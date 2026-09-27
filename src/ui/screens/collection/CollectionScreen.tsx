@@ -5,7 +5,7 @@
  */
 import './collection.css';
 import { ageNameKey, rarityNameKey, roleNameKey, skinNameKey } from '@/content/keys';
-import type { AgeId, CardId, Rarity, Role, SkinDef } from '@/contracts';
+import type { AgeId, SkinDef } from '@/contracts';
 import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { CardArt, CardTile } from '../../components/CardTile';
@@ -18,40 +18,8 @@ import { Empty, ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
-import { cardDef, cardGlyph, cardTile, collectionProgress, isOwned } from '../model/cards';
-
-type AgeFilter = 'all' | AgeId;
-type RarityFilter = 'all' | Rarity;
-type Ownership = 'all' | 'owned' | 'missing';
-/** Role filter: a unit role, or all turrets, or all powers. */
-type RoleFilter = 'all' | Role | 'turret' | 'power';
-
-export interface CollectionFilter {
-  age: AgeFilter;
-  rarity: RarityFilter;
-  role: RoleFilter;
-  own: Ownership;
-}
-
-/** Cards matching the filter in display order: units, turrets, powers (DESIGN table order). */
-export function filterCards(save: Parameters<typeof isOwned>[0], content: Parameters<typeof isOwned>[2], f: CollectionFilter): CardId[] {
-  const ids = [...content.order.units, ...content.order.turrets, ...content.order.powers];
-  return ids.filter((id) => {
-    const def = cardDef(content, id);
-    if (!def) return false;
-    if (f.age !== 'all' && def.age !== f.age) return false;
-    if (f.rarity !== 'all' && (def.kind === 'power' || def.rarity !== f.rarity)) return false;
-    if (f.role !== 'all') {
-      if (f.role === 'turret' || f.role === 'power') {
-        if (def.kind !== f.role) return false;
-      } else if (def.kind !== 'unit' || def.role !== f.role) return false;
-    }
-    const owned = isOwned(save, id, content);
-    if (f.own === 'owned' && !owned) return false;
-    if (f.own === 'missing' && owned) return false;
-    return true;
-  });
-}
+import { cardDef, cardGlyph, cardTile, collectionProgress } from '../model/cards';
+import { filterCards, NO_FILTER, type AgeFilter, type CollectionFilter, type Ownership, type RarityFilter, type RoleFilter } from '../model/collection';
 
 function SkinTile(p: { skin: SkinDef }) {
   const { save, content, t, locale, services, toasts } = useUi();
@@ -110,7 +78,7 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
   const { save, content, t, router } = useUi();
   const s = save.value;
   const [tab, setTab] = useState<'cards' | 'skins'>(p.route.tab ?? 'cards');
-  const [f, setF] = useState<CollectionFilter>({ age: 'all', rarity: 'all', role: 'all', own: 'all' });
+  const [f, setF] = useState<CollectionFilter>(NO_FILTER);
   const prog = collectionProgress(s, content);
   const foils = Object.values(s.collection).filter((e) => e.foil !== 'none').length;
   const roles = [...new Set(content.order.units.map((id) => content.units[id]!.role))];
