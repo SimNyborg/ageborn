@@ -4,13 +4,13 @@
  * A11 cartoon style; colours come from CSS where they depend on state.
  */
 import type { AgeId, EmoteId, RoleGroup } from '@/contracts';
-import type { JSX } from 'preact';
+import type { ComponentChildren, JSX } from 'preact';
 
 type P = { size?: number; class?: string };
 
 const OUT = '#1b1330';
 
-function Svg(props: P & { children: JSX.Element | JSX.Element[]; view?: string }) {
+function Svg(props: P & { children: ComponentChildren; view?: string }) {
   const s = props.size ?? 24;
   return (
     <svg class={props.class} width={s} height={s} viewBox={props.view ?? '0 0 24 24'} aria-hidden="true" focusable="false">

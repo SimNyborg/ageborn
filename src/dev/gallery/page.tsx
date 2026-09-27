@@ -4,7 +4,7 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { drawPuppet, puppetBounds } from '@/visuals/draw';
 import { getPart } from '@/visuals/parts/registry';
-import { STONE_BASE, STONE_TURRETS, STONE_UNITS } from '@/visuals/puppets/stone';
+import { allPuppets } from '@/visuals/library';
 import { CanvasTarget } from '@/visuals/targets';
 import { TEAM_COLORS } from '@/visuals/palette';
 import type { PuppetDef } from '@/visuals/types';
@@ -18,7 +18,9 @@ export default function Gallery() {
     if (!c) return;
     const ctx = c.getContext('2d');
     if (!ctx) return;
-    const scale = Number(new URLSearchParams(window.location.hash.split('/')[1] ?? '').get('s') ?? '2');
+    const q = new URLSearchParams(window.location.hash.split('/')[1] ?? '');
+    const scale = Number(q.get('s') ?? '2');
+    const age = q.get('age');
     c.width = 1800;
     c.height = 1100;
     ctx.fillStyle = '#d9d2bf';
@@ -26,7 +28,7 @@ export default function Gallery() {
     let x = 20;
     let y = 20;
     let rowH = 0;
-    const all: PuppetDef[] = [...STONE_UNITS, ...STONE_TURRETS, STONE_BASE];
+    const all: PuppetDef[] = allPuppets().filter((p) => (age ? p.age === age : p.age !== null));
     for (const p of all) {
       const b = puppetBounds(p, getPart);
       const w = (b.maxX - b.minX) * scale;

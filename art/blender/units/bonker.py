@@ -12,8 +12,8 @@ from ageborn_art.geometry import Geo
 SLUG = "bonker"
 NAME = "Bonker"
 HEIGHT_LU = 68
-CANVAS = (232, 216)
-FEET = (92, 190)
+CANVAS = (256, 224)
+FEET = (112, 198)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 
 SKIN = "#EBC4A0"
@@ -28,11 +28,11 @@ TOOTH = "#F4EEDC"
 
 # club geometry along +Z from the fist; the head is centred CLUB_HEAD lu up the club
 FIST = (4.0, -13.0, 21.0)
-CLUB_HEAD = 31.0
+CLUB_HEAD = 36.0
 CLUB_R = 9.5
 
 SMEAR = {"joint": "club", "inner": (FIST[0], FIST[1], FIST[2] + CLUB_HEAD - 8),
-         "outer": (FIST[0], FIST[1], FIST[2] + CLUB_HEAD + 9), "color": WOOD, "taper": 0.55,
+         "outer": (FIST[0], FIST[1], FIST[2] + CLUB_HEAD + 8), "color": WOOD, "taper": 0.55,
          "start": 0.35}
 
 
@@ -124,8 +124,8 @@ def build(rig):
     # the club: along +Z from the fist, long handle, big head with dark stone studs
     cx, cy, cz = FIST
     h = CLUB_HEAD
-    g = Geo().lathe([(0, -4.5), (2.5, -4.2), (2.6, -1), (2.8, 10), (3.8, h - 13), (7.2, h - 7),
-                     (CLUB_R, h), (CLUB_R * 0.95, h + 4.5), (7.0, h + 8.5), (0, h + 10)],
+    g = Geo().lathe([(0, -4.5), (2.5, -4.2), (2.6, -1), (2.9, 14), (4.2, h - 9), (7.6, h - 5),
+                     (CLUB_R, h), (CLUB_R * 0.95, h + 4.0), (7.0, h + 7.8), (0, h + 9.4)],
                     (cx, cy, cz), segs=18)
     rig.part("club", g, WOOD)
     g = Geo()
@@ -156,7 +156,7 @@ def off_arm(arm, fore):
 
 
 # club held up and forward, about 40 degrees from vertical, clear of the head
-STANCE = merge(club_arm(-8, 42, 50), off_arm(-70, -30), {"torso": {"r": -3}, "club": {"rx": -12}})
+STANCE = merge(club_arm(-15, 25, 45), off_arm(-70, -30), {"torso": {"r": -3}, "club": {"rx": -14}})
 
 
 def _idle(f):
@@ -197,9 +197,9 @@ def _walk(f):
 def _attack(f):
     # 0-1 anticipation (squash 0.9/1.1), 2 held extreme (club far back), 3 smear, 4 held
     # impact (squash 0.85/1.15, yell), 5-7 recovery. See fx.MELEE_MS for the timing.
-    arm = pick(f, [10, 70, 115, 60, -20, -15, -25, -38])
-    fore = pick(f, [60, 120, 160, 70, -30, -20, 0, 20])
-    club = pick(f, [95, 150, 205, 80, -22, -10, 25, 52])
+    arm = pick(f, [40, 80, 100, 70, -20, -18, -25, -15])
+    fore = pick(f, [100, 120, 135, 60, -22, -15, 5, 25])
+    club = pick(f, [115, 122, 130, 60, 6, 12, 28, 45])
     sq = pick(f, [-0.05, -0.10, 0.08, 0.05, -0.15, -0.08, 0.0, 0.0])
     pose = merge(club_arm(arm, fore, club), {
         "body": dict(squash(sq), x=pick(f, [-1, -2.5, -3.5, 2, 6, 5, 2, 0])),
