@@ -13,6 +13,7 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
+sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ageborn_art.colors import hex_to_rgb  # noqa: E402
 from ageborn_art.config import PX_PER_LU_1X, TEAM_COLORS  # noqa: E402

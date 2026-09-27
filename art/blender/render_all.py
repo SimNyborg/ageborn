@@ -12,6 +12,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+sys.dont_write_bytecode = True  # keep __pycache__ out of the repo
 
 UNITS = ["bonker", "destrier_knight", "pulse_trooper"]
 
@@ -37,7 +38,8 @@ def main():
         all_stats.append(pipeline.run_unit(mod, out, frames))
     if not args.no_mockup:
         import mockup
-        mockup.make(out, [s["slug"] for s in all_stats] if args.units != ",".join(UNITS) else UNITS)
+        # every unit that has an atlas in the output folder, not only the ones just rendered
+        mockup.make(out, [u for u in UNITS if os.path.exists(os.path.join(out, f"{u}.json"))])
     with open(os.path.join(out, "stats.json"), "w") as fh:
         json.dump({"units": all_stats, "seconds": round(time.time() - t0, 1)}, fh, indent=1)
     print(f"done in {time.time() - t0:.1f} s -> {out}")

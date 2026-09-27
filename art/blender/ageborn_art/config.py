@@ -77,8 +77,7 @@ THREADS = 2  # the machine is shared with other agents
 TEAM_COLORS = {
     "blue": "#2F7DF6",
     "orange": "#F28A1E",
-    "cb_blue": "#2F7DF6",
-    "cb_yellow": "#F2C21E",
+    "cb_yellow": "#F2C21E",   # Blue/Yellow preset (its blue is the default blue)
     "hc_blue": "#1F5FD6",
     "hc_orange": "#FF6A00",
 }

@@ -191,3 +191,9 @@ part('icon.horn', [
   { d: blob([7.4, -9.4, 12, -10.4, 12.4, -5.4, 9.4, -4.8]), zone: 'metal', line: 2 },
   { d: rrect(-4, -1.6, 2.6, 7, 1), zone: 'metal', line: 1.6, shade: false, light: false },
 ]);
+
+/** The Modernise arrow shown over outdated turrets (A2.4, A11 turret clips). */
+part('icon.modernise', [
+  { d: poly([0, -11, 9, -1.4, 3.4, -1.4, 3.4, 8, -3.4, 8, -3.4, -1.4, -9, -1.4]), zone: 'star', line: 2 },
+  { d: poly([0, -6.4, 4.6, -2.4, -4.6, -2.4]), zone: 'white', line: 0, shade: false, light: false },
+]);

@@ -47,6 +47,7 @@ Outputs per unit (`<slug>` = `bonker`, `destrier_knight`, `pulse_trooper`):
 | `<slug>.rgba.png`, `<slug>.webp`, `<slug>.q90.webp` | full RGBA master and WebP variants, for size comparison |
 | `<slug>_<clip>_1x.gif`, `<slug>_<clip>_3x.gif` | previews at in-game size (56 px infantry) and 3x |
 | `<slug>_contact.png` | every frame, blue and orange rows per clip |
+| `<slug>_team_layer.png` | one frame as base (team holes), grey team layer, and composites in all 5 team colours |
 | `<slug>.stats.json` | render time, sheet sizes, colour-rule result |
 | `lane_mockup_1280.png`, `lane_mockup_2560.png`, `lane_mockup_zoom.png` | lane at true scale (DPR 1 and 2) and a 3x crop |
 | `_frames/` | raw per-frame renders (not shipped) |
@@ -132,6 +133,17 @@ muzzle, hitCenter), per-clip `frames/fps/loop/durationMs/impactAt` and the team 
 **Colour rule.** `sheet.colour_rule` measures, per frame, the share of the silhouette where
 non-team pixels fall in the team hue bands (350-81 and 182-254 degrees) above 40%
 saturation (DESIGN A11 MUST rule, limit 10%) and writes the worst frame to the stats.
+
+## Measured (this container, CPU, 2 render threads, 12 samples)
+
+| Unit | Frames | Render | Total incl. packing | Sheet (2x) | PNG8 | WebP q90 | WebP lossless | PNG32 | PNG8 at 1.5x |
+|---|---|---|---|---|---|---|---|---|---|
+| bonker | 38 | 16 s | 31 s | 768x844 | 125 KB | 158 KB | 331 KB | 587 KB | 84 KB |
+| destrier_knight | 38 | 31 s | 50 s | 1280x1476 | 279 KB | 343 KB | 740 KB | 1385 KB | 185 KB |
+| pulse_trooper | 37 | 14 s | 27 s | 896x680 | 120 KB | 154 KB | 289 KB | 544 KB | 82 KB |
+
+Each frame is two Cycles renders (base and team) of 0.1-0.45 s. The JSON is ~28 KB
+(~2 KB gzipped). Team frames are 22-36% of the atlas area; death frames 2-7 are 5-11%.
 
 ## Adding a unit
 

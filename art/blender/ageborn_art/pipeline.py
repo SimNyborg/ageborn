@@ -43,6 +43,8 @@ def run_unit(mod, out_dir, frame_root, log=print):
     size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE)
     tints = {"blue": C.TEAM_COLORS["blue"], "orange": C.TEAM_COLORS["orange"]}
     sheet.previews(mod.SLUG, frames, clip_meta, out_dir, C.RENDER_SCALE, C.PREVIEW_BG, tints)
+    base0, team0 = frames["idle"][0]
+    sheet.team_breakdown(mod.SLUG, base0, team0, out_dir, list(C.TEAM_COLORS.values()), C.PREVIEW_BG)
     t_pack = time.time() - t1
     n_frames = sum(c.frames for c in clips)
     kb = lambda p: round(os.path.getsize(os.path.join(out_dir, p)) / 1024, 1)

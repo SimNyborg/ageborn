@@ -175,6 +175,19 @@ def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale):
     return sheet.size
 
 
+def team_breakdown(slug, base_path, team_path, out_dir, tints, bg_hex):
+    """One frame shown as: base frame (team surfaces are holes), grey team layer, and the
+    composite in every team colour/preset. Explains the tint-underlay scheme at a glance."""
+    base, team = load(base_path), load(team_path)
+    tiles = [to_image(base), to_image(team)] + [to_image(composite(base, team, t)) for t in tints]
+    w, h = tiles[0].size
+    bg = tuple(int(c * 255) for c in hex_to_rgb(bg_hex)) + (255,)
+    out = Image.new("RGBA", (w * len(tiles), h), bg)
+    for i, t in enumerate(tiles):
+        out.alpha_composite(t, (i * w, 0))
+    out.convert("RGB").save(os.path.join(out_dir, f"{slug}_team_layer.png"))
+
+
 def previews(slug, clip_frames, clip_meta, out_dir, render_scale, bg_hex, tints):
     """Animated GIFs at in-game size (1x) and 3x, per clip, on a flat background, plus a
     contact sheet of every frame in two team colours."""
