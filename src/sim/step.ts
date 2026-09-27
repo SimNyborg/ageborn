@@ -4,6 +4,7 @@
 import type { SimEvent, TimedCommand } from '@/contracts';
 import { applyCommands, applyScript } from './commands';
 import { hashState } from './hashState';
+import { buildSpatial } from './spatial';
 import type { Ctx } from './state';
 import { abilitySystem } from './systems/abilities';
 import { ascendSystem } from './systems/ascend';
@@ -42,6 +43,7 @@ export function stepTick(ctx: Ctx, cmds: readonly TimedCommand[]): SimEvent[] {
   turretTimerSystem(ctx);
   trainingSystem(ctx); //                     5. training and spawns
   statusSystem(ctx); //                       6. statuses, regen, innate shields, auras
+  buildSpatial(ctx); //                          (index for the range queries of steps 7-9)
   abilitySystem(ctx); //                      7. heals, Roar, EMP, Time Stop, pounce, called strikes
   combatSystem(ctx); //                       8. unit attack state machines (collect)
   turretFireSystem(ctx); //                   9. turrets, mount order, side 0 then 1 (collect)

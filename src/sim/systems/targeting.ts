@@ -13,7 +13,8 @@ import type { Side, TargetPriority } from '@/contracts';
 import { isLeaping } from '../damage';
 import { centreDist, distFromGate, distToEnemyGate, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import { DENSE_SCAN_STEP, TAG, type AttackRules, type UnitRules } from '../rules';
-import { BASE_TARGET, NO_TARGET, type Ctx, type UnitRt } from '../state';
+import { MAX_HALF, unitsBetween } from '../spatial';
+import { BASE_TARGET, LANE, NO_TARGET, other, type Ctx, type UnitRt } from '../state';
 import { alive, findUnit, unitRules } from '../units';
 
 /** Priority class of a base target: below every unit. */
@@ -56,8 +57,11 @@ function bestUnitCandidate(
   prio: TargetPriority = a.priority,
 ): Pick | null {
   let best: Pick | null = null;
-  for (const e of ctx.s.units) {
-    if (e.side === u.side || !alive(e) || !canHit(a, e)) continue;
+  const reach = maxDist + r.half + MAX_HALF;
+  const foes = unitsBetween(ctx, other(u.side), u.x - reach, u.x + reach, ctx.scratch);
+  for (let i = 0; i < foes.length; i += 1) {
+    const e = foes[i] as UnitRt;
+    if (!canHit(a, e)) continue;
     const er = unitRules(ctx, e);
     const d = edgeDist(u.x, r.half, e.x, er.half);
     if (d > maxDist || d < a.minRange) continue;
@@ -96,10 +100,11 @@ function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, target
 function bomberTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, window: number): number {
   let bestId = NO_TARGET;
   let bestD = 0;
-  for (const e of ctx.s.units) {
-    if (e.side === u.side || !alive(e) || e.air || !a.hitsGround) continue;
+  const foes = a.hitsGround ? unitsBetween(ctx, other(u.side), u.x - window, u.x + window, ctx.scratch) : [];
+  for (let i = 0; i < foes.length; i += 1) {
+    const e = foes[i] as UnitRt;
+    if (e.air) continue;
     const d = centreDist(u.x, e.x);
-    if (d > window) continue;
     if (bestId === NO_TARGET || d < bestD || (d === bestD && e.id < bestId)) {
       bestId = e.id;
       bestD = d;
@@ -205,12 +210,20 @@ function turretCandidate(a: AttackRules, side: Side, e: UnitRt, er: UnitRules): 
   return d;
 }
 
+/** Enemy units whose centre is within `range` + the largest half-width of `side`'s gate. */
+function nearGate(ctx: Ctx, side: Side, range: number): UnitRt[] {
+  const span = range + MAX_HALF;
+  const lo = side === 0 ? 0 : LANE - span;
+  const hi = side === 0 ? span : LANE;
+  return unitsBetween(ctx, other(side), lo, hi, ctx.scratch);
+}
+
 /** Picks a turret target for a shot, or null. */
 export function pickTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick | null {
   if (a.priority === 'densest') return densestTurretTarget(ctx, side, a);
   if (a.drag > 0) return toadTarget(ctx, side, a);
   let best: (Pick & { x: number }) | null = null;
-  for (const e of ctx.s.units) {
+  for (const e of nearGate(ctx, side, a.range)) {
     const er = unitRules(ctx, e);
     const d = turretCandidate(a, side, e, er);
     if (d < 0) continue;
@@ -229,7 +242,7 @@ export function pickTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPi
 function toadTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick | null {
   let back: Pick | null = null;
   const small: Pick[] = [];
-  for (const e of ctx.s.units) {
+  for (const e of nearGate(ctx, side, a.range)) {
     const er = unitRules(ctx, e);
     const d = turretCandidate(a, side, e, er);
     if (d < 0 || e.air) continue;
@@ -283,7 +296,7 @@ export function densestP(
 function densestTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick | null {
   let lo = -1;
   let hi = -1;
-  for (const e of ctx.s.units) {
+  for (const e of nearGate(ctx, side, a.range)) {
     const er = unitRules(ctx, e);
     const d = turretCandidate(a, side, e, er);
     if (d < 0) continue;

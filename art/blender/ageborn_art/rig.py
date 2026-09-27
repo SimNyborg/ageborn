@@ -1,0 +1,144 @@
+"""Part-based rig: joints are empties, parts are meshes parented to joints.
+
+This mirrors the 2D cutout rigs of DESIGN A11 (biped, rider, ...) so clips read the
+same way: every joint has a rest position in character space and a pose adds rotation,
+offset and scale on top. Characters face +X; the root carries the 3/4 view yaw.
+
+Pose channels per joint (all optional):
+  r        rotation in the side plane, degrees, counter-clockwise on screen
+           (for a right-facing unit: positive raises a forward-pointing arm)
+  rx, rz   roll (toward/away from camera) and yaw, degrees
+  x, y, z  offset in lu in the parent's space (x forward, z up)
+  s        uniform scale; sx, sy, sz multiply on top (squash and stretch)
+  alpha    fade the joint's parts (non-team materials only)
+  show     True to reveal a joint that is hidden by default (death FX)
+"""
+import math
+
+import bpy
+from mathutils import Matrix, Vector
+
+from . import config as C
+from . import materials
+from .geometry import hull_mesh
+
+
+class Rig:
+    def __init__(self, name, yaw=C.CHARACTER_YAW_DEG):
+        self.name = name
+        self.coll = bpy.context.scene.collection
+        self.joints, self.rest, self.parent_of = {}, {}, {}
+        self.hidden_by_default = set()
+        self.parts = []  # dicts: obj, hull, joint, team
+        root = self._empty("root", None, (0, 0, 0))
+        root.rotation_euler = (0.0, 0.0, math.radians(yaw))
+        self.yaw = math.radians(yaw)
+
+    def _empty(self, name, parent, pos):
+        e = bpy.data.objects.new(f"{self.name}.{name}", None)
+        e.empty_display_size = 2
+        self.coll.objects.link(e)
+        e.rotation_mode = "XYZ"
+        self.joints[name] = e
+        self.rest[name] = Vector(pos)
+        self.parent_of[name] = parent
+        if parent is not None:
+            e.parent = self.joints[parent]
+            e.location = Vector(pos) - self.rest[parent]
+        return e
+
+    def joint(self, name, parent, pos, hidden=False):
+        """Add a pivot at `pos` (character space, rest pose)."""
+        self._empty(name, parent, pos)
+        if hidden:
+            self.hidden_by_default.add(name)
+        return name
+
+    def part(self, joint, geo, fill=None, team=False, glow=None, outline=C.OUTLINE_LU,
+             outline_hex=None, highlight=True, name=None):
+        """Attach geometry built in character space to `joint`.
+        fill: palette hex for a cel-shaded part; team=True for a team-coloured part;
+        glow: hex for an unshaded emissive part. outline: hull thickness in lu (0 = none)."""
+        name = name or f"{joint}.{len(self.parts)}"
+        me = geo.mesh(f"{self.name}.{name}")
+        me.transform(Matrix.Translation(-self.rest[joint]))
+        if team:
+            mat = materials.team()
+        elif glow:
+            mat = materials.glow(glow)
+        else:
+            mat = materials.toon(fill, highlight)
+        me.materials.append(mat)
+        obj = bpy.data.objects.new(f"{self.name}.{name}", me)
+        self.coll.objects.link(obj)
+        obj.parent = self.joints[joint]
+        hull = None
+        if outline > 0:
+            hme = hull_mesh(me, outline, f"{self.name}.{name}.hull")
+            # outline_hex overrides the colour the outline is derived from (still darkened 45%).
+            hmat = (materials.outline(team_part=True) if team
+                    else materials.outline(outline_hex or fill or glow))
+            hme.materials.append(hmat)
+            hull = bpy.data.objects.new(f"{self.name}.{name}.hull", hme)
+            self.coll.objects.link(hull)
+            hull.parent = self.joints[joint]
+        self.parts.append({"obj": obj, "hull": hull, "joint": joint, "team": team})
+        return obj
+
+    # -- posing ------------------------------------------------------------------------
+    def _chain(self, j):
+        while j is not None:
+            yield j
+            j = self.parent_of[j]
+
+    def apply(self, pose):
+        """Reset every joint to rest, then apply `pose` = {joint: {channel: value}}."""
+        for name, e in self.joints.items():
+            p = self.parent_of[name]
+            e.location = self.rest[name] - (self.rest[p] if p else Vector())
+            e.rotation_euler = (0.0, 0.0, self.yaw if name == "root" else 0.0)
+            e.scale = (1.0, 1.0, 1.0)
+        for name, ch in pose.items():
+            if name not in self.joints:
+                continue
+            e = self.joints[name]
+            e.location = e.location + Vector((ch.get("x", 0.0), ch.get("y", 0.0), ch.get("z", 0.0)))
+            rx, ry, rz = e.rotation_euler
+            e.rotation_euler = (rx + math.radians(ch.get("rx", 0.0)),
+                                ry - math.radians(ch.get("r", 0.0)),
+                                rz + math.radians(ch.get("rz", 0.0)))
+            s = ch.get("s", 1.0)
+            e.scale = (max(1e-3, s * ch.get("sx", 1.0)), max(1e-3, s * ch.get("sy", 1.0)),
+                       max(1e-3, s * ch.get("sz", 1.0)))
+        hidden = set()
+        for name in self.joints:
+            for j in self._chain(name):
+                ch = pose.get(j, {})
+                if (j in self.hidden_by_default and not ch.get("show")) or ch.get("hide") \
+                        or ch.get("s", 1.0) < 0.02:
+                    hidden.add(name)
+                    break
+        self._hidden = hidden
+        for part in self.parts:
+            j = part["joint"]
+            alpha = 1.0
+            for k in self._chain(j):
+                alpha *= pose.get(k, {}).get("alpha", 1.0)
+            for o in (part["obj"], part["hull"]):
+                if o is None:
+                    continue
+                o.hide_render = j in hidden or alpha < 0.02
+                o.color = (1, 1, 1, alpha)
+
+    def set_pass(self, team_pass):
+        """Base pass shows everything (team surfaces as holdout); team pass shows only team parts."""
+        materials.set_team_pass(team_pass)
+        for part in self.parts:
+            vis = part["joint"] not in self._hidden and part["obj"].color[3] >= 0.02
+            show = vis and (part["team"] or not team_pass)
+            for o in (part["obj"], part["hull"]):
+                if o is not None:
+                    o.hide_render = not show
+
+    def has_visible_team(self):
+        return any(p["team"] and p["joint"] not in self._hidden for p in self.parts)

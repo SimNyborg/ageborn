@@ -292,8 +292,8 @@ export function unitOf(sim: Sim, id: number) {
 }
 
 /** Events of one kind. */
-export function ofKind<K extends SimEvent['e']>(events: readonly SimEvent[], e: K): Extract<SimEvent, { e: K }>[] {
-  return events.filter((x): x is Extract<SimEvent, { e: K }> => x.e === e);
+export function ofKind<K extends SimEvent['e']>(events: readonly SimEvent[], e: K): (SimEvent & { e: K })[] {
+  return events.filter((x): x is SimEvent & { e: K } => x.e === e);
 }
 
 /** Stuns a unit for `ticks` (test only). */

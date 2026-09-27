@@ -188,7 +188,7 @@ describe('turrets (A2.8)', () => {
     const kb = ofKind(ev, 'knockback').find((k) => k.id === archer);
     // 410 → 290 would pass the frontmost ally at 300: it stops there
     expect(kb?.toX).toBe(300000);
-    expect(pLu(sim, front)).toBe(1200 - 300);
+    expect(pLu(sim, front as number)).toBe(1200 - 300);
   });
 
   it('Gravity Well: aims at the densest point, pulls 60% toward the centre, slows everyone in the radius', () => {

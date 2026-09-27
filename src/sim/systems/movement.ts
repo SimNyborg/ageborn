@@ -51,7 +51,8 @@ export function movementSystem(ctx: Ctx): void {
     if (u.air) air.push(m);
     else ground[u.side].push(m);
   }
-  for (const side of [0, 1] as const) ground[side].sort((a, b) => b.p - a.p || a.u.id - b.u.id);
+  ground[0].sort(frontFirst);
+  ground[1].sort(frontFirst);
   for (const m of all) computeWant(ctx, m, ground[m.u.side]);
   for (const side of [0, 1] as const) resolveGround(ctx, ground[side], ground[side === 0 ? 1 : 0]);
   for (const m of air) m.newP = m.p + m.want;
@@ -65,6 +66,10 @@ export function movementSystem(ctx: Ctx): void {
     if (moved !== 0) m.u.x = xOf(p, m.u.side);
     m.u.mode = m.engaged ? 'attack' : moved < 0 ? 'retreat' : moved > 0 ? 'walk' : 'hold';
   }
+}
+
+function frontFirst(a: Mover, b: Mover): number {
+  return b.p - a.p || a.u.id - b.u.id;
 }
 
 function stepLeap(ctx: Ctx, u: UnitRt, r: UnitRules): void {

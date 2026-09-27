@@ -5,15 +5,16 @@
  * Re-record after an intended rule change (and bump SIM_VERSION in replay.ts):
  *   UPDATE_GOLDEN=1 npx vitest run src/sim/test/golden.test.ts
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import type { MatchConfig, ReplayDoc } from '@/contracts';
 import { buildReplay, verifyReplay } from '../replay';
 import { STRATEGIES, fixture, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
 
-const DIR = join(dirname(fileURLToPath(import.meta.url)), 'golden');
+/** The recorded files, loaded by Vite (src has no Node types; see `writeGolden` for recording). */
+const FILES = import.meta.glob<ReplayDoc>('./golden/*.json', { eager: true, import: 'default' });
+/** Replays recorded in this run (UPDATE_GOLDEN=1) take precedence over the files loaded at import. */
+const recorded = new Map<string, ReplayDoc>();
+const golden = (name: string): ReplayDoc | undefined => recorded.get(name) ?? FILES[`./golden/${name}.json`];
 
 interface Scenario {
   name: string;
@@ -115,22 +116,37 @@ function record(sc: Scenario): ReplayDoc {
   return buildReplay(sim);
 }
 
-const file = (name: string) => join(DIR, `${name}.json`);
-
-if (process.env.UPDATE_GOLDEN === '1') {
-  mkdirSync(DIR, { recursive: true });
-  for (const sc of SCENARIOS) writeFileSync(file(sc.name), `${JSON.stringify(record(sc))}\n`);
+interface NodeFs {
+  mkdirSync(path: string, o: { recursive: boolean }): void;
+  writeFileSync(path: string, data: string): void;
 }
+
+const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
+
+/** Writes every scenario's replay into ./golden (Node only; the module name is computed so src needs no Node types). */
+async function writeGolden(): Promise<void> {
+  const fs = (await import(/* @vite-ignore */ ['node', 'fs'].join(':'))) as NodeFs;
+  const dir = new URL('./golden/', import.meta.url).pathname;
+  fs.mkdirSync(dir, { recursive: true });
+  for (const sc of SCENARIOS) {
+    const doc = record(sc);
+    recorded.set(sc.name, doc);
+    fs.writeFileSync(`${dir}${sc.name}.json`, `${JSON.stringify(doc)}\n`);
+  }
+}
+
+if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
   it('has all 10 recorded files', () => {
     expect(SCENARIOS).toHaveLength(10);
-    for (const sc of SCENARIOS) expect(existsSync(file(sc.name)), sc.name).toBe(true);
+    for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
   });
 
   for (const sc of SCENARIOS) {
     it(`${sc.name} re-simulates to its recorded final hash`, () => {
-      const doc = JSON.parse(readFileSync(file(sc.name), 'utf8')) as ReplayDoc;
+      const doc = golden(sc.name);
+      if (!doc) throw new Error(`missing golden ${sc.name}`);
       expect(doc.contentHash).toBe(fixture.hash);
       const check = verifyReplay(doc, fixture);
       expect(check.firstMismatch).toBe(-1);

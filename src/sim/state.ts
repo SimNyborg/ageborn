@@ -30,6 +30,7 @@ import type {
 import { BP, LANE_MLU, MILLI, TICK_MS, assert, seedSfc32 } from '@/core';
 import { matchMods, type MatchMods } from './modifiers';
 import { rulesFor, type AreaKind, type AttackRules, type EconRules, type FormatRules, type SimRules } from './rules';
+import { createSpatial, type SpatialIndex } from './spatial';
 
 /** No target (ids start at 1). */
 export const NO_TARGET = 0;
@@ -214,6 +215,9 @@ export interface Ctx {
   /** Training script sorted by tick; `scriptCursor` is the next event. */
   script: readonly TrainingEvent[];
   scriptCursor: number;
+  /** Per-tick spatial index (built at step 7) and a scratch list for range queries. */
+  spatial: SpatialIndex;
+  scratch: UnitRt[];
 }
 
 /** Creates the context and the tick-0 state for a match. */
@@ -294,6 +298,8 @@ export function createCtx(cfg: MatchConfig): Ctx {
     retreatTick: noClock ? null : fmt.retreatTick,
     script,
     scriptCursor: 0,
+    spatial: createSpatial(),
+    scratch: [],
   };
 }
 
