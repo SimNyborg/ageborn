@@ -151,7 +151,6 @@ describe('Age Powers: effects (A5.7)', () => {
   it('Smoke Screen: enemy ranged attacks into the cloud miss about 50%; own units inside deal +20%', () => {
     const { sim, st } = powerArena('smoke_screen');
     const mine = devSpawn(sim, 0, 'cuirassier', { p: 500 });
-    stun(sim, mine.id, 5000);
     const mu = unitById(sim, mine.id);
     if (mu) mu.hp = mu.maxHp = 100000000;
     const shooters = [650, 660, 670, 680].map((p) => devSpawn(sim, 1, 'fusilier', { p: 1200 - p }).id);
