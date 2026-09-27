@@ -64,7 +64,7 @@ def add_follow_through(rig, clip, poses):
                 b["A"] -= 360
             while b["A"] - a["A"] < -180:
                 b["A"] += 360
-        phi = follow_through(steps, clip.durations, clip.loop, sec["gain"])
+        phi = follow_through(steps, clip.durations, clip.loop, sec["gain"], rot_gain=sec["rot_gain"])
         acc = {}
         for i, v in zip(clip.sequence, phi):
             acc.setdefault(i, []).append(v)

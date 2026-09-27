@@ -104,23 +104,35 @@ function Scouted(p: { c: HudCtx }) {
 function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   const { c } = p;
   const [open, setOpen] = useState(false);
+  const [cooling, setCooling] = useState(false);
+  const cooldownMs = c.config.content.economy.emoteCooldownMs;
+  useEffect(() => {
+    if (!cooling) return;
+    const id = setTimeout(() => setCooling(false), cooldownMs);
+    return () => clearTimeout(id);
+  }, [cooling, cooldownMs]);
+  const off = c.readOnly || c.m.phase === 'ended';
   return (
     <div class="hud-emote">
       <button
-        class="hud-round hud-emote-btn"
+        class={`hud-round hud-emote-btn${cooling ? ' is-cooling' : ''}${c.denied('emote') ? ' is-denied' : ''}`}
         data-testid="hud-emote"
         aria-label={c.t('hud.emote')}
         aria-expanded={open}
-        disabled={c.m.phase === 'ended'}
+        disabled={off}
         onClick={() => {
+          if (cooling) {
+            c.act({ k: 'deny', target: 'emote' });
+            return;
+          }
           c.audio?.play('ui_click');
           setOpen(!open);
         }}
       >
         <SmileIcon size={22} />
       </button>
-      {open ? (
-        <div class="hud-emote-picker" role="menu">
+      {open && !off ? (
+        <div class="hud-emote-picker" role="menu" data-testid="hud-emote-picker">
           {EMOTES.map((e) => (
             <button
               key={e}
@@ -130,6 +142,7 @@ function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
               aria-label={c.t(`emote.${e}.name`)}
               onClick={() => {
                 setOpen(false);
+                setCooling(true);
                 p.onEmote(e);
               }}
             >
@@ -233,7 +246,7 @@ export function TopBar(p: {
           ) : null}
           {phaseKey ? <div class="hud-phase-tag">{t(phaseKey)}</div> : null}
         </div>
-        <EmoteButton c={c} onEmote={(emote) => c.act({ k: 'command', cmd: { t: 'emote', side: c.side, emote }, target: 'army' })} />
+        <EmoteButton c={c} onEmote={(emote) => c.act({ k: 'command', cmd: { t: 'emote', side: c.side, emote }, target: 'emote' })} />
       </div>
 
       <div class="hud-right">

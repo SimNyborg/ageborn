@@ -62,6 +62,8 @@ export interface BipedSpec {
   /** On the far hand (shields, drums, lanterns). */
   offhand?: Held;
   extras?: SlotDef[];
+  /** Extra bones (bow strings, antennas, devices); parents must be biped bones or listed earlier. */
+  extraBones?: BoneDef[];
   /** Rest rotations in degrees per bone. */
   pose?: Partial<Record<'torso' | 'head' | 'armF' | 'foreF' | 'handF' | 'armB' | 'foreB' | 'handB' | 'legF' | 'legB' | 'shinF' | 'shinB', number>>;
   attack: string;
@@ -108,6 +110,7 @@ export function biped(s: BipedSpec): PuppetDef {
     { id: 'legF', parent: 'pelvis', x: 3.4 * k, y: 1 * k, rot: P.legF ?? -4 },
     { id: 'shinF', parent: 'legF', x: 0, y: 7.6 * k, rot: P.shinF ?? 0 },
   ];
+  bones.push(...(s.extraBones ?? []).map((b) => ({ ...b, x: b.x * k, y: b.y * k })));
   const w = s.weapon;
   if (w?.muzzle) bones.push({ id: 'muzzle', parent: 'handF', x: 0, y: 0 });
   const z = (p: string): string => sized(p, k);

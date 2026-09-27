@@ -9,7 +9,20 @@
 import type { AgeId, CardId, Command, CompiledContent, HudModel, MatchConfig, Side } from '@/contracts';
 
 /** Elements that can show the denied-press feedback. */
-export type DenyTarget = 'card0' | 'card1' | 'card2' | 'card3' | 'card4' | 'gold' | 'evolve' | 'power' | 'stance' | 'lastStand' | 'mounts' | 'army';
+export type DenyTarget =
+  | 'card0'
+  | 'card1'
+  | 'card2'
+  | 'card3'
+  | 'card4'
+  | 'gold'
+  | 'evolve'
+  | 'power'
+  | 'stance'
+  | 'lastStand'
+  | 'mounts'
+  | 'army'
+  | 'emote';
 
 export type HudIntent =
   | { k: 'command'; cmd: Command; target: DenyTarget }
@@ -20,6 +33,16 @@ export type HudIntent =
 
 const NONE: HudIntent = { k: 'none' };
 const PPM_FULL = 1_000_000;
+
+/** Pointer travel (CSS px) that turns a press on the power button into a drag (A2.9: tap = auto-aim, drag = place). */
+export const POWER_DRAG_PX = 12;
+/** A press this long on a card cancels its last queued instance (A2.12). */
+export const LONG_PRESS_MS = 450;
+/** How long the denied-press feedback shows (red flash; the 2-frame shake runs inside it, A9.2). */
+export const DENY_MS = 280;
+/** Emote bubbles and evolve banners stay this long. */
+export const BUBBLE_MS = 2200;
+export const BANNER_MS = 2600;
 
 type Slot = 0 | 1 | 2 | 3 | 4;
 type Mount = 0 | 1 | 2 | 3;
@@ -234,6 +257,37 @@ export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig
       return { k: 'speed' };
     default:
       return NONE;
+  }
+}
+
+/**
+ * Where the denied-press feedback goes when the sim rejects a command (DESIGN A9.2). The HUD
+ * remembers the element that issued each command type and prefers that; this is the fallback.
+ */
+export function denyTargetFor(t: Command['t']): DenyTarget | null {
+  switch (t) {
+    case 'train':
+    case 'cancelTrain':
+      return 'army';
+    case 'buildTurret':
+    case 'replaceTurret':
+    case 'sellTurret':
+    case 'buyMount':
+      return 'mounts';
+    case 'treasury':
+      return 'gold';
+    case 'evolve':
+      return 'evolve';
+    case 'power':
+      return 'power';
+    case 'stance':
+      return 'stance';
+    case 'lastStand':
+      return 'lastStand';
+    case 'emote':
+      return 'emote';
+    case 'retreat':
+      return null;
   }
 }
 

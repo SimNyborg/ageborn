@@ -19,4 +19,6 @@ export interface HudCtx {
   audio: Pick<AudioService, 'play'> | undefined;
   /** Narrow screens (< 900 px) use 72 px cards (A9.2). */
   compact: boolean;
+  /** A read-only HUD (replay viewer, dev state gallery) shows everything and accepts no input. */
+  readOnly: boolean;
 }

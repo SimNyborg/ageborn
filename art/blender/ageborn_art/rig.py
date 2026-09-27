@@ -66,7 +66,7 @@ class Rig:
             self.rest_scale[name] = scale
         return name
 
-    def secondary(self, name, parent, pos, tip, max_deg, gain=1.0):
+    def secondary(self, name, parent, pos, tip, max_deg, gain=1.0, rot_gain=1.0):
         """A dangling joint driven by follow-through: pivot at `pos`, its part reaching to
         `tip` (both character space, rest pose). Swing is soft-limited to +-max_deg."""
         self.joint(name, parent, pos)
@@ -74,7 +74,7 @@ class Rig:
         self.coll.objects.link(e)
         e.parent = self.joints[name]
         e.location = Vector(tip) - self.rest[name]
-        self.secondaries[name] = {"tip": e, "max": max_deg, "gain": gain}
+        self.secondaries[name] = {"tip": e, "max": max_deg, "gain": gain, "rot_gain": rot_gain}
         return name
 
     def track(self, name, joint, pos):

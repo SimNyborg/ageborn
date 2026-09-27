@@ -37,6 +37,31 @@ part('shared.leg.lower.bare', [
 ]);
 
 // ---------------------------------------------------------------------------------------------
+// Body templates (infantry scale). Ages dress these with their own layers so every biped shares one
+// proportion: a barrel chest facing +x with the shoulders at y -16.6 and the neck at (1.5, -20).
+
+/** Torso outline points: pass through `blob`, optionally scaled (broad or slim builds). */
+export const TORSO_PTS: readonly number[] = [-9, 2, -10.6, -8, -9.4, -17, -5.6, -21.6, 0.4, -23, 6.2, -21.6, 10, -16.6, 11, -7.6, 9.6, 2, 0.2, 3.6];
+
+/** The torso outline scaled about the pelvis joint (sx wider, sy taller). */
+export function torsoShape(sx = 1, sy = 1): string {
+  return blob(TORSO_PTS.map((v, i) => (i % 2 === 0 ? v * sx : v * sy)));
+}
+
+/** A tabard or coat panel covering the front and sides of the torso (team layers use it). */
+export function tabardShape(sx = 1, hem = 3.4): string {
+  return blob(
+    [-8.8, 1.8, -9.8, -8, -8.4, -17.6, -3, -20.8, 4, -21.2, 8.6, -17, 10.4, -8, 9.6, hem - 1.4, 0, hem].map((v, i) => (i % 2 === 0 ? v * sx : v)),
+    0.8,
+  );
+}
+
+/** Hips (pelvis part) as trousers: a rounded block over the hip joints. */
+export function hipsShape(w = 9.6): string {
+  return blob([-w, -3.6, w, -3.6, w + 0.6, 3, 4, 5.4, 0, 4.2, -4, 5.4, -w - 0.4, 3], 0.7);
+}
+
+// ---------------------------------------------------------------------------------------------
 // Heads: pivot at the neck, skull centre at (0.5, -12.5), radius about 12.6.
 
 export interface HeadOptions {

@@ -134,7 +134,7 @@ class Clip:
         return m
 
 
-def follow_through(steps, durations, loop, gain=1.0, hz=None, damping=None):
+def follow_through(steps, durations, loop, gain=1.0, hz=None, damping=None, rot_gain=1.0):
     """Secondary motion for one joint over a clip's playback.
 
     steps: per playback step, the parent's side-plane angle `A` (deg), the pivot position
@@ -143,7 +143,8 @@ def follow_through(steps, durations, loop, gain=1.0, hz=None, damping=None):
     changes speed, the part lags and then overshoots (about 20% with the default damping).
     The parent is taken to move linearly between frame starts, so every frame boundary is
     an impulse. Returns the offset angle (deg) sampled in the middle of each step.
-    Loops run three times and return the last pass, so the result is seamless."""
+    Loops run three times and return the last pass, so the result is seamless.
+    rot_gain = 0 ignores the parent's rotation (a pennant held level by counter-rotation)."""
     hz = hz or C.SPRING_HZ
     zeta = damping or C.SPRING_DAMPING
     w = 2 * math.pi * hz
@@ -168,7 +169,7 @@ def follow_through(steps, durations, loop, gain=1.0, hz=None, damping=None):
             s = steps[j]
             dA, dx, dz = v[0] - prev[0], v[1] - prev[1], v[2] - prev[2]
             # parent spins: the part keeps its world angle for a moment (inertia)
-            dphi -= dA * gain
+            dphi -= dA * gain * rot_gain
             # pivot changes speed: pseudo-force on the tip, torque = u x (-dv) / L
             dphi -= math.degrees((s["ux"] * dz - s["uz"] * dx) / max(1.0, s["L"])) * gain
             prev = v
