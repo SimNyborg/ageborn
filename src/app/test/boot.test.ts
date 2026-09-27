@@ -3,7 +3,7 @@ import { content } from '@/content';
 import { FakeAudio } from '@/contracts/fakes/audio';
 import { FixedClock } from '@/contracts/fakes/clock';
 import { InMemorySaveStore, fakeSaveDoc } from '@/contracts/fakes/saveStore';
-import { NonePlatform } from '@/platform';
+import { type NonePlatform } from '@/platform';
 import { boot, bootFlags, unlockAudioOnGesture } from '../boot';
 import { buildServices, FAKE_CHOICE, type Services } from '../services';
 import { fakeMeta } from './helpers';

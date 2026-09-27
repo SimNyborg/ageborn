@@ -1811,3 +1811,41 @@
     --card-w: 82px;
   }
 }
+
+/* ------------------------------------------------------------------------------------------ */
+/* Text fields                                                                                */
+/* ------------------------------------------------------------------------------------------ */
+
+.ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 800;
+}
+.ui-input,
+.ui-textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 14px;
+  background: #f7f0dc;
+  color: var(--ui-ink);
+  font: inherit;
+  font-weight: 800;
+  font-size: 18px;
+  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.15);
+  user-select: text;
+}
+.ui-textarea {
+  min-height: 110px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  resize: vertical;
+  word-break: break-all;
+}
+.ui-input:focus-visible,
+.ui-textarea:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
+}

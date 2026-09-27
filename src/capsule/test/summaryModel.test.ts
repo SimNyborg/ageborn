@@ -9,7 +9,7 @@ import {
   revealCards,
   wardrobePityLines,
   type SummaryItem,
-} from '../summary';
+} from '../summaryModel';
 import { DEFAULT_PITY_RULES } from '../types';
 import { PITY, reveal, stack, testCatalog } from './fixtures';
 

@@ -8,6 +8,7 @@
 import type { AgeId, Pt } from '@/contracts/ids';
 import type { Palette } from '../palette';
 import type { BoneDef, PuppetDef, SlotDef } from '../types';
+import { uniqueSlots } from './common';
 
 export interface BaseSpec {
   id: string;
@@ -42,7 +43,7 @@ export function base(s: BaseSpec): BasePuppet {
     rig: 'base',
     age: s.age,
     bones,
-    slots: s.slots,
+    slots: uniqueSlots(s.slots),
     palette: s.palette,
     heightLu: s.height,
     anchors: {

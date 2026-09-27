@@ -93,8 +93,8 @@ export interface BrainConfig {
   tier: TierParams;
   persona: Personality;
   weights: WeightsBp;
-  /** Mistake rate per decision, bp (tier rate + profile bonus). */
-  mistakeBp: number;
+  /** Extra mistake rate from the profile, bp (added to the tier's rate). */
+  mistakeBonusBp: number;
   openings: readonly string[];
 }
 
@@ -141,6 +141,8 @@ const URGENT_PRESSURE_BP = 5000;
 const OPENING_TICKS = 30 * TICKS_PER_SECOND;
 /** A Commander's favourite card bonus. */
 const FAVORITE_BONUS = 1500;
+/** Mistake rate ceiling, bp (a bot always plays mostly on purpose). */
+const MAX_MISTAKE_BP = 9000;
 /** A saving goal's own action gets this bonus once affordable, bp of score. */
 const GOAL_BONUS = 15000;
 /** A bot keeps a stance at least this long before toggling again (on top of the 2 s cooldown). */
@@ -240,7 +242,8 @@ export class Brain {
     // Train.
     const trains = this.trainCandidates(v, mem, { banking, allIn, clockBp });
     if (mayTrain) for (const s of trains.scored) add(s.action, s.score);
-    if (banking && trains.ignoringGate) opts.overCommit = trains.ignoringGate;
+    // Over-commit (mistake): keep feeding units forward while the push gate says bank.
+    if (banking && trains.eager) opts.overCommit = trains.eager;
     if (trains.noAntiAir) opts.forgetAntiAir = trains.noAntiAir;
 
     // Turrets.
@@ -360,7 +363,7 @@ export class Brain {
       opts.leaveMountEmpty = cand.find((c) => c.action.kind !== 'build' && c.action.kind !== 'mount' && c.score >= bar)?.action ?? null;
     }
 
-    if (chanceBp(rng, this.cfg.mistakeBp)) {
+    if (chanceBp(rng, Math.min(MAX_MISTAKE_BP, t.mistakeBp + this.cfg.mistakeBonusBp))) {
       const m = pickMistake(rng, opts);
       trace.mistake = m.kind;
       trace.action = m.action;
@@ -390,7 +393,7 @@ export class Brain {
     v: View,
     mem: BotMemory,
     s: { banking: boolean; allIn: boolean; clockBp: number },
-  ): { scored: Scored[]; ignoringGate?: BotAction; noAntiAir?: BotAction } {
+  ): { scored: Scored[]; eager?: BotAction; noAntiAir?: BotAction } {
     const { book, tier: t, persona: P, weights: W } = this.cfg;
     const e = book.econ;
     if (v.ageUncertain) return { scored: [] };
@@ -404,7 +407,7 @@ export class Brain {
     }
     const foeAir = v.foes.some((u) => u.air);
     const scored: Scored[] = [];
-    let bestIgnoringGate: Scored | null = null;
+    let eager: Scored | null = null;
     let bestNoAir: Scored | null = null;
     for (const slot of v.tray) {
       const c = slot.card;
@@ -428,11 +431,11 @@ export class Brain {
       const action: BotAction = { kind: 'train', slot: slot.slot, card: c.id, cost: c.cost };
       const score = base + bankingBonus - savePenalty;
       scored.push({ action, score });
-      if (!bestIgnoringGate || base > bestIgnoringGate.score) bestIgnoringGate = { action, score: base };
+      if (!eager || base > eager.score) eager = { action, score: base };
       if (foeAir && !c.hitsAir && (!bestNoAir || score > bestNoAir.score)) bestNoAir = { action, score };
     }
-    const out: { scored: Scored[]; ignoringGate?: BotAction; noAntiAir?: BotAction } = { scored };
-    if (bestIgnoringGate) out.ignoringGate = bestIgnoringGate.action;
+    const out: { scored: Scored[]; eager?: BotAction; noAntiAir?: BotAction } = { scored };
+    if (eager) out.eager = eager.action;
     if (bestNoAir) out.noAntiAir = bestNoAir.action;
     return out;
   }

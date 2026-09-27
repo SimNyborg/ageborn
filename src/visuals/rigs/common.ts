@@ -2,9 +2,11 @@
  * Helpers shared by the rig builders: the root/spin bones, anchors, palettes and slot shorthands.
  */
 import type { Anchors } from '@/contracts/art';
-import { boneWorld } from '../pose';
+import { puppetBounds } from '../draw';
+import { getPart } from '../parts/registry';
+import { boneWorld, slotId } from '../pose';
 import { matApply } from '../svg';
-import type { BoneDef, SlotDef } from '../types';
+import type { BoneDef, PuppetDef, SlotDef } from '../types';
 
 /**
  * Every rig starts with `root` at the feet (scale and squash anchor on the ground) and `spin` at the
@@ -41,4 +43,27 @@ function round(v: number): number {
 /** Shorthand for an extra slot on a bone. */
 export function slot(part: string, bone: string, z: number, o: Partial<SlotDef> = {}): SlotDef {
   return { part, bone, z, ...o };
+}
+
+/** Gives repeated slot ids (the same part on two bones) a `#n` suffix so every slot id is unique. */
+export function uniqueSlots(slots: readonly SlotDef[]): SlotDef[] {
+  const seen = new Map<string, number>();
+  return slots.map((s) => {
+    const id = slotId(s);
+    const n = seen.get(id) ?? 0;
+    seen.set(id, n + 1);
+    return n === 0 ? s : { ...s, id: `${id}#${n + 1}` };
+  });
+}
+
+/**
+ * Finishes a unit puppet: unique slot ids, and `heightLu` plus the head anchor taken from the drawn
+ * rest pose (the top of the hat, plume or rotor), so health bars sit just above the art (B6).
+ */
+export function finishUnit<T extends PuppetDef>(p: T): T {
+  const q = { ...p, slots: uniqueSlots(p.slots) };
+  const b = puppetBounds(q, getPart);
+  if (!Number.isFinite(b.minY) || b.minY >= 0) return q;
+  const top = Math.round(b.minY * 10) / 10;
+  return { ...q, heightLu: Math.round(-b.minY), anchors: { ...q.anchors, head: { x: q.anchors.head.x, y: top } } };
 }

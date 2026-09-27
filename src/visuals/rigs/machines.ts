@@ -2,7 +2,8 @@
  * Machine rigs (DESIGN A11 Rigs):
  *  - vehicle: hull, wheels or treads, turret, barrel (Ram, Cannon, Tankette, Behemoth)
  *  - walker: a hull on two jointed legs, optional arms (Walker Mech, Chrono Titan)
- *  - flyer: body, rotor or balloon, gondola (Balloon, Gyrocopter, Drone), authored at altitude
+ *  - flyer: body, rotor or balloon, gondola (Balloon, Gyrocopter, Drone). Flyers are authored with
+ *    the origin at their lowest point; the battle view lifts air units to their flight altitude.
  *
  * These rigs take explicit bone lists (machines vary too much for one template) plus the slots that
  * place parts on them; the helpers here add the root and spin bones, anchors and motion.
@@ -12,7 +13,7 @@ import { getClip } from '../clips';
 import { strideFor } from '../clips/procedural';
 import type { Palette } from '../palette';
 import type { BoneDef, PuppetDef, SlotDef } from '../types';
-import { anchorsFrom, rootBones } from './common';
+import { anchorsFrom, finishUnit, rootBones } from './common';
 
 export interface MachineSpec {
   id: string;
@@ -45,7 +46,7 @@ function machine(rig: 'vehicle' | 'walker' | 'flyer', s: MachineSpec): PuppetDef
   const attackClip = getClip(s.attack);
   const legLu = s.legLen ?? 30;
   const legDeg = s.legDeg ?? 20;
-  return {
+  return finishUnit({
     id: s.id,
     kind: 'unit',
     rig,
@@ -71,7 +72,7 @@ function machine(rig: 'vehicle' | 'walker' | 'flyer', s: MachineSpec): PuppetDef
     size: s.size,
     legendary: s.legendary,
     aura: s.aura ?? (s.legendary ? 'legendary' : null),
-  };
+  });
 }
 
 export const vehicle = (s: MachineSpec): PuppetDef => machine('vehicle', s);

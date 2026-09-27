@@ -129,18 +129,30 @@ export function silhouetteArea(p: PuppetDef, parts: PartLookup, pxPerLu = 2): nu
 // ---------------------------------------------------------------------------------------------
 // Scale and width
 
-/** Body bounds: every slot except held gear, rotors and banners (`noWidth`). */
+/** Body bounds: every slot except weapons, held gear, arms, rotors and banners (`noWidth`). */
 export function bodyBounds(p: PuppetDef, parts: PartLookup): Bounds {
-  return puppetBounds({ ...p, slots: p.slots.filter((s) => !s.noWidth) }, parts);
+  return puppetBounds({ ...p, slots: p.slots.filter((s) => !s.noWidth && s.tag !== 'weapon') }, parts);
 }
 
-export function bodyWidth(p: PuppetDef, parts: PartLookup): number {
-  const b = bodyBounds(p, parts);
-  return b.maxX - b.minX;
+/** Exact body width (lu) from the rasterised body silhouette (rotated parts do not inflate it). */
+export function bodyWidth(p: PuppetDef, parts: PartLookup, pxPerLu = 2): number {
+  const body: PuppetDef = { ...p, slots: p.slots.filter((s) => !s.noWidth && s.tag !== 'weapon') };
+  const r = rasterizePuppet(body, parts, { pxPerLu });
+  let min = Infinity;
+  let max = -Infinity;
+  for (let y = 0; y < r.h; y++) {
+    for (let x = 0; x < r.w; x++) {
+      if ((r.color[y * r.w + x] ?? -1) < 0) continue;
+      if (x < min) min = x;
+      if (x > max) max = x;
+    }
+  }
+  return max < min ? 0 : (max - min + 1) / pxPerLu;
 }
 
+/** 1.4x the collision width, plus one outline width (bounds include the outline drawn outside the fill). */
 export function maxBodyWidth(p: PuppetDef): number {
-  return STYLE.collisionWidthLu[p.size ?? 'small'] * STYLE.maxWidthFactor;
+  return STYLE.collisionWidthLu[p.size ?? 'small'] * STYLE.maxWidthFactor + STYLE.outlineLu;
 }
 
 export function restHeight(p: PuppetDef, parts: PartLookup): number {

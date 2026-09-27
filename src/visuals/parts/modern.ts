@@ -47,8 +47,8 @@ part('modern.head.radio', headLayers({ nose: 'button', brow: 'worried', mouth: '
 
 /** Brodie helmet: wide shallow dish (Trench Raider). */
 part('modern.helmet.brodie', [
-  { d: blob([-19, -18, -12, -22, -8, -28, 2, -30.6, 11, -27.6, 14, -22, 20, -18, 10, -16.4, 0, -16.8, -10, -16.4], 0.7), zone: 'cloth' },
-  { d: rrect(-19.6, -19.4, 40, 3, 1.5), zone: 'cloth3', line: 2 },
+  { d: blob([-16, -18, -11, -22, -8, -28, 2, -30.6, 11, -27.6, 14, -22, 18, -18, 10, -16.4, 0, -16.8, -10, -16.4], 0.7), zone: 'cloth' },
+  { d: rrect(-16.6, -19.4, 35.2, 3, 1.5), zone: 'cloth3', line: 2 },
 ]);
 /** Steel helmet with netting and a team band (Rifleman). */
 part('modern.helmet.net', [
@@ -121,27 +121,27 @@ part('modern.radio.handset', [
 // Tankette (vehicle rig: hull, road wheels, tread teeth, turret, barrel)
 
 part('modern.tank.tread', [
-  { d: rrect(-34, -18, 68, 18, 9), zone: 'metal2' },
-  { d: rrect(-30, -14.6, 60, 11.2, 5.6), zone: 'cloth3', line: 1.4, shade: false },
+  { d: rrect(-30, -18, 60, 18, 9), zone: 'metal2' },
+  { d: rrect(-26.6, -14.6, 53.2, 11.2, 5.6), zone: 'cloth3', line: 1.4, shade: false },
 ]);
 /** Tread teeth: a strip that scrolls with the `treadTeeth` bone (wraps every 8 lu). */
-part('modern.tank.teeth', [{ d: join(...[-32, -24, -16, -8, 0, 8, 16, 24].map((x) => rect(x, -1.4, 4, 2.8))), zone: 'metal', line: 0.8, shade: false, light: false }]);
+part('modern.tank.teeth', [{ d: join(...[-20, -12, -4, 4, 12, 20].map((x) => rect(x, -1.4, 4, 2.8))), zone: 'metal', line: 0.8, shade: false, light: false }]);
 part('modern.tank.roadwheel', [
   { d: circle(0, 0, 5.4), zone: 'cloth' },
   { d: circle(0, 0, 1.8), zone: 'metal2', line: 1, shade: false },
 ]);
 part('modern.tank.hull', [
-  { d: blob([-34, -16, -32, -30, -20, -38, 20, -38, 34, -26, 36, -16], 0.5), zone: 'cloth' },
-  { d: join(circle(-26, -22, 1), circle(-14, -22, 1), circle(-2, -22, 1), circle(10, -22, 1), circle(22, -22, 1)), zone: 'cloth3', line: 0, shade: false, light: false },
-  { d: circle(-10, -27, 6.6), zone: 'team', banner: true, line: 1.8 },
-  { d: circle(-10, -27, 2.6), zone: 'cloth2', line: 1, shade: false, light: false },
-  { d: rrect(12, -35, 12, 4, 1.4), zone: 'cloth3', line: 1.4 },
+  { d: blob([-30, -16, -29, -34, -19, -44, 18, -44, 30, -30, 32, -16], 0.5), zone: 'cloth' },
+  { d: join(circle(-22, -22, 1), circle(-11, -22, 1), circle(0, -22, 1), circle(11, -22, 1), circle(22, -22, 1)), zone: 'cloth3', line: 0, shade: false, light: false },
+  { d: circle(-8, -30, 7.4), zone: 'team', banner: true, line: 1.8 },
+  { d: circle(-8, -30, 3), zone: 'cloth2', line: 1, shade: false, light: false },
+  { d: rrect(10, -41, 12, 4, 1.4), zone: 'cloth3', line: 1.4 },
 ]);
 /** Turret (pivot on the hull roof), pointing +x. */
 part('modern.tank.turret', [
-  { d: blob([-16, 0, -14, -12, -6, -17, 10, -17, 17, -10, 18, 0], 0.5), zone: 'cloth' },
-  { d: rrect(-12, -7, 22, 3, 1.2), zone: 'team', banner: true, line: 1.2, shade: false },
-  { d: rrect(-8, -21, 12, 5, 2), zone: 'cloth3', line: 1.8 },
+  { d: blob([-16, 0, -14, -14, -6, -20, 10, -20, 17, -12, 18, 0], 0.5), zone: 'cloth' },
+  { d: rrect(-12, -8, 22, 3.4, 1.2), zone: 'team', banner: true, line: 1.2, shade: false },
+  { d: rrect(-8, -24, 12, 5, 2), zone: 'cloth3', line: 1.8 },
 ]);
 part('modern.tank.gun', [
   { d: rrect(0, -2.6, 26, 5.2, 2), zone: 'cloth3' },
@@ -181,8 +181,8 @@ part('modern.behemoth.hull', [
   { d: join(rect(-40, -50, 84, 2.4), rect(-42, -26, 86, 2.4)), zone: 'cloth3', line: 0, shade: false, light: false },
   { d: join(...[-34, -20, -6, 8, 22, 36].map((x) => circle(x, -56, 1.2)), ...[-34, -20, -6, 8, 22, 36].map((x) => circle(x, -20, 1.2))), zone: 'cloth3', line: 0, shade: false, light: false },
   { d: join(circle(-18, -38, 9.6)), zone: 'team', banner: true, line: 2 },
-  { d: join(circle(-18, -38, 4), rect(-40, -34, 12, 3), rect(-8, -34, 12, 3)), zone: 'cloth2', line: 1, shade: false, light: false },
   { d: join(rect(8, -44, 30, 4), rect(8, -34, 30, 4)), zone: 'team', banner: true, line: 1.6 },
+  { d: join(circle(-18, -38, 4), rect(-40, -34, 12, 3), rect(-8, -34, 12, 3)), zone: 'cloth2', line: 1, shade: false, light: false },
 ]);
 /** Raised casemate between the hull and the turret (pivot on the hull roof centre). */
 part('modern.behemoth.deck', [
@@ -192,10 +192,10 @@ part('modern.behemoth.deck', [
   { d: join(...[-26, -12, 2, 16, 30].map((x) => circle(x, -4, 1.1))), zone: 'cloth3', line: 0, shade: false, light: false },
 ]);
 part('modern.behemoth.sponson', [
-  { d: blob([-12, -12, 6, -14, 14, -6, 12, 6, -10, 8, -14, -2], 0.6), zone: 'cloth' },
-  { d: rrect(10, -3, 16, 4, 1.6), zone: 'metal2', line: 1.6 },
+  { d: blob([-12, -12, 6, -14, 12, -6, 10, 6, -10, 8, -14, -2], 0.6), zone: 'cloth' },
   { d: join(circle(-6, -2, 1), circle(4, -9, 1)), zone: 'cloth3', line: 0, shade: false, light: false },
 ]);
+part('modern.behemoth.mgun', [{ d: rrect(0, -2, 16, 4, 1.6), zone: 'metal2', line: 1.6 }]);
 part('modern.behemoth.turret', [
   { d: blob([-26, 0, -24, -16, -14, -26, 16, -26, 28, -16, 30, 0], 0.5), zone: 'cloth' },
   { d: rrect(-20, -12, 40, 4, 1.4), zone: 'team', banner: true, line: 1.4, shade: false },
@@ -214,9 +214,9 @@ part('modern.behemoth.stack', [
 // Gyrocopter (flyer rig: body, rotor, prop, barrel)
 
 part('modern.gyro.body', [
-  { d: blob([-30, -4, -20, -12, 0, -14, 18, -12, 28, -6, 30, 2, 20, 8, -10, 8, -26, 4], 0.7), zone: 'cloth' },
-  { d: blob([-34, -16, -26, -18, -22, -4, -30, -2], 0.6), zone: 'cloth' },
-  { d: blob([-34, -16, -28, -17, -26, -8, -32, -7], 0.6), zone: 'team', banner: true, line: 1.6 },
+  { d: blob([-28, -4, -20, -12, 0, -14, 18, -12, 28, -6, 30, 2, 20, 8, -10, 8, -24, 4], 0.7), zone: 'cloth' },
+  { d: blob([-31, -16, -24, -18, -21, -4, -28, -2], 0.6), zone: 'cloth' },
+  { d: blob([-31, -16, -26, -17, -24, -8, -29, -7], 0.6), zone: 'team', banner: true, line: 1.6 },
   { d: circle(4, 0, 5.4), zone: 'team', banner: true, line: 1.6 },
   { d: circle(4, 0, 2.2), zone: 'cloth2', line: 0.8, shade: false, light: false },
   { d: join(limb(-4, 8, 1, -10, 16, 1), limb(14, 8, 1, 18, 16, 1), rrect(-16, 15, 40, 2.4, 1.2)), zone: 'metal2', line: 1.6 },

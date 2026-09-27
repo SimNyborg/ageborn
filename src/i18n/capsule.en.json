@@ -39,7 +39,8 @@
       "openNext": "Open next ({n})",
       "done": "Done",
       "newItems": "New",
-      "total": "Total"
+      "total": "Total",
+      "equipped": "Equipped"
     },
     "wardrobe": {
       "name": "Wardrobe Crate",

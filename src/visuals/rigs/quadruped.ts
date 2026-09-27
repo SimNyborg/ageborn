@@ -11,7 +11,7 @@ import { getClip } from '../clips';
 import { strideFor } from '../clips/procedural';
 import type { Palette } from '../palette';
 import type { BoneDef, PuppetDef, SlotDef } from '../types';
-import { anchorsFrom, rootBones } from './common';
+import { anchorsFrom, finishUnit, rootBones } from './common';
 
 export interface PartAt {
   part: string;
@@ -93,7 +93,7 @@ export function quadruped(s: QuadSpec): PuppetDef {
   ];
   const legDeg = s.legDeg ?? 22;
   const attackClip = getClip(s.attack);
-  return {
+  return finishUnit({
     id: s.id,
     kind: 'unit',
     rig: 'quadruped',
@@ -121,5 +121,5 @@ export function quadruped(s: QuadSpec): PuppetDef {
     size: s.size,
     legendary: s.legendary,
     aura: s.aura ?? (s.legendary ? 'legendary' : null),
-  };
+  });
 }

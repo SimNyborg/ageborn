@@ -1,0 +1,296 @@
+/* War Plan builder (A9 #9). */
+
+.ui-screen--warPlan .ui-screen__body {
+  padding-top: 10px;
+}
+.wp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr);
+  gap: clamp(10px, 1.6vw, 20px);
+  height: 100%;
+  min-height: 0;
+}
+.wp-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px 4px 8px;
+}
+.wp-presets {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wp-presets .ui-tabs {
+  flex: 0 1 auto;
+}
+.wp-inuse {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: rgba(60, 196, 107, 0.18);
+  color: var(--ui-green-hi);
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.wp-board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 14px 18px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 229, 138, 0.12), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 40px),
+    linear-gradient(180deg, #4a3a2a, #33271c 60%, #271d15);
+  box-shadow: var(--ui-shadow-drop), inset 0 3px 0 rgba(255, 255, 255, 0.1), inset 0 -4px 0 rgba(0, 0, 0, 0.3);
+}
+.wp-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(8px, 1.4vw, 16px);
+}
+.wp-divider {
+  width: 3px;
+  align-self: stretch;
+  margin: 0 6px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.35);
+}
+.wp-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: var(--card-w, 96px);
+}
+.wp-slot--empty {
+  --card-w: 96px;
+  justify-content: center;
+  aspect-ratio: 0.82;
+  height: auto;
+  padding: 0;
+  border: 3px dashed rgba(255, 229, 138, 0.45);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 229, 138, 0.8);
+  cursor: pointer;
+  transition: background 150ms, transform 120ms var(--ui-ease-out), border-color 150ms;
+}
+.wp-slot--empty:hover {
+  background: rgba(255, 229, 138, 0.08);
+  transform: translateY(-2px);
+}
+.wp-slot--empty.is-selected {
+  border-style: solid;
+  border-color: #fff;
+  background: rgba(59, 140, 255, 0.25);
+  box-shadow: 0 0 0 5px rgba(59, 140, 255, 0.4);
+}
+.wp-slot__plus {
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+}
+.wp-slot__label {
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.wp-slot.is-filled .ui-card {
+  animation: ui-pop 280ms var(--ui-ease-back) both;
+}
+.wp-remove {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, var(--ui-red-hi), var(--ui-red));
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ui-ink);
+}
+.wp-remove::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+}
+.wp-skinbtn {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #b48cff, #7442e6);
+  color: #fff;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.wp-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.wp-avg {
+  padding: 4px 12px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  background: rgba(10, 8, 26, 0.5);
+  font-weight: 800;
+  font-size: 13px;
+}
+.wp-foot .ui-btn {
+  margin-left: auto;
+}
+.wp-note {
+  color: var(--ui-muted);
+  font-weight: 700;
+  font-size: 13px;
+}
+.wp-advisor {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wp-issue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 13px;
+  animation: ui-enter 240ms var(--ui-ease-out) both;
+}
+.wp-issue::before {
+  content: '!';
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  font-weight: 900;
+  color: var(--ui-ink);
+}
+.wp-issue--warning {
+  background: rgba(255, 197, 61, 0.14);
+  color: var(--ui-gold-hi);
+}
+.wp-issue--warning::before {
+  background: var(--ui-gold);
+}
+.wp-issue--error {
+  background: rgba(239, 90, 74, 0.16);
+  color: var(--ui-red-hi);
+}
+.wp-issue--error::before {
+  background: var(--ui-red);
+}
+
+.wp-right {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 3px solid var(--ui-ink);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(58, 53, 111, 0.92), rgba(31, 27, 62, 0.95));
+  box-shadow: var(--ui-shadow-drop);
+  overflow: hidden;
+}
+.wp-right__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 3px solid var(--ui-ink);
+  background: linear-gradient(180deg, #554ca0, var(--ui-panel-head));
+}
+.wp-right__title {
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 4px var(--ui-ink);
+}
+.wp-right__head .ui-tab {
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+.wp-hint {
+  padding: 6px 12px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ui-muted);
+}
+.wp-grid {
+  --card-w: 76px;
+  flex: 1;
+  overflow: auto;
+  align-content: start;
+}
+.wp-cand {
+  position: relative;
+}
+.wp-cand.is-used .ui-card__frame {
+  filter: saturate(0.6) brightness(0.85);
+}
+.wp-used {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: var(--ui-green);
+  color: #fff;
+}
+
+@media (max-height: 480px), (max-width: 900px) {
+  .wp {
+    grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
+  }
+  .wp-board {
+    gap: 10px;
+    padding: 10px 8px 12px;
+  }
+  .wp-slot,
+  .wp-slot--empty,
+  .wp-board .ui-card--md {
+    --card-w: 70px;
+  }
+  .wp-slot__plus {
+    font-size: 28px;
+  }
+  .wp-skinbtn {
+    display: none;
+  }
+  .ui-tabs--age .ui-tab__label {
+    display: none;
+  }
+  .ui-tabs--age .ui-tab {
+    padding: 0 6px;
+  }
+}

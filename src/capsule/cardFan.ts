@@ -9,7 +9,7 @@ import { mulberry32, type CosmeticRng } from '@/core';
 import { clamp01, easeInOutCubic, easeOutBack, easeOutCubic, easeOutElastic, hump, lerp, span } from './ease';
 import { drawBolt, glowSprite, label, type Particles } from './fx';
 import { AGE_COLORS, FOIL_COLORS, RARITY_COLORS, ROOM, shade } from './palette';
-import type { RevealCard } from './summary';
+import type { RevealCard } from './summaryModel';
 import { dotTexture, glowTexture, holoTexture, raysTexture, starTexture, sweepTexture } from './textures';
 import type { CapsuleCatalog, CardProgress } from './types';
 

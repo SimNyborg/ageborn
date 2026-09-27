@@ -6,7 +6,7 @@
 import { getClip } from '../clips';
 import type { PuppetDef, SlotDef } from '../types';
 import { biped, type BipedSpec } from './biped';
-import { anchorsFrom } from './common';
+import { anchorsFrom, finishUnit } from './common';
 import { quadruped, type QuadSpec } from './quadruped';
 
 export interface RiderSpec {
@@ -62,7 +62,7 @@ export function rider(s: RiderSpec): PuppetDef {
   const slots = [...m.slots, ...riderSlots];
   const bones = [...m.bones, ...riderBones];
   const attackClip = getClip(s.attack);
-  return {
+  return finishUnit({
     ...m,
     rig: 'rider',
     bones,
@@ -78,5 +78,5 @@ export function rider(s: RiderSpec): PuppetDef {
     impactAt: attackClip?.impactAt ?? 0.55,
     legendary: s.legendary,
     aura: s.legendary ? 'legendary' : null,
-  };
+  });
 }

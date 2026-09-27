@@ -17,7 +17,6 @@ Optional:
 """
 import json
 import os
-import shutil
 import time
 
 from . import config as C

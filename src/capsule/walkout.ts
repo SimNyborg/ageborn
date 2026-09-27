@@ -13,7 +13,7 @@ import { clamp01, easeInCubic, easeInOutCubic, easeOutBack, easeOutCubic, easeOu
 import { drawBolt, glowSprite, label, type Particles } from './fx';
 import { AGE_COLORS, RARITY_COLORS, ROOM, shade } from './palette';
 import { MINI_BEATS, type MiniWalkoutStep, type WalkoutBeats, type WalkoutStep } from './plan';
-import type { RevealCard } from './summary';
+import type { RevealCard } from './summaryModel';
 import { confettiTexture, coneTexture, dotTexture, glowTexture, raysTexture, starTexture } from './textures';
 import type { CapsuleCatalog, CardProgress } from './types';
 
@@ -344,7 +344,7 @@ export class Walkout {
   update(t: number, dtMs: number): void {
     this.rings.update(dtMs, this.mini ? 1.4 : 0.9 + (this.dropped ? 0.6 : 0));
     this.unit.update(dtMs);
-    if (this.mini) this.updateMini(t, dtMs);
+    if (this.mini) this.updateMini(t);
     else if (this.beats) this.updateLegendary(this.beats, t, dtMs);
     this.lastT = t;
   }
@@ -428,7 +428,7 @@ export class Walkout {
     if (t >= b.banner[0] && outro < 1) this.confetti(dtMs);
   }
 
-  private updateMini(t: number, dtMs: number): void {
+  private updateMini(t: number): void {
     const B = MINI_BEATS;
     const out = span(t, B.out[0], B.out[1]);
     const inn = span(t, 0, 200);

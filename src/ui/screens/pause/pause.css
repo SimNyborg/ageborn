@@ -1,0 +1,100 @@
+/* Pause (A9 #6), an overlay above the battle. */
+
+.pause {
+  display: grid;
+  place-items: center;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  background: radial-gradient(circle at 50% 45%, rgba(27, 22, 60, 0.7), rgba(6, 4, 16, 0.88));
+  backdrop-filter: blur(4px);
+  animation: ui-fade 180ms ease-out both;
+}
+.pause__panel {
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: 100%;
+  border: 4px solid var(--ui-ink);
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--ui-panel-hi), var(--ui-panel) 25%, var(--ui-panel-lo));
+  box-shadow: 0 10px 0 rgba(8, 5, 20, 0.6), 0 30px 60px rgba(0, 0, 0, 0.5);
+  animation: ui-pop 300ms var(--ui-ease-back) both;
+  overflow: hidden;
+}
+.pause__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  border-bottom: 3px solid var(--ui-ink);
+  background: linear-gradient(180deg, #5d53ad, var(--ui-panel-head));
+}
+.pause__title {
+  font-size: clamp(24px, 5vh, 34px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 6px var(--ui-ink);
+  text-shadow: 0 3px 0 var(--ui-ink);
+}
+.pause__clock {
+  padding: 4px 12px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 12px;
+  background: var(--ui-well);
+  font-size: 20px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.pause__body {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+  gap: 18px;
+  padding: 16px 18px 18px;
+  min-height: 0;
+  overflow: auto;
+}
+.pause__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pause__note {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ui-muted);
+  text-align: center;
+}
+.pause__sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ui-gold-hi);
+}
+.pause__scouted {
+  padding: 10px 12px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  background: rgba(10, 8, 26, 0.45);
+}
+.pause__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 10px;
+  padding-top: 8px;
+}
+@media (max-height: 480px) {
+  .pause__body {
+    gap: 12px;
+    padding: 10px 14px 12px;
+  }
+  .pause__actions {
+    gap: 6px;
+  }
+}

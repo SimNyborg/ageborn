@@ -100,8 +100,8 @@ export const FUTURE_UNITS: PuppetDef[] = [
     ),
     slots: scaleSlots(
       [
-        slot('future.mech.upperarm', 'armB', 3, { tone: 'back' }),
-        slot('future.mech.forearm', 'foreB', 4, { tone: 'back' }),
+        slot('future.mech.upperarm', 'armB', 3, { tone: 'back', noWidth: true }),
+        slot('future.mech.forearm', 'foreB', 4, { tone: 'back', noWidth: true }),
         slot('future.mech.thigh', 'legB', 5, { tone: 'back' }),
         slot('future.mech.shin', 'shinB', 6, { tone: 'back' }),
         slot('future.mech.foot', 'footB', 7, { tone: 'back' }),
@@ -110,7 +110,7 @@ export const FUTURE_UNITS: PuppetDef[] = [
         slot('future.mech.thigh', 'legF', 12, { id: 'thighF' }),
         slot('future.mech.shin', 'shinF', 13, { id: 'shinFs' }),
         slot('future.mech.foot', 'footF', 14, { id: 'footFs' }),
-        slot('future.mech.upperarm', 'armF', 15, { id: 'upperF' }),
+        slot('future.mech.upperarm', 'armF', 15, { id: 'upperF', noWidth: true }),
         slot('future.mech.claw', 'foreF', 16, { tag: 'weapon', noWidth: true }),
       ],
       MECH_K,
@@ -213,8 +213,8 @@ export const FUTURE_UNITS: PuppetDef[] = [
     ),
     slots: scaleSlots(
       [
-        slot('future.titan.upperarm', 'armB', 3, { tone: 'back' }),
-        slot('future.titan.fist', 'foreB', 4, { tone: 'back' }),
+        slot('future.titan.upperarm', 'armB', 3, { tone: 'back', noWidth: true }),
+        slot('future.titan.fist', 'foreB', 4, { tone: 'back', noWidth: true }),
         slot('future.titan.thigh', 'legB', 5, { tone: 'back' }),
         slot('future.titan.shin', 'shinB', 6, { tone: 'back' }),
         slot('future.titan.foot', 'footB', 7, { tone: 'back' }),
@@ -224,7 +224,7 @@ export const FUTURE_UNITS: PuppetDef[] = [
         slot('future.titan.thigh', 'legF', 12, { id: 'thighF' }),
         slot('future.titan.shin', 'shinF', 13, { id: 'shinFs' }),
         slot('future.titan.foot', 'footF', 14, { id: 'footFs' }),
-        slot('future.titan.upperarm', 'armF', 15, { id: 'upperF' }),
+        slot('future.titan.upperarm', 'armF', 15, { id: 'upperF', noWidth: true }),
         slot('future.titan.fist', 'foreF', 16, { tag: 'weapon', id: 'fistF' }),
       ],
       TITAN_K,

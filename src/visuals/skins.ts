@@ -117,8 +117,8 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     skin: 'toy_soldier',
     target: 'unit.fusilier',
     palette: { skin: 0xf2e2d4, glove: 0xf2e2d4, cheek: 0xe8a8a0, hair: 0x3a332e, brass: 0xd8c08a },
-    bones: [{ id: 'key', parent: 'torso', x: -10, y: -11 }],
-    add: [slot('skin.toy.key', 'key', 2), slot('skin.toy.cheeks', 'head', 41.5)],
+    bones: [{ id: 'key', parent: 'torso', x: -8, y: -11 }],
+    add: [slot('skin.toy.key*0.8', 'key', 2, { noWidth: true }), slot('skin.toy.cheeks', 'head', 41.5)],
     twirlBone: 'key',
   },
   {

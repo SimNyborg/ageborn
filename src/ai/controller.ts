@@ -19,8 +19,6 @@ import { personalityFor, weightBp, type Personality } from './personalities';
 import { tierParams, type TierParams } from './tiers';
 import { buildView, type View, type WeightsBp } from './view';
 
-/** Mistake rate ceiling, bp (a bot always plays mostly on purpose). */
-const MAX_MISTAKE_BP = 9000;
 /** Decision traces kept for the dev viewer. */
 const TRACE_KEEP = 40;
 
@@ -96,7 +94,7 @@ export class UtilityController implements AiBotController {
         tier: this.tier,
         persona: this.personality,
         weights: weightsBp(profile),
-        mistakeBp: Math.min(MAX_MISTAKE_BP, this.tier.mistakeBp + Math.max(0, profile.mistakeBonusBp)),
+        mistakeBonusBp: Math.max(0, Math.trunc(profile.mistakeBonusBp)),
         openings,
       },
       this.rng,

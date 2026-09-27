@@ -16,7 +16,7 @@ import {
   revealCards,
   type RevealCard,
   type SummaryModel,
-} from './summary';
+} from './summaryModel';
 import { isBackLoaded, resolveStrikes, STRIKES, tierIndex } from './tiers';
 import type { CapsuleCatalog, CardProgress, ProgressLookup } from './types';
 

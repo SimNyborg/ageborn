@@ -78,6 +78,8 @@ export function CardTile(p: {
   /** Shows the copies bar (collection) instead of the plain level badge only. */
   showCopies?: boolean;
   showCost?: boolean;
+  /** Hides the level badge (opponent cards: their levels are not shown, A3 Scouted list). */
+  hideLevel?: boolean;
   /** Extra content in the top-right corner (for example a remove button). */
   corner?: ComponentChildren;
   testid?: string;
@@ -100,17 +102,17 @@ export function CardTile(p: {
   ]
     .filter(Boolean)
     .join(' ');
-  const levelText = c.owned ? t('ui.card.level', { n: c.level }) : null;
+  const levelText = c.owned && !p.hideLevel ? t('ui.card.level', { n: c.level }) : null;
   const aria =
     p.label ??
-    [c.name, levelText ?? t('ui.card.notOwned'), c.rarity ? t(rarityNameKey(c.rarity)) : null, c.upgradeReady ? t('ui.card.upgradeReady') : null]
+    [c.name, c.owned ? levelText : t('ui.card.notOwned'), c.rarity ? t(rarityNameKey(c.rarity)) : null, c.upgradeReady ? t('ui.card.upgradeReady') : null]
       .filter(Boolean)
       .join(', ');
   const body = (
     <>
       <span class="ui-card__frame" style={{ '--frame': frame }}>
         <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} />
-        {c.owned && size !== 'xs' ? <span class="ui-card__level">{levelText}</span> : null}
+        {c.owned && size !== 'xs' && !p.hideLevel ? <span class="ui-card__level">{levelText}</span> : null}
         {p.showCost && c.cost !== null ? (
           <span class="ui-card__cost">
             <CoinIcon size={size === 'xs' ? 12 : 15} />

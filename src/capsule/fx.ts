@@ -3,7 +3,7 @@
  * lightning bolts and text labels. View-only; the cosmetic RNG keeps every opening reproducible
  * on the bench.
  */
-import { Container, Graphics, Sprite, Text, type TextStyleOptions, type Texture } from 'pixi.js';
+import { Container, Sprite, Text, type Graphics, type TextStyleOptions, type Texture } from 'pixi.js';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { clamp01 } from './ease';
 

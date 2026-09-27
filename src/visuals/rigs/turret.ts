@@ -9,7 +9,7 @@
 import type { AgeId } from '@/contracts/ids';
 import type { Palette } from '../palette';
 import type { BoneDef, PuppetDef, SlotDef } from '../types';
-import { boneRest } from './common';
+import { boneRest, uniqueSlots } from './common';
 
 export interface TurretSpec {
   id: string;
@@ -41,7 +41,7 @@ export function turret(s: TurretSpec): TurretPuppet {
     rig: 'turret',
     age: s.age,
     bones,
-    slots: s.slots,
+    slots: uniqueSlots(s.slots),
     palette: s.palette,
     heightLu: s.height,
     anchors: {

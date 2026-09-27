@@ -18,7 +18,7 @@ import type { Palette } from '../palette';
 import { sized } from '../parts/registry';
 import { STYLE } from '../style';
 import type { BoneDef, PuppetDef, SlotDef } from '../types';
-import { anchorsFrom, rootBones } from './common';
+import { anchorsFrom, finishUnit, rootBones } from './common';
 
 export interface Held {
   part: string;
@@ -132,10 +132,10 @@ export function biped(s: BipedSpec): PuppetDef {
   const slots: SlotDef[] = [
     ...(s.back ?? []).map((b, i) => held(b, 'torso', 2 + i * 0.1)),
     ...(s.hairBack ?? []).map((b, i) => held(b, 'head', 3 + i * 0.1)),
-    { id: 'armB', part: z(armB.upper), bone: 'armB', z: 5, tone: 'back' },
-    { id: 'foreB', part: z(armB.lower), bone: 'foreB', z: 6, tone: 'back' },
+    { id: 'armB', part: z(armB.upper), bone: 'armB', z: 5, tone: 'back', noWidth: true },
+    { id: 'foreB', part: z(armB.lower), bone: 'foreB', z: 6, tone: 'back', noWidth: true },
     ...(s.offhand ? [{ ...held({ tone: 'back', ...s.offhand }, 'handB', 6.5), noWidth: true }] : []),
-    { id: 'handB', part: z(armB.hand), bone: 'handB', z: 7, tone: 'back' },
+    { id: 'handB', part: z(armB.hand), bone: 'handB', z: 7, tone: 'back', noWidth: true },
     { id: 'legB', part: z(leg.upper), bone: 'legB', z: 10, tone: 'back' },
     { id: 'shinB', part: z(leg.lower), bone: 'shinB', z: 11, tone: 'back' },
     { id: 'legF', part: z(leg.upper), bone: 'legF', z: 12 },
@@ -146,10 +146,10 @@ export function biped(s: BipedSpec): PuppetDef {
     { id: 'head', part: z(s.head), bone: 'head', z: 40 },
     ...(s.eyes === null ? [] : [{ id: 'eyes', part: z(s.eyes ?? 'shared.eyes'), bone: 'eyes', z: 41 }]),
     ...(s.hat ?? []).map((b, i) => held(b, 'head', 42 + i * 0.1)),
-    { id: 'armF', part: z(arm.upper), bone: 'armF', z: 50 },
-    { id: 'foreF', part: z(arm.lower), bone: 'foreF', z: 51 },
+    { id: 'armF', part: z(arm.upper), bone: 'armF', z: 50, noWidth: true },
+    { id: 'foreF', part: z(arm.lower), bone: 'foreF', z: 51, noWidth: true },
     ...(w ? [{ ...held({ tag: 'weapon', ...w }, 'handF', 52), noWidth: true }] : []),
-    { id: 'handF', part: z(arm.hand), bone: 'handF', z: 53 },
+    { id: 'handF', part: z(arm.hand), bone: 'handF', z: 53, noWidth: true },
     ...(s.extras ?? []),
   ];
   if (w?.muzzle) {
@@ -164,7 +164,7 @@ export function biped(s: BipedSpec): PuppetDef {
   const legLu = 15.8 * k;
   const legDeg = 25;
   const attackClip = getClip(s.attack);
-  return {
+  return finishUnit({
     id: s.id,
     kind: 'unit',
     rig: 'biped',
@@ -189,5 +189,5 @@ export function biped(s: BipedSpec): PuppetDef {
     size: s.size,
     legendary: s.legendary,
     aura: s.aura ?? (s.legendary ? 'legendary' : null),
-  };
+  });
 }

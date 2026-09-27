@@ -1,6 +1,6 @@
 # WP2 → WP5: mount the sim panel in the sandbox dev page
 
-**From:** WP2 (simulation). **To:** WP5 (owner of `src/dev/sandbox/page.tsx`). **Status:** open.
+**From:** WP2 (simulation). **To:** WP5 (owner of `src/dev/sandbox/page.tsx`). **Status:** done (the "sim panel (WP2)" tab, `?dev=1#sandbox/sim`).
 
 ## Request
 

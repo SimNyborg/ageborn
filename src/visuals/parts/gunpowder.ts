@@ -69,7 +69,7 @@ part('gunpowder.head.admiral', headLayers({ nose: 'round', brow: 'angry', mouth:
 
 /** Team bandana with trailing knot and a gold earring (Corsair). */
 part('gunpowder.bandana', [
-  { d: blob([-12, -16, -18, -11, -20, -4, -16, -6, -14, -11], 0.7), zone: 'team', banner: true, line: 2.2 },
+  { d: blob([-12, -16, -16, -11, -17, -5, -14, -6, -13, -11], 0.7), zone: 'team', banner: true, line: 2.2 },
   { d: blob([-12.6, -13.6, -11.6, -22, -4, -27, 5, -27, 11.6, -22.6, 13.6, -17.6, 6, -18.6, -2, -18, -9, -13], 0.8), zone: 'team', banner: true },
   { d: join(circle(-2, -24, 1.1), circle(4, -23.6, 1.1), circle(-6, -19, 1.1)), zone: 'cloth2', line: 0, shade: false, light: false },
 ]);
@@ -176,9 +176,9 @@ part('gunpowder.horse.bridle', [
 // Bronze Cannon (vehicle rig: hull = carriage, wheel, barrel) and its gunner
 
 part('gunpowder.cannon.carriage', [
-  { d: poly([-40, -6, -36, -12, 8, -24, 14, -22, 12, -14, -34, -2]), zone: 'wood' },
-  { d: join(rect(-24, -12, 2, 8), rect(-8, -18, 2, 8)), zone: 'wood2', line: 0, shade: false, light: false },
-  { d: rrect(-42, -7, 8, 7, 2), zone: 'wood2', line: 2 },
+  { d: poly([-30, -6, -26, -12, 8, -24, 14, -22, 12, -14, -24, -2]), zone: 'wood' },
+  { d: join(rect(-16, -12, 2, 8), rect(-4, -18, 2, 8)), zone: 'wood2', line: 0, shade: false, light: false },
+  { d: rrect(-32, -7, 8, 7, 2), zone: 'wood2', line: 2 },
   { d: blob([-2, -24, 6, -30, 14, -28, 14, -20, 4, -18], 0.7), zone: 'wood' },
 ]);
 /** Barrel (pivot at the trunnion), aged bronze with brass bands, pointing +x. */
@@ -254,7 +254,7 @@ part('gunpowder.balloon.admiral', [
   { d: join(limb(3, -12, 0.8, 2, 8, 0.8)), zone: 'cloth2', line: 1.2 },
   { d: circle(1, -22, 9), zone: 'skin' },
   { d: blob([-15, -26, -9, -33, 1, -36, 11, -33, 16, -26, 9, -28, 1, -27, -8, -28], 0.7), zone: 'hat' },
-  { d: circle(3, -32, 2.6), zone: 'team', banner: true, line: 1.2, shade: false },
+  { d: circle(3, -32, 2.6), zone: 'accent', line: 1.2, shade: false },
   { d: join(ellipse(4.6, -22.6, 1.8, 2.3), ellipse(8.4, -22.6, 1.5, 2)), zone: 'eye', line: 1, shade: false, light: false },
   { d: join(circle(5.3, -22.2, 1.05), circle(8.9, -22.2, 0.9)), zone: 'pupil', line: 0, shade: false, light: false },
   { d: blob([3, -17.6, 8, -18.4, 13, -17, 14, -15, 10, -16, 6, -15.6], 0.7), zone: 'hair', line: 1.2 },

@@ -1,0 +1,16 @@
+import { chromium } from '@playwright/test';
+const url = process.argv[2] ?? 'http://localhost:5211/';
+const out = process.argv[3] ?? '/tmp/shot.png';
+const waitMs = Number(process.argv[4] ?? 6000);
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+const errors = [];
+page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`${m.type()}: ${m.text()}`); });
+page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+await page.goto(url);
+await page.waitForTimeout(waitMs);
+await page.screenshot({ path: out });
+console.log(JSON.stringify(errors.slice(0, 20), null, 1));
+const ids = await page.$$eval('[data-testid]', (els) => els.map((e) => e.getAttribute('data-testid')).slice(0, 40));
+console.log(ids.join(' '));
+await browser.close();

@@ -44,6 +44,7 @@ function scaleSlots(slots: SlotDef[], k: number): SlotDef[] {
 }
 
 const BEHEMOTH_K = 1;
+const GYRO_K = 0.84;
 
 export const MODERN_UNITS: PuppetDef[] = [
   biped({
@@ -85,18 +86,18 @@ export const MODERN_UNITS: PuppetDef[] = [
     bones: [
       { id: 'hull', parent: 'spin', x: 0, y: 30 },
       { id: 'treadTeeth', parent: 'hull', x: 0, y: 0 },
-      { id: 'wheel1', parent: 'hull', x: -21, y: -8.6 },
-      { id: 'wheel2', parent: 'hull', x: -7, y: -8.6 },
-      { id: 'wheel3', parent: 'hull', x: 7, y: -8.6 },
-      { id: 'wheel4', parent: 'hull', x: 21, y: -8.6 },
-      { id: 'turret', parent: 'hull', x: 2, y: -38 },
-      { id: 'barrel', parent: 'turret', x: 14, y: -8 },
+      { id: 'wheel1', parent: 'hull', x: -18, y: -8.6 },
+      { id: 'wheel2', parent: 'hull', x: -6, y: -8.6 },
+      { id: 'wheel3', parent: 'hull', x: 6, y: -8.6 },
+      { id: 'wheel4', parent: 'hull', x: 18, y: -8.6 },
+      { id: 'turret', parent: 'hull', x: 0, y: -44 },
+      { id: 'barrel', parent: 'turret', x: 14, y: -9 },
       { id: 'muzzle', parent: 'barrel', x: 28, y: 0 },
-      { id: 'commander', parent: 'turret', x: -2, y: -15 },
-      { id: 'flag1', parent: 'turret', x: -12, y: -16 },
+      { id: 'commander', parent: 'turret', x: -2, y: -18 },
+      { id: 'flag1', parent: 'turret', x: -12, y: -19 },
     ],
     slots: [
-      slot('modern.tank.flag', 'flag1', 4),
+      slot('modern.tank.flag', 'flag1', 4, { noWidth: true }),
       slot('modern.tank.tread', 'hull', 10),
       slot('modern.tank.teeth', 'treadTeeth', 11, { y: -1.6 }),
       slot('modern.tank.roadwheel', 'wheel1', 12),
@@ -158,25 +159,31 @@ export const MODERN_UNITS: PuppetDef[] = [
     age: 'modern',
     palette: { ...X, skin: 0xcfa98c },
     height: 56,
-    center: 22,
-    bones: [
-      { id: 'body', parent: 'spin', x: 0, y: 4.6 },
-      { id: 'mast', parent: 'body', x: 0, y: -12 },
-      { id: 'rotor', parent: 'mast', x: 0, y: -19 },
-      { id: 'prop', parent: 'body', x: -31, y: -4 },
-      { id: 'pilot', parent: 'body', x: 2, y: -8 },
-      { id: 'barrel', parent: 'body', x: 24, y: 2 },
-      { id: 'muzzle', parent: 'barrel', x: 14, y: 0 },
-    ],
-    slots: [
-      slot('modern.gyro.mast', 'mast', 7),
-      slot('modern.gyro.prop', 'prop', 8, { noWidth: true }),
-      slot('modern.gyro.pilot', 'pilot', 9, { tag: 'prop' }),
-      slot('modern.gyro.body', 'body', 10),
-      slot('modern.gyro.windshield', 'body', 11),
-      slot('modern.gyro.gun', 'barrel', 12, { tag: 'weapon', noWidth: true }),
-      slot('modern.gyro.rotor', 'rotor', 13, { noWidth: true }),
-    ],
+    center: 22 * GYRO_K,
+    bones: scaleBones(
+      [
+        { id: 'body', parent: 'spin', x: 0, y: 4.6 },
+        { id: 'mast', parent: 'body', x: 0, y: -12 },
+        { id: 'rotor', parent: 'mast', x: 0, y: -19 },
+        { id: 'prop', parent: 'body', x: -31, y: -4 },
+        { id: 'pilot', parent: 'body', x: 2, y: -8 },
+        { id: 'barrel', parent: 'body', x: 24, y: 2 },
+        { id: 'muzzle', parent: 'barrel', x: 14, y: 0 },
+      ],
+      GYRO_K,
+    ),
+    slots: scaleSlots(
+      [
+        slot('modern.gyro.mast', 'mast', 7),
+        slot('modern.gyro.prop', 'prop', 8, { noWidth: true }),
+        slot('modern.gyro.pilot', 'pilot', 9, { tag: 'prop' }),
+        slot('modern.gyro.body', 'body', 10),
+        slot('modern.gyro.windshield', 'body', 11),
+        slot('modern.gyro.gun', 'barrel', 12, { tag: 'weapon', noWidth: true }),
+        slot('modern.gyro.rotor', 'rotor', 13, { noWidth: true }),
+      ],
+      GYRO_K,
+    ),
     muzzleBone: 'muzzle',
     attack: 'flyer.attack.gun',
     ability: 'ability.rotor_tilt',
@@ -196,7 +203,7 @@ export const MODERN_UNITS: PuppetDef[] = [
         [
           { id: 'treadTeeth', parent: 'hull', x: 0, y: 0 },
           { id: 'wheel1', parent: 'hull', x: -30, y: -8 },
-          { id: 'mg', parent: 'hull', x: 42, y: -28 },
+          { id: 'mg', parent: 'hull', x: 40, y: -28 },
           { id: 'deck', parent: 'hull', x: 0, y: -60 },
           { id: 'turret', parent: 'deck', x: 2, y: -34 },
           { id: 'barrel', parent: 'turret', x: 18, y: -13 },
@@ -210,12 +217,13 @@ export const MODERN_UNITS: PuppetDef[] = [
     ],
     slots: scaleSlots(
       [
-        slot('modern.behemoth.flag', 'flag1', 4),
+        slot('modern.behemoth.flag', 'flag1', 4, { noWidth: true }),
         slot('modern.behemoth.stack', 'stack', 5),
         slot('modern.behemoth.tracks', 'hull', 10),
         slot('modern.behemoth.teeth', 'treadTeeth', 11, { y: -1.6 }),
         slot('modern.behemoth.hull', 'hull', 14),
         slot('modern.behemoth.deck', 'deck', 14.5),
+        slot('modern.behemoth.mgun', 'mg', 14.8, { x: 8, y: -2, tag: 'weapon', noWidth: true }),
         slot('modern.behemoth.sponson', 'mg', 15),
         slot('modern.behemoth.gun', 'barrel', 16, { tag: 'weapon', noWidth: true }),
         slot('modern.tank.commander', 'commander', 16.5, { tag: 'prop' }),
