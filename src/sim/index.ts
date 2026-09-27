@@ -11,6 +11,8 @@ export { SIM_VERSION, ReplayContentMismatchError, buildReplay, replayConfig, rep
 export type { ReplayCheck } from './replay';
 export { computeMatchStats, createStatsTracker } from './stats';
 export type { StatsConfig, StatsTracker } from './stats';
+export { runDuel } from './duel';
+export type { DuelResult } from './duel';
 export { compileForSim } from './shim';
 export type { RawContentLike } from './shim';
 export { DAILY_MODIFIERS } from './modifiers';

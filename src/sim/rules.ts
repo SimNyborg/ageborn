@@ -556,7 +556,7 @@ function powerRules(def: PowerDef, idx: number): PowerRules {
         zone,
         durationTicks: msToTicks(fx.durationMs),
         damage: fx.damage,
-        halfWidth: mlu(fx.width) / 2,
+        halfWidth: Math.trunc(mlu(fx.width) / 2),
         hitsAir: fx.hitsAir,
       };
       break;

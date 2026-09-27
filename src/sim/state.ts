@@ -345,6 +345,12 @@ export function xpCapOf(ctx: Ctx, side: Side): number {
   return Math.trunc((t * ctx.econ.xpCapBp) / BP);
 }
 
+/** XP as bp of the current threshold; in the final age, of the Overcharge amount (A2.4). */
+export function xpBp(ctx: Ctx, side: Side): number {
+  const t = thresholdOf(ctx, side) ?? ctx.econ.overchargeXp;
+  return t > 0 ? Math.trunc((ctx.s.sides[side].xp * BP) / t) : 0;
+}
+
 export function isAscending(ctx: Ctx, side: Side): boolean {
   return ctx.s.sides[side].ascendUntil > 0;
 }

@@ -56,10 +56,3 @@ function ageUp(ctx: Ctx, side: Side): void {
     }
   }
 }
-
-/** Milli-XP helper for tests and the observation: XP as bp of the current threshold (final age: of Overcharge). */
-export function xpBp(ctx: Ctx, side: Side): number {
-  const t = thresholdOf(ctx, side) ?? ctx.econ.overchargeXp;
-  if (t <= 0) return 0;
-  return Math.trunc((ctx.s.sides[side].xp * BP) / t);
-}

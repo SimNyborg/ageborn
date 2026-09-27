@@ -8,8 +8,7 @@
  */
 import type { Observation, Side } from '@/contracts';
 import { pOf } from './geometry';
-import { baseHpBp, loadoutOf, other, type Ctx, type SideRt } from './state';
-import { xpBp } from './systems/ascend';
+import { baseHpBp, loadoutOf, other, xpBp, type Ctx, type SideRt } from './state';
 
 function turretsOf(s: SideRt): Observation['me']['turrets'] {
   return s.turrets.map((t) => (t ? { card: t.card, age: t.age } : null));

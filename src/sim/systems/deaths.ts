@@ -13,7 +13,7 @@ import { BP } from '@/core';
 import { makeImpact } from '../damage';
 import { emit } from '../events';
 import { levelBp, scaleCenti } from '../rules';
-import { ageIdxOf, canEvolve, cardLevel, type Ctx, type UnitRt } from '../state';
+import { ageIdxOf, canEvolve, cardLevel, unitCost, type Ctx, type UnitRt } from '../state';
 import { spawnUnit, unitRules } from '../units';
 import { addGold, addXp } from './economy';
 import { resolveImpact } from './impacts';
@@ -57,7 +57,7 @@ function processDeath(ctx: Ctx, u: UnitRt): void {
   let xp = 0;
   let loss = 0;
   if (!u.summoned) {
-    const cost = Math.trunc((r.cost * 1000 * ctx.mods.costBp[r.group]) / BP);
+    const cost = unitCost(ctx, u.card);
     loss = Math.trunc((cost * ctx.econ.ownLossXpBp) / BP);
     if (kind !== null && killerSide !== u.side) {
       const byPower = kind === 'power' || kind === 'lastStand';

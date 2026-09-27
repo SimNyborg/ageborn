@@ -11,13 +11,13 @@ from ageborn_art.geometry import Geo
 SLUG = "bonker"
 NAME = "Bonker"
 HEIGHT_LU = 68
-CANVAS = (208, 196)
-FEET = (84, 180)
+CANVAS = (216, 204)
+FEET = (88, 186)
 ANCHORS = {"head": (2, 66), "muzzle": (30, 30), "hitCenter": (0, 32)}
 
 SKIN = "#EBC4A0"
 HAIR = "#3B2D25"
-WOOD = "#82684F"
+WOOD = "#A08A6C"
 FUR = "#75685B"
 BONE = "#EDE3C8"
 STONE = "#A39B90"
@@ -110,7 +110,7 @@ def build(rig):
 # Joint angles are screen-plane, counter-clockwise positive (see rig.py). Held club
 # stance: upper arm forward, forearm up, club up and a little back over the head.
 STANCE = {
-    "arm_r": {"r": 35}, "fore_r": {"r": 62}, "club": {"r": -140},
+    "arm_r": {"r": 26}, "fore_r": {"r": 128}, "club": {"r": -103},
     "arm_l": {"r": -18}, "fore_l": {"r": 40},
     "torso": {"r": -4},
 }
@@ -152,10 +152,10 @@ ATTACK_IMPACT = 5
 def _attack(f):
     # anticipation f0-3 (squash then stretch back), smear f4, contact f5, follow-through f6-9
     K = lambda keys: key(f, keys)
-    arm = K([(0, 22), (2, 70), (3, 130, "out"), (4, 60, "in"), (5, 12, "in"), (6, 0), (8, 16), (9, 22)])
-    fore = K([(0, 72), (3, 55), (4, 30), (5, 18), (6, 12), (8, 50), (9, 72)])
-    club = K([(0, -78), (2, -55), (3, -48), (4, -95, "in"), (5, -118, "in"), (6, -122), (8, -95), (9, -78)])
-    torso = K([(0, -4), (2, 10), (3, 16, "out"), (4, -12, "in"), (5, -24, "in"), (6, -22), (8, -8), (9, -4)])
+    arm = K([(0, 26), (2, 120), (3, 185, "out"), (4, 110, "in"), (5, 55, "in"), (6, 45), (8, 30), (9, 26)])
+    fore = K([(0, 128), (2, 60), (3, 35), (4, 18), (5, 10), (6, 5), (8, 90), (9, 128)])
+    club = K([(0, -103), (2, -105), (3, -110), (4, -125, "in"), (5, -150, "in"), (6, -170), (8, -125), (9, -103)])
+    torso = K([(0, -4), (2, 8), (3, 14, "out"), (4, -8, "in"), (5, -22, "in"), (6, -20), (8, -8), (9, -4)])
     sq = K([(0, 0), (1, -0.1), (3, 0.1, "out"), (4, 0.02), (5, -0.12, "in"), (6, -0.08), (8, 0.0), (9, 0)])
     lean_x = K([(0, 0), (3, -3), (5, 6, "in"), (6, 6), (9, 0)])
     return {
@@ -193,7 +193,7 @@ def _die(f):
                      z=K([(0, 3), (1, 0)]), s=K([(0, 1.0), (1, 0.95), (2, 0.0, "in")])),
         "torso": {"r": K([(0, 20), (1, 8)])},
         "head": {"r": K([(0, 16), (1, -10)])},
-        "arm_r": {"r": 70}, "fore_r": {"r": 30}, "club": {"r": -30},
+        "arm_r": {"r": 22}, "fore_r": {"r": 40}, "club": {"r": -128},
         "arm_l": {"r": 80}, "fore_l": {"r": 40},
     }
     return merge(body, death_fx_pose(f, pop, n))

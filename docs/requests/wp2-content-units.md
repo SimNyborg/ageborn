@@ -1,6 +1,6 @@
 # WP2 → WP1: units of `CompiledContent` definitions
 
-**From:** WP2 (simulation). **To:** WP1 (content compiler). **Status:** open.
+**From:** WP2 (simulation). **To:** WP1 (content compiler). **Status:** done (WP1 kept table units and uses these modifier ids; see docs/decisions.md, WP1 "units").
 
 ## Request
 

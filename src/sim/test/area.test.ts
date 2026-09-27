@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { devPlaceTurret, devSetGold, devSpawn, stepN, unitById } from '../debug';
-import { Stamper, arena, ofKind, pLu, stun } from './helpers';
+import { devPlaceTurret, devSetGold, devSpawn, simCtx, stepN, unitById } from '../debug';
+import { rulesFor } from '../rules';
+import { Stamper, arena, fixture, ofKind, pLu, stun } from './helpers';
 
 /** Spawns stunned enemies (side 1) at own-side-0 positions (lu). Returns their ids. */
 function clump(sim: ReturnType<typeof arena>, card: string, at: number[]): number[] {
@@ -181,7 +182,7 @@ describe('turrets (A2.8)', () => {
     const sim = arena();
     const [front, back] = clump(sim, 'bonker', [300, 400]);
     const [archer] = clump(sim, 'longbowman', [410]);
-    void back;
+    expect(back).toBeDefined();
     devPlaceTurret(sim, 0, 0, 'grumpy_toad');
     const ev = stepN(sim, 3);
     expect(ofKind(ev, 'turretFired')[0]?.targetId).toBe(archer);
@@ -196,11 +197,14 @@ describe('turrets (A2.8)', () => {
     const ids = clump(sim, 'bonker', [250, 300, 300, 310, 350, 390]);
     devPlaceTurret(sim, 0, 0, 'gravity_well');
     const ev = stepN(sim, 30);
+    // the densest 90 lu window holds the three Bonkers at 300-310 (plus 250 or 350)
+    const aim = ofKind(ev, 'projectileFired')[0]?.toX ?? 0;
+    expect(Math.abs(aim - 300000)).toBeLessThanOrEqual(50000);
     expect(ofKind(ev, 'hit').length).toBeLessThanOrEqual(4);
     const slowed = ofKind(ev, 'statusApplied').filter((s) => s.kind === 'slow').map((s) => s.id);
     expect(slowed.length).toBeGreaterThanOrEqual(4);
     expect(ofKind(ev, 'knockback').length).toBeGreaterThan(0);
-    void ids;
+    expect(ids).toHaveLength(6);
   });
 
   it('sell: stops at once, frees the mount after 1 s and refunds 50%; modernise costs new − 50% old', () => {
@@ -220,5 +224,30 @@ describe('turrets (A2.8)', () => {
     devPlaceTurret(sim, 0, 1, 'rock_tosser');
     const rej = st.step({ t: 'replaceTurret', side: 0, mount: 1, slot: 0 });
     expect(ofKind(rej, 'commandRejected')[0]?.reason).toBe('notOutdated');
+  });
+});
+
+describe('turret range and Siege (A2.8, A2.10)', () => {
+  it('turret range is measured from the own gate and capped at 480 lu', () => {
+    const sim = arena();
+    // Howitzer: range 480, min 180; a Bonker's edge at 480 lu from the gate is in range, at 481 it is not
+    clump(sim, 'bonker', [481 + 12]);
+    devPlaceTurret(sim, 0, 0, 'howitzer');
+    expect(ofKind(stepN(sim, 1), 'turretFired')).toHaveLength(0);
+    const [inside] = clump(sim, 'bonker', [480 + 12]);
+    expect(ofKind(stepN(sim, 1), 'turretFired')[0]?.targetId).toBe(inside);
+    // a content turret listing a longer range is capped by the rules
+    const long = {
+      ...fixture,
+      turrets: { ...fixture.turrets, far: { ...fixture.turrets['howitzer']!, id: 'far', attack: { ...fixture.turrets['howitzer']!.attack, range: 900 } } },
+    };
+    expect(rulesFor(long).turrets['far']?.attack.range).toBe(480000);
+  });
+
+  it('Siege: damage to bases ×2', () => {
+    const sim = arena();
+    devSpawn(sim, 0, 'bonker', { p: 1200 - 20 });
+    simCtx(sim).s.phase = 'siege';
+    expect(ofKind(stepN(sim, 12), 'baseDamaged')[0]?.damage).toBe(4000);
   });
 });
