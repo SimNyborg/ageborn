@@ -72,8 +72,9 @@ def _math(nodes, links, op, a, b=None):
     return m.outputs[0]
 
 
-def _shading(nodes, links):
+def _shading(nodes, links, finish="matte"):
     """Masks shared by every toon material: lit band, in-band gradient, highlight, rim."""
+    F = C.FINISHES[finish]
     geo = nodes.new("ShaderNodeNewGeometry")
     n = geo.outputs["Normal"]
     ndl = _dot(nodes, links, n, C.LIGHT_DIR)
@@ -85,11 +86,11 @@ def _shading(nodes, links):
     links.new(ndl, grad.inputs["Value"])
     grad.inputs["From Min"].default_value = -1.0
     grad.inputs["From Max"].default_value = 1.0
-    grad.inputs["To Min"].default_value = 1.0 - C.GRADIENT
+    grad.inputs["To Min"].default_value = 1.0 - F["gradient"]
     grad.inputs["To Max"].default_value = 1.0
     hs = C.HIGHLIGHT_SOFTNESS
     hl = _smoothstep(nodes, links, _dot(nodes, links, n, C.HIGHLIGHT_DIR),
-                     C.HIGHLIGHT_THRESHOLD - hs, C.HIGHLIGHT_THRESHOLD + hs)
+                     F["hl_threshold"] - hs, F["hl_threshold"] + hs)
     # rim: grazing to the view, on the lit side only
     vm = nodes.new("ShaderNodeVectorMath")
     vm.operation = "DOT_PRODUCT"
@@ -108,9 +109,10 @@ def _shading(nodes, links):
     return {"lit": lit, "grad": grad_ao, "hl": hl, "rim": rim}
 
 
-def _toon_color(nodes, links, fill_hex, highlight=True, shadow=C.SHADOW_FACTOR, masks=None):
-    m = masks or _shading(nodes, links)
-    col = _mix_rgb(nodes, links, m["lit"], to_linear(scale(fill_hex, shadow)), to_linear(fill_hex))
+def _toon_color(nodes, links, fill_hex, highlight=True, finish="matte"):
+    F = C.FINISHES[finish]
+    m = _shading(nodes, links, finish)
+    col = _mix_rgb(nodes, links, m["lit"], to_linear(scale(fill_hex, F["shadow"])), to_linear(fill_hex))
     g = nodes.new("ShaderNodeMixRGB")
     g.blend_type = "MULTIPLY"
     g.inputs[0].default_value = 1.0
@@ -118,7 +120,7 @@ def _toon_color(nodes, links, fill_hex, highlight=True, shadow=C.SHADOW_FACTOR, 
     links.new(m["grad"], g.inputs[2])
     col = g.outputs[0]
     if highlight:
-        col = _mix_rgb(nodes, links, m["hl"], col, to_linear(mix(fill_hex, "#FFFFFF", C.HIGHLIGHT_MIX)))
+        col = _mix_rgb(nodes, links, m["hl"], col, to_linear(mix(fill_hex, "#FFFFFF", F["hl_mix"])))
         rim = _math(nodes, links, "MULTIPLY", m["rim"], C.RIM_STRENGTH)
         col = _mix_rgb(nodes, links, rim, col, to_linear(mix(fill_hex, "#FFFFFF", C.RIM_MIX)))
     return col, m
@@ -165,13 +167,13 @@ def _team_switch(nodes):
     return v.outputs[0]
 
 
-def toon(fill_hex, highlight=True):
-    """Opaque cel-shaded material in a fixed palette colour."""
-    key = ("toon", fill_hex, highlight)
+def toon(fill_hex, highlight=True, finish="matte"):
+    """Opaque cel-shaded material in a fixed palette colour. finish: matte, gloss or metal."""
+    key = ("toon", fill_hex, highlight, finish)
     if key not in _cache:
-        mat = bpy.data.materials.new(f"toon_{fill_hex}")
+        mat = bpy.data.materials.new(f"toon_{fill_hex}_{finish}")
         nt, nodes, links = _nodes(mat)
-        col, _ = _toon_color(nodes, links, fill_hex, highlight)
+        col, _ = _toon_color(nodes, links, fill_hex, highlight, finish)
         _output(nodes, links, _fade(nodes, links, _emission(nodes, links, col)))
         _cache[key] = mat
     return _cache[key]

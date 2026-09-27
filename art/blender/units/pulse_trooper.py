@@ -42,7 +42,7 @@ def build(rig):
         rig.part(f"shin_{side}", g, SUIT)
         g = Geo().blob((2.8, y, 3.2), (7.0, 4.8, 3.4), p=3.0, taper=(1.05, 0.85))
         g.blob((0.8, y, 7.0), (4.6, 4.5, 3.0), p=2.6)
-        rig.part(f"shin_{side}", g, ARMOR)
+        rig.part(f"shin_{side}", g, ARMOR, finish="gloss")
 
     # torso: suit, team chest plate, belt with a light, backpack power cell
     g = Geo().blob((0, 0, 28), (9.8, 9.6, 11.2), p=2.4, taper=(0.95, 1.05))
@@ -62,10 +62,14 @@ def build(rig):
     # helmet: white dome, wide mint visor, team crest, antenna with a magenta tip
     g = Geo().blob((2, 0, 51), (11.4, 11.0, 11.6), p=2.5)
     g.blob((0, 0, 42.2), (7.5, 7.5, 3.2), p=2.4)
-    rig.part("head", g, ARMOR)
+    rig.part("head", g, ARMOR, finish="gloss")
     g = Geo().blob((9.6, 0, 49.8), (4.4, 9.0, 4.6), p=3.2, rot=(0, 0, 0))
-    rig.part("head", g, VISOR_DARK, outline=1.6, outline_hex=SUIT)
+    rig.part("head", g, VISOR_DARK, finish="gloss", outline=1.6, outline_hex=SUIT)
     g = Geo().blob((11.6, -0.4, 50.4), (2.6, 7.6, 2.6), p=3.0)
+    rig.part("head", g, glow=MINT, outline=0)
+    g = Geo().blob((-3.5, -10.4, 50.0), (4.4, 2.0, 4.4), p=2.4)  # ear pod
+    rig.part("head", g, SUIT, outline=1.6)
+    g = Geo().blob((-3.5, -12.2, 50.0), (1.7, 0.8, 1.7), p=2.2)
     rig.part("head", g, glow=MINT, outline=0)
     g = Geo().blob((-0.5, 0, 61.4), (10.8, 3.2, 3.0), p=2.8, rot=(0, -8, 0))
     rig.part("head", g, team=True, outline=2.2)
@@ -97,7 +101,7 @@ def build(rig):
     rig.part("gun", g, SUIT, outline=2.4)
     g = Geo().blob((gx + 12, gy + 1, gz + 7.0), (11.5, 3.0, 2.4), p=3.4)  # top shroud
     g.lathe([(3.4, 0), (3.6, 4), (3.0, 12), (0, 12.2)], (gx + 23, gy + 1, gz + 3.5), (gx + 40, gy + 1, gz + 3.5), segs=14)
-    rig.part("gun", g, ARMOR, outline=2.4, outline_hex=TRIM)
+    rig.part("gun", g, ARMOR, finish="gloss", outline=2.4, outline_hex=TRIM)
     g = Geo()
     for x in (gx + 17.5, gx + 21, gx + 24.5):
         g.lathe([(0, -0.7), (4.3, -0.6), (4.3, 0.6), (0, 0.7)], (x, gy + 1, gz + 3.5), (x + 1, gy + 1, gz + 3.5), segs=16)
@@ -106,7 +110,7 @@ def build(rig):
     rig.part("gun", g, MAGENTA, outline=1.4)
     g = Geo().blob((gx + 13, gy + 1.6, gz + 1.6), (3.6, 2.4, 3.2), p=2.6)  # far hand on the foregrip
     g.blob((gx + 0.6, gy - 0.6, gz + 1.8), (3.6, 3.2, 3.4), p=2.6)  # near hand on the grip
-    rig.part("gun", g, ARMOR, outline=1.8, outline_hex=TRIM)
+    rig.part("gun", g, ARMOR, finish="gloss", outline=1.8, outline_hex=TRIM)
 
     # muzzle charge and flash (hidden unless a clip shows them)
     mx = (gx + 38.5, gy + 1, gz + 3.5)

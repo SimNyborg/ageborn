@@ -34,15 +34,19 @@ LIGHT_THRESHOLD = 0.02
 TERMINATOR_SOFTNESS = 0.06
 # Highlight: one glossy shape per part (DESIGN A11) where dot(N, H) is near 1.
 HIGHLIGHT_DIR = (-0.05, -0.55, 0.83)
-HIGHLIGHT_THRESHOLD = 0.93
 HIGHLIGHT_SOFTNESS = 0.02
 SHADOW_FACTOR = 0.82        # shadow = fill darkened 18% (DESIGN A11)
+# Surface finishes. Matte follows A11 exactly; gloss (plastic, visors) and metal (plate
+# armour, blades) get a larger, brighter highlight and, for metal, a deeper shadow band.
+FINISHES = {
+    "matte": {"shadow": 0.82, "gradient": 0.22, "hl_threshold": 0.93, "hl_mix": 0.32},
+    "gloss": {"shadow": 0.80, "gradient": 0.22, "hl_threshold": 0.90, "hl_mix": 0.60},
+    "metal": {"shadow": 0.70, "gradient": 0.34, "hl_threshold": 0.86, "hl_mix": 0.62},
+}
 OUTLINE_FACTOR = 0.55       # outline = fill darkened 45% (DESIGN A11)
-HIGHLIGHT_MIX = 0.32        # highlight = fill mixed 32% toward white
 TEAM_HIGHLIGHT_ALPHA = 0.30 # white overlay drawn over the tinted team layer for its highlight
 TEAM_RIM_ALPHA = 0.22
-# In-band gradient (fraction darker on the side away from the light) for a rounder, 3D read.
-GRADIENT = 0.22
+# FINISHES["gradient"]: in-band gradient (fraction darker away from the light), in linear light.
 # Ambient occlusion: darkens creases between parts (arm against torso, under the helmet).
 AO_DISTANCE = 6.0   # lu
 AO_STRENGTH = 0.45

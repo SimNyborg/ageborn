@@ -88,8 +88,16 @@ export interface MotionSpec {
   ability: string;
   /** Idle flourish (weapon twirl) bone, if any. */
   twirlBone?: string;
-  /** Gait parameters. */
+  /** Hip to sole (lu), for the walk cycle. */
+  legLu?: number;
+  /** Leg swing amplitude (degrees, A11 default 25). */
+  legDeg?: number;
+  /** Ground distance per walk cycle (lu); derived from the legs when omitted. */
   strideLu?: number;
+  /** Wheel radius for rolling vehicles (lu). */
+  wheelRadiusLu?: number;
+  /** Nominal speed (lu/s) for time-driven walks when no movement is reported. */
+  speedLuPerSec?: number;
   /** The unit hovers (air units): idle and walk bob in the air. */
   air?: boolean;
 }

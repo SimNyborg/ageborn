@@ -38,6 +38,33 @@ def composite(base, team, tint_hex):
     return np.concatenate([rgb, out_a], axis=-1)
 
 
+def colour_rule(clip_frames):
+    """DESIGN A11 colour rule: non-team pixels may not sit within +-35 deg of a team hue
+    (bands 350-81 and 182-254 deg) at HSV saturation > 40% for more than 10% of the
+    silhouette. Returns the worst frame's percentage. Base frames hold only non-team
+    pixels (team surfaces are holes), so they are measured directly."""
+    worst = (0.0, None)
+    for clip, frames in clip_frames.items():
+        for i, (bp, tp) in enumerate(frames):
+            base = load(bp)
+            sil = base[..., 3] > 0.5
+            if tp:
+                sil |= load(tp)[..., 3] > 0.5
+            opaque = base[..., 3] > 0.5
+            rgb = base[..., :3]
+            mx, mn = rgb.max(-1), rgb.min(-1)
+            sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
+            d = np.maximum(mx - mn, 1e-6)
+            r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+            hue = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) * 60
+            band = (hue >= 350) | (hue <= 81) | ((hue >= 182) & (hue <= 254))
+            bad = opaque & band & (sat > 0.40)
+            pct = 100.0 * bad.sum() / max(1, sil.sum())
+            if pct > worst[0]:
+                worst = (pct, f"{clip}_{i:02d}")
+    return {"worstPct": round(worst[0], 2), "worstFrame": worst[1], "limitPct": 10.0}
+
+
 def to_image(arr):
     return Image.fromarray(np.clip(arr * 255 + 0.5, 0, 255).astype(np.uint8), "RGBA")
 
@@ -117,8 +144,12 @@ def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale):
             "sourceSize": {"w": source[0], "h": source[1]},
             "anchor": {"x": round(feet[0] / source[0], 5), "y": round(feet[1] / source[1], 5)},
         }
-    png = os.path.join(out_dir, f"{slug}.png")
-    sheet.save(png, optimize=True)
+    # Shipping image: 256-colour palette PNG (toon shading has few distinct colours, so this
+    # is ~4-5x smaller than RGBA with no visible loss at game size). The RGBA master and
+    # WebP variants are written alongside for comparison.
+    sheet.save(os.path.join(out_dir, f"{slug}.rgba.png"), optimize=True)
+    pal = sheet.quantize(256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+    pal.save(os.path.join(out_dir, f"{slug}.png"), optimize=True)
     sheet.save(os.path.join(out_dir, f"{slug}.webp"), lossless=True, quality=100, method=6)
     sheet.save(os.path.join(out_dir, f"{slug}.q90.webp"), quality=90, method=6, alpha_quality=90)
     atlas = {

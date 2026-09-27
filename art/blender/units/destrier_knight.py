@@ -60,7 +60,7 @@ def build(rig):
     g = Geo()
     for x in (-20, -7, 7, 20):
         g.sphere((x, -15.2, 29.0), 1.5, cuts=3)
-    rig.part("horse", g, GOLD, outline=1.0)
+    rig.part("horse", g, GOLD, finish="metal", outline=1.0)
     g = Geo().blob((-2, 0, 54), (11.5, 9.5, 3.6), p=2.6)  # saddle
     g.blob((-11.5, 0, 56.5), (2.6, 8.5, 4.0), p=2.4)      # cantle
     rig.part("horse", g, WINE, outline=2.2)
@@ -81,11 +81,11 @@ def build(rig):
         g.lathe([(2.2, 0), (1.6, 3), (0, 6.5)], (30.5, y, 70), (29.5, y * 1.3, 77.5), segs=10)
     rig.part("hhead", g, COAT)
     g = Geo().blob((37.5, 0, 66), (8.8, 5.6, 3.2), p=3.0, rot=(0, 38, 0))
-    rig.part("hhead", g, SLATE, outline=2.0)
+    rig.part("hhead", g, SLATE, finish="metal", outline=2.0)
     g = Geo().sphere((34.6, -5.9, 65.8), 1.6, cuts=3).sphere((50.5, -3.6, 55.5), 1.1, cuts=3)
     rig.part("hhead", g, DARK, outline=0)
     g = Geo().capsule((47.5, -5.2, 52.5), (47.5, 5.2, 52.5), 1.2)  # bit
-    rig.part("hhead", g, GOLD, outline=0.8)
+    rig.part("hhead", g, GOLD, finish="metal", outline=0.8)
     rig.joint("tail", "horse", (-27, 0, 50))
     g = Geo().capsule((-27, 0, 50), (-35, 0, 40), 4.6, 5.4).capsule((-35, 0, 40), (-35, 0, 27), 5.4, 2.8)
     rig.part("tail", g, MANE)
@@ -96,23 +96,23 @@ def build(rig):
     rig.joint("khead", "ktorso", (0, 0, 79))
     g = Geo().capsule((-1, -8.5, 58), (8, -11.5, 52), 5.2, 4.6).capsule((8, -11.5, 52), (7, -11.5, 40), 4.4, 4.0)
     g.blob((9.5, -11.5, 38.0), (5.8, 4.2, 3.0), p=2.8)
-    rig.part("rider", g, SLATE)
+    rig.part("rider", g, SLATE, finish="metal")
     g = Geo().blob((-1, 0, 70.5), (9.2, 10.2, 11.2), p=2.4, taper=(0.95, 1.08))
-    rig.part("ktorso", g, SLATE)
+    rig.part("ktorso", g, SLATE, finish="metal")
     g = Geo().blob((-0.4, 0, 64.8), (10.2, 11.2, 8.4), p=2.8, taper=(1.12, 0.9))
     g.blob((-0.4, 0, 72.5), (9.8, 10.6, 5.0), p=2.6)
     rig.part("ktorso", g, team=True)
     g = Geo().blob((-0.4, 0, 63.2), (10.6, 11.6, 1.8), p=3.0)
     rig.part("ktorso", g, WINE, outline=1.6)
     g = Geo().sphere((10.3, -3.5, 63.6), 1.6, cuts=3)
-    rig.part("ktorso", g, GOLD, outline=1.0)
+    rig.part("ktorso", g, GOLD, finish="metal", outline=1.0)
     # helmet: great helm with a visor slit, gold cross trim and a big team plume
     g = Geo().blob((0.5, 0, 88), (9.6, 9.4, 10.8), p=3.2, taper=(1.05, 0.92))
-    rig.part("khead", g, STEEL)
+    rig.part("khead", g, STEEL, finish="metal")
     g = Geo().capsule((9.3, -6.5, 89.5), (9.9, 5.0, 89.5), 1.35)
     rig.part("khead", g, DARK, outline=0)
     g = Geo().capsule((10.2, -1.5, 97.5), (10.4, -1.5, 81.5), 1.1).capsule((10.2, -7.5, 85.5), (10.4, 5, 85.5), 1.0)
-    rig.part("khead", g, GOLD, outline=0.9)
+    rig.part("khead", g, GOLD, finish="metal", outline=0.9)
     g = Geo()
     for i, (x, z, r) in enumerate(((0, 99.5, 4.6), (-4, 104, 5.4), (-9.5, 106, 5.4), (-15, 104.5, 4.8),
                                    (-19, 100, 4.0), (-21.5, 95, 3.2))):
@@ -122,7 +122,7 @@ def build(rig):
     # far arm with the heater shield (team face, gold rim)
     rig.joint("karm_l", "ktorso", (0, 10.5, 77))
     g = Geo().capsule((0, 10.5, 77), (5, 12, 68), 4.2, 3.8).capsule((5, 12, 68), (11, 12, 66), 3.8, 3.6)
-    rig.part("karm_l", g, SLATE)
+    rig.part("karm_l", g, SLATE, finish="metal")
     rig.joint("shield", "karm_l", (12, 9, 66))
     g = Geo().blob((13.5, 7, 65), (2.2, 9.6, 12.0), p=3.6, taper=(0.3, 1.0), rot=(0, 0, -38))
     rig.part("shield", g, PARCH, outline=2.4, outline_hex=GOLD)
@@ -134,19 +134,19 @@ def build(rig):
     rig.joint("kfore_r", "karm_r", (3, -12, 68))
     rig.joint("lance", "kfore_r", (10, -13, 65))
     g = Geo().capsule((0, -10.5, 77), (3, -12, 68), 4.4, 4.0)
-    rig.part("karm_r", g, SLATE)
+    rig.part("karm_r", g, SLATE, finish="metal")
     g = Geo().capsule((3, -12, 68), (10, -13, 65.5), 4.0, 3.7).blob((10.5, -13, 65), (4.3, 4.3, 4.3), p=2.6)
-    rig.part("kfore_r", g, SLATE)
+    rig.part("kfore_r", g, SLATE, finish="metal")
     for y in (-10.5, 10.5):
         g = Geo().blob((-0.5, y * 1.02, 78.5), (7.6, 6.2, 5.6), p=2.4)
-        rig.part("ktorso" if y > 0 else "karm_r", g, STEEL)
+        rig.part("ktorso" if y > 0 else "karm_r", g, STEEL, finish="metal")
     lx, ly, lz = 10.5, -14.5, 65.0
     g = Geo().lathe([(0, -16), (1.8, -15.5), (2.0, -4), (2.1, 3), (1.8, 30), (1.4, 62), (0, 63)],
                     (lx, ly, lz), segs=12)
     rig.part("lance", g, WINE, outline=1.8)
     g = Geo().lathe([(0, 1.5), (2.6, 2.0), (6.8, 8.5), (5.8, 10), (0, 10.2)], (lx, ly, lz), segs=16)
     g.lathe([(1.8, 62), (2.8, 63), (1.6, 69), (0, 76)], (lx, ly, lz), segs=10)
-    rig.part("lance", g, STEEL, outline=1.8)
+    rig.part("lance", g, STEEL, finish="metal", outline=1.8)
     # pennant: a tapered flag below the tip; its own joint keeps it flying backward
     rig.joint("pennant", "lance", (lx, ly, lz + 55.0))
     g = Geo().blob((lx - 11.0, ly, lz + 55.0), (4.6, 0.9, 11.0), p=2.6, taper=(1.0, 0.18), rot=(0, -90, 0))
@@ -157,7 +157,7 @@ def build(rig):
 
 # -- clips ---------------------------------------------------------------------------
 STANCE = {
-    "karm_r": {"r": 14}, "kfore_r": {"r": 30}, "lance": {"r": -78},
+    "karm_r": {"r": 14}, "kfore_r": {"r": 30}, "lance": {"r": -92},
     "karm_l": {"r": 5}, "neck": {"r": 0},
 }
 LEGS = ("leg_fr", "leg_fl", "leg_br", "leg_bl")
@@ -220,8 +220,8 @@ def _attack(f):
         "ktorso": {"r": K([(0, 0), (3, 12, "out"), (4, -6, "in"), (5, -16, "in"), (6, -14), (8, -4), (9, 0)])},
         "karm_r": {"r": K([(0, 14), (3, -30), (4, 10, "in"), (5, 55, "in"), (6, 50), (8, 20), (9, 14)])},
         "kfore_r": {"r": K([(0, 30), (3, 30), (5, 30), (9, 30)])},
-        "lance": {"r": K([(0, -78), (2, -92), (3, -88, "out"), (4, -122, "in"), (5, -150, "in"),
-                          (6, -148), (8, -95), (9, -78)])},
+        "lance": {"r": K([(0, -92), (2, -100), (3, -88, "out"), (4, -122, "in"), (5, -150, "in"),
+                          (6, -148), (8, -105), (9, -92)])},
         "karm_l": {"r": K([(0, 5), (3, 18), (5, -10), (9, 5)])},
     }
 

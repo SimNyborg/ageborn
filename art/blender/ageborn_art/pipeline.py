@@ -37,6 +37,7 @@ def run_unit(mod, out_dir, frame_root, log=print):
         "anchorsLu": {k: list(v) for k, v in mod.ANCHORS.items()},
         "facing": "right",
     }
+    rule = sheet.colour_rule(frames)
     size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE)
     tints = {"blue": C.TEAM_COLORS["blue"], "orange": C.TEAM_COLORS["orange"]}
     sheet.previews(mod.SLUG, frames, clip_meta, out_dir, C.RENDER_SCALE, C.PREVIEW_BG, tints)
@@ -49,9 +50,11 @@ def run_unit(mod, out_dir, frame_root, log=print):
         "renders": sum(1 + (t is not None) for f in frames.values() for _, t in f),
         "canvasPx": list(mod.CANVAS),
         "sheetPx": list(size),
+        "colourRule": rule,
         "seconds": {"build": round(t_build, 1), "render": round(t_render, 1),
                     "pack_and_previews": round(t_pack, 1), "total": round(time.time() - t0, 1)},
-        "kb": {"png": kb(f"{mod.SLUG}.png"), "webp_lossless": kb(f"{mod.SLUG}.webp"),
+        "kb": {"png8": kb(f"{mod.SLUG}.png"), "png32": kb(f"{mod.SLUG}.rgba.png"),
+               "webp_lossless": kb(f"{mod.SLUG}.webp"),
                "webp_q90": kb(f"{mod.SLUG}.q90.webp"), "json": kb(f"{mod.SLUG}.json")},
     }
     with open(os.path.join(out_dir, f"{mod.SLUG}.stats.json"), "w") as fh:

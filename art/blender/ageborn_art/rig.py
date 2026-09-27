@@ -55,7 +55,7 @@ class Rig:
         return name
 
     def part(self, joint, geo, fill=None, team=False, glow=None, outline=C.OUTLINE_LU,
-             outline_hex=None, highlight=True, name=None):
+             outline_hex=None, highlight=True, finish="matte", name=None):
         """Attach geometry built in character space to `joint`.
         fill: palette hex for a cel-shaded part; team=True for a team-coloured part;
         glow: hex for an unshaded emissive part. outline: hull thickness in lu (0 = none)."""
@@ -67,7 +67,7 @@ class Rig:
         elif glow:
             mat = materials.glow(glow)
         else:
-            mat = materials.toon(fill, highlight)
+            mat = materials.toon(fill, highlight, finish)
         me.materials.append(mat)
         obj = bpy.data.objects.new(f"{self.name}.{name}", me)
         self.coll.objects.link(obj)
