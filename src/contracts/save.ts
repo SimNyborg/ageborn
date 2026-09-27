@@ -6,12 +6,9 @@
  * A6.4, A10): the reveal is honest. Implemented by WP8 in `src/save`.
  */
 import type { Bus } from './audio';
-import type { I18n, Locale } from './i18n';
+import type { Locale } from './i18n';
 import type { AgeId, CapsuleTier, CardId, Foil, Rarity, Result, SkinId, SkinRarity, TeamPreset } from './ids';
 import type { Loadout, ReplayDoc } from './sim';
-
-/** Re-exported for convenience: settings use the i18n locale. */
-export type { Locale, I18n };
 
 /** Generated profile avatar (DESIGN A6.1). */
 export interface AvatarSpec {
