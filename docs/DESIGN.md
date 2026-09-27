@@ -2342,7 +2342,7 @@ CI fails the build if the initial chunk exceeds 3 MB gzipped.
 
 **Owns:**
 
-- root configs, `index.html`, `.github/workflows/ci.yml` (until Phase 1), `README.md`, `docs/**`
+- root configs, `index.html`, `README.md`, `docs/**` (`.github/workflows/ci.yml` and `pages.yml` already exist; agents do not edit them)
 - `src/contracts/**`, `src/core/**`, `src/i18n/index.ts`
 - `src/content/raw/**`
 - `tests/fixtures/content/**`
@@ -2535,7 +2535,7 @@ CI fails the build if the initial chunk exceeds 3 MB gzipped.
 
 ### WP12: Tools, integrity tests, CI, e2e (Phase 1 start, Phase 3 lead)
 
-**Owns:** `tools/**` except `tools/counters.ts`, `tests/**` except `tests/fixtures/content`, `.github/workflows/ci.yml` (from Phase 1 on)
+**Owns:** `tools/**` except `tools/counters.ts`, `tests/**` except `tests/fixtures/content` (CI workflow changes go through `docs/requests/wp12-ci.md`)
 
 **Tasks:**
 

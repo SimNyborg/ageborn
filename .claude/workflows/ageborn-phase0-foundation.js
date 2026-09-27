@@ -19,7 +19,8 @@ Your final answer is a short plain-text report: what you built, the checks you r
 const SCAFFOLD = `${COMMON}
 
 YOUR TASK: WP0 part 1, the project scaffold (DESIGN B1, B2, B13, B14, B16, C2/WP0 tasks 2, 3, 6, 7 and the DoD).
-You own: package.json, package-lock.json, tsconfig*.json, vite.config.ts, vitest.config.ts, eslint.config.js, playwright.config.ts, index.html, public/**, .github/workflows/ci.yml, .github/workflows/pages.yml, src/core/**, src/i18n/index.ts, src/dev/router.tsx, src/app/main.tsx (stub), and empty placeholder folders from B14.
+You own: package.json, package-lock.json, tsconfig*.json, vite.config.ts, vitest.config.ts, eslint.config.js, playwright.config.ts, index.html, public/**, src/core/**, src/i18n/index.ts, src/dev/router.tsx, src/app/main.tsx (stub), and empty placeholder folders from B14.
+Do NOT edit .github/workflows/*: ci.yml and pages.yml already exist and are final (cloud sessions may lack permission to push workflow changes). They call npm ci, then the npm scripts typecheck, lint, test, build and size (optional), and deploy dist/.
 Do NOT write src/contracts/** or src/content/raw/** (two other agents are writing them right now).
 
 1. Check current versions with npm view. Use the newest majors where the toolchain supports them (see DESIGN B1 version note), else the B1 versions. Pin exact versions.
@@ -30,7 +31,7 @@ Do NOT write src/contracts/** or src/content/raw/** (two other agents are writin
 5. src/core per B14 (fixed.ts rng.ts hash.ts ids.ts assert.ts ring.ts): sfc32 + xmur3, mulberry32, FNV-1a, bp/fixed-point helpers, integer-only trig approximations or lookup tables if the sim needs them per B3, ring buffer, assert. Known-answer tests.
 6. src/i18n/index.ts loader with EN fallback, matching the I18n contract shape in DESIGN B15 (i18n.ts). Import the type from "@/contracts" once that file exists; if it does not exist yet when you finish, define a local type and leave a TODO note in docs/requests/wp0-i18n-type.md.
 7. index.html, src/app/main.tsx stub that mounts a Preact shell over a PixiJS 8 canvas showing the Ageborn title and a lane, and src/dev/router.tsx that lists dev pages found with import.meta.glob('./*/page.tsx') when the URL has ?dev=1.
-8. .github/workflows/ci.yml: typecheck, lint, unit tests, build, bundle-size gate (initial chunk <= 3 MB gzip). Update .github/workflows/pages.yml so it always runs npm ci and npm run build (drop the placeholder branch) and deploys dist. Keep its branch triggers.
+8. Add an npm script "size" (a small node script under tools/ is fine) that fails if the initial chunk exceeds 3 MB gzip. The existing CI workflow runs it.
 9. Run npm install, npm run typecheck (filtered), npm run lint (your files), npm test, npm run build. Everything you own must pass.`
 
 const CONTRACTS = `${COMMON}

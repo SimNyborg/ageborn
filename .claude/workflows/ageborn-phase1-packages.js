@@ -43,7 +43,7 @@ const WPS = [
     read: 'C2/WP10, A10 (full storyboard), A10.1 (Wardrobe reel), A6.4, A6.5, A12 (juice), B15 (CapsuleReveal, WardrobeReveal). This is the excitement moment of the game: anticipation, rarity pre-signal, climbs, burst, walkouts. Consume only the reveal data' },
   { id: 'WP11', title: 'App integration scaffold, session, onboarding, platform, replay viewer', owns: 'src/app/**, src/platform/**, src/tutorial/**, src/i18n/tutorial.en.json',
     read: 'C2/WP11, B6 (session loop), B11, A8 (onboarding), A7.1 (labels), B15 (session, platform). Phase 1: scaffolding against fakes (boot, services.ts that can build real or fake implementations, BattleSession loop, tutorial director and scripts, replay player, visibility pause). Also a "Quick Battle" route that starts a battle via services.ts, so Phase 2 can switch it to real implementations' },
-  { id: 'WP12', title: 'Tools, integrity tests, CI, e2e skeleton', owns: 'tools/** except tools/counters.ts, tests/** except tests/fixtures/content/**, .github/workflows/ci.yml',
+  { id: 'WP12', title: 'Tools, integrity tests, CI, e2e skeleton', owns: 'tools/** except tools/counters.ts, tests/** except tests/fixtures/content/** (the CI workflow files are fixed; put wanted CI changes such as a nightly balance job in docs/requests/wp12-ci.md)',
     read: 'C2/WP12, B12, B13 (Integrity, E2E), A2.14 (balance targets). Phase 1: tool skeletons that run against the contracts, integrity tests (IDs, string keys, layer graph, hard-coded strings) and the Playwright smoke skeleton. Tests that need packages still being built must skip with a clear reason rather than fail' },
 ]
 

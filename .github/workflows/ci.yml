@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Skip until the project is scaffolded
+        id: guard
+        run: |
+          if [ -f package.json ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "No package.json yet"; fi
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm ci
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run typecheck
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run lint
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm test
+      - if: steps.guard.outputs.ready == 'true'
+        run: npm run build
+      - if: steps.guard.outputs.ready == 'true'
+        name: Bundle size gate
+        run: npm run size --if-present
