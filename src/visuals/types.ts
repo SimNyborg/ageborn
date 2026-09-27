@@ -162,7 +162,9 @@ export type ProcId =
   | 'spinRotor'
   | 'riderBounce'
   | 'dizzy'
-  | 'tremble';
+  | 'tremble'
+  | 'buzz'
+  | 'wave';
 
 export interface ClipDef {
   id: string;

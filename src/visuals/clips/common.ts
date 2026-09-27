@@ -397,7 +397,7 @@ const machines: ClipDef[] = [
 // Turret (DESIGN A11 Turret clips)
 
 const turret: ClipDef[] = [
-  clip('turret.idle', 3200, true, { pivot: [{ t: 0 }, { t: 0.3, r: -5, e: 'inOut' }, { t: 0.7, r: 4, e: 'inOut' }, { t: 1, e: 'inOut' }] }),
+  clip('turret.idle', 3200, true, { pivot: [{ t: 0 }, { t: 0.3, r: -5, e: 'inOut' }, { t: 0.7, r: 4, e: 'inOut' }, { t: 1, e: 'inOut' }] }, { proc: ['buzz', 'wave'] }),
   clip(
     'turret.fire',
     300,
@@ -405,7 +405,7 @@ const turret: ClipDef[] = [
     {
       pivot: [{ t: 0 }, { t: 0.1, sx: 1.08, sy: 0.92, e: 'out' }, { t: 0.4, sx: 1, sy: 1, e: 'inOut' }],
       barrel: [{ t: 0 }, { t: 0.08, x: -6, e: 'out' }, { t: 0.7, x: 0, e: 'inOut' }],
-      arm: [{ t: 0 }, { t: 0.15, r: -125, e: 'out' }, { t: 0.4, r: -115 }, { t: 1, r: 0, e: 'inOut' }],
+      arm: [{ t: 0 }, { t: 0.15, r: 125, e: 'out' }, { t: 0.4, r: 115 }, { t: 1, r: 0, e: 'inOut' }],
       lid: [{ t: 0 }, { t: 0.1, r: -30, e: 'out' }, { t: 0.8, r: 0, e: 'inOut' }],
     },
     { impactAt: 0.1 },

@@ -1,0 +1,197 @@
+{
+  "shake": { "decayPerSec": 1.2, "noiseHz": 18, "maxOffsetPx": 12, "maxRotDeg": 2.5 },
+  "globalFreezeCapMs": 150,
+  "globalFreezeWindowMs": 3000,
+  "heavyHitBp": 1500,
+  "damageNumbers": "important",
+  "particleCaps": { "mobile": 600, "desktop": 1500 },
+  "tuning": {
+    "kickPx": 5,
+    "kickDecayMs": 140,
+    "ghostHoldMs": 300,
+    "ghostDrainMs": 350,
+    "hpBarShowMs": 2600,
+    "numberSpreadPx": [20, 40],
+    "numberLifeMs": 950,
+    "numberRisePx": 46,
+    "numberMergeMs": 380,
+    "goldLifeMs": 1150,
+    "coinTravelMs": 620,
+    "coinStaggerMs": 70,
+    "xpTravelMs": 720,
+    "coinSoundGapMs": 40,
+    "coinComboMs": 650,
+    "coinPitchStepBp": 600,
+    "coinPitchMaxBp": 3600,
+    "soundGapMs": { "heal_tick": 220, "shield_up": 120, "base_hit": 90, "hit_effective": 60 },
+    "intensity": { "decayPerSec": 0.2, "hit": 0.015, "heavy": 0.05, "death": 0.06, "power": 0.3, "baseHit": 0.05, "evolve": 0.2, "pushHz": 4 },
+    "reduceMotion": { "shake": 0, "hitstop": 0.5, "flash": 0.45 },
+    "seamMaxLuPerSec": 20,
+    "cameraFollowK": 0.08,
+    "maxZoom": 1.6,
+    "rowEaseLuPerSec": 90,
+    "deathLingerMs": 900,
+    "turretSellMs": 1000,
+    "telegraphMs": 1000,
+    "cheerMs": 900,
+    "mechExplodeOneIn": 3
+  },
+  "events": {
+    "hit.light": {
+      "flashMs": 60,
+      "flashTarget": "victim",
+      "particles": [{ "effectId": "$spark", "count": 3, "priority": 1 }],
+      "sound": "$hitSound"
+    },
+    "hit.heavy": {
+      "hitstopLocalMs": { "victim": 70, "attacker": 50 },
+      "jitterPx": 2,
+      "trauma": 0.05,
+      "flashMs": 80,
+      "flashTarget": "victim",
+      "particles": [
+        { "effectId": "$spark", "count": 6, "priority": 2 },
+        { "effectId": "fx.dust_poof", "count": 2, "priority": 1 }
+      ],
+      "sound": "hit_heavy"
+    },
+    "death.unit": {
+      "hitstopLocalMs": { "victim": 50, "attacker": 0 },
+      "trauma": 0.1,
+      "particles": [
+        { "effectId": "fx.dust_poof", "count": 10, "priority": 2 },
+        { "effectId": "fx.ko_stars", "count": 1, "priority": 3 }
+      ],
+      "sound": "$dieSound"
+    },
+    "death.heavy": {
+      "hitstopLocalMs": { "victim": 70, "attacker": 0 },
+      "trauma": 0.15,
+      "particles": [
+        { "effectId": "fx.dust_poof", "count": 10, "priority": 2 },
+        { "effectId": "fx.ko_stars", "count": 1, "priority": 3 }
+      ],
+      "sound": "$dieSound"
+    },
+    "death.legendary": {
+      "hitstopGlobalMs": 80,
+      "trauma": 0.15,
+      "particles": [
+        { "effectId": "fx.dust_poof", "count": 10, "priority": 3 },
+        { "effectId": "fx.ko_stars", "count": 1, "priority": 4 }
+      ],
+      "sound": "$dieSound"
+    },
+    "death.mech": { "trauma": 0.12, "flashMs": 60, "flashTarget": "victim" },
+    "death.mech.explode": {
+      "particles": [{ "effectId": "fx.explosion_s", "count": 1, "priority": 3 }],
+      "sound": "explosion_s"
+    },
+    "death.coins": { "particles": [{ "effectId": "fx.coin", "count": 1, "priority": 4 }], "sound": "coin_gain" },
+    "xp.kill": { "particles": [{ "effectId": "fx.xp_sparkle", "count": 3, "priority": 1 }] },
+    "turret.fire": {
+      "particles": [
+        { "effectId": "fx.muzzle", "count": 1, "priority": 2 },
+        { "effectId": "fx.dust_poof", "count": 3, "priority": 0 }
+      ],
+      "sound": "$attackSound"
+    },
+    "turret.build": { "particles": [{ "effectId": "fx.dust_poof", "count": 3, "priority": 1 }], "sound": "turret_build" },
+    "turret.sell": { "particles": [{ "effectId": "fx.dust_poof", "count": 4, "priority": 1 }], "sound": "turret_sell" },
+    "turret.modernise": { "sound": "turret_upgrade" },
+    "mount.buy": { "particles": [{ "effectId": "fx.dust_poof", "count": 2, "priority": 1 }], "sound": "slot_buy" },
+    "treasury.up": { "sound": "treasury_up" },
+    "base.hit": {
+      "trauma": 0.2,
+      "traumaGapMs": 500,
+      "flashMs": 60,
+      "flashTarget": "base",
+      "particles": [{ "effectId": "fx.debris", "count": 4, "priority": 1 }],
+      "sound": "base_hit"
+    },
+    "base.crumble": { "trauma": 0.15, "particles": [{ "effectId": "fx.debris", "count": 16, "priority": 2 }], "sound": "base_crumble" },
+    "power.ready": { "sound": "power_ready" },
+    "power.telegraph": { "sound": "power_telegraph" },
+    "power.impact": {
+      "hitstopGlobalMs": 120,
+      "trauma": 0.5,
+      "flashMs": 16,
+      "flashColor": 16777215,
+      "flashAlpha": 0.3,
+      "flashTarget": "screen",
+      "sound": "$powerSound",
+      "duckDb": -6,
+      "duckMs": 1500
+    },
+    "power.impact.more": { "trauma": 0.06 },
+    "evolve.ready": { "sound": "evolve_ready" },
+    "evolve.start.own": { "sound": "evolve_riser", "duckDb": -6, "duckMs": 2600 },
+    "evolve.start.enemy": {},
+    "evolve.own": {
+      "hitstopGlobalMs": 100,
+      "trauma": 0.4,
+      "flashMs": 120,
+      "flashColor": 16777215,
+      "flashAlpha": 0.85,
+      "flashTarget": "screen",
+      "particles": [{ "effectId": "fx.evolve_pillar", "count": 1, "priority": 5 }],
+      "sound": "$fanfare"
+    },
+    "evolve.enemy": {
+      "trauma": 0.1,
+      "particles": [{ "effectId": "fx.evolve_pillar", "count": 1, "priority": 4 }],
+      "sound": "evolve_enemy"
+    },
+    "lastStand.armed": { "sound": "last_stand_armed" },
+    "lastStand.charge": { "sound": "last_stand_charge" },
+    "lastStand.fire": {
+      "hitstopGlobalMs": 150,
+      "trauma": 0.5,
+      "flashMs": 100,
+      "flashColor": 16726832,
+      "flashAlpha": 0.55,
+      "flashTarget": "screen",
+      "particles": [{ "effectId": "fx.last_stand_wave", "count": 1, "priority": 5 }],
+      "sound": "last_stand_fire"
+    },
+    "base.destroyed": {
+      "hitstopGlobalMs": 250,
+      "globalExempt": true,
+      "slowMo": { "scale": 0.3, "ms": 1200 },
+      "trauma": 1,
+      "flashMs": 200,
+      "flashColor": 16777215,
+      "flashAlpha": 0.9,
+      "flashTarget": "screen",
+      "particles": [{ "effectId": "fx.debris", "count": 120, "priority": 5 }],
+      "sound": "base_destroyed"
+    },
+    "unit.spawn": { "particles": [{ "effectId": "fx.dust_poof", "count": 1, "priority": 0 }], "sound": "$spawnSound" },
+    "attack.melee": { "sound": "$attackSound" },
+    "projectile.fire": { "sound": "$attackSound" },
+    "heal": { "particles": [{ "effectId": "fx.heal_glyph", "count": 1, "priority": 0 }], "sound": "heal_tick" },
+    "status.stun": { "particles": [{ "effectId": "fx.dizzy", "count": 1, "priority": 1 }] },
+    "status.frozen": { "particles": [{ "effectId": "fx.time_ripple", "count": 1, "priority": 2 }] },
+    "status.shield": { "particles": [{ "effectId": "fx.shield_bubble", "count": 1, "priority": 2 }], "sound": "shield_up" },
+    "status.mark": { "particles": [{ "effectId": "fx.mark_reticle", "count": 1, "priority": 1 }] },
+    "ability.periodicShieldAura": { "particles": [{ "effectId": "fx.shield_bubble", "count": 1, "priority": 2 }], "sound": "shield_up" },
+    "ability.callStrike": { "particles": [{ "effectId": "fx.call_marker", "count": 1, "priority": 3 }], "sound": "radio_call" },
+    "ability.emp": { "trauma": 0.08, "particles": [{ "effectId": "fx.emp_ring", "count": 1, "priority": 3 }], "sound": "emp_pulse" },
+    "ability.timeStop": {
+      "trauma": 0.12,
+      "particles": [{ "effectId": "fx.time_ripple", "count": 1, "priority": 4 }],
+      "sound": "time_stop"
+    },
+    "ability.pounce": { "particles": [{ "effectId": "fx.dust_poof", "count": 2, "priority": 1 }] },
+    "ability.onDeathExplode": {
+      "trauma": 0.12,
+      "particles": [{ "effectId": "fx.explosion_m", "count": 1, "priority": 3 }],
+      "sound": "explosion_m"
+    },
+    "phase.overdrive": { "trauma": 0.1, "sound": "overdrive_horn" },
+    "phase.siege": { "trauma": 0.15, "sound": "siege_bell" },
+    "emote": { "sound": "emote_pop" },
+    "stance": { "sound": "ui_toggle" },
+    "deny": { "sound": "ui_deny" }
+  }
+}

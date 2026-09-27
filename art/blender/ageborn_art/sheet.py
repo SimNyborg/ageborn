@@ -100,7 +100,8 @@ def pack(images):
             continue
         pos, height = _shelf_pack(sizes, width)
         height = (height + 3) // 4 * 4
-        area = width * height
+        # prefer squarish sheets: tall strips waste mobile texture limits
+        area = width * height * (1.0 + 0.25 * max(0.0, height / width - 1.5))
         if height <= 4096 and (best is None or area < best[0]):
             best = (area, width, height, pos)
     _, width, height, pos = best

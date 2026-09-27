@@ -2,7 +2,10 @@
 
 Cycles has no Shader-to-RGB, so the cel look is built directly in the node tree:
   lit/shadow = smoothstep(dot(N, LIGHT_DIR)) picks fill or fill*0.82 (DESIGN A11 two-tone),
-  highlight  = a tight smoothstep on dot(N, HIGHLIGHT_DIR) (one highlight shape per part).
+  gradient   = a soft darkening inside each band away from the light, times short-range AO,
+  highlight  = a tight smoothstep on dot(N, HIGHLIGHT_DIR) (one highlight shape per part),
+  rim        = a thin lighter edge at grazing view angles on the lit side.
+Finishes (config.FINISHES) tune these per surface: matte (A11 exactly), gloss and metal.
 There are no lamps, so a frame needs only enough samples to antialias edges.
 
 Team parts are rendered in two passes controlled by one value node per material:

@@ -145,6 +145,24 @@ export function* procDeltas(procs: readonly ProcId[], c: ProcContext, u: number,
         if (has('hull')) yield ['hull', d(2.5 * Math.sin(u * TAU))];
         break;
       }
+      case 'buzz': {
+        // bees (or drones, sparks) orbiting their rest point
+        for (let i = 1; i <= 4; i++) {
+          const b = `bee${i}`;
+          if (!has(b)) continue;
+          const a = (clockMs / (520 + i * 90)) * TAU + i * 2.1;
+          yield [b, d(Math.sin(a * 2) * 25, Math.cos(a) * (6 + i), Math.sin(a) * (4 + i))];
+        }
+        break;
+      }
+      case 'wave': {
+        for (let i = 1; i <= 4; i++) {
+          const b = `flag${i}`;
+          if (!has(b)) continue;
+          yield [b, d(0, 0, 0, 1 + 0.08 * Math.sin((clockMs / 700) * TAU + i), 1 + 0.05 * Math.sin((clockMs / 520) * TAU + i * 1.7))];
+        }
+        break;
+      }
       case 'tremble': {
         const j = Math.sin(clockMs * 0.9) * 0.6;
         yield ['root', d(0, j, 0)];
