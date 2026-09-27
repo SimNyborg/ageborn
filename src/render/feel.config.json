@@ -10,7 +10,6 @@
     "kickDecayMs": 140,
     "ghostHoldMs": 300,
     "ghostDrainMs": 350,
-    "hpBarShowMs": 2600,
     "numberSpreadPx": [20, 40],
     "numberLifeMs": 950,
     "numberRisePx": 46,

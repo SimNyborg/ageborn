@@ -38,7 +38,6 @@ export interface FeelTuning {
   kickDecayMs: number;
   ghostHoldMs: number;
   ghostDrainMs: number;
-  hpBarShowMs: number;
   numberSpreadPx: [number, number];
   numberLifeMs: number;
   numberRisePx: number;

@@ -2,11 +2,12 @@
  * Art gallery (WP4). Temporary bootstrap: renders puppet sheets on a 2D canvas.
  */
 import { useEffect, useRef } from 'preact/hooks';
-import { drawPuppet } from '@/visuals/draw';
+import { drawPuppet, puppetBounds } from '@/visuals/draw';
 import { getPart } from '@/visuals/parts/registry';
-import { STONE_PUPPETS } from '@/visuals/puppets/stone';
+import { STONE_BASE, STONE_TURRETS, STONE_UNITS } from '@/visuals/puppets/stone';
 import { CanvasTarget } from '@/visuals/targets';
 import { TEAM_COLORS } from '@/visuals/palette';
+import type { PuppetDef } from '@/visuals/types';
 
 export const title = 'Art gallery';
 
@@ -17,22 +18,32 @@ export default function Gallery() {
     if (!c) return;
     const ctx = c.getContext('2d');
     if (!ctx) return;
-    c.width = 1400;
-    c.height = 700;
+    const scale = Number(new URLSearchParams(window.location.hash.split('/')[1] ?? '').get('s') ?? '2');
+    c.width = 1800;
+    c.height = 1100;
     ctx.fillStyle = '#d9d2bf';
     ctx.fillRect(0, 0, c.width, c.height);
-    let x = 80;
-    for (const p of STONE_PUPPETS) {
-      for (const [scale, side] of [
-        [4, 0],
-        [4, 1],
-        [1.64, 0],
-        [0.82, 0],
-      ] as const) {
-        const t = new CanvasTarget(ctx, [scale, 0, 0, scale, x, 600]);
-        drawPuppet(p, t, [1, 0, 0, 1, 0, 0], { parts: getPart, teamColor: TEAM_COLORS.default[side] });
-        x += scale * 60 + 40;
+    let x = 20;
+    let y = 20;
+    let rowH = 0;
+    const all: PuppetDef[] = [...STONE_UNITS, ...STONE_TURRETS, STONE_BASE];
+    for (const p of all) {
+      const b = puppetBounds(p, getPart);
+      const w = (b.maxX - b.minX) * scale;
+      const h = (b.maxY - b.minY) * scale;
+      if (x + w > c.width - 20) {
+        x = 20;
+        y += rowH + 30;
+        rowH = 0;
       }
+      const t = new CanvasTarget(ctx, [scale, 0, 0, scale, x - b.minX * scale, y - b.minY * scale]);
+      drawPuppet(p, t, [1, 0, 0, 1, 0, 0], { parts: getPart, teamColor: TEAM_COLORS.default[0] });
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = '#333';
+      ctx.font = '12px monospace';
+      ctx.fillText(`${p.id} ${Math.round(b.maxX - b.minX)}x${Math.round(b.maxY - b.minY)}`, x, y + h + 14);
+      x += Math.max(w, 150) + 30;
+      rowH = Math.max(rowH, h + 16);
     }
   }, []);
   return <canvas ref={ref} data-testid="gallery-canvas" style={{ display: 'block' }} />;
