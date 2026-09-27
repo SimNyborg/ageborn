@@ -201,6 +201,19 @@ export function weightBp(w: number): number {
   return 5000 + c * 100;
 }
 
+/** All seven multipliers of a profile, bp. */
+export function weightsBp(w: Weights): Record<keyof Weights, number> {
+  return {
+    aggr: weightBp(w.aggr),
+    turret: weightBp(w.turret),
+    economy: weightBp(w.economy),
+    greed: weightBp(w.greed),
+    patience: weightBp(w.patience),
+    legendary: weightBp(w.legendary),
+    hold: weightBp(w.hold),
+  };
+}
+
 export interface BotProfileOptions {
   /** The General shown to the player (or `echo`). */
   generalId: string;
@@ -216,6 +229,10 @@ export interface BotProfileOptions {
   favoriteCard?: CardId;
   /** Replaces the personality's default opening (for example the tutorial's Old Grogg script). */
   openings?: string[];
+  /** The match locks this side's stance (`MatchConfig.training.stanceEnabled`), so the bot never toggles it. */
+  stanceLocked?: boolean;
+  /** Last Stand is automatic-only for this side (`training.manualLastStand`), so the bot never fires it. */
+  autoLastStand?: boolean;
 }
 
 /**
@@ -229,6 +246,8 @@ export function botProfile(content: CompiledContent, o: BotProfileOptions): BotP
   const p = personalityFor(content, source);
   const openings = [...(o.openings ?? p.opening)];
   if (o.favoriteCard) openings.push(`favorite:${o.favoriteCard}`);
+  if (o.stanceLocked) openings.push('rule:noStance');
+  if (o.autoLastStand) openings.push('rule:autoLastStand');
   return {
     generalId: source,
     tier: o.tier,

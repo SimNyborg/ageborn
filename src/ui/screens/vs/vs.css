@@ -224,10 +224,6 @@
     width: 84px !important;
     height: 84px !important;
   }
-  .vs__card svg {
-    width: 84px;
-    height: 84px;
-  }
   .vs__line {
     padding: 4px 10px;
     font-size: 13px;

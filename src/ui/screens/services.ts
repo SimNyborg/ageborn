@@ -6,16 +6,7 @@
  *
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
-import type {
-  CardId,
-  FormatId,
-  OpponentSpec,
-  PlanIssue,
-  ReplayDoc,
-  SaveDoc,
-  Settings,
-  SkinId,
-} from '@/contracts';
+import type { CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId } from '@/contracts';
 import type { MatchRequest } from '../router';
 
 export type WarPlan = SaveDoc['warPlans'][number];

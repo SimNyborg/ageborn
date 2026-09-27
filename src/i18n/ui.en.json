@@ -5,7 +5,6 @@
       "close": "Close",
       "progress": "{n}/{max}",
       "cancel": "Cancel",
-      "confirm": "Confirm",
       "done": "Done"
     },
     "time": {
@@ -14,6 +13,14 @@
       "ms": "{m}m {s}s",
       "s": "{s}s"
     },
+    "unit": {
+      "seconds": "{n} s",
+      "lu": "{n}",
+      "lus": "{n}/s"
+    },
+    "speed": {
+      "x": "{n}x"
+    },
     "currency": {
       "amber": "Amber",
       "dust": "Dust",
@@ -21,7 +28,10 @@
     },
     "ai": {
       "chip": "AI",
-      "general": "AI General"
+      "general": "AI General",
+      "sameRules": "Plays by the same rules as you",
+      "allAi": "All opponents in this version are AI.",
+      "adapts": "Opponent difficulty adapts to your recent results."
     },
     "card": {
       "max": "MAX",
@@ -30,7 +40,48 @@
       "level": "Lv {n}",
       "notOwned": "Not owned",
       "upgradeReady": "Upgrade ready",
-      "new": "NEW"
+      "new": "NEW",
+      "power": "Age Power",
+      "foils": "Foils",
+      "hitsGround": "Hits ground",
+      "hitsAir": "Hits air",
+      "noGround": "No ground",
+      "noAir": "No air",
+      "mod": "\u00d7{x} vs {tag}",
+      "strongVs": "Strong vs",
+      "weakVs": "Weak vs",
+      "nextDelta": "+{n}",
+      "upgradeFor": "Upgrade {n}",
+      "upgraded": "Level {n}!",
+      "needCopies": "{n} more copies needed",
+      "maxLevel": "Max level",
+      "craft": "Craft for {n}",
+      "craftCopy": "Craft a copy: {n}",
+      "craftUnlock": "Craft a copy with Dust to unlock this card.",
+      "crafted": "Crafted!",
+      "powerOwned": "Unlocked",
+      "powerFromRoad": "Unlocks on the Trophy Road at {n}",
+      "skins": "Skins",
+      "size": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "huge": "Huge"
+      }
+    },
+    "stat": {
+      "hp": "HP",
+      "damage": "Damage",
+      "baseDamage": "Base damage",
+      "interval": "Attack every",
+      "dps": "Damage per second",
+      "range": "Range",
+      "melee": "Melee",
+      "splash": "Splash",
+      "speed": "Speed",
+      "pop": "Army size",
+      "train": "Train time",
+      "cost": "Cost"
     },
     "clay": {
       "label": "Clay meter",
@@ -43,7 +94,9 @@
       "text": "Rotate your device"
     },
     "error": {
-      "generic": "That didn't work. Try again."
+      "generic": "That didn't work. Try again.",
+      "notEnoughAmber": "Not enough Amber",
+      "notEnoughDust": "Not enough Dust"
     },
     "lock": {
       "afterMatches": "Unlocks after {n} matches",
@@ -135,15 +188,288 @@
       "foilTitle": "Foil per stack",
       "wardrobeTitle": "Wardrobe Crate"
     },
-    "vs": {
-      "tier": "Tier {tier}",
-      "warmUp": "Warm-up match"
+    "mode": {
+      "title": "Choose a battle",
+      "format": "Format",
+      "speed": "Speed",
+      "start": "Start",
+      "play": "Play",
+      "ladder": {
+        "title": "Ladder",
+        "desc": "Win trophies and capsules.",
+        "help": "Opponent difficulty adapts to your recent results."
+      },
+      "conquest": {
+        "title": "Conquest",
+        "desc": "Beat 9 AI Generals for stars.",
+        "open": "Open board",
+        "rules": "Full War. No charges, no trophies."
+      },
+      "skirmish": {
+        "title": "Skirmish",
+        "desc": "Practice against any AI General.",
+        "help": "No trophies, no capsules.",
+        "setup": "Set up",
+        "general": "Opponent",
+        "tier": "Difficulty",
+        "echo": "Echo of You plays your own War Plan.",
+        "standardLevels": "Standard levels",
+        "standardLevelsHint": "Every card on both sides at Lv {n}",
+        "reward": "{n} Amber per win",
+        "threeUnits": "{age} plays with 3 units until you get its Anti-armor card."
+      },
+      "daily": {
+        "title": "Daily Challenge",
+        "desc": "{format} with today's twist.",
+        "firstWin": "First win today: Age Capsule",
+        "wonToday": "Won today. More wins: {n} Amber",
+        "rules": "Uses no charges and changes no trophies."
+      }
     },
-    "profile": {
-      "codex": "Codex Level"
+    "vs": {
+      "title": "Versus {name}",
+      "vs": "VS",
+      "tier": "Tier {tier}",
+      "aiLevel": "Lv {n}",
+      "planLevel": "Plan Lv {n}",
+      "planLevelNone": "Plan Lv -",
+      "warmUp": "Warm-up match",
+      "skip": "Tap to start",
+      "mode": {
+        "ladder": "Ladder",
+        "conquest": "Conquest",
+        "skirmish": "Skirmish",
+        "daily": "Daily Challenge"
+      }
+    },
+    "pause": {
+      "title": "Paused",
+      "resume": "Resume",
+      "retreat": "Retreat",
+      "retreatLocked": "Retreat unlocks at {time}",
+      "retreatTitle": "Retreat?",
+      "retreatBody": "Retreating counts as a loss.",
+      "quitSkirmish": "Quit Skirmish",
+      "quitBody": "Leave this Skirmish? It gives no rewards.",
+      "scouted": "Scouted ({n})",
+      "scoutedNone": "Their cards appear here once they play them."
+    },
+    "result": {
+      "victory": "Victory",
+      "defeat": "Defeat",
+      "draw": "Draw",
+      "vs": "vs {name}",
+      "recap": "Battle recap",
+      "rewards": "Rewards",
+      "mvp": "MVP",
+      "time": "Time",
+      "trained": "Units trained",
+      "kills": "Units defeated",
+      "turretKills": "Turret kills",
+      "baseDamage": "Base damage",
+      "evolves": "Evolves",
+      "capsule": "Capsule",
+      "clayFull": "Clay Capsule earned!",
+      "codexPoints": "+{n}",
+      "codexUp": "Codex Level up!",
+      "star": "Star {n}: {name}",
+      "newArena": "New arena!",
+      "newTitle": "New title!",
+      "tapToSkip": "Tap to skip",
+      "home": "Home",
+      "replay": "Watch replay",
+      "openCapsule": "Open capsule",
+      "next": "Next battle"
     },
     "warplan": {
-      "hasWarnings": "Has warnings"
+      "presets": "War Plan presets",
+      "rename": "Rename plan",
+      "planName": "Plan name",
+      "inUse": "In use",
+      "use": "Use this plan",
+      "hasWarnings": "Has warnings",
+      "slot": {
+        "unit": "Unit",
+        "turret": "Turret",
+        "power": "Age Power"
+      },
+      "emptySlot": "Empty {slot} slot",
+      "slotFilled": "{slot}: {name}",
+      "remove": "Remove {name}",
+      "skins": "Skins",
+      "loadoutLevel": "{age} Lv {n}",
+      "planLevel": "{format}: Plan Lv {n}",
+      "autoFill": "Auto-fill",
+      "autoFilled": "Plan filled with your best cards",
+      "notInFormat": "This age is not used in {format}.",
+      "cardsOf": "{age} cards",
+      "cardKind": "Card type",
+      "units": "Units",
+      "turrets": "Turrets",
+      "powers": "Powers",
+      "hint": "Tap a card to add it, or pick a slot first.",
+      "hintSelected": "Pick a card for the {slot} slot.",
+      "pickSlot": "Pick a slot to swap into."
+    },
+    "advisor": {
+      "tooFewUnits": "{age} needs at least 3 units.",
+      "noTurret": "{age} needs a turret.",
+      "onlyThreeUnits": "{age} has only 3 units.",
+      "noAntiArmor": "{age} has no anti-armor.",
+      "noAir": "{age} cannot hit air.",
+      "noSplash": "No splash anywhere: swarms will hurt."
+    },
+    "skins": {
+      "title": "Skins: {name}",
+      "default": "Classic",
+      "equip": "Equip",
+      "equipped": "Equipped",
+      "crafted": "Skin crafted!",
+      "notCraftable": "Crate only",
+      "baseOf": "{age} base"
+    },
+    "collection": {
+      "cards": "Cards",
+      "skins": "Skins",
+      "progress": "{n}/{max} cards",
+      "foils": "{n} foils",
+      "all": "All",
+      "allRoles": "All roles",
+      "owned": "Owned",
+      "missing": "Missing",
+      "filterAge": "Filter by age",
+      "filterRarity": "Filter by rarity",
+      "filterRole": "Filter by role",
+      "filterOwned": "Owned or missing",
+      "none": "No cards match these filters."
+    },
+    "road": {
+      "best": "Best {n}",
+      "claimable": "{n} to claim",
+      "claimed": "Reward claimed!",
+      "you": "You",
+      "gateN": "Arena {n}",
+      "gate": {
+        "starterPlan": "Starter War Plan",
+        "banner": "{name} banner",
+        "ageUnlock": "{n} Age Unlock Capsules",
+        "conquest": "Conquest opens",
+        "skin": "Skin: {name}",
+        "warden": "{name} joins the ladder",
+        "format": "New format: {name}"
+      }
+    },
+    "conquest": {
+      "starsOf": "{n}/{max} stars",
+      "next": "Next",
+      "fight": "Fight",
+      "generalLabel": "{name}, {n} of 3 stars",
+      "locked": "Conquest opens in {arena} ({n} trophies)",
+      "noCost": "Uses no charges, changes no trophies. Each star pays once.",
+      "cond": {
+        "win": "Win",
+        "base": "Win with your base above {n}%",
+        "time": "Win before {time}"
+      }
+    },
+    "profile": {
+      "codex": "Codex Level",
+      "name": "Name",
+      "editName": "Change name",
+      "nameHint": "Any name you like. You can change it any time.",
+      "look": "Your look",
+      "portrait": "Portrait",
+      "face": "Face",
+      "frame": "Frame",
+      "noFrame": "No frame",
+      "banner": "Banner",
+      "title": "Title",
+      "best": "Best trophies",
+      "record": "Wins, losses, draws",
+      "recordValue": "{w}-{l}-{d}",
+      "winRate": "Win rate",
+      "percent": "{n}%",
+      "collection": "Collection",
+      "foils": "Foils owned",
+      "legendaries": "Legendaries",
+      "conquestStars": "Conquest stars",
+      "fastestWin": "Fastest win",
+      "futureReached": "Future Age reached",
+      "favourite": "Favourite card",
+      "byTier": "Results by AI tier",
+      "wl": "{w}W {l}L",
+      "history": "Last matches",
+      "noMatches": "No matches yet",
+      "win": "Win",
+      "loss": "Loss",
+      "draw": "Draw",
+      "watch": "Watch replay",
+      "oldReplay": "Recorded in an older version; it can't be played.",
+      "oldReplayShort": "Older version"
+    },
+    "settings": {
+      "audio": "Sound",
+      "volume": {
+        "master": "Master",
+        "music": "Music",
+        "sfx": "Effects",
+        "ui": "Menus"
+      },
+      "graphics": "Graphics",
+      "preset": "Quality",
+      "presetAuto": "Auto",
+      "presetHigh": "High",
+      "presetLite": "Lite",
+      "reduceMotion": "Reduce motion",
+      "reduceMotionHint": "Calmer menus, less shake and flashing",
+      "shake": "Screen shake",
+      "hitstop": "Hit pause",
+      "damageNumbers": "Damage numbers",
+      "numbersOff": "Off",
+      "numbersImportant": "Important",
+      "numbersAll": "All",
+      "colourblind": "Team colours",
+      "teamDefault": "Default",
+      "teamBlueYellow": "Blue/Yellow",
+      "teamHighContrast": "High contrast",
+      "gameplay": "Gameplay",
+      "defaultSpeed": "Default speed",
+      "vibrate": "Vibration",
+      "muteEmotes": "Mute opponent emotes",
+      "language": "Language",
+      "langEn": "English",
+      "langDa": "Dansk",
+      "langSoon": "Danish arrives in the next update.",
+      "save": "Save",
+      "saveLocal": "Your progress is saved in this browser. Back it up to move it or keep it safe.",
+      "backupReminder": "It's been a while. Back up your progress?",
+      "backupNow": "Back up",
+      "exportCode": "Copy save code",
+      "exportFile": "Download save file",
+      "exportHelp": "Keep this code somewhere safe. Paste it into Import to restore your progress.",
+      "codeLength": "{n} characters",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "copyFailed": "Couldn't copy. Select the text and copy it.",
+      "import": "Import save",
+      "importHelp": "Paste a save code. It replaces your current progress.",
+      "imported": "Save imported!",
+      "importFailed": "That code didn't work.",
+      "reset": "Reset progress",
+      "resetTitle": "Reset progress?",
+      "resetBody": "This deletes your cards, trophies and everything else on this device.",
+      "resetSure": "Are you sure?",
+      "resetBody2": "This can't be undone. Back up first if you might want it back.",
+      "resetYes": "Yes, start over",
+      "exportLog": "Export event log",
+      "odds": "Capsule odds",
+      "about": "About",
+      "noMoney": "Nothing is for sale. Everything is earned by playing.",
+      "offline": "Plays offline. No account, no ads.",
+      "credits": "Credits",
+      "creditsGame": "Ageborn: design, code and art made for this game.",
+      "creditsSound": "Sound effects made with ZzFX by Frank Force (MIT).",
+      "creditsTech": "Built with PixiJS, Preact and Vite."
     }
   }
 }

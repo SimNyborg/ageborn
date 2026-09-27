@@ -44,7 +44,12 @@ function loadout(units: (CardId | null)[], turrets: (CardId | null)[], power: Ca
 }
 
 /** A plan per age from owned cards: commons, then rares, epics and Legendaries as owned. */
-function planFrom(content: Content, collection: SaveDoc['collection'], name: string, pick: (ids: CardId[]) => CardId[] = (x) => x): SaveDoc['warPlans'][number] {
+function planFrom(
+  content: Content,
+  collection: SaveDoc['collection'],
+  name: string,
+  pick: (ids: CardId[]) => CardId[] = (x) => x,
+): SaveDoc['warPlans'][number] {
   const loadouts = {} as Record<AgeId, Loadout>;
   for (const age of content.order.ages) {
     const a = byAge(content, age);
@@ -57,11 +62,32 @@ function planFrom(content: Content, collection: SaveDoc['collection'], name: str
 
 function quests(ids: [string, number, boolean][], weekly: [number, boolean]): SaveDoc['quests'] {
   const daily: QuestSlot[] = ids.map(([id, progress, claimed]) => ({ id, progress, claimed }));
-  return { daily, rerollUsed: false, dayKey: '2026-01-01', weekly: { id: 'weekly_win_15', progress: weekly[0], claimed: weekly[1] }, weekKey: '2026-W01' };
+  return {
+    daily,
+    rerollUsed: false,
+    dayKey: '2026-01-01',
+    weekly: { id: 'weekly_win_15', progress: weekly[0], claimed: weekly[1] },
+    weekKey: '2026-W01',
+  };
 }
 
-function capsule(id: string, kind: PendingCapsule['kind'], tier: PendingCapsule['tier'], startTier: PendingCapsule['tier'], age: AgeId | null = null): PendingCapsule {
-  return { id, kind, tier, startTier, scriptIndex: null, age, contents: { stacks: [], amber: 0, dust: 0, skin: null }, createdAt: FIXTURE_NOW - HOUR };
+function capsule(
+  id: string,
+  kind: PendingCapsule['kind'],
+  tier: PendingCapsule['tier'],
+  startTier: PendingCapsule['tier'],
+  age: AgeId | null = null,
+): PendingCapsule {
+  return {
+    id,
+    kind,
+    tier,
+    startTier,
+    scriptIndex: null,
+    age,
+    contents: { stacks: [], amber: 0, dust: 0, skin: null },
+    createdAt: FIXTURE_NOW - HOUR,
+  };
 }
 
 /**
@@ -226,7 +252,9 @@ export function midGameSave(content: Content): SaveDoc {
       dailyBank: 1,
       dailyNextAt: FIXTURE_NOW + 14 * HOUR,
       bag: [...Array(18).fill(0), ...Array(26).fill(1), ...Array(14).fill(2), ...Array(5).fill(3), ...Array(1).fill(4)],
-      wardrobe: [{ id: 'crate-mid-1', source: 'road', skin: 'arctic_rifleman', rarity: 'rare', duplicateDust: 0, createdAt: FIXTURE_NOW - DAY }],
+      wardrobe: [
+        { id: 'crate-mid-1', source: 'road', skin: 'arctic_rifleman', rarity: 'rare', duplicateDust: 0, createdAt: FIXTURE_NOW - DAY },
+      ],
     },
     pity: { sinceEpic: 6, sinceLegendary: 28, sinceNewCard: 2, opened: 57, wardrobeSinceEpic: 1, wardrobeSinceLegendary: 1 },
     scriptStep: 5,
@@ -270,7 +298,12 @@ export function maxedSave(content: Content): SaveDoc {
   const collection: SaveDoc['collection'] = {};
   for (const id of [...content.order.units, ...content.order.turrets]) collection[id] = entry(10, 0, 'holo');
   const pending: PendingCapsule[] = Array.from({ length: 10 }, (_, i) =>
-    capsule(`cap-max-${i + 1}`, i === 0 ? 'road' : 'win', (['aeon', 'jade', 'silver', 'bronze', 'bronze', 'clay', 'silver', 'bronze', 'clay', 'jade'] as const)[i]!, i === 0 ? 'aeon' : 'clay'),
+    capsule(
+      `cap-max-${i + 1}`,
+      i === 0 ? 'road' : 'win',
+      (['aeon', 'jade', 'silver', 'bronze', 'bronze', 'clay', 'silver', 'bronze', 'clay', 'jade'] as const)[i]!,
+      i === 0 ? 'aeon' : 'clay',
+    ),
   );
   const stars: SaveDoc['conquest']['stars'] = {};
   for (const b of content.generals.conquest.board) stars[b.general] = [true, true, true];

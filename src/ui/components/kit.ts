@@ -14,8 +14,14 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 
 export type Translate = (key: string, params?: Record<string, string | number>) => string;
 
-/** Same shape as `ArtProvider.portrait`, so the app can pass `art.portrait.bind(art)`. */
-export type PortraitFn = ArtProvider['portrait'];
+/**
+ * `ArtProvider.portrait` plus the optional `plate` flag WP4's provider already supports
+ * (docs/requests/wp4-portrait-plate-contract.md): `plate: false` gives a transparent background, used
+ * for silhouettes. Any contract `ArtProvider.portrait` is assignable, so the app passes
+ * `art.portrait.bind(art)`.
+ */
+export type PortraitRequest = Parameters<ArtProvider['portrait']>[0] & { plate?: boolean };
+export type PortraitFn = (o: PortraitRequest) => Promise<string>;
 
 export interface UiKit {
   t: Translate;
@@ -42,6 +48,12 @@ export function useT(): Translate {
   return useContext(UiKitContext).t;
 }
 
+/**
+ * Where modals render: the UI root (set by the ScreenHost). Rendering them there keeps them above
+ * every panel, whatever transforms or filters the panels use. Null renders modals in place.
+ */
+export const PortalContext = createContext<{ current: HTMLElement | null }>({ current: null });
+
 const portraitCache = new Map<string, string>();
 
 /** Clears cached portrait URLs (tests, or after the art provider changes). */
@@ -51,13 +63,15 @@ export function clearPortraitCache(): void {
 
 /**
  * Resolves a card portrait data URL through the injected provider, cached per
- * (card, skin, foil, size). Returns null while loading, on failure, or without a provider.
+ * (card, skin, foil, size, plate). Returns null while loading, on failure (an empty URL), or without
+ * a provider.
  */
-export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil?: Foil; size: number }): string | null {
+export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil?: Foil; size: number; plate?: boolean }): string | null {
   const { portrait } = useKit();
   const skin = o.skin ?? undefined;
   const foil = o.foil ?? 'none';
-  const key = card ? `${card}|${skin ?? ''}|${foil}|${o.size}` : '';
+  const plate = o.plate ?? true;
+  const key = card ? `${card}|${skin ?? ''}|${foil}|${o.size}|${plate ? 1 : 0}` : '';
   const [url, setUrl] = useState<string | null>(() => (key ? (portraitCache.get(key) ?? null) : null));
   useEffect(() => {
     if (!portrait || !card) {
@@ -70,12 +84,13 @@ export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil
       return;
     }
     let live = true;
-    const req: Parameters<PortraitFn>[0] = { card, foil, size: o.size };
+    const req: PortraitRequest = { card, foil, size: o.size };
     if (skin) req.skin = skin;
+    if (!plate) req.plate = false;
     portrait(req).then(
       (u) => {
-        portraitCache.set(key, u);
-        if (live) setUrl(u);
+        if (u) portraitCache.set(key, u);
+        if (live) setUrl(u || null);
       },
       () => {
         if (live) setUrl(null);

@@ -59,7 +59,14 @@ export type ViewAction =
       visualId: VisualId;
       arc: boolean;
     }
-  | { a: 'fx'; effectId: EffectId; at: Anchor; count: number; priority: number; spreadLu?: number; opts?: Record<string, number> }
+  /**
+   * Particles at an anchor. `opts` use the art's effect option names (WP4 `effects/recipes.ts`: side,
+   * dir, radius, zone, width, height, distance, speed, durationMs, ...). `follow` keeps the effect on
+   * its unit while the unit lives and ends it when the unit dies (A12 checklist 10).
+   */
+  | { a: 'fx'; effectId: EffectId; at: Anchor; count: number; priority: number; spreadLu?: number; opts?: Record<string, number>; follow?: boolean }
+  /** One effect on every live unit of `side`, following each unit (Royal Decree, Nanite Surge). */
+  | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number> }
   | { a: 'fxFly'; effectId: EffectId; from: Anchor; to: 'gold' | 'xp'; count: number; priority: number }
   | { a: 'sound'; id: SoundId; delayMs?: number; gap?: Gap; climb?: string; priority?: number }
   | { a: 'trauma'; amount: number; dir?: Pt; gap?: Gap }
@@ -80,7 +87,6 @@ export type ViewAction =
   | { a: 'baseMorph'; side: Side; age: AgeId; ms: number }
   | { a: 'backdropWipe'; side: Side; age: AgeId; ms: number }
   | { a: 'telegraph'; side: Side; castId: number; power: CardId; x: number; zone: number; ms: number }
-  | { a: 'powerFx'; side: Side; power: CardId; castId: number; x: number; index: number }
   | { a: 'phase'; phase: 'regulation' | 'overdrive' | 'siege' }
   | { a: 'view'; ev: ViewEvent };
 

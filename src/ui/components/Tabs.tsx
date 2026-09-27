@@ -29,6 +29,8 @@ export function Tabs<V extends string>(p: {
   testid?: string;
   /** id prefix for aria-controls; the panel should use `${idPrefix}-panel`. */
   idPrefix?: string;
+  /** Only the selected tab shows its label; the others show their icon (label stays for screen readers). */
+  compact?: boolean;
 }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const enabled = p.items.map((it, i) => (it.disabled ? -1 : i)).filter((i) => i >= 0);
@@ -59,12 +61,13 @@ export function Tabs<V extends string>(p: {
             tabIndex={on ? 0 : -1}
             disabled={it.disabled}
             class={`ui-tab${on ? ' is-on' : ''}`}
+            title={p.compact && !on ? it.label : undefined}
             data-testid={it.testid}
             onClick={() => p.onChange(it.value)}
             onKeyDown={(e) => onKey(e, i)}
           >
             {it.icon ? <span class="ui-tab__icon">{it.icon}</span> : null}
-            <span class="ui-tab__label">{it.label}</span>
+            <span class={`ui-tab__label${p.compact && !on ? ' ui-sr' : ''}`}>{it.label}</span>
             {it.badge !== undefined && it.badge !== null && it.badge !== false ? <span class="ui-tab__badge">{it.badge}</span> : null}
           </button>
         );
@@ -82,11 +85,13 @@ export function AgePicker(p: {
   warn?: ReadonlySet<AgeId>;
   testid?: string;
   idPrefix?: string;
+  compact?: boolean;
 }) {
   const { t } = useKit();
   return (
     <Tabs
       label={t('ui.age.picker')}
+      compact={p.compact ?? true}
       variant="age"
       value={p.value}
       onChange={p.onChange}

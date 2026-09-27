@@ -49,7 +49,9 @@ export function CardArt(p: {
   silhouette?: boolean;
   class?: string;
 }) {
-  const url = usePortrait(p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2) });
+  // Silhouettes (unowned cards) use a plate-free portrait darkened by CSS; without a provider the
+  // role glyph stands in (docs/requests/wp4-portrait-plate-contract.md).
+  const url = usePortrait(p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette });
   const age = AGE_COLOR[p.age];
   return (
     <span
@@ -61,7 +63,7 @@ export function CardArt(p: {
         <img class="ui-art__img" src={url} alt="" draggable={false} />
       ) : (
         <span class="ui-art__fallback">
-          <RoleGlyph kind={p.glyph} size={Math.round(p.size * 0.56)} color={age.light} />
+          <RoleGlyph kind={p.glyph} size={Math.round(p.size * 0.56)} color={p.silhouette ? '#1b1330' : age.light} />
         </span>
       )}
       {p.foil && p.foil !== 'none' ? <i class={`ui-foil ui-foil--${p.foil}`} /> : null}
@@ -105,14 +107,19 @@ export function CardTile(p: {
   const levelText = c.owned && !p.hideLevel ? t('ui.card.level', { n: c.level }) : null;
   const aria =
     p.label ??
-    [c.name, c.owned ? levelText : t('ui.card.notOwned'), c.rarity ? t(rarityNameKey(c.rarity)) : null, c.upgradeReady ? t('ui.card.upgradeReady') : null]
+    [
+      c.name,
+      c.owned ? levelText : t('ui.card.notOwned'),
+      c.rarity ? t(rarityNameKey(c.rarity)) : null,
+      c.upgradeReady ? t('ui.card.upgradeReady') : null,
+    ]
       .filter(Boolean)
       .join(', ');
   const body = (
     <>
       <span class="ui-card__frame" style={{ '--frame': frame }}>
         <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} />
-        {c.owned && size !== 'xs' && !p.hideLevel ? <span class="ui-card__level">{levelText}</span> : null}
+        {c.owned && size !== 'xs' && !p.hideLevel && c.kind !== 'power' ? <span class="ui-card__level">{levelText}</span> : null}
         {p.showCost && c.cost !== null ? (
           <span class="ui-card__cost">
             <CoinIcon size={size === 'xs' ? 12 : 15} />
@@ -122,7 +129,7 @@ export function CardTile(p: {
         {c.isNew && c.owned ? <span class="ui-card__new">{t('ui.card.new')}</span> : null}
         {!c.owned ? (
           <span class="ui-card__lock">
-            <LockIcon size={size === 'lg' ? 34 : 22} />
+            <LockIcon size={size === 'lg' ? 30 : size === 'xs' ? 16 : 20} />
           </span>
         ) : null}
         {c.upgradeReady && !p.showCopies ? (

@@ -35,7 +35,7 @@ part('medieval.torso.gambeson', [
 /** Friar's habit with a team scapular and a rope belt. */
 part('medieval.torso.habit', [
   { d: torsoShape(1.1), zone: 'robe' },
-  { d: blob([2, -21.6, 8, -18.6, 10.6, -8, 10.4, 4, 4.6, 4.4, 3.6, -8, 1, -18], 0.8), zone: 'team', banner: true },
+  { d: blob([0, -21.6, 8, -18.6, 11, -8, 10.8, 4.4, 2, 4.8, 0, -8, -2, -18], 0.8), zone: 'team', banner: true },
   { d: rrect(-10.6, -4, 22, 2.8, 1.4), zone: 'rope', line: 1.8 },
   { d: blob([-6.6, -23.4, 4, -24.6, 9.4, -20, 6, -17.6, -2, -18.6, -8, -17.6], 0.7), zone: 'robe' },
 ]);
@@ -81,7 +81,7 @@ part('medieval.helm.nasal', [
 
 /** Team hood with a liripipe tail and a feather (Longbowman). */
 part('medieval.hood', [
-  { d: blob([-12, -21, -19, -16, -24, -7, -21.4, -5.6, -16.4, -11, -11, -13], 0.7), zone: 'team', banner: true },
+  { d: blob([-12, -21, -16, -16, -18, -7, -15.6, -5.6, -13.4, -11, -11, -13], 0.7), zone: 'team', banner: true },
   {
     d: blob([-13.6, -4, -14.6, -16, -11, -25, -2, -29.6, 8, -27.6, 13.4, -21, 13.4, -17.6, 7, -20.6, 0, -19.6, -4.4, -14, -5, -4], 0.9),
     zone: 'team',
@@ -293,7 +293,8 @@ part('medieval.bear.saddle', [
 
 part('medieval.ram.hull', [
   { d: join(limb(-28, -8, 2.6, -25, -58, 2.4), limb(22, -8, 2.6, 19, -58, 2.4), limb(-28, -20, 2, 22, -20, 2)), zone: 'wood' },
-  { d: blob([-36, -52, -3, -84, 30, -52, 28, -46, -3, -70, -33, -46], 0.6), zone: 'hide' },
+  { d: blob([-34, -52, -3, -84, 28, -52, 26, -46, -3, -70, -31, -46], 0.6), zone: 'hide' },
+  { d: poly([-30, -52, -3, -78, 24, -52, 20, -48, -3, -70, -26, -48]), zone: 'team', banner: true, line: 1.6 },
   { d: join(limb(-18, -60, 0.9, -18, -48, 0.9), limb(12, -60, 0.9, 12, -48, 0.9)), zone: 'rope', line: 1.6 },
   { d: join(rect(-30, -52, 56, 2), rect(-24, -44, 44, 1.6)), zone: 'wood2', line: 0, shade: false, light: false },
 ]);

@@ -17,7 +17,6 @@
     "dustPlus": "+{n} Dust",
     "amber": "Amber",
     "dust": "Dust",
-    "level": "Lv {n}",
     "foilUnlocked": "{foil}!",
     "skinFor": "Skin for {target}",
     "baseSkinFor": "Base skin: {age}",
@@ -38,12 +37,9 @@
       "upgrade": "Upgrade",
       "openNext": "Open next ({n})",
       "done": "Done",
-      "newItems": "New",
-      "total": "Total",
       "equipped": "Equipped"
     },
     "wardrobe": {
-      "name": "Wardrobe Crate",
       "duplicate": "Duplicate: +{n} Dust",
       "newSkin": "New skin!"
     },

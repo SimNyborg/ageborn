@@ -70,7 +70,12 @@ function Face(p: { look: AvatarLook; x?: number; scale?: number; visor?: boolean
   return (
     <g transform={`translate(${tx} 0) translate(50 56) scale(${s}) translate(-50 -56)`}>
       {/* shoulders */}
-      <path d="M18 100c2-18 16-26 32-26s30 8 32 26z" fill={AVATAR_PARTS.bg[(L.bg + 2) % AVATAR_PARTS.bg.length]} stroke={OUTLINE} stroke-width="3" />
+      <path
+        d="M18 100c2-18 16-26 32-26s30 8 32 26z"
+        fill={AVATAR_PARTS.bg[(L.bg + 2) % AVATAR_PARTS.bg.length]}
+        stroke={OUTLINE}
+        stroke-width="3"
+      />
       {/* long hair behind */}
       {L.hair === 3 ? <path d="M24 50c0-22 12-32 26-32s26 10 26 32v26H24z" fill={hair} stroke={OUTLINE} stroke-width="3" /> : null}
       {/* head */}
@@ -80,8 +85,12 @@ function Face(p: { look: AvatarLook; x?: number; scale?: number; visor?: boolean
       <path d="M36 66c4 4 10 6 14 6" stroke="#000" stroke-opacity=".12" stroke-width="5" fill="none" stroke-linecap="round" />
       {/* beard */}
       {L.beard === 1 ? <path d="M30 62c4 14 12 18 20 18s16-4 20-18c-6 6-12 8-20 8s-14-2-20-8z" fill={hair} opacity=".45" /> : null}
-      {L.beard === 2 ? <path d="M28 58c2 18 12 26 22 26s20-8 22-26c-6 8-14 10-22 10s-16-2-22-10z" fill={hair} stroke={OUTLINE} stroke-width="2.5" /> : null}
-      {L.beard === 3 ? <path d="M38 63c4-3 8-3 12-1 4-2 8-2 12 1-4 4-8 3-12 1-4 2-8 3-12-1z" fill={hair} stroke={OUTLINE} stroke-width="2" /> : null}
+      {L.beard === 2 ? (
+        <path d="M28 58c2 18 12 26 22 26s20-8 22-26c-6 8-14 10-22 10s-16-2-22-10z" fill={hair} stroke={OUTLINE} stroke-width="2.5" />
+      ) : null}
+      {L.beard === 3 ? (
+        <path d="M38 63c4-3 8-3 12-1 4-2 8-2 12 1-4 4-8 3-12 1-4 2-8 3-12-1z" fill={hair} stroke={OUTLINE} stroke-width="2" />
+      ) : null}
       {/* eyes */}
       {p.visor ? (
         <>
@@ -115,7 +124,9 @@ function Face(p: { look: AvatarLook; x?: number; scale?: number; visor?: boolean
       {/* brows */}
       {L.brows === 0 ? <path d="M35 41l11 2M65 41l-11 2" stroke={hair} stroke-width="3.4" stroke-linecap="round" /> : null}
       {L.brows === 1 ? <path d="M35 43l11-3M65 43l-11-3" stroke={hair} stroke-width="3.4" stroke-linecap="round" /> : null}
-      {L.brows === 2 ? <path d="M35 41q5-3 11 0M54 41q6-3 11 0" fill="none" stroke={hair} stroke-width="3.4" stroke-linecap="round" /> : null}
+      {L.brows === 2 ? (
+        <path d="M35 41q5-3 11 0M54 41q6-3 11 0" fill="none" stroke={hair} stroke-width="3.4" stroke-linecap="round" />
+      ) : null}
       {/* nose */}
       <path d="M50 52q-4 6 0 8" fill="none" stroke={OUTLINE} stroke-width="2.2" stroke-linecap="round" opacity=".6" />
       {/* mouth */}
@@ -124,11 +135,21 @@ function Face(p: { look: AvatarLook; x?: number; scale?: number; visor?: boolean
       {L.mouth === 2 ? <path d="M43 67h14" stroke={OUTLINE} stroke-width="3" stroke-linecap="round" /> : null}
       {L.mouth === 3 ? <ellipse cx="50" cy="67" rx="5" ry="4" fill="#7a2a2a" stroke={OUTLINE} stroke-width="2.4" /> : null}
       {/* hair on top */}
-      {L.hair === 1 ? <path d="M26 46c0-20 12-28 24-28s24 8 24 28c-6-8-14-12-24-12s-18 4-24 12z" fill={hair} stroke={OUTLINE} stroke-width="3" /> : null}
-      {L.hair === 2 ? (
-        <path d="M26 46l2-14 6 6 4-14 6 8 6-12 6 12 6-8 4 14 6-6 2 14c-8-6-16-9-24-9s-16 3-24 9z" fill={hair} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />
+      {L.hair === 1 ? (
+        <path d="M26 46c0-20 12-28 24-28s24 8 24 28c-6-8-14-12-24-12s-18 4-24 12z" fill={hair} stroke={OUTLINE} stroke-width="3" />
       ) : null}
-      {L.hair === 3 ? <path d="M26 48c0-20 12-30 24-30s24 10 24 30c-8-10-16-14-24-14s-16 4-24 14z" fill={hair} stroke={OUTLINE} stroke-width="3" /> : null}
+      {L.hair === 2 ? (
+        <path
+          d="M26 46l2-14 6 6 4-14 6 8 6-12 6 12 6-8 4 14 6-6 2 14c-8-6-16-9-24-9s-16 3-24 9z"
+          fill={hair}
+          stroke={OUTLINE}
+          stroke-width="3"
+          stroke-linejoin="round"
+        />
+      ) : null}
+      {L.hair === 3 ? (
+        <path d="M26 48c0-20 12-30 24-30s24 10 24 30c-8-10-16-14-24-14s-16 4-24 14z" fill={hair} stroke={OUTLINE} stroke-width="3" />
+      ) : null}
       {L.hair === 4 ? (
         <>
           <circle cx="50" cy="20" r="8" fill={hair} stroke={OUTLINE} stroke-width="3" />
@@ -140,7 +161,12 @@ function Face(p: { look: AvatarLook; x?: number; scale?: number; visor?: boolean
       {L.hat === 1 ? (
         <>
           <path d="M24 42c0-16 12-24 26-24s26 8 26 24z" fill="#8c95a6" stroke={OUTLINE} stroke-width="3" />
-          <path d="M26 30c-8-4-10-12-8-18 4 6 8 8 12 10M74 30c8-4 10-12 8-18-4 6-8 8-12 10" fill="#ede3c8" stroke={OUTLINE} stroke-width="2.6" />
+          <path
+            d="M26 30c-8-4-10-12-8-18 4 6 8 8 12 10M74 30c8-4 10-12 8-18-4 6-8 8-12 10"
+            fill="#ede3c8"
+            stroke={OUTLINE}
+            stroke-width="2.6"
+          />
           <path d="M22 42h56" stroke={OUTLINE} stroke-width="4" stroke-linecap="round" />
         </>
       ) : null}
@@ -170,15 +196,27 @@ export function Avatar(p: { spec: AvatarSpec; size?: number; frameColor?: string
   const size = p.size ?? 64;
   if (p.spec.portraitCard) {
     return (
-      <span class="ui-avatar" style={{ width: `${size}px`, height: `${size}px`, '--frame': p.frameColor ?? '#f2c14e' }} role="img" aria-label={p.label} data-testid={p.testid}>
+      <span
+        class="ui-avatar"
+        style={{ width: `${size}px`, height: `${size}px`, '--frame': p.frameColor ?? '#f2c14e' }}
+        role="img"
+        aria-label={p.label}
+        data-testid={p.testid}
+      >
         <CardArt card={p.spec.portraitCard} age="stone" glyph="infantry" size={size} />
       </span>
     );
   }
   const look = avatarLook(p.spec.seed, p.spec.parts);
   return (
-    <span class="ui-avatar" style={{ width: `${size}px`, height: `${size}px`, '--frame': p.frameColor ?? '#f2c14e' }} role="img" aria-label={p.label} data-testid={p.testid}>
-      <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true">
+    <span
+      class="ui-avatar"
+      style={{ width: `${size}px`, height: `${size}px`, '--frame': p.frameColor ?? '#f2c14e' }}
+      role="img"
+      aria-label={p.label}
+      data-testid={p.testid}
+    >
+      <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
         <rect width="100" height="100" fill={AVATAR_PARTS.bg[look.bg]} />
         <circle cx="50" cy="40" r="42" fill="#fff" opacity=".12" />
         <Face look={look} />
@@ -239,7 +277,7 @@ export function GeneralPortrait(p: { generalId: string; name?: string; size?: nu
   const gid = `gp-${p.generalId}`;
   return (
     <span class="ui-general" style={{ width: `${size}px`, height: `${size}px` }} role="img" aria-label={p.label} data-testid={p.testid}>
-      <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true">
+      <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
         <defs>
           <radialGradient id={gid} cx="50%" cy="38%" r="70%">
             <stop offset="0" stop-color={plate[0]} />

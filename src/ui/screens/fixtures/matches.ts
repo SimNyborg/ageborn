@@ -32,9 +32,22 @@ export function fixtureOpponent(content: Content, which: OpponentFixture): Oppon
     case 'general':
       return opponent({ generalId: 'kettle', displayName: name('kettle'), tier: 3, level: 4, format: 'standard' });
     case 'commander':
-      return opponent({ generalId: 'commander', displayName: `${content.names.aiPrefix}Brakka Stonejaw`, tier: 2, level: 3, format: 'short' });
+      return opponent({
+        generalId: 'commander',
+        displayName: `${content.names.aiPrefix}Brakka Stonejaw`,
+        tier: 2,
+        level: 3,
+        format: 'short',
+      });
     case 'warmUp':
-      return opponent({ generalId: 'commander', displayName: `${content.names.aiPrefix}Mossa Flintfist`, tier: 1, level: 3, format: 'short', warmUp: true });
+      return opponent({
+        generalId: 'commander',
+        displayName: `${content.names.aiPrefix}Mossa Flintfist`,
+        tier: 1,
+        level: 3,
+        format: 'short',
+        warmUp: true,
+      });
     case 'warden':
       return opponent({
         generalId: 'warden',
@@ -68,6 +81,8 @@ export function fixtureRequest(which: OpponentFixture): MatchRequest {
       return { mode: 'conquest', general: 'warden' };
     case 'echo':
       return { mode: 'skirmish', options: { generalId: 'echo', tier: 5, format: 'short', standardLevels: false }, speed: 1 };
+    case 'grogg':
+      return { mode: 'tutorial', match: 1 };
     default:
       return { mode: 'ladder', format: 'standard' };
   }
@@ -96,7 +111,12 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
   const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' ? 0 : which === 'loss' ? 1 : null;
   const input: MatchResultInput = {
     mode: which === 'conquest' ? 'conquest' : 'ladder',
-    outcome: { winner, reason: which === 'draw' ? 'finalBell' : 'baseDestroyed', tick: 6620, baseHpBp: winner === 0 ? [6200, 0] : winner === 1 ? [0, 4100] : [3100, 3080] },
+    outcome: {
+      winner,
+      reason: which === 'draw' ? 'finalBell' : 'baseDestroyed',
+      tick: 6620,
+      baseHpBp: winner === 0 ? [6200, 0] : winner === 1 ? [0, 4100] : [3100, 3080],
+    },
     mySide: 0,
     opponent: opp,
     stats: which === 'loss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
@@ -148,22 +168,33 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
       ];
       break;
   }
-  return { input, rewards, replayIndex: 0, request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : { mode: 'ladder', format: 'standard' } };
+  return {
+    input,
+    rewards,
+    replayIndex: 0,
+    request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : { mode: 'ladder', format: 'standard' },
+  };
 }
 
-export function fixturePause(which: 'early' | 'late' | 'skirmish'): PauseInfo {
+export function fixturePause(which: 'early' | 'late' | 'skirmish' | 'tutorial'): PauseInfo {
   return {
-    mode: which === 'skirmish' ? 'skirmish' : 'ladder',
-    scouted: which === 'early' ? [] : ['footman', 'longbowman', 'crossbow_nest', 'pikeman', 'arrow_storm'],
+    mode: which === 'skirmish' ? 'skirmish' : which === 'tutorial' ? 'tutorial' : 'ladder',
+    scouted: which === 'early' || which === 'tutorial' ? [] : ['footman', 'longbowman', 'crossbow_nest', 'pikeman', 'arrow_storm'],
     clockMs: which === 'early' ? 42000 : 187000,
-    canRetreat: which !== 'early',
-    retreatAfterMs: 60000,
+    canRetreat: which === 'late' || which === 'skirmish',
+    retreatAfterMs: which === 'tutorial' ? null : 60000,
   };
 }
 
 /** A replay ring (newest first) for the Profile history. */
 export function fixtureReplays(content: Content, count: number): ReplayDoc[] {
-  const names = ['Captain Kettle', `${content.names.aiPrefix}Brakka Stonejaw`, 'Mama Moss', `${content.names.aiPrefix}Ula Ironhide`, 'Pip Quickstep'];
+  const names = [
+    'Captain Kettle',
+    `${content.names.aiPrefix}Brakka Stonejaw`,
+    'Mama Moss',
+    `${content.names.aiPrefix}Ula Ironhide`,
+    'Pip Quickstep',
+  ];
   const formats: FormatId[] = ['short', 'standard', 'full'];
   return Array.from({ length: count }, (_, i) => {
     const winner = i % 5 === 3 ? null : i % 3 === 1 ? 1 : 0;

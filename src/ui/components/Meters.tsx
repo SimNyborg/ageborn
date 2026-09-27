@@ -66,9 +66,7 @@ export function CopiesBar(p: { copies: number; needed: number | null; ready: boo
           <ArrowUpIcon size={14} />
         </span>
       ) : null}
-      <span class="ui-copies__text">
-        {t('ui.card.copiesOf', { n: formatInt(p.copies, locale), need: formatInt(p.needed, locale) })}
-      </span>
+      <span class="ui-copies__text">{t('ui.card.copiesOf', { n: formatInt(p.copies, locale), need: formatInt(p.needed, locale) })}</span>
     </div>
   );
 }
@@ -78,7 +76,15 @@ export function ClayMeter(p: { pips: number; max: number }) {
   const { t } = useKit();
   const pips = Array.from({ length: p.max }, (_, i) => i < p.pips);
   return (
-    <div class="ui-clay" data-testid="clay-meter" role="meter" aria-label={t('ui.clay.label')} aria-valuemin={0} aria-valuemax={p.max} aria-valuenow={p.pips}>
+    <div
+      class="ui-clay"
+      data-testid="clay-meter"
+      role="meter"
+      aria-label={t('ui.clay.label')}
+      aria-valuemin={0}
+      aria-valuemax={p.max}
+      aria-valuenow={p.pips}
+    >
       <span class="ui-clay__cap">
         <CapsuleIcon tier="clay" size={30} />
       </span>

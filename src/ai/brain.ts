@@ -15,9 +15,10 @@
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
  *
  * Plus the push gate, the attack clock, saving goals, the gold float target (A7.3), openings and the
- * personality rules (personalities.ts). The brain is pure given (view, memory, RNG, profile, content):
- * everything it keeps between decisions (saving goal, spending mode, opening progress) is derived from
- * those inputs.
+ * personality rules (personalities.ts). The brain is deterministic given (view, memory, RNG, profile,
+ * content); the little it keeps between decisions (saving goal, spending mode, opening progress, stance
+ * dwell) is itself derived from earlier inputs. Rules the DESIGN leaves open are logged in
+ * docs/decisions.md under WP3.
  */
 import type { CardId, RoleGroup } from '@/contracts';
 import { BP, LANE_MLU, MILLI, TICKS_PER_SECOND, chanceBp, clamp, msToTicks, pickWeighted, randRange, type Sfc32State } from '@/core';
@@ -102,8 +103,6 @@ export interface BrainConfig {
 const GATE_ZONE = 500 * MILLI;
 /** Push gate: each enemy turret counts as 300 gold of defence. */
 const TURRET_DEFENCE = 300;
-/** Share of the estimated foe bank counted as defence (gold it could turn into defenders), bp. */
-const FOE_BANK_DEFENCE_BP = 3333;
 /** Treasury only while no enemy is within 600 lu of the own gate and before 3:00. */
 const TREASURY_SAFE = 600 * MILLI;
 const TREASURY_BEFORE_TICKS = 180 * TICKS_PER_SECOND;
@@ -132,6 +131,8 @@ const CLOCK_START = 60 * TICKS_PER_SECOND;
 const CLOCK_STEP = 5 * TICKS_PER_SECOND;
 const CLOCK_STEP_BP = 1000;
 const CLOCK_MAX_BP = 30000;
+/** Pop within this much of the cap counts as full for the push gate. */
+const POP_FULL_MARGIN = 6;
 /** Kettle's all-in starts at 80% of the XP threshold and adds this to train scores. */
 const ALL_IN_XP_BP = 8000;
 const ALL_IN_BONUS = 3000;
@@ -141,12 +142,14 @@ const URGENT_PRESSURE_BP = 5000;
 const OPENING_TICKS = 30 * TICKS_PER_SECOND;
 /** A Commander's favourite card bonus. */
 const FAVORITE_BONUS = 1500;
+/** A "float gold" mistake: the bot forgets its tray for this long. */
+const FLOAT_IDLE_TICKS = 3 * TICKS_PER_SECOND;
 /** Mistake rate ceiling, bp (a bot always plays mostly on purpose). */
 const MAX_MISTAKE_BP = 9000;
 /** A saving goal's own action gets this bonus once affordable, bp of score. */
 const GOAL_BONUS = 15000;
 /** A bot keeps a stance at least this long before toggling again (on top of the 2 s cooldown). */
-const STANCE_DWELL = 5 * TICKS_PER_SECOND;
+const STANCE_DWELL = 8 * TICKS_PER_SECOND;
 /** Pressure (bp) from which a bot below its wanted turret count wants a turret or mount. */
 const DEFENCE_PRESSURE_BP = 2500;
 /** Bonus for a wanted turret, mount or modernise once affordable, bp of score. */
@@ -161,6 +164,8 @@ export class Brain {
   spending = true;
   /** When the brain last chose a stance change. */
   private stanceTick = -1000000;
+  /** A "float gold" mistake leaves the tray untouched until this tick. */
+  private idleUntil = 0;
   private readonly opening: OpeningPlan;
   private openingIndex = 0;
 
@@ -176,7 +181,7 @@ export class Brain {
     return this.openingIndex < this.opening.steps.length;
   }
 
-  /** Decides one action for the view. `allowAction` is false when the action cap is full. */
+  /** Decides at most one action for the view (the controller only asks while the action cap has room). */
   decide(v: View, mem: BotMemory, rng: Sfc32State): DecisionTrace {
     const { book, tier: t, persona: P, weights: W } = this.cfg;
     const e = book.econ;
@@ -190,12 +195,26 @@ export class Brain {
     const urgent = pressure >= URGENT_PRESSURE_BP;
     const foeTurrets = obs.foe.turrets.filter((x) => x !== null).length;
     const foeGold = Math.trunc(mem.estimator.gold / MILLI);
-    const defence = foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) + TURRET_DEFENCE * foeTurrets + Math.trunc((foeGold * FOE_BANK_DEFENCE_BP) / BP);
-    const gateBp = hot ? BP : P.pushGateBp;
-    const pushOk = siege || v.myArmy * BP >= gateBp * defence;
+    const defence = foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) + TURRET_DEFENCE * foeTurrets;
+    // Attack clock (A7.2): after 60 s without a ground unit past mid-lane, train scores rise 10% per 5 s,
+    // and the push gate relaxes by 0.1 per 5 s down to parity, so two banking bots cannot stall a match.
+    const quiet = v.now - mem.pastMidTick;
+    const clockSteps = quiet >= CLOCK_START ? Math.trunc((quiet - CLOCK_START) / CLOCK_STEP) : 0;
+    const clockBp = Math.min(CLOCK_MAX_BP, BP + CLOCK_STEP_BP * clockSteps);
+    const gateBp = hot ? BP : Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
+    // An army at the pop cap cannot grow by banking, so it goes.
+    const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
+    const pushOk = siege || popFull || v.myArmy * BP >= gateBp * defence;
     const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane);
-    const banking = !pushOk && !foeOnMyHalf;
     const allIn = P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP));
+    // Push gate (A7.2 anti-turtle): the bot charges past mid-lane only with myArmy ≥ gate × D. When the
+    // gate fails it banks instead of feeding units into the turrets one by one: a Treasury saving goal
+    // (below its cap), a preference for range ≥ 250, a Hold at the line where the tier allows it, and no
+    // training until its gold can lift the army over the gate in one wave, which it then spends at once.
+    const gateFailed = !pushOk && !foeOnMyHalf && !allIn;
+    const waveGold = mulBp(gateBp, defence) - v.myArmy;
+    const banking = gateFailed && v.gold < waveGold * MILLI;
+    const wave = gateFailed && !banking;
 
     // Saving goals (A7.2: "Bank 350 for a Legendary" or "bank for Treasury"): trains that would dip
     // below the goal wait, and the goal's own action gets a bonus once affordable, so the bot visibly
@@ -206,7 +225,10 @@ export class Brain {
     const legendaryCard = v.tray.find((s) => s.card.legendary)?.card ?? null;
     this.goal = null;
     if (!urgent && !allIn) {
-      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || (banking && v.now < TREASURY_BEFORE_TICKS))) {
+      // Treasury pays back in 133-367 s (A2.3), so a bot banks for it while the lane near its gate is
+      // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
+      const quietGate = !v.foes.some((u) => u.p <= TREASURY_SAFE);
+      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || quietGate) && v.now < TREASURY_BEFORE_TICKS))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
       } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP) {
         this.goal = { kind: 'legendary', amount: legendaryCard.cost, card: legendaryCard.id };
@@ -219,19 +241,15 @@ export class Brain {
     // not pause training; the bonus only makes them win when the gold is there.
     const mountCap = Math.min(e.mountCount, t.maxTurrets);
     const wantedTurrets = Math.min(t.maxTurrets, 1 + Math.trunc((v.ageIndex * W.turret) / BP));
-    const wantTurret = pressure >= DEFENCE_PRESSURE_BP && v.turretsBuilt < wantedTurrets && !allIn ? WANT_BONUS : 0;
+    const wantTurret = v.turretsBuilt < wantedTurrets && !allIn && pressure >= DEFENCE_PRESSURE_BP ? WANT_BONUS : 0;
     const wantModernise = !urgent && !allIn ? WANT_BONUS : 0;
 
     // Gold float (A7.3): let gold pile up to the float target, then spend it down.
     // An active saving goal raises the float to the goal, so the bot visibly banks (A7.2 "pause training").
     const cheapest = v.tray.reduce((m, s) => Math.min(m, s.card.cost), Number.MAX_SAFE_INTEGER);
-    if (v.gold >= Math.max(t.goldFloat * MILLI, this.goal?.amount ?? 0)) this.spending = true;
+    if (v.gold >= Math.max(t.goldFloat * MILLI, this.goal?.amount ?? 0) || wave) this.spending = true;
     else if (v.gold < cheapest) this.spending = false;
-    const mayTrain = this.spending || urgent || allIn;
-
-    // Attack clock (A7.2).
-    const quiet = v.now - mem.pastMidTick;
-    const clockBp = quiet >= CLOCK_START ? Math.min(CLOCK_MAX_BP, BP + CLOCK_STEP_BP * Math.trunc((quiet - CLOCK_START) / CLOCK_STEP)) : BP;
+    const mayTrain = !banking && v.now >= this.idleUntil && (this.spending || urgent || allIn);
 
     const cand: Scored[] = [];
     const add = (action: BotAction, score: number): void => {
@@ -240,7 +258,7 @@ export class Brain {
     const opts: MistakeOptions = {};
 
     // Train.
-    const trains = this.trainCandidates(v, mem, { banking, allIn, clockBp });
+    const trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp });
     if (mayTrain) for (const s of trains.scored) add(s.action, s.score);
     // Over-commit (mistake): keep feeding units forward while the push gate says bank.
     if (banking && trains.eager) opts.overCommit = trains.eager;
@@ -296,9 +314,9 @@ export class Brain {
     }
 
     // Stance.
-    if (t.hold && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
+    if (t.hold && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
       const weak = v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && v.turretsBuilt >= HOLD_MIN_TURRETS;
-      const wantHold = !siege && !allIn && (weak || (!pushOk && W.hold >= HOLD_ON_GATE_BP));
+      const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
         add({ kind: 'stance', stance: want }, SCORE.stance);
@@ -310,7 +328,7 @@ export class Brain {
     // Last Stand. It fires on its own at 10%; if the base may reach that before the command runs, the
     // command would find it already charging, so the bot leaves it to the automatic trigger.
     const lsMargin = mem.baseLossPerTick() * (t.snapshotDelayTicks + 2) + LAST_STAND_MARGIN_BP;
-    if (v.lastStandArmed && v.baseHpBp - lsMargin > e.lastStandAutoBp) {
+    if (v.lastStandArmed && !this.opening.autoLastStand && v.baseHpBp - lsMargin > e.lastStandAutoBp) {
       const near = v.foes.filter((u) => u.p <= e.lastStandRadius).length;
       if (near >= LAST_STAND_FOES) add({ kind: 'lastStand' }, SCORE.lastStand);
     }
@@ -345,7 +363,7 @@ export class Brain {
       } else {
         while (this.inOpening) {
           const step = this.opening.steps[this.openingIndex];
-          const r = step ? resolveStep(step, v, book, (vv) => this.chooseTurret(vv)) : 'skip';
+          const r = step ? resolveStep(step, v, book, { treasuryMax, mountCap }, (vv) => this.chooseTurret(vv)) : 'skip';
           if (r === 'skip') {
             this.openingIndex += 1;
             continue;
@@ -363,15 +381,20 @@ export class Brain {
       opts.leaveMountEmpty = cand.find((c) => c.action.kind !== 'build' && c.action.kind !== 'mount' && c.score >= bar)?.action ?? null;
     }
 
+    // A mistake replaces an action the bot meant to take (A7.2 "Choice"), so the error rate scales with
+    // what the bot does, not with how often it looks. Holding back a wave while banking counts as a
+    // choice too: that is when an impatient player over-commits.
+    if (!best && !opts.overCommit) return trace;
     if (chanceBp(rng, Math.min(MAX_MISTAKE_BP, t.mistakeBp + this.cfg.mistakeBonusBp))) {
       const m = pickMistake(rng, opts);
+      if (m.kind === 'floatGold') this.idleUntil = v.now + FLOAT_IDLE_TICKS;
       trace.mistake = m.kind;
       trace.action = m.action;
       trace.reason = 'mistake';
       return trace;
     }
-    if (!best) return trace;
 
+    if (!best) return trace;
     let action = best.action;
     // Counter depth 0: a weighted random choice from the loadout (A7.3).
     if (action.kind === 'train' && t.counterDepth === 0) {

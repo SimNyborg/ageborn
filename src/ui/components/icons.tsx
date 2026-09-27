@@ -110,7 +110,14 @@ export function BackIcon(p: IconProps) {
   return (
     <Svg {...p}>
       <path d="M14.8 4.2 7 12l7.8 7.8" fill="none" stroke={OUTLINE} stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M14.8 4.2 7 12l7.8 7.8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M14.8 4.2 7 12l7.8 7.8"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </Svg>
   );
 }
@@ -180,7 +187,13 @@ export function CardsIcon(p: IconProps) {
     <Svg {...p}>
       <rect x="3" y="5" width="11" height="15" rx="2" fill="#22b8cf" {...O} transform="rotate(-10 8.5 12.5)" />
       <rect x="9" y="3.5" width="11" height="15" rx="2" fill="#a855f7" {...O} transform="rotate(8 14.5 11)" />
-      <path d="M14.8 7.5 16.2 10l2.7.3-2 1.8.6 2.7-2.4-1.4-2.4 1.4.6-2.7-2-1.8 2.7-.3z" fill="#ffcf3a" stroke={OUTLINE} stroke-width="1" transform="rotate(8 14.5 11)" />
+      <path
+        d="M14.8 7.5 16.2 10l2.7.3-2 1.8.6 2.7-2.4-1.4-2.4 1.4.6-2.7-2-1.8 2.7-.3z"
+        fill="#ffcf3a"
+        stroke={OUTLINE}
+        stroke-width="1"
+        transform="rotate(8 14.5 11)"
+      />
     </Svg>
   );
 }
@@ -257,8 +270,22 @@ export function StarIcon(p: IconProps & { filled?: boolean }) {
 export function CheckIcon(p: IconProps) {
   return (
     <Svg {...p}>
-      <path d="M4.5 12.5 9.5 17.5 19.5 6.5" fill="none" stroke={OUTLINE} stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M4.5 12.5 9.5 17.5 19.5 6.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M4.5 12.5 9.5 17.5 19.5 6.5"
+        fill="none"
+        stroke={OUTLINE}
+        stroke-width="5.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M4.5 12.5 9.5 17.5 19.5 6.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </Svg>
   );
 }
@@ -287,6 +314,14 @@ export function ReplayIcon(p: IconProps) {
     <Svg {...p}>
       <circle cx="12" cy="12" r="9.5" fill="#2f7df6" {...O} />
       <path d="M10 8.3v7.4l6-3.7z" fill="#fff" stroke={OUTLINE} stroke-width="1.2" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+export function PlayIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke={OUTLINE} stroke-width="1.8" stroke-linejoin="round" />
     </Svg>
   );
 }
@@ -346,7 +381,14 @@ export function UploadIcon(p: IconProps) {
   return (
     <Svg {...p}>
       <path d="M12 15V4M7 8.5l5-5 5 5" fill="none" stroke={OUTLINE} stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M12 15V4M7 8.5l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M12 15V4M7 8.5l5-5 5 5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
       <path d="M4 17.5v2.5h16v-2.5" fill="none" stroke={OUTLINE} stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
       <path d="M4 17.5v2.5h16v-2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
     </Svg>
@@ -377,7 +419,13 @@ export function SpeakerIcon(p: IconProps) {
     <Svg {...p}>
       <path d="M3.5 9h4l5-4.5v15l-5-4.5h-4z" fill="#e8eef7" {...O} />
       <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke={OUTLINE} stroke-width="3.6" stroke-linecap="round" />
-      <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      <path
+        d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+      />
     </Svg>
   );
 }

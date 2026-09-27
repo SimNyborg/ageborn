@@ -11,6 +11,8 @@
  * | `treasury` | buy a Treasury level |
  * | `a\|b` | one of the alternatives, chosen by the bot's seeded RNG |
  * | `favorite:<card>` | not a step: a procedural Commander's favourite card (A7.4), trained a little more often |
+ * | `rule:noStance` | not a step: the match locks this side's stance (training matches), so the bot never toggles it |
+ * | `rule:autoLastStand` | not a step: Last Stand is automatic-only for this side, so the bot never fires it |
  *
  * Unknown steps are ignored. After the steps are resolved, one pair of neighbouring steps after the
  * first may swap (seeded), so two matches against the same General do not open identically.
@@ -30,6 +32,15 @@ export type OpeningStep =
 export interface OpeningPlan {
   steps: OpeningStep[];
   favorite: CardId | null;
+  /** Match rules the session disclosed (training matches, DESIGN A8, A2.11). */
+  noStance: boolean;
+  autoLastStand: boolean;
+}
+
+/** Limits the tier puts on opening steps (A7.3 Treasury max and Max turrets). */
+export interface OpeningLimits {
+  treasuryMax: number;
+  mountCap: number;
 }
 
 const GROUPS: readonly (RoleGroup | 'any')[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary', 'any'];
@@ -50,9 +61,19 @@ function parseStep(token: string): OpeningStep | null {
 export function parseOpenings(tokens: readonly string[], rng: Sfc32State): OpeningPlan {
   const steps: OpeningStep[] = [];
   let favorite: CardId | null = null;
+  let noStance = false;
+  let autoLastStand = false;
   for (const token of tokens) {
     if (token.startsWith('favorite:')) {
       favorite = token.slice('favorite:'.length).trim() || null;
+      continue;
+    }
+    if (token === 'rule:noStance') {
+      noStance = true;
+      continue;
+    }
+    if (token === 'rule:autoLastStand') {
+      autoLastStand = true;
       continue;
     }
     const alts = token.split('|');
@@ -66,14 +87,20 @@ export function parseOpenings(tokens: readonly string[], rng: Sfc32State): Openi
     steps[i] = steps[i + 1] as OpeningStep;
     steps[i + 1] = a;
   }
-  return { steps, favorite };
+  return { steps, favorite, noStance, autoLastStand };
 }
 
 /**
  * What an opening step asks for right now: an action, `wait` (not affordable yet) or `skip` (not
  * possible with this loadout or position). Legality checks match the brain's.
  */
-export function resolveStep(step: OpeningStep, v: View, book: CardBook, chooseTurret: (v: View) => BotAction | null): BotAction | 'wait' | 'skip' {
+export function resolveStep(
+  step: OpeningStep,
+  v: View,
+  book: CardBook,
+  limits: OpeningLimits,
+  chooseTurret: (v: View) => BotAction | null,
+): BotAction | 'wait' | 'skip' {
   switch (step.kind) {
     case 'train': {
       const options = v.tray.filter((s) => step.group === 'any' || s.card.group === step.group);
@@ -90,12 +117,12 @@ export function resolveStep(step: OpeningStep, v: View, book: CardBook, chooseTu
       return chooseTurret(v) ?? 'wait';
     }
     case 'mount': {
-      if (v.mountsOwned >= book.econ.mountCount) return 'skip';
+      if (v.mountsOwned >= Math.min(book.econ.mountCount, limits.mountCap)) return 'skip';
       const cost = book.econ.mountCosts[v.mountsOwned] ?? 0;
       return v.gold >= cost ? { kind: 'mount', cost } : 'wait';
     }
     case 'treasury': {
-      if (v.treasury >= book.econ.treasuryCosts.length) return 'skip';
+      if (v.treasury >= Math.min(book.econ.treasuryCosts.length, limits.treasuryMax)) return 'skip';
       const cost = book.econ.treasuryCosts[v.treasury] ?? 0;
       return v.gold >= cost ? { kind: 'treasury', cost } : 'wait';
     }

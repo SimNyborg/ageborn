@@ -14,9 +14,11 @@
  *    contiguous inside each part (the bake splits parts into under/team/over).
  */
 import { CLIP_LIBRARY, getClip } from './clips';
+import type { FxRecipe } from './effects/recipes';
+import { FX_ZONES } from './effects/sprites';
 import { procDeltas, type ProcContext } from './clips/procedural';
 import { drawPuppet, puppetBounds, teamLayersContiguous, type PartLookup } from './draw';
-import { COLOR_RULE_MAX_SHARE, isTeamZone, resolveZone, violatesColorRule } from './palette';
+import { COLOR_RULE_MAX_SHARE, hexToRgb, isTeamZone, resolveZone, rgbToHex, violatesColorRule } from './palette';
 import { boneWorld, slotId, validateBones, type DeltaLookup, type PuppetState } from './pose';
 import { iou, maskArea, Raster } from './raster';
 import { sampleTrack } from './animator';
@@ -85,6 +87,66 @@ export function colorRule(p: PuppetDef, parts: PartLookup, pxPerLu = 2): ColorRu
   return colorRuleOfRaster(rasterizePuppet(p, parts, { pxPerLu, teamColor: null }));
 }
 
+/** A tint multiplies every channel, like a Pixi sprite tint. */
+function multiply(c: number, tint: number): number {
+  const [r, g, b] = hexToRgb(c);
+  const [tr, tg, tb] = hexToRgb(tint);
+  return rgbToHex((r * tr) / 255, (g * tg) / 255, (b * tb) / 255);
+}
+
+/**
+ * Colour rule for a lane effect: every sprite, particle, falling object and chain of the recipe is
+ * rasterised with its tint, weighted by how many copies the recipe spawns; team-tinted pieces are
+ * the team layer and do not count. Screen and UI cues (`exemptColorRule`) pass by definition.
+ */
+export function effectColorRule(r: FxRecipe, parts: PartLookup): ColorRuleReport {
+  if (r.exemptColorRule) return { share: 0, pass: true, offenders: [] };
+  const items: { sprite: string; tint?: number | 'team'; weight: number }[] = [];
+  for (const s of r.sprites ?? []) items.push({ sprite: s.sprite, tint: s.tint, weight: 1 });
+  for (const p of r.particles ?? []) items.push({ sprite: p.sprite, tint: p.tint, weight: Math.max(1, p.count ?? 0, Math.round(((p.rate ?? 0) * r.durationMs) / 1000)) });
+  if (r.fall) items.push({ sprite: r.fall.sprite, weight: r.fall.count });
+  if (r.chain) items.push({ sprite: 'fx.p.beam', tint: r.chain.tint, weight: r.chain.segments });
+  let area = 0;
+  let bad = 0;
+  const byColor = new Map<number, number>();
+  for (const it of items) {
+    if (it.tint === 'team') continue;
+    const part = parts(it.sprite);
+    if (!part) continue;
+    const pup: PuppetDef = {
+      id: it.sprite,
+      kind: 'sprite',
+      rig: 'sprite',
+      age: null,
+      bones: [{ id: 'root', parent: null, x: 0, y: 0 }],
+      slots: [{ part: it.sprite, bone: 'root', z: 0 }],
+      palette: FX_ZONES,
+      heightLu: 10,
+      anchors: { feet: { x: 0, y: 0 }, head: { x: 0, y: 0 }, muzzle: { x: 0, y: 0 }, hitCenter: { x: 0, y: 0 } },
+      motion: { family: 'sprite', attack: '', ability: '' },
+      impactAt: 0,
+    };
+    const ras = rasterizePuppet(pup, parts, { pxPerLu: 4, teamColor: null });
+    for (let i = 0; i < ras.color.length; i++) {
+      const c0 = ras.color[i] ?? -1;
+      if (c0 < 0) continue;
+      area += it.weight;
+      if (ras.team[i] === 1) continue;
+      const c = typeof it.tint === 'number' ? multiply(c0, it.tint) : c0;
+      if (violatesColorRule(c)) {
+        bad += it.weight;
+        byColor.set(c, (byColor.get(c) ?? 0) + it.weight);
+      }
+    }
+  }
+  const share = area === 0 ? 0 : bad / area;
+  const offenders = [...byColor.entries()]
+    .map(([color, n]) => ({ color, share: n / Math.max(1, area) }))
+    .sort((a, b) => b.share - a.share)
+    .slice(0, 5);
+  return { share, pass: share <= COLOR_RULE_MAX_SHARE, offenders };
+}
+
 // ---------------------------------------------------------------------------------------------
 // Silhouettes
 
@@ -130,14 +192,17 @@ export function silhouetteArea(p: PuppetDef, parts: PartLookup, pxPerLu = 2): nu
 // Scale and width
 
 /** Body bounds: every slot except weapons, held gear, arms, rotors and banners (`noWidth`). */
+export function bodyOnly(p: PuppetDef): PuppetDef {
+  return { ...p, slots: p.slots.filter((s) => !s.noWidth && s.tag !== 'weapon') };
+}
+
 export function bodyBounds(p: PuppetDef, parts: PartLookup): Bounds {
-  return puppetBounds({ ...p, slots: p.slots.filter((s) => !s.noWidth && s.tag !== 'weapon') }, parts);
+  return puppetBounds(bodyOnly(p), parts);
 }
 
 /** Exact body width (lu) from the rasterised body silhouette (rotated parts do not inflate it). */
 export function bodyWidth(p: PuppetDef, parts: PartLookup, pxPerLu = 2): number {
-  const body: PuppetDef = { ...p, slots: p.slots.filter((s) => !s.noWidth && s.tag !== 'weapon') };
-  const r = rasterizePuppet(body, parts, { pxPerLu });
+  const r = rasterizePuppet(bodyOnly(p), parts, { pxPerLu });
   let min = Infinity;
   let max = -Infinity;
   for (let y = 0; y < r.h; y++) {
@@ -201,13 +266,12 @@ export function structuralProblems(p: PuppetDef, parts: PartLookup): string[] {
       if (resolveZone(p.palette, l.zone) === undefined) out.push(`${p.id}: part "${part.id}" zone "${l.zone}" missing from the palette`);
     }
   }
-  // Every animated bone used by the puppet's clips should exist? Clips ignore missing bones by design.
   const world = boneWorld(p.bones);
   if (world.size !== p.bones.length) out.push(`${p.id}: bone ids are not unique`);
   return out;
 }
 
-/** Bounds of the rest pose per slot tag set, e.g. the whole puppet. */
+/** Bounds of the whole rest pose, outlines included. */
 export function restBounds(p: PuppetDef, parts: PartLookup): Bounds {
   return puppetBounds(p, parts);
 }

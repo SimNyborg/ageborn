@@ -136,21 +136,7 @@ export function skinsFor(content: Content, target: string): SkinDef[] {
 // Stats sheet (A9 #11)
 // ---------------------------------------------------------------------------------------------
 
-export type StatId =
-  | 'hp'
-  | 'damage'
-  | 'baseDamage'
-  | 'interval'
-  | 'dps'
-  | 'range'
-  | 'speed'
-  | 'pop'
-  | 'train'
-  | 'size'
-  | 'hits'
-  | 'cost'
-  | 'splash'
-  | 'targets';
+export type StatId = 'hp' | 'damage' | 'baseDamage' | 'interval' | 'dps' | 'range' | 'speed' | 'pop' | 'train' | 'cost' | 'splash';
 
 export interface StatRow {
   id: StatId;
@@ -170,9 +156,7 @@ export function unitStats(content: Content, u: UnitDef, level: number): StatRow[
   const nextLevel = level < content.economy.maxLevel ? level + 1 : null;
   const at = (v: number, l: number) => atLevel(content, v, l);
   const a = u.attacks[0];
-  const rows: StatRow[] = [
-    { id: 'hp', value: at(u.hp, level), next: nextLevel ? at(u.hp, nextLevel) : null, unit: null },
-  ];
+  const rows: StatRow[] = [{ id: 'hp', value: at(u.hp, level), next: nextLevel ? at(u.hp, nextLevel) : null, unit: null }];
   if (a) {
     const volley = a.volley ?? 1;
     rows.push({ id: 'damage', value: at(a.damage, level), next: nextLevel ? at(a.damage, nextLevel) : null, unit: null });

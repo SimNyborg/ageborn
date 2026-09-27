@@ -15,9 +15,9 @@ import { Brain, type DecisionTrace } from './brain';
 import { EmotePolicy } from './emotes';
 import { Ledger } from './ledger';
 import { BotMemory } from './memory';
-import { personalityFor, weightBp, type Personality } from './personalities';
+import { personalityFor, weightsBp, type Personality } from './personalities';
 import { tierParams, type TierParams } from './tiers';
-import { buildView, type View, type WeightsBp } from './view';
+import { buildView, type View } from './view';
 
 /** Decision traces kept for the dev viewer. */
 const TRACE_KEEP = 40;
@@ -45,19 +45,6 @@ export interface AiBotController extends BotController {
 export function botSeed(seed: number, side: Side, stream: string): Sfc32State {
   // DESIGN A7.2: the bot RNG is seeded from hash(matchSeed, side).
   return seedSfc32(`bot:${seed}:${side}:${stream}`);
-}
-
-function weightsBp(profile: BotProfile): WeightsBp {
-  const w = profile.weights;
-  return {
-    aggr: weightBp(w.aggr),
-    turret: weightBp(w.turret),
-    economy: weightBp(w.economy),
-    greed: weightBp(w.greed),
-    patience: weightBp(w.patience),
-    legendary: weightBp(w.legendary),
-    hold: weightBp(w.hold),
-  };
 }
 
 export class UtilityController implements AiBotController {
@@ -93,7 +80,7 @@ export class UtilityController implements AiBotController {
         book: this.book,
         tier: this.tier,
         persona: this.personality,
-        weights: weightsBp(profile),
+        weights: weightsBp(profile.weights),
         mistakeBonusBp: Math.max(0, Math.trunc(profile.mistakeBonusBp)),
         openings,
       },

@@ -129,6 +129,9 @@ export class CapsuleStage implements ShowView {
   private waveT = -1;
   private waveColor = 0xffffff;
   private summaryDim = 0;
+  /** 0..1: the pedestal sinks and dims once the cards take the stage. */
+  private pedSink = 0;
+  private pedSinkTarget = 0;
   private confettiOn = false;
   private confettiT = 0;
 
@@ -255,6 +258,7 @@ export class CapsuleStage implements ShowView {
         break;
       case 'fan':
         this.bigRaysLevel = Math.max(this.bigRaysLevel, 0.35);
+        this.pedSinkTarget = 1;
         break;
       case 'signal':
       case 'flip':
@@ -358,8 +362,8 @@ export class CapsuleStage implements ShowView {
         this.pedestal.setGlow(0.4);
         break;
       case 'volley':
-        for (const m of this.miniDrums) m.drum.destroy();
-        this.miniDrums = [];
+        // Hidden, not destroyed: their halves may still be flying and share the drawing context.
+        for (const m of this.miniDrums) m.drum.root.visible = false;
         break;
       case 'fan':
         this.fan?.settleDealt();
@@ -800,6 +804,9 @@ export class CapsuleStage implements ShowView {
   }
 
   private placeWinner(u: number): void {
+    // The emptied crate sinks away so the winner's name reads clearly.
+    this.pedGroup.y = CRATE_DROP + 260 * easeOutCubic(u);
+    this.pedGroup.alpha = 1 - 0.7 * u;
     const v = this.winner;
     if (!v) return;
     const from = this.reel ? this.reel.winnerCenter() : { x: 0, y: 0 };
@@ -983,11 +990,12 @@ export class CapsuleStage implements ShowView {
     this.particles.update(dt);
     this.motes.update(dt);
     this.drum.update(dt);
-    for (const m of this.miniDrums) m.drum.update(dt);
+    for (const m of this.miniDrums) if (m.drum.root.visible) m.drum.update(dt);
     this.confetti(dt);
     this.updateMotes(dt);
     this.updateDrumAndHammer(dt);
     this.updateRays(dt);
+    this.updatePedestal(dt);
     this.updateCards(dt);
     this.updateFlyers(dt);
 
@@ -1059,6 +1067,13 @@ export class CapsuleStage implements ShowView {
     }
   }
 
+  private updatePedestal(dt: number): void {
+    if (this.plan.mode === 'wardrobe') return;
+    this.pedSink += (this.pedSinkTarget - this.pedSink) * Math.min(1, dt / 220);
+    this.pedGroup.y = 170 * easeOutCubic(this.pedSink);
+    this.pedGroup.alpha = 1 - 0.55 * this.pedSink;
+  }
+
   private updateRays(dt: number): void {
     this.backRays.rotation += dt / 5200;
     this.backRays.alpha += (this.raysLevel * (this.drum.root.visible ? 1 : 0) - this.backRays.alpha) * Math.min(1, dt / 120);
@@ -1081,8 +1096,9 @@ export class CapsuleStage implements ShowView {
         v.setLift(next);
         v.setSignal(this.signal.get(slot) ?? 0, this.time);
       }
-      const want = 1 - 0.75 * this.summaryDim;
-      this.fanAlpha += (want - this.fanAlpha) * Math.min(1, dt / 200);
+      // Walkouts own the screen; the summary dims the fan behind its panel.
+      const want = this.walkout ? 0.08 : 1 - 0.75 * this.summaryDim;
+      this.fanAlpha += (want - this.fanAlpha) * Math.min(1, dt / (this.walkout ? 260 : 200));
       this.fan.root.alpha = this.fanAlpha;
     }
     if (this.summaryDim > 0) {
@@ -1115,8 +1131,10 @@ export class CapsuleStage implements ShowView {
     this.walkout?.destroy();
     this.reel?.destroy();
     this.winner?.destroy();
-    for (const m of this.miniDrums) m.drum.destroy();
+    // Flying halves first: they share the drums' drawing contexts.
     for (const f of this.flyers) f.c.destroy({ children: true });
+    this.flyers.length = 0;
+    for (const m of this.miniDrums) m.drum.destroy();
     this.particles.destroy();
     this.motes.destroy();
     this.fan?.destroy();

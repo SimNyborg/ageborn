@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { SimEvent } from '@/contracts';
 import { TutorialDirector, type DirectorLogEntry } from '../director';
 import { MATCH1, MATCH1_PEBBLER_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, MATCH5, sec } from '../scripts';
-import { Harness, config } from './helpers';
+import { Harness, config, type Ev } from './helpers';
 
 function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } {
   const h = new Harness(config({ format: 'tutorial' }));
@@ -11,8 +10,7 @@ function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } 
   return { h, d, log };
 }
 
-const kill = (): Omit<SimEvent, 'tick'> =>
-  ({ e: 'died', id: 900, side: 1, card: 'training_dummy', killerId: 1, killerCard: 'bonker', killerKind: 'unit', killerSide: 0, bountyGold: 30000, bountyXp: 50000, x: 600_000 }) as Omit<SimEvent, 'tick'>;
+const kill = (): Ev => ({ e: 'died', id: 900, side: 1, card: 'training_dummy', killerId: 1, killerCard: 'bonker', killerKind: 'unit', killerSide: 0, bountyGold: 30000, bountyXp: 50000, x: 600_000 });
 
 describe('TutorialDirector: match 1 beats in A8 order', () => {
   it('walks Bonker → kill → Pebbler → Rock Tosser → Evolve → Arrow Storm → Future', () => {

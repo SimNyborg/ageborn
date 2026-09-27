@@ -19,7 +19,15 @@ import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardGlyph, cardTile, collectionProgress } from '../model/cards';
-import { filterCards, NO_FILTER, type AgeFilter, type CollectionFilter, type Ownership, type RarityFilter, type RoleFilter } from '../model/collection';
+import {
+  filterCards,
+  NO_FILTER,
+  type AgeFilter,
+  type CollectionFilter,
+  type Ownership,
+  type RarityFilter,
+  type RoleFilter,
+} from '../model/collection';
 
 function SkinTile(p: { skin: SkinDef }) {
   const { save, content, t, locale, services, toasts } = useUi();
@@ -33,7 +41,14 @@ function SkinTile(p: { skin: SkinDef }) {
   return (
     <div class={`col-skin${owned ? '' : ' is-locked'}`} style={{ '--frame': RARITY_COLOR[k.rarity] }} data-testid={`skin-tile-${k.id}`}>
       <span class="col-skin__art">
-        <CardArt card={k.target} age={target?.age ?? baseAge ?? 'stone'} glyph={target ? cardGlyph(target) : 'heavy'} size={96} skin={k.id} silhouette={!owned} />
+        <CardArt
+          card={k.target}
+          age={target?.age ?? baseAge ?? 'stone'}
+          glyph={target ? cardGlyph(target) : 'heavy'}
+          size={96}
+          skin={k.id}
+          silhouette={!owned}
+        />
         {!owned ? (
           <span class="col-skin__lock">
             <LockIcon size={26} />
@@ -41,7 +56,9 @@ function SkinTile(p: { skin: SkinDef }) {
         ) : null}
       </span>
       <span class="col-skin__name">{t(skinNameKey(k.id))}</span>
-      <span class="col-skin__target">{target ? t(target.nameKey) : baseAge ? t('ui.skins.baseOf', { age: t(ageNameKey(baseAge)) }) : k.target}</span>
+      <span class="col-skin__target">
+        {target ? t(target.nameKey) : baseAge ? t('ui.skins.baseOf', { age: t(ageNameKey(baseAge)) }) : k.target}
+      </span>
       <span class="col-skin__rarity">{t(rarityNameKey(k.rarity))}</span>
       {owned ? (
         equipped ? (
@@ -136,12 +153,20 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
                   testid="filter-rarity"
                   options={[
                     { value: 'all', label: t('ui.collection.all') },
-                    ...content.rarities.order.map((r) => ({ value: r, label: t(rarityNameKey(r)), icon: <RarityGem rarity={r} size={16} /> })),
+                    ...content.rarities.order.map((r) => ({
+                      value: r,
+                      label: t(rarityNameKey(r)),
+                      icon: <RarityGem rarity={r} size={16} />,
+                    })),
                   ]}
                 />
                 <label class="col-select">
                   <span class="ui-sr">{t('ui.collection.filterRole')}</span>
-                  <select value={f.role} onChange={(e) => set({ role: (e.currentTarget as HTMLSelectElement).value as RoleFilter })} data-testid="filter-role">
+                  <select
+                    value={f.role}
+                    onChange={(e) => set({ role: (e.currentTarget as HTMLSelectElement).value as RoleFilter })}
+                    data-testid="filter-role"
+                  >
                     <option value="all">{t('ui.collection.allRoles')}</option>
                     {roles.map((r) => (
                       <option key={r} value={r}>
@@ -180,7 +205,17 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
                         grid
                         testid={`card-${id}`}
                         onClick={() => router.go({ id: 'cardDetail', card: id })}
-                        corner={tile.kind === 'turret' ? <span class="col-kind"><TowerIcon size={18} /></span> : tile.kind === 'power' ? <span class="col-kind"><BoltIcon size={18} /></span> : undefined}
+                        corner={
+                          tile.kind === 'turret' ? (
+                            <span class="col-kind">
+                              <TowerIcon size={18} />
+                            </span>
+                          ) : tile.kind === 'power' ? (
+                            <span class="col-kind">
+                              <BoltIcon size={18} />
+                            </span>
+                          ) : undefined
+                        }
                       />
                     );
                   })}

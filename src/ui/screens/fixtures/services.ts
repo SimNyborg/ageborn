@@ -9,7 +9,6 @@ import { InMemorySaveStore } from '@/contracts/fakes/saveStore';
 import type { Signal } from '@preact/signals';
 import type { Router } from '../../router';
 import { cardDef, isOwned, upgradeCost } from '../model/cards';
-import { arenaOf } from '../model/progress';
 import type { ActionResult, UiServices, WarPlan } from '../services';
 import { fixtureOpponent, fixtureReplays, fixtureResult, type OpponentFixture } from './matches';
 import { newPlayerSave } from './saves';
@@ -59,7 +58,9 @@ export function createPreviewServices(o: {
   };
   return {
     previewOpponent() {
-      return save.value.matchesPlayed >= 2 ? fixtureOpponent(content, o.opponent ?? (save.value.lossStreak >= 3 ? 'warmUp' : 'general')) : null;
+      return save.value.matchesPlayed >= 2
+        ? fixtureOpponent(content, o.opponent ?? (save.value.lossStreak >= 3 ? 'warmUp' : 'general'))
+        : null;
     },
     dailyModifier() {
       return content.dailyModifiers.order[0] ?? null;
@@ -72,7 +73,8 @@ export function createPreviewServices(o: {
       const plan = s.warPlans[s.activePlan] ?? s.warPlans[0]!;
       const loadouts = { ...plan.loadouts };
       for (const age of content.order.ages) {
-        const byLevel = (ids: string[]) => ids.filter((id) => isOwned(s, id, content)).sort((a, b) => (s.collection[b]?.level ?? 0) - (s.collection[a]?.level ?? 0));
+        const byLevel = (ids: string[]) =>
+          ids.filter((id) => isOwned(s, id, content)).sort((a, b) => (s.collection[b]?.level ?? 0) - (s.collection[a]?.level ?? 0));
         const units = byLevel(content.order.units.filter((id) => content.units[id]!.age === age)).slice(0, 5);
         const turrets = byLevel(content.order.turrets.filter((id) => content.turrets[id]!.age === age)).slice(0, 2);
         loadouts[age] = {
@@ -90,11 +92,26 @@ export function createPreviewServices(o: {
     prepareMatch(req) {
       log('prepareMatch', req);
       if (req.mode === 'daily') return fixtureOpponent(content, 'daily');
-      if (req.mode === 'conquest') return { ...fixtureOpponent(content, req.general === 'warden' ? 'warden' : 'general'), generalId: req.general, displayName: content.generals.list[req.general as 'pip']?.nameKey ?? req.general };
+      if (req.mode === 'conquest')
+        return {
+          ...fixtureOpponent(content, req.general === 'warden' ? 'warden' : 'general'),
+          generalId: req.general,
+          displayName: content.generals.list[req.general as 'pip']?.nameKey ?? req.general,
+        };
       if (req.mode === 'skirmish') {
         const base = fixtureOpponent(content, req.options.generalId === 'echo' ? 'echo' : 'general');
-        return { ...base, generalId: req.options.generalId, tier: req.options.tier, format: req.options.format, displayName: content.generals.list[req.options.generalId as 'pip']?.nameKey ?? base.displayName };
+        return {
+          ...base,
+          generalId: req.options.generalId,
+          tier: req.options.tier,
+          format: req.options.format,
+          displayName: content.generals.list[req.options.generalId as 'pip']?.nameKey ?? base.displayName,
+        };
       }
+      if (req.mode === 'tutorial')
+        return req.match === 1
+          ? fixtureOpponent(content, 'grogg')
+          : { ...fixtureOpponent(content, 'general'), generalId: 'pip', tier: 0, level: 1, format: 'short' };
       return { ...fixtureOpponent(content, o.opponent ?? 'general'), format: req.format };
     },
     beginBattle(req, opponent) {
@@ -140,7 +157,16 @@ export function createPreviewServices(o: {
           dailyBank: x.capsules.dailyBank - 1,
           pending: [
             ...x.capsules.pending,
-            { id: `daily-${x.pity.opened + x.capsules.pending.length}`, kind: 'daily', tier: 'bronze', startTier: 'bronze', scriptIndex: null, age: null, contents: { stacks: [], amber: 0, dust: 0, skin: null }, createdAt: 0 },
+            {
+              id: `daily-${x.pity.opened + x.capsules.pending.length}`,
+              kind: 'daily',
+              tier: 'bronze',
+              startTier: 'bronze',
+              scriptIndex: null,
+              age: null,
+              contents: { stacks: [], amber: 0, dust: 0, skin: null },
+              createdAt: 0,
+            },
           ],
         },
       }));
@@ -171,7 +197,11 @@ export function createPreviewServices(o: {
         if (!skin.craftable) return fail('notCraftable');
         if (s.skins.owned.includes(id)) return fail('owned');
         if (s.currencies.dust < price) return fail('dust');
-        set((x) => ({ ...x, currencies: { ...x.currencies, dust: x.currencies.dust - price }, skins: { ...x.skins, owned: [...x.skins.owned, id] } }));
+        set((x) => ({
+          ...x,
+          currencies: { ...x.currencies, dust: x.currencies.dust - price },
+          skins: { ...x.skins, owned: [...x.skins.owned, id] },
+        }));
         return ok;
       }
       const def = cardDef(content, id);
@@ -228,7 +258,11 @@ export function createPreviewServices(o: {
       if (!next) return fail('none');
       set((x) => ({
         ...x,
-        quests: { ...x.quests, rerollUsed: true, daily: x.quests.daily.map((q, i) => (i === slot ? { id: next.id, progress: 0, claimed: false } : q)) },
+        quests: {
+          ...x.quests,
+          rerollUsed: true,
+          daily: x.quests.daily.map((q, i) => (i === slot ? { id: next.id, progress: 0, claimed: false } : q)),
+        },
       }));
       return ok;
     },
@@ -265,9 +299,4 @@ export function createPreviewServices(o: {
       log('exportEventLog');
     },
   };
-}
-
-/** Arena-appropriate preview opponent (used by the dev page). */
-export function previewOpponentFor(content: Content, save: SaveDoc): OpponentFixture {
-  return arenaOf(save, content).index >= 8 ? 'warden' : 'general';
 }

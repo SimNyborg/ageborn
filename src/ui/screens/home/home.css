@@ -637,10 +637,6 @@
     width: 42px !important;
     height: 42px !important;
   }
-  .home-profile .ui-avatar svg {
-    width: 42px;
-    height: 42px;
-  }
   .home-profile__name {
     font-size: 16px;
   }

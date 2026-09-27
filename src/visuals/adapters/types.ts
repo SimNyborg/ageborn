@@ -49,12 +49,23 @@ export interface PortraitRequest {
   size: number;
   foil: Foil;
   side: Side;
+  /** False: no age plate, transparent background (silhouettes of unowned cards). */
+  plate: boolean;
 }
+
+/** What the provider is about to create (adapters may support only some, e.g. atlas units). */
+export type ViewKind = 'unit' | 'turret' | 'base' | 'backdrop' | 'projectile' | 'effect' | 'portrait';
 
 export interface VisualAdapter {
   readonly kind: VisualKind;
   /** False for stubs: the provider then falls back to the placeholder tier. */
   readonly available: boolean;
+  /**
+   * Whether this adapter can draw `def` as `what` right now (supported and loaded). Omitted means
+   * yes. When it answers no, the provider draws a placeholder and logs once (B5: tiers mix, and a
+   * half-migrated manifest still runs).
+   */
+  canDraw?(what: ViewKind, def: VisualDef): boolean;
   preload(ages: AgeId[]): Promise<void>;
   createUnit(r: ViewRequest): UnitView;
   createTurret(r: ViewRequest): TurretView;

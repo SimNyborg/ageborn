@@ -18,6 +18,9 @@
   overflow: auto;
   padding: 2px 4px 8px;
 }
+.wp-left > * {
+  flex-shrink: 0;
+}
 .wp-presets {
   display: flex;
   align-items: center;
@@ -129,7 +132,8 @@
   inset: -9px;
 }
 .wp-skinbtn {
-  min-height: 32px;
+  position: relative;
+  min-height: 36px;
   padding: 0 10px;
   border: 2px solid var(--ui-ink);
   border-radius: 10px;
@@ -140,6 +144,11 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
+}
+.wp-skinbtn::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
 }
 .wp-foot {
   display: flex;
@@ -235,7 +244,7 @@
   -webkit-text-stroke: 4px var(--ui-ink);
 }
 .wp-right__head .ui-tab {
-  min-height: 44px;
+  min-height: 48px;
   padding: 0 12px;
   font-size: 13px;
 }
@@ -247,6 +256,7 @@
 }
 .wp-grid {
   --card-w: 76px;
+  padding-top: 18px;
   flex: 1;
   overflow: auto;
   align-content: start;
@@ -286,11 +296,5 @@
   }
   .wp-skinbtn {
     display: none;
-  }
-  .ui-tabs--age .ui-tab__label {
-    display: none;
-  }
-  .ui-tabs--age .ui-tab {
-    padding: 0 6px;
   }
 }

@@ -100,7 +100,10 @@
 .ui-root *::after {
   box-sizing: border-box;
 }
-.ui-root button {
+:where(.ui-root) button,
+:where(.ui-root) input,
+:where(.ui-root) select,
+:where(.ui-root) textarea {
   font: inherit;
   color: inherit;
 }
@@ -117,6 +120,11 @@
   outline: 3px solid #fff;
   outline-offset: 3px;
   box-shadow: 0 0 0 6px rgba(59, 140, 255, 0.55);
+}
+/* Headings get focus programmatically on screen changes (for screen readers); no ring for them. */
+.ui-root [tabindex='-1']:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 .ui-icon {
   display: block;
@@ -1015,7 +1023,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 44px;
+  min-height: 48px;
   min-width: 48px;
   padding: 0 14px;
   border: 2px solid transparent;
@@ -1048,8 +1056,12 @@
 .ui-seg__icon {
   display: flex;
 }
+.ui-seg--sm {
+  padding: 3px;
+  gap: 3px;
+}
 .ui-seg--sm .ui-seg__opt {
-  min-height: 40px;
+  min-height: 48px;
   padding: 0 10px;
   font-size: 13px;
 }
@@ -1317,10 +1329,10 @@
 }
 .ui-art.is-silhouette .ui-art__img,
 .ui-art.is-silhouette .ui-art__fallback {
-  filter: brightness(0) opacity(0.55);
+  filter: brightness(0) opacity(0.6);
 }
 .ui-art.is-silhouette {
-  background: radial-gradient(circle at 50% 38%, #4a4575, #26223f 75%);
+  background: radial-gradient(circle at 50% 38%, #9d99c4, #6a6590 60%, #4a4570 100%);
 }
 
 .ui-foil {
@@ -1418,7 +1430,7 @@
   box-shadow: 0 4px 0 var(--ui-ink), 0 0 0 9px rgba(59, 140, 255, 0.55);
 }
 .ui-card.is-locked .ui-card__frame {
-  background: linear-gradient(160deg, #5a567a, #3a3658);
+  background: linear-gradient(160deg, #8a86ab, #57537a);
 }
 .ui-card__level {
   position: absolute;
@@ -1468,10 +1480,11 @@
 }
 .ui-card__lock {
   position: absolute;
-  inset: 0;
+  right: -6px;
+  bottom: -6px;
   display: grid;
   place-items: center;
-  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5));
 }
 .ui-card__ready {
   position: absolute;

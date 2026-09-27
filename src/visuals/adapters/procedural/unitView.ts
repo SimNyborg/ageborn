@@ -14,6 +14,7 @@ import { mulberry32, type CosmeticRng } from '@/core/rng';
 import { Animator } from '../../animator';
 import type { PartBaker } from '../../bake';
 import { FX_ZONES } from '../../effects/sprites';
+import { puppetBounds } from '../../draw';
 import { getPart } from '../../parts/registry';
 import { TRIM_COLORS } from '../../palette';
 import { CLIP_TIMING, STYLE } from '../../style';
@@ -72,6 +73,9 @@ export class ProceduralUnitView implements UnitView {
   private dead = false;
   private destroyed = false;
   private readonly skinAlpha: number;
+  /** Frosty breath puffs (snow aura skins, A5.8): where they leave the mouth and when the next comes. */
+  private readonly breathAt: { x: number; y: number } | null;
+  private breathMs = 0;
 
   constructor(private readonly o: UnitViewOptions) {
     const p = o.puppet;
@@ -111,6 +115,13 @@ export class ProceduralUnitView implements UnitView {
     this.root.addChild(this.overlay);
     this.puffs = new PuffList(this.overlay);
     this.animator = new Animator(clipResolver(o.def), procContext(p), o.seed);
+    if (p.aura === 'snow' && o.quality === 'high') {
+      const b = puppetBounds({ ...p, slots: p.slots.filter((sl) => sl.tag !== 'weapon') }, getPart);
+      this.breathAt = { x: b.maxX - 6, y: -p.heightLu * 0.46 };
+      this.breathMs = 600 + this.rng.next() * 900;
+    } else {
+      this.breathAt = null;
+    }
     this.applyAlpha();
     this.rig.apply((b) => this.animator.sample().get(b));
   }
@@ -257,8 +268,24 @@ export class ProceduralUnitView implements UnitView {
     }
     if (this.clock?.visible) this.clock.rotation = Math.sin(this.clockMs / 180) * 0.04;
     if (this.bubble?.visible) this.bubble.scale.set(((this.o.puppet.heightLu * 0.62) / 10) * (1 + 0.03 * Math.sin(this.clockMs / 160)));
+    if (this.breathAt && !this.dead) {
+      this.breathMs -= dtMs;
+      if (this.breathMs <= 0) {
+        this.breath(this.breathAt);
+        this.breathMs = 1400 + this.rng.next() * 900;
+      }
+    }
     this.puffs.update(dtMs);
     this.applyAlpha();
+  }
+
+  private breath(at: { x: number; y: number }): void {
+    for (let i = 0; i < 3; i++) {
+      const s = partSprite(this.o.baker, 'fx.p.dust', UI_ZONES);
+      s.tint = 0xf4f8fb;
+      s.position.set(at.x * this.facing, at.y + (this.rng.next() - 0.5) * 4);
+      this.puffs.add(s, { vx: this.facing * (18 + this.rng.next() * 16), vy: -6 - this.rng.next() * 8, life: 700 + this.rng.next() * 300, s0: 0.3, s1: 0.9, a0: 0.7 });
+    }
   }
 
   /** True once the die clip has finished (the view can then be destroyed). */

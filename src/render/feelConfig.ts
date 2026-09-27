@@ -11,6 +11,11 @@
  * Placeholders in `effectId` and `sound` are resolved per event by the mapper: `$spark` (hit spark by
  * damage type, or the effective spark / resisted puff), `$hitSound`, `$attackSound`, `$dieSound`,
  * `$spawnSound`, `$powerSound` and `$fanfare` (see `eventMapper.ts`).
+ *
+ * Per-power presets (A12 "Power lands: per-power preset"): every `powerImpact` plays
+ * `power.fx.<powerId>` if present, else `power.fx.<effect kind>`; the first impact of a cast also plays
+ * `power.fx.<powerId>.first`, else `power.fx.<effect kind>.first`. The mapper supplies the size options
+ * from the power's data (radius, zone, width, distance, duration), so the config only picks effects.
  */
 import type { FeelConfig, FeelRule } from '@/contracts';
 import raw from './feel.config.json';
@@ -31,6 +36,11 @@ export interface FeelRuleExt extends FeelRule {
   slowMo?: { scale: number; ms: number };
   /** Global freeze exempt from the rolling cap (base destroyed, A12). */
   globalExempt?: boolean;
+  /**
+   * Where the rule's particles go: at the event's anchor (default), or one on every live unit of the
+   * event's side, following it (`sideUnits`: Royal Decree, Nanite Surge).
+   */
+  fxTarget?: 'anchor' | 'sideUnits';
 }
 
 export interface FeelTuning {
@@ -71,6 +81,11 @@ export interface FeelTuning {
   telegraphMs: number;
   cheerMs: number;
   mechExplodeOneIn: number;
+  /**
+   * Length of the "shield up" bubble pop. The lasting bubble is the art's, drawn from
+   * `UnitPose.shieldBp` (B5), so the effect only marks the moment the shield lands.
+   */
+  shieldPopMs: number;
 }
 
 /** The full render feel config: the contract plus the render-only extensions. */
@@ -126,6 +141,7 @@ export function validateFeelConfig(c: RenderFeelConfig): string[] {
       if (!(Number.isInteger(p.count) && p.count >= 0)) out.push(`${key}.particles[${p.effectId}].count must be an integer >= 0`);
     }
     if (r.slowMo && !(r.slowMo.scale > 0 && r.slowMo.scale <= 1)) out.push(`${key}.slowMo.scale must be in (0, 1]`);
+    if (r.fxTarget !== undefined && !['anchor', 'sideUnits'].includes(r.fxTarget)) out.push(`${key}.fxTarget is unknown`);
   }
   return out;
 }

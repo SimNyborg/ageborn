@@ -23,10 +23,22 @@ export function ScreenFrame(p: {
 }) {
   const { t } = useKit();
   return (
-    <section class={`ui-screen ui-screen--${p.id} ${p.class ?? ''}`} data-screen={p.id} data-theme={p.theme} aria-labelledby={`${p.id}-title`}>
+    <section
+      class={`ui-screen ui-screen--${p.id} ${p.class ?? ''}`}
+      data-screen={p.id}
+      data-theme={p.theme}
+      aria-labelledby={`${p.id}-title`}
+    >
       <header class="ui-screen__head">
         {p.onBack ? (
-          <IconButton icon={<BackIcon size={26} />} label={t('ui.common.back')} onClick={p.onBack} variant="blue" testid="back" class="ui-screen__back" />
+          <IconButton
+            icon={<BackIcon size={26} />}
+            label={t('ui.common.back')}
+            onClick={p.onBack}
+            variant="blue"
+            testid="back"
+            class="ui-screen__back"
+          />
         ) : null}
         <div class="ui-screen__titles">
           <h1 class="ui-screen__title" id={`${p.id}-title`}>

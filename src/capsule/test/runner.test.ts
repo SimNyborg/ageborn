@@ -91,6 +91,19 @@ describe('ShowRunner (DESIGN A10 Input)', () => {
     expect(r2.state.index).toBe(2);
   });
 
+  it('shows "Tap!" late in the charge and a tap there queues the first strike', () => {
+    const { runner } = setup(silver());
+    while (runner.state.kind !== 'charge') runner.update(16);
+    expect(runner.state.prompt).toBeNull();
+    runner.tap();
+    while (runner.state.prompt !== 'tap') runner.update(16);
+    expect(runner.state.kind).toBe('charge');
+    runner.tap();
+    while (runner.state.kind === 'charge') runner.update(16);
+    expect(runner.state.kind).toBe('strike');
+    expect(runner.state.phase).toBe('run');
+  });
+
   it('tapping quickly strikes back to back without waiting', () => {
     const { runner } = setup(silver());
     while (runner.state.phase !== 'wait') runner.update(16);

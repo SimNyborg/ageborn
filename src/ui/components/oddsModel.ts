@@ -120,7 +120,13 @@ export function oddsModel(
         guaranteedIn: guaranteeIn(p.legendaryGuaranteeAt, pity.sinceLegendary),
         nextChanceBp: legendaryPityBp(capsules, nextLegendary),
       },
-      { id: 'newCard', since: pity.sinceNewCard, every: p.newCardEvery, guaranteedIn: guaranteeIn(p.newCardEvery, pity.sinceNewCard), nextChanceBp: null },
+      {
+        id: 'newCard',
+        since: pity.sinceNewCard,
+        every: p.newCardEvery,
+        guaranteedIn: guaranteeIn(p.newCardEvery, pity.sinceNewCard),
+        nextChanceBp: null,
+      },
       {
         id: 'wardrobeEpic',
         since: pity.wardrobeSinceEpic,
@@ -143,5 +149,7 @@ export function oddsModel(
 /** 7200 → "72%", 25 → "0.25%" (EN). */
 export function formatBp(bp: number, locale = 'en'): string {
   const digits = bp % 100 === 0 ? 0 : bp % 10 === 0 ? 1 : 2;
-  return new Intl.NumberFormat(locale, { style: 'percent', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(bp / 10000);
+  return new Intl.NumberFormat(locale, { style: 'percent', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(
+    bp / 10000,
+  );
 }

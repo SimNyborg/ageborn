@@ -65,7 +65,13 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
   return (
     <div class={`${css.item} ${item.isNew ? css.itemNew : ''}`} style={style} data-testid="capsule-summary-item" data-card={item.card}>
       <div class={css.badges}>
-        {item.isNew ? <span class={css.badge}>{t('capsule.new')}</span> : <span />}
+        {item.isNew ? (
+          <span class={css.badge}>{t('capsule.new')}</span>
+        ) : item.kind === 'skin' ? (
+          <span class={css.badgeSkin}>{t('capsule.skinStamp')}</span>
+        ) : (
+          <span />
+        )}
         {item.kind === 'card' && item.copies > 0 ? <span class={css.badgeCount}>{t('capsule.copiesTimes', { n: item.copies })}</span> : null}
       </div>
       <div class={css.portrait}>{url ? <img src={url} alt="" draggable={false} /> : initials(name)}</div>

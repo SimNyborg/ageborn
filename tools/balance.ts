@@ -1,0 +1,519 @@
+/**
+ * The balance matrix (DESIGN B12 `sim:balance`, A2.14).
+ *
+ * Runs, with both sides at tier V on the Balanced brain and every card at L7:
+ *
+ * - **Balanced mirror** (baseline vs baseline) in Full War and Short War: match length distribution,
+ *   Final Bell rate, evolve timings, first-mover advantage, turret share of kills, power coverage.
+ * - **Per card**: mirrored-seed matches of the card's test plan vs the baseline plan (each seed twice,
+ *   the test plan once on each side). Passes when the 95% CI of the win-rate delta lies within ±3 points
+ *   (full: 2,000 matches per card) or ±6 (smoke: 400 matches). Cards in the baseline plan are the control.
+ * - **Scenarios**: base time to kill per age and the A2.9 power damage per unit in zone.
+ * - **Damage per gold per card**, per age (reported, not gated).
+ *
+ * Exits non-zero when an A2.14 target fails (unless `--no-gate`). Library entry: `runBalance`.
+ */
+import { writeFileSync } from 'node:fs';
+import path from 'node:path';
+import type { AgeId, CardId, CompiledContent, FormatId } from '../src/contracts';
+import { content as gameContent } from '../src/content';
+import { BALANCED_GENERAL, playedResults, type JobResult, type MatchJob } from './lib/jobs';
+import { totalKills, type MatchSummary } from './lib/metrics';
+import { agesOf, allCardTests, baselinePlan, cardTest, type CardTest } from './lib/plans';
+import { runJobs, type RunOutcome } from './lib/runner';
+import { baseTimeToKill, powerCoverage } from './lib/scenarios';
+import { median, pairedDelta, proportion, quantile, shareWithin, type Estimate } from './lib/stats';
+import {
+  ciWithinCheck,
+  crashCheck,
+  fmtClock,
+  fmtEstimate,
+  fmtNum,
+  fmtPct,
+  infoCheck,
+  markdownTable,
+  maxCheck,
+  rangeCheck,
+  REPORTS_DIR,
+  requireSamples,
+  startReport,
+  type Check,
+  type Report,
+} from './report';
+
+export type BalanceMode = 'smoke' | 'full';
+
+export interface BalanceOptions {
+  mode: BalanceMode;
+  /** Seeds per tested card; each seed is played twice (mirrored), so matches = 2 × pairs. */
+  pairsPerCard: number;
+  /** Balanced-mirror matches per format (Full War and Short War). */
+  mirrorMatches: number;
+  /** Cards to test (null = every card outside the baseline). */
+  cards: CardId[] | null;
+  tier: number;
+  level: number;
+  seed: number;
+  workers: number;
+  /** CI half-width bound in win-rate points (A2.14: 3 full, 6 smoke). */
+  bound: number;
+  mirror: boolean;
+  scenarios: boolean;
+  onProgress?: (done: number, total: number) => void;
+}
+
+/** A2.14 run sizes: full 2,000 matches per card (±3), smoke 400 (±6). */
+export function balanceDefaults(mode: BalanceMode): Omit<BalanceOptions, 'workers' | 'onProgress'> {
+  return mode === 'full'
+    ? { mode, pairsPerCard: 1000, mirrorMatches: 1000, cards: null, tier: 5, level: 7, seed: 1, bound: 3, mirror: true, scenarios: true }
+    : { mode, pairsPerCard: 200, mirrorMatches: 200, cards: null, tier: 5, level: 7, seed: 1, bound: 6, mirror: true, scenarios: true };
+}
+
+/** DESIGN A2.14 / A2.4 target numbers (seconds, percent). */
+export const TARGETS = {
+  fullMedian: { value: 420, tolerance: 30 },
+  shortMedian: { value: 270, tolerance: 30 },
+  fullWindow: { lo: 300, hi: 540, minShare: 80 },
+  finalBellMaxPct: 3,
+  firstEvolve: { value: 60, tolerance: 10 },
+  /** A2.4 expected evolve times after the first: 2:05, 3:20, 4:50. */
+  laterEvolves: [125, 200, 290],
+  laterTolerance: 20,
+  firstMover: { lo: 47, hi: 53 },
+  turretShare: { lo: 20, hi: 35 },
+  baseKill: { lo: 40, hi: 60 },
+  powerLight: { lo: 60, hi: 100 },
+  powerHeavy: { lo: 15, hi: 35 },
+} as const;
+
+const TICKS_PER_SEC = 20;
+const MIRROR_FORMATS: readonly FormatId[] = ['full', 'short'];
+
+function botSeat(tier: number): MatchJob['seats'][number] {
+  return { kind: 'bot', generalId: BALANCED_GENERAL, tier };
+}
+
+/** The tested cards: `cards` (baseline members are reported as control) or every non-baseline card. */
+export function selectTests(content: CompiledContent, cards: CardId[] | null): CardTest[] {
+  return cards ? cards.map((c) => cardTest(content, c)) : allCardTests(content);
+}
+
+/** Builds every match job of a balance run, in a stable order. */
+export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: readonly CardTest[]): MatchJob[] {
+  const jobs: MatchJob[] = [];
+  const base = baselinePlan(content);
+  const seats: MatchJob['seats'] = [botSeat(o.tier), botSeat(o.tier)];
+  if (o.mirror) {
+    for (const format of MIRROR_FORMATS) {
+      for (let k = 0; k < o.mirrorMatches; k += 1) {
+        jobs.push({ id: jobs.length, tag: `mirror.${format}`, seed: o.seed + k, format, level: o.level, plans: [base, base], seats, subject: null });
+      }
+    }
+  }
+  for (const t of tests) {
+    if (t.inBaseline) continue;
+    for (let k = 0; k < o.pairsPerCard; k += 1) {
+      const seed = o.seed + k;
+      jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format: 'full', level: o.level, plans: [t.plan, base], seats, subject: 0 });
+      jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format: 'full', level: o.level, plans: [base, t.plan], seats, subject: 1 });
+    }
+  }
+  return jobs;
+}
+
+export interface MirrorStats {
+  format: FormatId;
+  matches: number;
+  medianSec: number;
+  p10Sec: number;
+  p90Sec: number;
+  withinWindowPct: number;
+  finalBellPct: number;
+  /** Median seconds of evolve n (index 0 = first evolve), both sides pooled. */
+  evolveMedianSec: number[];
+  evolveSamples: number[];
+  firstMover: Estimate;
+  turretSharePct: number;
+  kills: number;
+  draws: number;
+}
+
+export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): MirrorStats {
+  const lengths = ms.map((m) => m.ticks / TICKS_PER_SEC);
+  const evolves: number[][] = [];
+  for (const m of ms) {
+    for (const s of m.sides) {
+      s.evolveTicks.forEach((t, i) => {
+        (evolves[i] ??= []).push(t / TICKS_PER_SEC);
+      });
+    }
+  }
+  let side0 = 0;
+  let turret = 0;
+  let kills = 0;
+  let draws = 0;
+  for (const m of ms) {
+    side0 += m.winner === null ? 0.5 : m.winner === 0 ? 1 : 0;
+    if (m.winner === null) draws += 1;
+    const k = totalKills(m);
+    turret += k.turret;
+    kills += Object.values(k).reduce((a, b) => a + b, 0);
+  }
+  return {
+    format,
+    matches: ms.length,
+    medianSec: median(lengths),
+    p10Sec: quantile(lengths, 0.1),
+    p90Sec: quantile(lengths, 0.9),
+    withinWindowPct: shareWithin(lengths, TARGETS.fullWindow.lo, TARGETS.fullWindow.hi) * 100,
+    finalBellPct: ms.length ? (ms.filter((m) => m.finalBell).length * 100) / ms.length : Number.NaN,
+    evolveMedianSec: evolves.map((xs) => median(xs)),
+    evolveSamples: evolves.map((xs) => xs.length),
+    firstMover: proportion(side0, ms.length),
+    turretSharePct: kills > 0 ? (turret * 100) / kills : Number.NaN,
+    kills,
+    draws,
+  };
+}
+
+function mirrorChecks(s: MirrorStats): Check[] {
+  const f = s.format;
+  const checks: Check[] = [];
+  const clock = (v: number): string => fmtClock(v);
+  if (f === 'full') {
+    const t = TARGETS.fullMedian;
+    checks.push(rangeCheck('mirror.full.median', 'Full War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock }));
+    checks.push(
+      rangeCheck('mirror.full.window', 'Full War matches between 5:00 and 9:00', s.withinWindowPct, TARGETS.fullWindow.minShare, 100, {
+        target: `≥ ${TARGETS.fullWindow.minShare}%`,
+        show: (v) => fmtPct(v),
+      }),
+    );
+  } else {
+    const t = TARGETS.shortMedian;
+    checks.push(rangeCheck(`mirror.${f}.median`, 'Short War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock }));
+  }
+  checks.push(maxCheck(`mirror.${f}.finalBell`, `${f === 'full' ? 'Full' : 'Short'} War Final Bell rate`, s.finalBellPct, TARGETS.finalBellMaxPct - 1e-9, { target: `< ${TARGETS.finalBellMaxPct}%`, show: (v) => fmtPct(v) }));
+  if (f === 'full') {
+    const fe = TARGETS.firstEvolve;
+    checks.push(rangeCheck('mirror.full.firstEvolve', 'First evolve (median)', s.evolveMedianSec[0] ?? Number.NaN, fe.value - fe.tolerance, fe.value + fe.tolerance, { target: `${clock(fe.value)} ± ${fe.tolerance} s`, show: clock }));
+    TARGETS.laterEvolves.forEach((want, i) => {
+      const got = s.evolveMedianSec[i + 1] ?? Number.NaN;
+      checks.push(
+        rangeCheck(`mirror.full.evolve${i + 2}`, `Evolve ${i + 2} (median)`, got, want - TARGETS.laterTolerance, want + TARGETS.laterTolerance, {
+          target: `${clock(want)} ± ${TARGETS.laterTolerance} s (A2.4)`,
+          show: clock,
+        }),
+      );
+    });
+    const fm = TARGETS.firstMover;
+    checks.push(
+      requireSamples(
+        rangeCheck('mirror.full.firstMover', 'First-mover advantage (side 0 score)', s.firstMover.value, fm.lo, fm.hi, { target: `${fm.lo}-${fm.hi}%`, show: () => fmtEstimate(s.firstMover, 1, '%') }),
+        s.matches,
+      ),
+    );
+    const ts = TARGETS.turretShare;
+    checks.push(requireSamples(rangeCheck('mirror.full.turretShare', 'Turret share of kills', s.turretSharePct, ts.lo, ts.hi, { target: `${ts.lo}-${ts.hi}%`, show: (v) => fmtPct(v) }), s.matches));
+  }
+  return checks;
+}
+
+export interface CardResult {
+  card: CardId;
+  age: AgeId;
+  kind: CardTest['kind'];
+  rarity: string;
+  inBaseline: boolean;
+  replaces: CardId | null;
+  matches: number;
+  winRatePct: number;
+  delta: Estimate;
+  verdict: Check['verdict'];
+}
+
+/** Pair scores per seed for one card: mean of the subject's two scores. */
+export function pairScores(results: readonly JobResult[]): number[] {
+  const bySeed = new Map<number, number[]>();
+  for (const r of results) {
+    if (r.subject === null) continue;
+    const m = r.summary;
+    const score = m.winner === null ? 0.5 : m.winner === r.subject ? 1 : 0;
+    const list = bySeed.get(m.seed) ?? [];
+    list.push(score);
+    bySeed.set(m.seed, list);
+  }
+  return [...bySeed.keys()].sort((a, b) => a - b).map((k) => {
+    const xs = bySeed.get(k) as number[];
+    return xs.reduce((a, b) => a + b, 0) / xs.length;
+  });
+}
+
+export interface DamagePerGold {
+  card: CardId;
+  age: AgeId;
+  damage: number;
+  gold: number;
+  perGold: number;
+}
+
+/** Whole damage per gold per card over every side of every match (A2.14: reported per age). */
+export function damagePerGold(content: CompiledContent, ms: readonly MatchSummary[]): DamagePerGold[] {
+  const dmg = new Map<CardId, number>();
+  const gold = new Map<CardId, number>();
+  for (const m of ms) {
+    for (const s of m.sides) {
+      for (const [c, d] of Object.entries(s.damage)) dmg.set(c, (dmg.get(c) ?? 0) + d);
+      for (const [c, g] of Object.entries(s.spent)) gold.set(c, (gold.get(c) ?? 0) + g);
+    }
+  }
+  const out: DamagePerGold[] = [];
+  for (const [card, g] of gold) {
+    const def = content.units[card] ?? content.turrets[card];
+    if (!def || g <= 0) continue;
+    const d = (dmg.get(card) ?? 0) / 100;
+    out.push({ card, age: def.age, damage: d, gold: g, perGold: d / g });
+  }
+  const order = agesOf(content);
+  return out.sort((a, b) => order.indexOf(a.age) - order.indexOf(b.age) || b.perGold - a.perGold);
+}
+
+export interface PowerUse {
+  power: CardId;
+  casts: number;
+  unitsHitPerCast: number;
+}
+
+export function powerUse(ms: readonly MatchSummary[]): PowerUse[] {
+  const acc = new Map<CardId, { casts: number; hit: number }>();
+  for (const m of ms) {
+    for (const s of m.sides) {
+      for (const [p, v] of Object.entries(s.powers)) {
+        const a = acc.get(p) ?? { casts: 0, hit: 0 };
+        a.casts += v.casts;
+        a.hit += v.unitsHit;
+        acc.set(p, a);
+      }
+    }
+  }
+  return [...acc.entries()].map(([power, a]) => ({ power, casts: a.casts, unitsHitPerCast: a.casts ? a.hit / a.casts : 0 })).sort((a, b) => a.power.localeCompare(b.power));
+}
+
+export interface BalanceData {
+  bots: { source: string; reason: string | null };
+  mirrors: MirrorStats[];
+  cards: CardResult[];
+  baseKill: ReturnType<typeof baseTimeToKill>[];
+  powerCoverage: NonNullable<ReturnType<typeof powerCoverage>>[];
+  damagePerGold: DamagePerGold[];
+  powerUse: PowerUse[];
+  matches: number;
+  avgMatchMs: number;
+}
+
+/** Scenario checks: base time to kill and A2.9 power damage per unit (no bots needed). */
+export function scenarioChecks(content: CompiledContent): { checks: Check[]; baseKill: BalanceData['baseKill']; coverage: BalanceData['powerCoverage'] } {
+  const checks: Check[] = [];
+  const baseKill = agesOf(content).map((age) => baseTimeToKill(content, age));
+  for (const b of baseKill) {
+    checks.push(
+      rangeCheck(`scenario.baseKill.${b.age}`, `Base time to kill, ${b.age} (60 pop of L1 Commons)`, b.seconds, TARGETS.baseKill.lo, TARGETS.baseKill.hi, {
+        target: `${TARGETS.baseKill.lo}-${TARGETS.baseKill.hi} s`,
+        show: (v) => (Number.isFinite(v) ? `${v.toFixed(1)} s` : 'base not destroyed'),
+      }),
+    );
+  }
+  const coverage = Object.values(content.powers)
+    .map((p) => powerCoverage(content, p))
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+  for (const c of coverage) {
+    const okLight = c.lightPct >= TARGETS.powerLight.lo && c.lightPct <= TARGETS.powerLight.hi;
+    const okHeavy = c.heavyPct >= TARGETS.powerHeavy.lo && c.heavyPct <= TARGETS.powerHeavy.hi;
+    checks.push({
+      id: `scenario.power.${c.power}`,
+      metric: `Power damage per unit, ${c.power}`,
+      target: `${TARGETS.powerLight.lo}-${TARGETS.powerLight.hi}% of ${c.light ?? 'Infantry'} / ${TARGETS.powerHeavy.lo}-${TARGETS.powerHeavy.hi}% of ${c.heavy ?? 'Heavy'}`,
+      value: `${fmtNum(c.perUnit, 0)} HP: ${fmtPct(c.lightPct, 0)} / ${fmtPct(c.heavyPct, 0)}`,
+      verdict: okLight && okHeavy ? 'pass' : 'fail',
+    });
+  }
+  return { checks, baseKill, coverage };
+}
+
+/** Plays a balance run and returns the report (no files written). */
+export async function runBalance(o: BalanceOptions, content: CompiledContent = gameContent): Promise<Report<BalanceData>> {
+  const tests = selectTests(content, o.cards);
+  const params = {
+    mode: o.mode,
+    pairsPerCard: o.pairsPerCard,
+    matchesPerCard: o.pairsPerCard * 2,
+    mirrorMatchesPerFormat: o.mirror ? o.mirrorMatches : 0,
+    cards: o.cards ?? 'all outside the baseline',
+    tier: o.tier,
+    level: o.level,
+    seed: o.seed,
+    workers: o.workers,
+    ciBound: o.bound,
+    contentHash: content.hash,
+  };
+  const rep = startReport<BalanceData>('balance', 'Ageborn balance matrix (DESIGN A2.14)', params);
+  const jobs = balanceJobs(content, o, tests);
+  const run: RunOutcome = await runJobs(jobs, { workers: o.workers, ...(o.onProgress ? { onProgress: o.onProgress } : {}) });
+  const played = playedResults(run.results);
+  const byTag = new Map<string, JobResult[]>();
+  for (const r of played) {
+    const list = byTag.get(r.tag) ?? [];
+    list.push(r);
+    byTag.set(r.tag, list);
+  }
+
+  const checks: Check[] = jobs.length > 0 ? [crashCheck('run.crashes', run.results)] : [];
+  const notes: string[] = [];
+  if (run.botSource !== 'src/ai' && jobs.length > 0) notes.push(`Bots: the scripted Balanced proxy stood in for the AI (${run.botReason ?? 'src/ai unavailable'}). Results do not judge balance.`);
+
+  const mirrors: MirrorStats[] = [];
+  if (o.mirror) {
+    for (const f of MIRROR_FORMATS) {
+      const s = mirrorStats(f, (byTag.get(`mirror.${f}`) ?? []).map((r) => r.summary));
+      mirrors.push(s);
+      checks.push(...mirrorChecks(s));
+    }
+  }
+
+  const cards: CardResult[] = [];
+  for (const t of tests) {
+    const rs = byTag.get(`card.${t.card}`) ?? [];
+    const pairs = pairScores(rs);
+    const delta = pairedDelta(pairs);
+    let verdict: Check['verdict'] = 'info';
+    if (!t.inBaseline) {
+      const c = requireSamples(ciWithinCheck(`card.${t.card}`, `Win-rate delta, ${t.card} (${t.age} ${t.rarity} ${t.kind})`, delta, o.bound), delta.n);
+      checks.push(c);
+      verdict = c.verdict;
+    }
+    const wins = rs.reduce((a, r) => a + (r.summary.winner === null ? 0.5 : r.summary.winner === r.subject ? 1 : 0), 0);
+    cards.push({
+      card: t.card,
+      age: t.age,
+      kind: t.kind,
+      rarity: t.rarity,
+      inBaseline: t.inBaseline,
+      replaces: t.replaces,
+      matches: rs.length,
+      winRatePct: rs.length ? (wins * 100) / rs.length : Number.NaN,
+      delta,
+      verdict,
+    });
+  }
+  const control = cards.filter((c) => c.inBaseline).map((c) => c.card);
+  if (control.length > 0) notes.push(`Baseline cards (the control, measured by the Balanced mirror): ${control.join(', ')}.`);
+
+  let baseKill: BalanceData['baseKill'] = [];
+  let coverage: BalanceData['powerCoverage'] = [];
+  if (o.scenarios) {
+    const sc = scenarioChecks(content);
+    checks.push(...sc.checks);
+    baseKill = sc.baseKill;
+    coverage = sc.coverage;
+  }
+
+  const all = played.map((r) => r.summary);
+  const dpg = damagePerGold(content, all);
+  const pu = powerUse(all);
+  if (dpg.length > 0) checks.push(infoCheck('info.damagePerGold', 'Damage per gold per card', `${dpg.length} cards, see table`));
+  const avgMatchMs = played.length ? played.reduce((a, r) => a + r.ms, 0) / played.length : 0;
+  return rep.finish(
+    checks,
+    { bots: { source: run.botSource, reason: run.botReason }, mirrors, cards, baseKill, powerCoverage: coverage, damagePerGold: dpg, powerUse: pu, matches: run.results.length, avgMatchMs },
+    notes,
+  );
+}
+
+/** Markdown sections for the balance report. */
+export function balanceSections(r: Report<BalanceData>): string[] {
+  const d = r.data;
+  const out: string[] = [];
+  if (d.mirrors.length > 0) {
+    out.push(
+      '## Balanced mirror',
+      '',
+      markdownTable(
+        ['Format', 'Matches', 'Median', 'P10', 'P90', '5:00-9:00', 'Final Bell', 'Evolves (median)', 'Side 0 score', 'Turret kill share'],
+        d.mirrors.map((m) => [
+          m.format,
+          m.matches,
+          fmtClock(m.medianSec),
+          fmtClock(m.p10Sec),
+          fmtClock(m.p90Sec),
+          fmtPct(m.withinWindowPct),
+          fmtPct(m.finalBellPct),
+          m.evolveMedianSec.map((s) => fmtClock(s)).join(' / '),
+          fmtEstimate(m.firstMover, 1, '%'),
+          fmtPct(m.turretSharePct),
+        ]),
+      ),
+    );
+  }
+  if (d.cards.length > 0) {
+    out.push(
+      '## Cards',
+      '',
+      markdownTable(
+        ['Card', 'Age', 'Kind', 'Rarity', 'Replaces', 'Matches', 'Win rate', 'Delta [95% CI]', 'Verdict'],
+        d.cards.map((c) => [
+          c.card,
+          c.age,
+          c.kind,
+          c.rarity,
+          c.inBaseline ? '(baseline)' : (c.replaces ?? '-'),
+          c.matches,
+          fmtPct(c.winRatePct),
+          c.inBaseline ? '-' : fmtEstimate(c.delta, 1),
+          c.inBaseline ? 'control' : c.verdict,
+        ]),
+      ),
+    );
+  }
+  if (d.baseKill.length > 0) {
+    out.push(
+      '## Base time to kill',
+      '',
+      markdownTable(
+        ['Age', 'Army', 'Pop', 'First hit to destroyed', 'Spawn to destroyed'],
+        d.baseKill.map((b) => [b.age, Object.entries(b.army).map(([c, n]) => `${n} ${c}`).join(', '), b.pop, `${fmtNum(b.seconds)} s`, `${fmtNum(b.fromSpawnSeconds)} s`]),
+      ),
+    );
+  }
+  if (d.powerCoverage.length > 0 || d.powerUse.length > 0) {
+    out.push(
+      '## Powers',
+      '',
+      markdownTable(
+        ['Power', 'A2.9 damage per unit', 'vs Infantry', 'vs Heavy', 'Casts in matches', 'Enemies hit per cast'],
+        [...new Set([...d.powerCoverage.map((x) => x.power), ...d.powerUse.map((x) => x.power)])].sort().map((id) => {
+          const c = d.powerCoverage.find((x) => x.power === id);
+          const u = d.powerUse.find((x) => x.power === id);
+          return [id, c ? fmtNum(c.perUnit, 0) : '-', c ? fmtPct(c.lightPct, 0) : '-', c ? fmtPct(c.heavyPct, 0) : '-', u?.casts ?? 0, u ? fmtNum(u.unitsHitPerCast, 2) : '-'];
+        }),
+      ),
+    );
+  }
+  if (d.damagePerGold.length > 0) {
+    out.push('## Damage per gold (reported per age, not gated)', '', markdownTable(['Card', 'Age', 'Damage', 'Gold', 'Damage per gold'], d.damagePerGold.map((x) => [x.card, x.age, fmtNum(x.damage, 0), x.gold, fmtNum(x.perGold, 2)])));
+  }
+  out.push('', `Bots: ${d.bots.source}${d.bots.reason ? ` (${d.bots.reason})` : ''}. ${d.matches} matches, ${fmtNum(d.avgMatchMs, 0)} ms per match on average.`);
+  return out;
+}
+
+/** Per-card rows as CSV (for spreadsheets). */
+export function writeCardsCsv(r: Report<BalanceData>, dir: string = REPORTS_DIR): string {
+  const file = path.join(dir, 'balance-cards.csv');
+  const rows = [
+    'card,age,kind,rarity,in_baseline,replaces,matches,win_rate_pct,delta_pts,ci_lo,ci_hi,verdict',
+    ...r.data.cards.map((c) =>
+      [c.card, c.age, c.kind, c.rarity, c.inBaseline, c.replaces ?? '', c.matches, fmtNum(c.winRatePct, 2), fmtNum(c.delta.value, 2), fmtNum(c.delta.lo, 2), fmtNum(c.delta.hi, 2), c.inBaseline ? 'control' : c.verdict].join(','),
+    ),
+  ];
+  writeFileSync(file, `${rows.join('\n')}\n`);
+  return file;
+}

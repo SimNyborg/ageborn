@@ -22,7 +22,7 @@ part('future.torso.armor', [
 /** Charcoal stealth suit with a team stripe and a mint seam (EMP Saboteur). */
 part('future.torso.suit', [
   { d: torsoShape(1), zone: 'cloth' },
-  { d: limb(-8, -20, 2.6, 9, -1, 2.6), zone: 'team', banner: true },
+  { d: limb(-8, -20, 3.6, 9, -1, 3.6), zone: 'team', banner: true },
   { d: join(rrect(-10, -4, 20.6, 3, 1.4)), zone: 'leather', line: 1.6 },
   { d: join(circle(4, -12, 1.4), circle(-4, -8, 1.2)), zone: 'glow', line: 0, shade: false, light: false },
 ]);
@@ -284,7 +284,7 @@ part('future.base.antenna', [
 part('future.base.holo', [
   { d: rrect(-2, -2, 4, 40, 2), zone: 'metal2', line: 1.6 },
   { d: blob([2, 0, 24, 2, 24, 26, 2, 24], 0.3), zone: 'team', banner: true, line: 1.4, alpha: 0.85 },
-  { d: star(13, 13, 4, 2, 6, 45), zone: 'white', line: 0, alpha: 0.7, shade: false, light: false },
+  { d: star(13, 13, 4, 2.4, 6.4, -90), zone: 'white', line: 0, alpha: 0.7, shade: false, light: false },
 ]);
 part('future.base.ledge', [
   { d: rrect(-22, -5, 42, 6, 3), zone: 'cloth2' },

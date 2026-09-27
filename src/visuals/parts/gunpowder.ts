@@ -93,10 +93,10 @@ part('gunpowder.bicorne', [
 ]);
 /** Grenadier mitre cap: a tall front plate in team colour with a brass badge. */
 part('gunpowder.mitre', [
-  { d: blob([-12.6, -16, -11, -30, -4, -44, 2, -46, 6, -40, 12, -18, 0, -18.6], 0.7), zone: 'team', banner: true },
-  { d: blob([0.6, -40, 5, -41, 11, -19, 6, -19], 0.6), zone: 'cloth2', line: 1.6 },
-  { d: star(5.6, -29, 6, 1.6, 3.4), zone: 'accent', line: 1.2, shade: false },
-  { d: circle(1.6, -46, 2.4), zone: 'cloth2', line: 1.4 },
+  { d: blob([-12.6, -16, -11, -28, -4, -39, 2, -41, 6, -36, 12, -18, 0, -18.6], 0.7), zone: 'team', banner: true },
+  { d: blob([0.6, -36, 5, -37, 11, -19, 6, -19], 0.6), zone: 'cloth2', line: 1.6 },
+  { d: star(5.6, -27, 6, 1.6, 3.4), zone: 'accent', line: 1.2, shade: false },
+  { d: circle(1.6, -41, 2.4), zone: 'cloth2', line: 1.4 },
 ]);
 /** Cuirassier helmet with a crest and a team horsehair plume. */
 part('gunpowder.helmet.crest', [
@@ -177,6 +177,7 @@ part('gunpowder.horse.bridle', [
 
 part('gunpowder.cannon.carriage', [
   { d: poly([-30, -6, -26, -12, 8, -24, 14, -22, 12, -14, -24, -2]), zone: 'wood' },
+  { d: poly([-24, -8.6, 6, -19.6, 7, -16.4, -23, -5.4]), zone: 'team', banner: true, line: 1.2, shade: false },
   { d: join(rect(-16, -12, 2, 8), rect(-4, -18, 2, 8)), zone: 'wood2', line: 0, shade: false, light: false },
   { d: rrect(-32, -7, 8, 7, 2), zone: 'wood2', line: 2 },
   { d: blob([-2, -24, 6, -30, 14, -28, 14, -20, 4, -18], 0.7), zone: 'wood' },

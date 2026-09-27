@@ -124,17 +124,17 @@ class UnitPair {
   private readonly rimFilter = flatFilter(RARITY_COLORS.legendary);
   readonly baseScale: number;
 
-  constructor(art: ArtProvider, visualId: string, skin: string | null, teamPreset: TeamPreset, rimColor: number) {
+  constructor(art: ArtProvider, visualId: string, skin: string | null, teamPreset: TeamPreset, rimColor: number, group: 'epic' | 'legendary') {
     const o = { visualId, side: 0 as const, teamPreset, ...(skin ? { skin } : {}) };
     this.rim = art.createUnit(o);
     this.body = art.createUnit(o);
     this.rimFilter = flatFilter(rimColor);
-    this.rim.root.filters = [this.rimFilter, new BlurFilter({ strength: 6, quality: 3 })];
+    this.rim.root.filters = [this.rimFilter, new BlurFilter({ strength: 9, quality: 3 })];
     this.rim.root.blendMode = 'add';
     this.body.root.filters = [this.bodyFilter];
     this.root.addChild(this.rim.root, this.body.root);
     for (const u of [this.rim, this.body]) {
-      u.setPose({ x: 0, y: 0, facing: 1, hpBp: 10000, shieldBp: 0, stunned: false, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: 'legendary' });
+      u.setPose({ x: 0, y: 0, facing: 1, hpBp: 10000, shieldBp: 0, stunned: false, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: group });
       u.play('idle', { loop: true });
     }
     const b = this.body.root.getLocalBounds();
@@ -280,7 +280,7 @@ export class Walkout {
     this.flare.position.set(640, 300);
     this.flare.alpha = 0;
 
-    this.unit = new UnitPair(d.art, info.visualId, card.skin, d.teamPreset, this.color);
+    this.unit = new UnitPair(d.art, info.visualId, card.skin, d.teamPreset, this.color, this.mini ? 'epic' : 'legendary');
     this.unitHolder.addChild(this.unit.root);
     this.unitHolder.position.set(this.mini ? 640 : 560, this.mini ? 470 : FLOOR_Y);
     this.unitHolder.scale.set(0);
@@ -297,7 +297,7 @@ export class Walkout {
     const glyph = ageGlyph(info.age, this.mini ? 46 : 62);
     glyph.position.set(-name.width / 2 - (this.mini ? 36 : 48), 0);
     this.bannerName.addChild(glyph, name);
-    this.bannerName.position.set(640, this.mini ? 606 : 628);
+    this.bannerName.position.set(640, this.mini ? 590 : 612);
     this.bannerName.alpha = 0;
 
     this.buildStampOrBar(card);
@@ -337,12 +337,14 @@ export class Walkout {
       const l = label(text, 16, 0xffffff, { outline: 4 });
       this.stampOrBar.addChild(g, l);
     }
-    this.stampOrBar.position.set(640, this.mini ? 660 : 684);
+    this.stampOrBar.position.set(640, this.mini ? 644 : 668);
   }
 
   /** Advances to step time `t` (ms). */
   update(t: number, dtMs: number): void {
     this.rings.update(dtMs, this.mini ? 1.4 : 0.9 + (this.dropped ? 0.6 : 0));
+    // The floor light follows the unit across the lane.
+    this.rings.root.x = this.floorGlow.x = this.unitHolder.x;
     this.unit.update(dtMs);
     if (this.mini) this.updateMini(t);
     else if (this.beats) this.updateLegendary(this.beats, t, dtMs);
@@ -372,7 +374,7 @@ export class Walkout {
       this.unitHolder.scale.set(this.unit.baseScale * (this.dropped ? 1 : growScale));
       this.unitHolder.y = FLOOR_Y + bob - (this.dropped ? 0 : 40 * (1 - g));
     }
-    this.unit.setRim(this.dropped ? Math.max(0, 1 - span(t, b.drop, b.drop + 500)) : 0.85 * span(t, b.grow[0], b.grow[0] + 300), 1.06);
+    this.unit.setRim(this.dropped ? Math.max(0, 1 - span(t, b.drop, b.drop + 500)) : span(t, b.grow[0], b.grow[0] + 300), 1.08 + 0.02 * Math.sin(t / 90));
 
     // The drop: flash, shockwave, colour.
     if (!this.dropped && t >= b.drop) {
@@ -418,10 +420,12 @@ export class Walkout {
     const bn = span(t, b.banner[0], b.banner[0] + 450);
     this.bannerTop.alpha = Math.min(1, bn * 2) * (1 - outro);
     this.bannerTop.scale.set(lerp(1.8, 1, easeOutBack(bn, 2)));
-    this.bannerTop.style.letterSpacing = lerp(40, 6, easeOutCubic(bn));
+    // Letters close in as the banner lands (re-rasterised only when the spacing changes).
+    const spacing = Math.round(lerp(40, 6, easeOutCubic(bn)) / 2) * 2;
+    if (this.bannerTop.style.letterSpacing !== spacing) this.bannerTop.style.letterSpacing = spacing;
     const nm = span(t, b.banner[0] + 150, b.banner[0] + 550);
     this.bannerName.alpha = nm * (1 - outro);
-    this.bannerName.y = 628 + 30 * (1 - easeOutCubic(nm));
+    this.bannerName.y = 612 + 30 * (1 - easeOutCubic(nm));
     const sb = span(t, b.banner[0] + 300, b.banner[0] + 700);
     this.stampOrBar.alpha = sb * (1 - outro);
     this.stampOrBar.scale.set(easeOutElastic(sb));
@@ -432,8 +436,8 @@ export class Walkout {
     const B = MINI_BEATS;
     const out = span(t, B.out[0], B.out[1]);
     const inn = span(t, 0, 200);
-    this.dim.alpha = 0.62 * inn * (1 - out);
-    this.cone.alpha = 0.4 * inn * (1 - out);
+    this.dim.alpha = 0.82 * inn * (1 - out);
+    this.cone.alpha = 0.45 * inn * (1 - out);
     this.floorGlow.alpha = 0.8 * inn * (1 - out);
     this.rings.root.alpha = 0.7 * inn * (1 - out);
     const pop = span(t, B.pop[0], B.pop[1]);

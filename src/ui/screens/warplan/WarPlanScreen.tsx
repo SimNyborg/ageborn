@@ -93,7 +93,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const [skinFor, setSkinFor] = useState<CardId | null>(null);
   const [renaming, setRenaming] = useState(false);
 
-  const plan: WarPlan = s.warPlans[preset] ?? { ...(s.warPlans[s.activePlan] ?? emptyPlan(content, PRESET_LABELS[preset]!)), name: PRESET_LABELS[preset]! };
+  const plan: WarPlan = s.warPlans[preset] ?? {
+    ...(s.warPlans[s.activePlan] ?? emptyPlan(content, PRESET_LABELS[preset]!)),
+    name: PRESET_LABELS[preset]!,
+  };
   const loadout = normalizeLoadout(plan.loadouts[age] ?? emptyPlan(content, '').loadouts[age]);
   const format = nextFormat(s, content);
   const fAges = formatAges(content, format);
@@ -113,7 +116,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   function pick(card: CardId) {
     const kind = slotKindOf(content, card);
     if (!kind) return;
-    const target = selected && selected.kind === kind ? selected : (firstEmptySlot(content, loadout, card) ?? (kind === 'power' ? { kind: 'power' as const } : null));
+    const target =
+      selected && selected.kind === kind
+        ? selected
+        : (firstEmptySlot(content, loadout, card) ?? (kind === 'power' ? { kind: 'power' as const } : null));
     if (!target) {
       toasts.show(t('ui.warplan.pickSlot'), { tone: 'info' });
       return;
@@ -207,26 +213,48 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       <div class="wp">
         <div class="wp-left">
           <div class="wp-presets">
-            <Tabs label={t('ui.warplan.presets')} items={presetItems} value={String(preset)} onChange={(v) => { setPreset(Number(v)); setSelected(null); }} variant="folder" testid="presets" />
+            <Tabs
+              label={t('ui.warplan.presets')}
+              items={presetItems}
+              value={String(preset)}
+              onChange={(v) => {
+                setPreset(Number(v));
+                setSelected(null);
+              }}
+              variant="folder"
+              testid="presets"
+            />
             <IconButton icon={<PencilIcon size={22} />} label={t('ui.warplan.rename')} onClick={() => setRenaming(true)} testid="rename" />
             {preset === s.activePlan ? (
               <span class="wp-inuse" data-testid="plan-in-use">
                 <CheckIcon size={18} /> {t('ui.warplan.inUse')}
               </span>
             ) : (
-              <Button variant="green" size="sm" testid="use-plan" onClick={() => {
-                if (!s.warPlans[preset]) commit(plan);
-                services.setActivePlan(preset);
-              }}>
+              <Button
+                variant="green"
+                size="sm"
+                testid="use-plan"
+                onClick={() => {
+                  if (!s.warPlans[preset]) commit(plan);
+                  services.setActivePlan(preset);
+                }}
+              >
                 {t('ui.warplan.use')}
               </Button>
             )}
           </div>
-          <AgePicker ages={content.order.ages} value={age} onChange={(a) => { setAge(a); setSelected(null); }} warn={warnAges} idPrefix="wp-age" />
+          <AgePicker
+            ages={content.order.ages}
+            value={age}
+            onChange={(a) => {
+              setAge(a);
+              setSelected(null);
+            }}
+            warn={warnAges}
+            idPrefix="wp-age"
+          />
           <div class="wp-board" role="tabpanel" id="wp-age-panel" aria-labelledby={`wp-age-tab-${age}`} data-testid="wp-board">
-            <div class="wp-row wp-row--units">
-              {loadout.units.map((_, i) => slotView({ kind: 'unit', index: i }))}
-            </div>
+            <div class="wp-row wp-row--units">{loadout.units.map((_, i) => slotView({ kind: 'unit', index: i }))}</div>
             <div class="wp-row wp-row--support">
               {loadout.turrets.map((_, i) => slotView({ kind: 'turret', index: i }))}
               <span class="wp-divider" aria-hidden="true" />
@@ -279,7 +307,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
               ]}
             />
           </header>
-          {selected ? <p class="wp-hint">{t('ui.warplan.hintSelected', { slot: t(SLOT_LABEL[selected.kind]) })}</p> : <p class="wp-hint">{t('ui.warplan.hint')}</p>}
+          {selected ? (
+            <p class="wp-hint">{t('ui.warplan.hintSelected', { slot: t(SLOT_LABEL[selected.kind]) })}</p>
+          ) : (
+            <p class="wp-hint">{t('ui.warplan.hint')}</p>
+          )}
           <div class="ui-cardgrid wp-grid" onKeyDown={onGridKeyDown} data-testid="wp-cards">
             {list.map((id) => {
               const tile = cardTile(s, content, id, t)!;
@@ -294,7 +326,13 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                     disabled={!tile.owned}
                     onClick={() => pick(id)}
                     testid={`cand-${id}`}
-                    corner={used ? <span class="wp-used"><CheckIcon size={16} /></span> : undefined}
+                    corner={
+                      used ? (
+                        <span class="wp-used">
+                          <CheckIcon size={16} />
+                        </span>
+                      ) : undefined
+                    }
                   />
                 </div>
               );

@@ -5,10 +5,13 @@ import { createSim } from '@/sim';
 import { MATCH1_TRAYS, match1Loadouts, starterLoadout } from '../scripts';
 import type { TickInput } from '../view';
 
+/** A sim event without its tick (distributive, so each event kind keeps its fields). */
+export type Ev = SimEvent extends infer E ? (E extends SimEvent ? Omit<E, 'tick'> : never) : never;
+
 export function config(o: Partial<MatchConfig> = {}): MatchConfig {
   const loadouts = match1Loadouts(content);
   const stone = starterLoadout(content, 'stone');
-  // The player owns the Stone AA (Spear Hunter) and Support in slots 3-4 for the hint tests.
+  // The player owns the Stone AA (Spear Hunter) in slot 3 for the hint tests.
   loadouts.stone = { ...stone, units: [stone.units[0]!, stone.units[1]!, stone.units[2]!, 'spear_hunter', null] };
   return {
     seed: 1,
@@ -33,7 +36,7 @@ export class Harness {
   }
 
   /** The input for the current tick with these events (stamped with the tick). */
-  input(events: Omit<SimEvent, 'tick'>[] = []): TickInput {
+  input(events: Ev[] = []): TickInput {
     return {
       state: this.state,
       config: this.config,
@@ -60,11 +63,11 @@ export class Harness {
     return u;
   }
 
-  died(card: string, killerKind: 'unit' | 'turret' | 'power', killerCard: string | null): Omit<SimEvent, 'tick'> {
+  died(card: string, killerKind: 'unit' | 'turret' | 'power', killerCard: string | null): Ev {
     return {
       e: 'died', id: this.nextId++, side: 0, card, killerId: null, killerCard, killerKind, killerSide: 1,
       bountyGold: 0, bountyXp: 0, x: 500_000,
-    } as Omit<SimEvent, 'tick'>;
+    };
   }
 }
 

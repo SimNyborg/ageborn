@@ -3,7 +3,7 @@
  * ring around that element, and for the Arrow Storm an animated hand dragging from the power
  * button onto the lane. Text only, at most 8 words; hints can be tapped away.
  */
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { PromptTarget, TutorialPrompt } from '@/tutorial';
 import type { BattleView } from '@/render';
 
@@ -52,7 +52,15 @@ export function TutorialBubble(p: {
   onDismiss: () => void;
 }) {
   const [rect, setRect] = useState<Rect | null>(null);
+  const [bubbleW, setBubbleW] = useState(0);
+  const bubble = useRef<HTMLDivElement>(null);
   const { prompt, root, view, mountsOwned } = p;
+
+  // Measure the bubble so it can be kept on screen near the edges.
+  useLayoutEffect(() => {
+    const w = bubble.current?.offsetWidth ?? 0;
+    if (w !== bubbleW) setBubbleW(w);
+  });
 
   // Follow the target (HUD layout and the camera move); cheap, and only while a prompt shows.
   useEffect(() => {
@@ -72,16 +80,25 @@ export function TutorialBubble(p: {
 
   if (!prompt) return null;
   const box = root?.getBoundingClientRect();
-  const center = { x: (box?.width ?? 800) / 2, y: (box?.height ?? 600) * 0.38 };
+  const width = box?.width ?? 800;
+  const center = { x: width / 2, y: (box?.height ?? 600) * 0.38 };
   const anchor = rect ? { x: rect.x + rect.w / 2, y: rect.y - 14 } : center;
+  // Keep the whole bubble on screen; the arrow still points at the target.
+  const half = bubbleW / 2 + 8;
+  const left = half * 2 < width ? Math.max(half, Math.min(width - half, anchor.x)) : width / 2;
   return (
     <>
       {rect ? <div class="ab-ring" style={{ left: `${rect.x - 6}px`, top: `${rect.y - 6}px`, width: `${rect.w + 12}px`, height: `${rect.h + 12}px` }} /> : null}
       <div
+        ref={bubble}
         class={`ab-bubble${rect ? '' : ' ab-bubble--center'}`}
         data-testid="tutorial-bubble"
         data-prompt={prompt.id}
-        style={{ left: `${Math.max(90, Math.min((box?.width ?? 800) - 90, anchor.x))}px`, top: `${Math.max(60, anchor.y)}px` }}
+        style={{
+          left: `${left}px`,
+          top: `${Math.max(60, anchor.y)}px`,
+          ['--ab-arrow-dx' as string]: `${Math.round(anchor.x - left)}px`,
+        }}
         onClick={prompt.kind === 'hint' ? p.onDismiss : undefined}
       >
         {p.t(prompt.textKey)}

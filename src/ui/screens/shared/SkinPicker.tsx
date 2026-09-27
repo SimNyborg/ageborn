@@ -30,7 +30,12 @@ export function SkinOptions(p: { card: CardId; compact?: boolean }) {
         const on = equipped === id;
         const price = skin && skin.craftable ? content.rarities.skins[skin.rarity].craftDust : null;
         return (
-          <li key={id ?? 'default'} class={`skins__item${on ? ' is-on' : ''}${owned ? '' : ' is-locked'}`} style={{ '--frame': skin ? RARITY_COLOR[skin.rarity] : '#8a86ab' }} data-testid={`skin-${id ?? 'default'}`}>
+          <li
+            key={id ?? 'default'}
+            class={`skins__item${on ? ' is-on' : ''}${owned ? '' : ' is-locked'}`}
+            style={{ '--frame': skin ? RARITY_COLOR[skin.rarity] : '#8a86ab' }}
+            data-testid={`skin-${id ?? 'default'}`}
+          >
             <span class="skins__art">
               <CardArt card={p.card} age={def.age} glyph={cardGlyph(def)} size={p.compact ? 72 : 96} skin={id} silhouette={!owned} />
               {!owned ? (

@@ -12,7 +12,14 @@
 import { content } from '@/content';
 import { i18n } from '@/i18n';
 import { createRouter, type Route, type Router } from '@/ui/router';
-import { fixtureOpponent, fixturePause, fixtureRequest, fixtureResult, type OpponentFixture, type ResultFixture } from '@/ui/screens/fixtures/matches';
+import {
+  fixtureOpponent,
+  fixturePause,
+  fixtureRequest,
+  fixtureResult,
+  type OpponentFixture,
+  type ResultFixture,
+} from '@/ui/screens/fixtures/matches';
 import { FIXTURE_NOW, FIXTURE_STATES, fixtureSave, type FixtureState } from '@/ui/screens/fixtures/saves';
 import { createPreviewServices } from '@/ui/screens/fixtures/services';
 import { ScreenHost } from '@/ui/screens/ScreenHost';
@@ -39,7 +46,7 @@ const result = (r: ResultFixture): Variant => ({
   label: `Result: ${r}`,
   route: () => [{ id: 'home' }, { id: 'result', info: fixtureResult(content, r) }],
 });
-const pause = (w: 'early' | 'late' | 'skirmish'): Variant => ({
+const pause = (w: 'early' | 'late' | 'skirmish' | 'tutorial'): Variant => ({
   id: `pause-${w}`,
   label: `Pause: ${w}`,
   route: () => [
@@ -47,7 +54,11 @@ const pause = (w: 'early' | 'late' | 'skirmish'): Variant => ({
     { id: 'pause', info: fixturePause(w) },
   ],
 });
-const card = (id: string): Variant => ({ id: `card-${id}`, label: `Card: ${id}`, route: () => [{ id: 'home' }, { id: 'collection' }, { id: 'cardDetail', card: id }] });
+const card = (id: string): Variant => ({
+  id: `card-${id}`,
+  label: `Card: ${id}`,
+  route: () => [{ id: 'home' }, { id: 'collection' }, { id: 'cardDetail', card: id }],
+});
 
 const VARIANTS: Variant[] = [
   { id: 'home', label: 'Home', route: () => [{ id: 'home' }] },
@@ -62,6 +73,7 @@ const VARIANTS: Variant[] = [
   pause('early'),
   pause('late'),
   pause('skirmish'),
+  pause('tutorial'),
   result('win'),
   result('loss'),
   result('draw'),

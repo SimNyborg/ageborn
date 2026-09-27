@@ -60,7 +60,14 @@ function useCountUp(from: number, to: number, ms: number, active: boolean): numb
   return v;
 }
 
-function RewardRow(p: { icon: ComponentChildren; label: string; value?: ComponentChildren; tone?: 'good' | 'bad' | 'gold'; children?: ComponentChildren; testid: string }) {
+function RewardRow(p: {
+  icon: ComponentChildren;
+  label: string;
+  value?: ComponentChildren;
+  tone?: 'good' | 'bad' | 'gold';
+  children?: ComponentChildren;
+  testid: string;
+}) {
   return (
     <li class={`result-reward result-reward--${p.tone ?? 'gold'}`} data-testid={p.testid}>
       <span class="result-reward__icon">{p.icon}</span>
@@ -96,9 +103,25 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
     case 'trophies':
       return <TrophyReward delta={r.delta} total={save.value.trophies.current} animate={p.animate} />;
     case 'amber':
-      return <RewardRow testid="reward-amber" icon={<AmberIcon size={34} />} label={t('ui.currency.amber')} value={formatSigned(r.amount, locale)} tone="good" />;
+      return (
+        <RewardRow
+          testid="reward-amber"
+          icon={<AmberIcon size={34} />}
+          label={t('ui.currency.amber')}
+          value={formatSigned(r.amount, locale)}
+          tone="good"
+        />
+      );
     case 'dust':
-      return <RewardRow testid="reward-dust" icon={<DustIcon size={34} />} label={t('ui.currency.dust')} value={formatSigned(r.amount, locale)} tone="good" />;
+      return (
+        <RewardRow
+          testid="reward-dust"
+          icon={<DustIcon size={34} />}
+          label={t('ui.currency.dust')}
+          value={formatSigned(r.amount, locale)}
+          tone="good"
+        />
+      );
     case 'capsule': {
       const cap = save.value.capsules.pending.find((c) => c.id === r.capsuleId);
       return (
@@ -114,7 +137,11 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
       const max = content.capsules.clayMeterPips;
       const pips = Math.min(r.meter, max);
       return (
-        <RewardRow testid="reward-clay" icon={<CapsuleIcon tier="clay" size={40} />} label={pips >= max ? t('ui.result.clayFull') : t('ui.clay.label')}>
+        <RewardRow
+          testid="reward-clay"
+          icon={<CapsuleIcon tier="clay" size={40} />}
+          label={pips >= max ? t('ui.result.clayFull') : t('ui.clay.label')}
+        >
           <ClayMeter pips={pips} max={max} />
         </RewardRow>
       );
@@ -130,11 +157,19 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
         />
       );
     case 'quest': {
-      const def: QuestDef | undefined = content.quests.daily.find((q) => q.id === r.questId) ?? (content.quests.weekly.id === r.questId ? content.quests.weekly : undefined);
+      const def: QuestDef | undefined =
+        content.quests.daily.find((q) => q.id === r.questId) ??
+        (content.quests.weekly.id === r.questId ? content.quests.weekly : undefined);
       const target = def?.target ?? 1;
       const name = def ? t(questNameKey(def.id), { n: formatInt(target, locale) }) : r.questId;
       return (
-        <RewardRow testid={`reward-quest-${r.questId}`} icon={<FlagIcon size={30} />} label={name} value={r.done ? <CheckIcon size={26} /> : undefined} tone={r.done ? 'good' : 'gold'}>
+        <RewardRow
+          testid={`reward-quest-${r.questId}`}
+          icon={<FlagIcon size={30} />}
+          label={name}
+          value={r.done ? <CheckIcon size={26} /> : undefined}
+          tone={r.done ? 'good' : 'gold'}
+        >
           <ProgressBar value={Math.min(r.progress, target)} max={target} tone={r.done ? 'green' : 'blue'} thin label={name} />
         </RewardRow>
       );
@@ -166,6 +201,29 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
         </RewardRow>
       );
   }
+}
+
+const CONFETTI_COLORS = ['#ffcf3a', '#3b8cff', '#3cc46b', '#ef5a4a', '#a855f7', '#22b8cf'];
+
+/** A short burst of confetti for a victory (off under reduce motion via the theme). */
+function Confetti() {
+  return (
+    <div class="result__confetti" aria-hidden="true">
+      {Array.from({ length: 28 }, (_, i) => (
+        <i
+          key={i}
+          style={{
+            left: `${(i * 37) % 100}%`,
+            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+            animationDelay: `${((i * 53) % 900) / 1000}s`,
+            animationDuration: `${2.2 + ((i * 29) % 12) / 10}s`,
+            '--spin': `${(i % 2 ? 1 : -1) * (240 + ((i * 47) % 360))}deg`,
+            '--drift': `${((i * 61) % 80) - 40}px`,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
 export function ResultScreen(p: { route: RouteOf<'result'> }) {
@@ -210,13 +268,19 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     { id: 'trained', icon: <SwordsIcon size={22} />, label: t('ui.result.trained'), value: formatInt(stats.trained, locale) },
     { id: 'kills', icon: <CrownIcon size={22} />, label: t('ui.result.kills'), value: formatInt(stats.kills, locale) },
     { id: 'turretKills', icon: <TowerIcon size={22} />, label: t('ui.result.turretKills'), value: formatInt(stats.turretKills, locale) },
-    { id: 'baseDamage', icon: <ShieldBrokenIcon size={22} />, label: t('ui.result.baseDamage'), value: formatInt(stats.baseDamage, locale) },
+    {
+      id: 'baseDamage',
+      icon: <ShieldBrokenIcon size={22} />,
+      label: t('ui.result.baseDamage'),
+      value: formatInt(stats.baseDamage, locale),
+    },
     { id: 'evolves', icon: <StarIcon size={22} />, label: t('ui.result.evolves'), value: formatInt(stats.evolves, locale) },
   ];
 
   return (
     <section class={`ui-screen result result--${kind}`} data-screen="result" data-result={kind} aria-labelledby="result-title">
       <div class="result__rays" aria-hidden="true" />
+      {kind === 'win' ? <Confetti /> : null}
       <header class="result__banner">
         <span class="result__bannerIcon">
           <BannerIcon size={54} />
@@ -237,7 +301,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             {mvp ? (
               <div class="result__mvp" data-testid="result-mvp">
                 <span class="result__mvpLabel">{t('ui.result.mvp')}</span>
-                <CardTile card={mvp} size="md" />
+                <CardTile card={mvp} size="lg" />
               </div>
             ) : null}
             <ul class="result__stats">
@@ -251,7 +315,13 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             </ul>
           </div>
         </section>
-        <section class="result__rewards" aria-labelledby="result-rewards-title" data-testid="result-rewards" aria-live="polite" onClick={skipOne}>
+        <section
+          class="result__rewards"
+          aria-labelledby="result-rewards-title"
+          data-testid="result-rewards"
+          aria-live="polite"
+          onClick={skipOne}
+        >
           <h2 class="result__h" id="result-rewards-title">
             {t('ui.result.rewards')}
           </h2>
@@ -261,10 +331,15 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             ))}
           </ul>
           {!done ? (
-            <button type="button" class="result__tap" data-testid="result-skip" onClick={(e) => {
-              e.stopPropagation();
-              setShown(rewards.length);
-            }}>
+            <button
+              type="button"
+              class="result__tap"
+              data-testid="result-skip"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShown(rewards.length);
+              }}
+            >
               {t('ui.result.tapToSkip')}
             </button>
           ) : null}
@@ -275,12 +350,25 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           {t('ui.result.home')}
         </Button>
         {info.replayIndex !== null ? (
-          <Button variant="blue" size="md" icon={<ReplayIcon size={24} />} testid="result-replay" onClick={() => services.watchReplay(info.replayIndex!)}>
+          <Button
+            variant="blue"
+            size="md"
+            icon={<ReplayIcon size={24} />}
+            testid="result-replay"
+            onClick={() => services.watchReplay(info.replayIndex!)}
+          >
             {t('ui.result.replay')}
           </Button>
         ) : null}
         {capsule ? (
-          <Button variant="violet" size="lg" autofocus icon={<CapsuleIcon tier="silver" size={28} />} testid="result-open" onClick={() => services.openCapsule(capsule)}>
+          <Button
+            variant="violet"
+            size="lg"
+            autofocus
+            icon={<CapsuleIcon tier="silver" size={28} />}
+            testid="result-open"
+            onClick={() => services.openCapsule(capsule)}
+          >
             {t('ui.result.openCapsule')}
           </Button>
         ) : null}

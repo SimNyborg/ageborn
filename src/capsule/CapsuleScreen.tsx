@@ -67,7 +67,10 @@ export interface WardrobeScreenProps extends ShowScreenBase {
 }
 
 export function CapsuleScreen(p: CapsuleScreenProps) {
-  const plan = useMemo(() => planOpenAll(p.reveals, { catalog: p.catalog, ...(p.progress ? { progress: p.progress } : {}) }), [p.reveals, p.catalog, p.progress]);
+  // Planned once per set of capsules: a parent re-render (new array or callback identities) must
+  // never restart the show.
+  const showKey = p.reveals.map((r) => r.capsule.id).join('|');
+  const plan = useMemo(() => planOpenAll(p.reveals, { catalog: p.catalog, ...(p.progress ? { progress: p.progress } : {}) }), [showKey]);
   const i18n = p.i18n ?? appI18n;
   const rules = p.pityRules ?? DEFAULT_PITY_RULES;
   const before = plan.summary.pityBefore;
@@ -92,7 +95,7 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
 }
 
 export function WardrobeScreen(p: WardrobeScreenProps) {
-  const plan = useMemo(() => planWardrobeShow(p.reveal, { catalog: p.catalog, reelReveal: p.reelReveal }), [p.reveal, p.catalog, p.reelReveal]);
+  const plan = useMemo(() => planWardrobeShow(p.reveal, { catalog: p.catalog, reelReveal: p.reelReveal }), [p.reveal.crate.id, p.reelReveal]);
   const i18n = p.i18n ?? appI18n;
   const lines = p.pity ? wardrobePityLines(p.pity, p.pityRules ?? DEFAULT_PITY_RULES) : [];
   return (
@@ -196,7 +199,9 @@ function ShowScreen(p: ShowScreenProps) {
     if (hold.current.timer) clearTimeout(hold.current.timer);
   }, []);
 
+  // Keys on the stage itself; buttons (Skip, summary actions) keep their own Space/Enter.
   const onKeyDown = (e: KeyboardEvent) => {
+    if (e.target !== e.currentTarget) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       if (!e.repeat) press();
@@ -205,6 +210,7 @@ function ShowScreen(p: ShowScreenProps) {
     }
   };
   const onKeyUp = (e: KeyboardEvent) => {
+    if (e.target !== e.currentTarget) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       release(true);
@@ -242,7 +248,7 @@ function ShowScreen(p: ShowScreenProps) {
     >
       <div class={css.top}>
         {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={p.onShowOdds} /> : <span />}
-        {amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe') ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
+        {opened && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
       {state?.prompt === 'tap' ? (
         <div class={css.tap} data-testid="capsule-tap">
@@ -251,7 +257,7 @@ function ShowScreen(p: ShowScreenProps) {
       ) : null}
       {!inSummary ? (
         <div class={css.bottom}>
-          {state?.holding && state.canFastForward ? <span class={css.ff}>▶▶ {t('capsule.fastForward')}</span> : state?.canFastForward ? <span class={css.hint}>{t('capsule.holdHint')}</span> : null}
+          {state?.holding && state.canFastForward ? <span class={css.ff}>{t('capsule.fastForward')}</span> : state?.canFastForward ? <span class={css.hint}>{t('capsule.holdHint')}</span> : null}
           {state?.canSkip ? (
             <button
               class={css.skip}
@@ -265,7 +271,7 @@ function ShowScreen(p: ShowScreenProps) {
               }}
               data-testid="capsule-skip"
             >
-              {t('capsule.skip')} ▸▸
+              {t('capsule.skip')}
             </button>
           ) : null}
         </div>

@@ -31,6 +31,11 @@ part('modern.torso.radio', [
   { d: join(limb(-6, -20, 1.4, -6, 1, 1.4), rrect(-10, -3.6, 21, 3, 1.4)), zone: 'leather', line: 1.6 },
   { d: rrect(3, -14, 6, 8, 1.4), zone: 'cloth2', line: 1.4 },
 ]);
+/** Upper arm with a team armband (every Modern soldier wears one). */
+part('modern.arm.band', [
+  { d: limb(0, 0, 4.4, 0, 8.6, 3.8), zone: 'sleeve' },
+  { d: rrect(-4.6, 1.2, 9.2, 4.4, 1.6), zone: 'team', banner: true, line: 1.6 },
+]);
 part('modern.pelvis.trousers', [
   { d: hipsShape(9.4), zone: 'pants' },
   { d: rrect(-10, -4.8, 20.4, 3.2, 1.6), zone: 'leather', line: 2 },
@@ -47,8 +52,9 @@ part('modern.head.radio', headLayers({ nose: 'button', brow: 'worried', mouth: '
 
 /** Brodie helmet: wide shallow dish (Trench Raider). */
 part('modern.helmet.brodie', [
-  { d: blob([-16, -18, -11, -22, -8, -28, 2, -30.6, 11, -27.6, 14, -22, 18, -18, 10, -16.4, 0, -16.8, -10, -16.4], 0.7), zone: 'cloth' },
-  { d: rrect(-16.6, -19.4, 35.2, 3, 1.5), zone: 'cloth3', line: 2 },
+  { d: blob([-15, -18, -11, -22, -8, -28, 2, -30.6, 11, -27.6, 14, -22, 17, -18, 10, -16.4, 0, -16.8, -10, -16.4], 0.7), zone: 'cloth' },
+  { d: blob([-10.6, -21, -8.6, -25.4, 11.6, -25.6, 13.6, -21], 0.5), zone: 'team', banner: true, line: 1.6 },
+  { d: rrect(-15.6, -19.4, 33.2, 3, 1.5), zone: 'cloth3', line: 2 },
 ]);
 /** Steel helmet with netting and a team band (Rifleman). */
 part('modern.helmet.net', [
@@ -59,8 +65,8 @@ part('modern.helmet.net', [
 /** Helmet with goggles pushed up (Bazooka Trooper). */
 part('modern.helmet.goggles', [
   { d: blob([-13.6, -13, -14, -21, -9, -28, 2, -30.6, 11, -27, 15, -20, 15, -15, 2, -17, -10, -13], 0.8), zone: 'cloth' },
+  { d: rrect(-14.2, -17.6, 29.6, 3.4, 1.6), zone: 'team', banner: true, line: 1.8 },
   { d: join(ellipse(2, -24, 4.4, 3.6), ellipse(10, -22, 3.8, 3.4)), zone: 'lens', line: 2 },
-  { d: limb(-13, -18, 1.2, 12, -21, 1.2), zone: 'leather', line: 1.2, shade: false, light: false },
 ]);
 /** Side cap and headphones (Radio Operator). */
 part('modern.cap.radio', [
@@ -91,6 +97,7 @@ part('modern.rifle', [
 /** Bazooka: a long tube resting on the shoulder (grip in the middle, pointing up = forward). */
 part('modern.bazooka', [
   { d: rrect(-3.4, -30, 6.8, 44, 3.4), zone: 'cloth' },
+  { d: join(rect(-3.4, -24, 6.8, 5), rect(-3.4, 4, 6.8, 5)), zone: 'team', banner: true, line: 0, shade: false },
   { d: join(rrect(-4.2, -32, 8.4, 5, 2), rrect(-4.2, 10, 8.4, 5, 2)), zone: 'metal2', line: 2 },
   { d: join(rect(-3.4, -12, 6.8, 2), rect(-3.4, 0, 6.8, 2)), zone: 'accent', line: 0, shade: false, light: false },
   { d: join(rrect(2.4, -6, 5, 3, 1.2), rrect(3, -4, 2.6, 6, 1)), zone: 'metal2', line: 1.4 },
@@ -104,6 +111,7 @@ part('modern.carbine', [
 /** Radio backpack: the antenna is its own part on the `antenna` bone. */
 part('modern.radio.pack', [
   { d: rrect(-7, -10, 13, 20, 2.4), zone: 'cloth3' },
+  { d: rect(-7, -1, 13, 4), zone: 'team', banner: true, line: 1.2, shade: false },
   { d: join(rrect(-5, -7, 9, 5, 1.4)), zone: 'cloth', line: 1.4 },
   { d: join(circle(-2.4, 4, 1.8), circle(2.4, 4, 1.8)), zone: 'metal', line: 1, shade: false },
   { d: circle(3.4, -8, 1.2), zone: 'accent', line: 0.8, shade: false, light: false },
@@ -214,9 +222,9 @@ part('modern.behemoth.stack', [
 // Gyrocopter (flyer rig: body, rotor, prop, barrel)
 
 part('modern.gyro.body', [
-  { d: blob([-28, -4, -20, -12, 0, -14, 18, -12, 28, -6, 30, 2, 20, 8, -10, 8, -24, 4], 0.7), zone: 'cloth' },
-  { d: blob([-31, -16, -24, -18, -21, -4, -28, -2], 0.6), zone: 'cloth' },
-  { d: blob([-31, -16, -26, -17, -24, -8, -29, -7], 0.6), zone: 'team', banner: true, line: 1.6 },
+  { d: blob([-24, -4, -18, -12, 0, -14, 16, -12, 24, -6, 26, 2, 18, 8, -10, 8, -21, 4], 0.7), zone: 'cloth' },
+  { d: blob([-27, -16, -21, -18, -18, -4, -24, -2], 0.6), zone: 'cloth' },
+  { d: blob([-27, -16, -22, -17, -20.6, -8, -25, -7], 0.6), zone: 'team', banner: true, line: 1.6 },
   { d: circle(4, 0, 5.4), zone: 'team', banner: true, line: 1.6 },
   { d: circle(4, 0, 2.2), zone: 'cloth2', line: 0.8, shade: false, light: false },
   { d: join(limb(-4, 8, 1, -10, 16, 1), limb(14, 8, 1, 18, 16, 1), rrect(-16, 15, 40, 2.4, 1.2)), zone: 'metal2', line: 1.6 },

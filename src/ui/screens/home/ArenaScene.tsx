@@ -22,11 +22,51 @@ export const ARENA_PALETTES: Record<ArenaId, ArenaPalette> = {
   tar_pits: { skyTop: '#2a1e3f', skyBottom: '#c7703a', far: '#5b3a4a', mid: '#3d2a36', near: '#241826', glow: '#ffb35a', mote: '#ffcf8a' },
   frostfang: { skyTop: '#1b2a4f', skyBottom: '#8fc3e8', far: '#6f8fb8', mid: '#4a6690', near: '#2b3c5e', glow: '#dff4ff', mote: '#ffffff' },
   kingsmoat: { skyTop: '#23294a', skyBottom: '#7fa0a8', far: '#5d6f7c', mid: '#3f4d5c', near: '#27303d', glow: '#ffe3a0', mote: '#fff2c4' },
-  powder_bay: { skyTop: '#1c2b44', skyBottom: '#d99a5c', far: '#56707a', mid: '#2e4a52', near: '#1b2d34', glow: '#ffc27a', mote: '#ffe1b0' },
-  iron_front: { skyTop: '#26262a', skyBottom: '#9a8a6a', far: '#6a6456', mid: '#48443a', near: '#2c2a25', glow: '#ffcf7a', mote: '#e8d9b0' },
-  neon_harbor: { skyTop: '#14082b', skyBottom: '#6b2a7a', far: '#3c2a6a', mid: '#281c4c', near: '#170f30', glow: '#ff5ac8', mote: '#5ff2ff' },
-  orbital_ring: { skyTop: '#07081c', skyBottom: '#2a2a6a', far: '#2c2f5c', mid: '#1c1e40', near: '#10112a', glow: '#8fb0ff', mote: '#ffffff' },
-  chrono_rift: { skyTop: '#1a0a2e', skyBottom: '#7a3fb0', far: '#4a2a7a', mid: '#301a55', near: '#1c0f36', glow: '#f5b82e', mote: '#d8b8ff' },
+  powder_bay: {
+    skyTop: '#1c2b44',
+    skyBottom: '#d99a5c',
+    far: '#56707a',
+    mid: '#2e4a52',
+    near: '#1b2d34',
+    glow: '#ffc27a',
+    mote: '#ffe1b0',
+  },
+  iron_front: {
+    skyTop: '#26262a',
+    skyBottom: '#9a8a6a',
+    far: '#6a6456',
+    mid: '#48443a',
+    near: '#2c2a25',
+    glow: '#ffcf7a',
+    mote: '#e8d9b0',
+  },
+  neon_harbor: {
+    skyTop: '#14082b',
+    skyBottom: '#6b2a7a',
+    far: '#3c2a6a',
+    mid: '#281c4c',
+    near: '#170f30',
+    glow: '#ff5ac8',
+    mote: '#5ff2ff',
+  },
+  orbital_ring: {
+    skyTop: '#07081c',
+    skyBottom: '#2a2a6a',
+    far: '#2c2f5c',
+    mid: '#1c1e40',
+    near: '#10112a',
+    glow: '#8fb0ff',
+    mote: '#ffffff',
+  },
+  chrono_rift: {
+    skyTop: '#1a0a2e',
+    skyBottom: '#7a3fb0',
+    far: '#4a2a7a',
+    mid: '#301a55',
+    near: '#1c0f36',
+    glow: '#f5b82e',
+    mote: '#d8b8ff',
+  },
 };
 
 const W = 1600;
@@ -104,7 +144,17 @@ function Landmark(p: { arena: ArenaId; color: string; glow: string }) {
         <g fill="none">
           <ellipse cx="1150" cy="300" rx="340" ry="70" stroke={p.glow} stroke-width="10" opacity=".35" transform="rotate(-12 1150 300)" />
           <circle cx="1150" cy="300" r="90" fill={c} />
-          <ellipse cx="1150" cy="300" rx="340" ry="70" stroke={p.glow} stroke-width="4" opacity=".6" transform="rotate(-12 1150 300)" stroke-dasharray="820 1400" />
+          <ellipse
+            cx="1150"
+            cy="300"
+            rx="340"
+            ry="70"
+            stroke={p.glow}
+            stroke-width="4"
+            opacity=".6"
+            transform="rotate(-12 1150 300)"
+            stroke-dasharray="820 1400"
+          />
         </g>
       );
     case 'chrono_rift':
@@ -164,7 +214,10 @@ export function ArenaScene(p: { arena: ArenaId }) {
       </svg>
       <div class="home-scene__motes">
         {motes.map((m, i) => (
-          <i key={i} style={{ left: m.left, animationDelay: m.delay, animationDuration: m.dur, width: m.size, height: m.size, background: pal.mote }} />
+          <i
+            key={i}
+            style={{ left: m.left, animationDelay: m.delay, animationDuration: m.dur, width: m.size, height: m.size, background: pal.mote }}
+          />
         ))}
       </div>
       <div class="home-scene__vignette" />

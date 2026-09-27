@@ -66,7 +66,8 @@ part('skin.panda.banner', [
   { d: limb(0, 20, 1.8, 0, -70, 1.6), zone: 'bamboo', line: 2.2 },
   { d: join(rect(-2, -52, 4, 1.8), rect(-2, -30, 4, 1.8), rect(-2, -8, 4, 1.8)), zone: 'bamboo2', line: 0, shade: false, light: false },
   { d: blob([0, -70, -22, -68, -18, -58, -22, -48, 0, -46], 0.3), zone: 'silk', line: 2.2 },
-  { d: join(limb(-14, -64, 0.8, -6, -54, 0.8), limb(-6, -64, 0.8, -14, -54, 0.8)), zone: 'bamboo2', line: 0, shade: false, light: false },
+  { d: join(circle(-10, -58, 3.4)), zone: 'bamboo2', line: 1, shade: false, light: false },
+  { d: join(circle(-11.4, -59.4, 1.1), circle(-8.6, -59.4, 1.1)), zone: 'silk', line: 0, shade: false, light: false },
   { d: join(blob([1, -40, 9, -44, 13, -40, 6, -38], 0.6), blob([-1, -22, -9, -26, -13, -22, -6, -20], 0.6)), zone: 'bamboo', line: 1.4 },
 ]);
 
@@ -89,11 +90,11 @@ part('skin.arctic.collar', [{ d: blob([-9, -20, -4, -24.6, 3, -24.6, 9, -21, 7, 
 // Shark Mouth (Gyrocopter): nose art
 
 part('skin.shark.nose', [
-  { d: blob([16, 1, 24, -1, 30, 1, 28, 6, 20, 7, 14, 5], 0.6), zone: 'mouth', line: 1.2, shade: false, light: false },
-  { d: poly([16, 1.4, 18, 4, 20, 1, 22, 4, 24, 0.6, 26, 3.6, 28, 1.4, 28, 2.8, 16, 3]), zone: 'white', line: 0.8, shade: false, light: false },
-  { d: poly([16, 6.4, 18, 4.4, 20, 6.8, 22, 4.6, 24, 6.8, 26, 5, 27, 6, 18, 7]), zone: 'white', line: 0.8, shade: false, light: false },
-  { d: circle(20, -5, 2.2), zone: 'white', line: 1, shade: false, light: false },
-  { d: circle(20.6, -5, 1.1), zone: 'dark', line: 0, shade: false, light: false },
+  { d: blob([11.6, 1, 18.6, -1, 22.4, 1.4, 21, 5.4, 16, 6.2, 11, 4.6], 0.6), zone: 'mouth', line: 1.2, shade: false, light: false },
+  { d: poly([12, 1.4, 14, 4, 16, 1, 18, 4, 20, 0.6, 22, 3.4, 23, 1.6, 23, 2.8, 12, 3]), zone: 'white', line: 0.8, shade: false, light: false },
+  { d: poly([12, 5.6, 14, 4, 16, 6.2, 18, 4.2, 20, 6, 21, 4.8, 21.4, 5.4, 14, 6.4]), zone: 'white', line: 0.8, shade: false, light: false },
+  { d: circle(16, -5, 2.2), zone: 'white', line: 1, shade: false, light: false },
+  { d: circle(16.6, -5, 1.1), zone: 'dark', line: 0, shade: false, light: false },
 ]);
 
 // ---------------------------------------------------------------------------------------------
@@ -117,7 +118,7 @@ part('skin.kaiju.head', [
   { d: poly([10, -32, 18, -33, 14, -30.6]), zone: 'dark', line: 0, shade: false, light: false },
 ]);
 part('skin.kaiju.spikes', [
-  { d: join(poly([-20, -30, -28, -26, -22, -22]), poly([-22, -18, -30, -13, -23, -10]), poly([-23, -6, -30, -1, -23, 2])), zone: 'plate', line: 2 },
+  { d: join(poly([-19, -30, -25, -26, -21, -22]), poly([-21, -18, -26, -13, -22, -10]), poly([-22, -6, -26, -1, -22, 2])), zone: 'plate', line: 2 },
 ]);
 
 // ---------------------------------------------------------------------------------------------

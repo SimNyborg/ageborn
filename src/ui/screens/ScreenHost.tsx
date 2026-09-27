@@ -11,7 +11,7 @@
 import '../theme.css';
 import type { ComponentChildren, ComponentType } from 'preact';
 import { useEffect, useMemo, useRef } from 'preact/hooks';
-import { UiKitContext, type UiKit } from '../components/kit';
+import { PortalContext, UiKitContext, type UiKit } from '../components/kit';
 import { RotateOverlay } from '../components/Layout';
 import { createToastStore, ToastHost, type ToastStore } from '../components/Toasts';
 import { visibleEntries, type Route, type RouteOf, type ScreenId } from '../router';
@@ -126,25 +126,27 @@ export function ScreenHost(p: ScreenHostProps) {
   return (
     <UiEnvContext.Provider value={env}>
       <UiKitContext.Provider value={kit}>
-        <div
-          ref={root}
-          class="ui-root"
-          data-testid="ui-root"
-          data-screen-id={top.route.id}
-          data-reduce-motion={save.settings.reduceMotion ? 'true' : 'false'}
-          data-team={save.settings.teamPreset}
-        >
-          <div class="ui-layer" key={base.key} data-layer="base">
-            {renderRoute(base.route, p.slots)}
-          </div>
-          {overlays.map((o) => (
-            <div class="ui-layer ui-layer--overlay" key={o.key} data-layer="overlay">
-              {renderRoute(o.route, p.slots)}
+        <PortalContext.Provider value={root}>
+          <div
+            ref={root}
+            class="ui-root"
+            data-testid="ui-root"
+            data-screen-id={top.route.id}
+            data-reduce-motion={save.settings.reduceMotion ? 'true' : 'false'}
+            data-team={save.settings.teamPreset}
+          >
+            <div class="ui-layer" key={base.key} data-layer="base">
+              {renderRoute(base.route, p.slots)}
             </div>
-          ))}
-          <ToastHost store={toasts} />
-          <RotateOverlay />
-        </div>
+            {overlays.map((o) => (
+              <div class="ui-layer ui-layer--overlay" key={o.key} data-layer="overlay">
+                {renderRoute(o.route, p.slots)}
+              </div>
+            ))}
+            <ToastHost store={toasts} />
+            <RotateOverlay />
+          </div>
+        </PortalContext.Provider>
       </UiKitContext.Provider>
     </UiEnvContext.Provider>
   );

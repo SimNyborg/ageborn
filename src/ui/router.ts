@@ -12,22 +12,18 @@
  * UI context. Pure apart from its signals, so it is unit-tested in Node.
  */
 import { computed, signal, type ReadonlySignal } from '@preact/signals';
-import type {
-  AgeId,
-  CardId,
-  FormatId,
-  MatchResultInput,
-  OpponentSpec,
-  RewardStep,
-  SkirmishOptions,
-} from '@/contracts';
+import type { AgeId, CardId, FormatId, MatchResultInput, OpponentSpec, RewardStep, SkirmishOptions } from '@/contracts';
 
-/** How a match is started from the meta UI (A9 Mode select, A9.1 Daily, A6.10 Conquest). */
+/**
+ * How a match is started (A9 Mode select, A9.1 Daily, A6.10 Conquest, A8 onboarding). The onboarding
+ * matches 1 and 2 are built by the app, not picked by meta (docs/requests/wp11-router-tutorial-route.md).
+ */
 export type MatchRequest =
   | { mode: 'ladder'; format: FormatId }
   | { mode: 'conquest'; general: string }
   | { mode: 'skirmish'; options: SkirmishOptions; speed: 1 | 1.5 | 2 }
-  | { mode: 'daily' };
+  | { mode: 'daily' }
+  | { mode: 'tutorial'; match: 1 | 2 };
 
 export type MatchMode = MatchResultInput['mode'];
 
@@ -39,7 +35,7 @@ export interface PauseInfo {
   clockMs: number;
   /** Retreat unlocks after 1:00 and counts as a loss (A2.10, C5 #19). */
   canRetreat: boolean;
-  /** 1:00 in the current format, shown while Retreat is still locked. */
+  /** When Retreat unlocks in this format (1:00), or null when the format has no Retreat (Tutorial). */
   retreatAfterMs: number | null;
 }
 
@@ -49,7 +45,10 @@ export interface ResultInfo {
   rewards: RewardStep[];
   /** Index into the replay ring for "Watch replay", or null when no replay was kept. */
   replayIndex: number | null;
-  /** The request that started the match, so "Next battle" can start the same mode again. */
+  /**
+   * What "Next battle" starts: normally the request that started this match (same mode again); after
+   * onboarding match 1 the app passes the match 2 request. Null opens Mode select.
+   */
   request: MatchRequest | null;
 }
 
@@ -128,9 +127,7 @@ export const SCREENS: Readonly<Record<ScreenId, ScreenInfo>> = {
 };
 
 /** Screen ids rendered by this package (WP9). */
-export const WP9_SCREENS: readonly ScreenId[] = (Object.keys(SCREENS) as ScreenId[]).filter(
-  (id) => SCREENS[id].owner === 'WP9',
-);
+export const WP9_SCREENS: readonly ScreenId[] = (Object.keys(SCREENS) as ScreenId[]).filter((id) => SCREENS[id].owner === 'WP9');
 
 export interface RouteEntry {
   readonly route: Route;

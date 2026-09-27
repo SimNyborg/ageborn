@@ -113,12 +113,26 @@ export function questViews(save: SaveDoc, content: Content): { daily: QuestView[
   save.quests.daily.forEach((q, i) => {
     const def = questDef(content, q.id);
     if (!def) return;
-    daily.push({ slot: i, def, progress: Math.min(q.progress, def.target), target: def.target, done: q.progress >= def.target, claimed: q.claimed });
+    daily.push({
+      slot: i,
+      def,
+      progress: Math.min(q.progress, def.target),
+      target: def.target,
+      done: q.progress >= def.target,
+      claimed: q.claimed,
+    });
   });
   const w = save.quests.weekly;
   const wd = questDef(content, w.id);
   const weekly = wd
-    ? { slot: 'weekly' as const, def: wd, progress: Math.min(w.progress, wd.target), target: wd.target, done: w.progress >= wd.target, claimed: w.claimed }
+    ? {
+        slot: 'weekly' as const,
+        def: wd,
+        progress: Math.min(w.progress, wd.target),
+        target: wd.target,
+        done: w.progress >= wd.target,
+        claimed: w.claimed,
+      }
     : null;
   return { daily, weekly, rerollLeft: !save.quests.rerollUsed };
 }

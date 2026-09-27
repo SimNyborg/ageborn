@@ -33,7 +33,40 @@
 .result--draw .result__rays {
   opacity: 0.35;
 }
-.result > :not(.result__rays) {
+.result__confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+.result__confetti i {
+  position: absolute;
+  top: -20px;
+  width: 9px;
+  height: 14px;
+  border: 1.5px solid rgba(27, 19, 48, 0.6);
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: result-confetti;
+  animation-timing-function: cubic-bezier(0.3, 0.6, 0.5, 1);
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+@keyframes result-confetti {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), 105vh) rotate(var(--spin));
+  }
+}
+.result > :not(.result__rays):not(.result__confetti) {
   position: relative;
   z-index: 1;
 }
@@ -265,6 +298,17 @@
   flex-wrap: wrap;
 }
 
+@media (max-height: 480px), (max-width: 900px) {
+  .result__mvp .ui-card--lg {
+    --card-w: 104px;
+  }
+  .result__recapBody {
+    gap: 10px;
+  }
+  .result__stats li {
+    gap: 6px;
+  }
+}
 @media (max-height: 480px) {
   .result__bannerIcon {
     display: none;

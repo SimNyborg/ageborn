@@ -4,10 +4,11 @@
  * also go back.
  */
 import type { ComponentChildren } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
+import { useContext, useEffect, useRef } from 'preact/hooks';
 import { CloseIcon } from './icons';
 import { focusables, trapTab } from './keys';
-import { useKit } from './kit';
+import { PortalContext, useKit } from './kit';
 import { useId } from './Controls';
 
 export function Modal(p: {
@@ -21,6 +22,7 @@ export function Modal(p: {
   icon?: ComponentChildren;
 }) {
   const { t } = useKit();
+  const portal = useContext(PortalContext);
   const panel = useRef<HTMLDivElement>(null);
   const titleId = useId('modal-title');
   const onClose = useRef(p.onClose);
@@ -48,7 +50,7 @@ export function Modal(p: {
     if (panel.current) trapTab(e, panel.current);
   }
 
-  return (
+  const modal = (
     <div class="ui-modal" data-testid={p.testid ?? 'modal'} onKeyDown={onKeyDown}>
       <div class="ui-modal__backdrop" onClick={() => onClose.current()} />
       <div
@@ -73,4 +75,5 @@ export function Modal(p: {
       </div>
     </div>
   );
+  return portal.current ? createPortal(modal, portal.current) : modal;
 }

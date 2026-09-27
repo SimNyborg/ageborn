@@ -128,7 +128,7 @@ async function start(root: HTMLElement): Promise<void> {
     viewOf: (sim) => views.get(sim),
     createView,
     scheduler: pixi.scheduler,
-    portrait: (card, foil, size) => art.portrait({ card, foil, size }),
+    portrait: (card, foil, size) => art.portrait({ card, foil, size, side: 0 }),
     t: (key, params) => services.i18n.t(key, params),
   };
 
@@ -149,11 +149,37 @@ async function start(root: HTMLElement): Promise<void> {
   render(<AppRoot ui={ui} />, uiHost);
 }
 
+/**
+ * WP11's dev page, until `docs/requests/wp11-dev-page.md` moves it under `src/dev/replayDebug/`
+ * (then the dev router finds it by itself and this entry can go).
+ */
+const APP_DEV_PAGES: Record<string, () => Promise<{ default: () => preact.JSX.Element }>> = {
+  replayDebug: () => import('./dev/ReplayDebugPage'),
+};
+
+async function renderDev(root: HTMLElement): Promise<void> {
+  const name = window.location.hash.replace(/^#/, '');
+  const load = APP_DEV_PAGES[name];
+  if (!load) {
+    render(<DevRouter />, root);
+    return;
+  }
+  const Page = (await load()).default;
+  render(<Page />, root);
+}
+
 const root = document.getElementById('app');
 if (!root) throw new Error('#app element missing');
 
 if (isDevMode() && !bootFlags(window.location.search).autopilot) {
-  render(<DevRouter />, root);
+  void renderDev(root);
+  // The dev router handles its own hash changes; moving to or from an app dev page needs a reload.
+  let hash = window.location.hash.replace(/^#/, '');
+  window.addEventListener('hashchange', () => {
+    const next = window.location.hash.replace(/^#/, '');
+    if (next in APP_DEV_PAGES || hash in APP_DEV_PAGES) window.location.reload();
+    hash = next;
+  });
 } else {
   void start(root);
 }

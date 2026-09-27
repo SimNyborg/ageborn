@@ -216,8 +216,8 @@ part('stone.mammoth.rider', [
 part('stone.dummy.torso', [
   { d: blob([-9, 2, -10, -9, -8, -18, -3, -22, 4, -22, 9, -18, 10.6, -8, 9.4, 2, 0, 4]), zone: 'straw' },
   { d: join(poly([-9, -6, 9.8, -9, 10, -6.6, -9, -3.6]), poly([-9, -14, 9.4, -16.4, 9.2, -14, -8.6, -11.6])), zone: 'rope', line: 1.4, shade: false },
-  { d: circle(3, -11, 5.6), zone: 'bone', line: 2 },
-  { d: circle(3, -11, 3.2), zone: 'team', line: 1.4, shade: false, light: false, banner: true },
+  { d: circle(3, -11, 7), zone: 'bone', line: 2 },
+  { d: circle(3, -11, 4.8), zone: 'team', line: 1.4, shade: false, light: false, banner: true },
   { d: circle(3, -11, 1.2), zone: 'bone', line: 0, shade: false, light: false },
 ]);
 part('stone.dummy.head', [
@@ -227,7 +227,7 @@ part('stone.dummy.head', [
   { d: blob([3, -6.4, 7, -5, 11, -6.4, 10.4, -5, 7, -3.8, 3.4, -5], 0.6), zone: 'dark', line: 0, shade: false, light: false },
   { d: join(poly([-2, -24, -6, -31, -1, -26]), poly([2, -25, 2, -33, 5, -25.6]), poly([6, -24.6, 10, -31, 9, -23])), zone: 'straw', line: 1.8 },
 ]);
-part('stone.dummy.scarf', [{ d: blob([-9, -2, 10, -3, 11, 3, 2, 3, -2, 12, -6, 11, -3, 3, -9, 3], 0.5), zone: 'team', banner: true, line: 2.6 }]);
+part('stone.dummy.scarf', [{ d: blob([-10, -3, 11, -4, 12, 4, 3, 4, -1, 16, -7, 15, -4, 4, -10, 4], 0.5), zone: 'team', banner: true, line: 2.6 }]);
 part('stone.dummy.sword', [
   { d: limb(0, 4, 1.8, 0, -4, 1.8), zone: 'wood2', line: 2 },
   { d: rrect(-5, -6, 10, 3, 1.4), zone: 'wood2', line: 2 },

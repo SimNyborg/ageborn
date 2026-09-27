@@ -62,7 +62,13 @@ export function OddsSheet(p: { model: OddsModel }) {
             {m.pity.map((r) => (
               <li key={r.id} class="ui-odds__pityrow" data-testid={`odds-pity-${r.id}`}>
                 <span class="ui-odds__pityname">{t(PITY_KEYS[r.id], { every: r.every })}</span>
-                <ProgressBar value={r.since} max={r.every} tone={r.id === 'legendary' || r.id === 'wardrobeLegendary' ? 'gold' : 'violet'} thin label={t(PITY_KEYS[r.id], { every: r.every })} />
+                <ProgressBar
+                  value={r.since}
+                  max={r.every}
+                  tone={r.id === 'legendary' || r.id === 'wardrobeLegendary' ? 'gold' : 'violet'}
+                  thin
+                  label={t(PITY_KEYS[r.id], { every: r.every })}
+                />
                 <span class="ui-odds__pityval">
                   {t('ui.odds.guaranteedIn', { n: r.guaranteedIn })}
                   {r.nextChanceBp !== null && r.nextChanceBp > 0 && r.nextChanceBp < 10000 ? (

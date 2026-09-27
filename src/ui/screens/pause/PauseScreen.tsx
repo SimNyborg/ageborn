@@ -41,7 +41,14 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
             <Button variant="green" size="lg" wide autofocus testid="pause-resume" icon={<PlayIcon size={26} />} onClick={resume}>
               {t('ui.pause.resume')}
             </Button>
-            <Button variant="blue" size="md" wide testid="pause-settings" icon={<GearIcon size={24} />} onClick={() => router.go({ id: 'settings' }, { overlay: true })}>
+            <Button
+              variant="blue"
+              size="md"
+              wide
+              testid="pause-settings"
+              icon={<GearIcon size={24} />}
+              onClick={() => router.go({ id: 'settings' }, { overlay: true })}
+            >
               {t('ui.nav.settings')}
             </Button>
             {info.mode === 'skirmish' ? (
@@ -49,21 +56,23 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
                 {t('ui.pause.quitSkirmish')}
               </Button>
             ) : null}
-            <Button
-              variant="red"
-              size="md"
-              wide
-              testid="pause-retreat"
-              inert={!info.canRetreat}
-              icon={<FlagIcon size={24} />}
-              onClick={() => setConfirm('retreat')}
-              title={info.canRetreat ? undefined : t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs ?? 60000) })}
-            >
-              {t('ui.pause.retreat')}
-            </Button>
-            {!info.canRetreat ? (
+            {info.retreatAfterMs !== null ? (
+              <Button
+                variant="red"
+                size="md"
+                wide
+                testid="pause-retreat"
+                inert={!info.canRetreat}
+                icon={<FlagIcon size={24} />}
+                onClick={() => setConfirm('retreat')}
+                title={info.canRetreat ? undefined : t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
+              >
+                {t('ui.pause.retreat')}
+              </Button>
+            ) : null}
+            {info.retreatAfterMs !== null && !info.canRetreat ? (
               <p class="pause__note" data-testid="pause-retreat-locked">
-                {t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs ?? 60000) })}
+                {t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
               </p>
             ) : null}
           </div>

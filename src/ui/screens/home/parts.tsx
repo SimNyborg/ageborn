@@ -38,23 +38,20 @@ import { oddsModel } from '../../components/oddsModel';
 import type { Route } from '../../router';
 import { useUi } from '../context';
 import { opponentName } from '../model/opponent';
-import {
-  arenaOf,
-  chargesView,
-  dailyCapsuleView,
-  questViews,
-  roadProgress,
-  trayCapsules,
-  unlocks,
-  type QuestView,
-} from '../model/progress';
+import { arenaOf, chargesView, dailyCapsuleView, questViews, roadProgress, trayCapsules, unlocks, type QuestView } from '../model/progress';
 
 export function ProfileChip() {
   const { save, content, t, locale, router } = useUi();
   const s = save.value;
   const arena = arenaOf(s, content);
   return (
-    <button type="button" class="home-profile" data-testid="home-profile" onClick={() => router.go({ id: 'profile' })} aria-label={t('ui.home.openProfile')}>
+    <button
+      type="button"
+      class="home-profile"
+      data-testid="home-profile"
+      onClick={() => router.go({ id: 'profile' })}
+      aria-label={t('ui.home.openProfile')}
+    >
       <Avatar spec={s.profile.avatar} size={52} />
       <span class="home-profile__text">
         <span class="home-profile__name">{s.profile.name}</span>
@@ -78,7 +75,12 @@ export function TopRight() {
     <div class="home-top__right">
       <CurrencyChip kind="amber" value={s.currencies.amber} testid="chip-amber" />
       <CurrencyChip kind="dust" value={s.currencies.dust} testid="chip-dust" />
-      <IconButton icon={<GearIcon size={30} />} label={t('ui.nav.settings')} onClick={() => router.go({ id: 'settings' })} testid="nav-settings" />
+      <IconButton
+        icon={<GearIcon size={30} />}
+        label={t('ui.nav.settings')}
+        onClick={() => router.go({ id: 'settings' })}
+        testid="nav-settings"
+      />
     </div>
   );
 }
@@ -120,7 +122,9 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
         <span class="home-quest__name">{name}</span>
         <span class="home-quest__bar">
           <ProgressBar value={q.progress} max={q.target} tone={q.done ? 'green' : 'blue'} thin label={name} />
-          <span class="home-quest__count">{t('ui.common.progress', { n: formatInt(q.progress, locale), max: formatInt(q.target, locale) })}</span>
+          <span class="home-quest__count">
+            {t('ui.common.progress', { n: formatInt(q.progress, locale), max: formatInt(q.target, locale) })}
+          </span>
         </span>
       </div>
       <span class="home-quest__reward">
@@ -169,7 +173,13 @@ export function QuestsPanel() {
   const { save, content, t } = useUi();
   const qv = questViews(save.value, content);
   return (
-    <Panel title={t('ui.home.quests')} icon={<CalendarIcon size={24} />} class="home-quests" testid="home-quests" labelledBy="home-quests-title">
+    <Panel
+      title={t('ui.home.quests')}
+      icon={<CalendarIcon size={24} />}
+      class="home-quests"
+      testid="home-quests"
+      labelledBy="home-quests-title"
+    >
       {qv.daily.length === 0 && !qv.weekly ? <p class="ui-muted">{t('ui.quest.none')}</p> : null}
       <ul class="home-quests__list">
         {qv.daily.map((q) => (
@@ -224,7 +234,14 @@ export function CapsuleTray() {
         ))}
         {pending.length > 4 ? <span class="home-tray__more">{t('ui.home.more', { n: pending.length - 4 })}</span> : null}
         {crates.slice(0, 2).map((c) => (
-          <button key={c.id} type="button" class="home-drum home-drum--crate" onClick={() => services.openWardrobe(c.id)} aria-label={t('ui.home.openCrate')} data-testid={`crate-${c.id}`}>
+          <button
+            key={c.id}
+            type="button"
+            class="home-drum home-drum--crate"
+            onClick={() => services.openWardrobe(c.id)}
+            aria-label={t('ui.home.openCrate')}
+            data-testid={`crate-${c.id}`}
+          >
             <CrateIcon size={46} />
           </button>
         ))}
@@ -335,7 +352,13 @@ export function RoadBar() {
   const rp = roadProgress(save.value, content);
   const next = rp.next;
   return (
-    <button type="button" class="home-road" data-testid="home-road" onClick={() => router.go({ id: 'trophyRoad' })} aria-label={t('ui.nav.trophyRoad')}>
+    <button
+      type="button"
+      class="home-road"
+      data-testid="home-road"
+      onClick={() => router.go({ id: 'trophyRoad' })}
+      aria-label={t('ui.nav.trophyRoad')}
+    >
       <span class="home-road__icon">
         <RoadIcon size={30} />
       </span>
@@ -384,10 +407,31 @@ export function HomeNav() {
   }).length;
   const rp = roadProgress(s, content);
   const items: NavItem[] = [
-    { route: { id: 'warPlan' }, labelKey: 'ui.nav.warPlan', icon: <ScrollIcon size={34} />, locked: !u.warPlan, lockKey: 'ui.lock.afterMatches', lockParams: { n: 3 } },
+    {
+      route: { id: 'warPlan' },
+      labelKey: 'ui.nav.warPlan',
+      icon: <ScrollIcon size={34} />,
+      locked: !u.warPlan,
+      lockKey: 'ui.lock.afterMatches',
+      lockParams: { n: 3 },
+    },
     { route: { id: 'collection' }, labelKey: 'ui.nav.collection', icon: <CardsIcon size={34} />, locked: false, lockKey: '', badge: ready },
-    { route: { id: 'trophyRoad' }, labelKey: 'ui.nav.trophyRoad', icon: <RoadIcon size={34} />, locked: false, lockKey: '', badge: rp.claimable },
-    { route: { id: 'conquest' }, labelKey: 'ui.nav.conquest', icon: <CastleIcon size={34} />, locked: !u.conquest, lockKey: 'ui.lock.arena', lockParams: { n: u.conquestArena } },
+    {
+      route: { id: 'trophyRoad' },
+      labelKey: 'ui.nav.trophyRoad',
+      icon: <RoadIcon size={34} />,
+      locked: false,
+      lockKey: '',
+      badge: rp.claimable,
+    },
+    {
+      route: { id: 'conquest' },
+      labelKey: 'ui.nav.conquest',
+      icon: <CastleIcon size={34} />,
+      locked: !u.conquest,
+      lockKey: 'ui.lock.arena',
+      lockParams: { n: u.conquestArena },
+    },
   ];
   return (
     <nav class="home-nav" aria-label={t('ui.nav.label')} data-testid="home-nav">
@@ -413,7 +457,11 @@ export function HomeNav() {
                 <LockIcon size={20} />
               </span>
             ) : null}
-            {it.badge ? <span class="home-nav__badge"><Badge tone="green">{it.badge}</Badge></span> : null}
+            {it.badge ? (
+              <span class="home-nav__badge">
+                <Badge tone="green">{it.badge}</Badge>
+              </span>
+            ) : null}
           </span>
           <span class="home-nav__labels">
             <span class="home-nav__label">{t(it.labelKey)}</span>

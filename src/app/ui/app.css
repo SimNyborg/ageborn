@@ -237,7 +237,7 @@
 .ab-bubble::after {
   content: '';
   position: absolute;
-  left: 50%;
+  left: calc(50% + var(--ab-arrow-dx, 0px));
   bottom: -14px;
   transform: translateX(-50%);
   border: 10px solid transparent;
@@ -280,7 +280,9 @@
 .ab-replay-bar {
   position: absolute;
   left: 50%;
-  bottom: 12px;
+  /* Above the HUD tray (24% of the height, A9.2). */
+  bottom: calc(24% + 10px);
+  white-space: nowrap;
   transform: translateX(-50%);
   display: flex;
   gap: 8px;

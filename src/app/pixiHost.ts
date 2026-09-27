@@ -18,26 +18,32 @@ export interface PixiHost {
   destroy(): void;
 }
 
-/** A `FrameScheduler` over a Pixi ticker (callbacks run before Pixi's render of the same frame). */
+/**
+ * A `FrameScheduler` over a Pixi ticker: one high-priority listener runs the callbacks requested
+ * before this frame (callbacks that request again run next frame, never twice in one frame).
+ */
 export function tickerScheduler(app: Application): FrameScheduler {
   let next = 1;
-  const fns = new Map<number, () => void>();
+  let queue = new Map<number, (now: number) => void>();
+  app.ticker.add(
+    () => {
+      if (queue.size === 0) return;
+      const run = queue;
+      queue = new Map();
+      const now = performance.now();
+      for (const cb of run.values()) cb(now);
+    },
+    undefined,
+    UPDATE_PRIORITY.HIGH,
+  );
   return {
     request(cb) {
       const h = next++;
-      const fn = (): void => {
-        fns.delete(h);
-        cb(performance.now());
-      };
-      fns.set(h, fn);
-      app.ticker.addOnce(fn, undefined, UPDATE_PRIORITY.HIGH);
+      queue.set(h, cb);
       return h;
     },
     cancel(h) {
-      const fn = fns.get(h);
-      if (!fn) return;
-      fns.delete(h);
-      app.ticker.remove(fn);
+      queue.delete(h);
     },
     now: () => performance.now(),
   };

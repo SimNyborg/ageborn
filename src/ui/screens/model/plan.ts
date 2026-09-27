@@ -126,7 +126,11 @@ export function emptyPlan(content: Content, name: string): WarPlan {
   const loadouts = {} as Record<AgeId, Loadout>;
   for (const age of content.order.ages) {
     const power = content.order.powers.find((id) => content.powers[id]?.age === age && content.powers[id]?.slot === 'default') ?? '';
-    loadouts[age] = { units: Array.from({ length: UNIT_SLOTS }, () => null), turrets: Array.from({ length: TURRET_SLOTS }, () => null), power };
+    loadouts[age] = {
+      units: Array.from({ length: UNIT_SLOTS }, () => null),
+      turrets: Array.from({ length: TURRET_SLOTS }, () => null),
+      power,
+    };
   }
   return { name, loadouts };
 }

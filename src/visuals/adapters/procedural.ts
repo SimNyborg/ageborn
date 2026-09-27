@@ -218,7 +218,7 @@ export class ProceduralAdapter implements VisualAdapter {
   async portrait(r: PortraitRequest): Promise<string> {
     const p = puppetById(r.def.source);
     if (!p) return '';
-    return renderPortrait({ puppet: p, size: r.size, foil: r.foil, teamColor: teamColor(r.side, 'default'), fit: p.legendary ? 'bust' : 'full' });
+    return renderPortrait({ puppet: p, size: r.size, foil: r.foil, teamColor: teamColor(r.side, 'default'), fit: p.legendary && !p.motion.air ? 'bust' : 'full', plate: r.plate });
   }
 }
 

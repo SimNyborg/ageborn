@@ -18,6 +18,8 @@ export interface PortraitOptions {
   teamColor: number;
   /** Crop to the upper body for tall visuals (cards), or fit the whole visual (icons). */
   fit?: 'full' | 'bust';
+  /** Draw the age plate behind the visual (default true); false gives a transparent background. */
+  plate?: boolean;
 }
 
 type Ctx = CanvasRenderingContext2D;
@@ -83,7 +85,7 @@ export function drawPortrait(ctx: Ctx, o: PortraitOptions): void {
   ctx.save();
   ctx.clearRect(0, 0, size, size);
   const isIcon = p.kind === 'sprite';
-  if (!isIcon) plate(ctx, p, size);
+  if (!isIcon && o.plate !== false) plate(ctx, p, size);
   const b = puppetBounds(p, getPart);
   const inner = size * (o.foil === 'none' ? 0.9 : 0.8);
   const w = b.maxX - b.minX;

@@ -55,6 +55,8 @@ const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'f
 /** Steps that are "visually" opened: after these the capsule is open. */
 const OPENING: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'reel', 'crateArrival']);
 
+/** "Tap!" appears this far into the charge (A10 step 2); a tap from then on queues the first strike. */
+const CHARGE_PROMPT_AT = 0.6;
 /** Longest frame the runner integrates at once (a hidden tab must not jump the show). */
 export const MAX_FRAME_MS = 250;
 const WALKOUT_DUCK_DB = -6;
@@ -107,7 +109,7 @@ export class ShowRunner {
       index: this.i,
       kind,
       phase: this.phase,
-      prompt: this.phase === 'wait' ? 'tap' : null,
+      prompt: this.phase === 'wait' || (s?.kind === 'charge' && this.t >= s.durationMs * CHARGE_PROMPT_AT) ? 'tap' : null,
       canSkip: s !== undefined && this.phase !== 'done' && s.skippable && s.kind !== 'summary',
       canFastForward: s !== undefined && this.phase !== 'done' && s.fastForward,
       holding: this.holding,
@@ -171,7 +173,7 @@ export class ShowRunner {
     if (this.phase === 'wait') {
       this.tapQueued = false;
       this.setPhase('run');
-    } else if (s.kind === 'strike') {
+    } else if (s.kind === 'strike' || (s.kind === 'charge' && this.t >= s.durationMs * CHARGE_PROMPT_AT)) {
       this.tapQueued = true;
     } else if (RUSHABLE.has(s.kind) && s.fastForward) {
       this.rush = true;
@@ -281,6 +283,7 @@ export class ShowRunner {
       l &&
       l.index === s.index &&
       l.phase === s.phase &&
+      l.prompt === s.prompt &&
       l.holding === s.holding &&
       l.canSkip === s.canSkip &&
       l.canFastForward === s.canFastForward &&

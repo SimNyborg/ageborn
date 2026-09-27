@@ -36,7 +36,11 @@ function ModeCard(p: {
   action: ComponentChildren;
 }) {
   return (
-    <article class={`mode-card mode-card--${p.tone}${p.locked ? ' is-locked' : ''}`} data-testid={`mode-${p.id}`} aria-labelledby={`mode-${p.id}-title`}>
+    <article
+      class={`mode-card mode-card--${p.tone}${p.locked ? ' is-locked' : ''}`}
+      data-testid={`mode-${p.id}`}
+      aria-labelledby={`mode-${p.id}-title`}
+    >
       <header class="mode-card__head">
         <span class="mode-card__art" aria-hidden="true">
           {p.icon}
@@ -133,13 +137,31 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
           />
           <div class="skirmish__row">
             <span class="skirmish__label">{t('ui.mode.format')}</span>
-            <Segmented label={t('ui.mode.format')} value={format} onChange={setFormat} options={ALL_FORMATS.map((f) => ({ value: f, label: t(formatNameKey(f)) }))} size="sm" />
+            <Segmented
+              label={t('ui.mode.format')}
+              value={format}
+              onChange={setFormat}
+              options={ALL_FORMATS.map((f) => ({ value: f, label: t(formatNameKey(f)) }))}
+              size="sm"
+            />
           </div>
           <div class="skirmish__row">
             <span class="skirmish__label">{t('ui.mode.speed')}</span>
-            <Segmented label={t('ui.mode.speed')} value={speed} onChange={setSpeed} options={SPEEDS.map((v) => ({ value: v, label: t('ui.speed.x', { n: v }) }))} size="sm" />
+            <Segmented
+              label={t('ui.mode.speed')}
+              value={speed}
+              onChange={setSpeed}
+              options={SPEEDS.map((v) => ({ value: v, label: t('ui.speed.x', { n: v }) }))}
+              size="sm"
+            />
           </div>
-          <Toggle label={t('ui.mode.skirmish.standardLevels')} hint={t('ui.mode.skirmish.standardLevelsHint', { n: content.arenas.ladder.standardLevel })} checked={standard} onChange={setStandard} testid="skirmish-standard" />
+          <Toggle
+            label={t('ui.mode.skirmish.standardLevels')}
+            hint={t('ui.mode.skirmish.standardLevelsHint', { n: content.arenas.ladder.standardLevel })}
+            checked={standard}
+            onChange={setStandard}
+            testid="skirmish-standard"
+          />
           <p class="skirmish__reward">
             <AmberIcon size={18} /> {t('ui.mode.skirmish.reward', { n: content.arenas.ladder.skirmishWinAmber })}
           </p>
@@ -182,7 +204,15 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           title={t('ui.mode.ladder.title')}
           desc={t('ui.mode.ladder.desc')}
           action={
-            <Button variant="gold" size="lg" wide testid="ladder-start" autofocus icon={<SwordsIcon size={26} />} onClick={() => start({ mode: 'ladder', format })}>
+            <Button
+              variant="gold"
+              size="lg"
+              wide
+              testid="ladder-start"
+              autofocus
+              icon={<SwordsIcon size={26} />}
+              onClick={() => start({ mode: 'ladder', format })}
+            >
               {t('ui.home.battle')}
             </Button>
           }
@@ -201,7 +231,9 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           )}
           <p class="mode-card__meta">
             <CapsuleIcon tier="bronze" size={20} />
-            {charges.free > 0 ? t('ui.home.freeCapsules', { n: charges.free }) : t('ui.home.charges', { n: charges.charges, max: charges.max })}
+            {charges.free > 0
+              ? t('ui.home.freeCapsules', { n: charges.free })
+              : t('ui.home.charges', { n: charges.charges, max: charges.max })}
           </p>
           <p class="mode-card__help">{t('ui.mode.ladder.help')}</p>
         </ModeCard>

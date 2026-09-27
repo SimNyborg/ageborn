@@ -26,18 +26,30 @@ export interface CardDeps {
   reduceMotion: boolean;
 }
 
-/** Loads a portrait data URL as a texture; null for failures and 1-pixel stand-ins (the fake provider). */
-export async function portraitTexture(url: string): Promise<Texture | null> {
-  if (!url || typeof Image === 'undefined') return null;
-  try {
-    const img = new Image();
-    img.src = url;
-    await img.decode();
-    if (img.naturalWidth < 8 || img.naturalHeight < 8) return null;
-    return Texture.from(img);
-  } catch {
-    return null;
-  }
+const portraitCache = new Map<string, Promise<Texture | null>>();
+
+/**
+ * Loads a portrait data URL as a texture; null for failures and 1-pixel stand-ins (the fake
+ * provider). Textures are cached by URL (the art provider caches URLs by card, skin and size), so
+ * repeated openings reuse them instead of piling up GPU textures.
+ */
+export function portraitTexture(url: string): Promise<Texture | null> {
+  if (!url || typeof Image === 'undefined') return Promise.resolve(null);
+  const hit = portraitCache.get(url);
+  if (hit) return hit;
+  const p = (async () => {
+    try {
+      const img = new Image();
+      img.src = url;
+      await img.decode();
+      if (img.naturalWidth < 8 || img.naturalHeight < 8) return null;
+      return Texture.from(img);
+    } catch {
+      return null;
+    }
+  })();
+  portraitCache.set(url, p);
+  return p;
 }
 
 function cardShape(g: Graphics, inset = 0): Graphics {
@@ -390,7 +402,7 @@ export function fanLayout(n: number, cx = 640, cy = 318): { x: number; y: number
   if (n <= 0) return out;
   const perRow = n <= 7 ? n : Math.ceil(n / Math.ceil(n / 7));
   const rows = Math.ceil(n / perRow);
-  const scale = rows === 1 ? (n <= 5 ? 1 : 0.92) : rows === 2 ? 0.74 : 0.58;
+  const scale = rows === 1 ? (n <= 3 ? 1.2 : n <= 5 ? 1.08 : 0.94) : rows === 2 ? 0.74 : 0.58;
   const gapX = (CARD_W + 22) * scale;
   const gapY = (CARD_H + 46) * scale;
   for (let i = 0; i < n; i++) {

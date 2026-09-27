@@ -15,7 +15,14 @@ export function useId(prefix: string): string {
   return ref.current;
 }
 
-export function Toggle(p: { label: string; checked: boolean; onChange: (v: boolean) => void; testid?: string; disabled?: boolean; hint?: string }) {
+export function Toggle(p: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  testid?: string;
+  disabled?: boolean;
+  hint?: string;
+}) {
   return (
     <button
       type="button"

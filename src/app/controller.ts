@@ -106,6 +106,10 @@ export class AppController {
   /** Shows the title: the next onboarding match is built and waits, rendered, behind Play. */
   showTitle(): void {
     this.disposeRoute();
+    // No capsules without meta (Phase 1): a capsule step completes at once. Phase 2 opens WP10's
+    // capsule show here instead.
+    const step = this.stepSig.peek();
+    if ((step === 'capsule1' || step === 'capsule2') && !this.services.meta) this.completeStep(step);
     const setup = this.onboardingSetup();
     this.routeSig.value = { id: 'title', battle: setup ? this.build(setup) : null };
   }
@@ -142,12 +146,6 @@ export class AppController {
 
   /** Result screen "Next": the capsule step (Phase 2: WP10's show), then the next match or the title. */
   next(): void {
-    const r = this.routeSig.peek();
-    if (r.id === 'result' && r.result.setup.mode === 'tutorial') {
-      // No capsules without meta (Phase 1): the capsule step completes at once.
-      const step = this.stepSig.peek();
-      if ((step === 'capsule1' || step === 'capsule2') && !this.services.meta) this.completeStep(step);
-    }
     this.showTitle();
     if (this.stepSig.peek() !== 'home') this.play();
   }

@@ -19,6 +19,7 @@ import { activePlan, formatAges, planAvgLevel } from '../model/plan';
 /** A9 #4: the VS screen shows for 2 s. */
 export const VS_MS = 2000;
 
+/** Mode chips; the Tutorial format already reads "Training", so it has none. */
 const MODE_KEYS = {
   ladder: 'ui.vs.mode.ladder',
   conquest: 'ui.vs.mode.conquest',
@@ -84,7 +85,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
           <AiBadge general />
           <span class="vs__name">{name}</span>
           <span class="vs__row">
-            <Pill tone="violet">{t('ui.vs.tier', { tier: tierNumeral(o.tier) })}</Pill>
+            {general?.scripted ? null : <Pill tone="violet">{t('ui.vs.tier', { tier: tierNumeral(o.tier) })}</Pill>}
             <span class="vs__level" data-testid="vs-ai-level">
               {t('ui.vs.aiLevel', { n: o.level })}
             </span>
@@ -103,7 +104,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
       </div>
       <footer class="vs__strip">
         <div class="vs__chips">
-          <Pill tone="blue">{t(MODE_KEYS[request.mode])}</Pill>
+          {request.mode === 'tutorial' ? null : <Pill tone="blue">{t(MODE_KEYS[request.mode])}</Pill>}
           <Pill tone="gold">{t(formatNameKey(o.format))}</Pill>
           {o.warmUp ? (
             <Pill tone="green" testid="vs-warmup">

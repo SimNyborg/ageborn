@@ -100,7 +100,11 @@ export class SvgTarget implements DrawTarget {
   readonly defs: string[] = [];
   private clipIds = new Map<string, string>();
 
-  constructor(readonly base: Mat = [1, 0, 0, 1, 0, 0]) {}
+  /** `idPrefix` keeps clip-path ids unique when several targets share one SVG document. */
+  constructor(
+    readonly base: Mat = [1, 0, 0, 1, 0, 0],
+    readonly idPrefix = 'c',
+  ) {}
 
   private tf(m: Mat): string {
     const t = matMul(this.base, m);
@@ -111,7 +115,7 @@ export class SvgTarget implements DrawTarget {
     const key = `${clip.m.join(',')}|${clip.d}`;
     let id = this.clipIds.get(key);
     if (!id) {
-      id = `c${this.clipIds.size + 1}`;
+      id = `${this.idPrefix}${this.clipIds.size + 1}`;
       this.clipIds.set(key, id);
       this.defs.push(`<clipPath id="${id}"><path d="${clip.d}" transform="${this.tf(clip.m)}"/></clipPath>`);
     }
