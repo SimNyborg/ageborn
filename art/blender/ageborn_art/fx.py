@@ -1,67 +1,42 @@
-"""Shared death effect: the unit pops into a dust cloud with KO stars (no blood, DESIGN A11).
+"""Shared clip timing and the death hand-off (no blood, DESIGN A11).
 
-The FX parts live in the unit's own rig as joints hidden by default, so the death clip is
-self-contained. Colours stay low-saturation to respect the A11 colour rule.
+A unit's own die clip is 3 frames: a knockback fling with a 20 degree spin, a squash, and a
+hand-off frame. The dust poof and KO stars are shared effects (`fx.dust_poof`,
+`fx.ko_stars`, rendered once by units/fx_dust_poof.py and units/fx_ko_stars.py) that the
+game spawns at the times in the die clip's `fx` metadata, scaled to the unit's width.
 """
-import math
 
-from .anim import ease, key
-from .geometry import Geo
-
-DUST = "#E4DACB"
-DUST_DARK = "#CDBFA8"
-STAR = "#FFF3CC"
-
-# (angle in the screen plane in degrees, radius factor, size factor)
-_PUFFS = [(90, 0.20, 1.15), (20, 0.55, 0.85), (160, 0.55, 0.9), (-35, 0.5, 0.75),
-          (215, 0.5, 0.8), (60, 0.62, 0.7), (125, 0.65, 0.72)]
-_STARS = 3
+# -- standard clip timing (ms per playback step) --------------------------------------------
+IDLE_SEQUENCE = [0, 1, 2, 3, 2, 1]        # 4 unique poses, ping-pong: 1.2 s breathing loop
+IDLE_MS = 200
+WALK_MS = [62, 63, 62, 63, 62, 63, 62, 63]  # 8 frames, 0.5 s cycle (A11 walk at 80 lu/s)
+# melee: anticipation, anticipation, held extreme, smear, held impact, 3 recovery frames
+MELEE_MS = [83, 83, 167, 42, 125, 83, 83, 83]
+MELEE_SMEAR = 3
+MELEE_IMPACT = 4
+HIT_MS = [83, 83, 83]
+DIE_MS = [83, 83, 83]
 
 
-def add_death_fx(rig, height, width=None, puff_scale=1.0):
-    """Add hidden dust puffs and KO stars scaled to a unit `height` (lu)."""
-    width = width or height * 0.9
-    cz = height * 0.42
-    rig.death_fx = {"height": height, "width": width, "cz": cz}
-    base_r = height * 0.19 * puff_scale
-    for i, (ang, rf, sf) in enumerate(_PUFFS):
-        name = f"fx_puff{i}"
-        a = math.radians(ang)
-        pos = (math.cos(a) * width * 0.25 * rf, -6.0 - i * 0.7, cz + math.sin(a) * height * 0.25 * rf)
-        rig.joint(name, "root", pos, hidden=True)
-        g = Geo()
-        r = base_r * sf
-        g.blob(pos, (r, r * 0.9, r * 0.92), p=2.0, cuts=5)
-        g.blob((pos[0] + r * 0.55, pos[1] - 1, pos[2] + r * 0.35), (r * 0.62,) * 3, p=2.0, cuts=4)
-        g.blob((pos[0] - r * 0.5, pos[1] - 1, pos[2] + r * 0.25), (r * 0.55,) * 3, p=2.0, cuts=4)
-        rig.part(name, g, fill=DUST if i % 2 == 0 else DUST_DARK, outline=2.2)
-    for i in range(_STARS):
-        name = f"fx_star{i}"
-        pos = (0.0, -12.0, height * 0.95)
-        rig.joint(name, "root", pos, hidden=True)
-        g = Geo()
-        g.star(pos, height * 0.085, height * 0.038, height * 0.035)
-        rig.part(name, g, fill=STAR, outline=2.0)
+def death_meta(height_lu):
+    """Die clip metadata: when and where the game spawns the shared poof and stars.
+    atMs is from the start of the die clip; offsetLu is from the unit's feet."""
+    return {
+        "fx": [
+            {"id": "fx.dust_poof", "atMs": 166, "offsetLu": [0, round(height_lu * 0.42, 1)]},
+            {"id": "fx.ko_stars", "atMs": 249, "offsetLu": [0, round(height_lu * 0.62, 1)],
+             "loops": 2, "scalePow": 0.5},
+        ],
+        "hideUnitAtMs": 249,
+    }
 
 
-def death_fx_pose(f, pop_frame, n):
-    """Pose for the FX joints at frame f of a death clip that pops at `pop_frame`."""
-    pose = {}
-    if f < pop_frame:
-        return pose
-    u = (f - pop_frame) / max(1, (n - 1 - pop_frame))  # 0 at the pop, 1 at the last frame
-    for i, (ang, rf, sf) in enumerate(_PUFFS):
-        a = math.radians(ang)
-        grow = key(u, [(0.0, 0.55), (0.3, 1.1, "out"), (1.0, 0.25, "in")])
-        drift = 16.0 * ease("out", u)
-        pose[f"fx_puff{i}"] = {"show": True, "s": grow,
-                               "x": math.cos(a) * drift, "z": math.sin(a) * drift * 0.8 + 6 * u,
-                               "alpha": key(u, [(0.0, 1.0), (0.6, 1.0), (1.0, 0.0)])}
-    for i in range(_STARS):
-        ph = 2 * math.pi * (i / _STARS + 0.35 * u)
-        pose[f"fx_star{i}"] = {"show": True,
-                               "x": math.cos(ph) * 15.0, "y": math.sin(ph) * 10.0,
-                               "z": 6.0 * ease("out", u),
-                               "rz": 0.0, "r": 40.0 * u + 25 * i,
-                               "s": key(u, [(0.0, 0.3), (0.25, 1.15, "back"), (0.8, 1.0), (1.0, 0.0, "in")])}
-    return pose
+def die_pose(f, extra=None):
+    """Body channels of the 3 death frames (units merge limb flails on top):
+    0 fling back and up with a 20 degree spin, 1 squash, 2 hand-off (flattened, small)."""
+    table = [
+        {"body": {"x": -6.0, "z": 5.0, "r": 20.0, "sz": 1.12, "sx": 0.92, "sy": 0.92}},
+        {"body": {"x": -8.0, "z": 0.0, "r": 12.0, "sz": 0.72, "sx": 1.26, "sy": 1.26}},
+        {"body": {"x": -8.0, "z": 0.0, "r": 6.0, "s": 0.82, "sz": 0.5, "sx": 1.4, "sy": 1.4}},
+    ]
+    return table[max(0, min(2, f))]

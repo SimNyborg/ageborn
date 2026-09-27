@@ -11,7 +11,12 @@ Pose channels per joint (all optional):
   x, y, z  offset in lu in the parent's space (x forward, z up)
   s        uniform scale; sx, sy, sz multiply on top (squash and stretch)
   alpha    fade the joint's parts (non-team materials only)
-  show     True to reveal a joint that is hidden by default (death FX)
+  show     True to reveal a joint that is hidden by default (muzzle flash, yell mouth)
+  hide     True to hide a joint and everything under it for this frame
+
+Secondary joints (plume, tail, pennant, hair, hem) get their rotation added per frame by
+the follow-through spring (anim.follow_through, driven from render.py). Trackers are
+points on a joint whose screen position is exported per frame (muzzle, lance tip).
 """
 import math
 
@@ -30,6 +35,10 @@ class Rig:
         self.joints, self.rest, self.parent_of = {}, {}, {}
         self.hidden_by_default = set()
         self.parts = []  # dicts: obj, hull, joint, team
+        self.rest_scale = {}
+        self.secondaries = {}  # name -> {"tip": empty, "max": deg, "gain": g}
+        self.trackers = {}     # name -> empty
+        self._hidden = set()
         root = self._empty("root", None, (0, 0, 0))
         root.rotation_euler = (0.0, 0.0, math.radians(yaw))
         self.yaw = math.radians(yaw)
@@ -47,12 +56,48 @@ class Rig:
             e.location = Vector(pos) - self.rest[parent]
         return e
 
-    def joint(self, name, parent, pos, hidden=False):
-        """Add a pivot at `pos` (character space, rest pose)."""
+    def joint(self, name, parent, pos, hidden=False, scale=1.0):
+        """Add a pivot at `pos` (character space, rest pose). `scale` is a rest scale about
+        the pivot (e.g. the knight rides 1.2x relative to his horse)."""
         self._empty(name, parent, pos)
         if hidden:
             self.hidden_by_default.add(name)
+        if scale != 1.0:
+            self.rest_scale[name] = scale
         return name
+
+    def secondary(self, name, parent, pos, tip, max_deg, gain=1.0):
+        """A dangling joint driven by follow-through: pivot at `pos`, its part reaching to
+        `tip` (both character space, rest pose). Swing is soft-limited to +-max_deg."""
+        self.joint(name, parent, pos)
+        e = bpy.data.objects.new(f"{self.name}.{name}.tip", None)
+        self.coll.objects.link(e)
+        e.parent = self.joints[name]
+        e.location = Vector(tip) - self.rest[name]
+        self.secondaries[name] = {"tip": e, "max": max_deg, "gain": gain}
+        return name
+
+    def track(self, name, joint, pos):
+        """A point on `joint` (character space, rest pose) whose position is exported."""
+        e = bpy.data.objects.new(f"{self.name}.track.{name}", None)
+        self.coll.objects.link(e)
+        e.parent = self.joints[joint]
+        e.location = Vector(pos) - self.rest[joint]
+        self.trackers[name] = e
+        return e
+
+    # -- queries (after apply + view_layer.update) -----------------------------------------
+    def char_matrix(self, obj):
+        """obj's matrix in character space (root space without the view yaw)."""
+        return Matrix.Rotation(-self.yaw, 4, "Z") @ obj.matrix_world  # root sits at the origin
+
+    def side_angle(self, joint):
+        """Side-plane angle (deg, counter-clockwise on screen) of a joint's local +X."""
+        m = self.char_matrix(self.joints[joint])
+        return math.degrees(math.atan2(m[2][0], m[0][0]))
+
+    def char_pos(self, obj):
+        return self.char_matrix(obj).translation
 
     def part(self, joint, geo, fill=None, team=False, glow=None, outline=C.OUTLINE_LU,
              outline_hex=None, highlight=True, finish="matte", name=None):
@@ -60,6 +105,7 @@ class Rig:
         fill: palette hex for a cel-shaded part; team=True for a team-coloured part;
         glow: hex for an unshaded emissive part. outline: hull thickness in lu (0 = none)."""
         name = name or f"{joint}.{len(self.parts)}"
+        outline = min(outline, C.OUTLINE_LU)  # interior lines only; the outer line is 2D
         me = geo.mesh(f"{self.name}.{name}")
         me.transform(Matrix.Translation(-self.rest[joint]))
         if team:
@@ -75,7 +121,7 @@ class Rig:
         hull = None
         if outline > 0:
             hme = hull_mesh(me, outline, f"{self.name}.{name}.hull")
-            # outline_hex overrides the colour the outline is derived from (still darkened 45%).
+            # outline_hex overrides the colour the interior line is derived from.
             hmat = (materials.outline(team_part=True) if team
                     else materials.outline(outline_hex or fill or glow))
             hme.materials.append(hmat)
@@ -101,7 +147,8 @@ class Rig:
             p = self.parent_of[name]
             e.location = self.rest[name] - (self.rest[p] if p else Vector())
             e.rotation_euler = (0.0, 0.0, self.yaw if name == "root" else 0.0)
-            e.scale = (1.0, 1.0, 1.0)
+            rs = self.rest_scale.get(name, 1.0)
+            e.scale = (rs, rs, rs)
         for name, ch in pose.items():
             if name not in self.joints:
                 continue
@@ -111,7 +158,7 @@ class Rig:
             e.rotation_euler = (rx + math.radians(ch.get("rx", 0.0)),
                                 ry - math.radians(ch.get("r", 0.0)),
                                 rz + math.radians(ch.get("rz", 0.0)))
-            s = ch.get("s", 1.0)
+            s = ch.get("s", 1.0) * self.rest_scale.get(name, 1.0)
             e.scale = (max(1e-3, s * ch.get("sx", 1.0)), max(1e-3, s * ch.get("sy", 1.0)),
                        max(1e-3, s * ch.get("sz", 1.0)))
         hidden = set()

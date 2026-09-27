@@ -31,6 +31,9 @@ def px(v):
 # width), in the nearest fill colour x 0.40 capped at HSV value 0.38 (darker than A11's
 # x 0.55 on purpose: it is what keeps the unit edge readable at 56 px; see README).
 OUTER_OUTLINE_PX_1X = 3.0
+# ...and it also covers the silhouette's own edge band this wide (the interior hull line
+# there would otherwise make a soft double edge), so the line's inner edge stays crisp.
+OUTER_OUTLINE_INNER_PX_1X = 0.9
 OUTER_OUTLINE_FACTOR = 0.40
 OUTER_OUTLINE_MAX_V = 0.38
 # Interior lines between parts: inverted hulls, thin and lighter than the outer line.
@@ -69,6 +72,8 @@ FINISHES = {
     "metal": {"shadow": 0.65, "gradient": 0.14, "hl_threshold": 0.86, "hl_mix": 0.62},
     "hair":  {"shadow": 0.74, "gradient": 0.08, "hl_threshold": 0.90, "hl_mix": 0.12,
               "hl_color": "#E0C29A"},
+    # dust and smoke: a soft, light shadow so puffs read as air, not rocks
+    "dust":  {"shadow": 0.87, "gradient": 0.04, "hl_threshold": 0.88, "hl_mix": 0.60},
 }
 # Warm materials (hue 15-75 degrees) shift their shadow this many degrees toward red.
 WARM_SHADOW_HUE_SHIFT = 8.0
@@ -100,6 +105,10 @@ TEAM_COLORS = {
     "hc_blue": "#1F5FD6",
     "hc_orange": "#FF6A00",
 }
+# Shared death effects (fx.dust_poof, fx.ko_stars) are rendered once for a unit this wide;
+# the game scales them by the unit's widthLu / FX_REF_WIDTH_LU.
+FX_REF_WIDTH_LU = 80
+
 # Minimum share of the silhouette that must be team-coloured on every frame.
 TEAM_COVERAGE_MIN_PCT = 18.0
 

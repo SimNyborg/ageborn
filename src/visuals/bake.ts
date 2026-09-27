@@ -187,8 +187,9 @@ export class PartBaker {
       page.shelfH = 0;
     }
     if (!page || page.y + h > size) {
-      page = this.newPage();
-      if (!page) return null;
+      const fresh = this.newPage();
+      if (!fresh) return null;
+      page = fresh;
     }
     const x = page.x;
     const y = page.y;

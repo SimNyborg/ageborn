@@ -128,10 +128,8 @@ function paintLayer(l: LayerDef, t: DrawTarget, m: Mat, o: PaintOptions, withHig
   }
   if (withHighlight) {
     const light = l.light ?? 'auto';
-    if (light === 'auto' ? short >= STYLE.autoShadeMinLu : light !== false) {
-      const hd = light === 'auto' ? autoHighlight(b) : light;
-      t.fill(hd, m, 0xffffff, STYLE.highlightAlpha * alpha, { d: l.d, m }, { team: false });
-    }
+    const hd = light === 'auto' ? (short >= STYLE.autoShadeMinLu ? autoHighlight(b) : null) : light === false ? null : light;
+    if (hd !== null) t.fill(hd, m, 0xffffff, STYLE.highlightAlpha * alpha, { d: l.d, m }, { team: false });
   }
   if (!onlyHighlight && lineW > 0) t.stroke(l.d, m, lineW, darken(c, STYLE.outlinePct), alpha, tag);
 }

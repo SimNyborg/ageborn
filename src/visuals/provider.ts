@@ -9,6 +9,7 @@ import type { ArtProvider, BackdropView, BaseView, EffectView, TurretView, UnitV
 import type { AgeId, CardId, EffectId, Foil, Side, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter } from './adapters/atlas';
+import type { BakeStats } from './bake';
 import { PlaceholderAdapter } from './adapters/placeholder';
 import { ProceduralAdapter } from './adapters/procedural';
 import { SpineAdapter } from './adapters/spine';
@@ -206,7 +207,7 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /** Bake statistics for the gallery and budget checks. */
-  stats(): { bake: typeof this.procedural.baker.stats; preloads: typeof this.procedural.preloadMs; backdropMs: number } {
+  stats(): { bake: BakeStats; preloads: ProceduralAdapter['preloadMs']; backdropMs: number } {
     return { bake: this.procedural.baker.stats, preloads: this.procedural.preloadMs, backdropMs: this.procedural.backdrops.bakeMs };
   }
 }

@@ -4,7 +4,7 @@
  */
 import type { DrawTarget, PaintTag } from './draw';
 import { toCss } from './palette';
-import { andMasks, Raster } from './raster';
+import { andMasks, type Raster } from './raster';
 import { fmt, matMul, type Mat } from './svg';
 
 // ---------------------------------------------------------------------------------------------
