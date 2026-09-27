@@ -213,10 +213,12 @@ export function TopBar(p: {
                 data-testid="hud-evolve"
                 data-ready={m.me.evolveReady}
                 aria-disabled={!m.me.evolveReady}
+                disabled={c.readOnly}
                 onClick={() => c.act(evolveIntent(m, c.side))}
               >
                 {nextAge ? <AgeGlyph age={nextAge} size={18} /> : null}
                 <span>{m.me.ascending ? t('hud.evolving') : t('hud.evolve')}</span>
+                {c.compact ? null : <kbd class="hud-key">E</kbd>}
               </button>
             )}
           </div>
@@ -276,15 +278,17 @@ export function TopBar(p: {
         </div>
         <div class="hud-controls">
           <Scouted c={c} />
-          <div class="hud-buttons">
-            <button class="hud-round" data-testid="hud-pause" aria-label={t('hud.pause')} onClick={p.onPause}>
-              {m.paused ? <PlayIcon size={20} /> : <PauseIcon size={20} />}
-            </button>
-            <button class="hud-round hud-speed" data-testid="hud-speed" aria-label={t('hud.speedLabel')} data-speed={m.speed} onClick={p.onSpeed}>
-              <SpeedIcon size={16} />
-              <span>{t('hud.speed', { s: m.speed })}</span>
-            </button>
-          </div>
+          {c.readOnly ? null : (
+            <div class="hud-buttons">
+              <button class="hud-round" data-testid="hud-pause" aria-label={m.paused ? t('hud.resume') : t('hud.pause')} onClick={p.onPause}>
+                {m.paused ? <PlayIcon size={20} /> : <PauseIcon size={20} />}
+              </button>
+              <button class="hud-round hud-speed" data-testid="hud-speed" aria-label={t('hud.speedLabel')} data-speed={m.speed} onClick={p.onSpeed}>
+                <SpeedIcon size={16} />
+                <span>{t('hud.speed', { s: m.speed })}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
