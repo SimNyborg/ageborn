@@ -19,7 +19,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "bench": "vitest bench --run",
-    "size": "node tools/size.mjs"
+    "size": "tsx tools/size.ts"
   },
   "dependencies": {
     "@preact/signals": "2.11.2",

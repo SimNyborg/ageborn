@@ -142,7 +142,7 @@ export default tseslint.config(
     linterOptions: { reportUnusedDisableDirectives: 'error' },
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
+      '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports', disallowTypeAnnotations: false }],
       'no-restricted-imports': ['error', {
         patterns: [{ group: ['age-of-war', '*age-of-war*'], message: 'Our own IP only (CLAUDE.md).' }],
       }],
