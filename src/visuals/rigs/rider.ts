@@ -11,7 +11,7 @@ import { quadruped, type QuadSpec } from './quadruped';
 
 export interface RiderSpec {
   id: string;
-  mount: Omit<QuadSpec, 'id' | 'attack' | 'group' | 'size' | 'age'>;
+  mount: Omit<QuadSpec, 'id' | 'attack' | 'group' | 'size' | 'age' | 'height'>;
   rider: Omit<BipedSpec, 'id' | 'attack' | 'group' | 'size' | 'age'>;
   age: QuadSpec['age'];
   height: number;
@@ -47,10 +47,19 @@ export function rider(s: RiderSpec): PuppetDef {
     size: s.size,
     pose: { legF: -78, shinF: 70, legB: -70, shinB: 64, ...s.rider.pose },
   });
+  // Rider bones and slots whose ids collide with the mount's (head, eyes) get a `rider.` prefix, so
+  // every bone and slot id stays unique (the mount keeps the plain names the clips animate).
+  const mountBones = new Set(m.bones.map((b) => b.id));
+  const mountSlots = new Set(m.slots.map((sl) => sl.id ?? sl.part));
+  const boneId = (id: string): string => (mountBones.has(id) && id !== 'root' && id !== 'spin' ? `rider.${id}` : id);
   const riderBones = r.bones
     .filter((b) => b.id !== 'root' && b.id !== 'spin')
-    .map((b) => (b.id === 'pelvis' ? { ...b, parent: 'saddle', x: 0, y: 0 } : b));
-  const slots = [...m.slots, ...r.slots.map((sl) => ({ ...sl, z: riderZ(sl) }))];
+    .map((b) => (b.id === 'pelvis' ? { ...b, parent: 'saddle', x: 0, y: 0 } : { ...b, id: boneId(b.id), parent: b.parent === null ? null : boneId(b.parent) }));
+  const riderSlots = r.slots.map((sl) => {
+    const id = sl.id ?? sl.part;
+    return { ...sl, id: mountSlots.has(id) ? `rider.${id}` : sl.id, bone: boneId(sl.bone), z: riderZ(sl) };
+  });
+  const slots = [...m.slots, ...riderSlots];
   const bones = [...m.bones, ...riderBones];
   const attackClip = getClip(s.attack);
   return {

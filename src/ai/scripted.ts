@@ -1,0 +1,200 @@
+/**
+ * The scripted brain of Old Grogg, the tutorial trainer (DESIGN A7.4, A8, B10): "Sends Training
+ * Dummies, never evolves". The script is data: `tutorial/scripts.ts` (WP11) passes it as
+ * `BotProfile.openings`; without one the default below runs. Grogg issues ordinary commands through
+ * the same API as every bot, sees only the delayed observation, and never evolves.
+ *
+ * Script lines (times in ms from the match start):
+ *
+ * | Line | Meaning |
+ * |---|---|
+ * | `at <ms> <action>` | once, at that time |
+ * | `every <ms> [from <ms>] [until <ms>] <action>` | repeatedly |
+ *
+ * Actions: `train <card>`, `turret <card>`, `power`, `emote <id>`. A due action waits until it is
+ * legal and affordable (at most one pending occurrence per line), so Grogg never issues an illegal
+ * command. Unknown lines are ignored.
+ */
+import type { BotProfile, CardId, Command, CompiledContent, EmoteId, Observation, Side } from '@/contracts';
+import { PPM, msToTicks } from '@/core';
+import { toCommand, type BotAction } from './actions';
+import { cardBook, type CardBook } from './book';
+import { botSeed, type AiBotController } from './controller';
+import type { DecisionTrace } from './brain';
+import { EmotePolicy } from './emotes';
+import { Ledger } from './ledger';
+import { BotMemory } from './memory';
+import { personalityFor, type Personality } from './personalities';
+import { tierParams, type TierParams } from './tiers';
+import { buildView, type View } from './view';
+
+export type ScriptAction = { kind: 'train'; card: CardId } | { kind: 'turret'; card: CardId } | { kind: 'power' } | { kind: 'emote'; emote: EmoteId };
+
+export interface ScriptLine {
+  /** First time the line fires, ticks. */
+  from: number;
+  /** Repeat period in ticks, or null for a one-shot line. */
+  every: number | null;
+  /** Last tick an occurrence may start (inclusive), or null. */
+  until: number | null;
+  action: ScriptAction;
+}
+
+/**
+ * Old Grogg's default tutorial script (A8): Training Dummies from the start, a Tuskback at 0:40, then
+ * Dummies and the odd Tuskback until his base falls. WP11 retimes the tutorial beats from a scripted
+ * sim run and may pass its own lines.
+ */
+export const GROGG_SCRIPT: readonly string[] = [
+  'every 8000 from 3000 until 38000 train training_dummy',
+  'at 40000 train tuskback',
+  'every 9000 from 48000 train training_dummy',
+  'every 30000 from 75000 train tuskback',
+];
+
+const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
+
+function parseAction(words: string[]): ScriptAction | null {
+  const [verb, arg] = words;
+  if (verb === 'train' && arg) return { kind: 'train', card: arg };
+  if (verb === 'turret' && arg) return { kind: 'turret', card: arg };
+  if (verb === 'power') return { kind: 'power' };
+  if (verb === 'emote' && arg && (EMOTES as readonly string[]).includes(arg)) return { kind: 'emote', emote: arg as EmoteId };
+  return null;
+}
+
+function ms(word: string | undefined): number | null {
+  if (word === undefined || !/^\d+$/.test(word)) return null;
+  return msToTicks(Number(word));
+}
+
+/** Parses script lines. Unknown or malformed lines are skipped. */
+export function parseScript(lines: readonly string[]): ScriptLine[] {
+  const out: ScriptLine[] = [];
+  for (const line of lines) {
+    const w = line.trim().split(/\s+/);
+    if (w[0] === 'at') {
+      const at = ms(w[1]);
+      const action = parseAction(w.slice(2));
+      if (at !== null && action) out.push({ from: at, every: null, until: null, action });
+    } else if (w[0] === 'every') {
+      const every = ms(w[1]);
+      let i = 2;
+      let from = 0;
+      let until: number | null = null;
+      if (w[i] === 'from') {
+        from = ms(w[i + 1]) ?? 0;
+        i += 2;
+      }
+      if (w[i] === 'until') {
+        until = ms(w[i + 1]);
+        i += 2;
+      }
+      const action = parseAction(w.slice(i));
+      if (every !== null && action) out.push({ from, every, until, action });
+    }
+  }
+  return out;
+}
+
+interface LineState {
+  line: ScriptLine;
+  /** Next occurrence tick, or null when finished. */
+  next: number | null;
+  /** An occurrence is due and waiting to become legal. */
+  due: boolean;
+}
+
+export class ScriptedController implements AiBotController {
+  readonly snapshotDelayTicks: number;
+  readonly tier: TierParams;
+  readonly personality: Personality;
+  readonly traces: DecisionTrace[] = [];
+  private readonly book: CardBook;
+  private readonly memory: BotMemory;
+  private readonly ledger: Ledger;
+  private readonly emotes: EmotePolicy;
+  private readonly lines: LineState[];
+
+  constructor(
+    readonly profile: BotProfile,
+    readonly side: Side,
+    seed: number,
+    content: CompiledContent,
+  ) {
+    this.book = cardBook(content);
+    this.tier = tierParams(profile.tier);
+    this.personality = personalityFor(content, profile.generalId);
+    this.snapshotDelayTicks = this.tier.snapshotDelayTicks;
+    this.memory = new BotMemory(this.book);
+    this.ledger = new Ledger(this.book);
+    this.emotes = new EmotePolicy(botSeed(seed, side, 'emote'));
+    const script = parseScript(profile.openings.length > 0 ? profile.openings : GROGG_SCRIPT);
+    this.lines = script.map((line) => ({ line, next: line.from, due: false }));
+  }
+
+  get foeGoldEstimate(): number {
+    return this.memory.estimator.gold;
+  }
+
+  hearEmote(emote: EmoteId, tick: number): void {
+    this.emotes.hear(emote, tick);
+  }
+
+  onTick(obs: Observation): Command[] {
+    if (obs.side !== this.side || obs.phase === 'ended') return [];
+    this.memory.observe(obs);
+    this.ledger.sync(obs);
+    const now = obs.tick + this.snapshotDelayTicks;
+    const out: Command[] = [];
+    let view: View | null = null;
+    for (const s of this.lines) {
+      if (s.next !== null && now >= s.next) {
+        s.due = true;
+        const every = s.line.every;
+        s.next = every === null ? null : s.next + every;
+        if (s.next !== null && s.line.until !== null && s.next > s.line.until) s.next = null;
+      }
+      if (!s.due) continue;
+      view ??= buildView(obs, now, this.book, this.ledger);
+      const a = this.resolve(s.line.action, view, now);
+      if (!a) continue;
+      s.due = false;
+      this.ledger.record(a, now, now + 1);
+      out.push(toCommand(a, this.side));
+      view = null;
+    }
+    const canEmote = now >= this.ledger.lastEmoteTick + this.book.econ.emoteCooldownTicks + 1;
+    const emote = this.emotes.next(obs, now, canEmote);
+    if (emote) {
+      this.ledger.record({ kind: 'emote', emote }, now, now + 1);
+      out.push({ t: 'emote', side: this.side, emote });
+    }
+    return out;
+  }
+
+  /** The legal action for a script action right now, or null to keep waiting. */
+  private resolve(sa: ScriptAction, v: View, now: number): BotAction | null {
+    const e = this.book.econ;
+    switch (sa.kind) {
+      case 'train': {
+        const slot = v.tray.find((s) => s.card.id === sa.card);
+        if (!slot || v.ageUncertain) return null;
+        if (v.gold < slot.card.cost || v.queue.length >= e.queueMax) return null;
+        if (slot.card.legendary && v.legendaryInField) return null;
+        return { kind: 'train', slot: slot.slot, card: slot.card.id, cost: slot.card.cost };
+      }
+      case 'turret': {
+        const slot = v.turretCards.indexOf(sa.card);
+        const def = this.book.turrets[sa.card];
+        const mount = v.turrets.findIndex((x, m) => m < v.mountsOwned && x === null && !v.mountBusy[m]);
+        if (slot < 0 || !def || mount < 0 || v.gold < def.cost || v.ageUncertain) return null;
+        return { kind: 'build', mount, slot, card: sa.card, cost: def.cost };
+      }
+      case 'power':
+        return v.powerReady && v.obs.me.powerPpm >= PPM ? { kind: 'power', p: null } : null;
+      case 'emote':
+        return now >= this.ledger.lastEmoteTick + e.emoteCooldownTicks + 1 ? { kind: 'emote', emote: sa.emote } : null;
+    }
+  }
+}

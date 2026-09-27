@@ -1,0 +1,82 @@
+import { describe, expect, it } from 'vitest';
+import { FixedClock } from '@/contracts/fakes/clock';
+import { AppController, QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
+import { buildServices, DEFAULT_CHOICE } from '../services';
+
+async function controller() {
+  const services = await buildServices({ choice: DEFAULT_CHOICE, clock: new FixedClock() });
+  const c = new AppController(services, { save: null, autopilot: true, delay: async () => undefined });
+  return { c, services };
+}
+
+/** Runs the battle on screen to its end and lets the end flow settle. */
+async function finish(c: AppController): Promise<void> {
+  const r = c.route.value;
+  if (r.id !== 'battle') throw new Error(`not in battle: ${r.id}`);
+  r.battle.session.fastForward(20 * 60 * 12);
+  for (let i = 0; i < 10 && c.route.value.id === 'battle'; i += 1) await Promise.resolve();
+}
+
+describe('AppController: the first session (A8, A9 flow)', () => {
+  it('title shows match 1 waiting behind Play; one tap starts it', async () => {
+    const { c } = await controller();
+    c.showTitle();
+    const r = c.route.value;
+    expect(r.id).toBe('title');
+    if (r.id !== 'title') return;
+    expect(r.battle?.setup.opponent.generalId).toBe('grogg');
+    expect(r.battle?.session.status.value).toBe('ready');
+    c.play();
+    expect(c.route.value.id).toBe('battle');
+    expect(r.battle?.session.status.value).toBe('running');
+  });
+
+  it('match 1 → result → match 2 → result → onboarding done, replays kept', async () => {
+    const { c, services } = await controller();
+    c.showTitle();
+    c.play();
+    await finish(c);
+    const r1 = c.route.value;
+    expect(r1.id).toBe('result');
+    if (r1.id !== 'result') return;
+    expect(r1.result.input.outcome.winner).toBe(0);
+    expect(r1.result.setup.matchNumber).toBe(1);
+    expect(c.step.value).toBe('capsule1');
+
+    c.next();
+    expect(c.step.value).toBe('match2');
+    const r2 = c.route.value;
+    expect(r2.id).toBe('battle');
+    if (r2.id !== 'battle') return;
+    expect(r2.battle.setup.opponent).toMatchObject({ generalId: 'pip', tier: 0, isAI: true, format: 'short' });
+    await finish(c);
+    expect(c.route.value.id).toBe('result');
+    expect(c.step.value).toBe('capsule2');
+    c.next();
+    expect(c.step.value).toBe('home');
+    const r3 = c.route.value;
+    expect(r3).toMatchObject({ id: 'title', battle: null });
+    expect(services.saveStore.loadReplays()).toHaveLength(2);
+    expect(c.replays.value).toHaveLength(2);
+    expect(services.eventLog.entries().filter((e) => e.kind === 'matchEnd')).toHaveLength(2);
+  }, 60_000);
+
+  it('Quick Battle: Short War vs a tier III AI General; play again, replay, quit', async () => {
+    const { c } = await controller();
+    const b = c.quickBattle('short');
+    expect(b.setup.opponent).toMatchObject({ generalId: QUICK_BATTLE_GENERAL, tier: QUICK_BATTLE_TIER, isAI: true, format: 'short' });
+    expect(b.session.status.value).toBe('running');
+    await finish(c);
+    const r = c.route.value;
+    expect(r.id).toBe('result');
+    if (r.id !== 'result') return;
+    c.watchReplay(r.result.replay);
+    expect(c.route.value.id).toBe('replay');
+    c.home();
+    expect(c.route.value.id).toBe('title');
+    const again = c.quickBattle('standard');
+    expect(again.setup.config.format).toBe('standard');
+    c.quit();
+    expect(again.session.status.value).toBe('disposed');
+  }, 60_000);
+});

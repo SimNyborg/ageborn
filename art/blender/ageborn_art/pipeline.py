@@ -106,7 +106,18 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True):
     for c in clips:
         m = c.meta()
         if c.name in tracks:
-            m["anchorsLu"] = tracks[c.name]
+            pub = {k: v for k, v in tracks[c.name].items() if not k.startswith("_")}
+            if pub:
+                m["anchorsLu"] = pub
+            foot = tracks[c.name].get("_foot")
+            if foot and c.name == "walk":
+                # a foot travels its x range backward while planted, twice per cycle: moving
+                # at strideLu per cycle keeps it from sliding; the game scales playback by
+                # unit speed / naturalSpeedLuPerS (DESIGN A12 checklist item 2)
+                xs = [p[0] for p in foot]
+                stride = round(2 * (max(xs) - min(xs)), 1)
+                m["strideLu"] = stride
+                m["naturalSpeedLuPerS"] = round(stride / (c.total_ms() / 1000.0), 1)
         for fx in m.get("fx", []):
             fx["scale"] = round((width_lu / C.FX_REF_WIDTH_LU) ** fx.pop("scalePow", 1.0), 3)
         clip_meta[c.name] = m

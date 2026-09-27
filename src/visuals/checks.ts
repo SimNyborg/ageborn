@@ -1,0 +1,201 @@
+/**
+ * Art checks shared by the unit tests and the gallery (DESIGN B5: the gallery "hosts the silhouette
+ * IoU test and the colour-rule test, both rasterising the same SVG data"). Pure TypeScript: the
+ * rasteriser paints the same SVG path data the atlas bake draws, so a check here judges exactly what
+ * the game shows.
+ *
+ *  - colour rule (A11, MUST): non-team parts of units, turrets, projectiles and lane effects may not
+ *    use a hue within ±35° of a team hue (any preset) at HSV saturation above 40% for more than 10%
+ *    of the silhouette. Team layers are painted neutral grey here, so only non-team paint counts.
+ *  - silhouette parity (A5.8): a skin's silhouette mask vs its base visual, IoU >= 0.85.
+ *  - body width (A11): visual width within 1.4x the collision width (held gear and rotors excluded).
+ *  - scale (A11): infantry ~68 lu, heavies 100-120 lu, Legendaries 170-220 lu.
+ *  - structure: unique bone and slot ids, parents first, every part and zone resolvable, team layers
+ *    contiguous inside each part (the bake splits parts into under/team/over).
+ */
+import { CLIP_LIBRARY, getClip } from './clips';
+import { procDeltas, type ProcContext } from './clips/procedural';
+import { drawPuppet, puppetBounds, teamLayersContiguous, type PartLookup } from './draw';
+import { COLOR_RULE_MAX_SHARE, isTeamZone, resolveZone, violatesColorRule } from './palette';
+import { boneWorld, slotId, validateBones, type DeltaLookup, type PuppetState } from './pose';
+import { iou, maskArea, Raster } from './raster';
+import { sampleTrack } from './animator';
+import { STYLE } from './style';
+import { unionBounds, type Bounds } from './svg';
+import { RasterTarget } from './targets';
+import type { BoneDelta, PuppetDef } from './types';
+
+export interface RasterOptions {
+  pxPerLu?: number;
+  deltas?: DeltaLookup;
+  state?: PuppetState;
+  /** Paint team layers in this colour (null = the neutral grey used by the bake). */
+  teamColor?: number | null;
+  /** Frame to rasterise into (defaults to the puppet's own bounds plus a margin). */
+  bounds?: Bounds;
+}
+
+const MARGIN = 4;
+
+function padded(b: Bounds): Bounds {
+  return { minX: Math.floor(b.minX - MARGIN), minY: Math.floor(b.minY - MARGIN), maxX: Math.ceil(b.maxX + MARGIN), maxY: Math.ceil(b.maxY + MARGIN) };
+}
+
+export function rasterizePuppet(p: PuppetDef, parts: PartLookup, o: RasterOptions = {}): Raster {
+  const bounds = o.bounds ?? padded(puppetBounds(p, parts, o.deltas, undefined, o.state));
+  const r = new Raster(bounds, o.pxPerLu ?? 2);
+  drawPuppet(p, new RasterTarget(r), [1, 0, 0, 1, 0, 0], { parts, teamColor: o.teamColor ?? null, deltas: o.deltas, state: o.state });
+  return r;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Colour rule
+
+export interface ColorRuleReport {
+  /** Share of the silhouette painted in a saturated team-band hue by non-team layers. */
+  share: number;
+  pass: boolean;
+  /** The worst offending colours (0xRRGGBB → share), largest first. */
+  offenders: { color: number; share: number }[];
+}
+
+export function colorRuleOfRaster(r: Raster): ColorRuleReport {
+  let area = 0;
+  let bad = 0;
+  const byColor = new Map<number, number>();
+  for (let i = 0; i < r.color.length; i++) {
+    const c = r.color[i] ?? -1;
+    if (c < 0) continue;
+    area++;
+    if (r.team[i] === 1) continue;
+    if (violatesColorRule(c)) {
+      bad++;
+      byColor.set(c, (byColor.get(c) ?? 0) + 1);
+    }
+  }
+  const share = area === 0 ? 0 : bad / area;
+  const offenders = [...byColor.entries()]
+    .map(([color, n]) => ({ color, share: n / Math.max(1, area) }))
+    .sort((a, b) => b.share - a.share)
+    .slice(0, 5);
+  return { share, pass: share <= COLOR_RULE_MAX_SHARE, offenders };
+}
+
+export function colorRule(p: PuppetDef, parts: PartLookup, pxPerLu = 2): ColorRuleReport {
+  return colorRuleOfRaster(rasterizePuppet(p, parts, { pxPerLu, teamColor: null }));
+}
+
+// ---------------------------------------------------------------------------------------------
+// Silhouettes
+
+/** Bone deltas of a clip at normalised time u (keyframes plus procedural helpers), for checks. */
+export function clipPose(p: PuppetDef, clipId: string, u: number): DeltaLookup {
+  const clip = getClip(clipId) ?? CLIP_LIBRARY.get(clipId);
+  const out = new Map<string, BoneDelta>();
+  if (!clip) return (b) => out.get(b);
+  for (const [bone, keys] of Object.entries(clip.tracks)) out.set(bone, sampleTrack(keys, u));
+  const ctx: ProcContext = {
+    bones: new Set(p.bones.map((b) => b.id)),
+    heightLu: p.heightLu,
+    legLu: p.motion.legLu ?? 16,
+    legDeg: p.motion.legDeg ?? 25,
+    strideLu: p.motion.strideLu ?? 30,
+    speedLuPerSec: p.motion.speedLuPerSec ?? 60,
+    wheelRadiusLu: p.motion.wheelRadiusLu ?? 10,
+    twirlBone: p.motion.twirlBone,
+    air: p.motion.air ?? false,
+  };
+  for (const [bone, d] of procDeltas(clip.proc ?? [], ctx, u, u * clip.durationMs)) {
+    const prev = out.get(bone);
+    out.set(bone, prev ? { r: prev.r + d.r, x: prev.x + d.x, y: prev.y + d.y, sx: prev.sx * d.sx, sy: prev.sy * d.sy } : d);
+  }
+  return (b) => out.get(b);
+}
+
+/** Silhouette IoU of two puppets in the same pose, rasterised on one shared grid. */
+export function silhouetteIoU(a: PuppetDef, b: PuppetDef, parts: PartLookup, o: { pxPerLu?: number; deltas?: DeltaLookup; state?: PuppetState } = {}): number {
+  const bounds = padded(unionBounds(puppetBounds(a, parts, o.deltas, undefined, o.state), puppetBounds(b, parts, o.deltas, undefined, o.state)));
+  const ra = rasterizePuppet(a, parts, { ...o, bounds });
+  const rb = rasterizePuppet(b, parts, { ...o, bounds });
+  return iou(ra.silhouette(), rb.silhouette());
+}
+
+/** Silhouette area in lu² (for size comparisons). */
+export function silhouetteArea(p: PuppetDef, parts: PartLookup, pxPerLu = 2): number {
+  const r = rasterizePuppet(p, parts, { pxPerLu });
+  return maskArea(r.silhouette()) / (pxPerLu * pxPerLu);
+}
+
+// ---------------------------------------------------------------------------------------------
+// Scale and width
+
+/** Body bounds: every slot except held gear, rotors and banners (`noWidth`). */
+export function bodyBounds(p: PuppetDef, parts: PartLookup): Bounds {
+  return puppetBounds({ ...p, slots: p.slots.filter((s) => !s.noWidth) }, parts);
+}
+
+export function bodyWidth(p: PuppetDef, parts: PartLookup): number {
+  const b = bodyBounds(p, parts);
+  return b.maxX - b.minX;
+}
+
+export function maxBodyWidth(p: PuppetDef): number {
+  return STYLE.collisionWidthLu[p.size ?? 'small'] * STYLE.maxWidthFactor;
+}
+
+export function restHeight(p: PuppetDef, parts: PartLookup): number {
+  const b = puppetBounds(p, parts);
+  return -b.minY;
+}
+
+/** A11 scale bands for ground units by role group (air units and Epics vary). */
+export function heightBand(p: PuppetDef): readonly [number, number] | null {
+  if (p.kind !== 'unit' || p.motion.air) return null;
+  switch (p.group) {
+    case 'infantry':
+    case 'ranged':
+    case 'antiArmor':
+    case 'support':
+      return [54, 90];
+    case 'heavy':
+      return [90, 125];
+    case 'legendary':
+      return [150, 225];
+    default:
+      return null;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Structure
+
+export function structuralProblems(p: PuppetDef, parts: PartLookup): string[] {
+  const out = validateBones(p.bones).map((m) => `${p.id}: ${m}`);
+  const bones = new Set(p.bones.map((b) => b.id));
+  const slots = new Set<string>();
+  for (const s of p.slots) {
+    const id = slotId(s);
+    if (slots.has(id)) out.push(`${p.id}: duplicate slot "${id}"`);
+    slots.add(id);
+    if (!bones.has(s.bone)) out.push(`${p.id}: slot "${id}" on missing bone "${s.bone}"`);
+    const part = parts(s.part);
+    if (!part) {
+      out.push(`${p.id}: slot "${id}" uses missing part "${s.part}"`);
+      continue;
+    }
+    if (!teamLayersContiguous(part)) out.push(`${p.id}: part "${part.id}" has non-contiguous team layers`);
+    for (const l of part.layers) {
+      if (isTeamZone(l.zone)) continue;
+      if (resolveZone(p.palette, l.zone) === undefined) out.push(`${p.id}: part "${part.id}" zone "${l.zone}" missing from the palette`);
+    }
+  }
+  // Every animated bone used by the puppet's clips should exist? Clips ignore missing bones by design.
+  const world = boneWorld(p.bones);
+  if (world.size !== p.bones.length) out.push(`${p.id}: bone ids are not unique`);
+  return out;
+}
+
+/** Bounds of the rest pose per slot tag set, e.g. the whole puppet. */
+export function restBounds(p: PuppetDef, parts: PartLookup): Bounds {
+  return puppetBounds(p, parts);
+}

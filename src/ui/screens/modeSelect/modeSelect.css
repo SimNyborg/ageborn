@@ -1,0 +1,248 @@
+/* Mode select (A9 #3). */
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.6vw, 22px);
+  height: 100%;
+  min-height: 330px;
+}
+
+.mode-card {
+  --tone: var(--ui-blue);
+  --tone-hi: var(--ui-blue-hi);
+  --tone-lo: var(--ui-blue-lo);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 3px solid var(--ui-ink);
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--ui-panel-hi), var(--ui-panel) 40%, var(--ui-panel-lo));
+  box-shadow: var(--ui-shadow-drop), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  animation: ui-enter 360ms var(--ui-ease-out) both;
+}
+.mode-card:nth-child(2) {
+  animation-delay: 60ms;
+}
+.mode-card:nth-child(3) {
+  animation-delay: 120ms;
+}
+.mode-card:nth-child(4) {
+  animation-delay: 180ms;
+}
+.mode-card--red {
+  --tone: var(--ui-red);
+  --tone-hi: var(--ui-red-hi);
+  --tone-lo: var(--ui-red-lo);
+}
+.mode-card--green {
+  --tone: var(--ui-green);
+  --tone-hi: var(--ui-green-hi);
+  --tone-lo: var(--ui-green-lo);
+}
+.mode-card--gold {
+  --tone: var(--ui-gold);
+  --tone-hi: var(--ui-gold-hi);
+  --tone-lo: var(--ui-gold-lo);
+}
+.mode-card__head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: clamp(8px, 2vh, 18px) 10px clamp(6px, 1.4vh, 12px);
+  border-bottom: 3px solid var(--ui-ink);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4), transparent 55%),
+    repeating-conic-gradient(from 0deg at 50% 45%, rgba(255, 255, 255, 0.08) 0deg 10deg, transparent 10deg 20deg),
+    linear-gradient(180deg, var(--tone-hi), var(--tone) 55%, var(--tone-lo));
+}
+.mode-card__art {
+  display: flex;
+  filter: drop-shadow(0 4px 0 rgba(27, 19, 48, 0.55));
+  animation: ui-bob 3s ease-in-out infinite;
+}
+.mode-card__title {
+  font-size: clamp(18px, 3.4vh, 24px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: center;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 5px var(--ui-ink);
+  text-shadow: 0 3px 0 var(--ui-ink);
+}
+.mode-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  min-height: 0;
+  overflow: auto;
+}
+.mode-card__desc {
+  font-weight: 800;
+  font-size: 14px;
+}
+.mode-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 13px;
+}
+.mode-card__help {
+  color: var(--ui-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.mode-card__mod {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 2px solid var(--ui-gold-lo);
+  border-radius: 12px;
+  background: rgba(255, 197, 61, 0.1);
+  font-size: 13px;
+}
+.mode-card__mod b {
+  color: var(--ui-gold-hi);
+  font-size: 15px;
+}
+.mode-card__foot {
+  padding: 8px 12px 12px;
+}
+.mode-card.is-locked .mode-card__head {
+  filter: grayscale(0.85) brightness(0.8);
+}
+.mode-card.is-locked .mode-card__body {
+  opacity: 0.6;
+}
+.mode-card__lock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  border: 3px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--ui-muted);
+  text-align: center;
+}
+
+/* Skirmish setup */
+.skirmish {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+.skirmish__generals {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+.skirmish__gen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border: 3px solid transparent;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: transform 120ms var(--ui-ease-back), background 150ms;
+}
+.skirmish__gen:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+}
+.skirmish__gen.is-on {
+  border-color: var(--ui-gold);
+  background: rgba(255, 197, 61, 0.14);
+}
+.skirmish__gen .ui-general {
+  border-radius: 12px;
+}
+.skirmish__genname {
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.1;
+}
+.skirmish__opts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skirmish__who {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 16px;
+}
+.skirmish__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.skirmish__label {
+  font-weight: 800;
+}
+.skirmish__reward {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+}
+.skirmish__note {
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(255, 197, 61, 0.12);
+  color: var(--ui-gold-hi);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .modes {
+    grid-template-columns: repeat(4, minmax(170px, 1fr));
+    overflow-x: auto;
+  }
+  .mode-card__art svg {
+    width: 44px;
+    height: 44px;
+  }
+  .skirmish {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-height: 480px) {
+  .modes {
+    min-height: 0;
+  }
+  .mode-card__art svg {
+    width: 38px;
+    height: 38px;
+  }
+  .mode-card__body {
+    gap: 6px;
+    padding: 6px 10px;
+  }
+  .mode-card__help {
+    display: none;
+  }
+}

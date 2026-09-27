@@ -134,7 +134,7 @@ export function biped(s: BipedSpec): PuppetDef {
     ...(s.hairBack ?? []).map((b, i) => held(b, 'head', 3 + i * 0.1)),
     { id: 'armB', part: z(armB.upper), bone: 'armB', z: 5, tone: 'back' },
     { id: 'foreB', part: z(armB.lower), bone: 'foreB', z: 6, tone: 'back' },
-    ...(s.offhand ? [held({ tone: 'back', ...s.offhand }, 'handB', 6.5)] : []),
+    ...(s.offhand ? [{ ...held({ tone: 'back', ...s.offhand }, 'handB', 6.5), noWidth: true }] : []),
     { id: 'handB', part: z(armB.hand), bone: 'handB', z: 7, tone: 'back' },
     { id: 'legB', part: z(leg.upper), bone: 'legB', z: 10, tone: 'back' },
     { id: 'shinB', part: z(leg.lower), bone: 'shinB', z: 11, tone: 'back' },
@@ -148,7 +148,7 @@ export function biped(s: BipedSpec): PuppetDef {
     ...(s.hat ?? []).map((b, i) => held(b, 'head', 42 + i * 0.1)),
     { id: 'armF', part: z(arm.upper), bone: 'armF', z: 50 },
     { id: 'foreF', part: z(arm.lower), bone: 'foreF', z: 51 },
-    ...(w ? [held({ tag: 'weapon', ...w }, 'handF', 52)] : []),
+    ...(w ? [{ ...held({ tag: 'weapon', ...w }, 'handF', 52), noWidth: true }] : []),
     { id: 'handF', part: z(arm.hand), bone: 'handF', z: 53 },
     ...(s.extras ?? []),
   ];

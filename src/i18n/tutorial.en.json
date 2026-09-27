@@ -1,0 +1,92 @@
+{
+  "tutorial": {
+    "m1": {
+      "sendBonker": "Tap to send a Bonker",
+      "killsEarnGold": "Kills earn gold",
+      "pebbler": "Pebblers shoot over friends",
+      "buildTurret": "Build a Rock Tosser",
+      "evolve": "Evolve!",
+      "arrowStorm": "Drag the arrows onto them",
+      "future": "From clubs to lasers!"
+    },
+    "m2": {
+      "treasury": "Tap your gold for Treasury",
+      "secondMount": "Buy a second turret mount"
+    },
+    "m4": {
+      "stance": "Hold: gather at the line, then push."
+    },
+    "m5": {
+      "lastStand": "Low base? Tap Last Stand."
+    },
+    "home": {
+      "warPlan": "Your army, your plan"
+    },
+    "hint": {
+      "turretShredsMelee": "Their turret shreds melee. Try Pebblers.",
+      "heaviesStopInfantry": "Heavies stop Bonkers. Try a Spear Hunter.",
+      "powerReady": "Your power is ready.",
+      "evolveFirst": "Evolve before they do.",
+      "buyMount": "Buy another turret mount.",
+      "hold": "Hold: gather at the line, then push.",
+      "modernise": "Old turret? Tap it to modernise."
+    },
+    "dismiss": "Got it"
+  },
+  "app": {
+    "play": "Play",
+    "quickBattle": "Quick Battle",
+    "loading": "Loading…",
+    "trainingMatch": "Training match",
+    "aiGeneral": "AI General",
+    "aiChip": "AI",
+    "sameRules": "Plays by the same rules as you",
+    "vsTier": "Tier {tier}",
+    "paused": "Paused",
+    "resume": "Resume",
+    "retreat": "Retreat",
+    "quit": "Quit",
+    "victory": "Victory!",
+    "defeat": "Defeat",
+    "draw": "Draw",
+    "playAgain": "Play again",
+    "home": "Home",
+    "watchReplay": "Watch replay",
+    "next": "Next",
+    "tapToSkip": "Tap to skip",
+    "saveUnreadable": "Save could not be read. Import a backup?",
+    "rotate": "Turn your device sideways",
+    "reward": {
+      "trophies": "{delta} trophies",
+      "amber": "+{amount} Amber",
+      "dust": "+{amount} Dust",
+      "capsule": "Time Capsule",
+      "clayPip": "Clay meter {meter}/3",
+      "codex": "+{points} Codex points",
+      "quest": "Quest progress {progress}",
+      "star": "Conquest star {star}",
+      "arena": "New arena!",
+      "title": "New title: {title}"
+    },
+    "stats": {
+      "trained": "Units trained: {n}",
+      "kills": "Kills: {n}",
+      "baseDamage": "Base damage: {n}",
+      "time": "Time: {time}"
+    }
+  },
+  "replay": {
+    "title": "Replay",
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Restart",
+    "speed": "{speed}x",
+    "showSide": "Show {name}",
+    "olderVersion": "This replay is from an older version and cannot be played.",
+    "verified": "Same result as the match",
+    "mismatch": "Result differs from the recorded match",
+    "ended": "Replay finished",
+    "back": "Back",
+    "none": "No replays yet"
+  }
+}

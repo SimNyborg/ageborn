@@ -1,0 +1,1313 @@
+/*
+ * Battle HUD styles (DESIGN A9.2, A11). Chunky cartoon style: dark ink outlines, flat fills, one
+ * highlight, team colours from --hud-me / --hud-foe (set per colourblind preset by Hud.tsx).
+ *
+ * The HUD root is a size container over the canvas box: the top bar is 12% of its height, the tray
+ * 24%, and nothing persistent sits in the 64% lane band between them. Sizes in the top bar follow the
+ * container height (cqh); the tray uses the A9.2 pixel targets (88 px cards, 72 px when narrow).
+ */
+
+.hud {
+  --hud-ink: #1b1330;
+  --hud-panel: rgba(28, 21, 50, 0.84);
+  --hud-panel-edge: #4a3c7a;
+  --hud-text: #f6eedb;
+  --hud-dim: #b9aecb;
+  --hud-gold: #ffd447;
+  --hud-gold-deep: #c9901c;
+  --hud-deny: #ff4a4a;
+  --hud-xp: #9be7ff;
+  --hud-ghost: #fff1cf;
+  --hud-card: 88px;
+  --hud-power: 88px;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  container-type: size;
+  container-name: hud;
+  font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: clamp(10px, 1.9cqh, 15px);
+  font-weight: 700;
+  color: var(--hud-text);
+  line-height: 1.15;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.hud.is-compact {
+  --hud-card: 72px;
+  --hud-power: 70px;
+}
+
+.hud button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.hud button:disabled {
+  cursor: default;
+}
+
+.hud button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.hud img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.hud-key {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  min-width: 13px;
+  padding: 0 3px;
+  border-radius: 4px;
+  background: rgba(20, 14, 36, 0.72);
+  color: #d8cff0;
+  font: 800 9px/13px ui-monospace, Menlo, Consolas, monospace;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- denied press (A9.2) */
+
+.hud .is-denied {
+  animation:
+    hud-deny-flash 280ms ease-out,
+    hud-deny-shake 66ms steps(2, jump-none) 1;
+}
+
+@keyframes hud-deny-flash {
+  0%,
+  35% {
+    box-shadow:
+      0 0 0 3px var(--hud-deny),
+      0 0 18px 4px rgba(255, 60, 60, 0.75);
+    background-color: rgba(190, 30, 40, 0.9);
+  }
+}
+
+@keyframes hud-deny-shake {
+  0% {
+    translate: -3px 0;
+  }
+  100% {
+    translate: 3px 0;
+  }
+}
+
+/* ---------------------------------------------------------------- low HP vignette */
+
+.hud-vignette {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(214, 24, 34, 0.26) 74%, rgba(190, 10, 22, 0.62) 100%);
+}
+
+.hud-vignette.is-on {
+  animation: hud-vignette 1.2s ease-in-out infinite;
+}
+
+@keyframes hud-vignette {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  45% {
+    opacity: 0.95;
+  }
+}
+
+/* ---------------------------------------------------------------- top bar (12%) */
+
+.hud-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2cqw;
+  padding: 0.9cqh max(1cqw, env(safe-area-inset-right)) 0 max(1cqw, env(safe-area-inset-left));
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.hud-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.8cqh;
+  height: 10.2cqh;
+  padding: 0 1.2cqh;
+  box-sizing: border-box;
+  border: 2px solid var(--hud-ink);
+  border-radius: 1.6cqh;
+  background: linear-gradient(180deg, rgba(58, 45, 98, 0.9), var(--hud-panel));
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.12),
+    0 3px 0 rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+.hud-side {
+  width: min(31cqw, 360px);
+}
+
+.hud-bars {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55cqh;
+}
+
+.hud-name {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  min-width: 0;
+  font-size: 0.92em;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 var(--hud-ink);
+}
+
+.hud-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hud-name-foe {
+  justify-content: flex-end;
+}
+
+.hud-ai-chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  padding: 0 6px 0 3px;
+  border: 1.5px solid var(--hud-ink);
+  border-radius: 999px;
+  background: #dfe6f5;
+  color: var(--hud-ink);
+  font-size: 0.9em;
+  font-weight: 900;
+  text-shadow: none;
+}
+
+/* Base HP: fill over a ghost that drains 300 ms after the fill (A11 ghost segment). */
+.hud-hp {
+  position: relative;
+  height: max(9px, 2.5cqh);
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #2a2140;
+  overflow: hidden;
+}
+
+.hud-hp > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.hud-hp-ghost {
+  background: var(--hud-ghost);
+  transition: width 360ms ease-in 300ms;
+}
+
+.hud-hp-fill {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--team) 62%, #fff) 0 32%, var(--team) 32% 78%, color-mix(in srgb, var(--team) 72%, #000) 78%);
+  transition: width 120ms ease-out;
+}
+
+.hud-hp-foe > i {
+  left: auto;
+  right: 0;
+}
+
+.hud-hp-me {
+  --team: var(--hud-me);
+}
+
+.hud-hp-foe {
+  --team: var(--hud-foe);
+}
+
+.hud-hp-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: max(8px, 1.6cqh);
+  font-weight: 900;
+  text-shadow:
+    0 1px 0 var(--hud-ink),
+    0 -1px 0 var(--hud-ink),
+    1px 0 0 var(--hud-ink),
+    -1px 0 0 var(--hud-ink);
+}
+
+.hud-xp-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6cqh;
+}
+
+.hud-xp {
+  position: relative;
+  flex: 1;
+  height: max(6px, 1.5cqh);
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #221a36;
+  overflow: hidden;
+}
+
+/* The opponent's XP bar sits directly in the bars column. */
+.hud-bars > .hud-xp {
+  flex: none;
+}
+
+.hud-xp-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  max-width: 100%;
+  background: linear-gradient(90deg, #6ec9ff, var(--hud-xp));
+  transition: width 200ms linear;
+}
+
+.hud-xp-foe .hud-xp-fill {
+  left: auto;
+  right: 0;
+  background: linear-gradient(270deg, #6ec9ff, var(--hud-xp));
+}
+
+.hud-xp.is-ready .hud-xp-fill {
+  background: linear-gradient(90deg, #ffe27a, var(--hud-gold));
+}
+
+/* Evolve glows steadily when ready and never flashes (A2.4). */
+.hud-evolve {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  height: max(18px, 3.4cqh);
+  padding: 0 0.9em 0 0.5em;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #4b416a;
+  color: #cbc2dd;
+  font-size: 0.95em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.hud-evolve .hud-key {
+  top: -8px;
+  left: auto;
+  right: -6px;
+}
+
+.hud-evolve.is-ready {
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 55%, var(--hud-gold-deep));
+  color: var(--hud-ink);
+  box-shadow:
+    0 0 0 2px rgba(255, 230, 140, 0.5),
+    0 0 16px 3px rgba(255, 212, 71, 0.75);
+}
+
+.hud-evolve.is-ascending {
+  background: linear-gradient(180deg, #fffbe8, #ffe9a0);
+  color: var(--hud-ink);
+}
+
+.hud-overcharge {
+  flex: none;
+  font-size: 0.8em;
+  color: var(--hud-dim);
+  text-transform: uppercase;
+}
+
+/* Age medallion; the opponent's carries its power charge ring (A9.2). */
+.hud-medal {
+  position: relative;
+  flex: none;
+  width: 7.6cqh;
+  height: 7.6cqh;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 50%;
+}
+
+.hud-medal-core {
+  position: absolute;
+  inset: 12%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff8e6, #d9cdb2 60%, #a8977a);
+}
+
+.hud-medal-core svg {
+  width: 72%;
+  height: 72%;
+}
+
+.hud-medal-me .hud-medal-core {
+  box-shadow: 0 0 0 3px var(--hud-me);
+}
+
+.hud-medal-foe .hud-medal-core {
+  box-shadow: 0 0 0 3px var(--hud-foe);
+}
+
+.hud-medal-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--hud-gold) calc(var(--charge, 0) * 1turn), rgba(20, 14, 36, 0.8) 0);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%);
+  mask: radial-gradient(circle, transparent 60%, #000 61%);
+}
+
+.hud-medal.is-charged .hud-medal-ring {
+  box-shadow: 0 0 12px 2px rgba(255, 212, 71, 0.8);
+}
+
+.hud-horn {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  display: flex;
+  padding: 2px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: #ff7a3a;
+  box-shadow: 0 0 10px 2px rgba(255, 110, 40, 0.8);
+}
+
+/* Centre: clock with the phase timeline, and the emote button. */
+.hud-center {
+  display: flex;
+  flex: none;
+  align-items: flex-start;
+  gap: 0.8cqh;
+}
+
+.hud-clock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 13cqh;
+  padding: 0.4cqh 1.4cqh 0.8cqh;
+  border: 2px solid var(--hud-ink);
+  border-radius: 0 0 1.6cqh 1.6cqh;
+  border-top: none;
+  background: linear-gradient(180deg, rgba(58, 45, 98, 0.92), var(--hud-panel));
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+.hud-clock-text {
+  font-size: max(15px, 3.9cqh);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 0 var(--hud-ink);
+}
+
+.hud-timeline {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  margin-top: 0.3cqh;
+  border: 1.5px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #2a2140;
+}
+
+.hud-timeline-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 99px;
+  background: #d8cff0;
+}
+
+.hud-mark {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  border: 1px solid var(--hud-ink);
+}
+
+.hud-mark-overdrive {
+  background: var(--hud-gold);
+}
+
+.hud-mark-siege {
+  background: #ff5a4a;
+}
+
+.hud-phase-tag {
+  position: absolute;
+  top: 100%;
+  margin-top: 3px;
+  padding: 1px 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  font-size: 0.85em;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+}
+
+.hud-clock.phase-overdrive {
+  border-color: var(--hud-gold-deep);
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.35),
+    0 0 14px rgba(255, 212, 71, 0.55);
+}
+
+.hud-clock.phase-overdrive .hud-phase-tag {
+  background: var(--hud-gold);
+  color: var(--hud-ink);
+}
+
+.hud-clock.phase-siege {
+  border-color: #8a1d1d;
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.35),
+    0 0 14px rgba(255, 70, 60, 0.6);
+}
+
+.hud-clock.phase-siege .hud-phase-tag {
+  background: #e0402f;
+}
+
+.hud-clock.phase-ended .hud-phase-tag {
+  background: #4b416a;
+}
+
+.hud-round {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: max(34px, 6.4cqh);
+  height: max(34px, 6.4cqh);
+  padding: 0;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #6a5b9a, #3d3163);
+  color: #f6eedb;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hud-round:active {
+  translate: 0 1px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+.hud-speed {
+  width: auto;
+  min-width: max(34px, 6.4cqh);
+  padding: 0 0.6em;
+  border-radius: 99px;
+  font-size: 0.95em;
+}
+
+.hud-emote {
+  position: relative;
+  margin-top: 0.8cqh;
+  pointer-events: auto;
+}
+
+.hud-emote-btn.is-cooling {
+  opacity: 0.55;
+}
+
+.hud-emote-picker {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 4px;
+  padding: 6px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 12px;
+  background: var(--hud-panel);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  z-index: 5;
+}
+
+.hud-emote-pick {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hud-emote-pick:hover {
+  border-color: var(--hud-gold);
+}
+
+.hud-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8cqh;
+}
+
+.hud-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6cqh;
+}
+
+.hud-buttons {
+  display: flex;
+  gap: 0.6cqh;
+  pointer-events: auto;
+}
+
+.hud-chip {
+  padding: 2px 10px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #3d3163;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.hud-scouted {
+  position: relative;
+  pointer-events: auto;
+}
+
+/* The only element that may briefly cover the lane band, and only on request (A9.2). */
+.hud-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 190px;
+  max-height: 44cqh;
+  overflow: auto;
+  padding: 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 12px;
+  background: var(--hud-panel);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+  animation: hud-drop 160ms ease-out;
+}
+
+@keyframes hud-drop {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+}
+
+.hud-dropdown-title {
+  margin-bottom: 6px;
+  color: var(--hud-dim);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hud-dropdown-empty {
+  color: var(--hud-dim);
+}
+
+.hud-dropdown ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hud-scouted-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.hud-scouted-pic {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid var(--hud-ink);
+  border-radius: 7px;
+  background: #2a2140;
+}
+
+/* Emote bubbles and evolve banners. */
+.hud-bubble {
+  position: absolute;
+  top: calc(100% + 6px);
+  padding: 4px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 14px;
+  background: #fff8e6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: hud-pop 220ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.hud-bubble-me {
+  left: 8cqh;
+}
+
+.hud-bubble-foe {
+  right: 8cqh;
+}
+
+.hud-banner {
+  position: absolute;
+  top: calc(100% + 0.6cqh);
+  padding: 2px 10px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold));
+  color: var(--hud-ink);
+  font-size: 0.9em;
+  font-weight: 900;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  animation: hud-banner 2.6s ease-out forwards;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.hud-banner-me {
+  left: 0;
+}
+
+.hud-banner-foe {
+  right: 0;
+  background: linear-gradient(180deg, #ffd9b0, #ff9d4d);
+}
+
+@keyframes hud-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@keyframes hud-banner {
+  0% {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+  10%,
+  80% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- bottom tray (24%) */
+
+.hud-tray {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 max(12px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(12px, env(safe-area-inset-left));
+  box-sizing: border-box;
+  background: linear-gradient(0deg, rgba(16, 11, 30, 0.9), rgba(16, 11, 30, 0.62) 70%, rgba(16, 11, 30, 0));
+  z-index: 2;
+}
+
+.hud.is-compact .hud-tray {
+  gap: 6px;
+}
+
+.hud.is-ended .hud-tray {
+  opacity: 0.55;
+  filter: saturate(0.4);
+}
+
+.hud.is-ended .hud-tray button {
+  pointer-events: none;
+}
+
+/* Gold counter: tap buys Treasury. */
+.hud-gold {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 112px;
+  height: min(calc(var(--hud-card) * 1.12), 21cqh);
+  padding: 4px 6px;
+  box-sizing: border-box;
+  border: 3px solid var(--hud-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #54447f, #2e2450);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    0 4px 0 rgba(0, 0, 0, 0.4);
+}
+
+.hud.is-compact .hud-gold {
+  width: 90px;
+}
+
+.hud-gold-main {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-gold-value {
+  color: var(--hud-gold);
+  font-size: 1.9em;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 0 var(--hud-ink);
+}
+
+.hud.is-compact .hud-gold-value {
+  font-size: 1.5em;
+}
+
+.hud.is-compact .hud-gold-treasury {
+  padding: 0 4px;
+  font-size: 0.68em;
+}
+
+.hud-gold-rate {
+  color: #fff3c4;
+  font-size: 0.85em;
+}
+
+.hud-gold-treasury {
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--hud-dim);
+  font-size: 0.78em;
+  white-space: nowrap;
+}
+
+.hud-gold.can-buy .hud-gold-treasury {
+  background: var(--hud-gold);
+  color: var(--hud-ink);
+}
+
+.hud-gold.is-bump .hud-gold-value {
+  animation: hud-bump 320ms ease-out;
+}
+
+@keyframes hud-bump {
+  30% {
+    scale: 1.28;
+    color: #fff6c9;
+  }
+}
+
+/* Unit cards. */
+.hud-cards {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+.hud.is-compact .hud-cards {
+  gap: 5px;
+}
+
+.hud-card {
+  position: relative;
+  flex: none;
+  width: var(--hud-card);
+  height: min(calc(var(--hud-card) * 1.14), 21cqh);
+  padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 3px solid var(--hud-ink);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #6b5a9e, #3a2e62);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+  transition:
+    translate 90ms ease-out,
+    box-shadow 120ms ease-out,
+    filter 120ms ease-out;
+}
+
+.hud-card-art {
+  position: absolute;
+  inset: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.22), transparent 70%);
+}
+
+.hud-card-fill {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: conic-gradient(rgba(255, 244, 200, 0.42) calc(var(--fill, 0) * 1turn), rgba(10, 6, 22, 0.28) 0);
+}
+
+.hud-card.is-training .hud-card-fill {
+  opacity: 1;
+}
+
+.hud-card-cost {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--hud-ink);
+  color: var(--hud-gold);
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-card-queue {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #fff8e6;
+  color: var(--hud-ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 16px;
+  animation: hud-pop 160ms ease-out;
+}
+
+.hud-card-tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 36%;
+  padding: 2px 3px;
+  background: #d8333a;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+  box-shadow: 0 2px 0 var(--hud-ink);
+}
+
+.hud.is-compact .hud-card-tag {
+  padding: 2px 1px;
+  font-size: 8px;
+  letter-spacing: -0.01em;
+}
+
+.hud-card-tag.is-legendary {
+  background: linear-gradient(180deg, #ffe07a, #e0a51e);
+  color: var(--hud-ink);
+}
+
+/* Affordable glow. */
+.hud-card.state-ready {
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18),
+    0 0 0 2px rgba(255, 223, 120, 0.85),
+    0 0 14px 2px rgba(255, 212, 71, 0.55),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+.hud-card.state-ready:hover {
+  translate: 0 -3px;
+}
+
+.hud-card.state-ready:active {
+  translate: 0 1px;
+}
+
+.hud-card.state-unaffordable .hud-card-art,
+.hud-card.state-armyFull .hud-card-art,
+.hud-card.state-legendaryInField .hud-card-art {
+  filter: grayscale(0.75) brightness(0.7);
+}
+
+.hud-card.state-unaffordable .hud-card-cost {
+  color: #ff7a6e;
+}
+
+.hud-card.is-empty {
+  border-style: dashed;
+  border-color: rgba(185, 174, 203, 0.4);
+  background: rgba(20, 14, 36, 0.55);
+  box-shadow: none;
+}
+
+/* Foil frames (A5.1). */
+.hud-card.foil-bronze {
+  border-color: #b8702a;
+}
+
+.hud-card.foil-silver {
+  border-color: #d5dde8;
+}
+
+.hud-card.foil-holo {
+  border-color: transparent;
+  background:
+    linear-gradient(180deg, #6b5a9e, #3a2e62) padding-box,
+    conic-gradient(#ff7ad9, #7af0ff, #b3ff7a, #ffe07a, #ff7ad9) border-box;
+}
+
+/* Army counter and stance. */
+.hud-army {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 78px;
+  pointer-events: auto;
+}
+
+.hud-army-count {
+  padding: 3px 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #2e2450;
+  font-size: 0.95em;
+  text-align: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-army-count.is-full {
+  background: #8a2430;
+}
+
+.hud-stance {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #54447f, #2e2450);
+  font-size: 0.95em;
+  text-transform: uppercase;
+}
+
+.hud-stance.stance-charge {
+  color: #ffd9b0;
+}
+
+.hud-stance.stance-hold {
+  color: #bfe0ff;
+}
+
+.hud-stance .hud-key {
+  top: -8px;
+  left: -6px;
+}
+
+/* Age Power: charge ring, tap = auto-aim, drag = place. */
+.hud-power {
+  position: relative;
+  flex: none;
+  width: var(--hud-power);
+  height: var(--hud-power);
+  max-width: 21cqh;
+  max-height: 21cqh;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  touch-action: none;
+}
+
+.hud-power-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--hud-gold) calc(var(--charge, 0) * 1turn), rgba(20, 14, 36, 0.85) 0);
+  box-shadow: 0 0 0 3px var(--hud-ink);
+}
+
+.hud-power-core {
+  position: absolute;
+  inset: 9%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 3px solid var(--hud-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #7d6bb8, #3a2e62 70%);
+  filter: grayscale(0.6) brightness(0.8);
+}
+
+.hud-power.is-ready .hud-power-core {
+  filter: none;
+}
+
+.hud-power.is-ready {
+  animation: hud-power-ready 1.6s ease-in-out infinite;
+}
+
+@keyframes hud-power-ready {
+  0%,
+  100% {
+    box-shadow: 0 0 10px 2px rgba(255, 212, 71, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 22px 6px rgba(255, 212, 71, 0.9);
+  }
+}
+
+.hud-power.is-aiming {
+  scale: 0.92;
+  opacity: 0.8;
+}
+
+.hud-power .hud-key {
+  top: 0;
+  left: 0;
+}
+
+/* Last Stand, only while armed (A2.11). */
+.hud-laststand {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 76px;
+  height: min(calc(var(--hud-card) * 1.12), 21cqh);
+  border: 3px solid var(--hud-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ff9a4a, #c2401e);
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 var(--hud-ink);
+  box-shadow:
+    0 0 14px 3px rgba(255, 110, 40, 0.7),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+  animation: hud-pop 220ms ease-out;
+}
+
+.hud-laststand.is-charging {
+  background: linear-gradient(180deg, #fff1a8, #ff9a4a);
+  color: var(--hud-ink);
+  text-shadow: none;
+}
+
+.hud.is-compact .hud-laststand {
+  width: 62px;
+}
+
+/* ---------------------------------------------------------------- mount popover */
+
+.hud-pop {
+  position: absolute;
+  min-width: 180px;
+  max-width: 240px;
+  padding: 8px;
+  translate: 18px -50%;
+  border: 2px solid var(--hud-ink);
+  border-radius: 12px;
+  background: var(--hud-panel);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+  z-index: 6;
+  animation: hud-pop 150ms ease-out;
+}
+
+.hud-pop.to-left {
+  translate: calc(-100% - 18px) -50%;
+}
+
+.hud-pop-title {
+  margin-bottom: 6px;
+  font-size: 1.05em;
+}
+
+.hud-pop-sub,
+.hud-pop-note {
+  margin: 4px 0;
+  color: var(--hud-dim);
+  font-size: 0.85em;
+}
+
+.hud-pop-option,
+.hud-pop-sell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  border: 2px solid var(--hud-ink);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #54447f, #2e2450);
+  text-align: left;
+}
+
+.hud-pop-option.is-poor {
+  opacity: 0.6;
+}
+
+.hud-pop-option.is-poor .hud-pop-cost {
+  color: #ff7a6e;
+}
+
+.hud-pop-pic {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid var(--hud-ink);
+  border-radius: 8px;
+  background: #2a2140;
+}
+
+.hud-pop-name {
+  flex: 1;
+}
+
+.hud-pop-cost {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--hud-gold);
+}
+
+.hud-pop-sell {
+  justify-content: center;
+  background: linear-gradient(180deg, #7a3a4a, #4a1e2c);
+}
+
+.hud-pop-sell.is-confirm {
+  background: linear-gradient(180deg, #ff6a5a, #b0282a);
+}
+
+/* ---------------------------------------------------------------- narrow and short screens */
+
+/* Short screens drop your own name row; the opponent's AI chip and label always stay (A7.1). */
+@container hud (max-height: 460px) {
+  .hud-me .hud-name {
+    display: none;
+  }
+
+  .hud-name-foe {
+    font-size: 0.8em;
+  }
+
+  .hud-foe .hud-bars {
+    gap: 0.3cqh;
+  }
+}
+
+@container hud (max-width: 899px) {
+  .hud-side {
+    width: min(30cqw, 280px);
+  }
+
+  .hud-scouted-chip {
+    padding: 1px 6px;
+    font-size: 0.8em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-vignette.is-on {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .hud-power.is-ready {
+    animation: none;
+    box-shadow: 0 0 14px 4px rgba(255, 212, 71, 0.75);
+  }
+
+  .hud .is-denied {
+    animation: hud-deny-flash 280ms ease-out;
+  }
+}

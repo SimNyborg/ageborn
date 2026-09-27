@@ -71,6 +71,11 @@ export interface SlotDef {
    * overlay: skin overlay (counted by the silhouette test like any other part).
    */
   tag?: 'weapon' | 'prop' | 'overlay';
+  /**
+   * Excluded from the body-width check (A11: visual width within 1.4x the collision width): held
+   * gear (weapons, shields, tools), rotors and banners. Everything else counts as body.
+   */
+  noWidth?: boolean;
   when?: SlotWhen;
   /** Slot opacity (glass canopies, ghosts). */
   alpha?: number;

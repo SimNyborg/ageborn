@@ -442,7 +442,8 @@ export class EventMapper {
         if (ev.side === this.mySide) this.rule('power.ready', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
         return;
       case 'powerTelegraph':
-        out.push({ a: 'telegraph', side: ev.side, castId: ev.castId, power: ev.power, x: ev.x / MILLI_LU, zone: ev.zone, ms: this.content.powers[ev.power]?.telegraphMs ?? tun.telegraphMs });
+        // `zone` is milli-lu like every sim position (B3; WP2 emits `zone: 500_000` for 500 lu).
+        out.push({ a: 'telegraph', side: ev.side, castId: ev.castId, power: ev.power, x: ev.x / MILLI_LU, zone: ev.zone / MILLI_LU, ms: this.content.powers[ev.power]?.telegraphMs ?? tun.telegraphMs });
         this.rule('power.telegraph', { at: { k: 'world', x: ev.x / MILLI_LU, y: 0 } }, out);
         return;
       case 'powerImpact': {

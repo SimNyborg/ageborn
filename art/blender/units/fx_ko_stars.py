@@ -15,6 +15,7 @@ FILE_SLUG = "fx_ko_stars"
 VISUAL_ID = "fx.ko_stars"
 NAME = "KO stars"
 TEAM = False
+YAW_DEG = 0.0
 OUTER_OUTLINE = (1.5, 0.62, 1.0)
 HEIGHT_LU = 20
 CANVAS = (136, 72)      # px at 2x
@@ -27,7 +28,7 @@ def build(rig):
     for i in range(3):
         rig.joint(f"s{i}", "root", (0, 0, 0))
         g = Geo().star((0, 0, 0), 6.2, 2.9, 2.8)
-        rig.part(f"s{i}", g, STAR, finish="gloss")
+        rig.part(f"s{i}", g, STAR, finish="dust")
 
 
 def _pose(f):

@@ -1,0 +1,159 @@
+/**
+ * Adaptive hints (DESIGN A8): "fire at most once per 30 s, only on failure patterns, and at most 3
+ * times each". Each hint watches one failure pattern over the sim state and events of the player's
+ * side; counts persist in `SaveDoc.tutorial.hintsShown` (the app loads and stores them).
+ *
+ * | Hint | Failure pattern |
+ * |---|---|
+ * | Their turret shreds melee. Try Pebblers. | 3 of your melee units killed by turrets within 20 s |
+ * | Heavies stop Bonkers. Try a Spear Hunter. | 3 Bonkers killed by Heavies within 20 s while a Spear Hunter is in your loadout |
+ * | Your power is ready. | Power full for 15 s with 3+ enemies on your half |
+ * | Evolve before they do. | Evolve available and unused for 10 s |
+ * | Buy another turret mount. | Every owned mount built, the next one affordable, your base hit in the last 10 s |
+ * | Hold: gather at the line, then push. | Stance available, on Charge, 4 losses within 20 s while outnumbered |
+ * | Old turret? Tap it to modernise. | An older-age turret, Modernise affordable, for 15 s |
+ */
+import type { CardId, SimEvent } from '@/contracts';
+import { ADAPTIVE, ADAPTIVE_HINTS, type AdaptiveHintDef, type AdaptiveHintId } from './scripts';
+import { LANE_MILLI, PPM_FULL, evolveReady, goldOf, loadoutUnits, other, pOf, type TickInput } from './view';
+
+interface Death {
+  tick: number;
+  card: CardId;
+  killerKind: Extract<SimEvent, { e: 'died' }>['killerKind'];
+  killerCard: CardId | null;
+}
+
+export interface AdaptiveHintsOptions {
+  /** Shows per hint id so far (from the save). Mutated copy is available via `shown()`. */
+  shown?: Record<string, number>;
+  /** Hints switched off for this match (for example stance hints before match 4). */
+  disabled?: readonly AdaptiveHintId[];
+}
+
+export class AdaptiveHints {
+  private readonly counts: Record<string, number>;
+  private readonly disabled: Set<AdaptiveHintId>;
+  private deaths: Death[] = [];
+  private lastHintTick = -Infinity;
+  private lastBaseHitTick = -Infinity;
+  private powerFullSince: number | null = null;
+  private evolveReadySince: number | null = null;
+  private outdatedSince: number | null = null;
+
+  constructor(o: AdaptiveHintsOptions = {}) {
+    this.counts = { ...(o.shown ?? {}) };
+    this.disabled = new Set(o.disabled ?? []);
+  }
+
+  /** Shows per hint id, including this match. */
+  shown(): Record<string, number> {
+    return { ...this.counts };
+  }
+
+  /**
+   * Feeds one tick. Returns the hint to show now, or null. `quiet` = a scripted prompt is on screen:
+   * patterns are still tracked but nothing fires.
+   */
+  update(i: TickInput, quiet = false): AdaptiveHintDef | null {
+    this.track(i);
+    if (quiet || i.state.phase === 'ended') return null;
+    if (i.state.tick - this.lastHintTick < ADAPTIVE.gapTicks) return null;
+    for (const def of ADAPTIVE_HINTS) {
+      if (this.disabled.has(def.id) || (this.counts[def.id] ?? 0) >= ADAPTIVE.maxPerHint) continue;
+      if (!this.matches(def.id, i)) continue;
+      this.counts[def.id] = (this.counts[def.id] ?? 0) + 1;
+      this.lastHintTick = i.state.tick;
+      this.resetPattern(def.id);
+      return def;
+    }
+    return null;
+  }
+
+  private track(i: TickInput): void {
+    const tick = i.state.tick;
+    for (const e of i.events) {
+      if (e.e === 'died' && e.side === i.side) {
+        this.deaths.push({ tick, card: e.card, killerKind: e.killerKind, killerCard: e.killerCard });
+      } else if (e.e === 'baseDamaged' && e.side === i.side) {
+        this.lastBaseHitTick = tick;
+      }
+    }
+    this.deaths = this.deaths.filter((d) => tick - d.tick <= ADAPTIVE.windowTicks);
+    const me = i.state.sides[i.side];
+    this.powerFullSince = me.powerPpm >= PPM_FULL ? (this.powerFullSince ?? tick) : null;
+    this.evolveReadySince = evolveReady(i) ? (this.evolveReadySince ?? tick) : null;
+    this.outdatedSince = this.moderniseAffordable(i) ? (this.outdatedSince ?? tick) : null;
+  }
+
+  private resetPattern(id: AdaptiveHintId): void {
+    const tick = this.lastHintTick;
+    if (id === 'turretShredsMelee' || id === 'heaviesStopInfantry' || id === 'hold') this.deaths = [];
+    if (id === 'powerReady') this.powerFullSince = tick;
+    if (id === 'evolveFirst') this.evolveReadySince = tick;
+    if (id === 'modernise') this.outdatedSince = tick;
+  }
+
+  private matches(id: AdaptiveHintId, i: TickInput): boolean {
+    const tick = i.state.tick;
+    const units = i.config.content.units;
+    switch (id) {
+      case 'turretShredsMelee': {
+        const hasRanged = loadoutUnits(i).some((c) => units[c]?.tags.includes('ranged'));
+        const n = this.deaths.filter((d) => d.killerKind === 'turret' && units[d.card]?.tags.includes('melee')).length;
+        return hasRanged && n >= ADAPTIVE.deaths;
+      }
+      case 'heaviesStopInfantry': {
+        if (!loadoutUnits(i).includes(ADAPTIVE.heavyAnswer)) return false;
+        const n = this.deaths.filter(
+          (d) => ADAPTIVE.heavyVictims.includes(d.card) && d.killerCard !== null && units[d.killerCard]?.group === 'heavy',
+        ).length;
+        return n >= ADAPTIVE.deaths;
+      }
+      case 'powerReady': {
+        if (this.powerFullSince === null || tick - this.powerFullSince < ADAPTIVE.powerIdleTicks) return false;
+        const foe = other(i.side);
+        const near = i.state.units.filter((u) => u.side === foe && pOf(u.x, i.side) < LANE_MILLI / 2).length;
+        return near >= ADAPTIVE.powerCrowd;
+      }
+      case 'evolveFirst':
+        return this.evolveReadySince !== null && tick - this.evolveReadySince >= ADAPTIVE.evolveIdleTicks;
+      case 'buyMount': {
+        const me = i.state.sides[i.side];
+        const next = i.config.content.economy.mountCosts[me.mountsOwned];
+        if (next === undefined || me.mountsOwned >= me.turrets.length) return false;
+        const allBuilt = me.turrets.slice(0, me.mountsOwned).every((t) => t !== null);
+        return allBuilt && goldOf(i) >= next && tick - this.lastBaseHitTick <= ADAPTIVE.baseHitTicks;
+      }
+      case 'hold': {
+        const me = i.state.sides[i.side];
+        const stanceOn = i.config.training?.stanceEnabled?.[i.side] ?? true;
+        if (!stanceOn || me.stance !== 'charge') return false;
+        const mine = i.state.units.filter((u) => u.side === i.side).length;
+        const theirs = i.state.units.filter((u) => u.side !== i.side).length;
+        return this.deaths.length >= ADAPTIVE.holdDeaths && theirs > mine;
+      }
+      case 'modernise':
+        return this.outdatedSince !== null && tick - this.outdatedSince >= ADAPTIVE.outdatedTicks;
+      default:
+        return false;
+    }
+  }
+
+  /** An active turret from an older age whose Modernise (new price − 50% of old) is affordable. */
+  private moderniseAffordable(i: TickInput): boolean {
+    const me = i.state.sides[i.side];
+    const content = i.config.content;
+    const age = content.formats[i.config.format]?.ages[me.ageIndex];
+    const lo = age ? i.config.sides[i.side].loadouts[age] : undefined;
+    const newCosts = (lo?.turrets ?? []).flatMap((c) => (c && content.turrets[c] ? [content.turrets[c].cost] : []));
+    if (newCosts.length === 0) return false;
+    const cheapest = Math.min(...newCosts);
+    const gold = goldOf(i);
+    return me.turrets.some((t) => {
+      if (!t || t.state !== 'active' || content.ages[t.age].index >= me.ageIndex) return false;
+      const old = content.turrets[t.card]?.cost ?? 0;
+      return gold >= cheapest - Math.floor((old * content.economy.sellRefundBp) / 10000);
+    });
+  }
+}

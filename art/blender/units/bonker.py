@@ -136,6 +136,7 @@ def build(rig):
         g.lathe([(2.6, 0), (2.1, 2.4), (0, 4.4)], base, tip, segs=10)
     rig.part("club", g, STUD)
     rig.track("clubHead", "club", (cx, cy, cz + h))
+    rig.track("_foot", "shin_r", (3.2, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------

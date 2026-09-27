@@ -1,7 +1,9 @@
-"""Render every unit's sprite sheet, previews and the lane mockup.
+"""Render the shared death effects, every unit's sprite sheet and previews, the lane
+mockups and the review sheets.
 
 Usage (from the repo root, with the bpy venv):
   <venv>/bin/python art/blender/render_all.py --out <output dir> [--units bonker,pulse_trooper]
+      [--scale 1.5] [--no-mockup] [--no-review] [--before <v1 output dir>]
 """
 import argparse
 import importlib
@@ -14,6 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.dont_write_bytecode = True  # keep __pycache__ out of the repo
 
+FX = ["fx_dust_poof", "fx_ko_stars"]
 UNITS = ["bonker", "destrier_knight", "pulse_trooper"]
 
 
@@ -21,7 +24,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True, help="output directory for sheets and previews")
     ap.add_argument("--units", default=",".join(UNITS))
+    ap.add_argument("--no-fx", action="store_true", help="reuse the FX sheets already in --out")
     ap.add_argument("--no-mockup", action="store_true")
+    ap.add_argument("--no-review", action="store_true")
+    ap.add_argument("--before", help="v1 output dir, for the before/after review sheet")
     ap.add_argument("--scale", type=float, default=2.0, help="sheet scale vs 1280 px (default 2)")
     args = ap.parse_args()
     from ageborn_art import config, pipeline  # imports bpy
@@ -32,7 +38,8 @@ def main():
     os.makedirs(out, exist_ok=True)
     t0 = time.time()
     all_stats = []
-    for slug in args.units.split(","):
+    todo = ([] if args.no_fx else FX) + args.units.split(",")
+    for slug in todo:
         print(f"[{slug}]", flush=True)
         mod = importlib.import_module(f"units.{slug}")
         all_stats.append(pipeline.run_unit(mod, out, frames))
@@ -40,6 +47,10 @@ def main():
         import mockup
         # every unit that has an atlas in the output folder, not only the ones just rendered
         mockup.make(out, [u for u in UNITS if os.path.exists(os.path.join(out, f"{u}.json"))])
+        if not args.no_review:
+            import review
+            sys.argv = ["review.py", out] + (["--before", args.before] if args.before else [])
+            review.main()
     with open(os.path.join(out, "stats.json"), "w") as fh:
         json.dump({"units": all_stats, "seconds": round(time.time() - t0, 1)}, fh, indent=1)
     print(f"done in {time.time() - t0:.1f} s -> {out}")

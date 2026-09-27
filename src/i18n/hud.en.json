@@ -1,0 +1,54 @@
+{
+  "hud": {
+    "you": "You",
+    "ai": "AI",
+    "baseHp": "Base health",
+    "xp": "Experience",
+    "evolve": "Evolve",
+    "evolving": "Evolving",
+    "overcharge": "Overcharge",
+    "clockLabel": "Match clock",
+    "phase": {
+      "overdrive": "Overdrive",
+      "siege": "Siege",
+      "finalBell": "Final Bell",
+      "ended": "Match over"
+    },
+    "emote": "Emotes",
+    "scouted": "Scouted ({n})",
+    "scoutedTitle": "Cards the AI has played",
+    "scoutedNone": "Nothing yet",
+    "pause": "Pause",
+    "resume": "Resume",
+    "speedLabel": "Game speed",
+    "speed": "{s}x",
+    "goldRate": "+{n}/s",
+    "treasury": "Treasury {cost}",
+    "treasuryMax": "Treasury max",
+    "treasuryBuy": "Buy Treasury for {cost} gold",
+    "emptySlot": "Empty card slot",
+    "cardLabel": "Train {name} for {cost} gold",
+    "queued": "{n} queued",
+    "armyFull": "Army full",
+    "legendaryInField": "Legendary in field",
+    "army": "Army {pop}/{cap}",
+    "stanceLabel": "Stance: {stance}",
+    "stance": {
+      "charge": "Charge",
+      "hold": "Hold"
+    },
+    "power": "Age Power",
+    "powerLabel": "{name}, {pct}% charged",
+    "lastStand": "Last Stand",
+    "mount": {
+      "title": "Turret mount {n}",
+      "build": "Build a turret",
+      "noTurrets": "No turrets in this age's plan",
+      "modernise": "Modernise",
+      "sell": "Sell (+{n})",
+      "sellConfirm": "Tap again to sell (+{n})",
+      "busy": "Working on it",
+      "locked": "Buy this mount first"
+    }
+  }
+}

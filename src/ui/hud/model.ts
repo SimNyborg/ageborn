@@ -6,7 +6,7 @@
  * A press the HUD can already tell is invalid becomes a `deny` intent (red flash, 2-frame shake,
  * `ui_deny`, A9.2) instead of a command; everything else is sent and the sim has the final word.
  */
-import type { AgeId, CardId, Command, CompiledContent, HudModel, MatchConfig, Side } from '@/contracts';
+import type { AgeId, CardId, Command, CompiledContent, HudModel, MatchConfig, Side, TeamPreset } from '@/contracts';
 
 /** Elements that can show the denied-press feedback. */
 export type DenyTarget =
@@ -340,4 +340,20 @@ export function powerFraction(ppm: number): number {
 /** Low base HP (< 25%) shows the red vignette pulse (A9.2). */
 export function lowHp(m: HudModel): boolean {
   return m.me.baseHpBp < 2500 && m.phase !== 'ended';
+}
+
+/**
+ * Team colours per preset (DESIGN A11 Team readability): side 0 blue, side 1 orange, plus the two
+ * colourblind presets. `ui` may not import `render` or `visuals` (B2), so the HUD keeps its copy.
+ */
+export const HUD_TEAM_COLORS: Record<TeamPreset, readonly [string, string]> = {
+  default: ['#2F7DF6', '#F28A1E'],
+  blueYellow: ['#2F7DF6', '#F2C21E'],
+  highContrast: ['#1F5FD6', '#FF6A00'],
+};
+
+/** The HUD's own ("me") and the opponent's colour for the side this HUD shows. */
+export function hudTeamColors(preset: TeamPreset, side: Side): { me: string; foe: string } {
+  const [a, b] = HUD_TEAM_COLORS[preset];
+  return side === 0 ? { me: a, foe: b } : { me: b, foe: a };
 }

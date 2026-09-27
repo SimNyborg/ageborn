@@ -156,7 +156,9 @@ const biped: ClipDef[] = [
       foreB: [{ t: 0 }, { t: 0.36, r: -70, e: 'out' }, { t: 0.6, r: -75 }, { t: 0.66, r: -10, e: 'out' }, { t: 1, e: 'inOut' }],
       armF: [{ t: 0 }, { t: 0.36, r: -6, e: 'out' }, { t: 0.62, r: 4, e: 'out' }, { t: 1, e: 'inOut' }],
       torso: [{ t: 0 }, { t: 0.36, r: 5, e: 'out' }, { t: 0.62, r: -3, e: 'out' }, { t: 1, e: 'inOut' }],
-      bowString: [{ t: 0 }, { t: 0.36, x: -9, e: 'out' }, { t: 0.6, x: -9.5 }, { t: 0.63, x: 1, e: 'out' }, { t: 0.72, x: 0 }],
+      // The string is two halves hanging from the bow tips; rotating them pulls the nock back.
+      stringU: [{ t: 0 }, { t: 0.36, r: 22, e: 'out' }, { t: 0.6, r: 23 }, { t: 0.63, r: -3, e: 'out' }, { t: 0.72, r: 0 }],
+      stringL: [{ t: 0 }, { t: 0.36, r: -22, e: 'out' }, { t: 0.6, r: -23 }, { t: 0.63, r: 3, e: 'out' }, { t: 0.72, r: 0 }],
     },
     { impactAt: 0.6 },
   ),
@@ -409,6 +411,26 @@ const turret: ClipDef[] = [
       lid: [{ t: 0 }, { t: 0.1, r: -30, e: 'out' }, { t: 0.8, r: 0, e: 'inOut' }],
     },
     { impactAt: 0.1 },
+  ),
+  clip(
+    'turret.fire.pour',
+    500,
+    false,
+    {
+      bucket: [{ t: 0 }, { t: 0.2, r: 62, e: 'out' }, { t: 0.55, r: 58 }, { t: 1, r: 0, e: 'inOut' }],
+      pivot: [{ t: 0 }, { t: 0.2, sx: 1.04, sy: 0.96, e: 'out' }, { t: 0.5, sx: 1, sy: 1, e: 'inOut' }],
+    },
+    { impactAt: 0.2 },
+  ),
+  clip(
+    'turret.fire.sling',
+    700,
+    false,
+    {
+      arm: [{ t: 0 }, { t: 0.2, r: 150, e: 'in' }, { t: 0.32, r: 140, e: 'out' }, { t: 1, r: 0, e: 'inOut' }],
+      pivot: [{ t: 0 }, { t: 0.2, sx: 1.05, sy: 0.95, e: 'out' }, { t: 0.5, sx: 1, sy: 1, e: 'inOut' }],
+    },
+    { impactAt: 0.2 },
   ),
   clip('turret.build', 460, false, {
     root: [

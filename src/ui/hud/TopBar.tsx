@@ -172,6 +172,8 @@ export function TopBar(p: {
   bubbles: Bubble[];
   banners: Banner[];
   xpRef: (el: HTMLElement | null) => void;
+  /** Shows the pause and speed buttons. */
+  controls: boolean;
   onPause: () => void;
   onSpeed: () => void;
 }) {
@@ -278,17 +280,17 @@ export function TopBar(p: {
         </div>
         <div class="hud-controls">
           <Scouted c={c} />
-          {c.readOnly ? null : (
+          {p.controls ? (
             <div class="hud-buttons">
-              <button class="hud-round" data-testid="hud-pause" aria-label={m.paused ? t('hud.resume') : t('hud.pause')} onClick={p.onPause}>
+              <button class="hud-round" data-testid="hud-pause" aria-label={m.paused ? t('hud.resume') : t('hud.pause')} disabled={c.readOnly} onClick={p.onPause}>
                 {m.paused ? <PlayIcon size={20} /> : <PauseIcon size={20} />}
               </button>
-              <button class="hud-round hud-speed" data-testid="hud-speed" aria-label={t('hud.speedLabel')} data-speed={m.speed} onClick={p.onSpeed}>
+              <button class="hud-round hud-speed" data-testid="hud-speed" aria-label={t('hud.speedLabel')} data-speed={m.speed} disabled={c.readOnly} onClick={p.onSpeed}>
                 <SpeedIcon size={16} />
                 <span>{t('hud.speed', { s: m.speed })}</span>
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

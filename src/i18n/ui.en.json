@@ -1,0 +1,149 @@
+{
+  "ui": {
+    "common": {
+      "back": "Back",
+      "close": "Close",
+      "progress": "{n}/{max}",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "done": "Done"
+    },
+    "time": {
+      "dh": "{d}d {h}h",
+      "hm": "{h}h {m}m",
+      "ms": "{m}m {s}s",
+      "s": "{s}s"
+    },
+    "currency": {
+      "amber": "Amber",
+      "dust": "Dust",
+      "trophies": "Trophies"
+    },
+    "ai": {
+      "chip": "AI",
+      "general": "AI General"
+    },
+    "card": {
+      "max": "MAX",
+      "copies": "Copies",
+      "copiesOf": "{n}/{need}",
+      "level": "Lv {n}",
+      "notOwned": "Not owned",
+      "upgradeReady": "Upgrade ready",
+      "new": "NEW"
+    },
+    "clay": {
+      "label": "Clay meter",
+      "progress": "Clay meter {n}/{max}"
+    },
+    "age": {
+      "picker": "Age"
+    },
+    "rotate": {
+      "text": "Rotate your device"
+    },
+    "error": {
+      "generic": "That didn't work. Try again."
+    },
+    "lock": {
+      "afterMatches": "Unlocks after {n} matches",
+      "arena": "Unlocks in Arena {n}"
+    },
+    "reward": {
+      "wardrobe": "Wardrobe Crate"
+    },
+    "nav": {
+      "label": "Main menu",
+      "settings": "Settings",
+      "warPlan": "War Plan",
+      "collection": "Collection",
+      "trophyRoad": "Trophy Road",
+      "conquest": "Conquest",
+      "profile": "Profile"
+    },
+    "home": {
+      "title": "Home",
+      "openProfile": "Open your profile",
+      "battle": "Battle",
+      "nextOpponent": "Next opponent",
+      "quests": "Quests",
+      "weekly": "Weekly quest",
+      "capsules": "Capsules",
+      "noCapsules": "Win battles to earn capsules",
+      "open": "Open ({n})",
+      "openAll": "Open all",
+      "openOne": "Open {name}",
+      "openCrate": "Open Wardrobe Crate",
+      "more": "+{n}",
+      "daily": "Daily Capsule",
+      "dailyBank": "Ready: {n}/{max}",
+      "dailyNext": "Next in {time}",
+      "dailyLocked": "Opens after your second capsule",
+      "claim": "Claim",
+      "charges": "Charges {n}/{max}",
+      "freeCapsules": "Next {n} capsules are free",
+      "chargeNext": "+1 in {time}",
+      "chargesFull": "Full",
+      "roadNext": "Next reward at {n}",
+      "roadDone": "Trophy Road complete",
+      "arenaN": "Arena {n}"
+    },
+    "quest": {
+      "claim": "Claim",
+      "claimed": "Claimed",
+      "claimedToast": "Reward claimed!",
+      "reroll": "Swap quest (free once a day)",
+      "rerollHint": "One free quest swap today",
+      "rerollUsed": "Quest swap used today",
+      "none": "New quests arrive at 04:00"
+    },
+    "odds": {
+      "open": "Odds and pity",
+      "title": "Odds and pity",
+      "honest": "Every capsule is rolled the moment you earn it and saved before it opens. The show only reveals it.",
+      "bagTitle": "Win Capsule bag",
+      "bagLine": "Exactly {n} Aeon in every {size} Win Capsules.",
+      "perHundred": "{n} in {size}",
+      "left": "{n} left",
+      "bagLeftTotal": "{n} of {size} left in your current bag",
+      "pityTitle": "Your pity counters",
+      "pity": {
+        "epic": "Epic at least every {every} capsules",
+        "legendary": "Legendary by capsule {every}",
+        "newCard": "A new card at least every {every} capsules",
+        "wardrobeEpic": "Wardrobe: Epic or better every {every} crates",
+        "wardrobeLegendary": "Wardrobe: Legendary every {every} crates"
+      },
+      "guaranteedIn": "Guaranteed within {n}",
+      "nextChance": "Next capsule: {p}",
+      "legendaryRule": "From capsule 26 since your last Legendary, each capsule adds 5% to the chance.",
+      "insideTitle": "What's inside",
+      "col": {
+        "tier": "Capsule",
+        "stacks": "Stacks"
+      },
+      "copiesNote": "Copies per stack by rarity.",
+      "guarantees": "at least {list}.",
+      "stackCount": "{n} {rarity}",
+      "rareToLegendary": "{p} chance one Rare stack becomes Legendary.",
+      "bonusDust": "+{n} Dust.",
+      "skinChance": "{p} chance of a skin.",
+      "stackTitle": "Other stacks roll",
+      "noRandomLegendaries": "In this arena the 1% Legendary roll becomes Common. Pity still gives Legendaries.",
+      "unownedWeight": "Cards you don't own yet are three times as likely.",
+      "dailyTitle": "Daily Capsule",
+      "foilTitle": "Foil per stack",
+      "wardrobeTitle": "Wardrobe Crate"
+    },
+    "vs": {
+      "tier": "Tier {tier}",
+      "warmUp": "Warm-up match"
+    },
+    "profile": {
+      "codex": "Codex Level"
+    },
+    "warplan": {
+      "hasWarnings": "Has warnings"
+    }
+  }
+}

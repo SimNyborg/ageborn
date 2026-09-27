@@ -42,3 +42,9 @@ export const A13_SOUND_IDS = new Set([
 export const A14_MUSIC_CUES = new Set([
   'music.menu', 'music.capsule', ...AGES.map((a) => `music.${a}`), 'stinger.victory', 'stinger.defeat',
 ]);
+
+export const A14_PROJECTILE_IDS = new Set([
+  'proj.rock', 'proj.boulder', 'proj.bee', 'proj.log', 'proj.arrow', 'proj.bolt', 'proj.goose', 'proj.musket', 'proj.lob',
+  'proj.cannonball', 'proj.grapeshot', 'proj.rocket', 'proj.chainshot', 'proj.bomb', 'proj.bullet', 'proj.shell', 'proj.flak',
+  'proj.plasma', 'proj.plasma_mortar', 'proj.gravity_orb',
+]);

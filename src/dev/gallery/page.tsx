@@ -28,7 +28,8 @@ export default function Gallery() {
     let x = 20;
     let y = 20;
     let rowH = 0;
-    const all: PuppetDef[] = allPuppets().filter((p) => (age ? p.age === age : p.age !== null));
+    const only = q.get('only')?.split(',');
+    const all: PuppetDef[] = allPuppets().filter((p) => (only ? only.some((o) => p.id.endsWith(o)) : age ? p.age === age : p.age !== null));
     for (const p of all) {
       const b = puppetBounds(p, getPart);
       const w = (b.maxX - b.minX) * scale;

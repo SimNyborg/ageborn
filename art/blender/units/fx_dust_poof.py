@@ -17,6 +17,7 @@ FILE_SLUG = "fx_dust_poof"
 VISUAL_ID = "fx.dust_poof"
 NAME = "Dust poof"
 TEAM = False
+YAW_DEG = 0.0
 OUTER_OUTLINE = (1.0, 0.85, 1.0)
 W = C.FX_REF_WIDTH_LU * 1.2          # frame 0 cloud width: 96 lu
 HEIGHT_LU = round(W * 0.8)
@@ -26,8 +27,8 @@ DUST = "#F4EFE4"
 DUST_SHADE = "#E6DDCF"
 
 # puff layout: (angle deg in the screen plane, distance factor, size factor)
-PUFFS = [(90, 0.52, 0.62), (30, 0.62, 0.58), (150, 0.62, 0.6), (-30, 0.6, 0.55),
-         (210, 0.6, 0.57), (-90, 0.45, 0.5)]
+PUFFS = [(96, 0.55, 0.64), (28, 0.66, 0.56), (152, 0.62, 0.62), (-22, 0.58, 0.5),
+         (208, 0.64, 0.55), (-84, 0.42, 0.48)]
 R = W * 0.26                          # puff radius at frame 0
 
 
@@ -42,27 +43,23 @@ def build(rig):
         g = Geo().sphere(pos, R * s * 1.25, cuts=5)
         g.sphere((pos[0] + R * s * 0.55, pos[1] - 1.5, pos[2] + R * s * 0.4), R * s * 0.7, cuts=4)
         rig.part(f"p{i}", g, DUST if i % 2 else DUST_SHADE, finish="dust")
-    rig.joint("core", "root", (0, -12, 2), hidden=True)
-    g = Geo().blob((0, -12, 2), (W * 0.2, 2.0, W * 0.16), p=2.0, cuts=5)
+    rig.joint("core", "root", (0, -34, 2), hidden=True)
+    g = Geo().blob((0, -34, 2), (W * 0.24, 2.0, W * 0.19), p=2.0, cuts=5)
     rig.part("core", g, glow="#FFFFFF", outline=0)
 
 
 def _pose(f):
-    # frame 0: one cloud (puffs tucked in); 1-4: puffs fly out, rise and shrink
+    # frame 0: one round cloud (puffs tucked in as bumps) with a white flash core: the
+    # most area; 1-4: the puffs fly apart (the extent grows to 1.3x), rise 6 lu, shrink
     pose = {"core": {"show": f == 0}}
-    if f == 0:
-        pose["cloud"] = {"s": 1.0}
-        for i in range(len(PUFFS)):
-            pose[f"p{i}"] = {"s": 0.9}
-        return pose
     u = f / 4.0
-    pose["cloud"] = {"s": [0, 0.8, 0.55, 0.3, 0.0][f]}
+    pose["cloud"] = {"s": [1.0, 0.72, 0.45, 0.2, 0.0][f]}
     for i, (ang, d, s) in enumerate(PUFFS):
         a = math.radians(ang)
-        spread = W * 0.5 * d * (0.30 * u + 0.12)
+        spread = W * 0.5 * d * 0.34 * u
         pose[f"p{i}"] = {"x": math.cos(a) * spread,
                          "z": math.sin(a) * spread * 0.8 + 6.0 * u,
-                         "s": [1.0, 1.05, 0.85, 0.6, 0.32][f]}
+                         "s": [1.1, 0.98, 0.78, 0.54, 0.3][f]}
     return pose
 
 

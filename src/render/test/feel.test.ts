@@ -287,6 +287,14 @@ describe('graphics presets (B6)', () => {
     for (let i = 0; i < 400; i++) fixed.frame(40);
     expect(fixed.preset).toBe('high');
   });
+
+  it('ignores the warm-up frames of a battle (uploads and lazy bakes)', () => {
+    const m = new AutoPresetMonitor('auto', false);
+    // 1.5 s of slow start-up frames, then a steady 60 fps: stays High.
+    for (let i = 0; i < 15; i++) expect(m.frame(100)).toBe(false);
+    for (let i = 0; i < 600; i++) expect(m.frame(16.7)).toBe(false);
+    expect(m.preset).toBe('high');
+  });
 });
 
 describe('feel config', () => {

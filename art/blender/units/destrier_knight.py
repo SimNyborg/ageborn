@@ -14,8 +14,8 @@ SLUG = "destrier_knight"
 NAME = "Destrier Knight"
 HEIGHT_LU = 118
 YAW_DEG = -10.0
-CANVAS = (296, 264)
-FEET = (96, 246)
+CANVAS = (400, 292)
+FEET = (174, 274)
 ANCHORS = {"head": (0, 112), "hitCenter": (0, 50)}
 
 COAT = "#E3DACB"
@@ -33,8 +33,8 @@ EYE = "#FAF6EE"
 # lance: joint in the far hand; shaft along +Z (rest), tip at LANCE_TIP lu
 LX, LY, LZ = 10.5, 14.0, 65.0
 LANCE_TIP = 66.0
-SMEAR = {"joint": "lance", "inner": (LX, LY, LZ + 36), "outer": (LX, LY, LZ + LANCE_TIP),
-         "color": STEEL, "taper": 0.5, "start": 0.4, "behind": 6.0}
+SMEAR = {"joint": "lance", "inner": (LX, LY, LZ + 22), "outer": (LX, LY, LZ + LANCE_TIP),
+         "color": STEEL, "taper": 0.35, "start": 0.15, "behind": 6.0}
 
 
 def _leg(rig, name, parent, x, y, z_top, front):
@@ -148,6 +148,7 @@ def build(rig):
             (LX, LY, LZ), segs=10)
     rig.part("lance", g, STEEL, finish="metal")
     rig.track("lanceTip", "lance", (LX, LY, LZ + LANCE_TIP))
+    rig.track("_foot", "leg_fr2", (19.8, -6.5, 0.5))
     # swallowtail pennant (14 x 8 lu after the 1.2x rider scale) trailing behind the tip; it is
     # counter-rotated to stream back level and follows through from the lance's movement
     pz = LZ + LANCE_TIP - 14.0
@@ -168,14 +169,14 @@ def build(rig):
     for y in (-10.5, 10.5):
         g = Geo().blob((-0.5, y * 1.02, 78.5), (7.6, 6.2, 5.6), p=2.4)
         rig.part("ktorso" if y > 0 else "karm_r", g, STEEL, finish="metal")
-    sx, sy, sz = 7.0, -17.6, 64.0
-    rot = (0, 0, 10)
-    g = Geo().blob((sx, sy + 0.7, sz), (9.9, 1.4, 13.2), p=3.2, taper=(0.2, 1.0), rot=rot)
+    sx, sy, sz = 8.0, -20.5, 64.0
+    rot = (0, 0, 8)
+    g = Geo().blob((sx, sy + 0.8, sz), (11.2, 1.4, 14.6), p=3.2, taper=(0.2, 1.0), rot=rot)
     rig.part("shield", g, STEEL, finish="metal")
-    g = Geo().blob((sx, sy, sz + 0.4), (9.0, 1.5, 12.2), p=3.2, taper=(0.18, 1.0), rot=rot)
+    g = Geo().blob((sx, sy, sz + 0.5), (9.5, 1.5, 12.6), p=3.2, taper=(0.17, 1.0), rot=rot)
     rig.part("shield", g, team=True, outline=0.8)
-    g = Geo().capsule((sx - 5.4, sy - 1.9, sz - 1.8), (sx - 0.3, sy - 2.3, sz + 4.4), 1.5)
-    g.capsule((sx - 0.3, sy - 2.3, sz + 4.4), (sx + 5.0, sy - 2.0, sz - 1.8), 1.5)
+    g = Geo().capsule((sx - 5.6, sy - 1.8, sz - 2.6), (sx, sy - 2.0, sz + 3.6), 1.7)
+    g.capsule((sx, sy - 2.0, sz + 3.6), (sx + 5.6, sy - 1.8, sz - 2.6), 1.7)
     rig.part("shield", g, PARCH, outline=0.6)
 
 
@@ -192,7 +193,7 @@ def lance_at(pose, deg):
 
 def _pennant(pose, lance_deg):
     """Counter-rotate the pennant so it streams back level (a little droop)."""
-    pose.setdefault("pennant", {})["r"] = -(lance_deg - 90.0) - 90.0 - 4.0
+    pose.setdefault("pennant", {})["r"] = 90.0 - lance_deg + 4.0
     return pose
 
 
@@ -222,7 +223,8 @@ def _idle(f):
 
 
 def _walk(f):
-    # trot: diagonal pairs move together (front-right with back-left); the horse is lowest
+    # trot: diagonal pairs move together (front-right with back-left), 0.8 s per cycle
+    # (100 ms per frame, see clips()); the horse is lowest
     # on the contact frames 0 and 4 (3.5 lu bob), nods +-8 degrees, the rider bobs 2.2 lu
     # one frame behind
     import math
@@ -233,10 +235,10 @@ def _walk(f):
     up = lambda v: max(0.0, v)
     pose = merge(STANCE, {
         "horse": {"z": bob - 0.4, "r": 1.5 * s},
-        "leg_fr": {"r": 28 * s}, "leg_fr2": {"r": -48 * up(c)},
-        "leg_bl": {"r": 22 * s}, "leg_bl2": {"r": 34 * up(-c)},
-        "leg_fl": {"r": -28 * s}, "leg_fl2": {"r": -48 * up(-c)},
-        "leg_br": {"r": -22 * s}, "leg_br2": {"r": 34 * up(c)},
+        "leg_fr": {"r": 20 * s}, "leg_fr2": {"r": -46 * up(c)},
+        "leg_bl": {"r": 16 * s}, "leg_bl2": {"r": 32 * up(-c)},
+        "leg_fl": {"r": -20 * s}, "leg_fl2": {"r": -46 * up(-c)},
+        "leg_br": {"r": -16 * s}, "leg_br2": {"r": 32 * up(c)},
         "neck": {"r": -8 * math.cos(2 * p)}, "hhead": {"r": 3 * math.cos(2 * p)},
         "rider": {"z": bob_lag},
         "ktorso": {"r": -2.0 * math.cos(2 * (p - 2 * math.pi / 8))},
@@ -265,7 +267,7 @@ def _attack(f):
         "karm_r": {"r": pick(f, [4, 0, -4, 14, 22, 18, 12, 0])},
         "khead": {"r": pick(f, [2, 4, 6, -4, -8, -6, -2, 0])},
     })
-    lance = pick(f, [38, 50, 58, 22, 2, 5, 14, IDLE_LANCE])
+    lance = pick(f, [34, 40, 46, 20, 2, 5, 14, IDLE_LANCE])
     pose = _finish(pose, lance)
     if f == 3:
         pose["lance"]["sz"] = 1.12  # smear frame: the lance stretches along the thrust
@@ -290,15 +292,17 @@ def _die(f):
         "neck": {"r": pick(f, [20, 12, 12])}, "hhead": {"r": -10},
         "leg_fr": {"r": pick(f, [40, 20, 20])}, "leg_fl": {"r": pick(f, [30, 16, 16])},
         "leg_fr2": {"r": -50},
-        "ktorso": {"r": pick(f, [22, 10, 10])}, "karm_r": {"r": 40},
+        "ktorso": {"r": pick(f, [22, 10, 10])}, "karm_r": {"r": 10},
     })
-    return _finish(pose, pick(f, [60, 40, 30]))
+    return _finish(pose, pick(f, [26, 20, 16]))
 
 
 def clips():
     return [
         Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
+        # a heavy horse: 0.8 s cycle and a shorter stride, so it plays near 1x at its
+        # 60 lu/s sim speed instead of in slow motion
+        Clip("walk", 8, _walk, loop=True, durations=100),
         Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
              durations=fx.MELEE_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),

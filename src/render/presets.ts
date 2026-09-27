@@ -48,12 +48,15 @@ export function presetDpr(preset: GraphicsPreset, devicePixelRatio: number): num
 
 /**
  * The Auto fallback: watches frame times and drops to Lite once the average over a 3 s window exceeds
- * 20 ms. It never climbs back during a match, so the picture does not flip back and forth.
+ * 20 ms. It never climbs back during a match, so the picture does not flip back and forth. The first
+ * `warmupMs` of frames are ignored: the first frames of a battle pay for texture uploads and lazy bakes,
+ * which say nothing about the steady frame rate (decision WP5 "Auto warm-up").
  */
 export class AutoPresetMonitor {
   private samples: { t: number; ms: number }[] = [];
   private now = 0;
   private sum = 0;
+  private warm = 0;
   preset: GraphicsPreset;
 
   constructor(
@@ -61,6 +64,7 @@ export class AutoPresetMonitor {
     isMobile: boolean,
     readonly windowMs = 3000,
     readonly limitMs = 20,
+    readonly warmupMs = 1500,
   ) {
     this.preset = initialPreset(setting, isMobile);
   }
@@ -70,6 +74,10 @@ export class AutoPresetMonitor {
     if (this.setting !== 'auto' || this.preset === 'lite' || !(frameMs > 0)) return false;
     // Ignore huge gaps (tab switches); they are not rendering cost.
     const ms = Math.min(frameMs, 250);
+    if (this.warm < this.warmupMs) {
+      this.warm += ms;
+      return false;
+    }
     this.now += ms;
     this.samples.push({ t: this.now, ms });
     this.sum += ms;

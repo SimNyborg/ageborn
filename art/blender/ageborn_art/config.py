@@ -73,7 +73,7 @@ FINISHES = {
     "hair":  {"shadow": 0.74, "gradient": 0.08, "hl_threshold": 0.90, "hl_mix": 0.12,
               "hl_color": "#E0C29A"},
     # dust and smoke: a soft, light shadow so puffs read as air, not rocks
-    "dust":  {"shadow": 0.87, "gradient": 0.04, "hl_threshold": 0.88, "hl_mix": 0.60},
+    "dust":  {"shadow": 0.87, "gradient": 0.04, "hl_threshold": 0.90, "hl_mix": 0.30},
 }
 # Warm materials (hue 15-75 degrees) shift their shadow this many degrees toward red.
 WARM_SHADOW_HUE_SHIFT = 8.0

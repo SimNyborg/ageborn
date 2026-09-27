@@ -1,4 +1,4 @@
-# Pre-rendered 3D sprite pipeline (art spike)
+# Pre-rendered 3D sprite pipeline (art spike, v2)
 
 This folder is a feasibility spike: it builds Ageborn units as simple 3D models in Blender
 from Python code (no manual modelling, no downloaded assets), renders them with a
@@ -6,7 +6,14 @@ cel-shaded look to 2D sprite sheets, and packs PixiJS spritesheet atlases that t
 `atlas` art tier (DESIGN B5) could load by data only. It is not wired into the game.
 
 Everything is scripted: models, rigs, animation clips, materials, lighting, camera,
-rendering, packing, previews and the lane mockup. Rerunning a script gives the same result.
+rendering, outlines, packing, previews, the lane mockups and the review sheets. Rerunning a
+script gives the same result.
+
+v2 applies the art director's critique of v1: a thick dark outer outline added in 2D,
+lighting that survives mirroring with a visible shadow band, faces, silhouette fixes,
+at least 18% team colour on every frame, a flatter camera yaw, real idle/walk amplitude,
+attacks with holds, a smear frame and follow-through, a level fire frame with a per-frame
+muzzle anchor, and a 3-frame death that hands off to shared `fx.dust_poof` / `fx.ko_stars`.
 
 ## Install
 
@@ -25,98 +32,154 @@ headless). No GPU is needed.
 From the repository root:
 
 ```sh
-# every unit, all previews and the lane mockup (about 2 minutes on 2 CPU threads)
+# shared FX, every unit, previews, lane mockups and review sheets (about 1.5 min, 2 threads)
 .venv-blender/bin/python art/blender/render_all.py --out /tmp/art-spike
 
-# one unit, or a smaller sheet scale for size tests (default 2 = DPR 2)
-.venv-blender/bin/python art/blender/render_all.py --out /tmp/art-spike --units bonker --scale 1.5
+# one unit, reusing the FX already rendered, at the size-budget scale
+.venv-blender/bin/python art/blender/render_all.py --out /tmp/art-spike --units bonker --no-fx --scale 1.5
 
-# fast look-dev: a few frames of one unit in one strip (2x on top, 1x blue/orange below)
-.venv-blender/bin/python art/blender/preview.py bonker idle:0 attack:3 attack:5 --out strip.png
+# fast look-dev: a few frames of one unit (2x on top, 1x blue/orange, black silhouette)
+.venv-blender/bin/python art/blender/preview.py bonker idle:0 attack:2 attack:4 --out strip.png
 
-# rebuild only the lane mockup from existing atlases
+# rebuild only the lane mockups (and lane_anim.gif), or only the review sheets
 .venv-blender/bin/python art/blender/mockup.py /tmp/art-spike
+.venv-blender/bin/python art/blender/review.py /tmp/art-spike [--before <v1 dir>]
 ```
 
-Outputs per unit (`<slug>` = `bonker`, `destrier_knight`, `pulse_trooper`):
+Outputs per unit (`<slug>` = `bonker`, `destrier_knight`, `pulse_trooper`) and per shared
+effect (`fx_dust_poof`, `fx_ko_stars`):
 
 | File | What |
 |---|---|
 | `<slug>.png` | shipping atlas: 256-colour palette PNG (base and team frames) |
-| `<slug>.json` | PixiJS spritesheet JSON (frames, `animations`, `meta.scale`, clip metadata) |
-| `<slug>.rgba.png`, `<slug>.webp`, `<slug>.q90.webp` | full RGBA master and WebP variants, for size comparison |
-| `<slug>_<clip>_1x.gif`, `<slug>_<clip>_3x.gif` | previews at in-game size (56 px infantry) and 3x |
-| `<slug>_contact.png` | every frame, blue and orange rows per clip |
+| `<slug>.json` | PixiJS spritesheet JSON (frames, `animations` in playback order, `meta.scale`, `meta.ageborn`) |
+| `<slug>.rgba.png`, `<slug>.webp`, `<slug>.q90.webp` | RGBA master and WebP variants, for size comparison |
+| `<slug>_<clip>_1x.gif`, `<slug>_<clip>_3x.gif` | previews at in-game size and 3x, with real frame timing; the die GIF includes the shared poof and stars |
+| `<slug>_contact.png` | every unique frame, blue and orange rows per clip |
 | `<slug>_team_layer.png` | one frame as base (team holes), grey team layer, and composites in all 5 team colours |
-| `<slug>.stats.json` | render time, sheet sizes, colour-rule result |
-| `lane_mockup_1280.png`, `lane_mockup_2560.png`, `lane_mockup_zoom.png` | lane at true scale (DPR 1 and 2) and a 3x crop |
-| `_frames/` | raw per-frame renders (not shipped) |
+| `<slug>.stats.json` | render time, sheet size, colour rule, team coverage, clipped frames |
+| `lane_mockup_1280.png`, `lane_mockup_2560.png` | the lane at true scale, DPR 1 and DPR 2 |
+| `lane_mockup_zoom.png`, `lane_mockup_dpr2_crop.png` | a 3x nearest-neighbour crop of the fight at DPR 1, and a DPR 2 crop |
+| `lane_anim.gif` | the lane animated for 3 s at DPR 1 (walkers move, a unit dies every 1.6 s) |
+| `review/` | `silhouettes.png`, `mock_grey.png`, `size32.png`, `showcase.gif`, `before_after.png` |
+| `_frames/<slug>/` | raw renders; `final/` holds the outlined frames that are packed (not shipped) |
 
 ## How it works
 
 ```
 art/blender/
-  render_all.py        entry point: all units, then the mockup
+  render_all.py        entry point: FX, units, mockups, review sheets
   preview.py           look-dev strip for a few frames
-  mockup.py            1280x720 lane mockup built from the packed atlases only
+  mockup.py            lane mockups and lane_anim.gif, built from the packed atlases only
+  review.py            art-direction review sheets, built from the packed atlases only
   ageborn_art/
-    config.py          scale, camera, light, finishes, outline width, team colours
-    colors.py          hex/linear conversion, darken and mix as DESIGN A11 defines them
-    geometry.py        bmesh primitives in lu: blob (superellipsoid), capsule, lathe, star; hull
-    materials.py       emission-only toon shading, outline, team layer switch
-    rig.py             joints (empties) + parts (meshes), pose channels, render passes
-    anim.py            keys with easing, loop waves, squash, Clip metadata (impactAt)
-    fx.py              shared death effect: dust puffs and KO stars
-    render.py          two passes per frame (base, team)
-    sheet.py           trim, pack, Pixi JSON, PNG8/WebP, GIFs, contact sheet, colour rule
-    pipeline.py        one unit end to end
+    config.py          scale, camera, light, finishes, outlines, springs, team colours
+    colors.py          hex/linear conversion, darken, mix, warm shadow shift
+    geometry.py        bmesh primitives in lu: blob, capsule, lathe, star, slab, clip; hull; ribbon
+    materials.py       emission-only toon shading, interior lines, team layer switch
+    rig.py             joints (empties) + parts (meshes), rest scale, secondary joints, trackers
+    anim.py            keys, per-frame tables, Clip (sequence + durations), follow-through spring
+    fx.py              standard clip timing and the death hand-off metadata
+    render.py          follow-through pass, smear ribbon, base/team/smear render passes
+    sheet.py           outer outline, checks, trim/pack, Pixi JSON, PNG8/WebP, GIFs, contact sheet
+    pipeline.py        one unit or effect end to end
   units/
     bonker.py          Stone Age infantry (club)
-    destrier_knight.py Medieval heavy, rider rig (horse + knight, lance)
+    destrier_knight.py Medieval heavy, rider rig (horse + knight, shield, lance)
     pulse_trooper.py   Future ranged (plasma rifle)
+    fx_dust_poof.py    shared fx.dust_poof (5 frames)
+    fx_ko_stars.py     shared fx.ko_stars (3-frame loop)
 ```
 
 **Space and scale.** 1 Blender unit = 1 lu. Characters face +X, up is +Z, +Y is away from
 the camera. The camera is orthographic at `0.82 px/lu x RENDER_SCALE` (DESIGN A11 world
-scale), tilted down 12 degrees; the root of every rig is yawed 32 degrees toward the camera
-for a three-quarter view. The feet (origin) land on a fixed pixel, which becomes each
-frame's `anchor`, so the game positions sprites exactly like the procedural rigs.
+scale), tilted down 16 degrees; bipeds are yawed 18 degrees toward the camera, rider,
+quadruped and vehicle rigs 10 degrees (`YAW_DEG`), so the horse reads long and facing
+direction stays a clear team cue. The feet land on a fixed pixel, which becomes each frame's
+`anchor`, so the game positions sprites exactly like the procedural rigs.
 
-**Toon look in Cycles.** Cycles has no Shader-to-RGB, so the shading is computed from
-normals in the node tree and output as emission: a lit and a shadow band (shadow = fill
-darkened 18%, DESIGN A11), a soft in-band gradient, one highlight shape, a thin rim light and
-short-range ambient occlusion between parts. There are no lamps, so 12 samples are enough
-and no denoiser is needed. Outlines are inverted hulls (the part mesh pushed out 3 lu along
-its normals, faces flipped, back faces only) coloured fill darkened 45% (DESIGN A11); hulls
-are invisible to AO rays. Finishes: `matte` follows A11 exactly; `gloss` and `metal` get a
-bigger highlight (metal also a deeper shadow) so armour and plastic read as such.
+**Toon look in Cycles.** Cycles has no Shader-to-RGB, so shading is computed from normals
+in the node tree and output as emission. The light comes from above and in front with **no
+side component**, so mirrored opponent sprites are lit exactly like the player's. The lit
+band ends at `dot(N, L) = 0.30`, which puts undersides, chins, under-arms, inner legs and
+bellies in shadow; the shadow colour is fill x 0.74 (matte) or x 0.65 (metal), and warm
+materials turn 8 degrees toward red in shadow. Inside each band there is only a slight
+gradient (8%) and a light 3 lu ambient occlusion, so the shading reads as two clean tones
+plus one highlight. Hair and fur get a small brown-tinted highlight instead of a white
+streak. No lamps: 12 samples antialias the edges and no denoiser is needed.
+
+**Outlines.** Two kinds:
+
+1. *Outer outline (2D, after rendering).* `sheet.outline` widens the combined silhouette of
+   the base and team frames by 3 px at 1x (6 px at 2x) with an antialiased disk and also
+   covers the silhouette's own outer 0.9 px, so the line's inner edge is crisp. Each line
+   pixel takes the nearest fill colour, propagated from pixels a few px inside the
+   silhouette, x 0.40, with HSV value capped at 0.38. Line pixels next to team surfaces go
+   into the `_team` frame as grey 0.40 instead, so the tint gives team colour x 0.40.
+   Shared FX use a thin line (fill x 0.85 for dust).
+2. *Interior lines (3D).* Inverted hulls 1.2 lu thick at fill x 0.60 separate parts inside
+   the silhouette.
 
 **Rigs and clips.** Joints are empties parented in a tree; parts are meshes parented to
 joints (the A11 cutout rigs, in 3D). A pose is `{joint: {r, rx, rz, x, y, z, s, sx, sy, sz,
-alpha, show}}`; `r` is the side-plane angle, counter-clockwise on screen. Clips are pose
-functions of the frame index built from eased keys and loop waves: idle 8, walk 8, attack
-9-10 (anticipation, contact frame, follow-through), hit 4 and die 8 frames at 12 fps.
-`Clip.meta()` writes `impactAt` (start of the contact frame as a 0..1 fraction), which the
-game uses to time-scale the attack so the contact lands on the sim's impact tick (B5).
+alpha, show, hide}}`; `r` is the side-plane angle, counter-clockwise on screen. A clip has
+`frames` unique poses played in `sequence` order with per-step `durationsMs`, so holds and
+ping-pong loops cost no atlas space:
 
-**Team colour: tint underlay (chosen over pre-coloured variants).** Each frame is rendered
-twice:
+| Clip | Unique frames | Playback |
+|---|---|---|
+| idle | 4 | 0-1-2-3-2-1 at 200 ms = 1.2 s; hips bob 2.4 lu, squash +-4%, head and weapon one pose behind |
+| walk | 8 | 62/63 ms = 0.5 s cycle; lowest on contact frames 0 and 4, highest on passing frames 2 and 6 |
+| attack (melee) | 8 | 83, 83, 167 (held extreme), 42 (smear), 125 (held impact, squash 0.85/1.15), 83 x 3 |
+| attack (trooper) | 8 | raise, brace, charge, charge (125), fire (gun level), recoil, vent puff, settle (125) |
+| hit | 3 | 83 ms each |
+| die | 3 | fling with a 20 degree spin, squash, hand-off to the shared poof and stars |
+
+`Clip.meta()` writes `impactAt` from time (start of the impact frame / clip length), which
+the game uses to time-scale the attack so the contact lands on the sim's impact tick (B5).
+
+**Follow-through.** Plume, pennant, tail, hair tufts, the skirt hem and the antenna are
+*secondary joints*. Before a clip is rendered, the rig is posed through its playback and a
+damped spring per joint (2.2 Hz, damping 0.42, about 20% overshoot) reacts to its parent's
+turning and to the pivot's changes of speed; the result is added to each frame's pose.
+Loops are simulated three times so they stay seamless.
+
+**Smear.** On a melee attack's smear frame, a flat ribbon follows the weapon head's path from
+the previous frame (weapon colour mixed 50% with white, no outline), and the weapon head is
+stretched along the motion. It is rendered as a separate pass and composited under the unit.
+
+**Per-frame anchors.** Trackers are points on joints whose screen position is exported per
+frame as `meta.ageborn.clips.<clip>.anchorsLu` (screen-plane lu from the feet, y up):
+`muzzle` for the trooper (the projectile spawns there on the fire frame), `lanceTip`,
+`clubHead`. The walk clip also gets `strideLu` and `naturalSpeedLuPerS` (from a foot
+tracker): the game plays the walk at `unit speed / naturalSpeedLuPerS` so feet do not slide.
+
+**Death.** Each unit's die clip is 3 frames; its metadata lists the shared effects to spawn
+(`fx`: id, `atMs`, `offsetLu`, `scale` = unit width / 80 lu, `loops`) and `hideUnitAtMs`.
+`fx.dust_poof` (5 frames): frame 0 is the biggest, one round cloud about 1.2x the unit's
+width with a white flash core; frames 1-4 grow to 1.3x, rise 6 lu and break into 6 puffs
+that shrink (never fade: fades band in a 256-colour PNG). `fx.ko_stars`: 3 pale-yellow stars
+circling, a seamless 3-frame loop.
+
+**Team colour: tint underlay.** Each frame is rendered twice:
 
 1. *Base pass*: everything, but team surfaces are a Holdout (a transparent hole) plus a
    faint white highlight and rim.
 2. *Team pass*: only team surfaces are visible to the camera, shaded in grey
-   (1.0 lit, 0.82 shadow, 0.55 outline). Other parts stay in the scene for AO.
+   (1.0 lit, 0.74 shadow, 0.60 interior line; the outer line adds grey 0.40).
 
 The game draws `<frame>_team` with `sprite.tint = teamColour`, then `<frame>` on top in the
-same container. Multiplying grey by the team colour gives exactly fill, shadow and outline per
-A11, for blue/orange and both colourblind presets, from one atlas. Pre-rendered variants would
-need 2 full sheets per unit (6 with the presets); the team layer adds only about 10-20% to
-a sheet. Both frames share `sourceSize` and `anchor`, so they line up in Pixi.
+same container. Multiplying grey by the team colour gives exactly fill, shadow and outline
+for blue/orange and both colourblind presets from one atlas. Both frames share
+`sourceSize` and `anchor`, so they line up in Pixi.
 
 ```ts
 const sheet = await Assets.load('bonker.json');           // meta.scale = 2 -> resolution 2
-const team = new AnimatedSprite(sheet.animations['walk_team']);
-const base = new AnimatedSprite(sheet.animations['walk']);
+const clip = sheet.data.meta.ageborn.clips.walk;          // sequence + durationsMs
+const frames = (name: string) => sheet.animations[name].map((texture, i) =>
+  ({ texture, time: clip.durationsMs[i] }));
+const team = new AnimatedSprite(frames('walk_team'));
+const base = new AnimatedSprite(frames('walk'));
 team.tint = 0x2f7df6;                                      // or 0xf28a1e, 0xf2c21e, ...
 unit.addChild(team, base);                                 // flip unit.scale.x for side 1
 ```
@@ -125,29 +188,41 @@ unit.addChild(team, base);                                 // flip unit.scale.x 
 
 **Atlas.** Frames are trimmed to their alpha bounds, shelf-packed with a 2 px gutter, and
 written as a PixiJS spritesheet hash (`frame`, `spriteSourceSize`, `sourceSize`, `anchor`),
-with `animations` per clip (`idle`, `idle_team`, ...) and `meta.scale` = render scale.
-`meta.ageborn` carries `visualId`, `heightLu`, `pxPerLu`, `feetPx`, `anchorsLu` (head,
-muzzle, hitCenter), per-clip `frames/fps/loop/durationMs/impactAt` and the team scheme.
-`mockup.py` rebuilds every sprite from the PNG and JSON alone, which checks the atlas.
+with `animations` per clip in playback order (`idle`, `idle_team`, ...) and `meta.scale` =
+render scale. `meta.ageborn` carries `visualId`, `heightLu`, `widthLu`, `pxPerLu`,
+`feetPx`, static `anchorsLu`, per-clip `frames/sequence/durationsMs/loop/impactAt/
+smearFrame/anchorsLu/fx`, and the team scheme. `mockup.py` and `review.py` rebuild every
+sprite from the PNG and JSON alone, which checks the atlas.
 
-**Colour rule.** `sheet.colour_rule` measures, per frame, the share of the silhouette where
-non-team pixels fall in the team hue bands (350-81 and 182-254 degrees) above 40%
-saturation (DESIGN A11 MUST rule, limit 10%) and writes the worst frame to the stats.
+**Checks** (in each `<slug>.stats.json`):
+
+- *Colour rule* (DESIGN A11 MUST, limit 10%): share of the silhouette where non-team pixels
+  fall in the team hue bands (350-81 and 182-254 degrees) above 40% saturation.
+- *Team coverage* (limit 18% on every frame): share of the silhouette whose visible surface
+  is team-coloured, before the outer outline (`minFillPct`) and after (`minWithOutlinePct`).
+- *Clipped frames*: frames whose silhouette touches the canvas edge (canvas too small).
+
+## Deviations from DESIGN A11 (need a note in `docs/requests/` before this ships)
+
+This spike may only write under `art/blender/`, so the requests are not filed. Proposed:
+
+1. **Outline darkness**: A11 says "fill colour darkened 45%". The pre-rendered route uses a
+   3 px outer line at fill x 0.40 capped at HSV value 0.38 (pale parts would otherwise get
+   mid-grey lines that vanish against the backdrop), and thin interior lines at fill x 0.60.
+2. **Shadow depth**: A11 says "shadow = fill darkened 18%". The pre-rendered route uses 26%
+   (x 0.74; metal x 0.65) with an 8 degree warm hue shift, because an 18% band does not
+   survive down-scaling to 56 px.
 
 ## Measured (this container, CPU, 2 render threads, 12 samples)
 
-| Unit | Frames | Render | Total incl. packing | Sheet (2x) | PNG8 | WebP q90 | WebP lossless | PNG32 | PNG8 at 1.5x |
-|---|---|---|---|---|---|---|---|---|---|
-| bonker | 38 | 16 s | 31 s | 768x844 | 125 KB | 158 KB | 331 KB | 587 KB | 84 KB |
-| destrier_knight | 38 | 31 s | 50 s | 1280x1476 | 279 KB | 343 KB | 740 KB | 1385 KB | 185 KB |
-| pulse_trooper | 37 | 14 s | 27 s | 896x680 | 120 KB | 154 KB | 289 KB | 544 KB | 82 KB |
-
-Each frame is two Cycles renders (base and team) of 0.1-0.45 s. The JSON is ~28 KB
-(~2 KB gzipped). Team frames are 22-36% of the atlas area; death frames 2-7 are 5-11%.
+See `REPORT.md` in the spike output for the current table (render time, sheet sizes at 2x
+and 1.5x, colour rule and team coverage per unit) and the size budget for 35 units.
 
 ## Adding a unit
 
 Create `units/<slug>.py` with `SLUG`, `NAME`, `HEIGHT_LU`, `CANVAS` and `FEET` (px at 2x),
-`ANCHORS`, `build(rig)` and `clips()`; copy an existing unit as a template, add the slug to
-`UNITS` in `render_all.py`, and iterate with `preview.py`. Palette colours come from the
-DESIGN A11 age table; keep large non-team areas under 40% saturation in the team hue bands.
+`ANCHORS`, `build(rig)` and `clips()` (use the timings in `ageborn_art/fx.py`); copy an
+existing unit as a template, add the slug to `UNITS` in `render_all.py`, and iterate with
+`preview.py` (watch the black silhouette row and the printed team share). Palette colours
+come from the DESIGN A11 age table; keep large non-team areas under 40% saturation in the
+team hue bands. If `stats.json` lists clipped frames, enlarge `CANVAS`/`FEET`.

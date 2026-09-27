@@ -117,17 +117,6 @@ export function BoltIcon(p: P) {
   );
 }
 
-export function RotateIcon(p: P) {
-  return (
-    <Svg {...p} view="0 0 48 48">
-      <rect x="15" y="6" width="18" height="32" rx="3.5" fill="#2a2548" stroke="#f4ecd8" stroke-width="2.4" />
-      <rect x="18" y="10" width="12" height="22" rx="1.5" fill="#4a86f0" />
-      <path d="M38 22a14 14 0 0 1-9 17" fill="none" stroke="#ffd447" stroke-width="3" stroke-linecap="round" />
-      <path d="M26 36.5l3.4 3 .4-4.6" fill="none" stroke="#ffd447" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-    </Svg>
-  );
-}
-
 /** Age glyphs: stone axe, keep tower, cannon, helmet, atom. */
 export function AgeGlyph(p: P & { age: AgeId }) {
   switch (p.age) {

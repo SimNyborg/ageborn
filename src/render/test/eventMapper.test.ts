@@ -200,7 +200,7 @@ describe('event mapper: turrets, bases, powers', () => {
   });
 
   it('power telegraph and power lands: global 120 ms, trauma 0.5, 1-frame 30% white, duck 6 dB for 1.5 s', () => {
-    const tel = run([ev('powerTelegraph', { side: 0, power: 'stampede', castId: 1, x: 700_000, zone: 500 })]);
+    const tel = run([ev('powerTelegraph', { side: 0, power: 'stampede', castId: 1, x: 700_000, zone: 500_000 })]);
     expect(pick(tel, 'telegraph')).toEqual([{ a: 'telegraph', side: 0, castId: 1, power: 'stampede', x: 700, zone: 500, ms: 1000 }]);
     expect(pick(tel, 'sound').map((s) => s.id)).toEqual(['power_telegraph']);
     const out = run([ev('powerImpact', { side: 0, power: 'stampede', castId: 1, x: 703_000, index: 0 })]);
@@ -307,7 +307,7 @@ describe('event mapper: coverage', () => {
     ev('ascendStart', { side: 1, age: 'medieval' }),
     ev('ageUp', { side: 1, age: 'medieval' }),
     ev('powerReady', { side: 0 }),
-    ev('powerTelegraph', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, zone: 450 }),
+    ev('powerTelegraph', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, zone: 450_000 }),
     ev('powerImpact', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, index: 0 }),
     ev('stanceChanged', { side: 0, stance: 'hold' }),
     ev('lastStandArmed', { side: 0 }),

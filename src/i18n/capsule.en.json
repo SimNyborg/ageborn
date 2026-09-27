@@ -1,0 +1,55 @@
+{
+  "capsule": {
+    "tap": "Tap!",
+    "skip": "Skip",
+    "holdHint": "Hold to fast-forward",
+    "fastForward": "Fast-forward",
+    "new": "NEW",
+    "newBang": "NEW!",
+    "skinStamp": "SKIN",
+    "legendary": "LEGENDARY",
+    "newEpic": "NEW EPIC",
+    "upgradeReady": "UPGRADE READY",
+    "copiesOf": "{have}/{need}",
+    "copiesPlus": "+{n}",
+    "copiesTimes": "×{n}",
+    "max": "MAX",
+    "dustPlus": "+{n} Dust",
+    "amber": "Amber",
+    "dust": "Dust",
+    "level": "Lv {n}",
+    "foilUnlocked": "{foil}!",
+    "skinFor": "Skin for {target}",
+    "baseSkinFor": "Base skin: {age}",
+    "pity": {
+      "title": "Guarantees",
+      "epic": "Epic within {n}",
+      "legendary": "Legendary within {n}",
+      "newCard": "New card within {n}",
+      "wardrobeEpic": "Epic skin within {n}",
+      "wardrobeLegendary": "Legendary skin within {n}",
+      "odds": "Odds"
+    },
+    "summary": {
+      "title": "{name}",
+      "openAllTitle": "{n} capsules opened",
+      "crateTitle": "Wardrobe Crate",
+      "equip": "Equip now",
+      "upgrade": "Upgrade",
+      "openNext": "Open next ({n})",
+      "done": "Done",
+      "newItems": "New",
+      "total": "Total"
+    },
+    "wardrobe": {
+      "name": "Wardrobe Crate",
+      "duplicate": "Duplicate: +{n} Dust",
+      "newSkin": "New skin!"
+    },
+    "aria": {
+      "stage": "Capsule opening. Tap to strike, hold to fast-forward.",
+      "crateStage": "Wardrobe Crate opening. Hold to fast-forward.",
+      "skip": "Skip to the results"
+    }
+  }
+}
