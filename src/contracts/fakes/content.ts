@@ -27,6 +27,7 @@ import type { Loadout, SideConfig } from '../sim';
 /** The two ages that have cards in the fake set. */
 export const FAKE_AGES: readonly AgeId[] = ['stone', 'medieval'];
 
+/** Infantry melee "Blunt" (DESIGN A2.6). Heavies carry no mods. */
 const BLUNT_MODS: AttackDef['mods'] = [{ vs: 'armored', bp: 7000 }];
 
 function unit(
@@ -63,7 +64,7 @@ const units: Record<CardId, UnitDef> = {
   tuskback: unit({
     id: 'tuskback', age: 'stone', rarity: 'common', role: 'heavy', group: 'heavy',
     cost: 150, trainMs: 4000, pop: 6, hp: 560, speed: 55, size: 'large', tags: ['armored', 'bio', 'melee', 'ground'],
-    attacks: [{ damage: 42, intervalMs: 1500, range: 16, hitsGround: true, hitsAir: false, dmgType: 'blunt', sfx: 'swing_whoosh', mods: BLUNT_MODS }],
+    attacks: [{ damage: 42, intervalMs: 1500, range: 16, hitsGround: true, hitsAir: false, dmgType: 'blunt', sfx: 'swing_whoosh' }],
     abilities: [{ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 }],
     sfx: { spawn: 'spawn_heavy', die: 'die_bio' },
   }),
@@ -113,12 +114,12 @@ const powers: Record<CardId, PowerDef> = {
   stampede: {
     id: 'stampede', kind: 'power', age: 'stone', slot: 'default', telegraphMs: 1000,
     effect: { kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400, damage: 50, knockback: 40, maxHitsPerEnemy: 3 },
-    visualId: 'power.stampede', sfx: 'power_stampede', nameKey: 'card.stampede.name', descKey: 'card.stampede.desc',
+    visualId: 'power.stampede', sfx: 'pw_stampede', nameKey: 'card.stampede.name', descKey: 'card.stampede.desc',
   },
   arrow_storm: {
     id: 'arrow_storm', kind: 'power', age: 'medieval', slot: 'default', telegraphMs: 1000,
     effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 40, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' },
-    visualId: 'power.arrow_storm', sfx: 'power_arrow_storm', nameKey: 'card.arrow_storm.name', descKey: 'card.arrow_storm.desc',
+    visualId: 'power.arrow_storm', sfx: 'pw_arrows', nameKey: 'card.arrow_storm.name', descKey: 'card.arrow_storm.desc',
   },
 };
 
@@ -188,9 +189,9 @@ export const fakeContent: CompiledContent = deepFreeze({
   turrets,
   powers,
   skins: {
-    'bonker@pumpkin_head': {
-      id: 'bonker@pumpkin_head', target: 'bonker', rarity: 'epic', visualId: 'unit.bonker@pumpkin_head',
-      inCratePool: true, craftable: true, nameKey: 'skin.bonker@pumpkin_head.name',
+    pumpkin_head: {
+      id: 'pumpkin_head', target: 'bonker', rarity: 'rare', visualId: 'unit.bonker@pumpkin_head',
+      inCratePool: true, craftable: true, nameKey: 'skin.pumpkin_head.name',
     },
   },
   rarities: null,

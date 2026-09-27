@@ -1,12 +1,30 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+dist-ssr/
+*.tsbuildinfo
+
+# Test and tool output
 coverage/
 reports/
 playwright-report/
 test-results/
+blob-report/
+playwright/.cache/
+
+# Tool caches
 .vite/
+.eslintcache
+
+# Logs
 *.log
-.DS_Store
-Thumbs.db
+
+# Local and editor files
+.claude/settings.local.json
+*.local
 .env
 .env.*
+.DS_Store
+Thumbs.db
