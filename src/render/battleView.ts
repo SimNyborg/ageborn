@@ -168,7 +168,8 @@ export class BattleView {
   private readonly screenFx: EffectView[] = [];
   private readonly listeners = new Set<ViewEventListener>();
   private readonly ages: AgeId[];
-  private readonly baseFlashFilter = new ColorMatrixFilter();
+  /** Created on the first base flash (a filter needs a GPU context). */
+  private baseFlashFilter: ColorMatrixFilter | null | undefined;
   private readonly onPresetChange: ((p: GraphicsPreset) => void) | undefined;
   private feel: RenderFeelConfig;
   private settings: ViewSettings;
@@ -214,7 +215,6 @@ export class BattleView {
     this.bases = [this.createBase(0), this.createBase(1)];
     this.layers.bars.addChild(this.bars.root);
     this.layers.telegraphs.addChild(this.zones.root, this.markers.root);
-    this.baseFlashFilter.brightness(1.9, false);
 
     this.applySettings(this.settings);
     this.resize(1280, 720);
@@ -1019,10 +1019,25 @@ export class BattleView {
       }
       if (b.flashLeftMs > 0) {
         b.flashLeftMs -= this.paused ? 0 : Math.max(gameDt, 16);
-        b.view.root.filters = b.flashLeftMs > 0 ? [this.baseFlashFilter] : [];
+        const f = this.flashFilter();
+        if (f) b.view.root.filters = b.flashLeftMs > 0 ? [f] : [];
       }
       b.view.update(gameDt);
     }
+  }
+
+  /** The brightening filter for base flashes, or null where filters are unavailable (tests). */
+  private flashFilter(): ColorMatrixFilter | null {
+    if (this.baseFlashFilter === undefined) {
+      try {
+        const f = new ColorMatrixFilter();
+        f.brightness(1.9, false);
+        this.baseFlashFilter = f;
+      } catch {
+        this.baseFlashFilter = null;
+      }
+    }
+    return this.baseFlashFilter;
   }
 
   private turretAction(a: Extract<ViewAction, { a: 'turret' }>): void {

@@ -1,7 +1,7 @@
 """Toon materials for Cycles, computed from normals with emission only.
 
 Cycles has no Shader-to-RGB, so the cel look is built directly in the node tree:
-  lit/shadow = smoothstep(dot(N, LIGHT_DIR)) picks fill or fill*0.82 (DESIGN A11 two-tone),
+  lit/shadow = smoothstep(dot(N, LIGHT_DIR)) picks fill or the shadow colour (colors.shadow),
   gradient   = a soft darkening inside each band away from the light, times short-range AO,
   highlight  = a tight smoothstep on dot(N, HIGHLIGHT_DIR) (one highlight shape per part),
   rim        = a thin lighter edge at grazing view angles on the lit side.
@@ -11,14 +11,15 @@ There are no lamps, so a frame needs only enough samples to antialias edges.
 Team parts are rendered in two passes controlled by one value node per material:
   base pass (team_pass = 0): team surfaces are a Holdout (a hole in the base sprite) plus a
       faint white highlight, so the tinted team layer shows through from underneath;
-  team pass (team_pass = 1): team surfaces are white-based toon shading (1.0 lit, 0.82 shadow,
-      0.55 outline). Multiplying by any team colour then gives exactly fill, shadow and
-      outline per DESIGN A11, for every colourblind preset, from a single sheet.
+  team pass (team_pass = 1): team surfaces are white-based toon shading (1.0 lit, 0.74 shadow,
+      0.60 interior line; the outer outline is added as grey 0.40 by sheet.outline).
+      Multiplying by any team colour then gives exactly fill, shadow and outline, for every
+      colourblind preset, from a single sheet.
 """
 import bpy
 
 from . import config as C
-from .colors import mix, scale, to_linear
+from .colors import mix, scale, shadow, to_linear
 
 _cache = {}
 TEAM_MATERIALS = []
@@ -115,7 +116,8 @@ def _shading(nodes, links, finish="matte"):
 def _toon_color(nodes, links, fill_hex, highlight=True, finish="matte"):
     F = C.FINISHES[finish]
     m = _shading(nodes, links, finish)
-    col = _mix_rgb(nodes, links, m["lit"], to_linear(scale(fill_hex, F["shadow"])), to_linear(fill_hex))
+    dark = shadow(fill_hex, F["shadow"], C.WARM_SHADOW_HUE_SHIFT)
+    col = _mix_rgb(nodes, links, m["lit"], to_linear(dark), to_linear(fill_hex))
     g = nodes.new("ShaderNodeMixRGB")
     g.blend_type = "MULTIPLY"
     g.inputs[0].default_value = 1.0
@@ -123,7 +125,8 @@ def _toon_color(nodes, links, fill_hex, highlight=True, finish="matte"):
     links.new(m["grad"], g.inputs[2])
     col = g.outputs[0]
     if highlight:
-        col = _mix_rgb(nodes, links, m["hl"], col, to_linear(mix(fill_hex, "#FFFFFF", F["hl_mix"])))
+        hl = mix(fill_hex, F.get("hl_color", "#FFFFFF"), F["hl_mix"])
+        col = _mix_rgb(nodes, links, m["hl"], col, to_linear(hl))
         rim = _math(nodes, links, "MULTIPLY", m["rim"], C.RIM_STRENGTH)
         col = _mix_rgb(nodes, links, rim, col, to_linear(mix(fill_hex, "#FFFFFF", C.RIM_MIX)))
     return col, m
@@ -216,7 +219,8 @@ def team():
 
 
 def outline(fill_hex=None, team_part=False):
-    """Back-face-only hull material. Outline colour = fill darkened 45% (DESIGN A11)."""
+    """Back-face-only hull material for interior lines: fill x OUTLINE_FACTOR (0.60).
+    The dark outer silhouette line is added after rendering (sheet.outline)."""
     key = ("outline", fill_hex, team_part)
     if key not in _cache:
         mat = bpy.data.materials.new(f"outline_{'team' if team_part else fill_hex}")

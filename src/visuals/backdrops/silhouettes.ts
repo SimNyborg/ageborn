@@ -28,6 +28,12 @@ export interface AmbientSpec {
   rate?: number;
   tint?: number;
   alpha?: number;
+  /** Emitters: horizontal spawn half-width (weather across the lane). */
+  spreadX?: number;
+  /** Emitters: particles fall (snow, rain, ash) instead of rising (smoke, embers). */
+  fall?: boolean;
+  /** Emitters: particle life (ms). */
+  life?: number;
 }
 
 function ridge(ctx: Ctx2D, f: LayerFrame, color: string, yAt: (x: number) => number, bottom = 20): void {

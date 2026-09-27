@@ -36,3 +36,15 @@ def mix(h1, h2, t):
 def hsv(h):
     import colorsys
     return colorsys.rgb_to_hsv(*hex_to_rgb(h))
+
+
+def shadow(h, factor, warm_shift_deg=0.0):
+    """Shadow band colour: fill darkened by `factor`; warm hues (15-75 deg) also turn
+    `warm_shift_deg` toward red, which reads richer than a plain darken. Saturation is
+    kept as is, so the A11 colour rule is unaffected."""
+    import colorsys
+    hh, s, v = colorsys.rgb_to_hsv(*hex_to_rgb(h))
+    deg = hh * 360.0
+    if warm_shift_deg and s > 0.08 and 15.0 <= deg <= 75.0:
+        hh = (deg - warm_shift_deg) / 360.0
+    return rgb_to_hex(colorsys.hsv_to_rgb(hh, s, v * factor))

@@ -145,6 +145,32 @@ class Geo:
             faces.append([i, j, n + j, n + i])
         return self._add(verts, faces, Matrix.Translation(Vector(center)) @ _euler(rot), smooth=False)
 
+    def slab(self, points, y, depth, rot=(0, 0, 0), origin=(0, 0, 0)):
+        """Flat polygon in the side (XZ) plane, extruded `depth` along Y and centred on `y`:
+        flags, pennants, badges. `points` are (x, z) around the outline, in order."""
+        n = len(points)
+        verts = [(x, y - depth / 2, z) for x, z in points] + [(x, y + depth / 2, z) for x, z in points]
+        faces = [list(range(n - 1, -1, -1)), list(range(n, 2 * n))]
+        for i in range(n):
+            j = (i + 1) % n
+            faces.append([i, j, n + j, n + i])
+        m = Matrix.Translation(Vector(origin)) @ _euler(rot) @ Matrix.Translation(-Vector(origin))
+        return self._add(verts, faces, m, smooth=False)
+
+    def clip(self, point, normal, fill=True):
+        """Cut away everything on the side of the plane that `normal` points to, and cap
+        the cut so the mesh stays closed (for two-colour parts such as a helmet cap)."""
+        geom = self.bm.verts[:] + self.bm.edges[:] + self.bm.faces[:]
+        res = bmesh.ops.bisect_plane(self.bm, geom=geom, dist=1e-4, plane_co=Vector(point),
+                                     plane_no=Vector(normal).normalized(), clear_outer=True)
+        if fill:
+            cut = [e for e in res["geom_cut"] if isinstance(e, bmesh.types.BMEdge)]
+            if cut:
+                out = bmesh.ops.holes_fill(self.bm, edges=cut, sides=0)
+                for f in out["faces"]:
+                    f.smooth = False
+        return self
+
     # -- output ----------------------------------------------------------------------
     def mesh(self, name):
         bmesh.ops.remove_doubles(self.bm, verts=self.bm.verts[:], dist=1e-4)
@@ -174,3 +200,19 @@ def hull_mesh(src, thickness, name):
 
 def translate_mesh(me, offset):
     me.transform(Matrix.Translation(-Vector(offset)))
+
+
+def ribbon_mesh(pairs, name):
+    """A flat strip through a list of (inner, outer) world points, e.g. the path a weapon
+    head swept between two frames (the smear). Emission materials render both sides."""
+    bm = bmesh.new()
+    rows = [(bm.verts.new(Vector(a)), bm.verts.new(Vector(b))) for a, b in pairs]
+    for (a0, b0), (a1, b1) in zip(rows, rows[1:]):
+        try:
+            bm.faces.new([a0, b0, b1, a1])
+        except ValueError:
+            pass
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    return me
