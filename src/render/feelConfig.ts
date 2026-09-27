@@ -80,7 +80,7 @@ export interface RenderFeelConfig extends FeelConfig {
 }
 
 /** The shipped config, as loaded from `feel.config.json`. Treat as read-only; clone before editing. */
-export const defaultFeelConfig: RenderFeelConfig = raw as RenderFeelConfig;
+export const defaultFeelConfig: RenderFeelConfig = raw as unknown as RenderFeelConfig;
 
 /** A deep copy, for live tuning. */
 export function cloneFeelConfig(c: RenderFeelConfig = defaultFeelConfig): RenderFeelConfig {
