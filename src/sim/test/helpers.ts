@@ -146,6 +146,8 @@ export interface Strategy {
   every: number;
   /** Issue some invalid or edge commands to exercise rejections. */
   noisy: boolean;
+  /** Never evolve (the tutorial's Old Grogg stays in the Stone Age). */
+  noEvolve?: boolean;
 }
 
 export const STRATEGIES: Record<string, Strategy> = {
@@ -166,7 +168,7 @@ export function scriptedPlayer(content: CompiledContent, side: Side, seed: numbe
     const me = obs.me;
     let gold = Math.trunc(me.gold / 1000);
     if (me.lastStand === 'armed') out.push({ t: 'lastStand', side });
-    if (me.xpBp >= 10000 && me.ageIndex < 4) out.push({ t: 'evolve', side });
+    if (!strat.noEvolve && me.xpBp >= 10000 && me.ageIndex < 4) out.push({ t: 'evolve', side });
     if (me.powerPpm >= 1000000) {
       const near = obs.units.filter((u) => u.side !== side && u.p > 150000 && u.p < 1050000).length;
       if (strat.powerAsap || near >= 3) out.push({ t: 'power', side, ...(randInt(rng, 3) === 0 ? { p: 300 + randInt(rng, 600) } : {}) });
