@@ -9,8 +9,21 @@ and tagged with `meta.scale` so Pixi shows them at the right logical size.
 # World scale (DESIGN A11): px per lu at a 1280 px wide canvas.
 PX_PER_LU_1X = 0.82
 # Sheets are rendered at 2x (DPR 2 phones and desktops), the maximum the budget allows.
+# Unit CANVAS/FEET values are authored in px at 2x and scaled by set_render_scale().
 RENDER_SCALE = 2
 PX_PER_LU = PX_PER_LU_1X * RENDER_SCALE
+
+
+def set_render_scale(scale):
+    """Override the sheet scale (e.g. 1.5 for a smaller download) before rendering."""
+    global RENDER_SCALE, PX_PER_LU
+    RENDER_SCALE = scale
+    PX_PER_LU = PX_PER_LU_1X * scale
+
+
+def px(v):
+    """A pixel size authored at 2x, converted to the current render scale."""
+    return int(round(v * RENDER_SCALE / 2))
 
 # Outline width: 3 px at 720p = about 3.7 lu (DESIGN A11). Inverted-hull thickness in lu.
 OUTLINE_LU = 3.0

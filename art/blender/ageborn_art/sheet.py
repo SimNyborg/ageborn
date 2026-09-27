@@ -161,7 +161,7 @@ def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale):
             "image": f"{slug}.png",
             "format": "RGBA8888",
             "size": {"w": sheet.size[0], "h": sheet.size[1]},
-            "scale": str(scale),
+            "scale": f"{scale:g}",
             "ageborn": dict(extra_meta, clips=clip_meta, team={
                 "mode": "tint-underlay",
                 "frameSuffix": "_team",

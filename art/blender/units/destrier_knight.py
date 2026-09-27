@@ -246,7 +246,7 @@ def _die(f):
         "horse": {"r": K([(0, 14), (1, 4)])},
         "neck": {"r": 20}, "hhead": {"r": -10},
         "leg_fr": {"r": 40}, "leg_fl": {"r": 30}, "leg_fr2": {"r": -50},
-        "ktorso": {"r": K([(0, 22), (1, 10)])}, "lance": {"r": 40}, "karm_l": {"r": 50},
+        "ktorso": {"r": K([(0, 22), (1, 10)])}, "lance": {"r": -20}, "karm_l": {"r": 50},
     })
     return merge(body, death_fx_pose(f, pop, n))
 

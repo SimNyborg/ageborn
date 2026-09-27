@@ -2,8 +2,8 @@
 
 A unit module provides:
   SLUG, NAME, HEIGHT_LU      visual id is unit.<SLUG>
-  CANVAS = (w, h)            frame size in px at RENDER_SCALE
-  FEET = (x, y)              feet pixel in the frame (y from the top); becomes the anchor
+  CANVAS = (w, h)            frame size in px, authored at 2x (scaled by config.px)
+  FEET = (x, y)              feet pixel at 2x (y from the top); becomes the anchor
   ANCHORS                    {"head": (x, z), "muzzle": (x, z), "hitCenter": (x, z)} in lu
   build(rig)                 adds joints and parts
   clips()                    list of anim.Clip (idle, walk, attack, hit, die)
@@ -20,7 +20,9 @@ from .rig import Rig
 def run_unit(mod, out_dir, frame_root, log=print):
     t0 = time.time()
     scene.reset()
-    scene.camera(*mod.CANVAS, mod.FEET)
+    canvas = (C.px(mod.CANVAS[0]), C.px(mod.CANVAS[1]))
+    feet = (C.px(mod.FEET[0]), C.px(mod.FEET[1]))
+    scene.camera(*canvas, feet)
     rig = Rig(mod.SLUG)
     mod.build(rig)
     clips = mod.clips()
@@ -33,7 +35,7 @@ def run_unit(mod, out_dir, frame_root, log=print):
         "name": mod.NAME,
         "heightLu": mod.HEIGHT_LU,
         "pxPerLu": C.PX_PER_LU,
-        "feetPx": list(mod.FEET),
+        "feetPx": list(feet),
         "anchorsLu": {k: list(v) for k, v in mod.ANCHORS.items()},
         "facing": "right",
     }
@@ -48,7 +50,8 @@ def run_unit(mod, out_dir, frame_root, log=print):
         "slug": mod.SLUG,
         "frames": n_frames,
         "renders": sum(1 + (t is not None) for f in frames.values() for _, t in f),
-        "canvasPx": list(mod.CANVAS),
+        "canvasPx": list(canvas),
+        "renderScale": C.RENDER_SCALE,
         "sheetPx": list(size),
         "colourRule": rule,
         "seconds": {"build": round(t_build, 1), "render": round(t_render, 1),

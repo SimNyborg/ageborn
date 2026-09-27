@@ -21,8 +21,10 @@ def main():
     ap.add_argument("--out", required=True, help="output directory for sheets and previews")
     ap.add_argument("--units", default=",".join(UNITS))
     ap.add_argument("--no-mockup", action="store_true")
+    ap.add_argument("--scale", type=float, default=2.0, help="sheet scale vs 1280 px (default 2)")
     args = ap.parse_args()
-    from ageborn_art import pipeline  # imports bpy
+    from ageborn_art import config, pipeline  # imports bpy
+    config.set_render_scale(args.scale)
 
     out = os.path.abspath(args.out)
     frames = os.path.join(out, "_frames")
