@@ -1,0 +1,190 @@
+/**
+ * Card-specific ability clips (DESIGN A11). The matching gameplay effects (roar ring, EMP ring,
+ * time ripple, repair beam) are separate effect ids (A14.1) that the battle view spawns; these clips
+ * are the body language.
+ */
+import type { ClipDef } from '../types';
+
+export const ABILITY_CLIPS: readonly ClipDef[] = [
+  {
+    id: 'ability.charge_lean',
+    durationMs: 700,
+    loop: false,
+    tracks: {
+      root: [{ t: 0 }, { t: 0.25, sx: 1.12, sy: 0.9, x: -3, e: 'out' }, { t: 0.5, sx: 0.94, sy: 1.04, x: 6, e: 'in' }, { t: 1, x: 0, sx: 1, sy: 1, e: 'inOut' }],
+      torso: [{ t: 0 }, { t: 0.25, r: 8 }, { t: 0.5, r: -18, e: 'in' }, { t: 0.8, r: -14 }, { t: 1, e: 'inOut' }],
+      neck: [{ t: 0 }, { t: 0.25, r: -12 }, { t: 0.5, r: 14, e: 'in' }, { t: 0.8, r: 10 }, { t: 1, e: 'inOut' }],
+      body: [{ t: 0 }, { t: 0.25, r: 4 }, { t: 0.5, r: -5, e: 'in' }, { t: 1, e: 'inOut' }],
+      armF: [{ t: 0 }, { t: 0.25, r: 10 }, { t: 0.5, r: -20, e: 'in' }, { t: 1, e: 'inOut' }],
+    },
+  },
+  {
+    id: 'ability.hook_throw',
+    durationMs: 640,
+    loop: false,
+    impactAt: 0.4,
+    tracks: {
+      armB: [{ t: 0 }, { t: 0.22, r: 60, e: 'out' }, { t: 0.4, r: -115, e: 'in' }, { t: 0.62, r: -100 }, { t: 0.85, r: 25, e: 'inOut' }, { t: 1 }],
+      foreB: [{ t: 0 }, { t: 0.22, r: -40 }, { t: 0.4, r: 0, e: 'in' }, { t: 1 }],
+      torso: [{ t: 0 }, { t: 0.22, r: 8 }, { t: 0.4, r: -10, e: 'in' }, { t: 0.85, r: 6 }, { t: 1 }],
+      root: [{ t: 0 }, { t: 0.22, sx: 1.08, sy: 0.93 }, { t: 0.4, sx: 0.96, sy: 1.04 }, { t: 0.85, x: -3 }, { t: 1 }],
+    },
+  },
+  {
+    id: 'ability.shield_raise',
+    durationMs: 700,
+    loop: false,
+    tracks: {
+      armB: [{ t: 0 }, { t: 0.25, r: -80, e: 'outBack' }, { t: 0.8, r: -80 }, { t: 1, e: 'inOut' }],
+      foreB: [{ t: 0 }, { t: 0.25, r: -20 }, { t: 0.8, r: -20 }, { t: 1 }],
+      pelvis: [{ t: 0 }, { t: 0.25, y: 3, e: 'out' }, { t: 0.8, y: 3 }, { t: 1, y: 0 }],
+      torso: [{ t: 0 }, { t: 0.25, r: -6 }, { t: 0.8, r: -6 }, { t: 1 }],
+      root: [{ t: 0 }, { t: 0.25, sx: 1.06, sy: 0.95, e: 'out' }, { t: 0.8, sx: 1.06, sy: 0.95 }, { t: 1, sx: 1, sy: 1 }],
+    },
+  },
+  {
+    id: 'ability.pounce',
+    durationMs: 520,
+    loop: false,
+    impactAt: 0.85,
+    tracks: {
+      root: [
+        { t: 0, sx: 1, sy: 1 },
+        { t: 0.12, sx: 1.15, sy: 0.85, e: 'out' },
+        { t: 0.2, y: 0, sx: 0.9, sy: 1.12, e: 'in' },
+        { t: 0.5, y: -38, sx: 1, sy: 1, e: 'out' },
+        { t: 0.85, y: 0, e: 'in' },
+        { t: 0.92, sx: 1.12, sy: 0.88, e: 'out' },
+        { t: 1, sx: 1, sy: 1 },
+      ],
+      body: [{ t: 0 }, { t: 0.2, r: -14 }, { t: 0.5, r: -4 }, { t: 0.85, r: 12, e: 'in' }, { t: 1 }],
+      legFN: [{ t: 0 }, { t: 0.2, r: -45 }, { t: 0.7, r: -50 }, { t: 0.9, r: 0 }],
+      legFF: [{ t: 0 }, { t: 0.2, r: -40 }, { t: 0.7, r: -45 }, { t: 0.9, r: 0 }],
+      legBN: [{ t: 0 }, { t: 0.2, r: 45 }, { t: 0.7, r: 30 }, { t: 0.9, r: 0 }],
+      legBF: [{ t: 0 }, { t: 0.2, r: 40 }, { t: 0.7, r: 28 }, { t: 0.9, r: 0 }],
+      jaw: [{ t: 0 }, { t: 0.5, r: 35 }, { t: 0.85, r: 0 }],
+      tail: [{ t: 0 }, { t: 0.5, r: -30 }, { t: 1 }],
+    },
+  },
+  {
+    id: 'ability.stomp_riders',
+    durationMs: 950,
+    loop: false,
+    impactAt: 0.5,
+    tracks: {
+      body: [{ t: 0 }, { t: 0.3, r: -16, e: 'out' }, { t: 0.5, r: 4, e: 'in' }, { t: 0.62, r: 0 }, { t: 1 }],
+      legFN: [{ t: 0 }, { t: 0.3, r: -32, e: 'out' }, { t: 0.5, r: 0, e: 'in' }, { t: 1 }],
+      legFF: [{ t: 0 }, { t: 0.3, r: -26, e: 'out' }, { t: 0.5, r: 0, e: 'in' }, { t: 1 }],
+      trunk: [{ t: 0 }, { t: 0.3, r: -70, e: 'out' }, { t: 0.5, r: 25, e: 'in' }, { t: 1, e: 'inOut' }],
+      rider1: [{ t: 0 }, { t: 0.5 }, { t: 0.62, y: -14, e: 'out' }, { t: 0.78, y: 0, e: 'in' }, { t: 1 }],
+      rider2: [{ t: 0 }, { t: 0.54 }, { t: 0.68, y: -12, e: 'out' }, { t: 0.84, y: 0, e: 'in' }, { t: 1 }],
+      root: [{ t: 0 }, { t: 0.3, sx: 0.96, sy: 1.04 }, { t: 0.5, sx: 1.14, sy: 0.86, e: 'in' }, { t: 0.7, sx: 1, sy: 1, e: 'out' }],
+    },
+  },
+  {
+    id: 'ability.roar',
+    durationMs: 850,
+    loop: false,
+    impactAt: 0.4,
+    tracks: {
+      neck: [{ t: 0 }, { t: 0.25, r: 10, e: 'out' }, { t: 0.4, r: -28, e: 'out' }, { t: 0.8, r: -24 }, { t: 1, e: 'inOut' }],
+      jaw: [{ t: 0 }, { t: 0.4, r: 38, e: 'out' }, { t: 0.8, r: 34 }, { t: 1, e: 'inOut' }],
+      body: [{ t: 0 }, { t: 0.25, r: 3 }, { t: 0.4, r: -6, e: 'out' }, { t: 1 }],
+      armF: [{ t: 0 }, { t: 0.4, r: -150, e: 'out' }, { t: 0.8, r: -150 }, { t: 1, e: 'inOut' }],
+      root: [{ t: 0 }, { t: 0.25, sx: 1.1, sy: 0.9, e: 'out' }, { t: 0.4, sx: 0.95, sy: 1.08, e: 'out' }, { t: 1, sx: 1, sy: 1 }],
+    },
+  },
+  {
+    id: 'ability.ram_swing',
+    durationMs: 950,
+    loop: false,
+    impactAt: 0.6,
+    tracks: {
+      log: [{ t: 0 }, { t: 0.4, x: -20, r: 6, e: 'out' }, { t: 0.6, x: 15, r: -3, e: 'in' }, { t: 0.72, x: 11 }, { t: 1, x: 0, r: 0, e: 'inOut' }],
+      hull: [{ t: 0 }, { t: 0.4, r: 3 }, { t: 0.6, r: -3, e: 'in' }, { t: 1, r: 0 }],
+      root: [{ t: 0 }, { t: 0.6, x: 4, sx: 0.95, sy: 1.04, e: 'in' }, { t: 1, x: 0, sx: 1, sy: 1 }],
+    },
+  },
+  {
+    id: 'ability.recoil',
+    durationMs: 650,
+    loop: false,
+    impactAt: 0.35,
+    tracks: {
+      barrel: [{ t: 0 }, { t: 0.33 }, { t: 0.38, x: -10, e: 'out' }, { t: 1, x: 0, e: 'inOut' }],
+      hull: [{ t: 0 }, { t: 0.35 }, { t: 0.45, r: 5, e: 'out' }, { t: 0.7, r: -1.5 }, { t: 1, r: 0, e: 'inOut' }],
+      root: [{ t: 0 }, { t: 0.35 }, { t: 0.45, x: -4, sx: 1.06, sy: 0.94, e: 'out' }, { t: 1, x: 0, sx: 1, sy: 1, e: 'inOut' }],
+    },
+  },
+  {
+    id: 'ability.bomb_drop',
+    durationMs: 800,
+    loop: false,
+    impactAt: 0.45,
+    tracks: {
+      hatch: [{ t: 0 }, { t: 0.35, r: 75, e: 'out' }, { t: 0.75, r: 75 }, { t: 1, r: 0 }],
+      gondola: [{ t: 0 }, { t: 0.3, r: -8 }, { t: 0.5, r: 10 }, { t: 0.7, r: -5 }, { t: 1 }],
+      body: [{ t: 0 }, { t: 0.45, y: -5, e: 'out' }, { t: 1, y: 0, e: 'inOut' }],
+    },
+    proc: ['hover'],
+  },
+  {
+    id: 'ability.rotor_tilt',
+    durationMs: 650,
+    loop: false,
+    tracks: {
+      body: [{ t: 0 }, { t: 0.3, r: 14, e: 'out' }, { t: 0.75, r: 10 }, { t: 1, e: 'inOut' }],
+      rotor: [{ t: 0 }, { t: 0.3, r: -6 }, { t: 1 }],
+    },
+    proc: ['spinRotor'],
+  },
+  {
+    id: 'ability.radio_call',
+    durationMs: 950,
+    loop: false,
+    impactAt: 0.5,
+    tracks: {
+      armB: [{ t: 0 }, { t: 0.25, r: -150, e: 'out' }, { t: 0.8, r: -150 }, { t: 1, e: 'inOut' }],
+      foreB: [{ t: 0 }, { t: 0.25, r: -95, e: 'out' }, { t: 0.8, r: -95 }, { t: 1, e: 'inOut' }],
+      head: [{ t: 0 }, { t: 0.25, r: 10 }, { t: 0.8, r: 10 }, { t: 1 }],
+      antenna: [{ t: 0 }, { t: 0.3, r: -14 }, { t: 0.4, r: 12 }, { t: 0.5, r: -10 }, { t: 0.6, r: 8 }, { t: 0.7, r: -4 }, { t: 1 }],
+      torso: [{ t: 0 }, { t: 0.25, r: 4 }, { t: 0.8, r: 4 }, { t: 1 }],
+    },
+  },
+  {
+    id: 'ability.repair_beam',
+    durationMs: 800,
+    loop: false,
+    impactAt: 0.4,
+    tracks: {
+      body: [{ t: 0 }, { t: 0.3, r: 10, e: 'out' }, { t: 0.8, r: 8 }, { t: 1, e: 'inOut' }],
+      emitter: [{ t: 0 }, { t: 0.3, sx: 1.5, sy: 1.5, e: 'outBack' }, { t: 0.8, sx: 1.3, sy: 1.3 }, { t: 1, sx: 1, sy: 1 }],
+    },
+    proc: ['hover', 'spinRotor'],
+  },
+  {
+    id: 'ability.emp',
+    durationMs: 720,
+    loop: false,
+    impactAt: 0.5,
+    tracks: {
+      root: [{ t: 0 }, { t: 0.3, sx: 1.15, sy: 0.85, e: 'out' }, { t: 0.5, y: -6, sx: 0.92, sy: 1.1, e: 'out' }, { t: 0.7, y: 0, sx: 1.08, sy: 0.93, e: 'in' }, { t: 1, sx: 1, sy: 1 }],
+      armF: [{ t: 0 }, { t: 0.3, r: -40 }, { t: 0.5, r: -165, e: 'out' }, { t: 0.8, r: -150 }, { t: 1, e: 'inOut' }],
+      armB: [{ t: 0 }, { t: 0.3, r: -30 }, { t: 0.5, r: -160, e: 'out' }, { t: 0.8, r: -145 }, { t: 1, e: 'inOut' }],
+      device: [{ t: 0 }, { t: 0.5, sx: 1.4, sy: 1.4, e: 'outBack' }, { t: 1, sx: 1, sy: 1 }],
+    },
+  },
+  {
+    id: 'ability.time_stop',
+    durationMs: 1200,
+    loop: false,
+    impactAt: 0.35,
+    tracks: {
+      armF: [{ t: 0 }, { t: 0.3, r: -110, e: 'outBack' }, { t: 0.85, r: -110 }, { t: 1, e: 'inOut' }],
+      armB: [{ t: 0 }, { t: 0.3, r: -70, e: 'outBack' }, { t: 0.85, r: -70 }, { t: 1, e: 'inOut' }],
+      hull: [{ t: 0 }, { t: 0.3, y: -6, r: -4, e: 'out' }, { t: 0.85, y: -6, r: -4 }, { t: 1, e: 'inOut' }],
+      clock: [{ t: 0 }, { t: 0.3, r: 180, sx: 1.3, sy: 1.3, e: 'out' }, { t: 0.85, r: 360, sx: 1.2, sy: 1.2 }, { t: 1, r: 360, sx: 1, sy: 1 }],
+      root: [{ t: 0 }, { t: 0.2, sx: 1.08, sy: 0.93 }, { t: 0.35, sx: 0.97, sy: 1.04 }, { t: 1, sx: 1, sy: 1 }],
+    },
+  },
+];

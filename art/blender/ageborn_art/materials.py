@@ -98,7 +98,14 @@ def _shading(nodes, links):
     facing = _math(nodes, links, "ABSOLUTE", vm.outputs["Value"])
     edge = _smoothstep(nodes, links, _math(nodes, links, "SUBTRACT", 1.0, facing), C.RIM_LO, C.RIM_HI)
     rim = _math(nodes, links, "MULTIPLY", edge, _smoothstep(nodes, links, ndl, 0.05, 0.45))
-    return {"lit": lit, "grad": grad.outputs["Result"], "hl": hl, "rim": rim}
+    # ambient occlusion between parts (hull objects are invisible to these rays)
+    ao = nodes.new("ShaderNodeAmbientOcclusion")
+    ao.samples = C.AO_SAMPLES
+    ao.inputs["Distance"].default_value = C.AO_DISTANCE
+    occ = _math(nodes, links, "SUBTRACT", 1.0, ao.outputs["AO"])
+    shade = _math(nodes, links, "SUBTRACT", 1.0, _math(nodes, links, "MULTIPLY", occ, C.AO_STRENGTH))
+    grad_ao = _math(nodes, links, "MULTIPLY", grad.outputs["Result"], shade)
+    return {"lit": lit, "grad": grad_ao, "hl": hl, "rim": rim}
 
 
 def _toon_color(nodes, links, fill_hex, highlight=True, shadow=C.SHADOW_FACTOR, masks=None):

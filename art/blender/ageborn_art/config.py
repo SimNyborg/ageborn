@@ -43,6 +43,10 @@ TEAM_HIGHLIGHT_ALPHA = 0.30 # white overlay drawn over the tinted team layer for
 TEAM_RIM_ALPHA = 0.22
 # In-band gradient (fraction darker on the side away from the light) for a rounder, 3D read.
 GRADIENT = 0.22
+# Ambient occlusion: darkens creases between parts (arm against torso, under the helmet).
+AO_DISTANCE = 6.0   # lu
+AO_STRENGTH = 0.45
+AO_SAMPLES = 8
 # Rim light: a thin lighter edge just inside the outline on the lit side.
 RIM_LO, RIM_HI = 0.62, 0.80
 RIM_STRENGTH = 0.8

@@ -80,6 +80,10 @@ class Rig:
                     else materials.outline(outline_hex or fill or glow))
             hme.materials.append(hmat)
             hull = bpy.data.objects.new(f"{self.name}.{name}.hull", hme)
+            # the hull is only for the camera: AO and other rays must ignore it
+            for flag in ("visible_diffuse", "visible_glossy", "visible_shadow",
+                         "visible_transmission", "visible_volume_scatter"):
+                setattr(hull, flag, False)
             self.coll.objects.link(hull)
             hull.parent = self.joints[joint]
         self.parts.append({"obj": obj, "hull": hull, "joint": joint, "team": team})
@@ -131,14 +135,16 @@ class Rig:
                 o.color = (1, 1, 1, alpha)
 
     def set_pass(self, team_pass):
-        """Base pass shows everything (team surfaces as holdout); team pass shows only team parts."""
+        """Base pass shows everything (team surfaces as holdout); the team pass shows only team
+        parts to the camera, while other parts stay in the scene so AO matches the base pass."""
         materials.set_team_pass(team_pass)
         for part in self.parts:
             vis = part["joint"] not in self._hidden and part["obj"].color[3] >= 0.02
-            show = vis and (part["team"] or not team_pass)
+            to_camera = part["team"] or not team_pass
             for o in (part["obj"], part["hull"]):
                 if o is not None:
-                    o.hide_render = not show
+                    o.hide_render = not vis
+                    o.visible_camera = to_camera
 
     def has_visible_team(self):
         return any(p["team"] and p["joint"] not in self._hidden for p in self.parts)
