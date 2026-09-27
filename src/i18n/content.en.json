@@ -1,0 +1,310 @@
+{
+  "card": {
+    "bonker": { "name": "Bonker", "desc": "Cheap club-swinging infantry. Blunt: deals less damage to armored targets." },
+    "pebbler": { "name": "Pebbler", "desc": "Slings rocks over friends. Ricochet: each rock bounces to one more enemy nearby. Hits air." },
+    "tuskback": { "name": "Tuskback", "desc": "Armored charger. Gore: the first hit of each fight deals double damage and knocks the target back." },
+    "spear_hunter": { "name": "Spear Hunter", "desc": "Anti-armor with reach: strikes from the second rank, deals double damage to armored and mech targets and goes for them first." },
+    "drum_shaman": { "name": "Drum Shaman", "desc": "Support. Drums give nearby allies +20% attack speed. Stays behind the front line." },
+    "sabertooth": { "name": "Sabertooth", "desc": "Fast skirmisher. Pounce: when blocked, leaps past the front to bite an enemy ranged or support unit for double damage." },
+    "mammoth_matriarch": { "name": "Mammoth Matriarch", "desc": "Legendary siege beast. Tramples groups with splash damage while two riders sling rocks at ground and air. When she falls, the riders jump off as two Pebblers." },
+    "training_dummy": { "name": "Training Dummy", "desc": "A straw target for practice. It barely fights back." },
+    "rock_tosser": { "name": "Rock Tosser", "desc": "Lobs a boulder at a single target. Hits ground and air." },
+    "angry_beehive": { "name": "Angry Beehive", "desc": "Releases a steady stream of angry bees: short range, lots of little stings. Hits ground and air." },
+    "log_roller": { "name": "Log Roller", "desc": "Rolls a log along the ground near your gate, hitting up to 6 enemies, nearest first." },
+    "grumpy_toad": { "name": "Grumpy Toad", "desc": "Grabs an enemy ranged or support unit with its tongue and drags it toward your gate." },
+    "footman": { "name": "Footman", "desc": "Sturdy infantry. Shield Wall: takes 25% less damage from ranged attacks. Blunt against armor." },
+    "longbowman": { "name": "Longbowman", "desc": "Long-range archer. Hits ground and air." },
+    "destrier_knight": { "name": "Destrier Knight", "desc": "Armored cavalry. Lance charge: the first hit of each fight deals double damage and knocks the target back." },
+    "pikeman": { "name": "Pikeman", "desc": "Anti-armor with reach. Brace: immune to knockback and charge bonuses. Deals double damage to armored and mech targets." },
+    "friar": { "name": "Friar", "desc": "Support. Heals the two most wounded allies nearby. Stays behind the front line." },
+    "battering_ram": { "name": "Battering Ram", "desc": "Siege engine that heads straight for the enemy base and hits it hard. Fights units only when blocked." },
+    "ursa_paladin": { "name": "Ursa Paladin", "desc": "Legendary bear knight. Cleaves two enemies at once, and every 15 s its roar shields nearby allies." },
+    "crossbow_nest": { "name": "Crossbow Nest", "desc": "Fires heavy bolts at a single target. Hits ground and air." },
+    "pitch_cauldron": { "name": "Pitch Cauldron", "desc": "Pours burning pitch on up to 4 ground enemies right at your gate." },
+    "trebuchet": { "name": "Trebuchet", "desc": "Hurls boulders far across the lane for splash damage. Cannot hit targets close to your gate." },
+    "honk_ballista": { "name": "Honk Ballista", "desc": "Launches a goose that bounces between 3 enemies and slows them. Hits ground and air." },
+    "corsair": { "name": "Corsair", "desc": "Infantry with a boarding hook: the first hit of each fight pulls the target closer. Blunt against armor." },
+    "fusilier": { "name": "Fusilier", "desc": "Musket infantry with long range and heavy shots. Hits ground and air." },
+    "cuirassier": { "name": "Cuirassier", "desc": "Armored cavalry. Charge: the first hit of each fight deals double damage and knocks the target back." },
+    "grenadier": { "name": "Grenadier", "desc": "Anti-armor. Lobs grenades over allies for splash damage, strongest against armored and mech targets." },
+    "field_surgeon": { "name": "Field Surgeon", "desc": "Support. Heals the two most wounded allies nearby. Stays behind the front line." },
+    "bronze_cannon": { "name": "Bronze Cannon", "desc": "Artillery. Fires cannonballs in an arc for heavy splash damage. Cannot hit enemies up close." },
+    "balloon_admiral": { "name": "Balloon Admiral", "desc": "Legendary air bomber. Drifts over the lane dropping bombs on ground enemies, then bombs the base. Crashes with a big explosion when shot down." },
+    "swivel_gun": { "name": "Swivel Gun", "desc": "Rapid musket fire at a single target. Hits ground and air." },
+    "grapeshot_gun": { "name": "Grapeshot Gun", "desc": "Blasts the frontmost enemy and everyone just behind it. Hits ground and air." },
+    "congreve_rack": { "name": "Congreve Rack", "desc": "Fires a volley of 4 scattering rockets for splash damage. Extra damage to air." },
+    "chainshot_cannon": { "name": "Chainshot Cannon", "desc": "Fires chained shot that pierces up to 4 ground enemies in a row." },
+    "trench_raider": { "name": "Trench Raider", "desc": "Tough close-combat infantry. Blunt against armor." },
+    "rifleman": { "name": "Rifleman", "desc": "Long-range rifle fire. Suppressing Fire: hits slow the target. Hits ground and air." },
+    "tankette": { "name": "Tankette", "desc": "Light tank with a short-range cannon. Armored and mech." },
+    "bazooka_trooper": { "name": "Bazooka Trooper", "desc": "Anti-armor rockets: double damage to armored and mech targets, which it aims at first. Hits ground and air." },
+    "radio_operator": { "name": "Radio Operator", "desc": "Support. Every 8 s calls an artillery shell onto the nearest ground enemy. Stays behind the front line." },
+    "gyrocopter": { "name": "Gyrocopter", "desc": "Air gunship with a rapid machine gun. Only units and turrets that hit air can fight it." },
+    "behemoth_tank": { "name": "Behemoth Tank", "desc": "Legendary super-heavy tank. Its main gun deals splash damage at long range while a machine gun shoots down air units." },
+    "mg_nest": { "name": "MG Nest", "desc": "Sprays bullets at a single target. Hits ground and air." },
+    "flak_gun": { "name": "Flak Gun", "desc": "Flak shells burst for splash damage, double against air. Aims at air first." },
+    "howitzer": { "name": "Howitzer", "desc": "Long-range artillery with heavy splash damage. Cannot hit targets close to your gate." },
+    "searchlight_sniper": { "name": "Searchlight Sniper", "desc": "Picks off armored targets first and marks them: marked enemies take 20% more damage from everything." },
+    "photon_knight": { "name": "Photon Knight", "desc": "Infantry with an energy shield that recharges after a few seconds without damage. Blunt against armor." },
+    "pulse_trooper": { "name": "Pulse Trooper", "desc": "Fires fast plasma bolts at long range. Hits ground and air." },
+    "walker_mech": { "name": "Walker Mech", "desc": "Armored walker that strikes from the second rank." },
+    "rail_gunner": { "name": "Rail Gunner", "desc": "Anti-armor. An instant rail shot pierces two enemies and deals double damage to armored and mech targets. Hits ground and air." },
+    "repair_drone": { "name": "Repair Drone", "desc": "Flying support. Repairs the two most wounded allies nearby. It does not attack." },
+    "emp_saboteur": { "name": "EMP Saboteur", "desc": "Fast saboteur. Its EMP strips enemy shields and stuns nearby mech units, even in the air." },
+    "chrono_titan": { "name": "Chrono Titan", "desc": "Legendary time colossus. Cleaves three enemies at once and freezes everything nearby in time every 15 s." },
+    "pulse_laser": { "name": "Pulse Laser", "desc": "Instant laser pulses at a single target. Hits ground and air." },
+    "arc_coil": { "name": "Arc Coil", "desc": "Lightning that jumps between 3 enemies. Hits ground and air." },
+    "plasma_mortar": { "name": "Plasma Mortar", "desc": "Lobs plasma for heavy splash damage at long range. Cannot hit targets close to your gate." },
+    "gravity_well": { "name": "Gravity Well", "desc": "Fires into the thickest crowd: damages up to 4 ground enemies, then pulls everyone nearby together and slows them." },
+    "stampede": { "name": "Stampede", "desc": "Five spirit aurochs charge from your front line, trampling and knocking back ground enemies." },
+    "meteor_shower": { "name": "Meteor Shower", "desc": "Meteors rain across the target zone, each with splash damage. Ground only." },
+    "arrow_storm": { "name": "Arrow Storm", "desc": "A storm of arrows covers the target zone. Hits air too." },
+    "royal_decree": { "name": "Royal Decree", "desc": "All your units deal 30% more damage and move 25% faster for 8 s." },
+    "smoke_screen": { "name": "Smoke Screen", "desc": "A smoke cloud where enemy ranged and turret shots miss half the time, and your units inside hit harder." },
+    "broadside": { "name": "Broadside", "desc": "Cannonballs pound the target zone with heavy splash damage. Ground only." },
+    "paratroopers": { "name": "Paratroopers", "desc": "Four Riflemen drop in just behind the enemy front line." },
+    "carpet_bomber": { "name": "Carpet Bomber", "desc": "A bomber drops a line of bombs across the target zone. Ground only." },
+    "orbital_lance": { "name": "Orbital Lance", "desc": "A beam sweeps the target zone and hits every enemy it touches once. Hits air too." },
+    "nanite_surge": { "name": "Nanite Surge", "desc": "All your units regenerate 40% of their HP over 4 s and gain a shield." }
+  },
+  "skin": {
+    "pumpkin_head": { "name": "Pumpkin Head", "look": "Carved gourd helmet" },
+    "woolly_tuskback": { "name": "Woolly Tuskback", "look": "Shaggy coat, frosty breath puffs" },
+    "frost_matriarch": { "name": "Frost Matriarch", "look": "Ice tusks, snow aura" },
+    "tin_can": { "name": "Tin Can", "look": "Dented bucket armour" },
+    "panda_paladin": { "name": "Panda Paladin", "look": "Panda mount, bamboo banner" },
+    "toy_soldier": { "name": "Toy Soldier", "look": "Wind-up key on the back" },
+    "ghost_corsair": { "name": "Ghost Corsair", "look": "Translucent body with a pale glow" },
+    "arctic_rifleman": { "name": "Arctic Rifleman", "look": "Winter whites" },
+    "shark_mouth": { "name": "Shark Mouth", "look": "Painted nose art" },
+    "synthwave": { "name": "Synthwave", "look": "Neon grid visor" },
+    "kaiju_walker": { "name": "Kaiju Walker", "look": "Dinosaur-head plating" },
+    "crystal_spire": { "name": "Crystal Spire", "look": "Faceted glass, prism glints" }
+  },
+  "age": {
+    "stone": { "name": "Stone Age", "mechanic": "Melee, ranged, heavies, knockback, charges and ricochet" },
+    "medieval": { "name": "Medieval Age", "mechanic": "Reach, shields, damage resistance and siege damage to bases" },
+    "gunpowder": { "name": "Gunpowder Age", "mechanic": "Splash artillery, pulls, mech units and the first air unit" },
+    "modern": { "name": "Modern Age", "mechanic": "Air units, suppression, marking and called strikes" },
+    "future": { "name": "Future Age", "mechanic": "Energy shields, EMP stuns and time control" }
+  },
+  "format": {
+    "tutorial": { "name": "Training", "desc": "Stone Age to Future Age, no clock." },
+    "short": { "name": "Short War", "desc": "Three ages: Stone to Gunpowder." },
+    "standard": { "name": "Standard War", "desc": "Four ages: Stone to Modern." },
+    "full": { "name": "Full War", "desc": "All five ages: Stone to Future." }
+  },
+  "rarity": {
+    "common": { "name": "Common" },
+    "rare": { "name": "Rare" },
+    "epic": { "name": "Epic" },
+    "legendary": { "name": "Legendary" }
+  },
+  "role": {
+    "infantry": { "name": "Infantry" },
+    "ranged": { "name": "Ranged" },
+    "heavy": { "name": "Heavy" },
+    "antiArmor": { "name": "Anti-armor" },
+    "support": { "name": "Support" },
+    "skirmisher": { "name": "Skirmisher" },
+    "siege": { "name": "Siege" },
+    "artillery": { "name": "Artillery" },
+    "airBomber": { "name": "Air bomber" },
+    "airGunship": { "name": "Air gunship" },
+    "antiMech": { "name": "Anti-mech" },
+    "siegeHeavy": { "name": "Siege heavy" }
+  },
+  "group": {
+    "infantry": { "name": "Infantry" },
+    "ranged": { "name": "Ranged" },
+    "heavy": { "name": "Heavy" },
+    "antiArmor": { "name": "Anti-armor" },
+    "support": { "name": "Support" },
+    "epic": { "name": "Epic" },
+    "legendary": { "name": "Legendary" }
+  },
+  "tag": {
+    "light": { "name": "Light" },
+    "armored": { "name": "Armored" },
+    "bio": { "name": "Bio" },
+    "mech": { "name": "Mech" },
+    "ground": { "name": "Ground" },
+    "air": { "name": "Air" },
+    "legendary": { "name": "Legendary" },
+    "support": { "name": "Support" },
+    "ranged": { "name": "Ranged" },
+    "melee": { "name": "Melee" }
+  },
+  "foil": {
+    "none": { "name": "No foil" },
+    "bronze": { "name": "Bronze foil" },
+    "silver": { "name": "Silver foil" },
+    "holo": { "name": "Holo" }
+  },
+  "capsuleTier": {
+    "clay": { "name": "Clay Capsule" },
+    "bronze": { "name": "Bronze Capsule" },
+    "silver": { "name": "Silver Capsule" },
+    "jade": { "name": "Jade Capsule" },
+    "aeon": { "name": "Aeon Capsule" }
+  },
+  "capsuleKind": {
+    "win": { "name": "Win Capsule" },
+    "daily": { "name": "Daily Capsule" },
+    "road": { "name": "Trophy Road Capsule" },
+    "meter": { "name": "Clay Meter Capsule" },
+    "age": { "name": "Age Capsule" },
+    "codex": { "name": "Codex Capsule" },
+    "conquest": { "name": "Conquest Capsule" },
+    "ageUnlock": { "name": "Age Unlock Capsule" }
+  },
+  "arena": {
+    "tar_pits": { "name": "Tar Pits" },
+    "frostfang": { "name": "Frostfang Pass" },
+    "kingsmoat": { "name": "Kingsmoat" },
+    "powder_bay": { "name": "Powder Bay" },
+    "iron_front": { "name": "Iron Front" },
+    "neon_harbor": { "name": "Neon Harbor" },
+    "orbital_ring": { "name": "Orbital Ring" },
+    "chrono_rift": { "name": "Chrono Rift" }
+  },
+  "general": {
+    "grogg": {
+      "name": "Old Grogg",
+      "personality": "Tutorial trainer",
+      "signature": "Sends Training Dummies and never evolves.",
+      "line": "Grogg ready. Grogg nap first.",
+      "disclosure": "Training match: Grogg's base starts at 50%."
+    },
+    "pip": {
+      "name": "Pip Quickstep",
+      "personality": "Balanced beginner",
+      "signature": "Opens with Ranged, then Infantry, then leans on Heavies.",
+      "line": "Ready when you are!"
+    },
+    "kettle": {
+      "name": "Captain Kettle",
+      "personality": "Rusher",
+      "signature": "Infantry spam and an all-in push before each evolve.",
+      "line": "Tea's getting cold. Charge!"
+    },
+    "moss": {
+      "name": "Mama Moss",
+      "personality": "Turtle",
+      "signature": "Early turrets, holds the line, pushes in Overdrive.",
+      "line": "Nobody gets past my garden."
+    },
+    "ledger": {
+      "name": "Baroness Ledger",
+      "personality": "Greedy evolver",
+      "signature": "Treasury 3 by 2:30 and evolves first. Weak before 1:00.",
+      "line": "Money first. Manners later."
+    },
+    "boomsworth": {
+      "name": "Sgt. Boomsworth",
+      "personality": "Artillery",
+      "signature": "Trebuchet, Bronze Cannon, Howitzer and Grenadier.",
+      "line": "Stand still, please."
+    },
+    "twins": {
+      "name": "Ada & Ivo",
+      "personality": "Balanced counters",
+      "signature": "The Twins: two portraits, one AI General.",
+      "line": "Two heads, one plan."
+    },
+    "rook": {
+      "name": "Rook",
+      "personality": "Counter-picker",
+      "signature": "Weighs counters extra and switches within seconds.",
+      "line": "I see what you brought."
+    },
+    "tempest": {
+      "name": "Madame Tempest",
+      "personality": "Power timing",
+      "signature": "Saves Age Powers for evolves and clumps.",
+      "line": "Wait for it..."
+    },
+    "warden": {
+      "name": "The Warden",
+      "personality": "All-round boss",
+      "signature": "Final boss of Arena 8 and Conquest.",
+      "line": "Every age ends. Yours ends here.",
+      "disclosure": "Brings all five Legendaries at level 9."
+    },
+    "echo": {
+      "name": "Echo of You",
+      "personality": "Mirror",
+      "signature": "Plays your own active War Plan.",
+      "line": "Let's see how you like it."
+    }
+  },
+  "quest": {
+    "win_2": { "name": "Win {n} battles" },
+    "play_3": { "name": "Play {n} battles" },
+    "train_30": { "name": "Train {n} units" },
+    "evolve_6": { "name": "Evolve {n} times" },
+    "fast_final_age": { "name": "Reach your format's final age before 2:20 (Short), 3:40 (Standard) or 5:00 (Full)" },
+    "turret_kills_20": { "name": "Kill {n} units with turrets" },
+    "win_no_treasury": { "name": "Win without buying Treasury" },
+    "power_hits_5": { "name": "Hit 5+ enemies with one Age Power" },
+    "base_damage_15000": { "name": "Deal {n} damage to enemy bases" },
+    "aa_heavy_kills_5": { "name": "Kill {n} Heavies with Anti-armor units" },
+    "win_with_legendary": { "name": "Win with a Legendary in your War Plan" },
+    "fast_base_kill": { "name": "Destroy a base before 6:00" },
+    "win_after_last_stand": { "name": "Win after using Last Stand" },
+    "upgrade_2": { "name": "Upgrade {n} cards" },
+    "daily_challenge_win": { "name": "Win a Daily Challenge" },
+    "weekly_win_15": { "name": "Win {n} battles this week" }
+  },
+  "modifier": {
+    "gold_rush": { "name": "Gold Rush", "desc": "Passive gold ×1.5 for both sides." },
+    "glass_armies": { "name": "Glass Armies", "desc": "Unit HP ×0.7 for both sides." },
+    "power_hour": { "name": "Power Hour", "desc": "Age Powers charge twice as fast." },
+    "fast_forward": { "name": "Fast Forward", "desc": "XP needed to evolve ×0.7." },
+    "heavy_metal": { "name": "Heavy Metal", "desc": "Heavy and Legendary units cost 30% less." },
+    "sudden_siege": { "name": "Sudden Siege", "desc": "Siege starts 1:15 earlier." }
+  },
+  "banner": {
+    "tar_pit": { "name": "Tar Pit" },
+    "frostfang": { "name": "Frostfang" },
+    "moat": { "name": "Moat" },
+    "harbor": { "name": "Harbor" },
+    "barbed": { "name": "Barbed" },
+    "neon": { "name": "Neon" },
+    "starfield": { "name": "Starfield" },
+    "rift": { "name": "Rift" }
+  },
+  "frame": {
+    "bark": { "name": "Bark Frame" },
+    "bone": { "name": "Bone Frame" },
+    "bronze": { "name": "Bronze Frame" },
+    "iron": { "name": "Iron Frame" },
+    "brass": { "name": "Brass Frame" },
+    "steel": { "name": "Steel Frame" },
+    "chrome": { "name": "Chrome Frame" },
+    "aeon": { "name": "Aeon Frame" }
+  },
+  "title": {
+    "recruit": { "name": "Recruit", "unlock": "Start playing" },
+    "firestarter": { "name": "Firestarter", "unlock": "Win your first battle" },
+    "evolver": { "name": "Evolver", "unlock": "Reach the Future Age" },
+    "mammoth_tamer": { "name": "Mammoth Tamer", "unlock": "Own the Mammoth Matriarch" },
+    "collector": { "name": "Collector", "unlock": "Reach Codex Level 10" },
+    "siege_scholar": { "name": "Siege Scholar", "unlock": "Reach Arena 4" },
+    "last_stander": { "name": "Last Stander", "unlock": "Win after your Last Stand" },
+    "speedrunner": { "name": "Speedrunner", "unlock": "Reach the final age before 4:30 in a Full War" },
+    "veteran": { "name": "Veteran", "unlock": "Win 100 battles" },
+    "curator": { "name": "Curator", "unlock": "Reach Codex Level 40" },
+    "wardens_bane": { "name": "Warden's Bane", "unlock": "Beat The Warden" },
+    "conqueror": { "name": "Conqueror", "unlock": "Earn 27 Conquest stars" },
+    "ageborn": { "name": "Ageborn", "unlock": "Reach Arena 8" }
+  },
+  "emote": {
+    "laugh": { "name": "Laugh" },
+    "salute": { "name": "Salute" },
+    "cry": { "name": "Cry" },
+    "angry": { "name": "Angry" },
+    "thumbsUp": { "name": "Thumbs up" },
+    "gg": { "name": "GG" }
+  }
+}
