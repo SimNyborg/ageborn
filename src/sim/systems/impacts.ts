@@ -219,16 +219,18 @@ function applyKnock(ctx: Ctx, k: Knock): void {
  */
 function limitDrag(ctx: Ctx, u: UnitRt, r: UnitRules, p0: number, dp: number): number {
   let maxP = p0 + dp;
+  let allyFront = -1;
   for (const e of ctx.s.units) {
     if (e === u || !alive(e) || e.air) continue;
     const ep = pOf(e.x, u.side);
     if (e.side === u.side) {
-      if (ep > p0 && ep < maxP) maxP = ep;
+      if (ep > allyFront) allyFront = ep;
     } else if (isAheadOrLevel(u.side, u.x, e.x)) {
       const limit = ep - unitRules(ctx, e).half - r.half;
       if (limit < maxP) maxP = limit;
     }
   }
+  if (allyFront > p0 && allyFront < maxP) maxP = allyFront;
   const d = maxP - p0;
   return d > 0 ? d : 0;
 }

@@ -901,7 +901,7 @@ function checkCounters(issues: Issues, c: Content): void {
         issues.check(Math.round(m * BP) + Math.round(back * BP) === BP, `counters.${a}.${b}`, 'M[a][b] + M[b][a] = 1');
       }
     }
-    issues.check(row[a] === 0.5, `counters.${a}.${a}`, 'a mirror duel is even');
+    issues.check(Math.round((row[a] ?? 0) * BP) === BP / 2, `counters.${a}.${a}`, 'a mirror duel is even');
   }
 }
 

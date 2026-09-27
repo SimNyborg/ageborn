@@ -1,0 +1,135 @@
+import { describe, expect, it } from 'vitest';
+import { devSpawn, stepN } from '../debug';
+import { Stamper, arena, pLu, stun, unitOf } from './helpers';
+
+describe('movement (A2.7)', () => {
+  it('walks at its speed: Bonker 70 lu/s = 3.5 lu per tick', () => {
+    const sim = arena();
+    const u = devSpawn(sim, 0, 'bonker', { p: 20 });
+    stepN(sim, 20);
+    expect(pLu(sim, u.id)).toBe(90);
+    // side 1 walks the other way in world x, same progress
+    const v = devSpawn(sim, 1, 'bonker', { p: 20 });
+    stepN(sim, 1);
+    expect(pLu(sim, v.id)).toBe(23.5);
+  });
+
+  it('soft single file with a two-wide front: unit 2 joins unit 1, unit 3 keeps (wA + wB) × 0.3', () => {
+    const sim = arena();
+    const a = devSpawn(sim, 0, 'bonker', { p: 100 });
+    const b = devSpawn(sim, 0, 'bonker', { p: 100 });
+    const c = devSpawn(sim, 0, 'bonker', { p: 100 });
+    stepN(sim, 40);
+    expect(pLu(sim, a.id)).toBe(pLu(sim, b.id));
+    // small + small = 48 lu × 0.3 = 14.4 lu behind the ally directly ahead
+    expect(pLu(sim, b.id) - pLu(sim, c.id)).toBeCloseTo(14.4, 5);
+  });
+
+  it('overtaking: melee passes a stationary longer-range ally; ranged queues behind stationary melee', () => {
+    const sim = arena();
+    // An enemy the Pebbler can shoot but the Bonker cannot reach yet; stunned so it stays put.
+    const foe = devSpawn(sim, 1, 'tuskback', { p: 1200 - 480 });
+    stun(sim, foe.id, 400);
+    const pebbler = devSpawn(sim, 0, 'pebbler', { p: 300 });
+    const bonker = devSpawn(sim, 0, 'bonker', { p: 250 });
+    stepN(sim, 40);
+    expect(unitOf(sim, pebbler.id)?.mode).toBe('attack');
+    expect(pLu(sim, pebbler.id)).toBe(300);
+    expect(pLu(sim, bonker.id)).toBeGreaterThan(300);
+
+    // A moving ally is never passed: the faster Bonker walks level with the Pebbler (front rank).
+    const sim2 = arena();
+    const peb = devSpawn(sim2, 0, 'pebbler', { p: 100 });
+    const bonk = devSpawn(sim2, 0, 'bonker', { p: 90 });
+    stepN(sim2, 60);
+    expect(pLu(sim2, bonk.id)).toBe(pLu(sim2, peb.id));
+
+    // Reach from the third position: a Spear Hunter queues behind two engaged Bonkers and still hits.
+    const sim3 = arena();
+    const foe3 = devSpawn(sim3, 1, 'tuskback', { p: 1200 - 330 });
+    stun(sim3, foe3.id, 400);
+    const b1 = devSpawn(sim3, 0, 'bonker', { p: 290 });
+    const b2 = devSpawn(sim3, 0, 'bonker', { p: 290 });
+    const spear = devSpawn(sim3, 0, 'spear_hunter', { p: 200 });
+    stepN(sim3, 60);
+    expect(pLu(sim3, b1.id)).toBe(290);
+    expect(pLu(sim3, b2.id)).toBe(290);
+    expect(pLu(sim3, spear.id)).toBeLessThanOrEqual(290 - 16.8 + 1e-9);
+    expect(unitOf(sim3, spear.id)?.mode).toBe('attack');
+  });
+
+  it('followSupport: stays 60 lu behind the frontmost non-follower, or at p ≤ 200 alone', () => {
+    const sim = arena();
+    const shaman = devSpawn(sim, 0, 'drum_shaman', { p: 20 });
+    stepN(sim, 200);
+    expect(pLu(sim, shaman.id)).toBe(200);
+    const sim2 = arena();
+    const front = devSpawn(sim2, 0, 'tuskback', { p: 500 });
+    stun(sim2, front.id, 1000);
+    const s2 = devSpawn(sim2, 0, 'drum_shaman', { p: 300 });
+    stepN(sim2, 200);
+    expect(pLu(sim2, s2.id)).toBe(440);
+  });
+
+  it('symmetric resolution: facing units that both advance split the gap and never overlap', () => {
+    const sim = arena();
+    // Bronze Cannons cannot shoot inside their 80 lu minimum range, so they keep advancing.
+    const a = devSpawn(sim, 0, 'bronze_cannon', { p: 575 });
+    const b = devSpawn(sim, 1, 'bronze_cannon', { p: 575 });
+    // gap = 1200 − 575 − 575 − 48 = 2 lu
+    stepN(sim, 1);
+    const ua = unitOf(sim, a.id);
+    const ub = unitOf(sim, b.id);
+    expect(ua && ub && ua.x + ub.x).toBe(1200000);
+    expect(pLu(sim, a.id)).toBe(576);
+    stepN(sim, 10);
+    const d = Math.abs((unitOf(sim, a.id)?.x ?? 0) - (unitOf(sim, b.id)?.x ?? 0));
+    expect(d).toBeGreaterThanOrEqual(48000);
+    expect(pLu(sim, a.id) + pLu(sim, b.id)).toBeCloseTo(1200 - 48, 5);
+  });
+
+  it('a unit stops at edge distance 0 against a stationary enemy and never increases overlap', () => {
+    const sim = arena();
+    const foe = devSpawn(sim, 1, 'bronze_cannon', { p: 1200 - 600 });
+    stun(sim, foe.id, 1000);
+    const me = devSpawn(sim, 0, 'bronze_cannon', { p: 500 });
+    stepN(sim, 60);
+    // edge distance 0: centres 48 lu apart
+    expect(pLu(sim, me.id)).toBe(552);
+    // overlapping (transient, e.g. a landing): cannot move forward
+    const sim2 = arena();
+    const f2 = devSpawn(sim2, 1, 'bronze_cannon', { p: 1200 - 600 });
+    stun(sim2, f2.id, 1000);
+    const m2 = devSpawn(sim2, 0, 'bronze_cannon', { p: 590 });
+    stepN(sim2, 20);
+    expect(pLu(sim2, m2.id)).toBe(590);
+  });
+
+  it('Hold: units beyond 320 walk back at 70% speed; units below do not pass 320', () => {
+    const sim = arena();
+    const st = new Stamper(sim);
+    const far = devSpawn(sim, 0, 'bonker', { p: 400 });
+    const near = devSpawn(sim, 0, 'bonker', { p: 300 });
+    st.step({ t: 'stance', side: 0, stance: 'hold' });
+    // tick 1: stance applies at step 1, then movement: far walks back 3.5 × 0.7 = 2.45 lu
+    expect(pLu(sim, far.id)).toBeCloseTo(397.55, 5);
+    stepN(sim, 60);
+    expect(pLu(sim, far.id)).toBe(320);
+    expect(pLu(sim, near.id)).toBe(320);
+    expect(unitOf(sim, far.id)?.mode).toBe('hold');
+  });
+
+  it('air units ignore blocking; the bomber never stops and halts at the enemy gate', () => {
+    const sim = arena();
+    const wall = devSpawn(sim, 1, 'tuskback', { p: 1200 - 300 });
+    stun(sim, wall.id, 5000);
+    const gyro = devSpawn(sim, 0, 'gyrocopter', { p: 250 });
+    const bomber = devSpawn(sim, 0, 'balloon_admiral', { p: 200 });
+    stepN(sim, 2);
+    expect(pLu(sim, bomber.id)).toBeCloseTo(204.5, 5);
+    stepN(sim, 700);
+    // The gyrocopter stops over the Tuskback to shoot it (range 150), the bomber flies on.
+    expect(pLu(sim, bomber.id)).toBe(1200 - 40);
+    expect(pLu(sim, gyro.id)).toBeGreaterThan(250);
+  });
+});

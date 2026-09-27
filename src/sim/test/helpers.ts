@@ -22,6 +22,8 @@ import type {
 import { randInt, seedSfc32, type Sfc32State } from '@/core';
 import { raw as fixtureRaw } from '../../../tests/fixtures/content';
 import { createSim } from '../createSim';
+import { applyStatus } from '../damage';
+import { simCtx } from '../debug';
 import { compileForSim } from '../shim';
 
 export const fixture: CompiledContent = compileForSim(fixtureRaw);
@@ -270,4 +272,32 @@ export function runMatch(
 
 export function formatOf(sim: Sim): FormatId {
   return sim.config.format;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Small accessors for rule tests.
+
+/** Own-side progress of a unit in whole lu (float, test only). */
+export function pLu(sim: Sim, id: number): number {
+  const u = sim.state.units.find((x) => x.id === id);
+  if (!u) return Number.NaN;
+  const p = u.side === 0 ? u.x : 1200000 - u.x;
+  return p / 1000;
+}
+
+export function unitOf(sim: Sim, id: number) {
+  return sim.state.units.find((x) => x.id === id);
+}
+
+/** Events of one kind. */
+export function ofKind<K extends SimEvent['e']>(events: readonly SimEvent[], e: K): Extract<SimEvent, { e: K }>[] {
+  return events.filter((x): x is Extract<SimEvent, { e: K }> => x.e === e);
+}
+
+/** Stuns a unit for `ticks` (test only). */
+export function stun(sim: Sim, id: number, ticks: number): void {
+  const ctx = simCtx(sim);
+  const u = ctx.s.units.find((x) => x.id === id);
+  if (!u) throw new Error(`no unit ${id}`);
+  applyStatus(ctx, u, { kind: 'stun', magnitudeBp: 10000, ticks, amount: 0, frozen: false }, 0);
 }

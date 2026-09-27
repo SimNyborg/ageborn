@@ -453,14 +453,17 @@ class Duel {
     }
   }
 
-  /** B3 step 7: heals, Roar, called strikes, EMP, Time Stop, pounce. */
+  /**
+   * B3 step 7: heals, Roar, called strikes, EMP, Time Stop, pounce. Every trigger reads the state from
+   * before this step; heals and stuns are applied together afterwards, so id order (and with it the
+   * side) never decides who acts first.
+   */
   private abilities(): void {
+    for (const f of this.fighters) if (f.alive && f.leapUntil === this.tick) this.land(f);
     const heals = new Map<number, number>();
+    const stuns: [Fighter, number][] = [];
     for (const f of [...this.fighters]) {
-      if (!f.alive) continue;
-      if (this.leaping(f)) continue;
-      if (f.leapUntil === this.tick) this.land(f);
-      if (this.stunned(f)) continue;
+      if (!f.alive || this.leaping(f) || this.stunned(f)) continue;
       f.def.abilities.forEach((ab, i) => {
         const ready = this.tick >= (f.abilityNext[i] ?? 0);
         switch (ab.kind) {
@@ -524,7 +527,7 @@ class Duel {
               e.shield = 0;
               e.innate = 0;
               e.lastDamagedTick = this.tick;
-              if (hasTag(e, 'mech')) this.stun(e, msToTicks(ab.stunMs));
+              if (hasTag(e, 'mech')) stuns.push([e, msToTicks(ab.stunMs)]);
             }
             f.abilityNext[i] = this.tick + msToTicks(ab.everyMs);
             this.active = true;
@@ -534,7 +537,7 @@ class Duel {
             if (!ready) break;
             const foes = this.enemies(f).filter((e) => edge(f, e) <= ab.radius * MILLI);
             if (foes.length === 0) break;
-            for (const e of foes) this.stun(e, msToTicks(hasTag(e, 'legendary') ? ab.legendaryFreezeMs : ab.freezeMs));
+            for (const e of foes) stuns.push([e, msToTicks(hasTag(e, 'legendary') ? ab.legendaryFreezeMs : ab.freezeMs)]);
             f.abilityNext[i] = this.tick + msToTicks(ab.everyMs);
             this.active = true;
             break;
@@ -568,6 +571,7 @@ class Duel {
         }
       });
     }
+    for (const [e, ticks] of stuns) this.stun(e, ticks);
     for (const [id, amount] of heals) {
       const a = this.get(id);
       if (!a) continue;
