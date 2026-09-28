@@ -129,3 +129,14 @@ describe(`${OPENINGS} capsule openings through Meta (A6.4, A6.5, C4 #5)`, () => 
     expect(passesChi2([t.aeonSkins, t.aeon - t.aeonSkins], [skin, 10000 - skin])).toBe(true);
   });
 });
+
+describe('drop pools by arena (A17.13)', () => {
+  it('Arena 1 drops the Short War ages, Arena 2 the Standard War ages, Arena 3 and up all 8', async () => {
+    const { poolOf } = await import('../tables');
+    const size = (i: number) => poolOf(C, C.arenas.list[i]!.dropAges).cards.length;
+    // 11 cards per age (7 units, 4 turrets)
+    expect([size(0), size(1), size(2), size(7)]).toEqual([44, 66, 88, 88]);
+    const ages = new Set(poolOf(C, C.arenas.list[0]!.dropAges).cards.map((id) => (C.units[id] ?? C.turrets[id])!.age));
+    expect([...ages].sort()).toEqual(['bronze', 'gunpowder', 'medieval', 'stone']);
+  });
+});

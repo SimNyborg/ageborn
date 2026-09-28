@@ -70,6 +70,16 @@ describe('Trophy Road (A6.3)', () => {
     expect(o.collection['bazooka_trooper']?.level).toBe(1);
   });
 
+  it('Gate 3 at 400 adds the Future and Cosmic Age Unlock Capsules (A17.13)', () => {
+    const s = claim(at(scripted(), 400), 400);
+    const unlocks = s.capsules.pending.filter((p) => p.kind === 'ageUnlock').map((p) => p.age);
+    expect(unlocks).toEqual(['future', 'cosmic']);
+    let o = s;
+    for (const p of s.capsules.pending) o = M.openCapsule(o, p.id).save;
+    expect(o.collection['rail_gunner']?.level).toBe(1);
+    expect(o.collection['graviton_halberdier']?.level).toBe(1);
+  });
+
   it('Gate 8 gives the Crystal Spire; road capsules have a fixed tier; Wardrobe nodes grant crates', () => {
     let s = at(scripted(), 3400);
     s = claim(s, 3400);
