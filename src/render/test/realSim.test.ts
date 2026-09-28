@@ -15,6 +15,7 @@ import type { LabelFactory } from '../feel/numbers';
 import { ageOrder, canEvolve } from '../hudModel';
 import { FixedStepClock } from '../loop';
 import type { ViewEvent } from '../types';
+import { WORLD_LEFT_LU, WORLD_RIGHT_LU } from '../layout';
 import { A13_SOUND_IDS, A14_EFFECT_IDS, A14_MUSIC_CUES, A14_PROJECTILE_IDS } from './designIds';
 
 const AGES: AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
@@ -155,7 +156,7 @@ describe('BattleView on the real sim (Full War, scripted players)', () => {
       if (frame % 20 === 0) {
         for (const v of art.unitViews) {
           const p = v.lastPose;
-          if (p && !v.destroyed && !(Number.isFinite(p.x) && Number.isFinite(p.y) && p.x > -200 && p.x < 1400 && p.y > -200 && p.y < 40)) badPose++;
+          if (p && !v.destroyed && !(Number.isFinite(p.x) && Number.isFinite(p.y) && p.x > WORLD_LEFT_LU - 200 && p.x < WORLD_RIGHT_LU + 200 && p.y > -200 && p.y < 40)) badPose++;
         }
       }
     }

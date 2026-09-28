@@ -19,9 +19,17 @@ export const A14_EFFECT_IDS = new Set([
   'fx.evolve_pillar', 'fx.last_stand_wave', 'fx.overdrive_frame', 'fx.siege_vignette',
 ]);
 
-const AGES = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
+
+/** Sound ids added by A17 (docs/design-lane-ages.md, A17.12). */
+const A17_SOUND_IDS = [
+  'shot_javelin', 'shot_scorpion', 'stomp_colossus', 'mirror_beam', 'gorgon_gaze', 'shot_carbine', 'shot_harpoon',
+  'flare_pop', 'fuse_hiss', 'shot_gatling', 'tesla_zap', 'shot_ion', 'shot_void', 'shot_starburst', 'shot_tachyon',
+  'blink_warp', 'drone_launch', 'pw_wave', 'pw_aegis', 'pw_iron_horse', 'pw_zeppelin', 'pw_starfall', 'pw_warp', 'alert_base',
+];
 
 export const A13_SOUND_IDS = new Set([
+  ...A17_SOUND_IDS,
   'ui_click', 'ui_hover', 'ui_deny', 'ui_toggle', 'ui_tab', 'ui_confirm', 'meter_pip',
   'spawn_pop', 'spawn_heavy', 'spawn_legendary', 'step_heavy', 'step_mech',
   'swing_whoosh', 'shot_sling', 'shot_bow', 'shot_crossbow', 'shot_catapult', 'shot_musket', 'shot_lob', 'shot_cannon',
