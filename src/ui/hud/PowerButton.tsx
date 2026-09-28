@@ -324,13 +324,15 @@ export function PowerButton(p: { c: HudCtx }) {
       </button>
       {def ? <span class="hud-power-name">{t(def.nameKey)}</span> : null}
       {hint && ready && st.s === 'idle' ? (
-        <div class="hud-power-hint" data-testid="hud-power-hint" role="status">
-          <span class="hud-power-hint-text">{t('hud.powerAim.hint')}</span>
-          <div class="hud-power-hand" aria-hidden="true">
+        <>
+          <div class="hud-power-hint" data-testid="hud-power-hint" role="status">
+            <span class="hud-power-hint-text">{t('hud.powerAim.hint')}</span>
+          </div>
+          <div class="hud-power-hand" data-testid="hud-power-hand" aria-hidden="true">
             <i class="hud-power-hand-ghost">{icon(22)}</i>
             <Hand />
           </div>
-        </div>
+        </>
       ) : null}
       {aiming ? (
         <div class="hud-power-chip" data-testid="hud-power-aiming" role="status">

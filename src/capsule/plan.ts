@@ -34,11 +34,23 @@ export const SHOW_TIMING = {
   strikeImpactMs: 90,
   /** A strike fires by itself after this much idle time (A10 step 3). */
   strikeIdleMs: 1500,
-  burstMs: 300,
+  /**
+   * The burst builds before it pops: the drum swells, rattles and pours light from its cracks, and the
+   * build grows with the tier already shown (honest: the climb has revealed it). Then a short
+   * freeze and the explosion (`burstPopMs`).
+   */
+  burstBuildMs: { clay: 200, bronze: 260, silver: 360, jade: 560, aeon: 820 } as Readonly<Record<CapsuleTier, number>>,
+  burstPopMs: 360,
+  /** Freeze frame at the pop (the drum held white) before it explodes. */
+  burstHoldMs: 70,
   fanBaseMs: 350,
   fanPerCardMs: 70,
-  signalMs: 300,
+  /** The honest rarity pre-signal grows with the rarity (a longer build for Epic and Legendary). */
+  signalMs: { common: 260, rare: 380, epic: 640, legendary: 700 } as Readonly<Record<Rarity, number>>,
   flipMs: { common: 150, rare: 400, epic: 800, legendary: 400 } as Readonly<Record<Rarity, number>>,
+  /** After the flip lands: the snap settles and the copies badge counts up. */
+  settleMs: { common: 160, rare: 220, epic: 320, legendary: 320 } as Readonly<Record<Rarity, number>>,
+  countMs: 420,
   foilMs: { none: 0, bronze: 500, silver: 500, holo: 1000 } as Readonly<Record<Foil, number>>,
   stampMs: 450,
   miniWalkoutMs: 2000,
@@ -59,12 +71,14 @@ export const SHOW_LIMITS = {
   charge: 1500,
   strike: 600,
   strikeIdle: 1500,
-  burst: 300,
+  /** Build (up to 820 ms for Aeon) plus the pop. */
+  burst: 1200,
   fan: 1000,
-  signal: 300,
+  signal: 800,
   flip: 800,
   foil: 1000,
   stamp: 500,
+  count: 500,
   miniWalkout: 2000,
   walkoutFirstMin: 8000,
   walkoutFirstMax: 10000,
@@ -140,11 +154,19 @@ export type StrikeStep = StepBase & {
   /** Waits for a tap, at most this long (A10 step 3: auto after 1.5 s idle). */
   maxWaitMs: number;
 };
-export type BurstStep = StepBase & { kind: 'burst'; tier: CapsuleTier; fixed: boolean; amber: number };
+export type BurstStep = StepBase & { kind: 'burst'; tier: CapsuleTier; fixed: boolean; amber: number; /** The pop happens this far in. */ buildMs: number };
 export type VolleyStep = StepBase & { kind: 'volley'; tiers: CapsuleTier[]; amber: number };
 export type FanStep = StepBase & { kind: 'fan'; cards: RevealCard[] };
 export type SignalStep = StepBase & { kind: 'signal'; card: RevealCard };
-export type FlipStep = StepBase & { kind: 'flip'; card: RevealCard; flipMs: number; foilMs: number; stampMs: number };
+export type FlipStep = StepBase & {
+  kind: 'flip';
+  card: RevealCard;
+  flipMs: number;
+  foilMs: number;
+  stampMs: number;
+  /** The copies badge counts up from the landing (0 without copies). */
+  countMs: number;
+};
 export type WalkoutStep = StepBase & { kind: 'walkout'; card: RevealCard; first: boolean; beats: WalkoutBeats };
 export type MiniWalkoutStep = StepBase & { kind: 'miniWalkout'; card: RevealCard };
 export type DuplicatesStep = StepBase & { kind: 'duplicates'; card: RevealCard; progress: CardProgress | null; ticks: number };
@@ -218,7 +240,7 @@ function cardSteps(card: RevealCard, intro = false): ShowStep[] {
     step<SignalStep>({
       kind: 'signal',
       id: `signal-${card.key}`,
-      durationMs: T.signalMs,
+      durationMs: T.signalMs[card.rarity],
       card,
       cues: sig ? [{ atMs: 0, sound: sig, ...(card.rarity === 'common' ? { volumeDb: -4 } : {}) }] : [],
     }),
@@ -242,6 +264,8 @@ function cardSteps(card: RevealCard, intro = false): ShowStep[] {
           { atMs: beats.flare[0], sound: 'rarity_legendary' },
           { atMs: beats.drop, sound: 'walkout_bass' },
           { atMs: beats.drop + 60, sound: 'spawn_legendary' },
+          // The name slams down.
+          { atMs: beats.banner[0] + 330, sound: 'upgrade_slam', volumeDb: -4 },
         ],
       }),
     );
@@ -250,18 +274,31 @@ function cardSteps(card: RevealCard, intro = false): ShowStep[] {
   const foilMs = T.foilMs[card.foil];
   const stamped = card.isNew || card.kind === 'skin';
   const stampMs = stamped ? T.stampMs : 0;
+  const counted = card.kind === 'card' && card.copies > 1;
+  const countMs = counted ? T.countMs : 0;
+  const settleMs = T.settleMs[card.rarity];
   const flipCues: Cue[] = [{ atMs: 0, sound: 'card_flip' }];
+  // The snap as the face lands: brighter for rarer cards.
+  if (card.rarity !== 'common') flipCues.push({ atMs: flipMs, sound: 'flare_pop', volumeDb: card.rarity === 'rare' ? -8 : -3, pitchBp: card.rarity === 'rare' ? 11500 : 9500 });
   if (foilMs > 0) flipCues.push({ atMs: flipMs, sound: 'foil_shine', ...(card.foil === 'holo' ? { pitchBp: 11000 } : {}) });
   if (stamped) flipCues.push({ atMs: flipMs + foilMs + 60, sound: 'ui_confirm' });
+  if (counted) {
+    // A few ticks climbing in pitch while the copies badge counts up.
+    const ticks = Math.min(5, card.copies);
+    for (let i = 0; i < ticks; i++) {
+      flipCues.push({ atMs: flipMs + 40 + Math.round((i * (countMs - 80)) / ticks), sound: 'xp_tick', pitchBp: 9000 + i * 900, volumeDb: -8 });
+    }
+  }
   out.push(
     step<FlipStep>({
       kind: 'flip',
       id: `flip-${card.key}`,
-      durationMs: flipMs + foilMs + stampMs,
+      durationMs: flipMs + Math.max(foilMs + stampMs, countMs) + settleMs,
       card,
       flipMs,
       foilMs,
       stampMs,
+      countMs,
       cues: flipCues,
     }),
   );
@@ -320,11 +357,18 @@ function summaryStep(): SummaryStep {
   return step<SummaryStep>({ kind: 'summary', id: 'summary', durationMs: Infinity, fastForward: false });
 }
 
-function burstCues(tier: CapsuleTier): Cue[] {
+function burstCues(tier: CapsuleTier, buildMs: number): Cue[] {
   const idx = tierIndex(tier);
-  const cues: Cue[] = [{ atMs: 0, sound: 'cap_burst' }];
+  const cues: Cue[] = [
+    // The build: a riser that climbs with the tier.
+    idx >= 2
+      ? { atMs: 0, sound: 'evolve_riser', volumeDb: -6, pitchBp: 9000 + idx * 800 }
+      : { atMs: 0, sound: 'cap_riser', volumeDb: -8, pitchBp: 11000 + idx * 1000 },
+    { atMs: buildMs, sound: 'cap_burst' },
+    { atMs: buildMs + SHOW_TIMING.burstHoldMs, sound: idx >= 3 ? 'explosion_l' : 'explosion_m', volumeDb: idx >= 3 ? -4 : -9 },
+  ];
   // The tier stinger reuses the climb note of the final tier (A13 has no separate stinger ids).
-  if (idx > 0) cues.push({ atMs: 60, sound: `cap_climb_${idx}`, volumeDb: -3 });
+  if (idx > 0) cues.push({ atMs: buildMs + 60, sound: `cap_climb_${idx}`, volumeDb: -3 });
   return cues;
 }
 
@@ -343,7 +387,10 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
         id: 'arrival',
         durationMs: T.arrivalMs,
         tier: strikes.startShown,
-        cues: [{ atMs: T.arrivalImpactMs, sound: 'cap_thud' }],
+        cues: [
+          { atMs: T.arrivalImpactMs, sound: 'cap_thud' },
+          { atMs: T.arrivalImpactMs, sound: 'step_heavy', volumeDb: -6, pitchBp: 7000 },
+        ],
       }),
       step<ChargeStep>({
         kind: 'charge',
@@ -368,7 +415,11 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
           to,
           maxWaitMs: T.strikeIdleMs,
           // Each climb is a step higher: the note of the tier reached (cap_climb_1 = Bronze ... 4 = Aeon).
-          cues: [{ atMs: T.strikeImpactMs, sound: climb ? `cap_climb_${tierIndex(to)}` : 'cap_clunk' }],
+          // A non-climb is never a penalty sound; its clunk rises with each strike, so every tap builds.
+          cues: [
+            climb ? { atMs: T.strikeImpactMs, sound: `cap_climb_${tierIndex(to)}` } : { atMs: T.strikeImpactMs, sound: 'cap_clunk', pitchBp: 10000 + i * 900 },
+            { atMs: T.strikeImpactMs, sound: 'hit_heavy', volumeDb: climb ? -9 : -13, pitchBp: 8500 + i * 700 },
+          ],
         }),
       );
       from = to;
@@ -376,15 +427,17 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
   } else if (!o.catalog.hasClimb(cap.kind) && cap.startTier !== cap.tier) {
     issues.push(`fixed-tier ${cap.kind} capsule has start tier ${cap.startTier} and tier ${cap.tier}; showing ${cap.tier}`);
   }
+  const buildMs = T.burstBuildMs[cap.tier];
   steps.push(
     step<BurstStep>({
       kind: 'burst',
       id: 'burst',
-      durationMs: T.burstMs,
+      durationMs: buildMs + T.burstPopMs,
       tier: cap.tier,
       fixed: !climbs,
       amber: cap.contents.amber,
-      cues: burstCues(cap.tier),
+      buildMs,
+      cues: burstCues(cap.tier, buildMs),
     }),
   );
   const cards = revealCards([reveal], o.catalog);
@@ -511,6 +564,7 @@ export function checkPlan(plan: ShowPlan): string[] {
         break;
       case 'burst':
         over(s, 'burst', s.durationMs, L.burst);
+        if (s.buildMs < 0 || s.buildMs >= s.durationMs) out.push(`${s.id}: the pop at ${s.buildMs} ms is outside the step`);
         break;
       case 'volley':
         over(s, 'volley', s.durationMs, L.volley);
@@ -525,6 +579,7 @@ export function checkPlan(plan: ShowPlan): string[] {
         over(s, 'flip', s.flipMs, L.flip);
         over(s, 'foil sweep', s.foilMs, L.foil);
         over(s, 'NEW stamp', s.stampMs, L.stamp);
+        over(s, 'count-up', s.countMs, L.count);
         if (s.card.rarity === 'common' && s.card.kind === 'card' && s.flipMs !== SHOW_TIMING.flipMs.common) out.push(`${s.id}: common flip must be 150 ms`);
         break;
       case 'walkout':

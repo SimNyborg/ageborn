@@ -20,7 +20,7 @@
 import type { HudCard, UnitDef } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
-import { BoltIcon, ChargeFlagIcon, CoinIcon, HoldShieldIcon, HornIcon, RoleGlyph } from './icons';
+import { ChargeFlagIcon, CoinIcon, HoldShieldIcon, HornIcon, RoleGlyph } from './icons';
 import {
   LONG_PRESS_MS,
   POWER_DRAG_PX,
@@ -30,8 +30,6 @@ import {
   cardTarget,
   lastStandIntent,
   lastStandVisible,
-  powerFraction,
-  powerIntent,
   secondsUntilAffordable,
   stanceIntent,
   trainIntent,

@@ -139,7 +139,10 @@ export class CapsuleDrum {
   private readonly ringGlow = new Graphics();
   private readonly crackGlow = new Graphics();
   private readonly crackLines = new Graphics();
+  /** Light beams shooting out of the cracks (grows with each strike and through the burst build). */
+  private readonly leakG = new Graphics();
   private readonly cracks: [number, number][][];
+  private leak = 0;
   tier: CapsuleTier = 'clay';
   private crackAmount = 0;
   private time = 0;
@@ -167,7 +170,8 @@ export class CapsuleDrum {
     this.white.alpha = 0;
     this.ringGlow.blendMode = 'add';
     this.crackGlow.blendMode = 'add';
-    this.body.addChild(this.left, this.right, this.crackLines, this.crackGlow, this.ringGlow, this.white);
+    this.leakG.blendMode = 'add';
+    this.body.addChild(this.left, this.right, this.crackLines, this.crackGlow, this.ringGlow, this.leakG, this.white);
     this.root.addChild(this.body);
     this.setTier('clay');
   }
@@ -188,6 +192,11 @@ export class CapsuleDrum {
     this.drawCracks();
   }
 
+  /** 0..2: light beams pouring out of the visible cracks (0 = none, 1 = strong, 2 = about to burst). */
+  setLeak(amount: number): void {
+    this.leak = Math.max(0, Math.min(2, amount));
+  }
+
   /** A white silhouette over the drum, 0..1. */
   setWhite(alpha: number): void {
     this.white.alpha = Math.max(0, Math.min(1, alpha));
@@ -199,6 +208,8 @@ export class CapsuleDrum {
     this.ringGlow.alpha = 0;
     this.crackLines.alpha = 0;
     this.crackAmount = 0;
+    this.leak = 0;
+    this.leakG.clear();
     this.shattered = true;
   }
 
@@ -269,6 +280,52 @@ export class CapsuleDrum {
     const pulse = 0.72 + 0.28 * Math.sin(this.time / 260);
     this.ringGlow.alpha = Math.min(1, pulse + this.energy * 0.6);
     this.crackGlow.alpha = Math.min(1, (0.6 + 0.4 * Math.sin(this.time / 90)) * (0.7 + this.energy));
+    this.drawLeak();
+  }
+
+  /** Beams fan out from the tip of every crack that has spread, flickering; longer as `leak` grows. */
+  private drawLeak(): void {
+    const g = this.leakG;
+    g.clear();
+    if (this.leak <= 0.01 || this.crackAmount <= 0) return;
+    const c = TIER_COLORS[this.tier];
+    const n = this.cracks.length;
+    this.cracks.forEach((pts, i) => {
+      const local = Math.max(0, Math.min(1, this.crackAmount * n - i * 0.7));
+      if (local < 0.5) return;
+      const idx = Math.max(1, Math.ceil(local * (pts.length - 1)));
+      const tip = pts[idx];
+      const prev = pts[idx - 1];
+      if (!tip || !prev) return;
+      // Out from the drum's axis, bent towards the crack's direction.
+      const ax = tip[0] * 1.4 + (tip[0] - prev[0]) * 0.8;
+      const ay = (tip[1] + 125) * 0.6 + (tip[1] - prev[1]) * 0.8;
+      const len0 = Math.hypot(ax, ay) || 1;
+      const flick = 0.75 + 0.25 * Math.sin(this.time / 37 + i * 2.1);
+      const len = (40 + 110 * this.leak) * flick * (0.6 + 0.4 * local);
+      const ux = ax / len0;
+      const uy = ay / len0;
+      const w = (5 + 7 * this.leak) * flick;
+      const ex = tip[0] + ux * len;
+      const ey = tip[1] + uy * len;
+      // A tapered wedge: wide and soft outside, a white-hot core.
+      g.poly([tip[0] - uy * 2, tip[1] + ux * 2, ex - uy * w, ey + ux * w, ex + uy * w, ey - ux * w, tip[0] + uy * 2, tip[1] - ux * 2]).fill({ color: c, alpha: 0.28 * Math.min(1, this.leak) });
+      g.poly([tip[0] - uy, tip[1] + ux, ex - (uy * w) / 3, ey + (ux * w) / 3, ex + (uy * w) / 3, ey - (ux * w) / 3, tip[0] + uy, tip[1] - ux]).fill({ color: shade(c, 0.7), alpha: 0.55 * Math.min(1, this.leak) });
+      g.circle(tip[0], tip[1], 5 + 4 * this.leak).fill({ color: 0xffffff, alpha: 0.7 * flick });
+    });
+  }
+
+  /** Where the cracks end, for sparks (drum coordinates, only cracks that have spread). */
+  crackTips(): [number, number][] {
+    const n = this.cracks.length;
+    const out: [number, number][] = [];
+    this.cracks.forEach((pts, i) => {
+      const local = Math.max(0, Math.min(1, this.crackAmount * n - i * 0.7));
+      if (local <= 0) return;
+      const p = pts[Math.max(1, Math.ceil(local * (pts.length - 1)))];
+      if (p) out.push(p);
+    });
+    return out;
   }
 
   destroy(): void {
