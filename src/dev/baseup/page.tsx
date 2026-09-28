@@ -34,6 +34,8 @@ interface Bench {
   build(i: number): void;
   modernise(i: number): void;
   step(ms: number): void;
+  /** Steps, renders and returns the frame as a PNG data URL (read in the same task as the render). */
+  snap(ms: number): string;
   readonly age: AgeId;
   ready: boolean;
 }
@@ -42,7 +44,7 @@ const W = 900;
 const H = 560;
 /** Pixels per lu and the base's gate position on the canvas. */
 const ZOOM = 1.25;
-const GATE_X = 560;
+const GATE_X = 470;
 const GROUND_Y = 470;
 const ASCEND_MS = 2500;
 
@@ -197,6 +199,10 @@ export default function BaseUpBench() {
         placeFn?.(i, opts.age, 'modernise');
       },
       step,
+      snap(ms) {
+        step(ms);
+        return app.canvas.toDataURL('image/png');
+      },
     };
     bench.current = b;
     (window as unknown as { __baseup?: Bench }).__baseup = b;
