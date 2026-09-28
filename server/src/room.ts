@@ -190,8 +190,8 @@ export class MatchRoom {
 
   private command(side: Side, c: Command): void {
     if (!this.spec || this.finished || this.outcome) return;
-    const k = this.tick();
-    if (k < 0) return;
+    // Commands sent during the start countdown count as tick 0.
+    const k = Math.max(0, this.tick());
     // Shape check only; the sim validates the rest and rejects invalid commands deterministically.
     if (!c || typeof c !== 'object' || !COMMAND_TYPES.has((c as { t: string }).t)) return;
     // Rate guard: the side is set by the server, never trusted from the client.

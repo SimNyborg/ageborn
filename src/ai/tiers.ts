@@ -64,8 +64,6 @@ export interface TierParams {
   waveCommit: boolean;
   powerArmyShareBp: number;
   baseTurrets: number;
-  /** From tier VIII: in Siege a bot ahead on base HP holds its lead for the Final Bell, else it pushes. */
-  bellAware: boolean;
 }
 
 interface Row {
@@ -157,7 +155,6 @@ export function tierParams(tier: number): TierParams {
     waveCommit: t >= CRAFT_FROM * 100,
     powerArmyShareBp: t >= CRAFT_FROM * 100 ? lerp(POWER_SHARE_AT_CRAFT_BP, POWER_SHARE_AT_X_BP, t, CRAFT_FROM * 100, 1000) : 0,
     baseTurrets: t >= 800 ? 2 : t >= CRAFT_FROM * 100 ? 1 : 0,
-    bellAware: t >= 800,
   };
 }
 
