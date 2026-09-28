@@ -68,7 +68,7 @@ export interface ResultFacts {
   /** Damage dealt to the enemy base (the tilt card's Watch picks the closest loss). */
   baseDamage: number;
   /** The kept replay's final hash, or null when none was kept. */
-  replayHash: string | null;
+  replayHash: number | null;
 }
 
 interface SessionState {
@@ -79,7 +79,7 @@ interface SessionState {
   losses: number;
   ladderLossRun: number;
   /** The Ladder losses of the current run: replay hash and base damage dealt. */
-  lossRun: { replayHash: string | null; baseDamage: number }[];
+  lossRun: { replayHash: number | null; baseDamage: number }[];
   tiltShown: boolean;
   wrapShown: boolean;
   /** Active play at which the next break card is due. */
@@ -202,7 +202,7 @@ export class StoppingCues {
    * Counts a finished match and picks its Result card, if any (the tutorial shows none).
    * `indexOf` turns a kept replay's hash into the Result's replay index (newest first).
    */
-  onResult(f: ResultFacts, indexOf: (hash: string) => number | null = () => null): ResultCard | null {
+  onResult(f: ResultFacts, indexOf: (hash: number) => number | null = () => null): ResultCard | null {
     this.sample();
     const s = this.s;
     if (f.mode === 'tutorial') return null;
@@ -224,14 +224,14 @@ export class StoppingCues {
     return card;
   }
 
-  private pick(f: ResultFacts, indexOf: (hash: string) => number | null): ResultCard | null {
+  private pick(f: ResultFacts, indexOf: (hash: number) => number | null): ResultCard | null {
     const s = this.s;
     // Tilt: the 3rd Ladder loss in a row (when the Warm-up rule fires, A6.3).
     if (!s.tiltShown && f.mode === 'ladder' && f.lost && Math.max(s.ladderLossRun, f.lossStreak) >= TILT_LOSSES) {
       s.tiltShown = true;
-      let best: { replayHash: string | null; baseDamage: number } | null = null;
+      let best: { replayHash: number | null; baseDamage: number } | null = null;
       for (const l of s.lossRun) if (l.replayHash !== null && (!best || l.baseDamage > best.baseDamage)) best = l;
-      return { kind: 'tilt', watchIndex: best?.replayHash ? indexOf(best.replayHash) : null };
+      return { kind: 'tilt', watchIndex: best && best.replayHash !== null ? indexOf(best.replayHash) : null };
     }
     // Break: the first Result after each 60 min of active play.
     if (s.activeMs >= s.nextBreakAtMs) {
