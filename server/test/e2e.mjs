@@ -1,6 +1,6 @@
 // End-to-end spike test: starts `wrangler dev` (local workerd + Durable Objects), then two headless
 // Chromium pages per scenario play a match through the relay with simulated latency and jitter.
-// Usage: node test/e2e.mjs [--port 5061] [--only realtime,reconnect,quick]
+// Usage: node test/e2e.mjs [--port 5063] [--only realtime,reconnect,quick]
 import { spawn, execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +14,7 @@ const arg = (k, d) => {
   const i = args.indexOf(`--${k}`);
   return i >= 0 ? args[i + 1] : d;
 };
-const PORT = Number(arg('port', '5061'));
+const PORT = Number(arg('port', '5063'));
 const ONLY = arg('only', 'realtime,reconnect,quick').split(',');
 const HTTP = `http://127.0.0.1:${PORT}`;
 const WS = `ws://127.0.0.1:${PORT}`;
@@ -78,6 +78,7 @@ async function runScenario(browser, name, sc) {
     pages.push(page);
   }
   const t0 = Date.now();
+  console.log(`[${name}] room ${code} started`);
   if (sc.drop) {
     const p = pages[1];
     await p.waitForFunction((k) => (window.spike.net.sim?.state.tick ?? 0) >= k, sc.drop.atTick, { timeout: 600000, polling: 100 });

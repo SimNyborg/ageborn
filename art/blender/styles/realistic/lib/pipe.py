@@ -44,8 +44,8 @@ def _mode(mode, ctx):
         cy.use_adaptive_sampling = True
         cy.max_bounces = 4
         sc.view_settings.view_transform = "AgX"
-        sc.view_settings.look = "AgX - Medium High Contrast"
-        sc.view_settings.exposure = ctx.get("exposure", 0.35)
+        sc.view_settings.look = "AgX - Punchy"
+        sc.view_settings.exposure = ctx.get("exposure", 0.15)
         if ground:
             ground.hide_render = False
     else:
@@ -288,7 +288,7 @@ def lref_for(tmp, jobs):
         L = load_layers(tmp, c, i)
         sel = L["t"] > 0.95
         if sel.sum() > 20:
-            vals.append(np.percentile(L["lum"][sel], 90))
+            vals.append(np.percentile(L["lum"][sel], 98))
     return float(np.median(vals)) if vals else 0.8
 
 

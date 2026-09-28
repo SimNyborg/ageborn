@@ -988,6 +988,13 @@ export class BattleView {
     if (!PRESETS[preset].legendaryAuras) {
       for (const e of this.units.values()) this.dropAura(e);
     }
+    // base and turret upgrade moments follow Reduce motion and Lite (duck-typed `setMotion`)
+    for (const b of this.bases ?? []) withMotion(b.view, this.viewMotion());
+    for (const e of this.turrets?.values() ?? []) withMotion(e.view, this.viewMotion());
+  }
+
+  private viewMotion(): ViewMotion {
+    return { reduce: this.settings.reduceMotion, lite: this.preset === 'lite' };
   }
 
   // ------------------------------------------------------------------------------------------
@@ -1232,6 +1239,12 @@ export class BattleView {
         b.mountsLocal = b.view.mountPoints();
         return;
       }
+      case 'baseAscend':
+        (this.bases[a.side].view as Partial<UpgradeBaseView>).ascend?.(a.ms);
+        return;
+      case 'baseMount':
+        (this.bases[a.side].view as Partial<UpgradeBaseView>).mountBuilt?.(a.mount);
+        return;
       case 'backdropWipe':
         this.backdrop.wipe(a.side, a.age, a.ms);
         return;
@@ -1619,6 +1632,7 @@ export class BattleView {
     // Mirroring the root here as well flipped side 1 back and pushed side 0 half off screen.
     view.root.position.set(gateX(side), 0);
     this.layers.structures.addChild(view.root);
+    withMotion(view, this.viewMotion());
     const s = this.sim.state.sides[side];
     const crumble = crumbleStage(s.baseHp, s.baseMaxHp);
     if (crumble > 0) view.setCrumble(crumble);
@@ -1698,7 +1712,10 @@ export class BattleView {
           this.turrets.delete(key);
         }
         const e = this.turretEntry(a.side, a.mount, a.card);
-        e.view.play('build');
+        // the new turret grows out of the old one's light (A2.8 Modernise); plain build otherwise
+        const up = e.view as Partial<UpgradeTurretView>;
+        if (prev && prev.card !== a.card && up.modernisedIn) up.modernisedIn();
+        else e.view.play('build');
         return;
       }
       case 'fire': {
@@ -1727,6 +1744,7 @@ export class BattleView {
     view.root.position.set(p.x, p.y);
     view.root.scale.x = side === 1 ? -1 : 1;
     this.layers.structures.addChild(view.root);
+    withMotion(view, this.viewMotion());
     const e: TurretEntry = { side, mount, card, view, selling: false, outdated: false };
     this.turrets.set(key, e);
     this.mapper.setTurretCard(side, mount, card);
@@ -1795,4 +1813,21 @@ export class BattleView {
   get lastGameDt(): number {
     return this.frameGameDt;
   }
+}
+
+/** Optional motion hooks of the world views (WP4 atlas views; the art contract stays unchanged). */
+interface ViewMotion {
+  reduce: boolean;
+  lite: boolean;
+}
+interface UpgradeBaseView {
+  ascend(ms: number): void;
+  mountBuilt(mount: number): void;
+}
+interface UpgradeTurretView {
+  modernisedIn(): void;
+}
+
+function withMotion(view: object, m: ViewMotion): void {
+  (view as { setMotion?: (m: ViewMotion) => void }).setMotion?.(m);
 }

@@ -307,7 +307,7 @@ function CapsuleInfo(p: { onClose: () => void }) {
   );
 }
 
-export function CapsuleTray() {
+export function CapsuleTray(p: { sheet?: boolean } = {}) {
   const { save, content, t, services, locale } = useUi();
   const [info, setInfo] = useState(false);
   const s = save.value;
@@ -318,9 +318,8 @@ export function CapsuleTray() {
   const best = pending[0];
   return (
     <Panel
-      title={t('ui.home.capsules')}
-      icon={<CapsuleIcon tier={best?.tier ?? 'bronze'} size={26} />}
-      class="home-tray"
+      {...(p.sheet ? {} : { title: t('ui.home.capsules'), icon: <CapsuleIcon tier={best?.tier ?? 'bronze'} size={26} /> })}
+      class={`home-tray${p.sheet ? ' home-tray--sheet' : ''}`}
       testid="capsule-tray"
       labelledBy="home-tray-title"
       actions={<IconButton icon={<InfoIcon size={24} />} label={t('ui.info.title')} onClick={() => setInfo(true)} testid="odds-open" />}
@@ -353,6 +352,13 @@ export function CapsuleTray() {
           </button>
         ))}
       </div>
+      {pending.length === 0 && crates[0] ? (
+        <div class="home-tray__actions">
+          <Button variant="violet" size="md" testid="open-crate" icon={<CrateIcon size={22} />} onClick={() => services.openWardrobe(crates[0]!.id)}>
+            {t('ui.home.openCrate')}
+          </Button>
+        </div>
+      ) : null}
       {pending.length > 0 ? (
         <div class="home-tray__actions">
           <Button variant="gold" size="md" testid="open-one" onClick={() => best && services.openCapsule(best.id)}>
@@ -518,7 +524,7 @@ function CapsulesSheet(p: { onClose: () => void }) {
   const { t } = useUi();
   return (
     <Modal title={t('ui.nav.capsules')} onClose={p.onClose} size="md" testid="capsules-sheet" icon={<CapsuleIcon tier="silver" size={28} />}>
-      <CapsuleTray />
+      <CapsuleTray sheet />
     </Modal>
   );
 }

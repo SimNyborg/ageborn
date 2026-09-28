@@ -45,8 +45,8 @@ def reset(samples=40):
     cy.use_denoising = True
     cy.denoiser = "OPENIMAGEDENOISE"
     cy.max_bounces = 4
-    cy.diffuse_bounces = 2
-    cy.glossy_bounces = 2
+    cy.diffuse_bounces = 1
+    cy.glossy_bounces = 1
     cy.transmission_bounces = 0
     cy.volume_bounces = 0
     cy.transparent_max_bounces = 4
@@ -64,8 +64,8 @@ def reset(samples=40):
     sc.render.resolution_percentage = 100
     sc.render.fps = 24
     sc.view_settings.view_transform = "AgX"
-    sc.view_settings.look = "AgX - Medium High Contrast"
-    sc.view_settings.exposure = 0.35
+    sc.view_settings.look = "AgX - Punchy"
+    sc.view_settings.exposure = 0.15
     _world(sc)
     _lights(sc)
     _ground(sc)
@@ -91,16 +91,17 @@ def _world(sc):
     mid = el.new(0.52)
     mid.color = col("#c9c1b0")
     nt.links.new(ramp.outputs["Color"], bg.inputs["Color"])
-    bg.inputs["Strength"].default_value = 0.55
+    bg.inputs["Strength"].default_value = 0.38
     nt.links.new(bg.outputs[0], out.inputs[0])
     sc.world = w
 
 
-def _sun(name, from_dir, energy, color, angle_deg):
+def _sun(name, from_dir, energy, color, angle_deg, shadow=True):
     d = bpy.data.lights.new(name, "SUN")
     d.energy = energy
     d.color = color
     d.angle = math.radians(angle_deg)
+    d.use_shadow = shadow
     o = bpy.data.objects.new(name, d)
     bpy.context.scene.collection.objects.link(o)
     travel = -Vector(from_dir).normalized()
@@ -110,10 +111,10 @@ def _sun(name, from_dir, energy, color, angle_deg):
 
 def _lights(sc):
     # Key light from above and in front (no side component, so mirrored sprites match).
-    _sun("key", (0.0, -0.55, 1.0), 4.2, (1.0, 0.955, 0.9), 9.0)
+    _sun("key", (0.0, -0.6, 1.0), 5.6, (1.0, 0.95, 0.88), 7.0)
     # Two symmetric back rims: a cool edge on both silhouette sides and on top.
-    _sun("rimL", (-0.9, 1.0, 0.55), 2.6, (0.82, 0.9, 1.0), 4.0)
-    _sun("rimR", (0.9, 1.0, 0.55), 2.6, (0.82, 0.9, 1.0), 4.0)
+    _sun("rimL", (-0.9, 1.0, 0.45), 3.4, (0.82, 0.9, 1.0), 4.0, shadow=False)
+    _sun("rimR", (0.9, 1.0, 0.45), 3.4, (0.82, 0.9, 1.0), 4.0, shadow=False)
 
 
 def _ground(sc):

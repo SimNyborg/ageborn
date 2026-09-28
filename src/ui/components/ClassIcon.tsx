@@ -307,7 +307,7 @@ export function CardTipBody(p: { name: string; cls: CardClass; legendary?: boole
   return (
     <>
       <div class="ui-card-tip__name">{p.name}</div>
-      <ClassChip id={p.cls} legendary={p.legendary} size="sm" />
+      <ClassChip id={p.cls} legendary={p.legendary} />
       <CounterRows strong={p.strong} weak={p.weak} size={20} />
     </>
   );

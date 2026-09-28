@@ -11,7 +11,7 @@ import type { CardId, Foil } from '@/contracts';
 import { useEffect, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { CardArt, CardTile, type CardTileData } from '../../components/CardTile';
-import { ClassChip, ClassIcon, CounterRows } from '../../components/ClassIcon';
+import { CLASS_NAME_KEY, ClassChip, ClassIcon, CounterRows } from '../../components/ClassIcon';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { formatDec, formatInt, formatSeconds } from '../../components/format';
 import { AgeGlyph, AmberIcon, CheckIcon, DustIcon, HammerIcon, LockIcon, RARITY_COLOR, RoadIcon } from '../../components/icons';
@@ -171,7 +171,9 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
           <div class="cd-chips">
             {tile.cls ? <ClassChip id={tile.cls} legendary={tile.legendary} testid="card-class" /> : null}
             <Pill icon={<AgeGlyph age={def.age} size={18} />}>{t(ageNameKey(def.age))}</Pill>
-            {def.kind === 'unit' ? <Pill tone="blue">{t(roleNameKey(def.role))}</Pill> : null}
+            {def.kind === 'unit' && !(tile.cls && t(roleNameKey(def.role)) === t(CLASS_NAME_KEY[tile.cls])) ? (
+              <Pill tone="blue">{t(roleNameKey(def.role))}</Pill>
+            ) : null}
             {def.kind === 'turret' ? <Pill tone="blue">{t('ui.warplan.slot.turret')}</Pill> : null}
             {def.kind === 'power' ? <Pill tone="gold">{t('ui.warplan.slot.power')}</Pill> : null}
           </div>

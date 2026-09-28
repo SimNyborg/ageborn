@@ -113,12 +113,34 @@ describe('Home', () => {
   });
 
   it('locked nav items explain themselves instead of opening', () => {
-    m = mount({ state: 'new' });
+    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 0 } });
     m.click('[data-testid="nav-warPlan"]');
     expect(m.router.current.value.id).toBe('home');
-    expect(text(m.q('[data-testid="toasts"]')!)).toBe('Unlocks after 3 matches');
+    expect(text(m.q('[data-testid="toasts"]')!)).toBe('Unlocks after the training match');
     m.click('[data-testid="nav-collection"]');
     expect(m.router.current.value.id).toBe('collection');
+  });
+
+  it('shows every entry after the training match, with one first-time pointer at a time (owner feedback 2026-09-28)', () => {
+    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 1, flags: {} } });
+    for (const id of ['warPlan', 'collection', 'capsules', 'customize', 'trophyRoad', 'conquest']) expect(m.q(`[data-testid="nav-${id}"]`)).not.toBeNull();
+    expect(m.qa('[data-testid^="pointer-"]').map((el) => el.getAttribute('data-testid'))).toEqual(['pointer-warPlan']);
+    expect(text(m.q('[data-testid="pointer-warPlan"]')!).split(/\s+/).length).toBeLessThanOrEqual(8);
+    m.click('[data-testid="nav-warPlan"]');
+    expect(m.router.current.value.id).toBe('warPlan');
+    expect(m.save.value.flags['ui-pointer.warPlan']).toBe(true);
+    flush(() => m!.router.back());
+    expect(m.qa('[data-testid^="pointer-"]').map((el) => el.getAttribute('data-testid'))).toEqual(['pointer-collection']);
+    m.click('[data-testid="nav-customize"]');
+    expect(m.router.current.value.id).toBe('customize');
+  });
+
+  it('while match 2 is next, Battle suggests Pip and starts the onboarding match (owner feedback 2026-09-28)', () => {
+    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} } } });
+    expect(text(m.q('[data-testid="battle-suggested"]')!)).toContain('Pip');
+    m.click('[data-testid="battle-button"]');
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'tutorial', match: 2 });
+    expect(m.router.current.value.id).toBe('vs');
   });
 
   it('claims a finished quest and rerolls another', () => {
@@ -192,26 +214,41 @@ describe('Home details', () => {
 
 describe('Mode select', () => {
   it('offers only the arena formats and locks Conquest and Skirmish for a new player', () => {
-    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'modeSelect' }] });
+    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 0 }, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
     expect(m.q('[data-testid="ladder-format"]')).toBeNull();
     expect(m.q('[data-testid="conquest-open"]')).toBeNull();
     expect(m.q('[data-testid="skirmish-open"]')).toBeNull();
     expect(text(m.q('[data-testid="mode-conquest"]')!)).toContain('Unlocks in Arena 3');
   });
 
-  it('sets up a Skirmish with Echo, tier, format, speed and standard levels', () => {
+  it('sets up a Skirmish with Echo, difficulty, format, speed and standard levels', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'modeSelect' }] });
     m.click('[data-testid="skirmish-open"]');
     m.click('[data-testid="skirmish-general-echo"]');
-    const tier = m.q('[data-testid="skirmish-tier"] input')!;
-    flush(() => input(tier, '7'));
+    const expert = m.qa('[data-testid="skirmish-difficulty"] [role="radio"]').find((el) => text(el).startsWith('Expert'))!;
+    flush(() => expert.click());
     m.click('[data-testid="skirmish-standard"]');
     m.click('[data-testid="skirmish-start"]');
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({
       mode: 'skirmish',
-      options: { generalId: 'echo', tier: 7, format: 'short', standardLevels: true },
+      options: { generalId: 'echo', tier: 8, format: 'short', standardLevels: true },
       speed: 1,
     });
+    // The pick is remembered for the next visit (Quick Battle and Skirmish share it).
+    expect(m.save.value.flags['ui-difficulty.expert']).toBe(true);
+  });
+
+  it('Quick Battle: five difficulties with their AI tier, Normal by default (owner feedback 2026-09-28)', () => {
+    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 1, flags: {} }, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
+    const radios = m.qa('[data-testid="quick-difficulty"] [role="radio"]');
+    expect(radios.map((el) => text(el).split(/\s|Tier/)[0])).toEqual(['Easy', 'Normal', 'Hard', 'Expert', 'Legendary']);
+    expect(text(m.q('[data-testid="quick-difficulty"] [aria-checked="true"]')!)).toContain('Normal');
+    expect(text(m.q('[data-testid="quick-opponent"]')!)).toContain('Tier IV');
+    const legendary = radios.find((el) => text(el).startsWith('Legendary'))!;
+    flush(() => legendary.click());
+    expect(text(m.q('[data-testid="quick-opponent"]')!)).toContain('Tier X');
+    m.click('[data-testid="quick-start"]');
+    expect(calls('prepareMatch')[0]!.args[0]).toMatchObject({ mode: 'skirmish', options: { tier: 10, format: 'short', standardLevels: false } });
   });
 
   it('notes the ages that still wait for their Anti-armor card (A3)', () => {

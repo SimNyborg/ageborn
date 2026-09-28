@@ -18,7 +18,7 @@ import css from './capsule.module.css';
 import { CapsuleStage } from './capsuleStage';
 import { OddsPanel } from './OddsPanel';
 import { RARITY_COLORS, cssHex } from './palette';
-import { planOpenAll, planWardrobeShow, type Cue, type ShowPlan, type ShowStep } from './plan';
+import { planOpenAll, planWardrobeShow, SHOW_TIMING, type Cue, type ShowPlan, type ShowStep } from './plan';
 import { ShowRunner, type RunnerState } from './runner';
 import { SummaryPanel, type SummaryActions } from './summary';
 import { pityLines, wardrobePityLines, type PityLine } from './summaryModel';
@@ -276,6 +276,9 @@ function ShowScreen(p: ShowScreenProps) {
   const inSummary = state?.kind === 'summary';
   const opened = state?.opened ?? false;
   const amber = p.plan.summary.amber;
+  // The Amber pours once the capsule has actually burst (after its build), not when the burst step starts.
+  const burstStep = p.plan.steps.find((s) => s.kind === 'burst');
+  const pourDelay = 650 + (burstStep?.kind === 'burst' ? burstStep.buildMs + SHOW_TIMING.burstHoldMs : 0);
   const dust = p.plan.summary.dust;
   const pity = inSummary ? p.pityAfter : p.pityBefore;
   const rootRef = useRef<HTMLDivElement>(null);
@@ -317,7 +320,7 @@ function ShowScreen(p: ShowScreenProps) {
     >
       <div class={css.top}>
         {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={showOdds} /> : <span />}
-        {opened && !inSummary && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
+        {opened && !inSummary && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} delayMs={pourDelay} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
       {p.kindLabel && !inSummary ? (
         <div class={`${css.kind} ${opened ? css.kindOpened : ''}`} data-testid="capsule-kind">
@@ -427,20 +430,24 @@ function PityPanel(p: { lines: PityLine[]; t: (k: string, o?: Record<string, str
 }
 
 /** Counts up once the capsule opens ("Amber pours into the counter", A10 step 4). */
-function Counter(p: { value: number; dust: boolean; run: boolean; label: string }) {
+function Counter(p: { value: number; dust: boolean; run: boolean; delayMs: number; label: string }) {
   const [shown, setShown] = useState(0);
   const [pulse, setPulse] = useState(false);
+  const [live, setLive] = useState(false);
   useEffect(() => {
     if (!p.run) {
       setShown(0);
+      setLive(false);
       return;
     }
     let raf = 0;
-    const start = performance.now() + 650;
+    const start = performance.now() + p.delayMs;
     const dur = 700;
     const step = (now: number) => {
       const u = Math.max(0, Math.min(1, (now - start) / dur));
       const eased = 1 - Math.pow(1 - u, 3);
+      // The counter pops in as the first drops arrive.
+      if (now >= start - 250) setLive(true);
       setShown(Math.round(p.value * eased));
       setPulse(u > 0 && u < 1);
       if (u < 1) raf = requestAnimationFrame(step);
@@ -449,7 +456,7 @@ function Counter(p: { value: number; dust: boolean; run: boolean; label: string 
     return () => cancelAnimationFrame(raf);
   }, [p.run, p.value]);
   return (
-    <div class={`${css.amber} ${pulse ? css.amberPulse : ''}`} title={p.label} data-testid="capsule-amber">
+    <div class={`${css.amber} ${pulse ? css.amberPulse : ''} ${live ? css.amberLive : css.amberWait}`} title={p.label} data-testid="capsule-amber">
       <span class={p.dust ? css.dustGem : css.amberGem} />+{shown}
     </div>
   );

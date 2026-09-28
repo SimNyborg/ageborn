@@ -141,7 +141,7 @@ def stance(breath=0.0, shift=0.0):
         root=(0.0, -1.4 - 0.3 * breath), root_dy=shift, hips=4, spine=3 + 1.2 * breath,
         chest=2 - 0.8 * breath, neck=-4, head=-3 - 0.8 * breath,
         footF=(9.0, G, 0.0), footB=(-10.0, G, 0.0),
-        armF=(28 + 1.5 * breath, 58 - 2 * breath, -18), armB=(-6 - 2 * breath, 16, 4, -4),
+        absF=(32 + 1.5 * breath, 84 - 2 * breath, 70), armB=(-6 - 2 * breath, 16, 4, -4),
     )
 
 
@@ -152,7 +152,8 @@ def pose(ctx, clip, t):
         a = 2 * math.pi * t / 8.0
         P_ = stance(breath=math.sin(a), shift=0.9 * math.sin(a + 0.8))
         P_["hips"] += 1.2 * math.sin(a + 0.8)
-        P_["armF"] = (P_["armF"][0] + 2.5 * math.sin(a - 0.6), P_["armF"][1], P_["armF"][2])
+        P_["absF"] = (P_["absF"][0] + 2.5 * math.sin(a - 0.6), P_["absF"][1] + 3 * math.sin(a - 1.0),
+                      P_["absF"][2] + 3 * math.sin(a - 1.4))
     elif clip == "walk":
         P_ = walk(t / 12.0)
     elif clip == "attack":
@@ -185,22 +186,20 @@ def _atk_keys():
     ready = stance()
     wind1 = dict(root=(-2.5, -1.0), hips=-4, spine=-7, chest=-8, neck=2, head=4,
                  footF=(10.0, G, 6.0), footB=(-11.0, G, 0.0),
-                 armF=(150, 55, -28, 10), armB=(38, 30, 0, -8))
-    wind2 = dict(root=(-4.0, -0.2), hips=-8, spine=-12, chest=-12, neck=4, head=6,
+                 absF=(150, 200, 150, 10), armB=(38, 30, 0, -8))
+    wind2 = dict(root=(-4.0, -0.4), hips=-8, spine=-12, chest=-10, neck=4, head=6,
                  footF=(10.5, G + 1.5, 16.0), footB=(-11.5, G, 0.0),
-                 armF=(176, 64, -30, 12), armB=(52, 34, 0, -10))
-    smash = dict(root=(6.5, -7.5), hips=22, spine=18, chest=12, neck=-8, head=-6,
+                 absF=(168, 228, 196, 12), armB=(55, 34, 0, -10))
+    smash = dict(root=(5.0, -6.0), hips=16, spine=12, chest=6, neck=-6, head=-5,
                  footF=(15.0, G, 0.0), footB=(-11.0, G + 0.5, -18.0),
-                 armF=(70, 10, -30, 6), armB=(-30, 20, 4, -4))
-    impact = dict(root=(7.5, -9.0), hips=26, spine=22, chest=14, neck=-10, head=-8,
-                  footF=(15.5, G, 0.0), footB=(-11.0, G + 0.8, -22.0),
-                  armF=(58, 6, -36, 4), armB=(-36, 22, 6, -4))
-    rebound = dict(root=(6.5, -7.8), hips=22, spine=18, chest=12, neck=-7, head=-6,
-                   footF=(15.5, G, 0.0), footB=(-11.0, G + 0.6, -20.0),
-                   armF=(68, 12, -26, 4), armB=(-30, 22, 6, -4))
-    rec = dict(root=(3.0, -3.5), hips=12, spine=9, chest=6, neck=-6, head=-5,
+                 absF=(120, 118, 70, 6), armB=(-30, 20, 4, -4))
+    impact = dict(root=(7.5, -9.5), hips=20, spine=14, chest=8, neck=-10, head=-8,
+                  footF=(16.0, G, 0.0), footB=(-11.0, G + 0.8, -22.0),
+                  absF=(74, 80, -48, 4), armB=(-36, 22, 6, -4))
+    rebound = dict(impact, root=(7.0, -8.6), hips=18, spine=12, absF=(78, 86, -36, 4))
+    rec = dict(root=(3.0, -3.5), hips=10, spine=7, chest=4, neck=-6, head=-5,
                footF=(12.0, G, 0.0), footB=(-10.5, G, -4.0),
-               armF=(40, 40, -22, 2), armB=(-14, 18, 4, -4))
+               absF=(46, 84, 30, 2), armB=(-14, 18, 4, -4))
     return [(0, ready), (1.2, wind1), (3.0, wind2), (3.6, wind2), (4.4, smash), (5.0, impact),
             (6.0, impact), (7.0, rebound), (9.0, rec), (13.0, ready)]
 
@@ -214,8 +213,15 @@ def attack(t):
     return B.keyed(ATK, t)
 
 
-def hit(t):
+def relaxed():
     base = stance()
+    base.pop("absF")
+    base["armF"] = (23, 52, -14)
+    return base
+
+
+def hit(t):
+    base = relaxed()
     knock = dict(root=(-5.0, -2.2), hips=-10, spine=-10, chest=-8, neck=8, head=14,
                  footF=(7.0, G + 1.0, 10.0), footB=(-12.5, G, 0.0),
                  armF=(10, 70, -10), armB=(-30, 30, 10, -14))
@@ -225,7 +231,7 @@ def hit(t):
 
 def die(t):
     pz = B.PELV * H
-    base = stance()
+    base = relaxed()
     base["pel"] = (0.0, pz + base.pop("root")[1])
     k1 = dict(pel=(-4.0, pz - 2.0), hips=-10, spine=-12, chest=-8, neck=10, head=16,
               footF=(7.0, G + 1.0, 10.0), footB=(-12.5, G, 0.0),
@@ -238,12 +244,12 @@ def die(t):
               armF=(120, 30, 0, 24), armB=(110, 30, 0, -24))
     land = dict(pel=(-20.0, 6.0), root_r=86, hips=-4, spine=0, chest=0, neck=0, head=4,
                 footF=(1.0, G + 5.0, 60.0), footB=(-4.0, G + 3.0, 50.0),
-                armF=(168, 14, 10, 30), armB=(158, 20, 0, -30))
+                armF=(168, 14, -80, 30), armB=(158, 20, 0, -30))
     bounce = dict(land, pel=(-20.5, 7.6), root_r=80, neck=-6, head=-10,
-                  armF=(160, 20, 10, 34), footF=(1.0, G + 7.0, 60.0))
+                  armF=(160, 20, -70, 34), footF=(1.0, G + 7.0, 60.0))
     rest = dict(land, pel=(-20.8, 5.6), root_r=87, neck=2, head=6,
                 footF=(4.0, G + 3.0, 70.0), footB=(0.0, G + 2.0, 60.0),
-                armF=(172, 10, 10, 30))
+                armF=(172, 10, -85, 30))
     keys = [(0, base), (1, k1), (2.5, k2), (4.0, k3), (5.0, land), (5.8, bounce), (7, rest),
             (11, rest)]
     return B.keyed(keys, t)
@@ -262,9 +268,9 @@ def clips():
         P.Clip("walk", range(12), [80] * 12),
         P.Clip("attack", [0, 1, 2, 3, 3.6, 4.4, 5, 5.8, 7, 8, 9, 10, 11.5, 13],
                [70, 70, 80, 150, 40, 40, 110, 90, 70, 70, 70, 70, 80, 90], loop=False,
-               blur={5: 0.6, 4: 0.5}, impact=6),
+               blur={4: 0.18, 5: 0.15}, impact=6),
         P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
         P.Clip("die", [0, 1, 2, 3, 4, 5, 5.8, 6.6, 7.4, 8.4, 9.6, 11],
                [70, 70, 70, 70, 70, 80, 80, 90, 100, 110, 120, 200], loop=False,
-               blur={3: 0.6, 4: 0.6}),
+               blur={3: 0.2, 4: 0.2}),
     ]

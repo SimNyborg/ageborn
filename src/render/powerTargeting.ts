@@ -220,7 +220,7 @@ export class ZoneOverlay {
     for (let i = 0; i < bands; i++) {
       const y0 = -(CURTAIN_LU * s * i) / bands;
       const h = (CURTAIN_LU * s) / bands;
-      const a = (z.valid ? 0.16 : 0.12) * Math.pow(1 - i / bands, 1.6) * (0.85 + 0.15 * breathe);
+      const a = (z.valid ? 0.24 : 0.16) * Math.pow(1 - i / bands, 1.4) * (0.85 + 0.15 * breathe);
       g.rect(x - half, y0 - h, half * 2, h).fill({ color, alpha: a });
     }
     // Ground disc: soft outer glow, fill, bright rim, inner ring.

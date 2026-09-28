@@ -184,6 +184,8 @@ export function actingSide(ev: SimEvent, unit: (id: number) => UnitInfo | undefi
 
 /** The short freeze before your evolve's camera push (A12 evolve moment, audit #5). */
 export const EVOLVE_FREEZE_MS = 220;
+/** The evolve camera push holds this long past `ageUp`: the beat and the new base assembling. */
+export const EVOLVE_PUSH_AFTER_MS = 1400;
 /** The new age's music takes over this fast on the fanfare (docs/requests/quality-audio-evolve.md). */
 export const EVOLVE_CUE_FADE_MS = 150;
 /** Length passed to an effect that loops on a unit for as long as it lives (it stops when the unit dies). */
@@ -502,20 +504,27 @@ export class EventMapper {
       case 'queueConverted':
         return;
       case 'mountBought':
+        out.push({ a: 'baseMount', side: ev.side, mount: ev.mount });
         this.rule('mount.buy', { at: { k: 'mount', side: ev.side, mount: ev.mount } }, out);
         return;
-      case 'treasuryUp':
+      case 'treasuryUp': {
         out.push({ a: 'baseTreasury', side: ev.side, level: ev.level });
         this.rule('treasury.up', { at: { k: 'base', side: ev.side, part: 'center' } }, out);
+        // "+1.5/s": the income the new level adds, popped over your own base
+        const perSec = this.content.economy.treasuryMilliGoldPerSecPerLevel / 1000;
+        if (ev.side === this.mySide && perSec > 0) out.push({ a: 'number', kind: 'income', value: perSec, at: { k: 'base', side: ev.side, part: 'center' }, important: true });
         return;
+      }
       case 'ascendStart': {
         const own = ev.side === this.mySide;
         if (own) {
           // A12 evolve moment: a short freeze, then the camera pushes in on your base for the rebuild.
           const ms = this.content.economy.ascendMs;
           out.push({ a: 'freeze', ms: EVOLVE_FREEZE_MS, exempt: false });
-          out.push({ a: 'camera', at: { k: 'base', side: ev.side, part: 'center' }, zoom: 1.3, inMs: 450, holdMs: Math.max(600, ms + 700), outMs: 800 });
+          // held through the beat and the assembly of the new base (baseMorph, ~1.1 s after ageUp)
+          out.push({ a: 'camera', at: { k: 'base', side: ev.side, part: 'center' }, zoom: 1.3, inMs: 450, holdMs: Math.max(600, ms + EVOLVE_PUSH_AFTER_MS), outMs: 800 });
         }
+        out.push({ a: 'baseAscend', side: ev.side, ms: this.content.economy.ascendMs });
         out.push({ a: 'fx', effectId: 'fx.evolve_pillar', at: { k: 'base', side: ev.side, part: 'center' }, count: 1, priority: 4, opts: { phase: 0, ms: this.content.economy.ascendMs, small: own ? 0 : 1 } });
         const key = own ? 'evolve.start.own' : 'evolve.start.enemy';
         this.rule(key, { at: { k: 'base', side: ev.side, part: 'center' } }, out);

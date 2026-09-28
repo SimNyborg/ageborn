@@ -89,6 +89,9 @@ export const CASES: Case[] = [
   { name: 'profile', screen: 'profile', routes: () => [{ id: 'home' }, { id: 'profile' }] },
   { name: 'settings', screen: 'settings', routes: () => [{ id: 'home' }, { id: 'settings' }] },
   { name: 'conquest', screen: 'conquest', routes: () => [{ id: 'home' }, { id: 'conquest' }] },
+  { name: 'customize', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize' }] },
+  { name: 'customize-look', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'look' }] },
+  { name: 'customize-emotes', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'emotes' }] },
 ];
 
 
@@ -99,7 +102,7 @@ afterEach(() => {
 });
 
 describe('every WP9 screen renders in every fixture state', () => {
-  it('covers all 12 WP9 screens', () => {
+  it('covers all 13 WP9 screens', () => {
     const covered = new Set(CASES.map((c) => c.screen));
     expect([...covered].sort()).toEqual(Object.keys(SCREEN_COMPONENTS).sort());
   });

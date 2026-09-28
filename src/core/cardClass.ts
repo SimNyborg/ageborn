@@ -104,7 +104,7 @@ export const COUNTER_LEGEND: readonly { a: CardClass; b: CardClass; note: string
 export const CLASS_COLOR: Readonly<Record<ClassGlyphId, { main: string; dark: string }>> = {
   infantry: { main: '#E69F00', dark: '#8A5A00' },
   ranged: { main: '#56B4E9', dark: '#1F6E9C' },
-  heavy: { main: '#8D9AAE', dark: '#4A5568' },
+  heavy: { main: '#7E8FAE', dark: '#3E4A63' },
   antiArmor: { main: '#D55E00', dark: '#7F3500' },
   siege: { main: '#CC79A7', dark: '#7D3D62' },
   support: { main: '#009E73', dark: '#005C43' },

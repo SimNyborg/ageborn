@@ -70,9 +70,15 @@ export const POWER_HINT_MS = 7500;
 /** The hint follows the ready burst by this long. */
 const POWER_HINT_DELAY_MS = 700;
 
-/** True while the tutorial (A8 beats, adaptive hints) shows a bubble: the hint does not talk over it. */
-function tutorialBubbleShown(from: Element | null): boolean {
-  return (from?.ownerDocument ?? globalThis.document)?.querySelector('[data-testid="tutorial-bubble"]') != null;
+/** Checks for a free moment this many times (every `POWER_HINT_DELAY_MS`) before giving up. */
+const POWER_HINT_TRIES = 12;
+
+/** True while a tutorial bubble (A8 beat or adaptive hint) points at the power button. */
+function tutorialOnPower(from: Element | null): boolean {
+  const doc = from?.ownerDocument ?? globalThis.document;
+  const bubble = doc?.querySelector<HTMLElement>('[data-testid="tutorial-bubble"]');
+  const id = bubble?.dataset['prompt'] ?? '';
+  return id === 'hint.powerReady' || id === 'm1.arrowStorm' || /power/i.test(id);
 }
 
 function hintSeen(): boolean {
@@ -186,7 +192,7 @@ export function PowerButton(p: { c: HudCtx }) {
     view.previewPower(g.p, g.valid);
   };
 
-  const apply = (e: PowerAimEffect, prev: PowerAimState): void => {
+  const apply = (e: PowerAimEffect): void => {
     const { c: cc, ready: isReady } = live.current;
     switch (e.k) {
       case 'none':
@@ -205,10 +211,9 @@ export function PowerButton(p: { c: HudCtx }) {
         return;
       }
       case 'fire': {
-        // The preview may have moved under a still finger while the camera edge-scrolled.
-        const fromView = prev.s === 'dragging' || prev.s === 'aiming' ? (cc.view?.previewedP?.() ?? null) : null;
-        const at = e.p === undefined ? undefined : (fromView ?? e.p);
-        cc.act(powerIntent(cc.m, cc.side, at));
+        // `p` was resolved at the release point against the current camera, so a drag that edge-scrolled
+        // under a still finger lands where the ghost is.
+        cc.act(powerIntent(cc.m, cc.side, e.p));
         if (isReady) {
           rememberHint();
           cc.audio?.play('ui_confirm');
@@ -229,7 +234,7 @@ export function PowerButton(p: { c: HudCtx }) {
     setSt(r.state);
     if (r.state.s !== 'dragging') setPos(null);
     syncGhost(r.state);
-    apply(r.effect, prev);
+    apply(r.effect);
   };
 
   const local = (clientX: number, clientY: number): Pos => {
@@ -261,16 +266,23 @@ export function PowerButton(p: { c: HudCtx }) {
   useEffect(() => {
     if (!ready || !hintsOn || hintSeen()) return undefined;
     let hide: ReturnType<typeof setTimeout> | null = null;
-    // After the ready burst; a tutorial bubble on screen has the floor (it would sit on the same spot),
-    // so the hint waits for a later match instead.
-    const show = setTimeout(() => {
-      if (stRef.current.s !== 'idle' || tutorialBubbleShown(btn.current)) return;
+    let tries = 0;
+    // After the ready burst. A tutorial bubble about the power has the floor (it sits on the same
+    // spot), so the hint waits for it to go, and gives up for this match after a while.
+    const poll = setInterval(() => {
+      tries += 1;
+      if (tries > POWER_HINT_TRIES || stRef.current.s !== 'idle') {
+        clearInterval(poll);
+        return;
+      }
+      if (tutorialOnPower(btn.current)) return;
+      clearInterval(poll);
       rememberHint();
       setHint(true);
       hide = setTimeout(() => setHint(false), POWER_HINT_MS);
     }, POWER_HINT_DELAY_MS);
     return () => {
-      clearTimeout(show);
+      clearInterval(poll);
       if (hide) clearTimeout(hide);
     };
   }, [ready, hintsOn]);

@@ -133,8 +133,8 @@ describe('War Plan edits (A3)', () => {
 });
 
 describe('progress (A3, A6.3, A6.7, A6.10)', () => {
-  it('unlocks the War Plan and Skirmish after match 3, the format picker in Arena 2, Conquest in Arena 3', () => {
-    const n = newPlayerSave(content);
+  it('unlocks the War Plan and Skirmish after the training match, the format picker in Arena 2, Conquest in Arena 3', () => {
+    const n = { ...newPlayerSave(content), matchesPlayed: 0 };
     expect(unlocks(n, content)).toMatchObject({
       warPlan: false,
       skirmish: false,
@@ -142,7 +142,7 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
       formatPicker: false,
       ladderFormats: ['short'],
     });
-    expect(unlocks({ ...n, matchesPlayed: 3 }, content)).toMatchObject({ warPlan: true, skirmish: true });
+    expect(unlocks({ ...n, matchesPlayed: 1 }, content)).toMatchObject({ warPlan: true, skirmish: true });
     expect(unlocks({ ...n, arenaIndex: 1 }, content)).toMatchObject({
       formatPicker: true,
       conquest: false,

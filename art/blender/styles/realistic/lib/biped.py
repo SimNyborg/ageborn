@@ -207,6 +207,15 @@ class Biped:
                 rig.set("upperarm_" + s, r=up - f["rc"], rz=ab)
                 rig.set("forearm_" + s, r=lo - up)
                 rig.set("hand_" + s, r=math.radians(wa) - lo)
+            elif "abs" + s in P:
+                # absolute angles: upper arm and forearm from straight down, hand (held-prop
+                # axis) from +X, all CCW; converted to local rotations
+                a = P["abs" + s]
+                ab = math.radians(a[3]) if len(a) > 3 else 0.0
+                ua, fa, ha = (math.radians(x) for x in a[:3])
+                rig.set("upperarm_" + s, r=ua - f["rc"], rz=ab)
+                rig.set("forearm_" + s, r=fa - ua)
+                rig.set("hand_" + s, r=ha - fa)
             elif "arm" + s in P:
                 a = P["arm" + s]
                 ab = math.radians(a[3]) if len(a) > 3 else 0.0

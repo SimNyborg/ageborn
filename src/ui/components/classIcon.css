@@ -4,7 +4,7 @@
 :root {
   --cls-infantry: #e69f00;
   --cls-ranged: #56b4e9;
-  --cls-heavy: #8d9aae;
+  --cls-heavy: #7e8fae;
   --cls-antiArmor: #d55e00;
   --cls-siege: #cc79a7;
   --cls-support: #009e73;
@@ -23,7 +23,7 @@
   border: 2px solid #1b1330;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.55) 0 18%, transparent 19%),
+    radial-gradient(ellipse 40% 22% at 50% 14%, rgba(255, 255, 255, 0.5), transparent 100%),
     linear-gradient(170deg, color-mix(in srgb, var(--cls-main) 78%, #fff) 0%, var(--cls-main) 48%, var(--cls-dark) 100%);
   box-shadow:
     0 2px 0 #1b1330,
@@ -122,9 +122,12 @@
 .ui-card.is-button:hover .ui-card__class {
   transform: scale(1.12) rotate(-6deg);
 }
-.ui-card__crown {
-  margin-left: -6px;
-  margin-bottom: 10px;
+.ui-card__class .ui-card__crown {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  translate: -50% -72%;
+  border-width: 1.5px;
 }
 .ui-card.is-locked .ui-card__class {
   filter: grayscale(0.4) brightness(0.85);
@@ -141,6 +144,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.ui-card--sm .ui-card__classname {
+  font-size: 10px;
+  letter-spacing: 0;
 }
 .ui-card--lg .ui-card__classname {
   font-size: 13px;
@@ -168,6 +175,9 @@
 }
 .ui-card-tip.is-below {
   transform-origin: 50% 0;
+}
+.ui-card-tip .ui-class-chip {
+  justify-self: start;
 }
 .ui-card-tip__name {
   font-size: 16px;

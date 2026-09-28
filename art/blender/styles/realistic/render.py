@@ -23,7 +23,7 @@ def main():
     ap.add_argument("slug")
     ap.add_argument("frames", nargs="*")
     ap.add_argument("--out", default=OUT)
-    ap.add_argument("--samples", type=int, default=40)
+    ap.add_argument("--samples", type=int, default=24)
     ap.add_argument("--clips", default=None)
     a = ap.parse_args()
     unit = importlib.import_module(a.slug)
