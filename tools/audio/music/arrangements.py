@@ -89,6 +89,8 @@ class Arrangement:
     target_lufs: float = -16.0
     tail_s: float = 3.0
     air_db: float = 1.0  # master high shelf at 9 kHz (only acts where there is content up there)
+    presence_db: float = 0.0  # master bell at 3.5 kHz (Q 0.7)
+    low_db: float = 0.0  # master low shelf at 110 Hz
     ceiling_db: float = -1.5  # limiter ceiling (stems lower: low-bitrate Opus overshoots on transients)
     extras: list = field(default_factory=list)  # numpy-made parts: callables (seconds_per_pass, passes) -> stereo array
 
@@ -267,10 +269,10 @@ def stone(key: int = 0) -> Arrangement:
         Part(strings, rel=-8, pan=0.0, send=0.25, hp=150, eq=PAD_EQ),
         Part(bass, rel=-5, pan=0.0, send=0.08, hp=55, eq=[(250, -2.0, 1.0), (900, 2.5, 1.0)], duck=((0.0, 2.0), 0.55)),
         Part(marimba, rel=-8, pan=-0.35, send=0.18, hp=180),
-        Part(taiko, rel=-2, pan=0.0, send=0.22, hp=60, eq=[(400, -3.0, 1.2), (2000, 3.0, 1.0)], swing_ms=3),
-        Part(hand, rel=-6, pan=0.25, send=0.15, hp=120, swing_ms=3),
+        Part(taiko, rel=-2.5, pan=0.0, send=0.22, hp=75, eq=[(400, -3.0, 1.2), (2000, 3.5, 1.0)], swing_ms=3),
+        Part(hand, rel=-5, pan=0.25, send=0.15, hp=150, eq=[(5000, 3.0, 0.8)], swing_ms=3),
     ]
-    return Arrangement("music.stone", BPM, LOOP_BARS, parts, reverb_s=2.2, reverb_damp=7000, reverb_wet=0.22, air_db=2.5)
+    return Arrangement("music.stone", BPM, LOOP_BARS, parts, reverb_s=2.2, reverb_damp=7000, reverb_wet=0.22, air_db=3.0, presence_db=3.0, low_db=-3.0)
 
 
 # ------------------------------------------------------------------------------------------------

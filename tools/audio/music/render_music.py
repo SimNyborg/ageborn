@@ -213,6 +213,10 @@ def master(mix: np.ndarray, a: Arrangement, lo: int, hi: int) -> np.ndarray:
     y = dsp.hp(mix, 30, 2)
     y = dsp.peq(y, 240, -1.5, 0.8)  # clear the low-mid mud
     # No presence cut: the parts carry their own EQ, and the music must stay clear on small speakers.
+    if a.presence_db:
+        y = dsp.peq(y, 3500, a.presence_db, 0.7)  # clarity on small speakers
+    if a.low_db:
+        y = dsp.shelf(y, 110, a.low_db, high=False)  # lighter sub where drums pile up below 100 Hz
     y = dsp.shelf(y, 9000, a.air_db, high=True)  # a little air
     # Pre-gain to a known level, then gentle glue compression.
     l0 = loud.integrated_lufs(y[lo:hi], SR)
