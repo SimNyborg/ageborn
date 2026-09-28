@@ -5,12 +5,16 @@ import { content } from '@/content';
 import { createSim } from '@/sim';
 import { devSpawn, stepN } from '@/sim/debug';
 import { matchConfig, sideConfig } from '@/ai/test/helpers';
+import { LANE_MLU } from '@/core';
 import { WALL_CARD, padClear, placeWall, progressFor, withWalls } from '../walls';
 
 function sim(): Sim {
   const c = withWalls(content);
   return createSim({ ...matchConfig({ seed: 7, format: 'full' }), content: c, sides: [sideConfig(c), sideConfig(c)] });
 }
+
+/** Lane length in lu (A17.2: the long lane); side 1 spawns are measured from its own base. */
+const LANE_LU = LANE_MLU / 1000;
 
 describe('wall prototype (A16.14)', () => {
   it('adds an inert, parked, hidden palisade copied from Tuskback', () => {
@@ -36,7 +40,7 @@ describe('wall prototype (A16.14)', () => {
   it('an enemy alone stops at the wall and chips it down', () => {
     const s = sim();
     const wall = placeWall(s, 0, 360);
-    const foe = devSpawn(s, 1, 'bonker', { p: 1200 - 500 });
+    const foe = devSpawn(s, 1, 'bonker', { p: LANE_LU - 500 });
     stepN(s, 20 * 6);
     const foeNow = s.state.units.find((u) => u.id === foe.id);
     const wallNow = s.state.units.find((u) => u.id === wall.id);
@@ -50,7 +54,7 @@ describe('wall prototype (A16.14)', () => {
     placeWall(s, 0, 360);
     // A Pebbler behind the wall is the pounce target (a ranged unit within 150 lu beyond the blocker).
     devSpawn(s, 0, 'pebbler', { p: 150 });
-    const cat = devSpawn(s, 1, 'sabertooth', { p: 1200 - 560 });
+    const cat = devSpawn(s, 1, 'sabertooth', { p: LANE_LU - 560 });
     let passed = false;
     for (let i = 0; i < 20 * 10 && !passed; i += 1) {
       stepN(s, 1);
@@ -63,7 +67,7 @@ describe('wall prototype (A16.14)', () => {
   it('a pad is legal only with no enemy ground unit within 120 lu', () => {
     const s = sim();
     expect(padClear(s, 0, 360)).toBe(true);
-    devSpawn(s, 1, 'bonker', { p: 1200 - 520 });
+    devSpawn(s, 1, 'bonker', { p: LANE_LU - 520 });
     expect(padClear(s, 0, 360)).toBe(true);
     expect(padClear(s, 0, 460)).toBe(false);
   });

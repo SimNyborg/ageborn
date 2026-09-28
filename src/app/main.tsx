@@ -1,6 +1,6 @@
 /**
  * Entry point (DESIGN B11). `?dev=1` shows the dev page list (src/dev/router.tsx); every other URL
- * boots the game: services, save, settings, platform, Pixi and the Stone/Medieval bake, audio unlock
+ * boots the game: services, save, settings, platform, Pixi and the Stone/Bronze bake, audio unlock
  * on the first gesture, then the title with the next onboarding match behind one Play button.
  *
  * URL flags:

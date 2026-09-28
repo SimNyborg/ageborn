@@ -16,3 +16,5 @@ Today `art.preload(['stone', 'medieval'])` bakes only Stone synchronously (the p
 intersection with its own boot list) and slices Medieval; Bronze waits for the idle batch. Nothing
 breaks (a missing bake draws on first use), but the first evolve of every match may hitch on a slow
 phone. Measured in the gallery: the Stone + Bronze boot bake is 59 ms CPU (budget 400 ms).
+
+**Resolved (2026-09-28, eight-age playtest):** `BOOT_AGES` is now Stone and Bronze and `LATER_AGES` starts at Medieval; `src/app/test/boot.test.ts` updated.

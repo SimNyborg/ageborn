@@ -128,7 +128,8 @@ describe('fakes', () => {
     expect(sim.state.units.map((u) => u.card)).toEqual(['bonker', 'pebbler']);
     expect(a.received).toHaveLength(1);
     const obs = sim.observe(1);
-    expect(obs.units.find((u) => u.id === 2)?.p).toBe(500_000);
+    // Side 1 sees positions from its own base: lane 2,000,000 (A17.2) minus x 700,000.
+    expect(obs.units.find((u) => u.id === 2)?.p).toBe(1_300_000);
     expect(obs.me.tray[0]).toBe('bonker');
 
     const rest = drainFakeSim(a);
@@ -136,7 +137,8 @@ describe('fakes', () => {
     expect(all).toHaveLength(cannedBattleEvents.length);
     expect(rest.outcome?.winner).toBe(0);
     expect(sim.state.phase).toBe('ended');
-    expect(sim.state.sides[0].ageIndex).toBe(1);
+    // The canned evolve goes to Medieval, index 2 of the eight ages (A17.8; the fake has no Bronze cards).
+    expect(sim.state.sides[0].ageIndex).toBe(2);
     expect(sim.state.units.map((u) => u.id)).toEqual([1, 4, 5]);
 
     const b = new FakeSim();

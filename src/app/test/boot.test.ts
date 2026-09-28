@@ -23,12 +23,12 @@ describe('boot (DESIGN B11)', () => {
     expect(b.save).toBeNull();
     expect((s.platform as NonePlatform).initialized).toBe(true);
     expect((s.platform as NonePlatform).loaded).toBe(true);
-    // Stone and Medieval bake at boot; the rest waits for idle time (B5).
+    // Stone and Bronze bake at boot (A17.13); the rest waits for idle time (B5).
     const art = b.art as unknown as { preloaded: Set<string> };
-    expect([...art.preloaded]).toEqual(['stone', 'medieval']);
+    expect([...art.preloaded]).toEqual(['stone', 'bronze']);
     idle.forEach((t) => t());
     await Promise.resolve();
-    expect([...art.preloaded]).toEqual(['stone', 'medieval', 'bronze', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
+    expect([...art.preloaded]).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
     expect(s.eventLog.entries().at(-1)).toMatchObject({ kind: 'boot', id: 'tutorial' });
   });
 

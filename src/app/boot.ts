@@ -4,7 +4,7 @@
  * 1. load the save
  * 2. apply settings
  * 3. init the platform adapter
- * 4. init Pixi and pre-bake Stone/Medieval (the other ages bake in idle time)
+ * 4. init Pixi and pre-bake Stone/Bronze (the other ages bake in idle time)
  * 5. audio unlock on the first gesture
  * 6. route to the tutorial or Home
  *
@@ -16,9 +16,10 @@ import { bootRoute } from './onboarding';
 import type { PixiHost } from './pixiHost';
 import { buildServices, choiceFromUrl, type Services } from './services';
 
-export const BOOT_AGES: readonly AgeId[] = ['stone', 'medieval'];
+/** Baked at boot (A17.13): Stone, and Bronze, the second age of every format. */
+export const BOOT_AGES: readonly AgeId[] = ['stone', 'bronze'];
 /** Every other age, preloaded when the browser is idle (A17.8: eight ages). */
-export const LATER_AGES: readonly AgeId[] = ['bronze', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
+export const LATER_AGES: readonly AgeId[] = ['medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 export type BootStep = 'save' | 'settings' | 'platform' | 'pixi' | 'art' | 'audio' | 'route';
 
@@ -115,7 +116,7 @@ export async function boot(o: BootOptions): Promise<Booted> {
   await services.platform.init();
   steps.push('platform');
 
-  // 4. Pixi, then the Stone and Medieval bake; later ages bake when the browser is idle.
+  // 4. Pixi, then the Stone and Bronze bake; later ages bake when the browser is idle.
   const pixi = o.initPixi ? await o.initPixi() : null;
   steps.push('pixi');
   const settings = save?.settings;

@@ -47,6 +47,19 @@ Newest entry first. Each session appends what it finished, what is next, and any
 2. In any battle, press pause, then drag the battlefield or tap the map strip at the top: you can look around while paused.
 3. Play a Full War to the end. Tell us if matches still end at the Final Bell too often, and whether a match that is clearly won now ends quickly.
 
+## 2026-09-28: Eight-age playtest in the browser (cloud session)
+
+**What works**
+
+- Headless Chromium with the dev autopilot (production build, desktop 1280 x 720 and iPhone 13 landscape): Full War plays Stone, Bronze, Medieval, Gunpowder, Industrial, Modern, Future, Cosmic in that order; Standard War stops at Modern (6 ages), Short War at Gunpowder (4). Every evolve switches to that age's music cue (`music.bronze` ... `music.cosmic`), the stinger plays, the result screen appears, and there were no console errors or failed requests in 8 runs. Every age draws its own units, tray cards, power and backdrop.
+- Fixed: the app now bakes Stone and Bronze at boot; the A17 id lists are merged into DESIGN A13, A14.1 and A14.3; two stale tests (fake sim, wall prototype) follow the long lane and eight ages.
+- Checks: typecheck, lint, build and size pass (initial download 446 KB). Tests: 3,392 pass, 1 fails (`src/render/test/realSim.test.ts`, the render package's own five-age sound list; already requested in `docs/requests/wp5-a17-eight-ages.md`).
+
+**Still open**
+
+- HUD: the age badge next to each side's health bar is empty for Bronze, Industrial and Cosmic (`AgeGlyph` in `src/ui/hud/icons.tsx` has no case for them; `docs/requests/wp5-a17-eight-ages.md`).
+- The rest of the A17 merge into DESIGN (sections listed at the end of `docs/design-lane-ages.md`), the old-key music re-render, and the balance numbers in the entries below.
+
 ## 2026-09-28: A17 art and sound registered for Bronze, Industrial and Cosmic (cloud session)
 
 **What works**

@@ -1422,13 +1422,13 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 |---|---|
 | UI | `ui_click`, `ui_hover`, `ui_deny`, `ui_toggle`, `ui_tab`, `ui_confirm`, `meter_pip` |
 | Spawn and movement | `spawn_pop`, `spawn_heavy`, `spawn_legendary`, `step_heavy`, `step_mech` |
-| Attacks | `swing_whoosh`, `shot_sling`, `shot_bow`, `shot_crossbow`, `shot_catapult`, `shot_musket`, `shot_lob`, `shot_cannon`, `shot_grapeshot`, `shot_rifle`, `shot_mg`, `shot_flak`, `shot_rocket`, `shot_rail`, `shot_laser`, `shot_arc`, `shot_plasma`, `bee_buzz`, `log_roll`, `cauldron_pour`, `toad_tongue`, `goose_honk`, `bomb_whistle`, `radio_call`, `emp_pulse`, `time_stop`, `gravity_hum` |
+| Attacks | `swing_whoosh`, `shot_sling`, `shot_bow`, `shot_crossbow`, `shot_catapult`, `shot_musket`, `shot_lob`, `shot_cannon`, `shot_grapeshot`, `shot_rifle`, `shot_mg`, `shot_flak`, `shot_rocket`, `shot_rail`, `shot_laser`, `shot_arc`, `shot_plasma`, `bee_buzz`, `log_roll`, `cauldron_pour`, `toad_tongue`, `goose_honk`, `bomb_whistle`, `radio_call`, `emp_pulse`, `time_stop`, `gravity_hum`, `shot_javelin`, `shot_scorpion`, `stomp_colossus`, `mirror_beam`, `gorgon_gaze`, `shot_carbine`, `shot_harpoon`, `flare_pop`, `fuse_hiss`, `shot_gatling`, `tesla_zap`, `shot_ion`, `shot_void`, `shot_starburst`, `shot_tachyon`, `blink_warp`, `drone_launch` |
 | Hits and deaths | `hit_blunt`, `hit_slash`, `hit_pierce`, `hit_bullet`, `hit_laser`, `hit_heavy`, `hit_effective`, `explosion_s`, `explosion_m`, `explosion_l`, `die_bio`, `die_mech`, `prop_drop`, `heal_tick`, `shield_up` |
 | Turrets and bases | `turret_build`, `turret_sell`, `turret_upgrade`, `slot_buy`, `base_hit`, `base_crumble`, `base_destroyed` |
 | Economy | `coin_gain` (pitch climbs on multi-kills; throttled to 1 per 40 ms), `xp_tick`, `treasury_up` |
-| Evolve | `evolve_ready` (single soft chime), `evolve_riser`, `evolve_fanfare_stone/medieval/gunpowder/modern/future`, `evolve_enemy` |
-| Powers | `power_ready`, `power_telegraph`, `pw_stampede`, `pw_meteor`, `pw_arrows`, `pw_decree`, `pw_smoke`, `pw_broadside`, `pw_paratroop`, `pw_bomber`, `pw_lance`, `pw_nanite` |
-| Match | `last_stand_armed`, `last_stand_charge`, `last_stand_fire`, `overdrive_horn`, `siege_bell`, `victory_jingle`, `defeat_jingle` (gentle, not mocking), `emote_pop` |
+| Evolve | `evolve_ready` (single soft chime), `evolve_riser`, `evolve_fanfare_stone/bronze/medieval/gunpowder/industrial/modern/future/cosmic`, `evolve_enemy` |
+| Powers | `power_ready`, `power_telegraph`, `pw_stampede`, `pw_meteor`, `pw_arrows`, `pw_decree`, `pw_smoke`, `pw_broadside`, `pw_paratroop`, `pw_bomber`, `pw_lance`, `pw_nanite`, `pw_wave`, `pw_aegis`, `pw_iron_horse`, `pw_zeppelin`, `pw_starfall`, `pw_warp` |
+| Match | `last_stand_armed`, `last_stand_charge`, `last_stand_fire`, `overdrive_horn`, `siege_bell`, `victory_jingle`, `defeat_jingle` (gentle, not mocking), `emote_pop`, `alert_base` |
 | Capsules | `cap_thud`, `cap_riser`, `cap_climb_1`, `cap_climb_2`, `cap_climb_3`, `cap_climb_4`, `cap_clunk`, `cap_burst`, `card_flip`, `foil_shine`, `rarity_common` (pluck), `rarity_rare` (two rising notes), `rarity_epic` (triad arpeggio plus shimmer), `rarity_legendary` (5-note fanfare, pad, sub drop), `walkout_bass`, `copy_tick`, `upgrade_ready`, `upgrade_slam`, `level_up`, `reel_tick` (kept as an ID but unused: there is no reel, A15.3) |
 
 **Mixer:**
@@ -1450,10 +1450,13 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
   | Arrangement | Instruments |
   |---|---|
   | Stone | drums, breathy square flute |
+  | Bronze | plucked lyre, frame drum, reed pipe (square wave with vibrato) |
   | Medieval | plucked lute, horn |
   | Gunpowder | fife, snare march |
+  | Industrial | brass band (tuba bass, cornet lead), anvil and piston percussion |
   | Modern | brass stabs, synth bass |
   | Future | arpeggiated synths, sidechain pump |
+  | Cosmic | choir pad (formant-filtered saw), deep sub pulse, bell arpeggios |
   | Menu | slow version |
   | Capsule room | loop |
 
@@ -1463,23 +1466,23 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
   - intensity layer, driven by a view-side estimate from nearby damage and deaths (decays 0.2/s)
   - Overdrive layer (+8 BPM feel, double-time percussion)
   - Siege heartbeat bass
-- **Key changes.** Own evolves transpose the music by +2, +2, +1 and +1 semitones in turn (+6 total at Future), so every evolve gets a lift.
+- **Key changes.** Own evolves transpose the music by +2, +2, +1, +1, +1, +1, +1 semitones in turn (+9 total at Cosmic, A17), so every evolve gets a lift. Once the total passes +6 the lead drops one octave so the register stays comfortable.
 - Any `musicCueId` can later point to a composed file through the manifest.
 
 ## A14. ID appendix
 
 ### A14.1 Visual and effect IDs
 
-- **Cards:** `unit.<slug>` for the 35 units plus `unit.training_dummy`; `turret.<slug>` for the 20 turrets; `power.<slug>` for the 10 powers (HUD icon and cast root).
+- **Cards:** `unit.<slug>` for the 56 units plus `unit.training_dummy`; `turret.<slug>` for the 32 turrets; `power.<slug>` for the 16 powers (HUD icon and cast root).
 - **Skins:** `<target visualId>@<skin slug>`, for example `unit.bonker@pumpkin_head` and `base.future@crystal_spire`.
-- **World:** `base.<age>` (5), `backdrop.<age>` (5), `ground.<arena>` for tar_pits, frostfang, kingsmoat, powder_bay, iron_front, neon_harbor, orbital_ring, chrono_rift.
-- **Projectiles:** `proj.rock`, `proj.boulder`, `proj.bee`, `proj.log`, `proj.arrow`, `proj.bolt`, `proj.goose`, `proj.musket`, `proj.lob`, `proj.cannonball`, `proj.grapeshot`, `proj.rocket`, `proj.chainshot`, `proj.bomb`, `proj.bullet`, `proj.shell`, `proj.flak`, `proj.plasma`, `proj.plasma_mortar`, `proj.gravity_orb`.
-- **Instant and attack effects:** `fx.beam_laser`, `fx.beam_rail`, `fx.arc_chain`, `fx.tongue`, `fx.pitch_pour`, `fx.heal_beam`.
+- **World:** `base.<age>` (8), `backdrop.<age>` (8), `ground.<arena>` for tar_pits, frostfang, kingsmoat, powder_bay, iron_front, neon_harbor, orbital_ring, chrono_rift.
+- **Projectiles:** `proj.rock`, `proj.boulder`, `proj.bee`, `proj.log`, `proj.arrow`, `proj.bolt`, `proj.goose`, `proj.musket`, `proj.lob`, `proj.cannonball`, `proj.grapeshot`, `proj.rocket`, `proj.chainshot`, `proj.bomb`, `proj.bullet`, `proj.shell`, `proj.flak`, `proj.plasma`, `proj.plasma_mortar`, `proj.gravity_orb`, `proj.javelin`, `proj.scorpion_bolt`, `proj.harpoon`, `proj.flare`, `proj.ion`, `proj.starburst`, `proj.star_shard`.
+- **Instant and attack effects:** `fx.beam_laser`, `fx.beam_rail`, `fx.arc_chain`, `fx.tongue`, `fx.pitch_pour`, `fx.heal_beam`, `fx.sun_beam`, `fx.gorgon_gaze`, `fx.tesla_arc`, `fx.beam_void`, `fx.beam_ion`, `fx.beam_tachyon`.
 - **Hit and death effects:** `fx.spark_blunt`, `fx.spark_slash`, `fx.spark_pierce`, `fx.spark_bullet`, `fx.scorch_laser`, `fx.blast`, `fx.spark_effective`, `fx.puff_resisted`, `fx.muzzle`, `fx.trail`, `fx.splash_ring`, `fx.explosion_s`, `fx.explosion_m`, `fx.explosion_l`, `fx.dust_poof`, `fx.ko_stars`, `fx.coin`, `fx.xp_sparkle`, `fx.debris`.
-- **Status and ability effects:** `fx.heal_glyph`, `fx.shield_bubble`, `fx.mark_reticle`, `fx.gravity_swirl`, `fx.smoke_cloud`, `fx.emp_ring`, `fx.time_ripple`, `fx.roar_ring`, `fx.call_marker`, `fx.dizzy`, `fx.legendary_aura`.
-- **Power effects:** `fx.telegraph_zone`, `fx.aurochs`, `fx.meteor`, `fx.arrow_rain`, `fx.decree_glow`, `fx.cannonball_rain`, `fx.plane_bomber`, `fx.parachute`, `fx.orbital_beam`, `fx.nanite_swarm`.
+- **Status and ability effects:** `fx.heal_glyph`, `fx.shield_bubble`, `fx.mark_reticle`, `fx.gravity_swirl`, `fx.smoke_cloud`, `fx.emp_ring`, `fx.time_ripple`, `fx.roar_ring`, `fx.call_marker`, `fx.dizzy`, `fx.legendary_aura`, `fx.stomp_ring`, `fx.fuse_spark`, `fx.beacon_ring`, `fx.blink`.
+- **Power effects:** `fx.telegraph_zone`, `fx.aurochs`, `fx.meteor`, `fx.arrow_rain`, `fx.decree_glow`, `fx.cannonball_rain`, `fx.plane_bomber`, `fx.parachute`, `fx.orbital_beam`, `fx.nanite_swarm`, `fx.tidal_wave`, `fx.aegis_glow`, `fx.iron_horse`, `fx.zeppelin`, `fx.star_shard_rain`, `fx.warp_portal`.
 - **Match effects:** `fx.evolve_pillar`, `fx.last_stand_wave`, `fx.overdrive_frame`, `fx.siege_vignette`.
-- **UI icons:** `icon.role.<group>`, `icon.age.<age>`, `icon.horn`, `trim.bronze`, `trim.silver`, `trim.gold`, `foil.bronze`, `foil.silver`, `foil.holo`.
+- **UI icons:** `icon.role.<group>`, `icon.age.<age>`, `icon.horn`, `icon.chevron`, `icon.base_alert`, `icon.follow`, `trim.bronze`, `trim.silver`, `trim.gold`, `foil.bronze`, `foil.silver`, `foil.holo`.
 
 ### A14.2 Per-card attack mapping
 
@@ -1546,7 +1549,7 @@ Defaults: spawn sound `spawn_pop` (Infantry, Ranged, AA, Support), `spawn_heavy`
 
 ### A14.3 Music cues
 
-`music.menu`, `music.capsule`, `music.stone`, `music.medieval`, `music.gunpowder`, `music.modern`, `music.future`, `stinger.victory`, `stinger.defeat`. Layers: `intensity`, `overdrive`, `siege`.
+`music.menu`, `music.capsule`, `music.stone`, `music.bronze`, `music.medieval`, `music.gunpowder`, `music.industrial`, `music.modern`, `music.future`, `music.cosmic`, `stinger.victory`, `stinger.defeat`. Layers: `intensity`, `overdrive`, `siege`.
 
 ## A15. Engagement and long-term progression
 
