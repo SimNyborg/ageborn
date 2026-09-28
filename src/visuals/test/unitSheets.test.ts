@@ -7,6 +7,7 @@ import { Texture } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { AtlasAdapter, atlasWalkDurationMs, walkSpeedFromDuration, type AtlasData } from '../adapters/atlas';
+import { portraitStillBase, UNITS_WITHOUT_STILLS } from '../adapters/atlasPortrait';
 import { MANIFEST, PROCEDURAL_MANIFEST } from '../manifest';
 import { unitSheetAge } from '../manifest.units';
 import { UNIT_SHEETS } from '../unitSheets.gen';
@@ -21,6 +22,7 @@ const SHEETS = import.meta.glob<SheetJson>(['/public/art/units/*/*.json', '!/pub
 /** HD sheets (2.46 px/lu), one per plain sheet. */
 const HD_SHEETS = import.meta.glob<SheetJson>('/public/art/units/*/*.hd.json', { eager: true, import: 'default' });
 const PNGS = new Set(Object.keys(import.meta.glob('/public/art/units/*/*.png', { query: '?url', import: 'default' })));
+const PORTRAITS = import.meta.glob('/public/art/portraits/*.png', { query: '?url', import: 'default' });
 
 describe('HD unit sheets', () => {
   it('every HD sheet matches its plain sheet frame for frame', () => {
@@ -70,6 +72,17 @@ describe('unit sprite sheets in the manifest', () => {
     for (const c of ['idle', 'walk', 'attack', 'hit', 'die', 'spawn', 'stun', 'victory', 'ability']) expect(def.clips[c], c).toBeDefined();
     // shots leave in front of the unit
     if (u.attacks.some((a) => a.projectile !== undefined)) expect(def.anchors.muzzle.x).toBeGreaterThanOrEqual(0);
+  });
+
+  it('every sheet unit has a card still, or is listed as not rendered yet (no requests for missing files)', () => {
+    const stills = new Set(Object.keys(PORTRAITS));
+    for (const u of Object.values(content.units)) {
+      const def = MANIFEST[u.visualId];
+      if (def?.kind !== 'atlas') continue;
+      const has = stills.has(`/public/art/portraits/${u.id}.png`) && stills.has(`/public/art/portraits/${u.id}_team.png`);
+      expect(portraitStillBase(def.source) !== null, u.id).toBe(has);
+      expect(UNITS_WITHOUT_STILLS.has(u.id), u.id).toBe(!has);
+    }
   });
 
   it('skins without a sheet keep their procedural entry', () => {

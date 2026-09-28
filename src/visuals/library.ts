@@ -58,6 +58,13 @@ export const POWER_IDS = [
   'carpet_bomber',
   'orbital_lance',
   'nanite_surge',
+  // A17.12
+  'tidal_wave',
+  'aegis',
+  'iron_horse',
+  'zeppelin_raid',
+  'starfall',
+  'warp_strike',
 ] as const;
 
 export const ICON_SPRITES: readonly PuppetDef[] = [
@@ -65,6 +72,10 @@ export const ICON_SPRITES: readonly PuppetDef[] = [
   ...(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'] as const).map((g) => spritePuppet(`icon.role.${g}`, `icon.role.${g}`, UI, 18)),
   ...AGES.map((a) => spritePuppet(`icon.age.${a}`, `icon.age.${a}`, UI, 40)),
   spritePuppet('icon.horn', 'icon.horn', UI, 20),
+  // A17.5 camera UI
+  spritePuppet('icon.chevron', 'icon.chevron', UI, 20),
+  spritePuppet('icon.base_alert', 'icon.base_alert', UI, 24),
+  spritePuppet('icon.follow', 'icon.follow', UI, 22),
   ...(['bronze', 'silver', 'gold'] as const).map((t) => spritePuppet(`trim.${t}`, `trim.${t}`, UI, 10)),
   ...(['bronze', 'silver', 'holo'] as const).map((t) => spritePuppet(`foil.${t}`, `foil.${t}`, UI, 100)),
 ];

@@ -179,7 +179,7 @@ export const AGE_PALETTES: Readonly<Record<AgeId, { large: readonly number[]; ac
   gunpowder: { large: [0x2e5e4e, 0xefe6cf, 0x4a3b2e], accent: 0xc9a227, names: ['bottle green', 'cream', 'dark wood', 'brass'] },
   modern: { large: [0x62664a, 0xb8a67a, 0x3a3f45], accent: 0xb0306a, names: ['olive', 'khaki', 'gunmetal', 'signal red-violet'] },
   future: { large: [0x23262e, 0xf03aa8, 0x3af0b4, 0xf4f6f8], accent: 0x29e3f5, names: ['charcoal', 'magenta', 'mint', 'white', 'cyan'] },
-  // A17.12 (placeholder procedural tier until the WP4 art for the new ages lands)
+  // A17.12
   bronze: { large: [0xcdbe9e, 0x4f8f7f, 0x6a5566], accent: 0xb8863b, names: ['sandstone', 'verdigris', 'dusk plum', 'polished bronze'] },
   industrial: { large: [0x5b6168, 0x2b2a2e, 0xdcd6c8, 0x8a6a63], accent: 0xb06a3b, names: ['iron', 'coal', 'smoke cream', 'muted brick', 'copper'] },
   cosmic: { large: [0x1e1830, 0x8e44c8, 0xf2f0ff], accent: 0x3fe0b0, names: ['void', 'nebula violet', 'star white', 'mint'] },
@@ -302,7 +302,7 @@ export const AGE_ZONES: Readonly<Record<AgeId, Palette>> = {
     glow: 0x3af0b4,
     accent: 0x29e3f5,
   },
-  // A17.12 placeholder zones (medieval-like rigs recoloured; WP4 replaces them with real puppets)
+  // A17.12: Bronze (bronze armour stays under 40% saturation; polished bronze is the accent)
   bronze: {
     ...SHARED_ZONES,
     skin: 0xcfa98c,
@@ -311,8 +311,8 @@ export const AGE_ZONES: Readonly<Record<AgeId, Palette>> = {
     cloth2: 0x4f8f7f, // verdigris
     cloth3: 0x6a5566, // dusk plum
     leather: 0x7a6250,
-    metal: 0xa88f5e,
-    metal2: 0x7d6a48,
+    metal: 0xb09c78,
+    metal2: 0x7a6c54,
     wood: 0x7a6552,
     wood2: 0x5e4d3f,
     stone: 0xb5a888,
@@ -345,10 +345,10 @@ export const AGE_ZONES: Readonly<Record<AgeId, Palette>> = {
     ...SHARED_ZONES,
     skin: 0xa8876f,
     hair: 0x2a2530,
-    cloth: 0x2e2648, // void
+    cloth: 0x33264c, // void, nudged to 260° so it stays out of the blue team band
     cloth2: 0x8e44c8, // nebula violet
     cloth3: 0xf2f0ff, // star white
-    leather: 0x3a3450,
+    leather: 0x3c3252,
     metal: 0xb8b4d0,
     metal2: 0x5a5478,
     wood: 0x4a4460,

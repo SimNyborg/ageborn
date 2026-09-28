@@ -13,8 +13,8 @@
  *   advance, each gets at most floor(gap / 2) of the gap.
  * - followSupport units stay 60 lu behind the frontmost friendly non-follower ground unit (p ≤ 200 alone).
  * - Hold: units beyond 320 without a target walk back at 70% speed; at or below 320 they do not pass it.
- * - Open gate (A16.4 stall fix): while a side has no ground unit within `openGate.clear` of its own gate,
- *   the attackers close up at that gate as in the siege crowd, in every phase (see `gateOpen`).
+ * - Open gate (A16.4 stall fix, `economy.openGateLu`): while the defender has no ground unit within that
+ *   distance of its own gate, the attackers close up at the gate as in the siege crowd, in every phase.
  * - Siege forced march (A17.3): unit movement ×`siege.moveSpeedBp` (×1.2) while the phase is Siege; it applies
  *   to ground and air units (not to knockback, pulls, leaps, projectiles or power runners).
  * Air: ignore blocking; gunships stop for targets and obey stance; the bomber never stops, ignores Hold
@@ -26,7 +26,6 @@ import { clampToLane, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import type { UnitRules } from '../rules';
 import { LANE, type Ctx, type UnitRt } from '../state';
 import { alive, unitRules } from '../units';
-import { gateOpen } from '../gate';
 import { targetInRange } from './targeting';
 
 interface Mover {
@@ -59,7 +58,8 @@ export function movementSystem(ctx: Ctx): void {
   ground[0].sort(frontFirst);
   ground[1].sort(frontFirst);
   for (const m of all) computeWant(ctx, m, ground[m.u.side]);
-  for (const side of [0, 1] as const) resolveGround(ctx, ground[side], ground[side === 0 ? 1 : 0]);
+  const open = openGates(ctx, ground);
+  for (const side of [0, 1] as const) resolveGround(ctx, ground[side], ground[side === 0 ? 1 : 0], open[side === 0 ? 1 : 0]);
   for (const m of air) m.newP = m.p + m.want;
   for (const m of all) {
     const pMax = LANE - m.r.half;
@@ -147,10 +147,9 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
 }
 
 /** Plans the ground moves of one side against the (pre-move) enemy ground units. */
-function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[]): void {
+function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[], foeGateOpen: boolean): void {
   const spacingBp = ctx.econ.spacingBp;
-  const side = mine[0]?.u.side;
-  const siegeCrowd = ctx.s.phase === 'siege' || (side !== undefined && gateOpen(ctx, side === 0 ? 1 : 0)) ? ctx.econ.siege.gateCrowd : 0;
+  const siegeCrowd = ctx.s.phase === 'siege' || foeGateOpen ? ctx.econ.siege.gateCrowd : 0;
   for (let i = 0; i < mine.length; i += 1) {
     const m = mine[i] as Mover;
     const { u, r } = m;
@@ -197,4 +196,15 @@ function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[]): void {
     }
     m.newP = m.p + (limit > 0 ? limit : 0);
   }
+}
+
+/**
+ * The open gate per side (A16.4 stall fix, `economy.openGateLu`): true while none of the side's ground
+ * units (pre-move) stands within that distance of its own gate. Off when 0 and in the tutorial format.
+ */
+function openGates(ctx: Ctx, ground: readonly [Mover[], Mover[]]): [boolean, boolean] {
+  const clear = ctx.econ.openGate;
+  if (clear <= 0 || ctx.cfg.format === 'tutorial') return [false, false];
+  const open = (list: readonly Mover[]): boolean => list.every((m) => m.p > clear);
+  return [open(ground[0]), open(ground[1])];
 }

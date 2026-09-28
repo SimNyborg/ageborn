@@ -5,7 +5,8 @@
  *   "Off" shows none. Gold popups always show.
  * - Numbers near each other are spread 20-40 px apart.
  * - Hits from the same source on the same target within a short window merge into one number (a
- *   40-arrow barrage reads as a few totals, not a wall of digits).
+ *   40-arrow barrage reads as a few totals, not a wall of digits). Gold popups within 300 ms and 60 lu
+ *   of each other merge into one sum, so two bounties never overlap into "+3090".
  *
  * Labels live in the world container (they follow shake and camera) and are counter-scaled so their
  * size is constant in screen px. Text uses one shared bitmap font (one texture, batched draws).
@@ -114,6 +115,9 @@ export function formatNumber(v: number): string {
 }
 
 const MAX_LIVE = 60;
+/** Gold popups closer than this (ms since the first, lu apart) merge into one sum. */
+export const GOLD_MERGE_MS = 300;
+export const GOLD_MERGE_LU = 60;
 
 export class FloatingNumbers {
   mode: DamageNumberMode = 'important';
@@ -147,6 +151,14 @@ export class FloatingNumbers {
   show(kind: NumberKind, value: number, at: Pt, o: { important?: boolean; key?: string; scale?: number } = {}): boolean {
     if (!(value > 0) || !numberVisible(this.mode, kind, o.important ?? false)) return false;
     const key = o.key ?? null;
+    if (kind === 'gold' && key === null) {
+      const near = this.live.find((l) => l.kind === 'gold' && l.key === null && l.ageMs < GOLD_MERGE_MS && Math.abs(l.at.x - at.x) <= GOLD_MERGE_LU);
+      if (near) {
+        near.value += value;
+        near.node.setText(this.text('gold', near.value));
+        return true;
+      }
+    }
     if (key !== null) {
       const same = this.live.find((l) => l.key === key && l.ageMs < this.tuning.numberMergeMs);
       if (same) {

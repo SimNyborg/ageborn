@@ -6,10 +6,10 @@
   pointer-events: auto;
 }
 
-/* Broadcast plate: REPLAY badge, both names, timeline. Docked under the HUD clock. */
+/* Broadcast plate: REPLAY badge, both names, timeline. Docked under the HUD's minimap strip (A17.5). */
 .ab-replay-top {
   position: absolute;
-  top: calc(clamp(64px, 13.5%, 110px));
+  top: 142px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -358,7 +358,7 @@
     border-width: 1.5px;
   }
   .ab-replay-top {
-    top: 58px;
+    top: 84px;
     gap: 4px;
   }
   .ab-replay-plate {

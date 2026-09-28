@@ -10,10 +10,11 @@
  * - The owner gets 40% of the cost in XP. Summoned units pay nothing either way.
  */
 import { BP } from '@/core';
-import { makeImpact } from '../damage';
+import { damageBase, makeImpact } from '../damage';
 import { emit } from '../events';
 import { levelBp, scaleCenti } from '../rules';
 import { ageIdxOf, canEvolve, cardLevel, unitCost, type Ctx, type UnitRt } from '../state';
+import { pOf } from '../geometry';
 import { spawnUnit, unitRules } from '../units';
 import { addGold, addXp } from './economy';
 import { resolveImpact } from './impacts';
@@ -86,6 +87,7 @@ function processDeath(ctx: Ctx, u: UnitRt): void {
   if (gold > 0) addGold(ctx, killerSide, gold, 'bounty', u.x);
   if (xp > 0) addXp(ctx, killerSide, xp, 'kill');
   if (loss > 0) addXp(ctx, u.side, loss, 'loss');
+  gateFall(ctx, u);
 
   // On-death effects.
   if (r.riders) {
@@ -107,4 +109,22 @@ function processDeath(ctx: Ctx, u: UnitRt): void {
     imp.srcX = u.x;
     resolveImpact(ctx, imp);
   }
+}
+
+/**
+ * The falling gate (A16.4 stall fix, `economy.gateFall`): in Overdrive and Siege, a unit killed by an
+ * enemy unit, turret or ability within `gateFall.dist` of its own gate costs its base `hpBp` of its max
+ * HP, dealt as base damage by the killer (Siege's base damage applies; the killer earns base-damage
+ * XP). Summoned units and power or Last Stand kills never count. Off when `dist` is 0 and in the
+ * tutorial format.
+ */
+function gateFall(ctx: Ctx, u: UnitRt): void {
+  const fall = ctx.econ.gateFall;
+  if (fall.dist <= 0 || fall.hpBp <= 0 || ctx.cfg.format === 'tutorial') return;
+  if (ctx.s.phase !== 'overdrive' && ctx.s.phase !== 'siege') return;
+  const kind = u.lastHitKind;
+  if (u.summoned || kind === null || kind === 'power' || kind === 'lastStand') return;
+  if (u.lastHitSide === u.side || pOf(u.x, u.side) > fall.dist) return;
+  const imp = makeImpact(u.lastHitSide, u.lastHitId, u.lastHitCard ?? '');
+  damageBase(ctx, u.side, imp, Math.trunc((u.maxHp * fall.hpBp) / BP));
 }

@@ -29,7 +29,26 @@ const WIDE = new Set([
   'fx.arc_chain',
   'fx.heal_beam',
   'fx.tongue',
+  // A17.12
+  'fx.sun_beam',
+  'fx.gorgon_gaze',
+  'fx.tesla_arc',
+  'fx.beam_void',
+  'fx.beam_ion',
+  'fx.beam_tachyon',
+  'fx.tidal_wave',
+  'fx.aegis_glow',
+  'fx.iron_horse',
+  'fx.zeppelin',
+  'fx.star_shard_rain',
+  'fx.warp_portal',
 ]);
+
+/** Effects stretched from the source to a target (`toX`, `toY`). */
+const BEAMS = new Set(['fx.heal_beam', 'fx.arc_chain', 'fx.tongue', 'fx.sun_beam', 'fx.gorgon_gaze', 'fx.tesla_arc']);
+const isBeam = (id: string): boolean => id.startsWith('fx.beam') || BEAMS.has(id);
+/** Effects that run across the zone from one end (`distance` or `zone` along `dir`). */
+const RUNS = new Set(['fx.aurochs', 'fx.plane_bomber', 'fx.iron_horse']);
 
 /** Options the battle view would pass for an effect (sizes in lu; beam targets in the parent's space). */
 function optionsFor(r: FxRecipe, side: Side, cellW: number, cellH: number, at: { x: number; y: number }): Record<string, number> {
@@ -38,7 +57,7 @@ function optionsFor(r: FxRecipe, side: Side, cellW: number, cellH: number, at: {
     o['width'] = cellW - 20;
     o['height'] = cellH - 40;
   }
-  if (r.id === 'fx.beam_laser' || r.id === 'fx.beam_rail' || r.id === 'fx.heal_beam' || r.id === 'fx.tongue' || r.id === 'fx.arc_chain' || r.id === 'fx.pitch_pour') {
+  if (isBeam(r.id) || r.id === 'fx.pitch_pour') {
     o['toX'] = at.x + (side === 0 ? 1 : -1) * (r.id === 'fx.pitch_pour' ? 40 : 300);
     o['toY'] = at.y + (r.id === 'fx.pitch_pour' ? 40 : 0);
   }
@@ -92,12 +111,12 @@ export function buildEffects(ctx: StageContext, o: { side: Side; zoom: number; f
     const w = wide ? 460 : 150;
     const h = wide ? 250 : 130;
     const c = place(w, h, r.id);
-    const directional = r.id.startsWith('fx.beam') || r.id === 'fx.heal_beam' || r.id === 'fx.arc_chain' || r.id === 'fx.tongue' || r.id === 'fx.aurochs' || r.id === 'fx.plane_bomber';
+    const directional = isBeam(r.id) || RUNS.has(r.id);
     const cx = r.screen ? c.x + 10 : wide && directional ? c.x + (o.side === 0 ? 70 : w - 70) : c.x + w / 2;
     const cy = r.screen ? c.y + 10 : c.y + h - 40;
-    const fx = r.id === 'fx.aurochs' || r.id === 'fx.plane_bomber' ? (o.side === 0 ? c.x + 20 : c.x + w - 20) : cx;
-    const opts = optionsFor(r, o.side, w, h, { x: fx, y: cy - (r.id.startsWith('fx.beam') || r.id === 'fx.heal_beam' || r.id === 'fx.arc_chain' ? 40 : 0) });
-    const beam = r.id.startsWith('fx.beam') || r.id === 'fx.heal_beam' || r.id === 'fx.arc_chain';
+    const fx = RUNS.has(r.id) ? (o.side === 0 ? c.x + 20 : c.x + w - 20) : cx;
+    const beam = isBeam(r.id) && r.id !== 'fx.tongue';
+    const opts = optionsFor(r, o.side, w, h, { x: fx, y: cy - (beam ? 40 : 0) });
     cells.push({ make: () => art.createEffect(r.id, opts), at: { x: fx, y: beam ? cy - 40 : cy }, view: null, wait: 0, opts, loops: r.loops ?? false, elapsed: 0 });
   }
   x = pad;

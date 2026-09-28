@@ -86,9 +86,25 @@ describe('team readability (A11)', () => {
   // A11 redundant cues: "pennant on heavies". Heavies and ground Legendaries (the Siege heavies)
   // carry a team pennant, flag or pennoned lance; skins inherit it (clarity parity, A5.8).
   const heavies = [...units, ...skins.filter((s) => s.kind === 'unit')].filter((p) => (p.group === 'heavy' || p.group === 'legendary') && !p.motion.air);
-  it('the heavy set is complete (5 Heavies, 4 ground Legendaries, their skins)', () => {
+  it('the heavy set is complete (8 Heavies, 6 ground Legendaries, their skins)', () => {
     expect(heavies.filter((p) => !p.skinOf).map((p) => p.id).sort()).toEqual(
-      ['unit.behemoth_tank', 'unit.chrono_titan', 'unit.cuirassier', 'unit.destrier_knight', 'unit.mammoth_matriarch', 'unit.tankette', 'unit.tuskback', 'unit.ursa_paladin', 'unit.walker_mech'].sort(),
+      [
+        'unit.behemoth_tank',
+        'unit.chrono_titan',
+        'unit.cuirassier',
+        'unit.destrier_knight',
+        'unit.mammoth_matriarch',
+        'unit.tankette',
+        'unit.tuskback',
+        'unit.ursa_paladin',
+        'unit.walker_mech',
+        // A17
+        'unit.war_chariot',
+        'unit.bronze_colossus',
+        'unit.steam_golem',
+        'unit.land_dreadnought',
+        'unit.hover_tank',
+      ].sort(),
     );
   });
   it.each(heavies.map((p) => [p.id, p] as const))('%s carries a pennant', (_id, p) => {
@@ -119,8 +135,10 @@ describe('bases (A11 Bases, A2.2)', () => {
   const bases = allPuppets().filter((p): p is BasePuppet => p.kind === 'base');
   const visibleSlots = (b: BasePuppet, st: { crumble: number; treasury: number }): string => b.slots.filter((s) => slotVisible(s.when, st)).map((s) => slotId(s)).sort().join(',');
 
-  it('five bases plus the Crystal Spire skin', () => {
-    expect(bases.map((b) => b.id).sort()).toEqual(['base.future', 'base.future@crystal_spire', 'base.gunpowder', 'base.medieval', 'base.modern', 'base.stone']);
+  it('eight bases plus the Crystal Spire skin', () => {
+    expect(bases.map((b) => b.id).sort()).toEqual(
+      ['base.bronze', 'base.cosmic', 'base.future', 'base.future@crystal_spire', 'base.gunpowder', 'base.industrial', 'base.medieval', 'base.modern', 'base.stone'].sort(),
+    );
   });
   it.each(bases.map((b) => [b.id, b] as const))('%s shows each crumble stage (75/50/25%%) and each Treasury level (1-3) differently', (_id, b) => {
     const crumble = [0, 1, 2, 3].map((c) => visibleSlots(b, { crumble: c, treasury: 0 }));

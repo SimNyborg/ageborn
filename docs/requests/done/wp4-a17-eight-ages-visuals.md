@@ -32,3 +32,15 @@ Still needed (these tests fail until then):
   but `art/blender/gen_unit_manifest.mjs` does not list `bronze` yet.
 - A17.17: the procedural bake at boot should become Stone and Bronze (`src/visuals/adapters/procedural.ts`
   `BOOT_AGES`; the app preloads the other seven ages when idle, `src/app/boot.ts` `LATER_AGES`).
+
+## Resolution (A17 asset registration)
+
+Done by WP4. `AGES` has the eight ages in A17.8 order; the manifest has every A17.12 id (21 units,
+12 turrets, 6 power icons, 3 bases, 3 backdrops, 3 age icons, 7 projectiles, 6 instant effects, 4 ability
+and 6 power effects, the 3 camera icons). The rendered unit, turret and base sheets are wired
+(`unitSheets.gen.ts` for 8 ages, `WORLD_TURRET_SHEETS`, `WORLD_BASE_SHEETS`), with new procedural puppets
+and parts for every card and base as the fallback (`src/visuals/parts|puppets/{bronze,industrial,cosmic}.ts`),
+four new signature clips (`ability.stomp`, `ability.blink`, `ability.beacon`, `ability.reel`), code-painted
+backdrops for the three ages and the boot bake on Stone and Bronze. The first-guess palette entries were
+kept or tuned (Bronze metal, Cosmic void). What is left for other packages: `wp5-a17-new-age-fx.md`,
+`wp11-a17-boot-ages.md`, `art-a17-pipeline-ages.md`, and the DESIGN merge for `tests/integrity/ids.test.ts`.

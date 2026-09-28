@@ -8,7 +8,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import type { TeamPreset } from '@/contracts/ids';
 import type { VisualDef } from '@/contracts/art';
 import { atlasVisualDef, type AtlasJson } from '@/visuals/adapters/atlas';
-import { MANIFEST } from '@/visuals/manifest';
+import { MANIFEST, PROCEDURAL_MANIFEST } from '@/visuals/manifest';
 import { ALL_AGES, createArtProvider, type VisualsArtProvider } from '@/visuals/provider';
 import type { VisualKind } from '@/visuals/adapters/types';
 
@@ -87,7 +87,9 @@ export function PixiStage(p: StageProps) {
       el.appendChild(app.canvas);
       const overrides = p.atlas ? await atlasOverrides(p.atlas) : {};
       // Baked for the review zoom (the units grid defaults to 1.6 px per lu), not for this window's lane.
-      const art = createArtProvider({ manifest: { ...MANIFEST, ...overrides }, quality: p.quality, teamPreset: p.preset, force: p.tier, dpr: Math.min(2, window.devicePixelRatio || 1), worldPxPerLu: 1.6 });
+      // a forced procedural tier draws the procedural entries (sheet units would have no puppet source)
+      const base = p.tier === 'procedural' ? PROCEDURAL_MANIFEST : MANIFEST;
+      const art = createArtProvider({ manifest: { ...base, ...overrides }, quality: p.quality, teamPreset: p.preset, force: p.tier, dpr: Math.min(2, window.devicePixelRatio || 1), worldPxPerLu: 1.6 });
       await art.preload([...ALL_AGES]);
       // unit sheets of later ages stream in the background in the game; the gallery waits for all of them,
       // but at most 8 s: anything still loading then draws with its procedural fallback

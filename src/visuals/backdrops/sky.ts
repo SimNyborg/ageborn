@@ -47,7 +47,8 @@ export function paintSky(ctx: Ctx2D, age: AgeId, f: LayerFrame): void {
   // a deeper zenith, a soft mid band and a bright horizon glow (lit from the sun's side)
   const horizon = mix(pal.skyBottom, pal.light, 0.45);
   const g = ctx.createLinearGradient(0, f.yTop, 0, f.yTop + f.height);
-  g.addColorStop(0, toCss(mix(pal.skyTop, 0x1c2030, age === 'future' ? 0.35 : 0.12)));
+  const night = age === 'future' || age === 'cosmic';
+  g.addColorStop(0, toCss(mix(pal.skyTop, 0x1c2030, age === 'cosmic' ? 0.5 : night ? 0.35 : 0.12)));
   g.addColorStop(0.35, toCss(pal.skyTop));
   g.addColorStop(0.72, toCss(mix(pal.skyTop, pal.skyBottom, 0.75)));
   g.addColorStop(0.9, toCss(pal.skyBottom));
@@ -68,7 +69,7 @@ export function paintSky(ctx: Ctx2D, age: AgeId, f: LayerFrame): void {
     const a = Math.PI * 0.5 + (i - 3) * 0.2 + (i % 2) * 0.05;
     const len = 900;
     const w = 0.035 + (i % 3) * 0.015;
-    ctx.fillStyle = toCss(sun.color, age === 'future' ? 0.012 : 0.022); // halved (art review: rays washed out the sky)
+    ctx.fillStyle = toCss(sun.color, night ? 0.012 : 0.022); // halved (art review: rays washed out the sky)
     ctx.beginPath();
     ctx.moveTo(sun.x, sun.y);
     ctx.lineTo(sun.x + Math.cos(a - w) * len, sun.y + Math.sin(a - w) * len);
@@ -117,9 +118,68 @@ export function paintSky(ctx: Ctx2D, age: AgeId, f: LayerFrame): void {
     ctx.ellipse(300, -600, 92, 18, -0.2, 0, Math.PI * 2);
     ctx.stroke();
   }
+  if (age === 'cosmic') {
+    // A17.12: nebula clouds in violet and mint, and a big ringed planet with a small moon
+    for (const [x, y, r, c, a] of [
+      [380, -600, 360, 0x8e44c8, 0.26],
+      [1080, -520, 300, 0x3fe0b0, 0.14],
+      [760, -680, 260, 0xc070c8, 0.18],
+      [60, -420, 220, 0x6a5ac8, 0.16],
+    ] as const) {
+      const n = ctx.createRadialGradient(x, y, 10, x, y, r);
+      n.addColorStop(0, toCss(c, a));
+      n.addColorStop(0.55, toCss(c, a * 0.45));
+      n.addColorStop(1, toCss(c, 0));
+      ctx.fillStyle = n;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    const px = 560;
+    const py = -560;
+    ctx.strokeStyle = toCss(0xe8e0ff, 0.35);
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.ellipse(px, py, 150, 30, -0.18, Math.PI * 0.95, Math.PI * 2.05);
+    ctx.stroke();
+    const pg = ctx.createLinearGradient(px - 70, py - 70, px + 70, py + 70);
+    pg.addColorStop(0, toCss(0xd8c8f4, 0.95));
+    pg.addColorStop(0.6, toCss(0x8a74b8, 0.95));
+    pg.addColorStop(1, toCss(0x4a3a72, 0.95));
+    ctx.fillStyle = pg;
+    ctx.beginPath();
+    ctx.arc(px, py, 70, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = toCss(0xf2f0ff, 0.18);
+    for (const [bx, by, bw] of [
+      [-30, -30, 50],
+      [-10, 0, 60],
+      [10, 30, 40],
+    ] as const) {
+      ctx.beginPath();
+      ctx.ellipse(px + bx, py + by, bw, 7, -0.18, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = toCss(0xf2f0ff, 0.6);
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.ellipse(px, py, 150, 30, -0.18, -Math.PI * 0.05, Math.PI * 0.95);
+    ctx.stroke();
+    ctx.fillStyle = toCss(0xb8b0d8, 0.8);
+    ctx.beginPath();
+    ctx.arc(1280, -640, 20, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (age === 'industrial') {
+    // A17.12: a low band of coal smog over the horizon
+    const smog = ctx.createLinearGradient(0, -420, 0, 0);
+    smog.addColorStop(0, toCss(0x8a847c, 0));
+    smog.addColorStop(0.6, toCss(0x8a847c, 0.22));
+    smog.addColorStop(1, toCss(0x9a948a, 0.32));
+    ctx.fillStyle = smog;
+    ctx.fillRect(f.x0, -420, f.width, 440);
+  }
   // distant cloud banks along the horizon: cel-shaded (lit tops, shaded bellies), low contrast
   const rng = mulberry32(age.length * 7919 + 13);
-  const lit = mix(horizon, 0xffffff, age === 'future' ? 0.15 : 0.55);
+  const lit = mix(horizon, 0xffffff, night ? 0.15 : 0.55);
   const shade = mix(horizon, pal.skyTop, 0.35);
   for (let i = 0; i < 9; i++) {
     const cx = f.x0 + (i + 0.3 * rng.next()) * (f.width / 9);

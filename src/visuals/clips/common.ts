@@ -260,7 +260,8 @@ const quad: ClipDef[] = [
     { impactAt: 0.55 },
   ),
   clip('rider.idle', S.idleMs * 1.3, true, {}, { proc: ['breathe'] }),
-  clip('rider.walk', S.walkCycleMs, true, {}, { proc: ['walkQuad', 'riderBounce'] }),
+  // wheels roll too (the War Chariot's cart); riders without wheel bones are unaffected
+  clip('rider.walk', S.walkCycleMs, true, {}, { proc: ['walkQuad', 'riderBounce', 'rollVehicle'] }),
   clip(
     'rider.attack.lance',
     620,

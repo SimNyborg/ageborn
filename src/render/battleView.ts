@@ -53,7 +53,7 @@ import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf
 import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, textLabelFactory } from './mounts';
 import { ZoneOverlay, clampPowerP, powerZoneLu } from './powerTargeting';
 import { AutoPresetMonitor, PRESETS, particleCap, presetDpr, type GraphicsPreset } from './presets';
-import { SEAM_START_LU, cameraFronts, followFocus, frontLines, frontMidpoint, framingCenter, stepSeam } from './seam';
+import { SEAM_START_LU, cameraFronts, followFocus, frontLines, frontMidpoint, framingCenter, spectatorFocus, stepSeam } from './seam';
 import { teamColor } from './teamColors';
 import {
   DEFAULT_VIEW_SETTINGS,
@@ -90,6 +90,8 @@ export interface BattleViewOptions {
   onPresetChange?: (preset: GraphicsPreset) => void;
   /** The next-mount tag ("New slot · 150"); render has no i18n, so the app passes the text. */
   mountLabel?: (cost: number) => string;
+  /** Replays: auto-follow the midpoint of both fronts with no bias toward `mySide` (A17.4). */
+  spectator?: boolean;
 }
 
 type LoopClip = 'walk' | 'idle';
@@ -209,6 +211,8 @@ export class BattleView {
   readonly layers: BattleLayers;
   readonly director: FeelDirector;
   readonly mySide: Side;
+  /** Spectator follow (replays, A17.4): the midpoint of both fronts, unframed. */
+  private readonly spectator: boolean;
   private readonly sim: BattleViewOptions['sim'];
   private readonly config: Readonly<MatchConfig>;
   private readonly art: ArtProvider;
@@ -269,6 +273,7 @@ export class BattleView {
     this.config = o.sim.config;
     this.art = o.art;
     this.mySide = o.mySide ?? 0;
+    this.spectator = o.spectator === true;
     this.feel = o.feel ?? cloneFeelConfig(defaultFeelConfig);
     this.settings = { ...DEFAULT_VIEW_SETTINGS, ...o.settings };
     this.isMobile = o.isMobile ?? false;
@@ -669,6 +674,7 @@ export class BattleView {
   /** The follow target centre (A17.4): a priority moment, else the fronts' focus, framed. */
   private followTarget(): number | null {
     const V = this.camera.viewLu;
+    if (this.spectator) return this.moment ? this.moment.x : spectatorFocus(cameraFronts(this.frontInputs()));
     const focus = this.moment ? this.moment.x : followFocus(cameraFronts(this.frontInputs()), this.mySide, V);
     return focus === null ? null : framingCenter(focus, this.mySide, V);
   }

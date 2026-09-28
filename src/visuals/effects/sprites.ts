@@ -53,6 +53,18 @@ export const FX_ZONES: Readonly<Record<string, number>> = {
   red: 0xb0306a,
   rope: 0xb5a58a,
   shadow: 0x000000,
+  // A17.12
+  sea: 0xa9d2da,
+  foam: 0xeef8f6,
+  bronze: 0xb09c78,
+  bronze2: 0x7a6c54,
+  flare: 0xf8e0f0,
+  ion: 0x3fe0b0,
+  violet: 0xb49ae0,
+  crystal: 0xe0d6fa,
+  engine: 0x5b6168,
+  engine2: 0x2b2a2e,
+  canvas: 0xdcd6c8,
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -258,6 +270,72 @@ part('proj.plasma_mortar', [
 part('proj.gravity_orb', [
   { d: circle(0, 0, 6.4), zone: 'void2', line: 1.6 },
   { d: join(arcBand(0, 0, 3, 4.4, 0, 140), arcBand(0, 0, 3, 4.4, 180, 320)), zone: 'lilac', line: 0, shade: false, light: false },
+]);
+
+// A17.12 projectiles
+part('proj.javelin', [
+  { d: limb(-16, 0, 0.9, 10, 0, 0.8), zone: 'wood', line: 1 },
+  { d: poly([9, -2.2, 17, 0, 9, 2.2]), zone: 'bronze', line: 1 },
+  { d: rrect(-6, -1.2, 4, 2.4, 0.8), zone: 'rope', line: 0, shade: false, light: false },
+]);
+part('proj.scorpion_bolt', [
+  { d: limb(-12, 0, 1.6, 7, 0, 1.6), zone: 'wood', line: 1.4 },
+  { d: poly([6, -3.4, 14, 0, 6, 3.4]), zone: 'bronze', line: 1.4 },
+  { d: join(poly([-12, 0, -16, -4, -8, -1]), poly([-12, 0, -16, 4, -8, 1])), zone: 'paper', line: 0.8, shade: false, light: false },
+]);
+part('proj.harpoon', [
+  { d: limb(-12, 0, 1.2, 8, 0, 1.2), zone: 'metal', line: 1.2 },
+  { d: join(poly([7, -3, 15, 0, 7, 3]), poly([6, -1, 3, -4.4, 5, -1]), poly([6, 1, 3, 4.4, 5, 1])), zone: 'metal2', line: 1 },
+  { d: limb(-20, 1.6, 0.5, -12, 0, 0.5), zone: 'rope', line: 0, shade: false, light: false },
+]);
+part('proj.flare', [
+  { d: circle(0, 0, 5), zone: 'flare', line: 0, alpha: 0.6, shade: false, light: false },
+  { d: circle(0, 0, 2.6), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.ion', [
+  { d: ellipse(-3, 0, 8, 2.4), zone: 'ion', line: 0, alpha: 0.6, shade: false, light: false },
+  { d: ellipse(0, 0, 3.6, 1.8), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.starburst', [
+  { d: star(0, 0, 4, 1.6, 5.4, 0), zone: 'violet', line: 0, alpha: 0.8, shade: false, light: false },
+  { d: circle(0, 0, 1.8), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.star_shard', [
+  { d: poly([-9, 0, -2, -3.4, 8, 0, -2, 3.4]), zone: 'crystal', line: 1.2 },
+  { d: poly([-4, 0, 0, -1.4, 5, 0, 0, 1.4]), zone: 'white', line: 0, shade: false, light: false },
+]);
+
+// A17.12 power and ability sprites
+/** A curling wave, crest to the right (Tidal Wave), 60 lu wide and 40 lu tall from the ground. */
+part('fx.p.wave', [
+  { d: blob([-30, 0, -26, -16, -8, -34, 12, -40, 26, -30, 28, -18, 18, -24, 10, -18, 20, -4, 30, 0], 0.7), zone: 'sea', line: 1.6, alpha: 0.85 },
+  { d: blob([4, -36, 18, -38, 27, -28, 20, -30, 12, -30], 0.7), zone: 'foam', line: 0, shade: false },
+  { d: join(circle(-18, -10, 2), circle(-8, -22, 1.6), circle(-22, -4, 1.4)), zone: 'foam', line: 0, shade: false, light: false },
+]);
+/** A runaway armoured engine (Iron Horse), facing right, 36 lu long from the ground. */
+part('fx.p.engine', [
+  { d: join(rrect(-18, -20, 26, 14, 3), rect(4, -30, 10, 12), rect(-14, -32, 6, 12)), zone: 'engine' },
+  { d: poly([12, -8, 20, -2, 12, -2]), zone: 'bronze', line: 1.2 },
+  { d: join(circle(-12, -4, 4.4), circle(-1, -4, 4.4), circle(10, -4, 3.4)), zone: 'engine2', line: 1.6 },
+  { d: rrect(-15, -28, 12, 3, 1.2), zone: 'canvas', line: 1, shade: false },
+]);
+/** A zeppelin in profile, nose right (Zeppelin Raid). */
+part('fx.p.zeppelin', [
+  { d: ellipse(0, 0, 30, 9), zone: 'canvas', line: 1.8 },
+  { d: join(rect(-26, -1, 52, 1.4), rect(-12, -8, 1.4, 16), rect(8, -8, 1.4, 16)), zone: 'dust2', line: 0, shade: false, light: false },
+  { d: join(poly([-28, -2, -36, -9, -32, 0]), poly([-28, 2, -36, 9, -32, 0])), zone: 'canvas', line: 1.4 },
+  { d: rrect(-6, 8, 14, 4, 1.6), zone: 'engine', line: 1.4 },
+]);
+/** A warp portal seen edge-on (Warp Strike, Warp Stalker blink). */
+part('fx.p.portal', [
+  { d: ellipse(0, 0, 10, 24), zone: 'violet', line: 1.4, alpha: 0.85 },
+  { d: ellipse(0, 0, 5, 17), zone: 'void2', line: 0, shade: false, light: false },
+  { d: ellipse(-1, -4, 1.6, 6), zone: 'white', line: 0, alpha: 0.7, shade: false, light: false },
+]);
+/** A bronze shield sigil (Aegis). */
+part('fx.p.aegis', [
+  { d: blob([-8, -9, 0, -11, 8, -9, 7, 2, 0, 10, -7, 2], 0.6), zone: 'bronze', line: 1.4, alpha: 0.9 },
+  { d: star(0, -1, 5, 1.4, 3.6), zone: 'white', line: 0, shade: false, light: false },
 ]);
 
 // ---------------------------------------------------------------------------------------------

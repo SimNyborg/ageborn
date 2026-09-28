@@ -60,10 +60,10 @@ const RUBBLE_COLORS: Record<AgeId, readonly number[]> = {
   gunpowder: [0xb8a88a, 0x9a8c72, 0xcabb9c, 0x857860],
   modern: [0xa29f96, 0x86837b, 0xb6b3a9, 0x62664a],
   future: [0xbfc4cb, 0x3a3f4a, 0xced3d9, 0x23262e],
-  // A17.12 (no base sheet yet: the procedural base draws until WP4 wires them)
+  // A17.12: Ziggurat sandstone and verdigris, Foundry brick and iron, Star Ark hull plates and void
   bronze: [0xcdbe9e, 0xb0a282, 0xdccfb2, 0x4f8f7f],
   industrial: [0x8a6a63, 0x5b6168, 0x9c7e76, 0x2b2a2e],
-  cosmic: [0xc8c4dc, 0x2e2648, 0xe0dcf2, 0x8e44c8],
+  cosmic: [0xc8c4dc, 0x33264c, 0xe0dcf2, 0x8e44c8],
 };
 const DUST_COLORS: Record<AgeId, number> = {
   stone: 0xb8a88e,
@@ -95,9 +95,9 @@ const LIGHT_COLORS: Record<AgeId, number> = {
   gunpowder: 0xffd89a,
   modern: 0xf2ecd2,
   future: 0x9ff5d8,
-  bronze: 0xffc27a,
-  industrial: 0xffd89a,
-  cosmic: 0x9ff5d8,
+  bronze: 0xffc27a, // braziers
+  industrial: 0xf6e2b0, // gas lamps
+  cosmic: 0xa8f2dc, // mint hull lights
 };
 
 export class AtlasBaseView implements BaseView {
@@ -428,7 +428,7 @@ export class AtlasBaseView implements BaseView {
 
   private smokePuff(x: number, y: number): void {
     const s = partSprite(this.o.decor, 'fx.p.smoke', FX_ZONES);
-    s.tint = this.age === 'future' ? 0x8c8aa0 : 0x7a746c;
+    s.tint = this.age === 'future' || this.age === 'cosmic' ? 0x8c8aa0 : 0x7a746c;
     s.position.set(x * this.facing + (this.rng.next() - 0.5) * 8, -y);
     this.puffs.add(s, { vx: 6 + this.rng.next() * 8, vy: -26 - this.rng.next() * 14, life: 1600, s0: 1.1, s1: 3.2, a0: 0.45 });
   }

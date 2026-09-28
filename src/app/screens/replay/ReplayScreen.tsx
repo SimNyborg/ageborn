@@ -76,7 +76,8 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
         content: ui.services.content,
         createSim: ui.services.sim.createSim,
         simVersion: ui.services.sim.simVersion,
-        createView: (sim) => ui.createView(sim, 0),
+        // Spectator follow (A17.4): the camera tracks the midpoint of both fronts.
+        createView: (sim) => ui.createView(sim, 0, { spectator: true }),
         scheduler: ui.scheduler,
       }),
     [p.replay, ui],
@@ -111,6 +112,7 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
   const speed = player.speed.value;
   const verified = player.verified.value;
   const sim = player.sim;
+  const view = sim ? ui.viewOf(sim) : undefined;
   const other = side === 0 ? 1 : 0;
   const name = (i: 0 | 1): string => displayName(p.replay.sides[i].label, ui.services.i18n);
 
@@ -138,7 +140,20 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
 
   return (
     <div class="ab-layer ab-replay" data-testid="replay" data-status={status}>
-      {hud ? <Hud model={hud} config={sim.config} side={side} readOnly controls={false} keyboard={false} portrait={ui.portrait} t={ui.t} /> : null}
+      {hud ? (
+        <Hud
+          model={hud}
+          config={sim.config}
+          side={side}
+          readOnly
+          controls={false}
+          keyboard={false}
+          portrait={ui.portrait}
+          t={ui.t}
+          // The view bridge gives the replay the minimap, its camera window and the off-screen badges (A17.5).
+          {...(view ? { view } : {})}
+        />
+      ) : null}
       <div class="ab-replay-top">
         <div class="ab-replay-plate">
           <span class={`ab-replay-live${status === 'playing' ? ' is-on' : ''}`} data-testid="replay-badge">

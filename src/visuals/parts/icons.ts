@@ -32,6 +32,16 @@ export const ICON_ZONES: Readonly<Record<string, number>> = {
   holo: 0xd8c8f0,
   holo2: 0x9fe8e0,
   dark: 0x2a2530,
+  sand: 0xcdbe9e,
+  verdigris: 0x4f8f7f,
+  sea: 0x7fb6c8,
+  foam: 0xe8f4f2,
+  brick: 0x8a6a63,
+  copper: 0xb06a3b,
+  coal: 0x2b2a2e,
+  violet: 0x8e44c8,
+  starwhite: 0xf2f0ff,
+  void: 0x1e1830,
 };
 
 function medallion(id: string, symbol: { d: string; zone: string; line?: number }[]): void {
@@ -105,6 +115,71 @@ medallion('icon.age.modern', [
 medallion('icon.age.future', [
   { d: join(ellipse(0, 0, 13, 4.6), ellipse(0, 0, 4.6, 13)), zone: 'mint', line: 1.4 },
   { d: circle(0, 0, 3.6), zone: 'magenta' },
+]);
+
+// A17.12: the powers of the three new ages
+medallion('power.tidal_wave', [
+  { d: blob([-14, 8, -12, -2, -6, -10, 2, -12, 8, -8, 6, -4, 0, -5, -2, 0, 4, 2, 12, 2, 14, 8], 0.7), zone: 'sea' },
+  { d: blob([-4, -9, 2, -12, 8, -8, 5, -7, 1, -9], 0.7), zone: 'foam', line: 1.2 },
+]);
+medallion('power.aegis', [
+  { d: blob([-11, -11, 0, -14, 11, -11, 10, 2, 0, 13, -10, 2], 0.6), zone: 'bronze' },
+  { d: blob([-7, -8, 0, -10, 7, -8, 6.4, 1, 0, 9, -6.4, 1], 0.6), zone: 'verdigris', line: 0 },
+  { d: star(0, -1, 5, 1.8, 4.4), zone: 'gold', line: 1.2 },
+]);
+medallion('power.iron_horse', [
+  { d: join(rrect(-13, -6, 20, 10, 2), rect(-3, -12, 10, 7), rect(-10, -13, 4, 8)), zone: 'iron' },
+  { d: join(circle(-8, 7, 3.4), circle(1, 7, 3.4), circle(9, 6, 2.6)), zone: 'coal', line: 1.4 },
+  { d: poly([7, 4, 14, 8, 7, 8]), zone: 'copper', line: 1 },
+  { d: join(circle(-8, -17, 2.6), circle(-4, -19, 2)), zone: 'smoke', line: 1 },
+]);
+medallion('power.zeppelin_raid', [
+  { d: ellipse(0, -4, 14, 6), zone: 'canopy' },
+  { d: join(rect(-12, -5, 24, 1.4)), zone: 'smoke', line: 0 },
+  { d: rrect(-4, 2, 8, 3.4, 1.4), zone: 'brick', line: 1.2 },
+  { d: join(circle(-6, 9, 1.6), circle(0, 11, 1.6), circle(6, 9, 1.6)), zone: 'iron' },
+]);
+medallion('power.starfall', [
+  { d: join(poly([-12, -12, -4, -6, -7, -4]), poly([-2, -13, 5, -6, 2, -4])), zone: 'violet', line: 1.2 },
+  { d: star(6, 5, 5, 2.6, 7.4), zone: 'starwhite' },
+  { d: star(-6, 3, 4, 1.4, 4, 0), zone: 'mint', line: 1.2 },
+]);
+medallion('power.warp_strike', [
+  { d: ellipse(0, 2, 13, 8), zone: 'violet' },
+  { d: ellipse(0, 2, 8, 4.6), zone: 'void', line: 0 },
+  { d: join(poly([-2, -13, 2, -13, 1.2, 2, -1.2, 2]), poly([-5, -4, 5, -4, 4, -2, -4, -2])), zone: 'mint', line: 1.2 },
+]);
+
+// A17.12: the three new ages
+medallion('icon.age.bronze', [
+  { d: join(rect(-12, 4, 24, 6), rect(-9, -2, 18, 6), rect(-6, -8, 12, 6)), zone: 'sand' },
+  { d: rrect(-2, 4, 4, 6, 1.6), zone: 'dark', line: 0 },
+  { d: blob([-3, -8, -1, -14, 1, -11, 3, -15, 3, -8], 0.6), zone: 'ember', line: 1.2 },
+]);
+medallion('icon.age.industrial', [
+  { d: join(rect(-11, -2, 14, 12), rect(5, -14, 6, 24)), zone: 'brick' },
+  { d: join(rect(-9, 2, 3, 3), rect(-3, 2, 3, 3)), zone: 'dark', line: 0 },
+  { d: circle(-4, -8, 5), zone: 'canopy', line: 1.4 },
+  { d: join(limb(-4, -8, 0.5, -4, -11, 0.5), limb(-4, -8, 0.5, -2, -8, 0.5)), zone: 'dark', line: 0 },
+  { d: join(circle(9, -17, 2.6), circle(12, -19, 2)), zone: 'smoke', line: 1 },
+]);
+medallion('icon.age.cosmic', [
+  { d: circle(-1, 1, 8), zone: 'violet' },
+  { d: arcBand(-1, 1, 11, 13, 200, 340), zone: 'starwhite', line: 1 },
+  { d: arcBand(-1, 1, 11, 13, 20, 160), zone: 'starwhite', line: 1 },
+  { d: star(10, -10, 4, 1, 3.6, 0), zone: 'mint', line: 0 },
+]);
+
+// A17.5 camera UI (the HUD draws its own DOM copies; these keep the ids in the manifest for the art)
+part('icon.chevron', [{ d: poly([-6, -10, 6, 0, -6, 10, -2, 0]), zone: 'white', line: 2 }]);
+part('icon.base_alert', [
+  { d: join(rect(-10, -4, 20, 14), rect(-12, -10, 6, 20), rect(6, -10, 6, 20)), zone: 'stone', line: 2 },
+  { d: poly([-1, -4, 2, 2, -2, 4, 1, 10]), zone: 'dark', line: 0 },
+  { d: star(8, -12, 5, 1.6, 4.4), zone: 'ember', line: 1.2 },
+]);
+part('icon.follow', [
+  { d: join(limb(-10, 10, 1.4, 8, -8, 1.2), limb(10, 10, 1.4, -8, -8, 1.2)), zone: 'metal', line: 1.8 },
+  { d: join(rrect(-12, 6, 6, 3, 1.2), rrect(6, 6, 6, 3, 1.2)), zone: 'wood', line: 1.4 },
 ]);
 
 /** Foil frames (card borders for portraits and trays). 100 lu square, 8 lu bars, no holes. */

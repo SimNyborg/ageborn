@@ -52,8 +52,8 @@ part('bronze.helm.crested', [
 
 /** Tall pointed helmet with a small team plume (Phalangite). */
 part('bronze.helm.tall', [
-  { d: blob([-4, -38, -9, -46, -3, -50, 3, -44], 0.6), zone: 'team', banner: true, line: 2 },
-  { d: blob([-13.2, -10, -13.6, -20, -8, -32, 0, -40, 9, -32, 14.6, -20, 15, -12, 2, -15, -9, -10], 0.8), zone: 'metal' },
+  { d: blob([-4, -33, -10, -39, -4, -43, 3, -38], 0.6), zone: 'team', banner: true, line: 2 },
+  { d: blob([-13.2, -10, -13.6, -20, -8, -30, 0, -36, 9, -30, 14.6, -20, 15, -12, 2, -15, -9, -10], 0.8), zone: 'metal' },
   { d: rrect(-13.8, -18.4, 29.4, 3.4, 1.6), zone: 'metal2', line: 1.8 },
 ]);
 
@@ -97,9 +97,9 @@ part('bronze.spear', [
 
 /** The sarissa: a very long pike, so its reach reads at a glance (Phalangite). */
 part('bronze.sarissa', [
-  { d: limb(0, 26, 1.5, 0, -86, 1.3), zone: 'wood' },
-  { d: blob([0, -100, 3.2, -90, 1.8, -84, -1.8, -84, -3.2, -90], 0.5), zone: 'metal' },
-  { d: join(rrect(-2, -40, 4, 3, 1), rrect(-2, -86, 4, 3, 1)), zone: 'metal2', line: 1.2 },
+  { d: limb(0, 30, 1.5, 0, -72, 1.3), zone: 'wood' },
+  { d: blob([0, -86, 3.2, -76, 1.8, -70, -1.8, -70, -3.2, -76], 0.5), zone: 'metal' },
+  { d: join(rrect(-2, -30, 4, 3, 1), rrect(-2, -72, 4, 3, 1), rrect(-2.2, 26, 4.4, 5, 1.4)), zone: 'metal2', line: 1.2 },
 ]);
 
 /** A javelin held for the throw (Javelineer, Standard Bearer). */
@@ -200,8 +200,8 @@ part('bronze.scorpion.crew', [
   { d: limb(3, -4, 2, 10, 4, 2), zone: 'skin', line: 1.8 },
 ]);
 part('bronze.scorpion.flag', [
-  { d: limb(0, 0, 1, 0, -32, 0.9), zone: 'wood', line: 1.6 },
-  { d: blob([0, -32, 14, -30, 14, -21, 0, -20], 0.3), zone: 'team', banner: true, line: 2 },
+  { d: limb(0, 0, 1, 0, -44, 0.9), zone: 'wood', line: 1.6 },
+  { d: blob([0, -44, 14, -42, 14, -33, 0, -32], 0.3), zone: 'team', banner: true, line: 2 },
 ]);
 
 // ---------------------------------------------------------------------------------------------
@@ -211,9 +211,9 @@ part('bronze.scorpion.flag', [
 part('bronze.colossus.hull', [
   { d: blob([-30, 8, -34, -24, -28, -52, -12, -62, 12, -62, 28, -52, 34, -24, 30, 8, 0, 14], 0.8), zone: 'metal' },
   { d: join(arcBand(-6, -36, 10, 12, 200, 330), arcBand(12, -36, 10, 12, 200, 330)), zone: 'metal2', line: 0, shade: false, light: false },
+  { d: blob([-26, 6, 26, 6, 30, 22, -30, 22], 0.4), zone: 'team', banner: true },
   { d: limb(-24, -54, 6, 26, 2, 6), zone: 'team', banner: true },
   { d: join(limb(-2, -20, 1.2, 4, -4, 1.2), limb(4, -4, 1.2, -1, 8, 1.2), limb(18, -14, 1, 22, -2, 1)), zone: 'glow', line: 0, shade: false, light: false },
-  { d: blob([-26, 6, 26, 6, 30, 22, -30, 22], 0.4), zone: 'team', banner: true },
   { d: join(...[-20, -10, 0, 10, 20].map((x) => rect(x - 1, 8, 2, 13))), zone: 'metal2', line: 0, shade: false, light: false },
 ]);
 part('bronze.colossus.head', [

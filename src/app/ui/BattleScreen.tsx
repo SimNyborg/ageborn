@@ -1,7 +1,9 @@
 /**
  * The battle screen (DESIGN A9 #5, B6): WP5's DOM HUD over the persistent canvas, the tutorial
- * prompt, and a simple pause panel (WP9's Pause screen replaces it in Phase 2). The battle view on
- * the canvas was created with the session (`AppUi.createView`).
+ * prompt, and a compact pause card (WP9's Pause screen replaces it in the meta flow). The battle view
+ * on the canvas was created with the session (`AppUi.createView`). The pause card sits at the top and
+ * leaves the lane uncovered and its input live, so a paused player can scout (A17.4: the camera pans
+ * freely while paused).
  */
 import { useRef } from 'preact/hooks';
 import { Hud } from '@/ui/hud';
@@ -67,9 +69,10 @@ export function BattleScreen(p: {
         onDismiss={() => b.director.dismissHint()}
       />
       {status === 'paused' && !p.externalPause ? (
-        <div class="ab-scrim" data-testid="pause">
-          <div class="ab-panel">
-            <h2>{ui.t('app.paused')}</h2>
+        <div class="ab-pause" data-testid="pause">
+          <div class="ab-pause-card" role="dialog" aria-labelledby="ab-pause-title">
+            <h2 id="ab-pause-title">{ui.t('app.paused')}</h2>
+            <p class="ab-pause-hint">{ui.t('app.pauseScout')}</p>
             <div class="ab-row">
               <button class="ab-btn ab-btn--gold" data-testid="resume" onClick={() => s.resume()}>
                 {ui.t('app.resume')}

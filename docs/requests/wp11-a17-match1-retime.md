@@ -1,7 +1,7 @@
 # WP2 (A17 step 1, sim) → WP11: re-pin match 1 after SIM_VERSION 2.0.0
 
 **From:** the A17 step 1 sim and content agent. **To:** WP11 (owner of `src/tutorial/scripts.ts` and the
-match 1 beats). **Status:** open. **Priority:** high (`src/tutorial/test/retime.test.ts` fails until done).
+match 1 beats). **Status:** done (A17 step 1 review fixes: `MATCH1_TIMING` re-pinned; the Pebbler unlock moved to 0:24 so its beat shows after "Kills earn gold"; Grogg still falls at ~2:30). **Priority:** high (`src/tutorial/test/retime.test.ts` fails until done).
 
 ## What changed in the sim
 

@@ -358,10 +358,10 @@ export interface EconRules {
   healPulseTicks: number;
   /** Units that may stand side by side at the front of a file (A2.7, A16.4 L4). */
   frontWidth: number;
-  /** The open gate (A16.4 stall fix): `clear` in mlu (0 = off), base damage multiplier in bp. */
-  openGate: { clear: number; baseDamageBp: number };
-  /** The falling gate (A16.4 stall fix): `dist` in mlu from the own gate (0 = off), base loss in bp of the unit's max HP. */
+  /** The falling gate (A16.4 stall fix; Overdrive and Siege): `dist` in mlu from the own gate (0 = off), base loss in bp of the unit's max HP. */
   gateFall: { dist: number; hpBp: number };
+  /** The open gate (A16.4 stall fix): mlu from the own gate that must hold no own ground unit (0 = off). */
+  openGate: number;
 }
 
 export interface SimRules {
@@ -791,8 +791,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     healPulseTicks: t.healPulse,
     frontWidth: posOr(e.frontWidth, DEFAULT_FRONT_WIDTH),
     // Off for content that predates it (the frozen golden fixture), so old replays keep their hashes.
-    openGate: { clear: mlu(nonNegOr(e.openGate?.clearLu, 0)), baseDamageBp: posOr(e.openGate?.baseDamageBp, BP) },
     gateFall: { dist: mlu(nonNegOr(e.gateFall?.lu, 0)), hpBp: nonNegOr(e.gateFall?.hpBp, 0) },
+    openGate: mlu(nonNegOr(e.openGateLu, 0)),
   };
 }
 

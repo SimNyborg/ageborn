@@ -1,6 +1,7 @@
 /**
- * Backdrop layer 3 (mid-ground per age) and the arena ground and weather layer (DESIGN A11: "The
- * arena controls the ground and weather layer"; A14.1 `ground.<arena>`).
+ * Backdrop layer 3 (mid-ground per age, with A17.12 for Bronze, Industrial and Cosmic) and the arena
+ * ground and weather layer (DESIGN A11: "The arena controls the ground and weather layer"; A14.1
+ * `ground.<arena>`).
  */
 import type { AgeId } from '@/contracts/ids';
 import { BACKDROP_PALETTES, darken, lighten, mix, toCss } from '../palette';
@@ -143,6 +144,91 @@ export function paintMid(ctx: Ctx2D, age: AgeId, f: LayerFrame): AmbientSpec[] {
         fillPath(ctx, rect(x - 1.5, -160, 3, 120), toCss(i % 2 ? 0xf6c6e4 : 0x9ff5d8, 0.6));
       }
       fillPath(ctx, rect(f.x0, -60, f.width, 12), toCss(darken(pal.mid, 0.1)));
+      break;
+    }
+    case 'bronze': {
+      // olive groves on terraces, cypresses, a broken colonnade and a smoking altar
+      band(ctx, f, near, (x) => -40 - 8 * n(x * 2), 20);
+      for (let i = 0; i < 24; i++) {
+        const x = f.x0 + 30 + i * 72 + 18 * n(i * 11);
+        const r = 16 + 7 * Math.abs(n(i * 5));
+        const c = i % 3 === 0 ? dark : near;
+        fillPath(ctx, join(ellipse(x, -48 - r * 0.6, r * 1.2, r * 0.7), ellipse(x - r * 0.7, -44 - r * 0.4, r * 0.7, r * 0.5), ellipse(x + r * 0.8, -44 - r * 0.45, r * 0.65, r * 0.5)), c);
+        fillPath(ctx, poly([x - 2.5, -40, x - 1, -50, x + 2, -52, x + 3, -40]), dark);
+      }
+      for (const x of [200, 250, 700, 1180, 1220]) fillPath(ctx, blob([x - 7, -38, x - 6, -80, x, -118, x + 6, -80, x + 7, -38], 0.7), dark);
+      const stone = toCss(mix(pal.near, pal.light, 0.32));
+      const stone2 = toCss(mix(pal.near, pal.light, 0.18));
+      for (let k = 0; k < 6; k++) {
+        const cx = 880 + k * 26;
+        const h = k === 2 ? 40 : k === 4 ? 52 : 86;
+        fillPath(ctx, join(rect(cx - 5, -38 - h, 10, h), rect(cx - 7, -44 - h, 14, 6)), k % 2 ? stone : stone2);
+      }
+      fillPath(ctx, rect(874, -130, 60, 8), stone);
+      fillPath(ctx, join(rect(476, -64, 36, 26), rect(470, -70, 48, 8)), stone);
+      ambient.push({ kind: 'emit', part: 'fx.p.smoke', x: 494, y: -74, layer: 'mid', rate: 0.8, speed: 14, scale: 1.2, tint: lighten(pal.mid, 0.4), alpha: 0.45 });
+      ambient.push({ kind: 'blink', part: 'bd.light', x: 494, y: -72, layer: 'mid', period: 700, tint: 0xfff0cc });
+      break;
+    }
+    case 'industrial': {
+      // brick terraces with chimney pots, telegraph poles with sagging wires and a factory lamp row
+      for (let i = 0; i < 12; i++) {
+        const x = f.x0 + 40 + i * 150;
+        const w = 120;
+        const h = 60 + 20 * Math.abs(n(i * 3));
+        const c = i % 2 ? near : dark;
+        fillPath(ctx, join(rect(x, -38 - h, w, h), poly([x - 4, -36 - h, x + w / 2, -60 - h, x + w + 4, -36 - h])), c);
+        for (let k = 0; k < 4; k++) fillPath(ctx, rect(x + 12 + k * 28, -30 - h * 0.6, 10, 12), toCss(k % 2 ? mix(pal.light, pal.near, 0.55) : darken(pal.near, 0.3)));
+        fillPath(ctx, join(rect(x + 20, -76 - h, 8, 22), rect(x + w - 30, -72 - h, 8, 18)), dark);
+        if (i % 3 === 1) ambient.push({ kind: 'emit', part: 'fx.p.smoke', x: x + 24, y: -80 - h, layer: 'mid', rate: 0.6, speed: 12, scale: 1.1, tint: lighten(pal.mid, 0.35), alpha: 0.45 });
+      }
+      ctx.strokeStyle = toCss(darken(pal.mid, 0.3));
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      for (let x = f.x0 + 60; x < f.x0 + f.width; x += 180) {
+        ctx.moveTo(x, -30);
+        ctx.lineTo(x, -170);
+        ctx.moveTo(x - 14, -160);
+        ctx.lineTo(x + 14, -160);
+      }
+      for (let x = f.x0 + 60; x < f.x0 + f.width - 180; x += 180) {
+        ctx.moveTo(x - 12, -160);
+        ctx.quadraticCurveTo(x + 90, -136, x + 168, -160);
+        ctx.moveTo(x + 12, -160);
+        ctx.quadraticCurveTo(x + 90, -140, x + 192, -160);
+      }
+      ctx.stroke();
+      for (let x = f.x0 + 130; x < f.x0 + f.width; x += 360) ambient.push({ kind: 'blink', part: 'bd.light', x, y: -120, layer: 'mid', period: 1500, tint: 0xf6e8c4 });
+      fillPath(ctx, rect(f.x0, -44, f.width, 8), toCss(darken(pal.mid, 0.12)));
+      break;
+    }
+    case 'cosmic': {
+      // crystal outcrops, landing beacons and glowing habitat domes
+      band(ctx, f, near, (x) => -40 - 10 * n(x * 2), 20);
+      for (let i = 0; i < 16; i++) {
+        const x = f.x0 + 40 + i * 110 + 20 * n(i * 13);
+        const h = 40 + 50 * Math.abs(n(i * 7));
+        const c = i % 2 ? near : dark;
+        fillPath(ctx, join(poly([x - 14, -36, x - 4, -36 - h, x + 6, -36 - h * 0.8, x + 12, -36]), poly([x + 6, -36, x + 14, -36 - h * 0.55, x + 22, -36])), c);
+        fillPath(ctx, poly([x - 2, -40 - h * 0.4, x - 4, -36 - h, x + 2, -40 - h * 0.6]), toCss(0xc9b8f0, 0.35));
+      }
+      for (const [x, r] of [
+        [220, 60],
+        [760, 76],
+        [1260, 64],
+      ] as const) {
+        fillPath(ctx, ellipse(x, -36, r, r * 0.7), toCss(mix(pal.near, pal.light, 0.1)));
+        ctx.strokeStyle = toCss(0x3fe0b0, 0.55);
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(x, -36, r * 0.75, r * 0.45, 0, Math.PI, 0);
+        ctx.stroke();
+        ambient.push({ kind: 'blink', part: 'bd.light', x, y: -36 - r * 0.7, layer: 'mid', period: 1200, tint: 0xd8fff0 });
+      }
+      for (let x = f.x0 + 90; x < f.x0 + f.width; x += 300) {
+        fillPath(ctx, rect(x - 3, -150, 6, 112), dark);
+        ambient.push({ kind: 'blink', part: 'bd.light', x, y: -154, layer: 'mid', period: 900 + (x % 7) * 60, tint: 0xe8d8ff });
+      }
       break;
     }
   }

@@ -333,6 +333,51 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     ],
   },
 
+  // A17.12 instant attacks
+  {
+    id: 'fx.sun_beam',
+    durationMs: 160,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 160, toTarget: true, keys: [{ t: 0, sy: 1.8, a: 0.5 }, { t: 1, sy: 0.5, a: 0 }], tint: 0xfff1d6 },
+      { sprite: 'fx.p.beam', life: 130, toTarget: true, keys: [{ t: 0, sy: 0.7, a: 1 }, { t: 1, sy: 0.2, a: 0 }], tint: 0xffffff },
+    ],
+  },
+  {
+    id: 'fx.gorgon_gaze',
+    durationMs: 420,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 360, toTarget: true, keys: [{ t: 0, sy: 0.4, a: 0 }, { t: 0.2, sy: 2.2, a: 0.6 }, { t: 1, sy: 1.2, a: 0 }], tint: 0xd6ecc4 },
+      { sprite: 'fx.p.beam', life: 300, toTarget: true, keys: [{ t: 0, sy: 0.2, a: 0 }, { t: 0.25, sy: 0.8, a: 1 }, { t: 1, sy: 0.3, a: 0 }], tint: 0xffffff },
+    ],
+    particles: [{ sprite: 'fx.p.dust', count: 3, life: [300, 500], speed: [20, 50], angle: [-160, -20], scale: [0.5, 0.9], alpha: [0.8, 0], tint: 0xc9c2b4 }],
+  },
+  { id: 'fx.tesla_arc', durationMs: 260, chain: { segments: 8, jitter: 9, tint: 0xe6ecff, width: 2.4, refreshMs: 40 }, sprites: [flash(1, 0xe6ecff, 130)] },
+  {
+    id: 'fx.beam_void',
+    durationMs: 200,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 200, toTarget: true, keys: [{ t: 0, sy: 2.2, a: 0.6 }, { t: 1, sy: 0.5, a: 0 }], tint: 0xb49ae0 },
+      { sprite: 'fx.p.beam', life: 160, toTarget: true, keys: [{ t: 0, sy: 0.8, a: 1 }, { t: 1, sy: 0.2, a: 0 }], tint: 0xffffff },
+    ],
+  },
+  {
+    id: 'fx.beam_ion',
+    durationMs: 140,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 140, toTarget: true, keys: [{ t: 0, sy: 1.5, a: 0.55 }, { t: 1, sy: 0.4, a: 0 }], tint: 0x3fe0b0 },
+      { sprite: 'fx.p.beam', life: 120, toTarget: true, keys: [{ t: 0, sy: 0.6, a: 1 }, { t: 1, sy: 0.2, a: 0 }], tint: 0xffffff },
+    ],
+  },
+  {
+    id: 'fx.beam_tachyon',
+    durationMs: 300,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 300, toTarget: true, keys: [{ t: 0, sy: 3, a: 0.6 }, { t: 1, sy: 0.4, a: 0 }], tint: 0xc9b8f0 },
+      { sprite: 'fx.p.beam', life: 240, toTarget: true, keys: [{ t: 0, sy: 1.3, a: 1 }, { t: 1, sy: 0.2, a: 0 }], tint: 0xffffff },
+    ],
+    particles: [{ sprite: 'fx.p.spark', count: 5, life: [120, 240], speed: [60, 140], angle: [-180, 180], scale: [0.8, 0.3], alpha: [1, 0], align: true, tint: 0xe7dcff }],
+  },
+
   // Hit and death effects
   { id: 'fx.spark_blunt', durationMs: 520, sprites: [bloom(0.9, 160, 0xfff0d8, 0.55), flash(0.9, 0xfff6e2, 90), ring(1.1, 180, 0xfff6e2, 0.8)], particles: [dust(4, 0.8), { sprite: 'fx.p.star', count: 2, life: [220, 320], speed: [60, 110], angle: [-150, -30], scale: [0.6, 0.3], alpha: [1, 0], spin: [-300, 300] }] },
   {
@@ -492,6 +537,35 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     sprites: [{ sprite: 'fx.p.glow', life: 0, loop: 1800, sizeWith: 'radius', keys: [{ t: 0, sx: 1, sy: 1, a: 0.35 }, { t: 0.5, sx: 1.08, sy: 1.08, a: 0.55 }, { t: 1, sx: 1, sy: 1, a: 0.35 }] }],
   },
 
+  // A17.12 ability effects
+  {
+    id: 'fx.stomp_ring',
+    durationMs: 700,
+    sprites: [{ ...ring(1, 520, 0xf4ecd0, 0.35), sizeWith: 'radius' }, { ...ring(0.7, 440, 0xfff6e2, 0.35), delay: 80, sizeWith: 'radius' }, bloom(2, 260, 0xfff0d6, 0.5)],
+    particles: [dust(8, 1.3), { ...chunks(3), tint: 0x9a8e7c }],
+  },
+  {
+    id: 'fx.fuse_spark',
+    durationMs: 1000,
+    loops: true,
+    particles: [{ sprite: 'fx.p.spark', rate: 26, life: [120, 220], speed: [40, 110], angle: [-160, -20], gravity: 220, scale: [0.8, 0.3], alpha: [1, 0], align: true, tint: 0xfff6e2 }],
+  },
+  {
+    id: 'fx.beacon_ring',
+    durationMs: 700,
+    sprites: [{ ...ring(1, 600, 0x3fe0b0, 0.4), sizeWith: 'radius' }, { ...ring(0.8, 500, 0xffffff, 0.4), delay: 90, sizeWith: 'radius' }, bloom(1.4, 400, 0xd8fff0, 0.6)],
+    particles: [{ sprite: 'fx.p.nanite', count: 8, life: [400, 700], speed: [30, 80], angle: [-170, -10], scale: [1, 0.3], alpha: [1, 0], tint: 0xd8fff0 }],
+  },
+  {
+    id: 'fx.blink',
+    durationMs: 520,
+    sprites: [
+      { sprite: 'fx.p.portal', life: 460, keys: [{ t: 0, sx: 0.1, sy: 0.3, a: 0, y: -30 }, { t: 0.25, sx: 1, sy: 1, a: 1, y: -30 }, { t: 0.8, sx: 0.9, sy: 1, a: 0.9, y: -30 }, { t: 1, sx: 0.1, sy: 0.4, a: 0, y: -30 }] },
+      flash(1.2, 0xe7dcff, 140),
+    ],
+    particles: [{ sprite: 'fx.p.nanite', count: 10, life: [300, 520], speed: [40, 120], angle: [-180, 180], spread: 6, scale: [1, 0.3], alpha: [1, 0], tint: 0xc9b8f0 }],
+  },
+
   // Power effects
   {
     id: 'fx.telegraph_zone',
@@ -546,6 +620,57 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     durationMs: 4000,
     loops: true,
     particles: [{ sprite: 'fx.p.nanite', rate: 14, life: [600, 1000], box: [10, 14], speed: [10, 30], angle: [-120, -60], attract: 2, scale: [1.1, 0.4], alpha: [1, 0], spin: [-180, 180] }],
+  },
+
+  // A17.12 power effects
+  {
+    id: 'fx.tidal_wave',
+    durationMs: 2000,
+    sprites: [
+      { sprite: 'fx.p.wave', life: 2000, moveBy: 'zone', keys: [{ t: 0, x: -50, sx: 1.4, sy: 0.4, a: 0 }, { t: 0.08, x: -46, sx: 1.6, sy: 1.5, a: 0.95 }, { t: 0.9, x: 46, sx: 1.6, sy: 1.4, a: 0.95 }, { t: 1, x: 50, sx: 1.4, sy: 0.4, a: 0 }] },
+    ],
+    particles: [
+      { sprite: 'fx.p.snow', rate: 60, life: [300, 600], box: [45, 1], sizeWith: 'zone', speed: [60, 150], angle: [-150, -30], gravity: 420, scale: [2, 1], alpha: [0.95, 0], tint: 0xeef8f6 },
+      { sprite: 'fx.p.dust', rate: 10, life: [400, 700], box: [45, 1], sizeWith: 'zone', speed: [10, 40], angle: [-120, -60], scale: [0.6, 1.2], alpha: [0.5, 0], tint: 0xd8eef0 },
+    ],
+  },
+  {
+    id: 'fx.aegis_glow',
+    durationMs: 1000,
+    sprites: [
+      bloom(2.6, 900, 0xf4e6c8, 0.5),
+      { sprite: 'fx.p.aegis', life: 900, keys: [{ t: 0, sx: 0.4, sy: 0.4, a: 0, y: -30 }, { t: 0.25, sx: 2.2, sy: 2.2, a: 1, y: -40 }, { t: 1, sx: 2.6, sy: 2.6, a: 0, y: -52 }] },
+      { ...ring(3, 700, 0xf4e6c8, 0.35), delay: 100 },
+    ],
+    particles: [{ sprite: 'fx.p.xp', count: 6, life: [500, 800], box: [10, 4], speed: [20, 50], angle: [-100, -80], scale: [1, 0.4], alpha: [1, 0], tint: 0xf4ecd0, spin: [-180, 180] }],
+  },
+  {
+    id: 'fx.iron_horse',
+    durationMs: 1400,
+    sprites: [{ sprite: 'fx.p.engine', life: 1400, moveBy: 'distance', keys: [{ t: 0, a: 0, sx: 1.5, sy: 1.5 }, { t: 0.08, a: 1 }, { t: 0.88, a: 1 }, { t: 1, a: 0 }] }],
+    particles: [
+      { sprite: 'fx.p.smoke', rate: 26, life: [500, 900], speed: [10, 40], angle: [-120, -80], scale: [0.6, 1.4], alpha: [0.7, 0], followMove: true, tint: 0xdcd8d2 },
+      { sprite: 'fx.p.spark', rate: 20, life: [120, 220], speed: [60, 140], angle: [-170, -120], gravity: 300, scale: [0.8, 0.3], alpha: [1, 0], align: true, followMove: true },
+    ],
+  },
+  {
+    id: 'fx.zeppelin',
+    durationMs: 2000,
+    sprites: [
+      { sprite: 'fx.p.zeppelin', life: 2000, moveBy: 'zone', keys: [{ t: 0, x: -60, y: -240, sx: 2.4, sy: 2.4, a: 1 }, { t: 1, x: 60, y: -240, sx: 2.4, sy: 2.4, a: 1 }] },
+      { sprite: 'fx.p.disc', life: 2000, moveBy: 'zone', keys: [{ t: 0, x: -60, sx: 3.4, sy: 0.4, a: 0.15 }, { t: 1, x: 60, sx: 3.4, sy: 0.4, a: 0.15 }], tint: 0x000000 },
+    ],
+  },
+  { id: 'fx.star_shard_rain', durationMs: 1000, fall: { sprite: 'proj.star_shard', count: 1, fromX: -90, fromY: -330, spreadX: 0, fallMs: 220, impact: 'fx.explosion_s' } },
+  {
+    id: 'fx.warp_portal',
+    durationMs: 1000,
+    sprites: [
+      { sprite: 'fx.p.portal', life: 1000, keys: [{ t: 0, sx: 0.1, sy: 0.3, a: 0, y: -34 }, { t: 0.2, sx: 1.6, sy: 1.6, a: 1, y: -34 }, { t: 0.8, sx: 1.5, sy: 1.6, a: 0.9, y: -34 }, { t: 1, sx: 0.1, sy: 0.5, a: 0, y: -34 }] },
+      bloom(2, 700, 0xe7dcff, 0.5, 150),
+      { ...ring(2.4, 600, 0xc9b8f0, 0.35), delay: 200 },
+    ],
+    particles: [{ sprite: 'fx.p.nanite', rate: 30, life: [300, 600], box: [6, 20], speed: [20, 60], angle: [-180, 180], attract: 3, scale: [1, 0.3], alpha: [1, 0], tint: 0xc9b8f0 }],
   },
 
   // Match effects
@@ -633,6 +758,14 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.plasma', sprite: 'proj.plasma', tail: { length: 24, width: 3, alpha: 0.6 } },
   { id: 'proj.plasma_mortar', sprite: 'proj.plasma_mortar', tail: { length: 20, width: 6, alpha: 0.5 }, puff: { sprite: 'fx.p.nanite', every: 40, tint: 0xf6c6e4 } },
   { id: 'proj.gravity_orb', sprite: 'proj.gravity_orb', spin: 360, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 50, tint: 0xc9b8f0 } },
+  // A17.12
+  { id: 'proj.javelin', sprite: 'proj.javelin', tail: { length: 18, width: 1.6, alpha: 0.45 } },
+  { id: 'proj.scorpion_bolt', sprite: 'proj.scorpion_bolt', tail: { length: 22, width: 2.4, alpha: 0.5 } },
+  { id: 'proj.harpoon', sprite: 'proj.harpoon', tail: { length: 20, width: 1.4, alpha: 0.4 } },
+  { id: 'proj.flare', sprite: 'proj.flare', tail: { length: 18, width: 3, alpha: 0.55 }, puff: { sprite: 'fx.p.ember', every: 35, tint: 0xf8e0f0 } },
+  { id: 'proj.ion', sprite: 'proj.ion', tail: { length: 24, width: 2.6, alpha: 0.6 } },
+  { id: 'proj.starburst', sprite: 'proj.starburst', spin: 540, tail: { length: 14, width: 3, alpha: 0.5 } },
+  { id: 'proj.star_shard', sprite: 'proj.star_shard', tail: { length: 22, width: 3, alpha: 0.55 }, puff: { sprite: 'fx.p.nanite', every: 45, tint: 0xe0d6fa } },
 ];
 
 export const PROJECTILE_BY_ID: ReadonlyMap<string, ProjectileRecipe> = new Map(PROJECTILE_RECIPES.map((r) => [r.id, r]));

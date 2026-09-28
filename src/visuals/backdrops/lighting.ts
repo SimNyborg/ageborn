@@ -94,7 +94,7 @@ export function finishLayer(canvas: HTMLCanvasElement, ctx: Ctx2D, kind: 'far' |
 export function extraAmbient(age: AgeId): AmbientSpec[] {
   const pal = BACKDROP_PALETTES[age];
   const out: AmbientSpec[] = [];
-  if (age !== 'future') {
+  if (age !== 'future' && age !== 'cosmic') {
     const birdTint = mix(pal.far, 0x2a2630, 0.45);
     const flocks: [number, number, number][] = [
       [120, -430, 16],
@@ -106,7 +106,7 @@ export function extraAmbient(age: AgeId): AmbientSpec[] {
       }
     }
   }
-  const mist = mix(pal.skyBottom, 0xffffff, age === 'future' ? 0.1 : 0.35);
+  const mist = mix(pal.skyBottom, 0xffffff, age === 'future' || age === 'cosmic' ? 0.1 : 0.35);
   for (const [x, y, sc, sp, a] of [
     [80, -70, 3.2, 5, 0.12],
     [700, -40, 4.2, -4, 0.1],

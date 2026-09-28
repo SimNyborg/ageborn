@@ -131,6 +131,9 @@ export const economy: EconomyRules = {
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
+  // A16.4 stall fix (A17 step 1): in Overdrive and Siege a unit killed within 120 lu of its own gate costs
+  // its base its max HP, so spawn-camping a beaten side ends the match (docs/decisions.md)
+  gateFall: { lu: 120, hpBp: 10000 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
   marchSpeedBp: 12500,
   // A2.7 / A16.4 L4: a three-wide front

@@ -187,4 +187,65 @@ export const ABILITY_CLIPS: readonly ClipDef[] = [
       root: [{ t: 0 }, { t: 0.2, sx: 1.08, sy: 0.93 }, { t: 0.35, sx: 0.97, sy: 1.04 }, { t: 1, sx: 1, sy: 1 }],
     },
   },
+  // A17.12 signature clips -------------------------------------------------------------------------
+  // Bronze Colossus: anticipation lift of the near leg, a heavy stomp with squash, the ring lands at 0.5.
+  {
+    id: 'ability.stomp',
+    durationMs: 900,
+    loop: false,
+    impactAt: 0.5,
+    tracks: {
+      legF: [{ t: 0 }, { t: 0.32, r: -38, e: 'out' }, { t: 0.5, r: 0, e: 'in' }, { t: 1 }],
+      shinF: [{ t: 0 }, { t: 0.32, r: 30, e: 'out' }, { t: 0.5, r: 0, e: 'in' }, { t: 1 }],
+      hull: [{ t: 0 }, { t: 0.32, y: -6, r: -5, e: 'out' }, { t: 0.5, y: 4, r: 3, e: 'in' }, { t: 0.7, y: 0, r: 0, e: 'out' }, { t: 1 }],
+      armF: [{ t: 0 }, { t: 0.32, r: -40, e: 'out' }, { t: 0.5, r: 10, e: 'in' }, { t: 1, e: 'inOut' }],
+      root: [{ t: 0 }, { t: 0.32, sx: 0.96, sy: 1.05 }, { t: 0.5, sx: 1.14, sy: 0.86, e: 'in' }, { t: 0.72, sx: 1, sy: 1, e: 'out' }],
+    },
+  },
+  // Warp Stalker: a crouch, a pinch out to a sliver (the warp), and a snap back in with overshoot.
+  {
+    id: 'ability.blink',
+    durationMs: 520,
+    loop: false,
+    impactAt: 0.55,
+    blendInMs: 40,
+    tracks: {
+      root: [
+        { t: 0, sx: 1, sy: 1 },
+        { t: 0.15, sx: 1.14, sy: 0.86, e: 'out' },
+        { t: 0.35, sx: 0.08, sy: 1.35, y: -6, e: 'in' },
+        { t: 0.55, sx: 0.08, sy: 1.35, y: -6 },
+        { t: 0.72, sx: 1.18, sy: 0.88, y: 0, e: 'out' },
+        { t: 1, sx: 1, sy: 1, e: 'outBack' },
+      ],
+      torso: [{ t: 0 }, { t: 0.15, r: 10 }, { t: 0.72, r: -12, e: 'out' }, { t: 1, e: 'inOut' }],
+    },
+    alpha: [{ t: 0, v: 1 }, { t: 0.3, v: 1 }, { t: 0.4, v: 0.25 }, { t: 0.6, v: 0.25 }, { t: 0.7, v: 1 }],
+  },
+  // Starwarden: the beacon staff is thrust up and pulses (the shield ring leaves at 0.4).
+  {
+    id: 'ability.beacon',
+    durationMs: 800,
+    loop: false,
+    impactAt: 0.4,
+    tracks: {
+      armF: [{ t: 0 }, { t: 0.25, r: -60, e: 'out' }, { t: 0.4, r: -150, e: 'out' }, { t: 0.8, r: -140 }, { t: 1, e: 'inOut' }],
+      foreF: [{ t: 0 }, { t: 0.4, r: -10 }, { t: 1 }],
+      torso: [{ t: 0 }, { t: 0.25, r: 6 }, { t: 0.4, r: -6, e: 'out' }, { t: 1, e: 'inOut' }],
+      root: [{ t: 0 }, { t: 0.25, sx: 1.08, sy: 0.93, e: 'out' }, { t: 0.42, sx: 0.95, sy: 1.07, y: -3, e: 'out' }, { t: 0.7, sx: 1, sy: 1, y: 0 }, { t: 1 }],
+    },
+  },
+  // Harpoon Gunner: a braced yank back on the line after the hit (Reel In).
+  {
+    id: 'ability.reel',
+    durationMs: 620,
+    loop: false,
+    impactAt: 0.3,
+    tracks: {
+      torso: [{ t: 0 }, { t: 0.15, r: -6, e: 'out' }, { t: 0.3, r: 16, e: 'in' }, { t: 0.7, r: 12 }, { t: 1, e: 'inOut' }],
+      armF: [{ t: 0 }, { t: 0.3, r: 30, e: 'in' }, { t: 0.7, r: 26 }, { t: 1, e: 'inOut' }],
+      armB: [{ t: 0 }, { t: 0.3, r: 40, e: 'in' }, { t: 0.7, r: 34 }, { t: 1, e: 'inOut' }],
+      root: [{ t: 0 }, { t: 0.3, x: -5, sx: 1.06, sy: 0.95, e: 'in' }, { t: 0.7, x: -4 }, { t: 1, x: 0, sx: 1, sy: 1, e: 'inOut' }],
+    },
+  },
 ];

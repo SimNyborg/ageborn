@@ -84,6 +84,15 @@ export function followFocus(fronts: { left: number | null; right: number | null 
   return null;
 }
 
+/**
+ * The spectator follow focus (A17.4 "Pause and replays"): the midpoint of both ground fronts with no
+ * bias toward either side; one side's front alone when only it has units; null with no units.
+ */
+export function spectatorFocus(fronts: { left: number | null; right: number | null }): number | null {
+  if (fronts.left !== null && fronts.right !== null) return (fronts.left + fronts.right) / 2;
+  return fronts.left ?? fronts.right;
+}
+
 /** The follow target centre (A17.4 "Framing"): the focus sits at 55% of the view from your side. */
 export function framingCenter(focus: number, mySide: Side, viewLu: number): number {
   return focus - (mySide === 0 ? 1 : -1) * 0.05 * viewLu;

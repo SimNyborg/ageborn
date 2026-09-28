@@ -16,7 +16,7 @@ export interface AppUi {
   /** The battle view created for a sim (for the HUD bridge and the tutorial hand). */
   viewOf(sim: Sim): BattleView | undefined;
   /** Builds a mounted battle view for a sim (battles and replays). */
-  createView(sim: Sim, mySide?: 0 | 1): SessionView;
+  createView(sim: Sim, mySide?: 0 | 1, o?: { spectator?: boolean }): SessionView;
   /** Frames for replays (the Pixi ticker in the app). */
   scheduler: FrameScheduler | null;
   portrait(card: CardId, foil: Foil, size: number): Promise<string>;

@@ -96,10 +96,17 @@ over).
 | Age | Large-area colours | Accent (≤ 10% of a silhouette) |
 |---|---|---|
 | Stone | stone brown `#8C7B68`, moss `#6E8B3D`, bone `#EDE3C8` | ochre `#C98A3D` |
+| Bronze (A17.12) | sandstone `#CDBE9E`, verdigris `#4F8F7F`, dusk plum `#6A5566` | polished bronze `#B8863B` |
 | Medieval | slate `#6B7682`, wine `#8E2A4A`, parchment `#E8DFC8` | gold `#D4A437` |
 | Gunpowder | bottle green `#2E5E4E`, cream `#EFE6CF`, dark wood `#4A3B2E` | brass `#C9A227` |
+| Industrial (A17.12) | iron `#5B6168`, coal `#2B2A2E`, smoke cream `#DCD6C8`, muted brick `#8A6A63` | copper `#B06A3B` |
 | Modern | olive `#62664A`, khaki `#B8A67A`, gunmetal `#3A3F45` | signal red-violet `#B0306A` |
 | Future | charcoal `#23262E`, magenta `#F03AA8`, mint `#3AF0B4`, white | cyan `#29E3F5` |
+| Cosmic (A17.12) | void `#1E1830`, nebula violet `#8E44C8`, star white `#F2F0FF` | mint `#3FE0B0` |
+
+On units the Cosmic void is nudged to `#33264C` (hue 260°): the design value sits at 254°, on the edge
+of the blue team band, and at full saturation it would count against the colour rule. Bronze armour uses
+the muted `#B09C78` / `#7A6C54`; polished bronze stays an accent.
 
 The zone names every age uses (`skin`, `hair`, `cloth`, `cloth2`, `cloth3`, `leather`, `metal`, `metal2`,
 `wood`, `wood2`, `stone`, `fur`, `bone`, `accent`, …) are in `palette.ts` (`AGE_ZONES`); each puppet

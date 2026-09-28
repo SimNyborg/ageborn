@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { CAMERA, Camera, springOmega, springStep } from '../camera';
 import { edgeSpeed, releaseVelocity } from '../input';
 import { WORLD_LEFT_LU, WORLD_RIGHT_LU } from '../layout';
-import { cameraFronts, followFocus, framingCenter } from '../seam';
+import { cameraFronts, followFocus, framingCenter, spectatorFocus } from '../seam';
 
 function phone(): Camera {
   const c = new Camera();
@@ -220,5 +220,15 @@ describe('input helpers (A17.4)', () => {
     ];
     expect(releaseVelocity(samples, 205)).toBeCloseTo(2000);
     expect(releaseVelocity(samples, 400)).toBe(0);
+  });
+});
+
+describe('spectator follow (A17.4, replays)', () => {
+  it('follows the midpoint of both fronts with no side bias', () => {
+    expect(spectatorFocus({ left: 200, right: 1800 })).toBe(1000);
+    expect(spectatorFocus({ left: 900, right: 960 })).toBe(930);
+    expect(spectatorFocus({ left: 400, right: null })).toBe(400);
+    expect(spectatorFocus({ left: null, right: 1500 })).toBe(1500);
+    expect(spectatorFocus({ left: null, right: null })).toBeNull();
   });
 });

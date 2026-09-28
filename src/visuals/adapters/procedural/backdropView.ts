@@ -101,6 +101,13 @@ function appBaseUrl(): string {
   return env?.BASE_URL ?? '/';
 }
 
+/**
+ * Ages with pre-rendered far and mid layers (art/blender/world/backdrop.py `AGES`). The A17 ages
+ * (Bronze, Industrial, Cosmic) draw their code-painted layers until the pipeline renders them, so the
+ * game never requests files that do not exist.
+ */
+export const PRERENDERED_BACKDROP_AGES: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+
 /** Pre-rendered layer files (art/blender/world/backdrop.py). */
 export function backdropLayerUrl(age: AgeId, file: string): string {
   return `art/backdrops/${age}/${file}`;
@@ -138,7 +145,7 @@ export class BackdropTextures {
 
   private loadAge(age: AgeId): void {
     const key = `age.${age}`;
-    if (!this.canBake || !this.prerendered || this.requested.has(key)) return;
+    if (!this.canBake || !this.prerendered || this.requested.has(key) || !PRERENDERED_BACKDROP_AGES.includes(age)) return;
     this.requested.add(key);
     void (async () => {
       try {

@@ -25,3 +25,10 @@ Needed changes (not made by the art task):
 3. Unit manifest entries for `unit.<slug>` once the bronze content is in `content.units`.
 
 Rebuild: `art/blender/world/render_bronze.py units|world --out <dir>` (see its docstring).
+
+## Resolution (A17 asset registration)
+
+Items 2 and 3 are done by WP4 (world sheets and unit entries for all three A17 ages). Item 1 (the
+generator's `AGES`) is in `art/**`, which WP4 was asked not to edit while the art task works there; the
+summary was generated from a scratch copy with the eight ages, and the script change is requested in
+`art-a17-pipeline-ages.md`.

@@ -90,12 +90,13 @@ async function start(root: HTMLElement): Promise<void> {
   const arenas = (services.content as { arenas?: { list?: { id: string }[] } | null }).arenas;
   const arena = arenas?.list?.[booted.save?.arenaIndex ?? 0]?.id ?? 'tar_pits';
 
-  const createView = (sim: Sim, mySide: 0 | 1 = 0): SessionView => {
+  const createView = (sim: Sim, mySide: 0 | 1 = 0, o: { spectator?: boolean } = {}): SessionView => {
     const view = new BattleView({
       sim,
       art,
       audio: services.audio,
       mySide,
+      spectator: o.spectator === true,
       settings: viewSettings(),
       isMobile,
       arena,

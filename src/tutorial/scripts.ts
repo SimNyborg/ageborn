@@ -119,8 +119,9 @@ const TUSKBACK = 1 as const;
 /**
  * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (680 / 690 /
  * 520 / 700 XP) and Grogg's base at 90% (content, `docs/requests/wp1-tutorial-pacing.md`) the match
- * follows the A8 draft: Medieval at ~0:55, Gunpowder ~1:36, Modern ~2:07, Future ~2:40 and Grogg
- * falls at ~2:59, so each age gets time on screen. Grogg sends three dummies before his Tuskback,
+ * follows the A8 draft: Medieval at ~0:55, Gunpowder ~1:33, Modern ~1:55, Future ~2:25 and Grogg
+ * falls at ~2:30 (A17's longer lane with faster walking and the three-wide front end it about 30 s
+ * before A8's 3:00). Grogg sends three dummies before his Tuskback,
  * so the four Stone lessons (Bonker, first kill, Pebbler, Rock Tosser) come before the first evolve.
  */
 function groggSends(): GroggSend[] {
@@ -147,8 +148,12 @@ function groggGrants(content: CompiledContent, groggUnits: readonly (CardId | nu
   });
 }
 
-/** The Pebbler slides in at 0:17 [0:20], after "Kills earn gold". */
-export const MATCH1_PEBBLER_TICK = sec(17);
+/**
+ * The Pebbler slides in at 0:24 [0:20], after "Kills earn gold" (the first kill lands at ~0:18 on the
+ * 2,000 lu lane and its beat stays 5 s; an earlier unlock let a quick player train the Pebbler before
+ * its beat could show).
+ */
+export const MATCH1_PEBBLER_TICK = sec(24);
 /** 150 gold for the Rock Tosser when Grogg's Tuskback walks on, 0:38 [0:40]. */
 export const MATCH1_TURRET_GRANT_TICK = sec(38);
 export const MATCH1_TURRET_GRANT = 150;
@@ -209,14 +214,14 @@ export const MATCH1: MatchScript = {
  * The A8 draft times are in brackets; the order of the beats is the A8 order.
  */
 export const MATCH1_TIMING = {
-  firstKill: 297, // 0:14.9 [0:17]
+  firstKill: 366, // 0:18.3 [0:17]
   evolveReady: 1038, // 0:51.9 [0:50]
   medieval: 1101, // 0:55.1 [0:55]
   arrowStormReady: 1280, // 1:04.0 [1:20]
-  gunpowder: 1911, // 1:35.6 [1:30]
-  modern: 2541, // 2:07.1 [2:00]
-  future: 3201, // 2:40.1 [2:35]
-  groggFalls: 3577, // 2:58.9 [3:00]
+  gunpowder: 1851, // 1:32.6 [1:30]
+  modern: 2301, // 1:55.1 [2:00]
+  future: 2901, // 2:25.1 [2:35]
+  groggFalls: 3006, // 2:30.3 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */

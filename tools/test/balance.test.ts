@@ -117,12 +117,15 @@ describe('runBalance', () => {
     const ids = r.checks.map((c) => c.id);
     expect(ids).toContain('mirror.full.median');
     expect(ids).toContain('mirror.short.finalBell');
+    expect(ids).toContain('mirror.standard.median');
+    expect(ids).toContain('info.standard.finalBell');
     expect(ids).toContain('card.meteor_shower');
     expect(ids).not.toContain('card.pebbler');
     expect(r.checks.find((c) => c.id === 'card.meteor_shower')?.verdict).toBe('fail');
     expect(r.data.cards.find((c) => c.card === 'pebbler')?.inBaseline).toBe(true);
-    expect(r.data.matches).toBe(4);
-    expect(r.data.mirrors).toHaveLength(2);
+    // One mirror match each in Full, Standard (A17.14) and Short War, plus the card's two.
+    expect(r.data.matches).toBe(5);
+    expect(r.data.mirrors).toHaveLength(3);
     expect(r.tool).toBe('balance');
   }, 60_000);
 });

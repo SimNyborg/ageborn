@@ -109,6 +109,15 @@ describe('tutorial bubble placement (audit #2, #14)', () => {
     });
   }
 
+  it('never covers the minimap: the Evolve bubble goes beside the button instead of below it (A17.5)', () => {
+    const minimap: Rect = { x: 342, y: 96, w: 596, h: 36 };
+    const pos = placeBubble(targets.evolve!, 130, 52, W, H, H * 0.12, [minimap]);
+    const bubble = { x: pos.left, y: pos.top, w: 130, h: 52 };
+    expect(overlaps(bubble, minimap)).toBe(false);
+    expect(overlaps(bubble, targets.evolve!)).toBe(false);
+    expect(pos.placement).toBe('left');
+  });
+
   it('goes below a target in the top bar and above one in the tray', () => {
     expect(placeBubble(targets.evolve!, 300, 52, W, H, H * 0.12).placement).toBe('below');
     expect(placeBubble(targets.card!, 300, 52, W, H, H * 0.12).placement).toBe('above');

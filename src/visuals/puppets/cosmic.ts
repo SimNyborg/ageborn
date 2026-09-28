@@ -1,0 +1,278 @@
+/**
+ * Cosmic Age puppets (DESIGN A17.11 units and turrets, A17.12 art notes, the Star Ark base).
+ * Each entry is a procedural visual source keyed like its manifest id; the 3D sprite sheets
+ * (`public/art/units/cosmic`) replace the units once loaded, and these stay the fallback.
+ */
+import { AGE_ZONES } from '../palette';
+import '../parts/cosmic';
+import { base, type BasePuppet } from '../rigs/base';
+import { biped } from '../rigs/biped';
+import { slot } from '../rigs/common';
+import { flyer, vehicle } from '../rigs/machines';
+import { turret, type TurretPuppet } from '../rigs/turret';
+import type { PuppetDef } from '../types';
+
+const Z = AGE_ZONES.cosmic;
+const zone = (k: string): number => Z[k] ?? 0x888888;
+
+/** Extra Cosmic zones. Violet and mint sit outside the team hue bands; star white is neutral. */
+const X = {
+  ...Z,
+  glass: 0xcfe9f2,
+  crystal: 0xe0d6fa,
+  robe: 0x3e3058,
+  void: 0x221832,
+  smoke: 0x8a86a0,
+};
+
+/** Legionaries: star-white limbs over the void suit. */
+const armored = { ...X, sleeve: zone('cloth3'), forearm: zone('cloth3'), glove: zone('metal2'), pants: zone('cloth'), shin: zone('cloth3'), boot: zone('metal2') };
+
+export const COSMIC_UNITS: PuppetDef[] = [
+  biped({
+    id: 'unit.star_legionnaire',
+    age: 'cosmic',
+    palette: armored,
+    head: 'cosmic.head.plain',
+    eyes: null,
+    hat: [{ part: 'cosmic.helmet.visor', tag: 'prop' }],
+    torso: 'cosmic.torso.armor',
+    pelvis: 'cosmic.pelvis.armor',
+    weapon: { part: 'cosmic.energyblade', rot: 100 },
+    offhand: { part: 'cosmic.deflector', x: 3, y: 1, z: 44 },
+    pose: { armF: -30, foreF: -50, armB: -30, foreB: -60 },
+    attack: 'biped.attack.swing',
+    ability: 'ability.shield_raise',
+    group: 'infantry',
+    size: 'small',
+  }),
+  biped({
+    id: 'unit.ion_ranger',
+    age: 'cosmic',
+    height: 70,
+    palette: { ...armored, skin: 0xcfa98c },
+    head: 'cosmic.head.plain',
+    eyes: 'shared.eyes.angry',
+    hat: [{ part: 'cosmic.helmet.ranger', tag: 'prop' }],
+    torso: 'cosmic.torso.armor',
+    pelvis: 'cosmic.pelvis.armor',
+    weapon: { part: 'cosmic.ionrifle', rot: 180, y: 2, muzzle: { x: 0, y: -44 } },
+    pose: { armF: -78, foreF: -12, armB: -64, foreB: -46 },
+    attack: 'biped.attack.shoot',
+    group: 'ranged',
+    size: 'small',
+    twirl: false,
+  }),
+  vehicle({
+    id: 'unit.hover_tank',
+    age: 'cosmic',
+    palette: X,
+    height: 104,
+    center: 30,
+    bones: [
+      { id: 'hull', parent: 'spin', x: 0, y: 14 },
+      { id: 'padB', parent: 'hull', x: -18, y: 8 },
+      { id: 'padF', parent: 'hull', x: 16, y: 8 },
+      { id: 'turret', parent: 'hull', x: -4, y: -22 },
+      { id: 'barrel', parent: 'turret', x: 10, y: -7 },
+      { id: 'muzzle', parent: 'barrel', x: 32, y: 0 },
+      { id: 'flag1', parent: 'turret', x: -10, y: -12 },
+    ],
+    slots: [
+      slot('cosmic.hover.flag', 'flag1', 4, { noWidth: true }),
+      slot('cosmic.hover.pad', 'padB', 8, { tone: 'back', id: 'padFar' }),
+      slot('cosmic.hover.gun', 'barrel', 9, { tag: 'weapon', noWidth: true }),
+      slot('cosmic.hover.turret', 'turret', 10),
+      slot('cosmic.hover.hull', 'hull', 12),
+      slot('cosmic.hover.pad', 'padF', 13),
+    ],
+    muzzleBone: 'muzzle',
+    attack: 'vehicle.attack.recoil',
+    ability: 'ability.recoil',
+    group: 'heavy',
+    size: 'large',
+    speed: 55,
+  }),
+  biped({
+    id: 'unit.graviton_halberdier',
+    age: 'cosmic',
+    height: 72,
+    palette: { ...armored, skin: 0xa8876f },
+    head: 'cosmic.head.plain',
+    eyes: 'shared.eyes.angry',
+    hat: [{ part: 'cosmic.helmet.fin', tag: 'prop' }],
+    torso: 'cosmic.torso.armor',
+    pelvis: 'cosmic.pelvis.armor',
+    weapon: { part: 'cosmic.halberd', rot: 160 },
+    pose: { armF: -32, foreF: -58, armB: -55, foreB: -40, legF: -10, legB: 8 },
+    attack: 'biped.attack.thrust',
+    ability: 'ability.shield_raise',
+    group: 'antiArmor',
+    size: 'medium',
+  }),
+  biped({
+    id: 'unit.starwarden',
+    age: 'cosmic',
+    height: 68,
+    palette: { ...X, skin: 0xcfa98c, sleeve: zone('cloth'), forearm: X.robe, glove: zone('skin'), pants: X.robe, shin: X.robe, boot: zone('metal2') },
+    head: 'cosmic.head.sage',
+    hairBack: [{ part: 'cosmic.hood.warden' }],
+    torso: 'cosmic.torso.robe',
+    pelvis: 'cosmic.pelvis.robe',
+    weapon: { part: 'cosmic.beaconstaff', rot: 68, muzzle: { x: 0, y: -56 } },
+    pose: { armF: -18, foreF: -42, armB: 10, foreB: -30 },
+    attack: 'biped.attack.cast',
+    ability: 'ability.beacon',
+    group: 'support',
+    size: 'small',
+    twirl: false,
+  }),
+  biped({
+    id: 'unit.warp_stalker',
+    age: 'cosmic',
+    height: 70,
+    palette: { ...X, skin: 0x86695a, sleeve: zone('cloth'), forearm: zone('cloth'), glove: zone('metal2'), pants: zone('cloth'), shin: zone('cloth'), boot: zone('metal2') },
+    head: 'cosmic.head.plain',
+    eyes: null,
+    hat: [{ part: 'cosmic.hood.stalker', tag: 'prop' }],
+    back: [{ part: 'cosmic.cloak', x: -2, y: -4 }],
+    torso: 'cosmic.torso.stalker',
+    pelvis: 'cosmic.pelvis.armor',
+    weapon: { part: 'cosmic.claw', rot: 90 },
+    pose: { armF: -40, foreF: -40, armB: 20, foreB: -40, torso: 10, legF: -14, legB: 10 },
+    attack: 'biped.attack.swing',
+    ability: 'ability.blink',
+    group: 'epic',
+    size: 'medium',
+  }),
+  flyer({
+    id: 'unit.mothership',
+    age: 'cosmic',
+    palette: X,
+    height: 70,
+    center: 22,
+    bones: [
+      { id: 'body', parent: 'spin', x: 0, y: 0 },
+      { id: 'dome', parent: 'body', x: 0, y: -12 },
+      { id: 'emitter', parent: 'body', x: 0, y: 14 },
+      { id: 'muzzle', parent: 'emitter', x: 0, y: 4 },
+      { id: 'flag1', parent: 'dome', x: -2, y: -22 },
+    ],
+    slots: [
+      slot('cosmic.mother.pennant', 'flag1', 5, { noWidth: true }),
+      slot('cosmic.mother.dome', 'dome', 8),
+      slot('cosmic.mother.ring', 'emitter', 9, { noWidth: true }),
+      slot('cosmic.mother.disc', 'body', 10),
+    ],
+    muzzleBone: 'muzzle',
+    attack: 'flyer.attack.beam',
+    ability: 'ability.bomb_drop',
+    group: 'legendary',
+    size: 'huge',
+    legendary: true,
+    speed: 40,
+  }),
+];
+
+export const COSMIC_TURRETS: TurretPuppet[] = [
+  turret({
+    id: 'turret.ion_turret',
+    age: 'cosmic',
+    palette: X,
+    height: 30,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -22 },
+      { id: 'barrel', parent: 'pivot', x: 0, y: 0 },
+      { id: 'muzzle', parent: 'pivot', x: 22, y: 0 },
+    ],
+    slots: [slot('cosmic.turret.flag', 'root', 5, { x: -14, y: -6 }), slot('cosmic.turret.pylon', 'root', 10), slot('cosmic.turret.ion', 'barrel', 12)],
+    aim: [-35, 25],
+  }),
+  turret({
+    id: 'turret.starburst_gun',
+    age: 'cosmic',
+    palette: X,
+    height: 36,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -24 },
+      { id: 'barrel', parent: 'pivot', x: 0, y: 0 },
+      { id: 'muzzle', parent: 'pivot', x: 24, y: 0 },
+    ],
+    slots: [slot('cosmic.turret.flag', 'root', 5, { x: -14, y: -6 }), slot('cosmic.turret.pylon', 'root', 10), slot('cosmic.turret.starburst', 'barrel', 12)],
+    aim: [-35, 25],
+  }),
+  turret({
+    id: 'turret.starfall_battery',
+    age: 'cosmic',
+    palette: X,
+    height: 34,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -12, rot: -55 },
+      { id: 'barrel', parent: 'pivot', x: 0, y: 0 },
+      { id: 'muzzle', parent: 'pivot', x: 26, y: 0 },
+    ],
+    slots: [slot('cosmic.turret.flag', 'root', 5, { x: -16, y: -6 }), slot('cosmic.turret.launcher', 'barrel', 9), slot('cosmic.turret.dish', 'root', 12)],
+    aim: [0, 0],
+  }),
+  turret({
+    id: 'turret.tachyon_lance',
+    age: 'cosmic',
+    palette: X,
+    height: 34,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -24 },
+      { id: 'barrel', parent: 'pivot', x: 0, y: 0 },
+      { id: 'muzzle', parent: 'pivot', x: 40, y: 0 },
+    ],
+    slots: [slot('cosmic.turret.flag', 'root', 5, { x: -14, y: -6 }), slot('cosmic.turret.pylon', 'root', 10), slot('cosmic.turret.lance', 'barrel', 12)],
+    aim: [-35, 25],
+  }),
+];
+
+export const COSMIC_BASE: BasePuppet = base({
+  id: 'base.cosmic',
+  age: 'cosmic',
+  palette: X,
+  height: 320,
+  width: 160,
+  bones: [
+    { id: 'body', parent: 'root', x: 0, y: 0 },
+    { id: 'flag1', parent: 'body', x: -60, y: -268 },
+    { id: 'flag2', parent: 'body', x: -150, y: -140 },
+    { id: 'torch1', parent: 'body', x: -66, y: -64 },
+    { id: 'torch2', parent: 'body', x: -12, y: -64 },
+    { id: 'smoke', parent: 'body', x: -90, y: -240 },
+  ],
+  slots: [
+    slot('cosmic.base.flag', 'flag2', 0.5, { when: { crumbleMax: 2 } }),
+    slot('cosmic.base.fin', 'body', 0.8),
+    slot('cosmic.base.chunk', 'body', 0.9, { when: { crumbleMax: 1 } }),
+    slot('cosmic.base.hull', 'body', 1),
+    slot('cosmic.base.ring', 'body', 1.5),
+    slot('cosmic.base.banner', 'body', 2, { when: { crumbleMax: 2 } }),
+    slot('cosmic.base.gate', 'body', 3),
+    slot('cosmic.base.crack1', 'body', 4, { when: { crumbleMin: 1 } }),
+    slot('cosmic.base.crack2', 'body', 4.1, { when: { crumbleMin: 2 } }),
+    slot('cosmic.base.flag', 'flag1', 5, { when: { crumbleMax: 2 }, id: 'flagTop' }),
+    slot('cosmic.base.light', 'torch1', 9),
+    slot('cosmic.base.light', 'torch2', 9),
+    slot('cosmic.base.ledge', 'body', 10, { x: -8, y: -40 }),
+    slot('cosmic.base.ledge', 'body', 10, { x: -10, y: -90, id: 'ledge2' }),
+    slot('cosmic.base.ledge', 'body', 10, { x: -24, y: -150, id: 'ledge3' }),
+    slot('cosmic.base.ledge', 'body', 10, { x: -46, y: -212, id: 'ledge4' }),
+    slot('cosmic.base.treasury1', 'body', 12, { x: -146, y: -8, when: { treasuryMin: 1 } }),
+    slot('cosmic.base.treasury2', 'body', 12, { x: -124, y: -8, when: { treasuryMin: 2 } }),
+    slot('cosmic.base.treasury3', 'body', 12.1, { x: -100, y: -8, when: { treasuryMin: 3 } }),
+    slot('cosmic.base.rubble', 'body', 13, { when: { crumbleMin: 2 } }),
+    slot('cosmic.base.smoke', 'smoke', 14, { when: { crumbleMin: 3 } }),
+  ],
+  mounts: [
+    { x: -8, y: -45 },
+    { x: -10, y: -95 },
+    { x: -24, y: -155 },
+    { x: -46, y: -217 },
+  ],
+  hornAt: { x: -90, y: -350 },
+  flags: ['flag1', 'flag2'],
+  flickers: ['torch1', 'torch2'],
+});

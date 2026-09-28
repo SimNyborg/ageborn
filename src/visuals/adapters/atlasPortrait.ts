@@ -8,10 +8,18 @@
 import type { AgeId, Foil } from '@/contracts/ids';
 import { drawPortraitPlate, foilFrame } from '../portraits';
 
+/**
+ * Units whose sheet is installed but whose card still is not rendered yet (`art/blender/gen_portraits.py`
+ * needs the render frames). They keep the procedural portrait, so the game never requests a missing file.
+ * `src/visuals/test/unitSheets.test.ts` fails once a still appears, so this list shrinks with the art.
+ */
+export const UNITS_WITHOUT_STILLS: ReadonlySet<string> = new Set(['riveter', 'sapper']);
+
 /** `art/units/<age>/<slug>.json` → `art/portraits/<slug>` (no extension), or null for other sources. */
 export function portraitStillBase(source: string): string | null {
   const m = /art\/units\/[a-z]+\/([a-z0-9_]+)\.json$/.exec(source);
-  return m ? `art/portraits/${m[1]}` : null;
+  const slug = m?.[1];
+  return slug !== undefined && !UNITS_WITHOUT_STILLS.has(slug) ? `art/portraits/${slug}` : null;
 }
 
 const images = new Map<string, Promise<HTMLImageElement>>();

@@ -2,6 +2,22 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28: A17 art and sound registered for Bronze, Industrial and Cosmic (cloud session)
+
+**What works**
+
+- The 21 new units, 12 turrets and 3 bases draw with their 3D sprite sheets; each also has a procedural puppet in the house style as fallback and card art. All 8 ages load per age (Stone and Bronze baked at boot: 59 ms of the 400 ms budget).
+- Code-painted backdrops: Bronze (temples, colonnade, olive hills, volcano), Industrial (chimneys, gas holders, viaduct with a train, smog), Cosmic (nebulae, ringed planet, crystal spires, asteroids). The split-age seam blends them with the old ages.
+- Effects: 7 projectiles, 6 beams, 4 ability and 6 power effects; age icons for all 8 ages, the 6 power icons, the 3 camera icons; 4 new signature animations (Colossus stomp, Warp Stalker blink, Starwarden beacon, Harpoon reel).
+- Sound: the recorded Bronze, Industrial and Cosmic effect sheets, music and intensity layers, stingers in every key; ZzFX and sequenced fallbacks for all of them; key changes follow +2, +2, +1, +1, +1, +1, +1 with the lead dropping an octave past +6.
+- Checks: typecheck and build pass; initial download 446 KB. Visuals (1,105) and audio (152) tests pass except the unit-sheet summary whenever the art task re-renders a unit (rerun the generator). The in-browser art checks pass (136 visuals, 66 effects), and a live bot match shows Bronze and the seam with no console errors.
+
+**Still open**
+
+- Other packages: power and ability effects and the eight-age key steps in the battle view (`docs/requests/wp5-a17-new-age-fx.md`), the app's boot ages (`docs/requests/wp11-a17-boot-ages.md`), the art pipeline's age lists, Riveter and Sapper card stills and a pre-rendered backdrop for the new ages (`docs/requests/art-a17-pipeline-ages.md`), and the DESIGN merge of A17 for `tests/integrity/ids.test.ts`. Lint fails on one unused import in `src/ui/hud/model.ts` (HUD work in progress).
+- Audio: the Medieval, Gunpowder, Modern and Future music files are recorded in their old five-age keys, so in an 8-age match the music does not rise at the Medieval evolve and drops a semitone at Modern. They need a re-render in E, F, G and G# (`tools/audio`).
+- The gallery's world view shows the backdrop only over the first ~1,460 lu of the long lane (pre-existing since the long lane).
+
 ## 2026-09-28: A17 step 2, eight ages as data (cloud session)
 
 **What works**

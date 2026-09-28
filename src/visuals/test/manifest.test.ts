@@ -10,20 +10,30 @@ import { CLIP_LIBRARY, UNIT_CLIP_NAMES } from '../clips';
 import { buildManifest, MANIFEST, OVERRIDES, PROCEDURAL_MANIFEST } from '../manifest';
 import { puppetById } from '../library';
 
-/** A14.1, spelled out here so the test checks the manifest against DESIGN rather than against itself. */
+/**
+ * A14.1 with the A17.12 ids, spelled out here so the test checks the manifest against DESIGN rather than
+ * against itself.
+ */
 const A14 = {
-  ages: ['stone', 'medieval', 'gunpowder', 'modern', 'future'],
+  ages: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'],
   arenas: ['tar_pits', 'frostfang', 'kingsmoat', 'powder_bay', 'iron_front', 'neon_harbor', 'orbital_ring', 'chrono_rift'],
-  projectiles: 'rock boulder bee log arrow bolt goose musket lob cannonball grapeshot rocket chainshot bomb bullet shell flak plasma plasma_mortar gravity_orb'.split(' ').map((s) => `proj.${s}`),
+  projectiles: [
+    ...'rock boulder bee log arrow bolt goose musket lob cannonball grapeshot rocket chainshot bomb bullet shell flak plasma plasma_mortar gravity_orb'.split(' '),
+    ...'javelin scorpion_bolt harpoon flare ion starburst star_shard'.split(' '),
+  ].map((s) => `proj.${s}`),
   effects: [
     ...'beam_laser beam_rail arc_chain tongue pitch_pour heal_beam'.split(' '),
     ...'spark_blunt spark_slash spark_pierce spark_bullet scorch_laser blast spark_effective puff_resisted muzzle trail splash_ring explosion_s explosion_m explosion_l dust_poof ko_stars coin xp_sparkle debris'.split(' '),
     ...'heal_glyph shield_bubble mark_reticle gravity_swirl smoke_cloud emp_ring time_ripple roar_ring call_marker dizzy legendary_aura'.split(' '),
     ...'telegraph_zone aurochs meteor arrow_rain decree_glow cannonball_rain plane_bomber parachute orbital_beam nanite_swarm'.split(' '),
     ...'evolve_pillar last_stand_wave overdrive_frame siege_vignette'.split(' '),
+    // A17.12: instant attacks, ability effects and power effects
+    ...'sun_beam gorgon_gaze tesla_arc beam_void beam_ion beam_tachyon'.split(' '),
+    ...'stomp_ring fuse_spark beacon_ring blink'.split(' '),
+    ...'tidal_wave aegis_glow iron_horse zeppelin star_shard_rain warp_portal'.split(' '),
   ].map((s) => `fx.${s}`),
   roleGroups: ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'],
-  ui: ['icon.horn', 'trim.bronze', 'trim.silver', 'trim.gold', 'foil.bronze', 'foil.silver', 'foil.holo'],
+  ui: ['icon.horn', 'trim.bronze', 'trim.silver', 'trim.gold', 'foil.bronze', 'foil.silver', 'foil.holo', 'icon.chevron', 'icon.base_alert', 'icon.follow'],
 };
 
 describe('A14.1 coverage', () => {
@@ -34,8 +44,9 @@ describe('A14.1 coverage', () => {
     for (const p of Object.values(content.powers)) if (!MANIFEST[p.visualId]) missing.push(p.visualId);
     for (const s of Object.values(content.skins)) if (!MANIFEST[s.visualId]) missing.push(s.visualId);
     expect(missing).toEqual([]);
-    expect(Object.values(content.units).length).toBe(36);
-    expect(Object.values(content.turrets).length).toBe(20);
+    // A17.13: 56 units (plus the hidden Training Dummy) and 32 turrets
+    expect(Object.values(content.units).length).toBe(57);
+    expect(Object.values(content.turrets).length).toBe(32);
     expect(Object.values(content.skins).length).toBe(12);
   });
 

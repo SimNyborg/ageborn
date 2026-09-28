@@ -1,0 +1,354 @@
+/**
+ * Bronze Age puppets (DESIGN A17.9 units and turrets, A17.12 art notes, the Ziggurat base).
+ * Each entry is a procedural visual source keyed like its manifest id; the 3D sprite sheets
+ * (`public/art/units/bronze`) replace the units once loaded, and these stay the fallback.
+ */
+import { AGE_ZONES } from '../palette';
+import '../parts/bronze';
+import '../parts/medieval';
+import { sized } from '../parts/registry';
+import { base, type BasePuppet } from '../rigs/base';
+import { biped } from '../rigs/biped';
+import { slot } from '../rigs/common';
+import { vehicle, walker } from '../rigs/machines';
+import { rider } from '../rigs/rider';
+import { turret, type TurretPuppet } from '../rigs/turret';
+import type { BoneDef, PuppetDef, SlotDef } from '../types';
+
+const Z = AGE_ZONES.bronze;
+const zone = (k: string): number => Z[k] ?? 0x888888;
+
+/** Extra Bronze zones (all under the colour rule's 40% saturation in the team hue bands). */
+const X = {
+  ...Z,
+  linen: 0xefe6d0,
+  linen2: 0xcfc3a6,
+  leaf: 0x7f9a6a,
+  hide: 0xd9c9a6,
+  hoof: 0x4a403a,
+  snout: 0xb09a8c,
+  glow: 0xfff1d6,
+  fire: 0xf6d6a0,
+  sand: 0xd8c9a4,
+  clay: 0xa8826a,
+  coin: 0xe6c45c,
+  smoke: 0x9a948c,
+};
+
+/** Soldiers: bronze greaves over sandalled feet, bare arms. */
+const soldier = { ...X, sleeve: zone('skin'), forearm: zone('skin'), glove: zone('skin'), pants: zone('leather'), shin: zone('metal'), boot: zone('leather') };
+
+function scaleBones(bones: BoneDef[], k: number): BoneDef[] {
+  return bones.map((b) => ({ ...b, x: b.x * k, y: b.y * k }));
+}
+function scaleSlots(slots: SlotDef[], k: number): SlotDef[] {
+  return slots.map((s) => ({ ...s, part: sized(s.part, k), x: (s.x ?? 0) * k, y: (s.y ?? 0) * k }));
+}
+
+const COLOSSUS_K = 1.02;
+
+export const BRONZE_UNITS: PuppetDef[] = [
+  biped({
+    id: 'unit.hoplite',
+    age: 'bronze',
+    palette: { ...soldier, skin: 0xcfa98c, hair: 0x3a302a },
+    head: 'bronze.head.warrior',
+    eyes: 'shared.eyes.angry',
+    hat: [{ part: 'bronze.helm.crested', tag: 'prop' }],
+    torso: 'bronze.torso.linen',
+    pelvis: 'bronze.pelvis.pteruges',
+    weapon: { part: 'bronze.spear', rot: 100 },
+    offhand: { part: 'bronze.shield.round', x: 3, y: 2, z: 44 },
+    pose: { armF: -30, foreF: -50, armB: -40, foreB: -60 },
+    attack: 'biped.attack.thrust',
+    ability: 'ability.shield_raise',
+    group: 'infantry',
+    size: 'small',
+  }),
+  biped({
+    id: 'unit.javelineer',
+    age: 'bronze',
+    height: 66,
+    palette: { ...soldier, skin: 0xa8876f, hair: 0x2e2826, shin: zone('skin') },
+    head: 'bronze.head.young',
+    hat: [{ part: 'bronze.headband' }],
+    torso: 'bronze.torso.linen',
+    pelvis: 'bronze.pelvis.pteruges',
+    weapon: { part: 'bronze.javelin', rot: 170, muzzle: { x: 0, y: -36 } },
+    extras: [slot(sized('bronze.javelins', 66 / 68), 'torso', 2, { x: -8, y: -8, rot: -10, noWidth: true })],
+    pose: { armF: -115, foreF: -45, armB: 30, foreB: -20 },
+    attack: 'biped.attack.throw',
+    group: 'ranged',
+    size: 'small',
+    twirl: false,
+  }),
+  rider({
+    id: 'unit.war_chariot',
+    age: 'bronze',
+    height: 110,
+    mount: {
+      palette: { ...X, fur: 0x8a7462, fur2: 0x6a5848, hair: 0x3a302a },
+      body: 'bronze.horse.body',
+      bodyHeight: 38,
+      legFront: 'bronze.horse.leg.front',
+      legBack: 'bronze.horse.leg.back',
+      legLen: 28,
+      frontX: 13,
+      backX: -13,
+      legY: 10,
+      farDx: -5,
+      neck: { x: 14.4, y: -11, rot: -6 },
+      head: { part: 'medieval.horse.head', x: 0, y: 0 },
+      eyes: { part: 'shared.eyes.beast', x: 12, y: -25 },
+      tail: { part: 'medieval.horse.tail', x: -14, y: -8, rot: 18 },
+      saddle: { x: -15, y: -13 },
+      extraBones: [
+        { id: 'cart', parent: 'body', x: -12, y: 14 },
+        { id: 'wheel1', parent: 'body', x: -24, y: 27 },
+        { id: 'flag1', parent: 'cart', x: -24, y: -22 },
+      ],
+      extras: [
+        slot('bronze.horse.harness', 'body', 21),
+        slot('bronze.chariot.pennant', 'flag1', 0.5, { noWidth: true }),
+        slot('bronze.chariot.cart', 'cart', 38, { noWidth: true }),
+        slot('bronze.chariot.wheel', 'wheel1', 39, { noWidth: true }),
+      ],
+      headTopY: -110,
+    },
+    rider: {
+      palette: { ...soldier, skin: 0xcfa98c, hair: 0x3a302a },
+      head: 'bronze.head.warrior',
+      eyes: 'shared.eyes.angry',
+      hat: [{ part: 'bronze.helm.crested', tag: 'prop' }],
+      torso: 'bronze.torso.cuirass',
+      pelvis: 'bronze.pelvis.pteruges',
+      weapon: { part: 'bronze.spear', rot: 120, y: 2 },
+      pose: { armF: -20, foreF: -70, armB: -40, foreB: -40, torso: 6 },
+    },
+    attack: 'rider.attack.lance',
+    ability: 'ability.charge_lean',
+    group: 'heavy',
+    size: 'large',
+  }),
+  biped({
+    id: 'unit.phalangite',
+    age: 'bronze',
+    height: 72,
+    palette: { ...soldier, skin: 0xe8c9ad, hair: 0x5a4a3e },
+    head: 'bronze.head.warrior',
+    eyes: 'shared.eyes.angry',
+    hat: [{ part: 'bronze.helm.tall', tag: 'prop' }],
+    torso: 'bronze.torso.cuirass',
+    pelvis: 'bronze.pelvis.pteruges',
+    weapon: { part: 'bronze.sarissa', rot: 160 },
+    offhand: { part: 'bronze.shield.small', x: 2, y: 4, z: 44 },
+    pose: { armF: -32, foreF: -58, armB: -55, foreB: -40, legF: -10, legB: 8 },
+    attack: 'biped.attack.thrust',
+    ability: 'ability.shield_raise',
+    group: 'antiArmor',
+    size: 'medium',
+  }),
+  biped({
+    id: 'unit.standard_bearer',
+    age: 'bronze',
+    height: 66,
+    palette: { ...soldier, skin: 0x86695a, hair: 0x2a2530, shin: zone('skin') },
+    head: 'bronze.head.young',
+    hat: [{ part: 'bronze.laurel' }],
+    torso: 'bronze.torso.cuirass',
+    pelvis: 'bronze.pelvis.pteruges',
+    weapon: { part: 'bronze.javelin', rot: 170, muzzle: { x: 0, y: -36 } },
+    offhand: { part: 'bronze.standard.banner', x: 0, y: 4, rot: 6, z: 3 },
+    extraBones: [{ id: 'drum', parent: 'pelvis', x: -9, y: 2 }],
+    extras: [slot(sized('bronze.drum', 66 / 68), 'drum', 21)],
+    pose: { armF: -150, foreF: -20, armB: -20, foreB: -40 },
+    attack: 'biped.attack.throw',
+    ability: 'ability.radio_call',
+    group: 'support',
+    size: 'small',
+    twirl: false,
+  }),
+  vehicle({
+    id: 'unit.scorpion',
+    age: 'bronze',
+    palette: { ...X, skin: 0xcfa98c },
+    height: 62,
+    center: 20,
+    bones: [
+      { id: 'hull', parent: 'spin', x: 0, y: 20 },
+      { id: 'wheel1', parent: 'hull', x: -16, y: -7.6 },
+      { id: 'wheel2', parent: 'hull', x: 8, y: -7.6 },
+      { id: 'turret', parent: 'hull', x: -4, y: -30 },
+      { id: 'barrel', parent: 'turret', x: 0, y: 0, rot: -6 },
+      { id: 'muzzle', parent: 'barrel', x: 26, y: 0 },
+      { id: 'crew', parent: 'hull', x: -24, y: -12 },
+      { id: 'flag1', parent: 'hull', x: -12, y: -24 },
+    ],
+    slots: [
+      slot('bronze.scorpion.flag', 'flag1', 4, { noWidth: true }),
+      slot('bronze.scorpion.crew', 'crew', 8, { tag: 'prop' }),
+      slot('bronze.scorpion.frame', 'hull', 10),
+      slot('bronze.scorpion.wheel', 'wheel1', 12),
+      slot('bronze.scorpion.wheel', 'wheel2', 12, { id: 'wheelB' }),
+      slot('bronze.scorpion.bow', 'barrel', 14, { tag: 'weapon', noWidth: true }),
+    ],
+    muzzleBone: 'muzzle',
+    attack: 'vehicle.attack.recoil',
+    ability: 'ability.recoil',
+    group: 'epic',
+    size: 'large',
+    wheelRadius: 7.6,
+    speed: 45,
+  }),
+  walker({
+    id: 'unit.bronze_colossus',
+    age: 'bronze',
+    palette: X,
+    height: 204,
+    center: 80 * COLOSSUS_K,
+    bones: scaleBones(
+      [
+        { id: 'hull', parent: 'spin', x: 0, y: 0 },
+        { id: 'head', parent: 'hull', x: 2, y: -62 },
+        { id: 'legB', parent: 'hull', x: -12, y: 14 },
+        { id: 'shinB', parent: 'legB', x: 0, y: 30 },
+        { id: 'footB', parent: 'shinB', x: 0, y: 30 },
+        { id: 'legF', parent: 'hull', x: 12, y: 14 },
+        { id: 'shinF', parent: 'legF', x: 0, y: 30 },
+        { id: 'footF', parent: 'shinF', x: 0, y: 30 },
+        { id: 'armB', parent: 'hull', x: -30, y: -50, rot: 10 },
+        { id: 'foreB', parent: 'armB', x: 0, y: 26, rot: -14 },
+        { id: 'armF', parent: 'hull', x: 30, y: -50, rot: -12 },
+        { id: 'foreF', parent: 'armF', x: 0, y: 26, rot: -18 },
+      ],
+      COLOSSUS_K,
+    ),
+    slots: scaleSlots(
+      [
+        slot('bronze.colossus.upperarm', 'armB', 3, { tone: 'back', noWidth: true }),
+        slot('bronze.colossus.fist', 'foreB', 4, { tone: 'back', noWidth: true }),
+        slot('bronze.colossus.thigh', 'legB', 5, { tone: 'back' }),
+        slot('bronze.colossus.shin', 'shinB', 6, { tone: 'back' }),
+        slot('bronze.colossus.foot', 'footB', 7, { tone: 'back' }),
+        // A11 redundant team cue: a pennant on every heavy
+        slot('bronze.colossus.flag', 'hull', 9.5, { x: -22, y: -56, id: 'pennant', noWidth: true }),
+        slot('bronze.colossus.hull', 'hull', 10),
+        slot('bronze.colossus.head', 'head', 11.5),
+        slot('bronze.colossus.thigh', 'legF', 12, { id: 'thighF' }),
+        slot('bronze.colossus.shin', 'shinF', 13, { id: 'shinFs' }),
+        slot('bronze.colossus.foot', 'footF', 14, { id: 'footFs' }),
+        slot('bronze.colossus.upperarm', 'armF', 15, { id: 'upperF', noWidth: true }),
+        slot('bronze.colossus.fist', 'foreF', 16, { tag: 'weapon', id: 'fistF' }),
+      ],
+      COLOSSUS_K,
+    ),
+    attack: 'walker.attack.slam',
+    ability: 'ability.stomp',
+    group: 'legendary',
+    size: 'huge',
+    legendary: true,
+    legLen: 60 * COLOSSUS_K,
+    legDeg: 16,
+    speed: 40,
+  }),
+];
+
+export const BRONZE_TURRETS: TurretPuppet[] = [
+  turret({
+    id: 'turret.archer_tower',
+    age: 'bronze',
+    palette: { ...X, skin: 0xcfa98c },
+    height: 56,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -40 },
+      { id: 'muzzle', parent: 'pivot', x: 10, y: -8 },
+    ],
+    slots: [slot('bronze.turret.tower', 'root', 10), slot('bronze.turret.archer', 'pivot', 9)],
+    aim: [0, 0],
+  }),
+  turret({
+    id: 'turret.sun_mirror',
+    age: 'bronze',
+    palette: X,
+    height: 34,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -18 },
+      { id: 'muzzle', parent: 'pivot', x: 7, y: 0 },
+    ],
+    slots: [slot('bronze.turret.flag', 'root', 5, { x: -14, y: -4 }), slot('bronze.turret.tripod', 'root', 10), slot('bronze.turret.dish', 'pivot', 12)],
+    aim: [-35, 25],
+  }),
+  turret({
+    id: 'turret.onager',
+    age: 'bronze',
+    palette: X,
+    height: 50,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -10 },
+      { id: 'arm', parent: 'pivot', x: -2, y: -4, rot: -60 },
+      { id: 'muzzle', parent: 'root', x: 12, y: -46 },
+    ],
+    slots: [slot('bronze.turret.flag', 'root', 5, { x: -18, y: -6 }), slot('bronze.turret.onagerArm', 'arm', 9), slot('bronze.turret.onagerFrame', 'pivot', 10)],
+    aim: [0, 0],
+    fire: 'turret.fire.sling',
+  }),
+  turret({
+    id: 'turret.gorgon_bust',
+    age: 'bronze',
+    palette: X,
+    height: 46,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -22 },
+      { id: 'muzzle', parent: 'pivot', x: 6, y: -8 },
+    ],
+    slots: [slot('bronze.turret.flag', 'root', 5, { x: -16, y: -6 }), slot('bronze.turret.plinth', 'root', 10), slot('bronze.turret.gorgon', 'pivot', 12)],
+    aim: [0, 0],
+  }),
+];
+
+export const BRONZE_BASE: BasePuppet = base({
+  id: 'base.bronze',
+  age: 'bronze',
+  palette: X,
+  height: 300,
+  width: 156,
+  bones: [
+    { id: 'body', parent: 'root', x: 0, y: 0 },
+    { id: 'flag1', parent: 'body', x: -60, y: -240 },
+    { id: 'flag2', parent: 'body', x: -128, y: -186 },
+    { id: 'torch1', parent: 'body', x: -62, y: -56 },
+    { id: 'torch2', parent: 'body', x: -12, y: -56 },
+    { id: 'smoke', parent: 'body', x: -90, y: -220 },
+  ],
+  slots: [
+    slot('bronze.base.flag', 'flag2', 0.5, { when: { crumbleMax: 2 } }),
+    slot('bronze.base.shrine', 'body', 0.8),
+    slot('bronze.base.steps', 'body', 1),
+    slot('bronze.base.chunk', 'body', 1.1, { when: { crumbleMax: 1 } }),
+    slot('bronze.base.banner', 'body', 1.5, { when: { crumbleMax: 2 } }),
+    slot('bronze.base.door', 'body', 3),
+    slot('bronze.base.crack1', 'body', 4, { when: { crumbleMin: 1 } }),
+    slot('bronze.base.crack2', 'body', 4.1, { when: { crumbleMin: 2 } }),
+    slot('bronze.base.flag', 'flag1', 5, { when: { crumbleMax: 2 }, id: 'flagTop' }),
+    slot('bronze.base.brazier', 'torch1', 9),
+    slot('bronze.base.brazier', 'torch2', 9),
+    slot('bronze.base.ledge', 'body', 10, { x: -8, y: -40 }),
+    slot('bronze.base.ledge', 'body', 10, { x: -14, y: -104, id: 'ledge2' }),
+    slot('bronze.base.ledge', 'body', 10, { x: -30, y: -164, id: 'ledge3' }),
+    slot('bronze.base.ledge', 'body', 10, { x: -48, y: -222, id: 'ledge4' }),
+    slot('bronze.base.treasury1', 'body', 12, { x: -148, y: 0, when: { treasuryMin: 1 } }),
+    slot('bronze.base.treasury2', 'body', 12, { x: -126, y: 0, when: { treasuryMin: 2 } }),
+    slot('bronze.base.treasury3', 'body', 12.1, { x: -104, y: 0, when: { treasuryMin: 3 } }),
+    slot('bronze.base.rubble', 'body', 13, { when: { crumbleMin: 2 } }),
+    slot('bronze.base.smoke', 'smoke', 14, { when: { crumbleMin: 3 } }),
+  ],
+  mounts: [
+    { x: -8, y: -45 },
+    { x: -14, y: -109 },
+    { x: -30, y: -169 },
+    { x: -48, y: -227 },
+  ],
+  hornAt: { x: -86, y: -326 },
+  flags: ['flag1', 'flag2'],
+  flickers: ['torch1', 'torch2'],
+});

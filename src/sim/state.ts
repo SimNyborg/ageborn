@@ -221,9 +221,6 @@ export interface Ctx {
   /** Per-tick spatial index (built at step 7) and a scratch list for range queries. */
   spatial: SpatialIndex;
   scratch: UnitRt[];
-  /** Per-tick cache of the open gate test (A16.4 stall fix): the tick it was computed for, per side. */
-  gateOpenTick: number;
-  gateOpen: [boolean, boolean];
 }
 
 /** Creates the context and the tick-0 state for a match. */
@@ -306,8 +303,6 @@ export function createCtx(cfg: MatchConfig): Ctx {
     scriptCursor: 0,
     spatial: createSpatial(),
     scratch: [],
-    gateOpenTick: -1,
-    gateOpen: [false, false],
   };
 }
 

@@ -267,6 +267,18 @@ describe('damage numbers (A12)', () => {
     expect(n.liveCount).toBe(0);
   });
 
+  it('merges gold popups within 300 ms and 60 lu into one sum (no "+3090" overlap)', () => {
+    const n = new FloatingNumbers(new Container(), defaultFeelConfig.tuning, mulberry32(3), plain);
+    n.show('gold', 30, { x: 1500, y: -70 }, { important: true, scale: 1 });
+    n.show('gold', 90, { x: 1540, y: -70 }, { important: true, scale: 1 });
+    expect(n.shown()).toEqual([{ kind: 'gold', value: 120 }]);
+    // Far apart or later: separate popups.
+    n.show('gold', 45, { x: 1700, y: -70 }, { important: true, scale: 1 });
+    n.update(400, 1);
+    n.show('gold', 10, { x: 1500, y: -70 }, { important: true, scale: 1 });
+    expect(n.shown().map((x) => x.value)).toEqual([120, 45, 10]);
+  });
+
   it('formats values', () => {
     expect(formatNumber(1234)).toBe('1,234');
     expect(formatNumber(20_000)).toBe('20k');

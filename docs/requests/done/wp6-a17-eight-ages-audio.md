@@ -17,3 +17,16 @@ Needed:
 - The three arrangements and music cues (A17.12 table), and the A17.8 key-change rule for seven evolves:
   +2, +2, +1, +1, +1, +1, +1 semitones, the lead dropping an octave once the total passes +6.
 - `src/dev/soundboard/page.tsx` got titles for the three new sound groups.
+
+## Resolution (A17 asset registration)
+
+Done by WP6. `src/audio/assets.gen.ts` is the A17 render (`tools/audio/generated/assets.gen.a17.ts`): the
+`bronze`, `industrial` and `cosmic` effect sheets, `alert_base` in `battle`, the three music cues with their
+intensity stems, and the stingers up to `.k9`. `sounds.ts` lists all 27 A17.12 ids with ZzFX fallbacks
+(groups follow the recorded sheets; `SOUND_GROUPS` has the eight ages, boot groups UI, battle, Stone,
+Bronze), `pending_sounds.json` is deleted. `music.ts` has the three sequenced arrangements (lyre, frame
+drum, reed pipe; cornet, tuba, anvil, pistons; choir, sub pulse, bells) as fallbacks, `AGE_CUES` in eight-age
+order, `EVOLVE_TRANSPOSE_STEPS` `[2, 2, 1, 1, 1, 1, 1]`, `STINGER_KEYS` up to 9, and the sequencer drops lead
+lines an octave above +6 (`transposedMidi`). Render still sends the old steps (`wp5-a17-new-age-fx.md`).
+Open in WP6: the Medieval, Gunpowder, Modern and Future music files are still recorded in their five-age
+keys (D, E, F, F#), not the eight-age chain (E, F, G, G#); see PROGRESS.

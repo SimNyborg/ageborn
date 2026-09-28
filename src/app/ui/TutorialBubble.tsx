@@ -74,34 +74,46 @@ function targetRect(root: HTMLElement, target: PromptTarget | null, view: Battle
   return p ? { x: p.x - half, y: p.y - half, w: MOUNT_RING_PX, h: MOUNT_RING_PX } : null;
 }
 
+/** True when two rects overlap. */
+function overlaps(a: Rect, b: Rect): boolean {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+}
+
 /**
  * Places a `bw` × `bh` bubble next to `t` inside a `W` × `H` screen without covering `t`: above,
- * below, right, then left; the first side with room wins. `top` keeps the HUD top bar free.
+ * below, right, then left; the first side with room wins. `top` keeps the HUD top bar free. A side
+ * whose bubble would cover one of the `avoid` rects (the minimap strip and its jump buttons) is
+ * skipped while another side fits; if none does, the first side with room is used anyway.
  */
-export function placeBubble(t: Rect | null, bw: number, bh: number, W: number, H: number, topLimit = 0): BubblePos {
+export function placeBubble(t: Rect | null, bw: number, bh: number, W: number, H: number, topLimit = 0, avoid: readonly Rect[] = []): BubblePos {
   if (!t) return { placement: 'center', left: (W - bw) / 2, top: H * 0.38 - bh / 2, arrow: 0 };
   const cx = t.x + t.w / 2;
   const cy = t.y + t.h / 2;
   const clampX = (x: number): number => Math.max(EDGE, Math.min(W - EDGE - bw, x));
   const clampY = (y: number): number => Math.max(topLimit + EDGE, Math.min(H - EDGE - bh, y));
+  const options: BubblePos[] = [];
   const aboveTop = t.y - GAP - bh;
   if (aboveTop >= topLimit + EDGE) {
     const left = clampX(cx - bw / 2);
-    return { placement: 'above', left, top: aboveTop, arrow: cx - left };
+    options.push({ placement: 'above', left, top: aboveTop, arrow: cx - left });
   }
   const belowTop = t.y + t.h + GAP;
   if (belowTop + bh <= H - EDGE) {
     const left = clampX(cx - bw / 2);
-    return { placement: 'below', left, top: belowTop, arrow: cx - left };
+    options.push({ placement: 'below', left, top: belowTop, arrow: cx - left });
   }
   const rightLeft = t.x + t.w + GAP;
   if (rightLeft + bw <= W - EDGE) {
     const top = clampY(cy - bh / 2);
-    return { placement: 'right', left: rightLeft, top, arrow: cy - top };
+    options.push({ placement: 'right', left: rightLeft, top, arrow: cy - top });
   }
-  const left = Math.max(EDGE, t.x - GAP - bw);
-  const top = clampY(cy - bh / 2);
-  return { placement: 'left', left, top, arrow: cy - top };
+  const leftLeft = t.x - GAP - bw;
+  if (leftLeft >= EDGE || options.length === 0) {
+    const top = clampY(cy - bh / 2);
+    options.push({ placement: 'left', left: Math.max(EDGE, leftLeft), top, arrow: cy - top });
+  }
+  const clear = options.find((o) => !avoid.some((a) => overlaps({ x: o.left, y: o.top, w: bw, h: bh }, a)));
+  return clear ?? (options[0] as BubblePos);
 }
 
 /** A cartoon glove pointing up; its fingertip is at (19, 3) of the 48 px box. */
@@ -181,10 +193,20 @@ export function TutorialBubble(p: {
   const box = root?.getBoundingClientRect();
   const W = box?.width ?? 800;
   const H = box?.height ?? 600;
-  const pos = placeBubble(rect, size.w, size.h, W, H, H * 0.12);
+  // Never cover the minimap strip (its base and front buttons) unless the target is the strip itself.
+  const avoid = prompt.target === 'minimap' ? [] : stripRects(root);
+  const pos = placeBubble(rect, size.w, size.h, W, H, H * 0.12, avoid);
   const isMount = (prompt.target === 'mount0' || prompt.target === 'mount1' || prompt.target === 'mountBuy') && rect !== null && rect.w === MOUNT_RING_PX && rect.h === MOUNT_RING_PX;
   // Beats ask for an action: a hand shows it. Hints only point.
   const tapHand = prompt.kind === 'beat' && rect !== null && prompt.hand !== 'powerDrag';
+  // The hand hangs down and to the right of the fingertip; where that would cover the minimap (the
+  // Evolve button sits beside its base button), it is mirrored to hang to the left instead.
+  const tipX = rect ? rect.x + rect.w / 2 : 0;
+  const tipY = rect ? rect.y + rect.h / 2 : 0;
+  const handAt = (flip: boolean): Rect => ({ x: flip ? tipX - (48 - TIP.x) - 4 : tipX - TIP.x + 4, y: tipY - TIP.y + 6, w: 48, h: 48 });
+  const covered = (h: Rect): number => avoid.reduce((sum, a) => sum + Math.max(0, Math.min(h.x + h.w, a.x + a.w) - Math.max(h.x, a.x)) * Math.max(0, Math.min(h.y + h.h, a.y + a.h) - Math.max(h.y, a.y)), 0);
+  const flipHand = tapHand && covered(handAt(true)) < covered(handAt(false));
+  const hand = handAt(flipHand);
   return (
     <>
       {rect ? (
@@ -211,10 +233,10 @@ export function TutorialBubble(p: {
       </div>
       {tapHand && rect ? (
         <div
-          class="ab-hand ab-hand--tap"
+          class={`ab-hand ab-hand--tap${flipHand ? ' ab-hand--flip' : ''}`}
           data-testid="tutorial-hand"
           aria-hidden="true"
-          style={{ left: `${Math.round(rect.x + rect.w / 2 - TIP.x + 4)}px`, top: `${Math.round(rect.y + rect.h / 2 - TIP.y + 6)}px` }}
+          style={{ left: `${Math.round(hand.x)}px`, top: `${Math.round(hand.y)}px` }}
         >
           <i class="ab-hand-ripple" />
           <Hand />
@@ -237,4 +259,13 @@ export function TutorialBubble(p: {
       ) : null}
     </>
   );
+}
+
+/** The minimap (strip, base and front buttons) in `root` coordinates (empty without a minimap). */
+function stripRects(root: HTMLElement | null): Rect[] {
+  const strip = root?.querySelector('[data-testid="hud-minimap"]');
+  if (!root || !strip) return [];
+  const b = root.getBoundingClientRect();
+  const r = strip.getBoundingClientRect();
+  return [{ x: r.left - b.left - 4, y: r.top - b.top - 4, w: r.width + 8, h: r.height + 8 }];
 }
