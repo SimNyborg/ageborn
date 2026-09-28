@@ -932,7 +932,15 @@ function checkMeta(issues: Issues, c: Content): void {
   unique(issues, 'cosmetics.titles', cos.titles.map((t) => t.id));
   unique(issues, 'cosmetics.emotes', cos.emotes.map((e) => e.id));
   issues.check(cos.banners.length === 8 && cos.frames.length === 8, 'cosmetics', '8 banners and 8 frames (A5.8)');
-  issues.check(cos.titles.length === 13 && cos.emotes.length === 6, 'cosmetics', '13 titles and 6 emotes (A5.8)');
+  issues.check(cos.titles.length === 17 && cos.emotes.length === 6, 'cosmetics', '13 titles plus 4 feat titles and 6 emotes (A5.8, A15.10)');
+  issues.check(c.feats.order.length === 12, 'feats', '12 hidden feats (A15.10)');
+  for (const t of cos.titles) {
+    if (t.unlock.kind === 'feat') issues.check(c.feats.list[t.unlock.feat] !== undefined, `cosmetics.titles.${t.id}`, `unknown feat "${t.unlock.feat}"`);
+  }
+  for (const id of c.feats.order) {
+    const title = c.feats.list[id]?.title;
+    if (title) issues.check(cos.titles.some((x) => x.id === title), `feats.${id}`, `unknown title "${title}"`);
+  }
   for (const b of cos.banners) issues.check(list[b.arena - 1] !== undefined, `cosmetics.banners.${b.id}`, 'unknown arena');
   for (const t of cos.titles) {
     const u = t.unlock;

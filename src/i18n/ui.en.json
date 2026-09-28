@@ -24,7 +24,11 @@
     "currency": {
       "amber": "Amber",
       "dust": "Dust",
-      "trophies": "Trophies"
+      "trophies": "Trophies",
+      "amberInfo": "Amber can't be bought. It has no money value.",
+      "dustInfo": "Dust can't be bought. It has no money value.",
+      "amberUse": "Earned by playing. Spend it on upgrades.",
+      "dustUse": "Earned from spare copies and feats. Spend it on crafting cards and skins."
     },
     "ai": {
       "chip": "AI",
@@ -47,7 +51,7 @@
       "hitsAir": "Hits air",
       "noGround": "No ground",
       "noAir": "No air",
-      "mod": "\u00d7{x} vs {tag}",
+      "mod": "×{x} vs {tag}",
       "strongVs": "Strong vs",
       "weakVs": "Weak vs",
       "nextDelta": "+{n}",
@@ -139,7 +143,12 @@
       "chargesFull": "Full",
       "roadNext": "Next reward at {n}",
       "roadDone": "Trophy Road complete",
-      "arenaN": "Arena {n}"
+      "arenaN": "Arena {n}",
+      "warChest": "War Chest {n}/{max}",
+      "warChestHint": "Ladder and Daily wins fill it. Its progress never expires.",
+      "supply": "Supply Capsule",
+      "supplyMore": "Supply Capsule: {n} more matches",
+      "supplyMoreOne": "Supply Capsule: 1 more match"
     },
     "quest": {
       "claim": "Claim",
@@ -148,7 +157,8 @@
       "reroll": "Swap quest (free once a day)",
       "rerollHint": "One free quest swap today",
       "rerollUsed": "Quest swap used today",
-      "none": "New quests arrive at 04:00"
+      "none": "New quests arrive at 04:00",
+      "queueLine": "New quests arrive each day. Up to 21 can wait for you."
     },
     "odds": {
       "open": "Odds and pity",
@@ -279,7 +289,30 @@
       "home": "Home",
       "replay": "Watch replay",
       "openCapsule": "Open capsule",
-      "next": "Next battle"
+      "next": "Next battle",
+      "featFound": "Feat found: {name}",
+      "progress": {
+        "road": "Trophy Road: next reward at {n}",
+        "warChest": "War Chest {n}/{max}",
+        "conquest": "Conquest stars {n}/{max}"
+      },
+      "alsoEarned": "Also earned",
+      "night": "It's late. Everything you've earned is saved.",
+      "tilt": "Tough run. Watch the closest one, or call it here?",
+      "watch": "Watch",
+      "warmUp": "Warm-up match",
+      "break": "You've played for an hour. A good moment for a break? Everything you've earned is saved.",
+      "keepPlaying": "Keep playing",
+      "wrapTitle": "Good session!",
+      "wrapSummary": "Wins: {wins} · Losses: {losses} · New cards: {cards}",
+      "wrapCharges": "Capsule charges used up. Wins still pay Amber and a Clay pip.",
+      "wrapNext": "Next on your road:",
+      "copy": "Copy result",
+      "copied": "Result copied",
+      "dailyLine": "Ageborn Daily {date} · {modifier} · {difficulty} · {outcome} in {time} · Base {base}%",
+      "outcomeWon": "Won",
+      "outcomeLost": "Lost",
+      "outcomeDraw": "Draw"
     },
     "warplan": {
       "presets": "War Plan presets",
@@ -480,6 +513,18 @@
       "creditsGame": "Ageborn: design, code and art made for this game.",
       "creditsSound": "Sound effects made with ZzFX by Frank Force (MIT).",
       "creditsTech": "Built with PixiJS, Preact and Vite."
+    },
+    "info": {
+      "title": "How capsules work",
+      "bankCap": "Holds up to {n}. When full, it stops filling.",
+      "charges": "Capsule charges",
+      "chargesRule": "A ladder win uses one charge and earns a capsule. You get +1 charge every {h} hours.",
+      "supplyRule": "+1 allowance each day. Each time you finish {n} matches, one allowance turns into a Supply Capsule.",
+      "daily": "Daily Challenge rewards",
+      "dailyRule": "+1 each day. A Daily Challenge win uses one and pays an Age Capsule.",
+      "clayRule": "Wins without a charge fill it. {n} pips make a Clay Capsule.",
+      "kept": "Nothing you have earned is ever taken away.",
+      "rookie": "Your first 20 opponents make extra mistakes while you learn. After that, opponent difficulty adapts to your recent results."
     }
   }
 }

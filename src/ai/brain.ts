@@ -357,7 +357,10 @@ export class Brain {
     // (the evolve-delay column: 2 s at VII, 0.5 s at X); then it evolves anyway.
     let evolveWanted = false;
     const evolveWaited = mem.evolveSince === null ? -1 : obs.tick - mem.evolveSince;
-    if (v.evolveReady && !P.neverEvolves && evolveWaited >= 0 && (t.safeWindowEvolve || evolveWaited >= t.evolveDelayTicks)) {
+    // XP at exactly 100% can also be the final age (memory.ts `evolveVisible`), so a safe-window tier
+    // acts at once only on XP above the threshold, and otherwise after its cap as before.
+    const earlyOk = t.safeWindowEvolve && obs.me.xpBp > BP;
+    if (v.evolveReady && !P.neverEvolves && evolveWaited >= 0 && (earlyOk || evolveWaited >= t.evolveDelayTicks)) {
       const safe = t.safeWindowEvolve ? this.safeWindow(v) || evolveWaited >= t.evolveDelayTicks : true;
       if (safe || W.greed >= GREEDY_BP) {
         evolveWanted = true;

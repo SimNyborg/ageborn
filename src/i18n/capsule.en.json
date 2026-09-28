@@ -41,10 +41,6 @@
       "equipped": "Equipped",
       "openAll": "Open all ({n})"
     },
-    "wardrobe": {
-      "duplicate": "Duplicate: +{n} Dust",
-      "newSkin": "New skin!"
-    },
     "aria": {
       "stage": "Capsule opening. Tap to strike, hold to fast-forward.",
       "crateStage": "Wardrobe Crate opening. Hold to fast-forward.",
@@ -59,9 +55,7 @@
       "title": "Odds and guarantees",
       "setContents": "Set contents",
       "setContentsBody": "Starter Capsules 1-5 hold set cards chosen to get you started. They do not use the bag, and they still count for every guarantee.",
-      "close": "Close",
-      "thisCapsule": "This capsule",
-      "supplyOdds": "Supply Capsule tiers"
+      "close": "Close"
     }
   }
 }

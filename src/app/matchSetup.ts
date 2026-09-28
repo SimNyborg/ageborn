@@ -237,7 +237,7 @@ export function generalOpponent(
 }
 
 /**
- * Match 1 (A8): Tutorial format (Stone to Future, no clock) vs Old Grogg, whose base starts at 50%
+ * Match 1 (A8): Tutorial format (Stone to Future, no clock) vs Old Grogg, whose base starts at 90%
  * ("Training match", disclosed). The player's tray is scripted: Bonker only, the Pebbler slides in
  * at 0:20, and each later age offers its Infantry and Ranged commons.
  */
@@ -268,7 +268,7 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
     sides: [player, opponent.side],
     modifiers: [],
     training: {
-      enemyBaseStartBp: grogg?.baseStartBp ?? 5000,
+      enemyBaseStartBp: grogg?.baseStartBp ?? 9000,
       noClock: true,
       script: match1TrainingScript(content, groggUnits),
       manualLastStand: staged.manualLastStand,

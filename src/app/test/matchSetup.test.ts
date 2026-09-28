@@ -9,7 +9,7 @@ import { botProfileFor, generalOpponent, generalPlan, matchSetupFor, nextMatchNu
 describe('match 1 setup (A8)', () => {
   const s = tutorialMatch1(null, content, 'Old Grogg');
 
-  it('is the Tutorial format vs Old Grogg, labeled AI, base at 50%, no clock (A7.4, A8)', () => {
+  it('is the Tutorial format vs Old Grogg, labeled AI, base at 90%, no clock (A7.4, A8)', () => {
     expect(s.mode).toBe('tutorial');
     expect(s.matchNumber).toBe(1);
     expect(s.config.format).toBe('tutorial');
@@ -18,7 +18,7 @@ describe('match 1 setup (A8)', () => {
     expect(s.opponent).toMatchObject({ generalId: 'grogg', isAI: true, format: 'tutorial' });
     expect(s.opponent.disclosures).toEqual(['general.grogg.disclosure']);
     expect(s.config.sides[1].isBot).toBe(true);
-    expect(s.config.training).toMatchObject({ enemyBaseStartBp: 5000, noClock: true, manualLastStand: [false, true], stanceEnabled: [false, true] });
+    expect(s.config.training).toMatchObject({ enemyBaseStartBp: 9000, noClock: true, manualLastStand: [false, true], stanceEnabled: [false, true] });
     expect(s.config.training?.trays).toEqual(MATCH1_TRAYS);
     expect(s.script).toBe(MATCH1);
   });

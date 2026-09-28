@@ -53,7 +53,24 @@ export interface ResultInfo {
    * onboarding match 1 the app passes the match 2 request. Null opens Mode select.
    */
   request: MatchRequest | null;
+  /** At most one stopping card after the staged rewards (A15.6); the app's session counters pick it. */
+  card?: ResultCard | null;
+  /** Local hour the match ended; 22:00-06:00 adds the night line and makes Home primary (A15.6). */
+  endedHour?: number;
+  /** Daily Challenge: what the "Copy result" line needs (A9.1, A15.7). */
+  daily?: { dateKey: string; modifier: string; difficulty: DailyDifficulty } | null;
+  /** One result or loss tip (A15.12, A16.6) as an i18n key, shown in the summary row. */
+  tipKey?: string | null;
 }
+
+/**
+ * The stopping cards (A15.6), in priority tilt, break, wrap. None blocks input, starts a timer or
+ * advances by itself; Home is the primary button on each.
+ */
+export type ResultCard =
+  | { kind: 'tilt'; watchIndex: number | null }
+  | { kind: 'break' }
+  | { kind: 'wrap'; wins: number; losses: number; newCards: number; chargesOut: boolean };
 
 /** Screens without parameters. */
 export type NoParams = object;

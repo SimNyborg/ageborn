@@ -174,7 +174,7 @@
       "personality": "Tutorial trainer",
       "signature": "Sends Training Dummies and never evolves.",
       "line": "Grogg ready. Grogg nap first.",
-      "disclosure": "Training match: Grogg's base starts at 50%."
+      "disclosure": "Training match: Grogg's base starts at 90%."
     },
     "pip": {
       "name": "Pip Quickstep",

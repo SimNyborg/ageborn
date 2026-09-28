@@ -40,6 +40,13 @@ function usePortrait(art: ArtProvider, card: CardId, skin: SkinId | null, foil: 
   return url;
 }
 
+/** "Skin for Bonker" or "Base skin: Stone Age". */
+function skinTarget(catalog: CapsuleCatalog, skin: SkinId, t: (k: string, o?: Record<string, string | number>) => string): string {
+  const target = catalog.skin(skin).target;
+  if (target.startsWith('base.')) return t('capsule.baseSkinFor', { age: t(`age.${target.slice(5)}.name`) });
+  return t('capsule.skinFor', { target: t(catalog.card(target).nameKey) });
+}
+
 function initials(name: string): string {
   const w = name.split(/\s+/).filter(Boolean);
   return ((w[0]?.[0] ?? '?') + (w[1]?.[0] ?? '')).toUpperCase();
@@ -78,6 +85,7 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
       </div>
       <div class={css.portrait}>{url ? <img src={url} alt="" draggable={false} /> : initials(name)}</div>
       <div class={css.itemName}>{name}</div>
+      {item.kind === 'skin' && item.skin ? <div class={css.itemSub}>{skinTarget(catalog, item.skin, t)}</div> : null}
       {item.foil !== 'none' ? <span class={css.foil}>{t('capsule.foilUnlocked', { foil: t(`foil.${item.foil}.name`) })}</span> : null}
       {item.dust > 0 ? <span class={css.dust}>{t('capsule.dustPlus', { n: item.dust })}</span> : null}
       {pr && pr.need !== null ? (

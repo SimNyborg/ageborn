@@ -115,21 +115,22 @@ const DUMMY = 0 as const;
 const TUSKBACK = 1 as const;
 
 /**
- * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (250 / 300 /
- * 350 / 400 XP) every dummy kill is worth 50 XP and every 1% of Grogg's base 12 XP, so the natural
- * pace is faster than the A8 draft: Medieval lands at ~0:36 [0:55] and Grogg falls at ~1:54 [3:00].
- * Grogg therefore sends only two dummies before his Tuskback, so the four Stone lessons (Bonker,
- * first kill, Pebbler, Rock Tosser) still come before the first evolve, in A8 order.
+ * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (680 / 690 /
+ * 520 / 700 XP) and Grogg's base at 90% (content, `docs/requests/wp1-tutorial-pacing.md`) the match
+ * follows the A8 draft: Medieval at ~0:55, Gunpowder ~1:36, Modern ~2:07, Future ~2:40 and Grogg
+ * falls at ~2:59, so each age gets time on screen. Grogg sends three dummies before his Tuskback,
+ * so the four Stone lessons (Bonker, first kill, Pebbler, Rock Tosser) come before the first evolve.
  */
 function groggSends(): GroggSend[] {
   const sends: GroggSend[] = [
     // Meets the first Bonker for the first kill at ~0:15 [0:17].
     { tick: sec(2), slot: DUMMY },
     { tick: sec(12), slot: DUMMY },
-    // The Tuskback trains for 4 s and walks on at ~0:23 [0:40].
-    { tick: sec(19), slot: TUSKBACK },
+    { tick: sec(22), slot: DUMMY },
+    // The Tuskback trains for 4 s and walks on at ~0:37 [0:40].
+    { tick: sec(33), slot: TUSKBACK },
   ];
-  for (let t = sec(28); t <= sec(600); t += sec(8)) sends.push({ tick: t, slot: DUMMY });
+  for (let t = sec(42); t <= sec(600); t += sec(8)) sends.push({ tick: t, slot: DUMMY });
   return sends;
 }
 
@@ -146,14 +147,14 @@ function groggGrants(content: CompiledContent, groggUnits: readonly (CardId | nu
 
 /** The Pebbler slides in at 0:17 [0:20], after "Kills earn gold". */
 export const MATCH1_PEBBLER_TICK = sec(17);
-/** 150 gold for the Rock Tosser when Grogg's Tuskback walks on, 0:24 [0:40]. */
-export const MATCH1_TURRET_GRANT_TICK = sec(24);
+/** 150 gold for the Rock Tosser when Grogg's Tuskback walks on, 0:38 [0:40]. */
+export const MATCH1_TURRET_GRANT_TICK = sec(38);
 export const MATCH1_TURRET_GRANT = 150;
 /**
- * Arrow Storm is charged at 0:42 [1:20], a few seconds into Medieval. At the retimed pace the
- * natural charge (50 s, halved on evolve) would only finish in Gunpowder, so the script fills it.
+ * Arrow Storm is charged at 1:04 [1:20], about 9 s into Medieval. The natural charge (50 s, halved
+ * on evolve) would only finish just before Gunpowder, so the script fills it.
  */
-export const MATCH1_POWER_TICK = sec(42);
+export const MATCH1_POWER_TICK = sec(64);
 
 /** "Kills earn gold" stays this long: long enough to read and to watch the coins land. */
 export const KILLS_EARN_GOLD_TICKS = sec(5);
@@ -207,13 +208,13 @@ export const MATCH1: MatchScript = {
  */
 export const MATCH1_TIMING = {
   firstKill: 297, // 0:14.9 [0:17]
-  evolveReady: 626, // 0:31.3 [0:50]
-  medieval: 711, // 0:35.6 [0:55]
-  arrowStormReady: 840, // 0:42.0 [1:20]
-  gunpowder: 951, // 0:47.6 [1:30]
-  modern: 1311, // 1:05.6 [2:00]
-  future: 1731, // 1:26.6 [2:35]
-  groggFalls: 2282, // 1:54.1 [3:00]
+  evolveReady: 1038, // 0:51.9 [0:50]
+  medieval: 1101, // 0:55.1 [0:55]
+  arrowStormReady: 1280, // 1:04.0 [1:20]
+  gunpowder: 1911, // 1:35.6 [1:30]
+  modern: 2541, // 2:07.1 [2:00]
+  future: 3201, // 2:40.1 [2:35]
+  groggFalls: 3577, // 2:58.9 [3:00]
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */

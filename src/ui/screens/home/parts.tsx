@@ -40,12 +40,14 @@ import { useUi } from '../context';
 import { opponentName } from '../model/opponent';
 import {
   arenaOf,
+  bankRules,
   chargesView,
-  dailyCapsuleView,
   questViews,
   roadProgress,
+  supplyView,
   trayCapsules,
   unlocks,
+  warChestView,
   WAR_PLAN_UNLOCK_MATCHES,
   type QuestView,
 } from '../model/progress';
@@ -79,13 +81,37 @@ export function ProfileChip() {
   );
 }
 
+/** The Amber and Dust info panels (A15.3): what it is for, and that it can't be bought. */
+function CurrencyInfo(p: { kind: 'amber' | 'dust'; onClose: () => void }) {
+  const { t } = useUi();
+  const amber = p.kind === 'amber';
+  return (
+    <Modal
+      title={t(amber ? 'ui.currency.amber' : 'ui.currency.dust')}
+      onClose={p.onClose}
+      size="sm"
+      testid={`currency-info-${p.kind}`}
+      icon={amber ? <AmberIcon size={28} /> : <DustIcon size={28} />}
+    >
+      <p class="home-info__use">{t(amber ? 'ui.currency.amberUse' : 'ui.currency.dustUse')}</p>
+      <p class="home-info__kept">{t(amber ? 'ui.currency.amberInfo' : 'ui.currency.dustInfo')}</p>
+    </Modal>
+  );
+}
+
 export function TopRight() {
   const { save, t, router } = useUi();
+  const [info, setInfo] = useState<'amber' | 'dust' | null>(null);
   const s = save.value;
   return (
     <div class="home-top__right">
-      <CurrencyChip kind="amber" value={s.currencies.amber} testid="chip-amber" />
-      <CurrencyChip kind="dust" value={s.currencies.dust} testid="chip-dust" />
+      <button type="button" class="home-chipBtn" onClick={() => setInfo('amber')} aria-label={t('ui.currency.amber')}>
+        <CurrencyChip kind="amber" value={s.currencies.amber} testid="chip-amber" />
+      </button>
+      <button type="button" class="home-chipBtn" onClick={() => setInfo('dust')} aria-label={t('ui.currency.dust')}>
+        <CurrencyChip kind="dust" value={s.currencies.dust} testid="chip-dust" />
+      </button>
+      {info ? <CurrencyInfo kind={info} onClose={() => setInfo(null)} /> : null}
       <IconButton
         icon={<GearIcon size={30} />}
         label={t('ui.nav.settings')}
@@ -197,16 +223,39 @@ export function QuestsPanel() {
           <QuestRow key={String(q.slot)} q={q} rerollLeft={qv.rerollLeft} />
         ))}
       </ul>
-      {qv.weekly ? (
-        <>
-          <h3 class="home-quests__weekly">{t('ui.home.weekly')}</h3>
-          <ul class="home-quests__list">
-            <QuestRow q={qv.weekly} rerollLeft={false} />
-          </ul>
-        </>
-      ) : null}
-      <p class="home-quests__hint">{qv.rerollLeft ? t('ui.quest.rerollHint') : t('ui.quest.rerollUsed')}</p>
+      <WarChestBar />
+      <p class="home-quests__hint">
+        {t('ui.quest.queueLine')} {qv.rerollLeft ? t('ui.quest.rerollHint') : t('ui.quest.rerollUsed')}
+      </p>
     </Panel>
+  );
+}
+
+/**
+ * The War Chest (A15.5), where the weekly quest line was: "War Chest 13/20". Counting wins fill it;
+ * at 20 it opens by itself (a Wardrobe Crate and an Age Capsule) and starts again. Never reset.
+ */
+export function WarChestBar() {
+  const { save, content, t, locale } = useUi();
+  const w = warChestView(save.value, content);
+  const label = t('ui.home.warChest', { n: formatInt(w.wins, locale), max: formatInt(w.of, locale) });
+  return (
+    <div class="home-chest" data-testid="war-chest" title={t('ui.home.warChestHint')}>
+      <span class="home-chest__icon" aria-hidden="true">
+        <CrateIcon size={34} />
+      </span>
+      <span class="home-chest__main">
+        <span class="home-chest__row">
+          <b class="home-chest__label">{label}</b>
+          <span class="home-chest__rewards">
+            <CrateIcon size={20} />
+            <CapsuleIcon tier="silver" size={22} />
+          </span>
+        </span>
+        <ProgressBar value={w.wins} max={w.of} tone="gold" thin label={label} />
+        <small class="home-chest__hint">{t('ui.home.warChestHint')}</small>
+      </span>
+    </div>
   );
 }
 
@@ -220,16 +269,56 @@ function useTicker(ms: number, active: boolean): void {
   }, [ms, active]);
 }
 
+/** The capsule info panel (A15.3): each bank's rule and cap, then the odds. No countdowns. */
+function CapsuleInfo(p: { onClose: () => void }) {
+  const { save, content, t, locale } = useUi();
+  const s = save.value;
+  const r = bankRules(content);
+  const arena = arenaOf(s, content);
+  const hours = Math.max(1, Math.round(r.chargeRegenMs / 3_600_000));
+  const cap = (n: number) => t('ui.info.bankCap', { n: formatInt(n, locale) });
+  const rows: { id: string; icon: ComponentChildren; title: string; body: string; cap?: string }[] = [
+    { id: 'charges', icon: <ClockIcon size={26} />, title: t('ui.info.charges'), body: t('ui.info.chargesRule', { h: hours }), cap: cap(r.chargesMax) },
+    {
+      id: 'supply',
+      icon: <CapsuleIcon tier="bronze" size={28} />,
+      title: t('ui.home.supply'),
+      body: t('ui.info.supplyRule', { n: r.supplyEvery }),
+      cap: cap(r.supplyMax),
+    },
+    { id: 'daily', icon: <CalendarIcon size={26} />, title: t('ui.info.daily'), body: t('ui.info.dailyRule'), cap: cap(r.dailyRewardsMax) },
+    { id: 'clay', icon: <CapsuleIcon tier="clay" size={28} />, title: t('ui.clay.label'), body: t('ui.info.clayRule', { n: content.capsules.clayMeterPips }) },
+  ];
+  return (
+    <Modal title={t('ui.info.title')} onClose={p.onClose} size="lg" testid="odds-modal" icon={<InfoIcon size={28} />}>
+      <ul class="home-info" data-testid="capsule-info">
+        {rows.map((row) => (
+          <li key={row.id} class="home-info__row" data-testid={`info-${row.id}`}>
+            <span class="home-info__icon">{row.icon}</span>
+            <span class="home-info__text">
+              <b>{row.title}</b>
+              <span>{row.body}</span>
+              {row.cap ? <small>{row.cap}</small> : null}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p class="home-info__kept">{t('ui.info.kept')}</p>
+      <p class="home-info__rookie">{t('ui.info.rookie')}</p>
+      <h3 class="home-info__h">{t('ui.odds.title')}</h3>
+      <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arena.randomLegendaries)} />
+    </Modal>
+  );
+}
+
 export function CapsuleTray() {
-  const { save, content, t, services, now, toasts } = useUi();
-  const [odds, setOdds] = useState(false);
+  const { save, content, t, services, locale } = useUi();
+  const [info, setInfo] = useState(false);
   const s = save.value;
   const pending = trayCapsules(s, content);
   const crates = s.capsules.wardrobe;
-  const charges = chargesView(s, content, now());
-  const daily = dailyCapsuleView(s, content, now());
-  useTicker(1000, charges.nextInMs !== null || daily.nextInMs !== null);
-  const arena = arenaOf(s, content);
+  const charges = chargesView(s, content, 0);
+  const supply = supplyView(s, content);
   const best = pending[0];
   return (
     <Panel
@@ -238,7 +327,7 @@ export function CapsuleTray() {
       class="home-tray"
       testid="capsule-tray"
       labelledBy="home-tray-title"
-      actions={<IconButton icon={<InfoIcon size={24} />} label={t('ui.odds.open')} onClick={() => setOdds(true)} testid="odds-open" />}
+      actions={<IconButton icon={<InfoIcon size={24} />} label={t('ui.info.title')} onClick={() => setInfo(true)} testid="odds-open" />}
     >
       <div class="home-tray__drums" data-testid="tray-drums">
         {pending.length === 0 && crates.length === 0 ? <p class="home-tray__empty">{t('ui.home.noCapsules')}</p> : null}
@@ -281,54 +370,30 @@ export function CapsuleTray() {
         </div>
       ) : null}
       <div class="home-tray__rows">
-        <div class="home-tray__row" data-testid="daily-capsule">
-          <CapsuleIcon tier="bronze" size={30} />
-          <span class="ui-grow">
-            <b>{t('ui.home.daily')}</b>
-            <small>
-              {!daily.unlocked
-                ? t('ui.home.dailyLocked')
-                : daily.bank === 0 && daily.nextInMs !== null
-                  ? t('ui.home.dailyNext', { time: formatCountdown(daily.nextInMs, t) })
-                  : t('ui.home.dailyBank', { n: daily.bank, max: daily.max })}
-            </small>
-          </span>
-          {daily.bank > 0 ? (
-            <Button
-              variant="green"
-              size="sm"
-              testid="daily-claim"
-              onClick={() => {
-                const r = services.claimDailyCapsule();
-                if (!r.ok) toasts.show(t('ui.error.generic'), { tone: 'bad' });
-              }}
-            >
-              {t('ui.home.claim')}
-            </Button>
-          ) : null}
-        </div>
+        {supply.unlocked && supply.moreMatches !== null ? (
+          <div class="home-tray__row" data-testid="supply">
+            <CapsuleIcon tier="bronze" size={30} />
+            <span class="ui-grow">
+              <b>
+                {supply.moreMatches === 1
+                  ? t('ui.home.supplyMoreOne')
+                  : t('ui.home.supplyMore', { n: formatInt(supply.moreMatches, locale) })}
+              </b>
+            </span>
+          </div>
+        ) : null}
         <div class="home-tray__row" data-testid="charges">
           <span class="home-charge" aria-hidden="true">
             <ClockIcon size={26} />
           </span>
           <span class="ui-grow">
-            <b>{t('ui.home.charges', { n: charges.charges, max: charges.max })}</b>
-            <small>
-              {charges.free > 0
-                ? t('ui.home.freeCapsules', { n: charges.free })
-                : charges.nextInMs !== null
-                  ? t('ui.home.chargeNext', { time: formatCountdown(charges.nextInMs, t) })
-                  : t('ui.home.chargesFull')}
-            </small>
+            <b>{t('ui.home.charges', { n: formatInt(charges.charges, locale), max: formatInt(charges.max, locale) })}</b>
+            {charges.free > 0 ? <small>{t('ui.home.freeCapsules', { n: charges.free })}</small> : null}
           </span>
         </div>
         <ClayMeter pips={Math.min(s.capsules.clayMeter, content.capsules.clayMeterPips)} max={content.capsules.clayMeterPips} />
       </div>
-      {odds ? (
-        <Modal title={t('ui.odds.title')} onClose={() => setOdds(false)} size="lg" testid="odds-modal" icon={<InfoIcon size={28} />}>
-          <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arena.randomLegendaries)} />
-        </Modal>
-      ) : null}
+      {info ? <CapsuleInfo onClose={() => setInfo(false)} /> : null}
     </Panel>
   );
 }

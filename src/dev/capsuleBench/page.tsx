@@ -41,8 +41,8 @@ function caseFromHash(): string {
 }
 
 function planFor(c: BenchCase): ShowPlan {
-  if (c.crate) return planWardrobeShow(c.crate, { catalog, reelReveal: c.reelReveal ?? true });
-  return planOpenAll(c.reveals ?? [], { catalog, ...(c.progress ? { progress: c.progress } : {}) });
+  if (c.crate) return planWardrobeShow(c.crate, { catalog });
+  return planOpenAll(c.reveals ?? [], { catalog, quickReveal: c.quickReveal === true, ...(c.progress ? { progress: c.progress } : {}) });
 }
 
 async function makeArt(kind: 'real' | 'fake'): Promise<ArtProvider> {
@@ -188,7 +188,7 @@ export default function CapsuleBench() {
     audio,
     catalog,
     pityRules,
-    settings: { reduceMotion, vibrate: false, teamPreset: 'default' as const },
+    settings: { reduceMotion, vibrate: false, teamPreset: 'default' as const, quickReveal: bench?.quickReveal === true },
     playMusic: false,
     onCue,
     onState: (s: RunnerState) => {
@@ -266,7 +266,7 @@ export default function CapsuleBench() {
       <div style={S.stage} ref={host} data-testid="capsule-bench-stage">
         {app && art && bench ? (
           bench.crate ? (
-            <WardrobeScreen key={`${bench.id}-${runKey}-${artKind}`} {...common} pixi={app} art={art} reveal={bench.crate} reelReveal={bench.reelReveal ?? true} {...(bench.pity ? { pity: bench.pity } : {})} />
+            <WardrobeScreen key={`${bench.id}-${runKey}-${artKind}`} {...common} pixi={app} art={art} reveal={bench.crate} {...(bench.pity ? { pity: bench.pity } : {})} />
           ) : (
             <CapsuleScreen key={`${bench.id}-${runKey}-${artKind}`} {...common} pixi={app} art={art} reveals={bench.reveals ?? []} {...(bench.progress ? { progress: bench.progress } : {})} />
           )

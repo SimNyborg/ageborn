@@ -114,8 +114,9 @@ describe("Old Grogg's scripted brain (A7.4, B10)", () => {
   it('issues train commands on schedule, for his side only, and never evolves', () => {
     const g = new GroggBrain(1);
     const out = [];
-    for (let t = 0; t <= GROGG_SCRIPT.sends[2]!.tick; t += 1) out.push(...g.onTick(obs(t)));
+    for (let t = 0; t <= GROGG_SCRIPT.sends[3]!.tick; t += 1) out.push(...g.onTick(obs(t)));
     expect(out).toEqual([
+      { t: 'train', side: 1, slot: 0 },
       { t: 'train', side: 1, slot: 0 },
       { t: 'train', side: 1, slot: 0 },
       { t: 'train', side: 1, slot: 1 },

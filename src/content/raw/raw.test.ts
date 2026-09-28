@@ -391,8 +391,9 @@ describe.each([
     });
 
     it('formats and clocks (A2.10)', () => {
+      // The Tutorial thresholds were retimed for the A8 pace (wp1-tutorial-pacing); the frozen fixture keeps the old ones.
       expect(c.formats.tutorial).toMatchObject({ ages: AGES, overdriveMs: null, siegeMs: null, finalBellMs: null,
-        retreatAfterMs: null, xpToNextOverride: [250, 300, 350, 400] });
+        retreatAfterMs: null, xpToNextOverride: c === raw ? [680, 690, 520, 700] : [250, 300, 350, 400] });
       expect(c.formats.short).toMatchObject({ ages: ['stone', 'medieval', 'gunpowder'], overdriveMs: 210000, siegeMs: 270000,
         finalBellMs: 360000, retreatAfterMs: 60000 });
       expect(c.formats.standard).toMatchObject({ ages: ['stone', 'medieval', 'gunpowder', 'modern'], overdriveMs: 270000,

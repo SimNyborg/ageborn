@@ -32,7 +32,7 @@ import { dailyDrawAt, defaultDailyDifficulty } from './daily';
 import { ladderTier } from './mmr';
 import { COMMANDER_ID_PREFIX, FIRST_LADDER_GENERAL, GENERAL_SHARE_BP, META_FLAGS, TUTORIAL_MATCH2 } from './rules';
 import { ageCards, arenaOf, RARITY_INDEX } from './tables';
-import { dayKeyOf, gameDay, type LocalTime } from './time';
+import type { LocalTime } from './time';
 
 export interface OpponentOptions {
   format?: FormatId;

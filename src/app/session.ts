@@ -48,6 +48,8 @@ import type {
 import { RingBuffer } from '@/core';
 import { FixedStepClock, HudModelBuilder, type HudExtras } from '@/render';
 import { createStatsTracker, type StatsTracker } from '@/sim';
+import type { Content } from '@/content';
+import { createFeatTracker, type FeatTracker } from '@/meta';
 
 /** Speeds a battle allows (A2.12). */
 export type BattleSpeed = 1 | 1.5 | 2;
@@ -181,6 +183,8 @@ export class BattleSessionImpl implements BattleSession {
   private readonly bots: BotSlot[];
   private readonly clock = new FixedStepClock();
   private readonly stats: StatsTracker;
+  /** Hidden feats (A15.10): fed each tick's events like the stats; never in the tutorial. */
+  private readonly feats: FeatTracker | null;
   private readonly recorded: TimedCommand[] = [];
   private readonly seq: [number, number] = [0, 0];
   private human: Command[] = [];
@@ -215,6 +219,11 @@ export class BattleSessionImpl implements BattleSession {
       ring: new RingBuffer<Observation>(Math.max(1, Math.trunc(b.controller.snapshotDelayTicks)) + 1),
     }));
     this.stats = createStatsTracker({ format: this.sim.config.format, content: this.sim.config.content }, this.mySide);
+    const typed = this.sim.config.content as Partial<Content>;
+    this.feats =
+      this.mode !== 'tutorial' && typed.feats
+        ? createFeatTracker({ content: typed as Content, format: this.sim.config.format, side: this.mySide, loadouts: this.sim.config.sides[this.mySide].loadouts })
+        : null;
     this.statusSig = signal<SessionStatus>('ready');
     this.hudSig = signal(this.hudBuilder.build(this.extras()));
     this.hud = this.hudSig;
@@ -412,6 +421,7 @@ export class BattleSessionImpl implements BattleSession {
     this.recorded.push(...cmds);
     this.relayEmotes(events);
     this.stats.push(events);
+    this.feats?.push(events);
     this.hudBuilder.afterStep?.();
     this.view?.onEvents(events);
     for (const l of this.tickListeners) l(events, this.sim);
@@ -463,6 +473,8 @@ export class BattleSessionImpl implements BattleSession {
       opponent: this.opponent,
       stats: this.stats.result(),
     };
+    const feats = this.feats?.found(replay.result) ?? [];
+    if (feats.length > 0) input.feats = feats;
     this.ended = { input, replay };
     const wasRunning = this.statusSig.peek() === 'running';
     this.setStatus('ended');

@@ -198,10 +198,14 @@ export class AppController {
     this.disposeRoute();
     if (leaving.id === 'battle') this.services.audio.music.stop(600);
     this.menuMusic();
-    // No capsules without meta (Phase 1): a capsule step completes at once. Phase 2 opens WP10's
-    // capsule show here instead.
+    // No capsules without meta (Phase 1): a capsule step completes at once. With meta the app opens
+    // WP10's capsule show over an empty title (AppRoot, `capsules/`), and `finishCapsuleStep` moves on.
     const step = this.stepSig.peek();
     if ((step === 'capsule1' || step === 'capsule2') && !this.services.meta) this.completeStep(step);
+    else if (step === 'capsule1' || step === 'capsule2') {
+      this.routeSig.value = { id: 'title', battle: null };
+      return;
+    }
     // After onboarding the start screen is Home (WP9): nothing waits behind it.
     if (this.o.homeScreen && this.stepSig.peek() === 'home') {
       this.routeSig.value = { id: 'title', battle: null };
@@ -246,6 +250,14 @@ export class AppController {
     const battle = this.build(setup);
     this.startBattle(battle);
     return battle;
+  }
+
+  /** The onboarding capsule show was closed (A8): on to the next match, or Home after capsule 2. */
+  finishCapsuleStep(): void {
+    const step = this.stepSig.peek();
+    if (step !== 'capsule1' && step !== 'capsule2') return;
+    this.completeStep(step);
+    this.showTitle();
   }
 
   /** Leaves a running battle without a result (Quit on the pause screen). */

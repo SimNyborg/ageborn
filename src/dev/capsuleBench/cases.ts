@@ -34,7 +34,8 @@ export interface BenchCase {
   title: string;
   reveals?: CapsuleReveal[];
   crate?: WardrobeReveal;
-  reelReveal?: boolean;
+  /** `Settings.quickReveal` (A15.6): open at the burst. */
+  quickReveal?: boolean;
   progress?: ProgressLookup;
   pity?: SaveDoc['pity'];
 }
@@ -170,28 +171,14 @@ const SKIN_POOL: Record<SkinRarity, SkinId[]> = { rare: [], epic: [], legendary:
 for (const s of Object.values(C.skins)) if (s.inCratePool) SKIN_POOL[s.rarity].push(s.id);
 const SKIN_RANK: Record<SkinRarity, number> = { rare: 0, epic: 1, legendary: 2 };
 
-/** A reel as the meta would build it: fillers at the true odds, winner at 45, no rarer tile at 46 (A10.1). */
-export function makeCrate(id: string, skin: SkinId, o: { duplicateDust?: number; stopOffsetBp?: number; seed?: number } = {}): WardrobeReveal {
+/** A Wardrobe Crate reveal as the meta writes it: the pre-rolled skin, no reel (A15.3). */
+export function makeCrate(id: string, skin: SkinId, o: { duplicateDust?: number } = {}): WardrobeReveal {
   const rarity = C.skins[skin]?.rarity ?? 'rare';
-  const rng = mulberry32(o.seed ?? id.length * 7 + 3);
-  const odds = C.rarities.skins;
-  const roll = (): SkinRarity => {
-    const x = rng.int(10000);
-    return x < odds.legendary.crateOddsBp ? 'legendary' : x < odds.legendary.crateOddsBp + odds.epic.crateOddsBp ? 'epic' : 'rare';
-  };
-  const tiles: SkinId[] = [];
-  for (let i = 0; i < 50; i++) {
-    let r = roll();
-    if (i === 46) while (SKIN_RANK[r] > SKIN_RANK[rarity]) r = roll();
-    const pool = SKIN_POOL[r];
-    tiles.push(pool[rng.int(pool.length)] ?? skin);
-  }
-  tiles[45] = skin;
   return {
     crate: { id, source: 'codex', skin, rarity, duplicateDust: o.duplicateDust ?? 0, createdAt: 0 },
-    reelTiles: tiles,
+    reelTiles: [],
     winnerIndex: 45,
-    stopOffsetBp: o.stopOffsetBp ?? rng.int(10001),
+    stopOffsetBp: 0,
   };
 }
 
@@ -297,13 +284,17 @@ function buildCases(): BenchCase[] {
       makeReveal({ id: `small-${i}`, tier: t as CapsuleTier, seed: 50 + i, stacks: tierStacks(t as CapsuleTier).map(() => ({ rarity: 'common' as Rarity })) }),
     ),
   });
-  // Wardrobe (A10.1).
+  // Quick reveal (A15.6): every capsule opens at the burst.
+  {
+    const quick = makeReveal({ id: 'quick-jade', tier: 'jade', startTier: 'clay', seed: 77, pity: PITY });
+    cases.push({ id: 'quick-jade', group: 'Quick reveal', title: 'Quick reveal: a Jade Win Capsule opens at the burst', reveals: [quick], progress: benchProgress([quick]), quickReveal: true });
+  }
+  // Wardrobe Crate: the card flip for each skin rarity (A10, A15.3; there is no reel).
   cases.push(
-    { id: 'crate-rare', group: 'Wardrobe', title: 'Reel: Rare skin', crate: makeCrate('crate-rare', 'pumpkin_head'), reelReveal: true, pity: PITY },
-    { id: 'crate-epic', group: 'Wardrobe', title: 'Reel: Epic skin', crate: makeCrate('crate-epic', 'ghost_corsair'), reelReveal: true, pity: PITY },
-    { id: 'crate-legendary', group: 'Wardrobe', title: 'Reel: Legendary skin', crate: makeCrate('crate-legendary', 'frost_matriarch'), reelReveal: true, pity: PITY },
-    { id: 'crate-duplicate', group: 'Wardrobe', title: 'Reel: duplicate (Dust)', crate: makeCrate('crate-dup', 'tin_can', { duplicateDust: 50 }), reelReveal: true, pity: PITY },
-    { id: 'crate-flip', group: 'Wardrobe', title: 'Flag off: card flip', crate: makeCrate('crate-flip', 'kaiju_walker'), reelReveal: false, pity: PITY },
+    { id: 'crate-rare', group: 'Wardrobe', title: 'Card flip: Rare skin', crate: makeCrate('crate-rare', 'pumpkin_head'), pity: PITY },
+    { id: 'crate-epic', group: 'Wardrobe', title: 'Card flip: Epic skin', crate: makeCrate('crate-epic', 'ghost_corsair'), pity: PITY },
+    { id: 'crate-legendary', group: 'Wardrobe', title: 'Card flip: Legendary skin', crate: makeCrate('crate-legendary', 'frost_matriarch'), pity: PITY },
+    { id: 'crate-duplicate', group: 'Wardrobe', title: 'Card flip: duplicate (Dust)', crate: makeCrate('crate-dup', 'tin_can', { duplicateDust: 50 }), pity: PITY },
   );
   return cases;
 }

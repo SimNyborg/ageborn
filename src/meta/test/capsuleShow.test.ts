@@ -3,7 +3,8 @@
  * wp10-meta-reveal-data.md): WP10's own checks find no issue in any capsule or crate meta reveals.
  */
 import { describe, expect, it } from 'vitest';
-import { checkReel } from '@/capsule/reelMath';
+import { createCatalog } from '@/capsule/catalog';
+import { checkPlan, planWardrobeShow } from '@/capsule/plan';
 import { resolveStrikes } from '@/capsule/tiers';
 import { C, M, clock, fresh, lastPending, scripted } from './helpers';
 
@@ -21,13 +22,17 @@ describe('reveals meet the capsule show contract (WP10)', () => {
     }
   });
 
-  it('every Wardrobe reel passes WP10 checkReel', () => {
+  it('every Wardrobe Crate reveal plays as a card flip of the pre-rolled skin (A15.3: no reel)', () => {
     let s = scripted(32);
-    const rarityOf = (id: string) => C.skins[id]!.rarity;
-    for (let i = 0; i < 200; i += 1) {
+    const catalog = createCatalog(C);
+    for (let i = 0; i < 100; i += 1) {
       s = M.grantWardrobe(s, 'road', C, clock());
       const o = M.openWardrobe(s, s.capsules.wardrobe[0]!.id);
-      expect(checkReel(o.reveal, rarityOf)).toEqual([]);
+      expect(o.reveal.reelTiles).toEqual([]);
+      const plan = planWardrobeShow(o.reveal, { catalog });
+      expect(checkPlan(plan)).toEqual([]);
+      expect(plan.cards[0]?.skin).toBe(o.reveal.crate.skin);
+      expect(plan.cards[0]?.rarity).toBe(o.reveal.crate.rarity);
       s = o.save;
     }
   });

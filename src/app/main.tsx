@@ -134,6 +134,8 @@ async function start(root: HTMLElement): Promise<void> {
     viewOf: (sim) => views.get(sim),
     createView,
     scheduler: pixi.scheduler,
+    pixi: pixi.app,
+    storage: safeStorage(),
     portrait: (card, foil, size) => art.portrait({ card, foil, size, side: 0 }),
     t: (key, params) => services.i18n.t(key, params),
     download: (file) => {

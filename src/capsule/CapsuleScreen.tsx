@@ -8,6 +8,7 @@
  * this screen opens (A6.4, B8); nothing here can change it. The first capsule of a save and every
  * odds panel say so (A15.3); scripted capsules 1-5 are labelled Starter Capsules.
  */
+import type { ComponentChildren } from 'preact';
 import type { Application, Ticker } from 'pixi.js';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { ArtProvider, AudioService, CapsuleReveal, I18n, WardrobeReveal } from '@/contracts';
@@ -15,6 +16,7 @@ import { fnv1a32 } from '@/core';
 import { i18n as appI18n } from '@/i18n';
 import css from './capsule.module.css';
 import { CapsuleStage } from './capsuleStage';
+import { OddsPanel } from './OddsPanel';
 import { RARITY_COLORS, cssHex } from './palette';
 import { planOpenAll, planWardrobeShow, type Cue, type ShowPlan, type ShowStep } from './plan';
 import { ShowRunner, type RunnerState } from './runner';
@@ -45,8 +47,13 @@ interface ShowScreenBase extends SummaryActions {
   settings?: Partial<ShowSettings>;
   /** Switch to the capsule room music on mount (A13 "Capsule room"). Default true. */
   playMusic?: boolean;
-  /** Opens the odds overview; the Odds button is hidden without it. */
+  /** Opens the app's own odds overview. Ignored when `oddsSheet` is given. */
   onShowOdds?: () => void;
+  /**
+   * The odds sheet (bag state, tier contents, pity counters; WP9) shown inside the show's own odds
+   * panel, under the honesty line (A15.3). The Odds button is hidden without this or `onShowOdds`.
+   */
+  oddsSheet?: () => ComponentChildren;
   /** Dev and tests: every cue as it plays, and every runner state change. */
   onCue?: (cue: Cue, step: ShowStep) => void;
   onState?: (s: RunnerState) => void;
@@ -97,6 +104,7 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
       title={title}
       kindLabel={plan.mode === 'openAll' || !first ? null : capsuleKindLabel(first, i18n)}
       honesty={first !== undefined && isFirstCapsule(first)}
+      scripted={p.reveals.length > 0 && p.reveals.every((r) => r.capsule.scriptIndex !== null)}
       ariaLabel={i18n.t('capsule.aria.stage')}
       pityBefore={before ? pityLines(before, rules, p.newCardProtection !== false) : []}
       pityAfter={after ? pityLines(after, rules, p.newCardProtection !== false) : []}
@@ -116,6 +124,7 @@ export function WardrobeScreen(p: WardrobeScreenProps) {
       title={i18n.t('capsule.summary.crateTitle')}
       kindLabel={i18n.t('capsule.summary.crateTitle')}
       honesty={false}
+      scripted={false}
       ariaLabel={i18n.t('capsule.aria.crateStage')}
       pityBefore={lines}
       pityAfter={lines}
@@ -148,6 +157,8 @@ interface ShowScreenProps extends ShowScreenBase {
   kindLabel: string | null;
   /** Show "The result was decided when you earned this capsule…" (A15.3). */
   honesty: boolean;
+  /** Scripted Starter Capsules: the odds panel says "Set contents" (A15.3). */
+  scripted: boolean;
   ariaLabel: string;
   pityBefore: PityLine[];
   pityAfter: PityLine[];
@@ -155,13 +166,15 @@ interface ShowScreenProps extends ShowScreenBase {
 
 interface Controls {
   runner: ShowRunner | null;
+  /** The odds panel is open: the show holds still behind it. */
+  paused: boolean;
 }
 
 function ShowScreen(p: ShowScreenProps) {
   const i18n = p.i18n ?? appI18n;
   const t = (k: string, o?: Record<string, string | number>) => i18n.t(k, o);
   const [state, setState] = useState<RunnerState | null>(null);
-  const ctl = useRef<Controls>({ runner: null });
+  const ctl = useRef<Controls>({ runner: null, paused: false });
   const cbs = useRef({ onCue: p.onCue, onState: p.onState });
   cbs.current = { onCue: p.onCue, onState: p.onState };
   const settings: ShowSettings = { ...DEFAULT_SHOW_SETTINGS, ...p.settings };
@@ -194,6 +207,7 @@ function ShowScreen(p: ShowScreenProps) {
     if (p.audio && p.playMusic !== false) p.audio.music.setCue('music.capsule', { fadeMs: 600 });
     runner.start();
     const tick = (tk: Ticker) => {
+      if (ctl.current.paused) return;
       runner.update(tk.deltaMS);
       stage.update(Math.min(250, tk.deltaMS) * runner.timeScale);
     };
@@ -257,6 +271,18 @@ function ShowScreen(p: ShowScreenProps) {
   const pity = inSummary ? p.pityAfter : p.pityBefore;
   const rootRef = useRef<HTMLDivElement>(null);
   useEffect(() => rootRef.current?.focus(), []);
+  const [odds, setOdds] = useState(false);
+  const showOdds = p.oddsSheet
+    ? () => {
+        ctl.current.paused = true;
+        setOdds(true);
+      }
+    : p.onShowOdds;
+  const closeOdds = () => {
+    ctl.current.paused = false;
+    setOdds(false);
+    rootRef.current?.focus();
+  };
 
   return (
     <div
@@ -281,7 +307,7 @@ function ShowScreen(p: ShowScreenProps) {
       onKeyUp={onKeyUp}
     >
       <div class={css.top}>
-        {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={p.onShowOdds} /> : <span />}
+        {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={showOdds} /> : <span />}
         {opened && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
       {p.kindLabel && !inSummary ? (
@@ -337,6 +363,11 @@ function ShowScreen(p: ShowScreenProps) {
             ...(p.pendingCount !== undefined ? { pendingCount: p.pendingCount } : {}),
           }}
         />
+      ) : null}
+      {odds && p.oddsSheet ? (
+        <OddsPanel i18n={i18n} scripted={p.scripted} onClose={closeOdds}>
+          {p.oddsSheet()}
+        </OddsPanel>
       ) : null}
     </div>
   );

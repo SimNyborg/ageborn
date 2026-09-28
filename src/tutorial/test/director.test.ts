@@ -46,7 +46,7 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     expect(d.prompt).toBeNull();
 
     h.advance();
-    h.state.sides[0].xp = 250_000;
+    h.state.sides[0].xp = 1_000_000;
     d.update(h.input());
     expect(d.prompt).toMatchObject({ id: 'm1.evolve', target: 'evolve' });
     h.advance();
@@ -94,19 +94,20 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     const { h, d, log } = match1();
     h.advance();
     d.update(h.input());
-    // The player builds the turret the moment the gold arrives, while the Bonker prompt is still up.
-    h.state.tick = MATCH1_TURRET_GRANT_TICK;
-    d.update(h.input([{ e: 'turretBuildStart', side: 0, mount: 0, card: 'rock_tosser' }]));
-    expect(d.prompt?.id).toBe('m1.sendBonker');
     h.state.sides[0].queue.push({ card: 'bonker', group: 'infantry', progress: 0, total: 30, waiting: false });
     h.advance();
     d.update(h.input([kill()]));
     h.advance(KILLS_EARN_GOLD_TICKS);
     d.update(h.input());
+    h.state.tick = MATCH1_PEBBLER_TICK;
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m1.pebbler');
+    // The player builds the turret the moment the gold arrives, while the Pebbler prompt is still up.
+    h.state.tick = MATCH1_TURRET_GRANT_TICK;
+    d.update(h.input([{ e: 'turretBuildStart', side: 0, mount: 0, card: 'rock_tosser' }]));
+    expect(d.prompt?.id).toBe('m1.pebbler');
     h.advance();
     d.update(h.input([{ e: 'unitSpawned', id: 5, side: 0, card: 'pebbler', x: 20_000, summoned: false, level: 1 }]));
-    h.advance();
-    d.update(h.input());
     h.advance();
     d.update(h.input());
     expect(log.find((e) => e.id === 'm1.buildTurret')?.kind).toBe('beatDone');
@@ -152,7 +153,7 @@ describe('TutorialDirector: Evolve jumps the queue', () => {
     expect(d.prompt?.id).toBe('m1.buildTurret');
     // The player ignores the turret; XP fills.
     h.advance(sec(4));
-    h.state.sides[0].xp = 250_000;
+    h.state.sides[0].xp = 1_000_000;
     d.update(h.input());
     expect(d.prompt).toMatchObject({ id: 'm1.evolve', target: 'evolve' });
     h.advance();

@@ -24,7 +24,7 @@ export const formats: Record<FormatId, FormatDef> = {
     siegeMs: null,
     finalBellMs: null,
     retreatAfterMs: null,
-    xpToNextOverride: [250, 300, 350, 400],
+    xpToNextOverride: [680, 690, 520, 700],
   },
   short: {
     id: 'short',

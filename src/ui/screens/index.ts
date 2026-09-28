@@ -15,6 +15,7 @@ export {
   type MatchMode,
   type MatchRequest,
   type PauseInfo,
+  type ResultCard,
   type ResultInfo,
   type Route,
   type RouteOf,

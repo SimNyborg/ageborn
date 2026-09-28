@@ -146,7 +146,7 @@ const GROGG: Partial<Plan> = {
 const LIST: GeneralDef[] = [
   general({
     id: 'grogg', personality: 'tutorial', tiers: null, weights: BALANCED, warPlan: GROGG,
-    scripted: true, baseStartBp: 5000, neverEvolves: true, signatureCards: ['training_dummy'], disclosures: true,
+    scripted: true, baseStartBp: 9000, neverEvolves: true, signatureCards: ['training_dummy'], disclosures: true,
   }),
   general({ id: 'pip', personality: 'balanced', tiers: [0, 2], weights: w(50, 40, 30, 40, 30, 20, 20), warPlan: PIP }),
   general({ id: 'kettle', personality: 'rusher', tiers: [1, 5], weights: w(90, 15, 10, 20, 20, 30, 0), warPlan: KETTLE }),

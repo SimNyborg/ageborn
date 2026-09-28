@@ -375,7 +375,7 @@ def window(rig, joint, x, y, z, w, h, glow_hex="#FFD89A", frame="#4A3B2E", arch=
     rig.part(joint, g, glow=glow_hex, outline=0)
 
 
-def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6B5440", finial="#C9A227"):
+def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6A5A4A", finial="#C8B488"):
     """A small static team pennant on a pole (turret mounts)."""
     g = Geo().capsule((x, y, z0), (x, y, z0 + h), 1.1)
     rig.part(joint, g, pole, outline=0.6)

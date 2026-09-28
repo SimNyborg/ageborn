@@ -91,6 +91,57 @@ export function dailyCapsuleView(save: SaveDoc, content: Content, now: number): 
   };
 }
 
+/** A15.4 bank sizes and the Supply rule, from content where it has them (WP1), else the DESIGN values. */
+export interface BankRules {
+  chargesMax: number;
+  chargeRegenMs: number;
+  supplyMax: number;
+  supplyEvery: number;
+  dailyRewardsMax: number;
+  questQueueMax: number;
+}
+
+export function bankRules(content: Content): BankRules {
+  const supply = (content.capsules as { supply?: { matchesPerCapsule?: number; allowanceMax?: number } }).supply;
+  const challenge = content.dailyModifiers.challenge as { bankMax?: number };
+  const quests = content.quests as { queueMax?: number };
+  return {
+    chargesMax: content.capsules.charges.max,
+    chargeRegenMs: content.capsules.charges.regenMs,
+    supplyMax: supply?.allowanceMax ?? content.capsules.daily.bankMax,
+    supplyEvery: supply?.matchesPerCapsule ?? 3,
+    dailyRewardsMax: challenge.bankMax ?? 7,
+    questQueueMax: quests.queueMax ?? 21,
+  };
+}
+
+/**
+ * The Supply Capsule line inside the capsule tray (A15.4, A9 #2): "Supply Capsule: 2 more matches"
+ * while an allowance is banked. No timer (A15.13).
+ */
+export interface SupplyView {
+  unlocked: boolean;
+  /** Allowances banked (each turns into a Supply Capsule on every 3rd finished match). */
+  bank: number;
+  max: number;
+  /** Finished matches until the next one turns into a capsule, or null when none is banked. */
+  moreMatches: number | null;
+}
+
+export function supplyView(save: SaveDoc, content: Content): SupplyView {
+  const r = bankRules(content);
+  const bank = Math.max(0, Math.min(r.supplyMax, save.capsules.dailyBank));
+  const unlocked = bank > 0 || save.capsules.dailyNextAt !== null || save.pity.opened >= DAILY_UNLOCK_OPENED;
+  const rest = save.matchesPlayed % r.supplyEvery;
+  return { unlocked, bank, max: r.supplyMax, moreMatches: bank > 0 ? r.supplyEvery - rest : null };
+}
+
+/** The War Chest bar on Home (A15.5): counting wins toward the next chest, never reset. */
+export function warChestView(save: SaveDoc, content: Content): { wins: number; of: number } {
+  const of = Math.max(1, content.quests.weekly.target);
+  return { wins: Math.max(0, Math.min(of, save.quests.weekly.progress)), of };
+}
+
 /** Pending capsules, best tier first (the tray shows the best one biggest). */
 export function trayCapsules(save: SaveDoc, content: Content): SaveDoc['capsules']['pending'] {
   const rank = (t: CapsuleTier) => content.capsules.tierOrder.indexOf(t);
@@ -115,9 +166,13 @@ function questDef(content: Content, id: string): QuestDef | null {
   return content.quests.daily.find((q) => q.id === id) ?? null;
 }
 
+/** Quests that are active and progress: the first 3 of the queue (A6.7, A15.4). */
+export const ACTIVE_QUESTS = 3;
+
 export function questViews(save: SaveDoc, content: Content): { daily: QuestView[]; weekly: QuestView | null; rerollLeft: boolean } {
   const daily: QuestView[] = [];
-  save.quests.daily.forEach((q, i) => {
+  // Only the active quests show; the rest of the queue is never counted on screen (A15.13).
+  save.quests.daily.slice(0, ACTIVE_QUESTS).forEach((q, i) => {
     const def = questDef(content, q.id);
     if (!def) return;
     daily.push({

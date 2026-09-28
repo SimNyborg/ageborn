@@ -3,7 +3,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { SaveDoc } from '@/contracts';
-import { dailyModifierOn } from '../daily';
+import { xmur3 } from '@/core';
+import { DAILY_DIFFICULTIES, dailyDrawOn, dailyModifierOn, defaultDailyDifficulty } from '../daily';
 import { META_FLAGS } from '../rules';
 import { daysFromCivil } from '../time';
 import { C, DAY, HOUR, M, TestClock, T0, fresh, lastPending, matchInput, play, scripted } from './helpers';
@@ -47,7 +48,7 @@ describe('Daily Capsule (A6.3)', () => {
   });
 });
 
-describe('Daily Challenge (A9.1)', () => {
+describe('Daily Challenge 2.0 (A9.1, A15.7)', () => {
   it('one modifier per local date, the same for every player, all six in use', () => {
     const d = daysFromCivil(2026, 9, 27);
     expect(dailyModifierOn(C, d)).toBe(dailyModifierOn(C, d));
@@ -61,41 +62,97 @@ describe('Daily Challenge (A9.1)', () => {
     expect(M.dailyModifier(C, c)).toBe(dailyModifierOn(C, d));
   });
 
-  it('Standard War at the ladder tier with the modifier disclosed; first win an Age Capsule, later wins 20 Amber', () => {
+  it('dailySeed = xmur3("daily" + YYYYMMDD) picks the modifier, one of the 8 ladder Generals and the match seed', () => {
+    const d = daysFromCivil(2026, 10, 3);
+    const draw = dailyDrawOn(C, d);
+    expect(draw.dayKey).toBe('2026-10-03');
+    expect(draw.dailySeed).toBe(xmur3('daily20261003')() >>> 0);
+    expect(C.dailyModifiers.challenge.generals).toContain(draw.generalId);
+    const generals = new Set<string>();
+    for (let i = 0; i < 200; i += 1) generals.add(dailyDrawOn(C, d + i).generalId);
+    expect([...generals].sort()).toEqual([...C.dailyModifiers.challenge.generals].sort());
+  });
+
+  it('two players on the same date and difficulty get the same opponent, modifier and seed', () => {
+    const c = new TestClock(Date.UTC(2026, 9, 3, 12));
+    const a = scripted(1, 0, c);
+    const b = { ...scripted(99, 3, c), mmr: 1400, matchesPlayed: 57 };
+    for (const difficulty of DAILY_DIFFICULTIES) {
+      const oa = M.pickOpponent(a, 'daily', C, c, { daily: { difficulty } });
+      const ob = M.pickOpponent(b, 'daily', C, c, { daily: { difficulty } });
+      expect([oa.generalId, oa.tier, oa.seed, oa.modifiers, oa.format, oa.level]).toEqual([ob.generalId, ob.tier, ob.seed, ob.modifiers, ob.format, ob.level]);
+      expect(oa.side.loadouts).toEqual(ob.side.loadouts);
+      expect(oa.tier).toBe(C.dailyModifiers.challenge.difficulties[difficulty]);
+      expect(oa).toMatchObject({ isAI: true, format: 'standard', level: 7, standardLevels: true });
+      expect(Object.values(oa.side.levels).every((l) => l === 7)).toBe(true);
+    }
+    // A different date may give a different draw, but always Standard War.
+    c.advance(DAY);
+    expect(M.pickOpponent(a, 'daily', C, c).format).toBe('standard');
+  });
+
+  it('the default difficulty is the one nearest the skill tier', () => {
+    const at = (mmr: number) => defaultDailyDifficulty({ mmr }, C);
+    expect(at(870)).toBe('recruit'); // skill 0
+    expect(at(1170)).toBe('recruit'); // skill 3: II is 1 away, V is 2
+    expect(at(1270)).toBe('veteran'); // skill 4
+    expect(at(1470)).toBe('veteran'); // skill 6
+    expect(at(1570)).toBe('warlord'); // skill 7
+    expect(at(3000)).toBe('warlord');
+    const c = new TestClock();
+    expect(M.pickOpponent({ ...scripted(), mmr: 1370 }, 'daily', C, c).tier).toBe(5);
+  });
+
+  it('a new save banks 1; the bank gains +1 each 04:00 up to 7', () => {
+    const c = new TestClock(T0);
+    let s = fresh(1, c);
+    expect(s.daily.bank).toBe(1);
+    c.advance(DAY);
+    s = M.tickTimers(s, c);
+    expect(s.daily.bank).toBe(2);
+    c.advance(30 * DAY);
+    s = M.tickTimers(s, c);
+    expect(s.daily.bank).toBe(7);
+    c.advance(DAY);
+    expect(M.tickTimers(s, c).daily.bank).toBe(7);
+    // A clock moved backwards adds nothing.
+    c.advance(-5 * DAY);
+    expect(M.tickTimers({ ...s, daily: { ...s.daily, bank: 3 } }, c).daily.bank).toBe(3);
+  });
+
+  it('a win uses one banked reward and pays an Age Capsule; with none banked 20 Amber; no charges, trophies or MMR', () => {
     const c = new TestClock();
     const s = scripted();
-    const o = M.pickOpponent(s, 'daily', C, c);
-    expect(o.format).toBe('standard');
-    expect(o.modifiers).toEqual([M.dailyModifier(C, c)]);
-    expect(o.isAI).toBe(true);
+    expect(s.daily.bank).toBe(1);
     const first = play(s, 'daily', 'win', c);
     expect(first.rewards[0]?.kind).toBe('capsule');
     expect(lastPending(first.save)).toMatchObject({ kind: 'age', tier: 'silver' });
-    expect(lastPending(first.save).contents.stacks).toHaveLength(C.capsules.ageCapsule.stacks);
+    expect(first.save.daily.bank).toBe(0);
     expect(first.save.trophies).toEqual(s.trophies);
+    expect(first.save.mmr).toBe(s.mmr);
     expect(first.save.capsules.charges).toBe(s.capsules.charges);
     const second = play(first.save, 'daily', 'win', c);
     expect(second.rewards[0]).toEqual({ kind: 'amber', amount: 20 });
     c.advance(DAY);
     const nextDay = play(second.save, 'daily', 'win', c);
     expect(nextDay.rewards[0]?.kind).toBe('capsule');
-    expect(play(s, 'daily', 'loss', c).rewards.some((x) => x.kind === 'amber' || x.kind === 'capsule')).toBe(false);
+    const loss = play(s, 'daily', 'loss', c);
+    expect(loss.rewards.some((x) => x.kind === 'amber' || x.kind === 'capsule')).toBe(false);
+    expect(loss.save.daily.bank).toBeGreaterThan(0);
   });
 
-  it('the first win\'s Age Capsule holds the age the player picked in the dialog (A6.4)', () => {
+  it('the banked win\'s Age Capsule holds the age the player picked in the dialog (A6.4)', () => {
     const c = new TestClock();
     const s = scripted();
     const o = M.pickOpponent(s, 'daily', C, c);
     const win = matchInput('daily', 'win', o);
     expect(M.ageCapsuleDue(s, win, C, c)).toBe(true);
     expect(M.ageCapsuleDue(s, matchInput('daily', 'loss', o), C, c)).toBe(false);
-    expect(M.ageCapsuleDue(s, matchInput('ladder', 'win', M.pickOpponent(s, 'ladder', C, c)), C, c)).toBe(false);
     const r = M.applyMatchResult(s, win, C, c, { age: 'gunpowder' });
     const cap = lastPending(r.save);
     expect(cap).toMatchObject({ kind: 'age', age: 'gunpowder', scriptIndex: null });
     for (const st of cap.contents.stacks) expect((C.units[st.card] ?? C.turrets[st.card])?.age).toBe('gunpowder');
-    expect(cap.contents.stacks.some((x) => x.rarity === 'epic')).toBe(true);
-    // The second win of the day pays Amber, so no dialog.
+    // The bank is empty now, so the next win pays Amber and needs no dialog.
     expect(M.ageCapsuleDue(r.save, win, C, c)).toBe(false);
   });
 });

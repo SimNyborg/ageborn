@@ -208,7 +208,7 @@ describe('Generals and Conquest (A7.4, A6.10)', () => {
     expect(generals.list.kettle.tiers).toEqual([1, 5]);
     expect(generals.list.warden.tiers).toEqual([10, 10]);
     expect(generals.list.echo).toMatchObject({ tiers: null, mirror: true, warPlan: null });
-    expect(generals.list.grogg).toMatchObject({ scripted: true, baseStartBp: 5000, neverEvolves: true });
+    expect(generals.list.grogg).toMatchObject({ scripted: true, baseStartBp: 9000, neverEvolves: true });
     expect(generals.list.rook.counterWeightBp).toBe(15000);
     expect(generals.list.twins.portraits).toBe(2);
     expect(generals.list.warden.legendaryLevel).toBe(9);
@@ -312,12 +312,45 @@ describe('Daily Challenge (A9.1)', () => {
       [5, 'heavy_metal', { kind: 'unitCost', groups: ['heavy', 'legendary'], bp: 7000 }],
       [6, 'sudden_siege', { kind: 'siegeShift', ms: -75000 }],
     ]);
-    expect(dailyModifiers.challenge).toEqual({ format: 'standard', firstWinReward: 'ageCapsule', winAmber: 20, resetHour: 4 });
+    expect(dailyModifiers.challenge).toEqual({
+      format: 'standard',
+      firstWinReward: 'ageCapsule',
+      winAmber: 20,
+      resetHour: 4,
+      bankMax: 7,
+      bankStart: 1,
+      standardLevel: 7,
+      difficulties: { recruit: 2, veteran: 5, warlord: 8 },
+      generals: ['pip', 'kettle', 'moss', 'ledger', 'boomsworth', 'twins', 'rook', 'tempest'],
+    });
+  });
+});
+
+describe('Hidden feats (A15.10)', () => {
+  it('has the 12 feats in table order, 100 Dust each, 4 with a title', () => {
+    expect(content.feats.order).toEqual([
+      'caveman_diplomacy', 'arrows_into_tomorrow', 'stubborn', 'no_walls', 'photo_finish', 'horn_of_legends', 'lightspeed',
+      'underdog', 'humble_beginnings', 'back_from_the_brink', 'stone_cold', 'old_guard',
+    ]);
+    const list = content.feats.order.map((id) => content.feats.list[id]!);
+    expect(list.every((f) => f.dust === 100)).toBe(true);
+    expect(list.filter((f) => f.title).map((f) => f.title)).toEqual(['the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages']);
+  });
+
+  it('pays ladder wins by format from 400 trophies (A15.8)', () => {
+    expect(arenas.ladder.winByFormat).toEqual({
+      fromTrophies: 400,
+      formats: {
+        short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
+        standard: { trophies: 30, amber: 25, amberWithoutCharge: 50 },
+        full: { trophies: 34, amber: 30, amberWithoutCharge: 60 },
+      },
+    });
   });
 });
 
 describe('Cosmetics and skins (A5.8)', () => {
-  it('has banners from the arena gates, frames from Codex levels and 13 titles', () => {
+  it('has banners from the arena gates, frames from Codex levels and 13 titles plus 4 feat titles', () => {
     expect(cosmetics.banners.map((b) => b.id)).toEqual(['tar_pit', 'frostfang', 'moat', 'harbor', 'barbed', 'neon', 'starfield', 'rift']);
     for (const b of cosmetics.banners.slice(1)) {
       expect(arenas.list[b.arena - 1]?.gateRewards).toContainEqual({ kind: 'banner', banner: b.id });
@@ -325,7 +358,7 @@ describe('Cosmetics and skins (A5.8)', () => {
     expect(cosmetics.frames.map((f) => f.codexLevel)).toEqual([5, 15, 25, 35, 45, 55, 65, 75]);
     expect(cosmetics.titles.map((t) => t.id)).toEqual([
       'recruit', 'firestarter', 'evolver', 'mammoth_tamer', 'collector', 'siege_scholar', 'last_stander', 'speedrunner',
-      'veteran', 'curator', 'wardens_bane', 'conqueror', 'ageborn',
+      'veteran', 'curator', 'wardens_bane', 'conqueror', 'ageborn', 'the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages',
     ]);
     expect(cosmetics.emotes.map((e) => e.id)).toEqual(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']);
     expect(cosmetics.defaults).toEqual({ banner: 'tar_pit', frame: 'none', title: 'recruit' });

@@ -1120,7 +1120,7 @@ On-screen text is at most 8 words. No menu, name prompt or account screen appear
 | Time | Beat | Text |
 |---|---|---|
 | 0:00 | Click Play. Load ≤ 3 s. The title screen is the live battlefield with one Play button | "Play" |
-| 0:03 | Match 1 (Tutorial format, Stone to Future) vs Old Grogg (AI, Training match: no clock, his base at 50%). Tray: Bonker only; the gold counter pulses when affordable. Grogg sends Training Dummies | "Tap to send a Bonker" |
+| 0:03 | Match 1 (Tutorial format, Stone to Future) vs Old Grogg (AI, Training match: no clock, his base at 90%). Tray: Bonker only; the gold counter pulses when affordable. Grogg sends Training Dummies | "Tap to send a Bonker" |
 | ~0:17 | First kill; "+30" flies to the gold counter | "Kills earn gold" |
 | 0:20 | Pebbler card slides in (script `unlockSlot`) | "Pebblers shoot over friends" |
 | 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Tosser" |

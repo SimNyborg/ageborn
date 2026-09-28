@@ -9,7 +9,6 @@ import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { createCatalog } from '@/capsule/catalog';
 import { checkPlan, longestUnskippableMs, planOpenAll, planWardrobeShow, SHOW_LIMITS, type ShowPlan, type ShowStep } from '@/capsule/plan';
-import { checkReel } from '@/capsule/reelMath';
 import { ShowRunner, type ShowView } from '@/capsule/runner';
 import { isBackLoaded, TIER_ORDER } from '@/capsule/tiers';
 import { BENCH_CASES, type BenchCase } from './cases';
@@ -17,8 +16,8 @@ import { BENCH_CASES, type BenchCase } from './cases';
 const catalog = createCatalog(content);
 
 function planFor(c: BenchCase): ShowPlan {
-  if (c.crate) return planWardrobeShow(c.crate, { catalog, reelReveal: c.reelReveal ?? true });
-  return planOpenAll(c.reveals ?? [], { catalog, ...(c.progress ? { progress: c.progress } : {}) });
+  if (c.crate) return planWardrobeShow(c.crate, { catalog });
+  return planOpenAll(c.reveals ?? [], { catalog, quickReveal: c.quickReveal === true, ...(c.progress ? { progress: c.progress } : {}) });
 }
 
 const nullView: ShowView = { enter() {}, progress() {}, exit() {} };
@@ -55,8 +54,11 @@ describe('capsule bench cases (WP10 DoD)', () => {
     expect(steps.some((s) => s.kind === 'miniWalkout')).toBe(true);
     for (const foil of ['bronze', 'silver', 'holo']) expect(steps.some((s) => s.kind === 'flip' && s.card.foil === foil)).toBe(true);
     expect(BENCH_CASES.some((c) => (c.reveals?.length ?? 0) === 10)).toBe(true);
-    expect(BENCH_CASES.some((c) => c.crate && c.reelReveal)).toBe(true);
-    expect(BENCH_CASES.some((c) => c.crate && c.reelReveal === false)).toBe(true);
+    // A card-flip Wardrobe Crate for each skin rarity (A15.3), and a quick-reveal capsule (A15.6).
+    for (const r of ['rare', 'epic', 'legendary']) expect(BENCH_CASES.some((c) => c.crate?.crate.rarity === r)).toBe(true);
+    const quick = BENCH_CASES.find((c) => c.quickReveal);
+    expect(quick).toBeDefined();
+    if (quick) expect(planFor(quick).steps[0]?.kind).toBe('burst');
   });
 
   it('plays the onboarding script beats: capsule 1 climbs to Bronze with a short Spear Hunter walkout, capsule 5 the full Matriarch walkout (A8)', () => {
@@ -102,10 +104,8 @@ describe('capsule bench cases (WP10 DoD)', () => {
       });
 
       if (c.crate) {
-        it('shows an honest reel', () => {
-          const crate = c.crate;
-          if (!crate) return;
-          expect(checkReel(crate, (s) => catalog.skin(s).rarity)).toEqual([]);
+        it('reveals the crate with the card flip, never a reel (A15.3)', () => {
+          expect(plan.steps.map((s) => s.kind)).toEqual(['crateArrival', 'crateOpen', 'signal', 'flip', 'summary']);
         });
       }
     });

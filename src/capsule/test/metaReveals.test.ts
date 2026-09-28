@@ -15,9 +15,10 @@ const M = createMeta(content);
 const catalog = createCatalog(content);
 const clock = { now: () => Date.UTC(2026, 2, 2, 12), offsetMs: () => 0 };
 
+/** Opens the oldest waiting capsule (the first Supply Capsule arrives after capsule 2), else a new one. */
 function openNext(s: SaveDoc, kind: 'win' | 'daily' | 'meter' = 'win'): { save: SaveDoc; reveal: CapsuleReveal } {
-  const g = M.grantCapsule(s, kind, content, clock);
-  const cap = g.capsules.pending[g.capsules.pending.length - 1];
+  const g = s.capsules.pending.length > 0 ? s : M.grantCapsule(s, kind, content, clock);
+  const cap = g.capsules.pending[0];
   if (!cap) throw new Error('no capsule granted');
   return M.openCapsule(g, cap.id);
 }

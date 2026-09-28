@@ -9,7 +9,7 @@ import { arenaNameKey, capsuleKindNameKey, questNameKey, titleNameKey } from '@/
 import type { QuestDef } from '@/content/types';
 import type { RewardStep } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge } from '../../components/Chips';
@@ -18,11 +18,15 @@ import {
   AmberIcon,
   CapsuleIcon,
   CheckIcon,
+  CopyIcon,
+  CrateIcon,
   CrownIcon,
   DustIcon,
   FlagIcon,
   HomeIcon,
+  InfoIcon,
   ReplayIcon,
+  RoadIcon,
   ScalesIcon,
   ShieldBrokenIcon,
   StarIcon,
@@ -32,11 +36,23 @@ import {
 } from '../../components/icons';
 import { useKit } from '../../components/kit';
 import { ClayMeter, ProgressBar } from '../../components/Meters';
-import type { RouteOf } from '../../router';
+import type { ResultCard, RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile } from '../model/cards';
 import { opponentName } from '../model/opponent';
-import { COUNT_UP_MS, earnedCapsule, REWARD_STEP_MS, resultKind, stagedRewards } from '../model/result';
+import { roadProgress } from '../model/progress';
+import {
+  COUNT_UP_MS,
+  dailyResultLine,
+  earnedCapsule,
+  isNight,
+  resultKind,
+  resultPlan,
+  REWARD_STEP_MS,
+  type ResultProgress,
+  type ResultStage,
+} from '../model/result';
+import { RoadRewardView } from '../shared/RoadReward';
 import { useMatchStarter } from '../shared/MatchStarter';
 
 const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 'ui.result.draw' } as const;
@@ -227,31 +243,215 @@ function Confetti() {
   );
 }
 
+/** Step 3: the one progress bar closest to done (A15.13). */
+function ProgressStage(p: { progress: ResultProgress }) {
+  const { t, locale } = useKit();
+  const g = p.progress;
+  const label =
+    g.kind === 'road'
+      ? t('ui.result.progress.road', { n: formatInt(g.next ?? g.max, locale) })
+      : g.kind === 'warChest'
+        ? t('ui.result.progress.warChest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) })
+        : t('ui.result.progress.conquest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) });
+  const icon = g.kind === 'road' ? <RoadIcon size={32} /> : g.kind === 'warChest' ? <CrateIcon size={34} /> : <StarIcon size={32} />;
+  return (
+    <RewardRow testid={`reward-progress-${g.kind}`} icon={icon} label={label}>
+      <ProgressBar value={g.value} max={g.max} tone="gold" label={label} />
+    </RewardRow>
+  );
+}
+
+function FeatStage(p: { featId: string }) {
+  const { t, content, locale } = useUi();
+  const def = (content as { feats?: { list: Record<string, { nameKey: string; dust: number }> } }).feats?.list[p.featId];
+  return (
+    <RewardRow
+      testid={`reward-feat-${p.featId}`}
+      icon={<StarIcon size={36} />}
+      label={t('ui.result.featFound', { name: def ? t(def.nameKey) : p.featId })}
+      value={def ? formatSigned(def.dust, locale) : undefined}
+      tone="good"
+    >
+      <span class="result-reward__sub">
+        <DustIcon size={16} /> {t('ui.currency.dust')}
+      </span>
+    </RewardRow>
+  );
+}
+
+function Stage(p: { stage: ResultStage; animate: boolean }) {
+  const st = p.stage;
+  switch (st.kind) {
+    case 'trophies':
+    case 'main':
+      return <Reward r={st.step} animate={p.animate} />;
+    case 'progress':
+      return <ProgressStage progress={st.progress} />;
+    case 'feat':
+      return <FeatStage featId={st.featId} />;
+  }
+}
+
+/** A compact chip for the summary row. */
+function SummaryChip(p: { r: RewardStep }) {
+  const { t, locale } = useUi();
+  const r = p.r;
+  switch (r.kind) {
+    case 'amber':
+      return (
+        <span class="result-sum__chip">
+          <AmberIcon size={18} /> {formatSigned(r.amount, locale)}
+        </span>
+      );
+    case 'dust':
+      return (
+        <span class="result-sum__chip">
+          <DustIcon size={18} /> {formatSigned(r.amount, locale)}
+        </span>
+      );
+    case 'codex':
+      return (
+        <span class="result-sum__chip">
+          <StarIcon size={18} /> {t('ui.result.codexPoints', { n: formatInt(r.points, locale) })}
+        </span>
+      );
+    case 'quest':
+      return (
+        <span class={`result-sum__chip${r.done ? ' is-done' : ''}`}>
+          <FlagIcon size={16} /> {r.done ? <CheckIcon size={16} /> : null}
+        </span>
+      );
+    default:
+      return (
+        <span class="result-sum__chip">
+          <CrownIcon size={16} />
+        </span>
+      );
+  }
+}
+
+/** Everything that is not a staged step, in one row that expands on tap (A15.13). */
+function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null }) {
+  const { t } = useUi();
+  const [open, setOpen] = useState(false);
+  if (p.steps.length === 0 && !p.tipKey) return null;
+  return (
+    <div class={`result-sum${open ? ' is-open' : ''}`} data-testid="result-summary">
+      <button
+        type="button"
+        class="result-sum__row"
+        aria-expanded={open}
+        data-testid="result-summary-toggle"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
+      >
+        <span class="result-sum__label">{t('ui.result.alsoEarned')}</span>
+        <span class="result-sum__chips">
+          {p.steps.map((r, i) => (
+            <SummaryChip key={i} r={r} />
+          ))}
+        </span>
+        <span class="result-sum__caret" aria-hidden="true" />
+      </button>
+      {open ? (
+        <ul class="result__list result-sum__list">
+          {p.steps.map((r, i) => (
+            <Reward key={i} r={r} animate={false} />
+          ))}
+          {p.tipKey ? (
+            <li class="result-sum__tip" data-testid="result-tip">
+              <InfoIcon size={20} /> {t(p.tipKey)}
+            </li>
+          ) : null}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+/** The stopping cards (A15.6): tilt, break or wrap. Never blocks input or advances by itself. */
+function StopCard(p: { card: ResultCard; onHome: () => void; onNext: () => void; onDismiss: () => void }) {
+  const { t, locale, services, save, content } = useUi();
+  const c = p.card;
+  const next = c.kind === 'wrap' ? roadProgress(save.value, content).next : null;
+  return (
+    <div class={`result-card result-card--${c.kind}`} data-testid={`result-card-${c.kind}`} role="note">
+      {c.kind === 'tilt' ? <p class="result-card__text">{t('ui.result.tilt')}</p> : null}
+      {c.kind === 'break' ? <p class="result-card__text">{t('ui.result.break')}</p> : null}
+      {c.kind === 'wrap' ? (
+        <>
+          <p class="result-card__title">{t('ui.result.wrapTitle')}</p>
+          <p class="result-card__text">
+            {t('ui.result.wrapSummary', { wins: formatInt(c.wins, locale), losses: formatInt(c.losses, locale), cards: formatInt(c.newCards, locale) })}
+          </p>
+          {c.chargesOut ? <p class="result-card__text">{t('ui.result.wrapCharges')}</p> : null}
+          {next ? (
+            <p class="result-card__next">
+              {t('ui.result.wrapNext')}{' '}
+              {next.rewards.map((r, i) => (
+                <RoadRewardView key={i} r={r} compact />
+              ))}
+            </p>
+          ) : null}
+        </>
+      ) : null}
+      <div class="result-card__actions">
+        <Button variant="gold" size="md" icon={<HomeIcon size={22} />} testid="result-card-home" autofocus onClick={p.onHome}>
+          {t('ui.result.home')}
+        </Button>
+        {c.kind === 'tilt' && c.watchIndex !== null ? (
+          <Button variant="blue" size="md" icon={<ReplayIcon size={22} />} testid="result-card-watch" onClick={() => services.watchReplay(c.watchIndex!)}>
+            {t('ui.result.watch')}
+          </Button>
+        ) : null}
+        {c.kind === 'break' ? (
+          <Button variant="plain" size="md" testid="result-card-keep" onClick={p.onDismiss}>
+            {t('ui.result.keepPlaying')}
+          </Button>
+        ) : (
+          <Button variant="plain" size="md" icon={<SwordsIcon size={22} />} testid="result-card-next" onClick={p.onNext}>
+            {c.kind === 'tilt' ? t('ui.result.warmUp') : t('ui.result.next')}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ResultScreen(p: { route: RouteOf<'result'> }) {
-  const { save, content, t, locale, router, services } = useUi();
+  const { save, content, t, locale, router, services, toasts } = useUi();
   const info = p.route.info;
   const kind = resultKind(info.input);
-  const rewards = stagedRewards(info.rewards);
+  // The plan is fixed when the screen opens (the save moves on while it is up).
+  const plan = useMemo(() => resultPlan(info.rewards, save.peek(), content, { mode: info.input.mode }), [info, content, save]);
+  const stages = plan.stages;
   const reduce = save.value.settings.reduceMotion;
-  const [shown, setShown] = useState(reduce ? rewards.length : 0);
+  const [shown, setShown] = useState(reduce ? stages.length : 0);
+  const [cardOpen, setCardOpen] = useState(true);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Only offer "Open capsule" while the earned capsule is still unopened in the tray.
   const earned = earnedCapsule(info.rewards);
   const capsule = earned !== null && save.value.capsules.pending.some((c) => c.id === earned) ? earned : null;
   const stats = info.input.stats;
   const opp = info.input.opponent;
+  const night = info.endedHour !== undefined && isNight(info.endedHour);
 
   useEffect(() => {
-    if (shown >= rewards.length) return;
-    timer.current = setTimeout(() => setShown((n) => Math.min(rewards.length, n + 1)), shown === 0 ? REWARD_STEP_MS + 250 : REWARD_STEP_MS);
+    if (shown >= stages.length) return;
+    timer.current = setTimeout(() => setShown((n) => Math.min(stages.length, n + 1)), shown === 0 ? REWARD_STEP_MS + 250 : REWARD_STEP_MS);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [shown, rewards.length]);
+  }, [shown, stages.length]);
 
-  const skipOne = () => setShown((n) => Math.min(rewards.length, n + 1));
-  const done = shown >= rewards.length;
+  const skipOne = () => setShown((n) => Math.min(stages.length, n + 1));
+  const done = shown >= stages.length;
   const mvp = stats.mvpCard ? cardTile(save.value, content, stats.mvpCard, t) : null;
+  const card = done && cardOpen ? (info.card ?? null) : null;
+  // A card or the night line makes Home the primary button (A15.6).
+  const homePrimary = night || !!info.card;
 
   const starter = useMatchStarter();
 
@@ -263,6 +463,29 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       return;
     }
     starter.start(req, { resetToHome: true });
+  }
+
+  function copyDaily() {
+    const d = info.daily;
+    if (!d) return;
+    const line = dailyResultLine({
+      dateKey: d.dateKey,
+      modifier: d.modifier,
+      difficulty: d.difficulty,
+      outcome: t(kind === 'win' ? 'ui.result.outcomeWon' : kind === 'loss' ? 'ui.result.outcomeLost' : 'ui.result.outcomeDraw'),
+      time: formatClock(stats.durationMs),
+      basePercent: stats.ownBaseHpBpAtEnd / 100,
+      t,
+    });
+    const ok = () => toasts.show(t('ui.result.copied'), { tone: 'good' });
+    const fail = () => toasts.show(line, { tone: 'info' });
+    try {
+      const clip = typeof navigator !== 'undefined' ? navigator.clipboard : undefined;
+      if (clip) void clip.writeText(line).then(ok, fail);
+      else fail();
+    } catch {
+      fail();
+    }
   }
 
   const BannerIcon = kind === 'win' ? CrownIcon : kind === 'loss' ? ShieldBrokenIcon : ScalesIcon;
@@ -288,7 +511,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
         <span class="result__bannerIcon">
           <BannerIcon size={54} />
         </span>
-        <h1 class="result__title" id="result-title" data-testid="result-title">
+        <h1 class="result__title" id="result-title" data-testid="result-title" data-outcome={kind}>
           {t(BANNER_KEYS[kind])}
         </h1>
         <p class="result__vs">
@@ -322,6 +545,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           class="result__rewards"
           aria-labelledby="result-rewards-title"
           data-testid="result-rewards"
+          data-stages={stages.length}
           aria-live="polite"
           onClick={skipOne}
         >
@@ -329,10 +553,19 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             {t('ui.result.rewards')}
           </h2>
           <ul class="result__list">
-            {rewards.slice(0, shown).map((r, i) => (
-              <Reward key={i} r={r} animate={!reduce} />
+            {stages.slice(0, shown).map((st, i) => (
+              <Stage key={i} stage={st} animate={!reduce} />
             ))}
           </ul>
+          {done ? <SummaryRow steps={plan.summary} tipKey={info.tipKey ?? null} /> : null}
+          {done && night ? (
+            <p class="result__night" data-testid="result-night">
+              {t('ui.result.night')}
+            </p>
+          ) : null}
+          {card ? (
+            <StopCard card={card} onHome={() => router.reset({ id: 'home' })} onNext={nextBattle} onDismiss={() => setCardOpen(false)} />
+          ) : null}
           {!done ? (
             <button
               type="button"
@@ -340,7 +573,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
               data-testid="result-skip"
               onClick={(e) => {
                 e.stopPropagation();
-                setShown(rewards.length);
+                setShown(stages.length);
               }}
             >
               {t('ui.result.tapToSkip')}
@@ -349,9 +582,21 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
         </section>
       </div>
       <footer class="result__actions">
-        <Button variant="plain" size="md" icon={<HomeIcon size={24} />} testid="result-home" onClick={() => router.reset({ id: 'home' })}>
+        <Button
+          variant={homePrimary ? 'gold' : 'plain'}
+          size={homePrimary ? 'lg' : 'md'}
+          icon={<HomeIcon size={24} />}
+          testid="result-home"
+          autofocus={homePrimary}
+          onClick={() => router.reset({ id: 'home' })}
+        >
           {t('ui.result.home')}
         </Button>
+        {info.daily ? (
+          <Button variant="plain" size="md" icon={<CopyIcon size={22} />} testid="result-copy" onClick={copyDaily}>
+            {t('ui.result.copy')}
+          </Button>
+        ) : null}
         {info.replayIndex !== null ? (
           <Button
             variant="blue"
@@ -367,7 +612,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           <Button
             variant="violet"
             size="lg"
-            autofocus
+            autofocus={!homePrimary}
             icon={<CapsuleIcon tier="silver" size={28} />}
             testid="result-open"
             onClick={() => services.openCapsule(capsule)}
@@ -375,7 +620,14 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             {t('ui.result.openCapsule')}
           </Button>
         ) : null}
-        <Button variant="gold" size="lg" autofocus={!capsule} icon={<SwordsIcon size={26} />} testid="result-next" onClick={nextBattle}>
+        <Button
+          variant={homePrimary ? 'plain' : 'gold'}
+          size={homePrimary ? 'md' : 'lg'}
+          autofocus={!capsule && !homePrimary}
+          icon={<SwordsIcon size={26} />}
+          testid="result-next"
+          onClick={nextBattle}
+        >
           {t('ui.result.next')}
         </Button>
       </footer>
