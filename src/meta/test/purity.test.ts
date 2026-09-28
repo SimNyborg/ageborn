@@ -86,7 +86,7 @@ describe('a long session through the contract', () => {
         expect(e.level).toBeGreaterThanOrEqual(1);
         expect(e.level).toBeLessThanOrEqual(10);
       }
-      expect(s.capsules.charges).toBeLessThanOrEqual(12);
+      expect(s.capsules.charges).toBeLessThanOrEqual(C.capsules.charges.max);
       expect(s.capsules.dailyBank).toBeLessThanOrEqual(3);
       expect(s.quests.daily.filter((q) => !q.claimed).length).toBeLessThanOrEqual(21);
       expect(s.pity.sinceEpic).toBeLessThan(10);

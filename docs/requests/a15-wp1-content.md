@@ -18,3 +18,5 @@ Tables are typed on `Content`, not on the frozen `CompiledContent`. Meta tables 
 `winsPerChest` and the Standard War reward row are tuned in Phase 3 (A15.5, A15.8).
 
 **Progress (2026-09-28, onboarding-daily track):** done: `arenas.ladder.winByFormat` (A15.8), `dailyModifiers.challenge` (`bankMax` 7, `bankStart` 1, `standardLevel` 7, `difficulties`, `generals`), `quests.queueMax` 21, a `weight` per quest, `quests.weekly` = War Chest (`war_chest`, `countingWins`, 20), the `feats` table (`src/content/feats.ts`, in `MetaTables`, schema-checked) with the four feat titles, and the feat names, riddles, hints and titles in `content.en.json`. Open for the banks track: `chargesMax` 28 and the `supply` table (`supplyRules` has defaults until then); the stretch rows.
+
+**Progress (Phase 2b integration):** `capsules.charges.max` is 28 (a new save still starts with 12) and `capsules.supply` (`matchesPerCapsule` 3, `allowanceMax` 7) is in content and the schema; `supplyRules` reads it. Open: the stretch rows (foil crafting prices, `amberToDustRatio`, result-tip thresholds).

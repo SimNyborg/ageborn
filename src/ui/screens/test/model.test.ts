@@ -150,10 +150,10 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
     expect(unlocks({ ...n, arenaIndex: 2 }, content).conquest).toBe(true);
   });
 
-  it('counts down to the next charge (+1 every 6 h, bank of 12)', () => {
+  it('counts down to the next charge (+1 every 6 h, bank of 28, A15.4)', () => {
     const mid = midGameSave(content);
-    expect(chargesView(mid, content, FIXTURE_NOW)).toEqual({ charges: 5, max: 12, nextInMs: 4 * HOUR, free: 0 });
-    expect(chargesView(newPlayerSave(content), content, FIXTURE_NOW)).toMatchObject({ charges: 12, nextInMs: null, free: 8 });
+    expect(chargesView(mid, content, FIXTURE_NOW)).toEqual({ charges: 5, max: 28, nextInMs: 4 * HOUR, free: 0 });
+    expect(chargesView(newPlayerSave(content), content, FIXTURE_NOW)).toMatchObject({ charges: 12, nextInMs: 6 * HOUR, free: 8 });
   });
 
   it('shows the Daily Capsule bank and timer', () => {

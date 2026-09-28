@@ -16,7 +16,7 @@ import type { MatchResultInput, PendingCapsule, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 
-/** A15.4 numbers. Read from `content.capsules.supply` when the content has it (WP1), else the DESIGN values. */
+/** A15.4 numbers from `content.capsules.supply` (the DESIGN values stand in for content sets without it, e.g. old fixtures). */
 export interface SupplyRules {
   matchesPerCapsule: number;
   allowanceMax: number;
@@ -26,7 +26,7 @@ const DEFAULT_SUPPLY: SupplyRules = { matchesPerCapsule: 3, allowanceMax: 7 };
 
 /** The Supply rules of a content set. */
 export function supplyRules(t: Content): SupplyRules {
-  const s = (t.capsules as { supply?: Partial<SupplyRules> }).supply;
+  const s = (t.capsules as { supply?: Partial<SupplyRules> | undefined }).supply;
   const pos = (v: unknown, d: number) => (typeof v === 'number' && Number.isInteger(v) && v > 0 ? v : d);
   return {
     matchesPerCapsule: pos(s?.matchesPerCapsule, DEFAULT_SUPPLY.matchesPerCapsule),

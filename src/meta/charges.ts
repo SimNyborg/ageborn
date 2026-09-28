@@ -1,7 +1,8 @@
 /**
  * Capsule charges and the Clay meter (DESIGN A6.3).
  *
- * - A new save starts with 12 charges; +1 charge every 6 h, continuously, banking up to 12.
+ * - A new save starts with 12 charges; +1 charge every 6 h, continuously, banking up to 28 (A15.4;
+ *   both numbers come from `content.capsules.charges`).
  *   `chargesUpdatedAt` is the start of the current 6 h period; while the bank is full it is reset
  *   when a charge is spent, so the next charge always takes a full period.
  * - The first 10 capsules of a save never use a charge (`freeCapsulesLeft`, spent by Win Capsules

@@ -9,3 +9,5 @@
   - No reel: no `reel` module is imported by the capsule show, and `NonePlatform.features.reelReveal` is false.
   - The walk-away test with WP7: a save advanced 30 days changes nothing owned, and every bank sits at its cap.
 - **C5 additions** 45-53 are in DESIGN C5; items 24, 26 and 36 changed. Update any e2e that checks the old values (charges 12, daily capsule bank 3, the reel).
+
+**Progress (Phase 2b integration):** `tests/integrity/copyReview.test.ts` covers the copy review (the four forbidden lines in every string file) and "no reel" (no `reel` import under `src/capsule`, `NonePlatform.features.reelReveal` false). The walk-away and Daily tests exist in `src/meta/test/daily.test.ts` and `supplyWarChest.test.ts`; the onboarding e2e checks the Starter Capsule label on both Results and both summaries. Open: `sim:economy` with the A15 sources (Phase 3), a "Copy result grants nothing" test, and a sweep of the C5 45-53 items.

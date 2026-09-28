@@ -91,10 +91,13 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
   const before = plan.summary.pityBefore;
   const after = plan.summary.pityAfter;
   const first = p.reveals[0];
+  // A15.3: a scripted capsule (1-5) is a "Starter Capsule" on the summary too, not its tier's name.
   const title =
     plan.mode === 'openAll'
       ? i18n.t('capsule.summary.openAllTitle', { n: p.reveals.length })
-      : i18n.t('capsule.summary.title', { name: first ? i18n.t(`capsuleTier.${first.capsule.tier}.name`) : '' });
+      : i18n.t('capsule.summary.title', {
+          name: !first ? '' : first.capsule.scriptIndex !== null ? (kindParts(capsuleKindLabel(first, i18n))[0] ?? '') : i18n.t(`capsuleTier.${first.capsule.tier}.name`),
+        });
   const seed = fnv1a32(p.reveals.map((r) => r.capsule.id).join('|'));
   return (
     <ShowScreen

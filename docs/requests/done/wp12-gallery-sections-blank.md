@@ -8,3 +8,6 @@ production build. Suspected cause (not confirmed): `src/dev/gallery/stage.tsx` a
 the stage never draws. Please add a timeout (for example `Promise.race` with 8 s) and draw with the
 procedural fallback for anything still loading, so world and unit clips (turret fire, build and
 destroyed at zoom 2.4) can be checked there.
+
+**Done (Phase 2b integration):** `src/dev/gallery/stage.tsx` waits for the unit sheets at most 8 s
+(`Promise.race`), then draws; anything still loading uses its procedural fallback.

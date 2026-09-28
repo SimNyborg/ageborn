@@ -379,3 +379,11 @@ The owner accepted all recommendations:
   the code-painted layers stay as the fallback. Sun rays halved, painted haze at the layer foot cut 30%.
 - `FxRecipe.maxInstances` caps multi-count emits (fx.debris: 12) and `SpriteSpec.jitter` varies a
   sprite per play (explosion lobes).
+
+## Phase 2b: integration pass
+
+- 2026-09-28 (strings integrity): the unwired A17 raw age tables (`src/content/raw/bronze.ts`, `industrial.ts`, `cosmic.ts`) are skipped by the `*Key` property check in `tests/integrity/strings.test.ts` (`UNWIRED_RAW`) until they are wired; their EN strings arrive with the wiring, and the compiled-content check covers them from then on. (DESIGN B4, B13)
+- 2026-09-28 (Starter Capsule summary): a scripted capsule's summary title is "Starter Capsule" (the first part of the kind label), not its tier's name, so capsules 1-5 read the same on the Result chip, under the capsule and on the summary. The onboarding e2e checks both. (DESIGN A15.3)
+- 2026-09-28 (charges and Supply in content): `capsules.charges.max` is 28 (A15.4; a new save still starts with 12) and `capsules.supply` holds `matchesPerCapsule` 3 and `allowanceMax` 7. Meta tables are outside `contentHash`, so replays are unaffected. (DESIGN A6.3, A15.4)
+- 2026-09-28 (e2e timing): the two Quick Battle e2e tests get 90-120 s budgets. Under software WebGL with other work on the machine the title and battle render at about 6-8 fps, and each Playwright click waits for a stable frame (about 2 s), so the default 30 s ran out (with tracing on). Nothing in the game was stuck. (DESIGN B13)
+- 2026-09-28 (proxies test): `EXPLOIT_PROXIES` holds the eight B12 proxies plus A16.5's `random_spam` and `mono_heavy` (10); the test now says so. (DESIGN B12, A16.5)

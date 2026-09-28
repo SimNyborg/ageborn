@@ -58,7 +58,7 @@ describe('ladder results (A6.3)', () => {
     expect(draw.rewards).toContainEqual({ kind: 'amber', amount: 15 });
   });
 
-  it('the first 10 capsules of a save use no charge; then charges refill 1 per 6 h and bank to 12 (C5 #24)', () => {
+  it('the first 10 capsules of a save use no charge; then charges refill 1 per 6 h and bank to 28 (C5 #24, A15.4)', () => {
     let s = fresh();
     const c = clock();
     expect(s.capsules.charges).toBe(12);
@@ -77,18 +77,18 @@ describe('ladder results (A6.3)', () => {
     c.advance(1);
     expect(M.tickTimers(s, c).capsules.charges).toBe(1);
     c.advance(30 * DAY);
-    expect(M.tickTimers(s, c).capsules.charges).toBe(12);
+    expect(M.tickTimers(s, c).capsules.charges).toBe(28);
   });
 
   it('spending a charge from a full bank starts a fresh 6 h period', () => {
     const c = clock();
     const s = noFree();
-    c.advance(3 * DAY);
+    c.advance(7 * DAY);
     const r = play(s, 'ladder', 'win', c);
-    expect(r.save.capsules.charges).toBe(11);
+    expect(r.save.capsules.charges).toBe(27);
     expect(r.save.capsules.chargesUpdatedAt).toBe(c.now());
     c.advance(6 * HOUR);
-    expect(M.tickTimers(r.save, c).capsules.charges).toBe(12);
+    expect(M.tickTimers(r.save, c).capsules.charges).toBe(28);
   });
 
   it('a clock moved backwards never takes charges away', () => {

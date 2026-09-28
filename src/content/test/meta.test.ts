@@ -70,7 +70,7 @@ describe('Time Capsules (A6.4)', () => {
     });
     // Legendary pity reaches 70% at n = 39, then capsule 40 guarantees one (A6.5).
     expect((39 - capsules.pity.legendaryFreeUntil) * capsules.pity.legendaryStepBp).toBe(7000);
-    expect(capsules.charges).toEqual({ start: 12, max: 12, regenMs: 6 * 3600 * 1000, freeCapsules: 10 });
+    expect(capsules.charges).toEqual({ start: 12, max: 28, regenMs: 6 * 3600 * 1000, freeCapsules: 10 });
     expect(capsules.clayMeterPips).toBe(3);
     expect(capsules.daily).toEqual({ firstAfterCapsule: 2, bankMax: 3 });
     expect(capsules.script.map((s) => [s.tier, s.cards])).toEqual([

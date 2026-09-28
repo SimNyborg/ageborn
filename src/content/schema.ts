@@ -297,6 +297,7 @@ const CapsulesSchema = v.strictObject({
   charges: v.strictObject({ start: nonNeg, max: pos, regenMs: pos, freeCapsules: nonNeg }),
   clayMeterPips: pos,
   daily: v.strictObject({ firstAfterCapsule: pos, bankMax: pos }),
+  supply: v.strictObject({ matchesPerCapsule: pos, allowanceMax: pos }),
   resetHour: v.pipe(int, v.minValue(0), v.maxValue(23)),
   kinds: byKeys(
     ['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock'],

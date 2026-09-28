@@ -30,6 +30,9 @@ test.describe('boot', () => {
   });
 
   test('the start screen starts a Quick Battle vs an AI-labeled General (C3 Checkpoint A)', async ({ page }) => {
+    // Software WebGL renders the title and battle at a few fps under load, and every click waits for a
+    // stable frame (about 2 s each here), so this flow needs more than the default 30 s.
+    test.setTimeout(90_000);
     const problems = watchPage(page);
     await page.goto('./');
     await expect(page.getByTestId('quick-ai-chip')).toHaveText(/\bAI\b/);

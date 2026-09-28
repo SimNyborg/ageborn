@@ -149,6 +149,8 @@ test.describe('B13 flows', () => {
 
   test('6a. a Quick Battle (Short War vs AI) starts and ends via dev fast-forward', async ({ page }) => {
     requireFlow('quickBattle');
+    // playToResult polls for up to 90 s; software WebGL under load needs more than the default 30 s.
+    test.setTimeout(120_000);
     const problems = watchPage(page);
     await page.goto('./?dev=1&autopilot=1&quick=short');
     await playToResult(page);

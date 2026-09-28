@@ -61,10 +61,12 @@ export const capsules: CapsuleTables = {
     wardrobeEpicEvery: 5,
     wardrobeLegendaryEvery: 25,
   },
-  // A6.3: a new save starts with 12; +1 every 6 h, banking up to 12; the first 10 capsules use none
-  charges: { start: 12, max: 12, regenMs: 21600000, freeCapsules: 10 },
+  // A6.3, A15.4: a new save starts with 12; +1 every 6 h, banking up to 28 (7 days); the first 10 capsules use none
+  charges: { start: 12, max: 28, regenMs: 21600000, freeCapsules: 10 },
   clayMeterPips: 3,
   daily: { firstAfterCapsule: 2, bankMax: 3 },
+  // A15.4 Supply Capsule: every 3rd finished match turns one banked allowance (+1 a day, banks 7) into one
+  supply: { matchesPerCapsule: 3, allowanceMax: 7 },
   resetHour: 4,
   // A6.4 "Other capsule types" and A10 (climb start; null = fixed tier, reveal starts at step 4)
   kinds: {

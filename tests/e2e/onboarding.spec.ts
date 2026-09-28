@@ -33,6 +33,8 @@ async function openCapsule(page: Page): Promise<void> {
       { timeout: 60_000, intervals: [300] },
     )
     .toBe(true);
+  // A15.3: scripted capsules 1-5 are Starter Capsules on the summary too (not their tier's name).
+  await expect(page.getByTestId('capsule-summary').getByRole('heading')).toHaveText('Starter Capsule');
   await page.getByTestId('capsule-done').click();
   await expect(page.getByTestId('capsule-screen')).toHaveCount(0);
 }
@@ -57,6 +59,7 @@ test.describe('first session (A8)', () => {
     await expect(page.getByTestId('play')).toHaveClass(/ab-btn--gold/);
     await page.getByTestId('play').click();
     await playToResult(page);
+    await expect(page.locator('[data-testid=result-reward][data-kind=capsule]')).toContainText('Starter Capsule');
     await page.getByTestId('next').click();
     await openCapsule(page);
 

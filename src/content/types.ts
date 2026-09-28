@@ -167,6 +167,8 @@ export interface CapsuleTables {
   clayMeterPips: number;
   /** Daily Capsule (A6.3): first after capsule 2 is opened, then one per day, banking up to 3. */
   daily: { firstAfterCapsule: number; bankMax: number };
+  /** Supply Capsule (A15.4): every `matchesPerCapsule`-th finished match uses one banked allowance; the allowance banks up to `allowanceMax`. */
+  supply: { matchesPerCapsule: number; allowanceMax: number };
   /** All daily timers reset at local 04:00 (A6.3). */
   resetHour: number;
   kinds: Record<PendingCapsule['kind'], CapsuleKindDef>;
