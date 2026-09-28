@@ -6,7 +6,7 @@
  * A press the HUD can already tell is invalid becomes a `deny` intent (red flash, 2-frame shake,
  * `ui_deny`, A9.2) instead of a command; everything else is sent and the sim has the final word.
  */
-import type { AgeId, CardId, Command, CompiledContent, HudModel, MatchConfig, Side, TeamPreset } from '@/contracts';
+import type { AgeId, CardId, Command, HudModel, MatchConfig, Side, TeamPreset } from '@/contracts';
 import { matchMods } from '@/core';
 
 /** Elements that can show the denied-press feedback. */

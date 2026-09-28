@@ -9,6 +9,8 @@ not `AgeDef.index`, so the two differ in the tutorial (A17.15 rule 4).
 
 ## 1. Bug: the HUD and the battle view map `ageIndex` through the global age list
 
+**Status:** done (A17 step 1 review fixes): `ageOrder` / `ageIds(config)` follow the format; the outdated-turret mark compares global indices; the XP tests in part 2 use 550.
+
 These look up the age as `<all ages sorted by AgeDef.index>[state.sides[s].ageIndex]`, which is wrong
 whenever the format skips ages, that is in onboarding match 1: in Medieval (position 1) they read Bronze.
 

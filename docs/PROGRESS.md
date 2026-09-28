@@ -2,6 +2,51 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28: A17 step 1, review fixes: long lane, camera, fewer Final Bells (cloud session)
+
+**What works**
+
+- Tutorial: after the first evolve the tray shows the Medieval cards again (Footman, Longbowman, Arrow Storm). The HUD and the battle view now read each side's age from the match format, which skips Bronze in the tutorial. A test covers it.
+- Fewer stalled matches: new rule "the falling gate". In Overdrive and Siege, a unit that dies within 120 lu of its own gate costs its base the unit's max HP. A beaten side that keeps spawning into a parked army now loses its base instead of feeding bounties. Golden replays are unchanged; `SIM_VERSION` 2.2.0.
+- Pause: the pause panel is a small card under the minimap. The lane stays visible and can be dragged or scouted with the minimap while paused.
+- Replays: the viewer has the minimap, the off-screen badges and a camera that follows the middle of the fight.
+- HUD: key badges no longer hide card names; gold popups that land together show one sum ("+120", not "+3090"); the base-under-attack badge plays its `alert_base` alarm.
+- The "Evolve!" bubble and hand no longer cover the minimap's base button. Tutorial match 1 timings are re-pinned; the Pebbler beat shows again.
+- Tools: the balance mirror includes Standard War; `--out` folders are created. New e2e test `tests/e2e/camera.spec.ts` (A17.14 camera row).
+
+**Measured** (Balanced mirror, 200 matches per format; proxies vs tier VII, 200 per format)
+
+| | Before (review) | After | Target |
+|---|---|---|---|
+| Final Bell, Full War | 17.5-21% | 11.5% | ≤ 5% |
+| Final Bell, Standard War | 16% | 10.0% | reported |
+| Final Bell, Short War | 9.0% | 9.0% | ≤ 10% |
+| Full War median | 9:07-9:14 | 8:39 | 8:30 ± 0:30 |
+| Full War in 6:45-10:15 | 46-51% | 55.5% | ≥ 80% |
+| Standard War median / in 5:00-8:00 | 7:20 / 79% | 6:59 / 85.5% | 6:30 ± 0:30 / 80% |
+| Short War median | 5:06 | 4:58 | 4:45 ± 0:30 |
+| Turtle wins, Short / Full (share at the Bell) | 29% / 11% (76% / 99%) | 16% / 8% (74% / 98%) | 35-45% (≤ 50%) |
+| Heavy + mass Ranged at the Bell, Short / Full | 83% / 91% | 64% / 75% | reported |
+| Mono Heavy, Short / Full | 38.5% / 26% | 43% / 31.5% | ≤ 35% |
+| Random spam, Short / Full | 29.5% / 18% | 25% / 17% | ≤ 15% |
+
+- First clash 0:13; contact between the turret covers 66-72% of the time.
+- Camera e2e on 844 × 390: the contact point was on screen 96.5% of the time (2 bot matches; target ≥ 90%).
+- Checks: `npm run typecheck`, `npm run lint`, `npm run build` and `npm run size` (446 KB initial) pass. `npm test`: 3,386 passed, 7 failed, all from other work in progress: the fake sim stream, the wall prototype (3), the real-sim render map and two eight-age sound and music id checks (`tests/integrity/ids.test.ts`, waiting for the DESIGN merge). The e2e boot, flows and camera specs pass (14 tests) against a local preview.
+
+**Still open**
+
+- The Full War Final Bell (11.5%) and the turtle band still fail. The turtle proxy never attacks, so it can only win at the Bell; in Full War the bot does not attack a 4-turret turtle until Siege (an AI change, WP3). By the release rule these go to the owner.
+- Base time to kill in the no-defender scenario is 104-128 s (target 40-60 s). A built but unused lever ("the open gate", `economy.openGateLu`) gets it to 40-70 s but makes Full Wars end at a 7:19 median. Phase 3 and the owner choose.
+- The meta Pause screen (ladder, Daily, Conquest, Skirmish) still covers the lane: `docs/requests/wp9-a17-pause-scout.md`.
+- Grogg falls at about 2:30 instead of A8's 3:00. The Result screen cuts off the "Also earned" row on phones (WP9). Frame rate and swipe feel need a real phone.
+
+**What the owner should try** (once this is pushed and deployed)
+
+1. On your phone (sideways), play the tutorial. After the first "Evolve!", the cards should change to Footman and Longbowman.
+2. In any battle, press pause, then drag the battlefield or tap the map strip at the top: you can look around while paused.
+3. Play a Full War to the end. Tell us if matches still end at the Final Bell too often, and whether a match that is clearly won now ends quickly.
+
 ## 2026-09-28: A17 art and sound registered for Bronze, Industrial and Cosmic (cloud session)
 
 **What works**
