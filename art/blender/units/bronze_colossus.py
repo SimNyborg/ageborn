@@ -43,6 +43,7 @@ SEAM_CORE = B.FIRE_CORE
 FLARE = "#FFFFFF"
 DARK = "#2E2722"
 POL = B.BRONZE           # polished bronze accents (<= 10% of the silhouette)
+RICH = "bronze_rich"     # the polished finish with a tighter highlight (config.FINISHES)
 
 HIP_Z = 62.0
 THIGH, SHIN = 32.0, 36.0
@@ -154,7 +155,7 @@ def _shield(rig):
     rig.part("shield", g, B.PLUM_DK, outline=0.8)
     g = Geo().lathe([(0, -1.0), (R, -1.0), (R + 0.5, 0.8), (R - 0.3, 2.2), (R - 2.8, 2.2), (0, 1.6)],
                     at(0.0), at(1.0), segs=32)
-    rig.part("shield", g, POL, finish=B.POLISH, outline=0.8)
+    rig.part("shield", g, POL, finish=RICH, outline=0.8)
     g = Geo().lathe([(0, 0.0), (R - 2.6, 0.0), (R - 3.0, 1.6), (R * 0.5, 3.4), (0, 4.2)], at(1.0), at(2.0), segs=32)
     rig.part("shield", g, team=True, outline=0.8)
     # lambda chevron, lying on the face (built in the face plane)
@@ -168,7 +169,7 @@ def _shield(rig):
     g.capsule(face(0, 6.4 * k, 5.2), face(5.6 * k, -6.2 * k), 1.5 * k)
     rig.part("shield", g, B.SAND_LT, outline=0.6)
     g = Geo().sphere(face(0, 0, 5.6), 4.2, cuts=3)
-    rig.part("shield", g, B.BRONZE_HI, finish=B.POLISH, outline=0.6)
+    rig.part("shield", g, B.BRONZE_HI, finish=RICH, outline=0.6)
 
 
 def _debris(rig):
@@ -224,7 +225,7 @@ def build(rig):
         g = Geo().capsule((0, y, kz), (0, y, ANK_REST + 4), 7.6, 6.4)
         rig.part(f"shin_{s}", g, BR, finish="metal")
         g = Geo().blob((3.6, y, kz - 15.0), (8.6, 9.0, 10.5), p=2.6, taper=(0.82, 1.08))      # polished greave
-        rig.part(f"shin_{s}", g, POL, finish=B.POLISH)
+        rig.part(f"shin_{s}", g, POL, finish=RICH)
         g = Geo().blob((3.2, y, kz - 3.4), (8.4, 9.0, 1.4), p=3.0)
         g.blob((3.2, y, kz - 31.0), (7.8, 8.4, 1.4), p=3.0)
         rig.part(f"shin_{s}", g, B.VERD_DK, finish="metal", outline=0.6)
@@ -306,7 +307,7 @@ def build(rig):
     g = Geo().blob((6.4, 0, 158.6), (15.6, 14.6, 2.0), p=2.8)                                      # polished brow band
     rig.part("head", g, B.VERD, finish="metal", outline=0.6)
     g = Geo().capsule((20.0, -6.0, 165.0), (20.4, 6.0, 165.0), 1.8)
-    rig.part("head", g, POL, finish=B.POLISH, outline=0.6)
+    rig.part("head", g, POL, finish=RICH, outline=0.6)
     g = Geo().blob((2.0, -9.0, 166.0), (8.0, 1.8, 5.0), p=2.2)
     rig.part("head", g, PATINA)
     g = Geo().capsule((4.0, 0, 172.0), (3.0, 0, 176.0), 2.4)

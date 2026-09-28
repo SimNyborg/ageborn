@@ -1,6 +1,6 @@
 """Standard Bearer: Bronze Age support (A17.9). Damage aura (+15%), throws darts, ~70 lu.
 
-Look (A17.12): a veteran in a conical aged-bronze pilos helmet, a linen tunic with a plum
+Look (A17.12): a veteran in a conical polished-bronze pilos helmet with a verdigris rim, a linen tunic with a plum
 belt sash and a team cloak clasped on the shoulders that streams behind him, greaves and
 sandals, a plum-and-sandstone frame drum at the hip. In the far hand a tall eagle standard:
 a pole with a crossbar and a big team banner (sandstone fringe, a lambda emblem) that swings
@@ -25,7 +25,7 @@ ANCHORS = {"head": (2, 68), "hitCenter": (0, 32)}
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand: darts (modelled along +X)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand: the standard (modelled pointing up)
 POLE_UP, POLE_DOWN = 78.0, 18.0
-WING_TILT = -40.0             # wings tipped back so their faces catch the highlight
+WING_TILT = -26.0             # wings tipped back so their faces catch the highlight
 DART_F, DART_B = 26.0, 7.0
 SMEAR = {"joint": "dart", "inner": (HR[0] + DART_F - 10, HR[1] - 1.0, HR[2]),
          "outer": (HR[0] + DART_F, HR[1] - 1.0, HR[2]), "color": B.WOOD, "taper": 0.4, "start": 0.2, "behind": 4.0}
@@ -128,10 +128,10 @@ def build(rig):
     rig.part("head", g, B.HAIR, finish="hair")
     g = Geo().lathe([(0, 0), (12.6, 0), (12.0, 3.0), (8.6, 10.0), (3.6, 15.0), (0, 16.0)], (1.0, 0, 53.6),
                     (0.0, 0, 69.6), segs=28, squash=(1.0, 0.95))
-    rig.part("head", g, B.AGED, finish="metal")
+    rig.part("head", g, B.BRONZE, finish=B.POLISH)
     g = Geo().blob((1.0, 0, 53.8), (13.2, 12.6, 1.3), p=2.8)
     g.sphere((0.0, 0, 70.4), 1.8, cuts=3)
-    rig.part("head", g, B.BRONZE, finish=B.POLISH, outline=0.6)
+    rig.part("head", g, B.VERD, finish="metal", outline=0.6)
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.0, r1=3.6)

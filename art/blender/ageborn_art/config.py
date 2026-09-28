@@ -87,6 +87,10 @@ FINISHES = {
     # desaturated (it reflects the surroundings), which also keeps the A11 colour rule
     "bronze": {"shadow": 0.62, "gradient": 0.16, "hl_threshold": 0.50, "hl_mix": 0.50,
                "hl_color": "#FFF3D6", "shadow_sat": 0.55},
+    # the same with a tighter highlight (more of the bronze colour shows), for big units whose
+    # accents are a small share of the silhouette (the Bronze Colossus)
+    "bronze_rich": {"shadow": 0.62, "gradient": 0.16, "hl_threshold": 0.74, "hl_mix": 0.66,
+                    "hl_color": "#FFF3D6", "shadow_sat": 0.7},
     # dust and smoke: a soft, light shadow so puffs read as air, not rocks
     "dust":  {"shadow": 0.87, "gradient": 0.04, "hl_threshold": 0.90, "hl_mix": 0.30},
 }
