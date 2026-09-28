@@ -11,7 +11,7 @@
  * queue. Durable Objects run single-threaded, so the relay needs no locks.
  */
 import { DurableObject } from 'cloudflare:workers';
-import { SIM_VERSION, content, reSimulate } from '../shared/match';
+import { SIM_VERSION, content, maxTicksFor, reSimulate } from '../shared/match';
 import { FRAME_TICKS, type MatchSpec } from '../shared/protocol';
 import { MatchRoom, type Conn } from './room';
 
@@ -19,6 +19,8 @@ export interface Env {
   MATCH: DurableObjectNamespace<MatchDO>;
   LOBBY: DurableObjectNamespace<LobbyDO>;
   VERIFY: string;
+  /** "1" only in local tests: lets `?tickMs=` speed the clock up. Never set in a deployed Worker. */
+  DEV_FAST?: string;
 }
 
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' };
@@ -32,12 +34,20 @@ function newCode(): string {
   return Array.from(b, (x) => ALPHABET[x % ALPHABET.length]).join('');
 }
 
-function roomOptions(url: URL): { format: MatchSpec['format']; tickMs: number; level: number } {
+function roomOptions(url: URL, env: Env): { format: MatchSpec['format']; tickMs: number; level: number; maxTicks: number } {
   const f = url.searchParams.get('format');
   const format = f === 'standard' || f === 'full' ? f : 'short';
-  // tickMs < 50 only exists so the automated test can play a match faster than real time.
-  const tickMs = Math.max(5, Math.min(50, Number(url.searchParams.get('tickMs') ?? 50) || 50));
-  return { format, tickMs, level: 8 };
+  // tickMs < 50 only exists so the automated test can play a match faster than real time; a deployed
+  // Worker ignores it (otherwise any client could open a 10x-speed room, e.g. through quick match).
+  const tickMs = env.DEV_FAST === '1' ? Math.max(5, Math.min(50, Number(url.searchParams.get('tickMs') ?? 50) || 50)) : 50;
+  return { format, tickMs, level: 8, maxTicks: maxTicksFor(format) };
+}
+
+/** 128-bit reconnect token from the crypto RNG (Math.random is not unguessable). */
+function secretToken(): string {
+  const b = new Uint8Array(16);
+  crypto.getRandomValues(b);
+  return Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 }
 
 export default {
@@ -48,12 +58,12 @@ export default {
     if (parts[0] !== 'api') return json({ ok: true, service: 'ageborn-online-spike', simVersion: SIM_VERSION, contentHash: content.hash });
     if (req.method === 'POST' && parts[1] === 'rooms' && parts.length === 2) {
       const code = newCode();
-      await env.MATCH.get(env.MATCH.idFromName(code)).init(code, roomOptions(url));
+      await env.MATCH.get(env.MATCH.idFromName(code)).init(code, roomOptions(url, env));
       return json({ code });
     }
     if (req.method === 'POST' && parts[1] === 'quick') {
       const lobby = env.LOBBY.get(env.LOBBY.idFromName('global'));
-      const code = await lobby.pair(roomOptions(url), newCode());
+      const code = await lobby.pair(roomOptions(url, env), newCode());
       return json({ code });
     }
     if (parts[1] === 'rooms' && parts[2] && /^[A-Z0-9]{6}$/.test(parts[2])) {
@@ -70,17 +80,18 @@ export default {
 
 /** The quick-match queue: one waiting room at a time (a real launch adds rating bands, see docs). */
 export class LobbyDO extends DurableObject<Env> {
-  private waiting: { code: string; since: number } | null = null;
-
+  // Kept in storage, not only in memory: an idle Durable Object can be evicted between two requests,
+  // and the waiting player would then never be paired.
   async pair(opts: ReturnType<typeof roomOptions>, fresh: string): Promise<string> {
     const now = Date.now();
-    if (this.waiting && now - this.waiting.since < 60_000) {
-      const code = this.waiting.code;
-      this.waiting = null;
-      return code;
+    const key = `waiting:${opts.format}:${opts.tickMs}`;
+    const waiting = await this.ctx.storage.get<{ code: string; since: number }>(key);
+    if (waiting && now - waiting.since < 60_000) {
+      await this.ctx.storage.delete(key);
+      return waiting.code;
     }
     await this.env.MATCH.get(this.env.MATCH.idFromName(fresh)).init(fresh, opts);
-    this.waiting = { code: fresh, since: now };
+    await this.ctx.storage.put(key, { code: fresh, since: now });
     return fresh;
   }
 }
@@ -96,6 +107,8 @@ export class MatchDO extends DurableObject<Env> {
     this.room = new MatchRoom(code, opts, {
       now: () => Date.now(),
       random: () => Math.random(),
+      secret: secretToken,
+      onSeat: (side, token, name) => void this.ctx.storage.put(`seat:${side}`, { token, name }),
       verify: this.env.VERIFY === '1' ? (spec, log, o, h) => reSimulate(spec, log, o, h) : null,
       persist: (key, value) => void this.ctx.storage.put(key, value),
       contentHash: content.hash,
@@ -112,6 +125,38 @@ export class MatchDO extends DurableObject<Env> {
     return this.room ? { ...this.room.stats, finished: this.room.finished, commands: this.room.log.length, outcome: this.room.outcome } : { error: 'no room' };
   }
 
+  /**
+   * Hibernation restore. With the Hibernation API the runtime may evict this object while sockets
+   * stay open (e.g. a player waiting alone in a room). In-memory state is then gone: rebuild the room
+   * from storage and re-attach each open socket to its seat through its attachment.
+   */
+  private async wake(): Promise<MatchRoom | null> {
+    if (this.room) return this.room;
+    const saved = await this.ctx.storage.get<{ code: string } & ReturnType<typeof roomOptions>>('opts');
+    if (!saved) return null;
+    await this.init(saved.code, saved);
+    const room = this.room as MatchRoom | null;
+    if (!room) return null;
+    if (await this.ctx.storage.get(`match:${saved.code}`)) room.finished = true;
+    for (const side of [0, 1] as const) {
+      const seat = await this.ctx.storage.get<{ token: string; name: string }>(`seat:${side}`);
+      if (!seat) continue;
+      const ws = this.ctx.getWebSockets().find((w) => (w.deserializeAttachment() as { side?: number } | null)?.side === side);
+      // Before the start a seat without a live socket is free again (see MatchRoom.leave).
+      if (ws) room.restoreSeat(side, seat.token, seat.name, this.connFor(ws));
+    }
+    return room;
+  }
+
+  private connFor(ws: WebSocket): Conn {
+    let c = this.conns.get(ws);
+    if (!c) {
+      c = { send: (d) => ws.send(d), close: (code, r) => ws.close(code, r) };
+      this.conns.set(ws, c);
+    }
+    return c;
+  }
+
   private timed<T>(fn: () => T): T {
     const t0 = performance.now();
     try {
@@ -122,20 +167,18 @@ export class MatchDO extends DurableObject<Env> {
   }
 
   override async fetch(req: Request): Promise<Response> {
-    if (!this.room) {
-      const saved = await this.ctx.storage.get<{ code: string } & ReturnType<typeof roomOptions>>('opts');
-      if (!saved) return json({ error: 'no such room' }, 404);
-      await this.init(saved.code, saved);
-    }
-    const room = this.room as MatchRoom;
+    const room = await this.wake();
+    if (!room) return json({ error: 'no such room' }, 404);
     const url = new URL(req.url);
     const pair = new WebSocketPair();
     const [client, server] = [pair[0], pair[1]];
     // Hibernation API: the runtime owns the socket; handlers below are called per message.
     this.ctx.acceptWebSocket(server);
-    const conn: Conn = { send: (d) => server.send(d), close: (c, r) => server.close(c, r) };
-    this.conns.set(server, conn);
-    this.timed(() => room.join(conn, url.searchParams.get('name') ?? '', url.searchParams.get('token')));
+    const conn = this.connFor(server);
+    const ok = this.timed(() => room.join(conn, url.searchParams.get('name') ?? '', url.searchParams.get('token')));
+    const side = room.sideOf(conn);
+    if (ok && side !== -1) server.serializeAttachment({ side });
+    else server.close(1008, 'rejected');
     if (room.spec && !this.timer && !room.finished) {
       this.timer = setInterval(() => this.timed(() => room.frame()), room.spec.tickMs * FRAME_TICKS);
     }
@@ -143,15 +186,17 @@ export class MatchDO extends DurableObject<Env> {
   }
 
   override async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer): Promise<void> {
-    const conn = this.conns.get(ws);
-    if (!conn || !this.room || typeof msg !== 'string') return;
-    const room = this.room;
+    if (typeof msg !== 'string') return;
+    const room = await this.wake();
+    if (!room) return;
+    const conn = this.connFor(ws);
     this.timed(() => room.message(conn, msg));
   }
 
   override async webSocketClose(ws: WebSocket): Promise<void> {
+    const room = await this.wake();
     const conn = this.conns.get(ws);
-    if (conn && this.room) this.room.leave(conn);
+    if (conn && room) room.leave(conn);
     this.conns.delete(ws);
   }
 

@@ -379,7 +379,7 @@ def die(t):
     return HP, R
 
 
-DIE_FX = {5: {'s': 0.027, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 6: {'s': 0.133, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 7: {'s': 0.213, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 8: {'s': 0.293, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 9: {'s': 0.493, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 10: {'s': 0.693, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 11: {'s': 0.96, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}}
+DIE_FX = {5: {'s': 0.027, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 6: {'s': 0.133, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 7: {'s': 0.213, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 8: {'s': 0.293, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 9: {'s': 0.493, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 10: {'s': 0.693, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 11: {'s': 0.96, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}}
 
 
 def clips():

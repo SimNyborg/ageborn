@@ -381,7 +381,7 @@ def dust2d(h, w, feet_px, pxlu, s, origin=(0.0, 0.0), spread=24.0, n=14, size=7.
         shade += blob * np.clip(0.55 + 0.6 * (cz - yy) / rp, 0.2, 1.2)
     nz = fbm(h, w, 6 * pxlu, seed + 11)
     thin = 0.12 + 0.75 * max(0.0, (s - 0.35) / 0.65) ** 1.2      # breaks up as it settles
-    a = np.clip((dens * (0.55 + 0.9 * nz) - thin) * 1.6, 0, 0.9)
+    a = np.clip((dens * (0.6 + 0.9 * nz) - thin) * 2.0, 0, 0.92)
     lum = np.clip(shade / np.maximum(dens, 1e-3), 0.4, 1.2) * (0.85 + 0.3 * nz)
     rgb = np.array(color)[None, None, :] * lum[..., None]
     return np.dstack([rgb * a[..., None], a])

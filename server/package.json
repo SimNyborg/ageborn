@@ -8,7 +8,8 @@
     "build:client": "node build-client.mjs",
     "dev": "wrangler dev --port 5063 --ip 127.0.0.1",
     "e2e": "node test/e2e.mjs",
-    "bench": "esbuild test/bench.ts --bundle --platform=node --format=esm --tsconfig=tsconfig.json --outfile=test/results/bench.mjs --log-level=warning && node test/results/bench.mjs"
+    "bench": "esbuild test/bench.ts --bundle --platform=node --format=esm --tsconfig=tsconfig.json --outfile=test/results/bench.mjs --log-level=warning && node test/results/bench.mjs",
+    "adversarial": "esbuild test/adversarial.ts --bundle --platform=node --format=esm --tsconfig=tsconfig.json --outfile=test/results/adversarial.mjs --log-level=warning && node test/results/adversarial.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260928.1",

@@ -4,8 +4,11 @@
  * enters aiming mode (tap the field to fire, tap the button again to cancel). Drives the production
  * build with a real mouse, like a player.
  */
-import { expect, test, type Page } from '@playwright/test';
+import { expect as baseExpect, test, type Page } from '@playwright/test';
 import { fastForward, requireFlow, watchPage } from './helpers';
+
+/** Software WebGL renders a few frames per second, so every check gets more time. */
+const expect = baseExpect.configure({ timeout: 20_000 });
 
 interface Ghost {
   x: number;
@@ -44,8 +47,8 @@ async function readyPower(page: Page): Promise<{ x: number; y: number }> {
 test.describe('Age Power: drag onto the battlefield', () => {
   test.beforeEach(() => requireFlow('quickBattle'));
 
-  test('dropping back on the HUD or pressing Escape cancels; dragging onto the lane fires', async ({ page }) => {
-    test.setTimeout(120_000);
+  test('dropping back on the HUD or pressing Escape cancels a drag', async ({ page }) => {
+    test.setTimeout(240_000);
     const problems = watchPage(page);
     const btn = await readyPower(page);
     const vp = page.viewportSize() ?? { width: 1280, height: 720 };
@@ -54,14 +57,14 @@ test.describe('Age Power: drag onto the battlefield', () => {
     // Drag out onto the lane: the power is in hand and its ghost shows, valid, on the field.
     await page.mouse.move(btn.x, btn.y);
     await page.mouse.down();
-    await page.mouse.move(btn.x - 30, btn.y - 50, { steps: 4 });
-    await page.mouse.move(vp.width * 0.5, vp.height * 0.5, { steps: 8 });
+    await page.mouse.move(btn.x - 30, btn.y - 50, { steps: 2 });
+    await page.mouse.move(vp.width * 0.5, vp.height * 0.5, { steps: 3 });
     await expect(power).toHaveAttribute('data-aim', 'dragging');
     // The token (a zero-size anchor at the pointer) carries the power's icon above the finger.
     await expect(page.getByTestId('hud-power-token').locator('.hud-power-token-core')).toBeVisible();
     await expect.poll(async () => (await ghost(page))?.valid ?? null).toBe(true);
     // Back over the tray: the ghost turns invalid and says so; releasing puts the power back.
-    await page.mouse.move(vp.width * 0.4, vp.height * 0.93, { steps: 6 });
+    await page.mouse.move(vp.width * 0.4, vp.height * 0.93, { steps: 3 });
     await expect.poll(async () => (await ghost(page))?.valid ?? null).toBe(false);
     await expect(page.getByTestId('hud-power-token')).toContainText(/cancel/i);
     await page.mouse.up();
@@ -72,13 +75,22 @@ test.describe('Age Power: drag onto the battlefield', () => {
     // Escape during a drag cancels too.
     await page.mouse.move(btn.x, btn.y);
     await page.mouse.down();
-    await page.mouse.move(vp.width * 0.5, vp.height * 0.5, { steps: 8 });
+    await page.mouse.move(vp.width * 0.5, vp.height * 0.5, { steps: 3 });
     await expect(power).toHaveAttribute('data-aim', 'dragging');
     await page.keyboard.press('Escape');
     await expect(power).toHaveAttribute('data-aim', 'idle');
     await page.mouse.up();
     await expect(power).toHaveAttribute('data-ready', 'true');
     await expect(page.getByTestId('battle')).toBeVisible();
+    expect(problems.errors).toEqual([]);
+  });
+
+  test('a second tap on the button cancels aiming mode; a drag onto the lane fires', async ({ page }) => {
+    test.setTimeout(240_000);
+    const problems = watchPage(page);
+    const btn = await readyPower(page);
+    const vp = page.viewportSize() ?? { width: 1280, height: 720 };
+    const power = page.getByTestId('hud-power');
 
     // A tap enters aiming mode (the ghost waits on the field); a second tap on the button cancels.
     await page.mouse.click(btn.x, btn.y);
@@ -92,7 +104,7 @@ test.describe('Age Power: drag onto the battlefield', () => {
     // Drag onto the lane and let go: the power fires (its charge is spent).
     await page.mouse.move(btn.x, btn.y);
     await page.mouse.down();
-    await page.mouse.move(vp.width * 0.55, vp.height * 0.5, { steps: 10 });
+    await page.mouse.move(vp.width * 0.55, vp.height * 0.5, { steps: 3 });
     await expect.poll(async () => (await ghost(page))?.valid ?? null).toBe(true);
     await page.mouse.up();
     await expect(power).toHaveAttribute('data-ready', 'false', { timeout: 10_000 });
@@ -101,7 +113,7 @@ test.describe('Age Power: drag onto the battlefield', () => {
   });
 
   test('a tap then a tap on the field fires', async ({ page }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(240_000);
     const btn = await readyPower(page);
     const vp = page.viewportSize() ?? { width: 1280, height: 720 };
     const power = page.getByTestId('hud-power');

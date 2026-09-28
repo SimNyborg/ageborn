@@ -268,7 +268,7 @@ def die(t):
     return B.keyed(keys, t)
 
 
-DIE_FX = {5: {'s': 0.016, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 6: {'s': 0.145, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 7: {'s': 0.274, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 8: {'s': 0.403, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 9: {'s': 0.565, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 10: {'s': 0.758, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 11: {'s': 0.984, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}}
+DIE_FX = {5: {'s': 0.016, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 6: {'s': 0.145, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 7: {'s': 0.274, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 8: {'s': 0.403, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 9: {'s': 0.565, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 10: {'s': 0.758, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 11: {'s': 0.984, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}}
 
 
 def clips():

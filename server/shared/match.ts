@@ -29,8 +29,21 @@ export function toTimed(w: WireCmd): TimedCommand {
   return { ...w[2], tick: w[0], seq: w[1] } as TimedCommand;
 }
 
-/** Server-side anti-cheat check: re-simulate the command log and compare with what the clients reported. */
-export function reSimulate(spec: MatchSpec, log: readonly WireCmd[], claimed: MatchOutcome, claimedHash: number): { ok: boolean; finalHash: number; outcome: MatchOutcome | null } {
+/**
+ * Hard cap on a match's length in ticks: the Final Bell plus two minutes of slack (50 ms ticks).
+ * The relay ends a room past this tick, and the re-simulation never runs further.
+ */
+export function maxTicksFor(format: MatchSpec['format']): number {
+  const bell = content.formats[format]?.finalBellMs ?? 645_000;
+  return Math.ceil(bell / 50) + 2400;
+}
+
+/**
+ * Server-side anti-cheat check: re-simulate the command log on the server's own and compare with what
+ * the clients reported. The re-simulation runs until the sim itself ends the match (capped), not to
+ * the claimed tick, so an early or invented end claim cannot shorten it; its outcome is the result.
+ */
+export function reSimulate(spec: MatchSpec, log: readonly WireCmd[], claimed: MatchOutcome | null, claimedHash: number | null): { ok: boolean; finalHash: number; outcome: MatchOutcome | null } {
   const doc: ReplayDoc = {
     v: 1,
     simVersion: SIM_VERSION,
@@ -41,14 +54,14 @@ export function reSimulate(spec: MatchSpec, log: readonly WireCmd[], claimed: Ma
     modifiers: [],
     training: null,
     commands: log.map(toTimed),
-    result: claimed,
-    finalHash: claimedHash,
+    result: claimed ?? ({ tick: 0 } as MatchOutcome),
+    finalHash: claimedHash ?? 0,
     hashes: [],
   };
-  const sim = replayMatch(doc, content);
+  const sim = replayMatch(doc, content, maxTicksFor(spec.format));
   const o = sim.state.outcome;
   const finalHash = sim.hash();
-  const same = o !== null && o.winner === claimed.winner && o.reason === claimed.reason && o.tick === claimed.tick;
+  const same = o !== null && claimed !== null && o.winner === claimed.winner && o.reason === claimed.reason && o.tick === claimed.tick;
   return { ok: same && finalHash === claimedHash, finalHash, outcome: o };
 }
 

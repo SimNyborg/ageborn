@@ -49,7 +49,9 @@ const CRACKS = { charge: 0.3 } as const;
  * flies back to its slot in the fan (the others dim meanwhile). Spring constants give a small
  * overshoot on arrival and on the landing back home.
  */
-const PRESENT = { x: 640, y: 322, scale: 1.72, omega: 21, zeta: 0.6, dim: 0.5 } as const;
+const PRESENT = { x: 640, y: 322, omega: 21, zeta: 0.6, dim: 0.5 } as const;
+/** Rarer cards take centre stage a little larger (the payoff grows with the rarity). */
+const PRESENT_SCALE: Readonly<Record<RevealCard['rarity'], number>> = { common: 1.6, rare: 1.72, epic: 1.88, legendary: 1.98 };
 
 export interface StageDeps {
   art: ArtProvider;
@@ -1615,7 +1617,7 @@ export class CapsuleStage implements ShowView {
     const k = s.k;
     const home = v.home;
     v.root.position.set(lerp(home.x, PRESENT.x, k), lerp(home.y, PRESENT.y, k));
-    v.root.scale.set(Math.max(0.2, lerp(home.scale, PRESENT.scale, k)));
+    v.root.scale.set(Math.max(0.2, lerp(home.scale, PRESENT_SCALE[v.card.rarity], k)));
     // Follow-through: the card leans into its flight.
     const lean = this.d.settings.reduceMotion ? 0 : Math.max(-0.22, Math.min(0.22, s.v * 0.0016 * Math.sign(PRESENT.x - home.x || 1)));
     v.root.rotation = lerp(home.rot, 0, clamp01(k)) + lean;

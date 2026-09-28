@@ -25,6 +25,7 @@ def main():
     ap.add_argument("--out", default=OUT)
     ap.add_argument("--samples", type=int, default=24)
     ap.add_argument("--clips", default=None)
+    ap.add_argument("--secs", default=None)
     a = ap.parse_args()
     unit = importlib.import_module(a.slug)
     if a.cmd == "preview":
@@ -33,6 +34,20 @@ def main():
         png = os.path.join(a.out, "_look", f"{a.slug}_strip.png")
         pipe.strip(r["tmp"], r["jobs"], r["feet_px"], png, fx=r["fx"])
         print("wrote", png)
+    elif a.cmd == "refinish":
+        # rebuild sheets/GIFs from the frames already rendered (no Blender render)
+        import math
+        import finish
+        from lib import core as C
+        pxlu = C.PX_PER_LU_1X * C.RENDER_MULT
+        wpx = int(math.ceil(unit.CANVAS[0] * pxlu / 6) * 6)
+        hpx = int(math.ceil(unit.CANVAS[1] * pxlu / 6) * 6)
+        clips = unit.clips()
+        jobs = [(c.name, i) for c in clips for i in range(len(c.times))]
+        r = dict(jobs=jobs, tmp=os.path.join(a.out, "_frames", unit.SLUG), secs=float(a.secs or 0),
+                 feet_px=(unit.FEET[0] * pxlu, hpx - unit.FEET[1] * pxlu), size=(wpx, hpx), clips=clips,
+                 fx={(c.name, i): c.fx.get(i) for c in clips for i in range(len(c.times))})
+        finish.unit_outputs(unit, r, a.out)
     elif a.cmd == "unit":
         import finish
         clips = a.clips.split(",") if a.clips else None

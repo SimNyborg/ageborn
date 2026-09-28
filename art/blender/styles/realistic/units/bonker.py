@@ -148,10 +148,11 @@ def pose(ctx, clip, t):
     rig = ctx["rig"]
     if clip == "idle":
         a = 2 * math.pi * t / 8.0
-        P_ = stance(breath=math.sin(a), shift=0.9 * math.sin(a + 0.8))
+        P_ = stance(breath=1.8 * math.sin(a), shift=1.5 * math.sin(a + 0.8))
         P_["hips"] += 1.2 * math.sin(a + 0.8)
-        P_["absF"] = (P_["absF"][0] + 2.5 * math.sin(a - 0.6), P_["absF"][1] + 3 * math.sin(a - 1.0),
-                      P_["absF"][2] + 3 * math.sin(a - 1.4))
+        P_["absF"] = (P_["absF"][0] + 4 * math.sin(a - 0.6), P_["absF"][1] + 5 * math.sin(a - 1.0),
+                      P_["absF"][2] + 6 * math.sin(a - 1.4))
+        P_["head"] += 3 * math.sin(a * 0.5 + 0.3)
     elif clip == "walk":
         P_ = walk(t / 12.0)
     elif clip == "attack":
@@ -259,7 +260,7 @@ def die_dust(t):
     return (t - 4.9) / 6.0
 
 
-DIE_FX = {5: {'s': 0.016, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 6: {'s': 0.145, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 7: {'s': 0.274, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 8: {'s': 0.403, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 9: {'s': 0.565, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 10: {'s': 0.758, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 11: {'s': 0.984, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}}
+DIE_FX = {5: {'s': 0.016, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 6: {'s': 0.145, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 7: {'s': 0.274, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 8: {'s': 0.403, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 9: {'s': 0.565, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 10: {'s': 0.758, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}, 11: {'s': 0.984, 'origin': (-22, 0), 'spread': 22, 'size': 9.5}}
 
 
 def clips():

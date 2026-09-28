@@ -15,13 +15,13 @@ const arg = (k, d) => {
   return i >= 0 ? args[i + 1] : d;
 };
 const PORT = Number(arg('port', '5063'));
-const ONLY = arg('only', 'realtime,reconnect,quick').split(',');
+const ONLY = arg('only', 'realtime,reconnect,quick,hostile').split(',');
 const HTTP = `http://127.0.0.1:${PORT}`;
 const WS = `ws://127.0.0.1:${PORT}`;
 
 if (!existsSync(path.join(root, 'client/dist/bot.js')) || args.includes('--rebuild')) execSync('node build-client.mjs', { cwd: root, stdio: 'inherit' });
 
-const wrangler = spawn('npx', ['wrangler', 'dev', '--port', String(PORT), '--ip', '127.0.0.1', '--inspector-port', String(PORT + 1)], { cwd: root, detached: true, env: { ...process.env, WRANGLER_SEND_METRICS: 'false' } });
+const wrangler = spawn('npx', ['wrangler', 'dev', '--port', String(PORT), '--ip', '127.0.0.1', '--inspector-port', String(PORT + 1), '--var', 'DEV_FAST:1'], { cwd: root, detached: true, env: { ...process.env, WRANGLER_SEND_METRICS: 'false' } });
 let wlog = '';
 wrangler.stdout.on('data', (d) => (wlog += d));
 wrangler.stderr.on('data', (d) => (wlog += d));
@@ -50,6 +50,9 @@ const scenarios = {
   reconnect: { tickMs: 10, lat: [{ oneWayMs: 40, jitterMs: 30 }, { oneWayMs: 60, jitterMs: 30 }], drop: { atTick: 1500, forMs: 2000 }, quick: false },
   // Quick match through the lobby Durable Object.
   quick: { tickMs: 10, lat: [{ oneWayMs: 50, jitterMs: 50 }, { oneWayMs: 50, jitterMs: 50 }], drop: null, quick: true },
+  // Reviewer scenario: side 1 is a modified client (spoofed side/tick, junk, bogus hash and end
+  // claims) on a bad line (up to 300 ms jitter), and drops twice. The match must stay in sync.
+  hostile: { tickMs: 10, lat: [{ oneWayMs: 30, jitterMs: 20 }, { oneWayMs: 100, jitterMs: 300 }], drop: { atTick: 800, forMs: 1500, again: { atTick: 2500, forMs: 3000 } }, quick: false, hostile: [false, true] },
 };
 
 async function runScenario(browser, name, sc) {
@@ -73,17 +76,17 @@ async function runScenario(browser, name, sc) {
       ({ o }) => {
         window.spike = window.startSpike(o);
       },
-      { o: { wsBase: WS, code, name: `Bot ${side === 0 ? 'A' : 'B'}`, ...sc.lat[side], general: 'echo', tier: 5 } },
+      { o: { wsBase: WS, code, name: `Bot ${side === 0 ? 'A' : 'B'}`, ...sc.lat[side], general: 'echo', tier: 5, hostile: !!sc.hostile?.[side] } },
     );
     pages.push(page);
   }
   const t0 = Date.now();
   console.log(`[${name}] room ${code} started`);
-  if (sc.drop) {
+  for (let d = sc.drop; d; d = d.again) {
     const p = pages[1];
-    await p.waitForFunction((k) => (window.spike.net.sim?.state.tick ?? 0) >= k, sc.drop.atTick, { timeout: 600000, polling: 100 });
+    await p.waitForFunction((k) => (window.spike.net.sim?.state.tick ?? 0) >= k, d.atTick, { timeout: 600000, polling: 100 });
     await p.evaluate(() => window.spike.net.drop());
-    await new Promise((r) => setTimeout(r, sc.drop.forMs));
+    await new Promise((r) => setTimeout(r, d.forMs));
     await p.evaluate(() => window.spike.net.reconnect('Bot B'));
   }
   const reports = [];
@@ -104,6 +107,8 @@ async function runScenario(browser, name, sc) {
     serverReSimVerified: a.server.verified,
     serverHashMatchesClients: a.server.finalHash === a.finalHash,
     noDesync: stats.hashMismatches === 0 && a.net.desyncs === 0 && b.net.desyncs === 0,
+    noLateCommands: a.net.lateCommands === 0 && b.net.lateCommands === 0,
+    ...(sc.hostile ? { hostileRejected: stats.rejected > 0, hostileNotFinishedEarly: a.server.o?.tick === a.outcome.tick } : {}),
   };
   for (const r of reports) delete r.replayCommandsDigest;
   return { name, code, wallMs: Date.now() - t0, tickMs: sc.tickMs, latency: sc.lat, drop: sc.drop, checks, ok: Object.values(checks).every(Boolean), stats, reports };
@@ -123,7 +128,7 @@ try {
     console.log(`\n== ${r.name}: ${r.ok ? 'PASS' : 'FAIL'} (room ${r.code}, wall ${(r.wallMs / 1000).toFixed(1)} s, ${s.ticks} ticks = ${minutes.toFixed(2)} game-min)`);
     console.log('checks', r.checks);
     console.log(`outcome ${JSON.stringify(r.reports[0].outcome)} finalHash ${r.reports[0].finalHash}`);
-    console.log(`server: in ${s.msgsIn} msgs / ${s.bytesIn} B, out ${s.msgsOut} msgs / ${s.bytesOut} B, commands ${s.commands}, hash checks ${s.hashChecks}, reconnects ${s.reconnects}, handlerMs ${s.handlerMs.toFixed(1)}, verifyMs ${s.verifyMs}`);
+    console.log(`server: in ${s.msgsIn} msgs / ${s.bytesIn} B, out ${s.msgsOut} msgs / ${s.bytesOut} B, commands ${s.commands}, hash checks ${s.hashChecks}, reconnects ${s.reconnects}, handlerMs ${s.handlerMs.toFixed(1)}, verifyMs ${s.verifyMs}, rejected ${s.rejected}, endReason ${r.reports[0].server.endReason}`);
     for (const rep of r.reports) console.log(`client ${rep.side}:`, JSON.stringify(rep.net), `replay ${rep.replayBytes} B verify ${rep.replayMs} ms`);
   }
   process.exitCode = results.every((r) => r.ok) ? 0 : 1;

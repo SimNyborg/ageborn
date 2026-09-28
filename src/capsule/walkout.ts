@@ -162,7 +162,7 @@ class UnitPair {
   private readonly rimFilter: ColorMatrixFilter;
   readonly baseScale: number;
 
-  constructor(art: ArtProvider, info: CardInfo, skin: string | null, teamPreset: TeamPreset, rimColor: number, fallbackGroup: RoleGroup) {
+  constructor(art: ArtProvider, info: CardInfo, skin: string | null, teamPreset: TeamPreset, rimColor: number, fallbackGroup: RoleGroup, heightK = 1) {
     this.rim = performer(art, info, skin, teamPreset, fallbackGroup);
     this.body = performer(art, info, skin, teamPreset, fallbackGroup);
     this.rimFilter = flatFilter(rimColor);
@@ -172,7 +172,7 @@ class UnitPair {
     this.root.addChild(this.rim.root, this.body.root);
     const b = this.body.root.getLocalBounds();
     const h = Math.max(20, b.height || 40);
-    this.baseScale = Math.max(0.5, Math.min(6, UNIT_H / h));
+    this.baseScale = Math.max(0.5, Math.min(6, (UNIT_H * heightK) / h));
   }
 
   /** 1 = flat silhouette, 0 = full colour. */
@@ -325,7 +325,8 @@ export class Walkout {
     this.heroRays.alpha = 0;
     this.heroGlow = glowSprite(glowTexture(), shade(this.color, 0.2), 620, 0);
 
-    this.unit = new UnitPair(d.art, info, card.skin, d.teamPreset, this.color, this.mini ? 'epic' : 'legendary');
+    // The Legendary hero stands larger than a mini-walkout's Epic: it owns the screen.
+    this.unit = new UnitPair(d.art, info, card.skin, d.teamPreset, this.color, this.mini ? 'epic' : 'legendary', this.mini ? 1 : 1.25);
     this.unitHolder.addChild(this.unit.root);
     this.unitHolder.position.set(this.mini ? 640 : 560, this.mini ? 470 : FLOOR_Y);
     this.unitHolder.scale.set(0);

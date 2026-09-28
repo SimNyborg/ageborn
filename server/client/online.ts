@@ -127,9 +127,21 @@ export class OnlineMatch {
     });
   }
 
+  /** Test hook: sends a raw string as if from a modified client (used by the hostile e2e scenario). */
+  sendRaw(s: string): void {
+    const ws = this.ws;
+    const at = this.delay(this.outAt);
+    this.outAt = at;
+    this.later(this.outbox, at, () => {
+      if (ws && ws.readyState === WebSocket.OPEN) ws.send(s);
+    });
+  }
+
   /** The player (or a bot) issues a command. Side is filled in by the server. */
   issue(c: Command): void {
-    if (!this.sim || this.sim.state.outcome || !this.ws) return;
+    // A command issued while the socket is (re)connecting would be dropped by the send queue; drop it
+    // here so the latency bookkeeping stays aligned. The UI should show "reconnecting" meanwhile.
+    if (!this.sim || this.sim.state.outcome || !this.ws || this.ws.readyState !== WebSocket.OPEN) return;
     this.issued.push(performance.now());
     this.stats.commandsSent += 1;
     this.send({ t: 'cmd', c });
@@ -215,7 +227,9 @@ export class OnlineMatch {
       }
     }
     const events = sim.step(cmds);
-    if (tick % HASH_EVERY === 0) this.send({ t: 'hash', k: tick, h: sim.hash() });
+    // Hashes only for live ticks: a reconnect catch-up of 1,500 ticks would otherwise send 75 hash
+    // messages at once and trip the server's flood guard (and they prove nothing new).
+    if (live && tick % HASH_EVERY === 0) this.send({ t: 'hash', k: tick, h: sim.hash() });
     if (live) this.onTick?.(events, sim);
     const o = sim.state.outcome;
     if (o && !this.endSent) this.sendEnd(o);

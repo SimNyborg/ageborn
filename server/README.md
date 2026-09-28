@@ -9,6 +9,7 @@ npm install
 npm run build:client   # bundles client/online.ts + a bot driver into client/dist/bot.js
 npm run e2e            # wrangler dev on 127.0.0.1:5063 + 2 headless Chromium pages per scenario
 npm run bench          # CPU of the relay and the server re-simulation, in Node
+npm run adversarial    # 23 checks of what a modified client can and cannot do (about 1 s)
 npm run dev            # the server alone
 ```
 

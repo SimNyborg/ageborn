@@ -50,7 +50,8 @@ export type ServerMsg =
   /** Commands with tick <= u (and > the previous frame's u). */
   | { t: 'f'; u: number; c?: WireCmd[] }
   | { t: 'desync'; k: number; h: [number, number] }
-  | { t: 'result'; o: MatchOutcome | null; agreed: boolean; verified: boolean | null; finalHash: number | null; stats: RoomStats }
+  /** `o` is the server re-simulation's outcome when verification is on; null when the room was forfeited/abandoned/timed out. */
+  | { t: 'result'; o: MatchOutcome | null; agreed: boolean; verified: boolean | null; finalHash: number | null; endReason: 'forfeit' | 'abandoned' | 'timeout' | null; abandonedBy: Side | null; stats: RoomStats }
   | { t: 'pong'; n: number; k: number }
   | { t: 'error'; msg: string };
 
@@ -71,4 +72,8 @@ export interface RoomStats {
   ticks: number;
   /** Commands stamped later than now + INPUT_DELAY because of the clock guard. */
   lateStamps: number;
+  /** Client messages dropped as malformed, oversized, out of range or flooding. */
+  rejected: number;
+  /** Hash checks dropped because the other side never sent its hash for that tick. */
+  hashUnpaired: number;
 }

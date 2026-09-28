@@ -21,6 +21,8 @@ interface SpikeOptions {
   jitterMs: number;
   general: string;
   tier: number;
+  /** Also behave like a modified client: spoofed side/tick, junk, bogus hashes and end claims. */
+  hostile?: boolean;
 }
 
 function run(o: SpikeOptions) {
@@ -40,6 +42,19 @@ function run(o: SpikeOptions) {
     const obs = ring.at(bot.snapshotDelayTicks);
     if (!obs) return;
     for (const c of bot.onTick(obs)) if (c.side === net.side) net.issue(c);
+    const k = sim.state.tick;
+    if (o.hostile && k % 50 === 7) {
+      const them = net.side === 0 ? 1 : 0;
+      // Spoofed side and tick: the server must stamp it as ours at its own tick.
+      net.sendRaw(JSON.stringify({ t: 'cmd', c: { t: 'emote', emote: 'gg', side: them, tick: 1, seq: 1 } }));
+      // Junk the server must drop without crashing.
+      net.sendRaw('{"t":"cmd","c":{"t":"train","slot":"0"}}');
+      net.sendRaw('null');
+      net.sendRaw(JSON.stringify({ t: 'cmd', c: { t: 'train', slot: 1, pad: 'x'.repeat(900) } }));
+      // Hash and end claims for ticks we cannot have simulated yet.
+      net.sendRaw(JSON.stringify({ t: 'hash', k: k + 20000 - (k % 20), h: 1 }));
+      net.sendRaw(JSON.stringify({ t: 'end', k: k + 5000, o: { winner: net.side, reason: 'base', tick: k + 5000 }, h: 1 }));
+    }
   };
   net.connect(o.code, o.name);
 

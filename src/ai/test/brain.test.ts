@@ -9,7 +9,7 @@ import { BALANCED_WEIGHTS, personalityFor, weightsBp, type Weights } from '../pe
 import { SCORE } from '../scoring';
 import { tierParams, type TierParams } from '../tiers';
 import { buildView } from '../view';
-import { content, observation, unit } from './helpers';
+import { AGES, content, observation, unit } from './helpers';
 
 /** Lane length in lu (A17.2). */
 const L = LANE_MLU / MLU;
@@ -581,7 +581,7 @@ describe('upper-tier craft (owner feedback 2026-09-28)', () => {
 
 /** Bronze Age, 400 gold, one owned mount, no enemy anywhere. */
 function baselineTurretsObs(): Observation {
-  const bronze = content.order.ages[1] as 'bronze';
+  const bronze = AGES[1] as 'bronze';
   const units = Object.values(content.units).filter((u) => u.age === bronze && !u.hidden && u.rarity === 'common');
   const turrets = Object.values(content.turrets).filter((u) => u.age === bronze && u.rarity === 'common');
   return observation({
