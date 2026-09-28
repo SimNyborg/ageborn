@@ -64,9 +64,9 @@ def _arm(rig, s):
     sg = 1 if s == "r" else -1
     g = Geo().capsule((0, y, z), (0, y, z - UPPER), 9.0, 8.0)
     rig.part(f"arm_{s}", g, BR, finish="metal")
-    g = Geo().blob((1.0, y - 2.0 * sg, z + 3.0), (15.0, 12.5, 11.5), p=2.6)      # shoulder
+    g = Geo().blob((1.0, y - 1.0 * sg, z + 3.0), (13.0, 11.0, 10.5), p=2.6)      # shoulder
     rig.part(f"arm_{s}", g, BR, finish="metal")
-    g = Geo().blob((1.0, y - 2.4 * sg, z + 5.5), (13.0, 10.5, 7.0), p=2.6)       # patina cap
+    g = Geo().blob((1.0, y - 1.4 * sg, z + 5.5), (11.0, 9.0, 6.4), p=2.6)        # patina cap
     g.clip((0, 0, z + 6.0), (0, 0, -1))
     rig.part(f"arm_{s}", g, PATINA)
     g = Geo().lathe([(0, -3.0), (9.2, -2.8), (9.6, 0), (9.2, 2.8), (0, 3.0)], (0, y, z - UPPER), (0, y + 1, z - UPPER),
@@ -138,7 +138,7 @@ def build(rig):
     n = 9
     for k in range(n):
         ang = math.pi * (0.55 + 1.9 * k / (n - 1))
-        g.blob((23.0 * math.cos(ang), 23.0 * math.sin(ang), HIP_Z - 5.0), (6.8, 5.6, 11.0), p=3.0, taper=(0.9, 1.0),
+        g.blob((23.0 * math.cos(ang), 23.0 * math.sin(ang), HIP_Z - 5.0), (6.0, 3.8, 11.5), p=3.4, taper=(0.9, 1.0),
                rot=(0, 0, math.degrees(ang) + 90))
     rig.part("hem", g, team=True)
     g = Geo().blob((1.0, 0, HIP_Z + 7.0), (23.6, 23.4, 3.4), p=3.2)                            # belt
@@ -147,7 +147,7 @@ def build(rig):
     # torso: a muscled bronze cuirass, patina streaks, a molten crack in the chest, team sash
     g = Geo().blob((0, 0, 88.0), (19.0, 19.0, 13.0), p=2.6)
     rig.part("torso", g, BR, finish="metal")
-    g = Geo().blob((1.0, 0, 114.0), (29.0, 27.0, 25.0), p=2.6, taper=(0.8, 1.06))
+    g = Geo().blob((1.0, 0, 114.0), (30.0, 29.0, 25.0), p=2.6, taper=(0.78, 1.1))
     rig.part("torso", g, BR, finish="metal")
     g = Geo().blob((16.0, -8.0, 118.0), (12.0, 10.0, 8.6), p=2.2)                                  # pecs
     g.blob((16.0, 8.0, 118.0), (12.0, 10.0, 8.6), p=2.2)
@@ -157,11 +157,11 @@ def build(rig):
                             (-12.0, -22.0, 116.0, 1.6, 12.0)):
         g.blob((x, y, z), (rx * 2.2, 1.6, rz), p=2.2)
     rig.part("torso", g, PATINA)
-    _glow_line(rig, "torso", [(26.0, -10.0, 128.0), (29.6, -6.0, 118.0), (27.0, -8.0, 110.0), (29.0, -2.0, 101.0)],
+    _glow_line(rig, "torso", [(22.0, -20.0, 128.0), (26.0, -17.0, 119.0), (24.0, -19.0, 110.0), (27.0, -14.0, 101.0)],
                r=1.5)
-    _glow_line(rig, "torso", [(29.6, -6.0, 118.0), (27.0, 1.0, 116.0)], r=1.1)
-    rig.joint("heart", "torso", (29.0, -5.0, 114.0))
-    g = Geo().sphere((29.0, -5.0, 114.0), 3.2, cuts=3)
+    _glow_line(rig, "torso", [(26.0, -17.0, 119.0), (29.0, -8.0, 117.0)], r=1.1)
+    rig.joint("heart", "torso", (26.5, -17.0, 115.0))
+    g = Geo().sphere((26.5, -17.0, 115.0), 3.2, cuts=3)
     rig.part("heart", g, glow=SEAM_CORE, outline=0.8, outline_hex=SEAM)
     g = Geo()
     g.capsule((18.0, -26.0, 136.0), (26.0, 6.0, 96.0), 7.0, 6.0)                                  # sash
@@ -225,7 +225,7 @@ def arms(ra, rf, la=-75.0, lf=-30.0, rw=None):
     return merge(F.arm("r", ra, rf), F.arm("l", la, lf))
 
 
-REST = arms(-80, -40, -74, -32)
+REST = arms(-62, -8, -84, -44)
 WALK_MS = [175] * 8
 STRIDE = 28.0            # natural speed 2 x 28 / 1.4 s = 40 lu/s (sim speed 40)
 
