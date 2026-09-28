@@ -2,7 +2,8 @@
 
 .modes {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Quick Battle first and a little wider (its difficulty picker), then the four A9 modes. */
+  grid-template-columns: minmax(0, 1.35fr) repeat(4, minmax(0, 1fr));
   gap: clamp(10px, 1.6vw, 22px);
   height: 100%;
   min-height: 330px;
@@ -31,6 +32,9 @@
 }
 .mode-card:nth-child(4) {
   animation-delay: 180ms;
+}
+.mode-card:nth-child(5) {
+  animation-delay: 240ms;
 }
 .mode-card--red {
   --tone: var(--ui-red);
@@ -283,8 +287,12 @@
 
 @media (max-width: 900px) {
   .modes {
-    grid-template-columns: repeat(4, minmax(170px, 1fr));
+    grid-template-columns: minmax(270px, 1.35fr) repeat(4, minmax(190px, 1fr));
     overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+  .mode-card {
+    scroll-snap-align: start;
   }
   .mode-card__art svg {
     width: 44px;
@@ -345,4 +353,24 @@
   .mode-card__rewardLabel {
     display: none;
   }
+}
+
+/* Quick Battle and Skirmish difficulty (owner feedback 2026-09-28): five steps, wrapping 3 + 2. */
+.mode-card .mode-card__diff [data-testid='quick-difficulty'].ui-seg,
+.mode-card .mode-card__diff .ui-seg[data-testid='quick-difficulty'] {
+  flex-wrap: wrap;
+}
+.mode-card .mode-card__diff [data-testid='quick-difficulty'] .ui-seg__opt {
+  flex: 1 1 30%;
+  min-height: 34px;
+  font-size: 12.5px;
+}
+.skirmish__row--diff {
+  flex-wrap: wrap;
+}
+.skirmish__row--diff .mode-card__diff {
+  flex: 1 1 320px;
+}
+.skirmish__row--diff .ui-seg {
+  flex-wrap: wrap;
 }

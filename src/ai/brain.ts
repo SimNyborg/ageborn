@@ -199,6 +199,8 @@ const WAVE_MARGIN_BP = 11500;
 const PASSIVE_FOE_TICKS = 20 * TICKS_PER_SECOND;
 /** ... and a Treasury level bought then must pay back within this long (A2.3: levels 1 and 2). */
 const PASSIVE_PAYBACK_TICKS = 240 * TICKS_PER_SECOND;
+/** `bellAware`: a Siege lead of more than this (bp of base HP) is guarded rather than pressed. */
+const BELL_LEAD_BP = 300;
 
 /** A16.3 rule 3 factor for the visible enemy army, bp (10,000 = ×1, capped at ×2). */
 export function monoFactorBp(foes: readonly { value: number; def?: { group: RoleGroup } | undefined }[]): number {
@@ -249,6 +251,12 @@ export class Brain {
     const obs = v.obs;
     const siege = v.phase === 'siege';
     const hot = v.phase === 'overdrive' || siege;
+    // `bellAware` (owner feedback 2026-09-28): in Siege a bot ahead on base HP guards its lead for the
+    // Final Bell (both bars are on screen); a bot level or behind throws everything forward.
+    const guardLead = siege && t.bellAware && v.baseHpBp - obs.foe.baseHpBp > BELL_LEAD_BP;
+    // `waveCommit` tiers keep forming waves in Siege too (a trickle into a held turret line only feeds
+    // it bounties), with the turrets counted at half, as Siege halves their damage (A16.4).
+    const siegePush = siege && !guardLead && !t.waveCommit;
 
     // Situation (A7.2).
     const pressureValue = foeValueIn(v, 0, PRESSURE_RADIUS);
@@ -260,7 +268,7 @@ export class Brain {
     // stand there on their way out, and on the 2,000 lu lane holding back for them delayed the first clash
     // to ~0:38 (A17.14 wants 0:11-0:16). Turrets always count.
     const gateUnits = v.now >= OPENING_TICKS ? foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) : 0;
-    const defence = gateUnits + TURRET_DEFENCE * foeTurrets;
+    const defence = gateUnits + (siege && t.waveCommit ? TURRET_DEFENCE / 2 : TURRET_DEFENCE) * foeTurrets;
     // Attack clock (A7.2): after 60 s without a ground unit past mid-lane, train scores rise 10% per 5 s,
     // and the push gate relaxes by 0.1 per 5 s down to parity, so two banking bots cannot stall a match.
     const quiet = v.now - mem.pastMidTick;
@@ -269,14 +277,14 @@ export class Brain {
     const gateBp = hot ? BP : Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
     // An army at the pop cap cannot grow by banking, so it goes.
     const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
-    let pushOk = siege || popFull || v.myArmy * BP >= gateBp * defence;
+    let pushOk = siegePush || popFull || v.myArmy * BP >= gateBp * defence;
     if (t.waveCommit) {
       // Waves, not trickles (owner feedback 2026-09-28): a wave that passed the gate keeps going until it
       // has lost half its peak value; a new wave needs a 15% margin over the gate.
       if (this.wavePeak !== null && v.myArmy < mulBp(this.wavePeak, WAVE_END_BP)) this.wavePeak = null;
-      if (this.wavePeak === null && v.myArmy > 0 && (siege || popFull || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) this.wavePeak = v.myArmy;
+      if (this.wavePeak === null && v.myArmy > 0 && (siegePush || popFull || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) this.wavePeak = v.myArmy;
       if (this.wavePeak !== null) this.wavePeak = Math.max(this.wavePeak, v.myArmy);
-      pushOk = siege || this.wavePeak !== null;
+      pushOk = siegePush || this.wavePeak !== null;
     }
     const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane);
     const allIn = P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP));
@@ -424,7 +432,7 @@ export class Brain {
     // Stance. A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her tiers too.
     if ((t.hold || P.holdAnyTier) && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
       const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && (v.turretsBuilt >= HOLD_MIN_TURRETS || (mono >= HOLD_MONO_BP && v.foeArmy >= HOLD_MONO_ARMY));
-      const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
+      const wantHold = guardLead || (!siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP)));
       const want = wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
         add({ kind: 'stance', stance: want }, SCORE.stance);

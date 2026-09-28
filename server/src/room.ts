@@ -50,9 +50,11 @@ export class MatchRoom {
   finished = false;
   outcome: MatchOutcome | null = null;
   private seq: [number, number] = [0, 0];
+  /** Highest `u` ever sent to a client. */
+  private maxU = -1;
   private hashes = new Map<number, [number | null, number | null]>();
   private rate: [number, number, number] = [0, 0, 0]; // [windowStartTick, side0 count, side1 count]
-  readonly stats: RoomStats = { msgsIn: 0, msgsOut: 0, bytesIn: 0, bytesOut: 0, commands: 0, hashChecks: 0, hashMismatches: 0, reconnects: 0, handlerMs: 0, verifyMs: -1, storageWrites: 0, ticks: 0 };
+  readonly stats: RoomStats = { msgsIn: 0, msgsOut: 0, bytesIn: 0, bytesOut: 0, commands: 0, hashChecks: 0, hashMismatches: 0, reconnects: 0, handlerMs: 0, verifyMs: -1, storageWrites: 0, ticks: 0, lateStamps: 0 };
 
   constructor(
     readonly code: string,
@@ -135,6 +137,7 @@ export class MatchRoom {
     while (n < this.log.length && (this.log[n] as WireCmd)[0] <= u) n += 1;
     seat.sent = n;
     seat.u = u;
+    this.maxU = Math.max(this.maxU, u);
     this.out(seat.conn, {
       t: 'start',
       spec: this.spec,
@@ -198,7 +201,12 @@ export class MatchRoom {
     if ((this.rate[side + 1] as number) > MAX_CMDS_PER_SEC) return;
     this.seq[side] += 1;
     const cmd = { ...c, side } as Command;
-    this.log.push([k + INPUT_DELAY, this.seq[side], cmd]);
+    // Never stamp a tick that a client was already told is complete, and keep the log sorted,
+    // even if the runtime clock is coarse or seen out of order between events.
+    const last = this.log.length ? (this.log[this.log.length - 1] as WireCmd)[0] : 0;
+    const stamp = Math.max(k + INPUT_DELAY, this.maxU + 1, last);
+    if (stamp > k + INPUT_DELAY) this.stats.lateStamps += 1;
+    this.log.push([stamp, this.seq[side], cmd]);
     this.stats.commands += 1;
   }
 
@@ -240,6 +248,7 @@ export class MatchRoom {
       const msg: ServerMsg = n > seat.sent ? { t: 'f', u, c: this.log.slice(seat.sent, n) } : { t: 'f', u };
       seat.sent = n;
       seat.u = u;
+      this.maxU = Math.max(this.maxU, u);
       this.out(seat.conn, msg);
     }
     // A side that reported the end while the other is gone for 10 s finishes the room alone.

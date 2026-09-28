@@ -4,7 +4,14 @@
  * the same class twice.
  */
 import { AGE_ORDER, content } from '@/content';
-import { CLASS_GLYPH, COUNTER_LEGEND, UNIT_CLASSES, counterClasses, unitClass, type ClassGlyphId } from '@/core/cardClass';
+import {
+  CLASS_GLYPH,
+  COUNTER_LEGEND,
+  UNIT_CLASSES,
+  counterClasses,
+  unitClass,
+  type ClassGlyphId,
+} from '@/core/cardClass';
 import { i18n } from '@/i18n';
 import { describe, expect, it } from 'vitest';
 import { CLASS_NAME_KEY } from '../ClassIcon';
@@ -53,13 +60,30 @@ describe('card classes', () => {
   });
 
   it('keeps each age mixed (at least 4 classes per age)', () => {
-    for (const age of AGE_ORDER) expect(new Set(units.filter((u) => u.age === age).map(unitClass)).size, age).toBeGreaterThanOrEqual(4);
+    for (const age of AGE_ORDER)
+      expect(new Set(units.filter((u) => u.age === age).map(unitClass)).size, age).toBeGreaterThanOrEqual(4);
   });
 
   it('never lists a class as both strong and weak', () => {
     for (const u of units) {
       const { strong, weak } = counterClasses(u.strongVs, u.weakVs, content.units);
-      expect(strong.filter((c) => weak.includes(c)), u.id).toEqual([]);
+      expect(
+        strong.filter((c) => weak.includes(c)),
+        u.id,
+      ).toEqual([]);
+    }
+  });
+
+  it('never lists a unit\'s own class, nor contradicts the War Plan legend', () => {
+    const beats = (a: string, b: string) => COUNTER_LEGEND.some((l) => l.a === a && l.b === b);
+    for (const u of Object.values(content.units)) {
+      if (u.hidden) continue;
+      const self = unitClass(u);
+      const { strong, weak } = counterClasses(u.strongVs, u.weakVs, content.units, self);
+      expect(strong, u.id).not.toContain(self);
+      expect(weak, u.id).not.toContain(self);
+      expect(strong.filter((c) => beats(c, self)), u.id).toEqual([]);
+      expect(weak.filter((c) => beats(self, c)), u.id).toEqual([]);
     }
   });
 
@@ -77,7 +101,11 @@ describe('card classes', () => {
   });
 
   it('gives every card tile a class', () => {
-    const save = { collection: {}, powersOwned: [], skins: { equipped: {} } } as never;
+    const save = {
+      collection: {},
+      powersOwned: [],
+      skins: { equipped: {} },
+    } as never;
     const t = (k: string) => k;
     for (const id of [...content.order.units, ...content.order.turrets, ...content.order.powers]) {
       const tile = cardTile(save, content, id, t)!;

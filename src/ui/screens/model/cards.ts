@@ -35,7 +35,7 @@ export function cardClassOf(def: AnyCardDef): CardClass {
 /** The classes a unit beats and loses to, from the compiled counter lists (B4). */
 export function counterClasses(content: Content, def: AnyCardDef): { strong: UnitClass[]; weak: UnitClass[] } {
   if (def.kind !== 'unit') return { strong: [], weak: [] };
-  return classCounters(def.strongVs, def.weakVs, content.units);
+  return classCounters(def.strongVs, def.weakVs, content.units, unitClass(def));
 }
 
 export function isOwned(save: SaveDoc, id: CardId, content: Content): boolean {

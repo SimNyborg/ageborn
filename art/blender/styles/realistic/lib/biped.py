@@ -188,13 +188,14 @@ class Biped:
         w = (e[0] + self.L_fore * math.sin(lo), e[1] - self.L_fore * math.cos(lo))
         return w, lo
 
-    def apply(self, rig, P):
+    def apply(self, rig, P, rest=True):
         """Pose the rig. P keys (degrees, lu):
         root (dx, dz), root_r, root_dy, hips, spine, chest, neck, head,
         footF/footB (ankle x, ankle z, foot angle) solved with IK, or legF/legB FK (thigh, shin, foot),
         armF/armB FK (shoulder, elbow, wrist[, abduct]) or handF/handB IK ((x, z), wrist_abs),
         twist (hips yaw), bones {name: r or (r, rz)} for extra bones."""
-        rig.rest()
+        if rest:
+            rig.rest()
         f = self.fk(P)
         rx, rz = P.get("root", (0.0, 0.0))
         rig.set(self.root, r=f["rr"], loc=(rx, P.get("root_dy", 0.0), rz))
@@ -362,7 +363,10 @@ def _unflat(F):
 def keyed(keys, t, loop_len=None):
     """Catmull-Rom interpolation through [(time, pose)] (every pose has the same keys,
     missing ones fall back to the base = first pose). With loop_len the keys wrap."""
-    base = _flat(keys[0][1])
+    base = {}
+    for _, p in reversed(keys):
+        base.update(_flat(p))
+    base.update(_flat(keys[0][1]))
     fl = [(tk, {**base, **_flat(p)}) for tk, p in keys]
     n = len(fl)
     if loop_len:

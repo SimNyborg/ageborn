@@ -31,9 +31,9 @@ while (!match.ended) {
     const s = st.sides;
     const u0 = st.units.filter((u) => u.side === 0);
     const u1 = st.units.filter((u) => u.side === 1);
-    const pos = (us: typeof u0) => us.map((u) => Math.round(u.p / 1000)).sort((a, b) => a - b).join(',');
+    const pos = (us: typeof u0) => us.map((u) => Math.round(u.x / 1000)).sort((a, b) => a - b).join(',');
     console.log(
-      `${(st.tick / 20).toFixed(0)}s ${st.phase} | A age${s[0].ageIndex} g${Math.round(s[0].gold / 1000)} hp${s[0].baseHpBp} tr${s[0].treasury} tur${s[0].turrets.filter(Boolean).length} ${s[0].stance} n${u0.length}[${pos(u0)}] | P age${s[1].ageIndex} g${Math.round(s[1].gold / 1000)} hp${s[1].baseHpBp} tur${s[1].turrets.filter(Boolean).length} n${u1.length}[${pos(u1)}]`,
+      `${(st.tick / 20).toFixed(0)}s ${st.phase} | A age${s[0].ageIndex} g${Math.round(s[0].gold / 1000)} hp${Math.round(s[0].baseHp*100/s[0].baseMaxHp)} tr${s[0].treasury} tur${s[0].turrets.filter(Boolean).length} ${s[0].stance} n${u0.length}[${pos(u0)}] | P age${s[1].ageIndex} g${Math.round(s[1].gold / 1000)} hp${Math.round(s[1].baseHp*100/s[1].baseMaxHp)} tur${s[1].turrets.filter(Boolean).length} n${u1.length}[${pos(u1)}]`,
     );
     const tr = bot.traces;
     const recent = tr.filter((t) => t.tick > lastTrace && t.action);

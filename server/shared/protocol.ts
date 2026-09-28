@@ -69,4 +69,6 @@ export interface RoomStats {
   verifyMs: number;
   storageWrites: number;
   ticks: number;
+  /** Commands stamped later than now + INPUT_DELAY because of the clock guard. */
+  lateStamps: number;
 }

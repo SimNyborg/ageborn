@@ -1,10 +1,10 @@
 # Ageborn v1: definitive design document
 
-This document is the single source of truth for the v1 build. Version 1.2, 2026-09-28: A15 and A16 merged, with the owner's decisions of 2026-09-28.
+This document is the single source of truth for the v1 build. Version 1.3, 2026-09-28: A17 (a longer lane and eight ages, mostly built) and A18 (harder, longer, deeper: pacing, the War Council, stances, difficulty, the War Path, more ages, new classes and the road to online; decided, not yet built) merged, with the owner's decisions of 2026-09-28. Version 1.2 merged A15 and A16.
 
 The document has four parts plus an appendix:
 
-- **Part A:** game design. It ends with A15 (engagement and long-term progression) and A16 (strategic depth, variety and long-term play), which also hold the ranked wishlist after v1 (A16.24).
+- **Part A:** game design. It ends with A15 (engagement and long-term progression), A16 (strategic depth, variety and long-term play, with the ranked wishlist after v1 in A16.24), A17 (a longer lane and eight ages) and A18 (harder, longer, deeper). Where A18 and an older section differ, A18 wins; the older text is updated and points to it. A rule marked "A18" takes effect in the build with its A18.13 phase; until then the build follows the older rule, which is kept beside it.
 - **Part B:** technical architecture.
 - **Part C:** build plan for parallel agents.
 - **Part D:** roadmap and risks.
@@ -78,7 +78,7 @@ Ageborn is a one-lane tug-of-war battler. Two bases face each other, warriors wa
 - a War Plan (one loadout per age)
 - a collection with rarities and foil variants
 - Time Capsules with an exciting, honest reveal
-- upgrades, skins, a Trophy Road and a Conquest board
+- upgrades, skins and cosmetic collections, a Trophy Road, and the War Path, a saga-map campaign against AI Generals at the centre of Home (A18.7; it absorbs the old Conquest board)
 
 No real money exists anywhere in the game.
 
@@ -87,7 +87,7 @@ Before public use, the name needs a TMview (EUIPO/USPTO) and domain check. "Age 
 **Pillars (priority order)**
 
 1. **Familiar in 10 seconds.** Tap a card and a warrior walks out and fights. Match one teaches by doing and ends with lasers.
-2. **Evolving is the best moment of every match.** It brings a big visual transformation, new-age troops on the lane at once, and a music key change.
+2. **Evolving is the best moment of every match.** It brings a big visual transformation, new-age troops on the lane at once, and a music key change. Since A18 (owner decision D1) evolves are rarer: every age has an arrival, a middle and a push (about 60-125 s per age, A18.3.1), and each evolve also opens new research ranks (A18.5).
 3. **A decision every 5-10 seconds.** Which unit, save or spend, turret or army, evolve now or fire the power first.
 4. **Honesty.** Bots follow the player's rules and are labeled AI. Capsule odds, pity counters and bot difficulty are always visible. Nothing is for sale. Every promise on screen is literally true. Nothing a player has earned is ever taken away, and stopping, whether mid-match or for a month, never costs anything the player owns (A15.1).
 5. **Readable chaos.** Juice scales with how much an event matters, and it never hides the state of the lane.
@@ -99,18 +99,20 @@ A sixth, technical pillar: art, sound and balance are data. The simulation owns 
 | Classic element | v1 decision |
 |---|---|
 | One lane, two bases, tap only | Keep |
-| Units walk and fight automatically | Keep, plus a Charge/Hold stance |
-| XP to evolve through 5 ages | Keep: Stone, Medieval, Gunpowder, Modern, Future |
+| Units walk and fight automatically | Keep, plus three stances: Charge, Hold at a draggable flag, Fall back (A18.4) |
+| XP to evolve through 5 ages | 8 ages built (Stone, Bronze, Medieval, Gunpowder, Industrial, Modern, Future, Cosmic, A17); 13 as the target (A18.8). A match plays a window of 3, 5 or 7 consecutive ages (A18.3.4) |
 | Training queue of 5 | Keep; queued units upgrade to the new age on evolve |
-| 4 turret slots, 50% sell refund | Keep, plus one-tap Modernise. Range capped at 480 lu (40% of the lane); turrets never hit bases |
-| Kill bounty 130% of cost (AoW1) | 60% of cost; kills by powers pay 30% and no XP |
-| XP when your own unit dies | Keep at 40% of cost |
+| 4 turret slots, 50% sell refund | Keep, plus one-tap Modernise. Range capped at 480 lu (24% of the 2,000 lu lane); research may add range up to a hard cap of 560 lu (A18.5.3); turrets never hit bases |
+| Kill bounty 130% of cost (AoW1) | 50% of cost (A18.3.3; 60% until A18 phase 1); kills by powers pay 30% and no XP |
+| XP when your own unit dies | 50% of cost (A18.3.2; 40% until A18 phase 1) |
+| Money upgrades that are a linear buy | The War Council: in-battle research with 1-of-2 picks in four tracks (A18.5) |
 | Free special on a cooldown | Keep as a charge meter; it never costs XP |
 | Unit prices inflating 15 → 150,000 | Flat prices by role; power comes from age and card level |
 | AI with free gold and timer evolution | Bots use the same economy, the same command API and only a limited observation |
 | Turtling, AFK farming, 40-minute stalemates | Match clock with Overdrive, Siege and Final Bell; XP from base damage; turret caps; bots that refuse to feed turrets |
-| Queued units idle behind the front | Two-wide melee front rank; reach and ranged units attack from behind; faster units overtake parked ranged units |
-| Slow walking, no pause, mute or save | ~17 s lane crossing, 1x/1.5x/2x speed, pause, 4 volume buses, autosave plus export |
+| Queued units idle behind the front | Three-wide melee front rank (A17.3); reach and ranged units attack from behind; faster units overtake parked ranged units |
+| A long lane you scroll along | 2,000 lu lane with a scrolling, auto-following camera and a minimap (A17) |
+| Slow walking, no pause, mute or save | ~23 s lane crossing (A17.2), 1x/1.5x/2x speed, pause, 4 volume buses, autosave plus export |
 | Flashing evolve reminder | Steady glow only |
 | Army of Ages wiping units on evolve | Units and turrets survive evolving |
 
@@ -118,40 +120,44 @@ A sixth, technical pillar: art, sound and balance are data. The simulation owns 
 
 ### A2.1 Lane, coordinates, camera
 
-- **Lane.** 1,200 lu from the left gate (world x = 0) to the right gate (x = 1,200).
+- **Lane.** 2,000 lu from the left gate (world x = 0) to the right gate (x = 2,000) since A17 (was 1,200). L = 2,000 below; rules about the whole lane scale with L, rules about home defence keep their size (A17.3).
   - The player (side 0) is on the left, faces right and plays blue. The opponent (side 1) is on the right, faces left and plays orange.
   - Each base occupies 140 lu behind its gate, outside the fighting area.
-- **Progress.** Each side measures progress p from its own gate: side 0 has p = x, side 1 has p = 1,200 − x. Rules below use p unless stated.
+- **Progress.** Each side measures progress p from its own gate: side 0 has p = x, side 1 has p = 2,000 − x. Rules below use p unless stated. Rules stated from the enemy gate are written `L − x`.
 - **Key positions:**
   - spawn at p = 20
   - hold line at p = 320
   - turret range cap 480 lu, measured from the own gate
-  - mid-lane at p = 600
-  - power zone centres clamped to p ∈ [150, 1,050]
-- **Crossing time.** Speeds run 35-100 lu/s. Standard infantry (70 lu/s) crosses in ~17 s.
-- **Camera.**
-  - The whole world (1,200 lu lane plus both bases plus a 40 lu margin, 1,560 lu) fits the lane band of the screen by default, using one world scale (px per lu = lane band width / 1,560). There is no scrolling.
-  - On screens narrower than 900 CSS px, a pinch zooms up to 1.6x with a camera that follows the midpoint of the two front lines (lerp k = 0.08 per frame at 60 fps, scaled by dt). A double tap resets it.
-- **Screen layout (landscape, v1 is landscape only):** top bar 12% of height, lane band 64%, bottom tray 24%. Portrait shows a "Rotate your device" overlay.
-- **Depth.** The sim is 1D. The view places units in three depth rows by their rank in the side's order: the two front-rank units get y = −8 and +8 lu, and every other unit gets y = −16, 0 or +16 lu by (rank index mod 3). The view depth-sorts by y. The sim spacing is unaffected.
+  - mid-lane at p = 1,000 (L / 2)
+  - power zone centres clamped to p ∈ [150, 1,850] (L − 150)
+  - the Hold flag range [320, 800] (A18.4.2)
+- **Crossing time.** Table speeds run 35-100 lu/s; every unit walks at table speed × 1.25 (`economy.marchSpeedBp` 12,500, A17.2). Standard infantry (70 lu/s) crosses in ~23 s.
+- **Camera (A17.4-A17.7).** The world is 2,360 lu (x −180 to 2,180). The camera shows a window of it at a world scale set by device class (about 40% of the world on a phone, 60% on a desktop), with zoom 0.8-1.25. The player drags, swipes, scrolls, uses the arrow keys or edge scroll, or taps the minimap; auto-follow (default On, a setting) frames the fight whenever the player is not scrolling. A minimap strip shows the whole lane, and off-screen badges warn of attacks on the base, powers and enemy Legendaries. The camera is view-only and never touches the sim.
+- **Screen layout (landscape, v1 is landscape only):** by device class (A17.7): phones (height < 500 CSS px) top bar 10% (min 36 px), lane band 68%, tray 22%; tablets and desktops 12% / 64% / 24%. Portrait shows a "Rotate your device" overlay.
+- **Depth.** The sim is 1D. The view places units in depth rows by their rank in the side's order: the three front-rank units get y = −12, 0 and +12 lu (A17.3: three-wide front), and every other unit gets y = −16, 0 or +16 lu by (rank index mod 3). In the Siege crowd (own p ≥ L − 90) units spread over seven rows (−20, 8, −6, 20, −26, 14, 0), each later round 4 lu further back. The view depth-sorts by y. The sim spacing is unaffected.
 
 ### A2.2 Bases and the age power scale
 
 | Age index | Age | P | P (bp) | Base max HP |
 |---|---|---|---|---|
 | 0 | Stone | 1.00 | 10,000 | 10,000 |
-| 1 | Medieval | 1.35 | 13,500 | 13,500 |
-| 2 | Gunpowder | 1.82 | 18,200 | 18,200 |
-| 3 | Modern | 2.46 | 24,600 | 24,600 |
-| 4 | Future | 3.32 | 33,200 | 33,200 |
+| 1 | Bronze (A17) | 1.16 | 11,600 | 11,600 |
+| 2 | Medieval | 1.35 | 13,500 | 13,500 |
+| 3 | Gunpowder | 1.82 | 18,200 | 18,200 |
+| 4 | Industrial (A17) | 2.12 | 21,200 | 21,200 |
+| 5 | Modern | 2.46 | 24,600 | 24,600 |
+| 6 | Future | 3.32 | 33,200 | 33,200 |
+| 7 | Cosmic (A17) | 4.48 | 44,800 | 44,800 |
+
+Bronze and Industrial are half steps (×1.16, the geometric midpoint of their neighbours); the others are ×1.35 steps (A17.8). A18.8 adds five more ages at geometric steps between these (Nile 1.08, Rome 1.22, Norse 1.28, Shogun 1.49, Renaissance 1.65), which shifts `AgeDef.index` but changes no existing P. A match may start in a later age (A18.3.4): its base starts at that age's P and HP.
 
 - Base max HP equals 10,000 × P. A2.14 checks that a full unopposed army needs 40-60 s to destroy a base.
 - P is already baked into every card stat in A5 (tables list final level-1 values for their age).
 - Base max HP follows the owner's current age.
 - On evolve the base keeps its HP percentage and then heals 5% of the new max, capped at max.
-- An age-N unit beats its age N−1 counterpart one-on-one with about half its HP left. A same-gold army is ~1.8x stronger: a real edge that turrets and the defender's short walk can hold for 20-40 s.
+- An age-N unit beats its previous-age counterpart one-on-one with about half its HP left after a ×1.35 step and about a quarter after a half step. A same-gold army is ~1.8x stronger after a ×1.35 step: a real edge that turrets and the defender's short walk can hold for 20-40 s.
 - Bases do not attack, except Last Stand (A2.11).
-- Each base shows its Treasury level (gatherer count) and, while Last Stand is armed, a horn icon.
+- Each base shows its Treasury level (gatherer count) and, while Last Stand is armed, a horn icon. From A18.5 the Treasury is gone; the base shows the War Council workshop glyph with the current research icon and its progress ring instead.
 
 ### A2.3 Gold (in battle)
 
@@ -161,29 +167,33 @@ Gold and XP are stored internally in milli-units.
 |---|---|
 | Starting gold | 175 |
 | Passive income | 6 gold/s (×2 in Overdrive and Siege) |
-| Treasury upgrade | 3 levels, each +1.5 gold/s; costs 200 / 350 / 550 (payback 133 / 233 / 367 s). Treasury income is never doubled by Overdrive. The art changes per age (gatherers, farm, trade cart, factory, fusion core); the numbers do not |
-| Kill bounty | 60% of the victim's card cost, credited to the killing side for kills by units, turrets and unit abilities |
+| Treasury upgrade | **Replaced by the War Council's Economy track (A18.5.4, owner decision D3).** Until A18 phase 3: 3 levels, each +1.5 gold/s; costs 200 / 350 / 550 (payback 133 / 233 / 367 s). Treasury income is never doubled by Overdrive. The art changes per age (gatherers, farm, trade cart, factory, fusion core); the numbers do not |
+| War Council research (A18.5) | Gold spent on one research item at a time in four tracks (Troops, Defences, Economy, Command); rank I 150, rank II 300, rank III 450-500; −20% for the side that is behind. Economy income is never doubled by Overdrive |
+| Kill bounty | 50% of the victim's card cost (A18.3.3; 60% until A18 phase 1), credited to the killing side for kills by units, turrets and unit abilities |
 | Power and Last Stand kills | 30% of the victim's card cost in gold, no XP |
 | Underdog bounty | +50% gold and XP when the victim's card age index is higher than the killer side's current age index. It is off while the killer side's Evolve is available |
 | Summoned units (riders, Paratroopers, Vanguard) | No bounty and no loss XP for either side |
+| Falling gate (A17.3, built) | In Overdrive and Siege, a unit killed within 120 lu of its own gate by an enemy unit, turret or unit ability costs its base the unit's max HP as base damage by the killer |
 | Unit and turret prices | Flat across ages (A5) |
 | Turret sell refund | 50% of turret cost (slot purchases are never refunded) |
-| Modernise | New turret price minus 50% of the old turret's price |
+| Modernise | New turret price minus 50% of the old turret's price (the Engineers research halves this price, A18.5.3) |
 | Turret slots | Mount 1 free; mounts 2 / 3 / 4 cost 150 / 350 / 700 |
 
 ### A2.4 XP and evolving
 
-| XP source | Value |
-|---|---|
-| Passive trickle | 4 XP/s (×2 in Overdrive and Siege) |
-| Killing an enemy unit with a unit, turret or unit ability | 100% of its card cost (+50% underdog) |
-| Killing with an Age Power or Last Stand | 0 |
-| Losing your own unit (not summons) | 40% of its card cost |
-| Damaging the enemy base | 12 XP per 1% of that base's current max HP (XP = damage × 1,200 / maxHp) |
+**Superseded by A18.3.2 (owner decision D1: slower evolving).** The table shows the A18 values; the build uses the "Until A18 phase 1" column until the pacing data switch ships with the War Council (A18.13 phases 1 and 3).
 
-- **Thresholds.** Medieval 700, Gunpowder 1,000, Modern 1,200, Future 1,500. Excess XP carries over.
-- **XP cap.** XP never exceeds 1.5× the current threshold (1,050 in Stone). In the final age of the format the cap is 1,200.
-- **Expected timing.** Active play earns 14-17 XP/s, so evolutions land near 1:00, 2:05, 3:20 and 4:50. Passive XP alone reaches Medieval at 2:55, so nobody is frozen in an age.
+| XP source | A18 | Until A18 phase 1 |
+|---|---|---|
+| Passive trickle | 5 XP/s (×2 in Overdrive and Siege) | 4 XP/s |
+| Killing an enemy unit with a unit, turret or unit ability | 70% of its card cost (+50% underdog) | 100% |
+| Killing with an Age Power or Last Stand | 0 | 0 |
+| Losing your own unit (not summons) | 50% of its card cost | 40% |
+| Damaging the enemy base | 8 XP per 1% of that base's current max HP (XP = damage × 800 / maxHp) | 12 XP per 1% |
+
+- **Thresholds (A18.3.2).** They follow the position in the match's age window, not the age: evolving out of the window's 1st age costs 700 XP, then 1,250, 1,350, 1,450, 1,550 and 1,650 (`FormatDef.xpToNextOverride`). Excess XP carries over. The tutorial keeps its own thresholds (built: 680 / 690 / 520 / 700). Until A18 phase 1 the build uses the per-age thresholds of A17.8 (Bronze 550, Medieval 500, Gunpowder 900, Industrial 700, Modern 800, Future 1,200, Cosmic 1,300).
+- **XP cap.** XP never exceeds 1.5× the current threshold. In the final age of the window, Overcharge uses 1,650 XP per +25% charge (A18; 1,200 until phase 1).
+- **Expected timing (A18.3.1).** The first age lasts ~70 s and each later one ~100-122 s (Balanced mirror); no age after the first has a median stay under 75 s. Passive XP alone reaches the second age at 2:20, so nobody is frozen in an age.
 - **Evolve command:**
   - Valid when XP ≥ threshold, current age < the format's max age, and not already ascending.
   - A 2.5 s Ascension (50 ticks) follows. The training timer pauses and turrets keep firing. Every other command stays legal; anything built or trained during Ascension uses the old age.
@@ -192,27 +202,35 @@ Gold and XP are stored internally in milli-units.
   - The tray swaps to the new age's loadout.
   - **Queue conversion.** Each queued item converts to the new loadout's card of the same role group (Infantry, Ranged, Heavy, Anti-armor, Support, Epic, Legendary), keeping its training progress. Prices are flat within a group, so nothing is charged or refunded. If the new loadout has no card of that group, the item keeps its original card.
   - **Vanguard.** 2 of the new age's Common Infantry spawn free at p = 20 at the side's level for that card. They are summoned: no pop, no bounty.
-- **Units and turrets already built are unchanged.** Old turrets keep their original stats and show a Modernise arrow.
-- **Final age of the format (Overcharge).** While Age Power charge is below 100%, every 1,200 XP is consumed and adds +25% charge.
+  - **Research carries over (A18.5).** Owned War Council picks are kept across evolves and apply to later units of the same class; research in progress continues through Ascension.
+- **Units and turrets already built are unchanged.** Old turrets keep their original stats and show a Modernise arrow. "Older" compares the global `AgeDef.index`, never the position in the format (A17.15 rule 4).
+- **Final age of the format (Overcharge).** While Age Power charge is below 100%, every 1,650 XP (A18; 1,200 until A18 phase 1) is consumed and adds +25% charge.
 - **Visibility.** Both XP bars (with age icons) are always visible, so the evolve race is part of the show. The Evolve button sits on your own XP bar and glows steadily when ready. It never flashes.
 
 ### A2.5 Ages in v1
 
+Eight ages are built (A17.8):
+
 | Age | New mechanic introduced |
 |---|---|
 | Stone | Basics: melee, ranged, heavy, knockback, first-hit charges, ricochet |
+| Bronze (A17.9; shown as "Bronze Age: Hellas", A18.8.2) | Piercing throws, damage auras, turret stuns, the sweep power |
 | Medieval | Reach (second-rank attacks), shields, damage resistance, siege damage to bases |
-| Gunpowder | Splash artillery, pulls, the Mech tag, first Air unit (Legendary bomber) |
-| Modern | Air as a regular option, suppression, marking, called strikes |
+| Gunpowder (shown as "Age of Muskets") | Splash artillery, pulls, the Mech tag, first Air unit (Legendary bomber) |
+| Industrial (A17.10; shown with Great War flavour) | Mech Heavies, marking support, runners that explode, stun chains, crewed Legendary |
+| Modern | Air as a regular option, suppression, called strikes |
 | Future | Energy shields, EMP stuns, time control |
+| Cosmic (A17.11) | Blink skirmisher, shield projector, an air Legendary with called strikes |
 
-Ages are data. A sixth age (Bronze/Antiquity between Stone and Medieval) is planned for v1.x and MUST require only content, visuals and audio entries.
+Ages are data. New ages need only content, visuals and audio entries plus one `AgeId` entry (A17.15). The target is 13 ages (A18.8.1: Nile, Rome, Norse, Shogun and Renaissance join), built in waves once the realistic restyle is proven on Stone (A18.8.3, owner decision D4). Every new age brings a visibly new mechanic.
 
 ### A2.6 Roles, tags and damage modifiers
 
 **Tags:** `light`, `armored`, `bio`, `mech`, `ground`, `air`, `legendary`, `support`, `ranged`, `melee`.
 
 **Roles:** Infantry, Ranged, Heavy, Anti-armor (AA), Support, plus Epic and Legendary specialists. Each card also has a **role group** (Infantry, Ranged, Heavy, Anti-armor, Support, Epic, Legendary) used by pop, queue conversion and bot scoring.
+
+**Classes (A18.9).** Every card shows its class with an icon and a label (A18.9.1). Research lines (A18.5.2) are bought per class; Epics and Legendaries count in their base role's class. Three classes join later: **Air** as a full class with its own counters and research line (phase 8; air units already exist), **Underground** tunnelers (A16.15, phase 8) and the stationary **Fort** card type (A16.14, phase 6).
 
 Each attack carries an ordered `mods` list. The **first** mod whose tag the target has applies; otherwise the multiplier is ×1.0. Role defaults:
 
@@ -252,9 +270,9 @@ Edge distance between two entities = |xA − xB| − (wA + wB)/2, minimum 0. All
 
 - A unit advances at its speed unless it has a valid target in range for its first attack.
 - A unit cannot move into the nearest enemy ground unit ahead of it (it stops at edge distance 0).
-- **Soft single file with a two-wide front.** Each tick, sort a side's ground units by p descending, then id ascending. Unit 1 and unit 2 form the front rank: unit 2 may walk up to unit 1's position. From unit 3 on, a unit may not come closer than (wA + wB) × 0.3 centre to centre behind the ally directly ahead.
-  - The result: two melee units fight side by side, reach units (range ≥ 55) hit from the third position, and Infantry (range 16) can hit from the third position against small targets.
-  - Under review: the two-wide front is a main cause of stalls (A16.4). Phase 2b measures a third rank that closes to contact (lever L3) and a three-wide front (L4). If L3 is not adopted, the "third position" sentences above are deleted; if L4 is adopted, this rule changes to three wide.
+- **Soft single file with a three-wide front** (`economy.frontWidth` 3; A16.4 lever L4, adopted and built with A17 step 1). Each tick, sort a side's ground units by p descending, then id ascending. Units 1 to 3 form the front rank: units 2 and 3 may walk up to unit 1's position. From unit 4 on, a unit may not come closer than (wA + wB) × 0.3 centre to centre behind the ally directly ahead.
+  - The result: three melee units fight side by side. Units behind the front rank fight only if their range covers the gap (ranged units, which also overtake parked melee). Lever L3 (melee closes to contact so a rear rank reaches) was measured and not built, so the old "third position" claims are removed.
+  - **Siege crowd** (`economy.siege.gateCrowdLu` 60, built): in Siege a unit may stand level with the ally ahead once that ally is within 60 lu of the enemy gate, so an army at the gate hits the base with every unit.
 - **Overtaking.** These ally caps apply only against an ally ahead that is moving, or whose longest attack range is ≤ the mover's longest attack range. A unit may pass a stationary ally with a longer range, so melee is never stuck behind parked ranged units or artillery.
 - **Symmetric resolution.** Both sides' desired moves are computed from pre-move positions. If the two fronts would overlap, each side gets floor(gap / 2) of the remaining gap.
 - **Support followers.** Units with `followSupport` never advance beyond (frontmost friendly non-follower ground unit p − 60 lu). If no such unit exists, they advance to at most p = 200.
@@ -267,10 +285,13 @@ Edge distance between two entities = |xA − xB| − (wA + wB)/2, minimum 0. All
 - Air units are immune to knockback and pulls.
 - A Repair Drone follows the support rule above.
 
-**Stance (per side, 2 s toggle cooldown):**
+**Stance (per side; superseded by A18.4, owner decision D6).** A18 gives three stances and a Hold flag:
 
 - **Charge** (default): advance.
-- **Hold:** ground units with p > 320 that have no target in range walk back to 320 at 70% speed. Units at or below 320 do not advance past it. Engaged units keep fighting. Gunships obey stance; the bomber does not.
+- **Hold:** ground units hold at the side's Hold flag (default p = 320; the player drags it to any p in [320, 800], snapped to 20 lu). Units beyond it with no target walk back at 70% speed; units behind it do not pass it. Engaged units keep fighting.
+- **Fall back:** ground units with no target walk back to p = 200 at full speed and hold there; engaged units keep fighting until their target dies or leaves range.
+- A stance change is accepted at most once per 3 s (`battle.stanceCooldownMs`), a flag move once per 1 s. Gunships obey stance; the bomber does not.
+- Until A18 phases 2 and 4: two stances (Charge and Hold at p = 320) with a 2 s toggle cooldown.
 
 **Targeting:**
 
@@ -320,6 +341,8 @@ The pipeline truncates after each step, in this fixed order, with a minimum of 1
 
 Damage is absorbed by a temporary shield first, then an innate shield, then HP.
 
+**Stacking caps (A18.2 rule 4).** All sources summed in bp (research, doctrines, relics, modifiers, weather, auras): damage dealt ≤ +35%; damage taken ≥ −35% (no unit ever takes less than 65% of a hit); max HP ≤ +30%; attack speed ≤ +25%; move speed ≤ +20% (forced march and slows apply after); unit range ≤ +60 lu. Research applies to units spawned after it completes, never to units already on the lane.
+
 **Bases take damage only from attacks that targeted them,** using `vsBaseDamage` if set, else the listed damage. Splash never damages a base.
 
 **Knockback and pulls:**
@@ -328,7 +351,7 @@ Damage is absorbed by a temporary shield first, then an innate shield, then HP.
 - Resist values: small and medium 0%, large and huge 50%, Brace 100%, Air 100%.
 - Knockback cancels a pending windup.
 
-**First-hit bonus.** "First hit of each engagement" means the first attack started after ≥ 2 s without attacking. Brace units ignore attackers' first-hit bonuses (multiplier and knockback).
+**First-hit bonus.** "First hit of each engagement" means the first attack started after ≥ 2 s without attacking. From A18 phase 2 it follows **engagement freshness** (A18.4.2): a unit is fresh after 4 s with no target, its first hit then is the engagement's first hit, and stance changes never reset it. Brace units ignore attackers' first-hit bonuses (multiplier and knockback). A ranged first-hit bonus rides on the first projectile of the attack (built with A17 step 2 for the Harpoon Gunner).
 
 **Status effects:**
 
@@ -360,7 +383,7 @@ Status rules:
 
 **Training:**
 
-- One shared queue of 5. Gold is paid on enqueue.
+- One shared queue of 5 (4 with the Guildhall research, A18.5.4). Gold is paid on enqueue. The tray holds 6 unit cards from A18 phase 2 (A18.9; 5 before).
 - `cancelTrain { slot }` removes the last queued instance of that card with a full refund. `cancelTrain` without a slot removes the last item.
 - Training advances the first queued item that is not waiting. A finished item spawns at p = 20 if pop + unit pop ≤ 60. Otherwise it waits at 100% with "ARMY FULL" on its card, and the next item starts training. Each tick, finished items spawn in queue order as soon as they fit.
 - Train times: Infantry 1.5 s, Ranged 2.0 s, AA 2.5 s, Support 3.0 s, Heavy and Epic 4.0 s, Legendary 7.0 s.
@@ -377,7 +400,8 @@ Status rules:
 - **Rules:**
   - Turrets are invulnerable.
   - They never target bases.
-  - Range is measured from their own gate, capped at 480 lu.
+  - Range is measured from their own gate, capped at 480 lu on the card. Research (Watchtowers +40 lu, A18.5.3), relics and modifiers may add range up to a hard cap of **560 lu** (`turretRangeHardCapLu`, A18.2), so the gap between the two covers never falls below 880 lu.
+  - Turret attack speed and damage research (Quick Loaders, Arsenal) applies at once, within the A18.2 caps.
   - Damage ×0.5 during Siege.
   - Turrets from older ages keep firing at their original stats.
 - **Prices.** Commons 150 / 175, Rare 250, Epic 250. There are no Legendary turrets in v1.
@@ -387,11 +411,11 @@ Status rules:
 
 - One power is equipped per age loadout (default or alternate).
 - **Charge:**
-  - 0 → 100% over 50 s, stored in parts per million (1,000 per tick); ×1.25 in Overdrive and Siege.
-  - Capped at 50% across an evolve.
+  - 0 → 100% over 50 s, stored in parts per million (1,000 per tick); ×1.25 in Overdrive and Siege; Signal Fires research charges 15% faster (A18.5.5).
+  - Capped at 50% across an evolve (70% with the Reserve Charge research, v1.1). The 50% carry and the A18 thresholds give one power cast per age (A17.8).
   - The opponent's charge ring is visible.
 - **Casting:**
-  - Tap to auto-aim (the `densest` scan over p 150-1,050) or drag to place.
+  - Drag from the power button onto the lane (or the minimap) to place; this is the primary, taught interaction (A18.9.2). A tap starts an aiming mode and the next tap on the lane casts. Space auto-aims (the `densest` scan over p 150-1,850). Until A18.9.2 ships, a tap auto-aims.
   - A 1.0 s telegraph (ground marker plus sound) is visible to both sides.
   - The effect then plays out.
 - **Barrage sequencing.** Impact i (0-based) lands at `telegraphEnd + floor(i × durationTicks / count)` at x = `zoneStart + (i + 0.5) × zone / count + jitter`, where zoneStart is the zone edge nearer the caster's gate and jitter comes from the sim RNG within ±jitter (0 for line patterns).
@@ -404,27 +428,33 @@ Status rules:
 
 ### A2.10 Match formats and clock
 
-| Format | Ages | Overdrive | Siege | Final Bell | Retreat unlocks | Used in |
-|---|---|---|---|---|---|---|
-| Tutorial | Stone to Future (thresholds 250 / 300 / 350 / 400) | none | none | none | never | Onboarding match 1 |
-| Short War | Stone to Gunpowder | 3:30 | 4:30 | 6:00 | 1:00 | Ladder (all arenas), Skirmish |
-| Standard War | Stone to Modern | 4:30 | 6:00 | 7:30 | 1:00 | Ladder from Arena 2, Daily Challenge, Skirmish |
-| Full War | Stone to Future | 5:30 | 7:30 | 9:30 | 1:00 | Ladder from Arena 3, Conquest, Skirmish |
+**Formats are age windows (A18.3.4, owner decision D2).** A format is a window of consecutive ages; `FormatId` is an open string key into `content.formats`. The target formats:
 
-From Arena 2 the player picks any unlocked format before each ladder match. Trophies and Amber per win depend on the format from Arena 3 (A15.8). The Short War clock may change in Phase 3 (A16.4, lever L2: Overdrive 3:00, Siege 3:45, Final Bell 5:00).
+| Format | Ages in the window | Overdrive | Siege | Final Bell | Median target | Retreat unlocks | Used in |
+|---|---|---|---|---|---|---|---|
+| Tutorial | Stone, Medieval, Gunpowder, Modern, Future (scripted; thresholds 680 / 690 / 520 / 700) | none | none | none | ~2:30-3:00 | never | Onboarding match 1 (War Path Stone L1) |
+| Short War | 3 | 5:00 | 6:30 | 8:30 | 7:00 | 1:00 | Ladder (all arenas), Quick Battle, Skirmish |
+| Standard War | 5 | 8:00 | 10:00 | 12:30 | 10:30 | 1:00 | Ladder from Arena 2, Daily Challenge, Skirmish |
+| Full War | 7 | 12:00 | 14:30 | 17:30 | 15:00 | 1:00 | Ladder from Arena 3, Skirmish; never on the War Path |
+
+Shorter windows (War Path levels, custom) use the clocks in A18.3.4. **Which window:** Quick Battle and Skirmish let the player pick a start era (default Stone); ladder Arenas 1-2 start at Stone and from Arena 3 the window is the seeded Era of the Week; the Daily Challenge has its own seeded window of Standard length; War Path levels have fixed windows (A18.7.2). A match that starts in a later age starts its base at that age's P and HP.
+
+**Built today (until A18 phase 1):** Short War Stone to Gunpowder (4 ages; 3:45 / 4:45 / 6:15), Standard War Stone to Modern (6 ages; 5:00 / 6:45 / 8:30; also Conquest), Full War Stone to Cosmic (8 ages; 6:45 / 8:45 / 10:45), per A17.8.
+
+From Arena 2 the player picks any unlocked format before each ladder match. Trophies and Amber per win depend on the format from Arena 3 (A15.8).
 
 | Phase | Effect |
 |---|---|
 | Regulation | Normal rules |
-| Overdrive | Base passive gold (6/s) and passive XP ×2 (Treasury income unchanged), Age Power charge ×1.25, faster music layer, gold frame pulse |
-| Siege | Overdrive effects continue; turret damage −50%, all damage to bases ×2, each base loses 0.5% of its max HP per second (applied every 20 ticks), siege bell, red vignette |
+| Overdrive | Base passive gold (6/s) and passive XP ×2 (Treasury and Economy research income unchanged), Age Power charge ×1.25, faster music layer, gold frame pulse; the falling gate is on (A17.3) |
+| Siege | Overdrive effects continue; turret damage −50%, all damage to bases ×2, each base loses 0.5% of its max HP per second (applied every 20 ticks), forced march (unit movement ×1.2), the siege crowd at the gate (A17.3), siege bell, red vignette |
 | Final Bell | Higher base HP% wins; a gap ≤ 0.5% (50 bp) is a draw |
 
-**Wins:** destroy the enemy base. Both bases destroyed on the same tick is a draw. Retreat counts as a loss.
+**Wins:** destroy the enemy base. Both bases destroyed on the same tick is a draw. Retreat counts as a loss. War Path levels may set another victory rule (`MatchConfig.victory`: hold out until a time, or destroy a marked turret or fort; A18.7.3).
 
 | Classic exploit | Countermeasure |
 |---|---|
-| Turtling behind 4 turrets | Range cap, no base targeting, Siege halves turret damage, 60% bounty, bots that refuse to feed turrets (A7.2) |
+| Turtling behind 4 turrets | Range cap (560 lu hard cap with research), no base targeting, Siege halves turret damage, the falling gate, bots that refuse to feed turrets (A7.2), turtle proxies gated (A18.12) |
 | Staying in the Stone Age to farm | Flat prices, bounty follows cost not age, underdog bonus is only 50% and off while Evolve is available, XP cap |
 | Going AFK | Passive gold is small; the clock ends the match |
 | Stuck in an age | Passive XP, XP from base damage and from losses |
@@ -433,16 +463,18 @@ From Arena 2 the player picks any unlocked format before each ladder match. Trop
 
 ### A2.11 Comeback tools (visible and counterable)
 
-- XP from your own losses (40% of cost).
+- XP from your own losses (50% of cost from A18 phase 1; 40% before).
 - Underdog bounty (+50% gold and XP).
+- Underdog research discount (A18.5.1): a side whose age position is lower than the enemy's, or whose base HP is 20 or more percentage points lower, pays −20% for research started while that holds.
+- A smaller kill bounty (50%) and less kill XP (70%), so the winner is not paid twice (A18.2 rule 6).
 - Defender's advantage: short reinforcement walk plus turret cover at the hold line.
-- The 50% power carry cap, which stops a leader chaining specials across an evolve.
+- The 50% power carry cap, which stops a leader chaining specials across an evolve (70% with the Reserve Charge research, v1.1).
 - **Last Stand (once per match):**
   - Arms when your base is at or below 25% HP. Both sides see a horn icon on the armed base.
   - Tap it: 1.0 s charge (horn, glow), then a volley hits every enemy unit (ground and air) within 450 lu of your gate for 200 × P(your current age) × your loadout multiplier (Legendaries 50%) and knocks ground units back 80 lu.
   - If unused, it fires automatically at 10% HP.
   - Kills pay 30% gold and no XP.
-  - In the player's first 4 matches the button is hidden and Last Stand is automatic only (A8).
+  - In match 1 the button is hidden and Last Stand is automatic only; the manual button appears from match 2 (built 2026-09-28; A8 had match 5). The Last Stand Drill research (v1.1) arms it at 35% base HP and makes it hit 20% harder.
   - The attacker can play around it by holding back.
 - There is no hidden rubber-banding of any kind.
 
@@ -450,36 +482,40 @@ From Arena 2 the player picks any unlocked format before each ladder match. Trop
 
 | Action | Mouse / touch | Keyboard |
 |---|---|---|
-| Train unit (5 cards) | Tap card | 1-5 |
+| Train unit (6 cards from A18 phase 2; 5 before) | Tap card | 1-6 |
 | Cancel | Right-click or long-press a card cancels its last queued instance | Backspace (last item) |
 | Build turret | Tap an empty mount, then a card | Q / W (next free mount, or the oldest outdated turret when none is free) |
 | Modernise or sell turret | Tap an occupied mount: popover with Modernise cards and Sell (confirm) | Shift + click mount to sell |
 | Buy mount | Tap the "+" mount | B |
-| Treasury | Tap the gold counter | T |
+| War Council (A18.5; replaces Treasury) | Tap the round button right of the gold counter; a bottom sheet opens | G (T is freed). Until A18 phase 3: Treasury, tap the gold counter, T |
 | Evolve | Tap Evolve on your XP bar | E |
-| Age Power | Tap = auto-aim, drag = place | Space (auto-aim) |
-| Stance Charge/Hold | Tap flag | S |
+| Age Power | Drag from the button onto the lane or the minimap; a tap starts aiming, then tap the lane (A18.9.2) | Space (auto-aim) |
+| Stance Charge / Hold / Fall back (A18.4) | Three-segment control above the tray; drag the Hold flag on the lane or minimap while Holding | S toggles Charge and Hold; Shift+S Fall back |
+| Camera (A17.4) | Drag or swipe the lane, wheel, tap or drag the minimap, base and front buttons, double tap resets | ← / → pan (Shift faster); H or Home: own base; J or End: follow the front |
 | Last Stand | Tap when armed | L |
 | Emote (6) | Emote button in the top bar | none |
 | Pause | Top-right button | P (never Esc) |
 | Speed 1x / 1.5x / 2x | Button (all v1 modes) | F |
 
-Speed and pause are allowed in every v1 mode because all opponents are AI. They are removed for PvP later. Default speed is 1x.
+Speed and pause are allowed in every v1 mode because all opponents are AI. They are removed for PvP later. Default speed is 1x. While paused, the camera still pans, so the player may scout the lane (A17.4).
 
-### A2.13 Expected match flow (Full War, two mid-tier players)
+### A2.13 Expected match flow (Standard War, two mid-tier players; A18)
 
 | Time | What typically happens |
 |---|---|
-| 0:00-0:12 | Both open with 2-3 units; first clash near mid-lane at ~0:10 |
-| 0:30 | First turret; greedy players buy Treasury |
-| 0:50 | Stone power ready; fired just before evolving |
-| ~1:00 | Medieval; 2 Vanguard Footmen march out |
-| ~2:05 | Gunpowder; first Epics |
-| ~3:20 | Modern; turrets modernised; first Legendary pushes |
-| ~4:50 | Future |
-| 5:30 | Overdrive: big pushes |
-| 6:00-8:30 | Most matches end |
-| 7:30-9:30 | Siege; Final Bell is rare |
+| 0:00-0:15 | Both open with 2-3 units; the camera walks out with them; first clash near mid-lane (p ≈ 1,000) at ~0:13 |
+| 0:30-0:50 | First turret; first research (Granary or Forage, or a Troops rank I) |
+| 0:50 | First-age power ready; cast in the age's middle |
+| ~1:10 | Second age; 2 Vanguard Infantry march out; rank II research opens |
+| 1:30-2:40 | One research, the first fight with the new troops, one power cast; the push to evolve is timed against the enemy's research and power rings |
+| ~2:50 | Third age; first Epics |
+| ~4:35 | Fourth age; rank III opens (v1.1); turrets modernised; first Legendary pushes |
+| ~6:25 | Fifth and final age; Overcharge |
+| 8:00 | Overdrive: big pushes |
+| 8:30-12:30 | Most matches end (median 10:30) |
+| 10:00-12:30 | Siege with forced march; Final Bell is rare (≤ 8%) |
+
+Every age has an arrival (15-20 s), a middle (40-60 s) and a push (20-35 s), A18.3.1. The built A17 flow (Full War, 8 ages, evolves every ~30-80 s) is in A17.8 and holds until A18 phases 1 and 3.
 
 ### A2.14 Balance targets (checked by the headless sim, B12)
 
@@ -487,12 +523,13 @@ All card tests use both sides at tier V with the Balanced brain and every card a
 
 | Metric | Target |
 |---|---|
-| Full War median length | 7:00; 80% between 5:00 and 9:00 |
-| Short War median | 4:30 (4:00 ± 0:20 if Phase 3 adopts the shorter Short War clock, A16.4) |
-| Final Bell, tier VII mirror, baseline plan | ≤ 10% of Short Wars, ≤ 5% of Full Wars |
+| Short / Standard / Full War median (A18.12) | 7:00 / 10:30 / 15:00; 80% of matches in 5:30-8:30 / 8:30-12:30 / 12:00-17:00. Until A18 phase 1 (A17.14): Short 4:45, Standard 6:30 (80% 5:00-8:00), Full 8:30 (80% 6:45-10:15) |
+| Final Bell, tier VII mirror, baseline plan | ≤ 10% of Short Wars, ≤ 8% of Standard Wars (A18.12), ≤ 5% of Full Wars |
 | Final Bell, tier VII mirror, a Legendary in each plan | Reported |
-| First evolve | Median 60 ± 10 s |
-| Later evolves | Balanced mirror within ±20 s of A2.4; every scripted strategy reaches Future (Full War) between 4:00 and 6:15 |
+| First evolve | A18.3.1: median stay in the first age 60-75 s. Until A18 phase 1 (A17.14): median 52 ± 10 s |
+| Later evolves | A18.12: median stay per age per A18.3.1; no age after the first under 75 s; the winner's evolve lead at the 3rd evolve ≤ 30 s. Until A18 phase 1: within ±20 s of A17.8 and every scripted strategy reaches Cosmic (Full War) between 5:45 and 7:30 |
+| First clash, contact in the middle, camera, one power per age (A17.14) | First clash median 0:11-0:16; contact share between the turret covers reported; auto-follow keeps the contact on screen ≥ 90% (e2e); ≥ 70% of age stays include a power cast |
+| War Council, stances, difficulty, War Path (A18.12) | Research share of gold 15-25%; 5-8 items per Standard War; `no_research` loses ≥ 70%; `few_then_evolve` wins ≤ 10% vs Normal and ≤ 2% vs Hard; each pick pair within ±5 points with pick-flip ≥ 30%; `flag_ball` ≤ 45% vs tier VII; `stance_toggler` no better than without toggling; War Path levels in their role bands (A18.7.2) |
 | Per-card win-rate delta vs baseline | The 95% confidence interval lies within ±3 points; 2,000 mirrored matches per card (smoke run: 400 matches, ±6) |
 | Per-card Final Bell delta | Reported |
 | First-mover advantage (side 0 vs side 1, mirrored) | 47-53% |
@@ -508,11 +545,12 @@ All card tests use both sides at tier V with the Balanced brain and every card a
 | Rules sanity: counter-picker vs each mono spam | ≥ 80% |
 | Rules sanity: triangle, mono vs mono (Heavy > Infantry, AA > Heavy, Infantry > AA) | Each ≥ 70% |
 | Rules sanity: skill gradient (Save-and-counter vs Balanced script; Balanced script vs cheapest spam) | Each ≥ 80% |
-| Has-an-answer (static, `counters.json`) | A same-age card scores ≥ 55% at equal gold against every non-Legendary card; Legendaries reported |
+| Has-an-answer (static, `counters.json`) | A same-age card scores ≥ 55% at equal gold against every non-Legendary card; Legendaries reported, including the three A17 Legendaries (A17.11) |
 | Has-a-starter-answer (static) | Reported |
 | Bot tier gaps (VII vs V, X vs V, VII vs III); attention gap; level edge +1 | Reported |
 | Base time to kill | A full army (60 pop) of same-age L1 Commons with no opposition needs 40-60 s to destroy a full same-age base |
-| Power damage per unit in zone | Within the A2.9 target for every damaging power |
+| Power damage per unit in zone | Within the A2.9 target for every damaging power (including Tidal Wave, Iron Horse, Zeppelin Raid and Starfall) |
+| B3 performance | Headless Full War ≤ 500 ms (A17, 12,900 ticks); ≤ 850 ms from A18 (21,000 ticks) |
 | Damage per gold per card | Reported per age; not gated |
 
 The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows:** if Phase 3 cannot meet a v1 Final Bell target after the A16.4 levers, the lead records the measured value in `docs/balance-log.md`, tells the owner in plain words, and the row becomes the first v1.1 task. The Bell rows alone do not block the v1 release; every other row does (C4).
@@ -521,14 +559,15 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
 
 ## A3. Deck rules: the War Plan
 
-- **Structure.** A War Plan is five Age Loadouts, one per age. A loadout has 5 unit slots, 2 turret slots and 1 Age Power, all from that age, all owned, with no duplicates. Slots may be empty. A train command on an empty slot is rejected.
-- **Minimum to play:** 3 units and 1 turret per age used by the format. The starter kit always satisfies it.
+- **Structure.** A War Plan holds one Age Loadout per age (eight since A17, thirteen at the A18.8 target). A loadout has **6 unit slots** (A18.9, owner direction; 5 until A18 phase 2), 2 turret slots and 1 Age Power, and later 1 Fort slot (A18.9, phase 6), all from that age, all owned, with no duplicates. Slots may be empty. A train command on an empty slot is rejected. Save v3 fills the new sixth slot automatically.
+- **Minimum to play:** 3 units and 1 turret per age used by the format. The starter kit always satisfies it. A match uses only the loadouts of its age window (A18.3.4); auto-fill fills a missing loadout from starter Commons, so a plan is never unplayable.
 - **Tray.** In battle all unit cards of the current age are always available; there is no hand cycling. On evolve the cards flip over (300 ms) to the next loadout.
 - **Scouted list.** Each opponent card joins a "Scouted" list the first time the opponent plays it. It opens from a chip in the top bar and in the pause menu. Nobody sees the full enemy plan in advance.
-- **Starter kit.** From the first launch the player owns every Common (3 units and 2 turrets per age) and each age's default Age Power, all at L1. Each age's Anti-armor Rare arrives by script:
-  - Spear Hunter: capsule 1
+- **Starter kit.** From the first launch the player owns every Common (3 units and 2 turrets per age) and each age's default Age Power, all at L1. Each age's Anti-armor Rare arrives by script (A17.13):
+  - Spear Hunter and Phalangite: capsule 1
   - Pikeman and Grenadier: capsule 2
-  - Bazooka Trooper and Rail Gunner: Age Unlock Capsules at Arena 2
+  - Harpoon Gunner and Bazooka Trooper: Age Unlock Capsules at Arena 2
+  - Rail Gunner and Graviton Halberdier: Age Unlock Capsules at Arena 3
 
   Until an AA Rare arrives, that loadout plays with 3 units. Skirmish shows a note on that age.
 - **Chase cards** (from capsules): per age, the Support Rare, the Rare turret, the Epic unit, the Epic turret and the Legendary unit. Alternate Age Powers come from Trophy Road nodes at 100-500 trophies (A6.3).
@@ -536,6 +575,8 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
   - 3 War Plan presets, each renamable. From v1.1 up to 5, and the player picks one after the battlefield is revealed on the VS screen (A16.9). New presets start empty.
   - Auto-fill picks the highest-level card per slot while keeping at least one Heavy or Legendary, one Ranged and one AA per age, plus an air-hitter from Gunpowder on.
   - The builder shows each loadout's average level and the War Plan average (over the ages the next format uses).
+  - The builder is a clear deck builder (A18.9.3): age tabs, drag or tap into slots, equipped cards marked, class filters, the counter legend and class icons (A18.9.1).
+  - **Research compatibility (A18.5.2).** The builder shows, per age loadout, which classes it holds, so a player sees that a Troops research line is wasted in an age with no card of that class.
   - After a capsule, the summary offers "Equip now" for a new card: it fills an empty slot, else the same-role slot, else the lowest-level slot.
 - **Deck advisor.** Warnings, never blockers:
   - "Stone has no anti-armor"
@@ -543,7 +584,7 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
   - "Medieval has only 3 units"
   - "No splash anywhere: swarms will hurt"
 - **Rarity is a sidegrade.** Every card starts at L1 and gains the same +5% per level. At equal level, Rare, Epic and Legendary cards are more specialised, not more efficient. Balance rule: A2.14.
-- **Unlock order.** Match 1 uses scripted trays. Match 2 uses the full Short War starter plan. The War Plan screen and Skirmish open after match 3. The stance flag appears in match 4 and the manual Last Stand button in match 5.
+- **Unlock order (built 2026-09-28).** Match 1 uses scripted trays. Match 2 uses the full Short War starter plan. The War Plan screen, Customize, Quick Battle and Skirmish open after match 1 (was match 3). The stance flag is there from match 1 and the manual Last Stand button from match 2 (was matches 4 and 5). With the War Path (A18.7.5) the War Council, Fall back and the Hold flag are taught on its nodes.
 
 ## A4. (Reserved: formats are in A2.10)
 
@@ -567,7 +608,7 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
 | Epic | 200 | 4.0 s | 8 | varies | varies | - | - | - | varies |
 | Legendary | 350 | 7.0 s | 14 | ~3× Heavy | ~1.5-2× Heavy DPS plus a trait | - | - | - | huge |
 
-**Collection:** 35 units + 20 turrets = 55 cards (25 Common, 15 Rare, 10 Epic, 5 Legendary), plus 10 Age Powers (starter and Trophy Road, not capsules), 12 skins and 3 foil variants per card. The tutorial-only Training Dummy is hidden and not collectable.
+**Collection:** 56 units + 32 turrets = 88 cards (40 Common, 24 Rare, 16 Epic, 8 Legendary) over 8 ages since A17 (A17.13; was 55), plus 16 Age Powers (starter and Trophy Road, not capsules), 12 skins and 3 foil variants per card. Schema checks per age: 7 units, 4 turrets, 2 powers. The tables A5.2-A5.6 hold the five original ages; Bronze, Industrial and Cosmic are in A17.9-A17.11. Each A18 age adds the same per-age set plus 1 fort card once forts exist (A18.8.3). The tutorial-only Training Dummy is hidden and not collectable.
 
 **Default projectile speeds (lu/s):** rock 500, arrow 650, musket 1,500, bullet 1,500, shell 1,200, rocket 900, arc/lob 450, plasma bolt 1,800. Lasers and rails are instant.
 
@@ -682,10 +723,12 @@ All values are final numbers at that age's P and L1 loadouts. Every power has a 
 | royal_decree | Medieval | Alternate | Road 200 | All your units get +30% damage and +25% move speed for 8 s (no zone) | - |
 | smoke_screen | Gunpowder | Default | Starter | 350 lu cloud for 7 s: enemy ranged and turret attacks fired from or into it miss 50% (sim RNG); your units inside deal +20% damage | - |
 | broadside | Gunpowder | Alternate | Road 300 | 10 cannonballs over 3.0 s across 450 lu; each 120 damage, splash r45; ground only | ~240: 82% / 24% |
-| paratroopers | Modern | Default | Starter | 4 Riflemen at your Rifleman level land 150 lu beyond the enemy's frontmost ground unit (clamped to p ≤ 1,050; p = 600 if the enemy has no ground units); summoned, no pop, no bounty | - |
+| paratroopers | Modern | Default | Starter | 4 Riflemen at your Rifleman level land 150 lu beyond the enemy's frontmost ground unit (clamped to p ≤ 1,850; p = 1,000 if the enemy has no ground units; A17.3); summoned, no pop, no bounty | - |
 | carpet_bomber | Modern | Alternate | Road 400 | 12 bombs along a 500 lu line over 1.5 s (line pattern); each 150 damage, splash r50; ground only | ~360: 91% / 26% |
 | orbital_lance | Future | Default | Starter | A beam sweeps a 500 lu zone over 2.0 s, dealing 450 once to each enemy it touches (±20 lu); hits air | 450: 80% / 24% |
 | nanite_surge | Future | Alternate | Road 500 | All your units get a regen of 40% of max HP over 4 s and a 150 shield for 6 s (no zone) | - |
+
+The powers of Bronze (Tidal Wave, Aegis), Industrial (Iron Horse, Zeppelin Raid) and Cosmic (Starfall, Warp Strike) are in A17.11. Since A17 the Road sources of the alternates are: Meteor Shower 100, Aegis 200, Royal Decree 250, Broadside 300, Zeppelin Raid 350, Carpet Bomber 400, Nanite Surge 450, Warp Strike 500 (A17.13). Research can widen zones (Survey Corps) or raise power damage and heals (Master Gunners), both v1.1 (A18.5.5).
 
 ### A5.8 Skins
 
@@ -730,19 +773,20 @@ Counts: 4 Rare, 4 Epic, 4 Legendary. The Wardrobe Crate pool holds the first 11.
   |---|---|
   | Recruit | start |
   | Firestarter | first win |
-  | Evolver | first Future Age |
+  | Evolver | first Cosmic Age (A17; was Future) |
   | Mammoth Tamer | own Matriarch |
   | Collector | Codex Lv 10 |
   | Siege Scholar | Arena 4 |
   | Last Stander | win after your Last Stand |
-  | Speedrunner | final age before 4:30 in Full War |
+  | Speedrunner | Cosmic before 6:15 in Full War (A17; retimed with A18's clocks). A18: "reach the last age of your window" wording |
   | Veteran | 100 wins |
   | Curator | Codex Lv 40 |
   | Warden's Bane | beat The Warden |
-  | Conqueror | 27 Conquest stars |
+  | Conqueror | 27 Conquest stars; with A18.7.10 the carried-over War Path boss stars count (titles "Pathfinder", "Veteran", "Legend" and "Crowned" join in v1.1) |
   | Ageborn | Arena 8 |
 
 - **6 emotes:** Laugh, Salute, Cry, Angry, Thumbs up, GG. There is no text chat anywhere.
+- **Cosmetic collections (A18.9.4, owner direction):** emotes, quotes, base flags, national flags, base skins and base decorations, all earned, with rarities and completion counts, equipped in the Customize screen.
 
 ## A6. Meta progression
 
@@ -792,14 +836,15 @@ Ladder results:
 - **War Chest** (replaces the weekly quest, A15.5). Every counting win adds 1; at 20 it grants a Wardrobe Crate and an Age Capsule at once and restarts at 0. It never resets and has no weekly gate.
 - **Void matches.** A match that never reaches its end (tab closed or reloaded, device off, crash) changes nothing: no trophies, MMR, rewards, charge use, quest or War Chest progress, loss streak or Clay pip. Retreat is a choice and still counts as a loss (A15.6).
 - **Loss protection.** After 3 ladder losses in a row, the next opponent is one tier lower (minimum tier 0) and the VS screen says "Warm-up match". The same Result shows the tilt card (A15.6).
-- **Other modes.** Daily Challenge: A9.1 and A15.7. Conquest: A6.10. Skirmish: 5 Amber per win, no trophies, no capsules.
+- **Other modes.** Daily Challenge: A9.1 and A15.7. War Path (A18.7; replaces Conquest, A6.10): first-clear Amber, card unlocks and boss capsules. Quick Battle (a Short War Skirmish at a picked difficulty) and Skirmish: 5 Amber per win, no trophies, no capsules.
+- **Ladder window (A18.3.4).** Arenas 1-2 play windows that start at Stone. From Arena 3 the window is the **Era of the Week**, seeded weekly in `meta` from the date and shown on Mode select a week ahead.
 - **Clock.** All daily timers reset at local 04:00, capped by the banks. Every bank holds at least 7 days and nothing earned expires (A15.4). Clock tampering is accepted because no money is involved.
 
 | # | Arena | Trophies | Ladder formats | Drop pool | Bot tiers | Bot level | Gate rewards |
 |---|---|---|---|---|---|---|---|
-| 1 | Tar Pits | 0 | Short | Ages 1-3, no random Legendaries | 0-II | 1 | Starter War Plan, Tar Pit banner |
-| 2 | Frostfang Pass | 150 | Short, Standard | Ages 1-4 | I-III | 2 | Age Unlock Capsules (Modern and Future), Frostfang banner, Silver Capsule |
-| 3 | Kingsmoat | 400 | All | All | II-IV | 3 | Moat banner, Jade Capsule, Conquest unlocked |
+| 1 | Tar Pits | 0 | Short | Stone to Gunpowder (4 ages, A17.13), no random Legendaries | 0-II | 1 | Starter War Plan, Tar Pit banner |
+| 2 | Frostfang Pass | 150 | Short, Standard | Stone to Modern (6 ages) | I-III | 2 | Age Unlock Capsules (Industrial and Modern), Frostfang banner, Silver Capsule |
+| 3 | Kingsmoat | 400 | All | All 8 ages | II-IV | 3 | Age Unlock Capsules (Future and Cosmic), Moat banner, Jade Capsule, Conquest unlocked (the War Path is open from the start once A18.7 ships) |
 | 4 | Powder Bay | 800 | All | All | III-V | 4 | Harbor banner, Jade Capsule |
 | 5 | Iron Front | 1,300 | All | All | IV-VI | 5 | Barbed banner, Jade Capsule |
 | 6 | Neon Harbor | 1,900 | All | All | V-VII | 6 | Neon banner, Jade Capsule |
@@ -813,7 +858,7 @@ Ladder results:
 
 | Base | +50 | +100 | +150 | +200 | +250 | +300 | +350 | +400 | +450 | +500 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 0 | 110 A | Meteor Shower | Gate 2 | Royal Decree | Silver | Broadside | 100 D | Gate 3 + Carpet Bomber | 190 A | Nanite Surge |
+| 0 | 110 A | Meteor Shower | Gate 2 | Aegis | Royal Decree | Broadside | Zeppelin Raid | Gate 3 + Carpet Bomber | Nanite Surge | Warp Strike |
 | 500 | 100 D | 220 A | Silver | 240 A | 100 D | Gate 4 | 270 A | Silver | 100 D | Wardrobe Crate |
 | 1,000 | 310 A | 100 D | Silver | 340 A | 100 D | Gate 5 | 370 A | Silver | 100 D | Jade |
 | 1,500 | 410 A | 400 D | Silver | 440 A | 400 D | Silver | 470 A | Gate 6 | 400 D | Wardrobe Crate |
@@ -823,7 +868,7 @@ Ladder results:
 | 2,000 | 520 A | Jade | 400 D | 580 A | Jade | Gate 7 | 640 A | 400 D | Jade | Wardrobe Crate |
 | 3,000 | 720 A | 400 D | Jade | Gate 8 | 800 A | 400 D | Jade | 860 A | 400 D | Aeon |
 
-Amber nodes pay 100 + 20 × (trophies / 100). Road capsules have a fixed tier and no climb.
+Amber nodes pay 100 + 20 × (trophies / 100). Road capsules have a fixed tier and no climb. Since A17 the first row places the three new alternate powers; the Silver Capsule, 100 Dust and Amber it displaced are second items on the 550, 600 and 650 nodes (the Amber pays the formula at its new place, 230), so no reward is lost.
 
 ### A6.4 Time Capsules (card cases)
 
@@ -3715,6 +3760,1424 @@ Every point of both reviews, with its verdict. "Accepted" means applied as writt
 | Two lanes in v1 | Owner direction 5 | Decided against with the owner | Revisit trigger and the Twin Fronts experiment |
 | Stake or bet verbs | Marvel Snap | Grey for minors | Heat (A15.14) |
 | In-session double-point streaks | lichess Arena | Rewards "one more" | none |
+
+---
+
+## A17. A longer lane and eight ages
+
+**Status (v1.3).** Written 2026-09-28 from the owner's two requests of the same day: a longer lane that the player scrolls back and forth, as in the classic Flash games of the genre, and more ages. Steps 1 and 2 of A17.16 are built (`SIM_VERSION` 2.0.0 to 2.2.0) and the assets of the three new ages are registered; balance work (step 4) is open. The values below are what was built. Where the build changed a number during implementation, this section states the built value and says so (the log is `docs/decisions.md`, "A17 step 1" and "A17 step 2"). A18 later replaces several A17 rules: formats become age windows and the XP thresholds follow the position in the window (A18.3), the Treasury becomes the War Council's Economy track (A18.5), stance gains a third mode and a flag (A18.4), and Conquest folds into the War Path (A18.7.10). Those places are marked "superseded by A18" below; until the A18 phase that replaces them is built, the build follows A17.
+
+
+### A17.1 Summary and principles
+
+| Change | Now | A17 |
+|---|---|---|
+| Lane, gate to gate | 1,200 lu | 2,000 lu |
+| Unit walking speed | table speed | table speed × 1.25 (one economy number) |
+| Standard infantry crossing | ~17 s | ~23 s |
+| Camera | whole world fits; no scrolling | about 40% (phone) to 60% (desktop) of the world visible; drag, swipe, wheel, keys and edge scroll; auto-follow |
+| Infantry height on an 844 × 390 phone | ~37 px | ~62 px |
+| Overview | a front-line strip | a minimap strip with units, bases, fronts, powers and the camera window |
+| Ages | 5 | 8 |
+| Formats | Short 3 ages, Standard 4, Full 5 | Short 4 ages, Standard 6, Full 8 (superseded by A18.3.4: formats are windows of 3, 5 and 7 consecutive ages) |
+| Cards | 35 units, 20 turrets, 10 powers | 56 units, 32 turrets, 16 powers |
+| Front rank (built with step 1, A16.4 lever L4) | two wide | three wide |
+| Siege (built with step 1) | turret damage −50%, base damage ×2, decay | also a forced march, a siege crowd at the gate and a falling gate (A17.3) |
+
+**Principles.**
+
+1. **The sim stays simple.** The lane is longer and units walk faster; every other combat number keeps its meaning. The camera, minimap and indicators are view-only and never touch the sim.
+2. **Turrets defend home; the middle belongs to units.** Turret range (480 lu cap), the hold line (320) and Last Stand (450) keep their absolute sizes, so a real no-man's-land of 1,040 lu opens between the two turret covers (240 lu today).
+3. **Information stays equal.** Bots read the whole lane through `Observation` (A7.1). The player keeps the whole lane through the minimap, so scrolling never hides anything a bot knows.
+4. **Existing cards keep their numbers.** The three new ages slot between (Bronze, Industrial) and after (Cosmic) the existing ones. The 35 tuned units, 20 turrets and 10 powers are unchanged.
+5. **New ages reuse existing ability kinds.** The 39 new cards need no new `AbilityDef` kind and no new `AttackDef` field (A17.15).
+6. **Short matches stay short.** Short War gains one early half-step age and keeps a ~4:45 median.
+
+### A17.2 Lane length and pacing
+
+**Options considered** (infantry at table speed 70 lu/s; phone view from A17.7):
+
+| Option | Lane | Speed scale | Infantry crossing | Gap between turret covers | World on a phone | Verdict |
+|---|---|---|---|---|---|---|
+| Today | 1,200 | ×1.00 | 17 s | 240 lu | 1 screen, no scrolling | Units too small on phones; fights happen inside turret cover |
+| A | 1,600 | ×1.10 | 21 s | 640 lu | 2.1 screens | Too little room to feel the scroll |
+| **B (chosen)** | **2,000** | **×1.25** | **23 s** | **1,040 lu** | **2.6 screens (1.7 on desktop)** | A real middle ground; crossing only 6 s longer |
+| C | 2,400 | ×1.25 | 27 s | 1,440 lu | 3.0 screens | Long reinforcement walks feed stalemates (A16.4) |
+
+**Why 2,000 lu with ×1.25 speed.**
+
+- The scroll only matters when there is somewhere to scroll to. At 2,000 lu a phone sees about a third of the lane and a desktop about 60% of it, which gives the back-and-forth feel the owner asked for without making the far base a mystery.
+- Faster walking keeps the first clash near ~0:13 (today ~0:10) and the attacker's reinforcement walk at ~23 s (today ~17 s). A longer walk strengthens defence, which is already the main cause of Final Bells (A16.4), so A17.3 adds a Siege forced march that brings the late walk back to ~19 s.
+- Ranges, sizes, spacing and projectile speeds are unchanged, so every duel and counter keeps its meaning. The one balance shift: a ranged unit gets 20% less free shooting time against a melee unit walking toward it. The A2.14 rerun (A17.14) checks it.
+
+**Effective speeds** (table speed × 1.25, compiled to milli-lu per tick, B3):
+
+| Table speed (lu/s) | 35 | 40 | 45 | 50 | 55 | 60 | 65 | 70 | 72 | 75 | 80 | 85 | 100 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Effective (lu/s) | 43.75 | 50 | 56.25 | 62.5 | 68.75 | 75 | 81.25 | 87.5 | 90 | 93.75 | 100 | 106.25 | 125 |
+| Crossing 2,000 lu | 46 s | 40 s | 36 s | 32 s | 29 s | 27 s | 25 s | 23 s | 22 s | 21 s | 20 s | 19 s | 16 s |
+
+Tables in A5 and A17.9-A17.11 keep listing table speeds; the ×1.25 is applied once at compile time.
+
+**Match length targets per format** (replacing the A2.10 clocks and the A2.14 median rows; derivation in A17.8):
+
+| Format | Ages | Last evolve (expected) | Overdrive | Siege | Final Bell | Median target | 80% of matches |
+|---|---|---|---|---|---|---|---|
+| Tutorial | Stone, Medieval, Gunpowder, Modern, Future | scripted | none | none | none | ~6 min as today | - |
+| Short War | Stone to Gunpowder (4) | ~2:25 | 3:45 | 4:45 | 6:15 | 4:45 | 3:45-6:00 |
+| Standard War | Stone to Modern (6) | ~4:00 | 5:00 | 6:45 | 8:30 | 6:30 | 5:00-8:00 |
+| Full War | Stone to Cosmic (8) | ~6:30 | 6:45 | 8:45 | 10:45 | 8:30 | 6:45-10:15 |
+
+If Phase 3 adopts the shorter Short War clock (A16.4 lever L2), it becomes Overdrive 3:15, Siege 4:00, Final Bell 5:15, median 4:15 ± 0:20.
+
+**Superseded by A18.3.4.** A18 (owner decision D2) makes formats windows of 3, 5 and 7 ages with medians of about 7:00, 10:30 and 15:00. The clocks above are what the build uses until A18 phase 1 lands.
+
+### A17.3 What scales with the lane
+
+Let L = 2,000 (the lane length). Rules that are about home defence keep their absolute size; rules about the whole lane scale with L.
+
+| Rule | Today | A17 | Why |
+|---|---|---|---|
+| Lane length | 1,200 | 2,000 | A17.2 |
+| Base depth behind the gate | 140 | 140 | Art size |
+| World width (lane, bases, 40 lu margins) | 1,560 (x −180 to 1,380) | 2,360 (x −180 to 2,180) | Derived |
+| Spawn | p = 20 | p = 20 | Home |
+| Hold line | p = 320 | p = 320 | Stays inside turret cover |
+| Turret range cap | 480 | 480 (24% of the lane) | Turrets defend home |
+| Last Stand radius | 450 | 450 | Home |
+| Fort pads (A16.14) | p 240, 360, 460 | unchanged | Inside turret cover |
+| Mid-lane | p = 600 | p = 1,000 (L/2) | Scales |
+| Power zone centre clamp | p ∈ [150, 1,050] | p ∈ [150, 1,850] (L − 150) | Scales |
+| Age Power auto-aim (`densest` scan) | p 150-1,050 | p 150-1,850 | Scales |
+| Paratroopers and Warp Strike | clamp p ≤ 1,050; fallback p = 600 | clamp p ≤ 1,850; fallback p = 1,000 | Scales |
+| Stampede and Iron Horse start fallback | p = 200 | p = 200 | Home |
+| Support follower alone (`soloMaxP`) | p = 200 | p = 200 | Home |
+| Unit walking speed | table | table × 1.25 (`economy.marchSpeedBp` 12,500) | A17.2 |
+| Hold retreat speed | 70% of speed | 70% of walking speed | Unchanged rule |
+| Siege | turret damage −50%, base damage ×2, decay 0.5%/s | as today, plus **forced march**: unit movement ×1.2 (`economy.siege.moveSpeedBp` 12,000) | Keeps the late reinforcement walk at ~19 s |
+| Split-age seam (A11) | x = 600, clamp [450, 750], 240 lu blend, drift ≤ 20 lu/s | x = 1,000, clamp [700, 1,300], 300 lu blend, drift ≤ 30 lu/s | Scales |
+| Evolve backdrop wipe | 1.5 s | 2.0 s | Longer half |
+| Battlefield trenches (A16.9) | own p 600-700 | own p 1,300-1,400 (enemy turret cover starts at own p 1,520) | Stated from the enemy gate |
+| Tunneler surfacing (A16.15) | p ≥ 560 trigger; p 880 | p ≥ 1,360 (L − 640); p 1,680 (the enemy hold line, L − 320) | Stated from the enemy gate |
+| Kill bounty, loss XP, base-damage XP, passive gold and XP | as A2.3-A2.4 | unchanged | Flat per event; A17.8 retunes thresholds instead |
+| B3 tick cap | Full War ≤ 11,400 ticks | ≤ 12,900 ticks (10:45) | Longer Full War (A18.3.4 raises it to 21,000 ticks) |
+| Front rank (built) | two wide | three wide: `economy.frontWidth` 3; the first three units of a file stand side by side (A2.7) | A16.4 lever L4: mirror Final Bell cut most, spam kept in check |
+| Siege crowd (built) | none | `economy.siege.gateCrowdLu` 60: in Siege a unit may stand level with the ally ahead once that ally is within 60 lu of the enemy gate, so an army at the gate hits the base with every unit | The single file made a defended base unkillable |
+| Falling gate (built, `SIM_VERSION` 2.2.0) | none | `economy.gateFall` { lu 120, hpBp 10,000 }: in Overdrive and Siege, a unit killed by an enemy unit, turret or unit ability within 120 lu of its own gate costs its base the unit's max HP, dealt as base damage by the killer (Siege ×2 applies; base-damage XP to the killer; never for summons, power or Last Stand kills, or in the tutorial) | A decided match ends instead of feeding bounties; Full War Bell 21% → 11.5% |
+| Open gate (built, off) | none | `economy.openGateLu`: while a side has no ground unit within that distance of its gate, attackers close up as in the siege crowd in every phase. Off in the game content | Shortens Full War too much (median 7:19); Phase 3 decides with the owner |
+
+**Forced march** multiplies with slows and speed buffs in the usual order (A2.7) and applies to ground and air units, not to knockback, pulls, pounces, projectiles or power runners. It is announced with the Siege banner ("Siege! Forced march").
+
+Rules stated in p from the enemy gate (trenches, surfacing, AI zones) are written as `L − x` from now on, so a later lane change needs no rule edits.
+
+### A17.4 Camera
+
+**World scale.** The camera shows a window of the world at a fixed world scale s (px per lu) chosen by device class (A17.7) and an optional zoom z ∈ [0.8, 1.25] (pinch or Ctrl + wheel; a double tap resets it). Visible width V = screen width / (s × z).
+
+**Clamps.** The camera centre stays in [−180 + V/2, 2,180 − V/2]. If V ≥ 2,360 (very wide screens) the centre is fixed at x = 1,000 and nothing scrolls. Overscroll shows a 40 px rubber band that springs back in 200 ms.
+
+**Opening view.** The match starts with the player's base at the left edge (centre = −180 + V/2) and auto-follow on, so the camera walks out with the first wave.
+
+**Manual controls:**
+
+| Input | Effect |
+|---|---|
+| One-finger or mouse drag on the lane band | Pans 1:1 (the world follows the pointer). A press becomes a drag after 10 px of travel; below 10 px and 350 ms it stays a tap (mounts) |
+| Swipe (release while moving) | Momentum: release velocity = average over the last 100 ms, capped at 3,000 lu/s, decaying by e^(−4 t) (half every 0.17 s), stopping below 20 lu/s |
+| Mouse wheel, trackpad | Horizontal pan: deltaX or deltaY in px (line mode × 40 px) moves the view by the same screen distance. Ctrl + wheel zooms |
+| ← and → | Pan at 1,000 lu/s (Shift: 2,000), reaching full speed in 150 ms |
+| Edge scroll (desktop, fine pointer only) | Pointer inside the lane band within 32 px of the left or right window edge pans at 300 lu/s, rising to 1,200 lu/s at the edge. Off while a popover is open or the pointer is outside the window. Setting, default On |
+| Base button (left end of the minimap), H or Home | Eases (350 ms) to the opening view: own base at the left edge. Camera goes Manual |
+| Front button (right end of the minimap), J or End | Eases to the follow target and turns auto-follow on |
+| Tap or drag on the minimap | Centres the camera on that x (300 ms ease) or scrubs it 1:1 in minimap scale. Camera goes Manual |
+| Double tap on the lane band | Resets zoom and turns auto-follow on |
+
+Keys D (A16.14 forts), Q, W, B, T, E, S, L, P, F, Space, 1-5 and Backspace keep their A2.12 meanings.
+
+**Auto-follow (default On).** Each frame, from interpolated view positions:
+
+1. **Fronts.** Each side's front is its frontmost ground unit (by own p). A side with only air units uses its frontmost air unit.
+2. **Focus x.**
+   - Both sides have units: focus = own front + min(gap / 2, 0.3 V), where gap = the distance from the own front to the enemy front (0 if they touch). In contact this is the midpoint; with a wide gap it looks 0.3 V ahead of your own front.
+   - Only enemy units: focus = the enemy front. As built, while that front is still on the enemy's half the focus is the opening view, so the bot's first spawn does not fly the camera across the lane.
+   - Only own units: focus = own front + 0.3 V.
+   - No units: the opening view.
+3. **Framing.** The target centre = focus − 0.05 V, so the focus sits at 55% of the view from the player's side and slightly more of the player's own reinforcements show.
+4. **Priority moments** (only while following): the player's own power zone, from cast to the end of its effect (at most 3.5 s); an enemy power zone that overlaps the player's units, for its telegraph and effect; the player's Last Stand (pan to the own gate for 1.5 s).
+5. **Motion.** A dead zone of ±8% of V: the camera does not move while the target is that close. Outside it, a critically damped spring with a 350 ms half-life, capped at 900 lu/s × game speed.
+
+**Yielding to the player.** Any manual camera input (drag, swipe, wheel, arrow keys, edge scroll, base button, minimap) switches to Manual at once. Auto-follow resumes after 5 s with no camera input, but never while a pointer is down, a mount popover is open or a power is being dragged; it eases back over 600 ms. The front button, J and a double tap resume it at once. While Manual, the front button shows a soft outline ("Follow"). Setting "Auto camera": On (default) or Off; with Off, follow never resumes by itself and the front button jumps once without re-enabling it.
+
+**Pause and replays.** The camera pans freely while paused (scouting the lane is allowed; bots are paused too). Replays use the same camera; a spectator follow uses the midpoint of both fronts with 0% bias.
+
+**Camera moments (A12).** The own-evolve push-in (1.3×) runs only if the own base is inside the view; otherwise the banner and a minimap base flash replace it. A destroyed base always pans (500 ms) to the base and pushes in (1.45×), as today. Pushes never show past the world ends.
+
+**Reduce motion.** No momentum, no rubber band, 150 ms eases, spring half-life 200 ms.
+
+### A17.5 Minimap strip and off-screen indicators
+
+**Minimap strip.** It replaces the front-line strip under the match clock in the top bar (A9.2).
+
+- **Size.** 40% of the screen width (min 280 px, max 560 px); 16 px tall on phones, 22 px otherwise, with an invisible hit area at least 32 px tall. The base button (house icon) sits at its left end and the front button (crossed swords) at its right end, 32 px on phones and 36 px otherwise.
+- **Scale.** The whole world, x −180 to 2,180, linearly.
+- **Content, back to front:**
+  1. Territory: own colour from the own gate to the own front, enemy colour from the enemy gate to the enemy front, neutral between (what the front-line strip showed).
+  2. Turret cover: a thin bracket 480 lu from each gate while that side owns at least one turret.
+  3. Bases: the age icon in team colour at each end with a thin HP fill; it flashes red for 1 s when hit (at most once per 2 s).
+  4. Units: own units as circles, enemy units as diamonds (the A11 ring cue): 3 px for Infantry, Ranged, Anti-armor and Support, 4 px for Heavy and Epic, 6 px with a white ring for Legendaries (4, 5 and 7 px on desktop). Air units sit on a row above the ground row. Summons look like any unit. At most 80 dots (the B16 on-screen cap).
+  5. Fronts: a 2 px vertical tick in team colour at each side's front.
+  6. Power telegraphs and zones: a pulsing segment in the caster's colour.
+  7. Camera window: a white rounded rectangle, 2 px outline and 15% white fill, covering the visible range.
+- **Updates.** Redrawn at 10 Hz or more (built: up to 30 Hz, which keeps the camera window smooth) on a small DOM canvas from the view's interpolated positions (cheap: at most 80 dots). As built, the fronts are drawn under the dots so the frontmost unit stays visible, and the bases are DOM medallions with an HP ring.
+- **Colourblind presets** recolour it like everything else; the circle and diamond shapes keep sides apart without colour.
+
+**Off-screen indicators.** Round 44 px badges with a chevron at the left or right edge of the lane band, at 35% of the band height, stacking up to 3 per edge (newest on top, 12 px apart). They never cover the centre 70% of the band, and they are transient, so A9.2's "no persistent control covers the lane band" still holds. Tapping a badge jumps the camera there (Manual).
+
+| Badge | Shows when | Look | Sound | Lasts |
+|---|---|---|---|---|
+| Base under attack | The own base took damage in the last 2 s and the own gate is off-screen | Red pulse, base icon | `alert_base` once, then at most once per 10 s | Until 3 s after the last hit |
+| Power incoming | Either side's power zone lies fully off-screen | Caster's colour, power icon, a 1.0 s countdown ring during the telegraph | `power_telegraph` as usual (panned, A17.7) | Telegraph plus effect |
+| Enemy Legendary | An enemy Legendary spawns off-screen | Legendary icon, enemy colour frame | none | 4 s |
+
+### A17.6 Acting on things off-screen
+
+- **Training.** Unchanged: units spawn at the own gate and auto-follow shows them walking out.
+- **Turrets.** Mounts are still tapped on the base in the canvas. When the own base is off-screen:
+  - the base button (or H) brings the base into view and stays Manual while the mount popover is open;
+  - Q, W and B work from anywhere with no camera move (A2.12);
+  - the base button shows a small hammer badge while an owned mount is empty and the player can afford the cheapest turret in the loadout;
+  - an open mount popover or hover card closes when its anchor scrolls off-screen.
+- **Age Power.**
+  - Tap = auto-aim over p 150-1,850 whatever the view. While following, the camera frames the zone (A17.4); while Manual, a "Power incoming" badge points at it.
+  - Drag from the power button into the lane band places the zone as today. Within 48 px of the band's left or right edge the camera edge-scrolls at up to 1,200 lu/s during the drag, on touch too, so any point of the lane can be reached in one drag.
+  - Drag onto the minimap: the zone preview shows on the minimap (and in the lane where visible); releasing casts at that p. Dragging back onto the button cancels, as today.
+  - Space auto-aims.
+- **Evolve, stance, Treasury (the War Council from A18.5), Last Stand, emotes.** HUD controls; no camera needed. The Hold flag (A18.4.2) can also be dragged on the minimap.
+- **Tutorial (A8).** A beat that points at something off-screen (a mount, a power zone, the enemy base) first moves the camera there (350 ms) and pauses auto-follow until the beat ends. `retime.test.ts` reruns with the longer walk.
+
+### A17.7 Screen layouts, rendering and sound
+
+**Device classes** (landscape; portrait keeps the "Rotate your device" overlay):
+
+| Class | Test (CSS px) | Top bar / lane band / tray | World scale s | Visible width at z = 1 |
+|---|---|---|---|---|
+| Phone | height < 500 | 10% (min 36 px) / 68% / 22% | lane band height / 290 | ~760-930 lu |
+| Tablet and small laptop | not a phone, width < 1,280 | 12% / 64% / 24% | min(width / 1,100, band / 330) | ~1,100 lu |
+| Desktop | width ≥ 1,280 | 12% / 64% / 24% | min(width / 1,400, band / 330) | ~1,400 lu |
+
+The phone value 290 lu is the world height the lane band shows: 232 lu above the ground line (the ground sits at 80% of the band), enough for Legendaries (170-220 lu, A11). Taller art (base towers, auras) may draw up under the translucent top bar.
+
+| Screen | Class | s (px/lu) | Infantry (68 lu) | Visible | Share of the 2,360 lu world |
+|---|---|---|---|---|---|
+| 667 × 375 phone | Phone | 0.88 | 60 px | 760 lu | 32% |
+| 844 × 390 phone | Phone | 0.91 | 62 px | 923 lu | 39% |
+| 932 × 430 phone | Phone | 1.01 | 69 px | 925 lu | 39% |
+| 1024 × 768 tablet | Tablet | 0.93 | 63 px | 1,100 lu | 47% |
+| 1280 × 720 laptop | Desktop | 0.91 | 62 px | 1,400 lu | 59% |
+| 1920 × 1080 desktop | Desktop | 1.37 | 93 px | 1,400 lu | 59% |
+
+**Phone tray.** At 22% of 390 px the tray is 86 px: the 72 px cards (A9.2) fit with their name ribbon; the Army counter and stance flag shrink to one 40 px column. The planned top bar (a 20 px row over a 16 px minimap row inside 39 px) did not fit beside the Evolve button. As built, the minimap strip sits just under the top bar (10 px down on desktop, 6 px on phones) and overlaps the top of the phone's lane band, which is sky; the side panels shrink to 30 px and 26% of the width on phones. Six tray cards (A18.9) need the tray layout rechecked on 667 × 375.
+
+**Rendering.**
+
+- **Culling.** Display objects, projectiles and particle emitters more than 150 lu outside the view are not drawn or emitted; their state still updates, so nothing pops when scrolled into view. The minimap and indicators still show them.
+- **Parallax.** The backdrop's 3 layers scroll at 0.05 (sky), 0.25 (silhouettes) and 0.55 (mid-ground) of the camera movement, the ground at 1.0. Each layer is built wide enough for its factor (V + (2,360 − V) × factor). Scrolling now shows the depth the layers were built for.
+- **Sprite sharpness.** Unit sheets are rendered at 1.23 px per lu. At s × DPR up to 2.7 on desktop they would be upscaled about 2×. WP4 renders a sharper tier at 1.8 px per lu, loaded when s × DPR > 1.6, and streams sheets per age as each side reaches it (A17.17, size risk).
+
+**Sound (A13 addition).** World sounds pan by screen position (StereoPanner, pan = clamped offset from the screen centre × 0.6) and fade outside the view: −1 dB per 50 lu beyond the view edge, down to −12 dB. UI sounds, alerts, the player's own evolve, power impacts and hits on the own base are never faded.
+
+### A17.8 Eight ages: power scale, XP and formats
+
+**Power scale (replaces the A2.2 table).**
+
+| Index | Age | P | P (bp) | Base max HP | Step from the previous age |
+|---|---|---|---|---|---|
+| 0 | Stone | 1.00 | 10,000 | 10,000 | - |
+| 1 | Bronze | 1.16 | 11,600 | 11,600 | ×1.16 (half step) |
+| 2 | Medieval | 1.35 | 13,500 | 13,500 | ×1.16 (half step) |
+| 3 | Gunpowder | 1.82 | 18,200 | 18,200 | ×1.35 |
+| 4 | Industrial | 2.12 | 21,200 | 21,200 | ×1.16 (half step) |
+| 5 | Modern | 2.46 | 24,600 | 24,600 | ×1.16 (half step) |
+| 6 | Future | 3.32 | 33,200 | 33,200 | ×1.35 |
+| 7 | Cosmic | 4.48 | 44,800 | 44,800 | ×1.35 |
+
+- Bronze and Industrial sit at the geometric midpoint of their neighbours (√1.35 ≈ 1.16), so the existing ages keep their P and every existing card keeps its numbers. Cosmic continues the ×1.35 step after Future.
+- A half-step unit beats its previous-age counterpart one-on-one with about a quarter of its HP left (1 − 1/1.16²); a ×1.35 step leaves about half (1 − 1/1.35²), as A2.2 says today.
+- A uniform ×1.24 chain (1.00, 1.24, 1.54, 1.90, 2.36, 2.92, 3.62, 4.48) was considered and rejected: it changes every existing table and every tuned number.
+- Rest of A2.2 unchanged: base HP follows the owner's age; on evolve it keeps its HP percentage and heals 5% of the new max.
+
+**XP thresholds (replaces the A2.4 thresholds; superseded by A18.3.2).** Small steps cost less XP, big steps more. These are the built values. A18 (owner decision D1) replaces them with thresholds by position in the window (700, 1,250, 1,350, 1,450, 1,550, 1,650) and new XP sources, from A18 phase 1.
+
+| Evolve into | XP needed (threshold of the age before) | Expected time, active play | Stay in the age before |
+|---|---|---|---|
+| Bronze | 550 | ~0:52 | 52 s |
+| Medieval | 500 | ~1:25 | 33 s |
+| Gunpowder | 900 | ~2:25 | 60 s |
+| Industrial | 700 | ~3:10 | 45 s |
+| Modern | 800 | ~4:00 | 50 s |
+| Future | 1,200 | ~5:10 | 70 s |
+| Cosmic | 1,300 | ~6:30 | 80 s |
+
+- The times assume ~10.5 XP/s before the first evolve and 15-17 XP/s after (A2.4's active-play rate); Overdrive (6:45) comes after Cosmic.
+- **One power per age.** Charge carries at most 50% across an evolve and refills the rest in 25 s (A2.9). Every age's threshold is at least 500 XP (≥ 28 s at 18 XP/s), so a player can fire each age's power once before evolving on. Stone's 550 lets the Stone power (ready at 0:50) fire just before Bronze.
+- XP cap: 1.5 × the current threshold (825 in Stone); 1,200 in the format's final age. Overcharge unchanged.
+- Passive XP alone reaches Bronze at 2:18, so nobody is frozen in an age.
+- Queue conversion and Vanguard unchanged. Full War now has 7 Vanguard pairs instead of 4; both sides get them.
+- **Music key changes (A13).** Own evolves transpose by +2, +2, +1, +1, +1, +1, +1 semitones (+9 at Cosmic). Once the total passes +6 the lead drops one octave so the register stays comfortable; each age still has its own arrangement.
+
+**New mechanics by age (replaces the A2.5 table).**
+
+| Age | New mechanic introduced |
+|---|---|
+| Stone | Basics: melee, ranged, heavy, knockback, first-hit charges, ricochet |
+| Bronze | Piercing throws (Javelineer, Scorpion), damage auras, turret stuns, the sweep power |
+| Medieval | Reach (second-rank attacks), shields, damage resistance, siege damage to bases |
+| Gunpowder | Splash artillery, pulls, the Mech tag, first Air unit (Legendary bomber) |
+| Industrial | Mech Heavies, marking support, runners that explode, stun chains, crewed Legendary |
+| Modern | Air as a regular option, suppression, called strikes |
+| Future | Energy shields, EMP stuns, time control |
+| Cosmic | Blink skirmisher, shield projector, an air Legendary with called strikes |
+
+The A2.5 sentence on a sixth age becomes: "Ages are data. New ages need only content, visuals and audio entries plus one `AgeId` entry (A17.15)."
+
+**Formats (replaces the A2.10 table).**
+
+| Format | Ages | Overdrive | Siege | Final Bell | Retreat unlocks | Used in |
+|---|---|---|---|---|---|---|
+| Tutorial | Stone, Medieval, Gunpowder, Modern, Future (built thresholds 680 / 690 / 520 / 700, retimed for the long lane) | none | none | none | never | Onboarding match 1 |
+| Short War | Stone to Gunpowder (4 ages) | 3:45 | 4:45 | 6:15 | 1:00 | Ladder (all arenas), Skirmish, Quick Battle |
+| Standard War | Stone to Modern (6 ages) | 5:00 | 6:45 | 8:30 | 1:00 | Ladder from Arena 2, Daily Challenge, Conquest (owner decision), Skirmish |
+| Full War | Stone to Cosmic (8 ages) | 6:45 | 8:45 | 10:45 | 1:00 | Ladder from Arena 3, Skirmish |
+
+This table is the built state. **Superseded by A18.3.4:** formats become windows of 3, 5 and 7 consecutive ages with longer clocks, and Conquest folds into the War Path (A18.7.10).
+
+- Every ladder format is a range of consecutive ages from Stone. The tutorial alone skips ages: it keeps today's five-age highlight run ("ends with lasers") with its own thresholds, so match 1 is unchanged. The schema check is "increasing ages from Stone" for every format and "consecutive from Stone" for ladder formats (A18 relaxes "from Stone" to any window).
+- The start screen's format labels read "up to 6 min", "up to 9 min" and "up to 11 min" (the Final Bell rounded up).
+
+**Expected match flow (replaces A2.13; Full War, two mid-tier players).**
+
+| Time | What typically happens |
+|---|---|
+| 0:00-0:15 | Both open with 2-3 units; the camera walks out with them; first clash near mid-lane (p ≈ 1,000) at ~0:13 |
+| 0:30 | First turret; greedy players buy Treasury (the Economy track from A18.5) |
+| 0:50 | Stone power ready; fired just before evolving |
+| ~0:52 | Bronze; 2 Vanguard Hoplites march out |
+| ~1:25 | Medieval |
+| ~2:25 | Gunpowder; first Epics |
+| ~3:10 | Industrial; first mech Heavies |
+| ~4:00 | Modern; turrets modernised; first Legendary pushes |
+| ~5:10 | Future |
+| ~6:30 | Cosmic |
+| 6:45 | Overdrive: big pushes |
+| 7:30-10:00 | Most matches end |
+| 8:45-10:45 | Siege with forced march; Final Bell is rare |
+
+### A17.9 Bronze Age (P 1.16)
+
+Theme: antiquity (hoplites, chariots, bolt-throwers, myths in bronze). Values are final level-1 numbers at P 1.16 (A5.1 conventions). Raw file: `src/content/raw/bronze.ts`.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Tags | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| hoplite | Hoplite | C | Infantry | 50 | 186 | 23 / 1.0 s | 16 | 70 | S | G | light bio melee | Blunt. Shield Bash: the first hit of each engagement knocks the target back 15 lu (no damage bonus) |
+| javelineer | Javelineer | C | Ranged | 75 | 110 | 20 / 1.4 s | 210 | 65 | S | G+A | light bio ranged | Javelin; pierces 2 targets total within 50 lu |
+| war_chariot | War Chariot | C | Heavy | 150 | 630 | 49 / 1.5 s | 16 | 65 | L | G | armored bio melee | Scythe Charge: first hit ×2 and 30 lu knockback. The fastest Common Heavy, with 3% less HP |
+| phalangite | Phalangite | R | Anti-armor | 100 | 232 | 30 / 1.2 s | 65 | 70 | M | G | light bio melee | Reach; melee AA mods; priority armored |
+| standard_bearer | Standard Bearer | R | Support | 110 | 151 | 9 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Aura: allies within 160 lu deal +15% damage; followSupport |
+| scorpion | Scorpion | E | Artillery | 200 | 330 | 64 / 3.0 s | 290 (min 60) | 45 | L | G | light mech ranged | Bolt pierces 3 targets total within 150 lu |
+| bronze_colossus | Bronze Colossus | L | Siege heavy | 350 | 2,050 | 64 splash r45 / 2.0 s | 20 | 40 | H | G | armored mech melee legendary | Stomp: every enemy hit is slowed 20% for 1.5 s. Molten Heart: on death bursts for 160 splash r70 on ground enemies |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| archer_tower | Archer Tower | C | 150 | 35 / 1.5 s | 370 | G+A | Single target |
+| sun_mirror | Sun Mirror | C | 175 | 9 / 0.3 s | 230 | G+A | Instant beam of focused sunlight; high chip DPS, short range |
+| onager | Onager | R | 250 | 95 splash r50 / 4.5 s | 480 (min 150) | G | Arc |
+| gorgon_bust | Gorgon Bust | E | 250 | 55 / 6.0 s | 380 | G+A | Priority armored. Stone Gaze: stuns the target 1.5 s |
+
+### A17.10 Industrial Age (P 2.12)
+
+Theme: steam, rivets, rail and the first electric light, roughly 1850-1915. No gas weapons. Raw file: `src/content/raw/industrial.ts`.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Tags | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| riveter | Riveter | C | Infantry | 50 | 330 | 42 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Big Wrench: the first hit of each engagement deals ×1.5 |
+| carbineer | Carbineer | C | Ranged | 75 | 201 | 33 / 1.2 s | 250 | 65 | S | G+A | light bio ranged | Bullet |
+| steam_golem | Steam Golem | C | Heavy | 150 | 1,187 | 89 / 1.5 s | 16 | 55 | L | G | armored mech melee | Piston Punch: first hit ×2 and 30 lu knockback |
+| harpoon_gunner | Harpoon Gunner | R | Anti-armor | 100 | 260 | 55 / 1.2 s | 210 | 65 | M | G+A | light bio ranged | Harpoon; ranged AA mods; priority armored. Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner |
+| flare_spotter | Flare Spotter | R | Support | 110 | 276 | 17 / 1.2 s | 200 | 65 | S | G+A | light bio support ranged | Priority armored. Every hit marks the target (+20% damage taken from all sources) for 3 s; followSupport |
+| sapper | Sapper | E | Siege | 200 | 560 | 240 vs base / 2.0 s (12 vs units) | 12 | 85 | M | G | light bio melee | siegeOnly. Short Fuse: on death the charge goes off for 180 splash r60 on ground enemies (never the base) |
+| land_dreadnought | Land Dreadnought | L | Siege heavy | 350 | 3,600 | 130 splash r40 / 2.2 s | 160 | 35 | H | G | armored mech ranged legendary | Two sponson gunners (riders) each shoot 10 / 0.5 s at range 160 (G+A); on death the crew bails out as 2 Carbineers (summoned) |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| gatling_gun | Gatling Gun | C | 150 | 13 / 0.3 s | 350 | G+A | Single target |
+| mortar_pit | Mortar Pit | C | 175 | 68 splash r40 / 2.0 s | 300 (min 60) | G | Arc; short-range swarm breaker |
+| boiler_mortar | Boiler Mortar | R | 250 | 172 splash r55 / 5.0 s | 480 (min 170) | G | Arc |
+| tesla_tower | Tesla Tower | E | 250 | 130 / 4.5 s | 380 | G+A | Chains to 4 targets total (each ≤ 90 lu from the previous); every target hit is stunned 0.5 s |
+
+### A17.11 Cosmic Age (P 4.48)
+
+Theme: space opera beyond the Future (star legions, warp, motherships). Raw file: `src/content/raw/cosmic.ts`.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Tags | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| star_legionnaire | Star Legionnaire | C | Infantry | 50 | 700 | 90 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt. Deflector: takes 20% less damage from attacks with range ≥ 100 (not powers) |
+| ion_ranger | Ion Ranger | C | Ranged | 75 | 426 | 54 / 1.0 s | 270 | 65 | S | G+A | light bio ranged | Ion bolt; arcs to 1 more enemy within 50 lu (chain, 2 targets total) |
+| hover_tank | Hover Tank | C | Heavy | 150 | 2,509 | 188 / 1.5 s | 90 | 55 | L | G | armored mech ranged | Plasma cannon. Hovers, but is a ground unit (blocks and is blocked) |
+| graviton_halberdier | Graviton Halberdier | R | Anti-armor | 100 | 896 | 116 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee AA mods; priority armored; Brace |
+| starwarden | Starwarden | R | Support | 110 | 582 | 36 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Shield Beacon every 8 s while it has a target: the nearest 4 allies within 180 lu get a 200 shield for 5 s; followSupport |
+| warp_stalker | Warp Stalker | E | Skirmisher | 200 | 1,600 | 140 / 0.8 s | 12 | 100 | M | G | light bio melee | Blink (10 s cooldown): when blocked, warps (0.4 s, untargetable by melee) to the nearest enemy ranged or support unit within 200 lu beyond the blocker; first strike ×2 (the pounce rule) |
+| mothership | Mothership | L | Air gunship | 350 | 3,700 | 80 / 0.6 s | 180 | 40 | H | G+A | air mech legendary | Obeys stance. Drone Strike every 6 s: the nearest enemy ground unit within 400 lu gets a strike after 1.0 s for 300 splash r50 (one call-in per side per 3 s). On death crashes for 350 splash r80 on ground enemies |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| ion_turret | Ion Turret | C | 150 | 27 / 0.3 s | 370 | G+A | Instant beam, single target |
+| starburst_gun | Starburst Gun | C | 175 | 123 / 2.0 s | 240 | G+A | Hits the frontmost enemy in range and enemies within 90 lu behind it; max 4 targets |
+| starfall_battery | Starfall Battery | R | 250 | 363 splash r60 / 5.0 s | 480 (min 180) | G | Arc |
+| tachyon_lance | Tachyon Lance | E | 250 | 184 / 4.0 s | 420 | G+A | Instant; pierces 4 targets total within 250 lu |
+
+**Age Powers of the new ages (join the A5.7 table).** Final numbers at the age's P and L1 loadouts; every power has a 1.0 s telegraph. "Per unit" follows A2.9 against the age's L1 Infantry and Heavy Commons.
+
+| Slug | Age | Slot | Source | Effect | Per unit |
+|---|---|---|---|---|---|
+| tidal_wave | Bronze | Default | Starter | A wave sweeps a 450 lu zone over 2.0 s, dealing 130 once to each ground enemy it touches (±20 lu); ground only | 130: 70% / 21% |
+| aegis | Bronze | Alternate | Road 200 | All your units get an 80 shield and +15% damage for 6 s (no zone) | - |
+| iron_horse | Industrial | Default | Starter | 3 runaway armoured engines, 0.5 s apart, run 600 lu forward at 450 lu/s from your frontmost unit (or p = 200); 150 damage and 50 lu knockback per hit; max 2 hits per enemy per cast; ground only | ≤ 300: 91% / 25% |
+| zeppelin_raid | Industrial | Alternate | Road 350 | 10 bombs along a 480 lu line over 2.0 s (line pattern); each 150 damage, splash r45; ground only | ~281: 85% / 24% |
+| starfall | Cosmic | Default | Starter | 6 star shards over 2.0 s across 450 lu (even pattern, ±20 lu jitter); each 380 damage, splash r60; hits air | ~608: 87% / 24% |
+| warp_strike | Cosmic | Alternate | Road 500 | 3 Star Legionnaires at your Star Legionnaire level warp in 150 lu beyond the enemy's frontmost ground unit (clamped to p ≤ 1,850; p = 1,000 if the enemy has no ground units); summoned, no pop, no bounty | - |
+
+**Curve check** (value ÷ P; the existing ages set the curve):
+
+| Stat ÷ P | Stone | Bronze | Medieval | Gunpowder | Industrial | Modern | Future | Cosmic |
+|---|---|---|---|---|---|---|---|---|
+| Infantry HP | 160 | 160 | 160 | 160 | 156 (+first hit ×1.5) | 160 | 142 (+27 shield) | 156 (+20% resist) |
+| Infantry damage | 20 | 19.8 | 20 | 19.8 | 19.8 | 19.9 | 19.9 | 20.1 |
+| Heavy HP | 560 | 543 (faster) | 560 | 560 | 560 | 560 | 560 | 560 |
+| Anti-armor Rare HP | 200 | 200 | 200 | 126 (ranged) | 123 (ranged) | 122 (ranged) | 120 (ranged) | 200 |
+| Legendary HP (ground) | 1,700 | 1,767 | 1,704 | air 824 | 1,698 | 1,667 | 1,687 | air 826 |
+| C150 turret DPS | 20.0 | 20.1 | 19.8 | 20.1 | 20.4 | 20.3 | 20.1 | 20.1 |
+| Rare arc turret damage per shot | 45 (log) | 81.9 | 81.5 | 30 (4 rockets) | 81.1 | 81.3 | 81.3 | 81.0 |
+
+**Rarity stays a sidegrade.** Rares, Epics and Legendaries follow the same per-P budgets as the existing ages (A5.1 archetypes); their extras are specialisation (reach, pierce, marks, stuns, siege), paid for with lower HP or DPS elsewhere. Every new Legendary has an in-age answer to check in Phase 3 (A16.4 "Legendary tuning"): Phalangite for the Bronze Colossus, Harpoon Gunner and Sapper's burst for the Land Dreadnought, Ion Ranger, Ion Turret and Tachyon Lance for the Mothership (the Cosmic Anti-armor Rare is melee and cannot hit air, by design).
+
+### A17.12 Art, sound and IDs for the new ages
+
+**Age palettes (join the A11 table; the colour rule applies).**
+
+| Age | Large-area colours | Accents |
+|---|---|---|
+| Bronze | sandstone #CDBE9E, verdigris #4F8F7F, dusk plum #6A5566 | polished bronze #B8863B |
+| Industrial | iron #5B6168, coal #2B2A2E, smoke cream #DCD6C8, muted brick #8A6A63 | copper #B06A3B |
+| Cosmic | void #1E1830, nebula violet #8E44C8, star white #F2F0FF | mint #3FE0B0 |
+
+Polished bronze and copper sit in the orange band (350°-81°) and stay accents (≤ 10% of a silhouette). Sun beams, flares and fuse sparks use white-hot cores at low saturation; the Flare Spotter's flare is white-magenta, never red. Nebula violet (276°) sits outside the blue band.
+
+**Bases, backdrops and Treasury art.** (The Treasury art is replaced by the War Council workshop glyph when A18.5 ships.)
+
+| Age | Base (4 mounts, crumble states, evolve morph per A11) | Backdrop silhouettes | Treasury art |
+|---|---|---|---|
+| Bronze | Ziggurat: stepped stone with bronze doors and braziers | Stepped temples, colonnades, olive hills, a distant volcano | Granary and trade barge |
+| Industrial | Foundry: brick works with a clock tower, chimney and gantry crane | Chimneys, gas holders, rail viaducts, smoke plumes | Steam mill |
+| Cosmic | Star Ark: a grounded starship hull with a landing ring | Ringed planets, nebula clouds, drifting asteroids | Star forge |
+
+A11's skyline chain becomes: mountains → temples → castles → windmills and masts → chimneys and viaducts → city → megastructures → planets and nebulae.
+
+**Units: rigs, silhouettes and signature clips** (A11 scale: infantry ~68 lu, heavies 100-120 lu, Legendaries 170-220 lu; team colour on large parts).
+
+| Slug | Rig | Silhouette and art notes | Ability clip |
+|---|---|---|---|
+| hoplite | biped | Round shield (team face), crested helmet (team crest), short spear | Shield bash shove |
+| javelineer | biped | Light tunic, a bundle of javelins on the back, throwing arm cocked | Wind-up throw |
+| war_chariot | rider | Charioteer on a two-wheeled cart pulled by one stocky horse; scythed hubs; team pennant on the cart | Charge lean, wheel sparks |
+| phalangite | biped | Very long sarissa (reads as reach), small shield, tall helmet | Braced thrust |
+| standard_bearer | biped | Tall eagle standard with a team banner, drum at the hip | Banner wave (aura ring) |
+| scorpion | vehicle | Wheeled torsion bolt-thrower with one crew member cranking | Crank and recoil |
+| bronze_colossus | walker | Huge bronze statue with a team sash and crest; glowing white-hot seams | Ground stomp ring; molten burst on death |
+| riveter | biped | Cap, overalls with a team bib, oversized wrench | Wrench wind-up |
+| carbineer | biped | Brimmed hat, long team-colour coat, short carbine | Lever cock |
+| steam_golem | walker | Boiler belly, piston arms, a chimney that puffs in idle | Piston punch with a steam burst |
+| harpoon_gunner | biped | Shoulder harpoon gun, rope coil, goggles | Reel-in yank |
+| flare_spotter | biped | Binoculars, flare pistol, team armband | Flare arc and mark reticle |
+| sapper | biped | Running crouch, striped charge box on the back, lit fuse sparkle | Fuse sparkle; blast on death |
+| land_dreadnought | vehicle | Rhomboid landship with full-length treads, two side sponsons with visible gunners, team roundel | Crew bails out on death |
+| star_legionnaire | biped | Sleek helmet with a visor, energy blade, deflector disc on the forearm | Deflector flare on ranged hits |
+| ion_ranger | biped | Long rifle with glowing coil rings | Coil charge-up |
+| hover_tank | vehicle | Low wedge hull on glowing hover pads, no wheels, bobbing idle | Recoil and pad flare |
+| graviton_halberdier | biped | Long halberd with a floating gravity orb in the head | Brace plant |
+| starwarden | biped | Robed figure with a staff that holds a floating beacon | Beacon pulse ring |
+| warp_stalker | biped | Lean, hooded, a cloak with a starry lining | Blink out and in |
+| mothership | flyer | Huge disc ship with a tractor ring, launch bays and team hull stripes | Drone launch; crash on death |
+
+**Turrets (turret rig: base, pivot, barrel).** Archer Tower (wooden tower, archer inside), Sun Mirror (bronze dish on a tripod), Onager (torsion catapult), Gorgon Bust (stone head with snake hair on a plinth; eyes glow white on fire), Gatling Gun (crank-fed multi-barrel), Mortar Pit (sandbag ring with a squat tube), Boiler Mortar (heavy mortar on a boiler with a steam vent), Tesla Tower (coil tower with a sparking globe), Ion Turret (compact emitter), Starburst Gun (fan-barrelled blaster), Starfall Battery (shard launcher on a dish), Tachyon Lance (long prism barrel).
+
+**Attack mapping (joins A14.2).**
+
+| Card | Projectile / effect | Attack SFX | Damage type |
+|---|---|---|---|
+| hoplite | melee | swing_whoosh | pierce |
+| javelineer | proj.javelin | shot_javelin | pierce |
+| war_chariot | melee | swing_whoosh | slash |
+| phalangite | melee | swing_whoosh | pierce |
+| standard_bearer | proj.javelin | shot_javelin | pierce |
+| scorpion | proj.scorpion_bolt | shot_scorpion | pierce |
+| bronze_colossus | melee; death fx.explosion_m | stomp_colossus; explosion_m | blast |
+| archer_tower | proj.arrow | shot_bow | pierce |
+| sun_mirror | fx.sun_beam | mirror_beam | laser |
+| onager | proj.boulder | shot_catapult | blast |
+| gorgon_bust | fx.gorgon_gaze | gorgon_gaze | laser |
+| riveter | melee | swing_whoosh | blunt |
+| carbineer | proj.bullet | shot_carbine | bullet |
+| steam_golem | melee | swing_whoosh | blunt |
+| harpoon_gunner | proj.harpoon | shot_harpoon | pierce |
+| flare_spotter | proj.flare | flare_pop | blast |
+| sapper | melee; death fx.explosion_m | fuse_hiss; explosion_m | blast |
+| land_dreadnought | proj.shell; riders proj.bullet | shot_cannon; shot_gatling | blast; bullet |
+| gatling_gun | proj.bullet | shot_gatling | bullet |
+| mortar_pit | proj.lob | shot_lob | blast |
+| boiler_mortar | proj.shell | shot_cannon | blast |
+| tesla_tower | fx.tesla_arc | tesla_zap | laser |
+| star_legionnaire | melee | swing_whoosh | laser |
+| ion_ranger | proj.ion | shot_ion | laser |
+| hover_tank | proj.plasma | shot_plasma | blast |
+| graviton_halberdier | melee | swing_whoosh | laser |
+| starwarden | proj.ion; beacon fx.beacon_ring | shot_ion; shield_up | laser |
+| warp_stalker | melee; blink fx.blink | swing_whoosh; blink_warp | slash |
+| mothership | fx.beam_void; strike proj.star_shard | shot_void; drone_launch | laser; blast |
+| ion_turret | fx.beam_ion | shot_ion | laser |
+| starburst_gun | proj.starburst | shot_starburst | laser |
+| starfall_battery | proj.star_shard | shot_plasma | blast |
+| tachyon_lance | fx.beam_tachyon | shot_tachyon | laser |
+
+Spawn and death sounds follow the A14.2 defaults.
+
+**New IDs (join A14).**
+
+- Cards: 21 `unit.<slug>`, 12 `turret.<slug>`, 6 `power.<slug>`.
+- World: `base.bronze`, `base.industrial`, `base.cosmic`; `backdrop.bronze`, `backdrop.industrial`, `backdrop.cosmic`; `icon.age.bronze`, `icon.age.industrial`, `icon.age.cosmic`.
+- Projectiles: `proj.javelin`, `proj.scorpion_bolt`, `proj.harpoon`, `proj.flare`, `proj.ion`, `proj.starburst`, `proj.star_shard`.
+- Instant effects: `fx.sun_beam`, `fx.gorgon_gaze`, `fx.tesla_arc`, `fx.beam_void`, `fx.beam_ion`, `fx.beam_tachyon`.
+- Ability effects: `fx.stomp_ring`, `fx.fuse_spark`, `fx.beacon_ring`, `fx.blink`.
+- Power effects: `fx.tidal_wave`, `fx.aegis_glow`, `fx.iron_horse`, `fx.zeppelin`, `fx.star_shard_rain`, `fx.warp_portal`.
+- Camera UI: `icon.chevron`, `icon.base_alert`, `icon.follow`.
+- Sounds (A13): `shot_javelin`, `shot_scorpion`, `stomp_colossus`, `mirror_beam`, `gorgon_gaze`, `shot_carbine`, `shot_harpoon`, `flare_pop`, `fuse_hiss`, `shot_gatling`, `tesla_zap`, `shot_ion`, `shot_void`, `shot_starburst`, `shot_tachyon`, `blink_warp`, `drone_launch`, `pw_wave`, `pw_aegis`, `pw_iron_horse`, `pw_zeppelin`, `pw_starfall`, `pw_warp`, `evolve_fanfare_bronze`, `evolve_fanfare_industrial`, `evolve_fanfare_cosmic`, `alert_base`.
+- Music (A14.3): `music.bronze`, `music.industrial`, `music.cosmic`.
+
+**Arrangements (join the A13 table).**
+
+| Arrangement | Instruments |
+|---|---|
+| Bronze | plucked lyre, frame drum, reed pipe (square wave with vibrato) |
+| Industrial | brass band (tuba bass, cornet lead), anvil and piston percussion |
+| Cosmic | choir pad (formant-filtered saw), deep sub pulse, bell arpeggios |
+
+**Skins.** None for the new ages now. The skin rules (A5.8) apply unchanged when they come.
+
+**Art direction.** The palettes, silhouettes and clips above were written for the A11 house style and are what the built procedural puppets and sheets use (the Cosmic `cloth` zone is `#33264C` and Bronze `metal` is `#B09C78`/`#7A6C54` on units, to pass the colour rule; `docs/art-style.md`). The owner has since chosen an ultra-realistic direction (A11, A18.8.3); the restyle keeps the readability rules and the ids.
+
+### A17.13 Meta, AI and other systems for 8 ages
+
+**War Plan (A3).**
+
+- A War Plan is **eight** Age Loadouts, one per age. The minimum to play stays 3 units and 1 turret per age used by the format.
+- The starter kit holds every Common of all 8 ages (3 units and 2 turrets each) and each age's default power, all at L1.
+- AA Rares by script: Spear Hunter and Phalangite in capsule 1; Pikeman and Grenadier in capsule 2; Harpoon Gunner and Bazooka Trooper in the Age Unlock Capsules at Arena 2; Rail Gunner and Graviton Halberdier in new Age Unlock Capsules at Arena 3.
+- The builder shows age tabs (one loadout visible at a time on phones) and the plan average over the ages the next format uses. Auto-fill, presets, "Equip now" and the deck advisor are unchanged.
+- Save migration (WP8): every stored War Plan gains Bronze, Industrial and Cosmic loadouts filled with that age's starter Commons, both Common turrets and the default power; the collection gains the 15 new starter Commons at L1 and the 3 default powers. Nothing owned is lost (A15.1).
+
+**Collection (A5.1).** 56 units + 32 turrets = 88 cards (40 Common, 24 Rare, 16 Epic, 8 Legendary), 16 Age Powers. Schema checks per age stay (7 units, 4 turrets, 2 powers); the totals move to these numbers.
+
+**Arenas and capsules (A6.3-A6.5).**
+
+| Arena | Ladder formats | Drop pool (was) | Drop pool (A17) | Gate rewards change |
+|---|---|---|---|---|
+| 1 Tar Pits | Short | Ages 1-3 | Stone to Gunpowder (4 ages), no random Legendaries | none |
+| 2 Frostfang Pass | Short, Standard | Ages 1-4 | Stone to Modern (6 ages) | Age Unlock Capsules: Industrial and Modern (was Modern and Future) |
+| 3 Kingsmoat and up | All | All | All 8 ages | Gate 3 adds Age Unlock Capsules for Future and Cosmic |
+
+- Onboarding script: capsule 1 (Bronze tier) guarantees Spear Hunter NEW and Phalangite NEW; capsules 2-5 unchanged.
+- Age Capsules pick from 8 ages in the grant dialog. Roll algorithm, pity and odds unchanged.
+- **Pacing.** The pool grows 60% (55 → 88 cards), so each card gets ~37% fewer copies per day. The owner chose to keep today's time to max a card (A17.18 question 5). The economy sim needed more than the ×1.4 first estimated: capsules carry about **×1.75** copies and Amber (built). Tiers (Common / Rare / Epic / Legendary copies, then Amber): Clay 4 / 1 / 1 / 1 and 105, Bronze 5 / 2 / 2 / 1 and 210, Silver 10 / 5 / 2 / 1 and 530, Jade 24 / 10 / 5 / 2 and 1,400, Aeon 26 / 10 / 5 / 2 and 2,640. Median days to max a card by rarity: 119 / 108 / 68 / 109 (before A17: 114 / 114 / 71 / 109). Bag average 15.7 copies and 398.7 Amber. Upgrade costs are unchanged.
+
+**Trophy Road (A6.3).** Alternate powers move so each unlocks near the arena that brings its age:
+
+| Node | 100 | 150 | 200 | 250 | 300 | 350 | 400 | 450 | 500 |
+|---|---|---|---|---|---|---|---|---|---|
+| Today | Meteor Shower | Gate 2 | Royal Decree | Silver | Broadside | 100 D | Gate 3 + Carpet Bomber | 190 A | Nanite Surge |
+| A17 | Meteor Shower | Gate 2 | Aegis | Royal Decree | Broadside | Zeppelin Raid | Gate 3 + Carpet Bomber | Nanite Surge | Warp Strike |
+
+The displaced Silver Capsule, 100 Dust and Amber node join the 550, 600 and 650 nodes as second items, so no reward is lost. The Amber at its new place pays the node formula (230, not 190).
+
+**Timings that follow the formats.**
+
+| Item | Today | A17 |
+|---|---|---|
+| Quest "Reach your format's final age before" | 2:20 / 3:40 / 5:00 | 2:40 / 4:15 / 6:45 |
+| Quest "Destroy a base before" | 6:00 | 6:00 (Short and Standard make it reachable) |
+| Conquest star 3 | win before 6:00 (Full War) | Conquest plays Standard War (owner decision): win before 5:45. Superseded by A18.7.10 (Conquest folds into the War Path) |
+| Title Evolver | first Future Age | first Cosmic Age |
+| Title Speedrunner | final age before 4:30 in Full War | Cosmic before 6:15 in Full War |
+| Feat Lightspeed | - | Future before 4:10 |
+| Rewards by format (A15.8) | from today's medians | re-derived from the A17.2 medians at a 60% win rate: +26 / +31 / +36 trophies (1.60 / 1.63 / 1.60 per minute), Amber 20 / 27 / 35 |
+| `ProfileStats.futureReached` | Future reached | counts matches that reached the game's last age (Cosmic); the field name stays, its label reads "Cosmic Age reached" |
+| Codex Levels (A6.7) | ~81 levels | ~130 levels at the same 15 points per level |
+| B5 procedural bake at boot | ages 0-1 | Stone and Bronze; the rest lazily |
+
+**AI (WP3).**
+
+- `src/ai/book.ts` already builds the age order from content, so the new ages need no brain code. Generals' personal War Plans (`src/content/generals.ts`) and procedural commanders gain the 3 new loadouts; ladder bots pick from the arena's drop pool as today.
+- Lane constants in `src/ai/brain.ts` (gate zone, push gate, hold decisions) become lane-relative (offsets from the own gate for home rules, `L − x` for enemy-side rules) and are retuned once on the 2,000 lu lane.
+- Evolve policy: "fire the power, then evolve" becomes the normal pattern with 7 evolves and the one-power-per-age thresholds; the existing evolve-vs-power scoring covers it.
+- New cards score through existing ability kinds: Sapper like the Battering Ram (siege), Mothership like an air Legendary (the air-answer check), Scorpion like the Bronze Cannon (artillery), Flare Spotter through its mark, Gorgon Bust and Tesla Tower through their stuns.
+- `Observation` is unchanged. Bots have no camera; the minimap gives the player the same whole-lane information (A17.1 principle 3).
+
+**Daily Challenge, Skirmish, replays.** The Daily Challenge plays Standard War (now 6 ages; a seeded window of Standard length from A18.3.4). Skirmish offers all three formats. Old replays carry an older `contentHash` and show "from an older version" (B3), as today.
+
+### A17.14 A2.14 targets (changes)
+
+| Metric | Target today | A17 target |
+|---|---|---|
+| Full War median length | 7:00; 80% 5:00-9:00 | 8:30; 80% 6:45-10:15 |
+| Standard War median | not listed | 6:30; 80% 5:00-8:00 |
+| Short War median | 4:30 | 4:45 (4:15 ± 0:20 with the shorter clock) |
+| First evolve | median 60 ± 10 s | median 52 ± 10 s |
+| Later evolves | within ±20 s of A2.4; every scripted strategy reaches Future (Full War) between 4:00 and 6:15 | within ±20 s of A17.8; every scripted strategy reaches Cosmic (Full War) between 5:45 and 7:30 |
+| One power per age (new) | - | In the Balanced mirror, ≥ 70% of age stays (Stone to the second-to-last age) include one power cast |
+| First clash (new) | - | Median 0:11-0:16 |
+| Contact in the middle (new) | - | Reported: share of match time the contact point lies between the two turret covers (p 480 to L − 480) |
+| Camera (new, e2e) | - | Auto-follow keeps the contact point on screen ≥ 90% of match time in a 10-match bot-vs-bot run on an 844 × 390 viewport |
+| Has-an-answer | as today | adds the 3 new Legendaries (A17.11) |
+| Power damage per unit in zone | every damaging power | adds Tidal Wave, Iron Horse, Zeppelin Raid, Starfall |
+| B3 performance | headless Full War ≤ 400 ms | ≤ 500 ms (up to 12,900 ticks) |
+
+All other rows stay, including the Final Bell rows and their release rule. The whole table reruns after step 1 (lane) and again after step 4 (ages) of A17.16. A18.12 replaces the length, evolve and Bell rows when A18 phase 1 and 3 land.
+
+**Measured after steps 1-2 and the falling gate (tier V Balanced mirror, 200 matches per format):** Final Bell Full 11.5% (gate ≤ 5%), Standard 10.0%, Short 9.0%; Full median 8:39 (passes 8:30 ± 0:30), 55.5% of Full Wars in 6:45-10:15 (target 80%); Standard median 6:59; first clash 0:13; camera e2e 96.5% of samples keep the contact on screen. Still open for Phase 3 and reported to the owner under the A16.5 release rule: the Full War Bell, the turtle band (35-45%), first evolve 1:12 (target 0:52) and Cosmic at 5:43 (target 6:30).
+
+### A17.15 Genuinely new rules (everything else reuses existing kinds)
+
+1. **Lane length 2,000 lu.** `LANE_MLU` in `src/core/fixed.ts` becomes 2,000,000; `battle.laneLength` and `battle.midLane` follow, and a content test asserts they match. Render derives its lane from core instead of its own `LANE_LU`.
+2. **March speed.** New `EconomyRules.marchSpeedBp` (12,500): unit speed in milli-lu per tick = trunc(speed × 1,000 / 20 × marchSpeedBp / 10,000), applied once in the compile step (`src/sim/rules.ts`).
+3. **Siege forced march.** New `EconomyRules.siege.moveSpeedBp` (12,000), applied to unit movement while the phase is Siege.
+4. **Formats may skip ages (tutorial only).** The schema check becomes "ages in increasing order from Stone". The underdog bounty compares `AgeDef.index` values (global), never the position in the format; WP2 verifies this.
+5. **New ages as data.** `AgeId` gains `'bronze' | 'industrial' | 'cosmic'` (contract request to WP0).
+
+First-time combinations of existing kinds, each needing one WP2 unit test and no new code if the test passes:
+
+| Card | Combination |
+|---|---|
+| Gorgon Bust, Tesla Tower | `onHit` stun from a turret; Tesla's stun on every chain target |
+| Bronze Colossus | `onHit` slow on a melee splash attack; `onDeathExplode` on a ground Legendary |
+| Harpoon Gunner | `firstHitBonus` pull on a ranged unit |
+| Starwarden | `periodicShieldAura` on a `followSupport` unit ("while it has a target") |
+| Mothership | `callStrike` and `onDeathExplode` on an air gunship; the strike search starts at its x |
+| Sapper | `siegeOnly` plus `onDeathExplode` (the burst never hits the base) |
+| Land Dreadnought | `riders` on a ranged Legendary, bailing out as Carbineers |
+| Warp Stalker | `pounce` with a 200 lu search |
+| Tidal Wave | `sweep` with `hitsAir: false` |
+| Warp Strike | `paradrop` of a melee card |
+
+Camera, minimap, indicators, culling and sound panning are view rules only. They never read or change sim state beyond what the view already reads.
+
+### A17.16 Build plan
+
+**Recommended order.** Step 1 first, with the existing 5 ages, so the owner can feel the long lane before any art money is spent on new ages.
+
+**Status (2026-09-28).** Step 1 built (`SIM_VERSION` 2.0.0; lane, march, forced march, three-wide front, siege crowd, camera, minimap, badges, culling, parallax, settings). Step 2 built (`SIM_VERSION` 2.1.0, then 2.2.0 with the falling gate; save v2). Step 3: the 21 unit, 12 turret and 3 base sheets and the backdrops, effects, sounds and music of the three ages are registered. Not done yet: sound panning and off-view fading (A17.7), the sharper 1.8 px/lu sheet tier, and step 4 (balance).
+
+| Step | What | Work packages and main files | Golden replays | Size |
+|---|---|---|---|---|
+| 1. Long lane and camera | Lane 2,000 lu, march speed, Siege forced march, lane-derived clamps; device classes, camera, controls, auto-follow, minimap, indicators, off-screen actions, culling, parallax, sound panning, settings | WP0 request: `src/core/fixed.ts`, `src/contracts/content.ts` (2 fields), `src/contracts/save.ts` (settings: auto camera, edge scroll). WP1: `raw/economy.ts` (`battle`, `economy`), `raw/powers.ts` (Paratroopers fallback 1,000), `compile.ts`, `schema.ts`. WP2: `sim/rules.ts`, `sim/systems/movement.ts`, `sim/replay.ts`. WP3: `ai/brain.ts`. WP5: `render/layout.ts`, `camera.ts`, `input.ts`, `seam.ts`, `powerTargeting.ts`, `eventMapper.ts`, `battleView.ts`, `ui/hud/*` (minimap, jump buttons, badges). WP4: `visuals/backdrops/*`, `manifest.world.ts`. WP6: `audio/mixer.ts`, `service.ts` (pan and fade, `alert_base`). WP9: settings screen. WP11: tutorial beats that move the camera. WP12: goldens, e2e (pan, minimap tap, badge), A2.14 rerun | **All invalidated** (lane, speeds). `SIM_VERSION` 2.0.0; re-record once | M-L |
+| Owner check | Play Short and Full War on phone and PC | - | - | - |
+| 2. Eight ages as data | Wire the three raw files; new thresholds and formats; meta tables; save migration; AI plans; strings; placeholder and procedural visuals and ZzFX sounds so every ID exists | WP0 request: `contracts/ids.ts` (`AgeId`), `contracts/save.ts` (version). WP1: `raw/index.ts`, `raw/economy.ts` (`ageScale`, formats), `raw/powers.ts` or the three files' powers, `ages.ts` (`AGE_ORDER`), `schema.ts` (totals, format check), `arenas.ts`, `trophyRoad.ts`, `capsules.ts` (script), `cosmetics.ts` (titles), `quests.ts`, `generals.ts`, `i18n/content.en.json`, `generated/counters.json`. WP7: Age Unlock at Gate 3, quest and Conquest times. WP8: migration. WP9: War Plan tabs, collection filters. WP10: 8-age Age Capsule dialog. WP3: plans. WP4: manifest entries, procedural puppets and parts for 3 ages. WP6: sounds, 3 arrangements, 3 fanfares, key-change rule. WP12: integrity tests, unit tests of A17.15 | Unchanged if the sim code is unchanged (goldens use the frozen fixture content). If the underdog check or a combination test needs a sim fix: `SIM_VERSION` 2.1.0 and re-record | L |
+| 3. Art for the new ages | 3D sprite sheets for 21 units (Blender rigs per age), 12 turrets, 3 bases; 3 backdrops; effects for 6 powers and new projectiles; the sharper sheet tier for the long-lane scale | WP4: `art/blender/ageborn_art/rigs_bronze.py`, `rigs_industrial.py`, `rigs_cosmic.py`; `art/blender/units/<slug>.py` (21); `art/blender/world` (turrets, bases); `public/art/units/<age>/`, `public/art/turrets`, `public/art/bases`; `gen_unit_manifest.mjs` → `unitSheets.gen.ts`; `visuals/backdrops/*`, `visuals/effects/*` | None | XL (~50 agent hours units, ~10 turrets, ~12 bases and backdrops, ~10 effects) |
+| 4. Balance and economy | A2.14 rerun for 8 ages, per-card deltas for 39 new cards, has-an-answer, power coverage, A6.9 economy sim (copies per stack) | Phase 3 tuning agent: `src/content/raw/*` numbers only; `tools/` runs; `docs/balance-log.md` | None (numbers only; goldens use the fixture) | M |
+
+**Notes.**
+
+- Step 1 touches files of many WPs at once; run it as one orchestrated phase with the usual requests in `docs/requests/`, as Phase 2a did.
+- Step 2 is playable with procedural art; step 3 can follow age by age (Bronze first, since Short War uses it).
+- Other sections edited when A17 was merged into this document (v1.3): A1 (table rows on crossing time, ages, turret range share), A2.1, A2.2, A2.4, A2.5, A2.9 (scan band), A2.10, A2.12 (camera keys), A2.13, A2.14, A3, A5.1 (counts), A5.7 (Paratroopers clamp, new powers), A5.8 (titles), A6.3-A6.5, A6.7, A6.10, A8 (camera in beats), A9.2 (phone split, minimap), A11 (palettes, seam, bases, skyline), A12 (camera moments), A13 (sounds, arrangements, key changes, panning), A14, A16.9, A16.15, A16.17 (Season 3 "The Bronze Age" is absorbed), B3, B5, B16, D1 (the sixth-age line).
+
+### A17.17 Risks
+
+| Risk | Mitigation |
+|---|---|
+| A longer walk strengthens defence; Final Bells are already too common (PROGRESS: ~50% of Full War mirrors) | Walking ×1.25, Siege forced march ×1.2, turrets cover less of the lane; the A16.4 levers still apply and are measured on the new lane |
+| Players miss fights while scrolled away | Auto-follow by default, the minimap, off-screen badges, the base button's hammer badge |
+| Full War at ~8:30 feels long | Short War stays ~4:45 and Standard ~6:30; Full War is the chosen epic format; owner question 2 |
+| Bigger units look soft on desktop; more pixels cost frame time | A sharper sheet tier at 1.8 px per lu, streamed per age; culling outside the view; a check on a real mid-range phone |
+| Download size: 21 new unit sheets at the sharper tier | Sheets load per age as each side reaches it; the initial chunk stays under 3 MB; the 16 MB total warning is reviewed |
+| Art volume for 39 cards, 3 bases, 3 backdrops is the largest cost | Step 1 first; step 3 age by age; procedural art keeps the game playable meanwhile |
+| The collection grows 60%, so upgrades per card slow down | The economy sim sets copies per stack (A17.13) |
+| "Bronze" is also a capsule tier and a foil name | UI always says "Bronze Age" for the age; ids are prefixed (`icon.age.bronze`, `capsuleTier.bronze`) |
+| Half-step evolves feel smaller | Each evolve keeps the full A12 moment, a new arrangement and new cards; the P step is only one part of the thrill |
+
+### A17.18 Open questions for the owner
+
+All six were answered on 2026-09-28:
+
+1. **Lane length.** Try 2,000 lu with 25% faster walking first? **Yes, built.** (1,800 lu stays the fallback.)
+2. **Full War length.** Is a ~8:30 typical Full War (up to 10:45) fine, now that it holds all 8 ages? **Yes.** A18 later lengthens every format (D2).
+3. **Conquest.** Keep Conquest in Full War, or move it to Standard War? **Standard War, built.** A18 then folds Conquest into the War Path (D5).
+4. **Auto camera.** On by default for everyone, with a setting to turn it off? **Yes, built** (`Settings.autoCamera`, `Settings.edgeScroll`).
+5. **Upgrade pace.** Keep today's time to max a card? **Yes:** capsules carry ×1.75 copies and Amber (A17.13).
+6. **Later.** A "Late War" format that starts in the Industrial Age? **Answered by A18.3.4:** any window of consecutive ages is a format, and the player picks a start era in Quick Battle and Skirmish.
+
+---
+
+## A18. Harder, longer, deeper: pacing, ages, upgrades, difficulty, campaign and the road to online
+
+**Status (v1.3).** Design, written 2026-09-28 from the owner's playtest feedback of the same day and the owner directions in `docs/decisions.md` (2026-09-28 evening and late). It replaces the proposal in `docs/design-history/a18-proposal.md` and resolves both reviews of it (A18.15). Inputs: `docs/research/a18-classics.md`, `docs/research/a18-upgrades-pacing.md`, `docs/research/a18-campaign-online.md`, DESIGN A1-A17. The owner delegated the open decisions; D1-D8 (A18.16) were taken as recommended on 2026-09-28. **This section wins over A1-A17 where they differ.** The edits A18.14 lists are applied to those sections, each marked with a pointer to A18. Nothing in A18 is built yet except the items in the next paragraph; each rule takes effect in the build with its phase in A18.13, and until then the build follows the older rule.
+
+**Already built before A18 (2026-09-28).** Home is the hub from match 2 on; War Plan, Customize, Quick Battle and Skirmish open after match 1; the Charge/Hold flag is there from match 1 and the manual Last Stand button from match 2 (this is A18.13 phase 0's stance item); Quick Battle and Skirmish use the difficulty picker (Easy II, Normal IV, Hard VI, Expert VIII, Legendary X; `content.generals.difficulty`); the Rookie AI mistake bonus applies only in the onboarding matches and never when the player picked a difficulty. A18 does not redesign those. It says how the War Path and the War Council use them (A18.6, A18.7).
+
+**Hard rules kept.** No real money, no energy, no lives, no timers. Bots are labelled AI everywhere (A7.1). The sim stays integer, seeded and deterministic; every new number is content data. Art goes through the ArtProvider and the visual manifest; the sim owns all timing. The name of the classic Flash game is never used.
+
+---
+
+### A18.1 The owner's points and where each is answered
+
+| Owner point (2026-09-28) | Root cause (measured) | Answer | Section |
+|---|---|---|---|
+| "Too easy", "single player needs difficulty levels" | Tier II-V AI loses to a human-like script 88-100% | The picker (in flight), a War Path difficulty that stays meaningful in every region, AI research and stance use, a "few soldiers" proxy that must lose | A18.6 |
+| "You win by just spawning a few soldiers" | The AI does not punish a thin army | Normal and up push when their army is ≥ 1.5× yours; `few_then_evolve` wins ≤ 10% vs Normal | A18.6, A18.12 |
+| "You evolve far too fast", "you climb very quickly" | Middle ages last 31-37 s; kill XP snowballs for the winner | XP by position in the match, less kill XP, more passive XP; 60-125 s per age | A18.3 |
+| "Matches finish too fast" | Endings follow lane combat; nothing to spend on besides units | Longer clocks, plus the War Council, plus a stronger AI | A18.3, A18.5 |
+| "Too few ages, many missing" | 8 ages | 13 ages as the target; presentation themes now; new ages after the realistic art pipeline is proven | A18.8 |
+| "Upgrades with money are boring; troops, abilities, turret range, money generation" | Treasury and mounts are linear buy-once numbers | The **War Council**: four tracks of 1-of-2 picks that differ in kind, visible to both sides | A18.5 |
+| "Maybe add the hold/attack option" | Stance exists but is hidden until match 4 | Visible from match 1 now; then three stances and a Hold flag | A18.4 |
+| "A level map like Candy Crush ... cool opponents" | Conquest is 9 matches | The **War Path**: one region per age, 10 levels each, short windows, objective variety, boss Generals | A18.7 |
+| "Online multiplayer is the final goal" | Spike only (`server/`) | Milestones M0-M8; M1 now, M2 after the War Path | A18.10 |
+| Earlier wishes: forts, underground, air, six troops, collection, lane features, clans, village, beautiful art | Partly designed in A16 | Scheduled in A18.9 and A18.13 | A18.9 |
+
+**Design stance.** Longer matches are good only if every extra minute holds a decision. Slower XP alone removes ages from a match (Full War 8:48 today, 8:39 at 1.5× thresholds) and adds Final Bells. So pacing (A18.3) and the War Council (A18.5) ship together, never pacing alone.
+
+**Pillar 2 (owner decision D1).** A1 Pillar 2 and A16.2 say "evolving is the best moment; keep it fast". A18 keeps every evolve a big moment (the A12 show, a new tray, new research ranks, a doctrine pick later, and a new mechanic in every new age, A18.8.3) but makes evolves rarer, and gives every age a middle.
+
+---
+
+### A18.2 Principles and budgets
+
+1. **A decision in every minute.** In the middle of an age a player has at least: spawn choices, one research about every 60-90 s, a stance or flag choice, and an Age Power cast. If playtests show standoffs, the Supply Cache (A18.3.5) adds a timed objective.
+2. **Research is never retroactive.** A finished pick applies to units spawned after it completes; units already on the lane keep their stats. The completion shimmer on existing units is visual only and marks the timing.
+3. **Picks differ in kind.** Two picks of a pair never differ only in size (+10% damage vs +12% HP). One answers swarms, the other Heavies; one pays in quiet games, the other in busy ones.
+4. **Hard stacking caps** (all sources summed in bp: research, doctrines, relics, modifiers, weather, auras): damage dealt ≤ +35%; damage taken ≥ −35% (a floor: no unit ever takes less than 65% of a hit); max HP ≤ +30%; attack speed ≤ +25%; move speed ≤ +20% (forced march and slows apply after); unit range ≤ +60 lu; turret range hard cap **560 lu** from the own gate. The A16.1 budget (±20% additive, range +15%) still limits doctrines, weather and modifiers among themselves.
+5. **Disclosed modifiers are allowed; hidden ones never.** Difficulty changes behaviour, not stats. The only stat differences between sides are disclosed on the node and the VS screen (boss base HP, extra turret, The Warden's L9 Legendaries, relics in single player).
+6. **The winner is not paid twice.** Kill XP and base-damage XP are cut; bounty is cut; the side behind gets cheaper research.
+7. **Content is data.** Every pick, threshold, clock, level, objective and boss rule is a table in `src/content`. The only new sim code is listed in A18.11.
+
+---
+
+### A18.3 Pacing: longer ages, longer matches
+
+#### A18.3.1 What an age should feel like
+
+| Beat | Length | What happens |
+|---|---|---|
+| Arrival | 15-20 s | New tray, Vanguard pair, new units march out, the next research rank may open |
+| Middle | 40-60 s | One research, the first fight with the new troops, one Age Power cast |
+| Push | 20-35 s | Saving for the evolve, timing it against the enemy's research ring and power ring |
+
+| Position in the match's age window | 1st | 2nd | 3rd | 4th | 5th | 6th | 7th (final) |
+|---|---|---|---|---|---|---|---|
+| Target median stay (Balanced mirror) | 60-75 s | 90-105 s | 95-110 s | 100-115 s | 105-120 s | 110-125 s | to the end |
+| Today (tier V mirror, Full War) | 72 s | 55 s | 50 s | 31 s | 35 s | 50 s | 49 s |
+
+The first age stays shortest, so a new player sees the first evolve by about 1:10. No age after the first may have a median stay under 75 s.
+
+#### A18.3.2 XP rules (replace the A2.4 source table and the A17.8 thresholds)
+
+| XP source | Today | A18 |
+|---|---|---|
+| Passive trickle | 4 XP/s | **5 XP/s** (×2 in Overdrive and Siege, unchanged) |
+| Kill by a unit, turret or unit ability | 100% of the victim's card cost | **70%** |
+| Losing your own unit (not summons) | 40% | **50%** |
+| Damage to the enemy base | 12 XP per 1% of its max HP | **8 XP per 1%** |
+| Kills by powers or Last Stand | 0 | 0 |
+| Underdog bonus | +50% | +50% |
+
+**Thresholds follow the position in the window, not the age.** Every card costs the same in every age (A2.3), so XP income does not depend on the age. `FormatDef.xpToNextOverride` holds them per format:
+
+| Evolve out of the window's | 1st age | 2nd | 3rd | 4th | 5th | 6th |
+|---|---|---|---|---|---|---|
+| XP needed | **700** | **1,250** | **1,350** | **1,450** | **1,550** | **1,650** |
+| Expected rate (XP/s, active play) | ~10 | ~12.5 | ~13 | ~13 | ~13.5 | ~13.5 |
+| Expected stay | ~70 s | ~100 s | ~104 s | ~111 s | ~115 s | ~122 s |
+
+- These are starting values between the measured `x15kc` and `x15p` patches, with the first age protected (1.5× on Stone made the first evolve 2:02). They are tuned once, after the War Council is in (A18.13 phase 3), never before: slowing XP fully and then adding research overshoots.
+- The XP cap stays 1.5× the current threshold. In the final age Overcharge (A2.4) uses 1,650 XP per +25% charge.
+- Passive XP alone reaches the second age at 2:20, so nobody is frozen in an age.
+- The tutorial keeps its own thresholds (250 / 300 / 350 / 400).
+
+#### A18.3.3 Gold (changes to A2.3)
+
+| Rule | Today | A18 | Why |
+|---|---|---|---|
+| Starting gold | 175 | 175 | |
+| Passive income | 6 gold/s | 6 gold/s | Longer matches already give more gold; research absorbs it |
+| Treasury | 3 levels, +1.5 gold/s each | **Replaced by the Economy track** (A18.5.5) | Choices instead of a linear buy |
+| Kill bounty | 60% of cost | **50%** | Longer matches pay more kills; the leader must not buy research first on the winner's gold |
+| Evolve price | none | none | A gold price made spam win 83-92% (A16.2) |
+
+Expected gold per side: Short ~6,500, Standard ~9,800, Full ~14,000. Research takes 15-25% of it (A18.12).
+
+#### A18.3.4 Formats become age windows (replace the A17.8 format table)
+
+A format is a **window of consecutive ages**. `FormatId` becomes an open string key into `content.formats`; each `FormatDef` already lists its ages, and the sim already advances by position (`ctx.fmt.ages[s.ageIndex]`). A Rome-to-Medieval window is one more `FormatDef`. `ReplayDoc` already stores the format key, and the content hash makes a replay self-describing.
+
+| Format | Ages in the window | Evolves (expected) | Overdrive | Siege | Final Bell | Median target | 80% of matches | Start screen label |
+|---|---|---|---|---|---|---|---|---|
+| Tutorial | Stone, Medieval, Gunpowder, Modern, Future (scripted) | scripted | none | none | none | ~2:30-3:00 | | |
+| Short War | 3 | ~1:10, ~2:50 | 5:00 | 6:30 | 8:30 | **7:00** | 5:30-8:30 | "about 7 min" |
+| Standard War | 5 | ~1:10, 2:50, 4:35, 6:25 | 8:00 | 10:00 | 12:30 | **10:30** | 8:30-12:30 | "about 10 min" |
+| Full War | 7 | ~1:10, 2:50, 4:35, 6:25, 8:20, 10:20 | 12:00 | 14:30 | 17:30 | **15:00** | 12:00-17:00 | "about 15 min" |
+
+Shorter windows (War Path, Daily, custom) use these clocks:
+
+| Window length | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| Overdrive / Siege / Final Bell | 3:30 / 4:30 / 6:00 | 4:15 / 5:30 / 7:15 | Short War | 6:30 / 8:15 / 10:30 | Standard War |
+| Median target | ~4:30 | ~5:45 | 7:00 | ~8:45 | 10:30 |
+
+- **Which window.** Quick Battle and Skirmish: the player picks the format and a start era (default Stone). Ladder: Arenas 1-2 start at Stone; from Arena 3 the window is the **Era of the Week**, seeded weekly in `meta` from the date and shown on Mode select a week ahead; the sim only receives the resolved format key. Daily Challenge: its own seeded window, Standard length. War Path: fixed per level (A18.7.3).
+- **Starting in a later age.** The base starts at that age's P and HP; everything else is as at 0:00. Underdog, older-age turrets and Modernise compare global `AgeDef.index` (A17.15 rule 4).
+- **War Plan.** A plan holds one loadout per age; a match uses only the loadouts of its window. Auto-fill fills a missing loadout from starter Commons, so a plan is never unplayable.
+- **Old names.** "Full War" no longer means "all ages". Titles that say "reach Cosmic" become "reach the last age of your window".
+- **Performance (B3).** Full War up to 17:30 is 21,000 ticks; the headless budget becomes ≤ 850 ms per Full War on desktop Node. Balance tools measure Short and Standard on every run and Full only at gates.
+
+#### A18.3.5 The Supply Cache (a mid-age event, built only if needed)
+
+If the owner playtest after phase 3 (A18.13) shows standoffs in the 880 lu gap, the Supply Cache ships:
+
+- A crate drops at p = 1,000 at fixed match times from content (Short 2:30 and 4:30; Standard every 2:30 from 2:30; Full every 2:30 from 2:30), announced 5 s ahead on both minimaps.
+- The first side with ground units alone within 60 lu of it for 5 s gains **150 gold** (flat, no XP). Air, powers and burrowed units cannot claim it. Unclaimed after 30 s, it vanishes.
+- Gate: Final Bell unchanged or lower; turtle proxy still in its band; median decisions per minute in the middle of an age (spawns, research, stance, power) ≥ 6.
+
+---
+
+### A18.4 Stance and the Hold flag (replace the A2.7 stance rules and the A2.12 row)
+
+#### A18.4.1 Now: the toggle from match 1
+
+The existing Charge/Hold toggle ships visible from match 1 by flipping `training.stanceEnabled` in onboarding. No sim change, no contract change (A18.13 phase 0). **Built 2026-09-28**, with one hint in match 1.
+
+#### A18.4.2 Three stances
+
+| Stance | Behaviour | Button |
+|---|---|---|
+| **Charge** (default) | As today: units advance and fight | Crossed swords |
+| **Hold** | Ground units hold at the side's **Hold flag**: units beyond it with no target walk back at 70% speed; units behind it do not pass it; engaged units keep fighting | Flag |
+| **Fall back** | Ground units with no target walk back to p = 200 at full speed, then hold there; engaged units keep fighting until their target dies or leaves range | Shield |
+
+- **The Hold flag.** Default p = 320. While Hold is active the player drags the flag on the lane or the minimap to any p in **[320, 800]**, snapped to 20 lu. Every modifier that moves the flag (Sally Port) is clamped to the same range. Command `stance { mode, holdP? }`; the sim clamps `holdP`.
+- **Stance cooldown.** A stance change is accepted at most once per **3 s** (`battle.stanceCooldownMs` 3,000); a flag move is accepted at most once per 1 s. A rejected change is shown on the control with a short fill.
+- **Engagement.** A unit is "fresh" after 4 s with no target. A fresh unit's first hit is its engagement's first hit; after that the unit is fresh again only after 4 s with no target. Stance changes never reset it. All "first hit" bonuses (Rush, Ambush) read this flag, so toggling stance gains nothing.
+- **Controls.** A three-segment control above the tray on the right, 48 px tall on phones; **S** toggles Charge and Hold, **Shift+S** is Fall back. A small flag shows over the own front. Air gunships obey stance; the bomber does not.
+- **AI.** Hold at the flag when the push gate fails, placed where its turrets cover or where its army value is highest; Fall back when its army is under 0.5× the enemy's and the enemy is past mid-lane. Tiers 0-II never move the flag; tiers V and up use Fall back.
+- **Taught** at War Path Stone L2 (A18.7.5).
+
+---
+
+### A18.5 The War Council: in-battle upgrades with real choices
+
+A round button right of the gold counter (it replaces the Treasury tap target) opens the **War Council**. It has four tracks. Research runs in **one slot**, one item at a time. Owned picks are kept across evolves and apply to later units of the same class.
+
+#### A18.5.1 Rules
+
+- **Command.** `research { track, group?, rank, pick }`, replacing `treasury`. Valid when the rank is unlocked, the previous rank of that track (and class group) is owned, the slot is free and gold suffices. Gold is paid at the start. Validation lives in `sim/commands.ts` with reject codes like the others.
+- **Time.** Rank I 10 s, rank II 14 s, rank III 18 s, in ticks. Research continues through Ascension. Cancel refunds 75%.
+- **Underdog discount.** A side whose age position is lower than the enemy's, or whose base HP is 20 or more percentage points lower, pays **−20%** for research started while that holds (integer, rounded down).
+- **Ranks unlock with the window:**
+
+  | Window length | Rank I | Rank II | Rank III |
+  |---|---|---|---|
+  | 1 | from start | | |
+  | 2 | from start | 2nd age | |
+  | 3 | from start | 2nd age | 3rd age |
+  | 4-5 | from start | 2nd age | 4th age |
+  | 7 | from start | 3rd age | 5th age |
+
+- **Applies from spawn.** A pick applies to units spawned after it completes (A18.2 rule 2). Turret, base and economy picks apply at once, since those objects are updated only by research, never by per-tick stat code.
+- **Public.** The researching side's base shows a workshop glyph with a progress ring and the item's icon; the opponent's HUD shows it too, and finished picks join the Scouted list. Completion plays a stinger and a shimmer on affected units.
+- **Math.** All integer bp. For a unit stat: final = card value at its level (A6.6) × (10,000 + Σ bp of research, doctrine, relic, modifier) / 10,000, truncated, then clamped to the A18.2 caps.
+- **Never touches** XP, the clock, train time or Overdrive multipliers.
+- **Hashing.** `SideState.research` is hashed as an owned-picks bitmask integer plus the current item and its end tick.
+
+#### A18.5.2 Track 1: Troops (per class)
+
+Each class has its own line, bought separately. Epics and Legendaries count in their base role's class. Rank I is a stat choice of different kinds; rank II an ability; rank III an elite pick (v1.1).
+
+| Class | Rank I (150 g): 1 of 2 | Rank II (300 g), ability: 1 of 2 | Rank III (500 g, v1.1): 1 of 2 |
+|---|---|---|---|
+| Infantry | **Weapons**: +10% damage · **Mail**: each hit taken −N flat (N = 25% of that age's Infantry Common L1 damage; a hit never drops below 1) | **Shield Wall**: −20% damage from attackers with range ≥ 100, −8% speed · **Rush**: +15% speed, first hit of each engagement +30% | **Veterans**: +8% damage per kill, up to 3 stacks · **Second Rank**: the second rank strikes (reach 1) |
+| Ranged | **Weapons**: +10% damage · **Long Draw**: +30 lu range, −8% attack speed | **Fire Arrows**: hits burn 3 s at 15% of hit damage per second · **Pierce**: shots also hit the next enemy within 40 lu for 50% | **Marksmen**: +25% damage vs Heavy · **Quick Nock**: +18% attack speed |
+| Heavy | **Plating**: −15% damage taken from Infantry · **Weapons**: +10% damage | **Trample**: first hit knocks back 30 lu · **Bulwark**: allies within 60 lu behind it take −10% damage | **Juggernaut**: immune to knockback and pulls · **Breaker**: +25% damage to bases and structures |
+| Anti-armor | **Hunters**: +12% damage vs armored · **Lightfoot**: +12% speed | **Ambush**: first hit of an engagement +40% while Holding · **Skirmish**: −20% damage taken from Infantry | **Tank Killers**: +20% damage vs mech · **Harriers**: +15% attack speed |
+| Support | **Field Care**: heals and shields +20% · **Mail** (as Infantry) | **War Drums**: allies within 160 lu +8% attack speed · **Rally**: allies within 160 lu −10% damage taken | **Miracle**: once per age per side, the first own unit to die within 160 lu of a Support revives at 30% HP without Veterans stacks · **Banners**: aura radius +50% |
+| Air (with the class, A18.9) | **Weapons**: +10% · **Evasion**: −20% damage from turrets | **Strafing Run**: +20% vs moving ground units · **Loiter**: +25% time over the target | **Aces**: +15% attack speed · **Heavy Payload**: bomb splash +30% |
+| Underground (with the class, A18.9) | **Quick Dig**: +20% burrowed speed · **Shoring**: +15% HP | **Surprise**: first hit after surfacing +40% · **Deep Tunnel**: surfaces 120 lu further | later |
+
+- **Budget.** One class to rank II costs 450 gold, to rank III 950. A Standard War research budget of ~1,500-2,500 gold buys 5-8 items, so a player specialises in 2-3 classes: that is the build.
+- **Research compatibility.** The War Plan builder shows, per age loadout, which classes it holds, so a player sees that a Heavy line is wasted in an age with no Heavy. The Council marks a class with no unit in the current loadout "Not in this tray".
+- **Kinds.** Rank I and II picks use existing kinds: stat bp, range, attack speed, speed, `firstHitBonus`, auras, `resist`, knockback, flat damage reduction (a new `resist` variant, part of the phase 2 sim work). Fire Arrows ships in v1 only if a damage-over-time status already exists; otherwise it moves to v1.1 with Pierce, Veterans, Miracle, Second Rank and Juggernaut.
+
+#### A18.5.3 Track 2: Defences
+
+| Rank | Pick A | Pick B |
+|---|---|---|
+| I (150 g) | **Watchtowers**: turret range +40 lu | **Quick Loaders**: turret attack speed +15% |
+| II (300 g) | **Engineers**: Modernise costs −50% and takes 0.5 s; fort build time −40% | **Arsenal**: turret damage +12% |
+| III (450 g, v1.1) | **Keep Walls**: base max HP +10% | **Sally Port**: units spawn 60 lu further forward and the Hold flag range becomes [380, 800] |
+
+- Range comes from rank I only, so it cannot be stacked twice inside the Council. Relics and modifiers may add more, up to the 560 lu hard cap; the gap between the two covers never falls below 880 lu.
+- Gate: the turtle and `tech_turtle` proxies stay in the turtle band (A2.14). If Watchtowers fails the pick-flip gate against Quick Loaders, Watchtowers becomes +30 lu.
+- When forts ship (A18.9), wall picks join this track.
+
+#### A18.5.4 Track 3: Economy (replaces Treasury)
+
+| Rank | Pick A | Pick B |
+|---|---|---|
+| I (150 g) | **Granary**: +1.5 gold/s | **Forage**: +40% kill bounty for kills made in your own half (p ≤ 1,000) |
+| II (300 g) | **Market**: +2 gold/s | **Bounty Hunters**: kill bounty 50% → 65% everywhere |
+| III (450 g, v1.1) | **Guildhall**: +2.5 gold/s, but your unit queue holds one fewer unit | **Levy**: Common units cost −12%, passive income −1 gold/s |
+
+- Every rank-I price is 150 g in every track. Granary pays back in 100 s; Forage pays a defender under pressure; Bounty Hunters pays in busy games and Market in quiet ones. Guildhall trades burst spawning for income; Levy trades income for cheap Commons.
+- Economy income is never doubled by Overdrive. There is **no second research slot** anywhere.
+- Rejected: interest on banked gold, gold from XP, anything that multiplies with Overdrive.
+- **Migration.** Treasury disappears as a control. Saved plans, AI profiles (`Treasury max` column in A7.3) and HUD switch to the Council.
+
+#### A18.5.5 Track 4: Command
+
+| Rank | Pick A | Pick B |
+|---|---|---|
+| I (150 g) | **Signal Fires**: Age Power charges 15% faster | **War Horns**: while Charging, ground units +8% speed; while Holding with the flag at p ≤ 480, units at the flag +10% damage |
+| II (300 g, v1.1) | **Survey Corps**: power zones +20% wider | **Master Gunners**: power damage and heals +12% |
+| III (450 g, v1.1) | **Reserve Charge**: power charge kept across an evolve 50% → 70% | **Last Stand Drill**: Last Stand arms at 35% base HP and hits 20% harder |
+
+Power kills still pay 30% gold and no XP. Reserve Charge and Last Stand Drill must pass the `fallback_turtle` and power-banking proxies.
+
+#### A18.5.6 How it fits with card levels, doctrines and relics
+
+| System | Relation |
+|---|---|
+| Card levels (A6.6) | Unchanged; research multiplies with them. Ranked and Daily use Standard levels (A16.7) |
+| Evolve doctrines (A16.10) | Stay the free pick at evolve; may not duplicate a research pick; same caps |
+| War Relics (A18.7.8) | Single player only; same caps |
+| Modifiers (A16.8) | War Path and Daily may lock a track ("No Council") or discount one ("Cheap Drills"), always disclosed |
+
+#### A18.5.7 UI
+
+- **Button.** Round, right of the gold counter; a ring while research runs, a dot when something is affordable. **G** opens and closes it. T is freed.
+- **Sheet.** A bottom sheet over the tray, never the lane; the game keeps running. Four track cards, each showing its next item (Troops shows the class icons with rank pips). Tap a card to flip it to its two picks: icon, name, one-line effect, cost, time. At most 2 decisions on screen (A15.13).
+- **Advisor.** On Easy and in War Path regions 1-2, one pick is outlined "Suggested" with a reason ("They have many Heavies"). Never on Hard and up.
+- **Enemy.** The enemy's research icon and ring show on their base and in the top-bar enemy panel.
+- **Motion (A12).** The sheet slides up in 180 ms ease-out; the chosen pick stamps into the slot; completion sends a shimmer along affected units, a class badge pops, the workshop glyph bursts. Reduce motion uses fades.
+- **Look.** v1: one badge per pick plus a class-coloured shimmer. Later, per-age looks through the manifest (`research.<id>.<ageId>`, falling back to `research.<id>`). Art never changes numbers.
+
+#### A18.5.8 AI use
+
+- **Utility (A7.2 addition).** Research score = personality weight by track × (value over the rest of the age − value of the units the gold would buy now) + counter value against scouted enemy classes + a timing bonus for a push planned at completion.
+- **Tiers (A7.3 columns).** Research is public to every tier; tiers differ in how they use it.
+
+  | Tier | First research | How it picks | Uses enemy research |
+  |---|---|---|---|
+  | 0-I | after 1:30, then every ~90 s | seeded random among affordable | no |
+  | II-IV | after 1:00 | the pick's `aiHint` | no |
+  | V-VI | after 0:45 | counter scoring | pushes when its own Troops rank completes |
+  | VII-X | from 0:30 | counter scoring | times pushes and evolves to its completions and away from the enemy's |
+
+- **Generals' research styles:** Captain Kettle: Infantry Rush, Forage never; Mama Moss: Defences first; Baroness Ledger: Economy first, Guildhall; Sgt. Boomsworth: Command and Ranged; Madame Tempest: Signal Fires, Reserve Charge; Rook: counters your scouted classes.
+
+---
+
+### A18.6 Difficulty in single player
+
+**Principle.** Difficulty changes **how** the AI plays, never its stats (A18.2 rule 5). Easy to Normal is the smallest step.
+
+#### A18.6.1 Quick Battle and Skirmish
+
+They use the picker as it ships: Easy II, Normal IV, Hard VI, Expert VIII, Legendary X, plus the behaviour flags below.
+
+#### A18.6.2 War Path
+
+Each region has a Normal base tier; the level role adds `tierOffset` (A18.7.2); the difficulty adds its own offset; the result is clamped to [0, X]. Because tiers clamp at the top, every difficulty also carries **behaviour flags**, so each step changes play in every region.
+
+| Region (8-age map) | Stone | Bronze | Medieval | Gunpowder | Industrial | Modern | Future | Cosmic |
+|---|---|---|---|---|---|---|---|---|
+| Normal base tier | 0 | I | II | III | IV | V | VI | VII |
+
+With 13 regions the Normal bases run 0, 0, I, I, II, III, III, IV, V, V, VI, VII, VII in map order.
+
+| Difficulty | Tier offset | Behaviour flags |
+|---|---|---|
+| Easy | −2 (min 0) | Never pushes before its first evolve; research late and random; never moves the flag; pauses 5 s after each of its pushes |
+| Normal | 0 | Punishes a thin army: pushes when its army value is ≥ 1.5× yours; research by `aiHint` |
+| Hard | +1 | As Normal, plus counter scoring for units and research, Hold flag use, saves gold for counters (A16.3) |
+| Expert | +2 | As Hard, plus the wave game (A16.3) and push timing to research completions |
+| Legendary | always X | As Expert, plus evolve timing against the player's research ring and a boss-phase plan on every level |
+
+- In Cosmic this gives Easy V, Normal VII, Hard VIII, Expert IX, Legendary X. At Stone Easy and Normal are both tier 0 and differ by flags only.
+- The node and the VS screen show the resulting tier ("AI · Rook · Tier IX").
+- **No hidden bonus.** Opponents use Standard L8 levels; The Warden keeps its disclosed L9 Legendaries. If the owner later wants Legendary harder still, the only allowed lever is a disclosed head start (owner decision D7; recommended: not needed).
+- **Rookie AI** (A7.1) still applies to the first 20 matches of a save and is still disclosed. Daily keeps Recruit, Veteran and Warlord mapped to Easy, Normal and Hard.
+
+---
+
+### A18.7 The War Path (saga-map campaign)
+
+The War Path is the centre of Home (owner direction). A scrolling map in the Candy Crush style: a winding road through one landscape per age, each node a battle, the next node always under a big Play button with the difficulty picker (default Normal, remembered per save). Quick Battle, Daily and Ladder sit around it.
+
+#### A18.7.1 Size
+
+| | Now (8 ages) | With 10 | 12 | 13 |
+|---|---|---|---|---|
+| Regions | 8 | 10 | 12 | 13 |
+| Main levels (10 per region) | 80 | 100 | 120 | 130 |
+| Side nodes (2 per region, optional) | 16 | 20 | 24 | 26 |
+| First pass (median level ~5:30) | ~7.5 h | ~9 h | ~11 h | ~12 h |
+
+A new age's region is inserted at its place in history. Players past that point see it marked "New region" and may play it any time; nothing cleared is locked again. Level ids are stable forever (`wp.<ageId>.l05`, side nodes `wp.<ageId>.s1`).
+
+#### A18.7.2 The sawtooth inside a region
+
+| Level | Role | Tier offset | Window | Target win rate (tier-matched player bot, Normal) |
+|---|---|---|---|---|
+| 1 | Intro: the region's new thing | −1 | region age only | 85-95% |
+| 2 | Practice | 0 | 2 ages | 65-80% |
+| 3 | Mix (card unlock node) | 0 | 2 ages | 65-80% |
+| 4 | Feature: a lane feature or special objective | 0 | 2 ages | 60-75% |
+| 5 | **Lieutenant** (mini-boss, marked Hard) | +1 | 3 ages | 40-55% |
+| 6 | Relief: a fun modifier | −1 | region age only | 80-90% |
+| 7 | Ramp | 0 | 2 ages | 60-75% |
+| 8 | Counter puzzle: the enemy plan punishes one class | +1 | 2 ages | 50-65% |
+| 9 | **Spike** (marked Hard) | +1 | 2 ages | 35-50% |
+| 10 | **Boss General** | +2 | 4 ages (fewer in regions 1-3) | 25-40% |
+
+A window "of 2 ages" is the region's previous age and its own; windows never reach past the region's age, and in region 1 every window is Stone only. So the region's new age is on screen for most of every level. Bosses in regions 2 and 3 use 2 and 3 ages. No War Path level uses a 5-age or longer window.
+
+#### A18.7.3 Objectives (data, so levels differ in kind)
+
+| Objective | Rule | Where it lives |
+|---|---|---|
+| Destroy the base | Default | Sim (today) |
+| Hold out | Win if your base stands at a set time (for example 4:00) | Sim: `MatchConfig.victory { kind: 'survive', atMs }` |
+| Take the tower | Win by destroying one marked enemy turret or fort | Sim: `victory { kind: 'target', slot }` |
+| Fixed loadout | You play a given War Plan: a puzzle | Meta (builds the `SideConfig`) |
+| Mid-battle start | The level starts from a preset state: a seed plus a stored command prefix, simulated before the first frame | Meta, replay tools |
+| Fast win | Win before a set time | Star goal (meta) |
+
+Roles 4, 8 and at least two other levels per region use a non-default objective or start. "Hold mid-lane for 60 s" waits for v1.1.
+
+#### A18.7.4 Stars, crowns and goals
+
+- **★** win. **★★** win and meet the disclosed goal on the node (base above 50%, win before the Final Bell, at most 3 unit types, all turrets alive, no Legendary, at most 3 research items, and so on). **★★★** win and meet the goal on Hard or harder.
+- **Crowns** record the highest difficulty beaten on the level (bronze Easy, silver Normal, gold Hard, jade Expert, star Legendary). Stars measure skill goals, crowns measure difficulty.
+- Stars never block progress; the next region opens when its boss is beaten once on any difficulty.
+- **Retry is free and instant.** After 3 losses in a row the result offers "Try Easy" and one A15.12 tip. A level never quietly gets easier.
+
+#### A18.7.5 Teaching one thing at a time (8-age map)
+
+| Where | New thing |
+|---|---|
+| Stone L1 | Train, the lane, destroy the base (today's training match vs Old Grogg) |
+| Stone L2 | **Stance**: the enemy rushes; winning needs Hold, then Charge |
+| Stone L3 | Turret on a mount |
+| Stone L4 | Age Power, dragged onto the lane |
+| Stone L6 | **War Council: Economy** (the button appears with Granary and Forage) |
+| Stone L7 | Troops rank I, advisor on |
+| Stone L8 | Defences rank I (enemy Ranged outranges plain turrets) |
+| Stone L10 | First boss: Pip Quickstep |
+| Bronze L1 | **Evolving** (first 2-age window) |
+| Bronze L3 | Troops rank II |
+| Bronze L4 | **Forts** (once the card type ships) |
+| Bronze L6 | Command track |
+| Medieval L1 | Doctrines at evolve (when shipped) |
+| Medieval L4 | The Hold flag and Fall back |
+| Gunpowder L1 | **Underground** (when shipped) |
+| Industrial L1 | **Air** as a full class (when shipped) |
+| Modern L1 | Council rank III (v1.1) |
+| Each region L4 | One lane feature (A15.16, A16.9) once they ship |
+
+When Nile and Rome arrive, evolving moves to Nile L1 and forts to Nile L4 (A18.8).
+
+#### A18.7.6 Boss Generals
+
+Every boss is labelled "AI General", with its tier, its War Plan and its research style.
+
+| Region | Boss | Style | New? |
+|---|---|---|---|
+| Stone | Pip Quickstep | Balanced beginner | exists |
+| Nile | Queen Sethra of the Dunes | Monuments and walls, Holds, bursts out with chariots | new (with Nile) |
+| Bronze (Hellas) | Captain Kettle | Rusher | exists |
+| Rome | Legate Varro Ironhand | Two classes to rank III, Shield Wall, pushes on completions | new (with Rome) |
+| Norse | Jarl Ingrid Stormaxe | Bounty Hunters, always Charges, pushes after evolves | new (with Norse) |
+| Medieval | Mama Moss | Turtle | exists |
+| Shogun | Lady Kaede | Ambush on Anti-armor, counter-times your evolve | new (D4: yes) |
+| Renaissance | Baroness Ledger | Economy first | exists |
+| Gunpowder | Sgt. Boomsworth | Artillery, Command | exists |
+| Industrial | Ada & Ivo | Balanced counters | exists |
+| Modern | Rook | Counter-picker | exists |
+| Future | Madame Tempest | Power timing | exists |
+| Cosmic | The Warden | Final boss, L9 Legendaries (disclosed) | exists |
+
+On the 8-age map, Baroness Ledger is the Bronze Lieutenant and the Medieval region boss is Mama Moss; Captain Kettle holds Bronze.
+
+**Boss rules.**
+
+- **Boss base:** +50% base HP and one extra fixed turret of the boss's age, disclosed on the node and the VS screen. These are per-side modifiers (`SideConfig.sideMods`, A18.11), the one sim addition bosses need.
+- **Phase at 50% base HP** (a bot-profile rule reading the `Observation`, no sim trigger): a banner "The General is enraged" and a 2 s warning. Then the boss casts its Age Power if charged and the zone holds at least its power threshold, trains its signature Legendary if affordable, and switches to Charge only if its army value is ≥ 1.0× the player's; otherwise it Holds, banks and counters, and re-checks every 5 s. Stopping at 51% to build a kill zone gains nothing.
+- A new General needs a portrait, a VS line, a plan per age and a profile entry: ~2 agent hours plus art.
+
+#### A18.7.7 Modifiers
+
+Disclosed on the node and the VS screen, from the A16.8 kinds: Gold Rush (passive gold ×1.5 both sides), Double Powers, Iron Rain (enemy starts with a Rare turret), No Council, Cheap Drills (Troops −30%), Fog Window, Night (turret range −20%), Mud (−15% speed), Short Fuse (Overdrive 1 min earlier). Each appears first in a relief level.
+
+#### A18.7.8 Rewards (all earned, all shown before the fight)
+
+| Reward | Rule | When |
+|---|---|---|
+| First clear | Amber (40; 60 on Hard-marked levels); boss: a fixed capsule shown on the node | v1 |
+| **Card unlocks** | Level 3 of each region grants a named Rare of the region's age, the boss grants a named Epic, on first clear; a copy of a card already owned counts as a normal duplicate (A6) | v1 |
+| Star chests | Every 10 stars: Amber, Dust and one cosmetic from the collections | v1.1 |
+| **War Relics** | 3 per region, earned by ★★ on levels 3, 6 and 9. Each is a trade-off ("Nile Charm: +5% Economy income, −5% turret damage"), within the A18.2 caps. **Single player only**: War Path, Skirmish, Quick Battle. `meta` never puts relic `sideMods` into Ladder, Daily, ranked or PvP configs, and a test proves it | v1.1 |
+| Veteran and Legend Paths | After the Cosmic boss: the same map at +2 and +3 tier offset with one modifier or restriction per level; own stars | v1.1 |
+| Boss rematch | After a region is done, the boss returns with a twist modifier | v1.1 |
+| Titles | "Pathfinder", "Veteran", "Legend", "Crowned" | v1.1 |
+
+No lives, energy, timers, boosters or paid anything (A15 red lines).
+
+**Capsule age weighting.** Age Capsules and card drops that pick an age weight the current War Path region's age ×2 and the Era of the Week ×2 (disclosed on the odds screen), so cards arrive for the ages the player actually plays (v1.1, meta data).
+
+#### A18.7.9 Resume a single-player match
+
+Single-player matches save their seed, config and command log every 10 s and on page hide. After a reload, "Resume battle" re-simulates the log to the saved tick (deterministic, B3) and continues. Never in PvP. Size S-M, v1.1. Full War stays off the War Path either way.
+
+#### A18.7.10 Conquest, onboarding, content and save
+
+- **Conquest folds into the War Path** (owner decision D5). The boss and Lieutenant nodes are the Conquest Generals. On migration each Conquest star becomes the matching star on that General's boss node; Conquest milestones (9, 18, 27 stars) become star-chest credit; the Conquest tab leaves Mode select. Nothing earned is lost (A15.1).
+- **Onboarding (A8).** The first 40 minutes are Stone L1-L6; A8's beats move onto the nodes; the stance is there from L2.
+- **Content** (`src/content/raw/warPath.ts`):
+
+```ts
+interface WarPathLevel {
+  id: string;                 // 'wp.bronze.l05', stable forever
+  region: AgeId;
+  index: number;              // 1..10, or side nodes 's1', 's2'
+  role: 'intro' | 'practice' | 'mix' | 'feature' | 'lieutenant' | 'relief' | 'ramp' | 'puzzle' | 'spike' | 'boss' | 'side';
+  format: string;             // a content FormatId: the window and its clocks
+  general: GeneralId;         // labelled AI
+  tierOffset: number;         // added to the region base and the difficulty offset, clamped [0, 10]
+  victory?: VictoryRule;      // default: destroy the base
+  start?: { seed: number; commands: string };  // mid-battle start
+  fixedPlan?: WarPlanSpec;    // fixed loadout puzzle
+  modifiers: ModifierId[];    // disclosed
+  laneFeatures: LaneFeatureId[];
+  goal2: StarGoal;            // the ★★ goal
+  teaches?: MechanicId;
+  reward: RewardSpec;         // first clear, card unlocks
+  boss?: { sideMods: SideMods; phaseAtBp: number };
+}
+```
+
+- **Save** (`SaveDoc` v3): `warPath: { path: 'normal' | 'veteran' | 'legend'; stars: Record<levelId, 0|1|2|3>; crowns: Record<levelId, 0..5>; relics: RelicId[]; difficulty: DifficultyId }`.
+- **Headless check** (`tools/warPath.ts`): plays every level with the human-limited player bot (A15.17) at each difficulty and fails the build when a level misses its role band in A18.7.2 by more than 10 points.
+
+---
+
+### A18.8 More ages
+
+#### A18.8.1 The target list: 13 ages
+
+The existing 8 keep their ids, cards and P values. Five are inserted at geometric steps between their neighbours, so no existing card changes.
+
+| # | Age (id) | Theme | P | Status | Signature mechanic |
+|---|---|---|---|---|---|
+| 0 | Stone (`stone`) | Tribes, beasts | 1.00 | exists | Basics |
+| 1 | **Nile** (`nile`) | Ancient Egypt: chariots of the sun, sphinx, obelisks | 1.08 | new, wave 1 | Monuments (first fort card); sandstorm power |
+| 2 | Bronze (`bronze`), shown as **"Bronze Age: Hellas"** | Ancient Greece: hoplites, gorgons, bronze giants | 1.16 | exists | Piercing throws, auras |
+| 3 | **Rome** (`rome`) | Legions, testudo, ballistae | 1.22 | new, wave 1 | Formations: the front rank takes less damage; siege towers |
+| 4 | **Norse** (`norse`) | Raiders, longships, berserkers | 1.28 | new, wave 2 | Rage: damage up as HP falls |
+| 5 | Medieval (`medieval`) | Castles, knights | 1.35 | exists | Reach, shields, siege |
+| 6 | **Shogun** (`shogun`) | Feudal Japan: samurai, ashigaru, fire arrows | 1.49 | new, wave 3 (D4: yes) | Duelists: first-strike counters |
+| 7 | **Renaissance** (`renaissance`) | Pike and shot, inventors, war wagons, gliders | 1.65 | new, wave 2 | Inventions: a glider (light Air), a war wagon (mobile cover) |
+| 8 | Gunpowder (`gunpowder`), shown as **"Age of Muskets"** | Napoleonic lines, sail-age cannon | 1.82 | exists | Splash artillery, first Air |
+| 9 | Industrial (`industrial`), shown as **"Great War"** | Steam, rail, landships, trenches | 2.12 | exists | Mech Heavies, marks |
+| 10 | Modern (`modern`) | Second World War to tanks and jets | 2.46 | exists | Air as a regular option |
+| 11 | Future (`future`) | Mechs, energy shields | 3.32 | exists | EMP, time control |
+| 12 | Cosmic (`cosmic`) | Star legions | 4.48 | exists | Blink, motherships |
+
+- Nile = √1.16; Rome and Norse split Bronze to Medieval in three; Shogun and Renaissance split Medieval to Gunpowder in three. Without Shogun, Renaissance becomes √(1.35 × 1.82) ≈ 1.57.
+- Small early steps are a feature (being one age ahead early matters less), paid for by a visibly new mechanic in every new age.
+- Rejected: a separate Greek age (Bronze is Hellas), a separate Napoleonic age (Gunpowder is), a separate World War age (Industrial and Modern are), a Contemporary age (too close to Modern and Future). Shogun as a side branch instead of Medieval is rejected: it breaks queue conversion and the one-line P scale.
+
+#### A18.8.2 Now: presentation themes (no new art)
+
+Bronze is presented as "Bronze Age: Hellas", Gunpowder as "Age of Muskets", Industrial with Great War flavour: age card titles, flavour lines, VS lines, War Path region names and music titles. Strings and content data only, size XS (A18.13 phase 0). This answers the owner's Ancient Greece, Napoleonic and World War wishes at once.
+
+#### A18.8.3 When new ages are built, and what they cost
+
+The owner has chosen an **ultra-realistic** art direction; every existing age will be restyled. Building Nile and Rome before that pipeline is proven would pay for their art twice. So:
+
+1. New ages are **frozen** until one existing age (Stone) ships in the realistic style, passes the screenshot review, and has a measured hours figure.
+2. Each new age is then re-costed from that figure. Planning value until then: **75-150 agent hours per age** (1.5-3× the stylized 50 h), of which unit art is the largest part.
+3. Waves: 1 Nile and Rome; 2 Norse and Renaissance; 3 Shogun (D4: yes).
+
+Per age, as A17 set the standard: 7 units (3 Common, 2 Rare, 1 Epic, 1 Legendary), 4 turrets, 2 Age Powers, 1 fort card when forts exist, a base, a backdrop, a sound set and music arrangement, one boss General, and its War Path region (10 levels as data). Each signature mechanic that needs a new ability kind (Rome formation, Norse rage) is one `AbilityDef` kind with its own unit test, requested from WP0 and WP2 before content is written.
+
+**Age index shift.** Inserting an age shifts `AgeDef.index`, which the sim reads for older-age turrets, Modernise and underdog. Saves persist only ids, so no migration is needed; a sim test proves these rules on a window with an inserted age.
+
+---
+
+### A18.9 Classes, forts and six troops
+
+| Owner wish | Rule | When |
+|---|---|---|
+| **Six troops per battle** | A loadout has 6 unit slots; the tray shows 6 cards. The `train` and `cancelTrain` slot type widens from `0..4` to `0..5` | Phase 2 contract bump |
+| **Stationary class (forts)** | The A16.14 card type rules (pads at p 240, 360, 460; at most 2 alive; 5 s scaffold; 6 pop; 25 s recharge; decay; ×2 from Heavy, siege and Legendary; bounty 60%). Each age loadout gains 1 Fort slot beside its 6 units. Placed by dragging onto a pad (the power drag). Wall picks join the Defences track. The wall-turtle gate (≤ 45%, ≤ 15% at the Bell) applies | Phase 6, right after the War Path (owner: early) |
+| **Air as a full class** | Air units get their own class icon, counter row and Troops line (A18.5.2) | Phase 8 |
+| **Underground class** | A16.15 rules (tunnelers, detectors, 1 s surfacing telegraph); own Troops line | Phase 8, after forts |
+| **Class icons and counters, clear deck builder** | Owner directions of 2026-09-28; the builder also shows research compatibility (A18.5.2) | In flight / Phase 3 |
+| **Cosmetic collections** (emotes, quotes, flags, base skins, decorations, national flags) | A18.9.4; the War Path pays into them through star chests | After the War Path and the new classes |
+| **Lane features, battlefields** | One per region from L4 (A15.16, A16.9) | v1.1 |
+| **Clans, friends** | Online M6 and M8 (A18.10) | Later |
+| **Home village** | v1.1 as decided (A16.22); shares Home with the War Path map | v1.1 |
+| **Beautiful art** | Realistic restyle (A18.8.3, A18.9.5); research picks add badges and later per-age looks | Art track |
+
+#### A18.9.1 Card class and counters on every card (owner direction, in flight)
+
+Every unit card (battle tray, War Plan, Collection, card detail, capsule reveal) shows its class with a role icon and a label: Infantry, Ranged, Heavy, Anti-armor, Siege, Support, Air, Legendary, and Underground and Fort once those classes ship. The class comes from the existing roles and tags (A2.6). The card detail and a long-press or hover tooltip show "Strong vs" and "Weak vs" from the compiled counter lists (B4); the War Plan builder shows a small counter triangle legend. Colours are colourblind-safe and never carry meaning alone.
+
+#### A18.9.2 Age Power targeting (owner direction, in flight)
+
+Dragging the power from its button onto the lane is the primary, taught interaction. A tap no longer fires blind: it starts an aiming mode, and the next tap on the lane or the minimap casts; Space still auto-aims for keyboard players. The ready button invites dragging (a lift and a glow, never a flash); a large ghost of the power's area follows the finger with a valid or invalid tint and highlights the units it would hit; the camera edge-scrolls during the drag (A17.6); dropping on the minimap works; releasing over the HUD cancels. This replaces "tap = auto-aim" in A2.9 and A2.12.
+
+#### A18.9.3 The deck builder (owner direction)
+
+The War Plan becomes a clear deck builder: age tabs with the 6 unit slots, 2 turret slots, 1 power and (later) 1 Fort slot of each age visible at once; drag or tap a card into a slot; equipped cards are marked in the collection grid below; filters by class and rarity; the counter legend, the deck advisor (A3) and the research compatibility marks (A18.5.2) are visible without opening another screen. The layout and motion are specified in the UI plan (`docs/ui-plan.md`, A18.9.5).
+
+#### A18.9.4 Cosmetic collections (owner direction)
+
+Besides troop skins (A5.8), players collect:
+
+| Collection | What it is | Shown |
+|---|---|---|
+| Emotes | Short animated reactions (A9.2 emote wheel) | In battle, both sides |
+| Quotes | Curated one-liners, friendly or neutral only (A16.28: no taunts) | VS screen and the emote wheel |
+| Base flags | A banner design on the base's flagpoles | In battle and on the VS screen |
+| National flags | Country flags only (Denmark, England, USA and many more), drawn in our own style; no political or hate symbols; the pick is never inferred from location | On the base and the VS screen |
+| Base skins | A full restyle of a base for one age, same size and mounts | In battle |
+| Base decorations | Small attached props (banners, trophies, braziers) in fixed anchor spots that never cover mounts or HP | In battle |
+
+- **Rules.** All earned: capsules, the Wardrobe Crate, Trophy Road, War Path star chests, feats and events; nothing is sold (A6.2). Each item has a rarity; Collection shows completion counts per collection. Cosmetics never change numbers, hitboxes or readability (the A11 team-colour and silhouette rules apply).
+- **Customize screen** (built as route 19 with tabs Troops, Bases, Banner & title, Emotes) gains tabs for Quotes and Flags and the base decoration anchors; the chosen base cosmetics and flag show in battle for both sides and on the VS screen.
+- **Content and save.** Tables in `src/content/raw/cosmetics.ts` (id, collection, rarity, source, art id); drop tables join the capsule and crate tables with disclosed odds; `SaveDoc.cosmetics` gains owned and equipped ids per collection (additive migration). Art ids go through the manifest (`cosmetic.<collection>.<id>`).
+
+#### A18.9.5 Art direction and UI (owner directions)
+
+- **Ultra-realistic art (decided 2026-09-28).** The target is an ultra-realistic look: realistic proportions and anatomy, physically based materials, realistic lighting and weighty, natural motion. It replaces the stylized chunky cartoon direction of A11 for every unit, turret, base and backdrop, Stone first (A18.8.3). Readability at in-game size still rules: a clear silhouette, team colour on large parts, an outline or rim light, and the A11 colour rule. Free CC0 materials and models (Poly Haven, ambientCG, Quaternius) may be used once the owner allows those hosts. Art stays behind the ArtProvider and the manifest, so the restyle cannot change balance.
+- **UI rebuild.** Home is centred on the War Path map, with the next level under a big Play button and the difficulty picker beside it; Quick Battle, Daily and the ladder sit around it; the bottom row keeps War Plan, Collection, Capsules, Customize and Trophy Road (Conquest leaves it with A18.7.10). A shared design system and a motion catalogue apply across every screen and the HUD (`docs/ui-plan.md`). Every screen is reviewed with phone and desktop screenshots before release.
+
+---
+
+### A18.10 Online multiplayer: the final goal
+
+Single player leads there directly: the sim is integer, seeded and hashed; replays are command logs; every War Path match is a determinism test; Generals become labelled AI fill; relics and card levels stay out of PvP (Standard L8).
+
+**Netcode (A16.21 and the `server/` spike; D1's Colyseus line is superseded).** One Cloudflare Durable Object per match relays commands: stamped at server tick + 4 (200 ms, adaptive 4-8), frames every 2 ticks, state hashes compared every 20 ticks. On a mismatch the room re-simulates the log and the side that disagrees loses. Reconnect replays the stored log, 60 s grace. PvP: no pause, no speed, Standard L8; research and stance are public anyway.
+
+**Free-tier capacity** (Durable Objects 13,000 GB-s and 100,000 requests a day; going over gives errors, never a bill). Longer matches reduce it:
+
+| Online format | Median | GB-s per match | Matches a day | Use |
+|---|---|---|---|---|
+| Short War | 7:00 | ~53 | ~245 | Ranked |
+| Standard War | 10:30 | ~79 | ~165 | Friend Duel, casual |
+| Full War | 15:00 | ~113 | ~115 | Friend Duel only |
+
+A client-clocked relay that lets the room hibernate roughly doubles these; M0 measures whether it is worth the code. A daily guard closes ranked near 90% of the budget.
+
+| # | Milestone | Size | Exit test | Owner action | When |
+|---|---|---|---|---|---|
+| M0 | Spike measurements | S | 100 bot matches, 0 desyncs; costs in `docs/online-spike.md` | None | In progress |
+| M1 | Same results in Chromium, Firefox and WebKit: golden replays and fuzz in CI | M | CI green on 3 engines | None | **Now, beside phase 3** |
+| M2 | Friend Duel by code, reconnect, desync disputes, capacity guard | L | Owner plays PC vs phone; 0 desyncs in 200 CI matches | Cloudflare account and two GitHub secrets (below) | After the War Path |
+| M3 | Accounts and cloud save (device keys, transfer code) | M | Save moves between devices | None | After M2 |
+| M4 | Casual matchmaking; labelled AI after 20-30 s; block and report; emotes only | M | Paired in 30 s or a labelled AI | Pick the public server name | |
+| M5 | Ranked: Glicko-2 plus trophies, server-granted rewards | L | Rating moves only human vs human | Decide the review for minors | |
+| M6 | Friends and leaderboards | M | An edited replay is rejected | None | |
+| M7 | PWA install; store apps only if the owner pays | S | Browser and installed player finish a match | PWA or stores | |
+| M8 | Clans, 2v2 vs AI, then 2v2 PvP | XL | Per A16.21 | None | |
+
+**Owner steps for M2 (exact, when asked).**
+
+1. Go to dash.cloudflare.com, sign up with your email and confirm it. Stay on the Free plan. Do not add a payment method.
+2. In Cloudflare: My Profile, API Tokens, Create Token, template "Edit Cloudflare Workers", choose your account, Create. Copy the token. Copy the Account ID from the Workers & Pages overview.
+3. On github.com/SimNyborg/ageborn: Settings, Secrets and variables, Actions, New repository secret. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+4. When told Friend Duel is live: open the game on PC and phone, press Online, Friend Duel, share the code, play, and report lag or anything out of sync.
+
+---
+
+### A18.11 Contract, save and content changes
+
+All sim-visible contract changes land in **one** WP0 bump and one `SIM_VERSION` 3.0.0 with one golden re-record (phase 2). Pacing data (phase 1) changes only `contentHash`.
+
+| Area | Change | Phase | Owner |
+|---|---|---|---|
+| Contracts | `FormatId` becomes an open string key into `content.formats` (was a closed union of 4); used by `MatchConfig.format` and `ReplayDoc.format` | 2 | WP0 |
+| Contracts | `SideConfig.sideMods?` (per-side modifiers read at spawn and base init: base HP bp, extra fixed turret, unit stat bp) | 2 | WP0 |
+| Contracts | `Command.research { track, group?, rank, pick }` replaces `treasury`; `research.cancel` | 2 | WP0 |
+| Contracts | `Command.stance { mode: 'charge' \| 'hold' \| 'fallback', holdP? }` replaces the toggle | 2 | WP0 |
+| Contracts | Tray slot type `0..5` in `train` and `cancelTrain` | 2 | WP0 |
+| Contracts | `MatchConfig.victory?` (`survive`, `target`) | 2 | WP0 |
+| Contracts | `Observation.me/foe.research` (owned picks, current item, progress), `stance`, `holdP`; `SimEvent` `researchStarted`, `researchDone`, `stanceChanged` | 2 | WP0 |
+| Contracts | `AgeId` gains `nile`, `rome`, `norse`, `renaissance` (and `shogun`) | per age wave | WP0 |
+| Sim | Research slot and timers, underdog discount, spawn-time application, A18.2 caps and damage-taken floor, flat per-hit reduction, turret cap 560, three stances, flag, stance cooldown, engagement freshness, `sideMods`, victory rules; `SideState.research` hashed | 2 | WP2 |
+| Content | `raw/economy.ts`: XP sources, bounty 50%, thresholds by position, window formats and clocks, `stanceCooldownMs`, `turretRangeHardCapLu` | 1-2 | WP1 |
+| Content | `raw/research.ts` (tracks, picks, bp, `aiHint`), `raw/warPath.ts`, later `raw/warRelics.ts` | 3, 5, 7 | WP1 |
+| Content | Presentation names for Bronze, Gunpowder, Industrial | 0 | WP1, i18n |
+| AI | Research utility, tier columns, Generals' styles, stance and flag, difficulty behaviour flags, boss phase | 3-5 | WP3 |
+| Save | `SaveDoc` v3 migration: `warPath`, `difficulty`, 6-slot loadouts (a sixth slot auto-filled), Fort slot later, Conquest stars mapped to boss nodes; Treasury fields dropped | 5 | WP8 |
+| Meta | War Path rules, stars, crowns, card unlocks, Era of the Week (seeded in meta), relic PvE switch and its test | 5, 7 | WP7 |
+| Replays | Each tuning pass changes `contentHash`, and `replayPlayer` requires an exact match. Replays from an older build keep their result card and are labelled "Recorded on an older build"; they no longer play. Replays never promise to survive balance work | 2 | WP11 |
+| Tools | Proxies and gates (A18.12), time-in-age rows, `tools/warPath.ts`, the 850 ms budget, fewer Full War runs | 1-5 | WP12 |
+| CI | M1: golden replays on 3 browser engines | 3 | WP12 |
+
+---
+
+### A18.12 A2.14 targets, proxies and gates
+
+**New proxies (B12):** `no_research`, `drill_rush`, `eco_greed`, `tech_turtle` (Defences first, Hold at home), `flag_ball` (Hold flag at 800 with Ranged, Support auras, Bulwark, Shield Wall), `fallback_turtle` (Fall back, Keep Walls, Last Stand Drill), `few_then_evolve` (the owner's "a few soldiers" player), `stance_toggler` (toggles on every engagement).
+
+| Metric | Target |
+|---|---|
+| Median stay per age, Balanced mirror | A18.3.1; no age after the first under 75 s |
+| Winner's evolve lead at the 3rd evolve | Median ≤ 30 s |
+| Short / Standard / Full median | 7:00 / 10:30 / 15:00 (80% bands A18.3.4) |
+| Final Bell (mirror) | ≤ 10% Short, ≤ 8% Standard, ≤ 5% Full |
+| Research share of gold, Balanced mirror | 15-25% |
+| Research items per Standard War | 5-8 median |
+| `no_research` vs a researching Balanced script | Loses ≥ 70% |
+| `few_then_evolve` | Wins ≤ 10% vs Normal, ≤ 2% vs Hard |
+| Each pick pair | Pick-flip ≥ 30% of sampled lane states (A16.10) and the two picks within ±5 points of each other |
+| Rank III | Buying it beats saving the gold by ≥ +4 points |
+| `tech_turtle`, `fallback_turtle` | In the turtle band (A2.14) |
+| `flag_ball` | ≤ 45% vs tier VII |
+| `stance_toggler` | No better than the same bot without toggling (±2 points) |
+| Underdog discount | Comeback share (A2.14) unchanged or higher; mirror win rate unchanged |
+| War Path levels | Per-role bands in A18.7.2 |
+
+If `flag_ball` fails, the flag cap drops from 800 to 700.
+
+---
+
+### A18.13 Build plan
+
+Each phase keeps `main` playable and reruns `balance`, `exploits` and `strength`. Sizes: XS a few hours, S ≤ 1 day of agent work, M 1-3, L 3-6, XL more. Phases 0-3 give "harder, longer, more choices" with no new art.
+
+| Phase | What | Size | Owning areas | Depends on |
+|---|---|---|---|---|
+| **0** | Stance toggle visible from match 1 (built); Hellas, Muskets and Great War presentation names | XS | app/onboarding (WP11), content and i18n (WP1) | Picker in flight |
+| **1** | **Pacing as data**: XP sources, bounty 50%, thresholds by position, window clocks. Behind a content switch; measured with the stronger AI in flight | S | content (WP1), tools (WP12) | |
+| **2** | **One contract bump**: open `FormatId`, `sideMods`, `research` replacing `treasury`, `stance { mode, holdP }`, six tray slots, `victory`, caps and floor, stance cooldown and engagement freshness; `SIM_VERSION` 3.0.0 and one golden re-record; age-index sim test | M | contracts (WP0), sim (WP2), tools (WP12) | |
+| **3** | **War Council v1**: Economy I-II, Defences I-II, Troops I-II for the 5 existing classes, Command I (about 26 picks); AI utility and tiers; HUD button and sheet, enemy ring, badges and shimmer; deck-builder compatibility marks; proxies and gates; tune the phase 1 thresholds once. Ships with phase 1 switched on. M1 CI in parallel | L | content (WP1), AI (WP3), visuals (WP4), render and HUD (WP5), UI (WP9), tools (WP12) | 1, 2 |
+| **4** | Hold flag and Fall back in the HUD and minimap; AI flag placement | M | render and HUD (WP5), AI (WP3) | 2 |
+| **Owner check** | Owner plays Short and Standard War on Normal and Hard | | | 0-4 |
+| **5** | **War Path v1** on the 8 ages: map screen, 80 levels and 16 side nodes as data, objectives, stars and crowns, card unlocks, first-clear rewards, the Generals as bosses with `sideMods` and the phase rule, Conquest migration in save v3, difficulty flags, `tools/warPath.ts` | L | meta (WP7), save (WP8), UI (WP9), content (WP1), AI (WP3), tools (WP12) | 3, Home in flight |
+| **6** | **Forts card type** (A16.14) with the Fort slot and wall picks in Defences; Supply Cache if the owner check showed standoffs | L | WP0, WP1, WP2, WP3, WP4, WP5, WP7, WP8, WP9, WP12 | 5, wall prototype verdict |
+| **7** | Council rank III, Command II-III, doctrines (A16.10), relics, star chests, Veteran and Legend Paths, boss rematches, match resume, capsule age weighting | M | WP1, WP2, WP3, WP7, WP8, WP9 | 3, 5 |
+| **8** | Air as a full class, then the Underground class (A16.15) | M each | WP0, WP1, WP2, WP3, WP4, WP5 | 6 |
+| **Art track** | Realistic restyle of the existing ages, Stone first, with measured hours per age | XL | art, visuals (WP4) | Parallel from now |
+| **9+** | New ages, re-costed from the art track: wave 1 Nile and Rome, wave 2 Norse and Renaissance, wave 3 Shogun (D4: yes) | 2 × L-XL per wave | all content areas, art, audio (WP6) | Stone restyled and measured |
+| **Online** | M1 with phase 3; M2 Friend Duel after phase 5; M3-M8 after | M, L | server, tools | Owner's Cloudflare steps for M2 |
+
+---
+
+### A18.14 Edits to other sections (applied at the v1.3 merge)
+
+Each edited place says that A18 supersedes it and names the A18 section. The sections: A1 (Pillar 2 wording, match lengths), A2.3 (Treasury to Economy, bounty 50%), A2.4 (XP sources, thresholds by position), A2.7 and A2.12 (three stances, flag, cooldown, keys S, Shift+S, G; T freed), A2.8 (turret cap 560, A18.2 caps), A2.10 and A17.8 (windows, clocks), A2.11 (underdog research discount, Reserve Charge), A2.13 (match flow), A2.14 and A17.14 (A18.12 rows), A3 (6 unit slots, Fort slot, loadouts per window, compatibility marks), A6.3 (ladder Era of the Week), A6.10 (Conquest into the War Path), A7.2-A7.4 (research utility, tier columns, Treasury column removed, Generals' styles, new Generals), A8 (onboarding on War Path nodes), A9 (War Path screen, Council, stance control), A11-A13 (realistic direction, badges, presentation names), A14 (ids), A16.10, A16.14, A16.15 (schedule), A16.21 and D1 (milestones, capacity), B3 (tick budget), B15 (contracts).
+
+---
+
+### A18.15 Review resolution
+
+"Accepted" means applied as written; "Changed" means applied in a modified form, with the reason; "Rejected" gives the reason.
+
+#### Player review (veteran lane-battler and Clash Royale player)
+
+| Point | Verdict | Where, and why |
+|---|---|---|
+| Weapons vs Armour is not a decision | Changed | Armour becomes Mail, a flat per-hit reduction that beats swarms and burn ticks and loses to Heavies (A18.5.2) |
+| Hunters vs Armour, Air Weapons vs Armour are the same fake pair | Accepted | Hunters vs Lightfoot; Air Weapons vs Evasion |
+| Economy rank I has no choice; Granary is a forced opener | Accepted | Forage added: pays a defender under pressure (A18.5.4) |
+| Market vs War Spoils is a profile choice | Changed | War Spoils replaced by Bounty Hunters (all kills): the choice reads how busy the lane is, a match decision |
+| Guildhall's second slot is worthless; Levy too small | Accepted | No second slot anywhere; Guildhall costs a queue slot; Levy −12% Commons for −1 gold/s |
+| Watchtowers beats Quick Loaders; range stacks twice | Accepted | Range only at rank I; rank II is Engineers vs Arsenal |
+| Research wasted if the next loadout lacks the class | Accepted | Builder and Council show compatibility (A18.5.2) |
+| `no_research` gate too lenient | Accepted | Loses ≥ 70% |
+| `few_then_evolve` ≤ 20% too lenient | Accepted | ≤ 10% vs Normal, ≤ 2% vs Hard |
+| Rank III ±5 gate contradicts itself | Accepted | Pairs within ±5 of each other; buying beats saving by ≥ +4 |
+| Forward Hold ball | Accepted | Flag cap 800 (700 if the gate fails), War Horns' damage only with the flag at p ≤ 480, `flag_ball` proxy |
+| Damage-reduction stacking | Accepted | Damage-taken floor −35% and the other A18.2 caps |
+| Stance-toggle resets | Accepted | 3 s stance cooldown; engagement freshness by 4 s without a target; `stance_toggler` proxy |
+| Fall back stalling | Accepted | `fallback_turtle` proxy; Fall back no longer disengages mid-fight |
+| Gold snowball through research | Accepted | Bounty 60% → 50% and a −20% underdog research discount |
+| Veterans plus Miracle ambiguity | Accepted | Miracle is once per age per side; revived units lose Veterans stacks; both are v1.1 behind gates |
+| Boss enrage is exploitable | Accepted | The phase casts and trains, but Charges only when the army comparison favours the boss (A18.7.6) |
+| Research eclipses small early age steps | Changed | Kept small steps; each new age must bring a visibly new mechanic, and research never touches the P step itself |
+| Full War at 15 min is long; no checkpoints | Accepted | Full War stays off the War Path; match resume from the command log (A18.7.9) |
+| Mid-age standoffs | Changed | The Supply Cache is designed and gated, built only if the owner playtest shows standoffs, since the stronger AI may already fill the middle |
+| Difficulty spread collapses at the top | Accepted | Region bases lowered to 0-VII, offsets −2/0/+1/+2/X, and behaviour flags per difficulty (A18.6.2) |
+| Some rules break "difficulty never changes stats" | Accepted | Principle restated: disclosed modifiers allowed, hidden never; Legendary uses Standard L8 |
+| Every level is "destroy the base" | Accepted | Objective kinds as data (A18.7.3) |
+| Levels too long; the region's age appears late | Accepted | Normal levels use 1-2 ages, Lieutenant 3, boss at most 4; mid-battle starts |
+| Stars and crowns overlap | Accepted | ★★★ = the ★★ goal on Hard; crowns keep difficulty |
+| Relics gated behind Hard reward the wrong players | Accepted | Relics on ★★ and as trade-offs; v1.1 |
+| Rewards are generic; the map is a single line | Accepted | Card unlocks on L3 and the boss; 2 side nodes per region; boss rematches in v1.1 |
+| One win-rate band for all levels | Accepted | Bands per role (A18.7.2) |
+| G and T both open the Council | Accepted | G only; T freed |
+| Flag plus Sally Port needs a clamp | Accepted | Clamped to [380, 800] |
+| "Tiers VII-X know enemy research" is no distinction | Accepted | Tiers differ in how they use public research (A18.5.8) |
+| Economy rank I costs 200 while others cost 150 | Accepted | All rank I cost 150 |
+| Capsule drops for rarely played ages feel dead | Accepted | Region and Era of the Week weighted ×2, disclosed (v1.1) |
+
+#### Engineering and producer review
+
+| Point | Verdict | Where, and why |
+|---|---|---|
+| Pacing is already data; step 2 is S | Accepted | Phase 1 is S, content only |
+| Open `FormatId` instead of `MatchConfig.window` | Accepted | A18.3.4, A18.11 |
+| Modifiers are symmetric; bosses, relics and research need per-side modifiers | Accepted | `SideConfig.sideMods`, the one boss addition |
+| Research raising units already on the lane is a replay risk | Accepted | Research applies from spawn; shimmer is visual only |
+| Stance toggle is an XS onboarding flip; the flag is M | Accepted | Phase 0 and phases 2 and 4 |
+| Treasury swap, stance shape and `sideMods` in one major bump | Accepted | Phase 2, with slots and `victory` too |
+| Replays break on every tuning pass | Accepted | Old replays labelled and not played; no promise (owner decision D8) |
+| Tray slots typed `0..4` | Accepted | Widened in the phase 2 bump |
+| Saves are ready; keep ids stable; age index shift needs a sim test | Accepted | A18.8.3, A18.11 |
+| Art cost priced wrong after the ultra-realistic decision | Accepted | New ages frozen until Stone is restyled and measured; 75-150 h planning value |
+| Cheap answers to "too few ages" | Accepted | Presentation names in phase 0; windows and Era of the Week |
+| Council v1 cut to ~26 picks from existing kinds | Accepted | Phase 3; Fire Arrows only if a DoT exists |
+| Air and Underground lines wait for the classes; second slot waits | Changed | Lines wait (phase 8); the second slot is removed entirely (player review) |
+| War Path v1 cut list | Changed | Relics, star chests, paths and crowns' extras move to v1.1; crowns and card unlocks stay in v1 because they are cheap meta data and answer the player review |
+| Difficulty: no new layer beyond the picker | Changed | Quick Battle uses the picker as is; the War Path needs region-relative tiers and behaviour flags, because absolute tiers collapse at the top (player review). The flags live in `raw/difficulty` data and the bot profile |
+| Online: only M1 now | Accepted | A18.10 |
+| Balance tool run counts | Accepted | Full War only at gates |
+| Corrections list (A18.2.3, A18.4.1, A18.6.5, A18.3.2, step splits, first-pass hours) | Accepted | All applied; first pass now ~7.5 h at the shorter War Path windows |
+
+---
+
+### A18.16 Owner decisions
+
+The owner delegated these decisions; on 2026-09-28 the orchestrator took every one as recommended (`docs/decisions.md`, "A18 decisions D1-D8").
+
+| # | Question | Recommendation | Decision |
+|---|---|---|---|
+| D1 | Slower evolving: ages of about 60-125 s instead of 30-70 s (changes Pillar 2)? | Yes | Yes |
+| D2 | Match lengths: Short ~7, Standard ~10:30, Full ~15 minutes, formats as windows of 3, 5 and 7 ages? | Yes | Yes |
+| D3 | Treasury disappears; money generation becomes the Economy track of the War Council? | Yes | Yes |
+| D4 | New ages wait until the realistic art is proven on Stone; then Nile and Rome first. 12 ages, or 13 with Shogun? | Wait, then 13 | Wait, then 13 (Shogun included) |
+| D5 | Fold Conquest into the War Path (Generals become bosses, stars carried over)? | Yes | Yes |
+| D6 | Three stances (Charge, Hold at a draggable flag up to just before mid-lane, Fall back)? | Yes | Yes |
+| D7 | Legendary: behaviour only, or also a disclosed head start for the AI? | Behaviour only | Behaviour only |
+| D8 | Saved replays stop playing after a balance update (their result stays, labelled)? | Accept | Accept (from `SIM_VERSION` 3.0.0) |
 
 ---
 

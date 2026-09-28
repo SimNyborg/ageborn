@@ -1062,21 +1062,21 @@ export class AtlasBaseView implements BaseView {
     for (let i = 0; i < burst; i++) {
       const s = partSprite(this.o.decor, 'fx.p.coin', FX_ZONES);
       s.position.set(x + (this.rng.next() - 0.5) * 8, top);
-      const a = -Math.PI / 2 + (this.rng.next() - 0.5) * 1.5;
-      const sp = 260 + this.rng.next() * 160;
-      this.bits.add(s, { vx: Math.cos(a) * sp * 0.55, vy: Math.sin(a) * sp, g: 1100, life: 1400, s0: 1.3, s1: 1.1, flip: 0.02 + this.rng.next() * 0.01, killY: top + 6, onKill, delay: i * 12 });
+      const a = -Math.PI / 2 + (this.rng.next() - 0.5) * 1.3;
+      const sp = 300 + this.rng.next() * 170;
+      this.bits.add(s, { vx: Math.cos(a) * sp * 0.3, vy: Math.sin(a) * sp, g: 1100, life: 1400, s0: 1.9, s1: 1.5, flip: 0.02 + this.rng.next() * 0.01, killY: top + 6, onKill, delay: i * 12 });
     }
     const rain = lite ? 5 : 10;
     for (let i = 0; i < rain; i++) {
       const s = partSprite(this.o.decor, 'fx.p.coin', FX_ZONES);
       s.position.set(x + (this.rng.next() - 0.5) * 36, top - 90 - this.rng.next() * 60);
-      this.bits.add(s, { vx: -(s.x - x) * 0.6, vy: 40 + this.rng.next() * 60, g: 900, life: 1400, s0: 1.2, s1: 1, flip: 0.02 + this.rng.next() * 0.01, killY: top + 4, onKill, delay: 260 + i * 55, fadeIn: 0.08 });
+      this.bits.add(s, { vx: -(s.x - x) * 0.6, vy: 40 + this.rng.next() * 60, g: 900, life: 1400, s0: 1.7, s1: 1.4, flip: 0.02 + this.rng.next() * 0.01, killY: top + 4, onKill, delay: 260 + i * 55, fadeIn: 0.08 });
     }
     const g = partSprite(this.o.decor, 'fx.p.glow', FX_ZONES);
     g.tint = GOLD;
     g.blendMode = 'add';
     g.position.set(x, top);
-    this.bits.add(g, { life: 700, s0: 1, s1: 4.5, a0: 0.55, pulse: true });
+    this.bits.add(g, { life: 800, s0: 1, s1: 6, a0: 0.7, pulse: true });
   }
 
   // ------------------------------------------------------------------------------------------

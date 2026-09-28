@@ -32,7 +32,9 @@ export function classGlyphSvg(id: ClassGlyphId): string {
   const parts = CLASS_GLYPH[id]
     .map((g) => {
       const fill = g.fill === 'glyph' ? GLYPH : g.fill === 'ink' ? INK : 'none';
-      const stroke = g.stroke ? ` stroke="${g.strokeGlyph ? GLYPH : INK}" stroke-width="${g.stroke / 10}" stroke-linecap="round" stroke-linejoin="round"` : '';
+      const stroke = g.stroke
+        ? ` stroke="${g.strokeGlyph ? GLYPH : INK}" stroke-width="${g.stroke / 10}" stroke-linecap="round" stroke-linejoin="round"`
+        : '';
       const tf = g.transform ? ` transform="${g.transform}"` : '';
       return `<path d="${g.d}" fill="${fill}"${stroke}${tf}/>`;
     })

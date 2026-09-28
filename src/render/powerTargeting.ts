@@ -90,7 +90,7 @@ export const GHOST_INVALID = 0xe0525a;
 /** The ring under units the power would hit. */
 export const GHOST_TARGET = 0xffd447;
 /** Height of the ghost's light curtain (lu): tall enough to read at a glance on a phone. */
-const CURTAIN_LU = 170;
+const CURTAIN_LU = 115;
 
 /** Draws active telegraphs and the drag ghost on the ground (one Graphics). */
 export class ZoneOverlay {

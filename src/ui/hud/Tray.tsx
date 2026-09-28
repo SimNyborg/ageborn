@@ -107,7 +107,7 @@ function CardInfo(p: { c: HudCtx; def: UnitDef }) {
   const { c, def } = p;
   const units = c.config.content.units;
   const klass = unitClass(def);
-  const { strong, weak } = counterClasses(def.strongVs, def.weakVs, units);
+  const { strong, weak } = counterClasses(def.strongVs, def.weakVs, units, klass);
   const row = (key: 'hud.info.strongVs' | 'hud.info.weakVs', list: typeof strong, tone: string) =>
     list.length > 0 ? (
       <div class={cls('hud-card-info-vs', tone)} data-testid={tone === 'is-good' ? 'hud-info-strong' : 'hud-info-weak'}>

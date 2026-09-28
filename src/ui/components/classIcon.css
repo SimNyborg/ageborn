@@ -42,7 +42,11 @@
   padding: 2px 9px 2px 3px;
   border: 2px solid #1b1330;
   border-radius: 999px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--cls-main) 30%, #2b2754), color-mix(in srgb, var(--cls-main) 16%, #1f1b3e));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--cls-main) 30%, #2b2754),
+    color-mix(in srgb, var(--cls-main) 16%, #1f1b3e)
+  );
   box-shadow: 0 2px 0 #1b1330;
   color: #fff;
   font-weight: 900;

@@ -5,7 +5,14 @@
  * card tip. The shapes come from `core/cardClass.ts`, so the capsule show draws the same icons.
  */
 import './classIcon.css';
-import { CLASS_COLOR, CLASS_GLYPH, COUNTER_LEGEND, type CardClass, type ClassGlyphId, type UnitClass } from '@/core/cardClass';
+import {
+  CLASS_COLOR,
+  CLASS_GLYPH,
+  COUNTER_LEGEND,
+  type CardClass,
+  type ClassGlyphId,
+  type UnitClass,
+} from '@/core/cardClass';
 import type { ComponentChildren } from 'preact';
 import { createPortal } from 'preact/compat';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
@@ -69,7 +76,12 @@ export function ClassIcon(p: { id: ClassGlyphId; size?: number; title?: string; 
   return (
     <span
       class={`ui-class-icon ui-class-icon--${p.id} ${p.class ?? ''}`}
-      style={{ width: `${s}px`, height: `${s}px`, '--cls-main': col.main, '--cls-dark': col.dark }}
+      style={{
+        width: `${s}px`,
+        height: `${s}px`,
+        '--cls-main': col.main,
+        '--cls-dark': col.dark,
+      }}
       data-class={p.id}
       role={p.title ? 'img' : undefined}
       aria-label={p.title}
@@ -86,7 +98,12 @@ export function ClassChip(p: { id: CardClass; legendary?: boolean; size?: 'sm' |
   const { t } = useKit();
   const px = p.size === 'sm' ? 16 : 22;
   return (
-    <span class={`ui-class-chip ui-class-chip--${p.size ?? 'md'}`} data-testid={p.testid} data-class={p.id} style={{ '--cls-main': CLASS_COLOR[p.id].main }}>
+    <span
+      class={`ui-class-chip ui-class-chip--${p.size ?? 'md'}`}
+      data-testid={p.testid}
+      data-class={p.id}
+      style={{ '--cls-main': CLASS_COLOR[p.id].main }}
+    >
       <ClassIcon id={p.id} size={px} />
       <span class="ui-class-chip__label">{t(CLASS_NAME_KEY[p.id])}</span>
       {p.legendary ? <ClassIcon id="legendary" size={px} title={t(CLASS_NAME_KEY.legendary)} /> : null}
@@ -114,7 +131,12 @@ export function ClassList(p: { classes: readonly UnitClass[]; size?: number; lab
 }
 
 /** Strong vs / Weak vs block (card detail and the card tip). */
-export function CounterRows(p: { strong: readonly UnitClass[]; weak: readonly UnitClass[]; size?: number; labels?: boolean }) {
+export function CounterRows(p: {
+  strong: readonly UnitClass[];
+  weak: readonly UnitClass[];
+  size?: number;
+  labels?: boolean;
+}) {
   const { t } = useKit();
   return (
     <div class="ui-counters">
@@ -154,15 +176,35 @@ export function CounterLegend(p: { compact?: boolean }) {
   const notes = COUNTER_LEGEND.slice(3);
   const name = (c: ClassGlyphId) => t(CLASS_NAME_KEY[c]);
   // Triangle corners (percent of the box): Heavy top, Infantry bottom right, Anti-armor bottom left.
-  const at: Record<string, [number, number]> = { heavy: [50, 16], infantry: [84, 80], antiArmor: [16, 80] };
+  const at: Record<string, [number, number]> = {
+    heavy: [50, 16],
+    infantry: [84, 80],
+    antiArmor: [16, 80],
+  };
   return (
-    <section class={`ui-legend${p.compact ? ' is-compact' : ''}`} data-testid="counter-legend" aria-label={t('ui.class.legend.title')}>
+    <section
+      class={`ui-legend${p.compact ? ' is-compact' : ''}`}
+      data-testid="counter-legend"
+      aria-label={t('ui.class.legend.title')}
+    >
       <h3 class="ui-legend__title">{t('ui.class.legend.title')}</h3>
       <div class="ui-legend__body">
-        <div class="ui-legend__tri" role="img" aria-label={tri.map((r) => t('ui.class.legend.beats', { a: name(r.a), b: name(r.b) })).join('. ')}>
+        <div
+          class="ui-legend__tri"
+          role="img"
+          aria-label={tri.map((r) => t('ui.class.legend.beats', { a: name(r.a), b: name(r.b) })).join('. ')}
+        >
           <svg class="ui-legend__ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <defs>
-              <marker id="ui-legend-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto">
+              <marker
+                id="ui-legend-head"
+                viewBox="0 0 10 10"
+                refX="7"
+                refY="5"
+                markerWidth="4.2"
+                markerHeight="4.2"
+                orient="auto"
+              >
                 <path d="M0 0 10 5 0 10z" fill="#FFF8E8" stroke={OUTLINE} stroke-width="1.2" />
               </marker>
             </defs>
@@ -267,7 +309,12 @@ export function useCardTip(enabled: boolean) {
         }, TIP_PRESS_MS);
       },
       onPointerMove: (e: PointerEvent) => {
-        if (timer.current && e.pointerType !== 'mouse' && Math.hypot(e.clientX - start.current.x, e.clientY - start.current.y) > 10) clear();
+        if (
+          timer.current &&
+          e.pointerType !== 'mouse' &&
+          Math.hypot(e.clientX - start.current.x, e.clientY - start.current.y) > 10
+        )
+          clear();
       },
       onPointerUp: () => clear(),
       onPointerCancel: () => clear(),
@@ -293,9 +340,20 @@ export function CardTip(p: { anchor: TipAnchor; children: ComponentChildren; tes
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const left = Math.max(8, Math.min(vw - w - 8, p.anchor.x - w / 2));
   const below = p.anchor.top < 170;
-  const style = below ? { left: `${left}px`, top: `${p.anchor.bottom + 8}px`, width: `${w}px` } : { left: `${left}px`, bottom: `${window.innerHeight - p.anchor.top + 8}px`, width: `${w}px` };
+  const style = below
+    ? { left: `${left}px`, top: `${p.anchor.bottom + 8}px`, width: `${w}px` }
+    : {
+        left: `${left}px`,
+        bottom: `${window.innerHeight - p.anchor.top + 8}px`,
+        width: `${w}px`,
+      };
   const tip = (
-    <div class={`ui-card-tip${below ? ' is-below' : ''}`} role="tooltip" data-testid={p.testid ?? 'card-tip'} style={style}>
+    <div
+      class={`ui-card-tip${below ? ' is-below' : ''}`}
+      role="tooltip"
+      data-testid={p.testid ?? 'card-tip'}
+      style={style}
+    >
       {p.children}
     </div>
   );
@@ -303,7 +361,13 @@ export function CardTip(p: { anchor: TipAnchor; children: ComponentChildren; tes
 }
 
 /** Tip body for a card: name, class chip, Strong vs / Weak vs. */
-export function CardTipBody(p: { name: string; cls: CardClass; legendary?: boolean; strong: readonly UnitClass[]; weak: readonly UnitClass[] }) {
+export function CardTipBody(p: {
+  name: string;
+  cls: CardClass;
+  legendary?: boolean;
+  strong: readonly UnitClass[];
+  weak: readonly UnitClass[];
+}) {
   return (
     <>
       <div class="ui-card-tip__name">{p.name}</div>
