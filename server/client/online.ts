@@ -31,6 +31,8 @@ export interface NetStats {
   /** Times the sim had caught up with `u` and had to wait for the next frame while the clock ran. */
   catchUpBursts: number;
   desyncs: number;
+  /** Commands that arrived for a tick already simulated (must stay 0). */
+  lateCommands: number;
   reconnects: number;
   /** ms spent re-simulating the log on (re)connect. */
   catchUpMs: number[];
@@ -45,7 +47,7 @@ export class OnlineMatch {
   u = -1;
   result: Extract<ServerMsg, { t: 'result' }> | null = null;
   endSent = false;
-  readonly stats: NetStats = { framesIn: 0, msgsIn: 0, msgsOut: 0, bytesIn: 0, bytesOut: 0, commandsSent: 0, inputLatencyMs: [], catchUpBursts: 0, desyncs: 0, reconnects: 0, catchUpMs: [] };
+  readonly stats: NetStats = { framesIn: 0, msgsIn: 0, msgsOut: 0, bytesIn: 0, bytesOut: 0, commandsSent: 0, inputLatencyMs: [], catchUpBursts: 0, desyncs: 0, lateCommands: 0, reconnects: 0, catchUpMs: [] };
   /** Called for every tick the local sim steps (render, sound, bots). */
   onTick: ((events: readonly SimEvent[], sim: Sim) => void) | null = null;
   onStart: ((reconnect: boolean) => void) | null = null;
@@ -64,6 +66,24 @@ export class OnlineMatch {
     private readonly latency: Latency = { oneWayMs: 0, jitterMs: 0 },
   ) {}
 
+  private inbox: [number, () => void][] = [];
+  private outbox: [number, () => void][] = [];
+
+  /**
+   * Runs `fn` at time `at`, strictly in queue order (a WebSocket is ordered like TCP). Timers alone
+   * are not enough: setTimeout rounds delays, so two messages due at nearly the same time can swap.
+   */
+  private later(q: [number, () => void][], at: number, fn: () => void): void {
+    q.push([at, fn]);
+    if (q.length > 1) return;
+    const pump = (): void => {
+      const now = performance.now();
+      while (q.length && (q[0] as [number, () => void])[0] <= now + 0.5) (q.shift() as [number, () => void])[1]();
+      if (q.length) setTimeout(pump, Math.max(0, (q[0] as [number, () => void])[0] - performance.now()));
+    };
+    setTimeout(pump, Math.max(0, at - performance.now()));
+  }
+
   private delay(prev: number): number {
     const t = performance.now() + this.latency.oneWayMs + Math.random() * this.latency.jitterMs;
     return Math.max(prev, t);
@@ -79,7 +99,7 @@ export class OnlineMatch {
       const data = String(ev.data);
       const at = this.delay(this.inAt);
       this.inAt = at;
-      setTimeout(() => this.receive(data), at - performance.now());
+      this.later(this.inbox, at, () => this.receive(data));
     };
   }
 
@@ -102,9 +122,9 @@ export class OnlineMatch {
     this.stats.bytesOut += s.length;
     const at = this.delay(this.outAt);
     this.outAt = at;
-    setTimeout(() => {
+    this.later(this.outbox, at, () => {
       if (ws.readyState === WebSocket.OPEN) ws.send(s);
-    }, at - performance.now());
+    });
   }
 
   /** The player (or a bot) issues a command. Side is filled in by the server. */
@@ -146,6 +166,8 @@ export class OnlineMatch {
 
   private queue(cmds: readonly WireCmd[]): void {
     for (const w of cmds) {
+      // A command for a tick the sim already ran would be a relay bug (it would desync); count it.
+      if (this.sim && w[0] <= this.sim.state.tick) this.stats.lateCommands += 1;
       const list = this.pending.get(w[0]);
       if (list) list.push(toTimed(w));
       else this.pending.set(w[0], [toTimed(w)]);

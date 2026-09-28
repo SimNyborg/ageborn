@@ -223,9 +223,9 @@ export function CounterLegend(p: { compact?: boolean }) {
         <ul class="ui-legend__notes">
           {tri.concat(notes).map((r) => (
             <li key={`${r.a}-${r.b}`} class="ui-legend__row" data-testid={`legend-${r.a}-${r.b}`}>
-              <ClassIcon id={r.a} size={20} />
+              <ClassIcon id={r.a} size={22} />
               <Arrow />
-              <ClassIcon id={r.b} size={20} />
+              <ClassIcon id={r.b} size={22} />
               <span class="ui-legend__text">
                 <b>{t('ui.class.legend.beats', { a: name(r.a), b: name(r.b) })}</b> {t(NOTE_KEY[r.note]!)}
               </span>

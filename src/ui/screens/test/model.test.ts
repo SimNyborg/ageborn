@@ -327,6 +327,7 @@ describe('misc', () => {
       'harpoon_gunner',
       'bazooka_trooper',
       'rail_gunner',
+      'emp_saboteur',
       'graviton_halberdier',
     ]);
   });

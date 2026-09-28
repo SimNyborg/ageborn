@@ -811,6 +811,7 @@
   animation: ui-glow 1.8s ease-in-out infinite;
 }
 .home-nav__pointer {
+  --pointer-x: -50%;
   position: absolute;
   left: 50%;
   bottom: calc(100% + 12px);
@@ -833,6 +834,13 @@
     home-pointer-in 380ms var(--ui-ease-out) both,
     home-pointer-bob 2.2s ease-in-out 380ms infinite;
 }
+.home-nav__btn:first-child .home-nav__pointer {
+  --pointer-x: 0%;
+  left: 0;
+}
+.home-nav__btn:first-child .home-nav__pointer::after {
+  left: 40px;
+}
 .home-nav__pointer::after {
   content: '';
   position: absolute;
@@ -849,24 +857,24 @@
 @keyframes home-pointer-in {
   from {
     opacity: 0;
-    transform: translate(-50%, 8px) scale(0.7);
+    transform: translate(var(--pointer-x), 8px) scale(0.7);
   }
   70% {
     opacity: 1;
-    transform: translate(-50%, -2px) scale(1.05);
+    transform: translate(var(--pointer-x), -2px) scale(1.05);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translate(var(--pointer-x), 0) scale(1);
   }
 }
 @keyframes home-pointer-bob {
   0%,
   100% {
-    transform: translate(-50%, 0);
+    transform: translate(var(--pointer-x), 0);
   }
   50% {
-    transform: translate(-50%, -4px);
+    transform: translate(var(--pointer-x), -4px);
   }
 }
 

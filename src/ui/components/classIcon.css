@@ -150,7 +150,7 @@
   text-overflow: ellipsis;
 }
 .ui-card--sm .ui-card__classname {
-  font-size: 10px;
+  font-size: 10.5px;
   letter-spacing: 0;
 }
 .ui-card--lg .ui-card__classname {
@@ -268,7 +268,7 @@
   padding: 0 5px;
   border-radius: 6px;
   background: rgba(20, 16, 44, 0.75);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -287,8 +287,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
-  line-height: 1.15;
+  font-size: 13px;
+  line-height: 1.2;
 }
 .ui-legend__text {
   min-width: 0;
@@ -303,7 +303,7 @@
   height: 96px;
 }
 .ui-legend.is-compact .ui-legend__row {
-  font-size: 11px;
+  font-size: 12px;
 }
 @media (max-width: 900px) {
   .ui-legend__tri {
@@ -311,6 +311,6 @@
     height: 96px;
   }
   .ui-legend__text {
-    font-size: 11px;
+    font-size: 12px;
   }
 }

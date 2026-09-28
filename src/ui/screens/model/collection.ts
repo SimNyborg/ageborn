@@ -1,15 +1,17 @@
 /**
- * Collection filters (A9 #10): age, role (or all turrets, or all powers), rarity, and owned / missing.
+ * Collection filters (A9 #10): age, class (the unit class badge, or all turrets, or all powers), rarity,
+ * and owned / missing. The filter uses the same class the card badge shows (owner feedback 2026-09-28).
  */
 import type { Content } from '@/content/types';
-import type { AgeId, CardId, Rarity, Role, SaveDoc } from '@/contracts';
-import { cardDef, isOwned } from './cards';
+import type { AgeId, CardId, Rarity, SaveDoc } from '@/contracts';
+import type { CardClass } from '@/core/cardClass';
+import { cardClassOf, cardDef, isOwned } from './cards';
 
 export type AgeFilter = 'all' | AgeId;
 export type RarityFilter = 'all' | Rarity;
 export type Ownership = 'all' | 'owned' | 'missing';
-/** A unit role, or all turrets, or all powers. */
-export type RoleFilter = 'all' | Role | 'turret' | 'power';
+/** A unit class (as on the card badge), or all turrets, or all powers. */
+export type RoleFilter = 'all' | CardClass;
 
 export interface CollectionFilter {
   age: AgeFilter;
@@ -28,11 +30,7 @@ export function filterCards(save: SaveDoc, content: Content, f: CollectionFilter
     if (!def) return false;
     if (f.age !== 'all' && def.age !== f.age) return false;
     if (f.rarity !== 'all' && (def.kind === 'power' || def.rarity !== f.rarity)) return false;
-    if (f.role !== 'all') {
-      if (f.role === 'turret' || f.role === 'power') {
-        if (def.kind !== f.role) return false;
-      } else if (def.kind !== 'unit' || def.role !== f.role) return false;
-    }
+    if (f.role !== 'all' && cardClassOf(def) !== f.role) return false;
     const owned = isOwned(save, id, content);
     if (f.own === 'owned' && !owned) return false;
     if (f.own === 'missing' && owned) return false;

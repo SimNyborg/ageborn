@@ -4,11 +4,13 @@
  * Dust from the card detail and the skin tiles (A6.6).
  */
 import './collection.css';
-import { ageNameKey, rarityNameKey, roleNameKey, skinNameKey } from '@/content/keys';
+import { ageNameKey, rarityNameKey, skinNameKey } from '@/content/keys';
 import type { AgeId, SkinDef } from '@/contracts';
+import { UNIT_CLASSES, unitClass } from '@/core/cardClass';
 import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { CardArt, CardTile } from '../../components/CardTile';
+import { CLASS_NAME_KEY } from '../../components/ClassIcon';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { Segmented } from '../../components/Controls';
 import { formatInt } from '../../components/format';
@@ -141,7 +143,8 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
   const [f, setF] = useState<CollectionFilter>(NO_FILTER);
   const prog = collectionProgress(s, content);
   const foils = Object.values(s.collection).filter((e) => e.foil !== 'none').length;
-  const roles = [...new Set(content.order.units.map((id) => content.units[id]!.role))];
+  const present = new Set(content.order.units.map((id) => unitClass(content.units[id]!)));
+  const classes = UNIT_CLASSES.filter((c) => present.has(c));
   const cards = filterCards(s, content, f);
   const skins = content.order.skins.map((id) => content.skins[id]!);
   const set = (patch: Partial<CollectionFilter>) => setF({ ...f, ...patch });
@@ -212,9 +215,9 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
                     data-testid="filter-role"
                   >
                     <option value="all">{t('ui.collection.allRoles')}</option>
-                    {roles.map((r) => (
-                      <option key={r} value={r}>
-                        {t(roleNameKey(r))}
+                    {classes.map((c) => (
+                      <option key={c} value={c}>
+                        {t(CLASS_NAME_KEY[c])}
                       </option>
                     ))}
                     <option value="turret">{t('ui.warplan.turrets')}</option>
