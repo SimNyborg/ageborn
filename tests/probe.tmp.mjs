@@ -1,0 +1,15 @@
+import { chromium, devices } from '@playwright/test';
+const b = await chromium.launch();
+const ctx = await b.newContext({ ...devices['Desktop Chrome'] });
+const p = await ctx.newPage();
+await p.goto('http://localhost:4174/ageborn/');
+await p.getByTestId('quick-ai-chip').waitFor();
+await p.waitForTimeout(3000);
+const fr = async () => p.evaluate(() => new Promise(r => { let n=0; const t0=performance.now(); const f=()=>{ n++; if (performance.now()-t0<3000) requestAnimationFrame(f); else r(n/3); }; requestAnimationFrame(f); }));
+console.log('title fps', await fr());
+const long = await p.evaluate(() => new Promise(r => { const out=[]; new PerformanceObserver(l => { for (const e of l.getEntries()) out.push(Math.round(e.duration)); }).observe({type:'longtask', buffered:false}); setTimeout(()=>r(out.slice(0,30)), 3000); }));
+console.log('longtasks', JSON.stringify(long));
+await p.getByTestId('quick-battle').click();
+await p.waitForTimeout(4000);
+console.log('battle fps', await fr());
+await b.close();
