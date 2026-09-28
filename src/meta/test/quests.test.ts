@@ -35,9 +35,9 @@ describe('quest progress from MatchStats (A6.7)', () => {
     expect(matchProgress(def('play_3'), facts({ win: false }))).toBe(1);
     expect(matchProgress(def('train_30'), facts({ stats: stats({ trained: 17 }) }))).toBe(17);
     expect(matchProgress(def('evolve_6'), facts({ stats: stats({ evolves: 3 }) }))).toBe(3);
-    expect(matchProgress(def('fast_final_age'), facts({ format: 'short', stats: stats({ reachedFinalAgeAtMs: 139_999 }) }))).toBe(1);
-    expect(matchProgress(def('fast_final_age'), facts({ format: 'short', stats: stats({ reachedFinalAgeAtMs: 140_000 }) }))).toBe(0);
-    expect(matchProgress(def('fast_final_age'), facts({ format: 'full', stats: stats({ reachedFinalAgeAtMs: 290_000 }) }))).toBe(1);
+    expect(matchProgress(def('fast_final_age'), facts({ format: 'short', stats: stats({ reachedFinalAgeAtMs: 159_999 }) }))).toBe(1);
+    expect(matchProgress(def('fast_final_age'), facts({ format: 'short', stats: stats({ reachedFinalAgeAtMs: 160_000 }) }))).toBe(0);
+    expect(matchProgress(def('fast_final_age'), facts({ format: 'full', stats: stats({ reachedFinalAgeAtMs: 400_000 }) }))).toBe(1);
     expect(matchProgress(def('turret_kills_20'), facts({ stats: stats({ turretKills: 6 }) }))).toBe(6);
     expect(matchProgress(def('win_no_treasury'), facts({ stats: stats({ usedTreasury: false }) }))).toBe(1);
     expect(matchProgress(def('win_no_treasury'), facts({ stats: stats({ usedTreasury: true }) }))).toBe(0);

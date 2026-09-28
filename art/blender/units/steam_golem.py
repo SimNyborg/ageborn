@@ -6,11 +6,13 @@ Look (A17.12, Industrial palette): a squat, top-heavy riveted steam automaton. A
 belly with copper bands, rows of rivets, a wide team armour band round the middle and a firebox
 door whose grate glows warm; a small domed head with two round porthole eyes (warm glass) under a
 heavy brow plate; a tall coal chimney on its back that puffs steam in the idle and walk (A17.12
-"a chimney that puffs in idle"); stumpy iron legs with knee discs and wide flat feet; the near arm
+"a chimney that puffs in idle"); it is turned well toward the camera, and its face is the
+furnace itself: a dark furnace mouth on the boiler front with a glowing grate and two angry
+glowing eye slits under iron brow plates, a low riveted dome cap above; stumpy iron legs with knee discs and wide flat feet; the near arm
 an oversized piston ram ending in a huge riveted fist with a team knuckle plate, the far arm a
-smaller clamp. A team pennant on a pole behind the chimney (the heavy's team cue). The walk is a
+smaller clamp. A team pennant on a pole rises from the far shoulder plate (the heavy's team cue). The walk is a
 heavy 1 s stomp; the attack ("piston punch with a steam burst") cocks the ram back, holds, fires
-the piston out with a smear and slams the fist home (held impact, sparks, a burst of steam from the
+the piston out (the rod visibly extends about 26 lu) with a smear and slams the fist home (held impact, sparks, a burst of steam from the
 elbow valve), then retracts. Heavy melee timing (retime.HEAVY_MELEE).
 """
 import math
@@ -23,7 +25,7 @@ from ageborn_art.geometry import Geo
 SLUG = "steam_golem"
 NAME = "Steam Golem"
 HEIGHT_LU = 110
-YAW_DEG = -16.0
+YAW_DEG = -41.0          # turned toward the camera so the furnace face on the boiler front reads
 CANVAS = (360, 300)
 FEET = (132, 280)
 ANCHORS = {"head": (4, 106), "hitCenter": (0, 58)}
@@ -101,18 +103,44 @@ def build(rig):
             t = math.radians(a)
             g.sphere((rr * math.cos(t) * 1.0, rr * 0.93 * math.sin(t), z), 1.1, cuts=2)
     rig.part("hull", g, I.IRON_LT, finish="metal", outline=0)
-    # firebox door on the belly front with a warm grate
-    g = Geo().lathe([(0, 0), (9.6, 0), (10.4, 1.6), (9.8, 3.0), (0, 3.2)], (20.4, -10.0, hz - 6.0), (23.6, -13.4, hz - 6.0),
-                    segs=22)
+    # the furnace face on the boiler front (turned toward the camera): a dark rounded furnace
+    # mouth with a glowing grate of horizontal bars and two angry glowing eye slits above it
+    ang = math.radians(-24.0)
+    nx, ny = math.cos(ang), math.sin(ang)
+    ux, uy = -ny, nx
+
+    def on(u, v, d=0.0):     # a point on the boiler front: u across, v up, d out of the surface
+        return (24.2 * nx + ux * u + nx * d, 22.4 * ny + uy * u + ny * d, hz + v)
+    g = Geo().lathe([(0, 0), (11.4, 0), (12.2, 1.8), (11.2, 3.2), (0, 3.4)], on(0, -5.0, -1.8), on(0, -5.0, 1.6),
+                    segs=24, squash=(1.0, 0.72))
     rig.part("hull", g, I.COAL_LT, finish="metal", outline=0.8)
-    rig.joint("fire", "hull", (23.8, -13.6, hz - 6.0))
-    g = Geo()
-    g.blob((23.2, -13.2, hz - 6.0), (1.2, 7.4, 7.4), p=2.2, rot=(0, 0, -43))
+    rig.joint("fire", "hull", on(0, -5.0, 1.8))
+    g = Geo().lathe([(0, 0), (9.0, 0), (8.8, 0.6), (0, 0.8)], on(0, -5.0, 1.4), on(0, -5.0, 2.4), segs=24,
+                    squash=(1.0, 0.66))
     rig.part("fire", g, "#4A3A33", outline=0)
     g = Geo()
-    for dz in (-4.0, 0.0, 4.0):
-        g.blob((24.0, -14.2, hz - 6.0 + dz), (1.0, 6.2 - abs(dz) * 0.6, 1.3), p=3.0, rot=(0, 0, -43))
+    for dv in (-3.6, 0.0, 3.6):
+        w = 7.6 - abs(dv) * 0.5
+        g.capsule(on(-w, -5.0 + dv, 2.8), on(w, -5.0 + dv, 2.8), 1.25)
     rig.part("fire", g, glow=I.EMBER, outline=0)
+    g = Geo().sphere(on(0, -5.0, 2.2), 3.4, cuts=3)
+    rig.part("fire", g, glow=I.FIRE, outline=0)
+    rig.joint("eyes", "hull", on(0, 9.0, 1.0))
+    g = Geo()
+    for sgn in (-1, 1):
+        g.capsule(on(4.0 * sgn, 7.4, 1.4), on(10.4 * sgn, 10.2, 1.4), 1.9, 1.5)
+    rig.part("eyes", g, glow=I.FLASH, outline=1.0, outline_hex="#8A4A2A")
+    g = Geo()
+    for sgn in (-1, 1):
+        g.blob(on(7.4 * sgn, 13.4, 0.8), (4.6, 4.6, 1.4), p=2.6, rot=(0, 0, 0))
+    rig.part("hull", g, I.IRON_DK, finish="metal", outline=0.6)          # brow plates
+    rig.joint("eyes_x", "hull", on(0, 9.0, 1.0), hidden=True)
+    g = Geo()
+    for sgn in (-1, 1):
+        c = on(7.2 * sgn, 8.8, 1.8)
+        g.capsule((c[0] - 2.2 * ux, c[1] - 2.2 * uy, c[2] + 2.2), (c[0] + 2.2 * ux, c[1] + 2.2 * uy, c[2] - 2.2), 0.9)
+        g.capsule((c[0] - 2.2 * ux, c[1] - 2.2 * uy, c[2] - 2.2), (c[0] + 2.2 * ux, c[1] + 2.2 * uy, c[2] + 2.2), 0.9)
+    rig.part("eyes_x", g, I.COAL, outline=0)
     # pressure gauge on the chest
     g = Geo().lathe([(0, 0), (3.2, 0), (3.4, 1.2), (0, 1.6)], (14.0, -17.4, hz + 14.0), (15.6, -19.0, hz + 14.6),
                     segs=16)
@@ -127,36 +155,23 @@ def build(rig):
     rig.part("hull", g, I.COAL_LT, finish="metal")
     g = Geo().lathe([(5.2, -1.0), (5.5, 0), (5.2, 1.0)], (cx - 1.0, cy, cz + 9.0), (cx - 1.1, cy, cz + 10.0), segs=18)
     rig.part("hull", g, I.COPPER, finish="metal", outline=0.5)
-    I.pennant(rig, "hull", (cx - 10.0, cy + 8.0, cz - 4.0), 38.0, length=20.0, w=11.0, max_deg=18)
     I.steam_puff(rig, "hull", (cx - 3.0, cy - 3.0, cz + 31.0), size=1.5, name="puff")
     I.steam_puff(rig, "hull", (cx - 4.0, cy - 3.0, cz + 38.0), size=1.1, name="puff2")
 
-    # head: a small riveted dome sunk between the shoulders, porthole eyes under a brow plate
+    # head: a low riveted dome cap with a copper knob and a pressure whistle (the face is the
+    # furnace below it)
     rig.joint("head", "hull", (8.0, 0, hz + 22.0))
-    g = Geo().blob((8.0, 0, hz + 26.0), (12.0, 11.4, 10.0), p=2.3)
-    g.clip((8.0, 0, hz + 20.0), (0, 0, -1))
+    g = Geo().blob((6.0, 0, hz + 23.0), (13.0, 12.4, 8.4), p=2.3)
+    g.clip((6.0, 0, hz + 18.0), (0, 0, -1))
     rig.part("head", g, I.IRON_LT, finish="metal")
-    g = Geo().blob((13.0, -1.0, hz + 30.0), (8.6, 10.8, 2.4), p=3.0, rot=(0, -8, 0))
-    rig.part("head", g, I.IRON_DK, finish="metal")
-    g = Geo().sphere((6.0, 0, hz + 36.4), 2.4, cuts=3)
+    g = Geo()
+    for a_ in range(-150, -20, 26):
+        t = math.radians(a_)
+        g.sphere((6.0 + 12.4 * math.cos(t), 11.8 * math.sin(t), hz + 21.0), 0.9, cuts=2)
+    rig.part("head", g, I.BRASS_LT, finish="metal", outline=0)
+    g = Geo().sphere((5.0, 0, hz + 31.4), 2.6, cuts=3)
+    g.capsule((12.0, -4.0, hz + 27.0), (13.0, -4.0, hz + 33.0), 1.3)
     rig.part("head", g, I.COPPER, finish="metal", outline=0.5)
-    for yy in (-5.8, 3.8):
-        g = Geo().lathe([(0, 0), (4.2, 0), (4.6, 1.3), (0, 1.5)], (17.4, yy, hz + 25.6), (19.2, yy - 0.4, hz + 25.6),
-                        segs=16)
-        rig.part("head", g, I.BRASS, finish="metal", outline=0.6)
-    rig.joint("eyes", "head", (19.6, 0, hz + 25.6))
-    g = Geo()
-    for yy in (-5.8, 3.8):
-        g.blob((19.4, yy - 0.5, hz + 25.6), (0.8, 3.2, 3.2), p=2.2)
-    rig.part("eyes", g, glow=I.EMBER, outline=0)
-    rig.joint("eyes_x", "head", (19.6, 0, hz + 25.6), hidden=True)
-    g = Geo()
-    for yy in (-5.8, 3.8):
-        g.capsule((19.6, yy - 2.2, hz + 27.8), (19.6, yy + 1.4, hz + 23.4), 0.8)
-        g.capsule((19.6, yy - 2.2, hz + 23.4), (19.6, yy + 1.4, hz + 27.8), 0.8)
-    rig.part("eyes_x", g, I.COAL, outline=0)
-    g = Geo().blob((18.6, -1.0, hz + 19.2), (2.4, 7.0, 1.6), p=3.0)   # grille mouth
-    rig.part("head", g, I.COAL, outline=0.5)
 
     # far arm: a smaller clamp
     rig.joint("arm_l", "hull", SH_L)
@@ -164,6 +179,9 @@ def build(rig):
     x, y, z = SH_L
     g = Geo().sphere((x, y, z), 7.6, cuts=4)
     rig.part("arm_l", g, team=True)
+    g = Geo().blob((x - 1.0, y, z + 6.0), (9.0, 8.0, 2.0), p=2.8)             # shoulder plate
+    rig.part("arm_l", g, I.IRON_DK, finish="metal", outline=0.6)
+    I.pennant(rig, "arm_l", (x - 3.0, y, z + 7.0), 34.0, length=18.0, w=10.0, max_deg=18)
     g = Geo().capsule((x, y, z), (x, y, z - UP_L), 4.2)
     rig.part("arm_l", g, I.IRON_DK, finish="metal")
     g = Geo().capsule((x, y, z - UP_L), (x, y, z - UP_L - FORE_L), 6.0, 5.2)
@@ -193,8 +211,12 @@ def build(rig):
     g = Geo().capsule((x + 5.0, y - 4.0, z - UP_L - 4.0), (x + 7.0, y - 4.0, z - UP_L - 1.0), 1.4)   # valve
     rig.part("fore_r", g, I.BRASS, finish="metal", outline=0.5)
     fz = z - UP_L - FORE_L
-    g = Geo().capsule((x, y, fz + 6.0), (x, y, fz - 3.0), 3.0)
+    g = Geo().capsule((x, y, fz + 26.0), (x, y, fz - 3.0), 3.2)          # the piston rod (slides out)
     rig.part("ram", g, I.IRON_LT, finish="metal", outline=0.8)
+    g = Geo()
+    for dz in (2.0, 8.0):
+        g.lathe([(3.4, -0.6), (3.8, 0), (3.4, 0.6)], (x, y, fz - dz), (x, y, fz - dz + 1), segs=14)
+    rig.part("ram", g, I.BRASS_LT, finish="metal", outline=0.4)
     g = Geo().blob((x, y, fz - 10.0), (13.4, 11.6, 9.6), p=3.4)
     rig.part("ram", g, I.IRON_DK, finish="metal")
     g = Geo()
@@ -225,7 +247,7 @@ def arms(ra, rf, la=-100.0, lf=-60.0, ram=0.0):
     return merge(I.arm("r", ra, rf), I.arm("l", la, lf), {"ram": {"z": -ram}})
 
 
-REST_ARMS = arms(-100, -35, -90, -40)
+REST_ARMS = arms(-104, -86, -86, -60)     # the ram hangs at the side (the face stays clear)
 CROUCH = 6.0
 
 
@@ -267,11 +289,11 @@ def _walk(f):
 
 
 def _attack(f):
-    # 0-1 cock the ram back and twist, 2 held extreme, 3 smear (piston fires out),
+    # 0-1 cock the ram back and twist (the piston compresses), 2 held extreme (anticipation), 3 smear (piston fires out),
     # 4 held impact: full reach, hull lunges, sparks and a steam burst; 5-7 retract
-    ra = pick(f, [-130, -160, -170, -40, 0, -2, -50, -95])
-    rf = pick(f, [-110, -150, -160, -20, 0, -4, -45, -60])
-    ram = pick(f, [0, 0, 0, 8, 14, 12, 4, 0])
+    ra = pick(f, [-130, -165, -175, -40, 0, -2, -50, -95])
+    rf = pick(f, [-120, -160, -170, -20, 0, -4, -50, -80])
+    ram = pick(f, [-2, -5, -6, 14, 26, 22, 8, 0])       # compressed on the wind-up, fully out on impact
     pose = merge(_stand(pick(f, [-1, -3, -2, 0, -4, -3, -1, 0]), pick(f, [-1, -3, -4, 2, 6, 5, 2, 0])),
                  arms(ra, rf, pick(f, [-90, -80, -70, -110, -130, -125, -110, -100]),
                       pick(f, [-50, -40, -30, -70, -90, -85, -70, -60]), ram), {

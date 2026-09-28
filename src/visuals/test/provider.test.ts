@@ -104,11 +104,11 @@ describe('routing', () => {
     expect(forcedPlace).toHaveBeenCalledOnce();
   });
 
-  it('bakes the atlas for the largest world scale the screen can show (A2.1 camera, B16 memory)', async () => {
+  it('bakes the atlas for the world scale the camera shows (A17.7 camera, B16 memory)', async () => {
     const { screenWorldPxPerLu } = await import('../provider');
-    expect(screenWorldPxPerLu(1280, 720)).toBeCloseTo(1280 / 1560, 6); // desktop 720p: 1:1
+    expect(screenWorldPxPerLu(1280, 720)).toBeCloseTo(1280 / 1400, 6); // desktop 720p: 1,400 lu across
     expect(screenWorldPxPerLu(3840, 2160)).toBe(1.25); // capped: never larger than before
-    expect(screenWorldPxPerLu(390, 844)).toBeCloseTo((844 / 1560) * 1.6, 6); // phone: landscape width, pinch zoom 1.6x
+    expect(screenWorldPxPerLu(390, 844)).toBeCloseTo((390 * 0.68) / 290, 6); // phone: 290 lu in the 68% lane band
     expect(screenWorldPxPerLu(300, 200)).toBe(0.6);
     expect(screenWorldPxPerLu(0, 0)).toBe(1.25);
     expect(createArtProvider({ warn: () => {}, dpr: 2, worldPxPerLu: 0.9 }).procedural.baker.pxPerLu).toBeCloseTo(1.8, 6);

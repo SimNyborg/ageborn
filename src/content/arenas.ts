@@ -9,17 +9,19 @@ export const arenas: ArenaTables = {
   list: [
     {
       index: 1, id: 'tar_pits', trophies: 0, ladderFormats: ['short'],
-      dropAges: ['stone', 'medieval', 'gunpowder'], randomLegendaries: false,
+      // A17.13: the Short War ages
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder'], randomLegendaries: false,
       botTiers: [0, 2], botLevel: 1, botMaxRarity: 'rare', wardenChanceBp: 0,
       gateRewards: [{ kind: 'starterPlan' }, { kind: 'banner', banner: 'tar_pit' }],
       groundVisualId: 'ground.tar_pits', nameKey: 'arena.tar_pits.name',
     },
     {
       index: 2, id: 'frostfang', trophies: 150, ladderFormats: ['short', 'standard'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern'], randomLegendaries: true,
+      // A17.13: the Standard War ages
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern'], randomLegendaries: true,
       botTiers: [1, 3], botLevel: 2, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [
-        { kind: 'ageUnlock', ages: ['modern', 'future'] },
+        { kind: 'ageUnlock', ages: ['industrial', 'modern'] },
         { kind: 'banner', banner: 'frostfang' },
         { kind: 'capsule', tier: 'silver' },
       ],
@@ -27,42 +29,48 @@ export const arenas: ArenaTables = {
     },
     {
       index: 3, id: 'kingsmoat', trophies: 400, ladderFormats: ['short', 'standard', 'full'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern', 'future'], randomLegendaries: true,
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [2, 4], botLevel: 3, botMaxRarity: 'epic', wardenChanceBp: 0,
-      gateRewards: [{ kind: 'banner', banner: 'moat' }, { kind: 'capsule', tier: 'jade' }, { kind: 'conquestUnlock' }],
+      gateRewards: [
+        // A17.13: Gate 3 brings the Future and Cosmic Anti-armor Rares
+        { kind: 'ageUnlock', ages: ['future', 'cosmic'] },
+        { kind: 'banner', banner: 'moat' },
+        { kind: 'capsule', tier: 'jade' },
+        { kind: 'conquestUnlock' },
+      ],
       groundVisualId: 'ground.kingsmoat', nameKey: 'arena.kingsmoat.name',
     },
     {
       index: 4, id: 'powder_bay', trophies: 800, ladderFormats: ['short', 'standard', 'full'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern', 'future'], randomLegendaries: true,
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [3, 5], botLevel: 4, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'harbor' }, { kind: 'capsule', tier: 'jade' }],
       groundVisualId: 'ground.powder_bay', nameKey: 'arena.powder_bay.name',
     },
     {
       index: 5, id: 'iron_front', trophies: 1300, ladderFormats: ['short', 'standard', 'full'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern', 'future'], randomLegendaries: true,
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [4, 6], botLevel: 5, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'barbed' }, { kind: 'capsule', tier: 'jade' }],
       groundVisualId: 'ground.iron_front', nameKey: 'arena.iron_front.name',
     },
     {
       index: 6, id: 'neon_harbor', trophies: 1900, ladderFormats: ['short', 'standard', 'full'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern', 'future'], randomLegendaries: true,
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [5, 7], botLevel: 6, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'neon' }, { kind: 'capsule', tier: 'jade' }],
       groundVisualId: 'ground.neon_harbor', nameKey: 'arena.neon_harbor.name',
     },
     {
       index: 7, id: 'orbital_ring', trophies: 2600, ladderFormats: ['short', 'standard', 'full'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern', 'future'], randomLegendaries: true,
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [6, 8], botLevel: 7, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'starfield' }, { kind: 'capsule', tier: 'aeon' }],
       groundVisualId: 'ground.orbital_ring', nameKey: 'arena.orbital_ring.name',
     },
     {
       index: 8, id: 'chrono_rift', trophies: 3400, ladderFormats: ['short', 'standard', 'full'],
-      dropAges: ['stone', 'medieval', 'gunpowder', 'modern', 'future'], randomLegendaries: true,
+      dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       // A7.4: The Warden appears in 1 of 5 Arena 8 ladder matches
       botTiers: [8, 10], botLevel: 8, botMaxRarity: 'epic', wardenChanceBp: 2000,
       gateRewards: [
@@ -77,13 +85,14 @@ export const arenas: ArenaTables = {
   ladder: {
     // A6.3 ladder results
     win: { trophies: 30, amber: 20, amberWithoutCharge: 40 },
-    // A15.8 rewards by format from 400 trophies (Arena 3): equal reward per minute
+    // A15.8 rewards by format from 400 trophies (Arena 3): equal reward per minute. Re-derived from the
+    // A17.2 medians (4:45 / 6:30 / 8:30): trophies per minute at a 60% win rate 1.60 / 1.63 / 1.60
     winByFormat: {
       fromTrophies: 400,
       formats: {
         short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
-        standard: { trophies: 30, amber: 25, amberWithoutCharge: 50 },
-        full: { trophies: 34, amber: 30, amberWithoutCharge: 60 },
+        standard: { trophies: 31, amber: 27, amberWithoutCharge: 54 },
+        full: { trophies: 36, amber: 35, amberWithoutCharge: 70 },
       },
     },
     loss: { trophies: -20, amber: 15, noLossBelowTrophies: 400 },

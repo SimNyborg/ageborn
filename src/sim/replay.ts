@@ -9,7 +9,7 @@ import type { CompiledContent, MatchConfig, ReplayDoc, ReplayMatch, Sim, TimedCo
 import { SimImpl } from './createSim';
 
 /** Bumped whenever a sim change alters the outcome of recorded commands (golden replays re-recorded). */
-export const SIM_VERSION = '2.0.0';
+export const SIM_VERSION = '2.1.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

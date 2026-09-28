@@ -30,7 +30,8 @@ function earned(u: TitleUnlock, s: SaveDoc, t: Content, m: TitleMatchFacts | nul
     case 'firstWin':
       return s.stats.wins >= 1;
     case 'reachAge': {
-      if (u.age === 'future' && s.stats.futureReached > 0) return true;
+      // `futureReached` counts matches that reached the game's last age (A17.13: Cosmic).
+      if (u.age === t.order.ages[t.order.ages.length - 1] && s.stats.futureReached > 0) return true;
       if (!m || m.reachedFinalAgeAtMs === null) return false;
       const ages = t.formats[m.format]?.ages ?? [];
       return ages[ages.length - 1] === u.age;

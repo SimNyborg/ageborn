@@ -6,7 +6,7 @@ import { DEFAULT_SETTINGS } from '../defaults';
 import { SAVE_VERSION } from '../migrations';
 import { type ReplayDocSchema, validateReplay } from '../replaySchema';
 import { type PendingCapsuleSchema, type PendingCrateSchema, type SaveDocSchema, type SettingsSchema, validateSaveDoc } from '../schema';
-import { goldenReplays, v1Fixture } from './helpers';
+import { goldenReplays, currentFixture } from './helpers';
 
 describe('type parity (DESIGN B13 Schemas)', () => {
   it('schema outputs are exactly the contract types', () => {
@@ -19,14 +19,14 @@ describe('type parity (DESIGN B13 Schemas)', () => {
 });
 
 function withChange(mutate: (d: SaveDoc & Record<string, unknown>) => void): unknown {
-  const d = v1Fixture() as SaveDoc & Record<string, unknown>;
+  const d = currentFixture() as SaveDoc & Record<string, unknown>;
   mutate(d);
   return d;
 }
 
 describe('SaveDoc schema', () => {
-  it('accepts the frozen v1 fixture unchanged', () => {
-    const doc = v1Fixture();
+  it('accepts the frozen fixture of the current version unchanged', () => {
+    const doc = currentFixture();
     const r = validateSaveDoc(doc);
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value).toEqual(doc);
@@ -77,9 +77,9 @@ describe('SaveDoc schema', () => {
   });
 
   it('rejects a doc of another version than the one expected', () => {
-    const r = validateSaveDoc(v1Fixture(), 2);
+    const r = validateSaveDoc(currentFixture(), 3);
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.issues[0]).toMatch(/^v: expected 2/);
+    if (!r.ok) expect(r.issues[0]).toMatch(/^v: expected 3/);
   });
 });
 
@@ -92,7 +92,7 @@ describe('settings fall back field by field', () => {
     }));
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    const fixture = v1Fixture().settings;
+    const fixture = currentFixture().settings;
     expect(r.value.settings).toEqual({
       ...fixture,
       volume: { ...fixture.volume, music: DEFAULT_SETTINGS.volume.music },

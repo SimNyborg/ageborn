@@ -30,10 +30,10 @@ describe('Conquest (A6.10)', () => {
     expect(board[2]?.open).toBe(false);
   });
 
-  it('star conditions: win; win with base above 50%; win before 6:00', () => {
+  it('star conditions: win; win with base above 50%; win before 5:45 (Standard War, A17.13)', () => {
     expect(starsEarned(R, false, stats({ ownBaseHpBpAtEnd: 9000, durationMs: 1000 }))).toEqual([false, false, false]);
-    expect(starsEarned(R, true, stats({ ownBaseHpBpAtEnd: 5000, durationMs: 360_000 }))).toEqual([true, false, false]);
-    expect(starsEarned(R, true, stats({ ownBaseHpBpAtEnd: 5001, durationMs: 359_999 }))).toEqual([true, true, true]);
+    expect(starsEarned(R, true, stats({ ownBaseHpBpAtEnd: 5000, durationMs: 345_000 }))).toEqual([true, false, false]);
+    expect(starsEarned(R, true, stats({ ownBaseHpBpAtEnd: 5001, durationMs: 344_999 }))).toEqual([true, true, true]);
   });
 
   it('stars pay once: 200 Amber, 100 Dust, an Age Capsule; no charges, trophies or MMR', () => {

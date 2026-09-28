@@ -61,5 +61,6 @@ describe('fallback bot honesty (A7.1)', () => {
       winners.add(s.result!.input.outcome.winner);
     }
     expect(winners.size).toBeGreaterThan(1);
-  });
+    // Six Short Wars of up to 6:15 (four ages since A17.8) take a few seconds headless.
+  }, 30000);
 });

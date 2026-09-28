@@ -179,6 +179,10 @@ export const AGE_PALETTES: Readonly<Record<AgeId, { large: readonly number[]; ac
   gunpowder: { large: [0x2e5e4e, 0xefe6cf, 0x4a3b2e], accent: 0xc9a227, names: ['bottle green', 'cream', 'dark wood', 'brass'] },
   modern: { large: [0x62664a, 0xb8a67a, 0x3a3f45], accent: 0xb0306a, names: ['olive', 'khaki', 'gunmetal', 'signal red-violet'] },
   future: { large: [0x23262e, 0xf03aa8, 0x3af0b4, 0xf4f6f8], accent: 0x29e3f5, names: ['charcoal', 'magenta', 'mint', 'white', 'cyan'] },
+  // A17.12 (placeholder procedural tier until the WP4 art for the new ages lands)
+  bronze: { large: [0xcdbe9e, 0x4f8f7f, 0x6a5566], accent: 0xb8863b, names: ['sandstone', 'verdigris', 'dusk plum', 'polished bronze'] },
+  industrial: { large: [0x5b6168, 0x2b2a2e, 0xdcd6c8, 0x8a6a63], accent: 0xb06a3b, names: ['iron', 'coal', 'smoke cream', 'muted brick', 'copper'] },
+  cosmic: { large: [0x1e1830, 0x8e44c8, 0xf2f0ff], accent: 0x3fe0b0, names: ['void', 'nebula violet', 'star white', 'mint'] },
 };
 
 /**
@@ -298,6 +302,67 @@ export const AGE_ZONES: Readonly<Record<AgeId, Palette>> = {
     glow: 0x3af0b4,
     accent: 0x29e3f5,
   },
+  // A17.12 placeholder zones (medieval-like rigs recoloured; WP4 replaces them with real puppets)
+  bronze: {
+    ...SHARED_ZONES,
+    skin: 0xcfa98c,
+    hair: 0x4d4038,
+    cloth: 0xcdbe9e, // sandstone
+    cloth2: 0x4f8f7f, // verdigris
+    cloth3: 0x6a5566, // dusk plum
+    leather: 0x7a6250,
+    metal: 0xa88f5e,
+    metal2: 0x7d6a48,
+    wood: 0x7a6552,
+    wood2: 0x5e4d3f,
+    stone: 0xb5a888,
+    stone2: 0x8f846c,
+    fur: 0x7a6858,
+    fur2: 0x5e5044,
+    bone: 0xede3c8,
+    accent: 0xb8863b,
+  },
+  industrial: {
+    ...SHARED_ZONES,
+    skin: 0xe8c9ad,
+    hair: 0x3f3530,
+    cloth: 0x5b6168, // iron
+    cloth2: 0xdcd6c8, // smoke cream
+    cloth3: 0x8a6a63, // muted brick
+    leather: 0x5e4b3c,
+    metal: 0x7d838a,
+    metal2: 0x2b2a2e,
+    wood: 0x5a4838,
+    wood2: 0x4a3b2e,
+    stone: 0x8a6a63,
+    stone2: 0x6a524c,
+    fur: 0x6a5a4c,
+    fur2: 0x4f4439,
+    bone: 0xdcd6c8,
+    accent: 0xb06a3b,
+  },
+  cosmic: {
+    ...SHARED_ZONES,
+    skin: 0xa8876f,
+    hair: 0x2a2530,
+    cloth: 0x2e2648, // void
+    cloth2: 0x8e44c8, // nebula violet
+    cloth3: 0xf2f0ff, // star white
+    leather: 0x3a3450,
+    metal: 0xb8b4d0,
+    metal2: 0x5a5478,
+    wood: 0x4a4460,
+    wood2: 0x36304a,
+    stone: 0x6e6a88,
+    stone2: 0x4e4a66,
+    fur: 0x4a4460,
+    fur2: 0x36304a,
+    bone: 0xf2f0ff,
+    magenta: 0x8e44c8,
+    mint: 0x3fe0b0,
+    glow: 0x3fe0b0,
+    accent: 0x3fe0b0,
+  },
 };
 
 /** Muted sky, silhouette and mid-ground colours per age (backdrops stay desaturated, A11). */
@@ -309,6 +374,10 @@ export const BACKDROP_PALETTES: Readonly<
   gunpowder: { skyTop: 0x8cb6c6, skyBottom: 0xf2e2c0, far: 0x8ea3a6, mid: 0x6c8874, near: 0x546c56, light: 0xfff0d0 },
   modern: { skyTop: 0x98a8b6, skyBottom: 0xe6dcc4, far: 0x8a8f9a, mid: 0x6c7264, near: 0x565c4a, light: 0xf2ead2 },
   future: { skyTop: 0x2c2e50, skyBottom: 0x9a7aa8, far: 0x524e78, mid: 0x3e3e60, near: 0x2c2e46, light: 0xd8f3ea },
+  // A17.12: temples and olive hills; chimneys and viaducts; planets and nebulae
+  bronze: { skyTop: 0x94b4c8, skyBottom: 0xf0dcc0, far: 0xa39aa0, mid: 0x8a8a66, near: 0x6a7250, light: 0xfff0cc },
+  industrial: { skyTop: 0x8e9aa4, skyBottom: 0xdcd2c0, far: 0x7e7c80, mid: 0x686460, near: 0x4e4a48, light: 0xf2e6cc },
+  cosmic: { skyTop: 0x1e1830, skyBottom: 0x6a4a8e, far: 0x4a3e6e, mid: 0x36305a, near: 0x262040, light: 0xe8e4ff },
 };
 
 /** Level trims (DESIGN A11: they follow the colour rule, so they stay small accents). */

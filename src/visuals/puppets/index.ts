@@ -17,4 +17,8 @@ export const AGE_PUPPETS: Readonly<Record<AgeId, { units: readonly PuppetDef[]; 
   gunpowder: { units: GUNPOWDER_UNITS, turrets: GUNPOWDER_TURRETS, base: GUNPOWDER_BASE },
   modern: { units: MODERN_UNITS, turrets: MODERN_TURRETS, base: MODERN_BASE },
   future: { units: FUTURE_UNITS, turrets: FUTURE_TURRETS, base: FUTURE_BASE },
+  // A17 ages: no procedural puppets yet; their cards draw the provider's placeholder until WP4 adds them
+  bronze: { units: [], turrets: [], base: null },
+  industrial: { units: [], turrets: [], base: null },
+  cosmic: { units: [], turrets: [], base: null },
 };

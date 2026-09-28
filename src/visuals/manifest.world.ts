@@ -22,6 +22,10 @@ export const WORLD_TURRET_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   gunpowder: ['swivel_gun', 'grapeshot_gun', 'congreve_rack', 'chainshot_cannon'],
   modern: ['mg_nest', 'flak_gun', 'howitzer', 'searchlight_sniper'],
   future: ['pulse_laser', 'arc_coil', 'plasma_mortar', 'gravity_well'],
+  // A17 ages: sheets are rendered but not wired yet (docs/requests/wp4-bronze-art-wiring.md)
+  bronze: [],
+  industrial: [],
+  cosmic: [],
 };
 
 /** Ages whose base has a sheet (art/blender/world/base_<age>.py). */

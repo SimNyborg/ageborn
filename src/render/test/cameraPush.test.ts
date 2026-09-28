@@ -20,6 +20,7 @@ describe('camera push', () => {
   it('zooms around the focus and brings it toward the middle, then returns to the fit', () => {
     const c = new Camera();
     c.resize(1280, 720);
+    c.setHome(0);
     const before = c.worldToScreen(push.x, push.y);
     const fit = c.transform();
     c.pushTo(push);

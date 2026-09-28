@@ -58,6 +58,9 @@ const GROUP_TITLES: Record<SoundGroup, string> = {
   gunpowder: 'Gunpowder (lazy)',
   modern: 'Modern (lazy)',
   future: 'Future (lazy)',
+  bronze: 'Bronze (lazy)',
+  industrial: 'Industrial (lazy)',
+  cosmic: 'Cosmic (lazy)',
   capsule: 'Capsules (lazy)',
 };
 

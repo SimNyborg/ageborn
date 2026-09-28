@@ -11,7 +11,8 @@
     },
     "m2": {
       "treasury": "Tap your gold for Treasury",
-      "secondMount": "Buy a second turret mount"
+      "secondMount": "Buy a second turret mount",
+      "scroll": "Drag the field or tap the map"
     },
     "m4": {
       "stance": "Hold: gather at the line, then push."
@@ -46,7 +47,7 @@
     "disclosure": {
       "rookie": "Rookie AI: makes extra mistakes while you learn",
       "echo": "AI · Echo of You: an AI playing your War Plan",
-      "wardenStandard": "Brings all five Legendaries, at the Standard level like every card."
+      "wardenStandard": "Brings all eight Legendaries, at the Standard level like every card."
     },
     "play": "Play",
     "quickBattle": "Quick Battle",

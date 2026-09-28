@@ -39,6 +39,10 @@ export const AGE_COLOR: Record<AgeId, { main: string; accent: string; light: str
   gunpowder: { main: '#2E5E4E', accent: '#C9A227', light: '#EFE6CF' },
   modern: { main: '#62664A', accent: '#B0306A', light: '#B8A67A' },
   future: { main: '#23262E', accent: '#29E3F5', light: '#3AF0B4' },
+  // A17.12
+  bronze: { main: '#CDBE9E', accent: '#B8863B', light: '#4F8F7F' },
+  industrial: { main: '#5B6168', accent: '#B06A3B', light: '#DCD6C8' },
+  cosmic: { main: '#1E1830', accent: '#3FE0B0', light: '#8E44C8' },
 };
 
 function Svg(p: IconProps & { children: ComponentChildren; view?: string }) {

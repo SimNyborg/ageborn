@@ -44,7 +44,7 @@ export interface TierResult {
 
 /**
  * Tier A vs tier B, both the Balanced brain with the same baseline plan (A2.14) at level 1, on Full
- * War (the A2.14 reference format, all five ages), with mirrored seeds: each seed is played twice, tier
+ * War (the A2.14 reference format, all eight ages), with mirrored seeds: each seed is played twice, tier
  * A once on each side, so neither the side's first-mover edge nor a lucky seed counts for one tier.
  */
 export function tierMatches(tierA: number, tierB: number, n: number, format: FormatId = 'full'): TierResult {

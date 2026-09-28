@@ -52,6 +52,19 @@
     "xpText": "XP {xp}/{need}",
     "finalAge": "Top age",
     "frontLabel": "Front line: where the armies meet",
+    "camera": {
+      "base": "Your base",
+      "follow": "Follow the fight",
+      "followShort": "Follow",
+      "yourBase": "Your base",
+      "theirBase": "Their base",
+      "map": "Battlefield map: tap or drag to look around"
+    },
+    "badge": {
+      "base": "Your base is under attack",
+      "power": "Power incoming",
+      "legendary": "Enemy Legendary"
+    },
     "nextPhase": {
       "overdrive": "Overdrive in {time}",
       "siege": "Siege in {time}"

@@ -149,6 +149,26 @@ const FANFARE_VOICES: Record<AgeId, { voice: Zz; extra: (v: number) => ZzfxNote[
       at(340, { vol: 0.5, freq: 65, attack: 0.01, sustain: 0.3, release: 0.3, shape: 'sin' }),
     ],
   },
+  // A17.12 arrangements (the evolve_fanfare_<age> ids for these arrive with the WP6 A17 sounds).
+  // Plucked lyre over a frame drum.
+  bronze: {
+    voice: { shape: 'tri', attack: 0.003, lowpass: 3000 },
+    extra: (v) => [thump(0, 110 * (1 + 0.04 * v), 0.5, 0.2), thump(340, 100, 0.5, 0.25)],
+  },
+  // Cornet over tuba and an anvil strike.
+  industrial: {
+    voice: { shape: 'saw', attack: 0.02, lowpass: 2200 },
+    extra: () => [note(340, 'C3', { vol: 0.3, shape: 'saw', attack: 0.02, sustain: 0.3, release: 0.2, lowpass: 900 }), noiseBurst(340, { vol: 0.25, freq: 2600, release: 0.2, highpass: 1800 })],
+  },
+  // Choir pad with a bell arpeggio and a deep sub.
+  cosmic: {
+    voice: { shape: 'saw', attack: 0.06, lowpass: 1800 },
+    extra: () => [
+      note(620, 'G5', { vol: 0.18, shape: 'sin', release: 0.4 }),
+      note(680, 'C6', { vol: 0.18, shape: 'sin', release: 0.4 }),
+      at(340, { vol: 0.5, freq: 49, attack: 0.02, sustain: 0.35, release: 0.4, shape: 'sin' }),
+    ],
+  },
 };
 
 function fanfare(age: AgeId): SoundDef {

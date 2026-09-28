@@ -65,7 +65,8 @@ describe('modes wiring (A6.3, A6.8, A6.10, A9 #3)', () => {
     const ladder = play(save, { mode: 'ladder', format: 'standard' });
     expect(ladder.replay.format).toBe('standard');
     const conquest = play(save, { mode: 'conquest', general: 'pip' });
-    expect(conquest.replay.format).toBe('full');
+    // A17.18 owner decision: Conquest plays Standard War
+    expect(conquest.replay.format).toBe('standard');
     expect(conquest.label).toBe(i18n.t('general.pip.name'));
     const skirmish = play(save, { mode: 'skirmish', options: { generalId: 'kettle', tier: 2, format: 'short', standardLevels: true }, speed: 1 });
     // "Standard levels": every card on both sides at L7 (A6.8).

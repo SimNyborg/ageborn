@@ -60,8 +60,21 @@ const RUBBLE_COLORS: Record<AgeId, readonly number[]> = {
   gunpowder: [0xb8a88a, 0x9a8c72, 0xcabb9c, 0x857860],
   modern: [0xa29f96, 0x86837b, 0xb6b3a9, 0x62664a],
   future: [0xbfc4cb, 0x3a3f4a, 0xced3d9, 0x23262e],
+  // A17.12 (no base sheet yet: the procedural base draws until WP4 wires them)
+  bronze: [0xcdbe9e, 0xb0a282, 0xdccfb2, 0x4f8f7f],
+  industrial: [0x8a6a63, 0x5b6168, 0x9c7e76, 0x2b2a2e],
+  cosmic: [0xc8c4dc, 0x2e2648, 0xe0dcf2, 0x8e44c8],
 };
-const DUST_COLORS: Record<AgeId, number> = { stone: 0xb8a88e, medieval: 0xb4b2aa, gunpowder: 0xcfc2a6, modern: 0xb0ada4, future: 0xa8adb8 };
+const DUST_COLORS: Record<AgeId, number> = {
+  stone: 0xb8a88e,
+  bronze: 0xcfc2a6,
+  medieval: 0xb4b2aa,
+  gunpowder: 0xcfc2a6,
+  industrial: 0xa8a29a,
+  modern: 0xb0ada4,
+  future: 0xa8adb8,
+  cosmic: 0xa8a4c0,
+};
 /** At most this many rubble chunks live at once (hits, crumbles and the collapse share it). */
 const MAX_CHUNKS = 40;
 const EVOLVE_FLASH_MAX = 0.55;
@@ -82,6 +95,9 @@ const LIGHT_COLORS: Record<AgeId, number> = {
   gunpowder: 0xffd89a,
   modern: 0xf2ecd2,
   future: 0x9ff5d8,
+  bronze: 0xffc27a,
+  industrial: 0xffd89a,
+  cosmic: 0x9ff5d8,
 };
 
 export class AtlasBaseView implements BaseView {

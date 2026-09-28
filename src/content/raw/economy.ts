@@ -6,16 +6,26 @@ import type { EconomyRules, FormatDef } from '@/contracts/content';
 import type { AgeId, FormatId } from '@/contracts/ids';
 import type { RawAgeScale, RawBattleRules, RawDamageMods } from './types';
 
-/** DESIGN A2.2 (P, base max HP = 10,000 × P) and A2.4 (XP to evolve out of each age). */
+/**
+ * DESIGN A17.8 power scale (P, base max HP = 10,000 × P; Bronze and Industrial are half steps of
+ * ×1.16, the rest ×1.35) and XP to evolve out of each age (small steps cost less XP, big steps more).
+ */
 export const ageScale: Record<AgeId, RawAgeScale> = {
-  stone: { id: 'stone', index: 0, pBp: 10000, baseHp: 10000, xpToNext: 700 },
-  medieval: { id: 'medieval', index: 1, pBp: 13500, baseHp: 13500, xpToNext: 1000 },
-  gunpowder: { id: 'gunpowder', index: 2, pBp: 18200, baseHp: 18200, xpToNext: 1200 },
-  modern: { id: 'modern', index: 3, pBp: 24600, baseHp: 24600, xpToNext: 1500 },
-  future: { id: 'future', index: 4, pBp: 33200, baseHp: 33200, xpToNext: null },
+  stone: { id: 'stone', index: 0, pBp: 10000, baseHp: 10000, xpToNext: 550 },
+  bronze: { id: 'bronze', index: 1, pBp: 11600, baseHp: 11600, xpToNext: 500 },
+  medieval: { id: 'medieval', index: 2, pBp: 13500, baseHp: 13500, xpToNext: 900 },
+  gunpowder: { id: 'gunpowder', index: 3, pBp: 18200, baseHp: 18200, xpToNext: 700 },
+  industrial: { id: 'industrial', index: 4, pBp: 21200, baseHp: 21200, xpToNext: 800 },
+  modern: { id: 'modern', index: 5, pBp: 24600, baseHp: 24600, xpToNext: 1200 },
+  future: { id: 'future', index: 6, pBp: 33200, baseHp: 33200, xpToNext: 1300 },
+  cosmic: { id: 'cosmic', index: 7, pBp: 44800, baseHp: 44800, xpToNext: null },
 };
 
-/** DESIGN A2.10 match formats. Times are ms from match start; null means "none" / "never". */
+/**
+ * DESIGN A17.8 match formats: every ladder format is a range of consecutive ages from Stone (Short 4,
+ * Standard 6, Full 8). The tutorial alone skips ages and keeps its five-age run and retimed
+ * thresholds, so onboarding match 1 is unchanged. Times are ms from match start; null means "none".
+ */
 export const formats: Record<FormatId, FormatDef> = {
   tutorial: {
     id: 'tutorial',
@@ -28,26 +38,26 @@ export const formats: Record<FormatId, FormatDef> = {
   },
   short: {
     id: 'short',
-    ages: ['stone', 'medieval', 'gunpowder'],
-    overdriveMs: 210000,
-    siegeMs: 270000,
-    finalBellMs: 360000,
+    ages: ['stone', 'bronze', 'medieval', 'gunpowder'],
+    overdriveMs: 225000,
+    siegeMs: 285000,
+    finalBellMs: 375000,
     retreatAfterMs: 60000,
   },
   standard: {
     id: 'standard',
-    ages: ['stone', 'medieval', 'gunpowder', 'modern'],
-    overdriveMs: 270000,
-    siegeMs: 360000,
-    finalBellMs: 450000,
+    ages: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern'],
+    overdriveMs: 300000,
+    siegeMs: 405000,
+    finalBellMs: 510000,
     retreatAfterMs: 60000,
   },
   full: {
     id: 'full',
-    ages: ['stone', 'medieval', 'gunpowder', 'modern', 'future'],
-    overdriveMs: 330000,
-    siegeMs: 450000,
-    finalBellMs: 570000,
+    ages: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'],
+    overdriveMs: 405000,
+    siegeMs: 525000,
+    finalBellMs: 645000,
     retreatAfterMs: 60000,
   },
 };

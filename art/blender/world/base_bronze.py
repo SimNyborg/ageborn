@@ -37,6 +37,7 @@ CLAY = "#B98A66"
 OLIVE = "#6F7F55"
 CRACK = "#5A4E40"
 FIRE = "#FFD08A"
+FLAME = "#FFA64D"             # the outer flame (bases are exempt from the colour rule)
 FIRE_CORE = "#FFF3D6"
 
 DEPTHS = [-40, -24, -40, -24]
@@ -70,6 +71,11 @@ def tier(rig, joint, hw, z0, z1, yf, k):
     g = Geo()
     box(g, (CX, yc - 1.0, z1 - 5.4), (hw + 2.0, hd + 2.2, 1.8), p=6, cuts=2)
     rig.part(joint, g, PLUM, outline=0.4)
+    g = Geo()   # verdigris coping along the front and side edges of the roof
+    box(g, (CX, yf - 3.4, z1 + 0.6), (hw + 3.6, 1.6, 1.3), p=6, cuts=2)
+    for sx_ in (-1, 1):
+        box(g, (CX + sx_ * (hw + 2.4), yc - 1.0, z1 + 0.6), (1.6, hd + 3.6, 1.3), p=6, cuts=2)
+    rig.part(joint, g, VERD_LT, finish="metal", outline=0.4)
 
 
 def stairs(rig, joint):
@@ -87,6 +93,18 @@ def stairs(rig, joint):
         for s in (-1, 1):
             g.capsule((CX + s * (14.5 - k * 1.5), yf - 23.0, z0 + 2.0), (CX + s * (14.5 - k * 1.5), yf - 1.5, z1 + 1.0), 2.0)
     rig.part(joint, g, SAND_DKR, outline=0.5)
+    g, r = Geo(), Geo()   # a plum runner down the steps, held by polished bronze stair rods
+    for k, (hw, z0, z1, yf) in enumerate(TIERS[:3]):
+        steps = 8
+        for i in range(steps):
+            z = z0 + (z1 - z0) * (i + 0.5) / steps
+            y = yf - 12.0 + 11.0 * i / steps - (12.0 - 11.0 * i / steps) - 0.4
+            h = (z1 - z0) / steps / 2
+            box(g, (CX, y, z), (5.2, 0.5, h + 0.2), p=6, cuts=2)
+            box(g, (CX, y + 2.0, z + h), (5.2, 2.2, 0.4), p=6, cuts=2)
+            r.capsule((CX - 6.4, y - 0.6, z + h - 0.4), (CX + 6.4, y - 0.6, z + h - 0.4), 0.55)
+    rig.part(joint, g, PLUM, outline=0.3)
+    rig.part(joint, r, BRONZE, finish=P.POLISH, outline=0)
 
 
 def brazier(rig, joint, x, y, z, name):
@@ -97,9 +115,13 @@ def brazier(rig, joint, x, y, z, name):
     g = Geo().lathe([(7.2, 0), (7.8, 0.4), (7.8, 1.2), (7.2, 1.4)], (x, y, z + 12.6), (x, y, z + 13.6), segs=20)
     rig.part(joint, g, BRONZE, finish="metal", outline=0.4)
     rig.joint(name, joint, (x, y, z + 14.0))
-    g = Geo().blob((x, y - 1, z + 20.0), (5.6, 4.4, 8.6), p=2.0, taper=(1.0, 0.25))
+    g = Geo().blob((x, y - 1, z + 21.0), (7.0, 5.0, 10.6), p=2.0, taper=(1.0, 0.22))
+    for dx, h in ((-4.2, 7.0), (4.0, 8.4)):            # side tongues
+        g.blob((x + dx, y - 1.2, z + 17.0 + h * 0.5), (2.4, 2.2, h * 0.6), p=2.0, taper=(1.0, 0.2))
+    rig.part(name, g, glow=FLAME, outline=0.8, outline_hex="#C9782E")
+    g = Geo().blob((x, y - 2.4, z + 19.0), (4.4, 3.4, 6.8), p=2.0, taper=(1.0, 0.3))
     rig.part(name, g, glow=FIRE, outline=0)
-    g = Geo().blob((x, y - 3, z + 17.5), (2.8, 2.2, 4.4), p=2.0, taper=(1.0, 0.3))
+    g = Geo().blob((x, y - 4, z + 17.4), (2.4, 2.0, 3.6), p=2.0, taper=(1.0, 0.3))
     rig.part(name, g, glow=FIRE_CORE, outline=0)
 
 
@@ -150,6 +172,11 @@ def build(rig, M):
     g = Geo().slab([(sx - 33, 298), (sx + 33, 298), (sx, 318)], sy - 20, 3.0)
     g.blob((sx, sy, 306), (32, 20, 9), p=3.0, taper=(1.0, 0.1))
     rig.part("shrine", g, team=True)
+    g = Geo()   # verdigris eaves along the gable
+    g.capsule((sx - 34, sy - 21.6, 297.4), (sx, sy - 21.6, 318.6), 1.3)
+    g.capsule((sx, sy - 21.6, 318.6), (sx + 34, sy - 21.6, 297.4), 1.3)
+    box(g, (sx, sy - 2, 298.6), (33, 22, 1.0), p=6, cuts=2)
+    rig.part("shrine", g, VERD_LT, finish="metal", outline=0.4)
     g = Geo().sphere((sx, sy - 22, 318), 2.4, cuts=3)
     rig.part("shrine", g, BRONZE, finish="metal", outline=0.5)
 
@@ -168,16 +195,22 @@ def build(rig, M):
     g = Geo()
     box(g, (dx, gy - 0.6, 18), (11.5, 1.6, 18), p=5)
     rig.part("body", g, AGED_DK, finish="metal")
+    g = Geo()   # the two polished bronze door leaves
+    for s_ in (-1, 1):
+        box(g, (dx + s_ * 5.4, gy - 1.8, 18), (4.8, 1.3, 15.8), p=5, cuts=2)
+    rig.part("body", g, BRONZE, finish=P.POLISH, outline=0.4)
+    g = Geo()   # verdigris panels and rings on the leaves
+    for s_ in (-1, 1):
+        for z in (10.0, 25.0):
+            box(g, (dx + s_ * 5.4, gy - 3.2, z), (3.0, 0.4, 5.0), p=5, cuts=2)
+    rig.part("body", g, VERD, outline=0.3)
     g = Geo()
-    for s in (-1, 1):
-        box(g, (dx + s * 5.4, gy - 1.8, 18), (4.6, 1.2, 15.5), p=5, cuts=2)
-    rig.part("body", g, VERD_LT, finish="metal", outline=0.4)
-    g = Geo()
-    for s in (-1, 1):
-        for z in (6, 14, 22, 30):
-            g.sphere((dx + s * 5.4, gy - 3.0, z), 1.0, cuts=2)
-    g.capsule((dx - 0.8, gy - 3.0, 4.0), (dx - 0.8, gy - 3.0, 32.0), 0.7)
-    rig.part("body", g, BRONZE, finish="metal", outline=0.3)
+    for s_ in (-1, 1):
+        for z in (4, 17.5, 31):
+            g.sphere((dx + s_ * 5.4, gy - 3.4, z), 1.0, cuts=2)
+        g.lathe([(1.4, -0.4), (2.2, 0), (1.4, 0.4)], (dx + s_ * 1.8, gy - 3.6, 18), (dx + s_ * 1.8, gy - 4.6, 18), segs=12)
+    g.capsule((dx, gy - 3.2, 3.0), (dx, gy - 3.2, 33.0), 0.6)
+    rig.part("body", g, P.BRONZE_HI, finish=P.POLISH, outline=0.3)
     g = Geo().slab([(dx - 14, 0), (dx + 14, 0), (dx + 14, 38), (dx - 14, 38)], gy + 0.4, 2.0)
     rig.part("body", g, SAND_DKR, outline=0.4)
 

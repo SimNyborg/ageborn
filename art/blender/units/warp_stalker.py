@@ -4,11 +4,13 @@ fx.blink). ~70 lu.
 
 Look (A17.12, Cosmic palette): a lean, hunched assassin. A pointed violet hood over a dark mask
 with two mint eyes, a big team cloak that trails from the shoulders and flares on the walk
-(follow-through), its turned-up hem showing the starry lining (void with star-white and mint
-specks), a void bodysuit with violet shin guards and a team sash. Both hands hold short curved
+(follow-through); its near half is thrown open toward the camera so the starry lining reads
+(void with star-white and mint star specks), a void bodysuit with violet shin guards and a team sash. Both hands hold short curved
 mint warp blades held low and reversed, the brightest shapes on the unit. The stance is a low
 forward crouch. The attack is a lunging cross-slash: crouch and draw both blades back, a held
-coil, a mint smear, a held impact with both blades crossed forward and a spark burst.
+coil, a mint smear, a held impact with both blades crossed forward and a spark burst. The death
+blinks out: struck, folded in, then squeezed thin and shrunk into a violet star flash (no fall,
+no dust poof).
 """
 import math
 
@@ -74,12 +76,21 @@ def build(rig):
     rig.part("cloak", g, team=True)
     g = Geo().blob((-14.0, -1.5, 9.0), (4.2, 14.4, 3.2), p=2.6, rot=(0, -14, 0))
     rig.part("cloak", g, K.VOID, finish="matte")
+    # the near half of the cloak is thrown open toward the camera: a big void lining panel from
+    # the shoulder to the hem, scattered with star-white specks and one mint star
+    lin = [(-3.0, 37.0), (-7.0, 30.0), (-10.0, 20.0), (-12.0, 10.0), (-17.0, 6.5), (-24.0, 7.5), (-22.0, 16.0),
+           (-18.0, 27.0), (-11.0, 36.0)]
+    g = Geo().slab(lin, -13.6, 1.6)
+    rig.part("cloak", g, K.VOID, outline_hex=K.VOID_DK)
+    g = Geo().slab([(-3.0, 38.5), (-11.8, 37.4), (-19.8, 28.0), (-24.2, 16.0), (-26.8, 6.8), (-23.4, 4.6),
+                    (-21.0, 15.6), (-17.2, 26.2), (-10.6, 34.4), (-3.4, 34.8)], -13.0, 1.8)
+    rig.part("cloak", g, team=True, outline=0.6)                       # the team outer edge folds over
     g = Geo()
-    for (dx, dy, dz, r) in ((-12.0, -16.2, 9.8, 0.9), (-16.5, -15.8, 8.2, 0.7), (-9.2, -15.6, 8.0, 0.6),
-                            (-19.0, -14.8, 9.6, 0.6), (-14.2, -16.4, 10.8, 0.5)):
-        g.sphere((dx, dy, dz), r, cuts=2)
+    for (x, z, r) in ((-9.0, 30.0, 1.5), (-14.5, 24.0, 1.9), (-11.5, 17.0, 1.3), (-17.5, 13.0, 1.6),
+                      (-20.5, 9.2, 1.2), (-15.0, 9.0, 1.1), (-7.8, 23.0, 1.0)):
+        g.star((x, -15.2, z), r * 1.4, r * 0.55, 0.8, points=4)
     rig.part("cloak", g, glow=K.STAR, outline=0)
-    g = Geo().sphere((-17.6, -16.0, 7.6), 0.7, cuts=2)
+    g = Geo().star((-12.0, -15.2, 12.5), 2.2, 0.9, 0.8, points=4)
     rig.part("cloak", g, glow=K.MINT, outline=0)
 
     # lean torso: void suit, a team sash across the chest, violet belt
@@ -126,6 +137,22 @@ def build(rig):
     rig.track("bladeTip", "blade_r", TIP_R)
     rig.track("_foot", "shin_r", (3.0, -6.0, 0.5))
     K.sparks(rig, "blade_r", (TIP_R[0], TIP_R[1] - 1.0, TIP_R[2] - 4.0), color=K.MINT, size=1.3, name="sparks")
+    # the blink-out flash (on the root, so it does not shrink with the body)
+    at = (0.0, -6.0, 30.0)
+    rig.joint("blink", "root", at, hidden=True)
+    g = Geo().star((at[0], at[1] - 4.0, at[2]), 22.0, 5.0, 1.6, points=4)
+    rig.part("blink", g, glow=K.VIOLET_GLOW, outline=0)
+    g = Geo()
+    for i in range(8):
+        a = 2 * math.pi * (i + 0.5) / 8
+        g.sphere((at[0] + 16.0 * math.cos(a), at[1] - 5.0, at[2] + 16.0 * math.sin(a)), 1.4, cuts=2)
+    rig.part("blink", g, glow=K.STAR, outline=0)
+    g = Geo().lathe([(9.0, -1.6), (12.0, -1.6), (12.6, 0), (12.0, 1.6), (9.0, 1.6)], (at[0], at[1] - 3.0, at[2]),
+                    (at[0], at[1] - 4.0, at[2]), segs=28)
+    rig.part("blink", g, team=True, outline=0.6)        # a team ring keeps the team cue to the end
+    rig.joint("blink_core", "root", at, hidden=True)
+    g = Geo().sphere((at[0], at[1] - 7.0, at[2]), 7.0, cuts=4)
+    rig.part("blink_core", g, glow=K.VIOLET_CORE, outline=0)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -184,13 +211,30 @@ def _hit(f):
     return merge(STANCE, K.hit_body(f), {"arm_r": {"r": 16 * a}, "arm_l": {"r": 14 * a}})
 
 
+# death: a blink-out, not a fall. 0 struck (recoil, X eyes), 1 folds in, 2-4 warps away: squeezed
+# thin and shrinking into a violet flash, 5 a last spark as the flash closes (7 steps, 0.5 s)
+DIE_SEQ = [0, 1, 2, 3, 4, 5, 5]
+DIE_MS = [60, 70, 60, 60, 60, 80, 90]
+
+
 def _die(f):
-    pose = merge(STANCE, fx.die_pose(f), K.die_limbs(f), {
-        "arm_r": {"r": pick(f, [60, 70, 70])}, "arm_l": {"r": pick(f, [80, 70, 70])},
+    pose = merge(STANCE, {
+        "body": {"x": pick(f, [-3, -4, -4, -4, -4, -4]), "z": pick(f, [1, 0, 6, 10, 13, 15]),
+                 "r": pick(f, [12, 6, 0, 0, 0, 0]),
+                 "s": pick(f, [1.0, 0.94, 0.72, 0.45, 0.18, 0.04]),
+                 "sx": pick(f, [1.0, 1.06, 0.6, 0.45, 0.4, 1.0]), "sy": pick(f, [1.0, 1.06, 0.6, 0.45, 0.4, 1.0]),
+                 "sz": pick(f, [1.0, 0.9, 1.35, 1.6, 1.8, 1.0])},
+        "torso": {"r": pick(f, [16, 8, 0, 0, 0, 0])}, "head": {"r": pick(f, [14, 0, 0, 0, 0, 0])},
+        "arm_r": {"r": pick(f, [60, 30, 10, 0, 0, 0])}, "arm_l": {"r": pick(f, [80, 40, 10, 0, 0, 0])},
+        "blink": {"show": f >= 2, "s": pick(f, [1, 1, 0.7, 1.05, 1.3, 0.7])},
+        "blink_core": {"show": f in (2, 3, 4), "s": pick(f, [1, 1, 0.8, 1.0, 1.1, 1])},
     })
     if f in (0, 1):
         K.ko(pose)
     return pose
+
+
+DIE_EXTRA = {"fx": [], "blinkOut": True, "hideUnitAtMs": sum(DIE_MS)}
 
 
 def clips():
@@ -199,5 +243,5 @@ def clips():
         Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
         Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=fx.MELEE_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+        Clip("die", 6, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=DIE_EXTRA),
     ]

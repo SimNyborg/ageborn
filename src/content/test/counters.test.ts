@@ -130,8 +130,8 @@ describe('duel setup', () => {
 
 describe('strongWeak (A2.6 "Strong vs" / "Weak vs")', () => {
   const unit = (id: string, age: UnitDef['age']): UnitDef => ({ ...(content.units.bonker as UnitDef), id, age });
-  const units = [unit('a', 'stone'), unit('b', 'stone'), unit('c', 'medieval'), unit('d', 'gunpowder'), unit('e', 'stone'), unit('f', 'stone'), unit('g', 'stone')];
-  const ageIndex = { stone: 0, medieval: 1, gunpowder: 2, modern: 3, future: 4 };
+  const units = [unit('a', 'stone'), unit('b', 'stone'), unit('c', 'bronze'), unit('d', 'medieval'), unit('e', 'stone'), unit('f', 'stone'), unit('g', 'stone')];
+  const ageIndex = { stone: 0, bronze: 1, medieval: 2, gunpowder: 3, industrial: 4, modern: 5, future: 6, cosmic: 7 };
   const matrix = { a: { a: 5000, b: 9000, c: 8000, d: 10000, e: 5000, f: 1000, g: 7000 } };
 
   it('takes the top and bottom 3 of the same or adjacent age, winners and losers only', () => {

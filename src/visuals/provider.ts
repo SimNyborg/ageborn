@@ -18,7 +18,7 @@ import { AGES } from './ages';
 import { arenaId } from './backdrops/ground';
 import { puppetById } from './library';
 import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from './manifest';
-import { STYLE, WORLD } from './style';
+import { STYLE } from './style';
 
 export interface ArtProviderOptions {
   manifest?: VisualManifest;
@@ -42,16 +42,18 @@ export interface ArtProviderOptions {
 }
 
 /**
- * Atlas bake scale for a screen (px per lu at DPR 1). The battle fits 1,560 lu into the lane band
- * (DESIGN A2.1, so at most `landscape width / 1,560`), and screens narrower than 900 CSS px can pinch
- * to 1.6x. Baking at that scale draws sprites at about 1:1 and keeps the atlas small on phones, where
- * a fixed 1.25 x DPR 2 bake filled eight 2,048² pages (B16 memory). Clamped to [0.6, 1.25].
+ * Atlas bake scale for a screen (px per lu at DPR 1): the battle camera's world scale (DESIGN A17.7:
+ * phones show 290 lu of height in a 68% lane band, tablets and desktops about 1,100 and 1,400 lu of
+ * width) at zoom 1. Baking at that scale draws sprites at about 1:1 and keeps the atlas small on
+ * phones, where a fixed 1.25 x DPR 2 bake filled eight 2,048² pages (B16 memory). Clamped to
+ * [0.6, 1.25].
  */
 export function screenWorldPxPerLu(width: number, height: number): number {
   const landscape = Math.max(width, height);
-  if (!(landscape > 0)) return 1.25;
-  const zoom = landscape < 900 ? 1.6 : 1;
-  return Math.min(1.25, Math.max(0.6, (landscape / WORLD.worldWidthLu) * zoom));
+  const short = Math.min(width, height);
+  if (!(landscape > 0) || !(short > 0)) return 1.25;
+  const scale = short < 500 ? (short * 0.68) / 290 : Math.min(landscape / (landscape >= 1280 ? 1400 : 1100), (short * 0.64) / 330);
+  return Math.min(1.25, Math.max(0.6, scale));
 }
 
 /** Reads `?art=placeholder|procedural|atlas|spine` (DESIGN B5). */

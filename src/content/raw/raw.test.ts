@@ -12,7 +12,10 @@ import type { AgeId, DmgType, Rarity, Role, RoleGroup, Tag } from '@/contracts/i
 import { raw as fixture } from '../../../tests/fixtures/content';
 import { raw, type RawContent } from './index';
 
+/** The five ages of the frozen fixture (and of the tutorial format). */
 const AGES: AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+/** The eight ages of the live tables (A17.8). */
+const AGES8: AgeId[] = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 /** A5.1 / A2.7 per role group: price (flat across ages), train time, pop. */
 const GROUP: Record<RoleGroup, { cost: number; trainMs: number; pop: number }> = {
@@ -299,7 +302,7 @@ describe.each([
 
   describe('collection shape (A5.1)', () => {
     it('has 7 collectable units and 4 turrets per age, in age order, each tagged with its age', () => {
-      expect(c.ages.map((a) => a.age)).toEqual(AGES);
+      expect(c.ages.map((a) => a.age)).toEqual(c === raw ? AGES8 : AGES);
       for (const a of c.ages) {
         const visible = a.units.filter((u) => !u.hidden);
         expect(visible).toHaveLength(7);
@@ -311,19 +314,24 @@ describe.each([
       }
     });
 
-    it('has 55 cards: 25 Common, 15 Rare, 10 Epic, 5 Legendary; plus the hidden Training Dummy', () => {
+    it('has 88 cards: 40 Common, 24 Rare, 16 Epic, 8 Legendary (A17.13; the fixture 55); plus the hidden Training Dummy', () => {
       const cards = [...allUnits(c).filter((u) => !u.hidden), ...allTurrets(c)];
-      expect(cards).toHaveLength(55);
       const count = (r: Rarity) => cards.filter((x) => x.rarity === r).length;
-      expect([count('common'), count('rare'), count('epic'), count('legendary')]).toEqual([25, 15, 10, 5]);
+      if (c === raw) {
+        expect(cards).toHaveLength(88);
+        expect([count('common'), count('rare'), count('epic'), count('legendary')]).toEqual([40, 24, 16, 8]);
+      } else {
+        expect(cards).toHaveLength(55);
+        expect([count('common'), count('rare'), count('epic'), count('legendary')]).toEqual([25, 15, 10, 5]);
+      }
       expect(allUnits(c).filter((u) => u.hidden).map((u) => u.id)).toEqual(['training_dummy']);
       expect(unitById(c, 'training_dummy')).toMatchObject({ age: 'stone', cost: 50, hp: 40, speed: 50, size: 'small',
         attacks: [{ damage: 4, intervalMs: 1000, range: 16, hitsGround: true, hitsAir: false }] });
     });
 
-    it('has 10 Age Powers: one default and one alternate per age', () => {
-      expect(c.powers).toHaveLength(10);
-      for (const age of AGES) {
+    it('has one default and one alternate Age Power per age (16 live, 10 in the fixture)', () => {
+      expect(c.powers).toHaveLength(c === raw ? 16 : 10);
+      for (const age of c === raw ? AGES8 : AGES) {
         expect(c.powers.filter((p) => p.age === age).map((p) => p.slot).sort()).toEqual(['alternate', 'default']);
       }
     });
@@ -384,16 +392,36 @@ describe.each([
   });
 
   describe('A2 economy and battle numbers', () => {
-    it('ages: P, base HP = 10,000 × P, XP thresholds (A2.2, A2.4)', () => {
-      expect(AGES.map((a) => [c.ageScale[a].index, c.ageScale[a].pBp, c.ageScale[a].baseHp, c.ageScale[a].xpToNext])).toEqual([
-        [0, 10000, 10000, 700], [1, 13500, 13500, 1000], [2, 18200, 18200, 1200], [3, 24600, 24600, 1500], [4, 33200, 33200, null],
-      ]);
+    it('ages: P, base HP = 10,000 × P, XP thresholds (A17.8; the fixture A2.2, A2.4)', () => {
+      const row = (a: AgeId) => {
+        const x = c.ageScale[a];
+        return x ? [x.index, x.pBp, x.baseHp, x.xpToNext] : null;
+      };
+      if (c === raw) {
+        expect(AGES8.map(row)).toEqual([
+          [0, 10000, 10000, 550], [1, 11600, 11600, 500], [2, 13500, 13500, 900], [3, 18200, 18200, 700],
+          [4, 21200, 21200, 800], [5, 24600, 24600, 1200], [6, 33200, 33200, 1300], [7, 44800, 44800, null],
+        ]);
+      } else {
+        expect(AGES.map(row)).toEqual([
+          [0, 10000, 10000, 700], [1, 13500, 13500, 1000], [2, 18200, 18200, 1200], [3, 24600, 24600, 1500], [4, 33200, 33200, null],
+        ]);
+      }
     });
 
     it('formats and clocks (A2.10)', () => {
       // The Tutorial thresholds were retimed for the A8 pace (wp1-tutorial-pacing); the frozen fixture keeps the old ones.
       expect(c.formats.tutorial).toMatchObject({ ages: AGES, overdriveMs: null, siegeMs: null, finalBellMs: null,
         retreatAfterMs: null, xpToNextOverride: c === raw ? [680, 690, 520, 700] : [250, 300, 350, 400] });
+      if (c === raw) {
+        // A17.8: Short 4 ages, Standard 6, Full 8, on the A17.2 clocks
+        expect(c.formats.short).toMatchObject({ ages: AGES8.slice(0, 4), overdriveMs: 225000, siegeMs: 285000,
+          finalBellMs: 375000, retreatAfterMs: 60000 });
+        expect(c.formats.standard).toMatchObject({ ages: AGES8.slice(0, 6), overdriveMs: 300000,
+          siegeMs: 405000, finalBellMs: 510000, retreatAfterMs: 60000 });
+        expect(c.formats.full).toMatchObject({ ages: AGES8, overdriveMs: 405000, siegeMs: 525000, finalBellMs: 645000, retreatAfterMs: 60000 });
+        return;
+      }
       expect(c.formats.short).toMatchObject({ ages: ['stone', 'medieval', 'gunpowder'], overdriveMs: 210000, siegeMs: 270000,
         finalBellMs: 360000, retreatAfterMs: 60000 });
       expect(c.formats.standard).toMatchObject({ ages: ['stone', 'medieval', 'gunpowder', 'modern'], overdriveMs: 270000,

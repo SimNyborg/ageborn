@@ -7,7 +7,7 @@
  * Smoke Screen misses are rolled at fire time with the sim RNG (A5.7).
  */
 import type { CardId, KillerKind, Side } from '@/contracts';
-import { chanceBp } from '@/core';
+import { BP, chanceBp } from '@/core';
 import { makeImpact } from '../damage';
 import { emit } from '../events';
 import { centreDist } from '../geometry';
@@ -36,6 +36,9 @@ export interface FireOpts {
   /** Fixed travel time (called strikes); otherwise from distance and speed. */
   travelTicks?: number;
   visualId?: string;
+  /** First-hit bonus carried by a ranged attack (A17.15: Harpoon Gunner's Reel In); default ×1.0, no knockback. */
+  bonusBp?: number;
+  bonusKb?: number;
 }
 
 /** Travel time in ticks for a distance (mlu) at a speed (lu/s): ceil(d × 20 / (speed × 1,000)), min 1. */
@@ -91,6 +94,8 @@ export function fireProjectile(ctx: Ctx, o: FireOpts): ProjectileRt {
     fromX: o.fromX,
     startTick: ctx.tick,
     mount: o.mount,
+    bonusBp: o.bonusBp ?? BP,
+    bonusKb: o.bonusKb ?? 0,
   };
   ctx.s.nextId += 1;
   ctx.s.projectiles.push(p);
@@ -189,6 +194,8 @@ function collectProjectileImpact(ctx: Ctx, p: ProjectileRt): void {
       if (!t || !alive(t)) return;
       imp.targetId = t.id;
       imp.x = t.x;
+      imp.bonusBp = p.bonusBp;
+      imp.bonusKb = p.bonusKb;
     }
   }
   ctx.impacts.push(imp);

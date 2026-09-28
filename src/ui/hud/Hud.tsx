@@ -24,6 +24,7 @@ import { Signal, type ReadonlySignal } from '@preact/signals';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { HudViewBridge, HudViewEvent } from './bridge';
 import type { HudCtx, Translate } from './context';
+import { EdgeBadges } from './Minimap';
 import { MountPopover, type MountPopoverState } from './MountPopover';
 import {
   BANNER_MS,
@@ -334,6 +335,31 @@ export function Hud(props: HudProps) {
     if (m.phase === 'ended') setPopover(null);
   }, [m.phase]);
 
+  // A17.6: while the mount popover is open the auto camera holds, the popover stays on its mount as
+  // the camera moves, and it closes once its mount scrolls off-screen.
+  const popMount = popover?.mount ?? null;
+  useEffect(() => {
+    if (popMount === null || !view) return undefined;
+    view.cameraHold?.('popover', true);
+    let raf = 0;
+    const follow = (): void => {
+      raf = requestAnimationFrame(follow);
+      const p = view.mountScreenPoint?.(popMount);
+      const w = root.current?.clientWidth ?? 0;
+      if (!p) return;
+      if (p.x < 0 || (w > 0 && p.x > w)) {
+        setPopover(null);
+        return;
+      }
+      setPopover((cur) => (cur && cur.mount === popMount && (Math.abs(cur.x - p.x) > 0.5 || Math.abs(cur.y - p.y) > 0.5) ? { ...cur, x: p.x, y: p.y } : cur));
+    };
+    if (typeof requestAnimationFrame === 'function') raf = requestAnimationFrame(follow);
+    return () => {
+      if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(raf);
+      view.cameraHold?.('popover', false);
+    };
+  }, [popMount, view]);
+
   // A phase that starts gets a banner that says what it means ("Overdrive! Gold ×2", audit #24).
   const lastPhase = useRef(m.phase);
   useEffect(() => {
@@ -410,6 +436,7 @@ export function Hud(props: HudProps) {
         goldBump={goldBump}
       />
       {popover && !readOnly ? <MountPopover c={ctx} at={popover} onClose={closePopover} /> : null}
+      <EdgeBadges c={ctx} />
     </div>
   );
 }

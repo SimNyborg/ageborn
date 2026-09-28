@@ -263,7 +263,7 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     expect(pick(up, 'musicCue')).toEqual([{ a: 'musicCue', cue: 'music.medieval', fadeMs: 600 }]);
     expect(pick(up, 'musicTranspose')).toEqual([{ a: 'musicTranspose', semitones: 2 }]);
     expect(pick(up, 'baseMorph')).toEqual([{ a: 'baseMorph', side: 0, age: 'medieval', ms: 1800 }]);
-    expect(pick(up, 'backdropWipe')).toEqual([{ a: 'backdropWipe', side: 0, age: 'medieval', ms: 1500 }]);
+    expect(pick(up, 'backdropWipe')).toEqual([{ a: 'backdropWipe', side: 0, age: 'medieval', ms: 2000 }]);
   });
 
   it('enemy evolve: trauma 0.1, smaller pillar, evolve_enemy, no freeze and no key change', () => {

@@ -110,6 +110,8 @@ function resolveWindup(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackR
       vsBase,
       dmgBuffBp: buff,
       mount: -1,
+      // A ranged first hit (A17.15: Harpoon Gunner's Reel In) rides on the first projectile of the volley.
+      ...(firstHit && r.firstHit && v === 0 ? { bonusBp: r.firstHit.multBp, bonusKb: r.firstHit.knockback } : {}),
     });
   }
 }

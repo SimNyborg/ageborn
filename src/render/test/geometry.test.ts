@@ -1,100 +1,100 @@
 import { describe, expect, it } from 'vitest';
-import { Camera, followFraction } from '../camera';
-import { AIR_ALTITUDE_LU, depthRows, depthZ, easeToward, rowForRank } from '../depth';
+import { Camera } from '../camera';
+import { AIR_ALTITUDE_LU, CROWD_ROWS_LU, crowdRow, depthRows, depthZ, easeToward, rowForRank } from '../depth';
 import { clamp01, lerp, viewX } from '../interpolate';
-import { NARROW_SCREEN_PX, WORLD_LEFT_LU, WORLD_RIGHT_LU, WORLD_WIDTH_LU, baseCenterX, pToX, screenLayout, xToP } from '../layout';
+import { LANE_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, WORLD_WIDTH_LU, baseCenterX, pToX, screenLayout, xToP } from '../layout';
 import { FixedStepClock } from '../loop';
 import { SEAM_MAX_LU, SEAM_MIN_LU, SEAM_START_LU, frontLines, frontMidpoint, stepSeam } from '../seam';
 
-describe('layout (A2.1)', () => {
-  it('splits the screen 12 / 64 / 24 and fits 1,560 lu across the lane band', () => {
+describe('layout (A17.7)', () => {
+  it('takes the lane from core: 2,000 lu, a 2,360 lu world from -180 to 2,180', () => {
+    expect(LANE_LU).toBe(2000);
+    expect(WORLD_WIDTH_LU).toBe(2360);
+    expect(WORLD_LEFT_LU).toBe(-180);
+    expect(WORLD_RIGHT_LU).toBe(2180);
+  });
+
+  it('desktop: 12 / 64 / 24 and about 1,400 lu across (infantry ~62 px at 1280 × 720)', () => {
     const L = screenLayout(1280, 720);
-    expect(WORLD_WIDTH_LU).toBe(1560);
+    expect(L.device).toBe('desktop');
     expect(L.topBarH).toBeCloseTo(86.4);
     expect(L.bandH).toBeCloseTo(460.8);
     expect(L.trayH).toBeCloseTo(172.8);
-    expect(L.trayY).toBeCloseTo(720 - 172.8);
-    expect(L.scale).toBeCloseTo(1280 / 1560);
-    expect(L.offsetX).toBeCloseTo(0);
-    // Infantry (~68 lu) is about 56 px at 1,280 px wide (A11).
-    expect(68 * L.scale).toBeCloseTo(55.8, 0);
+    expect(L.scale).toBeCloseTo(1280 / 1400);
+    expect(L.viewLu).toBeCloseTo(1400);
+    expect(68 * L.scale).toBeCloseTo(62.2, 0);
   });
 
-  it('caps the scale on very wide, short screens and centres the world', () => {
-    const L = screenLayout(2400, 600);
-    expect(L.scale).toBeLessThan(2400 / 1560);
-    expect(L.offsetX).toBeGreaterThan(0);
-    expect(L.offsetX * 2 + WORLD_WIDTH_LU * L.scale).toBeCloseTo(2400);
+  it('phone: 10% (min 36 px) / 68% / 22%, 290 lu of height (infantry >= 60 px on 844 × 390)', () => {
+    const L = screenLayout(844, 390);
+    expect(L.device).toBe('phone');
+    expect(L.topBarH).toBeCloseTo(39);
+    expect(L.bandH).toBeCloseTo(265.2);
+    expect(L.trayH).toBeCloseTo(85.8);
+    expect(L.scale).toBeCloseTo(265.2 / 290);
+    expect(68 * L.scale).toBeGreaterThanOrEqual(60);
+    expect(L.viewLu).toBeCloseTo(923, 0);
+    expect(screenLayout(667, 300).topBarH).toBe(36);
+  });
+
+  it('tablet: about 1,100 lu across, capped by the band height on short wide screens', () => {
+    const T = screenLayout(1024, 768);
+    expect(T.device).toBe('tablet');
+    expect(T.viewLu).toBeCloseTo(1100);
+    const wide = screenLayout(2400, 600);
+    expect(wide.scale).toBeCloseTo((600 * 0.64) / 330);
   });
 
   it('maps progress and world x for both sides', () => {
     expect(pToX(20, 0)).toBe(20);
-    expect(pToX(20, 1)).toBe(1180);
-    expect(xToP(1180, 1)).toBe(20);
+    expect(pToX(20, 1)).toBe(1980);
+    expect(xToP(1980, 1)).toBe(20);
     expect(baseCenterX(0)).toBe(-70);
-    expect(baseCenterX(1)).toBe(1270);
+    expect(baseCenterX(1)).toBe(2070);
   });
 });
 
-describe('camera (A2.1)', () => {
-  it('fits the whole world with no scrolling by default', () => {
+describe('camera basics (A17.4)', () => {
+  it('opens with your base at the left edge and maps screen and world both ways', () => {
     const c = new Camera();
     c.resize(1280, 720);
-    const left = c.worldToScreen(WORLD_LEFT_LU, 0);
-    const right = c.worldToScreen(WORLD_RIGHT_LU, 0);
-    expect(left.x).toBeCloseTo(0);
-    expect(right.x).toBeCloseTo(1280);
-    expect(left.y).toBeCloseTo(c.layout.groundY);
+    c.setHome(0);
+    expect(c.worldToScreen(WORLD_LEFT_LU, 0).x).toBeCloseTo(0);
+    expect(c.worldToScreen(WORLD_LEFT_LU, 0).y).toBeCloseTo(c.layout.groundY);
     const back = c.screenToWorld(640, 300);
     const again = c.worldToScreen(back.x, back.y);
     expect(again.x).toBeCloseTo(640);
     expect(again.y).toBeCloseTo(300);
+    const other = new Camera();
+    other.resize(1280, 720);
+    other.setHome(1);
+    expect(other.worldToScreen(WORLD_RIGHT_LU, 0).x).toBeCloseTo(1280);
   });
 
-  it('offers pinch zoom up to 1.6x only below 900 CSS px', () => {
-    const wide = new Camera();
-    wide.resize(1280, 720);
-    wide.setZoom(1.5);
-    expect(wide.zoom).toBe(1);
-    const phone = new Camera();
-    phone.resize(NARROW_SCREEN_PX - 56, 390);
-    expect(phone.canZoom).toBe(true);
-    phone.setZoom(3);
-    expect(phone.zoom).toBe(1.6);
-    phone.setZoom(0.5);
-    expect(phone.zoom).toBe(1);
-  });
-
-  it('follows the front midpoint with k = 0.08 per 60 fps frame, scaled by dt', () => {
-    expect(followFraction(0.08, 1000 / 60)).toBeCloseTo(0.08);
-    expect(followFraction(0.08, 2000 / 60)).toBeCloseTo(1 - 0.92 * 0.92);
+  it('zooms within [0.8, 1.25] on every device, and a double tap resets it', () => {
     const c = new Camera();
-    c.resize(800, 400);
-    c.setZoom(1.6);
-    const start = c.centerX;
-    c.follow(start + 200);
-    c.update(1000 / 60);
-    expect(c.centerX - start).toBeCloseTo(16, 0);
-    for (let i = 0; i < 600; i++) c.update(1000 / 60);
-    expect(c.centerX).toBeCloseTo(start + 200, 0);
-  });
-
-  it('stays inside the world while zoomed and resets on double tap', () => {
-    const c = new Camera();
-    c.resize(800, 400);
-    c.setZoom(1.6);
-    c.follow(-1000);
-    for (let i = 0; i < 300; i++) c.update(16);
-    expect(c.screenToWorld(0, 0).x).toBeGreaterThanOrEqual(WORLD_LEFT_LU - 1e-6);
+    c.resize(1280, 720);
+    c.setZoom(3);
+    expect(c.zoom).toBe(1.25);
+    c.setZoom(0.1);
+    expect(c.zoom).toBe(0.8);
     c.reset();
     expect(c.zoom).toBe(1);
-    expect(c.worldToScreen(WORLD_LEFT_LU, 0).x).toBeCloseTo(0);
+    expect(c.mode).toBe('follow');
+  });
+
+  it('fixes the centre on the lane middle when the whole world fits', () => {
+    const c = new Camera();
+    c.resize(4000, 600);
+    c.setZoom(0.8);
+    expect(c.viewLu).toBeGreaterThanOrEqual(WORLD_WIDTH_LU);
+    expect(c.bounds()).toEqual({ lo: 1000, hi: 1000 });
   });
 });
 
-describe('depth rows (A2.1)', () => {
-  it('puts the two front-rank units at -8 / +8 and the rest at -16, 0, +16 by rank mod 3', () => {
-    expect([0, 1, 2, 3, 4, 5].map(rowForRank)).toEqual([-8, 8, 16, -16, 0, 16]);
+describe('depth rows (A2.1, three-wide front)', () => {
+  it('puts the three front-rank units at -12 / 0 / +12 and the rest at -16, 0, +16 by rank mod 3', () => {
+    expect([0, 1, 2, 3, 4, 5].map(rowForRank)).toEqual([-12, 0, 12, -16, 0, 16]);
   });
 
   it('orders each side by p descending, then id', () => {
@@ -102,16 +102,25 @@ describe('depth rows (A2.1)', () => {
       { id: 5, side: 0, x: 300, air: false },
       { id: 2, side: 0, x: 500, air: false },
       { id: 9, side: 0, x: 500, air: false },
-      { id: 3, side: 1, x: 700, air: false }, // p = 500: front for side 1
-      { id: 4, side: 1, x: 900, air: false },
-      { id: 7, side: 1, x: 650, air: true },
+      { id: 3, side: 1, x: 1500, air: false }, // p = 500: front for side 1
+      { id: 4, side: 1, x: 1700, air: false },
+      { id: 7, side: 1, x: 1450, air: true },
     ]);
-    expect(rows.get(2)).toBe(-8);
-    expect(rows.get(9)).toBe(8);
-    expect(rows.get(5)).toBe(16);
-    expect(rows.get(3)).toBe(-8);
-    expect(rows.get(4)).toBe(8);
+    expect(rows.get(2)).toBe(-12);
+    expect(rows.get(9)).toBe(0);
+    expect(rows.get(5)).toBe(12);
+    expect(rows.get(3)).toBe(-12);
+    expect(rows.get(4)).toBe(0);
     expect(rows.get(7)).toBe(AIR_ALTITUDE_LU);
+  });
+
+  it('spreads a siege crowd at the enemy gate over the crowd rows', () => {
+    const units = Array.from({ length: 10 }, (_, i) => ({ id: i + 1, side: 0 as const, x: 1960, air: false }));
+    const rows = depthRows(units);
+    const crowd = units.slice(3).map((u) => rows.get(u.id));
+    expect(crowd.slice(0, 7)).toEqual([...CROWD_ROWS_LU]);
+    expect(new Set(crowd).size).toBeGreaterThanOrEqual(6);
+    expect(crowdRow(7)).toBeLessThan(CROWD_ROWS_LU[0]);
   });
 
   it('sorts nearer rows on top and air above every ground unit', () => {
@@ -131,16 +140,17 @@ describe('interpolation (B6)', () => {
   });
 });
 
-describe('split-age seam (A11)', () => {
-  it('starts at 600, drifts at most 20 lu/s and stays within [450, 750]', () => {
+describe('split-age seam (A11, A17.3)', () => {
+  it('starts at 1,000, drifts at most 30 lu/s and stays within [700, 1,300]', () => {
+    expect([SEAM_START_LU, SEAM_MIN_LU, SEAM_MAX_LU]).toEqual([1000, 700, 1300]);
     let s = SEAM_START_LU;
-    s = stepSeam(s, 1000, 1000);
-    expect(s).toBe(620);
-    for (let i = 0; i < 100; i++) s = stepSeam(s, 1000, 1000);
+    s = stepSeam(s, 2000, 1000);
+    expect(s).toBe(1030);
+    for (let i = 0; i < 100; i++) s = stepSeam(s, 2000, 1000);
     expect(s).toBe(SEAM_MAX_LU);
     for (let i = 0; i < 100; i++) s = stepSeam(s, -500, 1000);
     expect(s).toBe(SEAM_MIN_LU);
-    expect(stepSeam(600, 605, 1000)).toBe(605);
+    expect(stepSeam(1000, 1005, 1000)).toBe(1005);
   });
 
   it('targets the midpoint of the two ground front lines (gates when a side is empty)', () => {
@@ -152,8 +162,8 @@ describe('split-age seam (A11)', () => {
     ];
     expect(frontLines(units)).toEqual({ left: 520, right: 700 });
     expect(frontMidpoint(units)).toBe(610);
-    expect(frontMidpoint([])).toBe(600);
-    expect(frontMidpoint([{ side: 0, x: 800, air: false }])).toBe(1000);
+    expect(frontMidpoint([])).toBe(1000);
+    expect(frontMidpoint([{ side: 0, x: 800, air: false }])).toBe(1400);
   });
 });
 

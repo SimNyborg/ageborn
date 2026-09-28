@@ -199,3 +199,71 @@ def puff(rig, joint, at, size=1.0, name="vent", color=SMOKE, hidden=True):
     for dx, dz, r in ((0, 0, 3.4), (3.8, 1.8, 2.8), (-2.8, 3.0, 2.6), (1.2, 4.8, 2.2)):
         g.sphere((x + dx * k, y - 2, z + dz * k), r * k, cuts=4)
     rig.part(name, g, color, finish="dust", outline=0.8)
+
+
+# -- Cosmic headgear (its own kit: no Future visor bar) ---------------------------------------
+def face_plate(rig, c=(2.0, 0, 50.5), r=(12.0, 11.4, 12.0), x0=5.0, top=53.5, eye_z=51.0, plate=STAR,
+               eye=VIOLET_CORE, eye_line=VIOLET, dy=(-5.2, 2.6)):
+    """A star-white faceplate over the front of a helmet shell (below `top`, ahead of `x0`) with
+    two narrow, slanted glowing violet eye slits (`eyes`, squint = sz) and hidden KO crosses
+    (`eyes_x`). The Cosmic answer to the Future visor bar."""
+    cx, cy, cz = c
+    g = Geo().blob(c, (r[0] + 0.7, r[1] + 0.7, r[2] + 0.7), p=2.5)
+    g.clip((x0, 0, 0), (-1, 0, 0)).clip((0, 0, top), (0, 0, 1)).clip((0, 0, cz - r[2] * 0.72), (0, 0, -1))
+    rig.part("head", g, plate, finish="gloss", outline_hex=STAR_TRIM)
+    ex = cx + r[0] + 0.5
+    g = Geo().capsule((ex - 1.4, 0.0, eye_z + 0.2), (ex + 0.9, 0.0, eye_z - 4.8), 0.9)     # nose ridge
+    rig.part("head", g, STAR_TRIM, finish="gloss", outline=0)
+    rig.joint("eyes", "head", (ex, 0, eye_z))
+    g = Geo()
+    for y in dy:
+        inner = y + (1.6 if y < 0 else -1.6)
+        g.capsule((ex - 0.2, y - 1.6 * (1 if y < 0 else -1), eye_z + 0.9), (ex + 0.3, inner, eye_z - 0.6), 1.25)
+    rig.part("eyes", g, glow=eye, outline=0.9, outline_hex=eye_line)
+    rig.joint("eyes_x", "head", (ex, 0, eye_z), hidden=True)
+    g = Geo()
+    for y in dy:
+        g.capsule((ex + 0.6, y - 1.6, eye_z + 1.6), (ex + 0.6, y + 1.6, eye_z - 1.6), 0.7)
+        g.capsule((ex + 0.6, y - 1.6, eye_z - 1.6), (ex + 0.6, y + 1.6, eye_z + 1.6), 0.7)
+    rig.part("eyes_x", g, glow=eye, outline=0.6, outline_hex=eye_line)
+
+
+def mono_lens(rig, at, r=3.6, ring=STAR, lens=VIOLET_GLOW, core=VIOLET_CORE, axis=(1.0, -0.35)):
+    """A single round glowing lens (the Ion Ranger's eye): a star-white bezel, a violet lens with
+    a bright core (`eyes`, squint = sz) and a hidden KO cross (`eyes_x`)."""
+    x, y, z = at
+    L = math.hypot(*axis)
+    ax, ay = axis[0] / L, axis[1] / L
+    g = Geo().lathe([(0, -1.0), (r + 1.2, -1.0), (r + 1.6, 0.4), (r + 1.0, 1.6), (0, 1.2)], (x, y, z),
+                    (x + ax, y + ay, z), segs=20)
+    rig.part("head", g, ring, finish="gloss", outline_hex=STAR_TRIM)
+    rig.joint("eyes", "head", (x + ax * 1.6, y + ay * 1.6, z))
+    g = Geo().lathe([(0, 0), (r, 0), (r * 0.9, 0.9), (0, 1.3)], (x + ax * 1.2, y + ay * 1.2, z),
+                    (x + ax * 2.2, y + ay * 2.2, z), segs=20)
+    rig.part("eyes", g, glow=lens, outline=0.6, outline_hex=VOID)
+    g = Geo().sphere((x + ax * 2.2 - 0.6, y + ay * 2.2 - 0.6, z + r * 0.3), r * 0.38, cuts=3)
+    rig.part("eyes", g, glow=core, outline=0)
+    rig.joint("eyes_x", "head", (x + ax * 2.4, y + ay * 2.4, z), hidden=True)
+    g = Geo()
+    px, py = x + ax * 2.6, y + ay * 2.6
+    g.capsule((px - ay * 2.4, py + ax * 2.4, z + 2.4), (px + ay * 2.4, py - ax * 2.4, z - 2.4), 0.8)
+    g.capsule((px - ay * 2.4, py + ax * 2.4, z - 2.4), (px + ay * 2.4, py - ax * 2.4, z + 2.4), 0.8)
+    rig.part("eyes_x", g, glow=core, outline=0.6, outline_hex=VIOLET)
+
+
+def wings(rig, joint, root, span=15.0, h=11.0, color=VIOLET, edge=STAR, y_off=11.0, team=False):
+    """A pair of swept wings on the sides of a helm (the Graviton Halberdier's winged helm):
+    three feathers each, sweeping back and up."""
+    x, y, z = root
+    for sgn in (-1, 1):
+        yy = y + y_off * sgn
+        g = Geo().slab([(x + 2.0, z - 2.0), (x - 2.0, z + h * 0.35), (x - span * 0.55, z + h), (x - span, z + h * 1.15),
+                        (x - span * 0.8, z + h * 0.72), (x - span * 1.05, z + h * 0.62), (x - span * 0.8, z + h * 0.32),
+                        (x - span * 0.95, z + h * 0.12), (x - span * 0.5, z - 0.8)], yy, 1.8)
+        if team:
+            rig.part(joint, g, team=True)
+        else:
+            rig.part(joint, g, color, finish="gloss", outline_hex=VIOLET_DK)
+        g = Geo().capsule((x + 1.0, yy - 1.2 * (1 if sgn < 0 else -1), z - 1.0),
+                          (x - span * 0.55, yy - 1.2 * (1 if sgn < 0 else -1), z + h * 0.98), 0.8)
+        rig.part(joint, g, edge, finish="gloss", outline=0)

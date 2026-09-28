@@ -44,7 +44,7 @@ function runMatch1(decideEveryTicks: number) {
     if (t.evolveReady === undefined && evolveReady(input)) t.evolveReady = s.state.tick;
     for (const e of evs) {
       if (e.e === 'died' && e.killerSide === 0 && t.firstKill === undefined) t.firstKill = e.tick;
-      if (e.e === 'ageUp' && e.side === 0 && e.age !== 'stone') t[e.age] = e.tick;
+      if (e.e === 'ageUp' && e.side === 0 && e.age !== 'stone') t[e.age as keyof typeof MATCH1_TIMING] = e.tick;
       if (e.e === 'powerReady' && e.side === 0 && s.state.sides[0].ageIndex === 1 && t.arrowStormReady === undefined) t.arrowStormReady = e.tick;
       if (e.e === 'matchEnded') t.groggFalls = e.tick;
     }

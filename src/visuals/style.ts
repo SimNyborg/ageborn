@@ -45,25 +45,25 @@ export const STYLE = {
 
 /** Where the camera places the ground line and how far art extends (backdrop layout, lu). */
 export const WORLD = {
-  /** Left gate at x = 0, right gate at x = 1,200 (DESIGN A2.1). */
-  laneLu: 1200,
+  /** Left gate at x = 0, right gate at x = 2,000 (DESIGN A17.2: the lane from core). */
+  laneLu: 2000,
   baseDepthLu: 140,
   marginLu: 40,
-  /** Full world width fitted by the camera: 1,200 + 2 x 140 + 2 x 40. */
-  worldWidthLu: 1560,
+  /** Full world width the camera scrolls over: 2,000 + 2 x 140 + 2 x 40 (A17.3). */
+  worldWidthLu: 2360,
   worldLeftLu: -180,
-  worldRightLu: 1380,
+  worldRightLu: 2180,
   /** Backdrops cover y from skyTop (negative, up) to groundBottom (below the ground line). */
   skyTopLu: -760,
   groundBottomLu: 240,
-  /** Seam rules (DESIGN A11 Split-age lane). */
-  seamHomeLu: 600,
-  seamMinLu: 450,
-  seamMaxLu: 750,
-  seamDriftLuPerSec: 20,
-  seamBlendLu: 240,
+  /** Seam rules (DESIGN A11 Split-age lane, scaled to the lane by A17.3). */
+  seamHomeLu: 1000,
+  seamMinLu: 700,
+  seamMaxLu: 1300,
+  seamDriftLuPerSec: 30,
+  seamBlendLu: 300,
   seamDesaturate: 0.3,
-  evolveWipeMs: 1500,
+  evolveWipeMs: 2000,
 } as const;
 
 /** Clip timings from DESIGN A11 (Clip contract). */

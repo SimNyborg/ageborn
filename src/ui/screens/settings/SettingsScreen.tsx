@@ -191,6 +191,20 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
                 options={([1, 1.5, 2] as const).map((v) => ({ value: v, label: t('ui.speed.x', { n: v }) }))}
               />
             </div>
+            <Toggle
+              label={t('ui.settings.autoCamera')}
+              hint={t('ui.settings.autoCameraHint')}
+              checked={st.autoCamera !== false}
+              onChange={(autoCamera) => set({ autoCamera })}
+              testid="set-auto-camera"
+            />
+            <Toggle
+              label={t('ui.settings.edgeScroll')}
+              hint={t('ui.settings.edgeScrollHint')}
+              checked={st.edgeScroll !== false}
+              onChange={(edgeScroll) => set({ edgeScroll })}
+              testid="set-edge-scroll"
+            />
             <Toggle label={t('ui.settings.vibrate')} checked={st.vibrate} onChange={(vibrate) => set({ vibrate })} testid="set-vibrate" />
             <Toggle
               label={t('ui.settings.breakReminder')}

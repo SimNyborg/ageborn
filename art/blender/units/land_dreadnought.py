@@ -10,7 +10,8 @@ roundel with a cream ring; a riveted near-side sponson with an open top holds th
 (leather tanker cap, goggles) behind a rotary machine gun; the second gunner stands in a raised
 rear barbette over the far sponson with his own gun, so both riders read from the side. A squat
 forward casemate on the roof carries the main gun (a long iron barrel with copper bands and a
-muzzle ring). A coal exhaust stack puffs smoke, twin trailing steering wheels ride behind the tail
+muzzle ring). A coal exhaust stack puffs smoke, an open spoked steering wheel with a bright brass
+hub rides behind the tail
 (the landship's signature), and a tall mast flies the team pennant. Legendary white aura is added in
 game.
 
@@ -18,12 +19,15 @@ The walk scrolls both belts with the ground (35 lu/s) and heaves the hull; the a
 settles, fires with a big flash (barrel slides back, hull rocks back and squashes), smoke rolls out
 and the hull rocks forward. The shell spawns at the per-frame `muzzle` anchor; the riders' guns are
 independent attacks, so `rider0Muzzle` and `rider1Muzzle` are exported per frame for every clip
-(`meta.ageborn.riders`). The die clip ("crew bails out") pops both gunners up out of their hatches
-with their arms up while the hull slumps and smokes; the game spawns the 2 Carbineers.
+(`meta.ageborn.riders`). The die clip ("crew bails out") wrecks the landship without squashing it:
+a fire flash, a 7 degree nose-down tilt onto a snapped track, the casemate knocked askew, black
+smoke from both sponsons, and both gunners climbing up out of their hatches from frame 2 (the game
+spawns the 2 Carbineers; `crewOutAtMs` marks the climb-out).
 """
 import math
 
 from ageborn_art import fx
+from ageborn_art import rigs_gunpowder as G
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
@@ -158,15 +162,14 @@ def build(rig):
     g.capsule((-80.0, -6.0, 36.0), (-118.0, -6.0, 18.0), 2.2)
     g.capsule((-80.0, 10.0, 36.0), (-118.0, 10.0, 18.0), 2.2)
     rig.part("tail", g, I.IRON_DK, finish="metal", outline=0.8)
-    names = I.wheel_row(rig, "tw", "tail", (-120.0,), 14.0, -10.0, 13.0, color=I.WOOD, hub=I.BRASS, bolts=8)
-    g = Geo()
-    for k in range(10):
-        a = 2 * math.pi * k / 10
-        g.capsule((-120.0, -11.6, 14.0), (-120.0 + 11.0 * math.cos(a), -11.6, 14.0 + 11.0 * math.sin(a)), 0.9)
-    rig.part("tw0", g, I.WOOD_LT, outline=0.4)
-    g = Geo().lathe([(12.0, -1.2), (13.4, -1.2), (13.4, 1.2), (12.0, 1.2)], (-120.0, -10.0, 14.0), (-120.0, -11.0, 14.0),
-                    segs=24)
-    rig.part("tw0", g, I.IRON_DK, finish="metal", outline=0.5)
+    # the steering wheel: an open spoked wheel (iron tyre, wooden felloe and spokes, a bright
+    # brass hub), so it reads as a wheel and not a loose ball
+    rig.joint("tw0", "tail", (-120.0, -10.0, 14.0))
+    G.wheel(rig, "tw0", (-120.0, -10.0, 14.0), 14.0, 3.4, rim=I.IRON_DK, spokes=I.WOOD_LT, hub=I.BRASS_LT,
+            team_felloe=False, n_spokes=8)
+    g = Geo().sphere((-120.0, -17.2, 14.0), 2.2, cuts=3)
+    rig.part("tw0", g, "#E8D9A8", finish="metal", outline=0.4)
+    names = [("tw0", 14.0)]
     _T["wheels"] = names
 
     # the exhaust stack and the pennant mast
@@ -195,17 +198,18 @@ def build(rig):
 
     # the forward casemate and the main gun
     cx, cy, cz = CASEMATE
+    rig.joint("casemate", "hull", (cx, cy, cz))
     g = Geo().blob((cx, cy, cz + 6.0), (26.0, 24.0, 12.0), p=3.2, taper=(1.0, 0.82))
     g.clip((0, 0, cz - 4.0), (0, 0, -1))
-    rig.part("hull", g, I.IRON_LT, finish="metal")
+    rig.part("casemate", g, I.IRON_LT, finish="metal")
     g = Geo().blob((cx + 1.0, -24.6, cz + 6.0), (20.0, 1.4, 6.0), p=3.2)
-    rig.part("hull", g, team=True, outline=0.6)
+    rig.part("casemate", g, team=True, outline=0.6)
     g = Geo()
     I.rivets(g, [(cx + dx, -25.8, cz + dz) for dx in (-16, -8, 0, 8, 16) for dz in (1.0, 11.0)], r=0.9)
-    rig.part("hull", g, I.BRASS_LT, finish="metal", outline=0)
+    rig.part("casemate", g, I.BRASS_LT, finish="metal", outline=0)
     g = Geo().blob((cx + 22.0, -2.0, BARREL_Z), (7.0, 10.0, 8.0), p=2.6)   # mantlet
-    rig.part("hull", g, I.IRON_DK, finish="metal")
-    rig.joint("barrel", "hull", (cx + 24.0, -2.0, BARREL_Z))
+    rig.part("casemate", g, I.IRON_DK, finish="metal")
+    rig.joint("barrel", "casemate", (cx + 24.0, -2.0, BARREL_Z))
     g = Geo().capsule((cx + 24.0, -2.0, BARREL_Z), (MUZZLE[0] - 6.0, -2.0, BARREL_Z), 3.6, 3.1)
     rig.part("barrel", g, I.IRON_DK, finish="metal")
     g = Geo()
@@ -270,6 +274,45 @@ def build(rig):
         g.sphere((MUZZLE[0] + 16 + dx, -20, BARREL_Z + 30 + dz), r, cuts=4)
     rig.part("smoke", g, I.SMOKE, finish="dust", outline=0.8)
     rig.track("_foot", "odo", (0, 0, 0))
+    _wreck(rig)
+
+
+def _wreck(rig):
+    """Hidden death parts: a fire flash in the hull, a snapped track run dangling at the nose with
+    loose links on the ground, and dark smoke rising from both sponsons."""
+    bx, bz = 62.0, 96.0      # the flash bursts out of the roof by the casemate (the team band stays clear)
+    rig.joint("boom", "hull", (bx, TY - 10.0, bz), hidden=True)
+    g = Geo().sphere((bx, TY - 18.0, bz), 16.0, cuts=4)
+    rig.part("boom", g, glow=I.FIRE, outline=0)
+    g = Geo().sphere((bx + 2.0, TY - 26.0, bz + 2.0), 9.0, cuts=4)
+    rig.part("boom", g, glow=I.FLASH_CORE, outline=0)
+    g = Geo()
+    for i in range(9):
+        a = math.pi * (0.05 + 0.9 * i / 8)
+        L = 36.0 if i % 2 else 27.0
+        g.capsule((bx + 12 * math.cos(a), TY - 24.0, bz + 12 * math.sin(a)),
+                  (bx + L * math.cos(a), TY - 24.0, bz + L * math.sin(a)), 3.2, 1.0, segs=6, rings=2)
+    rig.part("boom", g, glow=I.FLASH, outline=0)
+    rig.joint("broken", "track", (96.0, TY - 6.0, 30.0), hidden=True)
+    g = Geo()
+    pts = [(98.0, 40.0), (104.0, 29.0), (110.0, 19.0), (118.0, 12.0), (128.0, 8.0)]
+    for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+        g.capsule((x0, TY - 6.0, z0), (x1, TY - 6.0, z1), 4.0, segs=10, rings=2)
+    rig.part("broken", g, I.COAL, finish="gloss")
+    g = Geo()
+    for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+        for t in (0.25, 0.75):
+            x, z = x0 + (x1 - x0) * t, z0 + (z1 - z0) * t
+            g.blob((x, TY - 10.2, z), (2.2, 1.6, 2.2), p=2.4)
+    for x in (136.0, 144.0, 140.0):   # loose links (on the ground once the hull has nosed down)
+        g.blob((x, TY - 8.0, 6.0 + (x % 3)), (3.4, 3.0, 1.8), p=2.6)
+    rig.part("broken", g, I.IRON_LT, finish="metal", outline=0.5)
+    for name, at in (("wsmoke0", (10.0, TY - 16.0, 70.0)), ("wsmoke1", (-46.0, 10.0, 118.0))):
+        rig.joint(name, "hull", at, hidden=True)
+        g = Geo()
+        for dx, dz, r in ((0, 0, 7.0), (5, 8, 6.0), (-4, 13, 5.4), (2, 20, 6.4), (-3, 28, 5.0)):
+            g.sphere((at[0] + dx, at[1] - 4.0, at[2] + dz), r, cuts=4)
+        rig.part(name, g, I.SMOKE_DK, finish="dust", outline=0.8)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -339,21 +382,55 @@ def _hit(f):
     })
 
 
+# death ("crew bails out"): 8 unique poses, 12 steps (about 1.1 s). The hull keeps its shape: it
+# lurches, noses down 7 degrees onto the snapped track, the casemate is knocked askew and the gun
+# droops; a fire flash on frames 1-2, black smoke rising from both sponsons from frame 2; the two
+# gunners climb up out of their hatches from frame 2, arms up (the game spawns the 2 Carbineers at the end).
+DIE_SEQ = [0, 1, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7]
+DIE_MS = [70, 70, 80, 80, 80, 90, 90, 100, 100, 110, 110, 120]
+
+
 def _die(f):
-    # the hull slumps and smokes; both gunners pop up out of their hatches with their arms up
-    body = [{"x": -4.0, "z": 3.0, "r": 5.0, "sz": 1.05, "sx": 0.97, "sy": 0.97},
-            {"x": -6.0, "z": 0.0, "r": 2.5, "sz": 0.8, "sx": 1.06, "sy": 1.06},
-            {"x": -6.0, "z": 0.0, "r": 1.5, "s": 0.88, "sz": 0.62, "sx": 1.1, "sy": 1.1}][f]
-    return merge(_tracks(0, False), {"body": body}, {
-        "barrel": {"r": pick(f, [-6, -14, -18])},
-        "g0": {"z": pick(f, [10, 18, 16]), "x": pick(f, [-2, -6, -8]), "r": pick(f, [10, -8, -12])},
-        "g1": {"z": pick(f, [12, 20, 18]), "x": pick(f, [-4, -8, -10]), "r": pick(f, [14, -6, -10])},
-        "g0_arms": {"show": True}, "g1_arms": {"show": True},
-        "g0_eyes": {"hide": True}, "g0_ko": {"show": True},
-        "g1_eyes": {"hide": True}, "g1_ko": {"show": True},
-        "mg0": {"r": pick(f, [-10, -20, -26])}, "mg1": {"r": pick(f, [-10, -20, -26])},
-        "exhaust": {"show": True, "s": pick(f, [1.3, 1.7, 2.0])},
+    tilt = pick(f, [2.0, -3.0, -6.0, -7.5, -7.0, -7.0, -7.0, -7.0])
+    pose = merge(_tracks(0, False), {
+        "body": {"x": pick(f, [-3, -1, 2, 3, 3, 3, 3, 3]), "r": tilt,
+                 "z": pick(f, [1.5, 5.5, 11.0, 13.2, 12.6, 12.8, 12.8, 12.8])},   # pivot on the nose
+        "hull": {"r": pick(f, [0, 0.8, -0.6, 0.3, 0, 0, 0, 0])},
+        "casemate": {"rz": pick(f, [0, 8, 16, 20, 19, 20, 20, 20]), "r": pick(f, [0, 4, 7, 8, 8, 8, 8, 8]),
+                     "x": pick(f, [0, -1, -3, -4, -4, -4, -4, -4]), "z": pick(f, [0, 3, 2, 0.5, 0.5, 0.5, 0.5, 0.5])},
+        "barrel": {"r": pick(f, [-4, -10, -18, -22, -21, -22, -22, -22])},
+        "boom": {"show": f in (1, 2), "s": pick(f, [1, 1.0, 1.25, 1, 1, 1, 1, 1])},
+        "broken": {"show": f >= 2},
+        "wsmoke0": {"show": f >= 2, "s": pick(f, [1, 1, 0.6, 0.8, 1.0, 1.15, 1.3, 1.4]),
+                    "z": pick(f, [0, 0, 0, 4, 8, 12, 16, 20])},
+        "wsmoke1": {"show": f >= 3, "s": pick(f, [1, 1, 1, 0.6, 0.85, 1.05, 1.2, 1.35]),
+                    "z": pick(f, [0, 0, 0, 0, 4, 8, 12, 16])},
+        "exhaust": {"show": True, "s": pick(f, [1.2, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0])},
+        # the gunners: jolted, then climbing up out of the hatches (frame 2), arms up
+        "g0": {"z": pick(f, [4, 2, 10, 16, 19, 18, 19, 18]), "x": pick(f, [-2, -2, -3, -5, -7, -8, -8, -8]),
+               "r": pick(f, [8, 10, -6, -12, 6, 14, 10, 12])},
+        "g1": {"z": pick(f, [4, 2, 11, 17, 20, 19, 20, 19]), "x": pick(f, [-2, -2, -4, -6, -8, -9, -9, -9]),
+               "r": pick(f, [10, 12, -4, -10, 8, 16, 12, 14])},
+        "g0_arms": {"show": f >= 2}, "g1_arms": {"show": f >= 2},
+        "mg0": {"r": pick(f, [-8, -16, -24, -28, -28, -28, -28, -28])},
+        "mg1": {"r": pick(f, [-8, -16, -24, -28, -28, -28, -28, -28])},
     })
+    if f <= 3:
+        pose.update({"g0_eyes": {"hide": True}, "g0_ko": {"show": True},
+                     "g1_eyes": {"hide": True}, "g1_ko": {"show": True}})
+    pose.setdefault("tw0", {})["r"] = pick(f, [0, 20, 40, 50, 50, 50, 50, 50])
+    return pose
+
+
+def _die_extra():
+    total = sum(DIE_MS)
+    handoff = sum(DIE_MS[:len(DIE_MS) - 2])
+    h = HEIGHT_LU
+    return {"fx": [{"id": "fx.dust_poof", "atMs": handoff - 40, "offsetLu": [0, round(h * 0.36, 1)]},
+                   {"id": "fx.ko_stars", "atMs": handoff + 40, "offsetLu": [0, round(h * 0.55, 1)],
+                    "loops": 2, "scalePow": 0.5}],
+            "crewOutAtMs": sum(DIE_MS[:DIE_SEQ.index(2)]),
+            "hideUnitAtMs": total}
 
 
 def clips():
@@ -362,5 +439,5 @@ def clips():
         Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
         Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+        Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]

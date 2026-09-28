@@ -3,7 +3,7 @@
  * every surface labels it as one (A7.1).
  *
  * Personal War Plans are our design (DESIGN names only the signatures). They follow A3: every card
- * from its age, no duplicates, 5 units, 2 turrets and a power per age. Only The Warden brings
+ * from its age, no duplicates, 5 units, 2 turrets and a power per age, for all 8 ages (A17.13). Only The Warden brings
  * Legendaries (A6.8: "The Warden is the only exception"); ladder matchmaking still applies the A6.8
  * rarity allowance to every plan, and Echo mirrors the player's own plan.
  */
@@ -67,74 +67,101 @@ function general(g: GeneralInput): GeneralDef {
 
 const PIP: Plan = {
   stone: lo(['pebbler', 'bonker', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'stampede'),
+  bronze: lo(['javelineer', 'hoplite', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'sun_mirror'], 'tidal_wave'),
   medieval: lo(['longbowman', 'footman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'pitch_cauldron'], 'arrow_storm'),
   gunpowder: lo(['fusilier', 'corsair', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'grapeshot_gun'], 'smoke_screen'),
+  industrial: lo(['carbineer', 'riveter', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
   modern: lo(['rifleman', 'trench_raider', 'tankette', 'bazooka_trooper', 'radio_operator'], ['mg_nest', 'flak_gun'], 'paratroopers'),
   future: lo(['pulse_trooper', 'photon_knight', 'walker_mech', 'rail_gunner', 'repair_drone'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
+  cosmic: lo(['ion_ranger', 'star_legionnaire', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'starburst_gun'], 'starfall'),
 };
 
 const KETTLE: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth'], ['angry_beehive', 'rock_tosser'], 'stampede'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['sun_mirror', 'archer_tower'], 'aegis'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram'], ['pitch_cauldron', 'crossbow_nest'], 'royal_decree'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['grapeshot_gun', 'swivel_gun'], 'smoke_screen'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['mg_nest', 'flak_gun'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['ion_turret', 'starburst_gun'], 'starfall'),
 };
 
 const MOSS: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['log_roller', 'grumpy_toad'], 'stampede'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['onager', 'gorgon_bust'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['trebuchet', 'pitch_cauldron'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['grapeshot_gun', 'chainshot_cannon'], 'smoke_screen'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['boiler_mortar', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator'], ['howitzer', 'flak_gun'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['gravity_well', 'arc_coil'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['starfall_battery', 'tachyon_lance'], 'starfall'),
 };
 
 const LEDGER: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'stampede'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'onager'], 'aegis'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'royal_decree'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['swivel_gun', 'congreve_rack'], 'broadside'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['mg_nest', 'searchlight_sniper'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'plasma_mortar'], 'nanite_surge'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['ion_turret', 'tachyon_lance'], 'warp_strike'),
 };
 
 const BOOMSWORTH: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'log_roller'], 'meteor_shower'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['onager', 'archer_tower'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['trebuchet', 'crossbow_nest'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['congreve_rack', 'swivel_gun'], 'broadside'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['boiler_mortar', 'mortar_pit'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator'], ['howitzer', 'mg_nest'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['plasma_mortar', 'pulse_laser'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['starfall_battery', 'ion_turret'], 'starfall'),
 };
 
 const TWINS: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth'], ['rock_tosser', 'grumpy_toad'], 'stampede'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'chainshot_cannon'], 'smoke_screen'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper'], ['gatling_gun', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['flak_gun', 'searchlight_sniper'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['arc_coil', 'gravity_well'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['starburst_gun', 'tachyon_lance'], 'starfall'),
 };
 
 const ROOK: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['angry_beehive', 'grumpy_toad'], 'stampede'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['sun_mirror', 'onager'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram'], ['crossbow_nest', 'trebuchet'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['swivel_gun', 'congreve_rack'], 'smoke_screen'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['mortar_pit', 'boiler_mortar'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['flak_gun', 'howitzer'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'starfall_battery'], 'starfall'),
 };
 
 const TEMPEST: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'meteor_shower'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'chainshot_cannon'], 'broadside'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator'], ['mg_nest', 'searchlight_sniper'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'tachyon_lance'], 'starfall'),
 };
 
 const WARDEN: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'mammoth_matriarch'], ['rock_tosser', 'grumpy_toad'], 'stampede'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'bronze_colossus'], ['archer_tower', 'gorgon_bust'], 'aegis'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'ursa_paladin'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'balloon_admiral'], ['swivel_gun', 'chainshot_cannon'], 'broadside'),
+  industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'land_dreadnought'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'behemoth_tank'], ['flak_gun', 'searchlight_sniper'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'chrono_titan'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'mothership'], ['ion_turret', 'tachyon_lance'], 'warp_strike'),
 };
 
 /** Old Grogg only fights in the Stone Age: Training Dummies, then a Tuskback (A8). */
@@ -154,7 +181,7 @@ const LIST: GeneralDef[] = [
   general({ id: 'ledger', personality: 'greedy', tiers: [3, 6], weights: w(40, 40, 95, 95, 40, 40, 40), warPlan: LEDGER }),
   general({
     id: 'boomsworth', personality: 'artillery', tiers: [4, 7], weights: w(50, 70, 50, 50, 50, 40, 50), warPlan: BOOMSWORTH,
-    signatureCards: ['trebuchet', 'bronze_cannon', 'howitzer', 'grenadier'],
+    signatureCards: ['trebuchet', 'bronze_cannon', 'howitzer', 'grenadier', 'scorpion', 'boiler_mortar', 'starfall_battery'],
   }),
   general({ id: 'twins', personality: 'counters', tiers: [5, 8], weights: w(60, 50, 50, 60, 60, 50, 40), warPlan: TWINS, portraits: 2 }),
   general({
@@ -165,7 +192,9 @@ const LIST: GeneralDef[] = [
   general({
     id: 'warden', personality: 'boss', tiers: [10, 10], weights: w(70, 60, 60, 70, 80, 90, 40), warPlan: WARDEN,
     legendaryLevel: 9, disclosures: true,
-    signatureCards: ['mammoth_matriarch', 'ursa_paladin', 'balloon_admiral', 'behemoth_tank', 'chrono_titan'],
+    signatureCards: [
+      'mammoth_matriarch', 'bronze_colossus', 'ursa_paladin', 'balloon_admiral', 'land_dreadnought', 'behemoth_tank', 'chrono_titan', 'mothership',
+    ],
   }),
   general({ id: 'echo', personality: 'mirror', tiers: null, weights: BALANCED, warPlan: null, mirror: true }),
 ];
@@ -176,7 +205,8 @@ export const generals: GeneralTables = {
   // A6.10
   conquest: {
     unlockArena: 3,
-    format: 'full',
+    // A17.18 owner decision: Conquest plays Standard War (6 ages, ~6:30)
+    format: 'standard',
     board: [
       { general: 'pip', tier: 1, level: 1 },
       { general: 'kettle', tier: 2, level: 2 },
@@ -191,7 +221,8 @@ export const generals: GeneralTables = {
     stars: [
       { star: 1, condition: { kind: 'win' }, reward: { kind: 'amber', amount: 200 } },
       { star: 2, condition: { kind: 'winBaseAbove', bp: 5000 }, reward: { kind: 'dust', amount: 100 } },
-      { star: 3, condition: { kind: 'winBefore', ms: 360000 }, reward: { kind: 'ageCapsule' } },
+      // Standard War median 6:30 (A17.2): star 3 keeps the old ~0.86 × median ratio
+      { star: 3, condition: { kind: 'winBefore', ms: 345000 }, reward: { kind: 'ageCapsule' } },
     ],
     milestones: [
       { stars: 9, capsule: 'jade', title: null },

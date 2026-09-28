@@ -107,9 +107,9 @@ describe('feat tracker (A15.10)', () => {
     expect(run('standard', evs.slice(0, 14), LOSS)).toEqual([]);
   });
 
-  it('Lightspeed: the Future Age before 4:00 in a Full War', () => {
-    expect(run('full', [ageUp(ME, 'future', sec(239))], LOSS)).toEqual(['lightspeed']);
-    expect(run('full', [ageUp(ME, 'future', sec(241))], LOSS)).toEqual([]);
+  it('Lightspeed: the Future Age before 4:10 in a Full War', () => {
+    expect(run('full', [ageUp(ME, 'future', sec(249))], LOSS)).toEqual(['lightspeed']);
+    expect(run('full', [ageUp(ME, 'future', sec(251))], LOSS)).toEqual([]);
     expect(run('standard', [ageUp(ME, 'future', sec(100))], LOSS)).toEqual([]);
   });
 
@@ -132,7 +132,7 @@ describe('feat tracker (A15.10)', () => {
   it('Stone Cold: a Stone Age unit deals the final blow to a base in the Future Age', () => {
     const a = spawn(ME, 'bonker');
     expect(run('standard', [a.ev, ageUp(ME, 'modern', 90), ageUp(FOE, 'future', 100), baseHit(FOE, 0, a.id)], WIN, { rare: true })).toEqual(['stone_cold']);
-    expect(run('standard', [a.ev, ageUp(FOE, 'modern', 100), baseHit(FOE, 0, a.id)], WIN, { rare: true })).toEqual([]);
+    expect(run('standard', [a.ev, ageUp(FOE, 'industrial', 100), baseHit(FOE, 0, a.id)], WIN, { rare: true })).toEqual([]);
   });
 
   it('Old Guard: living units from all 5 ages at once', () => {
@@ -186,13 +186,13 @@ describe('rewards by format (A15.8)', () => {
     for (const f of ['short', 'standard', 'full'] as const) expect(ladderWinFor(low, C, f)).toEqual({ trophies: 30, amber: 20, amberWithoutCharge: 40 });
     const high = { ...scripted(1, 2), trophies: { ...low.trophies, current: 500, best: 500 } };
     expect(ladderWinFor(high, C, 'short').trophies).toBe(26);
-    expect(ladderWinFor(high, C, 'standard').trophies).toBe(30);
-    expect(ladderWinFor(high, C, 'full')).toEqual({ trophies: 34, amber: 30, amberWithoutCharge: 60 });
+    expect(ladderWinFor(high, C, 'standard').trophies).toBe(31);
+    expect(ladderWinFor(high, C, 'full')).toEqual({ trophies: 36, amber: 35, amberWithoutCharge: 70 });
     const c = new TestClock();
     const o = M.pickOpponent(high, 'ladder', C, c, { format: 'full' });
     expect(o.format).toBe('full');
     const r = M.applyMatchResult(high, matchInput('ladder', 'win', o), C, c);
-    expect(r.rewards[0]).toEqual({ kind: 'trophies', delta: 34 });
+    expect(r.rewards[0]).toEqual({ kind: 'trophies', delta: 36 });
   });
 });
 

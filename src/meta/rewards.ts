@@ -72,7 +72,8 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
   const st = s.stats;
   const tier = Math.max(0, Math.trunc(r.opponent.tier));
   const ages = t.formats[r.opponent.format]?.ages ?? [];
-  const reachedFuture = r.stats.reachedFinalAgeAtMs !== null && ages[ages.length - 1] === 'future';
+  // `futureReached` counts matches that reached the game's last age (Cosmic since A17.8; Future before).
+  const reachedFuture = r.stats.reachedFinalAgeAtMs !== null && ages[ages.length - 1] === t.order.ages[t.order.ages.length - 1];
   const win = result === 'win';
   return {
     ...s,

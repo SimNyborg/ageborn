@@ -43,6 +43,10 @@ export const AGE_COLORS: Readonly<Record<AgeId, { sky: number; ground: number; a
   gunpowder: { sky: 0x2e5e4e, ground: 0x4a3b2e, accent: 0xc9a227, light: 0xefe6cf },
   modern: { sky: 0x62664a, ground: 0x3a3f45, accent: 0xb0306a, light: 0xb8a67a },
   future: { sky: 0x23262e, ground: 0x3af0b4, accent: 0x29e3f5, light: 0xf03aa8 },
+  // A17.12
+  bronze: { sky: 0xcdbe9e, ground: 0x4f8f7f, accent: 0xb8863b, light: 0x6a5566 },
+  industrial: { sky: 0x5b6168, ground: 0x2b2a2e, accent: 0xb06a3b, light: 0xdcd6c8 },
+  cosmic: { sky: 0x1e1830, ground: 0x8e44c8, accent: 0x3fe0b0, light: 0xf2f0ff },
 };
 
 /** The capsule room: a dusky, warm stage (theme background #1b1a2e). */

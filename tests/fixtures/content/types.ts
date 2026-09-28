@@ -91,7 +91,7 @@ export interface RawContent {
   ages: readonly RawAgeTables[];
   powers: readonly PowerDef[];
   economy: EconomyRules;
-  ageScale: Record<AgeId, RawAgeScale>;
+  ageScale: Partial<Record<AgeId, RawAgeScale>>;
   formats: Record<FormatId, FormatDef>;
   battle: RawBattleRules;
   damageMods: RawDamageMods;

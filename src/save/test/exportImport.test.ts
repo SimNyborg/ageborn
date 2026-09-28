@@ -12,7 +12,8 @@ import {
   saveFileFor,
 } from '../exportImport';
 import { IMPORT_MESSAGE_KEYS } from '../notices';
-import { makeStore, v1Fixture } from './helpers';
+import { migrate } from '../migrations';
+import { makeStore, currentFixture, v1Fixture } from './helpers';
 import frozenV1Code from './fixtures/v1.code.txt?raw';
 
 describe('base64url (RFC 4648 §5, no padding)', () => {
@@ -53,39 +54,41 @@ describe('Adler-32', () => {
 
 describe('export codes (DESIGN B8 Export/import)', () => {
   it('round-trip a save exactly', () => {
-    const doc = v1Fixture();
+    const doc = currentFixture();
     const code = encodeSaveCode(doc);
     expect(code.startsWith(EXPORT_CODE_PREFIX)).toBe(true);
     expect(code.slice(EXPORT_CODE_PREFIX.length)).toMatch(/^[A-Za-z0-9_-]+$/);
     expect(code.length).toBeLessThan(JSON.stringify(doc).length / 2); // deflate pays off
-    expect(importSaveCode(code)).toEqual({ ok: true, value: doc, fromVersion: 1 });
+    expect(importSaveCode(code)).toEqual({ ok: true, value: doc, fromVersion: 2 });
   });
 
   it('the frozen v1 code imports in this build (codes stay valid across releases)', () => {
-    expect(importSaveCode(frozenV1Code)).toEqual({ ok: true, value: v1Fixture(), fromVersion: 1 });
+    const v1 = migrate(v1Fixture());
+    expect(v1.ok).toBe(true);
+    expect(importSaveCode(frozenV1Code)).toEqual({ ok: true, value: v1.ok ? v1.doc : null, fromVersion: 1 });
   });
 
   it('survives line breaks, spaces and a capitalised prefix from copy and paste', () => {
-    const code = encodeSaveCode(v1Fixture());
+    const code = encodeSaveCode(currentFixture());
     const mangled = ` ${code.slice(0, 9).toUpperCase()}\n${code.slice(9, 50)}\r\n  ${code.slice(50)}\n`;
     expect(importSaveCode(mangled).ok).toBe(true);
   });
 
   it('accepts a plain JSON save (hand-made backups, the dev page)', () => {
-    const r = importSaveCode(JSON.stringify(v1Fixture(), null, 2));
-    expect(r).toEqual({ ok: true, value: v1Fixture(), fromVersion: 1 });
+    const r = importSaveCode(JSON.stringify(currentFixture(), null, 2));
+    expect(r).toEqual({ ok: true, value: currentFixture(), fromVersion: 2 });
   });
 
   it('accepts a file that starts with a byte-order mark, and keeps spaces inside names', () => {
     const BOM = String.fromCharCode(0xfeff);
-    const doc = v1Fixture();
+    const doc = currentFixture();
     doc.profile.name = 'Sim  the Bold';
-    expect(importSaveCode(`${BOM}${JSON.stringify(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 1 });
-    expect(importSaveCode(`${BOM}${encodeSaveCode(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 1 });
+    expect(importSaveCode(`${BOM}${JSON.stringify(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 2 });
+    expect(importSaveCode(`${BOM}${encodeSaveCode(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 2 });
   });
 
   it('rejects damaged or foreign codes with a reason and a message key', () => {
-    const code = encodeSaveCode(v1Fixture());
+    const code = encodeSaveCode(currentFixture());
     const flip = (i: number) => code.slice(0, i) + (code[i] === 'A' ? 'B' : 'A') + code.slice(i + 1);
     const cases: [string, string][] = [
       ['', 'empty'],
@@ -98,8 +101,8 @@ describe('export codes (DESIGN B8 Export/import)', () => {
       [flip(code.length - 2), 'corrupt'],
       ['{"v":1,', 'corrupt'],
       [encodeSaveCode([1, 2, 3]), 'notASave'],
-      [encodeSaveCode({ ...v1Fixture(), v: 42 }), 'tooNew'],
-      [encodeSaveCode({ ...v1Fixture(), warPlans: [] }), 'invalid'],
+      [encodeSaveCode({ ...currentFixture(), v: 42 }), 'tooNew'],
+      [encodeSaveCode({ ...currentFixture(), warPlans: [] }), 'invalid'],
     ];
     for (const [input, reason] of cases) {
       const r = importSaveCode(input);
@@ -118,23 +121,23 @@ describe('export codes (DESIGN B8 Export/import)', () => {
 
 describe('.ageborn files', () => {
   it('hold the export code on one line under a dated name', () => {
-    const f = saveFileFor(v1Fixture(), Date.UTC(2026, 8, 27, 12));
+    const f = saveFileFor(currentFixture(), Date.UTC(2026, 8, 27, 12));
     expect(f.name).toBe('ageborn-2026-09-27.ageborn');
     expect(f.mime).toBe('text/plain');
-    expect(f.text).toBe(`${encodeSaveCode(v1Fixture())}\n`);
+    expect(f.text).toBe(`${encodeSaveCode(currentFixture())}\n`);
   });
 
   it('import through the store like a pasted code', () => {
     const { store } = makeStore();
-    const file = store.exportFile(v1Fixture());
+    const file = store.exportFile(currentFixture());
     expect(file.name).toMatch(/^ageborn-\d{4}-\d{2}-\d{2}\.ageborn$/);
-    expect(store.importFile(file.text)).toEqual({ ok: true, value: v1Fixture(), fromVersion: 1 });
-    expect(store.importCode(store.exportCode(v1Fixture()))).toMatchObject({ ok: true });
+    expect(store.importFile(file.text)).toEqual({ ok: true, value: currentFixture(), fromVersion: 2 });
+    expect(store.importCode(store.exportCode(currentFixture()))).toMatchObject({ ok: true });
   });
 
   it('importing stores nothing by itself', () => {
     const { store, storage } = makeStore();
-    store.importCode(store.exportCode(v1Fixture()));
+    store.importCode(store.exportCode(currentFixture()));
     expect(storage.length).toBe(0);
   });
 });

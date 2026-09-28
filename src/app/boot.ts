@@ -17,7 +17,8 @@ import type { PixiHost } from './pixiHost';
 import { buildServices, choiceFromUrl, type Services } from './services';
 
 export const BOOT_AGES: readonly AgeId[] = ['stone', 'medieval'];
-export const LATER_AGES: readonly AgeId[] = ['gunpowder', 'modern', 'future'];
+/** Every other age, preloaded when the browser is idle (A17.8: eight ages). */
+export const LATER_AGES: readonly AgeId[] = ['bronze', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 export type BootStep = 'save' | 'settings' | 'platform' | 'pixi' | 'art' | 'audio' | 'route';
 

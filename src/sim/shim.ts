@@ -30,7 +30,7 @@ export interface RawContentLike {
   ages: readonly { age: AgeId; units: readonly UnitDef[]; turrets: readonly TurretDef[] }[];
   powers: readonly PowerDef[];
   economy: EconomyRules;
-  ageScale: Readonly<Record<AgeId, Pick<AgeDef, 'id' | 'index' | 'pBp' | 'baseHp' | 'xpToNext'>>>;
+  ageScale: Readonly<Partial<Record<AgeId, Pick<AgeDef, 'id' | 'index' | 'pBp' | 'baseHp' | 'xpToNext'>>>>;
   formats: Readonly<Record<FormatId, FormatDef>>;
   /** Raw-only battle numbers (`RawBattleRules`): the heal pulse (A2.7: 0.5 s) and the {@link BattleRulesLike} fields. */
   battle?: Partial<BattleRulesLike> & { healPulseMs?: number };
@@ -48,6 +48,7 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
   const ages = {} as Record<AgeId, AgeDef>;
   for (const id of Object.keys(raw.ageScale).sort() as AgeId[]) {
     const a = raw.ageScale[id];
+    if (!a) continue;
     ages[id] = {
       ...a,
       paletteId: `palette.${id}`,

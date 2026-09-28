@@ -53,8 +53,6 @@ export interface FeatTracker {
   found(outcome: MatchOutcome | null): string[];
 }
 
-const AGE_INDEX: Readonly<Record<AgeId, number>> = { stone: 0, medieval: 1, gunpowder: 2, modern: 3, future: 4 };
-
 /** Creates the feat tracker for one side of one match. */
 export function createFeatTracker(cfg: FeatTrackerConfig): FeatTracker {
   const t = cfg.content;
@@ -69,10 +67,9 @@ export function createFeatTracker(cfg: FeatTrackerConfig): FeatTracker {
   const lastCast = new Map<number, number>();
   const castKills = new Map<number, Map<AgeId, number>>();
   const castPower = new Map<number, CardId>();
-  const aliveByAge: [number[], number[]] = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-  ];
+  // Global age index (`AgeDef.index`, A17.8), so a format that skips ages still compares ages correctly.
+  const AGE_INDEX = Object.fromEntries(t.order.ages.map((a) => [a, t.ages[a].index])) as Record<AgeId, number>;
+  const aliveByAge: [number[], number[]] = [t.order.ages.map(() => 0), t.order.ages.map(() => 0)];
   const age: [AgeId, AgeId] = ['stone', 'stone'];
   let maxAgeMine: AgeId = 'stone';
   let turretBuilt = false;

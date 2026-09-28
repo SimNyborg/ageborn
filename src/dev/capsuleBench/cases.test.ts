@@ -70,7 +70,8 @@ describe('capsule bench cases (WP10 DoD)', () => {
     const one = byId('script-1');
     expect(one.finalTier).toBe('bronze');
     expect(one.steps.filter((s) => s.kind === 'strike' && s.climb)).toHaveLength(1);
-    expect(one.steps.flatMap((s) => (s.kind === 'miniWalkout' ? [s.card.card] : []))).toEqual(['spear_hunter']);
+    // A17.13: capsule 1 brings the Spear Hunter and the Phalangite
+    expect(one.steps.flatMap((s) => (s.kind === 'miniWalkout' ? [s.card.card] : []))).toEqual(['spear_hunter', 'phalangite']);
     const five = byId('script-5');
     expect(five.steps.some((s) => s.kind === 'walkout' && s.first && s.card.card === 'mammoth_matriarch')).toBe(true);
   });

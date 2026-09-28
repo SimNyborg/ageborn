@@ -324,6 +324,27 @@ interface Drag {
   p: number | null;
 }
 
+/** The minimap's hit area is at least this tall (A17.5), also for dropping a power on it. */
+export const MINIMAP_HIT_PX = 32;
+
+/**
+ * World x under a client point when it is over the minimap strip (A17.6: a power can be dropped on
+ * it), else null. The strip's canvas carries the world range it draws.
+ */
+export function minimapDropX(clientX: number, clientY: number, from: Element | null): number | null {
+  const root = from?.closest('.hud') ?? null;
+  const canvas = root?.querySelector<HTMLElement>('[data-minimap]') ?? null;
+  if (!canvas) return null;
+  const r = canvas.getBoundingClientRect();
+  if (r.width <= 0) return null;
+  const cy = r.top + r.height / 2;
+  const half = Math.max(r.height, MINIMAP_HIT_PX) / 2;
+  if (clientX < r.left || clientX > r.right || Math.abs(clientY - cy) > half) return null;
+  const wl = Number(canvas.dataset['worldLeft'] ?? -180);
+  const wr = Number(canvas.dataset['worldRight'] ?? 2180);
+  return wl + ((clientX - r.left) / r.width) * (wr - wl);
+}
+
 function PowerButton(p: { c: HudCtx }) {
   const { c } = p;
   const { m, t } = c;
@@ -339,11 +360,20 @@ function PowerButton(p: { c: HudCtx }) {
   readySeq.current.ready = ready;
 
   const stop = (): void => {
-    if (drag.current?.dragging) c.view?.previewPower(null);
+    if (drag.current?.dragging) {
+      c.view?.previewPower(null);
+      c.view?.cameraHold?.('powerDrag', false);
+    }
     drag.current = null;
     setAiming(false);
   };
-  useEffect(() => () => c.view?.previewPower(null), [c.view]);
+  useEffect(
+    () => () => {
+      c.view?.previewPower(null);
+      c.view?.cameraHold?.('powerDrag', false);
+    },
+    [c.view],
+  );
 
   return (
     <div class={cls('hud-power-wrap', ready && 'is-ready')}>
@@ -368,15 +398,21 @@ function PowerButton(p: { c: HudCtx }) {
             if (!ready || !c.view?.powerAimable()) return;
             d.dragging = true;
             setAiming(true);
+            c.view?.cameraHold?.('powerDrag', true);
           }
-          d.p = c.view?.laneP(e.clientX, e.clientY) ?? null;
+          // Over the lane band (the camera edge-scrolls near its ends), or dropped on the minimap (A17.6).
+          let at = c.view?.laneP(e.clientX, e.clientY) ?? null;
+          const mapX = minimapDropX(e.clientX, e.clientY, e.currentTarget as Element);
+          if (mapX !== null && c.view?.powerPAtWorld) at = c.view.powerPAtWorld(mapX);
+          d.p = at;
           c.view?.previewPower(d.p);
         }}
         onPointerUp={(e) => {
           const d = drag.current;
           if (!d || d.id !== e.pointerId) return;
           const placed = d.dragging;
-          const at = d.p;
+          // The preview may have moved under a still finger while the camera edge-scrolled.
+          const at = d.p === null ? null : (c.view?.previewedP?.() ?? d.p);
           stop();
           if (!placed) c.act(powerIntent(m, c.side));
           // A drag released off the lane is a cancel.

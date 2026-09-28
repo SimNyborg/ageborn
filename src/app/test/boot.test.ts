@@ -28,7 +28,7 @@ describe('boot (DESIGN B11)', () => {
     expect([...art.preloaded]).toEqual(['stone', 'medieval']);
     idle.forEach((t) => t());
     await Promise.resolve();
-    expect([...art.preloaded]).toEqual(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
+    expect([...art.preloaded]).toEqual(['stone', 'medieval', 'bronze', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
     expect(s.eventLog.entries().at(-1)).toMatchObject({ kind: 'boot', id: 'tutorial' });
   });
 

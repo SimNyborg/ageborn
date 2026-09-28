@@ -141,8 +141,8 @@ describe('semantic checks', () => {
     const c = copy();
     (c.units.pebbler as { rarity: string }).rarity = 'rare';
     const m = messages(c).join('\n');
-    expect(m).toMatch(/25 common cards \(A5\.1\), found 24/);
-    expect(m).toMatch(/15 rare cards \(A5\.1\), found 16/);
+    expect(m).toMatch(/40 common cards \(A17\.13\), found 39/);
+    expect(m).toMatch(/24 rare cards \(A17\.13\), found 25/);
   });
 
   it('catches Trophy Road mistakes (A6.3)', () => {
@@ -175,12 +175,12 @@ describe('semantic checks', () => {
     if (!first) throw new Error('script capsule 1');
     first.cards = [];
     expect(messages(d)).toContain('capsules.script: "spear_hunter" (the stone Anti-armor Rare) never arrives (A3)');
-    // Nor would the Rail Gunner without Arena 2's Age Unlock Capsules.
+    // Nor would the Harpoon Gunner without Arena 2's Age Unlock Capsules (A17.13).
     const e = copy();
     const a2 = e.arenas.list[1];
     if (!a2) throw new Error('arena 2');
     a2.gateRewards = a2.gateRewards.filter((r) => r.kind !== 'ageUnlock');
-    expect(messages(e)).toContain('capsules.script: "rail_gunner" (the future Anti-armor Rare) never arrives (A3)');
+    expect(messages(e)).toContain('capsules.script: "harpoon_gunner" (the industrial Anti-armor Rare) never arrives (A3)');
     // A Bronze capsule has 3 stacks.
     const f = copy();
     const bronze = f.capsules.script[0];

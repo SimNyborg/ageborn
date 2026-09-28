@@ -6,7 +6,7 @@ a long wooden stock, a plum torsion housing up front with aged-bronze washers an
 team-painted bow arms (the team colour stays off the bolt, which reads as a projectile), a taut string, a
 heavy bolt with a polished head and sandstone fletching, and a windlass with a crank at the
 back. A crewman in a leather cap and a team tunic stands behind it, hands on the crank. The
-walk: he leans in and pushes it along with a pumping stride (the wheels roll at the ground
+walk (a team pennant flies from a pole on the trail): he leans in and pushes it along with a pumping stride (the wheels roll at the ground
 speed). The attack: crank, crank (the string winds back),
 aim (held), release (the arms whip forward, the frame kicks and the bolt leaves at the
 per-frame `muzzle`), a recoil bounce, and he cranks the next bolt into place. The death: the
@@ -149,6 +149,10 @@ def build(rig):
             team_felloe=False, n_spokes=6)
     _marker(rig, "wheel_r", -12.0)
     B.dust_puff(rig, "unit", (-14.0, -6.0, 2.0), size=0.9, name="dust")
+    # a team pennant on a pole at the trail (the machine's team cue while the crewman works)
+    from ageborn_art import rigs_modern as _M
+    _M.pennant(rig, "cart", (-26.0, 7.0, 8.0), 56.0, length=16.0, w=10.0, pole=B.WOOD_DK, tip=B.BRONZE_HI,
+               max_deg=16)
 
     # the crewman behind the windlass
     rig.joint("crew", "unit", (0, 0, 0))

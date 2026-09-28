@@ -1,14 +1,16 @@
 """Flare Spotter: Industrial Age support (docs/design-lane-ages.md A17.10). Flare (proj.flare), 200 lu,
 ~68 lu. Every hit marks the target (+20% damage taken) for 3 s; follows the front.
 
-Look (A17.12, Industrial palette): a lanky forward observer in a coal bowler hat with a team band,
+Look (A17.12, Industrial palette): a lanky forward observer in an iron-grey officer's peaked cap
+(a flat wide top, a glossy peak, a team band, a brass badge),
 a team Norfolk jacket with a belt, iron-grey sleeves with a wide team armband on the near arm,
 cream breeches with leather gaiters, a tidy moustache and a pair of big brass-rimmed binoculars
 hanging on a strap across his chest. In his near hand a stubby flare pistol (fat aged-brass
-barrel, wooden grip) held up by his shoulder, muzzle skyward. The far hand points out targets.
-The attack ("flare arc") levels the pistol up at 40 degrees, holds, fires with a white-magenta
-flash (the flare is white-magenta, never red, A17.12) and a smoke puff, kicks, then he throws his
-far arm out to point at the marked target and settles. The projectile spawns at the per-frame
+barrel, wooden grip) held up by his shoulder, muzzle skyward. The idle alternates: one breath with the
+binoculars raised to his eyes, one with them lowered while he scans. The attack ("flare arc")
+raises the pistol high overhead (about 65 degrees), holds, fires with a white-magenta flash
+around a white flare core (never red, A17.12) and a smoke puff, kicks, then he throws his far
+arm out to point at the marked target and settles. The projectile spawns at the per-frame
 `muzzle` anchor; `binoculars` is exported for the mark reticle effect.
 """
 import math
@@ -55,7 +57,7 @@ def build(rig):
     I.moustache(rig, I.HAIR, curl=True, big=0.9)
     I.back_hair(rig, I.HAIR)
     I.ear(rig)
-    I.bowler(rig, c=(1.0, 0, 57.6))
+    I.peaked_cap(rig, c=(1.0, 0, 57.2))
 
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=I.IRON_LT, team_sleeve=False, fist=4.3, cuff=I.COAL_LT)
@@ -84,7 +86,7 @@ def build(rig):
         g.blob((muz[0] + dx, muz[1] - 1, muz[2] + dz), r, p=2.0,
                rot=(0, (-36 if dz > 0 else 36) if dz else 0, 0))
     rig.part("flash", g, glow=I.FLARE, outline=0)
-    g = Geo().blob((muz[0] + 3.6, muz[1] - 2, muz[2]), (3.4, 1.8, 2.0), p=2.0)
+    g = Geo().sphere((muz[0] + 4.0, muz[1] - 2.4, muz[2]), 3.0, cuts=3)
     rig.part("flash", g, glow=I.FLARE_CORE, outline=0)
     I.smoke_puff(rig, "pistol", (muz[0] + 5.0, muz[1], muz[2] + 2.0), size=0.8)
     rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
@@ -103,11 +105,21 @@ LOOK = (10.0, 60.0)              # far arm: binoculars up at the eyes
 DOWN = (-95.0, -70.0)            # far arm: binoculars lowered
 
 
+IDLE_MS = 150
+# 8 unique idle poses = two breaths: 0-2 binoculars at the eyes, 3 lowering, 4-6 lowered (he
+# scans, head turning), 7 raising again. Not retimed (the retime only rebuilds 4-pose idles).
+BINO = [1.0, 1.0, 1.0, 0.45, 0.0, 0.0, 0.0, 0.5]
+
+
 def _idle(f):
-    c, lag = I.idle_wave(f)
+    c, lag = I.idle_wave([0, 1, 2, 3, 3, 2, 1, 0][f] if f < 8 else 0)
     a, fo, w = IDLE_R
-    return merge(I.idle_body(f), near(a + 2 * lag, fo + 3 * lag, w + 3 * lag),
-                 far(LOOK[0] + 1.5 * lag, LOOK[1] + 2 * lag, -4.0 * lag))
+    k = BINO[f]
+    la = DOWN[0] + (LOOK[0] - DOWN[0]) * k
+    lf = DOWN[1] + (LOOK[1] - DOWN[1]) * k
+    look = [0, 0, 0, -2, -5, 3, 6, 0][f]
+    return merge(I.idle_body([0, 1, 2, 3, 3, 2, 1, 0][f]), near(a + 2 * lag, fo + 3 * lag, w + 3 * lag),
+                 far(la + 1.5 * lag, lf + 2 * lag, -4.0 * lag), {"head": {"r": look}})
 
 
 def _walk(f):
@@ -123,11 +135,11 @@ ATTACK_IMPACT = 3
 
 
 def _attack(f):
-    # 0 raise, 1 level up to 40 degrees, 2 held aim (squint), 3 FIRE (white-magenta flash),
+    # 0 raise, 1 up high, 2 held aim at about 65 degrees (squint), 3 FIRE (white-magenta flash),
     # 4 kick up, 5 point at the target with the far arm (held), 6-7 binoculars back up
-    a = pick(f, [-30, 15, 30, 30, 42, 30, -10, -50])
-    fo = pick(f, [0, 30, 38, 38, 52, 40, 10, -12])
-    w = pick(f, [10, 34, 40, 40, 58, 46, 12, -16])
+    a = pick(f, [-30, 30, 58, 58, 70, 50, -10, -50])
+    fo = pick(f, [0, 50, 68, 68, 80, 60, 10, -12])
+    w = pick(f, [10, 52, 66, 66, 80, 60, 12, -16])
     la = pick(f, [0, -60, -90, -90, -90, 20, 12, 10])
     lf = pick(f, [20, -80, -80, -80, -80, 20, 50, 60])
     pose = merge(near(a, fo, w), far(la, lf), {
@@ -166,7 +178,7 @@ def _die(f):
 
 def clips():
     return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
+        Clip("idle", 8, _idle, loop=True, durations=IDLE_MS),
         Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
         Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),

@@ -30,6 +30,16 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['sabertooth', 'Sabertooth', 'E', 'skirmisher', 200, 380, 34, 8, 12, 100, 'M', 'G', 'light bio melee'],
     ['mammoth_matriarch', 'Mammoth Matriarch', 'L', 'siegeHeavy', 350, 1700, 55, 20, 20, 40, 'H', 'G', 'armored bio melee legendary'],
   ],
+  // A17.9 Bronze Age (P 1.16)
+  bronze: [
+    ['hoplite', 'Hoplite', 'C', 'infantry', 50, 186, 23, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['javelineer', 'Javelineer', 'C', 'ranged', 75, 110, 20, 14, 210, 65, 'S', 'GA', 'light bio ranged'],
+    ['war_chariot', 'War Chariot', 'C', 'heavy', 150, 630, 49, 15, 16, 65, 'L', 'G', 'armored bio melee'],
+    ['phalangite', 'Phalangite', 'R', 'antiArmor', 100, 232, 30, 12, 65, 70, 'M', 'G', 'light bio melee'],
+    ['standard_bearer', 'Standard Bearer', 'R', 'support', 110, 151, 9, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['scorpion', 'Scorpion', 'E', 'artillery', 200, 330, 64, 30, 290, 45, 'L', 'G', 'light mech ranged'],
+    ['bronze_colossus', 'Bronze Colossus', 'L', 'siegeHeavy', 350, 2050, 64, 20, 20, 40, 'H', 'G', 'armored mech melee legendary'],
+  ],
   // A5.3 Medieval Age (P 1.35)
   medieval: [
     ['footman', 'Footman', 'C', 'infantry', 50, 216, 27, 10, 16, 70, 'S', 'G', 'light bio melee'],
@@ -49,6 +59,16 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['field_surgeon', 'Field Surgeon', 'R', 'support', 110, 237, 15, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['bronze_cannon', 'Bronze Cannon', 'E', 'artillery', 200, 500, 110, 35, 280, 45, 'L', 'G', 'light mech ranged'],
     ['balloon_admiral', 'Balloon Admiral', 'L', 'airBomber', 350, 1500, 110, 16, 40, 45, 'H', 'G', 'air legendary'],
+  ],
+  // A17.10 Industrial Age (P 2.12)
+  industrial: [
+    ['riveter', 'Riveter', 'C', 'infantry', 50, 330, 42, 10, 16, 72, 'S', 'G', 'light bio melee'],
+    ['carbineer', 'Carbineer', 'C', 'ranged', 75, 201, 33, 12, 250, 65, 'S', 'GA', 'light bio ranged'],
+    ['steam_golem', 'Steam Golem', 'C', 'heavy', 150, 1187, 89, 15, 16, 55, 'L', 'G', 'armored mech melee'],
+    ['harpoon_gunner', 'Harpoon Gunner', 'R', 'antiArmor', 100, 260, 55, 12, 210, 65, 'M', 'GA', 'light bio ranged'],
+    ['flare_spotter', 'Flare Spotter', 'R', 'support', 110, 276, 17, 12, 200, 65, 'S', 'GA', 'light bio support ranged'],
+    ['sapper', 'Sapper', 'E', 'siege', 200, 560, 12, 20, 12, 85, 'M', 'G', 'light bio melee'],
+    ['land_dreadnought', 'Land Dreadnought', 'L', 'siegeHeavy', 350, 3600, 130, 22, 160, 35, 'H', 'G', 'armored mech ranged legendary'],
   ],
   // A5.5 Modern Age (P 2.46)
   modern: [
@@ -70,6 +90,16 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['emp_saboteur', 'EMP Saboteur', 'E', 'antiMech', 200, 700, 50, 10, 12, 85, 'M', 'G', 'light bio melee'],
     ['chrono_titan', 'Chrono Titan', 'L', 'siegeHeavy', 350, 5600, 230, 16, 60, 35, 'H', 'G', 'armored mech melee legendary'],
   ],
+  // A17.11 Cosmic Age (P 4.48)
+  cosmic: [
+    ['star_legionnaire', 'Star Legionnaire', 'C', 'infantry', 50, 700, 90, 10, 16, 75, 'S', 'G', 'light bio melee'],
+    ['ion_ranger', 'Ion Ranger', 'C', 'ranged', 75, 426, 54, 10, 270, 65, 'S', 'GA', 'light bio ranged'],
+    ['hover_tank', 'Hover Tank', 'C', 'heavy', 150, 2509, 188, 15, 90, 55, 'L', 'G', 'armored mech ranged'],
+    ['graviton_halberdier', 'Graviton Halberdier', 'R', 'antiArmor', 100, 896, 116, 12, 70, 70, 'M', 'G', 'light bio melee'],
+    ['starwarden', 'Starwarden', 'R', 'support', 110, 582, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['warp_stalker', 'Warp Stalker', 'E', 'skirmisher', 200, 1600, 140, 8, 12, 100, 'M', 'G', 'light bio melee'],
+    ['mothership', 'Mothership', 'L', 'airGunship', 350, 3700, 80, 6, 180, 40, 'H', 'GA', 'air mech legendary'],
+  ],
 };
 
 /** [slug, name, rarity, cost, damage, interval s×10, range, hits] */
@@ -81,6 +111,12 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['angry_beehive', 'Angry Beehive', 'C', 175, 5, 2, 220, 'GA'],
     ['log_roller', 'Log Roller', 'R', 250, 45, 40, 300, 'G'],
     ['grumpy_toad', 'Grumpy Toad', 'E', 250, 60, 50, 420, 'G'],
+  ],
+  bronze: [
+    ['archer_tower', 'Archer Tower', 'C', 150, 35, 15, 370, 'GA'],
+    ['sun_mirror', 'Sun Mirror', 'C', 175, 9, 3, 230, 'GA'],
+    ['onager', 'Onager', 'R', 250, 95, 45, 480, 'G'],
+    ['gorgon_bust', 'Gorgon Bust', 'E', 250, 55, 60, 380, 'GA'],
   ],
   medieval: [
     ['crossbow_nest', 'Crossbow Nest', 'C', 150, 40, 15, 380, 'GA'],
@@ -94,6 +130,12 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['congreve_rack', 'Congreve Rack', 'R', 250, 55, 50, 460, 'GA'],
     ['chainshot_cannon', 'Chainshot Cannon', 'E', 250, 75, 40, 400, 'G'],
   ],
+  industrial: [
+    ['gatling_gun', 'Gatling Gun', 'C', 150, 13, 3, 350, 'GA'],
+    ['mortar_pit', 'Mortar Pit', 'C', 175, 68, 20, 300, 'G'],
+    ['boiler_mortar', 'Boiler Mortar', 'R', 250, 172, 50, 480, 'G'],
+    ['tesla_tower', 'Tesla Tower', 'E', 250, 130, 45, 380, 'GA'],
+  ],
   modern: [
     ['mg_nest', 'MG Nest', 'C', 150, 15, 3, 340, 'GA'],
     ['flak_gun', 'Flak Gun', 'C', 175, 60, 15, 420, 'GA'],
@@ -106,6 +148,12 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['plasma_mortar', 'Plasma Mortar', 'R', 250, 270, 50, 480, 'G'],
     ['gravity_well', 'Gravity Well', 'E', 250, 60, 70, 400, 'G'],
   ],
+  cosmic: [
+    ['ion_turret', 'Ion Turret', 'C', 150, 27, 3, 370, 'GA'],
+    ['starburst_gun', 'Starburst Gun', 'C', 175, 123, 20, 240, 'GA'],
+    ['starfall_battery', 'Starfall Battery', 'R', 250, 363, 50, 480, 'G'],
+    ['tachyon_lance', 'Tachyon Lance', 'E', 250, 184, 40, 420, 'GA'],
+  ],
 };
 
 /** A5.7: [slug, name, age, slot, effect fields to match] */
@@ -116,6 +164,9 @@ const POWERS: PowerRow[] = [
     { kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400, damage: 50, knockback: 40, maxHitsPerEnemy: 3 }],
   ['meteor_shower', 'Meteor Shower', 'stone', 'alternate',
     { kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40, jitter: 20, hitsAir: false, pattern: 'even' }],
+  ['tidal_wave', 'Tidal Wave', 'bronze', 'default',
+    { kind: 'sweep', zone: 450, durationMs: 2000, damage: 130, width: 40, hitsAir: false }],
+  ['aegis', 'Aegis', 'bronze', 'alternate', { kind: 'buffAll' }],
   ['arrow_storm', 'Arrow Storm', 'medieval', 'default',
     { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 40, radius: 20, hitsAir: true, pattern: 'even' }],
   ['royal_decree', 'Royal Decree', 'medieval', 'alternate', { kind: 'buffAll' }],
@@ -123,6 +174,10 @@ const POWERS: PowerRow[] = [
     { kind: 'cloud', width: 350, durationMs: 7000, enemyMissBp: 5000, allyDamageBp: 2000 }],
   ['broadside', 'Broadside', 'gunpowder', 'alternate',
     { kind: 'barrage', count: 10, durationMs: 3000, zone: 450, damage: 120, radius: 45, hitsAir: false }],
+  ['iron_horse', 'Iron Horse', 'industrial', 'default',
+    { kind: 'stampede', runners: 3, spacingMs: 500, distance: 600, speed: 450, damage: 150, knockback: 50, maxHitsPerEnemy: 2 }],
+  ['zeppelin_raid', 'Zeppelin Raid', 'industrial', 'alternate',
+    { kind: 'barrage', count: 10, durationMs: 2000, zone: 480, damage: 150, radius: 45, jitter: 0, hitsAir: false, pattern: 'line' }],
   ['paratroopers', 'Paratroopers', 'modern', 'default',
     { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 1000 }],
   ['carpet_bomber', 'Carpet Bomber', 'modern', 'alternate',
@@ -130,6 +185,10 @@ const POWERS: PowerRow[] = [
   ['orbital_lance', 'Orbital Lance', 'future', 'default',
     { kind: 'sweep', zone: 500, durationMs: 2000, damage: 450, hitsAir: true }],
   ['nanite_surge', 'Nanite Surge', 'future', 'alternate', { kind: 'buffAll' }],
+  ['starfall', 'Starfall', 'cosmic', 'default',
+    { kind: 'barrage', count: 6, durationMs: 2000, zone: 450, damage: 380, radius: 60, jitter: 20, hitsAir: true, pattern: 'even' }],
+  ['warp_strike', 'Warp Strike', 'cosmic', 'alternate',
+    { kind: 'paradrop', card: 'star_legionnaire', count: 3, beyondFront: 150, fallbackP: 1000 }],
 ];
 
 /** A2.7 train times and pop per role group (derived by the compiler). */
@@ -179,9 +238,9 @@ describe('A5 unit tables', () => {
     }
   }
 
-  it('lists all 35 collectable units', () => {
+  it('lists all 56 collectable units (A17.13)', () => {
     const rows = Object.values(UNITS).flat().map((r) => r[0]);
-    expect(rows).toHaveLength(35);
+    expect(rows).toHaveLength(56);
     expect([...content.order.units].sort()).toEqual([...rows].sort());
   });
 
@@ -218,6 +277,31 @@ describe('A5 unit tables', () => {
     expect(ab('emp_saboteur')).toContainEqual({ kind: 'emp', everyMs: 8000, triggerRadius: 120, radius: 120, stunMs: 1500 });
     expect(ab('chrono_titan')).toContainEqual({ kind: 'timeStop', everyMs: 15000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 });
     expect(content.units.chrono_titan?.attacks[0]?.cleave).toEqual({ count: 3, reach: 60 });
+    // A17.9-A17.11
+    expect(ab('hoplite')).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: 15, idleResetMs: 2000 });
+    expect(content.units.javelineer?.attacks[0]?.pierce).toEqual({ count: 2, length: 50 });
+    expect(ab('war_chariot')).toContainEqual({ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 });
+    expect(content.units.phalangite?.attacks[0]).toMatchObject({ priority: 'armored', mods: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }] });
+    expect(ab('standard_bearer')).toContainEqual({ kind: 'aura', radius: 160, status: { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 0 } });
+    expect(content.units.scorpion?.attacks[0]).toMatchObject({ minRange: 60, pierce: { count: 3, length: 150 } });
+    expect(content.units.bronze_colossus?.attacks[0]).toMatchObject({ splashRadius: 45, onHit: [{ kind: 'slow', magnitudeBp: 2000, durationMs: 1500 }] });
+    expect(ab('bronze_colossus')).toContainEqual({ kind: 'onDeathExplode', damage: 160, radius: 70 });
+    expect(ab('riveter')).toContainEqual({ kind: 'firstHitBonus', multBp: 15000, knockback: 0, idleResetMs: 2000 });
+    expect(ab('steam_golem')).toContainEqual({ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 });
+    expect(ab('harpoon_gunner')).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: -25, idleResetMs: 2000 });
+    expect(content.units.flare_spotter?.attacks[0]).toMatchObject({ priority: 'armored', onHit: [{ kind: 'mark', magnitudeBp: 2000, durationMs: 3000 }] });
+    expect(content.units.sapper?.attacks[0]?.vsBaseDamage).toBe(240);
+    expect(ab('sapper')).toEqual([{ kind: 'siegeOnly' }, { kind: 'onDeathExplode', damage: 180, radius: 60 }]);
+    expect(ab('land_dreadnought').find((a) => a.kind === 'riders')).toMatchObject({ count: 2, onDeathSpawn: 'carbineer', attack: { damage: 10, intervalMs: 500, range: 160 } });
+    expect(ab('star_legionnaire')).toContainEqual({ kind: 'resist', minSourceRange: 100, bp: 2000 });
+    expect(content.units.ion_ranger?.attacks[0]?.chain).toEqual({ count: 2, hop: 50 });
+    expect(ab('graviton_halberdier')).toContainEqual({ kind: 'brace' });
+    expect(ab('starwarden')).toContainEqual({ kind: 'periodicShieldAura', everyMs: 8000, radius: 180, maxTargets: 4, shield: 200, durationMs: 5000 });
+    expect(ab('warp_stalker')).toContainEqual({ kind: 'pounce', searchRange: 200, cooldownMs: 10000, leapMs: 400, firstBiteBp: 20000 });
+    expect(ab('mothership')).toEqual([
+      { kind: 'callStrike', everyMs: 6000, searchRange: 400, delayMs: 1000, damage: 300, radius: 50, sideLockoutMs: 3000 },
+      { kind: 'onDeathExplode', damage: 350, radius: 80 },
+    ]);
   });
 });
 
@@ -239,9 +323,18 @@ describe('A5 turret tables', () => {
     }
   }
 
-  it('lists all 20 turrets and the listed notes', () => {
-    expect(Object.values(TURRETS).flat()).toHaveLength(20);
-    expect(Object.keys(content.turrets)).toHaveLength(20);
+  it('lists all 32 turrets and the listed notes', () => {
+    expect(Object.values(TURRETS).flat()).toHaveLength(32);
+    expect(Object.keys(content.turrets)).toHaveLength(32);
+    // A17.9-A17.11
+    expect(content.turrets.gorgon_bust?.attack).toMatchObject({ priority: 'armored', onHit: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 1500 }] });
+    expect(content.turrets.onager?.attack).toMatchObject({ splashRadius: 50, minRange: 150 });
+    expect(content.turrets.mortar_pit?.attack).toMatchObject({ splashRadius: 40, minRange: 60 });
+    expect(content.turrets.boiler_mortar?.attack).toMatchObject({ splashRadius: 55, minRange: 170 });
+    expect(content.turrets.tesla_tower?.attack).toMatchObject({ chain: { count: 4, hop: 90 }, onHit: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 500 }] });
+    expect(content.turrets.starburst_gun?.attack).toMatchObject({ followBehind: 90, maxTargets: 4 });
+    expect(content.turrets.starfall_battery?.attack).toMatchObject({ splashRadius: 60, minRange: 180 });
+    expect(content.turrets.tachyon_lance?.attack.pierce).toEqual({ count: 4, length: 250 });
     expect(content.turrets.log_roller?.attack).toMatchObject({ line: { fromGate: 300 }, maxTargets: 6 });
     expect(content.turrets.pitch_cauldron?.attack.gateZone).toEqual({ radius: 130 });
     expect(content.turrets.trebuchet?.attack).toMatchObject({ splashRadius: 50, minRange: 150 });
@@ -319,6 +412,40 @@ const A14_2: Record<string, FxRow[]> = {
   arc_coil: [['arc_coil', 'fx.arc_chain', 'shot_arc', 'laser']],
   plasma_mortar: [['plasma_mortar', 'proj.plasma_mortar', 'shot_plasma', 'blast']],
   gravity_well: [['gravity_well', 'proj.gravity_orb', 'gravity_hum', 'blast']],
+  // A17.12 attack mapping
+  hoplite: [['hoplite', 'melee', 'swing_whoosh', 'pierce']],
+  javelineer: [['javelineer', 'proj.javelin', 'shot_javelin', 'pierce']],
+  war_chariot: [['war_chariot', 'melee', 'swing_whoosh', 'slash']],
+  phalangite: [['phalangite', 'melee', 'swing_whoosh', 'pierce']],
+  standard_bearer: [['standard_bearer', 'proj.javelin', 'shot_javelin', 'pierce']],
+  scorpion: [['scorpion', 'proj.scorpion_bolt', 'shot_scorpion', 'pierce']],
+  bronze_colossus: [['bronze_colossus', 'melee', 'stomp_colossus', 'blast']],
+  riveter: [['riveter', 'melee', 'swing_whoosh', 'blunt']],
+  carbineer: [['carbineer', 'proj.bullet', 'shot_carbine', 'bullet']],
+  steam_golem: [['steam_golem', 'melee', 'swing_whoosh', 'blunt']],
+  harpoon_gunner: [['harpoon_gunner', 'proj.harpoon', 'shot_harpoon', 'pierce']],
+  flare_spotter: [['flare_spotter', 'proj.flare', 'flare_pop', 'blast']],
+  sapper: [['sapper', 'melee', 'fuse_hiss', 'blast']],
+  land_dreadnought: [['land_dreadnought', 'proj.shell', 'shot_cannon', 'blast'], ['riders', 'proj.bullet', 'shot_gatling', 'bullet']],
+  star_legionnaire: [['star_legionnaire', 'melee', 'swing_whoosh', 'laser']],
+  ion_ranger: [['ion_ranger', 'proj.ion', 'shot_ion', 'laser']],
+  hover_tank: [['hover_tank', 'proj.plasma', 'shot_plasma', 'blast']],
+  graviton_halberdier: [['graviton_halberdier', 'melee', 'swing_whoosh', 'laser']],
+  starwarden: [['starwarden', 'proj.ion', 'shot_ion', 'laser']],
+  warp_stalker: [['warp_stalker', 'melee', 'swing_whoosh', 'slash']],
+  mothership: [['mothership', 'fx.beam_void', 'shot_void', 'laser']],
+  archer_tower: [['archer_tower', 'proj.arrow', 'shot_bow', 'pierce']],
+  sun_mirror: [['sun_mirror', 'fx.sun_beam', 'mirror_beam', 'laser']],
+  onager: [['onager', 'proj.boulder', 'shot_catapult', 'blast']],
+  gorgon_bust: [['gorgon_bust', 'fx.gorgon_gaze', 'gorgon_gaze', 'laser']],
+  gatling_gun: [['gatling_gun', 'proj.bullet', 'shot_gatling', 'bullet']],
+  mortar_pit: [['mortar_pit', 'proj.lob', 'shot_lob', 'blast']],
+  boiler_mortar: [['boiler_mortar', 'proj.shell', 'shot_cannon', 'blast']],
+  tesla_tower: [['tesla_tower', 'fx.tesla_arc', 'tesla_zap', 'laser']],
+  ion_turret: [['ion_turret', 'fx.beam_ion', 'shot_ion', 'laser']],
+  starburst_gun: [['starburst_gun', 'proj.starburst', 'shot_starburst', 'laser']],
+  starfall_battery: [['starfall_battery', 'proj.star_shard', 'shot_plasma', 'blast']],
+  tachyon_lance: [['tachyon_lance', 'fx.beam_tachyon', 'shot_tachyon', 'laser']],
 };
 
 /** Every attack of a card, primary first, then secondary attacks, then riders. */
@@ -352,8 +479,9 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   // Infantry melee ("blunt"), including the tutorial dummy (an Infantry melee unit, A5.6)
   bonker: MODS.blunt, footman: MODS.blunt, corsair: MODS.blunt, trench_raider: MODS.blunt, photon_knight: MODS.blunt,
   training_dummy: MODS.blunt,
-  spear_hunter: MODS.meleeAA, pikeman: MODS.meleeAA,
-  bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rangedAA,
+  hoplite: MODS.blunt, riveter: MODS.blunt, star_legionnaire: MODS.blunt,
+  spear_hunter: MODS.meleeAA, pikeman: MODS.meleeAA, phalangite: MODS.meleeAA, graviton_halberdier: MODS.meleeAA,
+  bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rangedAA, harpoon_gunner: MODS.rangedAA,
   grenadier: MODS.grenadier,
   flak_gun: MODS.flak,
   congreve_rack: MODS.congreve,
@@ -363,6 +491,7 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
 const PRIORITY_BY_CARD: Record<string, string> = {
   spear_hunter: 'armored', pikeman: 'armored', grenadier: 'armored', bazooka_trooper: 'armored', rail_gunner: 'armored',
   searchlight_sniper: 'armored', flak_gun: 'air', gravity_well: 'densest',
+  phalangite: 'armored', harpoon_gunner: 'armored', flare_spotter: 'armored', graviton_halberdier: 'armored', gorgon_bust: 'armored',
   // Grumpy Toad grabs "the nearest enemy ranged or support ground unit" first
   grumpy_toad: 'backline',
 };
@@ -469,7 +598,15 @@ describe('A5.7 Age Powers', () => {
     });
     // Orbital Lance: "dealing 450 once to each enemy it touches (±20 lu)"
     expect(content.powers.orbital_lance?.effect).toMatchObject({ width: 40 });
-    expect(Object.keys(content.powers)).toHaveLength(10);
+    // Aegis (A17.11): all your units get an 80 shield and +15% damage for 6 s
+    expect(content.powers.aegis?.effect).toEqual({
+      kind: 'buffAll',
+      statuses: [
+        { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 80 },
+        { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 6000 },
+      ],
+    });
+    expect(Object.keys(content.powers)).toHaveLength(16);
   });
 
   /**
@@ -485,6 +622,11 @@ describe('A5.7 Age Powers', () => {
       ['broadside', 'corsair', 'cuirassier', 82, 24],
       ['carpet_bomber', 'trench_raider', 'tankette', 91, 26],
       ['orbital_lance', 'photon_knight', 'walker_mech', 80, 24],
+      // A17.11
+      ['tidal_wave', 'hoplite', 'war_chariot', 70, 21],
+      ['iron_horse', 'riveter', 'steam_golem', 91, 25],
+      ['zeppelin_raid', 'riveter', 'steam_golem', 85, 24],
+      ['starfall', 'star_legionnaire', 'hover_tank', 87, 24],
     ];
     const ehp = (id: string): number => {
       const u = content.units[id];

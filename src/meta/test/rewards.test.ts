@@ -174,12 +174,18 @@ describe('other modes', () => {
     const r = play(s, 'ladder', 'win', clock(), { format: 'short', stats: { usedLastStand: true } });
     expect(r.rewards).toContainEqual({ kind: 'title', title: 'firestarter' });
     expect(r.rewards).toContainEqual({ kind: 'title', title: 'last_stander' });
+    // A17.13: Evolver is the first Cosmic Age, so the tutorial's Future Age no longer earns it.
     const tutorial = play(fresh(), 'tutorial', 'win', clock(), { stats: { reachedFinalAgeAtMs: 90_000 } });
-    expect(tutorial.save.cosmetics.owned).toContain('evolver');
-    expect(tutorial.save.stats.futureReached).toBe(1);
+    expect(tutorial.save.cosmetics.owned).not.toContain('evolver');
+    expect(tutorial.save.stats.futureReached).toBe(0);
     const full = { ...noFree(), arenaIndex: 2, trophies: { current: 400, best: 400, roadClaimed: [] } };
-    const fast = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 260_000 } });
+    // Cosmic before 6:15 in a Full War: Evolver and Speedrunner
+    const fast = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 374_000 } });
     expect(fast.rewards).toContainEqual({ kind: 'title', title: 'speedrunner' });
+    expect(fast.rewards).toContainEqual({ kind: 'title', title: 'evolver' });
+    expect(fast.save.stats.futureReached).toBe(1);
+    const slow = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 376_000 } });
+    expect(slow.rewards).not.toContainEqual({ kind: 'title', title: 'speedrunner' });
     const vet = play({ ...s, stats: { ...s.stats, wins: 99 } }, 'ladder', 'win');
     expect(vet.save.cosmetics.owned).toContain('veteran');
   });

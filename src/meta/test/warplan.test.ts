@@ -57,6 +57,8 @@ describe('validatePlan and the advisor (A3)', () => {
     expect(all).toContain('medieval:warning:onlyThreeUnits');
     let noSplash = starterPlan(C);
     noSplash = withLoadout(noSplash, 'stone', { units: ['bonker', 'tuskback', 'spear_hunter', null, null], turrets: ['rock_tosser', null] });
+    // The Javelineer's pierce counts as area damage, so Bronze leaves it out too (Short War has 4 ages, A17.8).
+    noSplash = withLoadout(noSplash, 'bronze', { units: ['hoplite', 'war_chariot', 'phalangite', null, null], turrets: ['archer_tower', null] });
     noSplash = withLoadout(noSplash, 'medieval', { units: ['footman', 'longbowman', 'destrier_knight', null, null], turrets: ['crossbow_nest', null] });
     noSplash = withLoadout(noSplash, 'gunpowder', { units: ['corsair', 'fusilier', 'cuirassier', null, null], turrets: ['swivel_gun', null] });
     expect(codes(noSplash, s)).toContain('stone:warning:noSplash');

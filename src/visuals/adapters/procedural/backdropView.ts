@@ -19,6 +19,13 @@
  * into a handful of draw calls with no masks, filters or custom shaders (works on WebGL and WebGPU).
  *
  * Space: the root is world space, x = 0 at the left gate and y = 0 on the ground line.
+ *
+ * Parallax (DESIGN A17.7): the battle camera scrolls a 2,360 lu world, and `setView(left, width)`
+ * tells the backdrop what it shows. The sky, far and mid layers then scroll at 0.05, 0.25 and 0.55 of
+ * the camera movement (less when a layer is too narrow for its factor at this view width, so no edge
+ * ever shows), and the ground at 1.0; the ground image is extended with a mirrored copy to cover the
+ * longer lane. Each layer's age split is re-cut so its seam stays at the ground seam's screen position:
+ * the ages meet in one place on screen while the silhouettes drift at their depth.
  */
 import { Assets, CanvasSource, Container, Rectangle, Sprite, Texture } from 'pixi.js';
 import type { BackdropView } from '@/contracts/art';
@@ -36,9 +43,45 @@ import { fxSprite } from './effectView';
 type LayerKind = 'sky' | 'far' | 'mid';
 const LAYERS: readonly LayerKind[] = ['sky', 'far', 'mid'];
 const FRAMES: Record<LayerKind, LayerFrame> = { sky: SKY_FRAME, far: FAR_FRAME, mid: MID_FRAME };
-/** Parallax factors for the optional camera offset (mobile pinch-follow, A2.1). */
 const MID_LAYER_TINT = 0xdcdad6;
-const PARALLAX: Record<LayerKind | 'ground', number> = { sky: 0.08, far: 0.25, mid: 0.55, ground: 1 };
+/** Parallax factors of the camera movement (A17.7). */
+export const PARALLAX: Record<LayerKind | 'ground', number> = { sky: 0.05, far: 0.25, mid: 0.55, ground: 1 };
+
+/**
+ * How tall (lu above the ground line) the silhouettes of the far and mid layers reach. When the camera
+ * shows less height than that (phones show about 275 lu), the layer shrinks toward the ground line so
+ * its peaks stay in view; a smaller silhouette also reads as further away.
+ */
+export const LAYER_CONTENT_LU: Record<LayerKind, number> = { sky: 0, far: 330, mid: 250 };
+
+/** Where a parallax layer sits for a view: world x = `offset` + local x × `stretch`, world y = local y × `scaleY`. */
+export interface LayerPlacement {
+  offset: number;
+  stretch: number;
+  scaleY: number;
+  /** The factor actually used (lower than the layer's when its art is too narrow). */
+  factor: number;
+}
+
+export const IDENTITY_PLACEMENT: LayerPlacement = { offset: 0, stretch: 1, scaleY: 1, factor: 1 };
+
+/**
+ * Places a layer whose art spans [x0, x0 + width] (local lu) so that, for a camera showing
+ * [left, left + view] of the world, it moves at `factor` of the camera movement and always covers the
+ * view (A17.7). A layer narrower than the view is stretched.
+ */
+export function placeLayer(frame: { x0: number; width: number }, factor: number, left: number, view: number, fit = 1): LayerPlacement {
+  const worldW = WORLD.worldWidthLu;
+  const k = Math.max(0.3, Math.min(1, fit));
+  const stretch = k * Math.max(1, (view + 24) / (frame.width * k));
+  const w = frame.width * stretch;
+  const travel = Math.max(0, worldW - view);
+  const f = travel > 0 ? Math.max(0, Math.min(factor, (w - view) / travel)) : 0;
+  const slack = w - view - f * travel;
+  const camLeft = Math.max(WORLD.worldLeftLu, Math.min(WORLD.worldRightLu - view, left));
+  const offset = WORLD.worldLeftLu - slack / 2 - frame.x0 * stretch + (1 - f) * (camLeft - WORLD.worldLeftLu);
+  return { offset, stretch, scaleY: k, factor: f };
+}
 const STRIP_LU = 6;
 const WIPE_EDGE_LU = 70;
 
@@ -301,15 +344,18 @@ class StripLayer {
     private readonly textures: BackdropTextures,
   ) {}
 
-  layout(pieces: readonly Piece[]): void {
+  /** Lays the pieces (world x) out on this layer, placed at `at` (see `placeLayer`). */
+  layout(pieces: readonly Piece[], at: LayerPlacement = IDENTITY_PLACEMENT): void {
     const f = FRAMES[this.kind];
+    this.container.x = at.offset;
+    this.container.scale.set(at.stretch, at.scaleY);
     let used = 0;
     for (const p of pieces) {
       const src = this.textures.layer(this.kind, p.age).tex;
       if (src === Texture.EMPTY) continue;
       const slot = this.slot(used++);
-      const x0 = Math.max(f.x0, p.x0);
-      const x1 = Math.min(f.x0 + f.width, p.x1);
+      const x0 = Math.max(f.x0, (p.x0 - at.offset) / at.stretch);
+      const x1 = Math.min(f.x0 + f.width, (p.x1 - at.offset) / at.stretch);
       if (x1 <= x0) {
         slot.s.visible = false;
         continue;
@@ -420,6 +466,8 @@ export class ProceduralBackdropView implements BackdropView {
   private readonly haze = new HazeLayer();
   private readonly groundLayer = new Container();
   private readonly groundSprite: Sprite;
+  /** A mirrored copy that extends the ground over the 2,000 lu lane (A17.3). */
+  private readonly groundMirror: Sprite;
   private texVersion = -1;
   private readonly ambientLayers: Record<'sky' | 'far' | 'mid' | 'ground', Container>;
   private readonly rng: CosmeticRng;
@@ -432,8 +480,13 @@ export class ProceduralBackdropView implements BackdropView {
   private dirty = true;
   private ambient: Amb[] = [];
   private motes: Mote[] = [];
-  private parallax = 0;
   private destroyed = false;
+  /** The camera's visible range (world lu); null = no camera yet (the whole world, layers unshifted). */
+  private viewLeft: number | null = null;
+  private viewWidth: number = WORLD.worldWidthLu;
+  /** World height (lu) the camera shows above the ground line. */
+  private viewAbove = 1000;
+  private placements: Partial<Record<LayerKind, LayerPlacement>> = {};
 
   constructor(private readonly o: BackdropViewOptions) {
     this.left = o.left;
@@ -441,7 +494,9 @@ export class ProceduralBackdropView implements BackdropView {
     this.arena = arenaId(o.arena);
     this.rng = mulberry32(o.seed);
     this.root.label = `backdrop.${o.left}|${o.right}|ground.${this.arena}`;
-    this.layers = LAYERS.filter((k) => o.quality === 'high' || k !== 'mid').map((k) => new StripLayer(k, o.textures));
+    // Lite keeps the mid layer since A17: with a scrolling camera it is the layer that shows the
+    // parallax depth (A17.7); only its ambient life is dropped.
+    this.layers = LAYERS.map((k) => new StripLayer(k, o.textures));
     this.ambientLayers = { sky: new Container(), far: new Container(), mid: new Container(), ground: new Container() };
     const byKind = (k: LayerKind): StripLayer | undefined => this.layers.find((l) => l.kind === k);
     const sky = byKind('sky');
@@ -461,7 +516,9 @@ export class ProceduralBackdropView implements BackdropView {
     this.root.addChild(this.haze.container);
     this.groundSprite = new Sprite(Texture.EMPTY);
     this.groundSprite.position.set(GROUND_FRAME.x0, GROUND_FRAME.yTop);
-    this.groundLayer.addChild(this.groundSprite);
+    this.groundMirror = new Sprite(Texture.EMPTY);
+    this.groundMirror.position.set(GROUND_FRAME.x0 + 2 * GROUND_FRAME.width, GROUND_FRAME.yTop);
+    this.groundLayer.addChild(this.groundSprite, this.groundMirror);
     o.textures.prefetch([o.left, o.right], [this.arena]);
     this.syncGround();
     this.root.addChild(this.groundLayer, this.ambientLayers.ground);
@@ -473,11 +530,15 @@ export class ProceduralBackdropView implements BackdropView {
 
   private syncGround(): void {
     const ground = this.o.textures.ground(this.arena);
-    this.groundSprite.texture = ground.tex;
-    this.groundSprite.visible = ground.tex !== Texture.EMPTY;
-    if (this.groundSprite.visible) {
-      this.groundSprite.width = GROUND_FRAME.width;
-      this.groundSprite.height = GROUND_FRAME.height;
+    for (const [i, s] of [this.groundSprite, this.groundMirror].entries()) {
+      s.texture = ground.tex;
+      s.visible = ground.tex !== Texture.EMPTY;
+      if (!s.visible) continue;
+      s.scale.set(1);
+      s.width = GROUND_FRAME.width;
+      s.height = GROUND_FRAME.height;
+      // The copy is mirrored, so it meets the original seamlessly at the frame's right edge.
+      if (i === 1) s.scale.x = -Math.abs(s.scale.x);
     }
   }
 
@@ -494,11 +555,24 @@ export class ProceduralBackdropView implements BackdropView {
     this.dirty = true;
   }
 
-  /** Optional camera parallax (mobile pinch-follow): the camera's x offset in lu. */
-  setParallax(offsetX: number): void {
-    this.parallax = offsetX;
-    for (const l of this.layers) l.container.x = offsetX * (1 - PARALLAX[l.kind]);
-    this.clouds.x = offsetX * (1 - PARALLAX.sky);
+  /**
+   * The battle camera's visible world range (A17.7). The layers scroll at their parallax factors; the
+   * view calls this every frame (cheap when nothing moved).
+   */
+  setView(left: number, width: number, above = 1000): void {
+    if (this.viewLeft !== null && Math.abs(left - this.viewLeft) < 0.05 && Math.abs(width - this.viewWidth) < 0.05 && Math.abs(above - this.viewAbove) < 0.5) return;
+    this.viewLeft = left;
+    this.viewWidth = Math.max(1, width);
+    this.viewAbove = Math.max(1, above);
+    this.dirty = true;
+  }
+
+  /** Where each layer sits for the current view (identity until the camera reports one). */
+  private placement(kind: LayerKind): LayerPlacement {
+    if (this.viewLeft === null) return IDENTITY_PLACEMENT;
+    const content = LAYER_CONTENT_LU[kind];
+    const fit = content > 0 ? (this.viewAbove * 0.92) / content : 1;
+    return placeLayer(FRAMES[kind], PARALLAX[kind], this.viewLeft, this.viewWidth, fit);
   }
 
   /** Current seam position (lu) and ages, for tests and the gallery. */
@@ -547,12 +621,24 @@ export class ProceduralBackdropView implements BackdropView {
     const eased = w ? 1 - Math.pow(1 - Math.min(1, w.t / w.ms), 2) : 0;
     const regions = ageRegions({ left: this.left, right: this.right, seam: this.seam, wipe: w ? { side: w.side, age: w.age, front: half * eased } : null });
     const pieces = composePieces(regions, this.seam);
-    for (const l of this.layers) l.layout(pieces);
+    for (const kind of LAYERS) this.placements[kind] = this.placement(kind);
+    for (const l of this.layers) l.layout(pieces, this.placements[l.kind]);
+    for (const kind of LAYERS) {
+      const at = this.placements[kind] ?? IDENTITY_PLACEMENT;
+      const c = this.ambientLayers[kind];
+      c.x = at.offset;
+      c.scale.set(at.stretch, at.scaleY);
+      if (kind === 'sky') {
+        this.clouds.x = at.offset;
+        this.clouds.scale.set(at.stretch, at.scaleY);
+      }
+    }
     // seam haze: a soft grey veil, 240 lu wide (A11: 30% desaturation)
     this.haze.layout(this.seam, this.left, this.right);
     for (const a of this.ambient) {
       if (!a.age) continue;
-      const weight = regionWeight(regions, a.age, a.spec.x);
+      const at = a.spec.layer === 'ground' ? undefined : this.placements[a.spec.layer];
+      const weight = regionWeight(regions, a.age, at ? at.offset + a.spec.x * at.stretch : a.spec.x);
       a.node.visible = weight > 0.02;
       a.node.alpha = (a.spec.alpha ?? 1) * weight;
     }
@@ -566,7 +652,7 @@ export class ProceduralBackdropView implements BackdropView {
     for (let i = 0; i < n; i++) {
       const depth = i / (n - 1); // 0 far .. 1 near
       const s = fxSprite(this.o.baker, i % 3 === 0 ? 'bd.cloud.c' : i % 2 ? 'bd.cloud.a' : 'bd.cloud.b');
-      s.position.set(WORLD.worldLeftLu + this.rng.next() * (WORLD.worldRightLu - WORLD.worldLeftLu), -470 - depth * 200 - this.rng.next() * 50);
+      s.position.set(SKY_FRAME.x0 + this.rng.next() * SKY_FRAME.width, -470 - depth * 200 - this.rng.next() * 50);
       s.scale.set(0.6 + depth * 1.1 + this.rng.next() * 0.3);
       s.alpha = 0.35 + depth * 0.5;
       this.cloudSpeed.push(2 + depth * 9);
@@ -586,7 +672,12 @@ export class ProceduralBackdropView implements BackdropView {
       }
       for (const spec of extraAmbient(age)) if (this.o.quality === 'high' || spec.layer !== 'mid') this.addAmbient(spec, age);
     }
-    for (const spec of this.o.textures.ground(this.arena).ambient) this.addAmbient(spec, null);
+    for (const spec of this.o.textures.ground(this.arena).ambient) {
+      this.addAmbient(spec, null);
+      // The mirrored ground copy gets its own ambient life (A17.3 longer lane).
+      const mx = 2 * (GROUND_FRAME.x0 + GROUND_FRAME.width) - spec.x;
+      if (mx <= WORLD.worldRightLu + 120) this.addAmbient({ ...spec, x: mx }, null);
+    }
     // cloud tint follows the side ages
     this.clouds.children.forEach((c, i) => {
       if (c instanceof Sprite) c.tint = CLOUD_TINT[c.x < this.seam ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right];
@@ -616,7 +707,7 @@ export class ProceduralBackdropView implements BackdropView {
       const c = this.clouds.children[i];
       if (!c) continue;
       c.x += dt * (this.cloudSpeed[i] ?? 6);
-      if (c.x > WORLD.worldRightLu + 160) c.x = WORLD.worldLeftLu - 160;
+      if (c.x > SKY_FRAME.x0 + SKY_FRAME.width + 160) c.x = SKY_FRAME.x0 - 160;
     }
     for (const a of this.ambient) {
       a.t += dtMs;

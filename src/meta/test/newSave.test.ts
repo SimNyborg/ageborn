@@ -12,9 +12,9 @@ describe('newSave', () => {
     const s = fresh();
     const commons = [...C.order.units, ...C.order.turrets].filter((id) => (C.units[id] ?? C.turrets[id])?.rarity === 'common');
     expect(Object.keys(s.collection).sort()).toEqual([...commons].sort());
-    expect(commons).toHaveLength(25);
+    expect(commons).toHaveLength(40);
     for (const e of Object.values(s.collection)) expect(e).toEqual({ level: 1, copies: 0, isNew: false, foil: 'none' });
-    expect(s.powersOwned).toEqual(['stampede', 'arrow_storm', 'smoke_screen', 'paratroopers', 'orbital_lance']);
+    expect(s.powersOwned).toEqual(['stampede', 'tidal_wave', 'arrow_storm', 'smoke_screen', 'iron_horse', 'paratroopers', 'orbital_lance', 'starfall']);
     expect(s.collection['training_dummy']).toBeUndefined();
   });
 
@@ -63,10 +63,10 @@ describe('economy entry points (A6.4, A6.6, A6.9)', () => {
     }
   });
 
-  it('9.1 copies and 227 Amber per bag capsule before pity', () => {
+  it('15.7 copies and 398.7 Amber per bag capsule before pity (A17.13: about ×1.75)', () => {
     const a = bagCapsuleAverages(C);
-    expect(Math.round(a.copiesCenti / 10) / 10).toBe(9.1);
-    expect(a.amberCenti).toBe(22700);
+    expect(Math.round(a.copiesCenti / 10) / 10).toBe(15.7);
+    expect(a.amberCenti).toBe(39870);
   });
 
   it('copies and Amber to max one card', () => {

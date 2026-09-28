@@ -29,6 +29,9 @@ const AGE_COLORS: Record<AgeId, number> = {
   gunpowder: 0x7c5c3b,
   modern: 0x4b5f3a,
   future: 0x5b6fb0,
+  bronze: 0xcdbe9e,
+  industrial: 0x5b6168,
+  cosmic: 0x1e1830,
 };
 
 export interface FakeArtCall {

@@ -7,41 +7,43 @@ import type { CapsuleTables } from './types';
 
 export const capsules: CapsuleTables = {
   tierOrder: ['clay', 'bronze', 'silver', 'jade', 'aeon'],
-  // A6.4 tier table
+  // A6.4 tier table. A17.13 / owner decision "keep today's time to max a card": the pool grew 55 → 88
+  // cards, so copies per stack and Amber per capsule rise about ×1.75 (set with the A6.9 economy sim:
+  // median card to max 119 / 108 / 68 / 109 days by rarity against 114 / 114 / 71 / 109 before A17).
   tiers: {
     clay: {
       id: 'clay', index: 0, stacks: 2,
-      copies: { common: 2, rare: 1, epic: 1, legendary: 1 },
+      copies: { common: 4, rare: 1, epic: 1, legendary: 1 },
       guaranteed: [], rareToLegendaryBp: 0, legendaryUnownedFirst: false, skinChanceBp: 0, bonusDust: 0,
-      amber: 60, expectedCopiesCenti: 340, nameKey: 'capsuleTier.clay.name',
+      amber: 105, expectedCopiesCenti: 630, nameKey: 'capsuleTier.clay.name',
     },
     bronze: {
       id: 'bronze', index: 1, stacks: 3,
-      copies: { common: 3, rare: 1, epic: 1, legendary: 1 },
+      copies: { common: 5, rare: 2, epic: 2, legendary: 1 },
       // ≥ 1 Rare stack
       guaranteed: ['rare'], rareToLegendaryBp: 0, legendaryUnownedFirst: false, skinChanceBp: 0, bonusDust: 0,
-      amber: 120, expectedCopiesCenti: 590, nameKey: 'capsuleTier.bronze.name',
+      amber: 210, expectedCopiesCenti: 1030, nameKey: 'capsuleTier.bronze.name',
     },
     silver: {
       id: 'silver', index: 2, stacks: 4,
-      copies: { common: 6, rare: 3, epic: 1, legendary: 1 },
+      copies: { common: 10, rare: 5, epic: 2, legendary: 1 },
       // ≥ 2 Rare and ≥ 1 Epic stack
       guaranteed: ['rare', 'rare', 'epic'], rareToLegendaryBp: 0, legendaryUnownedFirst: false, skinChanceBp: 0,
-      bonusDust: 0, amber: 300, expectedCopiesCenti: 1200, nameKey: 'capsuleTier.silver.name',
+      bonusDust: 0, amber: 530, expectedCopiesCenti: 2040, nameKey: 'capsuleTier.silver.name',
     },
     jade: {
       id: 'jade', index: 3, stacks: 5,
-      copies: { common: 14, rare: 6, epic: 3, legendary: 1 },
+      copies: { common: 24, rare: 10, epic: 5, legendary: 2 },
       // ≥ 2 Rare and ≥ 2 Epic stacks; 25% one Rare stack becomes Legendary; +100 Dust
       guaranteed: ['rare', 'rare', 'epic', 'epic'], rareToLegendaryBp: 2500, legendaryUnownedFirst: false,
-      skinChanceBp: 0, bonusDust: 100, amber: 800, expectedCopiesCenti: 2830, nameKey: 'capsuleTier.jade.name',
+      skinChanceBp: 0, bonusDust: 100, amber: 1400, expectedCopiesCenti: 4780, nameKey: 'capsuleTier.jade.name',
     },
     aeon: {
       id: 'aeon', index: 4, stacks: 6,
-      copies: { common: 15, rare: 6, epic: 3, legendary: 1 },
+      copies: { common: 26, rare: 10, epic: 5, legendary: 2 },
       // 1 Legendary stack (unowned first), ≥ 2 Epic stacks; 30% chance of a skin (Wardrobe odds)
       guaranteed: ['legendary', 'epic', 'epic'], rareToLegendaryBp: 0, legendaryUnownedFirst: true,
-      skinChanceBp: 3000, bonusDust: 0, amber: 1500, expectedCopiesCenti: 4380, nameKey: 'capsuleTier.aeon.name',
+      skinChanceBp: 3000, bonusDust: 0, amber: 2640, expectedCopiesCenti: 7560, nameKey: 'capsuleTier.aeon.name',
     },
   },
   // A6.4 step 1.2: Common 72%, Rare 22%, Epic 5%, Legendary 1%
@@ -84,7 +86,8 @@ export const capsules: CapsuleTables = {
   ageUnlock: { rareCopies: 1, commonCopies: 4 },
   // A6.5 onboarding script
   script: [
-    { capsule: 1, tier: 'bronze', cards: ['spear_hunter'], randomUnownedEpic: false, fullWalkout: false },
+    // A17.13: capsule 1 brings both early Anti-armor Rares (Stone and Bronze)
+    { capsule: 1, tier: 'bronze', cards: ['spear_hunter', 'phalangite'], randomUnownedEpic: false, fullWalkout: false },
     { capsule: 2, tier: 'silver', cards: ['pikeman', 'grenadier'], randomUnownedEpic: false, fullWalkout: false },
     { capsule: 3, tier: 'bronze', cards: ['log_roller'], randomUnownedEpic: false, fullWalkout: false },
     { capsule: 4, tier: 'silver', cards: [], randomUnownedEpic: true, fullWalkout: false },

@@ -4,34 +4,13 @@
  * Table units: HP and damage whole, ms, lu, lu/s, gold, bp. Data only. `strongVs`/`weakVs` are
  * filled by the WP1 counter matrix (B4).
  *
- * NOT WIRED YET. `AgeId` has no 'industrial' until the WP0 contract request of A17.15 lands, so this
- * file types its tables with a local widening. When 'industrial' joins `AgeId`: type `industrial` as
- * `RawAgeTables`, `industrialPowers` as `PowerDef[]` (or move them into `powers.ts`), `industrialScale`
- * as `RawAgeScale`, and add the age to `raw/index.ts`, `economy.ts` (`ageScale`, formats) and `ages.ts`.
+ * The age's P, base HP and threshold live in `economy.ts` (`ageScale`, A17.8).
  */
-import type { PowerDef, TurretDef, UnitDef } from '@/contracts/content';
-import type { AgeId } from '@/contracts/ids';
+import type { PowerDef } from '@/contracts/content';
 import { damageMods } from './economy';
-import type { RawAgeScale } from './types';
+import type { RawAgeTables } from './types';
 
-/** The age id this file adds (A17.8). */
-type PendingAge = 'industrial';
-type WithAge<T extends { age: AgeId }> = Omit<T, 'age'> & { age: AgeId | PendingAge };
-
-/** A17.8: P 2.12, base max HP 21,200, index 4 (between Gunpowder and Modern), 800 XP to Modern. */
-export const industrialScale: Omit<RawAgeScale, 'id'> & { id: PendingAge } = {
-  id: 'industrial',
-  index: 4,
-  pBp: 21200,
-  baseHp: 21200,
-  xpToNext: 800,
-};
-
-export const industrial: {
-  age: PendingAge;
-  units: readonly WithAge<UnitDef>[];
-  turrets: readonly WithAge<TurretDef>[];
-} = {
+export const industrial: RawAgeTables = {
   age: 'industrial',
   units: [
     {
@@ -206,7 +185,7 @@ export const industrial: {
 };
 
 /** A17.11 Industrial Age Powers (values at P 2.12 and L1 loadouts; every power has a 1.0 s telegraph). */
-export const industrialPowers: readonly WithAge<PowerDef>[] = [
+export const industrialPowers: readonly PowerDef[] = [
   {
     // 3 runaway armoured engines, 0.5 s apart, run 600 lu forward at 450 lu/s from your frontmost unit
     // (or p = 200); 150 damage and 50 lu knockback per hit; max 2 hits per enemy per cast; ground only.

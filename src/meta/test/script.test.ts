@@ -34,8 +34,10 @@ describe('onboarding script (A6.5)', () => {
     const spear = o.reveal.capsule.contents.stacks.find((x) => x.card === 'spear_hunter');
     expect(spear?.isNew).toBe(true);
     expect(o.save.collection['spear_hunter']?.level).toBe(1);
+    // A17.13: capsule 1 also brings the Phalangite NEW.
+    expect(o.reveal.capsule.contents.stacks.find((x) => x.card === 'phalangite')?.isNew).toBe(true);
     // Every other stack is an owned Common: the script decides every NEW card.
-    for (const st of o.reveal.capsule.contents.stacks) if (st.card !== 'spear_hunter') expect(st.isNew).toBe(false);
+    for (const st of o.reveal.capsule.contents.stacks) if (st.card !== 'spear_hunter' && st.card !== 'phalangite') expect(st.isNew).toBe(false);
   });
 
   it('capsules 2-5 follow the table, then the bag takes over', () => {

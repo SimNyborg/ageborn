@@ -57,10 +57,11 @@ describe('keyboard navigation', () => {
     const stone = m.q('[data-testid="age-tab-stone"]')!;
     flush(() => stone.focus());
     flush(() => keydown(stone, 'ArrowRight'));
-    expect(m.q('[data-testid="age-tab-medieval"]')!.getAttribute('aria-selected')).toBe('true');
-    expect(m.document.activeElement).toBe(m.q('[data-testid="age-tab-medieval"]'));
-    flush(() => keydown(m!.q('[data-testid="age-tab-medieval"]')!, 'End'));
-    expect(m.q('[data-testid="age-tab-future"]')!.getAttribute('aria-selected')).toBe('true');
+    // A17.8: Bronze follows Stone
+    expect(m.q('[data-testid="age-tab-bronze"]')!.getAttribute('aria-selected')).toBe('true');
+    expect(m.document.activeElement).toBe(m.q('[data-testid="age-tab-bronze"]'));
+    flush(() => keydown(m!.q('[data-testid="age-tab-bronze"]')!, 'End'));
+    expect(m.q('[data-testid="age-tab-cosmic"]')!.getAttribute('aria-selected')).toBe('true');
     // Roving tab index: only the selected tab is in the Tab order.
     expect(m.qa('[role="tab"][tabindex="0"]').filter((el) => el.closest('[data-testid="age-picker"]'))).toHaveLength(1);
   });
@@ -221,8 +222,10 @@ describe('Mode select', () => {
     const full = m.qa('[data-testid="skirmish-setup"] [role="radio"]').find((el) => text(el) === 'Full War')!;
     flush(() => full.click());
     expect(m.qa('[data-testid^="skirmish-note-"]').map((el) => el.getAttribute('data-testid'))).toEqual([
+      'skirmish-note-industrial',
       'skirmish-note-modern',
       'skirmish-note-future',
+      'skirmish-note-cosmic',
     ]);
   });
 
@@ -496,12 +499,12 @@ describe('Collection and card detail', () => {
   it('filters the grid', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'collection' }] });
     const all = m.qa('[data-testid="col-grid"] .ui-card').length;
-    expect(all).toBe(65);
+    expect(all).toBe(104);
     const legendary = m.q('[data-testid="filter-rarity"] [role="radio"]:not([aria-checked="true"])');
     expect(legendary).not.toBeNull();
     const radios = m.qa('[data-testid="filter-rarity"] [role="radio"]');
     flush(() => radios[4]!.click());
-    expect(m.qa('[data-testid="col-grid"] .ui-card').length).toBe(5);
+    expect(m.qa('[data-testid="col-grid"] .ui-card').length).toBe(8);
   });
 
   it('shows silhouettes for unowned cards', () => {

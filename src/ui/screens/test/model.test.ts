@@ -87,10 +87,11 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
   });
 
   it('collection completion counts units and turrets', () => {
-    expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 55, total: 55 });
+    expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 88, total: 88 });
     const n = collectionProgress(newPlayerSave(content), content);
-    expect(n.total).toBe(55);
-    expect(n.owned).toBe(15 + 10 + 3);
+    expect(n.total).toBe(88);
+    // 24 unit and 16 turret Commons, plus Spear Hunter, Phalangite, Pikeman and Grenadier
+    expect(n.owned).toBe(24 + 16 + 4);
   });
 });
 
@@ -218,7 +219,7 @@ describe('profile and history (A6.1)', () => {
     const v = profileView(midGameSave(content), content);
     expect(v.favourite).toBe('bonker');
     expect(v.legendaries).toBe(1);
-    expect(v.legendariesTotal).toBe(5);
+    expect(v.legendariesTotal).toBe(8);
     expect(v.byTier[0]).toEqual({ tier: 0, wins: 5, losses: 1 });
     expect(v.conquestStars).toBe(6);
     const raw = profileView(fakeSaveDoc(), content);
@@ -275,7 +276,8 @@ describe('misc', () => {
       'short',
     );
     expect(requestFormat({ mode: 'daily' }, content)).toBe('standard');
-    expect(requestFormat({ mode: 'conquest', general: 'pip' }, content)).toBe('full');
+    // A17.18 owner decision: Conquest plays Standard War
+    expect(requestFormat({ mode: 'conquest', general: 'pip' }, content)).toBe('standard');
     expect(requestFormat({ mode: 'tutorial', match: 1 }, content)).toBeNull();
   });
 
@@ -298,9 +300,11 @@ describe('misc', () => {
 
   it('notes the ages still waiting for their Anti-armor card (A3, Skirmish)', () => {
     const n = newPlayerSave(content);
-    // The new player has Spear Hunter, Pikeman and Grenadier; Bazooka Trooper and Rail Gunner arrive at Arena 2.
+    // The new player has Spear Hunter, Phalangite, Pikeman and Grenadier; Harpoon Gunner and Bazooka Trooper
+    // arrive at Arena 2, Rail Gunner and Graviton Halberdier at Arena 3 (A17.13).
     expect(agesAwaitingAntiArmor(n, content, 'short')).toEqual([]);
-    expect(agesAwaitingAntiArmor(n, content, 'full')).toEqual(['modern', 'future']);
+    expect(agesAwaitingAntiArmor(n, content, 'standard')).toEqual(['industrial', 'modern']);
+    expect(agesAwaitingAntiArmor(n, content, 'full')).toEqual(['industrial', 'modern', 'future', 'cosmic']);
     const early = { ...n, collection: { ...n.collection } };
     delete early.collection['pikeman'];
     expect(agesAwaitingAntiArmor(early, content, 'short')).toEqual(['medieval']);
@@ -309,17 +313,21 @@ describe('misc', () => {
 
   it('filters the collection by age, role, rarity and ownership', () => {
     const s = midGameSave(content);
-    expect(filterCards(s, content, NO_FILTER)).toHaveLength(35 + 20 + 10);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(20);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(10);
+    expect(filterCards(s, content, NO_FILTER)).toHaveLength(56 + 32 + 16);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(32);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(16);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'stone', rarity: 'legendary' })).toEqual(['mammoth_matriarch']);
-    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(4);
+    expect(filterCards(s, content, { ...NO_FILTER, age: 'bronze', rarity: 'legendary' })).toEqual(['bronze_colossus']);
+    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(7);
     expect(filterCards(s, content, { ...NO_FILTER, role: 'antiArmor' })).toEqual([
       'spear_hunter',
+      'phalangite',
       'pikeman',
       'grenadier',
+      'harpoon_gunner',
       'bazooka_trooper',
       'rail_gunner',
+      'graviton_halberdier',
     ]);
   });
 

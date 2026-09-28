@@ -127,7 +127,7 @@ describe('strings that spell out table numbers', () => {
   const pctOf = (bp: number): string => `${bp / 100}%`;
   /** 15000 bp → "×1.5" */
   const timesOf = (bp: number): string => `×${bp / 10000}`;
-  const WORDS: Record<number, string> = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five' };
+  const WORDS: Record<number, string> = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight' };
   const word = (n: number): RegExp => new RegExp(`\\b${WORDS[n] ?? String(n)}\\b`, 'i');
   const secs = (ms: number): string => `${ms / 1000} s`;
   const unit = (id: string) => {

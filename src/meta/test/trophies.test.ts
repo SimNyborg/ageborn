@@ -47,25 +47,27 @@ describe('Trophy Road (A6.3)', () => {
     expect(a.trophies.roadClaimed).toEqual([50]);
   });
 
-  it('alternate powers at 100-500 trophies (C5 #33)', () => {
+  it('alternate powers at 100-500 trophies (C5 #33, A17.13)', () => {
     let s = at(fresh(), 500);
-    for (const n of [100, 200, 300, 400, 500]) s = claim(s, n);
-    for (const p of ['meteor_shower', 'royal_decree', 'broadside', 'carpet_bomber', 'nanite_surge']) expect(s.powersOwned).toContain(p);
+    for (const n of [100, 200, 250, 300, 350, 400, 450, 500]) s = claim(s, n);
+    for (const p of ['meteor_shower', 'aegis', 'royal_decree', 'broadside', 'zeppelin_raid', 'carpet_bomber', 'nanite_surge', 'warp_strike']) {
+      expect(s.powersOwned).toContain(p);
+    }
   });
 
-  it('Gate 2 at 150: the Modern and Future Age Unlock Capsules, the Frostfang banner and a Silver Capsule', () => {
+  it('Gate 2 at 150: the Industrial and Modern Age Unlock Capsules, the Frostfang banner and a Silver Capsule (A17.13)', () => {
     const s = claim(at(scripted(), 150), 150);
     expect(s.cosmetics.owned).toContain('frostfang');
     const kinds = s.capsules.pending.map((p) => [p.kind, p.tier, p.age]);
     expect(kinds).toEqual([
+      ['ageUnlock', 'silver', 'industrial'],
       ['ageUnlock', 'silver', 'modern'],
-      ['ageUnlock', 'silver', 'future'],
       ['road', 'silver', null],
     ]);
     let o = s;
     for (const p of s.capsules.pending) o = M.openCapsule(o, p.id).save;
+    expect(o.collection['harpoon_gunner']?.level).toBe(1);
     expect(o.collection['bazooka_trooper']?.level).toBe(1);
-    expect(o.collection['rail_gunner']?.level).toBe(1);
   });
 
   it('Gate 8 gives the Crystal Spire; road capsules have a fixed tier; Wardrobe nodes grant crates', () => {

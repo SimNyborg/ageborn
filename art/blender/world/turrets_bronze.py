@@ -218,18 +218,38 @@ def onager_build(rig):
     box(g, (4, 0, 26.0), (2.6, 9.5, 2.6), p=4)                            # the padded buffer beam
     rig.part("mount", g, team=True)
     pennant(rig, "mount", -15, 8, 5, h=22, length=12, width=7)
-    # head: the throwing arm pivots on the skein and lies cocked back; the cup carries a boulder
+    # head: the throwing arm pivots in a rope skein (a thick twisted coil round its foot, part of
+    # the head so it reads in every frame) and lies cocked back; a team sleeve on the arm; at the
+    # end a plum leather sling cup on ropes carries a boulder
     rig.joint("arm", "head", (8, 0, 11))
-    g = Geo().capsule((8, 0, 11), (-18, 0, 13), 2.6, 1.8)
+    g = Geo()
+    for k in range(7):                                                   # the twisted skein coil
+        y = -6.0 + 2.0 * k
+        g.lathe([(2.6, -0.9), (4.4, -0.5), (4.6, 0.4), (2.8, 0.9)], (8, y, 11), (8, y + 1, 11), segs=16)
+    rig.part("head", g, ROPE, finish="hair", outline=0.5)
+    g = Geo()
+    for y in (-7.6, 7.6):
+        cyl(g, (8, y, 11), (8, y + (1.2 if y > 0 else -1.2), 11), 5.0, bevel=0.3)
+    rig.part("head", g, AGED, finish="metal", outline=0.4)
+    g = Geo().capsule((8, 0, 11), (-18, 0, 13), 2.8, 2.0)
     rig.part("arm", g, WOOD)
-    g = Geo().lathe([(0, -1.0), (4.4, -0.6), (5.0, 1.8), (0, 0.6)], (-20, 0, 13.6), (-20, 0, 16.0), segs=16)
-    rig.part("arm", g, AGED, finish="metal", outline=0.5)
-    g = Geo().capsule((-13, -2.6, 13), (-13, 2.6, 13), 1.2)
-    rig.part("arm", g, team=True, outline=0.4)
+    g = Geo().capsule((1.0, 0, 11.6), (-9.0, 0, 12.4), 3.5, 3.1)          # team sleeve
+    rig.part("arm", g, team=True, outline=0.5)
+    g = Geo()
+    for x in (2.4, -9.8):
+        g.lathe([(3.3, -0.5), (3.7, 0), (3.3, 0.5)], (x, 0, 12.0), (x - 1, 0, 12.1), segs=14)
+    rig.part("arm", g, BRONZE, finish=P.POLISH, outline=0.4)
+    g = Geo()                                                               # sling ropes
+    g.capsule((-18, -1.6, 13.4), (-22.5, -3.2, 17.4), 0.55).capsule((-18, 1.6, 13.4), (-22.5, 3.2, 17.4), 0.55)
+    g.capsule((-18, 0, 13.4), (-16.5, 0, 18.0), 0.55)
+    rig.part("arm", g, ROPE, outline=0.3)
+    g = Geo().lathe([(0, -1.4), (5.6, -0.8), (6.4, 2.4), (5.4, 3.0), (0, 1.2)], (-20, 0, 13.4), (-20, 0, 16.4),
+                    segs=18, squash=(1.2, 1.0))
+    rig.part("arm", g, P.PLUM, outline=0.6)                                 # the sling cup
     rig.joint("stone", "arm", (-20, 0, 18.5))
     g = Geo()
     from world.common import rock
-    rock(g, (-20, 0, 18.5), (4.2, 4.0, 3.8), seed=4, jag=0.12)
+    rock(g, (-20, 0, 19.0), (4.4, 4.2, 4.0), seed=4, jag=0.12)
     rig.part("stone", g, SAND_DK)
 
 

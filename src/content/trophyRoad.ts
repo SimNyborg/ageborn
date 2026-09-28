@@ -17,21 +17,22 @@ const wardrobe: RoadReward = { kind: 'wardrobe' };
 
 /** DESIGN A6.3 road tables, one row per line: [trophies, rewards]. */
 const ROWS: readonly [number, RoadReward[]][] = [
-  // Base 0, +50 steps
+  // Base 0, +50 steps. A17.13: each alternate power unlocks near the arena that brings its age
   [50, [amber(110)]],
   [100, [power('meteor_shower')]],
   [150, [gate(2)]],
-  [200, [power('royal_decree')]],
-  [250, [capsule('silver')]],
+  [200, [power('aegis')]],
+  [250, [power('royal_decree')]],
   [300, [power('broadside')]],
-  [350, [dust(100)]],
+  [350, [power('zeppelin_raid')]],
   [400, [gate(3), power('carpet_bomber')]],
-  [450, [amber(190)]],
-  [500, [power('nanite_surge')]],
-  // Base 500
-  [550, [dust(100)]],
-  [600, [amber(220)]],
-  [650, [capsule('silver')]],
+  [450, [power('nanite_surge')]],
+  [500, [power('warp_strike')]],
+  // Base 500. A17.13: the displaced Silver Capsule, 100 Dust and Amber node join 550-650 as second
+  // items (the Amber node pays the formula at its new place, 230 instead of 190)
+  [550, [dust(100), capsule('silver')]],
+  [600, [amber(220), dust(100)]],
+  [650, [capsule('silver'), amber(230)]],
   [700, [amber(240)]],
   [750, [dust(100)]],
   [800, [gate(4)]],

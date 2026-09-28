@@ -31,12 +31,14 @@ export const cosmetics: Cosmetics = {
   titles: [
     { id: 'recruit', unlock: { kind: 'start' }, nameKey: 'title.recruit.name' },
     { id: 'firestarter', unlock: { kind: 'firstWin' }, nameKey: 'title.firestarter.name' },
-    { id: 'evolver', unlock: { kind: 'reachAge', age: 'future' }, nameKey: 'title.evolver.name' },
+    // A17.13: the first Cosmic Age
+    { id: 'evolver', unlock: { kind: 'reachAge', age: 'cosmic' }, nameKey: 'title.evolver.name' },
     { id: 'mammoth_tamer', unlock: { kind: 'ownCard', card: 'mammoth_matriarch' }, nameKey: 'title.mammoth_tamer.name' },
     { id: 'collector', unlock: { kind: 'codexLevel', level: 10 }, nameKey: 'title.collector.name' },
     { id: 'siege_scholar', unlock: { kind: 'arena', arena: 4 }, nameKey: 'title.siege_scholar.name' },
     { id: 'last_stander', unlock: { kind: 'winAfterLastStand' }, nameKey: 'title.last_stander.name' },
-    { id: 'speedrunner', unlock: { kind: 'finalAgeBefore', format: 'full', ms: 270000 }, nameKey: 'title.speedrunner.name' },
+    // A17.13: Cosmic (Full War's final age) before 6:15
+    { id: 'speedrunner', unlock: { kind: 'finalAgeBefore', format: 'full', ms: 375000 }, nameKey: 'title.speedrunner.name' },
     { id: 'veteran', unlock: { kind: 'wins', count: 100 }, nameKey: 'title.veteran.name' },
     { id: 'curator', unlock: { kind: 'codexLevel', level: 40 }, nameKey: 'title.curator.name' },
     { id: 'wardens_bane', unlock: { kind: 'beatGeneral', general: 'warden' }, nameKey: 'title.wardens_bane.name' },

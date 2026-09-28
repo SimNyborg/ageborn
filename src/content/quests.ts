@@ -40,9 +40,9 @@ export const quests: QuestTables = {
     quest('play_3', 'battles', 3, [amber(100)], { skirmishCounts: true, weight: 1 }),
     quest('train_30', 'unitsTrained', 30, [amber(100)], { skirmishCounts: true, weight: 1 }),
     quest('evolve_6', 'evolves', 6, [amber(100)]),
-    // Reach your format's final age before 2:20 (Short), 3:40 (Standard) or 5:00 (Full)
+    // Reach your format's final age before 2:40 (Short), 4:15 (Standard) or 6:45 (Full) (A17.13)
     quest('fast_final_age', 'fastFinalAge', 1, [amber(150)], {
-      beforeMsByFormat: { short: 140000, standard: 220000, full: 300000 },
+      beforeMsByFormat: { short: 160000, standard: 255000, full: 405000 },
     }),
     quest('turret_kills_20', 'turretKills', 20, [amber(150)]),
     quest('win_no_treasury', 'winsWithoutTreasury', 1, [amber(150)]),

@@ -82,6 +82,8 @@ async function start(root: HTMLElement): Promise<void> {
           damageNumbers: saved.damageNumbers,
           teamPreset: saved.teamPreset,
           mutedEmotes: saved.mutedEmotes,
+          autoCamera: saved.autoCamera ?? true,
+          edgeScroll: saved.edgeScroll ?? true,
         }
       : DEFAULT_VIEW_SETTINGS;
   };
@@ -165,6 +167,12 @@ async function start(root: HTMLElement): Promise<void> {
         if (r.id !== 'battle') return 0;
         controller.skipCountdown();
         return r.battle.session.fastForward(ticks);
+      },
+      /** The battle view on screen (e2e camera checks: minimap snapshot, camera stats). */
+      view(): BattleView | null {
+        const r = controller.route.peek();
+        const battle = r.id === 'battle' || r.id === 'title' ? r.battle : null;
+        return battle ? (views.get(battle.session.sim) ?? null) : null;
       },
       /** Client (page) point of your turret mount `i` on the battle on screen, for e2e taps. */
       mountPoint(i: number): { x: number; y: number } | null {

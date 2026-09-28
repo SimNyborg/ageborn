@@ -11,7 +11,7 @@ import type { AgeId, FormatId } from '@/contracts/ids';
 import type { RawAgeScale, RawBattleRules, RawDamageMods } from './types';
 
 /** DESIGN A2.2 (P, base max HP = 10,000 × P) and A2.4 (XP to evolve out of each age). */
-export const ageScale: Record<AgeId, RawAgeScale> = {
+export const ageScale: Partial<Record<AgeId, RawAgeScale>> = {
   stone: { id: 'stone', index: 0, pBp: 10000, baseHp: 10000, xpToNext: 700 },
   medieval: { id: 'medieval', index: 1, pBp: 13500, baseHp: 13500, xpToNext: 1000 },
   gunpowder: { id: 'gunpowder', index: 2, pBp: 18200, baseHp: 18200, xpToNext: 1200 },

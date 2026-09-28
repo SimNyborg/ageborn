@@ -12,6 +12,7 @@ export const FORMAT_ORDER: readonly FormatId[] = ['tutorial', 'short', 'standard
 export const FORMAT_MODES: Record<FormatId, readonly ('tutorial' | 'ladder' | 'skirmish' | 'daily' | 'conquest')[]> = {
   tutorial: ['tutorial'],
   short: ['ladder', 'skirmish'],
-  standard: ['ladder', 'daily', 'skirmish'],
-  full: ['ladder', 'conquest', 'skirmish'],
+  // A17.18 owner decision: Conquest plays Standard War
+  standard: ['ladder', 'daily', 'conquest', 'skirmish'],
+  full: ['ladder', 'skirmish'],
 };

@@ -282,3 +282,71 @@ export function EmoteGlyph(p: P & { emote: EmoteId }) {
       );
   }
 }
+
+/** The base button (A17.5 `icon.base`): a small keep with a team pennant. */
+export function HouseIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M4.5 20.5v-9l2-1.6v-2.4h2.6v1l2.9-2.3 2.9 2.3v-1h2.6v2.4l2 1.6v9z" fill="#e9dcc0" stroke={OUT} stroke-width="1.6" stroke-linejoin="round" />
+      <path d="M10 20.5v-4.3a2 2 0 0 1 4 0v4.3" fill="#5b4a3a" stroke={OUT} stroke-width="1.4" />
+      <path d="M12 6.2V2.6l3.6 1.2L12 5" fill="currentColor" stroke={OUT} stroke-width="1.2" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** The front button (A17.5 `icon.follow`): crossed swords. */
+export function SwordsIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M4 4l10.5 10.5M20 4L9.5 14.5" stroke={OUT} stroke-width="4.2" stroke-linecap="round" />
+      <path d="M4 4l10.5 10.5M20 4L9.5 14.5" stroke="#eef2f8" stroke-width="2" stroke-linecap="round" />
+      <path d="M12.6 16.4l4.8-4.8M11.4 16.4l-4.8-4.8" stroke={OUT} stroke-width="3.6" stroke-linecap="round" />
+      <path d="M12.6 16.4l4.8-4.8M11.4 16.4l-4.8-4.8" stroke="#d8a23a" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M17.4 17.4l2.4 2.4M6.6 17.4l-2.4 2.4" stroke={OUT} stroke-width="3.4" stroke-linecap="round" />
+      <path d="M17.4 17.4l2.4 2.4M6.6 17.4l-2.4 2.4" stroke="#8a5a2b" stroke-width="1.6" stroke-linecap="round" />
+    </Svg>
+  );
+}
+
+/** A hammer (the base button's "empty mount you can afford" badge, A17.6). */
+export function HammerIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M12.5 11.5l-7.5 7.5" stroke={OUT} stroke-width="4.4" stroke-linecap="round" />
+      <path d="M12.5 11.5l-7.5 7.5" stroke="#c9884a" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M9.6 6.9l4.2-4.2 2.2 1.2 1.4-1.4 3.8 3.8-1.4 1.4 1.2 2.2-4.2 4.2z" fill="#cfd6e2" stroke={OUT} stroke-width="1.5" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** The off-screen badge chevron (A17.5 `icon.chevron`), pointing right; CSS mirrors it on the left. */
+export function ChevronIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M8.5 4.5l7.5 7.5-7.5 7.5" fill="none" stroke={OUT} stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M8.5 4.5l7.5 7.5-7.5 7.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** Base under attack (A17.5 `icon.base_alert`): a keep with a crack and a spark. */
+export function BaseAlertIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M4.5 21v-9.5l2-1.5V7.5h2.6v1.2L12 6.3l2.9 2.4V7.5h2.6V10l2 1.5V21z" fill="#f4e3c8" stroke={OUT} stroke-width="1.6" stroke-linejoin="round" />
+      <path d="M12.5 10.5l-1.6 3 2.2 1.2-1.8 3.6" fill="none" stroke={OUT} stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M17.5 2.5l1 2.4 2.5.3-1.9 1.7.5 2.5-2.1-1.3-2.2 1.3.6-2.5-1.9-1.7 2.5-.3z" fill="#ffd447" stroke={OUT} stroke-width="1.1" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** A Legendary (the enemy Legendary badge): a crown. */
+export function CrownIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M3.5 18.5l-1-10 5.2 4.3L12 4.5l4.3 8.3 5.2-4.3-1 10z" fill="#ffd447" stroke={OUT} stroke-width="1.6" stroke-linejoin="round" />
+      <path d="M3.5 18.5h17v2.5h-17z" fill="#e0a92b" stroke={OUT} stroke-width="1.4" stroke-linejoin="round" />
+      <circle cx="12" cy="14.6" r="1.6" fill="#fff" stroke={OUT} stroke-width="1" />
+    </Svg>
+  );
+}

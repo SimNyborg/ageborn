@@ -3,9 +3,10 @@
  * - left: your base HP, age medallion with a "You" tag, the XP bar ("XP 180/250") and the round
  *   Evolve button at its end (56 px, 48 px on phones). When ready it turns gold with a steady glow,
  *   shows the next age's icon and says "Evolve!" (A2.4: it never flashes);
- * - centre: match clock with the Overdrive / Siege marks, "Overdrive in 0:45" under it, and the
- *   front-line strip (your colour against theirs, showing where the fighting is). The training match
- *   has no clock, only the strip;
+ * - centre: match clock with the Overdrive / Siege marks, "Overdrive in 0:45" under it, and under
+ *   that the minimap strip with the base and front buttons (A17.5; `Minimap.tsx`). Without a view
+ *   that draws a minimap (tests, the state gallery) the old front-line strip shows instead. The
+ *   training match has no clock, only the strip;
  * - right: the AI opponent's nameplate (robot icon and "AI" chip, A7.1), base HP, XP, age icon with
  *   its power charge ring, a horn while their Last Stand is armed, the "Scouted (n)" chip (from
  *   match 3), emotes, pause and speed.
@@ -16,6 +17,7 @@ import type { AgeId, CardId, EmoteId } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
 import { AgeGlyph, EmoteGlyph, HornIcon, PauseIcon, PlayIcon, RobotIcon, SmileIcon, SpeedIcon } from './icons';
+import { Minimap } from './Minimap';
 import { ageIds, clockView, evolveIntent, formatClock, frontStrip, powerFraction, xpProgress, type FrontLine } from './model';
 import { usePortrait } from './usePortrait';
 
@@ -320,8 +322,9 @@ export function TopBar(p: {
             ) : null}
           </div>
         ) : null}
-        <FrontStripView front={p.front} label={t('hud.frontLabel')} />
+        {c.view?.minimap ? null : <FrontStripView front={p.front} label={t('hud.frontLabel')} />}
       </div>
+      {c.view?.minimap ? <Minimap c={c} /> : null}
 
       <div class="hud-right">
         <div ref={foeEl} class="hud-panel hud-side hud-foe" data-testid="hud-foe">

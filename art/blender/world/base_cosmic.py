@@ -23,6 +23,7 @@ HULL_LT = "#4B3B6E"
 ARMOR = "#C9C3DD"         # star white held at ~0.8 albedo so the shading shows
 ARMOR_LT = "#D8D3EA"
 SEAM = "#1E1630"
+VIEWPORT = "#FFF1D6"
 CRACK = "#150F22"
 
 DEPTHS = [-40, -24, -40, -24]
@@ -105,6 +106,17 @@ def build(rig, M):
             g.sphere(on_hull(a_deg, z, 1.4), 2.4, cuts=3)
     rig.part("body", g, glow=K.MINT_CORE, outline=0.6, outline_hex=SEAM)
 
+    # rows of lit viewports (a star-white bezel round a warm glowing pane) so it reads as a ship
+    bez, pane = Geo(), Geo()
+    for zc, arc in ((Z0 + 63, range(-150, -25, 17)), (Z0 + 144, range(-146, -30, 19)), (Z0 + 94, (-135, -105, -75, -45))):
+        for a_deg in arc:
+            if zc == Z0 + 94 and a_deg in (-120, -90, -60):
+                continue
+            bez.blob(on_hull(a_deg, zc, 1.8), (3.6, 3.6, 3.6), p=2.4, rot=(0, 0, a_deg + 90))
+            pane.blob(on_hull(a_deg, zc, 3.0), (2.5, 2.5, 2.5), p=2.4, rot=(0, 0, a_deg + 90))
+    rig.part("body", bez, ARMOR_LT, finish="gloss", outline=0.5, outline_hex=K.STAR_TRIM)
+    rig.part("body", pane, glow=VIEWPORT, outline=0)
+
     # nose cone (falls in stage 3) with a mint beacon
     g = Geo().lathe([(0, 0), (24, 0), (19, 24), (10, 50), (0, 66)], (SP[0], SP[1], Z0 + 208),
                     (SP[0], SP[1], Z0 + 274), segs=32, squash=(1.0, 0.8))
@@ -112,8 +124,21 @@ def build(rig, M):
     g = Geo()
     cyl(g, (SP[0], SP[1], Z0 + 222), (SP[0], SP[1], Z0 + 225), 21.4, bevel=0.4, segs=32, squash=(1.0, 0.8))
     rig.part("tip", g, K.VIOLET, finish="gloss")
-    g = Geo().sphere((SP[0], SP[1], Z0 + 274), 4.4, cuts=3)
+    g = Geo().sphere((SP[0], SP[1], Z0 + 274), 6.4, cuts=3)
     rig.part("tip", g, glow=K.MINT_CORE, outline=0.8, outline_hex=K.MINT)
+    g = Geo().lathe([(7.6, -0.8), (10.4, 0), (7.6, 0.8)], (SP[0], SP[1] - 2, Z0 + 274), (SP[0], SP[1] - 3, Z0 + 274),
+                    segs=24)
+    rig.part("tip", g, glow="#8AF2D2", outline=0)                       # the beacon halo
+    # the nose glow: a lit canopy strip down the nose cone's front and a glowing collar
+    g = Geo()
+    for k in range(5):
+        zz = Z0 + 230 + k * 7.0
+        r_ = 20.6 - k * 2.4
+        g.blob((SP[0] - 2.0, SP[1] - r_ * 0.8 - 0.6, zz), (4.4 - k * 0.5, 1.2, 2.6), p=2.6)
+    rig.part("tip", g, glow=K.MINT, outline=0.6, outline_hex=SEAM)
+    g = Geo()
+    cyl(g, (SP[0], SP[1], Z0 + 213), (SP[0], SP[1], Z0 + 216.5), 24.2, bevel=0.3, segs=32, squash=(1.0, 0.8))
+    rig.part("tip", g, glow="#B98CFF", outline=0.5, outline_hex=SEAM)
 
     # fins: a back fin (lost at stage 1) and a front fin; team tips
     g = Geo().slab([(SP[0] - 44, 20), (SP[0] - 78, 12), (SP[0] - 62, 70), (SP[0] - 46, 120)], SP[1] + 2, 6)
@@ -232,7 +257,8 @@ MODULE = base_module(
     build=build, crumble=crumble, mount_depth=DEPTHS,
     flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
     lights=[((-40, -46, 30), 3, 30), ((SP[0], SP[1] - 40, 60), 3, 30), ((SP[0], SP[1] - 34, 140), 2, 24),
-            ((SP[0], SP[1] - 26, 204), 1, 20)],
+            ((SP[0], SP[1] - 26, 204), 1, 20), ((SP[0], SP[1] - 20, Z0 + 274), 2, 22),
+            ((SP[0] - 2, SP[1] - 20, Z0 + 240), 2, 18)],
     smoke=[((SP[0], SP[1], 236), 2), ((SP[0] - 20, -10, 90), 3), ((-40, -20, 30), 3)],
     horn=(-110, 350), yaw=BASE_YAW,
 )

@@ -27,11 +27,12 @@ describe('Time Capsules (A6.4)', () => {
       const x = capsules.tiers[t];
       return [x.stacks, x.copies.common, x.copies.rare, x.copies.epic, x.copies.legendary, x.amber];
     };
-    expect(row('clay')).toEqual([2, 2, 1, 1, 1, 60]);
-    expect(row('bronze')).toEqual([3, 3, 1, 1, 1, 120]);
-    expect(row('silver')).toEqual([4, 6, 3, 1, 1, 300]);
-    expect(row('jade')).toEqual([5, 14, 6, 3, 1, 800]);
-    expect(row('aeon')).toEqual([6, 15, 6, 3, 1, 1500]);
+    // A17.13: about ×1.75 copies and Amber (the pool grew 55 → 88 cards; time to max stays)
+    expect(row('clay')).toEqual([2, 4, 1, 1, 1, 105]);
+    expect(row('bronze')).toEqual([3, 5, 2, 2, 1, 210]);
+    expect(row('silver')).toEqual([4, 10, 5, 2, 1, 530]);
+    expect(row('jade')).toEqual([5, 24, 10, 5, 2, 1400]);
+    expect(row('aeon')).toEqual([6, 26, 10, 5, 2, 2640]);
     expect(capsules.tiers.bronze.guaranteed).toEqual(['rare']);
     expect(capsules.tiers.silver.guaranteed).toEqual(['rare', 'rare', 'epic']);
     expect(capsules.tiers.jade).toMatchObject({ guaranteed: ['rare', 'rare', 'epic', 'epic'], rareToLegendaryBp: 2500, bonusDust: 100 });
@@ -44,11 +45,11 @@ describe('Time Capsules (A6.4)', () => {
       const tenths = Math.round(expectedCopies(t) / 1000);
       expect(tenths, t).toBe(Math.round(capsules.tiers[t].expectedCopiesCenti / 10));
     }
-    expect(capsules.tiers.clay.expectedCopiesCenti).toBe(340);
-    expect(capsules.tiers.aeon.expectedCopiesCenti).toBe(4380);
+    expect(capsules.tiers.clay.expectedCopiesCenti).toBe(630);
+    expect(capsules.tiers.aeon.expectedCopiesCenti).toBe(7560);
   });
 
-  it('averages 9.1 copies and 227 Amber per bag capsule (A6.4)', () => {
+  it('averages 15.7 copies and 398.7 Amber per bag capsule (A6.4, A17.13)', () => {
     const bag = capsules.bag;
     expect(bag).toEqual({ clay: 30, bronze: 40, silver: 20, jade: 7, aeon: 3 });
     let copies = 0;
@@ -57,8 +58,8 @@ describe('Time Capsules (A6.4)', () => {
       copies += bag[t] * expectedCopies(t);
       amber += bag[t] * capsules.tiers[t].amber;
     }
-    expect(Math.round(copies / 100 / 1000)).toBe(91);
-    expect(amber / 100).toBe(227);
+    expect(Math.round(copies / 100 / 1000)).toBe(157);
+    expect(amber / 100).toBe(398.7);
   });
 
   it('has the odds, pity, charges and script', () => {
@@ -74,7 +75,7 @@ describe('Time Capsules (A6.4)', () => {
     expect(capsules.clayMeterPips).toBe(3);
     expect(capsules.daily).toEqual({ firstAfterCapsule: 2, bankMax: 3 });
     expect(capsules.script.map((s) => [s.tier, s.cards])).toEqual([
-      ['bronze', ['spear_hunter']],
+      ['bronze', ['spear_hunter', 'phalangite']],
       ['silver', ['pikeman', 'grenadier']],
       ['bronze', ['log_roller']],
       ['silver', []],
@@ -98,8 +99,8 @@ describe('Rarities, upgrades and Dust (A6.6, A6.7, A5.8)', () => {
     expect(total('legendary')).toBe(11);
     const amber = rarities.upgradeAmber.reduce((a, b) => a + b, 0);
     expect(amber).toBe(4970);
-    // A6.9: maxing all 55 cards costs 273,350 Amber.
-    expect(amber * (content.order.units.length + content.order.turrets.length)).toBe(273350);
+    // A6.9 / A17.13: maxing all 88 cards costs 437,360 Amber.
+    expect(amber * (content.order.units.length + content.order.turrets.length)).toBe(437360);
   });
 
   it('has the Dust, Codex and foil rates', () => {
@@ -129,10 +130,13 @@ describe('Arenas and ladder (A6.3, A6.8)', () => {
       [8, 'chrono_rift', 3400, [8, 10], 8],
     ]);
     const [a1, a2, a3] = arenas.list;
-    expect(a1).toMatchObject({ ladderFormats: ['short'], dropAges: ['stone', 'medieval', 'gunpowder'], randomLegendaries: false, botMaxRarity: 'rare' });
-    expect(a2).toMatchObject({ ladderFormats: ['short', 'standard'], dropAges: ['stone', 'medieval', 'gunpowder', 'modern'] });
-    expect(a2?.gateRewards).toContainEqual({ kind: 'ageUnlock', ages: ['modern', 'future'] });
+    // A17.13: the drop pools follow the formats' ages
+    expect(a1).toMatchObject({ ladderFormats: ['short'], dropAges: AGE_ORDER.slice(0, 4), randomLegendaries: false, botMaxRarity: 'rare' });
+    expect(a2).toMatchObject({ ladderFormats: ['short', 'standard'], dropAges: AGE_ORDER.slice(0, 6) });
+    expect(a2?.gateRewards).toContainEqual({ kind: 'ageUnlock', ages: ['industrial', 'modern'] });
+    expect(a3?.gateRewards).toContainEqual({ kind: 'ageUnlock', ages: ['future', 'cosmic'] });
     expect(a3?.gateRewards).toContainEqual({ kind: 'conquestUnlock' });
+    for (const a of arenas.list.slice(2)) expect(a.dropAges, a.id).toEqual(AGE_ORDER);
     expect(arenas.list[7]?.gateRewards).toContainEqual({ kind: 'skin', skin: 'crystal_spire' });
     expect(arenas.list[7]?.wardenChanceBp).toBe(2000);
   });
@@ -174,10 +178,20 @@ describe('Trophy Road (A6.3)', () => {
 
   it('places the powers, gates and big rewards as DESIGN lists them', () => {
     const at = (t: number) => trophyRoad.nodes.find((n) => n.trophies === t)?.rewards;
+    // A17.13 road
     expect(at(100)).toEqual([{ kind: 'power', card: 'meteor_shower' }]);
     expect(at(150)).toEqual([{ kind: 'gate', arena: 2 }]);
+    expect(at(200)).toEqual([{ kind: 'power', card: 'aegis' }]);
+    expect(at(250)).toEqual([{ kind: 'power', card: 'royal_decree' }]);
+    expect(at(300)).toEqual([{ kind: 'power', card: 'broadside' }]);
+    expect(at(350)).toEqual([{ kind: 'power', card: 'zeppelin_raid' }]);
     expect(at(400)).toEqual([{ kind: 'gate', arena: 3 }, { kind: 'power', card: 'carpet_bomber' }]);
-    expect(at(500)).toEqual([{ kind: 'power', card: 'nanite_surge' }]);
+    expect(at(450)).toEqual([{ kind: 'power', card: 'nanite_surge' }]);
+    expect(at(500)).toEqual([{ kind: 'power', card: 'warp_strike' }]);
+    // The displaced Silver Capsule, 100 Dust and Amber node join 550-650 as second items
+    expect(at(550)).toEqual([{ kind: 'dust', amount: 100 }, { kind: 'capsule', tier: 'silver' }]);
+    expect(at(600)).toEqual([{ kind: 'amber', amount: 220 }, { kind: 'dust', amount: 100 }]);
+    expect(at(650)).toEqual([{ kind: 'capsule', tier: 'silver' }, { kind: 'amber', amount: 230 }]);
     expect(at(1000)).toEqual([{ kind: 'wardrobe' }]);
     expect(at(1500)).toEqual([{ kind: 'capsule', tier: 'jade' }]);
     expect(at(1600)).toEqual([{ kind: 'dust', amount: 400 }]);
@@ -212,12 +226,18 @@ describe('Generals and Conquest (A7.4, A6.10)', () => {
     expect(generals.list.rook.counterWeightBp).toBe(15000);
     expect(generals.list.twins.portraits).toBe(2);
     expect(generals.list.warden.legendaryLevel).toBe(9);
-    expect(generals.list.boomsworth.signatureCards).toEqual(['trebuchet', 'bronze_cannon', 'howitzer', 'grenadier']);
+    expect(generals.list.boomsworth.signatureCards).toEqual(['trebuchet', 'bronze_cannon', 'howitzer', 'grenadier', 'scorpion', 'boiler_mortar', 'starfall_battery']);
   });
 
-  it('gives the Boss all five Legendaries and Boomsworth his artillery', () => {
+  it('gives the Boss all eight Legendaries and Boomsworth his artillery', () => {
     const legendaries = Object.values(generals.list.warden.warPlan ?? {}).flatMap((l) => l.units).filter((u) => u && content.units[u]?.rarity === 'legendary');
-    expect(legendaries.sort()).toEqual(['balloon_admiral', 'behemoth_tank', 'chrono_titan', 'mammoth_matriarch', 'ursa_paladin']);
+    expect(legendaries.sort()).toEqual([
+      'balloon_admiral', 'behemoth_tank', 'bronze_colossus', 'chrono_titan', 'land_dreadnought', 'mammoth_matriarch', 'mothership', 'ursa_paladin',
+    ]);
+    // A17.13: every General with a plan has all 8 loadouts
+    for (const g of Object.values(generals.list)) {
+      if (g.warPlan && !g.scripted) expect(Object.keys(g.warPlan).sort(), g.id).toEqual([...AGE_ORDER].sort());
+    }
     const boom = Object.values(generals.list.boomsworth.warPlan ?? {}).flatMap((l) => [...l.units, ...l.turrets]);
     for (const c of generals.list.boomsworth.signatureCards) expect(boom).toContain(c);
   });
@@ -227,13 +247,14 @@ describe('Generals and Conquest (A7.4, A6.10)', () => {
       ['pip', 1, 1], ['kettle', 2, 2], ['moss', 3, 3], ['ledger', 4, 4], ['boomsworth', 5, 5],
       ['twins', 6, 6], ['rook', 7, 7], ['tempest', 8, 8], ['warden', 10, 9],
     ]);
-    expect(generals.conquest.format).toBe('full');
+    // A17.18 owner decision: Conquest plays Standard War
+    expect(generals.conquest.format).toBe('standard');
     expect(generals.conquest.unlockArena).toBe(3);
     expect(generals.conquest.stars.map((s) => s.reward)).toEqual([
       { kind: 'amber', amount: 200 }, { kind: 'dust', amount: 100 }, { kind: 'ageCapsule' },
     ]);
     expect(generals.conquest.stars[1]?.condition).toEqual({ kind: 'winBaseAbove', bp: 5000 });
-    expect(generals.conquest.stars[2]?.condition).toEqual({ kind: 'winBefore', ms: 360000 });
+    expect(generals.conquest.stars[2]?.condition).toEqual({ kind: 'winBefore', ms: 345000 });
     expect(generals.conquest.milestones).toEqual([
       { stars: 9, capsule: 'jade', title: null },
       { stars: 18, capsule: 'jade', title: null },
@@ -250,7 +271,7 @@ describe('Quests and Codex (A6.7)', () => {
     expect(byId.play_3?.skirmishCounts).toBe(true);
     expect(byId.train_30?.skirmishCounts).toBe(true);
     expect(quests.daily.filter((q) => q.skirmishCounts).map((q) => q.id)).toEqual(['play_3', 'train_30']);
-    expect(byId.fast_final_age?.beforeMsByFormat).toEqual({ short: 140000, standard: 220000, full: 300000 });
+    expect(byId.fast_final_age?.beforeMsByFormat).toEqual({ short: 160000, standard: 255000, full: 405000 });
     expect(byId.win_with_legendary).toMatchObject({ requiresLegendary: true, rewards: [{ kind: 'dust', amount: 100 }] });
     expect(byId.win_after_last_stand).toMatchObject({ fromMatch: 5, rewards: [{ kind: 'amber', amount: 200 }] });
     expect(byId.daily_challenge_win?.rewards).toEqual([{ kind: 'ageCapsule' }]);
@@ -262,16 +283,16 @@ describe('Quests and Codex (A6.7)', () => {
     expect(quests.daily.every((q) => q.weight === 1 || q.weight === 2)).toBe(true);
   });
 
-  it('has the Codex rules: ~81 levels from all upgrades', () => {
+  it('has the Codex rules: ~130 levels from all upgrades (A17.13)', () => {
     expect(quests.codex).toEqual({
       pointsPerLevel: 15, amberPerLevel: 100,
       capsule: { firstLevel: 5, every: 10, tier: 'silver' }, wardrobe: { firstLevel: 10, every: 10 },
     });
-    // Every card to L10: 9 upgrades each (A6.7 "about 81 levels in total").
+    // Every card to L10: 9 upgrades each (A17.13 "about 130 levels in total").
     const points = [...content.order.units, ...content.order.turrets]
       .map((id) => content.units[id]?.rarity ?? content.turrets[id]?.rarity ?? 'common')
       .reduce((s, r) => s + 9 * rarities.cards[r].codexPoints, 0);
-    expect(Math.floor(points / quests.codex.pointsPerLevel)).toBe(81);
+    expect(Math.floor(points / quests.codex.pointsPerLevel)).toBe(129);
   });
 });
 
@@ -281,8 +302,8 @@ describe('Formats (A2.10 "Used in")', () => {
     expect(FORMAT_MODES).toEqual({
       tutorial: ['tutorial'],
       short: ['ladder', 'skirmish'],
-      standard: ['ladder', 'daily', 'skirmish'],
-      full: ['ladder', 'conquest', 'skirmish'],
+      standard: ['ladder', 'daily', 'conquest', 'skirmish'],
+      full: ['ladder', 'skirmish'],
     });
     // Short War on the ladder in all arenas, Standard from Arena 2, Full from Arena 3.
     const firstArena = (f: string) => arenas.list.find((a) => a.ladderFormats.some((x) => x === f))?.index;
@@ -296,8 +317,8 @@ describe('Formats (A2.10 "Used in")', () => {
     expect(FORMAT_MODES[dailyModifiers.challenge.format]).toContain('daily');
     expect(FORMAT_MODES[generals.conquest.format]).toContain('conquest');
     expect(content.formats.tutorial.ages).toHaveLength(5);
-    expect(content.formats.short.ages).toEqual(['stone', 'medieval', 'gunpowder']);
-    expect(content.formats.standard.ages).toEqual(['stone', 'medieval', 'gunpowder', 'modern']);
+    expect(content.formats.short.ages).toEqual(AGE_ORDER.slice(0, 4));
+    expect(content.formats.standard.ages).toEqual(AGE_ORDER.slice(0, 6));
     expect(content.formats.full.ages).toEqual(AGE_ORDER);
   });
 });
@@ -342,8 +363,8 @@ describe('Hidden feats (A15.10)', () => {
       fromTrophies: 400,
       formats: {
         short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
-        standard: { trophies: 30, amber: 25, amberWithoutCharge: 50 },
-        full: { trophies: 34, amber: 30, amberWithoutCharge: 60 },
+        standard: { trophies: 31, amber: 27, amberWithoutCharge: 54 },
+        full: { trophies: 36, amber: 35, amberWithoutCharge: 70 },
       },
     });
   });

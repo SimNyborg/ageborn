@@ -35,7 +35,7 @@ const key = v.pipe(v.string(), v.regex(/^[a-zA-Z][\w.]*$/, 'i18n keys are dot pa
 const visual = v.pipe(v.string(), v.regex(/^[a-z]+\.[\w@.]+$/, 'visual ids look like "unit.bonker"'));
 const sound = v.pipe(v.string(), v.minLength(1));
 
-const AGE = v.picklist(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
+const AGE = v.picklist(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
 const RARITY = v.picklist(['common', 'rare', 'epic', 'legendary']);
 const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
 const FORMAT = v.picklist(['tutorial', 'short', 'standard', 'full']);
@@ -720,14 +720,15 @@ function checkCards(issues: Issues, c: Content): void {
 function checkCollection(issues: Issues, c: Content): void {
   const units = c.order.units.map((x) => c.units[x] as UnitDef);
   const turrets = c.order.turrets.map((x) => c.turrets[x]);
-  issues.check(units.length === 35, 'order.units', `35 collectable units (A5.1), found ${units.length}`);
-  issues.check(turrets.length === 20, 'order.turrets', `20 turrets (A5.1), found ${turrets.length}`);
-  issues.check(c.order.powers.length === 10, 'order.powers', `10 Age Powers (A5.1), found ${c.order.powers.length}`);
+  // A17.13: 8 ages of 7 units, 4 turrets and 2 powers each.
+  issues.check(units.length === 56, 'order.units', `56 collectable units (A17.13), found ${units.length}`);
+  issues.check(turrets.length === 32, 'order.turrets', `32 turrets (A17.13), found ${turrets.length}`);
+  issues.check(c.order.powers.length === 16, 'order.powers', `16 Age Powers (A17.13), found ${c.order.powers.length}`);
   issues.check(c.order.skins.length === 12, 'order.skins', `12 skins (A5.8), found ${c.order.skins.length}`);
   const count = (r: Rarity): number => [...units, ...turrets].filter((x) => x?.rarity === r).length;
-  const want: Record<Rarity, number> = { common: 25, rare: 15, epic: 10, legendary: 5 };
+  const want: Record<Rarity, number> = { common: 40, rare: 24, epic: 16, legendary: 8 };
   for (const r of ['common', 'rare', 'epic', 'legendary'] as const) {
-    issues.check(count(r) === want[r], 'collection', `${want[r]} ${r} cards (A5.1), found ${count(r)}`);
+    issues.check(count(r) === want[r], 'collection', `${want[r]} ${r} cards (A17.13), found ${count(r)}`);
   }
   for (const age of AGE_ORDER) {
     const us = units.filter((u) => u.age === age);
@@ -760,7 +761,9 @@ function checkAgesAndFormats(issues: Issues, c: Content): void {
   });
   for (const f of Object.values(c.formats)) {
     const idx = f.ages.map((a) => AGE_ORDER.indexOf(a));
-    issues.check(idx.every((x, i) => x === i), `formats.${f.id}`, 'a format spans consecutive ages from Stone');
+    // A17.15 rule 4: ages in increasing order from Stone; only the tutorial may skip ages.
+    issues.check(idx[0] === 0 && idx.every((x, i) => x >= 0 && (i === 0 || x > (idx[i - 1] as number))), `formats.${f.id}`, 'a format lists ages in increasing order from Stone');
+    if (f.id !== 'tutorial') issues.check(idx.every((x, i) => x === i), `formats.${f.id}`, 'a ladder format spans consecutive ages from Stone (A17.8)');
     if (f.xpToNextOverride) {
       issues.check(f.xpToNextOverride.length === f.ages.length - 1, `formats.${f.id}`, 'one override per evolve');
     }

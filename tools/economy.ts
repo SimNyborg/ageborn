@@ -24,13 +24,15 @@ const MONTH_DAYS = 30.44;
 /** A6.9 targets. Months are converted at 30.44 days. */
 export const ECONOMY_TARGETS = {
   tolerance: 0.2,
-  copiesPerBagCapsule: 9.1,
-  amberPerBagCapsule: 227,
+  // A17.13: 88 cards instead of 55, so capsules carry about ×1.75 copies and Amber to keep the time to
+  // max a card (owner decision); the per-capsule and per-day income targets scale with them.
+  copiesPerBagCapsule: 15.7,
+  amberPerBagCapsule: 399,
   winCapsulesPerDay: 4,
   dailyCapsulesPerDay: 1,
   clayCapsulesPerDay: 0.9,
-  copiesPerDay: 48,
-  amberPerDay: 1700,
+  copiesPerDay: 84,
+  amberPerDay: 2975,
   commonMaxDays: 4.5 * MONTH_DAYS,
   rareMaxDays: 4.3 * MONTH_DAYS,
   epicMaxDays: 3 * MONTH_DAYS,
@@ -225,10 +227,10 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     near('economy.rareMax', 'Rare to max (median card)', m.maxDay.rare, T.rareMaxDays, 'days'),
     near('economy.epicMax', 'Epic to max (median card)', m.maxDay.epic, T.epicMaxDays, 'days'),
     near('economy.legendaryMax', 'Legendary to max (median card)', m.maxDay.legendary, T.legendaryMaxDays, 'days'),
-    near('economy.allLegendaries', 'All 5 Legendaries owned', m.allLegendariesDay, T.allLegendariesDays, 'days'),
+    near('economy.allLegendaries', 'All 8 Legendaries owned', m.allLegendariesDay, T.allLegendariesDays, 'days'),
     near('economy.planL7', 'Focused War Plan at L7', m.planL7Day, T.planL7Days, 'days'),
     near('economy.copiesDone', 'Copies for the whole collection', m.copiesDoneDay, T.copiesDoneDays, 'days'),
-    near('economy.amberDone', 'Amber for the whole collection (273,350)', m.amberDoneDay, T.amberDoneDays, 'days'),
+    near('economy.amberDone', 'Amber for the whole collection (88 cards × 4,970 = 437,360)', m.amberDoneDay, T.amberDoneDays, 'days'),
     near('economy.collectionMaxed', 'Whole collection maxed', m.collectionMaxedDay, T.collectionMaxedDays, 'days'),
     rangeCheck('economy.finishGap', 'Gap between the copy and Amber finish dates', gap, 0, T.maxGapDays - 1e-9, { target: `< ${T.maxGapDays} days`, show: (x) => (Number.isFinite(x) ? `${fmtNum(x, 0)} days` : 'not reached') }),
     // A model input rather than a result: the A6.9 player completes 3 quests a day.
@@ -239,10 +241,10 @@ export function economyChecks(m: EconomyMeasures): Check[] {
 // ---------------------------------------------------------------------------------------------
 // The player model (drives Meta).
 
-/** A2.4 expected evolve times (s): the n-th evolve lands near 1:00, 2:05, 3:20, 4:50. */
-const EVOLVE_AT_SEC = [60, 125, 200, 290] as const;
-/** Typical match length per format (s): the A2.14 medians (Full 7:00, Short 4:30), Standard in between. */
-const MATCH_SEC: Record<FormatId, number> = { tutorial: 240, short: 270, standard: 330, full: 420 };
+/** A17.8 expected evolve times (s): Bronze 0:52, Medieval 1:25, Gunpowder 2:25, Industrial 3:10, Modern 4:00, Future 5:10, Cosmic 6:30. */
+const EVOLVE_AT_SEC = [52, 85, 145, 190, 240, 310, 390] as const;
+/** Typical match length per format (s): the A17.2 medians (Short 4:45, Standard 6:30, Full 8:30). */
+const MATCH_SEC: Record<FormatId, number> = { tutorial: 240, short: 285, standard: 390, full: 510 };
 
 /**
  * Plausible per-match stats of an engaged player, for quest progress only (A6.7): the economy does not

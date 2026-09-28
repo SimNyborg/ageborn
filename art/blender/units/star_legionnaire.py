@@ -1,12 +1,12 @@
 """Star Legionnaire: Cosmic Age infantry (docs/design-lane-ages.md A17.11). Energy blade, blunt,
 laser damage, ~68 lu. Deflector: takes 20% less damage from ranged attacks (the disc is the cue).
 
-Look (A17.12, Cosmic palette): a legionary of the star legions. A sleek violet helmet with a
-star-white cheek guard, a dark visor band with a mint slit (squints on the strike, X on death)
-and a tall arched team crest; a team chest plate under a violet collar, big team shoulder pads
+Look (A17.12, Cosmic palette): a legionary of the star legions. A crested violet dome helmet
+with a team brow band, a star-white faceplate with slanted glowing violet eye slits (squint on
+the strike, X on death) and a tall violet crest fin with a star-white edge; a team chest plate under a violet collar, big team shoulder pads
 with star-white rims, a short team cape that trails on follow-through, violet boots and bracers
-over a void undersuit. The far forearm carries the deflector: a round mint energy disc with a
-bright hexagon rim projected from a star-white emitter. The near hand holds a broad violet
+over a void undersuit. The far forearm carries the deflector, big and turned to face the camera: a
+round mint energy disc with a bright hexagon rim projected from a star-white emitter. The near hand holds a broad violet
 energy gladius with a white core, the brightest shape on the unit. The attack is a forward
 cut: shoulder the disc, draw the blade back, a violet smear, a held lunge with a spark burst.
 """
@@ -36,25 +36,25 @@ SMEAR = {"joint": "blade", "inner": (HR[0], HR[1] - 1.0, HR[2] + HILT + BLADE_LE
 
 def build(rig):
     K.skeleton(rig)
-    K.legs(rig, team_shin=False)
+    K.legs(rig, team_shin=True)
     rig.joint("blade", "hand_r", HR)
     rig.joint("disc", "fore_l", (HL[0], HL[1], HL[2] + 4.0))
 
     # deflector disc on the far forearm, facing forward and turned toward the camera
-    n = (math.cos(math.radians(-40)), math.sin(math.radians(-40)), 0.0)
-    bx, by, bz = HL[0] + 4.5, HL[1] - 4.5, HL[2] + 5.0
+    n = (math.cos(math.radians(-72)), math.sin(math.radians(-72)), 0.0)   # facing the camera
+    bx, by, bz = HL[0] + 3.0, HL[1] - 6.0, HL[2] + 5.0
     g = Geo().blob((HL[0] + 1.6, HL[1] - 1.0, HL[2] + 4.5), (3.0, 3.2, 3.6), p=3.0)
     rig.part("disc", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
 
     def along(d):
         return (bx + n[0] * d, by + n[1] * d, bz)
 
-    g = Geo().lathe([(0, -0.3), (11.8, -0.2), (12.4, 0.8), (11.6, 1.6), (0, 1.4)], along(0), along(1),
+    g = Geo().lathe([(0, -0.3), (17.6, -0.2), (18.6, 0.8), (17.4, 1.6), (0, 1.4)], along(0), along(1),
                     segs=6)
     rig.part("disc", g, glow=K.MINT, outline=1.0, outline_hex=K.VOID)
-    g = Geo().lathe([(0, 0), (9.0, 0.1), (9.0, 0.9), (0, 1.0)], along(1.2), along(2.2), segs=24)
+    g = Geo().lathe([(0, 0), (13.6, 0.1), (13.6, 0.9), (0, 1.0)], along(1.2), along(2.2), segs=24)
     rig.part("disc", g, glow="#8AF2D2", outline=0)
-    g = Geo().lathe([(0, 0), (3.4, 0.2), (3.0, 1.2), (0, 1.8)], along(2.0), along(3.6), segs=16)
+    g = Geo().lathe([(0, 0), (5.0, 0.2), (4.5, 1.2), (0, 1.8)], along(2.0), along(3.6), segs=16)
     rig.part("disc", g, glow=K.MINT_CORE, outline=0)
     K.sparks(rig, "disc", along(3.0), color=K.MINT, size=1.1, name="flare", seed=2)
 
@@ -62,7 +62,7 @@ def build(rig):
 
     # short team cape behind the shoulders (drawn first so the torso covers its top)
     rig.secondary("cape", "torso", (-8.0, 0, 38.0), (-14.0, 0, 14.0), max_deg=16, gain=1.0)
-    g = Geo().blob((-11.0, 0.5, 27.5), (3.0, 11.0, 11.5), p=3.0, taper=(1.25, 0.9), shift=(0.2, 0))
+    g = Geo().blob((-11.5, 0.5, 26.5), (3.4, 12.0, 13.0), p=3.0, taper=(1.3, 0.9), shift=(0.2, 0))
     rig.part("cape", g, team=True)
     g = Geo().blob((-12.6, 0.5, 16.8), (2.2, 12.4, 1.4), p=3.0)
     rig.part("cape", g, K.VIOLET_DK, outline=0.6)
@@ -77,24 +77,23 @@ def build(rig):
     g.clip((0, 0, 12.8), (0, 0, -1))
     rig.part("hips", g, K.VIOLET_DK, finish="gloss")
 
-    # helmet: sleek violet shell, star-white cheek guard, visor, tall arched team crest
-    g = Geo().blob((2.0, 0, 50.5), (12.0, 11.4, 12.0), p=2.4, shift=(0.1, 0))
+    # helmet: a crested violet dome, a star-white faceplate with slanted glowing violet eye slits,
+    # a tall violet crest fin with a star-white edge, a team brow band (no Future visor bar)
+    g = Geo().blob((2.0, 0, 51.0), (12.0, 11.4, 12.2), p=2.4, shift=(0.1, 0))
     g.blob((-5.0, 0, 44.0), (7.0, 9.6, 5.4), p=2.4)                  # neck guard
     rig.part("head", g, K.VIOLET, finish="gloss", outline_hex=K.VIOLET_DK)
-    g = Geo().blob((6.0, 0, 42.6), (8.0, 9.4, 3.6), p=2.4)
+    g = Geo().lathe([(12.3, 0), (12.6, 1.4), (12.2, 2.8)], (2.0, 0, 54.0), (2.0, 0, 56.8), segs=26)
+    rig.part("head", g, team=True, outline=0.6)
+    K.face_plate(rig, c=(2.0, 0, 51.0), r=(12.0, 11.4, 12.2), x0=4.5, top=54.2, eye_z=51.2)
+    fin = [(6.0, 60.0), (3.0, 67.0), (-2.0, 74.0), (-6.0, 77.0), (-8.0, 73.0), (-12.0, 66.0), (-16.0, 61.0),
+           (-11.0, 56.0), (0.0, 58.0)]
+    g = Geo().slab(fin, 0.0, 3.2)
+    rig.part("head", g, K.VIOLET, finish="gloss", outline_hex=K.VIOLET_DK)
+    g = Geo().capsule((6.4, 0.0, 60.2), (2.6, 0.0, 68.0), 1.3).capsule((2.6, 0.0, 68.0), (-5.6, 0.0, 77.0), 1.3, 0.8)
     rig.part("head", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
-    K.visor_band(rig, c=(2.0, 0, 50.5), r=(12.0, 11.4, 12.0), z0=47.8, z1=53.0, x0=6.5)
-    g = Geo()
-    for i in range(8):
-        a = math.radians(138 - i * 12)
-        r = 12.6 + (2.4 if 2 <= i <= 5 else 1.4)
-        g.blob((1.5 + r * math.cos(a), 0, 50.0 + r * math.sin(a)), (3.0, 2.4, 3.0), p=2.2)
-    rig.part("head", g, team=True)
-    g = Geo().blob((1.0, 0, 62.0), (7.0, 2.0, 1.6), p=2.4)          # crest holder
-    rig.part("head", g, K.STAR_TRIM, finish="metal", outline=0.6)
 
     K.arm_parts(rig, "r")
-    K.shoulders(rig)
+    K.shoulders(rig, r=(8.2, 7.0, 6.6))
 
     # the energy gladius, along +Z from the near fist
     hx, hy, hz = HR

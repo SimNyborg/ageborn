@@ -5,9 +5,12 @@
  * After Phase 2 the tuning agent owns these numbers (C2 Phase 3). The golden replays use the frozen
  * copy in `tests/fixtures/content`, so tuning here never breaks them.
  */
+import { bronze, bronzePowers } from './bronze';
+import { cosmic, cosmicPowers } from './cosmic';
 import { ageScale, battle, damageMods, economy, formats } from './economy';
 import { future } from './future';
 import { gunpowder } from './gunpowder';
+import { industrial, industrialPowers } from './industrial';
 import { medieval } from './medieval';
 import { modern } from './modern';
 import { powers } from './powers';
@@ -15,11 +18,30 @@ import { stone } from './stone';
 import type { RawContent } from './types';
 
 export type { RawAgeScale, RawAgeTables, RawBattleRules, RawContent, RawDamageMods } from './types';
-export { ageScale, battle, damageMods, economy, formats, future, gunpowder, medieval, modern, powers, stone };
+export {
+  ageScale,
+  battle,
+  bronze,
+  bronzePowers,
+  cosmic,
+  cosmicPowers,
+  damageMods,
+  economy,
+  formats,
+  future,
+  gunpowder,
+  industrial,
+  industrialPowers,
+  medieval,
+  modern,
+  powers,
+  stone,
+};
 
 export const raw: RawContent = {
-  ages: [stone, medieval, gunpowder, modern, future],
-  powers,
+  ages: [stone, bronze, medieval, gunpowder, industrial, modern, future, cosmic],
+  // A5.7 powers, then the A17.11 powers of the new ages (the compiler sorts them by age and slot)
+  powers: [...powers, ...bronzePowers, ...industrialPowers, ...cosmicPowers],
   economy,
   ageScale,
   formats,

@@ -62,7 +62,7 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     const pose = s.art.unitViews[1]?.lastPose;
     expect(pose?.x).toBe(700);
     expect(pose?.facing).toBe(-1);
-    expect(Math.abs(pose?.y ?? 0)).toBe(8);
+    expect(Math.abs(pose?.y ?? 0)).toBe(12);
     expect(s.audio.played()).toContain('spawn_pop');
   });
 

@@ -6,7 +6,7 @@ import type { SaveNotice } from '../notices';
 import { decodeSlot, encodeEnvelope, type SlotEnvelope } from '../slots';
 import { MemoryStorage } from '../storage';
 import { readUnreadableCopies } from '../unreadable';
-import { goldenReplays, makeStore, settle, v1Fixture } from './helpers';
+import { goldenReplays, makeStore, settle, currentFixture } from './helpers';
 
 function envelopeOf(storage: MemoryStorage, slot: 'A' | 'B'): SlotEnvelope | null {
   const r = decodeSlot(slot, storage.getItem(SLOT_KEYS[slot]));
@@ -19,7 +19,7 @@ function keptTexts(storage: MemoryStorage): string[] {
 }
 
 function docWith(amber: number): SaveDoc {
-  const d = v1Fixture();
+  const d = currentFixture();
   d.currencies.amber = amber;
   return d;
 }
@@ -39,11 +39,11 @@ describe('LocalSaveStore: round trip', () => {
 
   it('what is saved loads back identically in a new session', async () => {
     const { store, storage } = makeStore();
-    const doc = v1Fixture();
+    const doc = currentFixture();
     await store.save(doc, { immediate: true });
     const next = makeStore({ storage });
     expect(await next.store.load()).toEqual(doc);
-    expect(next.store.loadReport).toMatchObject({ status: 'loaded', slot: 'A', fromVersion: 1, migrated: false });
+    expect(next.store.loadReport).toMatchObject({ status: 'loaded', slot: 'A', fromVersion: 2, migrated: false });
   });
 
   it('never keeps a reference to the caller’s doc', async () => {
@@ -194,9 +194,9 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     expect(kept.map((c) => c.source)).toEqual(['A: corrupt', 'B: corrupt']);
 
     // The fresh profile saves normally; the kept texts survive it and later loads.
-    await store.save(v1Fixture(), { immediate: true });
+    await store.save(currentFixture(), { immediate: true });
     expect(store.problem).toBeNull();
-    expect(await makeStore({ storage }).store.load()).toEqual(v1Fixture());
+    expect(await makeStore({ storage }).store.load()).toEqual(currentFixture());
     expect(readUnreadableCopies(storage)).toEqual(kept);
   });
 
@@ -210,8 +210,8 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     await first.store.save(docWith(2), { immediate: true }); // B
 
     // Months later a build cannot use either copy (here a broken migration): both must be kept too.
-    const broken: SaveVersion = { v: 2, summary: 'broken', up: () => { throw new Error('boom'); } };
-    const later = makeStore({ storage, versions: [SAVE_VERSIONS[0]!, broken] });
+    const broken: SaveVersion = { v: 3, summary: 'broken', up: () => { throw new Error('boom'); } };
+    const later = makeStore({ storage, versions: [...SAVE_VERSIONS, broken] });
     expect(await later.store.load()).toBeNull();
     const a = storage.getItem(SLOT_KEYS.A)!;
     const b = storage.getItem(SLOT_KEYS.B)!;
@@ -259,7 +259,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
 
   it('a save from a newer build is never loaded, never overwritten and never lost', async () => {
     const storage = new MemoryStorage();
-    const newer = { ...v1Fixture(), v: 99 };
+    const newer = { ...currentFixture(), v: 99 };
     const newerText = encodeEnvelope(JSON.stringify(newer), 99, 1000);
     storage.setItem(SLOT_KEYS.A, newerText);
     const { store } = makeStore({ storage });
@@ -270,7 +270,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     expect(keptTexts(storage)).toEqual([newerText]);
 
     // This (older) build writes nothing until reloaded, so the newer save survives.
-    await store.save(v1Fixture(), { immediate: true });
+    await store.save(currentFixture(), { immediate: true });
     expect(store.writeCount).toBe(0);
     expect(store.hasPendingWrite).toBe(true);
     expect(storage.getItem(SLOT_KEYS.A)).toBe(newerText);
@@ -278,7 +278,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
 
     // Reset progress is an explicit choice to start over and lifts the block.
     store.reset();
-    await store.save(v1Fixture(), { immediate: true });
+    await store.save(currentFixture(), { immediate: true });
     expect(store.writeCount).toBe(1);
     expect(store.problem).toBeNull();
   });
@@ -286,7 +286,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
   it('with a newer-build slot next to an older good one, loads the older one but writes nothing', async () => {
     const { store: first, storage, clock } = makeStore();
     await first.save(docWith(100), { immediate: true }); // A
-    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 2 }), 2, clock.now() + 5000);
+    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 3 }), 3, clock.now() + 5000);
     storage.setItem(SLOT_KEYS.B, newerText);
     const { store } = makeStore({ storage });
     expect((await store.load())?.currencies.amber).toBe(100);
@@ -300,14 +300,14 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
   it('never overwrites a newer build’s slot even when save() runs before load()', async () => {
     const { store: first, storage, clock } = makeStore();
     await first.save(docWith(100), { immediate: true }); // A
-    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 2 }), 2, clock.now() + 5000);
+    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 3 }), 3, clock.now() + 5000);
     storage.setItem(SLOT_KEYS.B, newerText);
     const { store } = makeStore({ storage });
     await store.save(docWith(101), { immediate: true }); // no load first
     expect(store.writeCount).toBe(0);
     expect(store.problem).toMatchObject({ kind: 'tooNew', ongoing: true });
     expect(storage.getItem(SLOT_KEYS.B)).toBe(newerText);
-    expect(decodeSlot('A', storage.getItem(SLOT_KEYS.A))).toMatchObject({ ok: true, envelope: { v: 1 } });
+    expect(decodeSlot('A', storage.getItem(SLOT_KEYS.A))).toMatchObject({ ok: true, envelope: { v: 2 } });
   });
 
   it('sets a rejected valid-checksum copy aside even when an older copy loads', async () => {
@@ -353,12 +353,12 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
 
   it('repairs bad settings on load instead of dropping the profile', async () => {
     const storage = new MemoryStorage();
-    const doc = v1Fixture() as SaveDoc & { settings: Record<string, unknown> };
+    const doc = currentFixture() as SaveDoc & { settings: Record<string, unknown> };
     doc.settings.shake = 7;
     storage.setItem(SLOT_KEYS.A, encodeEnvelope(JSON.stringify(doc), 1, 1000));
     const loaded = await makeStore({ storage }).store.load();
     expect(loaded?.settings.shake).toBe(1);
-    expect(loaded?.currencies).toEqual(v1Fixture().currencies);
+    expect(loaded?.currencies).toEqual(currentFixture().currencies);
   });
 });
 
@@ -418,19 +418,19 @@ describe('LocalSaveStore: problems shown to the player (DESIGN B8 Durability)', 
       removeItem: () => {},
     };
     const a = makeStore({ storage: blocked as unknown as MemoryStorage });
-    await a.store.save(v1Fixture(), { immediate: true });
+    await a.store.save(currentFixture(), { immediate: true });
     expect(a.store.problem?.kind).toBe('unavailable');
 
     const broken = { getItem: () => null, setItem: () => { throw new TypeError('???'); }, removeItem: () => {} };
     const b = makeStore({ storage: broken as unknown as MemoryStorage });
-    await b.store.save(v1Fixture(), { immediate: true });
+    await b.store.save(currentFixture(), { immediate: true });
     expect(b.store.problem).toMatchObject({ kind: 'writeFailed', messageKey: 'save.problem.writeFailed' });
   });
 
   it('an in-memory stand-in for blocked storage reports unavailable from the start, and it stays', async () => {
     const { store } = makeStore({ storageUnavailable: true });
     expect(store.problem).toMatchObject({ kind: 'unavailable', messageKey: 'save.problem.unavailable' });
-    await store.save(v1Fixture(), { immediate: true });
+    await store.save(currentFixture(), { immediate: true });
     expect(store.writeCount).toBe(1);
     expect(store.problem?.kind).toBe('unavailable');
   });
@@ -439,7 +439,7 @@ describe('LocalSaveStore: problems shown to the player (DESIGN B8 Durability)', 
     const { store, storage } = makeStore();
     store.onProblem(() => { throw new Error('ui bug'); });
     storage.quota = 10;
-    await store.save(v1Fixture(), { immediate: true });
+    await store.save(currentFixture(), { immediate: true });
     expect(store.problem?.kind).toBe('quota');
   });
 
@@ -449,7 +449,7 @@ describe('LocalSaveStore: problems shown to the player (DESIGN B8 Durability)', 
     const off = store.onProblem(cb);
     off();
     storage.quota = 10;
-    await store.save(v1Fixture(), { immediate: true });
+    await store.save(currentFixture(), { immediate: true });
     expect(cb).not.toHaveBeenCalled();
   });
 });

@@ -259,6 +259,10 @@ const AGE_PLATE: Record<AgeId, [string, string]> = {
   gunpowder: ['#2e5e4e', '#1d3a31'],
   modern: ['#62664a', '#2f3228'],
   future: ['#6b3fd6', '#1a1440'],
+  // A17.12
+  bronze: ['#b8863b', '#4a3e30'],
+  industrial: ['#8a6a63', '#2b2a2e'],
+  cosmic: ['#8e44c8', '#1e1830'],
 };
 
 /**

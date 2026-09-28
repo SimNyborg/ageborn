@@ -11,11 +11,14 @@ the hull hangs the tractor ring (a mint glow ring on struts around a void emitte
 the front of the belly sits the beam emitter. Origin (the feet anchor) is the lowest point; the
 battle view lifts air units to flight altitude.
 
-Clips: idle hovers (bob, lights turning, the tractor ring pulsing), walk is the flight loop
-(nose-down pitch, lights turning faster), attack charges a violet ball at the belly emitter,
-holds, fires (flare and a short beam stub; the game draws fx.beam_void from the per-frame
-`muzzle` anchor) and the hull kicks back; hit rocks the saucer; die tilts it nose-down with
-sparks and smoke as it drops (the sim does the crash splash).
+Clips: idle hovers (a +-3.6 lu bob, the running lights chase: every third light is bright and the
+ring turns, the tractor ring pulses), walk is the flight loop (nose-down pitch, lights chasing
+faster), attack charges a mint glow at the belly emitter that grows over three frames while the
+drone bay door swings open, fires (violet flare and a short beam stub; the game draws
+fx.beam_void from the per-frame `muzzle` anchor), the hull kicks back and a drone drops out of
+the bay and flies off; hit rocks the saucer; die is a crash: a 28 degree roll and a nose-down
+pitch, the spire snaps off, the running lights go dark quarter by quarter, a mint and white
+break-up flash, smoke, and it falls low (the sim does the crash splash).
 """
 import math
 
@@ -28,8 +31,8 @@ SLUG = "mothership"
 NAME = "Mothership"
 HEIGHT_LU = 172
 YAW_DEG = -10.0
-CANVAS = (440, 400)
-FEET = (214, 370)
+CANVAS = (440, 480)
+FEET = (214, 370)        # room below the feet: the crash ends low
 ANCHORS = {"head": (-8, 170), "hitCenter": (0, 70), "muzzle": (44, 22)}
 SCALE = 1.2              # the whole ship: a Legendary towers over the heavies
 
@@ -54,6 +57,9 @@ def build(rig):
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, DZ))
     rig.joint("lights", "hull", (0, 0, DZ))
+    for k in range(4):     # quarters of the light ring, so they can go dark in sequence (death)
+        rig.joint(f"lights_{k}", "lights", (0, 0, DZ))
+    rig.joint("spire", "hull", (-8.0, 4.0, DZ + 34.0))
     rig.joint("tractor", "hull", (0, 0, 14.0))
 
 
@@ -99,12 +105,15 @@ def build(rig):
     g = Geo().lathe([(30.0, -0.8), (40.0, -0.8), (40.0, 0.8), (30.0, 0.8)], (0, 0, DZ - 12.6), (0, 0, DZ - 11.6),
                     segs=40, squash=(1.0, 1.0))
     rig.part("hull", g, K.VOID, outline=0)
-    # running lights on a turning joint
-    g = Geo()
-    for i in range(N_LIGHTS):
-        a = 2 * math.pi * i / N_LIGHTS
-        g.sphere((R * 1.02 * math.cos(a), R * 1.02 * math.sin(a), DZ + 1.0), 1.9, cuts=3)
-    rig.part("lights", g, glow=K.MINT_CORE, outline=0.8, outline_hex=K.MINT)
+    # running lights on a turning joint: every third light is bright, so the ring visibly chases
+    for k in range(4):
+        hi, lo = Geo(), Geo()
+        for i in range(k * 3, k * 3 + 3):
+            a = 2 * math.pi * i / N_LIGHTS
+            (hi if i % 3 == 0 else lo).sphere((R * 1.02 * math.cos(a), R * 1.02 * math.sin(a), DZ + 1.0),
+                                              2.3 if i % 3 == 0 else 1.7, cuts=3)
+        rig.part(f"lights_{k}", hi, glow=K.MINT_CORE, outline=0.8, outline_hex=K.MINT)
+        rig.part(f"lights_{k}", lo, glow="#2FA884", outline=0.6, outline_hex="#1C6A55")
     # launch bays on the near rim (dark mouths with a mint glow inside)
     for k, a in enumerate((-120, -90, -60)):
         c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
@@ -142,18 +151,18 @@ def build(rig):
     sx, sy = -8.0, 4.0
     g = Geo().lathe([(7.0, 0), (5.6, 10.0), (2.6, 34.0), (1.5, 60.0), (0, 63.0)], (sx, sy, DZ + 34.0),
                     (sx, sy, DZ + 97.0), segs=16)
-    rig.part("hull", g, K.STAR_TRIM, finish="metal", outline_hex=K.VOID_LT)
+    rig.part("spire", g, K.STAR_TRIM, finish="metal", outline_hex=K.VOID_LT)
     g = Geo()
     for z, r in ((DZ + 52.0, 7.0), (DZ + 66.0, 5.2)):
         g.lathe([(0, -0.9), (r, -0.8), (r, 0.8), (0, 0.9)], (sx, sy, z), (sx, sy, z + 1), segs=20)
-    rig.part("hull", g, glow=K.MINT, outline=0.8, outline_hex=K.VOID)
+    rig.part("spire", g, glow=K.MINT, outline=0.8, outline_hex=K.VOID)
     g = Geo().capsule((sx, sy, DZ + 58.0), (sx + 9.0, sy, DZ + 62.0), 0.8)
     g.capsule((sx, sy, DZ + 72.0), (sx - 7.0, sy, DZ + 75.0), 0.7)
-    rig.part("hull", g, K.STAR_TRIM, finish="metal", outline=0.5)
+    rig.part("spire", g, K.STAR_TRIM, finish="metal", outline=0.5)
     g = Geo().sphere((sx, sy, DZ + 98.0), 2.4, cuts=3)
-    rig.part("hull", g, glow=K.MINT, outline=0.8, outline_hex=K.VOID)
+    rig.part("spire", g, glow=K.MINT, outline=0.8, outline_hex=K.VOID)
     top = (sx - 1.0, sy, DZ + 93.0)
-    rig.secondary("pennant", "hull", top, (top[0] - 26.0, sy, top[2] - 4.0), max_deg=14, gain=1.1, rot_gain=0.6)
+    rig.secondary("pennant", "spire", top, (top[0] - 26.0, sy, top[2] - 4.0), max_deg=14, gain=1.1, rot_gain=0.6)
     pts = [(0.0, 0.0), (-28.0, -1.5), (-20.0, -7.0), (-28.0, -12.5), (0.0, -14.0)]
     g = Geo().slab([(top[0] + a, top[2] + b) for a, b in pts], sy, 1.4)
     rig.part("pennant", g, team=True, outline=0.8)
@@ -165,8 +174,24 @@ def build(rig):
     rig.part("hull", g, K.VOID_LT, finish="gloss")
     g = Geo().sphere((ex + 1.0, ey - 0.5, ez - 1.0), 3.0, cuts=3)
     rig.part("hull", g, glow=K.VIOLET_GLOW, outline=0.8, outline_hex=K.VIOLET)
-    K.orb(rig, "hull", (ex + 3.0, ey - 1.0, ez - 3.0), 4.4, color=K.VIOLET_GLOW, core=K.VIOLET_CORE,
-          name="charge", hidden=True, line=K.VIOLET)
+    K.orb(rig, "hull", (ex + 3.0, ey - 1.0, ez - 3.0), 5.2, color=K.MINT, core=K.MINT_CORE,
+          name="charge", hidden=True, line="#1C8A6A")
+    rig.joint("charge_glow", "hull", (ex + 3.0, ey - 1.0, ez - 3.0), hidden=True)
+    g = Geo().star((ex + 3.0, ey - 7.0, ez - 3.0), 16.0, 4.4, 1.2, points=8)
+    rig.part("charge_glow", g, glow="#8AF2D2", outline=0)
+    # the drone bay on the near rim (a = -90): a hinged door that swings down, and a drone
+    bx, by, bz = 0.0, -(R + 0.6), DZ - 3.6
+    rig.joint("bay_door", "hull", (bx, by - 0.4, bz - 2.4))
+    g = Geo().blob((bx, by - 1.0, bz), (6.2, 1.2, 3.2), p=3.4)
+    rig.part("bay_door", g, K.STAR_TRIM, finish="gloss", outline=0.6, outline_hex=K.VOID)
+    rig.joint("drone", "hull", (bx, by - 4.0, bz), hidden=True, scale=1.6)
+    g = Geo().blob((bx, by - 4.0, bz), (6.4, 5.0, 2.2), p=2.4)
+    rig.part("drone", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
+    g = Geo().blob((bx, by - 4.0, bz + 1.6), (3.2, 2.8, 2.0), p=2.4)
+    rig.part("drone", g, team=True, outline=0.6)
+    g = Geo().sphere((bx + 4.6, by - 7.6, bz - 0.2), 1.5, cuts=3)
+    g.sphere((bx - 4.6, by - 6.0, bz - 0.8), 1.1, cuts=2)
+    rig.part("drone", g, glow=K.MINT, outline=0.6, outline_hex=K.VOID)
     rig.joint("flash", "hull", (ex + 3.0, ey, ez - 3.0), hidden=True)
     g = Geo().star((ex + 5.0, ey - 5, ez - 4.0), 14.0, 5.0, 1.4, points=6)
     rig.part("flash", g, glow=K.VIOLET_GLOW, outline=0)
@@ -178,6 +203,12 @@ def build(rig):
     rig.track("muzzle", "hull", (ex + 3.0, ey, ez - 3.0))
     rig.track("_foot", "odo", (0, 0, 0))
 
+    # death: a mint and white break-up flash on the near deck
+    rig.joint("breakup", "hull", (6.0, -34.0, DZ + 8.0), hidden=True)
+    g = Geo().star((6.0, -44.0, DZ + 8.0), 30.0, 9.0, 1.6, points=8)
+    rig.part("breakup", g, glow="#8AF2D2", outline=0)
+    g = Geo().sphere((6.0, -46.0, DZ + 8.0), 11.0, cuts=4)
+    rig.part("breakup", g, glow=K.WHITE, outline=0)
     # damage: sparks on the deck and smoke (death)
     K.sparks(rig, "hull", (20.0, -30.0, DZ + 10.0), color=K.MINT, size=2.0, name="sparks")
     rig.joint("smoke", "hull", (-10.0, -30.0, DZ + 30.0), hidden=True)
@@ -193,11 +224,13 @@ def _lights(k):
 
 
 def _idle(f):
+    # a +-3.6 lu hover bob; the light ring chases a quarter turn per loop (the bright lights move
+    # one bright-to-bright step)
     ph = 2 * math.pi * f / IDLE_N
-    return merge(_lights(360.0 / N_LIGHTS * f / IDLE_N), {
-        "body": {"z": 2.4 * math.sin(ph)},
-        "hull": {"r": 0.8 * math.sin(ph - 0.9)},
-        "tractor": dict(squash(0.05 * math.sin(ph + 1.0)), s=1.0 + 0.04 * math.sin(ph)),
+    return merge(_lights(90.0 * f / IDLE_N), {
+        "body": {"z": 3.6 * math.sin(ph)},
+        "hull": {"r": 1.0 * math.sin(ph - 0.9)},
+        "tractor": dict(squash(0.05 * math.sin(ph + 1.0)), s=1.0 + 0.05 * math.sin(ph)),
     })
 
 
@@ -207,28 +240,35 @@ WALK_MS = 100
 def _walk(f):
     p = 2 * math.pi * f / WALK_N
     a = 40.0 * (WALK_N * WALK_MS / 1000.0) / 4.0     # odo: sim speed 40 lu/s
-    return merge(_lights(2 * 360.0 / N_LIGHTS * f / WALK_N), {
+    return merge(_lights(180.0 * f / WALK_N), {
         "odo": {"x": a * math.cos(p)},
-        "body": {"z": 2.0 * math.sin(p)},
+        "body": {"z": 2.6 * math.sin(p)},
         "hull": {"r": -3.5 + 0.8 * math.sin(p - 0.8)},
         "tractor": {"r": 3.0 * math.sin(p - 1.6)},
     })
 
 
-ATTACK_MS = [83, 83, 125, 125, 83, 83, 125, 125]
+ATTACK_MS = [83, 100, 100, 125, 83, 100, 125, 125]
 ATTACK_IMPACT = 4
 
 
 def _attack(f):
-    # 0 dip the nose, 1-3 charge the emitter (held), 4 fire: flare and beam stub,
-    # 5 kick back, 6-7 settle
-    return merge(_lights(pick(f, [0, 3, 6, 9, 12, 15, 18, 21])), {
+    # 0 dip the nose and open the drone bay, 1-3 the belly emitter charges (a mint glow grows over
+    # three frames) while the bay door swings down, 4 fire: violet flare and beam stub (the game
+    # draws fx.beam_void from `muzzle`) and the drone drops out, 5-7 kick back, the drone flies
+    # off forward and down, the door closes
+    return merge(_lights(pick(f, [0, 8, 16, 24, 32, 40, 48, 56])), {
         "body": {"z": pick(f, [0, -1.0, -1.5, -1.5, 1.5, 2.5, 1.0, 0]),
                  "x": pick(f, [0, 0.5, 1.0, 1.0, -2.0, -4.0, -2.0, -0.5])},
         "hull": dict(squash(pick(f, [0, -0.01, -0.02, -0.02, 0.03, -0.02, 0.01, 0])),
                      r=pick(f, [-2.0, -3.0, -3.5, -3.5, 1.5, 3.0, 1.0, -0.5])),
-        "charge": {"show": f in (1, 2, 3), "s": pick(f, [0, 0.5, 0.9, 1.25, 0, 0, 0, 0])},
+        "charge": {"show": f in (1, 2, 3), "s": pick(f, [0, 0.45, 0.85, 1.3, 0, 0, 0, 0])},
+        "charge_glow": {"show": f in (2, 3), "s": pick(f, [0, 0, 0.7, 1.15, 0, 0, 0, 0])},
         "flash": {"show": f == 4},
+        "bay_door": {"rx": pick(f, [0, 30, 60, 80, 85, 85, 50, 10])},
+        "drone": {"show": f in (3, 4, 5, 6, 7),
+                  "x": pick(f, [0, 0, 0, 0, 6, 18, 32, 46]), "y": pick(f, [0, 0, 0, -2, -4, -6, -8, -8]),
+                  "z": pick(f, [0, 0, 0, -3, -8, -12, -14, -14]), "r": pick(f, [0, 0, 0, 0, -10, -16, -8, 0])},
     })
 
 
@@ -238,17 +278,43 @@ def _hit(f):
             "tractor": {"r": 10 * a}, "sparks": {"show": f == 0, "s": 0.7}}
 
 
+# death: a crash, 8 unique poses in 12 steps (about 1.1 s). 0 struck (sparks), 1 it rolls and
+# pitches, the spire cracks, the first quarter of the running lights goes dark, 2 the spire snaps
+# off and a mint/white break-up flash bursts from the near deck, 3 the flash peaks, more lights
+# out, 4 every light dark, smoke, 5-6 falling hard in a 28 degree roll, 7 low, hand-off
+DIE_SEQ = [0, 1, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7]
+DIE_MS = [60, 70, 70, 60, 60, 80, 90, 90, 100, 100, 110, 120]
+
+
 def _die(f):
-    # nose-down tilt and drop with sparks and smoke
-    return {
-        "body": {"x": pick(f, [-4.0, -8.0, -10.0]), "z": pick(f, [2.0, -6.0, -14.0]),
-                 "s": pick(f, [1.0, 0.96, 0.9])},
-        "hull": dict(squash(pick(f, [0.02, -0.04, -0.10])), r=pick(f, [-8.0, -16.0, -22.0])),
-        "tractor": {"r": pick(f, [14, 26, 34])},
-        "sparks": {"show": f in (0, 1), "s": pick(f, [1.0, 1.3, 1.0])},
-        "smoke": {"show": True, "s": pick(f, [0.7, 1.0, 1.25])},
-        "lights": {"hide": f >= 1},
+    pose = {
+        "body": {"x": pick(f, [-3, -6, -8, -10, -12, -14, -15, -15]),
+                 "z": pick(f, [1, -2, -6, -12, -20, -32, -44, -48]),
+                 "s": pick(f, [1, 1, 1, 1, 1, 1, 0.98, 0.92])},
+        "hull": {"r": pick(f, [-6, -10, -13, -15, -16, -18, -19, -19]),
+                 "rx": pick(f, [4, 10, 16, 21, 24, 27, 28, 28])},
+        "tractor": {"r": pick(f, [12, 22, 30, 34, 36, 38, 38, 38])},
+        "spire": {"r": pick(f, [0, 8, 30, 48, 60, 68, 72, 72]), "x": pick(f, [0, 0, -3, -7, -10, -12, -13, -13]),
+                  "z": pick(f, [0, 0, 5, 3, -3, -10, -16, -18])},
+        "sparks": {"show": f in (0, 1), "s": pick(f, [1.0, 1.3, 1, 1, 1, 1, 1, 1])},
+        "breakup": {"show": f in (2, 3), "s": pick(f, [1, 1, 0.8, 1.2, 1, 1, 1, 1])},
+        "smoke": {"show": f >= 3, "s": pick(f, [1, 1, 1, 0.7, 0.95, 1.15, 1.3, 1.4]),
+                  "z": pick(f, [0, 0, 0, 0, 4, 8, 12, 14])},
     }
+    for k in range(4):   # the light quarters go dark one after another
+        if f >= 1 + k:
+            pose[f"lights_{k}"] = {"hide": True}
+    return pose
+
+
+def _die_extra():
+    total = sum(DIE_MS)
+    handoff = sum(DIE_MS[:len(DIE_MS) - 2])
+    h = HEIGHT_LU
+    return {"fx": [{"id": "fx.dust_poof", "atMs": handoff - 40, "offsetLu": [0, round(h * 0.36, 1)]},
+                   {"id": "fx.ko_stars", "atMs": handoff + 40, "offsetLu": [0, round(h * 0.55, 1)],
+                    "loops": 2, "scalePow": 0.5}],
+            "hideUnitAtMs": total}
 
 
 def clips():
@@ -257,5 +323,5 @@ def clips():
         Clip("walk", WALK_N, _walk, loop=True, durations=WALK_MS),
         Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+        Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]

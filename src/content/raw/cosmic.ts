@@ -3,34 +3,13 @@
  * DESIGN as A5.x), A17.12 attack mapping. The last age of Full War. Table units: HP and damage whole,
  * ms, lu, lu/s, gold, bp. Data only. `strongVs`/`weakVs` are filled by the WP1 counter matrix (B4).
  *
- * NOT WIRED YET. `AgeId` has no 'cosmic' until the WP0 contract request of A17.15 lands, so this file
- * types its tables with a local widening. When 'cosmic' joins `AgeId`: type `cosmic` as
- * `RawAgeTables`, `cosmicPowers` as `PowerDef[]` (or move them into `powers.ts`), `cosmicScale` as
- * `RawAgeScale`, and add the age to `raw/index.ts`, `economy.ts` (`ageScale`, formats) and `ages.ts`.
+ * The age's P, base HP and threshold live in `economy.ts` (`ageScale`, A17.8).
  */
-import type { PowerDef, TurretDef, UnitDef } from '@/contracts/content';
-import type { AgeId } from '@/contracts/ids';
+import type { PowerDef } from '@/contracts/content';
 import { damageMods } from './economy';
-import type { RawAgeScale } from './types';
+import type { RawAgeTables } from './types';
 
-/** The age id this file adds (A17.8). */
-type PendingAge = 'cosmic';
-type WithAge<T extends { age: AgeId }> = Omit<T, 'age'> & { age: AgeId | PendingAge };
-
-/** A17.8: P 4.48, base max HP 44,800, index 7, the last age (no threshold). */
-export const cosmicScale: Omit<RawAgeScale, 'id'> & { id: PendingAge } = {
-  id: 'cosmic',
-  index: 7,
-  pBp: 44800,
-  baseHp: 44800,
-  xpToNext: null,
-};
-
-export const cosmic: {
-  age: PendingAge;
-  units: readonly WithAge<UnitDef>[];
-  turrets: readonly WithAge<TurretDef>[];
-} = {
+export const cosmic: RawAgeTables = {
   age: 'cosmic',
   units: [
     {
@@ -199,7 +178,7 @@ export const cosmic: {
 };
 
 /** A17.11 Cosmic Age Powers (values at P 4.48 and L1 loadouts; every power has a 1.0 s telegraph). */
-export const cosmicPowers: readonly WithAge<PowerDef>[] = [
+export const cosmicPowers: readonly PowerDef[] = [
   {
     // 6 star shards over 2.0 s across a 450 lu zone (even pattern, ±20 lu jitter); each 380 damage,
     // splash r60; hits air. Per unit ~608: 87% / 24% (Star Legionnaire / Hover Tank)

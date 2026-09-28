@@ -2,9 +2,10 @@
 (proj.harpoon), 210 lu, ~70 lu, medium. Reel In: the first hit of each engagement pulls the target
 25 lu toward the gunner.
 
-Look (A17.12, Industrial palette): a stocky whaler-engineer with brass goggles over his eyes, a
-knitted coal watch cap, a team pea jacket and team sleeves, a leather apron belt and a big coil
-of cream rope slung on his back. On his near shoulder rests a heavy iron harpoon gun: a fat
+Look (A17.12, Industrial palette): a stocky whaler-engineer with big brass goggles pushed up on
+his brow, a tall slouched coal watch cap with a team cuff and a cream pompom, a team pea jacket and team
+sleeves, a leather apron belt and a big coil of cream rope slung over his shoulder (its ring
+faces the camera and stands out behind his back). On his near shoulder rests a heavy iron harpoon gun: a fat
 riveted barrel with copper bands, a round breech drum with a crank, a pistol grip and a front
 grip, and a barbed iron harpoon head sticking out of the muzzle with its rope running back to the
 coil. The long gun with the barbed head is the anti-armor silhouette at 56 px. The attack braces,
@@ -39,13 +40,19 @@ HEAD_LEN = 14.0
 def build(rig):
     I.skeleton(rig)
     I.legs(rig, trousers=I.DENIM, cuff=I.CREAM_DK, thigh_r=5.1)
-    # rope coil on the back (drawn first, behind the jacket)
+    # a big coil of cream rope slung over the far shoulder, its ring facing the camera so it
+    # stands out behind the back and above the shoulder line (drawn first, behind the jacket)
     g = Geo()
-    for k, r in enumerate((10.4, 8.6, 6.8)):
-        g.lathe([(r - 1.5, -1.6), (r + 0.2, -1.8), (r + 1.5, 0), (r + 0.2, 1.8), (r - 1.5, 1.6)],
-                (-11.5 - k * 0.8, 1.0, 27.0), (-13.5 - k * 0.8, 1.0, 27.0), segs=24)
-    rig.part("torso", g, I.CREAM_DK, finish="hair")
-    g = Geo().capsule((6.0, -9.4, 37.0), (-6.0, -8.8, 18.0), 1.5)   # coil strap
+    for k, r in enumerate((11.0, 9.0)):
+        g.lathe([(r - 1.8, -1.8), (r + 0.2, -2.0), (r + 1.8, 0), (r + 0.2, 2.0), (r - 1.8, 1.8)],
+                (-7.5 - k * 0.6, 6.0 - k * 1.4, 32.0), (-7.2 - k * 0.6, 5.0 - k * 1.4, 32.0), segs=28)
+    rig.part("torso", g, I.CREAM, finish="hair")
+    g = Geo()
+    for a in (0.6, 2.2, 3.8, 5.3):                               # lashings
+        g.capsule((-7.5 + 9.0 * math.cos(a), 4.2, 32.0 + 9.0 * math.sin(a)),
+                  (-7.5 + 12.6 * math.cos(a), 4.2, 32.0 + 12.6 * math.sin(a)), 1.0)
+    rig.part("torso", g, I.LEATHER_DK, outline=0.4)
+    g = Geo().capsule((7.0, -9.4, 37.0), (-6.0, -9.0, 18.0), 1.6)   # coil strap across the chest
     rig.part("torso", g, I.LEATHER, outline=0.6)
     I.jacket(rig, collar=I.COAL_LT)
     g = Geo().blob((0.4, 0, 18.8), (11.2, 10.4, 3.8), p=3.2)   # apron belt with a hook
@@ -59,14 +66,16 @@ def build(rig):
     g = Geo().blob((5.0, 0, 42.0), (9.8, 10.4, 5.6), p=2.2)   # short beard along the jaw
     g.clip((4.0, 0, 0), (-1, 0, 0)).clip((0, 0, 44.4), (0, 0, 1))
     rig.part("head", g, I.HAIR_RED, finish="hair", outline=0.5)
-    # knitted watch cap (coal, a rolled cuff)
-    g = Geo().blob((-0.4, 0, 57.6), (11.8, 11.4, 7.6), p=2.3, shift=(-0.1, 0))
+    # knitted watch cap: a tall soft crown slouched back, a cream rolled cuff, a pompom; big
+    # brass goggles pushed up on the brow (they read at 1x)
+    g = Geo().blob((-1.4, 0, 58.6), (11.6, 11.2, 10.0), p=2.3, shift=(-0.22, 0), rot=(0, -8, 0))
     g.clip((0, 0, 56.0), (0, 0, -1))
-    g.sphere((-3.0, 0, 65.4), 2.6, cuts=3)   # pompom
     rig.part("head", g, I.COAL_LT)
-    g = Geo().lathe([(12.0, 0), (12.5, 1.4), (12.1, 3.2), (11.5, 3.8)], (0.2, 0, 55.4), (0.2, 0, 59.2), segs=24)
-    rig.part("head", g, I.IRON, outline=0.6)
-    I.goggles(rig, at=(11.2, 0, 59.4), k=1.0)
+    g = Geo().sphere((-8.0, 0, 67.6), 3.4, cuts=3)                     # pompom
+    rig.part("head", g, I.CREAM_DK, finish="hair")
+    g = Geo().lathe([(12.0, 0), (12.6, 1.4), (12.2, 3.4), (11.5, 4.0)], (0.2, 0, 54.8), (0.2, 0, 58.8), segs=24)
+    rig.part("head", g, team=True, outline=0.6)
+    I.goggles(rig, at=(10.4, 0, 59.6), k=1.4, dy=(-5.2, 4.6))
 
     for s in ("r", "l"):
         I.arm_parts(rig, s, team_sleeve=True, fist=4.6, cuff=I.COAL_LT)

@@ -130,13 +130,16 @@ function age(id: AgeId, index: number, pBp: number, xpToNext: number | null): Ag
   };
 }
 
-/** DESIGN A2.2 (P, base HP) and A2.4 (thresholds). */
+/** DESIGN A17.8 (P, base HP, thresholds; eight ages). */
 const ages: Record<AgeId, AgeDef> = {
-  stone: age('stone', 0, 10000, 700),
-  medieval: age('medieval', 1, 13500, 1000),
-  gunpowder: age('gunpowder', 2, 18200, 1200),
-  modern: age('modern', 3, 24600, 1500),
-  future: age('future', 4, 33200, null),
+  stone: age('stone', 0, 10000, 550),
+  bronze: age('bronze', 1, 11600, 500),
+  medieval: age('medieval', 2, 13500, 900),
+  gunpowder: age('gunpowder', 3, 18200, 700),
+  industrial: age('industrial', 4, 21200, 800),
+  modern: age('modern', 5, 24600, 1200),
+  future: age('future', 6, 33200, 1300),
+  cosmic: age('cosmic', 7, 44800, null),
 };
 
 function format(id: FormatId, overdriveMs: number | null, siegeMs: number | null, finalBellMs: number | null): FormatDef {

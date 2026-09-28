@@ -33,7 +33,8 @@ const id = v.pipe(v.string(), v.minLength(1));
 const uint32 = v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(0xffffffff));
 const unit01 = v.pipe(v.number(), v.finite(), v.minValue(0), v.maxValue(1));
 
-export const AGE_IDS = ['stone', 'medieval', 'gunpowder', 'modern', 'future'] as const;
+/** The eight ages (A17.8); save version 2 added Bronze, Industrial and Cosmic. */
+export const AGE_IDS = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;
 const AGE = v.picklist(AGE_IDS);
 const RARITY = v.picklist(['common', 'rare', 'epic', 'legendary']);
 const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
@@ -57,10 +58,13 @@ export const WarPlanSchema = v.object({
   name: v.string(),
   loadouts: v.object({
     stone: LoadoutSchema,
+    bronze: LoadoutSchema,
     medieval: LoadoutSchema,
     gunpowder: LoadoutSchema,
+    industrial: LoadoutSchema,
     modern: LoadoutSchema,
     future: LoadoutSchema,
+    cosmic: LoadoutSchema,
   }),
 });
 
@@ -96,6 +100,9 @@ export const SettingsSchema = v.fallback(
     mutedEmotes: v.fallback(v.boolean(), d.mutedEmotes),
     breakReminder: v.optional(v.fallback(v.boolean(), true)),
     quickReveal: v.optional(v.fallback(v.boolean(), false)),
+    // A17.4 camera settings (optional; missing means On), so a stored choice survives a load
+    autoCamera: v.optional(v.fallback(v.boolean(), true)),
+    edgeScroll: v.optional(v.fallback(v.boolean(), true)),
   }),
   defaultSettings,
 );

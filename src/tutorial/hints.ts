@@ -162,7 +162,8 @@ export class AdaptiveHints {
   private outdatedMountTarget(i: TickInput): AdaptiveHintDef['target'] {
     const me = i.state.sides[i.side];
     const ages = i.config.content.ages;
-    const k = me.turrets.findIndex((t) => t !== null && t.state === 'active' && ages[t.age].index < me.ageIndex);
+    const now = currentAgeIndex(i);
+    const k = me.turrets.findIndex((t) => t !== null && t.state === 'active' && ages[t.age].index < now);
     return k === 0 ? 'mount0' : k === 1 ? 'mount1' : null;
   }
 
@@ -175,10 +176,22 @@ export class AdaptiveHints {
     if (newCosts.length === 0) return false;
     const cheapest = Math.min(...newCosts);
     const gold = goldOf(i);
+    const now = currentAgeIndex(i);
     return me.turrets.some((t) => {
-      if (!t || t.state !== 'active' || content.ages[t.age].index >= me.ageIndex) return false;
+      if (!t || t.state !== 'active' || content.ages[t.age].index >= now) return false;
       const old = content.turrets[t.card]?.cost ?? 0;
       return gold >= cheapest - Math.floor((old * content.economy.sellRefundBp) / 10000);
     });
   }
+}
+
+/**
+ * The global `AgeDef.index` of the side's current age. `SideState.ageIndex` is the position in the
+ * format, which differs from the global index when a format skips ages (the tutorial, A17.15 rule 4).
+ */
+function currentAgeIndex(i: TickInput): number {
+  const me = i.state.sides[i.side];
+  const content = i.config.content;
+  const age = content.formats[i.config.format]?.ages[me.ageIndex];
+  return age ? content.ages[age].index : me.ageIndex;
 }

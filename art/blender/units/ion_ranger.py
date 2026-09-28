@@ -2,8 +2,8 @@
 one more enemy, laser damage, ~70 lu.
 
 Look (A17.12, Cosmic palette): a lean sharpshooter in a void undersuit with violet armour, a
-round helmet whose upper dome is team-coloured over a violet jaw with a dark visor band and a
-mint slit, a flip-up targeting lens on the near side and a short antenna with a mint tip. Team
+tall pointed team hood with a violet lining over a dark cowl face with one big glowing violet
+mono-lens (no Future visor bar), and a short antenna with a violet tip. Team
 chest plate and shoulder pads, a violet backpack cell. The long ion rifle (the reach cue) is a
 void and star-white stock and shroud with four glowing mint coil rings along the barrel and a
 forked emitter at the muzzle. The attack is the coil charge-up: the rings brighten back to
@@ -59,27 +59,25 @@ def build(rig):
     g.clip((0, 0, 13.2), (0, 0, -1))
     rig.part("hips", g, K.VIOLET_DK, finish="gloss")
 
-    # helmet: violet shell, team upper dome, dark visor, mint slit, targeting lens, antenna
-    g = Geo().blob((2, 0, 51), (11.4, 11.0, 11.6), p=2.5)
+    # a tall pointed hood (void cloth with a team outer layer and a violet lining at the face
+    # opening) over a dark cowl face with one big glowing violet mono-lens; a small antenna
+    g = Geo().blob((1.0, 0, 50.0), (10.6, 10.2, 10.6), p=2.4)
     g.blob((1, 0, 42.4), (7.8, 7.8, 3.2), p=2.4)
-    rig.part("head", g, K.VIOLET, finish="gloss", outline_hex=K.VIOLET_DK)
-    g = Geo().blob((2, 0, 51.1), (11.75, 11.35, 11.95), p=2.5, cuts=8)
-    g.clip((0, 0, 53.2), (0, 0, -1))
-    rig.part("head", g, team=True)
-    g = Geo().blob((-1.0, 0, 62.4), (8.0, 2.6, 2.2), p=2.8, rot=(0, -6, 0))   # low crest ridge
-    rig.part("head", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
-    K.visor_band(rig, c=(2, 0, 51), r=(11.4, 11.0, 11.6), z0=47.2, z1=52.2, x0=6.0)
-    g = Geo().blob((-3.0, -10.6, 50.0), (4.2, 2.0, 4.2), p=2.4)               # ear pod
-    rig.part("head", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
-    g = Geo().capsule((-1.0, -12.0, 52.0), (9.0, -13.0, 53.5), 1.0)         # lens arm
-    rig.part("head", g, K.STAR_TRIM, finish="metal", outline=0.6)
-    g = Geo().lathe([(0, 0), (2.6, 0.2), (2.6, 1.6), (0, 1.8)], (9.6, -13.2, 53.6), (9.6, -15.2, 53.6), segs=14)
-    rig.part("head", g, glow=K.MINT, outline=0.8, outline_hex=K.VOID)
-    rig.secondary("antenna", "head", (-8, 7.0, 55), (-12.0, 8.0, 68), max_deg=16, gain=1.2)
-    g = Geo().capsule((-8, 7.0, 55), (-11.6, 8.0, 67), 0.9)
-    rig.part("antenna", g, K.VOID_LT, outline=1.0)
-    g = Geo().sphere((-12.0, 8.0, 68), 1.9, cuts=3)
-    rig.part("antenna", g, glow=K.MINT, outline=1.0, outline_hex=K.VOID)
+    rig.part("head", g, K.VOID_LT, finish="gloss", outline_hex=K.VOID)
+    hood = Geo().blob((-1.0, 0, 53.0), (12.6, 12.4, 13.0), p=2.3, taper=(1.0, 0.7), shift=(-0.25, 0))
+    hood.blob((-8.0, 0, 64.0), (5.4, 5.0, 8.0), p=2.2, rot=(0, -38, 0))            # the tall point
+    hood.clip((7.2, 0, 0), (1, 0, 0))
+    rig.part("head", hood, team=True)
+    g = Geo().lathe([(9.8, -0.9), (11.2, 0), (9.8, 0.9)], (7.6, 0, 50.0), (8.6, 0, 50.0), segs=28, squash=(1.0, 1.12))
+    rig.part("head", g, K.VIOLET, finish="gloss", outline=0.6)                     # hood rim (lining)
+    g = Geo().blob((-3.0, 0, 40.0), (9.0, 12.4, 4.0), p=2.4)                          # cowl on the shoulders
+    rig.part("head", g, K.VOID_LT, outline=0.6)
+    K.mono_lens(rig, (10.0, -1.8, 50.4), r=4.8, axis=(1.0, -0.3))
+    rig.secondary("antenna", "head", (-8, 7.0, 58), (-12.0, 8.0, 70), max_deg=16, gain=1.2)
+    g = Geo().capsule((-8, 7.0, 58), (-11.6, 8.0, 69), 0.9)
+    rig.part("antenna", g, K.STAR_TRIM, outline=1.0)
+    g = Geo().sphere((-12.0, 8.0, 70), 1.9, cuts=3)
+    rig.part("antenna", g, glow=K.VIOLET_GLOW, outline=1.0, outline_hex=K.VOID)
 
     # far arm reaches the fore-grip; near arm holds the grip (modelled in the holding pose)
     rig.joint("arm_l", "torso", (0, 11, 37))

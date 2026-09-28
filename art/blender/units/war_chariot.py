@@ -38,7 +38,7 @@ HOOF = "#4A4038"
 
 HX = 26.0                    # the horse is this far ahead of the unit origin
 AX = -32.0                   # the chariot axle
-WHEEL_R = 14.0            # circumference 88 lu: 240 degrees per 0.8 s cycle = the ground speed
+WHEEL_R = 15.0            # 8 x 37.5 = 300 degrees per walk cycle = 78.5 lu of rim = strideLu (79)
 FLOOR_Z = 20.0
 DRIVER = (-30.0, 0.0, 18.0)  # pose offset of the driver's skeleton (feet on the car floor)
 HR = (0.0, G.ARM_Y["r"], G.HAND_Z)
@@ -233,7 +233,7 @@ def reins(a=-30, f=-10):
 
 DRV = {"driver": {"x": DRIVER[0], "z": DRIVER[2]}}
 STANCE = merge(DRV, khopesh(-30, 40, 70), reins(), {"torso": {"r": -4}})
-SPIN_PER_FRAME = 30.0     # 8 x 30 = 240 degrees per cycle = 57 lu of ground (r 14); seamless (6 spokes)
+SPIN_PER_FRAME = 37.5     # 300 degrees per cycle, seamless with 6 spokes; the team spoke shows the roll direction
 
 
 def car(dx=0.0, dz=0.0, tilt=0.0, spin=0.0):

@@ -31,7 +31,13 @@ export const fixture: CompiledContent = compileForSim(fixtureRaw);
 /** Lane length in whole lu (A17.2: 2,000). Tests place side-1 units at `L - p`. */
 export const L = LANE_MLU / MILLI;
 
+/** The five ages of the frozen fixture. */
 export const AGES: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+
+/** The ages a content defines, in `AgeDef.index` order (the fixture has 5, the live content 8, A17.8). */
+export function agesOf(content: CompiledContent): AgeId[] {
+  return (Object.keys(content.ages) as AgeId[]).sort((a, b) => content.ages[a].index - content.ages[b].index);
+}
 
 /** Every unit card of an age (non-hidden), in table order. */
 export function unitsOf(content: CompiledContent, age: AgeId): CardId[] {
@@ -89,7 +95,7 @@ export function sideConfig(
   const levels: Record<CardId, number> = {};
   for (const id of [...Object.keys(content.units), ...Object.keys(content.turrets)]) levels[id] = o.level ?? 1;
   const loadouts: Partial<Record<AgeId, Loadout>> = {};
-  for (const age of AGES) loadouts[age] = o.loadouts?.[age] ?? baselineLoadout(content, age, o.plan);
+  for (const age of agesOf(content)) loadouts[age] = o.loadouts?.[age] ?? baselineLoadout(content, age, o.plan);
   return { label: o.label ?? 'Player', isBot: o.isBot ?? false, loadouts, levels, skins: {} };
 }
 

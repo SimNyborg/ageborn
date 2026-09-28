@@ -8,8 +8,11 @@
 /** Side of the lane. 0 = player, left, faces right, blue; 1 = opponent, right, orange (DESIGN A2.1). */
 export type Side = 0 | 1;
 
-/** The five v1 ages, in order (DESIGN A2.2, A2.5). Ages are data; a sixth age must need only content (A2.5). */
-export type AgeId = 'stone' | 'medieval' | 'gunpowder' | 'modern' | 'future';
+/**
+ * The eight ages, in order (DESIGN A17.8: Stone, Bronze, Medieval, Gunpowder, Industrial, Modern, Future,
+ * Cosmic). Ages are data; a new age needs only content, visuals and audio entries plus one id here (A17.15).
+ */
+export type AgeId = 'stone' | 'bronze' | 'medieval' | 'gunpowder' | 'industrial' | 'modern' | 'future' | 'cosmic';
 
 /** Card rarity (DESIGN A5.1, A6.4). */
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';

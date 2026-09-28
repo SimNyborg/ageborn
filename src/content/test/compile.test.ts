@@ -22,7 +22,7 @@ describe('contentHash (B4, B3 replays)', () => {
   it('matches the snapshot (update only when battle content changes on purpose)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
-    expect(content.hash).toBe('4b5e2fde');
+    expect(content.hash).toBe('d59c0909');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -96,28 +96,30 @@ describe('compiled bundle (B4)', () => {
     }
   });
 
-  it('lists 35 collectable units in DESIGN order, then hidden ones apart', () => {
-    expect(content.order.units).toHaveLength(35);
-    expect(content.order.units.slice(0, 7)).toEqual([
+  it('lists 56 collectable units in DESIGN order, then hidden ones apart', () => {
+    expect(content.order.units).toHaveLength(56);
+    expect(content.order.units.slice(0, 14)).toEqual([
       'bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', 'mammoth_matriarch',
+      'hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer', 'scorpion', 'bronze_colossus',
     ]);
     expect(content.order.hiddenUnits).toEqual(['training_dummy']);
-    expect(content.order.turrets).toHaveLength(20);
+    expect(content.order.turrets).toHaveLength(32);
+    expect(content.order.ages).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
     expect(content.order.powers).toEqual([
-      'stampede', 'meteor_shower', 'arrow_storm', 'royal_decree', 'smoke_screen', 'broadside',
-      'paratroopers', 'carpet_bomber', 'orbital_lance', 'nanite_surge',
+      'stampede', 'meteor_shower', 'tidal_wave', 'aegis', 'arrow_storm', 'royal_decree', 'smoke_screen', 'broadside',
+      'iron_horse', 'zeppelin_raid', 'paratroopers', 'carpet_bomber', 'orbital_lance', 'nanite_surge', 'starfall', 'warp_strike',
     ]);
-    expect(content.order.ages).toEqual(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
     expect(content.order.formats).toEqual(['tutorial', 'short', 'standard', 'full']);
   });
 
   it('adds palette, visual and music ids to the ages (A14.1, A14.3)', () => {
     expect(content.ages.gunpowder).toEqual({
-      id: 'gunpowder', index: 2, pBp: 18200, baseHp: 18200, xpToNext: 1200,
+      id: 'gunpowder', index: 3, pBp: 18200, baseHp: 18200, xpToNext: 700,
       paletteId: 'palette.gunpowder', baseVisualId: 'base.gunpowder', backdropVisualId: 'backdrop.gunpowder',
       musicCue: 'music.gunpowder',
     });
-    expect(content.ages.future.xpToNext).toBeNull();
+    expect(content.ages.future.xpToNext).toBe(1300);
+    expect(content.ages.cosmic.xpToNext).toBeNull();
   });
 
   it('derives pop and train time from the role group (A2.7)', () => {
@@ -191,9 +193,13 @@ describe('integer view (B3 units)', () => {
     });
   });
 
-  it('converts base HP and XP thresholds (A2.2, A2.4)', () => {
-    expect(content.int.baseHp).toEqual({ stone: 1000000, medieval: 1350000, gunpowder: 1820000, modern: 2460000, future: 3320000 });
-    expect(content.int.xpToNext).toEqual({ stone: 700000, medieval: 1000000, gunpowder: 1200000, modern: 1500000, future: null });
+  it('converts base HP and XP thresholds (A17.8)', () => {
+    expect(content.int.baseHp).toEqual({
+      stone: 1000000, bronze: 1160000, medieval: 1350000, gunpowder: 1820000, industrial: 2120000, modern: 2460000, future: 3320000, cosmic: 4480000,
+    });
+    expect(content.int.xpToNext).toEqual({
+      stone: 550000, bronze: 500000, medieval: 900000, gunpowder: 700000, industrial: 800000, modern: 1200000, future: 1300000, cosmic: null,
+    });
   });
 
   it('has only safe integers', () => {

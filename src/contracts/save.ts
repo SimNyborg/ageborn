@@ -35,6 +35,10 @@ export interface Settings {
   breakReminder?: boolean;
   /** Every capsule opens at the burst (A10 step 4) (A15.6); default false when missing. */
   quickReveal?: boolean;
+  /** A17.4 "Auto camera": the battle camera follows the fight when you are not scrolling; default true when missing. */
+  autoCamera?: boolean;
+  /** A17.4 edge scroll on desktop (fine pointer only); default true when missing. */
+  edgeScroll?: boolean;
 }
 
 /** Profile statistics (DESIGN A6.1). */
@@ -48,6 +52,7 @@ export interface ProfileStats {
   lossesByTier: number[];
   trainedByCard: Record<CardId, number>;
   fastestWinMs: number | null;
+  /** Matches that reached the game's last age (A17.13: Cosmic, the end of Full War; the Future Age before A17). */
   futureReached: number;
 }
 

@@ -88,7 +88,7 @@ describe('f_counter (A7.2, B4 matrix)', () => {
     const mem = sampleOfMemory([{ card: 'tuskback', count: 3, lastTick: 0 }], book);
     expect(mem).toEqual([{ card: 'tuskback', weight: 450 }]);
     const now: CounterSample[] = [{ card: 'bonker', weight: 50 }];
-    const next = sampleOfAge(book.unitsByAge[1] ?? []);
+    const next = sampleOfAge(book.unitsByAge[2] ?? []);
     expect(next.every((s) => book.units[s.card]?.age === 'medieval')).toBe(true);
     expect(next.some((s) => book.units[s.card]?.legendary)).toBe(false);
     const cur = counterScore(book, 'footman', now);

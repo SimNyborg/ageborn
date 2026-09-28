@@ -20,10 +20,13 @@ const bool2 = v.tuple([v.boolean(), v.boolean()]);
 function partialPerAge<TSchema extends v.GenericSchema>(schema: TSchema) {
   return v.object({
     stone: v.optional(schema),
+    bronze: v.optional(schema),
     medieval: v.optional(schema),
     gunpowder: v.optional(schema),
+    industrial: v.optional(schema),
     modern: v.optional(schema),
     future: v.optional(schema),
+    cosmic: v.optional(schema),
   });
 }
 

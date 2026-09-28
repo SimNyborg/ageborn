@@ -308,13 +308,13 @@ describe('saving goals and economy', () => {
 
   it('modernises an outdated turret at rebuild tiers when calm', () => {
     const { brain } = brainFor({ tier: 5 });
-    const med = content.formats.full.ages[1];
+    const med = content.formats.full.ages[2];
     expect(med).toBe('medieval');
     const t = decide(
       brain,
       observation({
         tick: 5000,
-        ageIndex: 1,
+        ageIndex: 2,
         gold: 200 * MILLI,
         treasury: 3,
         tray: ['footman', 'longbowman', null, null, null],

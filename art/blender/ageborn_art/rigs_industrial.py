@@ -127,9 +127,10 @@ def overalls(rig, shirt=CREAM, strap_button=BRASS_LT, pocket=True):
     rig.part("hips", g, team=True)
 
 
-def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, tail_len=13.0):
+def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, tail_len=13.0, long=False):
     """A long team coat (duster): body, lapels, a row of buttons, a belt, and coat tails on a
-    follow-through joint that swing behind the legs."""
+    follow-through joint that swing behind the legs. long=True: the skirt flares down to the
+    shins (the Carbineer's duster)."""
     g = Geo().blob((0, 0, 27.6), (10.8, 9.8, 12.0), p=2.4, taper=(1.1, 0.94))
     g.blob((0.3, 0, 17.4), (11.2, 10.2, 5.0), p=2.6)
     rig.part("torso", g, team=True)
@@ -145,15 +146,29 @@ def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, ta
     rig.part("torso", g, belt)
     g = Geo().blob((11.6, -1.0, 20.4), (1.0, 2.2, 1.7), p=3.2)
     rig.part("torso", g, BRASS_LT, finish="metal", outline=0.4)
-    g = Geo().blob((0.4, 0, 15.2), (11.6, 10.6, 5.4), p=2.6, taper=(1.12, 1.0))
-    g.clip((0, 0, 11.0), (0, 0, -1))
-    rig.part("hips", g, team=True)
+    if long:
+        # open at the front (the legs stay readable), the back panel hangs to the shins
+        g = Geo().blob((0.4, 0, 15.2), (11.6, 10.6, 5.4), p=2.6, taper=(1.12, 1.0))
+        g.clip((0, 0, 11.0), (0, 0, -1))
+        rig.part("hips", g, team=True)
+        g = Geo().blob((-1.0, 0, 11.0), (11.6, 11.4, 9.0), p=2.6, taper=(1.2, 0.98))
+        g.clip((0, 0, 4.5), (0, 0, -1)).clip((0, 0, 16.0), (0, 0, 1)).clip((-1.0, 0, 0), (1, 0, 0))
+        g.clip((0, -3.0, 0), (0, -1, 0))
+        rig.part("hips", g, team=True)
+    else:
+        g = Geo().blob((0.4, 0, 15.2), (11.6, 10.6, 5.4), p=2.6, taper=(1.12, 1.0))
+        g.clip((0, 0, 11.0), (0, 0, -1))
+        rig.part("hips", g, team=True)
     if tails:
         rig.secondary("coattail", "hips", (-4.0, 0, 15.0), (-9.0, 0, 15.0 - tail_len), max_deg=22, gain=1.1)
-        g = Geo().blob((-4.8, 0, 15.0 - tail_len * 0.5), (7.2, 10.4, tail_len * 0.55), p=2.6,
+        ty, ry = (3.5, 7.0) if long else (0.0, 10.4)   # the long duster's tails hang behind the legs
+        g = Geo().blob((-4.8 - (3.0 if long else 0.0), ty, 15.0 - tail_len * 0.5), (7.2, ry, tail_len * 0.55), p=2.6,
                        taper=(1.25, 0.9), shift=(0.25, 0))
         g.clip((0, 0, 15.5), (0, 0, 1))
         rig.part("coattail", g, team=True)
+        if long:   # a coal hem band so the long tails read as cloth, not a blob
+            g = Geo().blob((-6.8, ty, 15.0 - tail_len * 1.02), (7.6, ry * 0.95, 1.6), p=2.6)
+            rig.part("coattail", g, COAL_LT, outline=0.5)
 
 
 def jacket(rig, collar=COAL_LT, buttons=BRASS_LT, belt=LEATHER, skirt=True):
@@ -246,6 +261,46 @@ def brim_hat(rig, c=(1.0, 0, 57.6), color=COAL_LT, band=LEATHER, team_band=True,
         rig.part(joint, g, team=True, outline=0.6)
     else:
         rig.part(joint, g, band, outline=0.6)
+
+
+def slouch_hat(rig, c=(1.0, 0, 57.6), color=COAL_LT, team_band=True, joint="head", k=1.0):
+    """A very wide slouch hat: a pinched crown and a broad soft brim that dips at the front and
+    the back (a clear silhouette apart from the bowler)."""
+    x, y, z = c
+    g = Geo().blob((x - 0.4, y, z + 4.2 * k), (10.2 * k, 9.8 * k, 6.6 * k), p=2.6, taper=(1.06, 0.78))
+    g.clip((x, y, z), (0, 0, -1))
+    rig.part(joint, g, color, finish="matte")
+    g = Geo().blob((x + 0.8 * k, y, z + 0.6 * k), (22.0 * k, 19.0 * k, 1.5 * k), p=2.2)
+    for v in g.bm.verts:   # droop the brim ends (front and back) and lift the sides a little
+        dx = (v.co.x - x) / (22.0 * k)
+        dy = (v.co.y - y) / (19.0 * k)
+        v.co.z -= 3.6 * k * dx * dx - 1.2 * k * dy * dy
+    rig.part(joint, g, color, finish="matte")
+    g = Geo().blob((x + 0.6 * k, y, z + 10.4 * k), (6.0 * k, 1.6 * k, 1.4 * k), p=2.2)   # crown pinch
+    rig.part(joint, g, COAL, outline=0, highlight=False)
+    g = Geo().lathe([(10.5 * k, 0), (10.4 * k, 2.6 * k), (10.0 * k, 3.8 * k)], (x, y, z + 1.2 * k),
+                    (x, y, z + 5.0 * k), segs=24)
+    if team_band:
+        rig.part(joint, g, team=True, outline=0.6)
+    else:
+        rig.part(joint, g, LEATHER, outline=0.6)
+
+
+def peaked_cap(rig, c=(1.0, 0, 57.2), color=IRON, team_band=True, joint="head", k=1.0):
+    """An officer's peaked cap: a flat, wide round top over a band and a glossy black peak."""
+    x, y, z = c
+    g = Geo().lathe([(0, 0), (10.6 * k, 0), (11.2 * k, 3.6 * k), (13.6 * k, 7.0 * k), (13.4 * k, 8.4 * k),
+                     (0, 8.8 * k)], (x - 0.8 * k, y, z - 0.6 * k), (x - 1.4 * k, y, z + 8.2 * k), segs=28,
+                    squash=(1.0, 0.94))
+    rig.part(joint, g, color, finish="matte")
+    g = Geo().blob((x + 11.0 * k, y, z - 0.4 * k), (6.6 * k, 9.6 * k, 1.1 * k), p=2.8, rot=(0, -16, 0))
+    rig.part(joint, g, COAL, finish="gloss")
+    g = Geo().lathe([(11.0 * k, 0), (11.2 * k, 1.6 * k), (11.0 * k, 3.2 * k)], (x - 0.8 * k, y, z),
+                    (x - 0.8 * k, y, z + 3.2 * k), segs=28)
+    if team_band:
+        rig.part(joint, g, team=True, outline=0.6)
+    g = Geo().sphere((x + 11.2 * k, y - 0.2, z + 3.0 * k), 1.4 * k, cuts=2)                # badge
+    rig.part(joint, g, BRASS_LT, finish="metal", outline=0.4)
 
 
 def bowler(rig, c=(1.0, 0, 57.0), color=COAL_LT, team_band=True, joint="head", k=1.0):

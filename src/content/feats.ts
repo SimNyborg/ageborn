@@ -26,7 +26,8 @@ const LIST: FeatDef[] = [
   feat('no_walls', { kind: 'winNoTurret', formats: ['full'] }),
   feat('photo_finish', { kind: 'winFinalBellMargin', maxMarginBp: 200 }, { title: 'photo_finisher' }),
   feat('horn_of_legends', { kind: 'lastStandKills', min: 8 }),
-  feat('lightspeed', { kind: 'reachAgeBefore', age: 'future', beforeMs: 240000, formats: ['full'] }),
+  // A17.8: Future now comes at ~5:10 in Full War (was ~5:00), so the bar moves 10 s
+  feat('lightspeed', { kind: 'reachAgeBefore', age: 'future', beforeMs: 250000, formats: ['full'] }),
   feat('underdog', { kind: 'winAfterAgesBehind', ages: 2 }),
   feat('humble_beginnings', { kind: 'winCommonsOnly', formats: ['full'] }),
   feat('back_from_the_brink', { kind: 'winAfterBaseBelow', belowBp: 500 }),

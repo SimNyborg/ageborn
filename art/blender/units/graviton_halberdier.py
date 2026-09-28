@@ -2,7 +2,8 @@
 melee anti-armour, laser damage, Brace, ~72 lu.
 
 Look (A17.12, Cosmic palette): a heavy guard in star-white armour over a void suit. A tall
-star-white helm with a dark visor band and mint slit and a team fin crest, big team shoulder
+winged helm: star-white shell, a faceplate with glowing violet eye slits, swept team wings on
+both sides (star-white leading edges) and a violet crest ridge, big team shoulder
 pads, a team chest plate and a long team tabard that swings. The halberd is the reach cue: a
 long void shaft with star-white fittings, a broad violet crescent blade on the front and a back
 spike, and between two forked prongs a floating violet gravity orb with a mint ring around it
@@ -43,7 +44,7 @@ def build(rig):
 
     # tabard (behind the belt) and torso
     rig.secondary("tabard", "hips", (7.0, 0, 20.0), (8.5, 0, 4.0), max_deg=14, gain=0.9)
-    g = Geo().blob((8.2, -0.5, 12.5), (2.4, 7.0, 8.8), p=3.2, taper=(1.14, 0.9))
+    g = Geo().blob((8.4, -0.5, 12.0), (2.6, 8.0, 9.6), p=3.2, taper=(1.16, 0.9))
     rig.part("tabard", g, team=True)
     g = Geo().blob((9.6, -0.5, 4.8), (1.4, 7.4, 1.2), p=3.0)
     rig.part("tabard", g, K.STAR, outline=0.6)
@@ -52,16 +53,18 @@ def build(rig):
     g.clip((0, 0, 12.8), (0, 0, -1))
     rig.part("hips", g, K.VIOLET, finish="gloss")
 
-    # tall helm: star-white shell, visor band, team fin crest
+    # winged helm: a tall star-white shell, a star-white faceplate with glowing violet eye slits,
+    # swept team wings on both sides and a violet crest ridge (no Future visor bar)
     g = Geo().blob((2.0, 0, 51.0), (11.8, 11.2, 13.4), p=2.6, taper=(1.05, 0.9))
     g.blob((4.5, 0, 42.2), (9.0, 9.2, 3.6), p=2.4)
+    rig.part("head", g, K.VIOLET_DK, finish="gloss", outline_hex=K.VOID)
+    g = Geo().blob((2.0, 0, 51.4), (12.2, 11.6, 13.6), p=2.6, taper=(1.05, 0.9))
+    g.clip((0, 0, 52.0), (0, 0, -1))
     rig.part("head", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
-    K.visor_band(rig, c=(2.0, 0, 51.0), r=(11.8, 11.2, 13.4), z0=47.6, z1=52.6, x0=6.5)
-    g = Geo().blob((-1.0, 0, 64.0), (12.0, 2.8, 7.2), p=2.4, rot=(0, -10, 0))
-    g.blob((-10.0, 0, 57.0), (4.0, 2.6, 7.0), p=2.4, rot=(0, 26, 0))
-    rig.part("head", g, team=True)
-    g = Geo().blob((-3.0, -11.0, 50.0), (3.4, 2.0, 3.4), p=2.4)
-    rig.part("head", g, K.STAR_TRIM, finish="metal", outline=0.6)
+    K.face_plate(rig, c=(2.0, 0, 51.0), r=(11.8, 11.2, 13.4), x0=5.0, top=53.0, eye_z=50.4, plate=K.STAR)
+    g = Geo().blob((-1.0, 0, 64.6), (11.0, 2.6, 4.4), p=2.4, rot=(0, -10, 0))
+    rig.part("head", g, K.VIOLET, finish="gloss", outline_hex=K.VIOLET_DK)
+    K.wings(rig, "head", (-1.0, 0, 55.0), span=17.0, h=13.0, y_off=11.4, team=True)
 
     K.arm_parts(rig, "r", bracer=K.STAR)
     K.shoulders(rig, r=(7.6, 6.4, 6.0))

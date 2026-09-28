@@ -33,10 +33,10 @@ describe('shows planned from meta reveals', () => {
       plans.push(planCapsuleShow(o.reveal, { catalog }));
     }
     const [one, , , four, five] = plans;
-    // Capsule 1: a scripted climb to Bronze, Spear Hunter NEW with a short walkout.
+    // Capsule 1: a scripted climb to Bronze, Spear Hunter and Phalangite NEW (A17.13) with short walkouts.
     expect(one?.finalTier).toBe('bronze');
     expect(one?.steps.filter((x) => x.kind === 'strike' && x.climb)).toHaveLength(1);
-    expect(one?.steps.flatMap((x) => (x.kind === 'miniWalkout' ? [x.card.card] : []))).toEqual(['spear_hunter']);
+    expect(one?.steps.flatMap((x) => (x.kind === 'miniWalkout' ? [x.card.card] : []))).toEqual(['spear_hunter', 'phalangite']);
     // Capsule 4: the first Epic, NEW, with its mini-walkout.
     expect(four?.steps.some((x) => x.kind === 'miniWalkout' && x.card.rarity === 'epic')).toBe(true);
     // Capsule 5: Mammoth Matriarch, the full walkout, which cannot be skipped.

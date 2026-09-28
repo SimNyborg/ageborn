@@ -30,7 +30,9 @@ export type PromptTarget =
   | 'evolve'
   | 'power'
   | 'stance'
-  | 'lastStand';
+  | 'lastStand'
+  /** The minimap strip under the clock (A17.5). */
+  | 'minimap';
 
 /** When a beat may show (evaluated every tick once the previous beat is over, if sequential). */
 export type BeatTrigger =
@@ -174,7 +176,7 @@ export function match1TrainingScript(content: CompiledContent, groggUnits: reado
 }
 
 /** Tray slots per age in match 1 (A3 "Match 1 uses scripted trays", A8). */
-export const MATCH1_TRAYS: Record<AgeId, number[]> = {
+export const MATCH1_TRAYS: Partial<Record<AgeId, number[]>> = {
   stone: [SLOT.infantry],
   medieval: [SLOT.infantry, SLOT.ranged],
   gunpowder: [SLOT.infantry, SLOT.ranged],
@@ -228,6 +230,8 @@ export const MATCH2: MatchScript = {
   id: 'match2',
   sequential: false,
   beats: [
+    // A17.6: the long lane scrolls. The first real battle shows how to look around once the armies are out.
+    { id: 'm2.scroll', textKey: 'tutorial.m2.scroll', target: 'minimap', trigger: { k: 'atTick', tick: sec(20) }, done: { k: 'shownFor', ticks: sec(5) } },
     // "Stone teaches Treasury" (A8).
     { id: 'm2.treasury', textKey: 'tutorial.m2.treasury', target: 'gold', trigger: { k: 'treasuryAffordable', afterTick: sec(15) }, done: { k: 'event', e: 'treasuryUp' }, timeoutTicks: sec(12) },
     // "Medieval teaches the second mount" (A8).

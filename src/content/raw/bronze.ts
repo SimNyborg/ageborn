@@ -3,34 +3,13 @@
  * DESIGN as A5.x), A17.12 attack mapping. Table units: HP and damage whole, ms, lu, lu/s, gold, bp.
  * Data only. `strongVs`/`weakVs` are filled by the WP1 counter matrix (B4).
  *
- * NOT WIRED YET. `AgeId` has no 'bronze' until the WP0 contract request of A17.15 lands, so this file
- * types its tables with a local widening. When 'bronze' joins `AgeId`: type `bronze` as
- * `RawAgeTables`, `bronzePowers` as `PowerDef[]` (or move them into `powers.ts`), `bronzeScale` as
- * `RawAgeScale`, and add the age to `raw/index.ts`, `economy.ts` (`ageScale`, formats) and `ages.ts`.
+ * The age's P, base HP and threshold live in `economy.ts` (`ageScale`, A17.8).
  */
-import type { PowerDef, TurretDef, UnitDef } from '@/contracts/content';
-import type { AgeId } from '@/contracts/ids';
+import type { PowerDef } from '@/contracts/content';
 import { damageMods } from './economy';
-import type { RawAgeScale } from './types';
+import type { RawAgeTables } from './types';
 
-/** The age id this file adds (A17.8). */
-type PendingAge = 'bronze';
-type WithAge<T extends { age: AgeId }> = Omit<T, 'age'> & { age: AgeId | PendingAge };
-
-/** A17.8: P 1.16, base max HP 11,600, index 1 (between Stone and Medieval), 500 XP to Medieval. */
-export const bronzeScale: Omit<RawAgeScale, 'id'> & { id: PendingAge } = {
-  id: 'bronze',
-  index: 1,
-  pBp: 11600,
-  baseHp: 11600,
-  xpToNext: 500,
-};
-
-export const bronze: {
-  age: PendingAge;
-  units: readonly WithAge<UnitDef>[];
-  turrets: readonly WithAge<TurretDef>[];
-} = {
+export const bronze: RawAgeTables = {
   age: 'bronze',
   units: [
     {
@@ -194,7 +173,7 @@ export const bronze: {
 };
 
 /** A17.11 Bronze Age Powers (values at P 1.16 and L1 loadouts; every power has a 1.0 s telegraph). */
-export const bronzePowers: readonly WithAge<PowerDef>[] = [
+export const bronzePowers: readonly PowerDef[] = [
   {
     // A wave sweeps a 450 lu zone over 2.0 s, dealing 130 once to each ground enemy it touches (±20 lu).
     // Per unit 130: 70% / 21% (Hoplite / War Chariot)

@@ -22,6 +22,7 @@ const TESTID: Partial<Record<PromptTarget, string>> = {
   power: 'hud-power',
   stance: 'hud-stance',
   lastStand: 'hud-laststand',
+  minimap: 'hud-minimap-strip',
 };
 
 /** The ring around a mount on the canvas (CSS px). */
@@ -150,6 +151,15 @@ export function TutorialBubble(p: {
     const h = bubble.current?.offsetHeight ?? 0;
     if (w !== size.w || h !== size.h) setSize({ w, h });
   });
+
+  // A17.6: a beat about a mount first brings your base into view and holds the auto camera until it ends.
+  const onBase = prompt?.target === 'mount0' || prompt?.target === 'mount1' || prompt?.target === 'mountBuy';
+  useEffect(() => {
+    if (!onBase || !view) return undefined;
+    view.showBase();
+    view.cameraHold('tutorial', true);
+    return () => view.cameraHold('tutorial', false);
+  }, [onBase, view, prompt?.id]);
 
   // Follow the target (HUD layout and the camera move); cheap, and only while a prompt shows.
   useEffect(() => {

@@ -38,6 +38,8 @@ BRASS_LT = "#B8A776"
 WOOD = "#7A5F48"
 SACK = "#BBAA88"
 WINDOW = "#FFD9A0"
+FURNACE = "#FFB866"            # furnace glow in the roof lantern (bases are exempt from the colour rule)
+DIAL = "#FBF5E2"
 CRACK = "#4A3A36"
 GOLD = "#D4A437"
 
@@ -81,6 +83,10 @@ def build(rig, M):
     g = Geo()
     cyl(g, (cx, cy, CHIM_TOP - 0.5), (cx, cy, CHIM_TOP + 0.4), 9.6, bevel=0.2, segs=20)
     rig.part("chimtop", g, COAL, outline=0, highlight=False)
+    g = Geo()   # a soft smoke plume leaving the chimney (the code adds rising puffs on top)
+    for dx, dz, r in ((0, 6, 8.0), (-7, 14, 7.0), (-16, 20, 6.4), (-26, 24, 5.4), (-36, 26, 4.4)):
+        g.sphere((cx + dx, cy - 2, CHIM_TOP + dz), r, cuts=4)
+    rig.part("chimtop", g, "#CFCAC0", finish="dust", outline=0.8)
     g = Geo()
     for z in (hall_h + 60, hall_h + 120):
         cyl(g, (cx, cy, z - 1.4), (cx, cy, z + 1.4), 15.0 - (z - hall_h + 10) / (CHIM_TOP - hall_h) * 3.4 + 0.6,
@@ -106,6 +112,21 @@ def build(rig, M):
     g = Geo()
     box(g, (hx - 6, hy + 8, hall_h + 6.0), (hl - 8, hd - 10, 6.0), p=5, taper=(1.0, 0.7))
     rig.part("body", g, SLATE)
+    # a roof lantern along the ridge: a raised slate-capped monitor whose windows glow with the
+    # furnace light inside (it breaks the flat roofline)
+    lx0, lx1 = hx - hl + 16, hx + hl - 44
+    g = Geo()
+    box(g, ((lx0 + lx1) / 2, hy + 4, hall_h + 17.0), ((lx1 - lx0) / 2, 10.0, 7.0), p=6)
+    rig.part("body", g, BRICK_LT)
+    g = Geo()
+    box(g, ((lx0 + lx1) / 2, hy + 4, hall_h + 26.0), ((lx1 - lx0) / 2 + 3, 13.0, 3.0), p=5, taper=(1.0, 0.8))
+    rig.part("body", g, SLATE_LT)
+    g, gf = Geo(), Geo()
+    for x in range(int(lx0 + 6), int(lx1 - 3), 11):
+        box(g, (x, hy - 6.4, hall_h + 17.0), (3.6, 0.6, 4.6), p=4, cuts=2)
+        box(gf, (x, hy - 6.2, hall_h + 17.0), (4.6, 0.5, 5.6), p=4, cuts=2)
+    rig.part("body", gf, IRON_DK, outline=0, highlight=False)
+    rig.part("body", g, glow=FURNACE, outline=0)
     g = Geo()   # the team sign band under the cornice
     g.slab([(hx - hl + 6, hall_h - 7), (hx + hl - 26, hall_h - 7), (hx + hl - 26, hall_h - 21),
             (hx - hl + 6, hall_h - 21)], hy - hd - 1.0, 1.4)
@@ -116,6 +137,9 @@ def build(rig, M):
     rig.part("body", g, CREAM, outline=0.3)
     for i, x in enumerate((-150.0, -126.0, -102.0, -78.0)):
         window(rig, "body", x, hy - hd - 0.4, 60.0, 14, 34, glow_hex=WINDOW, frame=STONE_DK)
+        g = Geo()   # the furnace glare in the lower panes
+        box(g, (x, hy - hd - 1.3, 49.0), (6.4, 0.3, 5.6), p=4, cuts=2)
+        rig.part("body", g, glow=FURNACE, outline=0)
         g = Geo()   # glazing bars
         box(g, (x, hy - hd - 1.4, 60.0), (0.5, 0.4, 16.0), p=4, cuts=2)
         box(g, (x, hy - hd - 1.4, 58.0), (6.6, 0.4, 0.5), p=4, cuts=2)
@@ -154,25 +178,30 @@ def build(rig, M):
             box(g, (tx + sx * (th - 1.5), ty - th - 0.4, z), (2.6, 1.2, 3.4 if k % 2 else 2.6), p=5, cuts=2)
     rig.part("body", g, STONE, outline=0.4)
     # the clock face
-    cz = tower_h - 20.0 - 16.0
+    # the clock face: about twice the area it was, a bright cream dial in a brass rim with a
+    # stone surround that overhangs the tower a little, bold hour marks and hands
+    cz = tower_h - 20.0 - 20.0
     g = Geo()
-    cyl(g, (tx, ty - th - 0.5, cz), (tx, ty - th - 2.5, cz), 12.5, bevel=0.5, segs=32)
-    rig.part("body", g, BRASS, finish="metal")
+    box(g, (tx, ty - th - 0.6, cz), (th + 1.6, 1.4, th + 2.2), p=6)
+    rig.part("body", g, STONE, outline=0.4)
     g = Geo()
-    cyl(g, (tx, ty - th - 2.2, cz), (tx, ty - th - 3.4, cz), 10.6, bevel=0.2, segs=32)
-    rig.part("body", g, CREAM, finish="gloss", outline=0)
+    cyl(g, (tx, ty - th - 1.5, cz), (tx, ty - th - 3.5, cz), 17.6, bevel=0.6, segs=40)
+    rig.part("body", g, BRASS_LT, finish="metal")
+    g = Geo()
+    cyl(g, (tx, ty - th - 3.2, cz), (tx, ty - th - 4.4, cz), 15.4, bevel=0.2, segs=40)
+    rig.part("body", g, DIAL, finish="gloss", outline=0)
     g = Geo()
     for k in range(12):
         a = 2 * math.pi * k / 12
-        L = 1.8 if k % 3 else 2.8
-        box(g, (tx + 8.4 * math.cos(a), ty - th - 3.6, cz + 8.4 * math.sin(a)), (0.6 if k % 3 else 0.9, 0.3, L / 2),
+        L = 2.8 if k % 3 else 4.4
+        box(g, (tx + 12.2 * math.cos(a), ty - th - 4.6, cz + 12.2 * math.sin(a)), (0.9 if k % 3 else 1.4, 0.3, L / 2),
             p=4, cuts=2, rot=(0, -math.degrees(a) + 90, 0))
     rig.part("body", g, COAL, outline=0, highlight=False)
-    rig.joint("hands", "body", (tx, ty - th - 4.0, cz))
+    rig.joint("hands", "body", (tx, ty - th - 5.0, cz))
     g = Geo()
-    g.capsule((tx, ty - th - 4.0, cz), (tx + 4.6, ty - th - 4.0, cz + 3.2), 0.8)
-    g.capsule((tx, ty - th - 4.0, cz), (tx - 1.4, ty - th - 4.0, cz + 7.8), 0.6)
-    g.sphere((tx, ty - th - 4.2, cz), 1.2, cuts=2)
+    g.capsule((tx, ty - th - 5.0, cz), (tx + 7.0, ty - th - 5.0, cz + 4.6), 1.2)
+    g.capsule((tx, ty - th - 5.0, cz), (tx - 2.0, ty - th - 5.0, cz + 11.4), 0.9)
+    g.sphere((tx, ty - th - 5.2, cz), 1.8, cuts=2)
     rig.part("hands", g, COAL, outline=0)
     window(rig, "body", tx, ty - th - 0.4, 120.0, 8, 18, glow_hex=WINDOW, frame=STONE_DK)
     window(rig, "body", tx, ty - th - 0.4, 34.0, 8, 18, glow_hex=WINDOW, frame=STONE_DK)
@@ -357,7 +386,8 @@ MODULE = base_module(
     build=build, crumble=crumble, mount_depth=DEPTHS,
     flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
     lights=[((-150.0, -31.0, 60.0), 3, 16), ((-126.0, -31.0, 60.0), 3, 16), ((-78.0, -31.0, 60.0), 3, 16),
-            ((-60.0, -40.0, 46.0), 3, 12), ((-20.0, -40.0, 46.0), 3, 12), ((-6.0, -36.0, 120.0), 2, 12)],
+            ((-60.0, -40.0, 46.0), 3, 12), ((-20.0, -40.0, 46.0), 3, 12), ((-6.0, -36.0, 120.0), 2, 12),
+            ((-140.0, 5.0, 124.0), 2, 14), ((-110.0, 5.0, 124.0), 2, 14), ((-80.0, 5.0, 124.0), 2, 14)],
     smoke=[(_smoke_top(), 0), ((-100.0, -30.0, 90.0), 2), ((-6.0, -36.0, 150.0), 3)],
     horn=(-100, 360), yaw=BASE_YAW,
 )

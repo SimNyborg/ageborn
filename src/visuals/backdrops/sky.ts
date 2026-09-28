@@ -31,6 +31,10 @@ const SUN: Record<AgeId, { x: number; y: number; r: number; color: number }> = {
   gunpowder: { x: 1060, y: -470, r: 44, color: 0xfff3dc },
   modern: { x: 420, y: -600, r: 38, color: 0xf2eee4 },
   future: { x: 860, y: -560, r: 30, color: 0xe8f7f2 },
+  // A17.12
+  bronze: { x: 1000, y: -500, r: 48, color: 0xfff0d0 },
+  industrial: { x: 380, y: -520, r: 40, color: 0xf4e8d0 },
+  cosmic: { x: 900, y: -600, r: 26, color: 0xf2f0ff },
 };
 
 export function applyFrame(ctx: Ctx2D, f: LayerFrame): void {
@@ -154,4 +158,7 @@ export const CLOUD_TINT: Record<AgeId, number> = {
   gunpowder: 0xf1eee6,
   modern: 0xd9d8d2,
   future: 0x8f86aa,
+  bronze: 0xf6efe2,
+  industrial: 0xc9c4ba,
+  cosmic: 0x7a6aa0,
 };

@@ -1,7 +1,7 @@
 # WP2 (A17 step 1, sim) → WP5: take the lane length from core
 
 **From:** the A17 step 1 sim and content agent. **To:** WP5 (render), for the A17 step 1 camera work.
-**Status:** open. **Priority:** high (the battle view draws the 2,000 lu lane on a 1,200 lu world until done).
+**Status:** done (A17 step 1 camera work, see decisions.md). **Priority:** high (the battle view draws the 2,000 lu lane on a 1,200 lu world until done).
 
 ## What changed
 

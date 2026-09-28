@@ -89,7 +89,8 @@ describe('Adaptive hints (DESIGN A8)', () => {
 
   it('"Old turret? Tap it to modernise": an older-age turret with Modernise affordable for 15 s', () => {
     const h = new Harness();
-    h.state.sides[0].ageIndex = 1;
+    // Medieval: position 2 in Short War since A17.8 (Stone, Bronze, Medieval, Gunpowder)
+    h.state.sides[0].ageIndex = 2;
     h.state.sides[0].turrets[0] = { card: 'rock_tosser', age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
     h.gold(50);
     expect(run(new AdaptiveHints({ disabled: ['evolveFirst'] }), h, ADAPTIVE.outdatedTicks + 1)).toEqual([]);
@@ -99,7 +100,7 @@ describe('Adaptive hints (DESIGN A8)', () => {
 
   it('the modernise hint points at the old turret\'s mount', () => {
     const h = new Harness();
-    h.state.sides[0].ageIndex = 1;
+    h.state.sides[0].ageIndex = 2;
     h.state.sides[0].turrets[1] = { card: 'rock_tosser', age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
     h.gold(100);
     const hints = new AdaptiveHints({ disabled: ['evolveFirst'] });
@@ -114,7 +115,7 @@ describe('Adaptive hints (DESIGN A8)', () => {
 
   it('the modernise hint stays quiet while Evolve is ready (evolving first is the better move)', () => {
     const h = new Harness();
-    h.state.sides[0].ageIndex = 1;
+    h.state.sides[0].ageIndex = 2;
     h.state.sides[0].xp = 5_000_000;
     h.state.sides[0].turrets[0] = { card: 'rock_tosser', age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
     h.gold(100);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BACKUP_REMINDER_MS } from '../defaults';
 import { backupReminderDue, isFirstWin, markExported, persist } from '../durability';
-import { v1Fixture } from './helpers';
+import { currentFixture } from './helpers';
 
 describe('persist() (DESIGN B8: navigator.storage.persist() on the first win)', () => {
   it('reports each browser answer and never throws', async () => {
@@ -14,11 +14,11 @@ describe('persist() (DESIGN B8: navigator.storage.persist() on the first win)', 
   });
 
   it('asks only when the profile gets its first win', () => {
-    const noWins = v1Fixture();
+    const noWins = currentFixture();
     noWins.stats.wins = 0;
-    const oneWin = v1Fixture();
+    const oneWin = currentFixture();
     oneWin.stats.wins = 1;
-    const twoWins = v1Fixture();
+    const twoWins = currentFixture();
     twoWins.stats.wins = 2;
     expect(isFirstWin(noWins, oneWin)).toBe(true);
     expect(isFirstWin(null, oneWin)).toBe(true);
@@ -29,22 +29,22 @@ describe('persist() (DESIGN B8: navigator.storage.persist() on the first win)', 
 
 describe('backup reminder (DESIGN B8: last export more than 5 days old)', () => {
   it('counts from the last export', () => {
-    const doc = { ...v1Fixture(), lastExportAt: 1_000 };
+    const doc = { ...currentFixture(), lastExportAt: 1_000 };
     expect(backupReminderDue(doc, 1_000 + BACKUP_REMINDER_MS)).toBe(false);
     expect(backupReminderDue(doc, 1_000 + BACKUP_REMINDER_MS + 1)).toBe(true);
   });
 
   it('counts from the profile creation before any export', () => {
-    const doc = { ...v1Fixture(), createdAt: 5_000, lastExportAt: null };
+    const doc = { ...currentFixture(), createdAt: 5_000, lastExportAt: null };
     expect(backupReminderDue(doc, 5_000 + BACKUP_REMINDER_MS)).toBe(false);
     expect(backupReminderDue(doc, 5_000 + BACKUP_REMINDER_MS + 1)).toBe(true);
   });
 
   it('markExported stamps the export time without touching the input', () => {
-    const doc = v1Fixture();
+    const doc = currentFixture();
     const out = markExported(doc, 42);
     expect(out.lastExportAt).toBe(42);
-    expect(doc.lastExportAt).toBe(v1Fixture().lastExportAt);
+    expect(doc.lastExportAt).toBe(currentFixture().lastExportAt);
     expect(backupReminderDue(out, 42 + BACKUP_REMINDER_MS)).toBe(false);
   });
 });

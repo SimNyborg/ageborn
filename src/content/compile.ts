@@ -31,7 +31,7 @@ import type {
 import type { AgeId, CardId } from '@/contracts/ids';
 import { BP, CENTI, MILLI, TICK_MS, msToTicks, mulDiv, roundDiv } from '@/core/fixed';
 import { hashCanonical } from '@/core/hash';
-import { AGE_ORDER, buildAges } from './ages';
+import { AGE_ORDER, agesIn, buildAges } from './ages';
 import { strongWeak } from './counters/matrix';
 import { FORMAT_ORDER } from './formats';
 import type { RawBattleRules, RawContent } from './raw/types';
@@ -60,10 +60,11 @@ export function compileContent(input: CompileInput): Content {
   const economy = cloneData(raw.economy);
   const battle = cloneData(raw.battle);
   const ages = buildAges(raw.ageScale);
+  const ageIds = agesIn(raw.ageScale);
 
   const allUnits: UnitDef[] = raw.ages.flatMap((t) => t.units.map((u) => deriveUnit(cloneData(u), economy, battle)));
   const collectable = allUnits.filter((u) => !u.hidden);
-  const ageIndex = Object.fromEntries(AGE_ORDER.map((a) => [a, ages[a].index])) as Record<AgeId, number>;
+  const ageIndex = Object.fromEntries(ageIds.map((a) => [a, ages[a].index])) as Record<AgeId, number>;
   for (const u of collectable) {
     const sw = strongWeak(u.id, collectable, ageIndex, input.counters.matrixBp);
     u.strongVs = sw.strongVs;
@@ -84,7 +85,7 @@ export function compileContent(input: CompileInput): Content {
   const counters = countersFromFile(input.counters, collectable);
   const int = compileIntegers(allUnits, turretList, ages, economy, battle);
   const order: ContentOrder = {
-    ages: [...AGE_ORDER],
+    ages: ageIds,
     formats: [...FORMAT_ORDER],
     units: collectable.map((u) => u.id),
     hiddenUnits: allUnits.filter((u) => u.hidden).map((u) => u.id),
@@ -247,7 +248,8 @@ export function compileIntegers(
     out.turrets[t.id] = turret;
   }
   for (const id of AGE_ORDER) {
-    const a = ages[id];
+    const a = ages[id] as AgeDef | undefined;
+    if (!a) continue;
     out.baseHp[id] = a.baseHp * CENTI;
     out.xpToNext[id] = a.xpToNext === null ? null : a.xpToNext * MILLI;
   }

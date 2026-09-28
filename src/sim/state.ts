@@ -111,6 +111,9 @@ export interface ProjectileRt extends ProjectileState {
   startTick: number;
   /** Mount index for turret projectiles (−1 otherwise). */
   mount: number;
+  /** First-hit bonus of a ranged unit attack, applied to the homing primary (A17.15; BP and 0 otherwise). */
+  bonusBp: number;
+  bonusKb: number;
 }
 
 export interface CastRt extends PowerCastState {

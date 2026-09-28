@@ -20,7 +20,7 @@ import { createSim } from '@/sim';
 import { botProfile, createBot, runHeadless, BALANCED_BRAIN_ID, type HeadlessResult } from '@/ai';
 
 export const content: CompiledContent = realContent;
-export const AGES: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+export const AGES: readonly AgeId[] = realContent.order.ages;
 
 /** The A2.14 baseline plan of an age: the 3 Commons, the AA Rare, the Support Rare, both Common turrets, the default power. */
 export function baselineLoadout(c: CompiledContent, age: AgeId): Loadout {

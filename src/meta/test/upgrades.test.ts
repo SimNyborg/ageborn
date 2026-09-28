@@ -76,14 +76,14 @@ describe('upgrades (A6.6)', () => {
 });
 
 describe('Codex Level (A6.7)', () => {
-  it('15 points per level; the full collection maxed gives about 81 levels', () => {
+  it('15 points per level; the full collection maxed gives about 130 levels (A17.13)', () => {
     expect(codexLevelFor(0, C)).toBe(1);
     expect(codexLevelFor(14, C)).toBe(1);
     expect(codexLevelFor(15, C)).toBe(2);
     let total = 0;
     for (const id of [...C.order.units, ...C.order.turrets]) total += 9 * C.rarities.cards[(C.units[id] ?? C.turrets[id])!.rarity].codexPoints;
-    expect(total).toBe(1215);
-    expect(codexLevelFor(total, C) - 1).toBe(81);
+    expect(total).toBe(1944);
+    expect(codexLevelFor(total, C) - 1).toBe(129);
   });
 
   it('level rewards: 100 Amber each, a Silver Codex Capsule at 5, a Wardrobe Crate at 10, frames, titles', () => {

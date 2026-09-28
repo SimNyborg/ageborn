@@ -106,6 +106,8 @@ export function newPlayerSave(content: Content): SaveDoc {
   collection['bonker'] = entry(2, 1);
   collection['pebbler'] = entry(1, 2);
   collection['spear_hunter'] = entry(1, 0);
+  // A17.13: onboarding capsule 1 also brings the Phalangite
+  collection['phalangite'] = entry(1, 0);
   collection['pikeman'] = entry(1, 0, 'none', true);
   collection['grenadier'] = entry(1, 0, 'none', true);
   const powersOwned = content.order.ages.map((a) => defaultPower(content, a));
@@ -182,6 +184,16 @@ export function midGameSave(content: Content): SaveDoc {
     photon_knight: [3, 3],
     pulse_trooper: [4, 2],
     walker_mech: [3, 0],
+    // A17 ages (save v2 added their starter Commons, A17.13)
+    hoplite: [5, 6],
+    javelineer: [5, 4],
+    war_chariot: [4, 2],
+    riveter: [4, 3],
+    carbineer: [4, 5],
+    steam_golem: [3, 1],
+    star_legionnaire: [2, 1],
+    ion_ranger: [2, 2],
+    hover_tank: [2, 0],
     // rares
     spear_hunter: [5, 6],
     drum_shaman: [4, 3],
@@ -192,6 +204,10 @@ export function midGameSave(content: Content): SaveDoc {
     bazooka_trooper: [3, 2],
     rail_gunner: [2, 1],
     radio_operator: [2, 0],
+    phalangite: [4, 3],
+    standard_bearer: [2, 0],
+    harpoon_gunner: [2, 1],
+    graviton_halberdier: [1, 0],
     // epics
     sabertooth: [3, 2, 'bronze'],
     battering_ram: [2, 1],
@@ -214,6 +230,12 @@ export function midGameSave(content: Content): SaveDoc {
     pulse_laser: [2, 1],
     arc_coil: [2, 0],
     grumpy_toad: [2, 1],
+    archer_tower: [4, 2],
+    sun_mirror: [3, 1],
+    gatling_gun: [3, 2],
+    mortar_pit: [3, 1],
+    ion_turret: [2, 0],
+    starburst_gun: [1, 1],
   };
   for (const id of Object.keys(levels)) {
     if (!content.units[id] && !content.turrets[id]) continue;

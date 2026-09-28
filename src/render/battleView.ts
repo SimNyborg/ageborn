@@ -2,7 +2,10 @@
  * The battle view (DESIGN B6, A2.1, A11, A12): renders a running sim with an injected `ArtProvider`
  * and `AudioService`.
  *
- * - Layers, interpolation between ticks, camera (fit plus mobile pinch-follow) and depth rows.
+ * - Layers, interpolation between ticks, the scrolling camera (A17.4: drag, swipe, wheel, keys, edge
+ *   scroll, auto-follow of the fronts with priority moments) and depth rows.
+ * - The minimap and off-screen badge snapshot for the HUD (A17.5), culling outside the view and the
+ *   backdrop's parallax (A17.7).
  * - The event mapper turns each tick's `SimEvent`s into clips, feel (hitstop with the global cap,
  *   shake, flash), particles, numbers, sounds and music.
  * - Health bars with ghost segments, power telegraphs and drag targeting, mount markers and taps.
@@ -35,7 +38,7 @@ import type {
 } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { ColorMatrixFilter, Graphics, type Container } from 'pixi.js';
-import { Camera } from './camera';
+import { CAMERA, Camera, type CameraHold } from './camera';
 import { depthRows, depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
 import { FeelDirector } from './feel/director';
@@ -44,15 +47,27 @@ import { ParticlePool, type ParticleHandle } from './feel/particlePool';
 import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { ageOrder, canEvolve } from './hudModel';
-import { BattleInput } from './input';
+import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
-import { LANE_LU, MILLI_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
+import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
 import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, textLabelFactory } from './mounts';
 import { ZoneOverlay, clampPowerP, powerZoneLu } from './powerTargeting';
 import { AutoPresetMonitor, PRESETS, particleCap, presetDpr, type GraphicsPreset } from './presets';
-import { SEAM_START_LU, frontLines, frontMidpoint, stepSeam } from './seam';
+import { SEAM_START_LU, cameraFronts, followFocus, frontLines, frontMidpoint, framingCenter, stepSeam } from './seam';
 import { teamColor } from './teamColors';
-import { DEFAULT_VIEW_SETTINGS, type Anchor, type ViewAction, type ViewEvent, type ViewEventListener, type ViewSettings } from './types';
+import {
+  DEFAULT_VIEW_SETTINGS,
+  type Anchor,
+  type CameraCommand,
+  type EdgeBadge,
+  type MinimapSnapshot,
+  type MinimapUnit,
+  type MinimapZone,
+  type ViewAction,
+  type ViewEvent,
+  type ViewEventListener,
+  type ViewSettings,
+} from './types';
 
 export interface BattleViewOptions {
   /** The running sim (or anything with read-only state and config, such as a replay). */
@@ -147,6 +162,33 @@ const AIR_TAGS = 'air';
 /** Health bars in a crowd: above this many units only the front ones and recently hit ones show. */
 const BAR_CROWD_UNITS = 10;
 const BAR_FRONT_UNITS = 3;
+/** Display objects further than this outside the view are not drawn (A17.7 culling). */
+const CULL_LU = 150;
+/** At most this many minimap dots (the B16 on-screen cap). */
+const MINIMAP_MAX_UNITS = 80;
+/** Turret cover on the minimap: the turret range cap (A17.3). */
+const TURRET_COVER_LU = 480;
+/** Priority moments (A17.4): your power zone at most 3.5 s; your Last Stand pans to your gate 1.5 s. */
+const POWER_MOMENT_MAX_MS = 3500;
+const LAST_STAND_MOMENT_MS = 1500;
+/** Off-screen badges (A17.5). */
+const BADGE_BASE_HIT_MS = 2000;
+const BADGE_BASE_LINGER_MS = 3000;
+const BADGE_LEGENDARY_MS = 4000;
+const ALERT_BASE_GAP_MS = 10_000;
+const BADGES_PER_EDGE = 3;
+
+/** A power zone the view tracks for the camera, the minimap and the badges (game ms). */
+interface ZoneTrack {
+  id: string;
+  side: Side;
+  x: number;
+  width: number;
+  telegraphMs: number;
+  totalMs: number;
+  ageMs: number;
+  power: CardId;
+}
 
 /** Legendary aura radius (lu): about half the figure's height, from its head anchor. */
 function auraRadius(view: UnitView): number {
@@ -209,6 +251,18 @@ export class BattleView {
   private followers: Follower[] = [];
   /** Your Evolve was available after the last step (the chime plays on the rising edge, A13). */
   private evolveReady: boolean;
+  /** Power zones in flight (telegraph plus effect), for follow moments, the minimap and badges. */
+  private zoneTracks: ZoneTrack[] = [];
+  /** A priority moment the camera frames while following (A17.4), in game ms left. */
+  private moment: { x: number; leftMs: number } | null = null;
+  /** Real-time clock for badge and minimap timings (ms). */
+  private nowMs = 0;
+  private baseHitAt: [number | null, number | null] = [null, null];
+  private evolveFlashAt: [number | null, number | null] = [null, null];
+  private lastAlertAt = -Infinity;
+  private legendaryBadges: { id: string; x: number; unitId: number; side: Side; card: CardId; ageMs: number }[] = [];
+  /** Your power drag: the pointer (client px) and the previewed p, kept current while edge-scrolling. */
+  private powerDrag: { clientX: number; clientY: number; p: number | null } | null = null;
 
   constructor(o: BattleViewOptions) {
     this.sim = o.sim;
@@ -223,7 +277,7 @@ export class BattleView {
     this.ages = ageOrder(this.config);
     this.layers = createLayers();
     this.root = this.layers.root;
-    this.camera = new Camera(this.feel.tuning.maxZoom, this.feel.tuning.cameraFollowK);
+    this.camera = new Camera(this.feel.tuning.maxZoom);
     this.director = new FeelDirector(this.feel, o.audio, this.config.seed);
     this.layers.flash.addChild(this.director.flash.root);
     this.mapper = new EventMapper({ content: this.config.content, feel: this.feel, mySide: this.mySide, rng: this.rng });
@@ -243,6 +297,7 @@ export class BattleView {
 
     this.applySettings(this.settings);
     this.resize(1280, 720);
+    this.camera.setHome(this.mySide);
     // A view created mid-match (replay seek) picks up what is already on the field.
     for (const u of st.units) this.ensureUnit(u);
     this.syncTurrets(0);
@@ -270,7 +325,10 @@ export class BattleView {
 
   /** Screen size in CSS px. */
   resize(width: number, height: number): void {
+    const wasHome = !this.started && this.camera.following;
     this.camera.resize(width, height);
+    // Before the battle starts the opening view keeps your base at the screen edge.
+    if (wasHome) this.camera.setHome(this.mySide);
     this.director.flash.resize(width, height);
     for (const fx of this.screenFx) this.playScreenFx(fx);
   }
@@ -301,7 +359,7 @@ export class BattleView {
     this.mapper.feel = feel;
     this.director.setFeel(feel);
     this.numbers.setTuning(feel.tuning);
-    this.camera.setTuning(feel.tuning.maxZoom, feel.tuning.cameraFollowK);
+    this.camera.setTuning(feel.tuning.maxZoom);
     this.applySettings(this.settings);
   }
 
@@ -321,7 +379,13 @@ export class BattleView {
   attachInput(el: HTMLElement): () => void {
     this.input?.destroy();
     this.inputEl = el;
-    this.input = new BattleInput(el, { camera: this.camera, tap: (p, shift) => this.tap(p, shift) });
+    this.input = new BattleInput(el, {
+      camera: this.camera,
+      tap: (p, shift) => this.tap(p, shift),
+      jump: (where) => this.cameraCommand({ t: where }),
+      cameraEnabled: () => this.cameraActive(),
+      edgeScrollEnabled: () => this.settings.edgeScroll && !this.camera.isHeld('popover') && !this.camera.isHeld('powerDrag'),
+    });
     return () => {
       this.input?.destroy();
       this.input = null;
@@ -353,6 +417,49 @@ export class BattleView {
     return this.mySide === 0 ? { mine: toP(f.left), theirs: toP(f.right) } : { mine: toP(f.right), theirs: toP(f.left) };
   }
 
+  /** True while the camera takes input: the battle has started (the title backdrop stays put). */
+  private cameraActive(): boolean {
+    return this.started && !this.camera.isLocked;
+  }
+
+  /**
+   * Camera commands from the HUD and keys (A17.4): the base button (H), the front button (J), a
+   * minimap tap (eases to x in 300 ms) and a minimap drag (scrubs 1:1). All but the front button go
+   * Manual.
+   */
+  cameraCommand(c: CameraCommand): void {
+    if (!this.cameraActive()) return;
+    switch (c.t) {
+      case 'base':
+        this.camera.jumpHome();
+        return;
+      case 'front':
+        this.camera.jumpFront();
+        return;
+      case 'center':
+        this.camera.jumpTo(c.x, CAMERA.minimapMs);
+        return;
+      case 'scrub':
+        this.camera.scrubTo(c.x);
+        return;
+    }
+  }
+
+  /**
+   * Blocks the auto-follow from resuming (and edge scroll) while the HUD holds something open: a mount
+   * popover, a power drag, a minimap scrub, a tutorial beat pointing at your base (A17.4, A17.6).
+   */
+  cameraHold(key: CameraHold, on: boolean): void {
+    this.camera.hold(key, on);
+    if (key === 'powerDrag' && !on) this.powerDrag = null;
+  }
+
+  /** Brings your base into view for something that needs it (a tutorial beat, A17.6); stays Manual. */
+  showBase(): void {
+    if (!this.cameraActive()) return;
+    if (!this.camera.inView(baseCenterX(this.mySide), -60)) this.camera.jumpHome();
+  }
+
   /** The screen point (view-local CSS px) of one of your mounts, for placing the HUD popover. */
   mountScreenPoint(mount: number): Pt | null {
     const p = this.mountPoints(this.mySide)[mount];
@@ -376,6 +483,14 @@ export class BattleView {
    * point is not over the lane band. Use for power drag targeting.
    */
   laneP(clientX: number, clientY: number): number | null {
+    const p = this.lanePAt(clientX, clientY);
+    // A drag near the band's edge scrolls the camera (A17.6); remember the pointer for that.
+    this.powerDrag = { clientX, clientY, p };
+    this.camera.hold('powerDrag', true);
+    return p;
+  }
+
+  private lanePAt(clientX: number, clientY: number): number | null {
     const r = this.inputEl?.getBoundingClientRect();
     const sx = clientX - (r?.left ?? 0);
     const sy = clientY - (r?.top ?? 0);
@@ -385,13 +500,25 @@ export class BattleView {
     return clampPowerP(xToP(w.x, this.mySide), this.config.content.economy.powerZoneClamp);
   }
 
+  /** Own-side p for a world x (the minimap drop), clamped to the power band. */
+  powerPAtWorld(x: number): number {
+    return clampPowerP(xToP(x, this.mySide), this.config.content.economy.powerZoneClamp);
+  }
+
+  /** The p the drag preview shows right now (it moves while the camera edge-scrolls under the finger). */
+  previewedP(): number | null {
+    return this.powerDrag?.p ?? null;
+  }
+
   /** Shows the power zone at own-side progress `p` (lu), or hides it with null. */
   previewPower(p: number | null): void {
     const width = powerZoneLu(this.myPower());
     if (p === null || width === null) {
       this.zones.hidePreview();
+      if (this.powerDrag) this.powerDrag.p = null;
       return;
     }
+    if (this.powerDrag) this.powerDrag.p = p;
     this.zones.showPreview(pToX(p, this.mySide), width, teamColor(this.settings.teamPreset, this.mySide));
   }
 
@@ -399,6 +526,7 @@ export class BattleView {
   onEvents(events: readonly SimEvent[]): void {
     // Muted AI emotes (Settings) show no bubble and make no sound.
     const evs = this.settings.mutedEmotes ? events.filter((e) => !(e.e === 'emote' && e.side !== this.mySide)) : events;
+    for (const ev of evs) this.watchEvent(ev);
     if (evs.length > 0) {
       const actions = this.mapper.map(evs, (id) => this.lookup(id));
       for (const a of actions) this.exec(a);
@@ -439,13 +567,22 @@ export class BattleView {
     const mid = frontMidpoint(this.frontInputs());
     this.seam = stepSeam(this.seam, mid, gameDt, this.feel.tuning.seamMaxLuPerSec);
     this.backdrop.setSeam(this.seam);
-    this.backdrop.update(gameDt);
 
-    this.camera.follow(mid);
-    this.camera.update(realDt);
+    this.nowMs += realDt;
+    this.updateTracks(gameDt);
+    this.input?.tick();
+    this.updatePowerDragEdge();
+    this.camera.follow(this.followTarget());
+    this.camera.update(realDt, this.paused ? 1 : this.speed);
     const t = this.camera.transform();
     this.layers.world.position.set(t.x, t.y);
     this.layers.world.scale.set(t.scale);
+    this.viewL = -t.x / t.scale;
+    this.viewR = this.viewL + this.camera.layout.width / t.scale;
+    // The backdrop's layers scroll at their parallax factors (A17.7); it is told the visible range.
+    (this.backdrop as BackdropView & { setView?(left: number, width: number, above: number): void }).setView?.(this.viewL, this.viewR - this.viewL, t.y / t.scale);
+    this.backdrop.update(gameDt);
+    this.cull();
 
     this.zones.update(gameDt, t.scale);
     this.updateMarkers(realDt, t.scale);
@@ -460,8 +597,232 @@ export class BattleView {
     this.layers.shaker.rotation = s.rot;
   }
 
+  // ------------------------------------------------------------------------------------------
+  // Camera follow, moments, badges and the minimap (A17.4, A17.5)
+  // ------------------------------------------------------------------------------------------
+
+  /** The visible world range of the last frame (lu), for culling and badges. */
+  private viewL = WORLD_LEFT_LU;
+  private viewR = WORLD_RIGHT_LU;
+
+  /** Tracks the events that feed the camera moments, the badges and the minimap flashes. */
+  private watchEvent(ev: SimEvent): void {
+    switch (ev.e) {
+      case 'baseDamaged': {
+        if (ev.sourceId === null) return; // Siege decay is not an attack
+        this.baseHitAt[ev.side] = this.nowMs;
+        if (ev.side === this.mySide && this.started && !this.ended && !this.camera.inView(gateX(this.mySide), -20)) {
+          if (this.nowMs - this.lastAlertAt >= ALERT_BASE_GAP_MS) {
+            this.lastAlertAt = this.nowMs;
+            this.director.sound('alert_base', { priority: 4 });
+          }
+        }
+        return;
+      }
+      case 'unitSpawned': {
+        if (ev.side === this.mySide) return;
+        const def = this.config.content.units[ev.card];
+        if (def?.group !== 'legendary') return;
+        const x = ev.x / MILLI_LU;
+        if (this.camera.inView(x, -40)) return;
+        this.legendaryBadges.push({ id: `leg:${ev.id}`, x, unitId: ev.id, side: ev.side, card: ev.card, ageMs: 0 });
+        return;
+      }
+      case 'lastStandFire':
+        if (ev.side === this.mySide) this.moment = { x: gateX(this.mySide), leftMs: LAST_STAND_MOMENT_MS };
+        return;
+      default:
+        return;
+    }
+  }
+
+  /** A cast's telegraph: tracked for the minimap and badges; your casts (or theirs on your units) get a moment. */
+  private trackZone(a: Extract<ViewAction, { a: 'telegraph' }>): void {
+    const def = this.config.content.powers[a.power];
+    const e = def?.effect as { durationMs?: number } | undefined;
+    const effectMs = typeof e?.durationMs === 'number' ? e.durationMs : 1500;
+    const totalMs = a.ms + effectMs;
+    this.zoneTracks.push({ id: `pw:${a.side}:${a.castId}`, side: a.side, x: a.x, width: a.zone, telegraphMs: a.ms, totalMs, ageMs: 0, power: a.power });
+    const half = Math.max(40, a.zone / 2);
+    const hitsMine = a.side !== this.mySide && [...this.units.values()].some((u) => u.side === this.mySide && !u.dying && Math.abs(u.x - a.x) <= half);
+    if (a.side === this.mySide || hitsMine) this.moment = { x: a.x, leftMs: Math.min(POWER_MOMENT_MAX_MS, totalMs) };
+  }
+
+  private updateTracks(gameDt: number): void {
+    for (const z of this.zoneTracks) z.ageMs += gameDt;
+    this.zoneTracks = this.zoneTracks.filter((z) => z.ageMs < z.totalMs);
+    if (this.moment) {
+      this.moment.leftMs -= gameDt;
+      if (this.moment.leftMs <= 0) this.moment = null;
+    }
+    for (const b of this.legendaryBadges) {
+      b.ageMs += gameDt;
+      const u = this.units.get(b.unitId);
+      if (u && !u.dying) b.x = u.x;
+    }
+    this.legendaryBadges = this.legendaryBadges.filter((b) => {
+      const u = this.units.get(b.unitId);
+      return b.ageMs < BADGE_LEGENDARY_MS && !!u && !u.dying && !this.camera.inView(b.x, -40);
+    });
+  }
+
+  /** The follow target centre (A17.4): a priority moment, else the fronts' focus, framed. */
+  private followTarget(): number | null {
+    const V = this.camera.viewLu;
+    const focus = this.moment ? this.moment.x : followFocus(cameraFronts(this.frontInputs()), this.mySide, V);
+    return focus === null ? null : framingCenter(focus, this.mySide, V);
+  }
+
+  private dragEdgeOn = false;
+
+  /** A power drag within 48 px of the band's left or right edge scrolls the camera (A17.6). */
+  private updatePowerDragEdge(): void {
+    const d = this.powerDrag;
+    let speed = 0;
+    if (d && this.inputEl && this.cameraActive()) {
+      const r = this.inputEl.getBoundingClientRect();
+      const sx = d.clientX - r.left;
+      const sy = d.clientY - r.top;
+      const L = this.camera.layout;
+      if (sy >= L.bandY && sy <= L.bandY + L.bandH) speed = edgeSpeed(sx, L.width, CAMERA.dragEdgePx, 150, CAMERA.edgeMaxLuPerSec);
+    }
+    if (speed !== 0) {
+      this.camera.setEdge(speed);
+      this.dragEdgeOn = true;
+      if (d) {
+        d.p = this.lanePAt(d.clientX, d.clientY);
+        this.previewPower(d.p);
+      }
+    } else if (this.dragEdgeOn) {
+      this.camera.setEdge(0);
+      this.dragEdgeOn = false;
+    }
+  }
+
+  /** Hides display objects more than 150 lu outside the view; their state still updates (A17.7). */
+  private cull(): void {
+    const lo = this.viewL - CULL_LU;
+    const hi = this.viewR + CULL_LU;
+    for (const e of this.units.values()) {
+      const on = e.x >= lo && e.x <= hi;
+      e.view.root.visible = on;
+      if (e.aura) e.aura.root.visible = on;
+    }
+    for (const p of this.projectiles.values()) {
+      const x = p.view.root.x;
+      p.view.root.visible = x >= lo && x <= hi;
+    }
+  }
+
+  /** True when a world x is near enough the view to be worth emitting particles for (A17.7). */
+  private nearView(x: number): boolean {
+    return x >= this.viewL - CULL_LU && x <= this.viewR + CULL_LU;
+  }
+
+  /** The off-screen badges (A17.5), newest first, at most 3 per edge. */
+  private badges(): EdgeBadge[] {
+    const out: EdgeBadge[] = [];
+    const L = this.viewL;
+    const R = this.viewR;
+    const edgeOf = (x: number): 'left' | 'right' => (x < (L + R) / 2 ? 'left' : 'right');
+    const hit = this.baseHitAt[this.mySide];
+    const gate = gateX(this.mySide);
+    if (hit !== null && this.nowMs - hit <= BADGE_BASE_HIT_MS + BADGE_BASE_LINGER_MS && (gate < L - 20 || gate > R + 20) && !this.ended) {
+      out.push({ id: 'base', kind: 'base', edge: edgeOf(gate), x: baseCenterX(this.mySide), side: this.mySide, countdown: null, ageMs: this.nowMs - hit });
+    }
+    for (const z of this.zoneTracks) {
+      const half = z.width / 2;
+      if (z.x + half >= L && z.x - half <= R) continue;
+      out.push({
+        id: z.id,
+        kind: 'power',
+        edge: edgeOf(z.x),
+        x: z.x,
+        side: z.side,
+        card: z.power,
+        countdown: z.ageMs < z.telegraphMs ? 1 - z.ageMs / Math.max(1, z.telegraphMs) : null,
+        ageMs: z.ageMs,
+      });
+    }
+    for (const b of this.legendaryBadges) {
+      out.push({ id: b.id, kind: 'legendary', edge: edgeOf(b.x), x: b.x, side: b.side, card: b.card, countdown: null, ageMs: b.ageMs });
+    }
+    out.sort((a, b) => a.ageMs - b.ageMs);
+    const left = out.filter((b) => b.edge === 'left').slice(0, BADGES_PER_EDGE);
+    const right = out.filter((b) => b.edge === 'right').slice(0, BADGES_PER_EDGE);
+    return [...left, ...right];
+  }
+
+  /**
+   * What the HUD's minimap strip and off-screen badges draw (A17.5), from the view's interpolated
+   * positions. Cheap: at most 80 unit dots.
+   */
+  minimap(): MinimapSnapshot {
+    const st = this.sim.state;
+    const units: MinimapUnit[] = [];
+    for (const e of this.units.values()) {
+      if (e.dying) continue;
+      const g = e.def?.group;
+      units.push({ x: e.x, side: e.side, air: e.air, size: g === 'legendary' ? 2 : g === 'heavy' || g === 'epic' ? 1 : 0 });
+    }
+    // Over the cap: keep the Legendaries and the fronts (the dots that matter most).
+    if (units.length > MINIMAP_MAX_UNITS) {
+      units.sort((a, b) => b.size - a.size || (a.side === 0 ? b.x - a.x : a.x - b.x));
+      units.length = MINIMAP_MAX_UNITS;
+    }
+    const f = cameraFronts(this.frontInputs());
+    const base = (side: Side) => {
+      const s = st.sides[side];
+      const hit = this.baseHitAt[side];
+      const evo = this.evolveFlashAt[side];
+      return {
+        hpBp: s.baseMaxHp > 0 ? Math.max(0, Math.floor((s.baseHp * 10000) / s.baseMaxHp)) : 0,
+        age: this.ageOf(side),
+        hitAgoMs: hit === null ? null : this.nowMs - hit,
+        evolveAgoMs: evo === null ? null : this.nowMs - evo,
+      };
+    };
+    const zones: MinimapZone[] = this.zoneTracks.map((z) => ({ x: z.x, width: z.width, side: z.side, kind: z.ageMs < z.telegraphMs ? 'telegraph' : 'effect' }));
+    const preview = this.powerDrag?.p;
+    const width = powerZoneLu(this.myPower());
+    if (preview !== null && preview !== undefined && width !== null) zones.push({ x: pToX(preview, this.mySide), width, side: this.mySide, kind: 'preview' });
+    const L = this.camera.layout;
+    const r = this.camera.viewRange();
+    return {
+      worldLeft: WORLD_LEFT_LU,
+      worldRight: WORLD_RIGHT_LU,
+      lane: LANE_LU,
+      mySide: this.mySide,
+      view: { left: Math.max(WORLD_LEFT_LU, r.left), right: Math.min(WORLD_RIGHT_LU, r.right) },
+      following: this.camera.following,
+      autoCamera: this.settings.autoCamera,
+      units,
+      fronts: [f.left, f.right],
+      bases: [base(0), base(1)],
+      cover: [st.sides[0].turrets.some((t) => t !== null), st.sides[1].turrets.some((t) => t !== null)],
+      coverLu: TURRET_COVER_LU,
+      zones,
+      badges: this.started ? this.badges() : [],
+      band: { y: L.bandY, h: L.bandH },
+    };
+  }
+
   /** Counters for the dev pages. */
-  stats(): { units: number; projectiles: number; particles: number; particleCap: number; dropped: number; numbers: number; trauma: number; freezeUsedMs: number; preset: GraphicsPreset; seam: number; zoom: number } {
+  stats(): {
+    units: number;
+    projectiles: number;
+    particles: number;
+    particleCap: number;
+    dropped: number;
+    numbers: number;
+    trauma: number;
+    freezeUsedMs: number;
+    preset: GraphicsPreset;
+    seam: number;
+    zoom: number;
+    cameraX: number;
+    following: boolean;
+  } {
     return {
       units: this.units.size,
       projectiles: this.projectiles.size,
@@ -474,6 +835,8 @@ export class BattleView {
       preset: this.preset,
       seam: this.seam,
       zoom: this.camera.zoom,
+      cameraX: this.camera.centerX,
+      following: this.camera.following,
     };
   }
 
@@ -507,6 +870,8 @@ export class BattleView {
 
   private applySettings(s: ViewSettings): void {
     this.director.applySettings({ hitstop: s.hitstop, reduceMotion: s.reduceMotion, shake: s.shake });
+    this.camera.autoCamera = s.autoCamera;
+    this.camera.reduceMotion = s.reduceMotion;
     this.numbers.mode = s.damageNumbers;
     const preset = this.autoPreset.preset;
     this.particles.cap = particleCap(preset, this.isMobile, this.feel.particleCaps);
@@ -633,6 +998,8 @@ export class BattleView {
         return;
       case 'fx': {
         const at = this.anchor(a.at);
+        // Off-screen particles are not emitted (A17.7); zones and strikes still show when they matter.
+        if (!this.nearView(at.x) && a.at.k !== 'base' && a.opts?.['durationMs'] === undefined) return;
         const handles: ParticleHandle[] = [];
         this.particles.emit(a.effectId, a.count, a.priority, at, {
           ...(a.spreadLu !== undefined ? { spreadLu: a.spreadLu } : {}),
@@ -644,7 +1011,7 @@ export class BattleView {
       }
       case 'fxUnits':
         for (const e of this.units.values()) {
-          if (e.side !== a.side || e.dying) continue;
+          if (e.side !== a.side || e.dying || !this.nearView(e.x)) continue;
           const at = this.anchor({ k: 'unit', id: e.id, part: 'hit' });
           const handles: ParticleHandle[] = [];
           this.particles.emit(a.effectId, 1, a.priority, at, { ...(a.opts ? { opts: a.opts } : {}), out: handles });
@@ -689,9 +1056,20 @@ export class BattleView {
         this.director.startSlowMo(a.scale, a.ms);
         return;
       case 'camera': {
-        // Reduce motion: no camera moves.
-        if (this.settings.reduceMotion) return;
         const at = this.anchor(a.at);
+        if (a.outMs <= 0) {
+          // A base falls (A17.4): always pan (500 ms) to it, then push in and stay.
+          this.camera.lockOn(at.x);
+          if (!this.settings.reduceMotion) this.camera.pushTo({ x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
+          return;
+        }
+        // Your evolve pushes in only when your base is in view; otherwise the banner and a minimap base
+        // flash replace it (A17.4). Reduce motion: no pushes.
+        if (a.at.k === 'base' && !this.camera.inView(at.x, -40)) {
+          this.evolveFlashAt[a.at.side] = this.nowMs;
+          return;
+        }
+        if (this.settings.reduceMotion) return;
         this.camera.pushTo({ x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
         return;
       }
@@ -749,6 +1127,7 @@ export class BattleView {
         this.backdrop.wipe(a.side, a.age, a.ms);
         return;
       case 'telegraph':
+        this.trackZone(a);
         this.zones.telegraph(a.x, a.zone, teamColor(this.settings.teamPreset, a.side), a.ms);
         // The art's decoration sizes itself by `zone` and loops for `durationMs` (WP4 recipe options).
         if (a.zone > 0) this.particles.emit('fx.telegraph_zone', 1, 3, { x: a.x, y: 0 }, { opts: { zone: a.zone, side: a.side, durationMs: a.ms } });
@@ -1005,7 +1384,7 @@ export class BattleView {
     const crowd = this.units.size > BAR_CROWD_UNITS;
     const draws: BarDraw[] = [];
     for (const e of this.units.values()) {
-      if (e.dying || !e.bar.shown) continue;
+      if (e.dying || !e.bar.shown || !e.view.root.visible) continue;
       const recent = e.bar.holdMs > 0 || e.bar.ghostBp > e.bar.hpBp || e.shieldBp > 0;
       if (crowd && !recent && !front.has(e.id)) continue;
       draws.push({
@@ -1036,6 +1415,7 @@ export class BattleView {
     g.clear();
     if (!g.visible) return;
     for (const e of this.units.values()) {
+      if (!e.view.root.visible) continue;
       const a = e.dying ? 0.2 * Math.min(1, e.dieLeftMs / 300) : 0.24;
       const w = e.sizeLu * 0.62 + 6;
       if (e.air) {

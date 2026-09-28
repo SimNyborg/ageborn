@@ -123,6 +123,18 @@ gradient (8%) and a light 3 lu ambient occlusion, so the shading reads as two cl
 plus one highlight. Hair and fur get a small brown-tinted highlight instead of a white
 streak. No lamps: 12 samples antialias the edges and no denoiser is needed.
 
+**Polished bronze.** The Bronze Age accents (helmets, greaves, shield rims, bosses, blades) use
+the `bronze` finish: polished bronze #B8863B with a big warm specular (a cream highlight over the
+upper half of a part) and a desaturated shadow band (it reflects the surroundings). That keeps
+the metal reading as polished bronze while the A11 colour rule (<= 10% saturated orange) holds;
+`bronze_rich` has a tighter highlight for units whose accents are a small share of the silhouette
+(the Bronze Colossus).
+
+**Custom death clips.** A unit may author its own die clip with more than 3 poses (a `sequence`
+and `durationsMs` of its own); `retime` then leaves it alone. The Bronze Colossus (burst), War
+Chariot and Scorpion (wrecks), Land Dreadnought (crew bails out), Mothership (crash) and Warp
+Stalker (blink-out, no dust poof: `fx: []`, `blinkOut: true`) do this.
+
 **Outlines.** Two kinds:
 
 1. *Outer outline (2D, after rendering).* `sheet.outline` widens the combined silhouette of

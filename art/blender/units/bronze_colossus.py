@@ -155,7 +155,7 @@ def _shield(rig):
     rig.part("shield", g, B.PLUM_DK, outline=0.8)
     g = Geo().lathe([(0, -1.0), (R, -1.0), (R + 0.5, 0.8), (R - 0.3, 2.2), (R - 2.8, 2.2), (0, 1.6)],
                     at(0.0), at(1.0), segs=32)
-    rig.part("shield", g, POL, finish=RICH, outline=0.8)
+    rig.part("shield", g, POL, finish=B.POLISH, outline=0.8)
     g = Geo().lathe([(0, 0.0), (R - 2.6, 0.0), (R - 3.0, 1.6), (R * 0.5, 3.4), (0, 4.2)], at(1.0), at(2.0), segs=32)
     rig.part("shield", g, team=True, outline=0.8)
     # lambda chevron, lying on the face (built in the face plane)

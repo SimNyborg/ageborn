@@ -1,11 +1,11 @@
 """Carbineer: Industrial Age ranged (docs/design-lane-ages.md A17.10). Bullet (proj.bullet), 250 lu,
 ~68 lu.
 
-Look (A17.12, Industrial palette): a frontier-style rifleman in a wide-brimmed coal slouch hat with
-a team band, a long team duster coat (lapels, brass buttons, a leather belt, coat tails that swing
-behind him on follow-through), iron-blue trousers tucked into tall boots, a dark moustache and a
+Look (A17.12, Industrial palette): a frontier-style rifleman in a very wide-brimmed coal slouch hat
+(the brim dips at the front and back) with a team band, a long team duster coat down to the shins
+(lapels, brass buttons, a leather belt, long coat tails that swing behind him on follow-through), iron-blue trousers tucked into tall boots, a dark moustache and a
 cartridge bandolier across the chest. He carries a short lever-action carbine (brass receiver,
-wooden stock, big lever loop) at port arms. The attack shoulders the carbine, aims (held, squint),
+wooden stock, big lever loop) diagonally across his chest at port arms. The attack shoulders the carbine, aims (held, squint),
 fires level with a flash and a puff, kicks up, then works the lever ("lever cock": the loop swings
 down and a brass casing flips out) and settles. The projectile spawns at the per-frame `muzzle`
 anchor on the fire frame.
@@ -32,7 +32,7 @@ LENGTH = 38.0
 def build(rig):
     I.skeleton(rig)
     I.legs(rig, trousers=I.DENIM, gaiter=I.LEATHER_DK)
-    I.long_coat(rig)
+    I.long_coat(rig, tail_len=21.0, long=True)
     # bandolier across the chest (leather with brass cartridge tips)
     g = Geo().capsule((10.4, -7.0, 36.0), (8.0, 8.0, 19.0), 1.7)
     rig.part("torso", g, I.LEATHER, outline=0.6)
@@ -46,7 +46,7 @@ def build(rig):
     I.moustache(rig, I.HAIR, curl=True)
     I.back_hair(rig, I.HAIR)
     I.ear(rig)
-    I.brim_hat(rig, c=(1.0, 0, 57.8))
+    I.slouch_hat(rig, c=(1.0, 0, 57.8))
 
     for s in ("r", "l"):
         I.arm_parts(rig, s, sleeve=None, team_sleeve=True, fist=4.3, cuff=I.COAL_LT)
@@ -69,7 +69,7 @@ def build(rig):
     rig.part("casing", g, I.BRASS_LT, finish="metal", outline=0.5)
 
 
-PORT = (6.0, 25.0, 34.0)
+PORT = (4.0, 27.0, 52.0)     # port arms: the carbine held diagonally across the chest
 
 
 def hold(gx, gz, deg):

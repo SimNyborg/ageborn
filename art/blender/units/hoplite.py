@@ -57,12 +57,12 @@ def build(rig):
 
     # spear in the far hand, modelled pointing up from the fist
     rig.joint("spear", "hand_l", HL)
-    tip = B.spear(rig, "spear", (HL[0], HL[1] - 0.4, HL[2]), fwd=FWD, back=BACK, r=1.15, head_len=10.0)
+    tip = B.spear(rig, "spear", (HL[0], HL[1] - 0.4, HL[2]), fwd=FWD, back=BACK, r=1.15, head_len=10.0, head=B.BRONZE_HI)
     rig.track("spearTip", "spear", tip)
 
     # the aspis on the near hand: a big round team shield
     sx, sy, sz = HR[0] + 1.0, HR[1] - 6.0, HR[2] + 3.0
-    B.aspis(rig, "hand_r", (sx, sy, sz), r=13.2, depth=2.6, rim=B.BRONZE, rim_w=1.4)
+    B.aspis(rig, "hand_r", (sx, sy, sz), r=13.2, depth=2.6, rim=B.BRONZE, rim_w=1.1)
     B.dust_puff(rig, "root", (22.0, -4.0, 2.0), size=0.8, name="dust")
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 

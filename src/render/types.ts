@@ -15,6 +15,10 @@ export interface ViewSettings {
   damageNumbers: 'off' | 'important' | 'all';
   teamPreset: TeamPreset;
   mutedEmotes: boolean;
+  /** A17.4 "Auto camera": follow the fight when you are not scrolling; Off never resumes by itself. */
+  autoCamera: boolean;
+  /** A17.4 edge scroll (desktop, fine pointer only). */
+  edgeScroll: boolean;
 }
 
 export const DEFAULT_VIEW_SETTINGS: ViewSettings = {
@@ -25,7 +29,78 @@ export const DEFAULT_VIEW_SETTINGS: ViewSettings = {
   damageNumbers: 'important',
   teamPreset: 'default',
   mutedEmotes: false,
+  autoCamera: true,
+  edgeScroll: true,
 };
+
+/** One unit dot on the minimap (A17.5): size 0 = Infantry, Ranged, Anti-armor, Support; 1 = Heavy, Epic; 2 = Legendary. */
+export interface MinimapUnit {
+  x: number;
+  side: Side;
+  air: boolean;
+  size: 0 | 1 | 2;
+}
+
+/** A power zone on the minimap: its telegraph, its effect, or your drag preview. */
+export interface MinimapZone {
+  x: number;
+  width: number;
+  side: Side;
+  kind: 'telegraph' | 'effect' | 'preview';
+}
+
+/** An off-screen indicator (A17.5): base under attack, power incoming, enemy Legendary. */
+export interface EdgeBadge {
+  /** Stable id (the HUD keys its elements by it). */
+  id: string;
+  kind: 'base' | 'power' | 'legendary';
+  edge: 'left' | 'right';
+  /** World x the badge points at (a tap jumps the camera there). */
+  x: number;
+  /** The side the thing belongs to (colours the badge). */
+  side: Side;
+  /** The power or the Legendary's card. */
+  card?: CardId;
+  /** 0..1 left of a power's telegraph (the countdown ring); null outside it. */
+  countdown: number | null;
+  /** Game ms since it appeared (newest on top). */
+  ageMs: number;
+}
+
+/** Everything the HUD's minimap strip and edge badges draw (A17.5), in world lu unless named. */
+export interface MinimapSnapshot {
+  worldLeft: number;
+  worldRight: number;
+  lane: number;
+  mySide: Side;
+  /** The camera window. */
+  view: { left: number; right: number };
+  following: boolean;
+  autoCamera: boolean;
+  units: MinimapUnit[];
+  /** Each side's front (world x), null without units. */
+  fronts: [number | null, number | null];
+  bases: [MinimapBase, MinimapBase];
+  /** Each side owns at least one turret (the turret-cover bracket shows). */
+  cover: [boolean, boolean];
+  coverLu: number;
+  zones: MinimapZone[];
+  badges: EdgeBadge[];
+  /** The lane band in CSS px (the badges sit at its edges). */
+  band: { y: number; h: number };
+}
+
+export interface MinimapBase {
+  hpBp: number;
+  age: AgeId;
+  /** Real ms since the last hit by a unit or turret (the red flash), or null. */
+  hitAgoMs: number | null;
+  /** Real ms since an evolve whose push did not run because the base was off-screen, or null. */
+  evolveAgoMs: number | null;
+}
+
+/** Camera commands from the HUD (minimap, jump buttons, badges). */
+export type CameraCommand = { t: 'base' } | { t: 'front' } | { t: 'center'; x: number } | { t: 'scrub'; x: number };
 
 /** Where an action happens. The view resolves anchors to world points at execution time. */
 export type Anchor =
