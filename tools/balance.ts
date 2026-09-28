@@ -74,13 +74,15 @@ export const TARGETS = {
   fullMedian: { value: 420, tolerance: 30 },
   shortMedian: { value: 270, tolerance: 30 },
   fullWindow: { lo: 300, hi: 540, minShare: 80 },
-  finalBellMaxPct: 3,
+  /** A16.5 v1 gate: Final Bell ≤ 10% of Short Wars and ≤ 5% of Full Wars (tier VII mirror, baseline plan). */
+  finalBellMaxPct: { short: 10, full: 5 },
+  /** A17.14: first clash (the first unit-on-unit hit) median 0:11-0:16 on the 2,000 lu lane. */
+  firstClash: { lo: 11, hi: 16 },
   firstEvolve: { value: 60, tolerance: 10 },
   /** A2.4 expected evolve times after the first: 2:05, 3:20, 4:50. */
   laterEvolves: [125, 200, 290],
   laterTolerance: 20,
   firstMover: { lo: 47, hi: 53 },
-  turretShare: { lo: 20, hi: 35 },
   baseKill: { lo: 40, hi: 60 },
   powerLight: { lo: 60, hi: 100 },
   powerHeavy: { lo: 15, hi: 35 },
@@ -137,6 +139,11 @@ export interface MirrorStats {
   turretSharePct: number;
   kills: number;
   draws: number;
+  /** Median seconds to the first unit-on-unit hit (A17.14), over matches that had one. */
+  firstClashSec: number;
+  firstClashSamples: number;
+  /** Share of contact samples with the contact point between the turret covers (A17.14, reported). */
+  contactMiddlePct: number;
 }
 
 export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): MirrorStats {
@@ -175,7 +182,19 @@ export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): Mirr
     turretSharePct: kills > 0 ? (turret * 100) / kills : Number.NaN,
     kills,
     draws,
+    ...clashAndContact(ms),
   };
+}
+
+function clashAndContact(ms: readonly MatchSummary[]): Pick<MirrorStats, 'firstClashSec' | 'firstClashSamples' | 'contactMiddlePct'> {
+  const clashes = ms.flatMap((m) => (m.firstClashTick === null || m.firstClashTick === undefined ? [] : [m.firstClashTick / TICKS_PER_SEC]));
+  let samples = 0;
+  let middle = 0;
+  for (const m of ms) {
+    samples += m.contact?.samples ?? 0;
+    middle += m.contact?.middle ?? 0;
+  }
+  return { firstClashSec: median(clashes), firstClashSamples: clashes.length, contactMiddlePct: samples > 0 ? (middle * 100) / samples : Number.NaN };
 }
 
 /**
@@ -202,7 +221,16 @@ export function mirrorChecks(s: MirrorStats): Check[] {
     const t = TARGETS.shortMedian;
     checks.push(matches(rangeCheck(`mirror.${f}.median`, 'Short War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
   }
-  checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${f === 'full' ? 'Full' : 'Short'} War Final Bell rate`, s.finalBellPct, TARGETS.finalBellMaxPct - 1e-9, { target: `< ${TARGETS.finalBellMaxPct}%`, show: (v) => fmtPct(v) })));
+  const bellMax = f === 'full' ? TARGETS.finalBellMaxPct.full : TARGETS.finalBellMaxPct.short;
+  checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${f === 'full' ? 'Full' : 'Short'} War Final Bell rate`, s.finalBellPct, bellMax, { target: `≤ ${bellMax}% (A16.5)`, show: (v) => fmtPct(v) })));
+  const fc = TARGETS.firstClash;
+  checks.push(
+    requireSamples(
+      rangeCheck(`mirror.${f}.firstClash`, `${f === 'full' ? 'Full' : 'Short'} War first clash (median)`, s.firstClashSec, fc.lo, fc.hi, { target: `${clock(fc.lo)}-${clock(fc.hi)} (A17.14)`, show: clock }),
+      s.firstClashSamples,
+    ),
+  );
+  checks.push(infoCheck(`info.${f}.contactMiddle`, `${f === 'full' ? 'Full' : 'Short'} War contact between the turret covers`, fmtPct(s.contactMiddlePct), 'share of seconds with a contact point (A17.14, reported)'));
   if (f === 'full') {
     const fe = TARGETS.firstEvolve;
     checks.push(
@@ -230,8 +258,8 @@ export function mirrorChecks(s: MirrorStats): Check[] {
         s.matches,
       ),
     );
-    const ts = TARGETS.turretShare;
-    checks.push(requireSamples(rangeCheck('mirror.full.turretShare', 'Turret share of kills', s.turretSharePct, ts.lo, ts.hi, { target: `${ts.lo}-${ts.hi}%`, show: (v) => fmtPct(v) }), s.matches));
+    // A16.5: turret share of kills is reported only.
+    checks.push(infoCheck('info.full.turretShare', 'Turret share of kills', fmtPct(s.turretSharePct), 'reported only (A16.5)'));
   }
   return checks;
 }

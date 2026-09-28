@@ -9,7 +9,8 @@
  * 4. The result screen stages the rewards one at a time; each tap skips to the next (`RewardStager`).
  */
 import { signal, type ReadonlySignal, type Signal } from '@preact/signals';
-import type { MatchResultInput, ReplayDoc, RewardStep, SaveDoc } from '@/contracts';
+import type { AgeId, MatchResultInput, ReplayDoc, RewardStep, SaveDoc } from '@/contracts';
+import type { MetaRules } from '@/meta';
 import type { MatchSetup } from './matchSetup';
 import { afterOnboardingMatch, completeStep, onboardingStep, ONBOARDING_STEPS, type OnboardingStep } from './onboarding';
 import type { Services } from './services';
@@ -31,6 +32,7 @@ export async function finishMatch(
   input: MatchResultInput,
   replay: ReplayDoc,
   hintsShown: Record<string, number> = {},
+  o: { age?: AgeId } = {},
 ): Promise<MatchEndResult> {
   try {
     services.saveStore.pushReplay(replay);
@@ -41,7 +43,9 @@ export async function finishMatch(
   let next: SaveDoc;
   let rewards: RewardStep[] = [];
   if (services.meta) {
-    const r = services.meta.applyMatchResult(save, input, services.content, services.clock);
+    // WP7's rules take the Age Capsule age the player picked (A6.4); the bare contract has 4 arguments.
+    const apply = services.meta.applyMatchResult as MetaRules['applyMatchResult'];
+    const r = o.age ? apply(save, input, services.content, services.clock, { age: o.age }) : services.meta.applyMatchResult(save, input, services.content, services.clock);
     next = r.save;
     rewards = r.rewards;
   } else {

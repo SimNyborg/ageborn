@@ -1,6 +1,6 @@
 /**
  * The odds sheet (DESIGN A6.4, A6.5, C5 #27): the Win Capsule bag with what is left in it, the
- * Daily Capsule odds, stack rarity odds, what each tier holds, foil odds, Wardrobe Crate odds and
+ * Supply Capsule odds (A15.4), stack rarity odds, what each tier holds, foil odds, Wardrobe Crate odds and
  * every pity counter with its current value. Shown from the capsule tray and Settings; the capsule
  * show (WP10) has its own panel from the same numbers.
  */
@@ -32,13 +32,14 @@ function guaranteeList(g: readonly Rarity[], t: Translate, locale: string): stri
   }
 }
 
-export function OddsSheet(p: { model: OddsModel }) {
+/** `hideHonest`: the host already shows the A15.3 honesty line (the capsule show's odds panel). */
+export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
   const { t, locale } = useKit();
   const m = p.model;
   const aeon = m.bag.find((r) => r.tier === 'aeon');
   return (
     <div class="ui-odds" data-testid="odds-sheet">
-      <p class="ui-odds__honest">{t('ui.odds.honest')}</p>
+      {p.hideHonest ? null : <p class="ui-odds__honest">{t('ui.odds.honest')}</p>}
       <div class="ui-odds__cols">
         <section class="ui-odds__sec" aria-labelledby="odds-bag">
           <h3 id="odds-bag">{t('ui.odds.bagTitle')}</h3>
@@ -140,7 +141,7 @@ export function OddsSheet(p: { model: OddsModel }) {
           {!m.randomLegendaries ? <p class="ui-odds__note">{t('ui.odds.noRandomLegendaries')}</p> : null}
           <p class="ui-odds__note">{t('ui.odds.unownedWeight')}</p>
 
-          <h3>{t('ui.odds.dailyTitle')}</h3>
+          <h3>{t('ui.odds.supplyTitle')}</h3>
           <div class="ui-odds__chips">
             {m.dailyBp.map((d) => (
               <span key={d.tier} class="ui-odds__chip" style={{ '--c': TIER_COLOR[d.tier] }}>

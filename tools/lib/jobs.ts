@@ -5,12 +5,13 @@
  */
 import type { BotController, CompiledContent, FormatId, MatchConfig, Side } from '../../src/contracts';
 import { content as gameContent } from '../../src/content';
-import { patchedGameContent } from './patch';
+import { LANE_MLU } from '../../src/core';
 import { createSim } from '../../src/sim';
 import { createProxy, type ProxyId } from '../proxies';
 import { HeadlessMatch } from './driver';
 import { MatchTally, type MatchSummary } from './metrics';
 import { loadBots, type BotFactory } from './modules';
+import { patchedGameContent } from './patch';
 import { sideConfig, type Plan } from './plans';
 
 export type SeatSpec = { kind: 'bot'; generalId: string; tier: number } | { kind: 'proxy'; proxy: ProxyId };
@@ -75,7 +76,14 @@ export function playJob(job: MatchJob, bots: BotFactory, content: CompiledConten
     { side: 1, controller: controller(bots, content, job, 1) },
   ]);
   const tally = new MatchTally(content);
-  const outcome = match.run({ maxTicks: job.maxTicks ?? 20_000, onEvents: (ev) => tally.push(ev) });
+  const cover = content.economy.turretRangeCap * 1000;
+  const outcome = match.run({
+    maxTicks: job.maxTicks ?? 20_000,
+    onEvents: (ev) => {
+      tally.push(ev);
+      if (sim.state.tick % 20 === 0) tally.sampleContact(sim.state.units, LANE_MLU, cover);
+    },
+  });
   const summary = tally.summary({ seed: job.seed, format: job.format, outcome, ticks: sim.state.tick, hash: sim.hash() });
   return { id: job.id, tag: job.tag, subject: job.subject, summary, ms: performance.now() - started };
 }

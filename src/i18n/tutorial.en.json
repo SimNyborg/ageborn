@@ -68,6 +68,11 @@
     "next": "Continue",
     "tapToSkip": "Tap to skip",
     "saveUnreadable": "Save could not be read. Import a backup?",
+    "agePick": {
+      "title": "Pick an age",
+      "lead": "Every card in this Age Capsule comes from the age you pick.",
+      "suggested": "Most new cards"
+    },
     "rotate": "Turn your device sideways",
     "reward": {
       "trophies": "{delta} trophies",
@@ -75,6 +80,7 @@
       "dust": "+{amount} Dust",
       "capsule": "Time Capsule",
       "starterCapsule": "Starter Capsule",
+      "crate": "Wardrobe Crate",
       "feat": "Feat found: {name}",
       "clayPip": "Clay meter {meter}/3",
       "codex": "+{points} Codex points",

@@ -24,7 +24,7 @@ function side(o: Partial<SideStats> = {}): SideStats {
 }
 
 function summary(o: Partial<MatchSummary> = {}): MatchSummary {
-  return { seed: 1, format: 'full', winner: 0, reason: 'baseDestroyed', ticks: 8400, finalBell: false, baseHpBp: [5000, 0], hash: 1, sides: [side(), side()], ...o };
+  return { seed: 1, format: 'full', winner: 0, reason: 'baseDestroyed', ticks: 8400, finalBell: false, baseHpBp: [5000, 0], hash: 1, sides: [side(), side()], firstClashTick: 260, contact: { samples: 0, middle: 0 }, ...o };
 }
 
 describe('balance jobs (A2.14)', () => {

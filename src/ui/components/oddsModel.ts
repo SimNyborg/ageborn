@@ -87,7 +87,11 @@ export function oddsModel(
   const left = bagLeft(capsules, save.capsules.bag);
   const pity = save.pity;
   const p = capsules.pity;
-  const nextLegendary = pity.sinceLegendary + 1;
+  // Capsules already in the tray were rolled when they were earned (A6.4), so the chance shown is
+  // for the next capsule the player earns: it counts after every pending capsule that counts for
+  // pity, as the roll does (meta pityDraw).
+  const ahead = (save.capsules.pending ?? []).filter((c) => capsules.kinds[c.kind]?.countsForPity !== false).length;
+  const nextLegendary = pity.sinceLegendary + ahead + 1;
   return {
     bag: capsules.tierOrder.map((tier) => ({ tier, perHundred: capsules.bag[tier], leftInBag: left[tier] })),
     bagLeftTotal: capsules.tierOrder.reduce((n, tier) => n + left[tier], 0),

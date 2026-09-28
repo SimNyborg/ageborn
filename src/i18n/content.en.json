@@ -150,7 +150,7 @@
   },
   "capsuleKind": {
     "win": { "name": "Win Capsule" },
-    "daily": { "name": "Daily Capsule" },
+    "daily": { "name": "Supply Capsule" },
     "road": { "name": "Trophy Road Capsule" },
     "meter": { "name": "Clay Meter Capsule" },
     "age": { "name": "Age Capsule" },
@@ -229,13 +229,15 @@
       "personality": "All-round boss",
       "signature": "Final boss of Arena 8 and Conquest.",
       "line": "Every age ends. Yours ends here.",
-      "disclosure": "Brings all five Legendaries at level 9."
+      "disclosure": "Brings all five Legendaries at level 9.",
+      "disclosureStandard": "Brings all five Legendaries, at the Standard level like every card."
     },
     "echo": {
       "name": "Echo of You",
       "personality": "Mirror",
       "signature": "Plays your own active War Plan.",
-      "line": "Let's see how you like it."
+      "line": "Let's see how you like it.",
+      "disclosure": "AI · Echo of You: an AI playing your War Plan"
     }
   },
   "quest": {

@@ -7,6 +7,7 @@ import { createMetaUi, type MetaUi } from '../metaUi';
 import { attachActivity } from '../stopping';
 import { ReplayScreen } from '../screens/replay/ReplayScreen';
 import { isMetaRules } from '../uiServices';
+import { AgeDialog } from './AgeDialog';
 import { BattleScreen } from './BattleScreen';
 import { FirstUpgrade } from './FirstUpgrade';
 import { AppUiContext, type AppUi } from './context';
@@ -136,6 +137,7 @@ export function AppRoot(p: { ui: AppUi }) {
       <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
         <Screen ui={p.ui} meta={meta} shows={shows} />
         {shows?.current.value ? null : <FirstUpgrade />}
+        <AgeDialog />
         <div class="ab-rotate" data-testid="rotate">
           <div class="ab-rotate-phone" aria-hidden="true" />
           <span>{p.ui.t('app.rotate')}</span>

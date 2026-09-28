@@ -17,7 +17,8 @@ import type { Observation } from '../observation';
 import type { MatchConfig, Sim, SideState, SimState, UnitState } from '../sim';
 import { fakeContent, fakeSideConfig } from './content';
 
-const LANE_MILLI = 1_200_000;
+/** Lane length in milli-lu; mirrors core `LANE_MLU` (A17.2), which contracts may not import (B2). */
+const LANE_MILLI = 2_000_000;
 const BASE_HP_CENTI = 1_000_000;
 
 /** A short scripted skirmish: spawn, ranged hit, melee hit, power kill, turret, evolve, Overdrive, retreat. */

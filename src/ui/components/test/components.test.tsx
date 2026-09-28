@@ -100,7 +100,8 @@ describe('odds model (A6.4, A6.5)', () => {
     const m = oddsModel(content.capsules, content.rarities, midGameSave(content), true);
     const byId = Object.fromEntries(m.pity.map((p) => [p.id, p]));
     expect(byId['epic']).toMatchObject({ since: 6, every: 10, guaranteedIn: 4 });
-    expect(byId['legendary']).toMatchObject({ since: 28, guaranteedIn: 12, nextChanceBp: 2000 });
+    // 28 since the last Legendary plus 5 pre-rolled pending capsules: the next one earned is n = 34.
+    expect(byId['legendary']).toMatchObject({ since: 28, guaranteedIn: 12, nextChanceBp: 4500 });
     expect(byId['newCard']).toMatchObject({ guaranteedIn: 3 });
     expect(m.bagSize).toBe(100);
     expect(m.bagLeftTotal).toBe(64);
@@ -117,6 +118,16 @@ describe('odds model (A6.4, A6.5)', () => {
       ['bronze', 400],
     ]);
     expect(m.wardrobeBp.map((w) => w.bp)).toEqual([7800, 1800, 400]);
+  });
+
+  it('the Legendary "next capsule you earn" chance counts pre-rolled pending capsules (A6.4, A6.5)', () => {
+    const base = midGameSave(content);
+    const none = { ...base, capsules: { ...base.capsules, pending: [] } };
+    const two = { ...base, capsules: { ...base.capsules, pending: [{ kind: 'win' }, { kind: 'ageUnlock' }, { kind: 'daily' }] as never } };
+    const leg = (s: typeof base) => oddsModel(content.capsules, content.rarities, s, true).pity.find((p) => p.id === 'legendary')!;
+    expect(leg(none).nextChanceBp).toBe(legendaryPityBp(content.capsules, base.pity.sinceLegendary + 1));
+    // Two pending capsules count for pity (the Age Unlock Capsule does not), so the next one earned is n + 3.
+    expect(leg(two).nextChanceBp).toBe(legendaryPityBp(content.capsules, base.pity.sinceLegendary + 3));
   });
 
   it('formats basis points as percentages', () => {

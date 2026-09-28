@@ -8,7 +8,7 @@ npx tsx tools/sim-cli.ts help
 
 | Command | Does | Targets |
 |---|---|---|
-| `balance [--mode smoke\|full]` | Balanced mirror in Full and Short War, then mirrored-seed matches of every non-baseline card's test plan vs the baseline plan (tier V Balanced, L7), plus the base time-to-kill and power-damage scenarios | A2.14 |
+| `balance [--mode smoke\|full]` | Balanced mirror in Full and Short War (length, Final Bell ≤ 10% Short / ≤ 5% Full, evolves, first-mover, first clash 0:11-0:16, contact between the turret covers), then mirrored-seed matches of every non-baseline card's test plan vs the baseline plan (tier V Balanced, L7), plus the base time-to-kill and power-damage scenarios | A2.14, A16.5, A17.14 |
 | `exploits [--mode smoke\|full] [--formats short,full]` | The scripted exploit proxies (`proxies.ts`: the eight B12 ones plus random spam and mono Heavy spam; `mono_ranged` and `mono_antiair` on request) vs the tier VII Balanced bot at L7, in Short and Full War, with the Final Bell share per row. Gates: cheapest spam ≤ 20%, random spam ≤ 15%, mono ≤ 35%, turtle 35-45% and ≤ 50% at the Bell, others ≤ 55% | A2.14, A16.5 |
 | `economy` | 365-day engaged-player model through the meta rules (ladder at 60%, Daily Capsule, road, quests claimed through the meta package's `claimQuest`) | A6.9 |
 | `drops [--mode smoke\|full]` | Capsule openings through the meta rules: bag totals, chi-square of the published odds, pity boundaries | A6.4, A6.5, C4.5 |
@@ -26,6 +26,10 @@ npx tsx tools/sim-cli.ts help
 - **Sizes.** `--mode smoke` is the CI size (400 matches per card, CI within ±6); `--mode full` is the
   A2.14 size (2,000 per card, ±3; about 2-3 hours on 4 cores). `--matches`, `--mirror`, `--cards a,b`
   and `--proxies a,b` narrow a run.
+- **Patches.** `--patch file.json` (balance, exploits) deep-merges a JSON object over the compiled content
+  for data-only experiments (A16.4 step 1), for example `{"economy":{"siege":{"ropeDecayBpPerSec":100}}}`.
+  Workers inherit it through `AGEBORN_PATCH`; the report's `contentHash` ends in `+<file name>` so a patched
+  run never passes for the game.
 - **Workers.** Matches run on `worker_threads` (`--workers N`, default cores - 1). Results do not depend on
   the worker count.
 - **Packages.** The tools use the contracts only. Without `src/ai` a scripted stand-in bot plays (the

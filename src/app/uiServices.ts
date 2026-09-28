@@ -8,7 +8,7 @@
  * (battles, the capsule show, replays) go through `flow`, so this file stays testable in Node.
  */
 import type { ReadonlySignal } from '@preact/signals';
-import type { CardId, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/contracts';
+import type { AgeId, CardId, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/contracts';
 import type { MetaRules } from '@/meta';
 import { IMPORT_MESSAGE_KEYS, markExported, saveFileFor, type SaveFile } from '@/save';
 import type { ActionResult, MatchRequest, Router, UiServices, WarPlan } from '@/ui/screens';
@@ -28,6 +28,8 @@ export interface UiFlow {
   openWardrobe(id: string): void;
   /** A brand-new profile after Reset progress: back to onboarding match 1. */
   restart(): void;
+  /** The A6.4 Age Capsule dialog; without it the suggested age is used. */
+  pickAge?(choices: { ages: readonly AgeId[]; suggested: AgeId }): Promise<AgeId>;
 }
 
 export interface UiServicesDeps {
@@ -190,7 +192,18 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       return apply(meta.claimRoadNode(d.save.peek(), trophies, content, clock), true);
     },
     claimQuest(slot) {
-      return apply(meta.claimQuest(ticked(), slot, content, clock), true);
+      const s = ticked();
+      // A6.4: a quest that grants an Age Capsule asks for the age first (the Daily Challenge quest,
+      // the War Chest slot). The claim is checked now and applied once the age is picked.
+      if (flow.pickAge && meta.questGrantsAgeCapsule(s, slot, content)) {
+        const check = meta.claimQuest(s, slot, content, clock);
+        if (!check.ok) return { ok: false, reason: check.reason };
+        void flow.pickAge(meta.ageCapsuleChoices(s, content)).then((age) => {
+          apply(meta.claimQuest(meta.tickTimers(d.save.peek(), clock), slot, content, clock, { age }), true);
+        });
+        return OK;
+      }
+      return apply(meta.claimQuest(s, slot, content, clock), true);
     },
     rerollQuest(slot) {
       return apply(meta.rerollQuest(ticked(), slot, content), true);

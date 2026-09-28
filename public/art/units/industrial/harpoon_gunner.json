@@ -1,0 +1,2346 @@
+{
+ "frames": {
+  "harpoon_gunner_idle_00": {
+   "frame": {
+    "x": 802,
+    "y": 105,
+    "w": 93,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 87,
+    "w": 93,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_00_team": {
+   "frame": {
+    "x": 137,
+    "y": 357,
+    "w": 63,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 115,
+    "w": 63,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_01": {
+   "frame": {
+    "x": 266,
+    "y": 105,
+    "w": 91,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 85,
+    "w": 91,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_01_team": {
+   "frame": {
+    "x": 1034,
+    "y": 296,
+    "w": 62,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 114,
+    "w": 62,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_02": {
+   "frame": {
+    "x": 887,
+    "y": 2,
+    "w": 89,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 81,
+    "w": 89,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_02_team": {
+   "frame": {
+    "x": 775,
+    "y": 296,
+    "w": 60,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 111,
+    "w": 60,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_03": {
+   "frame": {
+    "x": 276,
+    "y": 2,
+    "w": 87,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 78,
+    "w": 87,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_03_team": {
+   "frame": {
+    "x": 327,
+    "y": 296,
+    "w": 59,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 109,
+    "w": 59,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_04": {
+   "frame": {
+    "x": 93,
+    "y": 2,
+    "w": 86,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 75,
+    "w": 86,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_04_team": {
+   "frame": {
+    "x": 453,
+    "y": 296,
+    "w": 58,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 108,
+    "w": 58,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_05": {
+   "frame": {
+    "x": 367,
+    "y": 2,
+    "w": 87,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 78,
+    "w": 87,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_05_team": {
+   "frame": {
+    "x": 390,
+    "y": 296,
+    "w": 59,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 109,
+    "w": 59,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_06": {
+   "frame": {
+    "x": 980,
+    "y": 2,
+    "w": 89,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 81,
+    "w": 89,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_06_team": {
+   "frame": {
+    "x": 839,
+    "y": 296,
+    "w": 60,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 111,
+    "w": 60,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_07": {
+   "frame": {
+    "x": 361,
+    "y": 105,
+    "w": 91,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 85,
+    "w": 91,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_idle_07_team": {
+   "frame": {
+    "x": 1100,
+    "y": 296,
+    "w": 62,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 114,
+    "w": 62,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_00": {
+   "frame": {
+    "x": 631,
+    "y": 105,
+    "w": 92,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 86,
+    "w": 92,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_00_team": {
+   "frame": {
+    "x": 204,
+    "y": 357,
+    "w": 63,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 116,
+    "w": 63,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_01": {
+   "frame": {
+    "x": 171,
+    "y": 105,
+    "w": 91,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 83,
+    "w": 91,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_01_team": {
+   "frame": {
+    "x": 1166,
+    "y": 296,
+    "w": 62,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 113,
+    "w": 62,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_02": {
+   "frame": {
+    "x": 1073,
+    "y": 2,
+    "w": 89,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 79,
+    "w": 89,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_02_team": {
+   "frame": {
+    "x": 515,
+    "y": 296,
+    "w": 61,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 109,
+    "w": 61,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_03": {
+   "frame": {
+    "x": 458,
+    "y": 2,
+    "w": 91,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 82,
+    "w": 91,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_03_team": {
+   "frame": {
+    "x": 271,
+    "y": 357,
+    "w": 63,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 113,
+    "w": 63,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_04": {
+   "frame": {
+    "x": 791,
+    "y": 2,
+    "w": 92,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 86,
+    "w": 92,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_04_team": {
+   "frame": {
+    "x": 902,
+    "y": 357,
+    "w": 63,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 116,
+    "w": 63,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_05": {
+   "frame": {
+    "x": 183,
+    "y": 2,
+    "w": 89,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 83,
+    "w": 89,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_05_team": {
+   "frame": {
+    "x": 535,
+    "y": 357,
+    "w": 60,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 113,
+    "w": 60,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 87,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 79,
+    "w": 87,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_06_team": {
+   "frame": {
+    "x": 903,
+    "y": 296,
+    "w": 59,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 110,
+    "w": 59,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_07": {
+   "frame": {
+    "x": 78,
+    "y": 105,
+    "w": 89,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 83,
+    "w": 89,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_walk_07_team": {
+   "frame": {
+    "x": 580,
+    "y": 296,
+    "w": 61,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 113,
+    "w": 61,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_00": {
+   "frame": {
+    "x": 899,
+    "y": 105,
+    "w": 93,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 87,
+    "w": 93,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_00_team": {
+   "frame": {
+    "x": 966,
+    "y": 296,
+    "w": 64,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 115,
+    "w": 64,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_01": {
+   "frame": {
+    "x": 1089,
+    "y": 105,
+    "w": 95,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 89,
+    "w": 95,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_01_team": {
+   "frame": {
+    "x": 68,
+    "y": 357,
+    "w": 65,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 117,
+    "w": 65,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_02": {
+   "frame": {
+    "x": 2,
+    "y": 204,
+    "w": 96,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 90,
+    "w": 96,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_02_team": {
+   "frame": {
+    "x": 696,
+    "y": 357,
+    "w": 65,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 118,
+    "w": 65,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_03": {
+   "frame": {
+    "x": 685,
+    "y": 2,
+    "w": 102,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 83,
+    "w": 102,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_03_team": {
+   "frame": {
+    "x": 262,
+    "y": 296,
+    "w": 61,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 113,
+    "w": 61,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_04": {
+   "frame": {
+    "x": 191,
+    "y": 204,
+    "w": 125,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 94,
+    "w": 125,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_04_team": {
+   "frame": {
+    "x": 834,
+    "y": 357,
+    "w": 64,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 119,
+    "w": 64,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_05": {
+   "frame": {
+    "x": 553,
+    "y": 2,
+    "w": 128,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 81,
+    "w": 128,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 296,
+    "w": 58,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 105,
+    "w": 58,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_06": {
+   "frame": {
+    "x": 551,
+    "y": 105,
+    "w": 76,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 84,
+    "w": 76,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_06_team": {
+   "frame": {
+    "x": 645,
+    "y": 296,
+    "w": 61,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 113,
+    "w": 61,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_07": {
+   "frame": {
+    "x": 1166,
+    "y": 2,
+    "w": 89,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 81,
+    "w": 89,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_07_team": {
+   "frame": {
+    "x": 710,
+    "y": 296,
+    "w": 61,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 111,
+    "w": 61,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_00": {
+   "frame": {
+    "x": 320,
+    "y": 204,
+    "w": 93,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 93,
+    "w": 93,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_00_team": {
+   "frame": {
+    "x": 765,
+    "y": 357,
+    "w": 65,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 118,
+    "w": 65,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_01": {
+   "frame": {
+    "x": 578,
+    "y": 204,
+    "w": 88,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 96,
+    "w": 88,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_01_team": {
+   "frame": {
+    "x": 969,
+    "y": 357,
+    "w": 63,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 119,
+    "w": 63,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_02": {
+   "frame": {
+    "x": 102,
+    "y": 204,
+    "w": 85,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 89,
+    "w": 85,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_02_team": {
+   "frame": {
+    "x": 403,
+    "y": 357,
+    "w": 59,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 114,
+    "w": 59,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_03": {
+   "frame": {
+    "x": 996,
+    "y": 105,
+    "w": 89,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 86,
+    "w": 89,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_03_team": {
+   "frame": {
+    "x": 338,
+    "y": 357,
+    "w": 61,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 114,
+    "w": 61,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_04": {
+   "frame": {
+    "x": 456,
+    "y": 105,
+    "w": 91,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 85,
+    "w": 91,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_hit_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 357,
+    "w": 62,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 114,
+    "w": 62,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_00": {
+   "frame": {
+    "x": 500,
+    "y": 204,
+    "w": 74,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 92,
+    "w": 74,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_00_team": {
+   "frame": {
+    "x": 64,
+    "y": 296,
+    "w": 59,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 109,
+    "w": 59,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 105,
+    "w": 72,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 70,
+    "w": 72,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_01_team": {
+   "frame": {
+    "x": 929,
+    "y": 204,
+    "w": 52,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 87,
+    "w": 52,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_02": {
+   "frame": {
+    "x": 1188,
+    "y": 105,
+    "w": 77,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 73,
+    "w": 77,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_02_team": {
+   "frame": {
+    "x": 985,
+    "y": 204,
+    "w": 55,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 89,
+    "w": 55,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_03": {
+   "frame": {
+    "x": 417,
+    "y": 204,
+    "w": 79,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 82,
+    "w": 79,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_03_team": {
+   "frame": {
+    "x": 1103,
+    "y": 204,
+    "w": 57,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 98,
+    "w": 57,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_04": {
+   "frame": {
+    "x": 754,
+    "y": 204,
+    "w": 78,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 103,
+    "w": 78,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_04_team": {
+   "frame": {
+    "x": 127,
+    "y": 296,
+    "w": 64,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 118,
+    "w": 64,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_05": {
+   "frame": {
+    "x": 727,
+    "y": 105,
+    "w": 71,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 80,
+    "w": 71,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_05_team": {
+   "frame": {
+    "x": 1044,
+    "y": 204,
+    "w": 55,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 98,
+    "w": 55,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_06": {
+   "frame": {
+    "x": 670,
+    "y": 204,
+    "w": 80,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 98,
+    "w": 80,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_06_team": {
+   "frame": {
+    "x": 195,
+    "y": 296,
+    "w": 63,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 116,
+    "w": 63,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_07": {
+   "frame": {
+    "x": 836,
+    "y": 204,
+    "w": 89,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 103,
+    "w": 89,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_07_team": {
+   "frame": {
+    "x": 466,
+    "y": 357,
+    "w": 65,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 121,
+    "w": 65,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_08": {
+   "frame": {
+    "x": 1164,
+    "y": 204,
+    "w": 94,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 116,
+    "w": 94,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_08_team": {
+   "frame": {
+    "x": 1036,
+    "y": 357,
+    "w": 65,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 130,
+    "w": 65,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_09": {
+   "frame": {
+    "x": 599,
+    "y": 357,
+    "w": 93,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 128,
+    "w": 93,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_die_09_team": {
+   "frame": {
+    "x": 1105,
+    "y": 357,
+    "w": 64,
+    "h": 32
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 138,
+    "w": 64,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "harpoon_gunner_idle_00",
+   "harpoon_gunner_idle_01",
+   "harpoon_gunner_idle_02",
+   "harpoon_gunner_idle_03",
+   "harpoon_gunner_idle_04",
+   "harpoon_gunner_idle_05",
+   "harpoon_gunner_idle_06",
+   "harpoon_gunner_idle_07"
+  ],
+  "idle_team": [
+   "harpoon_gunner_idle_00_team",
+   "harpoon_gunner_idle_01_team",
+   "harpoon_gunner_idle_02_team",
+   "harpoon_gunner_idle_03_team",
+   "harpoon_gunner_idle_04_team",
+   "harpoon_gunner_idle_05_team",
+   "harpoon_gunner_idle_06_team",
+   "harpoon_gunner_idle_07_team"
+  ],
+  "walk": [
+   "harpoon_gunner_walk_00",
+   "harpoon_gunner_walk_01",
+   "harpoon_gunner_walk_02",
+   "harpoon_gunner_walk_03",
+   "harpoon_gunner_walk_04",
+   "harpoon_gunner_walk_05",
+   "harpoon_gunner_walk_06",
+   "harpoon_gunner_walk_07"
+  ],
+  "walk_team": [
+   "harpoon_gunner_walk_00_team",
+   "harpoon_gunner_walk_01_team",
+   "harpoon_gunner_walk_02_team",
+   "harpoon_gunner_walk_03_team",
+   "harpoon_gunner_walk_04_team",
+   "harpoon_gunner_walk_05_team",
+   "harpoon_gunner_walk_06_team",
+   "harpoon_gunner_walk_07_team"
+  ],
+  "attack": [
+   "harpoon_gunner_attack_00",
+   "harpoon_gunner_attack_01",
+   "harpoon_gunner_attack_02",
+   "harpoon_gunner_attack_03",
+   "harpoon_gunner_attack_04",
+   "harpoon_gunner_attack_05",
+   "harpoon_gunner_attack_06",
+   "harpoon_gunner_attack_07"
+  ],
+  "attack_team": [
+   "harpoon_gunner_attack_00_team",
+   "harpoon_gunner_attack_01_team",
+   "harpoon_gunner_attack_02_team",
+   "harpoon_gunner_attack_03_team",
+   "harpoon_gunner_attack_04_team",
+   "harpoon_gunner_attack_05_team",
+   "harpoon_gunner_attack_06_team",
+   "harpoon_gunner_attack_07_team"
+  ],
+  "hit": [
+   "harpoon_gunner_hit_00",
+   "harpoon_gunner_hit_01",
+   "harpoon_gunner_hit_02",
+   "harpoon_gunner_hit_03",
+   "harpoon_gunner_hit_04"
+  ],
+  "hit_team": [
+   "harpoon_gunner_hit_00_team",
+   "harpoon_gunner_hit_01_team",
+   "harpoon_gunner_hit_02_team",
+   "harpoon_gunner_hit_03_team",
+   "harpoon_gunner_hit_04_team"
+  ],
+  "die": [
+   "harpoon_gunner_die_00",
+   "harpoon_gunner_die_01",
+   "harpoon_gunner_die_02",
+   "harpoon_gunner_die_03",
+   "harpoon_gunner_die_04",
+   "harpoon_gunner_die_05",
+   "harpoon_gunner_die_06",
+   "harpoon_gunner_die_07",
+   "harpoon_gunner_die_08",
+   "harpoon_gunner_die_09"
+  ],
+  "die_team": [
+   "harpoon_gunner_die_00_team",
+   "harpoon_gunner_die_01_team",
+   "harpoon_gunner_die_02_team",
+   "harpoon_gunner_die_03_team",
+   "harpoon_gunner_die_04_team",
+   "harpoon_gunner_die_05_team",
+   "harpoon_gunner_die_06_team",
+   "harpoon_gunner_die_07_team",
+   "harpoon_gunner_die_08_team",
+   "harpoon_gunner_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "harpoon_gunner.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 408
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.harpoon_gunner",
+   "name": "Harpoon Gunner",
+   "heightLu": 70,
+   "widthLu": 68.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    147.0,
+    167.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     40,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        24.3,
+        29.1
+       ],
+       [
+        23.6,
+        30.7
+       ],
+       [
+        22.7,
+        33.4
+       ],
+       [
+        21.7,
+        36.4
+       ],
+       [
+        20.9,
+        39.1
+       ],
+       [
+        21.7,
+        36.4
+       ],
+       [
+        22.7,
+        33.4
+       ],
+       [
+        23.6,
+        30.7
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.3,
+        28.2
+       ],
+       [
+        26.5,
+        31.3
+       ],
+       [
+        27.0,
+        33.2
+       ],
+       [
+        26.7,
+        30.4
+       ],
+       [
+        25.3,
+        28.2
+       ],
+       [
+        23.5,
+        30.3
+       ],
+       [
+        22.9,
+        31.8
+       ],
+       [
+        23.7,
+        29.4
+       ]
+      ]
+     },
+     "strideLu": 29.8,
+     "naturalSpeedLuPerS": 59.6
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      125,
+      83,
+      125,
+      100,
+      100,
+      125
+     ],
+     "durationMs": 824,
+     "impactFrame": 3,
+     "impactAt": 0.3532,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.1,
+        27.6
+       ],
+       [
+        26.9,
+        24.1
+       ],
+       [
+        28.2,
+        22.6
+       ],
+       [
+        24.9,
+        26.3
+       ],
+       [
+        10.1,
+        31.7
+       ],
+       [
+        3.0,
+        46.0
+       ],
+       [
+        17.7,
+        34.9
+       ],
+       [
+        22.2,
+        33.9
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        18.4,
+        33.2
+       ],
+       [
+        11.2,
+        35.7
+       ],
+       [
+        13.5,
+        39.2
+       ],
+       [
+        18.1,
+        37.0
+       ],
+       [
+        22.8,
+        32.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 0.859
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 0.927
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        0.9,
+        44.7
+       ],
+       [
+        -13.0,
+        62.1
+       ],
+       [
+        -19.1,
+        61.2
+       ],
+       [
+        -22.0,
+        53.9
+       ],
+       [
+        -10.3,
+        37.7
+       ],
+       [
+        -16.7,
+        52.9
+       ],
+       [
+        -4.5,
+        39.1
+       ],
+       [
+        0.7,
+        35.0
+       ],
+       [
+        6.4,
+        25.8
+       ],
+       [
+        8.7,
+        17.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

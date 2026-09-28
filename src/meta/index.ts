@@ -21,7 +21,7 @@ import { claimDaily, dailyModifierAt } from './daily';
 import { pickOpponentAt } from './matchmaking';
 import { newSaveAt } from './newSave';
 import { claimQuest, rerollQuest } from './quests';
-import { ageCapsuleDue, applyMatchResultAt } from './rewards';
+import { ageCapsuleChoices, ageCapsuleDue, applyMatchResultAt, questGrantsAgeCapsule } from './rewards';
 import { tables } from './tables';
 import { localNow, type LocalClock } from './time';
 import { tickTimersAt } from './timers';
@@ -47,6 +47,10 @@ export interface MetaRules extends Meta {
   ): { save: SaveDoc; rewards: RewardStep[] };
   /** True when this result grants an Age Capsule whose age the player should pick first (A6.4). */
   ageCapsuleDue(s: SaveDoc, r: MatchResultInput, c: CompiledContent, clock: Clock): boolean;
+  /** The ages the A6.4 Age Capsule dialog offers, and the suggested (default) one. */
+  ageCapsuleChoices(s: SaveDoc, c: CompiledContent): { ages: AgeId[]; suggested: AgeId };
+  /** True when claiming this quest grants an Age Capsule (ask for the age first, A6.4). */
+  questGrantsAgeCapsule(s: SaveDoc, slot: number | 'weekly', c: CompiledContent): boolean;
   /** Moves one banked Daily Capsule into the tray (A6.3). Reasons: noDailyCapsule. */
   claimDailyCapsule(s: SaveDoc, c: CompiledContent, clock: Clock): Result<SaveDoc>;
   /** Claims a finished quest; `age` is the Age Capsule age the player picked (A6.4, A6.7). */
@@ -76,6 +80,8 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     newSave: (c, clock, seed) => newSaveAt(c, localNow(clock), seed),
     applyMatchResult: (s, r, c, clock, o) => applyMatchResultAt(s, r, tables(c), localNow(clock), o ?? {}),
     ageCapsuleDue: (s, r, c, clock) => ageCapsuleDue(s, r, tables(c), localNow(clock)),
+    ageCapsuleChoices: (s, c) => ageCapsuleChoices(s, tables(c)),
+    questGrantsAgeCapsule: (s, slot, c) => questGrantsAgeCapsule(s, slot, tables(c)),
     grantCapsule: (s, kind, c, clock, o) => grantCapsuleAt(s, kind, tables(c), clock.now(), o ?? {}).save,
     openCapsule: (s, id) => openCapsuleWith(s, id, t),
     openWardrobe: (s, id) => openCrate(s, id, t),

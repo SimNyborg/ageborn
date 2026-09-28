@@ -98,8 +98,9 @@ describe('evolve (A7.2)', () => {
   });
 
   it('tiers VII and X wait for a safe window: no foe can reach 300 lu of the gate during the Ascension', () => {
-    // A Bonker (70 lu/s) at 500 lu: outside 300 lu now, but tier VII sees it 0.5 s late and the
-    // Ascension takes 2.5 s, so it would be within 300 lu (500 − 70 × 3.05 = 286) before the ageUp.
+    // A Bonker (70 lu/s × 1.25 march = 87 lu/s, A17.2) at 500 lu: outside 300 lu now, but tier VII sees it
+    // 0.5 s late and the Ascension takes 2.5 s, so it would be within 300 lu (500 − 87 × 3.05 = 234) before
+    // the ageUp.
     // Decided 1 s after XP filled, inside the 2 s cap.
     const near = [unit(0, 'bonker', 500)];
     const t7 = decide(brainFor({ tier: 7 }).brain, ready(30, { units: near }), { history: [ready(10, { units: near })] });
@@ -107,8 +108,8 @@ describe('evolve (A7.2)', () => {
     // Tier V has no safety check at all.
     const t5 = decide(brainFor({ tier: 5 }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] });
     expect(t5.action).toEqual({ kind: 'evolve' });
-    // 30 lu further out the window is open for tier VII too.
-    const far = [unit(0, 'bonker', 530)];
+    // 100 lu further out the window is open for tier VII too (600 − 265 = 335).
+    const far = [unit(0, 'bonker', 600)];
     expect(decide(brainFor({ tier: 7 }).brain, ready(30, { units: far }), { history: [ready(10, { units: far })] }).action).toEqual({ kind: 'evolve' });
     // Air units never block the window.
     const air = [unit(0, 'bonker', 350, { air: true })];
@@ -220,8 +221,11 @@ describe('push gate, banking and stance (A7.2)', () => {
 
   it('counts enemy units within 500 lu of their gate in D, and never banks while the enemy is on its half', () => {
     const { brain } = brainFor({ tier: 5 });
-    const t = decide(brain, observation({ tick: 400, units: [unit(0, 'bonker', L - 50), unit(0, 'tuskback', L - 550)] }));
+    const t = decide(brain, observation({ tick: 700, units: [unit(0, 'bonker', L - 50), unit(0, 'tuskback', L - 550)] }));
     expect(t.defence).toBe(50);
+    // A17.13: in the first 30 s freshly spawned units walking out of their gate zone are not defence.
+    const { brain: early } = brainFor({ tier: 5 });
+    expect(decide(early, observation({ tick: 400, units: [unit(0, 'bonker', L - 50)] })).defence).toBe(0);
     const { brain: b2 } = brainFor({ tier: 5 });
     const defending = decide(b2, observation({ tick: 400, foe: foeTurret, units: [unit(0, 'bonker', 500)] }));
     expect(defending.pushOk).toBe(false);
@@ -265,10 +269,10 @@ describe('saving goals and economy', () => {
     expect(t.action).toEqual({ kind: 'treasury', cost: 200 * MILLI });
   });
 
-  it('does not buy Treasury after 3:00, above the tier max, or with enemies within 600 lu', () => {
+  it('does not buy Treasury after 3:00, above the tier max, or with enemies on its own half (A17.13)', () => {
     expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 600 * MILLI })))).not.toContain('treasury');
     expect(kinds(decide(brainFor({ tier: 1 }).brain, observation({ tick: 600, gold: 600 * MILLI })))).not.toContain('treasury');
-    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 600, gold: 600 * MILLI, units: [unit(0, 'bonker', 550)] })))).not.toContain(
+    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 600, gold: 600 * MILLI, units: [unit(0, 'bonker', L / 2 - 50)] })))).not.toContain(
       'treasury',
     );
   });

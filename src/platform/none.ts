@@ -3,7 +3,7 @@
  *
  * No ads and no portal SDK (CLAUDE.md: no ads SDK in v1). Every hook is a no-op that only tracks the
  * gameplay state, so the app can call the same lifecycle it will call on a portal later.
- * `commercialBreak` resolves at once. The Wardrobe reel is on (A10.1); external links are allowed.
+ * `commercialBreak` resolves at once. There is no Wardrobe reel (`reelReveal: false`, A15.3 rule 1); external links are allowed.
  */
 import type { PlatformAdapter } from '@/contracts';
 

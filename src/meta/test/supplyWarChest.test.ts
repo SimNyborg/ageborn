@@ -132,6 +132,11 @@ describe('War Chest (A15.5)', () => {
     expect(s.capsules.wardrobe.length).toBe(crates + 1);
     expect(s.capsules.wardrobe[s.capsules.wardrobe.length - 1]!.source).toBe('weekly');
     expect(s.capsules.pending.filter((p) => p.kind === 'age').length).toBe(ages + 1);
+    // Both grants are reward steps, so the Result screen can show them (A15.13).
+    const crate = s.capsules.wardrobe[s.capsules.wardrobe.length - 1]!;
+    expect(r.rewards).toContainEqual({ kind: 'crate', crateId: crate.id });
+    const age = s.capsules.pending.filter((p) => p.kind === 'age').at(-1)!;
+    expect(r.rewards).toContainEqual({ kind: 'capsule', capsuleId: age.id });
   });
 
   it('never resets with time, and the weekly slot cannot be claimed as a quest', () => {

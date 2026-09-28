@@ -19,11 +19,11 @@
  */
 import type { AbilityDef, AttackDef, EconomyRules, StatusApply, UnitDef } from '@/contracts/content';
 import type { CardId, Tag } from '@/contracts/ids';
-import { BP, CENTI, MILLI, TICK_MS, msToTicks } from '@/core/fixed';
+import { BP, CENTI, LANE_MLU, MILLI, TICK_MS, msToTicks } from '@/core/fixed';
 import type { RawBattleRules } from '../raw/types';
 
 /** Bump when the duel rules change (the counter file then reads as stale). */
-export const DUEL_ENGINE_VERSION = 1;
+export const DUEL_ENGINE_VERSION = 2;
 
 /** Duel setup constants: equal-gold budgets and time limits. */
 export const DUEL_RULES = {
@@ -82,7 +82,8 @@ export function duelCounts(costA: number, costB: number): [number, number] {
 // Runtime state
 // ---------------------------------------------------------------------------------------------
 
-const LANE = 1200 * MILLI;
+/** The lane (A17.2: 2,000 lu, from core). */
+const LANE = LANE_MLU;
 const NO_TICK = -1;
 
 interface AttackRt {
@@ -259,8 +260,8 @@ class Duel {
       w: e.sizes[def.size] * MILLI,
       hp: def.hp * CENTI,
       maxHp: def.hp * CENTI,
-      // lu/s → milli-lu per tick
-      speed: (def.speed * MILLI * TICK_MS) / 1000,
+      // lu/s → milli-lu per tick, × the march speed (A17.2: walking ×1.25, `economy.marchSpeedBp`)
+      speed: applyBp((def.speed * MILLI * TICK_MS) / 1000, e.marchSpeedBp),
       air,
       alive: true,
       summoned,

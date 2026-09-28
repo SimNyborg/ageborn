@@ -8,8 +8,10 @@
  * replay parts.
  */
 import { signal, type ReadonlySignal, type Signal } from '@preact/signals';
-import type { FormatId, MatchResultInput, ReplayDoc, RewardStep, SaveDoc, Sim } from '@/contracts';
+import type { AgeId, FormatId, MatchResultInput, ReplayDoc, RewardStep, SaveDoc, Sim } from '@/contracts';
 import { STAGES } from '@/tutorial';
+import type { MetaRules } from '@/meta';
+import { AgePicker } from './agePick';
 import { createBattle, type BattleHandle } from './battle';
 import { finishMatch } from './flow';
 import { quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup, type SetupLabels } from './matchSetup';
@@ -78,6 +80,8 @@ export class AppController {
   readonly step: ReadonlySignal<OnboardingStep>;
   /** Replays of this session, newest last (the store keeps the persistent ring). */
   readonly replays: ReadonlySignal<readonly ReplayDoc[]>;
+  /** The A6.4 Age Capsule dialog: asked before a result that grants a non-scripted Age Capsule. */
+  readonly agePicker = new AgePicker();
   private readonly routeSig: Signal<AppRoute>;
   private readonly saveSig: Signal<SaveDoc | null>;
   private readonly stepSig: Signal<OnboardingStep>;
@@ -98,6 +102,7 @@ export class AppController {
     this.save = this.saveSig;
     this.step = this.stepSig;
     this.replays = this.replaysSig;
+    this.agePicker.auto = o.autopilot ?? false;
   }
 
   private t(key: string): string {
@@ -376,7 +381,8 @@ export class AppController {
     const hints = battle.director.hintsShown();
     let out: Awaited<ReturnType<typeof finishMatch>> = { save: null, rewards: [], onboarding: null };
     try {
-      out = await finishMatch(this.services, this.saveSig.peek(), setup, input, replay, hints);
+      const age = await this.pickAgeFor(input);
+      out = await finishMatch(this.services, this.saveSig.peek(), setup, input, replay, hints, age ? { age } : {});
     } catch (e) {
       // The player must never be stuck on a finished battle: show the result without rewards.
       this.services.eventLog.record('error', 'finishMatch', { message: e instanceof Error ? e.message : String(e) });
@@ -394,6 +400,18 @@ export class AppController {
     if (r.id !== 'battle' || r.battle !== battle) return;
     // The battle stays on screen, dimmed, behind the result (audit #16); leaving the result disposes it.
     this.routeSig.value = { id: 'result', result: { setup, input, replay, rewards: out.rewards, battle } };
+  }
+
+  /**
+   * A6.4: when this result grants an Age Capsule (Daily first win, Conquest star 3, a full War
+   * Chest), the player picks its age before meta rolls it. Null when none is due.
+   */
+  private async pickAgeFor(input: MatchResultInput): Promise<AgeId | null> {
+    const m = this.services.meta as Partial<MetaRules> | null;
+    const save = this.saveSig.peek();
+    if (!save || !m || typeof m.ageCapsuleDue !== 'function' || typeof m.ageCapsuleChoices !== 'function') return null;
+    if (!m.ageCapsuleDue(save, input, this.services.content, this.services.clock)) return null;
+    return this.agePicker.ask(m.ageCapsuleChoices(save, this.services.content));
   }
 
   private disposeRoute(): void {

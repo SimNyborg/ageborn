@@ -18,7 +18,9 @@
  */
 import type { AgeId, MatchResultInput, RewardStep, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
-import { grantCapsuleAt } from './capsules/grant';
+import { defaultCapsuleAge, grantCapsuleAt } from './capsules/grant';
+import { arenaOf } from './tables';
+import { questDef } from './quests';
 import { addClayPip, payForWinCapsule } from './charges';
 import { applyConquest } from './conquest';
 import { dailyWin } from './daily';
@@ -225,4 +227,21 @@ export function ageCapsuleDue(s: SaveDoc, r: MatchResultInput, t: Content, lt: L
   const before = new Set(s.capsules.pending.map((p) => p.id));
   const { save } = applyMatchResultAt(s, r, t, lt);
   return save.capsules.pending.some((p) => !before.has(p.id) && p.kind === 'age' && p.scriptIndex === null);
+}
+
+/**
+ * The ages the A6.4 dialog offers for an Age Capsule (the arena's drop-pool ages) and the one it
+ * suggests (the age with the most cards not owned yet, the default when no age is picked).
+ */
+export function ageCapsuleChoices(s: SaveDoc, t: Content): { ages: AgeId[]; suggested: AgeId } {
+  const suggested = defaultCapsuleAge(s, t);
+  const ages = [...arenaOf(s, t).dropAges];
+  return { ages: ages.length > 0 ? ages : [suggested], suggested };
+}
+
+/** True when claiming quest `slot` grants an Age Capsule (its age is picked in the A6.4 dialog first). */
+export function questGrantsAgeCapsule(s: SaveDoc, slot: number | 'weekly', t: Content): boolean {
+  const q = slot === 'weekly' ? s.quests.weekly : s.quests.daily[slot];
+  const def = q ? questDef(t, q.id) : undefined;
+  return !!def && def.rewards.some((r) => r.kind === 'ageCapsule');
 }

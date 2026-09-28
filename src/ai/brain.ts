@@ -8,10 +8,10 @@
  * | Build turret on an empty mount | m_turret · f_pressure · f_spare |
  * | Buy mount (all owned mounts filled) | 0.8 · m_turret · f_pressure · f_spare |
  * | Modernise | 0.8 · m_turret · [turret age < current age] · f_spare |
- * | Treasury | m_econ · [before 3:00] · [no enemy within 600 lu of own gate] · [level < tier max] · f_spare |
+ * | Treasury | m_econ · [before 3:00] · [no enemy on its own half (A17.13; 600 lu on the old 1,200 lu lane)] · [level < tier max] · f_spare |
  * | Evolve | 1.2 when XP ≥ threshold and (no enemy ground unit within 300 lu of own gate, or m_greed ≥ 1.3), after the tier's evolve delay |
  * | Power | 1.0 when the best zone's enemy value ≥ tier threshold × m_patience, or own base took damage in the last 3 s and zone value ≥ 100; aim error applied |
- * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built, or when the push gate fails; otherwise Charge |
+ * | Stance | Hold when the tier allows it and myArmy < 0.7 × foeArmy (A17.13: no turret minimum on the long lane), or when the push gate fails; otherwise Charge |
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
  *
  * Plus the push gate, the attack clock, saving goals, the gold float target (A7.3), openings and the
@@ -109,8 +109,6 @@ export interface BrainConfig {
 const GATE_ZONE = 500 * MILLI;
 /** Push gate: each enemy turret counts as 300 gold of defence. */
 const TURRET_DEFENCE = 300;
-/** Treasury only while no enemy is within 600 lu of the own gate and before 3:00. */
-const TREASURY_SAFE = 600 * MILLI;
 const TREASURY_BEFORE_TICKS = 180 * TICKS_PER_SECOND;
 /** A quiet-lane Treasury level must pay for itself by 6:00 (A2.3 payback 133 / 233 / 367 s). */
 const TREASURY_PAYBACK_BY_TICKS = 360 * TICKS_PER_SECOND;
@@ -132,7 +130,11 @@ const POWER_MIN_VALUE = 100;
 const LOW_BASE_BP = 2500;
 /** Tempest casts into the burst right after the foe evolves. */
 const FOE_EVOLVE_WINDOW = 5 * TICKS_PER_SECOND;
-/** Stance: Hold when myArmy < 0.7 × m_hold × foeArmy with ≥ 2 turrets. */
+/**
+ * Stance: Hold when myArmy < 0.7 × m_hold × foeArmy with ≥ 2 turrets. On the 2,000 lu lane (A17.13
+ * retune) a weaker army holds even without turrets: the hold line keeps the defender's short walk,
+ * while trickling units one by one across 1,000+ lu fed Heavy spam (mono Heavy 53% → 17% vs tier VII).
+ */
 const HOLD_RATIO_BP = 7000;
 const HOLD_MIN_TURRETS = 2;
 /** Holding on a failed push gate needs a Hold weight of at least 20 (m_hold 0.7). */
@@ -241,7 +243,11 @@ export class Brain {
     const urgent = pressure >= URGENT_PRESSURE_BP;
     const foeTurrets = obs.foe.turrets.filter((x) => x !== null).length;
     const foeGold = Math.trunc(mem.estimator.gold / MILLI);
-    const defence = foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) + TURRET_DEFENCE * foeTurrets;
+    // A17.13: enemy units in their gate zone count only after the opening (30 s). Freshly spawned units
+    // stand there on their way out, and on the 2,000 lu lane holding back for them delayed the first clash
+    // to ~0:38 (A17.14 wants 0:11-0:16). Turrets always count.
+    const gateUnits = v.now >= OPENING_TICKS ? foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) : 0;
+    const defence = gateUnits + TURRET_DEFENCE * foeTurrets;
     // Attack clock (A7.2): after 60 s without a ground unit past mid-lane, train scores rise 10% per 5 s,
     // and the push gate relaxes by 0.1 per 5 s down to parity, so two banking bots cannot stall a match.
     const quiet = v.now - mem.pastMidTick;
@@ -279,7 +285,7 @@ export class Brain {
     else if (!urgent && !allIn) {
       // Treasury pays back in 133-367 s (A2.3), so a bot banks for it while the lane near its gate is
       // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
-      const quietGate = !v.foes.some((u) => u.p <= TREASURY_SAFE);
+      const quietGate = !v.foes.some((u) => u.p <= e.midLane);
       // In a quiet moment a level is only worth it while it still pays back by 6:00.
       const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / e.treasuryGoldPerSecMilli) <= TREASURY_PAYBACK_BY_TICKS;
       if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS))) {
@@ -347,7 +353,7 @@ export class Brain {
 
     // Treasury.
     if (nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < TREASURY_BEFORE_TICKS || rushing)) {
-      const safe = !v.foes.some((u) => u.p <= TREASURY_SAFE);
+      const safe = !v.foes.some((u) => u.p <= e.midLane);
       if (safe) add({ kind: 'treasury', cost: nextTreasury }, mulBp(W.economy, fSpare(v.gold, nextTreasury)) + goalBonus('treasury'));
     }
 
@@ -388,7 +394,7 @@ export class Brain {
 
     // Stance. A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her tiers too.
     if ((t.hold || P.holdAnyTier) && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
-      const weak = v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && v.turretsBuilt >= HOLD_MIN_TURRETS;
+      const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && v.turretsBuilt >= HOLD_MIN_TURRETS;
       const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {

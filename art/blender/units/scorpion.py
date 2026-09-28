@@ -21,8 +21,8 @@ SLUG = "scorpion"
 NAME = "Scorpion"
 HEIGHT_LU = 76
 YAW_DEG = -10.0
-CANVAS = (440, 270)
-FEET = (226, 246)
+CANVAS = (480, 270)
+FEET = (266, 246)
 ANCHORS = {"head": (-20, 74), "hitCenter": (0, 32)}
 
 WHEEL_R = 15.0
@@ -245,7 +245,7 @@ def _die(f):
     pose = merge(_crew(), gun(IDLE_ELEV + pick(f, [16, 24, 26]), tilt=pick(f, [6, 4, 2]), spin=pick(f, [-30, -40, -40])), {
         "unit": dict(squash(pick(f, [0.05, -0.16, -0.28])), x=pick(f, [-3, -6, -7]), r=pick(f, [6, 4, 2])),
         "wheel_r": {"x": pick(f, [0, -4, -6]), "z": pick(f, [0, -3, -4]), "rx": pick(f, [0, 25, 40])},
-        "crew": {"y": CREW_Y, "x": CREW_X - pick(f, [4, 10, 12]), "r": pick(f, [20, 40, 60]), "z": pick(f, [4, 2, 0])},
+        "crew": {"y": CREW_Y, "x": CREW_X - pick(f, [3, 6, 7]), "r": pick(f, [10, 18, 24]), "z": pick(f, [3, 1, 0])},
         "arm_r": {"r": pick(f, [120, 90, 90])}, "arm_l": {"r": pick(f, [150, 120, 120])},
         "thigh_r": {"r": pick(f, [25, 10, 10])}, "thigh_l": {"r": pick(f, [-10, -5, -5])},
         "bolt": {"hide": f >= 1},

@@ -66,9 +66,11 @@ def _arm(rig, s):
     rig.part(f"arm_{s}", g, BR, finish="metal")
     g = Geo().blob((1.0, y - 1.0 * sg, z + 3.0), (13.0, 11.0, 10.5), p=2.6)      # shoulder
     rig.part(f"arm_{s}", g, BR, finish="metal")
-    g = Geo().blob((1.0, y - 1.4 * sg, z + 5.5), (11.0, 9.0, 6.4), p=2.6)        # patina cap
-    g.clip((0, 0, z + 6.0), (0, 0, -1))
-    rig.part(f"arm_{s}", g, PATINA)
+    g = Geo().blob((1.0, y - 1.6 * sg, z + 5.0), (15.0, 13.0, 8.0), p=2.6, taper=(1.15, 0.9))   # team pauldron
+    g.clip((0, 0, z - 2.0), (0, 0, -1))
+    rig.part(f"arm_{s}", g, team=True)
+    g = Geo().blob((1.0, y - 1.6 * sg, z - 2.4), (15.6, 13.6, 1.5), p=3.0)
+    rig.part(f"arm_{s}", g, B.BRONZE, finish="metal", outline=0.6)
     g = Geo().lathe([(0, -3.0), (9.2, -2.8), (9.6, 0), (9.2, 2.8), (0, 3.0)], (0, y, z - UPPER), (0, y + 1, z - UPPER),
                     segs=18)
     rig.part(f"fore_{s}", g, DARK, finish="metal")
@@ -118,7 +120,7 @@ def build(rig):
         g = Geo().capsule((0, y, kz), (0, y, ANK_REST + 4), 7.6, 6.4)
         rig.part(f"shin_{s}", g, BR, finish="metal")
         g = Geo().blob((3.0, y, kz - 17.0), (9.0, 9.6, 16.0), p=2.6, taper=(0.82, 1.08))      # greave
-        rig.part(f"shin_{s}", g, BR_LT, finish="metal")
+        rig.part(f"shin_{s}", g, B.VERD_LT, finish="metal")
         g = Geo().blob((3.2, y, kz - 2.6), (8.6, 9.2, 1.6), p=3.0)
         rig.part(f"shin_{s}", g, B.BRONZE, finish="metal", outline=0.6)
         a = ANK_REST
@@ -142,15 +144,20 @@ def build(rig):
                rot=(0, 0, math.degrees(ang) + 90))
     rig.part("hem", g, team=True)
     g = Geo().blob((1.0, 0, HIP_Z + 7.0), (23.6, 23.4, 3.4), p=3.2)                            # belt
-    rig.part("hips", g, BR_DK, finish="metal")
+    rig.part("hips", g, B.VERD, finish="metal")
 
     # torso: a muscled bronze cuirass, patina streaks, a molten crack in the chest, team sash
     g = Geo().blob((0, 0, 88.0), (19.0, 19.0, 13.0), p=2.6)
     rig.part("torso", g, BR, finish="metal")
+    # team cape from the shoulders, trailing behind (follow-through)
+    rig.secondary("cape", "torso", (-18.0, 0, 136.0), (-34.0, 0, 70.0), max_deg=8, gain=0.8)
+    g = Geo().blob((-26.0, 2.0, 104.0), (7.0, 30.0, 34.0), p=2.6, taper=(1.35, 0.85), shift=(-0.6, 0))
+    rig.part("cape", g, team=True)
     g = Geo().blob((1.0, 0, 114.0), (30.0, 29.0, 25.0), p=2.6, taper=(0.78, 1.1))
-    rig.part("torso", g, BR, finish="metal")
-    g = Geo().blob((16.0, -8.0, 118.0), (12.0, 10.0, 8.6), p=2.2)                                  # pecs
-    g.blob((16.0, 8.0, 118.0), (12.0, 10.0, 8.6), p=2.2)
+    rig.part("torso", g, BR_LT, finish="metal")
+    g = Geo().blob((17.0, -9.0, 118.0), (12.0, 10.0, 8.6), p=2.2)                                  # pecs
+    g.blob((17.0, 9.0, 118.0), (12.0, 10.0, 8.6), p=2.2)
+    g.blob((20.0, -6.0, 100.0), (8.0, 9.0, 5.0), p=2.4).blob((20.0, 6.0, 100.0), (8.0, 9.0, 5.0), p=2.4)
     rig.part("torso", g, BR_LT, finish="metal")
     g = Geo()
     for x, y, z, rx, rz in ((22.0, -18.0, 126.0, 1.6, 10.0), (4.0, -26.0, 122.0, 1.8, 9.0),
@@ -174,7 +181,7 @@ def build(rig):
     # head: a great crested helmet with a dark T-shaped face opening and glowing eye slits
     g = Geo().blob((6.0, 0, 158.0), (15.0, 14.0, 15.0), p=2.4)
     g.blob((13.0, 0, 147.0), (8.0, 10.0, 6.0), p=2.4)
-    rig.part("head", g, BR, finish="metal")
+    rig.part("head", g, BR_LT, finish="metal")
     g = Geo().blob((-2.0, 0, 150.0), (8.0, 14.6, 8.0), p=2.4)                                     # neck guard
     rig.part("head", g, BR_DK, finish="metal")
     g = Geo().slab([(19.0, 162.0), (22.0, 162.0), (22.0, 158.0), (21.0, 150.0), (19.0, 143.0), (17.0, 143.0),
@@ -203,8 +210,8 @@ def build(rig):
     rig.part("crest", g, team=True)
 
     _arm(rig, "r")
-    B.dust_puff(rig, "root", (58.0, -14.0, 4.0), size=2.6, name="dust")
-    B.sparks(rig, "root", (52.0, -24.0, 10.0), size=2.8, name="sparks", rays=8, seed=3)
+    B.dust_puff(rig, "root", (40.0, -22.0, 4.0), size=2.6, name="dust")
+    B.sparks(rig, "root", (62.0, -30.0, 40.0), size=2.8, name="sparks", rays=8, seed=3)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -225,7 +232,7 @@ def arms(ra, rf, la=-75.0, lf=-30.0, rw=None):
     return merge(F.arm("r", ra, rf), F.arm("l", la, lf))
 
 
-REST = arms(-62, -8, -84, -44)
+REST = arms(-104, -78, -80, -40)
 WALK_MS = [175] * 8
 STRIDE = 28.0            # natural speed 2 x 28 / 1.4 s = 40 lu/s (sim speed 40)
 
@@ -263,12 +270,12 @@ def _attack(f):
     # 0-1 raise the fist and the near foot (coil, squash), 2 held extreme (fist high behind the
     # head, foot up), 3 smear (the smash), 4 held impact: fist in the ground ahead, foot
     # stamped, deep crouch, dust ring and sparks; 5-7 heavy recovery
-    ra = pick(f, [-20, 60, 100, 20, -40, -44, -60, -76])
-    rf = pick(f, [30, 110, 140, -20, -70, -66, -55, -44])
+    ra = pick(f, [-40, 60, 100, 20, -30, -36, -60, -90])
+    rf = pick(f, [10, 110, 140, -10, -50, -52, -60, -72])
     la = pick(f, [-70, -40, -20, -90, -110, -104, -90, -78])
     lf = pick(f, [-30, 0, 20, -50, -70, -64, -48, -34])
     foot = pick(f, [(12, 6), (16, 20), (18, 26), (22, 8), (24, 0), (22, 0), (16, 0), (11, 0)])
-    bob = pick(f, [0, -2, 1, -2, -12, -10, -5, -1])
+    bob = pick(f, [0, -2, 1, -2, -16, -13, -6, -1])
     dx = pick(f, [-1, -3, -4, 3, 8, 7, 4, 1])
     pose = merge(legs((STANCE_X["r"] + foot[0] - 10, foot[1]), (STANCE_X["l"], 0.0), (dx, LIFT + bob)),
                  arms(ra, rf, la, lf), _glow(f), {

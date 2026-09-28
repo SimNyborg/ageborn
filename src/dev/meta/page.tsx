@@ -52,6 +52,8 @@ function stepText(r: RewardStep): string {
       return `+${r.amount} Dust`;
     case 'capsule':
       return `capsule ${r.capsuleId}`;
+    case 'crate':
+      return `crate ${r.crateId}`;
     case 'clayPip':
       return `Clay pip ${r.meter}/3`;
     case 'codex':

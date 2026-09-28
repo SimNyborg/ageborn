@@ -161,6 +161,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       openCapsules: o.openCapsules ?? ((ids) => router.go({ id: 'capsule', ids })),
       openWardrobe: o.openWardrobe ?? ((id) => router.go({ id: 'capsule', ids: [id] })),
       restart: () => controller.showTitle(),
+      pickAge: (choices) => controller.agePicker.ask(choices),
     },
   });
 

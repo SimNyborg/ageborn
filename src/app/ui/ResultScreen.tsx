@@ -28,6 +28,8 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
       return { icon: 'dust', text: t('app.reward.dust', { amount: r.amount }) };
     case 'capsule':
       return { icon: 'capsule', text: t(o.starter ? 'app.reward.starterCapsule' : 'app.reward.capsule') };
+    case 'crate':
+      return { icon: 'plain', text: t('app.reward.crate') };
     case 'clayPip':
       return { icon: 'plain', text: t('app.reward.clayPip', { meter: r.meter }) };
     case 'codex':

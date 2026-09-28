@@ -55,7 +55,7 @@ export interface UiServices {
   /** "Open all" (A10: summary plus Epic-or-better reveals). */
   openAllCapsules(): void;
   openWardrobe(id: string): void;
-  /** Moves one banked Daily Capsule into the tray (A6.3). */
+  /** Moves one banked Supply Capsule into the tray (A6.3). */
   claimDailyCapsule(): ActionResult;
 
   // ---- cards and plans -----------------------------------------------------------------------

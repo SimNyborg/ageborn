@@ -48,6 +48,8 @@ export interface ResultProgress {
   max: number;
   /** Trophies of the next Trophy Road node (road only). */
   next?: number;
+  /** The War Chest filled in this match and was granted at once (A15.5): the bar shows full. */
+  done?: boolean;
 }
 
 export type ResultStage =
@@ -117,7 +119,10 @@ export function resultPlan(rewards: readonly RewardStep[], save: SaveDoc, conten
     used.add(main);
   }
   if (o.mode !== 'tutorial') {
-    const p = closestProgress(save, content);
+    // A15.5: a War Chest granted by this match is the progress step (its bar full), so the payoff
+    // shows even though the saved bar has already restarted at 0.
+    const chest = Math.max(1, content.quests.weekly.target);
+    const p = list.some((r) => r.kind === 'crate') ? { kind: 'warChest' as const, value: chest, max: chest, done: true } : closestProgress(save, content);
     if (p) stages.push({ kind: 'progress', progress: p });
   }
   for (const r of list) {
@@ -136,7 +141,8 @@ export function isNight(localHour: number): boolean {
 
 /**
  * The Daily Challenge "Copy result" line (A9.1, A15.7): plain text with no name, for example
- * `Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Won in 5:42 · Base 63%`. Copying pays nothing.
+ * `Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Won in 5:42 · Base 63%`, or for a loss
+ * `... · Veteran · Lost at 6:10` (no Base field). Copying pays nothing.
  */
 export function dailyResultLine(o: {
   dateKey: string;
@@ -145,8 +151,10 @@ export function dailyResultLine(o: {
   outcome: string;
   time: string;
   basePercent: number;
+  lost?: boolean;
   t: (k: string, p?: Record<string, string | number>) => string;
 }): string {
+  if (o.lost) return o.t('ui.result.dailyLineLost', { date: o.dateKey, modifier: o.modifier, difficulty: o.difficulty, time: o.time });
   return o.t('ui.result.dailyLine', {
     date: o.dateKey,
     modifier: o.modifier,

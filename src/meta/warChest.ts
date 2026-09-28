@@ -86,6 +86,7 @@ export function addWarChestWin(
       const c = grantCrateAt(save, 'weekly', t, now);
       save = c.save;
       crate = c.crate;
+      steps.push({ kind: 'crate', crateId: c.crate.id });
     } else if (r.kind === 'ageCapsule') {
       const g = grantCapsuleAt(save, 'age', t, now, age ? { age } : {});
       save = g.save;

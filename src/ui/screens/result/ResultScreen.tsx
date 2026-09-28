@@ -150,6 +150,10 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
         />
       );
     }
+    case 'crate':
+      return (
+        <RewardRow testid="reward-crate" icon={<CrateIcon size={40} />} label={t('ui.result.chestCrate')} value={<CheckIcon size={26} />} />
+      );
     case 'clayPip': {
       const max = content.capsules.clayMeterPips;
       const pips = Math.min(r.meter, max);
@@ -251,12 +255,14 @@ function ProgressStage(p: { progress: ResultProgress }) {
     g.kind === 'road'
       ? t('ui.result.progress.road', { n: formatInt(g.next ?? g.max, locale) })
       : g.kind === 'warChest'
-        ? t('ui.result.progress.warChest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) })
+        ? g.done
+          ? t('ui.result.progress.warChestDone')
+          : t('ui.result.progress.warChest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) })
         : t('ui.result.progress.conquest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) });
   const icon = g.kind === 'road' ? <RoadIcon size={32} /> : g.kind === 'warChest' ? <CrateIcon size={34} /> : <StarIcon size={32} />;
   return (
-    <RewardRow testid={`reward-progress-${g.kind}`} icon={icon} label={label}>
-      <ProgressBar value={g.value} max={g.max} tone="gold" label={label} />
+    <RewardRow testid={`reward-progress-${g.kind}`} icon={icon} label={label} tone={g.done ? 'good' : 'gold'}>
+      <ProgressBar value={g.value} max={g.max} tone={g.done ? 'green' : 'gold'} label={label} />
     </RewardRow>
   );
 }
@@ -296,9 +302,30 @@ function Stage(p: { stage: ResultStage; animate: boolean }) {
 
 /** A compact chip for the summary row. */
 function SummaryChip(p: { r: RewardStep }) {
-  const { t, locale, content } = useUi();
+  const { t, locale, content, save } = useUi();
   const r = p.r;
   switch (r.kind) {
+    case 'capsule': {
+      // A second capsule (Supply, a War Chest Age Capsule, a Conquest milestone): never hidden.
+      const cap = save.value.capsules.pending.find((c) => c.id === r.capsuleId);
+      return (
+        <span class="result-sum__chip is-done" data-testid="sum-capsule">
+          <CapsuleIcon tier={cap?.tier ?? 'bronze'} size={18} /> {cap ? t(capsuleKindNameKey(cap.kind)) : t('ui.result.capsule')}
+        </span>
+      );
+    }
+    case 'crate':
+      return (
+        <span class="result-sum__chip is-done" data-testid="sum-crate">
+          <CrateIcon size={18} /> {t('ui.result.crate')}
+        </span>
+      );
+    case 'clayPip':
+      return (
+        <span class="result-sum__chip" data-testid="sum-clay">
+          <CapsuleIcon tier="clay" size={18} /> {`${formatInt(Math.min(r.meter, content.capsules.clayMeterPips), locale)}/${formatInt(content.capsules.clayMeterPips, locale)}`}
+        </span>
+      );
     case 'amber':
       return (
         <span class="result-sum__chip">
@@ -493,6 +520,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       outcome: t(kind === 'win' ? 'ui.result.outcomeWon' : kind === 'loss' ? 'ui.result.outcomeLost' : 'ui.result.outcomeDraw'),
       time: formatClock(stats.durationMs),
       basePercent: stats.ownBaseHpBpAtEnd / 100,
+      lost: kind === 'loss',
       t,
     });
     const ok = () => toasts.show(t('ui.result.copied'), { tone: 'good' });

@@ -1,5 +1,5 @@
 /**
- * Progress view models: arena, unlocks (A3, A8, A9 #3), capsule charges and the Daily Capsule
+ * Progress view models: arena, unlocks (A3, A8, A9 #3), capsule charges and the Supply Capsule
  * (A6.3), quests (A6.7), Trophy Road nodes (A6.3) and the Conquest board (A6.10).
  * Pure over (save, content, now); the screens only render them.
  */
@@ -45,7 +45,7 @@ export function unlocks(save: SaveDoc, content: Content): Unlocks {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Charges and the Daily Capsule (A6.3)
+// Charges and the Supply Capsule (A6.3)
 // ---------------------------------------------------------------------------------------------
 
 export interface ChargesView {
@@ -69,14 +69,14 @@ export function chargesView(save: SaveDoc, content: Content, now: number): Charg
 }
 
 export interface DailyCapsuleView {
-  /** A6.3: the first Daily Capsule becomes available right after capsule 2 is opened. */
+  /** A6.3: the first Supply Capsule becomes available right after capsule 2 is opened. */
   unlocked: boolean;
   bank: number;
   max: number;
   nextInMs: number | null;
 }
 
-/** Capsules opened before the Daily Capsule unlocks (A6.3). */
+/** Capsules opened before the Supply Capsule unlocks (A6.3). */
 export const DAILY_UNLOCK_OPENED = 2;
 
 export function dailyCapsuleView(save: SaveDoc, content: Content, now: number): DailyCapsuleView {

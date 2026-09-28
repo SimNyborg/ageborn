@@ -3,11 +3,12 @@
  * contract types (`SimState`, `MatchConfig`), so `tutorial` stays independent of `sim` (B2).
  */
 import type { AgeId, CardId, MatchConfig, Side, SimEvent, SimState } from '@/contracts';
+import { LANE_MLU } from '@/core';
 
 export const PPM_FULL = 1_000_000;
 const MILLI = 1000;
-/** Lane length in milli-lu (A2.1, B3). */
-export const LANE_MILLI = 1_200_000;
+/** Lane length in milli-lu (A2.1, B3, A17.2: from core). */
+export const LANE_MILLI = LANE_MLU;
 
 /** Everything the director and hints read each tick. */
 export interface TickInput {

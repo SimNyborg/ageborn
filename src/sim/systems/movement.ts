@@ -118,7 +118,8 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
   const st0 = u.attacks[0];
   if (st0 && (st0.impactTick !== 0 || targetInRange(ctx, u, r, 0))) {
     m.engaged = true;
-    return;
+    // EXPERIMENT (A16.4 L3): melee keeps closing to contact while its target is in range.
+    if (st0.impactTick !== 0 || !e.meleeCloses || !r.attacks[0]?.melee) return;
   }
   let want = speed;
   const side = ctx.s.sides[u.side];
@@ -184,7 +185,8 @@ function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[]): void {
       }
     }
     if (nearest) {
-      const cap = rank === 1 ? nearest.newP : nearest.newP - Math.trunc(((r.width + nearest.r.width) * spacingBp) / BP);
+      const crowd = ctx.econ.gateCrowd > 0 && (!ctx.econ.crowdSiegeOnly || ctx.s.phase === 'siege') && nearest.newP + nearest.r.half >= LANE - ctx.econ.gateCrowd;
+      const cap = rank < ctx.econ.frontWidth || crowd ? nearest.newP : nearest.newP - Math.trunc(((r.width + nearest.r.width) * spacingBp) / BP);
       const room = cap - m.p;
       if (room < limit) limit = room;
     }

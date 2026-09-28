@@ -48,6 +48,22 @@ export interface MatchSummary {
   /** Final state hash (determinism checks). */
   hash: number;
   sides: [SideStats, SideStats];
+  /** Tick of the first unit-on-unit hit (A17.14 "first clash"), null if none. */
+  firstClashTick: number | null;
+  /**
+   * Once-a-second samples of the contact point, the midpoint of the two ground fronts (A17.14): seconds
+   * with a contact point (both sides have ground units) and those whose contact lies between the two
+   * turret covers (p 480 to L − 480).
+   */
+  contact: { samples: number; middle: number };
+}
+
+/** A ground unit as the contact sampler needs it (a subset of the sim's `UnitState`). */
+export interface LaneUnit {
+  side: Side;
+  x: number;
+  hp: number;
+  air: boolean;
 }
 
 function emptySide(): SideStats {
@@ -84,6 +100,8 @@ export class MatchTally {
   private readonly castInfo = new Map<number, { side: Side; power: CardId; hit: Set<number> }>();
   private readonly mounts: [(CardId | null)[], (CardId | null)[]] = [[null, null, null, null], [null, null, null, null]];
   private readonly refundBp: number;
+  private firstClash: number | null = null;
+  private readonly contact = { samples: 0, middle: 0 };
 
   constructor(private readonly content: CompiledContent) {
     this.refundBp = content.economy.sellRefundBp;
@@ -124,6 +142,7 @@ export class MatchTally {
       case 'hit': {
         const targetSide = this.unitSide.get(e.targetId);
         if (targetSide === undefined) break;
+        if (this.firstClash === null && e.sourceKind === 'unit' && e.castId === null) this.firstClash = e.tick;
         const by = this.sides[other(targetSide)];
         add(by.damage, e.sourceCard, e.damage);
         if (e.castId !== null) this.castInfo.get(e.castId)?.hit.add(e.targetId);
@@ -181,6 +200,24 @@ export class MatchTally {
     }
   }
 
+  /**
+   * One contact sample (call once a second): the midpoint of the two ground fronts, in lane mlu from side
+   * 0's gate, counts as "middle" between the turret covers (`coverMlu` from each gate).
+   */
+  sampleContact(units: readonly LaneUnit[], laneMlu: number, coverMlu: number): void {
+    let f0 = -1;
+    let f1 = -1;
+    for (const u of units) {
+      if (u.air || u.hp <= 0) continue;
+      if (u.side === 0) f0 = Math.max(f0, u.x);
+      else f1 = Math.max(f1, laneMlu - u.x);
+    }
+    if (f0 < 0 || f1 < 0) return;
+    const c = (f0 + laneMlu - f1) / 2;
+    this.contact.samples += 1;
+    if (c >= coverMlu && c <= laneMlu - coverMlu) this.contact.middle += 1;
+  }
+
   /** The summary; `outcome` null means the match hit the tick limit. */
   summary(o: { seed: number; format: FormatId; outcome: MatchOutcome | null; ticks: number; hash: number }): MatchSummary {
     for (const c of this.castInfo.values()) {
@@ -199,6 +236,8 @@ export class MatchTally {
       baseHpBp: out ? [out.baseHpBp[0], out.baseHpBp[1]] : [10000, 10000],
       hash: o.hash,
       sides: this.sides,
+      firstClashTick: this.firstClash,
+      contact: { ...this.contact },
     };
   }
 }

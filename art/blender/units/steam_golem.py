@@ -305,7 +305,7 @@ def _die(f):
                  "sx": pick(f, [0.97, 1.15, 1.25])},
         "hull": {"r": pick(f, [16, 22, 22])},
         "sparks": {"show": f == 0},
-        "steam": {"show": True, "s": pick(f, [1.2, 1.6, 1.8])},
+        "steam": {"show": f == 0, "s": 0.9},
         "puff": {"show": True, "s": pick(f, [1.2, 1.5, 1.7])},
         "fire": {"s": pick(f, [0.8, 0.5, 0.3])},
     })

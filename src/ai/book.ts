@@ -22,7 +22,7 @@ export interface UnitCard {
   pop: number;
   /** Range of the first attack in milli-lu (0 for units without attacks). */
   range: number;
-  /** Walking speed in lu/s (A2.1: 35-100), for the safe-window Evolve check (A7.3). */
+  /** Walking speed in lu/s: table speed × `economy.marchSpeedBp` (A17.2), for the safe-window Evolve check (A7.3). */
   speed: number;
   hitsAir: boolean;
   air: boolean;
@@ -123,7 +123,7 @@ export function cardBook(content: CompiledContent): CardBook {
       cost: u.cost * MILLI,
       pop: e.popByGroup[u.group] ?? 0,
       range: firstRange(u),
-      speed: Math.max(0, Math.trunc(u.speed)),
+      speed: Math.max(0, Math.trunc((u.speed * e.marchSpeedBp) / BP)),
       hitsAir: u.attacks.some((a) => a.hitsAir),
       air: u.tags.includes('air'),
       hidden: u.hidden === true,

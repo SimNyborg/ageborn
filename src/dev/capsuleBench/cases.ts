@@ -1,7 +1,7 @@
 /**
  * Capsule bench cases (WP10 DoD): every tier and start tier, fixed tiers, a first-time and a repeat
  * Legendary, a NEW Epic, each foil, Dust conversion, a bonus skin, the onboarding script, a
- * 10-capsule "Open all", and the Wardrobe reel (with the flag on and off).
+ * 10-capsule "Open all", and a Wardrobe Crate (card-flip reveal; there is no reel, A15.3).
  *
  * The reveals are hand-built from real content ids with the A6.4 tier shapes (stacks, copies,
  * guarantees); they are presentation fixtures, not rolls. Pure, so `cases.test.ts` checks them.

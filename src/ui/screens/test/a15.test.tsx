@@ -44,6 +44,31 @@ describe('Result budget (A15.13)', () => {
     expect(plan.summary.map((s) => s.kind)).toEqual(['amber']);
   });
 
+  it('a War Chest grant shows the chest full; a second capsule and the crate go into the summary (A15.5, A15.13)', () => {
+    const rewards: RewardStep[] = [
+      { kind: 'trophies', delta: 30 },
+      { kind: 'capsule', capsuleId: 'cap-mid-1' },
+      { kind: 'crate', crateId: 'crate-1' },
+      { kind: 'capsule', capsuleId: 'cap-mid-2' },
+      { kind: 'capsule', capsuleId: 'cap-mid-3' },
+    ];
+    const s = midGameSave(content);
+    const plan = resultPlan(rewards, { ...s, quests: { ...s.quests, weekly: { ...s.quests.weekly, progress: 0 } } }, content, { mode: 'ladder' });
+    const of = content.quests.weekly.target;
+    expect(plan.stages[2]).toEqual({ kind: 'progress', progress: { kind: 'warChest', value: of, max: of, done: true } });
+    expect(plan.summary.map((r) => r.kind)).toEqual(['crate', 'capsule', 'capsule']);
+  });
+
+  it('the summary row shows every extra capsule and the crate (none is hidden)', () => {
+    const info = fixtureResult(content, 'win');
+    const rewards: RewardStep[] = [...info.rewards, { kind: 'crate', crateId: 'crate-1' }, { kind: 'capsule', capsuleId: 'cap-mid-2' }];
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'result', info: { ...info, rewards } }] });
+    m.click('[data-testid="result-skip"]');
+    expect(m.q('[data-testid="sum-crate"]')).not.toBeNull();
+    expect(m.qa('[data-testid="sum-capsule"]').length).toBe(1);
+    expect(text(m.q('[data-testid="reward-progress-warChest"]')!)).toContain('War Chest full');
+  });
+
   it('picks the progress bar closest to done', () => {
     const s = midGameSave(content);
     const of = content.quests.weekly.target;
@@ -68,6 +93,20 @@ describe('Result budget (A15.13)', () => {
       t: (k, p) => (k === 'ui.result.dailyLine' ? `Ageborn Daily ${p!.date} · ${p!.modifier} · ${p!.difficulty} · ${p!.outcome} in ${p!.time} · Base ${p!.base}%` : k),
     });
     expect(line).toBe('Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Won in 5:42 · Base 63%');
+  });
+
+  it('the Daily copy line for a loss reads "Lost at 6:10" with no Base field (A15.7)', () => {
+    const line = dailyResultLine({
+      dateKey: '2026-10-03',
+      modifier: 'Glass Armies',
+      difficulty: 'Veteran',
+      outcome: 'Lost',
+      time: '6:10',
+      basePercent: 0,
+      lost: true,
+      t: (k, p) => (k === 'ui.result.dailyLineLost' ? `Ageborn Daily ${p!.date} · ${p!.modifier} · ${p!.difficulty} · Lost at ${p!.time}` : k),
+    });
+    expect(line).toBe('Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Lost at 6:10');
   });
 });
 

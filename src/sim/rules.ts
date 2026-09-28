@@ -341,6 +341,13 @@ export interface EconRules {
   levelStepBp: number;
   maxLevel: number;
   healPulseTicks: number;
+  /** EXPERIMENT (A16.4 L3). */
+  meleeCloses: boolean;
+  /** EXPERIMENT (A16.4 L4). */
+  frontWidth: number;
+  /** EXPERIMENT: gate crowd zone, mlu (0 = off). */
+  gateCrowd: number;
+  crowdSiegeOnly: boolean;
 }
 
 export interface SimRules {
@@ -770,6 +777,10 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     levelStepBp: e.levelStepBp,
     maxLevel: e.maxLevel,
     healPulseTicks: t.healPulse,
+    meleeCloses: (e as { meleeCloses?: unknown }).meleeCloses === true,
+    frontWidth: posOr((e as { frontWidth?: unknown }).frontWidth, 2),
+    crowdSiegeOnly: (e as { crowdSiegeOnly?: unknown }).crowdSiegeOnly === true,
+    gateCrowd: mlu(posOr((e as { gateCrowd?: unknown }).gateCrowd, 0)),
   };
 }
 

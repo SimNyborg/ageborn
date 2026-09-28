@@ -5,8 +5,9 @@
  * wired in. Dev tool only.
  */
 import type { CompiledContent, SimState } from '@/contracts';
+import { LANE_MLU } from '@/core';
 
-const LANE_LU = 1200;
+const LANE_LU = LANE_MLU / 1000;
 const BASE_LU = 140;
 const MARGIN_LU = 20;
 const WORLD_LU = LANE_LU + 2 * (BASE_LU + MARGIN_LU);
@@ -26,7 +27,7 @@ export function drawLane(ctx: CanvasRenderingContext2D, s: Readonly<SimState>, c
   // Hold lines (p = 320) and mid-lane.
   ctx.strokeStyle = '#3a3960';
   ctx.setLineDash([4, 4]);
-  for (const x of [320, 600, 880]) {
+  for (const x of [320, LANE_LU / 2, LANE_LU - 320]) {
     ctx.beginPath();
     ctx.moveTo(xOf(x * 1000), 8);
     ctx.lineTo(xOf(x * 1000), ground);
@@ -37,7 +38,7 @@ export function drawLane(ctx: CanvasRenderingContext2D, s: Readonly<SimState>, c
   // Bases and turrets.
   for (const side of [0, 1] as const) {
     const sd = s.sides[side];
-    const left = side === 0 ? MARGIN_LU * scale : xOf(1200000);
+    const left = side === 0 ? MARGIN_LU * scale : xOf(LANE_MLU);
     const bw = BASE_LU * scale;
     ctx.fillStyle = SIDE_COLOR[side];
     ctx.globalAlpha = 0.35;

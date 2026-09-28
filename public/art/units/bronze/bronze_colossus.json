@@ -1,0 +1,2043 @@
+{
+ "frames": {
+  "bronze_colossus_idle_00": {
+   "frame": {
+    "x": 772,
+    "y": 2,
+    "w": 91,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 189,
+    "w": 91,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_00_team": {
+   "frame": {
+    "x": 1106,
+    "y": 447,
+    "w": 80,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 184,
+    "w": 80,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_01": {
+   "frame": {
+    "x": 580,
+    "y": 2,
+    "w": 92,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 188,
+    "w": 92,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_01_team": {
+   "frame": {
+    "x": 86,
+    "y": 641,
+    "w": 79,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 184,
+    "w": 79,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_02": {
+   "frame": {
+    "x": 99,
+    "y": 2,
+    "w": 92,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 186,
+    "w": 92,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_02_team": {
+   "frame": {
+    "x": 1190,
+    "y": 447,
+    "w": 80,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 182,
+    "w": 80,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 93,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 185,
+    "w": 93,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_03_team": {
+   "frame": {
+    "x": 1274,
+    "y": 447,
+    "w": 80,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 181,
+    "w": 80,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_04": {
+   "frame": {
+    "x": 195,
+    "y": 2,
+    "w": 92,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 186,
+    "w": 92,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_04_team": {
+   "frame": {
+    "x": 1358,
+    "y": 447,
+    "w": 80,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 182,
+    "w": 80,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_05": {
+   "frame": {
+    "x": 676,
+    "y": 2,
+    "w": 92,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 188,
+    "w": 92,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_idle_05_team": {
+   "frame": {
+    "x": 169,
+    "y": 641,
+    "w": 79,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 184,
+    "w": 79,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_00": {
+   "frame": {
+    "x": 1160,
+    "y": 2,
+    "w": 101,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 192,
+    "w": 101,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_00_team": {
+   "frame": {
+    "x": 422,
+    "y": 641,
+    "w": 81,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 187,
+    "w": 81,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_01": {
+   "frame": {
+    "x": 1062,
+    "y": 2,
+    "w": 94,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 190,
+    "w": 94,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_01_team": {
+   "frame": {
+    "x": 973,
+    "y": 641,
+    "w": 80,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 186,
+    "w": 80,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_02": {
+   "frame": {
+    "x": 291,
+    "y": 2,
+    "w": 89,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 186,
+    "w": 89,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_02_team": {
+   "frame": {
+    "x": 507,
+    "y": 641,
+    "w": 81,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 182,
+    "w": 81,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_03": {
+   "frame": {
+    "x": 867,
+    "y": 2,
+    "w": 85,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 188,
+    "w": 85,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 641,
+    "w": 80,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 184,
+    "w": 80,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_04": {
+   "frame": {
+    "x": 134,
+    "y": 228,
+    "w": 86,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 192,
+    "w": 86,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_04_team": {
+   "frame": {
+    "x": 252,
+    "y": 641,
+    "w": 79,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 187,
+    "w": 79,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_05": {
+   "frame": {
+    "x": 643,
+    "y": 228,
+    "w": 91,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 188,
+    "w": 91,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_05_team": {
+   "frame": {
+    "x": 934,
+    "y": 447,
+    "w": 82,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 184,
+    "w": 82,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_06": {
+   "frame": {
+    "x": 438,
+    "y": 228,
+    "w": 97,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 184,
+    "w": 97,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_06_team": {
+   "frame": {
+    "x": 544,
+    "y": 447,
+    "w": 85,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 180,
+    "w": 85,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_07": {
+   "frame": {
+    "x": 539,
+    "y": 228,
+    "w": 100,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 187,
+    "w": 100,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_walk_07_team": {
+   "frame": {
+    "x": 1020,
+    "y": 447,
+    "w": 82,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 182,
+    "w": 82,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_00": {
+   "frame": {
+    "x": 333,
+    "y": 228,
+    "w": 101,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 189,
+    "w": 101,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_00_team": {
+   "frame": {
+    "x": 335,
+    "y": 641,
+    "w": 83,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 185,
+    "w": 83,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_01": {
+   "frame": {
+    "x": 1013,
+    "y": 228,
+    "w": 115,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 193,
+    "w": 115,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_01_team": {
+   "frame": {
+    "x": 881,
+    "y": 641,
+    "w": 88,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 188,
+    "w": 88,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_02": {
+   "frame": {
+    "x": 2,
+    "y": 228,
+    "w": 128,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 181,
+    "w": 128,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_02_team": {
+   "frame": {
+    "x": 358,
+    "y": 447,
+    "w": 88,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 176,
+    "w": 88,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_03": {
+   "frame": {
+    "x": 224,
+    "y": 228,
+    "w": 105,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 186,
+    "w": 105,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_03_team": {
+   "frame": {
+    "x": 450,
+    "y": 447,
+    "w": 90,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 182,
+    "w": 90,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_04": {
+   "frame": {
+    "x": 244,
+    "y": 447,
+    "w": 110,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 234,
+    "w": 110,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_04_team": {
+   "frame": {
+    "x": 715,
+    "y": 813,
+    "w": 115,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 230,
+    "w": 115,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 447,
+    "w": 106,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 223,
+    "w": 106,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_05_team": {
+   "frame": {
+    "x": 368,
+    "y": 813,
+    "w": 109,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 219,
+    "w": 109,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_06": {
+   "frame": {
+    "x": 1250,
+    "y": 228,
+    "w": 101,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 215,
+    "w": 101,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_06_team": {
+   "frame": {
+    "x": 139,
+    "y": 813,
+    "w": 110,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 211,
+    "w": 110,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_07": {
+   "frame": {
+    "x": 1368,
+    "y": 2,
+    "w": 92,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 191,
+    "w": 92,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_07_team": {
+   "frame": {
+    "x": 1442,
+    "y": 447,
+    "w": 84,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 187,
+    "w": 84,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_08": {
+   "frame": {
+    "x": 481,
+    "y": 2,
+    "w": 95,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 188,
+    "w": 95,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_08_team": {
+   "frame": {
+    "x": 717,
+    "y": 447,
+    "w": 79,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 183,
+    "w": 79,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_00": {
+   "frame": {
+    "x": 906,
+    "y": 228,
+    "w": 103,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 200,
+    "w": 103,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_00_team": {
+   "frame": {
+    "x": 1193,
+    "y": 641,
+    "w": 87,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 196,
+    "w": 87,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_01": {
+   "frame": {
+    "x": 1132,
+    "y": 228,
+    "w": 114,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 208,
+    "w": 114,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_01_team": {
+   "frame": {
+    "x": 1398,
+    "y": 641,
+    "w": 94,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 204,
+    "w": 94,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_02": {
+   "frame": {
+    "x": 956,
+    "y": 2,
+    "w": 102,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 190,
+    "w": 102,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_02_team": {
+   "frame": {
+    "x": 592,
+    "y": 641,
+    "w": 84,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 186,
+    "w": 84,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_03": {
+   "frame": {
+    "x": 1265,
+    "y": 2,
+    "w": 99,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 191,
+    "w": 99,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_03_team": {
+   "frame": {
+    "x": 680,
+    "y": 641,
+    "w": 84,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 186,
+    "w": 84,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_04": {
+   "frame": {
+    "x": 384,
+    "y": 2,
+    "w": 93,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 187,
+    "w": 93,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_hit_04_team": {
+   "frame": {
+    "x": 633,
+    "y": 447,
+    "w": 80,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 183,
+    "w": 80,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_00": {
+   "frame": {
+    "x": 738,
+    "y": 228,
+    "w": 164,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 196,
+    "w": 164,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_00_team": {
+   "frame": {
+    "x": 768,
+    "y": 641,
+    "w": 109,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 192,
+    "w": 109,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_01": {
+   "frame": {
+    "x": 1355,
+    "y": 228,
+    "w": 163,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 215,
+    "w": 163,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_01_team": {
+   "frame": {
+    "x": 1284,
+    "y": 641,
+    "w": 110,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 211,
+    "w": 110,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_02": {
+   "frame": {
+    "x": 112,
+    "y": 447,
+    "w": 128,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 225,
+    "w": 128,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_02_team": {
+   "frame": {
+    "x": 253,
+    "y": 813,
+    "w": 111,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 221,
+    "w": 111,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_03": {
+   "frame": {
+    "x": 800,
+    "y": 447,
+    "w": 130,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 236,
+    "w": 130,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_03_team": {
+   "frame": {
+    "x": 481,
+    "y": 813,
+    "w": 113,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 232,
+    "w": 113,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_04": {
+   "frame": {
+    "x": 1057,
+    "y": 641,
+    "w": 132,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 243,
+    "w": 132,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_04_team": {
+   "frame": {
+    "x": 598,
+    "y": 813,
+    "w": 113,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 238,
+    "w": 113,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_05": {
+   "frame": {
+    "x": 2,
+    "y": 813,
+    "w": 133,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 253,
+    "w": 133,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_05_team": {
+   "frame": {
+    "x": 834,
+    "y": 813,
+    "w": 114,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 249,
+    "w": 114,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_06": {
+   "frame": {
+    "x": 952,
+    "y": 813,
+    "w": 136,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 277,
+    "w": 136,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_06_team": {
+   "frame": {
+    "x": 1353,
+    "y": 813,
+    "w": 117,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 274,
+    "w": 117,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_07": {
+   "frame": {
+    "x": 1092,
+    "y": 813,
+    "w": 136,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 277,
+    "w": 136,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_die_07_team": {
+   "frame": {
+    "x": 1232,
+    "y": 813,
+    "w": 117,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 273,
+    "w": 117,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "bronze_colossus_idle_00",
+   "bronze_colossus_idle_01",
+   "bronze_colossus_idle_02",
+   "bronze_colossus_idle_03",
+   "bronze_colossus_idle_04",
+   "bronze_colossus_idle_05"
+  ],
+  "idle_team": [
+   "bronze_colossus_idle_00_team",
+   "bronze_colossus_idle_01_team",
+   "bronze_colossus_idle_02_team",
+   "bronze_colossus_idle_03_team",
+   "bronze_colossus_idle_04_team",
+   "bronze_colossus_idle_05_team"
+  ],
+  "walk": [
+   "bronze_colossus_walk_00",
+   "bronze_colossus_walk_01",
+   "bronze_colossus_walk_02",
+   "bronze_colossus_walk_03",
+   "bronze_colossus_walk_04",
+   "bronze_colossus_walk_05",
+   "bronze_colossus_walk_06",
+   "bronze_colossus_walk_07"
+  ],
+  "walk_team": [
+   "bronze_colossus_walk_00_team",
+   "bronze_colossus_walk_01_team",
+   "bronze_colossus_walk_02_team",
+   "bronze_colossus_walk_03_team",
+   "bronze_colossus_walk_04_team",
+   "bronze_colossus_walk_05_team",
+   "bronze_colossus_walk_06_team",
+   "bronze_colossus_walk_07_team"
+  ],
+  "attack": [
+   "bronze_colossus_attack_00",
+   "bronze_colossus_attack_00",
+   "bronze_colossus_attack_01",
+   "bronze_colossus_attack_01",
+   "bronze_colossus_attack_02",
+   "bronze_colossus_attack_03",
+   "bronze_colossus_attack_04",
+   "bronze_colossus_attack_04",
+   "bronze_colossus_attack_05",
+   "bronze_colossus_attack_06",
+   "bronze_colossus_attack_06",
+   "bronze_colossus_attack_07",
+   "bronze_colossus_attack_08"
+  ],
+  "attack_team": [
+   "bronze_colossus_attack_00_team",
+   "bronze_colossus_attack_00_team",
+   "bronze_colossus_attack_01_team",
+   "bronze_colossus_attack_01_team",
+   "bronze_colossus_attack_02_team",
+   "bronze_colossus_attack_03_team",
+   "bronze_colossus_attack_04_team",
+   "bronze_colossus_attack_04_team",
+   "bronze_colossus_attack_05_team",
+   "bronze_colossus_attack_06_team",
+   "bronze_colossus_attack_06_team",
+   "bronze_colossus_attack_07_team",
+   "bronze_colossus_attack_08_team"
+  ],
+  "hit": [
+   "bronze_colossus_hit_00",
+   "bronze_colossus_hit_01",
+   "bronze_colossus_hit_02",
+   "bronze_colossus_hit_03",
+   "bronze_colossus_hit_04"
+  ],
+  "hit_team": [
+   "bronze_colossus_hit_00_team",
+   "bronze_colossus_hit_01_team",
+   "bronze_colossus_hit_02_team",
+   "bronze_colossus_hit_03_team",
+   "bronze_colossus_hit_04_team"
+  ],
+  "die": [
+   "bronze_colossus_die_00",
+   "bronze_colossus_die_01",
+   "bronze_colossus_die_01",
+   "bronze_colossus_die_02",
+   "bronze_colossus_die_03",
+   "bronze_colossus_die_04",
+   "bronze_colossus_die_04",
+   "bronze_colossus_die_05",
+   "bronze_colossus_die_05",
+   "bronze_colossus_die_06",
+   "bronze_colossus_die_06",
+   "bronze_colossus_die_07"
+  ],
+  "die_team": [
+   "bronze_colossus_die_00_team",
+   "bronze_colossus_die_01_team",
+   "bronze_colossus_die_01_team",
+   "bronze_colossus_die_02_team",
+   "bronze_colossus_die_03_team",
+   "bronze_colossus_die_04_team",
+   "bronze_colossus_die_04_team",
+   "bronze_colossus_die_05_team",
+   "bronze_colossus_die_05_team",
+   "bronze_colossus_die_06_team",
+   "bronze_colossus_die_06_team",
+   "bronze_colossus_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bronze_colossus.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 968
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.bronze_colossus",
+   "name": "Bronze Colossus",
+   "heightLu": 200,
+   "widthLu": 86.8,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    220.0,
+    393.0
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     196
+    ],
+    "hitCenter": [
+     0,
+     104
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      175,
+      175,
+      175,
+      175,
+      175,
+      175,
+      175,
+      175
+     ],
+     "durationMs": 1400,
+     "strideLu": 54.2,
+     "naturalSpeedLuPerS": 38.7
+    },
+    "attack": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      90,
+      80,
+      80,
+      90,
+      190,
+      40,
+      90,
+      90,
+      90,
+      90,
+      90,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactAt": 0.4634,
+     "smearFrame": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        72.0
+       ],
+       "scale": 1.085
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        110.0
+       ],
+       "loops": 2,
+       "scale": 1.042
+      }
+     ],
+     "hideUnitAtMs": 990
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

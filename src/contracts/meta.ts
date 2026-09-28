@@ -68,6 +68,8 @@ export type RewardStep =
   | { kind: 'amber'; amount: number }
   | { kind: 'dust'; amount: number }
   | { kind: 'capsule'; capsuleId: string }
+  /** A Wardrobe Crate granted by this result (the War Chest, A15.5). */
+  | { kind: 'crate'; crateId: string }
   | { kind: 'clayPip'; meter: number }
   | { kind: 'codex'; points: number; levelUp: boolean }
   | { kind: 'quest'; questId: string; progress: number; done: boolean }

@@ -334,6 +334,7 @@ function skirmishOpponent(s: SaveDoc, t: Content, o: SkirmishOptions): OpponentS
       format: o.format,
       side: side(echo.nameKey, loadouts, levels, { ...s.skins.equipped }),
       seed,
+      disclosures: [ECHO_DISCLOSURE_KEY],
       standardLevels: o.standardLevels,
     });
   }
@@ -350,7 +351,9 @@ function skirmishOpponent(s: SaveDoc, t: Content, o: SkirmishOptions): OpponentS
     format: o.format,
     side: side(general.nameKey, fullPlan(t, general.warPlan, ages), levelsFor(t, level, legendary)),
     seed,
-    disclosures: o.standardLevels ? [] : general.disclosureKeys,
+    // A6.8: The Warden still fields his Legendaries at Standard levels, so the VS screen still says
+    // so (at the Standard level, not his own).
+    disclosures: o.standardLevels ? (general.legendaryLevel !== null ? [`general.${general.id}.disclosureStandard`] : []) : general.disclosureKeys,
     standardLevels: o.standardLevels,
   });
 }
@@ -375,6 +378,9 @@ function tutorialOpponent(s: SaveDoc, t: Content): OpponentSpec {
   const arena = t.arenas.list[0] ?? arenaOf(s, t);
   return ladderGeneral(s, t, pip, TUTORIAL_MATCH2.tier, arena, TUTORIAL_MATCH2.format, seedOf(s, 'tutorial:2'));
 }
+
+/** The Echo of You label (A7.1, A15.3): "AI · Echo of You: an AI playing your War Plan". */
+export const ECHO_DISCLOSURE_KEY = 'general.echo.disclosure';
 
 /** The VS disclosure of the A6.8 new-player bonus, first 20 matches of a save (A15.3). */
 export const ROOKIE_DISCLOSURE_KEY = 'app.disclosure.rookie';
