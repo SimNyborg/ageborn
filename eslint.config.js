@@ -134,6 +134,8 @@ export default tseslint.config(
     ignores: [
       'dist/**', 'node_modules/**', 'coverage/**', 'reports/**', 'playwright-report/**',
       'test-results/**', 'placeholder/**', 'assets-src/**', '.claude/**',
+      // The online server (server/) is its own package with its own tooling and checks.
+      'server/**',
     ],
   },
   js.configs.recommended,
