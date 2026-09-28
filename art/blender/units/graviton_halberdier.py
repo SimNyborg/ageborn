@@ -135,7 +135,7 @@ def _attack(f):
     # 4 held impact (blade down in front, orb flares), 5-7 recovery
     gx = pick(f, [2, -2, -5, 6, 12, 10, 8, 6])
     gz = pick(f, [22, 34, 40, 34, 22, 23, 24, 25])
-    deg = pick(f, [34, 78, 100, 45, -4, 0, 12, 24])
+    deg = pick(f, [34, 78, 100, 50, 14, 16, 20, 26])
     pose = merge(hold(gx, gz, deg), {
         "body": dict(squash(pick(f, [-0.07, 0.04, 0.07, 0.03, -0.15, -0.08, -0.03, 0])),
                      x=pick(f, [-1, -2, -3, 2, 6, 5, 2.5, 0.5])),

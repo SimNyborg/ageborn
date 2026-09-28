@@ -544,6 +544,349 @@ def future(key: int = 6) -> Arrangement:
 
 
 # ------------------------------------------------------------------------------------------------
+# The three A17 ages. Their keys follow the eight-age evolve chain (A17.8: +2, +2, +1, +1, +1, +1,
+# +1 from Stone's C): Bronze D (+2), Industrial F# (+6), Cosmic A (+9). Past +6 the lead lines drop
+# one octave so the register stays comfortable.
+#
+# GM programs only used here.
+P.update(accordion=21, oboe=68, shanai=111, dulcimer=15, kalimba=108, muted_trumpet=59, euphonium=58,
+         synth_brass=62, synth_brass2=63, polysynth=90, space_voice=91, crystal=98, vibes=11,
+         tubular=14, bagpipe=109, fiddle=110)
+CHINA = 52  # GM Chinese cymbal: a thin bronze crash
+MUTE_TRI, OPEN_TRI = 80, 81
+
+
+def _extra_machine(L: float, bpm: float, bars: int) -> tuple[np.ndarray, float, float]:
+    """Industrial "steam machine" percussion made in numpy: piston chuffs on the 8ths (accented like
+    a locomotive), a struck anvil on the backbeat and a steam-vent hiss at every section start. It
+    follows the loop's form: the engine starts in the intro, drives the groove bars and takes the lead
+    in the breakdown. Returns (stereo, rel LU vs the lead, reverb send)."""
+    import dsp
+
+    rng = np.random.default_rng(1851)
+    beat = 60 / bpm
+    n = dsp.n_of(L + 2.0)
+    out = np.zeros((n, 2))
+
+    def put(x: np.ndarray, t: float, g: float, pan_: float) -> None:
+        i = int(round(t * dsp.SR))
+        if i >= n:
+            return
+        s = dsp.pan(x, pan_) * g
+        e = min(n, i + len(s))
+        out[i:e] += s[: e - i]
+
+    def chuff(strong: bool) -> np.ndarray:
+        d = 0.11 if strong else 0.075
+        x = dsp.bp(dsp.noise(d, rng, "pink"), 500, 3200, 2) * dsp.env_exp(d, 0.035 if strong else 0.02, 0.002)
+        body = dsp.osc(dsp.drop(140, 80, d, 0.02), "sine") * dsp.env_exp(d, 0.03, 0.001) * (0.5 if strong else 0.0)
+        return x * (1.0 if strong else 0.55) + body
+
+    def anvil(f0: float) -> np.ndarray:
+        d = 0.6
+        y = np.zeros(dsp.n_of(d))
+        for ratio, amp in ((1.0, 1.0), (2.76, 0.55), (5.40, 0.35), (8.93, 0.18)):
+            if f0 * ratio < 15000:
+                y += dsp.osc(f0 * ratio, "sine", d) * amp * dsp.env_exp(d, 0.18 / ratio**0.6, 0.0005)
+        tick = dsp.bp(dsp.noise(0.01, rng), 2000, 9000) * dsp.env_exp(0.01, 0.002, 0.0002)
+        y[: len(tick)] += tick * 0.8
+        return y
+
+    def hiss() -> np.ndarray:
+        d = 0.9
+        x = dsp.hp(dsp.noise(d, rng), 3000, 2)
+        return dsp.lp(x, 9000, 2) * dsp.env_exp(d, 0.3, 0.02) * 0.5
+
+    hot = set(HOT)
+    brk = set(BRK)
+    for b in range(bars):
+        t0 = b * 4 * beat
+        if b < 2:
+            steps = [0, 2, 4, 6] if b == 1 else [0, 4]  # the engine starts
+        else:
+            steps = list(range(8))
+        for k in steps:
+            strong = k % 2 == 0
+            g = (0.9 if k in (0, 4) else 0.7) if strong else 0.5
+            if b in brk:
+                g *= 1.15
+            put(chuff(strong), t0 + k * beat / 2 + rng.uniform(-0.003, 0.003), g, -0.25 if k % 2 else 0.2)
+        if b in hot or b in brk:
+            f = 1320 * (1.0 if b % 2 == 0 else 1.06)
+            for bt in (1, 3):
+                put(anvil(f), t0 + bt * beat, 0.35 if b not in brk else 0.5, 0.35)
+            if b % 2 == 1:
+                put(anvil(f * 1.12), t0 + 3.5 * beat, 0.22, 0.4)
+        if b in DOWNBEATS:
+            put(hiss(), t0, 0.5, -0.4)
+    return out, -9.0, 0.12
+
+
+def bronze(key: int = 2) -> Arrangement:
+    """Bronze (D): plucked lyre, frame drums, reed pipe and horns; a temple march in the sun."""
+    reed = t("reed pipe", P["oboe"])
+    add_melody(reed, key, A_BARS, vel=96)
+    add_harmony_third(reed, key, B_BARS, vel=70)
+    add_melody(reed, key, A3_BARS, vel=94)
+    add_b2(reed, key, range(0, 8), vel=96)
+    add_b2(reed, key, range(8, 12), vel=74, third=True)
+    calls(reed, key, OUTRO_CALL, vel=90)
+    shanai = t("double reed", P["shanai"])  # a nasal aulos colour on the melody in the loud sections
+    add_melody(shanai, key, A3_BARS, vel=70)
+    add_b2(shanai, key, range(0, 4), vel=66)
+    horn = t("horns", P["horn"])
+    calls(horn, key, INTRO_CALL, octave=-1, vel=90)
+    add_melody(horn, key, B_BARS, octave=-1, vel=96)
+    add_melody(horn, key, A3_BARS, octave=-1, vel=84)
+    add_b2(horn, key, range(8, 12), octave=-1, vel=96)
+    horns2 = t("horn fifths", P["horn"])
+    for b in list(loop_bars(B_BARS)) + list(range(B2_START + 8, BREAK_START)):
+        r = root(chord_at(b), 3) + key
+        if r > 57:
+            r -= 12
+        horns2.add(bar(b), 1.9, r, 72)
+        horns2.add(bar(b), 1.9, r + 7, 68)
+        horns2.add(bar(b) + 2, 1.9, r, 66)
+        horns2.add(bar(b) + 2, 1.9, r + 7, 62)
+    lyre = t("lyre", P["harp"])
+    # A rolling lyre figure: low root, then the chord broken upwards, a little different on bar 2 of 2.
+    for b in ALL:
+        ch = chord_at(b)
+        r = root(ch, 3)
+        v = voicing(ch, r)
+        pool = [v[0], v[1], v[2], v[0] + 12, v[1] + 12, v[2] + 12, v[0] + 24]
+        pat = [0, 2, 3, 4, 5, 4, 3, 2] if b % 2 == 0 else [0, 2, 3, 5, 6, 5, 3, 4]
+        if b in BRK:
+            pat = [0, 3, 2, 3, 0, 3, 4, 3]
+        for k, s in enumerate(pat):
+            lyre.add(bar(b) + k * 0.5, 0.9, pool[s] + key, 84 if k in (0, 4) else 68)
+    dulc = t("dulcimer", P["dulcimer"])  # a bright hammered sparkle over the B-theme and the breakdown
+    for b in list(B2) + list(range(BREAK_START + 4, OUTRO_START)):
+        ch = chord_at(b)
+        v = voicing(ch, root(ch, 5))
+        for k, s in enumerate([2, 1, 0, 1, 2, 1, 0, 1]):
+            dulc.add(bar(b) + k * 0.5 + 0.25, 0.3, v[s] + key - 12, 58 if k % 2 else 66)
+    strings = t("strings", P["strings"])
+    add_pad(strings, key, NOBRK, 57, vel=60)
+    drone = t("drone", P["cello"])  # tonic and fifth, the ancient drone under the march
+    for b in ALL:
+        r = root(chord_at(b), 2) + key
+        drone.add(bar(b), 1.9, r, 90)
+        drone.add(bar(b) + 2, 1.9, r + 7 if b % 2 == 0 else r + 12, 78)
+    bass = t("contrabass", P["contrabass"])
+    add_roots(bass, key, range(2, LOOP_BARS), 2, [(0, 1.4, 0, 96), (1.5, 0.45, 0, 70), (2, 1.4, 7, 84), (3.5, 0.45, 0, 72)])
+    frame = t("big frame drum", P["taiko"])  # the taiko sample pitched up reads as a large frame drum
+    for b in ALL:
+        # Maqsum: DUM tek - tek DUM - tek -
+        hits = [(0, 112, 57), (1.5, 76, 62), (2, 100, 57), (3, 84, 62)]
+        if b < 2:
+            hits = [(0, 104, 57), (2, 92, 57)]
+        elif b in BRK and b < BREAK_START + 4:
+            hits = [(0, 110, 57), (2.5, 80, 62), (3, 92, 57)]
+        for beat, v, n in hits:
+            frame.add(bar(b) + beat, 0.5, n, v)
+        if b in FILL_BARS:
+            for k, v in enumerate([70, 80, 92, 106]):
+                frame.add(bar(b) + 3 + k * 0.25, 0.25, 62 if k % 2 else 57, v)
+    hand = t("frame drums and riq", KIT_STANDARD, drums=True)
+    drum_pattern(hand, range(2, LOOP_BARS), [(0.5, CONGA_MUTE, 58), (1, CONGA_OPEN, 74), (2.5, CONGA_MUTE, 60), (3.5, CONGA_OPEN, 72)])
+    grid16(hand, range(THEME_START, LOOP_BARS), TAMB, [58, 0, 36, 44] * 4)
+    grid16(hand, range(2, THEME_START), TAMB, [48, 0, 30, 0] * 4)
+    drum_pattern(hand, loop_bars(range(8, 16)), [(1, OPEN_TRI, 46), (3, OPEN_TRI, 46)])  # finger cymbals
+    drum_pattern(hand, B2, [(1, MUTE_TRI, 44), (3, OPEN_TRI, 44)])
+    for b in DOWNBEATS:
+        if b not in BRK:
+            hand.add(bar(b), 1, CHINA, 78)
+    for b in FILL_BARS:
+        roll(hand, b, CONGA_LOW, 2, 3, 60, 92, 0.5)
+    timp = t("timpani", P["timpani"])
+    for b in DOWNBEATS:
+        r = root(chord_at(b), 2) + key
+        timp.add(bar(b), 1.5, r - 12 if r > 50 else r, 100 if b not in BRK else 84)
+    parts = [
+        Part(reed, rel=0, lead=True, pan=0.05, send=0.3, hp=220, eq=[(1200, 1.5, 1.0)]),
+        Part(shanai, rel=-9, pan=0.3, send=0.35, hp=400, lp=9000),
+        Part(horn, rel=-0.5, pan=-0.15, send=0.32, hp=90),
+        Part(horns2, rel=-10, pan=-0.35, send=0.35, hp=110, eq=PAD_EQ),
+        Part(lyre, rel=-4, pan=0.35, send=0.22, hp=140, eq=[(3000, 1.5, 1.0)]),
+        Part(dulc, rel=-10, pan=-0.4, send=0.3, hp=500, lp=10000),
+        Part(strings, rel=-11, pan=0.0, send=0.35, hp=150, eq=PAD_EQ),
+        Part(drone, rel=-9, pan=-0.1, send=0.2, hp=60, eq=[(250, -2.0, 1.0), (900, 2.0, 1.0)]),
+        Part(bass, rel=-7, pan=0.0, send=0.08, hp=50, eq=[(250, -2.0, 1.0), (900, 2.5, 1.0)], duck=((0.0, 2.0), 0.4)),
+        Part(frame, rel=-3, pan=0.0, send=0.22, hp=80, eq=[(400, -3.0, 1.2), (2200, 3.0, 1.0)], swing_ms=3),
+        Part(hand, rel=-6, pan=-0.2, send=0.15, hp=150, lp=12000, swing_ms=3),
+        Part(timp, rel=-8, pan=0.0, send=0.28, hp=45, swing_ms=2),
+    ]
+    return Arrangement("music.bronze", BPM, LOOP_BARS, parts, reverb_s=2.3, reverb_damp=7000, reverb_wet=0.22, air_db=2.5, presence_db=3.5, low_db=-1.5)
+
+
+def industrial(key: int = 6) -> Arrangement:
+    """Industrial (F#): a colliery brass band (cornet lead, euphonium, tuba), accordion, march drums
+    and the steam machine (pistons, anvil, vents)."""
+    cornet = t("cornet", P["trumpet"])
+    add_melody(cornet, key, A_BARS, vel=94)
+    add_melody(cornet, key, A3_BARS, vel=98)
+    add_b2(cornet, key, range(8, 12), vel=94)
+    calls(cornet, key, OUTRO_CALL, vel=88)
+    euph = t("euphonium", P["horn"])
+    calls(euph, key, INTRO_CALL, octave=-1, vel=88)
+    add_harmony_third(euph, key, range(4, 8), octave=-1, vel=78)
+    add_harmony_third(euph, key, A3_BARS, octave=-1, vel=82)
+    add_b2(euph, key, range(0, 8), octave=-1, vel=90)
+    add_b2(euph, key, range(8, 12), octave=-1, vel=76, third=True)
+    acc = t("accordion", P["accordion"])
+    add_melody(acc, key, B_BARS, vel=96)
+    add_b2(acc, key, range(0, 4), vel=76, third=True)
+    acc_ch = t("accordion chords", P["accordion"])
+    for b in range(2, LOOP_BARS):
+        for beat in (1, 3):
+            for n in voicing(chord_at(b), 55, 3):
+                acc_ch.add(bar(b) + beat, 0.4, n + key - 12 if n + key > 66 else n + key, 74 if b not in BRK else 62)
+        if b in BRK:
+            for n in voicing(chord_at(b), 55, 3):
+                acc_ch.add(bar(b) + 3.5, 0.3, n + key - 12 if n + key > 66 else n + key, 56)
+    bones = t("band chords", P["trombone"])
+    add_pad(bones, key, loop_bars(A3_BARS), 48, vel=74, count=3, beats=2)
+    add_pad(bones, key, range(B2_START + 4, BREAK_START), 48, vel=70, count=3, beats=2)
+    add_pad(bones, key, OUT, 48, vel=68, count=3, beats=2)
+    tuba = t("tuba", P["tuba"])
+    for b in range(2, LOOP_BARS):
+        r = root(chord_at(b), 1) + key
+        if r < 34:
+            r += 12
+        tuba.add(bar(b), 0.8, r, 102)
+        tuba.add(bar(b) + 2, 0.8, r + 7 if b % 2 == 0 else r - 5, 90)
+        if b % 2 == 1 and b not in BRK:
+            # A diatonic walking pickup into the next bar's root (from below when it rises).
+            nxt = root(chord_at(b + 1), 1)
+            if nxt + key < 34:
+                nxt += 12
+            here = r - key
+            app = diatonic_below(nxt, 1) if nxt >= here else diatonic_below(nxt + 12, -1) - 12
+            tuba.add(bar(b) + 3.5, 0.4, app + key, 84)
+    add_roots(tuba, key, range(0, 2), 1, [(0, 1.8, 12, 90), (2, 1.8, 7, 84)])
+    glock = t("bells", P["glock"])
+    add_melody(glock, key, A3_BARS, octave=-1, vel=62, legato=0.5)
+    drums = t("band drums", KIT_STANDARD, drums=True)
+    march = [102, 0, 40, 40, 84, 0, 40, 0, 98, 0, 40, 40, 84, 0, 60, 60]
+    march_b = [100, 0, 40, 0, 84, 40, 40, 0, 96, 0, 40, 40, 90, 0, 90, 40]
+    grid16(drums, range(2, THEME_START), SNARE, [80, 0, 0, 0, 60, 0, 0, 0, 76, 0, 0, 0, 60, 0, 50, 50])
+    for b in HOT:
+        grid16(drums, range(b, b + 1), SNARE, march if b % 2 == 0 else march_b)
+    grid16(drums, BRK, SNARE2, [0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 72, 0, 0, 0])
+    drum_pattern(drums, range(0, LOOP_BARS), [(0, KICK, 106), (1, KICK, 72), (2, KICK, 96), (3, KICK, 72)])
+    drum_pattern(drums, loop_bars(A3_BARS), [(1, CRASH2, 44), (3, CRASH2, 44)])
+    drum_pattern(drums, range(B2_START + 8, BREAK_START), [(1, CRASH2, 40), (3, CRASH2, 40)])
+    for b in DOWNBEATS:
+        if b not in BRK:
+            drums.add(bar(b), 1, CRASH, 90)
+    for b in FILL_BARS:
+        roll(drums, b, SNARE, 2, 4, 44, 108, 0.125)
+        drums.add(bar(b) + 3.5, 0.25, KICK, 96)
+    timp = t("timpani", P["timpani"])
+    for b in DOWNBEATS:
+        r = root(chord_at(b), 2) + key
+        timp.add(bar(b), 1.5, r - 12 if r > 50 else r, 106 if b not in BRK else 88)
+    parts = [
+        Part(cornet, rel=0, lead=True, pan=0.05, send=0.26, hp=200, eq=[(3200, -3.0, 1.0)]),
+        Part(euph, rel=-1.5, pan=-0.2, send=0.28, hp=90),
+        Part(acc, rel=-0.5, pan=0.2, send=0.25, hp=200, eq=[(3000, -3.0, 1.0)]),
+        Part(acc_ch, rel=-7, pan=0.35, send=0.18, hp=180, eq=PAD_EQ),
+        Part(bones, rel=-7, pan=-0.3, send=0.28, hp=100, eq=PAD_EQ),
+        Part(tuba, rel=-4, pan=0.0, send=0.1, hp=45, eq=[(250, -2.0, 1.0), (700, 2.5, 1.0)]),
+        Part(glock, rel=-12, pan=0.4, send=0.3, hp=600, lp=10000),
+        Part(drums, rel=-3, pan=0.0, send=0.14, hp=55, swing_ms=2),
+        Part(timp, rel=-7, pan=0.0, send=0.25, hp=45, swing_ms=2),
+    ]
+    arr = Arrangement("music.industrial", BPM, LOOP_BARS, parts, reverb_s=1.9, reverb_damp=6500, reverb_wet=0.2, air_db=2.0)
+    arr.extras.append(lambda L, p: _extra_machine(L, BPM, LOOP_BARS))
+    return arr
+
+
+def cosmic(key: int = 9) -> Arrangement:
+    """Cosmic (A): choir and orchestra over big synths; the lead lines sit an octave down (+9)."""
+    lo = -1  # the lead octave drop past +6 (A17.8)
+    choir = t("choir", P["choir"])
+    add_melody(choir, key, A_BARS, octave=lo, vel=100)
+    add_melody(choir, key, A3_BARS, octave=lo, vel=100)
+    add_b2(choir, key, range(8, 12), octave=lo, vel=96)
+    calls(choir, key, OUTRO_CALL, octave=lo, vel=92)
+    sbrass = t("synth brass", P["synth_brass"])  # doubles the choir: gives it an edge and a clear attack
+    add_melody(sbrass, key, A_BARS, octave=lo, vel=88, legato=0.9)
+    add_melody(sbrass, key, A3_BARS, octave=lo, vel=92, legato=0.9)
+    add_b2(sbrass, key, range(8, 12), octave=lo, vel=88, legato=0.9)
+    calls(sbrass, key, INTRO_CALL, octave=lo, vel=86)
+    strings = t("string melody", P["strings"])
+    add_melody(strings, key, B_BARS, octave=lo, vel=104)
+    add_b2(strings, key, range(0, 8), octave=lo, vel=104)
+    add_harmony_third(strings, key, A3_BARS, octave=lo, vel=80)
+    brass = t("brass", P["brass"])
+    add_melody(brass, key, A3_BARS, octave=lo - 1, vel=96)
+    add_b2(brass, key, range(8, 12), octave=lo - 1, vel=92)
+    add_pad(brass, key, loop_bars(B_BARS), 50, vel=66, count=3, beats=2)
+    ost = t("string ostinato", P["strings2"])
+    add_arp(ost, key - 12, range(2, LOOP_BARS), 4, [0, 1, 2, 1, 3, 1, 2, 1], 0.5, vel=(66, 86), dur=0.3)
+    bells = t("bell arpeggio", P["celesta"])
+    add_arp(bells, key - 12, range(THEME_START, LOOP_BARS), 5, [0, 1, 2, 3, 4, 3, 2, 1, 0, 2, 4, 5, 4, 3, 2, 1], 0.25, vel=(56, 72), dur=0.3)
+    add_arp(bells, key - 12, range(0, THEME_START), 5, [0, 2, 4, 5, 4, 2, 0, 2], 0.5, vel=(50, 64), dur=0.6)
+    pad = t("choir pad", P["space_voice"])
+    add_pad(pad, key - 12, NOBRK, 62, vel=80, count=4)
+    poly = t("synth pad", P["polysynth"])
+    add_pad(poly, key - 12, ALL, 60, vel=72, count=3, beats=1)
+    bass = t("sub pulse", P["synth_bass1"])
+    add_roots(bass, key, range(2, LOOP_BARS), 1, [(k * 0.5, 0.42, 0, 108 if k % 2 == 0 else 86) for k in range(8)])
+    add_roots(bass, key, range(0, 2), 1, [(0, 3.9, 0, 96)])
+    timp = t("timpani", P["timpani"])
+    for b in ALL:
+        r = root(chord_at(b), 2) + key
+        r = r - 12 if r > 50 else r
+        if b in DOWNBEATS or b == 0:
+            timp.add(bar(b), 1.5, r, 116 if b not in BRK else 94)
+        elif b in HOT and b % 2 == 1:
+            timp.add(bar(b) + 2.5, 0.5, r, 78)
+    for b in FILL_BARS:
+        r = root(chord_at(b), 2) + key
+        roll(timp, b, r - 12 if r > 50 else r, 3, 4, 60, 108, 0.125)
+    taiko = t("taiko", P["taiko"])
+    for b in range(THEME_START, LOOP_BARS):
+        if b in BRK and b < BREAK_START + 4:
+            hits = [(0, 110, 50)]
+        else:
+            hits = [(0, 116, 50), (1.75, 78, 53), (2.5, 96, 50)]
+        for beat, v, n in hits:
+            taiko.add(bar(b) + beat, 0.5, n, v)
+    kit = t("epic kit", KIT_ORCH, drums=True)
+    drum_pattern(kit, range(2, LOOP_BARS), [(0, KICK, 110), (2.5, KICK, 90)])
+    drum_pattern(kit, [b for b in range(2, LOOP_BARS) if not (BREAK_START <= b < BREAK_START + 4)], [(1, SNARE, 96), (3, SNARE, 104)])
+    for b in DOWNBEATS:
+        if b not in BRK:
+            kit.add(bar(b), 1, CRASH, 96)
+    for b in FILL_BARS:
+        toms = [TOM_H, TOM_H, TOM_HM, TOM_HM, TOM_LM, TOM_LM, TOM_L, TOM_L]
+        for k, n in enumerate(toms):
+            kit.add(bar(b) + 2 + k * 0.25, 0.25, n, 84 + k * 3)
+    hats = t("electro hats", KIT_ELECTRONIC, drums=True)
+    grid16(hats, range(2, LOOP_BARS), HAT, [64, 30, 50, 30] * 4)
+    drum_pattern(hats, HOT, [(k + 0.5, SHAKER, 50) for k in range(4)])
+    parts = [
+        Part(choir, rel=0, lead=True, pan=0.0, send=0.35, hp=170, eq=PAD_EQ + [(2800, 2.0, 1.0)]),
+        Part(sbrass, rel=-5, pan=0.0, send=0.25, hp=200, lp=7000),
+        Part(strings, rel=-0.5, pan=0.1, send=0.32, hp=170, eq=PAD_EQ),
+        Part(brass, rel=-3, pan=-0.15, send=0.28, hp=100),
+        Part(ost, rel=-7, pan=0.3, send=0.2, hp=200, eq=PAD_EQ),
+        Part(bells, rel=-9, pan=-0.35, send=0.35, hp=500, lp=11000),
+        Part(pad, rel=-10, pan=0.0, send=0.4, hp=180, pump=0.35, eq=PAD_EQ),
+        Part(poly, rel=-12, pan=0.0, send=0.3, hp=200, pump=0.5, width=1.0, eq=PAD_EQ),
+        Part(bass, rel=-3, pan=0.0, send=0.03, hp=32, lp=2500, eq=[(700, 2.5, 1.0)], pump=0.25, swing_ms=1),
+        Part(timp, rel=-5, pan=0.0, send=0.3, hp=40, swing_ms=1),
+        Part(taiko, rel=-5, pan=0.0, send=0.25, hp=70, eq=[(400, -3.0, 1.2), (2000, 3.0, 1.0)], swing_ms=2),
+        Part(kit, rel=-3, pan=0.0, send=0.2, hp=40, swing_ms=1),
+        Part(hats, rel=-10, pan=0.25, send=0.1, hp=3000, swing_ms=1),
+    ]
+    return Arrangement("music.cosmic", BPM, LOOP_BARS, parts, reverb_s=2.8, reverb_damp=8000, reverb_wet=0.24, air_db=2.0, presence_db=1.0)
+
+
+# ------------------------------------------------------------------------------------------------
 # Menu: its own relaxed tune, "Hearth Song" (C, 84 BPM, 16 bars), so the battle theme stays fresh
 
 
@@ -666,6 +1009,8 @@ def capsule(key: int = 0) -> Arrangement:
 # `musicEngine` plays the stinger recorded in that key)
 
 STINGER_KEYS = (0, 2, 4, 5, 6)
+# The eight-age chain (A17.8) also ends battles in G (Modern, +7), G# (Future, +8) and A (Cosmic, +9).
+STINGER_KEYS_A17 = (7, 8, 9)
 
 
 def stinger_cue(base: str, key: int) -> str:
@@ -675,11 +1020,12 @@ def stinger_cue(base: str, key: int) -> str:
 
 def victory(key: int = 0) -> Arrangement:
     line = [(0, 0.5, "C5"), (0.5, 0.25, "G4"), (0.75, 0.25, "C5"), (1, 1, "E5"), (2, 0.5, "G5"), (2.5, 0.25, "E5"), (2.75, 0.25, "G5"), (3, 5, "C6")]
+    lead = -12 if key > 6 else 0  # past +6 the lead drops an octave (A17.8)
     trumpet = t("trumpets", P["trumpet"])
     horn = t("horns", P["horn"])
     for beat, dur, name in line:
-        trumpet.add(beat, dur * 0.95, m(name) + key, 104 if beat in (0, 3) else 92)
-        horn.add(beat, dur * 0.95, m(name) - 12 + key, 96)
+        trumpet.add(beat, dur * 0.95, m(name) + key + lead, 104 if beat in (0, 3) else 92)
+        horn.add(beat, dur * 0.95, m(name) - 12 + key + lead, 96)
     brass = t("brass chords", P["brass"])
     for beat, dur, c in [(0, 1, "C"), (1, 1, "C"), (2, 1, "G"), (3, 5, "C")]:
         for n in voicing(c, 52, 4):
@@ -698,7 +1044,7 @@ def victory(key: int = 0) -> Arrangement:
     timp.add(3, 2, 36 + key, 120)
     glock = t("glock", P["glock"])
     for k, n in enumerate(["C6", "E6", "G6", "C7"]):
-        glock.add(3 + k * 0.125, 1.5, m(n) + key - 12, 88)
+        glock.add(3 + k * 0.125, 1.5, m(n) + key - 12 + lead, 88)
     kit = t("kit", KIT_ORCH, drums=True)
     for k in range(8):
         kit.add(2 + k * 0.125, 0.12, SNARE, 60 + k * 6)
@@ -754,7 +1100,7 @@ def defeat(key: int = 0) -> Arrangement:
 
 STEM_BARS = 4
 STEM_LUFS = -22.0
-AGE_KEYS = {"stone": 0, "medieval": 2, "gunpowder": 4, "modern": 5, "future": 6}
+AGE_KEYS = {"stone": 0, "medieval": 2, "gunpowder": 4, "modern": 5, "future": 6, "bronze": 2, "industrial": 6, "cosmic": 9}
 
 
 def _stem(cue: str, parts: list[Part], lufs: float) -> Arrangement:
@@ -771,10 +1117,12 @@ def _pedal(tr: Track, key: int, low: int, vels: tuple[int, int] = (92, 70), leng
 
 def intensity(age: str) -> Arrangement:
     key = AGE_KEYS[age]
-    kit_no = {"stone": KIT_STANDARD, "medieval": KIT_STANDARD, "gunpowder": KIT_STANDARD, "modern": KIT_POWER, "future": KIT_808}[age]
-    prog, low = {"stone": (P["strings"], 48), "medieval": (P["brass"], 48), "gunpowder": (P["trumpet"], 60), "modern": (P["strings2"], 48), "future": (P["saw"], 48)}[age]
+    kit_no = {"stone": KIT_STANDARD, "medieval": KIT_STANDARD, "gunpowder": KIT_STANDARD, "modern": KIT_POWER, "future": KIT_808,
+              "bronze": KIT_STANDARD, "industrial": KIT_STANDARD, "cosmic": KIT_ELECTRONIC}[age]
+    prog, low = {"stone": (P["strings"], 48), "medieval": (P["brass"], 48), "gunpowder": (P["trumpet"], 60), "modern": (P["strings2"], 48), "future": (P["saw"], 48),
+                 "bronze": (P["horn"], 48), "industrial": (P["accordion"], 48), "cosmic": (P["synth_brass"], 48)}[age]
     ost = t(f"ostinato {age}", prog)
-    _pedal(ost, key, low, length=0.28 if age != "future" else 0.2)
+    _pedal(ost, key, low, length=0.2 if age in ("future", "cosmic") else 0.28)
     d = t(f"top perc {age}", kit_no, drums=True)
     bars = range(STEM_BARS)
     if age == "stone":
@@ -787,11 +1135,20 @@ def intensity(age: str) -> Arrangement:
         grid16(d, bars, HAT, [70, 40, 56, 40] * 4)
         drum_pattern(d, bars, [(1, TAMB, 70), (3, TAMB, 70)])
         drum_pattern(d, range(3, 4), [(3, TOM_H, 80), (3.25, TOM_H, 84), (3.5, TOM_HM, 88), (3.75, TOM_HM, 92)])
+    elif age == "bronze":
+        grid16(d, bars, TAMB, [64, 28, 44, 34] * 4)
+        drum_pattern(d, bars, [(0.5, CONGA_MUTE, 66), (1.5, CONGA_MUTE, 60), (2.25, CONGA_OPEN, 64), (3, OPEN_TRI, 50), (3.5, CONGA_MUTE, 62)])
+    elif age == "industrial":
+        grid16(d, bars, SHAKER, [66, 40, 54, 40] * 4)
+        drum_pattern(d, bars, [(1, CLAVES, 58), (3, CLAVES, 58), (3.5, TOM_H, 70), (3.75, TOM_HM, 76)])
+    elif age == "cosmic":
+        grid16(d, bars, HAT, [66, 36, 56, 36] * 4)
+        drum_pattern(d, bars, [(1, CLAP, 62), (3, CLAP, 66), (3.75, TOM_H, 64)])
     else:
         grid16(d, bars, HAT, [64, 40, 70, 40] * 4)
         drum_pattern(d, bars, [(0.75, TOM_H, 66), (2.75, TOM_HM, 66)])
     parts = [
-        Part(ost, rel=0, lead=True, hp=150, send=0.15, pump=0.3 if age == "future" else 0.0, eq=[(300, -3.0, 1.0)] + ([(3000, -4.0, 0.8)] if age in ("gunpowder", "future") else [])),
+        Part(ost, rel=0, lead=True, hp=150, send=0.15, pump=0.3 if age in ("future", "cosmic") else 0.0, eq=[(300, -3.0, 1.0)] + ([(3000, -4.0, 0.8)] if age in ("gunpowder", "future", "cosmic") else [])),
         Part(d, rel=-3, hp=150, send=0.1, swing_ms=2),
     ]
     return _stem(f"layer.intensity.{age}", parts, STEM_LUFS)
@@ -812,11 +1169,12 @@ def overdrive() -> Arrangement:
 
 def all_music() -> list[Arrangement]:
     stingers = [victory(k) for k in STINGER_KEYS] + [defeat(k) for k in STINGER_KEYS]
-    return [menu(), capsule(), stone(), medieval(), gunpowder(), modern(), future()] + stingers
+    stingers += [victory(k) for k in STINGER_KEYS_A17] + [defeat(k) for k in STINGER_KEYS_A17]
+    return [menu(), capsule(), stone(), medieval(), gunpowder(), modern(), future(), bronze(), industrial(), cosmic()] + stingers
 
 
 def all_stems() -> list[Arrangement]:
-    return [intensity(a) for a in ("stone", "medieval", "gunpowder", "modern", "future")] + [overdrive()]
+    return [intensity(a) for a in ("stone", "medieval", "gunpowder", "modern", "future", "bronze", "industrial", "cosmic")] + [overdrive()]
 
 
 def humanize(tr: Track, rng: np.random.Generator, bpm: float, spread_ms: float, vel_jitter: int) -> None:

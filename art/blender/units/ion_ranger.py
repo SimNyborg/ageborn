@@ -91,7 +91,7 @@ def build(rig):
     rig.joint("gun", "arm_r", (GX, GY, GZ))
     g = Geo().capsule((0, -11.5, 37), (-1.5, -12, 29), 3.9, 3.5).capsule((-1.5, -12, 29), (4.5, -11, 29.5), 3.5, 3.3)
     rig.part("arm_r", g, K.VOID)
-    g = Geo().blob((0.5, -12.2, 38.4), (6.8, 5.8, 5.6), p=2.6)
+    g = Geo().blob((0.5, -12.4, 38.2), (7.6, 6.4, 6.2), p=2.6)
     rig.part("arm_r", g, team=True)
     g = Geo().blob((0.5, -12.4, 34.4), (7.2, 6.2, 1.2), p=2.6)
     rig.part("arm_r", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)

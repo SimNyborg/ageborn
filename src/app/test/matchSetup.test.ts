@@ -137,6 +137,16 @@ describe('helpers', () => {
     expect(fake.config.sides[1].loadouts.stone?.units[0]).toBe('bonker');
   });
 
+  it('discloses the Rookie AI whenever the bot gets the new-player mistakes (A15.3, A6.8)', () => {
+    const rookie = 'app.disclosure.rookie';
+    const q = quickBattle(null, content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
+    expect(q.opponent.disclosures).toContain(rookie);
+    const m2 = tutorialMatch2(fakeSaveDoc({ matchesPlayed: 1 }), content, 'Pip', 5);
+    expect(m2.opponent.disclosures).toContain(rookie);
+    const veteran = quickBattle(fakeSaveDoc({ matchesPlayed: 25 }), content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
+    expect(veteran.opponent.disclosures).not.toContain(rookie);
+  });
+
   it('nextMatchNumber', () => {
     expect(nextMatchNumber(null)).toBe(1);
     expect(nextMatchNumber(fakeSaveDoc({ matchesPlayed: 4 }))).toBe(5);

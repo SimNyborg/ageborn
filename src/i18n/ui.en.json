@@ -240,6 +240,7 @@
       "aiLevel": "Lv {n}",
       "planLevel": "Plan Lv {n}",
       "planLevelNone": "Plan Lv -",
+      "standardLevels": "Both sides: every card Lv {n}",
       "warmUp": "Warm-up match",
       "skip": "Tap to start",
       "mode": {

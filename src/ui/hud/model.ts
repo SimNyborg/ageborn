@@ -442,7 +442,7 @@ export const BLOCKED_MS = 5000;
 export const BLOCKED_GAP_MS = 45_000;
 
 /**
- * "Blocked at their gate. Evolve or use your power." (audit #7): your front has stood at their gate
+ * "Blocked at their gate: Evolve or use power." (at most 8 words, A8) (audit #7): your front has stood at their gate
  * for 5 s while their base took no damage. Feed it every HUD model (15 Hz); `update` returns true on
  * the model where the callout should appear.
  */

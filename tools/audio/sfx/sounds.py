@@ -1178,3 +1178,428 @@ def level_up(v, rng):
 @sfx("reel_tick", -33, 3, hp_hz=400)
 def reel_tick(v, rng):
     return mixdown(blip(1500 * [1, 1.01, 0.99][v], 0.02, 0.004, "tri"), at(0, click(rng, 0.003, 2000, 6000), 0.2))
+
+
+# =================================================================================================
+# A17: Bronze, Industrial and Cosmic (DESIGN A17.12). The evolve fanfares play the motif in the key
+# the music moves to on the eight-age chain: Bronze D (+2), Industrial F# (+6), Cosmic A (+9, the lead
+# an octave down). Other musical sounds stay in C.
+
+
+def bronze_clang(f0: float, dur: float = 0.9, bright: float = 0.8, tau: float = 0.35) -> np.ndarray:
+    """Struck cast bronze: a bell with the dense, slightly beating partials of a thick plate."""
+    return bell(f0, dur, bright, tau, ((1, 1.0), (1.51, 0.7), (2.09, 0.55), (2.74, 0.45), (3.46, 0.3), (4.9, 0.18), (6.3, 0.1)))
+
+
+def flutter(rng, dur: float, f0: float, f1: float, rate: float, res: float = 1.4) -> np.ndarray:
+    """A whoosh with an amplitude flutter (a spinning shaft, a rope, a rotor)."""
+    w = whoosh(rng, dur, f0, f1, res, 0.35)
+    return w * (0.65 + 0.35 * osc(rate, "sine", dur)[: len(w)])
+
+
+# ---------------------------------------------------------------------------------------- Bronze
+
+
+@sfx("shot_javelin", -27, 3)
+def shot_javelin(v, rng):
+    # A grunt-free overarm throw: a hand slap on the shaft, a heavy low whoosh with a flutter (the
+    # shaft wobbling), a short wooden knock of the release.
+    p = pv(v)
+    slap = mixdown(perc(WOOD_LO, 96, pitch=0.7 * p, length=0.07), at(0, knock(900 * p, 0.05, 0.012, rng), 0.5), at(0, click(rng, 0.004, 900, 4000), 0.35))
+    fly = flutter(rng, 0.26, 300 * p, 1500 * p, 24 * p, 1.5)
+    tail = whoosh(rng, 0.18, 1200, 2600, 2.0, 0.3) * 0.25
+    body = thump(150 * p, 90, 0.06, 0.012, 0.02, hp_hz=110)
+    return mixdown(slap, at(0.005, fly, 0.9), at(0.08, tail), at(0, body, 0.3))
+
+
+@sfx("shot_scorpion", -24, 3)
+def shot_scorpion(v, rng):
+    # Crank and recoil: two ratchet clicks, then the torsion arms slam (a deep twang and a wooden
+    # thunk) and the bolt hisses away.
+    p = pv(v)
+    ratchet = mixdown(at(0, perc(CLAVES, 86, pitch=0.75 * p, length=0.04), 0.5), at(0.045, perc(CLAVES, 92, pitch=0.8 * p, length=0.04), 0.55), at(0.09, perc(WOOD_HI, 90, pitch=0.7 * p, length=0.05), 0.5))
+    twang = pluck(72 * p, 0.35, rng, bright=0.35)
+    slam = mixdown(perc(TOM_LF, 118, KIT_ORCH, pitch=1.1 * p, length=0.3), at(0, perc(WOOD_LO, 114, pitch=0.55 * p, length=0.12), 0.7), at(0, thump(150 * p, 70, 0.16, 0.02, 0.05, 2.0, hp_hz=90), 0.6), at(0, crack(rng, 0.05, 700, 3200, 0.014), 0.6))
+    bolt = whoosh(rng, 0.22, 900, 2800, 2.0, 0.25) * 0.4
+    return room(mixdown(ratchet, at(0.13, slam), at(0.13, twang, 0.7), at(0.15, bolt)), rng, 0.3, 0.18)
+
+
+@sfx("stomp_colossus", -22, 3, phone_gap=-6.0)
+def stomp_colossus(v, rng):
+    # A bronze giant's foot: a deep boom, a heavy cast-metal clang, cracking ground and grit.
+    p = pv(v)
+    boom = thump(85 * p, 34, 0.55, 0.05, 0.16, 2.4, hp_hz=50)
+    tom = perc(TOM_LF, 124, KIT_ORCH, pitch=0.62 * p, length=0.6)
+    clang = bronze_clang(233 * p, 1.0, 0.8, 0.32)
+    ground = mixdown(crack(rng, 0.08, 500, 3000, 0.025), at(0.01, debris(rng, 0.6, 120, 600, 4000, 0.2, 0.012), 0.6), at(0, rumble(rng, 0.8, 260, 0.3), 0.6))
+    return room(mixdown(boom, at(0, tom, 0.8), at(0.005, clang, 0.55), at(0, ground)), rng, 0.55, 0.2)
+
+
+@sfx("mirror_beam", -29, 3)
+def mirror_beam(v, rng):
+    # Focused sunlight (fires every 0.3 s, so it is short and soft): a glassy shimmer that brightens,
+    # a thin sizzle where it lands.
+    p = pv(v)
+    d = 0.26
+    f = dsp.glide(2100 * p, 2350 * p, d)
+    glass = (osc(f, "sine") + 0.35 * osc(f * 1.5, "sine") + 0.2 * osc(f * 2.02, "sine")) * dsp.env_adsr(d, 0.012, 0.08, 0.5, 0.12)
+    sizzle = bp(noise(d, rng), 3500, 9000) * dsp.env_adsr(d, 0.03, 0.1, 0.4, 0.1) * 0.35
+    body = lp(osc(dsp.glide(620 * p, 700 * p, d), "tri"), 1500) * dsp.env_adsr(d, 0.005, 0.06, 0.3, 0.1) * 0.35
+    return mixdown(glass * 0.6, at(0, sizzle), at(0, body), at(0, click(rng, 0.003, 2000, 7000), 0.2))
+
+
+@sfx("gorgon_gaze", -23, 2)
+def gorgon_gaze(v, rng):
+    # A hiss of snakes, an eerie two-tone glare and the grind and crack of flesh turning to stone.
+    p = pv(v)
+    d = 0.9
+    hiss = bp(noise(d, rng), 2500, 7000) * (0.6 + 0.4 * osc(11, "sine", d)) * dsp.env_adsr(d, 0.06, 0.3, 0.5, 0.3) * 0.5
+    glare = (osc(dsp.glide(440 * p, 520 * p, d), "sine") * osc(dsp.glide(466 * p, 610 * p, d), "sine")) * dsp.env_adsr(d, 0.1, 0.3, 0.6, 0.3)
+    glare = lp(glare + 0.3 * osc(dsp.glide(880 * p, 1040 * p, d), "tri") * dsp.env_adsr(d, 0.1, 0.3, 0.5, 0.3), 3500)
+    grind = lp(noise(0.5, rng, "brown"), 700) * (0.5 + 0.5 * np.abs(osc(17, "sine", 0.5))) * dsp.env_adsr(0.5, 0.05, 0.2, 0.6, 0.2) * 1.4
+    stone = mixdown(perc(WOOD_LO, 116, pitch=0.5 * p, length=0.15), at(0, crack(rng, 0.07, 600, 3500, 0.02), 0.9), at(0, thump(140 * p, 70, 0.14, 0.02, 0.05, 2.0), 0.6), at(0.01, debris(rng, 0.3, 90, 900, 4000, 0.1, 0.01), 0.5))
+    return room(mixdown(hiss, at(0, glare, 0.6), at(0.3, grind), at(0.62, stone)), rng, 0.4, 0.2)
+
+
+@sfx("pw_wave", -19, 2, max_s=2.6, noisy=True, phone_gap=-6.0)
+def pw_wave(v, rng):
+    # The tidal wave: a roar builds, crashes onto the lane and rushes along it for 2 s, then drains
+    # away in foam and spray.
+    d = 2.5
+    n = n_of(d)
+    t = dsp.tvec(d)
+    build = np.clip(t / 0.7, 0, 1) ** 2
+    decay = np.where(t < 0.7, 1.0, np.exp(-(t - 0.7) / 0.9))
+    cut = dsp.glide(500, 2600, d, 0.4)
+    roar = dsp.sweep_lp(noise(d, rng, "pink"), np.minimum(cut, 2600), 0.9) * build * decay * 1.4
+    surge = lp(noise(d, rng, "brown"), 350) * np.sin(np.clip(t / d, 0, 1) * np.pi) ** 0.7 * 2.0
+    crash = mixdown(thump(90, 36, 0.6, 0.05, 0.18, 2.2, hp_hz=50), at(0, nburst(rng, 0.5, 400, 4000, 0.15, 0.002, "pink"), 1.4), at(0, perc(TOM_LF, 120, KIT_ORCH, pitch=0.6, length=0.5), 0.6))
+    foam = debris(rng, 1.8, 220, 1200, 6000, 0.9, 0.02) * 0.5
+    spray = bp(noise(1.6, rng), 4000, 10000) * dsp.env_adsr(1.6, 0.05, 0.3, 0.5, 1.0) * 0.18
+    out = mixdown(at(0, roar), at(0, surge), at(0.68, crash), at(0.72, foam), at(0.75, spray))[:n]
+    return fade(out, 0.05, 0.4)
+
+
+@sfx("pw_aegis", -20, 2, max_s=2.0)
+def pw_aegis(v, rng):
+    # Shields up for the whole army: a struck bronze shield, a C major choir swelling behind it and a
+    # rising shimmer of bells (musical, in C).
+    shield = mixdown(bronze_clang(262, 1.4, 0.9, 0.5), at(0, perc(TOM_L, 110, KIT_ORCH, pitch=0.9, length=0.3), 0.4), at(0, click(rng, 0.004, 1500, 6000), 0.3))
+    choir = chord_hit(GM["choir"], 0, ("C4", "E4", "G4", "C5"), 0.12, 1.2, 96)
+    horn = gm_notes(GM["horn"], [(0.12, 1.0, mn("C4"), 90), (0.12, 1.0, mn("G3"), 84)], tail=0.8)
+    bells = gm_notes(GM["celesta"], [(0.2 + k * 0.08, 0.6, mn(nm), 84) for k, nm in enumerate(("C6", "E6", "G6", "C7"))], tail=0.8)
+    shimmer = whoosh(rng, 0.8, 800, 4000, 1.8, 0.8) * 0.2
+    return mixdown(shield, at(0, choir, 0.55), at(0, horn, 0.45), at(0, bells, 0.35), at(0, shimmer))
+
+
+@sfx("evolve_fanfare_bronze", -16, 1, max_s=2.0)
+def evolve_fanfare_bronze(v, rng):
+    k = 2
+    reed = motif(GM["oboe"], k, 110)
+    horn = motif(GM["horn"], k, 104, -1)
+    lyre = gm_notes(GM["harp"], [(0.35 + i * 0.03, 1.0, mn(nm) + k, 100) for i, nm in enumerate(("C3", "G3", "C4", "E4", "G4", "C5"))], tail=1.2)
+    strings = chord_hit(GM["strings"], k, ("C3", "G3", "C4", "E4"))
+    frame = gm_notes(GM["taiko"], [(0.0, 0.2, 57, 116), (0.17, 0.1, 62, 84), (0.26, 0.1, 62, 92), (0.35, 0.4, 57, 127)], tail=1.0)
+    cym = gm_notes(0, [(0.35, 0.8, 52, 96)], drums=True, tail=1.4)
+    return mixdown(reed, at(0, horn, 0.75), at(0, lyre, 0.5), at(0, strings, 0.45), at(0, hp(frame, 70), 0.9), at(0, cym, 0.35))
+
+
+# ------------------------------------------------------------------------------------ Industrial
+
+
+@sfx("shot_carbine", -25, 3, noisy=True)
+def shot_carbine(v, rng):
+    # A short carbine shot, then the lever cocks: clack-clack.
+    p = pv(v)
+    snap = nburst(rng, 0.04, 800, 6500, 0.01, 0.0003) * 1.1
+    gs = sample(GM["gunshot"], 62, 120, 0.3, 0.6, pitch=1.05 * p, length=0.4)
+    body = thump(190 * p, 90, 0.12, 0.012, 0.035, 2.0, hp_hz=110) * 0.5
+    tail = nburst(rng, 0.3, 400, 2600, 0.09, 0.005, "pink") * 0.35
+    lever = mixdown(perc(SIDE_STICK, 96, pitch=1.4 * p, length=0.05), at(0, knock(2300 * p, 0.04, 0.008, rng), 0.5), at(0.07, perc(SIDE_STICK, 104, pitch=1.2 * p, length=0.05), 1.0), at(0.07, knock(1900 * p, 0.05, 0.01, rng), 0.5))
+    return room(mixdown(snap, at(0, gs, 0.9), at(0, body), at(0.004, tail), at(0.2, lever, 0.35)), rng, 0.45, 0.2)
+
+
+@sfx("shot_harpoon", -25, 3)
+def shot_harpoon(v, rng):
+    # A pneumatic thoonk and a puff of air, then the rope whizzes off the coil.
+    p = pv(v)
+    thoonk = mixdown(thump(200 * p, 85, 0.16, 0.02, 0.05, 2.0, hp_hz=100), at(0, perc(TOM_HM, 112, KIT_ORCH, pitch=1.2 * p, length=0.2), 0.6), at(0, knock(760 * p, 0.08, 0.02, rng), 0.5))
+    puff = nburst(rng, 0.2, 500, 2500, 0.06, 0.003, "pink") * 0.7
+    rope = flutter(rng, 0.4, 1400 * p, 2800 * p, 38, 2.2) * 0.45
+    reel = debris(rng, 0.35, 260, 2000, 5000, 0.2, 0.004) * 0.3
+    return mixdown(thoonk, at(0, puff), at(0.03, rope), at(0.05, reel))
+
+
+@sfx("flare_pop", -26, 3)
+def flare_pop(v, rng):
+    # A flare pistol: a hollow pop and a bright, fizzing climb.
+    p = pv(v)
+    pop = mixdown(thump(260 * p, 130, 0.08, 0.012, 0.025, 1.8, hp_hz=120), at(0, perc(SIDE_STICK, 108, pitch=0.8 * p, length=0.06), 0.6), at(0, crack(rng, 0.03, 900, 4000, 0.008), 0.5))
+    d = 0.5
+    fizz = bp(noise(d, rng), 2500, 8000) * dsp.env_adsr(d, 0.03, 0.15, 0.5, 0.25) * 0.35
+    whistle = osc(dsp.glide(1400 * p, 2200 * p, d, 0.7), "sine") * dsp.env_adsr(d, 0.04, 0.15, 0.4, 0.2) * 0.2
+    sparks = crackle(rng, d, 220, 0.25) * 0.25
+    return mixdown(pop, at(0.02, fizz), at(0.02, whistle), at(0.03, sparks))
+
+
+@sfx("fuse_hiss", -28, 3, noisy=True)
+def fuse_hiss(v, rng):
+    # The Sapper sets the charge: a thunk of the box and a spitting, sparkling fuse.
+    p = pv(v)
+    d = 0.55
+    thunk = mixdown(perc(WOOD_LO, 104, pitch=0.7 * p, length=0.1), at(0, thump(170 * p, 90, 0.08, 0.012, 0.025, hp_hz=110), 0.5))
+    spit = bp(noise(d, rng), 2000, 7000) * (0.55 + 0.45 * np.abs(noise(d, rng, "pink")).clip(0, 1)) * dsp.env_adsr(d, 0.02, 0.1, 0.7, 0.2) * 0.5
+    sparks = crackle(rng, d, 500, 0.4) * 0.45
+    return mixdown(thunk, at(0.04, spit), at(0.04, sparks))
+
+
+@sfx("shot_gatling", -26, 3, noisy=True)
+def shot_gatling(v, rng):
+    # A crank-fed burst: four fast shots over the rattle of the turning barrels.
+    p = pv(v)
+    gs = sample(GM["gunshot"], 67, 112, 0.2, 0.4, pitch=1.45 * p, length=0.1)
+    parts = []
+    for k in range(4):
+        s = mixdown(nburst(rng, 0.025, 900, 6000, 0.006, 0.0003), at(0, gs, 0.8), at(0, thump(180 * p, 100, 0.06, 0.01, 0.018, 2.0, hp_hz=120), 0.4))
+        parts.append(at(k * 0.065 + rng.uniform(-0.003, 0.003), s, 1.0 - 0.08 * k))
+    rattle = debris(rng, 0.3, 420, 1800, 5000, 1.0, 0.004) * 0.25
+    crank = mixdown(perc(CLAVES, 84, pitch=0.6 * p, length=0.04), at(0.13, perc(CLAVES, 80, pitch=0.62 * p, length=0.04)))
+    tail = nburst(rng, 0.2, 400, 2400, 0.06, 0.004, "pink") * 0.3
+    return mixdown(*parts, at(0, rattle), at(0.01, crank, 0.3), at(0.2, tail))
+
+
+@sfx("tesla_zap", -23, 3, noisy=True)
+def tesla_zap(v, rng):
+    # A coil discharge: a crack, a buzzing arc that jumps (it chains) and a spray of sparks.
+    p = pv(v)
+    d = 0.45
+    am = (0.55 + 0.45 * np.sign(osc(23 * p, "sine", d))) * (0.7 + 0.3 * osc(61, "sine", d))
+    buzz = bp(osc(118 * p * (1 + 0.08 * osc(31, "sine", d)), "saw") + 0.6 * osc(177 * p, "square", d), 250, 3000) * am * env_exp(d, 0.2, 0.002)
+    arc = crackle(rng, d, 1400, 0.16) * 0.8
+    snap = mixdown(crack(rng, 0.03, 1500, 6000, 0.006), at(0, click(rng, 0.004, 2000, 8000), 0.6))
+    whine = osc(dsp.glide(2600 * p, 1800 * p, d), "sine") * env_exp(d, 0.1, 0.002) * 0.12
+    sparks = debris(rng, 0.35, 150, 2500, 8000, 0.12, 0.004) * 0.35
+    return mixdown(snap, at(0, buzz, 0.7), at(0, arc), at(0, whine), at(0.05, sparks))
+
+
+def train_whistle(rng, dur: float) -> np.ndarray:
+    """A steam whistle: three breathy pipes (C, E, G) through resonant band passes, with a pitch scoop."""
+    out = np.zeros(n_of(dur))
+    scoop = dsp.glide(0.94, 1.0, dur, 0.3)
+    for name, g in (("C6", 1.0), ("E6", 0.8), ("G6", 0.7)):
+        f = hz(name) * scoop
+        tone_ = osc(f, "saw") * 0.3 + osc(f, "sine")
+        out += lp(tone_, 3500) * g
+    breath = bp(noise(dur, rng), 900, 3500) * 0.25
+    return (out * 0.35 + breath) * dsp.env_adsr(dur, 0.05, 0.1, 0.9, 0.2)
+
+
+@sfx("pw_iron_horse", -19, 2, max_s=2.6, phone_gap=-6.0)
+def pw_iron_horse(v, rng):
+    # Three runaway engines: a whistle screams, the chuffs race faster and faster over rail clatter,
+    # and the iron slams into the enemy line.
+    d = 2.4
+    n = n_of(d)
+    out = np.zeros(n)
+    for e in range(3):
+        t0 = 0.25 + e * 0.5
+        t = t0
+        gap = 0.16
+        while t < min(d, t0 + 1.6):
+            g = 0.5 + 0.5 * min(1, (t - t0) / 0.8)
+            ch = nburst(rng, 0.09, 400, 2800, 0.03, 0.002, "pink") * (1.0 if int((t - t0) / gap) % 2 == 0 else 0.6)
+            thk = thump(110 * (1 + 0.1 * e), 55, 0.1, 0.02, 0.03, 2.0, hp_hz=60) * 0.6
+            i = n_of(t)
+            seg = mixdown(ch, at(0, thk))
+            e_ = min(n, i + len(seg))
+            out[i:e_] += seg[: e_ - i] * g * (1.0 - 0.15 * e)
+            t += gap
+            gap = max(0.07, gap * 0.93)
+    clatter = sum(dsp.pad_to(np.concatenate([np.zeros(n_of(k * 0.19 + 0.3)), perc(SIDE_STICK, 90, pitch=0.7 + 0.05 * (k % 2), length=0.05)]), n) * 0.35 for k in range(11))
+    roll_ = lp(noise(d, rng, "brown"), 300) * np.clip(dsp.tvec(d) / 1.2, 0, 1) * 1.6
+    slams = mixdown(*[at(1.15 + k * 0.5, mixdown(thump(95, 40, 0.3, 0.04, 0.1, 2.3, hp_hz=55), at(0, perc(TOM_L, 122, KIT_ORCH, pitch=0.7, length=0.35), 0.8), at(0, crack(rng, 0.06, 500, 3000, 0.02), 0.7), at(0, bronze_clang(180, 0.5, 0.6, 0.12), 0.25)), 0.9) for k in range(3)])
+    whistle = train_whistle(rng, 0.7)
+    out = mixdown(at(0, out), at(0, clatter), at(0, roll_), at(0, slams), at(0, whistle, 0.9))[:n]
+    return fade(out, 0.01, 0.3)
+
+
+@sfx("pw_zeppelin", -19, 2, max_s=2.6)
+def pw_zeppelin(v, rng):
+    # An airship drones over and lays ten bombs along the lane: short whistles, a rolling line of blasts.
+    d = 2.5
+    dop = dsp.glide(46 * 1.04, 46 * 0.96, d)
+    engine = lp(osc(dop, "saw") + 0.7 * osc(dop * 2, "square") + 0.4 * osc(dop * 3, "saw"), 900) * (0.7 + 0.3 * osc(dop * 0.5, "sine"))
+    engine = engine * np.sin(np.linspace(0, np.pi, n_of(d))) ** 0.8 * 0.5
+    prop = bp(noise(d, rng, "pink"), 300, 1400) * (0.6 + 0.4 * osc(9, "sine", d)) * np.sin(np.linspace(0, np.pi, n_of(d))) * 0.3
+    parts = []
+    for k in range(10):
+        t = 0.3 + k * 0.2
+        wh = osc(dsp.glide(1500, 900, 0.18), "sine") * np.linspace(0.2, 1, n_of(0.18)) * 0.12
+        parts.append(at(t, wh))
+        parts.append(at(t + 0.17, explosion(rng, 0.2, 1.0 + 0.04 * ((k * 3) % 5 - 2)), 0.55 + 0.03 * (k % 3)))
+    return fade(mixdown(engine, at(0, prop), *parts)[: n_of(d)], 0.2, 0.3)
+
+
+@sfx("evolve_fanfare_industrial", -16, 1, max_s=2.0)
+def evolve_fanfare_industrial(v, rng):
+    k = 6
+    cornet = motif(GM["trumpet"], k, 106)
+    euph = motif(GM["horn"], k, 100, -1)
+    acc = chord_hit(GM["accordion"], k, ("C4", "E4", "G4"), vel=96)
+    band = chord_hit(GM["trombone"], k, ("C3", "G3", "C4", "E4"))
+    tuba = chord_hit(GM["tuba"], k, ("C2",))
+    drums = gm_notes(0, [(0.02 * i, 0.03, 38, 55 + 3 * i) for i in range(17)] + [(0.35, 0.5, 49, 110), (0.35, 0.3, 36, 122)], drums=True, tail=1.2)
+    anvil = bell(hz("F#6"), 0.8, 0.7, 0.2, ((1, 1.0), (2.76, 0.5), (5.4, 0.3), (8.93, 0.15)))
+    steam = hp(noise(0.9, rng), 3000) * env_exp(0.9, 0.25, 0.02) * 0.12
+    return mixdown(cornet, at(0, euph, 0.8), at(0, acc, 0.5), at(0, band, 0.55), at(0, tuba, 0.6), at(0, drums, 0.5), at(0.35, anvil, 0.25), at(0.36, steam))
+
+
+# ---------------------------------------------------------------------------------------- Cosmic
+
+
+@sfx("shot_ion", -25, 3)
+def shot_ion(v, rng):
+    # The coil rings charge up in a blink, then an ion bolt: a ringing "tsiu" with a crackling edge.
+    p = pv(v)
+    charge = osc(dsp.glide(600 * p, 1800 * p, 0.06, 0.6), "sine") * np.linspace(0.1, 1, n_of(0.06)) * 0.25
+    d = 0.3
+    f = dsp.drop(2400 * p, 520 * p, d, 0.05)
+    bolt = dsp.fm(f, 1.5, 2.2 * np.exp(-dsp.tvec(d) / 0.05)) * env_exp(d, 0.08, 0.001)
+    ring = osc(f * 0.5, "sine") * env_exp(d, 0.1, 0.002) * 0.5
+    edge = crackle(rng, 0.15, 500, 0.05) * 0.25
+    return mixdown(charge, at(0.06, sat(bolt * 0.8 + ring, 1.3)), at(0.06, edge), at(0.06, click(rng, 0.003, 1500, 6000), 0.3), at(0.06, thump(180 * p, 90, 0.08, 0.012, 0.025), 0.3))
+
+
+@sfx("shot_void", -26, 3)
+def shot_void(v, rng):
+    # The Mothership's void beam: a dark, phasing "vwom" that sucks the air in.
+    p = pv(v)
+    d = 0.38
+    f = dsp.glide(95 * p, 62 * p, d)
+    tone_ = osc(f, "saw") + 0.7 * osc(f * 1.007, "saw") + 0.5 * osc(f * 2, "square")
+    sweep = dsp.sweep_bp(tone_, dsp.glide(1800, 500, d, 0.7), 2.5)
+    body = osc(f * 2, "sine") * 0.4
+    suck = dsp.sweep_bp(noise(d, rng, "pink"), dsp.glide(3000, 700, d), 2.0) * np.linspace(1, 0.2, n_of(d)) * 0.4
+    env = dsp.env_adsr(d, 0.01, 0.1, 0.7, 0.15)
+    return mixdown(sat((sweep + body) * env, 1.4), at(0, suck * env), at(0, click(rng, 0.004, 700, 3500), 0.3))
+
+
+@sfx("shot_starburst", -25, 3)
+def shot_starburst(v, rng):
+    # A fan of three bolts at once: a bright, spread "pew-pew-pew" chord with a sparkle.
+    p = pv(v)
+    parts = []
+    for k, (ratio, g) in enumerate(((1.0, 1.0), (1.26, 0.8), (1.5, 0.7))):
+        d = 0.2
+        f = dsp.drop(1500 * p * ratio, 380 * p * ratio, d, 0.045)
+        pew = (osc(f, "sine") * 0.8 + osc(f, "tri") * 0.3) * env_exp(d, 0.06, 0.002)
+        parts.append(at(k * 0.018, pew, g))
+    sparkle = debris(rng, 0.25, 220, 4000, 9000, 0.1, 0.003) * 0.3
+    return mixdown(*parts, at(0.02, sparkle), at(0, click(rng, 0.003, 1500, 6000), 0.3), at(0, thump(170 * p, 85, 0.08, 0.012, 0.025), 0.35))
+
+
+@sfx("shot_tachyon", -22, 3)
+def shot_tachyon(v, rng):
+    # The Tachyon Lance: a glassy inhale, a crystalline crack and a long, bright prism beam.
+    p = pv(v)
+    pre = 0.1
+    inhale = dsp.sweep_bp(noise(pre, rng, "pink"), dsp.glide(1500, 6000, pre), 3.0) * np.linspace(0, 1, n_of(pre)) ** 2 * 0.6
+    d = 0.55
+    crack_ = mixdown(crack(rng, 0.04, 1500, 7000, 0.008), at(0, thump(140, 50, 0.3, 0.03, 0.09, 1.8, hp_hz=60), 0.6))
+    beam_f = dsp.glide(1320 * p, 1180 * p, d)
+    beam = (osc(beam_f, "sine") + 0.5 * osc(beam_f * 1.5, "sine") + 0.3 * osc(beam_f * 2.01, "sine")) * env_exp(d, 0.18, 0.003)
+    prism = fm_bell(2640 * p, d, 1.41, 3.0, 0.2, 0.05) * 0.35
+    fizz = bp(noise(d, rng), 5000, 11000) * env_exp(d, 0.12, 0.002) * 0.15
+    return mixdown(inhale, at(pre, crack_), at(pre, beam * 0.45), at(pre, prism), at(pre, fizz))
+
+
+@sfx("blink_warp", -25, 3)
+def blink_warp(v, rng):
+    # Blink out and in: the air is sucked into a point (a reverse swell), a pop, and the stalker
+    # reappears with a bright upward flick.
+    p = pv(v)
+    d1 = 0.16
+    out_ = dsp.sweep_bp(noise(d1, rng, "pink"), dsp.glide(600, 4500, d1), 2.5) * np.linspace(0, 1, n_of(d1)) ** 2.5
+    down = osc(dsp.glide(900 * p, 150 * p, d1, 1.5), "sine") * np.linspace(0.2, 1, n_of(d1)) * 0.4
+    pop = mixdown(click(rng, 0.004, 1200, 6000), at(0, thump(220 * p, 110, 0.06, 0.01, 0.02, hp_hz=120), 0.6))
+    d2 = 0.22
+    flick = osc(dsp.glide(300 * p, 2200 * p, d2, 0.6), "sine") * env_exp(d2, 0.07, 0.002) * 0.6
+    shimmer = fm_bell(1760 * p, 0.3, 2.01, 1.5, 0.08, 0.03) * 0.3
+    return mixdown(out_, at(0, down), at(d1, pop), at(d1 + 0.07, flick), at(d1 + 0.07, shimmer))
+
+
+@sfx("drone_launch", -24, 3)
+def drone_launch(v, rng):
+    # A launch bay opens (a hydraulic clunk), a drone spins up and darts away with a doppler whine.
+    p = pv(v)
+    clunk = mixdown(perc(TOM_HM, 108, KIT_ORCH, pitch=1.1 * p, length=0.15), at(0, knock(650 * p, 0.08, 0.02, rng), 0.6), at(0, thump(170 * p, 80, 0.1, 0.015, 0.03, 2.0), 0.5))
+    hiss = nburst(rng, 0.15, 1500, 5000, 0.05, 0.003) * 0.3
+    d = 0.5
+    f = dsp.glide(180 * p, 820 * p, d, 0.6)
+    rotor = lp(osc(f, "saw") + 0.5 * osc(f * 1.5, "square"), 3500) * (0.6 + 0.4 * osc(dsp.glide(20, 60, d), "sine")) * dsp.env_adsr(d, 0.05, 0.2, 0.6, 0.2) * 0.4
+    zip_ = whoosh(rng, 0.3, 1200, 3000, 2.0, 0.6) * 0.35
+    return mixdown(clunk, at(0.02, hiss), at(0.08, rotor), at(0.3, zip_))
+
+
+def star_shard(rng, p: float = 1.0) -> np.ndarray:
+    """A falling star shard: a descending crystalline whistle into a small blast with a chime."""
+    fall = 0.32
+    w = (osc(dsp.glide(3200 * p, 900 * p, fall, 1.2), "sine") + 0.3 * osc(dsp.glide(4800 * p, 1350 * p, fall, 1.2), "sine")) * np.linspace(0.1, 1, n_of(fall)) ** 1.5 * 0.25
+    trail = dsp.sweep_bp(noise(fall, rng, "pink"), dsp.glide(5000, 1200, fall), 2.0) * np.linspace(0, 1, n_of(fall)) * 0.3
+    hit = mixdown(explosion(rng, 0.25, 1.05 * p), at(0, fm_bell(hz("E6") * p, 0.6, 3.5, 2.0, 0.2, 0.04), 0.12))
+    return mixdown(w, at(0, trail), at(fall, hit))
+
+
+@sfx("pw_starfall", -19, 2, max_s=2.8, phone_gap=-6.0)
+def pw_starfall(v, rng):
+    # Six star shards over 2 s: a shimmer opens the sky, then shard after shard whistles down and bursts.
+    d = 2.7
+    sky = dsp.sweep_bp(noise(0.6, rng, "pink"), dsp.glide(800, 5000, 0.6), 2.0) * np.linspace(0, 1, n_of(0.6)) ** 2 * 0.4
+    parts = [at(0.1 + k * 0.36 + rng.uniform(-0.02, 0.02), star_shard(rng, 1.0 + 0.05 * ((k * 2) % 5 - 2)), 0.85) for k in range(6)]
+    return fade(mixdown(sky, *parts)[: n_of(d)], 0.01, 0.3)
+
+
+@sfx("pw_warp", -20, 2, max_s=2.2)
+def pw_warp(v, rng):
+    # A portal tears open (a deep swell and a swirling rise), three legionnaires warp through (pops
+    # with a bright flick), and the portal snaps shut.
+    d = 1.0
+    swell = dsp.sweep_bp(noise(d, rng, "pink"), dsp.glide(200, 3000, d, 0.7), 1.8) * np.linspace(0, 1, n_of(d)) ** 1.8 * 0.9
+    swirl = dsp.fm(dsp.glide(110, 330, d), 1.5, 2.5 * (0.5 + 0.5 * osc(5, "sine", d))) * np.linspace(0, 1, n_of(d)) * 0.35
+    sub = thump(70, 35, 0.8, 0.08, 0.3, 1.8, hp_hz=45)
+    pops = []
+    for k in range(3):
+        t = d - 0.1 + k * 0.2
+        pops.append(at(t, blink_warp(k, rng), 0.8))
+        pops.append(at(t, thump(160, 80, 0.12, 0.02, 0.04, 2.0), 0.5))
+    shut = mixdown(osc(dsp.glide(900, 120, 0.25, 1.5), "sine") * env_exp(0.25, 0.08, 0.002) * 0.5, at(0, click(rng, 0.004, 800, 4000), 0.4))
+    return mixdown(swell, at(0, lp(swirl, 3000)), at(d - 0.12, sub, 0.7), *pops, at(d + 0.62, shut))
+
+
+@sfx("evolve_fanfare_cosmic", -16, 1, max_s=2.0)
+def evolve_fanfare_cosmic(v, rng):
+    k = 9 - 12  # A, the lead an octave down (+9 passes +6)
+    choir = motif(GM["choir"], k, 112)
+    brass = motif(GM["brass"], k, 106)
+    sbrass = motif(GM["synth_brass"], k, 96)
+    strings = chord_hit(GM["strings"], k, ("C4", "G4", "C5", "E5", "G5"))
+    pad = chord_hit(GM["space_voice"], k, ("C4", "E4", "G4", "C5"))
+    timp = gm_notes(GM["timpani"], [(0.0, 0.2, mn("A1"), 110), (0.35, 0.6, mn("A1"), 127)], tail=1.0)
+    kit = gm_notes(48, [(0.35, 0.5, 49, 110), (0.35, 0.3, 36, 124), (0.17, 0.1, 38, 84), (0.26, 0.1, 38, 96)], drums=True, tail=1.2)
+    bells = gm_notes(GM["celesta"], [(0.35 + i * 0.05, 0.5, mn(nm) + 9, 86) for i, nm in enumerate(("C5", "E5", "G5", "C6"))], tail=1.0)
+    sub = thump(hz("A1") * 2, hz("A1"), 0.9, 0.05, 0.35, 1.5, hp_hz=45)
+    return mixdown(choir, at(0, brass, 0.7), at(0, sbrass, 0.4), at(0, strings, 0.5), at(0, pad, 0.4), at(0, timp, 0.7), at(0, kit, 0.5), at(0, bells, 0.3), at(0.35, sub, 0.6))
+
+
+# ------------------------------------------------------------------------------------- Lane (A17.5)
+
+
+@sfx("alert_base", -23, 2, hp_hz=150)
+def alert_base(v, rng):
+    # "Your base is under attack" (the gate is off-screen): two urgent muted bell strokes, G5 then C5,
+    # over a low tom, clear on a phone and unlike any combat hit. Musical, in C.
+    p = [1.0, 1.0][v]
+    bell1 = mixdown(gm_note(GM["tubular"], mn("G5"), 0.25, 112, 0.6), at(0, chime(hz("G5"), 0.4, 0.12), 0.5))
+    bell2 = mixdown(gm_note(GM["tubular"], mn("C5"), 0.35, 116, 0.8), at(0, chime(hz("C5"), 0.5, 0.16), 0.5))
+    tom = mixdown(perc(TOM_L, 112 if v == 0 else 104, KIT_ORCH, pitch=0.9 * p, length=0.35), at(0, thump(130, 70, 0.15, 0.02, 0.05, 2.0), 0.4))
+    return mixdown(bell1, at(0.16, bell2), at(0, tom, 0.5), at(0.16, tom, 0.65))

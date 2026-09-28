@@ -241,4 +241,11 @@ describe('VS disclosures (A7.1, A6.3, A7.4)', () => {
     expect(text(m.q('[data-testid="vs-plan-level"]')!)).toBe('Plan Lv 10.0');
     expect(text(m.q('[data-testid="vs-ai-level"]')!)).toBe('Lv 4');
   });
+
+  it('the Daily Challenge shows both sides at L7, not the owned plan level (A9.1)', () => {
+    m = mount({ state: 'new', routes: CASES.find((c) => c.name === 'vs-daily')!.routes() });
+    expect(text(m.q('[data-testid="vs-plan-level"]')!)).toBe('Plan Lv 7.0');
+    expect(text(m.q('[data-testid="vs-ai-level"]')!)).toBe('Lv 7');
+    expect(m.q('[data-testid="vs-standard"]')).not.toBeNull();
+  });
 });

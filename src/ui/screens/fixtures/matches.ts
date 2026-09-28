@@ -68,7 +68,8 @@ export function fixtureOpponent(content: Content, which: OpponentFixture): Oppon
         disclosures: content.generals.list.grogg.disclosureKeys,
       });
     case 'daily':
-      return opponent({ generalId: 'moss', displayName: name('moss'), tier: 4, level: 4, format: 'standard', modifiers: ['gold_rush'] });
+      // A15.7: the Daily is a Standard War with every card on both sides at L7.
+      return opponent({ generalId: 'moss', displayName: name('moss'), tier: 4, level: 7, format: 'standard', modifiers: ['gold_rush'], standardLevels: true });
     case 'echo':
       return opponent({ generalId: 'echo', displayName: name('echo'), tier: 5, level: 7, format: 'short' });
   }

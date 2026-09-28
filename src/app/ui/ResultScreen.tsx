@@ -167,7 +167,8 @@ export function ResultScreen(p: { result: ResultState }) {
   // A16.6: one loss tip when the trickle detector fired.
   const tip = lossTipKey({ won, draw, trickled: p.result.battle?.trickle.fired ?? false });
   const line = resultLine(ui.t, won, draw, input.outcome.reason, name, clock(input.stats.durationMs));
-  // One main action (gold) and one second; replay and home are small icon buttons.
+  // One main action (gold). During onboarding that is Next (a capsule waits) or Retry; nothing
+  // competes with it (A8, A9 #7). Outside onboarding: Play again, Watch replay and Home, all labeled.
   const primary = next ? 'next' : retry ? 'retry' : 'again';
   return (
     <div class={`ab-scrim ab-result ab-result--${draw ? 'draw' : won ? 'win' : 'loss'}`} data-testid="result" onClick={() => stager.tap()}>
@@ -220,17 +221,23 @@ export function ResultScreen(p: { result: ResultState }) {
               {ui.t('app.next')}
             </button>
           ) : null}
-          {!retry ? (
+          {!retry && !onboarding ? (
             <button class={`ab-btn ${primary === 'again' ? 'ab-btn--gold ab-btn--wide' : 'ab-btn--plain'}`} data-testid="play-again" onClick={() => c.playAgain()}>
               {ui.t('app.playAgain')}
             </button>
           ) : null}
-          <button class="ab-btn ab-btn--plain ab-btn--icon" data-testid="watch-replay" aria-label={ui.t('app.watchReplay')} title={ui.t('app.watchReplay')} onClick={() => c.watchReplay(replay)}>
-            <ReplayIcon />
-          </button>
-          <button class="ab-btn ab-btn--plain ab-btn--icon" data-testid="home" aria-label={ui.t('app.home')} title={ui.t('app.home')} onClick={() => c.home()}>
-            <HomeIcon />
-          </button>
+          {onboarding ? null : (
+            <>
+              <button class="ab-btn ab-btn--plain ab-btn--labeled" data-testid="watch-replay" onClick={() => c.watchReplay(replay)}>
+                <ReplayIcon />
+                <span>{ui.t('app.watchReplay')}</span>
+              </button>
+              <button class="ab-btn ab-btn--plain ab-btn--labeled" data-testid="home" onClick={() => c.home()}>
+                <HomeIcon />
+                <span>{ui.t('app.home')}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

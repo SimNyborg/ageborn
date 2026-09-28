@@ -77,11 +77,12 @@ export async function pastOnboarding(page: Page): Promise<void> {
   await page.goto('./?dev=1&game=1');
   await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 30_000 });
   await page.evaluate(() => {
-    type Save = { tutorial: { step: number }; matchesPlayed: number };
+    type Save = { tutorial: { step: number }; matchesPlayed: number; flags: Record<string, boolean> };
     const c = (window as unknown as { __agebornDev: { controller: { save: { peek(): Save }; setSave(s: Save, o?: object): void; showTitle(): void } } })
       .__agebornDev.controller;
     const s = c.save.peek();
-    c.setSave({ ...s, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed) }, { immediate: true });
+    // The "Your army, your plan" prompt (A8, after match 3) has been seen.
+    c.setSave({ ...s, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed), flags: { ...s.flags, 'tutorial.warPlanPrompt': true } }, { immediate: true });
     c.showTitle();
   });
 }

@@ -185,9 +185,21 @@ def render_arrangement(a: Arrangement, verbose: bool = True) -> tuple[np.ndarray
         send += dsp.pad_to(y, n) * part.send
     for ex in a.extras:
         e = ex(L, 1)
+        # An extra is either a stereo array (added as it is) or (array, rel LU vs the lead, reverb send),
+        # which is balanced like a Part.
+        rel, ex_send = None, 0.0
+        if isinstance(e, tuple):
+            e, rel, ex_send = e
         if a.loop:
             e = np.tile(fold(e, period), (3, 1))
-        dry += dsp.pad_to(e, n)
+        e = dsp.pad_to(e, n)
+        if rel is not None:
+            l_e = loud.integrated_lufs(e[lo:hi], SR)
+            if l_e > -90:
+                e = e * dsp.db(lead_l + rel - l_e)
+            levels[f"extra{len(levels)}"] = round(lead_l + rel, 1)
+        dry += e
+        send += e * ex_send
 
     h = dsp.ir(a.reverb_s, np.random.default_rng(seed(a.cue, "ir")), predelay=0.018, damp_hz=a.reverb_damp)
     wet = dsp.convolve(dsp.hp(send, 180, 2), h)[:n] * a.reverb_wet * REVERB_RETURN
@@ -250,7 +262,7 @@ def main(only: list[str] | None = None) -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     arrs = all_music() + all_stems()
     for a in arrs:
-        if a.cue == "music.future":
+        if a.cue in ("music.future", "music.cosmic"):
             a.extras.append(lambda L, p, a=a: future_riser(L, a.bpm, p, a.bars))
     for a in arrs:
         if only and a.cue not in only:

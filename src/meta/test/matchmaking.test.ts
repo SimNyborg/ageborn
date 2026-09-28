@@ -201,6 +201,20 @@ describe('other modes', () => {
     expect(echo.side.loadouts.stone).toEqual(s.warPlans[0]!.loadouts.stone);
     expect(Object.keys(echo.side.loadouts).sort()).toEqual(['gunpowder', 'medieval', 'stone']);
   });
+
+  it('Skirmish discloses Echo of You as an AI playing your plan, and The Warden\'s Legendaries at Standard levels too (A7.1, A15.3, A6.8)', () => {
+    const s = ownsAll(ladderSave(1), 3);
+    const c = new TestClock();
+    const echo = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'echo', tier: 2, format: 'short', standardLevels: true } });
+    expect(echo.disclosures).toContain('general.echo.disclosure');
+    const own = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'warden', tier: 4, format: 'standard', standardLevels: false } });
+    expect(own.disclosures).toContain('general.warden.disclosure');
+    const std = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'warden', tier: 4, format: 'standard', standardLevels: true } });
+    expect(std.disclosures).toContain('general.warden.disclosureStandard');
+    expect(std.disclosures).not.toContain('general.warden.disclosure');
+    const moss = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'moss', tier: 4, format: 'standard', standardLevels: true } });
+    expect(moss.disclosures.filter((d) => d.startsWith('general.'))).toEqual([]);
+  });
 });
 
 describe('Rookie AI disclosure (A15.3)', () => {

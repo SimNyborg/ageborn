@@ -56,10 +56,8 @@ test.describe('usability: input reaches the battlefield', () => {
   });
 
   test('a Quick Battle opens with "3-2-1 Fight!" before the sim runs', async ({ page }) => {
-    await page.goto('./');
-    await expect(page.getByTestId('title')).toBeVisible({ timeout: 20_000 });
-    await page.getByTestId('quick-battle').click();
-    await expect(page.getByTestId('countdown')).toBeVisible();
+    await page.goto('./?quick=short');
+    await expect(page.getByTestId('countdown')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('countdown')).toHaveCount(0, { timeout: 10_000 });
     await expect(page.getByTestId('hud-clock')).toBeVisible();
   });

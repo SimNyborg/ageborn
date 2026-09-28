@@ -24,7 +24,7 @@ import type {
 } from '@/contracts';
 import { botProfile } from '@/ai';
 import type { Content, GeneralDef, GeneralId } from '@/content';
-import { commanderInfo } from '@/meta';
+import { commanderInfo, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
   GROGG_SCRIPT,
   MATCH1_SEED,
@@ -139,6 +139,13 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
   return out;
 }
 
+/** The A6.8 new-player mistake bonus for this save (the first 20 matches; no save = a first launch). */
+export function newPlayerBonusBp(content: CompiledContent, save: SaveDoc | null): number {
+  const ladder = tables(content).arenas?.ladder;
+  const played = save?.matchesPlayed ?? 0;
+  return ladder && played < ladder.newPlayer.matches ? ladder.newPlayer.mistakeBonusBp : 0;
+}
+
 /**
  * The bot profile for an opponent (A7.3, A7.4), built by WP3's `botProfile`: the General's weights
  * and opening, or, for a procedural AI Commander (`commander:<personality>:<favourite card>`, meta),
@@ -146,9 +153,7 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
  * first 20 matches, a missing save being a first launch) get the A6.8 mistake bonus.
  */
 export function botProfileFor(opponent: OpponentSpec, content: CompiledContent, save: SaveDoc | null): BotProfile {
-  const ladder = tables(content).arenas?.ladder;
-  const played = save?.matchesPlayed ?? 0;
-  const mistakeBonusBp = ladder && played < ladder.newPlayer.matches ? ladder.newPlayer.mistakeBonusBp : 0;
+  const mistakeBonusBp = newPlayerBonusBp(content, save);
   const commander = commanderInfo(opponent.generalId);
   return botProfile(content, {
     generalId: opponent.generalId,
@@ -200,11 +205,17 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
   };
   const training = trainingFor(n);
   if (training) config.training = training;
+  // A15.3: whenever the bot gets A6.8's new-player mistakes, the opponent says so (meta adds this
+  // for the opponents it picks; Quick Battle and onboarding match 2 are built here).
+  const disclosed =
+    newPlayerBonusBp(content, save) > 0 && !opponent.disclosures.includes(ROOKIE_DISCLOSURE_KEY)
+      ? { ...opponent, disclosures: [...opponent.disclosures, ROOKIE_DISCLOSURE_KEY] }
+      : opponent;
   return {
     mode,
     matchNumber: n,
     config,
-    opponent,
+    opponent: disclosed,
     brain: { kind: 'general', profile: botProfileFor(opponent, content, save) },
     script: mode === 'tutorial' || n <= 5 ? scriptForMatch(n) : null,
   };

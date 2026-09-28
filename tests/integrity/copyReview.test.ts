@@ -37,6 +37,36 @@ describe('honest copy (A15.3)', () => {
   });
 });
 
+describe('A15.3 strings', () => {
+  const load = (f: string): Record<string, unknown> => JSON.parse(readFileSync(path.join(SRC, 'i18n', f), 'utf8')) as Record<string, unknown>;
+  const at = (o: unknown, key: string): unknown => key.split('.').reduce<unknown>((v, k) => (v && typeof v === 'object' ? (v as Record<string, unknown>)[k] : undefined), o);
+  const HONEST = 'The result was decided when you earned this capsule. Tapping only reveals it.';
+
+  it('every odds panel uses the one honesty line', () => {
+    expect(at(load('ui.en.json'), 'ui.odds.honest')).toBe(HONEST);
+    expect(at(load('capsule.en.json'), 'capsule.honesty')).toBe(HONEST);
+  });
+
+  it('the Supply Capsule is never called the Daily Capsule (A15.4)', () => {
+    const all: string[] = [];
+    for (const f of readdirSync(path.join(SRC, 'i18n')).filter((n) => n.endsWith('.json'))) strings(load(f), all);
+    expect(all.filter((s) => /daily capsule/i.test(s))).toEqual([]);
+    expect(at(load('content.en.json'), 'capsuleKind.daily.name')).toBe('Supply Capsule');
+  });
+
+  it('Echo of You carries the exact AI label', () => {
+    expect(at(load('content.en.json'), 'general.echo.disclosure')).toBe('AI · Echo of You: an AI playing your War Plan');
+  });
+
+  it('no string claims something is free or that the game plays offline (Pillar 4)', () => {
+    const all: string[] = [];
+    for (const f of readdirSync(path.join(SRC, 'i18n')).filter((n) => n.endsWith('.json'))) strings(load(f), all);
+    expect(all.filter((s) => /\bfree\b|\boffline\b/i.test(s))).toEqual([]);
+    const html = readFileSync(path.join(SRC, '..', 'index.html'), 'utf8');
+    expect(/\bfree\b|\boffline\b/i.test(html)).toBe(false);
+  });
+});
+
 describe('no reel (A15.3)', () => {
   it('the capsule show imports no reel module', () => {
     const bad: string[] = [];

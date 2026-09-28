@@ -24,3 +24,4 @@ export {
 } from '../router';
 export { createToastStore, type ToastStore } from '../components/Toasts';
 export type { PortraitFn, Translate } from '../components/kit';
+export { WAR_PLAN_UNLOCK_MATCHES } from './model/progress';

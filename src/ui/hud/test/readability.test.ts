@@ -3,6 +3,7 @@ import { fakeMatchConfig } from '@/contracts/fakes/sim';
 import { describe, expect, it } from 'vitest';
 import { AT_GATE, BLOCKED_GAP_MS, BLOCKED_MS, BlockedWatch, affordFraction, frontStrip, phaseBanner, secondsUntilAffordable, xpNeeded, xpProgress } from '../model';
 import { sampleHudModel } from '../samples';
+import { i18n } from '@/i18n';
 
 const config = fakeMatchConfig();
 
@@ -68,6 +69,10 @@ describe('"Blocked at their gate" callout', () => {
     // Not again right away.
     expect(w.update(BLOCKED_MS * 3, atGate, 5000, false)).toBe(false);
     expect(w.update(BLOCKED_MS + BLOCKED_GAP_MS + 1, atGate, 5000, false)).toBe(true);
+  });
+
+  it('says it in at most 8 words (A8 on-screen text)', () => {
+    expect(i18n.t('hud.blocked').split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(8);
   });
 
   it('does not fire while their base is being hurt, away from the gate, or after the end', () => {

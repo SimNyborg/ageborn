@@ -197,6 +197,36 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     ui.dispose();
   });
 
+  it('Settings opens from the onboarding title and Back returns to it (A15.6, B8 import)', async () => {
+    const { services, meta, save } = await setup((s) => ({ ...s, tutorial: { ...s.tutorial, step: 0 }, matchesPlayed: 0 }));
+    const c = new AppController(services, { save, autopilot: true, delay: async () => undefined, homeScreen: true });
+    const ui = createMetaUi({ controller: c, services, meta });
+    c.showTitle();
+    expect(c.step.value).toBe('match1');
+    expect(ui.owns(c.route.value, c.step.value)).toBe(false);
+    ui.openSettings();
+    expect(ui.owns(c.route.value, c.step.value)).toBe(true);
+    expect(ui.router.current.value.id).toBe('settings');
+    ui.router.back();
+    expect(ui.owns(c.route.value, c.step.value)).toBe(false);
+    expect(c.route.value.id).toBe('title');
+    ui.dispose();
+    c.dispose();
+  });
+
+  it('a load notice shows as a banner until dismissed (B8 "Save could not be read. Import a backup?")', async () => {
+    const { services, meta, save } = await setup();
+    const store = services.saveStore as typeof services.saveStore & { loadReport?: unknown };
+    Object.defineProperty(store, 'loadReport', { value: { notice: { kind: 'unreadable', messageKey: 'save.problem.unreadable', ongoing: false } }, configurable: true });
+    const c = new AppController(services, { save, autopilot: true, delay: async () => undefined, homeScreen: true });
+    const ui = createMetaUi({ controller: c, services, meta });
+    expect(ui.notice.value).toEqual({ messageKey: 'save.problem.unreadable', kind: 'unreadable' });
+    expect(services.i18n.t('save.problem.unreadable')).toBe('Save could not be read. Import a backup?');
+    ui.dismissNotice();
+    expect(ui.notice.value).toBeNull();
+    ui.dispose();
+  });
+
   it('the training match and the ?quick dev route keep the app screens', async () => {
     const { c, ui } = await app();
     c.quickBattle('short');

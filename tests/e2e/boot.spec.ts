@@ -27,20 +27,18 @@ test.describe('boot', () => {
     await expect(page.getByTestId('title')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('play')).toBeVisible();
     await expect(page.getByTestId('title-ai-chip')).toHaveText(/\bAI\b/);
+    // A8 0:00: no menu before the first win (no format picker, no Quick Battle).
+    await expect(page.getByTestId('quick-battle')).toHaveCount(0);
+    await expect(page.getByTestId('format-short')).toHaveCount(0);
   });
 
-  test('the start screen starts a Quick Battle vs an AI-labeled General (C3 Checkpoint A)', async ({ page }) => {
+  test('the Quick Battle dev route starts a Short War vs an AI-labeled General (C3 Checkpoint A)', async ({ page }) => {
     // Software WebGL renders the title and battle at a few fps under load, and every click waits for a
     // stable frame (about 2 s each here), so this flow needs more than the default 30 s.
     test.setTimeout(90_000);
     const problems = watchPage(page);
-    await page.goto('./');
-    await expect(page.getByTestId('quick-ai-chip')).toHaveText(/\bAI\b/);
-    await page.getByTestId('format-standard').click();
-    await expect(page.getByTestId('format-standard')).toHaveAttribute('aria-checked', 'true');
-    await page.getByTestId('format-short').click();
-    await page.getByTestId('quick-battle').click();
-    await expect(page.getByTestId('battle')).toBeVisible();
+    await page.goto('./?quick=short');
+    await expect(page.getByTestId('battle')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('hud-ai-chip')).toBeVisible();
     await page.getByTestId('hud-card-0').click();
     await page.getByTestId('hud-pause').click();

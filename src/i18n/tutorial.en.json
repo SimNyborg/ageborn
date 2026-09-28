@@ -20,7 +20,10 @@
       "lastStand": "Low base? Tap Last Stand."
     },
     "home": {
-      "warPlan": "Your army, your plan"
+      "warPlan": "Your army, your plan",
+      "warPlanBody": "Check your Stone Age cards. Swap in your favourites.",
+      "warPlanOpen": "Open War Plan",
+      "later": "Later"
     },
     "hint": {
       "turretShredsMelee": "Their turret shreds melee. Try Pebblers.",

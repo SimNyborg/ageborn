@@ -62,7 +62,7 @@
       "siege": "Siege!",
       "siegeSub": "Bases crumble"
     },
-    "blocked": "Blocked at their gate. Evolve or use your power.",
+    "blocked": "Blocked at their gate: Evolve or use power.",
     "ageReached": "{age}!",
     "need": "Need {n}",
     "wait": "{s}s",

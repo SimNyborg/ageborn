@@ -132,3 +132,28 @@ describe('capsule flow (app)', () => {
     expect(hasUnownedInPool({ ...s, collection }, content)).toBe(false);
   });
 });
+
+describe('a stale or malformed show record never blocks the app (B8, C5 #29)', () => {
+  it('drops a record with another shape, from another build, or with unknown ids, and clears the key', () => {
+    const { shows, kv, state } = setup();
+    shows.open([state.save.capsules.pending[0]!.id]);
+    const good = kv.getItem(SHOW_KEY)!;
+    expect(loadShow(kv, content)).not.toBeNull();
+
+    const bad = [
+      JSON.stringify({ v: 1, kind: 'capsules', reveals: [{ capsule: { id: 'x' } }], progress: {}, newCardProtection: true, onboarding: null }),
+      JSON.stringify({ ...JSON.parse(good), content: 'another-build' }),
+      good.replace(/"tier":"[a-z]+"/, '"tier":"obsidian"'),
+      '{not json',
+    ];
+    for (const raw of bad) {
+      kv.setItem(SHOW_KEY, raw);
+      expect(loadShow(kv, content)).toBeNull();
+      expect(kv.getItem(SHOW_KEY)).toBeNull();
+    }
+    // A new CapsuleShows over a stale record starts with no show.
+    kv.setItem(SHOW_KEY, bad[0]!);
+    const again = new CapsuleShows({ meta: M, content, save: () => state.save, commit: () => undefined, kv });
+    expect(again.current.value).toBeNull();
+  });
+});

@@ -10,10 +10,13 @@ async function veteranHome(page: Page): Promise<void> {
   await page.goto('./?dev=1&game=1');
   await page.waitForFunction(() => !!(window as unknown as { __agebornDev?: unknown }).__agebornDev, null, { timeout: 60_000 });
   await page.evaluate(() => {
-    type C = { save: { value: Record<string, unknown> & { tutorial: object; trophies: object } }; setSave(s: unknown, o?: unknown): void; showTitle(): void };
+    type C = { save: { value: Record<string, unknown> & { tutorial: object; trophies: object; flags: object } }; setSave(s: unknown, o?: unknown): void; showTitle(): void };
     const c = (window as unknown as { __agebornDev: { controller: C } }).__agebornDev.controller;
     const s = c.save.value;
-    c.setSave({ ...s, matchesPlayed: 30, arenaIndex: 2, tutorial: { ...s.tutorial, step: 4 }, trophies: { ...s.trophies, current: 450, best: 450 } }, { immediate: true });
+    c.setSave(
+      { ...s, matchesPlayed: 30, arenaIndex: 2, tutorial: { ...s.tutorial, step: 4 }, trophies: { ...s.trophies, current: 450, best: 450 }, flags: { ...s.flags, 'tutorial.warPlanPrompt': true } },
+      { immediate: true },
+    );
     c.showTitle();
   });
   await expect(page.getByTestId('battle-button')).toBeVisible({ timeout: 20_000 });

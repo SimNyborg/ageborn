@@ -6,6 +6,7 @@ import type { SaveDoc } from '@/contracts';
 import { content } from '@/content';
 import { meta } from '@/meta';
 import { FIRST_UPGRADE_FLAG, firstUpgradeDue } from '../ui/FirstUpgrade';
+import { WAR_PLAN_PROMPT_FLAG, warPlanPromptDue } from '../ui/WarPlanPrompt';
 
 const clock = { now: () => Date.UTC(2026, 8, 28, 12) };
 
@@ -29,5 +30,16 @@ describe('first upgrade (A8)', () => {
     const r = meta.upgrade(s, 'bonker', content);
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.collection.bonker?.level).toBe(2);
+  });
+});
+
+describe('"Your army, your plan" (A8, after match 3)', () => {
+  it('is due on Home from match 3, once, and never over the first upgrade', () => {
+    const upgraded = { ...afterOnboarding(), flags: { [FIRST_UPGRADE_FLAG]: true } };
+    expect(warPlanPromptDue({ ...upgraded, matchesPlayed: 2 }, 'home')).toBe(false);
+    expect(warPlanPromptDue({ ...upgraded, matchesPlayed: 3 }, 'home')).toBe(true);
+    expect(warPlanPromptDue({ ...upgraded, matchesPlayed: 3 }, 'match2')).toBe(false);
+    expect(warPlanPromptDue({ ...upgraded, matchesPlayed: 3, flags: { ...upgraded.flags, [WAR_PLAN_PROMPT_FLAG]: true } }, 'home')).toBe(false);
+    expect(warPlanPromptDue({ ...afterOnboarding(), matchesPlayed: 3 }, 'home')).toBe(false);
   });
 });

@@ -1,5 +1,6 @@
 /** The app shell (DESIGN A9 flow, Phase 1): one screen per route over the persistent canvas. */
-import { useEffect, useMemo } from 'preact/hooks';
+import type { ComponentChildren } from 'preact';
+import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
@@ -14,7 +15,21 @@ import { AppUiContext, type AppUi } from './context';
 import { MetaHost } from './MetaHost';
 import { ResultScreen } from './ResultScreen';
 import { TitleScreen } from './TitleScreen';
+import { WarPlanPrompt } from './WarPlanPrompt';
 import './app.css';
+
+/**
+ * A capsule show that throws while drawing (a record this build cannot play) is dropped, so the app
+ * goes on to Home or the next step instead of a blank page (B8: the save already holds the result).
+ */
+function ShowGuard(p: { shows: CapsuleShows; onAbandon: () => void; children: ComponentChildren }) {
+  const [error] = useErrorBoundary((e: unknown) => {
+    console.error('capsule show failed; skipping it', e);
+    p.shows.abandon();
+    p.onAbandon();
+  });
+  return error ? null : <>{p.children}</>;
+}
 
 function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null }) {
   const r = p.ui.controller.route.value;
@@ -28,48 +43,61 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
     const content = ui.services.content;
     const commit = (next: typeof save) => ui.controller.setSave(next, { immediate: true });
     const onboarding = show.kind === 'capsules' && show.onboarding !== null;
+    const onboardingStep = show.kind === 'capsules' ? show.onboarding : null;
     return (
-      <CapsuleHost
+      <ShowGuard
+        key={show}
         shows={shows}
-        record={show}
-        pixi={ui.pixi!}
-        art={ui.art}
-        audio={ui.services.audio}
-        content={content}
-        save={save}
-        t={ui.t}
-        allowMore={!onboarding}
-        onEquip={(card) => {
-          const s = ui.controller.save.peek();
-          if (s) commit(m.equipNow(s, card, content));
+        onAbandon={() => {
+          if (onboardingStep) ui.controller.finishCapsuleStep();
         }}
-        onEquipSkin={(skin) => {
-          const s = ui.controller.save.peek();
-          const target = asContent(content).skins[skin]?.target;
-          if (!s || !target) return;
-          const res = m.equipSkin(s, target, skin, content);
-          if (res.ok) commit(res.value);
-        }}
-        {...(p.meta && !onboarding
-          ? {
-              onUpgrade: (card) => {
-                shows.done();
-                p.meta?.router.go({ id: 'cardDetail', card });
-              },
-            }
-          : {})}
-        onDone={(rec) => {
-          if (rec.kind === 'capsules' && rec.onboarding) ui.controller.finishCapsuleStep();
-          else ui.services.audio.music.setCue('music.menu', { fadeMs: 600 });
-        }}
-      />
+      >
+        <CapsuleHost
+          shows={shows}
+          record={show}
+          pixi={ui.pixi!}
+          art={ui.art}
+          audio={ui.services.audio}
+          content={content}
+          save={save}
+          t={ui.t}
+          allowMore={!onboarding}
+          onEquip={(card) => {
+            const s = ui.controller.save.peek();
+            if (s) commit(m.equipNow(s, card, content));
+          }}
+          onEquipSkin={(skin) => {
+            const s = ui.controller.save.peek();
+            const target = asContent(content).skins[skin]?.target;
+            if (!s || !target) return;
+            const res = m.equipSkin(s, target, skin, content);
+            if (res.ok) commit(res.value);
+          }}
+          {...(p.meta && !onboarding
+            ? {
+                onUpgrade: (card) => {
+                  shows.done();
+                  p.meta?.router.go({ id: 'cardDetail', card });
+                },
+              }
+            : {})}
+          onDone={(rec) => {
+            if (rec.kind === 'capsules' && rec.onboarding) ui.controller.finishCapsuleStep();
+            else ui.services.audio.music.setCue('music.menu', { fadeMs: 600 });
+          }}
+        />
+      </ShowGuard>
     );
   }
   // After onboarding, Home and every match started from it run on WP9's meta screens (Phase 2b).
   if (p.meta && p.ui.controller.save.value && p.meta.owns(r, p.ui.controller.step.value)) return <MetaHost meta={p.meta} />;
   switch (r.id) {
     case 'title':
-      return <TitleScreen />;
+      return p.meta ? (
+        <TitleScreen onSettings={() => p.meta!.openSettings()} notice={p.meta.notice.value} onDismissNotice={() => p.meta!.dismissNotice()} />
+      ) : (
+        <TitleScreen />
+      );
     case 'battle':
       return <BattleScreen battle={r.battle} />;
     case 'result':
@@ -103,7 +131,12 @@ export function AppRoot(p: { ui: AppUi }) {
           services: p.ui.services,
           meta: m,
           download: p.ui.download,
-          ...(shows ? { openCapsules: (ids: string[]) => void shows.open(ids), openWardrobe: (id: string) => void shows.openWardrobe(id) } : {}),
+          ...(shows
+            ? {
+                openCapsules: (ids: string[]) => void shows.open(ids),
+                openWardrobe: (id: string) => void shows.openWardrobe(id),
+              }
+            : {}),
         })
       : null;
   }, [p.ui, shows]);
@@ -137,6 +170,7 @@ export function AppRoot(p: { ui: AppUi }) {
       <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
         <Screen ui={p.ui} meta={meta} shows={shows} />
         {shows?.current.value ? null : <FirstUpgrade />}
+        {shows?.current.value || !meta ? null : <WarPlanPrompt meta={meta} />}
         <AgeDialog />
         <div class="ab-rotate" data-testid="rotate">
           <div class="ab-rotate-phone" aria-hidden="true" />

@@ -13,11 +13,11 @@
  *
  * The onboarding matches (A8) keep the app's own title, battle and result screens.
  */
-import { computed, effect, type ReadonlySignal } from '@preact/signals';
+import { computed, effect, signal, type ReadonlySignal } from '@preact/signals';
 import type { OpponentSpec, ReplayDoc, SaveDoc } from '@/contracts';
 import type { MetaRules } from '@/meta';
 import { isFirstWin, persist, type SaveFile } from '@/save';
-import { createRouter, createToastStore, type DailyDifficulty, type ToastStore, type MatchRequest, type PauseInfo, type Router, type UiServices } from '@/ui/screens';
+import { createRouter, createToastStore, visibleEntries, type DailyDifficulty, type ToastStore, type MatchRequest, type PauseInfo, type Router, type UiServices } from '@/ui/screens';
 import type { BattleHandle } from './battle';
 import { applySettings } from './boot';
 import type { AppController, AppRoute } from './controller';
@@ -40,6 +40,15 @@ export interface MetaUi {
   requestOf(battle: BattleHandle): MatchRequest | null;
   /** True when this route is drawn by the meta screens (not the onboarding screens). */
   owns(route: AppRoute, step: string): boolean;
+  /**
+   * A save problem to show as a banner where the toast host is not drawn (the title during
+   * onboarding, B8 load order step 5): the load notice ("Save could not be read. Import a
+   * backup?") or an ongoing write problem. Null when there is nothing to say.
+   */
+  notice: ReadonlySignal<{ messageKey: string; kind?: string } | null>;
+  dismissNotice(): void;
+  /** Opens Settings (import, For parents, About, break reminder) from the title (A15.6, B8). */
+  openSettings(): void;
   dispose(): void;
 }
 
@@ -96,11 +105,20 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     problem?: { messageKey: string; ongoing?: boolean } | null;
     loadReport?: { notice?: { messageKey: string } | null } | null;
   };
-  const notify = (n: { messageKey: string; ongoing?: boolean } | null | undefined): void => {
-    if (n) toasts.show(services.i18n.t(n.messageKey), { tone: 'bad', ms: n.ongoing ? 8000 : 5000 });
+  const noticeSig = signal<{ messageKey: string; kind?: string } | null>(null);
+  const notify = (n: { messageKey: string; ongoing?: boolean; kind?: string } | null | undefined): void => {
+    if (n) {
+      toasts.show(services.i18n.t(n.messageKey), { tone: 'bad', ms: n.ongoing ? 8000 : 5000 });
+      noticeSig.value = { messageKey: n.messageKey, ...(n.kind ? { kind: n.kind } : {}) };
+    } else if (noticeSig.peek() && noticeSig.peek()!.kind !== 'unreadable' && noticeSig.peek()!.kind !== 'recovered') {
+      // An ongoing problem was cleared by a successful write; the one-off load notices stay until dismissed.
+      noticeSig.value = null;
+    }
   };
   const stopProblems = typeof store.onProblem === 'function' ? store.onProblem(notify) : () => undefined;
   notify(store.problem ?? store.loadReport?.notice ?? null);
+  /** Settings opened from the title (onboarding has no Home yet). */
+  const titleSettings = signal(false);
   const cardsOwned = (): number => Object.keys(controller.save.peek()?.collection ?? {}).length;
   const cues = o.cues ?? new StoppingCues(cardsOwned(), { now: () => services.clock.now(), log: services.eventLog });
   // The meta screens only mount once a save exists (meta makes one at boot).
@@ -170,7 +188,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   const owns = (route: AppRoute, step: string): boolean => {
     switch (route.id) {
       case 'title':
-        return step === 'home';
+        return step === 'home' || titleSettings.value;
       case 'battle':
         if (pending && !requests.has(route.battle)) requests.set(route.battle, pending);
         return requests.has(route.battle);
@@ -272,6 +290,15 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     applySettings(services, st);
   });
 
+  // Settings opened from the title: back (or an import or reset, which reset the router to Home)
+  // returns to the title, rebuilt for the save's onboarding step.
+  const stopTitleSettings = effect(() => {
+    const base = visibleEntries(router.stack.value).base.route.id;
+    if (!titleSettings.value || base !== 'home') return;
+    titleSettings.value = false;
+    controller.showTitle();
+  });
+
   // router → controller
   const stopStack = effect(() => {
     void router.stack.value;
@@ -303,7 +330,17 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     services: uiServices,
     requestOf: (b) => requests.get(b) ?? null,
     owns,
+    notice: noticeSig,
+    dismissNotice() {
+      noticeSig.value = null;
+    },
+    openSettings() {
+      router.reset({ id: 'home' });
+      router.go({ id: 'settings' });
+      titleSettings.value = true;
+    },
     dispose() {
+      stopTitleSettings();
       stopRoute();
       stopStack();
       stopPause();

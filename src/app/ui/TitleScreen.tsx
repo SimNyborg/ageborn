@@ -3,15 +3,18 @@
  * the next onboarding match (or, after onboarding, the training match vs Old Grogg) is already built
  * and rendered behind it, so one tap starts it.
  *
- * A new player sees one big "Play" button that starts the training match (audit #10); Quick Battle
- * stays a small secondary button until the training match is won. After that Quick Battle gets the
- * big card, with formats that say how long they take ("Short · up to 6 min") and an opponent line a
- * normal player understands. WP9's Home replaces this in Phase 2b. Every opponent keeps its AI chip
- * (A7.1).
+ * A new player sees one big "Play" button and nothing else (A8 0:00: "No menu ... before the first
+ * win"). Quick Battle only appears once onboarding is done and no Home is mounted (the Phase 2a
+ * shell and dev builds), with formats that say how long they take ("Short · up to 6 min"). WP9's
+ * Home replaces this in Phase 2b. Every opponent keeps its AI chip, its tier and its disclosures,
+ * such as the Rookie AI line (A7.1, A15.3).
  */
 import { useState } from 'preact/hooks';
 import type { FormatId } from '@/contracts';
-import { QUICK_BATTLE_GENERAL } from '../controller';
+import { tierNumeral } from '@/ui/components/format';
+import { GearIcon } from '@/ui/components/icons';
+import { QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
+import { newPlayerBonusBp } from '../matchSetup';
 import { displayName } from '../names';
 import { useApp } from './context';
 
@@ -25,7 +28,15 @@ export function formatMinutes(finalBellMs: number | null | undefined): number | 
   return finalBellMs ? Math.round(finalBellMs / 60_000) : null;
 }
 
-export function TitleScreen() {
+export interface TitleScreenProps {
+  /** Opens Settings (import, For parents, About, the break reminder), also during onboarding (A15.6). */
+  onSettings?: () => void;
+  /** A save problem to show as a banner (B8: "Save could not be read. Import a backup?"). */
+  notice?: { messageKey: string; kind?: string } | null;
+  onDismissNotice?: () => void;
+}
+
+export function TitleScreen(p: TitleScreenProps = {}) {
   const ui = useApp();
   const c = ui.controller;
   const r = c.route.value;
@@ -73,7 +84,12 @@ export function TitleScreen() {
         <span class="ab-chip ab-chip--ai" data-testid="quick-ai-chip">
           {ui.t('app.aiChip')}
         </span>
-        {newPlayer ? null : <span class="ab-chip ab-chip--soft">{ui.t('app.difficultyNormal')}</span>}
+        <span class="ab-chip ab-chip--soft" data-testid="quick-tier">
+          {ui.t('app.vsTier', { tier: tierNumeral(QUICK_BATTLE_TIER) })}
+        </span>
+        {newPlayerBonusBp(ui.services.content, c.save.value) > 0 ? (
+          <span class="ab-chip">{ui.t('app.disclosure.rookie')}</span>
+        ) : null}
       </div>
     </div>
   );
@@ -91,6 +107,11 @@ export function TitleScreen() {
           <span class="ab-chip ab-chip--ai" data-testid="title-ai-chip">
             {ui.t('app.aiChip')}
           </span>
+          {waitingIsTraining ? null : (
+            <span class="ab-chip ab-chip--soft" data-testid="title-tier">
+              {ui.t('app.vsTier', { tier: tierNumeral(opponent.tier) })}
+            </span>
+          )}
           {waitingIsTraining && opponent.disclosures.length === 0 ? <span class="ab-chip ab-chip--soft">{ui.t('app.trainingMatch')}</span> : null}
           {opponent.disclosures.map((k) => (
             <span class="ab-chip" key={k}>
@@ -108,12 +129,29 @@ export function TitleScreen() {
 
   return (
     <div class={`ab-title${newPlayer ? ' ab-title--new' : ''}`} data-testid="title">
+      {p.onSettings ? (
+        <button type="button" class="ab-btn ab-btn--plain ab-gear" data-testid="title-settings" aria-label={ui.t('ui.nav.settings')} title={ui.t('ui.nav.settings')} onClick={p.onSettings}>
+          <GearIcon size={26} />
+        </button>
+      ) : null}
+      {p.notice ? (
+        <div class="ab-notice" role="alert" data-testid="save-notice">
+          <span class="ab-notice__text">{ui.t(p.notice.messageKey)}</span>
+          {p.notice.kind === 'unreadable' && p.onSettings ? (
+            <button type="button" class="ab-btn ab-btn--gold ab-btn--small" data-testid="save-notice-import" onClick={p.onSettings}>
+              {ui.t('ui.settings.import')}
+            </button>
+          ) : null}
+          {p.onDismissNotice ? (
+            <button type="button" class="ab-btn ab-btn--plain ab-btn--small" data-testid="save-notice-close" onClick={p.onDismissNotice}>
+              {ui.t('ui.common.close')}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
       <h1 class="ab-logo">{GAME_NAME}</h1>
       {newPlayer ? (
-        <>
-          {playCard}
-          {quickCard}
-        </>
+        playCard
       ) : (
         <>
           {quickCard}

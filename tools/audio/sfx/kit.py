@@ -270,6 +270,7 @@ GM = dict(
     horn=60, brass=61, piccolo=72, flute=73, panflute=75, saw=81, square=80, warm_pad=89, taiko=116,
     woodblock=115, timp=47, synth_bass=38, gunshot=127, helicopter=125, breath=121, fret=120,
     seashore=122, reverse_cymbal=119, steel_drum=114, agogo=113, tinkle_bell=112, contrabass=43,
+    oboe=68, accordion=21, synth_brass=62, space_voice=91,
 )
 
 NOTE = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}

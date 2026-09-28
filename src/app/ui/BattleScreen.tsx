@@ -48,6 +48,7 @@ export function BattleScreen(p: {
         audio={ui.services.audio}
         teamPreset={settings?.teamPreset ?? 'default'}
         scouted={b.setup.matchNumber >= SCOUTED_FROM_MATCH}
+        callouts={b.setup.mode !== 'tutorial' && b.setup.script === null}
         t={ui.t}
       />
       {countdown >= 0 ? (

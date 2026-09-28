@@ -84,6 +84,11 @@ export interface HudProps {
   scouted?: boolean;
   /** Keyboard hint badges from the start (the dev state gallery). By default they appear after the first key press. */
   showKeys?: boolean;
+  /**
+   * The "Blocked at their gate" callout (audit #7). Default true. The app turns it off in the
+   * onboarding matches, whose scripted beats own the on-screen text (A8).
+   */
+  callouts?: boolean;
 }
 
 /** Remembers that this player uses the keyboard, so the hint badges show from then on. */
@@ -342,10 +347,10 @@ export function Hud(props: HudProps) {
   const front = view?.frontLine?.() ?? null;
   const blocked = useRef(new BlockedWatch());
   useEffect(() => {
-    if (readOnly || m.paused) return;
+    if (readOnly || m.paused || props.callouts === false) return;
     if (blocked.current.update(m.clockMs, front, m.foe.baseHpBp, m.phase === 'ended')) showMoment({ kind: 'blocked', title: t('hud.blocked') });
     // `front` is read fresh with every model (15 Hz).
-  }, [m, readOnly, t, showMoment]);
+  }, [m, readOnly, t, showMoment, props.callouts]);
 
   const ctx: HudCtx = {
     m,

@@ -48,7 +48,10 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   const general = generalOf(content, o.generalId);
   const persona = personalityOf(o, content);
   const plan = activePlan(s, content).plan;
-  const avg = planAvgLevel(s, content, plan, formatAges(content, o.format));
+  // Daily Challenge and Skirmish "Standard levels" put every card on both sides at the same level
+  // (A9.1, A6.8), so the player's side shows that level, not the owned levels.
+  const std = o.standardLevels === true;
+  const avg = std ? o.level : planAvgLevel(s, content, plan, formatAges(content, o.format));
   const name = opponentName(o, content, t);
 
   return (
@@ -107,6 +110,11 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
         <div class="vs__chips">
           {request.mode === 'tutorial' ? null : <Pill tone="blue">{t(MODE_KEYS[request.mode])}</Pill>}
           <Pill tone="gold">{t(formatNameKey(o.format))}</Pill>
+          {std ? (
+            <Pill tone="green" testid="vs-standard">
+              {t('ui.vs.standardLevels', { n: o.level })}
+            </Pill>
+          ) : null}
           {o.warmUp ? (
             <Pill tone="green" testid="vs-warmup">
               {t('ui.vs.warmUp')}

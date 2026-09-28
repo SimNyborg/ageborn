@@ -11,6 +11,11 @@
  * So a reload in the middle of the animation finds the record and plays the same result again; the
  * save already holds it, and nothing is re-rolled or granted twice. `done()` clears the record.
  *
+ * The record carries the content hash it was made with. A record from another build (an update
+ * between the reload and the replay), or one whose shape or ids the show cannot play, is dropped:
+ * the save already holds the result, so only the animation is skipped, and the app never gets stuck
+ * on a show it cannot draw.
+ *
  * Pure except for the injected key-value store, so it is tested in Node.
  */
 import { signal, type ReadonlySignal } from '@preact/signals';
@@ -35,6 +40,8 @@ export type ShowRecord =
       newCardProtection: boolean;
       /** The onboarding capsule step this show completes (A8), if any. */
       onboarding: 'capsule1' | 'capsule2' | null;
+      /** `CompiledContent.hash` of the build that made the record. */
+      content?: string;
     }
   | {
       v: 1;
@@ -42,6 +49,8 @@ export type ShowRecord =
       reveal: WardrobeReveal;
       /** Wardrobe pity after opening (the reveal carries none). */
       pity: SaveDoc['pity'];
+      /** `CompiledContent.hash` of the build that made the record. */
+      content?: string;
     };
 
 /** The meta calls the flow needs (the `Meta` contract). */
@@ -126,25 +135,57 @@ export function openCrate(meta: ShowMeta, before: SaveDoc, id: string): { save: 
   return { save: o.save, record: { v: 1, kind: 'wardrobe', reveal: o.reveal, pity: o.save.pity } };
 }
 
-function isRecord(x: unknown): x is ShowRecord {
-  if (!x || typeof x !== 'object') return false;
-  const r = x as { v?: unknown; kind?: unknown; reveals?: unknown; reveal?: unknown };
-  if (r.v !== 1) return false;
-  if (r.kind === 'capsules') return Array.isArray(r.reveals) && r.reveals.length > 0;
-  if (r.kind === 'wardrobe') return !!r.reveal && typeof r.reveal === 'object';
+const obj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
+
+/** True when every reveal in the record is one this build's show can play (tiers, cards, skins). */
+export function isPlayableRecord(x: unknown, content: CompiledContent | null = null): x is ShowRecord {
+  if (!obj(x) || x['v'] !== 1) return false;
+  if (content && x['content'] !== content.hash) return false;
+  const c = content ? asContent(content) : null;
+  const tiers = c ? new Set<string>(c.capsules.tierOrder) : null;
+  const isCard = (id: unknown): boolean => typeof id === 'string' && (!c || !!c.units[id] || !!c.turrets[id]);
+  const isSkin = (id: unknown): boolean => typeof id === 'string' && (!c || !!c.skins[id]);
+  if (x['kind'] === 'capsules') {
+    const reveals = x['reveals'];
+    if (!Array.isArray(reveals) || reveals.length === 0 || !obj(x['progress'])) return false;
+    return reveals.every((r: unknown) => {
+      if (!obj(r) || !obj(r['capsule']) || !obj(r['pityBefore']) || !obj(r['pityAfter']) || !Array.isArray(r['strikeClimbs'])) return false;
+      if (typeof r['climbs'] !== 'number' || !Array.isArray(r['firstLegendaryReveal'])) return false;
+      const cap = r['capsule'];
+      if (typeof cap['id'] !== 'string' || typeof cap['kind'] !== 'string') return false;
+      if (typeof cap['tier'] !== 'string' || typeof cap['startTier'] !== 'string') return false;
+      if (tiers && (!tiers.has(cap['tier']) || !tiers.has(cap['startTier']))) return false;
+      const contents = cap['contents'];
+      if (!obj(contents) || !Array.isArray(contents['stacks'])) return false;
+      if (contents['skin'] !== null && contents['skin'] !== undefined && !isSkin(contents['skin'])) return false;
+      return contents['stacks'].every((st: unknown) => obj(st) && isCard(st['card']) && typeof st['rarity'] === 'string' && typeof st['copies'] === 'number');
+    });
+  }
+  if (x['kind'] === 'wardrobe') {
+    const r = x['reveal'];
+    if (!obj(r) || !obj(r['crate']) || !obj(x['pity'])) return false;
+    return isSkin(r['crate']['skin']) && typeof r['crate']['rarity'] === 'string';
+  }
   return false;
 }
 
-export function loadShow(kv: KeyValueStore | null): ShowRecord | null {
+/**
+ * The show a reload interrupted, if this build can play it (see the module note). `content` checks
+ * the build hash and every id; without it only the shape is checked.
+ */
+export function loadShow(kv: KeyValueStore | null, content: CompiledContent | null = null): ShowRecord | null {
   if (!kv) return null;
   try {
     const raw = kv.getItem(SHOW_KEY);
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
-    return isRecord(parsed) ? parsed : null;
+    if (isPlayableRecord(parsed, content)) return parsed;
   } catch {
-    return null;
+    /* unreadable: dropped below */
   }
+  // The save already holds the result; a record this build cannot play only costs the animation.
+  storeShow(kv, null);
+  return null;
 }
 
 function storeShow(kv: KeyValueStore | null, r: ShowRecord | null): void {
@@ -173,7 +214,7 @@ export class CapsuleShows {
 
   constructor(private readonly d: CapsuleShowsDeps) {
     // A show interrupted by a reload plays again with the same result (C5 #29).
-    this.cur.value = loadShow(d.kv);
+    this.cur.value = loadShow(d.kv, d.content);
   }
 
   get active(): boolean {
@@ -183,9 +224,15 @@ export class CapsuleShows {
   private start(o: { save: SaveDoc; record: ShowRecord } | null): boolean {
     if (!o) return false;
     this.d.commit(o.save);
-    storeShow(this.d.kv, o.record);
-    this.cur.value = o.record;
+    const record: ShowRecord = { ...o.record, content: this.d.content.hash };
+    storeShow(this.d.kv, record);
+    this.cur.value = record;
     return true;
+  }
+
+  /** The show could not be drawn (an error while rendering it): forget it so the app goes on. */
+  abandon(): void {
+    this.done();
   }
 
   /** Opens pending capsules (several = "Open all") and starts the show. False when none was found. */
