@@ -1,7 +1,10 @@
 /**
- * The tutorial prompt (DESIGN A8): a speech bubble over the HUD element it talks about, a pulsing
- * ring around that element, and for the Arrow Storm an animated hand dragging from the power
- * button onto the lane. Text only, at most 8 words; hints can be tapped away.
+ * The tutorial prompt (DESIGN A8): a speech bubble next to the thing it talks about, a pulsing ring
+ * around that thing, and a large animated hand that shows the action: a tap on cards, mounts and the
+ * Evolve button, a drag for the Arrow Storm. Text only, at most 8 words; hints can be tapped away.
+ *
+ * The bubble never covers its target: it goes above the target when there is room, else below, to
+ * the right or to the left, and its arrow points at the target (audit #2, #14).
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { PromptTarget, TutorialPrompt } from '@/tutorial';
@@ -21,11 +24,28 @@ const TESTID: Partial<Record<PromptTarget, string>> = {
   lastStand: 'hud-laststand',
 };
 
-interface Rect {
+/** The ring around a mount on the canvas (CSS px). */
+export const MOUNT_RING_PX = 64;
+/** Gap between the bubble's arrow tip and its target. */
+const GAP = 16;
+/** Space kept free at the screen edges. */
+const EDGE = 8;
+
+export interface Rect {
   x: number;
   y: number;
   w: number;
   h: number;
+}
+
+export type Placement = 'above' | 'below' | 'right' | 'left' | 'center';
+
+export interface BubblePos {
+  placement: Placement;
+  left: number;
+  top: number;
+  /** Where the arrow meets the bubble edge, along that edge, from the bubble's left/top. */
+  arrow: number;
 }
 
 function targetRect(root: HTMLElement, target: PromptTarget | null, view: BattleView | undefined, mountsOwned: number): Rect | null {
@@ -36,12 +56,80 @@ function targetRect(root: HTMLElement, target: PromptTarget | null, view: Battle
     const el = root.querySelector<HTMLElement>(`[data-testid="${id}"]`);
     if (!el) return null;
     const r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) return null;
     return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
   }
   const mount = target === 'mount0' ? 0 : target === 'mount1' ? 1 : target === 'mountBuy' ? mountsOwned : -1;
+  // The mount's popover is open: point at its first build option (the Rock Tosser in match 1).
+  if (mount >= 0 && target !== 'mountBuy') {
+    const option = root.querySelector<HTMLElement>('[data-testid="hud-pop-build-0"]');
+    if (option) {
+      const r = option.getBoundingClientRect();
+      return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
+    }
+  }
   const p = mount >= 0 ? view?.mountScreenPoint(mount) : null;
-  return p ? { x: p.x - 28, y: p.y - 28, w: 56, h: 56 } : null;
+  const half = MOUNT_RING_PX / 2;
+  return p ? { x: p.x - half, y: p.y - half, w: MOUNT_RING_PX, h: MOUNT_RING_PX } : null;
 }
+
+/**
+ * Places a `bw` × `bh` bubble next to `t` inside a `W` × `H` screen without covering `t`: above,
+ * below, right, then left; the first side with room wins. `top` keeps the HUD top bar free.
+ */
+export function placeBubble(t: Rect | null, bw: number, bh: number, W: number, H: number, topLimit = 0): BubblePos {
+  if (!t) return { placement: 'center', left: (W - bw) / 2, top: H * 0.38 - bh / 2, arrow: 0 };
+  const cx = t.x + t.w / 2;
+  const cy = t.y + t.h / 2;
+  const clampX = (x: number): number => Math.max(EDGE, Math.min(W - EDGE - bw, x));
+  const clampY = (y: number): number => Math.max(topLimit + EDGE, Math.min(H - EDGE - bh, y));
+  const aboveTop = t.y - GAP - bh;
+  if (aboveTop >= topLimit + EDGE) {
+    const left = clampX(cx - bw / 2);
+    return { placement: 'above', left, top: aboveTop, arrow: cx - left };
+  }
+  const belowTop = t.y + t.h + GAP;
+  if (belowTop + bh <= H - EDGE) {
+    const left = clampX(cx - bw / 2);
+    return { placement: 'below', left, top: belowTop, arrow: cx - left };
+  }
+  const rightLeft = t.x + t.w + GAP;
+  if (rightLeft + bw <= W - EDGE) {
+    const top = clampY(cy - bh / 2);
+    return { placement: 'right', left: rightLeft, top, arrow: cy - top };
+  }
+  const left = Math.max(EDGE, t.x - GAP - bw);
+  const top = clampY(cy - bh / 2);
+  return { placement: 'left', left, top, arrow: cy - top };
+}
+
+/** A cartoon glove pointing up; its fingertip is at (19, 3) of the 48 px box. */
+function Hand() {
+  const shapes = (
+    <>
+      <rect x="14" y="2" width="10" height="26" rx="5" />
+      <circle cx="28.5" cy="21" r="5" />
+      <circle cx="34.5" cy="23" r="4.6" />
+      <rect x="11" y="19" width="28" height="21" rx="9" />
+      <ellipse cx="10.5" cy="28" rx="4.6" ry="7.5" transform="rotate(-24 10.5 28)" />
+    </>
+  );
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+      <g fill="#1b1330" stroke="#1b1330" stroke-width="5" stroke-linejoin="round">
+        {shapes}
+        <rect x="12" y="37" width="26" height="9" rx="3" />
+      </g>
+      <g fill="#fffaf0">{shapes}</g>
+      <rect x="12" y="37" width="26" height="9" rx="3" fill="#ffc53d" />
+      <path d="M17 7 v14" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" />
+      <path d="M22 30 q5 3 11 0" stroke="#d9cdb2" stroke-width="2" fill="none" stroke-linecap="round" />
+    </svg>
+  );
+}
+
+/** Fingertip offset inside the hand box, so the tip lands on the target. */
+const TIP = { x: 19, y: 3 };
 
 export function TutorialBubble(p: {
   prompt: TutorialPrompt | null;
@@ -52,14 +140,15 @@ export function TutorialBubble(p: {
   onDismiss: () => void;
 }) {
   const [rect, setRect] = useState<Rect | null>(null);
-  const [bubbleW, setBubbleW] = useState(0);
+  const [size, setSize] = useState({ w: 0, h: 0 });
   const bubble = useRef<HTMLDivElement>(null);
   const { prompt, root, view, mountsOwned } = p;
 
-  // Measure the bubble so it can be kept on screen near the edges.
+  // Measure the bubble so it can be placed beside its target and kept on screen.
   useLayoutEffect(() => {
     const w = bubble.current?.offsetWidth ?? 0;
-    if (w !== bubbleW) setBubbleW(w);
+    const h = bubble.current?.offsetHeight ?? 0;
+    if (w !== size.w || h !== size.h) setSize({ w, h });
   });
 
   // Follow the target (HUD layout and the camera move); cheap, and only while a prompt shows.
@@ -71,7 +160,7 @@ export function TutorialBubble(p: {
     let raf = 0;
     const tick = (): void => {
       const r = targetRect(root, prompt.target, view, mountsOwned);
-      setRect((old) => (old && r && Math.abs(old.x - r.x) < 0.5 && Math.abs(old.y - r.y) < 0.5 && old.w === r.w ? old : r));
+      setRect((old) => (old && r && Math.abs(old.x - r.x) < 0.5 && Math.abs(old.y - r.y) < 0.5 && old.w === r.w && old.h === r.h ? old : r));
       raf = requestAnimationFrame(tick);
     };
     tick();
@@ -80,44 +169,60 @@ export function TutorialBubble(p: {
 
   if (!prompt) return null;
   const box = root?.getBoundingClientRect();
-  const width = box?.width ?? 800;
-  const center = { x: width / 2, y: (box?.height ?? 600) * 0.38 };
-  const anchor = rect ? { x: rect.x + rect.w / 2, y: rect.y - 14 } : center;
-  // Keep the whole bubble on screen; the arrow still points at the target.
-  const half = bubbleW / 2 + 8;
-  const left = half * 2 < width ? Math.max(half, Math.min(width - half, anchor.x)) : width / 2;
+  const W = box?.width ?? 800;
+  const H = box?.height ?? 600;
+  const pos = placeBubble(rect, size.w, size.h, W, H, H * 0.12);
+  const isMount = (prompt.target === 'mount0' || prompt.target === 'mount1' || prompt.target === 'mountBuy') && rect !== null && rect.w === MOUNT_RING_PX && rect.h === MOUNT_RING_PX;
+  // Beats ask for an action: a hand shows it. Hints only point.
+  const tapHand = prompt.kind === 'beat' && rect !== null && prompt.hand !== 'powerDrag';
   return (
     <>
-      {rect ? <div class="ab-ring" style={{ left: `${rect.x - 6}px`, top: `${rect.y - 6}px`, width: `${rect.w + 12}px`, height: `${rect.h + 12}px` }} /> : null}
+      {rect ? (
+        <div
+          class={`ab-ring${isMount ? ' ab-ring--round' : ''}`}
+          data-testid="tutorial-ring"
+          style={{ left: `${rect.x - 6}px`, top: `${rect.y - 6}px`, width: `${rect.w + 12}px`, height: `${rect.h + 12}px` }}
+        />
+      ) : null}
       <div
         ref={bubble}
-        class={`ab-bubble${rect ? '' : ' ab-bubble--center'}`}
+        class={`ab-bubble ab-bubble--${pos.placement}${prompt.kind === 'hint' ? ' ab-bubble--hint' : ''}`}
         data-testid="tutorial-bubble"
         data-prompt={prompt.id}
+        data-placement={pos.placement}
         style={{
-          left: `${left}px`,
-          top: `${Math.max(60, anchor.y)}px`,
-          ['--ab-arrow-dx' as string]: `${Math.round(anchor.x - left)}px`,
+          left: `${Math.round(pos.left)}px`,
+          top: `${Math.round(pos.top)}px`,
+          ['--ab-arrow' as string]: `${Math.round(pos.arrow)}px`,
         }}
         onClick={prompt.kind === 'hint' ? p.onDismiss : undefined}
       >
         {p.t(prompt.textKey)}
       </div>
+      {tapHand && rect ? (
+        <div
+          class="ab-hand ab-hand--tap"
+          data-testid="tutorial-hand"
+          aria-hidden="true"
+          style={{ left: `${Math.round(rect.x + rect.w / 2 - TIP.x + 4)}px`, top: `${Math.round(rect.y + rect.h / 2 - TIP.y + 6)}px` }}
+        >
+          <i class="ab-hand-ripple" />
+          <Hand />
+        </div>
+      ) : null}
       {prompt.hand === 'powerDrag' && rect ? (
         <div
-          class="ab-hand"
+          class="ab-hand ab-hand--drag"
+          data-testid="tutorial-hand"
           aria-hidden="true"
           style={{
-            left: `${rect.x + rect.w / 2 - 10}px`,
-            top: `${rect.y + rect.h / 2 - 10}px`,
-            ['--ab-dx' as string]: `${-Math.round((rect.x + rect.w / 2) - (box?.width ?? 800) * 0.62)}px`,
-            ['--ab-dy' as string]: `${-Math.round((rect.y + rect.h / 2) - (box?.height ?? 600) * 0.55)}px`,
+            left: `${Math.round(rect.x + rect.w / 2 - TIP.x)}px`,
+            top: `${Math.round(rect.y + rect.h / 2 - TIP.y)}px`,
+            ['--ab-dx' as string]: `${-Math.round(rect.x + rect.w / 2 - W * 0.62)}px`,
+            ['--ab-dy' as string]: `${-Math.round(rect.y + rect.h / 2 - H * 0.55)}px`,
           }}
         >
-          <svg viewBox="0 0 44 44" width="44" height="44">
-            <circle cx="22" cy="22" r="17" fill="#fffaf0" stroke="#1b1330" stroke-width="4" />
-            <circle cx="22" cy="22" r="7" fill="#ffc53d" stroke="#1b1330" stroke-width="3" />
-          </svg>
+          <Hand />
         </div>
       ) : null}
     </>

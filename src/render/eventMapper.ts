@@ -178,6 +178,10 @@ export function actingSide(ev: SimEvent, unit: (id: number) => UnitInfo | undefi
   return null;
 }
 
+
+/** The short freeze before your evolve's camera push (A12 evolve moment, audit #5). */
+export const EVOLVE_FREEZE_MS = 220;
+
 export class EventMapper {
   feel: RenderFeelConfig;
   private readonly content: CompiledContent;
@@ -280,6 +284,7 @@ export class EventMapper {
         out.push({ a: 'unitSpawn', id: ev.id, side: ev.side, card: ev.card, x: ev.x / MILLI_LU, summoned: ev.summoned, level: ev.level });
         out.push({ a: 'unitClip', id: ev.id, clip: 'spawn' });
         this.rule('unit.spawn', { at: { k: 'unit', id: ev.id, part: 'feet' }, subs: { spawnSound: spawnSoundFor(def) } }, out);
+        if (ev.side === this.mySide && !ev.summoned) out.push({ a: 'view', ev: { t: 'trained', card: ev.card } });
         return;
       }
       case 'attackStarted': {
@@ -447,6 +452,7 @@ export class EventMapper {
           out.push({ a: 'number', kind: 'base', value: ev.damage / 100, at: front, important: false, key: `decay${ev.side}` });
         } else {
           out.push({ a: 'base', side: ev.side, op: 'hit' });
+          out.push({ a: 'view', ev: { t: 'baseHit', side: ev.side } });
           const dir = { x: ev.side === 0 ? -1 : 1, y: 0 };
           this.rule('base.hit', { at: front, base: ev.side, dir, gapKey: String(ev.side), spreadLu: 18 }, out);
           out.push({ a: 'number', kind: 'base', value: ev.damage / 100, at: front, important: true, key: `base${ev.side}` });
@@ -482,6 +488,12 @@ export class EventMapper {
         return;
       case 'ascendStart': {
         const own = ev.side === this.mySide;
+        if (own) {
+          // A12 evolve moment: a short freeze, then the camera pushes in on your base for the rebuild.
+          const ms = this.content.economy.ascendMs;
+          out.push({ a: 'freeze', ms: EVOLVE_FREEZE_MS, exempt: false });
+          out.push({ a: 'camera', at: { k: 'base', side: ev.side, part: 'center' }, zoom: 1.3, inMs: 450, holdMs: Math.max(600, ms + 700), outMs: 800 });
+        }
         out.push({ a: 'fx', effectId: 'fx.evolve_pillar', at: { k: 'base', side: ev.side, part: 'center' }, count: 1, priority: 4, opts: { phase: 0, ms: this.content.economy.ascendMs, small: own ? 0 : 1 } });
         this.rule(own ? 'evolve.start.own' : 'evolve.start.enemy', { at: { k: 'base', side: ev.side, part: 'center' } }, out);
         out.push({ a: 'view', ev: { t: 'ascending', side: ev.side, age: ev.age } });
@@ -571,6 +583,9 @@ export class EventMapper {
         const destroyed = r.reason === 'baseDestroyed' || r.reason === 'bothDestroyed';
         if (destroyed) {
           const losers: Side[] = r.reason === 'bothDestroyed' || r.winner === null ? [0, 1] : [other(r.winner)];
+          // A12 "a base falls": the camera pushes in on the falling base and stays there.
+          const focus = losers.length === 1 ? losers[0] : null;
+          if (focus !== null && focus !== undefined) out.push({ a: 'camera', at: { k: 'base', side: focus, part: 'center' }, zoom: 1.45, inMs: 700, holdMs: 0, outMs: 0 });
           for (const s of losers) {
             out.push({ a: 'base', side: s, op: 'collapse' });
             this.rule('base.destroyed', { at: { k: 'base', side: s, part: 'center' }, spreadLu: BASE_DEPTH_LU / 2, opts: { side: s } }, out);

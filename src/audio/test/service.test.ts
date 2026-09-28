@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { SFX_SAMPLE_RATE } from '../bank';
 import { MIX_TRIM } from '../mixer';
 import { createWebAudioService, WebAudioService, type WebAudioServiceOptions } from '../service';
+import { music as seqMusic } from '../music';
 import { BOOT_GROUPS, SOUND_IDS, sounds, type SoundDef } from '../sounds';
 import { FakeBufferSource, FakeContext, type FakeGain, FakeOscillator, FakePanner } from './fakeContext';
 
@@ -15,6 +16,9 @@ function make(o: WebAudioServiceOptions = {}): { svc: WebAudioService; ctx: Fake
     random: () => 0.5,
     gestureTarget: null,
     warn: (m) => warns.push(m),
+    // The ZzFX sounds and sequenced music; the file sheets have their own tests below.
+    sfxFiles: null,
+    music: seqMusic,
     ...o,
   });
   return { svc, ctx, warns };
@@ -215,7 +219,7 @@ describe('WebAudioService', () => {
 
   it('renders boot groups up front and the rest lazily in idle slices', () => {
     const queue: (() => void)[] = [];
-    const { service, boot } = createWebAudioService({ createContext: () => null, scheduler: 'manual', idle: (t) => queue.push(t) });
+    const { service, boot } = createWebAudioService({ createContext: () => null, scheduler: 'manual', idle: (t) => queue.push(t), sfxFiles: null });
     expect(boot!.sounds).toBe(SOUND_IDS.filter((id) => BOOT_GROUPS.includes(sounds[id]!.group)).length);
     for (const id of SOUND_IDS) expect(service.bank.isRendered(id), id).toBe(BOOT_GROUPS.includes(sounds[id]!.group));
     let slices = 0;

@@ -74,6 +74,8 @@ export type ViewAction =
   | { a: 'baseFlash'; side: Side; ms: number }
   | { a: 'freeze'; ms: number; exempt: boolean }
   | { a: 'slowMo'; scale: number; ms: number }
+  /** A camera moment: push in on an anchor, hold, ease out (`outMs` 0 = hold until the end). */
+  | { a: 'camera'; at: Anchor; zoom: number; inMs: number; holdMs: number; outMs: number }
   | { a: 'duck'; db: number; ms: number }
   | { a: 'musicCue'; cue: MusicCueId; fadeMs: number }
   | { a: 'musicTranspose'; semitones: number }
@@ -98,6 +100,8 @@ export type ViewEvent =
   | { t: 'ascending'; side: Side; age: AgeId }
   | { t: 'lastStandArmed'; side: Side }
   | { t: 'coins'; count: number }
+  | { t: 'baseHit'; side: Side }
+  | { t: 'trained'; card: CardId }
   | { t: 'matchEnded'; outcome: MatchOutcome }
   | { t: 'mountTap'; mount: number; kind: 'mount' | 'buy'; screen: Pt; shift: boolean };
 

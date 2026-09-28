@@ -1,0 +1,1623 @@
+{
+ "frames": {
+  "ursa_paladin_idle_00": {
+   "frame": {
+    "x": 1480,
+    "y": 285,
+    "w": 181,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 44,
+    "w": 181,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_00_team": {
+   "frame": {
+    "x": 837,
+    "y": 791,
+    "w": 96,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 61,
+    "w": 96,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_01": {
+   "frame": {
+    "x": 910,
+    "y": 285,
+    "w": 179,
+    "h": 253
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 40,
+    "w": 179,
+    "h": 253
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_01_team": {
+   "frame": {
+    "x": 511,
+    "y": 791,
+    "w": 96,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 58,
+    "w": 96,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_02": {
+   "frame": {
+    "x": 1132,
+    "y": 2,
+    "w": 175,
+    "h": 259
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 32,
+    "w": 175,
+    "h": 259
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_02_team": {
+   "frame": {
+    "x": 1674,
+    "y": 546,
+    "w": 92,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 51,
+    "w": 92,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_03": {
+   "frame": {
+    "x": 593,
+    "y": 2,
+    "w": 173,
+    "h": 264
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 26,
+    "w": 173,
+    "h": 264
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_idle_03_team": {
+   "frame": {
+    "x": 981,
+    "y": 546,
+    "w": 92,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 40,
+    "w": 92,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_00": {
+   "frame": {
+    "x": 952,
+    "y": 2,
+    "w": 176,
+    "h": 260
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 38,
+    "w": 176,
+    "h": 260
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_00_team": {
+   "frame": {
+    "x": 1877,
+    "y": 546,
+    "w": 94,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 56,
+    "w": 94,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_01": {
+   "frame": {
+    "x": 1675,
+    "y": 2,
+    "w": 177,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 36,
+    "w": 177,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_01_team": {
+   "frame": {
+    "x": 1373,
+    "y": 546,
+    "w": 95,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 50,
+    "w": 95,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_02": {
+   "frame": {
+    "x": 545,
+    "y": 285,
+    "w": 177,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 33,
+    "w": 177,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_02_team": {
+   "frame": {
+    "x": 1275,
+    "y": 546,
+    "w": 94,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 46,
+    "w": 94,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_03": {
+   "frame": {
+    "x": 1856,
+    "y": 2,
+    "w": 177,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 34,
+    "w": 177,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_03_team": {
+   "frame": {
+    "x": 1176,
+    "y": 546,
+    "w": 95,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 47,
+    "w": 95,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_04": {
+   "frame": {
+    "x": 183,
+    "y": 285,
+    "w": 176,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 38,
+    "w": 176,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 791,
+    "w": 94,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 56,
+    "w": 94,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_05": {
+   "frame": {
+    "x": 1493,
+    "y": 2,
+    "w": 178,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 37,
+    "w": 178,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_05_team": {
+   "frame": {
+    "x": 412,
+    "y": 791,
+    "w": 95,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 56,
+    "w": 95,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_06": {
+   "frame": {
+    "x": 1311,
+    "y": 2,
+    "w": 178,
+    "h": 258
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 34,
+    "w": 178,
+    "h": 258
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_06_team": {
+   "frame": {
+    "x": 100,
+    "y": 791,
+    "w": 94,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 52,
+    "w": 94,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_07": {
+   "frame": {
+    "x": 770,
+    "y": 2,
+    "w": 178,
+    "h": 262
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 34,
+    "w": 178,
+    "h": 262
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_walk_07_team": {
+   "frame": {
+    "x": 1575,
+    "y": 546,
+    "w": 95,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 53,
+    "w": 95,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_00": {
+   "frame": {
+    "x": 1278,
+    "y": 285,
+    "w": 198,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 40,
+    "y": 40,
+    "w": 198,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_00_team": {
+   "frame": {
+    "x": 1770,
+    "y": 546,
+    "w": 103,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 56,
+    "w": 103,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_01": {
+   "frame": {
+    "x": 2,
+    "y": 546,
+    "w": 225,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 11,
+    "y": 49,
+    "w": 225,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_01_team": {
+   "frame": {
+    "x": 710,
+    "y": 791,
+    "w": 123,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 63,
+    "w": 123,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_02": {
+   "frame": {
+    "x": 184,
+    "y": 2,
+    "w": 200,
+    "h": 271
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 22,
+    "y": 18,
+    "w": 200,
+    "h": 271
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_02_team": {
+   "frame": {
+    "x": 761,
+    "y": 546,
+    "w": 119,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 28,
+    "w": 119,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_03": {
+   "frame": {
+    "x": 388,
+    "y": 2,
+    "w": 201,
+    "h": 268
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 26,
+    "w": 201,
+    "h": 268
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_03_team": {
+   "frame": {
+    "x": 884,
+    "y": 546,
+    "w": 93,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 35,
+    "w": 93,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_04": {
+   "frame": {
+    "x": 231,
+    "y": 546,
+    "w": 202,
+    "h": 231
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 69,
+    "w": 202,
+    "h": 231
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_04_team": {
+   "frame": {
+    "x": 1040,
+    "y": 791,
+    "w": 111,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 87,
+    "w": 111,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_05": {
+   "frame": {
+    "x": 1665,
+    "y": 285,
+    "w": 185,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 53,
+    "w": 185,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_05_team": {
+   "frame": {
+    "x": 937,
+    "y": 791,
+    "w": 99,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 72,
+    "w": 99,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_06": {
+   "frame": {
+    "x": 726,
+    "y": 285,
+    "w": 180,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 40,
+    "w": 180,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_06_team": {
+   "frame": {
+    "x": 611,
+    "y": 791,
+    "w": 95,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 60,
+    "w": 95,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_07": {
+   "frame": {
+    "x": 2,
+    "y": 285,
+    "w": 177,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 35,
+    "w": 177,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_attack_07_team": {
+   "frame": {
+    "x": 1077,
+    "y": 546,
+    "w": 95,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 44,
+    "w": 95,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_hit_00": {
+   "frame": {
+    "x": 1854,
+    "y": 285,
+    "w": 185,
+    "h": 244
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 47,
+    "w": 185,
+    "h": 244
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_hit_00_team": {
+   "frame": {
+    "x": 198,
+    "y": 791,
+    "w": 110,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 58,
+    "w": 110,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_hit_01": {
+   "frame": {
+    "x": 1093,
+    "y": 285,
+    "w": 181,
+    "h": 251
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 40,
+    "w": 181,
+    "h": 251
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_hit_01_team": {
+   "frame": {
+    "x": 1472,
+    "y": 546,
+    "w": 99,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 52,
+    "w": 99,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_hit_02": {
+   "frame": {
+    "x": 363,
+    "y": 285,
+    "w": 178,
+    "h": 256
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 36,
+    "w": 178,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_hit_02_team": {
+   "frame": {
+    "x": 312,
+    "y": 791,
+    "w": 96,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 56,
+    "w": 96,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 178,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 13,
+    "w": 178,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_die_00_team": {
+   "frame": {
+    "x": 437,
+    "y": 546,
+    "w": 118,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 23,
+    "w": 118,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_die_01": {
+   "frame": {
+    "x": 559,
+    "y": 546,
+    "w": 198,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 94,
+    "w": 198,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_die_01_team": {
+   "frame": {
+    "x": 1155,
+    "y": 791,
+    "w": 118,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 102,
+    "w": 118,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_die_02": {
+   "frame": {
+    "x": 1277,
+    "y": 791,
+    "w": 178,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 159,
+    "w": 178,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  },
+  "ursa_paladin_die_02_team": {
+   "frame": {
+    "x": 1459,
+    "y": 791,
+    "w": 97,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 165,
+    "w": 97,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 298,
+    "h": 302
+   },
+   "anchor": {
+    "x": 0.43289,
+    "y": 0.92053
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "ursa_paladin_idle_00",
+   "ursa_paladin_idle_01",
+   "ursa_paladin_idle_02",
+   "ursa_paladin_idle_03",
+   "ursa_paladin_idle_02",
+   "ursa_paladin_idle_01"
+  ],
+  "idle_team": [
+   "ursa_paladin_idle_00_team",
+   "ursa_paladin_idle_01_team",
+   "ursa_paladin_idle_02_team",
+   "ursa_paladin_idle_03_team",
+   "ursa_paladin_idle_02_team",
+   "ursa_paladin_idle_01_team"
+  ],
+  "walk": [
+   "ursa_paladin_walk_00",
+   "ursa_paladin_walk_01",
+   "ursa_paladin_walk_02",
+   "ursa_paladin_walk_03",
+   "ursa_paladin_walk_04",
+   "ursa_paladin_walk_05",
+   "ursa_paladin_walk_06",
+   "ursa_paladin_walk_07"
+  ],
+  "walk_team": [
+   "ursa_paladin_walk_00_team",
+   "ursa_paladin_walk_01_team",
+   "ursa_paladin_walk_02_team",
+   "ursa_paladin_walk_03_team",
+   "ursa_paladin_walk_04_team",
+   "ursa_paladin_walk_05_team",
+   "ursa_paladin_walk_06_team",
+   "ursa_paladin_walk_07_team"
+  ],
+  "attack": [
+   "ursa_paladin_attack_00",
+   "ursa_paladin_attack_01",
+   "ursa_paladin_attack_02",
+   "ursa_paladin_attack_03",
+   "ursa_paladin_attack_04",
+   "ursa_paladin_attack_05",
+   "ursa_paladin_attack_06",
+   "ursa_paladin_attack_07"
+  ],
+  "attack_team": [
+   "ursa_paladin_attack_00_team",
+   "ursa_paladin_attack_01_team",
+   "ursa_paladin_attack_02_team",
+   "ursa_paladin_attack_03_team",
+   "ursa_paladin_attack_04_team",
+   "ursa_paladin_attack_05_team",
+   "ursa_paladin_attack_06_team",
+   "ursa_paladin_attack_07_team"
+  ],
+  "hit": [
+   "ursa_paladin_hit_00",
+   "ursa_paladin_hit_01",
+   "ursa_paladin_hit_02"
+  ],
+  "hit_team": [
+   "ursa_paladin_hit_00_team",
+   "ursa_paladin_hit_01_team",
+   "ursa_paladin_hit_02_team"
+  ],
+  "die": [
+   "ursa_paladin_die_00",
+   "ursa_paladin_die_01",
+   "ursa_paladin_die_02"
+  ],
+  "die_team": [
+   "ursa_paladin_die_00_team",
+   "ursa_paladin_die_01_team",
+   "ursa_paladin_die_02_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "ursa_paladin.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 968
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.ursa_paladin",
+   "name": "Ursa Paladin",
+   "heightLu": 190,
+   "widthLu": 166.8,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    129,
+    278
+   ],
+   "anchorsLu": {
+    "head": [
+     10,
+     186
+    ],
+    "hitCenter": [
+     0,
+     80
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      1
+     ],
+     "durationsMs": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+     ],
+     "durationMs": 1200,
+     "anchorsLu": {
+      "hammerHead": [
+       [
+        37.9,
+        149.4
+       ],
+       [
+        37.4,
+        152.6
+       ],
+       [
+        36.2,
+        159.1
+       ],
+       [
+        35.0,
+        164.6
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      110,
+      110,
+      110,
+      110,
+      110,
+      110,
+      110,
+      110
+     ],
+     "durationMs": 880,
+     "anchorsLu": {
+      "hammerHead": [
+       [
+        36.2,
+        154.9
+       ],
+       [
+        34.1,
+        156.6
+       ],
+       [
+        33.8,
+        160.2
+       ],
+       [
+        34.9,
+        158.9
+       ],
+       [
+        36.2,
+        154.9
+       ],
+       [
+        37.5,
+        155.2
+       ],
+       [
+        38.6,
+        158.1
+       ],
+       [
+        38.3,
+        157.3
+       ]
+      ]
+     },
+     "strideLu": 67.0,
+     "naturalSpeedLuPerS": 76.1
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      167,
+      42,
+      125,
+      83,
+      83,
+      83
+     ],
+     "durationMs": 749,
+     "impactFrame": 4,
+     "impactAt": 0.5007,
+     "smearFrame": 3,
+     "anchorsLu": {
+      "hammerHead": [
+       [
+        -63.3,
+        154.1
+       ],
+       [
+        -90.1,
+        119.6
+       ],
+       [
+        -83.8,
+        115.6
+       ],
+       [
+        41.0,
+        188.0
+       ],
+       [
+        88.8,
+        76.9
+       ],
+       [
+        80.9,
+        87.6
+       ],
+       [
+        70.2,
+        121.7
+       ],
+       [
+        36.2,
+        157.6
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "anchorsLu": {
+      "hammerHead": [
+       [
+        3.0,
+        161.8
+       ],
+       [
+        19.1,
+        161.4
+       ],
+       [
+        30.4,
+        159.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 166,
+       "offsetLu": [
+        0,
+        79.8
+       ],
+       "scale": 2.085
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 249,
+       "offsetLu": [
+        0,
+        117.8
+       ],
+       "loops": 2,
+       "scale": 1.444
+      }
+     ],
+     "hideUnitAtMs": 249,
+     "anchorsLu": {
+      "hammerHead": [
+       [
+        -55.3,
+        191.6
+       ],
+       [
+        -6.2,
+        127.6
+       ],
+       [
+        4.5,
+        78.6
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

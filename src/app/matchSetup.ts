@@ -319,7 +319,7 @@ export function quickBattle(
     seed: o.seed,
   });
   const setup = matchSetupFor(save, opponent, 'skirmish', content, o.player !== undefined ? { player: o.player } : {});
-  // Quick Battle is a dev route: no onboarding stages or scripts, every control available.
-  const { training: _unused, ...config } = setup.config;
-  return { ...setup, config, script: null };
+  // Quick Battle has no tutorial script, but it keeps the staged unlocks (A8): a new player does not
+  // see the stance flag before match 4 or the Last Stand button before match 5 (audit #23).
+  return { ...setup, script: null };
 }

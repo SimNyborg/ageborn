@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TutorialDirector, type DirectorLogEntry } from '../director';
-import { MATCH1, MATCH1_PEBBLER_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, MATCH5, sec } from '../scripts';
+import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, MATCH5, sec } from '../scripts';
 import { Harness, config, type Ev } from './helpers';
 
 function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } {
@@ -27,7 +27,7 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     h.advance(100);
     d.update(h.input([kill()]));
     expect(d.prompt?.id).toBe('m1.killsEarnGold');
-    h.advance(sec(3));
+    h.advance(KILLS_EARN_GOLD_TICKS);
     d.update(h.input());
     // "Kills earn gold" is over; the Pebbler waits for its tick.
     expect(d.prompt).toBeNull();
@@ -101,7 +101,7 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     h.state.sides[0].queue.push({ card: 'bonker', group: 'infantry', progress: 0, total: 30, waiting: false });
     h.advance();
     d.update(h.input([kill()]));
-    h.advance(sec(3));
+    h.advance(KILLS_EARN_GOLD_TICKS);
     d.update(h.input());
     h.advance();
     d.update(h.input([{ e: 'unitSpawned', id: 5, side: 0, card: 'pebbler', x: 20_000, summoned: false, level: 1 }]));
@@ -121,13 +121,49 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     d.update(h.input());
     expect(log.at(-1)).toMatchObject({ kind: 'beatTimeout', id: 'm1.sendBonker' });
     d.update(h.input([kill()]));
-    h.advance(sec(3));
+    h.advance(KILLS_EARN_GOLD_TICKS);
     d.update(h.input());
     // The player evolved before the Pebbler beat: it names a Stone card, so it is skipped.
     h.state.sides[0].ageIndex = 1;
     h.state.tick = MATCH1_PEBBLER_TICK;
     d.update(h.input([{ e: 'ageUp', side: 0, age: 'medieval' }]));
-    expect(log.filter((e) => e.kind === 'beatSkipped').map((e) => e.id)).toEqual(['m1.pebbler', 'm1.buildTurret', 'm1.evolve']);
+    expect(log.filter((e) => e.kind === 'beatSkipped').map((e) => e.id).sort()).toEqual(['m1.buildTurret', 'm1.evolve', 'm1.pebbler']);
+  });
+});
+
+describe('TutorialDirector: Evolve jumps the queue', () => {
+  it('shows "Evolve!" while the turret step still waits, and the turret step retires with Stone', () => {
+    const { h, d, log } = match1();
+    h.advance();
+    d.update(h.input());
+    h.state.sides[0].queue.push({ card: 'bonker', group: 'infantry', progress: 0, total: 30, waiting: false });
+    h.advance();
+    d.update(h.input());
+    h.advance(100);
+    d.update(h.input([kill()]));
+    h.advance(KILLS_EARN_GOLD_TICKS);
+    d.update(h.input());
+    h.state.tick = MATCH1_PEBBLER_TICK;
+    d.update(h.input());
+    h.advance();
+    d.update(h.input([{ e: 'unitSpawned', id: 5, side: 0, card: 'pebbler', x: 20_000, summoned: false, level: 1 }]));
+    h.state.tick = MATCH1_TURRET_GRANT_TICK;
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m1.buildTurret');
+    // The player ignores the turret; XP fills.
+    h.advance(sec(4));
+    h.state.sides[0].xp = 250_000;
+    d.update(h.input());
+    expect(d.prompt).toMatchObject({ id: 'm1.evolve', target: 'evolve' });
+    h.advance();
+    d.update(h.input([{ e: 'ascendStart', side: 0, age: 'medieval' }]));
+    h.advance(50);
+    h.state.sides[0].ageIndex = 1;
+    h.state.sides[0].xp = 0;
+    d.update(h.input([{ e: 'ageUp', side: 0, age: 'medieval' }]));
+    expect(d.prompt).toBeNull();
+    expect(log.find((e) => e.id === 'm1.buildTurret' && e.kind !== 'beatShown')?.kind).toBe('beatSkipped');
+    expect(log.find((e) => e.id === 'm1.evolve' && e.kind !== 'beatShown')?.kind).toBe('beatDone');
   });
 });
 

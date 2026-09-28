@@ -7,6 +7,7 @@
  * `ui_deny`, A9.2) instead of a command; everything else is sent and the sim has the final word.
  */
 import type { AgeId, CardId, Command, CompiledContent, HudModel, MatchConfig, Side, TeamPreset } from '@/contracts';
+import { matchMods } from '@/core';
 
 /** Elements that can show the denied-press feedback. */
 export type DenyTarget =
@@ -360,4 +361,117 @@ export const HUD_TEAM_COLORS: Record<TeamPreset, readonly [string, string]> = {
 export function hudTeamColors(preset: TeamPreset, side: Side): { me: string; foe: string } {
   const [a, b] = HUD_TEAM_COLORS[preset];
   return side === 0 ? { me: a, foe: b } : { me: b, foe: a };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Readability helpers (usability audit): XP numbers, "affordable in 4s", the front-line strip,
+// the blocked-at-the-gate callout and phase banners. Pure, so they are unit-tested without a DOM.
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * XP needed to leave age `ageIndex` in this match, in whole XP (Fast Forward applied, as in the
+ * sim); null in the format's final age.
+ */
+export function xpNeeded(config: Readonly<MatchConfig>, ageIndex: number): number | null {
+  const content = config.content;
+  const fmt = content.formats[config.format];
+  const age = ageIds(content)[ageIndex];
+  if (!fmt || !age || ageIndex >= fmt.ages.length - 1) return null;
+  const base = fmt.xpToNextOverride?.[ageIndex] ?? content.ages[age]?.xpToNext ?? null;
+  if (base === null) return null;
+  return Math.trunc((base * matchMods(config.modifiers, content).xpThresholdBp) / 10000);
+}
+
+/** "XP 180/250" values for your bar, or null in the final age. */
+export function xpProgress(m: HudModel, config: Readonly<MatchConfig>): { xp: number; need: number } | null {
+  const need = xpNeeded(config, m.me.ageIndex);
+  if (need === null) return null;
+  return { xp: Math.min(need, Math.floor((m.me.xpBp * need) / 10000)), need };
+}
+
+/**
+ * Whole seconds until `cost` is affordable at the current income (rounded up), 0 when it already is,
+ * or null without income. Kills and Treasury change it; it is an estimate for the card's countdown.
+ */
+export function secondsUntilAffordable(cost: number, gold: number, goldPerSec: number): number | null {
+  if (gold >= cost) return 0;
+  if (goldPerSec <= 0) return null;
+  return Math.ceil((cost - gold) / goldPerSec);
+}
+
+/** 0..1: how close a card is to affordable (the grey card's fill). */
+export function affordFraction(cost: number, gold: number): number {
+  if (cost <= 0) return 1;
+  return Math.max(0, Math.min(1, gold / cost));
+}
+
+/**
+ * Where the fighting is, seen from your side: `mine` is your front unit's progress from your gate
+ * (0) to theirs (1), `theirs` their front unit's, both null without units. The strip shows your
+ * colour from the left up to your front and theirs from the right down to their front; the clash
+ * point is between them.
+ */
+export interface FrontLine {
+  mine: number | null;
+  theirs: number | null;
+}
+
+export interface FrontStrip {
+  /** Width of your colour from the left, 0..1. */
+  mine: number;
+  /** Width of their colour from the right, 0..1. */
+  theirs: number;
+  /** The clash marker, 0..1 from your gate. */
+  clash: number;
+}
+
+export function frontStrip(f: FrontLine | null): FrontStrip {
+  const mine = f?.mine ?? null;
+  const theirs = f?.theirs ?? null;
+  const a = mine === null ? 0.08 : Math.max(0.04, Math.min(1, mine));
+  const b = theirs === null ? 0.92 : Math.max(0, Math.min(0.96, theirs));
+  const clash = mine !== null && theirs !== null ? (Math.min(a, b) + Math.max(a, b)) / 2 : mine !== null ? a : theirs !== null ? b : 0.5;
+  return { mine: a, theirs: 1 - b, clash: Math.max(0, Math.min(1, clash)) };
+}
+
+/** Your units count as "at their gate" beyond this progress. */
+export const AT_GATE = 0.92;
+/** How long they must stand there without hurting the base before the callout shows. */
+export const BLOCKED_MS = 5000;
+/** The callout shows at most once per this long. */
+export const BLOCKED_GAP_MS = 45_000;
+
+/**
+ * "Blocked at their gate. Evolve or use your power." (audit #7): your front has stood at their gate
+ * for 5 s while their base took no damage. Feed it every HUD model (15 Hz); `update` returns true on
+ * the model where the callout should appear.
+ */
+export class BlockedWatch {
+  private since: number | null = null;
+  private hp = -1;
+  private lastShown = -Infinity;
+
+  update(clockMs: number, front: FrontLine | null, foeBaseHpBp: number, ended: boolean): boolean {
+    const atGate = !ended && front?.mine !== null && front?.mine !== undefined && front.mine >= AT_GATE;
+    if (!atGate || foeBaseHpBp < this.hp) {
+      this.since = atGate ? clockMs : null;
+      this.hp = foeBaseHpBp;
+      return false;
+    }
+    this.hp = foeBaseHpBp;
+    if (this.since === null) this.since = clockMs;
+    if (clockMs - this.since >= BLOCKED_MS && clockMs - this.lastShown >= BLOCKED_GAP_MS) {
+      this.lastShown = clockMs;
+      this.since = clockMs;
+      return true;
+    }
+    return false;
+  }
+}
+
+/** The phase banner for a phase that just started (audit #24), as i18n keys. */
+export function phaseBanner(phase: HudModel['phase']): { title: string; sub: string } | null {
+  if (phase === 'overdrive') return { title: 'hud.banner.overdrive', sub: 'hud.banner.overdriveSub' };
+  if (phase === 'siege') return { title: 'hud.banner.siege', sub: 'hud.banner.siegeSub' };
+  return null;
 }

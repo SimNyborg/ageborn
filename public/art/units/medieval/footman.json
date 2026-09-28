@@ -1,0 +1,1623 @@
+{
+ "frames": {
+  "footman_idle_00": {
+   "frame": {
+    "x": 298,
+    "y": 146,
+    "w": 68,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 62,
+    "w": 68,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_00_team": {
+   "frame": {
+    "x": 711,
+    "y": 354,
+    "w": 49,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 65,
+    "w": 49,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_01": {
+   "frame": {
+    "x": 73,
+    "y": 146,
+    "w": 66,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 58,
+    "w": 66,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_01_team": {
+   "frame": {
+    "x": 304,
+    "y": 354,
+    "w": 49,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 62,
+    "w": 49,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_02": {
+   "frame": {
+    "x": 322,
+    "y": 2,
+    "w": 64,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 53,
+    "w": 64,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_02_team": {
+   "frame": {
+    "x": 547,
+    "y": 256,
+    "w": 48,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 57,
+    "w": 48,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_03": {
+   "frame": {
+    "x": 126,
+    "y": 2,
+    "w": 63,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 49,
+    "w": 63,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_idle_03_team": {
+   "frame": {
+    "x": 222,
+    "y": 256,
+    "w": 47,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 52,
+    "w": 47,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_00": {
+   "frame": {
+    "x": 90,
+    "y": 256,
+    "w": 80,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 70,
+    "w": 80,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_00_team": {
+   "frame": {
+    "x": 208,
+    "y": 354,
+    "w": 44,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 64,
+    "w": 44,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_01": {
+   "frame": {
+    "x": 631,
+    "y": 146,
+    "w": 81,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 68,
+    "w": 81,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_01_team": {
+   "frame": {
+    "x": 357,
+    "y": 354,
+    "w": 46,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 62,
+    "w": 46,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_02": {
+   "frame": {
+    "x": 143,
+    "y": 146,
+    "w": 74,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 59,
+    "w": 74,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_02_team": {
+   "frame": {
+    "x": 699,
+    "y": 256,
+    "w": 47,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 57,
+    "w": 47,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_03": {
+   "frame": {
+    "x": 390,
+    "y": 2,
+    "w": 66,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 57,
+    "w": 66,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_03_team": {
+   "frame": {
+    "x": 599,
+    "y": 256,
+    "w": 46,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 59,
+    "w": 46,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_04": {
+   "frame": {
+    "x": 530,
+    "y": 2,
+    "w": 66,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 60,
+    "w": 66,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_04_team": {
+   "frame": {
+    "x": 256,
+    "y": 354,
+    "w": 44,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 64,
+    "w": 44,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_05": {
+   "frame": {
+    "x": 670,
+    "y": 2,
+    "w": 71,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 61,
+    "w": 71,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_05_team": {
+   "frame": {
+    "x": 407,
+    "y": 354,
+    "w": 46,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 62,
+    "w": 46,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_06": {
+   "frame": {
+    "x": 221,
+    "y": 146,
+    "w": 73,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 62,
+    "w": 73,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_06_team": {
+   "frame": {
+    "x": 53,
+    "y": 354,
+    "w": 45,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 57,
+    "w": 45,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_07": {
+   "frame": {
+    "x": 551,
+    "y": 146,
+    "w": 76,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 65,
+    "w": 76,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_walk_07_team": {
+   "frame": {
+    "x": 649,
+    "y": 256,
+    "w": 46,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 59,
+    "w": 46,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 146,
+    "w": 67,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 33,
+    "y": 58,
+    "w": 67,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_00_team": {
+   "frame": {
+    "x": 648,
+    "y": 354,
+    "w": 59,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 40,
+    "y": 63,
+    "w": 59,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_01": {
+   "frame": {
+    "x": 451,
+    "y": 256,
+    "w": 92,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 4,
+    "y": 76,
+    "w": 92,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_01_team": {
+   "frame": {
+    "x": 131,
+    "y": 445,
+    "w": 67,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 30,
+    "y": 71,
+    "w": 67,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_02": {
+   "frame": {
+    "x": 370,
+    "y": 146,
+    "w": 79,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 12,
+    "y": 61,
+    "w": 79,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_02_team": {
+   "frame": {
+    "x": 381,
+    "y": 256,
+    "w": 66,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 27,
+    "y": 55,
+    "w": 66,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 120,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 18,
+    "y": 24,
+    "w": 120,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_03_team": {
+   "frame": {
+    "x": 174,
+    "y": 256,
+    "w": 44,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 53,
+    "w": 44,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_04": {
+   "frame": {
+    "x": 457,
+    "y": 354,
+    "w": 100,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 83,
+    "w": 100,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_04_team": {
+   "frame": {
+    "x": 202,
+    "y": 445,
+    "w": 67,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 78,
+    "w": 67,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_05": {
+   "frame": {
+    "x": 273,
+    "y": 256,
+    "w": 104,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 75,
+    "w": 104,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_05_team": {
+   "frame": {
+    "x": 68,
+    "y": 445,
+    "w": 59,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 70,
+    "w": 59,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_06": {
+   "frame": {
+    "x": 453,
+    "y": 146,
+    "w": 94,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 57,
+    "y": 65,
+    "w": 94,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_06_team": {
+   "frame": {
+    "x": 102,
+    "y": 354,
+    "w": 45,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 60,
+    "w": 45,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_07": {
+   "frame": {
+    "x": 460,
+    "y": 2,
+    "w": 66,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 55,
+    "w": 66,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_attack_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 354,
+    "w": 47,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 59,
+    "w": 47,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_hit_00": {
+   "frame": {
+    "x": 600,
+    "y": 2,
+    "w": 66,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 29,
+    "y": 56,
+    "w": 66,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_hit_00_team": {
+   "frame": {
+    "x": 273,
+    "y": 445,
+    "w": 73,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 23,
+    "y": 73,
+    "w": 73,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_hit_01": {
+   "frame": {
+    "x": 259,
+    "y": 2,
+    "w": 59,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 41,
+    "y": 52,
+    "w": 59,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_hit_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 445,
+    "w": 62,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 67,
+    "w": 62,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_hit_02": {
+   "frame": {
+    "x": 193,
+    "y": 2,
+    "w": 62,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 53,
+    "w": 62,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_hit_02_team": {
+   "frame": {
+    "x": 151,
+    "y": 354,
+    "w": 53,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 60,
+    "w": 53,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 256,
+    "w": 84,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 60,
+    "w": 84,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_die_00_team": {
+   "frame": {
+    "x": 561,
+    "y": 354,
+    "w": 83,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 58,
+    "w": 83,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_die_01": {
+   "frame": {
+    "x": 350,
+    "y": 445,
+    "w": 83,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 5,
+    "y": 89,
+    "w": 83,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_die_01_team": {
+   "frame": {
+    "x": 437,
+    "y": 445,
+    "w": 68,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 23,
+    "y": 84,
+    "w": 68,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_die_02": {
+   "frame": {
+    "x": 509,
+    "y": 445,
+    "w": 74,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 22,
+    "y": 109,
+    "w": 74,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  },
+  "footman_die_02_team": {
+   "frame": {
+    "x": 587,
+    "y": 445,
+    "w": 52,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 111,
+    "w": 52,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.39062,
+    "y": 0.88506
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "footman_idle_00",
+   "footman_idle_01",
+   "footman_idle_02",
+   "footman_idle_03",
+   "footman_idle_02",
+   "footman_idle_01"
+  ],
+  "idle_team": [
+   "footman_idle_00_team",
+   "footman_idle_01_team",
+   "footman_idle_02_team",
+   "footman_idle_03_team",
+   "footman_idle_02_team",
+   "footman_idle_01_team"
+  ],
+  "walk": [
+   "footman_walk_00",
+   "footman_walk_01",
+   "footman_walk_02",
+   "footman_walk_03",
+   "footman_walk_04",
+   "footman_walk_05",
+   "footman_walk_06",
+   "footman_walk_07"
+  ],
+  "walk_team": [
+   "footman_walk_00_team",
+   "footman_walk_01_team",
+   "footman_walk_02_team",
+   "footman_walk_03_team",
+   "footman_walk_04_team",
+   "footman_walk_05_team",
+   "footman_walk_06_team",
+   "footman_walk_07_team"
+  ],
+  "attack": [
+   "footman_attack_00",
+   "footman_attack_01",
+   "footman_attack_02",
+   "footman_attack_03",
+   "footman_attack_04",
+   "footman_attack_05",
+   "footman_attack_06",
+   "footman_attack_07"
+  ],
+  "attack_team": [
+   "footman_attack_00_team",
+   "footman_attack_01_team",
+   "footman_attack_02_team",
+   "footman_attack_03_team",
+   "footman_attack_04_team",
+   "footman_attack_05_team",
+   "footman_attack_06_team",
+   "footman_attack_07_team"
+  ],
+  "hit": [
+   "footman_hit_00",
+   "footman_hit_01",
+   "footman_hit_02"
+  ],
+  "hit_team": [
+   "footman_hit_00_team",
+   "footman_hit_01_team",
+   "footman_hit_02_team"
+  ],
+  "die": [
+   "footman_die_00",
+   "footman_die_01",
+   "footman_die_02"
+  ],
+  "die_team": [
+   "footman_die_00_team",
+   "footman_die_01_team",
+   "footman_die_02_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "footman.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 528
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.footman",
+   "name": "Footman",
+   "heightLu": 68,
+   "widthLu": 49.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    75,
+    154
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      1
+     ],
+     "durationsMs": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+     ],
+     "durationMs": 1200,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        32.0,
+        70.3
+       ],
+       [
+        30.5,
+        73.0
+       ],
+       [
+        28.5,
+        77.6
+       ],
+       [
+        27.7,
+        80.5
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        44.5,
+        60.1
+       ],
+       [
+        44.6,
+        63.9
+       ],
+       [
+        38.7,
+        72.7
+       ],
+       [
+        31.9,
+        74.6
+       ],
+       [
+        31.7,
+        71.7
+       ],
+       [
+        36.1,
+        71.1
+       ],
+       [
+        38.7,
+        70.4
+       ],
+       [
+        41.0,
+        65.0
+       ]
+      ]
+     },
+     "strideLu": 30.0,
+     "naturalSpeedLuPerS": 60.0
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      167,
+      42,
+      125,
+      83,
+      83,
+      83
+     ],
+     "durationMs": 749,
+     "impactFrame": 4,
+     "impactAt": 0.5007,
+     "smearFrame": 3,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -29.3,
+        73.7
+       ],
+       [
+        -52.5,
+        49.5
+       ],
+       [
+        -46.7,
+        30.8
+       ],
+       [
+        46.8,
+        89.2
+       ],
+       [
+        65.9,
+        -6.7
+       ],
+       [
+        67.9,
+        3.3
+       ],
+       [
+        57.2,
+        51.2
+       ],
+       [
+        30.0,
+        75.4
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -12.6,
+        74.9
+       ],
+       [
+        7.9,
+        78.3
+       ],
+       [
+        22.5,
+        77.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 166,
+       "offsetLu": [
+        0,
+        28.6
+       ],
+       "scale": 0.62
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 249,
+       "offsetLu": [
+        0,
+        42.2
+       ],
+       "loops": 2,
+       "scale": 0.787
+      }
+     ],
+     "hideUnitAtMs": 249,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -58.6,
+        50.1
+       ],
+       [
+        -51.8,
+        47.7
+       ],
+       [
+        -38.3,
+        32.1
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

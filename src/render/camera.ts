@@ -28,8 +28,38 @@ export interface CameraTransform {
   y: number;
 }
 
+/** A camera "moment" (A12): push in on a world point, hold, ease back out. */
+export interface CameraPush {
+  /** World point to focus. */
+  x: number;
+  y: number;
+  /** Extra zoom at full push (1.3 = 30% closer). */
+  zoom: number;
+  inMs: number;
+  holdMs: number;
+  /** 0 = stay pushed until `release()` (the end of a match). */
+  outMs: number;
+}
+
+/** Smoothstep easing for camera pushes. */
+export function easeInOut(t: number): number {
+  const c = Math.max(0, Math.min(1, t));
+  return c * c * (3 - 2 * c);
+}
+
+/** 0..1 push amount `ms` into a push (in, hold, out). */
+export function pushAmount(p: CameraPush, ms: number): number {
+  if (ms <= 0) return 0;
+  if (ms < p.inMs) return easeInOut(ms / Math.max(1, p.inMs));
+  if (ms < p.inMs + p.holdMs || p.outMs <= 0) return 1;
+  const out = (ms - p.inMs - p.holdMs) / Math.max(1, p.outMs);
+  return out >= 1 ? 0 : 1 - easeInOut(out);
+}
+
 export class Camera {
   layout: ScreenLayout = screenLayout(1280, 720);
+  private push: CameraPush | null = null;
+  private pushMs = 0;
   /** 1 = fit; up to `maxZoom` on narrow screens. */
   zoom = 1;
   /** World x at the screen centre. */
@@ -80,7 +110,33 @@ export class Camera {
     this.targetX = x;
   }
 
+  /** Starts a camera moment (evolve push-in, base destroyed). A new push replaces the current one. */
+  pushTo(p: CameraPush): void {
+    this.push = p;
+    this.pushMs = 0;
+  }
+
+  /** Ends a held push (eases out over `outMs`, or 500 ms). */
+  release(outMs = 500): void {
+    if (!this.push) return;
+    const a = pushAmount(this.push, this.pushMs);
+    // Restart as an out-only push from the current amount.
+    this.push = { ...this.push, inMs: 0, holdMs: 0, outMs };
+    this.pushMs = (1 - a) * outMs;
+    if (a <= 0) this.push = null;
+  }
+
+  /** The current push amount, 0..1 (tests, dev pages). */
+  get pushed(): number {
+    return this.push ? pushAmount(this.push, this.pushMs) : 0;
+  }
+
   update(dtMs: number): void {
+    if (this.push) {
+      this.pushMs += Math.max(0, dtMs);
+      const p = this.push;
+      if (p.outMs > 0 && this.pushMs >= p.inMs + p.holdMs + p.outMs) this.push = null;
+    }
     if (this.zoom <= 1) {
       this.centerX = WORLD_MID_LU;
       return;
@@ -89,8 +145,23 @@ export class Camera {
     this.clamp();
   }
 
-  /** The transform for the world container. */
+  /** The transform for the world container (with any camera push applied). */
   transform(): CameraTransform {
+    const base = this.baseTransform();
+    const a = this.push ? pushAmount(this.push, this.pushMs) : 0;
+    if (!this.push || a <= 0) return base;
+    const p = this.push;
+    const L = this.layout;
+    // The focus point moves toward the middle of the lane band while the world scales around it.
+    const sx = base.x + p.x * base.scale;
+    const sy = base.y + p.y * base.scale;
+    const qx = sx + (L.width / 2 - sx) * a * 0.6;
+    const qy = sy + (L.bandY + L.bandH * 0.52 - sy) * a * 0.5;
+    const scale = base.scale * (1 + (p.zoom - 1) * a);
+    return { scale, x: qx - p.x * scale, y: qy - p.y * scale };
+  }
+
+  private baseTransform(): CameraTransform {
     const s = this.scale;
     const L = this.layout;
     if (this.zoom <= 1) {

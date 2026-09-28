@@ -1,6 +1,7 @@
 /**
- * Music manifest (DESIGN B7, A13 Music, A14.3): every `MusicCueId` → a sequenced score or, later, a
- * composed file with optional layer stems.
+ * Music manifests (DESIGN B7, A13 Music, A14.3): every `MusicCueId` → a composed file with layer stems
+ * (`fileMusic`, what the game plays) or a sequenced score (`music`, the synthesized fallback that plays
+ * while a file loads or where a browser cannot decode it).
  *
  * `role` drives the engine's state between cues: `battle` cues keep the adaptive layers and the
  * evolve key changes when the next cue is another battle cue (an evolve) or a stinger; switching to a
@@ -8,6 +9,7 @@
  * the layers off.
  */
 import type { MusicCueId, MusicLayer } from '@/contracts';
+import { MUSIC_FILES } from './files';
 import {
   capsuleArrangement,
   futureArrangement,
@@ -22,10 +24,31 @@ import type { Score } from './sequencer';
 
 export type MusicRole = 'battle' | 'menu' | 'stinger';
 
+/** A looping stem file for an adaptive layer. */
+export interface MusicStem {
+  src: string;
+  /** Loop window in seconds (default: the whole file). */
+  loopStart?: number;
+  loopLength?: number;
+}
+
 export type MusicSource =
   | { kind: 'seq'; score: Score }
-  /** A composed file (looped unless it is a stinger), with optional stems per adaptive layer. */
-  | { kind: 'file'; src: string; layers?: Partial<Record<MusicLayer, string>> };
+  /**
+   * A composed file (looped unless it is a stinger), with optional stems per adaptive layer. The
+   * loop window (`loopStart`, `loopLength`) defaults to the whole file; `fallback` plays while the
+   * file loads or if it cannot be decoded; `prefetch` names cues to load in the background while this
+   * one plays (the next age, the stingers).
+   */
+  | {
+      kind: 'file';
+      src: string;
+      loopStart?: number;
+      loopLength?: number;
+      layers?: Partial<Record<MusicLayer, string | MusicStem>>;
+      fallback?: Score;
+      prefetch?: readonly MusicCueId[];
+    };
 
 export type MusicDef = MusicSource & {
   role: MusicRole;
@@ -47,6 +70,66 @@ export const music: Readonly<Record<MusicCueId, MusicDef>> = {
 };
 
 export const MUSIC_CUES: readonly MusicCueId[] = Object.keys(music);
+
+/** Battle cues in age order (an evolve moves one step along). */
+export const AGE_CUES: readonly MusicCueId[] = ['music.stone', 'music.medieval', 'music.gunpowder', 'music.modern', 'music.future'];
+
+/**
+ * Level trims for the composed files (mastered to about -16 LUFS). Battle music sits a little under
+ * the effects; the menu, with nothing to compete with, a little higher.
+ */
+export const FILE_GAIN_DB: Readonly<Record<MusicRole, number>> = { battle: -3, menu: -1.5, stinger: -2 };
+
+function stem(id: string): MusicStem | undefined {
+  const f = Object.hasOwn(MUSIC_FILES, id) ? MUSIC_FILES[id] : undefined;
+  if (!f) return undefined;
+  return { src: f.src, ...(f.loopStart !== undefined ? { loopStart: f.loopStart } : {}), ...(f.loopLength !== undefined ? { loopLength: f.loopLength } : {}) };
+}
+
+function prefetchFor(cue: MusicCueId): MusicCueId[] {
+  if (cue === 'music.menu') return ['music.stone'];
+  const k = AGE_CUES.indexOf(cue);
+  if (k < 0) return [];
+  const next = AGE_CUES[k + 1];
+  return [...(next ? [next] : []), 'stinger.victory', 'stinger.defeat'];
+}
+
+/** Builds the file manifest from the generated asset list; cues without a file keep their score. */
+export function buildFileMusic(seq: Readonly<Record<MusicCueId, MusicDef>> = music): Record<MusicCueId, MusicDef> {
+  const out: Record<MusicCueId, MusicDef> = {};
+  for (const [cue, def] of Object.entries(seq)) {
+    const f = Object.hasOwn(MUSIC_FILES, cue) ? MUSIC_FILES[cue] : undefined;
+    if (!f) {
+      out[cue] = def;
+      continue;
+    }
+    const age = AGE_CUES.includes(cue) ? cue.slice('music.'.length) : null;
+    const layers: Partial<Record<MusicLayer, MusicStem>> = {};
+    if (age) {
+      const intensity = stem(`layer.intensity.${age}`);
+      const overdrive = stem('layer.overdrive');
+      const siege = stem('layer.siege');
+      if (intensity) layers.intensity = intensity;
+      if (overdrive) layers.overdrive = overdrive;
+      if (siege) layers.siege = siege;
+    }
+    out[cue] = {
+      kind: 'file',
+      src: f.src,
+      ...(f.loopStart !== undefined ? { loopStart: f.loopStart } : {}),
+      ...(f.loopLength !== undefined ? { loopLength: f.loopLength } : {}),
+      ...(Object.keys(layers).length > 0 ? { layers } : {}),
+      ...(def.kind === 'seq' ? { fallback: def.score } : {}),
+      prefetch: prefetchFor(cue),
+      role: def.role,
+      gainDb: FILE_GAIN_DB[def.role],
+    };
+  }
+  return out;
+}
+
+/** What the game plays: the composed files, each with its sequenced score as the fallback. */
+export const fileMusic: Readonly<Record<MusicCueId, MusicDef>> = buildFileMusic();
 
 /** Semitones added by each own evolve, in turn (A13 "Key changes": +2, +2, +1, +1 = +6 at Future). */
 export const EVOLVE_TRANSPOSE_STEPS: readonly number[] = [2, 2, 1, 1];

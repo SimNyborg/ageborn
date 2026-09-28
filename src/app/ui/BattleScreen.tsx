@@ -9,6 +9,9 @@ import type { BattleHandle } from '../battle';
 import { useApp } from './context';
 import { TutorialBubble } from './TutorialBubble';
 
+/** The "Scouted (n)" chip appears from match 3; new players have enough to read (audit #11). */
+export const SCOUTED_FROM_MATCH = 3;
+
 export function BattleScreen(p: { battle: BattleHandle }) {
   const ui = useApp();
   const root = useRef<HTMLDivElement>(null);
@@ -18,13 +21,17 @@ export function BattleScreen(p: { battle: BattleHandle }) {
   const hud = s.hud.value;
   const view = ui.viewOf(s.sim);
   const settings = ui.controller.save.value?.settings;
+  const countdown = b.countdown.value;
+  const prompt = b.prompt.value;
   const togglePause = (): void => {
+    // Pausing during "3-2-1" ends the countdown, so the pause screen shows a running battle.
+    if (b.countdown.peek() > 0) ui.controller.skipCountdown();
     if (s.status.peek() === 'paused') s.resume();
     else s.pause();
   };
 
   return (
-    <div class="ab-layer" ref={root} data-testid="battle">
+    <div class="ab-layer" ref={root} data-testid="battle" data-tut={prompt?.kind === 'beat' ? prompt.target ?? '' : ''}>
       <Hud
         model={s.hud}
         config={s.sim.config}
@@ -36,10 +43,18 @@ export function BattleScreen(p: { battle: BattleHandle }) {
         portrait={ui.portrait}
         audio={ui.services.audio}
         teamPreset={settings?.teamPreset ?? 'default'}
+        scouted={b.setup.matchNumber >= SCOUTED_FROM_MATCH}
         t={ui.t}
       />
+      {countdown >= 0 ? (
+        <div class="ab-countdown" data-testid="countdown" data-count={countdown} aria-live="assertive">
+          <span key={countdown} class={`ab-countdown-num${countdown === 0 ? ' is-fight' : ''}`}>
+            {countdown === 0 ? ui.t('app.fight') : countdown}
+          </span>
+        </div>
+      ) : null}
       <TutorialBubble
-        prompt={b.prompt.value}
+        prompt={prompt}
         root={root.current}
         view={view}
         mountsOwned={hud.mounts.filter((m) => m.owned).length}

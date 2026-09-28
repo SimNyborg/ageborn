@@ -18,6 +18,11 @@ import type { FrameScheduler, SessionView, VisibilitySource } from './session';
 
 export interface ResultState {
   setup: MatchSetup;
+  /**
+   * The finished battle, kept alive behind the result so its last frame stays on screen (dimmed);
+   * disposed when the player leaves the result.
+   */
+  battle?: BattleHandle;
   input: MatchResultInput;
   replay: ReplayDoc;
   rewards: RewardStep[];
@@ -37,6 +42,11 @@ export const QUICK_BATTLE_TIER = 3;
 /** How long the end of a match plays (base collapse, slow motion, coins) before the result. */
 export const END_DELAY_MS = 2500;
 
+/** "3-2-1 Fight!" before a non-tutorial battle: each number shows this long (audit #21). */
+export const COUNTDOWN_STEP_MS = 700;
+/** How long "Fight!" stays after the battle has started. */
+export const COUNTDOWN_FIGHT_MS = 650;
+
 export interface AppControllerOptions {
   save: SaveDoc | null;
   /** Builds the battle view (the battle screen owns the canvas). */
@@ -49,6 +59,8 @@ export interface AppControllerOptions {
   delay?: (ms: number) => Promise<void>;
   /** A fresh seed for each non-scripted match. */
   seed?: () => number;
+  /** "3-2-1 Fight!" before Quick Battles and other non-tutorial matches (off in tests and on autopilot). */
+  countdown?: boolean;
 }
 
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -67,6 +79,7 @@ export class AppController {
   private readonly services: Services;
   private readonly o: AppControllerOptions;
   private seedCounter = 1;
+  private countdownTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(services: Services, o: AppControllerOptions) {
     this.services = services;
@@ -123,11 +136,55 @@ export class AppController {
     if (cue) this.services.audio.music.setCue(cue, { fadeMs: 600 });
   }
 
-  /** Starts a battle that is on screen (route and music). */
+  /** Starts a battle that is on screen (route and music), after the countdown when it has one. */
   private startBattle(battle: BattleHandle): void {
     this.routeSig.value = { id: 'battle', battle };
     this.battleMusic(battle);
-    battle.session.start();
+    if (this.o.countdown && !this.o.autopilot && battle.setup.mode !== 'tutorial') this.runCountdown(battle);
+    else battle.session.start();
+  }
+
+  /**
+   * "3-2-1 Fight!" (audit #21): the sim waits in 'ready' (no ticks, no commands) while the numbers
+   * show, so nobody is hit while still reading the screen. `countdown` goes 3, 2, 1, 0 ("Fight!",
+   * the battle is running), then -1 (hidden).
+   */
+  private runCountdown(battle: BattleHandle): void {
+    this.clearCountdown();
+    const cd = battle.countdown;
+    cd.value = 3;
+    const step = (): void => {
+      const r = this.routeSig.peek();
+      if (r.id !== 'battle' || r.battle !== battle) return;
+      if (cd.peek() > 1) {
+        cd.value = cd.peek() - 1;
+        this.countdownTimer = setTimeout(step, COUNTDOWN_STEP_MS);
+        return;
+      }
+      if (cd.peek() === 1) {
+        cd.value = 0;
+        battle.session.start();
+        this.countdownTimer = setTimeout(step, COUNTDOWN_FIGHT_MS);
+        return;
+      }
+      cd.value = -1;
+      this.countdownTimer = null;
+    };
+    this.countdownTimer = setTimeout(step, COUNTDOWN_STEP_MS);
+  }
+
+  private clearCountdown(): void {
+    if (this.countdownTimer !== null) clearTimeout(this.countdownTimer);
+    this.countdownTimer = null;
+  }
+
+  /** Ends a running countdown at once and starts the battle (pause button, dev fast-forward). */
+  skipCountdown(): void {
+    const r = this.routeSig.peek();
+    if (r.id !== 'battle' || r.battle.countdown.peek() <= 0) return;
+    this.clearCountdown();
+    r.battle.countdown.value = -1;
+    r.battle.session.start();
   }
 
   /** Shows the title: the next onboarding match is built and waits, rendered, behind Play. */
@@ -290,13 +347,15 @@ export class AppController {
     // The player may have left meanwhile.
     const r = this.routeSig.peek();
     if (r.id !== 'battle' || r.battle !== battle) return;
-    this.routeSig.value = { id: 'result', result: { setup, input, replay, rewards: out.rewards } };
-    battle.dispose();
+    // The battle stays on screen, dimmed, behind the result (audit #16); leaving the result disposes it.
+    this.routeSig.value = { id: 'result', result: { setup, input, replay, rewards: out.rewards, battle } };
   }
 
   private disposeRoute(): void {
+    this.clearCountdown();
     const r = this.routeSig.peek();
     if (r.id === 'title' || r.id === 'battle') r.battle?.dispose();
+    else if (r.id === 'result') r.result.battle?.dispose();
   }
 
   dispose(): void {

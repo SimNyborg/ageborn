@@ -21,4 +21,6 @@ export interface HudCtx {
   compact: boolean;
   /** A read-only HUD (replay viewer, dev state gallery) shows everything and accepts no input. */
   readOnly: boolean;
+  /** Keyboard hint badges; shown only after the player first uses a key (audit #22). */
+  keys: boolean;
 }

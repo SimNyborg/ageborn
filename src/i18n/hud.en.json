@@ -6,7 +6,6 @@
     "xp": "Experience",
     "evolve": "Evolve",
     "evolving": "Evolving",
-    "overcharge": "Overcharge",
     "clockLabel": "Match clock",
     "phase": {
       "overdrive": "Overdrive",
@@ -23,15 +22,14 @@
     "speedLabel": "Game speed",
     "speed": "{s}x",
     "goldRate": "+{n}/s",
-    "treasury": "Treasury {cost}",
-    "treasuryMax": "Treasury max",
-    "treasuryBuy": "Buy Treasury for {cost} gold",
-    "emptySlot": "Empty card slot",
+    "treasury": "+Income · {cost}",
+    "treasuryMax": "Income max",
+    "treasuryBuy": "Raise your income for {cost} gold",
     "cardLabel": "Train {name} for {cost} gold",
     "queued": "{n} queued",
     "armyFull": "Army full",
     "legendaryInField": "Legendary in field",
-    "army": "Army {pop}/{cap}",
+    "army": "{pop}/{cap}",
     "stanceLabel": "Stance: {stance}",
     "stance": {
       "charge": "Charge",
@@ -49,6 +47,37 @@
       "sellConfirm": "Tap again to sell (+{n})",
       "busy": "Working on it",
       "locked": "Buy this mount first"
-    }
+    },
+    "evolveReady": "Evolve!",
+    "xpText": "XP {xp}/{need}",
+    "finalAge": "Top age",
+    "frontLabel": "Front line: where the armies meet",
+    "nextPhase": {
+      "overdrive": "Overdrive in {time}",
+      "siege": "Siege in {time}"
+    },
+    "banner": {
+      "overdrive": "Overdrive!",
+      "overdriveSub": "Gold ×2",
+      "siege": "Siege!",
+      "siegeSub": "Bases crumble"
+    },
+    "blocked": "Blocked at their gate. Evolve or use your power.",
+    "ageReached": "{age}!",
+    "need": "Need {n}",
+    "wait": "{s}s",
+    "info": {
+      "label": "About {name}",
+      "hp": "Health {n}",
+      "cost": "Cost {n}",
+      "strongVs": "Good against {list}"
+    },
+    "lockedSlot": "A new card unlocks soon",
+    "armyLabel": "Your units on the field",
+    "ready": "Ready",
+    "key": {
+      "space": "Space"
+    },
+    "newUnits": "New units!"
   }
 }

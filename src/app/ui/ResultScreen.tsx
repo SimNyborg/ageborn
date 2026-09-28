@@ -43,6 +43,31 @@ function clock(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+/** The one-line story of the match (audit #16): "You toppled Old Grogg in 1:57". */
+export function resultLine(t: (k: string, p?: Record<string, string | number>) => string, won: boolean, draw: boolean, reason: string, name: string, time: string): string {
+  if (draw) return t('app.drawLine', { time });
+  if (reason === 'finalBell') return won ? t('app.bellWin', { time }) : t('app.bellLoss', { name, time });
+  return won ? t('app.toppled', { name, time }) : t('app.fell', { name, time });
+}
+
+function HomeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M3.5 11.5 12 4l8.5 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M6 10.5V20h4.5v-5h3v5H18v-9.5" fill="currentColor" stroke="#1b1330" stroke-width="1.4" stroke-linejoin="round" />
+    </svg>
+  );
+}
+
+function ReplayIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="3" fill="currentColor" stroke="#1b1330" stroke-width="1.4" />
+      <path d="M10 9v6l5-3z" fill="#1b1330" />
+    </svg>
+  );
+}
+
 export function ResultScreen(p: { result: ResultState }) {
   const ui = useApp();
   const c = ui.controller;
@@ -69,52 +94,65 @@ export function ResultScreen(p: { result: ResultState }) {
   // A8: a lost onboarding match offers a retry. After match 1 the retry is the only way on.
   const retry = onboarding && c.canRetry(p.result);
   const next = onboarding && step !== 'match1';
+  const name = displayName(input.opponent.displayName, ui.services.i18n);
+  const line = resultLine(ui.t, won, draw, input.outcome.reason, name, clock(input.stats.durationMs));
+  // One main action (gold) and one second; replay and home are small icon buttons.
+  const primary = next ? 'next' : retry ? 'retry' : 'again';
   return (
     <div class={`ab-scrim ab-result ab-result--${draw ? 'draw' : won ? 'win' : 'loss'}`} data-testid="result" onClick={() => stager.tap()}>
       <div class="ab-result-rays" aria-hidden="true" />
-      <div class="ab-panel ab-result-panel">
+      <div class="ab-result-banner">
         <h2 class={won ? 'ab-win' : 'ab-loss'} data-testid="result-title" data-outcome={draw ? 'draw' : won ? 'win' : 'loss'}>
           {title}
         </h2>
-        <div class="ab-row">
-          <span class="ab-chip">{displayName(input.opponent.displayName, ui.services.i18n)}</span>
+      </div>
+      <div class="ab-panel ab-result-panel">
+        <p class="ab-result-line" data-testid="result-line">
+          {line}
+        </p>
+        <div class="ab-row ab-result-vs">
+          <span class="ab-chip">
+            {ui.t('app.vs')} {name}
+          </span>
           <span class="ab-chip ab-chip--ai">{ui.t('app.aiChip')}</span>
         </div>
         <div class="ab-stats">
           <span>{ui.t('app.stats.trained', { n: input.stats.trained })}</span>
           <span>{ui.t('app.stats.kills', { n: input.stats.kills })}</span>
-          <span>{ui.t('app.stats.baseDamage', { n: input.stats.baseDamage })}</span>
-          <span>{ui.t('app.stats.time', { time: clock(input.stats.durationMs) })}</span>
         </div>
-        <div class="ab-rewards" data-testid="result-rewards">
-          {rewards.slice(0, revealed).map((r, i) => (
-            <div class="ab-reward" key={i}>
-              {rewardText(ui.t, r)}
-            </div>
-          ))}
-          {!stager.done ? <span class="ab-muted">{ui.t('app.tapToSkip')}</span> : null}
-        </div>
-        <div class="ab-row" onClick={(e) => e.stopPropagation()}>
+        {rewards.length > 0 ? (
+          <div class="ab-rewards" data-testid="result-rewards">
+            {rewards.slice(0, revealed).map((r, i) => (
+              <div class="ab-reward" key={i}>
+                {rewardText(ui.t, r)}
+              </div>
+            ))}
+            {!stager.done ? <span class="ab-muted">{ui.t('app.tapToSkip')}</span> : null}
+          </div>
+        ) : (
+          <div data-testid="result-rewards" hidden />
+        )}
+        <div class="ab-row ab-result-actions" onClick={(e) => e.stopPropagation()}>
           {retry ? (
-            <button class={`ab-btn ${next ? 'ab-btn--plain' : 'ab-btn--gold'}`} data-testid="retry" onClick={() => c.retry()}>
+            <button class={`ab-btn ${primary === 'retry' ? 'ab-btn--gold ab-btn--wide' : 'ab-btn--plain'}`} data-testid="retry" onClick={() => c.retry()}>
               {ui.t('app.retry')}
             </button>
           ) : null}
           {next ? (
-            <button class="ab-btn ab-btn--gold" data-testid="next" onClick={() => c.next()}>
+            <button class="ab-btn ab-btn--gold ab-btn--wide" data-testid="next" onClick={() => c.next()}>
               {ui.t('app.next')}
             </button>
           ) : null}
           {!retry ? (
-            <button class={`ab-btn ${next ? 'ab-btn--plain' : 'ab-btn--gold'}`} data-testid="play-again" onClick={() => c.playAgain()}>
+            <button class={`ab-btn ${primary === 'again' ? 'ab-btn--gold ab-btn--wide' : 'ab-btn--plain'}`} data-testid="play-again" onClick={() => c.playAgain()}>
               {ui.t('app.playAgain')}
             </button>
           ) : null}
-          <button class="ab-btn ab-btn--plain" data-testid="watch-replay" onClick={() => c.watchReplay(replay)}>
-            {ui.t('app.watchReplay')}
+          <button class="ab-btn ab-btn--plain ab-btn--icon" data-testid="watch-replay" aria-label={ui.t('app.watchReplay')} title={ui.t('app.watchReplay')} onClick={() => c.watchReplay(replay)}>
+            <ReplayIcon />
           </button>
-          <button class="ab-btn ab-btn--plain" data-testid="home" onClick={() => c.home()}>
-            {ui.t('app.home')}
+          <button class="ab-btn ab-btn--plain ab-btn--icon" data-testid="home" aria-label={ui.t('app.home')} title={ui.t('app.home')} onClick={() => c.home()}>
+            <HomeIcon />
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@
     "m1": {
       "sendBonker": "Tap to send a Bonker",
       "killsEarnGold": "Kills earn gold",
-      "pebbler": "Pebblers shoot over friends",
+      "pebbler": "Tap to send a Pebbler",
       "buildTurret": "Build a Rock Tosser",
       "evolve": "Evolve!",
       "arrowStorm": "Drag the arrows onto them",
@@ -36,6 +36,7 @@
   "app": {
     "play": "Play",
     "quickBattle": "Quick Battle",
+    "fight": "Fight!",
     "loading": "Loading…",
     "trainingMatch": "Training match",
     "aiGeneral": "AI General",
@@ -55,7 +56,7 @@
     "restart": "Restart",
     "home": "Home",
     "watchReplay": "Watch replay",
-    "next": "Next",
+    "next": "Continue",
     "tapToSkip": "Tap to skip",
     "saveUnreadable": "Save could not be read. Import a backup?",
     "rotate": "Turn your device sideways",
@@ -76,7 +77,18 @@
       "kills": "Kills: {n}",
       "baseDamage": "Base damage: {n}",
       "time": "Time: {time}"
-    }
+    },
+    "vs": "vs",
+    "upToMin": "up to {min} min",
+    "formatPick": "How long a battle",
+    "difficultyNormal": "Normal difficulty",
+    "continueTo": "Continue: {name}",
+    "toppled": "You toppled {name} in {time}",
+    "fell": "{name} toppled your base in {time}",
+    "bellWin": "You led when the bell rang at {time}",
+    "bellLoss": "{name} led when the bell rang at {time}",
+    "drawLine": "Even after {time}",
+    "newSlot": "New slot · {cost}"
   },
   "replay": {
     "title": "Replay",

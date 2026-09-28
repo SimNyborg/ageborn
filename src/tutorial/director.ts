@@ -5,8 +5,9 @@
  * The session calls `update` after every sim step with that tick's state and events. The director
  * never touches the sim: prompts are text plus a HUD target to highlight (and, for the Arrow Storm,
  * an animated drag hand). Sequential scripts (match 1) show their beats strictly in order, each at
- * most once (C5 #2); a beat whose age has passed is skipped, and a shown beat retires after its
- * timeout. Both cases are logged, so playtests can see where new players drop off.
+ * most once (C5 #2), except beats marked `jumpQueue` (Evolve), which show as soon as their trigger
+ * holds; a beat whose age has passed is skipped, and a shown beat retires after its timeout. Both
+ * cases are logged, so playtests can see where new players drop off.
  */
 import type { Side } from '@/contracts';
 import { AdaptiveHints, type AdaptiveHintsOptions } from './hints';
@@ -128,11 +129,20 @@ export class TutorialDirector {
       if (this.triggered(r.beat, i)) r.triggeredAt = tick;
     }
     let visible: BeatRun | null = null;
+    // Beats that jump the queue (Evolve): the moment their trigger holds they show over whatever
+    // earlier beat is still waiting for the player, so a stuck step never hides them.
+    for (const r of this.runs) {
+      if (!r.beat.jumpQueue || r.status === 'over') continue;
+      const passed = r.beat.onlyInAge !== undefined && age > r.beat.onlyInAge;
+      if (r.status === 'pending' && !passed && !this.triggered(r.beat, i)) continue;
+      this.step(r, i);
+      if ((r.status as BeatStatus) === 'shown' && r.beat.textKey !== null && !visible) visible = r;
+    }
     for (let k = 0; k < this.runs.length; k += 1) {
       const r = this.runs[k]!;
       if (r.status === 'over') continue;
       if (this.sequential && k > 0 && this.runs[k - 1]!.status !== 'over') break;
-      this.step(r, i);
+      if (!r.beat.jumpQueue) this.step(r, i);
       // `step` may have changed the status (TS keeps the narrowing from above).
       const status = r.status as BeatStatus;
       if (status === 'shown' && r.beat.textKey !== null && !visible) visible = r;

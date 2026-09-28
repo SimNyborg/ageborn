@@ -125,18 +125,24 @@ class FakeScheduled extends FakeNode {
 export class FakeBufferSource extends FakeScheduled {
   buffer: FakeBuffer | null = null;
   loop = false;
+  loopStart = 0;
+  loopEnd = 0;
   readonly playbackRate = new FakeParam(1);
   offset = 0;
+  /** The `duration` argument of start() (a sprite-sheet slice), if any. */
+  duration: number | null = null;
   constructor(ctx: FakeContext) {
     super(ctx, 'bufferSource');
   }
-  override start(when = 0, offset = 0): void {
+  override start(when = 0, offset = 0, duration?: number): void {
     this.startedAt = when;
     this.offset = offset;
+    this.duration = duration ?? null;
   }
   override naturalEnd(): number | null {
     if (this.startedAt === null || !this.buffer || this.loop) return null;
-    return this.startedAt + this.buffer.duration / this.playbackRate.value;
+    const length = this.duration ?? this.buffer.duration - this.offset;
+    return this.startedAt + length / this.playbackRate.value;
   }
 }
 

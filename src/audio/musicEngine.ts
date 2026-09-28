@@ -13,6 +13,11 @@
  * - `transpose(semitones)` sets the total transposition (WP5 sends 2, 4, 5, 6 after each own evolve),
  *   applied from the next scheduled note. Drum tracks are not transposed.
  * - A throttled background tab skips the missed steps instead of playing them late.
+ * - Composed file cues (`FilePlayer`) are recorded in their age's evolve key, so they ignore
+ *   `transpose`; an evolve between two file loops of the same length continues at the same point of
+ *   the loop. Their fallback score (while loading, or where the file cannot be decoded) follows the
+ *   transposition like any score. The engine prefetches each cue's `prefetch` files and releases
+ *   files that neither the playing cues nor the upcoming ones need.
  */
 import type { MusicCueId, MusicLayer } from '@/contracts';
 import { INSTRUMENTS, playNote } from './instruments';
@@ -39,6 +44,10 @@ export interface MusicEngineOptions {
   lookahead?: number;
   /** Loads a file cue's audio (fetch + decode). */
   loadFile?: (src: string) => Promise<AudioBuffer>;
+  /** Lets go of a loaded file nothing needs any more (the loader may drop its decoded copy). */
+  releaseFile?: (src: string) => void;
+  /** Level of each cue's fallback score, for file cues that fall back (dB, default 0). */
+  fallbackGainDb?: Readonly<Record<MusicCueId, number>>;
   warn?: (msg: string) => void;
 }
 
@@ -175,53 +184,82 @@ export class SeqPlayer implements Player {
   }
 }
 
-/** Plays a composed file cue with optional layer stems (the manifest's `{ kind: 'file' }`). */
-class FilePlayer implements Player {
+/** How long a file cue may take to load before its synthesized fallback starts, in seconds. */
+export const FALLBACK_AFTER_S = 0.35;
+/** Cross-fade from the fallback score to the file once the file has loaded, in seconds. */
+export const FILE_FADE_IN_S = 1.2;
+
+type FileDef = Extract<MusicDef, { kind: 'file' }>;
+
+interface StemSpec {
+  layer: MusicLayer | null;
+  src: string;
+  loopStart: number;
+  loopLength: number | null;
+}
+
+/** Every file a cue needs: the main file first, then its layer stems. */
+export function fileStems(def: MusicDef): StemSpec[] {
+  if (def.kind !== 'file') return [];
+  const main: StemSpec = { layer: null, src: def.src, loopStart: def.loopStart ?? 0, loopLength: def.loopLength ?? null };
+  const stems = Object.entries(def.layers ?? {}).map(([layer, s]): StemSpec => {
+    const spec = typeof s === 'string' ? { src: s } : (s as { src: string; loopStart?: number; loopLength?: number });
+    return { layer: layer as MusicLayer, src: spec.src, loopStart: spec.loopStart ?? 0, loopLength: spec.loopLength ?? null };
+  });
+  return [main, ...stems];
+}
+
+function mod(x: number, m: number): number {
+  return ((x % m) + m) % m;
+}
+
+/**
+ * Plays a composed file cue with optional layer stems (the manifest's `{ kind: 'file' }`).
+ *
+ * - Loops play their loop window (`loopStart`, `loopLength`); stems loop their own window, aligned
+ *   to the main loop's position, so the layers stay on the beat.
+ * - `phaseAt` (from the cue being replaced) starts the file at the same point in the loop, so an
+ *   evolve continues the melody in the next age's arrangement.
+ * - While the file loads (after `FALLBACK_AFTER_S`) or if it cannot be decoded, the `fallback` score
+ *   plays; once the file is ready it fades in over `FILE_FADE_IN_S` and the score fades out.
+ */
+export class FilePlayer implements Player {
   private readonly fade: GainNode;
+  private readonly fileGain: GainNode;
   private readonly sources: AudioBufferSourceNode[] = [];
   private readonly layerGains = new Map<MusicLayer, GainNode>();
   private stopAt: number | null = null;
   private ended = false;
   private disposed = false;
+  private fallback: SeqPlayer | null = null;
+  private readonly createdAt: number;
+  private loaded = false;
+  private loadFailed = false;
+  private startedAt: number | null = null;
+  private startPos = 0;
+  readonly loopLength: number | null;
 
   constructor(
     readonly ctx: BaseAudioContext,
     dest: AudioNode,
     readonly cue: MusicCueId,
     readonly role: MusicRole,
-    def: Extract<MusicDef, { kind: 'file' }>,
-    state: MusicState,
+    private readonly def: FileDef,
+    private readonly state: MusicState,
     load: (src: string) => Promise<AudioBuffer>,
-    o: { fadeMs: number },
+    private readonly o: { fadeMs: number; lookahead: number; phaseAt?: (t: number) => number; fallbackGainDb?: number },
   ) {
+    this.createdAt = ctx.currentTime;
     this.fade = fadeNode(ctx, dest, def.gainDb ?? 0, ctx.currentTime, o.fadeMs);
-    const stems = [{ layer: null as MusicLayer | null, src: def.src }, ...Object.entries(def.layers ?? {}).map(([layer, src]) => ({ layer: layer as MusicLayer, src: src as string }))];
+    this.fileGain = ctx.createGain();
+    this.fileGain.connect(this.fade);
+    const stems = fileStems(def);
+    this.loopLength = def.loopLength ?? null;
     void Promise.all(stems.map((s) => load(s.src))).then(
-      (buffers) => {
-        if (this.disposed || this.stopAt !== null) return;
-        const at = ctx.currentTime + 0.05;
-        buffers.forEach((buffer, k) => {
-          const stem = stems[k];
-          if (!stem) return;
-          const src = ctx.createBufferSource();
-          src.buffer = buffer;
-          src.loop = role !== 'stinger';
-          let out: AudioNode = this.fade;
-          if (stem.layer) {
-            const g = ctx.createGain();
-            g.gain.value = state.layers[stem.layer];
-            g.connect(this.fade);
-            this.layerGains.set(stem.layer, g);
-            out = g;
-          }
-          src.connect(out);
-          if (k === 0) src.onended = () => (this.ended = true);
-          src.start(at);
-          this.sources.push(src);
-        });
-      },
+      (buffers) => this.begin(stems, buffers),
       () => {
-        this.ended = true;
+        this.loadFailed = true;
+        if (!this.def.fallback) this.ended = true;
       },
     );
   }
@@ -230,12 +268,79 @@ class FilePlayer implements Player {
     return this.stopAt !== null;
   }
 
+  /** What is playing: the file, the fallback score, or nothing yet. */
+  get source(): 'file' | 'fallback' | 'loading' {
+    return this.startedAt !== null ? 'file' : this.fallback ? 'fallback' : 'loading';
+  }
+
+  /** Position inside the loop at time `t` (seconds), once the file plays; null otherwise. */
+  phaseAt(t: number): number | null {
+    if (this.startedAt === null || this.loopLength === null) return null;
+    return mod(this.startPos + (t - this.startedAt), this.loopLength);
+  }
+
+  private begin(stems: StemSpec[], buffers: AudioBuffer[]): void {
+    if (this.disposed || this.stopAt !== null) return;
+    this.loaded = true;
+    const ctx = this.ctx;
+    const at = ctx.currentTime + 0.03;
+    const phase = this.loopLength !== null && this.o.phaseAt ? mod(this.o.phaseAt(at), this.loopLength) : 0;
+    if (this.fallback) {
+      const g = this.fileGain.gain;
+      g.setValueAtTime(0, at);
+      g.linearRampToValueAtTime(1, at + FILE_FADE_IN_S);
+      this.fallback.fadeOut(FILE_FADE_IN_S * 1000);
+    }
+    buffers.forEach((buffer, k) => {
+      const stem = stems[k];
+      if (!stem) return;
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      let offset = 0;
+      if (this.role !== 'stinger') {
+        src.loop = true;
+        if (stem.loopLength !== null) {
+          src.loopStart = stem.loopStart;
+          src.loopEnd = stem.loopStart + stem.loopLength;
+          offset = stem.loopStart + mod(phase, stem.loopLength);
+        }
+      }
+      let out: AudioNode = this.fileGain;
+      if (stem.layer) {
+        const g = ctx.createGain();
+        g.gain.value = this.state.layers[stem.layer];
+        g.connect(this.fileGain);
+        this.layerGains.set(stem.layer, g);
+        out = g;
+      }
+      src.connect(out);
+      if (k === 0) src.onended = () => (this.ended = true);
+      src.start(at, offset);
+      this.sources.push(src);
+    });
+    this.startedAt = at;
+    this.startPos = phase;
+  }
+
+  private startFallback(now: number): void {
+    const score = this.def.fallback;
+    if (!score || this.fallback || this.stopAt !== null) return;
+    const trim = (this.o.fallbackGainDb ?? 0) - (this.def.gainDb ?? 0);
+    this.fallback = new SeqPlayer(this.ctx, this.fade, this.cue, this.role, score, this.state, { startTime: now + 0.05, fadeMs: 250, lookahead: this.o.lookahead, gainDb: trim });
+  }
+
   update(now: number): boolean {
     if (this.stopAt !== null && now >= this.stopAt) return false;
+    if (!this.loaded && !this.fallback && this.def.fallback && (this.loadFailed || now - this.createdAt >= FALLBACK_AFTER_S)) this.startFallback(now);
+    if (this.fallback) {
+      const alive = this.fallback.update(now);
+      if (!alive && !this.loaded) return false;
+    }
     return !this.ended;
   }
 
   setLayer(l: MusicLayer, v: number): void {
+    this.fallback?.setLayer(l, v);
     const g = this.layerGains.get(l);
     if (!g) return;
     const now = this.ctx.currentTime;
@@ -249,6 +354,7 @@ class FilePlayer implements Player {
     this.stopAt = now + Math.max(0.005, ms / 1000);
     this.fade.gain.linearRampToValueAtTime(0, this.stopAt);
     for (const s of this.sources) s.stop(this.stopAt + 0.05);
+    this.fallback?.fadeOut(ms);
   }
 
   dispose(): void {
@@ -261,7 +367,9 @@ class FilePlayer implements Player {
       }
       s.disconnect();
     }
+    this.fallback?.dispose();
     this.fade.disconnect();
+    this.fileGain.disconnect();
     for (const g of this.layerGains.values()) g.disconnect();
   }
 }
@@ -275,6 +383,8 @@ export class MusicEngine {
   private readonly manifest: Readonly<Record<MusicCueId, MusicDef>>;
   private readonly lookahead: number;
   private readonly warned = new Set<string>();
+  /** Files loaded for current or upcoming cues (see `manageFiles`). */
+  private readonly requested = new Set<string>();
 
   constructor(
     readonly ctx: BaseAudioContext,
@@ -291,9 +401,13 @@ export class MusicEngine {
   }
 
   /** What is playing, for tests and the soundboard: cue, fading, and for scores the step and tempo. */
-  get playing(): { cue: MusicCueId; fading: boolean; step?: number; nextTime?: number; bpm?: number }[] {
+  get playing(): { cue: MusicCueId; fading: boolean; step?: number; nextTime?: number; bpm?: number; source?: 'file' | 'fallback' | 'loading'; phase?: number | null }[] {
     return this.players.map((p) =>
-      p instanceof SeqPlayer ? { cue: p.cue, fading: p.fading, step: p.seq.step, nextTime: p.seq.nextTime, bpm: p.bpm() } : { cue: p.cue, fading: p.fading },
+      p instanceof SeqPlayer
+        ? { cue: p.cue, fading: p.fading, step: p.seq.step, nextTime: p.seq.nextTime, bpm: p.bpm() }
+        : p instanceof FilePlayer
+          ? { cue: p.cue, fading: p.fading, source: p.source, phase: p.phaseAt(this.ctx.currentTime) }
+          : { cue: p.cue, fading: p.fading },
     );
   }
 
@@ -323,6 +437,11 @@ export class MusicEngine {
     }
     for (const p of this.players) if (!p.fading) p.fadeOut(fade);
 
+    let phaseAt: ((t: number) => number) | undefined;
+    if (def.kind === 'file' && def.role === 'battle' && old instanceof FilePlayer && old.role === 'battle' && old.loopLength !== null && def.loopLength !== undefined && Math.abs(old.loopLength - def.loopLength) < 1e-3) {
+      // An evolve: carry on at the same point of the loop in the new arrangement.
+      phaseAt = (t) => old.phaseAt(t) ?? 0;
+    }
     let player: Player;
     if (def.kind === 'seq') {
       player = new SeqPlayer(this.ctx, this.out, cue, def.role, def.score, this.state, {
@@ -338,13 +457,51 @@ export class MusicEngine {
         this.warnOnce(`No file loader for music cue "${cue}"`);
         return false;
       }
-      player = new FilePlayer(this.ctx, this.out, cue, def.role, def, this.state, load, { fadeMs: fade });
+      const fallbackGainDb = this.o.fallbackGainDb?.[cue];
+      player = new FilePlayer(this.ctx, this.out, cue, def.role, def, this.state, load, {
+        fadeMs: fade,
+        lookahead: this.lookahead,
+        ...(phaseAt ? { phaseAt } : {}),
+        ...(fallbackGainDb !== undefined ? { fallbackGainDb } : {}),
+      });
     }
     this.players.push(player);
     this.cue = cue;
     this.lastRole = def.role;
+    this.manageFiles(def);
     this.update();
     return true;
+  }
+
+  /**
+   * Starts loading the files the next cues will need (`prefetch`) and lets go of files no cue needs
+   * any more, so only the current and the next arrangements stay decoded.
+   */
+  private manageFiles(def: MusicDef): void {
+    const load = this.o.loadFile;
+    if (!load) return;
+    const keep = new Set<string>();
+    for (const s of fileStems(def)) keep.add(s.src);
+    for (const p of this.players) {
+      const d = this.manifest[p.cue];
+      if (d) for (const s of fileStems(d)) keep.add(s.src);
+    }
+    if (def.kind === 'file') {
+      for (const next of def.prefetch ?? []) {
+        const d = Object.hasOwn(this.manifest, next) ? this.manifest[next] : undefined;
+        if (!d) continue;
+        for (const s of fileStems(d)) {
+          keep.add(s.src);
+          if (!this.requested.has(s.src)) void load(s.src).catch(() => undefined);
+        }
+      }
+    }
+    for (const s of keep) this.requested.add(s);
+    for (const src of [...this.requested]) {
+      if (keep.has(src)) continue;
+      this.requested.delete(src);
+      this.o.releaseFile?.(src);
+    }
   }
 
   setLayer(l: MusicLayer, v01: number): void {

@@ -3,7 +3,7 @@
  * real mixer chain in an OfflineAudioContext and measured, and the limiter is tested with 40
  * simultaneous hits. Offline rendering needs no user gesture, so these also run headless.
  */
-import { Mixer, MIX_TRIM, MusicEngine, SoundBank, sounds, type SoundDef } from '@/audio';
+import { assetUrl, Mixer, MIX_TRIM, MUSIC_FILES, MusicEngine, sfxFiles, SoundBank, sounds, type SoundDef } from '@/audio';
 import { music } from '@/audio';
 import type { MusicCueId, SoundId } from '@/contracts';
 
@@ -144,6 +144,10 @@ export async function checkLimiter(hits = 40, bank: SoundBank = new SoundBank())
     const loudest = r.variants.reduce((a, b) => (measure(b).peak > measure(a).peak ? b : a));
     return { samples: loudest, rate: r.sampleRate };
   });
+  return limiterTest(hits, voices);
+}
+
+async function limiterTest(hits: number, voices: { samples: Float32Array; rate: number }[]): Promise<LimiterCheck> {
   const render = async (limited: boolean): Promise<number> => {
     const ctx = new OfflineAudioContext(2, RATE * 2, RATE);
     let input: AudioNode;
@@ -170,6 +174,90 @@ export async function checkLimiter(hits = 40, bank: SoundBank = new SoundBank())
   const rawPeak = await render(false);
   const limitedPeak = await render(true);
   return { hits, rawPeak, limitedPeak, ok: limitedPeak < 1 };
+}
+
+export interface FileCheck extends Level {
+  /** Sheet name or music cue. */
+  name: string;
+  kind: 'sheet' | 'music';
+  src: string;
+  seconds: number;
+  ok: boolean;
+  error?: string;
+}
+
+export interface FileSoundCheck extends Level {
+  id: SoundId;
+  variants: number;
+  ok: boolean;
+}
+
+async function fetchDecode(src: string): Promise<AudioBuffer> {
+  const r = await fetch(assetUrl(src));
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = await r.arrayBuffer();
+  return new OfflineAudioContext(1, 1, 48000).decodeAudioData(data);
+}
+
+/**
+ * Fetches and decodes every pre-rendered file (the effect sheets and the music) and measures every
+ * sound's variants inside its sheet. A sound passes when each variant is audible and below full
+ * scale; a file passes when it decodes, is audible, never clips and holds its loop window.
+ */
+export async function checkFiles(): Promise<{ files: FileCheck[]; sounds: FileSoundCheck[]; limiter: LimiterCheck | null }> {
+  const files: FileCheck[] = [];
+  const out: FileSoundCheck[] = [];
+  const decoded = new Map<string, AudioBuffer>();
+  for (const [name, sheet] of Object.entries(sfxFiles.sheets)) {
+    try {
+      const b = await fetchDecode(sheet.src);
+      decoded.set(name, b);
+      const level = measure(mixDown(b));
+      files.push({ name, kind: 'sheet', src: sheet.src, seconds: b.duration, ...level, ok: level.peak < 1 && Math.abs(b.duration - sheet.seconds) < 0.1 });
+    } catch (e) {
+      files.push({ name, kind: 'sheet', src: sheet.src, seconds: 0, peak: 0, rms: 0, ok: false, error: String(e) });
+    }
+  }
+  for (const [id, entry] of Object.entries(sfxFiles.entries)) {
+    const b = decoded.get(entry.sheet);
+    if (!b) {
+      out.push({ id, variants: entry.variants.length, peak: 0, rms: 0, ok: false });
+      continue;
+    }
+    const data = b.getChannelData(0);
+    let peak = 0;
+    let quietest = Infinity;
+    for (const [offset, duration] of entry.variants) {
+      const l = measure(data, Math.floor(offset * b.sampleRate), Math.min(data.length, Math.ceil((offset + duration) * b.sampleRate)));
+      peak = Math.max(peak, l.peak);
+      quietest = Math.min(quietest, l.rms);
+    }
+    out.push({ id, variants: entry.variants.length, peak, rms: quietest, ok: peak < 1 && quietest > SILENT_RMS / 4 });
+  }
+  for (const [cue, f] of Object.entries(MUSIC_FILES)) {
+    try {
+      const b = await fetchDecode(f.src);
+      const level = measure(mixDown(b));
+      const holdsLoop = f.loopLength === undefined || b.duration >= (f.loopStart ?? 0) + f.loopLength - 0.01;
+      files.push({ name: cue, kind: 'music', src: f.src, seconds: b.duration, ...level, ok: level.peak < 1 && level.rms > SILENT_RMS && holdsLoop });
+    } catch (e) {
+      files.push({ name: cue, kind: 'music', src: f.src, seconds: 0, peak: 0, rms: 0, ok: false, error: String(e) });
+    }
+  }
+  // The 40-hit limiter test again, with the file versions of the hits.
+  const battle = decoded.get('battle');
+  let limiter: LimiterCheck | null = null;
+  if (battle) {
+    const data = battle.getChannelData(0);
+    const voices = HIT_IDS.map((id) => {
+      const spans = sfxFiles.entries[id]?.variants ?? [];
+      const slices = spans.map(([o, d]) => data.slice(Math.floor(o * battle.sampleRate), Math.ceil((o + d) * battle.sampleRate)));
+      const loudest = slices.reduce((a, b) => (measure(b).peak > measure(a).peak ? b : a));
+      return { samples: loudest, rate: battle.sampleRate };
+    });
+    limiter = await limiterTest(40, voices);
+  }
+  return { files, sounds: out, limiter };
 }
 
 /** Linear level to dBFS for display. */

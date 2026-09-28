@@ -72,6 +72,11 @@ export interface Beat {
    * player leaves the age before the beat is over, it is skipped.
    */
   onlyInAge?: number;
+  /**
+   * Shows as soon as its trigger holds, even while an earlier beat of a sequential script still
+   * waits for the player (audit: "Evolve!" must never hide behind a stuck turret step).
+   */
+  jumpQueue?: boolean;
 }
 
 /** Old Grogg's scripted sends (A7.4, A8): train commands through the normal command API (B10). */
@@ -150,6 +155,9 @@ export const MATCH1_TURRET_GRANT = 150;
  */
 export const MATCH1_POWER_TICK = sec(42);
 
+/** "Kills earn gold" stays this long: long enough to read and to watch the coins land. */
+export const KILLS_EARN_GOLD_TICKS = sec(5);
+
 /**
  * The training script of match 1 (B15 `TrainingEvent`): the Pebbler unlock, the turret gold and
  * Grogg's gold. Sorted by tick.
@@ -178,10 +186,11 @@ export const MATCH1: MatchScript = {
   sequential: true,
   beats: [
     { id: 'm1.sendBonker', textKey: 'tutorial.m1.sendBonker', target: 'card0', trigger: { k: 'start' }, done: { k: 'trained', slot: SLOT.infantry }, timeoutTicks: sec(30) },
-    { id: 'm1.killsEarnGold', textKey: 'tutorial.m1.killsEarnGold', target: 'gold', trigger: { k: 'firstKill' }, done: { k: 'shownFor', ticks: sec(3) } },
-    { id: 'm1.pebbler', textKey: 'tutorial.m1.pebbler', target: 'card1', trigger: { k: 'atTick', tick: MATCH1_PEBBLER_TICK }, done: { k: 'trained', slot: SLOT.ranged }, timeoutTicks: sec(10), onlyInAge: 0 },
-    { id: 'm1.buildTurret', textKey: 'tutorial.m1.buildTurret', target: 'mount0', trigger: { k: 'atTick', tick: MATCH1_TURRET_GRANT_TICK }, done: { k: 'event', e: 'turretBuildStart' }, timeoutTicks: sec(15), onlyInAge: 0 },
-    { id: 'm1.evolve', textKey: 'tutorial.m1.evolve', target: 'evolve', trigger: { k: 'evolveReady' }, done: { k: 'event', e: 'ascendStart' }, timeoutTicks: sec(30), onlyInAge: 0 },
+    { id: 'm1.killsEarnGold', textKey: 'tutorial.m1.killsEarnGold', target: 'gold', trigger: { k: 'firstKill' }, done: { k: 'shownFor', ticks: KILLS_EARN_GOLD_TICKS } },
+    // An action prompt: it asks for the Pebbler and stays until one is trained (or Stone is over).
+    { id: 'm1.pebbler', textKey: 'tutorial.m1.pebbler', target: 'card1', trigger: { k: 'atTick', tick: MATCH1_PEBBLER_TICK }, done: { k: 'trained', slot: SLOT.ranged }, timeoutTicks: sec(30), onlyInAge: 0 },
+    { id: 'm1.buildTurret', textKey: 'tutorial.m1.buildTurret', target: 'mount0', trigger: { k: 'atTick', tick: MATCH1_TURRET_GRANT_TICK }, done: { k: 'event', e: 'turretBuildStart' }, timeoutTicks: sec(30), onlyInAge: 0 },
+    { id: 'm1.evolve', textKey: 'tutorial.m1.evolve', target: 'evolve', trigger: { k: 'evolveReady' }, done: { k: 'event', e: 'ascendStart' }, timeoutTicks: sec(30), onlyInAge: 0, jumpQueue: true },
     // ~0:55: the Ascension show speaks for itself.
     { id: 'm1.ascension', textKey: null, target: null, trigger: { k: 'ageUp', age: 'medieval' }, done: { k: 'shownFor', ticks: 1 } },
     { id: 'm1.arrowStorm', textKey: 'tutorial.m1.arrowStorm', target: 'power', hand: 'powerDrag', trigger: { k: 'powerReady' }, done: { k: 'event', e: 'powerTelegraph' }, timeoutTicks: sec(20), onlyInAge: 1 },

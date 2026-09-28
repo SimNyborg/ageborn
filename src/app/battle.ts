@@ -4,7 +4,7 @@
  * The view is created by the caller's factory (the battle screen owns the Pixi canvas), so this
  * module runs headless in tests and dev tools.
  */
-import { signal, type ReadonlySignal } from '@preact/signals';
+import { signal, type ReadonlySignal, type Signal } from '@preact/signals';
 import { BALANCED_BRAIN_ID, botProfile } from '@/ai';
 import type { BotController, BotProfile, CompiledContent, SaveDoc, Side, Sim } from '@/contracts';
 import { fnv1a32 } from '@/core';
@@ -33,6 +33,8 @@ export interface BattleHandle {
   readonly director: TutorialDirector;
   /** The tutorial prompt on screen. */
   readonly prompt: ReadonlySignal<TutorialPrompt | null>;
+  /** "3-2-1 Fight!" before the start: 3, 2, 1, 0 = "Fight!", -1 = none (the controller runs it). */
+  readonly countdown: Signal<number>;
   dispose(): void;
 }
 
@@ -136,6 +138,7 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     session,
     director,
     prompt,
+    countdown: signal(-1),
     dispose() {
       unsubscribePrompt();
       session.dispose();

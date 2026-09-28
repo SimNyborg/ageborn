@@ -15,6 +15,10 @@ export type HudViewEvent =
   | { t: 'ascending'; side: Side; age: AgeId }
   | { t: 'lastStandArmed'; side: Side }
   | { t: 'coins'; count: number }
+  /** A unit or turret hit a base (not the Siege decay): that side's HP panel flashes and shakes. */
+  | { t: 'baseHit'; side: Side }
+  /** Your unit came out of the base door (the tray card that trained it can pop). */
+  | { t: 'trained'; card: string }
   | { t: 'matchEnded'; outcome: MatchOutcome }
   | { t: 'mountTap'; mount: number; kind: 'mount' | 'buy'; screen: Pt; shift: boolean };
 
@@ -26,6 +30,11 @@ export interface HudViewBridge {
   /** True when the current power can be placed by dragging. */
   powerAimable(): boolean;
   on(listener: (ev: HudViewEvent) => void): () => void;
+  /**
+   * Where the fighting is: your and their front unit as progress 0..1 from your gate (the top bar's
+   * front-line strip). Optional so plain test bridges need not implement it.
+   */
+  frontLine?(): { mine: number | null; theirs: number | null } | null;
   /** Screen points (relative to the canvas) that coins and XP sparkles fly to. */
   setHudAnchors(a: { gold?: Pt | null; xp?: Pt | null }): void;
 }

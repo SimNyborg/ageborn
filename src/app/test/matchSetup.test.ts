@@ -125,11 +125,14 @@ describe('helpers', () => {
     expect(generalPlan(fakeContent, 'pip').stone?.units[0]).toBe('bonker');
   });
 
-  it('quickBattle is a Short War vs a tier III AI General with every control available', () => {
+  it('quickBattle is a Short War vs a tier III AI General with the staged unlocks and no script', () => {
     const q = quickBattle(null, content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
     expect(q.opponent).toMatchObject({ tier: 3, isAI: true, format: 'short' });
-    expect(q.config.training).toBeUndefined();
+    // A new player: no stance flag before match 4, no Last Stand button before match 5 (A8).
+    expect(q.config.training).toEqual({ manualLastStand: [false, true], stanceEnabled: [false, true] });
     expect(q.script).toBeNull();
+    const veteran = quickBattle(fakeSaveDoc({ matchesPlayed: 9 }), content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
+    expect(veteran.config.training).toBeUndefined();
     const fake = quickBattle(null, fakeContent, { generalId: 'kettle', displayName: 'AI Kettle', format: 'short', seed: 3 });
     expect(fake.config.sides[1].loadouts.stone?.units[0]).toBe('bonker');
   });

@@ -1,17 +1,22 @@
 /**
  * The HUD top bar (DESIGN A9.2, 12% of the height):
- * - left: your base HP, age icon and XP bar with the Evolve button attached (steady glow when ready,
- *   never flashing, A2.4);
- * - centre: match clock with the Overdrive / Siege marks on the timeline, and the emote button;
+ * - left: your base HP, age medallion with a "You" tag, the XP bar ("XP 180/250") and the round
+ *   Evolve button at its end (56 px, 48 px on phones). When ready it turns gold with a steady glow,
+ *   shows the next age's icon and says "Evolve!" (A2.4: it never flashes);
+ * - centre: match clock with the Overdrive / Siege marks, "Overdrive in 0:45" under it, and the
+ *   front-line strip (your colour against theirs, showing where the fighting is). The training match
+ *   has no clock, only the strip;
  * - right: the AI opponent's nameplate (robot icon and "AI" chip, A7.1), base HP, XP, age icon with
- *   its power charge ring, a horn while their Last Stand is armed, the "Scouted (n)" chip with its
- *   drop-down (collapses after 3 s), pause and speed.
+ *   its power charge ring, a horn while their Last Stand is armed, the "Scouted (n)" chip (from
+ *   match 3), emotes, pause and speed.
+ *
+ * Every hit on a base kicks that side's panel (flash and shake), so it is clear who is winning.
  */
 import type { AgeId, CardId, EmoteId } from '@/contracts';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
 import { AgeGlyph, EmoteGlyph, HornIcon, PauseIcon, PlayIcon, RobotIcon, SmileIcon, SpeedIcon } from './icons';
-import { ageIds, clockView, evolveIntent, powerFraction } from './model';
+import { ageIds, clockView, evolveIntent, formatClock, frontStrip, powerFraction, xpProgress, type FrontLine } from './model';
 import { usePortrait } from './usePortrait';
 
 export const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
@@ -21,10 +26,38 @@ function pct(bp: number): number {
   return Math.max(0, Math.min(100, bp / 100));
 }
 
+/** Plays a short Web Animation on `ref` every time `seq` grows (base hit kick, evolve pop). */
+export function useKick(ref: { current: HTMLElement | null }, seq: number, frames: Keyframe[], ms: number): void {
+  const last = useRef(seq);
+  useEffect(() => {
+    if (seq === last.current) return;
+    last.current = seq;
+    const el = ref.current;
+    if (el && typeof el.animate === 'function') el.animate(frames, { duration: ms, easing: 'ease-out' });
+    // The keyframes and duration are constant per call site.
+  }, [seq]);
+}
+
+const HIT_FRAMES: Keyframe[] = [
+  { transform: 'translate(0, 0)', filter: 'brightness(1)' },
+  { transform: 'translate(-4px, 1px)', filter: 'brightness(1.7)' },
+  { transform: 'translate(4px, -1px)', filter: 'brightness(1.4)' },
+  { transform: 'translate(-2px, 0)', filter: 'brightness(1.15)' },
+  { transform: 'translate(0, 0)', filter: 'brightness(1)' },
+];
+
 function HpBar(p: { bp: number; team: 'me' | 'foe'; label: string }) {
   const w = pct(p.bp);
   return (
-    <div class={`hud-hp hud-hp-${p.team}`} role="meter" aria-label={p.label} aria-valuenow={Math.round(w)} aria-valuemin={0} aria-valuemax={100}>
+    <div
+      class={`hud-hp hud-hp-${p.team}${w < 25 ? ' is-low' : ''}`}
+      role="meter"
+      aria-label={p.label}
+      aria-valuenow={Math.round(w)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      data-testid={`hud-hp-${p.team}`}
+    >
       <i class="hud-hp-ghost" style={{ width: `${w}%` }} />
       <i class="hud-hp-fill" style={{ width: `${w}%` }} />
       <span class="hud-hp-text">{Math.ceil(w)}%</span>
@@ -32,16 +65,17 @@ function HpBar(p: { bp: number; team: 'me' | 'foe'; label: string }) {
   );
 }
 
-function XpBar(p: { bp: number; team: 'me' | 'foe'; ready: boolean; label: string }) {
+function XpBar(p: { bp: number; team: 'me' | 'foe'; ready: boolean; label: string; text?: string | null }) {
   const w = pct(p.bp);
   return (
-    <div class={`hud-xp hud-xp-${p.team}${p.ready ? ' is-ready' : ''}`} role="meter" aria-label={p.label} aria-valuenow={Math.round(w)}>
+    <div class={`hud-xp hud-xp-${p.team}${p.ready ? ' is-ready' : ''}${p.text ? ' has-text' : ''}`} role="meter" aria-label={p.label} aria-valuenow={Math.round(w)}>
       <i class="hud-xp-fill" style={{ width: `${w}%` }} />
+      {p.text ? <span class="hud-xp-text">{p.text}</span> : null}
     </div>
   );
 }
 
-function Medallion(p: { age: AgeId; team: 'me' | 'foe'; ring?: number; horn?: boolean; hornLabel?: string }) {
+function Medallion(p: { age: AgeId; team: 'me' | 'foe'; ring?: number; horn?: boolean; hornLabel?: string; tag?: string }) {
   const ring = p.ring;
   return (
     <div class={`hud-medal hud-medal-${p.team} age-${p.age}${ring !== undefined && ring >= 1 ? ' is-charged' : ''}`}>
@@ -49,6 +83,7 @@ function Medallion(p: { age: AgeId; team: 'me' | 'foe'; ring?: number; horn?: bo
       <span class="hud-medal-core">
         <AgeGlyph age={p.age} size={26} />
       </span>
+      {p.tag ? <span class="hud-medal-tag">{p.tag}</span> : null}
       {p.horn ? (
         <span class="hud-horn" data-testid="hud-foe-horn" title={p.hornLabel}>
           <HornIcon size={18} />
@@ -115,7 +150,7 @@ function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   return (
     <div class="hud-emote">
       <button
-        class={`hud-round hud-emote-btn${cooling ? ' is-cooling' : ''}${c.denied('emote') ? ' is-denied' : ''}`}
+        class={`hud-round hud-round--small hud-emote-btn${cooling ? ' is-cooling' : ''}${c.denied('emote') ? ' is-denied' : ''}`}
         data-testid="hud-emote"
         aria-label={c.t('hud.emote')}
         aria-expanded={open}
@@ -129,7 +164,7 @@ function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
           setOpen(!open);
         }}
       >
-        <SmileIcon size={22} />
+        <SmileIcon size={18} />
       </button>
       {open && !off ? (
         <div class="hud-emote-picker" role="menu" data-testid="hud-emote-picker">
@@ -155,6 +190,43 @@ function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   );
 }
 
+/** The round Evolve button at the end of your XP bar (audit #4). */
+function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; progress: number }) {
+  const { c } = p;
+  const { m, t } = c;
+  const ready = m.me.evolveReady;
+  const label = m.me.ascending ? t('hud.evolving') : ready ? t('hud.evolveReady') : t('hud.evolve');
+  return (
+    <button
+      class={`hud-evolve${ready ? ' is-ready' : ''}${m.me.ascending ? ' is-ascending' : ''}${c.denied('evolve') ? ' is-denied' : ''}`}
+      data-testid="hud-evolve"
+      data-ready={ready}
+      aria-disabled={!ready}
+      aria-label={label}
+      disabled={c.readOnly}
+      style={{ '--xp': Math.max(0, Math.min(1, p.progress)) }}
+      onClick={() => c.act(evolveIntent(m, c.side))}
+    >
+      <i class="hud-evolve-ring" />
+      <span class="hud-evolve-disc">{p.nextAge ? <AgeGlyph age={p.nextAge} size={c.compact ? 26 : 32} /> : null}</span>
+      <span class="hud-evolve-label">{label}</span>
+      {c.keys ? <kbd class="hud-key">E</kbd> : null}
+    </button>
+  );
+}
+
+/** Where the fighting is: your colour from the left, theirs from the right, a spark at the clash. */
+function FrontStripView(p: { front: FrontLine | null; label: string }) {
+  const s = frontStrip(p.front);
+  return (
+    <div class="hud-front" data-testid="hud-front" role="img" aria-label={p.label} data-clash={s.clash.toFixed(2)}>
+      <i class="hud-front-me" style={{ width: `${s.mine * 100}%` }} />
+      <i class="hud-front-foe" style={{ width: `${s.theirs * 100}%` }} />
+      <i class="hud-front-clash" style={{ left: `${s.clash * 100}%` }} />
+    </div>
+  );
+}
+
 export interface Bubble {
   id: number;
   side: 0 | 1;
@@ -176,6 +248,11 @@ export function TopBar(p: {
   controls: boolean;
   onPause: () => void;
   onSpeed: () => void;
+  /** Base hits so far per side (each one kicks that side's panel). */
+  hits: readonly [number, number];
+  front: FrontLine | null;
+  /** The "Scouted (n)" chip (hidden for new players, audit #11). */
+  scouted: boolean;
 }) {
   const { c } = p;
   const { m, t } = c;
@@ -189,47 +266,34 @@ export function TopBar(p: {
   const mySide = c.side;
   const foeSide = mySide === 0 ? 1 : 0;
   const bubble = (side: 0 | 1) => p.bubbles.filter((b) => b.side === side).slice(-1)[0];
-  const banner = (side: 0 | 1) => p.banners.filter((b) => b.side === side).slice(-1)[0];
+  const foeBanner = p.banners.filter((b) => b.side === foeSide).slice(-1)[0];
   const myBubble = bubble(mySide);
   const foeBubble = bubble(foeSide);
-  const myBanner = banner(mySide);
-  const foeBanner = banner(foeSide);
   const phaseKey = m.phase === 'regulation' ? null : `hud.phase.${m.phase}`;
+  const xp = xpProgress(m, c.config);
+  const meEl = useRef<HTMLDivElement>(null);
+  const foeEl = useRef<HTMLDivElement>(null);
+  useKick(meEl, p.hits[mySide], HIT_FRAMES, 280);
+  useKick(foeEl, p.hits[foeSide], HIT_FRAMES, 280);
+  const next = clock.nextPhase && clock.nextPhase.kind !== 'finalBell' ? clock.nextPhase : null;
 
   return (
     <div class="hud-top">
-      <div class="hud-panel hud-side hud-me" data-testid="hud-me">
-        <Medallion age={myAge} team="me" />
+      <div ref={meEl} class="hud-panel hud-side hud-me" data-testid="hud-me">
+        <Medallion age={myAge} team="me" tag={t('hud.you')} />
         <div class="hud-bars">
-          <div class="hud-name">
-            <span class="hud-name-text">{t('hud.you')}</span>
-          </div>
           <HpBar bp={m.me.baseHpBp} team="me" label={t('hud.baseHp')} />
           <div class="hud-xp-row" ref={p.xpRef}>
-            <XpBar bp={m.me.xpBp} team="me" ready={m.me.evolveReady} label={t('hud.xp')} />
-            {finalAge ? (
-              <span class="hud-overcharge">{t('hud.overcharge')}</span>
-            ) : (
-              <button
-                class={`hud-evolve${m.me.evolveReady ? ' is-ready' : ''}${m.me.ascending ? ' is-ascending' : ''}${c.denied('evolve') ? ' is-denied' : ''}`}
-                data-testid="hud-evolve"
-                data-ready={m.me.evolveReady}
-                aria-disabled={!m.me.evolveReady}
-                disabled={c.readOnly}
-                onClick={() => c.act(evolveIntent(m, c.side))}
-              >
-                {nextAge ? <AgeGlyph age={nextAge} size={18} /> : null}
-                <span>{m.me.ascending ? t('hud.evolving') : t('hud.evolve')}</span>
-                {c.compact ? null : <kbd class="hud-key">E</kbd>}
-              </button>
-            )}
+            <XpBar
+              bp={m.me.xpBp}
+              team="me"
+              ready={m.me.evolveReady}
+              label={t('hud.xp')}
+              text={xp ? t('hud.xpText', { xp: xp.xp, need: xp.need }) : t('hud.finalAge')}
+            />
           </div>
-          {myBanner ? (
-            <div key={myBanner.id} class="hud-banner hud-banner-me">
-              {t(`age.${myBanner.age}.name`)}
-            </div>
-          ) : null}
         </div>
+        {finalAge ? null : <EvolveButton c={c} nextAge={nextAge} progress={m.me.xpBp / 10000} />}
         {myBubble ? (
           <div key={myBubble.id} class="hud-bubble hud-bubble-me" data-testid="hud-bubble-me">
             <EmoteGlyph emote={myBubble.emote} size={34} />
@@ -238,23 +302,29 @@ export function TopBar(p: {
       </div>
 
       <div class="hud-center">
-        <div class={`hud-clock phase-${m.phase}`} data-testid="hud-clock" aria-label={t('hud.clockLabel')}>
-          <div class="hud-clock-text">{clock.text}</div>
-          {clock.progress !== null ? (
+        {clock.progress !== null ? (
+          <div class={`hud-clock phase-${m.phase}`} data-testid="hud-clock" aria-label={t('hud.clockLabel')}>
+            <div class="hud-clock-text">{clock.text}</div>
             <div class="hud-timeline">
               <i class="hud-timeline-fill" style={{ width: `${clock.progress * 100}%` }} />
               {clock.marks.map((mk) => (
                 <i key={mk.kind} class={`hud-mark hud-mark-${mk.kind}`} style={{ left: `${mk.at * 100}%` }} title={t(`hud.phase.${mk.kind}`)} />
               ))}
             </div>
-          ) : null}
-          {phaseKey ? <div class="hud-phase-tag">{t(phaseKey)}</div> : null}
-        </div>
-        <EmoteButton c={c} onEmote={(emote) => c.act({ k: 'command', cmd: { t: 'emote', side: c.side, emote }, target: 'emote' })} />
+            {phaseKey ? (
+              <div class="hud-phase-tag">{t(phaseKey)}</div>
+            ) : next ? (
+              <div class={`hud-next-phase is-${next.kind}`} data-testid="hud-next-phase">
+                {t(`hud.nextPhase.${next.kind}`, { time: formatClock(next.inMs) })}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+        <FrontStripView front={p.front} label={t('hud.frontLabel')} />
       </div>
 
       <div class="hud-right">
-        <div class="hud-panel hud-side hud-foe" data-testid="hud-foe">
+        <div ref={foeEl} class="hud-panel hud-side hud-foe" data-testid="hud-foe">
           <div class="hud-bars">
             <div class="hud-name hud-name-foe">
               {/* The foe is always an AI in a live battle (A7.1); in a replay shown from the AI's side
@@ -283,9 +353,9 @@ export function TopBar(p: {
           ) : null}
         </div>
         <div class="hud-controls">
-          <Scouted c={c} />
           {p.controls ? (
             <div class="hud-buttons">
+              {c.compact ? null : <EmoteButton c={c} onEmote={(emote) => c.act({ k: 'command', cmd: { t: 'emote', side: c.side, emote }, target: 'emote' })} />}
               <button class="hud-round" data-testid="hud-pause" aria-label={m.paused ? t('hud.resume') : t('hud.pause')} disabled={c.readOnly} onClick={p.onPause}>
                 {m.paused ? <PlayIcon size={20} /> : <PauseIcon size={20} />}
               </button>
@@ -295,6 +365,7 @@ export function TopBar(p: {
               </button>
             </div>
           ) : null}
+          {p.scouted ? <Scouted c={c} /> : null}
         </div>
       </div>
     </div>

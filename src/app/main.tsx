@@ -49,7 +49,9 @@ async function start(root: HTMLElement): Promise<void> {
   const canvasHost = document.createElement('div');
   canvasHost.style.cssText = 'position:absolute;inset:0';
   const uiHost = document.createElement('div');
-  uiHost.style.cssText = 'position:absolute;inset:0';
+  // The UI layer never takes pointer events itself: taps on the lane must reach the canvas (mount
+  // taps, pinch zoom, double tap). Only its screens' panels and buttons opt back in (app.css).
+  uiHost.style.cssText = 'position:absolute;inset:0;pointer-events:none';
   root.append(canvasHost, uiHost);
 
   const isMobile = detectMobile();
@@ -92,6 +94,7 @@ async function start(root: HTMLElement): Promise<void> {
       settings,
       isMobile,
       arena,
+      mountLabel: (cost) => services.i18n.t('app.newSlot', { cost }),
       onPresetChange: () => pixi.setResolution(view.resolution(dpr)),
     });
     pixi.setResolution(view.resolution(dpr));
@@ -121,6 +124,7 @@ async function start(root: HTMLElement): Promise<void> {
     scheduler: pixi.scheduler,
     visibility: documentVisibility(),
     autopilot: flags.autopilot,
+    countdown: true,
   });
   const ui: AppUi = {
     controller,
@@ -143,7 +147,19 @@ async function start(root: HTMLElement): Promise<void> {
       /** Runs up to `ticks` sim ticks of the battle on screen at once (B13 e2e dev fast-forward). */
       fastForward(ticks: number): number {
         const r = controller.route.peek();
-        return r.id === 'battle' ? r.battle.session.fastForward(ticks) : 0;
+        if (r.id !== 'battle') return 0;
+        controller.skipCountdown();
+        return r.battle.session.fastForward(ticks);
+      },
+      /** Client (page) point of your turret mount `i` on the battle on screen, for e2e taps. */
+      mountPoint(i: number): { x: number; y: number } | null {
+        const r = controller.route.peek();
+        const battle = r.id === 'battle' || r.id === 'title' ? r.battle : null;
+        const view = battle ? views.get(battle.session.sim) : undefined;
+        const p = view?.mountScreenPoint(i);
+        if (!p) return null;
+        const box = pixi.app.canvas.getBoundingClientRect();
+        return { x: box.left + p.x, y: box.top + p.y };
       },
     };
   }

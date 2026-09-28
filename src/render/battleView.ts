@@ -39,18 +39,18 @@ import { Camera } from './camera';
 import { depthRows, depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
 import { FeelDirector } from './feel/director';
-import { FloatingNumbers, bitmapLabelFactory, type LabelFactory } from './feel/numbers';
+import { FloatingNumbers, type LabelFactory } from './feel/numbers';
 import { ParticlePool, type ParticleHandle } from './feel/particlePool';
 import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { ageOrder, canEvolve } from './hudModel';
 import { BattleInput } from './input';
 import { createLayers, type BattleLayers } from './layers';
-import { MILLI_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
-import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, mountWorldPoints } from './mounts';
+import { LANE_LU, MILLI_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
+import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, textLabelFactory } from './mounts';
 import { ZoneOverlay, clampPowerP, powerZoneLu } from './powerTargeting';
 import { AutoPresetMonitor, PRESETS, particleCap, presetDpr, type GraphicsPreset } from './presets';
-import { SEAM_START_LU, frontMidpoint, stepSeam } from './seam';
+import { SEAM_START_LU, frontLines, frontMidpoint, stepSeam } from './seam';
 import { teamColor } from './teamColors';
 import { DEFAULT_VIEW_SETTINGS, type Anchor, type ViewAction, type ViewEvent, type ViewEventListener, type ViewSettings } from './types';
 
@@ -73,6 +73,8 @@ export interface BattleViewOptions {
   labelFactory?: LabelFactory;
   /** Called when the Auto preset drops to Lite (the host lowers the resolution). */
   onPresetChange?: (preset: GraphicsPreset) => void;
+  /** The next-mount tag ("New slot · 150"); render has no i18n, so the app passes the text. */
+  mountLabel?: (cost: number) => string;
 }
 
 type LoopClip = 'walk' | 'idle';
@@ -194,6 +196,8 @@ export class BattleView {
   private speed = 1;
   private paused = false;
   private ended = false;
+  /** True once the battle has run (the first unpause); the title backdrop shows no mount markers. */
+  private started = false;
   private input: BattleInput | null = null;
   private inputEl: HTMLElement | null = null;
   private hudAnchors: { gold: Pt | null; xp: Pt | null } = { gold: null, xp: null };
@@ -223,7 +227,7 @@ export class BattleView {
     this.autoPreset = new AutoPresetMonitor(this.settings.graphics, this.isMobile);
     this.particles = new ParticlePool(o.art, this.layers.vfx, 0, this.rng);
     this.numbers = new FloatingNumbers(this.layers.text, this.feel.tuning, this.rng, o.labelFactory);
-    this.markers = new MountMarkers(o.labelFactory ?? bitmapLabelFactory);
+    this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
     const st = this.sim.state;
     this.backdrop = o.art.createBackdrop({ left: this.ageOf(0), right: this.ageOf(1), arena: o.arena ?? 'tar_pits' });
@@ -274,6 +278,7 @@ export class BattleView {
 
   setPaused(p: boolean): void {
     this.paused = p;
+    if (!p) this.started = true;
   }
 
   setSettings(s: Partial<ViewSettings>): void {
@@ -333,6 +338,16 @@ export class BattleView {
     if (!kind) return false;
     this.emit({ t: 'mountTap', mount: idx, kind, screen: { ...screen }, shift });
     return true;
+  }
+
+  /**
+   * Where the fighting is, from your side: your and their front ground unit as progress 0..1 from
+   * your gate (null when a side has no units). Feeds the HUD's front-line strip.
+   */
+  frontLine(): { mine: number | null; theirs: number | null } {
+    const f = frontLines(this.frontInputs());
+    const toP = (x: number | null): number | null => (x === null ? null : Math.max(0, Math.min(1, xToP(x, this.mySide) / LANE_LU)));
+    return this.mySide === 0 ? { mine: toP(f.left), theirs: toP(f.right) } : { mine: toP(f.right), theirs: toP(f.left) };
   }
 
   /** The screen point (view-local CSS px) of one of your mounts, for placing the HUD popover. */
@@ -513,9 +528,9 @@ export class BattleView {
     return u ? { side: u.side, card: u.card, x: u.x / MILLI_LU } : undefined;
   }
 
+  /** World points of a side's four mounts (cached from the base view: world space, see createBase). */
   private mountPoints(side: Side): Pt[] {
-    const b = this.bases[side];
-    return mountWorldPoints(b.mountsLocal, b.view.root.x, b.view.root.y, b.view.root.scale.x);
+    return this.bases[side].mountsLocal;
   }
 
   private anchor(a: Anchor): Pt {
@@ -670,6 +685,13 @@ export class BattleView {
       case 'slowMo':
         this.director.startSlowMo(a.scale, a.ms);
         return;
+      case 'camera': {
+        // Reduce motion: no camera moves.
+        if (this.settings.reduceMotion) return;
+        const at = this.anchor(a.at);
+        this.camera.pushTo({ x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
+        return;
+      }
       case 'duck':
         this.director.duck(a.db, a.ms);
         return;
@@ -1075,8 +1097,10 @@ export class BattleView {
     const skins = this.config.sides[side].skins;
     const skin = skins[`base.${age}`] ?? Object.entries(skins).find(([target]) => target.startsWith('base.'))?.[1];
     const view = this.art.createBase({ age, ...(skin ? { skin } : {}), side, teamPreset: this.settings.teamPreset });
-    view.root.position.set(baseCenterX(side), 0);
-    view.root.scale.x = side === 1 ? -1 : 1;
+    // The art contract (WP4 base views): the root sits on the gate at ground level and the art
+    // mirrors itself for side 1; `mountPoints()` are already in the root's parent (world) space.
+    // Mirroring the root here as well flipped side 1 back and pushed side 0 half off screen.
+    view.root.position.set(gateX(side), 0);
     this.layers.structures.addChild(view.root);
     const s = this.sim.state.sides[side];
     const crumble = crumbleStage(s.baseHp, s.baseMaxHp);
@@ -1235,11 +1259,13 @@ export class BattleView {
 
   private updateMarkers(realDt: number, scale: number): void {
     const s = this.sim.state.sides[this.mySide];
-    if (this.ended) {
+    // No markers on the title backdrop (the battle waits behind Play) or after the end.
+    if (this.ended || !this.started) {
       this.markers.update(realDt, scale, null);
       return;
     }
     this.markers.update(realDt, scale, {
+      gold: Math.floor(s.gold / 1000),
       points: this.mountPoints(this.mySide),
       mountsOwned: s.mountsOwned,
       occupied: [0, 1, 2, 3].map((m) => (s.turrets[m] ?? null) !== null),

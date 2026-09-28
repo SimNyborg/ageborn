@@ -1,0 +1,1626 @@
+{
+ "frames": {
+  "longbowman_idle_00": {
+   "frame": {
+    "x": 330,
+    "y": 202,
+    "w": 73,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 77,
+    "w": 73,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_00_team": {
+   "frame": {
+    "x": 128,
+    "y": 470,
+    "w": 58,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 72,
+    "w": 58,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_01": {
+   "frame": {
+    "x": 553,
+    "y": 106,
+    "w": 71,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 74,
+    "w": 71,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_01_team": {
+   "frame": {
+    "x": 432,
+    "y": 385,
+    "w": 59,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 69,
+    "w": 59,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_02": {
+   "frame": {
+    "x": 544,
+    "y": 2,
+    "w": 68,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 70,
+    "w": 68,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_02_team": {
+   "frame": {
+    "x": 458,
+    "y": 296,
+    "w": 57,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 64,
+    "w": 57,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_03": {
+   "frame": {
+    "x": 238,
+    "y": 2,
+    "w": 67,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 67,
+    "w": 67,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_idle_03_team": {
+   "frame": {
+    "x": 264,
+    "y": 296,
+    "w": 57,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 62,
+    "w": 57,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_00": {
+   "frame": {
+    "x": 531,
+    "y": 202,
+    "w": 85,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 78,
+    "w": 85,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_00_team": {
+   "frame": {
+    "x": 306,
+    "y": 385,
+    "w": 56,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 73,
+    "w": 56,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_01": {
+   "frame": {
+    "x": 73,
+    "y": 202,
+    "w": 86,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 74,
+    "w": 86,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_01_team": {
+   "frame": {
+    "x": 128,
+    "y": 385,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 69,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_02": {
+   "frame": {
+    "x": 154,
+    "y": 106,
+    "w": 80,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 71,
+    "w": 80,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_02_team": {
+   "frame": {
+    "x": 519,
+    "y": 296,
+    "w": 52,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 65,
+    "w": 52,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_03": {
+   "frame": {
+    "x": 238,
+    "y": 106,
+    "w": 74,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 74,
+    "w": 74,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_03_team": {
+   "frame": {
+    "x": 495,
+    "y": 385,
+    "w": 55,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 69,
+    "w": 55,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_04": {
+   "frame": {
+    "x": 475,
+    "y": 106,
+    "w": 74,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 78,
+    "w": 74,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_04_team": {
+   "frame": {
+    "x": 554,
+    "y": 385,
+    "w": 55,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 73,
+    "w": 55,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_05": {
+   "frame": {
+    "x": 2,
+    "y": 106,
+    "w": 77,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 75,
+    "w": 77,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 470,
+    "w": 52,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 69,
+    "w": 52,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_06": {
+   "frame": {
+    "x": 370,
+    "y": 2,
+    "w": 76,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 71,
+    "w": 76,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_06_team": {
+   "frame": {
+    "x": 575,
+    "y": 296,
+    "w": 52,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 65,
+    "w": 52,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_07": {
+   "frame": {
+    "x": 248,
+    "y": 202,
+    "w": 78,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 75,
+    "w": 78,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_walk_07_team": {
+   "frame": {
+    "x": 184,
+    "y": 385,
+    "w": 53,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 70,
+    "w": 53,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_00": {
+   "frame": {
+    "x": 309,
+    "y": 2,
+    "w": 57,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 69,
+    "w": 57,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_00_team": {
+   "frame": {
+    "x": 78,
+    "y": 296,
+    "w": 60,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 40,
+    "y": 64,
+    "w": 60,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_01": {
+   "frame": {
+    "x": 71,
+    "y": 2,
+    "w": 96,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 72,
+    "w": 96,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_01_team": {
+   "frame": {
+    "x": 325,
+    "y": 296,
+    "w": 55,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 66,
+    "w": 55,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_02": {
+   "frame": {
+    "x": 450,
+    "y": 2,
+    "w": 90,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 74,
+    "w": 90,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 385,
+    "w": 61,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 37,
+    "y": 69,
+    "w": 61,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_03": {
+   "frame": {
+    "x": 163,
+    "y": 202,
+    "w": 81,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 41,
+    "y": 76,
+    "w": 81,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_03_team": {
+   "frame": {
+    "x": 366,
+    "y": 385,
+    "w": 62,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 72,
+    "w": 62,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 65,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 64,
+    "w": 65,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_04_team": {
+   "frame": {
+    "x": 474,
+    "y": 202,
+    "w": 53,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 62,
+    "w": 53,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_05": {
+   "frame": {
+    "x": 171,
+    "y": 2,
+    "w": 63,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 66,
+    "w": 63,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_05_team": {
+   "frame": {
+    "x": 142,
+    "y": 296,
+    "w": 55,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 65,
+    "w": 55,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_06": {
+   "frame": {
+    "x": 316,
+    "y": 106,
+    "w": 62,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 72,
+    "w": 62,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_06_team": {
+   "frame": {
+    "x": 201,
+    "y": 296,
+    "w": 59,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 41,
+    "y": 66,
+    "w": 59,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_07": {
+   "frame": {
+    "x": 83,
+    "y": 106,
+    "w": 67,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 72,
+    "w": 67,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_attack_07_team": {
+   "frame": {
+    "x": 67,
+    "y": 385,
+    "w": 57,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 67,
+    "w": 57,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_hit_00": {
+   "frame": {
+    "x": 2,
+    "y": 296,
+    "w": 72,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 30,
+    "y": 80,
+    "w": 72,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_hit_00_team": {
+   "frame": {
+    "x": 190,
+    "y": 470,
+    "w": 70,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 27,
+    "y": 77,
+    "w": 70,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_hit_01": {
+   "frame": {
+    "x": 407,
+    "y": 202,
+    "w": 63,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 77,
+    "w": 63,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_hit_01_team": {
+   "frame": {
+    "x": 58,
+    "y": 470,
+    "w": 66,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 33,
+    "y": 71,
+    "w": 66,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_hit_02": {
+   "frame": {
+    "x": 2,
+    "y": 202,
+    "w": 67,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 74,
+    "w": 67,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_hit_02_team": {
+   "frame": {
+    "x": 241,
+    "y": 385,
+    "w": 61,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 68,
+    "w": 61,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_die_00": {
+   "frame": {
+    "x": 382,
+    "y": 106,
+    "w": 89,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 9,
+    "y": 64,
+    "w": 89,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_die_00_team": {
+   "frame": {
+    "x": 384,
+    "y": 296,
+    "w": 70,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 15,
+    "y": 62,
+    "w": 70,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_die_01": {
+   "frame": {
+    "x": 264,
+    "y": 470,
+    "w": 89,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 17,
+    "y": 94,
+    "w": 89,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_die_01_team": {
+   "frame": {
+    "x": 357,
+    "y": 470,
+    "w": 78,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 11,
+    "y": 88,
+    "w": 78,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_die_02": {
+   "frame": {
+    "x": 439,
+    "y": 470,
+    "w": 72,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 32,
+    "y": 117,
+    "w": 72,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  },
+  "longbowman_die_02_team": {
+   "frame": {
+    "x": 515,
+    "y": 470,
+    "w": 63,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 26,
+    "y": 113,
+    "w": 63,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 192,
+    "h": 174
+   },
+   "anchor": {
+    "x": 0.40625,
+    "y": 0.88506
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "longbowman_idle_00",
+   "longbowman_idle_01",
+   "longbowman_idle_02",
+   "longbowman_idle_03",
+   "longbowman_idle_02",
+   "longbowman_idle_01"
+  ],
+  "idle_team": [
+   "longbowman_idle_00_team",
+   "longbowman_idle_01_team",
+   "longbowman_idle_02_team",
+   "longbowman_idle_03_team",
+   "longbowman_idle_02_team",
+   "longbowman_idle_01_team"
+  ],
+  "walk": [
+   "longbowman_walk_00",
+   "longbowman_walk_01",
+   "longbowman_walk_02",
+   "longbowman_walk_03",
+   "longbowman_walk_04",
+   "longbowman_walk_05",
+   "longbowman_walk_06",
+   "longbowman_walk_07"
+  ],
+  "walk_team": [
+   "longbowman_walk_00_team",
+   "longbowman_walk_01_team",
+   "longbowman_walk_02_team",
+   "longbowman_walk_03_team",
+   "longbowman_walk_04_team",
+   "longbowman_walk_05_team",
+   "longbowman_walk_06_team",
+   "longbowman_walk_07_team"
+  ],
+  "attack": [
+   "longbowman_attack_00",
+   "longbowman_attack_01",
+   "longbowman_attack_02",
+   "longbowman_attack_03",
+   "longbowman_attack_04",
+   "longbowman_attack_05",
+   "longbowman_attack_06",
+   "longbowman_attack_07"
+  ],
+  "attack_team": [
+   "longbowman_attack_00_team",
+   "longbowman_attack_01_team",
+   "longbowman_attack_02_team",
+   "longbowman_attack_03_team",
+   "longbowman_attack_04_team",
+   "longbowman_attack_05_team",
+   "longbowman_attack_06_team",
+   "longbowman_attack_07_team"
+  ],
+  "hit": [
+   "longbowman_hit_00",
+   "longbowman_hit_01",
+   "longbowman_hit_02"
+  ],
+  "hit_team": [
+   "longbowman_hit_00_team",
+   "longbowman_hit_01_team",
+   "longbowman_hit_02_team"
+  ],
+  "die": [
+   "longbowman_die_00",
+   "longbowman_die_01",
+   "longbowman_die_02"
+  ],
+  "die_team": [
+   "longbowman_die_00_team",
+   "longbowman_die_01_team",
+   "longbowman_die_02_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "longbowman.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 552
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.longbowman",
+   "name": "Longbowman",
+   "heightLu": 68,
+   "widthLu": 54.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    78,
+    154
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     33,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      1
+     ],
+     "durationsMs": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+     ],
+     "durationMs": 1200,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        19.8,
+        11.0
+       ],
+       [
+        19.4,
+        12.6
+       ],
+       [
+        18.7,
+        15.3
+       ],
+       [
+        18.4,
+        17.1
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        18.1,
+        5.7
+       ],
+       [
+        19.6,
+        7.7
+       ],
+       [
+        21.8,
+        11.9
+       ],
+       [
+        23.2,
+        12.2
+       ],
+       [
+        21.6,
+        9.9
+       ],
+       [
+        18.3,
+        9.9
+       ],
+       [
+        16.5,
+        10.7
+       ],
+       [
+        16.9,
+        8.3
+       ]
+      ]
+     },
+     "strideLu": 30.0,
+     "naturalSpeedLuPerS": 60.0
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      100,
+      167,
+      83,
+      83,
+      100,
+      100
+     ],
+     "durationMs": 799,
+     "impactFrame": 4,
+     "impactAt": 0.5419,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        23.5,
+        28.8
+       ],
+       [
+        34.4,
+        31.0
+       ],
+       [
+        34.8,
+        33.0
+       ],
+       [
+        33.6,
+        33.5
+       ],
+       [
+        32.7,
+        34.0
+       ],
+       [
+        31.5,
+        33.5
+       ],
+       [
+        27.7,
+        24.8
+       ],
+       [
+        22.1,
+        16.6
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.5,
+        25.8
+       ],
+       [
+        18.6,
+        20.8
+       ],
+       [
+        19.3,
+        16.5
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 166,
+       "offsetLu": [
+        0,
+        28.6
+       ],
+       "scale": 0.681
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 249,
+       "offsetLu": [
+        0,
+        42.2
+       ],
+       "loops": 2,
+       "scale": 0.825
+      }
+     ],
+     "hideUnitAtMs": 249,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -24.2,
+        63.6
+       ],
+       [
+        2.2,
+        33.1
+       ],
+       [
+        9.0,
+        15.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -71,12 +71,14 @@
   position: absolute;
   top: 3px;
   left: 4px;
-  min-width: 13px;
-  padding: 0 3px;
-  border-radius: 4px;
-  background: rgba(20, 14, 36, 0.72);
-  color: #d8cff0;
-  font: 800 9px/13px ui-monospace, Menlo, Consolas, monospace;
+  min-width: 17px;
+  padding: 0 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+  background: rgba(20, 14, 36, 0.82);
+  color: #efe8ff;
+  font: 800 11px/15px ui-monospace, Menlo, Consolas, monospace;
+  animation: hud-pop 200ms ease-out;
   text-align: center;
   pointer-events: none;
 }
@@ -170,6 +172,11 @@
   width: min(31cqw, 360px);
 }
 
+.hud-me {
+  width: min(34cqw, 400px);
+  padding-right: 0.6cqh;
+}
+
 .hud-bars {
   position: relative;
   flex: 1;
@@ -250,6 +257,16 @@
   --team: var(--hud-me);
 }
 
+.hud-hp.is-low .hud-hp-fill {
+  animation: hud-hp-low 1.2s ease-in-out infinite;
+}
+
+@keyframes hud-hp-low {
+  50% {
+    filter: brightness(1.5) saturate(1.3);
+  }
+}
+
 .hud-hp-foe {
   --team: var(--hud-foe);
 }
@@ -260,8 +277,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: max(8px, 1.6cqh);
+  font-size: max(9px, 1.75cqh);
   font-weight: 900;
+  letter-spacing: 0.02em;
   text-shadow:
     0 1px 0 var(--hud-ink),
     0 -1px 0 var(--hud-ink),
@@ -290,6 +308,28 @@
   flex: none;
 }
 
+.hud-xp.has-text {
+  height: max(13px, 2.7cqh);
+}
+
+.hud-xp-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: max(9px, 1.55cqh);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-shadow:
+    0 1px 0 var(--hud-ink),
+    0 -1px 0 var(--hud-ink),
+    1px 0 0 var(--hud-ink),
+    -1px 0 0 var(--hud-ink);
+}
+
 .hud-xp-fill {
   position: absolute;
   top: 0;
@@ -310,50 +350,136 @@
   background: linear-gradient(90deg, #ffe27a, var(--hud-gold));
 }
 
-/* Evolve glows steadily when ready and never flashes (A2.4). */
+/* The round Evolve button at the end of your XP bar (audit #4): 56 px, 48 px on phones. It glows
+   steadily when ready and never flashes (A2.4); a slow bob and the gold fill make it the obvious
+   thing to press. Before that its ring fills with your XP. */
 .hud-evolve {
+  --evo: 56px;
   position: relative;
-  display: inline-flex;
   flex: none;
+  align-self: center;
+  width: var(--evo);
+  height: var(--evo);
+  margin-top: 1.6cqh;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: #cbc2dd;
+}
+
+.hud.is-compact .hud-evolve {
+  --evo: 48px;
+}
+
+.hud-evolve-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(#8fd8ff calc(var(--xp, 0) * 1turn), rgba(20, 14, 36, 0.9) 0);
+  box-shadow: 0 0 0 2.5px var(--hud-ink), 0 3px 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.hud-evolve-disc {
+  position: absolute;
+  inset: 5px;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  height: max(18px, 3.4cqh);
-  padding: 0 0.9em 0 0.5em;
+  justify-content: center;
+  border: 2.5px solid var(--hud-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, #7a6ca6, #3d3163 70%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18);
+  transition: background 200ms ease-out;
+}
+
+.hud-evolve-disc svg {
+  filter: grayscale(0.85) brightness(0.8);
+  opacity: 0.8;
+  transition: filter 200ms ease-out, opacity 200ms ease-out;
+}
+
+.hud-evolve-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 7px);
+  translate: -50% 0;
+  padding: 1px 7px;
   border: 2px solid var(--hud-ink);
   border-radius: 99px;
   background: #4b416a;
-  color: #cbc2dd;
-  font-size: 0.95em;
+  color: #e4dcf5;
+  font-size: max(10px, 1.6cqh);
   font-weight: 900;
-  text-transform: uppercase;
+  line-height: 1.2;
   letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
 }
 
 .hud-evolve .hud-key {
-  top: -8px;
+  top: -4px;
   left: auto;
-  right: -6px;
+  right: -8px;
 }
 
-.hud-evolve.is-ready {
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 55%, var(--hud-gold-deep));
-  color: var(--hud-ink);
+/* The bob moves the button's parts, not its box, so the hit area stays put. */
+.hud-evolve.is-ready > .hud-evolve-ring,
+.hud-evolve.is-ready > .hud-evolve-disc,
+.hud-evolve.is-ready > .hud-evolve-label {
+  animation: hud-evolve-bob 1.8s ease-in-out infinite;
+}
+
+.hud-evolve.is-ready .hud-evolve-ring {
+  background: conic-gradient(#fff1a8, var(--hud-gold), #fff1a8, var(--hud-gold-deep), #fff1a8);
   box-shadow:
-    0 0 0 2px rgba(255, 230, 140, 0.5),
-    0 0 16px 3px rgba(255, 212, 71, 0.75);
+    0 0 0 2.5px var(--hud-ink),
+    0 0 0 5px rgba(255, 230, 140, 0.55),
+    0 0 22px 6px rgba(255, 212, 71, 0.8),
+    0 3px 0 2px rgba(0, 0, 0, 0.35);
 }
 
-.hud-evolve.is-ascending {
-  background: linear-gradient(180deg, #fffbe8, #ffe9a0);
+.hud-evolve.is-ready .hud-evolve-disc {
+  background: radial-gradient(circle at 38% 30%, #fffbe0, #ffe27a 45%, #e6a91f 100%);
+}
+
+.hud-evolve.is-ready .hud-evolve-disc svg {
+  filter: none;
+  opacity: 1;
+}
+
+.hud-evolve.is-ready .hud-evolve-label {
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
   color: var(--hud-ink);
+  font-size: max(11px, 1.9cqh);
 }
 
-.hud-overcharge {
-  flex: none;
-  font-size: 0.8em;
-  color: var(--hud-dim);
-  text-transform: uppercase;
+.hud-evolve.is-ready:active {
+  scale: 0.92;
 }
+
+.hud-evolve.is-ascending .hud-evolve-ring {
+  background: conic-gradient(#fffbe8, #ffe9a0, #fffbe8);
+  animation: hud-spin 1.2s linear infinite;
+}
+
+@keyframes hud-evolve-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes hud-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
 
 /* Age medallion; the opponent's carries its power charge ring (A9.2). */
 .hud-medal {
@@ -380,6 +506,25 @@
 .hud-medal-core svg {
   width: 72%;
   height: 72%;
+}
+
+.hud-medal-tag {
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  translate: -50% 0;
+  padding: 0 6px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: var(--hud-me);
+  color: #fff;
+  font-size: max(9px, 1.45cqh);
+  font-weight: 900;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 var(--hud-ink);
 }
 
 .hud-medal-me .hud-medal-core {
@@ -415,12 +560,65 @@
   box-shadow: 0 0 10px 2px rgba(255, 110, 40, 0.8);
 }
 
-/* Centre: clock with the phase timeline, and the emote button. */
+/* Centre: clock with the phase timeline, and the front-line strip under it. */
 .hud-center {
   display: flex;
   flex: none;
-  align-items: flex-start;
-  gap: 0.8cqh;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7cqh;
+}
+
+.hud-next-phase {
+  margin-top: 0.35cqh;
+  font-size: max(9px, 1.5cqh);
+  font-weight: 800;
+  color: var(--hud-dim);
+  white-space: nowrap;
+}
+
+.hud-next-phase.is-overdrive {
+  color: #ffe38a;
+}
+
+.hud-next-phase.is-siege {
+  color: #ff9d8f;
+}
+
+/* Front-line strip: your colour from the left, theirs from the right, a spark where they meet. */
+.hud-front {
+  position: relative;
+  width: clamp(120px, 22cqw, 240px);
+  height: max(9px, 1.7cqh);
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: repeating-linear-gradient(90deg, #3a2f5c 0 6px, #2e2450 6px 12px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.hud-front > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transition: width 400ms ease-out, left 400ms ease-out;
+}
+
+.hud-front-me {
+  left: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hud-me) 55%, #fff) 0 35%, var(--hud-me) 35%);
+}
+
+.hud-front-foe {
+  right: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hud-foe) 55%, #fff) 0 35%, var(--hud-foe) 35%);
+}
+
+.hud-front-clash {
+  width: 6px;
+  margin-left: -3px;
+  background: #fff8e0;
+  box-shadow: 0 0 8px 2px rgba(255, 240, 180, 0.9);
 }
 
 .hud-clock {
@@ -541,6 +739,11 @@
     0 3px 0 rgba(0, 0, 0, 0.35);
 }
 
+.hud-round--small {
+  width: max(30px, 5.4cqh);
+  height: max(30px, 5.4cqh);
+}
+
 .hud-round:active {
   translate: 0 1px;
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
@@ -556,7 +759,7 @@
 
 .hud-emote {
   position: relative;
-  margin-top: 0.8cqh;
+  align-self: center;
   pointer-events: auto;
 }
 
@@ -567,8 +770,7 @@
 .hud-emote-picker {
   position: absolute;
   top: calc(100% + 6px);
-  left: 50%;
-  translate: -50% 0;
+  right: 0;
   display: grid;
   grid-template-columns: repeat(3, auto);
   gap: 4px;
@@ -787,7 +989,7 @@
   pointer-events: none;
 }
 
-/* Gold counter: tap buys Treasury. */
+/* Gold counter: tap buys the income upgrade (Treasury). */
 .hud-gold {
   position: relative;
   display: flex;
@@ -796,20 +998,25 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  width: 112px;
+  width: 118px;
   height: min(calc(var(--hud-card) * 1.12), 21cqh);
   padding: 4px 6px;
   box-sizing: border-box;
   border: 3px solid var(--hud-ink);
   border-radius: 14px;
-  background: linear-gradient(180deg, #54447f, #2e2450);
+  background: linear-gradient(180deg, #5c4a8a, #2e2450);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
     0 4px 0 rgba(0, 0, 0, 0.4);
+  transition: translate 90ms ease-out;
+}
+
+.hud-gold:active {
+  translate: 0 2px;
 }
 
 .hud.is-compact .hud-gold {
-  width: 90px;
+  width: 94px;
 }
 
 .hud-gold-main {
@@ -820,19 +1027,22 @@
 
 .hud-gold-value {
   color: var(--hud-gold);
-  font-size: 1.9em;
+  font-size: 2.1em;
   font-weight: 900;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 0 var(--hud-ink);
+  text-shadow:
+    0 2px 0 var(--hud-ink),
+    0 0 12px rgba(255, 212, 71, 0.35);
 }
 
 .hud.is-compact .hud-gold-value {
-  font-size: 1.5em;
+  font-size: 1.7em;
 }
 
 .hud.is-compact .hud-gold-treasury {
-  padding: 0 4px;
-  font-size: 0.68em;
+  padding: 0 5px;
+  font-size: 0.72em;
 }
 
 .hud-gold-rate {
@@ -841,11 +1051,11 @@
 }
 
 .hud-gold-treasury {
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: 99px;
   background: rgba(0, 0, 0, 0.3);
   color: var(--hud-dim);
-  font-size: 0.78em;
+  font-size: 0.8em;
   white-space: nowrap;
 }
 
@@ -854,14 +1064,67 @@
   color: var(--hud-ink);
 }
 
-.hud-gold.is-bump .hud-gold-value {
-  animation: hud-bump 320ms ease-out;
+/* Coins landing pop the counter up to 1.15 (audit #25). */
+.hud-gold.is-bump .hud-gold-main {
+  animation: hud-bump 320ms cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
 @keyframes hud-bump {
-  30% {
-    scale: 1.28;
-    color: #fff6c9;
+  35% {
+    scale: 1.15;
+    filter: brightness(1.35);
+  }
+}
+
+/* Floating numbers: "-50" up from the gold, "Need 23" over a card. */
+.hud-float {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  translate: -50% 0;
+  z-index: 3;
+  font-size: 18px;
+  font-weight: 900;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 2px 0 var(--hud-ink),
+    0 -1px 0 var(--hud-ink),
+    1px 0 0 var(--hud-ink),
+    -1px 0 0 var(--hud-ink);
+  animation: hud-float 900ms cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+.hud-float-spend {
+  color: #ffe38a;
+}
+
+.hud-float-need {
+  top: 30%;
+  padding: 1px 7px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #d8333a;
+  color: #fff;
+  font-size: 13px;
+  text-shadow: none;
+}
+
+@keyframes hud-float {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.7);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.12);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(1);
   }
 }
 
@@ -876,8 +1139,31 @@
   gap: 5px;
 }
 
+/* After an evolve (and at the start) the cards deal in with a flip, one after another. */
+.hud-card-flip {
+  perspective: 500px;
+  animation: hud-flip 520ms cubic-bezier(0.25, 1.4, 0.45, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+@keyframes hud-flip {
+  0% {
+    transform: rotateY(90deg) scale(0.9);
+    opacity: 0.2;
+  }
+  60% {
+    transform: rotateY(-10deg) scale(1.04);
+    opacity: 1;
+  }
+}
+
+.hud-card-slot {
+  position: relative;
+}
+
 .hud-card {
   position: relative;
+  display: block;
   flex: none;
   width: var(--hud-card);
   height: min(calc(var(--hud-card) * 1.14), 21cqh);
@@ -886,7 +1172,7 @@
   box-sizing: border-box;
   border: 3px solid var(--hud-ink);
   border-radius: 12px;
-  background: linear-gradient(180deg, #6b5a9e, #3a2e62);
+  background: linear-gradient(180deg, #7a68b0, #3a2e62);
   box-shadow:
     inset 0 0 0 2px rgba(255, 255, 255, 0.12),
     0 4px 0 rgba(0, 0, 0, 0.45);
@@ -902,19 +1188,88 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.22), transparent 70%);
+  background: radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.28), transparent 70%);
 }
 
+/* Training: a bright fill rising from the bottom over the portrait; the portrait stays in colour. */
 .hud-card-fill {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  height: calc((100% - 18px) * var(--fill, 0));
   opacity: 0;
   pointer-events: none;
-  background: conic-gradient(rgba(255, 244, 200, 0.42) calc(var(--fill, 0) * 1turn), rgba(10, 6, 22, 0.28) 0);
+  background: linear-gradient(0deg, rgba(255, 236, 160, 0.5), rgba(255, 236, 160, 0.18));
+  border-top: 2px solid rgba(255, 250, 220, 0.95);
+  box-shadow: 0 -4px 10px rgba(255, 240, 180, 0.45);
+  transition: height 120ms linear;
 }
 
 .hud-card.is-training .hud-card-fill {
   opacity: 1;
+}
+
+/* Not affordable yet: grey, with a fill rising toward affordable. */
+.hud-card-afford {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  height: calc((100% - 18px) * var(--afford, 0));
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(255, 212, 71, 0.32), rgba(255, 212, 71, 0.1));
+  border-top: 2px solid rgba(255, 212, 71, 0.7);
+  transition: height 300ms ease-out;
+}
+
+.hud-card-wait {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  translate: -50% -50%;
+  padding: 1px 7px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: rgba(20, 14, 36, 0.85);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-card-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 17px;
+  padding: 0 3px;
+  background: linear-gradient(180deg, rgba(20, 14, 36, 0.85), rgba(20, 14, 36, 0.55));
+  color: #fff8e6;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.hud.is-compact .hud-card-name {
+  font-size: 10.5px;
+}
+
+.hud-card-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-card-role {
+  display: inline-flex;
+  flex: none;
 }
 
 .hud-card-cost {
@@ -929,34 +1284,37 @@
   gap: 2px;
   background: var(--hud-ink);
   color: var(--hud-gold);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
 }
 
+/* Queue count: a 22 px gold badge that pops on every change. */
 .hud-card-queue {
   position: absolute;
-  top: 3px;
+  top: 19px;
   right: 3px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
   box-sizing: border-box;
   border: 2px solid var(--hud-ink);
   border-radius: 99px;
-  background: #fff8e6;
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
   color: var(--hud-ink);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
-  line-height: 16px;
-  animation: hud-pop 160ms ease-out;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+  animation: hud-pop 220ms cubic-bezier(0.3, 1.8, 0.5, 1);
 }
 
 .hud-card-tag {
   position: absolute;
   left: 0;
   right: 0;
-  top: 36%;
+  top: 40%;
   padding: 2px 3px;
   background: #d8333a;
   color: #fff;
@@ -981,35 +1339,166 @@
 /* Affordable glow. */
 .hud-card.state-ready {
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.18),
-    0 0 0 2px rgba(255, 223, 120, 0.85),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.2),
+    0 0 0 2px rgba(255, 223, 120, 0.9),
     0 0 14px 2px rgba(255, 212, 71, 0.55),
     0 4px 0 rgba(0, 0, 0, 0.45);
 }
 
 .hud-card.state-ready:hover {
-  translate: 0 -3px;
-}
-
-.hud-card.state-ready:active {
-  translate: 0 1px;
+  translate: 0 -4px;
 }
 
 .hud-card.state-unaffordable .hud-card-art,
 .hud-card.state-armyFull .hud-card-art,
 .hud-card.state-legendaryInField .hud-card-art {
-  filter: grayscale(0.75) brightness(0.7);
+  filter: grayscale(0.8) brightness(0.62);
+}
+
+/* A card that is only waiting in the queue keeps its colour. */
+.hud-card.state-unaffordable.is-training .hud-card-art {
+  filter: grayscale(0.3) brightness(0.85);
 }
 
 .hud-card.state-unaffordable .hud-card-cost {
-  color: #ff7a6e;
+  color: #ff8a7e;
 }
 
-.hud-card.is-empty {
+/* The one padlock slot for a card the match unlocks later. */
+.hud-card.is-locked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-style: dashed;
-  border-color: rgba(185, 174, 203, 0.4);
+  border-color: rgba(185, 174, 203, 0.55);
   background: rgba(20, 14, 36, 0.55);
   box-shadow: none;
+}
+
+.hud-card-lock {
+  position: relative;
+  width: 22px;
+  height: 17px;
+  margin-top: 10px;
+  border: 2.5px solid #b9aecb;
+  border-radius: 4px;
+  background: #4b416a;
+}
+
+.hud-card-lock::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 12px;
+  height: 11px;
+  translate: -50% 1px;
+  border: 2.5px solid #b9aecb;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+/* The "i" corner (touch) and the info card (hover on desktop, the "i" on touch). */
+.hud-card-i {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 2;
+  display: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: #dfe6f5;
+  color: var(--hud-ink);
+  font: italic 900 14px/20px Georgia, serif;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .hud-card-i {
+    display: block;
+  }
+}
+
+.hud-card-info-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  z-index: 6;
+  translate: -50% 6px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 140ms ease-out,
+    translate 180ms cubic-bezier(0.3, 1.4, 0.5, 1),
+    visibility 0s linear 140ms;
+}
+
+.hud-card-info-wrap.is-open {
+  translate: -50% 0;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 140ms ease-out,
+    translate 180ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hud-card-slot:hover .hud-card-info-wrap {
+    translate: -50% 0;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 140ms ease-out 250ms,
+      translate 180ms cubic-bezier(0.3, 1.4, 0.5, 1) 250ms;
+  }
+}
+
+.hud-card-info {
+  width: 200px;
+  padding: 8px 10px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #3f3470, #231b40);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.hud-card-info-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.hud-card-info-role {
+  color: var(--hud-gold);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hud-card-info-desc {
+  margin: 4px 0;
+  color: #e9e1f7;
+}
+
+.hud-card-info-stats {
+  display: flex;
+  gap: 10px;
+  color: var(--hud-dim);
+}
+
+.hud-card-info-strong {
+  margin-top: 3px;
+  color: #9ff0b0;
 }
 
 /* Foil frames (A5.1). */
@@ -1024,7 +1513,7 @@
 .hud-card.foil-holo {
   border-color: transparent;
   background:
-    linear-gradient(180deg, #6b5a9e, #3a2e62) padding-box,
+    linear-gradient(180deg, #7a68b0, #3a2e62) padding-box,
     conic-gradient(#ff7ad9, #7af0ff, #b3ff7a, #ffe07a, #ff7ad9) border-box;
 }
 
@@ -1035,17 +1524,20 @@
   flex-direction: column;
   align-items: stretch;
   gap: 6px;
-  min-width: 78px;
+  min-width: 70px;
   pointer-events: auto;
 }
 
 .hud-army-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   padding: 3px 8px;
   border: 2px solid var(--hud-ink);
   border-radius: 99px;
   background: #2e2450;
   font-size: 0.95em;
-  text-align: center;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
@@ -1082,19 +1574,55 @@
   left: -6px;
 }
 
-/* Age Power: charge ring, tap = auto-aim, drag = place. */
+/* Age Power: charge ring and name; tap = auto-aim, drag = place. Full: burst, bob and "READY". */
+.hud-power-wrap {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-power.is-ready > .hud-power-ring,
+.hud-power.is-ready > .hud-power-core,
+.hud-power.is-ready > .hud-power-ready {
+  animation:
+    hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1),
+    hud-evolve-bob 1.6s ease-in-out infinite;
+}
+
 .hud-power {
   position: relative;
   flex: none;
   width: var(--hud-power);
   height: var(--hud-power);
-  max-width: 21cqh;
-  max-height: 21cqh;
+  max-width: 18cqh;
+  max-height: 18cqh;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: none;
   touch-action: none;
+}
+
+.hud-power-name {
+  max-width: 110px;
+  padding: 0 7px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #2e2450;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-power-wrap.is-ready .hud-power-name {
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
+  color: var(--hud-ink);
 }
 
 .hud-power-ring {
@@ -1122,18 +1650,49 @@
   filter: none;
 }
 
-.hud-power.is-ready {
-  animation: hud-power-ready 1.6s ease-in-out infinite;
+.hud-power.is-ready .hud-power-ring {
+  box-shadow:
+    0 0 0 3px var(--hud-ink),
+    0 0 20px 5px rgba(255, 212, 71, 0.8);
 }
 
-@keyframes hud-power-ready {
-  0%,
+.hud-power-burst {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 5px solid #fff4c2;
+  pointer-events: none;
+  animation: hud-burst 700ms ease-out forwards;
+}
+
+@keyframes hud-burst {
+  0% {
+    scale: 0.8;
+    opacity: 1;
+  }
   100% {
-    box-shadow: 0 0 10px 2px rgba(255, 212, 71, 0.55);
+    scale: 1.7;
+    opacity: 0;
+    border-width: 1px;
   }
-  50% {
-    box-shadow: 0 0 22px 6px rgba(255, 212, 71, 0.9);
-  }
+}
+
+.hud-power-ready {
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  translate: -50% 0;
+  padding: 0 7px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #3fcf6e;
+  color: var(--hud-ink);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
 }
 
 .hud-power.is-aiming {
@@ -1142,7 +1701,8 @@
 }
 
 .hud-power .hud-key {
-  top: 0;
+  top: auto;
+  bottom: 0;
   left: 0;
 }
 
@@ -1268,6 +1828,102 @@
   background: linear-gradient(180deg, #ff6a5a, #b0282a);
 }
 
+/* ---------------------------------------------------------------- moments */
+
+/* A big centred banner in the upper lane: "Medieval Age!", "Overdrive! Gold ×2", the blocked
+   callout. It never takes input. */
+.hud-moment {
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  translate: -50% 0;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  animation: hud-moment 2400ms cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+
+.hud-moment-title {
+  font-size: clamp(30px, 8cqh, 56px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #fff6d6;
+  -webkit-text-stroke: 5px var(--hud-ink);
+  paint-order: stroke fill;
+  text-shadow:
+    0 5px 0 var(--hud-ink),
+    0 0 26px rgba(255, 212, 71, 0.75);
+}
+
+.hud-moment-evolve .hud-moment-title {
+  color: #ffe27a;
+  font-size: clamp(34px, 9cqh, 64px);
+}
+
+.hud-moment-sub {
+  padding: 2px 12px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: var(--hud-gold);
+  color: var(--hud-ink);
+  font-size: clamp(13px, 2.6cqh, 20px);
+  font-weight: 900;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+.hud-moment-phase .hud-moment-title {
+  color: #ffe38a;
+}
+
+.hud-moment-blocked {
+  top: 58%;
+  animation-duration: 4200ms;
+}
+
+.hud-moment-blocked .hud-moment-title {
+  padding: 8px 16px;
+  border: 3px solid var(--hud-ink);
+  border-radius: 16px;
+  background: #fffaf0;
+  color: var(--hud-ink);
+  font-size: clamp(15px, 2.9cqh, 22px);
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  white-space: normal;
+  max-width: 70cqw;
+  box-shadow: 0 5px 0 var(--hud-ink), 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes hud-moment {
+  0% {
+    opacity: 0;
+    scale: 2.2;
+  }
+  14% {
+    opacity: 1;
+    scale: 0.94;
+  }
+  22% {
+    scale: 1.03;
+  }
+  30%,
+  82% {
+    opacity: 1;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.08;
+    translate: -50% -10px;
+  }
+}
+
 /* ---------------------------------------------------------------- narrow and short screens */
 
 /* Short screens drop your own name row; the opponent's AI chip and label always stay (A7.1). */
@@ -1296,15 +1952,33 @@
   }
 }
 
+@keyframes hud-moment-calm {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  85% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hud-vignette.is-on {
     animation: none;
     opacity: 0.6;
   }
 
-  .hud-power.is-ready {
+  .hud-power.is-ready > *,
+  .hud-evolve.is-ready > *,
+  .hud-card-flip,
+  .hud-power-burst,
+  .hud-hp.is-low .hud-hp-fill {
     animation: none;
-    box-shadow: 0 0 14px 4px rgba(255, 212, 71, 0.75);
+  }
+
+  .hud-moment {
+    animation: hud-moment-calm 2400ms linear forwards;
   }
 
   .hud .is-denied {

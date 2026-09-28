@@ -1,9 +1,14 @@
 /**
  * `WebAudioService`, the real `AudioService` (DESIGN B7, A13, B15 `audio.ts`).
  *
- * - Sound effects are pre-rendered ZzFX buffers (`bank.ts`): `prerender()` renders the boot groups
- *   before the first gesture (< 300 ms, B16), `renderLazily()` the rest in idle time; a sound that is
- *   not rendered yet renders on first use.
+ * - Sound effects play from pre-rendered files (`files.ts`, made by `tools/audio`): one Ogg Opus
+ *   sprite sheet per sound group, fetched after unlock (UI and shared battle sounds first, the age
+ *   and capsule sheets when the music says they are coming, or on first use).
+ * - The ZzFX definitions (`sounds.ts`, `bank.ts`) are the fallback while a sheet loads and on
+ *   browsers that cannot decode it: `prerender()` renders the boot groups before the first gesture
+ *   (< 300 ms, B16); a sound that is not rendered yet renders on first use; `renderLazily()` renders
+ *   the rest in idle time only when there are no files (or they failed).
+ * - Music plays the composed files (`fileMusic`) with the sequenced scores as their fallback.
  * - The AudioContext is created and resumed by `unlock()` on the first user gesture (iOS). When that
  *   attempt does not start it (the event carried no user activation, such as a touch `pointerdown`),
  *   every following gesture retries until it runs (`unlock.ts`). Effects played before that are
@@ -19,8 +24,9 @@
  */
 import type { AudioService, Bus, MusicCueId, MusicLayer, SoundId } from '@/contracts';
 import { SoundBank, type RenderStats } from './bank';
+import { assetUrl, sfxFiles as defaultSfxFiles, SfxFileBank, type Clip, type SfxFiles, type SheetState } from './files';
 import { Mixer } from './mixer';
-import { continuesBattle, music as defaultMusic, type MusicDef } from './music';
+import { continuesBattle, fileMusic, music as seqMusic, type MusicDef } from './music';
 import { MUSIC_LAYERS, MusicEngine } from './musicEngine';
 import {
   BOOT_GROUPS,
@@ -39,7 +45,11 @@ import { dbToGain, DEFAULT_MAX_TOTAL_VOICES, pickVariant, rollVariation, UI_PRIO
 export type PlayOptions = Parameters<AudioService['play']>[1];
 
 export interface WebAudioServiceOptions {
+  /** The ZzFX manifest (the fallback, and the mix settings of every id). */
   sounds?: Readonly<Record<SoundId, SoundDef>>;
+  /** Pre-rendered effect sheets (default: the generated ones; null plays ZzFX only). */
+  sfxFiles?: SfxFiles | null;
+  /** Music manifest (default: the composed files with their scores as fallback). */
   music?: Readonly<Record<MusicCueId, MusicDef>>;
   /** Creates the AudioContext on unlock (default: the browser's AudioContext). */
   createContext?: () => AudioContext | null;
@@ -65,6 +75,18 @@ interface VoiceHandle {
   gain: GainNode;
 }
 
+/** Sheets to load for a music cue: the age now playing and the next one (DESIGN B7 lazy loading). */
+const SHEETS_FOR_CUE: Readonly<Record<MusicCueId, readonly string[]>> = {
+  'music.stone': ['stone', 'medieval', 'match'],
+  'music.medieval': ['medieval', 'gunpowder', 'match'],
+  'music.gunpowder': ['gunpowder', 'modern', 'match'],
+  'music.modern': ['modern', 'future', 'match'],
+  'music.future': ['future', 'match'],
+  'music.capsule': ['capsule'],
+};
+/** Sheets loaded right after unlock, in order. */
+const BOOT_SHEETS: readonly string[] = ['ui', 'battle', 'stone', 'medieval', 'match'];
+
 export interface ServiceStats {
   started: number;
   dropped: { gap: number; idCap: number; totalCap: number; locked: number; unknown: number; loading: number };
@@ -87,6 +109,8 @@ function finite(x: number | undefined, fallback: number): number {
 
 export class WebAudioService implements AudioService {
   readonly bank: SoundBank;
+  /** The pre-rendered effect sheets (null when the service plays ZzFX only). */
+  readonly files: SfxFileBank | null;
   ctx: AudioContext | null = null;
   mixer: Mixer | null = null;
   engine: MusicEngine | null = null;
@@ -109,13 +133,42 @@ export class WebAudioService implements AudioService {
   private timer: ReturnType<typeof setInterval> | null = null;
   private stopKeepAlive: (() => void) | null = null;
   private lazyStarted = false;
+  /** renderLazily() was asked for while files were expected; it runs if they fail. */
+  private lazyWanted: ((task: () => void) => void) | null | undefined = undefined;
 
   constructor(private readonly o: WebAudioServiceOptions = {}) {
     this.soundDefs = o.sounds ?? defaultSounds;
-    this.musicDefs = o.music ?? defaultMusic;
+    this.musicDefs = o.music ?? fileMusic;
     this.random = o.random ?? Math.random;
     this.voices = new VoicePolicy<VoiceHandle>(o.maxVoices ?? DEFAULT_MAX_TOTAL_VOICES);
     this.bank = new SoundBank(this.soundDefs, o.sampleRate !== undefined ? { sampleRate: o.sampleRate } : {});
+    const files = o.sfxFiles === undefined ? defaultSfxFiles : o.sfxFiles;
+    this.files = files
+      ? new SfxFileBank(files, (src) => this.loadFile(src), (msg) => {
+          this.warnOnce(msg);
+          // Files are out: render the ZzFX fallback ahead of use after all.
+          if (this.lazyWanted !== undefined) this.renderLazily(this.lazyWanted ?? undefined);
+        })
+      : null;
+  }
+
+  /** Per sheet: idle, loading, ready or failed (dev soundboard). */
+  sheetStates(): Record<string, SheetState> {
+    const out: Record<string, SheetState> = {};
+    if (this.files) for (const s of this.files.sheets()) out[s] = this.files.sheetState(s);
+    return out;
+  }
+
+  /** Loads effect sheets in order, one after the other (after unlock). */
+  private loadSheets(sheets: readonly string[]): void {
+    const files = this.files;
+    if (!files || files.failed || !this.ctx) return;
+    const next = (k: number): void => {
+      const s = sheets[k];
+      if (s === undefined || files.failed) return;
+      void files.loadSheet(s).then(() => next(k + 1));
+    };
+    next(0);
   }
 
   /** 'locked' before the first gesture, then the context's state. */
@@ -136,6 +189,11 @@ export class WebAudioService implements AudioService {
    * lazily"). `idle` defaults to requestIdleCallback, or a 0 ms timeout.
    */
   renderLazily(idle?: (task: () => void) => void): void {
+    if (this.files && !this.files.failed) {
+      // The files replace the ZzFX renders; keep the request in case they fail.
+      this.lazyWanted = idle ?? null;
+      return;
+    }
     if (this.lazyStarted) return;
     this.lazyStarted = true;
     const schedule = idle ?? defaultIdle;
@@ -177,9 +235,13 @@ export class WebAudioService implements AudioService {
   private setUpGraph(ctx: AudioContext): void {
     this.mixer = new Mixer(ctx, { meter: this.o.meter === true });
     for (const bus of Object.keys(this.volumes) as Bus[]) this.mixer.setVolume(bus, this.volumes[bus]);
+    const fallbackGainDb: Record<MusicCueId, number> = {};
+    for (const [cue, d] of Object.entries(seqMusic)) fallbackGainDb[cue] = d.gainDb ?? 0;
     this.engine = new MusicEngine(ctx, this.mixer.input('music'), {
       manifest: this.musicDefs,
       loadFile: (src) => this.loadFile(src),
+      releaseFile: (src) => this.fileLoads.delete(src),
+      fallbackGainDb,
       ...(this.o.warn ? { warn: this.o.warn } : {}),
     });
     for (const l of MUSIC_LAYERS) this.engine.setLayer(l, this.pendingLayers[l]);
@@ -192,6 +254,9 @@ export class WebAudioService implements AudioService {
       for (const l of MUSIC_LAYERS) this.engine.setLayer(l, this.pendingLayers[l]);
       this.engine.transpose(this.pendingTranspose);
     }
+    this.loadSheets(BOOT_SHEETS);
+    const cue = this.engine.cue;
+    if (cue) this.loadSheets(SHEETS_FOR_CUE[cue] ?? []);
     const doc = typeof document !== 'undefined' ? document : null;
     this.stopKeepAlive = keepAlive(ctx, this.o.gestureTarget !== undefined ? this.o.gestureTarget : doc, doc);
     if (this.o.scheduler !== 'manual') this.timer = setInterval(() => this.tick(), SCHEDULER_MS);
@@ -218,11 +283,12 @@ export class WebAudioService implements AudioService {
       this.stats.dropped.locked++;
       return;
     }
-    const buffers = this.buffersFor(id);
-    if (!buffers || buffers.length === 0) {
+    const found = this.clipsFor(id);
+    if (!found || found.clips.length === 0) {
       this.stats.dropped.loading++;
       return;
     }
+    const clips = found.clips;
     const now = ctx.currentTime;
     const priority = (o?.priority ?? 0) + (def.bus === 'ui' ? UI_PRIORITY_BONUS : 0);
     const verdict = this.voices.admit(id, priority, now, { maxVoices: def.maxVoices ?? DEFAULT_MAX_VOICES, gapMs: def.gapMs ?? DEFAULT_GAP_MS });
@@ -236,16 +302,17 @@ export class WebAudioService implements AudioService {
       this.stats.stolen++;
     }
 
-    const k = pickVariant(this.random, buffers.length, this.lastVariant.get(id));
+    const k = pickVariant(this.random, clips.length, this.lastVariant.get(id));
     this.lastVariant.set(id, k);
-    const buffer = buffers[k] as AudioBuffer;
+    const clip = clips[k] as Clip;
     const vary = rollVariation(this.random, def.pitchVarBp ?? DEFAULT_PITCH_VAR_BP, def.volVarDb ?? DEFAULT_VOL_VAR_DB);
     // A non-finite option would make the AudioParam setters throw inside the caller's frame.
     const rate = Math.max(0.25, Math.min(4, vary.rate * (finite(o?.pitchBp, 10000) / 10000)));
-    const gainDb = (def.gainDb ?? 0) + vary.gainDb + finite(o?.volumeDb, 0);
+    // Files are mastered to their level; the manifest trim belongs to the ZzFX designs.
+    const gainDb = (found.file ? 0 : (def.gainDb ?? 0)) + vary.gainDb + finite(o?.volumeDb, 0);
 
     const src = ctx.createBufferSource();
-    src.buffer = buffer;
+    src.buffer = clip.buffer;
     src.playbackRate.value = rate;
     const gain = ctx.createGain();
     gain.gain.value = dbToGain(gainDb);
@@ -265,8 +332,8 @@ export class WebAudioService implements AudioService {
       last.disconnect();
       gain.disconnect();
     };
-    src.start(now);
-    this.voices.started({ id, priority, start: now, end: now + buffer.duration / rate, handle });
+    startClip(src, now, clip);
+    this.voices.started({ id, priority, start: now, end: now + clip.duration / rate, handle });
     this.stats.started++;
     this.stats.voices = this.voices.count(now);
   }
@@ -275,23 +342,51 @@ export class WebAudioService implements AudioService {
    * Dev and soundboard: plays one exact variant with no variation and no voice limits. Returns false
    * while audio is locked or the sound is not available.
    */
-  preview(id: SoundId, variant: number): boolean {
+  preview(id: SoundId, variant: number, o?: { source?: 'file' | 'zzfx' }): boolean {
     const def = Object.hasOwn(this.soundDefs, id) ? this.soundDefs[id] : undefined;
     const ctx = this.ctx;
     const mixer = this.mixer;
     if (!def || !ctx || !mixer || !isRunning(ctx)) return false;
-    const buffers = this.buffersFor(id);
-    const buffer = buffers?.[Math.max(0, Math.min(buffers.length - 1, variant))];
-    if (!buffer) return false;
+    const found = this.clipsFor(id, o?.source);
+    const clip = found?.clips[Math.max(0, Math.min(found.clips.length - 1, variant))];
+    if (!found || !clip) return false;
     const src = ctx.createBufferSource();
-    src.buffer = buffer;
+    src.buffer = clip.buffer;
     const gain = ctx.createGain();
-    gain.gain.value = dbToGain(def.gainDb ?? 0);
+    gain.gain.value = dbToGain(found.file ? 0 : (def.gainDb ?? 0));
     src.connect(gain);
     gain.connect(mixer.input(def.bus));
     src.onended = () => gain.disconnect();
-    src.start();
+    startClip(src, ctx.currentTime, clip);
     return true;
+  }
+
+  /** How many variants a sound has in the file sheets (or its ZzFX definition). */
+  variantCount(id: SoundId): number {
+    const e = this.files?.files.entries[id];
+    if (e) return e.variants.length;
+    const d = this.soundDefs[id];
+    return d && d.kind !== 'file' ? d.variants.length : 1;
+  }
+
+  /**
+   * The clips to play for a sound: the file sheet's when it is decoded (asking for it otherwise),
+   * else the ZzFX fallback. `source` forces one of the two (soundboard comparisons).
+   */
+  private clipsFor(id: SoundId, source?: 'file' | 'zzfx'): { clips: Clip[]; file: boolean } | undefined {
+    const files = this.files;
+    if (files && !files.failed && files.has(id) && source !== 'zzfx') {
+      const clips = files.clips(id);
+      if (clips) {
+        // The fallback is not needed any more.
+        this.buffers.delete(id);
+        return { clips, file: true };
+      }
+      files.request(id);
+    }
+    if (source === 'file') return undefined;
+    const buffers = this.buffersFor(id);
+    return buffers ? { clips: buffers.map((buffer) => ({ buffer, offset: 0, duration: buffer.duration })), file: false } : undefined;
   }
 
   /** Fades a voice out over a few ms (no click) and stops it. */
@@ -336,9 +431,13 @@ export class WebAudioService implements AudioService {
     if (!ctx) return Promise.reject(new Error('audio is locked'));
     let p = this.fileLoads.get(src);
     if (!p) {
-      const fetchFile = this.o.fetchFile ?? ((s: string) => fetch(s).then((r) => r.arrayBuffer()));
+      const fetchFile = this.o.fetchFile ?? defaultFetch;
       p = fetchFile(src).then((data) => ctx.decodeAudioData(data));
       this.fileLoads.set(src, p);
+      // A failed load may succeed later (a flaky network): do not cache the failure.
+      p.catch(() => {
+        if (this.fileLoads.get(src) === p) this.fileLoads.delete(src);
+      });
     }
     return p;
   }
@@ -366,6 +465,7 @@ export class WebAudioService implements AudioService {
       if (this.engine) {
         this.engine.setCue(cue, fadeMs);
         this.startScheduler();
+        this.loadSheets(SHEETS_FOR_CUE[cue] ?? []);
       } else {
         // The same carry-over rule the engine applies (see music.ts `continuesBattle`).
         const prevRole = this.pendingCue ? (this.musicDefs[this.pendingCue.cue]?.role ?? null) : null;
@@ -424,6 +524,20 @@ export class WebAudioService implements AudioService {
     this.mixer = null;
     this.engine = null;
   }
+}
+
+/** Fetches a file relative to the site base; HTTP errors reject. */
+function defaultFetch(src: string): Promise<ArrayBuffer> {
+  return fetch(assetUrl(src)).then((r) => {
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.arrayBuffer();
+  });
+}
+
+/** Starts a source on a clip: the whole buffer, or a slice of a sprite sheet. */
+function startClip(src: AudioBufferSourceNode, when: number, clip: Clip): void {
+  if (clip.offset === 0 && clip.duration >= (src.buffer?.duration ?? 0)) src.start(when);
+  else src.start(when, clip.offset, clip.duration);
 }
 
 function defaultIdle(task: () => void): void {

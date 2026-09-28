@@ -28,7 +28,9 @@ import { MountPopover, type MountPopoverState } from './MountPopover';
 import {
   BANNER_MS,
   BUBBLE_MS,
+  BlockedWatch,
   DENY_MS,
+  phaseBanner,
   buyMountIntent,
   denyTargetFor,
   hudTeamColors,
@@ -78,7 +80,43 @@ export interface HudProps {
   teamPreset?: TeamPreset;
   /** Forces the narrow (72 px card) layout; by default it follows the HUD's own width. */
   compact?: boolean;
+  /** The "Scouted (n)" chip; the app hides it for new players (audit #11). Default true. */
+  scouted?: boolean;
+  /** Keyboard hint badges from the start (the dev state gallery). By default they appear after the first key press. */
+  showKeys?: boolean;
 }
+
+/** Remembers that this player uses the keyboard, so the hint badges show from then on. */
+const KEYS_STORAGE = 'ageborn.hud.keys';
+let keysUsedThisSession = false;
+
+function keysUsedBefore(): boolean {
+  if (keysUsedThisSession) return true;
+  try {
+    return globalThis.localStorage?.getItem(KEYS_STORAGE) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function rememberKeysUsed(): void {
+  keysUsedThisSession = true;
+  try {
+    globalThis.localStorage?.setItem(KEYS_STORAGE, '1');
+  } catch {
+    // Storage blocked: the badges still show for this session.
+  }
+}
+
+/** A big centred moment: "Medieval Age!", "Overdrive! Gold ×2", the blocked-at-the-gate callout. */
+interface Moment {
+  id: number;
+  kind: 'evolve' | 'phase' | 'blocked';
+  title: string;
+  sub?: string;
+}
+
+const MOMENT_MS: Record<Moment['kind'], number> = { evolve: 2400, phase: 2600, blocked: 4200 };
 
 function isSignal(model: ReadonlySignal<HudModel> | HudModel): model is ReadonlySignal<HudModel> {
   return model instanceof Signal;
@@ -159,6 +197,23 @@ export function Hud(props: HudProps) {
   const [goldBump, setGoldBump] = useState(false);
   const [popover, setPopover] = useState<MountPopoverState | null>(null);
   const closePopover = useCallback(() => setPopover(null), []);
+  const [hits, setHits] = useState<[number, number]>([0, 0]);
+  const [keys, setKeys] = useState(() => props.showKeys === true || keysUsedBefore());
+  const [moment, setMoment] = useState<Moment | null>(null);
+  const momentSeq = useRef(0);
+  const momentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showMoment = useCallback((mo: Omit<Moment, 'id'>) => {
+    const id = ++momentSeq.current;
+    setMoment({ ...mo, id });
+    if (momentTimer.current) clearTimeout(momentTimer.current);
+    momentTimer.current = setTimeout(() => setMoment((cur) => (cur?.id === id ? null : cur)), MOMENT_MS[mo.kind]);
+  }, []);
+  useEffect(
+    () => () => {
+      if (momentTimer.current) clearTimeout(momentTimer.current);
+    },
+    [],
+  );
 
   const act = useCallback(
     (i: HudIntent) => {
@@ -209,6 +264,16 @@ export function Hud(props: HudProps) {
           return;
         case 'evolved':
           addBanner({ side: ev.side, age: ev.age });
+          // Your evolve is a moment: a big centred banner over the push-in and the pillar of light.
+          if (ev.side === me) {
+            const tr = p.t ?? i18nT;
+            showMoment({ kind: 'evolve', title: tr('hud.ageReached', { age: tr(`age.${ev.age}.name`) }), sub: tr('hud.newUnits') });
+          }
+          return;
+        case 'baseHit':
+          setHits((h) => (ev.side === 0 ? [h[0] + 1, h[1]] : [h[0], h[1] + 1]));
+          return;
+        case 'trained':
           return;
         case 'coins':
           setGoldBump(true);
@@ -222,7 +287,7 @@ export function Hud(props: HudProps) {
           return;
       }
     });
-  }, [view, act, flash, addBubble, addBanner]);
+  }, [view, act, flash, addBubble, addBanner, showMoment]);
 
   // Keyboard (A2.12).
   useEffect(() => {
@@ -235,6 +300,10 @@ export function Hud(props: HudProps) {
       const i = keyIntent(e.key, cur, p.config, me);
       if (i.k === 'none') return;
       e.preventDefault();
+      if (!keysUsedThisSession) {
+        rememberKeysUsed();
+        setKeys(true);
+      }
       act(i);
     };
     window.addEventListener('keydown', onKey);
@@ -260,6 +329,24 @@ export function Hud(props: HudProps) {
     if (m.phase === 'ended') setPopover(null);
   }, [m.phase]);
 
+  // A phase that starts gets a banner that says what it means ("Overdrive! Gold ×2", audit #24).
+  const lastPhase = useRef(m.phase);
+  useEffect(() => {
+    if (m.phase === lastPhase.current) return;
+    lastPhase.current = m.phase;
+    const b = phaseBanner(m.phase);
+    if (b) showMoment({ kind: 'phase', title: t(b.title), sub: t(b.sub) });
+  }, [m.phase, t, showMoment]);
+
+  // Where the fighting is, and the "blocked at their gate" callout (audit #7).
+  const front = view?.frontLine?.() ?? null;
+  const blocked = useRef(new BlockedWatch());
+  useEffect(() => {
+    if (readOnly || m.paused) return;
+    if (blocked.current.update(m.clockMs, front, m.foe.baseHpBp, m.phase === 'ended')) showMoment({ kind: 'blocked', title: t('hud.blocked') });
+    // `front` is read fresh with every model (15 Hz).
+  }, [m, readOnly, t, showMoment]);
+
   const ctx: HudCtx = {
     m,
     config,
@@ -272,6 +359,7 @@ export function Hud(props: HudProps) {
     audio,
     compact,
     readOnly,
+    keys: keys && !readOnly,
   };
 
   const colors = useMemo(() => hudTeamColors(props.teamPreset ?? 'default', side), [props.teamPreset, side]);
@@ -299,7 +387,16 @@ export function Hud(props: HudProps) {
         controls={props.controls !== false}
         onPause={() => act({ k: 'pause' })}
         onSpeed={() => act({ k: 'speed' })}
+        hits={hits}
+        front={front}
+        scouted={props.scouted !== false}
       />
+      {moment ? (
+        <div key={moment.id} class={`hud-moment hud-moment-${moment.kind}`} data-testid={`hud-moment-${moment.kind}`} role="status">
+          <div class="hud-moment-title">{moment.title}</div>
+          {moment.sub ? <div class="hud-moment-sub">{moment.sub}</div> : null}
+        </div>
+      ) : null}
       <Tray
         c={ctx}
         goldRef={(el) => {
