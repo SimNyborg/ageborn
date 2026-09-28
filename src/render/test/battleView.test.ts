@@ -5,6 +5,7 @@ import { FakeSim, cannedBattleEvents, fakeMatchConfig } from '@/contracts/fakes/
 import { Container } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import { BattleView, type BattleViewOptions } from '../battleView';
+import { EVOLVE_CUE_FADE_MS } from '../eventMapper';
 import type { LabelFactory } from '../feel/numbers';
 import { FixedStepClock } from '../loop';
 import type { ViewEvent } from '../types';
@@ -76,7 +77,7 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     const methods = s.audio.calls.map((c) => c.method);
     expect(methods).toContain('music.duck');
     expect(s.audio.calls).toContainEqual({ method: 'music.transpose', semitones: 2 });
-    expect(s.audio.calls).toContainEqual({ method: 'music.setCue', cue: 'music.medieval', o: { fadeMs: 600 } });
+    expect(s.audio.calls).toContainEqual({ method: 'music.setCue', cue: 'music.medieval', o: { fadeMs: EVOLVE_CUE_FADE_MS } });
     expect(s.audio.calls).toContainEqual({ method: 'music.setLayer', layer: 'overdrive', v01: 1 });
     const art = s.art.calls.map((c) => c.method);
     expect(art).toContain('createProjectile');

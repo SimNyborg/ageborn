@@ -7,7 +7,7 @@
  */
 import type { Bus } from './audio';
 import type { Locale } from './i18n';
-import type { AgeId, CapsuleTier, CardId, Foil, Rarity, Result, SkinId, SkinRarity, TeamPreset } from './ids';
+import type { AgeId, CapsuleTier, CardId, CosmeticKey, Foil, Rarity, Result, SkinId, SkinRarity, TeamPreset } from './ids';
 import type { Loadout, ReplayDoc } from './sim';
 
 /** Generated profile avatar (DESIGN A6.1). */
@@ -91,6 +91,8 @@ export interface CapsuleContents {
   amber: number;
   dust: number;
   skin: SkinId | null;
+  /** A bonus cosmetic collection item (A18.9.4), rolled at grant; absent or null when none. */
+  cosmetic?: CosmeticKey | null;
 }
 
 /** An unopened Time Capsule, rolled at grant time (DESIGN A6.4, B8). */
@@ -116,6 +118,8 @@ export interface PendingCrate {
   rarity: SkinRarity;
   duplicateDust: number;
   createdAt: number;
+  /** The crate's cosmetic collection item (A18.9.4), rolled at grant; absent in older crates. */
+  cosmetic?: CosmeticKey | null;
 }
 
 /** Everything the capsule show needs; pity counters shown before and after (DESIGN A6.5, A10). */
@@ -136,6 +140,24 @@ export interface WardrobeReveal {
   stopOffsetBp: number;
 }
 
+/**
+ * The equipped cosmetic collection items (DESIGN A18.9.4), as keys `<collection>.<id>`. Only owned
+ * (or starter) items can be equipped. The national flag is only ever the player's own pick, never
+ * inferred from location; null means no national flag.
+ */
+export interface CosmeticLoadout {
+  /** The battle emote wheel: starter emote ids and `emote.<id>` keys, at most 8. */
+  emotes: string[];
+  /** The quote wheel: `quote.<id>` keys, at most 4. */
+  quotes: string[];
+  baseFlag: CosmeticKey | null;
+  nationalFlag: CosmeticKey | null;
+  /** A base skin per age (`baseSkin.<id>`). */
+  baseSkins: Partial<Record<AgeId, CosmeticKey>>;
+  /** One per base decoration anchor (3 anchors); null leaves it empty. */
+  decorations: (CosmeticKey | null)[];
+}
+
 /** The whole persisted profile (DESIGN B8, A6). No real-money fields, ever (CLAUDE.md, A6.2). */
 export interface SaveDoc {
   v: number;
@@ -148,7 +170,11 @@ export interface SaveDoc {
   collection: Record<CardId, { level: number; copies: number; isNew: boolean; foil: Foil }>;
   powersOwned: CardId[];
   skins: { owned: SkinId[]; equipped: Record<string, SkinId> };
-  cosmetics: { owned: string[] };
+  /**
+   * Banner and title ids, plus cosmetic collection keys (`<collection>.<id>`, A18.9.4) in `owned`;
+   * `equipped` is the chosen look and battle wheel (save v3).
+   */
+  cosmetics: { owned: string[]; equipped: CosmeticLoadout };
   /** War Plans: one loadout per age (DESIGN A3). */
   warPlans: { name: string; loadouts: Record<AgeId, Loadout> }[];
   activePlan: number;
@@ -174,8 +200,11 @@ export interface SaveDoc {
     wardrobeSinceEpic: number;
     wardrobeSinceLegendary: number;
   };
-  /** Meta RNG stream (sfc32 state) for capsule rolls (DESIGN B8). */
-  rng: { capsule: [number, number, number, number] };
+  /**
+   * Meta RNG streams (sfc32 state): capsule rolls (DESIGN B8) and, from save v3, the cosmetic
+   * collection drops, kept apart so cosmetics never change a capsule's cards.
+   */
+  rng: { capsule: [number, number, number, number]; cosmetic?: [number, number, number, number] };
   scriptStep: number;
   quests: QuestState;
   codexPoints: number;

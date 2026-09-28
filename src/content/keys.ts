@@ -7,7 +7,8 @@
  * `capsuleKind`, `arena`, `general`, `quest`, `modifier`, `banner`, `frame`, `title`, `emote`.
  * Card keys (`card.<slug>.name` / `.desc`) are set in `src/content/raw` (WP0).
  */
-import type { AgeId, CapsuleTier, EmoteId, Foil, FormatId, Rarity, Role, RoleGroup, Tag } from '@/contracts/ids';
+import type { AgeId, BaseEmoteId, CapsuleTier, EmoteId, Foil, FormatId, Rarity, Role, RoleGroup, Tag } from '@/contracts/ids';
+import type { CosmeticCollection } from './types';
 import type { PendingCapsule } from '@/contracts/save';
 
 export const ageNameKey = (age: AgeId): string => `age.${age}.name`;
@@ -35,4 +36,18 @@ export const bannerNameKey = (id: string): string => `banner.${id}.name`;
 export const frameNameKey = (id: string): string => `frame.${id}.name`;
 export const titleNameKey = (id: string): string => `title.${id}.name`;
 export const titleUnlockKey = (id: string): string => `title.${id}.unlock`;
-export const emoteNameKey = (id: EmoteId): string => `emote.${id}.name`;
+export const emoteNameKey = (id: BaseEmoteId): string => `emote.${id}.name`;
+/** A cosmetic collection item's name (A18.9.4): `cosmetic.<collection>.<id>.name`. */
+export const cosmeticNameKey = (collection: CosmeticCollection, id: string): string => `cosmetic.${collection}.${id}.name`;
+/** A quote's fixed line: `cosmetic.quote.<id>.text`. */
+export const quoteTextKey = (id: string): string => `cosmetic.quote.${id}.text`;
+/** A collection's name: `cosmetic.collection.<collection>`. */
+export const cosmeticCollectionKey = (collection: CosmeticCollection): string => `cosmetic.collection.${collection}`;
+/**
+ * What an emote command shows: a starter emote's name, a collected emote's name, or a quote's line.
+ */
+export function emoteLabelKey(e: EmoteId): string {
+  if (e.startsWith('emote.')) return cosmeticNameKey('emote', e.slice(6));
+  if (e.startsWith('quote.')) return quoteTextKey(e.slice(6));
+  return emoteNameKey(e as BaseEmoteId);
+}

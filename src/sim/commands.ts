@@ -8,7 +8,7 @@
  * `finalAge`, `ascending`, `notEnoughXp`, `powerNotReady`, `noPower`, `stanceLocked`, `sameStance`,
  * `stanceCooldown`, `lastStandAuto`, `lastStandNotArmed`, `emoteCooldown`, `retreatLocked`.
  */
-import type { Command, EmoteId, Side, TimedCommand, TrainingEvent } from '@/contracts';
+import type { Command, Side, TimedCommand, TrainingEvent } from '@/contracts';
 import { BP, MILLI, PPM } from '@/core';
 import { emit } from './events';
 import {
@@ -42,8 +42,6 @@ export function applyCommands(ctx: Ctx, cmds: readonly TimedCommand[]): void {
   }
 }
 
-/** The six emotes (B15 `EmoteId`); anything else is rejected, so events only ever carry known ids. */
-const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
 
 const isSlot = (n: unknown, max: number): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < max;
 
@@ -198,7 +196,8 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       return null;
     }
     case 'emote': {
-      if (!EMOTES.includes(c.emote)) return 'badCommand';
+      // Starter emotes, collected emotes and fixed quotes the content lists (A18.9.4); nothing else
+      if (typeof c.emote !== 'string' || !ctx.rules.emotes.has(c.emote)) return 'badCommand';
       if (ctx.tick < s.emoteReadyTick) return 'emoteCooldown';
       s.emoteReadyTick = ctx.tick + e.emoteCooldownTicks;
       emit(ctx, { e: 'emote', side, emote: c.emote });

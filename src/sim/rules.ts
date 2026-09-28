@@ -381,6 +381,29 @@ export interface SimRules {
   pBp: Readonly<Record<AgeId, number>>;
   /** The Common Infantry card of each age (Vanguard, A2.4), or null. */
   vanguard: Readonly<Record<AgeId, CardId | null>>;
+  /** Every id an `emote` command may carry (see {@link emoteIds}). */
+  emotes: ReadonlySet<string>;
+}
+
+/** The six starter emotes (B15 `BaseEmoteId`). */
+const BASE_EMOTES = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'] as const;
+
+/**
+ * The ids an `emote` command may carry: the six starter emotes plus the collected emotes
+ * (`emote.<id>`) and fixed quotes (`quote.<id>`) the content lists (A18.9.4). `cosmetics` is an open
+ * slot of the contract, so it is read with a shape check; content without it (the fakes) gets the six.
+ * Anything else is rejected, so events only ever carry known ids.
+ */
+export function emoteIds(content: CompiledContent): ReadonlySet<string> {
+  const out = new Set<string>(BASE_EMOTES);
+  const cos = content.cosmetics as { collections?: { items?: unknown } } | null | undefined;
+  const items = cos?.collections?.items;
+  if (Array.isArray(items)) {
+    for (const x of items as { id?: unknown; collection?: unknown }[]) {
+      if (typeof x.id === 'string' && (x.collection === 'emote' || x.collection === 'quote')) out.add(`${x.collection}.${x.id}`);
+    }
+  }
+  return out;
 }
 
 const cache = new WeakMap<CompiledContent, SimRules>();
@@ -882,6 +905,7 @@ function compileRules(content: CompiledContent): SimRules {
     baseHp,
     pBp,
     vanguard,
+    emotes: emoteIds(content),
   };
 }
 

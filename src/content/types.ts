@@ -13,9 +13,9 @@ import type { CompiledContent } from '@/contracts/content';
 import type { Loadout } from '@/contracts/sim';
 import type {
   AgeId,
+  BaseEmoteId,
   CapsuleTier,
   CardId,
-  EmoteId,
   Foil,
   FormatId,
   Rarity,
@@ -641,10 +641,86 @@ export interface TitleDef {
 }
 
 export interface EmoteDef {
-  id: EmoteId;
+  id: BaseEmoteId;
   /** Bots use only GG, Salute and Thumbs up (A7.2). */
   botAllowed: boolean;
   nameKey: string;
+}
+
+/** The cosmetic collections (DESIGN A18.9.4). An item's key is `<collection>.<id>`. */
+export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration';
+
+/**
+ * Where a collection item comes from (A18.9.4: all earned, nothing sold). `capsule` and `crate` items
+ * are the disclosed drop pools of Time Capsules and the Wardrobe Crate, and can also be crafted with
+ * Dust; the others are granted by state (a claimed Trophy Road node, a found feat, an arena reached,
+ * a Codex Level). `warPath` items arrive with the War Path (A18.7) and are shown as "coming later".
+ */
+export type CosmeticSource =
+  | { kind: 'start' }
+  | { kind: 'capsule' }
+  | { kind: 'crate' }
+  | { kind: 'road'; trophies: number }
+  | { kind: 'feat'; feat: string }
+  | { kind: 'arena'; arena: number }
+  | { kind: 'codexLevel'; level: number }
+  | { kind: 'warPath' };
+
+export type DecorationKind = 'statue' | 'banner' | 'brazier' | 'trophy' | 'plant';
+
+/** One collection item (A18.9.4 "id, collection, rarity, source, art id"). */
+export interface CosmeticItemDef {
+  id: string;
+  collection: CosmeticCollection;
+  rarity: Rarity;
+  source: CosmeticSource;
+  /** Manifest id `cosmetic.<collection>.<id>` (A14.4); the visuals draw it. */
+  art: string;
+  nameKey: string;
+  /** Quotes: the fixed line (`cosmetic.quote.<id>.text`). */
+  textKey?: string;
+  /** Emotes: an age theme or `general`. */
+  theme?: AgeId | 'general';
+  /** Base skins: the one age the skin restyles. */
+  age?: AgeId;
+  /** Decorations: what it is. */
+  kind?: DecorationKind;
+  /** National flags: ISO 3166 code (`gb-eng` for England), for search and sorting only. */
+  country?: string;
+}
+
+/** Disclosed drop tables of the collections (A18.9.4, A15.3 honesty: odds shown on every screen). */
+export interface CosmeticDrops {
+  /** Chance that a Time Capsule of a tier holds one collection item, bp. Script and Age Unlock capsules never do. */
+  capsuleChanceBp: Record<CapsuleTier, number>;
+  /** The item's rarity in a Time Capsule, bp (sums to 10,000). */
+  capsuleRarityBp: Record<Rarity, number>;
+  /** Every Wardrobe Crate holds one collection item next to its skin; its rarity, bp (sums to 10,000). */
+  crateRarityBp: Record<Rarity, number>;
+  /** Dust for a duplicate (only once every item of that pool and rarity is owned). */
+  duplicateDust: Record<Rarity, number>;
+  /** Dust price to craft a `capsule` or `crate` item. */
+  craftDust: Record<Rarity, number>;
+}
+
+export interface CosmeticCollections {
+  /** Every collection item, in display order per collection. */
+  items: CosmeticItemDef[];
+  drops: CosmeticDrops;
+  /** Battle wheel sizes: emotes and quotes (A9.2 emote wheel). */
+  wheel: { emotes: number; quotes: number };
+  /** Extra cooldown between two quotes, ms (the sim's emote cooldown applies to every emote and quote). */
+  quoteCooldownMs: number;
+  /** Base decoration anchors: fixed spots that never cover mounts or the HP bar. */
+  decorationAnchors: number;
+  /** A new profile's equipped items (keys). */
+  defaults: {
+    emotes: string[];
+    quotes: string[];
+    baseFlag: string | null;
+    nationalFlag: string | null;
+    decorations: (string | null)[];
+  };
 }
 
 export interface Cosmetics {
@@ -654,6 +730,8 @@ export interface Cosmetics {
   emotes: EmoteDef[];
   /** A new profile's look (A5.8: Tar Pit banner and Recruit title at the start; no frame until Codex 5). */
   defaults: { banner: string; frame: string; title: string };
+  /** Emotes, quotes, base and national flags, base skins and decorations (A18.9.4). */
+  collections: CosmeticCollections;
 }
 
 // ---------------------------------------------------------------------------------------------

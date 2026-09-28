@@ -77,9 +77,9 @@ describe('SaveDoc schema', () => {
   });
 
   it('rejects a doc of another version than the one expected', () => {
-    const r = validateSaveDoc(currentFixture(), 3);
+    const r = validateSaveDoc(currentFixture(), SAVE_VERSION + 1);
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.issues[0]).toMatch(/^v: expected 3/);
+    if (!r.ok) expect(r.issues[0]).toMatch(new RegExp(`^v: expected ${SAVE_VERSION + 1}`));
   });
 });
 

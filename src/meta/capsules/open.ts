@@ -18,6 +18,7 @@ import type { Content } from '@/content';
 import { META_FLAGS } from '../rules';
 import { arenaOf, lastKnownTime, poolOf, TIER_INDEX } from '../tables';
 import { cardsForRoll, grantCapsuleAt } from './grant';
+import { duplicateDustOf, grantOpened } from '../cosmetics';
 import { unlockTitles } from '../titles';
 import { betterFoil } from './foil';
 import { advancePity } from './pity';
@@ -69,7 +70,9 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
   }
 
   const rolledDust = cap.contents.dust;
-  const shown = { ...cap, contents: { ...cap.contents, stacks, dust: rolledDust + skinDust } };
+  // A18.9.4: a duplicate collection item shows its Dust with the rest (granted below)
+  const cosmeticDust = duplicateDustOf(s, t, cap.contents.cosmetic);
+  const shown = { ...cap, contents: { ...cap.contents, stacks, dust: rolledDust + skinDust + cosmeticDust } };
   const counts = t.capsules.kinds[cap.kind]?.countsForPity !== false;
   const pityBefore = s.pity;
   const pityAfter = counts
@@ -103,6 +106,8 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
     },
   };
   let { save } = unlockTitles(opened, t);
+  // A18.9.4: the capsule's collection item (a duplicate pays its Dust)
+  save = grantOpened(save, t, cap.contents.cosmetic).save;
   if (unlockSupply) {
     // The first Supply Capsule, granted right after capsule 2 (A15.4). It never uses an allowance.
     const bank = save.capsules.dailyBank;

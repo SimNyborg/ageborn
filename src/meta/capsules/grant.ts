@@ -23,6 +23,7 @@ import { drawFromBag } from './bag';
 import { pityDraw } from './pity';
 import { rollStacks, type RollSpec } from './roll';
 import { rollScripted, scriptFor } from './script';
+import { rollCapsuleCosmetic } from '../cosmetics';
 import { rollSkinOfRarity, rollSkinRarity, skinsForRoll } from './wardrobe';
 
 export interface GrantOptions {
@@ -170,6 +171,9 @@ export function grantCapsuleAt(
     contents = { stacks, amber: def.amber, dust: def.bonusDust, skin: bonusSkin(s, t, rng, def) };
   }
 
+  // A18.9.4: a collection item, from its own stream so the cards above never change
+  const cos = rollCapsuleCosmetic(s, t, tier, kind, script !== null);
+  if (cos.key) contents = { ...contents, cosmetic: cos.key };
   const startTier = kindDef.climbFrom === null ? tier : lowerTier(kindDef.climbFrom, tier);
   const capsule: PendingCapsule = {
     id: rngId(rng, 'cap'),
@@ -183,7 +187,7 @@ export function grantCapsuleAt(
   };
   const save: SaveDoc = {
     ...s,
-    rng: { capsule: rng },
+    rng: { ...s.rng, capsule: rng, cosmetic: cos.rng },
     scriptStep: script ? s.scriptStep + 1 : s.scriptStep,
     capsules: {
       ...s.capsules,

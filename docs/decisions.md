@@ -569,3 +569,9 @@ Owner: "the capsule opening animation must be much more satisfying". Everything 
 ### Age Power drag: UX review fixes (2026-09-28)
 - Tap-to-aim brings the ghost on screen: when the camera is away from where the ghost starts (after a cancelled drag that edge-scrolled, a minimap jump), `powerAimStart` eases the camera there (`jumpTo`, stays Manual) unless the ghost's centre is already 120 lu inside the view. Before, a tap could show "Tap the battlefield to fire" with the ghost out of view. (A17.4, A17.6)
 - Powers that pick their own spot say where they act, since their ghost does not follow the finger: the drag token and the aiming chip show "Charges from your front line" (Stampede, the default Stone Age power every new player drags first), "Lands behind the enemy front" (Paratroopers) or "Boosts all your troops" (Royal Decree, Nanite Surge). Strings `hud.powerAim.auto.*`.
+
+### Base upgrade: game-feel review in a real battle (2026-09-28)
+- Evolve shards now fly mostly up and only a little toward the back (`atlasBaseView.beat`): the base sits at the world's end, so shards biased backward left the screen at once in a real battle; up-and-over arcs stay in view and clear the lane as they fall.
+- Turret build: the code landing squash is 5% when the sheet's `build` clip has its own landing frames (they already squash about 25%), 28% only for single-frame sheets; stacking both flattened turrets into a pancake.
+- New slot: the sliding ledge gets a dark underside and a warm top edge so it reads against a grey wall.
+- Open for the owner: the evolve push-in only runs when your base is in view (A17.4). In autopilot battles the camera usually follows the front, so the whole base upgrade happens off-screen and only the banner and the minimap flash show.

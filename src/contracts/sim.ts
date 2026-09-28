@@ -9,7 +9,7 @@
 import type { TimedCommand } from './commands';
 import type { CompiledContent, StatusKind } from './content';
 import type { MatchOutcome, SimEvent } from './events';
-import type { AgeId, CardId, FormatId, RoleGroup, Side, SkinId, VisualId } from './ids';
+import type { AgeId, CardId, FormatId, RoleGroup, Side, SideLook, SkinId, VisualId } from './ids';
 import type { Observation } from './observation';
 
 /** One age loadout of a War Plan: 5 unit slots, 2 turret slots, 1 power (DESIGN A3). */
@@ -29,6 +29,8 @@ export interface SideConfig {
   /** Every owned card, including summon sources (DESIGN A2.4 Vanguard, A5.7 Paratroopers). */
   levels: Record<CardId, number>;
   skins: Record<string, SkinId>;
+  /** Base flag, national flag, base skins and decorations (A18.9.4). Cosmetic: the sim ignores it. */
+  look?: SideLook;
 }
 
 /** A scripted tutorial event applied at B3 step 1 (DESIGN A8, B3). */

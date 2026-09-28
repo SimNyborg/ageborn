@@ -33,8 +33,31 @@ export type SoundId = string;
 /** Music cue, e.g. `music.stone` (DESIGN A14.3). */
 export type MusicCueId = string;
 
-/** The six emotes; there is no text chat (DESIGN A5.8, A7.1). */
-export type EmoteId = 'laugh' | 'salute' | 'cry' | 'angry' | 'thumbsUp' | 'gg';
+/** The six starter emotes every player has (DESIGN A5.8, A7.1). Bots use only these. */
+export type BaseEmoteId = 'laugh' | 'salute' | 'cry' | 'angry' | 'thumbsUp' | 'gg';
+
+/**
+ * What an `emote` command carries: a starter emote, a collected emote (`emote.<id>`) or a curated
+ * quote (`quote.<id>`) from the cosmetic collections (DESIGN A18.9.4). Quotes are fixed lines from
+ * the content; there is no free text chat anywhere (A5.8, A7.1). The sim rejects ids the content
+ * does not list.
+ */
+export type EmoteId = BaseEmoteId | `emote.${string}` | `quote.${string}`;
+
+/** A cosmetic collection item key, `<collection>.<id>` (DESIGN A18.9.4), e.g. `nationalFlag.dk`. */
+export type CosmeticKey = string;
+
+/**
+ * How a side's base looks (DESIGN A18.9.4): the equipped base flag, national flag, base skin per age
+ * and decorations, as cosmetic keys. Presentation only: the sim ignores it and hashes skip it.
+ */
+export interface SideLook {
+  baseFlag?: CosmeticKey | null;
+  nationalFlag?: CosmeticKey | null;
+  baseSkins?: Partial<Record<AgeId, CosmeticKey>>;
+  /** One per decoration anchor, in anchor order; null leaves the anchor empty. */
+  decorations?: (CosmeticKey | null)[];
+}
 
 /** Match formats (DESIGN A2.10). */
 export type FormatId = 'tutorial' | 'short' | 'standard' | 'full';

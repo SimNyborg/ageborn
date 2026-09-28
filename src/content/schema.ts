@@ -557,12 +557,59 @@ const FeatsSchema = v.strictObject({
   ),
 });
 
+const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration']);
+const CosmeticSourceSchema = v.variant('kind', [
+  v.strictObject({ kind: v.literal('start') }),
+  v.strictObject({ kind: v.literal('capsule') }),
+  v.strictObject({ kind: v.literal('crate') }),
+  v.strictObject({ kind: v.literal('road'), trophies: pos }),
+  v.strictObject({ kind: v.literal('feat'), feat: id }),
+  v.strictObject({ kind: v.literal('arena'), arena: pos }),
+  v.strictObject({ kind: v.literal('codexLevel'), level: pos }),
+  v.strictObject({ kind: v.literal('warPath') }),
+]);
+const CosmeticItemSchema = v.strictObject({
+  id,
+  collection: COLLECTION,
+  rarity: RARITY,
+  source: CosmeticSourceSchema,
+  art: v.pipe(v.string(), v.regex(/^cosmetic\.[a-zA-Z]+\.[a-z0-9_]+$/, 'art ids look like "cosmetic.nationalFlag.dk"')),
+  nameKey: key,
+  textKey: v.optional(key),
+  theme: v.optional(v.union([AGE, v.literal('general')])),
+  age: v.optional(AGE),
+  kind: v.optional(v.picklist(['statue', 'banner', 'brazier', 'trophy', 'plant'])),
+  country: v.optional(v.pipe(v.string(), v.regex(/^[a-z]{2}(-[a-z]{3})?$/, 'ISO 3166 codes'))),
+});
+const cosmeticKey = v.pipe(v.string(), v.regex(/^[a-zA-Z]+\.[a-z0-9_]+$/, 'cosmetic keys look like "baseFlag.ember"'));
+const CollectionsSchema = v.strictObject({
+  items: v.array(CosmeticItemSchema),
+  drops: v.strictObject({
+    capsuleChanceBp: perTier(bp),
+    capsuleRarityBp: perRarity(bp),
+    crateRarityBp: perRarity(bp),
+    duplicateDust: perRarity(nonNeg),
+    craftDust: perRarity(pos),
+  }),
+  wheel: v.strictObject({ emotes: pos, quotes: pos }),
+  quoteCooldownMs: nonNeg,
+  decorationAnchors: pos,
+  defaults: v.strictObject({
+    emotes: v.array(v.union([EMOTE, cosmeticKey])),
+    quotes: v.array(cosmeticKey),
+    baseFlag: v.nullable(cosmeticKey),
+    nationalFlag: v.nullable(cosmeticKey),
+    decorations: v.array(v.nullable(cosmeticKey)),
+  }),
+});
+
 const CosmeticsSchema = v.strictObject({
   banners: v.array(v.strictObject({ id, arena: pos, nameKey: key })),
   frames: v.array(v.strictObject({ id, codexLevel: pos, nameKey: key })),
   titles: v.array(v.strictObject({ id, unlock: TitleUnlockSchema, nameKey: key })),
   emotes: v.array(v.strictObject({ id: EMOTE, botAllowed: v.boolean(), nameKey: key })),
   defaults: v.strictObject({ banner: id, frame: id, title: id }),
+  collections: CollectionsSchema,
 });
 
 const IntAttackSchema = v.strictObject({
@@ -984,6 +1031,57 @@ function checkMeta(issues: Issues, c: Content): void {
     'cosmetics.emotes',
     'bots use only GG, Salute and Thumbs up (A7.2)',
   );
+  checkCollections(issues, c);
+}
+
+/** The A18.9.4 collections: unique ids, sources that exist, odds that add up and pools that are not empty. */
+function checkCollections(issues: Issues, c: Content): void {
+  const col = c.cosmetics.collections;
+  const items = col.items;
+  unique(issues, 'cosmetics.collections.items', items.map((x) => `${x.collection}.${x.id}`));
+  const keys = new Set(items.map((x) => `${x.collection}.${x.id}`));
+  const roadTrophies = new Set(c.trophyRoad.nodes.map((n) => n.trophies));
+  for (const x of items) {
+    const p = `cosmetics.collections.${x.collection}.${x.id}`;
+    issues.check(x.art === `cosmetic.${x.collection}.${x.id}`, p, 'art id is cosmetic.<collection>.<id> (A14.4)');
+    issues.check(x.nameKey === `cosmetic.${x.collection}.${x.id}.name`, p, 'name key is cosmetic.<collection>.<id>.name');
+    issues.check((x.collection === 'quote') === (x.textKey === `cosmetic.quote.${x.id}.text`), p, 'quotes (and only quotes) have a text key');
+    issues.check((x.collection === 'emote') === (x.theme !== undefined), p, 'emotes (and only emotes) have a theme');
+    issues.check((x.collection === 'baseSkin') === (x.age !== undefined), p, 'base skins (and only base skins) have an age');
+    issues.check((x.collection === 'decoration') === (x.kind !== undefined), p, 'decorations (and only decorations) have a kind');
+    issues.check((x.collection === 'nationalFlag') === (x.country !== undefined), p, 'national flags (and only national flags) have a country');
+    const s = x.source;
+    if (s.kind === 'road') issues.check(roadTrophies.has(s.trophies), p, `no Trophy Road node at ${s.trophies}`);
+    if (s.kind === 'feat') issues.check(c.feats.list[s.feat] !== undefined, p, `unknown feat "${s.feat}"`);
+    if (s.kind === 'arena') issues.check(c.arenas.list[s.arena - 1] !== undefined, p, `unknown arena ${s.arena}`);
+  }
+  const sum = (r: Record<string, number>) => Object.values(r).reduce((a, b) => a + b, 0);
+  issues.check(sum(col.drops.capsuleRarityBp) === 10000, 'cosmetics.collections.drops', 'capsule rarity odds sum to 100%');
+  issues.check(sum(col.drops.crateRarityBp) === 10000, 'cosmetics.collections.drops', 'crate rarity odds sum to 100%');
+  for (const [pool, odds] of [
+    ['capsule', col.drops.capsuleRarityBp],
+    ['crate', col.drops.crateRarityBp],
+  ] as const) {
+    for (const [rarity, bpv] of Object.entries(odds)) {
+      if (bpv > 0) {
+        issues.check(
+          items.some((x) => x.source.kind === pool && x.rarity === rarity),
+          'cosmetics.collections.drops',
+          `the ${pool} pool has ${rarity} odds but no ${rarity} item`,
+        );
+      }
+    }
+  }
+  const d = col.defaults;
+  const starter = (k: string | null) => k === null || items.some((x) => `${x.collection}.${x.id}` === k && x.source.kind === 'start');
+  const baseEmotes = new Set<string>(c.cosmetics.emotes.map((e) => e.id));
+  issues.check(d.emotes.length <= col.wheel.emotes && d.quotes.length <= col.wheel.quotes, 'cosmetics.collections.defaults', 'the default wheel fits');
+  issues.check(d.emotes.every((e) => baseEmotes.has(e) || (keys.has(e) && starter(e))), 'cosmetics.collections.defaults', 'default emotes are starters');
+  issues.check(d.quotes.every((q) => q.startsWith('quote.') && starter(q)), 'cosmetics.collections.defaults', 'default quotes are starters');
+  issues.check(starter(d.baseFlag) && (d.baseFlag === null || d.baseFlag.startsWith('baseFlag.')), 'cosmetics.collections.defaults', 'the default base flag is a starter');
+  issues.check(d.nationalFlag === null, 'cosmetics.collections.defaults', 'no national flag by default (never inferred from location)');
+  issues.check(d.decorations.length === col.decorationAnchors, 'cosmetics.collections.defaults', 'one default per decoration anchor');
+  issues.check(d.decorations.every((k) => starter(k) && (k === null || k.startsWith('decoration.'))), 'cosmetics.collections.defaults', 'default decorations are starters');
 }
 
 function checkCounters(issues: Issues, c: Content): void {

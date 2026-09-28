@@ -13,6 +13,7 @@ import type { PendingCrate, SaveDoc, SkinId, SkinRarity, WardrobeReveal } from '
 import type { Content } from '@/content';
 import { pickWeighted, randInt, rngId, cloneSfc32, type Sfc32State } from '@/core';
 import { REEL_WINNER_INDEX } from '../rules';
+import { grantOpened, rollCrateCosmetic } from '../cosmetics';
 import { advanceWardrobePity, wardrobeDraw } from './pity';
 
 const SKIN_RARITIES: readonly SkinRarity[] = ['rare', 'epic', 'legendary'];
@@ -64,6 +65,8 @@ export function grantCrateAt(s: SaveDoc, source: PendingCrate['source'], t: Cont
   const rarity = rollSkinRarity(t, rng, wardrobeDraw(s));
   const got = rollSkinOfRarity(t, rng, rarity, skinsForRoll(s));
   if (!got) throw new Error('meta: the content has no crate skins');
+  // A18.9.4: every crate also holds one collection item, rolled from the cosmetic stream
+  const cos = rollCrateCosmetic(s, t);
   const crate: PendingCrate = {
     id: rngId(rng, 'crate'),
     source,
@@ -71,9 +74,10 @@ export function grantCrateAt(s: SaveDoc, source: PendingCrate['source'], t: Cont
     rarity: got.rarity,
     duplicateDust: s.skins.owned.includes(got.skin) ? t.rarities.skins[got.rarity].duplicateDust : 0,
     createdAt: now,
+    ...(cos.key ? { cosmetic: cos.key } : {}),
   };
   return {
-    save: { ...s, rng: { capsule: rng }, capsules: { ...s.capsules, wardrobe: [...s.capsules.wardrobe, crate] } },
+    save: { ...s, rng: { ...s.rng, capsule: rng, cosmetic: cos.rng }, capsules: { ...s.capsules, wardrobe: [...s.capsules.wardrobe, crate] } },
     crate,
   };
 }
@@ -85,12 +89,14 @@ export function openCrate(s: SaveDoc, id: string, t: Content): { save: SaveDoc; 
   const dup = s.skins.owned.includes(crate.skin);
   const duplicateDust = dup ? t.rarities.skins[crate.rarity].duplicateDust : 0;
   const shown: PendingCrate = { ...crate, duplicateDust };
-  const save: SaveDoc = {
+  const opened: SaveDoc = {
     ...s,
     currencies: { ...s.currencies, dust: s.currencies.dust + duplicateDust },
     skins: dup ? s.skins : { ...s.skins, owned: [...s.skins.owned, crate.skin] },
     capsules: { ...s.capsules, wardrobe: s.capsules.wardrobe.filter((c) => c.id !== id) },
     pity: advanceWardrobePity(s.pity, crate.rarity),
   };
+  // A18.9.4: the crate's collection item (a duplicate pays its Dust)
+  const save = grantOpened(opened, t, crate.cosmetic).save;
   return { save, reveal: { crate: shown, reelTiles: [], winnerIndex: REEL_WINNER_INDEX, stopOffsetBp: 0 } };
 }

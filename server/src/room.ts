@@ -62,7 +62,8 @@ const COMMAND_FIELDS: Record<string, Record<string, { check: (v: unknown) => boo
   power: { p: { check: (v) => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100_000, optional: true } },
   stance: { stance: { check: ONE_OF('charge', 'hold') } },
   lastStand: {},
-  emote: { emote: { check: ONE_OF('laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg') } },
+  // A starter emote, a collected emote or a fixed quote (A18.9.4); the sim re-checks ids against the content.
+  emote: { emote: { check: (v) => typeof v === 'string' && /^(laugh|salute|cry|angry|thumbsUp|gg|(emote|quote)\.[a-z0-9_]{1,40})$/.test(v) } },
   retreat: {},
 };
 

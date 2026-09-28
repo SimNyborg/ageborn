@@ -1,7 +1,10 @@
 /**
- * Profile cosmetics (DESIGN A5.8 "Other cosmetics", A6.1): 8 banners, 8 frames, 13 titles, 6 emotes.
- * There is no text chat anywhere (A5.8, A7.1). Cosmetics never change stats.
+ * Profile cosmetics (DESIGN A5.8 "Other cosmetics", A6.1): 8 banners, 8 frames, 13 titles, 6 emotes,
+ * and the cosmetic collections (A18.9.4): emotes, quotes, base and national flags, base skins and
+ * decorations (items in `raw/cosmetics.ts`). There is no text chat anywhere (A5.8, A7.1): quotes are
+ * fixed lines. Cosmetics never change stats.
  */
+import { collectionItems } from './raw/cosmetics';
 import type { Cosmetics } from './types';
 
 export const cosmetics: Cosmetics = {
@@ -60,4 +63,31 @@ export const cosmetics: Cosmetics = {
     { id: 'gg', botAllowed: true, nameKey: 'emote.gg.name' },
   ],
   defaults: { banner: 'tar_pit', frame: 'none', title: 'recruit' },
+  // A18.9.4 collections. Odds are disclosed on every capsule and crate screen (A15.3); only
+  // `capsule` items drop from Time Capsules and only `crate` items from the Wardrobe Crate.
+  collections: {
+    items: collectionItems,
+    drops: {
+      // Script (onboarding) and Age Unlock capsules never hold a collection item.
+      capsuleChanceBp: { clay: 800, bronze: 1200, silver: 2000, jade: 3500, aeon: 6000 },
+      // No Legendary item is in the capsule pool (Legendaries come from crates, feats and the road)
+      capsuleRarityBp: { common: 6800, rare: 2600, epic: 600, legendary: 0 },
+      // Every crate holds one item next to its skin
+      crateRarityBp: { common: 0, rare: 7000, epic: 2500, legendary: 500 },
+      // A duplicate only once every item of that pool and rarity is owned
+      duplicateDust: { common: 5, rare: 20, epic: 60, legendary: 150 },
+      craftDust: { common: 40, rare: 150, epic: 500, legendary: 1500 },
+    },
+    wheel: { emotes: 8, quotes: 4 },
+    quoteCooldownMs: 8000,
+    decorationAnchors: 3,
+    defaults: {
+      emotes: ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'],
+      quotes: ['quote.glhf', 'quote.well_played', 'quote.nice_move', 'quote.so_close'],
+      baseFlag: 'baseFlag.ember',
+      // Never inferred from location: no national flag until the player picks one
+      nationalFlag: null,
+      decorations: ['decoration.fire_bowl', null, 'decoration.fern'],
+    },
+  },
 };

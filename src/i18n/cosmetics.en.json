@@ -1,0 +1,553 @@
+{
+  "cosmetic": {
+    "collection": {
+      "emote": "Emotes",
+      "quote": "Quotes",
+      "baseFlag": "Base flags",
+      "nationalFlag": "National flags",
+      "baseSkin": "Base skins",
+      "decoration": "Decorations"
+    },
+    "emote": {
+      "bonk": {
+        "name": "Bonk!"
+      },
+      "mammoth_toot": {
+        "name": "Mammoth Toot"
+      },
+      "laurel_crown": {
+        "name": "Laurel Crown"
+      },
+      "amphora_cheers": {
+        "name": "Amphora Cheers"
+      },
+      "royal_bow": {
+        "name": "Royal Bow"
+      },
+      "lute_strum": {
+        "name": "Lute Strum"
+      },
+      "hat_tip": {
+        "name": "Hat Tip"
+      },
+      "cannon_confetti": {
+        "name": "Cannon Confetti"
+      },
+      "steam_whistle": {
+        "name": "Steam Whistle"
+      },
+      "gear_heart": {
+        "name": "Gear Heart"
+      },
+      "radio_roger": {
+        "name": "Roger That"
+      },
+      "medal_shine": {
+        "name": "Medal Shine"
+      },
+      "robo_dance": {
+        "name": "Robo Dance"
+      },
+      "holo_wave": {
+        "name": "Holo Wave"
+      },
+      "supernova": {
+        "name": "Supernova"
+      },
+      "orbit_heart": {
+        "name": "Orbit Heart"
+      },
+      "clap": {
+        "name": "Clap Clap"
+      },
+      "heart": {
+        "name": "Big Heart"
+      },
+      "wow": {
+        "name": "Wow!"
+      },
+      "thinking": {
+        "name": "Hmm..."
+      },
+      "sleepy": {
+        "name": "Sleepy"
+      },
+      "party": {
+        "name": "Party Time"
+      },
+      "cool_shades": {
+        "name": "Cool Shades"
+      },
+      "oops": {
+        "name": "Oops!"
+      }
+    },
+    "quote": {
+      "glhf": {
+        "name": "Good luck",
+        "text": "Good luck, have fun!"
+      },
+      "well_played": {
+        "name": "Well played",
+        "text": "Well played!"
+      },
+      "nice_move": {
+        "name": "Nice move",
+        "text": "Nice move!"
+      },
+      "so_close": {
+        "name": "So close",
+        "text": "That was close!"
+      },
+      "rematch": {
+        "name": "Rematch",
+        "text": "Rematch? Same time next age?"
+      },
+      "respect": {
+        "name": "Respect",
+        "text": "Respect, General."
+      },
+      "history": {
+        "name": "History",
+        "text": "We are making history here."
+      },
+      "mammoth_mood": {
+        "name": "Mammoth mood",
+        "text": "My mammoths say hi."
+      },
+      "back_in_my_age": {
+        "name": "Back in my age",
+        "text": "Back in my age, we walked everywhere."
+      },
+      "fire_invention": {
+        "name": "Great invention",
+        "text": "Fire: still a great invention."
+      },
+      "clubs_style": {
+        "name": "Timeless",
+        "text": "Clubs never go out of style."
+      },
+      "wheel": {
+        "name": "The wheel",
+        "text": "Careful, I just invented the wheel."
+      },
+      "shiny": {
+        "name": "Shiny",
+        "text": "Shiny! Very bronze."
+      },
+      "moat": {
+        "name": "Moat",
+        "text": "Nice castle! Mine has a moat."
+      },
+      "knightly": {
+        "name": "Knightly",
+        "text": "A knightly effort!"
+      },
+      "fashionably_late": {
+        "name": "Fashionably late",
+        "text": "Reinforcements are fashionably late."
+      },
+      "powder_dry": {
+        "name": "Keep it dry",
+        "text": "Keep your powder dry!"
+      },
+      "full_steam": {
+        "name": "Full steam",
+        "text": "Full steam ahead!"
+      },
+      "tea_break": {
+        "name": "Tea break",
+        "text": "Tea break after this wave?"
+      },
+      "over_and_out": {
+        "name": "Over and out",
+        "text": "Roger that. Over and out."
+      },
+      "upgrade_complete": {
+        "name": "Upgraded",
+        "text": "Upgrade complete. Feeling futuristic."
+      },
+      "beep_boop": {
+        "name": "Beep boop",
+        "text": "Beep boop. That means good game."
+      },
+      "to_the_stars": {
+        "name": "To the stars",
+        "text": "To the stars, and back by dinner!"
+      },
+      "time_flies": {
+        "name": "Time flies",
+        "text": "Time flies when you are evolving."
+      },
+      "plot_twist": {
+        "name": "Plot twist",
+        "text": "Plot twist!"
+      },
+      "did_not_see": {
+        "name": "Surprise",
+        "text": "I did not see that coming."
+      },
+      "bold_strategy": {
+        "name": "Bold strategy",
+        "text": "Bold strategy. I like it."
+      },
+      "oops_mine": {
+        "name": "Oops",
+        "text": "Oops. That one was mine."
+      },
+      "thinking": {
+        "name": "Thinking",
+        "text": "Hmm... thinking..."
+      },
+      "one_more_wave": {
+        "name": "One more wave",
+        "text": "One more wave!"
+      },
+      "epic_battle": {
+        "name": "Epic battle",
+        "text": "What an epic battle!"
+      },
+      "hold_the_line": {
+        "name": "Hold the line",
+        "text": "Hold the line!"
+      },
+      "charge": {
+        "name": "Charge",
+        "text": "Chaaarge!"
+      },
+      "snack_break": {
+        "name": "Snack break",
+        "text": "Do your troops get snack breaks?"
+      },
+      "nice_flag": {
+        "name": "Nice flag",
+        "text": "Love your flag!"
+      },
+      "next_age": {
+        "name": "Next age",
+        "text": "See you in the next age!"
+      },
+      "comeback": {
+        "name": "Comeback",
+        "text": "Is that a comeback I smell?"
+      },
+      "gg_wp": {
+        "name": "GG WP",
+        "text": "Good game, well played."
+      },
+      "honour": {
+        "name": "An honour",
+        "text": "An honour to battle you."
+      },
+      "legendary": {
+        "name": "Legendary",
+        "text": "That was legendary!"
+      }
+    },
+    "baseFlag": {
+      "ember": {
+        "name": "Ember"
+      },
+      "dawn": {
+        "name": "Dawn"
+      },
+      "oak": {
+        "name": "Oak Leaf"
+      },
+      "chevron": {
+        "name": "Chevron"
+      },
+      "wave": {
+        "name": "Wave"
+      },
+      "mountain": {
+        "name": "Mountain"
+      },
+      "twin_stars": {
+        "name": "Twin Stars"
+      },
+      "mammoth": {
+        "name": "Mammoth"
+      },
+      "crossed_clubs": {
+        "name": "Crossed Clubs"
+      },
+      "laurel": {
+        "name": "Laurel"
+      },
+      "cogwheel": {
+        "name": "Cogwheel"
+      },
+      "lightning": {
+        "name": "Lightning"
+      },
+      "comet": {
+        "name": "Comet"
+      },
+      "wyvern": {
+        "name": "Wyvern"
+      },
+      "phoenix": {
+        "name": "Phoenix"
+      }
+    },
+    "nationalFlag": {
+      "dk": {
+        "name": "Denmark"
+      },
+      "fo": {
+        "name": "Faroe Islands"
+      },
+      "gl": {
+        "name": "Greenland"
+      },
+      "se": {
+        "name": "Sweden"
+      },
+      "no": {
+        "name": "Norway"
+      },
+      "fi": {
+        "name": "Finland"
+      },
+      "is": {
+        "name": "Iceland"
+      },
+      "gb": {
+        "name": "United Kingdom"
+      },
+      "gb_eng": {
+        "name": "England"
+      },
+      "gb_sct": {
+        "name": "Scotland"
+      },
+      "ie": {
+        "name": "Ireland"
+      },
+      "us": {
+        "name": "USA"
+      },
+      "ca": {
+        "name": "Canada"
+      },
+      "de": {
+        "name": "Germany"
+      },
+      "fr": {
+        "name": "France"
+      },
+      "nl": {
+        "name": "Netherlands"
+      },
+      "be": {
+        "name": "Belgium"
+      },
+      "lu": {
+        "name": "Luxembourg"
+      },
+      "ch": {
+        "name": "Switzerland"
+      },
+      "at": {
+        "name": "Austria"
+      },
+      "it": {
+        "name": "Italy"
+      },
+      "es": {
+        "name": "Spain"
+      },
+      "pt": {
+        "name": "Portugal"
+      },
+      "pl": {
+        "name": "Poland"
+      },
+      "cz": {
+        "name": "Czechia"
+      },
+      "hu": {
+        "name": "Hungary"
+      },
+      "gr": {
+        "name": "Greece"
+      },
+      "ee": {
+        "name": "Estonia"
+      },
+      "lv": {
+        "name": "Latvia"
+      },
+      "lt": {
+        "name": "Lithuania"
+      },
+      "ua": {
+        "name": "Ukraine"
+      },
+      "ro": {
+        "name": "Romania"
+      },
+      "bg": {
+        "name": "Bulgaria"
+      },
+      "tr": {
+        "name": "Türkiye"
+      },
+      "jp": {
+        "name": "Japan"
+      },
+      "kr": {
+        "name": "South Korea"
+      },
+      "in": {
+        "name": "India"
+      },
+      "th": {
+        "name": "Thailand"
+      },
+      "vn": {
+        "name": "Vietnam"
+      },
+      "id": {
+        "name": "Indonesia"
+      },
+      "au": {
+        "name": "Australia"
+      },
+      "nz": {
+        "name": "New Zealand"
+      },
+      "br": {
+        "name": "Brazil"
+      },
+      "ar": {
+        "name": "Argentina"
+      },
+      "cl": {
+        "name": "Chile"
+      },
+      "co": {
+        "name": "Colombia"
+      },
+      "za": {
+        "name": "South Africa"
+      },
+      "ng": {
+        "name": "Nigeria"
+      },
+      "gh": {
+        "name": "Ghana"
+      },
+      "jm": {
+        "name": "Jamaica"
+      }
+    },
+    "baseSkin": {
+      "frost_cave": {
+        "name": "Frost Cave"
+      },
+      "mossy_den": {
+        "name": "Mossy Den"
+      },
+      "gilded_ziggurat": {
+        "name": "Gilded Ziggurat"
+      },
+      "rose_keep": {
+        "name": "Rose Keep"
+      },
+      "snowy_keep": {
+        "name": "Snowbound Keep"
+      },
+      "coral_fort": {
+        "name": "Coral Fort"
+      },
+      "copper_foundry": {
+        "name": "Copper Foundry"
+      },
+      "desert_bunker": {
+        "name": "Desert Bunker"
+      },
+      "midnight_neon": {
+        "name": "Midnight Neon"
+      },
+      "nebula_ark": {
+        "name": "Nebula Ark"
+      }
+    },
+    "decoration": {
+      "stone_idol": {
+        "name": "Stone Idol"
+      },
+      "lion_statue": {
+        "name": "Lion Statue"
+      },
+      "knight_statue": {
+        "name": "Knight Statue"
+      },
+      "owl_statue": {
+        "name": "Wise Owl"
+      },
+      "astro_statue": {
+        "name": "Star Walker"
+      },
+      "hide_banner": {
+        "name": "Hide Banner"
+      },
+      "royal_standard": {
+        "name": "Royal Standard"
+      },
+      "regiment_colors": {
+        "name": "Regiment Colours"
+      },
+      "neon_banner": {
+        "name": "Neon Banner"
+      },
+      "fire_bowl": {
+        "name": "Fire Bowl"
+      },
+      "iron_brazier": {
+        "name": "Iron Brazier"
+      },
+      "gas_lamp": {
+        "name": "Gas Lamp"
+      },
+      "plasma_brazier": {
+        "name": "Plasma Brazier"
+      },
+      "mammoth_tusks": {
+        "name": "Mammoth Tusks"
+      },
+      "knight_helm": {
+        "name": "Knight Helm"
+      },
+      "golden_cup": {
+        "name": "Golden Cup"
+      },
+      "star_trophy": {
+        "name": "Star Trophy"
+      },
+      "shield_rack": {
+        "name": "Shield Rack"
+      },
+      "fern": {
+        "name": "Fern"
+      },
+      "olive_tree": {
+        "name": "Olive Tree"
+      },
+      "topiary": {
+        "name": "Topiary"
+      },
+      "potted_cactus": {
+        "name": "Potted Cactus"
+      },
+      "bonsai": {
+        "name": "Bonsai"
+      },
+      "crystal_flower": {
+        "name": "Crystal Flower"
+      }
+    }
+  }
+}

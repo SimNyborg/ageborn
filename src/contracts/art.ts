@@ -7,7 +7,7 @@
  *
  * Pixi types are referenced as type-only `import()` types, so this module has no runtime imports (B2).
  */
-import type { AgeId, CardId, EffectId, Foil, Pt, RoleGroup, Side, SkinId, TeamPreset, VisualId } from './ids';
+import type { AgeId, CardId, EffectId, Foil, Pt, RoleGroup, Side, SideLook, SkinId, TeamPreset, VisualId } from './ids';
 
 export type ClipName = 'spawn' | 'idle' | 'walk' | 'attack' | 'hit' | 'stun' | 'die' | 'victory' | 'ability';
 
@@ -114,6 +114,24 @@ export interface EffectView {
   destroy(): void;
 }
 
+/**
+ * A side's base cosmetics in the lane (DESIGN A18.9.4): the flags on their poles, the decorations in
+ * their fixed anchors (never over mounts or the HP bar) and the base skin's restyle. Attached to the
+ * base view's root by the battle view; purely cosmetic.
+ */
+export interface BaseDressingView {
+  readonly root: import('pixi.js').Container;
+  /** The base changed age (a morph of `ms`): swap to that age's base skin and re-seat the props. */
+  setAge(age: AgeId, ms: number): void;
+  /** The base took a big hit (flags flutter harder). */
+  hit(): void;
+  /** Stage 3 crumble or collapse: the props topple. */
+  collapse(): void;
+  setMotion(o: { reduce: boolean; lite: boolean }): void;
+  update(dtMs: number): void;
+  destroy(): void;
+}
+
 /** The injected art provider (DESIGN B5). */
 export interface ArtProvider {
   /** Bakes the given ages (Stone/Medieval at boot, the rest lazily; DESIGN B5). */
@@ -124,6 +142,8 @@ export interface ArtProvider {
   createBackdrop(o: { left: AgeId; right: AgeId; arena: string }): BackdropView;
   createProjectile(visualId: VisualId, side: Side): EffectView;
   createEffect(effectId: EffectId, o?: Record<string, number>): EffectView;
+  /** Base flag, national flag, decorations and skin restyle of one side (A18.9.4); optional. */
+  createBaseDressing?(o: { age: AgeId; side: Side; look: SideLook; teamPreset: TeamPreset }): BaseDressingView;
   /** Data URL, cached by (card, skin, size) (DESIGN B5 Portraits). */
   portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side }): Promise<string>;
 }

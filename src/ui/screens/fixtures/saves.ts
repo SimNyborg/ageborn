@@ -256,7 +256,25 @@ export function midGameSave(content: Content): SaveDoc {
     collection,
     powersOwned,
     skins: { owned: ['pumpkin_head', 'tin_can', 'woolly_tuskback'], equipped: { bonker: 'pumpkin_head' } },
-    cosmetics: { owned: ['tar_pit', 'frostfang', 'moat', 'harbor'] },
+    cosmetics: {
+      owned: [
+        'tar_pit', 'frostfang', 'moat', 'harbor',
+        'nationalFlag.dk', 'nationalFlag.se', 'nationalFlag.gb_eng', 'nationalFlag.us', 'nationalFlag.de', 'nationalFlag.jp',
+        'baseFlag.mammoth', 'baseFlag.oak', 'baseFlag.lightning',
+        'emote.clap', 'emote.heart', 'emote.bonk', 'emote.robo_dance',
+        'quote.charge', 'quote.plot_twist', 'quote.respect', 'quote.one_more_wave',
+        'baseSkin.frost_cave', 'baseSkin.rose_keep',
+        'decoration.stone_idol', 'decoration.lion_statue', 'decoration.iron_brazier', 'decoration.olive_tree', 'decoration.golden_cup',
+      ],
+      equipped: {
+        emotes: ['laugh', 'salute', 'thumbsUp', 'gg', 'emote.clap', 'emote.heart', 'emote.bonk', 'emote.robo_dance'],
+        quotes: ['quote.glhf', 'quote.well_played', 'quote.charge', 'quote.plot_twist'],
+        baseFlag: 'baseFlag.mammoth',
+        nationalFlag: 'nationalFlag.dk',
+        baseSkins: { stone: 'baseSkin.frost_cave', medieval: 'baseSkin.rose_keep' },
+        decorations: ['decoration.lion_statue', 'decoration.iron_brazier', 'decoration.olive_tree'],
+      },
+    },
     warPlans: [rush, turtle, air],
     activePlan: 0,
     capsules: {
@@ -342,7 +360,17 @@ export function maxedSave(content: Content): SaveDoc {
       owned: [...content.order.skins],
       equipped: { bonker: 'pumpkin_head', mammoth_matriarch: 'frost_matriarch', 'base.future': 'crystal_spire' },
     },
-    cosmetics: { owned: content.cosmetics.banners.map((b) => b.id) },
+    cosmetics: {
+      owned: [...content.cosmetics.banners.map((b) => b.id), ...content.cosmetics.collections.items.map((x) => `${x.collection}.${x.id}`)],
+      equipped: {
+        emotes: ['gg', 'salute', 'emote.supernova', 'emote.party', 'emote.cannon_confetti', 'emote.orbit_heart', 'emote.cool_shades', 'emote.heart'],
+        quotes: ['quote.honour', 'quote.legendary', 'quote.to_the_stars', 'quote.gg_wp'],
+        baseFlag: 'baseFlag.phoenix',
+        nationalFlag: 'nationalFlag.gb_eng',
+        baseSkins: { future: 'baseSkin.midnight_neon', cosmic: 'baseSkin.nebula_ark' },
+        decorations: ['decoration.star_trophy', 'decoration.plasma_brazier', 'decoration.astro_statue'],
+      },
+    },
     warPlans: [plan, planFrom(content, collection, 'Classic'), planFrom(content, collection, 'Air')],
     activePlan: 0,
     capsules: {

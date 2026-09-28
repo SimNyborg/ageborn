@@ -12,7 +12,7 @@ import {
   saveFileFor,
 } from '../exportImport';
 import { IMPORT_MESSAGE_KEYS } from '../notices';
-import { migrate } from '../migrations';
+import { migrate, SAVE_VERSION } from '../migrations';
 import { makeStore, currentFixture, v1Fixture } from './helpers';
 import frozenV1Code from './fixtures/v1.code.txt?raw';
 
@@ -59,7 +59,7 @@ describe('export codes (DESIGN B8 Export/import)', () => {
     expect(code.startsWith(EXPORT_CODE_PREFIX)).toBe(true);
     expect(code.slice(EXPORT_CODE_PREFIX.length)).toMatch(/^[A-Za-z0-9_-]+$/);
     expect(code.length).toBeLessThan(JSON.stringify(doc).length / 2); // deflate pays off
-    expect(importSaveCode(code)).toEqual({ ok: true, value: doc, fromVersion: 2 });
+    expect(importSaveCode(code)).toEqual({ ok: true, value: doc, fromVersion: SAVE_VERSION });
   });
 
   it('the frozen v1 code imports in this build (codes stay valid across releases)', () => {
@@ -76,15 +76,15 @@ describe('export codes (DESIGN B8 Export/import)', () => {
 
   it('accepts a plain JSON save (hand-made backups, the dev page)', () => {
     const r = importSaveCode(JSON.stringify(currentFixture(), null, 2));
-    expect(r).toEqual({ ok: true, value: currentFixture(), fromVersion: 2 });
+    expect(r).toEqual({ ok: true, value: currentFixture(), fromVersion: SAVE_VERSION });
   });
 
   it('accepts a file that starts with a byte-order mark, and keeps spaces inside names', () => {
     const BOM = String.fromCharCode(0xfeff);
     const doc = currentFixture();
     doc.profile.name = 'Sim  the Bold';
-    expect(importSaveCode(`${BOM}${JSON.stringify(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 2 });
-    expect(importSaveCode(`${BOM}${encodeSaveCode(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 2 });
+    expect(importSaveCode(`${BOM}${JSON.stringify(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: SAVE_VERSION });
+    expect(importSaveCode(`${BOM}${encodeSaveCode(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: SAVE_VERSION });
   });
 
   it('rejects damaged or foreign codes with a reason and a message key', () => {
@@ -131,7 +131,7 @@ describe('.ageborn files', () => {
     const { store } = makeStore();
     const file = store.exportFile(currentFixture());
     expect(file.name).toMatch(/^ageborn-\d{4}-\d{2}-\d{2}\.ageborn$/);
-    expect(store.importFile(file.text)).toEqual({ ok: true, value: currentFixture(), fromVersion: 2 });
+    expect(store.importFile(file.text)).toEqual({ ok: true, value: currentFixture(), fromVersion: SAVE_VERSION });
     expect(store.importCode(store.exportCode(currentFixture()))).toMatchObject({ ok: true });
   });
 

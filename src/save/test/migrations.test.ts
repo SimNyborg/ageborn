@@ -211,7 +211,7 @@ describe('v1 → v2: eight ages (A17.13)', () => {
     const m = migrate(old);
     if (!m.ok) throw new Error(m.reason);
     const doc = m.doc as SaveDoc;
-    expect(doc.v).toBe(2);
+    expect(doc.v).toBe(SAVE_VERSION);
     doc.warPlans.forEach((p, i) => {
       const before = old.warPlans[i]!;
       expect(Object.keys(p.loadouts)).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
@@ -225,7 +225,7 @@ describe('v1 → v2: eight ages (A17.13)', () => {
 
   it('the collection gains the 15 new starter Commons at L1 and the 3 default powers; nothing owned is lost', () => {
     const old = v1Fixture();
-    const m = migrate(old);
+    const m = migrate(old, { versions: SAVE_VERSIONS.slice(0, 2) });
     if (!m.ok) throw new Error(m.reason);
     const doc = m.doc as SaveDoc;
     for (const id of Object.keys(old.collection)) expect(doc.collection[id]).toEqual(old.collection[id]);
@@ -245,5 +245,28 @@ describe('v1 → v2: eight ages (A17.13)', () => {
     const doc = m.doc as SaveDoc;
     expect(doc.collection.hoplite).toEqual({ level: 4, copies: 7, isNew: true, foil: 'silver' });
     expect(doc.powersOwned.filter((p) => p === 'starfall')).toHaveLength(1);
+  });
+});
+
+describe('v2 → v3: cosmetic collections (A18.9.4)', () => {
+  it('adds the starter cosmetic loadout and a cosmetic RNG stream; nothing owned changes', () => {
+    const old = SAVE_FIXTURES[2] as SaveDoc;
+    const m = migrate(old);
+    if (!m.ok) throw new Error(m.reason);
+    const doc = m.doc as SaveDoc;
+    expect(doc.v).toBe(SAVE_VERSION);
+    expect(doc.cosmetics.owned).toEqual(old.cosmetics.owned);
+    expect(doc.cosmetics.equipped).toEqual({
+      emotes: ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'],
+      quotes: ['quote.glhf', 'quote.well_played', 'quote.nice_move', 'quote.so_close'],
+      baseFlag: 'baseFlag.ember',
+      nationalFlag: null,
+      baseSkins: {},
+      decorations: ['decoration.fire_bowl', null, 'decoration.fern'],
+    });
+    expect(doc.rng.capsule).toEqual(old.rng.capsule);
+    expect(doc.rng.cosmetic).toHaveLength(4);
+    expect(doc.rng.cosmetic).not.toEqual(old.rng.capsule);
+    expect(doc.capsules).toEqual(old.capsules);
   });
 });

@@ -6,7 +6,7 @@
  * replay player's question (WP11), and command legality is the sim's.
  */
 import * as v from 'valibot';
-import type { ReplayDoc } from '@/contracts';
+import type { EmoteId, ReplayDoc } from '@/contracts';
 import { LoadoutSchema, validateWith, type Validation } from './schema';
 
 const num = v.pipe(v.number(), v.finite());
@@ -16,6 +16,8 @@ const SLOT5 = v.picklist([0, 1, 2, 3, 4]);
 const MOUNT = v.picklist([0, 1, 2, 3]);
 const SLOT2 = v.picklist([0, 1]);
 const bool2 = v.tuple([v.boolean(), v.boolean()]);
+/** `EmoteId`: a starter emote, `emote.<id>` or `quote.<id>` (A18.9.4); the sim checks ids against the content. */
+const EMOTE_RE = /^(laugh|salute|cry|angry|thumbsUp|gg|(emote|quote)\.[a-z0-9_]{1,40})$/;
 
 function partialPerAge<TSchema extends v.GenericSchema>(schema: TSchema) {
   return v.object({
@@ -36,6 +38,15 @@ export const SideConfigSchema = v.object({
   loadouts: partialPerAge(LoadoutSchema),
   levels: v.record(v.string(), int),
   skins: v.record(v.string(), v.string()),
+  // A18.9.4 base cosmetics (presentation only); keys are not checked against the content
+  look: v.optional(
+    v.object({
+      baseFlag: v.optional(v.nullable(v.string())),
+      nationalFlag: v.optional(v.nullable(v.string())),
+      baseSkins: v.optional(partialPerAge(v.string())),
+      decorations: v.optional(v.array(v.nullable(v.string()))),
+    }),
+  ),
 });
 
 export const TrainingEventSchema = v.object({
@@ -72,7 +83,8 @@ export const TimedCommandSchema = v.variant('t', [
   cmd({ t: v.literal('power'), side: SIDE, p: v.optional(num) }),
   cmd({ t: v.literal('stance'), side: SIDE, stance: v.picklist(['charge', 'hold']) }),
   cmd({ t: v.literal('lastStand'), side: SIDE }),
-  cmd({ t: v.literal('emote'), side: SIDE, emote: v.picklist(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']) }),
+  // A starter emote, a collected emote (`emote.<id>`) or a fixed quote (`quote.<id>`, A18.9.4)
+  cmd({ t: v.literal('emote'), side: SIDE, emote: v.custom<EmoteId>((x) => typeof x === 'string' && EMOTE_RE.test(x), 'unknown emote') }),
   cmd({ t: v.literal('retreat'), side: SIDE }),
 ]);
 

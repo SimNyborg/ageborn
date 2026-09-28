@@ -12,10 +12,20 @@
  * Use `meta` (bound to the game content) or `createMeta(content)`. The `Meta` contract methods that
  * take no content (`openCapsule`, `openWardrobe`, `tickTimers`) use the bound content.
  */
-import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, PendingCrate, Result, RewardStep, SaveDoc, SkinId } from '@/contracts';
+import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, PendingCrate, Result, RewardStep, SaveDoc, SideLook, SkinId } from '@/contracts';
 import { content as gameContent, type Content, type ModifierId } from '@/content';
 import { grantCapsuleAt, grantCrateAt, openCapsuleWith, openCrate } from './capsules';
 import { conquestBoard, type ConquestEntry } from './conquest';
+import {
+  botLook,
+  collectionProgress,
+  cosmeticOdds,
+  craftCosmetic,
+  equipCosmetic,
+  sideLook,
+  syncEarnedCosmetics,
+  type CosmeticEquip,
+} from './cosmetics';
 import { craft } from './dust';
 import { claimDaily, dailyModifierAt } from './daily';
 import { pickOpponentAt } from './matchmaking';
@@ -70,6 +80,20 @@ export interface MetaRules extends Meta {
   equipSkin(s: SaveDoc, target: string, skin: SkinId | null, c: CompiledContent): Result<SaveDoc>;
   /** Clears a card's NEW badge (the collection's `isNew`). */
   markSeen(s: SaveDoc, card: CardId): SaveDoc;
+  /** Equips owned cosmetic collection items (A18.9.4). */
+  equipCosmetic(s: SaveDoc, e: CosmeticEquip, c: CompiledContent): Result<SaveDoc>;
+  /** Crafts a capsule or crate collection item with Dust (A18.9.4). */
+  craftCosmetic(s: SaveDoc, key: string, c: CompiledContent): Result<SaveDoc>;
+  /** Grants the road, feat, arena and Codex Level items the save has earned. */
+  syncCosmetics(s: SaveDoc, c: CompiledContent): SaveDoc;
+  /** "12/40 found" per collection. */
+  collectionProgress(s: SaveDoc, c: CompiledContent): ReturnType<typeof collectionProgress>;
+  /** The disclosed cosmetic drop tables (A15.3). */
+  cosmeticOdds(s: SaveDoc, c: CompiledContent): ReturnType<typeof cosmeticOdds>;
+  /** The player's base look for a match (both sides see it, A18.9.4). */
+  sideLook(s: SaveDoc, c: CompiledContent): SideLook;
+  /** An AI opponent's base look, seeded by its name (never a national flag). */
+  botLook(c: CompiledContent, seed: string): SideLook;
 }
 
 /** Meta rules bound to a content set (the game's by default). */
@@ -78,7 +102,10 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
   return {
     content: t,
     newSave: (c, clock, seed) => newSaveAt(c, localNow(clock), seed),
-    applyMatchResult: (s, r, c, clock, o) => applyMatchResultAt(s, r, tables(c), localNow(clock), o ?? {}),
+    applyMatchResult: (s, r, c, clock, o) => {
+      const out = applyMatchResultAt(s, r, tables(c), localNow(clock), o ?? {});
+      return { ...out, save: syncEarnedCosmetics(out.save, tables(c)).save };
+    },
     ageCapsuleDue: (s, r, c, clock) => ageCapsuleDue(s, r, tables(c), localNow(clock)),
     ageCapsuleChoices: (s, c) => ageCapsuleChoices(s, tables(c)),
     questGrantsAgeCapsule: (s, slot, c) => questGrantsAgeCapsule(s, slot, tables(c)),
@@ -90,7 +117,10 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     validatePlan: (plan, s, c, format: FormatId) => validatePlan(plan, s, tables(c), format),
     autoFill: (s, c) => autoFill(s, tables(c)),
     equipNow: (s, card, c) => equipNow(s, card, tables(c)),
-    claimRoadNode: (s, trophies, c, clock) => claimRoad(s, trophies, tables(c), clock.now()),
+    claimRoadNode: (s, trophies, c, clock) => {
+      const r = claimRoad(s, trophies, tables(c), clock.now());
+      return r.ok ? { ok: true, value: syncEarnedCosmetics(r.value, tables(c)).save } : r;
+    },
     pickOpponent: (s, mode, c, clock, o) => pickOpponentAt(s, mode, tables(c), localNow(clock), o ?? {}),
     tickTimers: (s, clock) => tickTimersAt(s, t, localNow(clock)),
     claimDailyCapsule: (s, c, clock) => claimDaily(s, tables(c), localNow(clock)),
@@ -102,6 +132,13 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     setWarPlan: (s, index, plan) => setWarPlan(s, index, plan),
     setActivePlan: (s, index) => setActivePlan(s, index),
     equipSkin: (s, target, skin, c) => equipSkin(s, target, skin, tables(c)),
+    equipCosmetic: (s, e, c) => equipCosmetic(s, tables(c), e),
+    craftCosmetic: (s, key, c) => craftCosmetic(s, tables(c), key),
+    syncCosmetics: (s, c) => syncEarnedCosmetics(s, tables(c)).save,
+    collectionProgress: (s, c) => collectionProgress(s, tables(c)),
+    cosmeticOdds: (s, c) => cosmeticOdds(s, tables(c)),
+    sideLook: (s, c) => sideLook(s, tables(c)),
+    botLook: (c, seed) => botLook(tables(c), seed),
     markSeen: (s, card) => {
       const e = s.collection[card];
       return e && e.isNew ? { ...s, collection: { ...s.collection, [card]: { ...e, isNew: false } } } : s;
@@ -115,6 +152,8 @@ export const meta: MetaRules = createMeta();
 export type { LocalClock };
 export type { WarPlan, PlanIssueCode } from './advisor';
 export type { ConquestEntry } from './conquest';
+export type { CosmeticEquip, CosmeticPool, PoolOdds } from './cosmetics';
+export { COSMETIC_COLLECTIONS, cosmeticItem, cosmeticKey, ownsCosmetic } from './cosmetics';
 export type { OpponentOptions } from './matchmaking';
 export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply, ROOKIE_DISCLOSURE_KEY } from './matchmaking';
 export { bagLeft, bagSize, legendaryPityBp, strikePattern } from './capsules';

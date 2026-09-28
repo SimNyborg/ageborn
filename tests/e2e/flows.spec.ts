@@ -180,7 +180,8 @@ test.describe('B13 flows', () => {
     await expect(page.getByTestId('result-title')).toHaveAttribute('data-outcome', /win|loss|draw/);
     // Rewards are staged; a tap skips; Home returns to Home.
     const skip = page.getByTestId('result-skip');
-    if (await skip.isVisible()) await skip.click();
+    // The skip button leaves once the staging ends, so it can vanish between the check and the click.
+    if (await skip.isVisible()) await skip.click({ timeout: 5_000 }).catch(() => undefined);
     await page.getByTestId('result-home').click();
     await expect(page.locator('[data-screen="home"]')).toBeVisible();
   });

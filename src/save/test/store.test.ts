@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { SaveDoc, SaveStore } from '@/contracts';
 import { SAVE_DEBOUNCE_MS, SLOT_KEYS, UNREADABLE_BACKUP_KEY } from '../defaults';
-import { SAVE_VERSIONS, type SaveVersion } from '../migrations';
+import { SAVE_VERSION, SAVE_VERSIONS, type SaveVersion } from '../migrations';
 import type { SaveNotice } from '../notices';
 import { decodeSlot, encodeEnvelope, type SlotEnvelope } from '../slots';
 import { MemoryStorage } from '../storage';
@@ -43,7 +43,7 @@ describe('LocalSaveStore: round trip', () => {
     await store.save(doc, { immediate: true });
     const next = makeStore({ storage });
     expect(await next.store.load()).toEqual(doc);
-    expect(next.store.loadReport).toMatchObject({ status: 'loaded', slot: 'A', fromVersion: 2, migrated: false });
+    expect(next.store.loadReport).toMatchObject({ status: 'loaded', slot: 'A', fromVersion: SAVE_VERSION, migrated: false });
   });
 
   it('never keeps a reference to the caller’s doc', async () => {
@@ -210,7 +210,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     await first.store.save(docWith(2), { immediate: true }); // B
 
     // Months later a build cannot use either copy (here a broken migration): both must be kept too.
-    const broken: SaveVersion = { v: 3, summary: 'broken', up: () => { throw new Error('boom'); } };
+    const broken: SaveVersion = { v: SAVE_VERSION + 1, summary: 'broken', up: () => { throw new Error('boom'); } };
     const later = makeStore({ storage, versions: [...SAVE_VERSIONS, broken] });
     expect(await later.store.load()).toBeNull();
     const a = storage.getItem(SLOT_KEYS.A)!;
@@ -286,7 +286,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
   it('with a newer-build slot next to an older good one, loads the older one but writes nothing', async () => {
     const { store: first, storage, clock } = makeStore();
     await first.save(docWith(100), { immediate: true }); // A
-    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 3 }), 3, clock.now() + 5000);
+    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: SAVE_VERSION + 1 }), SAVE_VERSION + 1, clock.now() + 5000);
     storage.setItem(SLOT_KEYS.B, newerText);
     const { store } = makeStore({ storage });
     expect((await store.load())?.currencies.amber).toBe(100);
@@ -300,14 +300,14 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
   it('never overwrites a newer build’s slot even when save() runs before load()', async () => {
     const { store: first, storage, clock } = makeStore();
     await first.save(docWith(100), { immediate: true }); // A
-    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 3 }), 3, clock.now() + 5000);
+    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: SAVE_VERSION + 1 }), SAVE_VERSION + 1, clock.now() + 5000);
     storage.setItem(SLOT_KEYS.B, newerText);
     const { store } = makeStore({ storage });
     await store.save(docWith(101), { immediate: true }); // no load first
     expect(store.writeCount).toBe(0);
     expect(store.problem).toMatchObject({ kind: 'tooNew', ongoing: true });
     expect(storage.getItem(SLOT_KEYS.B)).toBe(newerText);
-    expect(decodeSlot('A', storage.getItem(SLOT_KEYS.A))).toMatchObject({ ok: true, envelope: { v: 2 } });
+    expect(decodeSlot('A', storage.getItem(SLOT_KEYS.A))).toMatchObject({ ok: true, envelope: { v: SAVE_VERSION } });
   });
 
   it('sets a rejected valid-checksum copy aside even when an older copy loads', async () => {

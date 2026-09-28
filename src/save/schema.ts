@@ -134,6 +134,7 @@ export const PendingCapsuleSchema = v.object({
     amber: count,
     dust: count,
     skin: v.nullable(id),
+    cosmetic: v.optional(v.nullable(id)),
   }),
   createdAt: time,
 });
@@ -145,6 +146,17 @@ export const PendingCrateSchema = v.object({
   rarity: SKIN_RARITY,
   duplicateDust: count,
   createdAt: time,
+  cosmetic: v.optional(v.nullable(id)),
+});
+
+/** The equipped cosmetic collection items (A18.9.4, save v3); keys are not checked against the content. */
+export const CosmeticLoadoutSchema = v.object({
+  emotes: v.array(id),
+  quotes: v.array(id),
+  baseFlag: v.nullable(id),
+  nationalFlag: v.nullable(id),
+  baseSkins: v.record(AGE, id),
+  decorations: v.array(v.nullable(id)),
 });
 
 const flag3 = v.tuple([v.boolean(), v.boolean(), v.boolean()]);
@@ -174,7 +186,7 @@ export const SaveDocSchema = v.pipe(
     ),
     powersOwned: v.array(id),
     skins: v.object({ owned: v.array(id), equipped: v.record(v.string(), id) }),
-    cosmetics: v.object({ owned: v.array(v.string()) }),
+    cosmetics: v.object({ owned: v.array(v.string()), equipped: CosmeticLoadoutSchema }),
     warPlans: v.pipe(v.array(WarPlanSchema), v.minLength(1)),
     activePlan: count,
     capsules: v.object({
@@ -196,7 +208,10 @@ export const SaveDocSchema = v.pipe(
       wardrobeSinceEpic: count,
       wardrobeSinceLegendary: count,
     }),
-    rng: v.object({ capsule: v.tuple([uint32, uint32, uint32, uint32]) }),
+    rng: v.object({
+      capsule: v.tuple([uint32, uint32, uint32, uint32]),
+      cosmetic: v.optional(v.tuple([uint32, uint32, uint32, uint32])),
+    }),
     scriptStep: count,
     quests: v.object({
       daily: v.array(QuestSlotSchema),

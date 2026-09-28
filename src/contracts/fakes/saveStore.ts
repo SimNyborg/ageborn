@@ -97,7 +97,7 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
     loadouts[age] = clone(age === 'stone' ? fakeLoadouts.stone : fakeLoadouts.medieval);
   }
   const doc: SaveDoc = {
-    v: 2,
+    v: 3,
     createdAt: FAKE_EPOCH_MS,
     profile: { name: 'Player', avatar: { seed: 1, parts: {} }, banner: 'default', frame: 'default', title: '' },
     currencies: { amber: 0, dust: 0 },
@@ -106,7 +106,17 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
     collection,
     powersOwned: Object.keys(fakeContent.powers),
     skins: { owned: [], equipped: {} },
-    cosmetics: { owned: [] },
+    cosmetics: {
+      owned: [],
+      equipped: {
+        emotes: ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'],
+        quotes: ['quote.glhf', 'quote.well_played', 'quote.nice_move', 'quote.so_close'],
+        baseFlag: 'baseFlag.ember',
+        nationalFlag: null,
+        baseSkins: {},
+        decorations: ['decoration.fire_bowl', null, 'decoration.fern'],
+      },
+    },
     warPlans: [{ name: 'Plan 1', loadouts }],
     activePlan: 0,
     capsules: {
@@ -121,7 +131,7 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
       wardrobe: [],
     },
     pity: { sinceEpic: 0, sinceLegendary: 0, sinceNewCard: 0, opened: 0, wardrobeSinceEpic: 0, wardrobeSinceLegendary: 0 },
-    rng: { capsule: [1, 2, 3, 4] },
+    rng: { capsule: [1, 2, 3, 4], cosmetic: [5, 6, 7, 8] },
     scriptStep: 0,
     quests: { daily: [], rerollUsed: false, dayKey: '2026-01-01', weekly: { id: 'none', progress: 0, claimed: false }, weekKey: '2026-W01' },
     codexPoints: 0,

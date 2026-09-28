@@ -20,6 +20,7 @@ import { initialQuests } from './quests';
 import { SAVE_VERSION } from './rules';
 import { defaultPower, isCollectable, tables } from './tables';
 import { dayKeyOf, gameDay, type LocalTime } from './time';
+import { defaultLoadout } from './cosmetics';
 import { unlockTitles } from './titles';
 import { starterPlan } from './warplan';
 
@@ -74,7 +75,7 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
     collection: starterCollection(t),
     powersOwned: t.order.ages.map((age) => defaultPower(t, age)),
     skins: { owned: [], equipped: {} },
-    cosmetics: { owned: [d.banner] },
+    cosmetics: { owned: [d.banner], equipped: defaultLoadout(t) },
     warPlans: [starterPlan(t)],
     activePlan: 0,
     capsules: {
@@ -89,7 +90,7 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
       wardrobe: [],
     },
     pity: zeroPity(),
-    rng: { capsule: seedSfc32(`capsule:${seed}`) },
+    rng: { capsule: seedSfc32(`capsule:${seed}`), cosmetic: seedSfc32(`cosmetic:${seed}`) },
     scriptStep: 0,
     quests: { daily: [], rerollUsed: false, dayKey: dayKeyOf(day), weekly: { id: t.quests.weekly.id, progress: 0, claimed: false }, weekKey: '' },
     codexPoints: 0,
