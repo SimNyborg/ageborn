@@ -489,3 +489,4 @@ The owner accepted all recommendations:
 - The Charge/Hold stance is available from the start.
 - Troops must look and move much cooler (an art style exploration is running; the owner picks a direction).
 - Online multiplayer is the final goal; single player and the architecture must lead there.
+- **Card class and counters visible (owner, 2026-09-28 evening):** every unit card (battle tray, War Plan, Collection, card detail, capsule reveal) shows its class with a clear role icon and label (for example Infantry, Ranged, Heavy, Anti-armor, Siege, Support, Air, and Legendary), using the existing roles and tags (A2.6). The card detail and a long-press/hover tooltip show "Strong vs" and "Weak vs" from the compiled counter lists, and the War Plan builder shows a simple counter triangle legend. Colours are colourblind-safe and never rely on colour alone.
