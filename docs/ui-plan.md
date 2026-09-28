@@ -14,7 +14,9 @@ How to use it:
 - Parts 2-4 say what to build: structure, design system, screens.
 - Part 5 says how everything moves and sounds.
 - Part 6 says in which order, by whom, and how it is checked.
-- Numbers are CSS px at the phone reference viewport **844 × 390** (landscape, touch, safe areas 47 px left and right, 21 px bottom) and at the desktop reference **1280 × 720**, unless a row says otherwise.
+- Numbers are CSS px at the phone reference viewport **844 × 390** (landscape, touch, safe areas 47 px left and right, 21 px bottom; this is fullscreen or an installed app) and at the desktop reference **1280 × 720**, unless a row says otherwise. Every phone layout must also pass the **short** viewports **844 × 340** (iOS Safari in a normal tab, browser bars shown) and **800 × 360** (common Android, no notch); see the viewport policy in 3.1.
+- The plan was reviewed by a senior mobile UX critique and a first-time-player critique; every point is resolved in the **Review resolution** section at the end, and the body below already contains the accepted changes.
+- The binding rules in short form, for CLAUDE.md and agent prompts: `docs/ui-principles-short.md`.
 
 ---
 
@@ -25,11 +27,11 @@ The game has strong parts (the honest capsule climb, the power drag, class icons
 The plan fixes this in eight phases (Part 6), most confusing first:
 
 1. **UI-0 Foundations:** one button, one colour grammar, one type scale, motion tokens, a phone screen template with a fixed action bar, a reduce-motion mode that keeps feedback, and an automated budget test.
-2. **UI-1 Blockers:** Mode select, hidden primary actions, the Result's next step.
-3. **UI-2 Home as the War Path hub:** the map is Home from the very first launch, one Play button under the right thumb, five labelled tabs, features unlocked one at a time with a small ceremony.
-4. **UI-3 Battle HUD:** readable text, 48 px targets, six cards in one row, Evolve under the left thumb, one pulse at a time.
-5. **UI-4 Army, Collection, Card detail:** a real deck builder (drag or tap), sticky class filters, upgrade without scrolling.
-6. **UI-5 Satisfaction:** rewards fly to their counters, numbers count, the evolve happens on screen, every screen moves with direction.
+2. **UI-1 Blockers:** hidden primary actions (Card detail), the Result's next step, the capsule summary, Pause, VS auto-start, and a minimal hit fix for Mode select.
+3. **UI-2 Home as the War Path hub:** the map is Home from the very first launch, one Play button under the right thumb that always starts the next level, five labelled tabs, the Modes sheet, browser back handling and the viewport policy, features unlocked one at a time with a small ceremony.
+4. **UI-3 Battle HUD:** readable text, 48 px targets, six cards and a Fort slot in one row, Evolve under the left thumb, train on release, one pulse at a time, controls shown only once taught.
+5. **UI-4 Army and Card detail:** Army becomes the Clash Royale-style Cards screen (loadout plus the whole card collection), tap a card for Use and Info, drag or tap to equip, one Undo, upgrade with a stat preview and a confirm tap.
+6. **UI-5 Satisfaction:** rewards fly to their counters, numbers count, the evolve happens on screen, every screen moves with direction, haptics on Android. **UI-5b Battle feel:** a live audit and pass of the battle world's moments (spawn, hits, deaths, impacts, base damage, powers) with realistic weight.
 7. **UI-6 Customize:** a live preview of base, flags, decorations and skins.
 8. **UI-7 The realistic UI skin and polish:** materials, lighting, fonts, Danish length, the remaining audit items.
 
@@ -45,18 +47,18 @@ Every agent follows these on every change. Each cites the research IDs it comes 
 
 | # | Rule | Concretely |
 |---|---|---|
-| U1 | **One screen, one job, one primary button.** | A screen has at most one primary button: filled, the largest button on screen, at the bottom-right (thumb zone). Screens whose job is an action (Home, Result, Card detail, sheets) have exactly one; browsing and editing screens whose changes apply at once (Army, Collection, Settings, Profile) may have none. A new player can say what the screen is for within 5 seconds. Everything else is secondary (slate) or tertiary (text). (H8, G6, G7, F2, T3) |
-| U2 | **Battle is one tap away.** | The next War Path level starts with 1 tap from Home. Any other mode starts with at most 2 taps. The VS screen starts by itself after 2 s. The Result's primary ("Next level" or "Next battle") sits in the same spot as Home's Play button. (K5, B-rank 1, 10) |
+| U1 | **One screen, one job, one primary button.** | A screen has at most one primary button: the one emphasised action (`data-primary`), filled gold or green by the grammar in U5, the largest button on screen, at the bottom-right (thumb zone). Screens whose job is an action (Home, Result, sheets) have exactly one; Card detail and Customize have one when the action is possible; browsing and editing screens whose changes apply at once (Army, Progress, Settings, Profile) may have none. A disabled primary keeps its place and explains what is missing but loses `data-primary` and the pulse. A new player can say what the screen is for within 5 seconds. Everything else is secondary (slate) or tertiary (text). (H8, G6, G7, F2, T3) |
+| U2 | **Battle is one tap away.** | Home's Play always starts the next War Path level, with 1 tap. Any other mode starts from its card in the Modes sheet (2 taps). The VS screen starts by itself after 2 s. From every Result the next battle is at most 1 tap away, and the Result's primary sits in the same spot as Home's Play. After a War Path win the primary is "Continue": it returns to the map, where the advancing road is the reward (MR-41), and Play is then 1 tap; a loss offers "Try again" and the other modes "Next battle" straight into VS. (K5, B-rank 1, 2, 10) |
 | U3 | **Every tap answers within 100 ms.** | The pressed state shows on `pointerdown` in the same frame. The result of the action appears where the finger is, not in a toast across the screen. Disabled controls explain why on tap. (R1, N4, H1, H9) |
 | U4 | **Show, don't make them remember.** | Class, cost, level, counters, equipped, locked and ready are visible on the item where the decision is made. Long-press (touch) or hover (desktop) opens detail; nothing essential is hover-only. (H6, N2, P3) |
-| U5 | **One visual grammar.** | Gold = go (Play, Next, Open, Claim). Green = progress (Upgrade, Equip, Confirm a spend). Slate = neutral and navigation. Red = destructive or denied only. Rarity, team and capsule-tier colours mean only rarity, team and tier. One component per job (one Button, one CardTile, one Sheet). (H4, G2, B-rank 4) |
-| U6 | **It fits the phone.** | Every screen works at 844 × 390 with safe areas: no clipping, no truncated names, no horizontal page scroll, the primary button visible without scrolling. Text ≥ 12 px (tags ≥ 11 px bold). Targets ≥ 48 px (44 px for rare controls), ≥ 8 px apart. (T1, T4, A2, A8) |
-| U7 | **Five destinations, shallow depth, one way back.** | Five labelled tabs. Everything else is a sheet or at most one level below a tab. Back is always top-left, Close (×) on sheets always top-right, and Esc and the browser or Android back gesture do the same. Leaving and coming back keeps scroll, tab and filter. (H3, F2, B-rank 3, 22) |
-| U8 | **Reveal gradually, teach by doing.** | A new player sees only what they can use now. Each feature arrives with a short unlock ceremony and one line of at most 8 words. Locked things stay visible and say how they unlock ("Unlocks at level 3"). One new thing per level. (P1, P2, K9, B-rank 13, 16) |
-| U9 | **Plain words, icon plus label.** | Buttons are verbs ("Play level 4", "Upgrade", "Equip"). Every invented term (Amber, Dust, Clay, Charges, War Chest, Overdrive, Siege) has an icon and a one-tap info panel, and appears only when it matters. No ids, enums or debug text. (H2, H10, K3) |
-| U10 | **Forgive.** | Reversible actions (equip, swap, reorder, cosmetics) are instant and have Undo. Irreversible spends (upgrade, craft, reroll, reset, retreat) show the price and the result first and need a second tap or a confirm. Destructive buttons are small, red and away from the primary. (H3, H5, P4, B-rank 23) |
-| U11 | **One attention pulse per screen; badges mean "ready for you".** | At most one element breathes at a time: the next action. Badges only for things ready to claim, open or upgrade, never for backlogs; at most 2 badges visible on Home; badges clear once seen. Never flash. (G7, A15.13, B-rank 17, feel-ux §5) |
-| U12 | **Every motion has a job and uses the tokens.** | Motion gives feedback, continuity, attention, state change, celebration or life, otherwise it is cut. Only the tokens in 5.2. UI transitions 150-400 ms; exits about 0.7 × entrances; moving tokens follow arcs; only `transform` and `opacity` animate. Input during an animation skips or retargets it, never gets swallowed. (M1-M4, R2, R3) |
+| U5 | **One visual grammar.** | Gold = go (Play, Continue, Next, Open, Claim). Green = spend or progress (Upgrade, Equip, confirm a spend, valid drop target). Slate = neutral and navigation. Red = destructive or denied only. Rarity, team and capsule-tier colours mean only rarity, team and tier, and each lives on its own kind of object (3.2), so hues that look alike never meet. One component per job (one Button, one CardTile, one Sheet). (H4, G2, B-rank 4) |
+| U6 | **It fits the phone.** | Every screen works at 844 × 390, 844 × 340 and 800 × 360 with safe areas: no clipping, no truncated names, no horizontal page scroll, the primary button visible without scrolling. Text ≥ 12 px (tags ≥ 11 px bold). Targets ≥ 48 px (44 px for rare controls), ≥ 8 px apart. Layouts are budgeted in px before they are built (3.1). (T1, T4, A2, A8) |
+| U7 | **Five destinations, shallow depth, one way back.** | Five labelled tabs. Everything else is a panel or at most one level below a tab; never a panel on a panel. Back is always top-left, Close (×) on panels always top-right, and Esc and the browser or Android back gesture do the same (each panel, sub-screen and battle is a history entry; back on Home never leaves the site by accident). A jump to another tab returns to where it came from. Leaving and coming back keeps scroll, tab and filter. (H3, F2, B-rank 3, 22) |
+| U8 | **Reveal gradually, teach by doing.** | A new player sees only what they can use now, on Home, inside screens and in the HUD. Each feature arrives with a short unlock ceremony and one line of at most 8 words; each invented term arrives with a one-line caption the first time it appears. Locked things stay visible and say how they unlock ("Unlocks at level 3"). One new Home thing per level. (P1, P2, K9, B-rank 13, 16) |
+| U9 | **Plain words, icon plus label.** | Buttons are verbs ("Play level 4", "Upgrade", "Use"). Every invented term (Amber, Dust, Clay, Charges, War Chest, Overdrive, Siege) has an icon, a first-seen caption and a one-tap info panel, and appears only when it matters. A blocked button says in plain words what is missing ("Needs 1 charge"). No ids, enums or debug text. (H2, H10, K3) |
+| U10 | **Forgive.** | Reversible actions (equip, swap, reorder, cosmetics) are instant and have Undo. Irreversible spends (upgrade, craft, reroll, reset, retreat) take two taps: the first shows the price and the result (the button turns into "Confirm · price" in place, the stats show their gains), the second spends. Destructive buttons are small, red and away from the primary. (H3, H5, P4, B-rank 23) |
+| U11 | **One attention pulse per screen; badges mean "ready for you".** | At most one element breathes at a time: the next action. Two kinds of marks: a NEW dot (clears once seen) and a ready badge (claim, open now, upgrade; stays until acted on). Never for backlogs; at most 2 ready badges on Home, by the priority in 2.2. No repeating flash or blink anywhere; one-shot feedback flashes (a denied press, a hit) are allowed within the 3-per-second limit of U14. (G7, A15.13, B-rank 17, feel-ux §5) |
+| U12 | **Every motion has a job and uses the tokens.** | Motion gives feedback, continuity, attention, state change, celebration or life, otherwise it is cut. Only the tokens in 5.2. UI transitions 150-400 ms; exits about 0.7 × entrances; moving tokens follow arcs; only `transform` and `opacity` animate. Input during an animation skips or retargets it, never gets swallowed; pressing Play during any Home ceremony finishes it at once and starts the battle. In the battle world, motion is realistic: weight through poses and timing, not squash (5.8). (M1-M4, R2, R3) |
 | U13 | **Satisfying moments follow one recipe.** | Anticipation, action, impact (seen, heard, counted), follow-through, residue. The size matches the event class (micro, small, medium, large). Sound lands on the impact frame. Anything longer than 1 s can be skipped with a tap. Never two medium or large moments at once. (M5-M8) |
 | U14 | **Reduce motion replaces, never deletes.** | With reduce motion (setting or OS), movement becomes 150 ms cross-fades and glow or colour changes; counters still update; pre-signals and state feedback stay. At most 3 flashes per second in any mode; big flashes are tinted and soft. (A4, A5, M10) |
 | U15 | **Honest and labelled.** | Bots are labelled AI on every surface (A7.1). Capsule copy follows A15.3. No timers or countdowns in menus, no backlog counts, no "last chance". Nothing can be bought. (A15.3, A15.13, CLAUDE.md) |
@@ -71,9 +73,10 @@ Copy it into the progress note of every UI change and tick it. A box that cannot
 - [ ] At most one primary button (exactly one where 2.4 names a primary), bottom-right, strongest in the squint test (6 px blur + greyscale) (U1).
 - [ ] Back top-left, Close top-right on sheets, Esc and back gesture work; state is kept on return (U7).
 - [ ] Colours follow the grammar in 3.2; no rarity, team or tier colour on a button (U5).
-- [ ] Fits 844 × 390 and 1280 × 720: no clipping, truncation, overlap or page scroll; primary visible without scrolling (U6).
-- [ ] At most one pulsing element; badges only for "ready" (U11).
-- [ ] Every invented term has an icon and an info panel; every locked item says how it unlocks (U8, U9).
+- [ ] Fits 844 × 390, 844 × 340, 800 × 360 and 1280 × 720: no clipping, truncation, overlap or page scroll; primary visible without scrolling; the px budget in the screen's section adds up (U6).
+- [ ] At most one pulsing element; NEW dots clear when seen, ready badges only for what can be acted on now (U11).
+- [ ] A new player sees only what is unlocked (2.6); every invented term has an icon, a first-seen caption and an info panel; every locked item says how it unlocks (U8, U9).
+- [ ] Browser and Android back: every panel, sub-screen and cross-tab jump has a history entry; back closes, goes back or pauses (U7).
 - [ ] Strings through i18n, with room for Danish (+30%) (U9).
 - [ ] AI labels, honest copy, no timers or backlog counts (U15).
 
@@ -84,6 +87,8 @@ Copy it into the progress note of every UI change and tick it. A box that cannot
 - [ ] Disabled controls look disabled and explain why on tap (U3).
 - [ ] Reversible actions have Undo; irreversible spends show price and result first (U10).
 - [ ] Every drag has a tap alternative; valid targets light up on drag start; invalid drops return (T5, T6).
+- [ ] The screen's gesture matrix (tap, long-press, drag, scroll, pan) has no two gestures competing for the same start; nothing waits for a double-tap (U3).
+- [ ] A long-press never triggers a spend (train, buy, upgrade fire on a short tap's release) (U10).
 - [ ] Keyboard on desktop: Tab order, Enter = primary, Esc = back or close (H7).
 
 **Motion**
@@ -92,7 +97,8 @@ Copy it into the progress note of every UI change and tick it. A box that cannot
 - [ ] Uses tokens only; no new `cubic-bezier(` or ms literal outside the token files (U12).
 - [ ] Follows its row in the motion catalogue (5.5), including the sound and the reduced variant (U13, U14).
 - [ ] Longer than 1 s is skippable; input is never swallowed (U12, U13).
-- [ ] A 50 ms frame burst from input to settle looks alive: anticipation, overshoot, settle; nothing flat, stiff or placeholder-like (CLAUDE.md).
+- [ ] A 50 ms frame burst from input to settle looks alive: anticipation, overshoot, settle; nothing flat, stiff or placeholder-like (CLAUDE.md). Small pieces (buttons, cards, chests, badges, numbers) keep their full overshoot; only large panels and the realistic world drop the bounce (5.1).
+- [ ] The haptic in 5.4 fires on Android when the row has one, and never more than one per 100 ms.
 
 **Accessibility**
 
@@ -103,7 +109,7 @@ Copy it into the progress note of every UI change and tick it. A box that cannot
 
 ### 1.3 Automated budget checks
 
-A Playwright spec (UI-0, owner WP12) runs on every screen in 1.2 at 844 × 390 and 1280 × 720 and fails when:
+A Playwright spec (UI-0, owner WP12) runs on every screen in 2.4 at 844 × 390, 844 × 340, 800 × 360 and 1280 × 720. It measures **settled states only**: it waits until `document.getAnimations()` is empty and no element carries `data-anim` for 100 ms, so mid-animation transforms never cause false results. It fails when:
 
 | Check | Rule |
 |---|---|
@@ -114,8 +120,10 @@ A Playwright spec (UI-0, owner WP12) runs on every screen in 1.2 at 844 × 390 a
 | Clipping | an element with `data-clip-check` whose `scrollWidth > clientWidth` or `scrollHeight > clientHeight` (names, button labels) |
 | Page scroll | `document.scrollingElement.scrollWidth > innerWidth` |
 | Stray motion | CSS files outside `src/ui/theme.css` and `src/ui/motion.css` contain `cubic-bezier(` (lint, not Playwright) |
+| Canvas text and targets | the Pixi debug hook reports a canvas text under 12 px (capsule show honesty lines, damage numbers, canvas labels) or a canvas hit rect under 44 px |
+| Badges | more than 2 visible ready badges on Home |
 
-The Button, CardTile, tabs and chips set `data-primary`, `data-pulse`, `data-tag` and `data-clip-check` themselves, so screens get the checks for free.
+The Button, CardTile, tabs and chips set `data-primary`, `data-pulse`, `data-tag` and `data-clip-check` themselves, so screens get the checks for free. **Canvas hook:** in dev and test builds only, `window.__agebornDebug.canvasText()` and `.canvasHits()` return every visible Pixi text with its on-screen font size and every interactive canvas rect (WP10 for the capsule stage, WP5 for the battle view, through requests); release builds strip it.
 
 ---
 
@@ -127,25 +135,41 @@ The whole game in one sentence a new player can repeat:
 
 > **Beat levels on the War Path, open capsules to get cards, put your best cards in your army, beat harder levels.**
 
-Every Home element belongs to one of five verbs: **Play, Open, Build, Customize, Progress** (N6). Anything that fits none of them lives inside a destination, not on Home.
+Every Home element belongs to one of five verbs: **Play, Open, Build, Customize, Progress** (N6), and each verb has exactly one tab. Anything that fits none of them lives inside a destination, not on Home.
 
 ### 2.2 Navigation model
 
+**The five tabs, one per verb** (left to right): **Army** (Build), **Capsules** (Open), **War Path** (Play, Home, centre), **Progress** (Progress), **Customize** (Customize).
+
+| Tab | Holds | One home for |
+|---|---|---|
+| Army | the loadout of each age on the left, the whole troop collection on the right (this age, or "All cards" with completion counts), Card detail and upgrades | every troop, turret, power and Fort card: equip, inspect, upgrade, collection progress |
+| Capsules | the capsule shelf, Wardrobe Crates, charges, Supply and Clay, odds | everything that is opened |
+| War Path | the map, Play, the level plate, the Modes tile | playing |
+| Progress | Goals (quests and the War Chest), Trophy Road, Feats, the Profile record | every long-term goal and claim |
+| Customize | the live preview, all cosmetic collections with completion counts (the cosmetics album) | every cosmetic: see, try on, equip |
+
+Why this set: the research (ui-benchmarks B-rank 3) and both reviews found Army and Collection showing the same cards, cosmetics in two places, and Goals and Trophy Road hidden on a rail. One tab per verb gives each thing exactly one home, which is what the owner's "meta features are hard to find" asked for. Capsules stays a tab instead of a Home tray because Home's one job is the War Path (A15.13 budget) and the capsule systems (charges, Supply, Clay, crates, odds) need room; findability comes from the tab's ready badge and from the Result, which opens a fresh capsule with 1 tap.
+
 | Layer | What | Examples | How you leave |
 |---|---|---|---|
-| **Tabs** (5, always visible outside battle) | Top-level destinations in a bottom navigation bar | Army, Collection, **War Path (Home)**, Capsules, Customize | Tap another tab; the back gesture or Esc on a tab goes to Home |
-| **Sub-screens** (depth 1 below a tab) | Full screens with a header and Back | Card detail, Trophy Road, Profile, Settings | Back (top-left), Esc, back gesture: return to the tab with its scroll and filters kept |
-| **Sheets** | Panels that slide up over the current screen; the screen stays visible and dimmed | Level preview, Modes, Goals (quests and War Chest), odds, info panels, War Council (in battle) | × top-right, tap the scrim, swipe down, Esc |
-| **Modals** | Small centred dialogs that need an answer | Confirm a spend, Age Capsule picker, reset save | The two buttons, Esc (= cancel) |
+| **Tabs** (5, always visible outside battle) | Top-level destinations in a bottom navigation bar | Army, Capsules, **War Path (Home)**, Progress, Customize | Tap another tab; back or Esc on a tab goes to Home |
+| **Sub-screens** (depth 1 below a tab) | Full screens with a header and Back | Card detail, Skirmish setup, Trophy Road (in Progress), Profile, Settings | Back (top-left), Esc, back gesture: return to where the player came from, with scroll and filters kept |
+| **Panels** | On compact screens a side panel slides in from the right, about 58% of the width (min 440 px), full height inside the safe areas, and the screen stays visible and dimmed on the left; on regular screens a centred panel up to 720 wide | Level preview, Modes, odds, info panels | × top-right, tap the scrim, swipe right (compact) or down (regular), Esc |
+| **Tray sheets** (battle only) | A sheet that replaces the tray from below | War Council | its button, Esc |
+| **Modals** | Small centred dialogs that need an answer | Confirm a reset, Age Capsule picker, Retreat | The two buttons, Esc (= cancel) |
 | **Flows** | Full-screen sequences owned by the app | VS, Battle, Pause, Result, Capsule show | Their own buttons; Esc in battle = Pause; Esc in the capsule show = skip to summary |
 
 Rules:
 
-- **Depth ≤ 2** from Home: a tab, then one sub-screen or sheet. A sheet may open over a sub-screen (odds over Card detail), never a sub-screen over a sub-screen.
-- **Tab bar visibility:** visible on every tab and hidden in sub-screens, flows and sheets (the sheet covers it). The active tab is marked by a lit plate, a label in full white and the icon in colour; inactive tabs are slate with labels at 12 px.
+- **Depth ≤ 2** from Home: a tab, then one sub-screen or panel. A panel may open over a sub-screen (odds over Card detail). **Never a panel on a panel**, with one exception: an info panel (S17) may open over any panel and closes back to it. A choice that needs its own setup (Skirmish) opens a sub-screen and closes the Modes panel.
+- **Tab bar visibility:** visible on every tab and hidden in sub-screens and flows; a panel dims it. The active tab is marked by a lit plate, a label in full white and the icon in colour; inactive tabs are slate with labels at 12 px.
 - **Back stack:** the router keeps one stack per tab, so returning to a tab shows where the player left it (U7). Home always resets to the current War Path node after a battle.
+- **Cross-tab jumps return to their origin.** The jumps are: Level preview "Edit army" → Army; Result or capsule summary "Upgrade" → Card detail; a new cosmetic's "Try it on" → Customize. A jump opens the target with a Back button (top-left) and records its origin; Back, Esc and the back gesture return to the origin in the state it was left (the Level preview panel open again, the summary shown again). Tapping a tab instead clears the origin. There are no other cross-tab jumps.
+- **Browser history** (U7, owner WP11 in `src/app`, the router in WP9): every panel, sub-screen, cross-tab jump, VS and battle pushes one `history.pushState` entry, so Android back and the browser back button close the panel, go back, or open Pause in battle. Home at the root keeps one sentinel entry: the first back there shows a toast "Press back again to leave" (2 s) and re-arms the sentinel; only a second back within 2 s leaves the site. `overscroll-behavior: none` on `html` and `body` and `contain` on every scroll container, so a pull never reloads or navigates; the map, the Army drag surface and the battle canvas set `touch-action: none` and handle their own pans. **iOS edge swipe:** no drag or pan may start within 20 px of the left or right screen edge (on notched phones this lies inside the safe area anyway); a Safari edge swipe is a history back and therefore safe.
+- **Ready-badge priority on Home** (at most 2 show, U11): 1. Capsules (a capsule that can be opened now, charges permitting); 2. Army (an upgrade is ready); 3. Progress (a claim is ready); 4. Customize (never a ready badge, only NEW dots inside). A tab with a lower-priority ready state shows it inside the tab only.
 - **Keyboard (desktop):** 1-5 switch tabs outside battle, Enter presses the screen's primary, Esc goes back or closes, arrows move along the War Path, Space starts the next level on Home.
-- **Social later:** when friends or clans ship (A18.10 M6, M8), Social takes a tab and Customize becomes the second segment of the Collection tab ("Collection · Customize"), because both are about owned cosmetics. The limit of five tabs stays.
+- **Social later:** when friends or clans ship (A18.10 M6, M8), Social takes Progress's place and Progress becomes a segment of the Profile sub-screen, or the tab count grows to six on regular screens only; the lead decides then. Five tabs on phones stays.
 
 ### 2.3 The new Home (the War Path hub)
 

@@ -2,6 +2,18 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28 night: owner feedback batch 1 (published 7d0452b)
+
+- Home is the hub right after the training match: big Battle button and entries for War Plan, Collection, Capsules, Customize (new), Trophy Road and Conquest; War Plan, Customize, Skirmish and Quick Battle unlock after match 1; a Wardrobe Crate is granted for the first win.
+- Charge/Hold stance from match 1, Last Stand from match 2.
+- Difficulty picker (Easy II, Normal IV, Hard VI, Expert VIII, Legendary X) for Quick Battle and Skirmish; the Rookie handicap only in the 2 onboarding matches; tiers VI-X play much stronger (waves, economy, turrets, power use).
+- Class icons and Strong vs / Weak vs counters on every card surface; class filter in Collection; counter legend in War Plan.
+- The Age Power is dragged onto the field (ghost, highlights, cancel, aiming mode on tap).
+- Capsule opening rebuilt for impact; base upgrades (evolve, Treasury, new slot, turret build, Modernise) rebuilt for impact.
+- Checks: typecheck, lint, 3,493 unit tests and build green on a clean worktree; headless new-player flow OK.
+
+**Running:** A18 phases 0-3 (pacing, War Council, stances), cosmetics collections, UI master plan, ultra-realistic art exploration. See docs/night-plan.md.
+
 ## 2026-09-28: A17 step 1, review fixes: long lane, camera, fewer Final Bells (cloud session)
 
 **What works**
