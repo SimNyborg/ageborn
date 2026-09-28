@@ -480,3 +480,12 @@ The owner accepted all recommendations:
 - 2026-09-28 (boot): `src/app/boot.ts` `BOOT_AGES` is Stone and Bronze and `LATER_AGES` starts at Medieval, matching WP4's `BOOT_AGES` and WP6's `BOOT_GROUPS` (Bronze is the second age of every format). Request `wp11-a17-boot-ages.md` closed. (DESIGN A17.13)
 - 2026-09-28 (DESIGN merge, ids only): the A17 id lists are merged into DESIGN A13 (sounds, arrangements for Bronze, Industrial and Cosmic, key changes +2, +2, +1, +1, +1, +1, +1), A14.1 (card counts 56 / 32 / 16, 8 bases and backdrops, new projectiles, beams, ability and power effects, camera icons) and A14.3 (`music.bronze`, `music.industrial`, `music.cosmic`), so `tests/integrity/ids.test.ts` passes. The rest of the A17 merge (the section list in A17's last part) is still open. (DESIGN A13, A14, A17)
 - 2026-09-28 (stale tests): the fake sim test expects positions on the 2,000,000 lane and Medieval at age index 2; the wall prototype test measures side 1 spawns from `LANE_MLU` instead of 1,200 lu. (DESIGN A17.2, A17.8)
+
+## Owner feedback 2026-09-28 (evening), direction for A18
+
+- The single-player heart of the game is a **War Path**: a level map (Candy Crush style) of battles you beat one by one against ever cooler AI opponents. It must be obvious from the very first minute: the War Path is the centerpiece of Home, the training match is level 1 on it, and the next level is always one tap away. Other modes (Quick Battle, Daily, ladder) sit around it.
+- Harder and longer: difficulty levels in single player, slower evolving and longer ages, matches that last longer, and an AI that punishes a player who only sends a few units.
+- More ages (inspired by the classic sequels), and in-battle upgrades with real choices: troop stats and abilities, turret range, income.
+- The Charge/Hold stance is available from the start.
+- Troops must look and move much cooler (an art style exploration is running; the owner picks a direction).
+- Online multiplayer is the final goal; single player and the architecture must lead there.

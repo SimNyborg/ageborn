@@ -16,6 +16,17 @@
  * 10. `mono_heavy`, `mono_ranged`, `mono_antiair`: the mono family at m = 100% (A16.5): only that role
  *    group while the tray has one, otherwise random; no turrets, no Treasury.
  *
+ * Human-like strategies for the AI strength matrix (`strength.ts`, owner feedback 2026-09-28):
+ *
+ * 11. `few_then_evolve`: a casual player who keeps a few soldiers on the lane (at most 4 alive), one
+ *     turret, and evolves as soon as it can.
+ * 12. `rush`: spends every coin at once on the strongest melee it can afford (Heavy, then Infantry),
+ *     always Charges, no turrets, no Treasury.
+ * 13. `save_counter`: A16.5's Save-and-counter, the skilled scripted player: counter-picks from the
+ *     counter matrix against what it sees, banks to 300 gold and then spends it all (defends at once
+ *     when threatened), 2 turrets, Treasury 1, casts the power on a zone worth 350+ gold, evolves in a
+ *     safe window of at most 2 s, and fires Last Stand when 4+ enemies are at the gate.
+ *
  * `balanced` is a plain reference player; the tools also use it as the stand-in bot when `src/ai`
  * cannot be loaded. Proxies see the same `Observation` as bots (A7.1) with a 300 ms reaction delay and
  * decide every 0.5 s, so they never outpace a human. Plans are derived from content by role and
@@ -38,7 +49,10 @@ export type ProxyId =
   | 'random_spam'
   | 'mono_heavy'
   | 'mono_ranged'
-  | 'mono_antiair';
+  | 'mono_antiair'
+  | 'few_then_evolve'
+  | 'rush'
+  | 'save_counter';
 
 /** Mono family groups (A16.5): Heavy, anti-air and Ranged. */
 export type MonoGroup = 'heavy' | 'antiAir' | 'ranged';
@@ -46,8 +60,8 @@ export type MonoGroup = 'heavy' | 'antiAir' | 'ranged';
 export interface Strategy {
   id: ProxyId;
   title: string;
-  /** How the next unit is chosen. */
-  train: 'weighted' | 'cheapest' | 'heavyRanged' | 'random' | 'mono';
+  /** How the next unit is chosen (`melee`: the priciest affordable Heavy or Infantry; `counter`: counter-pick). */
+  train: 'weighted' | 'cheapest' | 'heavyRanged' | 'random' | 'mono' | 'melee' | 'counter';
   /** `mono`: the role group trained. */
   mono?: MonoGroup;
   /** Power: `value` casts on a clump, `full` casts on auto-aim as soon as the ring is full. */
@@ -65,6 +79,16 @@ export interface Strategy {
   power: 'value' | 'beforeEvolve' | 'full';
   /** Whole gold kept back before training. */
   reserve: number;
+  /** Trains only while fewer own (non-summoned) units than this are alive. */
+  maxAlive?: number;
+  /** Banks to this much gold, then spends it all (a wave); threats are answered at once. */
+  bankTo?: number;
+  /** `value` power: the zone must hold this much enemy value (whole gold); default: 3 units near mid. */
+  powerMinValue?: number;
+  /** Evolve waits up to this long for no enemy ground unit within 300 lu of the own gate. */
+  safeEvolveMs?: number;
+  /** Last Stand only when this many enemies are within 450 lu (default: whenever armed). */
+  lastStandFoes?: number;
   plan(content: CompiledContent): Plan;
 }
 
@@ -156,6 +180,20 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
   mono_heavy: { ...BALANCED, id: 'mono_heavy', title: 'Mono Heavy spam', train: 'mono', mono: 'heavy', treasury: 0, turrets: 0, modernise: false, power: 'full' },
   mono_ranged: { ...BALANCED, id: 'mono_ranged', title: 'Mono Ranged spam', train: 'mono', mono: 'ranged', treasury: 0, turrets: 0, modernise: false, power: 'full' },
   mono_antiair: { ...BALANCED, id: 'mono_antiair', title: 'Mono anti-air spam', train: 'mono', mono: 'antiAir', treasury: 0, turrets: 0, modernise: false, power: 'full' },
+  few_then_evolve: { ...BALANCED, id: 'few_then_evolve', title: 'A few soldiers, then evolve', treasury: 0, turrets: 1, maxAlive: 4 },
+  rush: { ...BALANCED, id: 'rush', title: 'All-out melee rush', train: 'melee', treasury: 0, turrets: 0, modernise: false, power: 'full' },
+  save_counter: {
+    ...BALANCED,
+    id: 'save_counter',
+    title: 'Save-and-counter (skilled player)',
+    train: 'counter',
+    turrets: 2,
+    treasury: 1,
+    bankTo: 300,
+    powerMinValue: 350,
+    safeEvolveMs: 2000,
+    lastStandFoes: 4,
+  },
 };
 
 /** Whether a unit belongs to a mono family group (anti-air: any unit that hits air). */
@@ -180,7 +218,12 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
 ];
 
 /** Every other proxy the tools know (run with `--proxies`). */
-export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair'];
+export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'few_then_evolve', 'rush', 'save_counter'];
+
+/** Enemy ground units this close to the own gate make an evolve unsafe (A7.2). */
+const EVOLVE_SAFE_P = 300_000;
+/** Last Stand radius (A2.11). */
+const LAST_STAND_P = 450_000;
 
 export function isProxyId(s: string): s is ProxyId {
   return Object.hasOwn(STRATEGIES, s);
