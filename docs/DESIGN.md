@@ -1949,8 +1949,10 @@ Today Short War pays about 55% more trophies per minute than Full War, which pus
 | Format | Win trophies | Win Amber (without a charge) | Loss |
 |---|---|---|---|
 | Short War | +26 | 20 (40) | −20 |
-| Standard War | +30 | 25 (50) | −20 |
-| Full War | +34 | 30 (60) | −20 |
+| Standard War | +31 | 27 (54) | −20 |
+| Full War | +36 | 35 (70) | −20 |
+
+These are the A17 values (built; re-derived from the A17.2 medians at a 60% win rate: 1.60 / 1.63 / 1.60 trophies per minute). The Amber in brackets doubles the win Amber as before. A18's longer formats (A18.3.4) re-derive the table from the A18.12 medians with the same ±5% rule.
 
 - The table applies from 400 trophies (Arena 3, where every format is open). Below 400, every format pays +30 and 20 (40) Amber, as A6.3 does today, so onboarding is not slowed.
 - Loss rules (0 below 400, never below the arena gate), MMR, capsules and charges are unchanged.
@@ -6372,7 +6374,7 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 6. **Bots.** AI labeling appears on every surface listed in A7.1. Bot controllers receive only `Observation` (enforced by type and test).
 7. **Save durability.** Survives reload, a corrupt slot and an export/import round trip; the v1 migration fixture exists.
 8. **Performance.** B16 budgets are met on a mid-range Android phone (Chrome) and an iPhone (Safari), measured on the Full War sandbox with 80 units.
-9. **Manual test.** The C5 checklist passes with no blocker or major bugs open.
+9. **Manual test.** The C5 checklist passes with no blocker or major bugs open. Items 69-88 (A18) count once their A18.13 phase is built.
 
 ## C5. Manual test checklist
 
@@ -6384,18 +6386,18 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 4. Arrow Storm drag shows the zone and telegraph, then hits.
 5. Capsule 1 climbs to Bronze and reveals Spear Hunter NEW, auto-equipped.
 6. Capsule 2 gives Pikeman and Grenadier; the forced Bonker upgrade plays the slam.
-7. Stance appears in match 4, the Last Stand button in match 5, and capsule 5 plays the Matriarch walkout.
+7. The stance flag is there from match 1 and the Last Stand button from match 2 (built 2026-09-28); after match 1 the player lands on Home, and War Plan, Customize, Quick Battle and Skirmish are open; capsule 5 plays the Matriarch walkout.
 
 **Battle rules**
 
-8. Two melee units fight side by side; a Spear Hunter hits from behind them; Pebblers fire over allies; melee units pass a parked Bronze Cannon.
+8. Three melee units fight side by side (A2.7); Pebblers fire over allies; melee units pass a parked Bronze Cannon.
 9. Train 5 units quickly: the queue shows 5, a 6th tap is denied with the deny feedback, and right-click cancels the last instance of that card with a refund.
 10. Reach 60 pop: a Heavy that does not fit shows ARMY FULL while a smaller queued unit behind it still trains and spawns.
 11. Units queued during an evolve come out as the new age's cards.
 12. A second Legendary cannot be queued while one is alive or queued.
 13. Buy mounts 2-4 at 150/350/700; build and sell turrets (50% refund); old-age turrets keep firing after an evolve and show the Modernise arrow; Modernise charges the new price minus half the old one.
-14. Turrets never hit the base; no turret shot lands beyond 480 lu from its gate.
-15. Hold stance pulls units back to the hold line (320); Charge sends them forward; the 2 s toggle cooldown works.
+14. Turrets never hit the base; no turret shot lands beyond 480 lu from its gate (560 lu with range research, A18).
+15. Hold stance pulls units back to the hold line (320); Charge sends them forward; the 2 s toggle cooldown works. (A18 phases 2 and 4 replace this with item 71.)
 16. Power charge carries at most 50% across an evolve; the telegraph is visible to both sides; Legendaries take half power damage; power kills show reduced gold and no XP.
 17. Overdrive, Siege and Final Bell trigger at the format times with their visuals and sounds; Siege decay is visible on both bases.
 18. Last Stand arms at 25% with a horn icon visible to both sides, fires on tap after 1 s, auto-fires at 10%, and only once.
@@ -6416,8 +6418,8 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 30. An upgrade spends copies and Amber, raises stats by +5% (card detail preview matches), and grants Codex points.
 31. A copy past L10 becomes Dust; crafting a card and a crate skin works; Crystal Spire cannot be crafted.
 32. The War Plan builder enforces the rules, shows advisor warnings, and auto-fill and Equip now work; presets save.
-33. The Trophy Road claims nodes; 150 trophies unlocks Standard War, the ladder format picker and the Modern and Future Age Unlock Capsules; alternate powers unlock at 100-500.
-34. Conquest opens at Arena 3; stars and milestones pay once.
+33. The Trophy Road claims nodes; 150 trophies unlocks Standard War, the ladder format picker and the Industrial and Modern Age Unlock Capsules; 400 trophies the Future and Cosmic ones; the eight alternate powers unlock at 100-500 (A17.13).
+34. Conquest opens at Arena 3 and plays Standard War; stars and milestones pay once. (Replaced by item 80 when the War Path ships.)
 35. Quests progress from real matches; Skirmish counts only for Play and Train; reroll works once per day.
 36. The Wardrobe Crate reveals its pre-rolled skin with the card flip; no reel exists.
 37. Foils appear on reveal and on the card in the tray.
@@ -6443,6 +6445,47 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 51. The Wardrobe Crate uses the card flip and no reel exists. Quick reveal skips climbs.
 52. Settings > For parents shows every line. Vibration is off by default.
 53. Copy review: no string says "Nothing is lost while you're away", "Everything waits for you" or "we missed you", and none shows a countdown.
+
+**Long lane and eight ages (A17)**
+
+54. On an 844 × 390 phone infantry is about 62 px tall and about 40% of the world is visible; on a 1280 × 720 laptop about 60%. The match opens with the own base at the left edge and the camera walks out with the first wave.
+55. Drag, swipe (with momentum), wheel, ← / → (Shift faster), edge scroll on desktop, H / Home and J / End, and minimap tap and scrub all move the camera; the rubber band springs back at both world ends; pinch or Ctrl + wheel zooms 0.8-1.25 and a double tap resets.
+56. Any manual camera input stops auto-follow; it resumes by itself 5 s later (never while a finger is down, a mount popover is open or a power is dragged); the front button resumes it at once. With "Auto camera" Off it never resumes by itself. "Edge scroll" can be turned off.
+57. The minimap shows territory, turret-cover brackets, both bases with HP, unit dots (circles yours, diamonds theirs, air above, Legendaries ringed), fronts, power zones and the camera window, and stays readable in both colourblind presets.
+58. Off-screen badges appear for "base under attack", "power incoming" (with a countdown ring) and "enemy Legendary"; at most 3 per edge; tapping one jumps there; they never cover the centre of the lane.
+59. With the base off-screen, the base button brings it into view (with a hammer badge when a mount is empty and affordable); Q, W and B build without moving the camera; a mount popover closes when its mount scrolls off.
+60. A power dragged to the band's edge scrolls the camera; a power dropped on the minimap casts there; Space auto-aims anywhere on the lane.
+61. The paused game still lets the player pan the camera and scout; replays use the spectator follow and show the minimap.
+62. Short War plays Stone to Gunpowder (4 ages), Standard Stone to Modern (6), Full Stone to Cosmic (8); the tutorial still skips to Medieval, Gunpowder, Modern and Future, and its tray is right after every evolve.
+63. Every card of Bronze, Industrial and Cosmic spawns, walks, attacks and dies with its own sheet (or the procedural fallback) and its sound; the three new bases morph on evolve; the backdrop parallax shows depth while scrolling and the split-age seam follows the fronts.
+64. Each new ability works as written: Shield Bash, Javelineer and Scorpion pierce, Standard Bearer aura, Gorgon Bust and Tesla Tower stuns, Bronze Colossus slow and molten burst, Reel In, Flare Spotter mark, Sapper burst (never on the base), Land Dreadnought crew bail-out, Deflector, Ion Ranger chain, Starwarden beacon, Warp Stalker blink, Mothership drone strike and crash; the six new powers hit as described.
+65. In Siege units march faster (banner "Siege! Forced march") and crowd the enemy gate so every unit hits the base; in Overdrive and Siege a unit killed next to its own gate damages its base.
+66. Music transposes on each own evolve (+2, +2, +1, +1, +1, +1, +1) and drops the lead an octave past +6; each new age has its own arrangement and fanfare.
+67. An old save (v1) loads with Bronze, Industrial and Cosmic loadouts filled from starter cards and the 15 new starter Commons at L1; nothing owned is lost. Capsule 1 of a new save gives Spear Hunter and Phalangite.
+68. The Age Capsule dialog offers all 8 ages; Codex Level and quest timings match A17.13; the Evolver title needs Cosmic.
+
+**Harder, longer, deeper (A18; each item is tested once its A18.13 phase is built)**
+
+69. Pacing (phase 1): in a Standard War on Normal the first evolve lands near 1:10 and every later age lasts at least ~75 s; the match lasts about 10 minutes; kill XP, loss XP, base-damage XP and bounty follow A18.3.
+70. Formats as windows (phase 2): Quick Battle and Skirmish offer a start era; a match that starts in a later age starts its base at that age's HP; the start screen labels read "about 7 min", "about 10 min" and "about 15 min"; the ladder shows the Era of the Week from Arena 3.
+71. Stances (phases 2 and 4): Charge, Hold and Fall back work as in A18.4; the Hold flag drags on the lane and the minimap within [320, 800] in 20 lu steps; a second stance change within 3 s is refused with a short fill; toggling stance never re-arms a first-hit bonus; S and Shift+S work.
+72. Six troops (phase 2): the tray shows 6 cards with keys 1-6 and fits on a 667 × 375 phone; old saves get a sixth slot filled automatically.
+73. War Council (phase 3): the button right of the gold counter (and G) opens the sheet over the tray while the game runs; one item researches at a time; cancel refunds 75%; the side behind pays 20% less; picks apply only to units spawned after completion (with a shimmer on the others); owned picks survive an evolve; the enemy's research ring and picks are visible; the Treasury control is gone.
+74. Council caps: no combination of research, doctrines and modifiers takes a unit past the A18.2 caps, and no turret shot lands beyond 560 lu from its gate.
+75. The advisor outlines one "Suggested" pick with a reason on Easy and in War Path regions 1-2, never on Hard and up; the Council marks a class with no unit in the tray "Not in this tray"; the War Plan builder shows the classes each loadout holds.
+76. Difficulty: Easy, Normal, Hard, Expert and Legendary change how the AI plays, never its stats; the VS screen shows "AI · <General> · Tier <n>"; a player who sends only a few units and evolves loses to Normal.
+77. War Path (phase 5): Home centres on the map; the next level sits under Play with the difficulty picker (remembered); levels 1-10 per region follow the sawtooth with Lieutenant, Spike and Boss marked; objectives (hold out, take the tower, fixed loadout, mid-battle start) work; stars, crowns and first-clear rewards (Amber, card unlocks on L3 and the boss) pay once; after 3 losses in a row the result offers "Try Easy".
+78. Boss Generals are labelled "AI General" with their tier, plan and research style; the boss's +50% base HP and extra turret are shown on the node and the VS screen; at 50% base HP the "enraged" banner and a 2 s warning appear.
+79. Retry is instant and free; no lives, energy or timers exist anywhere on the map.
+80. Conquest migration (phase 5): an old save's Conquest stars appear on the matching boss nodes and its milestones as star-chest credit; the Conquest tab is gone from Mode select and Home; nothing earned is lost.
+81. Replays: after a balance update, an old replay keeps its result card, reads "Recorded on an older build" and does not play.
+82. Card classes: every unit card in the tray, War Plan, Collection, card detail and capsule reveal shows its class icon and label; the card detail and a long-press or hover show "Strong vs" and "Weak vs"; nothing relies on colour alone.
+83. Power targeting: dragging from the ready button shows a large ghost of the area with a valid or invalid tint and the units it would hit; a tap starts aiming and the next tap casts; releasing over the HUD cancels.
+84. Presentation names: Bronze reads "Bronze Age: Hellas", Gunpowder "Age of Muskets", and Industrial carries Great War flavour on age cards, VS lines and region names; ids and saves are unchanged.
+85. Forts (phase 6): a fort dragged onto a pad scaffolds for 5 s, at most 2 are alive, Heavy, siege and Legendary attacks deal ×2 to it, and the AI answers walls.
+86. Cosmetics: emotes, quotes, base and national flags, base skins and decorations show in Collection with completion counts and equip in Customize; the chosen base cosmetics and flag show for both sides in battle and on the VS screen; nothing can be bought; no flag is picked from location.
+87. War Relics (v1.1) apply only in War Path, Skirmish and Quick Battle, never in Ladder, Daily or PvP.
+88. Online M1: the golden replays give the same hashes in Chromium, Firefox and WebKit in CI.
 
 ---
 
@@ -6474,9 +6517,9 @@ This section is the original roadmap. The ranked wishlist after v1, which merges
 
 **v1.2: content and modes**
 
-- ~~The sixth age, Bronze/Antiquity, inserted as data.~~ Done early by A17 (Bronze, Industrial and Cosmic are in v1). More ages follow A18.8: Nile and Rome, then Norse and Renaissance, then Shogun, once the realistic restyle is proven on Stone.
+- The sixth age, Bronze/Antiquity, inserted as data: done early by A17 (Bronze, Industrial and Cosmic are in v1). More ages follow A18.8: Nile and Rome, then Norse and Renaissance, then Shogun, once the realistic restyle is proven on Stone.
 - 1-2 extra cards per age, designed as role sidegrades, not new roles.
-- ~~The "Chronicle" campaign (~30 levels with disclosed modifiers).~~ Replaced by the War Path (A18.7): 10 levels and 2 side nodes per age region, built after the War Council (A18.13 phase 5).
+- The "Chronicle" campaign (about 30 levels with disclosed modifiers): replaced by the War Path (A18.7): 10 levels and 2 side nodes per age region, built after the War Council (A18.13 phase 5).
 - Endless Horde mode (A16.12).
 - Boss Battles as a permanent numbered gallery (A16.12). The weekly kaiju event is dropped: no time-limited modes.
 - Mythic tier as Ascended forms: cosmetic prestige variants of Legendary units with no extra power, pity at 150 eligible capsules, craftable (A16.18).
@@ -6486,7 +6529,7 @@ This section is the original roadmap. The ranked wishlist after v1, which merges
 
 **Online 1v1 (first multiplayer milestone)**
 
-- **Server.** Superseded by A18.10: one Cloudflare Durable Object per match relays commands (free tier), clients simulate, and hashes are compared; milestones M0-M8. The Colyseus line below is kept only as history. ~~Colyseus 0.17 room in `server/` hosting the same `src/sim` code (split into a workspace package at that point).~~
+- **Server.** Superseded by A18.10: one Cloudflare Durable Object per match relays commands (free tier), clients simulate, and hashes are compared; milestones M0-M8. Earlier plan, kept as history: a Colyseus 0.17 room in `server/` hosting the same `src/sim` code.
 - **Netcode:**
   - Authoritative input relay: the server stamps commands at the execution tick now + 4 (200 ms, hidden by the spawn gate animation).
   - Clients simulate deterministically; hashes are compared every 20 ticks.

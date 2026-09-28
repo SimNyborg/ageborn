@@ -31,7 +31,7 @@ def main():
         jobs = [(f.split(":")[0], int(f.split(":")[1])) for f in a.frames]
         r = pipe.run_unit(unit, os.path.join(a.out, "_look"), samples=a.samples, preview_only=jobs)
         png = os.path.join(a.out, "_look", f"{a.slug}_strip.png")
-        pipe.strip(r["tmp"], r["jobs"], r["feet_px"], png)
+        pipe.strip(r["tmp"], r["jobs"], r["feet_px"], png, fx=r["fx"])
         print("wrote", png)
     elif a.cmd == "unit":
         import finish

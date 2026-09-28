@@ -156,8 +156,7 @@ def build():
     for o in lp:
         C.xform(o, loc=fist)
         rig.rigid(o, "hand_B")
-    dust = props.dust_cloud("dust", 1.4, n=18, spread=(30, 9), color="#a89a84")
-    return dict(rig=rig, dust=dust)
+    return dict(rig=rig)
 
 
 def kite_shield(k, face_mat, rim_mat, boss_mat):
@@ -264,7 +263,6 @@ def horse_to_rider(HP, pw):
 def pose(ctx, clip, t):
     rig = ctx["rig"]
     rig.rest()
-    props.dust_state(ctx["dust"], None)
     if clip == "idle":
         a = 2 * math.pi * t / 8.0
         HP = Hs.stand()
@@ -280,8 +278,6 @@ def pose(ctx, clip, t):
         HP, R = hit(t)
     else:
         HP, R = die(t)
-        if t >= 3.8:
-            props.dust_state(ctx["dust"], (t - 3.8) / 7.0, origin=(-6, 0, 0), rig=rig.obj)
     Hs.apply(rig, HP)
     rider_apply(rig, R)
 
@@ -381,6 +377,9 @@ def die(t):
     return HP, R
 
 
+DIE_FX = {5: {'s': 0.027, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 6: {'s': 0.133, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 7: {'s': 0.213, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 8: {'s': 0.293, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 9: {'s': 0.493, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 10: {'s': 0.693, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}, 11: {'s': 0.96, 'origin': (-8, 0), 'spread': 34, 'size': 11.0}}
+
+
 def clips():
     return [
         P.Clip("idle", range(8), [160] * 8),
@@ -391,5 +390,5 @@ def clips():
         P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
         P.Clip("die", [0, 1, 1.8, 2.6, 3.4, 4.0, 4.8, 5.4, 6.0, 7.5, 9, 11],
                [80, 80, 80, 80, 80, 80, 90, 100, 110, 120, 140, 220], loop=False,
-               blur={2: 0.2, 3: 0.2}),
+               blur={2: 0.2, 3: 0.2}, fx=DIE_FX),
     ]

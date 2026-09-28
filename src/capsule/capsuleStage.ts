@@ -1398,7 +1398,8 @@ export class CapsuleStage implements ShowView {
     this.time += dt;
     // Hitstop freezes effects for a beat; slow motion stretches them (view only, A12).
     const frozen = this.hitstop > 0;
-    this.hitstop = Math.max(0, this.hitstop - dt);
+    // Reduce motion halves every hitstop (A12).
+    this.hitstop = Math.max(0, this.hitstop - dt * (this.d.settings.reduceMotion ? 2 : 1));
     const slow = this.slowmo > 0 ? 0.3 : 1;
     this.slowmo = Math.max(0, this.slowmo - dt);
     const fx = frozen ? 0 : dt * slow;

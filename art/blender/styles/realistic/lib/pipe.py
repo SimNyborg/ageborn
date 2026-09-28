@@ -28,7 +28,7 @@ class Clip:
         self.loop = loop
         self.blur = blur or {}              # frame index -> time span sampled for motion blur
         self.impact = impact
-        self.fx = fx or []
+        self.fx = fx or {}              # frame index -> dust2d kwargs
 
 
 # ---------------------------------------------------------------------- render passes
@@ -126,10 +126,13 @@ def load_layers(tmp, clip, i):
     return dict(rgb=rgb, lum=lum, t=ta, ab=ab, obj=np.maximum(O, 0))
 
 
-def build_layers(L, lref):
+def build_layers(L, lref, dust=None, feet_px=None):
     g = np.clip(L["lum"] / lref, 0, 1.0)
     team = np.dstack([g * L["t"]] * 3 + [L["t"]])
     base = np.dstack([L["rgb"] * L["ab"][..., None], L["ab"]])
+    if dust:
+        h, w = base.shape[:2]
+        base = over(dust2d(h, w, feet_px, C.PX_PER_LU_1X * C.RENDER_MULT, **dust), base)
     return team, base, L["obj"]
 
 
@@ -285,7 +288,7 @@ def run_unit(unit, out, samples=40, clips=None, preview_only=None):
     secs = render_jobs(unit, ctx, jobs, tmp)
     print(f"[{unit.SLUG}] rendered {len(jobs)} frames x2 passes in {secs:.1f}s")
     return dict(jobs=[(c.name, i) for c, i in jobs], tmp=tmp, secs=secs, feet_px=feet_px,
-                size=(wpx, hpx), clips=all_clips)
+                size=(wpx, hpx), clips=all_clips, fx={(c.name, i): c.fx.get(i) for c, i in jobs})
 
 
 def lref_for(tmp, jobs):
@@ -298,13 +301,13 @@ def lref_for(tmp, jobs):
     return float(np.median(vals)) if vals else 0.8
 
 
-def strip(tmp, jobs, feet_px, out_png, lref=None, teams=("#2F7DF6", "#F28A1E")):
+def strip(tmp, jobs, feet_px, out_png, lref=None, teams=("#2F7DF6", "#F28A1E"), fx=None):
     """Look-dev strip: 3x frames in blue on top, then 1x blue/orange, 1x shown at 3x nearest."""
     lref = lref or lref_for(tmp, jobs)
     big, small = [], []
     for c, i in jobs:
         L = load_layers(tmp, c, i)
-        tm, bs, ob = build_layers(L, lref)
+        tm, bs, ob = build_layers(L, lref, (fx or {}).get((c, i)), feet_px)
         t3, b3, _ = finish(tm, bs, ob, 3)
         h, w = b3.shape[:2]
         bg = preview_bg(w, h, feet_px[1])
@@ -326,3 +329,64 @@ def strip(tmp, jobs, feet_px, out_png, lref=None, teams=("#2F7DF6", "#F28A1E")):
     canvas.paste(bot_im, (0, top.shape[0] + bot_up.height + 8))
     canvas.save(out_png)
     return lref
+
+
+# ---------------------------------------------------------------------- 2D dust (post)
+def _value_noise(h, w, cell, rng):
+    gh, gw = h // cell + 3, w // cell + 3
+    g = rng.random((gh, gw))
+    y = np.arange(h)[:, None] / cell
+    x = np.arange(w)[None, :] / cell
+    y0, x0 = y.astype(int), x.astype(int)
+    fy, fx = y - y0, x - x0
+    fy, fx = fy * fy * (3 - 2 * fy), fx * fx * (3 - 2 * fx)
+    a = g[y0, x0] * (1 - fx) + g[y0, x0 + 1] * fx
+    b = g[y0 + 1, x0] * (1 - fx) + g[y0 + 1, x0 + 1] * fx
+    return a * (1 - fy) + b * fy
+
+
+def fbm(h, w, base_cell, seed, octaves=4):
+    rng = np.random.default_rng(seed)
+    out = np.zeros((h, w))
+    amp, tot = 1.0, 0.0
+    cell = base_cell
+    for _ in range(octaves):
+        out += amp * _value_noise(h, w, max(2, int(cell)), rng)
+        tot += amp
+        amp *= 0.5
+        cell /= 2
+    return out / tot
+
+
+def dust2d(h, w, feet_px, pxlu, s, origin=(0.0, 0.0), spread=24.0, n=14, size=7.0, seed=5,
+           color=(0.74, 0.69, 0.60)):
+    """Premultiplied RGBA dust cloud: billows out and up, then breaks up (s in 0..1)."""
+    rng = np.random.default_rng(seed)
+    yy, xx = np.mgrid[0:h, 0:w].astype(float)
+    dens = np.zeros((h, w))
+    shade = np.zeros((h, w))
+    grow = 1 - (1 - min(1.0, s / 0.3)) ** 3
+    for i in range(n):
+        bx = rng.uniform(-1, 1) * spread
+        bz = rng.uniform(0.0, 0.5) * size
+        dx = rng.uniform(-1, 1)
+        r = rng.uniform(0.6, 1.1) * size * (0.4 + 0.9 * grow + 0.35 * s)
+        cx = feet_px[0] + (origin[0] + bx * (1 + 0.6 * grow) + dx * 6 * s) * pxlu
+        cz = feet_px[1] - (origin[1] + bz + r * 0.55 + 7 * s * rng.uniform(0.4, 1.0)) * pxlu
+        rp = r * pxlu
+        d = np.sqrt((xx - cx) ** 2 + ((yy - cz) * 1.15) ** 2) / rp
+        blob = np.clip(1 - d, 0, 1) ** 1.3
+        dens = np.maximum(dens, blob) + blob * 0.35
+        # top-lit: brighter on the upper side of each puff
+        shade += blob * np.clip(0.55 + 0.6 * (cz - yy) / rp, 0.2, 1.2)
+    nz = fbm(h, w, 6 * pxlu, seed + 11)
+    thin = 0.12 + 0.75 * max(0.0, (s - 0.35) / 0.65) ** 1.2      # breaks up as it settles
+    a = np.clip((dens * (0.55 + 0.9 * nz) - thin) * 1.6, 0, 0.9)
+    lum = np.clip(shade / np.maximum(dens, 1e-3), 0.4, 1.2) * (0.85 + 0.3 * nz)
+    rgb = np.array(color)[None, None, :] * lum[..., None]
+    return np.dstack([rgb * a[..., None], a])
+
+
+def over(top, bottom):
+    return np.dstack([top[..., :3] + bottom[..., :3] * (1 - top[..., 3:4]),
+                      top[..., 3] + bottom[..., 3] * (1 - top[..., 3])])

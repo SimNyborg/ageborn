@@ -23,7 +23,7 @@ FIST = (0.36, -2.4)          # fist centre relative to the wrist, hand hanging d
 
 def build():
     k = BODY.k
-    suit = C.mat("suit", "#2e3138", rough=0.7, noise=0.1, nscale=1.2, bump=0.35, sheen=0.4)
+    suit = C.mat("suit", "#3b3e45", rough=0.85, noise=0.12, nscale=1.4, bump=0.5, sheen=0.7, spec=0.3)
     plate = C.mat("team_plate", "#999999", rough=0.32, noise=0.06, nscale=0.4, bump=0.08,
                   coat=0.6, team=True)
     gun = C.mat("gunmetal", "#3c4047", rough=0.35, metal=0.9, noise=0.12, nscale=0.8, bump=0.1)
@@ -60,15 +60,14 @@ def build():
     rig.rigid(ant, "head")
 
     # --- chest and back armour
-    chest = C.blobs("chestplate", [
-        (S(1.6, 0, 48.4), (4.1, 6.6, 6.4)),
-        (S(2.6, -3.1, 50.6), (2.9, 3.6, 3.0)),
-        (S(2.6, 3.1, 50.6), (2.9, 3.6, 3.0)),
-        (S(1.8, 0, 42.4), (3.4, 5.6, 2.8)),
-        (S(-1.6, 0, 49.0), (3.4, 6.6, 6.0)),
-    ], plate, res=0.45)
-    C.team(chest)
-    rig.skin(chest, ["spine", "chest"], soft=3.0 * k)
+    cuir = C.box("cuirass", 10.6 * k, 14.2 * k, 11.0 * k, plate, bevel=2.8 * k, loc=S(0.4, 0, 49.4), segs=3)
+    C.team(cuir)
+    rig.rigid(cuir, "chest")
+    collar = C.lathe("collar", [(3.4 * k, 54.2 * k), (4.2 * k, 55.2 * k), (3.6 * k, 56.4 * k)], gun, seg=20,
+                     loc=(0.5 * k, 0, 0))
+    rig.rigid(collar, "chest")
+    ab = C.box("abplate", 8.6 * k, 12.0 * k, 5.4 * k, gun, bevel=1.6 * k, loc=S(0.6, 0, 42.4), segs=2)
+    rig.rigid(ab, "spine")
     pack = C.box("backpack", 6.0 * k, 10.0 * k, 12.5 * k, dark, bevel=1.0 * k, loc=S(-7.4, 0, 48.6))
     rig.rigid(pack, "chest")
     cell = C.cyl("cell", 1.5 * k, 1.5 * k, 8.0 * k, mint, loc=S(-10.8, -2.4, 44.6))
@@ -128,17 +127,21 @@ def build():
         C.xform(o, loc=fist)
         rig.rigid(o, "hand_F")
     # muzzle flash and bolt (shown on the fire frame only)
-    flash = [C.sphere("flash", 2.6 * k, magenta, loc=(30.5 * k, 0, 3.4 * k), scale=(1.5, 1, 1)),
-             C.sphere("flash2", 1.6 * k, C.emit_mat("flash_core", "#fff4fb", 12.0),
-                      loc=(30.0 * k, 0, 3.4 * k), scale=(1.3, 1, 1)),
-             C.tube("bolt", [(33 * k, 0, 3.4 * k), (52 * k, 0, 3.4 * k)], [0.2 * k, 1.1 * k], magenta, seg=10)]
+    core = C.emit_mat("flash_core", "#fff4fb", 18.0)
+    flash = [C.sphere("flash", 3.4 * k, magenta, loc=(31.5 * k, 0, 3.4 * k), scale=(1.6, 1, 1)),
+             C.sphere("flash2", 2.0 * k, core, loc=(30.8 * k, 0, 3.4 * k), scale=(1.4, 1, 1)),
+             C.tube("bolt", [(34 * k, 0, 3.4 * k), (58 * k, 0, 3.4 * k)], [0.5 * k, 1.7 * k], magenta, seg=12),
+             C.tube("boltc", [(36 * k, 0, 3.4 * k), (57 * k, 0, 3.4 * k)], [0.2 * k, 0.8 * k], core, seg=10)]
+    for a in (0.5, -0.5, 1.2, -1.2):
+        flash.append(C.tube("spike", [(30.5 * k, 0, 3.4 * k),
+                                      (30.5 * k + 7 * k * math.cos(a), 0, 3.4 * k + 7 * k * math.sin(a))],
+                            [0.7 * k, 0.05 * k], magenta, seg=6))
     for o in flash:
         C.xform(o, loc=fist)
         rig.rigid(o, "hand_F")
         o.hide_render = True
         o["is_fx"] = 1
-    dust = props.dust_cloud("dust", k, color="#9a968e")
-    return dict(rig=rig, flash=flash, coils=coils, dust=dust)
+    return dict(rig=rig, flash=flash, coils=coils, )
 
 
 # ------------------------------------------------------------------------------ poses
@@ -166,7 +169,6 @@ def stance(b=0.0, shift=0.0):
 
 def pose(ctx, clip, t):
     rig = ctx["rig"]
-    props.dust_state(ctx["dust"], None)
     fire = False
     glow = 1.0
     if clip == "idle":
@@ -182,8 +184,6 @@ def pose(ctx, clip, t):
         P_ = hit(t)
     else:
         P_ = die(t)
-        props.dust_state(ctx["dust"], None if t < 4.9 else (t - 4.9) / 6.0,
-                         origin=(-22 * BODY.k, 0, 0), rig=rig.obj)
     for o in ctx["flash"]:
         o.hide_render = not fire
     for c in ctx["coils"]:
@@ -268,6 +268,9 @@ def die(t):
     return B.keyed(keys, t)
 
 
+DIE_FX = {5: {'s': 0.016, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 6: {'s': 0.145, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 7: {'s': 0.274, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 8: {'s': 0.403, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 9: {'s': 0.565, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 10: {'s': 0.758, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 11: {'s': 0.984, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}}
+
+
 def clips():
     return [
         P.Clip("idle", range(8), [150] * 8),
@@ -278,5 +281,5 @@ def clips():
         P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
         P.Clip("die", [0, 1, 2, 3, 4, 5, 5.8, 6.6, 7.4, 8.4, 9.6, 11],
                [70, 70, 70, 70, 70, 80, 80, 90, 100, 110, 120, 200], loop=False,
-               blur={3: 0.2, 4: 0.2}),
+               blur={3: 0.2, 4: 0.2}, fx=DIE_FX),
     ]

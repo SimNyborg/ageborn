@@ -128,8 +128,7 @@ def build():
         C.xform(o, loc=fist)
         rig.rigid(o, "hand_F")
 
-    dust = props.dust_cloud("dust", k)
-    return dict(rig=rig, dust=dust)
+    return dict(rig=rig)
 
 
 # ------------------------------------------------------------------------------ poses
@@ -147,7 +146,6 @@ def stance(breath=0.0, shift=0.0):
 
 def pose(ctx, clip, t):
     rig = ctx["rig"]
-    props.dust_state(ctx["dust"], None)
     if clip == "idle":
         a = 2 * math.pi * t / 8.0
         P_ = stance(breath=math.sin(a), shift=0.9 * math.sin(a + 0.8))
@@ -162,7 +160,6 @@ def pose(ctx, clip, t):
         P_ = hit(t)
     else:
         P_ = die(t)
-        props.dust_state(ctx["dust"], die_dust(t), origin=(-22 * BODY.k, 0, 0), rig=rig.obj)
     BODY.apply(rig, P_)
 
 
@@ -262,6 +259,9 @@ def die_dust(t):
     return (t - 4.9) / 6.0
 
 
+DIE_FX = {5: {'s': 0.016, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 6: {'s': 0.145, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 7: {'s': 0.274, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 8: {'s': 0.403, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 9: {'s': 0.565, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 10: {'s': 0.758, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}, 11: {'s': 0.984, 'origin': (-22, 0), 'spread': 20, 'size': 7.0}}
+
+
 def clips():
     return [
         P.Clip("idle", range(8), [150] * 8),
@@ -272,5 +272,5 @@ def clips():
         P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
         P.Clip("die", [0, 1, 2, 3, 4, 5, 5.8, 6.6, 7.4, 8.4, 9.6, 11],
                [70, 70, 70, 70, 70, 80, 80, 90, 100, 110, 120, 200], loop=False,
-               blur={3: 0.2, 4: 0.2}),
+               blur={3: 0.2, 4: 0.2}, fx=DIE_FX),
     ]

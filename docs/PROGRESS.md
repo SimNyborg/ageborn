@@ -58,7 +58,7 @@ Newest entry first. Each session appends what it finished, what is next, and any
 **Still open**
 
 - HUD: the age badge next to each side's health bar is empty for Bronze, Industrial and Cosmic (`AgeGlyph` in `src/ui/hud/icons.tsx` has no case for them; `docs/requests/wp5-a17-eight-ages.md`).
-- The rest of the A17 merge into DESIGN (sections listed at the end of `docs/design-lane-ages.md`), the old-key music re-render, and the balance numbers in the entries below.
+- The old-key music re-render and the balance numbers in the entries below. (A17 and A18 are merged into DESIGN as version 1.3, 2026-09-28.)
 
 ## 2026-09-28: A17 art and sound registered for Bronze, Industrial and Cosmic (cloud session)
 

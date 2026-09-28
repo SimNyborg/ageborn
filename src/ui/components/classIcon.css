@@ -228,6 +228,8 @@
 .ui-legend__tri {
   position: relative;
   flex: none;
+  /* Room for the node labels, which are wider than the triangle corners ("ANTI-ARMOR"). */
+  margin: 0 18px 0 30px;
   width: 150px;
   height: 118px;
 }
@@ -307,6 +309,7 @@
 }
 @media (max-width: 900px) {
   .ui-legend__tri {
+    margin: 0 6px 0 22px;
     width: 118px;
     height: 96px;
   }
