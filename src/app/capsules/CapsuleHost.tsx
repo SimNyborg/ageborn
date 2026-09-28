@@ -16,6 +16,7 @@ import { oddsModel } from '@/ui/components/oddsModel';
 import { UiKitContext, type UiKit } from '@/ui/components/kit';
 import type { ArtProvider, AudioService } from '@/contracts';
 import '@/ui/theme.css';
+import './capsuleHost.css';
 import type { CapsuleShows, ShowRecord } from './capsuleFlow';
 
 export interface CapsuleHostProps {
@@ -63,6 +64,9 @@ export function CapsuleHost(p: CapsuleHostProps) {
     </UiKitContext.Provider>
   );
   const done = () => p.onDone(p.shows.done() ?? r);
+  const plan = p.save.warPlans[p.save.activePlan];
+  const isEquipped = (card: CardId) =>
+    !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.power === card);
   const pending = p.allowMore ? p.save.capsules.pending.length : 0;
   const common = {
     pixi: p.pixi,
@@ -72,6 +76,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
     pityRules: c.capsules.pity,
     settings: showSettings(p.save),
     oddsSheet,
+    isEquipped,
     onDone: done,
     ...(p.onEquip ? { onEquip: p.onEquip } : {}),
     ...(p.onEquipSkin ? { onEquipSkin: p.onEquipSkin } : {}),

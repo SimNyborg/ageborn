@@ -16,7 +16,6 @@ import type {
   Rarity,
   SaveDoc,
   SkinId,
-  SkinRarity,
   WardrobeReveal,
 } from '@/contracts';
 import { mulberry32 } from '@/core';
@@ -167,9 +166,6 @@ export function benchProgress(reveals: readonly CapsuleReveal[]): ProgressLookup
   return progressFromCollections(before, after, upgrade, C.economy.maxLevel);
 }
 
-const SKIN_POOL: Record<SkinRarity, SkinId[]> = { rare: [], epic: [], legendary: [] };
-for (const s of Object.values(C.skins)) if (s.inCratePool) SKIN_POOL[s.rarity].push(s.id);
-const SKIN_RANK: Record<SkinRarity, number> = { rare: 0, epic: 1, legendary: 2 };
 
 /** A Wardrobe Crate reveal as the meta writes it: the pre-rolled skin, no reel (A15.3). */
 export function makeCrate(id: string, skin: SkinId, o: { duplicateDust?: number } = {}): WardrobeReveal {

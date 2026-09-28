@@ -130,7 +130,11 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
   const trickle = new TrickleDetector(content, 0);
   session.onTick((events, s) => {
     director.update({ state: s.state, config: s.config, events, side: 0 });
-    if (trickle.update(events, s.state)) log.record('trickle', `match${setup.matchNumber}`, { tick: s.state.tick });
+    if (trickle.update(events, s.state)) {
+      log.record('trickle', `match${setup.matchNumber}`, { tick: s.state.tick });
+      // A16.6: onboarding matches show "Save gold, then send them together." (adaptive hints only).
+      director.reportPattern('trickle');
+    }
   });
   log.record('matchStart', `match${setup.matchNumber}`, { mode: setup.mode, format: setup.config.format, opponent: setup.opponent.generalId, tier: setup.opponent.tier });
   session.onEnd((r) => {

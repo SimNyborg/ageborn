@@ -9,7 +9,7 @@ npx tsx tools/sim-cli.ts help
 | Command | Does | Targets |
 |---|---|---|
 | `balance [--mode smoke\|full]` | Balanced mirror in Full and Short War, then mirrored-seed matches of every non-baseline card's test plan vs the baseline plan (tier V Balanced, L7), plus the base time-to-kill and power-damage scenarios | A2.14 |
-| `exploits [--mode smoke\|full]` | The eight scripted exploit proxies (`proxies.ts`) vs the tier VII Balanced bot at L7 | A2.14 |
+| `exploits [--mode smoke\|full] [--formats short,full]` | The scripted exploit proxies (`proxies.ts`: the eight B12 ones plus random spam and mono Heavy spam; `mono_ranged` and `mono_antiair` on request) vs the tier VII Balanced bot at L7, in Short and Full War, with the Final Bell share per row. Gates: cheapest spam ≤ 20%, random spam ≤ 15%, mono ≤ 35%, turtle 35-45% and ≤ 50% at the Bell, others ≤ 55% | A2.14, A16.5 |
 | `economy` | 365-day engaged-player model through the meta rules (ladder at 60%, Daily Capsule, road, quests claimed through the meta package's `claimQuest`) | A6.9 |
 | `drops [--mode smoke\|full]` | Capsule openings through the meta rules: bag totals, chi-square of the published odds, pity boundaries | A6.4, A6.5, C4.5 |
 | `replay-verify <file\|dir>...` | Re-simulates replays and compares hashes (the golden replays live in `src/sim/test/golden`) | B3 |

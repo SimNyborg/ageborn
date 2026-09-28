@@ -20,3 +20,5 @@ them. The Result screen should show "Next" (not "Play again") while `SaveDoc.tut
 Until Phase 2 the app renders its own title, battle, result and replay screens
 (`src/app/ui/**`, `src/app/screens/replay/**`); the replay route `{ index }` fits the store's ring
 (`saveStore.loadReplays()[index]`).
+
+**Done:** `MatchRequest` has `{ mode: 'tutorial'; match: 1 | 2 }` (WP9), and the onboarding matches run on the app screens.

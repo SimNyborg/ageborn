@@ -1,0 +1,398 @@
+/* Replay viewer (DESIGN A9 #14). Tokens come from src/ui/theme.css (--ui-*). */
+
+.ab-replay-top,
+.ab-replay-bar,
+.ab-replay-end {
+  pointer-events: auto;
+}
+
+/* Broadcast plate: REPLAY badge, both names, timeline. Docked under the HUD clock. */
+.ab-replay-top {
+  position: absolute;
+  top: calc(clamp(64px, 13.5%, 110px));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 50;
+  animation: ab-replay-drop 420ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+.ab-replay-plate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px 5px 6px;
+  border: 3px solid var(--ui-ink, #1b1330);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--ui-panel-hi, #3a356f) 0%, var(--ui-panel, #2b2754) 100%);
+  box-shadow: 0 4px 0 var(--ui-ink, #1b1330), 0 10px 24px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.ab-replay-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 2px solid var(--ui-ink, #1b1330);
+  background: var(--ui-red, #ef5a4a);
+  color: #fff;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 var(--ui-red-lo, #b02f27);
+}
+
+.ab-replay-live i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  opacity: 0.55;
+}
+
+.ab-replay-live.is-on i {
+  opacity: 1;
+  animation: ab-replay-pulse 1.1s ease-in-out infinite;
+}
+
+.ab-replay-names {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--ui-text, #f7f0dc);
+}
+
+.ab-replay-me {
+  color: var(--ui-blue-hi, #8cc0ff);
+}
+
+.ab-replay-foe {
+  color: var(--ui-red-hi, #ff9c8f);
+}
+
+.ab-replay-vs {
+  color: var(--ui-dim, #817aa8);
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ab-replay-ai {
+  padding: 1px 8px;
+  font-size: 11px;
+}
+
+.ab-replay-timeline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ab-replay-track {
+  width: clamp(140px, 22vw, 280px);
+  height: 8px;
+  border-radius: 999px;
+  border: 2px solid var(--ui-ink, #1b1330);
+  background: var(--ui-well, #161330);
+  overflow: hidden;
+}
+
+.ab-replay-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--ui-gold-lo, #d4870f), var(--ui-gold, #ffc53d) 70%, var(--ui-gold-hi, #ffe58a));
+  transition: width 120ms linear;
+}
+
+.ab-replay-time {
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-text, #f7f0dc);
+  text-shadow: 0 2px 0 var(--ui-ink, #1b1330);
+}
+
+/* Controls: one compact pill, bottom left above the tray on desktop. */
+.ab-replay-bar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(19% + 10px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border: 3px solid var(--ui-ink, #1b1330);
+  border-radius: 999px;
+  background: rgba(31, 27, 62, 0.88);
+  box-shadow: 0 4px 0 var(--ui-ink, #1b1330), 0 12px 28px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+  z-index: 50;
+  animation: ab-replay-rise 420ms cubic-bezier(0.2, 0.9, 0.3, 1.25) 80ms backwards;
+}
+
+.ab-replay-bar {
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+
+.ab-replay-bar.is-idle {
+  opacity: 0;
+  transform: translate(-50%, 10px);
+  pointer-events: none;
+}
+
+.ab-rbtn {
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 2px solid var(--ui-ink, #1b1330);
+  background: linear-gradient(180deg, var(--ui-panel-hi, #3a356f), var(--ui-panel, #2b2754));
+  color: var(--ui-text, #f7f0dc);
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), 0 3px 0 var(--ui-ink, #1b1330);
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.ab-rbtn:hover {
+  filter: brightness(1.12);
+}
+
+.ab-rbtn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), 0 1px 0 var(--ui-ink, #1b1330);
+}
+
+.ab-rbtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ab-rbtn--main {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(180deg, var(--ui-gold-hi, #ffe58a), var(--ui-gold, #ffc53d) 55%, var(--ui-gold-lo, #d4870f));
+  color: var(--ui-ink, #1b1330);
+}
+
+.ab-rbtn--close {
+  background: linear-gradient(180deg, #4a3f7c, #362f63);
+  color: var(--ui-muted, #bdb6da);
+}
+
+.ab-rbtn-label {
+  font-size: 14px;
+  max-width: 18ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ab-rseg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 999px;
+  border: 2px solid var(--ui-ink, #1b1330);
+  background: var(--ui-well, #161330);
+}
+
+.ab-rseg-btn {
+  font: inherit;
+  min-width: 42px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ui-muted, #bdb6da);
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.ab-rseg-btn.is-on {
+  background: linear-gradient(180deg, var(--ui-blue-hi, #8cc0ff), var(--ui-blue, #3b8cff) 60%, var(--ui-blue-lo, #1f5fd6));
+  color: #fff;
+  text-shadow: 0 1px 0 var(--ui-blue-lo, #1f5fd6);
+  transform: scale(1.04);
+}
+
+/* End card: did the re-simulation end exactly like the recording? */
+.ab-replay-end {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 45%, rgba(23, 21, 43, 0.35), rgba(23, 21, 43, 0.75));
+  z-index: 60;
+  animation: ab-replay-fade 260ms ease-out both;
+}
+
+.ab-replay-endcard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 28px 20px;
+  border: 3px solid var(--ui-ink, #1b1330);
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--ui-panel-head, #463f86), var(--ui-panel, #2b2754) 45%);
+  box-shadow: 0 6px 0 var(--ui-ink, #1b1330), 0 24px 48px rgba(0, 0, 0, 0.45);
+  animation: ab-replay-pop 420ms cubic-bezier(0.2, 0.9, 0.3, 1.35) 60ms both;
+}
+
+.ab-replay-endtitle {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ui-muted, #bdb6da);
+}
+
+.ab-replay-endresult {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ui-text, #f7f0dc);
+  -webkit-text-stroke: 1.5px var(--ui-ink, #1b1330);
+  text-shadow: 0 4px 0 var(--ui-ink, #1b1330);
+}
+
+.ab-replay-endcard--win .ab-replay-endresult {
+  color: var(--ui-gold-hi, #ffe58a);
+}
+
+.ab-replay-endcard--loss .ab-replay-endresult {
+  color: var(--ui-red-hi, #ff9c8f);
+}
+
+.ab-replay-check.is-ok {
+  background: var(--ui-green, #3cc46b);
+  color: var(--ui-ink, #1b1330);
+}
+
+.ab-replay-check.is-bad {
+  background: var(--ui-red, #ef5a4a);
+  color: #fff;
+}
+
+.ab-replay-endactions {
+  gap: 10px;
+  margin-top: 4px;
+}
+
+@keyframes ab-replay-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.7);
+    opacity: 0.55;
+  }
+}
+
+@keyframes ab-replay-drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -14px) scale(0.96);
+  }
+}
+
+@keyframes ab-replay-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.96);
+  }
+}
+
+@keyframes ab-replay-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ab-replay-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.86) translateY(10px);
+  }
+}
+
+[data-reduce-motion] .ab-replay-top,
+[data-reduce-motion] .ab-replay-bar,
+[data-reduce-motion] .ab-replay-end,
+[data-reduce-motion] .ab-replay-endcard,
+[data-reduce-motion] .ab-replay-live.is-on i {
+  animation: none;
+}
+
+/* The end card takes the stage; the plate steps back. */
+.ab-replay[data-status='ended'] .ab-replay-top {
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+/* Phones in landscape: smaller controls, the side toggle shows its icon only. */
+@media (max-height: 480px) {
+  .ab-replay-ai {
+    padding: 0 6px;
+    font-size: 10px;
+    border-width: 1.5px;
+  }
+  .ab-replay-top {
+    top: 58px;
+    gap: 4px;
+  }
+  .ab-replay-plate {
+    padding: 3px 10px 3px 4px;
+    gap: 6px;
+  }
+  .ab-replay-names {
+    font-size: 12px;
+    gap: 5px;
+  }
+  .ab-replay-live {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .ab-replay-bar {
+    bottom: calc(26% + 6px);
+    padding: 4px;
+    gap: 4px;
+  }
+  .ab-rbtn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+  }
+  .ab-rbtn--main {
+    width: 40px;
+    height: 40px;
+  }
+  .ab-rseg-btn {
+    min-width: 34px;
+    height: 28px;
+    font-size: 12px;
+  }
+  .ab-rbtn-label {
+    display: none;
+  }
+}

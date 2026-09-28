@@ -261,6 +261,11 @@ export const STAGES = {
   stanceFromMatch: 4,
   /** The manual Last Stand button appears in match 5; before that it is automatic only (A2.11). */
   lastStandFromMatch: 5,
+  /**
+   * In-battle adaptive hints stop after the onboarding matches (A8: "only their in-battle hints
+   * stop"); the detectors keep running for the Result tip.
+   */
+  hintsUntilMatch: 5,
 } as const;
 
 /** The scripted beats for match `n`, if any. */
@@ -287,7 +292,7 @@ export const WAR_PLAN_PROMPT_KEY = 'tutorial.home.warPlan';
 // Adaptive hints (A8): at most once per 30 s, only on failure patterns, at most 3 times each
 // ---------------------------------------------------------------------------------------------
 
-export type AdaptiveHintId = 'turretShredsMelee' | 'heaviesStopInfantry' | 'powerReady' | 'evolveFirst' | 'buyMount' | 'hold' | 'modernise';
+export type AdaptiveHintId = 'turretShredsMelee' | 'heaviesStopInfantry' | 'powerReady' | 'evolveFirst' | 'buyMount' | 'hold' | 'modernise' | 'trickle';
 
 export interface AdaptiveHintDef {
   id: AdaptiveHintId;
@@ -331,6 +336,8 @@ export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [
   { id: 'buyMount', textKey: 'tutorial.hint.buyMount', target: 'mountBuy' },
   { id: 'hold', textKey: 'tutorial.hint.hold', target: 'stance' },
   { id: 'modernise', textKey: 'tutorial.hint.modernise', target: null },
+  // A16.6: units sent one by one (the app's trickle detector reports the pattern).
+  { id: 'trickle', textKey: 'tutorial.hint.trickle', target: 'gold' },
 ];
 
 // ---------------------------------------------------------------------------------------------

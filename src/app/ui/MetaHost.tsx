@@ -21,7 +21,7 @@ export interface MetaHostProps {
 
 export function MetaHost(p: MetaHostProps) {
   const ui = useApp();
-  const env: Omit<UiEnv, 'toasts'> = useMemo(
+  const env: UiEnv = useMemo(
     () => ({
       save: p.meta.save,
       content: asContent(ui.services.content),
@@ -31,6 +31,7 @@ export function MetaHost(p: MetaHostProps) {
       router: p.meta.router,
       services: p.meta.services,
       portrait: ui.art.portrait.bind(ui.art),
+      toasts: p.meta.toasts,
     }),
     [p.meta, ui],
   );

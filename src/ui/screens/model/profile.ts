@@ -28,6 +28,8 @@ export interface ProfileView {
   codexLevel: number;
   conquestStars: number;
   conquestMax: number;
+  /** "Highest AI tier beaten" (A15.9): the top tier with a counted win; it never goes down. */
+  highestTierBeaten: number | null;
   fastestWinMs: number | null;
   futureReached: number;
 }
@@ -53,7 +55,12 @@ export function profileView(save: SaveDoc, content: Content): ProfileView {
   const legendaryIds = content.order.units.filter((id) => content.units[id]?.rarity === 'legendary');
   const conquest = conquestView(save, content);
   const arena = arenaOf(save, content);
+  let highestTierBeaten: number | null = null;
+  s.winsByTier.forEach((n, tier) => {
+    if (n > 0) highestTierBeaten = tier;
+  });
   return {
+    highestTierBeaten,
     trophies: save.trophies.current,
     best: save.trophies.best,
     arenaNameKey: arena.nameKey,

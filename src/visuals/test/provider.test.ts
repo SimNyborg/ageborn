@@ -79,8 +79,8 @@ describe('routing', () => {
     expect(art.portrait({ card: 'bonker', size: 64, skin: 'pumpkin_head' })).not.toBe(a);
     expect(art.portrait({ card: 'bonker', size: 64, plate: false })).not.toBe(a);
     expect(await a).toBe('');
-    // team areas follow the colourblind preset (A11)
-    const spy = vi.spyOn(art.procedural, 'portrait');
+    // team areas follow the colourblind preset (A11); units with a sheet use the rendered card still
+    const spy = vi.spyOn(art.atlas, 'portrait');
     art.setTeamPreset('highContrast');
     const b = art.portrait({ card: 'bonker', size: 64 });
     expect(b).not.toBe(a);

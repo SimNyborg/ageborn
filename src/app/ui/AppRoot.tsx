@@ -8,6 +8,7 @@ import { attachActivity } from '../stopping';
 import { ReplayScreen } from '../screens/replay/ReplayScreen';
 import { isMetaRules } from '../uiServices';
 import { BattleScreen } from './BattleScreen';
+import { FirstUpgrade } from './FirstUpgrade';
 import { AppUiContext, type AppUi } from './context';
 import { MetaHost } from './MetaHost';
 import { ResultScreen } from './ResultScreen';
@@ -134,6 +135,7 @@ export function AppRoot(p: { ui: AppUi }) {
     <AppUiContext.Provider value={p.ui}>
       <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
         <Screen ui={p.ui} meta={meta} shows={shows} />
+        {shows?.current.value ? null : <FirstUpgrade />}
         <div class="ab-rotate" data-testid="rotate">
           <div class="ab-rotate-phone" aria-hidden="true" />
           <span>{p.ui.t('app.rotate')}</span>

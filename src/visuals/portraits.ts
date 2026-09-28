@@ -24,7 +24,7 @@ export interface PortraitOptions {
 
 type Ctx = CanvasRenderingContext2D;
 
-function plate(ctx: Ctx, p: PuppetDef, size: number): void {
+function plate(ctx: Ctx, p: Pick<PuppetDef, 'age'>, size: number): void {
   const pal = p.age ? BACKDROP_PALETTES[p.age] : BACKDROP_PALETTES.medieval;
   const g = ctx.createRadialGradient(size * 0.5, size * 0.42, size * 0.05, size * 0.5, size * 0.5, size * 0.72);
   g.addColorStop(0, toCss(lighten(pal.skyBottom, 0.2)));
@@ -47,7 +47,7 @@ function plate(ctx: Ctx, p: PuppetDef, size: number): void {
   }
 }
 
-function foilFrame(ctx: Ctx, foil: Foil, size: number): void {
+export function foilFrame(ctx: Ctx, foil: Foil, size: number): void {
   if (foil === 'none') return;
   const part = getPart(`foil.${foil}`);
   if (!part) return;
@@ -111,4 +111,9 @@ export function renderPortrait(o: PortraitOptions): string {
   if (!ctx) return '';
   drawPortrait(ctx, o);
   return c.toDataURL('image/png');
+}
+
+/** The age plate behind a portrait (shared by the sheet-art portraits in `adapters/atlasPortrait.ts`). */
+export function drawPortraitPlate(ctx: Ctx, age: PuppetDef['age'], size: number): void {
+  plate(ctx, { age }, size);
 }

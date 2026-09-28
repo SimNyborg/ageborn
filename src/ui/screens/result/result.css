@@ -469,3 +469,34 @@
   gap: 8px;
   margin-top: 10px;
 }
+
+/* The rewards column scrolls as a whole on short screens; rows keep their height. */
+.result__rewards {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.result__rewards .result__list {
+  flex: none;
+  overflow: visible;
+}
+.result-reward {
+  flex-shrink: 0;
+}
+@media (max-height: 480px) {
+  .result-reward {
+    padding: 2px 8px;
+    min-height: 0;
+  }
+  .result-reward__icon {
+    transform: scale(0.8);
+  }
+  .result-sum__row {
+    min-height: 38px;
+    padding: 4px 10px;
+  }
+}
+.result-reward__dust {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

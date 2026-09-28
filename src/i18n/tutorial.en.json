@@ -29,9 +29,15 @@
       "evolveFirst": "Evolve before they do.",
       "buyMount": "Buy another turret mount.",
       "hold": "Hold: gather at the line, then push.",
-      "modernise": "Old turret? Tap it to modernise."
+      "modernise": "Old turret? Tap it to modernise.",
+      "trickle": "Save gold, then send them together."
     },
-    "dismiss": "Got it"
+    "dismiss": "Got it",
+    "upgrade": {
+      "title": "Level up your Bonker",
+      "done": "Bonker reached level 2!",
+      "gain": "+5% HP and damage"
+    }
   },
   "app": {
     "disclosure": {
@@ -68,6 +74,8 @@
       "amber": "+{amount} Amber",
       "dust": "+{amount} Dust",
       "capsule": "Time Capsule",
+      "starterCapsule": "Starter Capsule",
+      "feat": "Feat found: {name}",
       "clayPip": "Clay meter {meter}/3",
       "codex": "+{points} Codex points",
       "quest": "Quest progress {progress}",
@@ -94,6 +102,12 @@
     "newSlot": "New slot · {cost}",
     "tip": {
       "trickle": "Tip: units sent one by one fall one by one. Bank gold, then send a wave."
+    },
+    "upgrade": {
+      "level": "Lv {level}",
+      "hp": "Health",
+      "damage": "Damage",
+      "go": "Upgrade"
     }
   },
   "replay": {
@@ -109,6 +123,8 @@
     "mismatch": "Result differs from the recorded match",
     "ended": "Replay finished",
     "back": "Back",
-    "none": "No replays yet"
+    "none": "No replays yet",
+    "badge": "Replay",
+    "watchAgain": "Watch again"
   }
 }

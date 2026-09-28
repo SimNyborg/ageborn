@@ -314,7 +314,7 @@ function ShowScreen(p: ShowScreenProps) {
     >
       <div class={css.top}>
         {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={showOdds} /> : <span />}
-        {opened && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
+        {opened && !inSummary && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
       {p.kindLabel && !inSummary ? (
         <div class={`${css.kind} ${opened ? css.kindOpened : ''}`} data-testid="capsule-kind">
@@ -371,6 +371,7 @@ function ShowScreen(p: ShowScreenProps) {
             ...(p.onOpenNext ? { onOpenNext: p.onOpenNext } : {}),
             ...(p.onOpenAll ? { onOpenAll: p.onOpenAll } : {}),
             ...(p.pendingCount !== undefined ? { pendingCount: p.pendingCount } : {}),
+            ...(p.isEquipped ? { isEquipped: p.isEquipped } : {}),
           }}
         />
       ) : null}

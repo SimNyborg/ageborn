@@ -1,7 +1,7 @@
 /**
  * Game portal adapters (DESIGN B11, B15 `platform.ts`).
  *
- * v1 ships only `none` (no ads, no SDK, `reelReveal: true`). Poki, CrazyGames and Y8 adapters come
+ * v1 ships only `none` (no ads, no SDK, `reelReveal: false`: there is no reel, A15.3). Poki, CrazyGames and Y8 adapters come
  * later and plug in here without touching the app: the app asks `createPlatform(name)` for an adapter
  * and only ever talks to the `PlatformAdapter` contract.
  *

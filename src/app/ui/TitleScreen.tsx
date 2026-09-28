@@ -34,8 +34,9 @@ export function TitleScreen() {
   const replays = c.replays.value;
   const opponent = battle?.setup.opponent;
   const waitingIsTraining = battle?.setup.brain.kind === 'grogg';
-  // A new player has not won the training match yet: one obvious Play button.
-  const newPlayer = c.step.value === 'match1';
+  // During onboarding (A8: match 1, capsule 1, match 2, capsule 2) the next onboarding match is the
+  // one obvious Play button; Quick Battle stays a small secondary choice.
+  const newPlayer = c.step.value !== 'home';
   const formats = ui.services.content.formats;
 
   const quickCard = (
@@ -97,7 +98,7 @@ export function TitleScreen() {
             </span>
           ))}
         </div>
-        {!waitingIsTraining ? (
+        {!waitingIsTraining && !newPlayer ? (
           <button class="ab-btn ab-btn--plain ab-btn--small" data-testid="training" onClick={() => c.training()}>
             {ui.t('app.trainingMatch')}
           </button>
@@ -119,7 +120,7 @@ export function TitleScreen() {
           {playCard}
         </>
       )}
-      {replays.length > 0 ? (
+      {replays.length > 0 && !newPlayer ? (
         <div class="ab-replays">
           {replays
             .slice(-3)

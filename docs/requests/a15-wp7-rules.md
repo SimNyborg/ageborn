@@ -20,3 +20,5 @@
 | Stretch: Amber to Dust | Once no upgrade is left to buy, Amber from every source is paid as Dust at 10 Amber = 1 Dust | A15.11 |
 
 **Tests** (A15.20): a 30-day absence changes nothing owned and each bank stops at its cap; Supply counts the 3rd finished match and not void or tutorial matches; the War Chest never resets and Skirmish never counts; the Daily gives the same opponent and seed for the same date and difficulty, and the bank gains +1 a day up to 7; each fixture event stream triggers exactly its feats, and each feat pays once.
+
+**Progress (2026-09-28, onboarding-daily track):** done: Daily Challenge 2.0 (seed, opponent, difficulties, bank), quest queue and weights, rewards by format, skill tier and peak rank at even levels, feat tracker and grants, Rookie disclosure, walk-away and Daily tests. The banks track did charges 28, the Supply Capsule and the War Chest (`supply.ts`, `warChest.ts`). Open: the two stretch items (foil crafting, Amber to Dust).

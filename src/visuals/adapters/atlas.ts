@@ -36,6 +36,9 @@ import { mulberry32, type CosmeticRng } from '@/core/rng';
 import { CLIP_TIMING, STYLE } from '../style';
 import { BLOCKING_UNIT_SHEET_AGES, unitSheetAge } from '../unitSheetPaths';
 import type { ClipDef } from '../types';
+import { puppetById } from '../library';
+import { renderPortrait } from '../portraits';
+import { portraitStillBase, renderStillPortrait } from './atlasPortrait';
 import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
@@ -141,12 +144,41 @@ export interface AtlasOptions {
   baseUrl?: string;
   /** Graphics preset (B6): Lite drops the ground shadow. */
   quality?: 'high' | 'lite';
+  /**
+   * Load the high-density unit sheets (`<slug>.hd.json`, 2.46 px/lu instead of 1.23) when the screen
+   * draws more than about 1.3 device px per lu, so units stay as crisp as the code-drawn world
+   * (see `wantsHdSheets`). Falls back to the plain sheet when an HD sheet is missing.
+   */
+  hd?: boolean;
+}
+
+/** Device px per lu above which the HD unit sheets are worth their download (1x sheets are 1.23 px/lu). */
+export const HD_SHEET_THRESHOLD_PX_PER_LU = 1.3;
+
+/** True when units drawn at `worldPxPerLu` CSS px per lu on a `dpr` screen would upscale the 1x sheets. */
+export function wantsHdSheets(worldPxPerLu: number, dpr: number): boolean {
+  return worldPxPerLu * dpr > HD_SHEET_THRESHOLD_PX_PER_LU;
+}
+
+/** `art/units/<age>/<slug>.json` → `art/units/<age>/<slug>.hd.json` (other sources are unchanged). */
+export function hdSheetUrl(url: string): string {
+  return /art\/units\/[^?#]+(?<!\.hd)\.json$/.test(url) ? url.replace(/\.json$/, '.hd.json') : url;
 }
 
 function baseUrl(): string {
   const env = (import.meta as unknown as { env?: { BASE_URL?: string } }).env;
   return env?.BASE_URL ?? '/';
 }
+
+function mixColor(a: number, b: number, t: number): number {
+  const ch = (sh: number): number => Math.round(((a >> sh) & 255) * (1 - t) + ((b >> sh) & 255) * t) << sh;
+  return ch(16) | ch(8) | ch(0);
+}
+
+/** Ground ring shape (art director review fix 12). */
+const RING_WIDEN = 1.2;
+const RING_FLATTEN = 0.8;
+const RING_ALPHA = 0.6;
 
 export class AtlasAdapter implements VisualAdapter {
   readonly kind = 'atlas' as const;
@@ -180,6 +212,8 @@ export class AtlasAdapter implements VisualAdapter {
       return false;
     }
     if (def.kind !== 'atlas') return false;
+    // units with a sheet also get a rendered card still (falls back to the procedural portrait)
+    if (what === 'portrait') return portraitStillBase(def.source) !== null;
     if (!this.sheets.has(def.source)) {
       // a unit whose age has not streamed in yet: load it now, draw the fallback meanwhile
       if (what === 'unit' && unitSheetAge(def.source)) void this.ensure(def.source);
@@ -194,7 +228,9 @@ export class AtlasAdapter implements VisualAdapter {
     let p = this.pending.get(source);
     if (!p) {
       const load = this.o.load ?? loadWithAssets;
-      p = load(this.url(source))
+      const url = this.url(source);
+      const hd = this.o.hd ? hdSheetUrl(url) : url;
+      p = (hd === url ? load(url) : load(hd).catch(() => load(url)))
         .then((d) => void this.sheets.set(source, d))
         .catch((e: unknown) => {
           this.failed.add(source);
@@ -289,8 +325,16 @@ export class AtlasAdapter implements VisualAdapter {
     throw new Error(`Atlas backdrops are not supported yet (${r.left.def.source})`);
   }
 
-  async portrait(_r: PortraitRequest): Promise<string> {
-    return '';
+  async portrait(r: PortraitRequest): Promise<string> {
+    const still = portraitStillBase(r.def.source);
+    const puppet = puppetById(r.key);
+    const color = teamColor(r.side, r.teamPreset);
+    if (still) {
+      const url = await renderStillPortrait({ url: this.url(still), age: unitSheetAge(r.def.source) ?? puppet?.age ?? null, size: r.size, foil: r.foil, teamColor: color, plate: r.plate });
+      if (url) return url;
+    }
+    if (!puppet) return '';
+    return renderPortrait({ puppet, size: r.size, foil: r.foil, teamColor: color, fit: puppet.legendary && !puppet.motion.air ? 'bust' : 'full', plate: r.plate });
   }
 }
 
@@ -429,14 +473,17 @@ class AtlasUnitView implements UnitView {
     this.facing = this.facing0;
     this.rng = mulberry32(o.seed ?? 1);
     const size = def.heightLu > 150 ? 3.1 : def.heightLu > 90 ? 1.85 : 1;
+    // Team ring (A11 redundant cue) behind the contact shadow: flatter and a little wider than the
+    // body, at 60% alpha, so it reads as a ground marker and does not clutter the feet of a crowd.
+    const ring = partSprite(decor, side === 0 ? 'shared.ring.circle' : 'shared.ring.diamond', UI_ZONES, team);
+    ring.scale.set(size * RING_WIDEN, RING_FLATTEN);
+    ring.alpha = RING_ALPHA;
+    this.ground.addChild(ring);
     if (o.quality !== 'lite') {
       const sh = partSprite(decor, 'shared.shadow', UI_ZONES);
       sh.scale.set(size * 1.1, 1);
       this.ground.addChild(sh);
     }
-    const ring = partSprite(decor, side === 0 ? 'shared.ring.circle' : 'shared.ring.diamond', UI_ZONES, team);
-    ring.scale.set(size, 1);
-    this.ground.addChild(ring);
     this.teamSprite = new Sprite(Texture.EMPTY);
     this.teamSprite.tint = team;
     this.baseSprite = new Sprite(Texture.EMPTY);
@@ -466,8 +513,9 @@ class AtlasUnitView implements UnitView {
       this.glyphGroup = p.roleGlyph;
       this.glyph?.destroy({ children: true });
       this.glyph = partSprite(this.decor, `icon.role.${p.roleGlyph}`, UI_ZONES, this.team);
-      this.glyph.position.set(0, 6.6);
-      this.glyph.scale.set(STYLE.roleGlyphLu / 17.2);
+      this.glyph.position.set(0, 5.2);
+      this.glyph.scale.set(STYLE.roleGlyphLu / 17.2, (STYLE.roleGlyphLu / 17.2) * 0.72);
+      this.glyph.alpha = 0.85;
       this.ground.addChild(this.glyph);
     }
     if (p.levelTrim !== this.trimName) {
@@ -671,7 +719,8 @@ class AtlasUnitView implements UnitView {
       this.bubble = partSprite(this.decor, 'fx.p.bubble', UI_ZONES);
       this.bubble.position.set(this.anchors.hitCenter.x * this.facing, this.anchors.hitCenter.y);
       this.bubble.scale.set((this.def.heightLu * 0.62) / 10);
-      this.bubble.tint = 0xe4fbf1;
+      // a filled bubble in a light team tint with a solid rim (reads at 56 px; review fix 11)
+      this.bubble.tint = mixColor(this.team, 0xffffff, 0.35);
       this.overlay.addChildAt(this.bubble, 0);
     }
     if (this.bubble) {

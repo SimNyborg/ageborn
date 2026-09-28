@@ -12,7 +12,7 @@ import { CardArt, CardTile } from '../../components/CardTile';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { Segmented } from '../../components/Controls';
 import { formatInt } from '../../components/format';
-import { AgeGlyph, BoltIcon, CardsIcon, CheckIcon, DustIcon, LockIcon, RARITY_COLOR, RarityGem, TowerIcon } from '../../components/icons';
+import { AgeGlyph, BoltIcon, CardsIcon, CheckIcon, DustIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TowerIcon } from '../../components/icons';
 import { onGridKeyDown } from '../../components/keys';
 import { Empty, ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
@@ -20,6 +20,7 @@ import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardGlyph, cardTile, collectionProgress } from '../model/cards';
 import {
+  featViews,
   filterCards,
   NO_FILTER,
   type AgeFilter,
@@ -92,10 +93,51 @@ function SkinTile(p: { skin: SkinDef }) {
   );
 }
 
+/**
+ * The Feats tab (A15.10): 12 hidden feats, each "???" and a riddle until found; "Show hint" reveals
+ * the plain rule (stored in `flags['featHint.<id>']`). Found feats show their name and reward.
+ */
+function FeatsPanel() {
+  const { save, content, t, services } = useUi();
+  const s = save.value;
+  const views = featViews(s, content);
+  const found = views.filter((v) => v.found).length;
+  return (
+    <div class="col-feats-wrap">
+      <p class="col-feats__count" data-testid="feats-count">
+        {t('ui.feats.found', { n: found, max: views.length })}
+      </p>
+      <ul class="col-feats" data-testid="col-feats">
+        {views.map((v) => (
+          <li key={v.id} class={`col-feat${v.found ? ' is-found' : ''}`} data-testid={`feat-${v.id}`}>
+            <span class="col-feat__badge" aria-hidden="true">
+              {v.found ? <StarIcon size={30} /> : <span class="col-feat__q">?</span>}
+            </span>
+            <span class="col-feat__text">
+              <b class="col-feat__name">{v.found ? t(v.nameKey) : t('ui.feats.unknown')}</b>
+              <span class="col-feat__riddle">{t(v.riddleKey)}</span>
+              {v.found || v.hinted ? <span class="col-feat__hint">{t(v.hintKey)}</span> : null}
+              <span class="col-feat__reward">
+                <DustIcon size={16} /> {v.dust}
+                {v.title ? <span class="col-feat__title">{t('ui.feats.plusTitle')}</span> : null}
+              </span>
+            </span>
+            {!v.found && !v.hinted ? (
+              <Button variant="plain" size="sm" testid={`feat-hint-${v.id}`} onClick={() => services.showFeatHint(v.id)}>
+                {t('ui.feats.showHint')}
+              </Button>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
   const { save, content, t, router } = useUi();
   const s = save.value;
-  const [tab, setTab] = useState<'cards' | 'skins'>(p.route.tab ?? 'cards');
+  const [tab, setTab] = useState<'cards' | 'skins' | 'feats'>(p.route.tab ?? 'cards');
   const [f, setF] = useState<CollectionFilter>(NO_FILTER);
   const prog = collectionProgress(s, content);
   const foils = Object.values(s.collection).filter((e) => e.foil !== 'none').length;
@@ -129,6 +171,7 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
           items={[
             { value: 'cards', label: t('ui.collection.cards'), icon: <CardsIcon size={22} />, testid: 'tab-cards' },
             { value: 'skins', label: t('ui.collection.skins'), testid: 'tab-skins' },
+            { value: 'feats', label: t('ui.feats.tab'), icon: <StarIcon size={20} />, testid: 'tab-feats' },
           ]}
         />
         <div class="col-panel" role="tabpanel" id="col-panel" aria-labelledby={`col-tab-${tab}`}>
@@ -223,12 +266,14 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
                 </div>
               )}
             </>
-          ) : (
+          ) : tab === 'skins' ? (
             <div class="col-skins" data-testid="col-skins">
               {skins.map((k) => (
                 <SkinTile key={k.id} skin={k} />
               ))}
             </div>
+          ) : (
+            <FeatsPanel />
           )}
         </div>
       </div>

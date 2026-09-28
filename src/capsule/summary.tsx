@@ -20,6 +20,8 @@ export interface SummaryActions {
   onDone: () => void;
   /** Capsules still waiting after this one ("Open next (N)"). */
   pendingCount?: number;
+  /** Already in the active War Plan (the first Starter Capsule equips its NEW card, A8): shows "Equipped". */
+  isEquipped?: (card: CardId) => boolean;
 }
 
 /** A portrait data URL from the art provider, or null while loading or on failure. */
@@ -56,7 +58,7 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
   const { item, i18n, catalog } = p;
   const t = (k: string, o?: Record<string, string | number>) => i18n.t(k, o);
   const url = usePortrait(p.art, item.card, item.skin, item.foil);
-  const [equipped, setEquipped] = useState(false);
+  const [equipped, setEquipped] = useState(() => item.kind === 'card' && p.actions.isEquipped?.(item.card) === true);
   const name = item.kind === 'skin' && item.skin ? t(catalog.skin(item.skin).nameKey) : t(catalog.card(item.card).nameKey);
   const color = RARITY_COLORS[item.rarity];
   const pr = item.progress;

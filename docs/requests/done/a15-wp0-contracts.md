@@ -28,3 +28,5 @@ One amendment, in one change, with the fakes in `src/contracts/fakes` and the v1
 Batch the pending `MatchStats.ageTimesMs` (`wp9-match-stats-age-times.md`) and `Observation.foe.lastEmote` (`wp3-observation-emotes.md`) requests into the same change. Also record engagement rule 10 in `docs/decisions.md` if it is not there: "MMR and bot tuning target win rate only, never session length, return rate or retention" (A15.1).
 
 SaveDoc stays at version 1: everything lands before the Checkpoint C push (B8).
+
+**Done (2026-09-28, onboarding-daily track):** all six items and the JSDoc meaning changes are in `src/contracts/save.ts` and `meta.ts`, with the fake save store, the meta new save and the save schema updated in the same change (SaveDoc stays v1). The pending `MatchStats.ageTimesMs` and `Observation.foe.lastEmote` requests are not part of this change. Logged in `docs/decisions.md`.

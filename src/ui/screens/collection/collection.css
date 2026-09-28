@@ -133,3 +133,97 @@
     display: inline;
   }
 }
+
+/* ---- Feats tab (A15.10) ---- */
+.col-feats__count {
+  margin: 0 0 10px;
+  font-weight: 900;
+  color: var(--ui-gold-hi);
+}
+.col-feats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.col-feat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(58, 53, 111, 0.9), rgba(31, 27, 62, 0.95));
+  box-shadow: 0 4px 0 var(--ui-ink), inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+  animation: ui-enter 280ms var(--ui-ease-out) both;
+}
+.col-feat.is-found {
+  background: linear-gradient(180deg, rgba(120, 88, 20, 0.95), rgba(58, 40, 12, 0.95));
+  box-shadow: 0 4px 0 var(--ui-ink), inset 0 0 0 2px rgba(255, 229, 138, 0.55), 0 0 18px rgba(255, 197, 61, 0.25);
+}
+.col-feat__badge {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #5b5596, #26224a);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.35), 0 3px 0 var(--ui-ink);
+}
+.col-feat.is-found .col-feat__badge {
+  background: radial-gradient(circle at 35% 30%, #ffe58a, #d4870f);
+  animation: col-feat-glint 3.2s ease-in-out infinite;
+}
+@keyframes col-feat-glint {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.18);
+  }
+}
+.col-feat__q {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--ui-muted);
+  -webkit-text-stroke: 2px var(--ui-ink);
+  paint-order: stroke fill;
+}
+.col-feat__text {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.col-feat__name {
+  font-size: 16px;
+  font-weight: 900;
+}
+.col-feat__riddle {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--ui-muted);
+}
+.col-feat__hint {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ui-blue-hi);
+}
+.col-feat__reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 900;
+}
+.col-feat__title {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(155, 107, 255, 0.35);
+  font-size: 11px;
+}

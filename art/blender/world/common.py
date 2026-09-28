@@ -35,6 +35,16 @@ SHADOW_DARK = "#2A2622"
 TURRET_YAW = -12.0
 BASE_YAW = -12.0
 
+# Turret mounts shared by every base (screen lu from the gate: x right, y UP), bottom to top. A
+# zig-zag between the front edge and a set-back ledge spreads the four turrets over the base's
+# full height, each pair at least 1.4x a turret's height apart, and keeps tap targets in the same
+# place in every age (so a base morph never moves a turret).
+BASE_MOUNTS = [(-6, 46), (-50, 112), (-8, 178), (-56, 246)]
+# Turrets render this much larger than their authored models (art review: they read as small bowls
+# next to 56 px infantry), capped so the tallest stays about 72 lu (59 px at 720p).
+TURRET_SCALE = 1.7
+TURRET_MAX_LU = 72.0
+
 
 # -- geometry -------------------------------------------------------------------------------
 def cyl(g, p0, p1, r, r1=None, bevel=0.6, segs=18, squash=(1, 1)):
@@ -222,9 +232,17 @@ def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, i
     or its children. idle(f) / fire(f): extra pose channels (dicts) per unique frame.
     """
     px_, pz_ = pivot
+    S = min(TURRET_SCALE, TURRET_MAX_LU / height)
 
     def _build(rig):
-        rig.joint("all", "root", (0, 0, 0))
+        # the whole turret is scaled by S at the "all" joint; interior lines keep their lu width
+        orig_part = rig.part
+
+        def part(joint, geo, *a, outline=C.OUTLINE_LU, **k):
+            return orig_part(joint, geo, *a, outline=min(outline, C.OUTLINE_LU) / S, **k)
+
+        rig.part = part
+        rig.joint("all", "root", (0, 0, 0), scale=S)
         rig.joint("mount", "all", (0, 0, 0))
         rig.joint("head", "all", (px_, 0, pz_))
         build(rig)
@@ -262,12 +280,14 @@ def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, i
             Clip("destroyed", 3, destroyed_pose, durations=DESTROYED_MS),
         ]
 
+    cw, ch = canvas
+    fx_, fy_ = feet
     return SimpleNamespace(
-        SLUG=slug, FILE_SLUG=slug, VISUAL_ID=f"turret.{slug}", NAME=name, HEIGHT_LU=height,
-        CANVAS=canvas, FEET=feet, YAW_DEG=yaw,
-        ANCHORS={"head": (0, height), "hitCenter": (0, pz_)},
-        EXTRA_META={"kind": "turret", "age": age, "pivotLu": list(project((px_, 0, pz_), yaw)),
-                    "aimLimits": list(aim), "fireKind": fire_kind},
+        SLUG=slug, FILE_SLUG=slug, VISUAL_ID=f"turret.{slug}", NAME=name, HEIGHT_LU=round(height * S, 1),
+        CANVAS=(round(cw * S), round(ch * S)), FEET=(round(fx_ * S), round(fy_ * S)), YAW_DEG=yaw,
+        ANCHORS={"head": (0, round(height * S, 1)), "hitCenter": (0, round(pz_ * S, 1))},
+        EXTRA_META={"kind": "turret", "age": age, "pivotLu": list(project((px_ * S, 0, pz_ * S), yaw)),
+                    "aimLimits": list(aim), "fireKind": fire_kind, "modelScale": round(S, 3)},
         build=_build, clips=clips, AGE=age,
     )
 
@@ -276,19 +296,23 @@ def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, i
 FLAG_MS = 110
 
 
-def base_module(age, name, height, width, canvas, feet, mounts, build, crumble, flags, treasury_levels=3,
+def base_module(age, name, height, width, canvas, feet, build, crumble, flags, mounts=None, treasury_levels=3,
                 lights=(), smoke=(), horn=(-80, 250), yaw=BASE_YAW, hit_center=None, mount_depth=-40.0):
     """A pipeline module for base.<age>.
 
-    mounts: the four sim-view mount points (x, y DOWN, lu) of BASE_PUPPETS; the build places
-    ledges there (`place()` at `mount_depth`, in front of the walls).
+    mounts: the four mount points (x, y DOWN, lu; default BASE_MOUNTS); the build models a real
+    platform at each (`place()` at `mount_depth`, a number or one per mount), and the sheet exports
+    them as `mountsLu`, which the game's base view returns from `mountPoints()`.
     lights / smoke: (character-space point, crumbleMax or crumbleMin[, radius lu]) for the
     code-drawn torch glow and damage smoke; exported projected to screen lu. build(rig, M) gets M = list of character-space mount points.
     crumble(stage) -> pose dict for the body at stages 0-3 (joints under `body`).
     flags: list of dicts {name, crumbleMax, z} whose joints build() created under root.
     Treasury joints are `treasury1..3` under root (hidden in the body frames).
     """
-    M = [place(mx, my, mount_depth, yaw) for mx, my in mounts]
+    if mounts is None:
+        mounts = [(x, -y) for x, y in BASE_MOUNTS]
+    depths = list(mount_depth) if isinstance(mount_depth, (list, tuple)) else [mount_depth] * len(mounts)
+    M = [place(mx, my, d, yaw) for (mx, my), d in zip(mounts, depths)]
     flag_names = [f["name"] for f in flags]
 
     def _build(rig):
@@ -385,3 +409,109 @@ def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6A5A4A"
     g = Geo().slab([(x - 0.5, zt), (x - length, zt - width * 0.35), (x - length * 0.8, zt - width * 0.6),
                     (x - 0.5, zt - width)], y, 1.2)
     rig.part(joint, g, team=True, outline=0.5)
+
+
+# -- turret platforms (art review: real mount ledges modelled into every base) ------------------
+def platform(rig, joint, m, top, side, style="stone", r=(27.0, 21.0), t=4.0, seed=0, depth_to=None,
+             accent=None):
+    """A turret platform whose top surface is exactly at the mount point `m` (character space).
+
+    style: rock (a cut rock shelf on a boulder), stone (a slab on stepped corbels), wood (a plank
+    deck on braces), bastion (a slab on a battered block), sandbag (a concrete pad ringed by bags),
+    disc (a hovering disc with a glow ring and a strut back to `depth_to`).
+    """
+    x, y, z = m
+    rx, ry = r
+    g = Geo()
+    if style == "rock":
+        rock(g, (x - 2, y + 4, z - t), (rx, ry, t + 0.6), seed=seed, jag=0.07, p=3.4)
+        g.clip((0, 0, z), (0, 0, -1))
+        rig.part(joint, g, top)
+        g = Geo()
+        rock(g, (x - 6, y + 10, z - t - 14), (rx * 0.7, ry * 0.8, 14), seed=seed + 7, jag=0.16)
+        rig.part(joint, g, side)
+    elif style == "stone":
+        box(g, (x - 2, y + 5, z - t / 2), (rx, ry, t / 2), p=7)
+        rig.part(joint, g, top)
+        g = Geo()
+        box(g, (x - 2, y + 5, z - t - 1.6), (rx - 2, ry - 1, 1.6), p=6)
+        for dx in (-rx * 0.6, 0, rx * 0.6):
+            for k in range(3):
+                box(g, (x - 2 + dx, y + 3 - (2 - k) * 1.5, z - t - 5 - k * 5), (4.6 - k * 0.6, 5 + k * 2, 2.6), p=5)
+        rig.part(joint, g, side)
+    elif style == "wood":
+        for k in range(4):
+            box(g, (x - 2, y - ry * 0.7 + k * ry * 0.47, z - 1.4), (rx, ry * 0.22, 1.4), p=6, cuts=2)
+        rig.part(joint, g, top)
+        g = Geo()
+        for dx in (-rx * 0.7, rx * 0.55):
+            g.capsule((x + dx, y - ry * 0.6, z - 3), (x + dx - 8, y + ry * 0.6, z - 26), 2.0)
+            g.capsule((x + dx, y + ry * 0.4, z - 3), (x + dx - 8, y + ry, z - 26), 2.0)
+        box(g, (x - 2, y - ry * 0.75, z - 4.5), (rx + 1, 1.6, 1.6), p=4, cuts=2)
+        rig.part(joint, g, side, outline=0.7)
+    elif style == "bastion":
+        box(g, (x - 2, y + 5, z - t / 2), (rx, ry, t / 2), p=7)
+        rig.part(joint, g, top)
+        g = Geo()
+        box(g, (x - 4, y + 9, z - t - 11), (rx - 3, ry - 2, 11), p=7, taper=(0.82, 1.0))
+        rig.part(joint, g, side)
+    elif style == "sandbag":
+        box(g, (x - 2, y + 5, z - t / 2), (rx, ry, t / 2), p=6)
+        rig.part(joint, g, top)
+        g = Geo()
+        box(g, (x - 4, y + 9, z - t - 10), (rx - 4, ry - 3, 10), p=5, taper=(0.85, 1.0))
+        rig.part(joint, g, side)
+        g = Geo()
+        n = 7
+        for k in range(n):
+            a = math.pi * (0.08 + 0.84 * k / (n - 1))
+            bx, by = x - 2 + rx * 0.98 * math.cos(a), y + 5 - ry * 0.95 * math.sin(a)
+            g.blob((bx, by, z - 1.0), (5.6, 4.0, 2.8), p=2.6, rot=(0, 0, math.degrees(-a) + 90))
+        rig.part(joint, g, accent or "#B8A67A", finish="hair")
+    elif style == "disc":
+        cyl(g, (x - 1, y + 4, z - t), (x - 1, y + 4, z), rx, rx + 1.5, bevel=1.2, segs=32, squash=(1.0, 0.72))
+        rig.part(joint, g, top)
+        g = Geo()
+        cyl(g, (x - 1, y + 4, z - t - 3), (x - 1, y + 4, z - t), rx * 0.78, bevel=0.4, segs=32, squash=(1.0, 0.72))
+        rig.part(joint, g, glow=accent or "#3AF0B4", outline=0)
+        if depth_to is not None:
+            g = Geo().capsule((x - rx * 0.4, y + 8, z - t - 1), depth_to, 2.6, 1.8)
+            rig.part(joint, g, side, finish="metal", outline=0.6)
+    return joint
+
+
+def chipped_cracks(rig, joint, lines, dark, chip, y_push=-1.5, w=2.2):
+    """Chipped-edge cracks on a surface facing the camera: `lines` = [[(x, y, z), ...], ...].
+    Each crack is a dark jagged groove with small lighter chips knocked out along its edges."""
+    g = Geo()
+    c = Geo()
+    rnd = random.Random(len(lines) * 31 + int(lines[0][0][0]))
+    for pts in lines:
+        for i, (a, b) in enumerate(zip(pts, pts[1:])):
+            wa = w * (1.0 - 0.25 * i / max(1, len(pts) - 1))
+            g.capsule(a, b, wa, wa * 0.7, segs=8, rings=3)
+            mx, my, mz = [(p + q) / 2 for p, q in zip(a, b)]
+            for s in (-1, 1):
+                if rnd.random() < 0.8:
+                    dx, dz = b[2] - a[2], -(b[0] - a[0])
+                    L = max(1e-3, math.hypot(dx, dz))
+                    o = (wa + 1.6) * s
+                    c.blob((mx + dx / L * o + rnd.uniform(-1.5, 1.5), my + y_push, mz + dz / L * o),
+                           (rnd.uniform(1.6, 2.8), 1.2, rnd.uniform(1.2, 2.2)), p=1.8,
+                           rot=(0, rnd.uniform(0, 90), 0))
+    rig.part(joint, g, dark, outline=0, highlight=False)
+    rig.part(joint, c, chip, outline=0.5)
+
+
+def moss_drape(rig, joint, spots, color, seed=0):
+    """Moss hanging over ledges: `spots` = [(x, y, z, width)]; tapered drips under a cap."""
+    rnd = random.Random(seed)
+    g = Geo()
+    for x, y, z, w in spots:
+        g.blob((x, y, z), (w / 2, 5, 2.6), p=2.4)
+        n = max(2, int(w // 6))
+        for k in range(n):
+            dx = -w / 2 + (k + 0.5) * w / n + rnd.uniform(-1, 1)
+            L = rnd.uniform(5, 13)
+            g.blob((x + dx, y - 1, z - L / 2), (2.2, 2.4, L / 2 + 1), p=2.0, taper=(0.4, 1.0))
+    rig.part(joint, g, color, finish="hair")

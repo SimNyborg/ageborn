@@ -95,16 +95,16 @@ def _hit(clip, idle0):
 
 # body trajectory of the death (added on top of the authored limbs; replaces fx.die_pose)
 DIE_BODY = [  # x back, z up, r spin, squash
-    dict(x=-3.0, z=0.0, r=8.0, q=-0.10),     # struck: squash into the blow
-    dict(x=-7.0, z=6.0, r=18.0, q=0.12),     # launched
-    dict(x=-11.0, z=9.5, r=26.0, q=0.06),    # apex
-    dict(x=-14.0, z=6.0, r=32.0, q=0.0),     # falling
-    dict(x=-16.0, z=0.0, r=30.0, q=-0.26),   # ground hit
-    dict(x=-17.0, z=2.5, r=24.0, q=0.05),    # small bounce
-    dict(x=-17.5, z=0.0, r=20.0, q=-0.20),   # settle
-    dict(x=-17.5, z=0.0, r=18.0, q=-0.28),   # slump
-    dict(x=-17.5, z=0.0, r=14.0, q=-0.40, s=0.92),  # hand-off (the poof covers it)
-    dict(x=-17.5, z=0.0, r=10.0, q=-0.50, s=0.82),
+    dict(x=-1.7, z=0.0, r=8.0, q=-0.10),     # struck: squash into the blow
+    dict(x=-3.9, z=6.0, r=18.0, q=0.12),     # launched
+    dict(x=-6.1, z=9.5, r=26.0, q=0.06),    # apex
+    dict(x=-7.7, z=6.0, r=32.0, q=0.0),     # falling
+    dict(x=-8.8, z=0.0, r=30.0, q=-0.26),   # ground hit
+    dict(x=-9.4, z=2.5, r=24.0, q=0.05),    # small bounce
+    dict(x=-9.6, z=0.0, r=20.0, q=-0.20),   # settle
+    dict(x=-9.6, z=0.0, r=18.0, q=-0.28),   # slump
+    dict(x=-9.6, z=0.0, r=14.0, q=-0.40, s=0.92),  # hand-off (the poof covers it)
+    dict(x=-9.6, z=0.0, r=10.0, q=-0.50, s=0.82),
 ]
 DIE_MS = [45, 60, 70, 60, 50, 60, 70, 90, 90, 100]
 DIE_U = [0.0, 0.3, 0.6, 0.85, 1.0, 1.0, 1.3, 1.7, 2.0, 2.0]

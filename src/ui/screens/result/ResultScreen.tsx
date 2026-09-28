@@ -263,19 +263,21 @@ function ProgressStage(p: { progress: ResultProgress }) {
 
 function FeatStage(p: { featId: string }) {
   const { t, content, locale } = useUi();
-  const def = (content as { feats?: { list: Record<string, { nameKey: string; dust: number }> } }).feats?.list[p.featId];
+  const def = content.feats.list[p.featId];
   return (
     <RewardRow
       testid={`reward-feat-${p.featId}`}
       icon={<StarIcon size={36} />}
       label={t('ui.result.featFound', { name: def ? t(def.nameKey) : p.featId })}
-      value={def ? formatSigned(def.dust, locale) : undefined}
+      value={
+        def ? (
+          <span class="result-reward__dust">
+            <DustIcon size={22} /> {formatSigned(def.dust, locale)}
+          </span>
+        ) : undefined
+      }
       tone="good"
-    >
-      <span class="result-reward__sub">
-        <DustIcon size={16} /> {t('ui.currency.dust')}
-      </span>
-    </RewardRow>
+    />
   );
 }
 
@@ -294,7 +296,7 @@ function Stage(p: { stage: ResultStage; animate: boolean }) {
 
 /** A compact chip for the summary row. */
 function SummaryChip(p: { r: RewardStep }) {
-  const { t, locale } = useUi();
+  const { t, locale, content } = useUi();
   const r = p.r;
   switch (r.kind) {
     case 'amber':
@@ -315,18 +317,34 @@ function SummaryChip(p: { r: RewardStep }) {
           <StarIcon size={18} /> {t('ui.result.codexPoints', { n: formatInt(r.points, locale) })}
         </span>
       );
-    case 'quest':
+    case 'quest': {
+      const def = content.quests.daily.find((q) => q.id === r.questId) ?? (content.quests.weekly.id === r.questId ? content.quests.weekly : undefined);
       return (
         <span class={`result-sum__chip${r.done ? ' is-done' : ''}`}>
-          <FlagIcon size={16} /> {r.done ? <CheckIcon size={16} /> : null}
+          <FlagIcon size={16} /> {r.done ? <CheckIcon size={16} /> : `${formatInt(Math.min(r.progress, def?.target ?? r.progress), locale)}/${formatInt(def?.target ?? 1, locale)}`}
+        </span>
+      );
+    }
+    case 'arena':
+      return (
+        <span class="result-sum__chip is-done">
+          <CrownIcon size={16} /> {t('ui.result.newArena')}
+        </span>
+      );
+    case 'title':
+      return (
+        <span class="result-sum__chip is-done">
+          <CrownIcon size={16} /> {t('ui.result.newTitle')}
+        </span>
+      );
+    case 'star':
+      return (
+        <span class="result-sum__chip is-done">
+          <StarIcon size={16} /> {r.star}
         </span>
       );
     default:
-      return (
-        <span class="result-sum__chip">
-          <CrownIcon size={16} />
-        </span>
-      );
+      return null;
   }
 }
 
@@ -504,7 +522,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   ];
 
   return (
-    <section class={`ui-screen result result--${kind}`} data-screen="result" data-result={kind} aria-labelledby="result-title">
+    <section class={`ui-screen result result--${kind}`} data-screen="result" data-testid="result" data-result={kind} aria-labelledby="result-title">
       <div class="result__rays" aria-hidden="true" />
       {kind === 'win' ? <Confetti /> : null}
       <header class="result__banner">

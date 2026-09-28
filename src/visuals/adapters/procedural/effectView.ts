@@ -142,7 +142,7 @@ export class ProceduralEffectView implements EffectView {
       this.layer.addChild(this.tail);
     }
     this.proj = fxSprite(this.opt.baker, sprite);
-    if (p?.scale) this.proj.scale.set(p.scale);
+    this.proj.scale.set((p?.scale ?? 1) * PROJECTILE_SCALE);
     this.layer.addChild(this.proj);
     this.stepFly(0);
   }
@@ -483,7 +483,7 @@ export class ProceduralEffectView implements EffectView {
       this.tail.position.set(x, y);
       this.tail.rotation = heading + Math.PI;
       const grow = Math.min(1, this.t / 80);
-      this.tail.scale.set((p.tail.length / 10) * grow, p.tail.width / 4);
+      this.tail.scale.set(((p.tail.length * PROJECTILE_SCALE) / 10) * grow, (p.tail.width * PROJECTILE_SCALE) / 4);
       const after = this.t - f.ms;
       this.tail.alpha = after > 0 ? Math.max(0, p.tail.alpha * (1 - after / 120)) : p.tail.alpha;
     }
@@ -514,6 +514,12 @@ function sampleKeys(keys: readonly SpriteKey[], u: number): Required<Omit<Sprite
   };
   return { sx: pick('sx', 1), sy: pick('sy', pick('sx', 1)), a: pick('a', 1), r: pick('r', 0), x: pick('x', 0), y: pick('y', 0) };
 }
+
+/**
+ * Projectiles and their tails are drawn this much larger than authored, so shots read next to the
+ * 3D-rendered units (art director review fix 11). Visual only: flight time and hits are the sim's.
+ */
+export const PROJECTILE_SCALE = 1.5;
 
 export function recipeFor(id: string): FxRecipe | undefined {
   return FX_RECIPE_BY_ID.get(id);

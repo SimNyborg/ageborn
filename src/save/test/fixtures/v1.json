@@ -134,7 +134,7 @@
   "mmr": 1087,
   "lossStreak": 1,
   "matchesPlayed": 27,
-  "daily": { "dayKey": "2026-09-22", "won": true },
+  "daily": { "dayKey": "2026-09-22", "bank": 1 },
   "conquest": { "stars": { "kettle": [true, true, false], "moss": [true, false, false] }, "milestonesClaimed": [] },
   "stats": {
     "matches": 27,

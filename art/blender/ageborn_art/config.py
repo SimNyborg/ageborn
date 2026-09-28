@@ -44,6 +44,7 @@ OUTLINE_FACTOR = 0.60       # interior line = fill x 0.60
 # sharper pixel filter, and sheets rendered at 2.46 px/lu (@2x) with a 1.23 px/lu (@1x) sheet
 # downsampled from the same frames. World renders (bases, turrets) keep the settings above.
 UNIT_OUTLINE_V3 = (2.5, 0.55, 0.50)   # px at 1x, fill factor, HSV value cap
+CHARACTER_YAW_V3 = -10.0              # bipeds closer to profile (facing reads at 56 px)
 UNIT_SCALE_V3 = 3.0                    # render scale of the @2x sheet (0.82 x 3 = 2.46 px/lu)
 FILTER_WIDTH = 1.5                     # Cycles pixel filter width (v3 units: 1.0)
 

@@ -22,6 +22,8 @@ def main():
     ap.add_argument("frames", nargs="+", help="clip:frame ...")
     ap.add_argument("--out", required=True)
     ap.add_argument("--scale", type=float, default=2.0)
+    ap.add_argument("--v3", action="store_true", help="retimed clips and the v3 outline")
+    ap.add_argument("--yaw", type=float, default=None, help="override the view yaw (deg)")
     args = ap.parse_args()
     import numpy as np
     from PIL import Image
@@ -36,9 +38,15 @@ def main():
     canvas = (C.px(mod.CANVAS[0]), C.px(mod.CANVAS[1]))
     feet = (C.px(mod.FEET[0]), C.px(mod.FEET[1]))
     scene.camera(*canvas, feet)
-    rig = Rig(mod.SLUG, yaw=getattr(mod, "YAW_DEG", C.CHARACTER_YAW_DEG))
+    yaw = args.yaw if args.yaw is not None else getattr(mod, "YAW_DEG",
+                                                                C.CHARACTER_YAW_V3 if args.v3 else C.CHARACTER_YAW_DEG)
+    rig = Rig(mod.SLUG, yaw=yaw)
     mod.build(rig)
-    clips = {c.name: c for c in mod.clips()}
+    from ageborn_art import retime
+    clips = {c.name: c for c in (retime.retime(mod, mod.clips()) if args.v3 else mod.clips())}
+    spec = pipeline.default_outline(mod)
+    if args.v3 and not hasattr(mod, "OUTER_OUTLINE"):
+        spec = C.UNIT_OUTLINE_V3
     poses = {}
     tmp = tempfile.mkdtemp()
     tiles = []
@@ -51,7 +59,7 @@ def main():
         smear = render.smear_for(rig, clip, poses[name], idx, getattr(mod, "SMEAR", None))
         raw = render.render_frame(rig, poses[name][idx], os.path.join(tmp, f"{name}_{idx}.png"),
                                   getattr(mod, "TEAM", True), smear)
-        base, team = pipeline.finish_frame(*raw, pipeline.default_outline(mod))
+        base, team = pipeline.finish_frame(*raw, spec)
         print(item, "team share %.1f%%" % sheet.team_share(sheet.load(raw[0]),
                                                           sheet.load(raw[1]) if raw[1] else None))
         tiles.append([sheet.to_image(sheet.composite(base, team, C.TEAM_COLORS[t]))

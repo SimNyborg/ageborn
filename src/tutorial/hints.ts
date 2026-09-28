@@ -43,10 +43,19 @@ export class AdaptiveHints {
   private powerFullSince: number | null = null;
   private evolveReadySince: number | null = null;
   private outdatedSince: number | null = null;
+  /** Hints already shown in this match: each shows at most once per match (C5 #2). */
+  private readonly thisMatch = new Set<AdaptiveHintId>();
+  /** Patterns detected outside this class (the app's trickle detector, A16.6). */
+  private readonly reported = new Set<AdaptiveHintId>();
 
   constructor(o: AdaptiveHintsOptions = {}) {
     this.counts = { ...(o.shown ?? {}) };
     this.disabled = new Set(o.disabled ?? []);
+  }
+
+  /** A pattern found by a detector outside the tutorial layer (the trickle detector, A16.6). */
+  report(id: AdaptiveHintId): void {
+    this.reported.add(id);
   }
 
   /** Shows per hint id, including this match. */
@@ -63,9 +72,10 @@ export class AdaptiveHints {
     if (quiet || i.state.phase === 'ended') return null;
     if (i.state.tick - this.lastHintTick < ADAPTIVE.gapTicks) return null;
     for (const def of ADAPTIVE_HINTS) {
-      if (this.disabled.has(def.id) || (this.counts[def.id] ?? 0) >= ADAPTIVE.maxPerHint) continue;
+      if (this.disabled.has(def.id) || this.thisMatch.has(def.id) || (this.counts[def.id] ?? 0) >= ADAPTIVE.maxPerHint) continue;
       if (!this.matches(def.id, i)) continue;
       this.counts[def.id] = (this.counts[def.id] ?? 0) + 1;
+      this.thisMatch.add(def.id);
       this.lastHintTick = i.state.tick;
       this.resetPattern(def.id);
       if (def.id === 'modernise') return { ...def, target: this.outdatedMountTarget(i) };
@@ -96,6 +106,7 @@ export class AdaptiveHints {
     if (id === 'powerReady') this.powerFullSince = tick;
     if (id === 'evolveFirst') this.evolveReadySince = tick;
     if (id === 'modernise') this.outdatedSince = tick;
+    this.reported.delete(id);
   }
 
   private matches(id: AdaptiveHintId, i: TickInput): boolean {
@@ -139,6 +150,8 @@ export class AdaptiveHints {
       }
       case 'modernise':
         return this.outdatedSince !== null && tick - this.outdatedSince >= ADAPTIVE.outdatedTicks && !evolveReady(i);
+      case 'trickle':
+        return this.reported.has('trickle');
       default:
         return false;
     }

@@ -7,3 +7,5 @@
 - **Defaults** (A15.6, B8): `breakReminder` true, `quickReveal` false, `vibrate` false, for every player.
 - **Fixture:** update the v1 save fixture in the same change as WP0.
 - **Version:** SaveDoc stays at version 1 with no migration, because all of this lands before the Checkpoint C push. After that push, every shape change needs a migration (B8, A15.18).
+
+**Done (2026-09-28, onboarding-daily track):** `daily` is `{ dayKey, bank }` (`count`), `settings.breakReminder` / `quickReveal` are optional with fallbacks true / false, and `vibrate` defaults to false in `src/save/defaults.ts` and the meta new save. The schema has no upper limits on these counts, so 28 charges, 7 allowances, 21 quests and a bank of 7 all validate. There is no v1 save fixture file in the repo to update.

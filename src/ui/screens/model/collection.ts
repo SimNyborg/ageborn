@@ -39,3 +39,31 @@ export function filterCards(save: SaveDoc, content: Content, f: CollectionFilter
     return true;
   });
 }
+
+/** One feat in the Feats tab (A15.10). Obscure feats are listed last. */
+export interface FeatView {
+  id: string;
+  found: boolean;
+  hinted: boolean;
+  dust: number;
+  title: string | null;
+  nameKey: string;
+  riddleKey: string;
+  hintKey: string;
+}
+
+export function featViews(save: SaveDoc, content: Content): FeatView[] {
+  const tables = content.feats;
+  const list = tables.order.map((id) => tables.list[id]).filter((f): f is NonNullable<typeof f> => !!f);
+  const ordered = [...list.filter((f) => !f.obscure), ...list.filter((f) => f.obscure)];
+  return ordered.map((f) => ({
+    id: f.id,
+    found: save.flags[`feat.${f.id}`] === true,
+    hinted: save.flags[`featHint.${f.id}`] === true,
+    dust: f.dust,
+    title: f.title,
+    nameKey: f.nameKey,
+    riddleKey: f.riddleKey,
+    hintKey: f.hintKey,
+  }));
+}

@@ -11,7 +11,7 @@ describe('NonePlatform (DESIGN B11)', () => {
       done = true;
     });
     expect(done).toBe(true);
-    expect(p.features).toEqual({ reelReveal: true, externalLinks: true });
+    expect(p.features).toEqual({ reelReveal: false, externalLinks: true });
   });
 
   it('tracks the gameplay lifecycle', () => {

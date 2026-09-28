@@ -159,7 +159,7 @@ export default function WallSandbox() {
           );
         })}
         <text x={W / 2} y={24} fill="#f4ecd8" text-anchor="middle" font-size="14">
-          {(tick / 20).toFixed(1)} s · base HP {sim.state.sides[0].baseHp} / {sim.state.sides[1].baseHp} · walls {walls.length}
+          {(tick / 20).toFixed(1)} s · base HP {Math.round(sim.state.sides[0].baseHp / 1000)} / {Math.round(sim.state.sides[1].baseHp / 1000)} · walls {walls.length}
           {out ? ` · ended: ${out.winner === null ? 'draw' : `side ${out.winner} wins`} (${out.reason})` : ''}
         </text>
       </svg>

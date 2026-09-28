@@ -1,0 +1,86 @@
+/**
+ * Card portraits for units drawn with 3D sprite sheets (art director review fix 10): a still rendered
+ * by the Blender pipeline (`art/blender/gen_portraits.py`) at 256 px, as a base image plus a grey team
+ * layer, composited here on the same age plate and foil frame as the procedural portraits, with the
+ * team layer tinted in the side's colour. `null` when the still is missing (the caller then draws the
+ * procedural portrait).
+ */
+import type { AgeId, Foil } from '@/contracts/ids';
+import { drawPortraitPlate, foilFrame } from '../portraits';
+
+/** `art/units/<age>/<slug>.json` → `art/portraits/<slug>` (no extension), or null for other sources. */
+export function portraitStillBase(source: string): string | null {
+  const m = /art\/units\/[a-z]+\/([a-z0-9_]+)\.json$/.exec(source);
+  return m ? `art/portraits/${m[1]}` : null;
+}
+
+const images = new Map<string, Promise<HTMLImageElement>>();
+
+function loadImage(url: string): Promise<HTMLImageElement> {
+  let p = images.get(url);
+  if (!p) {
+    p = new Promise((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = () => reject(new Error(`portrait still "${url}" failed`));
+      im.src = url;
+    });
+    p.catch(() => images.delete(url));
+    images.set(url, p);
+  }
+  return p;
+}
+
+const css = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
+
+export interface StillPortraitOptions {
+  /** URL of the still without extension (`<base>.png` and `<base>_team.png`). */
+  url: string;
+  age: AgeId | null;
+  size: number;
+  foil: Foil;
+  teamColor: number;
+  plate: boolean;
+}
+
+export async function renderStillPortrait(o: StillPortraitOptions): Promise<string | null> {
+  if (typeof document === 'undefined') return null;
+  let base: HTMLImageElement;
+  let team: HTMLImageElement | null;
+  try {
+    base = await loadImage(`${o.url}.png`);
+    team = await loadImage(`${o.url}_team.png`).catch(() => null);
+  } catch {
+    return null;
+  }
+  const { size } = o;
+  const c = document.createElement('canvas');
+  c.width = size;
+  c.height = size;
+  const ctx = c.getContext('2d');
+  if (!ctx) return null;
+  if (o.plate) drawPortraitPlate(ctx, o.age, size);
+  const inner = size * (o.foil === 'none' ? 0.92 : 0.8);
+  const off = (size - inner) / 2;
+  if (team) {
+    // grey team layer x team colour (multiply), clipped back to the layer's own alpha
+    const t = document.createElement('canvas');
+    t.width = size;
+    t.height = size;
+    const tc = t.getContext('2d');
+    if (tc) {
+      tc.imageSmoothingQuality = 'high';
+      tc.drawImage(team, off, off, inner, inner);
+      tc.globalCompositeOperation = 'multiply';
+      tc.fillStyle = css(o.teamColor);
+      tc.fillRect(0, 0, size, size);
+      tc.globalCompositeOperation = 'destination-in';
+      tc.drawImage(team, off, off, inner, inner);
+      ctx.drawImage(t, 0, 0);
+    }
+  }
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(base, off, off, inner, inner);
+  foilFrame(ctx, o.foil, size);
+  return c.toDataURL('image/png');
+}

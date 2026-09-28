@@ -5,8 +5,11 @@ import { FixedClock } from '@/contracts/fakes/clock';
 import { AppController, QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
 import { buildServices, DEFAULT_CHOICE } from '../services';
 
+/** The controller's own flow without meta and save (the meta screens are tested in metaUi.test.ts). */
+const NO_META = { ...DEFAULT_CHOICE, save: 'memory', meta: 'none' } as const;
+
 async function controller() {
-  const services = await buildServices({ choice: DEFAULT_CHOICE, clock: new FixedClock() });
+  const services = await buildServices({ choice: NO_META, clock: new FixedClock() });
   const c = new AppController(services, { save: null, autopilot: true, delay: async () => undefined });
   return { c, services };
 }
@@ -139,7 +142,7 @@ describe('AppController: the first session (A8, A9 flow)', () => {
   }, 60_000);
 
   it('sets the A14.3 music cues: menu on the title, the first age in battle, stop on quit', async () => {
-    const services = await buildServices({ choice: { ...DEFAULT_CHOICE, audio: 'fake' }, clock: new FixedClock() });
+    const services = await buildServices({ choice: { ...NO_META, audio: 'fake' }, clock: new FixedClock() });
     const audio = services.audio as FakeAudio;
     const c = new AppController(services, { save: null, delay: async () => undefined });
     c.showTitle();

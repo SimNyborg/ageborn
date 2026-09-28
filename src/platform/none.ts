@@ -8,7 +8,7 @@
 import type { PlatformAdapter } from '@/contracts';
 
 export class NonePlatform implements PlatformAdapter {
-  readonly features = { reelReveal: true, externalLinks: true };
+  readonly features = { reelReveal: false, externalLinks: true };
   /** True between `gameplayStart` and `gameplayStop`. Portals use this to suppress ads mid-play. */
   inGameplay = false;
   initialized = false;

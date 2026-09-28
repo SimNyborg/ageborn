@@ -14,7 +14,7 @@ import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge, Pill } from '../../components/Chips';
 import { formatClock, formatInt, tierNumeral } from '../../components/format';
-import { CardsIcon, CastleIcon, CrownIcon, PencilIcon, ReplayIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
+import { CardsIcon, CastleIcon, CrownIcon, PencilIcon, ReplayIcon, RobotIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { Empty, Panel, ScreenFrame } from '../../components/Layout';
 import { ProgressBar } from '../../components/Meters';
 import { Modal } from '../../components/Modal';
@@ -217,6 +217,12 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
           </Panel>
           <div class="prof-stats" data-testid="profile-stats">
             <Stat testid="stat-best" icon={<TrophyIcon size={26} />} label={t('ui.profile.best')} value={formatInt(v.best, locale)} />
+            <Stat
+              testid="stat-peak"
+              icon={<RobotIcon size={26} />}
+              label={t('ui.profile.highestTier')}
+              value={v.highestTierBeaten === null ? t('ui.profile.none') : tierNumeral(v.highestTierBeaten)}
+            />
             <Stat
               icon={<SwordsIcon size={26} />}
               label={t('ui.profile.record')}

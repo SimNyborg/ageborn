@@ -4,7 +4,7 @@
  * pass flips it on (Phase 2).
  *
  * 2. tutorial match 1 on autopilot (`?dev=1&autopilot=1` issues scripted commands)
- * 3. capsule 1 opens
+ * 3. capsule 1 opens (3b: the honesty copy, the odds panel and a reload mid-animation)
  * 4. reload keeps state
  * 5. Home renders
  * 6. a Skirmish starts and ends via dev fast-forward (6a: the Quick Battle dev route until Skirmish is
@@ -13,7 +13,7 @@
  * Plus the visibility pause (C5 #20), which needs a running battle.
  */
 import { expect, test, type Page } from '@playwright/test';
-import { fastForward, requireFlow, watchPage } from './helpers';
+import { fastForward, pastOnboarding, requireFlow, watchPage } from './helpers';
 
 /** Fast-forwards the battle on screen until the result screen shows. */
 async function playToResult(page: Page): Promise<void> {
@@ -60,6 +60,7 @@ test.describe('B13 flows', () => {
 
   test('3. capsule 1 opens', async ({ page }) => {
     requireFlow('capsule');
+    test.setTimeout(180_000);
     await winMatch1(page);
     await page.getByTestId('next').click();
     await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
@@ -75,6 +76,46 @@ test.describe('B13 flows', () => {
       )
       .toBe(true);
     await expect(page.getByTestId('capsule-summary-item').first()).toBeVisible();
+  });
+
+  test('3b. capsule 1: honest copy, odds panel, and a reload mid-animation keeps the result (A15.3, C5 #5, #29)', async ({ page }) => {
+    requireFlow('capsule');
+    test.setTimeout(180_000);
+    const problems = watchPage(page);
+    await winMatch1(page);
+    await page.getByTestId('next').click();
+    await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
+    // The first capsule is a scripted Starter Capsule and says the result is already decided.
+    await expect(page.getByTestId('capsule-kind')).toContainText(/Starter Capsule/i);
+    await expect(page.getByTestId('capsule-honesty')).toContainText('decided when you earned this capsule');
+    // The result was saved before the animation: a reload plays the same capsule again.
+    const record = await page.evaluate(() => localStorage.getItem('ageborn.capsuleShow'));
+    expect(record).not.toBeNull();
+    await page.reload();
+    await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 30_000 });
+    expect(await page.evaluate(() => localStorage.getItem('ageborn.capsuleShow'))).toBe(record);
+    // Odds: the honesty line, and "Set contents" for a Starter Capsule instead of bag odds.
+    await page.getByTestId('capsule-pity').getByRole('button').click();
+    await expect(page.getByTestId('capsule-odds-honesty')).toBeVisible();
+    await expect(page.getByTestId('capsule-odds-set')).toBeVisible();
+    await page.getByTestId('capsule-odds-close').click();
+    await expect
+      .poll(
+        async () => {
+          const skip = page.getByTestId('capsule-skip');
+          if (await skip.isVisible()) await skip.click();
+          else await page.getByTestId('capsule-screen').click();
+          return page.getByTestId('capsule-summary').isVisible();
+        },
+        { timeout: 60_000, intervals: [300] },
+      )
+      .toBe(true);
+    // Capsule 1 reveals Spear Hunter NEW (A8, C5 #5).
+    await expect(page.locator('[data-testid=capsule-summary-item][data-card=spear_hunter]')).toBeVisible();
+    await page.getByTestId('capsule-done').click();
+    await expect(page.getByTestId('capsule-screen')).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('ageborn.capsuleShow'))).toBeNull();
+    expect(problems.errors).toEqual([]);
   });
 
   test('4. reload keeps state', async ({ page }) => {
@@ -93,9 +134,16 @@ test.describe('B13 flows', () => {
   test('5. Home renders', async ({ page }) => {
     requireFlow('home');
     const problems = watchPage(page);
-    await page.goto('./');
-    await expect(page.getByTestId('home')).toBeVisible({ timeout: 20_000 });
+    await pastOnboarding(page);
+    await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('battle-button')).toBeVisible();
+    // A15.13: charges as "n/max" with no timer, the War Chest bar, at most 3 quests.
+    await expect(page.getByTestId('charges')).toContainText(/\d+\/\d+/);
+    await expect(page.getByTestId('war-chest')).toContainText('War Chest');
+    await expect(page.getByTestId('quest-3')).toHaveCount(0);
+    // A reload keeps the profile past onboarding: Home again, no tutorial battle.
+    await page.goto('./');
+    await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     expect(problems.errors).toEqual([]);
   });
 
@@ -113,15 +161,23 @@ test.describe('B13 flows', () => {
 
   test('6. a Skirmish starts and ends via dev fast-forward', async ({ page }) => {
     requireFlow('skirmish');
-    await page.goto('./');
-    await expect(page.getByTestId('home')).toBeVisible({ timeout: 20_000 });
+    test.setTimeout(180_000);
+    await pastOnboarding(page);
+    await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await page.getByTestId('battle-button').click();
     // The Skirmish card (`mode-skirmish`) opens its setup dialog, which starts the match. Skirmish
     // unlocks after the onboarding matches (A8), so the profile must be past them when this is wired.
     await page.getByTestId('mode-skirmish').getByTestId('skirmish-open').click();
     await expect(page.getByTestId('skirmish-setup')).toBeVisible();
     await page.getByTestId('skirmish-start').click();
+    // VS (2 s, skippable) shows the AI badge, then the battle starts.
+    await expect(page.locator('[data-screen="vs"]')).toBeVisible({ timeout: 20_000 });
     await playToResult(page);
     await expect(page.getByTestId('result-title')).toHaveAttribute('data-outcome', /win|loss|draw/);
+    // Rewards are staged; a tap skips; Home returns to Home.
+    const skip = page.getByTestId('result-skip');
+    if (await skip.isVisible()) await skip.click();
+    await page.getByTestId('result-home').click();
+    await expect(page.locator('[data-screen="home"]')).toBeVisible();
   });
 });

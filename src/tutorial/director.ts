@@ -11,7 +11,7 @@
  */
 import type { Side } from '@/contracts';
 import { AdaptiveHints, type AdaptiveHintsOptions } from './hints';
-import { ADAPTIVE, type Beat, type MatchScript, type PromptTarget } from './scripts';
+import { ADAPTIVE, type AdaptiveHintId, type Beat, type MatchScript, type PromptTarget } from './scripts';
 import { PPM_FULL, evolveReady, eventOfSide, goldOf, trayCard, type TickInput } from './view';
 
 export interface TutorialPrompt {
@@ -97,6 +97,11 @@ export class TutorialDirector {
   }
 
   /** Shows per hint id and beat id, to store in `SaveDoc.tutorial.hintsShown`. */
+  /** A failure pattern found outside the tutorial layer (the app's trickle detector, A16.6). */
+  reportPattern(id: AdaptiveHintId): void {
+    this.hints?.report(id);
+  }
+
   hintsShown(): Record<string, number> {
     return this.hints?.shown() ?? {};
   }

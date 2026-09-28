@@ -124,7 +124,6 @@
       "battle": "Battle",
       "nextOpponent": "Next opponent",
       "quests": "Quests",
-      "weekly": "Weekly quest",
       "capsules": "Capsules",
       "noCapsules": "Win battles to earn capsules",
       "open": "Open ({n})",
@@ -132,15 +131,9 @@
       "openOne": "Open {name}",
       "openCrate": "Open Wardrobe Crate",
       "more": "+{n}",
-      "daily": "Daily Capsule",
-      "dailyBank": "Ready: {n}/{max}",
-      "dailyNext": "Next in {time}",
-      "dailyLocked": "Opens after your second capsule",
       "claim": "Claim",
       "charges": "Charges {n}/{max}",
       "freeCapsules": "Next {n} capsules are free",
-      "chargeNext": "+1 in {time}",
-      "chargesFull": "Full",
       "roadNext": "Next reward at {n}",
       "roadDone": "Trophy Road complete",
       "arenaN": "Arena {n}",
@@ -161,7 +154,6 @@
       "queueLine": "New quests arrive each day. Up to 21 can wait for you."
     },
     "odds": {
-      "open": "Odds and pity",
       "title": "Odds and pity",
       "honest": "Every capsule is rolled the moment you earn it and saved before it opens. The show only reveals it.",
       "bagTitle": "Win Capsule bag",
@@ -232,7 +224,6 @@
       "daily": {
         "title": "Daily Challenge",
         "desc": "{format} with today's twist.",
-        "firstWin": "First win today: Age Capsule",
         "wonToday": "Won today. More wins: {n} Amber",
         "rules": "Uses no charges and changes no trophies.",
         "difficulty": "Difficulty",
@@ -419,7 +410,8 @@
         "win": "Win",
         "base": "Win with your base above {n}%",
         "time": "Win before {time}"
-      }
+      },
+      "youAreHere": "You are here"
     },
     "profile": {
       "codex": "Codex Level",
@@ -454,7 +446,9 @@
       "draw": "Draw",
       "watch": "Watch replay",
       "oldReplay": "Recorded in an older version; it can't be played.",
-      "oldReplayShort": "Older version"
+      "oldReplayShort": "Older version",
+      "highestTier": "Highest AI tier beaten",
+      "none": "None yet"
     },
     "settings": {
       "audio": "Sound",
@@ -544,6 +538,13 @@
       "capsules": "Capsules are earned by playing. Each one is decided when it is earned, and its odds are shown.",
       "breaks": "A break reminder appears after 60 minutes of play. You can switch it off or on here.",
       "kept": "Taking a break never takes away anything your child has earned."
+    },
+    "feats": {
+      "tab": "Feats",
+      "found": "Found {n}/{max}",
+      "unknown": "???",
+      "showHint": "Show hint",
+      "plusTitle": "+ title"
     }
   }
 }

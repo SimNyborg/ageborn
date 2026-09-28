@@ -2,8 +2,8 @@
  * Capsule test bench (WP10, DESIGN A9 screen 16 "capsule test bench", C2/WP10 DoD).
  *
  * Plays every bench case: each tier and start tier, fixed tiers, first-time and repeat Legendaries,
- * a NEW Epic, each foil, Dust, a bonus skin, the onboarding script, a 10-capsule "Open all" and the
- * Wardrobe reel with the flag on and off. Shows the plan checks (time limits, back-loaded climb),
+ * a NEW Epic, each foil, Dust, a bonus skin, the onboarding script, a 10-capsule "Open all", quick
+ * reveal and the Wardrobe Crate card flip for each skin rarity. Shows the plan checks (time limits, back-loaded climb),
  * the live step and a sound log. URL: `?dev=1#capsuleBench/<caseId>`; add `&art=fake` to the query
  * for the fake art provider. Dev pages are exempt from the i18n rule.
  */
@@ -28,6 +28,10 @@ import {
   type ShowStep,
 } from '@/capsule';
 import { asContent } from '@/content';
+import { OddsSheet } from '@/ui/components/OddsSheet';
+import { oddsModel } from '@/ui/components/oddsModel';
+import '@/ui/theme.css';
+import '@/app/capsules/capsuleHost.css';
 import { BENCH_CASES, type BenchCase } from './cases';
 
 export const title = 'Capsule bench';
@@ -200,7 +204,16 @@ export default function CapsuleBench() {
     onEquipSkin: (skin: string) => note(`Equip skin: ${skin}`),
     onUpgrade: (card: string) => note(`Upgrade: ${card}`),
     onOpenNext: () => note('Open next'),
-    onShowOdds: () => note('Odds'),
+    oddsSheet: () => {
+      const c = asContent(content);
+      const pity = bench?.pity ?? bench?.reveals?.[0]?.pityBefore ?? { sinceEpic: 0, sinceLegendary: 0, sinceNewCard: 0, opened: 0, wardrobeSinceEpic: 0, wardrobeSinceLegendary: 0 };
+      return (
+        <div class="ui-root ab-capsule-odds">
+          <OddsSheet model={oddsModel(c.capsules, c.rarities, { pity, capsules: { bag: [0, 0, 1, 1, 1, 2, 3, 4] } as never }, true)} />
+        </div>
+      );
+    },
+    onOpenAll: () => note('Open all'),
     pendingCount: 2,
   };
 

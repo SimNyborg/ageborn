@@ -237,6 +237,10 @@ export function createPreviewServices(o: {
       const e = save.value.collection[card];
       if (e?.isNew) set((s) => ({ ...s, collection: { ...s.collection, [card]: { ...e, isNew: false } } }));
     },
+    showFeatHint(id) {
+      log('showFeatHint', id);
+      set((s) => ({ ...s, flags: { ...s.flags, [`featHint.${id}`]: true } }));
+    },
     equipSkin(target, skin) {
       set((s) => {
         const equipped = { ...s.skins.equipped };

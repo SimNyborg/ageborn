@@ -1,21 +1,27 @@
 """Stone Age base: the Cave Hold (DESIGN A11 Bases).
 
-A mossy rock hill with a firelit cave behind a log palisade, framed by two mammoth tusks.
-Four stone shelves step up the front face for the turret mounts. Team colour: hide banners
-on poles (waving flags) and a big painted hide hung on the rock face.
-Crumble: cracks and a lost chunk (75%), a broken palisade and rubble (50%), the top rock
-knocked askew with the top banner gone and smoke (25%).
+A mossy crag that leans toward the lane with an overhang, a firelit cave behind a log palisade,
+framed by two mammoth tusks. Four cut rock shelves zig-zag up the crag for the turret mounts
+(common.BASE_MOUNTS): a boulder stack by the gate, a shelf in the face, a ledge under the overhang
+and the summit. Team colour: hide banners on poles (waving flags) and a big painted hide on the
+rock face. Crumble: chipped cracks and a lost chunk (75%), a broken palisade and rubble (50%), the
+summit knocked askew with the top banner gone and smoke (25%).
 Treasury: a berry basket and meat (1), a pile of furs (2), tusks and ochre stones (3).
 """
+import random
+
 from ageborn_art.geometry import Geo
 
-from world.common import BASE_YAW, SHADOW_DARK, base_module, box, cyl, flag, rock, rope
+from world.common import (BASE_YAW, SHADOW_DARK, base_module, chipped_cracks, cyl, flag, moss_drape, platform,
+                          rock, rope)
 
 STONE = "#8C7B68"
-STONE_LT = "#9C8B76"
-STONE_DK = "#77695A"
+STONE_LT = "#A08E78"
+STONE_DK = "#76685A"
+STONE_DKR = "#655A4E"
 MOSS = "#6E8B3D"
 MOSS_LT = "#7E9A4A"
+MOSS_DK = "#5C7534"
 BONE = "#EDE3C8"
 WOOD = "#7A5E44"
 WOOD_DK = "#5E4836"
@@ -26,175 +32,208 @@ MEAT = "#B87A6A"
 FUR = "#8A6E52"
 FIRE = "#FFC47A"
 FIRE_CORE = "#FFF0CC"
+CRACK = "#3E362F"
+CHIP = "#B2A08A"
 
-CRACK = "#4E443B"
-MOUNTS = [(-10, -64), (-14, -110), (-20, -154), (-30, -198)]
+DEPTHS = [-40, -24, -40, -24]
+CAVE = (-104.0, -44.0)
 
 
 def build(rig, M):
-    # crumble joints under body
-    for j, pos in (("top", (-80, 10, 180)), ("chunkA", (-40, -20, 150)), ("chunkB", (-120, -10, 110)),
-                   ("pal", (-40, -52, 0)), ("palB", (-12, -52, 0))):
+    for j, pos in (("top", (-104, 30, 236)), ("chunkA", (-120, -30, 150)), ("chunkB", (-150, -10, 100)),
+                   ("pal", (-104, -60, 0))):
         rig.joint(j, "body", pos)
-    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "smokeHole"):
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3"):
         rig.joint(j, "body", (0, 0, 0), hidden=True)
 
-    # the rock mass
+    # the crag: a wide foot, a body that leans toward the lane, an overhang and the summit
     g = Geo()
-    rock(g, (-78, 16, 58), (82, 44, 64), seed=1, jag=0.12)
-    rock(g, (-136, 22, 60), (34, 36, 62), seed=2)
-    rock(g, (-30, 4, 34), (34, 32, 38), seed=3)
+    rock(g, (-96, 18, 54), (84, 46, 58), seed=1, jag=0.12)
+    rock(g, (-150, 22, 70), (32, 34, 70), seed=2)
     rig.part("body", g, STONE)
     g = Geo()
-    rock(g, (-84, 20, 124), (60, 40, 50), seed=4, jag=0.14)
+    rock(g, (-78, 14, 138), (62, 40, 50), seed=4, jag=0.14, rot=(0, -10, 0))
     rig.part("body", g, STONE_LT)
     g = Geo()
-    rock(g, (-86, 24, 180), (44, 34, 40), seed=5, jag=0.15)
-    rig.part("top", g, STONE)
-    # moss caps
+    # the overhang juts out over the lane side (it carries the third mount's ledge)
+    rock(g, (-34, -8, 190), (44, 32, 22), seed=6, jag=0.12, rot=(0, -8, 0))
+    rig.part("body", g, STONE)
     g = Geo()
-    rock(g, (-86, 23, 186), (46, 36, 40), seed=5, jag=0.15)
-    g.clip((0, 0, 198), (0, 0, -1))
-    rig.part("top", g, MOSS, finish="hair")
+    rock(g, (-30, -14, 170), (30, 22, 10), seed=16, jag=0.18)
+    rig.part("body", g, STONE_DKR)
+    # summit block, and a pinnacle behind it that tilts off at crumble 3
     g = Geo()
-    rock(g, (-84, 19, 130), (62, 42, 50), seed=4, jag=0.14)
-    g.clip((0, 0, 156), (0, 0, -1))
+    rock(g, (-68, 8, 236), (46, 36, 32), seed=5, jag=0.14)
+    rig.part("body", g, STONE)
+    g = Geo()
+    rock(g, (-70, 9, 243), (48, 38, 30), seed=5, jag=0.14)
+    g.clip((0, 0, 254), (0, 0, -1))
+    rig.part("body", g, MOSS, finish="hair")
+    g = Geo()
+    rock(g, (-104, 30, 262), (22, 18, 30), seed=15, jag=0.16, rot=(0, 12, 0))
+    rig.part("top", g, STONE_LT)
+    # moss caps on the ledges
+    g = Geo()
+    rock(g, (-78, 13, 144), (64, 42, 48), seed=4, jag=0.14, rot=(0, -10, 0))
+    g.clip((0, 0, 172), (0, 0, -1))
     rig.part("body", g, MOSS_LT, finish="hair")
     g = Geo()
-    rock(g, (-137, 21, 64), (36, 38, 62), seed=2)
-    g.clip((0, 0, 108), (0, 0, -1))
+    rock(g, (-150, 21, 76), (34, 36, 70), seed=2)
+    g.clip((0, 0, 124), (0, 0, -1))
     rig.part("body", g, MOSS, finish="hair")
+    g = Geo()
+    rock(g, (-34, -8, 194), (46, 34, 22), seed=6, jag=0.12, rot=(0, -8, 0))
+    g.clip((0, 0, 204), (0, 0, -1))
+    rig.part("body", g, MOSS_LT, finish="hair")
+    moss_drape(rig, "body", [(-70, -26, 170, 30), (-112, -24, 164, 18), (-18, -38, 176, 16), (-148, -12, 124, 16),
+                             (-88, -24, 232, 20)], MOSS_DK, seed=3)
+    # strata: darker bands of flat stones on the foot
+    g = Geo()
+    rnd = random.Random(9)
+    for x, z in ((-160, 30), (-138, 22), (-118, 36), (-72, 30), (-60, 60), (-140, 90), (-40, 100), (-120, 118)):
+        rock(g, (x, -34 + rnd.uniform(-4, 2), z), (rnd.uniform(9, 14), 5, rnd.uniform(4, 6)), seed=int(x * z) % 97,
+             jag=0.2, p=2.6)
+    rig.part("body", g, STONE_DK)
     # chunks that break off
     g = Geo()
-    rock(g, (-40, -12, 150), (18, 16, 16), seed=11, jag=0.2)
+    rock(g, (-120, -28, 150), (16, 14, 14), seed=11, jag=0.2)
     rig.part("chunkA", g, STONE_DK)
     g = Geo()
-    rock(g, (-122, -8, 108), (16, 14, 18), seed=12, jag=0.2)
+    rock(g, (-150, -10, 104), (15, 14, 16), seed=12, jag=0.2)
     rig.part("chunkB", g, STONE_DK)
 
-    # the cave: a dark mouth with firelight inside
-    g = Geo().blob((-52, -26, 20), (24, 10, 34), p=2.2, cuts=5)
+    # the cave: a dark mouth with firelight inside, a rim of darker stone
+    cx, cy = CAVE
+    g = Geo().blob((cx, cy + 12, 22), (26, 10, 36), p=2.2, cuts=5)
+    g.clip((0, 0, 0.5), (0, 0, -1))
+    rig.part("body", g, STONE_DKR)
+    g = Geo().blob((cx, cy + 4, 20), (21, 8, 31), p=2.2, cuts=5)
     g.clip((0, 0, 0.5), (0, 0, -1))
     rig.part("body", g, SHADOW_DARK, highlight=False)
-    g = Geo().blob((-52, -33, 6), (14, 4, 12), p=2.0)
+    g = Geo().blob((cx, cy - 4, 6), (13, 4, 11), p=2.0)
     rig.part("body", g, glow="#E8A868", outline=0)
-    g = Geo().blob((-52, -36, 4), (7, 3, 7), p=2.0)
+    g = Geo().blob((cx, cy - 7, 4), (6, 3, 6), p=2.0)
     rig.part("body", g, glow=FIRE_CORE, outline=0)
     # mammoth tusks framing the cave
-    for x0, s in ((-80, -1), (-24, 1)):
-        pts = [(x0, -42, 0), (x0 + 4 * s, -44, 22), (x0 + 12 * s, -44, 44), (x0 + 24 * s, -42, 58), (x0 + 34 * s, -40, 62)]
+    for x0, s in ((cx - 28, -1), (cx + 26, 1)):
+        pts = [(x0, cy - 14, 0), (x0 + 4 * s, cy - 16, 22), (x0 + 12 * s, cy - 16, 44), (x0 + 24 * s, cy - 14, 58),
+               (x0 + 34 * s, cy - 12, 62)]
         g = Geo()
         for i, (a, b) in enumerate(zip(pts, pts[1:])):
             g.capsule(a, b, 5.2 - i * 1.1, 5.2 - (i + 1) * 1.1)
         rig.part("body", g, BONE)
     # skull over the cave
-    g = Geo().blob((-52, -42, 72), (9, 7, 8), p=2.3)
-    g.blob((-52, -46, 64), (5.5, 5, 4), p=2.3)
+    g = Geo().blob((cx, cy - 12, 70), (9, 7, 8), p=2.3)
+    g.blob((cx, cy - 16, 62), (5.5, 5, 4), p=2.3)
     rig.part("body", g, BONE)
-    g = Geo().sphere((-55.5, -49.5, 72), 2.3, cuts=2).sphere((-48.5, -49.5, 72), 2.3, cuts=2)
+    g = Geo().sphere((cx - 3.5, cy - 19.5, 70), 2.3, cuts=2).sphere((cx + 3.5, cy - 19.5, 70), 2.3, cuts=2)
     rig.part("body", g, SHADOW_DARK, outline=0, highlight=False)
 
-    # log palisade in front of the cave (left part) and at the gate (right part)
+    # log palisade in front of the cave
     def logs(joint, x0, x1, n, h0, seed):
         g = Geo()
-        import random
         rnd = random.Random(seed)
         for i in range(n):
             x = x0 + (x1 - x0) * i / max(1, n - 1)
             h = h0 + rnd.uniform(-5, 5)
-            g.capsule((x, -54, -2), (x, -54, h), 3.6, 3.2)
-            g.lathe([(3.3, 0), (0.1, 6.0)], (x, -54, h), (x, -54, h + 6), segs=10)
+            g.capsule((x, -62, -2), (x, -62, h), 3.6, 3.2)
+            g.lathe([(3.3, 0), (0.1, 6.0)], (x, -62, h), (x, -62, h + 6), segs=10)
         rig.part(joint, g, WOOD)
         rope_g = Geo()
-        rope(rope_g, [(x0 - 3, -58, h0 * 0.35), (x1 + 3, -58, h0 * 0.35)], 0.9)
-        rope(rope_g, [(x0 - 3, -58, h0 * 0.72), (x1 + 3, -58, h0 * 0.72)], 0.9)
+        rope(rope_g, [(x0 - 3, -66, h0 * 0.35), (x1 + 3, -66, h0 * 0.35)], 0.9)
+        rope(rope_g, [(x0 - 3, -66, h0 * 0.72), (x1 + 3, -66, h0 * 0.72)], 0.9)
         rig.part(joint, rope_g, "#B8A47E", outline=0.5)
-    logs("pal", -96, -74, 4, 34, 7)
-    logs("palB", -6, 12, 3, 40, 8)
+    logs("pal", -150, -134, 3, 34, 7)
 
-    # stone shelves for the turret mounts (tops exactly at the mounts)
-    for i, (x, y, z) in enumerate(M):
-        g = Geo()
-        rock(g, (x - 1, y + 2, z - 4), (17, 14, 4.2), seed=20 + i, jag=0.08, p=3.2)
-        rig.part("body", g, STONE_LT)
-        g = Geo()
-        rock(g, (x - 6, y + 10, z - 14), (10, 10, 10), seed=30 + i, jag=0.18)
-        rig.part("body", g, STONE_DK)
+    # turret shelves (tops exactly at the mounts): a boulder stack at the gate, cut shelves above
+    x0, y0, z0 = M[0]
+    g = Geo()
+    rock(g, (x0 - 6, y0 + 16, z0 * 0.45), (26, 24, z0 * 0.5), seed=21, jag=0.14)
+    rock(g, (x0 + 10, y0 + 8, 12), (16, 14, 13), seed=22, jag=0.18)
+    rig.part("body", g, STONE_DK)
+    platform(rig, "body", M[0], STONE_LT, STONE_DK, style="rock", seed=30)
+    platform(rig, "body", M[1], STONE_LT, STONE_DK, style="rock", seed=31, r=(26, 18))
+    platform(rig, "body", M[2], STONE_LT, STONE_DKR, style="rock", seed=32, r=(26, 19))
+    platform(rig, "body", M[3], STONE_LT, STONE_DK, style="rock", seed=33, r=(27, 20))
+    moss_drape(rig, "body", [(M[1][0] - 4, M[1][1] - 16, M[1][2] - 3, 20), (M[2][0] - 8, M[2][1] - 16, M[2][2] - 4, 16)],
+               MOSS_DK, seed=8)
 
-    # torches
-    for tx, tz in ((-88, 40), (-14, 44)):
-        g = Geo().capsule((tx, -56, tz - 30), (tx, -56, tz), 1.6)
-        g.lathe([(0.1, 0), (3.6, 3), (3.2, 7), (0.1, 7.5)], (tx, -56, tz - 1), (tx, -56, tz + 6), segs=10)
+    # torches at the cave
+    for tx, tz in ((cx - 34, 40), (cx + 34, 44)):
+        g = Geo().capsule((tx, -64, tz - 30), (tx, -64, tz), 1.6)
+        g.lathe([(0.1, 0), (3.6, 3), (3.2, 7), (0.1, 7.5)], (tx, -64, tz - 1), (tx, -64, tz + 6), segs=10)
         rig.part("body", g, WOOD_DK, outline=0.6)
-        g = Geo().blob((tx, -57, tz + 11), (3.8, 3.0, 6.8), p=2.0, taper=(1.0, 0.25))
+        g = Geo().blob((tx, -65, tz + 11), (3.8, 3.0, 6.8), p=2.0, taper=(1.0, 0.25))
         rig.part("body", g, glow=FIRE, outline=0)
-        g = Geo().blob((tx, -59, tz + 9), (1.8, 1.5, 3.4), p=2.0, taper=(1.0, 0.3))
+        g = Geo().blob((tx, -67, tz + 9), (1.8, 1.5, 3.4), p=2.0, taper=(1.0, 0.3))
         rig.part("body", g, glow=FIRE_CORE, outline=0)
 
     # a big painted hide on the rock face (team) on two bone rods
-    g = Geo().slab([(-128, 96), (-98, 100), (-94, 70), (-100, 50), (-113, 44), (-126, 50), (-132, 70)], -26, 2.0)
+    hx, hz = -150, 150
+    g = Geo().slab([(hx - 16, hz + 26), (hx + 16, hz + 28), (hx + 20, hz), (hx + 12, hz - 22), (hx, hz - 28),
+                    (hx - 13, hz - 22), (hx - 19, hz)], -30, 2.0)
     rig.part("body", g, team=True)
-    g = Geo().capsule((-134, -27, 98), (-92, -27, 102), 1.6).capsule((-130, -27, 52), (-96, -27, 50), 1.2)
+    g = Geo().capsule((hx - 21, -31, hz + 26), (hx + 21, -31, hz + 30), 1.6).capsule((hx - 17, -31, hz - 22),
+                                                                                    (hx + 17, -31, hz - 24), 1.2)
     rig.part("body", g, BONE, outline=0.6)
-    g = Geo().blob((-113, -28.5, 74), (7, 1.0, 7), p=2.0)
+    g = Geo().blob((hx, -32.5, hz + 2), (7, 1.0, 7), p=2.0)
     rig.part("body", g, OCHRE, outline=0.5)
 
     # bones and pebbles on the ground
     g = Geo()
-    for i, (x, y) in enumerate(((-140, -48), (-110, -58), (-6, -62), (8, -46))):
+    for i, (x, y) in enumerate(((-170, -48), (-128, -66), (-76, -64), (26, -46))):
         rock(g, (x, y, 2), (6 + i, 5, 4), seed=40 + i, jag=0.2)
     rig.part("body", g, STONE_DK)
 
-    # cracks (shown per stage): dark wedges half sunk into the rock face
-    for j, specs in (("crack1", [(-70, -26, 104, 30), (-60, -26, 90, -20)]),
-                     ("crack2", [(-112, -22, 70, 25), (-30, -24, 30, -35), (-96, -18, 150, 10)]),
-                     ("crack3", [(-82, -8, 186, -30), (-128, -18, 36, 40), (-46, -26, 60, 15)])):
-        g = Geo()
-        for x, y, z, rot in specs:
-            g.blob((x, y, z), (2.2, 6, 17), p=2.0, rot=(0, rot, 0))
-            g.blob((x + 4, y, z - 14), (1.6, 6, 8), p=2.0, rot=(0, rot - 40, 0))
-        rig.part(j, g, CRACK, outline=0, highlight=False)
-    # rubble piles
-    for j, pts in (("rubble1", [(-150, -44), (-128, -50)]), ("rubble2", [(-30, -58), (-100, -60), (-66, -62)]),
-                   ("rubble3", [(-150, -62), (-4, -66), (-84, -68), (-120, -66)])):
+    # chipped cracks, shown per stage
+    chipped_cracks(rig, "crack1", [[(-70, -40, 120), (-64, -40, 108), (-72, -40, 96), (-66, -40, 84)],
+                                   [(-34, -42, 186), (-28, -42, 178), (-32, -42, 170)]], CRACK, CHIP)
+    chipped_cracks(rig, "crack2", [[(-150, -30, 60), (-144, -30, 48), (-150, -30, 36)],
+                                   [(-120, -38, 104), (-112, -38, 94), (-116, -38, 84), (-108, -38, 74)],
+                                   [(-56, -40, 60), (-48, -40, 50), (-52, -40, 40)]], CRACK, CHIP)
+    chipped_cracks(rig, "crack3", [[(-80, -24, 250), (-72, -24, 240), (-78, -24, 230)],
+                                   [(-100, -36, 150), (-92, -36, 140), (-96, -36, 128), (-88, -36, 118)],
+                                   [(-24, -42, 110), (-18, -42, 98), (-22, -42, 88)]], CRACK, CHIP)
+    for j, pts in (("rubble1", [(-176, -44), (-150, -56)]), ("rubble2", [(-60, -64), (-128, -66), (-92, -70)]),
+                   ("rubble3", [(-176, -62), (22, -62), (-80, -72), (-140, -70)])):
         g = Geo()
         for k, (x, y) in enumerate(pts):
             rock(g, (x, y, 3), (9, 7, 6), seed=sum(map(ord, j)) + k, jag=0.25)
             rock(g, (x + 8, y - 2, 2), (5, 4, 4), seed=sum(map(ord, j)) + 50 + k, jag=0.25)
         rig.part(j, g, STONE_DK)
 
-    # flags (separate looping clips): hide banners
-    flag(rig, "root", "flagA", (-66, 12, 236), length=30, height=18, pole=196)
-    flag(rig, "root", "flagB", (-128, 26, 186), length=24, height=15, pole=132)
+    # flags (separate looping clips): hide banners on the summit's back and the left shoulder
+    flag(rig, "root", "flagA", (-96, 24, 300), length=30, height=18, pole=250)
+    flag(rig, "root", "flagB", (-168, 30, 196), length=24, height=15, pole=132)
 
-    # Treasury props, in front of the rock's back corner
+    # Treasury props, in front of the crag's left foot
     g = Geo()
-    cyl(g, (-122, -58, 0), (-122, -58, 12), 10, 12.5, bevel=1.2)
+    cyl(g, (-172, -60, 0), (-172, -60, 12), 10, 12.5, bevel=1.2)
     rig.part("treasury1", g, WOOD, outline=0.8)
     g = Geo()
     for dx, dy, dz in ((-4, 0, 14), (3, -2, 15), (0, 3, 17), (5, 2, 13), (-6, -3, 12), (1, -5, 13)):
-        g.sphere((-122 + dx, -58 + dy, dz), 3.4, cuts=2)
+        g.sphere((-172 + dx, -60 + dy, dz), 3.4, cuts=2)
     rig.part("treasury1", g, BERRY, finish="gloss", outline=0.5)
-    g = Geo().capsule((-104, -60, 5), (-92, -58, 11), 4.6).capsule((-92, -58, 11), (-88, -58, 13), 2.0)
+    g = Geo().capsule((-156, -66, 5), (-144, -64, 11), 4.6).capsule((-144, -64, 11), (-140, -64, 13), 2.0)
     rig.part("treasury1", g, MEAT, outline=0.6)
-    g = Geo().capsule((-86, -58, 12), (-83, -58, 14), 1.6)
+    g = Geo().capsule((-138, -64, 12), (-135, -64, 14), 1.6)
     rig.part("treasury1", g, BONE, outline=0.5)
     g = Geo()
-    rock(g, (-146, -52, 6), (15, 11, 7), seed=51, jag=0.12, p=2.4)
-    rock(g, (-144, -54, 14), (11, 9, 5), seed=52, jag=0.12, p=2.4)
+    rock(g, (-184, -48, 6), (15, 11, 7), seed=51, jag=0.12, p=2.4)
+    rock(g, (-182, -50, 14), (11, 9, 5), seed=52, jag=0.12, p=2.4)
     rig.part("treasury2", g, FUR, finish="hair")
     g = Geo()
-    rock(g, (-150, -50, 20), (8, 7, 4), seed=53, jag=0.1, p=2.4)
+    rock(g, (-188, -46, 20), (8, 7, 4), seed=53, jag=0.1, p=2.4)
     rig.part("treasury2", g, HIDE, finish="hair")
     g = Geo()
-    for x0, s in ((-110, 1), (-100, 1)):
-        pts = [(x0, -66, 2), (x0 + 8 * s, -66, 8), (x0 + 18 * s, -66, 12), (x0 + 26 * s, -64, 12)]
+    for x0 in (-66, -56):
+        pts = [(x0, -72, 2), (x0 + 8, -72, 8), (x0 + 18, -72, 12), (x0 + 26, -70, 12)]
         for i, (a, b) in enumerate(zip(pts, pts[1:])):
             g.capsule(a, b, 2.8 - i * 0.6, 2.8 - (i + 1) * 0.6)
     rig.part("treasury3", g, BONE)
     g = Geo()
-    for k, (x, z) in enumerate(((-132, 3), (-126, 4), (-129, 9))):
-        rock(g, (x, -68, z), (3.6, 3, 3), seed=60 + k, jag=0.15)
+    for k, (x, z) in enumerate(((-76, 3), (-70, 4), (-73, 9))):
+        rock(g, (x, -74, z), (3.6, 3, 3), seed=60 + k, jag=0.15)
     rig.part("treasury3", g, OCHRE, finish="gloss", outline=0.5)
 
 
@@ -207,16 +246,15 @@ def crumble(stage):
                      "pal": {"r": -14.0, "x": -3.0, "z": -3.0}})
     if stage >= 3:
         pose.update({"crack3": {"show": True}, "rubble3": {"show": True},
-                     "top": {"r": 12.0, "x": -4.0, "z": -12.0}, "palB": {"r": 22.0, "z": -4.0},
-                     "pal": {"r": -24.0, "x": -5.0, "z": -6.0}})
+                     "top": {"r": 16.0, "x": -6.0, "z": -8.0}, "pal": {"r": -24.0, "x": -5.0, "z": -6.0}})
     return pose
 
 
 MODULE = base_module(
-    "stone", "Cave Hold", height=236, width=160, canvas=(400, 500), feet=(300, 456), mounts=MOUNTS,
-    build=build, crumble=crumble,
-    flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7}],
-    lights=[((-88, -57, 52), 3, 22), ((-14, -57, 56), 2, 22), ((-52, -36, 8), 3, 30)],
-    smoke=[((-86, 0, 196), 2), ((-40, -20, 150), 3), ((-122, -10, 110), 3)],
-    horn=(-70, 256), yaw=BASE_YAW,
+    "stone", "Cave Hold", height=300, width=190, canvas=(460, 640), feet=(350, 590),
+    build=build, crumble=crumble, mount_depth=DEPTHS,
+    flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
+    lights=[((CAVE[0] - 34, -65, 52), 3, 22), ((CAVE[0] + 34, -65, 56), 2, 22), ((CAVE[0], CAVE[1] - 6, 8), 3, 30)],
+    smoke=[((-70, 0, 256), 2), ((-120, -28, 150), 3), ((-150, -10, 104), 3)],
+    horn=(-96, 316), yaw=BASE_YAW,
 )

@@ -78,8 +78,8 @@ part('fx.p.ring', [{ d: arcBand(0, 0, 8.4, 10, 0, 360), zone: 'white', line: 0, 
 part('fx.p.ringThick', [{ d: arcBand(0, 0, 6.4, 10, 0, 360), zone: 'white', line: 0, shade: false, light: false }]);
 part('fx.p.disc', [{ d: circle(0, 0, 10), zone: 'white', line: 0, shade: false, light: false }]);
 part('fx.p.bubble', [
-  { d: circle(0, 0, 10), zone: 'white', line: 0, alpha: 0.16, shade: false, light: false },
-  { d: arcBand(0, 0, 9, 10, 0, 360), zone: 'white', line: 0, alpha: 0.7, shade: false, light: false },
+  { d: circle(0, 0, 10), zone: 'white', line: 0, alpha: 0.22, shade: false, light: false },
+  { d: arcBand(0, 0, 8.3, 10, 0, 360), zone: 'white', line: 0, alpha: 0.8, shade: false, light: false },
   { d: arcBand(0, 0, 6.4, 7.6, 200, 260), zone: 'white', line: 0, alpha: 0.8, shade: false, light: false },
 ]);
 part('fx.p.plus', [{ d: join(rrect(-1.6, -5, 3.2, 10, 1), rrect(-5, -1.6, 10, 3.2, 1)), zone: 'heal', line: 1.4, shade: false }]);

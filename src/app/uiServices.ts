@@ -176,6 +176,11 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       const next = meta.markSeen(s, card);
       if (next !== s) d.commit(next);
     },
+    showFeatHint(id) {
+      const s = d.save.peek();
+      if (s.flags[`featHint.${id}`]) return;
+      d.commit({ ...s, flags: { ...s.flags, [`featHint.${id}`]: true } });
+    },
     equipSkin(target, skin) {
       apply(meta.equipSkin(d.save.peek(), target, skin, content));
     },

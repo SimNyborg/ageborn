@@ -55,8 +55,10 @@ export default function Gallery() {
   const params = useParams();
   const section = (SECTIONS as readonly string[]).includes(get(params, 'section', 'units')) ? (get(params, 'section', 'units') as Section) : 'units';
   const preset = get(params, 'preset', 'default') as TeamPreset;
-  const tierParam = get(params, 'tier', 'procedural');
-  const tier: VisualKind | null = tierParam === 'placeholder' ? 'placeholder' : null;
+  // `atlas` (default) draws what the manifest says: the 3D sheets where they exist, code-drawn art
+  // elsewhere. `procedural` and `placeholder` force that tier for every visual, for comparison.
+  const tierParam = get(params, 'tier', 'atlas');
+  const tier: VisualKind | null = tierParam === 'placeholder' ? 'placeholder' : tierParam === 'procedural' ? 'procedural' : null;
   const quality = get(params, 'quality', 'high') === 'lite' ? 'lite' : 'high';
   const freeze = params.has('t') ? num(params, 't', 0) : null;
   const speed = num(params, 'speed', 1);
@@ -82,7 +84,7 @@ export default function Gallery() {
   const common = (
     <>
       <Select label="preset" value={preset} options={TEAM_PRESETS} onChange={set('preset')} testId="gallery-preset" />
-      <Select label="tier" value={tierParam} options={['procedural', 'placeholder']} onChange={set('tier')} />
+      <Select label="tier" value={tierParam} options={['atlas', 'procedural', 'placeholder']} onChange={set('tier')} />
       <Select label="quality" value={quality} options={['high', 'lite']} onChange={set('quality')} />
       <Select label="speed" value={String(speed)} options={['0.25', '0.5', '1', '2']} onChange={set('speed')} />
     </>

@@ -34,6 +34,11 @@ SMEAR = {"joint": "sword", "inner": (HR[0], HR[1] - 1.0, HR[2] + HILT + BLADE_LE
 def build(rig):
     F.skeleton(rig)
     F.legs(rig)
+    # v3: team greaves on both shins (team colour must read on this near-white knight)
+    for side in ("r", "l"):
+        y = F.LEG_Y * F.SIDE_Y[side]
+        g = Geo().blob((2.2, y, 11.0), (4.4, 4.9, 5.6), p=2.6)
+        rig.part(f"shin_{side}", g, team=True, outline=0.6)
     rig.joint("sword", "hand_r", HR)
     rig.joint("buckler", "hand_l", HL)
 
@@ -66,7 +71,7 @@ def build(rig):
     rig.part("tabard", g, F.ARMOR, outline=0.6)
     F.torso_armor(rig, pack=True)
     # white breastplate rim over the team plate (a gorget and two plate edges)
-    g = Geo().blob((1.0, 0, 38.0), (8.6, 8.8, 2.6), p=2.6)
+    g = Geo().blob((1.0, 0, 39.2), (7.4, 7.6, 1.8), p=2.6)
     rig.part("torso", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
     # hip faulds
     g = Geo().blob((0.6, 0, 16.8), (10.6, 10.4, 4.4), p=2.8, taper=(1.12, 1.0))

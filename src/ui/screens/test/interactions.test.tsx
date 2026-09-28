@@ -7,7 +7,7 @@ import { content } from '@/content';
 import { i18n } from '@/i18n';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixtureOpponent, fixturePause, fixtureRequest, fixtureResult } from '../fixtures/matches';
-import { FIXTURE_NOW, midGameSave, newPlayerSave } from '../fixtures/saves';
+import { midGameSave, newPlayerSave } from '../fixtures/saves';
 import { VS_MS } from '../vs/VsScreen';
 import { REWARD_STEP_MS } from '../model/result';
 import { input, keydown, text, type FakeElement } from './dom';
@@ -148,21 +148,44 @@ describe('Home details', () => {
     expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100');
   });
 
-  it('countdowns keep ticking', () => {
-    vi.useFakeTimers();
-    let clock = FIXTURE_NOW;
-    m = mount({ state: 'mid', now: () => clock });
-    expect(text(m.q('[data-testid="charges"]')!)).toContain('+1 in 4h 0m');
-    clock += 61_000;
-    flush(() => vi.advanceTimersByTime(1000));
-    expect(text(m.q('[data-testid="charges"]')!)).toContain('+1 in 3h 58m');
+  it('charges show "n/max" with no timer on Home (A15.13)', () => {
+    m = mount({ state: 'mid' });
+    const row = text(m.q('[data-testid="charges"]')!);
+    expect(row).toMatch(/Charges \d+\/\d+/);
+    expect(row).not.toContain('+1 in');
   });
 
-  it('the Daily Capsule row explains the lock before capsule 2 is opened', () => {
+  it('shows the Supply line only while an allowance is banked (A15.4)', () => {
     const n = newPlayerSave(content);
-    m = mount({ save: { ...n, pity: { ...n.pity, opened: 1 }, capsules: { ...n.capsules, dailyBank: 0, dailyNextAt: null } } });
-    expect(text(m.q('[data-testid="daily-capsule"]')!)).toContain('Opens after your second capsule');
-    expect(m.q('[data-testid="daily-claim"]')).toBeNull();
+    m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, matchesPlayed: 4, capsules: { ...n.capsules, dailyBank: 2 } } });
+    expect(text(m.q('[data-testid="supply"]')!)).toContain('Supply Capsule: 2 more matches');
+    m.unmount();
+    m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, capsules: { ...n.capsules, dailyBank: 0 } } });
+    expect(m.q('[data-testid="supply"]')).toBeNull();
+  });
+
+  it('shows the War Chest bar where the weekly quest was, and only 3 active quests (A15.5, A15.13)', () => {
+    const mid = midGameSave(content);
+    const extra = [...mid.quests.daily, ...mid.quests.daily].map((q) => ({ ...q, claimed: false }));
+    m = mount({ save: { ...mid, quests: { ...mid.quests, daily: extra, weekly: { ...mid.quests.weekly, progress: 13 } } } });
+    expect(text(m.q('[data-testid="war-chest"]')!)).toContain(`War Chest 13/${content.quests.weekly.target}`);
+    expect(m.qa('[data-testid^="quest-"][data-testid$="0"], [data-testid="quest-1"], [data-testid="quest-2"]').length).toBeGreaterThan(0);
+    expect(m.q('[data-testid="quest-3"]')).toBeNull();
+    expect(text(m.q('[data-testid="home-quests"]')!)).toContain('Up to 21 can wait for you.');
+  });
+
+  it('the capsule info panel states each bank cap and that nothing earned is taken away (A15.3)', () => {
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="odds-open"]');
+    const info = text(m.q('[data-testid="capsule-info"]')!);
+    expect(info).toContain('When full, it stops filling.');
+    expect(text(m.q('[data-testid="odds-modal"]')!)).toContain('Nothing you have earned is ever taken away.');
+  });
+
+  it('Amber and Dust info panels say they cannot be bought (A15.3)', () => {
+    m = mount({ state: 'mid' });
+    m.click('.home-chipBtn');
+    expect(text(m.q('[data-testid="currency-info-amber"]')!)).toContain("Amber can't be bought. It has no money value.");
   });
 });
 
@@ -232,8 +255,11 @@ describe('Mode select', () => {
   it('starts the Daily Challenge', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'modeSelect' }] });
     expect(text(m.q('[data-testid="daily-modifier"]')!)).toContain('Gold Rush');
+    m.click('[data-testid="daily-difficulty"] [aria-checked="false"]');
     m.click('[data-testid="daily-start"]');
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'daily' });
+    const req = calls('prepareMatch')[0]!.args[0] as { mode: string; difficulty: string };
+    expect(req.mode).toBe('daily');
+    expect(['recruit', 'veteran', 'warlord']).toContain(req.difficulty);
   });
 });
 
@@ -291,8 +317,12 @@ describe('Result (rewards staged, each skippable)', () => {
     m.click('[data-testid="result-rewards"]');
     expect(m.qa('.result-reward').length).toBe(1);
     m.click('[data-testid="result-skip"]');
-    expect(m.qa('.result-reward').length).toBe(5);
+    // A15.13: trophies, the main reward and one progress bar; the rest in one summary row.
+    expect(m.qa('.result-reward').length).toBe(3);
     expect(m.q('[data-testid="result-skip"]')).toBeNull();
+    expect(m.q('[data-testid="result-summary"]')).not.toBeNull();
+    m.click('[data-testid="result-summary-toggle"]');
+    expect(m.qa('.result-reward').length).toBe(6);
   });
 
   it('shows everything at once with reduce motion', () => {
@@ -300,7 +330,7 @@ describe('Result (rewards staged, each skippable)', () => {
     const save = first.save.value;
     first.unmount();
     m = mount({ save: { ...save, settings: { ...save.settings, reduceMotion: true } }, routes: route() });
-    expect(m.qa('.result-reward').length).toBe(5);
+    expect(m.qa('.result-reward').length).toBe(3);
     expect(m.q('[data-testid="ui-root"]')!.getAttribute('data-reduce-motion')).toBe('true');
   });
 

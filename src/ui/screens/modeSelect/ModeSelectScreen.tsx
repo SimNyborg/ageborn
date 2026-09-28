@@ -3,23 +3,37 @@
  * match 4: General or Echo, tier 0-X, format, speed, "Standard levels"; 5 Amber per win) and the
  * Daily Challenge (A9.1). Starting a mode asks the app for the opponent and shows VS.
  */
-import './modeSelect.css';
-import { ageNameKey, formatNameKey, modifierDescKey, modifierNameKey } from '@/content/keys';
-import type { DailyDifficulty, GeneralId } from '@/content/types';
-import type { AgeId, FormatId } from '@/contracts';
-import type { ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
-import { GeneralPortrait } from '../../components/Avatar';
-import { Button } from '../../components/Button';
-import { AiBadge, Pill } from '../../components/Chips';
-import { Segmented, Slider, Toggle } from '../../components/Controls';
-import { formatInt, formatSigned, tierNumeral } from '../../components/format';
-import { AmberIcon, CalendarIcon, CapsuleIcon, CastleIcon, LockIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
-import { ScreenFrame } from '../../components/Layout';
-import { Modal } from '../../components/Modal';
-import type { MatchRequest, RouteOf } from '../../router';
-import { useUi } from '../context';
-import { agesAwaitingAntiArmor } from '../model/plan';
+import "./modeSelect.css";
+import {
+  ageNameKey,
+  formatNameKey,
+  modifierDescKey,
+  modifierNameKey,
+} from "@/content/keys";
+import type { DailyDifficulty, GeneralId } from "@/content/types";
+import type { AgeId, FormatId } from "@/contracts";
+import type { ComponentChildren } from "preact";
+import { useState } from "preact/hooks";
+import { GeneralPortrait } from "../../components/Avatar";
+import { Button } from "../../components/Button";
+import { AiBadge, Pill } from "../../components/Chips";
+import { Segmented, Slider, Toggle } from "../../components/Controls";
+import { formatInt, formatSigned, tierNumeral } from "../../components/format";
+import {
+  AmberIcon,
+  CalendarIcon,
+  CapsuleIcon,
+  CastleIcon,
+  LockIcon,
+  StarIcon,
+  SwordsIcon,
+  TrophyIcon,
+} from "../../components/icons";
+import { ScreenFrame } from "../../components/Layout";
+import { Modal } from "../../components/Modal";
+import type { MatchRequest, RouteOf } from "../../router";
+import { useUi } from "../context";
+import { agesAwaitingAntiArmor } from "../model/plan";
 import {
   chargesView,
   conquestView,
@@ -28,15 +42,20 @@ import {
   ladderWin,
   unlocks,
   WAR_PLAN_UNLOCK_MATCHES,
-} from '../model/progress';
-import { useMatchStarter } from '../shared/MatchStarter';
+} from "../model/progress";
+import { useMatchStarter } from "../shared/MatchStarter";
 
 const SPEEDS = [1, 1.5, 2] as const;
-const ALL_FORMATS: FormatId[] = ['short', 'standard', 'full'];
+const DIFFICULTY_KEYS: Record<DailyDifficulty, string> = {
+  recruit: "ui.mode.daily.recruit",
+  veteran: "ui.mode.daily.veteran",
+  warlord: "ui.mode.daily.warlord",
+};
+const ALL_FORMATS: FormatId[] = ["short", "standard", "full"];
 
 function ModeCard(p: {
   id: string;
-  tone: 'blue' | 'red' | 'green' | 'gold';
+  tone: "blue" | "red" | "green" | "gold";
   icon: ComponentChildren;
   title: string;
   desc: string;
@@ -46,7 +65,7 @@ function ModeCard(p: {
 }) {
   return (
     <article
-      class={`mode-card mode-card--${p.tone}${p.locked ? ' is-locked' : ''}`}
+      class={`mode-card mode-card--${p.tone}${p.locked ? " is-locked" : ""}`}
       data-testid={`mode-${p.id}`}
       aria-labelledby={`mode-${p.id}-title`}
     >
@@ -76,20 +95,25 @@ function ModeCard(p: {
   );
 }
 
-function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () => void }) {
+function SkirmishSetup(p: {
+  onStart: (req: MatchRequest) => void;
+  onClose: () => void;
+}) {
   const { content, save, t } = useUi();
   const s = save.value;
-  const generals = content.generals.order.filter((g) => !content.generals.list[g].scripted);
-  const [general, setGeneral] = useState<GeneralId>('pip');
+  const generals = content.generals.order.filter(
+    (g) => !content.generals.list[g].scripted,
+  );
+  const [general, setGeneral] = useState<GeneralId>("pip");
   const [tier, setTier] = useState(3);
-  const [format, setFormat] = useState<FormatId>('short');
+  const [format, setFormat] = useState<FormatId>("short");
   const [speed, setSpeed] = useState<1 | 1.5 | 2>(s.settings.defaultSpeed);
   const [standard, setStandard] = useState(false);
   const shortAges: AgeId[] = agesAwaitingAntiArmor(s, content, format);
   const g = content.generals.list[general];
   return (
     <Modal
-      title={t('ui.mode.skirmish.setup')}
+      title={t("ui.mode.skirmish.setup")}
       onClose={p.onClose}
       size="lg"
       testid="skirmish-setup"
@@ -99,14 +123,29 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
           size="lg"
           testid="skirmish-start"
           icon={<SwordsIcon size={26} />}
-          onClick={() => p.onStart({ mode: 'skirmish', options: { generalId: general, tier, format, standardLevels: standard }, speed })}
+          onClick={() =>
+            p.onStart({
+              mode: "skirmish",
+              options: {
+                generalId: general,
+                tier,
+                format,
+                standardLevels: standard,
+              },
+              speed,
+            })
+          }
         >
-          {t('ui.mode.start')}
+          {t("ui.mode.start")}
         </Button>
       }
     >
       <div class="skirmish">
-        <div class="skirmish__generals" role="radiogroup" aria-label={t('ui.mode.skirmish.general')}>
+        <div
+          class="skirmish__generals"
+          role="radiogroup"
+          aria-label={t("ui.mode.skirmish.general")}
+        >
           {generals.map((id) => {
             const on = id === general;
             const def = content.generals.list[id];
@@ -116,7 +155,7 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
                 type="button"
                 role="radio"
                 aria-checked={on}
-                class={`skirmish__gen${on ? ' is-on' : ''}`}
+                class={`skirmish__gen${on ? " is-on" : ""}`}
                 onClick={() => setGeneral(id)}
                 data-testid={`skirmish-general-${id}`}
               >
@@ -137,9 +176,11 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
             <b>{t(g.nameKey)}</b>
             <span class="ui-muted">{t(g.personalityKey)}</span>
           </div>
-          {g.mirror ? <p class="skirmish__note">{t('ui.mode.skirmish.echo')}</p> : null}
+          {g.mirror ? (
+            <p class="skirmish__note">{t("ui.mode.skirmish.echo")}</p>
+          ) : null}
           <Slider
-            label={t('ui.mode.skirmish.tier')}
+            label={t("ui.mode.skirmish.tier")}
             value={tier}
             min={0}
             max={content.arenas.ladder.maxTier}
@@ -149,38 +190,53 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
             testid="skirmish-tier"
           />
           <div class="skirmish__row">
-            <span class="skirmish__label">{t('ui.mode.format')}</span>
+            <span class="skirmish__label">{t("ui.mode.format")}</span>
             <Segmented
-              label={t('ui.mode.format')}
+              label={t("ui.mode.format")}
               value={format}
               onChange={setFormat}
-              options={ALL_FORMATS.map((f) => ({ value: f, label: t(formatNameKey(f)) }))}
+              options={ALL_FORMATS.map((f) => ({
+                value: f,
+                label: t(formatNameKey(f)),
+              }))}
               size="sm"
             />
           </div>
           <div class="skirmish__row">
-            <span class="skirmish__label">{t('ui.mode.speed')}</span>
+            <span class="skirmish__label">{t("ui.mode.speed")}</span>
             <Segmented
-              label={t('ui.mode.speed')}
+              label={t("ui.mode.speed")}
               value={speed}
               onChange={setSpeed}
-              options={SPEEDS.map((v) => ({ value: v, label: t('ui.speed.x', { n: v }) }))}
+              options={SPEEDS.map((v) => ({
+                value: v,
+                label: t("ui.speed.x", { n: v }),
+              }))}
               size="sm"
             />
           </div>
           <Toggle
-            label={t('ui.mode.skirmish.standardLevels')}
-            hint={t('ui.mode.skirmish.standardLevelsHint', { n: content.arenas.ladder.standardLevel })}
+            label={t("ui.mode.skirmish.standardLevels")}
+            hint={t("ui.mode.skirmish.standardLevelsHint", {
+              n: content.arenas.ladder.standardLevel,
+            })}
             checked={standard}
             onChange={setStandard}
             testid="skirmish-standard"
           />
           <p class="skirmish__reward">
-            <AmberIcon size={18} /> {t('ui.mode.skirmish.reward', { n: content.arenas.ladder.skirmishWinAmber })}
+            <AmberIcon size={18} />{" "}
+            {t("ui.mode.skirmish.reward", {
+              n: content.arenas.ladder.skirmishWinAmber,
+            })}
           </p>
           {shortAges.map((a) => (
-            <p key={a} class="skirmish__note" data-testid={`skirmish-note-${a}`}>
-              {t('ui.mode.skirmish.threeUnits', { age: t(ageNameKey(a)) })}
+            <p
+              key={a}
+              class="skirmish__note"
+              data-testid={`skirmish-note-${a}`}
+            >
+              {t("ui.mode.skirmish.threeUnits", { age: t(ageNameKey(a)) })}
             </p>
           ))}
         </div>
@@ -189,18 +245,24 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
   );
 }
 
-export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
+export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
   const { save, content, t, locale, router, services, now } = useUi();
   const s = save.value;
   const u = unlocks(s, content);
-  const [format, setFormat] = useState<FormatId>(u.ladderFormats[u.ladderFormats.length - 1] ?? 'short');
-  const [skirmish, setSkirmish] = useState(p.route.focus === 'skirmish' && u.skirmish);
+  const [format, setFormat] = useState<FormatId>(
+    u.ladderFormats[u.ladderFormats.length - 1] ?? "short",
+  );
+  const [skirmish, setSkirmish] = useState(
+    p.route.focus === "skirmish" && u.skirmish,
+  );
   const charges = chargesView(s, content, now());
   const conquest = conquestView(s, content);
   const modifier = services.dailyModifier();
   const challenge = content.dailyModifiers.challenge;
   const wonToday = s.daily.bank <= 0;
-  const [difficulty, setDifficulty] = useState<DailyDifficulty>(() => defaultDailyDifficulty(s, content));
+  const [difficulty, setDifficulty] = useState<DailyDifficulty>(() =>
+    defaultDailyDifficulty(s, content),
+  );
   const win = ladderWin(s, content, format);
 
   const starter = useMatchStarter();
@@ -211,14 +273,18 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
   }
 
   return (
-    <ScreenFrame id="modeSelect" title={t('ui.mode.title')} onBack={() => router.back()}>
+    <ScreenFrame
+      id="modeSelect"
+      title={t("ui.mode.title")}
+      onBack={() => router.back()}
+    >
       <div class="modes">
         <ModeCard
           id="ladder"
           tone="blue"
           icon={<TrophyIcon size={64} />}
-          title={t('ui.mode.ladder.title')}
-          desc={t('ui.mode.ladder.desc')}
+          title={t("ui.mode.ladder.title")}
+          desc={t("ui.mode.ladder.desc")}
           action={
             <Button
               variant="gold"
@@ -227,18 +293,21 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
               testid="ladder-start"
               autofocus
               icon={<SwordsIcon size={26} />}
-              onClick={() => start({ mode: 'ladder', format })}
+              onClick={() => start({ mode: "ladder", format })}
             >
-              {t('ui.home.battle')}
+              {t("ui.home.battle")}
             </Button>
           }
         >
           {u.formatPicker ? (
             <Segmented
-              label={t('ui.mode.format')}
+              label={t("ui.mode.format")}
               value={format}
               onChange={setFormat}
-              options={u.ladderFormats.map((f) => ({ value: f, label: t(formatNameKey(f)) }))}
+              options={u.ladderFormats.map((f) => ({
+                value: f,
+                label: t(formatNameKey(f)),
+              }))}
               testid="ladder-format"
               size="sm"
             />
@@ -246,7 +315,9 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
             <Pill tone="blue">{t(formatNameKey(format))}</Pill>
           )}
           <p class="mode-card__reward" data-testid="ladder-reward" key={format}>
-            <span class="mode-card__rewardLabel">{t('ui.mode.ladder.winPays')}</span>
+            <span class="mode-card__rewardLabel">
+              {t("ui.mode.ladder.winPays")}
+            </span>
             <span class="mode-card__rewardItem">
               <TrophyIcon size={18} /> {formatSigned(win.trophies, locale)}
             </span>
@@ -257,76 +328,111 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           <p class="mode-card__meta">
             <CapsuleIcon tier="bronze" size={20} />
             {charges.free > 0
-              ? t('ui.home.freeCapsules', { n: charges.free })
-              : t('ui.home.charges', { n: charges.charges, max: charges.max })}
+              ? t("ui.home.freeCapsules", { n: charges.free })
+              : t("ui.home.charges", { n: charges.charges, max: charges.max })}
           </p>
-          <p class="mode-card__help">{t('ui.mode.ladder.help')}</p>
+          <p class="mode-card__help">{t("ui.mode.ladder.help")}</p>
         </ModeCard>
 
         <ModeCard
           id="conquest"
           tone="red"
           icon={<CastleIcon size={64} />}
-          title={t('ui.mode.conquest.title')}
-          desc={t('ui.mode.conquest.desc')}
-          locked={u.conquest ? null : t('ui.lock.arena', { n: u.conquestArena })}
+          title={t("ui.mode.conquest.title")}
+          desc={t("ui.mode.conquest.desc")}
+          locked={
+            u.conquest ? null : t("ui.lock.arena", { n: u.conquestArena })
+          }
           action={
-            <Button variant="red" size="lg" wide testid="conquest-open" onClick={() => router.go({ id: 'conquest' })}>
-              {t('ui.mode.conquest.open')}
+            <Button
+              variant="red"
+              size="lg"
+              wide
+              testid="conquest-open"
+              onClick={() => router.go({ id: "conquest" })}
+            >
+              {t("ui.mode.conquest.open")}
             </Button>
           }
         >
           <p class="mode-card__meta">
             <StarIcon size={20} />
-            {t('ui.conquest.starsOf', { n: conquest.totalStars, max: conquest.maxStars })}
+            {t("ui.conquest.starsOf", {
+              n: conquest.totalStars,
+              max: conquest.maxStars,
+            })}
           </p>
-          <p class="mode-card__help">{t('ui.mode.conquest.rules')}</p>
+          <p class="mode-card__help">{t("ui.mode.conquest.rules")}</p>
         </ModeCard>
 
         <ModeCard
           id="skirmish"
           tone="green"
           icon={<SwordsIcon size={64} />}
-          title={t('ui.mode.skirmish.title')}
-          desc={t('ui.mode.skirmish.desc')}
-          locked={u.skirmish ? null : t('ui.lock.afterMatches', { n: WAR_PLAN_UNLOCK_MATCHES })}
+          title={t("ui.mode.skirmish.title")}
+          desc={t("ui.mode.skirmish.desc")}
+          locked={
+            u.skirmish
+              ? null
+              : t("ui.lock.afterMatches", { n: WAR_PLAN_UNLOCK_MATCHES })
+          }
           action={
-            <Button variant="green" size="lg" wide testid="skirmish-open" onClick={() => setSkirmish(true)}>
-              {t('ui.mode.skirmish.setup')}
+            <Button
+              variant="green"
+              size="lg"
+              wide
+              testid="skirmish-open"
+              onClick={() => setSkirmish(true)}
+            >
+              {t("ui.mode.skirmish.setup")}
             </Button>
           }
         >
           <p class="mode-card__meta">
             <AmberIcon size={20} />
-            {t('ui.mode.skirmish.reward', { n: content.arenas.ladder.skirmishWinAmber })}
+            {t("ui.mode.skirmish.reward", {
+              n: content.arenas.ladder.skirmishWinAmber,
+            })}
           </p>
-          <p class="mode-card__help">{t('ui.mode.skirmish.help')}</p>
+          <p class="mode-card__help">{t("ui.mode.skirmish.help")}</p>
         </ModeCard>
 
         <ModeCard
           id="daily"
           tone="gold"
           icon={<CalendarIcon size={64} />}
-          title={t('ui.mode.daily.title')}
-          desc={t('ui.mode.daily.desc', { format: t(formatNameKey(challenge.format)) })}
+          title={t("ui.mode.daily.title")}
+          desc={t("ui.mode.daily.desc", {
+            format: t(formatNameKey(challenge.format)),
+          })}
           action={
-            <Button variant="gold" size="lg" wide testid="daily-start" onClick={() => start({ mode: 'daily', difficulty })}>
-              {t('ui.mode.play')}
+            <Button
+              variant="gold"
+              size="lg"
+              wide
+              testid="daily-start"
+              onClick={() => start({ mode: "daily", difficulty })}
+            >
+              {t("ui.mode.play")}
             </Button>
           }
         >
-          <Segmented
-            label={t('ui.mode.daily.difficulty')}
-            value={difficulty}
-            onChange={setDifficulty}
-            options={DAILY_DIFFICULTIES.map((d) => ({
-              value: d,
-              label: t(`ui.mode.daily.${d}`),
-              hint: t('ui.vs.tier', { tier: tierNumeral(challenge.difficulties[d]) }),
-            }))}
-            testid="daily-difficulty"
-            size="sm"
-          />
+          <div class="mode-card__diff">
+            <Segmented
+              label={t("ui.mode.daily.difficulty")}
+              value={difficulty}
+              onChange={setDifficulty}
+              options={DAILY_DIFFICULTIES.map((d) => ({
+                value: d,
+                label: t(DIFFICULTY_KEYS[d]),
+                hint: t("ui.vs.tier", {
+                  tier: tierNumeral(challenge.difficulties[d]),
+                }),
+              }))}
+              testid="daily-difficulty"
+              size="sm"
+            />
+          </div>
           {modifier ? (
             <div class="mode-card__mod" data-testid="daily-modifier">
               <b>{t(modifierNameKey(modifier))}</b>
@@ -334,15 +440,25 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
             </div>
           ) : null}
           <p class="mode-card__meta">
-            {wonToday ? <AmberIcon size={20} /> : <CapsuleIcon tier="silver" size={22} />}
+            {wonToday ? (
+              <AmberIcon size={20} />
+            ) : (
+              <CapsuleIcon tier="silver" size={22} />
+            )}
             {wonToday
-              ? t('ui.mode.daily.wonToday', { n: formatInt(challenge.winAmber, locale) })
-              : t('ui.mode.daily.bankReady', { n: formatInt(s.daily.bank, locale) })}
+              ? t("ui.mode.daily.wonToday", {
+                  n: formatInt(challenge.winAmber, locale),
+                })
+              : t("ui.mode.daily.bankReady", {
+                  n: formatInt(s.daily.bank, locale),
+                })}
           </p>
-          <p class="mode-card__help">{t('ui.mode.daily.rules')}</p>
+          <p class="mode-card__help">{t("ui.mode.daily.rules")}</p>
         </ModeCard>
       </div>
-      {skirmish ? <SkirmishSetup onStart={start} onClose={() => setSkirmish(false)} /> : null}
+      {skirmish ? (
+        <SkirmishSetup onStart={start} onClose={() => setSkirmish(false)} />
+      ) : null}
       {starter.dialog}
     </ScreenFrame>
   );

@@ -31,7 +31,7 @@ SMEAR = {"joint": "spade", "inner": (FIST[0], FIST[1], FIST[2] + HANDLE + 1),
 
 def build(rig):
     M.skeleton(rig)
-    M.legs(rig)
+    M.legs(rig, trousers="#767B5A")   # v3: trousers 15% lighter than the khaki kit
     M.tunic(rig)
     # stick grenade tucked into the belt at the back (near side)
     g = Geo().capsule((-7.0, -10.8, 14.5), (-9.5, -10.6, 24.5), 1.2)
@@ -46,8 +46,8 @@ def build(rig):
     rig.part("head", g, M.HAIR, finish="hair")
     g = Geo().blob((-2.0, -11.2, 50.0), (2.6, 1.6, 3.4), p=2.2)   # ear
     rig.part("head", g, M.SKIN)
-    M.helmet_brodie(rig, c=(1.5, 0, 57.5))
-    g = Geo().capsule((6.0, -9.8, 55.5), (9.5, -8.0, 40.5), 0.7)
+    M.helmet_brodie(rig, c=(1.5, 0, 59.6))   # v3: brim raised off the eyes
+    g = Geo().capsule((6.0, -9.8, 57.5), (9.5, -8.0, 40.5), 0.7)
     rig.part("head", g, M.LEATHER, outline=0.4)
 
     for s in ("r", "l"):

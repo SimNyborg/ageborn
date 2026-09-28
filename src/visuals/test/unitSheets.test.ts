@@ -17,8 +17,22 @@ interface SheetJson {
   meta: { image: string; ageborn: { heightLu: number; clips: Record<string, { durationMs?: number; impactAt?: number }> } };
 }
 /** The installed sheets, read at test time (never bundled into the game). */
-const SHEETS = import.meta.glob<SheetJson>('/public/art/units/*/*.json', { eager: true, import: 'default' });
+const SHEETS = import.meta.glob<SheetJson>(['/public/art/units/*/*.json', '!/public/art/units/*/*.hd.json'], { eager: true, import: 'default' });
+/** HD sheets (2.46 px/lu), one per plain sheet. */
+const HD_SHEETS = import.meta.glob<SheetJson>('/public/art/units/*/*.hd.json', { eager: true, import: 'default' });
 const PNGS = new Set(Object.keys(import.meta.glob('/public/art/units/*/*.png', { query: '?url', import: 'default' })));
+
+describe('HD unit sheets', () => {
+  it('every HD sheet matches its plain sheet frame for frame', () => {
+    for (const [path, hd] of Object.entries(HD_SHEETS)) {
+      const plain = SHEETS[path.replace(/\.hd\.json$/, '.json')];
+      expect(plain, path).toBeDefined();
+      expect(PNGS.has(path.replace(/\.json$/, '.png')), path).toBe(true);
+      expect(Object.keys(hd.animations).sort(), path).toEqual(Object.keys(plain?.animations ?? {}).sort());
+      for (const [clip, frames] of Object.entries(hd.animations)) expect(frames, `${path} ${clip}`).toEqual(plain?.animations[clip]);
+    }
+  });
+});
 
 describe('unit sprite sheets in the manifest', () => {
   it('the generated summary matches the installed sheets (else run node art/blender/gen_unit_manifest.mjs)', () => {

@@ -7,8 +7,9 @@
 import './conquest.css';
 import { arenaNameKey, capsuleKindNameKey, capsuleTierNameKey, formatNameKey, titleNameKey } from '@/content/keys';
 import type { ConquestRules } from '@/content/types';
+import { Fragment } from 'preact';
 import { useState } from 'preact/hooks';
-import { GeneralPortrait } from '../../components/Avatar';
+import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button } from '../../components/Button';
 import { AiBadge, Pill } from '../../components/Chips';
 import { formatClock, formatInt, tierNumeral } from '../../components/format';
@@ -107,10 +108,15 @@ function GeneralModal(p: { e: ConquestEntry; onClose: () => void; onFight: () =>
 export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
   const { save, content, t, locale, router } = useUi();
   const v = conquestView(save.value, content);
+  const s = save.value;
   const [open, setOpen] = useState<ConquestEntry | null>(null);
   const unlockArena = content.arenas.list.find((a) => a.index === v.unlockArena);
 
   const starter = useMatchStarter();
+  // A15.9: a vertical ladder ordered by tier, hardest on top; the player's portrait sits just above
+  // the highest General beaten.
+  const ladder = v.entries.map((e, i) => ({ e, i })).sort((a, b) => b.e.tier - a.e.tier || b.i - a.i);
+  const topBeaten = ladder.find(({ e }) => e.beaten)?.e.general.id ?? null;
 
   function fight(e: ConquestEntry) {
     const req: MatchRequest = { mode: 'conquest', general: e.general.id };
@@ -159,39 +165,48 @@ export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
             </div>
           ))}
         </div>
-        <div class="cq-board" data-testid="cq-board">
-          {v.entries.map((e, i) => {
+        <ol class="cq-board cq-board--ladder" data-testid="cq-board">
+          {ladder.map(({ e, i }, row) => {
             const state = !e.open ? 'locked' : e.beaten ? 'beaten' : 'next';
             return (
-              <button
-                key={e.general.id}
-                type="button"
-                class={`cq-gen is-${state}`}
-                style={{ animationDelay: `${i * 50}ms` }}
-                data-testid={`cq-gen-${e.general.id}`}
-                disabled={!v.unlocked}
-                onClick={() => setOpen(e)}
-                aria-label={t('ui.conquest.generalLabel', { name: t(e.general.nameKey), n: e.stars.filter(Boolean).length })}
-              >
-                <span class="cq-gen__num">{i + 1}</span>
-                <GeneralPortrait generalId={e.general.id} size={72} />
-                <span class="cq-gen__text">
-                  <span class="cq-gen__name">{t(e.general.nameKey)}</span>
-                  <span class="cq-gen__meta">
-                    <AiBadge size="sm" /> {t('ui.vs.tier', { tier: tierNumeral(e.tier) })}
-                  </span>
-                  <Stars earned={e.stars} size={20} label={t('ui.conquest.starsOf', { n: e.stars.filter(Boolean).length, max: 3 })} />
-                </span>
-                {state === 'locked' ? (
-                  <span class="cq-gen__lock">
-                    <LockIcon size={28} />
-                  </span>
+              <Fragment key={e.general.id}>
+                {e.general.id === topBeaten ? (
+                  <li class="cq-you" data-testid="cq-you" aria-label={t('ui.conquest.youAreHere')}>
+                    <Avatar spec={s.profile.avatar} size={46} />
+                    <span class="cq-you__label">{t('ui.conquest.youAreHere')}</span>
+                  </li>
                 ) : null}
-                {state === 'next' ? <span class="cq-gen__next">{t('ui.conquest.next')}</span> : null}
-              </button>
+                <li class="cq-rung">
+                  <button
+                    type="button"
+                    class={`cq-gen is-${state}`}
+                    style={{ animationDelay: `${row * 50}ms` }}
+                    data-testid={`cq-gen-${e.general.id}`}
+                    disabled={!v.unlocked}
+                    onClick={() => setOpen(e)}
+                    aria-label={t('ui.conquest.generalLabel', { name: t(e.general.nameKey), n: e.stars.filter(Boolean).length })}
+                  >
+                    <span class="cq-gen__num">{i + 1}</span>
+                    <GeneralPortrait generalId={e.general.id} size={64} />
+                    <span class="cq-gen__text">
+                      <span class="cq-gen__name">{t(e.general.nameKey)}</span>
+                      <span class="cq-gen__meta">
+                        <AiBadge size="sm" /> {t('ui.vs.tier', { tier: tierNumeral(e.tier) })}
+                      </span>
+                    </span>
+                    <Stars earned={e.stars} size={22} label={t('ui.conquest.starsOf', { n: e.stars.filter(Boolean).length, max: 3 })} />
+                    {state === 'locked' ? (
+                      <span class="cq-gen__lock">
+                        <LockIcon size={28} />
+                      </span>
+                    ) : null}
+                    {state === 'next' ? <span class="cq-gen__next">{t('ui.conquest.next')}</span> : null}
+                  </button>
+                </li>
+              </Fragment>
             );
           })}
-        </div>
+        </ol>
         {!v.unlocked ? (
           <div class="cq-lock" data-testid="cq-locked">
             <LockIcon size={54} />

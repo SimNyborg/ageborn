@@ -65,7 +65,7 @@ def build(rig):
         rig.part(f"shin_{s}", g, F.SUIT)
         g = Geo().capsule((2.6, y - 2.0 * (1 if s == "r" else -1), kz - 4.0), (2.2, y, ANK_REST + 8.0), 2.2, 1.8)
         rig.part(f"shin_{s}", g, F.STEEL, finish="metal", outline=0.8)
-        g = Geo().blob((-1.4, y, kz - 13.0), (4.4, 5.0, 10.0), p=2.8, taper=(0.8, 1.15))
+        g = Geo().blob((-0.4, y, kz - 12.0), (5.6, 5.6, 12.5), p=2.8, taper=(0.8, 1.15))   # v3: bigger team shin
         rig.part(f"shin_{s}", g, team=True)
         a = ANK_REST
         g = Geo().blob((4.0, y, a - 3.8), (11.5, 7.2, 3.6), p=3.0, taper=(1.0, 0.8))
@@ -86,7 +86,7 @@ def build(rig):
     g = Geo().blob((0, 0, 76.0), (25.0, 20.0, 17.0), p=3.0, taper=(0.9, 1.0))
     rig.part("hull", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
     g = Geo().blob((0.5, 0, 76.4), (25.6, 20.6, 17.6), p=3.0, taper=(0.9, 1.0))
-    g.clip((0, 0, 72.0), (0, 0, -1)).clip((0, 0, 79.0), (0, 0, 1))   # team band round the hull
+    g.clip((0, 0, 67.5), (0, 0, -1)).clip((0, 0, 82.5), (0, 0, 1))   # v3: a wide team chest band
     g.blob((-4.0, -20.4, 64.0), (12.0, 2.0, 3.6), p=3.2)   # skirt plate
     rig.part("hull", g, team=True)
     g = Geo().blob((-3.0, 0, 92.4), (15.0, 3.4, 2.2), p=3.0)       # roof stripe

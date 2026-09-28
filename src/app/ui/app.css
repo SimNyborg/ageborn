@@ -459,12 +459,35 @@
 }
 
 .ab-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 900;
   font-size: 18px;
-  padding: 4px 14px;
-  border-radius: 12px;
-  background: var(--ui-well, #161330);
+  padding: 5px 16px 5px 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #2a2352 0%, var(--ui-well, #161330) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 2px 0 rgba(0, 0, 0, 0.35);
   animation: ab-pop 260ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.ab-reward svg {
+  flex: none;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45));
+}
+
+.ab-reward--capsule {
+  background: linear-gradient(180deg, #5a3a1c 0%, #2c1a0d 100%);
+  color: #ffe2a8;
+}
+
+.ab-reward--amber span {
+  color: #ffd27a;
+}
+
+.ab-reward--title,
+.ab-reward--feat {
+  color: #fff1b0;
 }
 
 /* ---------------------------------------------------------------------------------------- */
@@ -665,31 +688,7 @@
 /* Replay controls                                                                          */
 /* ---------------------------------------------------------------------------------------- */
 
-.ab-replay-bar {
-  position: absolute;
-  left: 50%;
-  /* Above the HUD tray (24% of the height, A9.2). */
-  bottom: calc(24% + 10px);
-  white-space: nowrap;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 12px;
-  border: 3px solid var(--ui-ink, #1b1330);
-  border-radius: 18px;
-  background: var(--ui-panel, #2b2754);
-  box-shadow: 0 5px 0 var(--ui-ink, #1b1330);
-  z-index: 50;
-}
-
-.ab-replay-status {
-  position: absolute;
-  top: 14%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-}
+/* Replay viewer styles live in src/app/screens/replay/replay.css. */
 
 .ab-rotate {
   display: none;
@@ -792,4 +791,191 @@
   .ab-logo, .ab-card, .ab-bubble, .ab-btn--hero::after, .ab-ring, .ab-panel, .ab-reward, .ab-rotate-phone, .ab-result-rays, .ab-result-panel, .ab-result-banner h2 {
     animation: none;
   }
+}
+
+/* ---------------------------------------------------------------------------------------- */
+/* Onboarding: the one forced upgrade (A8 ~9:00, A6.6 hammer slam)                           */
+/* ---------------------------------------------------------------------------------------- */
+
+.ab-upgrade {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  z-index: 40;
+  background: radial-gradient(circle at 50% 45%, rgba(58, 40, 110, 0.55) 0%, rgba(10, 6, 24, 0.86) 70%);
+  animation: ab-fade-in 240ms ease-out;
+}
+
+.ab-upgrade-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 28px 22px;
+  min-width: 320px;
+  animation: ab-pop 320ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.ab-upgrade-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffe58a;
+  text-shadow: 0 3px 0 #3a2200, 0 0 18px rgba(255, 200, 80, 0.35);
+}
+
+.ab-upgrade-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  padding: 10px 10px 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #4b7cc9 0%, #2b4c8a 100%);
+  border: 3px solid #1b2c55;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.25), 0 6px 0 rgba(0, 0, 0, 0.35);
+}
+
+.ab-upgrade-portrait {
+  width: 170px;
+  height: 150px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #e8f2ff 0%, #9ab8e6 75%);
+}
+
+.ab-upgrade-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ab-upgrade-name {
+  margin-top: 6px;
+  font-weight: 900;
+  font-size: 20px;
+  color: #fff;
+  text-shadow: 0 2px 0 #10214a;
+}
+
+.ab-upgrade-level {
+  margin-top: 4px;
+  padding: 2px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 20px;
+  color: #3a2200;
+  background: linear-gradient(180deg, #ffe07a, #f2a93b);
+  box-shadow: 0 2px 0 #6b3a0c;
+}
+
+.ab-upgrade--slam .ab-upgrade-level,
+.ab-upgrade--done .ab-upgrade-level {
+  animation: ab-level-flip 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 260ms both;
+}
+
+.ab-upgrade-hammer {
+  position: absolute;
+  top: -34px;
+  right: -40px;
+  transform-origin: 20% 90%;
+  animation: ab-hammer 520ms cubic-bezier(0.5, 0, 0.9, 0.4) both;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.35));
+}
+
+.ab-upgrade--done .ab-upgrade-hammer {
+  animation: ab-hammer 520ms cubic-bezier(0.5, 0, 0.9, 0.4) both, ab-fade-out 260ms ease-in 700ms forwards;
+}
+
+.ab-upgrade--slam .ab-upgrade-card {
+  animation: ab-card-slam 420ms ease-out 260ms both;
+}
+
+.ab-upgrade-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 260px;
+}
+
+.ab-upgrade-bar {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #d8d2ff;
+}
+
+.ab-upgrade-bar i {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6fe38a, #3fbf63);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: width 700ms cubic-bezier(0.2, 1.2, 0.4, 1) 400ms;
+}
+
+.ab-upgrade-cost {
+  margin-left: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 18px;
+  background: rgba(58, 34, 0, 0.25);
+}
+
+.ab-upgrade-gain {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: #8dffa8;
+  text-shadow: 0 2px 0 #0d3a1a;
+  animation: ab-pop 320ms cubic-bezier(0.2, 1.6, 0.4, 1) 500ms both;
+}
+
+@keyframes ab-hammer {
+  0% { transform: translate(40px, -60px) rotate(-70deg); opacity: 0; }
+  45% { transform: translate(10px, -20px) rotate(-85deg); opacity: 1; }
+  75% { transform: translate(0, 0) rotate(10deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes ab-card-slam {
+  0% { transform: scale(1); }
+  20% { transform: scale(0.9, 1.08) translateY(4px); }
+  45% { transform: scale(1.08, 0.94); }
+  70% { transform: scale(0.98, 1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ab-level-flip {
+  0% { transform: rotateX(90deg) scale(0.6); }
+  100% { transform: rotateX(0) scale(1); }
+}
+
+@keyframes ab-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ab-fade-out {
+  to { opacity: 0; }
+}
+
+[data-reduce-motion] .ab-upgrade,
+[data-reduce-motion] .ab-upgrade * {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-height: 460px) {
+  .ab-upgrade-panel { gap: 6px; padding: 12px 20px 14px; }
+  .ab-upgrade-title { font-size: 22px; }
+  .ab-upgrade-portrait { width: 120px; height: 96px; }
+  .ab-upgrade-card { width: 150px; }
 }

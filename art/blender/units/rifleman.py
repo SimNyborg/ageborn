@@ -30,7 +30,7 @@ BRASS = "#C8A560"
 
 def build(rig):
     M.skeleton(rig)
-    M.legs(rig)
+    M.legs(rig, trousers="#767B5A")   # v3: trousers 15% lighter than the khaki kit
     # backpack with a bedroll (behind the torso; drawn before the tunic)
     g = Geo().blob((-12.0, 0, 29.0), (5.6, 9.4, 9.4), p=3.2)
     rig.part("torso", g, team=True)
@@ -48,7 +48,7 @@ def build(rig):
     M.face(rig, brow=M.HAIR, brow_angry=False)
     g = Geo().blob((-2.0, -11.2, 49.0), (2.6, 1.6, 3.4), p=2.2)   # ear
     rig.part("head", g, M.SKIN)
-    M.helmet_round(rig, c=(1.0, 0, 55.0))
+    M.helmet_round(rig, c=(1.0, 0, 57.4))   # v3: brim raised off the eyes
 
     for s in ("r", "l"):
         M.arm_parts(rig, s, fist=4.3)

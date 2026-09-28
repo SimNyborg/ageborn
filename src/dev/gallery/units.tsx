@@ -27,23 +27,31 @@ export interface GridOptions {
   zoom: number;
 }
 
+/**
+ * Puppet for a manifest key: its procedural source, or (for sheet-art entries, whose source is a
+ * sheet URL) the procedural puppet with the same visual id, which the grid uses for layout, age and group.
+ */
+function puppetFor(k: string): PuppetDef | undefined {
+  return puppetById(MANIFEST[k]?.source ?? '') ?? puppetById(k);
+}
+
 /** Visual ids shown by the grid, skins right after their base. */
 export function gridVisuals(o: Pick<GridOptions, 'kind' | 'age' | 'skins' | 'only'>): { key: string; puppet: PuppetDef }[] {
   const prefix = o.kind === 'unit' ? 'unit.' : 'turret.';
   const out: { key: string; puppet: PuppetDef }[] = [];
   const keys = Object.keys(MANIFEST).filter((k) => k.startsWith(prefix));
   const bases = keys.filter((k) => !k.includes('@'));
-  const order = (k: string): number => AGES.indexOf(puppetById(MANIFEST[k]?.source ?? '')?.age ?? 'stone');
+  const order = (k: string): number => AGES.indexOf(puppetFor(k)?.age ?? 'stone');
   bases.sort((a, b) => order(a) - order(b));
   for (const k of bases) {
-    const p = puppetById(MANIFEST[k]?.source ?? '');
+    const p = puppetFor(k);
     if (!p) continue;
     if (o.age !== 'all' && p.age !== o.age) continue;
     if (o.only && !o.only.split(',').some((s) => k.endsWith(s))) continue;
     out.push({ key: k, puppet: p });
     if (o.skins) {
       for (const sk of keys.filter((x) => x.startsWith(`${k}@`))) {
-        const sp = puppetById(MANIFEST[sk]?.source ?? '');
+        const sp = puppetFor(sk);
         if (sp) out.push({ key: sk, puppet: sp });
       }
     }

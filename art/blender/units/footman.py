@@ -26,7 +26,7 @@ STEEL = "#A7B0BB"
 DARK = "#2B2F36"
 WINE = "#8E2A4A"
 LEATHER = "#6B5647"
-BOOT = "#4F433B"
+BOOT = "#7F6A58"   # lighter than v2: dark boots under the shield read as a beard
 GOLD = "#D4A437"
 PARCH = "#E8DFC8"
 
@@ -106,15 +106,16 @@ def build(rig):
 
     # shield on the near hand, modelled upright (rest direction 90): team face, steel rim,
     # parchment chevron and a gold boss
-    sx, sy, sz = HR[0] + 1.5, HR[1] - 6.5, HR[2] + 3.0
-    g = Geo().blob((sx, sy + 1.0, sz), (13.0, 1.6, 16.0), p=3.4, taper=(0.24, 1.0))
+    # a smaller kite shield (v3): the torso and legs stay visible beside it
+    sx, sy, sz = HR[0] + 1.5, HR[1] - 6.5, HR[2] + 1.0
+    g = Geo().blob((sx, sy + 1.0, sz), (10.2, 1.6, 12.8), p=3.4, taper=(0.24, 1.0))
     rig.part("hand_r", g, STEEL, finish="metal")
-    g = Geo().blob((sx, sy, sz + 0.6), (10.8, 1.6, 13.6), p=3.4, taper=(0.2, 1.0))
+    g = Geo().blob((sx, sy, sz + 0.5), (8.4, 1.6, 10.8), p=3.4, taper=(0.2, 1.0))
     rig.part("hand_r", g, team=True, outline=0.8)
-    g = Geo().capsule((sx - 8.0, sy - 1.6, sz - 1.0), (sx, sy - 1.8, sz + 6.5), 2.3)
-    g.capsule((sx, sy - 1.8, sz + 6.5), (sx + 8.0, sy - 1.6, sz - 1.0), 2.3)
+    g = Geo().capsule((sx - 6.2, sy - 1.6, sz - 0.8), (sx, sy - 1.8, sz + 5.2), 1.9)
+    g.capsule((sx, sy - 1.8, sz + 5.2), (sx + 6.2, sy - 1.6, sz - 0.8), 1.9)
     rig.part("hand_r", g, PARCH, outline=0.6)
-    g = Geo().blob((sx, sy - 1.8, sz + 7.0), (3.4, 1.6, 3.4), p=2.2)
+    g = Geo().blob((sx, sy - 1.8, sz + 5.6), (2.8, 1.6, 2.8), p=2.2)
     rig.part("hand_r", g, GOLD, finish="metal", outline=0.8)
     rig.track("_foot", "shin_r", (3.3, -6.0, 0.5))
 
@@ -128,7 +129,7 @@ def sword(a, f, w):
     return B.arm("l", a, f, w, w_rest=90.0)
 
 
-STANCE = merge(shield(-72, -12, 92), sword(-30, 55, 72), {"torso": {"r": -3}})
+STANCE = merge(shield(-58, -22, 96), sword(-30, 55, 72), {"torso": {"r": -3}})
 
 
 def _idle(f):
@@ -141,7 +142,7 @@ def _idle(f):
 
 def _walk(f):
     import math
-    pose, p, bl = B.walk_legs(f)
+    pose, p, bl = B.walk_legs(f, stride=40.0, lift=66.0)
     return merge(STANCE, pose, {
         "arm_r": {"r": 5 * math.cos(p)},
         "arm_l": {"r": -10 * math.cos(p)}, "hand_l": {"r": 4 * bl},

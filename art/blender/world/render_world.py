@@ -4,8 +4,11 @@ Usage (from the repository root, with the bpy venv):
   <venv>/bin/python art/blender/world/render_world.py --out <scratch dir> [--only base.stone,turret.rock_tosser]
       [--scale 1.5] [--no-install] [--no-previews]
 
-Every visual goes through ageborn_art.pipeline.run_unit (the same shading, outline, team layer
-and atlas packing as the units). Shipping files (256-colour PNG + Pixi JSON) are copied to
+Every visual goes through ageborn_art.pipeline.run_unit with the unit v3 settings (the same
+shading, light, outline width and colour, pixel filter and team layer as the units): frames render
+at 2.46 px/lu and are downsampled 2:1 to the shipped 1.23 px/lu sheet, exactly like the unit
+sheets, so world art and units have the same edge softness and outline weight at game scale.
+Clips are not retimed (retime.py is for unit clips). Shipping files (256-colour PNG + Pixi JSON) are copied to
 public/art/bases/<age>.{png,json} and public/art/turrets/<age>/<slug>.{png,json}; previews,
 contact sheets and stats stay in --out.
 """
@@ -65,12 +68,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--only", default="")
-    ap.add_argument("--scale", type=float, default=1.5)
     ap.add_argument("--no-install", action="store_true")
     ap.add_argument("--no-previews", action="store_true")
     args = ap.parse_args()
-    from ageborn_art import config, pipeline
-    config.set_render_scale(args.scale)
+    from ageborn_art import config, pipeline, retime
+    # unit v3 look (config.UNIT_*_V3): shared outline and filter; world clips keep their timing
+    retime.retime = lambda mod, clips: clips
     only = [s for s in args.only.split(",") if s]
     out = os.path.abspath(args.out)
     frames = os.path.join(out, "_frames")
@@ -83,7 +86,9 @@ def main():
         print(f"[{vid}]", flush=True)
         sub = os.path.join(out, mod.AGE)
         os.makedirs(sub, exist_ok=True)
-        s = pipeline.run_unit(mod, sub, frames, previews=not args.no_previews)
+        if not hasattr(mod, "OUTER_OUTLINE"):
+            mod.OUTER_OUTLINE = config.UNIT_OUTLINE_V3
+        s = pipeline.run_unit(mod, sub, frames, previews=not args.no_previews, v3=True)
         stats.append(s)
         if not args.no_install:
             print("  ->", install(mod, sub), flush=True)

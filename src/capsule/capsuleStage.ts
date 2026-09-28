@@ -10,10 +10,10 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import type { ArtProvider, CapsuleTier, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
-import { CardFan, CardView, portraitTexture } from './cardFan';
+import { CardFan, portraitTexture } from './cardFan';
 import { CapsuleDrum, Hammer, Pedestal, Pips } from './climb';
 import { clamp01, easeInQuad, easeOutBack, easeOutCubic, lerp, span } from './ease';
-import { Particles, Trauma, glowSprite, label } from './fx';
+import { Particles, Trauma, glowSprite } from './fx';
 import { RARITY_COLORS, ROOM, TIER_COLORS, shade } from './palette';
 import type {
   BurstStep,
@@ -183,6 +183,9 @@ export class CapsuleStage implements ShowView {
     this.pedGroup.addChild(this.shadow, this.pedestal.root, this.pips.root, this.crate.root, this.drum.root);
     const usesFan = plan.steps.some((s) => s.kind === 'fan' || (s.kind === 'flip' && plan.mode === 'wardrobe'));
     this.fan = usesFan ? new CardFan(plan.cards, this.cardDeps(), { x: PED.x, y: PED.y - 120 }) : null;
+    // The crate's one skin card rises high above the open crate, larger than a fan card.
+    const crateCard = plan.mode === 'wardrobe' ? this.fan?.views[0] : undefined;
+    if (crateCard) crateCard.home = { x: PED.x, y: 262, rot: 0, scale: 1.6 };
 
     this.world.pivot.set(DESIGN_W / 2, DESIGN_H / 2);
     this.world.addChild(
@@ -1021,7 +1024,7 @@ export class CapsuleStage implements ShowView {
         v.setSignal(this.signal.get(slot) ?? 0, this.time);
       }
       // Walkouts own the screen; the summary dims the fan behind its panel.
-      const want = this.walkout ? 0.08 : 1 - 0.75 * this.summaryDim;
+      const want = this.walkout ? 0.08 : 1 - 0.94 * this.summaryDim;
       this.fanAlpha += (want - this.fanAlpha) * Math.min(1, dt / (this.walkout ? 260 : 200));
       this.fan.root.alpha = this.fanAlpha;
     }

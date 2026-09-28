@@ -129,7 +129,8 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
         canvas = (_even(canvas[0]), _even(canvas[1]))
         feet = (_even(feet[0]), _even(feet[1]))
     scene.camera(*canvas, feet)
-    rig = Rig(mod.SLUG, yaw=getattr(mod, "YAW_DEG", C.CHARACTER_YAW_DEG))
+    rig = Rig(mod.SLUG, yaw=getattr(mod, "YAW_DEG",
+                                    C.CHARACTER_YAW_V3 if v3 else C.CHARACTER_YAW_DEG))
     mod.build(rig)
     clips = mod.clips()
     if v3:

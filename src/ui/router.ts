@@ -96,7 +96,7 @@ export interface RouteParams {
   /** 9. */
   warPlan: { age?: AgeId; plan?: number };
   /** 10. */
-  collection: { tab?: 'cards' | 'skins' };
+  collection: { tab?: 'cards' | 'skins' | 'feats' };
   /** 11. */
   cardDetail: { card: CardId };
   /** 12. */

@@ -54,7 +54,8 @@ function collect() {
   for (const age of AGES) {
     const dir = path.join(UNITS, age);
     if (!existsSync(dir)) continue;
-    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json')).sort()) {
+    // `<slug>.hd.json` is the same sheet at twice the density (picked at runtime on dense screens)
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !x.endsWith('.hd.json')).sort()) {
       const slug = f.replace(/\.json$/, '');
       if (!existsSync(path.join(dir, `${slug}.png`))) throw new Error(`${age}/${slug}.json has no PNG`);
       rows.push(summarize(JSON.parse(readFileSync(path.join(dir, f), 'utf8')), age, slug));

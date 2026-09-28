@@ -9,6 +9,7 @@
  */
 import { signal, type ReadonlySignal, type Signal } from '@preact/signals';
 import type { FormatId, MatchResultInput, ReplayDoc, RewardStep, SaveDoc, Sim } from '@/contracts';
+import { STAGES } from '@/tutorial';
 import { createBattle, type BattleHandle } from './battle';
 import { finishMatch } from './flow';
 import { quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup, type SetupLabels } from './matchSetup';
@@ -361,7 +362,8 @@ export class AppController {
       visibility: this.o.visibility ?? null,
       autopilot: this.o.autopilot ?? false,
       // Quick Battle is a dev route: no adaptive hints.
-      hints: setup.mode !== 'skirmish' || save !== null,
+      // A8: in-battle adaptive hints only in the onboarding matches; the detectors keep running.
+      hints: setup.matchNumber <= STAGES.hintsUntilMatch && (setup.mode !== 'skirmish' || save !== null),
     });
     battle.session.onEnd((input, replay) => {
       void this.onMatchEnd(battle, input, replay);

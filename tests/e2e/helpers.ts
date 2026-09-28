@@ -16,10 +16,10 @@ export const FLOWS: Record<FlowId, { ready: boolean; needs: string }> = {
   autopilot: { ready: true, needs: 'the tutorial autopilot and dev fast-forward (WP11) on the real sim (WP2)' },
   quickBattle: { ready: true, needs: 'the Quick Battle dev route `?quick=short` (WP11, C3 Checkpoint A)' },
   gallery: { ready: true, needs: 'the art gallery checks on `window.__galleryInfo` (WP4)' },
-  capsule: { ready: false, needs: 'capsule grants and opening wired after match 1 (WP7 meta, WP8 save, WP10 show; Phase 2b)' },
+  capsule: { ready: true, needs: 'capsule grants and opening wired after match 1 (WP7 meta, WP8 save, WP10 show; Phase 2b)' },
   reload: { ready: false, needs: 'the localStorage save store (WP8) wired into boot (WP11; Phase 2b)' },
-  home: { ready: false, needs: 'the Home screen (WP9) on the app router after onboarding (WP11; Phase 2b)' },
-  skirmish: { ready: false, needs: 'the mode select and Skirmish setup (WP9) wired to a battle (WP11; Phase 2b)' },
+  home: { ready: true, needs: 'the Home screen (WP9) on the app router after onboarding (WP11; Phase 2b)' },
+  skirmish: { ready: true, needs: 'the mode select and Skirmish setup (WP9) wired to a battle (WP11; Phase 2b)' },
 };
 
 /** Whether a flow runs: it is ready, or `E2E_ALL=1` asks for every flow. */
@@ -67,4 +67,21 @@ export function fastForward(page: Page, ticks: number): Promise<number> {
     const dev = (window as unknown as { __agebornDev?: AgebornDev }).__agebornDev;
     return dev ? dev.fastForward(n) : -1;
   }, ticks);
+}
+
+/**
+ * Opens the game with a profile that is past onboarding (step 4, 3 matches played), so the start
+ * screen is Home (WP9) and War Plan and Skirmish are open. Uses the `?dev=1&game=1` controller hook.
+ */
+export async function pastOnboarding(page: Page): Promise<void> {
+  await page.goto('./?dev=1&game=1');
+  await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 30_000 });
+  await page.evaluate(() => {
+    type Save = { tutorial: { step: number }; matchesPlayed: number };
+    const c = (window as unknown as { __agebornDev: { controller: { save: { peek(): Save }; setSave(s: Save, o?: object): void; showTitle(): void } } })
+      .__agebornDev.controller;
+    const s = c.save.peek();
+    c.setSave({ ...s, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed) }, { immediate: true });
+    c.showTitle();
+  });
 }

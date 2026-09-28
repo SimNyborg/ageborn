@@ -6,11 +6,11 @@ import { arenaNameKey, capsuleKindNameKey, capsuleTierNameKey, questNameKey } fr
 import type { QuestReward } from '@/content/types';
 import type { OpponentSpec } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { AiBadge, Badge, CurrencyChip } from '../../components/Chips';
-import { formatCountdown, formatInt, tierNumeral } from '../../components/format';
+import { formatInt, tierNumeral } from '../../components/format';
 import {
   AmberIcon,
   CalendarIcon,
@@ -257,16 +257,6 @@ export function WarChestBar() {
       </span>
     </div>
   );
-}
-
-/** Re-renders every `ms` while `active`, so countdowns on screen keep ticking. */
-function useTicker(ms: number, active: boolean): void {
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    const id = setInterval(() => setTick((n) => n + 1), ms);
-    return () => clearInterval(id);
-  }, [ms, active]);
 }
 
 /** The capsule info panel (A15.3): each bank's rule and cap, then the odds. No countdowns. */

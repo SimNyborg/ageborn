@@ -6,6 +6,7 @@ import type { SaveDoc } from '@/contracts';
 import { xmur3 } from '@/core';
 import { DAILY_DIFFICULTIES, dailyDrawOn, dailyModifierOn, defaultDailyDifficulty } from '../daily';
 import { META_FLAGS } from '../rules';
+import { supplyRules } from '../supply';
 import { daysFromCivil } from '../time';
 import { C, DAY, HOUR, M, TestClock, T0, fresh, lastPending, matchInput, play, scripted } from './helpers';
 
@@ -154,5 +155,34 @@ describe('Daily Challenge 2.0 (A9.1, A15.7)', () => {
     for (const st of cap.contents.stacks) expect((C.units[st.card] ?? C.turrets[st.card])?.age).toBe('gunpowder');
     // The bank is empty now, so the next win pays Amber and needs no dialog.
     expect(M.ageCapsuleDue(r.save, win, C, c)).toBe(false);
+  });
+});
+
+describe('walk-away rule (A15.4, A15.20)', () => {
+  it('a 30-day absence changes nothing owned, and every bank stops at its cap', () => {
+    const c = new TestClock(T0);
+    const s0 = M.tickTimers(unlocked(scripted(1, 0, c)), c);
+    const s = { ...s0, quests: { ...s0.quests, weekly: { ...s0.quests.weekly, progress: 13 } }, flags: { ...s0.flags, 'feat.underdog': true } };
+    c.advance(30 * DAY);
+    const after = M.tickTimers(s, c);
+    expect(after.currencies).toEqual(s.currencies);
+    expect(after.collection).toEqual(s.collection);
+    expect(after.capsules.pending).toEqual(s.capsules.pending);
+    expect(after.capsules.wardrobe).toEqual(s.capsules.wardrobe);
+    expect(after.quests.weekly.progress).toBe(13);
+    expect(after.flags['feat.underdog']).toBe(true);
+    expect(after.capsules.charges).toBe(C.capsules.charges.max);
+    expect(after.capsules.dailyBank).toBe(supplyRules(C).allowanceMax);
+    expect(after.daily.bank).toBe(C.dailyModifiers.challenge.bankMax);
+    expect(after.quests.daily).toHaveLength(C.quests.queueMax);
+    // Another 30 days add nothing more.
+    c.advance(30 * DAY);
+    const later = M.tickTimers(after, c);
+    expect([later.capsules.charges, later.capsules.dailyBank, later.daily.bank, later.quests.daily.length]).toEqual([
+      after.capsules.charges,
+      after.capsules.dailyBank,
+      after.daily.bank,
+      after.quests.daily.length,
+    ]);
   });
 });

@@ -69,9 +69,9 @@ describe('ladder results (A6.3)', () => {
     expect(s.capsules.charges).toBe(12);
     for (let i = 0; i < 12; i += 1) s = play(s, 'ladder', 'win', c).save;
     expect(s.capsules.charges).toBe(0);
-    expect(s.capsules.pending).toHaveLength(22);
+    expect(s.capsules.pending.filter((p) => p.kind === 'win')).toHaveLength(22);
     const extra = play(s, 'ladder', 'win', c);
-    expect(extra.save.capsules.pending).toHaveLength(22);
+    expect(extra.save.capsules.pending.filter((p) => p.kind === 'win')).toHaveLength(22);
     c.advance(6 * HOUR - 1);
     expect(M.tickTimers(s, c).capsules.charges).toBe(0);
     c.advance(1);

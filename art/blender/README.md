@@ -15,6 +15,21 @@ at least 18% team colour on every frame, a flatter camera yaw, real idle/walk am
 attacks with holds, a smear frame and follow-through, a level fire frame with a per-frame
 muzzle anchor, and a 3-frame death that hands off to shared `fx.dust_poof` / `fx.ko_stars`.
 
+## Shipping sheets (v3, after the art director review)
+
+The game's unit sheets are made with `--v3`, which renders at 2.46 px/lu, retimes the clips
+(`ageborn_art/retime.py`: idle 8, hit 5, die 10/12 frames, per-role attack timing), uses the
+colour-matched outline (`config.UNIT_OUTLINE_V3`) and the closer-to-profile biped yaw, and writes
+two sheets per unit: `<slug>.hd.json/.png` (2.46 px/lu) and `<slug>.json/.png` (1.23 px/lu,
+downsampled from the same frames). Bases and turrets (`world/`) do not use v3.
+
+```sh
+# every unit, then install into public/art/units/<age>/ and regenerate the summary and portraits
+.venv-blender/bin/python art/blender/render_all.py --out /tmp/v3 --units all --no-fx --no-mockup --v3 --no-previews --install
+.venv-blender/bin/python art/blender/gen_portraits.py /tmp/v3
+node art/blender/gen_unit_manifest.mjs
+```
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).

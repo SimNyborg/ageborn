@@ -16,9 +16,10 @@
 import { computed, effect, type ReadonlySignal } from '@preact/signals';
 import type { OpponentSpec, ReplayDoc, SaveDoc } from '@/contracts';
 import type { MetaRules } from '@/meta';
-import type { SaveFile } from '@/save';
-import { createRouter, type DailyDifficulty, type MatchRequest, type ResultCard, type PauseInfo, type Router, type UiServices } from '@/ui/screens';
+import { isFirstWin, persist, type SaveFile } from '@/save';
+import { createRouter, createToastStore, type DailyDifficulty, type ToastStore, type MatchRequest, type PauseInfo, type Router, type UiServices } from '@/ui/screens';
 import type { BattleHandle } from './battle';
+import { applySettings } from './boot';
 import type { AppController, AppRoute } from './controller';
 import { matchSetupFor } from './matchSetup';
 import { displayName } from './names';
@@ -29,6 +30,8 @@ import { createUiServices } from './uiServices';
 
 export interface MetaUi {
   router: Router;
+  /** The meta screens' toast host store (save problems show here too). */
+  toasts: ToastStore;
   /** Session counters for the stopping cards (A15.6). */
   cues: StoppingCues;
   save: ReadonlySignal<SaveDoc>;
@@ -86,6 +89,18 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   const requests = new WeakMap<BattleHandle, MatchRequest>();
   /** The save when each battle started (the wrap card compares charges and cards). */
   const saveAtStart = new WeakMap<BattleHandle, SaveDoc | null>();
+  const toasts = createToastStore();
+  // B8: problems the player must see (quota, blocked storage, an unreadable save).
+  const store = services.saveStore as typeof services.saveStore & {
+    onProblem?: (cb: (n: { messageKey: string; ongoing?: boolean } | null) => void) => () => void;
+    problem?: { messageKey: string; ongoing?: boolean } | null;
+    loadReport?: { notice?: { messageKey: string } | null } | null;
+  };
+  const notify = (n: { messageKey: string; ongoing?: boolean } | null | undefined): void => {
+    if (n) toasts.show(services.i18n.t(n.messageKey), { tone: 'bad', ms: n.ongoing ? 8000 : 5000 });
+  };
+  const stopProblems = typeof store.onProblem === 'function' ? store.onProblem(notify) : () => undefined;
+  notify(store.problem ?? store.loadReport?.notice ?? null);
   const cardsOwned = (): number => Object.keys(controller.save.peek()?.collection ?? {}).length;
   const cues = o.cues ?? new StoppingCues(cardsOwned(), { now: () => services.clock.now(), log: services.eventLog });
   // The meta screens only mount once a save exists (meta makes one at boot).
@@ -179,6 +194,9 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       const request = r.result.battle ? (requests.get(r.result.battle) ?? null) : null;
       const after = controller.save.peek();
       const won = input.outcome.winner === input.mySide;
+      // B8: ask the browser to keep the storage once the player has something to lose.
+      const started = r.result.battle ? saveAtStart.get(r.result.battle) : undefined;
+      if (after && isFirstWin(started ?? null, after)) void persist();
       const newestFirst = [...replays].reverse();
       const before = r.result.battle ? saveAtStart.get(r.result.battle) : undefined;
       const card = cues.onResult(
@@ -232,9 +250,18 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     }
   });
 
+  // Settings apply at once (A9 #15): volumes and language now; graphics at the next battle view.
+  let appliedSettings: SaveDoc['settings'] | null = controller.save.peek()?.settings ?? null;
+  const stopSettings = effect(() => {
+    const st = controller.save.value?.settings;
+    if (!st || st === appliedSettings) return;
+    appliedSettings = st;
+    applySettings(services, st);
+  });
+
   // router → controller
   const stopStack = effect(() => {
-    router.stack.value;
+    void router.stack.value;
     const r = controller.route.peek();
     if (!owns(r, controller.step.peek())) return;
     if (r.id === 'result' && !onStack('result')) controller.showTitle();
@@ -257,6 +284,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
 
   return {
     router,
+    toasts,
     cues,
     save,
     services: uiServices,
@@ -266,6 +294,8 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       stopRoute();
       stopStack();
       stopPause();
+      stopSettings();
+      stopProblems();
     },
   };
 }

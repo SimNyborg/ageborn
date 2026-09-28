@@ -6,12 +6,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FixedClock } from '@/contracts/fakes/clock';
 import { AppController, COUNTDOWN_FIGHT_MS, COUNTDOWN_STEP_MS } from '../controller';
 import { buildServices, DEFAULT_CHOICE } from '../services';
+
+/** The controller's own flow without meta and save (the meta screens are tested in metaUi.test.ts). */
+const NO_META = { ...DEFAULT_CHOICE, save: 'memory', meta: 'none' } as const;
 import { resultLine } from '../ui/ResultScreen';
 import { formatMinutes } from '../ui/TitleScreen';
 import { placeBubble, type Rect } from '../ui/TutorialBubble';
 
 async function controller(countdown: boolean) {
-  const services = await buildServices({ choice: DEFAULT_CHOICE, clock: new FixedClock() });
+  const services = await buildServices({ choice: NO_META, clock: new FixedClock() });
   return new AppController(services, { save: null, countdown, delay: async () => undefined });
 }
 

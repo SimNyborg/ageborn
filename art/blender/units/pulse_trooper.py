@@ -83,11 +83,13 @@ def build(rig):
     g.clip((8.4, 0, 50.0), (1, 0, -0.3))           # keep the faceplate white
     g.blob((-0.5, 0, 62.6), (10.4, 2.8, 2.6), p=2.8, rot=(0, -8, 0))  # crest
     rig.part("head", g, team=True)
-    g = Geo().blob((9.8, 0, 49.8), (4.4, 9.0, 4.6), p=3.2)
+    g = Geo().blob((10.4, -0.6, 49.8), (4.6, 10.0, 5.4), p=3.2)
     rig.part("head", g, VISOR_DARK, finish="gloss", outline_hex=SUIT)
-    # visor eyes: squint on the fire frame, X on the first death frames
+    # visor eye slit (v3: one wide bright band that reads as a face in profile at 56 px):
+    # squints on the fire frame, X on the first death frames
     rig.joint("eyes", "head", (13.4, 0, 50.3))
-    g = Geo().blob((13.7, -4.0, 50.3), (1.2, 1.9, 2.4), p=3.0).blob((13.8, 2.2, 50.3), (1.2, 1.9, 2.4), p=3.0)
+    g = Geo().blob((14.3, -2.2, 50.6), (1.6, 7.4, 2.0), p=3.4)
+    g.blob((14.9, -3.2, 50.6), (0.9, 1.6, 1.6), p=2.4)
     rig.part("eyes", g, glow=MINT, outline=0)
     rig.joint("eyes_x", "head", (13.4, 0, 50.3), hidden=True)
     g = Geo()

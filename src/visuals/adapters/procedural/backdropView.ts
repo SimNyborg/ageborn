@@ -31,6 +31,7 @@ type LayerKind = 'sky' | 'far' | 'mid';
 const LAYERS: readonly LayerKind[] = ['sky', 'far', 'mid'];
 const FRAMES: Record<LayerKind, LayerFrame> = { sky: SKY_FRAME, far: FAR_FRAME, mid: MID_FRAME };
 /** Parallax factors for the optional camera offset (mobile pinch-follow, A2.1). */
+const MID_LAYER_TINT = 0xdcdad6;
 const PARALLAX: Record<LayerKind | 'ground', number> = { sky: 0.08, far: 0.25, mid: 0.55, ground: 1 };
 const STRIP_LU = 6;
 const WIPE_EDGE_LU = 70;
@@ -349,7 +350,12 @@ export class ProceduralBackdropView implements BackdropView {
     if (far) this.root.addChild(far.container);
     this.root.addChild(this.ambientLayers.far);
     const mid = byKind('mid');
-    if (mid) this.root.addChild(mid.container);
+    if (mid) {
+      // the mid-ground sits about 13% darker than painted, so grey and white units (knights, mechs)
+      // do not sink into trees and fog at the same brightness (art director review)
+      mid.container.tint = MID_LAYER_TINT;
+      this.root.addChild(mid.container);
+    }
     this.root.addChild(this.ambientLayers.mid);
     this.root.addChild(this.haze.container);
     const ground = o.textures.ground(this.arena);

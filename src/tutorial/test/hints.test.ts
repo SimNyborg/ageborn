@@ -121,15 +121,18 @@ describe('Adaptive hints (DESIGN A8)', () => {
     expect(run(new AdaptiveHints({ disabled: ['evolveFirst'] }), h, ADAPTIVE.outdatedTicks + 1)).toEqual([]);
   });
 
-  it('at most once per 30 s and at most 3 times each (counts persist)', () => {
+  it('once per match, at most 3 times each over the profile (counts persist)', () => {
     const h = new Harness();
     h.state.sides[0].xp = 700_000;
-    const hints = new AdaptiveHints({ shown: { evolveFirst: 1 } });
-    const fired = run(hints, h, sec(300));
+    let shown: Record<string, number> = { evolveFirst: 1 };
+    const fired: string[] = [];
+    for (let match = 0; match < 4; match += 1) {
+      const hints = new AdaptiveHints({ shown });
+      fired.push(...run(hints, h, sec(120)));
+      shown = hints.shown();
+    }
     expect(fired).toEqual(['evolveFirst', 'evolveFirst']);
-    expect(hints.shown()).toEqual({ evolveFirst: 3 });
-    const again = new AdaptiveHints({ shown: hints.shown() });
-    expect(run(again, h, sec(60))).toEqual([]);
+    expect(shown).toEqual({ evolveFirst: 3 });
   });
 
   it('two different patterns still wait 30 s between hints', () => {
@@ -147,4 +150,21 @@ describe('Adaptive hints (DESIGN A8)', () => {
     expect(fired.map((f) => f[0])).toEqual(['evolveFirst', 'powerReady']);
     expect(fired[1]![1] - fired[0]![1]).toBeGreaterThanOrEqual(ADAPTIVE.gapTicks);
   });
+
+  it('each hint shows at most once per match (C5 #2), and the trickle pattern comes from the app (A16.6)', () => {
+    const h = new Harness();
+    const hints = new AdaptiveHints();
+    h.advance();
+    hints.report('trickle');
+    expect(hints.update(h.input())).toMatchObject({ id: 'trickle', textKey: 'tutorial.hint.trickle' });
+    h.advance(sec(40));
+    hints.report('trickle');
+    expect(run(hints, h, sec(40))).toEqual([]);
+    // A new match (a new AdaptiveHints with the saved counts) may show it again.
+    const next = new AdaptiveHints({ shown: hints.shown() });
+    next.report('trickle');
+    h.advance();
+    expect(next.update(h.input())?.id).toBe('trickle');
+  });
 });
+

@@ -25,7 +25,7 @@ import {
   planAvgLevel,
 } from '../model/plan';
 import { historyRows, profileView } from '../model/profile';
-import { chargesView, conquestView, dailyCapsuleView, questViews, roadNodes, roadProgress, trayCapsules, unlocks } from '../model/progress';
+import { chargesView, conquestView, dailyCapsuleView, questViews, roadNodes, roadProgress, trayCapsules, unlocks, warChestView } from '../model/progress';
 import { earnedCapsule, resultKind, stagedRewards } from '../model/result';
 import { needsBackup } from '../settings/SettingsScreen';
 
@@ -181,7 +181,7 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
       ['train_30', 18, 30, false, false],
       ['turret_kills_20', 20, 20, true, true],
     ]);
-    expect(q.weekly).toMatchObject({ progress: 9, target: 15, done: false });
+    expect(warChestView(midGameSave(content), content)).toEqual({ wins: 9, of: content.quests.weekly.target });
     expect(q.rerollLeft).toBe(true);
   });
 

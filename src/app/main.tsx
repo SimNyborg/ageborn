@@ -70,18 +70,21 @@ async function start(root: HTMLElement): Promise<void> {
   const { services, art, flags } = booted;
   const pixi = booted.pixi!;
   const views = new Map<Sim, BattleView>();
-  const saved = booted.save?.settings;
-  const settings: ViewSettings = saved
-    ? {
-        graphics: saved.graphics,
-        reduceMotion: saved.reduceMotion,
-        shake: saved.shake,
-        hitstop: saved.hitstop,
-        damageNumbers: saved.damageNumbers,
-        teamPreset: saved.teamPreset,
-        mutedEmotes: saved.mutedEmotes,
-      }
-    : DEFAULT_VIEW_SETTINGS;
+  // The view reads the settings when a battle starts, so Settings changes apply to the next battle.
+  const viewSettings = (): ViewSettings => {
+    const saved = controller.save.peek()?.settings ?? booted.save?.settings;
+    return saved
+      ? {
+          graphics: saved.graphics,
+          reduceMotion: saved.reduceMotion,
+          shake: saved.shake,
+          hitstop: saved.hitstop,
+          damageNumbers: saved.damageNumbers,
+          teamPreset: saved.teamPreset,
+          mutedEmotes: saved.mutedEmotes,
+        }
+      : DEFAULT_VIEW_SETTINGS;
+  };
   const arenas = (services.content as { arenas?: { list?: { id: string }[] } | null }).arenas;
   const arena = arenas?.list?.[booted.save?.arenaIndex ?? 0]?.id ?? 'tar_pits';
 
@@ -91,7 +94,7 @@ async function start(root: HTMLElement): Promise<void> {
       art,
       audio: services.audio,
       mySide,
-      settings,
+      settings: viewSettings(),
       isMobile,
       arena,
       mountLabel: (cost) => services.i18n.t('app.newSlot', { cost }),

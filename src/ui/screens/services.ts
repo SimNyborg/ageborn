@@ -71,6 +71,8 @@ export interface UiServices {
   setActivePlan(index: number): void;
   /** Clears a card's NEW badge once the player has looked at it (`meta.markSeen`). */
   markSeen(card: CardId): void;
+  /** Reveals a hidden feat's hint (A15.10; stored in `flags['featHint.<id>']`). */
+  showFeatHint(id: string): void;
   /** Equips a skin on a card or base, or clears it with null. */
   equipSkin(target: string, skin: SkinId | null): void;
 

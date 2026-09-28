@@ -8,7 +8,7 @@
 import type { ArtProvider, BackdropView, BaseView, EffectView, TurretView, UnitView, VisualDef } from '@/contracts/art';
 import type { AgeId, CardId, EffectId, Foil, Side, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
-import { AtlasAdapter } from './adapters/atlas';
+import { AtlasAdapter, wantsHdSheets } from './adapters/atlas';
 import type { BakeStats } from './bake';
 import { PlaceholderAdapter } from './adapters/placeholder';
 import { ProceduralAdapter } from './adapters/procedural';
@@ -28,6 +28,8 @@ export interface ArtProviderOptions {
   quality?: 'high' | 'lite';
   /** Device pixel ratio (capped at 2; B16). */
   dpr?: number;
+  /** Uncapped device pixel ratio for choosing HD unit sheets (default: `dpr`, else the window's). */
+  hdDpr?: number;
   /**
    * World scale the atlas is baked for, in px per lu at DPR 1. Default: the largest scale the battle
    * can use on this screen (`screenWorldPxPerLu`), at most 1.25 (a 1,950 px wide lane).
@@ -81,7 +83,8 @@ export class VisualsArtProvider implements ArtProvider {
     const dpr = this.quality === 'lite' ? 1 : Math.min(2, Math.max(1, o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1)));
     const world = o.worldPxPerLu ?? (typeof window !== 'undefined' ? screenWorldPxPerLu(window.innerWidth, window.innerHeight) : 1.25);
     this.procedural = new ProceduralAdapter({ pxPerLu: world * dpr, quality: this.quality, teamPreset: () => this.preset });
-    this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker, quality: this.quality });
+    const rawDpr = o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
+    this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker, quality: this.quality, hd: this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr) });
     this.adapters = { placeholder: this.placeholder, procedural: this.procedural, atlas: this.atlas, spine: new SpineAdapter() };
     this.warn = o.warn ?? ((m) => console.warn(m));
   }

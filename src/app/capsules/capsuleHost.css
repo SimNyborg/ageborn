@@ -1,0 +1,19 @@
+/* The capsule show over the persistent canvas (WP10): it takes every pointer while it runs. */
+.ab-capsule {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+/* WP9's odds sheet inside the show's odds panel: no page chrome of its own. */
+.ab-capsule-odds.ui-root {
+  position: static;
+  inset: auto;
+  overflow: visible;
+  background: transparent;
+}
+
+.ab-capsule-odds .ui-odds__honest {
+  /* The show leads with the A15.3 honesty line itself. */
+  display: none;
+}
