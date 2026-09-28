@@ -121,8 +121,9 @@ describe('duel setup', () => {
   it('melee never hits air and heals top units back up', () => {
     const vsAir = runDuel(duelContent, 'bonker', 'gyrocopter', 4, 1);
     expect(vsAir.hpLeftBp).toEqual([0, BP]);
-    // Friars win against Bonkers and heal each other back to full afterwards.
-    const healers = runDuel(duelContent, 'friar', 'bonker', 5, 11);
+    // Friars win against Bonkers and heal each other back to full afterwards (3 Bonkers: with the
+    // three-wide front of A16.4 L4, 11 Bonkers now overrun 5 Friars).
+    const healers = runDuel(duelContent, 'friar', 'bonker', 5, 3);
     expect(healers.hpLeftBp).toEqual([BP, 0]);
   });
 });

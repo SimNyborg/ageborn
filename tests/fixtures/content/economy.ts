@@ -123,10 +123,12 @@ export const economy: EconomyRules = {
   overchargeBp: 2500,
   // A2.10 phases
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
-  // A17.3 Siege forced march: unit movement ×1.2; A16.4 L5 Siege lethality (10,000 = off)
-  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, unitDamageTakenBp: 10000 },
+  // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
+  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
   marchSpeedBp: 12500,
+  // A2.7 / A16.4 L4: a three-wide front
+  frontWidth: 3,
   // A2.11 Last Stand: arms at ≤ 25%, auto at 10%, 450 lu, 200 × P damage, 80 lu knockback, 1.0 s charge
   lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
   // A2.1 / A2.7 positions and movement

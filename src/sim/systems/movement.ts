@@ -118,8 +118,7 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
   const st0 = u.attacks[0];
   if (st0 && (st0.impactTick !== 0 || targetInRange(ctx, u, r, 0))) {
     m.engaged = true;
-    // EXPERIMENT (A16.4 L3): melee keeps closing to contact while its target is in range.
-    if (st0.impactTick !== 0 || !e.meleeCloses || !r.attacks[0]?.melee) return;
+    return;
   }
   let want = speed;
   const side = ctx.s.sides[u.side];
@@ -147,6 +146,7 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
 /** Plans the ground moves of one side against the (pre-move) enemy ground units. */
 function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[]): void {
   const spacingBp = ctx.econ.spacingBp;
+  const siegeCrowd = ctx.s.phase === 'siege' ? ctx.econ.siege.gateCrowd : 0;
   for (let i = 0; i < mine.length; i += 1) {
     const m = mine[i] as Mover;
     const { u, r } = m;
@@ -185,7 +185,8 @@ function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[]): void {
       }
     }
     if (nearest) {
-      const crowd = ctx.econ.gateCrowd > 0 && (!ctx.econ.crowdSiegeOnly || ctx.s.phase === 'siege') && nearest.newP + nearest.r.half >= LANE - ctx.econ.gateCrowd;
+      // The first `frontWidth` units stand side by side; in Siege the file also closes up at the enemy gate.
+      const crowd = siegeCrowd > 0 && nearest.newP + nearest.r.half >= LANE - siegeCrowd;
       const cap = rank < ctx.econ.frontWidth || crowd ? nearest.newP : nearest.newP - Math.trunc(((r.width + nearest.r.width) * spacingBp) / BP);
       const room = cap - m.p;
       if (room < limit) limit = room;

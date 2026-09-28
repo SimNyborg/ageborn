@@ -1,0 +1,2342 @@
+{
+ "frames": {
+  "starwarden_idle_00": {
+   "frame": {
+    "x": 323,
+    "y": 227,
+    "w": 75,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 105,
+    "w": 75,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_00_team": {
+   "frame": {
+    "x": 467,
+    "y": 523,
+    "w": 47,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 122,
+    "w": 47,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_01": {
+   "frame": {
+    "x": 167,
+    "y": 227,
+    "w": 74,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 102,
+    "w": 74,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_01_team": {
+   "frame": {
+    "x": 219,
+    "y": 523,
+    "w": 46,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 121,
+    "w": 46,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_02": {
+   "frame": {
+    "x": 145,
+    "y": 116,
+    "w": 71,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 99,
+    "w": 71,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_02_team": {
+   "frame": {
+    "x": 463,
+    "y": 435,
+    "w": 46,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 118,
+    "w": 46,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_03": {
+   "frame": {
+    "x": 154,
+    "y": 2,
+    "w": 69,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 95,
+    "w": 69,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_03_team": {
+   "frame": {
+    "x": 101,
+    "y": 435,
+    "w": 44,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 116,
+    "w": 44,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 68,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 93,
+    "w": 68,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_04_team": {
+   "frame": {
+    "x": 149,
+    "y": 435,
+    "w": 44,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 115,
+    "w": 44,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_05": {
+   "frame": {
+    "x": 227,
+    "y": 2,
+    "w": 69,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 95,
+    "w": 69,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_05_team": {
+   "frame": {
+    "x": 197,
+    "y": 435,
+    "w": 44,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 116,
+    "w": 44,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_06": {
+   "frame": {
+    "x": 220,
+    "y": 116,
+    "w": 71,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 99,
+    "w": 71,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_06_team": {
+   "frame": {
+    "x": 513,
+    "y": 435,
+    "w": 46,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 118,
+    "w": 46,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_07": {
+   "frame": {
+    "x": 245,
+    "y": 227,
+    "w": 74,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 102,
+    "w": 74,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_idle_07_team": {
+   "frame": {
+    "x": 269,
+    "y": 523,
+    "w": 46,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 121,
+    "w": 46,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_00": {
+   "frame": {
+    "x": 2,
+    "y": 335,
+    "w": 82,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 110,
+    "w": 82,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_00_team": {
+   "frame": {
+    "x": 620,
+    "y": 523,
+    "w": 46,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 124,
+    "w": 46,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_01": {
+   "frame": {
+    "x": 549,
+    "y": 227,
+    "w": 85,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 106,
+    "w": 85,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_01_team": {
+   "frame": {
+    "x": 319,
+    "y": 523,
+    "w": 46,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 120,
+    "w": 46,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_02": {
+   "frame": {
+    "x": 453,
+    "y": 116,
+    "w": 80,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 99,
+    "w": 80,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_02_team": {
+   "frame": {
+    "x": 67,
+    "y": 523,
+    "w": 45,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 117,
+    "w": 45,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_03": {
+   "frame": {
+    "x": 66,
+    "y": 116,
+    "w": 75,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 100,
+    "w": 75,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_03_team": {
+   "frame": {
+    "x": 369,
+    "y": 523,
+    "w": 45,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 120,
+    "w": 45,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_04": {
+   "frame": {
+    "x": 617,
+    "y": 116,
+    "w": 75,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 105,
+    "w": 75,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_04_team": {
+   "frame": {
+    "x": 412,
+    "y": 435,
+    "w": 47,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 124,
+    "w": 47,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_05": {
+   "frame": {
+    "x": 295,
+    "y": 116,
+    "w": 77,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 103,
+    "w": 77,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 435,
+    "w": 46,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 120,
+    "w": 46,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_06": {
+   "frame": {
+    "x": 537,
+    "y": 116,
+    "w": 76,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 101,
+    "w": 76,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_06_team": {
+   "frame": {
+    "x": 589,
+    "y": 335,
+    "w": 45,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 117,
+    "w": 45,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_07": {
+   "frame": {
+    "x": 402,
+    "y": 227,
+    "w": 76,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 105,
+    "w": 76,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_walk_07_team": {
+   "frame": {
+    "x": 418,
+    "y": 523,
+    "w": 45,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 120,
+    "w": 45,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_00": {
+   "frame": {
+    "x": 567,
+    "y": 2,
+    "w": 73,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 98,
+    "w": 73,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_00_team": {
+   "frame": {
+    "x": 563,
+    "y": 435,
+    "w": 46,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 118,
+    "w": 46,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_01": {
+   "frame": {
+    "x": 77,
+    "y": 227,
+    "w": 86,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 102,
+    "w": 86,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_01_team": {
+   "frame": {
+    "x": 518,
+    "y": 523,
+    "w": 47,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 122,
+    "w": 47,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_02": {
+   "frame": {
+    "x": 392,
+    "y": 2,
+    "w": 86,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 97,
+    "w": 86,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_02_team": {
+   "frame": {
+    "x": 663,
+    "y": 435,
+    "w": 44,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 118,
+    "w": 44,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_03": {
+   "frame": {
+    "x": 300,
+    "y": 2,
+    "w": 88,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 97,
+    "w": 88,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_03_team": {
+   "frame": {
+    "x": 245,
+    "y": 435,
+    "w": 44,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 117,
+    "w": 44,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_04": {
+   "frame": {
+    "x": 194,
+    "y": 335,
+    "w": 103,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 117,
+    "w": 103,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_04_team": {
+   "frame": {
+    "x": 338,
+    "y": 608,
+    "w": 47,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 126,
+    "w": 47,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_05": {
+   "frame": {
+    "x": 482,
+    "y": 2,
+    "w": 81,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 98,
+    "w": 81,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_05_team": {
+   "frame": {
+    "x": 116,
+    "y": 523,
+    "w": 48,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 120,
+    "w": 48,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_06": {
+   "frame": {
+    "x": 74,
+    "y": 2,
+    "w": 76,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 96,
+    "w": 76,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_06_team": {
+   "frame": {
+    "x": 52,
+    "y": 435,
+    "w": 45,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 117,
+    "w": 45,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_07": {
+   "frame": {
+    "x": 376,
+    "y": 116,
+    "w": 73,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 100,
+    "w": 73,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_attack_07_team": {
+   "frame": {
+    "x": 613,
+    "y": 435,
+    "w": 46,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 118,
+    "w": 46,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_00": {
+   "frame": {
+    "x": 482,
+    "y": 227,
+    "w": 63,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 105,
+    "w": 63,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_00_team": {
+   "frame": {
+    "x": 112,
+    "y": 608,
+    "w": 49,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 125,
+    "w": 49,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_01": {
+   "frame": {
+    "x": 638,
+    "y": 227,
+    "w": 70,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 108,
+    "w": 70,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_01_team": {
+   "frame": {
+    "x": 684,
+    "y": 608,
+    "w": 52,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 132,
+    "w": 52,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_02": {
+   "frame": {
+    "x": 2,
+    "y": 116,
+    "w": 60,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 98,
+    "w": 60,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_02_team": {
+   "frame": {
+    "x": 670,
+    "y": 523,
+    "w": 49,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 123,
+    "w": 49,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_03": {
+   "frame": {
+    "x": 644,
+    "y": 2,
+    "w": 61,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 98,
+    "w": 61,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_03_team": {
+   "frame": {
+    "x": 569,
+    "y": 523,
+    "w": 47,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 122,
+    "w": 47,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_04": {
+   "frame": {
+    "x": 2,
+    "y": 227,
+    "w": 71,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 101,
+    "w": 71,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_hit_04_team": {
+   "frame": {
+    "x": 168,
+    "y": 523,
+    "w": 47,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 121,
+    "w": 47,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 608,
+    "w": 106,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 129,
+    "w": 106,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_00_team": {
+   "frame": {
+    "x": 281,
+    "y": 608,
+    "w": 53,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 126,
+    "w": 53,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_01": {
+   "frame": {
+    "x": 88,
+    "y": 335,
+    "w": 102,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 31,
+    "y": 108,
+    "w": 102,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_01_team": {
+   "frame": {
+    "x": 301,
+    "y": 335,
+    "w": 57,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 105,
+    "w": 57,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_02": {
+   "frame": {
+    "x": 474,
+    "y": 335,
+    "w": 111,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 19,
+    "y": 110,
+    "w": 111,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_02_team": {
+   "frame": {
+    "x": 638,
+    "y": 335,
+    "w": 61,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 107,
+    "w": 61,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_03": {
+   "frame": {
+    "x": 293,
+    "y": 435,
+    "w": 115,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 12,
+    "y": 120,
+    "w": 115,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 523,
+    "w": 61,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 117,
+    "w": 61,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_04": {
+   "frame": {
+    "x": 389,
+    "y": 608,
+    "w": 119,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 11,
+    "y": 141,
+    "w": 119,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 687,
+    "w": 54,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 139,
+    "w": 54,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_05": {
+   "frame": {
+    "x": 362,
+    "y": 335,
+    "w": 108,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 17,
+    "y": 115,
+    "w": 108,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_05_team": {
+   "frame": {
+    "x": 703,
+    "y": 335,
+    "w": 52,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 113,
+    "w": 52,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_06": {
+   "frame": {
+    "x": 165,
+    "y": 608,
+    "w": 112,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 17,
+    "y": 132,
+    "w": 112,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_06_team": {
+   "frame": {
+    "x": 630,
+    "y": 608,
+    "w": 50,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 132,
+    "w": 50,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_07": {
+   "frame": {
+    "x": 512,
+    "y": 608,
+    "w": 114,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 18,
+    "y": 137,
+    "w": 114,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_07_team": {
+   "frame": {
+    "x": 60,
+    "y": 687,
+    "w": 53,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 137,
+    "w": 53,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_08": {
+   "frame": {
+    "x": 117,
+    "y": 687,
+    "w": 111,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 25,
+    "y": 148,
+    "w": 111,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_08_team": {
+   "frame": {
+    "x": 232,
+    "y": 687,
+    "w": 52,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 148,
+    "w": 52,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_09": {
+   "frame": {
+    "x": 288,
+    "y": 687,
+    "w": 106,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 32,
+    "y": 158,
+    "w": 106,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  },
+  "starwarden_die_09_team": {
+   "frame": {
+    "x": 398,
+    "y": 687,
+    "w": 56,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 158,
+    "w": 56,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.49785,
+    "y": 0.85965
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "starwarden_idle_00",
+   "starwarden_idle_01",
+   "starwarden_idle_02",
+   "starwarden_idle_03",
+   "starwarden_idle_04",
+   "starwarden_idle_05",
+   "starwarden_idle_06",
+   "starwarden_idle_07"
+  ],
+  "idle_team": [
+   "starwarden_idle_00_team",
+   "starwarden_idle_01_team",
+   "starwarden_idle_02_team",
+   "starwarden_idle_03_team",
+   "starwarden_idle_04_team",
+   "starwarden_idle_05_team",
+   "starwarden_idle_06_team",
+   "starwarden_idle_07_team"
+  ],
+  "walk": [
+   "starwarden_walk_00",
+   "starwarden_walk_01",
+   "starwarden_walk_02",
+   "starwarden_walk_03",
+   "starwarden_walk_04",
+   "starwarden_walk_05",
+   "starwarden_walk_06",
+   "starwarden_walk_07"
+  ],
+  "walk_team": [
+   "starwarden_walk_00_team",
+   "starwarden_walk_01_team",
+   "starwarden_walk_02_team",
+   "starwarden_walk_03_team",
+   "starwarden_walk_04_team",
+   "starwarden_walk_05_team",
+   "starwarden_walk_06_team",
+   "starwarden_walk_07_team"
+  ],
+  "attack": [
+   "starwarden_attack_00",
+   "starwarden_attack_01",
+   "starwarden_attack_02",
+   "starwarden_attack_03",
+   "starwarden_attack_04",
+   "starwarden_attack_05",
+   "starwarden_attack_06",
+   "starwarden_attack_07"
+  ],
+  "attack_team": [
+   "starwarden_attack_00_team",
+   "starwarden_attack_01_team",
+   "starwarden_attack_02_team",
+   "starwarden_attack_03_team",
+   "starwarden_attack_04_team",
+   "starwarden_attack_05_team",
+   "starwarden_attack_06_team",
+   "starwarden_attack_07_team"
+  ],
+  "hit": [
+   "starwarden_hit_00",
+   "starwarden_hit_01",
+   "starwarden_hit_02",
+   "starwarden_hit_03",
+   "starwarden_hit_04"
+  ],
+  "hit_team": [
+   "starwarden_hit_00_team",
+   "starwarden_hit_01_team",
+   "starwarden_hit_02_team",
+   "starwarden_hit_03_team",
+   "starwarden_hit_04_team"
+  ],
+  "die": [
+   "starwarden_die_00",
+   "starwarden_die_01",
+   "starwarden_die_02",
+   "starwarden_die_03",
+   "starwarden_die_04",
+   "starwarden_die_05",
+   "starwarden_die_06",
+   "starwarden_die_07",
+   "starwarden_die_08",
+   "starwarden_die_09"
+  ],
+  "die_team": [
+   "starwarden_die_00_team",
+   "starwarden_die_01_team",
+   "starwarden_die_02_team",
+   "starwarden_die_03_team",
+   "starwarden_die_04_team",
+   "starwarden_die_05_team",
+   "starwarden_die_06_team",
+   "starwarden_die_07_team",
+   "starwarden_die_08_team",
+   "starwarden_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "starwarden.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 756
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.starwarden",
+   "name": "Starwarden",
+   "heightLu": 70,
+   "widthLu": 54.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    116.0,
+    196.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        31.4,
+        58.1
+       ],
+       [
+        30.6,
+        60.5
+       ],
+       [
+        29.6,
+        64.0
+       ],
+       [
+        28.5,
+        67.6
+       ],
+       [
+        27.7,
+        70.4
+       ],
+       [
+        28.5,
+        67.6
+       ],
+       [
+        29.6,
+        64.0
+       ],
+       [
+        30.6,
+        60.5
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        37.2,
+        54.8
+       ],
+       [
+        39.9,
+        58.7
+       ],
+       [
+        37.2,
+        63.6
+       ],
+       [
+        33.0,
+        62.3
+       ],
+       [
+        32.4,
+        59.6
+       ],
+       [
+        33.7,
+        60.9
+       ],
+       [
+        33.1,
+        61.6
+       ],
+       [
+        33.4,
+        57.6
+       ]
+      ]
+     },
+     "strideLu": 24.2,
+     "naturalSpeedLuPerS": 48.4
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      125,
+      125,
+      83,
+      83,
+      125,
+      125
+     ],
+     "durationMs": 832,
+     "impactFrame": 4,
+     "impactAt": 0.5,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        30.0,
+        64.7
+       ],
+       [
+        40.9,
+        60.7
+       ],
+       [
+        43.7,
+        62.5
+       ],
+       [
+        45.5,
+        61.4
+       ],
+       [
+        55.3,
+        48.5
+       ],
+       [
+        30.7,
+        65.5
+       ],
+       [
+        29.1,
+        66.2
+       ],
+       [
+        30.9,
+        63.0
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        14.3,
+        62.5
+       ],
+       [
+        -4.6,
+        63.1
+       ],
+       [
+        4.3,
+        69.9
+       ],
+       [
+        16.3,
+        67.8
+       ],
+       [
+        28.2,
+        61.9
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 0.681
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 0.825
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -52.1,
+        44.6
+       ],
+       [
+        -57.9,
+        59.0
+       ],
+       [
+        -67.2,
+        53.0
+       ],
+       [
+        -72.7,
+        40.7
+       ],
+       [
+        -71.3,
+        18.9
+       ],
+       [
+        -68.4,
+        49.7
+       ],
+       [
+        -66.2,
+        33.4
+       ],
+       [
+        -64.4,
+        30.2
+       ],
+       [
+        -58.3,
+        23.4
+       ],
+       [
+        -52.7,
+        17.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

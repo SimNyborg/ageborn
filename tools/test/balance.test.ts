@@ -87,7 +87,19 @@ describe('balance analysis', () => {
 
   it('reports the 5:00-9:00 window for Full War only', () => {
     expect(mirrorStats('short', [summary({ ticks: 20 * 270 })]).withinWindowPct).toBeNaN();
-    expect(mirrorChecks(mirrorStats('short', [summary()])).map((c) => c.id)).toEqual(['mirror.short.median', 'mirror.short.finalBell']);
+    expect(mirrorChecks(mirrorStats('short', [summary()])).map((c) => c.id)).toEqual(['mirror.short.median', 'mirror.short.finalBell', 'mirror.short.firstClash', 'info.short.contactMiddle']);
+  });
+
+  it('gates the Final Bell per format (A16.5) and the first clash (A17.14), and reports the contact point', () => {
+    const bell = (n: number, format: 'short' | 'full'): MatchSummary[] =>
+      Array.from({ length: 40 }, (_, i) => summary({ format, finalBell: i < n, firstClashTick: 20 * 13, contact: { samples: 10, middle: 4 } }));
+    const verdict = (ms: MatchSummary[], id: string) => mirrorChecks(mirrorStats(ms[0]?.format ?? 'short', ms)).find((c) => c.id === id);
+    expect(verdict(bell(4, 'short'), 'mirror.short.finalBell')?.verdict).toBe('pass');
+    expect(verdict(bell(5, 'short'), 'mirror.short.finalBell')?.verdict).toBe('fail');
+    expect(verdict(bell(2, 'full'), 'mirror.full.finalBell')?.verdict).toBe('pass');
+    expect(verdict(bell(3, 'full'), 'mirror.full.finalBell')?.verdict).toBe('fail');
+    expect(verdict(bell(0, 'short'), 'mirror.short.firstClash')?.verdict).toBe('pass');
+    expect(mirrorStats('short', bell(0, 'short')).contactMiddlePct).toBe(40);
   });
 
   it('computes damage per gold per card', () => {

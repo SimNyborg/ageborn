@@ -4,7 +4,8 @@ Every battle cue is the same 44-bar form at 110 BPM (96 s): a 4-bar groove intro
 a 12-bar B-theme (the motif on vi and IV), an 8-bar breakdown (drums, bass and ostinato, no melody)
 and a 4-bar turnaround. All ages share the form, so an evolve can cross-fade to the next age at the
 same bar and the music carries on in new instruments. Each age sits in its evolve key (A13 key changes +2, +2, +1, +1: C, D, E, F, F#), so
-the key lifts with every evolve even though the files are fixed recordings.
+the key lifts with every evolve even though the files are fixed recordings. The A17 ages (Bronze D,
+Industrial F#, Cosmic A) use the eight-age chain (A17.8).
 
 A `Part` is one instrument: its notes (in beats, one pass of the loop) and its mix settings. `rel`
 is the part's loudness relative to the lead line in LU; the renderer measures every stem and sets its

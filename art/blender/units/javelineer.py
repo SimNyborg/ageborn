@@ -47,7 +47,7 @@ def build(rig):
         x1 = -14.5 + dx * 1.3
         g.lathe([(0, 0), (1.3, 0.8), (1.6, 2.6), (0, 6.0)], (x1 + 0.1, dy, top - 1.0), (x1 - 1.0, dy, top + 5.0),
                 segs=8, squash=(1.0, 0.55))
-    rig.part("case", g, B.BRONZE, finish="metal", outline=0.5)
+    rig.part("case", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     g = Geo().capsule((9.5, -6.5, 36.0), (-8.5, 6.5, 24.0), 1.2)       # strap
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
 
@@ -95,7 +95,7 @@ def build(rig):
     rig.part("jav", g, B.LEATHER_DK, outline=0.4)
     g = Geo().lathe([(0, 0), (1.2, 0.6), (1.9, 2.4), (1.1, 5.0), (0, 7.4)], (hx + JAV_F - 7.2, hy - 1.0, hz),
                     (hx + JAV_F, hy - 1.0, hz), segs=10, squash=(1.0, 0.5))
-    rig.part("jav", g, B.BRONZE, finish="metal", outline=0.5)
+    rig.part("jav", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     rig.track("muzzle", "hand_r", (hx + JAV_F * 0.6, hy - 1.0, hz))
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 

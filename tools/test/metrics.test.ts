@@ -87,3 +87,19 @@ describe('MatchTally details', () => {
     expect(scoreOf({ winner: null }, 1)).toBe(0.5);
   });
 });
+
+describe('first clash and contact point (A17.14)', () => {
+  it('samples the midpoint of the ground fronts and counts it in the middle between the turret covers', () => {
+    const t = new MatchTally(fakeContent);
+    const L = 2_000_000;
+    const cover = 480_000;
+    t.sampleContact([{ side: 0, x: 900_000, hp: 1, air: false }, { side: 1, x: 1_100_000, hp: 1, air: false }], L, cover);
+    // Contact at 300 lu from side 0's gate: inside its turret cover.
+    t.sampleContact([{ side: 0, x: 250_000, hp: 1, air: false }, { side: 1, x: 350_000, hp: 1, air: false }], L, cover);
+    // Air units and the dead are not fronts; one side alone gives no contact point.
+    t.sampleContact([{ side: 0, x: 900_000, hp: 1, air: false }, { side: 1, x: 1_000_000, hp: 1, air: true }, { side: 1, x: 1_100_000, hp: 0, air: false }], L, cover);
+    const s = t.summary({ seed: 1, format: 'full', outcome: null, ticks: 100, hash: 0 });
+    expect(s.contact).toEqual({ samples: 2, middle: 1 });
+    expect(s.firstClashTick).toBeNull();
+  });
+});

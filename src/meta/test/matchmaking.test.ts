@@ -206,14 +206,14 @@ describe('other modes', () => {
     const s = ownsAll(ladderSave(1), 3);
     const c = new TestClock();
     const echo = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'echo', tier: 2, format: 'short', standardLevels: true } });
-    expect(echo.disclosures).toContain('general.echo.disclosure');
+    expect(echo.disclosures).toContain('app.disclosure.echo');
     const own = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'warden', tier: 4, format: 'standard', standardLevels: false } });
     expect(own.disclosures).toContain('general.warden.disclosure');
     const std = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'warden', tier: 4, format: 'standard', standardLevels: true } });
-    expect(std.disclosures).toContain('general.warden.disclosureStandard');
+    expect(std.disclosures).toContain('app.disclosure.wardenStandard');
     expect(std.disclosures).not.toContain('general.warden.disclosure');
     const moss = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'moss', tier: 4, format: 'standard', standardLevels: true } });
-    expect(moss.disclosures.filter((d) => d.startsWith('general.'))).toEqual([]);
+    expect(moss.disclosures.filter((d) => d.startsWith('general.') || d === 'app.disclosure.wardenStandard')).toEqual([]);
   });
 });
 

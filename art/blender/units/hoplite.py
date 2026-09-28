@@ -34,7 +34,7 @@ def build(rig):
     # torso: plum tunic under a linen cuirass with a team band, polished trim; team pteruges
     g = Geo().blob((0, 0, 20.0), (10.6, 9.8, 6.0), p=2.4)
     rig.part("torso", g, B.PLUM)
-    B.cuirass(rig, B.LINEN, trim=B.AGED, z=28.5)
+    B.cuirass(rig, B.LINEN, trim=B.VERD, z=28.5)
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=8, gain=0.7)
     B.pteruges(rig, "hem", 17.2, None, team=True, n=8, radius=(11.2, 10.4), length=8.6)
     for s, y in (("r", -12.0), ("l", 11.5)):                       # linen shoulder guards
@@ -62,7 +62,7 @@ def build(rig):
 
     # the aspis on the near hand: a big round team shield
     sx, sy, sz = HR[0] + 1.0, HR[1] - 6.0, HR[2] + 3.0
-    B.aspis(rig, "hand_r", (sx, sy, sz), r=13.2, depth=2.6, rim=B.AGED, rim_w=2.0)
+    B.aspis(rig, "hand_r", (sx, sy, sz), r=13.2, depth=2.6, rim=B.BRONZE, rim_w=2.0)
     B.dust_puff(rig, "root", (22.0, -4.0, 2.0), size=0.8, name="dust")
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 

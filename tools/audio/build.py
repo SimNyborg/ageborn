@@ -226,20 +226,54 @@ def write_manifest(sheets: dict, entries: dict, music: dict, sfx_bytes: int, mus
     GEN.write_text("\n".join(lines))
 
 
-def main() -> None:
+PENDING = HERE / "pending_sounds.json"
+
+
+def merge_pending(meta: dict) -> dict:
+    """Adds the ids of `pending_sounds.json` that `src/audio/sounds.ts` does not list yet (new sounds
+    rendered before the game registers them, e.g. the A17 ages). Ids and groups the game already lists
+    win; once every pending id is registered there, the file can be deleted."""
+    if not PENDING.exists():
+        return meta
+    pend = json.loads(PENDING.read_text())
+    groups = list(meta["groups"])
+    for g, after in pend.get("groups", {}).items():
+        if g not in groups:
+            groups.insert(groups.index(after) + 1 if after in groups else len(groups), g)
+    sounds = dict(meta["sounds"])
+    added = [sid for sid in pend.get("sounds", {}) if sid not in sounds]
+    for sid in added:
+        sounds[sid] = pend["sounds"][sid]
+    if added:
+        print(f"pending (not in src/audio/sounds.ts yet): {len(added)} ids")
+    return {"groups": groups, "sounds": sounds}
+
+
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Encode the rendered audio and write the manifest.")
+    ap.add_argument("--manifest-out", type=Path, default=None, help="write the manifest here instead of src/audio/assets.gen.ts")
+    ap.add_argument("--no-prune", action="store_true", help="keep files in public/audio that the new manifest no longer lists")
+    args = ap.parse_args(argv)
+    global GEN
+    if args.manifest_out is not None:
+        GEN = args.manifest_out.resolve()
+        GEN.parent.mkdir(parents=True, exist_ok=True)
     listing = subprocess.run(["npx", "tsx", str(HERE / "list-sounds.ts")], cwd=ROOT, check=True, capture_output=True, text=True).stdout
-    (CACHE / "sounds.json").write_text(listing)
-    meta = json.loads(listing)
+    meta = merge_pending(json.loads(listing))
+    (CACHE / "sounds.json").write_text(json.dumps(meta))
     print("sound effects:")
     sheets, entries, sfx_bytes = build_sfx(meta["groups"], meta["sounds"])
     print("music:")
     music, music_bytes = build_music()
     keep = {s["src"] for s in sheets.values()} | {m["src"] for m in music.values()}
     keep |= {s["alt"] for s in sheets.values() if "alt" in s} | {m["alt"] for m in music.values() if "alt" in m}
-    prune(keep)
+    if not args.no_prune:
+        prune(keep)
     write_manifest(sheets, entries, music, sfx_bytes, music_bytes)
-    alt_bytes = sum(f.stat().st_size for sub in ("sfx", "music") for f in (PUBLIC / sub).glob("*.m4a"))
-    print(f"total: sfx {sfx_bytes / 1024:.0f} KB, music {music_bytes / 1024:.0f} KB (Ogg Opus); AAC copies {alt_bytes / 1024:.0f} KB -> {GEN.relative_to(ROOT)}")
+    alt_bytes = sum((ROOT / "public" / a).stat().st_size for a in keep if a.endswith(".m4a"))
+    print(f"total: sfx {sfx_bytes / 1024:.0f} KB, music {music_bytes / 1024:.0f} KB (Ogg Opus); AAC copies {alt_bytes / 1024:.0f} KB -> {GEN}")
 
 
 if __name__ == "__main__":

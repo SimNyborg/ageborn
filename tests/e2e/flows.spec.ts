@@ -120,6 +120,8 @@ test.describe('B13 flows', () => {
 
   test('4. reload keeps state', async ({ page }) => {
     requireFlow('reload');
+    // Winning match 1 takes about 25-30 s under software WebGL; leave room for a loaded machine.
+    test.setTimeout(90_000);
     await winMatch1(page);
     const before = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('ageborn.save.')).length);
     expect(before).toBeGreaterThan(0);

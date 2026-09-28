@@ -55,7 +55,7 @@ describe('A15.3 strings', () => {
   });
 
   it('Echo of You carries the exact AI label', () => {
-    expect(at(load('content.en.json'), 'general.echo.disclosure')).toBe('AI · Echo of You: an AI playing your War Plan');
+    expect(at(load('tutorial.en.json'), 'app.disclosure.echo')).toBe('AI · Echo of You: an AI playing your War Plan');
   });
 
   it('no string claims something is free or that the game plays offline (Pillar 4)', () => {

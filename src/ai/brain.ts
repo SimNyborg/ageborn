@@ -11,7 +11,7 @@
  * | Treasury | m_econ · [before 3:00] · [no enemy on its own half (A17.13; 600 lu on the old 1,200 lu lane)] · [level < tier max] · f_spare |
  * | Evolve | 1.2 when XP ≥ threshold and (no enemy ground unit within 300 lu of own gate, or m_greed ≥ 1.3), after the tier's evolve delay |
  * | Power | 1.0 when the best zone's enemy value ≥ tier threshold × m_patience, or own base took damage in the last 3 s and zone value ≥ 100; aim error applied |
- * | Stance | Hold when the tier allows it and myArmy < 0.7 × foeArmy (A17.13: no turret minimum on the long lane), or when the push gate fails; otherwise Charge |
+ * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; otherwise Charge |
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
  *
  * Plus the push gate, the attack clock, saving goals, the gold float target (A7.3), openings and the
@@ -131,12 +131,15 @@ const LOW_BASE_BP = 2500;
 /** Tempest casts into the burst right after the foe evolves. */
 const FOE_EVOLVE_WINDOW = 5 * TICKS_PER_SECOND;
 /**
- * Stance: Hold when myArmy < 0.7 × m_hold × foeArmy with ≥ 2 turrets. On the 2,000 lu lane (A17.13
- * retune) a weaker army holds even without turrets: the hold line keeps the defender's short walk,
- * while trickling units one by one across 1,000+ lu fed Heavy spam (mono Heavy 53% → 17% vs tier VII).
+ * Stance: Hold when myArmy < 0.7 × m_hold × foeArmy with ≥ 2 turrets, or, on the 2,000 lu lane (A17.13
+ * retune), against a one-type army (A16.3 rule 3 factor ≥ ×1.5, a 60% role-group share) with any turrets:
+ * falling back to the hold line keeps the defender's short walk, where trickling units one by one across
+ * 1,000+ lu fed Heavy spam (mono Heavy 63% → 36% vs tier VII in Short War with the three-wide front).
  */
 const HOLD_RATIO_BP = 7000;
 const HOLD_MIN_TURRETS = 2;
+const HOLD_MONO_BP = 20000;
+const HOLD_MONO_ARMY = 450;
 /** Holding on a failed push gate needs a Hold weight of at least 20 (m_hold 0.7). */
 const HOLD_ON_GATE_BP = 7000;
 /** Attack clock: after 60 s without passing mid-lane, train scores +10% per 5 s (capped at ×3). */
@@ -394,7 +397,7 @@ export class Brain {
 
     // Stance. A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her tiers too.
     if ((t.hold || P.holdAnyTier) && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
-      const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && v.turretsBuilt >= HOLD_MIN_TURRETS;
+      const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && (v.turretsBuilt >= HOLD_MIN_TURRETS || (mono >= HOLD_MONO_BP && v.foeArmy >= HOLD_MONO_ARMY));
       const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {

@@ -353,7 +353,7 @@ function skirmishOpponent(s: SaveDoc, t: Content, o: SkirmishOptions): OpponentS
     seed,
     // A6.8: The Warden still fields his Legendaries at Standard levels, so the VS screen still says
     // so (at the Standard level, not his own).
-    disclosures: o.standardLevels ? (general.legendaryLevel !== null ? [`general.${general.id}.disclosureStandard`] : []) : general.disclosureKeys,
+    disclosures: o.standardLevels ? (general.legendaryLevel !== null ? [WARDEN_STANDARD_DISCLOSURE_KEY] : []) : general.disclosureKeys,
     standardLevels: o.standardLevels,
   });
 }
@@ -380,7 +380,10 @@ function tutorialOpponent(s: SaveDoc, t: Content): OpponentSpec {
 }
 
 /** The Echo of You label (A7.1, A15.3): "AI · Echo of You: an AI playing your War Plan". */
-export const ECHO_DISCLOSURE_KEY = 'general.echo.disclosure';
+export const ECHO_DISCLOSURE_KEY = 'app.disclosure.echo';
+
+/** The Warden's Legendaries at Standard levels (A6.8: the one exception, disclosed on VS). */
+export const WARDEN_STANDARD_DISCLOSURE_KEY = 'app.disclosure.wardenStandard';
 
 /** The VS disclosure of the A6.8 new-player bonus, first 20 matches of a save (A15.3). */
 export const ROOKIE_DISCLOSURE_KEY = 'app.disclosure.rookie';

@@ -30,12 +30,13 @@ HEIGHT_LU = 172
 YAW_DEG = -10.0
 CANVAS = (440, 400)
 FEET = (214, 370)
-ANCHORS = {"head": (-8, 170), "hitCenter": (0, 70), "muzzle": (52, 18)}
+ANCHORS = {"head": (-8, 170), "hitCenter": (0, 70), "muzzle": (44, 22)}
 SCALE = 1.2              # the whole ship: a Legendary towers over the heavies
 
-R = 64.0                  # saucer radius
+R = 54.0                  # saucer radius
+KR = R / 64.0             # radial scale of the authored saucer details
 DZ = 40.0                 # saucer mid height
-EMIT = (40.0, -2.0, DZ - 16.0)   # beam emitter at the front of the belly
+EMIT = (34.0, -2.0, DZ - 13.0)   # beam emitter at the front of the belly
 N_LIGHTS = 12
 IDLE_N = 6
 WALK_N = 8
@@ -43,8 +44,9 @@ WALK_N = 8
 
 def _disc_profile():
     # (radius, z) bottom to top: belly, rim, upper deck
-    return [(0.0, DZ - 16.0), (20.0, DZ - 15.0), (44.0, DZ - 11.0), (60.0, DZ - 5.0), (R, DZ - 1.0),
-            (R, DZ + 3.0), (58.0, DZ + 8.0), (40.0, DZ + 13.0), (22.0, DZ + 15.5), (0.0, DZ + 16.0)]
+    return [(r * KR, z) for r, z in [(0.0, DZ - 16.0), (20.0, DZ - 15.0), (44.0, DZ - 11.0), (60.0, DZ - 5.0),
+                                     (64.0, DZ - 1.0),
+            (64.0, DZ + 3.0), (58.0, DZ + 8.0), (40.0, DZ + 13.0), (22.0, DZ + 15.5), (0.0, DZ + 16.0)]]
 
 
 def build(rig):
@@ -59,12 +61,15 @@ def build(rig):
     g = Geo()
     for a in (30, 150, 270):
         c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
-        g.capsule((16 * c, 16 * s * 0.8, DZ - 14), (22 * c, 22 * s * 0.8, 12.0), 1.6, 1.2)
+        g.capsule((14 * c, 14 * s * 0.8, DZ - 14), (17.5 * c, 17.5 * s * 0.8, 12.0), 1.5, 1.1)
     rig.part("tractor", g, K.STAR_TRIM, finish="metal", outline=0.7)
-    g = Geo().lathe([(19.5, -1.8), (24.0, -1.6), (24.0, 1.6), (19.5, 1.8)], (0, 0, 12.0), (0, 0, 13.0), segs=36,
-                    squash=(1.0, 0.8))
+    g = Geo()
+    for i in range(32):
+        a0, a1 = 2 * math.pi * i / 32, 2 * math.pi * (i + 1) / 32
+        g.capsule((17.5 * math.cos(a0), 17.5 * math.sin(a0) * 0.8, 12.5),
+                  (17.5 * math.cos(a1), 17.5 * math.sin(a1) * 0.8, 12.5), 2.0, segs=8, rings=2)
     rig.part("tractor", g, glow=K.MINT, outline=1.0, outline_hex="#1C8A6A")
-    g = Geo().lathe([(13.0, 0), (9.0, 12.0), (5.0, 20.0), (0, 22.0)], (0, 0, DZ - 14.0), (0, 0, DZ - 15.0),
+    g = Geo().lathe([(11.0, 0), (7.6, 12.0), (4.2, 20.0), (0, 22.0)], (0, 0, DZ - 14.0), (0, 0, DZ - 15.0),
                     segs=28, squash=(1.0, 0.85))
     rig.part("hull", g, K.VOID_LT, finish="gloss")
     g = Geo().sphere((0, -1.0, 3.6), 4.2, cuts=4)
@@ -82,13 +87,13 @@ def build(rig):
     rig.part("hull", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
     # deck panel rings and hatches
     g = Geo()
-    for r0, z in ((50.0, DZ + 10.4), (41.0, DZ + 13.2)):
+    for r0, z in ((50.0 * KR, DZ + 10.4), (41.0 * KR, DZ + 13.2)):
         g.lathe([(r0 - 2.2, -0.6), (r0, -0.6), (r0, 0.6), (r0 - 2.2, 0.6)], (0, 0, z), (0, 0, z + 1), segs=48)
     rig.part("hull", g, K.VIOLET_LT, finish="gloss", outline=0)
     g = Geo()
     for a in (-150, -110, -70, -30, 20, 160):
         c, s_ = math.cos(math.radians(a)), math.sin(math.radians(a))
-        g.blob((45.5 * c, 45.5 * s_, DZ + 12.4), (3.2, 2.0, 0.8), p=3.0, rot=(0, 0, a + 90))
+        g.blob((45.5 * KR * c, 45.5 * KR * s_, DZ + 12.4), (3.2, 2.0, 0.8), p=3.0, rot=(0, 0, a + 90))
     rig.part("hull", g, glow=K.MINT, outline=0.6, outline_hex=K.VOID)
     # belly panel ring
     g = Geo().lathe([(30.0, -0.8), (40.0, -0.8), (40.0, 0.8), (30.0, 0.8)], (0, 0, DZ - 12.6), (0, 0, DZ - 11.6),
@@ -111,26 +116,27 @@ def build(rig):
 
     # superstructure: stepped violet tiers with a team stripe, bridge dome, spire
     g = Geo()
-    K_T = [(36.0, DZ + 14.0), (34.0, DZ + 22.0), (26.0, DZ + 26.0)]
-    g.lathe([(0, DZ + 14.0), (36.0, DZ + 14.0), (34.0, DZ + 22.0), (26.0, DZ + 26.0), (0, DZ + 26.5)], segs=36,
+    g.lathe([(r * KR, z) for r, z in ((0, DZ + 14.0), (36.0, DZ + 14.0), (34.0, DZ + 22.0), (26.0, DZ + 26.0),
+                                      (0, DZ + 26.5))], segs=36,
             squash=(1.0, 1.0))
     rig.part("hull", g, K.VIOLET, finish="gloss", outline_hex=K.VIOLET_DK)
-    g = Geo().lathe([(35.4, -2.0), (35.8, -1.0), (35.0, 2.0), (34.4, 2.4)], (0, 0, DZ + 18.0), (0, 0, DZ + 19.0),
+    g = Geo().lathe([(r * KR, z) for r, z in ((35.4, -2.0), (35.8, -1.0), (35.0, 2.0), (34.4, 2.4))], (0, 0, DZ + 18.0), (0, 0, DZ + 19.0),
                     segs=36, squash=(1.0, 1.0))
     rig.part("hull", g, team=True, outline=0.6)
-    g = Geo().lathe([(0, DZ + 26.0), (22.0, DZ + 26.0), (21.0, DZ + 32.0), (16.0, DZ + 35.0), (0, DZ + 35.5)],
+    g = Geo().lathe([(r * KR, z) for r, z in ((0, DZ + 26.0), (22.0, DZ + 26.0), (21.0, DZ + 32.0), (16.0, DZ + 35.0),
+                                                (0, DZ + 35.5))],
                     segs=32, squash=(1.0, 1.0))
     rig.part("hull", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
     # bridge dome with a star-white frame
-    g = Geo().blob((6.0, 0, DZ + 38.0), (15.0, 12.6, 12.0), p=2.2)
+    g = Geo().blob((5.0, 0, DZ + 36.0), (13.0, 11.0, 10.4), p=2.2)
     g.clip((0, 0, DZ + 34.0), (0, 0, -1))
     rig.part("hull", g, glow="#9B63D9", outline=1.0, outline_hex=K.VIOLET_DK)
-    g = Geo().blob((10.0, -6.0, DZ + 44.0), (4.2, 2.6, 3.0), p=2.2)
+    g = Geo().blob((8.6, -5.4, DZ + 41.0), (3.6, 2.4, 2.6), p=2.2)
     rig.part("hull", g, glow=K.VIOLET_CORE, outline=0)
     g = Geo()
     for a in (-60, 0, 60):
         c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
-        g.capsule((6 + 15.2 * c * 0.98, 12.8 * s, DZ + 35.0), (6 + 6 * c, 5 * s, DZ + 50.5), 1.1, 0.9, segs=8)
+        g.capsule((5 + 13.2 * c * 0.98, 11.2 * s, DZ + 34.0), (5 + 5 * c, 4.4 * s, DZ + 46.2), 1.0, 0.8, segs=8)
     rig.part("hull", g, K.STAR, finish="gloss", outline=0.6, outline_hex=K.STAR_TRIM)
     # spire with antenna rings and the team pennant (the Legendary's team cue) near the top
     sx, sy = -8.0, 4.0

@@ -226,3 +226,19 @@ describe('semantic checks', () => {
     expect(() => assertValidContent(c)).toThrow(/2 issue\(s\)/);
   });
 });
+
+describe('lane rules (A17.3, A17.15)', () => {
+  it('the lane length follows core, and mid-lane and the power zone clamp follow the lane', () => {
+    const c = copy();
+    c.battle.laneLength = 1200;
+    c.battle.midLane = 600;
+    c.economy.powerZoneClamp = [150, 1050];
+    const m = messages(c).join('\n');
+    expect(m).toMatch(/battle\.laneLength: lane length matches core LANE_MLU/);
+    expect(messages(copy())).toEqual([]);
+    const d = copy();
+    d.battle.midLane = 900;
+    d.economy.powerZoneClamp = [150, 1800];
+    expect(messages(d).join('\n')).toMatch(/battle\.midLane[\s\S]*economy\.powerZoneClamp|economy\.powerZoneClamp[\s\S]*battle\.midLane/);
+  });
+});

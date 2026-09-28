@@ -1,0 +1,33 @@
+{
+  "note": "A17 sounds rendered before src/audio/sounds.ts registers them. build.py adds the ids that sounds.ts does not list yet; 'groups' maps each new sound group to the group it follows in SOUND_GROUPS. Delete this file once sounds.ts lists every id.",
+  "groups": {"bronze": "stone", "industrial": "gunpowder", "cosmic": "future"},
+  "sounds": {
+    "shot_javelin": {"group": "bronze", "bus": "sfx"},
+    "shot_scorpion": {"group": "bronze", "bus": "sfx"},
+    "stomp_colossus": {"group": "bronze", "bus": "sfx"},
+    "mirror_beam": {"group": "bronze", "bus": "sfx"},
+    "gorgon_gaze": {"group": "bronze", "bus": "sfx"},
+    "pw_wave": {"group": "bronze", "bus": "sfx"},
+    "pw_aegis": {"group": "bronze", "bus": "sfx"},
+    "evolve_fanfare_bronze": {"group": "bronze", "bus": "sfx"},
+    "shot_carbine": {"group": "industrial", "bus": "sfx"},
+    "shot_harpoon": {"group": "industrial", "bus": "sfx"},
+    "flare_pop": {"group": "industrial", "bus": "sfx"},
+    "fuse_hiss": {"group": "industrial", "bus": "sfx"},
+    "shot_gatling": {"group": "industrial", "bus": "sfx"},
+    "tesla_zap": {"group": "industrial", "bus": "sfx"},
+    "pw_iron_horse": {"group": "industrial", "bus": "sfx"},
+    "pw_zeppelin": {"group": "industrial", "bus": "sfx"},
+    "evolve_fanfare_industrial": {"group": "industrial", "bus": "sfx"},
+    "shot_ion": {"group": "cosmic", "bus": "sfx"},
+    "shot_void": {"group": "cosmic", "bus": "sfx"},
+    "shot_starburst": {"group": "cosmic", "bus": "sfx"},
+    "shot_tachyon": {"group": "cosmic", "bus": "sfx"},
+    "blink_warp": {"group": "cosmic", "bus": "sfx"},
+    "drone_launch": {"group": "cosmic", "bus": "sfx"},
+    "pw_starfall": {"group": "cosmic", "bus": "sfx"},
+    "pw_warp": {"group": "cosmic", "bus": "sfx"},
+    "evolve_fanfare_cosmic": {"group": "cosmic", "bus": "sfx"},
+    "alert_base": {"group": "battle", "bus": "sfx"}
+  }
+}

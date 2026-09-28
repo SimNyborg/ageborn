@@ -6,7 +6,8 @@ grouped by role so the mix stays consistent: UI ticks -31..-34, UI clicks -27, f
 -26, shots -23..-28, spawns -26/-23, explosions -21/-19/-17, big match moments and fanfares -16..-19.
 
 Musical sounds (fanfares, rarity reveals, chimes, capsule climbs) are in C, except the evolve
-fanfares, which play in the key the music moves to (Medieval D, Gunpowder E, Modern F, Future F#).
+fanfares, which play in the key the music moves to (Medieval D, Gunpowder E, Modern F, Future F#;
+A17: Bronze D, Industrial F#, Cosmic A).
 """
 from __future__ import annotations
 
@@ -1237,15 +1238,16 @@ def stomp_colossus(v, rng):
 
 @sfx("mirror_beam", -29, 3)
 def mirror_beam(v, rng):
-    # Focused sunlight (fires every 0.3 s, so it is short and soft): a glassy shimmer that brightens,
-    # a thin sizzle where it lands.
+    # Focused sunlight (fires every 0.3 s, so it is short and soft): a warm glassy swell that
+    # brightens, a thin sizzle where it lands. Kept below 1.5 kHz so the repeats never whistle.
     p = pv(v)
     d = 0.26
-    f = dsp.glide(2100 * p, 2350 * p, d)
-    glass = (osc(f, "sine") + 0.35 * osc(f * 1.5, "sine") + 0.2 * osc(f * 2.02, "sine")) * dsp.env_adsr(d, 0.012, 0.08, 0.5, 0.12)
-    sizzle = bp(noise(d, rng), 3500, 9000) * dsp.env_adsr(d, 0.03, 0.1, 0.4, 0.1) * 0.35
-    body = lp(osc(dsp.glide(620 * p, 700 * p, d), "tri"), 1500) * dsp.env_adsr(d, 0.005, 0.06, 0.3, 0.1) * 0.35
-    return mixdown(glass * 0.6, at(0, sizzle), at(0, body), at(0, click(rng, 0.003, 2000, 7000), 0.2))
+    f = dsp.glide(1040 * p, 1180 * p, d)
+    glass = (osc(f, "sine") + 0.25 * osc(f * 1.5, "sine") + 0.1 * osc(f * 2.02, "sine")) * dsp.env_adsr(d, 0.015, 0.08, 0.5, 0.12)
+    body = lp(osc(dsp.glide(520 * p, 590 * p, d), "tri"), 1400) * dsp.env_adsr(d, 0.006, 0.06, 0.35, 0.1)
+    sizzle = bp(noise(d, rng), 4000, 10000) * dsp.env_adsr(d, 0.03, 0.1, 0.4, 0.1) * 0.25
+    air = bp(noise(d, rng, "pink"), 700, 2500) * dsp.env_adsr(d, 0.02, 0.08, 0.4, 0.1) * 0.3
+    return mixdown(glass * 0.5, at(0, body, 0.6), at(0, sizzle), at(0, air), at(0, click(rng, 0.003, 1500, 6000), 0.15))
 
 
 @sfx("gorgon_gaze", -23, 2)
@@ -1350,7 +1352,7 @@ def fuse_hiss(v, rng):
     thunk = mixdown(perc(WOOD_LO, 104, pitch=0.7 * p, length=0.1), at(0, thump(170 * p, 90, 0.08, 0.012, 0.025, hp_hz=110), 0.5))
     spit = bp(noise(d, rng), 2000, 7000) * (0.55 + 0.45 * np.abs(noise(d, rng, "pink")).clip(0, 1)) * dsp.env_adsr(d, 0.02, 0.1, 0.7, 0.2) * 0.5
     sparks = crackle(rng, d, 500, 0.4) * 0.45
-    return mixdown(thunk, at(0.04, spit), at(0.04, sparks))
+    return mixdown(at(0, thunk, 0.45), at(0.04, spit, 1.3), at(0.04, sparks, 1.2))
 
 
 @sfx("shot_gatling", -26, 3, noisy=True)
@@ -1506,9 +1508,9 @@ def shot_tachyon(v, rng):
     inhale = dsp.sweep_bp(noise(pre, rng, "pink"), dsp.glide(1500, 6000, pre), 3.0) * np.linspace(0, 1, n_of(pre)) ** 2 * 0.6
     d = 0.55
     crack_ = mixdown(crack(rng, 0.04, 1500, 7000, 0.008), at(0, thump(140, 50, 0.3, 0.03, 0.09, 1.8, hp_hz=60), 0.6))
-    beam_f = dsp.glide(1320 * p, 1180 * p, d)
-    beam = (osc(beam_f, "sine") + 0.5 * osc(beam_f * 1.5, "sine") + 0.3 * osc(beam_f * 2.01, "sine")) * env_exp(d, 0.18, 0.003)
-    prism = fm_bell(2640 * p, d, 1.41, 3.0, 0.2, 0.05) * 0.35
+    beam_f = dsp.glide(990 * p, 880 * p, d)
+    beam = (osc(beam_f, "sine") + 0.5 * osc(beam_f * 1.5, "sine") + 0.2 * osc(beam_f * 2.01, "sine")) * env_exp(d, 0.18, 0.003)
+    prism = fm_bell(1980 * p, d, 1.41, 2.0, 0.2, 0.05) * 0.25
     fizz = bp(noise(d, rng), 5000, 11000) * env_exp(d, 0.12, 0.002) * 0.15
     return mixdown(inhale, at(pre, crack_), at(pre, beam * 0.45), at(pre, prism), at(pre, fizz))
 

@@ -30,3 +30,13 @@ matches core.
   camera, the minimap and the rest of A17.4-A17.7 are WP5's step 1 work.
 
 The change was not made in WP5's files by the sim agent, to avoid clashing with the camera work.
+
+## Two sim rules the view should show (SIM_VERSION 2.0.0)
+
+- **Three-wide front** (A16.4 lever L4, `economy.frontWidth` 3): the first three units of a file now stand
+  side by side (A2.1 "Depth" places only two front-rank units at y = −8 and +8). Suggested: front rank at
+  y = −12, 0 and +12, the rest as today.
+- **Siege crowd** (`economy.siege.gateCrowdLu` 60): in Siege, units within 60 lu of the enemy gate may
+  stand level with each other, so a whole army piles up at the gate and hits the base. The view should
+  spread that pile over the depth rows (and a little upward) so it reads as a crowd storming the base rather
+  than units drawn on top of each other.

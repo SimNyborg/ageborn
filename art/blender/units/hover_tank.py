@@ -24,11 +24,12 @@ from ageborn_art.geometry import Geo
 
 SLUG = "hover_tank"
 NAME = "Hover Tank"
-HEIGHT_LU = 100
+HEIGHT_LU = 112
 YAW_DEG = -10.0
-CANVAS = (420, 300)
-FEET = (180, 272)
-ANCHORS = {"head": (0, 86), "hitCenter": (0, 30)}
+CANVAS = (500, 340)
+FEET = (214, 312)
+ANCHORS = {"head": (0, 100), "hitCenter": (0, 36)}
+SCALE = 1.25              # the whole vehicle: the Heavy reads big next to 68 lu infantry
 
 HOVER = 16.0                  # hull bottom above the ground
 TURRET = (-6.0, 0.0, 40.0)
@@ -39,7 +40,7 @@ SPEED = 55.0                  # sim speed, lu/s
 
 
 def build(rig):
-    rig.joint("body", "root", (0, 0, 0))
+    rig.joint("body", "root", (0, 0, 0), scale=SCALE)
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, HOVER + 10.0))
     rig.joint("turret", "hull", TURRET)
@@ -56,7 +57,7 @@ def build(rig):
                         (x, y - 0.4, HOVER - 0.8), segs=24, squash=(1.0, 0.7))
         rig.part(j, g, glow=K.MINT, outline=0)
         rig.joint(f"cone{i}", j, (x, y, HOVER - 2.0))
-        g = Geo().lathe([(7.4, 0), (5.4, 4.4), (2.4, 9.4), (0, 12.0)], (x, y, HOVER - 2.0), (x, y, HOVER - 3.0),
+        g = Geo().lathe([(8.6, 0), (7.0, 3.0), (4.0, 6.4), (0, 8.0)], (x, y, HOVER - 2.0), (x, y, HOVER - 3.0),
                         segs=16, squash=(1.0, 0.7))
         rig.part(f"cone{i}", g, glow="#9CF3D8", outline=0)
         g = Geo().lathe([(3.6, 0), (2.4, 4.0), (0, 7.0)], (x, y - 1.0, HOVER - 2.2), (x, y - 1.0, HOVER - 3.2),
@@ -165,7 +166,7 @@ def _idle(f):
 
 def _walk(f):
     p = 2 * math.pi * f / 8
-    a = SPEED * 0.5 / 4.0          # odo amplitude: stride = 4a per 0.5 s cycle = sim speed
+    a = SPEED * 0.5 / 4.0          # odo amplitude: stride = 4a per 0.5 s cycle = sim speed (odo is unscaled)
     return merge(_cones(1.15, [1.0 + 0.2 * math.sin(p + k) for k in (0, 1.6, 3.1, 4.7)]), {
         "odo": {"x": a * math.cos(p)},
         "hull": dict(z=1.2 * math.sin(2 * p) + 0.6, r=-2.2 + 0.6 * math.sin(p)),
@@ -206,8 +207,8 @@ def _hit(f):
 def _die(f):
     # the pads cut out: the hull drops onto the ground, tilts nose-up and smokes
     body = [{"x": -3.0, "z": 2.0, "r": 5.0, "sz": 1.04, "sx": 0.98, "sy": 0.98},
-            {"x": -5.0, "z": -HOVER + 1.0, "r": 3.0, "sz": 0.78, "sx": 1.08, "sy": 1.08},
-            {"x": -5.0, "z": -HOVER + 1.0, "r": 2.0, "s": 0.88, "sz": 0.6, "sx": 1.12, "sy": 1.12}][f]
+            {"x": -5.0, "z": -HOVER * SCALE + 2.0, "r": 3.0, "sz": 0.78, "sx": 1.08, "sy": 1.08},
+            {"x": -5.0, "z": -HOVER * SCALE + 2.0, "r": 2.0, "s": 0.88, "sz": 0.6, "sx": 1.12, "sy": 1.12}][f]
     return merge(_cones(0.05), {"body": body}, {
         "turret": {"z": pick(f, [6, 9, 5]), "r": pick(f, [12, 22, 16]), "x": pick(f, [-2, -4, -5])},
         "barrel": {"r": pick(f, [-8, -18, -24])},

@@ -132,6 +132,50 @@ describe('createUiServices over the real meta rules', () => {
     if (ids.length > 0) expect(s.flows).toContain(`open:${ids.join(',')}`);
   });
 
+  it('a quest that grants an Age Capsule asks for the age, then claims with it (A6.4)', async () => {
+    const { services, meta, save } = await setup();
+    const quests = { ...save.quests, daily: [{ id: 'daily_challenge_win', progress: 1, claimed: false }, ...save.quests.daily.slice(1)] };
+    // Past the five scripted capsules, so the Age Capsule is a real one-age capsule (A6.5).
+    const h = servicesOnly(services, meta, { ...save, quests, scriptStep: 5 });
+    const asked: string[][] = [];
+    let answer: (age: 'stone' | 'medieval') => void = () => undefined;
+    const ui = createUiServices({
+      services,
+      meta,
+      save: h.sig,
+      router: h.router,
+      flow: {
+        begin: () => undefined,
+        resume: () => undefined,
+        retreat: () => undefined,
+        quitSkirmish: () => undefined,
+        watchReplay: () => undefined,
+        openCapsules: () => undefined,
+        openWardrobe: () => undefined,
+        restart: () => undefined,
+        pickAge: (c) => {
+          asked.push([...c.ages]);
+          return new Promise((r) => {
+            answer = r;
+          });
+        },
+      },
+      commit: (doc) => {
+        h.sig.value = doc;
+      },
+    });
+    const before = h.sig.value.capsules.pending.length;
+    expect(ui.claimQuest(0).ok).toBe(true);
+    expect(asked).toHaveLength(1);
+    expect(h.sig.value.capsules.pending.length).toBe(before);
+    const pick = asked[0]!.find((a) => a !== meta.ageCapsuleChoices(h.sig.value, services.content).suggested) ?? asked[0]![0]!;
+    answer(pick as 'stone');
+    await Promise.resolve();
+    await Promise.resolve();
+    const age = h.sig.value.capsules.pending.find((p) => p.kind === 'age' && p.scriptIndex === null);
+    expect(age?.age).toBe(pick);
+  });
+
   it('maps requests to meta options', () => {
     const reqs: MatchRequest[] = [
       { mode: 'ladder', format: 'full' },

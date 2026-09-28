@@ -232,6 +232,18 @@ describe('push gate, banking and stance (A7.2)', () => {
     expect(defending.banking).toBe(false);
   });
 
+  it('holds without turrets against a one-type army of 450+ gold when weaker (A17.13), not against a mix', () => {
+    // Own army: one Bonker (50) on its side of the lane; foe: four Tuskbacks (600, all Heavy) on their half.
+    const mine = unit(1, 'bonker', 400);
+    const heavies = [0, 1, 2, 3].map((i) => unit(0, 'tuskback', L - 700 - i * 30));
+    const { brain } = brainFor({ tier: 5 });
+    expect(decide(brain, observation({ tick: 1200, units: [mine, ...heavies] })).action).toEqual({ kind: 'stance', stance: 'hold' });
+    // A mixed army of the same value does not trigger it (no turrets, so the A7.3 Hold rule is off).
+    const mixed = [unit(0, 'tuskback', L - 700), unit(0, 'tuskback', L - 730), unit(0, 'pebbler', L - 760), unit(0, 'pebbler', L - 780), unit(0, 'bonker', L - 800), unit(0, 'bonker', L - 820)];
+    const { brain: b2 } = brainFor({ tier: 5 });
+    expect(kinds(decide(b2, observation({ tick: 1200, units: [mine, ...mixed] })))).not.toContain('stance');
+  });
+
   it('charges in Siege whatever the gate says', () => {
     const { brain } = brainFor({ tier: 5 });
     const t = decide(brain, observation({ tick: 6000, phase: 'siege', stance: 'hold', foe: foeTurret }));

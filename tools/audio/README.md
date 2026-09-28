@@ -66,13 +66,25 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
   rhythm. The menu has its own relaxed tune ("Hearth Song", `MENU_MELODY`) so the battle theme stays
   fresh.
 - **Evolve key lift (A13).** The files cannot be transposed live, so each age is recorded in its key:
-  Stone C, Medieval D, Gunpowder E, Modern F, Future F# (+2, +2, +1, +1).
+  Stone C, Medieval D, Gunpowder E, Modern F, Future F# (+2, +2, +1, +1). The A17 ages are recorded in
+  their keys on the eight-age chain (+2, +2, +1, +1, +1, +1, +1): Bronze D (+2), Industrial F# (+6),
+  Cosmic A (+9, with the lead lines an octave down because the total passes +6).
 - **Arrangements (A13 table).** Stone: taiko and hand drums, pan flute and shakuhachi, low strings,
   contrabass, log marimba. Medieval: horns, trumpet, trombones, recorder, lute, march snare,
   timpani. Gunpowder: fife and flute, field drums, tuba and trombones (oom-pah), trumpets, glockenspiel.
   Modern: brass section, trumpets, strings (melody and ostinato), synth bass, rock kit, timpani, muted
   guitar, choir. Future: saw lead, square arpeggio, warm pad and synth bass with side-chain pump, 808
-  kit, strings, choir, brass, timpani, noise risers. Menu: the slow version at 84 BPM (flute,
+  kit, strings, choir, brass, timpani, noise risers. Bronze (A17): reed pipe (oboe, a double-reed
+  colour in the loud bars), horns and horn fifths, a rolling lyre (harp), hammered dulcimer, a
+  tonic-fifth cello drone, contrabass, big frame drum (taiko pitched up) with a maqsum rhythm,
+  frame drums, riq and finger cymbals, Chinese cymbal, timpani. Industrial (A17): colliery brass band
+  (cornet lead, euphonium, trombone chords, tuba with walking pickups), accordion (melody in the
+  bridge, off-beat chords), bells, march drums with a steam-engine kick on every beat, timpani, and a
+  numpy "steam machine" (piston chuffs on the 8ths, a struck anvil on the backbeat, vent hisses at
+  section starts; it leads the breakdown). Cosmic (A17): choir lead doubled by synth brass, string
+  melody, brass, string ostinato, celesta bell arpeggios, a space-voice choir pad and a polysynth
+  pad with side-chain pump, synth-bass sub pulse, timpani, taiko, orchestral kit, electronic hats and
+  the noise risers. Menu: the slow version at 84 BPM (flute,
   clarinet, horn, harp, strings, celesta). Capsule room: celesta, music box, pizzicato, marimba, pad.
 - **Layers (A14.3).** 4-bar mono stems that loop in step with the main loop and fade with the layer
   level. `intensity` (one per age, in the age's key): an 8th-note tonic-octave ostinato (a pedal point
@@ -80,7 +92,9 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
   -22 LUFS. `overdrive`: 16th hats and tambourine, 8th kick, a snare accent on beat 4 and a roll into
   every fourth bar. `siege`: heartbeat bass (synthesized). Stems are limited at -3 dBFS.
 - **Stingers** are recorded in every age key (`stinger.victory`, `stinger.victory.k2` ... `.k6`,
-  same for defeat); `musicEngine` plays the one for the key the battle ended in.
+  same for defeat); `musicEngine` plays the one for the key the battle ended in. For the eight-age
+  chain there are also `.k7`, `.k8` and `.k9` (Modern G, Future G#, Cosmic A); from `.k7` on the
+  victory lead plays an octave down.
 - **Balance.** Each part declares its loudness relative to the lead line (`Part.rel`, in LU); the
   renderer measures every stem and sets the gain from that, so the balance does not depend on how loud
   a soundfont sample is.
@@ -135,6 +149,25 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
 peak, energy per band (sub < 100 Hz, low 100-300, mid 300-2k, presence 2-5k, air 5-10k, top), the
 presence peak and, for effects, the phone-speaker loudness gap; for loops, the seam error (the audio
 one loop apart must match: below -30 dB passes). Lines that break a target start with `!`.
+
+## Sounds rendered before the game registers them (A17)
+
+`build.py` takes the ids and groups from `src/audio/sounds.ts` (through `list-sounds.ts`). Sounds
+designed here before `sounds.ts` lists them go into `pending_sounds.json` (id, group, bus, and which
+group each new group follows); `build.py` adds any pending id that `sounds.ts` does not list yet, at
+the end of its group, so existing sheets keep their offsets. Delete the file once `sounds.ts` lists
+every id. To publish files without touching `src/`:
+
+```sh
+python tools/audio/build.py --no-prune --manifest-out tools/audio/generated/assets.gen.a17.ts
+```
+
+`--manifest-out` writes the manifest elsewhere; `--no-prune` keeps the files the current
+`src/audio/assets.gen.ts` still references. `tools/audio/generated/assets.gen.a17.ts` is the drop-in
+replacement for `src/audio/assets.gen.ts` with the A17 files (new sheets `bronze`, `industrial`,
+`cosmic`; `alert_base` appended to `battle`; `music.bronze`, `music.industrial`, `music.cosmic`,
+their `layer.intensity.<age>` stems and the `.k7`-`.k9` stingers). A plain `build.py` run after
+`sounds.ts` registers the ids produces the same files and prunes the old `battle` sheet.
 
 ## Adding or changing a sound
 

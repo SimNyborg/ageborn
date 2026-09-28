@@ -84,7 +84,7 @@ def _horse(rig):
     g = Geo()
     for i in range(3):
         g.sphere((HX + 20 + 2.8 * i, -8.2 + 2.8 * i, 46.2 - 1.6 * i), 1.1, cuts=2)
-    rig.part("neck", g, B.BRONZE_HI, finish="metal", outline=0.5)
+    rig.part("neck", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
     g = Geo().blob((HX + 35, 0, 59), (11.5, 6.0, 6.8), p=2.4, rot=(0, 40, 0))
     g.blob((HX + 42.4, 0, 51.6), (6.2, 5.6, 5.4), p=2.2)
     for y in (-3.2, 3.2):
@@ -135,13 +135,13 @@ def _car(rig):
     g = Geo()
     for x, z in ((AX - 5, FLOOR_Z + 8), (AX + 3, FLOOR_Z + 8), (AX + 11, FLOOR_Z + 9)):
         g.sphere((x, -13.4, z), 1.2, cuts=2)
-    rig.part("cart", g, B.BRONZE_HI, finish="metal", outline=0.5)
+    rig.part("cart", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
     # team pennant on a tall pole at the back of the car
     px, py = AX - 11.0, 6.0
     g = Geo().capsule((px, py, FLOOR_Z), (px - 1.0, py, 106.0), 1.1)
     rig.part("cart", g, B.WOOD_DK, outline=0.6)
     g = Geo().sphere((px - 1.0, py, 107.6), 1.8, cuts=3)
-    rig.part("cart", g, B.BRONZE, finish="metal", outline=0.5)
+    rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     rig.secondary("pennant", "cart", (px - 1.0, py - 0.6, 104.0), (px - 22.0, py - 0.6, 99.0), max_deg=14,
                   gain=1.2)
     pts = [(0.0, 0.0), (-22.0, -1.8), (-15.5, -6.0), (-22.0, -10.6), (0.0, -11.4)]
@@ -166,7 +166,7 @@ def _driver(rig):
     G.skeleton(rig, parent="driver")
     g = Geo().blob((0.4, 0, 16.0), (10.0, 9.4, 6.0), p=2.4)             # (hidden in the car)
     rig.part("hips", g, B.PLUM)
-    B.cuirass(rig, B.LINEN, trim=B.AGED, z=28.5)
+    B.cuirass(rig, B.LINEN, trim=B.VERD, z=28.5)
     for s, y in (("r", -12.0), ("l", 11.5)):
         g = Geo().blob((0.4, y, 37.0), (6.2, 5.4, 4.6), p=2.6)
         rig.part(f"arm_{s}", g, B.LINEN)

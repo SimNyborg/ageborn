@@ -69,7 +69,7 @@ def build(rig):
 
     # small round shield slung on the near shoulder
     rig.joint("pelte", "torso", (2.0, -14.0, 32.0))
-    B.aspis(rig, "pelte", (3.0, -17.5, 29.0), r=8.8, depth=1.8, rim=B.AGED, rim_w=1.4)
+    B.aspis(rig, "pelte", (3.0, -17.5, 29.0), r=8.8, depth=1.8, rim=B.BRONZE, rim_w=1.4)
 
     # the sarissa on the rear hand, modelled along +X (rest direction 0)
     hx, hy, hz = HR
@@ -78,7 +78,7 @@ def build(rig):
     rig.part("hand_r", g, B.WOOD)
     g = Geo().lathe([(0, TIP - 14.5), (1.6, TIP - 14), (2.8, TIP - 9.5), (1.8, TIP - 4.0), (0, TIP)],
                     (hx, PY, hz), (hx + 1, PY, hz), segs=12, squash=(1.0, 0.5))
-    rig.part("hand_r", g, B.BRONZE, finish="metal")
+    rig.part("hand_r", g, B.BRONZE, finish=B.POLISH)
     g = Geo().lathe([(1.7, BUTT + 0.5), (1.6, BUTT - 2.5), (0, BUTT - 6.0)], (hx, PY, hz), (hx + 1, PY, hz), segs=10)
     g.lathe([(0, 34.0), (1.9, 34.2), (1.9, 36.6), (0, 36.8)], (hx, PY, hz), (hx + 1, PY, hz), segs=10)  # joint sleeve
     rig.part("hand_r", g, B.AGED_DK, finish="metal", outline=0.6)

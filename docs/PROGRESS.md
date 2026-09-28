@@ -2,6 +2,37 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28: Phase 2b meta loop, review fixes (cloud session)
+
+**What works**
+
+- The full meta loop is wired: Home, capsules and the capsule show, Supply Capsule, War Chest, onboarding, Daily Challenge 2.0, feats, stopping cards, ladder, Conquest, Skirmish, replays and AI anti-spam.
+- The Phase 2b review found 20 problems. All are fixed, each with a test where possible:
+  - Result screen: a War Chest grant shows its bar full, and every extra capsule (Supply, the chest's Age Capsule, a Conquest milestone), the Wardrobe Crate and Clay pips show in the "Also earned" row. The reward list has a new `crate` reward step.
+  - Age Capsules: a dialog now asks which age to pick when a match or a quest grants an Age Capsule (Daily first win, Conquest star 3, full War Chest, the Daily quest).
+  - Honest copy: the Supply Capsule is never called "Daily Capsule". Every odds panel uses the A15.3 honesty line. Echo of You has its exact AI label. The Warden's Legendaries are disclosed at Standard levels too. The claims "free" and "offline" are gone. The Legendary line reads "Next capsule you earn" and counts capsules already in the tray. A lost Daily copies as "Lost at 6:10". Stale comments about the reel are corrected.
+  - First session: the title shows only one Play button until onboarding is done. Every title opponent shows its tier and the Rookie AI line. A Settings gear on the title opens Settings (import, For parents, break reminder) during onboarding. An unreadable save shows a banner with an Import button. "Your army, your plan" appears once after match 3. The "Blocked at their gate" callout is off in scripted matches and uses at most 8 words. The onboarding Result offers only Next or Retry, and its other buttons have text labels. The Daily VS screen shows both sides at Lv 7.
+  - Durability: a capsule show saved by another build, or one this build cannot play, is dropped instead of blanking the app. The save already holds the result, so only the animation is lost.
+- Checks: `npm run typecheck`, `npm run lint`, `npm run build` and `npm run size` (421 KB initial gzip) pass. Unit tests and e2e pass for everything this step touched; see the known issues for the failures from work in progress.
+
+**Known issues**
+
+- Other agents are changing the sim, content counters, audio and art while this step runs. Their unfinished work makes these tests fail for now (9 unit tests out of 2,919, plus the e2e golden-replay determinism check): the match 1 retime, the wall prototype, the real-sim render map, the fake sim stream, the unit sprite sheet summary and the balance window. The orchestrator must get them green before the phase is committed as done.
+- The onboarding Result still looks different from the Ladder Result, although its buttons are fixed. The two should be unified in Phase 3.
+- The pause panel in the onboarding battles has no Settings entry; Settings is reachable from the title.
+- If the tab is closed while the Age Capsule dialog is open, that match's result is lost (the result is saved once the age is picked).
+- The total download (lazy art and audio) is about 55 MB, above the 16 MB budget (B16). This is only a warning from the size check.
+
+**What the owner should try** (once this is pushed and deployed)
+
+1. Open the game in a private window and play the two tutorial matches. The title should show only one Play button and a gear icon in the corner.
+2. Tap the gear: Settings should open. Press Back to return.
+3. After match 3, look for "Your army, your plan" on Home.
+4. Win a Daily Challenge: a window asks which age the Age Capsule should come from.
+5. Tell us if anything looks wrong or confusing.
+
+**Next:** get the in-progress sim, content and audio work green, then Phase 3 (`ageborn-phase3-polish`).
+
 ## 2026-09-28: Phase 2a playable battle, Checkpoint A/B (cloud session)
 
 **What works**

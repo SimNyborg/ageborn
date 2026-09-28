@@ -163,7 +163,7 @@ export const fakeEconomy: EconomyRules = {
   ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2,
   powerChargeMs: 50000, powerCarryCapBp: 5000, overchargeXp: 1200, overchargeBp: 2500,
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
-  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, unitDamageTakenBp: 10000 }, marchSpeedBp: 12500,
+  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 }, marchSpeedBp: 12500, frontWidth: 3,
   lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
   spawnP: 20, holdLine: 320, holdRetreatSpeedBp: 7000, leash: 20, spacingBp: 3000,
   retargetMs: 1000, retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: 2000,

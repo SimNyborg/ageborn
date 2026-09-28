@@ -82,9 +82,24 @@ function posOr(v: unknown, fallback: number): number {
   return isNum(v) && v > 0 ? Math.trunc(v) : fallback;
 }
 
-/** The walking speed multiplier (A17.2, `economy.marchSpeedBp`); ×1 for content without the field. */
+/** A non-negative integer field, or `fallback` for content that predates it. */
+function nonNegOr(v: unknown, fallback: number): number {
+  return isNum(v) && v >= 0 ? Math.trunc(v) : fallback;
+}
+
+/**
+ * DESIGN values of the A16.4/A17 economy fields, for content that predates them (old fixtures and
+ * hand-built test content): walking ×1.25 (A17.2), Siege forced march ×1.2 (A17.3), a three-wide front
+ * (A16.4 L4) and a 60 lu siege crowd (A16.4 step 2).
+ */
+export const DEFAULT_MARCH_BP = 12500;
+export const DEFAULT_SIEGE_MOVE_BP = 12000;
+export const DEFAULT_FRONT_WIDTH = 3;
+export const DEFAULT_GATE_CROWD_LU = 60;
+
+/** The walking speed multiplier (A17.2, `economy.marchSpeedBp`). */
 function marchBp(content: CompiledContent): number {
-  return posOr((content.economy as { marchSpeedBp?: unknown }).marchSpeedBp, BP);
+  return posOr((content.economy as { marchSpeedBp?: unknown }).marchSpeedBp, DEFAULT_MARCH_BP);
 }
 
 /** The content's battle table, field by field, falling back to {@link DEFAULT_BATTLE}. */
@@ -317,8 +332,8 @@ export interface EconRules {
   /** Stampede start without own ground units, own-side p in mlu (A5.7). */
   stampedeFallbackP: number;
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
-  /** Siege (A2.10); `moveSpeedBp` is the forced march (A17.3), `unitDamageTakenBp` lever L5 (A16.4). */
-  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; unitDamageTakenBp: number; ropeBpPerStep: number };
+  /** Siege (A2.10); `moveSpeedBp` is the forced march (A17.3), `gateCrowd` the siege crowd in mlu (A16.4 step 2). */
+  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; gateCrowd: number };
   lastStand: { thresholdBp: number; autoBp: number; radius: number; damagePerP: number; knockback: number; chargeTicks: number };
   spawnP: number;
   holdLine: number;
@@ -341,13 +356,8 @@ export interface EconRules {
   levelStepBp: number;
   maxLevel: number;
   healPulseTicks: number;
-  /** EXPERIMENT (A16.4 L3). */
-  meleeCloses: boolean;
-  /** EXPERIMENT (A16.4 L4). */
+  /** Units that may stand side by side at the front of a file (A2.7, A16.4 L4). */
   frontWidth: number;
-  /** EXPERIMENT: gate crowd zone, mlu (0 = off). */
-  gateCrowd: number;
-  crowdSiegeOnly: boolean;
 }
 
 export interface SimRules {
@@ -743,10 +753,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
       baseDamageBp: e.siege.baseDamageBp,
       decayBpPerStep: Math.trunc((e.siege.decayBpPerSec * decayStepTicks) / TICKS_PER_SECOND),
       decayStepTicks,
-      moveSpeedBp: posOr(e.siege.moveSpeedBp, BP),
-      unitDamageTakenBp: posOr(e.siege.unitDamageTakenBp, BP),
-      // A16.4 L6 "the rope": 0 = off (symmetric decay).
-      ropeBpPerStep: Math.trunc((posOr(e.siege.ropeDecayBpPerSec, 0) * decayStepTicks) / TICKS_PER_SECOND),
+      moveSpeedBp: posOr(e.siege.moveSpeedBp, DEFAULT_SIEGE_MOVE_BP),
+      gateCrowd: mlu(nonNegOr(e.siege.gateCrowdLu, DEFAULT_GATE_CROWD_LU)),
     },
     lastStand: {
       thresholdBp: e.lastStand.thresholdBp,
@@ -777,10 +785,7 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     levelStepBp: e.levelStepBp,
     maxLevel: e.maxLevel,
     healPulseTicks: t.healPulse,
-    meleeCloses: (e as { meleeCloses?: unknown }).meleeCloses === true,
-    frontWidth: posOr((e as { frontWidth?: unknown }).frontWidth, 2),
-    crowdSiegeOnly: (e as { crowdSiegeOnly?: unknown }).crowdSiegeOnly === true,
-    gateCrowd: mlu(posOr((e as { gateCrowd?: unknown }).gateCrowd, 0)),
+    frontWidth: posOr(e.frontWidth, DEFAULT_FRONT_WIDTH),
   };
 }
 

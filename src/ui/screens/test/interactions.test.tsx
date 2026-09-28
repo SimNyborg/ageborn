@@ -617,6 +617,6 @@ describe('Trophy Road, Conquest, Profile, Settings', () => {
     const sheet = m.q('[data-testid="odds-sheet"]')!;
     expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 3 Aeon in every 100 Win Capsules.');
     expect(text(sheet.querySelector('[data-testid="odds-bag-jade"]')!)).toContain('5 left');
-    expect(text(sheet.querySelector('[data-testid="odds-pity-legendary"]')!)).toContain('Next capsule: 20%');
+    expect(text(sheet.querySelector('[data-testid="odds-pity-legendary"]')!)).toContain('Next capsule you earn: 45%');
   });
 });

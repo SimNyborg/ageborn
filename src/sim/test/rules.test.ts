@@ -27,7 +27,10 @@ describe('battle table (content.battle)', () => {
     expect(r.econ.moderniseCreditBp).toBe(5000);
     expect(r.econ.stampedeFallbackP).toBe(200000);
     expect(r.econ.midLane).toBe(1000000);
-    expect(r.econ.siege).toMatchObject({ decayStepTicks: 20, decayBpPerStep: 50 });
+    expect(r.econ.siege).toMatchObject({ decayStepTicks: 20, decayBpPerStep: 50, moveSpeedBp: 12000, gateCrowd: 60000 });
+    expect(r.econ.frontWidth).toBe(3);
+    // A17.2: walking speed × 1.25 at compile time (Bonker 70 lu/s → 4,375 mlu per tick)
+    expect(r.units['bonker']?.speed).toBe(4375);
     // Brace and air resist 100%, large 50%
     expect(r.units['pikeman']?.kbResistBp).toBe(10000);
     expect(r.units['gyrocopter']?.kbResistBp).toBe(10000);
@@ -104,5 +107,19 @@ describe('battle table (content.battle)', () => {
     expect(tel?.power).toBe('stampede');
     expect(tel?.x).toBe(550000);
     stepN(sim, 1);
+  });
+});
+
+describe('A16.4 / A17 economy fields', () => {
+  it('fall back to the DESIGN values for content that predates them', () => {
+    const e = { ...fixture.economy } as Record<string, unknown>;
+    delete e['marchSpeedBp'];
+    delete e['frontWidth'];
+    e['siege'] = { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50 };
+    const old = { ...fixture, economy: e } as unknown as CompiledContent;
+    const r = rulesFor(old);
+    expect(r.units['bonker']?.speed).toBe(4375);
+    expect(r.econ.siege).toMatchObject({ moveSpeedBp: 12000, gateCrowd: 60000 });
+    expect(r.econ.frontWidth).toBe(3);
   });
 });

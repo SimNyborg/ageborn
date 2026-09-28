@@ -74,7 +74,7 @@ def build(rig):
     g.slab([(ex - 2.0, ez + 1.5), (ex - 7.5, ez - 1.0), (ex - 7.0, ez + 2.0), (ex - 2.0, ez + 4.0)], py, 1.6)
     rig.part("standard", g, B.AGED, finish="metal", outline=0.7)
     g = Geo().lathe([(1.2, 0), (0.7, 1.6), (0, 3.0)], (ex + 5.2, py, ez + 10.6), (ex + 8.2, py, ez + 9.6), segs=8)
-    rig.part("standard", g, B.BRONZE, finish="metal", outline=0.5)
+    rig.part("standard", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     g = Geo().sphere((ex + 4.0, py - 2.2, ez + 11.4), 0.7, cuts=2)
     rig.part("standard", g, B.PUPIL, outline=0)
 
@@ -95,7 +95,7 @@ def build(rig):
     g.capsule((10.0, -6.0, 36.0), (-2.0, 9.0, 22.0), 1.6)
     rig.part("torso", g, B.PLUM)
     g = Geo().sphere((7.6, -8.6, 37.2), 1.7, cuts=3)
-    rig.part("torso", g, B.BRONZE_HI, finish="metal", outline=0.5)
+    rig.part("torso", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
     # frame drum at the near hip
     rig.joint("drum", "hips", (2.0, -12.0, 16.0))
     g = Geo().lathe([(0, -2.2), (7.4, -2.2), (7.8, 0), (7.4, 2.2), (0, 2.2)], (2.0, -12.0, 15.0), (2.0, -13.0, 15.0),
@@ -116,7 +116,7 @@ def build(rig):
     rig.part("head", g, B.AGED, finish="metal")
     g = Geo().blob((1.0, 0, 53.8), (13.2, 12.6, 1.3), p=2.8)
     g.sphere((0.0, 0, 70.4), 1.8, cuts=3)
-    rig.part("head", g, B.BRONZE, finish="metal", outline=0.6)
+    rig.part("head", g, B.BRONZE, finish=B.POLISH, outline=0.6)
 
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.0, r1=3.6)
@@ -127,7 +127,7 @@ def build(rig):
     rig.part("dart", g, B.WOOD, outline=0.6)
     g = Geo().lathe([(0, 0), (1.1, 0.6), (1.7, 2.2), (1.0, 4.4), (0, 6.2)], (hx + DART_F - 6.0, hy - 1.0, hz),
                     (hx + DART_F, hy - 1.0, hz), segs=10, squash=(1.0, 0.5))
-    rig.part("dart", g, B.BRONZE, finish="metal", outline=0.5)
+    rig.part("dart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     rig.track("muzzle", "hand_r", (hx + DART_F * 0.6, hy - 1.0, hz))
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 

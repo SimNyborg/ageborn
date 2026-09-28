@@ -22,14 +22,14 @@ describe('contentHash (B4, B3 replays)', () => {
   it('matches the snapshot (update only when battle content changes on purpose)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
-    expect(content.hash).toBe('1ea324ad');
+    expect(content.hash).toBe('4b5e2fde');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
     // The fixture never changes, so this value stays fixed even after a balance change updates the
     // snapshot above. It changes only if the hash algorithm or the hashed slice changes, which
     // invalidates every golden replay.
-    const FIXTURE_HASH = 'f63c08d8';
+    const FIXTURE_HASH = '53d42a0d';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
     expect(fixture.hash).toBe(FIXTURE_HASH);
   });

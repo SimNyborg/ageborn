@@ -7,9 +7,11 @@ a horsehair team crest (a follow-through joint), a round aspis shield with a tea
 cuirass, a pteruges skirt, greaves and sandals.
 
 Palette (A17.12 Bronze): sandstone, verdigris and dusk plum for large areas; polished bronze
-is an accent only (it sits in the orange team band, so <= 10% of a silhouette). Large bronze
-surfaces (helmets, greaves, the Colossus) use the aged, desaturated bronze below (< 40%
-saturation), with the polished tone kept to rims, bosses and spear heads.
+is an accent only (it sits in the orange team band, so <= 10% of a silhouette). Helmets,
+greaves, shield rims, bosses and blades are polished bronze #B8863B with the `bronze` finish
+(a warm, clearly visible specular); larger metal (the Colossus body, frames) uses the aged,
+desaturated bronze below (< 40% saturation). Verdigris and dusk plum go on cloth trim, belts
+and shield backs so the age has its own colours next to the Stone Age browns.
 """
 import math
 
@@ -32,7 +34,8 @@ VERD_DK = "#3E7266"
 VERD_LT = "#78AE9F"
 PLUM = "#6A5566"         # dusk plum (large areas)
 PLUM_DK = "#54434F"
-BRONZE = "#B8863B"       # polished bronze: ACCENT only (rims, bosses, spear heads)
+BRONZE = "#B8863B"       # polished bronze: ACCENT only (helmets, greaves, rims, bosses, blades)
+POLISH = "bronze"        # the finish for polished bronze (config.FINISHES)
 BRONZE_HI = "#D8B26A"
 AGED = "#A08C66"         # aged bronze for large metal areas (sat ~36%, outside the rule)
 AGED_DK = "#7E6D50"
@@ -54,7 +57,7 @@ DUST = "#E6DCC6"
 
 
 # -- body kit ------------------------------------------------------------------------------------
-def sandal_legs(rig, skin=SKIN, sandal=LEATHER, greave=AGED, thigh_r=4.6, hip_z=HIP_Z, greaves=True):
+def sandal_legs(rig, skin=SKIN, sandal=LEATHER, greave=BRONZE, thigh_r=4.6, hip_z=HIP_Z, greaves=True):
     """Bare legs with laced sandals and (optionally) aged-bronze greaves over the shins."""
     for s in ("r", "l"):
         y = LEG_Y * SIDE_Y[s]
@@ -70,7 +73,9 @@ def sandal_legs(rig, skin=SKIN, sandal=LEATHER, greave=AGED, thigh_r=4.6, hip_z=
         if greaves:
             g = Geo().blob((1.4, y - 0.6 * (1 if s == "r" else -1), 7.4), (4.3, 4.3, 5.4), p=2.4,
                            taper=(0.86, 1.08))
-            rig.part(f"shin_{s}", g, greave, finish="metal")
+            rig.part(f"shin_{s}", g, greave, finish=POLISH if greave == BRONZE else "metal")
+            g = Geo().blob((1.4, y - 0.6 * (1 if s == "r" else -1), 12.2), (4.5, 4.5, 0.9), p=3.0)
+            rig.part(f"shin_{s}", g, VERD_DK, outline=0.5)          # verdigris garter strap
 
 
 def pteruges(rig, joint, z_top, color, team=False, n=7, radius=(11.0, 10.2), length=8.0, y0=0.0):
@@ -85,7 +90,7 @@ def pteruges(rig, joint, z_top, color, team=False, n=7, radius=(11.0, 10.2), len
     rig.part(joint, g, color, team=team, outline=0.8)
 
 
-def cuirass(rig, color=LINEN, trim=None, team_band=True, bulk=1.0, z=28.0):
+def cuirass(rig, color=LINEN, trim=VERD, team_band=True, bulk=1.0, z=28.0):
     """A linen cuirass (linothorax) over the torso with a team band across the belly."""
     k = bulk
     g = Geo().blob((0.2, 0, z), (10.8 * k, 9.8 * k, 11.6), p=2.4, taper=(1.08, 0.94))
@@ -96,7 +101,7 @@ def cuirass(rig, color=LINEN, trim=None, team_band=True, bulk=1.0, z=28.0):
     if trim:
         g = Geo().blob((0.6, 0, z - 9.4), (11.4 * k, 10.4 * k, 1.3), p=3.2)
         g.blob((0.6, 0, z - 0.6), (11.2 * k, 10.2 * k, 1.1), p=3.2)
-        rig.part("torso", g, trim, finish="metal", outline=0.6)
+        rig.part("torso", g, trim, finish=POLISH if trim == BRONZE else "matte", outline=0.6)
 
 
 def head_ball(rig, skin=SKIN, center=(2, 0, 49.0), r=(11.4, 10.8, 11.2), nose=(13.4, -0.6, 48.0),
@@ -112,7 +117,7 @@ def beard(rig, color=HAIR, cx=11.0, z=42.0, full=True):
     rig.part("head", g, color, finish="hair")
 
 
-def helmet(rig, color=AGED, rim=BRONZE, crest=True, crest_len=26.0, crest_h=10.0, tall=0.0, cheek=True,
+def helmet(rig, color=BRONZE, rim=BRONZE_HI, crest=True, crest_len=26.0, crest_h=10.0, tall=0.0, cheek=True,
            crest_color=None, c=(1.5, 0, 55.0), crest_joint="crest"):
     """An open-faced bronze helmet (Chalcidian cut): a dome, a neck guard, cheek guards that
     leave the eyes free, a polished rim and a tall horsehair crest (team) on a stilt that trails
@@ -120,23 +125,24 @@ def helmet(rig, color=AGED, rim=BRONZE, crest=True, crest_len=26.0, crest_h=10.0
     cx, cy, cz = c
     g = Geo().blob((cx, cy, cz + tall * 0.4), (12.4, 11.8, 10.2 + tall), p=2.4)
     g.clip((0, 0, cz - 1.6), (0, 0, -1))
-    rig.part("head", g, color, finish="metal")
+    fin = POLISH if color == BRONZE else "metal"
+    rig.part("head", g, color, finish=fin)
     g = Geo().blob((cx - 7.5, cy, cz - 5.0), (6.2, 11.4, 6.4), p=2.4)       # neck guard
     g.clip((cx - 5.0, 0, 0), (1, 0, 0))
-    rig.part("head", g, color, finish="metal")
+    rig.part("head", g, AGED if color == BRONZE else color, finish="metal")
     if cheek:
         g = Geo()
         for y in (-10.2, 10.2):
             g.blob((cx + 3.2, y, cz - 6.6), (3.6, 1.6, 5.0), p=2.4, taper=(0.55, 1.0), rot=(0, -8, 0))
-        rig.part("head", g, color, finish="metal", outline=0.8)
+        rig.part("head", g, AGED if color == BRONZE else color, finish="metal", outline=0.8)
     g = Geo().blob((cx + 0.4, cy, cz - 1.4), (12.9, 12.3, 1.3), p=2.8)       # polished rim
     g.capsule((cx + 12.0, -4.5, cz + 2.8), (cx + 12.4, 4.5, cz + 2.8), 1.0)   # brow ridge
-    rig.part("head", g, rim, finish="metal", outline=0.6)
+    rig.part("head", g, rim, finish=POLISH, outline=0.6)
     if not crest:
         return None
     top = cz + 10.0 + tall
     g = Geo().capsule((cx, cy, top - 1.0), (cx - 1.0, cy, top + 4.2), 1.5)   # crest stilt
-    rig.part("head", g, color, finish="metal", outline=0.6)
+    rig.part("head", g, VERD_DK, finish="metal", outline=0.6)
     rig.secondary(crest_joint, "head", (cx + 6.0, cy, top + 4.0), (cx - crest_len, cy, top + 1.0),
                   max_deg=10, gain=0.9)
     g = Geo()
@@ -163,7 +169,10 @@ def aspis(rig, joint, center, r=13.0, depth=2.4, face_team=True, emblem=SAND_LT,
     # back plate (rim colour) and the face in front of it, both bowed toward the camera
     g = Geo().blob((cx, cy + depth * 0.4, cz), (r, depth, r), p=2.0, rot=rot)
     g.clip((0, cy + depth * 0.3, 0), (0, 1, 0))
-    rig.part(joint, g, rim, finish="metal")
+    rig.part(joint, g, rim, finish=POLISH if rim in (BRONZE, BRONZE_HI) else "metal")
+    g = Geo().blob((cx, cy + depth * 1.1, cz), (r * 0.97, depth * 0.8, r * 0.97), p=2.0, rot=rot)
+    g.clip((0, cy + depth * 1.0, 0), (0, -1, 0))
+    rig.part(joint, g, PLUM_DK, outline=0.6)                                  # plum shield back
     g = Geo().blob((cx, cy + 0.2, cz), (r - rim_w, depth * 0.95, r - rim_w), p=2.0, rot=rot)
     g.clip((0, cy + depth * 0.2, 0), (0, 1, 0))
     if face_team:
@@ -179,7 +188,7 @@ def aspis(rig, joint, center, r=13.0, depth=2.4, face_team=True, emblem=SAND_LT,
         rig.part(joint, g, emblem, outline=0.5)
     if boss:
         g = Geo().sphere((cx, cy - depth * 0.95 - 0.4, cz), 1.6 * r / 13.0, cuts=3)
-        rig.part(joint, g, BRONZE_HI, finish="metal", outline=0.5)
+        rig.part(joint, g, BRONZE_HI, finish=POLISH, outline=0.5)
 
 
 def spear(rig, joint, grip, fwd=30.0, back=18.0, r=1.4, shaft=WOOD, head=BRONZE, head_len=9.0, butt=True,
@@ -195,7 +204,7 @@ def spear(rig, joint, grip, fwd=30.0, back=18.0, r=1.4, shaft=WOOD, head=BRONZE,
     rig.part(joint, g, shaft, outline=0.8)
     g = Geo().lathe([(0, 0), (r * 1.15, 0.6), (r * 1.9, head_len * 0.32), (r * 1.3, head_len * 0.7), (0, head_len)],
                     at(fwd - head_len), at(fwd), segs=12, squash=(1.0, 0.5))
-    rig.part(joint, g, head, finish="metal", outline=0.6)
+    rig.part(joint, g, head, finish=POLISH if head in (BRONZE, BRONZE_HI) else "metal", outline=0.6)
     if butt:
         g = Geo().lathe([(r * 1.1, 0), (r * 1.0, 3.0), (0, 5.0)], at(-back + 0.5), at(-back - 4.5), segs=10)
         rig.part(joint, g, AGED_DK, finish="metal", outline=0.5)

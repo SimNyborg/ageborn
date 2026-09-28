@@ -233,8 +233,9 @@ class Duel {
     const gap = Math.trunc((2 * w * this.c.economy.spacingBp) / BP);
     let p = this.c.economy.spawnP * MILLI;
     for (let i = 0; i < count; i += 1) {
-      // A2.7 soft single file: the first two share the front, then each keeps (wA + wB) × 0.3 behind.
-      if (i >= 2) p -= gap;
+      // A2.7 soft single file: the first `frontWidth` (A16.4 L4: 3) share the front, then each keeps
+      // (wA + wB) × 0.3 behind.
+      if (i >= this.c.economy.frontWidth) p -= gap;
       const f = this.spawn(def, side, side === 0 ? p : LANE - p, false);
       this.startHp[side] += f.maxHp;
     }
@@ -854,7 +855,7 @@ class Duel {
             const ahead = moved[k];
             if (!ahead || ahead.f.air) continue;
             if (!ahead.moving && ahead.f.maxRange > f.maxRange) continue;
-            const cap = rank <= 1 ? ahead.p : ahead.p - Math.trunc(((ahead.f.w + f.w) * this.c.economy.spacingBp) / BP);
+            const cap = rank < this.c.economy.frontWidth ? ahead.p : ahead.p - Math.trunc(((ahead.f.w + f.w) * this.c.economy.spacingBp) / BP);
             step = Math.max(0, Math.min(step, cap - this.p(f)));
             break;
           }

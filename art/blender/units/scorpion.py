@@ -114,7 +114,7 @@ def build(rig):
     rig.part("bolt", g, B.WOOD, outline=0.5)
     g = Geo().lathe([(0, 0), (1.3, 0.6), (2.0, 2.4), (1.2, 5.0), (0, 7.0)], (STRING_REST + BOLT_LEN - 7.0, -0.5, bz),
                     (STRING_REST + BOLT_LEN, -0.5, bz), segs=10, squash=(1.0, 0.5))
-    rig.part("bolt", g, B.BRONZE, finish="metal", outline=0.5)
+    rig.part("bolt", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     g = Geo().slab([(STRING_REST + 1.0, bz), (STRING_REST + 7.0, bz), (STRING_REST + 2.0, bz + 3.4)], -0.6, 0.8)
     g.slab([(STRING_REST + 1.0, bz), (STRING_REST + 7.0, bz), (STRING_REST + 2.0, bz - 3.4)], -0.6, 0.8)
     rig.part("bolt", g, B.SAND_LT, outline=0.4)

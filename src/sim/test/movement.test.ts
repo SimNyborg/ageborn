@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { devSpawn, stepN } from '../debug';
+import { devSpawn, simCtx, stepN } from '../debug';
 import { arena, L, pLu, Stamper, stun, unitOf } from './helpers';
 
 describe('movement (A2.7)', () => {
@@ -14,15 +14,45 @@ describe('movement (A2.7)', () => {
     expect(pLu(sim, v.id)).toBe(24.375);
   });
 
-  it('soft single file with a two-wide front: unit 2 joins unit 1, unit 3 keeps (wA + wB) × 0.3', () => {
+  it('soft single file with a three-wide front (A16.4 L4): units 2 and 3 join unit 1, unit 4 keeps (wA + wB) × 0.3', () => {
     const sim = arena();
     const a = devSpawn(sim, 0, 'bonker', { p: 100 });
     const b = devSpawn(sim, 0, 'bonker', { p: 100 });
     const c = devSpawn(sim, 0, 'bonker', { p: 100 });
+    const d = devSpawn(sim, 0, 'bonker', { p: 100 });
     stepN(sim, 40);
     expect(pLu(sim, a.id)).toBe(pLu(sim, b.id));
+    expect(pLu(sim, a.id)).toBe(pLu(sim, c.id));
     // small + small = 48 lu × 0.3 = 14.4 lu behind the ally directly ahead
-    expect(pLu(sim, b.id) - pLu(sim, c.id)).toBeCloseTo(14.4, 5);
+    expect(pLu(sim, c.id) - pLu(sim, d.id)).toBeCloseTo(14.4, 5);
+  });
+
+  it('Siege forced march (A17.3): movement ×1.2 in Siege only', () => {
+    const sim = arena();
+    const u = devSpawn(sim, 0, 'bonker', { p: 20 });
+    stepN(sim, 1);
+    const before = pLu(sim, u.id);
+    simCtx(sim).s.phase = 'siege';
+    stepN(sim, 1);
+    // 4.375 lu per tick × 1.2 = 5.25 lu
+    expect(pLu(sim, u.id) - before).toBeCloseTo(5.25, 5);
+  });
+
+  it('siege crowd (A16.4 step 2): in Siege the file closes up within 60 lu of the enemy gate', () => {
+    const column = (siege: boolean): number[] => {
+      const sim = arena();
+      simCtx(sim).s.sides[1].lastStand = 'used';
+      if (siege) simCtx(sim).s.phase = 'siege';
+      const ids = [0, 1, 2, 3, 4, 5].map((i) => devSpawn(sim, 0, 'bonker', { p: L - 300 - i * 10 }).id);
+      stepN(sim, 120);
+      return ids.map((id) => pLu(sim, id));
+    };
+    // A Bonker (half width 12, range 16) reaches the base from p ≥ L − 28.
+    const reaches = (p: number): boolean => p >= L - 28;
+    // Regulation: the three-wide front reaches the base, the rest queue 14.4 lu apart behind it.
+    expect(column(false).filter(reaches)).toHaveLength(3);
+    // Siege: all six stand at the gate and hit the base.
+    expect(column(true).filter(reaches)).toHaveLength(6);
   });
 
   it('overtaking: melee passes a stationary longer-range ally; ranged queues behind stationary melee', () => {

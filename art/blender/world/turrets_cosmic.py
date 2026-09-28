@@ -134,7 +134,16 @@ def starfall_build(rig):
     g = Geo().lathe([(0, 0), (6.0, 0.4), (13.0, 3.0), (16.0, 6.4), (15.0, 7.2), (12.0, 4.6), (5.0, 2.0), (0, 1.6)],
                     (0, 0, 12.5), (1.6, 0, 16.5), segs=28)
     rig.part("gun", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
-    g = Geo().lathe([(14.6, 6.0), (16.4, 6.6), (16.2, 7.6), (14.6, 7.2)], (0, 0, 12.5), (1.6, 0, 16.5), segs=28)
+    d = (0.371, 0.0, 0.928)                      # the dish axis
+    u = (0.928, 0.0, -0.371)
+    c0 = (d[0] * 7.0, 0.0, 12.5 + d[2] * 7.0)
+    g = Geo()
+    n = 28
+    for i in range(n):
+        a0, a1 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
+        p0 = (c0[0] + 15.6 * math.cos(a0) * u[0], 15.6 * math.sin(a0), c0[2] + 15.6 * math.cos(a0) * u[2])
+        p1 = (c0[0] + 15.6 * math.cos(a1) * u[0], 15.6 * math.sin(a1), c0[2] + 15.6 * math.cos(a1) * u[2])
+        g.capsule(p0, p1, 1.3, segs=8, rings=2)
     rig.part("gun", g, team=True, outline=0.4)
     g = Geo().lathe([(0, 1.2), (8.0, 2.4), (9.0, 3.4), (0, 2.6)], (0, 0, 12.5), (1.6, 0, 16.5), segs=24)
     rig.part("gun", g, glow=K.MINT, outline=0)
