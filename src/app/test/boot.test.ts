@@ -61,6 +61,10 @@ describe('boot (DESIGN B11)', () => {
     const target = new EventTarget();
     unlockAudioOnGesture(audio, target);
     target.dispatchEvent(new Event('pointerdown'));
+    await Promise.resolve();
+    // A touch pointerdown carries no user activation: it does not count as the gesture.
+    expect(audio.calls.filter((c) => c.method === 'unlock')).toHaveLength(0);
+    target.dispatchEvent(new Event('pointerup'));
     target.dispatchEvent(new Event('keydown'));
     await Promise.resolve();
     expect(audio.calls.filter((c) => c.method === 'unlock')).toHaveLength(1);

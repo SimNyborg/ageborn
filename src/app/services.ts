@@ -6,12 +6,13 @@
  * implementation or a stand-in per service. Loaders are dynamic imports, so a stand-in that is not
  * chosen is never downloaded, and the contracts' fakes stay out of the main chunk.
  *
- * Phase 1 status (what "real" means today):
- * - content (WP1), sim (WP2), bots (WP3 `createBot`) and art (WP4) have real implementations. The
- *   bot stand-in `fallbackBot.ts` (honest, same API) stays available as `?bots=fallback`.
- * - audio (WP6), save (WP8) and meta (WP7) use the recording fake audio, the in-memory store and no
- *   meta. Phase 2 adds their real loaders to `LOADERS` below and flips `DEFAULT_CHOICE`; nothing
- *   else in the app changes, because everything downstream only sees the contracts.
+ * Phase 2a status (what "real" means today):
+ * - content (WP1), sim (WP2), bots (WP3 `createBot`), art (WP4) and audio (WP6) have real
+ *   implementations. The bot stand-in `fallbackBot.ts` (honest, same API) stays available as
+ *   `?bots=fallback`.
+ * - save (WP8) and meta (WP7) use the in-memory store and no meta. Phase 2b adds their real loaders
+ *   to `LOADERS` below and flips `DEFAULT_CHOICE`; nothing else in the app changes, because
+ *   everything downstream only sees the contracts.
  *
  * URL overrides for dev and tests: `?svc=fake` (every fake), or per service, for example
  * `?sim=fake&art=fake`. A fake sim forces fake content (its canned events use the fake cards).
@@ -34,13 +35,13 @@ export interface ServiceChoice {
 
 export type ServiceName = keyof ServiceChoice;
 
-/** What the app builds by default. Phase 2 switches audio, save and meta to 'real'. */
+/** What the app builds by default. Phase 2b switches save and meta to 'real'. */
 export const DEFAULT_CHOICE: ServiceChoice = {
   content: 'real',
   sim: 'real',
   bots: 'real',
   art: 'real',
-  audio: 'fake',
+  audio: 'real',
   save: 'memory',
   meta: 'none',
 };
@@ -138,7 +139,8 @@ export const LOADERS: Loaders = {
     },
   },
   audio: {
-    // real: WP6 `WebAudioService` from '@/audio' (Phase 2).
+    // WP6: renders the boot sounds now and the rest in idle time; `unlock()` runs on the first gesture.
+    real: async () => (await import('@/audio')).createWebAudioService().service,
     fake: async () => new (await import('@/contracts/fakes/audio')).FakeAudio(),
   },
   save: {

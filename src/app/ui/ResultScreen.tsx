@@ -104,19 +104,17 @@ export function ResultScreen(p: { result: ResultState }) {
               {ui.t('app.next')}
             </button>
           ) : null}
-          {!onboarding ? (
-            <button class="ab-btn ab-btn--gold" data-testid="play-again" onClick={() => c.playAgain()}>
+          {!retry ? (
+            <button class={`ab-btn ${next ? 'ab-btn--plain' : 'ab-btn--gold'}`} data-testid="play-again" onClick={() => c.playAgain()}>
               {ui.t('app.playAgain')}
             </button>
           ) : null}
           <button class="ab-btn ab-btn--plain" data-testid="watch-replay" onClick={() => c.watchReplay(replay)}>
             {ui.t('app.watchReplay')}
           </button>
-          {!onboarding ? (
-            <button class="ab-btn ab-btn--plain" data-testid="home" onClick={() => c.home()}>
-              {ui.t('app.home')}
-            </button>
-          ) : null}
+          <button class="ab-btn ab-btn--plain" data-testid="home" onClick={() => c.home()}>
+            {ui.t('app.home')}
+          </button>
         </div>
       </div>
     </div>

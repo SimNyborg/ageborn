@@ -20,14 +20,14 @@ describe('service choice', () => {
 });
 
 describe('buildServices (B11 boot)', () => {
-  it('builds the real content and sim by default and stands in for the rest', async () => {
+  it('builds the real content, sim and audio by default and stands in for the rest', async () => {
     const warnings: string[] = [];
     const s = await buildServices({ choice: { ...DEFAULT_CHOICE, meta: 'real', save: 'real', audio: 'real' }, warn: (m) => warnings.push(m) });
     expect(s.content).toBe(content);
     expect(s.sim.simVersion).toBe(SIM_VERSION);
-    // Not in this build yet (Phase 2): recorded as the stand-in, with a warning each.
-    expect(s.choice).toMatchObject({ bots: 'real', meta: 'none', save: 'memory', audio: 'fake' });
-    expect(warnings).toHaveLength(3);
+    // Not in this build yet (Phase 2b): recorded as the stand-in, with a warning each.
+    expect(s.choice).toMatchObject({ bots: 'real', meta: 'none', save: 'memory', audio: 'real' });
+    expect(warnings).toHaveLength(2);
     expect(s.meta).toBeNull();
     expect(s.platform).toBeInstanceOf(NonePlatform);
     expect(typeof s.createArt).toBe('function');

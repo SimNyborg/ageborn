@@ -110,15 +110,40 @@ export class AppController {
     return tutorialMatch2(this.saveSig.peek(), this.services.content, this.t('general.pip.name'), this.nextSeed(), this.labels());
   }
 
+  /** A14.3 music: the menu cue on the title and result screens. */
+  private menuMusic(): void {
+    this.services.audio.music.setCue('music.menu', { fadeMs: 600 });
+  }
+
+  /** A14.3 music: a battle starts in its first age's cue (the view takes over the evolve cues). */
+  private battleMusic(battle: BattleHandle): void {
+    const cfg = battle.setup.config;
+    const age = cfg.content.formats[cfg.format]?.ages[0];
+    const cue = age ? cfg.content.ages[age]?.musicCue : undefined;
+    if (cue) this.services.audio.music.setCue(cue, { fadeMs: 600 });
+  }
+
+  /** Starts a battle that is on screen (route and music). */
+  private startBattle(battle: BattleHandle): void {
+    this.routeSig.value = { id: 'battle', battle };
+    this.battleMusic(battle);
+    battle.session.start();
+  }
+
   /** Shows the title: the next onboarding match is built and waits, rendered, behind Play. */
   showTitle(): void {
+    const leaving = this.routeSig.peek();
     this.disposeRoute();
+    if (leaving.id === 'battle') this.services.audio.music.stop(600);
+    this.menuMusic();
     // No capsules without meta (Phase 1): a capsule step completes at once. Phase 2 opens WP10's
     // capsule show here instead.
     const step = this.stepSig.peek();
     if ((step === 'capsule1' || step === 'capsule2') && !this.services.meta) this.completeStep(step);
-    const setup = this.onboardingSetup();
-    this.routeSig.value = { id: 'title', battle: setup ? this.build(setup) : null };
+    // The title is the live battlefield (A8 0:00): the next onboarding match waits behind it, or the
+    // training match vs Old Grogg once onboarding is done.
+    const setup = this.onboardingSetup() ?? tutorialMatch1(this.saveSig.peek(), this.services.content, this.t('general.grogg.name'), this.labels());
+    this.routeSig.value = { id: 'title', battle: this.build(setup) };
   }
 
   /** Play: starts the waiting onboarding match (one tap into match 1, A8). */
@@ -126,8 +151,18 @@ export class AppController {
     const r = this.routeSig.peek();
     const battle = r.id === 'title' ? r.battle : null;
     if (!battle) return;
-    this.routeSig.value = { id: 'battle', battle };
-    battle.session.start();
+    this.startBattle(battle);
+  }
+
+  /**
+   * The training match vs Old Grogg (A8 match 1) from the start screen, whatever the onboarding
+   * step (Phase 2a: the start screen offers it next to Quick Battle).
+   */
+  training(): BattleHandle {
+    this.disposeRoute();
+    const battle = this.build(tutorialMatch1(this.saveSig.peek(), this.services.content, this.t('general.grogg.name'), this.labels()));
+    this.startBattle(battle);
+    return battle;
   }
 
   /** Quick Battle (C3 Checkpoint A): Short War (or another format) vs a tier III AI General. */
@@ -142,8 +177,7 @@ export class AppController {
       ...this.labels(),
     });
     const battle = this.build(setup);
-    this.routeSig.value = { id: 'battle', battle };
-    battle.session.start();
+    this.startBattle(battle);
     return battle;
   }
 
@@ -179,9 +213,7 @@ export class AppController {
       return;
     }
     this.disposeRoute();
-    const battle = this.build(this.match2Setup());
-    this.routeSig.value = { id: 'battle', battle };
-    battle.session.start();
+    this.startBattle(this.build(this.match2Setup()));
   }
 
   /** Result screen "Play again": the same kind of match with a new seed. */
@@ -190,8 +222,11 @@ export class AppController {
     if (r.id !== 'result') return;
     const s = r.result.setup;
     if (s.mode === 'tutorial') {
-      this.showTitle();
-      this.play();
+      if (s.matchNumber === 1) this.training();
+      else {
+        this.disposeRoute();
+        this.startBattle(this.build(this.match2Setup()));
+      }
       return;
     }
     this.quickBattle(s.config.format);

@@ -70,10 +70,16 @@ export function applySettings(services: Pick<Services, 'i18n' | 'audio'>, settin
   for (const bus of BUSES) services.audio.setBusVolume(bus, settings.volume[bus] ?? 1);
 }
 
+/**
+ * Events that carry user activation in the HTML rules. A touch `pointerdown` does not, so it is left
+ * out: on a phone the tap's `pointerup`/`touchend` starts the AudioContext on the first try.
+ */
+export const GESTURE_EVENTS: readonly string[] = ['pointerup', 'touchend', 'click', 'keydown'];
+
 /** B11 step 5: the AudioContext may only start after a user gesture (iOS Safari, C5 #44). */
 export function unlockAudioOnGesture(audio: AudioService, target: EventTarget | null | undefined): () => void {
   if (!target) return () => undefined;
-  const events = ['pointerdown', 'keydown', 'touchend'];
+  const events = GESTURE_EVENTS;
   const unlock = (): void => {
     for (const e of events) target.removeEventListener(e, unlock);
     void audio.unlock();
