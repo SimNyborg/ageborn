@@ -35,9 +35,18 @@ export function match2Next(save: SaveDoc): boolean {
 // Difficulty (owner feedback 2026-09-28): Quick Battle and Skirmish pick Easy..Legendary
 // ---------------------------------------------------------------------------------------------
 
-const DIFFICULTY_FLAG = 'ui.difficulty.';
+const DIFFICULTY_FLAG = 'ui-difficulty.';
 
-/** The difficulty last picked in Quick Battle or Skirmish (stored as a `ui.difficulty.<id>` flag), else the default (Normal). */
+/** The i18n key of each difficulty's name. */
+export const DIFFICULTY_NAME_KEYS: Record<Difficulty, string> = {
+  easy: 'ui.difficulty.easy',
+  normal: 'ui.difficulty.normal',
+  hard: 'ui.difficulty.hard',
+  expert: 'ui.difficulty.expert',
+  legendary: 'ui.difficulty.legendary',
+};
+
+/** The difficulty last picked in Quick Battle or Skirmish (stored as a `ui-difficulty.<id>` flag), else the default (Normal). */
 export function lastDifficulty(save: SaveDoc, content: Content): Difficulty {
   const table = content.generals.difficulty;
   return table.order.find((d) => save.flags[DIFFICULTY_FLAG + d]) ?? table.default;
@@ -56,7 +65,16 @@ export function difficultyFlags(d: Difficulty, content: Content): Record<string,
 
 export type PointerEntry = 'warPlan' | 'collection' | 'capsules' | 'customize' | 'trophyRoad';
 
-export const pointerFlag = (entry: PointerEntry): string => `ui.pointer.${entry}`;
+export const pointerFlag = (entry: PointerEntry): string => `ui-pointer.${entry}`;
+
+/** Each pointer's line (at most 8 words). */
+export const POINTER_KEYS: Record<PointerEntry, string> = {
+  warPlan: 'ui.pointer.warPlan',
+  collection: 'ui.pointer.collection',
+  capsules: 'ui.pointer.capsules',
+  customize: 'ui.pointer.customize',
+  trophyRoad: 'ui.pointer.trophyRoad',
+};
 
 /** True while the entry's first-time pointer has not been dismissed (by opening the entry). */
 export function pointerDue(save: SaveDoc, entry: PointerEntry): boolean {

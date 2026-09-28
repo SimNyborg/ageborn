@@ -3,11 +3,16 @@
  *
  * The static footing (`mount`) and the head (`idle` / `fire`) are separate sprites, so the head
  * rotates about its pivot to aim like the procedural rig; `build` and `destroyed` show the whole
- * turret. Code motion on top of the frames: the 1 s build drop-in with a landing squash and dust,
+ * turret. Code motion on top of the frames: the 1 s build drop-in (a stretched fall over a growing
+ * shadow, a landing squash that springs back, a white impact flash, dust, sparks and three bolts
+ * set one after another),
  * a 120 ms recoil squash plus a two-frame head kick-back with a one-frame muzzle flash at the
  * sheet's per-frame muzzle anchor, an idle breathing bob and a slow head scan every few seconds
- * while nothing is being aimed at (so turrets never sit frozen next to lively units), the sell /
- * modernise sink with a poof, and the pulsing Modernise arrow. `muzzlePoint()` gives the render
+ * while nothing is being aimed at (so turrets never sit frozen next to lively units), the sell sink
+ * with a poof, and the pulsing Modernise arrow. Modernise morphs: the old turret glows white,
+ * squashes and pulls up into a streak of light (`play('modernise')`), and the new one grows out of
+ * that light with an overshoot, a ring and sparks (`modernisedIn()`, duck-typed). Reduce motion
+ * (`setMotion`) keeps the fades and drops the squash and bounce. `muzzlePoint()` gives the render
  * layer the live muzzle for projectile origins (docs/requests/wp5-turret-muzzle-anchor.md).
  *
  * Coordinates: the root sits on a mount point in the parent's space (lu); `aimAt(x)` aims at
@@ -21,6 +26,7 @@ import type { PartBaker } from '../../bake';
 import { FX_ZONES } from '../../effects/sprites';
 import { partSprite, PuffList } from '../procedural/shared';
 import { clipDurations, frameIndex, setFrame, type WorldSheet } from '../worldAtlas';
+import { Bits, bump, clamp01, DEFAULT_MOTION, easeInQuad, easeOutCubic, springSettle, type ViewMotion } from './upgradeFx';
 
 export interface AtlasTurretOptions {
   def: VisualDef;
@@ -38,6 +44,14 @@ const BUILD_MS = 1000;
 const DROP_MS = 380;
 const DROP_LU = 70;
 const SINK_MS = 650;
+/** Landing squash spring after the drop (ms). */
+const LAND_MS = 380;
+/** Modernise: the old turret glows and squashes, then pulls up into light (ms). */
+const GLOW_MS = 190;
+const VANISH_MS = 240;
+/** Modernise: the new turret appears out of the light after this delay (ms). */
+const EMERGE_DELAY_MS = 260;
+const EMERGE_MS = 460;
 /** Idle motion: head bob (lu, period ms), and a head scan (deg) every SCAN_EVERY_MS once aiming stops. */
 const BOB_LU = 1.2;
 const BOB_MS = 1700;
@@ -50,12 +64,30 @@ const KICK_LU = 3.2;
 const KICK_HOLD_MS = 34;
 const KICK_MS = 150;
 
-function pair(): { team: Sprite; base: Sprite; c: Container } {
+interface Pair {
+  team: Sprite;
+  base: Sprite;
+  /** Additive white copy of the frame for the impact and modernise glow. */
+  flash: Sprite;
+  c: Container;
+}
+
+function pair(): Pair {
   const c = new Container();
   const team = new Sprite(Texture.EMPTY);
   const base = new Sprite(Texture.EMPTY);
-  c.addChild(team, base);
-  return { team, base, c };
+  const flash = new Sprite(Texture.EMPTY);
+  flash.blendMode = 'add';
+  flash.tint = 0xfff6e8;
+  flash.alpha = 0;
+  c.addChild(team, base, flash);
+  return { team, base, flash, c };
+}
+
+function frame(p: Pair, base: Texture | undefined, team: Texture | undefined): void {
+  setFrame(p.base, base);
+  setFrame(p.team, team);
+  setFrame(p.flash, base);
 }
 
 export class AtlasTurretView implements TurretView {
@@ -70,6 +102,8 @@ export class AtlasTurretView implements TurretView {
   private readonly muzzleFlash: Container;
   private readonly arrow: Container;
   private readonly puffs: PuffList;
+  private readonly bits: Bits;
+  private readonly shadow: Container;
   private readonly rng: CosmeticRng;
   private readonly facing: 1 | -1;
   private readonly k: number;
@@ -87,6 +121,13 @@ export class AtlasTurretView implements TurretView {
   private outdated = false;
   private clockMs = 0;
   private landed = true;
+  /** The build is a Modernise: grow out of light instead of dropping. */
+  private emerge = false;
+  private emerged = false;
+  private bolts = 0;
+  private vanished = false;
+  private flashA = 0;
+  private motion: ViewMotion = DEFAULT_MOTION;
   private destroyed = false;
 
   constructor(private readonly o: AtlasTurretOptions) {
@@ -116,9 +157,12 @@ export class AtlasTurretView implements TurretView {
     this.arrow.position.set(0, -m.heightLu - 12);
     this.overlay.addChild(this.arrow);
     this.puffs = new PuffList(this.overlay);
-    this.root.addChild(this.body, this.overlay);
-    setFrame(this.mount.base, o.sheet.animations['mount']?.[0]);
-    setFrame(this.mount.team, o.sheet.animations['mount_team']?.[0]);
+    this.bits = new Bits(this.overlay, 40);
+    // the drop shadow grows under a falling turret (only visible during the build)
+    this.shadow = partSprite(o.decor, 'shared.shadow', FX_ZONES);
+    this.shadow.visible = false;
+    this.root.addChild(this.shadow, this.body, this.overlay);
+    frame(this.mount, o.sheet.animations['mount']?.[0], o.sheet.animations['mount_team']?.[0]);
     this.show();
   }
 
@@ -131,12 +175,27 @@ export class AtlasTurretView implements TurretView {
     this.aimTarget = Math.max(lo, Math.min(hi, deg));
   }
 
+  /** Motion options from the render layer (duck-typed on top of the TurretView contract). */
+  setMotion(m: ViewMotion): void {
+    this.motion = m;
+  }
+
+  /** The new turret of a Modernise: it grows out of the old one's light (duck-typed). */
+  modernisedIn(): void {
+    this.play('build');
+    this.emerge = true;
+    this.emerged = false;
+    this.body.alpha = 0;
+  }
+
   play(clip: Mode): void {
     if (this.destroyed) return;
     if ((this.mode === 'sell' || this.mode === 'modernise') && clip !== 'build') return;
     if (clip === 'idle' && this.mode === 'build') return;
     this.mode = clip;
     this.t = 0;
+    this.emerge = false;
+    this.vanished = false;
     if (clip === 'fire') {
       this.flashFrames = 1;
       this.recoilMs = 120;
@@ -144,9 +203,10 @@ export class AtlasTurretView implements TurretView {
     }
     if (clip === 'build') {
       this.landed = false;
+      this.bolts = 0;
       this.body.alpha = 1;
     }
-    if (clip === 'sell' || clip === 'modernise') this.poof(10);
+    if (clip === 'sell') this.poof(10);
     this.show();
   }
 
@@ -169,14 +229,42 @@ export class AtlasTurretView implements TurretView {
     let sx = 1;
     let sy = 1;
     let oy = 0;
-    if (this.mode === 'build') {
+    const reduce = this.motion.reduce;
+    this.flashA = 0;
+    this.shadow.visible = false;
+    if (this.mode === 'build' && this.emerge) {
+      ({ sx, sy } = this.stepEmerge());
+    } else if (this.mode === 'build') {
       if (this.t < DROP_MS) {
         const u = this.t / DROP_MS;
-        oy = -DROP_LU * (1 - u * u);
-        this.body.alpha = Math.min(1, 0.3 + u * 2);
-      } else if (!this.landed) {
-        this.landed = true;
-        this.poof(7);
+        oy = reduce ? 0 : -DROP_LU * (1 - u * u);
+        this.body.alpha = reduce ? u : Math.min(1, 0.3 + u * 2);
+        // stretched in the fall, over a shadow that grows as it nears the ledge
+        if (!reduce) {
+          sx = 0.9;
+          sy = 1.12;
+        }
+        this.shadow.visible = true;
+        this.shadow.scale.set(0.5 + 0.9 * u, 0.6 + 0.4 * u);
+        this.shadow.alpha = 0.25 + 0.6 * u;
+      } else {
+        if (!this.landed) {
+          this.landed = true;
+          this.poof(9);
+          this.sparks(0, -4, this.motion.lite ? 3 : 6, 200, 0xfff1d2);
+        }
+        const i = this.t - DROP_MS;
+        if (!reduce) {
+          const s = springSettle(i / LAND_MS, 2, 4.5);
+          sx = 1.28 - 0.28 * s;
+          sy = 0.72 + 0.28 * s;
+        }
+        this.flashA = 0.85 * (1 - easeOutCubic(i / 220));
+        // three bolts set one after another along the footing
+        while (this.bolts < 3 && i >= 150 + this.bolts * 110) {
+          this.bolt((this.bolts - 1) * 10);
+          this.bolts++;
+        }
       }
       if (this.t >= BUILD_MS) {
         this.mode = 'idle';
@@ -185,12 +273,15 @@ export class AtlasTurretView implements TurretView {
     } else if (this.mode === 'fire') {
       const total = clipDurations(this.o.sheet, 'fire').reduce((a, b) => a + b, 0);
       if (this.t >= total) this.mode = 'idle';
-    } else if (this.mode === 'sell' || this.mode === 'modernise') {
+    } else if (this.mode === 'modernise') {
+      ({ sx, sy } = this.stepVanish());
+    } else if (this.mode === 'sell') {
       const u = Math.min(1, this.t / SINK_MS);
       oy = 16 * u * u;
       sy = 1 - 0.25 * u;
       this.body.alpha = 1 - u;
     }
+    for (const p of [this.mount, this.head, this.whole]) p.flash.alpha = Math.min(1, this.flashA);
     if (this.recoilMs > 0) {
       this.recoilMs = Math.max(0, this.recoilMs - dtMs);
       const s = Math.sin((this.recoilMs / 120) * Math.PI);
@@ -217,6 +308,66 @@ export class AtlasTurretView implements TurretView {
       this.arrow.y = -this.o.sheet.meta.heightLu - 12 - 3 * k;
     }
     this.puffs.update(dtMs);
+    this.bits.update(dtMs);
+  }
+
+  /** Modernise (old turret): glow and squash, then pull up into a streak of light. */
+  private stepVanish(): { sx: number; sy: number } {
+    const reduce = this.motion.reduce;
+    const t = this.t;
+    if (t < GLOW_MS) {
+      const u = t / GLOW_MS;
+      this.flashA = u;
+      return reduce ? { sx: 1, sy: 1 } : { sx: 1 + 0.12 * easeOutCubic(u), sy: 1 - 0.16 * easeOutCubic(u) };
+    }
+    if (!this.vanished) {
+      this.vanished = true;
+      this.sparks(0, -this.o.sheet.meta.heightLu * 0.5, this.motion.lite ? 4 : 8, 160, 0xfff6e2);
+    }
+    const u = clamp01((t - GLOW_MS) / VANISH_MS);
+    this.flashA = 1;
+    this.body.alpha = 1 - easeInQuad(u);
+    return reduce ? { sx: 1, sy: 1 } : { sx: 1.12 * (1 - 0.9 * easeInQuad(u)), sy: 0.84 + 0.9 * easeOutCubic(u) };
+  }
+
+  /** Modernise (new turret): a light orb, then the turret grows out of it with an overshoot. */
+  private stepEmerge(): { sx: number; sy: number } {
+    const reduce = this.motion.reduce;
+    const t = this.t;
+    if (t < EMERGE_DELAY_MS) {
+      this.body.alpha = 0;
+      return { sx: 0.2, sy: 0.2 };
+    }
+    if (!this.emerged) {
+      this.emerged = true;
+      const h = this.o.sheet.meta.heightLu;
+      const ring = partSprite(this.o.decor, 'fx.p.ringThick', FX_ZONES);
+      ring.tint = 0xfff4e2;
+      ring.position.set(0, -h * 0.45);
+      this.bits.add(ring, { life: 360, s0: 0.6, s1: 4.2, a0: 0.8 });
+      const g = partSprite(this.o.decor, 'fx.p.glow', FX_ZONES);
+      g.tint = 0xfff0d6;
+      g.blendMode = 'add';
+      g.position.set(0, -h * 0.45);
+      this.bits.add(g, { life: 520, s0: 1, s1: 4.4, a0: 0.8, pulse: true });
+      this.sparks(0, -h * 0.45, this.motion.lite ? 5 : 10, 240, 0xfff6e2);
+      for (let i = 0; i < (this.motion.lite ? 2 : 5); i++) {
+        const s = partSprite(this.o.decor, 'fx.p.xp', FX_ZONES);
+        s.tint = 0xfff8e4;
+        s.blendMode = 'add';
+        s.position.set((this.rng.next() - 0.5) * 30, -4 - this.rng.next() * 10);
+        this.bits.add(s, { vy: -60 - this.rng.next() * 50, life: 700, s0: 1.1, s1: 0.2, delay: i * 60, fadeIn: 0.1 });
+      }
+      this.poof(6);
+    }
+    const i = t - EMERGE_DELAY_MS;
+    this.body.alpha = clamp01(i / 120);
+    this.flashA = 1 - easeOutCubic(i / 360);
+    if (reduce) return { sx: 1, sy: 1 };
+    const s = springSettle(i / EMERGE_MS, 2.2, 4.2);
+    // grows up out of the light: tall and thin first, then round
+    const g = 0.15 + 0.85 * s;
+    return { sx: g * (1 - 0.12 * bump(i / EMERGE_MS, 0, 0.5)), sy: g * (1 + 0.14 * bump(i / EMERGE_MS, 0, 0.5)) };
   }
 
   /** Idle bob and scan, and the fire kick-back, applied to the head's pivot container. */
@@ -268,14 +419,14 @@ export class AtlasTurretView implements TurretView {
 
   private show(): void {
     const A = this.o.sheet.animations;
-    const wholeClip = this.mode === 'build' ? 'build' : this.mode === 'sell' || this.mode === 'modernise' ? 'destroyed' : null;
+    // a Modernise shows the turret itself glowing away; a sale shows it breaking down
+    const wholeClip = this.mode === 'build' ? 'build' : this.mode === 'sell' ? 'destroyed' : null;
     if (wholeClip && A[wholeClip]) {
       const d = clipDurations(this.o.sheet, wholeClip);
       // build: frame 0 while dropping, then the landing squash frames
-      const t = wholeClip === 'build' ? Math.max(0, this.t - DROP_MS + (d[0] ?? 0)) : this.t;
+      const t = wholeClip === 'build' ? Math.max(0, this.t - (this.emerge ? EMERGE_DELAY_MS : DROP_MS) + (d[0] ?? 0)) : this.t;
       const i = frameIndex(d, t, false);
-      setFrame(this.whole.base, A[wholeClip]?.[i]);
-      setFrame(this.whole.team, A[`${wholeClip}_team`]?.[i]);
+      frame(this.whole, A[wholeClip]?.[i], A[`${wholeClip}_team`]?.[i]);
       this.whole.c.visible = true;
       this.mount.c.visible = false;
       this.headPivot.visible = false;
@@ -287,8 +438,29 @@ export class AtlasTurretView implements TurretView {
     const clip = this.mode === 'fire' && A['fire'] ? 'fire' : 'idle';
     const d = clipDurations(this.o.sheet, clip);
     const i = frameIndex(d, clip === 'fire' ? this.t : this.idleT, clip === 'idle');
-    setFrame(this.head.base, A[clip]?.[i]);
-    setFrame(this.head.team, A[`${clip}_team`]?.[i]);
+    frame(this.head, A[clip]?.[i], A[`${clip}_team`]?.[i]);
+  }
+
+  private sparks(x: number, y: number, n: number, speed: number, tint: number): void {
+    for (let i = 0; i < n; i++) {
+      const s = partSprite(this.o.decor, i % 3 === 0 ? 'fx.p.sparkHot' : 'fx.p.spark', FX_ZONES);
+      if (i % 3 !== 0) s.tint = tint;
+      s.blendMode = 'add';
+      s.position.set(x, y);
+      const a = -Math.PI / 2 + (this.rng.next() - 0.5) * Math.PI * 1.5;
+      const sp = speed * (0.5 + this.rng.next() * 0.5);
+      this.bits.add(s, { vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: 380, drag: 2.5, life: 300 + this.rng.next() * 220, s0: 1.1, s1: 0.3, align: true });
+    }
+  }
+
+  /** A bolt set into the footing: a bright star tick with two sparks. */
+  private bolt(x: number): void {
+    const s = partSprite(this.o.decor, 'fx.p.star', FX_ZONES);
+    s.tint = 0xfff6dc;
+    s.blendMode = 'add';
+    s.position.set(x * this.facing, -3);
+    this.bits.add(s, { life: 220, s0: 0.1, s1: 0.9, spin: 6, pulse: true });
+    this.sparks(x * this.facing, -3, 2, 120, 0xfff1d2);
   }
 
   private poof(n: number): void {
@@ -304,6 +476,7 @@ export class AtlasTurretView implements TurretView {
     if (this.destroyed) return;
     this.destroyed = true;
     this.puffs.clear();
+    this.bits.clear();
     this.root.destroy({ children: true });
   }
 

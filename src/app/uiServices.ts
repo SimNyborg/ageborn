@@ -188,7 +188,7 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       const flags = { ...s.flags };
       let changed = false;
       for (const [k, on] of Object.entries(patch)) {
-        if (!k.startsWith('ui.') || !!flags[k] === on) continue;
+        if (!k.startsWith('ui-') || !!flags[k] === on) continue;
         changed = true;
         if (on) flags[k] = true;
         else delete flags[k];

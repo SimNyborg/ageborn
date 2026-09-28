@@ -45,6 +45,7 @@ import {
   match2Next,
   pointerDue,
   pointerFlag,
+  POINTER_KEYS,
   chargesView,
   questViews,
   roadProgress,
@@ -625,7 +626,7 @@ export function HomeNav() {
         >
           {it.pointer && it.pointer === pointer ? (
             <span class="home-nav__pointer" role="note" data-testid={`pointer-${it.pointer}`}>
-              {t(`ui.pointer.${it.pointer}`)}
+              {t(POINTER_KEYS[it.pointer])}
             </span>
           ) : null}
           <span class="home-nav__icon">

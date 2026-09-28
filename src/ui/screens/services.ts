@@ -74,8 +74,8 @@ export interface UiServices {
   /** Reveals a hidden feat's hint (A15.10; stored in `flags['featHint.<id>']`). */
   showFeatHint(id: string): void;
   /**
-   * Sets UI-only flags in `SaveDoc.flags` (keys start with `ui.`): first-time pointers already
-   * shown (`ui.pointer.<entry>`) and the last picked difficulty (`ui.difficulty.<id>`). Each key in
+   * Sets UI-only flags in `SaveDoc.flags` (keys start with `ui-`): first-time pointers already
+   * shown (`ui-pointer.<entry>`) and the last picked difficulty (`ui-difficulty.<id>`). Each key in
    * `patch` is set to its value; a `false` value removes the key.
    */
   setUiFlags(patch: Record<string, boolean>): void;

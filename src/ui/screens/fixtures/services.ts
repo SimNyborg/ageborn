@@ -246,7 +246,7 @@ export function createPreviewServices(o: {
       set((s) => {
         const flags = { ...s.flags };
         for (const [k, on] of Object.entries(patch)) {
-          if (!k.startsWith('ui.')) continue;
+          if (!k.startsWith('ui-')) continue;
           if (on) flags[k] = true;
           else delete flags[k];
         }

@@ -12,13 +12,15 @@ describe('createCatalog (from compiled content)', () => {
       nameKey: 'card.mammoth_matriarch.name',
       view: 'unit',
       group: 'legendary',
+      cls: 'heavy',
+      legendary: true,
     });
     expect(c.card('trebuchet').age).toBe('medieval');
     expect(c.card('trebuchet').visualId).toBe('turret.trebuchet');
   });
 
   it('tells walkouts to stage turrets as turrets and units with their role group (DESIGN B5)', () => {
-    expect(c.card('grumpy_toad')).toMatchObject({ view: 'turret', group: null });
+    expect(c.card('grumpy_toad')).toMatchObject({ view: 'turret', group: null, cls: 'turret' });
     expect(c.card('sabertooth')).toMatchObject({ view: 'unit', group: 'epic' });
     expect(c.card('spear_hunter')).toMatchObject({ view: 'unit', group: 'antiArmor' });
     for (const id of Object.keys(content.turrets)) expect(c.card(id).view, id).toBe('turret');

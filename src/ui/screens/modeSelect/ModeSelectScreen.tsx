@@ -48,6 +48,7 @@ import {
   conquestView,
   DAILY_DIFFICULTIES,
   defaultDailyDifficulty,
+  DIFFICULTY_NAME_KEYS,
   difficultyFlags,
   ladderWin,
   lastDifficulty,
@@ -93,7 +94,7 @@ export function DifficultyPicker(p: {
         onChange={p.onChange}
         options={table.order.map((d) => ({
           value: d,
-          label: t(`ui.difficulty.${d}`),
+          label: t(DIFFICULTY_NAME_KEYS[d]),
           hint: t("ui.vs.tier", { tier: tierNumeral(table.tiers[d]) }),
         }))}
         testid={p.testid}

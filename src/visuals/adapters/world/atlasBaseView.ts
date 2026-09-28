@@ -165,6 +165,7 @@ interface Ascend {
   footprint: Container;
   moteAcc: number;
   dustAcc: number;
+  over?: number;
 }
 
 interface Shard {
@@ -491,8 +492,8 @@ export class AtlasBaseView implements BaseView {
   }
 
   hit(): void {
+    this.shakeAmp = this.shakeMs > 0 ? Math.max(this.shakeAmp, 1) : 1;
     this.shakeMs = Math.max(this.shakeMs, 240);
-    this.shakeAmp = Math.max(this.shakeMs > 240 ? this.shakeAmp : 0, 1);
     this.flashMs = 90;
     this.debris(2);
   }
@@ -649,6 +650,14 @@ export class AtlasBaseView implements BaseView {
     const a = this.ascending;
     if (!a) return { ox: 0, oy: 0, sx: 1, sy: 1, flash: 0 };
     a.t = Math.min(a.ms, a.t + dtMs);
+    if (a.t >= a.ms && !this.morph) {
+      // no ageUp followed (the match ended): let the peak go after a while
+      a.over = (a.over ?? 0) + dtMs;
+      if (a.over > MAX_HOLD_MS) {
+        this.endAscend(false);
+        return { ox: 0, oy: 0, sx: 1, sy: 1, flash: 0 };
+      }
+    }
     const u = a.t / a.ms;
     const reduce = this.motion.reduce;
     const power = 0.78 + 0.075 * Math.max(0, AGES.indexOf(this.age) + 1);
@@ -784,6 +793,7 @@ export class AtlasBaseView implements BaseView {
       for (const b of m.bands) destroyPiece(b.p);
       m.bands = [];
       this.art.visible = true;
+      this.lightLayer.visible = true;
       // the settle thump: ground dust and a camera-free squash
       if (!reduce) this.billows(this.motion.lite ? 1 : 2, 0.6);
       this.treasuryT = 0;
@@ -866,6 +876,7 @@ export class AtlasBaseView implements BaseView {
       this.build();
     }
     this.art.visible = false;
+    this.lightLayer.visible = false;
     const A = this.sheet.animations;
     const stage = Math.max(0, Math.min((A['body']?.length ?? 1) - 1, this.crumble));
     const main = A['body']?.[stage];
@@ -976,6 +987,7 @@ export class AtlasBaseView implements BaseView {
       this.build();
     }
     this.art.visible = true;
+    this.lightLayer.visible = true;
     this.unfurlFlags(1);
   }
 
