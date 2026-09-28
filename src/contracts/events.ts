@@ -62,6 +62,7 @@ type EventBody =
   | { e: 'ascendStart' | 'ageUp'; side: Side; age: AgeId }
   | { e: 'powerReady'; side: Side }
   /** 1.0 s telegraph visible to both sides (DESIGN A2.9). */
+  /** `x` and the zone width `zone` are in milli-lu, like every sim position (B3). */
   | { e: 'powerTelegraph'; side: Side; power: CardId; castId: number; x: number; zone: number }
   | { e: 'powerImpact'; side: Side; power: CardId; castId: number; x: number; index: number }
   | { e: 'stanceChanged'; side: Side; stance: 'charge' | 'hold' }

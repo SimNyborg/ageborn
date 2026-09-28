@@ -60,3 +60,7 @@ inside the service.
 
 Call `audio.setBusVolume(bus, v01)` live when a volume slider moves (0..1; the service applies a
 square-law taper). The iOS mute-switch note (D2 risk table) belongs next to the volume sliders.
+
+## Resolution (Phase 2a)
+
+Applied (WP11 and WP5 parts): `services.ts` loads `createWebAudioService().service` by default; `boot.ts` unlocks on `pointerup`/`touchend`/`click`/`keydown`; the controller sets `music.menu`, the first age cue at battle start and `music.stop(600)` on quit; the event mapper gives the player's own sounds `priority: 1` (A13). Stereo pan was not added (optional). The WP9 settings-slider part moves with the Settings screen to Phase 2b.

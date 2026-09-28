@@ -1,6 +1,6 @@
 # WP12 → WP0: CI stages for tools, e2e and balance
 
-**From:** WP12 (tools, integrity, CI, e2e). **To:** WP0 / integration lead (`.github/workflows/ci.yml` is fixed for agents). **Status:** open. **Priority:** high for `e2e`, medium for the balance jobs.
+**From:** WP12 (tools, integrity, CI, e2e). **To:** WP0 / integration lead (`.github/workflows/ci.yml` is fixed for agents). **Status:** partly applied (e2e done; balance jobs open for Phase 3). **Priority:** medium for the balance jobs.
 
 ## Request
 
@@ -147,3 +147,7 @@ and in each browser; with the WebKit project it compares V8 with JavaScriptCore 
   Phase 3, because the untuned Phase 1 numbers fail most targets by design (see `reports/balance.md`).
 - The `schedule` trigger only runs `balance-full`; public-repo Actions minutes are free (CLAUDE.md).
 - Use the current major of `actions/upload-artifact` (v4 when this was written), like the other actions.
+
+## Partly applied (Phase 2a)
+
+The `e2e` job (Chromium and WebKit) is in `.github/workflows/ci.yml`, the WebKit project is in `playwright.config.ts` (CI, or locally with `PW_WEBKIT=1`), and the npm scripts exist (`wp12-package-scripts.md`). Still open for Phase 3: the `balance-smoke` and `balance-full` jobs and the nightly `schedule` trigger (they fail by design until the numbers are tuned).

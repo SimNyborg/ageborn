@@ -15,3 +15,7 @@ No change is required in `src/ai`. If you prefer one implementation, `ScriptedCo
 accept the same data (a `{ tick, slot }` list plus `maxAlive`) through `BotProfile.openings`; then the
 app can switch to `createBot` for Grogg too. Please keep `scripted.ts`'s default script in line or
 point it at this one to avoid two diverging Grogg schedules.
+
+## Resolution (Phase 2a)
+
+Information; no change. The app keeps `tutorial/grogg.ts` and WP3 keeps `GROGG_SCRIPT` in line (see `wp3-session-bots.md`).

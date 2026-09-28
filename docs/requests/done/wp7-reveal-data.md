@@ -25,3 +25,7 @@ Every reading in `docs/requests/wp10-meta-reveal-data.md` matches what `src/meta
 - **`scriptIndex`** is the 1-based capsule number of the A6.5 script (`ScriptedCapsuleDef.capsule`),
   null outside the script. (The capsule bench uses 0-based values in its fixtures; the show does not
   read the field.)
+
+## Resolution (Phase 2a)
+
+Confirmation only; no change needed.

@@ -67,10 +67,13 @@ export function BattleScreen(p: { battle: BattleHandle }) {
                 </button>
               ) : null}
               {b.setup.mode === 'skirmish' ? (
-                <button class="ab-btn ab-btn--plain" data-testid="quit" onClick={() => ui.controller.quit()}>
-                  {ui.t('app.quit')}
+                <button class="ab-btn ab-btn--plain" data-testid="restart" onClick={() => ui.controller.quickBattle(b.setup.config.format)}>
+                  {ui.t('app.restart')}
                 </button>
               ) : null}
+              <button class="ab-btn ab-btn--plain" data-testid="quit" onClick={() => ui.controller.quit()}>
+                {ui.t('app.quit')}
+              </button>
             </div>
           </div>
         </div>

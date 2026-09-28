@@ -278,3 +278,12 @@ The owner accepted all recommendations:
 - A15: the Wardrobe reel is dropped (card-flip reveal everywhere); the safe defaults apply to all players; the 12-item A15 v1 slice goes into Phase 2b (cut from the bottom if needed).
 - A16: the new top rarity tier is prestige variants of Legendary cards with no extra power; the home village comes in v1.1; online ranked shows both trophies (progress) and a visible rating.
 - 3D sprite art: decided after the owner has played the first battle.
+
+## Phase 2a (battle integration)
+
+- 2026-09-28 (start screen): until WP9's Home is wired (Phase 2b) the app opens on one start screen with Quick Battle (format picker Short/Standard/Full, Short by default, vs AI Captain Kettle tier III) and the waiting onboarding match behind a second button. After onboarding the waiting match is the training match vs Old Grogg, so the title is always a live battlefield (A8 0:00). `AppController.training()` starts match 1 at any step. A fresh profile still reaches match 1 in one tap. (DESIGN A8, C3)
+- 2026-09-28 (result and pause buttons): the result screen always offers Home, and Play again unless Retry is shown (Play again after a tutorial match replays that match). The pause panel offers Quit in every mode and Restart in Quick Battle. (DESIGN C3 "restart button")
+- 2026-09-28 (music cues): the controller sets `music.menu` on the title, the first age's cue when a battle starts, and `music.stop(600)` when a running battle is left without a result; the view keeps the evolve, layer and stinger cues. (DESIGN A14.3)
+- 2026-09-28 (sound priority): the event mapper marks sounds caused by the player's side (`actingSide`: the event's side, the acting unit or turret, the killer) with `priority: 1`. (DESIGN A13)
+- 2026-09-28 (dev autopilot): outside the tutorial `?dev=1&autopilot=1` plays the player's side with WP3's Balanced brain at tier V (it uses every control: turrets, Modernise, evolve, powers, stance, Last Stand); `?bots=fallback` keeps the simple stand-in. `?dev=1&game=1` boots the game with `window.__agebornDev` but no autopilot, for scripted human-like tests. (DESIGN B13)
+- 2026-09-28 (audio unlock events): the first-gesture unlock listens for `pointerup`, `touchend`, `click` and `keydown`; a touch `pointerdown` carries no user activation. (DESIGN B11, C5 #44)

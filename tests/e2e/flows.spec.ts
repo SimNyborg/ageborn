@@ -105,6 +105,9 @@ test.describe('B13 flows', () => {
     await page.goto('./?dev=1&autopilot=1&quick=short');
     await playToResult(page);
     await expect(page.getByTestId('result-title')).toHaveAttribute('data-outcome', /^(win|loss|draw)$/);
+    // Restart at the end of a match: a new Quick Battle starts.
+    await page.getByTestId('play-again').click();
+    await expect(page.getByTestId('battle')).toBeVisible();
     expect(problems.errors).toEqual([]);
   });
 

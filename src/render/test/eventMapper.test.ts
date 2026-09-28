@@ -6,6 +6,7 @@ import { mulberry32 } from '@/core';
 import { describe, expect, it } from 'vitest';
 import {
   EventMapper,
+  actingSide,
   coinCount,
   crumbleStage,
   decodeTurretSource,
@@ -354,7 +355,7 @@ describe('event mapper: coverage', () => {
     const out = run([ev('attackStarted', { id: 1, targetId: 2, windupTicks: 8, attackIndex: 0 })]);
     expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400 }]);
     // Melee swing sound lands just before the impact.
-    expect(pick(out, 'sound')).toEqual([{ a: 'sound', id: 'swing_whoosh', delayMs: 320 }]);
+    expect(pick(out, 'sound')).toEqual([{ a: 'sound', id: 'swing_whoosh', delayMs: 320, priority: 1 }]);
   });
 
   it('emits HUD events for emotes, denied commands (own side only) and the match end', () => {
@@ -485,8 +486,29 @@ describe('event mapper: siege decay and XP ticks', () => {
   it('ticks the XP bar when the sparkles of your kill arrive', () => {
     const out = run([died()]);
     expect(pick(out, 'sound').filter((s) => s.id === 'xp_tick')).toEqual([
-      { a: 'sound', id: 'xp_tick', delayMs: defaultFeelConfig.tuning.xpTravelMs, gap: { key: 'xp_tick', gapMs: defaultFeelConfig.tuning.coinSoundGapMs } },
+      { a: 'sound', id: 'xp_tick', delayMs: defaultFeelConfig.tuning.xpTravelMs, gap: { key: 'xp_tick', gapMs: defaultFeelConfig.tuning.coinSoundGapMs }, priority: 1 },
     ]);
     expect(pick(run([died({ id: 1, side: 0, card: 'bonker', killerId: 2, killerSide: 1 })]), 'sound').some((s) => s.id === 'xp_tick')).toBe(false);
+  });
+});
+
+describe('A13 sound priority', () => {
+  it("gives the player's own sounds priority 1 and leaves the opponent's at 0", () => {
+    const out = run([
+      ev('unitSpawned', { id: 1, side: 0, card: 'bonker', x: 20_000, summoned: false, level: 1 }),
+      ev('unitSpawned', { id: 2, side: 1, card: 'pebbler', x: 900_000, summoned: false, level: 1 }),
+    ]);
+    const sounds = pick(out, 'sound');
+    expect(sounds.length).toBe(2);
+    expect(sounds[0]!.priority).toBe(1);
+    expect(sounds[1]!.priority).toBeUndefined();
+  });
+
+  it('finds the side that caused an event', () => {
+    const u = (id: number): UnitInfo | undefined => UNITS[id];
+    expect(actingSide(ev('attackStarted', { id: 2, targetId: 1, windupTicks: 4, attackIndex: 0 }), u)).toBe(1);
+    expect(actingSide(hit({ sourceId: -10 - 5, targetId: 1 }), u)).toBe(1);
+    expect(actingSide(hit({ sourceId: 99, targetId: 2 }), u)).toBe(0);
+    expect(actingSide(ev('phaseChanged', { phase: 'overdrive' } as never), u)).toBeNull();
   });
 });

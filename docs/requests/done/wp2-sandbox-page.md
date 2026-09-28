@@ -29,3 +29,7 @@ e2e checks. WP2 verified it in headless Chromium through a temporary harness (no
   `devSetXp`, `devSetPower`, `devClearLane`) if the Pixi sandbox wants spawn controls too.
 - Event and unit conventions (turret source ids, passive income cadence, `turretSold` timing, `prevX`)
   are in docs/decisions.md under WP2.
+
+## Resolution (Phase 2a)
+
+Already done in Phase 1 (WP5 sandbox sim tab).

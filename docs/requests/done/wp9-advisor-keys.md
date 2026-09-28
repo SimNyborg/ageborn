@@ -27,3 +27,7 @@ shows a raw key, but please add its string through a request.
 **Ask:** return these keys in `PlanIssue.messageKey` (any stable `code` is fine; the UI keys list items by
 `code` within an age). Only report ages the given format uses, as the screen shows the format next to
 the average level. Need another finding? Add the key to this table in a request and WP9 adds the string.
+
+## Resolution (Phase 2a)
+
+Already done in Phase 1 (WP7).

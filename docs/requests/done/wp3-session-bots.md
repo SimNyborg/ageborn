@@ -48,3 +48,7 @@ instead of feeding the turrets, A7.2) plus early Treasury make the opening minut
 without the quiet-lane Treasury goal gave Final Bell ≈ 8% and first evolve ≈ 77 s but cost the tier
 ordering (VII vs III ≈ 60%), so the rule stays and the trade-off is noted here for Phase 3. The AI's own tuning
 knobs are the constants at the top of `src/ai/brain.ts` and the tier table in `src/ai/tiers.ts`.
+
+## Resolution (Phase 2a)
+
+Applied: the session relays emotes to `hearEmote`; `battle.ts` adds `rule:noStance` / `rule:autoLastStand` to bot profiles when `MatchConfig.training` locks stance or manual Last Stand for that side; the dev autopilot uses WP3's Balanced brain at tier V outside the tutorial.

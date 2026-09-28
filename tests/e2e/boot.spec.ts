@@ -29,6 +29,28 @@ test.describe('boot', () => {
     await expect(page.getByTestId('title-ai-chip')).toHaveText(/\bAI\b/);
   });
 
+  test('the start screen starts a Quick Battle vs an AI-labeled General (C3 Checkpoint A)', async ({ page }) => {
+    const problems = watchPage(page);
+    await page.goto('./');
+    await expect(page.getByTestId('quick-ai-chip')).toHaveText(/\bAI\b/);
+    await page.getByTestId('format-standard').click();
+    await expect(page.getByTestId('format-standard')).toHaveAttribute('aria-checked', 'true');
+    await page.getByTestId('format-short').click();
+    await page.getByTestId('quick-battle').click();
+    await expect(page.getByTestId('battle')).toBeVisible();
+    await expect(page.getByTestId('hud-ai-chip')).toBeVisible();
+    await page.getByTestId('hud-card-0').click();
+    await page.getByTestId('hud-pause').click();
+    await expect(page.getByTestId('pause')).toBeVisible();
+    await page.getByTestId('restart').click();
+    await expect(page.getByTestId('battle')).toBeVisible();
+    await expect(page.getByTestId('pause')).toHaveCount(0);
+    await page.getByTestId('hud-pause').click();
+    await page.getByTestId('quit').click();
+    await expect(page.getByTestId('title')).toBeVisible();
+    expect(problems.errors).toEqual([]);
+  });
+
   test('every script, style and icon is served from the /ageborn/ base', async ({ page }) => {
     await page.goto('./');
     const urls = await page.evaluate(() =>

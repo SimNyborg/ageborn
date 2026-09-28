@@ -26,6 +26,8 @@ export default defineConfig({
         launchOptions: chromiumPath !== undefined && chromiumPath !== '' ? { executablePath: chromiumPath } : {},
       },
     },
+    // WebKit runs in CI (B13, C4.3: determinism across engines) and locally with PW_WEBKIT=1.
+    ...(process.env['CI'] !== undefined || process.env['PW_WEBKIT'] === '1' ? [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }] : []),
   ],
   webServer: {
     command: `npm run build && npx vite preview --port ${port} --strictPort`,

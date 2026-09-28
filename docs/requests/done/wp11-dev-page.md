@@ -27,3 +27,7 @@ treats `src/app/dev/**` like `src/dev/**` (dev pages are exempt from i18n, decis
 vs the fallback bot), keeps the last 20 replays and re-simulates each with the `ReplayPlayer`
 (verified = same outcome and final hash); runs the match 1 retiming run and compares every A8 beat
 with `MATCH1_TIMING`; shows and exports the onboarding event log.
+
+## Resolution (Phase 2a)
+
+Applied (option 1): the page moved to `src/dev/replayDebug/page.tsx` with `@/app/...` imports; `APP_DEV_PAGES` is gone from `main.tsx`.

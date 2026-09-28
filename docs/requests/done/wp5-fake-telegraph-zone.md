@@ -18,3 +18,7 @@ to `zone: 500_000`. Optionally add a JSDoc line on `powerTelegraph.zone` in `src
 The real sim (WP2, `src/sim/systems/powers.ts`) emits `zone` in milli-lu (`500_000` for a 500 lu zone),
 consistent with `x` and B3's integer units. The battle view converts it to lu, so on the fake stream the
 telegraph outline is currently drawn 0.5 lu wide (invisible). Nothing else depends on the value.
+
+## Resolution (Phase 2a)
+
+Applied: the fake Stampede telegraph uses `zone: 500_000`, and `powerTelegraph` has the milli-lu JSDoc.

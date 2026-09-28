@@ -158,6 +158,26 @@ export interface MapperOptions {
   rng: CosmeticRng;
 }
 
+/**
+ * The side whose action caused an event (A13 sound priority): the event's own side, else the side of
+ * the unit or turret that acted. Null when the event belongs to nobody (phases, the match end).
+ */
+export function actingSide(ev: SimEvent, unit: (id: number) => UnitInfo | undefined): Side | null {
+  const e = ev as { side?: Side; id?: number };
+  const source = (id: number): Side | null => decodeTurretSource(id)?.side ?? (id > 0 ? (unit(id)?.side ?? null) : null);
+  if (ev.e === 'died') return ev.killerSide;
+  if (ev.e === 'projectileFired') return source(ev.from);
+  if (ev.e === 'hit') {
+    const s = source(ev.sourceId);
+    if (s !== null) return s;
+    const target = unit(ev.targetId)?.side;
+    return target === undefined ? null : target === 0 ? 1 : 0;
+  }
+  if (e.side !== undefined) return e.side;
+  if (e.id !== undefined) return unit(e.id)?.side ?? null;
+  return null;
+}
+
 export class EventMapper {
   feel: RenderFeelConfig;
   private readonly content: CompiledContent;
@@ -183,7 +203,17 @@ export class EventMapper {
     const diedNow = new Set<number>();
     for (const ev of events) if (ev.e === 'died') diedNow.add(ev.id);
     this.areaShown = new Set();
-    for (const ev of events) this.one(ev, unit, diedNow, out);
+    for (const ev of events) {
+      const from = out.length;
+      this.one(ev, unit, diedNow, out);
+      // A13: "Sounds caused by the player get priority" when the voice caps are full.
+      if (out.length > from && actingSide(ev, unit) === this.mySide) {
+        for (let i = from; i < out.length; i++) {
+          const a = out[i]!;
+          if (a.a === 'sound' && a.priority === undefined) out[i] = { ...a, priority: 1 };
+        }
+      }
+    }
     return out;
   }
 

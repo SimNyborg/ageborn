@@ -5,7 +5,8 @@
  * module runs headless in tests and dev tools.
  */
 import { signal, type ReadonlySignal } from '@preact/signals';
-import type { BotController, CompiledContent, SaveDoc, Side, Sim } from '@/contracts';
+import { BALANCED_BRAIN_ID, botProfile } from '@/ai';
+import type { BotController, BotProfile, CompiledContent, SaveDoc, Side, Sim } from '@/contracts';
 import { fnv1a32 } from '@/core';
 import { createGroggBrain, createTutorialAutopilot, MATCH1_TURRET_GRANT_TICK, TutorialDirector, type TutorialPrompt } from '@/tutorial';
 import { createFallbackBot } from './fallbackBot';
@@ -40,14 +41,32 @@ export function botSeed(matchSeed: number, side: Side): number {
   return fnv1a32(`${matchSeed}:${side}`);
 }
 
+/** Tells a bot profile which controls the match locks for its side (WP3 request: no wasted commands). */
+function withTrainingLocks(profile: BotProfile, setup: MatchSetup, side: Side): BotProfile {
+  const t = setup.config.training;
+  const stanceLocked = t?.stanceEnabled ? !t.stanceEnabled[side] : false;
+  const autoLastStand = t?.manualLastStand ? !t.manualLastStand[side] : false;
+  // WP3's rule tokens (`src/ai/openings.ts`), as `botProfile({ stanceLocked, autoLastStand })` adds them.
+  const rules = [...(stanceLocked ? ['rule:noStance'] : []), ...(autoLastStand ? ['rule:autoLastStand'] : [])].filter((r) => !profile.openings.includes(r));
+  return rules.length === 0 ? profile : { ...profile, openings: [...profile.openings, ...rules] };
+}
+
 /** The opponent's controller for a setup: Old Grogg's script or an AI General. */
 export function opponentController(services: Pick<Services, 'createBot'>, setup: MatchSetup, content: CompiledContent): BotController {
   if (setup.brain.kind === 'grogg') return createGroggBrain(1);
-  return services.createBot(setup.brain.profile, 1, botSeed(setup.config.seed, 1), content);
+  return services.createBot(withTrainingLocks(setup.brain.profile, setup, 1), 1, botSeed(setup.config.seed, 1), content);
 }
 
-/** The dev autopilot for the player's side. */
-export function autopilotController(setup: MatchSetup, content: CompiledContent): BotController {
+/** The dev autopilot's tier outside the tutorial: a strong Balanced brain (A2.14) plays for you. */
+export const AUTOPILOT_TIER = 5;
+
+/**
+ * The dev autopilot for the player's side (`?dev=1&autopilot=1`, B13): the tutorial autopilot in
+ * onboarding matches, else the real AI (WP3's Balanced brain at tier V), which uses every control
+ * (train, turrets, Modernise, evolve, powers, stance, Last Stand). With `?bots=fallback` the simple
+ * stand-in plays instead.
+ */
+export function autopilotController(setup: MatchSetup, content: CompiledContent, services?: Pick<Services, 'createBot' | 'choice'>): BotController {
   const lastAge = Math.max(0, (content.formats[setup.config.format]?.ages.length ?? 1) - 1);
   if (setup.mode === 'tutorial') {
     return createTutorialAutopilot(content, {
@@ -58,14 +77,24 @@ export function autopilotController(setup: MatchSetup, content: CompiledContent)
       secondMountFromAge: setup.matchNumber === 2 ? 1 : null,
     });
   }
-  return createFallbackBot({ generalId: 'autopilot', tier: 5, mistakeBonusBp: 0, weights: { aggr: 50, turret: 50, economy: 50, greed: 50, patience: 50, legendary: 50, hold: 50 }, openings: [] }, 0, botSeed(setup.config.seed, 0), content);
+  const seed = botSeed(setup.config.seed, 0);
+  if (services && services.choice.bots === 'real' && hasGenerals(content)) {
+    const profile = botProfile(content, { generalId: BALANCED_BRAIN_ID, tier: AUTOPILOT_TIER });
+    return services.createBot(withTrainingLocks(profile, setup, 0), 0, seed, content);
+  }
+  return createFallbackBot({ generalId: 'autopilot', tier: AUTOPILOT_TIER, mistakeBonusBp: 0, weights: { aggr: 50, turret: 50, economy: 50, greed: 50, patience: 50, legendary: 50, hold: 50 }, openings: [] }, 0, seed, content);
+}
+
+/** The real content has General tables; the fake content does not (the fallback bot plays there). */
+function hasGenerals(content: CompiledContent): boolean {
+  return (content as { generals?: unknown }).generals != null;
 }
 
 export function createBattle(services: Services, setup: MatchSetup, o: BattleOptions): BattleHandle {
   const content = setup.config.content;
   const sim = services.sim.createSim(setup.config);
   const bots: SessionBot[] = [{ side: 1, controller: opponentController(services, setup, content) }];
-  if (o.autopilot) bots.push({ side: 0, controller: autopilotController(setup, content) });
+  if (o.autopilot) bots.push({ side: 0, controller: autopilotController(setup, content, services) });
   const log = services.eventLog;
   const director = new TutorialDirector(setup.script, {
     side: 0,

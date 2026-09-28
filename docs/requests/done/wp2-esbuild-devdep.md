@@ -23,3 +23,7 @@ measures that module (worst case ≈ 105 ms against the 400 ms budget of DESIGN 
 Alternative (no dependency change): set `test.experimental.viteModuleRunner: false` for the benchmark
 run in `vitest.config.ts`, if the node loader resolves the `@/` alias; then the bench could import the
 sources directly.
+
+## Resolution (Phase 2a)
+
+Applied: `esbuild` 0.28.2 is a direct devDependency (lockfile root entry updated offline, same installed version).

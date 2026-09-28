@@ -28,7 +28,10 @@ export function AppRoot(p: { ui: AppUi }) {
     <AppUiContext.Provider value={p.ui}>
       <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
         <Screen ui={p.ui} />
-        <div class="ab-rotate">{p.ui.t('app.rotate')}</div>
+        <div class="ab-rotate" data-testid="rotate">
+          <div class="ab-rotate-phone" aria-hidden="true" />
+          <span>{p.ui.t('app.rotate')}</span>
+        </div>
       </div>
     </AppUiContext.Provider>
   );

@@ -16,3 +16,7 @@ receives `config`; please draw the chip only when the foe side is a bot:
 ```
 
 In every live battle the foe is an AI (A7.1), so nothing changes there.
+
+## Resolution (Phase 2a)
+
+Applied in `src/ui/hud/TopBar.tsx`: the foe nameplate shows the AI chip only when `config.sides[foeSide].isBot`.

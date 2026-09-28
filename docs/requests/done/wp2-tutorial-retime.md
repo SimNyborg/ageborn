@@ -32,3 +32,7 @@ DESIGN A8 expects this: "WP11 retimes every beat from a scripted sim run".
 
 `npx vitest run src/tutorial/test/retime.test.ts` currently fails only on `groggFalls`
 (measured 2282, pinned 2210); every other tutorial test passes.
+
+## Resolution (Phase 2a)
+
+Applied: `MATCH1_TIMING` in `src/tutorial/scripts.ts` has future 1731 and groggFalls 2282; `retime.test.ts` passes.

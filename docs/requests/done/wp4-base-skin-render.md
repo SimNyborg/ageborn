@@ -30,3 +30,7 @@ Done and tested (`src/visuals/provider.ts`, test "draws a base skin on the age i
 after evolving into that age"): `createBase({ age, skin })` now applies the skin to every age that has
 an entry for it and draws the plain base for the other ages without a warning. A Stone base created
 with `crystal_spire` looks plain, and turns into the Crystal Spire when it morphs into the Future age.
+
+## Resolution (Phase 2a)
+
+Applied in `src/render/battleView.ts` `createBase`: the side's `base.<age>` skin is passed whatever age the match starts in.

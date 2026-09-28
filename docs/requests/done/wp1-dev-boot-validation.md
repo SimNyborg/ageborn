@@ -20,3 +20,7 @@ if (import.meta.env.DEV) {
 
 The dynamic import keeps Valibot and the schema out of the production bundle (`src/content/index.ts`
 does not import `schema.ts`). The dev page `?dev=1#content` shows the same result on screen.
+
+## Resolution (Phase 2a)
+
+Already done in Phase 1 (`validateContentInDev`).

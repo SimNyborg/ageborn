@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { UtilityController } from '@/ai';
+import { FakeAudio } from '@/contracts/fakes/audio';
 import { FixedClock } from '@/contracts/fakes/clock';
 import { AppController, QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
 import { buildServices, DEFAULT_CHOICE } from '../services';
@@ -54,8 +56,10 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     expect(c.step.value).toBe('capsule2');
     c.next();
     expect(c.step.value).toBe('home');
+    // After onboarding the start screen keeps the training match vs Old Grogg waiting (Phase 2a).
     const r3 = c.route.value;
-    expect(r3).toMatchObject({ id: 'title', battle: null });
+    expect(r3.id).toBe('title');
+    if (r3.id === 'title') expect(r3.battle?.setup).toMatchObject({ mode: 'tutorial', matchNumber: 1, opponent: { generalId: 'grogg', isAI: true } });
     expect(services.saveStore.loadReplays()).toHaveLength(2);
     expect(c.replays.value).toHaveLength(2);
     expect(services.eventLog.entries().filter((e) => e.kind === 'matchEnd')).toHaveLength(2);
@@ -118,5 +122,47 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     expect(again.setup.config.format).toBe('standard');
     c.quit();
     expect(again.session.status.value).toBe('disposed');
+  }, 60_000);
+
+  it('the start screen offers the training match vs Old Grogg at any step; Play again replays it', async () => {
+    const { c } = await controller();
+    const b = c.training();
+    expect(b.setup).toMatchObject({ mode: 'tutorial', matchNumber: 1, brain: { kind: 'grogg' }, opponent: { generalId: 'grogg', isAI: true } });
+    expect(c.route.value.id).toBe('battle');
+    await finish(c);
+    expect(c.route.value.id).toBe('result');
+    c.playAgain();
+    const again = c.route.value;
+    if (again.id !== 'battle') throw new Error('the training match should run again');
+    expect(again.battle.setup.opponent.generalId).toBe('grogg');
+    expect(again.battle).not.toBe(b);
+  }, 60_000);
+
+  it('sets the A14.3 music cues: menu on the title, the first age in battle, stop on quit', async () => {
+    const services = await buildServices({ choice: { ...DEFAULT_CHOICE, audio: 'fake' }, clock: new FixedClock() });
+    const audio = services.audio as FakeAudio;
+    const c = new AppController(services, { save: null, delay: async () => undefined });
+    c.showTitle();
+    c.quickBattle('short');
+    c.quit();
+    const music = audio.calls.filter((x) => x.method === 'music.setCue' || x.method === 'music.stop');
+    expect(music).toEqual([
+      { method: 'music.setCue', cue: 'music.menu', o: { fadeMs: 600 } },
+      { method: 'music.setCue', cue: 'music.stone', o: { fadeMs: 600 } },
+      { method: 'music.stop', fadeMs: 600 },
+      { method: 'music.setCue', cue: 'music.menu', o: { fadeMs: 600 } },
+    ]);
+  });
+
+  it('the dev autopilot plays the player side with the real AI outside the tutorial (B13)', async () => {
+    const { c } = await controller();
+    const b = c.quickBattle('short');
+    const bots = (b.session as unknown as { bots: { side: number; controller: unknown }[] }).bots;
+    expect(bots.map((x) => x.side).sort()).toEqual([0, 1]);
+    expect(bots.find((x) => x.side === 0)?.controller).toBeInstanceOf(UtilityController);
+    await finish(c);
+    const r = c.route.value;
+    if (r.id !== 'result') throw new Error('result expected');
+    expect(r.result.replay.commands.some((x) => x.side === 0)).toBe(true);
   }, 60_000);
 });

@@ -27,3 +27,7 @@ Please keep these option names stable, or tell us when they change.
    The procedural unit view also draws its own aura when the provider was created with `quality: 'high'`,
    and that one cannot follow a later drop to Lite. Suggest dropping the unit view's built-in aura for
    Legendary cards (keep skin auras such as ghost/snow/neon if they are part of the skin's look).
+
+## Resolution (Phase 2a)
+
+Both items were already handled by WP4: `recipes.ts` reads `small: 1` (0.6x) and the procedural unit view no longer draws its own aura for Legendary cards.

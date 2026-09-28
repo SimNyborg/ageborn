@@ -1070,7 +1070,10 @@ export class BattleView {
 
   private createBase(side: Side): BaseEntry {
     const age = this.ageOf(side);
-    const skin = this.config.sides[side].skins[`base.${age}`];
+    // A base skin targets one age (`base.future@crystal_spire`, A5.8); the provider draws it on that
+    // age only, so pass it whatever age the match starts in (it shows after the evolve).
+    const skins = this.config.sides[side].skins;
+    const skin = skins[`base.${age}`] ?? Object.entries(skins).find(([target]) => target.startsWith('base.'))?.[1];
     const view = this.art.createBase({ age, ...(skin ? { skin } : {}), side, teamPreset: this.settings.teamPreset });
     view.root.position.set(baseCenterX(side), 0);
     view.root.scale.x = side === 1 ? -1 : 1;

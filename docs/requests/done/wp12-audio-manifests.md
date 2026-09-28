@@ -21,3 +21,7 @@ B13 Integrity: "every content visualId, effectId, soundId and musicCueId resolve
 that every sound id used by content (unit, attack, power and skin `sfx`) and by
 `src/render/feel.config.json`, every id listed in A13 and every A14.3 cue has a manifest entry. Until
 the files exist those tests skip with the reason.
+
+## Resolution (Phase 2a)
+
+Information; the manifests have that shape and the integrity id tests run (none skip).

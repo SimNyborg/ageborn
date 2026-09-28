@@ -58,3 +58,7 @@ The replay viewer can pass `readOnly` and `controls={false}` (and `side` for the
 Tutorial pointers can target the `data-testid`s: `hud-card-0..4`, `hud-gold`, `hud-evolve`,
 `hud-power`, `hud-stance`, `hud-laststand`, `hud-emote`, `hud-scouted`, `hud-pause`, `hud-speed`,
 `hud-mount-popover`, and on the canvas `view.mountScreenPoint(mount)`.
+
+## Resolution (Phase 2a)
+
+Applied: `BattleSessionImpl` runs the B6 loop with `FixedStepClock`, `HudModelBuilder` and `view.simFrozen`; `main.tsx` builds `BattleView` and the battle screen mounts `Hud`.

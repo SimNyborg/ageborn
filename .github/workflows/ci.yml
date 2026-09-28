@@ -31,3 +31,25 @@ jobs:
       - if: steps.guard.outputs.ready == 'true'
         name: Bundle size gate
         run: npm run size --if-present
+
+  # DESIGN B13 / C4.1: the e2e specs against the production build, in Chromium and WebKit
+  # (docs/requests/wp12-ci.md; the balance jobs follow in Phase 3).
+  e2e:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

@@ -18,3 +18,7 @@ target"). Please add a Chromium spec that:
    No console errors should appear on any section.
 
 Everything the page needs is in the dev bundle; nothing in `public/` is required.
+
+## Resolution (Phase 2a)
+
+Items 1 and 2 are in `tests/e2e/gallery.spec.ts` and pass in Chromium. Screenshot baselines (item 3, optional) are v1.x (B13).

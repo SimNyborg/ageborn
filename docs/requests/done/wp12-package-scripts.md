@@ -27,3 +27,7 @@ DESIGN B12 documents `npm run sim:balance`, `sim:exploits`, `sim:economy`, `sim:
 `replay:verify <file>` and `content:csv -- export|import`, and the CI request
 (`docs/requests/wp12-ci.md`) calls them. Until they exist, run the same thing with
 `npx tsx tools/sim-cli.ts <command> [flags]` (`npx tsx tools/sim-cli.ts help` lists everything).
+
+## Resolution (Phase 2a)
+
+Applied: the B12 scripts are in `package.json`.

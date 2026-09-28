@@ -16,12 +16,12 @@ import { content } from '@/content';
 import { createBot } from '@/ai';
 import { createSim, SIM_VERSION } from '@/sim';
 import { MATCH1_TIMING, MATCH1_TURRET_GRANT_TICK, TutorialAutopilot, TutorialDirector, createGroggBrain, evolveReady } from '@/tutorial';
-import { EventLog } from '../eventLog';
-import { createFallbackBot } from '../fallbackBot';
-import { botProfileFor, quickBattle, tutorialMatch1 } from '../matchSetup';
-import { ReplayPlayer } from '../replayPlayer';
-import { BattleSessionImpl } from '../session';
-import { systemClock } from '../services';
+import { EventLog } from '@/app/eventLog';
+import { createFallbackBot } from '@/app/fallbackBot';
+import { botProfileFor, quickBattle, tutorialMatch1 } from '@/app/matchSetup';
+import { ReplayPlayer } from '@/app/replayPlayer';
+import { BattleSessionImpl } from '@/app/session';
+import { systemClock } from '@/app/services';
 
 export const title = 'Replay debugger (WP11)';
 

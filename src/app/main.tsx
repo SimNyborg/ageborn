@@ -6,6 +6,7 @@
  * URL flags:
  * - `?dev=1&autopilot=1`: boots the game with the dev autopilot playing the player's side and
  *   presses Play (B13 e2e step 2). `window.__agebornDev` exposes a fast-forward for e2e tests.
+ * - `?dev=1&game=1`: boots the game without the autopilot, with `window.__agebornDev`.
  * - `?quick=short|standard|full`: the Quick Battle dev route (C3 Checkpoint A).
  * - `?svc=fake`, `?sim=fake`, `?art=placeholder` ...: service overrides (services.ts, B5).
  */
@@ -149,37 +150,13 @@ async function start(root: HTMLElement): Promise<void> {
   render(<AppRoot ui={ui} />, uiHost);
 }
 
-/**
- * WP11's dev page, until `docs/requests/wp11-dev-page.md` moves it under `src/dev/replayDebug/`
- * (then the dev router finds it by itself and this entry can go).
- */
-const APP_DEV_PAGES: Record<string, () => Promise<{ default: () => preact.JSX.Element }>> = {
-  replayDebug: () => import('./dev/ReplayDebugPage'),
-};
-
-async function renderDev(root: HTMLElement): Promise<void> {
-  const name = window.location.hash.replace(/^#/, '');
-  const load = APP_DEV_PAGES[name];
-  if (!load) {
-    render(<DevRouter />, root);
-    return;
-  }
-  const Page = (await load()).default;
-  render(<Page />, root);
-}
-
 const root = document.getElementById('app');
 if (!root) throw new Error('#app element missing');
 
-if (isDevMode() && !bootFlags(window.location.search).autopilot) {
-  void renderDev(root);
-  // The dev router handles its own hash changes; moving to or from an app dev page needs a reload.
-  let hash = window.location.hash.replace(/^#/, '');
-  window.addEventListener('hashchange', () => {
-    const next = window.location.hash.replace(/^#/, '');
-    if (next in APP_DEV_PAGES || hash in APP_DEV_PAGES) window.location.reload();
-    hash = next;
-  });
+/** `?dev=1` shows the dev page list, unless the game is asked for (`&autopilot=1` or `&game=1`). */
+const devGame = bootFlags(window.location.search).autopilot || new URLSearchParams(window.location.search).get('game') === '1';
+if (isDevMode() && !devGame) {
+  render(<DevRouter />, root);
 } else {
   void start(root);
 }

@@ -38,7 +38,7 @@ export const cannedBattleEvents: readonly SimEvent[] = [
   },
   { tick: 40, e: 'knockback', id: 2, fromX: 700_000, toX: 703_000 },
   { tick: 50, e: 'powerReady', side: 0 },
-  { tick: 51, e: 'powerTelegraph', side: 0, power: 'stampede', castId: 1, x: 700_000, zone: 500 },
+  { tick: 51, e: 'powerTelegraph', side: 0, power: 'stampede', castId: 1, x: 700_000, zone: 500_000 },
   { tick: 71, e: 'powerImpact', side: 0, power: 'stampede', castId: 1, x: 703_000, index: 0 },
   {
     tick: 71, e: 'hit', targetId: 2, sourceId: -1, sourceCard: 'stampede', castId: 1, sourceKind: 'power',

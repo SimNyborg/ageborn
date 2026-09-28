@@ -18,3 +18,7 @@ exits 1 when the file is stale. CI already fails on a stale file without the scr
 `src/content/test/counters.test.ts` compares the file's input hash with the current tables in
 `npm test`; the scripts only give people the documented command. Until then:
 `npx tsx tools/counters.ts`.
+
+## Resolution (Phase 2a)
+
+Applied: `content:counters` and `content:counters:check` in `package.json`.

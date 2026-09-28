@@ -46,3 +46,7 @@ openings pass every A6.4/A6.5 check, and the 365-day economy sim runs. Quest cla
 optional `claimQuest(save, slot, content, clock)` and `rerollQuest(save, slot, content)` when the meta
 package exports them (it does). Please keep those two names and signatures, or tell WP12 if they
 change. Status: done.
+
+## Resolution (Phase 2a)
+
+Already done in Phase 1 (WP7).

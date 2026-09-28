@@ -368,7 +368,25 @@
     z-index: 100;
     text-align: center;
     padding: 24px;
+    flex-direction: column;
+    gap: 28px;
+    background: radial-gradient(ellipse at 50% 40%, #2b2754 0%, var(--ui-bg, #17152b) 70%);
   }
+  .ab-rotate-phone {
+    width: 64px;
+    height: 110px;
+    border: 5px solid var(--ui-gold-hi, #ffe58a);
+    border-radius: 14px;
+    box-shadow: 0 5px 0 var(--ui-ink, #1b1330), 0 0 30px #ffc53d44;
+    background: linear-gradient(180deg, #3a356f, #1f1b3e);
+    animation: ab-turn 2.4s cubic-bezier(0.6, -0.3, 0.3, 1.3) infinite;
+  }
+}
+
+@keyframes ab-turn {
+  0%, 20% { transform: rotate(0deg); }
+  55%, 85% { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes ab-fade {
@@ -412,7 +430,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ab-logo, .ab-card, .ab-bubble, .ab-ring, .ab-panel, .ab-reward {
+  .ab-logo, .ab-card, .ab-bubble, .ab-ring, .ab-panel, .ab-reward, .ab-rotate-phone {
     animation: none;
   }
 }

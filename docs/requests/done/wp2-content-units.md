@@ -35,3 +35,7 @@ content already uses table units, so every package tests against the same conven
 Until `src/content/compile.ts` exists, tests and the sandbox compile `src/content/raw` (and the frozen
 `tests/fixtures/content`) with the sim's local shim `src/sim/shim.ts` (`compileForSim`), which
 produces exactly this shape.
+
+## Resolution (Phase 2a)
+
+Already done in Phase 1 (WP1).

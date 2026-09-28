@@ -11,3 +11,7 @@ WP4's provider now takes `plate?: boolean` (default `true`). WP9 already uses it
 `plate: false` for silhouettes and darkens the result with CSS. Once `src/contracts/art.ts` has the field,
 `PortraitFn` can become `ArtProvider['portrait']` again. A provider that ignores `plate` would show dark
 squares for unowned cards, so the app should inject WP4's provider (or the glyph fallback: `portrait: null`).
+
+## Resolution (Phase 2a)
+
+Answered by WP4; the remaining contract JSDoc is `wp4-portrait-plate-contract.md` (Phase 2b).

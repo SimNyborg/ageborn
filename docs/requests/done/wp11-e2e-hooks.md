@@ -18,3 +18,7 @@ example `m1.sendBonker`), `pause`, `resume`, `retreat`, `quit`, `watch-replay`, 
 
 The visibility pause (C5 #20) can be tested by overriding `document.visibilityState` to `hidden` and
 dispatching `visibilitychange`: `[data-testid="pause"]` appears and stays until Resume.
+
+## Resolution (Phase 2a)
+
+Applied: the hooks exist and the B13 specs use them. Phase 2a adds `?dev=1&game=1` (the game with `window.__agebornDev`, no autopilot) and the start-screen ids `quick-battle`, `format-*`, `quick-ai-chip`, `training`, `restart`.
