@@ -245,6 +245,11 @@ export class ScriptedPlayer implements BotController {
   private rangedTrained = 0;
   /** `massThenCharge`: holding until the army nears the pop cap. */
   private massing = true;
+  /** `bankTo`: spending a banked wave (true) or saving up for the next one. */
+  private spending = false;
+  /** Tick Evolve was first seen available in the current age (`safeEvolveMs`). */
+  private evolveSeenTick = -1;
+  private evolveSeenAge = -1;
 
   constructor(
     readonly strategy: Strategy,
@@ -274,19 +279,31 @@ export class ScriptedPlayer implements BotController {
     const threat = obs.units.filter((u) => u.side !== side && u.p < THREAT_P).length >= 2;
     const nearMid = obs.units.filter((u) => u.side !== side && u.p > this.content.economy.powerZoneClamp[0] * 1000 && u.p < this.content.economy.powerZoneClamp[1] * 1000).length;
 
-    if (me.lastStand === 'armed') out.push({ t: 'lastStand', side });
+    const foes = obs.units.filter((u) => u.side !== side && u.hp > 0);
+    if (me.lastStand === 'armed' && foes.filter((u) => u.p <= LAST_STAND_P).length >= (st.lastStandFoes ?? 0)) out.push({ t: 'lastStand', side });
 
     // Evolve and power (A2.4, A2.9).
     const ascending = obs.tick - this.evolveIssuedTick < this.ascendWaitTicks;
     const canEvolve = !ascending && me.xpBp >= 10_000 && me.ageIndex < this.maxAgeIndex;
+    if (!canEvolve || this.evolveSeenAge !== me.ageIndex) {
+      this.evolveSeenTick = canEvolve ? obs.tick : -1;
+      this.evolveSeenAge = canEvolve ? me.ageIndex : -1;
+    }
     const charged = me.powerPpm >= CHARGED_PPM;
     let evolveNow = canEvolve && (st.evolve === 'asap' || me.xpBp >= BANK_XP_BP);
+    if (evolveNow && st.safeEvolveMs !== undefined) {
+      const unsafe = foes.some((u) => !u.air && u.p <= EVOLVE_SAFE_P);
+      evolveNow = !unsafe || obs.tick - this.evolveSeenTick >= Math.trunc(st.safeEvolveMs / 50);
+    }
     if (charged) {
       if (st.power === 'beforeEvolve' && me.ageIndex < this.maxAgeIndex) {
         if (evolveNow) {
           out.push({ t: 'power', side });
           evolveNow = false; // evolve on the next decision, after the cast
         }
+      } else if (st.powerMinValue !== undefined) {
+        const zone = this.bestZone(foes, me.power);
+        if (zone.value >= st.powerMinValue) out.push({ t: 'power', side, p: zone.p });
       } else if (st.power === 'full' || nearMid >= 3 || threat) {
         out.push({ t: 'power', side });
       }
@@ -355,8 +372,17 @@ export class ScriptedPlayer implements BotController {
     // the strategy wants unless the base is threatened.
     const saving = threat || boughtInfra ? 0 : this.infrastructureGoal(me);
     let queued = me.queue.length;
-    for (let i = 0; i < 4 && queued < econ.queueMax; i += 1) {
-      const slot = this.pickTrain(me.tray, gold);
+    // `maxAlive`: a casual player keeps only a few soldiers on the lane.
+    const alive = obs.units.filter((u) => u.side === side && u.hp > 0).length;
+    const room = st.maxAlive === undefined ? econ.queueMax : st.maxAlive - alive - queued;
+    // `bankTo`: save up a wave, then spend it all; a threat at the gate is answered at once.
+    if (st.bankTo !== undefined) {
+      if (gold >= st.bankTo + saving) this.spending = true;
+      else if (gold < this.cheapestInTray(me.tray)) this.spending = false;
+      if (!this.spending && !threat) return out;
+    }
+    for (let i = 0; i < 4 && queued < econ.queueMax && i < room; i += 1) {
+      const slot = this.pickTrain(me.tray, gold, foes, threat);
       if (slot === null) break;
       const card = me.tray[slot] as CardId;
       const cost = this.content.units[card]?.cost ?? Number.POSITIVE_INFINITY;
@@ -400,11 +426,83 @@ export class ScriptedPlayer implements BotController {
     return this.massing ? 'hold' : 'charge';
   }
 
-  private pickTrain(tray: readonly (CardId | null)[], gold: number): number | null {
+  private cheapestInTray(tray: readonly (CardId | null)[]): number {
+    let min = Number.POSITIVE_INFINITY;
+    for (const c of tray) {
+      const u = c === null ? undefined : this.content.units[c];
+      if (u && u.cost < min) min = u.cost;
+    }
+    return min;
+  }
+
+  /**
+   * The best aim for the equipped power: the window of the power's zone (300 lu when it has none) that
+   * holds the most enemy card value inside the power clamp. `p` is whole lu in the own frame.
+   */
+  private bestZone(foes: Observation['units'], power: CardId): { p: number; value: number } {
+    const def = this.content.powers[power];
+    const fx = def?.effect as { kind: string; zone?: number; width?: number } | undefined;
+    const width = fx?.zone ?? fx?.width ?? 300;
+    const [lo, hi] = this.content.economy.powerZoneClamp;
+    let best = { p: Math.trunc((lo + hi) / 2), value: 0 };
+    for (let p = lo; p <= hi; p += 20) {
+      let v = 0;
+      for (const u of foes) if (Math.abs(u.p / 1000 - p) <= width / 2) v += this.content.units[u.card]?.cost ?? 0;
+      if (v > best.value) best = { p, value: v };
+    }
+    return best;
+  }
+
+  /** Counter score of a unit against the visible enemies (value-weighted, bp of the counter matrix). */
+  private counterScore(card: CardId, foes: Observation['units']): number {
+    let num = 0;
+    let den = 0;
+    for (const u of foes) {
+      const w = this.content.units[u.card]?.cost ?? 0;
+      const m = this.content.counters[card]?.[u.card] ?? 0.5;
+      num += m * w;
+      den += w;
+    }
+    return den > 0 ? num / den : 0.5;
+  }
+
+  private pickTrain(tray: readonly (CardId | null)[], gold: number, foes: Observation['units'] = [], threat = false): number | null {
     const slots = tray.map((c, i) => (c !== null && this.content.units[c] ? i : -1)).filter((i) => i >= 0);
     if (slots.length === 0) return null;
     const unit = (i: number): UnitDef => this.content.units[tray[i] as CardId] as UnitDef;
     switch (this.strategy.train) {
+      case 'melee': {
+        // The priciest affordable Heavy (or Legendary), else Infantry; nothing affordable waits for gold.
+        const tiers: readonly (readonly UnitDef['group'][])[] = [['heavy', 'legendary', 'epic'], ['infantry']];
+        for (const groups of tiers) {
+          const ok = slots.filter((i) => groups.includes(unit(i).group) && unit(i).cost <= gold);
+          if (ok.length > 0) return ok.reduce((a, b) => (unit(b).cost > unit(a).cost ? b : a));
+        }
+        const melee = slots.filter((i) => ['heavy', 'infantry'].includes(unit(i).group));
+        const pool = melee.length > 0 ? melee : slots;
+        return pool.reduce((a, b) => (unit(b).cost < unit(a).cost ? b : a));
+      }
+      case 'counter': {
+        // Counter-pick against the enemies nearest the gate; with none in sight, a Balanced mix. The best
+        // counter is saved for unless the gate is threatened (then the best affordable one).
+        if (foes.length === 0) {
+          const w = slots.map((i) => this.strategy.weights[i] ?? 0);
+          return slots[pickWeighted(this.rng, w)] as number;
+        }
+        const near = [...foes].sort((a, b) => a.p - b.p).slice(0, 8);
+        const pool = threat ? slots.filter((i) => unit(i).cost <= gold) : slots;
+        if (pool.length === 0) return null;
+        let best = pool[0] as number;
+        let bestScore = -1;
+        for (const i of pool) {
+          const sc = this.counterScore(unit(i).id, near);
+          if (sc > bestScore || (sc === bestScore && unit(i).cost > unit(best).cost)) {
+            best = i;
+            bestScore = sc;
+          }
+        }
+        return best;
+      }
       case 'random': {
         // Uniform over the affordable units; nothing affordable waits for gold.
         const ok = slots.filter((i) => unit(i).cost <= gold);
