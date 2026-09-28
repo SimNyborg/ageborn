@@ -110,7 +110,8 @@ export interface PendingCapsule {
 /** An unopened Wardrobe Crate, rolled at grant time (DESIGN A10.1, A5.8). */
 export interface PendingCrate {
   id: string;
-  source: 'codex' | 'weekly' | 'road' | 'aeon';
+  /** `welcome`: the one crate for winning the training match (owner feedback 2026-09-28). */
+  source: 'codex' | 'weekly' | 'road' | 'aeon' | 'welcome';
   skin: SkinId;
   rarity: SkinRarity;
   duplicateDust: number;

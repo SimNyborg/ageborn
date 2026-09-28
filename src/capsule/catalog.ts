@@ -4,6 +4,7 @@
  * Unknown ids fall back to the A14.1 naming conventions, so a missing entry never breaks a reveal.
  */
 import type { CardId, CompiledContent, SkinId } from '@/contracts';
+import { isLegendaryUnit, unitClass } from '@/core/cardClass';
 import type { CapsuleCatalog, CapsuleKind, CardInfo, SkinInfo } from './types';
 
 /** Kinds shown with a climb when content says nothing (A6.4 "Other capsule types"; WP1 decision). */
@@ -37,12 +38,12 @@ export function createCatalog(content?: CompiledContent): CapsuleCatalog {
   return {
     card(id) {
       const unit = content?.units[id];
-      if (unit) return { age: unit.age, visualId: unit.visualId, nameKey: unit.nameKey, view: 'unit', group: unit.group };
+      if (unit) return { age: unit.age, visualId: unit.visualId, nameKey: unit.nameKey, view: 'unit', group: unit.group, cls: unitClass(unit), legendary: isLegendaryUnit(unit) };
       const turret = content?.turrets[id];
-      if (turret) return { age: turret.age, visualId: turret.visualId, nameKey: turret.nameKey, view: 'turret', group: null };
+      if (turret) return { age: turret.age, visualId: turret.visualId, nameKey: turret.nameKey, view: 'turret', group: null, cls: 'turret' };
       // Powers never come from capsules (A5); they only need a name and an icon here.
       const power = content?.powers[id];
-      if (power) return { age: power.age, visualId: power.visualId, nameKey: power.nameKey, view: 'unit', group: null };
+      if (power) return { age: power.age, visualId: power.visualId, nameKey: power.nameKey, view: 'unit', group: null, cls: 'power' };
       return fallbackCardInfo(id);
     },
     skin(id) {

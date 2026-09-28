@@ -6,6 +6,7 @@
  * injected `CapsuleCatalog`, and duplicate progress through a `ProgressLookup`, both built by the
  * app from content and the save. The show never rolls, changes or reinterprets a result.
  */
+import type { CardClass } from '@/core/cardClass';
 import type { AgeId, CardId, PendingCapsule, Rarity, RoleGroup, SaveDoc, SkinId, SkinRarity, VisualId } from '@/contracts';
 
 export type CapsuleKind = PendingCapsule['kind'];
@@ -20,6 +21,10 @@ export interface CardInfo {
   view: 'unit' | 'turret';
   /** A unit's role group (its ground-ring glyph); null for turrets and unknown ids. */
   group: RoleGroup | null;
+  /** The card's class badge (`core/cardClass.ts`); absent for unknown ids. */
+  cls?: CardClass;
+  /** Legendary units add a crown badge. */
+  legendary?: boolean;
 }
 
 /** How to draw and name one skin. */

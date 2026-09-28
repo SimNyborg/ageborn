@@ -118,7 +118,7 @@ export const CLASS_COLOR: Readonly<Record<ClassGlyphId, { main: string; dark: st
 export interface GlyphPart {
   d: string;
   fill?: 'glyph' | 'ink' | 'none';
-  /** Stroke width in view-box units; the stroke is the dark ink unless `strokeGlyph`. */
+  /** Stroke width in tenths of a view-box unit (integers: core bans float literals, B3); the stroke is the dark ink unless `strokeGlyph`. */
   stroke?: number;
   strokeGlyph?: boolean;
   /** An SVG transform (for mirrored halves). */
@@ -131,58 +131,58 @@ const WING = 'M12 9.2C10.4 6.4 6.9 4.6 2.4 4.8c.7 3 2.5 5.3 5 6.2-1.6.4-2.6 1.6-
 export const CLASS_GLYPH: Readonly<Record<ClassGlyphId, readonly GlyphPart[]>> = {
   // A sword pointing up and right.
   infantry: [
-    { d: 'M17.2 3.3h3.5v3.5L10.6 16.9l-3.5-3.5z', fill: 'glyph', stroke: 1.4 },
-    { d: 'M5 12.6l6.4 6.4', stroke: 3.4 },
-    { d: 'M5 12.6l6.4 6.4', stroke: 1.5, strokeGlyph: true },
-    { d: 'M4 20l3.2-3.2', stroke: 3.2 },
+    { d: 'M17.2 3.3h3.5v3.5L10.6 16.9l-3.5-3.5z', fill: 'glyph', stroke: 14 },
+    { d: 'M5 12.6l6.4 6.4', stroke: 34 },
+    { d: 'M5 12.6l6.4 6.4', stroke: 15, strokeGlyph: true },
+    { d: 'M4 20l3.2-3.2', stroke: 32 },
   ],
   // A drawn bow with an arrow.
   ranged: [
-    { d: 'M6.5 3.2c7.4 1.6 12.7 6.9 14.3 14.3', fill: 'none', stroke: 4.4 },
-    { d: 'M6.5 3.2c7.4 1.6 12.7 6.9 14.3 14.3', fill: 'none', stroke: 2.2, strokeGlyph: true },
-    { d: 'M6.5 3.2 20.8 17.5', stroke: 1.1 },
-    { d: 'M3.4 20.6 15 9', stroke: 2.6 },
-    { d: 'M17.8 6.2 12.6 7.4l4 4z', fill: 'glyph', stroke: 1.2 },
+    { d: 'M6.5 3.2c7.4 1.6 12.7 6.9 14.3 14.3', fill: 'none', stroke: 44 },
+    { d: 'M6.5 3.2c7.4 1.6 12.7 6.9 14.3 14.3', fill: 'none', stroke: 22, strokeGlyph: true },
+    { d: 'M6.5 3.2 20.8 17.5', stroke: 11 },
+    { d: 'M3.4 20.6 15 9', stroke: 26 },
+    { d: 'M17.8 6.2 12.6 7.4l4 4z', fill: 'glyph', stroke: 12 },
   ],
   // A kite shield with a boss.
   heavy: [
-    { d: 'M12 2.6l8 2.9v6.2c0 5.1-3.5 8.6-8 10.2-4.5-1.6-8-5.1-8-10.2V5.5z', fill: 'glyph', stroke: 1.5 },
-    { d: 'M12 5.6v13.2M7.2 10.4h9.6', stroke: 1.7 },
+    { d: 'M12 2.6l8 2.9v6.2c0 5.1-3.5 8.6-8 10.2-4.5-1.6-8-5.1-8-10.2V5.5z', fill: 'glyph', stroke: 15 },
+    { d: 'M12 5.6v13.2M7.2 10.4h9.6', stroke: 17 },
   ],
   // A spear driving down through a cracked armor plate.
   antiArmor: [
-    { d: 'M2.8 14.2h7.4l1.1 1.6-1.1 1.6h-7.4zM13.8 14.2h7.4v3.2h-7.4l-1.1-1.6z', fill: 'glyph', stroke: 1.3 },
-    { d: 'M12 2.5v10', stroke: 3.2 },
-    { d: 'M12 2.5v10', stroke: 1.3, strokeGlyph: true },
-    { d: 'M12 21.6 8.6 12.4h6.8z', fill: 'glyph', stroke: 1.4 },
+    { d: 'M2.8 14.2h7.4l1.1 1.6-1.1 1.6h-7.4zM13.8 14.2h7.4v3.2h-7.4l-1.1-1.6z', fill: 'glyph', stroke: 13 },
+    { d: 'M12 2.5v10', stroke: 32 },
+    { d: 'M12 2.5v10', stroke: 13, strokeGlyph: true },
+    { d: 'M12 21.6 8.6 12.4h6.8z', fill: 'glyph', stroke: 14 },
   ],
   // A lit bomb (cannonball with fuse and spark).
   siege: [
-    { d: 'M10.6 20.8a6.6 6.6 0 1 0 0-13.2 6.6 6.6 0 0 0 0 13.2z', fill: 'glyph', stroke: 1.5 },
-    { d: 'M8 11.2a3 3 0 0 1 2.4-1.4', fill: 'none', stroke: 1.3 },
-    { d: 'M14.8 9.2l2.6-2.6', stroke: 2.2 },
-    { d: 'M19 2.4l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z', fill: 'glyph', stroke: 1.1 },
+    { d: 'M10.6 20.8a6.6 6.6 0 1 0 0-13.2 6.6 6.6 0 0 0 0 13.2z', fill: 'glyph', stroke: 15 },
+    { d: 'M8 11.2a3 3 0 0 1 2.4-1.4', fill: 'none', stroke: 13 },
+    { d: 'M14.8 9.2l2.6-2.6', stroke: 22 },
+    { d: 'M19 2.4l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z', fill: 'glyph', stroke: 11 },
   ],
   // A medic cross.
-  support: [{ d: 'M9 3.2h6v5.8h5.8v6H15v5.8H9V15H3.2V9H9z', fill: 'glyph', stroke: 1.5 }],
+  support: [{ d: 'M9 3.2h6v5.8h5.8v6H15v5.8H9V15H3.2V9H9z', fill: 'glyph', stroke: 15 }],
   // A pair of wings.
   air: [
-    { d: WING, fill: 'glyph', stroke: 1.3 },
-    { d: WING, fill: 'glyph', stroke: 1.3, transform: 'matrix(-1 0 0 1 24 0)' },
-    { d: 'M12 7.6c1.3 0 2 1.4 2 3.4 0 3-1 6.6-2 9.4-1-2.8-2-6.4-2-9.4 0-2 .7-3.4 2-3.4z', fill: 'glyph', stroke: 1.3 },
+    { d: WING, fill: 'glyph', stroke: 13 },
+    { d: WING, fill: 'glyph', stroke: 13, transform: 'matrix(-1 0 0 1 24 0)' },
+    { d: 'M12 7.6c1.3 0 2 1.4 2 3.4 0 3-1 6.6-2 9.4-1-2.8-2-6.4-2-9.4 0-2 .7-3.4 2-3.4z', fill: 'glyph', stroke: 13 },
   ],
   // A crown.
   legendary: [
-    { d: 'M3.2 8.2l4.6 3.6L12 4.8l4.2 7 4.6-3.6-1.8 10.6H5z', fill: 'glyph', stroke: 1.4 },
-    { d: 'M5.4 16h13.2', stroke: 1.2 },
+    { d: 'M3.2 8.2l4.6 3.6L12 4.8l4.2 7 4.6-3.6-1.8 10.6H5z', fill: 'glyph', stroke: 14 },
+    { d: 'M5.4 16h13.2', stroke: 12 },
   ],
   // A crenellated tower.
   turret: [
-    { d: 'M5.5 21V4.2h2.9v2.2h2.1V4.2h3v2.2h2.1V4.2h2.9V21z', fill: 'glyph', stroke: 1.4 },
+    { d: 'M5.5 21V4.2h2.9v2.2h2.1V4.2h3v2.2h2.1V4.2h2.9V21z', fill: 'glyph', stroke: 14 },
     { d: 'M10 21v-4a2 2 0 0 1 4 0v4z', fill: 'ink' },
     { d: 'M10.8 10.2h2.4v2.6h-2.4z', fill: 'ink' },
   ],
   // A lightning bolt.
-  power: [{ d: 'M13.8 2.4 4.8 13.6h6l-1.6 8 9-11.2h-6z', fill: 'glyph', stroke: 1.4 }],
+  power: [{ d: 'M13.8 2.4 4.8 13.6h6l-1.6 8 9-11.2h-6z', fill: 'glyph', stroke: 14 }],
 };
 

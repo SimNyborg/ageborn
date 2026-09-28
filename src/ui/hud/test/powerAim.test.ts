@@ -110,8 +110,10 @@ describe('power aim state machine (owner decision "Age Power targeting")', () =>
     expect(stay.state.s).toBe('aiming');
   });
 
-  it('a power that ignores the aim fires on a tap, and on a drag released over the lane without a p', () => {
-    expect(run([down({ aimable: false }), up(NO_AIM)]).effects).toEqual([{ k: 'fire' }]);
+  it('a power that picks its own spot aims the same way but casts without a p', () => {
+    const aiming = run([down({ aimable: false }), up(NO_AIM), { e: 'aimAt', aim: lane(450) }]);
+    expect(aiming.effects).toEqual([{ k: 'aim' }]);
+    expect(run([{ e: 'fieldDown', id: 2, aim: lane(900) }, { e: 'fieldUp', id: 2, aim: lane(900) }], aiming.state).effects).toEqual([{ k: 'fire' }]);
     expect(run([down({ aimable: false }), move(40, lane(600)), up(lane(600))]).effects).toEqual([{ k: 'pickup' }, { k: 'fire' }]);
     expect(run([down({ aimable: false }), move(40, lane(600)), up(hud)]).effects).toEqual([{ k: 'pickup' }, { k: 'cancel' }]);
   });

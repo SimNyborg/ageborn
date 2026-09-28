@@ -19,6 +19,7 @@
 import type { AgeId, MatchResultInput, RewardStep, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { defaultCapsuleAge, grantCapsuleAt } from './capsules/grant';
+import { grantCrateAt } from './capsules/wardrobe';
 import { arenaOf } from './tables';
 import { questDef } from './quests';
 import { addClayPip, payForWinCapsule } from './charges';
@@ -132,7 +133,15 @@ function tutorial(s: SaveDoc, t: Content, result: LadderResult, now: number, ste
   save = payForWinCapsule(save, t, now, false)?.save ?? save;
   const g = grantCapsuleAt(save, 'win', t, now);
   steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
-  return g.save;
+  save = g.save;
+  // Owner feedback 2026-09-28: winning the training match also gives one Wardrobe Crate, so Home's
+  // Capsules entry has something to open and Customize has a skin to equip from the start.
+  if (s.matchesPlayed === 0 && result === 'win') {
+    const c = grantCrateAt(save, 'welcome', t, now);
+    save = c.save;
+    steps.push({ kind: 'crate', crateId: c.crate.id });
+  }
+  return save;
 }
 
 /**

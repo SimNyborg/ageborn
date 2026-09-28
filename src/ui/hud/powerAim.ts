@@ -9,9 +9,10 @@
  * - **A tap enters aiming mode** (the ghost appears at the front) instead of firing blind: a tap on the
  *   field fires there, a second tap on the button (or Escape) cancels. A drag from the button while
  *   aiming picks it up as usual.
- * - A power that ignores the aim (Stampede, Royal Decree, ...) fires on a tap, or when dragged onto the
- *   field and released there; a press on a power that is not ready asks for the (denied) command, so
- *   the button shakes as before. The keyboard (Space, Enter on the focused button) auto-aims.
+ * - A power that picks its own spot (Stampede, Paratroopers, Royal Decree, ...) works the same way,
+ *   but a drop or a field tap anywhere on the lane casts it without an aim (the ghost shows where it
+ *   will act). A press on a power that is not ready asks for the (denied) command, so the button
+ *   shakes as before. The keyboard (Space, Enter on the focused button) auto-aims.
  */
 import { POWER_DRAG_PX } from './model';
 
@@ -38,7 +39,7 @@ export type PowerAimState =
   /** The power follows the pointer. `last` is the last lane point, kept for the ghost while over the HUD. */
   | { s: 'dragging'; id: number; aimable: boolean; aim: AimTarget; last: number | null }
   /** Tap-to-aim: the ghost waits on the field; `field` is the pointer pressed on the field, if any. */
-  | { s: 'aiming'; aim: AimTarget; field: number | null };
+  | { s: 'aiming'; aimable: boolean; aim: AimTarget; field: number | null };
 
 export type PowerAimEvent =
   | { e: 'down'; id: number; x: number; y: number; ready: boolean; aimable: boolean }
@@ -115,8 +116,8 @@ export function stepPowerAim(s: PowerAimState, ev: PowerAimEvent): PowerAimStep 
       if (s.s === 'pressed' && s.id === ev.id) {
         // A second tap on the button while aiming puts the power back.
         if (s.wasAiming) return { state: AIM_IDLE, effect: { k: 'cancel' } };
-        if (s.ready && s.aimable) return { state: { s: 'aiming', aim: NO_AIM, field: null }, effect: { k: 'aim' } };
-        // Not ready (the model denies it) or a power that ignores the aim: the plain command.
+        if (s.ready) return { state: { s: 'aiming', aimable: s.aimable, aim: NO_AIM, field: null }, effect: { k: 'aim' } };
+        // Not ready: the plain command, which the model denies (the button shakes).
         return { state: AIM_IDLE, effect: { k: 'fire' } };
       }
       if (s.s === 'dragging' && s.id === ev.id) {
@@ -144,7 +145,7 @@ export function stepPowerAim(s: PowerAimState, ev: PowerAimEvent): PowerAimStep 
       if (s.s !== 'aiming' || s.field !== ev.id) return stay(s);
       const aim = ev.aim.over === 'off' ? s.aim : ev.aim;
       if (!aimValid(aim) || aim.p === null) return stay({ ...s, field: null });
-      return { state: AIM_IDLE, effect: { k: 'fire', p: aim.p } };
+      return { state: AIM_IDLE, effect: s.aimable ? { k: 'fire', p: aim.p } : { k: 'fire' } };
     }
 
     case 'cancel':

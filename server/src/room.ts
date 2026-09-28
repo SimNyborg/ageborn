@@ -97,8 +97,8 @@ export class MatchRoom {
         return true;
       }
     }
-    const free = this.seats[0] === null ? 0 : this.seats[1] === null ? 1 : -1;
-    if (free < 0) {
+    const free: Side | -1 = this.seats[0] === null ? 0 : this.seats[1] === null ? 1 : -1;
+    if (free === -1) {
       this.out(conn, { t: 'error', msg: 'room full' });
       return false;
     }
@@ -160,8 +160,9 @@ export class MatchRoom {
   message(conn: Conn, raw: string): void {
     this.stats.msgsIn += 1;
     this.stats.bytesIn += raw.length;
-    const side = this.seats[0]?.conn === conn ? 0 : this.seats[1]?.conn === conn ? 1 : -1;
-    if (side < 0) return;
+    const found: Side | -1 = this.seats[0]?.conn === conn ? 0 : this.seats[1]?.conn === conn ? 1 : -1;
+    if (found === -1) return;
+    const side: Side = found;
     let m: ClientMsg;
     try {
       m = JSON.parse(raw) as ClientMsg;

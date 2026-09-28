@@ -1511,9 +1511,67 @@
   color: var(--hud-dim);
 }
 
-.hud-card-info-strong {
-  margin-top: 3px;
+.hud-card-info-legendary {
+  margin-left: 6px;
+  color: #ffc23a;
+}
+
+/* Strong vs / Weak vs as class icons (owner feedback 2026-09-28). */
+.hud-card-info-vs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.hud-card-info-vs-label {
+  min-width: 58px;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hud-card-info-vs.is-good .hud-card-info-vs-label {
   color: #9ff0b0;
+}
+
+.hud-card-info-vs.is-bad .hud-card-info-vs-label {
+  color: #ff9b91;
+}
+
+.hud-card-info-vs-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px 1px 1px;
+  border-radius: 99px;
+  background: rgba(10, 6, 24, 0.45);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* The class badge on a tray card: bottom-left, above the cost strip. */
+.hud-card-class {
+  position: absolute;
+  left: 3px;
+  bottom: 20px;
+  z-index: 2;
+  display: inline-flex;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
+}
+
+.hud-card.state-unaffordable .hud-card-class,
+.hud-card.state-armyFull .hud-card-class,
+.hud-card.state-legendaryInField .hud-card-class {
+  filter: grayscale(0.35) brightness(0.9);
+}
+
+.hud-scouted-class {
+  display: inline-flex;
+  margin-left: auto;
 }
 
 /* Foil frames (A5.1). */

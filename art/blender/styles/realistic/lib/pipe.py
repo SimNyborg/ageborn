@@ -112,11 +112,12 @@ def load_layers(tmp, clip, i):
     O = M[..., 3]
     m = np.clip(M[..., 0], 0, 1)                   # Raw view: linear fraction
     t = np.clip(O * m, 0, 1)
-    ab = np.clip((A - t) / np.maximum(1 - t, 1e-4), 0, 1)
-    ab = np.where(t > 0.999, 0.0, ab)
+    t = np.minimum(t, A)
+    ab = np.clip(A - t, 0, 1)                       # non-team coverage (base over team)
+    ta = np.clip(t / np.maximum(1 - ab, 1e-4), 0, 1)  # team alpha so that base-over-team = A
     rgb = B[..., :3]
     lum = rgb @ np.array([0.2126, 0.7152, 0.0722])
-    return dict(rgb=rgb, lum=lum, t=t, ab=ab, obj=np.maximum(O, 0))
+    return dict(rgb=rgb, lum=lum, t=ta, ab=ab, obj=np.maximum(O, 0))
 
 
 def build_layers(L, lref):

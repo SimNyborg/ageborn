@@ -96,7 +96,7 @@ def _ribbon(rig, spec, pose_a, pose_b, kind, samples=12):
         else:
             w = 0.25 + 0.75 * u ** 0.6
         a = b + (a - b) * w
-        push = Vector((0.0, spec.get("behind", 2.0), 0.0))
+        push = Vector((0.0, spec.get("behind", 2.0) - (0.6 if kind == "core" else 0.0), 0.0))
         pairs.append((a + push, b + push))
     me = ribbon_mesh(pairs, f"{rig.name}.trail.{kind}")
     me.materials.append(M.trail(kind))
@@ -104,6 +104,7 @@ def _ribbon(rig, spec, pose_a, pose_b, kind, samples=12):
     for flag in ("visible_diffuse", "visible_glossy", "visible_shadow",
                  "visible_transmission", "visible_volume_scatter"):
         setattr(obj, flag, False)
+    obj.visible_camera = False
     bpy.context.scene.collection.objects.link(obj)
     return obj
 

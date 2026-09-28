@@ -41,7 +41,7 @@ const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
 const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
 const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock']);
-const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon']);
+const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon', 'welcome']);
 
 // ---------------------------------------------------------------------------------------------
 // Parts

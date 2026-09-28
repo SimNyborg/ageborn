@@ -7,6 +7,7 @@ import { Container, Graphics, Sprite, Texture, type Text } from 'pixi.js';
 import type { AgeId, ArtProvider, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { clamp01, easeInOutCubic, easeOutBack, easeOutCubic, easeOutElastic, hump, lerp, span } from './ease';
+import { classBadge } from './classBadge';
 import { drawBolt, glowSprite, label, type Particles } from './fx';
 import { AGE_COLORS, FOIL_COLORS, RARITY_COLORS, ROOM, shade } from './palette';
 import type { RevealCard } from './summaryModel';
@@ -220,6 +221,18 @@ export class CardView {
     this.stamp.rotation = -0.22;
     this.stamp.visible = false;
     this.front.addChild(frame, this.portrait, winLine, ribbon, nameText, gem, this.copiesBadge, this.stamp);
+    // Class badge on the portrait's bottom-left corner (owner feedback 2026-09-28).
+    const info = this.card.kind === 'card' ? this.d.catalog.card(this.card.card) : null;
+    if (info?.cls) {
+      const badge = classBadge(info.cls, 15);
+      badge.position.set(-50, 30);
+      this.front.addChild(badge);
+      if (info.legendary) {
+        const crown = classBadge('legendary', 11);
+        crown.position.set(-30, 34);
+        this.front.addChild(crown);
+      }
+    }
     this.drawFallbackPortrait(age);
   }
 

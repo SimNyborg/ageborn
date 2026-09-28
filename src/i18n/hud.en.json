@@ -89,7 +89,8 @@
       "label": "About {name}",
       "hp": "Health {n}",
       "cost": "Cost {n}",
-      "strongVs": "Good against {list}"
+      "strongVs": "Strong vs",
+      "weakVs": "Weak vs"
     },
     "lockedSlot": "A new card unlocks soon",
     "armyLabel": "Your units on the field",

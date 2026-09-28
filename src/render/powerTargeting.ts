@@ -55,6 +55,8 @@ export type GhostStyle = 'barrage' | 'sweep' | 'cloud' | 'plain';
 
 export function ghostStyle(def: PowerDef | undefined): GhostStyle {
   const k = def?.effect.kind;
+  // A stampede reads as a charge sweeping across its run.
+  if (k === 'stampede') return 'sweep';
   return k === 'barrage' || k === 'sweep' || k === 'cloud' ? k : 'plain';
 }
 

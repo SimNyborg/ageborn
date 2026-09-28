@@ -61,7 +61,7 @@ def _n(v):
     return tuple(c / l for c in v)
 
 
-KEY = _n((0.0, -0.50, 0.87))          # from above and in front (no x: mirror-safe)
+KEY = _n((0.0, -0.40, 0.92))          # from above and in front (no x: mirror-safe)
 RIM = _n((0.0, 0.80, 0.60))           # cool back light, from behind and above
 SHADOW_TINT = "#2B3350"               # deep shadows turn toward slate blue
 LIGHT_TINT = "#FFE9C4"                 # warm key light
@@ -79,7 +79,7 @@ FINISH = {
     "stone":   dict(shadow=0.40, cool=0.25, light=0.25, grime=0.35, noise=0.45, rim=0.35),
     "metal":   dict(shadow=0.45, cool=0.30, light=0.10, grime=0.20, noise=0.20, rim=0.55,
                     metal=True),
-    "team":    dict(shadow=0.52, cool=0.0, light=0.0, grime=0.14, noise=0.30, rim=0.0),
+    "team":    dict(shadow=0.50, cool=0.0, light=0.0, grime=0.12, noise=0.30, rim=0.0, var=0.18),
 }
 
 # -- node helpers (reused from the shared materials module) -------------------------------------
@@ -126,12 +126,12 @@ def _shade(nodes, links, fill_hex, finish, seed):
     geo = nodes.new("ShaderNodeNewGeometry")
     N = geo.outputs["Normal"]
     ndl = _dot(nodes, links, N, KEY)
-    brush = _noise(nodes, links, 0.22, 3.0, seed=seed)                 # brush-edge jitter
-    blot = _noise(nodes, links, 0.07, 2.0, seed=seed + 3.1)            # grime blotches
+    brush = _noise(nodes, links, 0.16, 3.0, seed=seed)                 # brush-edge jitter
+    blot = _noise(nodes, links, 0.11, 3.0, seed=seed + 3.1)            # grime blotches
     jit = _math(nodes, links, "MULTIPLY", _math(nodes, links, "SUBTRACT", brush, 0.5), F["noise"])
     ndl_p = _math(nodes, links, "ADD", ndl, jit)
-    lit = _smoothstep(nodes, links, ndl_p, 0.22, 0.30)
-    hi = _smoothstep(nodes, links, ndl_p, 0.70, 0.80)
+    lit = _smoothstep(nodes, links, ndl_p, 0.54, 0.60)
+    hi = _smoothstep(nodes, links, ndl_p, 0.84, 0.90)
     # three tones: deep cool shadow, fill, warm light
     from ageborn_art.colors import hsv
     import colorsys
@@ -146,6 +146,10 @@ def _shade(nodes, links, fill_hex, finish, seed):
         light = rgb_to_hex(colorsys.hsv_to_rgb(hh, ss, min(1.0, vv * 1.10)))
     col = _mix_rgb(nodes, links, lit, to_linear(dark), to_linear(fill_hex))
     col = _mix_rgb(nodes, links, hi, col, to_linear(light))
+    stroke = _noise(nodes, links, 0.45, 1.0, seed=seed + 11.0)
+    var = _math(nodes, links, "ADD", 1.0, _math(nodes, links, "MULTIPLY",
+                _math(nodes, links, "SUBTRACT", stroke, 0.5), F.get("var", 0.30)))
+    col = _mul_col(nodes, links, col, var)
     if F.get("metal"):
         # fake environment: reflect the view about the normal; sky above a hard horizon,
         # dark ground below; tinted by the metal fill
@@ -182,7 +186,7 @@ def _shade(nodes, links, fill_hex, finish, seed):
     ao.inputs["Distance"].default_value = 4.5
     occ = _math(nodes, links, "SUBTRACT", 1.0, ao.outputs["AO"])
     g_ao = _math(nodes, links, "MULTIPLY", occ, 0.55)
-    g_blot = _math(nodes, links, "MULTIPLY", _smoothstep(nodes, links, blot, 0.45, 0.70), F["grime"])
+    g_blot = _math(nodes, links, "MULTIPLY", _smoothstep(nodes, links, blot, 0.48, 0.62), F["grime"] * 1.5)
     pos = nodes.new("ShaderNodeSeparateXYZ")
     links.new(geo.outputs["Position"], pos.inputs[0])
     mud = _math(nodes, links, "MULTIPLY",
@@ -197,7 +201,7 @@ def _shade(nodes, links, fill_hex, finish, seed):
     links.new(N, vm.inputs[0])
     links.new(geo.outputs["Incoming"], vm.inputs[1])
     facing = _math(nodes, links, "ABSOLUTE", vm.outputs["Value"])
-    edge = _smoothstep(nodes, links, _math(nodes, links, "SUBTRACT", 1.0, facing), 0.55, 0.72)
+    edge = _smoothstep(nodes, links, _math(nodes, links, "SUBTRACT", 1.0, facing), 0.30, 0.55)
     rimd = _smoothstep(nodes, links, _dot(nodes, links, N, RIM), 0.05, 0.35)
     rim = _math(nodes, links, "MULTIPLY", edge, rimd)
     if F["rim"] > 0:

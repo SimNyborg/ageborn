@@ -16,12 +16,12 @@ CANVAS = (136, 108)       # lu
 FEET = (74, 9)            # lu from the left / bottom
 YAW = -24.0
 
-BODY = B.Biped(H=H, bulk=1.14)
+BODY = B.Biped(H=H, bulk=1.06)
 
 
 def build():
     k = BODY.k
-    skin = C.mat("skin", "#a98572", rough=0.55, noise=0.07, nscale=0.6, bump=0.12)
+    skin = C.mat("skin", "#9c7862", rough=0.5, noise=0.07, nscale=0.6, bump=0.12)
     hair = C.mat("hair", "#3b312b", rough=0.75, noise=0.25, nscale=1.4, bump=0.9)
     fur = C.mat("fur", "#76624f", rough=0.95, noise=0.32, nscale=1.1, bump=1.0, ramp2="#4f4236",
                 sheen=0.6)
@@ -41,37 +41,37 @@ def build():
 
     # --- team-dyed hide vest over the torso and a kilt (the big team read)
     vest = C.blobs("vest", [
-        (S(0.4, 0, 41.4), (5.9 * bw, 7.5 * bw, 6.0)),
-        (S(0.1, 0, 47.6), (6.9 * bw, 8.6 * bw, 6.8)),
-        (S(2.6, -3.4, 50.0), (3.7, 4.3, 3.0)),
-        (S(2.6, 3.4, 50.0), (3.7, 4.3, 3.0)),
-        (S(-2.4, 0, 49.0), (3.8, 7.2 * bw, 5.8)),
+        (S(0.3, 0, 41.2), (4.6 * bw, 6.3 * bw, 6.0)),
+        (S(-0.2, 0, 47.8), (5.3 * bw, 7.3 * bw, 6.8)),
+        (S(2.1, -3.2, 50.2), (3.2, 3.9, 2.9)),
+        (S(2.1, 3.2, 50.2), (3.2, 3.9, 2.9)),
+        (S(-2.0, 0, 49.0), (3.4, 6.8 * bw, 5.6)),
     ], hide)
     C.displace(vest, 0.35, 1.2)
     C.team(vest)
     rig.skin(vest, ["hips", "spine", "chest"], soft=2.0 * k)
     kilt = C.blobs("kilt", [
-        (S(0.2, 0, 36.8), (7.0 * bw, 8.7 * bw, 3.4)),
-        (S(0.4, 0, 32.4), (7.6 * bw, 9.3 * bw, 4.6)),
-        (S(0.5, 0, 28.6), (7.9 * bw, 9.6 * bw, 2.4)),
+        (S(-0.2, 0, 36.6), (5.4 * bw, 7.2 * bw, 3.2)),
+        (S(0.0, 0, 33.0), (6.0 * bw, 7.8 * bw, 4.0)),
+        (S(0.2, 0, 30.0), (6.3 * bw, 8.1 * bw, 2.0)),
     ], hide)
     C.displace(kilt, 0.6, 0.9)
     C.team(kilt)
     rig.skin(kilt, ["hips", "thigh_F", "thigh_B"], soft=3.0 * k,
              bias={"thigh_F": 1.2 * k, "thigh_B": 1.2 * k})
-    belt = C.blobs("belt", [(S(0.5, 0, 37.6), (7.3 * bw, 8.95 * bw, 1.2))], leather)
+    belt = C.blobs("belt", [(S(-0.1, 0, 37.6), (5.6 * bw, 7.45 * bw, 1.1))], leather)
     rig.skin(belt, ["hips", "spine"], soft=2.0 * k)
     # bone toggle on the belt
-    rig.rigid(C.sphere("toggle", 1.1 * k, bone, loc=S(6.5 * bw, -2.5, 37.8), scale=(0.6, 1, 1.4)),
+    rig.rigid(C.sphere("toggle", 1.1 * k, bone, loc=S(5.6 * bw, -2.5, 37.8), scale=(0.6, 1, 1.4)),
               "hips")
 
     # --- fur mantle over the shoulders and upper back
     mantle = C.blobs("mantle", [
-        (S(-1.2, 0, 54.0), (5.2, 10.8 * bw, 3.3)),
-        (S(-3.6, 0, 50.0), (3.6, 9.6 * bw, 5.4)),
-        (S(1.6, -6.4, 54.6), (3.4, 3.2, 2.6)),
-        (S(1.6, 6.4, 54.6), (3.4, 3.2, 2.6)),
-        (S(-4.4, 0, 45.6), (2.6, 7.4 * bw, 3.0)),
+        (S(-1.2, 0, 54.0), (4.4, 9.4 * bw, 3.0)),
+        (S(-3.0, 0, 50.0), (3.0, 8.2 * bw, 5.0)),
+        (S(1.2, -5.8, 54.4), (3.0, 3.0, 2.4)),
+        (S(1.2, 5.8, 54.4), (3.0, 3.0, 2.4)),
+        (S(-3.6, 0, 45.6), (2.2, 6.4 * bw, 2.8)),
     ], fur, res=0.5)
     C.displace(mantle, 1.2, 0.55)
     rig.skin(mantle, ["spine", "chest", "neck"], soft=2.0 * k)
@@ -109,10 +109,10 @@ def build():
         rig.skin(br, ["forearm_" + s, "hand_" + s], soft=1.5 * k)
         hy = (-1 if s == "F" else 1) * BODY.hw / k
         wrap = C.blobs("wrap_" + s, [
-            (S(-0.2, hy, 11.0), (2.9, 2.8, 5.8)),
-            (S(-0.8, hy, 15.6), (3.3, 3.1, 2.6)),
+            (S(-0.1, hy, 9.5), (2.8, 2.7, 5.6)),
+            (S(-0.8, hy, 14.2), (3.4, 3.2, 3.0)),
         ], fur, res=0.5)
-        C.displace(wrap, 0.7, 0.5)
+        C.displace(wrap, 0.45, 0.6)
         rig.skin(wrap, ["shin_" + s], soft=2 * k)
         boot = C.blobs("boot_" + s, [
             (S(0.2, hy, 3.8), (2.2, 2.1, 2.4)),

@@ -12,6 +12,7 @@ import { BlurFilter, ColorMatrixFilter, Container, FillGradient, Graphics, Sprit
 import type { AgeId, ArtProvider, I18n, RoleGroup, TeamPreset, UnitView } from '@/contracts';
 import type { CosmeticRng } from '@/core';
 import { clamp01, easeInCubic, easeInOutCubic, easeOutBack, easeOutCubic, easeOutElastic, hump, lerp, span } from './ease';
+import { CLASS_KEY, classBadge } from './classBadge';
 import { drawBolt, glowSprite, label, type Particles } from './fx';
 import { AGE_COLORS, RARITY_COLORS, ROOM, shade } from './palette';
 import { MINI_BEATS, type MiniWalkoutStep, type WalkoutBeats, type WalkoutStep } from './plan';
@@ -342,6 +343,16 @@ export class Walkout {
     const glyph = ageGlyph(info.age, this.mini ? 46 : 62);
     glyph.position.set(-name.width / 2 - (this.mini ? 36 : 48), 0);
     this.bannerName.addChild(glyph, name);
+    // The class badge and label under the name (owner feedback 2026-09-28).
+    if (info.cls) {
+      const r = this.mini ? 15 : 19;
+      const cls = label(d.i18n.t(CLASS_KEY[info.cls]), this.mini ? 18 : 22, 0xffffff, { outline: 5, letterSpacing: 2 });
+      const badge = classBadge(info.cls, r);
+      const y = this.mini ? 38 : 48;
+      badge.position.set(-cls.width / 2 - r - 4, y);
+      cls.position.set(r / 2 - 2, y);
+      this.bannerName.addChild(badge, cls);
+    }
     this.bannerName.position.set(640, this.mini ? 590 : 612);
     this.bannerName.alpha = 0;
 

@@ -49,7 +49,7 @@ export function ClassGlyph(p: { id: ClassGlyphId; size?: number; color?: string 
           d={g.d}
           fill={g.fill === 'glyph' ? c : g.fill === 'ink' ? OUTLINE : 'none'}
           stroke={g.stroke ? (g.strokeGlyph ? c : OUTLINE) : undefined}
-          stroke-width={g.stroke}
+          stroke-width={g.stroke ? g.stroke / 10 : undefined}
           stroke-linecap="round"
           stroke-linejoin="round"
           transform={g.transform}

@@ -67,6 +67,13 @@ function overHudBar(clientX: number, clientY: number, from: Element | null): boo
 const HINT_STORAGE = 'ageborn.hud.powerDragHint';
 /** How long the hint stays up (the hand loops three times within it). */
 export const POWER_HINT_MS = 7500;
+/** The hint follows the ready burst by this long. */
+const POWER_HINT_DELAY_MS = 700;
+
+/** True while the tutorial (A8 beats, adaptive hints) shows a bubble: the hint does not talk over it. */
+function tutorialBubbleShown(from: Element | null): boolean {
+  return (from?.ownerDocument ?? globalThis.document)?.querySelector('[data-testid="tutorial-bubble"]') != null;
+}
 
 function hintSeen(): boolean {
   try {
@@ -252,11 +259,20 @@ export function PowerButton(p: { c: HudCtx }) {
   // The first time the power is ready: the drag hint with the animated hand, once.
   const hintsOn = c.hints !== false && !c.readOnly;
   useEffect(() => {
-    if (!ready || !hintsOn || stRef.current.s !== 'idle' || hintSeen()) return undefined;
-    rememberHint();
-    setHint(true);
-    const id = setTimeout(() => setHint(false), POWER_HINT_MS);
-    return () => clearTimeout(id);
+    if (!ready || !hintsOn || hintSeen()) return undefined;
+    let hide: ReturnType<typeof setTimeout> | null = null;
+    // After the ready burst; a tutorial bubble on screen has the floor (it would sit on the same spot),
+    // so the hint waits for a later match instead.
+    const show = setTimeout(() => {
+      if (stRef.current.s !== 'idle' || tutorialBubbleShown(btn.current)) return;
+      rememberHint();
+      setHint(true);
+      hide = setTimeout(() => setHint(false), POWER_HINT_MS);
+    }, POWER_HINT_DELAY_MS);
+    return () => {
+      clearTimeout(show);
+      if (hide) clearTimeout(hide);
+    };
   }, [ready, hintsOn]);
 
   useEffect(

@@ -13,6 +13,8 @@
  *
  * Every hit on a base kicks that side's panel (flash and shake), so it is clear who is winning.
  */
+import { unitClass } from '@/core/cardClass';
+import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
 import type { AgeId, CardId, EmoteId } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
@@ -102,6 +104,11 @@ function ScoutedItem(p: { c: HudCtx; card: CardId }) {
     <li class="hud-scouted-item">
       <span class="hud-scouted-pic">{url ? <img src={url} alt="" /> : null}</span>
       <span>{def ? p.c.t(def.nameKey) : p.card}</span>
+      {def ? (
+        <span class="hud-scouted-class" data-class={def.kind === 'unit' ? unitClass(def) : def.kind}>
+          <ClassIcon id={def.kind === 'unit' ? unitClass(def) : def.kind} size={20} title={p.c.t(CLASS_NAME_KEY[def.kind === 'unit' ? unitClass(def) : def.kind])} />
+        </span>
+      ) : null}
     </li>
   );
 }

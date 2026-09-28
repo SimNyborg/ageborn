@@ -591,6 +591,28 @@
       "unknown": "???",
       "showHint": "Show hint",
       "plusTitle": "+ title"
+    },
+    "class": {
+      "infantry": "Infantry",
+      "ranged": "Ranged",
+      "heavy": "Heavy",
+      "antiArmor": "Anti-armor",
+      "siege": "Siege",
+      "support": "Support",
+      "air": "Air",
+      "legendary": "Legendary",
+      "turret": "Turret",
+      "power": "Age Power",
+      "legend": {
+        "title": "Who beats whom",
+        "beats": "{a} beats {b}",
+        "armor": "Armor shrugs off blows.",
+        "pierce": "Spears and rockets pierce armor.",
+        "swarm": "Cheap and many.",
+        "melee": "Melee cannot reach the sky.",
+        "shootDown": "Shots bring fliers down.",
+        "splash": "Outranges and smashes defenses."
+      }
     }
   }
 }

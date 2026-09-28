@@ -19,7 +19,7 @@ SLUG = "bonker"
 NAME = "Bonker"
 HEIGHT_LU = 68
 YAW_DEG = -20.0
-CANVAS_LU = (-62, 70, -8, 104)
+CANVAS_LU = (-80, 96, -10, 120)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 34)}
 
 SKIN = "#D6AE8E"
@@ -130,10 +130,10 @@ def build(rig):
     g = Geo().capsule((9.0, -5.0, 59.8), (10.4, 0.0, 58.4), 1.9, 1.6)                # angry brow
     g.capsule((10.4, 0.0, 58.4), (9.0, 5.0, 59.8), 1.6, 1.9)
     rig.part("head", g, HAIR, "hair", line=0.5)
-    for y in (-2.9, 2.9):
-        g = Geo().blob((9.6, y, 57.2), (1.1, 1.4, 1.05))
+    for y in (-3.0, 3.0):
+        g = Geo().blob((9.5, y, 57.3), (1.3, 1.7, 1.25))
         rig.part("head", g, EYE, "gloss", line=0.4)
-        g = Geo().blob((10.5, y - 0.2, 57.1), (0.6, 0.9, 0.9))
+        g = Geo().blob((10.6, y - 0.2, 57.2), (0.7, 1.0, 1.0))
         rig.part("head", g, PUPIL, "dark", line=0)
     g = Geo().blob((7.2, 0, 50.2), (5.4, 6.6, 4.4), p=2.3)                           # beard
     g.lathe([(3.2, 0), (0, -5.0)], (9.0, 0, 48.6), segs=10)
@@ -143,13 +143,13 @@ def build(rig):
                                   ((-4, 63), (-9.5, 68), 2.6)):
         g.capsule((x0, 0, z0), (x1, -0.5, z1), r, 0.8)
     rig.part("head", g, HAIR, "hair")
-    g = Geo().lathe([(7.45, 0), (7.6, 1.2), (7.4, 2.6)], (2.8, 0, 59.3), segs=20, squash=(1.0, 0.98))
+    g = Geo().lathe([(7.45, 0), (7.6, 1.2), (7.4, 2.6)], (2.4, 0, 61.2), segs=20, squash=(1.0, 0.98))
     rig.part("head", g, finish="cloth", team=True)
-    rig.chain(["band1", "band2"], "head", [(-4.2, 1.5, 60.5), (-9.5, 1.5, 58.0), (-14.5, 1.5, 55.5)],
+    rig.chain(["band1", "band2"], "head", [(-4.2, 1.5, 62.5), (-9.5, 1.5, 60.0), (-14.5, 1.5, 57.5)],
               max_deg=30, gain=1.3, hz=2.3, damping=0.3)
-    g = Geo().capsule((-4.2, 1.5, 60.5), (-9.5, 1.5, 58.0), 1.5, 1.4)
-    g.capsule((-9.5, 1.5, 58.0), (-14.5, 1.5, 55.5), 1.4, 0.9)
-    rig.skin(["band1", "band2"], g, finish="cloth", team=True, tip=(-14.5, 1.5, 55.5))
+    g = Geo().capsule((-4.2, 1.5, 62.5), (-9.5, 1.5, 60.0), 1.5, 1.4)
+    g.capsule((-9.5, 1.5, 60.0), (-14.5, 1.5, 57.5), 1.4, 0.9)
+    rig.skin(["band1", "band2"], g, finish="cloth", team=True, tip=(-14.5, 1.5, 57.5))
     # dreadlock, bending
     dpts = [(-5.5, 0.5, 60.0), (-10, 0.5, 55.5), (-13, 0.5, 49.5), (-14.5, 0.5, 43.5)]
     rig.chain(["dread1", "dread2", "dread3"], "head", dpts, max_deg=26, gain=1.1, hz=1.9, damping=0.3)
@@ -217,17 +217,18 @@ def build(rig):
     rig.part("club", g, LEATHER, "leather")
 
     # -- fx: impact spark (in front, at the ground where the maul lands) and the death pop ----
-    rig.joint("spark", "root", (33, -18, 8), hidden=True)
-    g = Geo().star((33, -18, 8), 11, 4.2, 2.0, points=6)
+    sx, sy, sz = FIST_R[0] + 2, FIST_R[1] - 9, FIST_Z + CLUB_LEN + 2
+    rig.joint("spark", "club", (sx, sy, sz), hidden=True)
+    g = Geo().star((sx, sy, sz), 12, 4.4, 2.0, points=6)
     rig.part("spark", g, glow=SPARK, fx=True)
     g = Geo()
-    for a in (15, 75, 135):
-        ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
-        g.capsule((33 + 11 * ca, -18.5, 8 + 11 * sa), (33 + 18 * ca, -18.5, 8 + 18 * sa), 1.3, 0.4)
+    for a in (0, 60, 120, 180, 240, 300):
+        ca, sa = math.cos(math.radians(a + 30)), math.sin(math.radians(a + 30))
+        g.capsule((sx + 13 * ca, sy - 0.5, sz + 13 * sa), (sx + 20 * ca, sy - 0.5, sz + 20 * sa), 1.3, 0.4)
     rig.part("spark", g, glow="#FFFFFF", fx=True)
-    rig.joint("dust", "root", (30, -12, 2), hidden=True)
+    rig.joint("dust", "root", (52, -12, 2), hidden=True)
     g = Geo()
-    for x, z, r in ((22, 3, 4.5), (28, 5, 5.5), (35, 4.5, 5.2), (41, 2.5, 4.0), (17, 2, 3.2)):
+    for x, z, r in ((44, 3, 4.5), (50, 5, 5.5), (57, 4.5, 5.2), (63, 2.5, 4.0), (39, 2, 3.2)):
         g.sphere((x, -12, z), r, cuts=4)
     rig.part("dust", g, PUFF, "cloth", fx=True)
     _pop(rig, (-22, 0, 10))
@@ -282,7 +283,7 @@ def legs(tr, sr, fr, tl, sl, fl):
 
 
 # confident stance: wide base, chest out, maul resting on the shoulder
-STANCE = merge(club_arm(-35, 70, 135), off_arm(-62, -20),
+STANCE = merge(club_arm(-68, 0, 48), off_arm(-62, -20),
                legs(16, -22, 6, -14, -8, 14),
                {"hips": {"z": -1.6, "r": -4}, "torso": {"r": -3}, "head": {"r": 4},
                 "club": {"rx": -10}})
@@ -313,7 +314,7 @@ def _walk(f):
     lift_r, lift_l = max(0.0, -s), max(0.0, s)
     bob = -1.4 * math.cos(2 * p) - 0.6
     lag = -math.cos(2 * (p - 2 * math.pi / n))
-    return merge(club_arm(-35, 70, 135), {"club": {"rx": -10}}, {
+    return merge(club_arm(-68, 0, 48), {"club": {"rx": -10}}, {
         "hips": {"z": bob - 1.4, "r": -6 + 2 * math.cos(2 * p)},
         "body": squash(-0.035 * max(0.0, math.cos(2 * p))),
         "torso": {"r": -5 + 1.5 * lag, "rz": 9 * s},
@@ -339,16 +340,16 @@ def _atk_key(arm, fore, club, off, off_f, lg, hips_z, hips_r, torso, head, body_
 # 5 smear, 6 contact (impact, held), 7 impact settle, 8 follow-through, 9-10 recoil, 11-13 settle
 A = {
     "stance": STANCE,
-    "dip": _atk_key(-20, 80, 140, -50, -10, (12, -30, 10, -18, -16, 16), -3.8, -2, 4, 6, -1.0, -0.08),
-    "gather": _atk_key(60, 120, 150, -10, 30, (6, -12, 4, -22, -10, 18), -0.6, 4, 12, 10, -3.0, 0.04),
-    "wind": _atk_key(118, 150, 172, 40, 90, (0, -6, 0, -24, -6, 14), 1.0, 8, 20, 14, -4.5, 0.09),
-    "wind2": _atk_key(122, 155, 176, 44, 94, (0, -6, 0, -25, -6, 14), 1.2, 9, 22, 15, -4.8, 0.10),
-    "smear": _atk_key(40, 45, 60, -40, 0, (26, -30, 6, -20, -10, 14), -2.0, -8, -14, -6, 3.0, 0.06),
-    "impact": _atk_key(-38, -30, -24, -100, -60, (42, -56, 14, -26, -18, 22), -8.5, -14, -34, -14, 8.0, -0.14),
-    "settle": _atk_key(-40, -34, -30, -104, -66, (42, -56, 14, -26, -18, 22), -8.0, -14, -32, -12, 8.0, -0.10),
-    "follow": _atk_key(-48, -44, -46, -95, -50, (40, -54, 12, -24, -16, 20), -7.0, -12, -38, -16, 8.5, -0.06),
-    "recoil": _atk_key(-20, 10, 40, -80, -30, (30, -40, 10, -20, -14, 16), -4.5, -8, -18, -4, 6.5, 0.03),
-    "back": _atk_key(-30, 60, 120, -66, -22, (20, -26, 6, -16, -10, 14), -2.2, -5, -6, 5, 3.0, 0.0),
+    "dip": _atk_key(-62, -24, 12, -50, -10, (12, -30, 10, -18, -16, 16), -3.8, -2, 4, 6, -1.0, -0.08),
+    "gather": _atk_key(30, 80, 115, -10, 30, (6, -12, 4, -22, -10, 18), -0.6, 4, 10, 10, -3.0, 0.04),
+    "wind": _atk_key(95, 118, 128, 40, 90, (0, -6, 0, -24, -6, 14), 1.0, 6, 14, 14, -4.5, 0.09),
+    "wind2": _atk_key(98, 122, 132, 44, 94, (0, -6, 0, -25, -6, 14), 1.2, 7, 15, 15, -4.8, 0.10),
+    "smear": _atk_key(40, 45, 50, -40, 0, (26, -30, 6, -20, -10, 14), -2.0, -8, -10, -6, 3.0, 0.06),
+    "impact": _atk_key(-20, -12, -6, -100, -60, (40, -54, 14, -26, -18, 22), -8.0, -10, -14, -8, 8.0, -0.14),
+    "settle": _atk_key(-22, -15, -9, -104, -66, (40, -54, 14, -26, -18, 22), -7.6, -10, -13, -7, 8.0, -0.10),
+    "follow": _atk_key(-28, -24, -22, -95, -50, (38, -52, 12, -24, -16, 20), -6.5, -9, -18, -10, 8.5, -0.06),
+    "recoil": _atk_key(-20, 10, 40, -80, -30, (30, -40, 10, -20, -14, 16), -4.5, -8, -12, -4, 6.5, 0.03),
+    "back": _atk_key(-55, 8, 62, -66, -22, (20, -26, 6, -16, -10, 14), -2.2, -5, -5, 5, 3.0, 0.0),
 }
 
 
@@ -436,7 +437,7 @@ def _die(f):
 def clips():
     atk = Clip("attack", 14, _attack_fn(), impact=6, smear=5,
                durations=[70, 70, 70, 140, 70, 35, 110, 70, 80, 70, 70, 70, 80, 90])
-    atk.trails = {5: {"from": 4, "start": 0.0}, 6: {"from": 5, "start": 0.55}}
+    atk.trails = {5: {"from": 4, "start": 0.35}, 6: {"from": 5, "start": 0.6}}
     die = Clip("die", 12, _die, durations=[50, 60, 70, 60, 60, 60, 110, 45, 60, 70, 80, 90],
                extra={"hideUnitAtMs": 525, "popAtMs": 525})
     return [

@@ -71,6 +71,22 @@ describe('Age Power drag ghost (owner decision "Age Power targeting")', () => {
   });
 });
 
+describe('Age Power ghost for a power that picks its own spot', () => {
+  it('Stampede shows the run from your front wherever the pointer is', () => {
+    const sim = new FakeSim({ events });
+    const view = new BattleView({ sim, art: new FakeArtProvider(), audio: new FakeAudio(), labelFactory: labels });
+    view.resize(1280, 720);
+    view.onEvents(sim.step([]));
+    view.render(0, 16);
+    expect(view.powerAimable()).toBe(false);
+    // Front bonker at x 540; the fake Stampede runs 500 lu, so the ghost covers 540-1,040.
+    view.previewPower(1234);
+    view.render(0, 16);
+    expect(view.powerGhost()).toEqual({ x: 790, width: 500, valid: true, targets: 1 });
+    expect(view.powerAimStart()).toBe(790);
+  });
+});
+
 describe('ZoneOverlay ghost', () => {
   it('pops in, keeps its style and reports targets only while valid', () => {
     const z = new ZoneOverlay();
