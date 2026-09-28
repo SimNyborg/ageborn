@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { devSpawn, simCtx, stepN, unitById } from '../debug';
-import { arena, ofKind, pLu, stun } from './helpers';
+import { arena, L, ofKind, pLu, stun } from './helpers';
 
 function hurt(sim: ReturnType<typeof arena>, id: number, hp: number): void {
   const u = unitById(sim, id);
@@ -59,7 +59,7 @@ describe('heals (A2.7)', () => {
 describe('periodic abilities (A5)', () => {
   it('Ursa Roar: every 15 s while it has a target, the nearest 8 allies within 200 lu get a 60 HP shield for 6 s', () => {
     const sim = arena();
-    const foe = devSpawn(sim, 1, 'tuskback', { p: 1200 - 200 });
+    const foe = devSpawn(sim, 1, 'tuskback', { p: L - 200 });
     stun(sim, foe.id, 2000);
     const fu = unitById(sim, foe.id);
     if (fu) fu.hp = fu.maxHp = 100000000;
@@ -78,7 +78,7 @@ describe('periodic abilities (A5)', () => {
 
   it('Radio Operator: a called shell lands after 1 s as 120 splash r50 (area rule); one call-in per side per 3 s', () => {
     const sim = arena();
-    const foes = [300, 320].map((p) => devSpawn(sim, 1, 'trench_raider', { p: 1200 - p }));
+    const foes = [300, 320].map((p) => devSpawn(sim, 1, 'trench_raider', { p: L - p }));
     for (const f of foes) stun(sim, f.id, 2000);
     const r1 = devSpawn(sim, 0, 'radio_operator', { p: 20 });
     const r2 = devSpawn(sim, 0, 'radio_operator', { p: 20 });
@@ -93,8 +93,8 @@ describe('periodic abilities (A5)', () => {
 
   it('EMP: strips shields from enemies within 120 lu and stuns mech enemies there for 1.5 s', () => {
     const sim = arena();
-    const knight = devSpawn(sim, 1, 'photon_knight', { p: 1200 - 150 });
-    const tank = devSpawn(sim, 1, 'tankette', { p: 1200 - 170 });
+    const knight = devSpawn(sim, 1, 'photon_knight', { p: L - 150 });
+    const tank = devSpawn(sim, 1, 'tankette', { p: L - 170 });
     stun(sim, knight.id, 5);
     devSpawn(sim, 0, 'emp_saboteur', { p: 60 });
     const ev = stepN(sim, 5);
@@ -108,8 +108,8 @@ describe('periodic abilities (A5)', () => {
 
   it('Time Stop: enemies within 200 lu are frozen 1.5 s, Legendaries 0.75 s', () => {
     const sim = arena();
-    const a = devSpawn(sim, 1, 'pulse_trooper', { p: 1200 - 300 });
-    const l = devSpawn(sim, 1, 'behemoth_tank', { p: 1200 - 330 });
+    const a = devSpawn(sim, 1, 'pulse_trooper', { p: L - 300 });
+    const l = devSpawn(sim, 1, 'behemoth_tank', { p: L - 330 });
     devSpawn(sim, 0, 'chrono_titan', { p: 150 });
     const ev = stepN(sim, 3);
     const frozen = ofKind(ev, 'statusApplied').filter((s) => s.kind === 'stun' && s.frozen);
@@ -120,8 +120,8 @@ describe('periodic abilities (A5)', () => {
 
   it('Sabertooth Pounce: when blocked, leaps to the nearest ranged unit ≤ 150 lu beyond the blocker; first bite ×2', () => {
     const sim = arena();
-    const blocker = devSpawn(sim, 1, 'tuskback', { p: 1200 - 200 });
-    const archer = devSpawn(sim, 1, 'longbowman', { p: 1200 - 300 });
+    const blocker = devSpawn(sim, 1, 'tuskback', { p: L - 200 });
+    const archer = devSpawn(sim, 1, 'longbowman', { p: L - 300 });
     stun(sim, blocker.id, 2000);
     stun(sim, archer.id, 2000);
     const s = devSpawn(sim, 0, 'sabertooth', { p: 160 });
@@ -137,7 +137,7 @@ describe('periodic abilities (A5)', () => {
 
   it('Pounce without a target: no leap and no cooldown', () => {
     const sim = arena();
-    const blocker = devSpawn(sim, 1, 'tuskback', { p: 1200 - 200 });
+    const blocker = devSpawn(sim, 1, 'tuskback', { p: L - 200 });
     stun(sim, blocker.id, 2000);
     const s = devSpawn(sim, 0, 'sabertooth', { p: 160 });
     stepN(sim, 30);
@@ -147,7 +147,7 @@ describe('periodic abilities (A5)', () => {
 
   it('Mammoth riders shoot as independent attacks; on death they jump off as 2 summoned Pebblers', () => {
     const sim = arena();
-    const foe = devSpawn(sim, 1, 'bonker', { p: 1200 - 300 });
+    const foe = devSpawn(sim, 1, 'bonker', { p: L - 300 });
     stun(sim, foe.id, 2000);
     const m = devSpawn(sim, 0, 'mammoth_matriarch', { p: 150 });
     const ev = stepN(sim, 30);
@@ -184,34 +184,34 @@ describe('periodic abilities (A5)', () => {
 
   it('Battering Ram: attacks units only while blocked, and hits the base for 160', () => {
     const sim = arena();
-    const b = devSpawn(sim, 1, 'bonker', { p: 1200 - 200 });
+    const b = devSpawn(sim, 1, 'bonker', { p: L - 200 });
     stun(sim, b.id, 2000);
     const ram = devSpawn(sim, 0, 'battering_ram', { p: 100 });
     const ev = stepN(sim, 80);
     const onUnit = ofKind(ev, 'hit').filter((h) => h.sourceId === ram.id);
     expect(onUnit[0]?.damage).toBe(1000);
     const sim2 = arena();
-    devSpawn(sim2, 0, 'battering_ram', { p: 1200 - 40 });
+    devSpawn(sim2, 0, 'battering_ram', { p: L - 40 });
     const base = ofKind(stepN(sim2, 60), 'baseDamaged');
     expect(base[0]?.damage).toBe(16000);
   });
 
   it('Balloon Admiral bombs ground enemies within ±40 lu and the base at the gate for 110', () => {
     const sim = arena();
-    const f = devSpawn(sim, 1, 'bonker', { p: 1200 - 230 });
+    const f = devSpawn(sim, 1, 'bonker', { p: L - 230 });
     stun(sim, f.id, 2000);
     const adm = devSpawn(sim, 0, 'balloon_admiral', { p: 200 });
     const ev = stepN(sim, 60);
     const bombs = ofKind(ev, 'hit').filter((h) => h.sourceId === adm.id);
     expect(bombs[0]?.damage).toBe(11000);
     const sim2 = arena();
-    devSpawn(sim2, 0, 'balloon_admiral', { p: 1150 });
+    devSpawn(sim2, 0, 'balloon_admiral', { p: L - 50 });
     expect(ofKind(stepN(sim2, 80), 'baseDamaged')[0]?.damage).toBe(11000);
   });
 
   it('Rifleman Suppressing Fire slows the target 15% for 1 s', () => {
     const sim = arena();
-    const f = devSpawn(sim, 1, 'bonker', { p: 1200 - 300 });
+    const f = devSpawn(sim, 1, 'bonker', { p: L - 300 });
     stun(sim, f.id, 2000);
     devSpawn(sim, 0, 'rifleman', { p: 100 });
     const st = ofKind(stepN(sim, 40), 'statusApplied').find((s) => s.kind === 'slow');

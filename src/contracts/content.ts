@@ -269,8 +269,17 @@ export interface EconomyRules {
   /**
    * Siege (A2.10). `moveSpeedBp` is the forced march (A17.3: unit movement ×1.2 while in Siege).
    * `unitDamageTakenBp` is the A16.4 lever L5 (all units take this much damage in Siege; 10,000 = off).
+   * `ropeDecayBpPerSec` is lever L6, "the rope": when set, only the side losing the contact point decays,
+   * at this rate, instead of the symmetric `decayBpPerSec` (absent or 0 = off).
    */
-  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerSec: number; moveSpeedBp: number; unitDamageTakenBp: number };
+  siege: {
+    turretDamageBp: number;
+    baseDamageBp: number;
+    decayBpPerSec: number;
+    moveSpeedBp: number;
+    unitDamageTakenBp: number;
+    ropeDecayBpPerSec?: number;
+  };
   /** Unit walking speed multiplier applied once at compile time (A17.2: 12,500 = ×1.25). */
   marchSpeedBp: number;
   lastStand: { thresholdBp: number; autoBp: number; radius: number; damagePerP: number; knockback: number; chargeMs: number };

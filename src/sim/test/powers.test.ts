@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { SimEvent } from '@/contracts';
 import { createSim } from '../createSim';
 import { devSetPower, devSpawn, simCtx, stepN, unitById } from '../debug';
-import { AGES, Stamper, fixture, matchConfig, ofKind, pLu, sideConfig, stun } from './helpers';
+import { AGES, fixture, L, matchConfig, ofKind, pLu, sideConfig, Stamper, stun } from './helpers';
 
 /** A no-clock match where side 0 is in the power's age with that power equipped. */
 function powerArena(power: string, o: { level?: number } = {}) {
@@ -20,7 +20,7 @@ function powerArena(power: string, o: { level?: number } = {}) {
 
 function enemies(sim: ReturnType<typeof createSim>, card: string, at: number[]): number[] {
   return at.map((p) => {
-    const u = devSpawn(sim, 1, card, { p: 1200 - p });
+    const u = devSpawn(sim, 1, card, { p: L - p });
     stun(sim, u.id, 5000);
     return u.id;
   });
@@ -41,15 +41,15 @@ describe('Age Powers: casting (A2.9)', () => {
     expect(tel).toMatchObject({ side: 0, power: 'meteor_shower', x: 500000, zone: 400000 });
     expect(sim.state.sides[0].powerPpm).toBe(1000);
     expect(sim.observe(1).telegraphs).toEqual([
-      { side: 0, power: 'meteor_shower', p: 700000, zone: 400000, impactTick: (tel?.tick ?? 0) + 20 },
+      { side: 0, power: 'meteor_shower', p: 1500000, zone: 400000, impactTick: (tel?.tick ?? 0) + 20 },
     ]);
     // the opponent sees the cast card in its Scouted list
     expect(sim.observe(1).foe.scouted).toContain('meteor_shower');
   });
 
-  it('aim is clamped to p ∈ [150, 1,050]; tap auto-aims at the densest enemies', () => {
+  it('aim is clamped to p ∈ [150, 1,850] (L − 150, A17.3); tap auto-aims at the densest enemies', () => {
     const { st } = powerArena('meteor_shower');
-    expect(ofKind(cast(st, 1190), 'powerTelegraph')[0]?.x).toBe(1050000);
+    expect(ofKind(cast(st, 1990), 'powerTelegraph')[0]?.x).toBe(1850000);
     const b = powerArena('meteor_shower');
     enemies(b.sim, 'bonker', [300, 820, 830, 840]);
     const x = ofKind(cast(b.st), 'powerTelegraph')[0]?.x ?? 0;
@@ -144,8 +144,8 @@ describe('Age Powers: effects (A5.7)', () => {
     ]);
     const p0 = pLu(sim, u.id);
     stepN(sim, 1);
-    // 70 lu/s × 1.25 = 87.5 lu/s = 4.375 lu per tick
-    expect(pLu(sim, u.id) - p0).toBeCloseTo(4.375, 5);
+    // 70 lu/s × 1.25 march = 4.375 lu per tick, × 1.25 speed buff = 5.468 lu (truncated in milli-lu)
+    expect(pLu(sim, u.id) - p0).toBeCloseTo(5.468, 5);
   });
 
   it('Smoke Screen: enemy ranged attacks into the cloud miss about 50%; own units inside deal +20%', () => {
@@ -153,8 +153,8 @@ describe('Age Powers: effects (A5.7)', () => {
     const mine = devSpawn(sim, 0, 'cuirassier', { p: 500 });
     const mu = unitById(sim, mine.id);
     if (mu) mu.hp = mu.maxHp = 100000000;
-    const shooters = [650, 660, 670, 680].map((p) => devSpawn(sim, 1, 'fusilier', { p: 1200 - p }).id);
-    const target = devSpawn(sim, 1, 'bonker', { p: 1200 - 510 });
+    const shooters = [650, 660, 670, 680].map((p) => devSpawn(sim, 1, 'fusilier', { p: L - p }).id);
+    const target = devSpawn(sim, 1, 'bonker', { p: L - 510 });
     stun(sim, target.id, 5000);
     const tu = unitById(sim, target.id);
     if (tu) tu.hp = tu.maxHp = 100000000;
@@ -171,7 +171,7 @@ describe('Age Powers: effects (A5.7)', () => {
     expect(mine2.some((h) => h.damage === 9120)).toBe(true);
   });
 
-  it('Paratroopers: 4 summoned Riflemen land 150 lu beyond the enemy front (clamped to 1,050; 600 when empty)', () => {
+  it('Paratroopers: 4 summoned Riflemen land 150 lu beyond the enemy front (clamped to 1,850; 1,000 when empty)', () => {
     const { sim, st } = powerArena('paratroopers');
     enemies(sim, 'trench_raider', [700, 500]);
     const ev = [...cast(st)];
@@ -181,7 +181,7 @@ describe('Age Powers: effects (A5.7)', () => {
     expect(drop.every((u) => u.summoned && u.x === 650000)).toBe(true);
     expect(sim.state.sides[0].pop).toBe(0);
     const e = powerArena('paratroopers');
-    expect(ofKind(cast(e.st), 'powerTelegraph')[0]?.x).toBe(600000);
+    expect(ofKind(cast(e.st), 'powerTelegraph')[0]?.x).toBe(1000000);
   });
 
   it('Orbital Lance: a beam sweeps 500 lu over 2 s, dealing 450 once to each enemy it touches, air included', () => {

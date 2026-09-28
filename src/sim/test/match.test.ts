@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Command, TimedCommand } from '@/contracts';
 import { createSim } from '../createSim';
 import { devSetBaseBp, devSetGold, devSpawn, simCtx, stepN } from '../debug';
-import { Stamper, arena, fixture, matchConfig, ofKind, sideConfig, stun } from './helpers';
+import { arena, fixture, L, matchConfig, ofKind, sideConfig, Stamper, stun } from './helpers';
 
 describe('formats and phases (A2.10)', () => {
   it('Short War: Overdrive 3:30, Siege 4:30 with base decay, Final Bell 6:00', () => {
@@ -69,10 +69,10 @@ describe('Last Stand (A2.11)', () => {
   it('arms at ≤ 25%; tap → 1 s charge → volley within 450 lu for 200 × P × loadout, 80 lu knockback; once', () => {
     const sim = arena();
     const st = new Stamper(sim);
-    const near = devSpawn(sim, 1, 'bonker', { p: 1200 - 300 });
-    const air = devSpawn(sim, 1, 'gyrocopter', { p: 1200 - 400 });
-    const far = devSpawn(sim, 1, 'bonker', { p: 1200 - 500 });
-    const legend = devSpawn(sim, 1, 'mammoth_matriarch', { p: 1200 - 200 });
+    const near = devSpawn(sim, 1, 'bonker', { p: L - 300 });
+    const air = devSpawn(sim, 1, 'gyrocopter', { p: L - 400 });
+    const far = devSpawn(sim, 1, 'bonker', { p: L - 500 });
+    const legend = devSpawn(sim, 1, 'mammoth_matriarch', { p: L - 200 });
     for (const u of [near, air, far, legend]) stun(sim, u.id, 1000);
     expect(ofKind(st.step({ t: 'lastStand', side: 0 }), 'commandRejected')[0]?.reason).toBe('lastStandNotArmed');
     devSetBaseBp(sim, 0, 2500);
@@ -189,10 +189,10 @@ describe('observation (A7.1)', () => {
     expect(Object.keys(o.foe)).not.toContain('queue');
     expect(o.foe.turrets[0]).toEqual({ card: 'angry_beehive', age: 'stone' });
     expect(o.foe.scouted).toEqual(['angry_beehive', 'bonker']);
-    // spawned at tick 30 at p = 20, walked 2 ticks × 3.5 lu: p = 27 lu from its own gate
+    // spawned at tick 30 at p = 20, walked 2 ticks × 4.375 lu: p = 28.75 lu from its own gate
     const o1 = sim.observe(1);
-    expect(o1.units.find((u) => u.side === 1)?.p).toBe(27000);
-    expect(o.units.find((u) => u.side === 1)?.p).toBe(1200000 - 27000);
+    expect(o1.units.find((u) => u.side === 1)?.p).toBe(28750);
+    expect(o.units.find((u) => u.side === 1)?.p).toBe(L * 1000 - 28750);
     expect(o1.me.queue).toEqual([]);
   });
 });

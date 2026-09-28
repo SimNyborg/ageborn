@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { devSetGold, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
-import { Stamper, arena, ofKind, stun } from './helpers';
+import { arena, L, ofKind, Stamper, stun } from './helpers';
 
 describe('gold and XP (A2.3, A2.4)', () => {
   it('passive income: 6 gold/s and 4 XP/s, reported once per second', () => {
@@ -68,7 +68,7 @@ describe('gold and XP (A2.3, A2.4)', () => {
 
   function killWith(o: { killer: string; victim: string; summoned?: boolean; victimLevel?: number; power?: boolean }) {
     const sim = arena();
-    const v = devSpawn(sim, 1, o.victim, { p: 1200 - 60, summoned: o.summoned ?? false });
+    const v = devSpawn(sim, 1, o.victim, { p: L - 60, summoned: o.summoned ?? false });
     stun(sim, v.id, 1000);
     const ctx = simCtx(sim);
     const vu = unitById(sim, v.id);
@@ -95,7 +95,7 @@ describe('gold and XP (A2.3, A2.4)', () => {
     expect(died?.bountyXp).toBe(75000);
     const sim = arena();
     devSetXp(sim, 0, 800);
-    const v = devSpawn(sim, 1, 'footman', { p: 1200 - 60 });
+    const v = devSpawn(sim, 1, 'footman', { p: L - 60 });
     stun(sim, v.id, 1000);
     const vu = unitById(sim, v.id);
     if (vu) vu.hp = 100;
@@ -106,7 +106,7 @@ describe('gold and XP (A2.3, A2.4)', () => {
 
   it('power and Last Stand kills pay 30% gold and no XP', () => {
     const sim = arena();
-    const v = devSpawn(sim, 1, 'tuskback', { p: 1200 - 400 });
+    const v = devSpawn(sim, 1, 'tuskback', { p: L - 400 });
     stun(sim, v.id, 1000);
     const vu = unitById(sim, v.id);
     if (vu) vu.hp = 100;

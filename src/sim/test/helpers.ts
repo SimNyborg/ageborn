@@ -19,7 +19,7 @@ import type {
   SimEvent,
   TimedCommand,
 } from '@/contracts';
-import { randInt, seedSfc32, type Sfc32State } from '@/core';
+import { LANE_MLU, MILLI, randInt, seedSfc32, type Sfc32State } from '@/core';
 import { raw as fixtureRaw } from '../../../tests/fixtures/content';
 import { createSim } from '../createSim';
 import { applyStatus } from '../damage';
@@ -27,6 +27,9 @@ import { simCtx } from '../debug';
 import { compileForSim } from '../shim';
 
 export const fixture: CompiledContent = compileForSim(fixtureRaw);
+
+/** Lane length in whole lu (A17.2: 2,000). Tests place side-1 units at `L - p`. */
+export const L = LANE_MLU / MILLI;
 
 export const AGES: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
 
@@ -170,8 +173,8 @@ export function scriptedPlayer(content: CompiledContent, side: Side, seed: numbe
     if (me.lastStand === 'armed') out.push({ t: 'lastStand', side });
     if (!strat.noEvolve && me.xpBp >= 10000 && me.ageIndex < 4) out.push({ t: 'evolve', side });
     if (me.powerPpm >= 1000000) {
-      const near = obs.units.filter((u) => u.side !== side && u.p > 150000 && u.p < 1050000).length;
-      if (strat.powerAsap || near >= 3) out.push({ t: 'power', side, ...(randInt(rng, 3) === 0 ? { p: 300 + randInt(rng, 600) } : {}) });
+      const near = obs.units.filter((u) => u.side !== side && u.p > 150000 && u.p < LANE_MLU - 150000).length;
+      if (strat.powerAsap || near >= 3) out.push({ t: 'power', side, ...(randInt(rng, 3) === 0 ? { p: 300 + randInt(rng, L - 600) } : {}) });
     }
     if (me.treasury < strat.treasury) {
       const cost = econ.treasuryCosts[me.treasury] ?? 99999;
@@ -283,7 +286,7 @@ export function formatOf(sim: Sim): FormatId {
 export function pLu(sim: Sim, id: number): number {
   const u = sim.state.units.find((x) => x.id === id);
   if (!u) return Number.NaN;
-  const p = u.side === 0 ? u.x : 1200000 - u.x;
+  const p = u.side === 0 ? u.x : LANE_MLU - u.x;
   return p / 1000;
 }
 

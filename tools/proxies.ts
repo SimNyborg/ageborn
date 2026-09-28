@@ -229,7 +229,7 @@ export class ScriptedPlayer implements BotController {
     const out: Command[] = [];
     let gold = Math.trunc(me.gold / 1000);
     const threat = obs.units.filter((u) => u.side !== side && u.p < THREAT_P).length >= 2;
-    const nearMid = obs.units.filter((u) => u.side !== side && u.p > 150_000 && u.p < 1_050_000).length;
+    const nearMid = obs.units.filter((u) => u.side !== side && u.p > this.content.economy.powerZoneClamp[0] * 1000 && u.p < this.content.economy.powerZoneClamp[1] * 1000).length;
 
     if (me.lastStand === 'armed') out.push({ t: 'lastStand', side });
 

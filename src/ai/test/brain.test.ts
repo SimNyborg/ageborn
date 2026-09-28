@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Observation } from '@/contracts';
-import { seedSfc32 } from '@/core';
+import { LANE_MLU, MILLI as MLU, seedSfc32 } from '@/core';
 import { cardBook } from '../book';
 import { Brain, monoFactorBp, type DecisionTrace } from '../brain';
 import { Ledger } from '../ledger';
@@ -10,6 +10,9 @@ import { SCORE } from '../scoring';
 import { tierParams, type TierParams } from '../tiers';
 import { buildView } from '../view';
 import { content, observation, unit } from './helpers';
+
+/** Lane length in lu (A17.2). */
+const L = LANE_MLU / MLU;
 
 const book = cardBook(content);
 const MILLI = 1000;
@@ -147,7 +150,7 @@ describe('power (A7.2)', () => {
     expect(t.action?.kind).toBe('power');
   });
 
-  it('aims within the tier aim error of the zone centre, clamped to 150-1,050', () => {
+  it('aims within the tier aim error of the zone centre, clamped to 150-1,850 (L − 150)', () => {
     for (const seed of ['a', 'b', 'c', 'd']) {
       const { brain } = brainFor({ tier: 0, tierOverride: { powerThreshold: 100 } });
       const t = decide(brain, observation({ powerPpm: 1000000, power, units: crowd(4) }), { rng: seed });
@@ -155,7 +158,7 @@ describe('power (A7.2)', () => {
       expect(a?.kind).toBe('power');
       if (a?.kind === 'power' && a.p !== null) {
         expect(a.p).toBeGreaterThanOrEqual(150);
-        expect(a.p).toBeLessThanOrEqual(1050);
+        expect(a.p).toBeLessThanOrEqual(L - 150);
         expect(Math.abs(a.p - 515)).toBeLessThanOrEqual(250 + 200);
       }
     }
@@ -217,7 +220,7 @@ describe('push gate, banking and stance (A7.2)', () => {
 
   it('counts enemy units within 500 lu of their gate in D, and never banks while the enemy is on its half', () => {
     const { brain } = brainFor({ tier: 5 });
-    const t = decide(brain, observation({ tick: 400, units: [unit(0, 'bonker', 1150), unit(0, 'tuskback', 650)] }));
+    const t = decide(brain, observation({ tick: 400, units: [unit(0, 'bonker', L - 50), unit(0, 'tuskback', L - 550)] }));
     expect(t.defence).toBe(50);
     const { brain: b2 } = brainFor({ tier: 5 });
     const defending = decide(b2, observation({ tick: 400, foe: foeTurret, units: [unit(0, 'bonker', 500)] }));
@@ -433,11 +436,11 @@ describe('answers to spam (A16.3)', () => {
   it('rule 1: saves for an unaffordable counter instead of answering with what it can afford', () => {
     const { brain } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
     // 90 gold: Bonker and Pebbler are affordable, the Spear Hunter (100) is the counter to Heavies.
-    const t = decide(brain, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(700) }));
+    const t = decide(brain, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(L - 500) }));
     expect(t.goal).toEqual({ kind: 'counter', amount: 100 * MILLI, card: 'spear_hunter' });
     expect(t.action?.kind === 'train' && t.action.card !== 'spear_hunter').toBe(false);
     // Once affordable, the counter is trained.
-    const t2 = decide(brain, observation({ tick: 5040, gold: 105 * MILLI, units: heavies(650) }));
+    const t2 = decide(brain, observation({ tick: 5040, gold: 105 * MILLI, units: heavies(L - 550) }));
     expect(t2.action).toMatchObject({ kind: 'train', card: 'spear_hunter' });
   });
 

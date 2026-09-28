@@ -124,7 +124,7 @@ const POWERS: PowerRow[] = [
   ['broadside', 'Broadside', 'gunpowder', 'alternate',
     { kind: 'barrage', count: 10, durationMs: 3000, zone: 450, damage: 120, radius: 45, hitsAir: false }],
   ['paratroopers', 'Paratroopers', 'modern', 'default',
-    { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 600 }],
+    { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 1000 }],
   ['carpet_bomber', 'Carpet Bomber', 'modern', 'alternate',
     { kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50, jitter: 0, hitsAir: false, pattern: 'line' }],
   ['orbital_lance', 'Orbital Lance', 'future', 'default',

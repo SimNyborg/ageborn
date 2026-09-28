@@ -318,7 +318,7 @@ export interface EconRules {
   stampedeFallbackP: number;
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
   /** Siege (A2.10); `moveSpeedBp` is the forced march (A17.3), `unitDamageTakenBp` lever L5 (A16.4). */
-  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; unitDamageTakenBp: number };
+  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; unitDamageTakenBp: number; ropeBpPerStep: number };
   lastStand: { thresholdBp: number; autoBp: number; radius: number; damagePerP: number; knockback: number; chargeTicks: number };
   spawnP: number;
   holdLine: number;
@@ -738,6 +738,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
       decayStepTicks,
       moveSpeedBp: posOr(e.siege.moveSpeedBp, BP),
       unitDamageTakenBp: posOr(e.siege.unitDamageTakenBp, BP),
+      // A16.4 L6 "the rope": 0 = off (symmetric decay).
+      ropeBpPerStep: Math.trunc((posOr(e.siege.ropeDecayBpPerSec, 0) * decayStepTicks) / TICKS_PER_SECOND),
     },
     lastStand: {
       thresholdBp: e.lastStand.thresholdBp,

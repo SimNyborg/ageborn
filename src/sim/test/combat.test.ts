@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { applyStatus, makeImpact, unitDamage } from '../damage';
 import { devPlaceTurret, devSpawn, simCtx, stepN, unitById } from '../debug';
 import { BASE_TARGET } from '../state';
-import { arena, ofKind, pLu, stun, unitOf } from './helpers';
+import { arena, L, ofKind, pLu, stun, unitOf } from './helpers';
 
 describe('attack cycle (A2.7)', () => {
   it('melee: 40% windup, impact on the impact tick, then the interval', () => {
     const sim = arena();
-    const foe = devSpawn(sim, 1, 'tuskback', { p: 1200 - 60 });
+    const foe = devSpawn(sim, 1, 'tuskback', { p: L - 60 });
     stun(sim, foe.id, 1000);
     const b = devSpawn(sim, 0, 'bonker', { p: 20 });
     const ev = stepN(sim, 80);
@@ -24,7 +24,7 @@ describe('attack cycle (A2.7)', () => {
 
   it('attack speed buff shortens the interval: round(base × 10,000 / (10,000 + bp))', () => {
     const sim = arena();
-    const foe = devSpawn(sim, 1, 'tuskback', { p: 1200 - 60 });
+    const foe = devSpawn(sim, 1, 'tuskback', { p: L - 60 });
     stun(sim, foe.id, 1000);
     const b = devSpawn(sim, 0, 'bonker', { p: 20 });
     devSpawn(sim, 0, 'drum_shaman', { p: 20 });
@@ -35,7 +35,7 @@ describe('attack cycle (A2.7)', () => {
 
   it('ranged: projectile travel = ceil(distance / speed / 0.05), homing', () => {
     const sim = arena();
-    const foe = devSpawn(sim, 1, 'tuskback', { p: 1200 - 300 });
+    const foe = devSpawn(sim, 1, 'tuskback', { p: L - 300 });
     stun(sim, foe.id, 1000);
     devSpawn(sim, 0, 'pebbler', { p: 100 });
     const ev = stepN(sim, 60);
@@ -51,7 +51,7 @@ describe('attack cycle (A2.7)', () => {
 
   it('targets the enemy base only when no unit candidate exists; bases give 12 XP per 1%', () => {
     const sim = arena();
-    const b = devSpawn(sim, 0, 'bonker', { p: 1200 - 20 });
+    const b = devSpawn(sim, 0, 'bonker', { p: L - 20 });
     const ev = stepN(sim, 30);
     expect(unitById(sim, b.id)?.attacks[0]?.targetId).toBe(BASE_TARGET);
     const dmg = ofKind(ev, 'baseDamaged');
@@ -62,7 +62,7 @@ describe('attack cycle (A2.7)', () => {
     expect(xp[0]?.amount).toBe(2400);
     // An enemy unit in range takes priority at once: the base is never a sticky target (the Bonker is
     // between swings at tick 30; its 1 s re-check is not due before tick 41).
-    const foe = devSpawn(sim, 1, 'bonker', { p: 1200 - 1200 + 20 + 8 });
+    const foe = devSpawn(sim, 1, 'bonker', { p: 20 + 8 });
     stun(sim, foe.id, 100);
     expect(unitById(sim, b.id)?.attacks[0]?.impactTick).toBe(0);
     stepN(sim, 1);
@@ -81,7 +81,7 @@ describe('attack cycle (A2.7)', () => {
     expect(pLu(sim, walker.id)).toBeGreaterThan(100);
 
     const sim2 = arena();
-    const t = devSpawn(sim2, 1, 'tuskback', { p: 1200 - 150 });
+    const t = devSpawn(sim2, 1, 'tuskback', { p: L - 150 });
     stun(sim2, t.id, 1000);
     const b = devSpawn(sim2, 0, 'bonker', { p: 100 });
     let started = -1;
@@ -124,8 +124,8 @@ describe('attack cycle (A2.7)', () => {
 
   it('two-phase impacts: units that kill each other on the same tick both die', () => {
     const sim = arena();
-    const a = devSpawn(sim, 0, 'bonker', { p: 588 });
-    const b = devSpawn(sim, 1, 'bonker', { p: 588 });
+    const a = devSpawn(sim, 0, 'bonker', { p: L / 2 - 12 });
+    const b = devSpawn(sim, 1, 'bonker', { p: L / 2 - 12 });
     const ctx = simCtx(sim);
     for (const u of ctx.s.units) u.hp = 1000;
     const ev = stepN(sim, 12);
@@ -138,8 +138,8 @@ describe('attack cycle (A2.7)', () => {
 describe('targeting (A2.7)', () => {
   it('priority armored: the Spear Hunter picks the Tuskback over a nearer Bonker', () => {
     const sim = arena();
-    const near = devSpawn(sim, 1, 'bonker', { p: 1200 - 150 });
-    const heavy = devSpawn(sim, 1, 'tuskback', { p: 1200 - 190 });
+    const near = devSpawn(sim, 1, 'bonker', { p: L - 150 });
+    const heavy = devSpawn(sim, 1, 'tuskback', { p: L - 190 });
     stun(sim, near.id, 100);
     stun(sim, heavy.id, 100);
     const s = devSpawn(sim, 0, 'spear_hunter', { p: 100 });
@@ -149,8 +149,8 @@ describe('targeting (A2.7)', () => {
 
   it('priority air on a secondary attack: the Behemoth MG shoots the Gyrocopter', () => {
     const sim = arena();
-    const ground = devSpawn(sim, 1, 'trench_raider', { p: 1200 - 200 });
-    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: 1200 - 230 });
+    const ground = devSpawn(sim, 1, 'trench_raider', { p: L - 200 });
+    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: L - 230 });
     stun(sim, ground.id, 100);
     stun(sim, gyro.id, 100);
     const t = devSpawn(sim, 0, 'behemoth_tank', { p: 100 });
@@ -162,29 +162,29 @@ describe('targeting (A2.7)', () => {
 
   it('only attack 0 stops movement: the Behemoth walks on while its MG shoots an air unit', () => {
     const sim = arena();
-    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: 1200 - 200 });
+    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: L - 200 });
     stun(sim, gyro.id, 1000);
     const t = devSpawn(sim, 0, 'behemoth_tank', { p: 100 });
     const ev = stepN(sim, 20);
     // the main gun hits ground only and has no target; the MG (G+A, range 150) fires at the Gyrocopter
     expect(unitById(sim, t.id)?.attacks[0]?.targetId).toBe(0);
     expect(ofKind(ev, 'attackStarted').filter((e) => e.id === t.id && e.attackIndex === 1).length).toBeGreaterThan(0);
-    // 35 lu/s = 1.75 lu per tick, 20 ticks
-    expect(pLu(sim, t.id)).toBe(135);
+    // 35 × 1.25 lu/s = 2.187 lu per tick (truncated in milli-lu), 20 ticks
+    expect(pLu(sim, t.id)).toBe(143.74);
   });
 
   it('stickiness: keeps its target unless another is ≥ 60 lu closer at the 1 s re-check', () => {
     const sim = arena();
-    const far = devSpawn(sim, 1, 'tuskback', { p: 1200 - 400 });
+    const far = devSpawn(sim, 1, 'tuskback', { p: L - 400 });
     stun(sim, far.id, 1000);
     const peb = devSpawn(sim, 0, 'pebbler', { p: 200 });
     stepN(sim, 1);
     expect(unitById(sim, peb.id)?.attacks[0]?.targetId).toBe(far.id);
-    const closer50 = devSpawn(sim, 1, 'tuskback', { p: 1200 - 350 });
+    const closer50 = devSpawn(sim, 1, 'tuskback', { p: L - 350 });
     stun(sim, closer50.id, 1000);
     stepN(sim, 25);
     expect(unitById(sim, peb.id)?.attacks[0]?.targetId).toBe(far.id);
-    const closer70 = devSpawn(sim, 1, 'tuskback', { p: 1200 - 330 });
+    const closer70 = devSpawn(sim, 1, 'tuskback', { p: L - 330 });
     stun(sim, closer70.id, 1000);
     stepN(sim, 25);
     expect(unitById(sim, peb.id)?.attacks[0]?.targetId).toBe(closer70.id);
@@ -192,7 +192,7 @@ describe('targeting (A2.7)', () => {
 
   it('self-defence: a ranged unit switches at once to an enemy within 30 lu', () => {
     const sim = arena();
-    const far = devSpawn(sim, 1, 'tuskback', { p: 1200 - 350 });
+    const far = devSpawn(sim, 1, 'tuskback', { p: L - 350 });
     stun(sim, far.id, 1000);
     const peb = devSpawn(sim, 0, 'pebbler', { p: 200 });
     stepN(sim, 2);
@@ -200,7 +200,7 @@ describe('targeting (A2.7)', () => {
     // wait for the windup to finish so the next decision is free
     stepN(sim, 20);
     const pp = pLu(sim, peb.id);
-    const intruder = devSpawn(sim, 1, 'bonker', { p: 1200 - pp - 12 - 12 - 20 });
+    const intruder = devSpawn(sim, 1, 'bonker', { p: L - pp - 12 - 12 - 20 });
     stun(sim, intruder.id, 1000);
     let switched = false;
     for (let i = 0; i < 16 && !switched; i += 1) {
@@ -212,7 +212,7 @@ describe('targeting (A2.7)', () => {
 
   it('melee never hits air; turrets never target bases', () => {
     const sim = arena();
-    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: 1200 - 60 });
+    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: L - 60 });
     stun(sim, gyro.id, 100);
     const b = devSpawn(sim, 0, 'bonker', { p: 50 });
     stepN(sim, 5);
@@ -226,7 +226,7 @@ describe('targeting (A2.7)', () => {
 describe('damage pipeline (A2.7)', () => {
   function hitOn(target: string, attacker: string, o: { level?: number; setup?: (sim: ReturnType<typeof arena>, t: number) => void } = {}) {
     const sim = arena();
-    const t = devSpawn(sim, 1, target, { p: 1200 - 150 });
+    const t = devSpawn(sim, 1, target, { p: L - 150 });
     stun(sim, t.id, 1000);
     o.setup?.(sim, t.id);
     const a = devSpawn(sim, 0, attacker, { p: 100, level: o.level ?? 1 });
@@ -253,7 +253,7 @@ describe('damage pipeline (A2.7)', () => {
   it('attacker damage buff and mark', () => {
     const buffed = (() => {
       const sim = arena();
-      const t = devSpawn(sim, 1, 'bonker', { p: 1200 - 150 });
+      const t = devSpawn(sim, 1, 'bonker', { p: L - 150 });
       stun(sim, t.id, 1000);
       const a = devSpawn(sim, 0, 'bonker', { p: 100 });
       const ctx = simCtx(sim);
@@ -269,7 +269,7 @@ describe('damage pipeline (A2.7)', () => {
 
   it('shields absorb first: temporary, then innate, then HP', () => {
     const sim = arena();
-    const t = devSpawn(sim, 1, 'photon_knight', { p: 1200 - 150 });
+    const t = devSpawn(sim, 1, 'photon_knight', { p: L - 150 });
     stun(sim, t.id, 1000);
     const ctx = simCtx(sim);
     const tu = ctx.s.units.find((x) => x.id === t.id);
@@ -288,7 +288,7 @@ describe('damage pipeline (A2.7)', () => {
 
   it('minimum 1 HP per hit, and the Siege turret halving', () => {
     const sim = arena();
-    const t = devSpawn(sim, 1, 'tuskback', { p: 1200 - 150 });
+    const t = devSpawn(sim, 1, 'tuskback', { p: L - 150 });
     const ctx = simCtx(sim);
     const tu = ctx.s.units.find((x) => x.id === t.id);
     if (!tu) throw new Error('no unit');
@@ -307,7 +307,7 @@ describe('damage pipeline (A2.7)', () => {
 
   it('first-hit bonus: first hit of an engagement ×2 and 30 lu knockback; Brace ignores both', () => {
     const sim = arena();
-    const t = devSpawn(sim, 1, 'bonker', { p: 1200 - 150 });
+    const t = devSpawn(sim, 1, 'bonker', { p: L - 150 });
     stun(sim, t.id, 1000);
     const tusk = devSpawn(sim, 0, 'tuskback', { p: 100 });
     const ev = stepN(sim, 60);
@@ -319,7 +319,7 @@ describe('damage pipeline (A2.7)', () => {
     expect(Math.abs((kb[0]?.toX ?? 0) - (kb[0]?.fromX ?? 0))).toBe(30000);
 
     const sim2 = arena();
-    const pike = devSpawn(sim2, 1, 'pikeman', { p: 1200 - 150 });
+    const pike = devSpawn(sim2, 1, 'pikeman', { p: L - 150 });
     stun(sim2, pike.id, 1000);
     const k2 = devSpawn(sim2, 0, 'tuskback', { p: 100 });
     const ev2 = stepN(sim2, 60);
@@ -330,7 +330,7 @@ describe('damage pipeline (A2.7)', () => {
 
   it('knockback: large units resist 50%, and it cancels a pending windup', () => {
     const sim = arena();
-    const t = devSpawn(sim, 1, 'tuskback', { p: 1200 - 150 });
+    const t = devSpawn(sim, 1, 'tuskback', { p: L - 150 });
     const k = devSpawn(sim, 0, 'tuskback', { p: 100 });
     const ev = stepN(sim, 30);
     const kbs = ofKind(ev, 'knockback');
@@ -343,7 +343,7 @@ describe('damage pipeline (A2.7)', () => {
 
   it('Corsair Boarding Hook pulls the target 20 lu toward the Corsair', () => {
     const sim = arena();
-    const t = devSpawn(sim, 1, 'fusilier', { p: 1200 - 150 });
+    const t = devSpawn(sim, 1, 'fusilier', { p: L - 150 });
     stun(sim, t.id, 1000);
     devSpawn(sim, 0, 'corsair', { p: 100 });
     const kb = ofKind(stepN(sim, 40), 'knockback')[0];

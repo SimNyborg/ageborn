@@ -210,7 +210,7 @@ const POWER_ROWS: { id: string; age: AgeId; slot: PowerDef['slot']; sfx: string;
   { id: 'smoke_screen', age: 'gunpowder', slot: 'default', sfx: 'pw_smoke',
     effect: { kind: 'cloud', width: 350, durationMs: 7000, enemyMissBp: 5000, allyDamageBp: 2000 } },
   { id: 'paratroopers', age: 'modern', slot: 'default', sfx: 'pw_paratroop',
-    effect: { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 600 } },
+    effect: { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 1000 } },
   { id: 'carpet_bomber', age: 'modern', slot: 'alternate', sfx: 'pw_bomber',
     effect: { kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50, jitter: 0, hitsAir: false, pattern: 'line' } },
   { id: 'orbital_lance', age: 'future', slot: 'default', sfx: 'pw_lance',

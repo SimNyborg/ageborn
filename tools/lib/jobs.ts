@@ -5,6 +5,7 @@
  */
 import type { BotController, CompiledContent, FormatId, MatchConfig, Side } from '../../src/contracts';
 import { content as gameContent } from '../../src/content';
+import { patchedGameContent } from './patch';
 import { createSim } from '../../src/sim';
 import { createProxy, type ProxyId } from '../proxies';
 import { HeadlessMatch } from './driver';
@@ -103,7 +104,9 @@ export function playJobSafely(job: MatchJob, bots: BotFactory, content: Compiled
 /** An executor bound to the loaded bots (one per process or worker). */
 export async function createExecutor(): Promise<{ bots: BotFactory; run(job: MatchJob): JobResult }> {
   const bots = await loadBots();
-  return { bots, run: (job) => playJobSafely(job, bots) };
+  // `--patch` (sim-cli) reaches workers through the environment (tools/lib/patch.ts).
+  const content = patchedGameContent();
+  return { bots, run: (job) => playJobSafely(job, bots, content) };
 }
 
 /** Results that played to the end or the tick limit (crashed matches left out). */

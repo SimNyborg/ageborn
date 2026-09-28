@@ -3,8 +3,8 @@
  *
  *   npx tsx tools/sim-cli.ts balance   [--mode smoke|full] [--matches N] [--mirror N] [--cards a,b]
  *                                      [--tier 5] [--level 7] [--seed 1] [--workers N]
- *                                      [--no-mirror] [--no-scenarios] [--no-gate]
- *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,full] [--tier 7] [--workers N] [--no-gate]
+ *                                      [--no-mirror] [--no-scenarios] [--no-gate] [--patch file.json]
+ *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,full] [--tier 7] [--workers N] [--no-gate] [--patch file.json]
  *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
@@ -28,6 +28,7 @@ import { economyDefaults, economySections, runEconomy } from './economy';
 import { exploitDefaults, exploitSections, runExploits } from './exploits';
 import { bool, int, list, parseArgs, str, type Args } from './lib/args';
 import { HeadlessMatch } from './lib/driver';
+import { PATCH_ENV, patchedGameContent } from './lib/patch';
 import { BALANCED_GENERAL, seatLabel, type SeatSpec } from './lib/jobs';
 import { MatchTally } from './lib/metrics';
 import { loadBots } from './lib/modules';
@@ -58,15 +59,16 @@ Commands:
                   --format full --seed 1 --level 7 --p0 bot:echo:5 --p1 proxy:turret_turtle --replay out.json
 
 Common flags: --out <dir> (default reports/), --no-gate (exit 0 even when a target fails),
---workers N (default: cores - 1). Unknown flags are refused.`;
+--workers N (default: cores - 1), --patch file.json (balance, exploits: a JSON content override deep-merged
+over the compiled content, for data-only experiments). Unknown flags are refused.`;
 
 /** Flags every command takes. */
 const COMMON_FLAGS = ['out', 'gate', 'workers'];
 
 /** The flags of each command; anything else is a typo and must not silently start a default run. */
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
-  balance: ['mode', 'matches', 'mirror', 'cards', 'tier', 'level', 'seed', 'bound', 'scenarios'],
-  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed'],
+  balance: ['mode', 'matches', 'mirror', 'cards', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
+  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'patch'],
   economy: ['days', 'seed'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
@@ -160,6 +162,9 @@ export async function main(argv: readonly string[]): Promise<number> {
   const a = parseArgs(rest);
   if (command !== undefined) checkFlags(command, a);
   const workers = int(a, 'workers', defaultWorkers());
+  // `--patch <file>`: a JSON content override for data-only experiments (B12, A16.4); workers inherit it.
+  const patch = str(a, 'patch', '');
+  if (patch !== '') process.env[PATCH_ENV] = path.resolve(patch);
   switch (command) {
     case 'balance': {
       const d = balanceDefaults(mode(a));
@@ -178,7 +183,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         scenarios: bool(a, 'scenarios', true),
         workers,
         onProgress: progressPrinter('balance'),
-      });
+      }, patchedGameContent());
       writeCardsCsv(report, str(a, 'out', REPORTS_DIR));
       return finish(report, balanceSections(report), a);
     }
@@ -196,7 +201,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         seed: int(a, 'seed', d.seed),
         workers,
         onProgress: progressPrinter('exploits'),
-      });
+      }, patchedGameContent());
       return finish(report, exploitSections(report), a);
     }
     case 'economy': {

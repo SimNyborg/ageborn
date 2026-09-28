@@ -9,7 +9,7 @@
  * never trade simply run out the clock.
  */
 import type { CardId, CompiledContent, Loadout, SideConfig } from '@/contracts';
-import { BP, MILLI, assert } from '@/core';
+import { BP, LANE_MLU, MILLI, assert } from '@/core';
 import { SimImpl } from './createSim';
 import { xOf } from './geometry';
 import { stepTick } from './step';
@@ -21,8 +21,8 @@ export interface DuelResult {
   ticks: number;
 }
 
-/** Where each group starts, own-side p in lu (300 lu apart centre to centre). */
-const START_P = 450;
+/** Where each group starts, own-side p in mlu: 150 lu before mid-lane, so 300 lu apart centre to centre. */
+const START_P = LANE_MLU / 2 - 150 * MILLI;
 
 function emptySide(label: string): SideConfig {
   const empty: Loadout = { units: [null, null, null, null, null], turrets: [null, null], power: '' };
@@ -56,7 +56,7 @@ export function runDuel(
   ];
   for (const side of [0, 1] as const) {
     const [card, n] = groups[side] as [CardId, number];
-    for (let i = 0; i < n; i += 1) start[side] += spawnUnit(ctx, side, card, xOf(START_P * MILLI, side), 1, true).maxHp;
+    for (let i = 0; i < n; i += 1) start[side] += spawnUnit(ctx, side, card, xOf(START_P, side), 1, true).maxHp;
   }
   const max = o.maxTicks ?? 1800;
   const left: [number, number] = [start[0], start[1]];

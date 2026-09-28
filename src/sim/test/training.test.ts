@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSim } from '../createSim';
 import { devSetGold, devSetXp, devSpawn, simCtx, stepN } from '../debug';
-import { Stamper, arena, matchConfig, ofKind } from './helpers';
+import { L, Stamper, arena, matchConfig, ofKind } from './helpers';
 
 describe('training (A2.7)', () => {
   it('pays on enqueue and spawns at p = 20 after the train time (Infantry 1.5 s = 30 ticks)', () => {
@@ -19,7 +19,7 @@ describe('training (A2.7)', () => {
     // side 1 spawns at its own p = 20
     st.step({ t: 'train', side: 1, slot: 0 });
     const s1 = ofKind(stepN(sim, 30), 'unitSpawned')[0];
-    expect(s1?.x).toBe(1180000);
+    expect(s1?.x).toBe(L * 1000 - 20000);
   });
 
   it('rejects empty slots, unaffordable cards and a full queue of 5', () => {

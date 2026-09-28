@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { devPlaceTurret, devSetGold, devSpawn, simCtx, stepN, unitById } from '../debug';
+import { applyStatus } from '../damage';
 import { rulesFor } from '../rules';
-import { Stamper, arena, fixture, ofKind, pLu, stun } from './helpers';
+import { arena, fixture, L, ofKind, pLu, Stamper, stun } from './helpers';
 
 /** Spawns stunned enemies (side 1) at own-side-0 positions (lu). Returns their ids. */
 function clump(sim: ReturnType<typeof arena>, card: string, at: number[]): number[] {
   return at.map((p) => {
-    const u = devSpawn(sim, 1, card, { p: 1200 - p });
+    const u = devSpawn(sim, 1, card, { p: L - p });
     stun(sim, u.id, 2000);
     return u.id;
   });
@@ -100,7 +101,7 @@ describe('area rule (A2.6): primary 100%, others 50%, at most 4 unless the card 
     const adm = devSpawn(sim, 0, 'balloon_admiral', { p: 600 });
     const u = unitById(sim, adm.id);
     if (u) u.hp = 1;
-    const foe = devSpawn(sim, 1, 'pebbler', { p: 1200 - 800 });
+    const foe = devSpawn(sim, 1, 'pebbler', { p: L - 800 });
     stun(sim, foe.id, 1);
     const ev = stepN(sim, 40);
     const crash = ofKind(ev, 'hit').filter((h) => h.sourceId === adm.id && h.sourceKind === 'ability');
@@ -110,9 +111,11 @@ describe('area rule (A2.6): primary 100%, others 50%, at most 4 unless the card 
 
   it('splash aimed at a point: the primary is the enemy nearest the impact, not the unit fired at (A2.6)', () => {
     const sim = arena();
-    // The Trebuchet fires at the walking Tuskback at 400; during the 18-tick flight it walks 49.5 lu toward
-    // the gate, still inside r50 of the impact point, while a stunned Tuskback sits 5 lu from it.
-    const walker = devSpawn(sim, 1, 'tuskback', { p: 1200 - 400 });
+    // The Trebuchet fires at the walking Tuskback at 400; slowed 25%, during the 18-tick flight it walks
+    // 46.4 lu toward the gate (55 × 1.25 × 0.75 lu/s), still inside r50 of the impact point, while a stunned
+    // Tuskback sits 5 lu from it.
+    const walker = devSpawn(sim, 1, 'tuskback', { p: L - 400 });
+    applyStatus(simCtx(sim), unitById(sim, walker.id) as NonNullable<ReturnType<typeof unitById>>, { kind: 'slow', magnitudeBp: 2500, ticks: 100, amount: 0, frozen: false }, 0);
     const [still] = clump(sim, 'tuskback', [405]);
     devPlaceTurret(sim, 0, 0, 'trebuchet');
     const ev = stepN(sim, 20);
@@ -236,7 +239,7 @@ describe('turrets (A2.8)', () => {
     const kb = ofKind(ev, 'knockback').find((k) => k.id === archer);
     // 410 → 290 would pass the frontmost ally at 300: it stops there
     expect(kb?.toX).toBe(300000);
-    expect(pLu(sim, front as number)).toBe(1200 - 300);
+    expect(pLu(sim, front as number)).toBe(L - 300);
   });
 
   it('Grumpy Toad without a backline target drags the second-frontmost small or medium ground enemy', () => {
@@ -336,7 +339,7 @@ describe('turret range and Siege (A2.8, A2.10)', () => {
 
   it('Siege: damage to bases ×2', () => {
     const sim = arena();
-    devSpawn(sim, 0, 'bonker', { p: 1200 - 20 });
+    devSpawn(sim, 0, 'bonker', { p: L - 20 });
     simCtx(sim).s.phase = 'siege';
     expect(ofKind(stepN(sim, 12), 'baseDamaged')[0]?.damage).toBe(4000);
   });

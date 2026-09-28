@@ -26,7 +26,7 @@ describe('battle table (content.battle)', () => {
     expect(r.econ.finalAgeXpCap).toBe(1200000);
     expect(r.econ.moderniseCreditBp).toBe(5000);
     expect(r.econ.stampedeFallbackP).toBe(200000);
-    expect(r.econ.midLane).toBe(600000);
+    expect(r.econ.midLane).toBe(1000000);
     expect(r.econ.siege).toMatchObject({ decayStepTicks: 20, decayBpPerStep: 50 });
     // Brace and air resist 100%, large 50%
     expect(r.units['pikeman']?.kbResistBp).toBe(10000);
@@ -78,7 +78,7 @@ describe('battle table (content.battle)', () => {
     const b = battleOf(c);
     expect(b.finalAgeXpCap).toBe(1200);
     expect(b.windupPct.melee).toBe(40);
-    expect(b.midLane).toBe(600);
+    expect(b.midLane).toBe(1000);
   });
 
   it('the match uses them: final-age XP cap, modernise credit, Stampede fallback', () => {

@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { Command, Observation, Side, Sim } from '@/contracts';
-import { randInt, seedSfc32 } from '@/core';
+import { LANE_MLU, randInt, seedSfc32 } from '@/core';
 import { simCtx } from '../debug';
 import { xpCapOf } from '../state';
 import { STRATEGIES, fixture, matchConfig, runMatch, scriptedPlayer, sideConfig } from './helpers';
@@ -85,7 +85,7 @@ function checkInvariants(sim: Sim, lastPhase: { i: number }): void {
   }
   for (const u of s.units) {
     if (u.hp > u.maxHp || u.hp <= 0) fail(`hp ${u.hp}/${u.maxHp} unit ${u.id}`);
-    if (u.x < 0 || u.x > 1200000) fail(`x ${u.x} unit ${u.id} ${u.card}`);
+    if (u.x < 0 || u.x > LANE_MLU) fail(`x ${u.x} unit ${u.id} ${u.card}`);
     if (!Number.isSafeInteger(u.x) || !Number.isSafeInteger(u.hp) || !Number.isSafeInteger(u.shield)) fail(`non-integer unit ${u.id}`);
   }
 }
