@@ -910,12 +910,42 @@
   .home-nav__label {
     font-size: 14px;
   }
+  /* Six entries stay on one row on a landscape phone. */
+  .home-nav {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .home-nav__btn {
+    min-height: 46px;
+    gap: 5px;
+    padding: 2px 8px 2px 5px;
+  }
+  .home-nav__lockText {
+    display: none;
+  }
+  .home-nav__pointer {
+    font-size: 12.5px;
+    padding: 5px 9px;
+  }
   .home-tray__drums {
     min-height: 56px;
     padding: 0 0 4px;
   }
   .home-tray__row {
     min-height: 44px;
+  }
+}
+@media (max-width: 900px) {
+  .home-nav__btn {
+    min-width: 0;
+  }
+  .home-nav__label {
+    font-size: 12px;
+    -webkit-text-stroke: 3px var(--ui-ink);
+  }
+  .home-nav__icon svg {
+    width: 24px;
+    height: 24px;
   }
 }
 @media (max-width: 760px) {
