@@ -179,41 +179,43 @@ Home is the War Path map. The map is the screen; everything else is a thin frame
 
 ```
 +--------------------------------------------------------------------------------------+
-| [avatar Name  Tr 540]     Stone Age · Level 4 of 10     [Amber 1,240] [Dust 80] [gear] |  top bar 44
+| [avatar Name]             Stone Age · Level 4 of 10     [Amber 1,240] [Dust 80] [gear] |  top bar 44 (40 short)
 |                                                                                      |
-|  (Goals)      ~~~~ map: winding road through the Stone region, parallax art ~~~~      |
-|  (Road)        ★★★ o---o---o---(L4 pulsing)- - - o - - - o - - - [BOSS]              |
+|               ~~~~ map: winding road through the Stone region, parallax art ~~~~      |
+|  ★★★ o---o---o---[banner-bearer](L4 on plinth)- - - o - - - o - - - [BOSS]           |
 |                                                                                      |
 |                                              +-----------------------------------+   |
-|                                              | [Pip portrait] Tuskback Ambush  AI|   |  level plate 56
-|                                              | Tier II · ★★ goal: base > 50% [Normal▾]|
-| [Army][Collection][ WAR PATH ][Capsules 2][Customize]   [Modes▾] [  PLAY LEVEL 4  ]   |  bottom row 56-64
+|                                              | [Pip portrait AI] Tuskback Ambush |   |  level plate 56
+|                                              |                  First clear: [◆ 60]  |
+| [Army][Capsules 2][ WAR PATH ][Progress][Customize]    [Modes] [  PLAY LEVEL 4  ]   |  bottom row 56-64
 +--------------------------------------------------------------------------------------+
 ```
 
 | Zone | Size (phone / desktop) | Contents |
 |---|---|---|
-| Top bar | 44 / 56 tall, transparent over the map with a 72% dark gradient scrim | Left: profile chip (avatar 32, name, trophies), opens Profile. Centre: region and level ("Stone Age · Level 4 of 10"), a label, not a button. Right: Amber and Dust chips (tap = info panel, A15.3 line), gear (44 / 48) opens Settings. Dust appears only once the player has any. |
-| Map | Full screen behind everything | The War Path (4.1). Opens centred so the current node sits at about 55% of the width, above the level plate. Drag to scroll sideways. |
-| Goals rail | 2 round buttons, 56 / 64, left edge, lower half (left thumb) | **Goals** (quests and the War Chest in one sheet) and **Trophy Road** (a sub-screen). Each shows a green badge only when something is claimable. Appear by unlock (2.6). |
-| Level plate | 272 × 56 / 360 × 72, right, above Play | General portrait with the AI badge, level name, tier, the ★★ goal, the first-clear reward icon, and the difficulty chip ("Normal ▾", 44 tall, opens a 5-option popover: Easy, Normal, Hard, Expert, Legendary, each with its AI tier). Tap the plate = Level preview sheet. |
-| Play | 176 × 64 / 240 × 80, bottom-right corner | Gold, the only primary, the one breathing element: "Play level 4". In other modes it reads "Play Ladder", "Play Daily" and so on. |
-| Modes | 88 × 64 / 112 × 80, left of Play | Slate tile with the current mode icon and "War Path ▾". Opens the Modes sheet (Quick Battle, Ladder, Daily, Skirmish; Conquest until A18.7.10 folds it in). The choice is remembered; the map stays. |
-| Bottom nav | 5 × 88 wide, 56 tall / 5 × 120, 72 tall, bottom-left | Army, Collection, **War Path** (centre, raised 6 px, gold rim when active), Capsules, Customize. Icon 28 above a 12 px label (14 px on desktop). Capsules carries the count of capsules ready to open ("2"), which A15.13 allows. |
+| Top bar | 44 / 56 tall (40 at height ≤ 360), transparent over the map with a 72% dark gradient scrim | Left: profile chip (avatar 32, name; trophies join it only once Ladder unlocks at L6), opens Profile. Centre: region and level ("Stone Age · Level 4 of 10"), a label, not a button. Right: Amber and Dust chips (tap = info panel, A15.3 line), gear (44 / 48) opens Settings. Each chip appears only once the player has earned that currency, with its first-seen caption (MR-28). |
+| Map | Full screen behind everything | The War Path (4.1). Opens centred so the current node sits at about 45% of the width, left of the level plate. Drag to scroll sideways. While the player pans, the level plate fades to 30% and slides 24 px right, so the road behind it shows; it returns 400 ms after the pan ends. |
+| Level plate | 272 × 56 / 360 × 72, right, above Play | Only three things: the General's portrait with the AI badge, the level name, and the first-clear reward icon ("First clear: 60 Amber"; after the first clear, the best stars earned). No difficulty, tier or goal text: those live in the Level preview. Tap the plate = Level preview panel. |
+| Play | 176 × 64 / 240 × 80, bottom-right corner | Gold, the only primary, the one breathing element: always "Play level 4", the next War Path level. It never changes to another mode. |
+| Modes | 88 × 64 / 112 × 80, left of Play | Slate tile with a crossed-swords icon and "Modes". Opens the Modes panel (Quick Battle, Skirmish, Ladder, Daily; Conquest until A18.7.10 folds it in); each mode starts from the Play on its own card. Nothing is remembered on Home, so Home always says one thing. Appears at L3. |
+| Bottom nav | 5 × 88 wide, 56 tall / 5 × 120, 72 tall, bottom-left (5 × 80 below 820 px wide) | Army, Capsules, **War Path** (centre, raised 6 px, gold rim when active), Progress, Customize. Icon 28 above a 12 px label (14 px on desktop). Ready badges by the priority in 2.2 (at most 2). Capsules' badge counts only capsules that can be opened now, which A15.13 allows. A tab that unlocks more than 2 levels ahead shows only its greyed icon and label, no padlock text; the next one to unlock shows "Lv 5". |
+
+**Width check** (compact, content box 750): nav 440 + 16 + Modes 88 + 8 + Play 176 = 728 ≤ 750; below 820 px wide (800 × 360 with 16 px margins: 768) nav 400 + 16 + 80 + 8 + 176 = 680. **Height check** at 844 × 390: top bar 44 + map band 261 (the plate's 56 sits at its bottom, over the map) + bottom row 64 + safe area 21 = 390. At height ≤ 360 Play and Modes shrink to 56 tall and the tabs to 52: at 844 × 340, 40 + 223 + 56 + 21 = 340, and the map band still shows the road above the plate (the road runs through the band's upper 60%, 4.1).
 
 **What moved off Home and where** (removes UA-02's crowding; the lead updates A9 #2 and A15.13's Home line, see 2.9):
 
 | Was on Home | Now |
 |---|---|
-| Capsule tray panel plus a Capsules nav button (the same content twice) | The **Capsules** tab (4.6). Home shows only its count badge. |
-| Quests panel with swap buttons, War Chest bar | The **Goals** sheet from the rail. |
-| Trophy Road bar behind the nav row | The **Trophy Road** rail button (a ring shows progress to the next node) and the Ladder card in Modes. |
+| Capsule tray panel plus a Capsules nav button (the same content twice) | The **Capsules** tab (4.6). Home shows only its ready badge. |
+| Quests panel with swap buttons, War Chest bar | **Progress** tab, Goals section. |
+| Trophy Road bar behind the nav row | **Progress** tab, Trophy Road section, and the Ladder card in Modes. |
 | Next-opponent chip on Battle | The level plate. |
 | Six equal nav buttons in two rows | Five labelled tabs in one row. |
-| Conquest nav button | Modes sheet until A18.7.10, then the boss nodes on the map. |
+| Conquest nav button | Modes panel until A18.7.10, then the boss nodes on the map. |
 | Clay meter, charges "12/28", Supply progress | The Capsules tab, next to what they fill. |
+| War Plan and Collection buttons | One **Army** tab. |
 
-**Counts on Home** (returning player): 15 tappable controls plus the map nodes, in five clear groups, one primary. The audit counted 18 equal-weight controls and no primary structure.
+**Counts on Home** (returning player): 12 tappable controls plus the map nodes, in four clear groups (top bar, map, bottom nav, Play group), one primary. The audit counted 18 equal-weight controls and no primary structure.
 
 **Desktop 1280 × 720:** the same composition with the desktop sizes above; the map shows about 7 nodes instead of 5; hover on a node shows its plate as a tooltip.
 
