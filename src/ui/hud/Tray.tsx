@@ -253,7 +253,10 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
           aria-expanded={info}
           onClick={() => setInfo(!info)}
         >
-          i
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <circle cx="10" cy="5" r="2.2" fill="currentColor" />
+            <rect x="8" y="8.5" width="4" height="9" rx="1.6" fill="currentColor" />
+          </svg>
         </button>
       )}
       {p.floats

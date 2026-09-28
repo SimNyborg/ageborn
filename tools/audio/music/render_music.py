@@ -66,6 +66,19 @@ def pump_env(n: int, bpm: float, depth: float) -> np.ndarray:
     return 1 - depth * np.exp(-ph / 0.12) * np.clip(ph / 0.01, 0, 1)
 
 
+def duck_env(n: int, bpm: float, beats: tuple[float, ...], depth: float) -> np.ndarray:
+    """Gain that dips by `depth` at the given beats of every bar and recovers over ~a quarter beat
+    (a side-chain duck under another part's hits)."""
+    t = np.arange(n) / SR
+    beat = 60 / bpm
+    pos = (t / beat) % 4.0
+    g = np.ones(n)
+    for b in beats:
+        ph = (pos - b) % 4.0  # beats since the hit
+        g = np.minimum(g, 1 - depth * np.exp(-ph / 0.22) * np.clip(ph / 0.02, 0, 1))
+    return g
+
+
 def siege_heartbeat(seconds: float, bpm: float) -> np.ndarray:
     """Heartbeat bass for the Siege layer: a lub-dub sub thump every two beats plus a soft tick."""
     n = dsp.n_of(seconds)
@@ -107,7 +120,7 @@ def future_riser(seconds_per_pass: float, bpm: float, passes: int, bars: int) ->
     out = np.zeros((n, 2))
     rng = np.random.default_rng(11)
     for p in range(passes):
-        for target_bar in (4, 12, 16):
+        for target_bar in (4, 16, 20, 40):
             dur = bar_s
             start = p * seconds_per_pass + (target_bar - 1) * bar_s
             x = dsp.noise(dur, rng, "pink")
@@ -144,7 +157,7 @@ def render_arrangement(a: Arrangement, verbose: bool = True) -> tuple[np.ndarray
         x = render_track(tr, a.bpm, seconds=render_s)
         if a.loop:
             x = np.tile(fold(x, period), (3, 1))
-        rendered.append((part, process_part(x, part)))
+        rendered.append((part, process_part(x, part).astype(np.float32)))
 
     # Balance: every part at its `rel` loudness relative to the lead (measured over the middle copy).
     lo, hi = (period, 2 * period) if a.loop else (0, n)
@@ -162,6 +175,8 @@ def render_arrangement(a: Arrangement, verbose: bool = True) -> tuple[np.ndarray
         y = y * dsp.db(g)
         if part.pump > 0:
             y = y * pump_env(len(y), a.bpm, part.pump)[:, None]
+        if part.duck is not None:
+            y = y * duck_env(len(y), a.bpm, part.duck[0], part.duck[1])[:, None]
         levels[part.track.name] = round(l_part + g, 1)
         if os.environ.get("AUDIO_DEBUG"):
             bb = loud.band_balance(y[lo:hi], SR)
@@ -197,7 +212,7 @@ def render_arrangement(a: Arrangement, verbose: bool = True) -> tuple[np.ndarray
 def master(mix: np.ndarray, a: Arrangement, lo: int, hi: int) -> np.ndarray:
     y = dsp.hp(mix, 30, 2)
     y = dsp.peq(y, 240, -1.5, 0.8)  # clear the low-mid mud
-    y = dsp.peq(y, 3300, -1.0, 1.0)  # soften the harsh presence band
+    # No presence cut: the parts carry their own EQ, and the music must stay clear on small speakers.
     y = dsp.shelf(y, 9000, a.air_db, high=True)  # a little air
     # Pre-gain to a known level, then gentle glue compression.
     l0 = loud.integrated_lufs(y[lo:hi], SR)

@@ -1412,8 +1412,12 @@
   border-radius: 50%;
   background: #dfe6f5;
   color: var(--hud-ink);
-  font: italic 900 14px/20px Georgia, serif;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.hud .hud-card-i svg {
+  display: block;
+  margin: auto;
 }
 
 @media (hover: none), (pointer: coarse) {
