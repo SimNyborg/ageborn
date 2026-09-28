@@ -187,17 +187,56 @@ const chunks = (count: number, sprite = 'fx.p.chunk'): ParticleSpec => ({
   spin: [-400, 400],
 });
 
+/** A soft additive glow that swells and fades (fireball cores, impact blooms). */
+const bloom = (scale: number, life: number, tint = 0xffe6bc, a = 0.8, delay = 0): SpriteSpec => ({
+  sprite: 'fx.p.glow',
+  life,
+  delay,
+  blendAdd: true,
+  keys: [
+    { t: 0, sx: 0.3 * scale, sy: 0.3 * scale, a },
+    { t: 0.25, sx: scale, sy: scale, a: a * 0.9 },
+    { t: 1, sx: 1.25 * scale, sy: 1.25 * scale, a: 0 },
+  ],
+  tint,
+});
+
+/** A scorch mark left on the ground, flattened for the lane's perspective. */
+const scorch = (scale: number, life: number): SpriteSpec => ({
+  sprite: 'fx.p.scorch',
+  life,
+  keys: [
+    { t: 0, sx: 0.4 * scale, sy: 0.16 * scale, a: 0.75, y: 4 },
+    { t: 0.1, sx: scale, sy: 0.38 * scale, a: 0.7, y: 4 },
+    { t: 1, sx: 1.1 * scale, sy: 0.4 * scale, a: 0, y: 4 },
+  ],
+});
+
+/**
+ * Explosions (A12): a white-hot flash, a warm fireball that swells and cools, two shock rings (the
+ * second delayed), a scorch on the ground, a rising smoke column that lingers, sparks, embers and
+ * chunks. All tints stay pale (A11 colour rule for lane effects).
+ */
 function explosion(id: string, s: number): FxRecipe {
   return {
     id,
-    durationMs: 900 * Math.min(1.4, s),
-    sprites: [flash(2.6 * s, 0xfff1d2, 140), flash(1.4 * s, 0xffffff, 90), ring(3 * s, 320, 0xfff6e2)],
+    durationMs: 1100 * Math.min(1.4, s),
+    sprites: [
+      scorch(2.2 * s, 1000 * Math.min(1.4, s)),
+      bloom(2.4 * s, 420, 0xffe2b0, 0.85),
+      bloom(1.3 * s, 220, 0xffffff, 0.9),
+      flash(2.6 * s, 0xfff1d2, 140),
+      flash(1.4 * s, 0xffffff, 90),
+      ring(3 * s, 320, 0xfff6e2),
+      { ...ring(4.2 * s, 460, 0xf4ecd8, 0.3), delay: 60 },
+    ],
     particles: [
       smoke(Math.round(5 * s), s),
-      sparks(Math.round(4 * s), [120 * s, 260 * s], 'fx.p.spark'),
-      sparks(Math.max(1, Math.round(1.5 * s)), [120 * s, 220 * s], 'fx.p.sparkHot'),
-      { ...chunks(Math.round(3 * s)), speed: [100 * s, 220 * s] },
-      { sprite: 'fx.p.ember', count: Math.round(5 * s), life: [400, 800], speed: [40, 140 * s], angle: [-160, -20], gravity: 90, drag: 1, scale: [1.2, 0.6], alpha: [1, 0], spread: 4 * s },
+      { ...smoke(Math.round(4 * s), s * 1.2, [900, 1500]), speed: [10 * s, 40 * s], angle: [-110, -70], gravity: -45, tint: 0xa8a39c, delay: [80, 240] },
+      sparks(Math.round(5 * s), [120 * s, 280 * s], 'fx.p.spark'),
+      sparks(Math.max(1, Math.round(2 * s)), [120 * s, 240 * s], 'fx.p.sparkHot'),
+      { ...chunks(Math.round(4 * s)), speed: [100 * s, 240 * s] },
+      { sprite: 'fx.p.ember', count: Math.round(7 * s), life: [500, 1000], speed: [40, 150 * s], angle: [-160, -20], gravity: 90, drag: 1, scale: [1.2, 0.5], alpha: [1, 0], spread: 5 * s, blendAdd: true },
     ],
   };
 }
@@ -248,15 +287,15 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   },
 
   // Hit and death effects
-  { id: 'fx.spark_blunt', durationMs: 520, sprites: [flash(0.9, 0xfff6e2, 90)], particles: [dust(4, 0.8), { sprite: 'fx.p.star', count: 2, life: [220, 320], speed: [60, 110], angle: [-150, -30], scale: [0.6, 0.3], alpha: [1, 0], spin: [-300, 300] }] },
+  { id: 'fx.spark_blunt', durationMs: 520, sprites: [bloom(0.9, 160, 0xfff0d8, 0.55), flash(0.9, 0xfff6e2, 90), ring(1.1, 180, 0xfff6e2, 0.8)], particles: [dust(4, 0.8), { sprite: 'fx.p.star', count: 2, life: [220, 320], speed: [60, 110], angle: [-150, -30], scale: [0.6, 0.3], alpha: [1, 0], spin: [-300, 300] }] },
   {
     id: 'fx.spark_slash',
     durationMs: 260,
-    sprites: [{ sprite: 'fx.p.slash', life: 170, keys: [{ t: 0, sx: 0.7, sy: 0.7, a: 1, r: -20 }, { t: 1, sx: 1.25, sy: 1.25, a: 0, r: 25 }] }],
+    sprites: [bloom(0.7, 140, 0xffffff, 0.5), { sprite: 'fx.p.slash', life: 170, keys: [{ t: 0, sx: 0.7, sy: 0.7, a: 1, r: -20 }, { t: 1, sx: 1.25, sy: 1.25, a: 0, r: 25 }] }],
     particles: [sparks(3, [100, 180])],
   },
-  { id: 'fx.spark_pierce', durationMs: 260, sprites: [flash(0.6, 0xffffff, 70)], particles: [sparks(5, [140, 240], 'fx.p.spark', [-210, -150])] },
-  { id: 'fx.spark_bullet', durationMs: 320, sprites: [flash(0.5, 0xffffff, 60)], particles: [sparks(4, [150, 260], 'fx.p.spark', [-220, -140]), dust(2, 0.5)] },
+  { id: 'fx.spark_pierce', durationMs: 260, sprites: [bloom(0.6, 120, 0xfff6e2, 0.5), flash(0.6, 0xffffff, 70)], particles: [sparks(5, [140, 240], 'fx.p.spark', [-210, -150])] },
+  { id: 'fx.spark_bullet', durationMs: 320, sprites: [bloom(0.55, 110, 0xfff1d2, 0.55), flash(0.5, 0xffffff, 60)], particles: [sparks(4, [150, 260], 'fx.p.spark', [-220, -140]), dust(2, 0.5)] },
   {
     id: 'fx.scorch_laser',
     durationMs: 520,
@@ -271,7 +310,9 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     id: 'fx.spark_effective',
     durationMs: 360,
     sprites: [
+      bloom(1.3, 200, 0xfff0d8, 0.7),
       flash(1.3, 0xffffff, 110),
+      ring(1.8, 220, 0xffffff, 0.8),
       { sprite: 'fx.p.star', life: 220, keys: [{ t: 0, sx: 0.6, sy: 0.6, a: 1 }, { t: 1, sx: 2, sy: 2, a: 0, r: 60 }], tint: 0xfff6e2 },
     ],
     particles: [sparks(6, [160, 280]), sparks(2, [150, 240], 'fx.p.sparkHot')],
@@ -285,15 +326,18 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   {
     id: 'fx.muzzle',
     durationMs: 380,
-    sprites: [{ sprite: 'fx.p.flash', life: 50, keys: [{ t: 0, sx: 0.9, sy: 0.9, a: 1 }, { t: 1, sx: 1.1, sy: 1.1, a: 1 }] }],
-    particles: [{ sprite: 'fx.p.smoke', count: 2, life: [280, 420], speed: [30, 60], angle: [-20, 20], gravity: -30, drag: 2, scale: [0.3, 0.8], alpha: [0.6, 0], tint: 0xd8d4ce }],
+    sprites: [bloom(0.9, 110, 0xfff0d0, 0.7), { sprite: 'fx.p.flash', life: 50, keys: [{ t: 0, sx: 0.9, sy: 0.9, a: 1 }, { t: 1, sx: 1.1, sy: 1.1, a: 1 }] }],
+    particles: [
+      { sprite: 'fx.p.smoke', count: 3, life: [320, 560], speed: [30, 70], angle: [-25, 15], gravity: -30, drag: 2, scale: [0.3, 0.9], alpha: [0.6, 0], tint: 0xd8d4ce, spin: [-60, 60] },
+      { sprite: 'fx.p.spark', count: 2, life: [80, 140], speed: [120, 200], angle: [-15, 15], scale: [0.7, 0.3], alpha: [1, 0], align: true },
+    ],
   },
   { id: 'fx.trail', durationMs: 420, particles: [{ sprite: 'fx.p.smoke', count: 1, life: [320, 420], speed: [0, 10], gravity: -20, scale: [0.35, 0.8], alpha: [0.55, 0], tint: 0xdcd8d2 }] },
   { id: 'fx.splash_ring', durationMs: 320, sprites: [{ ...ring(1, 300, 0xfff6e2, 0.32), sizeWith: 'radius' }] },
   explosion('fx.explosion_s', 1),
   explosion('fx.explosion_m', 1.6),
   explosion('fx.explosion_l', 2.4),
-  { id: 'fx.dust_poof', durationMs: 620, particles: [dust(8, 1.1)] },
+  { id: 'fx.dust_poof', durationMs: 620, sprites: [ring(1.8, 260, 0xf4ecdc, 0.35)], particles: [dust(9, 1.15), { ...dust(4, 0.7), speed: [60, 130], angle: [-175, -135] }, { ...dust(4, 0.7), speed: [60, 130], angle: [-45, -5] }] },
   {
     id: 'fx.ko_stars',
     durationMs: 700,
@@ -454,10 +498,16 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     id: 'fx.evolve_pillar',
     durationMs: 1400,
     sprites: [
+      bloom(9, 1100, 0xfff4d8, 0.6),
       { sprite: 'fx.p.pillar', life: 1200, keys: [{ t: 0, sx: 0.2, sy: 0.1, a: 0 }, { t: 0.15, sx: 3.2, sy: 1.6, a: 0.95 }, { t: 0.7, sx: 2.6, sy: 1.8, a: 0.7 }, { t: 1, sx: 0.4, sy: 2, a: 0 }], tint: 0xfffbe8 },
+      { sprite: 'fx.p.pillar', life: 900, blendAdd: true, keys: [{ t: 0, sx: 0.1, sy: 0.1, a: 0 }, { t: 0.12, sx: 1.2, sy: 1.8, a: 1 }, { t: 1, sx: 0.2, sy: 2.1, a: 0 }], tint: 0xffffff },
       ring(9, 700, 0xffffff, 0.35),
+      { ...ring(12, 900, 0xfff4d8, 0.3), delay: 150 },
     ],
-    particles: [{ sprite: 'fx.p.confetti', count: 30, life: [900, 1300], speed: [120, 280], angle: [-120, -60], gravity: 260, drag: 1.2, spread: 10, scale: [1.2, 1], alpha: [1, 0], spin: [-720, 720], tint: 0xf4ecd0 }],
+    particles: [
+      { sprite: 'fx.p.confetti', count: 30, life: [900, 1300], speed: [120, 280], angle: [-120, -60], gravity: 260, drag: 1.2, spread: 10, scale: [1.2, 1], alpha: [1, 0], spin: [-720, 720], tint: 0xf4ecd0 },
+      { sprite: 'fx.p.xp', rate: 26, life: [600, 1000], box: [24, 4], speed: [60, 140], angle: [-100, -80], scale: [1.1, 0.3], alpha: [1, 0], spin: [-180, 180], tint: 0xfff8e4, blendAdd: true },
+    ],
   },
   {
     id: 'fx.last_stand_wave',
