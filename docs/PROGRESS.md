@@ -2,6 +2,15 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28: Phase 1 work packages (cloud session)
+
+- All 12 work packages built and each independently reviewed against DESIGN (run as three parallel tracks): content compiler (WP1), simulation with golden replays (WP2), AI generals (WP3), procedural visuals plus a working sprite-sheet tier (WP4), battle view, feel layer and HUD (WP5), audio (WP6), meta rules (WP7), save system (WP8), meta UI screens (WP9), capsule show (WP10), app scaffold, session, onboarding and replay (WP11), tools, integrity tests and e2e skeleton (WP12).
+- Whole tree green: typecheck, lint, 2,609 unit tests, build. The production build boots at `/ageborn/` with no console errors; `?dev=1` lists 11 dev pages.
+- Design work done alongside: engagement research and addendum `docs/design-engagement.md` (A15), depth and variety research and addendum `docs/design-depth.md` (A16), and a 3D sprite pipeline spike in `art/blender/` (report in `art/blender/SPIKE_REPORT.md`). A15 and A16 are merged into DESIGN.md after the owner's decisions.
+- 40 change requests in `docs/requests/`, mostly app wiring; they are applied in Phase 2a (battle) and Phase 2b (meta loop).
+
+**Next:** Phase 2a (`ageborn-phase2-battle`): wire the real sim, AI, visuals, audio and HUD into a playable battle.
+
 ## 2026-09-27: Phase 0 foundation (cloud session)
 
 - Scaffold: Vite 8 + TypeScript 6 + Preact + PixiJS 8 with exact pins, ESLint layer and determinism rules, Vitest, Playwright (Chromium), size gate. `npm run dev` shows a Pixi canvas with a Preact shell; `?dev=1` lists dev pages. The build uses base `/ageborn/`.
