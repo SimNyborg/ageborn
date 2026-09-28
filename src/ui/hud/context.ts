@@ -23,4 +23,9 @@ export interface HudCtx {
   readOnly: boolean;
   /** Keyboard hint badges; shown only after the player first uses a key (audit #22). */
   keys: boolean;
+  /**
+   * One-time HUD hints (the "drag onto the battlefield" power hint). Off in the onboarding matches,
+   * whose scripted beats own the on-screen text (A8). Default true.
+   */
+  hints?: boolean;
 }

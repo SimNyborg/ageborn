@@ -51,7 +51,7 @@ import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
 import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, textLabelFactory } from './mounts';
-import { ZoneOverlay, clampPowerP, powerZoneLu } from './powerTargeting';
+import { ZoneOverlay, clampPowerP, ghostStyle, inZone, powerZoneLu, type GhostTarget } from './powerTargeting';
 import { AutoPresetMonitor, PRESETS, particleCap, presetDpr, type GraphicsPreset } from './presets';
 import { SEAM_START_LU, cameraFronts, followFocus, frontLines, frontMidpoint, framingCenter, spectatorFocus, stepSeam } from './seam';
 import { teamColor } from './teamColors';
@@ -266,7 +266,7 @@ export class BattleView {
   private lastAlertAt = -Infinity;
   private legendaryBadges: { id: string; x: number; unitId: number; side: Side; card: CardId; ageMs: number }[] = [];
   /** Your power drag: the pointer (client px) and the previewed p, kept current while edge-scrolling. */
-  private powerDrag: { clientX: number; clientY: number; p: number | null } | null = null;
+  private powerDrag: { clientX: number; clientY: number; p: number | null; valid: boolean } | null = null;
 
   constructor(o: BattleViewOptions) {
     this.sim = o.sim;
@@ -490,9 +490,38 @@ export class BattleView {
   laneP(clientX: number, clientY: number): number | null {
     const p = this.lanePAt(clientX, clientY);
     // A drag near the band's edge scrolls the camera (A17.6); remember the pointer for that.
-    this.powerDrag = { clientX, clientY, p };
+    this.powerDrag = { clientX, clientY, p, valid: this.powerDrag?.valid ?? true };
     this.camera.hold('powerDrag', true);
     return p;
+  }
+
+  /**
+   * Starts tap-to-aim (owner decision "Age Power targeting"): holds the camera like a drag and returns
+   * where the ghost starts: over the enemy front, reaching into their group (else ahead of your front,
+   * else mid-band), clamped to the power band. Null when the power ignores the aim.
+   */
+  powerAimStart(): number | null {
+    const width = powerZoneLu(this.myPower());
+    if (width === null) return null;
+    const band = this.config.content.economy.powerZoneClamp;
+    let foe: number | null = null;
+    let mine: number | null = null;
+    for (const u of this.units.values()) {
+      if (u.dying) continue;
+      const p = xToP(u.x, this.mySide);
+      if (u.side === this.mySide) mine = mine === null ? p : Math.max(mine, p);
+      else foe = foe === null ? p : Math.min(foe, p);
+    }
+    const at = foe !== null ? foe + width * 0.35 : mine !== null ? mine + width * 0.5 : (band[0] + band[1]) / 2;
+    const p = clampPowerP(at, band);
+    this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true };
+    this.camera.hold('powerDrag', true);
+    return p;
+  }
+
+  /** The drag ghost now: centre x (lu), width, validity and how many enemy units it would hit. */
+  powerGhost(): { x: number; width: number; valid: boolean; targets: number } | null {
+    return this.zones.preview;
   }
 
   private lanePAt(clientX: number, clientY: number): number | null {
@@ -515,16 +544,42 @@ export class BattleView {
     return this.powerDrag?.p ?? null;
   }
 
-  /** Shows the power zone at own-side progress `p` (lu), or hides it with null. */
-  previewPower(p: number | null): void {
-    const width = powerZoneLu(this.myPower());
+  /**
+   * Shows the power's ghost at own-side progress `p` (lu), or hides it with null. `valid` false tints
+   * it as a cancel (the pointer is over the HUD, so a drop there puts the power back).
+   */
+  previewPower(p: number | null, valid = true): void {
+    const def = this.myPower();
+    const width = powerZoneLu(def);
+    if (this.powerDrag) this.powerDrag.valid = valid;
     if (p === null || width === null) {
       this.zones.hidePreview();
       if (this.powerDrag) this.powerDrag.p = null;
       return;
     }
     if (this.powerDrag) this.powerDrag.p = p;
-    this.zones.showPreview(pToX(p, this.mySide), width, teamColor(this.settings.teamPreset, this.mySide));
+    this.zones.showPreview(pToX(p, this.mySide), width, teamColor(this.settings.teamPreset, this.mySide), {
+      valid,
+      style: ghostStyle(def),
+      dir: facingOf(this.mySide),
+    });
+  }
+
+  /** The enemy units the ghost would hit, refreshed every frame while it shows (they keep walking). */
+  private updateGhostTargets(): void {
+    const g = this.zones.preview;
+    if (!g || !g.valid) {
+      if (g) this.zones.setTargets([]);
+      return;
+    }
+    const e = this.myPower()?.effect as { hitsAir?: boolean } | undefined;
+    const air = e?.hitsAir !== false;
+    const out: GhostTarget[] = [];
+    for (const u of this.units.values()) {
+      if (u.side === this.mySide || u.dying || (u.air && !air)) continue;
+      if (inZone(u.x, u.sizeLu, g.x, g.width)) out.push({ x: u.x, y: u.y, size: u.sizeLu });
+    }
+    this.zones.setTargets(out);
   }
 
   /** Call after every `sim.step` with that tick's events. */
@@ -589,7 +644,8 @@ export class BattleView {
     this.backdrop.update(gameDt);
     this.cull();
 
-    this.zones.update(gameDt, t.scale);
+    this.updateGhostTargets();
+    this.zones.update(gameDt, t.scale, realDt);
     this.updateMarkers(realDt, t.scale);
     this.numbers.update(this.paused ? 0 : realDt, t.scale);
     this.drawBars(t.scale);
@@ -697,7 +753,7 @@ export class BattleView {
       this.dragEdgeOn = true;
       if (d) {
         d.p = this.lanePAt(d.clientX, d.clientY);
-        this.previewPower(d.p);
+        this.previewPower(d.p, d.valid);
       }
     } else if (this.dragEdgeOn) {
       this.camera.setEdge(0);

@@ -83,8 +83,11 @@ export type HudCameraHold = 'popover' | 'powerDrag' | 'minimap' | 'tutorial';
 export interface HudViewBridge {
   /** Own-side progress p (lu) under a client point, clamped to the power band; null off the lane. */
   laneP(clientX: number, clientY: number): number | null;
-  /** Shows (p) or hides (null) the power placement zone. */
-  previewPower(p: number | null): void;
+  /**
+   * Shows (p) or hides (null) the power's drag ghost. `valid` false tints it as a cancel (the pointer
+   * is over the HUD). Default true.
+   */
+  previewPower(p: number | null, valid?: boolean): void;
   /** True when the current power can be placed by dragging. */
   powerAimable(): boolean;
   on(listener: (ev: HudViewEvent) => void): () => void;
@@ -105,6 +108,11 @@ export interface HudViewBridge {
   powerPAtWorld?(x: number): number;
   /** The p the power preview shows now (it moves while a drag edge-scrolls the camera). */
   previewedP?(): number | null;
+  /**
+   * Starts tap-to-aim: holds the camera and returns the p where the ghost starts (the enemy front), or
+   * null when the power ignores the aim.
+   */
+  powerAimStart?(): number | null;
   /** Your mount's screen point (view-local CSS px), for keeping the popover on it while scrolling. */
   mountScreenPoint?(mount: number): Pt | null;
 }

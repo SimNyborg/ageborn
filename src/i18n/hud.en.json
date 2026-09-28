@@ -37,6 +37,12 @@
     },
     "power": "Age Power",
     "powerLabel": "{name}, {pct}% charged",
+    "powerAim": {
+      "hint": "Drag onto the battlefield!",
+      "tapField": "Tap the battlefield to fire",
+      "cancel": "Release to cancel",
+      "aimingLabel": "{name}: tap the battlefield to fire, tap again to cancel"
+    },
     "lastStand": "Last Stand",
     "mount": {
       "title": "Turret mount {n}",

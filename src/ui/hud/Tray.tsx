@@ -12,8 +12,9 @@
  *    shows one padlock slot. Hovering a card (desktop) or its "i" corner (touch) shows what it is.
  *    After an evolve the cards flip over to the new age's units.
  * 3. Army counter and the stance flag (from match 4).
- * 4. The large round Age Power button with its charge ring and name: tap = auto-aim, drag = place
- *    (A2.9). When full it bursts, bobs and says "READY".
+ * 4. The large round Age Power button with its charge ring and name (`PowerButton.tsx`): drag it
+ *    onto the battlefield to place it; a tap starts aiming mode (A2.9, owner decision "Age Power
+ *    targeting"). When full it bursts, lifts, bobs and says "READY".
  * 5. The Last Stand button, only while armed and from match 5 (A2.11).
  */
 import type { HudCard, UnitDef } from '@/contracts';
@@ -36,6 +37,7 @@ import {
   trainIntent,
   treasuryIntent,
 } from './model';
+import { PowerButton } from './PowerButton';
 import { usePortrait } from './usePortrait';
 
 function cls(...parts: (string | false | null | undefined)[]): string {
@@ -316,125 +318,8 @@ function Army(p: { c: HudCtx }) {
   );
 }
 
-interface Drag {
-  id: number;
-  x: number;
-  y: number;
-  dragging: boolean;
-  p: number | null;
-}
-
-/** The minimap's hit area is at least this tall (A17.5), also for dropping a power on it. */
-export const MINIMAP_HIT_PX = 32;
-
-/**
- * World x under a client point when it is over the minimap strip (A17.6: a power can be dropped on
- * it), else null. The strip's canvas carries the world range it draws.
- */
-export function minimapDropX(clientX: number, clientY: number, from: Element | null): number | null {
-  const root = from?.closest('.hud') ?? null;
-  const canvas = root?.querySelector<HTMLElement>('[data-minimap]') ?? null;
-  if (!canvas) return null;
-  const r = canvas.getBoundingClientRect();
-  if (r.width <= 0) return null;
-  const cy = r.top + r.height / 2;
-  const half = Math.max(r.height, MINIMAP_HIT_PX) / 2;
-  if (clientX < r.left || clientX > r.right || Math.abs(clientY - cy) > half) return null;
-  const wl = Number(canvas.dataset['worldLeft'] ?? -180);
-  const wr = Number(canvas.dataset['worldRight'] ?? 2180);
-  return wl + ((clientX - r.left) / r.width) * (wr - wl);
-}
-
-function PowerButton(p: { c: HudCtx }) {
-  const { c } = p;
-  const { m, t } = c;
-  const charge = powerFraction(m.me.powerPpm);
-  const ready = charge >= 1 && m.phase !== 'ended';
-  const def = c.config.content.powers[m.me.power];
-  const url = usePortrait(c.portrait, m.me.power || null, 'none', 72);
-  const drag = useRef<Drag | null>(null);
-  const [aiming, setAiming] = useState(false);
-  // Count the times it became ready, so the burst replays each time.
-  const readySeq = useRef({ ready, n: 0 });
-  if (ready && !readySeq.current.ready) readySeq.current.n += 1;
-  readySeq.current.ready = ready;
-
-  const stop = (): void => {
-    if (drag.current?.dragging) {
-      c.view?.previewPower(null);
-      c.view?.cameraHold?.('powerDrag', false);
-    }
-    drag.current = null;
-    setAiming(false);
-  };
-  useEffect(
-    () => () => {
-      c.view?.previewPower(null);
-      c.view?.cameraHold?.('powerDrag', false);
-    },
-    [c.view],
-  );
-
-  return (
-    <div class={cls('hud-power-wrap', ready && 'is-ready')}>
-      <button
-        class={cls('hud-power', ready && 'is-ready', aiming && 'is-aiming', c.denied('power') && 'is-denied')}
-        data-testid="hud-power"
-        data-ready={ready}
-        aria-label={def ? t('hud.powerLabel', { name: t(def.nameKey), pct: Math.floor(charge * 100) }) : t('hud.power')}
-        disabled={c.readOnly}
-        style={{ '--charge': charge }}
-        onPointerDown={(e) => {
-          if (c.readOnly || (e.pointerType === 'mouse' && e.button !== 0)) return;
-          drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, dragging: false, p: null };
-          (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-        }}
-        onPointerMove={(e) => {
-          const d = drag.current;
-          if (!d || d.id !== e.pointerId) return;
-          if (!d.dragging) {
-            if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < POWER_DRAG_PX) return;
-            // Only a charged, aimable power can be placed; others keep the tap (auto-aim) meaning.
-            if (!ready || !c.view?.powerAimable()) return;
-            d.dragging = true;
-            setAiming(true);
-            c.view?.cameraHold?.('powerDrag', true);
-          }
-          // Over the lane band (the camera edge-scrolls near its ends), or dropped on the minimap (A17.6).
-          let at = c.view?.laneP(e.clientX, e.clientY) ?? null;
-          const mapX = minimapDropX(e.clientX, e.clientY, e.currentTarget as Element);
-          if (mapX !== null && c.view?.powerPAtWorld) at = c.view.powerPAtWorld(mapX);
-          d.p = at;
-          c.view?.previewPower(d.p);
-        }}
-        onPointerUp={(e) => {
-          const d = drag.current;
-          if (!d || d.id !== e.pointerId) return;
-          const placed = d.dragging;
-          // The preview may have moved under a still finger while the camera edge-scrolled.
-          const at = d.p === null ? null : (c.view?.previewedP?.() ?? d.p);
-          stop();
-          if (!placed) c.act(powerIntent(m, c.side));
-          // A drag released off the lane is a cancel.
-          else if (at !== null) c.act(powerIntent(m, c.side, at));
-        }}
-        onPointerCancel={stop}
-        onClick={(e) => {
-          // Pointer presses are handled above; a keyboard click (Tab focus, then Enter or Space) casts
-          // with auto-aim, like the Space shortcut.
-          if (e.detail === 0) c.act(powerIntent(m, c.side));
-        }}
-      >
-        <i class="hud-power-ring" />
-        <span class="hud-power-core">{url ? <img src={url} alt="" draggable={false} /> : <BoltIcon size={c.compact ? 30 : 38} />}</span>
-        {ready ? <i key={readySeq.current.n} class="hud-power-burst" /> : null}
-        {ready ? <span class="hud-power-ready">{t('hud.ready')}</span> : null}
-        {c.keys ? <kbd class="hud-key">{t('hud.key.space')}</kbd> : null}
-      </button>
-      {def ? <span class="hud-power-name">{t(def.nameKey)}</span> : null}
-    </div>
-  );
-}
+// The Age Power button and its drag / tap-to-aim targeting live in `PowerButton.tsx`.
+export { MINIMAP_HIT_PX, minimapDropX } from './PowerButton';
 
 function LastStandButton(p: { c: HudCtx }) {
   const { c } = p;

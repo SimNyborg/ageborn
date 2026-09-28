@@ -391,6 +391,7 @@ export function Hud(props: HudProps) {
     compact,
     readOnly,
     keys: keys && !readOnly,
+    hints: props.callouts !== false && !readOnly,
   };
 
   const colors = useMemo(() => hudTeamColors(props.teamPreset ?? 'default', side), [props.teamPreset, side]);
