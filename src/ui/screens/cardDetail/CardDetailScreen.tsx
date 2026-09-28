@@ -10,7 +10,7 @@ import { ageNameKey, foilNameKey, rarityNameKey, roleNameKey, tagNameKey } from 
 import type { CardId, Foil } from '@/contracts';
 import { useEffect, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
-import { CardArt, CardTile } from '../../components/CardTile';
+import { CardArt, CardTile, type CardTileData } from '../../components/CardTile';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { formatDec, formatInt, formatSeconds } from '../../components/format';
 import { AgeGlyph, AmberIcon, CheckIcon, DustIcon, HammerIcon, LockIcon, RARITY_COLOR, RoadIcon } from '../../components/icons';
@@ -120,6 +120,8 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
     toasts.show(r.ok ? t('ui.card.crafted') : t(reasonKey(r.reason)), { tone: r.ok ? 'good' : 'bad' });
   }
 
+  /** Counter cards are shown as plain references: no NEW stamp or upgrade arrow of the player's own copy. */
+  const counterTile = (ct: CardTileData): CardTileData => ({ ...ct, owned: true, isNew: false, upgradeReady: false });
   const frame = rarity ? RARITY_COLOR[rarity] : '#f2c14e';
   return (
     <ScreenFrame
@@ -236,7 +238,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
                     return ct ? (
                       <CardTile
                         key={c}
-                        card={{ ...ct, owned: true }}
+                        card={counterTile(ct)}
                         size="xs"
                         hideLevel
                         onClick={() => router.replace({ id: 'cardDetail', card: c })}
@@ -254,7 +256,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
                     return ct ? (
                       <CardTile
                         key={c}
-                        card={{ ...ct, owned: true }}
+                        card={counterTile(ct)}
                         size="xs"
                         hideLevel
                         onClick={() => router.replace({ id: 'cardDetail', card: c })}

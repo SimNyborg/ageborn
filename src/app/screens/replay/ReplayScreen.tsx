@@ -6,6 +6,7 @@
 import { useEffect, useMemo } from 'preact/hooks';
 import type { ReplayDoc } from '@/contracts';
 import { Hud } from '@/ui/hud';
+import { displayName } from '../../names';
 import { REPLAY_SPEEDS, ReplayPlayer } from '../../replayPlayer';
 import { useApp } from '../../ui/context';
 
@@ -79,7 +80,9 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
           {ui.t('replay.restart')}
         </button>
         <button class="ab-btn ab-btn--plain ab-btn--small" data-testid="replay-side" onClick={() => player.setHudSide(other)}>
-          {ui.t('replay.showSide', { name: p.replay.sides[other].label })}
+          {p.replay.sides[other].isBot
+            ? ui.t('replay.showSide', { name: displayName(p.replay.sides[other].label, ui.services.i18n) })
+            : ui.t('replay.showMine')}
         </button>
         <button class="ab-btn ab-btn--plain ab-btn--small" data-testid="replay-back" onClick={p.onBack}>
           {ui.t('replay.back')}

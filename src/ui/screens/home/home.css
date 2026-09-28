@@ -374,14 +374,28 @@
   font-size: 13px;
   font-weight: 800;
 }
+.home-road__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.home-road__label {
+  white-space: nowrap;
+}
 .home-road__next {
   display: flex;
   align-items: center;
   gap: 6px;
   flex: none;
-  max-width: 45%;
+  max-width: 55%;
   overflow: hidden;
   white-space: nowrap;
+}
+.home-road__next .road-rw b {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---- quests ---- */

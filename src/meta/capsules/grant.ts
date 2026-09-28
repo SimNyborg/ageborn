@@ -40,6 +40,13 @@ export function cardsForRoll(s: SaveDoc): Set<CardId> {
   return out;
 }
 
+/** Cards an unopened capsule will reveal as NEW (kept out of other rolls where possible, `roll.ts`). */
+export function promisedNew(s: SaveDoc): Set<CardId> {
+  const out = new Set<CardId>();
+  for (const p of s.capsules.pending) for (const st of p.contents.stacks) if (st.isNew) out.add(st.card);
+  return out;
+}
+
 /**
  * The age an Age Capsule gets when the caller names none (the dialog of A6.4 is the app's): the drop
  * pool age with the most cards not owned yet, ties to the earliest age.
@@ -114,6 +121,7 @@ export function grantCapsuleAt(
   const arena = arenaOf(s, t);
   const rng = cloneSfc32(s.rng.capsule);
   const owned = cardsForRoll(s);
+  const reserved = promisedNew(s);
   const script = kindDef.countsForPity ? scriptFor(s, t) : null;
   let bag = s.capsules.bag;
   let tier: CapsuleTier;
@@ -135,8 +143,8 @@ export function grantCapsuleAt(
       save: s,
       fillerAge: arena.dropAges[0],
     });
+    // A scripted capsule is not from one age, even when it is an Age Capsule: `age` stays null.
     contents = { stacks, amber: def.amber, dust: def.bonusDust, skin: bonusSkin(s, t, rng, def) };
-    if (kind === 'age') age = o.age ?? null;
   } else if (kind === 'age') {
     age = o.age ?? defaultCapsuleAge(s, t);
     const ac = caps.ageCapsule;
@@ -144,7 +152,7 @@ export function grantCapsuleAt(
     tier = ac.copiesTier;
     const stacks = rollStacks(
       { stacks: ac.stacks, guaranteed: ac.guaranteed, copies: copiesTier.copies, rareToLegendaryBp: 0, randomLegendaries: arena.randomLegendaries },
-      { t, rng, pool: poolOf(t, [age]), owned, pity: pityDraw(s, t) },
+      { t, rng, pool: poolOf(t, [age]), owned, pity: pityDraw(s, t), reserved },
     );
     contents = { stacks, amber: copiesTier.amber, dust: 0, skin: null };
   } else {
@@ -158,7 +166,7 @@ export function grantCapsuleAt(
     else if (kind === 'codex') tier = caps.codexCapsuleTier;
     else tier = 'silver';
     const def = caps.tiers[tier];
-    const stacks = rollStacks(spec(def, arena.randomLegendaries), { t, rng, pool: poolOf(t, arena.dropAges), owned, pity: pityDraw(s, t) });
+    const stacks = rollStacks(spec(def, arena.randomLegendaries), { t, rng, pool: poolOf(t, arena.dropAges), owned, pity: pityDraw(s, t), reserved });
     contents = { stacks, amber: def.amber, dust: def.bonusDust, skin: bonusSkin(s, t, rng, def) };
   }
 

@@ -35,7 +35,17 @@ export type SlotDefect =
 
 export type SlotRead =
   | { ok: true; slot: SlotId; envelope: SlotEnvelope; doc: unknown; raw: string }
-  | { ok: false; slot: SlotId; defect: SlotDefect; raw: string | null };
+  | {
+      ok: false;
+      slot: SlotId;
+      defect: SlotDefect;
+      raw: string | null;
+      /**
+       * The envelope's `writtenAt` when only the payload failed its checksum. The checksum does not
+       * cover it, so it is a hint (was the damaged copy the older one?), never a reason to load.
+       */
+      writtenAt?: number;
+    };
 
 export function otherSlot(slot: SlotId): SlotId {
   return slot === 'A' ? 'B' : 'A';
@@ -69,7 +79,7 @@ export function decodeSlot(slot: SlotId, raw: string | null): SlotRead {
     return { ok: false, slot, defect: 'corrupt', raw };
   }
   if (!isEnvelope(envelope)) return { ok: false, slot, defect: 'corrupt', raw };
-  if (checksum(envelope.payload) !== envelope.checksum) return { ok: false, slot, defect: 'checksum', raw };
+  if (checksum(envelope.payload) !== envelope.checksum) return { ok: false, slot, defect: 'checksum', raw, writtenAt: envelope.writtenAt };
   try {
     return { ok: true, slot, envelope, doc: JSON.parse(envelope.payload) as unknown, raw };
   } catch {

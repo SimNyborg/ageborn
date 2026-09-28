@@ -90,6 +90,18 @@ describe('music manifest (A14.3)', () => {
     }
   });
 
+  it('Overdrive brings double-time percussion (A13 Layers)', () => {
+    const hitsInBar = (t: { notes: readonly { step: number }[] }): number => new Set(t.notes.filter((n) => n.step < STEPS_PER_BAR).map((n) => n.step)).size;
+    for (const cue of BATTLE) {
+      const s = score(cue);
+      const basePerc = s.tracks.filter((t) => t.layer === 'base' && t.pitched === false).map(hitsInBar);
+      const overdrivePerc = s.tracks.filter((t) => t.layer === 'overdrive' && t.pitched === false).map(hitsInBar);
+      // Straight 16ths on top of a base kit that never plays that densely.
+      expect(Math.max(...overdrivePerc), cue).toBe(STEPS_PER_BAR);
+      expect(Math.max(...basePerc), cue).toBeLessThan(STEPS_PER_BAR);
+    }
+  });
+
   it('each age plays the theme melody with its own instruments (A13 table)', () => {
     const lead: Record<string, string> = {
       'music.stone': 'flute',
@@ -135,10 +147,18 @@ describe('music manifest (A14.3)', () => {
       expect(scoreSeconds(s)).toBeGreaterThan(2);
       expect(scoreSeconds(s)).toBeLessThan(6);
     }
-    const v = score('stinger.victory').tracks[0]!.notes.map((n) => n.midi);
-    expect(v.slice(0, 4)).toEqual([midi('C5'), midi('G4'), midi('C5'), midi('E5')]);
-    // The defeat stinger comes home to C (gentle, not mocking).
+    const motif = themeMelody().slice(0, 3);
+    const v = score('stinger.victory').tracks[0]!.notes;
+    expect(v.slice(0, 4).map((n) => n.midi)).toEqual([midi('C5'), midi('G4'), midi('C5'), midi('E5')]);
+    // Both stingers open with the motif (C - G C, in the theme's rhythm).
     const d = score('stinger.defeat').tracks[0]!.notes;
+    for (const s of [v, d]) {
+      expect(s.slice(0, 3).map((n) => [n.step, n.len, n.midi])).toEqual(motif.map((n) => [n.step, n.len, n.midi]));
+    }
+    // The defeat stinger falls where the theme rises, moves only by small steps and comes home to C
+    // (gentle, not mocking).
+    expect(d[3]!.midi).toBeLessThan(d[2]!.midi);
+    for (let k = 1; k < d.length; k++) expect(Math.abs(d[k]!.midi - d[k - 1]!.midi), `step ${k}`).toBeLessThanOrEqual(5);
     expect(d[d.length - 1]!.midi % 12).toBe(0);
   });
 });

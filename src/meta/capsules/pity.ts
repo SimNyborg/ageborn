@@ -62,7 +62,7 @@ export interface OpenedFacts {
   hasLegendary: boolean;
   /** A card that was unowned when revealed. */
   gotNew: boolean;
-  /** The arena's drop pool had an unowned card before this capsule. */
+  /** The arena's drop pool had an unowned card before this capsule that no unopened capsule holds. */
   unownedInPool: boolean;
 }
 

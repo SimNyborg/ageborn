@@ -32,7 +32,11 @@ export async function finishMatch(
   replay: ReplayDoc,
   hintsShown: Record<string, number> = {},
 ): Promise<MatchEndResult> {
-  services.saveStore.pushReplay(replay);
+  try {
+    services.saveStore.pushReplay(replay);
+  } catch {
+    // A replay that cannot be stored (quota) must never cost the player the match's rewards (B8).
+  }
   if (!save) return { save: null, rewards: [], onboarding: null };
   let next: SaveDoc;
   let rewards: RewardStep[] = [];

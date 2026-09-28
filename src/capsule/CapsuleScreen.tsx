@@ -56,6 +56,11 @@ export interface CapsuleScreenProps extends ShowScreenBase {
   reveals: CapsuleReveal[];
   /** Copies bars (build with `progressFromCollections` from the save before and after opening). */
   progress?: ProgressLookup;
+  /**
+   * False once the arena's drop pool has no unowned card: new-card protection is off (A6.5 "while
+   * unowned cards exist in the pool"), so its pity line is hidden. Default true.
+   */
+  newCardProtection?: boolean;
 }
 
 export interface WardrobeScreenProps extends ShowScreenBase {
@@ -88,8 +93,8 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
       seed={seed}
       title={title}
       ariaLabel={i18n.t('capsule.aria.stage')}
-      pityBefore={before ? pityLines(before, rules) : []}
-      pityAfter={after ? pityLines(after, rules) : []}
+      pityBefore={before ? pityLines(before, rules, p.newCardProtection !== false) : []}
+      pityAfter={after ? pityLines(after, rules, p.newCardProtection !== false) : []}
     />
   );
 }
@@ -176,23 +181,24 @@ function ShowScreen(p: ShowScreenProps) {
     // The show restarts only for a new plan or other settings; callbacks are read through refs.
   }, [p.plan, p.pixi, p.art, p.audio, settingsKey, p.seed]);
 
-  // Input: tap, hold to fast-forward, Skip.
+  // Input: a press taps at once (the hammer lands on touch, not on release; a flip hurries), and a
+  // press held past HOLD_MS also fast-forwards until it is released. Skip is its own button.
   const hold = useRef<{ timer: ReturnType<typeof setTimeout> | null; held: boolean }>({ timer: null, held: false });
   const press = () => {
     const h = hold.current;
     if (h.timer) clearTimeout(h.timer);
     h.held = false;
+    ctl.current.runner?.tap();
     h.timer = setTimeout(() => {
       h.held = true;
       ctl.current.runner?.setHold(true);
     }, HOLD_MS);
   };
-  const release = (tap: boolean) => {
+  const release = () => {
     const h = hold.current;
     if (h.timer) clearTimeout(h.timer);
     h.timer = null;
     if (h.held) ctl.current.runner?.setHold(false);
-    else if (tap) ctl.current.runner?.tap();
     h.held = false;
   };
   useEffect(() => () => {
@@ -213,7 +219,7 @@ function ShowScreen(p: ShowScreenProps) {
     if (e.target !== e.currentTarget) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
-      release(true);
+      release();
     }
   };
 
@@ -233,15 +239,16 @@ function ShowScreen(p: ShowScreenProps) {
       aria-label={p.ariaLabel}
       tabIndex={0}
       data-testid="capsule-screen"
+      data-reduce-motion={settings.reduceMotion ? '' : undefined}
       data-step={state?.kind ?? ''}
       data-phase={state?.phase ?? ''}
       onPointerDown={(e) => {
         if (e.button !== 0 && e.pointerType === 'mouse') return;
         press();
       }}
-      onPointerUp={() => release(true)}
-      onPointerCancel={() => release(false)}
-      onPointerLeave={() => release(false)}
+      onPointerUp={() => release()}
+      onPointerCancel={() => release()}
+      onPointerLeave={() => release()}
       onContextMenu={(e) => e.preventDefault()}
       onKeyDown={onKeyDown}
       onKeyUp={onKeyUp}

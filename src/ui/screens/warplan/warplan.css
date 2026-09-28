@@ -111,7 +111,9 @@
   letter-spacing: 0.06em;
 }
 .wp-slot.is-filled .ui-card {
-  animation: ui-pop 280ms var(--ui-ease-back) both;
+  /* `backwards`, not `both`: a transform kept after the pop would make each card a stacking context,
+     and the next card would then cover this card's remove button's enlarged hit area. */
+  animation: ui-pop 280ms var(--ui-ease-back) backwards;
 }
 .wp-remove {
   display: grid;

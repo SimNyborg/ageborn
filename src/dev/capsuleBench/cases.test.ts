@@ -59,6 +59,20 @@ describe('capsule bench cases (WP10 DoD)', () => {
     expect(BENCH_CASES.some((c) => c.crate && c.reelReveal === false)).toBe(true);
   });
 
+  it('plays the onboarding script beats: capsule 1 climbs to Bronze with a short Spear Hunter walkout, capsule 5 the full Matriarch walkout (A8)', () => {
+    const byId = (id: string) => {
+      const c = BENCH_CASES.find((x) => x.id === id);
+      if (!c) throw new Error(`no bench case ${id}`);
+      return planFor(c);
+    };
+    const one = byId('script-1');
+    expect(one.finalTier).toBe('bronze');
+    expect(one.steps.filter((s) => s.kind === 'strike' && s.climb)).toHaveLength(1);
+    expect(one.steps.flatMap((s) => (s.kind === 'miniWalkout' ? [s.card.card] : []))).toEqual(['spear_hunter']);
+    const five = byId('script-5');
+    expect(five.steps.some((s) => s.kind === 'walkout' && s.first && s.card.card === 'mammoth_matriarch')).toBe(true);
+  });
+
   for (const c of BENCH_CASES) {
     describe(c.id, () => {
       const plan = planFor(c);

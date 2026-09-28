@@ -21,6 +21,7 @@ import type { MatchRequest, RouteOf } from '../../router';
 import { useUi } from '../context';
 import { agesAwaitingAntiArmor } from '../model/plan';
 import { chargesView, conquestView, unlocks, WAR_PLAN_UNLOCK_MATCHES } from '../model/progress';
+import { useMatchStarter } from '../shared/MatchStarter';
 
 const SPEEDS = [1, 1.5, 2] as const;
 const ALL_FORMATS: FormatId[] = ['short', 'standard', 'full'];
@@ -111,7 +112,12 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
                 onClick={() => setGeneral(id)}
                 data-testid={`skirmish-general-${id}`}
               >
-                <GeneralPortrait generalId={id} size={56} />
+                <span class="skirmish__portrait">
+                  <GeneralPortrait generalId={id} size={56} />
+                  <span class="skirmish__ai">
+                    <AiBadge size="sm" />
+                  </span>
+                </span>
                 <span class="skirmish__genname">{t(def.nameKey)}</span>
               </button>
             );
@@ -187,10 +193,11 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
   const challenge = content.dailyModifiers.challenge;
   const wonToday = s.daily.won;
 
+  const starter = useMatchStarter();
+
   function start(req: MatchRequest) {
-    const opponent = services.prepareMatch(req);
     setSkirmish(false);
-    router.go({ id: 'vs', request: req, opponent });
+    starter.start(req);
   }
 
   return (
@@ -303,6 +310,7 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
         </ModeCard>
       </div>
       {skirmish ? <SkirmishSetup onStart={start} onClose={() => setSkirmish(false)} /> : null}
+      {starter.dialog}
     </ScreenFrame>
   );
 }

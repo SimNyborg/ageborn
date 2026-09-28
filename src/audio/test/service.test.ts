@@ -130,11 +130,24 @@ describe('WebAudioService', () => {
     expect(svc.stats.voices).toBe(4);
   });
 
-  it('lets player-caused sounds (higher priority) through a gap', async () => {
+  it('keeps the 40 ms gap for player-caused sounds too; priority wins the voice caps', async () => {
     const { svc, ctx } = await unlocked();
-    svc.play('shot_sling');
-    svc.play('shot_sling', { priority: 1 });
-    expect(ctx.effectSources()).toHaveLength(2);
+    svc.play('explosion_m', { priority: 1 });
+    svc.play('explosion_m', { priority: 2 });
+    expect(ctx.effectSources()).toHaveLength(1);
+    expect(svc.stats.dropped.gap).toBe(1);
+    // Player voices fill the id cap: an opponent's retrigger cannot steal one, a player's can.
+    for (let k = 0; k < 3; k++) {
+      ctx.advance(0.041);
+      svc.play('explosion_m', { priority: 1 });
+    }
+    ctx.advance(0.041);
+    svc.play('explosion_m');
+    expect(svc.stats.dropped.idCap).toBe(1);
+    svc.play('explosion_m', { priority: 1 });
+    expect(svc.stats.stolen).toBe(1);
+    expect(ctx.effectSources()[0]!.stoppedAt).not.toBeNull();
+    expect(svc.stats.voices).toBe(4);
   });
 
   it('keeps at most the global voice cap and frees voices when they end', async () => {
@@ -251,6 +264,41 @@ describe('WebAudioService', () => {
     await Promise.resolve();
     expect(svc.state).toBe('running');
     expect(ctx.resumeCalls).toBe(2);
+  });
+
+  it('starts on a later gesture when the one that called unlock carried no user activation', async () => {
+    // The app calls unlock() from the first pointerdown; on a touch screen that event cannot start
+    // audio, and the app has already removed its own listeners.
+    const target = new EventTarget();
+    const { svc, ctx } = make({ gestureTarget: target });
+    ctx.allowResume = false;
+    const p = svc.unlock();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(svc.state).toBe('suspended');
+    ctx.allowResume = true;
+    target.dispatchEvent(new Event('touchend'));
+    await p;
+    expect(svc.state).toBe('running');
+    svc.play('ui_click');
+    expect(ctx.effectSources()).toHaveLength(1);
+  });
+
+  it('never throws on non-finite numbers from a caller', async () => {
+    const { svc, ctx } = await unlocked();
+    expect(() => svc.play('hit_blunt', { pitchBp: Number.NaN, volumeDb: Number.POSITIVE_INFINITY, pan: Number.NaN })).not.toThrow();
+    const s = ctx.effectSources()[0]!;
+    expect(s.playbackRate.value).toBe(1);
+    expect(chain(s).gain.gain.value).toBe(1);
+    expect(ctx.of(FakePanner)).toHaveLength(0);
+    expect(() => {
+      svc.music.setCue('music.stone', { fadeMs: Number.NaN });
+      svc.music.setLayer('intensity', Number.NaN);
+      svc.music.transpose(Number.NaN);
+      svc.music.duck(Number.NaN, 500);
+      svc.music.stop(Number.NaN);
+      svc.setBusVolume('music', Number.NaN);
+    }).not.toThrow();
+    expect(svc.engine!.state).toEqual({ layers: { intensity: 0, overdrive: 0, siege: 0 }, transpose: 0 });
   });
 
   it('disposes cleanly', async () => {

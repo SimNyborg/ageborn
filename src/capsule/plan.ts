@@ -100,6 +100,12 @@ export const WALKOUT_BEATS: Readonly<{ first: WalkoutBeats; repeat: WalkoutBeats
 /** Beats of the NEW Epic mini-walkout (A10 step 5). */
 export const MINI_BEATS = { pop: [0, 450], act: [450, 1250], pose: [1250, 1600], out: [1600, 2000] } as const;
 
+/**
+ * The onboarding script's first capsule (A6.5 `scriptIndex`, 1-based as the meta writes it). A8:
+ * "Capsule 1: ... Spear Hunter NEW (short walkout)", so its NEW cards get the mini-walkout too.
+ */
+export const INTRO_SCRIPT_CAPSULE = 1;
+
 export interface Cue {
   atMs: number;
   sound: SoundId;
@@ -192,7 +198,16 @@ function signalSound(r: Rarity, kind: RevealCard['kind']): SoundId | null {
   return `rarity_${r}`;
 }
 
-function cardSteps(card: RevealCard): ShowStep[] {
+/**
+ * The 2 s mini-walkout: every NEW Epic (A10 step 5) and, in the first onboarding capsule, every NEW
+ * card below Legendary (A8). Legendaries get the full walkout; skins never walk out.
+ */
+export function hasMiniWalkout(card: RevealCard, intro: boolean): boolean {
+  if (card.kind !== 'card' || !card.isNew || card.rarity === 'legendary') return false;
+  return card.rarity === 'epic' || intro;
+}
+
+function cardSteps(card: RevealCard, intro = false): ShowStep[] {
   const T = SHOW_TIMING;
   const out: ShowStep[] = [];
   const sig = signalSound(card.rarity, card.kind);
@@ -247,7 +262,7 @@ function cardSteps(card: RevealCard): ShowStep[] {
       cues: flipCues,
     }),
   );
-  if (card.kind === 'card' && card.rarity === 'epic' && card.isNew) {
+  if (hasMiniWalkout(card, intro)) {
     out.push(
       step<MiniWalkoutStep>({
         kind: 'miniWalkout',
@@ -255,7 +270,7 @@ function cardSteps(card: RevealCard): ShowStep[] {
         durationMs: T.miniWalkoutMs,
         card,
         cues: [
-          { atMs: 150, sound: 'spawn_heavy' },
+          { atMs: 150, sound: card.rarity === 'epic' ? 'spawn_heavy' : 'spawn_pop' },
           { atMs: 700, sound: 'swing_whoosh' },
         ],
       }),
@@ -370,8 +385,9 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
     }),
   );
   const cards = revealCards([reveal], o.catalog);
+  const intro = cap.scriptIndex === INTRO_SCRIPT_CAPSULE;
   if (cards.length > 0) steps.push(fanStep(cards));
-  for (const c of cards) steps.push(...cardSteps(c));
+  for (const c of cards) steps.push(...cardSteps(c, intro));
   for (const c of cards) if (c.kind === 'card' && (c.copies > 0 || c.dust > 0)) steps.push(duplicateStep(c, o.progress));
   steps.push(summaryStep());
   return {

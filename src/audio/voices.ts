@@ -8,8 +8,8 @@
  * - priority: a higher `priority` wins. Sounds the player causes pass a higher priority than the
  *   opponent's (A13 "Sounds caused by the player get priority"); UI sounds get a bonus on top. A new
  *   voice at a full cap steals the oldest voice of the lowest priority that is not above its own, and
- *   is dropped when every playing voice outranks it. A retrigger inside the gap is dropped unless it
- *   outranks the voice that started it.
+ *   is dropped when every playing voice outranks it. The retrigger gap is absolute (A13 "40 ms
+ *   minimum"): a same-id start inside it would only flam with the one just started, whoever caused it.
  * - per-play variation: a random variant (never the same one twice in a row), pitch ±8% and volume
  *   ±3 dB by default.
  */
@@ -39,7 +39,8 @@ export type Admission<H> = { ok: true; steal: Voice<H>[] } | { ok: false; reason
 
 export class VoicePolicy<H = unknown> {
   private voices: Voice<H>[] = [];
-  private readonly lastStart = new Map<SoundId, { at: number; priority: number }>();
+  /** Start time (seconds) of the latest voice of each id, for the retrigger gap. */
+  private readonly lastStart = new Map<SoundId, number>();
 
   constructor(public maxTotal: number = DEFAULT_MAX_TOTAL_VOICES) {}
 
@@ -61,7 +62,7 @@ export class VoicePolicy<H = unknown> {
   admit(id: SoundId, priority: number, now: number, limits: VoiceLimits): Admission<H> {
     this.prune(now);
     const last = this.lastStart.get(id);
-    if (last && (now - last.at) * 1000 < limits.gapMs && priority <= last.priority) return { ok: false, reason: 'gap' };
+    if (last !== undefined && (now - last) * 1000 < limits.gapMs) return { ok: false, reason: 'gap' };
 
     const steal: Voice<H>[] = [];
     const same = this.voices.filter((v) => v.id === id);
@@ -83,7 +84,7 @@ export class VoicePolicy<H = unknown> {
 
   started(v: Voice<H>): void {
     this.voices.push(v);
-    this.lastStart.set(v.id, { at: v.start, priority: v.priority });
+    this.lastStart.set(v.id, v.start);
   }
 
   /** Removes a voice (it ended or was stolen). */

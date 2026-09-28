@@ -40,6 +40,8 @@ export interface RevealSpec {
   skin?: SkinId | null;
   firstLegendary?: CardId[];
   id?: string;
+  /** The onboarding script's capsule number (1-based, as the meta writes it). */
+  scriptIndex?: number | null;
 }
 
 export function reveal(spec: RevealSpec): CapsuleReveal {
@@ -51,7 +53,7 @@ export function reveal(spec: RevealSpec): CapsuleReveal {
       kind: spec.kind ?? 'win',
       tier: spec.tier,
       startTier,
-      scriptIndex: null,
+      scriptIndex: spec.scriptIndex ?? null,
       age: null,
       contents: { stacks: spec.stacks, amber: spec.amber ?? 120, dust: spec.dust ?? 0, skin: spec.skin ?? null },
       createdAt: 0,

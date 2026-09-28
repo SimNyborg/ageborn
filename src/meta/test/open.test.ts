@@ -64,6 +64,28 @@ describe('openCapsule', () => {
     expect(o.save.currencies.dust).toBe(s.currencies.dust + 100 + 70);
   });
 
+  it('each tier pays its table Amber and bonus Dust (Jade +100); every Aeon holds a Legendary (A6.4, A10)', () => {
+    for (const arena of [0, 7]) {
+      let s = scripted(21 + arena, arena);
+      for (const tier of ['clay', 'bronze', 'silver', 'jade', 'aeon'] as const) {
+        const def = C.capsules.tiers[tier];
+        for (let i = 0; i < 40; i += 1) {
+          const g = M.grantCapsule(s, 'road', C, clock(), { tier });
+          const cap = lastPending(g);
+          expect(cap.contents.amber).toBe(def.amber);
+          expect(cap.contents.dust).toBe(def.bonusDust);
+          expect(cap.contents.stacks).toHaveLength(def.stacks);
+          if (tier === 'aeon') expect(cap.contents.stacks.some((x) => x.rarity === 'legendary')).toBe(true);
+          const o = M.openCapsule(g, cap.id);
+          const stackDust = o.reveal.capsule.contents.stacks.reduce((n, x) => n + x.dust, 0);
+          expect(o.save.currencies.amber).toBe(g.currencies.amber + def.amber);
+          expect(o.save.currencies.dust).toBe(g.currencies.dust + o.reveal.capsule.contents.dust + stackDust);
+          s = o.save;
+        }
+      }
+    }
+  });
+
   it('NEW is decided at reveal: a card crafted meanwhile is not new', () => {
     const s = { ...fresh(), currencies: { amber: 0, dust: 500 } };
     const cap = capsule({ contents: { stacks: [{ card: 'friar', rarity: 'rare', copies: 3, isNew: true, foil: 'none', dust: 0 }], amber: 0, dust: 0, skin: null } });

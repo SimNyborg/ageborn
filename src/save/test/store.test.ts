@@ -1,14 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { SaveDoc, SaveStore } from '@/contracts';
 import { SAVE_DEBOUNCE_MS, SLOT_KEYS, UNREADABLE_BACKUP_KEY } from '../defaults';
+import { SAVE_VERSIONS, type SaveVersion } from '../migrations';
 import type { SaveNotice } from '../notices';
 import { decodeSlot, encodeEnvelope, type SlotEnvelope } from '../slots';
 import { MemoryStorage } from '../storage';
+import { readUnreadableCopies } from '../unreadable';
 import { goldenReplays, makeStore, settle, v1Fixture } from './helpers';
 
 function envelopeOf(storage: MemoryStorage, slot: 'A' | 'B'): SlotEnvelope | null {
   const r = decodeSlot(slot, storage.getItem(SLOT_KEYS[slot]));
   return r.ok ? r.envelope : null;
+}
+
+/** The slot texts kept in `ageborn.backup.unreadable`, oldest first. */
+function keptTexts(storage: MemoryStorage): string[] {
+  return readUnreadableCopies(storage).map((c) => c.raw);
 }
 
 function docWith(amber: number): SaveDoc {
@@ -182,14 +189,72 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     expect(store.loadReport).toMatchObject({ status: 'unreadable', slot: null });
     expect(store.loadReport?.notice).toMatchObject({ kind: 'unreadable', messageKey: 'save.problem.unreadable' });
     expect(notices.map((n) => n?.kind)).toEqual(['unreadable']);
-    const kept = JSON.parse(storage.getItem(UNREADABLE_BACKUP_KEY)!) as { slots: Record<string, string> };
-    expect(kept.slots).toEqual({ A: '{"v":1,"writtenAt":5,"checksum":1,"payl', B: 'not json at all' });
+    const kept = readUnreadableCopies(storage);
+    expect(kept.map((c) => c.raw)).toEqual(['{"v":1,"writtenAt":5,"checksum":1,"payl', 'not json at all']);
+    expect(kept.map((c) => c.source)).toEqual(['A: corrupt', 'B: corrupt']);
 
-    // The fresh profile saves normally; the kept texts survive it.
+    // The fresh profile saves normally; the kept texts survive it and later loads.
     await store.save(v1Fixture(), { immediate: true });
     expect(store.problem).toBeNull();
-    expect(JSON.parse(storage.getItem(UNREADABLE_BACKUP_KEY)!)).toEqual(kept);
     expect(await makeStore({ storage }).store.load()).toEqual(v1Fixture());
+    expect(readUnreadableCopies(storage)).toEqual(kept);
+  });
+
+  it('keeps a later rejection even when an earlier one was set aside', async () => {
+    const storage = new MemoryStorage();
+    storage.setItem(SLOT_KEYS.A, 'first damage');
+    const first = makeStore({ storage });
+    expect(await first.store.load()).toBeNull();
+    await first.store.save(docWith(1), { immediate: true }); // A
+    first.clock.advance(1000);
+    await first.store.save(docWith(2), { immediate: true }); // B
+
+    // Months later a build cannot use either copy (here a broken migration): both must be kept too.
+    const broken: SaveVersion = { v: 2, summary: 'broken', up: () => { throw new Error('boom'); } };
+    const later = makeStore({ storage, versions: [SAVE_VERSIONS[0]!, broken] });
+    expect(await later.store.load()).toBeNull();
+    const a = storage.getItem(SLOT_KEYS.A)!;
+    const b = storage.getItem(SLOT_KEYS.B)!;
+    expect(keptTexts(storage)).toEqual(['first damage', a, b]);
+    expect(readUnreadableCopies(storage).slice(1).map((c) => c.source)).toEqual([
+      expect.stringMatching(/^A: migrationFailed/),
+      expect.stringMatching(/^B: migrationFailed/),
+    ]);
+  });
+
+  it('keeps each rejected text once, at most 4, dropping the oldest', async () => {
+    const storage = new MemoryStorage();
+    for (let i = 1; i <= 6; i += 1) {
+      storage.setItem(SLOT_KEYS.A, `damage ${i}`);
+      await makeStore({ storage }).store.load();
+      await makeStore({ storage }).store.load(); // the same text again is not kept twice
+    }
+    expect(keptTexts(storage)).toEqual(['damage 3', 'damage 4', 'damage 5', 'damage 6']);
+  });
+
+  it('gives up the oldest kept copies when storage has no room, and never blocks the load', async () => {
+    const storage = new MemoryStorage();
+    storage.setItem(SLOT_KEYS.A, 'x'.repeat(400));
+    await makeStore({ storage }).store.load();
+    storage.setItem(SLOT_KEYS.A, 'y'.repeat(400));
+    storage.quota = storage.used() + 200; // the list cannot grow by a second copy
+    await makeStore({ storage }).store.load();
+    expect(keptTexts(storage)).toEqual(['y'.repeat(400)]);
+
+    storage.setItem(SLOT_KEYS.A, 'z'.repeat(400));
+    storage.quota = storage.used() - 1; // no room at all: the kept copy stays, the load still works
+    const { store } = makeStore({ storage });
+    expect(await store.load()).toBeNull();
+    expect(store.loadReport?.status).toBe('unreadable');
+    expect(keptTexts(storage)).toEqual(['y'.repeat(400)]);
+  });
+
+  it('keeps foreign content under the backup key instead of overwriting it', async () => {
+    const storage = new MemoryStorage();
+    storage.setItem(UNREADABLE_BACKUP_KEY, 'hand-made note');
+    storage.setItem(SLOT_KEYS.B, 'damage');
+    await makeStore({ storage }).store.load();
+    expect(keptTexts(storage)).toEqual(['hand-made note', 'damage']);
   });
 
   it('a save from a newer build is never loaded, never overwritten and never lost', async () => {
@@ -202,8 +267,7 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     expect(store.loadReport?.slots[0]).toMatchObject({ slot: 'A', outcome: 'tooNew', version: 99 });
     expect(store.loadReport?.notice).toMatchObject({ kind: 'tooNew', messageKey: 'save.problem.tooNew', ongoing: true });
     expect(store.problem?.kind).toBe('tooNew');
-    const kept = JSON.parse(storage.getItem(UNREADABLE_BACKUP_KEY)!) as { slots: Record<string, string> };
-    expect(kept.slots.A).toBe(newerText);
+    expect(keptTexts(storage)).toEqual([newerText]);
 
     // This (older) build writes nothing until reloaded, so the newer save survives.
     await store.save(v1Fixture(), { immediate: true });
@@ -230,7 +294,20 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     expect(store.problem?.kind).toBe('tooNew');
     await store.save(docWith(101), { immediate: true });
     expect(storage.getItem(SLOT_KEYS.B)).toBe(newerText);
-    expect(JSON.parse(storage.getItem(UNREADABLE_BACKUP_KEY)!).slots).toEqual({ B: newerText });
+    expect(keptTexts(storage)).toEqual([newerText]);
+  });
+
+  it('never overwrites a newer build’s slot even when save() runs before load()', async () => {
+    const { store: first, storage, clock } = makeStore();
+    await first.save(docWith(100), { immediate: true }); // A
+    const newerText = encodeEnvelope(JSON.stringify({ ...docWith(500), v: 2 }), 2, clock.now() + 5000);
+    storage.setItem(SLOT_KEYS.B, newerText);
+    const { store } = makeStore({ storage });
+    await store.save(docWith(101), { immediate: true }); // no load first
+    expect(store.writeCount).toBe(0);
+    expect(store.problem).toMatchObject({ kind: 'tooNew', ongoing: true });
+    expect(storage.getItem(SLOT_KEYS.B)).toBe(newerText);
+    expect(decodeSlot('A', storage.getItem(SLOT_KEYS.A))).toMatchObject({ ok: true, envelope: { v: 1 } });
   });
 
   it('sets a rejected valid-checksum copy aside even when an older copy loads', async () => {
@@ -241,15 +318,29 @@ describe('LocalSaveStore: corruption fallback (DESIGN B8 Load order)', () => {
     const { store } = makeStore({ storage });
     expect((await store.load())?.currencies.amber).toBe(100);
     expect(store.problem).toBeNull();
-    expect(JSON.parse(storage.getItem(UNREADABLE_BACKUP_KEY)!).slots).toEqual({ B: badText });
+    expect(keptTexts(storage)).toEqual([badText]);
   });
 
-  it('a damaged older copy next to a good newest one still says recovered (progress may be missing)', async () => {
+  it('unparsable text in the other slot says recovered: it may have been the newer copy', async () => {
     const { storage } = await twoSaves();
     storage.setItem(SLOT_KEYS.A, 'garbage');
     const { store } = makeStore({ storage });
     expect((await store.load())?.currencies.amber).toBe(200);
     expect(store.loadReport?.status).toBe('recovered');
+  });
+
+  it('a damaged payload written before the loaded copy loses nothing: loaded, no notice', async () => {
+    const { storage } = await twoSaves();
+    const env = JSON.parse(storage.getItem(SLOT_KEYS.A)!) as SlotEnvelope; // the older copy
+    storage.setItem(SLOT_KEYS.A, JSON.stringify({ ...env, payload: env.payload.replace('"amber":100', '"amber":9') }));
+    const { store } = makeStore({ storage });
+    const notices: (SaveNotice | null)[] = [];
+    store.onProblem((n) => notices.push(n));
+    expect((await store.load())?.currencies.amber).toBe(200);
+    expect(store.loadReport).toMatchObject({ status: 'loaded', slot: 'B', notice: null });
+    expect(store.loadReport?.slots.find((s) => s.slot === 'A')?.outcome).toBe('checksum');
+    expect(notices).toEqual([]);
+    expect(store.nextWriteSlot).toBe('A'); // the damaged copy is replaced by the next write
   });
 
   it('a missing older slot is normal (first save of a profile)', async () => {

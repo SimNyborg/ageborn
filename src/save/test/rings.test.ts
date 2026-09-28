@@ -66,6 +66,18 @@ describe('JsonRing', () => {
     expect(storage.getItem('ring')).toBeNull();
   });
 
+  it('keeps copies, so later changes to a pushed object never leak into the ring', () => {
+    const storage = new MemoryStorage();
+    const ring = new JsonRing<{ n: number[] }>({ storage, key: 'objs', capacity: 3, parse: (x) => x as { n: number[] } });
+    const item = { n: [1] };
+    ring.push(item);
+    item.n.push(2);
+    ring.replace([item]);
+    item.n.push(3);
+    expect(ring.items()).toEqual([{ n: [1, 2] }]);
+    expect(JSON.parse(storage.getItem('objs')!)).toEqual([{ n: [1, 2] }]);
+  });
+
   it('refuses a capacity below 1', () => {
     expect(() => numbers(new MemoryStorage(), 0)).toThrow();
   });
@@ -97,6 +109,33 @@ describe('EventLogStore (DESIGN A8 Instrumentation, B8 ageborn.eventlog)', () =>
     mine.record(8, 'matchEnd', 'm1');
     expect(new EventLog({ clock: new FixedClock(9), store: storage }).entries()).toHaveLength(2);
     expect(JSON.parse(mine.exportJson())).toEqual(JSON.parse(new EventLog({ clock: new FixedClock(9), store: storage }).export()));
+  });
+
+  it("never writes a stale list over the app EventLog's newer entries on the shared key", () => {
+    const storage = new MemoryStorage();
+    const appLog = new EventLog({ clock: new FixedClock(1), store: storage });
+    const mine = new EventLogStore(storage);
+    for (let i = 0; i < 4; i += 1) appLog.record('beatShown', `b${i}`);
+    expect(mine.items()).toHaveLength(4); // cached now
+    for (let i = 4; i < 8; i += 1) appLog.record('beatShown', `b${i}`);
+
+    expect(mine.shrink()).toBe(true); // the save store frees space: keeps the newest half of all 8
+    expect((JSON.parse(storage.getItem(SAVE_KEYS.eventLog)!) as { id: string }[]).map((e) => e.id)).toEqual(['b4', 'b5', 'b6', 'b7']);
+
+    appLog.record('matchStart', 'm1');
+    mine.record(2, 'matchEnd', 'm1');
+    expect(mine.items().map((e) => e.id).slice(-2)).toEqual(['m1', 'm1']);
+    expect(JSON.parse(storage.getItem(SAVE_KEYS.eventLog)!).at(-2)).toMatchObject({ kind: 'matchStart' });
+  });
+
+  it('a ring that is the only writer keeps its session list after giving up space', () => {
+    const storage = new MemoryStorage();
+    const ring = numbers(storage, 8);
+    for (let i = 0; i < 8; i += 1) ring.push(i);
+    ring.shrink();
+    ring.push(8);
+    expect(ring.items()).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(JSON.parse(storage.getItem('ring')!)).toEqual([5, 6, 7, 8]);
   });
 });
 

@@ -4,20 +4,23 @@
  * - Sound effects are pre-rendered ZzFX buffers (`bank.ts`): `prerender()` renders the boot groups
  *   before the first gesture (< 300 ms, B16), `renderLazily()` the rest in idle time; a sound that is
  *   not rendered yet renders on first use.
- * - The AudioContext is created and resumed by `unlock()` on the first user gesture (iOS). Effects
- *   played before that are dropped (nobody could hear them); the music cue, layers, transposition and
- *   bus volumes are remembered and applied on unlock.
- * - `play` goes through the voice policy (`voices.ts`): 4 voices per id, 40 ms retrigger gap, a global
- *   cap, priority (higher wins; pass a higher `priority` for sounds the player caused), a random
- *   variant, pitch ±8% and volume ±3 dB. `pitchBp` scales the rate (10000 = as is), `volumeDb` adds
- *   gain and `pan` (-1..1) places the sound.
+ * - The AudioContext is created and resumed by `unlock()` on the first user gesture (iOS). When that
+ *   attempt does not start it (the event carried no user activation, such as a touch `pointerdown`),
+ *   every following gesture retries until it runs (`unlock.ts`). Effects played before that are
+ *   dropped (nobody could hear them); the music cue, layers, transposition and bus volumes are
+ *   remembered and applied on unlock.
+ * - `play` goes through the voice policy (`voices.ts`): 4 voices per id, an absolute 40 ms retrigger
+ *   gap, a global cap, priority for the caps (higher wins; pass a higher `priority` for sounds the
+ *   player caused), a random variant, pitch ±8% and volume ±3 dB. `pitchBp` scales the rate (10000 =
+ *   as is), `volumeDb` adds gain and `pan` (-1..1) places the sound. Non-finite numbers fall back to
+ *   the defaults instead of throwing inside the caller's frame.
  * - `music.duck(db, ms)` lowers the music bus by |db| for `ms` (A13: 6 dB during powers, evolves and
  *   walkouts); `music.transpose(semitones)` sets the total key change (see `musicEngine.ts`).
  */
 import type { AudioService, Bus, MusicCueId, MusicLayer, SoundId } from '@/contracts';
 import { SoundBank, type RenderStats } from './bank';
 import { Mixer } from './mixer';
-import { music as defaultMusic, type MusicDef } from './music';
+import { continuesBattle, music as defaultMusic, type MusicDef } from './music';
 import { MUSIC_LAYERS, MusicEngine } from './musicEngine';
 import {
   BOOT_GROUPS,
@@ -70,9 +73,16 @@ export interface ServiceStats {
 }
 
 const SCHEDULER_MS = 25;
+/** Crossfade and fade-out time when the caller gives none. */
+const DEFAULT_FADE_MS = 600;
 
 function defaultNow(): number {
   return typeof performance !== 'undefined' ? performance.now() : Date.now();
+}
+
+/** `x` when it is a finite number, else `fallback`. */
+function finite(x: number | undefined, fallback: number): number {
+  return x !== undefined && Number.isFinite(x) ? x : fallback;
 }
 
 export class WebAudioService implements AudioService {
@@ -230,8 +240,9 @@ export class WebAudioService implements AudioService {
     this.lastVariant.set(id, k);
     const buffer = buffers[k] as AudioBuffer;
     const vary = rollVariation(this.random, def.pitchVarBp ?? DEFAULT_PITCH_VAR_BP, def.volVarDb ?? DEFAULT_VOL_VAR_DB);
-    const rate = Math.max(0.25, Math.min(4, vary.rate * ((o?.pitchBp ?? 10000) / 10000)));
-    const gainDb = (def.gainDb ?? 0) + vary.gainDb + (o?.volumeDb ?? 0);
+    // A non-finite option would make the AudioParam setters throw inside the caller's frame.
+    const rate = Math.max(0.25, Math.min(4, vary.rate * (finite(o?.pitchBp, 10000) / 10000)));
+    const gainDb = (def.gainDb ?? 0) + vary.gainDb + finite(o?.volumeDb, 0);
 
     const src = ctx.createBufferSource();
     src.buffer = buffer;
@@ -240,7 +251,7 @@ export class WebAudioService implements AudioService {
     gain.gain.value = dbToGain(gainDb);
     src.connect(gain);
     let last: AudioNode = gain;
-    const pan = o?.pan ?? 0;
+    const pan = finite(o?.pan, 0);
     if (pan !== 0 && typeof ctx.createStereoPanner === 'function') {
       const p = ctx.createStereoPanner();
       p.pan.value = Math.max(-1, Math.min(1, pan));
@@ -265,7 +276,7 @@ export class WebAudioService implements AudioService {
    * while audio is locked or the sound is not available.
    */
   preview(id: SoundId, variant: number): boolean {
-    const def = this.soundDefs[id];
+    const def = Object.hasOwn(this.soundDefs, id) ? this.soundDefs[id] : undefined;
     const ctx = this.ctx;
     const mixer = this.mixer;
     if (!def || !ctx || !mixer || !isRunning(ctx)) return false;
@@ -346,8 +357,9 @@ export class WebAudioService implements AudioService {
 
   readonly music: AudioService['music'] = {
     setCue: (cue, o) => {
-      const fadeMs = o?.fadeMs ?? 600;
-      if (!Object.hasOwn(this.musicDefs, cue)) {
+      const fadeMs = Math.max(0, finite(o?.fadeMs, DEFAULT_FADE_MS));
+      const def = Object.hasOwn(this.musicDefs, cue) ? this.musicDefs[cue] : undefined;
+      if (!def) {
         this.warnOnce(`Unknown music cue "${cue}"`);
         return;
       }
@@ -355,9 +367,9 @@ export class WebAudioService implements AudioService {
         this.engine.setCue(cue, fadeMs);
         this.startScheduler();
       } else {
-        const prevRole = this.pendingCue ? this.musicDefs[this.pendingCue.cue]?.role : undefined;
-        const nextRole = this.musicDefs[cue]?.role;
-        if (!(prevRole === 'battle' && (nextRole === 'battle' || nextRole === 'stinger'))) {
+        // The same carry-over rule the engine applies (see music.ts `continuesBattle`).
+        const prevRole = this.pendingCue ? (this.musicDefs[this.pendingCue.cue]?.role ?? null) : null;
+        if (!continuesBattle(prevRole, def.role)) {
           this.pendingTranspose = 0;
           for (const l of MUSIC_LAYERS) this.pendingLayers[l] = 0;
         }
@@ -365,19 +377,21 @@ export class WebAudioService implements AudioService {
       }
     },
     setLayer: (l, v01) => {
-      this.pendingLayers[l] = Number.isFinite(v01) ? Math.min(1, Math.max(0, v01)) : 0;
-      this.engine?.setLayer(l, v01);
+      const v = Math.min(1, Math.max(0, finite(v01, 0)));
+      this.pendingLayers[l] = v;
+      this.engine?.setLayer(l, v);
     },
     transpose: (semitones) => {
-      this.pendingTranspose = Number.isFinite(semitones) ? Math.round(semitones) : 0;
-      this.engine?.transpose(semitones);
+      this.pendingTranspose = Math.round(finite(semitones, 0));
+      this.engine?.transpose(this.pendingTranspose);
     },
     duck: (db, ms) => {
+      if (!Number.isFinite(db) || !Number.isFinite(ms)) return;
       this.mixer?.duckMusic(db, ms);
     },
     stop: (fadeMs) => {
       this.pendingCue = null;
-      this.engine?.stop(fadeMs ?? 600);
+      this.engine?.stop(Math.max(0, finite(fadeMs, DEFAULT_FADE_MS)));
     },
   };
 

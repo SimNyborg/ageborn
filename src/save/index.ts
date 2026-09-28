@@ -15,6 +15,7 @@ export {
   SAVE_FILE_EXTENSION,
   SAVE_KEYS,
   SLOT_KEYS,
+  UNREADABLE_BACKUP_COPIES,
   UNREADABLE_BACKUP_KEY,
   type SlotId,
 } from './defaults';
@@ -48,3 +49,4 @@ export {
   type SlotReport,
   type Timers,
 } from './store.localStorage';
+export { readUnreadableCopies, type UnreadableCopy } from './unreadable';

@@ -61,6 +61,46 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     expect(services.eventLog.entries().filter((e) => e.kind === 'matchEnd')).toHaveLength(2);
   }, 60_000);
 
+  it('a lost match 2 offers a retry, and Next still moves on (A8 "a loss still gives rewards plus a retry")', async () => {
+    const { c } = await controller();
+    c.showTitle();
+    c.play();
+    await finish(c);
+    c.next();
+    const m2 = c.route.value;
+    if (m2.id !== 'battle') throw new Error('match 2 should be running');
+    // Retreat (a loss) once it unlocks at 1:00 (A2.10).
+    m2.battle.session.fastForward(20 * 62);
+    expect(m2.battle.session.status.value).toBe('running');
+    m2.battle.session.issue({ t: 'retreat', side: 0 });
+    await finish(c);
+    const lost = c.route.value;
+    if (lost.id !== 'result') throw new Error('result expected');
+    expect(lost.result.input.outcome).toMatchObject({ winner: 1, reason: 'retreat' });
+    expect(c.canRetry(lost.result)).toBe(true);
+    expect(c.step.value).toBe('capsule2');
+
+    c.retry();
+    const again = c.route.value;
+    if (again.id !== 'battle') throw new Error('the retry should be running');
+    expect(again.battle.setup).toMatchObject({ mode: 'tutorial', matchNumber: 2, opponent: { generalId: 'pip', isAI: true } });
+    expect(again.battle.session.status.value).toBe('running');
+    await finish(c);
+    expect(c.route.value.id).toBe('result');
+    expect(c.step.value).toBe('capsule2');
+    c.next();
+    expect(c.step.value).toBe('home');
+  }, 60_000);
+
+  it('names the player from i18n before a save exists (no hard-coded label)', async () => {
+    const { c, services } = await controller();
+    c.showTitle();
+    const r = c.route.value;
+    if (r.id !== 'title' || !r.battle) throw new Error('match 1 should wait on the title');
+    expect(r.battle.setup.config.sides[0].label).toBe(services.i18n.t('app.you'));
+    expect(r.battle.setup.config.sides[1].label).toBe(services.i18n.t('general.grogg.name'));
+  });
+
   it('Quick Battle: Short War vs a tier III AI General; play again, replay, quit', async () => {
     const { c } = await controller();
     const b = c.quickBattle('short');

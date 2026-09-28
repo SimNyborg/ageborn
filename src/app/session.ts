@@ -15,6 +15,7 @@
  * - Human commands arrive through `issue`, bot commands from `BotController.onTick`, which only ever
  *   receives a delayed `Observation` (A7.1 honesty, B10). Both are stamped with the execution tick
  *   (`sim.tick + 1`) and a per-side sequence number, and every command is recorded for the replay.
+ *   Emotes of the other side are relayed to bots that answer them (A7.2).
  * - Pause, speed (1x / 1.5x / 2x), global freezes (`view.simFrozen`, A12) and the visibility pause
  *   (the tab is hidden) stop time. The HUD model signal updates at 15 Hz (B6 HUD).
  * - When the sim reports an outcome the session stops stepping (the view keeps animating), reduces
@@ -31,6 +32,7 @@ import type {
   BotController,
   CardId,
   Command,
+  EmoteId,
   Foil,
   HudModel,
   MatchResultInput,
@@ -150,6 +152,15 @@ interface BotSlot {
   side: Side;
   controller: BotController;
   ring: RingBuffer<Observation>;
+}
+
+/** A bot that answers emotes (WP3's `AiBotController.hearEmote`, A7.2 emote rule). */
+interface EmoteListener {
+  hearEmote(emote: EmoteId, tick: number): void;
+}
+
+function hearsEmotes(c: BotController): c is BotController & EmoteListener {
+  return typeof (c as Partial<EmoteListener>).hearEmote === 'function';
 }
 
 export class BattleSessionImpl implements BattleSession {
@@ -399,11 +410,23 @@ export class BattleSessionImpl implements BattleSession {
     cmds.sort((a, b) => a.side - b.side || a.seq - b.seq);
     const events = this.sim.step(cmds);
     this.recorded.push(...cmds);
+    this.relayEmotes(events);
     this.stats.push(events);
     this.hudBuilder.afterStep?.();
     this.view?.onEvents(events);
     for (const l of this.tickListeners) l(events, this.sim);
     if (this.sim.state.outcome) this.finish();
+  }
+
+  /**
+   * A7.2 emotes: "If the player emotes first, the bot may reply". Emotes are on screen for both
+   * sides, so every bot hears the other side's emotes as they happen (like WP3's `BotMatch`).
+   */
+  private relayEmotes(events: readonly SimEvent[]): void {
+    for (const e of events) {
+      if (e.e !== 'emote') continue;
+      for (const b of this.bots) if (b.side !== e.side && hearsEmotes(b.controller)) b.controller.hearEmote(e.emote, e.tick);
+    }
   }
 
   private refreshHud(force: boolean): void {

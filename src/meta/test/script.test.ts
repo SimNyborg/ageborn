@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { SaveDoc } from '@/contracts';
-import { C, M, clock, fresh, lastPending, play, rarityOf } from './helpers';
+import { C, M, clock, fresh, lastPending, matchInput, play, rarityOf } from './helpers';
 
 function openLast(s: SaveDoc) {
   return M.openCapsule(s, lastPending(s).id);
@@ -74,6 +74,18 @@ describe('onboarding script (A6.5)', () => {
     const r = M.upgrade(s, 'bonker', C);
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.collection['bonker']?.level).toBe(2);
+  });
+
+  it('a scripted Age Capsule follows the script, belongs to no age and needs no age dialog', () => {
+    let s = fresh(11);
+    for (let i = 0; i < 4; i += 1) s = openLast(M.grantCapsule(s, 'win', C, clock())).save;
+    const c = clock();
+    const scriptedWin = { ...s, flags: { ...s.flags, 'meta.ladderPlayed': true } };
+    const win = matchInput('daily', 'win', M.pickOpponent(scriptedWin, 'daily', C, c));
+    expect(M.ageCapsuleDue(scriptedWin, win, C, c)).toBe(false);
+    const cap = lastPending(M.applyMatchResult(scriptedWin, win, C, c, { age: 'modern' }).save);
+    expect(cap).toMatchObject({ kind: 'age', tier: 'aeon', scriptIndex: 5, age: null });
+    expect(cap.contents.stacks.some((x) => x.card === 'mammoth_matriarch')).toBe(true);
   });
 
   it('Age Unlock Capsules do not take a script step', () => {

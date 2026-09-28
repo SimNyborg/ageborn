@@ -385,18 +385,20 @@ export function RoadBar() {
         <RoadIcon size={30} />
       </span>
       <span class="home-road__main">
-        <span class="home-road__label">
-          {next ? t('ui.home.roadNext', { n: formatInt(next.trophies, locale) }) : t('ui.home.roadDone')}
+        <span class="home-road__row">
+          <span class="home-road__label">
+            {next ? t('ui.home.roadNext', { n: formatInt(next.trophies, locale) }) : t('ui.home.roadDone')}
+          </span>
+          {next ? (
+            <span class="home-road__next" data-testid="home-road-next">
+              {next.rewards.map((r, i) => (
+                <RoadRewardView key={i} r={r} compact />
+              ))}
+            </span>
+          ) : null}
         </span>
         <ProgressBar value={rp.best - rp.from} max={next ? next.trophies - rp.from : 1} tone="gold" thin label={t('ui.nav.trophyRoad')} />
       </span>
-      {next ? (
-        <span class="home-road__next" data-testid="home-road-next">
-          {next.rewards.map((r, i) => (
-            <RoadRewardView key={i} r={r} compact />
-          ))}
-        </span>
-      ) : null}
       {rp.claimable > 0 ? <Badge tone="green">{rp.claimable}</Badge> : null}
     </button>
   );

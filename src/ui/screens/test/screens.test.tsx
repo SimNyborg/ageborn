@@ -203,6 +203,13 @@ describe('AI labeling on every surface (A7.1)', () => {
     for (const g of m.qa('[data-testid^="cq-gen-"]')) expect(g.querySelector('[data-testid="ai-badge"]')).not.toBeNull();
   });
 
+  it('every General in the Skirmish picker carries the AI badge', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'modeSelect', focus: 'skirmish' }] });
+    const gens = m.qa('[data-testid^="skirmish-general-"]');
+    expect(gens.length).toBeGreaterThan(8);
+    for (const g of gens) expect(g.querySelector('[data-testid="ai-badge"]')).not.toBeNull();
+  });
+
   it('Settings > About says all opponents are AI', () => {
     m = mount({ routes: [{ id: 'home' }, { id: 'settings' }] });
     expect(text(m.q('[data-testid="about-ai"]')!)).toBe('All opponents in this version are AI.');

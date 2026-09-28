@@ -3,7 +3,7 @@ import { midiToHz } from '../instruments';
 import { music, type MusicDef } from '../music';
 import { MusicEngine } from '../musicEngine';
 import type { Score } from '../sequencer';
-import { FakeContext, type FakeGain, FakeOscillator } from './fakeContext';
+import { FakeBufferSource, FakeContext, FakeGain, FakeOscillator } from './fakeContext';
 
 /** A one-bar test score: a base note every beat, an intensity note on beat 3, overdrive 8 BPM. */
 function testScore(extra: Partial<Score> = {}): Score {
@@ -191,6 +191,70 @@ describe('music engine', () => {
     expect(engine.setCue('music.nope', 0)).toBe(false);
     expect(engine.setCue('music.nope', 0)).toBe(false);
     expect(warns).toHaveLength(1);
+  });
+
+  it('plays a composed file cue with layer stems (B7: any cue can point to a file)', async () => {
+    const ctx = new FakeContext();
+    ctx.state = 'running';
+    const loaded: string[] = [];
+    const m: Record<string, MusicDef> = {
+      ...manifest,
+      'music.future': { kind: 'file', src: 'future.ogg', layers: { siege: 'future-siege.ogg' }, role: 'battle' },
+      'stinger.defeat': { kind: 'file', src: 'defeat.ogg', role: 'stinger' },
+    };
+    const engine = new MusicEngine(ctx as unknown as BaseAudioContext, ctx.createGain() as unknown as AudioNode, {
+      manifest: m,
+      warn: () => undefined,
+      loadFile: (src) => {
+        loaded.push(src);
+        return Promise.resolve(ctx.createBuffer(1, 48000, 48000) as unknown as AudioBuffer);
+      },
+    });
+    const fileSources = (): FakeBufferSource[] => ctx.of(FakeBufferSource).filter((s) => s.buffer?.length === 48000);
+
+    expect(engine.setCue('music.future', 0)).toBe(true);
+    engine.setLayer('siege', 0.5);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(loaded).toEqual(['future.ogg', 'future-siege.ogg']);
+    const [main, stem] = fileSources();
+    expect(main!.loop && stem!.loop).toBe(true);
+    // The stem plays at its layer's level and follows it.
+    const stemGain = stem!.outputs[0] as FakeGain;
+    expect(stemGain.gain.value).toBe(0.5);
+    engine.setLayer('siege', 1);
+    expect(stemGain.gain.events.at(-1)).toMatchObject({ kind: 'target', value: 1 });
+
+    // A file stinger plays once, the battle file fades out, and the engine goes quiet at the end.
+    engine.setCue('stinger.defeat', 300);
+    expect(main!.stoppedAt).not.toBeNull();
+    await new Promise((r) => setTimeout(r, 0));
+    const stinger = fileSources()[2]!;
+    expect(stinger.loop).toBe(false);
+    run(ctx, engine, 1.5);
+    expect(engine.cue).toBeNull();
+    expect(engine.active).toBe(false);
+  });
+
+  it('refuses a file cue when there is no file loader', () => {
+    const warns: string[] = [];
+    const ctx = new FakeContext();
+    const m: Record<string, MusicDef> = { 'music.menu': { kind: 'file', src: 'menu.ogg', role: 'menu' } };
+    const engine = new MusicEngine(ctx as unknown as BaseAudioContext, ctx.createGain() as unknown as AudioNode, { manifest: m, warn: (w) => warns.push(w) });
+    expect(engine.setCue('music.menu', 0)).toBe(false);
+    expect(warns).toEqual(['No file loader for music cue "music.menu"']);
+  });
+
+  it('pumps the Future arrangement on every beat (A13 sidechain pump)', () => {
+    const { ctx, engine } = setup(music as Record<string, MusicDef>);
+    engine.setCue('music.future', 0);
+    run(ctx, engine, 1.5);
+    const depth = (music['music.future'] as { score: Score }).score.pump!.depth;
+    const pump = ctx.of(FakeGain).find(
+      (g) => g.gain.events.filter((e) => e.kind === 'set' && Math.abs((e.value ?? 0) - (1 - depth)) < 1e-9).length >= 2 && g.gain.events.some((e) => e.kind === 'target' && e.value === 1),
+    );
+    expect(pump).toBeDefined();
+    const dips = pump!.gain.events.filter((e) => e.kind === 'set').map((e) => e.time);
+    for (let k = 1; k < dips.length; k++) expect(dips[k]! - dips[k - 1]!).toBeCloseTo(60 / 110, 6);
   });
 
   it('plays every real cue in the manifest without errors', () => {

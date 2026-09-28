@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { fakeContent } from '@/contracts/fakes/content';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
+import { commanderId } from '@/meta';
 import { MATCH1, MATCH1_SEED, MATCH1_TRAYS, MATCH2 } from '@/tutorial';
-import { botProfileFor, generalOpponent, generalPlan, matchSetupFor, nextMatchNumber, playerSide, quickBattle, tutorialMatch1, tutorialMatch2 } from '../matchSetup';
+import { botProfileFor, generalOpponent, generalPlan, matchSetupFor, nextMatchNumber, playerSide, quickBattle, standardLevel, tutorialMatch1, tutorialMatch2 } from '../matchSetup';
 
 describe('match 1 setup (A8)', () => {
   const s = tutorialMatch1(null, content, 'Old Grogg');
@@ -73,17 +74,47 @@ describe('matchSetupFor (B11)', () => {
     expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 3 }), opponent, 'ladder', content).script?.id).toBe('match4');
   });
 
-  it('gives new players the A6.8 mistake bonus', () => {
+  it('gives new players the A6.8 mistake bonus (a missing save is a first launch)', () => {
     expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 3 })).mistakeBonusBp).toBe(1000);
-    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 25 })).mistakeBonusBp).toBe(0);
+    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 19 })).mistakeBonusBp).toBe(1000);
+    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 20 })).mistakeBonusBp).toBe(0);
+    expect(botProfileFor(opponent, content, null).mistakeBonusBp).toBe(1000);
     expect(botProfileFor(opponent, content, null).weights).toEqual(content.generals.list.kettle.weights);
+  });
+
+  it("plays a procedural AI Commander with its personality General's weights and favourite card (A7.4)", () => {
+    const commander = { ...opponent, generalId: commanderId('moss', 'pebbler'), displayName: 'AI · Brakka Stonejaw' };
+    const p = botProfileFor(commander, content, null);
+    expect(p.generalId).toBe('moss');
+    expect(p.weights).toEqual(content.generals.list.moss.weights);
+    expect(p.openings).toContain('favorite:pebbler');
+    expect(p.tier).toBe(2);
+  });
+
+  it('puts the resolved opponent name on the nameplate and the player name from the save', () => {
+    const keyed = { ...opponent, displayName: 'general.kettle.name' };
+    const s = matchSetupFor(fakeSaveDoc({ matchesPlayed: 10 }), keyed, 'ladder', content, { opponentLabel: 'Captain Kettle' });
+    expect(s.config.sides[1].label).toBe('Captain Kettle');
+    expect(s.config.sides[0].label).toBe(fakeSaveDoc().profile.name);
+    expect(matchSetupFor(null, opponent, 'skirmish', content, { player: 'You' }).config.sides[0].label).toBe('You');
+  });
+
+  it('Skirmish "Standard levels" puts every card of the player at L7 too (A6.8)', () => {
+    const save = fakeSaveDoc({ matchesPlayed: 10 });
+    save.collection.bonker = { level: 4, copies: 0, isNew: false, foil: 'none' };
+    const std = matchSetupFor(save, opponent, 'skirmish', content, { standardLevels: true });
+    expect(standardLevel(content)).toBe(7);
+    expect(std.config.sides[0].levels.bonker).toBe(7);
+    for (const id of Object.keys(content.units)) expect(std.config.sides[0].levels[id]).toBe(7);
+    expect(matchSetupFor(save, opponent, 'skirmish', content).config.sides[0].levels.bonker).toBe(4);
   });
 });
 
 describe('helpers', () => {
   it('playerSide without a save uses the starter plan at level 1', () => {
-    const side = playerSide(null, content);
+    const side = playerSide(null, content, 'You');
     expect(side.isBot).toBe(false);
+    expect(side.label).toBe('You');
     expect(side.loadouts.stone?.units.slice(0, 3)).toEqual(['bonker', 'pebbler', 'tuskback']);
     expect(side.levels.bonker).toBe(1);
   });

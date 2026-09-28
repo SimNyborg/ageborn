@@ -36,7 +36,10 @@ export interface RevealCard {
   isNew: boolean;
   /** Dust this stack converted into (max level cards, duplicate skins). */
   dust: number;
-  /** The first time this Legendary is revealed: the full walkout plays and cannot be skipped (A10 step 6). */
+  /**
+   * The first time this Legendary is revealed (listed in `firstLegendaryReveal`, or NEW): the full
+   * walkout plays and cannot be skipped (A10 step 6).
+   */
   firstLegendary: boolean;
   /** Indexes of the capsules this card came from. */
   sources: number[];
@@ -85,11 +88,15 @@ export function revealCards(reveals: readonly CapsuleReveal[], catalog: CapsuleC
   reveals.forEach((rev, ci) => {
     for (const st of rev.capsule.contents.stacks) {
       const key = `c:${st.card}`;
+      // A NEW Legendary is by definition revealed for the first time, even if the meta's
+      // `firstLegendaryReveal` list missed it: the full walkout never turns into a skippable one.
+      const first = st.rarity === 'legendary' && (firstLegendary.has(st.card) || st.isNew);
       const had = byKey.get(key);
       if (had) {
         had.copies += st.copies;
         had.dust += st.dust;
         had.isNew ||= st.isNew;
+        had.firstLegendary ||= first;
         if (FOIL_RANK[st.foil] > FOIL_RANK[had.foil]) had.foil = st.foil;
         if (!had.sources.includes(ci)) had.sources.push(ci);
         continue;
@@ -105,7 +112,7 @@ export function revealCards(reveals: readonly CapsuleReveal[], catalog: CapsuleC
         foil: st.foil,
         isNew: st.isNew,
         dust: st.dust,
-        firstLegendary: st.rarity === 'legendary' && firstLegendary.has(st.card),
+        firstLegendary: first,
         sources: [ci],
       };
       byKey.set(key, card);
@@ -264,14 +271,19 @@ export interface PityLine {
   n: number;
 }
 
-/** "Within N capsules" lines (A6.5). The counters count opened capsules since the last hit. */
-export function pityLines(p: PityCounters, rules: PityRules): PityLine[] {
+/**
+ * "Within N capsules" lines (A6.5). The counters count opened capsules since the last hit.
+ * New-card protection only holds "while unowned cards exist in the pool", so its line is left out
+ * when `newCardProtection` is false (a promise the show cannot keep is never shown).
+ */
+export function pityLines(p: PityCounters, rules: PityRules, newCardProtection = true): PityLine[] {
   const within = (every: number, since: number): number => Math.max(1, every - since);
-  return [
+  const lines: PityLine[] = [
     { key: 'capsule.pity.epic', n: within(rules.epicEvery, p.sinceEpic) },
     { key: 'capsule.pity.legendary', n: within(rules.legendaryGuaranteeAt, p.sinceLegendary) },
-    { key: 'capsule.pity.newCard', n: within(rules.newCardEvery, p.sinceNewCard) },
   ];
+  if (newCardProtection) lines.push({ key: 'capsule.pity.newCard', n: within(rules.newCardEvery, p.sinceNewCard) });
+  return lines;
 }
 
 /** Wardrobe pity lines (A6.5: Epic or better every 5 crates, Legendary every 25). */

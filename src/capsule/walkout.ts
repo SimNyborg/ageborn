@@ -1,5 +1,7 @@
 /**
- * Legendary walkout and NEW Epic mini-walkout (DESIGN A10 steps 5 and 6).
+ * Legendary walkout and the 2 s mini-walkout of a NEW Epic (DESIGN A10 steps 5 and 6), which the
+ * NEW cards of the first onboarding capsule get as well (A8 "Spear Hunter NEW (short walkout)").
+ * Turret cards are staged with `createTurret` (they drop in and fire); units with `createUnit`.
  *
  * Legendary reveal order: the screen dims to a spotlight and rings spin; a Legendary rarity flare;
  * a gold-rimmed silhouette grows from 20% to full size; a bass drop as the unit bursts into colour
@@ -7,7 +9,7 @@
  * name banner with "LEGENDARY", confetti, and "NEW!" or the copies bar. Beats come from the plan.
  */
 import { BlurFilter, ColorMatrixFilter, Container, FillGradient, Graphics, Sprite, type Text } from 'pixi.js';
-import type { AgeId, ArtProvider, I18n, TeamPreset, UnitView } from '@/contracts';
+import type { AgeId, ArtProvider, I18n, RoleGroup, TeamPreset, UnitView } from '@/contracts';
 import type { CosmeticRng } from '@/core';
 import { clamp01, easeInCubic, easeInOutCubic, easeOutBack, easeOutCubic, easeOutElastic, hump, lerp, span } from './ease';
 import { drawBolt, glowSprite, label, type Particles } from './fx';
@@ -15,7 +17,7 @@ import { AGE_COLORS, RARITY_COLORS, ROOM, shade } from './palette';
 import { MINI_BEATS, type MiniWalkoutStep, type WalkoutBeats, type WalkoutStep } from './plan';
 import type { RevealCard } from './summaryModel';
 import { confettiTexture, coneTexture, dotTexture, glowTexture, raysTexture, starTexture } from './textures';
-import type { CapsuleCatalog, CardProgress } from './types';
+import type { CapsuleCatalog, CardInfo, CardProgress } from './types';
 
 export interface WalkoutDeps {
   art: ArtProvider;
@@ -115,28 +117,58 @@ class FloorRings {
   }
 }
 
-/** Two copies of the unit: the body (silhouette → colour) and a blurred gold rim behind it. */
+/** The clips a walkout asks for; turrets map them onto their own clip set. */
+type WalkoutClip = 'idle' | 'spawn' | 'walk' | 'attack' | 'ability' | 'victory';
+
+/** One drawn copy of the card: a `UnitView` or, for turret cards, a `TurretView` (DESIGN B5). */
+interface Performer {
+  readonly root: Container;
+  play(clip: WalkoutClip, loop?: boolean): void;
+  update(dtMs: number): void;
+  destroy(): void;
+}
+
+const TURRET_CLIPS: Readonly<Record<WalkoutClip, 'build' | 'idle' | 'fire'>> = {
+  idle: 'idle',
+  spawn: 'build',
+  walk: 'idle',
+  attack: 'fire',
+  ability: 'fire',
+  victory: 'idle',
+};
+
+function performer(art: ArtProvider, info: CardInfo, skin: string | null, teamPreset: TeamPreset, fallbackGroup: RoleGroup): Performer {
+  const o = { visualId: info.visualId, side: 0 as const, teamPreset, ...(skin ? { skin } : {}) };
+  if (info.view === 'turret') {
+    const t = art.createTurret(o);
+    // Aim along the lane, the way it faces in battle.
+    t.aimAt(400);
+    t.play('idle');
+    return { root: t.root, play: (clip) => t.play(TURRET_CLIPS[clip]), update: (dt) => t.update(dt), destroy: () => t.destroy() };
+  }
+  const u: UnitView = art.createUnit(o);
+  u.setPose({ x: 0, y: 0, facing: 1, hpBp: 10000, shieldBp: 0, stunned: false, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: info.group ?? fallbackGroup });
+  u.play('idle', { loop: true });
+  return { root: u.root, play: (clip, loop = false) => u.play(clip, { loop }), update: (dt) => u.update(dt), destroy: () => u.destroy() };
+}
+
+/** Two copies of the card: the body (silhouette → colour) and a blurred rim glow behind it. */
 class UnitPair {
   readonly root = new Container();
-  readonly body: UnitView;
-  readonly rim: UnitView;
+  readonly body: Performer;
+  readonly rim: Performer;
   private readonly bodyFilter = flatFilter(0x0d0b16);
-  private readonly rimFilter = flatFilter(RARITY_COLORS.legendary);
+  private readonly rimFilter: ColorMatrixFilter;
   readonly baseScale: number;
 
-  constructor(art: ArtProvider, visualId: string, skin: string | null, teamPreset: TeamPreset, rimColor: number, group: 'epic' | 'legendary') {
-    const o = { visualId, side: 0 as const, teamPreset, ...(skin ? { skin } : {}) };
-    this.rim = art.createUnit(o);
-    this.body = art.createUnit(o);
+  constructor(art: ArtProvider, info: CardInfo, skin: string | null, teamPreset: TeamPreset, rimColor: number, fallbackGroup: RoleGroup) {
+    this.rim = performer(art, info, skin, teamPreset, fallbackGroup);
+    this.body = performer(art, info, skin, teamPreset, fallbackGroup);
     this.rimFilter = flatFilter(rimColor);
     this.rim.root.filters = [this.rimFilter, new BlurFilter({ strength: 9, quality: 3 })];
     this.rim.root.blendMode = 'add';
     this.body.root.filters = [this.bodyFilter];
     this.root.addChild(this.rim.root, this.body.root);
-    for (const u of [this.rim, this.body]) {
-      u.setPose({ x: 0, y: 0, facing: 1, hpBp: 10000, shieldBp: 0, stunned: false, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: group });
-      u.play('idle', { loop: true });
-    }
     const b = this.body.root.getLocalBounds();
     const h = Math.max(20, b.height || 40);
     this.baseScale = Math.max(0.5, Math.min(6, UNIT_H / h));
@@ -155,9 +187,9 @@ class UnitPair {
     this.rim.root.visible = alpha > 0.01;
   }
 
-  play(clip: string, loop = false): void {
-    this.body.play(clip, { loop });
-    this.rim.play(clip, { loop });
+  play(clip: WalkoutClip, loop = false): void {
+    this.body.play(clip, loop);
+    this.rim.play(clip, loop);
   }
 
   update(dtMs: number): void {
@@ -280,7 +312,7 @@ export class Walkout {
     this.flare.position.set(640, 300);
     this.flare.alpha = 0;
 
-    this.unit = new UnitPair(d.art, info.visualId, card.skin, d.teamPreset, this.color, this.mini ? 'epic' : 'legendary');
+    this.unit = new UnitPair(d.art, info, card.skin, d.teamPreset, this.color, this.mini ? 'epic' : 'legendary');
     this.unitHolder.addChild(this.unit.root);
     this.unitHolder.position.set(this.mini ? 640 : 560, this.mini ? 470 : FLOOR_Y);
     this.unitHolder.scale.set(0);
@@ -288,7 +320,8 @@ export class Walkout {
     this.shock.blendMode = 'add';
     this.bolts.blendMode = 'add';
 
-    const top = this.mini ? d.i18n.t('capsule.newEpic') : d.i18n.t('capsule.legendary');
+    // The mini-walkout is a NEW Epic's, or a NEW card's in the first onboarding capsule (A8).
+    const top = !this.mini ? d.i18n.t('capsule.legendary') : card.rarity === 'epic' ? d.i18n.t('capsule.newEpic') : d.i18n.t('capsule.newCard');
     this.bannerTop = label(top, this.mini ? 46 : 72, this.color, { outline: 8, letterSpacing: 6 });
     this.bannerTop.position.set(640, 112);
     this.bannerTop.alpha = 0;

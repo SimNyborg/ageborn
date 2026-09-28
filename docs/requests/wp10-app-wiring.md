@@ -35,6 +35,12 @@ Notes:
 - `playMusic` (default true) switches to `music.capsule`; set the next screen's cue after `onDone`.
 - `settings` honours `reduceMotion` (no shake, softer flashes), `vibrate` and `teamPreset`.
 - For "Open all" pass every reveal at once; the plan shows the summary plus Epic-or-better reveals.
+- Pass `newCardProtection={false}` once the arena's drop pool has no unowned card left: new-card
+  protection is off then (A6.5 "while unowned cards exist in the pool"), and the screen hides its
+  "New card within N" line instead of showing a promise the meta will not keep. Default true.
+- Onboarding capsule 1 (`capsule.scriptIndex === 1`) gives its NEW card (Spear Hunter) the 2 s short
+  walkout from A8; nothing to wire, it comes from the reveal. The A8 "Tap to crack it" hint can sit
+  on top of the screen while `data-phase="wait"`.
 
 ## E2E hooks (WP12, B13 step 3 "capsule 1 opens")
 

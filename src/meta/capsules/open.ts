@@ -15,7 +15,8 @@
 import type { CapsuleReveal, CapsuleStack, CardId, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { META_FLAGS } from '../rules';
-import { arenaOf, isOwned, poolOf, TIER_INDEX } from '../tables';
+import { arenaOf, poolOf, TIER_INDEX } from '../tables';
+import { cardsForRoll } from './grant';
 import { unlockTitles } from '../titles';
 import { betterFoil } from './foil';
 import { advancePity } from './pity';
@@ -34,7 +35,11 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
   if (!cap) throw new Error(`meta: no pending capsule "${id}"`);
   const maxLevel = t.economy.maxLevel;
   const pool = poolOf(t, arenaOf(s, t).dropAges);
-  const unownedInPool = pool.cards.some((c) => !isOwned(s, c));
+  // As in the roll: a card already inside an unopened capsule is on its way, so it needs no
+  // protection. Otherwise opening a pile newest-first would count misses past the A6.5 limit while
+  // the new cards wait in the older capsules.
+  const promised = cardsForRoll(s);
+  const unownedInPool = pool.cards.some((c) => !promised.has(c));
 
   const collection = { ...s.collection };
   const firstLegendaryReveal: CardId[] = [];

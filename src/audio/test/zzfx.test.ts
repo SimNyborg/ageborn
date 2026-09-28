@@ -102,6 +102,12 @@ const EXACT_CASES: Record<string, ZzfxParams> = {
   lowpass: [1, 0, 200, 0, 0.1, 0.1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, -800],
   highpass: [1, 0, 200, 0, 0.1, 0.1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1200],
   decaySustain: [1, 0, 440, 0.01, 0.1, 0.1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.4, 0.05],
+  // Upstream picks the wave by range, so designer arrays with odd shape values still match.
+  shapeHalf: [1, 0, 440, 0, 0.03, 0.03, 0.5, 1.5],
+  shapeNegative: [1, 0, 440, 0, 0.03, 0.03, -1, 1.5],
+  shapeFractionalSaw: [1, 0, 440, 0, 0.03, 0.03, 1.5, 0.7],
+  shapeFractionalTan: [1, 0, 440, 0, 0.03, 0.03, 2.5],
+  shapeAboveSquare: [1, 0, 440, 0, 0.03, 0.03, 7, 0.4],
 };
 
 describe('vendored ZzFX', () => {

@@ -12,7 +12,7 @@
  * Use `meta` (bound to the game content) or `createMeta(content)`. The `Meta` contract methods that
  * take no content (`openCapsule`, `openWardrobe`, `tickTimers`) use the bound content.
  */
-import type { AgeId, CardId, Clock, CompiledContent, FormatId, Meta, PendingCrate, Result, SaveDoc, SkinId } from '@/contracts';
+import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, PendingCrate, Result, RewardStep, SaveDoc, SkinId } from '@/contracts';
 import { content as gameContent, type Content, type ModifierId } from '@/content';
 import { grantCapsuleAt, grantCrateAt, openCapsuleWith, openCrate } from './capsules';
 import { conquestBoard, type ConquestEntry } from './conquest';
@@ -21,7 +21,7 @@ import { claimDaily, dailyModifierAt } from './daily';
 import { pickOpponentAt } from './matchmaking';
 import { newSaveAt } from './newSave';
 import { claimQuest, rerollQuest } from './quests';
-import { applyMatchResultAt } from './rewards';
+import { ageCapsuleDue, applyMatchResultAt } from './rewards';
 import { tables } from './tables';
 import { localNow, type LocalClock } from './time';
 import { tickTimersAt } from './timers';
@@ -34,6 +34,19 @@ import { autoFill, equipNow, equipSkin, setActivePlan, setWarPlan } from './warp
 export interface MetaRules extends Meta {
   /** The content `openCapsule`, `openWardrobe` and `tickTimers` use. */
   readonly content: Content;
+  /**
+   * The contract's `applyMatchResult`; `o.age` is the age the player picked for an Age Capsule the
+   * result grants (A6.4 dialog; ask first when {@link MetaRules.ageCapsuleDue} is true).
+   */
+  applyMatchResult(
+    s: SaveDoc,
+    r: MatchResultInput,
+    c: CompiledContent,
+    clock: Clock,
+    o?: { age?: AgeId },
+  ): { save: SaveDoc; rewards: RewardStep[] };
+  /** True when this result grants an Age Capsule whose age the player should pick first (A6.4). */
+  ageCapsuleDue(s: SaveDoc, r: MatchResultInput, c: CompiledContent, clock: Clock): boolean;
   /** Moves one banked Daily Capsule into the tray (A6.3). Reasons: noDailyCapsule. */
   claimDailyCapsule(s: SaveDoc, c: CompiledContent, clock: Clock): Result<SaveDoc>;
   /** Claims a finished quest; `age` is the Age Capsule age the player picked (A6.4, A6.7). */
@@ -61,7 +74,8 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
   return {
     content: t,
     newSave: (c, clock, seed) => newSaveAt(c, localNow(clock), seed),
-    applyMatchResult: (s, r, c, clock) => applyMatchResultAt(s, r, tables(c), localNow(clock)),
+    applyMatchResult: (s, r, c, clock, o) => applyMatchResultAt(s, r, tables(c), localNow(clock), o ?? {}),
+    ageCapsuleDue: (s, r, c, clock) => ageCapsuleDue(s, r, tables(c), localNow(clock)),
     grantCapsule: (s, kind, c, clock, o) => grantCapsuleAt(s, kind, tables(c), clock.now(), o ?? {}).save,
     openCapsule: (s, id) => openCapsuleWith(s, id, t),
     openWardrobe: (s, id) => openCrate(s, id, t),

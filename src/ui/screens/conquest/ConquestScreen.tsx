@@ -19,6 +19,7 @@ import { Modal } from '../../components/Modal';
 import type { MatchRequest, RouteOf } from '../../router';
 import { useUi } from '../context';
 import { conquestView, type ConquestEntry } from '../model/progress';
+import { useMatchStarter } from '../shared/MatchStarter';
 
 type StarRule = ConquestRules['stars'][number];
 
@@ -104,16 +105,17 @@ function GeneralModal(p: { e: ConquestEntry; onClose: () => void; onFight: () =>
 }
 
 export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
-  const { save, content, t, locale, router, services } = useUi();
+  const { save, content, t, locale, router } = useUi();
   const v = conquestView(save.value, content);
   const [open, setOpen] = useState<ConquestEntry | null>(null);
   const unlockArena = content.arenas.list.find((a) => a.index === v.unlockArena);
 
+  const starter = useMatchStarter();
+
   function fight(e: ConquestEntry) {
     const req: MatchRequest = { mode: 'conquest', general: e.general.id };
-    const opponent = services.prepareMatch(req);
     setOpen(null);
-    router.go({ id: 'vs', request: req, opponent });
+    starter.start(req);
   }
 
   return (
@@ -203,6 +205,7 @@ export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
         ) : null}
       </div>
       {open ? <GeneralModal e={open} onClose={() => setOpen(null)} onFight={() => fight(open)} /> : null}
+      {starter.dialog}
     </ScreenFrame>
   );
 }

@@ -76,6 +76,14 @@ describe('export codes (DESIGN B8 Export/import)', () => {
     expect(r).toEqual({ ok: true, value: v1Fixture(), fromVersion: 1 });
   });
 
+  it('accepts a file that starts with a byte-order mark, and keeps spaces inside names', () => {
+    const BOM = String.fromCharCode(0xfeff);
+    const doc = v1Fixture();
+    doc.profile.name = 'Sim  the Bold';
+    expect(importSaveCode(`${BOM}${JSON.stringify(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 1 });
+    expect(importSaveCode(`${BOM}${encodeSaveCode(doc)}\n`)).toEqual({ ok: true, value: doc, fromVersion: 1 });
+  });
+
   it('rejects damaged or foreign codes with a reason and a message key', () => {
     const code = encodeSaveCode(v1Fixture());
     const flip = (i: number) => code.slice(0, i) + (code[i] === 'A' ? 'B' : 'A') + code.slice(i + 1);

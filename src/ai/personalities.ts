@@ -42,6 +42,8 @@ export interface Personality {
   treasuryRushByMs: number;
   /** Push gate factor before Overdrive in bp (A7.2 default 1.3; Moss holds out until Overdrive). */
   pushGateBp: number;
+  /** Moss: her signature Hold (A7.4) works at her tiers II-IV, below the A7.3 Hold tier (V). */
+  holdAnyTier: boolean;
   /** Tempest: banks the power for evolve moments (the foe's and its own). */
   powerForEvolveMoments: boolean;
   /** Old Grogg: never evolves. */
@@ -65,6 +67,7 @@ const BASE: Personality = {
   treasuryRushLevel: 0,
   treasuryRushByMs: 0,
   pushGateBp: DEFAULT_PUSH_GATE_BP,
+  holdAnyTier: false,
   powerForEvolveMoments: false,
   neverEvolves: false,
   scripted: false,
@@ -87,7 +90,7 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     opening: ['train:infantry', 'train:infantry', 'train:infantry|train:ranged', 'train:infantry'],
   },
   // Mama Moss: "Early turrets, Hold, pushes in Overdrive".
-  turtle: { ...BASE, id: 'turtle', pushGateBp: 20000, opening: ['turret', 'train:ranged', 'train:infantry', 'mount|train:ranged'] },
+  turtle: { ...BASE, id: 'turtle', pushGateBp: 20000, holdAnyTier: true, opening: ['turret', 'train:ranged', 'train:infantry', 'mount|train:ranged'] },
   // Baroness Ledger: "Treasury 3 by 2:30, evolves first, weak before 1:00".
   greedy: {
     ...BASE,

@@ -22,6 +22,7 @@ import { Tabs, AgePicker } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile } from '../model/cards';
+import { planIssueText } from '../model/match';
 import {
   assignCard,
   candidates,
@@ -106,13 +107,6 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const loadoutAvg = loadoutAvgLevel(s, content, loadout);
   const planAvg = planAvgLevel(s, content, plan, fAges);
   const inPlan = new Set([...loadout.units, ...loadout.turrets, loadout.power].filter(Boolean) as CardId[]);
-
-  /** Advisor text; a finding meta adds later without a string falls back to a generic line. */
-  function issueText(i: PlanIssue): string {
-    const age = t(ageNameKey(i.age));
-    const msg = t(i.messageKey, { age });
-    return msg === i.messageKey ? t('ui.advisor.generic', { age }) : msg;
-  }
 
   function commit(next: WarPlan) {
     // Presets are added one at a time (`meta.setWarPlan` refuses gaps): editing C before B exists
@@ -298,7 +292,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           <ul class="wp-advisor" data-testid="advisor" aria-live="polite">
             {ageIssues.map((i) => (
               <li key={i.code} class={`wp-issue wp-issue--${i.severity}`} data-testid={`issue-${i.code}`}>
-                {issueText(i)}
+                {planIssueText(i, t)}
               </li>
             ))}
           </ul>

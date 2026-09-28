@@ -18,7 +18,7 @@ const catalog = testCatalog();
 const A13_SOUNDS = new Set([
   'cap_thud', 'cap_riser', 'cap_climb_1', 'cap_climb_2', 'cap_climb_3', 'cap_climb_4', 'cap_clunk', 'cap_burst',
   'card_flip', 'foil_shine', 'rarity_common', 'rarity_rare', 'rarity_epic', 'rarity_legendary', 'walkout_bass',
-  'copy_tick', 'upgrade_ready', 'reel_tick', 'ui_confirm', 'spawn_heavy', 'spawn_legendary', 'swing_whoosh',
+  'copy_tick', 'upgrade_ready', 'reel_tick', 'ui_confirm', 'spawn_pop', 'spawn_heavy', 'spawn_legendary', 'swing_whoosh',
 ]);
 
 function kinds(steps: ShowStep[]): string[] {
@@ -115,6 +115,32 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     expect(minis).toHaveLength(1);
     expect(minis[0]?.durationMs).toBe(2000);
     expect(minis[0]?.kind === 'miniWalkout' && minis[0].card.card).toBe('sabertooth');
+  });
+
+  it('gives the NEW cards of onboarding capsule 1 the short walkout (A8 "Spear Hunter NEW (short walkout)")', () => {
+    const stacks = () => [stack('bonker', 'common', { copies: 3 }), stack('spear_hunter', 'rare', { isNew: true }), stack('pebbler', 'common', { copies: 3 })];
+    const intro = planCapsuleShow(reveal({ tier: 'bronze', stacks: stacks(), scriptIndex: 1 }), { catalog });
+    const minis = intro.steps.flatMap((s) => (s.kind === 'miniWalkout' ? [s] : []));
+    expect(minis.map((m) => m.card.card)).toEqual(['spear_hunter']);
+    expect(minis[0]?.durationMs).toBe(2000);
+    expect(minis[0]?.cues[0]?.sound).toBe('spawn_pop');
+    // It follows the card's own flip and NEW stamp.
+    const order = kinds(intro.steps).filter((k) => ['flip', 'miniWalkout'].includes(k));
+    expect(order.slice(-2)).toEqual(['flip', 'miniWalkout']);
+    expect(checkPlan(intro)).toEqual([]);
+    // Other script capsules and ordinary capsules keep the A10 rule: NEW Epics only.
+    for (const scriptIndex of [null, 2, 3]) {
+      const plan = planCapsuleShow(reveal({ tier: 'bronze', stacks: stacks(), scriptIndex }), { catalog });
+      expect(plan.steps.some((s) => s.kind === 'miniWalkout')).toBe(false);
+    }
+  });
+
+  it('never gives a NEW Legendary the short repeat walkout, even if firstLegendaryReveal misses it', () => {
+    const plan = planCapsuleShow(reveal({ tier: 'aeon', stacks: [stack('matriarch', 'legendary', { isNew: true })], firstLegendary: [] }), { catalog });
+    const w = plan.steps.find((s) => s.kind === 'walkout');
+    expect(w?.kind === 'walkout' && w.first).toBe(true);
+    expect(w?.skippable).toBe(false);
+    expect(w?.durationMs).toBe(SHOW_TIMING.walkoutFirstMs);
   });
 
   it('plays a first-ever Legendary walkout of 8-10 s that cannot be skipped, 3 s and skippable after', () => {

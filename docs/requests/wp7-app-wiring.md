@@ -34,7 +34,7 @@ export const systemClock: LocalClock = {
 | First launch (no save) | `meta.newSave(content, clock, seed)` with any 32-bit seed (for example from `crypto.getRandomValues`); persist at once |
 | Boot, Home shown, every minute on Home, before `pickOpponent` | `meta.tickTimers(save, clock)` (charges, Daily Capsule bank, quest and weekly resets, Daily Challenge day) |
 | Mode select / VS | `meta.pickOpponent(save, mode, content, clock, { format, conquestGeneral, skirmish })`; it is deterministic in the save, so the Home preview equals the match |
-| Match end | `meta.applyMatchResult(save, input, content, clock)` → `{ save, rewards }`; stage `rewards` on the Result screen; save immediately (capsules are rolled here, B8) |
+| Match end | if `meta.ageCapsuleDue(save, input, content, clock)`, ask for the Age Capsule's age first (section 4); then `meta.applyMatchResult(save, input, content, clock, { age })` → `{ save, rewards }`; stage `rewards` on the Result screen; save immediately (capsules are rolled here, B8) |
 | Capsule show | `meta.openCapsule(save, id)` → `{ save, reveal }`; save **before** playing `reveal` (B8), then `tickTimers` (the first Daily Capsule timer starts after capsule 2) |
 | Capsule 1 summary (A8 "auto-equipped") and every "Equip now" | `meta.equipNow(save, card, content)` |
 | Crate show | `meta.openWardrobe(save, id)` → `{ save, reveal }` |
@@ -78,7 +78,12 @@ Failure reasons (for toasts; WP9 already maps `amber`): `upgrade`: `unknownCard`
   `SideConfig.levels` to 7 for every card too when `skirmish.standardLevels` is on.
 - **Age Capsule dialog** (A6.4 "age picked in a dialog when granted"): `claimQuest` takes `{ age }`.
   Match results that grant one (Daily Challenge first win, Conquest star 3) happen inside
-  `applyMatchResult` and use the default age (the drop-pool age with the most cards not owned yet).
+  `applyMatchResult`: at match end call `meta.ageCapsuleDue(save, input, content, clock)`; when it is
+  true, show the age picker first and pass the choice as the fifth argument,
+  `meta.applyMatchResult(save, input, content, clock, { age })`. Without an age meta uses the default
+  (the drop-pool age with the most cards not owned yet).
+- **Conquest** results against a General that is not open on `meta.conquestBoard` pay nothing, so
+  only offer open Generals.
 
 ## 5. Persisting
 

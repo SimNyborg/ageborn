@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import type { SaveDoc } from '@/contracts';
 import { starsEarned } from '../conquest';
-import { C, M, TestClock, fresh, lastPending, play, scripted, stats } from './helpers';
+import { C, M, TestClock, fresh, lastPending, matchInput, play, scripted, stats } from './helpers';
 
 const R = C.generals.conquest;
 
@@ -56,6 +56,33 @@ describe('Conquest (A6.10)', () => {
     const again = play(a.save, 'conquest', 'win', c, { conquestGeneral: 'pip', stats: { ownBaseHpBpAtEnd: 8000, durationMs: 300_000 } });
     expect(again.rewards.some((x) => x.kind === 'star' || x.kind === 'amber' || x.kind === 'dust')).toBe(false);
     expect(again.save.currencies).toEqual(a.save.currencies);
+  });
+
+  it('a General that is not open yet pays nothing: before Arena 3, or before the previous one is beaten', () => {
+    const c = new TestClock();
+    const great = { ownBaseHpBpAtEnd: 9000, durationMs: 200_000 };
+    const early = play({ ...arena3(), arenaIndex: 1 }, 'conquest', 'win', c, { conquestGeneral: 'pip', stats: great });
+    expect(early.rewards.some((x) => x.kind === 'star' || x.kind === 'capsule')).toBe(false);
+    expect(early.save.conquest.stars).toEqual({});
+    const skipped = play(arena3(), 'conquest', 'win', c, { conquestGeneral: 'kettle', stats: great });
+    expect(skipped.rewards.some((x) => x.kind === 'star')).toBe(false);
+    expect(skipped.save.conquest.stars).toEqual({});
+    expect(skipped.save.currencies).toEqual(arena3().currencies);
+  });
+
+  it('star 3\'s Age Capsule holds the age the player picked (A6.4 dialog)', () => {
+    const s = arena3();
+    const c = new TestClock();
+    const o = M.pickOpponent(s, 'conquest', C, c, { conquestGeneral: 'pip' });
+    const fast = matchInput('conquest', 'win', o, { stats: { durationMs: 300_000 } });
+    const slow = matchInput('conquest', 'win', o, { stats: { durationMs: 400_000 } });
+    expect(M.ageCapsuleDue(s, fast, C, c)).toBe(true);
+    expect(M.ageCapsuleDue(s, slow, C, c)).toBe(false);
+    const r = M.applyMatchResult(s, fast, C, c, { age: 'future' });
+    expect(lastPending(r.save)).toMatchObject({ kind: 'age', age: 'future' });
+    for (const st of lastPending(r.save).contents.stacks) expect((C.units[st.card] ?? C.turrets[st.card])?.age).toBe('future');
+    // Star 3 pays once.
+    expect(M.ageCapsuleDue(r.save, fast, C, c)).toBe(false);
   });
 
   it('milestones: 9 stars a Jade Capsule, 18 a Jade Capsule, 27 an Aeon Capsule and the title Conqueror', () => {

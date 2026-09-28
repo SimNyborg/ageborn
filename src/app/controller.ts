@@ -11,7 +11,7 @@ import { signal, type ReadonlySignal, type Signal } from '@preact/signals';
 import type { FormatId, MatchResultInput, ReplayDoc, RewardStep, SaveDoc, Sim } from '@/contracts';
 import { createBattle, type BattleHandle } from './battle';
 import { finishMatch } from './flow';
-import { quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup } from './matchSetup';
+import { quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup, type SetupLabels } from './matchSetup';
 import { ONBOARDING_STEPS, afterOnboardingMatch, completeStep, onboardingStep, type OnboardingStep } from './onboarding';
 import type { Services } from './services';
 import type { FrameScheduler, SessionView, VisibilitySource } from './session';
@@ -89,18 +89,25 @@ export class AppController {
     return this.o.seed?.() ?? (this.seedCounter++ * 7919 + 17) >>> 0;
   }
 
+  /** Names for the sides (the player's only matters before a save exists). */
+  private labels(): SetupLabels {
+    return { player: this.t('app.you') };
+  }
+
   /** The onboarding match for the current step, or null once onboarding is done. */
   onboardingSetup(): MatchSetup | null {
-    const save = this.saveSig.peek();
-    const content = this.services.content;
     switch (this.stepSig.peek()) {
       case 'match1':
-        return tutorialMatch1(save, content, this.t('general.grogg.name'));
+        return tutorialMatch1(this.saveSig.peek(), this.services.content, this.t('general.grogg.name'), this.labels());
       case 'match2':
-        return tutorialMatch2(save, content, this.t('general.pip.name'), this.nextSeed());
+        return this.match2Setup();
       default:
         return null;
     }
+  }
+
+  private match2Setup(): MatchSetup {
+    return tutorialMatch2(this.saveSig.peek(), this.services.content, this.t('general.pip.name'), this.nextSeed(), this.labels());
   }
 
   /** Shows the title: the next onboarding match is built and waits, rendered, behind Play. */
@@ -132,6 +139,7 @@ export class AppController {
       format,
       seed: this.nextSeed(),
       tier: QUICK_BATTLE_TIER,
+      ...this.labels(),
     });
     const battle = this.build(setup);
     this.routeSig.value = { id: 'battle', battle };
@@ -148,6 +156,32 @@ export class AppController {
   next(): void {
     this.showTitle();
     if (this.stepSig.peek() !== 'home') this.play();
+  }
+
+  /**
+   * A lost onboarding match can be played again (A8 match 2: "a loss still gives rewards plus a
+   * retry"). The retry is offered, not forced: "Next" moves on to capsule 2 as after a win.
+   */
+  canRetry(result: ResultState): boolean {
+    return result.setup.mode === 'tutorial' && result.input.outcome.winner !== result.input.mySide;
+  }
+
+  /**
+   * Result screen "Retry". A lost match 1 has not moved the onboarding on, so this is the same as
+   * Next. A lost match 2 already paid its rewards and moved on to capsule 2; the retry is one more
+   * Short War vs Pip, after which the flow continues at capsule 2.
+   */
+  retry(): void {
+    const r = this.routeSig.peek();
+    if (r.id !== 'result' || !this.canRetry(r.result)) return;
+    if (this.stepSig.peek() === 'match1') {
+      this.next();
+      return;
+    }
+    this.disposeRoute();
+    const battle = this.build(this.match2Setup());
+    this.routeSig.value = { id: 'battle', battle };
+    battle.session.start();
   }
 
   /** Result screen "Play again": the same kind of match with a new seed. */
@@ -203,7 +237,14 @@ export class AppController {
   private async onMatchEnd(battle: BattleHandle, input: MatchResultInput, replay: ReplayDoc): Promise<void> {
     const setup = battle.setup;
     const hints = battle.director.hintsShown();
-    const out = await finishMatch(this.services, this.saveSig.peek(), setup, input, replay, hints);
+    let out: Awaited<ReturnType<typeof finishMatch>> = { save: null, rewards: [], onboarding: null };
+    try {
+      out = await finishMatch(this.services, this.saveSig.peek(), setup, input, replay, hints);
+    } catch (e) {
+      // The player must never be stuck on a finished battle: show the result without rewards.
+      this.services.eventLog.record('error', 'finishMatch', { message: e instanceof Error ? e.message : String(e) });
+      console.error(e);
+    }
     if (out.save) this.saveSig.value = out.save;
     if (setup.mode === 'tutorial') {
       const step = this.stepSig.peek();

@@ -5,7 +5,10 @@
  * title offers Quick Battle with a format picker and the replays of this session.
  */
 import { useState } from 'preact/hooks';
+import { tierLabel } from '@/ai';
 import type { FormatId } from '@/contracts';
+import { QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
+import { displayName } from '../names';
 import { useApp } from './context';
 
 /** The game's name is a brand, not translatable UI copy. */
@@ -28,7 +31,7 @@ export function TitleScreen() {
       {battle && opponent ? (
         <>
           <div class="ab-row">
-            <span class="ab-chip">{opponent.displayName}</span>
+            <span class="ab-chip">{displayName(opponent.displayName, ui.services.i18n)}</span>
             <span class="ab-chip ab-chip--ai" data-testid="title-ai-chip">
               {ui.t('app.aiChip')}
             </span>
@@ -62,7 +65,7 @@ export function TitleScreen() {
             {ui.t('app.quickBattle')}
           </button>
           <span class="ab-muted">
-            {ui.t(`general.kettle.name`)} · {ui.t('app.aiGeneral')} · {ui.t('app.vsTier', { tier: 'III' })}
+            {ui.t(`general.${QUICK_BATTLE_GENERAL}.name`)} · {ui.t('app.aiGeneral')} · {ui.t('app.vsTier', { tier: tierLabel(QUICK_BATTLE_TIER) })}
           </span>
           {replays.length > 0 ? (
             <div class="ab-replays">
@@ -71,7 +74,7 @@ export function TitleScreen() {
                 .reverse()
                 .map((rep, i) => (
                   <button key={`${rep.seed}-${i}`} class="ab-btn ab-btn--plain ab-btn--small" data-testid="title-replay" onClick={() => c.watchReplay(rep)}>
-                    {ui.t('app.watchReplay')} · {rep.sides[1].label} · {ui.t('app.aiChip')}
+                    {ui.t('app.watchReplay')} · {displayName(rep.sides[1].label, ui.services.i18n)} · {ui.t('app.aiChip')}
                   </button>
                 ))}
             </div>

@@ -32,6 +32,16 @@ export class EmotePolicy {
 
   constructor(private readonly rng: Sfc32State) {}
 
+  /** The bot's one own emote of the match is still unused. */
+  get ownAvailable(): boolean {
+    return !this.ownUsed;
+  }
+
+  /** Spends the one own emote (a scripted emote, scripted.ts). */
+  useOwn(): void {
+    this.ownUsed = true;
+  }
+
   /** The player emoted at `tick` (the session relays emotes the bot's side can see). */
   hear(emote: EmoteId, tick: number): void {
     if (tick <= this.lastHeardTick) return;

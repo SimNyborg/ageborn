@@ -28,7 +28,10 @@ export interface TierParams {
   remembersComposition: boolean;
   predictsNextAge: boolean;
   evolveDelayTicks: number;
-  /** VII and above wait for a safe window before evolving (and never longer than the delay). */
+  /**
+   * VII and above evolve only in a safe window: no enemy ground unit can reach 300 lu of the own gate
+   * before the Ascension ends (brain.ts). Their evolve delay (2 s at VII, 0.5 s at X) is the reaction time.
+   */
   safeWindowEvolve: boolean;
   /** ± lu added to the power aim. */
   powerAimErrorLu: number;

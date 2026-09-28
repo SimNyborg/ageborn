@@ -42,11 +42,16 @@ describe('voice policy (A13 Mixer)', () => {
     expect(p.admit('hit_blunt', 0, 1.01, LIMITS).ok).toBe(true);
   });
 
-  it('lets a higher-priority (player-caused) sound through the gap', () => {
+  it('keeps the gap absolute: priority never lets a same-id retrigger in before 40 ms', () => {
     const p = new VoicePolicy<number>();
     start(p, 'shot_bow', 0, 1.0);
-    expect(p.admit('shot_bow', 1, 1.01, LIMITS).ok).toBe(true);
-    expect(p.admit('shot_bow', 0, 1.01, LIMITS).ok).toBe(false);
+    expect(p.admit('shot_bow', 1, 1.01, LIMITS)).toEqual({ ok: false, reason: 'gap' });
+    expect(p.admit('shot_bow', 100, 1.039, LIMITS)).toEqual({ ok: false, reason: 'gap' });
+    expect(p.admit('shot_bow', 0, 1.04, LIMITS).ok).toBe(true);
+    // A voice started at time 0 still counts.
+    const q = new VoicePolicy<number>();
+    start(q, 'coin_gain', 0, 0);
+    expect(q.admit('coin_gain', 0, 0.02, LIMITS)).toEqual({ ok: false, reason: 'gap' });
   });
 
   it('never steals a higher-priority voice; drops the newcomer instead', () => {

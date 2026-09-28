@@ -8,6 +8,8 @@
  * - Milestones: 9 stars give a Jade Capsule, 18 a Jade Capsule, 27 an Aeon Capsule and the title
  *   Conqueror. `conquest.milestonesClaimed` holds the star thresholds paid.
  * - Conquest matches use no charges, change no trophies and do not move MMR.
+ * - A result against a General that is not open yet (before Arena 3, or before the previous General
+ *   is beaten) pays nothing: the board is the rule, not only the screen.
  */
 import type { AgeId, MatchStats, RewardStep, SaveDoc } from '@/contracts';
 import type { ConquestRules, Content, GeneralId } from '@/content';
@@ -66,7 +68,8 @@ export function applyConquest(
   age?: AgeId,
 ): { save: SaveDoc; steps: RewardStep[] } {
   const rules = t.generals.conquest;
-  if (!rules.board.some((b) => b.general === generalId)) return { save: s, steps: [] };
+  // Stars only count on the board as it stands: from Arena 3, each General after the previous one.
+  if (!conquestBoard(s, t).some((e) => e.general === generalId && e.open)) return { save: s, steps: [] };
   const had = s.conquest.stars[generalId] ?? NO_STARS;
   const got = starsEarned(rules, win, stats);
   const stars: [boolean, boolean, boolean] = [had[0] || got[0], had[1] || got[1], had[2] || got[2]];

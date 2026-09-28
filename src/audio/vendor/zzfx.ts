@@ -139,6 +139,9 @@ export function buildSamples(params: ZzfxParams, o: ZzfxRenderOptions = {}): Flo
   let decay = params[18] ?? 0;
   const tremolo = params[19] ?? 0;
   const filter = params[20] ?? 0;
+  // Upstream picks the wave by range (`shape ? shape > 1 ? ...`), so fractional and negative values
+  // select a wave too (0.5 and -1 are triangles, 1.5 a saw, anything above 4 a square).
+  const wave = !shape ? 0 : shape <= 1 ? 1 : shape <= 2 ? 2 : shape <= 3 ? 3 : shape <= 4 ? 4 : 5;
 
   const PI2 = Math.PI * 2;
   const abs = Math.abs;
@@ -193,14 +196,14 @@ export function buildSamples(params: ZzfxParams, o: ZzfxRenderOptions = {}): Flo
   const decayEnd = attack + decay;
   const sustainEnd = attack + decay + sustain;
   const releaseEnd = length - delay;
-  const bits = shape === 4 || noise ? noiseBits(seedOf(params)) : () => 0;
+  const bits = wave === 4 || noise ? noiseBits(seedOf(params)) : () => 0;
 
   for (; i < length; ) {
     // bit crush: upstream `!(++crush % (bitCrush*100|0))`, always true when the period is 0
     ++crush;
     if (crushEvery === 0 || crush % crushEvery === 0) {
       // wave shape
-      switch (shape) {
+      switch (wave) {
         case 0:
           s = Math.sin(t); // 0 sin
           break;
@@ -217,11 +220,11 @@ export function buildSamples(params: ZzfxParams, o: ZzfxRenderOptions = {}): Flo
           s = t < NOISE_EXACT_T && t > -NOISE_EXACT_T ? Math.sin(t ** 3) : SIN_TABLE[bits() & 4095]!; // 4 noise
           break;
         default:
-          s = shape > 4 ? ((t / PI2) % 1 < shapeCurve / 2 ? 1 : 0) * 2 - 1 : Math.sin(t); // 5 square duty
+          s = ((t / PI2) % 1 < shapeCurve / 2 ? 1 : 0) * 2 - 1; // 5 square duty
       }
 
-      // shape curve (the default curve 1 leaves the value as it is)
-      if (shape <= 4 && shapeCurve !== 1) s = sign(s) * abs(s) ** shapeCurve;
+      // shape curve, not for the square (the default curve 1 leaves the value as it is)
+      if (wave !== 5 && shapeCurve !== 1) s = sign(s) * abs(s) ** shapeCurve;
 
       // tremolo
       if (repeatTime) s *= 1 - tremolo + tremolo * Math.sin((PI2 * i) / repeatTime);

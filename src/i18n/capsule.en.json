@@ -9,6 +9,7 @@
     "skinStamp": "SKIN",
     "legendary": "LEGENDARY",
     "newEpic": "NEW EPIC",
+    "newCard": "NEW CARD",
     "upgradeReady": "UPGRADE READY",
     "copiesOf": "{have}/{need}",
     "copiesPlus": "+{n}",

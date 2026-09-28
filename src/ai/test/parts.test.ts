@@ -68,6 +68,24 @@ describe('Old Grogg, the scripted tutorial brain (A7.4, A8)', () => {
     ]);
   });
 
+  it('keeps the A7 bot rules: GG, Salute or Thumbs up only, one own emote per match, the action cap', () => {
+    expect(parseScript(['at 100 emote laugh', 'at 200 emote angry', 'at 300 emote cry']).length).toBe(0);
+    const plan = (content.generals as { list: Record<string, { warPlan: object }> }).list.grogg?.warPlan;
+    const run = (openings: string[], ticks: number): BotMatch => {
+      const bot = createBot({ ...balanced(0), generalId: 'grogg', openings }, 1, 3, content);
+      const sim = createSim(matchConfig({ seed: 3, training: { noClock: true }, sides: [sideConfig(content), sideConfig(content, { loadouts: plan as never })] }));
+      const m = new BotMatch(sim, [{ side: 1 as Side, controller: bot }]);
+      while (sim.state.tick < ticks) m.tick();
+      return m;
+    };
+    const emotes = run(['at 1000 emote gg', 'at 6000 emote salute', 'at 12000 emote thumbsUp'], 400).botCommands.filter((c) => c.t === 'emote');
+    expect(emotes.map((c) => (c.t === 'emote' ? c.emote : null))).toEqual(['gg']);
+    // A Dummy every 0.5 s: tier 0 allows 2 commands per 10 s, so the sends wait for room.
+    const trains = run(['every 500 train training_dummy'], 800).botCommands.map((c) => c.tick);
+    expect(trains.length).toBeGreaterThan(0);
+    for (const t of trains) expect(trains.filter((u) => u > t - 200 && u <= t).length).toBeLessThanOrEqual(2);
+  });
+
   it('is the brain createBot gives Grogg', () => {
     expect(createBot({ ...balanced(0), generalId: 'grogg', openings: [] }, 1, 1, content)).toBeInstanceOf(ScriptedController);
     expect(createBot(balanced(3), 1, 1, content)).toBeInstanceOf(UtilityController);
@@ -122,22 +140,29 @@ describe('personalities (A7.4)', () => {
 });
 
 describe('memory and the foe gold estimator (A7.1)', () => {
-  it('tracks the foe gold from time, Treasury, turrets and kills, close to the truth', () => {
-    const cfg = matchConfig({ seed: 61 });
-    const sim = createSim(cfg);
-    const seats = [0, 1].map((side) => ({ side: side as Side, controller: createBot(balanced(5), side as Side, 61, content) }));
-    const m = new BotMatch(sim, seats);
-    const mem = new BotMemory(book);
-    let worst = 0;
-    while (!m.ended && sim.state.tick < 3000) {
-      m.tick();
-      mem.observe(sim.observe(0));
-      const truth = sim.state.sides[1].gold + sim.state.sides[1].queue.reduce((a, q) => a + (book.units[q.card]?.cost ?? 0), 0);
-      worst = Math.max(worst, Math.abs(mem.estimator.gold - truth));
+  it('tracks the foe gold from time, Treasury, turrets and kills, close to the truth all match long', () => {
+    for (const [seed, format] of [
+      [61, 'short'],
+      [2, 'full'],
+      [4, 'full'],
+    ] as const) {
+      const sim = createSim(matchConfig({ seed, format }));
+      const seats = [0, 1].map((side) => ({ side: side as Side, controller: createBot(balanced(5), side as Side, seed, content) }));
+      const m = new BotMatch(sim, seats);
+      const mem = new BotMemory(book);
+      let worst = 0;
+      while (!m.ended) {
+        m.tick();
+        mem.observe(sim.observe(0));
+        // The foe's queue is invisible, so the truth counts gold paid into it as unspent.
+        const truth = sim.state.sides[1].gold + sim.state.sides[1].queue.reduce((a, q) => a + (book.units[q.card]?.cost ?? 0), 0);
+        worst = Math.max(worst, Math.abs(mem.estimator.gold - truth));
+      }
+      // Summons, power and Last Stand kills and underdog bounties are modelled; what remains is a mount
+      // bought but not yet built on, or a queue item converted at an ageUp.
+      expect(worst, `seed ${seed} ${format}`).toBeLessThan(200000);
+      expect(mem.estimator.income).toBeGreaterThan(0);
     }
-    // Queued units are paid before they show, bounties are approximate: within 300 gold all match long.
-    expect(worst).toBeLessThan(300000);
-    expect(mem.estimator.income).toBeGreaterThan(0);
   });
 
   it('knows Evolve from the observation alone', () => {

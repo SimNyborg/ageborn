@@ -1,7 +1,16 @@
 import { content } from '@/content';
 import { describe, expect, it } from 'vitest';
 import { renderDef, SFX_SAMPLE_RATE } from '../bank';
-import { BOOT_GROUPS, SOUND_GROUPS, SOUND_IDS, sounds } from '../sounds';
+import {
+  BOOT_GROUPS,
+  DEFAULT_GAP_MS,
+  DEFAULT_MAX_VOICES,
+  DEFAULT_PITCH_VAR_BP,
+  DEFAULT_VOL_VAR_DB,
+  SOUND_GROUPS,
+  SOUND_IDS,
+  sounds,
+} from '../sounds';
 import { midi, MAX_CUTOFF_HZ, zz } from '../soundKit';
 
 const AGES = ['stone', 'medieval', 'gunpowder', 'modern', 'future'] as const;
@@ -133,6 +142,36 @@ describe('sound manifest (A13)', () => {
       'rarity_legendary', 'level_up', 'upgrade_ready', 'cap_climb_1', 'cap_climb_4', 'evolve_ready', 'pw_decree', 'siege_bell',
     ];
     for (const id of musical) expect(sounds[id]!.pitchVarBp, id).toBe(0);
+    // Timed sounds keep their length, and the caller owns the pitch of climbs and the reel.
+    for (const id of ['power_telegraph', 'evolve_riser', 'cap_riser', 'last_stand_charge', 'coin_gain', 'copy_tick', 'reel_tick']) {
+      expect(sounds[id]!.pitchVarBp, id).toBe(0);
+    }
+  });
+
+  it('keeps A13 per-play variation: pitch ±8% unless the pitch must hold, volume ±3 dB always', () => {
+    let varied = 0;
+    for (const id of SOUND_IDS) {
+      const d = sounds[id]!;
+      // Either the A13 default (±8%) or a steady pitch; never an ad hoc spread.
+      expect(d.pitchVarBp === undefined || d.pitchVarBp === 0, id).toBe(true);
+      expect(d.volVarDb, id).toBeUndefined();
+      if (d.pitchVarBp === undefined) varied++;
+    }
+    expect(DEFAULT_PITCH_VAR_BP).toBe(800);
+    expect(DEFAULT_VOL_VAR_DB).toBe(3);
+    // Most sounds use the default spread.
+    expect(varied).toBeGreaterThan(SOUND_IDS.length / 2);
+  });
+
+  it('never loosens the A13 voice limits: at most 4 voices, at least 40 ms between retriggers', () => {
+    expect(DEFAULT_MAX_VOICES).toBe(4);
+    expect(DEFAULT_GAP_MS).toBe(40);
+    for (const id of SOUND_IDS) {
+      const d = sounds[id]!;
+      expect(d.maxVoices ?? DEFAULT_MAX_VOICES, id).toBeLessThanOrEqual(4);
+      expect(d.maxVoices ?? DEFAULT_MAX_VOICES, id).toBeGreaterThanOrEqual(1);
+      expect(d.gapMs ?? DEFAULT_GAP_MS, id).toBeGreaterThanOrEqual(40);
+    }
   });
 
   it('renders the boot groups B7 names (UI, Stone, Medieval) and the shared battle sounds', () => {

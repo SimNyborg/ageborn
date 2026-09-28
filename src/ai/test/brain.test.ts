@@ -82,6 +82,24 @@ describe('evolve (A7.2)', () => {
     expect(kinds(decide(brain, final(40), { history: [final(10)] }))).not.toContain('evolve');
   });
 
+  it('tiers VII and X wait for a safe window: no foe can reach 300 lu of the gate during the Ascension', () => {
+    // A Bonker (70 lu/s) at 500 lu: outside 300 lu now, but tier VII sees it 0.5 s late and the
+    // Ascension takes 2.5 s, so it would be within 300 lu (500 − 70 × 3.05 = 286) before the ageUp.
+    const near = [unit(0, 'bonker', 500)];
+    const t7 = decide(brainFor({ tier: 7 }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] });
+    expect(kinds(t7)).not.toContain('evolve');
+    // Tier V only checks where the foe stands, so it evolves into the push.
+    const t5 = decide(brainFor({ tier: 5 }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] });
+    expect(t5.action).toEqual({ kind: 'evolve' });
+    // 30 lu further out the window is open for tier VII too.
+    const far = [unit(0, 'bonker', 530)];
+    expect(decide(brainFor({ tier: 7 }).brain, ready(100, { units: far }), { history: [ready(10, { units: far })] }).action).toEqual({ kind: 'evolve' });
+    // Air units never block the window, and m_greed ≥ 1.3 ignores it.
+    const air = [unit(0, 'bonker', 350, { air: true })];
+    expect(decide(brainFor({ tier: 10 }).brain, ready(100, { units: air }), { history: [ready(10, { units: air })] }).action).toEqual({ kind: 'evolve' });
+    expect(kinds(decide(brainFor({ tier: 7, weights: { greed: 95 } }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] }))).toContain('evolve');
+  });
+
   it('fires a full power into a zone before evolving, so the 50% carry cap wastes nothing', () => {
     const units = [unit(0, 'tuskback', 500)];
     const o = (tick: number) => ready(tick, { powerPpm: 1000000, units, power: 'meteor_shower' });
@@ -305,6 +323,17 @@ describe('train choice', () => {
     expect(seen.size).toBeGreaterThan(2);
   });
 
+  it('counter depth 0 draws only among trains that clear the saving bar', () => {
+    const tray = ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'mammoth_matriarch'];
+    for (let i = 0; i < 30; i += 1) {
+      const { brain } = brainFor({ tier: 1, tierOverride: { goldFloat: 0 }, seed: `s${i}` });
+      // Saving 350 for the Legendary: every other card would dip below the goal (f_save).
+      const t = decide(brain, observation({ tick: 1000, gold: 380 * MILLI, tray }), { rng: `s${i}` });
+      expect(t.goal).toMatchObject({ kind: 'legendary', amount: 350 * MILLI });
+      expect(t.action).toMatchObject({ kind: 'train', card: 'mammoth_matriarch' });
+    }
+  });
+
   it('never trains a second Legendary, past the queue or past the pop cap', () => {
     const tray = ['bonker', null, null, null, 'mammoth_matriarch'];
     const { brain } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
@@ -349,6 +378,16 @@ describe('personalities (A7.4)', () => {
     const { brain } = brainFor({ tier: 3, general: 'ledger', weights: w.list.ledger?.weights });
     const t = decide(brain, observation({ tick: 1000, gold: 400 * MILLI, treasury: 2 }));
     expect(t.goal).toEqual({ kind: 'treasury', amount: 550 * MILLI });
+  });
+
+  it('Moss holds at her tiers (II-IV) although A7.3 allows Hold only from tier V', () => {
+    const w = content.generals as { list: Record<string, { weights: Weights }> };
+    const foe = { turrets: [{ card: 'rock_tosser', age: 'stone' as const }, null, null, null] };
+    const moss = decide(brainFor({ tier: 3, general: 'moss', weights: w.list.moss?.weights }).brain, observation({ tick: 400, foe }));
+    expect(moss.pushOk).toBe(false);
+    expect(moss.action).toEqual({ kind: 'stance', stance: 'hold' });
+    const echo = decide(brainFor({ tier: 3 }).brain, observation({ tick: 400, foe }));
+    expect(kinds(echo)).not.toContain('stance');
   });
 
   it('Rook weighs counters ×1.5', () => {

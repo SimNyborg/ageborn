@@ -295,7 +295,7 @@ export class Brain {
     // Evolve.
     let evolveWanted = false;
     if (v.evolveReady && !P.neverEvolves && mem.evolveSince !== null && obs.tick - mem.evolveSince >= t.evolveDelayTicks) {
-      const safe = !v.foes.some((u) => !u.air && u.p <= EVOLVE_SAFE);
+      const safe = t.safeWindowEvolve ? this.safeWindow(v) : !v.foes.some((u) => !u.air && u.p <= EVOLVE_SAFE);
       if (safe || W.greed >= GREEDY_BP) {
         evolveWanted = true;
         // Kettle pushes first: Evolve waits while units can still be trained into the all-in.
@@ -320,8 +320,8 @@ export class Brain {
       else if (zone.value > 0) opts.powerOnFew = { kind: 'power', p: zone.p === null ? null : Math.trunc(zone.p / MILLI) };
     }
 
-    // Stance.
-    if (t.hold && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
+    // Stance. A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her tiers too.
+    if ((t.hold || P.holdAnyTier) && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
       const weak = v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && v.turretsBuilt >= HOLD_MIN_TURRETS;
       const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = wantHold ? 'hold' : 'charge';
@@ -403,9 +403,10 @@ export class Brain {
 
     if (!best) return trace;
     let action = best.action;
-    // Counter depth 0: a weighted random choice from the loadout (A7.3).
+    // Counter depth 0: a weighted random choice from the loadout (A7.3), among the trains that clear
+    // the same bar as the best action, so a saving goal still pauses the trains f_save holds back.
     if (action.kind === 'train' && t.counterDepth === 0) {
-      const ts = cand.filter((c) => c.action.kind === 'train' && c.score > 0);
+      const ts = cand.filter((c) => c.action.kind === 'train' && c.score >= bar);
       const i = pickWeighted(
         rng,
         ts.map((c) => c.score),
@@ -534,6 +535,18 @@ export class Brain {
     const credit = Math.trunc((oldCost * book.econ.sellRefundBp) / BP);
     const pick = this.bestTurretCard(v, gold, credit);
     return pick ? { kind: 'modernise', mount, slot: pick.slot, card: pick.card, cost: pick.cost } : null;
+  }
+
+  /**
+   * The A7.3 "safe window" of tiers VII and X: no enemy ground unit can walk to within 300 lu of the
+   * own gate before the Ascension ends. The observation is `snapshotDelayTicks` old and the command
+   * runs a tick after the decision, so every foe is moved on at its card speed over that whole span.
+   * Lower tiers only check where the enemy stands now, and so sometimes evolve into a push.
+   */
+  private safeWindow(v: View): boolean {
+    const { book, tier: t } = this.cfg;
+    const horizon = t.snapshotDelayTicks + 1 + book.econ.ascendTicks;
+    return !v.foes.some((u) => !u.air && u.p - Math.trunc(((u.def?.speed ?? 0) * MILLI * horizon) / TICKS_PER_SECOND) <= EVOLVE_SAFE);
   }
 
   private aimPower(zone: PowerZone, rng: Sfc32State): BotAction {

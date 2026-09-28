@@ -6,9 +6,23 @@ describe('createCatalog (from compiled content)', () => {
   const c = createCatalog(content);
 
   it('describes units, turrets and powers', () => {
-    expect(c.card('mammoth_matriarch')).toEqual({ age: 'stone', visualId: 'unit.mammoth_matriarch', nameKey: 'card.mammoth_matriarch.name' });
+    expect(c.card('mammoth_matriarch')).toEqual({
+      age: 'stone',
+      visualId: 'unit.mammoth_matriarch',
+      nameKey: 'card.mammoth_matriarch.name',
+      view: 'unit',
+      group: 'legendary',
+    });
     expect(c.card('trebuchet').age).toBe('medieval');
     expect(c.card('trebuchet').visualId).toBe('turret.trebuchet');
+  });
+
+  it('tells walkouts to stage turrets as turrets and units with their role group (DESIGN B5)', () => {
+    expect(c.card('grumpy_toad')).toMatchObject({ view: 'turret', group: null });
+    expect(c.card('sabertooth')).toMatchObject({ view: 'unit', group: 'epic' });
+    expect(c.card('spear_hunter')).toMatchObject({ view: 'unit', group: 'antiArmor' });
+    for (const id of Object.keys(content.turrets)) expect(c.card(id).view, id).toBe('turret');
+    for (const id of Object.keys(content.units)) expect(c.card(id).view, id).toBe('unit');
   });
 
   it('describes skins with their rarity and target', () => {

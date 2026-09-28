@@ -4,8 +4,8 @@
  * - **Load** (B8 Load order): read both slots, take the newest valid checksum, migrate it (writing
  *   `ageborn.backup.pre-v<N>` before each step), validate it; if that fails fall back to the other
  *   slot, then to "no save" (`null`: the app creates a fresh save and shows the unreadable banner
- *   from `loadReport.notice`). Rejected copies are set aside in `ageborn.backup.unreadable` first, so
- *   a repairable save is never destroyed by the fresh one.
+ *   from `loadReport.notice`). Rejected copies are set aside in `ageborn.backup.unreadable` first
+ *   (`unreadable.ts`), so a repairable save is never destroyed by the fresh one.
  * - **Save** (B8 Writes): the doc is validated and serialized at once, then written 2 s after the
  *   first unsaved change (later saves in that window replace the payload but do not postpone it),
  *   right away with `{ immediate: true }` (after a capsule roll or upgrade) and on `flush()`, which
@@ -13,7 +13,8 @@
  * - **Quota** (B8 Durability): a full storage first gives up replay and event log space; if the save
  *   still does not fit, the problem is reported through `onProblem` and `problem` with an i18n key.
  * - **Newer builds**: a slot written by a newer build (an old cached page after an update) is never
- *   overwritten: the store stops writing and reports `tooNew` until the page is reloaded.
+ *   overwritten: the store stops writing and reports `tooNew` until the page is reloaded. This holds
+ *   even when `save()` runs before `load()`.
  *
  * The storage, clock and timers are injected, so the whole store runs in Node tests.
  */
@@ -35,8 +36,9 @@ import { migrate, SAVE_VERSION, SAVE_VERSIONS, type SaveVersion } from './migrat
 import { saveNotice, type SaveNotice, type SaveProblemKind } from './notices';
 import { createReplayRing } from './replays';
 import { validateSaveDoc } from './schema';
-import { encodeEnvelope, newestFirst, otherSlot, readSlots, type SlotDefect } from './slots';
+import { encodeEnvelope, newestFirst, otherSlot, readSlots, type SlotDefect, type SlotRead } from './slots';
 import { classifyStorageError, storageKeys, type KeyValueStorage, type StorageFailure } from './storage';
+import { keepUnreadableCopies } from './unreadable';
 
 /** Timer functions (injected so tests control time). */
 export interface Timers {
@@ -93,8 +95,10 @@ export interface SlotReport {
 
 export interface LoadReport {
   /**
-   * `empty`: nothing stored (first run). `loaded`: the newest copy loaded. `recovered`: a newer or
-   * damaged copy was skipped and an older one loaded. `unreadable`: nothing could be loaded.
+   * `empty`: nothing stored (first run). `loaded`: the newest copy loaded (an older copy may be
+   * damaged; it is replaced by the next write). `recovered`: a copy that was or may have been newer
+   * was rejected and an older one loaded, so recent progress may be missing. `unreadable`: nothing
+   * could be loaded.
    */
   status: 'empty' | 'loaded' | 'recovered' | 'unreadable';
   slot: SlotId | null;
@@ -214,8 +218,9 @@ export class LocalSaveStore implements SaveStore {
 
     let status: LoadReport['status'];
     if (chosen !== null) {
-      const otherDamaged = slots.some((s) => s.slot !== chosen && (s.outcome === 'corrupt' || s.outcome === 'checksum'));
-      status = skippedNewer || otherDamaged ? 'recovered' : 'loaded';
+      const loadedAt = candidates.find((c) => c.slot === chosen)!.envelope.writtenAt;
+      const otherMaybeNewer = reads.some((r) => r.slot !== chosen && damagedMaybeNewer(r, loadedAt));
+      status = skippedNewer || otherMaybeNewer ? 'recovered' : 'loaded';
       this.nextSlot = otherSlot(chosen);
     } else {
       status = reads.some((r) => r.raw !== null) ? 'unreadable' : 'empty';
@@ -224,12 +229,15 @@ export class LocalSaveStore implements SaveStore {
 
     // Copies that were rejected but may hold real progress are set aside before any write can
     // replace them: everything when nothing loaded, else the ones with a valid checksum.
-    const aside = reads.filter((r) => r.raw !== null && (chosen === null || KEEP_ASIDE.has(reportOf(r.slot).outcome)));
-    if (aside.length > 0) this.keepUnreadable(aside.map((r) => [r.slot, r.raw] as const));
+    const now = this.clock.now();
+    const aside = reads
+      .filter((r) => r.raw !== null && (chosen === null || KEEP_ASIDE.has(reportOf(r.slot).outcome)))
+      .map((r) => ({ at: now, source: describeSlot(reportOf(r.slot)), raw: r.raw! }));
+    if (aside.length > 0) keepUnreadableCopies(this.storage, aside);
 
     // A save from a newer build must survive this (older, probably cached) build: no writes at all.
     this.blocked = slots.some((s) => s.outcome === 'tooNew');
-    const detail = slots.map((s) => `${s.slot}: ${s.outcome}${s.detail ? ` (${s.detail})` : ''}`).join('; ');
+    const detail = slots.map(describeSlot).join('; ');
     let notice: SaveNotice | null = null;
     if (this.blocked) notice = saveNotice('tooNew', detail);
     else if (status === 'recovered' || status === 'unreadable') notice = saveNotice(status, detail);
@@ -418,18 +426,26 @@ export class LocalSaveStore implements SaveStore {
   // Internals
   // -------------------------------------------------------------------------------------------
 
+  /** Finds the next slot when `save()` runs before `load()` (tests, tools, a misordered boot). */
   private ensureScanned(): SlotId {
     if (this.nextSlot !== null) return this.nextSlot;
-    const newest = newestFirst(readSlots(this.storage))[0];
+    const valid = newestFirst(readSlots(this.storage));
+    const newest = valid[0];
     this.nextSlot = newest ? otherSlot(newest.slot) : 'A';
     this.lastWrittenAt = newest?.envelope.writtenAt ?? Number.NEGATIVE_INFINITY;
+    // Without a load nothing has checked the versions yet; a newer build's save must still survive.
+    const newer = valid.filter((r) => (versionOf(r.doc).version ?? 0) > this.version);
+    if (newer.length > 0) {
+      this.blocked = true;
+      this.setProblem(saveNotice('tooNew', newer.map((r) => `${r.slot}: v${versionOf(r.doc).version} > v${this.version}`).join('; ')));
+    }
     return this.nextSlot;
   }
 
   /** Writes one payload to the next slot, freeing ring space on quota errors. */
   private writePayload(payload: string): boolean {
-    if (this.blocked) return false;
     const slot = this.ensureScanned();
+    if (this.blocked) return false;
     const writtenAt = Math.max(this.clock.now(), this.lastWrittenAt + 1);
     const text = encodeEnvelope(payload, this.version, writtenAt);
     let failure = this.tryWrite(SLOT_KEYS[slot], text);
@@ -467,17 +483,6 @@ export class LocalSaveStore implements SaveStore {
     }
   }
 
-  /** Copies unreadable slot texts aside before a fresh save can overwrite them; best effort. */
-  private keepUnreadable(raws: readonly (readonly [SlotId, string | null])[]): void {
-    try {
-      if (this.storage.getItem(UNREADABLE_BACKUP_KEY) !== null) return;
-      const kept = Object.fromEntries(raws.filter(([, raw]) => raw !== null));
-      this.storage.setItem(UNREADABLE_BACKUP_KEY, JSON.stringify({ at: this.clock.now(), slots: kept }));
-    } catch {
-      // No room: the slots themselves are still untouched until the next write.
-    }
-  }
-
   private setProblem(n: SaveNotice | null): void {
     const was = this.currentProblem;
     this.currentProblem = n;
@@ -499,4 +504,21 @@ export class LocalSaveStore implements SaveStore {
 function versionOf(doc: unknown): { version?: number } {
   const ver = doc !== null && typeof doc === 'object' ? (doc as { v?: unknown }).v : undefined;
   return typeof ver === 'number' ? { version: ver } : {};
+}
+
+/** `A: invalid (activePlan: …)`: one slot's outcome for notices, the dev page and kept copies. */
+function describeSlot(s: SlotReport): string {
+  return `${s.slot}: ${s.outcome}${s.detail ? ` (${s.detail})` : ''}`;
+}
+
+/**
+ * True when a slot that failed before migration (damaged text or payload) may have held newer
+ * progress than the copy that loaded. A payload that failed its checksum still shows the time it was
+ * written; if that is older than the loaded copy, nothing was lost and the player is not alarmed.
+ * Unparsable text has no time, so it may have been the newer copy.
+ */
+function damagedMaybeNewer(r: SlotRead, loadedAt: number): boolean {
+  if (r.ok || r.defect === 'missing') return false;
+  if (r.defect === 'checksum' && r.writtenAt !== undefined) return r.writtenAt >= loadedAt;
+  return true;
 }

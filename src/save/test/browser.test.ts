@@ -73,6 +73,13 @@ describe('browserStorage', () => {
     const quotaOnly = { getItem: () => null, removeItem: () => {}, setItem: () => { throw makeQuotaError(); } };
     expect(browserStorage({ localStorage: quotaOnly }).available).toBe(true);
   });
+
+  it('counts an empty storage that refuses even the probe as blocked (old Safari private browsing)', () => {
+    const noRoom = new MemoryStorage({ quota: 0 });
+    const r = browserStorage({ localStorage: noRoom });
+    expect(r.available).toBe(false);
+    expect(r.storage).not.toBe(noRoom);
+  });
 });
 
 describe('createBrowserSaveStore', () => {

@@ -1,12 +1,14 @@
 /**
  * The result (DESIGN A9 #7): Victory / Defeat / Draw, a short recap, the rewards staged one at a
- * time (each tap skips to the next), and Next / Play again, Watch replay, Home. The opponent keeps
- * its AI badge (A7.1, C5 #38). WP9's Result screen takes over in Phase 2.
+ * time (each tap skips to the next), and Next / Play again, Watch replay, Home. A lost onboarding
+ * match offers Retry (A8). The opponent keeps its AI badge (A7.1, C5 #38). WP9's Result screen takes
+ * over in Phase 2.
  */
 import { useEffect, useMemo } from 'preact/hooks';
 import type { RewardStep } from '@/contracts';
 import type { ResultState } from '../controller';
 import { RewardStager } from '../flow';
+import { displayName } from '../names';
 import { useApp } from './context';
 
 function rewardText(t: (k: string, p?: Record<string, string | number>) => string, r: RewardStep): string {
@@ -62,7 +64,11 @@ export function ResultScreen(p: { result: ResultState }) {
   const won = input.outcome.winner === input.mySide;
   const draw = input.outcome.winner === null;
   const title = draw ? ui.t('app.draw') : won ? ui.t('app.victory') : ui.t('app.defeat');
-  const onboarding = setup.mode === 'tutorial' && c.step.value !== 'home';
+  const step = c.step.value;
+  const onboarding = setup.mode === 'tutorial' && step !== 'home';
+  // A8: a lost onboarding match offers a retry. After match 1 the retry is the only way on.
+  const retry = onboarding && c.canRetry(p.result);
+  const next = onboarding && step !== 'match1';
   return (
     <div class="ab-scrim" data-testid="result" onClick={() => stager.tap()}>
       <div class="ab-panel">
@@ -70,7 +76,7 @@ export function ResultScreen(p: { result: ResultState }) {
           {title}
         </h2>
         <div class="ab-row">
-          <span class="ab-chip">{input.opponent.displayName}</span>
+          <span class="ab-chip">{displayName(input.opponent.displayName, ui.services.i18n)}</span>
           <span class="ab-chip ab-chip--ai">{ui.t('app.aiChip')}</span>
         </div>
         <div class="ab-stats">
@@ -88,15 +94,21 @@ export function ResultScreen(p: { result: ResultState }) {
           {!stager.done ? <span class="ab-muted">{ui.t('app.tapToSkip')}</span> : null}
         </div>
         <div class="ab-row" onClick={(e) => e.stopPropagation()}>
-          {onboarding ? (
+          {retry ? (
+            <button class={`ab-btn ${next ? 'ab-btn--plain' : 'ab-btn--gold'}`} data-testid="retry" onClick={() => c.retry()}>
+              {ui.t('app.retry')}
+            </button>
+          ) : null}
+          {next ? (
             <button class="ab-btn ab-btn--gold" data-testid="next" onClick={() => c.next()}>
               {ui.t('app.next')}
             </button>
-          ) : (
+          ) : null}
+          {!onboarding ? (
             <button class="ab-btn ab-btn--gold" data-testid="play-again" onClick={() => c.playAgain()}>
               {ui.t('app.playAgain')}
             </button>
-          )}
+          ) : null}
           <button class="ab-btn ab-btn--plain" data-testid="watch-replay" onClick={() => c.watchReplay(replay)}>
             {ui.t('app.watchReplay')}
           </button>

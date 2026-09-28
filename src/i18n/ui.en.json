@@ -309,7 +309,10 @@
       "powers": "Powers",
       "hint": "Tap a card to add it, or pick a slot first.",
       "hintSelected": "Pick a card for the {slot} slot.",
-      "pickSlot": "Pick a slot to swap into."
+      "pickSlot": "Pick a slot to swap into.",
+      "blockedTitle": "War Plan not ready",
+      "blockedBody": "Your War Plan can't play {format} yet:",
+      "blockedFix": "Open War Plan"
     },
     "advisor": {
       "tooFewUnits": "{age} needs at least 3 units.",

@@ -3,14 +3,14 @@
  * type, so this package never imports `content`, DESIGN B2) and injected into the screens.
  * Unknown ids fall back to the A14.1 naming conventions, so a missing entry never breaks a reveal.
  */
-import type { AgeId, CardId, CompiledContent, SkinId } from '@/contracts';
+import type { CardId, CompiledContent, SkinId } from '@/contracts';
 import type { CapsuleCatalog, CapsuleKind, CardInfo, SkinInfo } from './types';
 
 /** Kinds shown with a climb when content says nothing (A6.4 "Other capsule types"; WP1 decision). */
 const CLIMB_KINDS: ReadonlySet<CapsuleKind> = new Set<CapsuleKind>(['win', 'daily', 'meter']);
 
 export function fallbackCardInfo(id: CardId): CardInfo {
-  return { age: null, visualId: `unit.${id}`, nameKey: `card.${id}.name` };
+  return { age: null, visualId: `unit.${id}`, nameKey: `card.${id}.name`, view: 'unit', group: null };
 }
 
 export function fallbackSkinInfo(id: SkinId): SkinInfo {
@@ -36,9 +36,14 @@ export function createCatalog(content?: CompiledContent): CapsuleCatalog {
   const climbs = climbTable(content);
   return {
     card(id) {
-      const def = content?.units[id] ?? content?.turrets[id] ?? content?.powers[id];
-      if (!def) return fallbackCardInfo(id);
-      return { age: def.age as AgeId, visualId: def.visualId, nameKey: def.nameKey };
+      const unit = content?.units[id];
+      if (unit) return { age: unit.age, visualId: unit.visualId, nameKey: unit.nameKey, view: 'unit', group: unit.group };
+      const turret = content?.turrets[id];
+      if (turret) return { age: turret.age, visualId: turret.visualId, nameKey: turret.nameKey, view: 'turret', group: null };
+      // Powers never come from capsules (A5); they only need a name and an icon here.
+      const power = content?.powers[id];
+      if (power) return { age: power.age, visualId: power.visualId, nameKey: power.nameKey, view: 'unit', group: null };
+      return fallbackCardInfo(id);
     },
     skin(id) {
       const def = content?.skins[id];

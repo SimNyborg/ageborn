@@ -93,6 +93,10 @@ describe('summary (DESIGN A10 step 8)', () => {
       { key: 'capsule.pity.newCard', n: 4 },
     ]);
     expect(pityLines({ ...PITY, sinceEpic: 12 }, DEFAULT_PITY_RULES)[0]?.n).toBe(1);
+    // Legendary n = 40 is guaranteed: with 39 opened since the last one, the next capsule holds it.
+    expect(pityLines({ ...PITY, sinceLegendary: 39 }, DEFAULT_PITY_RULES)[1]?.n).toBe(1);
+    // No unowned card left in the pool: no new-card promise on screen (A6.5 "while unowned cards exist").
+    expect(pityLines(PITY, DEFAULT_PITY_RULES, false).map((l) => l.key)).toEqual(['capsule.pity.epic', 'capsule.pity.legendary']);
     expect(wardrobePityLines(PITY, DEFAULT_PITY_RULES)).toEqual([
       { key: 'capsule.pity.wardrobeEpic', n: 3 },
       { key: 'capsule.pity.wardrobeLegendary', n: 18 },
@@ -103,7 +107,7 @@ describe('summary (DESIGN A10 step 8)', () => {
 describe('catalog', () => {
   it('falls back to A14.1 conventions without content', () => {
     const c = createCatalog();
-    expect(c.card('bonker')).toEqual({ age: null, visualId: 'unit.bonker', nameKey: 'card.bonker.name' });
+    expect(c.card('bonker')).toEqual({ age: null, visualId: 'unit.bonker', nameKey: 'card.bonker.name', view: 'unit', group: null });
     expect(c.hasClimb('win')).toBe(true);
     expect(c.hasClimb('daily')).toBe(true);
     expect(c.hasClimb('meter')).toBe(true);

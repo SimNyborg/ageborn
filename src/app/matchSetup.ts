@@ -22,7 +22,9 @@ import type {
   SaveDoc,
   SideConfig,
 } from '@/contracts';
+import { botProfile } from '@/ai';
 import type { Content, GeneralDef, GeneralId } from '@/content';
+import { commanderInfo } from '@/meta';
 import {
   GROGG_SCRIPT,
   MATCH1_SEED,
@@ -51,8 +53,14 @@ export interface MatchSetup {
   script: MatchScript | null;
 }
 
-/** Balanced weights (A7.4) for opponents without their own. */
-const BALANCED = { aggr: 50, turret: 50, economy: 50, greed: 50, patience: 50, legendary: 50, hold: 50 };
+/** Names the setup puts on the sides (from the caller's i18n; the setup itself has no strings). */
+export interface SetupLabels {
+  /** The player's side when there is no save yet (a save uses the profile name). */
+  player?: string;
+}
+
+/** "Standard levels" in Skirmish (A6.8), when the content has no ladder table (fake content). */
+const STANDARD_LEVEL_FALLBACK = 7;
 
 const RARITY_RANK: Record<string, number> = { common: 0, rare: 1, epic: 2, legendary: 3 };
 
@@ -85,15 +93,23 @@ export function starterLoadouts(content: CompiledContent): Record<AgeId, Loadout
   return out;
 }
 
-/** The player's side from the save: the active War Plan, card levels and equipped skins. */
-export function playerSide(save: SaveDoc | null, content: CompiledContent): SideConfig {
+/** The Skirmish "Standard levels" level: every card on both sides plays at it (A6.8). */
+export function standardLevel(content: CompiledContent): number {
+  return tables(content).arenas?.ladder.standardLevel ?? STANDARD_LEVEL_FALLBACK;
+}
+
+/**
+ * The player's side from the save: the active War Plan, card levels and equipped skins. Without a
+ * save (a first launch before meta exists) the starter plan at level 1, labeled `fallbackLabel`.
+ */
+export function playerSide(save: SaveDoc | null, content: CompiledContent, fallbackLabel = ''): SideConfig {
   const plan = save ? (save.warPlans[save.activePlan] ?? save.warPlans[0]) : undefined;
   const levels: Record<CardId, number> = save ? {} : uniformLevels(content, 1);
   if (save) {
     for (const id of Object.keys(save.collection).sort()) levels[id] = save.collection[id]!.level;
   }
   return {
-    label: save?.profile.name ?? 'Player',
+    label: save?.profile.name ?? fallbackLabel,
     isBot: false,
     loadouts: { ...(plan?.loadouts ?? starterLoadouts(content)) },
     levels,
@@ -123,18 +139,24 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
   return out;
 }
 
-/** The bot profile for an opponent (A7.3, A7.4); new players get the A6.8 mistake bonus. */
+/**
+ * The bot profile for an opponent (A7.3, A7.4), built by WP3's `botProfile`: the General's weights
+ * and opening, or, for a procedural AI Commander (`commander:<personality>:<favourite card>`, meta),
+ * the personality General's weights and opening plus the favourite card (A7.4). New players (the
+ * first 20 matches, a missing save being a first launch) get the A6.8 mistake bonus.
+ */
 export function botProfileFor(opponent: OpponentSpec, content: CompiledContent, save: SaveDoc | null): BotProfile {
-  const g = generalDef(content, opponent.generalId);
   const ladder = tables(content).arenas?.ladder;
-  const newPlayer = ladder && save && save.matchesPlayed < ladder.newPlayer.matches ? ladder.newPlayer.mistakeBonusBp : 0;
-  return {
+  const played = save?.matchesPlayed ?? 0;
+  const mistakeBonusBp = ladder && played < ladder.newPlayer.matches ? ladder.newPlayer.mistakeBonusBp : 0;
+  const commander = commanderInfo(opponent.generalId);
+  return botProfile(content, {
     generalId: opponent.generalId,
     tier: opponent.tier,
-    mistakeBonusBp: newPlayer,
-    weights: { ...(g?.weights ?? BALANCED) },
-    openings: [],
-  };
+    mistakeBonusBp,
+    ...(commander ? { personalityOf: commander.personalityOf } : {}),
+    ...(commander?.favoriteCard ? { favoriteCard: commander.favoriteCard } : {}),
+  });
 }
 
 /** Match number of the next match for this save (1 = the tutorial). */
@@ -151,17 +173,29 @@ function trainingFor(n: number, extra: MatchConfig['training'] = {}): MatchConfi
   return Object.keys(t).length > 0 ? t : undefined;
 }
 
+export interface MatchSetupOptions extends SetupLabels {
+  /**
+   * The opponent's name on the HUD nameplate (`SideConfig.label`). Default: `displayName`, which
+   * meta gives as a string key for named Generals; the caller resolves it through i18n.
+   */
+  opponentLabel?: string;
+  /** Skirmish "Standard levels": every card of the player plays at L7 too (A6.8; meta sets the bot's). */
+  standardLevels?: boolean;
+}
+
 /**
  * The setup for a match against `opponent` (any mode). The opponent's side from the spec is kept
  * as is, but always flagged as a bot (A7.1).
  */
-export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode: MatchMode, content: CompiledContent): MatchSetup {
+export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode: MatchMode, content: CompiledContent, o: MatchSetupOptions = {}): MatchSetup {
   const n = nextMatchNumber(save);
+  const player = playerSide(save, content, o.player);
+  if (o.standardLevels) player.levels = uniformLevels(content, standardLevel(content));
   const config: MatchConfig = {
     seed: opponent.seed,
     format: opponent.format,
     content,
-    sides: [playerSide(save, content), { ...opponent.side, label: opponent.displayName, isBot: true }],
+    sides: [player, { ...opponent.side, label: o.opponentLabel ?? opponent.displayName, isBot: true }],
     modifiers: [...opponent.modifiers],
   };
   const training = trainingFor(n);
@@ -207,7 +241,7 @@ export function generalOpponent(
  * ("Training match", disclosed). The player's tray is scripted: Bonker only, the Pebbler slides in
  * at 0:20, and each later age offers its Infantry and Ranged commons.
  */
-export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, groggName: string): MatchSetup {
+export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, groggName: string, labels: SetupLabels = {}): MatchSetup {
   const grogg = generalDef(content, 'grogg');
   const groggPlan: Partial<Record<AgeId, Loadout>> = grogg?.warPlan ?? { stone: starterLoadout(content, 'stone') };
   const groggUnits = groggPlan.stone?.units ?? [];
@@ -224,7 +258,7 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
     warmUp: false,
     disclosures: [...(grogg?.disclosureKeys ?? [])],
   };
-  const player = playerSide(save, content);
+  const player = playerSide(save, content, labels.player);
   player.loadouts = match1Loadouts(content);
   const staged = stagedTraining(1);
   const config: MatchConfig = {
@@ -252,7 +286,7 @@ export { GROGG_SCRIPT };
  * Match 2 (A8): Short War vs Pip Quickstep (AI, tier 0) with the player's starter plan. Pip plays
  * at the Arena 1 bot level with the arena's rarity allowance (A6.3, A6.8).
  */
-export function tutorialMatch2(save: SaveDoc | null, content: CompiledContent, pipName: string, seed: number): MatchSetup {
+export function tutorialMatch2(save: SaveDoc | null, content: CompiledContent, pipName: string, seed: number, labels: SetupLabels = {}): MatchSetup {
   const arena = tables(content).arenas?.list[0];
   const opponent = generalOpponent(content, {
     generalId: 'pip',
@@ -263,7 +297,7 @@ export function tutorialMatch2(save: SaveDoc | null, content: CompiledContent, p
     seed,
     maxRarity: arena?.botMaxRarity ?? 'rare',
   });
-  const setup = matchSetupFor(save, opponent, 'tutorial', content);
+  const setup = matchSetupFor(save, opponent, 'tutorial', content, labels);
   return { ...setup, matchNumber: 2, script: scriptForMatch(2) };
 }
 
@@ -274,7 +308,7 @@ export function tutorialMatch2(save: SaveDoc | null, content: CompiledContent, p
 export function quickBattle(
   save: SaveDoc | null,
   content: CompiledContent,
-  o: { generalId: string; displayName: string; format: FormatId; seed: number; tier?: number; level?: number },
+  o: { generalId: string; displayName: string; format: FormatId; seed: number; tier?: number; level?: number } & SetupLabels,
 ): MatchSetup {
   const opponent = generalOpponent(content, {
     generalId: o.generalId,
@@ -284,7 +318,7 @@ export function quickBattle(
     format: o.format,
     seed: o.seed,
   });
-  const setup = matchSetupFor(save, opponent, 'skirmish', content);
+  const setup = matchSetupFor(save, opponent, 'skirmish', content, o.player !== undefined ? { player: o.player } : {});
   // Quick Battle is a dev route: no onboarding stages or scripts, every control available.
   const { training: _unused, ...config } = setup.config;
   return { ...setup, config, script: null };

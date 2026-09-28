@@ -115,8 +115,9 @@ function tutorial(s: SaveDoc, t: Content, result: LadderResult, now: number, ste
 }
 
 /**
- * Applies a finished match (see the module note). `age` is the Age Capsule age if the app asked the
- * player first (Daily Challenge first win, Conquest star 3); otherwise the default age is used.
+ * Applies a finished match (see the module note). `age` is the Age Capsule age the player picked
+ * when {@link ageCapsuleDue} said one is due (Daily Challenge first win, Conquest star 3); without
+ * it the default age is used.
  */
 export function applyMatchResultAt(
   s: SaveDoc,
@@ -175,4 +176,17 @@ export function applyMatchResultAt(
   const titleIds = new Set(t.cosmetics.titles.map((d) => d.id));
   for (const id of save.cosmetics.owned) if (titleIds.has(id) && !titlesBefore.has(id)) steps.push({ kind: 'title', title: id });
   return { save, rewards: steps };
+}
+
+/**
+ * True when applying `r` would grant an Age Capsule whose age the player picks in a dialog first
+ * (A6.4 "all from one age picked in a dialog when granted"): the Daily Challenge's first win of the
+ * day or a new Conquest star 3. The app asks for the age, then passes it to `applyMatchResult`. A
+ * scripted capsule (A6.5) ignores the age, so it needs no dialog.
+ */
+export function ageCapsuleDue(s: SaveDoc, r: MatchResultInput, t: Content, lt: LocalTime): boolean {
+  if (r.mode !== 'daily' && r.mode !== 'conquest') return false;
+  const before = new Set(s.capsules.pending.map((p) => p.id));
+  const { save } = applyMatchResultAt(s, r, t, lt);
+  return save.capsules.pending.some((p) => !before.has(p.id) && p.kind === 'age' && p.scriptIndex === null);
 }

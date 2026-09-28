@@ -12,6 +12,7 @@ import { FIXTURE_NOW, maxedSave, midGameSave, newPlayerSave } from '../fixtures/
 import { atLevel, cardTile, collectionProgress, levelMultBp, unitStats, upgradeCost, upgradeState } from '../model/cards';
 import { filterCards, NO_FILTER } from '../model/collection';
 import { opponentName, personalityOf } from '../model/opponent';
+import { blockers, planIssueText, requestFormat } from '../model/match';
 import { reasonKey } from '../model/reasons';
 import {
   agesAwaitingAntiArmor,
@@ -266,6 +267,26 @@ describe('misc', () => {
     expect(personalityOf({ generalId: 'commander:moss:rock_tosser' }, content)?.id).toBe('moss');
     expect(personalityOf({ generalId: 'commander:nobody:' }, content)).toBeNull();
     expect(personalityOf({ generalId: 'commander' }, content)).toBeNull();
+  });
+
+  it('knows which format a match request plays', () => {
+    expect(requestFormat({ mode: 'ladder', format: 'standard' }, content)).toBe('standard');
+    expect(requestFormat({ mode: 'skirmish', options: { generalId: 'echo', tier: 1, format: 'short', standardLevels: false }, speed: 1 }, content)).toBe(
+      'short',
+    );
+    expect(requestFormat({ mode: 'daily' }, content)).toBe('standard');
+    expect(requestFormat({ mode: 'conquest', general: 'pip' }, content)).toBe('full');
+    expect(requestFormat({ mode: 'tutorial', match: 1 }, content)).toBeNull();
+  });
+
+  it('only errors block a match; findings read as text', () => {
+    const issues = [
+      { age: 'stone' as const, severity: 'warning' as const, code: 'noAntiArmor', messageKey: 'ui.advisor.noAntiArmor' },
+      { age: 'medieval' as const, severity: 'error' as const, code: 'noTurret', messageKey: 'ui.advisor.noTurret' },
+    ];
+    expect(blockers(issues).map((i) => i.code)).toEqual(['noTurret']);
+    expect(planIssueText(issues[1]!, t)).toBe('Medieval Age needs a turret.');
+    expect(planIssueText({ ...issues[0]!, messageKey: 'ui.advisor.notAKey' }, t)).toBe('Stone Age loadout needs a look.');
   });
 
   it('turns failure reasons into toast keys, never raw codes', () => {

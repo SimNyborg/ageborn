@@ -16,7 +16,8 @@
  * 6. Max-level copies convert to Dust when the capsule is revealed (`open.ts`), not here.
  *
  * "Owned" while rolling means owned or already inside another unopened capsule, so an unopened
- * capsule's NEW card is not handed out twice. Stacks are returned rarest last (A10 step 5).
+ * capsule's NEW card is not handed out twice; nor, where the rarity has another card, as a plain
+ * copy that could be opened first and take the NEW away. Stacks are returned rarest last (A10 step 5).
  */
 import type { CapsuleStack, CardId, Rarity } from '@/contracts';
 import type { Content } from '@/content';
@@ -44,6 +45,12 @@ export interface RollContext {
   owned: ReadonlySet<CardId>;
   /** Pity n values, or null for capsules that skip pity (none in v1 except scripted ones). */
   pity: PityDraw | null;
+  /**
+   * Cards another unopened capsule reveals as NEW. A stack picks one only when its rarity has no
+   * other card left, so opening a pile in any order never moves a NEW card (and the new-card
+   * protection it stands for) out of the capsule that promised it.
+   */
+  reserved?: ReadonlySet<CardId>;
 }
 
 interface Slot {
@@ -135,12 +142,12 @@ export function planSlots(spec: RollSpec, ctx: RollContext): Slot[] {
  * Returns null only when the pool has no card left at all.
  */
 export function pickCard(
-  ctx: Pick<RollContext, 't' | 'rng' | 'pool' | 'owned'>,
+  ctx: Pick<RollContext, 't' | 'rng' | 'pool' | 'owned' | 'reserved'>,
   rarity: Rarity,
   newOnly: boolean,
   used: ReadonlySet<CardId>,
 ): { card: CardId; rarity: Rarity } | null {
-  const { t, rng, pool, owned } = ctx;
+  const { t, rng, pool, owned, reserved } = ctx;
   const weight = t.capsules.unownedWeight;
   for (const onlyNew of newOnly ? [true, false] : [false]) {
     for (let r = RARITY_INDEX[rarity]; r >= 0; r -= 1) {
@@ -150,6 +157,10 @@ export function pickCard(
       // with no unowned one left falls back to Epic).
       if (onlyNew || (rr === 'legendary' && unownedIn(pool.byRarity.legendary, owned))) cands = cands.filter((c) => !owned.has(c));
       if (cands.length === 0) continue;
+      // Leave another capsule's NEW card alone while this rarity has any other card (the rarity odds
+      // never change, only which card of the rarity).
+      const free = reserved && reserved.size > 0 ? cands.filter((c) => !reserved.has(c)) : cands;
+      if (free.length > 0) cands = free;
       const i = pickWeighted(rng, cands.map((c) => (owned.has(c) ? 1 : weight)));
       const card = cands[i];
       if (card !== undefined) return { card, rarity: rr };

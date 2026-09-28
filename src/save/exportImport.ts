@@ -77,7 +77,8 @@ export function decodeSaveCode(code: string): { ok: true; json: unknown } | { ok
   if (text.length > MAX_CODE_LENGTH) return { ok: false, reason: 'corrupt', detail: 'too long' };
   if (text.startsWith('{')) {
     try {
-      return { ok: true, json: JSON.parse(code) as unknown };
+      // Parse the original text (spaces inside names matter); `trim` also drops a byte-order mark.
+      return { ok: true, json: JSON.parse(code.trim()) as unknown };
     } catch {
       return { ok: false, reason: 'corrupt', detail: 'not JSON' };
     }

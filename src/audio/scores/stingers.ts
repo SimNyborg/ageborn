@@ -51,10 +51,13 @@ export const victoryStinger: Score = {
   ] satisfies SeqTrack[],
 };
 
-/** Defeat: gentle, not mocking (A13). A slow descent on the soft flute that still comes home to C. */
+/**
+ * Defeat: gentle, not mocking (A13). The motif's opening (C - G C, same rhythm) on the soft flute, but
+ * where the theme rises to E it sinks to A over A minor, then walks down stepwise and comes home to C.
+ */
 const DEFEAT_MELODY: readonly MelodyBar[] = [
-  [['G4', 4], ['E4', 4], ['D4', 4], ['C4', 4]],
-  [['D4', 6], ['E4', 2], ['C4', 8]],
+  [['C5', 4], ['G4', 2], ['C5', 2], ['A4', 8]],
+  [['G4', 4], ['F4', 2], ['D4', 2], ['C4', 8]],
 ];
 
 export const defeatStinger: Score = {

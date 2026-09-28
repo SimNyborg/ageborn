@@ -11,6 +11,8 @@ import { BP, MILLI, msToTicks } from '@/core';
 export interface UnitCard {
   id: CardId;
   age: AgeId;
+  /** `AgeDef.index` order of the card's age (A2.3 underdog bounty). */
+  ageIndex: number;
   group: RoleGroup;
   legendary: boolean;
   /** Card value V(u) = card cost in whole gold (DESIGN A7.2 "Values"). */
@@ -20,9 +22,13 @@ export interface UnitCard {
   pop: number;
   /** Range of the first attack in milli-lu (0 for units without attacks). */
   range: number;
+  /** Walking speed in lu/s (A2.1: 35-100), for the safe-window Evolve check (A7.3). */
+  speed: number;
   hitsAir: boolean;
   air: boolean;
   hidden: boolean;
+  /** Riders summoned when the unit dies (A5 `riders`), or null. */
+  riders: { card: CardId; count: number } | null;
 }
 
 export interface TurretCard {
@@ -62,6 +68,8 @@ export interface CardBook {
     treasuryGoldPerSecMilli: number;
     overdriveGoldBp: number;
     bountyGoldBp: number;
+    /** A2.3 underdog bounty bonus, bp. */
+    underdogBp: number;
     powerKillGoldBp: number;
     vanguardCount: number;
     lastStandRadius: number;
@@ -104,18 +112,22 @@ export function cardBook(content: CompiledContent): CardBook {
   for (const id of Object.keys(content.units).sort()) {
     const u = content.units[id];
     if (!u) continue;
+    const riders = u.abilities.find((a) => a.kind === 'riders');
     units[id] = {
       id,
       age: u.age,
+      ageIndex: ageIndex(u.age),
       group: u.group,
       legendary: u.group === 'legendary' || u.rarity === 'legendary',
       value: u.cost,
       cost: u.cost * MILLI,
       pop: e.popByGroup[u.group] ?? 0,
       range: firstRange(u),
+      speed: Math.max(0, Math.trunc(u.speed)),
       hitsAir: u.attacks.some((a) => a.hitsAir),
       air: u.tags.includes('air'),
       hidden: u.hidden === true,
+      riders: riders?.kind === 'riders' ? { card: riders.onDeathSpawn, count: riders.count } : null,
     };
   }
   const turrets: Record<CardId, TurretCard> = {};
@@ -166,6 +178,7 @@ export function cardBook(content: CompiledContent): CardBook {
       treasuryGoldPerSecMilli: e.treasuryMilliGoldPerSecPerLevel,
       overdriveGoldBp: e.overdrive.baseGoldBp,
       bountyGoldBp: e.bountyGoldBp,
+      underdogBp: e.underdogBp,
       powerKillGoldBp: e.powerKillGoldBp,
       vanguardCount: e.vanguardCount,
       lastStandRadius: e.lastStand.radius * MILLI,

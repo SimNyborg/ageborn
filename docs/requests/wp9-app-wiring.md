@@ -66,14 +66,23 @@ the one `prepareMatch` will give), `dailyModifier`, `validatePlan` (→ `meta.va
 first; the index is passed back to `watchReplay`).
 
 Actions: `openCapsule`, `openAllCapsules`, `openWardrobe`, `claimDailyCapsule`, `upgrade`, `craft`
-(card id or skin id), `setWarPlan(index, plan)` (index may be a new preset slot 1 or 2),
-`setActivePlan`, `equipSkin(target, skin | null)`, `claimRoadNode`, `claimQuest(slot | 'weekly')`,
-`rerollQuest`, `setProfile`, `updateSettings`, `exportCode`, `downloadSave`, `importCode`, `resetSave`,
-`exportEventLog`. Each updates the save signal and persists (B8: immediately after upgrades). Results
-with `ok: false` show a toast; `reason: 'amber'` shows "Not enough Amber".
+(card id or skin id), `setWarPlan(index, plan)` (the UI only passes an index up to the current number of
+presets, as `meta.setWarPlan` requires), `setActivePlan`, `markSeen(card)` (→ `meta.markSeen`, called
+when the card detail of a NEW card opens), `equipSkin(target, skin | null)`, `claimRoadNode`,
+`claimQuest(slot | 'weekly')`, `rerollQuest`, `setProfile`, `updateSettings`, `exportCode`,
+`downloadSave`, `importCode`, `resetSave`, `exportEventLog`. Each updates the save signal and persists
+(B8: immediately after upgrades). Results with `ok: false` show a toast: `reason: 'amber'` shows "Not
+enough Amber", `reason: 'dust'` "Not enough Dust", anything else a generic line.
 
-Meta has no functions for quests, the Daily Capsule claim or rerolls in the frozen `Meta` contract;
-those actions need WP7 helpers (or app code) behind these services.
+The quest claim, reroll and Daily Capsule claim are not in the frozen `Meta` contract, but WP7's
+`MetaRules` (`@/meta`) has them: `claimQuest`, `rerollQuest`, `claimDailyCapsule`, plus `setWarPlan`,
+`setActivePlan`, `equipSkin`, `markSeen` and `dailyModifier`. `src/ui/screens/test/realMeta.test.tsx`
+shows the query side (`previewOpponent`, `dailyModifier`, `validatePlan`, `autoFill`, `prepareMatch`)
+answered by `createMeta(content)`.
+
+Before VS, the screens check the active War Plan against the request's format with
+`validatePlan` and refuse to call `prepareMatch` while it has `error` findings (A3 minimum to play), so
+`beginBattle` never receives an unplayable plan from the meta screens.
 
 `fixtures/services.ts` (`createPreviewServices`) is a working reference implementation over a local
 save signal, used by the dev page and tests.

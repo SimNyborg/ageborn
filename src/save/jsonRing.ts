@@ -5,8 +5,16 @@
  * The in-memory list is the ring for this session; storage holds the newest part of it that fits.
  * Both rings are expendable next to the save itself: on a quota error they keep halving what they
  * persist, and the save store can call `shrink()` to free space for a save write.
+ *
+ * The key may have a second writer (the app's `EventLog` shares `ageborn.eventlog`). Before it writes,
+ * a ring checks that storage still holds the text it last read or wrote; if not, it reads the key
+ * again, so it never puts a stale list over the other writer's newer entries.
  */
 import { classifyStorageError, type KeyValueStorage, type StorageFailure } from './storage';
+
+function jsonCopy<T>(x: T): T {
+  return JSON.parse(JSON.stringify(x)) as T;
+}
 
 export interface JsonRingOptions<T> {
   storage: KeyValueStorage;
@@ -22,6 +30,8 @@ export class JsonRing<T> {
   private readonly storage: KeyValueStorage;
   private readonly parse: (x: unknown) => T | null;
   private list: T[] | null = null;
+  /** The key's text as this ring last read or wrote it (null: absent). */
+  private seenText: string | null = null;
   /** How many of the newest items storage may hold; lowered when space runs out. */
   private persistCap: number;
   /** How many of the newest items storage holds now. */
@@ -50,16 +60,18 @@ export class JsonRing<T> {
     return this.persistedCount;
   }
 
+  /** Adds a copy of `item` (as JSON would store it), so later changes to the caller's object never leak in. */
   push(item: T): void {
+    this.syncWithStorage();
     const list = this.ensure();
-    list.push(item);
+    list.push(jsonCopy(item));
     if (list.length > this.capacity) list.splice(0, list.length - this.capacity);
     this.write();
   }
 
-  /** Replaces the whole ring (keeps the newest `capacity` items). */
+  /** Replaces the whole ring (keeps copies of the newest `capacity` items). */
   replace(items: readonly T[]): void {
-    this.list = items.slice(-this.capacity);
+    this.list = items.slice(-this.capacity).map(jsonCopy);
     this.write();
   }
 
@@ -68,6 +80,7 @@ export class JsonRing<T> {
    * when nothing is left to free.
    */
   shrink(): boolean {
+    this.syncWithStorage();
     this.ensure();
     if (this.persistedCount === 0) return false;
     this.persistCap = Math.floor(this.persistedCount / 2);
@@ -78,6 +91,7 @@ export class JsonRing<T> {
   /** Empties the ring and removes the key. */
   clear(): void {
     this.list = [];
+    this.seenText = null;
     this.persistedCount = 0;
     this.persistCap = this.capacity;
     this.lastError = null;
@@ -88,11 +102,25 @@ export class JsonRing<T> {
     }
   }
 
+  /** Drops the cached list when another writer changed the key since this ring last saw it. */
+  private syncWithStorage(): void {
+    if (this.list === null) return;
+    let raw: string | null;
+    try {
+      raw = this.storage.getItem(this.key);
+    } catch {
+      return;
+    }
+    if (raw !== this.seenText) this.list = null;
+  }
+
   private ensure(): T[] {
     if (this.list) return this.list;
     let parsed: unknown;
+    this.seenText = null;
     try {
       const raw = this.storage.getItem(this.key);
+      this.seenText = raw;
       parsed = raw === null ? [] : (JSON.parse(raw) as unknown);
     } catch {
       parsed = [];
@@ -116,8 +144,10 @@ export class JsonRing<T> {
     let n = Math.min(list.length, this.persistCap);
     for (;;) {
       try {
-        if (n === 0) this.storage.removeItem(this.key);
-        else this.storage.setItem(this.key, JSON.stringify(list.slice(list.length - n)));
+        const text = n === 0 ? null : JSON.stringify(list.slice(list.length - n));
+        if (text === null) this.storage.removeItem(this.key);
+        else this.storage.setItem(this.key, text);
+        this.seenText = text;
         this.persistedCount = n;
         this.lastError = null;
         return;

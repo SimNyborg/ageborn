@@ -203,6 +203,32 @@ describe('Mode select', () => {
     ]);
   });
 
+  it('refuses to start with a War Plan below the minimum to play and opens the builder (A3)', () => {
+    const save = midGameSave(content);
+    const plan = save.warPlans[0]!;
+    save.warPlans[0] = { ...plan, loadouts: { ...plan.loadouts, medieval: { ...plan.loadouts.medieval, turrets: [null, null] } } };
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
+    m.click('[data-testid="ladder-start"]');
+    expect(calls('prepareMatch')).toHaveLength(0);
+    expect(m.router.current.value.id).toBe('modeSelect');
+    const dialog = m.q('[data-testid="plan-blocked"]')!;
+    expect(text(dialog)).toContain("Your War Plan can't play Full War yet:");
+    expect(text(dialog)).toContain('Medieval Age needs a turret.');
+    m.click('[data-testid="plan-blocked-fix"]');
+    expect(m.router.current.value).toEqual({ id: 'warPlan', age: 'medieval' });
+  });
+
+  it('warnings never block a match (A3)', () => {
+    const save = midGameSave(content);
+    const plan = save.warPlans[0]!;
+    const medieval = { ...plan.loadouts.medieval, units: [plan.loadouts.medieval.units[0]!, plan.loadouts.medieval.units[1]!, plan.loadouts.medieval.units[2]!, null, null] };
+    save.warPlans[0] = { ...plan, loadouts: { ...plan.loadouts, medieval } };
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
+    m.click('[data-testid="ladder-start"]');
+    expect(m.q('[data-testid="plan-blocked"]')).toBeNull();
+    expect(m.router.current.value.id).toBe('vs');
+  });
+
   it('starts the Daily Challenge', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'modeSelect' }] });
     expect(text(m.q('[data-testid="daily-modifier"]')!)).toContain('Gold Rush');

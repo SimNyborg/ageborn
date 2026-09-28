@@ -211,6 +211,26 @@ describe('pending capsules (rolled at grant, counted at open)', () => {
     }
   });
 
+  it('new-card protection holds in any order: a NEW card stays in the capsule that promised it', () => {
+    for (const order of ['fifo', 'lifo'] as const) {
+      for (const seed of [1, 2, 3, 4]) {
+        let s = scripted(seed, 7);
+        for (let round = 0; round < 8; round += 1) {
+          for (let i = 0; i < 3 + ((seed + round) % 10); i += 1) s = M.grantCapsule(s, 'win', C, clock(), { tier: 'clay' });
+          const ids = s.capsules.pending.map((p) => p.id);
+          if (order === 'lifo') ids.reverse();
+          for (const id of ids) {
+            const promised = s.capsules.pending.find((p) => p.id === id)!.contents.stacks.map((x) => x.isNew);
+            const o = M.openCapsule(s, id);
+            s = o.save;
+            expect(o.reveal.capsule.contents.stacks.map((x) => x.isNew)).toEqual(promised);
+            expect(o.reveal.pityAfter.sinceNewCard).toBeLessThanOrEqual(C.capsules.pity.newCardEvery - 1);
+          }
+        }
+      }
+    }
+  });
+
   it('an unopened capsule counts as owned while rolling, so a NEW card is never promised twice', () => {
     let s = scripted(9, 7);
     for (let i = 0; i < 20; i += 1) s = M.grantCapsule(s, 'win', C, clock());

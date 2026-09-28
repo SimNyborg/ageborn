@@ -57,7 +57,8 @@ function nextPity(p: SaveDoc['pity'], stacks: CapsuleStack[]): SaveDoc['pity'] {
   return {
     ...p,
     opened: p.opened + 1,
-    sinceEpic: has('epic') || has('legendary') ? 0 : p.sinceEpic + 1,
+    // As the meta counts them (A6.5): only an Epic stack resets Epic pity.
+    sinceEpic: has('epic') ? 0 : p.sinceEpic + 1,
     sinceLegendary: has('legendary') ? 0 : p.sinceLegendary + 1,
     sinceNewCard: stacks.some((s) => s.isNew) ? 0 : p.sinceNewCard + 1,
   };
@@ -151,7 +152,8 @@ export function benchProgress(reveals: readonly CapsuleReveal[]): ProgressLookup
       }
       const b = before[s.card];
       const a = after[s.card] ?? (b ? { ...b } : { level: 1, copies: 0, isNew: true, foil: 'none' as Foil });
-      if (s.dust === 0) a.copies += s.isNew && !b ? s.copies - 1 : s.copies;
+      // As the meta applies them: a new card starts at L1 with all of its stack's copies.
+      if (s.dust === 0) a.copies += s.copies;
       after[s.card] = a;
     }
   }
@@ -251,22 +253,23 @@ function buildCases(): BenchCase[] {
       stacks: [{ rarity: 'common' }, { rarity: 'common' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram', isNew: false }, { rarity: 'epic' }, { rarity: 'legendary', card: 'ursa_paladin', isNew: false }],
     }),
   );
-  // Onboarding script (A6.5).
+  // Onboarding script (A6.5), shaped as the meta rolls it: the scripted cards replace the tier's
+  // guarantees and the other stacks are Common stacks of owned cards, so only the scripted cards are NEW.
   const script = C.capsules.script;
-  script.forEach((s, i) => {
-    const stacks: StackSpec[] = tierStacks(s.tier).map((st) => ({ ...st }));
-    s.cards.forEach((card, k) => {
-      const rarity = C.units[card]?.rarity ?? C.turrets[card]?.rarity ?? 'common';
-      const free = stacks.findIndex((x) => x.rarity === rarity && !x.card);
-      stacks[free >= 0 ? free : k] = { rarity, card, isNew: true };
-    });
-    if (s.randomUnownedEpic) stacks[stacks.length - 1] = { rarity: 'epic', card: 'grumpy_toad', isNew: true };
+  const ownedCommons = POOL.common.filter((c) => OWNED.has(c));
+  script.forEach((s) => {
+    const stacks: StackSpec[] = s.cards.map((card) => ({ rarity: C.units[card]?.rarity ?? C.turrets[card]?.rarity ?? 'common', card, isNew: true }));
+    if (s.randomUnownedEpic) stacks.push({ rarity: 'epic', card: 'grumpy_toad', isNew: true });
+    for (let k = 0; stacks.length < C.capsules.tiers[s.tier].stacks; k++) {
+      stacks.push({ rarity: 'common', card: ownedCommons[k % ownedCommons.length] ?? 'bonker', isNew: false });
+    }
     cases.push(
       single(`script-${s.capsule}`, 'Onboarding', `Script capsule ${s.capsule} (${s.tier})`, {
         tier: s.tier,
         startTier: 'clay',
         stacks,
-        scriptIndex: i,
+        // 1-based, as the meta writes it (the script's capsule number).
+        scriptIndex: s.capsule,
         firstLegendary: s.fullWalkout ? s.cards : [],
       }),
     );

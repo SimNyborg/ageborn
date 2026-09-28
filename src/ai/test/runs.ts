@@ -44,8 +44,8 @@ export interface TierResult {
 
 /**
  * Tier A vs tier B, both the Balanced brain with the same baseline plan (A2.14) at level 1, on Full
- * War (the A2.14 reference format, all five ages), alternating sides with mirrored seeds so neither
- * side's first-mover edge counts.
+ * War (the A2.14 reference format, all five ages), with mirrored seeds: each seed is played twice, tier
+ * A once on each side, so neither the side's first-mover edge nor a lucky seed counts for one tier.
  */
 export function tierMatches(tierA: number, tierB: number, n: number, format: FormatId = 'full'): TierResult {
   let winsA = 0;
@@ -54,7 +54,7 @@ export function tierMatches(tierA: number, tierB: number, n: number, format: For
   let rejected = 0;
   for (let i = 0; i < n; i += 1) {
     const aSide = (i % 2) as Side;
-    const cfg = matchConfig({ seed: 1000 + i, format });
+    const cfg = matchConfig({ seed: 1000 + Math.floor(i / 2), format });
     const tier = (side: Side) => (side === aSide ? tierA : tierB);
     const r = botMatch(cfg, [botProfile(content, { generalId: BALANCED_BRAIN_ID, tier: tier(0) }), botProfile(content, { generalId: BALANCED_BRAIN_ID, tier: tier(1) })]);
     rejected += r.rejected.length;

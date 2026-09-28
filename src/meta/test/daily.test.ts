@@ -6,7 +6,7 @@ import type { SaveDoc } from '@/contracts';
 import { dailyModifierOn } from '../daily';
 import { META_FLAGS } from '../rules';
 import { daysFromCivil } from '../time';
-import { C, DAY, HOUR, M, TestClock, T0, fresh, lastPending, play, scripted } from './helpers';
+import { C, DAY, HOUR, M, TestClock, T0, fresh, lastPending, matchInput, play, scripted } from './helpers';
 
 function unlocked(s: SaveDoc): SaveDoc {
   return { ...s, capsules: { ...s.capsules, dailyBank: 1, dailyNextAt: null }, flags: { ...s.flags, [META_FLAGS.dailyUnlocked]: true } };
@@ -80,5 +80,22 @@ describe('Daily Challenge (A9.1)', () => {
     const nextDay = play(second.save, 'daily', 'win', c);
     expect(nextDay.rewards[0]?.kind).toBe('capsule');
     expect(play(s, 'daily', 'loss', c).rewards.some((x) => x.kind === 'amber' || x.kind === 'capsule')).toBe(false);
+  });
+
+  it('the first win\'s Age Capsule holds the age the player picked in the dialog (A6.4)', () => {
+    const c = new TestClock();
+    const s = scripted();
+    const o = M.pickOpponent(s, 'daily', C, c);
+    const win = matchInput('daily', 'win', o);
+    expect(M.ageCapsuleDue(s, win, C, c)).toBe(true);
+    expect(M.ageCapsuleDue(s, matchInput('daily', 'loss', o), C, c)).toBe(false);
+    expect(M.ageCapsuleDue(s, matchInput('ladder', 'win', M.pickOpponent(s, 'ladder', C, c)), C, c)).toBe(false);
+    const r = M.applyMatchResult(s, win, C, c, { age: 'gunpowder' });
+    const cap = lastPending(r.save);
+    expect(cap).toMatchObject({ kind: 'age', age: 'gunpowder', scriptIndex: null });
+    for (const st of cap.contents.stacks) expect((C.units[st.card] ?? C.turrets[st.card])?.age).toBe('gunpowder');
+    expect(cap.contents.stacks.some((x) => x.rarity === 'epic')).toBe(true);
+    // The second win of the day pays Amber, so no dialog.
+    expect(M.ageCapsuleDue(r.save, win, C, c)).toBe(false);
   });
 });

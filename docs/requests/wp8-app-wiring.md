@@ -63,6 +63,8 @@ offer a "Reload" button. Keys and EN text: `docs/requests/wp8-strings.md`.
 - The onboarding `EventLog` can keep its own ring and persist through the same storage, so it also gets the
   memory fallback: `new EventLog({ clock, store: saveStore.storage })`. `store.eventLog` (an `EventLogStore`)
   reads and writes the same `ageborn.eventlog` format (tested both ways) and adds quota shrinking; Settings
-  "Export event log" can use either `export()`.
+  "Export event log" can use either `export()`. Both may share the key: before it writes (a quota shrink
+  included) `store.eventLog` re-reads the key if the app's `EventLog` changed it. Prefer one writer anyway,
+  since the app's `EventLog` rewrites its whole in-memory list on each record.
 - Replays: `pushReplay` / `loadReplays` as in the contract (ring of 20, oldest first, validated on read).
   When storage is full the rings give up space before the save does, so a replay may exist only for the session.

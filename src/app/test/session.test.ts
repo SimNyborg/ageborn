@@ -142,6 +142,25 @@ describe('BattleSession loop (DESIGN B6)', () => {
     expect(s.droppedBotCommands).toBe(1);
   });
 
+  it("relays the other side's emotes to bots that answer them (A7.2)", () => {
+    class EmoteBot extends ProbeBot {
+      heard: [string, number][] = [];
+      hearEmote(emote: string, tick: number): void {
+        this.heard.push([emote, tick]);
+      }
+    }
+    const bot = new EmoteBot(0, (obs) => (obs.tick === 2 ? [{ t: 'emote', side: 1, emote: 'gg' }] : []));
+    const { s, sim } = fakeSession({ bots: [{ side: 1, controller: bot }] });
+    // The fake sim echoes emote commands as events, like the real one.
+    const step = sim.step.bind(sim);
+    sim.step = (cmds) => [...step(cmds), ...cmds.filter((c) => c.t === 'emote').map((c) => ({ e: 'emote' as const, side: c.side, emote: (c as { emote: 'gg' | 'laugh' }).emote, tick: c.tick }))];
+    s.start();
+    s.issue({ t: 'emote', side: 0, emote: 'laugh' });
+    s.fastForward(5);
+    // The player's emote reaches the bot; the bot's own emote does not come back to it.
+    expect(bot.heard).toEqual([['laugh', 1]]);
+  });
+
   it('passes every tick of events to the view and to tick listeners', () => {
     const { s, view } = fakeSession();
     const seen: SimEvent[] = [];

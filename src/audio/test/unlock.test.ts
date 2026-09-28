@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createAudioContext, keepAlive, playSilence, unlockContext } from '../unlock';
+import { createAudioContext, GESTURES, keepAlive, playSilence, unlockContext } from '../unlock';
 import { FakeBufferSource, FakeContext } from './fakeContext';
 
 class FakeDocument extends EventTarget {
@@ -51,6 +51,52 @@ describe('audio unlock (A13, B11)', () => {
     expect(ctx.resumeCalls).toBe(1);
     target.dispatchEvent(new Event('touchend'));
     expect(ctx.resumeCalls).toBe(1);
+    stop();
+  });
+
+  it('keeps retrying on later gestures when the first one carried no user activation', async () => {
+    // A context that never ran fires no statechange, so the retry listeners must be armed up front.
+    const ctx = new FakeContext();
+    ctx.allowResume = false;
+    const target = new EventTarget();
+    const stop = keepAlive(ctx.asAudioContext(), target, null);
+    // A touch pointerdown: the browser refuses to start audio.
+    target.dispatchEvent(new Event('pointerdown'));
+    await flush();
+    expect(ctx.state).toBe('suspended');
+    expect(ctx.resumeCalls).toBe(1);
+    // The same tap's touchend carries the activation: resume and the silent blip run again.
+    ctx.allowResume = true;
+    const blips = ctx.of(FakeBufferSource).length;
+    target.dispatchEvent(new Event('touchend'));
+    await flush();
+    expect(ctx.state).toBe('running');
+    expect(ctx.of(FakeBufferSource).length).toBe(blips + 1);
+    // Running: the listeners are gone.
+    target.dispatchEvent(new Event('click'));
+    expect(ctx.resumeCalls).toBe(2);
+    stop();
+  });
+
+  it('listens for every activation-triggering event (touch pointerdown alone does not count)', () => {
+    expect([...GESTURES].sort()).toEqual(['click', 'keydown', 'mousedown', 'pointerdown', 'pointerup', 'touchend']);
+  });
+
+  it('does not resume from a gesture while the page is hidden', async () => {
+    const ctx = new FakeContext();
+    ctx.state = 'running';
+    const doc = new FakeDocument();
+    const target = new EventTarget();
+    const stop = keepAlive(ctx.asAudioContext(), target, doc as unknown as Document);
+    doc.set('hidden');
+    await flush();
+    expect(ctx.state).toBe('suspended');
+    target.dispatchEvent(new Event('keydown'));
+    await flush();
+    expect(ctx.state).toBe('suspended');
+    doc.set('visible');
+    await flush();
+    expect(ctx.state).toBe('running');
     stop();
   });
 

@@ -28,10 +28,13 @@ export function preMigrationBackupKey(toVersion: number): string {
 }
 
 /**
- * When neither slot can be read, their raw contents are kept here before a fresh save overwrites
- * them, so a save from a newer build (or a repairable one) is never silently destroyed.
+ * Rejected slot texts are kept here before a fresh save can overwrite them, so a save from a newer
+ * build (or a repairable one) is never silently destroyed (see `unreadable.ts`).
  */
 export const UNREADABLE_BACKUP_KEY = `${SAVE_KEYS.backupPrefix}unreadable`;
+
+/** How many distinct rejected slot texts `ageborn.backup.unreadable` keeps (newest last). */
+export const UNREADABLE_BACKUP_COPIES = 4;
 
 /** Writes are debounced by 2 s (DESIGN B8 Writes). */
 export const SAVE_DEBOUNCE_MS = 2000;

@@ -14,7 +14,9 @@ const PROBE_KEY = 'ageborn.probe';
  * localStorage when the browser allows it. Storage that is blocked (disabled site data, some
  * private modes, sandboxed frames) throws on access or on every write; the game then runs on an
  * in-memory stand-in and the store reports `unavailable`. A storage that is merely full is still
- * used: loading works and the quota problem shows up on the first write.
+ * used: loading works and the quota problem shows up on the first write. A storage that is empty yet
+ * refuses even the tiny probe with a quota error has no room at all (old Safari private browsing), so
+ * it counts as blocked too.
  */
 export function browserStorage(win: { localStorage: KeyValueStorage } | undefined = typeof window !== 'undefined' ? window : undefined): {
   storage: KeyValueStorage;
@@ -28,8 +30,20 @@ export function browserStorage(win: { localStorage: KeyValueStorage } | undefine
     ls.removeItem(PROBE_KEY);
     return { storage: ls, available: true };
   } catch (e) {
-    if (ls && isQuotaError(e)) return { storage: ls, available: true };
+    if (ls && isQuotaError(e) && !isEmpty(ls)) return { storage: ls, available: true };
     return { storage: new MemoryStorage(), available: false };
+  }
+}
+
+/**
+ * True only when the storage can say it holds no keys at all. localStorage is per origin, and every
+ * GitHub Pages project of one account shares an origin, so keys of other games may fill it.
+ */
+function isEmpty(storage: KeyValueStorage): boolean {
+  try {
+    return storage.length === 0;
+  } catch {
+    return false;
   }
 }
 

@@ -492,3 +492,10 @@
   .tap, .ready, .ff { animation: none; }
   .item, .summary { animation-duration: 1ms; }
 }
+
+/* The in-game Reduce motion setting (A12) does the same as the OS preference. */
+.screen[data-reduce-motion] .tap,
+.screen[data-reduce-motion] .ready,
+.screen[data-reduce-motion] .ff { animation: none; }
+.screen[data-reduce-motion] .item,
+.screen[data-reduce-motion] .summary { animation-duration: 1ms; }

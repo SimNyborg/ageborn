@@ -37,6 +37,7 @@ import { useUi } from '../context';
 import { cardTile } from '../model/cards';
 import { opponentName } from '../model/opponent';
 import { COUNT_UP_MS, earnedCapsule, REWARD_STEP_MS, resultKind, stagedRewards } from '../model/result';
+import { useMatchStarter } from '../shared/MatchStarter';
 
 const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 'ui.result.draw' } as const;
 
@@ -252,6 +253,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const done = shown >= rewards.length;
   const mvp = stats.mvpCard ? cardTile(save.value, content, stats.mvpCard, t) : null;
 
+  const starter = useMatchStarter();
+
   function nextBattle() {
     const req = info.request;
     if (!req) {
@@ -259,9 +262,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       router.go({ id: 'modeSelect' });
       return;
     }
-    const opponent = services.prepareMatch(req);
-    router.reset({ id: 'home' });
-    router.go({ id: 'vs', request: req, opponent });
+    starter.start(req, { resetToHome: true });
   }
 
   const BannerIcon = kind === 'win' ? CrownIcon : kind === 'loss' ? ShieldBrokenIcon : ScalesIcon;
@@ -378,6 +379,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           {t('ui.result.next')}
         </Button>
       </footer>
+      {starter.dialog}
     </section>
   );
 }

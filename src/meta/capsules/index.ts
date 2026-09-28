@@ -1,7 +1,7 @@
 /** Time Capsules and Wardrobe Crates (DESIGN A6.4, A6.5, A10): bag, roll, pity, foils, script, reveal. */
 export { bagLeft, bagSize, drawFromBag, freshBag } from './bag';
 export { betterFoil, rollFoil, FOIL_SCALE_BP } from './foil';
-export { cardsForRoll, defaultCapsuleAge, grantCapsuleAt, type GrantOptions } from './grant';
+export { cardsForRoll, defaultCapsuleAge, grantCapsuleAt, promisedNew, type GrantOptions } from './grant';
 export { openCapsuleWith, strikePattern, STRIKES } from './open';
 export {
   advancePity,

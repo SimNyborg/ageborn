@@ -21,6 +21,14 @@ for idle time (`requestIdleCallback`). Nothing else is needed at boot: `unlockAu
 `boot.ts` already calls `unlock()` inside the first gesture, which is what iOS needs (C5 #44), and
 `applySettings` already sets the bus volumes (they are remembered until the context exists).
 
+Recommended (not required since the WP6 review): `unlockAudioOnGesture` listens for `pointerdown`,
+`keydown` and `touchend` and removes all three after the first event. On a touch screen the first
+event is the tap's `pointerdown`, which carries no user activation in the HTML rules (only `pointerup`,
+`touchend`, a mouse `pointerdown`/`mousedown` and `keydown` do), so that unlock attempt can fail. The
+service now keeps its own retry listeners armed until the context runs, so the tap's `touchend` starts
+audio anyway; listening for `pointerup`, `touchend`, `click` and `keydown` in `boot.ts` would make the
+first attempt succeed on its own.
+
 Music cues the app should set (A14.3); the view already sets the evolve cues, the key changes, the
 layers and the end-of-match stinger:
 
@@ -36,12 +44,14 @@ layers and key carry over only from a battle cue to the next battle cue or a sti
 always starts in the home key with the layers off. Effects played before the first gesture are dropped.
 The context suspends while the page is hidden and resumes when it is visible again.
 
-## WP5: priority and panning (optional polish)
+## WP5: priority (A13 rule) and panning (optional polish)
 
 A13 "Sounds caused by the player get priority": the service treats a higher `priority` as more
-important (it survives voice caps and may retrigger inside the 40 ms gap). Suggested: pass
+important when the voice caps are full (4 per id, 32 in total): it steals the opponent's voices and
+is never stolen by them. The 40 ms retrigger gap is absolute for everyone (A13 "40 ms minimum"). Pass
 `priority: 1` for sounds of the player's own side (their spawns, attacks, powers, evolves, turret
-actions) and leave the opponent's at 0. UI sounds already get a bonus inside the service.
+actions) and leave the opponent's at 0; without it the rule is not met. UI sounds already get a bonus
+inside the service.
 
 `FeelDirector.sound()` already accepts `pan`; the view could pass a gentle stereo position, for example
 `pan = 0.6 * (2 * xLu / laneLu - 1)` (mirrored for side 1 when the player plays on the right).

@@ -34,7 +34,8 @@ Create `src/i18n/save.en.json` with exactly this content and give WP8 ownership 
 C2/WP8 DoD: "quota errors are caught with a user-facing message" (B8 Durability: "Quota errors are caught and
 shown to the player"). The save layer may not import i18n or UI (B2), so every problem is a `SaveNotice` whose
 `messageKey` is one of the keys above (`src/save/notices.ts`: `SAVE_MESSAGE_KEYS`, `IMPORT_MESSAGE_KEYS`); the app
-shows `t(notice.messageKey)` (see `docs/requests/wp8-app-wiring.md`). The keys are only referenced as data, so no
-integrity test fails before the file exists; `?dev=1#save` shows the proposed EN text marked "[string pending]"
+shows `t(notice.messageKey)` (see `docs/requests/wp8-app-wiring.md`). The keys are only referenced as data, so the
+integrity tests do not see them; `src/save/test/strings.test.ts` checks that every key has EN text, read from
+`src/i18n` as soon as any `save.*` key is there, else from the JSON block above (keep them in sync); `?dev=1#save` shows the proposed EN text marked "[string pending]"
 until then. `save.problem.unreadable` repeats the B8 banner text that WP11 also has as `tutorial.saveUnreadable`;
 either key works.

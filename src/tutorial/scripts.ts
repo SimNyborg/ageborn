@@ -112,7 +112,7 @@ const TUSKBACK = 1 as const;
 /**
  * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (250 / 300 /
  * 350 / 400 XP) every dummy kill is worth 50 XP and every 1% of Grogg's base 12 XP, so the natural
- * pace is faster than the A8 draft: Medieval lands at ~0:35 [0:55] and Grogg falls at ~1:55 [3:00].
+ * pace is faster than the A8 draft: Medieval lands at ~0:36 [0:55] and Grogg falls at ~1:54 [3:00].
  * Grogg therefore sends only two dummies before his Tuskback, so the four Stone lessons (Bonker,
  * first kill, Pebbler, Rock Tosser) still come before the first evolve, in A8 order.
  */
@@ -203,8 +203,8 @@ export const MATCH1_TIMING = {
   arrowStormReady: 840, // 0:42.0 [1:20]
   gunpowder: 951, // 0:47.6 [1:30]
   modern: 1311, // 1:05.6 [2:00]
-  future: 1701, // 1:25.1 [2:35]
-  groggFalls: 2210, // 1:50.5 [3:00]
+  future: 1731, // 1:26.6 [2:35]
+  groggFalls: 2282, // 1:54.1 [3:00]
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */

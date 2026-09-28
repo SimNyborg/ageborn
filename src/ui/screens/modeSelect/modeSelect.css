@@ -198,6 +198,22 @@
 .skirmish__gen .ui-general {
   border-radius: 12px;
 }
+/* A7.1: every AI nameplate carries the robot icon and "AI" chip, here on the portrait's corner. */
+.skirmish__portrait {
+  position: relative;
+  display: block;
+}
+.skirmish__ai {
+  position: absolute;
+  right: -10px;
+  bottom: -8px;
+}
+.skirmish__ai .ui-ai {
+  gap: 2px;
+  padding: 1px 3px;
+  border-radius: 8px;
+  background: var(--ui-ink);
+}
 .skirmish__genname {
   font-size: 11px;
   font-weight: 800;

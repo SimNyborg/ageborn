@@ -15,6 +15,10 @@
  * Actions: `train <card>`, `turret <card>`, `power`, `emote <id>`. A due action waits until it is
  * legal and affordable (at most one pending occurrence per line), so Grogg never issues an illegal
  * command. Unknown lines are ignored.
+ *
+ * The A7 bot rules hold for scripts too: due actions wait while the tier's action cap (A7.3, B10) is
+ * full, and a scripted emote must be GG, Salute or Thumbs up and spends the bot's one own emote of the
+ * match (A7.2), so later emote lines are dropped.
  */
 import type { BotProfile, CardId, Command, CompiledContent, EmoteId, Observation, Side } from '@/contracts';
 import { PPM, msToTicks } from '@/core';
@@ -22,7 +26,7 @@ import { toCommand, type BotAction } from './actions';
 import { cardBook, type CardBook } from './book';
 import { botSeed, type AiBotController } from './controller';
 import type { DecisionTrace } from './brain';
-import { EmotePolicy } from './emotes';
+import { BOT_EMOTES, EmotePolicy } from './emotes';
 import { Ledger } from './ledger';
 import { BotMemory } from './memory';
 import { personalityFor, type Personality } from './personalities';
@@ -55,14 +59,13 @@ export const GROGG_SCRIPT: readonly string[] = [
   'every 8000 from 28000 until 600000 train training_dummy',
 ];
 
-const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
-
 function parseAction(words: string[]): ScriptAction | null {
   const [verb, arg] = words;
   if (verb === 'train' && arg) return { kind: 'train', card: arg };
   if (verb === 'turret' && arg) return { kind: 'turret', card: arg };
   if (verb === 'power') return { kind: 'power' };
-  if (verb === 'emote' && arg && (EMOTES as readonly string[]).includes(arg)) return { kind: 'emote', emote: arg as EmoteId };
+  // Bots use only GG, Salute and Thumbs up (A7.2); other emote lines are ignored.
+  if (verb === 'emote' && arg && (BOT_EMOTES as readonly string[]).includes(arg)) return { kind: 'emote', emote: arg as EmoteId };
   return null;
 }
 
@@ -176,27 +179,40 @@ export class ScriptedController implements AiBotController {
         if (s.next !== null && s.line.until !== null && s.next > s.line.until) s.next = null;
       }
       if (!s.due) continue;
+      if (s.line.action.kind === 'emote' && !this.emotes.ownAvailable) {
+        // The one own emote of the match is spent (A7.2).
+        s.due = false;
+        continue;
+      }
       view ??= buildView(obs, now, this.book, this.ledger);
-      const cap = s.line.action.kind === 'train' ? this.maxAlive[s.line.action.card] : undefined;
-      if (cap !== undefined && view.mine.length + view.queue.length >= cap) {
+      const alive = s.line.action.kind === 'train' ? this.maxAlive[s.line.action.card] : undefined;
+      if (alive !== undefined && view.mine.length + view.queue.length >= alive) {
         // A dropped send: the lane already holds enough of Grogg's units (an idle player is not swamped).
         s.due = false;
         continue;
       }
+      // The action cap (A7.3): a due action waits for room in the 10 s window.
+      if (!this.canAct(now)) continue;
       const a = this.resolve(s.line.action, view, now);
       if (!a) continue;
       s.due = false;
+      if (a.kind === 'emote') this.emotes.useOwn();
       this.ledger.record(a, now, now + 1);
       out.push(toCommand(a, this.side));
       view = null;
     }
-    const canEmote = now >= this.ledger.lastEmoteTick + this.book.econ.emoteCooldownTicks + 1;
+    const canEmote = this.canAct(now) && now >= this.ledger.lastEmoteTick + this.book.econ.emoteCooldownTicks + 1;
     const emote = this.emotes.next(obs, now, canEmote);
     if (emote) {
       this.ledger.record({ kind: 'emote', emote }, now, now + 1);
       out.push({ t: 'emote', side: this.side, emote });
     }
     return out;
+  }
+
+  /** The action cap (A7.3 "Max actions / 10 s") has room for one more command. */
+  private canAct(now: number): boolean {
+    return this.ledger.actionsInWindow(now) < this.tier.maxActionsPer10s;
   }
 
   /** The legal action for a script action right now, or null to keep waiting. */
