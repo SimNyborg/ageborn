@@ -96,8 +96,8 @@ def build(rig):
         g.capsule((15.2, y - 1.8, 52.0), (15.2, y + 1.8, 48.4), 0.8)
         g.capsule((15.2, y - 1.8, 48.4), (15.2, y + 1.8, 52.0), 0.8)
     rig.part("eyes_x", g, glow=F.MINT, outline=0)
-    g = Geo().blob((-2.5, -11.4, 50.0), (3.8, 2.0, 3.8), p=2.4)   # ear disc
-    rig.part("head", g, F.SUIT)
+    g = Geo().blob((-3.0, -11.0, 49.0), (3.4, 2.0, 3.4), p=2.4)   # ear disc
+    rig.part("head", g, F.TRIM, outline=0.6)
 
     F.arm_parts(rig, "r")
     F.shoulders(rig, r=(7.2, 6.0, 5.8))

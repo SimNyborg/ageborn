@@ -223,6 +223,19 @@ def rot2(p, deg, about=(0.0, 0.0)):
     return (about[0] + x * c - z * s, about[1] + x * s + z * c)
 
 
+def hold2(joint, g0, fore, gx, gz, deg, near_off=(-0.4, 0.4), far_off=(-1.0, -1.0), sh=SH):
+    """A two-handed long gun on `joint` (a child of the torso, modelled with its grip at g0,
+    pointing +X): grip at (gx, gz) in torso space pointing `deg`; the near hand holds the
+    grip, the far hand the fore-end `fore` lu further along. Returns the pose."""
+    pose = {joint: {"x": gx - g0[0], "z": gz - g0[2], "r": deg}}
+    a, f = ik2(sh, (gx + near_off[0], gz + near_off[1]))
+    pose.update(arm("r", a, f))
+    fx_, fz = gx + fore * math.cos(math.radians(deg)), gz + fore * math.sin(math.radians(deg))
+    a, f = ik2(sh, (fx_ + far_off[0], fz + far_off[1]))
+    pose.update(arm("l", a, f))
+    return pose
+
+
 def idle_wave(f):
     """(c, lag) for the 4 idle poses played 0-1-2-3-2-1: c is the breath, lag one pose behind."""
     return [-1.0, -0.45, 0.45, 1.0][f], [-1.0, -1.0, -0.45, 0.45][f]
