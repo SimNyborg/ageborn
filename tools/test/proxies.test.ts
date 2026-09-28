@@ -28,8 +28,9 @@ function play(id: ProxyId, seconds: number, seed = 3) {
 }
 
 describe('exploit proxies (DESIGN B12)', () => {
-  it('lists the eight B12 proxies', () => {
-    expect(EXPLOIT_PROXIES).toHaveLength(8);
+  it('lists the eight B12 proxies plus the A16.5 random-spam and mono-heavy proxies', () => {
+    expect(EXPLOIT_PROXIES).toHaveLength(10);
+    expect(EXPLOIT_PROXIES.slice(8)).toEqual(['random_spam', 'mono_heavy']);
     expect(isProxyId('turret_turtle')).toBe(true);
     expect(isProxyId('nope')).toBe(false);
   });

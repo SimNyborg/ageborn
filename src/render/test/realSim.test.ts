@@ -194,5 +194,6 @@ describe('BattleView on the real sim (Full War, scripted players)', () => {
     }
     for (const id of ['fx.telegraph_zone', 'fx.overdrive_frame']) expect(sizedSeen.has(id), id).toBe(true);
     view.destroy();
-  });
+    // A whole Full War through the view: about 4 s alone, slower when the full suite runs in parallel.
+  }, 30_000);
 });

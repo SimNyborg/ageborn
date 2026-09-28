@@ -229,7 +229,7 @@ const scorch = (scale: number, life: number): SpriteSpec => ({
  */
 function lobe(s: number, i: number, n: number): SpriteSpec[] {
   const a = (i / n) * Math.PI * 2 + 0.6;
-  const d = (i === 0 ? 0 : 6.5) * s;
+  const d = (i === 0 ? 0 : 9.5) * s;
   const x = Math.cos(a) * d;
   const y = Math.sin(a) * d * 0.75 - 6 * s;
   const k = (i === 0 ? 1.25 : 0.8 + ((i * 37) % 5) * 0.09) * s;
@@ -281,8 +281,8 @@ function explosion(id: string, s: number): FxRecipe {
       { ...smoke(Math.round(4 * s), s * 1.2, [900, 1500]), speed: [10 * s, 40 * s], angle: [-110, -70], gravity: -45, tint: 0xa8a39c, delay: [200, 380] },
       sparks(Math.round(5 * s), [120 * s, 280 * s], 'fx.p.spark'),
       sparks(Math.max(1, Math.round(2 * s)), [120 * s, 240 * s], 'fx.p.sparkHot'),
-      { sprite: 'fx.p.rock', count: Math.round(3 * s), life: [600, 900], speed: [110 * s, 230 * s], angle: [-150, -30], spread: 4, gravity: 760, scale: [1.2, 1.1], alpha: [1, 0.4], spin: [-500, 500], tint: 0x6e5a48 },
-      { sprite: 'fx.p.rock2', count: Math.round(3 * s), life: [600, 900], speed: [100 * s, 210 * s], angle: [-150, -30], spread: 4, gravity: 760, scale: [1.1, 1], alpha: [1, 0.4], spin: [-500, 500], tint: 0x8a8580 },
+      { sprite: 'fx.p.rock', count: Math.round(3 * s), life: [600, 900], delay: [60, 110], speed: [150 * s, 260 * s], angle: [-150, -30], spread: 14 * s, gravity: 760, scale: [1.2, 1.1], alpha: [1, 0.4], spin: [-500, 500], tint: 0x6e5a48 },
+      { sprite: 'fx.p.rock2', count: Math.round(3 * s), life: [600, 900], delay: [60, 110], speed: [140 * s, 240 * s], angle: [-150, -30], spread: 14 * s, gravity: 760, scale: [1.1, 1], alpha: [1, 0.4], spin: [-500, 500], tint: 0x8a8580 },
       { sprite: 'fx.p.ember', count: Math.round(7 * s), life: [500, 1000], speed: [40, 150 * s], angle: [-160, -20], gravity: 90, drag: 1, scale: [1.2, 0.5], alpha: [1, 0], spread: 5 * s, blendAdd: true },
     ],
   };
