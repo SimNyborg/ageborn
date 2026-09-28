@@ -183,7 +183,7 @@ def _weights(char, pts, stiff):
         best = np.where(better, d, best)
         s = np.where(better, i + u, s)
     if stiff > 0:
-        s = np.where(s < stiff, 0.0, (s - stiff) / max(1e-6, 1 - stiff / n) if n > 0 else s)
+        s = np.where(s < stiff, 0.0, (s - stiff) * n / max(1e-6, n - stiff))
     w = np.zeros((len(char), n))
     for i in range(n):
         c = i + 0.5
