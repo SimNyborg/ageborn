@@ -2,17 +2,17 @@
  "frames": {
   "land_dreadnought_idle_00": {
    "frame": {
-    "x": 2601,
-    "y": 851,
-    "w": 520,
+    "x": 2615,
+    "y": 1319,
+    "w": 522,
     "h": 411
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
+    "x": 154,
     "y": 224,
-    "w": 520,
+    "w": 522,
     "h": 411
    },
    "sourceSize": {
@@ -26,8 +26,8 @@
   },
   "land_dreadnought_idle_00_team": {
    "frame": {
-    "x": 1194,
-    "y": 2791,
+    "x": 1993,
+    "y": 3283,
     "w": 396,
     "h": 336
    },
@@ -50,17 +50,17 @@
   },
   "land_dreadnought_idle_01": {
    "frame": {
-    "x": 522,
-    "y": 851,
-    "w": 517,
+    "x": 525,
+    "y": 1319,
+    "w": 520,
     "h": 413
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
+    "x": 155,
     "y": 222,
-    "w": 517,
+    "w": 520,
     "h": 413
    },
    "sourceSize": {
@@ -74,8 +74,8 @@
   },
   "land_dreadnought_idle_01_team": {
    "frame": {
-    "x": 2,
-    "y": 2791,
+    "x": 801,
+    "y": 3283,
     "w": 393,
     "h": 338
    },
@@ -98,17 +98,17 @@
   },
   "land_dreadnought_idle_02": {
    "frame": {
-    "x": 523,
-    "y": 431,
-    "w": 514,
+    "x": 1050,
+    "y": 899,
+    "w": 517,
     "h": 416
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
+    "x": 157,
     "y": 218,
-    "w": 514,
+    "w": 517,
     "h": 416
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "land_dreadnought_idle_02_team": {
    "frame": {
-    "x": 1992,
-    "y": 2445,
+    "x": 2780,
+    "y": 2933,
     "w": 391,
     "h": 340
    },
@@ -146,17 +146,17 @@
   },
   "land_dreadnought_idle_03": {
    "frame": {
-    "x": 1190,
-    "y": 2,
-    "w": 511,
+    "x": 1722,
+    "y": 470,
+    "w": 513,
     "h": 417
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 161,
+    "x": 159,
     "y": 216,
-    "w": 511,
+    "w": 513,
     "h": 417
    },
    "sourceSize": {
@@ -170,8 +170,8 @@
   },
   "land_dreadnought_idle_03_team": {
    "frame": {
-    "x": 2,
-    "y": 2445,
+    "x": 790,
+    "y": 2933,
     "w": 390,
     "h": 342
    },
@@ -194,17 +194,17 @@
   },
   "land_dreadnought_idle_04": {
    "frame": {
-    "x": 1041,
-    "y": 431,
-    "w": 514,
+    "x": 1571,
+    "y": 899,
+    "w": 517,
     "h": 416
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
+    "x": 157,
     "y": 218,
-    "w": 514,
+    "w": 517,
     "h": 416
    },
    "sourceSize": {
@@ -218,8 +218,8 @@
   },
   "land_dreadnought_idle_04_team": {
    "frame": {
-    "x": 2387,
-    "y": 2445,
+    "x": 3175,
+    "y": 2933,
     "w": 391,
     "h": 340
    },
@@ -242,17 +242,17 @@
   },
   "land_dreadnought_idle_05": {
    "frame": {
-    "x": 1043,
-    "y": 851,
-    "w": 517,
+    "x": 1049,
+    "y": 1319,
+    "w": 520,
     "h": 413
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
+    "x": 155,
     "y": 222,
-    "w": 517,
+    "w": 520,
     "h": 413
    },
    "sourceSize": {
@@ -266,8 +266,8 @@
   },
   "land_dreadnought_idle_05_team": {
    "frame": {
-    "x": 399,
-    "y": 2791,
+    "x": 1198,
+    "y": 3283,
     "w": 393,
     "h": 338
    },
@@ -290,17 +290,17 @@
   },
   "land_dreadnought_walk_00": {
    "frame": {
-    "x": 2220,
-    "y": 2,
-    "w": 510,
+    "x": 2239,
+    "y": 470,
+    "w": 513,
     "h": 417
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
+    "x": 159,
     "y": 215,
-    "w": 510,
+    "w": 513,
     "h": 417
    },
    "sourceSize": {
@@ -314,8 +314,8 @@
   },
   "land_dreadnought_walk_00_team": {
    "frame": {
-    "x": 1985,
-    "y": 2083,
+    "x": 2,
+    "y": 2933,
     "w": 390,
     "h": 346
    },
@@ -338,17 +338,17 @@
   },
   "land_dreadnought_walk_01": {
    "frame": {
-    "x": 1564,
-    "y": 851,
-    "w": 515,
+    "x": 1573,
+    "y": 1319,
+    "w": 517,
     "h": 412
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
+    "x": 156,
     "y": 221,
-    "w": 515,
+    "w": 517,
     "h": 412
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "land_dreadnought_walk_01_team": {
    "frame": {
-    "x": 1592,
-    "y": 2445,
+    "x": 2380,
+    "y": 2933,
     "w": 396,
     "h": 340
    },
@@ -386,17 +386,17 @@
   },
   "land_dreadnought_walk_02": {
    "frame": {
-    "x": 1056,
-    "y": 1269,
-    "w": 520,
+    "x": 1061,
+    "y": 1737,
+    "w": 522,
     "h": 406
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
+    "x": 153,
     "y": 227,
-    "w": 520,
+    "w": 522,
     "h": 406
    },
    "sourceSize": {
@@ -410,8 +410,8 @@
   },
   "land_dreadnought_walk_02_team": {
    "frame": {
-    "x": 2541,
-    "y": 2791,
+    "x": 2798,
+    "y": 3283,
     "w": 399,
     "h": 332
    },
@@ -434,17 +434,17 @@
   },
   "land_dreadnought_walk_03": {
    "frame": {
-    "x": 2083,
-    "y": 851,
-    "w": 514,
+    "x": 2094,
+    "y": 1319,
+    "w": 517,
     "h": 412
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 156,
     "y": 221,
-    "w": 514,
+    "w": 517,
     "h": 412
    },
    "sourceSize": {
@@ -458,8 +458,8 @@
   },
   "land_dreadnought_walk_03_team": {
    "frame": {
-    "x": 796,
-    "y": 2791,
+    "x": 1595,
+    "y": 3283,
     "w": 394,
     "h": 337
    },
@@ -482,17 +482,17 @@
   },
   "land_dreadnought_walk_04": {
    "frame": {
-    "x": 1705,
-    "y": 2,
-    "w": 511,
+    "x": 2756,
+    "y": 470,
+    "w": 513,
     "h": 417
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 161,
+    "x": 159,
     "y": 215,
-    "w": 511,
+    "w": 513,
     "h": 417
    },
    "sourceSize": {
@@ -506,8 +506,8 @@
   },
   "land_dreadnought_walk_04_team": {
    "frame": {
-    "x": 2379,
-    "y": 2083,
+    "x": 396,
+    "y": 2933,
     "w": 390,
     "h": 346
    },
@@ -530,17 +530,17 @@
   },
   "land_dreadnought_walk_05": {
    "frame": {
-    "x": 2734,
-    "y": 2,
-    "w": 517,
+    "x": 2,
+    "y": 899,
+    "w": 520,
     "h": 416
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 156,
     "y": 219,
-    "w": 517,
+    "w": 520,
     "h": 416
    },
    "sourceSize": {
@@ -554,8 +554,8 @@
   },
   "land_dreadnought_walk_05_team": {
    "frame": {
-    "x": 782,
-    "y": 2083,
+    "x": 2707,
+    "y": 2552,
     "w": 392,
     "h": 347
    },
@@ -578,17 +578,17 @@
   },
   "land_dreadnought_walk_06": {
    "frame": {
-    "x": 2051,
-    "y": 431,
-    "w": 523,
+    "x": 2092,
+    "y": 899,
+    "w": 525,
     "h": 414
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
+    "x": 154,
     "y": 223,
-    "w": 523,
+    "w": 525,
     "h": 414
    },
    "sourceSize": {
@@ -602,8 +602,8 @@
   },
   "land_dreadnought_walk_06_team": {
    "frame": {
-    "x": 3184,
-    "y": 2445,
+    "x": 404,
+    "y": 3283,
     "w": 393,
     "h": 339
    },
@@ -626,17 +626,17 @@
   },
   "land_dreadnought_walk_07": {
    "frame": {
-    "x": 2,
-    "y": 431,
-    "w": 517,
+    "x": 526,
+    "y": 899,
+    "w": 520,
     "h": 416
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 156,
     "y": 219,
-    "w": 517,
+    "w": 520,
     "h": 416
    },
    "sourceSize": {
@@ -650,8 +650,8 @@
   },
   "land_dreadnought_walk_07_team": {
    "frame": {
-    "x": 1198,
-    "y": 2445,
+    "x": 1986,
+    "y": 2933,
     "w": 390,
     "h": 341
    },
@@ -674,17 +674,17 @@
   },
   "land_dreadnought_attack_00": {
    "frame": {
-    "x": 2578,
-    "y": 431,
-    "w": 516,
+    "x": 2621,
+    "y": 899,
+    "w": 519,
     "h": 414
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 156,
     "y": 220,
-    "w": 516,
+    "w": 519,
     "h": 414
    },
    "sourceSize": {
@@ -698,8 +698,8 @@
   },
   "land_dreadnought_attack_00_team": {
    "frame": {
-    "x": 800,
-    "y": 2445,
+    "x": 1588,
+    "y": 2933,
     "w": 394,
     "h": 341
    },
@@ -723,16 +723,16 @@
   "land_dreadnought_attack_01": {
    "frame": {
     "x": 2,
-    "y": 1269,
-    "w": 527,
+    "y": 1737,
+    "w": 529,
     "h": 410
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
+    "x": 152,
     "y": 226,
-    "w": 527,
+    "w": 529,
     "h": 410
    },
    "sourceSize": {
@@ -746,8 +746,8 @@
   },
   "land_dreadnought_attack_01_team": {
    "frame": {
-    "x": 2782,
-    "y": 2445,
+    "x": 2,
+    "y": 3283,
     "w": 398,
     "h": 339
    },
@@ -770,17 +770,17 @@
   },
   "land_dreadnought_attack_02": {
    "frame": {
-    "x": 1580,
-    "y": 1269,
-    "w": 538,
+    "x": 1587,
+    "y": 1737,
+    "w": 540,
     "h": 405
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
+    "x": 148,
     "y": 232,
-    "w": 538,
+    "w": 540,
     "h": 405
    },
    "sourceSize": {
@@ -794,8 +794,8 @@
   },
   "land_dreadnought_attack_02_team": {
    "frame": {
-    "x": 1594,
-    "y": 2791,
+    "x": 2393,
+    "y": 3283,
     "w": 401,
     "h": 334
    },
@@ -818,17 +818,17 @@
   },
   "land_dreadnought_attack_03": {
    "frame": {
-    "x": 627,
-    "y": 2,
-    "w": 559,
+    "x": 1156,
+    "y": 470,
+    "w": 562,
     "h": 419
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 167,
+    "x": 164,
     "y": 209,
-    "w": 559,
+    "w": 562,
     "h": 419
    },
    "sourceSize": {
@@ -842,8 +842,8 @@
   },
   "land_dreadnought_attack_03_team": {
    "frame": {
-    "x": 391,
-    "y": 2083,
+    "x": 1930,
+    "y": 2552,
     "w": 387,
     "h": 349
    },
@@ -866,17 +866,17 @@
   },
   "land_dreadnought_attack_04": {
    "frame": {
-    "x": 1679,
-    "y": 1683,
-    "w": 593,
+    "x": 2,
+    "y": 2552,
+    "w": 596,
     "h": 377
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 126,
+    "x": 123,
     "y": 251,
-    "w": 593,
+    "w": 596,
     "h": 377
    },
    "sourceSize": {
@@ -890,8 +890,8 @@
   },
   "land_dreadnought_attack_04_team": {
    "frame": {
-    "x": 1669,
-    "y": 3133,
+    "x": 2068,
+    "y": 3626,
     "w": 430,
     "h": 305
    },
@@ -914,17 +914,17 @@
   },
   "land_dreadnought_attack_05": {
    "frame": {
-    "x": 2,
-    "y": 1683,
-    "w": 614,
+    "x": 524,
+    "y": 2151,
+    "w": 617,
     "h": 396
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 142,
+    "x": 139,
     "y": 234,
-    "w": 614,
+    "w": 617,
     "h": 396
    },
    "sourceSize": {
@@ -938,8 +938,8 @@
   },
   "land_dreadnought_attack_05_team": {
    "frame": {
-    "x": 413,
-    "y": 3133,
+    "x": 1225,
+    "y": 3626,
     "w": 408,
     "h": 321
    },
@@ -963,16 +963,16 @@
   "land_dreadnought_attack_06": {
    "frame": {
     "x": 2,
-    "y": 2,
-    "w": 621,
+    "y": 470,
+    "w": 623,
     "h": 425
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 161,
+    "x": 159,
     "y": 211,
-    "w": 621,
+    "w": 623,
     "h": 425
    },
    "sourceSize": {
@@ -986,8 +986,8 @@
   },
   "land_dreadnought_attack_06_team": {
    "frame": {
-    "x": 2,
-    "y": 2083,
+    "x": 1541,
+    "y": 2552,
     "w": 385,
     "h": 358
    },
@@ -1011,16 +1011,16 @@
   "land_dreadnought_attack_07": {
    "frame": {
     "x": 2,
-    "y": 851,
-    "w": 516,
+    "y": 1319,
+    "w": 519,
     "h": 414
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 156,
     "y": 220,
-    "w": 516,
+    "w": 519,
     "h": 414
    },
    "sourceSize": {
@@ -1034,8 +1034,8 @@
   },
   "land_dreadnought_attack_07_team": {
    "frame": {
-    "x": 1585,
-    "y": 2083,
+    "x": 3103,
+    "y": 2552,
     "w": 396,
     "h": 346
    },
@@ -1058,17 +1058,17 @@
   },
   "land_dreadnought_hit_00": {
    "frame": {
-    "x": 620,
-    "y": 1683,
-    "w": 543,
+    "x": 1521,
+    "y": 2151,
+    "w": 545,
     "h": 384
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 137,
+    "x": 135,
     "y": 248,
-    "w": 543,
+    "w": 545,
     "h": 384
    },
    "sourceSize": {
@@ -1082,8 +1082,8 @@
   },
   "land_dreadnought_hit_00_team": {
    "frame": {
-    "x": 825,
-    "y": 3133,
+    "x": 1637,
+    "y": 3626,
     "w": 427,
     "h": 319
    },
@@ -1106,17 +1106,17 @@
   },
   "land_dreadnought_hit_01": {
    "frame": {
-    "x": 2276,
-    "y": 1683,
-    "w": 556,
+    "x": 978,
+    "y": 2552,
+    "w": 559,
     "h": 368
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 125,
+    "x": 122,
     "y": 262,
-    "w": 556,
+    "w": 559,
     "h": 368
    },
    "sourceSize": {
@@ -1130,8 +1130,8 @@
   },
   "land_dreadnought_hit_01_team": {
    "frame": {
-    "x": 2632,
-    "y": 3133,
+    "x": 2502,
+    "y": 3626,
     "w": 443,
     "h": 299
    },
@@ -1154,17 +1154,17 @@
   },
   "land_dreadnought_hit_02": {
    "frame": {
-    "x": 2648,
-    "y": 1269,
-    "w": 515,
+    "x": 2,
+    "y": 2151,
+    "w": 518,
     "h": 397
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
+    "x": 147,
     "y": 232,
-    "w": 515,
+    "w": 518,
     "h": 397
    },
    "sourceSize": {
@@ -1178,8 +1178,8 @@
   },
   "land_dreadnought_hit_02_team": {
    "frame": {
-    "x": 2,
-    "y": 3133,
+    "x": 814,
+    "y": 3626,
     "w": 407,
     "h": 323
    },
@@ -1202,17 +1202,17 @@
   },
   "land_dreadnought_hit_03": {
    "frame": {
-    "x": 2122,
-    "y": 1269,
-    "w": 522,
+    "x": 2646,
+    "y": 1737,
+    "w": 524,
     "h": 401
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
+    "x": 148,
     "y": 231,
-    "w": 522,
+    "w": 524,
     "h": 401
    },
    "sourceSize": {
@@ -1226,8 +1226,8 @@
   },
   "land_dreadnought_hit_03_team": {
    "frame": {
-    "x": 2944,
-    "y": 2791,
+    "x": 405,
+    "y": 3626,
     "w": 405,
     "h": 327
    },
@@ -1250,17 +1250,17 @@
   },
   "land_dreadnought_hit_04": {
    "frame": {
-    "x": 533,
-    "y": 1269,
-    "w": 519,
+    "x": 535,
+    "y": 1737,
+    "w": 522,
     "h": 409
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
+    "x": 153,
     "y": 225,
-    "w": 519,
+    "w": 522,
     "h": 409
    },
    "sourceSize": {
@@ -1274,8 +1274,8 @@
   },
   "land_dreadnought_hit_04_team": {
    "frame": {
-    "x": 396,
-    "y": 2445,
+    "x": 1184,
+    "y": 2933,
     "w": 400,
     "h": 341
    },
@@ -1298,18 +1298,18 @@
   },
   "land_dreadnought_die_00": {
    "frame": {
-    "x": 1559,
-    "y": 431,
-    "w": 488,
-    "h": 416
+    "x": 2131,
+    "y": 1737,
+    "w": 511,
+    "h": 405
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 209,
-    "w": 488,
-    "h": 416
+    "x": 149,
+    "y": 222,
+    "w": 511,
+    "h": 405
    },
    "sourceSize": {
     "w": 912,
@@ -1322,18 +1322,18 @@
   },
   "land_dreadnought_die_00_team": {
    "frame": {
-    "x": 1178,
-    "y": 2083,
-    "w": 403,
-    "h": 346
+    "x": 2,
+    "y": 3626,
+    "w": 399,
+    "h": 328
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
-    "y": 208,
-    "w": 403,
-    "h": 346
+    "x": 221,
+    "y": 229,
+    "w": 399,
+    "h": 328
    },
    "sourceSize": {
     "w": 912,
@@ -1346,18 +1346,18 @@
   },
   "land_dreadnought_die_01": {
    "frame": {
-    "x": 1167,
-    "y": 1683,
-    "w": 508,
-    "h": 382
+    "x": 629,
+    "y": 470,
+    "w": 523,
+    "h": 424
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 244,
-    "w": 508,
-    "h": 382
+    "x": 156,
+    "y": 205,
+    "w": 523,
+    "h": 424
    },
    "sourceSize": {
     "w": 912,
@@ -1370,18 +1370,18 @@
   },
   "land_dreadnought_die_01_team": {
    "frame": {
-    "x": 1256,
-    "y": 3133,
-    "w": 409,
-    "h": 310
+    "x": 2321,
+    "y": 2552,
+    "w": 382,
+    "h": 348
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
-    "y": 250,
-    "w": 409,
-    "h": 310
+    "x": 252,
+    "y": 213,
+    "w": 382,
+    "h": 348
    },
    "sourceSize": {
     "w": 912,
@@ -1394,18 +1394,18 @@
   },
   "land_dreadnought_die_02": {
    "frame": {
-    "x": 2836,
-    "y": 1683,
-    "w": 517,
-    "h": 365
+    "x": 2871,
+    "y": 2,
+    "w": 570,
+    "h": 458
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
-    "y": 261,
-    "w": 517,
-    "h": 365
+    "x": 165,
+    "y": 187,
+    "w": 570,
+    "h": 458
    },
    "sourceSize": {
     "w": 912,
@@ -1418,18 +1418,18 @@
   },
   "land_dreadnought_die_02_team": {
    "frame": {
-    "x": 3079,
-    "y": 3133,
-    "w": 413,
-    "h": 296
+    "x": 2070,
+    "y": 2151,
+    "w": 373,
+    "h": 378
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
-    "y": 267,
-    "w": 413,
-    "h": 296
+    "x": 275,
+    "y": 185,
+    "w": 373,
+    "h": 378
    },
    "sourceSize": {
     "w": 912,
@@ -1442,18 +1442,18 @@
   },
   "land_dreadnought_die_03": {
    "frame": {
-    "x": 2773,
-    "y": 2083,
-    "w": 530,
-    "h": 344
+    "x": 2,
+    "y": 2,
+    "w": 569,
+    "h": 464
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 134,
-    "y": 283,
-    "w": 530,
-    "h": 344
+    "x": 168,
+    "y": 180,
+    "w": 569,
+    "h": 464
    },
    "sourceSize": {
     "w": 912,
@@ -1466,18 +1466,18 @@
   },
   "land_dreadnought_die_03_team": {
    "frame": {
-    "x": 2,
-    "y": 3460,
-    "w": 420,
-    "h": 278
+    "x": 1145,
+    "y": 2151,
+    "w": 372,
+    "h": 387
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
-    "y": 289,
-    "w": 420,
-    "h": 278
+    "x": 280,
+    "y": 173,
+    "w": 372,
+    "h": 387
    },
    "sourceSize": {
     "w": 912,
@@ -1490,18 +1490,18 @@
   },
   "land_dreadnought_die_04": {
    "frame": {
-    "x": 1999,
-    "y": 2791,
-    "w": 538,
-    "h": 332
+    "x": 575,
+    "y": 2,
+    "w": 570,
+    "h": 461
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
-    "y": 296,
-    "w": 538,
-    "h": 332
+    "x": 167,
+    "y": 183,
+    "w": 570,
+    "h": 461
    },
    "sourceSize": {
     "w": 912,
@@ -1514,18 +1514,18 @@
   },
   "land_dreadnought_die_04_team": {
    "frame": {
-    "x": 426,
-    "y": 3460,
-    "w": 423,
-    "h": 270
+    "x": 2447,
+    "y": 2151,
+    "w": 372,
+    "h": 378
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
-    "y": 302,
-    "w": 423,
-    "h": 270
+    "x": 279,
+    "y": 183,
+    "w": 372,
+    "h": 378
    },
    "sourceSize": {
     "w": 912,
@@ -1538,18 +1538,18 @@
   },
   "land_dreadnought_die_05": {
    "frame": {
-    "x": 2103,
-    "y": 3133,
-    "w": 525,
-    "h": 303
+    "x": 1149,
+    "y": 2,
+    "w": 570,
+    "h": 460
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 137,
-    "y": 325,
-    "w": 525,
-    "h": 303
+    "x": 167,
+    "y": 183,
+    "w": 570,
+    "h": 460
    },
    "sourceSize": {
     "w": 912,
@@ -1562,18 +1562,18 @@
   },
   "land_dreadnought_die_05_team": {
    "frame": {
-    "x": 853,
-    "y": 3460,
-    "w": 413,
-    "h": 251
+    "x": 602,
+    "y": 2552,
+    "w": 372,
+    "h": 375
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 208,
-    "y": 326,
-    "w": 413,
-    "h": 251
+    "x": 279,
+    "y": 186,
+    "w": 372,
+    "h": 375
    },
    "sourceSize": {
     "w": 912,
@@ -1586,18 +1586,18 @@
   },
   "land_dreadnought_die_06": {
    "frame": {
-    "x": 1270,
-    "y": 3460,
-    "w": 493,
-    "h": 242
+    "x": 1723,
+    "y": 2,
+    "w": 570,
+    "h": 460
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
-    "y": 385,
-    "w": 493,
-    "h": 242
+    "x": 167,
+    "y": 183,
+    "w": 570,
+    "h": 460
    },
    "sourceSize": {
     "w": 912,
@@ -1610,18 +1610,18 @@
   },
   "land_dreadnought_die_06_team": {
    "frame": {
-    "x": 2650,
-    "y": 3460,
-    "w": 381,
-    "h": 198
+    "x": 2823,
+    "y": 2151,
+    "w": 372,
+    "h": 378
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 229,
-    "y": 389,
-    "w": 381,
-    "h": 198
+    "x": 279,
+    "y": 183,
+    "w": 372,
+    "h": 378
    },
    "sourceSize": {
     "w": 912,
@@ -1634,18 +1634,18 @@
   },
   "land_dreadnought_die_07": {
    "frame": {
-    "x": 1767,
-    "y": 3460,
-    "w": 493,
-    "h": 242
+    "x": 2297,
+    "y": 2,
+    "w": 570,
+    "h": 460
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
-    "y": 385,
-    "w": 493,
-    "h": 242
+    "x": 167,
+    "y": 183,
+    "w": 570,
+    "h": 460
    },
    "sourceSize": {
     "w": 912,
@@ -1658,18 +1658,18 @@
   },
   "land_dreadnought_die_07_team": {
    "frame": {
-    "x": 2264,
-    "y": 3460,
-    "w": 382,
-    "h": 198
+    "x": 3199,
+    "y": 2151,
+    "w": 372,
+    "h": 378
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
-    "y": 389,
-    "w": 382,
-    "h": 198
+    "x": 279,
+    "y": 183,
+    "w": 372,
+    "h": 378
    },
    "sourceSize": {
     "w": 912,
@@ -1755,29 +1755,29 @@
   "die": [
    "land_dreadnought_die_00",
    "land_dreadnought_die_01",
-   "land_dreadnought_die_01",
    "land_dreadnought_die_02",
    "land_dreadnought_die_03",
-   "land_dreadnought_die_04",
+   "land_dreadnought_die_03",
    "land_dreadnought_die_04",
    "land_dreadnought_die_05",
    "land_dreadnought_die_05",
    "land_dreadnought_die_06",
    "land_dreadnought_die_06",
+   "land_dreadnought_die_07",
    "land_dreadnought_die_07"
   ],
   "die_team": [
    "land_dreadnought_die_00_team",
    "land_dreadnought_die_01_team",
-   "land_dreadnought_die_01_team",
    "land_dreadnought_die_02_team",
    "land_dreadnought_die_03_team",
-   "land_dreadnought_die_04_team",
+   "land_dreadnought_die_03_team",
    "land_dreadnought_die_04_team",
    "land_dreadnought_die_05_team",
    "land_dreadnought_die_05_team",
    "land_dreadnought_die_06_team",
    "land_dreadnought_die_06_team",
+   "land_dreadnought_die_07_team",
    "land_dreadnought_die_07_team"
   ]
  },
@@ -1788,14 +1788,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 3584,
-   "h": 3740
+   "h": 3956
   },
   "scale": "2.5",
   "ageborn": {
    "visualId": "unit.land_dreadnought",
    "name": "Land Dreadnought",
    "heightLu": 180,
-   "widthLu": 247.3,
+   "widthLu": 248.8,
    "pxPerLu": 2.05,
    "feetPx": [
     440,
@@ -2282,155 +2282,156 @@
      "sequence": [
       0,
       1,
-      1,
       2,
       3,
-      4,
+      3,
       4,
       5,
       5,
       6,
       6,
+      7,
       7
      ],
      "durationsMs": [
-      60,
+      70,
       70,
       80,
       80,
-      60,
-      70,
       80,
       90,
       90,
       100,
       100,
-      110
+      110,
+      110,
+      120
      ],
-     "durationMs": 990,
+     "durationMs": 1100,
      "fx": [
       {
        "id": "fx.dust_poof",
-       "atMs": 740,
+       "atMs": 830,
        "offsetLu": [
         0,
         64.8
        ],
-       "scale": 3.091
+       "scale": 3.11
       },
       {
        "id": "fx.ko_stars",
-       "atMs": 820,
+       "atMs": 910,
        "offsetLu": [
         0,
         99.0
        ],
        "loops": 2,
-       "scale": 1.758
+       "scale": 1.764
       }
      ],
-     "hideUnitAtMs": 990,
+     "crewOutAtMs": 140,
+     "hideUnitAtMs": 1100,
      "anchorsLu": {
       "rider1Muzzle": [
        [
-        -25.5,
-        127.9
+        -18.4,
+        122.0
        ],
        [
-        -22.8,
-        113.7
+        -5.9,
+        122.7
        ],
        [
-        -21.7,
-        106.6
+        6.0,
+        124.0
        ],
        [
-        -20.5,
-        98.0
+        8.7,
+        124.1
        ],
        [
-        -19.9,
-        92.8
+        8.1,
+        123.6
        ],
        [
-        -18.6,
-        83.0
+        8.1,
+        123.8
        ],
        [
-        -16.1,
-        62.4
+        8.1,
+        123.8
        ],
        [
-        -16.1,
-        62.4
+        8.1,
+        123.8
        ]
       ],
       "muzzle": [
        [
-        92.5,
-        112.6
+        103.1,
+        102.8
        ],
        [
-        98.2,
-        96.3
+        112.5,
+        104.1
        ],
        [
-        100.7,
-        88.4
+        117.9,
+        99.2
        ],
        [
-        103.6,
-        78.7
+        117.0,
+        97.8
        ],
        [
-        105.2,
-        73.0
+        117.2,
+        98.2
        ],
        [
-        102.7,
-        64.0
+        116.5,
+        97.8
        ],
        [
-        96.1,
-        45.5
+        116.5,
+        97.8
        ],
        [
-        96.1,
-        45.5
+        116.5,
+        97.8
        ]
       ],
       "rider0Muzzle": [
        [
-        21.1,
-        55.3
+        26.5,
+        49.0
        ],
        [
-        23.3,
-        45.8
+        33.7,
+        47.1
        ],
        [
-        24.3,
-        41.2
+        39.9,
+        46.3
        ],
        [
-        25.4,
-        35.4
+        41.6,
+        46.5
        ],
        [
-        25.9,
-        32.0
+        41.2,
+        46.1
        ],
        [
-        25.5,
-        27.1
+        41.2,
+        46.3
        ],
        [
-        24.1,
-        17.0
+        41.2,
+        46.3
        ],
        [
-        24.1,
-        17.0
+        41.2,
+        46.3
        ]
       ]
      }

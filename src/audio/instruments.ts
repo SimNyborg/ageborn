@@ -30,6 +30,17 @@ export type InstrumentId =
   | 'arp'
   | 'pad'
   | 'clap'
+  // Bronze (A17.12)
+  | 'lyre'
+  | 'frameDrum'
+  | 'reedPipe'
+  // Industrial (A17.12)
+  | 'cornet'
+  | 'anvil'
+  | 'piston'
+  // Cosmic (A17.12)
+  | 'choir'
+  | 'subPulse'
   // Menu, capsule room, stingers and layers
   | 'softFlute'
   | 'bell'
@@ -178,6 +189,70 @@ export const INSTRUMENTS: Readonly<Record<InstrumentId, Instrument>> = {
     gain: 0.06,
   },
   clap: { osc: [], noise: { gain: 1, type: 'bandpass', freq: 1500, q: 0.9, decay: 0.12 }, env: { a: 0.002, d: 0.12, s: 0, r: 0.04 }, gain: 0.22, maxLen: 0.18 },
+
+  // Bronze (A17.12): plucked lyre, frame drum, reed pipe (square with vibrato).
+  // Plucked lyre: a triangle and a soft square through a closing filter, a gut-string ring.
+  lyre: {
+    osc: [{ type: 'triangle', gain: 0.8 }, { type: 'square', gain: 0.18, detune: 3 }, { type: 'sine', octave: 1, gain: 0.12, decay: 0.2 }],
+    env: { a: 0.002, d: 0.7, s: 0, r: 0.15 },
+    filter: { type: 'lowpass', freq: 1400, q: 1.2, env: 2400 },
+    gain: 0.2,
+    maxLen: 0.9,
+  },
+  // Frame drum: a low skin thump with a slap of noise.
+  frameDrum: {
+    osc: [{ type: 'sine' }, { type: 'triangle', gain: 0.25 }],
+    noise: { gain: 0.45, type: 'bandpass', freq: 700, q: 0.8, decay: 0.07 },
+    env: { a: 0.002, d: 0.24, s: 0, r: 0.05 },
+    drop: { from: 1.7, time: 0.06 },
+    fixedHz: 88,
+    gain: 0.45,
+    maxLen: 0.32,
+  },
+  // Reed pipe: a narrow square with a nasal band-pass and a wide, early vibrato.
+  reedPipe: {
+    osc: [{ type: 'square', gain: 0.55 }, { type: 'sawtooth', gain: 0.2, detune: -4 }],
+    noise: { gain: 0.05, type: 'bandpass', freq: 2600, q: 1.4 },
+    env: { a: 0.03, d: 0.2, s: 0.75, r: 0.1 },
+    filter: { type: 'bandpass', freq: 1300, q: 0.9, env: 500 },
+    vibrato: { rate: 5.8, cents: 18, delay: 0.1 },
+    gain: 0.19,
+  },
+
+  // Industrial (A17.12): brass band (tuba bass, cornet lead), anvil and piston percussion.
+  cornet: {
+    osc: [{ type: 'sawtooth', gain: 0.6 }, { type: 'square', detune: 5, gain: 0.3 }],
+    env: { a: 0.025, d: 0.18, s: 0.75, r: 0.1 },
+    filter: { type: 'lowpass', freq: 1700, q: 1.1, env: 1500 },
+    vibrato: { rate: 5.4, cents: 9, delay: 0.25 },
+    gain: 0.14,
+  },
+  // Anvil: a struck bar with inharmonic partials.
+  anvil: {
+    osc: [{ type: 'triangle', gain: 0.6 }, { type: 'sine', ratio: 2.4, gain: 0.35, decay: 0.2 }, { type: 'sine', ratio: 3.9, gain: 0.2, decay: 0.1 }],
+    noise: { gain: 0.3, type: 'highpass', freq: 3000, decay: 0.03 },
+    env: { a: 0.001, d: 0.35, s: 0, r: 0.1 },
+    fixedHz: 1180,
+    gain: 0.09,
+    maxLen: 0.45,
+  },
+  // Piston: a short steam chuff.
+  piston: { osc: [], noise: { gain: 1, type: 'bandpass', freq: 1100, q: 0.6, decay: 0.07 }, env: { a: 0.004, d: 0.08, s: 0, r: 0.03 }, gain: 0.16, maxLen: 0.12 },
+
+  // Cosmic (A17.12): choir pad (formant-filtered saw), deep sub pulse, bell arpeggios.
+  choir: {
+    osc: [{ type: 'sawtooth', detune: -8, gain: 0.5 }, { type: 'sawtooth', detune: 8, gain: 0.5 }, { type: 'triangle', gain: 0.4 }],
+    env: { a: 0.25, d: 0.5, s: 0.8, r: 0.6 },
+    filter: { type: 'bandpass', freq: 850, q: 1.6 },
+    vibrato: { rate: 4.8, cents: 12, delay: 0.3 },
+    gain: 0.13,
+  },
+  subPulse: {
+    osc: [{ type: 'sine' }, { type: 'triangle', octave: 1, gain: 0.15 }],
+    env: { a: 0.01, d: 0.25, s: 0.35, r: 0.1 },
+    filter: { type: 'lowpass', freq: 240 },
+    gain: 0.3,
+  },
 
   softFlute: {
     osc: [{ type: 'triangle', gain: 0.8 }, { type: 'sine', octave: 1, gain: 0.15 }],

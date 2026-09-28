@@ -290,6 +290,9 @@ export function openCapsules(meta: Meta, content: CompiledContent, o: DropsOptio
       if (!granted) throw new Error(`grantCapsule('${kind}') added no pending capsule`);
       const opened: { save: SaveDoc; reveal: CapsuleReveal } = meta.openCapsule(save, granted.id);
       save = opened.save;
+      // Capsules the meta rules granted on the side (a Supply Capsule, A15.4) are opened too, untallied,
+      // as a player would; left pending, their NEW cards stay reserved and never drop elsewhere.
+      for (const p of [...save.capsules.pending]) save = meta.openCapsule(save, p.id).save;
       const cap = opened.reveal.capsule;
       tally.add(
         {

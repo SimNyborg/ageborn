@@ -13,6 +13,8 @@
  *   advance, each gets at most floor(gap / 2) of the gap.
  * - followSupport units stay 60 lu behind the frontmost friendly non-follower ground unit (p ≤ 200 alone).
  * - Hold: units beyond 320 without a target walk back at 70% speed; at or below 320 they do not pass it.
+ * - Open gate (A16.4 stall fix): while a side has no ground unit within `openGate.clear` of its own gate,
+ *   the attackers close up at that gate as in the siege crowd, in every phase (see `gateOpen`).
  * - Siege forced march (A17.3): unit movement ×`siege.moveSpeedBp` (×1.2) while the phase is Siege; it applies
  *   to ground and air units (not to knockback, pulls, leaps, projectiles or power runners).
  * Air: ignore blocking; gunships stop for targets and obey stance; the bomber never stops, ignores Hold
@@ -24,6 +26,7 @@ import { clampToLane, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import type { UnitRules } from '../rules';
 import { LANE, type Ctx, type UnitRt } from '../state';
 import { alive, unitRules } from '../units';
+import { gateOpen } from '../gate';
 import { targetInRange } from './targeting';
 
 interface Mover {
@@ -146,7 +149,8 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
 /** Plans the ground moves of one side against the (pre-move) enemy ground units. */
 function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[]): void {
   const spacingBp = ctx.econ.spacingBp;
-  const siegeCrowd = ctx.s.phase === 'siege' ? ctx.econ.siege.gateCrowd : 0;
+  const side = mine[0]?.u.side;
+  const siegeCrowd = ctx.s.phase === 'siege' || (side !== undefined && gateOpen(ctx, side === 0 ? 1 : 0)) ? ctx.econ.siege.gateCrowd : 0;
   for (let i = 0; i < mine.length; i += 1) {
     const m = mine[i] as Mover;
     const { u, r } = m;

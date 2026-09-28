@@ -2,6 +2,32 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28: A17 step 2, eight ages as data (cloud session)
+
+**What works**
+
+- Bronze, Industrial and Cosmic are real ages: 56 units, 32 turrets, 16 Age Powers. Short War plays Stone to Gunpowder (4 ages), Standard War Stone to Modern (6), Full War all 8. Conquest plays Standard War (owner decision). The tutorial keeps its five ages.
+- Content, strings, schema, counter matrix, the eight Generals' War Plans (The Warden brings all eight Legendaries), arenas and drop pools, Trophy Road, quests, titles and feats follow A17.13. Capsules carry about 1.75 times more copies and Amber so a card takes as long to max as before (owner decision).
+- Save version 2: old saves get Bronze, Industrial and Cosmic starter loadouts and cards; nothing owned is lost.
+- Sim: every new ability combination has a test; the Harpoon Gunner's Reel In needed a fix. `SIM_VERSION` 2.1.0, golden replays re-recorded (hashes unchanged).
+- Checks: typecheck and lint pass. Content, sim, AI, meta, save, tools, UI screens, app, capsule and tutorial tests pass except the known retime test.
+
+**Measured** (tier VII Balanced mirror, 200 per format; proxies 100 per format)
+
+- Full War median 9:07 (target 8:30), 51% in 6:45-10:15 (target 80%), Final Bell 17.5% (gate 5%); Short War median 5:06, Final Bell 9.0%; first clash 0:13.
+- Evolves 1:12, 2:08, 2:57, 3:28, 4:06, 4:54, 5:43 (targets 0:52 ... 6:30): early evolves are slow and late ones fast.
+- New Legendaries are too strong in the per-card test: Bronze Colossus +14.5, Land Dreadnought +14.0, Mothership +15.0 points; Warp Strike -9.5. Base time to kill 104-128 s (target 40-60 s).
+- Exploit proxies: random spam 29.5% / 18.0% and mono Heavy 38.5% / 26.0% (Short / Full); the turtle 29% / 11% with 76% / 99% at the Bell.
+- Economy: median card to max 119 / 108 / 68 / 109 days (before A17: 114 / 114 / 71 / 109). Drop tool: 10 of 10 pass.
+
+**Known issues**
+
+- No art or sound for the new ages yet: their units, turrets, bases and backdrops draw placeholders, and the visuals manifest, sound and id tests fail (requests for WP4 and WP6). The DESIGN merge of A17 (A13, A14.1, A14.3 lists) is also needed for `tests/integrity/ids.test.ts`.
+- The HUD and battle view read the wrong age in the tutorial, which now skips ages (request `docs/requests/wp5-a17-eight-ages.md`), and their tests still expect the old thresholds.
+- Balance for eight ages (A17.16 step 4) is Phase 3 work: the numbers above.
+
+**Next:** WP4, WP5 and WP6 requests, merge A17 into DESIGN, then Phase 3 balance.
+
 ## 2026-09-28: Phase 2b meta loop, review fixes (cloud session)
 
 **What works**

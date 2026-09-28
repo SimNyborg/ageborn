@@ -10,6 +10,6 @@ export function unitSheetSource(age: AgeId, slug: string): string {
 
 /** Age of a unit sheet from its source path (`art/units/<age>/<slug>.json`), or null. */
 export function unitSheetAge(source: string): AgeId | null {
-  const m = /art\/units\/(stone|medieval|gunpowder|modern|future)\/[^/]+\.json$/.exec(source);
+  const m = /art\/units\/(stone|bronze|medieval|gunpowder|industrial|modern|future|cosmic)\/[^/]+\.json$/.exec(source);
   return (m?.[1] ?? null) as AgeId | null;
 }

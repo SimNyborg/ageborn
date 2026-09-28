@@ -165,7 +165,8 @@ describe('memory and the foe gold estimator (A7.1)', () => {
       expect(worst, `seed ${seed} ${format}`).toBeLessThan(500000);
       expect(mem.estimator.income).toBeGreaterThan(0);
     }
-  });
+    // Two whole matches (Full War has eight ages since A17.8): about 2 s alone, more under a loaded run.
+  }, 30000);
 
   it('knows Evolve from the observation alone', () => {
     expect(evolveVisible(observation({ xpBp: 10001 }))).toBe(true);

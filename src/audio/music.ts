@@ -11,9 +11,12 @@
 import type { MusicCueId, MusicLayer } from '@/contracts';
 import { MUSIC_FILES } from './files';
 import {
+  bronzeArrangement,
   capsuleArrangement,
+  cosmicArrangement,
   futureArrangement,
   gunpowderArrangement,
+  industrialArrangement,
   medievalArrangement,
   menuArrangement,
   modernArrangement,
@@ -61,26 +64,41 @@ export type MusicDef = MusicSource & {
   gainDb?: number;
 };
 
-/** Transpositions (semitones above C) the stingers are also recorded in: Medieval D ... Future F#. */
-export const STINGER_KEYS: readonly number[] = [2, 4, 5, 6];
+/**
+ * Transpositions (semitones above C) the stingers are also recorded in, one per evolve key of the
+ * eight-age chain (A17.8): Bronze D (+2), Medieval E (+4) ... Cosmic A (+9).
+ */
+export const STINGER_KEYS: readonly number[] = [2, 4, 5, 6, 7, 8, 9];
 
 /** Level trims (`gainDb`) even out the arrangements, measured through the mixer with every layer up. */
 export const music: Readonly<Record<MusicCueId, MusicDef>> = {
   'music.menu': { kind: 'seq', score: menuArrangement, role: 'menu', gainDb: 2 },
   'music.capsule': { kind: 'seq', score: capsuleArrangement, role: 'menu', gainDb: 3.5 },
   'music.stone': { kind: 'seq', score: stoneArrangement, role: 'battle', gainDb: -2 },
+  'music.bronze': { kind: 'seq', score: bronzeArrangement, role: 'battle', gainDb: 1 },
   'music.medieval': { kind: 'seq', score: medievalArrangement, role: 'battle', gainDb: 4 },
   'music.gunpowder': { kind: 'seq', score: gunpowderArrangement, role: 'battle' },
+  'music.industrial': { kind: 'seq', score: industrialArrangement, role: 'battle' },
   'music.modern': { kind: 'seq', score: modernArrangement, role: 'battle' },
   'music.future': { kind: 'seq', score: futureArrangement, role: 'battle' },
+  'music.cosmic': { kind: 'seq', score: cosmicArrangement, role: 'battle', gainDb: 1 },
   'stinger.victory': { kind: 'seq', score: victoryStinger, role: 'stinger' },
   'stinger.defeat': { kind: 'seq', score: defeatStinger, role: 'stinger', gainDb: 2 },
 };
 
 export const MUSIC_CUES: readonly MusicCueId[] = Object.keys(music);
 
-/** Battle cues in age order (an evolve moves one step along). */
-export const AGE_CUES: readonly MusicCueId[] = ['music.stone', 'music.medieval', 'music.gunpowder', 'music.modern', 'music.future'];
+/** Battle cues in age order (an evolve moves one step along; A17.8's eight ages). */
+export const AGE_CUES: readonly MusicCueId[] = [
+  'music.stone',
+  'music.bronze',
+  'music.medieval',
+  'music.gunpowder',
+  'music.industrial',
+  'music.modern',
+  'music.future',
+  'music.cosmic',
+];
 
 /**
  * Level trims for the composed files (mastered to about -16 LUFS). Battle music sits well under the
@@ -150,10 +168,13 @@ export function buildFileMusic(seq: Readonly<Record<MusicCueId, MusicDef>> = mus
 /** What the game plays: the composed files, each with its sequenced score as the fallback. */
 export const fileMusic: Readonly<Record<MusicCueId, MusicDef>> = buildFileMusic();
 
-/** Semitones added by each own evolve, in turn (A13 "Key changes": +2, +2, +1, +1 = +6 at Future). */
-export const EVOLVE_TRANSPOSE_STEPS: readonly number[] = [2, 2, 1, 1];
+/**
+ * Semitones added by each own evolve, in turn (A17.8 "Music key changes": +2, +2, +1, +1, +1, +1, +1,
+ * +9 at Cosmic). Past +6 the lead lines drop an octave (`LEAD_OCTAVE_DROP_ABOVE` in the sequencer).
+ */
+export const EVOLVE_TRANSPOSE_STEPS: readonly number[] = [2, 2, 1, 1, 1, 1, 1];
 
-/** Total transposition after `evolves` own evolves (0 in Stone, 6 in Future). */
+/** Total transposition after `evolves` own evolves (0 in Stone, 9 after the seventh evolve). */
 export function evolveTranspose(evolves: number): number {
   let t = 0;
   for (let k = 0; k < evolves; k++) t += EVOLVE_TRANSPOSE_STEPS[Math.min(k, EVOLVE_TRANSPOSE_STEPS.length - 1)] ?? 0;

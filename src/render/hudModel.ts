@@ -27,8 +27,13 @@ export interface HudExtras {
 
 const other = (s: Side): Side => (s === 0 ? 1 : 0);
 
-/** Age ids in index order. */
+/**
+ * The match's ages in play order: `SideState.ageIndex` is a position in this list (A17.15 rule 4).
+ * The format's own list (the tutorial skips ages); every age in index order when the format is unknown.
+ */
 export function ageOrder(config: Readonly<MatchConfig>): AgeId[] {
+  const fmt = config.content.formats[config.format];
+  if (fmt) return [...fmt.ages];
   return Object.values(config.content.ages)
     .sort((a, b) => a.index - b.index)
     .map((a) => a.id);

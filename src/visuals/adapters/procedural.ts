@@ -2,8 +2,8 @@
  * `ProceduralPuppetView` tier (DESIGN B5 "Procedural v1 (tier 0)"): SVG part libraries baked to a
  * runtime atlas, rendered as sprites in a rig per visual and animated by keyframe clips.
  *
- * Ages 0-1 bake at boot (`preload(['stone', 'medieval'])`, budget 400 ms, B16); ages 2-4 bake later
- * in idle time (`preload` slices the work so the menu stays responsive).
+ * Ages 0-1 bake at boot (`preload(['stone', 'bronze'])`, budget 400 ms, B16 and A17.13); ages 2-7 bake
+ * later in idle time (`preload` slices the work so the menu stays responsive).
  */
 import type { BackdropView, BaseView, EffectView, TurretView, UnitView } from '@/contracts/art';
 import type { AgeId, Side } from '@/contracts/ids';
@@ -37,8 +37,8 @@ export interface ProceduralOptions {
 
 /** Budget slice for idle-time baking (ms). */
 const SLICE_MS = 8;
-/** Ages baked synchronously at boot (DESIGN B5, B16). */
-export const BOOT_AGES: readonly AgeId[] = ['stone', 'medieval'];
+/** Ages baked synchronously at boot: the first two ages (DESIGN B5, B16; A17.13 "Stone and Bronze"). */
+export const BOOT_AGES: readonly AgeId[] = ['stone', 'bronze'];
 const SHARED_SPRITES = [
   'shared.ring.circle',
   'shared.ring.diamond',

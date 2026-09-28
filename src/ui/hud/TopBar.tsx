@@ -258,7 +258,7 @@ export function TopBar(p: {
 }) {
   const { c } = p;
   const { m, t } = c;
-  const ages = ageIds(c.config.content);
+  const ages = ageIds(c.config);
   const myAge = ages[m.me.ageIndex] ?? 'stone';
   const foeAge = ages[m.foe.ageIndex] ?? 'stone';
   const nextAge = ages[m.me.ageIndex + 1];

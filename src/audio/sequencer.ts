@@ -28,6 +28,17 @@ export interface SeqTrack {
   pitched?: boolean;
   /** Routes the track through the score's sidechain pump. */
   pump?: boolean;
+  /** The theme's lead lines (melody and its harmony): they drop an octave on high key changes (A17.8). */
+  lead?: boolean;
+}
+
+/** A17.8: once the total key change passes +6 semitones (Industrial and later), lead lines drop one octave. */
+export const LEAD_OCTAVE_DROP_ABOVE = 6;
+
+/** The MIDI note a track plays under a total transposition (drums never transpose). */
+export function transposedMidi(t: Pick<SeqTrack, 'pitched' | 'lead'>, midi: number, transpose: number): number {
+  if (t.pitched === false) return midi;
+  return midi + transpose - (t.lead === true && transpose > LEAD_OCTAVE_DROP_ABOVE ? 12 : 0);
 }
 
 export interface Score {

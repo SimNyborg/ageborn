@@ -13,7 +13,7 @@ import {
 } from '../sounds';
 import { midi, MAX_CUTOFF_HZ, zz } from '../soundKit';
 
-const AGES = ['stone', 'medieval', 'gunpowder', 'modern', 'future'] as const;
+const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;
 
 /** DESIGN A13, copied verbatim, group by group. */
 const A13: Record<string, string[]> = {
@@ -45,6 +45,14 @@ const A13: Record<string, string[]> = {
     'card_flip', 'foil_shine', 'rarity_common', 'rarity_rare', 'rarity_epic', 'rarity_legendary', 'walkout_bass',
     'copy_tick', 'upgrade_ready', 'upgrade_slam', 'level_up', 'reel_tick',
   ],
+  /** A17.4: the off-screen "base under attack" badge. */
+  camera: ['alert_base'],
+  /** A17.12: the attack and power sounds of Bronze, Industrial and Cosmic (fanfares are under evolve). */
+  a17: [
+    'shot_javelin', 'shot_scorpion', 'stomp_colossus', 'mirror_beam', 'gorgon_gaze', 'shot_carbine', 'shot_harpoon',
+    'flare_pop', 'fuse_hiss', 'shot_gatling', 'tesla_zap', 'shot_ion', 'shot_void', 'shot_starburst', 'shot_tachyon',
+    'blink_warp', 'drone_launch', 'pw_wave', 'pw_aegis', 'pw_iron_horse', 'pw_zeppelin', 'pw_starfall', 'pw_warp',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -58,7 +66,7 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    expect(A13_IDS).toHaveLength(112);
+    expect(A13_IDS).toHaveLength(139);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 
@@ -174,11 +182,11 @@ describe('sound manifest (A13)', () => {
     }
   });
 
-  it('renders the boot groups B7 names (UI, Stone, Medieval) and the shared battle sounds', () => {
-    expect(BOOT_GROUPS).toEqual(['ui', 'battle', 'stone', 'medieval']);
+  it('renders the boot groups (UI and the first two ages, Stone and Bronze since A17.17) and the shared battle sounds', () => {
+    expect(BOOT_GROUPS).toEqual(['ui', 'battle', 'stone', 'bronze']);
     const boot = new Set(SOUND_IDS.filter((id) => BOOT_GROUPS.includes(sounds[id]!.group)));
-    // What a Stone or Medieval battle needs from its first seconds.
-    for (const id of ['ui_click', 'ui_deny', 'spawn_pop', 'spawn_heavy', 'swing_whoosh', 'shot_sling', 'shot_bow', 'shot_catapult', 'hit_blunt', 'hit_pierce', 'die_bio', 'coin_gain', 'turret_build', 'base_hit', 'pw_stampede', 'pw_arrows']) {
+    // What a Stone or Bronze battle needs from its first seconds.
+    for (const id of ['ui_click', 'ui_deny', 'spawn_pop', 'spawn_heavy', 'swing_whoosh', 'shot_sling', 'shot_catapult', 'shot_javelin', 'mirror_beam', 'hit_blunt', 'hit_pierce', 'die_bio', 'coin_gain', 'turret_build', 'base_hit', 'pw_stampede', 'pw_wave']) {
       expect(boot.has(id), id).toBe(true);
     }
   });

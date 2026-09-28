@@ -119,16 +119,21 @@ export function nextSpeed(s: 1 | 1.5 | 2): 1 | 1.5 | 2 {
   return s === 1 ? 1.5 : s === 1.5 ? 2 : 1;
 }
 
-/** Age ids in index order. */
-export function ageIds(content: CompiledContent): AgeId[] {
-  return Object.values(content.ages)
+/**
+ * The match's ages in play order: `ageIndex` is a position in this list (A17.15 rule 4). The format's
+ * own list (the tutorial skips ages); every age in index order when the format is unknown.
+ */
+export function ageIds(config: Readonly<MatchConfig>): AgeId[] {
+  const fmt = config.content.formats[config.format];
+  if (fmt) return [...fmt.ages];
+  return Object.values(config.content.ages)
     .sort((a, b) => a.index - b.index)
     .map((a) => a.id);
 }
 
 /** The loadout turret cards (2 slots) of `side` for the HUD's current age. */
 export function turretSlots(m: HudModel, config: Readonly<MatchConfig>, side: Side): (CardId | null)[] {
-  const age = ageIds(config.content)[m.me.ageIndex];
+  const age = ageIds(config)[m.me.ageIndex];
   const lo = age ? config.sides[side].loadouts[age] : undefined;
   return [lo?.turrets[0] ?? null, lo?.turrets[1] ?? null];
 }
@@ -375,7 +380,7 @@ export function hudTeamColors(preset: TeamPreset, side: Side): { me: string; foe
 export function xpNeeded(config: Readonly<MatchConfig>, ageIndex: number): number | null {
   const content = config.content;
   const fmt = content.formats[config.format];
-  const age = ageIds(content)[ageIndex];
+  const age = ageIds(config)[ageIndex];
   if (!fmt || !age || ageIndex >= fmt.ages.length - 1) return null;
   const base = fmt.xpToNextOverride?.[ageIndex] ?? content.ages[age]?.xpToNext ?? null;
   if (base === null) return null;

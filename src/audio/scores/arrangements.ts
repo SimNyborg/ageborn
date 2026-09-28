@@ -8,6 +8,9 @@
  * | Gunpowder | fife, snare march, bass drum, tuba |
  * | Modern | brass lead and stabs, synth bass, drum kit |
  * | Future | arpeggiated synths, lead, pad, sidechain pump, four-on-the-floor |
+ * | Bronze (A17.12) | plucked lyre, frame drum, reed pipe (square wave with vibrato) |
+ * | Industrial (A17.12) | brass band (tuba bass, cornet lead), anvil and piston percussion |
+ * | Cosmic (A17.12) | choir pad (formant-filtered saw), deep sub pulse, bell arpeggios |
  * | Menu | the slow version (84 BPM), soft flute, pad, bell |
  * | Capsule room | an 8-bar anticipation loop built on the motif in A minor |
  *
@@ -47,13 +50,13 @@ function track(name: string, instrument: InstrumentId, layer: TrackLayer, notes:
 
 /** The theme melody. */
 function melody(instrument: InstrumentId, layer: TrackLayer = 'base', o: { octave?: number; vel?: number } = {}): SeqTrack {
-  return track(`${instrument} melody`, instrument, layer, themeMelody(o));
+  return track(`${instrument} melody`, instrument, layer, themeMelody(o), { lead: true });
 }
 
 /** A harmony line a diatonic third below the melody (the intensity layer's counter voice). */
 function harmonyLine(instrument: InstrumentId, layer: TrackLayer, o: { octave?: number; vel?: number } = {}): SeqTrack {
   const notes = themeMelody(o).map((n) => ({ ...n, midi: diatonicBelow(n.midi, 2) }));
-  return track(`${instrument} harmony`, instrument, layer, notes);
+  return track(`${instrument} harmony`, instrument, layer, notes, { lead: true });
 }
 
 /** Repeats a one-bar drum pattern [step, velocity] over `bars` (optionally only some bars). */
@@ -205,6 +208,55 @@ export const futureArrangement: Score = battleScore(
     heartbeat(H),
   ],
   { pump: { depth: 0.55 } },
+);
+
+/** Bronze (A17.12): a reed pipe on the theme over a rolling lyre, a frame drum in a maqsum rhythm. */
+export const bronzeArrangement: Score = battleScore([
+  melody('reedPipe', 'base', { vel: 0.85 }),
+  arpeggio('lyre', 'base', H, 55, [0, 1, 2, 3, 2, 1, 2, 1], 2, 0.7),
+  bassLine('lyre', 'base', H, 2, [[0, 0, 4, 0.85], [6, 7, 2, 0.6], [8, 0, 4, 0.8]]),
+  bassLine('drone', 'base', H, 3, [[0, 0, 16, 0.5]]),
+  drums('frameDrum', 'base', [[0, 1], [3, 0.6], [6, 0.55], [8, 0.9], [12, 0.6]], B),
+  drums('shaker', 'base', offbeats8th(0.45), B),
+  harmonyLine('reedPipe', 'intensity', { vel: 0.5 }),
+  drums('frameDrum', 'intensity', [[10, 0.55], [14, 0.5]], B),
+  drums('shaker', 'overdrive', every16th(0.3, 0.55), B),
+  drums('frameDrum', 'overdrive', [[13, 0.5], [15, 0.6]], B),
+  heartbeat(H),
+]);
+
+/** Industrial (A17.12): a cornet on the theme, tuba oom-pah, pistons on the 8ths and an anvil backbeat. */
+export const industrialArrangement: Score = battleScore([
+  melody('cornet'),
+  bassLine('tuba', 'base', H, 2, [[0, 0, 3, 0.9], [4, 7, 3, 0.7], [8, 0, 3, 0.85], [12, 7, 2, 0.7], [14, 11, 2, 0.6]]),
+  stabs('brassStab', 'base', H, 55, [[4, 0.6], [12, 0.6]], 2),
+  drums('bassDrum', 'base', [[0, 1], [4, 0.7], [8, 0.9], [12, 0.7]], B),
+  drums('piston', 'base', eighths(0.7, 0.5), B),
+  drums('anvil', 'base', [[4, 0.8], [12, 0.8]], B),
+  harmonyLine('cornet', 'intensity', { vel: 0.5 }),
+  drums('snare', 'intensity', [[14, 0.5], [15, 0.6]], B),
+  drums('piston', 'overdrive', every16th(0.3, 0.55), B),
+  drums('anvil', 'overdrive', [[7, 0.45], [15, 0.5]], B),
+  heartbeat(H),
+]);
+
+/** Cosmic (A17.12): a choir on the theme over a pumping pad, a deep sub pulse and bell arpeggios. */
+export const cosmicArrangement: Score = battleScore(
+  [
+    melody('choir', 'base', { vel: 0.9 }),
+    heldChords('pad', 'base', H, 55, 0.6, { pump: true }),
+    arpeggio('bell', 'base', H, 72, [0, 1, 2, 3, 2, 1], 2, 0.55),
+    bassLine('subPulse', 'base', H, 2, [[0, 0, 2, 1], [4, 0, 2, 0.8], [8, 0, 2, 0.95], [12, 12, 2, 0.8]], { pump: true }),
+    drums('kick', 'base', [[0, 1], [8, 0.9]], B),
+    drums('hat', 'base', offbeats8th(0.6), B),
+    drums('timpani', 'base', [[12, 0.5]], B, lastOfFour),
+    harmonyLine('choir', 'intensity', { vel: 0.45 }),
+    drums('clap', 'intensity', [[4, 0.6], [12, 0.6]], B),
+    drums('hat', 'overdrive', every16th(0.3, 0.55), B),
+    drums('kick', 'overdrive', [[4, 0.7], [12, 0.7]], B),
+    heartbeat(H),
+  ],
+  { pump: { depth: 0.45 } },
 );
 
 // ---------------------------------------------------------------------------------------------------

@@ -89,9 +89,9 @@ describe('HUD model (A9.2)', () => {
   it('computes XP, Evolve readiness (steady, never while ascending) and the final age', () => {
     const sim = new FakeSim();
     const cfg = sim.config;
-    expect(xpThreshold(cfg, 0)).toBe(700);
+    expect(xpThreshold(cfg, 0)).toBe(550);
     expect(xpThreshold(cfg, 1)).toBeNull(); // Medieval is the fake format's last age
-    sim.state.sides[0].xp = 350_000;
+    sim.state.sides[0].xp = 275_000;
     expect(buildHudModel(sim, EXTRAS).me.xpBp).toBe(5000);
     expect(canEvolve(sim.state, cfg, 0)).toBe(false);
     sim.state.sides[0].xp = 800_000;
@@ -107,12 +107,12 @@ describe('HUD model (A9.2)', () => {
   it('follows the Daily Challenge modifiers as the sim does (A9.1): Fast Forward, Heavy Metal, Gold Rush, Sudden Siege', () => {
     const sim = new FakeSim({ config: { ...fakeMatchConfig(), modifiers: ['fast_forward', 'heavy_metal', 'gold_rush', 'sudden_siege'] } });
     const cfg = sim.config;
-    // Fast Forward: 700 × 0.7 = 490 XP, so Evolve is ready (and the bar full) at 490, not 700.
-    expect(xpThreshold(cfg, 0)).toBe(490);
-    sim.state.sides[0].xp = 500_000;
+    // Fast Forward: 550 × 0.7 = 385 XP, so Evolve is ready (and the bar full) at 385, not 550.
+    expect(xpThreshold(cfg, 0)).toBe(385);
+    sim.state.sides[0].xp = 400_000;
     const m = buildHudModel(sim, EXTRAS);
     expect(m.me.evolveReady).toBe(true);
-    expect(m.me.xpBp).toBe(10204);
+    expect(m.me.xpBp).toBe(10389);
     // Heavy Metal: the Tuskback (Heavy, 150) costs 105 and is affordable with 110 gold.
     sim.state.sides[0].gold = 110_000;
     const cards = buildHudModel(sim, EXTRAS).me.cards;

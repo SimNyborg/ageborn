@@ -10,8 +10,9 @@
  * - Layers and the transposition carry over from a battle cue into the next battle cue (an evolve) or
  *   a stinger (the stinger plays in the key the battle ended in); any other change, and `stop()`,
  *   resets them.
- * - `transpose(semitones)` sets the total transposition (WP5 sends 2, 4, 5, 6 after each own evolve),
- *   applied from the next scheduled note. Drum tracks are not transposed.
+ * - `transpose(semitones)` sets the total transposition (WP5 sends 2, 4, 5, 6, 7, 8, 9 after each own
+ *   evolve, A17.8), applied from the next scheduled note. Drum tracks are not transposed, and lead lines
+ *   drop an octave once the total passes +6 (`transposedMidi`).
  * - A throttled background tab skips the missed steps instead of playing them late.
  * - Composed file cues (`FilePlayer`) are recorded in their age's evolve key, so they ignore
  *   `transpose`; an evolve between two file loops of the same length continues at the same point of
@@ -23,7 +24,7 @@ import type { MusicCueId, MusicLayer } from '@/contracts';
 import { INSTRUMENTS, playNote } from './instruments';
 import { holdParam } from './mixer';
 import { continuesBattle, music as defaultMusic, type MusicDef, type MusicRole } from './music';
-import { Sequencer, type Score, type SeqTrack, type TrackLayer } from './sequencer';
+import { Sequencer, transposedMidi, type Score, type SeqTrack, type TrackLayer } from './sequencer';
 
 export const MUSIC_LAYERS: readonly MusicLayer[] = ['intensity', 'overdrive', 'siege'];
 /** How far ahead notes are scheduled, in seconds. */
@@ -177,7 +178,7 @@ export class SeqPlayer implements Player {
     });
     for (const n of block.notes) {
       const t = tracks[n.track] as SeqTrack;
-      const midi = n.midi + (t.pitched === false ? 0 : this.state.transpose);
+      const midi = transposedMidi(t, n.midi, this.state.transpose);
       const end = playNote(this.ctx, this.nodeFor(t), INSTRUMENTS[t.instrument], n.time, midi, n.dur, n.vel * (t.gain ?? 1));
       this.lastEnd = Math.max(this.lastEnd, end);
     }

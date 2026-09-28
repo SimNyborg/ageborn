@@ -273,6 +273,13 @@ export interface EconomyRules {
    * every unit instead of queuing in single file (0 = off).
    */
   siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerSec: number; moveSpeedBp: number; gateCrowdLu: number };
+  /**
+   * The open gate (A16.4 stall fix, A17 step 1): a side whose own ground units are all more than
+   * `clearLu` from its gate has an open gate. Then, in every phase, the attackers close up at it as in
+   * the siege crowd (`siege.gateCrowdLu`) and its base takes ×`baseDamageBp` damage (stacking with
+   * Siege). A decided match ends instead of spawn-camping the loser. Missing or `clearLu` 0 = off.
+   */
+  openGate?: { clearLu: number; baseDamageBp: number };
   /** Unit walking speed multiplier applied once at compile time (A17.2: 12,500 = ×1.25). */
   marchSpeedBp: number;
   /** Units per side that may fight side by side at the front before the single file starts (A2.7; A16.4 L4: 3). */

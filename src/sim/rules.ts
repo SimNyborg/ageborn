@@ -358,6 +358,8 @@ export interface EconRules {
   healPulseTicks: number;
   /** Units that may stand side by side at the front of a file (A2.7, A16.4 L4). */
   frontWidth: number;
+  /** The open gate (A16.4 stall fix): `clear` in mlu (0 = off), base damage multiplier in bp. */
+  openGate: { clear: number; baseDamageBp: number };
 }
 
 export interface SimRules {
@@ -786,6 +788,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     maxLevel: e.maxLevel,
     healPulseTicks: t.healPulse,
     frontWidth: posOr(e.frontWidth, DEFAULT_FRONT_WIDTH),
+    // Off for content that predates it (the frozen golden fixture), so old replays keep their hashes.
+    openGate: { clear: mlu(nonNegOr(e.openGate?.clearLu, 0)), baseDamageBp: posOr(e.openGate?.baseDamageBp, BP) },
   };
 }
 

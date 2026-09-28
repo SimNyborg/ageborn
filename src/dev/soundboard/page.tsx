@@ -53,12 +53,12 @@ const GROUP_TITLES: Record<SoundGroup, string> = {
   ui: 'UI (boot)',
   battle: 'Battle, shared (boot)',
   stone: 'Stone (boot)',
-  medieval: 'Medieval (boot)',
+  medieval: 'Medieval (lazy)',
   match: 'Match moments (lazy)',
   gunpowder: 'Gunpowder (lazy)',
   modern: 'Modern (lazy)',
   future: 'Future (lazy)',
-  bronze: 'Bronze (lazy)',
+  bronze: 'Bronze (boot)',
   industrial: 'Industrial (lazy)',
   cosmic: 'Cosmic (lazy)',
   capsule: 'Capsules (lazy)',
@@ -298,7 +298,7 @@ export default function Soundboard() {
         </div>
         <div>
           <button style={btn} onClick={evolve}>
-            evolve key change (+{EVOLVE_TRANSPOSE_STEPS[Math.min(evolves, EVOLVE_TRANSPOSE_STEPS.length - 1)]}) [{evolves}/4]
+            evolve key change (+{EVOLVE_TRANSPOSE_STEPS[Math.min(evolves, EVOLVE_TRANSPOSE_STEPS.length - 1)]}) [{evolves}/{EVOLVE_TRANSPOSE_STEPS.length}]
           </button>
           <button style={btn} onClick={resetKey}>
             reset key

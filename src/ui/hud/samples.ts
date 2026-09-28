@@ -10,7 +10,7 @@ type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? (T[K] extends unk
 
 /** A mid-match model for `side` in the config's first age, every card ready. */
 export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, over: DeepPartial<HudModel> = {}): HudModel {
-  const ages = ageIds(config.content);
+  const ages = ageIds(config);
   const ageIndex = over.me?.ageIndex ?? 0;
   const age: AgeId = ages[ageIndex] ?? 'stone';
   const lo = config.sides[side].loadouts[age];
@@ -95,7 +95,7 @@ function firstOfGroup(config: Readonly<MatchConfig>, side: Side, age: AgeId, gro
 
 /** One sample per HUD state (A9.2): card states, evolve, power, Last Stand, phases, mounts, end. */
 export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSample[] {
-  const ages = ageIds(config.content);
+  const ages = ageIds(config);
   const fmt = config.content.formats[config.format];
   const lastAge = fmt ? ages.indexOf(fmt.ages[fmt.ages.length - 1] ?? 'stone') : 0;
   const s = (id: string, note: string, over: DeepPartial<HudModel> = {}): HudSample => ({ id, note, model: sampleHudModel(config, side, over) });

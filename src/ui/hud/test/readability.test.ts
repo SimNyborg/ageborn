@@ -9,7 +9,7 @@ const config = fakeMatchConfig();
 
 describe('XP numbers on the bar ("XP 180/250")', () => {
   it('reads the threshold of the current age, and null in the final age', () => {
-    expect(xpNeeded(config, 0)).toBe(700);
+    expect(xpNeeded(config, 0)).toBe(550);
     const last = (config.content.formats.short?.ages.length ?? 1) - 1;
     expect(xpNeeded(config, last)).toBeNull();
     expect(xpNeeded({ ...config, format: 'tutorial' }, 0)).toBe(250);
@@ -17,8 +17,8 @@ describe('XP numbers on the bar ("XP 180/250")', () => {
 
   it('turns the bar fill into whole XP, capped at the threshold', () => {
     const m = sampleHudModel(config, 0, {});
-    expect(xpProgress({ ...m, me: { ...m.me, ageIndex: 0, xpBp: 5000 } }, config)).toEqual({ xp: 350, need: 700 });
-    expect(xpProgress({ ...m, me: { ...m.me, ageIndex: 0, xpBp: 14_000 } }, config)).toEqual({ xp: 700, need: 700 });
+    expect(xpProgress({ ...m, me: { ...m.me, ageIndex: 0, xpBp: 5000 } }, config)).toEqual({ xp: 275, need: 550 });
+    expect(xpProgress({ ...m, me: { ...m.me, ageIndex: 0, xpBp: 14_000 } }, config)).toEqual({ xp: 550, need: 550 });
   });
 });
 

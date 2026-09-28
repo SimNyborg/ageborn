@@ -4,11 +4,12 @@ import { INSTRUMENTS } from '../instruments';
 import { continuesBattle, EVOLVE_TRANSPOSE_STEPS, evolveTranspose, MUSIC_CUES, music } from '../music';
 import { OVERDRIVE_BPM } from '../scores/arrangements';
 import { CHORDS, chordVoicing, diatonicBelow, HARMONY, MELODY, STEPS_PER_BAR, THEME_BARS, THEME_BPM, themeMelody } from '../scores/dawnMarch';
-import { scoreSeconds, type Score } from '../sequencer';
+import { LEAD_OCTAVE_DROP_ABOVE, scoreSeconds, transposedMidi, type Score } from '../sequencer';
 import { midi } from '../soundKit';
 
-const A14_3 = ['music.menu', 'music.capsule', 'music.stone', 'music.medieval', 'music.gunpowder', 'music.modern', 'music.future', 'stinger.victory', 'stinger.defeat'];
-const BATTLE = ['music.stone', 'music.medieval', 'music.gunpowder', 'music.modern', 'music.future'];
+/** A14.3 with the A17.12 music cues (`music.bronze`, `music.industrial`, `music.cosmic`). */
+const BATTLE = ['music.stone', 'music.bronze', 'music.medieval', 'music.gunpowder', 'music.industrial', 'music.modern', 'music.future', 'music.cosmic'];
+const A14_3 = ['music.menu', 'music.capsule', ...BATTLE, 'stinger.victory', 'stinger.defeat'];
 const LAYERS: MusicLayer[] = ['intensity', 'overdrive', 'siege'];
 
 function score(cue: string): Score {
@@ -109,6 +110,9 @@ describe('music manifest (A14.3)', () => {
       'music.gunpowder': 'fife',
       'music.modern': 'brass',
       'music.future': 'lead',
+      'music.bronze': 'reedPipe',
+      'music.industrial': 'cornet',
+      'music.cosmic': 'choir',
     };
     const theme = themeMelody().map((n) => n.midi % 12);
     for (const [cue, inst] of Object.entries(lead)) {
@@ -126,6 +130,14 @@ describe('music manifest (A14.3)', () => {
     expect(inst('music.future').has('arp')).toBe(true);
     expect(score('music.future').pump).toBeDefined();
     expect(score('music.future').tracks.some((t) => t.pump)).toBe(true);
+    // A17.12: lyre and frame drum; brass band with anvil and pistons; choir, sub pulse and bells
+    expect(inst('music.bronze').has('lyre')).toBe(true);
+    expect(inst('music.bronze').has('frameDrum')).toBe(true);
+    expect(inst('music.industrial').has('tuba')).toBe(true);
+    expect(inst('music.industrial').has('anvil')).toBe(true);
+    expect(inst('music.industrial').has('piston')).toBe(true);
+    expect(inst('music.cosmic').has('subPulse')).toBe(true);
+    expect(inst('music.cosmic').has('bell')).toBe(true);
   });
 
   it('the menu is the slow version and the capsule room a loop', () => {
@@ -164,9 +176,23 @@ describe('music manifest (A14.3)', () => {
 });
 
 describe('key changes (A13)', () => {
-  it('transposes +2, +2, +1, +1 on own evolves (+6 at Future)', () => {
-    expect(EVOLVE_TRANSPOSE_STEPS).toEqual([2, 2, 1, 1]);
-    expect([0, 1, 2, 3, 4].map(evolveTranspose)).toEqual([0, 2, 4, 5, 6]);
+  it('transposes +2, +2, +1, +1, +1, +1, +1 on own evolves (+9 at Cosmic, A17.8)', () => {
+    expect(EVOLVE_TRANSPOSE_STEPS).toEqual([2, 2, 1, 1, 1, 1, 1]);
+    expect([0, 1, 2, 3, 4, 5, 6, 7].map(evolveTranspose)).toEqual([0, 2, 4, 5, 6, 7, 8, 9]);
+  });
+
+  it('drops the lead lines an octave once the total passes +6; drums never transpose (A17.8)', () => {
+    expect(LEAD_OCTAVE_DROP_ABOVE).toBe(6);
+    const c5 = midi('C5');
+    expect(transposedMidi({ lead: true }, c5, 6)).toBe(c5 + 6);
+    expect(transposedMidi({ lead: true }, c5, 7)).toBe(c5 + 7 - 12);
+    expect(transposedMidi({ lead: true }, c5, 9)).toBe(c5 - 3);
+    expect(transposedMidi({}, c5, 9)).toBe(c5 + 9);
+    expect(transposedMidi({ pitched: false }, 60, 9)).toBe(60);
+    // every battle arrangement marks its theme melody and harmony as lead lines, and nothing else
+    for (const cue of BATTLE) {
+      for (const t of score(cue).tracks) expect(t.lead === true, `${cue} ${t.name}`).toBe(/ (melody|harmony)$/.test(t.name));
+    }
   });
 
   it('carries battle state only into the next battle cue or a stinger', () => {

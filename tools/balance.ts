@@ -13,7 +13,7 @@
  *
  * Exits non-zero when an A2.14 target fails (unless `--no-gate`). Library entry: `runBalance`.
  */
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import type { AgeId, CardId, CompiledContent, FormatId } from '../src/contracts';
 import { content as gameContent } from '../src/content';
@@ -69,18 +69,23 @@ export function balanceDefaults(mode: BalanceMode): Omit<BalanceOptions, 'worker
     : { mode, pairsPerCard: 200, mirrorMatches: 200, cards: null, tier: 5, level: 7, seed: 1, bound: 6, mirror: true, scenarios: true };
 }
 
-/** DESIGN A2.14 / A2.4 target numbers (seconds, percent). */
+/** DESIGN A2.14 target numbers as changed by A17.14 for eight ages (seconds, percent). */
 export const TARGETS = {
-  fullMedian: { value: 420, tolerance: 30 },
-  shortMedian: { value: 270, tolerance: 30 },
-  fullWindow: { lo: 300, hi: 540, minShare: 80 },
+  /** A17.14: Full War (8 ages) median 8:30, 80% of matches 6:45-10:15; Short War (4 ages) 4:45. */
+  fullMedian: { value: 510, tolerance: 30 },
+  shortMedian: { value: 285, tolerance: 30 },
+  fullWindow: { lo: 405, hi: 615, minShare: 80 },
+  /** A17.14: Standard War (6 ages) median 6:30, 80% of matches 5:00-8:00. */
+  standardMedian: { value: 390, tolerance: 30 },
+  standardWindow: { lo: 300, hi: 480, minShare: 80 },
   /** A16.5 v1 gate: Final Bell ≤ 10% of Short Wars and ≤ 5% of Full Wars (tier VII mirror, baseline plan). */
   finalBellMaxPct: { short: 10, full: 5 },
   /** A17.14: first clash (the first unit-on-unit hit) median 0:11-0:16 on the 2,000 lu lane. */
   firstClash: { lo: 11, hi: 16 },
-  firstEvolve: { value: 60, tolerance: 10 },
-  /** A2.4 expected evolve times after the first: 2:05, 3:20, 4:50. */
-  laterEvolves: [125, 200, 290],
+  /** A17.14: first evolve (into Bronze) median 0:52 ± 10 s. */
+  firstEvolve: { value: 52, tolerance: 10 },
+  /** A17.8 expected evolve times after the first: 1:25, 2:25, 3:10, 4:00, 5:10, 6:30 (Cosmic). */
+  laterEvolves: [85, 145, 190, 240, 310, 390],
   laterTolerance: 20,
   firstMover: { lo: 47, hi: 53 },
   baseKill: { lo: 40, hi: 60 },
@@ -89,7 +94,7 @@ export const TARGETS = {
 } as const;
 
 const TICKS_PER_SEC = 20;
-const MIRROR_FORMATS: readonly FormatId[] = ['full', 'short'];
+const MIRROR_FORMATS: readonly FormatId[] = ['full', 'standard', 'short'];
 
 function botSeat(tier: number): MatchJob['seats'][number] {
   return { kind: 'bot', generalId: BALANCED_GENERAL, tier };
@@ -173,8 +178,13 @@ export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): Mirr
     medianSec: median(lengths),
     p10Sec: quantile(lengths, 0.1),
     p90Sec: quantile(lengths, 0.9),
-    // The 5:00-9:00 window is a Full War target (A2.14); other formats have none.
-    withinWindowPct: format === 'full' ? shareWithin(lengths, TARGETS.fullWindow.lo, TARGETS.fullWindow.hi) * 100 : Number.NaN,
+    // The 6:45-10:15 window is a Full War target (A17.14); other formats have none.
+    withinWindowPct:
+      format === 'full'
+        ? shareWithin(lengths, TARGETS.fullWindow.lo, TARGETS.fullWindow.hi) * 100
+        : format === 'standard'
+          ? shareWithin(lengths, TARGETS.standardWindow.lo, TARGETS.standardWindow.hi) * 100
+          : Number.NaN,
     finalBellPct: ms.length ? (ms.filter((m) => m.finalBell).length * 100) / ms.length : Number.NaN,
     evolveMedianSec: evolves.map((xs) => median(xs)),
     evolveSamples: evolves.map((xs) => xs.length),
@@ -211,8 +221,20 @@ export function mirrorChecks(s: MirrorStats): Check[] {
     checks.push(matches(rangeCheck('mirror.full.median', 'Full War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
     checks.push(
       matches(
-        rangeCheck('mirror.full.window', 'Full War matches between 5:00 and 9:00', s.withinWindowPct, TARGETS.fullWindow.minShare, 100, {
+        rangeCheck('mirror.full.window', `Full War matches between ${fmtClock(TARGETS.fullWindow.lo)} and ${fmtClock(TARGETS.fullWindow.hi)}`, s.withinWindowPct, TARGETS.fullWindow.minShare, 100, {
           target: `≥ ${TARGETS.fullWindow.minShare}%`,
+          show: (v) => fmtPct(v),
+        }),
+      ),
+    );
+  } else if (f === 'standard') {
+    const t = TARGETS.standardMedian;
+    const w = TARGETS.standardWindow;
+    checks.push(matches(rangeCheck('mirror.standard.median', 'Standard War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s (A17.14)`, show: clock })));
+    checks.push(
+      matches(
+        rangeCheck('mirror.standard.window', `Standard War matches between ${fmtClock(w.lo)} and ${fmtClock(w.hi)}`, s.withinWindowPct, w.minShare, 100, {
+          target: `≥ ${w.minShare}%`,
           show: (v) => fmtPct(v),
         }),
       ),
@@ -221,16 +243,22 @@ export function mirrorChecks(s: MirrorStats): Check[] {
     const t = TARGETS.shortMedian;
     checks.push(matches(rangeCheck(`mirror.${f}.median`, 'Short War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
   }
-  const bellMax = f === 'full' ? TARGETS.finalBellMaxPct.full : TARGETS.finalBellMaxPct.short;
-  checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${f === 'full' ? 'Full' : 'Short'} War Final Bell rate`, s.finalBellPct, bellMax, { target: `≤ ${bellMax}% (A16.5)`, show: (v) => fmtPct(v) })));
+  const name = f === 'full' ? 'Full' : f === 'standard' ? 'Standard' : 'Short';
+  if (f === 'standard') {
+    // A16.5 gates the Bell in Short and Full War only; Standard War's is reported.
+    checks.push(infoCheck('info.standard.finalBell', 'Standard War Final Bell rate', fmtPct(s.finalBellPct), 'reported (A16.5 gates Short and Full)'));
+  } else {
+    const bellMax = f === 'full' ? TARGETS.finalBellMaxPct.full : TARGETS.finalBellMaxPct.short;
+    checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${name} War Final Bell rate`, s.finalBellPct, bellMax, { target: `≤ ${bellMax}% (A16.5)`, show: (v) => fmtPct(v) })));
+  }
   const fc = TARGETS.firstClash;
   checks.push(
     requireSamples(
-      rangeCheck(`mirror.${f}.firstClash`, `${f === 'full' ? 'Full' : 'Short'} War first clash (median)`, s.firstClashSec, fc.lo, fc.hi, { target: `${clock(fc.lo)}-${clock(fc.hi)} (A17.14)`, show: clock }),
+      rangeCheck(`mirror.${f}.firstClash`, `${name} War first clash (median)`, s.firstClashSec, fc.lo, fc.hi, { target: `${clock(fc.lo)}-${clock(fc.hi)} (A17.14)`, show: clock }),
       s.firstClashSamples,
     ),
   );
-  checks.push(infoCheck(`info.${f}.contactMiddle`, `${f === 'full' ? 'Full' : 'Short'} War contact between the turret covers`, fmtPct(s.contactMiddlePct), 'share of seconds with a contact point (A17.14, reported)'));
+  checks.push(infoCheck(`info.${f}.contactMiddle`, `${name} War contact between the turret covers`, fmtPct(s.contactMiddlePct), 'share of seconds with a contact point (A17.14, reported)'));
   if (f === 'full') {
     const fe = TARGETS.firstEvolve;
     checks.push(
@@ -244,7 +272,7 @@ export function mirrorChecks(s: MirrorStats): Check[] {
       checks.push(
         requireSamples(
           rangeCheck(`mirror.full.evolve${i + 2}`, `Evolve ${i + 2} (median)`, got, want - TARGETS.laterTolerance, want + TARGETS.laterTolerance, {
-            target: `${clock(want)} ± ${TARGETS.laterTolerance} s (A2.4)`,
+            target: `${clock(want)} ± ${TARGETS.laterTolerance} s (A17.8)`,
             show: clock,
           }),
           s.evolveSamples[i + 1] ?? 0,
@@ -483,7 +511,7 @@ export function balanceSections(r: Report<BalanceData>): string[] {
       '## Balanced mirror',
       '',
       markdownTable(
-        ['Format', 'Matches', 'Median', 'P10', 'P90', '5:00-9:00', 'Final Bell', 'Evolves (median)', 'Side 0 score', 'Turret kill share'],
+        ['Format', 'Matches', 'Median', 'P10', 'P90', 'In window (Full 6:45-10:15, Standard 5:00-8:00)', 'Final Bell', 'Evolves (median)', 'Side 0 score', 'Turret kill share'],
         d.mirrors.map((m) => [
           m.format,
           m.matches,
@@ -559,6 +587,7 @@ export function writeCardsCsv(r: Report<BalanceData>, dir: string = REPORTS_DIR)
       [c.card, c.age, c.kind, c.rarity, c.inBaseline, c.replaces ?? '', c.matches, fmtNum(c.winRatePct, 2), fmtNum(c.delta.value, 2), fmtNum(c.delta.lo, 2), fmtNum(c.delta.hi, 2), c.inBaseline ? 'control' : c.verdict].join(','),
     ),
   ];
+  mkdirSync(dir, { recursive: true });
   writeFileSync(file, `${rows.join('\n')}\n`);
   return file;
 }

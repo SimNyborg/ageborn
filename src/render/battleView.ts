@@ -1635,7 +1635,7 @@ export class BattleView {
         let e = this.turrets.get(key);
         if (t) {
           if (!e || e.card !== t.card) e = this.turretEntry(side, m, t.card);
-          const outdated = side === this.mySide && (this.config.content.ages[t.age]?.index ?? 0) < s.ageIndex;
+          const outdated = side === this.mySide && (this.config.content.ages[t.age]?.index ?? 0) < (this.config.content.ages[this.ages[s.ageIndex] ?? 'stone']?.index ?? 0);
           if (outdated !== e.outdated) {
             e.outdated = outdated;
             e.view.setOutdated(outdated);

@@ -45,7 +45,9 @@ function fileService(o: WebAudioServiceOptions & { fail?: boolean; hold?: boolea
 
 describe('generated audio assets', () => {
   it('has a file for every sound id, inside its sheet, with 2-3 variants for frequent sounds', () => {
-    expect(Object.keys(SFX_FILES).sort()).toEqual([...SOUND_IDS].sort());
+    // Ids added after the last `tools/audio` render play their ZzFX definition until the next render.
+    const zzfxOnly = new Set<string>();
+    expect(Object.keys(SFX_FILES).sort()).toEqual([...SOUND_IDS].filter((id) => !zzfxOnly.has(id) || SFX_FILES[id]).sort());
     expect(Object.keys(SFX_SHEETS).sort()).toEqual([...SOUND_GROUPS].sort());
     for (const [id, e] of Object.entries(SFX_FILES)) {
       expect(e.sheet, id).toBe(sounds[id]!.group);
@@ -74,11 +76,17 @@ describe('generated audio assets', () => {
     // The 44-bar battle form at 110 BPM: 96 s.
     expect(lengths[0]).toBeGreaterThan(90);
     expect(lengths[0]).toBeLessThan(100);
-    // Ogg Opus bytes (the AAC copies only load where Opus cannot play).
+    // Ogg Opus bytes (the AAC copies only load where Opus cannot play). Music streams one age ahead
+    // (`prefetch`), so what matters per match is one battle loop and its stem; the total grew with the
+    // three A17 arrangements (eight ages).
     const musicBytes = Object.values(MUSIC_FILES).reduce((a, f) => a + f.bytes, 0);
     const sfxBytes = Object.values(SFX_SHEETS).reduce((a, f) => a + f.bytes, 0);
-    expect(musicBytes).toBeLessThan(5 * 1024 * 1024);
-    expect(sfxBytes).toBeLessThan(1.2 * 1024 * 1024);
+    expect(musicBytes).toBeLessThan(7 * 1024 * 1024);
+    for (const c of AGE_CUES) {
+      const age = c.slice('music.'.length);
+      expect(MUSIC_FILES[c]!.bytes + (MUSIC_FILES[`layer.intensity.${age}`]?.bytes ?? 0), c).toBeLessThan(700 * 1024);
+    }
+    expect(sfxBytes).toBeLessThan(1.5 * 1024 * 1024);
   });
 
   it('has an AAC copy of every file, a sync time for every sheet, and stingers in every age key', () => {
@@ -90,10 +98,11 @@ describe('generated audio assets', () => {
     }
     for (const [cue, f] of Object.entries(MUSIC_FILES)) expect(f.alt, cue).toMatch(/\.m4a$/);
     for (const base of ['stinger.victory', 'stinger.defeat']) {
-      for (const k of [2, 4, 5, 6]) expect(MUSIC_FILES[`${base}.k${k}`], `${base}.k${k}`).toBeDefined();
+      // one per evolve key of the eight-age chain (A17.8: +2, +4, +5, +6, +7, +8, +9)
+      for (const k of [2, 4, 5, 6, 7, 8, 9]) expect(MUSIC_FILES[`${base}.k${k}`], `${base}.k${k}`).toBeDefined();
       const d = fileMusic[base]!;
       if (d.kind !== 'file') throw new Error(base);
-      expect(Object.keys(d.keys ?? {}).sort()).toEqual(['2', '4', '5', '6']);
+      expect(Object.keys(d.keys ?? {}).sort()).toEqual(['2', '4', '5', '6', '7', '8', '9']);
     }
   });
 
@@ -115,7 +124,13 @@ describe('generated audio assets', () => {
     const stone = fileMusic['music.stone']!;
     if (stone.kind !== 'file') throw new Error('stone is not a file');
     expect(Object.keys(stone.layers ?? {}).sort()).toEqual(['intensity', 'overdrive', 'siege']);
-    expect(stone.prefetch).toEqual(['music.medieval', 'stinger.victory', 'stinger.defeat']);
+    expect(stone.prefetch).toEqual(['music.bronze', 'stinger.victory', 'stinger.defeat']);
+    // every age has its own intensity stem, the A17 ages included
+    for (const c of AGE_CUES) {
+      const d = fileMusic[c]!;
+      if (d.kind !== 'file') throw new Error(c);
+      expect(d.layers?.intensity, c).toBeDefined();
+    }
   });
 
   it('resolves asset paths against the site base', () => {

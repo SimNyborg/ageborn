@@ -485,7 +485,7 @@ export function Tray(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; 
     }, FLOAT_MS);
     timers.current.add(timer);
   };
-  const age = ageIds(c.config.content)[c.m.me.ageIndex] ?? 'stone';
+  const age = ageIds(c.config)[c.m.me.ageIndex] ?? 'stone';
   const cards = c.m.me.cards.filter((card) => card.state !== 'empty' && card.card);
   return (
     <div class="hud-tray" data-testid="hud-tray">

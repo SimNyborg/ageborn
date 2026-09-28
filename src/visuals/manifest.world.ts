@@ -8,7 +8,7 @@
  * returns them, so the battle view's turrets and tap targets follow the art and never move when a
  * base morphs into the next age. Turrets render `turretArtScale(h)` times larger than the procedural
  * puppets (art review: they must read next to 56 px infantry); their anchors scale with them.
- * The sheets themselves load per age (Stone and Medieval at boot, the rest in idle time) through
+ * The sheets themselves load per age (the boot ages first, the rest in idle time) through
  * `WorldAtlas`; `?art=procedural` shows the old tier for comparison.
  */
 import type { VisualDef } from '@/contracts/art';
@@ -22,14 +22,14 @@ export const WORLD_TURRET_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   gunpowder: ['swivel_gun', 'grapeshot_gun', 'congreve_rack', 'chainshot_cannon'],
   modern: ['mg_nest', 'flak_gun', 'howitzer', 'searchlight_sniper'],
   future: ['pulse_laser', 'arc_coil', 'plasma_mortar', 'gravity_well'],
-  // A17 ages: sheets are rendered but not wired yet (docs/requests/wp4-bronze-art-wiring.md)
-  bronze: [],
-  industrial: [],
-  cosmic: [],
+  // A17 ages (art/blender/world/turrets_<age>.py)
+  bronze: ['archer_tower', 'sun_mirror', 'onager', 'gorgon_bust'],
+  industrial: ['gatling_gun', 'mortar_pit', 'boiler_mortar', 'tesla_tower'],
+  cosmic: ['ion_turret', 'starburst_gun', 'starfall_battery', 'tachyon_lance'],
 };
 
 /** Ages whose base has a sheet (art/blender/world/base_<age>.py). */
-export const WORLD_BASE_SHEETS: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+export const WORLD_BASE_SHEETS: readonly AgeId[] = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 export function turretSheetSource(age: AgeId, slug: string): string {
   return `art/turrets/${age}/${slug}.json`;

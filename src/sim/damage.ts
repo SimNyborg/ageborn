@@ -10,6 +10,7 @@
 import type { DamageMod, Side, StatusKind } from '@/contracts';
 import { BP } from '@/core';
 import { emit } from './events';
+import { gateOpen } from './gate';
 import { HEAVY_HIT_BP, type StatusRules, type UnitRules } from './rules';
 import { NO_TARGET, baseHpBp, other, type Ctx, type Impact, type UnitRt } from './state';
 import { addXp } from './systems/economy';
@@ -176,6 +177,7 @@ export function damageBase(ctx: Ctx, baseSide: Side, imp: Impact | null, raw: nu
   if (imp) {
     if (imp.dmgBuffBp > 0) v = Math.trunc((v * (BP + imp.dmgBuffBp)) / BP);
     if (ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.baseDamageBp) / BP);
+    if (ctx.econ.openGate.baseDamageBp !== BP && gateOpen(ctx, baseSide)) v = Math.trunc((v * ctx.econ.openGate.baseDamageBp) / BP);
     if (v < 100) v = 100;
   }
   const dealt = v < b.baseHp ? v : b.baseHp;

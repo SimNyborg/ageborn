@@ -77,15 +77,18 @@ describe('balance analysis', () => {
 
   it('a mirror of too few matches or evolves cannot pass a target (A2.14 gating)', () => {
     // On-target numbers in 5 matches: every check is a statistic, so none may pass.
-    const onTarget = (): MatchSummary => summary({ ticks: 20 * 420, sides: [side({ evolveTicks: [1200, 2500, 4000, 5800] }), side({ evolveTicks: [1200, 2500, 4000, 5800] })] });
+    // A17.8 / A17.14: 8:30 and the seven evolves at 0:52, 1:25, 2:25, 3:10, 4:00, 5:10, 6:30
+    const evolveTicks = [52, 85, 145, 190, 240, 310, 390].map((x) => 20 * x);
+    const onTarget = (): MatchSummary => summary({ ticks: 20 * 510, sides: [side({ evolveTicks }), side({ evolveTicks })] });
     const few = mirrorChecks(mirrorStats('full', Array.from({ length: 5 }, onTarget)));
-    const gated = ['mirror.full.median', 'mirror.full.window', 'mirror.full.finalBell', 'mirror.full.firstEvolve', 'mirror.full.evolve2', 'mirror.full.evolve3', 'mirror.full.evolve4'];
+    const gated = ['mirror.full.median', 'mirror.full.window', 'mirror.full.finalBell', 'mirror.full.firstEvolve',
+      ...[2, 3, 4, 5, 6, 7].map((n) => `mirror.full.evolve${n}`)];
     for (const id of gated) expect(few.find((c) => c.id === id)).toMatchObject({ verdict: 'fail', note: expect.stringMatching(/samples/) });
     const many = mirrorChecks(mirrorStats('full', Array.from({ length: 30 }, onTarget)));
     for (const id of gated) expect(many.find((c) => c.id === id)?.verdict, id).toBe('pass');
   });
 
-  it('reports the 5:00-9:00 window for Full War only', () => {
+  it('reports the 6:45-10:15 window for Full War only', () => {
     expect(mirrorStats('short', [summary({ ticks: 20 * 270 })]).withinWindowPct).toBeNaN();
     expect(mirrorChecks(mirrorStats('short', [summary()])).map((c) => c.id)).toEqual(['mirror.short.median', 'mirror.short.finalBell', 'mirror.short.firstClash', 'info.short.contactMiddle']);
   });
