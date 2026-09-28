@@ -341,3 +341,12 @@
     transform: translateY(-3px);
   }
 }
+/* On the ladder the stars sit at the right edge, so the lock sits on the portrait instead. */
+.cq-board--ladder .cq-gen__lock {
+  right: auto;
+  left: 58px;
+  top: auto;
+  bottom: 4px;
+  transform: none;
+  filter: drop-shadow(0 2px 0 var(--ui-ink));
+}

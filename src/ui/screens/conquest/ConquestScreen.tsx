@@ -8,7 +8,7 @@ import './conquest.css';
 import { arenaNameKey, capsuleKindNameKey, capsuleTierNameKey, formatNameKey, titleNameKey } from '@/content/keys';
 import type { ConquestRules } from '@/content/types';
 import { Fragment } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button } from '../../components/Button';
 import { AiBadge, Pill } from '../../components/Chips';
@@ -117,6 +117,12 @@ export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
   // the highest General beaten.
   const ladder = v.entries.map((e, i) => ({ e, i })).sort((a, b) => b.e.tier - a.e.tier || b.i - a.i);
   const topBeaten = ladder.find(({ e }) => e.beaten)?.e.general.id ?? null;
+  const youRef = useRef<HTMLLIElement>(null);
+  // Open the ladder where the player stands.
+  useEffect(() => {
+    const el = youRef.current as (HTMLLIElement & { scrollIntoView?: (o: ScrollIntoViewOptions) => void }) | null;
+    el?.scrollIntoView?.({ block: 'center' });
+  }, []);
 
   function fight(e: ConquestEntry) {
     const req: MatchRequest = { mode: 'conquest', general: e.general.id };
@@ -171,7 +177,7 @@ export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
             return (
               <Fragment key={e.general.id}>
                 {e.general.id === topBeaten ? (
-                  <li class="cq-you" data-testid="cq-you" aria-label={t('ui.conquest.youAreHere')}>
+                  <li class="cq-you" ref={youRef} data-testid="cq-you" aria-label={t('ui.conquest.youAreHere')}>
                     <Avatar spec={s.profile.avatar} size={46} />
                     <span class="cq-you__label">{t('ui.conquest.youAreHere')}</span>
                   </li>

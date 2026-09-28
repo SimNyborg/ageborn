@@ -1,6 +1,6 @@
 # A15 → WP10: no reel, quick reveal, honesty lines
 
-**From:** design merge of A15 (2026-09-28). **To:** WP10 (capsule show). **Status:** open, Phase 2b. In `ageborn-phase2-loop` this is the capsules agent's work.
+**From:** design merge of A15 (2026-09-28). **To:** WP10 (capsule show). **Status:** done (Phase 2b, capsules agent, 2026-09-28).
 
 - **No reel.** The Wardrobe Crate uses the card-flip reveal everywhere (A10, A15.3). Do not build the reel; if `src/capsule/reel.ts` exists, delete it and its bench cases. Players cannot switch a reel on. `WardrobeReveal.reelTiles` may be empty; do not read it. `reel_tick` stays an unused sound ID.
 - **Quick reveal** (`Settings.quickReveal`, default false): when on, every capsule opens at step 4 (burst), as Trophy Road capsules do. Rarity pre-signals, walkouts and skips are unchanged (A15.6).

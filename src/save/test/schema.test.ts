@@ -105,7 +105,9 @@ describe('settings fall back field by field', () => {
     for (const bad of [undefined, null, 'loud', []]) {
       const r = validateSaveDoc(withChange((d) => ((d as Record<string, unknown>).settings = bad)));
       expect(r.ok).toBe(true);
-      if (r.ok) expect(r.value.settings).toEqual(DEFAULT_SETTINGS);
+      // The optional A15.6 flags may stay unset: a missing `breakReminder` means on, `quickReveal` off.
+      if (r.ok) expect({ ...DEFAULT_SETTINGS, ...r.value.settings }).toEqual(DEFAULT_SETTINGS);
+      if (r.ok) expect(r.value.settings.breakReminder ?? true).toBe(true);
     }
   });
 

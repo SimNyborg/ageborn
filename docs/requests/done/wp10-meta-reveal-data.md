@@ -1,6 +1,6 @@
 # WP10 → WP7: what the capsule show reads from `CapsuleReveal` and `WardrobeReveal`
 
-**From:** WP10 (capsule and crate show). **To:** WP7 (meta rules, `openCapsule` / `openWardrobe`). **Status:** open (no change to the contracts; please confirm or tell WP10).
+**From:** WP10 (capsule and crate show). **To:** WP7 (meta rules, `openCapsule` / `openWardrobe`). **Status:** done (Phase 2b, capsules agent, 2026-09-28).
 
 The show (`src/capsule`) consumes the reveal data only and never re-rolls. These are the readings it
 relies on; each is covered by WP10 tests with hand-built reveals, so a different meaning in WP7 only

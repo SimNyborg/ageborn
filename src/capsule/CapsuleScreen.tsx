@@ -337,7 +337,7 @@ function ShowScreen(p: ShowScreenProps) {
       ) : null}
       {!inSummary ? (
         <div class={css.bottom}>
-          {state?.holding && state.canFastForward ? <span class={css.ff}>{t('capsule.fastForward')}</span> : state?.canFastForward ? <span class={css.hint}>{t('capsule.holdHint')}</span> : null}
+          {state?.holding && state.canFastForward ? <span class={css.ff}>{t('capsule.fastForward')}</span> : state?.canFastForward && !(p.honesty && !opened) ? <span class={css.hint}>{t('capsule.holdHint')}</span> : null}
           {state?.canSkip ? (
             <button
               class={css.skip}

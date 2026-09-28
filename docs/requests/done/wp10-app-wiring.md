@@ -1,6 +1,6 @@
 # WP10 → WP11 (and WP12): mounting the capsule show
 
-**From:** WP10 (capsule and crate show). **To:** WP11 (app integration), WP12 (e2e). **Status:** open (Phase 2 wiring).
+**From:** WP10 (capsule and crate show). **To:** WP11 (app integration), WP12 (e2e). **Status:** done (Phase 2b, capsules agent, 2026-09-28).
 
 `src/capsule` exports two Preact screens. Both render a full-screen DOM overlay and mount their Pixi
 stage into the app's persistent `Application` (DESIGN B6), then remove it on unmount.
