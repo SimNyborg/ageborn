@@ -73,6 +73,8 @@ export interface SpriteSpec {
   /** Move across o.zone (sweeps) or o.distance (runs) along `dir` over the life. */
   moveBy?: 'zone' | 'distance';
   blendAdd?: boolean;
+  /** Per-play random variation: offset (lu), scale factor range and rotation (deg). */
+  jitter?: { x?: number; y?: number; s?: Range; r?: number };
 }
 
 export interface FallSpec {
@@ -107,6 +109,11 @@ export interface FxRecipe {
   /** Drawn in screen space, sized by o.width x o.height. */
   screen?: boolean;
   exemptColorRule?: boolean;
+  /**
+   * Multi-count emits (`n` instances) draw only the first `maxInstances` (the rest finish at once):
+   * a burst of 120 debris effects stays a readable handful of chunks, not pepper noise.
+   */
+  maxInstances?: number;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -213,30 +220,69 @@ const scorch = (scale: number, life: number): SpriteSpec => ({
 });
 
 /**
- * Explosions (A12): a white-hot flash, a warm fireball that swells and cools, two shock rings (the
- * second delayed), a scorch on the ground, a rising smoke column that lingers, sparks, embers and
- * chunks. All tints stay pale (A11 colour rule for lane effects).
+ * Explosions (A12, art review): a white-hot flash sprite for two frames at 1.3x, then a fireball
+ * built from six overlapping cel-shaded lobes of random size (white-hot core, pale warm body, a
+ * darker warm-brown rim, so saturation stays within the A11 colour rule) that squash in (0.6 ->
+ * 1.15 -> 1.0 over 120 ms), rise a little and cool into smoke lobes that fade out one by one. Two
+ * shock rings, a scorch, a lingering smoke column, sparks, embers and rounded brown and grey chunks
+ * that spin and fall on an arc.
  */
+function lobe(s: number, i: number, n: number): SpriteSpec[] {
+  const a = (i / n) * Math.PI * 2 + 0.6;
+  const d = (i === 0 ? 0 : 6.5) * s;
+  const x = Math.cos(a) * d;
+  const y = Math.sin(a) * d * 0.75 - 6 * s;
+  const k = (i === 0 ? 1.25 : 0.8 + ((i * 37) % 5) * 0.09) * s;
+  const out = 150 + i * 55;
+  const life = 250 + out;
+  return [
+    {
+      sprite: 'fx.p.fireLobe',
+      life,
+      delay: i * 12,
+      jitter: { x: 2.5 * s, y: 2 * s, s: [0.85, 1.2], r: 40 },
+      keys: [
+        { t: 0, x, y, sx: 0.6 * k, sy: 0.6 * k, a: 1 },
+        { t: 60 / life, x, y, sx: 1.15 * k, sy: 1.1 * k, a: 1 },
+        { t: 120 / life, x, y: y - 1 * s, sx: 1.0 * k, sy: 1.0 * k, a: 1 },
+        { t: 0.75, x, y: y - 6 * s, sx: 1.1 * k, sy: 1.08 * k, a: 1 },
+        { t: 1, x, y: y - 9 * s, sx: 1.15 * k, sy: 1.1 * k, a: 0 },
+      ],
+    },
+    {
+      sprite: 'fx.p.smokeLobe',
+      life: 520 + i * 60,
+      delay: life - 120 + i * 12,
+      jitter: { x: 2 * s, y: 2 * s, s: [0.9, 1.15], r: 60 },
+      keys: [
+        { t: 0, x, y: y - 8 * s, sx: 1.0 * k, sy: 1.0 * k, a: 0.85 },
+        { t: 1, x: x * 1.2, y: y - 26 * s, sx: 1.35 * k, sy: 1.3 * k, a: 0 },
+      ],
+    },
+  ];
+}
+
 function explosion(id: string, s: number): FxRecipe {
+  const lobes = 6;
+  const sprites: SpriteSpec[] = [scorch(2.2 * s, 1000 * Math.min(1.4, s)), bloom(2.2 * s, 360, 0xffe6c4, 0.55)];
+  for (let i = lobes - 1; i >= 0; i--) sprites.push(...lobe(s, i, lobes));
+  sprites.push(
+    // the two-frame white flash at 1.3x the fireball
+    { sprite: 'fx.p.flash', life: 34, keys: [{ t: 0, sx: 2.6 * s, sy: 2.6 * s, a: 1 }, { t: 1, sx: 2.8 * s, sy: 2.8 * s, a: 1 }], tint: 0xfffaf0 },
+    { sprite: 'fx.p.disc', life: 34, blendAdd: true, keys: [{ t: 0, sx: 1.7 * s, sy: 1.7 * s, a: 0.9 }, { t: 1, sx: 1.9 * s, sy: 1.9 * s, a: 0.7 }], tint: 0xffffff },
+    ring(3 * s, 320, 0xfff6e2),
+    { ...ring(4.2 * s, 460, 0xf4ecd8, 0.3), delay: 60 },
+  );
   return {
     id,
-    durationMs: 1100 * Math.min(1.4, s),
-    sprites: [
-      scorch(2.2 * s, 1000 * Math.min(1.4, s)),
-      bloom(2.4 * s, 420, 0xffd9a0, 0.9),
-      bloom(1.3 * s, 220, 0xffffff, 0.9),
-      { sprite: 'fx.p.disc', life: 300, keys: [{ t: 0, sx: 0.5 * s, sy: 0.5 * s, a: 1 }, { t: 0.3, sx: 1.5 * s, sy: 1.5 * s, a: 0.95 }, { t: 1, sx: 1.9 * s, sy: 1.7 * s, a: 0, y: -6 * s }], tint: 0xffdca6 },
-      flash(2.6 * s, 0xfff1d2, 140),
-      flash(1.4 * s, 0xffffff, 90),
-      ring(3 * s, 320, 0xfff6e2),
-      { ...ring(4.2 * s, 460, 0xf4ecd8, 0.3), delay: 60 },
-    ],
+    durationMs: 1300 * Math.min(1.4, s),
+    sprites,
     particles: [
-      smoke(Math.round(5 * s), s),
-      { ...smoke(Math.round(4 * s), s * 1.2, [900, 1500]), speed: [10 * s, 40 * s], angle: [-110, -70], gravity: -45, tint: 0xa8a39c, delay: [80, 240] },
+      { ...smoke(Math.round(4 * s), s * 1.2, [900, 1500]), speed: [10 * s, 40 * s], angle: [-110, -70], gravity: -45, tint: 0xa8a39c, delay: [200, 380] },
       sparks(Math.round(5 * s), [120 * s, 280 * s], 'fx.p.spark'),
       sparks(Math.max(1, Math.round(2 * s)), [120 * s, 240 * s], 'fx.p.sparkHot'),
-      { ...chunks(Math.round(4 * s)), speed: [100 * s, 240 * s] },
+      { sprite: 'fx.p.rock', count: Math.round(3 * s), life: [600, 900], speed: [110 * s, 230 * s], angle: [-150, -30], spread: 4, gravity: 760, scale: [1.2, 1.1], alpha: [1, 0.4], spin: [-500, 500], tint: 0x6e5a48 },
+      { sprite: 'fx.p.rock2', count: Math.round(3 * s), life: [600, 900], speed: [100 * s, 210 * s], angle: [-150, -30], spread: 4, gravity: 760, scale: [1.1, 1], alpha: [1, 0.4], spin: [-500, 500], tint: 0x8a8580 },
       { sprite: 'fx.p.ember', count: Math.round(7 * s), life: [500, 1000], speed: [40, 150 * s], angle: [-160, -20], gravity: 90, drag: 1, scale: [1.2, 0.5], alpha: [1, 0], spread: 5 * s, blendAdd: true },
     ],
   };
@@ -356,7 +402,16 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     exemptColorRule: true,
     sprites: [{ sprite: 'fx.p.xp', life: 600, keys: [{ t: 0, sx: 0.5, sy: 0.5, a: 1 }, { t: 0.5, sx: 1.2, sy: 1.2, r: 90 }, { t: 1, sx: 0.6, sy: 0.6, a: 0.8, r: 180 }] }],
   },
-  { id: 'fx.debris', durationMs: 900, particles: [chunks(4), { ...chunks(2, 'fx.p.chunkWood') }, dust(2, 0.8)] },
+  {
+    id: 'fx.debris',
+    durationMs: 900,
+    maxInstances: 18,
+    particles: [
+      { ...chunks(1, 'fx.p.rock'), tint: 0x8a7e70, scale: [1.4, 1.3] },
+      { ...chunks(1, 'fx.p.rock2'), tint: 0x6e665c, scale: [1.2, 1.1] },
+      { ...dust(1, 1.3), tint: 0xc8bca8 },
+    ],
+  },
 
   // Status and ability effects
   {
@@ -497,17 +552,19 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   // Match effects
   {
     id: 'fx.evolve_pillar',
-    durationMs: 1400,
+    durationMs: 1500,
     sprites: [
-      bloom(9, 1100, 0xfff4d8, 0.6),
-      { sprite: 'fx.p.pillar', life: 1200, keys: [{ t: 0, sx: 0.2, sy: 0.1, a: 0 }, { t: 0.15, sx: 3.2, sy: 1.6, a: 0.95 }, { t: 0.7, sx: 2.6, sy: 1.8, a: 0.7 }, { t: 1, sx: 0.4, sy: 2, a: 0 }], tint: 0xfffbe8 },
-      { sprite: 'fx.p.pillar', life: 900, blendAdd: true, keys: [{ t: 0, sx: 0.1, sy: 0.1, a: 0 }, { t: 0.12, sx: 1.2, sy: 1.8, a: 1 }, { t: 1, sx: 0.2, sy: 2.1, a: 0 }], tint: 0xffffff },
-      ring(9, 700, 0xffffff, 0.35),
-      { ...ring(12, 900, 0xfff4d8, 0.3), delay: 150 },
+      // art review: peak within the first second, gone by 1.5 s; warm-white core, pale warm edge,
+      // additive at low alpha so the base's morph stays visible underneath
+      bloom(7, 1000, 0xfff0d6, 0.35),
+      { sprite: 'fx.p.pillar', life: 1300, blendAdd: true, keys: [{ t: 0, sx: 0.3, sy: 0.1, a: 0 }, { t: 0.12, sx: 3.4, sy: 1.6, a: 0.32 }, { t: 0.55, sx: 2.8, sy: 1.8, a: 0.22 }, { t: 1, sx: 1.2, sy: 2, a: 0 }], tint: 0xf2dcb4 },
+      { sprite: 'fx.p.pillar', life: 950, blendAdd: true, keys: [{ t: 0, sx: 0.1, sy: 0.1, a: 0 }, { t: 0.14, sx: 1.3, sy: 1.8, a: 0.5 }, { t: 0.6, sx: 0.9, sy: 2, a: 0.3 }, { t: 1, sx: 0.2, sy: 2.1, a: 0 }], tint: 0xfff6e6 },
+      ring(9, 700, 0xfff6e6, 0.35),
+      { ...ring(12, 900, 0xf4e6cc, 0.3), delay: 150 },
     ],
     particles: [
       { sprite: 'fx.p.confetti', count: 30, life: [900, 1300], speed: [120, 280], angle: [-120, -60], gravity: 260, drag: 1.2, spread: 10, scale: [1.2, 1], alpha: [1, 0], spin: [-720, 720], tint: 0xf4ecd0 },
-      { sprite: 'fx.p.xp', rate: 26, life: [600, 1000], box: [24, 4], speed: [60, 140], angle: [-100, -80], scale: [1.1, 0.3], alpha: [1, 0], spin: [-180, 180], tint: 0xfff8e4, blendAdd: true },
+      { sprite: 'fx.p.xp', rate: 22, life: [500, 800], box: [24, 4], speed: [60, 140], angle: [-100, -80], scale: [1.1, 0.3], alpha: [0.9, 0], spin: [-180, 180], tint: 0xfff8e4, blendAdd: true },
     ],
   },
   {

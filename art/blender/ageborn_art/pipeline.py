@@ -129,8 +129,11 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
     canvas = (C.px(mod.CANVAS[0]), C.px(mod.CANVAS[1]))
     feet = (C.px(mod.FEET[0]), C.px(mod.FEET[1]))
     if v3:
-        canvas = (_even(canvas[0]), _even(canvas[1]))
-        feet = (_even(feet[0]), _even(feet[1]))
+        # room for the longer death (knockback, arc) and heavy wind-ups: extra canvas on the left,
+        # top and bottom (frames are trimmed when packed, so the margin costs no atlas space)
+        ml, mt, mb = _even(int(canvas[0] * 0.14)), _even(int(canvas[1] * 0.08)), _even(int(canvas[1] * 0.04))
+        canvas = (_even(canvas[0]) + ml, _even(canvas[1]) + mt + mb)
+        feet = (_even(feet[0]) + ml, _even(feet[1]) + mt)
     scene.camera(*canvas, feet)
     rig = Rig(mod.SLUG, yaw=getattr(mod, "YAW_DEG",
                                     C.CHARACTER_YAW_V3 if v3 else C.CHARACTER_YAW_DEG))

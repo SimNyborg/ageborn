@@ -7,8 +7,14 @@
  * horn and glow, the 1.8 s evolve morph (squash, flash, swap, rebuild) and the collapse.
  *
  * The root sits on the gate at ground level; side 1 is mirrored. `mountPoints()` returns the
- * sheet's `mountsLu`, which the pipeline takes from the procedural base puppets, so turret mounts
- * are exactly where the battle view and its tap targets expect them.
+ * sheet's `mountsLu`: the turret platforms modelled into each base (the same four points in every
+ * age, `WORLD_BASE_MOUNTS_LU`), so turrets and tap targets sit on real ledges and never move on a morph.
+ *
+ * A soft contact shadow sits under the base (like the units'). Hits and crumbles knock off a few
+ * rounded chunks in the base's own palette that spin, fall and bounce; the collapse throws 16 big
+ * chunks and four slow dust billows (the live chunk count is capped). The evolve flash is a warm,
+ * additive glow capped at 55% so the morph stays visible under it, and it fades while the base waits
+ * for the next age's sheet.
  */
 import { Container, Sprite, Texture } from 'pixi.js';
 import type { BaseView, VisualDef } from '@/contracts/art';
@@ -47,6 +53,29 @@ function pair(tint: number): Pair {
   return { c, team, base };
 }
 
+/** Rubble tints per age: the base's own large-area colours (wall, dark stone, accent material). */
+const RUBBLE_COLORS: Record<AgeId, readonly number[]> = {
+  stone: [0x8c7b68, 0x77695a, 0xa08e78, 0x6e8b3d],
+  medieval: [0x9a9c98, 0x7c7f80, 0xaeb0aa, 0x7a5e44],
+  gunpowder: [0xb8a88a, 0x9a8c72, 0xcabb9c, 0x857860],
+  modern: [0xa29f96, 0x86837b, 0xb6b3a9, 0x62664a],
+  future: [0xbfc4cb, 0x3a3f4a, 0xced3d9, 0x23262e],
+};
+const DUST_COLORS: Record<AgeId, number> = { stone: 0xb8a88e, medieval: 0xb4b2aa, gunpowder: 0xcfc2a6, modern: 0xb0ada4, future: 0xa8adb8 };
+/** At most this many rubble chunks live at once (hits, crumbles and the collapse share it). */
+const MAX_CHUNKS = 40;
+const EVOLVE_FLASH_MAX = 0.55;
+
+interface Chunk {
+  s: Container;
+  vx: number;
+  vy: number;
+  spin: number;
+  age: number;
+  life: number;
+  bounces: number;
+}
+
 const LIGHT_COLORS: Record<AgeId, number> = {
   stone: 0xffc27a,
   medieval: 0xffd08a,
@@ -64,6 +93,9 @@ export class AtlasBaseView implements BaseView {
   private readonly glow: Container;
   private readonly horn: Container;
   private readonly puffs: PuffList;
+  private readonly chunkLayer = new Container();
+  private chunks: Chunk[] = [];
+  private readonly shadow: Container;
   private readonly rng: CosmeticRng;
   private readonly facing: 1 | -1;
   private sheet: WorldSheet;
@@ -98,6 +130,7 @@ export class AtlasBaseView implements BaseView {
     this.treasuryPair = pair(o.teamColor);
     this.flash = new Sprite(Texture.EMPTY);
     this.flash.blendMode = 'add';
+    this.flash.tint = 0xfff0d8;
     this.flash.visible = false;
     this.body.addChild(this.art, this.lightLayer);
     this.body.scale.x = this.facing;
@@ -106,7 +139,18 @@ export class AtlasBaseView implements BaseView {
     this.glow.visible = false;
     this.horn = partSprite(o.decor, 'icon.horn', { ...FX_ZONES, bone: 0xede3c8, metal: 0x9aa3ab });
     this.horn.visible = false;
-    this.root.addChild(this.glow, this.body, this.overlay);
+    // soft contact shadow: a wide pale ellipse and a tighter darker one at the foot
+    this.shadow = new Container();
+    for (const [sx, sy, a] of [
+      [1, 1, 0.9],
+      [0.72, 0.55, 1],
+    ] as const) {
+      const sh = partSprite(o.decor, 'shared.shadow', FX_ZONES);
+      sh.scale.set(sx, sy);
+      sh.alpha = a;
+      this.shadow.addChild(sh);
+    }
+    this.root.addChild(this.shadow, this.glow, this.body, this.overlay, this.chunkLayer);
     this.overlay.addChild(this.horn);
     this.puffs = new PuffList(this.overlay);
     this.build();
@@ -140,6 +184,9 @@ export class AtlasBaseView implements BaseView {
       return { s, phase: i * 1.7, crumbleMax: l.crumbleMax, a: 0.38 };
     });
     this.placeHorn();
+    const w = m.widthLu ?? 160;
+    this.shadow.position.set(-w * 0.48 * this.facing, 3);
+    this.shadow.scale.set((w * 1.25) / 36, 2.4);
     this.show();
   }
 
@@ -157,7 +204,7 @@ export class AtlasBaseView implements BaseView {
   }
 
   setCrumble(stage: 0 | 1 | 2 | 3): void {
-    if (stage > this.crumble) this.debris(6 + stage * 3);
+    if (stage > this.crumble) this.debris(4 + stage * 2);
     this.crumble = stage;
     this.show();
   }
@@ -188,13 +235,14 @@ export class AtlasBaseView implements BaseView {
   hit(): void {
     this.shakeMs = 240;
     this.flashMs = 90;
-    this.debris(3);
+    this.debris(2);
   }
 
   collapse(): void {
     if (this.collapseT < 0) {
       this.collapseT = 0;
-      this.debris(26);
+      this.debris(16, 1.6);
+      this.billows(4);
     }
   }
 
@@ -217,6 +265,7 @@ export class AtlasBaseView implements BaseView {
       const m = this.morph;
       // hold at the bottom of the squash until the next age's sheet has arrived (at most 3 s)
       const waiting = !m.swapped && !m.next && m.t >= m.ms * 0.5 && m.hold < 3000 && this.o.sourceFor(m.age) !== undefined;
+      // while waiting for the next sheet the flash fades, so the base never sits as a white pillar
       if (waiting) m.hold += dtMs;
       else m.t += dtMs;
       const u = Math.min(1, m.t / m.ms);
@@ -228,7 +277,7 @@ export class AtlasBaseView implements BaseView {
         const s = (u - 0.25) / 0.25;
         sx = 1.08 - 0.3 * s;
         sy = 0.88 - 0.5 * s;
-        flash = Math.max(flash, s);
+        flash = Math.max(flash, s * Math.max(0.2, 1 - m.hold / 500));
       } else {
         if (!m.swapped) this.swap(m);
         const s = (u - 0.5) / 0.5;
@@ -246,7 +295,8 @@ export class AtlasBaseView implements BaseView {
       sy *= 1 - 0.45 * u;
       ox += (this.rng.next() - 0.5) * 4 * (1 - u);
       this.body.alpha = 1 - 0.55 * u;
-      if (this.rng.next() < 0.3 * (1 - u)) this.debris(1);
+      this.shadow.alpha = 1 - 0.6 * u;
+      if (this.rng.next() < 0.06 * (1 - u)) this.debris(1, 1.2);
     }
     if (this.popMs > 0) {
       this.popMs = Math.max(0, this.popMs - dtMs);
@@ -257,7 +307,7 @@ export class AtlasBaseView implements BaseView {
     this.body.position.set(ox, oy);
     this.body.scale.set(this.facing * sx, sy);
     this.flash.visible = flash > 0.01;
-    this.flash.alpha = Math.min(1, flash) * 0.85;
+    this.flash.alpha = Math.min(1, flash) * EVOLVE_FLASH_MAX;
     // lights flicker (two sines, per light phase)
     for (const l of this.lights) {
       const on = this.crumble <= l.crumbleMax && this.collapseT < 0;
@@ -287,6 +337,41 @@ export class AtlasBaseView implements BaseView {
     }
     this.show();
     this.puffs.update(dtMs);
+    this.stepChunks(dtMs);
+  }
+
+  /** Rubble chunks: spin, fall under gravity, bounce on the ground (y = 0) twice, then fade. */
+  private stepChunks(dtMs: number): void {
+    const dt = dtMs / 1000;
+    for (let i = this.chunks.length - 1; i >= 0; i--) {
+      const c = this.chunks[i];
+      if (!c) continue;
+      c.age += dtMs;
+      if (c.age >= c.life) {
+        c.s.destroy();
+        this.chunks.splice(i, 1);
+        continue;
+      }
+      c.vy += 900 * dt;
+      c.s.x += c.vx * dt;
+      c.s.y += c.vy * dt;
+      c.s.rotation += c.spin * dt;
+      if (c.s.y > 0 && c.vy > 0) {
+        c.s.y = 0;
+        if (c.bounces < 2) {
+          c.vy *= -0.38;
+          c.vx *= 0.6;
+          c.spin *= 0.5;
+          c.bounces++;
+        } else {
+          c.vy = 0;
+          c.vx *= 0.8;
+          c.spin = 0;
+        }
+      }
+      const fade = c.life - c.age;
+      c.s.alpha = Math.min(1, fade / 300);
+    }
   }
 
   private swap(m: { age: AgeId; swapped: boolean; next: WorldSheet | null }): void {
@@ -332,13 +417,42 @@ export class AtlasBaseView implements BaseView {
     this.puffs.add(s, { vx: 6 + this.rng.next() * 8, vy: -26 - this.rng.next() * 14, life: 1800, s0: 0.9, s1: 2.4, a0: 0.55 });
   }
 
-  private debris(n: number): void {
+  /** Knocks `n` rounded chunks off the base in its own palette (`size` scales them). */
+  private debris(n: number, size = 1): void {
     const w = this.sheet.meta.widthLu ?? 150;
     const h = this.sheet.meta.heightLu;
+    const colors = RUBBLE_COLORS[this.age];
     for (let i = 0; i < n; i++) {
-      const s = partSprite(this.o.decor, i % 3 === 0 ? 'fx.p.dust' : 'fx.p.chunk', FX_ZONES);
-      s.position.set(-this.rng.next() * w * 0.8 * this.facing, -h * (0.15 + this.rng.next() * 0.65));
-      this.puffs.add(s, { vx: (this.rng.next() - 0.3) * 120 * this.facing, vy: -60 - this.rng.next() * 100, g: 520, life: 700, spin: (this.rng.next() - 0.5) * 10, s0: 1, s1: 0.8 });
+      if (this.chunks.length >= MAX_CHUNKS) {
+        const old = this.chunks.shift();
+        old?.s.destroy();
+      }
+      const s = partSprite(this.o.decor, i % 2 ? 'fx.p.rock' : 'fx.p.rock2', FX_ZONES);
+      s.tint = colors[i % colors.length] ?? 0x9a9288;
+      s.scale.set(size * (0.9 + this.rng.next() * 1.1));
+      s.rotation = this.rng.next() * Math.PI * 2;
+      s.position.set(-(0.1 + this.rng.next() * 0.8) * w * this.facing, -h * (0.2 + this.rng.next() * 0.6));
+      this.chunkLayer.addChild(s);
+      this.chunks.push({
+        s,
+        vx: (this.rng.next() - 0.25) * 150 * this.facing,
+        vy: -120 - this.rng.next() * 180,
+        spin: (this.rng.next() - 0.5) * 9,
+        age: 0,
+        life: 1400 + this.rng.next() * 900,
+        bounces: 0,
+      });
+    }
+  }
+
+  /** Big soft dust billows that grow, rise a little and fade (the collapse). */
+  private billows(n: number): void {
+    const w = this.sheet.meta.widthLu ?? 150;
+    for (let i = 0; i < n; i++) {
+      const s = partSprite(this.o.decor, 'fx.p.cloud', FX_ZONES);
+      s.tint = DUST_COLORS[this.age];
+      s.position.set(-(0.15 + (i / Math.max(1, n - 1)) * 0.7) * w * this.facing, -10 - this.rng.next() * 30);
+      this.puffs.add(s, { vx: (this.rng.next() - 0.5) * 30, vy: -14 - this.rng.next() * 14, life: 1800 + this.rng.next() * 700, s0: 2.2, s1: 5.2, a0: 0.8 });
     }
   }
 
@@ -346,6 +460,8 @@ export class AtlasBaseView implements BaseView {
     if (this.destroyed) return;
     this.destroyed = true;
     this.puffs.clear();
+    for (const c of this.chunks) c.s.destroy();
+    this.chunks = [];
     this.root.destroy({ children: true });
   }
 

@@ -191,16 +191,16 @@ def build(rig, M):
     chipped_cracks(rig, "crack3", [[(KX, KY - KD - 2, 230), (KX + 6, KY - KD - 2, 220), (KX, KY - KD - 2, 208)],
                                    [(KX + 30, KY - KD - 2, 150), (KX + 36, KY - KD - 2, 140), (KX + 30, KY - KD - 2, 130)],
                                    [(TX - 4, TY - TR - 1, 110), (TX + 1, TY - TR - 1, 100)]], CRACK, STONE_LT)
-    rubble(rig, "rubble1", [(-168, -40), (-140, -50)], STONE_DK, seed=3)
+    rubble(rig, "rubble1", [(-156, -40), (-136, -50)], STONE_DK, seed=3)
     rubble(rig, "rubble2", [(-96, -52), (18, -46), (-66, -58)], STONE_DK, seed=13)
-    rubble(rig, "rubble3", [(-160, -60), (-124, -64), (-44, -62), (22, -56)], STONE_DK, seed=23, size=1.2)
+    rubble(rig, "rubble3", [(-154, -60), (-124, -64), (-44, -62), (22, -56)], STONE_DK, seed=23, size=1.2)
 
     flag(rig, "root", "flagA", (TX - 2, TY + 6, TH + 88), length=30, height=16, pole=TH + 56)
     flag(rig, "root", "flagB", (cx, cy, KH + 104), length=26, height=14, pole=KH + 78)
 
     # Treasury
     g = Geo()
-    for k, (x, y) in enumerate(((-170, -52), (-158, -58), (-164, -46))):
+    for k, (x, y) in enumerate(((-156, -52), (-146, -58), (-152, -46))):
         g.blob((x, y, 9), (7, 6, 9), p=2.4, taper=(1.0, 0.7))
         g.blob((x, y, 18.5), (2.8, 2.6, 1.6), p=2.0)
     rig.part("treasury1", g, SACK)

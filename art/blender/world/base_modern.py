@@ -61,10 +61,10 @@ def build(rig, M):
 
     # the glacis: a long sloped concrete front, and the casemate above it
     g = Geo()
-    box(g, (-92, 18, 26), (92, 58, 26), p=6, taper=(1.0, 0.72))
+    box(g, (-84, 18, 26), (84, 58, 26), p=6, taper=(1.0, 0.72))
     rig.part("body", g, CONCRETE)
     g = Geo()
-    box(g, (-92, 18, 50), (68, 42, 3), p=5)
+    box(g, (-86, 18, 50), (62, 42, 3), p=5)
     rig.part("body", g, CONCRETE_LT)
     g = Geo()
     box(g, (-104, 24, 80), (60, 38, 28), p=5.2, taper=(1.0, 0.9))
@@ -74,7 +74,7 @@ def build(rig, M):
     rig.part("body", g, CONCRETE_LT)
     # form-work seams on the glacis and casemate
     g = Geo()
-    for x in range(-170, -20, 26):
+    for x in range(-156, -20, 26):
         box(g, (x, -26, 28), (0.7, 1.0, 20), p=4, cuts=2, rot=(-30, 0, 0))
     for x in range(-156, -50, 24):
         box(g, (x, -14.5, 80), (0.7, 0.8, 24), p=4, cuts=2)
@@ -97,7 +97,7 @@ def build(rig, M):
     rig.part("body", g, OLIVE, outline=0.3)
 
     # team stripe band on the glacis and the roundel on the tower
-    g = Geo().slab([(-176, 40), (-38, 40), (-36, 33), (-178, 33)], -33.2, 1.2)
+    g = Geo().slab([(-160, 40), (-38, 40), (-36, 33), (-162, 33)], -33.2, 1.2)
     rig.part("body", g, team=True)
     ox, oy, oh, oH = OT
     g = Geo()
@@ -173,7 +173,7 @@ def build(rig, M):
     g = Geo()
     sandbags(g, 26, -58, 0, 30, rows=3)
     rig.part("body", g, KHAKI, finish="hair")
-    for x, z in ((-176, 64), (-60, 64)):
+    for x, z in ((-150, 64), (-60, 64)):
         g = Geo()
         box(g, (x, -26, z), (4.5, 3.5, 3), p=4, cuts=2)
         rig.part("body", g, GUNMETAL, finish="metal", outline=0.5)
@@ -194,23 +194,23 @@ def build(rig, M):
     chipped_cracks(rig, "crack3", [[(cx + 10, cy - ch - 1, 240), (cx + 15, cy - ch - 1, 230), (cx + 10, cy - ch - 1, 218)],
                                    [(-130, -16, 96), (-124, -16, 86), (-130, -16, 74)],
                                    [(ox - 6, oy - oh - 3, 170), (ox - 1, oy - oh - 3, 160)]], CRACK, CONCRETE_LT)
-    rubble(rig, "rubble1", [(-180, -56), (-150, -62)], CONCRETE_DK, seed=3)
+    rubble(rig, "rubble1", [(-160, -56), (-138, -62)], CONCRETE_DK, seed=3)
     rubble(rig, "rubble2", [(-106, -62), (-74, -66)], CONCRETE_DK, seed=13)
-    rubble(rig, "rubble3", [(-166, -68), (-130, -70), (-46, -70)], CONCRETE_DK, seed=23, size=1.2)
+    rubble(rig, "rubble3", [(-150, -68), (-120, -70), (-46, -70)], CONCRETE_DK, seed=23, size=1.2)
 
     flag(rig, "root", "flagA", (cx - 20, cy + 20, 318), length=30, height=17, pole=cH, pole_color=STEEL, finial=STEEL)
-    flag(rig, "root", "flagB", (-176, 30, 150), length=24, height=14, pole=60, pole_color=STEEL, finial=STEEL)
+    flag(rig, "root", "flagB", (-150, 30, 150), length=24, height=14, pole=60, pole_color=STEEL, finial=STEEL)
 
     # Treasury
     g = Geo()
-    box(g, (-176, -64, 8), (9, 8, 8), p=6)
-    box(g, (-172, -62, 22), (7, 6, 6), p=6)
+    box(g, (-158, -64, 8), (9, 8, 8), p=6)
+    box(g, (-154, -62, 22), (7, 6, 6), p=6)
     rig.part("treasury1", g, OLIVE)
     g = Geo()
-    for x, z in ((-176, 8), (-172, 22)):
+    for x, z in ((-158, 8), (-154, 22)):
         box(g, (x, -72.5, z), (5, 0.6, 1.4), p=4, cuts=2)
     rig.part("treasury1", g, KHAKI, outline=0.3)
-    for x in (-152, -140):
+    for x in (-136, -124):
         g = Geo()
         cyl(g, (x, -66, 0), (x, -66, 20), 6.4, bevel=0.8)
         rig.part("treasury2", g, DRUM, finish="gloss")
@@ -219,14 +219,14 @@ def build(rig, M):
             cyl(g, (x, -66, z - 0.8), (x, -66, z + 0.8), 6.8, bevel=0.2)
         rig.part("treasury2", g, GUNMETAL, finish="metal", outline=0.3)
     g = Geo()
-    box(g, (-116, -68, 6), (11, 7, 6), p=6)
-    box(g, (-116, -68, 18), (9, 6, 5.5), p=6)
+    box(g, (-106, -68, 6), (11, 7, 6), p=6)
+    box(g, (-106, -68, 18), (9, 6, 5.5), p=6)
     rig.part("treasury3", g, OLIVE_LT)
     g = Geo()
-    box(g, (-116, -68, 29), (8, 5, 4), p=6)
+    box(g, (-106, -68, 29), (8, 5, 4), p=6)
     rig.part("treasury3", g, GUNMETAL, finish="metal")
     g = Geo()
-    box(g, (-116, -73.2, 29), (8.2, 0.6, 1.2), p=4, cuts=2)
+    box(g, (-106, -73.2, 29), (8.2, 0.6, 1.2), p=4, cuts=2)
     rig.part("treasury3", g, "#D4A437", finish="metal", outline=0.3)
 
 
@@ -245,7 +245,7 @@ MODULE = base_module(
     "modern", "Bunker", height=320, width=190, canvas=(470, 700), feet=(360, 650),
     build=build, crumble=crumble, mount_depth=DEPTHS,
     flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
-    lights=[((-176, -32, 64), 3, 18), ((-60, -32, 64), 3, 18), ((MAST[0], MAST[1], 312), 2, 14)],
+    lights=[((-150, -32, 64), 3, 18), ((-60, -32, 64), 3, 18), ((MAST[0], MAST[1], 312), 2, 14)],
     smoke=[((CB[0], 10, 256), 2), ((-60, -30, 60), 3), ((-130, -10, 100), 3)],
     horn=(-100, 350), yaw=BASE_YAW,
 )

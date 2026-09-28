@@ -48,7 +48,7 @@ def build(rig, M):
 
     # plinth
     g = Geo()
-    cyl(g, (SP[0], SP[1], 0), (SP[0], SP[1], 16), 76, 70, bevel=2.0, segs=36, squash=(1.0, 0.72))
+    cyl(g, (SP[0], SP[1], 0), (SP[0], SP[1], 16), 72, 66, bevel=2.0, segs=36, squash=(1.0, 0.72))
     rig.part("body", g, CHARCOAL)
     g = Geo()
     cyl(g, (SP[0], SP[1], 15), (SP[0], SP[1], 18), 68, bevel=0.6, segs=36, squash=(1.0, 0.72))
@@ -132,20 +132,20 @@ def build(rig, M):
                                    [(SP[0] + 16, SP[1] - 32, 110), (SP[0] + 21, SP[1] - 32, 100)]], CRACK, WHITE_LT, w=1.8)
     chipped_cracks(rig, "crack3", [[(SP[0] - 6, SP[1] - 22, 214), (SP[0] - 1, SP[1] - 22, 204), (SP[0] - 6, SP[1] - 22, 192)],
                                    [(SP[0] + 22, SP[1] - 38, 44), (SP[0] + 27, SP[1] - 38, 34)]], CRACK, WHITE_LT, w=1.8)
-    rubble(rig, "rubble1", [(-176, -40), (-150, -48)], CHAR_LT, seed=3)
+    rubble(rig, "rubble1", [(-158, -40), (-136, -48)], CHAR_LT, seed=3)
     rubble(rig, "rubble2", [(-96, -54), (-64, -58)], WHITE, seed=13)
-    rubble(rig, "rubble3", [(-168, -58), (-126, -60), (18, -56)], CHAR_LT, seed=23, size=1.2)
+    rubble(rig, "rubble3", [(-152, -58), (-120, -60), (18, -56)], CHAR_LT, seed=23, size=1.2)
 
     flag(rig, "root", "flagA", (SP[0] - 24, SP[1] + 6, 290), length=30, height=16, pole=210, pole_color=TRIM, finial=MINT)
-    flag(rig, "root", "flagB", (-176, 30, 140), length=24, height=14, pole=14, pole_color=TRIM, finial=MINT)
+    flag(rig, "root", "flagB", (-150, 34, 140), length=24, height=14, pole=14, pole_color=TRIM, finial=MINT)
 
     # Treasury
     g = Geo()
-    for k, x in enumerate((-176, -166, -156)):
+    for k, x in enumerate((-160, -150, -140)):
         cyl(g, (x, -58, 0), (x, -58, 18 - k * 2), 4.2, bevel=0.8)
     rig.part("treasury1", g, CHAR_LT)
     g = Geo()
-    for k, x in enumerate((-176, -166, -156)):
+    for k, x in enumerate((-160, -150, -140)):
         cyl(g, (x, -62.4, 4), (x, -62.4, 14 - k * 2), 1.4, bevel=0.3)
     rig.part("treasury1", g, glow=MINT, outline=0)
     g = Geo()

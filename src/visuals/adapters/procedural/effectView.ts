@@ -41,6 +41,11 @@ interface LiveSprite {
   delay: number;
   life: number;
   k: number;
+  /** Per-play jitter (SpriteSpec.jitter): offset, scale and rotation (radians). */
+  jx: number;
+  jy: number;
+  js: number;
+  jr: number;
 }
 
 interface Particle {
@@ -161,6 +166,11 @@ export class ProceduralEffectView implements EffectView {
       this.dur = 0;
       return;
     }
+    if (r.maxInstances !== undefined && (this.o['i'] ?? 0) >= r.maxInstances) {
+      // past the recipe's instance cap: this copy of a multi-count emit draws nothing and finishes
+      this.dur = 0;
+      return;
+    }
     this.dur = r.loops && this.o['durationMs'] !== undefined ? this.o['durationMs'] : r.durationMs;
     for (const spec of r.sprites ?? []) this.addSprite(spec);
     for (const spec of r.particles ?? []) this.emitters.push({ spec, acc: 0, burstAt: spec.delay ? this.range(spec.delay) : 0, burstDone: !spec.count });
@@ -219,7 +229,18 @@ export class ProceduralEffectView implements EffectView {
     if (spec.blendAdd) s.blendMode = 'add';
     s.visible = false;
     this.layer.addChild(s);
-    this.sprites.push({ spec, s, delay: spec.delay ?? 0, life: spec.life > 0 ? spec.life : this.dur, k: this.size(spec.sizeWith) });
+    const j = spec.jitter;
+    this.sprites.push({
+      spec,
+      s,
+      delay: spec.delay ?? 0,
+      life: spec.life > 0 ? spec.life : this.dur,
+      k: this.size(spec.sizeWith),
+      jx: j?.x ? (this.rng.next() * 2 - 1) * j.x : 0,
+      jy: j?.y ? (this.rng.next() * 2 - 1) * j.y : 0,
+      js: j?.s ? this.range(j.s) : 1,
+      jr: j?.r ? (((this.rng.next() * 2 - 1) * j.r) * Math.PI) / 180 : 0,
+    });
   }
 
   update(dtMs: number): void {
@@ -274,9 +295,9 @@ export class ProceduralEffectView implements EffectView {
       ls.s.alpha = key.a;
       return;
     }
-    ls.s.position.set(x * this.dir, y);
-    ls.s.scale.set(sx * this.dir, sy);
-    ls.s.rotation = r * this.dir;
+    ls.s.position.set((x + ls.jx) * this.dir, y + ls.jy);
+    ls.s.scale.set(sx * ls.js * this.dir, sy * ls.js);
+    ls.s.rotation = (r + ls.jr) * this.dir;
     ls.s.alpha = key.a;
   }
 

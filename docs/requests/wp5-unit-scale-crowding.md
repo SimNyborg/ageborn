@@ -22,3 +22,11 @@ screens) and 1.23 px/lu (`<slug>.json`), with longer hit (5 frames, ~310 ms) and
    unit's `muzzle` anchor on the fire frame, and a small per-age impact puff where shots land (A12).
 5. **Die clip length**: the death hand-off (`die.fx`, `hideUnitAtMs`) is read from the sheet, so no
    change is needed if the view keeps the unit alive until the view reports its death done.
+6. **Phones at DPR 3 are soft everywhere** (the review's main blur complaint): `BattleView.resolution`
+   and `pixiHost` cap the render resolution at 2, so on a DPR 3 phone the browser upscales the whole
+   canvas 1.5x and units, bases and backdrop all blur, whatever the sheet density. Measured
+   2026-09-28 at 844x390 DPR 3: the HD sheets load, but the lane is still soft. Suggest allowing
+   `min(dpr, 3)` on High quality when the canvas is small (for example CSS width x height below
+   1,000,000 px, so a 844x390 phone renders 2532x1170, about the pixel count of a 1280x720 DPR 2
+   desktop), keeping 2 elsewhere and 1 in Lite (B16). The art provider should then get the same
+   `dpr` so `wantsHdSheets` sees it.

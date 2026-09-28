@@ -29,8 +29,9 @@ export interface LayerLook {
 }
 
 export const LAYER_LOOK: Record<'far' | 'mid', LayerLook> = {
-  far: { rimLu: 3.2, rim: 0.6, haze: 0.42, hazeReach: 0.4, shade: 0.12 },
-  mid: { rimLu: 2.4, rim: 0.65, haze: 0.28, hazeReach: 0.3, shade: 0.16 },
+  // haze at the foot cut by about 30% (art review: it washed out the lower half of every age)
+  far: { rimLu: 3.2, rim: 0.6, haze: 0.29, hazeReach: 0.4, shade: 0.12 },
+  mid: { rimLu: 2.4, rim: 0.65, haze: 0.2, hazeReach: 0.3, shade: 0.16 },
 };
 
 function scratch(w: number, h: number): { c: HTMLCanvasElement; x: CanvasRenderingContext2D } | null {

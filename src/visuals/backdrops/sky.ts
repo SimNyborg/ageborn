@@ -64,7 +64,7 @@ export function paintSky(ctx: Ctx2D, age: AgeId, f: LayerFrame): void {
     const a = Math.PI * 0.5 + (i - 3) * 0.2 + (i % 2) * 0.05;
     const len = 900;
     const w = 0.035 + (i % 3) * 0.015;
-    ctx.fillStyle = toCss(sun.color, age === 'future' ? 0.025 : 0.045);
+    ctx.fillStyle = toCss(sun.color, age === 'future' ? 0.012 : 0.022); // halved (art review: rays washed out the sky)
     ctx.beginPath();
     ctx.moveTo(sun.x, sun.y);
     ctx.lineTo(sun.x + Math.cos(a - w) * len, sun.y + Math.sin(a - w) * len);

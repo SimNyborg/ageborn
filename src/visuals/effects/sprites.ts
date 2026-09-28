@@ -259,3 +259,25 @@ part('proj.gravity_orb', [
   { d: circle(0, 0, 6.4), zone: 'void2', line: 1.6 },
   { d: join(arcBand(0, 0, 3, 4.4, 0, 140), arcBand(0, 0, 3, 4.4, 180, 320)), zone: 'lilac', line: 0, shade: false, light: false },
 ]);
+
+// ---------------------------------------------------------------------------------------------
+// Explosion and rubble parts (art review: lobed fireballs, rounded shaded chunks)
+
+/**
+ * One fireball lobe, cel-shaded like the 3D art: a darker warm-brown rim, a pale warm body offset up
+ * and left toward the light, and a white-hot core. The rim stays under 40% saturation (A11 colour
+ * rule); the lobes overlap in random sizes to build an irregular fireball.
+ */
+part('fx.p.fireLobe', [
+  { d: blob([-10, 1, -8, -6, -2, -10, 5, -9, 10, -3, 9, 5, 3, 9, -5, 9], 0.9), zone: '#9C7A62', line: 0, shade: false, light: false },
+  { d: blob([-8.4, -0.4, -6.6, -6.2, -1.6, -8.8, 4.2, -7.6, 7.6, -2.6, 6.4, 3.8, 1.2, 6.4, -5.2, 5.4], 0.9), zone: '#F2D7B0', line: 0, shade: false, light: false },
+  { d: ellipse(-2.2, -2.6, 4.6, 3.8), zone: '#FFF8EC', line: 0, shade: false, light: false },
+]);
+/** The same lobe cooling to smoke: grey-brown rim, dusty body, no hot core. */
+part('fx.p.smokeLobe', [
+  { d: blob([-10, 1, -8, -6, -2, -10, 5, -9, 10, -3, 9, 5, 3, 9, -5, 9], 0.9), zone: '#7E766C', line: 0, shade: false, light: false },
+  { d: blob([-8.4, -0.4, -6.6, -6.2, -1.6, -8.8, 4.2, -7.6, 7.6, -2.6, 6.4, 3.8, 1.2, 6.4, -5.2, 5.4], 0.9), zone: '#A9A196', line: 0, shade: false, light: false },
+]);
+/** Rounded rubble chunks (tinted per use): a lit top, a shaded underside and an outline. */
+part('fx.p.rock', [{ d: blob([-5, 1, -4, -3, 0, -4.6, 4, -3.4, 5.4, 0.6, 3, 3.6, -2, 3.8], 0.85), zone: 'white', line: 1.1 }]);
+part('fx.p.rock2', [{ d: blob([-4, 0, -2.6, -3.4, 2, -3.8, 4.6, -1, 3.6, 2.8, -1.4, 3.2], 0.85), zone: 'white', line: 1.1 }]);

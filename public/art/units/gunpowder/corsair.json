@@ -2,1250 +2,1874 @@
  "frames": {
   "corsair_idle_00": {
    "frame": {
-    "x": 533,
-    "y": 230,
-    "w": 81,
-    "h": 84
+    "x": 91,
+    "y": 316,
+    "w": 82,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 81,
-    "w": 81,
-    "h": 84
+    "x": 88,
+    "y": 96,
+    "w": 82,
+    "h": 83
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_00_team": {
    "frame": {
-    "x": 178,
-    "y": 479,
-    "w": 55,
+    "x": 229,
+    "y": 555,
+    "w": 53,
     "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 54,
-    "y": 76,
-    "w": 55,
+    "x": 82,
+    "y": 91,
+    "w": 53,
     "h": 64
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_01": {
    "frame": {
-    "x": 450,
-    "y": 230,
-    "w": 79,
-    "h": 85
+    "x": 177,
+    "y": 316,
+    "w": 82,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 79,
-    "w": 79,
-    "h": 85
+    "x": 87,
+    "y": 95,
+    "w": 82,
+    "h": 83
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_01_team": {
    "frame": {
-    "x": 581,
-    "y": 406,
-    "w": 54,
-    "h": 66
+    "x": 695,
+    "y": 484,
+    "w": 52,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
-    "y": 73,
-    "w": 54,
-    "h": 66
+    "x": 82,
+    "y": 89,
+    "w": 52,
+    "h": 65
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_02": {
    "frame": {
-    "x": 166,
-    "y": 136,
-    "w": 76,
-    "h": 89
+    "x": 97,
+    "y": 226,
+    "w": 80,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 74,
-    "w": 76,
-    "h": 89
+    "x": 87,
+    "y": 92,
+    "w": 80,
+    "h": 86
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_02_team": {
    "frame": {
-    "x": 175,
-    "y": 406,
-    "w": 53,
-    "h": 68
+    "x": 297,
+    "y": 484,
+    "w": 52,
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
-    "y": 69,
-    "w": 53,
-    "h": 68
+    "x": 82,
+    "y": 87,
+    "w": 52,
+    "h": 66
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_03": {
    "frame": {
-    "x": 87,
-    "y": 136,
-    "w": 75,
-    "h": 90
+    "x": 250,
+    "y": 133,
+    "w": 78,
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 72,
-    "w": 75,
-    "h": 90
+    "x": 87,
+    "y": 89,
+    "w": 78,
+    "h": 88
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_idle_03_team": {
    "frame": {
-    "x": 540,
-    "y": 320,
+    "x": 664,
+    "y": 404,
     "w": 52,
-    "h": 70
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 54,
-    "y": 66,
+    "x": 82,
+    "y": 84,
     "w": 52,
-    "h": 70
+    "h": 67
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_04": {
+   "frame": {
+    "x": 89,
+    "y": 133,
+    "w": 78,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 87,
+    "w": 78,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_04_team": {
+   "frame": {
+    "x": 497,
+    "y": 404,
+    "w": 52,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 82,
+    "w": 52,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_05": {
+   "frame": {
+    "x": 332,
+    "y": 133,
+    "w": 78,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 89,
+    "w": 78,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 484,
+    "w": 52,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 84,
+    "w": 52,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_06": {
+   "frame": {
+    "x": 181,
+    "y": 226,
+    "w": 80,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 92,
+    "w": 80,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_06_team": {
+   "frame": {
+    "x": 353,
+    "y": 484,
+    "w": 52,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 87,
+    "w": 52,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_07": {
+   "frame": {
+    "x": 263,
+    "y": 316,
+    "w": 82,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 95,
+    "w": 82,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_idle_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 555,
+    "w": 52,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 89,
+    "w": 52,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_00": {
    "frame": {
-    "x": 2,
-    "y": 320,
-    "w": 89,
-    "h": 82
+    "x": 435,
+    "y": 316,
+    "w": 91,
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 82,
-    "w": 89,
-    "h": 82
+    "x": 88,
+    "y": 97,
+    "w": 91,
+    "h": 81
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_00_team": {
    "frame": {
-    "x": 2,
-    "y": 479,
-    "w": 55,
+    "x": 521,
+    "y": 484,
+    "w": 54,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 77,
-    "w": 55,
+    "x": 87,
+    "y": 92,
+    "w": 54,
     "h": 65
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_01": {
    "frame": {
-    "x": 267,
-    "y": 230,
-    "w": 92,
-    "h": 85
+    "x": 533,
+    "y": 226,
+    "w": 93,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 78,
-    "w": 92,
-    "h": 85
+    "x": 89,
+    "y": 93,
+    "w": 93,
+    "h": 84
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_01_team": {
    "frame": {
-    "x": 467,
-    "y": 406,
-    "w": 53,
-    "h": 67
+    "x": 409,
+    "y": 484,
+    "w": 52,
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 73,
-    "w": 53,
-    "h": 67
+    "x": 89,
+    "y": 88,
+    "w": 52,
+    "h": 66
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_02": {
    "frame": {
-    "x": 509,
-    "y": 136,
-    "w": 90,
-    "h": 87
+    "x": 2,
+    "y": 226,
+    "w": 91,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 75,
-    "w": 90,
-    "h": 87
+    "x": 89,
+    "y": 90,
+    "w": 91,
+    "h": 86
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_02_team": {
    "frame": {
-    "x": 59,
-    "y": 406,
+    "x": 606,
+    "y": 404,
     "w": 54,
-    "h": 68
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
-    "y": 69,
+    "x": 89,
+    "y": 85,
     "w": 54,
-    "h": 68
+    "h": 67
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_03": {
    "frame": {
-    "x": 246,
-    "y": 136,
-    "w": 88,
-    "h": 88
+    "x": 487,
+    "y": 133,
+    "w": 89,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 78,
-    "w": 88,
-    "h": 88
+    "x": 88,
+    "y": 93,
+    "w": 89,
+    "h": 87
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_03_team": {
    "frame": {
-    "x": 232,
-    "y": 406,
+    "x": 238,
+    "y": 484,
     "w": 55,
-    "h": 67
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 73,
+    "x": 88,
+    "y": 88,
     "w": 55,
-    "h": 67
+    "h": 66
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_04": {
    "frame": {
-    "x": 96,
-    "y": 230,
-    "w": 87,
-    "h": 86
+    "x": 441,
+    "y": 226,
+    "w": 88,
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 82,
-    "w": 87,
-    "h": 86
+    "x": 88,
+    "y": 97,
+    "w": 88,
+    "h": 85
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_04_team": {
    "frame": {
-    "x": 61,
-    "y": 479,
-    "w": 55,
+    "x": 579,
+    "y": 484,
+    "w": 54,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 77,
-    "w": 55,
+    "x": 87,
+    "y": 92,
+    "w": 54,
     "h": 65
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_05": {
    "frame": {
-    "x": 338,
-    "y": 136,
-    "w": 83,
-    "h": 88
+    "x": 580,
+    "y": 133,
+    "w": 86,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 79,
-    "w": 83,
-    "h": 88
+    "x": 89,
+    "y": 94,
+    "w": 86,
+    "h": 87
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_05_team": {
    "frame": {
-    "x": 524,
-    "y": 406,
-    "w": 53,
-    "h": 67
+    "x": 58,
+    "y": 555,
+    "w": 51,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 73,
-    "w": 53,
-    "h": 67
+    "x": 89,
+    "y": 89,
+    "w": 51,
+    "h": 65
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_06": {
    "frame": {
     "x": 2,
-    "y": 136,
-    "w": 81,
-    "h": 90
+    "y": 133,
+    "w": 83,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 75,
-    "w": 81,
-    "h": 90
+    "x": 89,
+    "y": 90,
+    "w": 83,
+    "h": 89
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_06_team": {
    "frame": {
-    "x": 2,
-    "y": 406,
-    "w": 53,
-    "h": 69
+    "x": 58,
+    "y": 484,
+    "w": 52,
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
-    "y": 69,
-    "w": 53,
-    "h": 69
+    "x": 89,
+    "y": 85,
+    "w": 52,
+    "h": 67
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_07": {
    "frame": {
-    "x": 363,
-    "y": 230,
-    "w": 83,
-    "h": 85
+    "x": 2,
+    "y": 316,
+    "w": 85,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 79,
-    "w": 83,
-    "h": 85
+    "x": 88,
+    "y": 94,
+    "w": 85,
+    "h": 84
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_walk_07_team": {
    "frame": {
-    "x": 291,
-    "y": 406,
-    "w": 55,
-    "h": 67
+    "x": 637,
+    "y": 484,
+    "w": 54,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 73,
-    "w": 55,
-    "h": 67
+    "x": 88,
+    "y": 89,
+    "w": 54,
+    "h": 65
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_00": {
    "frame": {
-    "x": 106,
+    "x": 108,
     "y": 2,
-    "w": 67,
-    "h": 107
+    "w": 65,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 51,
-    "y": 57,
-    "w": 67,
-    "h": 107
+    "x": 79,
+    "y": 73,
+    "w": 65,
+    "h": 105
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_00_team": {
    "frame": {
-    "x": 120,
-    "y": 479,
-    "w": 54,
-    "h": 65
+    "x": 286,
+    "y": 555,
+    "w": 53,
+    "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 46,
-    "y": 74,
-    "w": 54,
-    "h": 65
+    "x": 74,
+    "y": 90,
+    "w": 53,
+    "h": 64
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_01": {
    "frame": {
-    "x": 359,
+    "x": 596,
     "y": 2,
-    "w": 90,
-    "h": 97
+    "w": 85,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 25,
-    "y": 68,
-    "w": 90,
-    "h": 97
+    "x": 55,
+    "y": 85,
+    "w": 85,
+    "h": 94
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_01_team": {
    "frame": {
-    "x": 296,
-    "y": 479,
-    "w": 58,
-    "h": 63
+    "x": 467,
+    "y": 555,
+    "w": 57,
+    "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 39,
-    "y": 78,
-    "w": 58,
-    "h": 63
+    "x": 67,
+    "y": 95,
+    "w": 57,
+    "h": 61
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_02": {
    "frame": {
-    "x": 265,
+    "x": 414,
     "y": 2,
-    "w": 90,
-    "h": 98
+    "w": 88,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 15,
-    "y": 65,
-    "w": 90,
-    "h": 98
+    "x": 43,
+    "y": 83,
+    "w": 88,
+    "h": 94
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_02_team": {
    "frame": {
-    "x": 427,
-    "y": 320,
-    "w": 55,
-    "h": 72
+    "x": 258,
+    "y": 404,
+    "w": 54,
+    "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 38,
-    "y": 64,
-    "w": 55,
-    "h": 72
+    "x": 66,
+    "y": 80,
+    "w": 54,
+    "h": 71
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_03": {
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 100,
-    "h": 130
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 38,
-    "y": 34,
-    "w": 100,
-    "h": 130
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_attack_03_team": {
-   "frame": {
-    "x": 486,
-    "y": 320,
-    "w": 50,
-    "h": 71
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 60,
-    "y": 67,
-    "w": 50,
-    "h": 71
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_attack_04": {
-   "frame": {
-    "x": 95,
-    "y": 320,
-    "w": 91,
-    "h": 79
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 65,
-    "y": 95,
-    "w": 91,
-    "h": 79
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_attack_04_team": {
-   "frame": {
-    "x": 490,
-    "y": 479,
-    "w": 68,
-    "h": 57
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 73,
-    "y": 90,
-    "w": 68,
-    "h": 57
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_attack_05": {
-   "frame": {
-    "x": 190,
-    "y": 320,
-    "w": 92,
-    "h": 78
+    "w": 102,
+    "h": 127
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 66,
-    "y": 88,
-    "w": 92,
-    "h": 78
+    "y": 50,
+    "w": 102,
+    "h": 127
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_03_team": {
+   "frame": {
+    "x": 553,
+    "y": 404,
+    "w": 49,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 83,
+    "w": 49,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_04": {
+   "frame": {
+    "x": 530,
+    "y": 316,
+    "w": 92,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 110,
+    "w": 92,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_04_team": {
+   "frame": {
+    "x": 270,
+    "y": 624,
+    "w": 67,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 105,
+    "w": 67,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 404,
+    "w": 94,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 103,
+    "w": 94,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_05_team": {
    "frame": {
-    "x": 358,
-    "y": 479,
-    "w": 62,
-    "h": 61
+    "x": 528,
+    "y": 555,
+    "w": 61,
+    "h": 60
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 83,
-    "w": 62,
-    "h": 61
+    "x": 100,
+    "y": 98,
+    "w": 61,
+    "h": 60
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
   "corsair_attack_06": {
    "frame": {
-    "x": 2,
-    "y": 230,
-    "w": 90,
+    "x": 345,
+    "y": 226,
+    "w": 92,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 93,
+    "w": 92,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_06_team": {
+   "frame": {
+    "x": 465,
+    "y": 484,
+    "w": 52,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 88,
+    "w": 52,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_07": {
+   "frame": {
+    "x": 670,
+    "y": 133,
+    "w": 81,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 91,
+    "w": 81,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_attack_07_team": {
+   "frame": {
+    "x": 114,
+    "y": 484,
+    "w": 52,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 86,
+    "w": 52,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_00": {
+   "frame": {
+    "x": 265,
+    "y": 226,
+    "w": 76,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 78,
-    "w": 90,
+    "x": 75,
+    "y": 92,
+    "w": 76,
     "h": 86
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_attack_06_team": {
+  "corsair_hit_00_team": {
    "frame": {
-    "x": 409,
-    "y": 406,
+    "x": 2,
+    "y": 624,
+    "w": 57,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 96,
+    "w": 57,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_01": {
+   "frame": {
+    "x": 171,
+    "y": 133,
+    "w": 75,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 89,
+    "w": 75,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_01_team": {
+   "frame": {
+    "x": 134,
+    "y": 624,
+    "w": 64,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 99,
+    "w": 64,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_02": {
+   "frame": {
+    "x": 342,
+    "y": 2,
+    "w": 68,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 82,
+    "w": 68,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_02_team": {
+   "frame": {
+    "x": 343,
+    "y": 555,
+    "w": 57,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 92,
+    "w": 57,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_03": {
+   "frame": {
+    "x": 685,
+    "y": 2,
+    "w": 76,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 88,
+    "w": 76,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_03_team": {
+   "frame": {
+    "x": 113,
+    "y": 555,
     "w": 54,
-    "h": 67
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 90,
+    "w": 54,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_04": {
+   "frame": {
+    "x": 349,
+    "y": 316,
+    "w": 82,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 95,
+    "w": 82,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_hit_04_team": {
+   "frame": {
+    "x": 171,
+    "y": 555,
+    "w": 54,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 90,
+    "w": 54,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_00": {
+   "frame": {
+    "x": 414,
+    "y": 133,
+    "w": 69,
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 63,
-    "y": 73,
-    "w": 54,
-    "h": 67
+    "y": 88,
+    "w": 69,
+    "h": 88
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_attack_07": {
+  "corsair_die_00_team": {
    "frame": {
-    "x": 425,
-    "y": 136,
-    "w": 80,
-    "h": 88
+    "x": 404,
+    "y": 555,
+    "w": 59,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 96,
+    "w": 59,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_01": {
+   "frame": {
+    "x": 177,
+    "y": 2,
+    "w": 77,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 64,
+    "w": 77,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_01_team": {
+   "frame": {
+    "x": 316,
+    "y": 404,
+    "w": 53,
+    "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 57,
-    "y": 76,
-    "w": 80,
-    "h": 88
+    "y": 75,
+    "w": 53,
+    "h": 71
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_attack_07_team": {
+  "corsair_die_02": {
    "frame": {
-    "x": 117,
-    "y": 406,
-    "w": 54,
-    "h": 68
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 53,
-    "y": 70,
-    "w": 54,
-    "h": 68
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_hit_00": {
-   "frame": {
-    "x": 453,
+    "x": 506,
     "y": 2,
-    "w": 73,
-    "h": 96
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 40,
-    "y": 68,
-    "w": 73,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_hit_00_team": {
-   "frame": {
-    "x": 424,
-    "y": 479,
-    "w": 62,
-    "h": 61
+    "w": 86,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 34,
-    "y": 79,
-    "w": 62,
-    "h": 61
+    "y": 70,
+    "w": 86,
+    "h": 94
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_hit_01": {
+  "corsair_die_02_team": {
    "frame": {
-    "x": 530,
-    "y": 2,
-    "w": 70,
-    "h": 93
+    "x": 436,
+    "y": 404,
+    "w": 57,
+    "h": 69
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 48,
-    "y": 71,
-    "w": 70,
-    "h": 93
+    "y": 77,
+    "w": 57,
+    "h": 69
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_hit_01_team": {
+  "corsair_die_03": {
    "frame": {
-    "x": 237,
-    "y": 479,
-    "w": 55,
-    "h": 64
+    "x": 630,
+    "y": 226,
+    "w": 91,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 43,
-    "y": 75,
-    "w": 55,
-    "h": 64
+    "x": 27,
+    "y": 84,
+    "w": 91,
+    "h": 84
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_hit_02": {
+  "corsair_die_03_team": {
    "frame": {
-    "x": 187,
-    "y": 230,
-    "w": 76,
-    "h": 86
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 55,
-    "y": 78,
-    "w": 76,
-    "h": 86
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_hit_02_team": {
-   "frame": {
-    "x": 350,
-    "y": 406,
-    "w": 55,
-    "h": 67
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 49,
-    "y": 72,
-    "w": 55,
-    "h": 67
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_die_00": {
-   "frame": {
-    "x": 177,
-    "y": 2,
-    "w": 84,
-    "h": 103
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 10,
-    "y": 50,
-    "w": 84,
-    "h": 103
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_die_00_team": {
-   "frame": {
-    "x": 364,
-    "y": 320,
-    "w": 59,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 20,
-    "y": 61,
-    "w": 59,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_die_01": {
-   "frame": {
-    "x": 286,
-    "y": 320,
-    "w": 74,
-    "h": 76
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 28,
-    "y": 86,
-    "w": 74,
-    "h": 76
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_die_01_team": {
-   "frame": {
-    "x": 562,
-    "y": 479,
-    "w": 67,
-    "h": 54
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 23,
-    "y": 90,
-    "w": 67,
-    "h": 54
-   },
-   "sourceSize": {
-    "w": 198,
-    "h": 174
-   },
-   "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
-   }
-  },
-  "corsair_die_02": {
-   "frame": {
-    "x": 2,
-    "y": 548,
+    "x": 170,
+    "y": 484,
     "w": 64,
-    "h": 50
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 44,
-    "y": 112,
+    "x": 37,
+    "y": 87,
     "w": 64,
-    "h": 50
+    "h": 66
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
    }
   },
-  "corsair_die_02_team": {
+  "corsair_die_04": {
    "frame": {
-    "x": 70,
-    "y": 548,
-    "w": 58,
-    "h": 35
+    "x": 100,
+    "y": 404,
+    "w": 82,
+    "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 38,
-    "y": 114,
-    "w": 58,
-    "h": 35
+    "y": 108,
+    "w": 82,
+    "h": 71
    },
    "sourceSize": {
-    "w": 198,
-    "h": 174
+    "w": 226,
+    "h": 195
    },
    "anchor": {
-    "x": 0.42424,
-    "y": 0.88506
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_04_team": {
+   "frame": {
+    "x": 593,
+    "y": 555,
+    "w": 65,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 108,
+    "w": 65,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_05": {
+   "frame": {
+    "x": 258,
+    "y": 2,
+    "w": 80,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 36,
+    "y": 75,
+    "w": 80,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_05_team": {
+   "frame": {
+    "x": 373,
+    "y": 404,
+    "w": 59,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 83,
+    "w": 59,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_06": {
+   "frame": {
+    "x": 626,
+    "y": 316,
+    "w": 72,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 99,
+    "w": 72,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_06_team": {
+   "frame": {
+    "x": 662,
+    "y": 555,
+    "w": 63,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 102,
+    "w": 63,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_07": {
+   "frame": {
+    "x": 186,
+    "y": 404,
+    "w": 68,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 105,
+    "w": 68,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_07_team": {
+   "frame": {
+    "x": 202,
+    "y": 624,
+    "w": 64,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 106,
+    "w": 64,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_08": {
+   "frame": {
+    "x": 63,
+    "y": 624,
+    "w": 67,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 118,
+    "w": 67,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_08_team": {
+   "frame": {
+    "x": 409,
+    "y": 624,
+    "w": 60,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 118,
+    "w": 60,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_09": {
+   "frame": {
+    "x": 341,
+    "y": 624,
+    "w": 64,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 130,
+    "w": 64,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
+   }
+  },
+  "corsair_die_09_team": {
+   "frame": {
+    "x": 473,
+    "y": 624,
+    "w": 56,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 129,
+    "w": 56,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 226,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.49558,
+    "y": 0.86667
    }
   }
  },
@@ -1255,16 +1879,20 @@
    "corsair_idle_01",
    "corsair_idle_02",
    "corsair_idle_03",
-   "corsair_idle_02",
-   "corsair_idle_01"
+   "corsair_idle_04",
+   "corsair_idle_05",
+   "corsair_idle_06",
+   "corsair_idle_07"
   ],
   "idle_team": [
    "corsair_idle_00_team",
    "corsair_idle_01_team",
    "corsair_idle_02_team",
    "corsair_idle_03_team",
-   "corsair_idle_02_team",
-   "corsair_idle_01_team"
+   "corsair_idle_04_team",
+   "corsair_idle_05_team",
+   "corsair_idle_06_team",
+   "corsair_idle_07_team"
   ],
   "walk": [
    "corsair_walk_00",
@@ -1309,22 +1937,40 @@
   "hit": [
    "corsair_hit_00",
    "corsair_hit_01",
-   "corsair_hit_02"
+   "corsair_hit_02",
+   "corsair_hit_03",
+   "corsair_hit_04"
   ],
   "hit_team": [
    "corsair_hit_00_team",
    "corsair_hit_01_team",
-   "corsair_hit_02_team"
+   "corsair_hit_02_team",
+   "corsair_hit_03_team",
+   "corsair_hit_04_team"
   ],
   "die": [
    "corsair_die_00",
    "corsair_die_01",
-   "corsair_die_02"
+   "corsair_die_02",
+   "corsair_die_03",
+   "corsair_die_04",
+   "corsair_die_05",
+   "corsair_die_06",
+   "corsair_die_07",
+   "corsair_die_08",
+   "corsair_die_09"
   ],
   "die_team": [
    "corsair_die_00_team",
    "corsair_die_01_team",
-   "corsair_die_02_team"
+   "corsair_die_02_team",
+   "corsair_die_03_team",
+   "corsair_die_04_team",
+   "corsair_die_05_team",
+   "corsair_die_06_team",
+   "corsair_die_07_team",
+   "corsair_die_08_team",
+   "corsair_die_09_team"
   ]
  },
  "meta": {
@@ -1333,19 +1979,19 @@
   "image": "corsair.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 600
+   "w": 768,
+   "h": 688
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.corsair",
    "name": "Corsair",
    "heightLu": 68,
-   "widthLu": 61.0,
+   "widthLu": 64.6,
    "pxPerLu": 1.23,
    "feetPx": [
-    84,
-    154
+    112.0,
+    169.0
    ],
    "anchorsLu": {
     "head": [
@@ -1361,42 +2007,62 @@
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
    "clips": {
     "idle": {
-     "frames": 4,
+     "frames": 8,
      "loop": true,
      "sequence": [
       0,
       1,
       2,
       3,
-      2,
-      1
+      4,
+      5,
+      6,
+      7
      ],
      "durationsMs": [
-      200,
-      200,
-      200,
-      200,
-      200,
-      200
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
      ],
-     "durationMs": 1200,
+     "durationMs": 920,
      "anchorsLu": {
       "bladeTip": [
        [
-        38.9,
-        47.0
+        42.2,
+        48.6
        ],
        [
-        37.5,
-        49.7
+        41.1,
+        50.5
        ],
        [
-        35.8,
-        53.9
+        39.8,
+        53.3
        ],
        [
-        35.1,
-        56.4
+        38.7,
+        56.0
+       ],
+       [
+        38.1,
+        57.8
+       ],
+       [
+        38.7,
+        56.0
+       ],
+       [
+        39.8,
+        53.3
+       ],
+       [
+        41.1,
+        50.5
        ]
       ]
      }
@@ -1428,41 +2094,41 @@
      "anchorsLu": {
       "bladeTip": [
        [
-        45.4,
-        37.3
+        48.9,
+        39.2
        ],
        [
-        48.5,
-        36.4
+        51.5,
+        38.4
        ],
        [
-        47.4,
-        42.7
+        50.1,
+        44.5
        ],
        [
-        44.6,
+        47.5,
+        47.2
+       ],
+       [
+        46.7,
+        44.4
+       ],
+       [
+        45.8,
+        44.4
+       ],
+       [
+        43.7,
+        47.6
+       ],
+       [
+        44.3,
         45.5
-       ],
-       [
-        43.3,
-        42.7
-       ],
-       [
-        41.9,
-        42.7
-       ],
-       [
-        39.8,
-        46.0
-       ],
-       [
-        40.5,
-        43.8
        ]
       ]
      },
-     "strideLu": 30.2,
-     "naturalSpeedLuPerS": 60.4
+     "strideLu": 31.0,
+     "naturalSpeedLuPerS": 62.0
     },
     "attack": {
      "frames": 8,
@@ -1478,136 +2144,190 @@
       7
      ],
      "durationsMs": [
-      83,
-      83,
-      167,
-      42,
-      125,
-      83,
-      83,
-      83
+      65,
+      70,
+      120,
+      35,
+      140,
+      80,
+      80,
+      90
      ],
-     "durationMs": 749,
+     "durationMs": 680,
      "impactFrame": 4,
-     "impactAt": 0.5007,
+     "impactAt": 0.4265,
      "smearFrame": 3,
      "anchorsLu": {
       "bladeTip": [
        [
-        -16.5,
-        73.2
+        -15.2,
+        72.6
        ],
        [
-        -41.4,
-        64.9
+        -40.9,
+        63.3
        ],
        [
         -50.0,
-        66.1
+        64.2
        ],
        [
-        37.8,
-        76.7
+        40.9,
+        78.2
        ],
        [
-        52.2,
-        -11.2
+        56.1,
+        -9.1
        ],
        [
-        53.9,
-        -2.1
+        57.7,
+        0.0
        ],
        [
-        49.3,
-        26.6
+        52.8,
+        28.6
        ],
        [
-        37.2,
-        51.6
+        40.4,
+        53.1
        ]
       ]
      }
     },
     "hit": {
-     "frames": 3,
+     "frames": 5,
      "loop": false,
      "sequence": [
       0,
       1,
-      2
+      2,
+      3,
+      4
      ],
      "durationsMs": [
-      83,
-      83,
-      83
+      45,
+      75,
+      60,
+      60,
+      70
      ],
-     "durationMs": 249,
+     "durationMs": 310,
      "anchorsLu": {
       "bladeTip": [
        [
-        3.6,
-        63.9
+        25.6,
+        57.0
        ],
        [
-        21.3,
-        61.1
+        6.3,
+        59.7
        ],
        [
-        32.2,
-        55.8
+        15.0,
+        65.1
+       ],
+       [
+        27.6,
+        60.8
+       ],
+       [
+        39.2,
+        52.5
        ]
       ]
      }
     },
     "die": {
-     "frames": 3,
+     "frames": 10,
      "loop": false,
      "sequence": [
       0,
       1,
-      2
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
      ],
      "durationsMs": [
-      83,
-      83,
-      83
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
      ],
-     "durationMs": 249,
+     "durationMs": 695,
      "fx": [
       {
        "id": "fx.dust_poof",
-       "atMs": 166,
+       "atMs": 465,
        "offsetLu": [
         0,
-        28.6
+        24.5
        ],
-       "scale": 0.762
+       "scale": 0.807
       },
       {
        "id": "fx.ko_stars",
-       "atMs": 249,
+       "atMs": 545,
        "offsetLu": [
         0,
-        42.2
+        37.4
        ],
        "loops": 2,
-       "scale": 0.873
+       "scale": 0.899
       }
      ],
-     "hideUnitAtMs": 249,
+     "hideUnitAtMs": 695,
      "anchorsLu": {
       "bladeTip": [
        [
-        -53.5,
-        78.5
+        -34.3,
+        61.2
        ],
        [
-        -39.0,
-        50.4
+        -47.2,
+        80.6
        ],
        [
-        -24.3,
-        29.0
+        -57.4,
+        75.2
+       ],
+       [
+        -63.2,
+        63.8
+       ],
+       [
+        -54.2,
+        40.5
+       ],
+       [
+        -56.3,
+        71.5
+       ],
+       [
+        -46.3,
+        52.2
+       ],
+       [
+        -41.3,
+        47.6
+       ],
+       [
+        -32.7,
+        36.8
+       ],
+       [
+        -27.3,
+        27.2
        ]
       ]
      }

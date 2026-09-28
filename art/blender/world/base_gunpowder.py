@@ -46,7 +46,7 @@ def build(rig, M):
         rig.joint(j, "body", (0, 0, 0), hidden=True)
 
     # bastion tiers (battered walls), each with a cordon moulding and merlons
-    tiers = [((-88, 14, 25), (86, 52, 25)), ((-100, 22, 80), (62, 42, 30))]
+    tiers = [((-82, 14, 25), (80, 52, 25)), ((-96, 22, 80), (58, 42, 30))]
     for c, r in tiers:
         g = Geo()
         box(g, c, r, p=9, taper=(1.0, 0.86))
@@ -110,7 +110,7 @@ def build(rig, M):
         rig.part("body", g, "#2A2622", outline=0, highlight=False)
 
     # embrasures with cannon muzzles
-    for x, y, z in ((-130, -39, 28), (-96, -39, 28), (-128, -21, 84), (-152, -21, 84)):
+    for x, y, z in ((-130, -39, 28), (-96, -39, 28), (-114, -21, 84)):
         g = Geo()
         box(g, (x, y - 0.5, z), (7, 2, 5.5), p=4, cuts=2)
         rig.part("body", g, "#2A2622", outline=0, highlight=False)
@@ -131,11 +131,11 @@ def build(rig, M):
     box(g, (gx, -42, 20), (0.8, 0.6, 18), p=4, cuts=2)
     rig.part("body", g, WOOD, outline=0.3)
     # long team banner on the upper tier
-    g = Geo().slab([(-156, 104), (-136, 104), (-136, 58), (-146, 50), (-156, 58)], -21.5, 1.6)
+    g = Geo().slab([(-148, 104), (-128, 104), (-128, 58), (-138, 50), (-148, 58)], -21.5, 1.6)
     rig.part("body", g, team=True)
-    g = Geo().capsule((-158, -22.2, 105), (-134, -22.2, 105), 1.3)
+    g = Geo().capsule((-150, -22.2, 105), (-126, -22.2, 105), 1.3)
     rig.part("body", g, BRASS, finish="metal", outline=0.5)
-    g = Geo().star((-146, -23.4, 84), 5.5, 2.4, 1.0)
+    g = Geo().star((-138, -23.4, 84), 5.5, 2.4, 1.0)
     rig.part("body", g, CREAM, outline=0.5)
 
     # the gun platforms
@@ -168,15 +168,15 @@ def build(rig, M):
     chipped_cracks(rig, "crack3", [[(cx + 8, cy - cr - 1, 230), (cx + 13, cy - cr - 1, 220), (cx + 8, cy - cr - 1, 208)],
                                    [(-80, -41, 40), (-74, -41, 30), (-80, -41, 18)],
                                    [(bx - 4, by - br - 3, 160), (bx + 1, by - br - 3, 150)]], CRACK, SAND_LT)
-    rubble(rig, "rubble1", [(-176, -52), (-146, -60)], SAND_DK, seed=3)
+    rubble(rig, "rubble1", [(-156, -52), (-132, -60)], SAND_DK, seed=3)
     rubble(rig, "rubble2", [(-106, -62), (20, -54), (-76, -64)], SAND_DK, seed=13)
-    rubble(rig, "rubble3", [(-166, -66), (-130, -68), (-34, -66), (24, -62)], SAND_DK, seed=23, size=1.2)
+    rubble(rig, "rubble3", [(-152, -66), (-120, -68), (-34, -66), (24, -62)], SAND_DK, seed=23, size=1.2)
 
     flag(rig, "root", "flagA", (SG[0], SG[1], 318), length=30, height=17, pole=272)
     flag(rig, "root", "flagB", (cx - 22, cy + 10, 300), length=24, height=14, pole=250)
 
     # Treasury: powder kegs, crates and shot, a gold chest
-    for k, (x, y) in enumerate(((-176, -62), (-164, -66))):
+    for k, (x, y) in enumerate(((-156, -62), (-144, -66))):
         g = Geo().lathe([(0, 0), (6.4, 0), (7.4, 7), (6.4, 14), (0, 14)], (x, y, 0), (x, y, 14), segs=16)
         rig.part("treasury1", g, WOOD_LT)
         g = Geo()
@@ -184,12 +184,12 @@ def build(rig, M):
             cyl(g, (x, y, z - 1), (x, y, z + 1), 7.0 - abs(z - 7) * 0.1, bevel=0.3)
         rig.part("treasury1", g, IRON, finish="metal", outline=0.4)
     g = Geo()
-    box(g, (-146, -64, 8), (9, 8, 8), p=6)
-    box(g, (-146, -62, 22), (7, 6, 6), p=6)
+    box(g, (-128, -64, 8), (9, 8, 8), p=6)
+    box(g, (-128, -62, 22), (7, 6, 6), p=6)
     rig.part("treasury2", g, WOOD_LT)
     g = Geo()
     for (dx, dy, dz) in ((-6, 0, 3.2), (0, 0, 3.2), (6, 0, 3.2), (-3, 0, 8.8), (3, 0, 8.8), (0, 0, 14.4)):
-        g.sphere((-124 + dx, -68 + dy, dz), 3.2, cuts=3)
+        g.sphere((-110 + dx, -68 + dy, dz), 3.2, cuts=3)
     rig.part("treasury2", g, IRON, finish="metal", outline=0.5)
     g = Geo()
     box(g, (-100, -66, 7), (10, 7, 7), p=5)

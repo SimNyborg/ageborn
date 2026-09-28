@@ -8,18 +8,24 @@
  *   within [450, 750] (the "fixed-drift seam", so the blend is never glued behind every fight).
  * - `wipe(side, age, ms)` sweeps that side's half to the new age from its base outward.
  *
+ * - The far and mid layers and the arena ground are pre-rendered by the 3D pipeline
+ *   (art/blender/world/backdrop.py: `art/backdrops/<age>/{far,mid}.webp` with `layers.json`, and
+ *   `art/ground/<arena>.webp`) with the same toon light as the units. They stream in on first use;
+ *   until they arrive (and in headless tests, or if a file fails) the code-painted layers are drawn,
+ *   so the pre-rendered art is a pure upgrade of the same frames.
+ *
  * Cross-fades are built from thin vertical strips cut from each layer texture (dynamic texture
  * frames) with stepped alpha. Everything comes from a few textures, so the whole backdrop batches
  * into a handful of draw calls with no masks, filters or custom shaders (works on WebGL and WebGPU).
  *
  * Space: the root is world space, x = 0 at the left gate and y = 0 on the ground line.
  */
-import { CanvasSource, Container, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Assets, CanvasSource, Container, Rectangle, Sprite, Texture } from 'pixi.js';
 import type { BackdropView } from '@/contracts/art';
 import type { AgeId, Side } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
 import type { PartBaker } from '../../bake';
-import { arenaId, GROUND_FRAME, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
+import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { CLOUD_TINT, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
@@ -41,15 +47,99 @@ interface Painted {
   ambient: AmbientSpec[];
 }
 
-/** Paints and caches layer textures per age and arena (shared by every backdrop of a provider). */
+interface LayerFile {
+  image: string;
+  pxPerLu: number;
+  ambient: AmbientSpec[];
+}
+
+function appBaseUrl(): string {
+  const env = (import.meta as unknown as { env?: { BASE_URL?: string } }).env;
+  return env?.BASE_URL ?? '/';
+}
+
+/** Pre-rendered layer files (art/blender/world/backdrop.py). */
+export function backdropLayerUrl(age: AgeId, file: string): string {
+  return `art/backdrops/${age}/${file}`;
+}
+export function groundImageUrl(arena: ArenaId): string {
+  return `art/ground/${arena}.webp`;
+}
+
+/**
+ * Paints and caches layer textures per age and arena (shared by every backdrop of a provider), and
+ * streams in the pre-rendered far, mid and ground images, which replace the painted ones once loaded
+ * (`version` counts arrivals so views can relayout).
+ */
 export class BackdropTextures {
   private readonly cache = new Map<string, Painted>();
+  private readonly images = new Map<string, Painted>();
+  private readonly requested = new Set<string>();
   private readonly canBake = typeof document !== 'undefined';
   bakeMs = 0;
+  /** Bumped every time a pre-rendered image arrives. */
+  version = 0;
 
-  constructor(private readonly quality: 'high' | 'lite') {}
+  constructor(
+    private readonly quality: 'high' | 'lite',
+    private readonly baseUrl: string = appBaseUrl(),
+    /** Set false to draw only the code-painted layers (tests, comparisons). */
+    private readonly prerendered = true,
+  ) {}
+
+  /** Starts loading the pre-rendered layers of these ages and arenas (idempotent). */
+  prefetch(ages: readonly AgeId[], arenas: readonly ArenaId[] = []): void {
+    for (const a of ages) this.loadAge(a);
+    for (const a of arenas) this.loadGround(a);
+  }
+
+  private loadAge(age: AgeId): void {
+    const key = `age.${age}`;
+    if (!this.canBake || !this.prerendered || this.requested.has(key)) return;
+    this.requested.add(key);
+    void (async () => {
+      try {
+        const meta = (await Assets.load(this.baseUrl + backdropLayerUrl(age, 'layers.json'))) as Partial<Record<'far' | 'mid', LayerFile>>;
+        for (const kind of ['far', 'mid'] as const) {
+          const m = meta[kind];
+          if (!m) continue;
+          const tex = await this.loadImage(backdropLayerUrl(age, m.image), m.pxPerLu);
+          this.images.set(`${kind}.${age}`, { tex, ambient: m.ambient ?? [] });
+          this.version++;
+        }
+      } catch (e) {
+        console.warn(`[visuals] backdrop layers for "${age}" failed to load; the painted layers are used`, e);
+      }
+    })();
+  }
+
+  private loadGround(arena: ArenaId): void {
+    const key = `ground.${arena}`;
+    if (!this.canBake || !this.prerendered || this.requested.has(key)) return;
+    this.requested.add(key);
+    void this.loadImage(groundImageUrl(arena), GROUND_IMAGE_PX_PER_LU)
+      .then((tex) => {
+        this.images.set(key, { tex, ambient: groundAmbient(arena) });
+        this.version++;
+      })
+      .catch((e: unknown) => console.warn(`[visuals] ground "${arena}" failed to load; the painted ground is used`, e));
+  }
+
+  /** Loads an image as a texture measured in lu (its source resolution is its px per lu). */
+  private async loadImage(path: string, pxPerLu: number): Promise<Texture> {
+    const t = (await Assets.load(this.baseUrl + path)) as Texture;
+    const source = t.source;
+    source.resolution = pxPerLu;
+    source.scaleMode = 'linear';
+    return new Texture({ source });
+  }
 
   layer(kind: LayerKind, age: AgeId): Painted {
+    if (kind !== 'sky') {
+      const img = this.images.get(`${kind}.${age}`);
+      if (img) return img;
+      this.loadAge(age);
+    }
     return this.get(`${kind}.${age}`, FRAMES[kind], (ctx, f, canvas) => {
       if (kind === 'sky') {
         paintSky(ctx, age, f);
@@ -63,6 +153,9 @@ export class BackdropTextures {
   }
 
   ground(arena: ArenaId): Painted {
+    const img = this.images.get(`ground.${arena}`);
+    if (img) return img;
+    this.loadGround(arena);
     return this.get(`ground.${arena}`, GROUND_FRAME, (ctx, f) => paintGround(ctx, arena, f));
   }
 
@@ -94,8 +187,14 @@ export class BackdropTextures {
   destroy(): void {
     for (const p of this.cache.values()) if (p.tex !== Texture.EMPTY) p.tex.destroy(true);
     this.cache.clear();
+    // image sources belong to the Assets cache; drop only our lu-sized texture views
+    for (const p of this.images.values()) p.tex.destroy(false);
+    this.images.clear();
   }
 }
+
+/** Px per lu of the pre-rendered ground images (backdrop.py FRAMES.ground). */
+export const GROUND_IMAGE_PX_PER_LU = 1.3;
 
 /** A horizontal slice [x0, x1] of a layer texture with a constant alpha. */
 export interface Piece {
@@ -320,6 +419,8 @@ export class ProceduralBackdropView implements BackdropView {
   private readonly clouds = new Container();
   private readonly haze = new HazeLayer();
   private readonly groundLayer = new Container();
+  private readonly groundSprite: Sprite;
+  private texVersion = -1;
   private readonly ambientLayers: Record<'sky' | 'far' | 'mid' | 'ground', Container>;
   private readonly rng: CosmeticRng;
   private left: AgeId;
@@ -358,16 +459,26 @@ export class ProceduralBackdropView implements BackdropView {
     }
     this.root.addChild(this.ambientLayers.mid);
     this.root.addChild(this.haze.container);
-    const ground = o.textures.ground(this.arena);
-    if (ground.tex !== Texture.EMPTY) {
-      const g = new Sprite(ground.tex);
-      g.position.set(GROUND_FRAME.x0, GROUND_FRAME.yTop);
-      this.groundLayer.addChild(g);
-    }
+    this.groundSprite = new Sprite(Texture.EMPTY);
+    this.groundSprite.position.set(GROUND_FRAME.x0, GROUND_FRAME.yTop);
+    this.groundLayer.addChild(this.groundSprite);
+    o.textures.prefetch([o.left, o.right], [this.arena]);
+    this.syncGround();
     this.root.addChild(this.groundLayer, this.ambientLayers.ground);
     this.spawnClouds();
     this.rebuildAmbient();
+    this.texVersion = o.textures.version;
     this.layout();
+  }
+
+  private syncGround(): void {
+    const ground = this.o.textures.ground(this.arena);
+    this.groundSprite.texture = ground.tex;
+    this.groundSprite.visible = ground.tex !== Texture.EMPTY;
+    if (this.groundSprite.visible) {
+      this.groundSprite.width = GROUND_FRAME.width;
+      this.groundSprite.height = GROUND_FRAME.height;
+    }
   }
 
   setSeam(x: number): void {
@@ -378,6 +489,7 @@ export class ProceduralBackdropView implements BackdropView {
     // finish a running wipe first
     if (this.wipeState) this.finishWipe();
     this.wipeState = { side, age, t: 0, ms: Math.max(1, ms) };
+    this.o.textures.prefetch([age]);
     this.rebuildAmbient();
     this.dirty = true;
   }
@@ -406,6 +518,13 @@ export class ProceduralBackdropView implements BackdropView {
       this.wipeState.t += dtMs;
       this.dirty = true;
       if (this.wipeState.t >= this.wipeState.ms) this.finishWipe();
+    }
+    if (this.o.textures.version !== this.texVersion) {
+      // a pre-rendered layer arrived: swap it in (and its ambient life)
+      this.texVersion = this.o.textures.version;
+      this.syncGround();
+      this.rebuildAmbient();
+      this.dirty = true;
     }
     if (this.dirty) this.layout();
     this.stepAmbient(dtMs);

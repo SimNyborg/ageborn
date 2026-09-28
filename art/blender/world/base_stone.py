@@ -49,7 +49,7 @@ def build(rig, M):
     # the crag: a wide foot, a body that leans toward the lane, an overhang and the summit
     g = Geo()
     rock(g, (-96, 18, 54), (84, 46, 58), seed=1, jag=0.12)
-    rock(g, (-150, 22, 70), (32, 34, 70), seed=2)
+    rock(g, (-140, 24, 70), (30, 34, 70), seed=2)
     rig.part("body", g, STONE)
     g = Geo()
     rock(g, (-78, 14, 138), (62, 40, 50), seed=4, jag=0.14, rot=(0, -10, 0))
@@ -78,7 +78,7 @@ def build(rig, M):
     g.clip((0, 0, 172), (0, 0, -1))
     rig.part("body", g, MOSS_LT, finish="hair")
     g = Geo()
-    rock(g, (-150, 21, 76), (34, 36, 70), seed=2)
+    rock(g, (-140, 23, 76), (32, 36, 70), seed=2)
     g.clip((0, 0, 124), (0, 0, -1))
     rig.part("body", g, MOSS, finish="hair")
     g = Geo()
@@ -143,7 +143,7 @@ def build(rig, M):
         rope(rope_g, [(x0 - 3, -66, h0 * 0.35), (x1 + 3, -66, h0 * 0.35)], 0.9)
         rope(rope_g, [(x0 - 3, -66, h0 * 0.72), (x1 + 3, -66, h0 * 0.72)], 0.9)
         rig.part(joint, rope_g, "#B8A47E", outline=0.5)
-    logs("pal", -150, -134, 3, 34, 7)
+    logs("pal", -146, -132, 3, 34, 7)
 
     # turret shelves (tops exactly at the mounts): a boulder stack at the gate, cut shelves above
     x0, y0, z0 = M[0]
@@ -169,7 +169,7 @@ def build(rig, M):
         rig.part("body", g, glow=FIRE_CORE, outline=0)
 
     # a big painted hide on the rock face (team) on two bone rods
-    hx, hz = -150, 150
+    hx, hz = -138, 150
     g = Geo().slab([(hx - 16, hz + 26), (hx + 16, hz + 28), (hx + 20, hz), (hx + 12, hz - 22), (hx, hz - 28),
                     (hx - 13, hz - 22), (hx - 19, hz)], -30, 2.0)
     rig.part("body", g, team=True)
@@ -181,7 +181,7 @@ def build(rig, M):
 
     # bones and pebbles on the ground
     g = Geo()
-    for i, (x, y) in enumerate(((-170, -48), (-128, -66), (-76, -64), (26, -46))):
+    for i, (x, y) in enumerate(((-160, -48), (-128, -66), (-76, -64), (26, -46))):
         rock(g, (x, y, 2), (6 + i, 5, 4), seed=40 + i, jag=0.2)
     rig.part("body", g, STONE_DK)
 
@@ -194,8 +194,8 @@ def build(rig, M):
     chipped_cracks(rig, "crack3", [[(-80, -24, 250), (-72, -24, 240), (-78, -24, 230)],
                                    [(-100, -36, 150), (-92, -36, 140), (-96, -36, 128), (-88, -36, 118)],
                                    [(-24, -42, 110), (-18, -42, 98), (-22, -42, 88)]], CRACK, CHIP)
-    for j, pts in (("rubble1", [(-176, -44), (-150, -56)]), ("rubble2", [(-60, -64), (-128, -66), (-92, -70)]),
-                   ("rubble3", [(-176, -62), (22, -62), (-80, -72), (-140, -70)])):
+    for j, pts in (("rubble1", [(-160, -44), (-140, -56)]), ("rubble2", [(-60, -64), (-128, -66), (-92, -70)]),
+                   ("rubble3", [(-160, -62), (22, -62), (-80, -72), (-140, -70)])):
         g = Geo()
         for k, (x, y) in enumerate(pts):
             rock(g, (x, y, 3), (9, 7, 6), seed=sum(map(ord, j)) + k, jag=0.25)
@@ -204,26 +204,26 @@ def build(rig, M):
 
     # flags (separate looping clips): hide banners on the summit's back and the left shoulder
     flag(rig, "root", "flagA", (-96, 24, 300), length=30, height=18, pole=250)
-    flag(rig, "root", "flagB", (-168, 30, 196), length=24, height=15, pole=132)
+    flag(rig, "root", "flagB", (-146, 32, 196), length=24, height=15, pole=132)
 
     # Treasury props, in front of the crag's left foot
     g = Geo()
-    cyl(g, (-172, -60, 0), (-172, -60, 12), 10, 12.5, bevel=1.2)
+    cyl(g, (-156, -60, 0), (-156, -60, 12), 10, 12.5, bevel=1.2)
     rig.part("treasury1", g, WOOD, outline=0.8)
     g = Geo()
     for dx, dy, dz in ((-4, 0, 14), (3, -2, 15), (0, 3, 17), (5, 2, 13), (-6, -3, 12), (1, -5, 13)):
-        g.sphere((-172 + dx, -60 + dy, dz), 3.4, cuts=2)
+        g.sphere((-156 + dx, -60 + dy, dz), 3.4, cuts=2)
     rig.part("treasury1", g, BERRY, finish="gloss", outline=0.5)
     g = Geo().capsule((-156, -66, 5), (-144, -64, 11), 4.6).capsule((-144, -64, 11), (-140, -64, 13), 2.0)
     rig.part("treasury1", g, MEAT, outline=0.6)
     g = Geo().capsule((-138, -64, 12), (-135, -64, 14), 1.6)
     rig.part("treasury1", g, BONE, outline=0.5)
     g = Geo()
-    rock(g, (-184, -48, 6), (15, 11, 7), seed=51, jag=0.12, p=2.4)
-    rock(g, (-182, -50, 14), (11, 9, 5), seed=52, jag=0.12, p=2.4)
+    rock(g, (-164, -40, 6), (13, 10, 7), seed=51, jag=0.12, p=2.4)
+    rock(g, (-162, -42, 14), (10, 8, 5), seed=52, jag=0.12, p=2.4)
     rig.part("treasury2", g, FUR, finish="hair")
     g = Geo()
-    rock(g, (-188, -46, 20), (8, 7, 4), seed=53, jag=0.1, p=2.4)
+    rock(g, (-166, -38, 20), (7, 6, 4), seed=53, jag=0.1, p=2.4)
     rig.part("treasury2", g, HIDE, finish="hair")
     g = Geo()
     for x0 in (-66, -56):

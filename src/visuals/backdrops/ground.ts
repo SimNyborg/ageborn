@@ -199,10 +199,10 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
   ctx.fillStyle = toCss(darken(g.top, 0.12));
   ctx.fillRect(f.x0, 28, f.width, 4);
   const rnd = fbm(seed + 3, 9, 1);
+  ambient.push(...groundAmbient(arena));
   switch (arena) {
     case 'tar_pits':
       paintTarPits(ctx, f, g, seed);
-      ambient.push({ kind: 'emit', part: 'fx.p.ember', x: 600, y: 10, spreadX: 760, life: 3200, layer: 'ground', rate: 3, speed: 22, scale: 1.4, tint: 0xf0e0c0, alpha: 0.7 });
       break;
     case 'frostfang':
       for (let i = 0; i < 14; i++) {
@@ -215,7 +215,6 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
         ctx.lineTo(x + 8, 120);
         ctx.stroke();
       }
-      ambient.push({ kind: 'emit', part: 'fx.p.snow', x: 600, y: -560, spreadX: 900, fall: true, life: 10000, layer: 'ground', rate: 14, speed: 60, scale: 1.4, alpha: 0.9 });
       break;
     case 'kingsmoat':
       for (let i = 0; i < 40; i++) fillPath(ctx, rrect(f.x0 + i * 44 + 10 * rnd(i), 36, 36, 12, 5), toCss(g.detail, 0.9));
@@ -226,7 +225,6 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
       for (let i = 0; i < 44; i++) fillPath(ctx, rect(f.x0 + i * 40, 40, 36, 60), toCss(i % 2 ? g.detail : darken(g.detail, 0.08)));
       fillPath(ctx, rect(f.x0, 100, f.width, 150), toCss(g.accent, 0.85));
       for (let i = 0; i < 12; i++) fillPath(ctx, rect(f.x0 + 60 + i * 150, 96, 10, 90), toCss(darken(g.detail, 0.2)));
-      ambient.push({ kind: 'drift', part: 'bd.bird', x: 300, y: -420, layer: 'sky', speed: 30, tint: 0xf4f4f0 });
       break;
     case 'iron_front':
       for (let i = 0; i < 8; i++) {
@@ -235,13 +233,11 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
         fillPath(ctx, ellipse(x, 66, 44, 8), toCss(darken(g.face, 0.35)));
       }
       for (let i = 0; i < 30; i++) fillPath(ctx, rect(f.x0 + i * 60, 126, 44, 8), toCss(g.accent, 0.6));
-      ambient.push({ kind: 'emit', part: 'fx.p.ember', x: 600, y: -560, spreadX: 900, fall: true, life: 12000, layer: 'ground', rate: 8, speed: 48, scale: 1.2, tint: 0xc8c2b8, alpha: 0.6 });
       break;
     case 'neon_harbor':
       for (let i = 0; i < 22; i++) fillPath(ctx, rect(f.x0 + i * 80, 34, 76, 70), toCss(i % 2 ? g.face : darken(g.face, 0.08)));
       fillPath(ctx, rect(f.x0, 32, f.width, 3), toCss(g.detail, 0.9));
       fillPath(ctx, rect(f.x0, 104, f.width, 3), toCss(g.accent, 0.8));
-      ambient.push({ kind: 'emit', part: 'fx.p.beam', x: 600, y: -560, spreadX: 900, fall: true, life: 1500, layer: 'ground', rate: 30, speed: 420, scale: 0.6, tint: 0xd8e8f0, alpha: 0.35 });
       break;
     case 'orbital_ring':
       for (let i = 0; i < 30; i++) fillPath(ctx, rect(f.x0 + i * 60, 36, 56, 40), toCss(i % 2 ? g.top : darken(g.top, 0.06)));
@@ -253,7 +249,6 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
         ctx.fill();
       }
       fillPath(ctx, rect(f.x0, 76, f.width, 4), toCss(g.accent, 0.8));
-      ambient.push({ kind: 'emit', part: 'fx.p.snow', x: 600, y: 170, spreadX: 800, life: 5000, layer: 'ground', rate: 6, speed: 8, scale: 1, alpha: 0.6, tint: 0xd8fff0 });
       break;
     case 'chrono_rift':
       for (let i = 0; i < 12; i++) {
@@ -268,7 +263,38 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
         ctx.stroke();
         fillPath(ctx, poly([x + 60, 60, x + 70, 30, x + 80, 60]), toCss(g.detail, 0.5));
       }
+      break;
+  }
+  return ambient;
+}
+
+
+/** Weather and ambient life of an arena's ground (shared by the painted and the pre-rendered ground). */
+export function groundAmbient(arena: ArenaId): AmbientSpec[] {
+  const ambient: AmbientSpec[] = [];
+  switch (arena) {
+    case 'tar_pits':
+      ambient.push({ kind: 'emit', part: 'fx.p.ember', x: 600, y: 10, spreadX: 760, life: 3200, layer: 'ground', rate: 3, speed: 22, scale: 1.4, tint: 0xf0e0c0, alpha: 0.7 });
+      break;
+    case 'frostfang':
+      ambient.push({ kind: 'emit', part: 'fx.p.snow', x: 600, y: -560, spreadX: 900, fall: true, life: 10000, layer: 'ground', rate: 14, speed: 60, scale: 1.4, alpha: 0.9 });
+      break;
+    case 'powder_bay':
+      ambient.push({ kind: 'drift', part: 'bd.bird', x: 300, y: -420, layer: 'sky', speed: 30, tint: 0xf4f4f0 });
+      break;
+    case 'iron_front':
+      ambient.push({ kind: 'emit', part: 'fx.p.ember', x: 600, y: -560, spreadX: 900, fall: true, life: 12000, layer: 'ground', rate: 8, speed: 48, scale: 1.2, tint: 0xc8c2b8, alpha: 0.6 });
+      break;
+    case 'neon_harbor':
+      ambient.push({ kind: 'emit', part: 'fx.p.beam', x: 600, y: -560, spreadX: 900, fall: true, life: 1500, layer: 'ground', rate: 30, speed: 420, scale: 0.6, tint: 0xd8e8f0, alpha: 0.35 });
+      break;
+    case 'orbital_ring':
+      ambient.push({ kind: 'emit', part: 'fx.p.snow', x: 600, y: 170, spreadX: 800, life: 5000, layer: 'ground', rate: 6, speed: 8, scale: 1, alpha: 0.6, tint: 0xd8fff0 });
+      break;
+    case 'chrono_rift':
       ambient.push({ kind: 'emit', part: 'fx.p.xp', x: 600, y: 20, spreadX: 760, life: 4000, layer: 'ground', rate: 5, speed: 18, scale: 1.2, tint: 0xc9b8f0, alpha: 0.8 });
+      break;
+    default:
       break;
   }
   return ambient;

@@ -9,7 +9,7 @@ describe('procedural backdrop teardown', () => {
     // registered on them (Phase 2a soak: ~320 sprites and textures leaked per battle).
     const source = new BufferImageSource({ resource: new Uint8Array(64 * 4), width: 64, height: 1 });
     const painted = { tex: new Texture({ source }), ambient: [] };
-    const textures = { layer: () => painted, ground: () => ({ tex: Texture.EMPTY, ambient: [] }) } as unknown as BackdropTextures;
+    const textures = { layer: () => painted, ground: () => ({ tex: Texture.EMPTY, ambient: [] }), prefetch: () => undefined, version: 0 } as unknown as BackdropTextures;
     const before = source.listenerCount('resize');
     for (let i = 0; i < 3; i++) {
       const view = new ProceduralBackdropView({
