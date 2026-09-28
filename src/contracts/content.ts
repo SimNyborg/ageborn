@@ -280,6 +280,13 @@ export interface EconomyRules {
    * Siege). A decided match ends instead of spawn-camping the loser. Missing or `clearLu` 0 = off.
    */
   openGate?: { clearLu: number; baseDamageBp: number };
+  /**
+   * The falling gate (A16.4 stall fix, A17 step 1): a unit killed by an enemy unit, turret or ability
+   * within `lu` of its own gate costs its base `hpBp` of the unit's max HP (as base damage from the
+   * killer: Siege and the open gate apply, the killer earns base-damage XP). Spawn-camping a beaten
+   * side ends the match instead of feeding it bounties. Missing or `lu` 0 = off.
+   */
+  gateFall?: { lu: number; hpBp: number };
   /** Unit walking speed multiplier applied once at compile time (A17.2: 12,500 = ×1.25). */
   marchSpeedBp: number;
   /** Units per side that may fight side by side at the front before the single file starts (A2.7; A16.4 L4: 3). */

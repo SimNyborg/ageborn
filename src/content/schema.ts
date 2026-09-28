@@ -234,6 +234,7 @@ const EconomySchema = v.strictObject({
   siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp, moveSpeedBp: pos, gateCrowdLu: nonNeg }),
   marchSpeedBp: pos, frontWidth: pos,
   openGate: v.optional(v.strictObject({ clearLu: nonNeg, baseDamageBp: bp })),
+  gateFall: v.optional(v.strictObject({ lu: nonNeg, hpBp: bp })),
   lastStand: v.strictObject({ thresholdBp: bp, autoBp: bp, radius: pos, damagePerP: pos, knockback: nonNeg, chargeMs: pos }),
   spawnP: nonNeg, holdLine: pos, holdRetreatSpeedBp: bp, leash: nonNeg, spacingBp: bp,
   retargetMs: pos, retargetCloserLu: nonNeg, rangedSelfDefenseLu: nonNeg, firstHitIdleMs: pos,
