@@ -107,9 +107,9 @@ export function extraAmbient(age: AgeId): AmbientSpec[] {
   }
   const mist = mix(pal.skyBottom, 0xffffff, age === 'future' ? 0.1 : 0.35);
   for (const [x, y, sc, sp, a] of [
-    [80, -70, 3.2, 5, 0.22],
-    [700, -40, 4.2, -4, 0.2],
-    [1180, -90, 2.8, 6, 0.18],
+    [80, -70, 3.2, 5, 0.12],
+    [700, -40, 4.2, -4, 0.1],
+    [1180, -90, 2.8, 6, 0.1],
   ] as const) {
     out.push({ kind: 'drift', part: 'bd.mist', x, y, layer: 'mid', scale: sc, speed: sp, tint: mist, alpha: a });
   }

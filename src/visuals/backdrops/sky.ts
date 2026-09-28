@@ -122,14 +122,14 @@ export function paintSky(ctx: Ctx2D, age: AgeId, f: LayerFrame): void {
     const cy = -240 + rng.next() * 110;
     const w = 90 + rng.next() * 90;
     const puffs: [number, number, number][] = [];
-    for (let k = 0; k < 6; k++) puffs.push([cx + (k - 2.5) * w * 0.28 + (rng.next() - 0.5) * 12, cy - Math.sin((k / 5) * Math.PI) * w * 0.16, w * (0.16 + 0.1 * rng.next())]);
-    ctx.fillStyle = toCss(shade, 0.35);
+    for (let k = 0; k < 7; k++) puffs.push([cx + (k - 3) * w * 0.2 + (rng.next() - 0.5) * 10, cy - Math.sin((k / 6) * Math.PI) * w * 0.14, w * (0.2 + 0.08 * rng.next())]);
+    ctx.fillStyle = toCss(shade, 0.16);
     for (const [x, y, r] of puffs) {
       ctx.beginPath();
       ctx.arc(x, y + r * 0.25, r, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.fillStyle = toCss(lit, 0.4);
+    ctx.fillStyle = toCss(lit, 0.2);
     for (const [x, y, r] of puffs) {
       ctx.beginPath();
       ctx.arc(x - r * 0.1, y - r * 0.12, r * 0.86, 0, Math.PI * 2);
