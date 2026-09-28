@@ -3,8 +3,8 @@
  * written as note data. Every age arrangement, the menu version and the stingers are built on it.
  *
  * Shape: A (bars 1-4, rising call that ends open), A' (5-8, reaches higher and comes home), B (9-12,
- * a bridge through A minor and F that lifts to the dominant), A'' (13-16, the call from the top of the
- * range, then home). The opening "C - G C E" is the motif the fanfares and stingers quote. It is a
+ * a bridge Am - Dm - G - G7 that ends in a scale run up to the top C), A'' (13-16, the call from the
+ * top of the range, then home). The opening "C - G C E" is the motif the fanfares and stingers quote. It is a
  * dotted, stepwise march rather than a fanfare of leaps, deliberately unlike the classic genre themes.
  */
 import type { SeqNote } from '../sequencer';
@@ -25,19 +25,19 @@ export const MELODY: readonly MelodyBar[] = [
   [['C5', 4], ['G4', 2], ['C5', 2], ['E5', 6], ['D5', 2]],
   [['C5', 3], ['D5', 1], ['E5', 4], ['G5', 8]],
   [['A5', 4], ['G5', 2], ['E5', 2], ['F5', 4], ['D5', 4]],
-  [['E5', 3], ['D5', 1], ['C5', 4], ['D5', 8]],
+  [['D5', 3], ['C5', 1], ['B4', 4], ['D5', 8]],
   // A'
   [['C5', 4], ['G4', 2], ['C5', 2], ['E5', 6], ['D5', 2]],
   [['C5', 3], ['D5', 1], ['E5', 4], ['A5', 8]],
-  [['G5', 4], ['F5', 2], ['E5', 2], ['D5', 4], ['G4', 4]],
+  [['G5', 2], ['A5', 2], ['G5', 2], ['E5', 2], ['D5', 6], ['G4', 2]],
   [['C5', 12], [null, 4]],
   // B
   [['A4', 2], ['C5', 2], ['E5', 4], ['A5', 4], ['G5', 4]],
   [['F5', 6], ['E5', 2], ['D5', 4], ['C5', 4]],
   [['B4', 2], ['D5', 2], ['G5', 4], ['F5', 4], ['D5', 4]],
-  [['E5', 4], ['D5', 2], ['E5', 2], ['G5', 8]],
+  [['D5', 2], ['E5', 2], ['F5', 2], ['G5', 2], ['A5', 2], ['B5', 2], ['A5', 2], ['B5', 2]],
   // A''
-  [['C6', 4], ['G5', 2], ['E5', 2], ['A5', 6], ['G5', 2]],
+  [['C6', 6], ['G5', 2], ['A5', 4], ['G5', 4]],
   [['F5', 4], ['A5', 4], ['G5', 4], ['E5', 4]],
   [['D5', 4], ['G5', 2], ['F5', 2], ['E5', 4], ['D5', 4]],
   [['C5', 12], [null, 4]],
@@ -56,8 +56,11 @@ export const CHORDS: Readonly<Record<ChordName, { root: number; tones: readonly 
   E: { root: 4, tones: [0, 4, 7] },
 };
 
-/** One chord per bar under the melody. */
-export const HARMONY: readonly ChordName[] = ['C', 'C', 'F', 'G', 'C', 'Am', 'G', 'C', 'Am', 'F', 'G', 'G', 'C', 'F', 'G', 'C'];
+/**
+ * One chord per bar under the melody. The B section is Am | Dm | G | G7; the file pipeline
+ * (`tools/audio/music/theme.py`) voices bar 12 as G7, this triad fallback as G.
+ */
+export const HARMONY: readonly ChordName[] = ['C', 'C', 'F', 'G', 'C', 'Am', 'G', 'C', 'Am', 'Dm', 'G', 'G', 'C', 'F', 'G', 'C'];
 
 /** Turns melody bars into sequencer notes (bars are 16 steps; rests leave gaps). */
 export function barsToNotes(bars: readonly MelodyBar[], o: { octave?: number; vel?: number; startStep?: number } = {}): SeqNote[] {

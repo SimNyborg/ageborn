@@ -44,26 +44,44 @@ def tame_presence(x: np.ndarray) -> np.ndarray:
     return dsp.peq(x, f0, -min(6.0, excess), 1.4)
 
 
+_PHONE_SOS = None
+
+
+def phone_speaker(x: np.ndarray) -> np.ndarray:
+    """A phone/laptop speaker model: 4th-order band pass 350 Hz-12 kHz."""
+    global _PHONE_SOS
+    from scipy import signal
+
+    if _PHONE_SOS is None:
+        _PHONE_SOS = signal.butter(4, [350, 12000], "bandpass", fs=SR, output="sos")
+    return signal.sosfilt(_PHONE_SOS, x)
+
+
 def phone_gap(x: np.ndarray) -> float:
-    """How much quieter the sound is through a phone speaker (nothing below ~300 Hz), in LU."""
-    return loud.max_window_lufs(dsp.hp(x, 300, 4), SR) - loud.max_window_lufs(x, SR)
+    """How much quieter the sound is through a phone speaker than full range, in LU (negative)."""
+    return loud.max_window_lufs(phone_speaker(x), SR) - loud.max_window_lufs(x, SR)
 
 
-def phone_enhance(x: np.ndarray, want_gap: float = -8.0) -> np.ndarray:
-    """Harmonic bass enhancement for small speakers: if most of the weight sits below 300 Hz, add
-    saturated upper harmonics of the lows (the ear hears the missing fundamental) and trim the deep
-    sub a little, until the phone-speaker loudness is within `want_gap` LU of the full-range one."""
+def phone_enhance(x: np.ndarray, want_gap: float = -4.0) -> np.ndarray:
+    """Safety net for small speakers, after the design itself (every impact has a mid-band layer).
+    If the sound still loses more than `want_gap` LU on the phone model: first add saturated upper
+    harmonics of the lows (the ear hears the missing fundamental), then lower the deep lows with a
+    low shelf in 3 dB steps until it passes."""
     if phone_gap(x) >= want_gap:
         return x
     lows = dsp.lp(x, 160, 2)
     peak = float(np.max(np.abs(lows))) + 1e-9
-    harm = dsp.lp(dsp.hp(np.tanh(lows / peak * 4.0) * peak, 200, 2), 1800, 2)
-    y = dsp.shelf(x, 90, -3.0, high=False)
-    for a in (0.3, 0.5, 0.8, 1.2, 1.8, 2.5):
-        cand = y + harm * a
+    harm = dsp.lp(dsp.hp(np.tanh(lows / peak * 4.0) * peak, 350, 2), 2500, 2)
+    best = x
+    for a in (0.3, 0.6, 1.0):
+        best = x + harm * a
+        if phone_gap(best) >= want_gap:
+            return best
+    for cut in (-3.0, -6.0, -9.0, -12.0, -15.0):
+        cand = dsp.shelf(best, 180, cut, high=False)
         if phone_gap(cand) >= want_gap:
             return cand
-    return y + harm * 2.5
+    return dsp.shelf(best, 180, -15.0, high=False)
 
 
 def finish(x: np.ndarray, spec: dict) -> np.ndarray:

@@ -144,6 +144,9 @@ interface Follower {
 /** One-shot clip lengths used to know when to go back to walk/idle (ms of game time). */
 const ONE_SHOT_MS = { spawn: 260, hit: 160, ability: 650, stun: 900, victory: 900, attackRecover: 220 } as const;
 const AIR_TAGS = 'air';
+/** Health bars in a crowd: above this many units only the front ones and recently hit ones show. */
+const BAR_CROWD_UNITS = 10;
+const BAR_FRONT_UNITS = 3;
 
 /** Legendary aura radius (lu): about half the figure's height, from its head anchor. */
 function auraRadius(view: UnitView): number {
@@ -996,9 +999,15 @@ export class BattleView {
   }
 
   private drawBars(scale: number): void {
+    // In a crowd only the bars that matter show (audit #18): each side's front units, and any unit
+    // hit a moment ago (its ghost is still up). Small fights show every damaged bar.
+    const front = this.frontIds(BAR_FRONT_UNITS);
+    const crowd = this.units.size > BAR_CROWD_UNITS;
     const draws: BarDraw[] = [];
     for (const e of this.units.values()) {
       if (e.dying || !e.bar.shown) continue;
+      const recent = e.bar.holdMs > 0 || e.bar.ghostBp > e.bar.hpBp || e.shieldBp > 0;
+      if (crowd && !recent && !front.has(e.id)) continue;
       draws.push({
         x: e.x,
         y: e.y + e.view.anchors.head.y - 12,
@@ -1011,6 +1020,17 @@ export class BattleView {
     this.bars.draw(draws, scale);
   }
 
+  /** Ids of the `n` frontmost ground units of each side. */
+  private frontIds(n: number): Set<number> {
+    const bySide: [UnitEntry[], UnitEntry[]] = [[], []];
+    for (const e of this.units.values()) if (!e.dying && !e.air) bySide[e.side].push(e);
+    const out = new Set<number>();
+    bySide[0].sort((a, b) => b.x - a.x);
+    bySide[1].sort((a, b) => a.x - b.x);
+    for (const list of bySide) for (const e of list.slice(0, n)) out.add(e.id);
+    return out;
+  }
+
   private drawShadows(): void {
     const g = this.shadows;
     g.clear();
@@ -1018,8 +1038,16 @@ export class BattleView {
     for (const e of this.units.values()) {
       const a = e.dying ? 0.2 * Math.min(1, e.dieLeftMs / 300) : 0.24;
       const w = e.sizeLu * 0.62 + 6;
-      if (e.air) g.ellipse(e.x, 4, w * 0.7, 4).fill({ color: 0x000000, alpha: a * 0.5 });
-      else g.ellipse(e.x, e.y + 1, w, 5.5).fill({ color: 0x000000, alpha: a });
+      if (e.air) {
+        g.ellipse(e.x, 4, w * 0.7, 4).fill({ color: 0x000000, alpha: a * 0.5 });
+        continue;
+      }
+      // A team-coloured ground disc under every unit, so the two armies read apart in a crowd.
+      const team = teamColor(this.settings.teamPreset, e.side);
+      const fade = e.dying ? Math.min(1, e.dieLeftMs / 300) : 1;
+      g.ellipse(e.x, e.y + 1, w * 1.08, 7).fill({ color: team, alpha: 0.34 * fade });
+      g.ellipse(e.x, e.y + 1, w * 1.08, 7).stroke({ color: team, width: 1.6, alpha: 0.7 * fade });
+      g.ellipse(e.x, e.y + 1, w * 0.8, 4.5).fill({ color: 0x000000, alpha: a });
     }
   }
 

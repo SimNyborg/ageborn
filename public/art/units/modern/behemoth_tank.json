@@ -2,298 +2,442 @@
  "frames": {
   "behemoth_tank_idle_00": {
    "frame": {
-    "x": 235,
-    "y": 541,
-    "w": 228,
-    "h": 170
+    "x": 696,
+    "y": 365,
+    "w": 229,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 79,
-    "w": 228,
-    "h": 170
+    "y": 81,
+    "w": 229,
+    "h": 172
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_idle_00_team": {
    "frame": {
-    "x": 1079,
-    "y": 1037,
-    "w": 151,
-    "h": 141
+    "x": 923,
+    "y": 888,
+    "w": 152,
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 59,
-    "y": 75,
-    "w": 151,
-    "h": 141
+    "y": 78,
+    "w": 152,
+    "h": 143
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_idle_01": {
    "frame": {
-    "x": 691,
-    "y": 186,
+    "x": 696,
+    "y": 187,
     "w": 228,
-    "h": 172
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 77,
+    "y": 80,
     "w": 228,
-    "h": 172
+    "h": 173
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_idle_01_team": {
    "frame": {
-    "x": 609,
-    "y": 886,
-    "w": 150,
-    "h": 143
+    "x": 307,
+    "y": 888,
+    "w": 151,
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 73,
-    "w": 150,
-    "h": 143
+    "y": 77,
+    "w": 151,
+    "h": 144
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_idle_02": {
    "frame": {
-    "x": 461,
-    "y": 186,
+    "x": 234,
+    "y": 187,
+    "w": 227,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 79,
+    "w": 227,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_idle_02_team": {
+   "frame": {
+    "x": 462,
+    "y": 888,
+    "w": 150,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 76,
+    "w": 150,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_idle_03": {
+   "frame": {
+    "x": 465,
+    "y": 187,
+    "w": 227,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 79,
+    "w": 227,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_idle_03_team": {
+   "frame": {
+    "x": 618,
+    "y": 1038,
+    "w": 149,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 76,
+    "w": 149,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_walk_00": {
+   "frame": {
+    "x": 970,
+    "y": 2,
     "w": 226,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 78,
+    "w": 226,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_walk_00_team": {
+   "frame": {
+    "x": 770,
+    "y": 888,
+    "w": 149,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 75,
+    "w": 149,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_walk_01": {
+   "frame": {
+    "x": 234,
+    "y": 365,
+    "w": 227,
     "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 76,
-    "w": 226,
+    "y": 80,
+    "w": 227,
     "h": 173
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
-  "behemoth_tank_idle_02_team": {
+  "behemoth_tank_walk_01_team": {
    "frame": {
-    "x": 156,
-    "y": 1037,
-    "w": 149,
+    "x": 2,
+    "y": 1038,
+    "w": 150,
     "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 72,
-    "w": 149,
+    "y": 77,
+    "w": 150,
     "h": 143
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
-  "behemoth_tank_idle_03": {
+  "behemoth_tank_walk_02": {
    "frame": {
-    "x": 231,
-    "y": 186,
-    "w": 226,
-    "h": 174
+    "x": 236,
+    "y": 542,
+    "w": 228,
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 75,
-    "w": 226,
-    "h": 174
+    "y": 82,
+    "w": 228,
+    "h": 171
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
-  "behemoth_tank_idle_03_team": {
+  "behemoth_tank_walk_02_team": {
    "frame": {
-    "x": 153,
-    "y": 886,
-    "w": 148,
-    "h": 144
+    "x": 922,
+    "y": 1038,
+    "w": 152,
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
-    "y": 71,
-    "w": 148,
-    "h": 144
+    "x": 59,
+    "y": 79,
+    "w": 152,
+    "h": 142
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
-  "behemoth_tank_walk_00": {
+  "behemoth_tank_walk_03": {
    "frame": {
-    "x": 2,
-    "y": 186,
-    "w": 225,
-    "h": 175
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 52,
-    "y": 74,
-    "w": 225,
-    "h": 175
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_00_team": {
-   "frame": {
-    "x": 305,
-    "y": 886,
-    "w": 148,
-    "h": 144
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 61,
-    "y": 70,
-    "w": 148,
-    "h": 144
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_01": {
-   "frame": {
-    "x": 695,
+    "x": 465,
     "y": 365,
-    "w": 226,
-    "h": 172
+    "w": 227,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 80,
+    "w": 227,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_walk_03_team": {
+   "frame": {
+    "x": 156,
+    "y": 1038,
+    "w": 150,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 77,
+    "w": 150,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 352,
+    "h": 253
+   },
+   "anchor": {
+    "x": 0.40909,
+    "y": 0.93676
+   }
+  },
+  "behemoth_tank_walk_04": {
+   "frame": {
+    "x": 739,
+    "y": 2,
+    "w": 227,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
     "y": 77,
-    "w": 226,
-    "h": 172
+    "w": 227,
+    "h": 176
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
-  "behemoth_tank_walk_01_team": {
+  "behemoth_tank_walk_04_team": {
    "frame": {
-    "x": 464,
-    "y": 1037,
-    "w": 150,
-    "h": 142
+    "x": 154,
+    "y": 888,
+    "w": 149,
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 73,
-    "w": 150,
-    "h": 142
+    "x": 61,
+    "y": 74,
+    "w": 149,
+    "h": 145
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
-  "behemoth_tank_walk_02": {
+  "behemoth_tank_walk_05": {
    "frame": {
-    "x": 467,
-    "y": 541,
+    "x": 2,
+    "y": 187,
     "w": 228,
-    "h": 170
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
@@ -301,261 +445,117 @@
     "x": 52,
     "y": 79,
     "w": 228,
-    "h": 170
+    "h": 174
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_02_team": {
-   "frame": {
-    "x": 2,
-    "y": 1184,
-    "w": 151,
-    "h": 141
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 59,
-    "y": 75,
-    "w": 151,
-    "h": 141
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_03": {
-   "frame": {
-    "x": 2,
-    "y": 365,
-    "w": 227,
-    "h": 172
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 52,
-    "y": 77,
-    "w": 227,
-    "h": 172
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_03_team": {
-   "frame": {
-    "x": 618,
-    "y": 1037,
-    "w": 150,
-    "h": 142
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 60,
-    "y": 73,
-    "w": 150,
-    "h": 142
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_04": {
-   "frame": {
-    "x": 990,
-    "y": 2,
-    "w": 226,
-    "h": 175
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 52,
-    "y": 74,
-    "w": 226,
-    "h": 175
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_04_team": {
-   "frame": {
-    "x": 457,
-    "y": 886,
-    "w": 148,
-    "h": 144
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 61,
-    "y": 70,
-    "w": 148,
-    "h": 144
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
-   }
-  },
-  "behemoth_tank_walk_05": {
-   "frame": {
-    "x": 219,
-    "y": 2,
-    "w": 228,
-    "h": 177
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 52,
-    "y": 72,
-    "w": 228,
-    "h": 177
-   },
-   "sourceSize": {
-    "w": 350,
-    "h": 250
-   },
-   "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_walk_05_team": {
    "frame": {
-    "x": 763,
-    "y": 886,
+    "x": 616,
+    "y": 888,
     "w": 150,
-    "h": 143
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 73,
+    "y": 76,
     "w": 150,
-    "h": 143
+    "h": 144
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_walk_06": {
    "frame": {
     "x": 2,
-    "y": 541,
-    "w": 229,
-    "h": 170
+    "y": 542,
+    "w": 230,
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 79,
-    "w": 229,
-    "h": 170
+    "y": 82,
+    "w": 230,
+    "h": 171
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_walk_06_team": {
    "frame": {
-    "x": 309,
-    "y": 1037,
+    "x": 1079,
+    "y": 888,
     "w": 151,
-    "h": 142
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 75,
+    "x": 60,
+    "y": 79,
     "w": 151,
-    "h": 142
+    "h": 143
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_walk_07": {
    "frame": {
-    "x": 923,
-    "y": 186,
+    "x": 928,
+    "y": 187,
     "w": 228,
-    "h": 172
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 77,
+    "y": 80,
     "w": 228,
-    "h": 172
+    "h": 173
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_walk_07_team": {
    "frame": {
-    "x": 917,
-    "y": 886,
+    "x": 310,
+    "y": 1038,
     "w": 150,
     "h": 143
    },
@@ -563,22 +563,22 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 73,
+    "y": 77,
     "w": 150,
     "h": 143
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_00": {
    "frame": {
-    "x": 233,
+    "x": 929,
     "y": 365,
     "w": 227,
     "h": 172
@@ -587,359 +587,359 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 77,
+    "y": 81,
     "w": 227,
     "h": 172
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_00_team": {
    "frame": {
-    "x": 1071,
-    "y": 886,
+    "x": 1078,
+    "y": 1038,
     "w": 150,
-    "h": 143
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 73,
+    "y": 78,
     "w": 150,
-    "h": 143
+    "h": 142
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_01": {
    "frame": {
-    "x": 925,
-    "y": 365,
-    "w": 231,
+    "x": 700,
+    "y": 542,
+    "w": 232,
     "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 51,
-    "y": 80,
-    "w": 231,
+    "y": 83,
+    "w": 232,
     "h": 170
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_01_team": {
    "frame": {
-    "x": 923,
-    "y": 1037,
-    "w": 152,
+    "x": 2,
+    "y": 1185,
+    "w": 153,
     "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 59,
-    "y": 76,
-    "w": 152,
+    "y": 80,
+    "w": 153,
     "h": 141
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_02": {
    "frame": {
-    "x": 931,
-    "y": 541,
-    "w": 235,
+    "x": 2,
+    "y": 717,
+    "w": 236,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 50,
-    "y": 83,
-    "w": 235,
+    "y": 86,
+    "w": 236,
     "h": 167
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_02_team": {
    "frame": {
-    "x": 312,
-    "y": 1184,
-    "w": 154,
+    "x": 314,
+    "y": 1185,
+    "w": 156,
     "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 79,
-    "w": 154,
+    "x": 58,
+    "y": 83,
+    "w": 156,
     "h": 139
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_03": {
    "frame": {
-    "x": 735,
+    "x": 482,
     "y": 2,
-    "w": 251,
-    "h": 175
+    "w": 253,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 53,
-    "y": 74,
-    "w": 251,
-    "h": 175
+    "y": 77,
+    "w": 253,
+    "h": 176
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_03_team": {
    "frame": {
-    "x": 772,
-    "y": 1037,
+    "x": 771,
+    "y": 1038,
     "w": 147,
-    "h": 142
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 56,
-    "y": 70,
+    "x": 57,
+    "y": 74,
     "w": 147,
-    "h": 142
+    "h": 143
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_04": {
    "frame": {
-    "x": 750,
-    "y": 715,
-    "w": 261,
+    "x": 714,
+    "y": 717,
+    "w": 241,
     "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 41,
-    "y": 90,
-    "w": 261,
+    "y": 94,
+    "w": 241,
     "h": 159
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_04_team": {
    "frame": {
     "x": 2,
-    "y": 1329,
+    "y": 1330,
     "w": 163,
     "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 44,
-    "y": 86,
+    "x": 45,
+    "y": 91,
     "w": 163,
     "h": 130
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_05": {
    "frame": {
-    "x": 236,
-    "y": 715,
-    "w": 274,
-    "h": 166
+    "x": 936,
+    "y": 542,
+    "w": 252,
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 46,
-    "y": 83,
-    "w": 274,
-    "h": 166
+    "y": 86,
+    "w": 252,
+    "h": 167
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_05_team": {
    "frame": {
-    "x": 873,
-    "y": 1184,
-    "w": 153,
-    "h": 136
+    "x": 474,
+    "y": 1185,
+    "w": 154,
+    "h": 137
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 54,
-    "y": 79,
-    "w": 153,
-    "h": 136
+    "y": 83,
+    "w": 154,
+    "h": 137
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_06": {
    "frame": {
-    "x": 451,
+    "x": 221,
     "y": 2,
-    "w": 280,
-    "h": 176
+    "w": 257,
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 53,
-    "y": 73,
-    "w": 280,
-    "h": 176
+    "y": 74,
+    "w": 257,
+    "h": 179
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_06_team": {
    "frame": {
     "x": 2,
-    "y": 886,
-    "w": 147,
-    "h": 147
+    "y": 888,
+    "w": 148,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 61,
-    "y": 69,
-    "w": 147,
-    "h": 147
+    "y": 74,
+    "w": 148,
+    "h": 146
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_07": {
    "frame": {
-    "x": 464,
+    "x": 2,
     "y": 365,
-    "w": 227,
-    "h": 172
+    "w": 228,
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 52,
-    "y": 77,
-    "w": 227,
-    "h": 172
+    "y": 80,
+    "w": 228,
+    "h": 173
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_attack_07_team": {
    "frame": {
-    "x": 2,
-    "y": 1037,
+    "x": 464,
+    "y": 1038,
     "w": 150,
     "h": 143
    },
@@ -947,305 +947,305 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 73,
+    "y": 77,
     "w": 150,
     "h": 143
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_hit_00": {
    "frame": {
-    "x": 514,
-    "y": 715,
-    "w": 232,
-    "h": 162
+    "x": 477,
+    "y": 717,
+    "w": 233,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 44,
-    "y": 87,
-    "w": 232,
-    "h": 162
+    "x": 45,
+    "y": 90,
+    "w": 233,
+    "h": 163
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_hit_00_team": {
    "frame": {
-    "x": 1030,
-    "y": 1184,
-    "w": 157,
-    "h": 133
+    "x": 790,
+    "y": 1185,
+    "w": 158,
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 50,
-    "y": 83,
-    "w": 157,
-    "h": 133
+    "x": 51,
+    "y": 87,
+    "w": 158,
+    "h": 134
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_hit_01": {
    "frame": {
-    "x": 2,
-    "y": 715,
-    "w": 230,
+    "x": 242,
+    "y": 717,
+    "w": 231,
     "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 48,
-    "y": 82,
-    "w": 230,
+    "y": 86,
+    "w": 231,
     "h": 167
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_hit_01_team": {
    "frame": {
-    "x": 470,
-    "y": 1184,
-    "w": 153,
+    "x": 632,
+    "y": 1185,
+    "w": 154,
     "h": 137
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 55,
-    "y": 78,
-    "w": 153,
+    "x": 56,
+    "y": 83,
+    "w": 154,
     "h": 137
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_hit_02": {
    "frame": {
-    "x": 699,
-    "y": 541,
+    "x": 468,
+    "y": 542,
     "w": 228,
-    "h": 170
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 51,
-    "y": 79,
+    "y": 82,
     "w": 228,
-    "h": 170
+    "h": 171
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_hit_02_team": {
    "frame": {
-    "x": 157,
-    "y": 1184,
+    "x": 159,
+    "y": 1185,
     "w": 151,
-    "h": 140
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 75,
+    "x": 59,
+    "y": 79,
     "w": 151,
-    "h": 140
+    "h": 141
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_die_00": {
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 213,
-    "h": 180
+    "w": 215,
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 36,
-    "y": 65,
-    "w": 213,
-    "h": 180
+    "x": 35,
+    "y": 69,
+    "w": 215,
+    "h": 181
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_die_00_team": {
    "frame": {
-    "x": 1015,
-    "y": 715,
-    "w": 169,
+    "x": 959,
+    "y": 717,
+    "w": 168,
     "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 30,
-    "y": 61,
-    "w": 169,
+    "x": 31,
+    "y": 66,
+    "w": 168,
     "h": 149
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_die_01": {
    "frame": {
-    "x": 627,
-    "y": 1184,
-    "w": 242,
-    "h": 136
+    "x": 952,
+    "y": 1185,
+    "w": 245,
+    "h": 132
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 17,
-    "y": 111,
-    "w": 242,
-    "h": 136
+    "x": 16,
+    "y": 119,
+    "w": 245,
+    "h": 132
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_die_01_team": {
    "frame": {
     "x": 169,
-    "y": 1329,
+    "y": 1330,
     "w": 196,
-    "h": 107
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 11,
-    "y": 115,
+    "x": 12,
+    "y": 116,
     "w": 196,
-    "h": 107
+    "h": 111
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_die_02": {
    "frame": {
     "x": 369,
-    "y": 1329,
-    "w": 207,
+    "y": 1330,
+    "w": 209,
     "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 42,
-    "y": 156,
-    "w": 207,
+    "x": 41,
+    "y": 160,
+    "w": 209,
     "h": 90
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   },
   "behemoth_tank_die_02_team": {
    "frame": {
-    "x": 580,
-    "y": 1329,
-    "w": 163,
+    "x": 582,
+    "y": 1330,
+    "w": 164,
     "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 37,
-    "y": 152,
-    "w": 163,
+    "y": 157,
+    "w": 164,
     "h": 77
    },
    "sourceSize": {
-    "w": 350,
-    "h": 250
+    "w": 352,
+    "h": 253
    },
    "anchor": {
-    "x": 0.41143,
-    "y": 0.928
+    "x": 0.40909,
+    "y": 0.93676
    }
   }
  },
@@ -1336,25 +1336,25 @@
    "w": 1280,
    "h": 1464
   },
-  "scale": "1.25",
+  "scale": "1.1",
   "ageborn": {
    "visualId": "unit.behemoth_tank",
    "name": "Behemoth Tank",
-   "heightLu": 150,
-   "widthLu": 213.7,
-   "pxPerLu": 1.025,
+   "heightLu": 172,
+   "widthLu": 245.0,
+   "pxPerLu": 0.902,
    "feetPx": [
     144,
-    232
+    237
    ],
    "anchorsLu": {
     "head": [
      0,
-     128
+     147
     ],
     "hitCenter": [
      0,
-     50
+     58
     ]
    },
    "facing": "right",
@@ -1388,38 +1388,38 @@
      "anchorsLu": {
       "muzzle": [
        [
-        127.0,
-        75.7
+        146.0,
+        87.1
        ],
        [
-        126.3,
-        76.4
+        145.3,
+        87.9
        ],
        [
-        125.3,
-        78.1
+        144.0,
+        89.8
        ],
        [
-        124.5,
-        79.6
+        143.2,
+        91.6
        ]
       ],
       "mgMuzzle": [
        [
-        -2.0,
-        115.2
+        -2.3,
+        132.4
        ],
        [
-        -2.0,
-        116.0
+        -2.3,
+        133.4
        ],
        [
-        -2.5,
-        117.9
+        -2.9,
+        135.6
        ],
        [
-        -3.5,
-        119.6
+        -4.0,
+        137.6
        ]
       ]
      }
@@ -1451,75 +1451,75 @@
      "anchorsLu": {
       "muzzle": [
        [
-        124.3,
-        80.5
+        142.9,
+        92.6
        ],
        [
-        125.2,
-        79.2
+        143.9,
+        91.1
        ],
        [
-        126.4,
-        77.3
+        145.3,
+        88.9
        ],
        [
-        125.3,
-        78.2
+        144.1,
+        90.0
        ],
        [
-        124.4,
-        79.1
+        143.1,
+        91.0
        ],
        [
-        126.2,
-        77.0
+        145.2,
+        88.6
        ],
        [
-        127.7,
-        75.5
+        146.9,
+        86.9
        ],
        [
-        126.1,
-        78.0
+        145.0,
+        89.7
        ]
       ],
       "mgMuzzle": [
        [
-        -2.8,
-        119.4
+        -3.2,
+        137.3
+       ],
+       [
+        -4.2,
+        135.2
+       ],
+       [
+        -4.7,
+        133.3
+       ],
+       [
+        -4.4,
+        136.0
        ],
        [
         -3.6,
-        117.6
+        138.4
        ],
        [
-        -4.0,
-        115.9
+        -2.8,
+        135.9
        ],
        [
-        -3.9,
-        118.2
+        -2.3,
+        133.1
        ],
        [
-        -3.2,
-        120.4
-       ],
-       [
-        -2.4,
-        118.1
-       ],
-       [
-        -2.0,
-        115.8
-       ],
-       [
-        -2.2,
-        117.5
+        -2.5,
+        135.1
        ]
       ]
      },
-     "strideLu": 27.6,
-     "naturalSpeedLuPerS": 34.5
+     "strideLu": 31.6,
+     "naturalSpeedLuPerS": 39.5
     },
     "attack": {
      "frames": 8,
@@ -1550,70 +1550,70 @@
      "anchorsLu": {
       "muzzle": [
        [
-        125.4,
-        82.6
+        144.2,
+        94.9
        ],
        [
-        128.4,
-        83.0
+        147.6,
+        95.4
        ],
        [
-        131.6,
-        80.6
+        151.2,
+        92.7
        ],
        [
-        102.0,
-        101.7
+        117.8,
+        116.9
        ],
        [
-        111.6,
-        90.8
+        129.3,
+        104.4
        ],
        [
-        118.2,
-        86.4
+        136.5,
+        99.3
        ],
        [
-        123.4,
-        80.4
+        142.1,
+        92.4
        ],
        [
-        125.7,
-        77.9
+        144.6,
+        89.6
        ]
       ],
       "mgMuzzle": [
        [
-        -3.8,
-        117.9
+        -4.3,
+        135.5
        ],
        [
-        -3.0,
-        115.6
+        -3.6,
+        132.9
        ],
        [
-        -2.1,
-        113.2
+        -2.5,
+        130.1
        ],
        [
-        -14.5,
-        126.4
+        -16.2,
+        145.4
        ],
        [
-        -19.6,
-        111.4
+        -21.7,
+        128.0
        ],
        [
-        -12.1,
-        115.3
+        -13.3,
+        132.6
        ],
        [
-        -2.6,
-        120.2
+        -2.9,
+        138.2
        ],
        [
-        -3.0,
-        117.7
+        -3.5,
+        135.3
        ]
       ]
      }
@@ -1635,30 +1635,30 @@
      "anchorsLu": {
       "muzzle": [
        [
-        123.1,
-        83.2
+        142.1,
+        95.6
        ],
        [
-        124.4,
-        81.0
+        143.4,
+        93.1
        ],
        [
-        125.3,
-        79.1
+        144.2,
+        90.9
        ]
       ],
       "mgMuzzle": [
        [
-        -16.7,
-        114.4
+        -18.6,
+        131.6
        ],
        [
-        -10.3,
-        116.1
+        -11.6,
+        133.5
        ],
        [
-        -5.6,
-        117.1
+        -6.3,
+        134.7
        ]
       ]
      }
@@ -1683,49 +1683,49 @@
        "atMs": 166,
        "offsetLu": [
         0,
-        63.0
+        72.2
        ],
-       "scale": 2.671
+       "scale": 3.062
       },
       {
        "id": "fx.ko_stars",
        "atMs": 249,
        "offsetLu": [
         0,
-        93.0
+        106.6
        ],
        "loops": 2,
-       "scale": 1.634
+       "scale": 1.75
       }
      ],
      "hideUnitAtMs": 249,
      "anchorsLu": {
       "muzzle": [
        [
-        96.1,
-        128.0
+        111.1,
+        146.6
        ],
        [
-        106.2,
-        91.8
+        123.0,
+        105.6
        ],
        [
-        96.3,
-        40.4
+        111.7,
+        46.4
        ]
       ],
       "mgMuzzle": [
        [
-        -35.6,
-        143.6
+        -40.4,
+        164.5
        ],
        [
-        -45.7,
-        102.8
+        -51.6,
+        118.2
        ],
        [
-        -34.2,
-        61.9
+        -38.5,
+        71.2
        ]
       ]
      }

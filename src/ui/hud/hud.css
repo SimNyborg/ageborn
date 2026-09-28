@@ -1399,10 +1399,10 @@
 }
 
 /* The "i" corner (touch) and the info card (hover on desktop, the "i" on touch). */
-.hud-card-i {
+.hud .hud-card-i {
   position: absolute;
-  top: -8px;
-  left: -8px;
+  top: -12px;
+  right: -10px;
   z-index: 2;
   display: none;
   width: 24px;
@@ -1417,7 +1417,7 @@
 }
 
 @media (hover: none), (pointer: coarse) {
-  .hud-card-i {
+  .hud .hud-card-i {
     display: block;
   }
 }

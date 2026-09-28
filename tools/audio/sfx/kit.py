@@ -34,12 +34,16 @@ def blip(freq: float, dur: float = 0.03, tau: float = 0.008, shape: str = "sine"
 # Bodies
 
 
-def thump(f0: float, f1: float, dur: float, pitch_tau: float = 0.03, amp_tau: float = 0.08, drive: float = 1.6, harm: float = 0.3) -> np.ndarray:
-    """A pitched-down sine punch (kick-drum style) with a touch of saturation and a 2nd harmonic,
-    so it stays audible on phone speakers that cannot play the fundamental."""
+def thump(f0: float, f1: float, dur: float, pitch_tau: float = 0.03, amp_tau: float = 0.08, drive: float = 1.6, harm: float = 0.3, hp_hz: float = 100.0) -> np.ndarray:
+    """A pitched-down sine punch (kick-drum style) with a touch of saturation and a 2nd harmonic.
+
+    The body is high-passed at `hp_hz` (100 Hz by default; big booms pass ~50): below that a phone or
+    laptop speaker plays nothing, and on full-range speakers the deep sub only muddies the mix. The
+    weight a player hears comes from the mid-band layers (`crack`, `knock`, GM drums) instead."""
     f = dsp.drop(f0, f1, dur, pitch_tau)
     x = osc(f, "sine") + harm * osc(f * 2, "sine") * env_exp(dur, amp_tau * 0.5)
-    return sat(x * env_exp(dur, amp_tau, 0.001), drive)
+    y = sat(x * env_exp(dur, amp_tau, 0.001), drive)
+    return hp(y, hp_hz, 2) if hp_hz > 0 else y
 
 
 def tone(freq, dur: float, shape: str = "sine", attack: float = 0.005, tau: float | None = None, release: float = 0.05) -> np.ndarray:
@@ -65,6 +69,62 @@ def whoosh(rng: np.random.Generator, dur: float, f0: float, f1: float, res: floa
     t = np.linspace(0, 1, len(y))
     env = np.where(t < peak, (t / peak) ** 2, ((1 - t) / (1 - peak)) ** 1.5)
     return y * env * 3
+
+
+def crack(rng: np.random.Generator, dur: float = 0.05, lo: float = 800, hi: float = 4000, tau: float = 0.012, attack: float = 0.0003) -> np.ndarray:
+    """The mid-band snap of an impact (800 Hz-4 kHz by default): what a phone speaker plays of a hit.
+    Band-passed noise with a near-instant attack plus a slightly saturated edge, so it reads as a
+    'crack' rather than as hiss."""
+    x = bp(noise(dur, rng), lo, hi, 2) * env_exp(dur, tau, attack) * 2.2
+    return sat(x, 1.4)
+
+
+def knock(freq: float, dur: float = 0.09, tau: float = 0.022, rng: np.random.Generator | None = None, modes: tuple = ((1.0, 1.0), (1.58, 0.55), (2.34, 0.35), (3.1, 0.2))) -> np.ndarray:
+    """A resonant wooden/skin knock: a few damped modes (the 'thwk' of a strike), with a noise
+    excitation at the start. `freq` is the lowest mode (use 600-1600 Hz for a mid-band body)."""
+    out = np.zeros(n_of(dur))
+    for ratio, amp in modes:
+        f = freq * ratio
+        if f < 16000:
+            out += osc(f, "sine", dur) * amp * env_exp(dur, tau / ratio**0.5, 0.0003)
+    if rng is not None:
+        exc = bp(noise(0.008, rng), freq * 0.8, min(12000, freq * 4)) * env_exp(0.008, 0.002, 0.0002) * 0.8
+        out[: len(exc)] += exc
+    return out
+
+
+def grunt(rng: np.random.Generator, f0: float = 150, dur: float = 0.16, vowel: str = "u", bright: float = 1.0) -> np.ndarray:
+    """A short voiced 'hup'/'oof' (glottal buzz through vowel formants) that starts at full level:
+    the vocal core of a unit's death, readable on any speaker."""
+    f = dsp.drop(f0 * 1.25, f0 * 0.8, dur, dur * 0.5) * (1 + 0.012 * osc(31, "sine", dur))
+    src = osc(f, "saw") + 0.18 * noise(dur, rng)
+    fm_ = {"u": [(420, 160, 1.0), (900, 220, 0.55), (2400, 400, 0.18)], "a": [(750, 200, 1.0), (1200, 260, 0.6), (2600, 400, 0.2)], "o": [(520, 160, 1.0), (950, 220, 0.5), (2500, 400, 0.15)]}[vowel]
+    y = formant(src, [(f * bright, bw * bright, g) for f, bw, g in fm_])
+    env = dsp.env_adsr(dur, 0.002, dur * 0.35, 0.55, dur * 0.4)
+    return sat(y * env * 1.6, 1.3)
+
+
+def cloth(rng: np.random.Generator, dur: float = 0.14) -> np.ndarray:
+    """A soft cloth/body fall: a fast swish of band-passed noise."""
+    return whoosh(rng, dur, 700, 2600, 1.1, 0.25, "pink") * 0.6
+
+
+def repitch(x: np.ndarray, factor: float) -> np.ndarray:
+    """Plays a sample `factor` times faster (higher and shorter), like a sampler's pitch knob."""
+    if abs(factor - 1.0) < 1e-4:
+        return x
+    n = int(len(x) / factor)
+    return np.interp(np.arange(n) * factor, np.arange(len(x)), x)
+
+
+def lead_in(x: np.ndarray, floor: float = 0.02) -> np.ndarray:
+    """Drops the silence before a sample's attack (soundfont samples often start a few ms late)."""
+    e = np.abs(x)
+    m = float(e.max()) if len(e) else 0.0
+    if m <= 0:
+        return x
+    i = int(np.argmax(e > floor * m))
+    return x[max(0, i - 24):]
 
 
 # ------------------------------------------------------------------------------------------------
@@ -172,6 +232,36 @@ def gm_notes(program: int, notes: list[tuple[float, float, int, int]], tail: flo
 
 def gm_drum(note: int, vel: int = 110, kit: int = 0, tail: float = 1.0) -> np.ndarray:
     return gm.one_shot(kit, note, 0.2, vel, drums=True, tail=tail)
+
+
+def _unit(x: np.ndarray) -> np.ndarray:
+    """Peak 1.0, so layer gains mean the same for every sample."""
+    m = float(np.max(np.abs(x))) if len(x) else 0.0
+    return x / m if m > 0 else x
+
+
+def perc(note: int, vel: int = 110, kit: int = 0, pitch: float = 1.0, tail: float = 0.8, length: float | None = None) -> np.ndarray:
+    """A recorded GM drum-kit sample (FluidR3), attack-aligned, optionally re-pitched and cut to
+    `length` seconds with a short fade. Kits: 0 standard, 16 power, 48 orchestra."""
+    x = _unit(repitch(lead_in(gm_drum(note, vel, kit, tail)), pitch))
+    if length is not None and len(x) > n_of(length):
+        x = fade(x[: n_of(length)], 0, min(0.04, length / 3))
+    return x
+
+
+def sample(program: int, midi: int, vel: int = 110, dur: float = 0.25, tail: float = 0.8, pitch: float = 1.0, bank: int = 0, length: float | None = None) -> np.ndarray:
+    """A recorded GM instrument note (woodblock 115, melodic tom 117, reverse cymbal 119, gunshot 127,
+    pizzicato 45, ...), attack-aligned, optionally re-pitched and cut like `perc`."""
+    x = _unit(repitch(lead_in(gm.one_shot(program, midi, dur, vel, tail=tail, bank=bank)), pitch))
+    if length is not None and len(x) > n_of(length):
+        x = fade(x[: n_of(length)], 0, min(0.04, length / 3))
+    return x
+
+
+# FluidR3 drum notes used by the effects.
+SIDE_STICK, CLAP, SNARE, E_SNARE, CLAVES, WOOD_HI, WOOD_LO = 37, 39, 38, 40, 75, 76, 77
+TOM_LF, TOM_L, TOM_LM, TOM_HM, TOM_H, CASTANETS, TAMB, COWBELL = 41, 45, 47, 48, 50, 85, 54, 56
+KIT_STD, KIT_POWER, KIT_ORCH = 0, 16, 48
 
 
 GM = dict(

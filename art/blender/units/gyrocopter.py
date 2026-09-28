@@ -24,7 +24,7 @@ SLUG = "gyrocopter"
 NAME = "Gyrocopter"
 HEIGHT_LU = 66
 YAW_DEG = -10.0
-CANVAS = (336, 268)
+CANVAS = (336, 300)
 FEET = (166, 244)
 ANCHORS = {"head": (0, 62), "hitCenter": (0, 26)}
 

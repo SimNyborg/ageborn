@@ -158,7 +158,12 @@ export class Camera {
     const qx = sx + (L.width / 2 - sx) * a * 0.6;
     const qy = sy + (L.bandY + L.bandH * 0.52 - sy) * a * 0.5;
     const scale = base.scale * (1 + (p.zoom - 1) * a);
-    return { scale, x: qx - p.x * scale, y: qy - p.y * scale };
+    // Never show past the world's ends (the push must not reveal the canvas background).
+    let x = qx - p.x * scale;
+    const lo = L.width - WORLD_RIGHT_LU * scale;
+    const hi = -WORLD_LEFT_LU * scale;
+    if (lo <= hi) x = Math.min(hi, Math.max(lo, x));
+    return { scale, x, y: qy - p.y * scale };
   }
 
   private baseTransform(): CameraTransform {

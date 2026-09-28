@@ -90,7 +90,7 @@ export function TitleScreen() {
           <span class="ab-chip ab-chip--ai" data-testid="title-ai-chip">
             {ui.t('app.aiChip')}
           </span>
-          {waitingIsTraining ? <span class="ab-chip ab-chip--soft">{ui.t('app.trainingMatch')}</span> : null}
+          {waitingIsTraining && opponent.disclosures.length === 0 ? <span class="ab-chip ab-chip--soft">{ui.t('app.trainingMatch')}</span> : null}
           {opponent.disclosures.map((k) => (
             <span class="ab-chip" key={k}>
               {ui.t(k)}

@@ -75,10 +75,12 @@ export const MUSIC_CUES: readonly MusicCueId[] = Object.keys(music);
 export const AGE_CUES: readonly MusicCueId[] = ['music.stone', 'music.medieval', 'music.gunpowder', 'music.modern', 'music.future'];
 
 /**
- * Level trims for the composed files (mastered to about -16 LUFS). Battle music sits a little under
- * the effects; the menu, with nothing to compete with, a little higher.
+ * Level trims for the composed files (mastered to about -16 LUFS). Battle music sits well under the
+ * effects: through the music bus (0.55) and this trim it lands near -28 LUFS, so a single -26 LUFS
+ * hit through the effects bus reads 6-8 LU above the music's momentary loudness, also on a phone.
+ * The menu, with little to compete with, sits higher.
  */
-export const FILE_GAIN_DB: Readonly<Record<MusicRole, number>> = { battle: -3, menu: -1.5, stinger: -2 };
+export const FILE_GAIN_DB: Readonly<Record<MusicRole, number>> = { battle: -7, menu: -4, stinger: -3 };
 
 function stem(id: string): MusicStem | undefined {
   const f = Object.hasOwn(MUSIC_FILES, id) ? MUSIC_FILES[id] : undefined;

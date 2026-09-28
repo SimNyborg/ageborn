@@ -1,5 +1,5 @@
 """Behemoth Tank: Modern Age legendary siege heavy (DESIGN A5.5). Main gun proj.shell
-(range 240) plus a machine gun proj.bullet (range 150, priority air). ~150 lu.
+(range 240) plus a machine gun proj.bullet (range 150, priority air). ~172 lu with the pennant.
 
 Look (A11 vehicle rig, Modern palette): a huge, heavy tank, a head taller than every other
 Modern unit. A long olive hull on two big rubber tracks (7 road wheels, sprocket and idler,
@@ -26,14 +26,14 @@ from ageborn_art.geometry import Geo
 
 SLUG = "behemoth_tank"
 NAME = "Behemoth Tank"
-HEIGHT_LU = 150
+HEIGHT_LU = 172
 YAW_DEG = -10.0
-CANVAS = (560, 400)
-FEET = (230, 372)
-ANCHORS = {"head": (0, 128), "hitCenter": (0, 50)}
+CANVAS = (640, 460)
+FEET = (262, 430)
+ANCHORS = {"head": (0, 147), "hitCenter": (0, 58)}
 EXTRA_META = {"secondaryAttack": {"id": "mg", "anchor": "mgMuzzle", "projectile": "proj.bullet"}}
 
-K = 1.0
+SCALE = 1.15               # the whole tank: a Legendary towers over the Heavies
 TR_R = 17.0
 TX0, TX1 = -62.0, 58.0
 TY = -24.0
@@ -52,7 +52,7 @@ _W = {}
 
 
 def build(rig):
-    rig.joint("body", "root", (0, 0, 0))
+    rig.joint("body", "root", (0, 0, 0), scale=SCALE)
     rig.joint("odo", "root", (0, 0, 0))
     rig.joint("hull", "body", (0, 0, 24.0))
     # far track (belt only)
@@ -211,7 +211,7 @@ def _idle(f):
 def _walk(f):
     p = 2 * math.pi * f / 8
     return merge(_tracks(f), {
-        "odo": {"x": 2.0 * STEP_LU * math.cos(p)},   # stride 28 lu per 0.8 s = 35 lu/s
+        "odo": {"x": 2.0 * STEP_LU * SCALE * math.cos(p)},   # ground speed of the scaled track
         "hull": dict(squash(0.012 * math.cos(2 * p)), z=0.9 * math.cos(2 * p) + 0.2,
                      r=0.7 * math.sin(p)),
         "turret": {"r": -0.4 * math.sin(p - 0.8)},

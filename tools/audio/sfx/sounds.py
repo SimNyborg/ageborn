@@ -12,19 +12,22 @@ from __future__ import annotations
 
 import numpy as np
 
+from kit import repitch as kit_repitch  # noqa: E402
 from kit import (
-    GM, at, bell, blip, bp, chime, click, crackle, debris, dsp, env_exp, fade, fm_bell, formant, gm_drum,
-    gm_note, gm_notes, hp, hz, lp, mixdown, mn, n_of, nburst, noise, osc, pluck, room, rumble, sat, thump,
-    tone, whoosh,
+    CLAP, CLAVES, E_SNARE, GM, KIT_ORCH, KIT_POWER, KIT_STD, SIDE_STICK, SNARE, TAMB, TOM_H, TOM_HM, TOM_L,
+    TOM_LF, TOM_LM, WOOD_HI, WOOD_LO, at, bell, blip, bp, chime, click, cloth, crack, crackle, debris, dsp,
+    env_exp, fade, fm_bell, formant, gm_drum, gm_note, gm_notes, grunt, hp, hz, knock, lp, mixdown, mn, n_of,
+    nburst, noise, osc, perc, pluck, room, rumble, sample, sat, thump, tone, whoosh,
 )
 
 REGISTRY: dict[str, dict] = {}
 
 
-def sfx(sid: str, target: float, variants: int = 3, hp_hz: float = 45, noisy: bool = False, max_s: float | None = None, timed: bool = False, phone_gap: float = -8.0):
+def sfx(sid: str, target: float, variants: int = 3, hp_hz: float = 45, noisy: bool = False, max_s: float | None = None, timed: bool = False, phone_gap: float = -4.0):
     """Registers a sound. `timed` keeps the exact length `max_s` from the first sample (the game syncs
-    to it); `phone_gap` is how much quieter (LU) it may be on a phone speaker before the renderer adds
-    harmonic bass enhancement (big booms may keep more weight below 300 Hz)."""
+    to it); `phone_gap` is how much quieter (LU) it may be on a phone speaker (350 Hz-12 kHz model)
+    before the renderer adds harmonics and trims the lows: -4 for everything, -6 for big booms
+    (explosions, cannon, base, walkout), which may keep a little more weight below 300 Hz."""
 
     def deco(fn):
         REGISTRY[sid] = dict(fn=fn, target=target, variants=variants, hp=hp_hz, noisy=noisy, max_s=max_s, timed=timed, phone_gap=phone_gap)
@@ -46,12 +49,10 @@ def pv(v: int) -> float:
 
 @sfx("ui_click", -27, 3, hp_hz=180)
 def ui_click(v, rng):
+    # A pitched woodblock tap with a 1-2 kHz wooden body: round and tactile, never a bare beep.
     p = pv(v)
-    return mixdown(
-        blip(1250 * p, 0.035, 0.007),
-        at(0, blip(620 * p, 0.03, 0.01), 0.5),
-        at(0, click(rng, 0.004, 2000, 6000, 0.001), 0.25),
-    )
+    wood = sample(GM["woodblock"], 79, 100, 0.12, 0.3, pitch=p, length=0.09)
+    return mixdown(wood, at(0, knock(1350 * p, 0.05, 0.012, rng), 0.35), at(0, perc(CLAVES, 90, pitch=1.2 * p, length=0.04), 0.2))
 
 
 @sfx("ui_hover", -34, 3, hp_hz=300)
@@ -61,16 +62,20 @@ def ui_hover(v, rng):
 
 @sfx("ui_deny", -25, 3, hp_hz=120)
 def ui_deny(v, rng):
+    # "Nuh-uh": two muted, falling wooden knocks with a soft reedy buzz. Clear, never scolding.
     p = pv(v) ** 0.3
-    a = lp(tone(311 * p, 0.09, "square", 0.003, tau=0.05), 1400) * 0.6 + tone(311 * p, 0.09, "sine", 0.003, tau=0.05)
-    b = lp(tone(247 * p, 0.14, "square", 0.003, tau=0.07), 1200) * 0.6 + tone(247 * p, 0.14, "sine", 0.003, tau=0.07)
-    return mixdown(a, at(0.1, b), at(0, click(rng, 0.004, 800, 3000), 0.3))
+    a = mixdown(perc(WOOD_LO, 104, pitch=0.8 * p, length=0.1), at(0, lp(tone(622 * p, 0.09, "square", 0.003, tau=0.05), 2200), 0.35), at(0, knock(700 * p, 0.08, 0.02), 0.3))
+    b = mixdown(perc(WOOD_LO, 100, pitch=0.64 * p, length=0.14), at(0, lp(tone(494 * p, 0.14, "square", 0.003, tau=0.07), 1900), 0.35), at(0, knock(560 * p, 0.1, 0.025), 0.3))
+    return mixdown(a, at(0.1, b))
 
 
 @sfx("ui_toggle", -28, 3, hp_hz=200)
 def ui_toggle(v, rng):
+    # Two claves-like taps, the second a fifth higher: a little "tick-tock" switch.
     p = pv(v)
-    return mixdown(blip(880 * p, 0.03, 0.008), at(0.035, blip(1320 * p, 0.04, 0.01)), at(0, click(rng, 0.004, 1500, 5000), 0.3))
+    a = mixdown(perc(CLAVES, 96, pitch=0.9 * p, length=0.05), at(0, knock(1100 * p, 0.05, 0.012), 0.3))
+    b = mixdown(perc(CLAVES, 100, pitch=1.35 * p, length=0.06), at(0, knock(1650 * p, 0.05, 0.012), 0.3))
+    return mixdown(a, at(0.045, b, 0.9))
 
 
 @sfx("ui_tab", -29, 3, hp_hz=200, noisy=True)
@@ -97,21 +102,27 @@ def meter_pip(v, rng):
 
 @sfx("spawn_pop", -26, 3)
 def spawn_pop(v, rng):
+    # A woodblock "tok" plus a pizzicato pop and a puff of air: a unit steps out, bright and quick.
     p = pv(v)
-    f = dsp.glide(170 * p, 560 * p, 0.07, 0.8)
-    bloop = osc(f, "sine") * env_exp(0.07, 0.03, 0.002)
-    puff = nburst(rng, 0.12, 300, 2200, 0.035, 0.004, "pink") * 0.5
-    return mixdown(bloop, at(0, puff), at(0, click(rng, 0.004, 1500, 5000), 0.25), at(0.01, thump(140 * p, 70, 0.08, 0.02, 0.03), 0.4))
+    wood = sample(GM["woodblock"], 74, 104, 0.12, 0.3, pitch=p, length=0.1)
+    pizz = sample(GM["pizz"], 79, 110, 0.15, 0.4, pitch=p, length=0.18)
+    bloop = osc(dsp.glide(380 * p, 900 * p, 0.06, 0.8), "sine") * env_exp(0.06, 0.025, 0.001)
+    puff = nburst(rng, 0.12, 700, 3000, 0.03, 0.002, "pink")
+    body = thump(170 * p, 95, 0.08, 0.02, 0.03, hp_hz=110)
+    return mixdown(wood, at(0, pizz, 0.55), at(0, bloop, 0.35), at(0, puff, 0.35), at(0, body, 0.3))
 
 
 @sfx("spawn_heavy", -23, 3)
 def spawn_heavy(v, rng):
+    # A concert tom and a low snare hit the ground together; dust, grit and an armour clank follow.
     p = pv(v)
-    body = thump(110 * p, 42, 0.35, 0.05, 0.12, 2.0)
-    dust = nburst(rng, 0.35, 150, 1500, 0.12, 0.01, "pink") * 0.7
-    grit = debris(rng, 0.35, 90, 600, 3000, 0.1) * 0.35
-    armor = bell(420 * p, 0.25, 0.8, 0.08, ((1, 1), (2.3, 0.6), (3.9, 0.35))) * 0.18
-    return room(mixdown(body, at(0.0, dust), at(0.01, grit), at(0.0, armor), at(0, click(rng, 0.005, 800, 4000), 0.3)), rng, 0.3, 0.2)
+    tom = perc(TOM_L, 120, KIT_ORCH, pitch=0.85 * p, length=0.45)
+    snare = perc(SNARE, 110, KIT_POWER, pitch=0.7 * p, length=0.3)
+    body = thump(120 * p, 55, 0.3, 0.04, 0.1, 2.0, hp_hz=90)
+    dust = nburst(rng, 0.35, 400, 2500, 0.1, 0.006, "pink")
+    grit = debris(rng, 0.35, 90, 900, 4000, 0.1)
+    armor = bell(620 * p, 0.25, 0.8, 0.08, ((1, 1), (2.3, 0.6), (3.9, 0.35)))
+    return room(mixdown(tom, at(0, snare, 0.45), at(0, body, 0.5), at(0, crack(rng, 0.05, 700, 3000, 0.014), 0.5), at(0.0, dust, 0.35), at(0.01, grit, 0.3), at(0.0, armor, 0.15)), rng, 0.3, 0.2)
 
 
 @sfx("spawn_legendary", -19, 2, max_s=1.8)
@@ -120,23 +131,26 @@ def spawn_legendary(v, rng):
     choir = choir * np.clip(np.linspace(0, 4, len(choir)), 0, 1)
     timp = gm_note(GM["timpani"], mn("C2"), 0.6, 120, 1.2)
     glock = gm_notes(GM["glock"], [(0.1 + k * 0.06, 0.3, mn(n), 90) for k, n in enumerate(("C6", "E6", "G6", "C7"))], tail=1.0)
-    sub = thump(90, 32, 1.0, 0.12, 0.35, 1.4)
+    sub = thump(90, 32, 1.0, 0.12, 0.35, 1.4, hp_hz=50)
     up = whoosh(rng, 0.35, 300, 3000, 1.3, 0.85) * 0.5
     return mixdown(at(0, up), at(0.3, sub), at(0.3, timp, 0.9), at(0.28, choir, 0.8), at(0.32, glock, 0.35), at(0.3, click(rng, 0.006, 800, 5000), 0.4))
 
 
 @sfx("step_heavy", -30, 3)
 def step_heavy(v, rng):
+    # A soft floor tom under a gritty scuff.
     p = pv(v)
-    return mixdown(thump(75 * p, 42, 0.14, 0.02, 0.045, 1.5), at(0, nburst(rng, 0.08, 200, 1400, 0.02, 0.002, "pink"), 0.5), at(0, click(rng, 0.003, 600, 2500), 0.2))
+    tom = perc(TOM_LF, 90, KIT_ORCH, pitch=1.1 * p, length=0.25)
+    scuff = nburst(rng, 0.08, 600, 3000, 0.02, 0.002, "pink")
+    return mixdown(tom, at(0, thump(95 * p, 55, 0.14, 0.02, 0.045, 1.5, hp_hz=90), 0.4), at(0, scuff, 0.45), at(0, crack(rng, 0.03, 600, 2500, 0.008), 0.3))
 
 
 @sfx("step_mech", -29, 3)
 def step_mech(v, rng):
     p = pv(v)
-    clank = bell(360 * p, 0.2, 0.9, 0.05, ((1, 1), (2.71, 0.7), (4.3, 0.4), (6.2, 0.2))) * 0.5
-    hiss = nburst(rng, 0.12, 2500, 7000, 0.04, 0.02) * 0.12
-    return mixdown(thump(85 * p, 45, 0.14, 0.02, 0.05, 1.8), at(0.004, clank), at(0.03, hiss), at(0, click(rng, 0.004, 1200, 5000), 0.3))
+    clank = bell(560 * p, 0.2, 0.9, 0.05, ((1, 1), (2.71, 0.7), (4.3, 0.4), (6.2, 0.2))) * 0.6
+    hiss = nburst(rng, 0.12, 2500, 7000, 0.04, 0.02) * 0.15
+    return mixdown(thump(95 * p, 55, 0.14, 0.02, 0.05, 1.8), at(0.004, clank), at(0.03, hiss), at(0, crack(rng, 0.03, 900, 3500, 0.008), 0.45), at(0, perc(TOM_H, 80, KIT_POWER, pitch=1.2 * p, length=0.15), 0.4))
 
 
 # =================================================================================================
@@ -191,66 +205,71 @@ def shot_musket(v, rng):
     p = pv(v)
     flint = click(rng, 0.004, 2500, 8000) * 0.3
     crack = nburst(rng, 0.05, 900, 7000, 0.012, 0.0005) * 1.3
-    boom = thump(130 * p, 50, 0.3, 0.02, 0.09, 2.2)
-    smoke = nburst(rng, 0.6, 150, 1600, 0.2, 0.01, "pink") * 0.55
-    gs = gm_note(GM["gunshot"], 60, 0.3, 110, 0.6)
-    return room(mixdown(flint, at(0.012, crack), at(0.012, boom), at(0.015, smoke), at(0.012, gs, 0.35)), rng, 0.45, 0.22)
+    boom = thump(140 * p, 65, 0.3, 0.02, 0.09, 2.2, hp_hz=90)
+    smoke = nburst(rng, 0.6, 350, 2200, 0.2, 0.01, "pink") * 0.55
+    gs = sample(GM["gunshot"], 60, 120, 0.3, 0.8, pitch=0.85 * p, length=0.6)
+    return room(mixdown(flint, at(0.012, crack), at(0.012, boom, 0.6), at(0.015, smoke), at(0.012, gs, 0.8)), rng, 0.45, 0.22)
 
 
 @sfx("shot_lob", -26, 3)
 def shot_lob(v, rng):
     p = pv(v)
-    tube = nburst(rng, 0.14, 250, 900, 0.05, 0.002) * 0.9
-    thoonk = thump(240 * p, 130, 0.16, 0.03, 0.05, 1.5)
-    up = whoosh(rng, 0.2, 400, 1100, 1.5, 0.5) * 0.3
-    return mixdown(thoonk, at(0, tube), at(0.05, up), at(0, click(rng, 0.004, 800, 3000), 0.3))
+    tube = nburst(rng, 0.14, 450, 1400, 0.05, 0.002) * 0.9
+    thoonk = thump(260 * p, 150, 0.16, 0.03, 0.05, 1.5, hp_hz=120)
+    tom = perc(TOM_HM, 110, KIT_ORCH, pitch=1.3 * p, length=0.2)
+    up = whoosh(rng, 0.2, 600, 1600, 1.5, 0.5) * 0.3
+    return mixdown(thoonk, at(0, tom, 0.6), at(0, tube), at(0.05, up), at(0, knock(700 * p, 0.08, 0.02), 0.4))
 
 
-@sfx("shot_cannon", -21, 3, noisy=True, phone_gap=-11.0)
+@sfx("shot_cannon", -21, 3, noisy=True, phone_gap=-6.0)
 def shot_cannon(v, rng):
     p = pv(v)
-    boom = thump(90 * p, 34, 0.7, 0.05, 0.2, 2.5)
-    crack = nburst(rng, 0.08, 300, 4000, 0.025, 0.0005) * 1.2
-    rum = rumble(rng, 1.2, 380, 0.45) * 0.9
+    boom = thump(95 * p, 40, 0.7, 0.05, 0.2, 2.5, hp_hz=55)
+    snap = crack(rng, 0.08, 500, 3500, 0.025)
+    blast = sample(GM["gunshot"], 55, 127, 0.3, 1.0, pitch=0.55 * p, length=1.0)
+    rum = rumble(rng, 1.2, 380, 0.45) * 0.7
     timp = gm_note(GM["timpani"], mn("G1"), 0.4, 127, 1.0)
-    return room(mixdown(crack, at(0, boom), at(0.01, rum), at(0, timp, 0.5), at(0, click(rng, 0.006, 600, 4000), 0.4)), rng, 0.6, 0.2)
+    return room(mixdown(snap, at(0, boom, 0.8), at(0, blast, 0.9), at(0.01, rum), at(0, timp, 0.5)), rng, 0.6, 0.2)
 
 
 @sfx("shot_grapeshot", -22, 3, noisy=True)
 def shot_grapeshot(v, rng):
     p = pv(v)
-    boom = thump(110 * p, 40, 0.45, 0.04, 0.13, 2.2)
-    crack = nburst(rng, 0.06, 400, 5000, 0.02, 0.0005)
+    boom = thump(115 * p, 50, 0.45, 0.04, 0.13, 2.2, hp_hz=70)
+    snap = crack(rng, 0.06, 600, 4500, 0.02)
+    blast = sample(GM["gunshot"], 60, 124, 0.3, 0.8, pitch=0.7 * p, length=0.7)
     pellets = debris(rng, 0.45, 160, 1200, 4500, 0.15, 0.008) * 0.6
-    rum = rumble(rng, 0.7, 400, 0.25) * 0.6
-    return room(mixdown(crack, at(0, boom), at(0.03, pellets), at(0.01, rum)), rng, 0.45, 0.2)
+    rum = rumble(rng, 0.7, 400, 0.25) * 0.5
+    return room(mixdown(snap, at(0, boom, 0.8), at(0, blast, 0.8), at(0.03, pellets), at(0.01, rum)), rng, 0.45, 0.2)
 
 
 @sfx("shot_rifle", -25, 3, noisy=True)
 def shot_rifle(v, rng):
     p = pv(v)
-    crack = nburst(rng, 0.04, 800, 7000, 0.01, 0.0003) * 1.2
-    body = thump(190 * p, 80, 0.12, 0.012, 0.03, 2.0) * 0.8
-    tail = nburst(rng, 0.35, 200, 2500, 0.1, 0.005, "pink") * 0.4
-    return room(mixdown(crack, at(0, body), at(0.004, tail), at(0.06, crack * 0.15)), rng, 0.5, 0.22)
+    snap = nburst(rng, 0.04, 800, 7000, 0.01, 0.0003) * 1.2
+    gs = sample(GM["gunshot"], 64, 120, 0.3, 0.6, pitch=1.15 * p, length=0.45)
+    body = thump(200 * p, 95, 0.12, 0.012, 0.03, 2.0, hp_hz=110) * 0.5
+    tail = nburst(rng, 0.35, 400, 3000, 0.1, 0.005, "pink") * 0.4
+    return room(mixdown(snap, at(0, gs, 0.9), at(0, body), at(0.004, tail), at(0.06, snap * 0.15)), rng, 0.5, 0.22)
 
 
 @sfx("shot_mg", -27, 3, noisy=True)
 def shot_mg(v, rng):
     p = pv(v)
-    crack = nburst(rng, 0.03, 900, 6500, 0.007, 0.0003)
-    body = thump(170 * p, 85, 0.08, 0.01, 0.022, 2.0) * 0.8
-    tail = nburst(rng, 0.14, 250, 2000, 0.04, 0.003, "pink") * 0.3
-    mech = click(rng, 0.004, 2000, 6000, 0.001) * 0.2
-    return mixdown(crack, at(0, body), at(0.003, tail), at(0.035, mech))
+    snap = nburst(rng, 0.03, 900, 6500, 0.007, 0.0003)
+    gs = sample(GM["gunshot"], 67, 110, 0.2, 0.4, pitch=1.4 * p, length=0.16)
+    body = thump(180 * p, 100, 0.08, 0.01, 0.022, 2.0, hp_hz=120) * 0.45
+    tail = nburst(rng, 0.14, 400, 2600, 0.04, 0.003, "pink") * 0.3
+    mech = click(rng, 0.004, 2000, 6000, 0.001) * 0.25
+    return mixdown(snap, at(0, gs, 0.9), at(0, body), at(0.003, tail), at(0.035, mech))
 
 
 @sfx("shot_flak", -24, 3)
 def shot_flak(v, rng):
     p = pv(v)
-    pop1 = mixdown(thump(160 * p, 60, 0.18, 0.02, 0.05, 2.2), at(0, nburst(rng, 0.05, 400, 3000, 0.015), 0.7))
-    pop2 = mixdown(thump(140 * p, 55, 0.2, 0.02, 0.06, 2.2), at(0, nburst(rng, 0.05, 350, 2800, 0.015), 0.6))
-    air = nburst(rng, 0.4, 200, 1500, 0.12, 0.01, "pink") * 0.4
+    pop1 = mixdown(thump(170 * p, 80, 0.18, 0.02, 0.05, 2.2, hp_hz=100), at(0, crack(rng, 0.05, 600, 3200, 0.015), 0.9), at(0, perc(SNARE, 116, KIT_POWER, pitch=0.8 * p, length=0.2), 0.6))
+    pop2 = mixdown(thump(150 * p, 75, 0.2, 0.02, 0.06, 2.2, hp_hz=100), at(0, crack(rng, 0.05, 550, 3000, 0.015), 0.8), at(0, perc(SNARE, 110, KIT_POWER, pitch=0.72 * p, length=0.2), 0.5))
+    air = nburst(rng, 0.4, 400, 2000, 0.12, 0.01, "pink") * 0.4
     return room(mixdown(pop1, at(0.09, pop2), at(0.02, air)), rng, 0.4, 0.2)
 
 
@@ -392,7 +411,7 @@ def radio_call(v, rng):
 @sfx("emp_pulse", -21, 2)
 def emp_pulse(v, rng):
     d = 0.7
-    sub = thump(90, 30, d, 0.08, 0.25, 1.6)
+    sub = thump(90, 30, d, 0.08, 0.25, 1.6, hp_hz=50)
     wob = dsp.fm(dsp.glide(300, 90, d), 0.5, 4 * np.exp(-dsp.tvec(d) / 0.2)) * env_exp(d, 0.2, 0.005) * 0.4
     ring = dsp.sweep_bp(noise(d, rng), dsp.glide(3000, 300, d), 3.0) * env_exp(d, 0.2) * 0.8
     return mixdown(sub, at(0, wob), at(0, ring), at(0.05, crackle(rng, 0.5, 250, 0.2), 0.5), at(0, click(rng, 0.006, 800, 5000), 0.4))
@@ -423,33 +442,43 @@ def gravity_hum(v, rng):
 
 @sfx("hit_blunt", -26, 3)
 def hit_blunt(v, rng):
+    # A club landing: a concert tom and a rimshot crack together, a short high-passed punch under them.
     p = pv(v)
-    return mixdown(thump(170 * p, 85, 0.12, 0.012, 0.035, 2.2), at(0, nburst(rng, 0.06, 300, 1600, 0.018, 0.0005), 0.9), at(0, click(rng, 0.004, 1200, 5000), 0.35))
+    tom = perc([TOM_HM, TOM_H, TOM_LM][v % 3], 118, KIT_ORCH, pitch=1.1 * p, length=0.2)
+    rim = perc(SIDE_STICK, 110, KIT_STD, pitch=0.85 * p, length=0.08)
+    punch = thump(190 * p, 100, 0.1, 0.012, 0.03, 2.2, hp_hz=120)
+    return mixdown(tom, at(0, rim, 0.6), at(0, crack(rng, 0.045, 800, 3200, 0.011), 0.7), at(0, knock(900 * p, 0.07, 0.016), 0.35), at(0, punch, 0.35))
 
 
 @sfx("hit_slash", -26, 3, noisy=True)
 def hit_slash(v, rng):
+    # A blade cut: a stick strike, the swept slice and a short metal ring (FM partials).
     p = pv(v)
     slice_ = dsp.sweep_bp(noise(0.09, rng), dsp.glide(3000 * p, 1100 * p, 0.09), 2.0) * env_exp(0.09, 0.03, 0.002) * 2.5
-    shing = fm_bell(2100 * p, 0.12, 1.5, 1.2, 0.035, 0.02) * 0.2
-    thud = thump(130 * p, 75, 0.07, 0.01, 0.025, 1.8) * 0.6
-    return mixdown(slice_, at(0, shing), at(0.005, thud))
+    shing = fm_bell(2100 * p, 0.14, 1.5, 1.2, 0.04, 0.02)
+    stick = perc(CLAVES, 110, pitch=0.8 * p, length=0.06)
+    thud = thump(160 * p, 95, 0.07, 0.01, 0.025, 1.8, hp_hz=120)
+    return mixdown(slice_, at(0, stick, 0.55), at(0, shing, 0.3), at(0.004, thud, 0.35))
 
 
 @sfx("hit_pierce", -27, 3)
 def hit_pierce(v, rng):
+    # An arrow striking home: a woodblock "thwk" with a short high hiss of feathers.
     p = pv(v)
-    tock = mixdown(nburst(rng, 0.03, 700, 2600, 0.008, 0.0003), at(0, osc(dsp.drop(650 * p, 320 * p, 0.04, 0.01), "sine") * env_exp(0.04, 0.014), 0.7))
-    return mixdown(tock, at(0, thump(110 * p, 65, 0.08, 0.01, 0.025), 0.6))
+    wood = sample(GM["woodblock"], 67, 116, 0.12, 0.3, pitch=p, length=0.1)
+    hiss = nburst(rng, 0.03, 3000, 8000, 0.007, 0.0003)
+    thud = thump(170 * p, 100, 0.06, 0.01, 0.02, hp_hz=120)
+    return mixdown(wood, at(0, knock(780 * p, 0.06, 0.013, rng), 0.45), at(0, hiss, 0.35), at(0, thud, 0.3))
 
 
 @sfx("hit_bullet", -27, 3, noisy=True)
 def hit_bullet(v, rng):
     p = pv(v)
-    smack = nburst(rng, 0.04, 700, 4000, 0.007, 0.0002) * 1.2
-    dirt = debris(rng, 0.12, 200, 800, 3500, 0.05, 0.006) * 0.4
-    body = thump(150 * p, 80, 0.06, 0.01, 0.02) * 0.6
-    out = mixdown(smack, at(0, body), at(0.005, dirt))
+    smack = crack(rng, 0.04, 900, 4200, 0.008)
+    stick = perc(SIDE_STICK, 100, pitch=1.1 * p, length=0.05)
+    dirt = debris(rng, 0.12, 200, 900, 4000, 0.05, 0.006) * 0.4
+    body = thump(170 * p, 95, 0.06, 0.01, 0.02, hp_hz=120) * 0.35
+    out = mixdown(smack, at(0, stick, 0.45), at(0, body), at(0.005, dirt))
     if v == 2:
         ric = osc(dsp.glide(2400, 1500, 0.16, 0.8), "sine") * env_exp(0.16, 0.06, 0.005) * 0.16
         out = mixdown(out, at(0.02, ric))
@@ -466,41 +495,48 @@ def hit_laser(v, rng):
 
 @sfx("hit_heavy", -23, 3)
 def hit_heavy(v, rng):
+    # A crushing blow: a low power snare and a floor tom over a heavy punch, with crunch.
     p = pv(v)
-    body = thump(120 * p, 42, 0.3, 0.03, 0.09, 2.6)
-    crunch = debris(rng, 0.2, 180, 500, 3000, 0.06, 0.01) * 0.6
-    smack = nburst(rng, 0.08, 200, 2000, 0.025, 0.0005)
-    return room(mixdown(body, at(0, smack), at(0.004, crunch), at(0, click(rng, 0.005, 800, 4500), 0.4)), rng, 0.3, 0.15)
+    body = thump(130 * p, 55, 0.3, 0.03, 0.09, 2.6, hp_hz=80)
+    snare = perc(SNARE, 124, KIT_POWER, pitch=0.62 * p, length=0.3)
+    tom = perc(TOM_LF, 120, KIT_ORCH, pitch=0.9 * p, length=0.35)
+    crunch = debris(rng, 0.2, 180, 700, 3500, 0.06, 0.01)
+    return room(mixdown(body, at(0, snare, 0.6), at(0, tom, 0.5), at(0, crack(rng, 0.06, 600, 2800, 0.016), 0.6), at(0.004, crunch, 0.35)), rng, 0.3, 0.15)
 
 
 @sfx("hit_effective", -25, 3)
 def hit_effective(v, rng):
     p = pv(v)
     ping = mixdown(at(0, fm_bell(1568 * p, 0.3, 2.0, 1.5, 0.09, 0.03), 0.5), at(0, blip(3136 * p, 0.15, 0.03), 0.15))
-    punch = thump(180 * p, 80, 0.1, 0.01, 0.03, 2.2)
-    return mixdown(punch, at(0, nburst(rng, 0.04, 800, 4000, 0.008), 0.6), at(0.004, ping))
+    punch = thump(190 * p, 95, 0.1, 0.01, 0.03, 2.2, hp_hz=120)
+    rim = perc(SIDE_STICK, 116, pitch=p, length=0.08)
+    return mixdown(punch, at(0, rim, 0.5), at(0, crack(rng, 0.04, 900, 4000, 0.009), 0.6), at(0.004, ping))
 
 
 def explosion(rng, size: float, p: float = 1.0):
+    # The GM gunshot pitched down gives the recorded "blast" crack; a high-passed boom, a mid burst,
+    # debris and a rumble tail do the rest.
     d = 0.35 + 0.9 * size
-    boom = thump(110 * p, 30 + 10 * (1 - size), d, 0.04 + 0.05 * size, 0.08 + 0.2 * size, 2.4)
-    burst = nburst(rng, d, 150, 3500 - 1200 * size, 0.05 + 0.1 * size, 0.001, "pink") * (1.1 + 0.4 * size)
-    crackl = debris(rng, d, 80 + 120 * size, 600, 4500, 0.1 + 0.25 * size, 0.01) * 0.45
-    rum = rumble(rng, d + 0.4 * size, 300 - 100 * size, 0.15 + 0.4 * size, 0.01) * (0.5 + 0.8 * size)
-    return room(mixdown(burst, at(0, boom), at(0.01, crackl), at(0.0, rum), at(0, click(rng, 0.008, 500, 4000), 0.5)), rng, 0.4 + 0.6 * size, 0.18)
+    boom = thump(110 * p, 36 + 10 * (1 - size), d, 0.04 + 0.05 * size, 0.08 + 0.2 * size, 2.4, hp_hz=55)
+    blast = sample(GM["gunshot"], 60, 127, 0.3, 1.0, pitch=(0.62 - 0.2 * size) * p, length=d + 0.3)
+    burst = nburst(rng, d, 350, 3500 - 1000 * size, 0.05 + 0.1 * size, 0.001, "pink") * (1.1 + 0.4 * size)
+    crackl = debris(rng, d, 80 + 120 * size, 700, 5000, 0.1 + 0.25 * size, 0.01) * 0.5
+    rum = rumble(rng, d + 0.4 * size, 300 - 100 * size, 0.15 + 0.4 * size, 0.01) * (0.4 + 0.6 * size)
+    snap = crack(rng, 0.07, 600, 3000, 0.02 + 0.02 * size)
+    return room(mixdown(burst, at(0, boom, 0.8), at(0, blast, 0.9), at(0, snap, 0.7), at(0.01, crackl), at(0.0, rum)), rng, 0.4 + 0.6 * size, 0.18)
 
 
-@sfx("explosion_s", -21, 3, noisy=True)
+@sfx("explosion_s", -21, 3, noisy=True, phone_gap=-6.0)
 def explosion_s(v, rng):
     return explosion(rng, 0.0, pv(v))
 
 
-@sfx("explosion_m", -19, 3, noisy=True, phone_gap=-11.0)
+@sfx("explosion_m", -19, 3, noisy=True, phone_gap=-6.0)
 def explosion_m(v, rng):
     return explosion(rng, 0.45, pv(v))
 
 
-@sfx("explosion_l", -17, 3, noisy=True, max_s=2.2, phone_gap=-11.0)
+@sfx("explosion_l", -17, 3, noisy=True, max_s=2.2, phone_gap=-6.0)
 def explosion_l(v, rng):
     first = explosion(rng, 1.0, pv(v))
     second = explosion(rng, 0.3, pv(v) * 0.9) * 0.5
@@ -509,19 +545,20 @@ def explosion_l(v, rng):
 
 @sfx("die_bio", -25, 3)
 def die_bio(v, rng):
+    # A cartoon "hup!" grunt that starts at full level, then a tom thud and a cloth fall.
     p = pv(v)
-    fall = osc(dsp.glide(560 * p, 190 * p, 0.2, 1.0), "sine") * env_exp(0.2, 0.09, 0.004) * 0.45
-    thud = thump(120 * p, 55, 0.18, 0.02, 0.05, 1.8)
-    puff = nburst(rng, 0.25, 200, 1800, 0.07, 0.01, "pink") * 0.6
-    return mixdown(at(0, fall), at(0.1, thud), at(0.1, puff), at(0.1, click(rng, 0.004, 700, 3000), 0.3))
+    voice = hp(grunt(rng, [200, 175, 225][v % 3] * p, 0.15, ["u", "o", "a"][v % 3], 1.3), 250, 2)
+    tom = perc(TOM_HM, 104, KIT_ORCH, pitch=1.3 * p, length=0.22)
+    thud = thump(170 * p, 95, 0.12, 0.02, 0.04, 1.8, hp_hz=130)
+    return mixdown(crack(rng, 0.025, 1000, 3800, 0.006), at(0, voice), at(0.09, tom, 0.45), at(0.09, thud, 0.15), at(0.08, cloth(rng, 0.16), 0.7))
 
 
 @sfx("die_mech", -24, 3)
 def die_mech(v, rng):
     p = pv(v)
-    clank = bell(290 * p, 0.35, 0.9, 0.08, ((1, 1), (2.43, 0.8), (3.9, 0.5), (5.8, 0.3))) * 0.5
-    pop = explosion(rng, 0.0, p * 1.1) * 0.8
-    sparks = crackle(rng, 0.35, 400, 0.12) * 0.3
+    clank = mixdown(bell(520 * p, 0.35, 0.9, 0.08, ((1, 1), (2.43, 0.8), (3.9, 0.5), (5.8, 0.3))) * 0.6, at(0, perc(E_SNARE, 110, KIT_POWER, pitch=1.1 * p, length=0.2), 0.5))
+    pop = hp(explosion(rng, 0.0, p * 1.1), 260, 2) * 0.7
+    sparks = crackle(rng, 0.35, 400, 0.12) * 0.45
     down = osc(dsp.glide(420 * p, 70 * p, 0.35, 0.7), "tri") * env_exp(0.35, 0.18, 0.005) * 0.3
     return mixdown(clank, at(0.02, pop), at(0.03, sparks), at(0.05, lp(down, 2500)))
 
@@ -599,17 +636,17 @@ def slot_buy(v, rng):
     return mixdown(ka, at(0.09, chunk), at(0.2, coin(hz("G6")), 0.35))
 
 
-@sfx("base_hit", -24, 3)
+@sfx("base_hit", -24, 3, phone_gap=-6.0)
 def base_hit(v, rng):
     p = pv(v)
-    body = thump(95 * p, 38, 0.35, 0.04, 0.1, 2.4)
-    stone = nburst(rng, 0.1, 250, 2500, 0.03, 0.0005) * 1.1
+    body = thump(95 * p, 38, 0.35, 0.04, 0.1, 2.4, hp_hz=50)
+    stone = mixdown(nburst(rng, 0.1, 400, 3000, 0.03, 0.0005) * 1.1, at(0, crack(rng, 0.06, 500, 2500, 0.02), 0.8), at(0, perc(TOM_L, 124, KIT_ORCH, pitch=0.7 * p, length=0.4), 0.8))
     crumbs = debris(rng, 0.4, 90, 700, 3500, 0.12, 0.012) * 0.5
     dust = nburst(rng, 0.45, 150, 1200, 0.15, 0.03, "pink") * 0.4
     return room(mixdown(body, at(0, stone), at(0.02, crumbs), at(0.02, dust)), rng, 0.35, 0.18)
 
 
-@sfx("base_crumble", -21, 2, max_s=1.6, phone_gap=-11.0)
+@sfx("base_crumble", -21, 2, max_s=1.6, phone_gap=-6.0)
 def base_crumble(v, rng):
     parts = []
     for k in range(4):
@@ -619,7 +656,7 @@ def base_crumble(v, rng):
     return mixdown(*parts, at(0, rum), at(0.1, rain))
 
 
-@sfx("base_destroyed", -17, 1, max_s=3.2, phone_gap=-11.0)
+@sfx("base_destroyed", -17, 1, max_s=3.2, phone_gap=-6.0)
 def base_destroyed(v, rng):
     big = explosion(rng, 1.0, 0.85)
     coll = base_crumble(0, rng)
@@ -665,16 +702,25 @@ def evolve_ready(v, rng):
 
 @sfx("evolve_riser", -21, 1, max_s=2.5, timed=True)
 def evolve_riser(v, rng):
+    # Unpitched on purpose: it plays over the music in any age's key (C, D, E, F, F#), so it must not
+    # carry a chord. Two reverse cymbals (one slowed down), a snare roll, a rising noise sweep and a
+    # rumble all peak right at 2.5 s, where the evolve fanfare hits.
     d = 2.5
-    t = dsp.tvec(d)
-    rise = np.linspace(0, 1, n_of(d)) ** 2.2
-    noise_up = dsp.sweep_bp(noise(d, rng, "pink"), dsp.glide(200, 5000, d, 0.8), 1.4) * rise * 1.4
-    tone_up = (osc(dsp.glide(110, 440, d, 0.7), "saw")) * rise * 0.12
-    tone_up = lp(tone_up, 2500)
-    choir = gm_notes(GM["choir"], [(0, d, mn(n), 100) for n in ("C4", "G4", "C5")], tail=0.2)[: n_of(d)] * rise
-    snare = gm_notes(0, [(1.3 + k * 0.05, 0.05, 38, int(40 + 70 * k / 24)) for k in range(24)], drums=True, tail=0.3)[: n_of(d)]
-    out = mixdown(noise_up, at(0, tone_up), at(0, choir, 0.9), at(0, snare, 0.6))[: n_of(d)]
-    return fade(out, 0.2, 0.03) * (0.2 + 0.8 * np.clip(t / d, 0, 1))
+    n = n_of(d)
+    rc = dsp.pad_to(gm_note(GM["reverse_cymbal"], 60, 2.5, 120, 0.5), n)
+    peak = int(np.argmax(np.abs(rc)))
+    swell = rc[: peak + 1]
+    slow = kit_repitch(swell, 0.56)
+    out = np.zeros(n)
+    end = n_of(d - 0.04)
+    out[max(0, end - len(slow)) : end] += slow[-min(end, len(slow)) :] * 0.9
+    out[max(0, end - len(swell)) : end] += swell[-min(end, len(swell)) :] * 1.0
+    rise = np.linspace(0, 1, n) ** 2.2
+    noise_up = dsp.sweep_bp(noise(d, rng, "pink"), dsp.glide(300, 6000, d, 0.8), 1.4) * rise * 0.9
+    rum = lp(noise(d, rng, "brown"), 180) * np.linspace(0, 1, n) ** 1.6 * 1.2
+    snare = gm_notes(0, [(1.2 + k * 0.05, 0.05, 38, int(36 + 80 * k / 25)) for k in range(26)], drums=True, tail=0.3)[:n]
+    out = mixdown(at(0, out * 1.6), at(0, noise_up), at(0, hp(rum, 40)), at(0, snare, 0.55))[:n]
+    return fade(out, 0.2, 0.03)
 
 
 FANFARE_MOTIF = [(0.0, 0.17, "C5"), (0.17, 0.09, "G4"), (0.26, 0.09, "C5"), (0.35, 0.85, "E5")]
@@ -740,7 +786,7 @@ def evolve_fanfare_future(v, rng):
     brass = motif(GM["brass"], k, 104, -1)
     pad = chord_hit(GM["warm_pad"], k, ("C3", "G3", "C4", "E4", "G4"))
     kit = gm_notes(25, [(0.0, 0.2, 36, 120), (0.17, 0.1, 39, 90), (0.26, 0.1, 39, 100), (0.35, 0.5, 49, 110), (0.35, 0.3, 36, 127)], drums=True, tail=1.2)
-    sub = thump(hz("F#1") * 2, hz("F#1"), 0.9, 0.05, 0.35, 1.5)
+    sub = thump(hz("F#1") * 2, hz("F#1"), 0.9, 0.05, 0.35, 1.5, hp_hz=50)
     shimmer = whoosh(rng, 0.4, 2000, 6000, 2.0, 0.3) * 0.25
     return mixdown(lp(lead, 6000), at(0, brass, 0.7), at(0, pad, 0.6), at(0, kit, 0.6), at(0.35, sub, 0.7), at(0.35, shimmer))
 
@@ -749,7 +795,7 @@ def evolve_fanfare_future(v, rng):
 def evolve_enemy(v, rng):
     low = gm_notes(GM["trombone"], [(0.0, 0.9, mn("C3"), 100), (0.0, 0.9, mn("G3"), 96), (0.0, 0.9, mn("Eb3") + 12, 80)], tail=0.8)
     timp = gm_notes(GM["timpani"], [(i * 0.03, 0.04, mn("C2"), 60 + 2 * i) for i in range(14)] + [(0.45, 0.5, mn("C2"), 120)], tail=1.0)
-    return mixdown(low, at(0, timp, 0.8), at(0.45, thump(80, 35, 0.6, 0.06, 0.2), 0.6))
+    return mixdown(low, at(0, timp, 0.8), at(0.45, thump(80, 35, 0.6, 0.06, 0.2, hp_hz=50), 0.6))
 
 
 # =================================================================================================
@@ -773,7 +819,7 @@ def power_telegraph(v, rng):
     return fade(out[: n_of(d)], 0.005, 0.03)
 
 
-@sfx("pw_stampede", -19, 2, max_s=2.2, phone_gap=-11.0)
+@sfx("pw_stampede", -19, 2, max_s=2.2, phone_gap=-6.0)
 def pw_stampede(v, rng):
     d = 2.0
     parts = []
@@ -781,7 +827,7 @@ def pw_stampede(v, rng):
     while t < d - 0.2:
         for off in (0.0, 0.07, 0.16):  # gallop: da-da-dum
             g = 0.4 + 0.6 * min(1, t / 1.0)
-            parts.append(at(t + off + rng.uniform(-0.01, 0.01), thump(95 * rng.uniform(0.85, 1.15), 40, 0.14, 0.02, 0.04, 2.0), g))
+            parts.append(at(t + off + rng.uniform(-0.01, 0.01), thump(95 * rng.uniform(0.85, 1.15), 40, 0.14, 0.02, 0.04, 2.0, hp_hz=50), g))
             parts.append(at(t + off, nburst(rng, 0.06, 200, 1500, 0.02, 0.002, "pink"), g * 0.5))
         t += 0.24 + rng.uniform(-0.03, 0.03)
     moo_d = 0.6
@@ -790,7 +836,7 @@ def pw_stampede(v, rng):
     return mixdown(*parts, at(0, rumble(rng, d, 250, 1.0, 0.4), 1.0), at(0.5, moo, 0.8))
 
 
-@sfx("pw_meteor", -19, 2, max_s=2.4, phone_gap=-11.0)
+@sfx("pw_meteor", -19, 2, max_s=2.4, phone_gap=-6.0)
 def pw_meteor(v, rng):
     fall = 1.0
     roar = dsp.sweep_bp(noise(fall, rng, "pink"), dsp.glide(3000, 500, fall), 1.2) * np.linspace(0.1, 1, n_of(fall)) ** 1.5 * 1.5
@@ -827,7 +873,7 @@ def pw_smoke(v, rng):
     return mixdown(pop, at(0.03, whoomph), at(0.05, hiss))
 
 
-@sfx("pw_broadside", -19, 2, max_s=2.2, phone_gap=-11.0)
+@sfx("pw_broadside", -19, 2, max_s=2.2, phone_gap=-6.0)
 def pw_broadside(v, rng):
     parts = [at(k * 0.2 + rng.uniform(0, 0.04), shot_cannon(k % 3, rng), 0.8 - 0.05 * k) for k in range(5)]
     return mixdown(*parts)
@@ -912,9 +958,9 @@ def last_stand_charge(v, rng):
     return fade(mixdown(drums, at(0, rise), at(0, air, 0.8))[: n_of(d)], 0.005, 0.02)
 
 
-@sfx("last_stand_fire", -18, 1, max_s=1.6, phone_gap=-11.0)
+@sfx("last_stand_fire", -18, 1, max_s=1.6, phone_gap=-6.0)
 def last_stand_fire(v, rng):
-    wave = mixdown(thump(80, 28, 1.0, 0.08, 0.3, 2.2), at(0, whoosh(rng, 0.8, 3000, 300, 0.8, 0.1), 1.2))
+    wave = mixdown(thump(80, 28, 1.0, 0.08, 0.3, 2.2, hp_hz=50), at(0, whoosh(rng, 0.8, 3000, 300, 0.8, 0.1), 1.2))
     orch = gm_notes(GM["orch_hit"], [(0, 0.4, mn("C4"), 120), (0, 0.4, mn("G4"), 110)], tail=0.8)
     return mixdown(explosion(rng, 0.7), at(0, wave), at(0, orch, 0.7))
 
@@ -955,8 +1001,11 @@ def defeat_jingle(v, rng):
 
 @sfx("emote_pop", -28, 3, hp_hz=200)
 def emote_pop(v, rng):
+    # A bubbly "bloop": a high woodblock with a quick upward pitched body.
     p = pv(v)
-    return mixdown(osc(dsp.glide(420 * p, 980 * p, 0.06, 0.8), "sine") * env_exp(0.06, 0.025, 0.002), at(0, click(rng, 0.003, 1500, 5000), 0.25))
+    wood = sample(GM["woodblock"], 84, 96, 0.12, 0.3, pitch=p, length=0.08)
+    bloop = osc(dsp.glide(700 * p, 1500 * p, 0.06, 0.8), "sine") * env_exp(0.06, 0.022, 0.001)
+    return mixdown(wood, at(0, bloop, 0.4), at(0, knock(1500 * p, 0.05, 0.01), 0.25))
 
 
 # =================================================================================================
@@ -965,8 +1014,11 @@ def emote_pop(v, rng):
 
 @sfx("cap_thud", -22, 3)
 def cap_thud(v, rng):
+    # The capsule lands: a concert tom and a wooden knock over a short punch, a little grit.
     p = pv(v)
-    return room(mixdown(thump(100 * p, 40, 0.35, 0.03, 0.1, 2.2), at(0, nburst(rng, 0.1, 200, 1800, 0.03), 0.8), at(0.003, bell(260 * p, 0.25, 0.6, 0.07), 0.25), at(0.01, debris(rng, 0.2, 60, 800, 3000, 0.08), 0.35)), rng, 0.3, 0.18)
+    tom = perc(TOM_L, 122, KIT_ORCH, pitch=0.8 * p, length=0.45)
+    wood = perc(WOOD_LO, 110, pitch=0.8 * p, length=0.12)
+    return room(mixdown(tom, at(0, thump(110 * p, 50, 0.35, 0.03, 0.1, 2.2, hp_hz=80), 0.5), at(0, wood, 0.4), at(0, crack(rng, 0.05, 600, 2500, 0.014), 0.5), at(0.003, bell(420 * p, 0.25, 0.6, 0.07), 0.2), at(0.01, debris(rng, 0.2, 60, 900, 3500, 0.08), 0.3)), rng, 0.3, 0.18)
 
 
 @sfx("cap_riser", -22, 1, max_s=1.5, timed=True)
@@ -1019,7 +1071,9 @@ def cap_climb_4(v, rng):
 def cap_clunk(v, rng):
     # A neutral knock, never a penalty sound (A10).
     p = pv(v)
-    return mixdown(nburst(rng, 0.07, 200, 1200, 0.02), at(0, thump(140 * p, 80, 0.12, 0.015, 0.035, 1.6), 0.8), at(0, bell(380 * p, 0.12, 0.5, 0.035), 0.2))
+    wood = perc(WOOD_LO, 104, pitch=0.7 * p, length=0.14)
+    tom = perc(TOM_LM, 100, KIT_ORCH, pitch=1.0 * p, length=0.2)
+    return mixdown(wood, at(0, tom, 0.5), at(0, thump(150 * p, 90, 0.12, 0.015, 0.035, 1.6, hp_hz=110), 0.35), at(0, bell(560 * p, 0.12, 0.5, 0.035), 0.15))
 
 
 @sfx("cap_burst", -18, 1, max_s=1.6)
@@ -1079,14 +1133,14 @@ def rarity_legendary(v, rng):
     horn = gm_notes(GM["horn"], [(0.48, 1.2, mn("C4"), 100), (0.48, 1.2, mn("E4"), 96)], tail=1.0)
     choir = chord_hit(GM["choir"], 0, ("C4", "G4", "C5", "E5"), 0.45, 1.5, 96)
     glock = gm_notes(GM["glock"], [(0.48 + k * 0.05, 0.5, mn(n), 90) for k, n in enumerate(("C6", "E6", "G6", "C7"))], tail=1.0)
-    sub = thump(80, 28, 1.4, 0.1, 0.45, 1.5)
+    sub = thump(80, 28, 1.4, 0.1, 0.45, 1.5, hp_hz=50)
     cym = gm_notes(48, [(0.48, 1.0, 49, 110)], drums=True, tail=1.5)
     return mixdown(fan, at(0, horn, 0.7), at(0, choir, 0.7), at(0, glock, 0.35), at(0.48, sub, 0.9), at(0, cym, 0.5))
 
 
-@sfx("walkout_bass", -17, 1, max_s=1.6, phone_gap=-11.0)
+@sfx("walkout_bass", -17, 1, max_s=1.6, phone_gap=-6.0)
 def walkout_bass(v, rng):
-    sub = thump(110, 36, 1.4, 0.08, 0.45, 2.4, harm=0.5)
+    sub = thump(110, 36, 1.4, 0.08, 0.45, 2.4, harm=0.5, hp_hz=50)
     hit = gm_notes(GM["timpani"], [(0, 0.8, mn("C2"), 127)], tail=1.0)
     boom = nburst(rng, 0.3, 80, 900, 0.1, 0.002, "pink") * 0.6
     return mixdown(sub, at(0, hit, 0.6), at(0, boom), at(0, click(rng, 0.006, 600, 4000), 0.4))
@@ -1105,7 +1159,7 @@ def upgrade_ready(v, rng):
 @sfx("upgrade_slam", -19, 2, max_s=1.2)
 def upgrade_slam(v, rng):
     anvil = bell(520, 0.9, 1.0, 0.3, ((1, 1), (2.76, 0.8), (5.4, 0.5), (8.9, 0.25)))
-    return room(mixdown(thump(110, 42, 0.4, 0.03, 0.12, 2.4), at(0, anvil, 0.35), at(0, nburst(rng, 0.08, 500, 4000, 0.02), 0.8), at(0.01, crackle(rng, 0.4, 500, 0.12), 0.25)), rng, 0.4, 0.2)
+    return room(mixdown(thump(110, 42, 0.4, 0.03, 0.12, 2.4, hp_hz=50), at(0, anvil, 0.35), at(0, nburst(rng, 0.08, 500, 4000, 0.02), 0.8), at(0.01, crackle(rng, 0.4, 500, 0.12), 0.25)), rng, 0.4, 0.2)
 
 
 @sfx("level_up", -18, 1, max_s=1.6)

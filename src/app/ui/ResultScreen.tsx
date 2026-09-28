@@ -61,9 +61,10 @@ function HomeIcon() {
 
 function ReplayIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-      <rect x="3" y="5" width="18" height="14" rx="3" fill="currentColor" stroke="#1b1330" stroke-width="1.4" />
-      <path d="M10 9v6l5-3z" fill="#1b1330" />
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+      <path d="M19 12a7 7 0 1 1-2.05-4.95" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" />
+      <path d="M19.5 3.5v5h-5z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+      <path d="M10 9v6l5-3z" fill="currentColor" />
     </svg>
   );
 }

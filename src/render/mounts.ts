@@ -92,6 +92,8 @@ export const textLabelFactory: LabelFactory = () => {
 
 /** Empty-mount socket diameter in CSS px (a 44 px tap target, audit #3). */
 export const SOCKET_PX = 44;
+/** Mounts sit about this far apart (lu); markers shrink to fit on small screens. */
+export const MOUNT_GAP_LU = 46;
 /** The "+" badge of the next buyable mount, in CSS px. */
 export const BUY_BADGE_PX = 30;
 
@@ -130,17 +132,19 @@ export class MountMarkers {
       return;
     }
     const px = 1 / Math.max(0.0001, scale);
+    // Sized in screen px, but never wider than the gap between two mounts (small phone screens).
+    const size = Math.min(1, (MOUNT_GAP_LU * scale) / SOCKET_PX);
     const pulse = 0.5 + 0.5 * Math.sin(this.t / 260);
     const bob = Math.sin(this.t / 420) * 2.5 * px;
     s.points.forEach((p, i) => {
-      if (i < s.mountsOwned && !s.occupied[i]) this.socket(p.x, p.y + bob, px, pulse, s.color);
+      if (i < s.mountsOwned && !s.occupied[i]) this.socket(p.x, p.y + bob, px * size, pulse, s.color);
     });
     const next = s.points[s.mountsOwned];
     if (next && s.nextCost !== null) {
       const affordable = s.gold >= s.nextCost;
       // A real option: affordable and every owned mount built. Only then it bobs, glows and says so.
       const offer = affordable && s.occupied.slice(0, s.mountsOwned).every(Boolean);
-      const r = (BUY_BADGE_PX / 2) * px;
+      const r = (BUY_BADGE_PX / 2) * px * Math.min(1, size * 1.25);
       const y = next.y + (offer ? bob : 0);
       g.circle(next.x, y + 2 * px, r + 2.5 * px).fill({ color: 0x1b1330, alpha: 0.9 });
       g.circle(next.x, y, r + 2.5 * px).fill({ color: 0x1b1330 });

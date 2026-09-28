@@ -97,9 +97,10 @@ def render_track(track: Track, bpm: float, seconds: float | None = None, gain: f
     CACHE.mkdir(parents=True, exist_ok=True)
     wav = CACHE / f"{key}.wav"
     if not wav.exists():
-        mid_path = CACHE / f"{key}.mid"
+        # Per-process temp names: parallel renders may ask for the same sample at the same time.
+        mid_path = CACHE / f"{key}.{os.getpid()}.mid"
         mid_path.write_bytes(data)
-        tmp = CACHE / f"{key}.tmp.wav"
+        tmp = CACHE / f"{key}.{os.getpid()}.tmp.wav"
         cmd = [
             shutil.which("fluidsynth") or "fluidsynth", "-ni", "-q",
             "-g", str(gain), "-r", str(SR),
@@ -108,7 +109,7 @@ def render_track(track: Track, bpm: float, seconds: float | None = None, gain: f
             "-F", str(tmp), SOUNDFONT, str(mid_path),
         ]
         subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        tmp.rename(wav)
+        os.replace(tmp, wav)
         mid_path.unlink(missing_ok=True)
     x, sr = sf.read(str(wav), dtype="float64", always_2d=True)
     assert sr == SR
@@ -118,17 +119,18 @@ def render_track(track: Track, bpm: float, seconds: float | None = None, gain: f
     return x
 
 
-def one_shot(program: int, midi: int, dur: float = 0.5, vel: int = 110, drums: bool = False, tail: float = 1.5, bpm: float = 120) -> np.ndarray:
-    """A single GM note as a mono array (for layering into effects)."""
+def one_shot(program: int, midi: int, dur: float = 0.5, vel: int = 110, drums: bool = False, tail: float = 1.5, bpm: float = 120, bank: int = 0) -> np.ndarray:
+    """A single GM note as a mono array (for layering into effects). `bank` selects a variation bank
+    (FluidR3 bank 8 has, among others, castanets, a concert bass drum and a second melodic tom)."""
     beats = dur * bpm / 60
-    t = Track("shot", program, drums=drums).add(0, beats, midi, vel)
+    t = Track("shot", program, drums=drums, bank=bank).add(0, beats, midi, vel)
     x = render_track(t, bpm, seconds=dur + tail)
     return x.mean(axis=1)
 
 
-def phrase(program: int, notes: list[tuple[float, float, int, int]], drums: bool = False, tail: float = 1.5, bpm: float = 120) -> np.ndarray:
+def phrase(program: int, notes: list[tuple[float, float, int, int]], drums: bool = False, tail: float = 1.5, bpm: float = 120, bank: int = 0) -> np.ndarray:
     """Several GM notes (start s, length s, midi, velocity) as a mono array."""
-    t = Track("phrase", program, drums=drums)
+    t = Track("phrase", program, drums=drums, bank=bank)
     end = 0.0
     for s, d, m, v in notes:
         t.add(s * bpm / 60, d * bpm / 60, m, v)
