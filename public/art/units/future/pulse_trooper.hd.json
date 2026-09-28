@@ -2,22 +2,22 @@
  "frames": {
   "pulse_trooper_idle_00": {
    "frame": {
-    "x": 217,
-    "y": 329,
-    "w": 105,
-    "h": 95
+    "x": 1073,
+    "y": 640,
+    "w": 209,
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 74,
-    "w": 105,
-    "h": 95
+    "x": 138,
+    "y": 148,
+    "w": 209,
+    "h": 190
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -26,22 +26,22 @@
   },
   "pulse_trooper_idle_00_team": {
    "frame": {
-    "x": 88,
-    "y": 582,
-    "w": 38,
-    "h": 55
+    "x": 2,
+    "y": 1303,
+    "w": 76,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 81,
-    "w": 38,
-    "h": 55
+    "x": 154,
+    "y": 162,
+    "w": 76,
+    "h": 109
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -50,22 +50,22 @@
   },
   "pulse_trooper_idle_01": {
    "frame": {
-    "x": 647,
-    "y": 227,
-    "w": 104,
-    "h": 96
+    "x": 1237,
+    "y": 440,
+    "w": 207,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 72,
-    "w": 104,
-    "h": 96
+    "x": 138,
+    "y": 144,
+    "w": 207,
+    "h": 192
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -74,22 +74,22 @@
   },
   "pulse_trooper_idle_01_team": {
    "frame": {
-    "x": 642,
-    "y": 520,
-    "w": 38,
-    "h": 56
+    "x": 900,
+    "y": 1185,
+    "w": 76,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 79,
-    "w": 38,
-    "h": 56
+    "x": 154,
+    "y": 158,
+    "w": 76,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -98,22 +98,22 @@
   },
   "pulse_trooper_idle_02": {
    "frame": {
-    "x": 522,
-    "y": 122,
-    "w": 102,
-    "h": 99
+    "x": 212,
+    "y": 440,
+    "w": 202,
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 69,
-    "w": 102,
-    "h": 99
+    "x": 139,
+    "y": 139,
+    "w": 202,
+    "h": 196
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -122,22 +122,22 @@
   },
   "pulse_trooper_idle_02_team": {
    "frame": {
-    "x": 210,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 80,
+    "y": 1185,
+    "w": 74,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 76,
-    "w": 37,
-    "h": 57
+    "x": 154,
+    "y": 152,
+    "w": 74,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -146,22 +146,22 @@
   },
   "pulse_trooper_idle_03": {
    "frame": {
-    "x": 691,
-    "y": 2,
-    "w": 99,
-    "h": 101
+    "x": 2,
+    "y": 236,
+    "w": 198,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 66,
-    "w": 99,
-    "h": 101
+    "x": 140,
+    "y": 133,
+    "w": 198,
+    "h": 200
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -170,22 +170,22 @@
   },
   "pulse_trooper_idle_03_team": {
    "frame": {
-    "x": 835,
-    "y": 429,
-    "w": 37,
-    "h": 58
+    "x": 1175,
+    "y": 1020,
+    "w": 74,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 73,
-    "w": 37,
-    "h": 58
+    "x": 154,
+    "y": 147,
+    "w": 74,
+    "h": 115
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -194,22 +194,22 @@
   },
   "pulse_trooper_idle_04": {
    "frame": {
-    "x": 362,
+    "x": 702,
     "y": 2,
-    "w": 98,
-    "h": 102
+    "w": 195,
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 64,
-    "w": 98,
-    "h": 102
+    "x": 140,
+    "y": 128,
+    "w": 195,
+    "h": 203
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -218,22 +218,22 @@
   },
   "pulse_trooper_idle_04_team": {
    "frame": {
-    "x": 697,
-    "y": 429,
-    "w": 37,
-    "h": 59
+    "x": 914,
+    "y": 1020,
+    "w": 72,
+    "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 71,
-    "w": 37,
-    "h": 59
+    "x": 155,
+    "y": 142,
+    "w": 72,
+    "h": 118
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -242,22 +242,22 @@
   },
   "pulse_trooper_idle_05": {
    "frame": {
-    "x": 794,
-    "y": 2,
-    "w": 99,
-    "h": 101
+    "x": 204,
+    "y": 236,
+    "w": 198,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 66,
-    "w": 99,
-    "h": 101
+    "x": 140,
+    "y": 133,
+    "w": 198,
+    "h": 200
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -266,22 +266,22 @@
   },
   "pulse_trooper_idle_05_team": {
    "frame": {
-    "x": 2,
-    "y": 520,
-    "w": 37,
-    "h": 58
+    "x": 1253,
+    "y": 1020,
+    "w": 74,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 73,
-    "w": 37,
-    "h": 58
+    "x": 154,
+    "y": 147,
+    "w": 74,
+    "h": 115
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -290,22 +290,22 @@
   },
   "pulse_trooper_idle_06": {
    "frame": {
-    "x": 628,
-    "y": 122,
-    "w": 102,
-    "h": 99
+    "x": 418,
+    "y": 440,
+    "w": 202,
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 69,
-    "w": 102,
-    "h": 99
+    "x": 139,
+    "y": 139,
+    "w": 202,
+    "h": 196
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -314,22 +314,22 @@
   },
   "pulse_trooper_idle_06_team": {
    "frame": {
-    "x": 251,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 158,
+    "y": 1185,
+    "w": 74,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 76,
-    "w": 37,
-    "h": 57
+    "x": 154,
+    "y": 152,
+    "w": 74,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -338,22 +338,22 @@
   },
   "pulse_trooper_idle_07": {
    "frame": {
-    "x": 755,
-    "y": 227,
-    "w": 104,
-    "h": 96
+    "x": 217,
+    "y": 640,
+    "w": 207,
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 72,
-    "w": 104,
-    "h": 96
+    "x": 138,
+    "y": 145,
+    "w": 207,
+    "h": 191
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -362,22 +362,22 @@
   },
   "pulse_trooper_idle_07_team": {
    "frame": {
-    "x": 684,
-    "y": 520,
-    "w": 38,
-    "h": 56
+    "x": 980,
+    "y": 1185,
+    "w": 76,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 79,
-    "w": 38,
-    "h": 56
+    "x": 154,
+    "y": 158,
+    "w": 76,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -386,22 +386,22 @@
   },
   "pulse_trooper_walk_00": {
    "frame": {
-    "x": 110,
-    "y": 329,
-    "w": 103,
-    "h": 96
+    "x": 639,
+    "y": 640,
+    "w": 206,
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 73,
-    "w": 103,
-    "h": 96
+    "x": 140,
+    "y": 146,
+    "w": 206,
+    "h": 191
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -410,22 +410,22 @@
   },
   "pulse_trooper_walk_00_team": {
    "frame": {
-    "x": 726,
-    "y": 520,
-    "w": 38,
-    "h": 56
+    "x": 1140,
+    "y": 1185,
+    "w": 75,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 80,
-    "y": 81,
-    "w": 38,
-    "h": 56
+    "x": 160,
+    "y": 162,
+    "w": 75,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -434,22 +434,22 @@
   },
   "pulse_trooper_walk_01": {
    "frame": {
-    "x": 109,
-    "y": 227,
-    "w": 103,
-    "h": 97
+    "x": 834,
+    "y": 440,
+    "w": 205,
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 70,
-    "w": 103,
-    "h": 97
+    "x": 141,
+    "y": 141,
+    "w": 205,
+    "h": 193
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -458,22 +458,22 @@
   },
   "pulse_trooper_walk_01_team": {
    "frame": {
-    "x": 292,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 236,
+    "y": 1185,
+    "w": 74,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 77,
-    "w": 37,
-    "h": 57
+    "x": 162,
+    "y": 155,
+    "w": 74,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -482,22 +482,22 @@
   },
   "pulse_trooper_walk_02": {
    "frame": {
-    "x": 100,
-    "y": 122,
-    "w": 102,
-    "h": 100
+    "x": 406,
+    "y": 236,
+    "w": 203,
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 71,
-    "y": 66,
-    "w": 102,
-    "h": 100
+    "x": 142,
+    "y": 133,
+    "w": 203,
+    "h": 199
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -506,22 +506,22 @@
   },
   "pulse_trooper_walk_02_team": {
    "frame": {
-    "x": 43,
-    "y": 520,
-    "w": 37,
-    "h": 58
+    "x": 1409,
+    "y": 1020,
+    "w": 73,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 82,
-    "y": 74,
-    "w": 37,
-    "h": 58
+    "x": 164,
+    "y": 149,
+    "w": 73,
+    "h": 115
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -530,22 +530,22 @@
   },
   "pulse_trooper_walk_03": {
    "frame": {
-    "x": 584,
+    "x": 1326,
     "y": 2,
-    "w": 103,
-    "h": 101
+    "w": 205,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 69,
-    "w": 103,
-    "h": 101
+    "x": 141,
+    "y": 139,
+    "w": 205,
+    "h": 200
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -554,22 +554,22 @@
   },
   "pulse_trooper_walk_03_team": {
    "frame": {
-    "x": 168,
-    "y": 520,
-    "w": 38,
-    "h": 57
+    "x": 314,
+    "y": 1185,
+    "w": 74,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 77,
-    "w": 38,
-    "h": 57
+    "x": 163,
+    "y": 155,
+    "w": 74,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -579,21 +579,21 @@
   "pulse_trooper_walk_04": {
    "frame": {
     "x": 2,
-    "y": 227,
-    "w": 103,
-    "h": 98
+    "y": 440,
+    "w": 206,
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 73,
-    "w": 103,
-    "h": 98
+    "x": 140,
+    "y": 146,
+    "w": 206,
+    "h": 196
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -602,22 +602,22 @@
   },
   "pulse_trooper_walk_04_team": {
    "frame": {
-    "x": 768,
-    "y": 520,
-    "w": 38,
-    "h": 56
+    "x": 1219,
+    "y": 1185,
+    "w": 75,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 80,
-    "y": 81,
-    "w": 38,
-    "h": 56
+    "x": 160,
+    "y": 162,
+    "w": 75,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -626,22 +626,22 @@
   },
   "pulse_trooper_walk_05": {
    "frame": {
-    "x": 312,
-    "y": 122,
-    "w": 101,
-    "h": 100
+    "x": 613,
+    "y": 236,
+    "w": 201,
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 70,
-    "w": 101,
-    "h": 100
+    "x": 141,
+    "y": 141,
+    "w": 201,
+    "h": 199
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -650,22 +650,22 @@
   },
   "pulse_trooper_walk_05_team": {
    "frame": {
-    "x": 333,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 392,
+    "y": 1185,
+    "w": 74,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 77,
-    "w": 37,
-    "h": 57
+    "x": 162,
+    "y": 155,
+    "w": 74,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -674,22 +674,22 @@
   },
   "pulse_trooper_walk_06": {
    "frame": {
-    "x": 259,
+    "x": 500,
     "y": 2,
-    "w": 99,
-    "h": 103
+    "w": 198,
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 71,
-    "y": 66,
-    "w": 99,
-    "h": 103
+    "x": 142,
+    "y": 132,
+    "w": 198,
+    "h": 205
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -698,22 +698,22 @@
   },
   "pulse_trooper_walk_06_team": {
    "frame": {
-    "x": 84,
-    "y": 520,
-    "w": 37,
-    "h": 58
+    "x": 1331,
+    "y": 1020,
+    "w": 74,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 82,
-    "y": 74,
-    "w": 37,
-    "h": 58
+    "x": 164,
+    "y": 149,
+    "w": 74,
+    "h": 115
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -722,22 +722,22 @@
   },
   "pulse_trooper_walk_07": {
    "frame": {
-    "x": 734,
-    "y": 122,
-    "w": 101,
-    "h": 99
+    "x": 1229,
+    "y": 236,
+    "w": 201,
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 69,
-    "w": 101,
-    "h": 99
+    "x": 141,
+    "y": 138,
+    "w": 201,
+    "h": 197
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -746,22 +746,22 @@
   },
   "pulse_trooper_walk_07_team": {
    "frame": {
-    "x": 374,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 548,
+    "y": 1185,
+    "w": 73,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 77,
-    "w": 37,
-    "h": 57
+    "x": 163,
+    "y": 155,
+    "w": 73,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -770,22 +770,22 @@
   },
   "pulse_trooper_attack_00": {
    "frame": {
-    "x": 206,
-    "y": 122,
-    "w": 102,
-    "h": 100
+    "x": 818,
+    "y": 236,
+    "w": 202,
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 68,
-    "w": 102,
-    "h": 100
+    "x": 139,
+    "y": 137,
+    "w": 202,
+    "h": 198
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -794,22 +794,22 @@
   },
   "pulse_trooper_attack_00_team": {
    "frame": {
-    "x": 415,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 2,
+    "y": 1185,
+    "w": 74,
+    "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 79,
-    "y": 76,
-    "w": 37,
-    "h": 57
+    "x": 158,
+    "y": 152,
+    "w": 74,
+    "h": 114
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -818,22 +818,22 @@
   },
   "pulse_trooper_attack_01": {
    "frame": {
-    "x": 216,
-    "y": 227,
-    "w": 103,
-    "h": 97
+    "x": 624,
+    "y": 440,
+    "w": 206,
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 70,
-    "w": 103,
-    "h": 97
+    "x": 140,
+    "y": 141,
+    "w": 206,
+    "h": 193
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -842,22 +842,22 @@
   },
   "pulse_trooper_attack_01_team": {
    "frame": {
-    "x": 2,
-    "y": 582,
-    "w": 39,
-    "h": 55
+    "x": 1298,
+    "y": 1185,
+    "w": 76,
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 80,
-    "y": 79,
-    "w": 39,
-    "h": 55
+    "x": 161,
+    "y": 158,
+    "w": 76,
+    "h": 110
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -866,22 +866,22 @@
   },
   "pulse_trooper_attack_02": {
    "frame": {
-    "x": 537,
-    "y": 227,
-    "w": 106,
-    "h": 96
+    "x": 2,
+    "y": 640,
+    "w": 211,
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 71,
-    "w": 106,
-    "h": 96
+    "x": 141,
+    "y": 143,
+    "w": 211,
+    "h": 191
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -890,22 +890,22 @@
   },
   "pulse_trooper_attack_02_team": {
    "frame": {
-    "x": 45,
-    "y": 582,
-    "w": 39,
-    "h": 55
+    "x": 172,
+    "y": 1303,
+    "w": 77,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 82,
-    "y": 80,
-    "w": 39,
-    "h": 55
+    "x": 164,
+    "y": 161,
+    "w": 77,
+    "h": 108
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -914,22 +914,22 @@
   },
   "pulse_trooper_attack_03": {
    "frame": {
-    "x": 423,
-    "y": 227,
-    "w": 110,
-    "h": 96
+    "x": 849,
+    "y": 640,
+    "w": 220,
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 72,
-    "w": 110,
-    "h": 96
+    "x": 140,
+    "y": 145,
+    "w": 220,
+    "h": 190
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -938,22 +938,22 @@
   },
   "pulse_trooper_attack_03_team": {
    "frame": {
-    "x": 177,
-    "y": 582,
-    "w": 39,
-    "h": 54
+    "x": 253,
+    "y": 1303,
+    "w": 78,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 82,
-    "y": 81,
-    "w": 39,
-    "h": 54
+    "x": 164,
+    "y": 163,
+    "w": 78,
+    "h": 107
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -962,22 +962,22 @@
   },
   "pulse_trooper_attack_04": {
    "frame": {
-    "x": 464,
+    "x": 901,
     "y": 2,
-    "w": 116,
-    "h": 101
+    "w": 231,
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 70,
-    "y": 66,
-    "w": 116,
-    "h": 101
+    "x": 140,
+    "y": 132,
+    "w": 231,
+    "h": 202
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -986,22 +986,22 @@
   },
   "pulse_trooper_attack_04_team": {
    "frame": {
-    "x": 738,
-    "y": 429,
-    "w": 37,
-    "h": 59
+    "x": 990,
+    "y": 1020,
+    "w": 73,
+    "h": 117
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 78,
-    "y": 73,
-    "w": 37,
-    "h": 59
+    "x": 156,
+    "y": 147,
+    "w": 73,
+    "h": 117
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1010,22 +1010,22 @@
   },
   "pulse_trooper_attack_05": {
    "frame": {
-    "x": 2,
-    "y": 429,
-    "w": 106,
-    "h": 87
+    "x": 668,
+    "y": 835,
+    "w": 211,
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
-    "y": 80,
-    "w": 106,
-    "h": 87
+    "x": 106,
+    "y": 160,
+    "w": 211,
+    "h": 174
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1034,22 +1034,22 @@
   },
   "pulse_trooper_attack_05_team": {
    "frame": {
-    "x": 130,
-    "y": 582,
-    "w": 43,
-    "h": 54
+    "x": 82,
+    "y": 1303,
+    "w": 86,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 81,
-    "w": 43,
-    "h": 54
+    "x": 120,
+    "y": 162,
+    "w": 86,
+    "h": 108
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1058,22 +1058,22 @@
   },
   "pulse_trooper_attack_06": {
    "frame": {
-    "x": 326,
-    "y": 329,
-    "w": 103,
-    "h": 93
+    "x": 1286,
+    "y": 640,
+    "w": 205,
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 74,
-    "w": 103,
-    "h": 93
+    "x": 125,
+    "y": 149,
+    "w": 205,
+    "h": 185
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1082,22 +1082,22 @@
   },
   "pulse_trooper_attack_06_team": {
    "frame": {
-    "x": 125,
-    "y": 520,
-    "w": 39,
-    "h": 57
+    "x": 625,
+    "y": 1185,
+    "w": 77,
+    "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 77,
-    "w": 39,
-    "h": 57
+    "x": 138,
+    "y": 155,
+    "w": 77,
+    "h": 112
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1106,22 +1106,22 @@
   },
   "pulse_trooper_attack_07": {
    "frame": {
-    "x": 417,
-    "y": 122,
-    "w": 101,
-    "h": 100
+    "x": 1024,
+    "y": 236,
+    "w": 201,
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 68,
-    "w": 101,
-    "h": 100
+    "x": 138,
+    "y": 137,
+    "w": 201,
+    "h": 198
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1130,22 +1130,22 @@
   },
   "pulse_trooper_attack_07_team": {
    "frame": {
-    "x": 456,
-    "y": 520,
-    "w": 37,
-    "h": 57
+    "x": 470,
+    "y": 1185,
+    "w": 74,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 76,
-    "w": 37,
-    "h": 57
+    "x": 154,
+    "y": 152,
+    "w": 74,
+    "h": 113
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1154,22 +1154,22 @@
   },
   "pulse_trooper_hit_00": {
    "frame": {
-    "x": 659,
-    "y": 329,
-    "w": 110,
-    "h": 88
+    "x": 444,
+    "y": 835,
+    "w": 220,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 80,
-    "w": 110,
-    "h": 88
+    "x": 124,
+    "y": 160,
+    "w": 220,
+    "h": 176
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1178,22 +1178,22 @@
   },
   "pulse_trooper_hit_00_team": {
    "frame": {
-    "x": 220,
-    "y": 582,
-    "w": 44,
-    "h": 53
+    "x": 335,
+    "y": 1303,
+    "w": 88,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 64,
-    "y": 84,
-    "w": 44,
-    "h": 53
+    "x": 128,
+    "y": 168,
+    "w": 88,
+    "h": 105
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1202,22 +1202,22 @@
   },
   "pulse_trooper_hit_01": {
    "frame": {
-    "x": 227,
-    "y": 429,
-    "w": 119,
-    "h": 81
+    "x": 2,
+    "y": 1020,
+    "w": 236,
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 48,
-    "y": 87,
-    "w": 119,
-    "h": 81
+    "x": 97,
+    "y": 174,
+    "w": 236,
+    "h": 161
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1226,22 +1226,22 @@
   },
   "pulse_trooper_hit_01_team": {
    "frame": {
-    "x": 328,
-    "y": 582,
-    "w": 52,
-    "h": 51
+    "x": 543,
+    "y": 1303,
+    "w": 103,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
-    "y": 87,
-    "w": 52,
-    "h": 51
+    "x": 106,
+    "y": 174,
+    "w": 103,
+    "h": 101
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1250,22 +1250,22 @@
   },
   "pulse_trooper_hit_02": {
    "frame": {
-    "x": 773,
-    "y": 329,
-    "w": 112,
-    "h": 87
+    "x": 883,
+    "y": 835,
+    "w": 223,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
-    "y": 81,
-    "w": 112,
-    "h": 87
+    "x": 106,
+    "y": 163,
+    "w": 223,
+    "h": 172
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1274,22 +1274,22 @@
   },
   "pulse_trooper_hit_02_team": {
    "frame": {
-    "x": 810,
-    "y": 520,
-    "w": 46,
-    "h": 55
+    "x": 1378,
+    "y": 1185,
+    "w": 91,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 79,
-    "w": 46,
-    "h": 55
+    "x": 120,
+    "y": 159,
+    "w": 91,
+    "h": 109
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1298,22 +1298,22 @@
   },
   "pulse_trooper_hit_03": {
    "frame": {
-    "x": 433,
-    "y": 329,
-    "w": 109,
-    "h": 91
+    "x": 224,
+    "y": 835,
+    "w": 216,
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 77,
-    "w": 109,
-    "h": 91
+    "x": 121,
+    "y": 154,
+    "w": 216,
+    "h": 181
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1322,22 +1322,22 @@
   },
   "pulse_trooper_hit_03_team": {
    "frame": {
-    "x": 555,
-    "y": 520,
-    "w": 40,
-    "h": 56
+    "x": 816,
+    "y": 1185,
+    "w": 80,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 68,
-    "y": 78,
-    "w": 40,
-    "h": 56
+    "x": 136,
+    "y": 157,
+    "w": 80,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1346,22 +1346,22 @@
   },
   "pulse_trooper_hit_04": {
    "frame": {
-    "x": 2,
-    "y": 329,
-    "w": 104,
-    "h": 96
+    "x": 428,
+    "y": 640,
+    "w": 207,
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 68,
-    "y": 72,
-    "w": 104,
-    "h": 96
+    "x": 137,
+    "y": 145,
+    "w": 207,
+    "h": 191
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1370,22 +1370,22 @@
   },
   "pulse_trooper_hit_04_team": {
    "frame": {
-    "x": 599,
-    "y": 520,
-    "w": 39,
-    "h": 56
+    "x": 1060,
+    "y": 1185,
+    "w": 76,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 75,
-    "y": 79,
-    "w": 39,
-    "h": 56
+    "x": 151,
+    "y": 158,
+    "w": 76,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1394,22 +1394,22 @@
   },
   "pulse_trooper_die_00": {
    "frame": {
-    "x": 323,
-    "y": 227,
-    "w": 96,
-    "h": 97
+    "x": 1043,
+    "y": 440,
+    "w": 190,
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 38,
-    "y": 70,
-    "w": 96,
-    "h": 97
+    "x": 77,
+    "y": 141,
+    "w": 190,
+    "h": 193
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1418,22 +1418,22 @@
   },
   "pulse_trooper_die_00_team": {
    "frame": {
-    "x": 268,
-    "y": 582,
-    "w": 56,
-    "h": 52
+    "x": 427,
+    "y": 1303,
+    "w": 112,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 45,
-    "y": 85,
-    "w": 56,
-    "h": 52
+    "x": 90,
+    "y": 171,
+    "w": 112,
+    "h": 103
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1444,20 +1444,20 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 78,
-    "h": 116
+    "w": 155,
+    "h": 230
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 32,
-    "y": 44,
-    "w": 78,
-    "h": 116
+    "x": 65,
+    "y": 89,
+    "w": 155,
+    "h": 230
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1466,22 +1466,22 @@
   },
   "pulse_trooper_die_01_team": {
    "frame": {
-    "x": 588,
-    "y": 429,
-    "w": 51,
-    "h": 62
+    "x": 707,
+    "y": 1020,
+    "w": 101,
+    "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 38,
-    "y": 63,
-    "w": 51,
-    "h": 62
+    "x": 76,
+    "y": 126,
+    "w": 101,
+    "h": 123
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1490,22 +1490,22 @@
   },
   "pulse_trooper_die_02": {
    "frame": {
-    "x": 84,
+    "x": 161,
     "y": 2,
-    "w": 81,
-    "h": 109
+    "w": 161,
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 26,
-    "y": 47,
-    "w": 81,
-    "h": 109
+    "x": 53,
+    "y": 94,
+    "w": 161,
+    "h": 217
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1514,22 +1514,22 @@
   },
   "pulse_trooper_die_02_team": {
    "frame": {
-    "x": 779,
-    "y": 429,
-    "w": 52,
-    "h": 58
+    "x": 1067,
+    "y": 1020,
+    "w": 104,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 30,
-    "y": 66,
-    "w": 52,
-    "h": 58
+    "x": 60,
+    "y": 132,
+    "w": 104,
+    "h": 115
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1538,22 +1538,22 @@
   },
   "pulse_trooper_die_03": {
    "frame": {
-    "x": 169,
+    "x": 326,
     "y": 2,
-    "w": 86,
-    "h": 104
+    "w": 170,
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 22,
-    "y": 56,
-    "w": 86,
-    "h": 104
+    "x": 45,
+    "y": 113,
+    "w": 170,
+    "h": 207
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1562,22 +1562,22 @@
   },
   "pulse_trooper_die_03_team": {
    "frame": {
-    "x": 497,
-    "y": 520,
-    "w": 54,
-    "h": 56
+    "x": 706,
+    "y": 1185,
+    "w": 106,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 25,
-    "y": 76,
-    "w": 54,
-    "h": 56
+    "x": 51,
+    "y": 152,
+    "w": 106,
+    "h": 111
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1586,22 +1586,22 @@
   },
   "pulse_trooper_die_04": {
    "frame": {
-    "x": 546,
-    "y": 329,
-    "w": 109,
-    "h": 91
+    "x": 2,
+    "y": 835,
+    "w": 218,
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 25,
-    "y": 77,
-    "w": 109,
-    "h": 91
+    "x": 50,
+    "y": 155,
+    "w": 218,
+    "h": 181
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1610,22 +1610,22 @@
   },
   "pulse_trooper_die_04_team": {
    "frame": {
-    "x": 553,
-    "y": 582,
-    "w": 53,
-    "h": 47
+    "x": 980,
+    "y": 1303,
+    "w": 105,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 33,
-    "y": 99,
-    "w": 53,
-    "h": 47
+    "x": 66,
+    "y": 198,
+    "w": 105,
+    "h": 94
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1634,22 +1634,22 @@
   },
   "pulse_trooper_die_05": {
    "frame": {
-    "x": 2,
-    "y": 122,
-    "w": 94,
-    "h": 101
+    "x": 1136,
+    "y": 2,
+    "w": 186,
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 24,
-    "y": 63,
-    "w": 94,
-    "h": 101
+    "x": 49,
+    "y": 126,
+    "w": 186,
+    "h": 201
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1658,22 +1658,22 @@
   },
   "pulse_trooper_die_05_team": {
    "frame": {
-    "x": 643,
-    "y": 429,
-    "w": 50,
-    "h": 59
+    "x": 812,
+    "y": 1020,
+    "w": 98,
+    "h": 118
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 31,
-    "y": 72,
-    "w": 50,
-    "h": 59
+    "x": 63,
+    "y": 144,
+    "w": 98,
+    "h": 118
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1682,22 +1682,22 @@
   },
   "pulse_trooper_die_06": {
    "frame": {
-    "x": 112,
-    "y": 429,
-    "w": 111,
-    "h": 85
+    "x": 1110,
+    "y": 835,
+    "w": 221,
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 32,
-    "y": 82,
-    "w": 111,
-    "h": 85
+    "x": 64,
+    "y": 165,
+    "w": 221,
+    "h": 169
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1706,22 +1706,22 @@
   },
   "pulse_trooper_die_06_team": {
    "frame": {
-    "x": 384,
-    "y": 582,
-    "w": 49,
-    "h": 50
+    "x": 650,
+    "y": 1303,
+    "w": 98,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 40,
-    "y": 91,
-    "w": 49,
-    "h": 50
+    "x": 80,
+    "y": 183,
+    "w": 98,
+    "h": 99
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1730,22 +1730,22 @@
   },
   "pulse_trooper_die_07": {
    "frame": {
-    "x": 350,
-    "y": 429,
-    "w": 115,
-    "h": 79
+    "x": 242,
+    "y": 1020,
+    "w": 228,
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 38,
-    "y": 89,
-    "w": 115,
-    "h": 79
+    "x": 77,
+    "y": 179,
+    "w": 228,
+    "h": 156
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1754,22 +1754,22 @@
   },
   "pulse_trooper_die_07_team": {
    "frame": {
-    "x": 610,
-    "y": 582,
-    "w": 49,
-    "h": 47
+    "x": 1089,
+    "y": 1303,
+    "w": 97,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 44,
-    "y": 96,
-    "w": 49,
-    "h": 47
+    "x": 88,
+    "y": 193,
+    "w": 97,
+    "h": 92
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1778,22 +1778,22 @@
   },
   "pulse_trooper_die_08": {
    "frame": {
-    "x": 469,
-    "y": 429,
-    "w": 115,
-    "h": 62
+    "x": 474,
+    "y": 1020,
+    "w": 229,
+    "h": 123
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 45,
-    "y": 105,
-    "w": 115,
-    "h": 62
+    "x": 91,
+    "y": 211,
+    "w": 229,
+    "h": 123
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1802,22 +1802,22 @@
   },
   "pulse_trooper_die_08_team": {
    "frame": {
-    "x": 663,
-    "y": 582,
-    "w": 46,
-    "h": 38
+    "x": 1190,
+    "y": 1303,
+    "w": 90,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 51,
-    "y": 109,
-    "w": 46,
-    "h": 38
+    "x": 103,
+    "y": 219,
+    "w": 90,
+    "h": 74
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1826,22 +1826,22 @@
   },
   "pulse_trooper_die_09": {
    "frame": {
-    "x": 437,
-    "y": 582,
-    "w": 112,
-    "h": 49
+    "x": 752,
+    "y": 1303,
+    "w": 224,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 49,
-    "y": 118,
-    "w": 112,
-    "h": 49
+    "x": 98,
+    "y": 237,
+    "w": 224,
+    "h": 96
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1850,22 +1850,22 @@
   },
   "pulse_trooper_die_09_team": {
    "frame": {
-    "x": 713,
-    "y": 582,
-    "w": 43,
-    "h": 30
+    "x": 1284,
+    "y": 1303,
+    "w": 84,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 56,
-    "y": 120,
-    "w": 43,
-    "h": 30
+    "x": 113,
+    "y": 241,
+    "w": 84,
+    "h": 59
    },
    "sourceSize": {
-    "w": 219,
-    "h": 178
+    "w": 438,
+    "h": 356
    },
    "anchor": {
     "x": 0.43836,
@@ -1976,22 +1976,22 @@
  "meta": {
   "app": "ageborn art/blender pipeline",
   "version": "2",
-  "image": "pulse_trooper.png",
+  "image": "pulse_trooper.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 896,
-   "h": 640
+   "w": 1536,
+   "h": 1416
   },
-  "scale": "1.5",
+  "scale": "3",
   "ageborn": {
    "visualId": "unit.pulse_trooper",
    "name": "Pulse Trooper",
    "heightLu": 70,
    "widthLu": 78.5,
-   "pxPerLu": 1.23,
+   "pxPerLu": 2.46,
    "feetPx": [
-    96.0,
-    159.0
+    192,
+    318
    ],
    "anchorsLu": {
     "head": [

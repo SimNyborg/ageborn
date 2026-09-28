@@ -21,7 +21,9 @@ From the repository root, with the bpy venv (Python 3.11, bpy 5.0.1):
 <venv>/bin/python art/blender/world/compose.py /tmp/world-art /tmp/world-art/review.png
 ```
 
-Sheets render at 1.5x (the unit budget scale). Installed files:
+Sheets use the unit v3 settings (same outline width and colour, pixel filter, light and shadow
+step as the units): frames render at 2.46 px/lu and are downsampled 2:1 to the shipped 1.23 px/lu
+sheet. Turrets render 1.7x their authored size (capped at about 72 lu tall, `TURRET_SCALE`). Installed files:
 `public/art/turrets/<age>/<slug>.{png,json}` and `public/art/bases/<age>.{png,json}`
 (about 0.95 MB in total). The game's entries are in `src/visuals/manifest.world.ts`.
 
@@ -34,6 +36,7 @@ Sheets render at 1.5x (the unit budget scale). Installed files:
 | `base_<age>.py` | the base (`MODULE`): Cave Hold, Keep, Star Fort, Bunker, Spire |
 | `render_world.py` | renders, packs and installs |
 | `compose.py` | review sheets built from the atlases |
+| `backdrop.py` | pre-rendered backdrop layers per age (`public/art/backdrops/<age>/{far,mid}.webp` + `layers.json` with ambient specs) and arena grounds (`public/art/ground/<arena>.webp`) |
 
 ## Turret contract
 
@@ -58,9 +61,12 @@ The game draws `mount`, then the head rotated about the pivot (`AtlasTurretView`
 | `flagA`, `flagB` | 4, loop | one waving flag each (`meta.ageborn.flags`: `crumbleMax`, `z` front or back) |
 | `treasury` | 3 | Treasury props for levels 1-3 (cumulative) |
 
-`mountsLu` are the procedural base puppets' mounts (`src/visuals/puppets/<age>.ts`); the ledges
-are placed with `place()` so their projected tops land exactly there, and each body frame exports
-`mount0..3` trackers that a unit test compares. `lightsLu` (torch and window glow), `smokeLu`
+`mountsLu` are `BASE_MOUNTS` (common.py; the same four points in every age, mirrored in
+`WORLD_BASE_MOUNTS_LU` in `src/visuals/manifest.world.ts`): a zig-zag over the base's full height,
+about 80 lu apart. Every base models a real platform there (`platform()`: rock shelves, corbelled
+balconies, timber hoardings, bastion gun platforms, sandbag pits, hover discs) with `place()` so the
+top lands exactly on the point; each body frame exports `mount0..3` trackers that a unit test
+compares, and `AtlasBaseView.mountPoints()` returns `mountsLu`. `lightsLu` (torch and window glow), `smokeLu`
 (damage smoke from a crumble stage) and `hornLu` drive code motion in `AtlasBaseView`.
 
 ## Colours
@@ -68,3 +74,15 @@ are placed with `place()` so their projected tops land exactly there, and each b
 Turrets follow the A11 colour rule except the team layer; saturated accents (brass, bees, beaks,
 magenta energy) stay small. Bases are exempt (A11) and carry large team areas: banners, roofs,
 domes, stripes and flags.
+
+## Backdrops and grounds
+
+```sh
+<venv>/bin/python art/blender/world/backdrop.py --out /tmp/bd [--only stone,tar_pits] [--no-install]
+```
+
+Far and mid strips use the toon shader with a flatter camera (8 and 12 degrees), then are
+desaturated and hazed toward the age's horizon colour (`LOOK`, far more than mid; DESIGN A11 low
+contrast). Grounds are flat emissive planes (the toon rim light would tint a grazing plane) with
+shaded pebbles, tar pools, bones, drifts and props on top, and a darker front lip. The game loads them
+in `BackdropTextures` and draws the code-painted layers until they arrive (about 0.6 MB in total).

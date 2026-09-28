@@ -405,11 +405,10 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   {
     id: 'fx.debris',
     durationMs: 900,
-    maxInstances: 18,
+    maxInstances: 12,
     particles: [
-      { ...chunks(1, 'fx.p.rock'), tint: 0x8a7e70, scale: [1.4, 1.3] },
-      { ...chunks(1, 'fx.p.rock2'), tint: 0x6e665c, scale: [1.2, 1.1] },
-      { ...dust(1, 1.3), tint: 0xc8bca8 },
+      { ...chunks(1, 'fx.p.rock'), tint: 0x8a7e70, scale: [1.6, 1.5] },
+      { ...chunks(1, 'fx.p.rock2'), tint: 0x6e665c, scale: [1.4, 1.3] },
     ],
   },
 

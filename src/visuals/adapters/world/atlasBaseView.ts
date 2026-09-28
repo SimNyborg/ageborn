@@ -321,7 +321,7 @@ export class AtlasBaseView implements BaseView {
     // damage smoke from the stage-2 crumble on
     const smoke = (this.sheet.meta.smokeLu ?? []).filter((s) => this.crumble >= s.crumbleMin);
     if (smoke.length > 0 && this.collapseT < 0) {
-      this.smokeAcc += (dtMs / 1000) * 2.2 * smoke.length;
+      this.smokeAcc += (dtMs / 1000) * 1.1 * smoke.length;
       while (this.smokeAcc >= 1) {
         this.smokeAcc -= 1;
         const s = smoke[Math.floor(this.rng.next() * smoke.length)] ?? smoke[0];
@@ -414,7 +414,7 @@ export class AtlasBaseView implements BaseView {
     const s = partSprite(this.o.decor, 'fx.p.smoke', FX_ZONES);
     s.tint = this.age === 'future' ? 0x8c8aa0 : 0x7a746c;
     s.position.set(x * this.facing + (this.rng.next() - 0.5) * 8, -y);
-    this.puffs.add(s, { vx: 6 + this.rng.next() * 8, vy: -26 - this.rng.next() * 14, life: 1800, s0: 0.9, s1: 2.4, a0: 0.55 });
+    this.puffs.add(s, { vx: 6 + this.rng.next() * 8, vy: -26 - this.rng.next() * 14, life: 1600, s0: 1.1, s1: 3.2, a0: 0.45 });
   }
 
   /** Knocks `n` rounded chunks off the base in its own palette (`size` scales them). */

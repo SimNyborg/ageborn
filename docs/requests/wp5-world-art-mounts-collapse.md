@@ -11,9 +11,9 @@ From: world art track (turrets, bases, backdrops, effects), 2026-09-28.
    and hit areas (`mounts.ts`) can now use the larger gap (bigger tap targets on phones), and the
    `base` anchor `top` (min mount y - 24) now sits about 70 lu higher.
 2. **Base collapse debris.** `feel.config.json` `base.destroyed` emits `fx.debris` x120, which drew
-   hundreds of identical dots. The recipe now has `maxInstances: 18` (the rest finish at once) and
+   hundreds of identical dots. The recipe now has `maxInstances: 12` (the rest finish at once) and
    bigger rounded chunks, and `AtlasBaseView.collapse()` throws 16 large chunks in the base's own
-   palette plus four dust billows. Suggest lowering the count to 18 so the pool budget is not spent
+   palette plus four dust billows. Suggest lowering the count to 12 so the pool budget is not spent
    on empty instances.
 3. **Turret mirroring (please verify).** `turretEntry` sets `view.root.scale.x = -1` for side 1, while
    both turret views (`ProceduralTurretView`, `AtlasTurretView`) already mirror their own body by

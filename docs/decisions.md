@@ -366,3 +366,16 @@ The owner accepted all recommendations:
 - 2026-09-28 (Mode select): the ladder card shows what a win pays in the chosen format (A15.8 from 400 trophies); the Daily card has a Recruit / Veteran / Warlord picker defaulting to the difficulty nearest the skill tier, passed as `MatchRequest.daily.difficulty`. (A15.7, A15.8)
 - 2026-09-28 (Settings): break reminder (default on), quick reveal (default off) and vibration toggles; About adds "Nothing you have earned is ever taken away."; the For parents page shows the six A15.6 lines. Volumes and language apply at once (metaUi applies the settings on every change); graphics, shake, hitstop, numbers and the team preset apply from the next battle view. Import failures show the save system's message (`IMPORT_MESSAGE_KEYS`); save problems (quota, blocked storage, unreadable) show as toasts; `navigator.storage.persist()` runs on the first win. `src/i18n/save.en.json` holds the WP8 strings (docs/requests/wp8-strings.md). (A9 #15, A15.6, B8)
 - 2026-09-28 (Collection, Profile, Conquest): a Feats tab lists the 12 feats as "???" and a riddle until found, obscure ones last, with Show hint (`flags['featHint.<id>']`, a new `UiServices.showFeatHint`). Profile shows "Highest AI tier beaten" (the top tier with a win in `winsByTier`). Conquest draws the Generals as a vertical ladder by tier, hardest on top, each with its AI badge, and a "You are here" portrait above the highest General beaten; the screen opens scrolled to it. (A15.9, A15.10)
+
+## World art review pass (turrets, bases, backdrops, effects), 2026-09-28
+
+- Turret mounts are the same four points on every 3D base (`WORLD_BASE_MOUNTS_LU`: (-6, 46),
+  (-50, 112), (-8, 178), (-56, 246) lu), modelled as real platforms and returned by
+  `AtlasBaseView.mountPoints()`. One layout for all ages means a base morph never moves a turret or
+  a tap target. The procedural fallback bases keep their old mounts.
+- Turret sheets are 1.7x the authored models (max about 72 lu); manifest anchors scale with them.
+- World sheets use the unit v3 outline, filter and 2:1 supersampling.
+- Backdrop far and mid layers and arena grounds are pre-rendered WebP images streamed on first use;
+  the code-painted layers stay as the fallback. Sun rays halved, painted haze at the layer foot cut 30%.
+- `FxRecipe.maxInstances` caps multi-count emits (fx.debris: 12) and `SpriteSpec.jitter` varies a
+  sprite per play (explosion lobes).
