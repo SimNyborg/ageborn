@@ -233,6 +233,16 @@ class StripLayer {
     }
   }
 
+  /**
+   * Destroys the slot textures (not their sources: the layer canvases are cached across battles).
+   * A slot texture listens to its source's `resize`, and Pixi's `Sprite.destroy` leaves the sprite
+   * on a dynamic texture's `update`, so without this every battle leaks its strips into the cache.
+   */
+  destroy(): void {
+    for (const p of this.pool) p.t.destroy(false);
+    this.pool.length = 0;
+  }
+
   private slot(i: number): { s: Sprite; t: Texture } {
     let s = this.pool[i];
     if (!s) {
@@ -534,6 +544,7 @@ export class ProceduralBackdropView implements BackdropView {
     this.destroyed = true;
     for (const m of this.motes) m.s.destroy();
     this.motes = [];
+    for (const l of this.layers) l.destroy();
     this.root.destroy({ children: true });
   }
 }

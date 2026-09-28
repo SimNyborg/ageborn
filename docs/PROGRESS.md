@@ -2,6 +2,42 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-28: Phase 2a playable battle, Checkpoint A/B (cloud session)
+
+**What works**
+
+- A full battle in the browser: the real sim, AI generals, procedural visuals, feel layer, HUD and audio all run together. Quick Battle (Short, Standard and Full War) against an AI-labelled General works from the title screen, as does tutorial match 1.
+- Three automated playtests (rules, feel, robustness) played real matches in headless Chromium and fixed what they found:
+  - Rules: tapping a card marked ARMY FULL now queues another copy, as the sim allows (C5 #10, A2.7). The HUD now applies Daily Challenge modifiers (XP threshold, prices, income, Siege time); the modifier rules moved to `src/core/modifiers.ts` so render can use them (B2), and `src/sim/modifiers.ts` re-exports them. Golden replays are unchanged. Logged in `docs/decisions.md`.
+  - Feel: new Tar Pits ground (uneven glossy tar pools, pebbles, bones, grass, depth scaling) and a new result screen (outcome tint, sunburst on a win, staged recap; reduce-motion respected).
+  - Robustness: 10 bot-vs-bot Full Wars at 2x with pause, tab-hide, restart and Play again; no console errors, no stuck matches. Fixed a memory leak of about 0.75 MB per match (backdrop strip textures kept every battle alive); new test `src/visuals/test/backdropDestroy.test.ts`. JS per frame is well within budget (p95 about 11 ms, at most 5 draw calls).
+- Checks C5 #8-23 were checked in the browser (phase times, bounties, XP cap, evolve, pop/queue/Legendary limits, turrets, Hold line, Last Stand, keys, pause and speed, auto-pause on tab hide).
+- Final gate: `npm run typecheck`, `npm run lint`, `npm test` (2,617 passed, 1 skipped), `npm run build`, `npm run size` (440 KB gzip initial, limit 3 MB) and `npm run test:e2e` (11 passed, 4 skipped until Phase 2b; includes booting at `/ageborn/` and a Quick Battle with no console errors) all pass.
+
+**Known issues**
+
+- Matches drag on: about half of Full War mirror matches end at the Final Bell, often 40%/40%. At the gate only about 3 units can reach the enemy base, so base time-to-kill is 128-167 s against a 40-60 s target (`reports/balance.md`). Phase 3 must decide whether the movement rule or the target changes.
+- Units are small on a phone (about 35-40 px tall in landscape), because the whole lane fits on screen (A2.1). Design decision pending.
+- Art details: pale blotches on skin at battle size; the pumpkin-head skin hides the blue team colour; the mount price label shows on the title screen.
+- The result screen covers the battle instead of showing its last frame.
+- Speed resets to 1x on Restart and Play again.
+- 60 fps is not confirmed: this machine renders WebGL in software. It needs a check on a real phone.
+- About 0.3 MB of heap growth per match remains (looks bounded).
+- Quick Battle shows the stance flag and Last Stand button on a fresh profile; the real onboarding flow (Phase 2b) must hide them until matches 4 and 5.
+- The AI ignores Daily Challenge modifiers; Daily Challenge itself is not wired yet.
+- Congreve Rack rockets can land about 521 lu from the gate (designed scatter) while C5 #14 says 480.
+
+**What the owner should try** (once this is pushed and the Pages deploy has finished)
+
+1. Open https://simnyborg.github.io/ageborn/ on your PC and on your phone (turn the phone sideways).
+2. On the title screen pick Short War and press Quick Battle.
+3. Tap unit cards to train units, press Evolve when it lights up, try a power, build a turret on your base.
+4. Try pause, the speed buttons, and switching to another tab and back (the game should pause).
+5. Play to the end and look at the result screen, then press Play again.
+6. Tell us: does it look good, does it feel fast enough, and is anything confusing or broken? On the phone: are the units big enough?
+
+**Next:** Phase 2b (`ageborn-phase2-loop`): the full meta loop (onboarding, capsules, War Plan, collection, road, quests, save, replays).
+
 ## 2026-09-28: Phase 1 work packages (cloud session)
 
 - All 12 work packages built and each independently reviewed against DESIGN (run as three parallel tracks): content compiler (WP1), simulation with golden replays (WP2), AI generals (WP3), procedural visuals plus a working sprite-sheet tier (WP4), battle view, feel layer and HUD (WP5), audio (WP6), meta rules (WP7), save system (WP8), meta UI screens (WP9), capsule show (WP10), app scaffold, session, onboarding and replay (WP11), tools, integrity tests and e2e skeleton (WP12).

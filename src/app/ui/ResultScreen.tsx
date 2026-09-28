@@ -70,8 +70,9 @@ export function ResultScreen(p: { result: ResultState }) {
   const retry = onboarding && c.canRetry(p.result);
   const next = onboarding && step !== 'match1';
   return (
-    <div class="ab-scrim" data-testid="result" onClick={() => stager.tap()}>
-      <div class="ab-panel">
+    <div class={`ab-scrim ab-result ab-result--${draw ? 'draw' : won ? 'win' : 'loss'}`} data-testid="result" onClick={() => stager.tap()}>
+      <div class="ab-result-rays" aria-hidden="true" />
+      <div class="ab-panel ab-result-panel">
         <h2 class={won ? 'ab-win' : 'ab-loss'} data-testid="result-title" data-outcome={draw ? 'draw' : won ? 'win' : 'loss'}>
           {title}
         </h2>

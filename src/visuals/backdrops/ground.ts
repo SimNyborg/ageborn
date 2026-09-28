@@ -5,6 +5,7 @@
 import type { AgeId } from '@/contracts/ids';
 import { BACKDROP_PALETTES, darken, lighten, mix, toCss } from '../palette';
 import { blob, circle, ellipse, join, poly, rect, rrect } from '../svg';
+import { mulberry32 } from '@/core/rng';
 import { fbm, seedOf } from './noise';
 import type { AmbientSpec } from './silhouettes';
 import { applyFrame, BACKDROP_WIDTH, BACKDROP_X0, type Ctx2D, type LayerFrame } from './sky';
@@ -200,12 +201,7 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
   const rnd = fbm(seed + 3, 9, 1);
   switch (arena) {
     case 'tar_pits':
-      for (let i = 0; i < 9; i++) {
-        const x = f.x0 + 90 + i * 190 + 40 * rnd(i);
-        fillPath(ctx, ellipse(x, 80 + 60 * Math.abs(rnd(i * 3)), 50, 12), toCss(g.detail));
-        fillPath(ctx, ellipse(x - 14, 76 + 60 * Math.abs(rnd(i * 3)), 16, 3), toCss(0x6a6260, 0.8));
-      }
-      for (let i = 0; i < 6; i++) fillPath(ctx, rrect(f.x0 + 150 + i * 280, 140, 30, 6, 3), toCss(g.accent, 0.7));
+      paintTarPits(ctx, f, g, seed);
       ambient.push({ kind: 'emit', part: 'fx.p.ember', x: 600, y: 10, spreadX: 760, life: 3200, layer: 'ground', rate: 3, speed: 22, scale: 1.4, tint: 0xf0e0c0, alpha: 0.7 });
       break;
     case 'frostfang':
@@ -276,6 +272,123 @@ export function paintGround(ctx: Ctx2D, arena: ArenaId, f: LayerFrame): AmbientS
       break;
   }
   return ambient;
+}
+
+/** An organic, perspective-squashed blob around (cx, cy): `k` points with seeded radius jitter. */
+function lumpy(cx: number, cy: number, rx: number, ry: number, rng: () => number, k = 9, jitter = 0.22): string {
+  const pts: number[] = [];
+  for (let i = 0; i < k; i++) {
+    const a = (i / k) * Math.PI * 2;
+    const r = 1 - jitter + 2 * jitter * rng();
+    pts.push(cx + Math.cos(a) * rx * r, cy + Math.sin(a) * ry * r);
+  }
+  return blob(pts, 1);
+}
+
+/**
+ * Tar Pits front soil: glossy tar pools with a trodden rim, bubble rings and a wet highlight, plus
+ * pebbles, bones and dry grass along the lane lip. Placement is seeded but irregular, and everything
+ * scales up toward the camera (lower on screen) so the strip reads as depth, not a row of holes.
+ */
+function paintTarPits(ctx: Ctx2D, f: LayerFrame, g: GroundPalette, seed: number): void {
+  const rng = mulberry32(seed ^ 0x7a9);
+  const r = (): number => rng.next();
+  const lipShade = ctx.createLinearGradient(0, 30, 0, 64);
+  lipShade.addColorStop(0, toCss(darken(g.face, 0.3), 0.55));
+  lipShade.addColorStop(1, toCss(darken(g.face, 0.3), 0));
+  ctx.fillStyle = lipShade;
+  ctx.fillRect(f.x0, 30, f.width, 34);
+  // soil speckle: darker clods and pale grit, denser near the lane
+  for (let i = 0; i < 260; i++) {
+    const y = 36 + 200 * r() ** 1.6;
+    const s = 1 + (y - 30) / 70;
+    const x = f.x0 + r() * f.width;
+    const dark = r() < 0.6;
+    fillPath(ctx, lumpy(x, y, 2.4 * s * (0.6 + r()), 1.2 * s * (0.6 + r()), r, 6, 0.3), toCss(dark ? darken(g.face, 0.18) : lighten(g.face, 0.14), dark ? 0.55 : 0.45));
+  }
+  // tar pools, spaced irregularly and shifted in depth
+  const pools: [number, number, number][] = [];
+  let x = f.x0 + 40 + 120 * r();
+  while (x < f.x0 + f.width - 40) {
+    const y = 64 + 110 * r();
+    const s = 0.75 + (y - 60) / 180;
+    const rx = (34 + 42 * r()) * s;
+    pools.push([x, y, rx]);
+    x += rx * 2 + 70 + 200 * r();
+  }
+  for (const [px, py, rx] of pools) {
+    const ry = rx * (0.2 + 0.04 * r());
+    fillPath(ctx, lumpy(px, py + ry * 0.25, rx * 1.18, ry * 1.5, r), toCss(darken(g.face, 0.22)));
+    fillPath(ctx, lumpy(px, py, rx * 1.06, ry * 1.25, r), toCss(lighten(g.top, 0.04), 0.55));
+    fillPath(ctx, lumpy(px, py, rx, ry, r, 10, 0.12), toCss(0x241c1a));
+    fillPath(ctx, lumpy(px + rx * 0.08, py + ry * 0.2, rx * 0.8, ry * 0.62, r, 8, 0.1), toCss(0x33282a));
+    // wet sheen: a long thin highlight up-left and a small glint
+    fillPath(ctx, ellipse(px - rx * 0.3, py - ry * 0.45, rx * 0.42, Math.max(1.4, ry * 0.14)), toCss(0xf4ead8, 0.32));
+    fillPath(ctx, ellipse(px + rx * 0.28, py - ry * 0.3, Math.max(2, rx * 0.07), Math.max(1, ry * 0.12)), toCss(0xffffff, 0.45));
+    // bubble rings
+    const bubbles = 1 + Math.floor(r() * 3);
+    ctx.lineWidth = 1.4;
+    for (let b = 0; b < bubbles; b++) {
+      const bx = px + (r() - 0.5) * rx * 1.1;
+      const by = py + (r() - 0.3) * ry * 0.8;
+      const br = 2 + 4 * r();
+      ctx.strokeStyle = toCss(0x6a5a58, 0.75);
+      ctx.beginPath();
+      ctx.ellipse(bx, by, br * 1.6, br * 0.55, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      fillPath(ctx, ellipse(bx - br * 0.5, by - br * 0.2, br * 0.45, br * 0.18), toCss(0xffffff, 0.35));
+    }
+  }
+  // pebbles with a lit top, avoiding the pools
+  for (let i = 0; i < 70; i++) {
+    const y = 38 + 190 * r() ** 1.3;
+    const px = f.x0 + r() * f.width;
+    if (pools.some(([qx, qy, rx]) => Math.abs(px - qx) < rx * 1.3 && Math.abs(y - qy) < rx * 0.4)) continue;
+    const s = (1.6 + 3.4 * r()) * (1 + (y - 30) / 110);
+    fillPath(ctx, ellipse(px + s * 0.25, y + s * 0.45, s * 1.25, s * 0.45), toCss(darken(g.deep, 0.25), 0.5));
+    fillPath(ctx, lumpy(px, y, s * 1.2, s * 0.8, r, 7, 0.18), toCss(r() < 0.5 ? g.top : mix(g.top, g.face, 0.5)));
+    fillPath(ctx, ellipse(px - s * 0.3, y - s * 0.35, s * 0.5, s * 0.22), toCss(lighten(g.top, 0.3), 0.8));
+  }
+  // a few old bones
+  for (let i = 0; i < 7; i++) {
+    const bx = f.x0 + 120 + i * (f.width / 7) + 90 * r();
+    const by = 70 + 150 * r();
+    const s = 1 + (by - 30) / 140;
+    const a = (r() - 0.5) * 0.9;
+    const c = Math.cos(a) * 9 * s;
+    const sn = Math.sin(a) * 9 * s;
+    ctx.strokeStyle = toCss(g.accent, 0.85);
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 2.6 * s;
+    ctx.beginPath();
+    ctx.moveTo(bx - c, by - sn);
+    ctx.lineTo(bx + c, by + sn);
+    ctx.stroke();
+    ctx.fillStyle = toCss(g.accent, 0.9);
+    for (const e of [-1, 1]) {
+      ctx.beginPath();
+      ctx.arc(bx + e * c - sn * 0.18, by + e * sn + c * 0.18 - 1.2 * s, 2.2 * s, 0, Math.PI * 2);
+      ctx.arc(bx + e * c + sn * 0.18, by + e * sn - c * 0.18 + 1.2 * s, 2.2 * s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  // dry grass along the lane lip
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 90; i++) {
+    const gx = f.x0 + r() * f.width;
+    const gy = 30 + 8 * r();
+    const blades = 3 + Math.floor(r() * 3);
+    ctx.strokeStyle = toCss(r() < 0.5 ? 0x8b8458 : 0x9d9468, 0.9);
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (let b = 0; b < blades; b++) {
+      const lean = (b - blades / 2) * 2.4 + (r() - 0.5) * 2;
+      ctx.moveTo(gx + b * 1.6, gy);
+      ctx.quadraticCurveTo(gx + b * 1.6 + lean * 0.4, gy - 5, gx + b * 1.6 + lean, gy - 7 - 5 * r());
+    }
+    ctx.stroke();
+  }
+  ctx.lineCap = 'butt';
 }
 
 export const GROUND_TINTS = GROUNDS;

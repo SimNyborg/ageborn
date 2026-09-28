@@ -104,6 +104,26 @@ describe('HUD model (A9.2)', () => {
     expect(xpBarBp(cfg, 1, 600_000)).toBe(5000);
   });
 
+  it('follows the Daily Challenge modifiers as the sim does (A9.1): Fast Forward, Heavy Metal, Gold Rush, Sudden Siege', () => {
+    const sim = new FakeSim({ config: { ...fakeMatchConfig(), modifiers: ['fast_forward', 'heavy_metal', 'gold_rush', 'sudden_siege'] } });
+    const cfg = sim.config;
+    // Fast Forward: 700 × 0.7 = 490 XP, so Evolve is ready (and the bar full) at 490, not 700.
+    expect(xpThreshold(cfg, 0)).toBe(490);
+    sim.state.sides[0].xp = 500_000;
+    const m = buildHudModel(sim, EXTRAS);
+    expect(m.me.evolveReady).toBe(true);
+    expect(m.me.xpBp).toBe(10204);
+    // Heavy Metal: the Tuskback (Heavy, 150) costs 105 and is affordable with 110 gold.
+    sim.state.sides[0].gold = 110_000;
+    const cards = buildHudModel(sim, EXTRAS).me.cards;
+    expect(cards[2]?.cost).toBe(105);
+    expect(cards[2]?.state).toBe('ready');
+    expect(cards[0]?.cost).toBe(50);
+    // Gold Rush: 6 × 1.5 = 9 gold/s; Sudden Siege: the Siege mark moves 1:15 earlier.
+    expect(m.me.goldPerSec).toBe(9);
+    expect(m.phaseMarks.siegeMs).toBe(270_000 - 75_000);
+  });
+
   it('reports mounts, outdated turrets, stance, Last Stand and retreat', () => {
     const sim = new FakeSim();
     const s = sim.state.sides[0];

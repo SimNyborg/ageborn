@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { UtilityController } from '@/ai';
-import { FakeAudio } from '@/contracts/fakes/audio';
+import type { FakeAudio } from '@/contracts/fakes/audio';
 import { FixedClock } from '@/contracts/fakes/clock';
 import { AppController, QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
 import { buildServices, DEFAULT_CHOICE } from '../services';

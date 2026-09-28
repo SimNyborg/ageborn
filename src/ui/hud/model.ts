@@ -59,11 +59,15 @@ function deny(target: DenyTarget): HudIntent {
   return { k: 'deny', target };
 }
 
-/** Tap on a tray card (A2.12: tap = train). */
+/**
+ * Tap on a tray card (A2.12: tap = train). "ARMY FULL" only means an instance of this card waits for
+ * room (A2.7); queueing another is still legal, so the command goes to the sim, which rejects it
+ * (and the card flashes) only when gold or the queue runs out.
+ */
 export function trainIntent(m: HudModel, slot: number, side: Side): HudIntent {
   const c = m.me.cards[slot];
   if (!c || c.state === 'empty' || !c.card) return NONE;
-  if (c.state !== 'ready') return deny(cardTarget(slot));
+  if (c.state !== 'ready' && c.state !== 'armyFull') return deny(cardTarget(slot));
   return cmd({ t: 'train', side, slot: slot as Slot }, cardTarget(slot));
 }
 

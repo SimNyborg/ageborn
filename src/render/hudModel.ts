@@ -7,6 +7,7 @@
  * of the format it is measured against the Overcharge amount), power charge is ppm, times are ms.
  */
 import type { AgeId, CardId, CardState, Foil, HudCard, HudModel, MatchConfig, Observation, Side, SimState } from '@/contracts';
+import { matchMods, type MatchMods } from '@/core';
 
 /** HUD refresh rate (B6). */
 export const HUD_HZ = 15;
@@ -33,7 +34,15 @@ export function ageOrder(config: Readonly<MatchConfig>): AgeId[] {
     .map((a) => a.id);
 }
 
-/** XP needed to leave age `ageIndex` in this format, in whole XP; null in the format's final age. */
+/** The match's Daily Challenge rule changes (A9.1), read exactly as the sim reads them. */
+export function hudMods(config: Readonly<MatchConfig>): MatchMods {
+  return matchMods(config.modifiers, config.content);
+}
+
+/**
+ * XP needed to leave age `ageIndex` in this format, in whole XP (Fast Forward applied, as in the
+ * sim); null in the format's final age.
+ */
 export function xpThreshold(config: Readonly<MatchConfig>, ageIndex: number): number | null {
   const fmt = config.content.formats[config.format];
   const ages = ageOrder(config);
@@ -41,7 +50,16 @@ export function xpThreshold(config: Readonly<MatchConfig>, ageIndex: number): nu
   if (!age || !fmt) return null;
   const last = fmt.ages[fmt.ages.length - 1];
   if (age === last || ageIndex >= fmt.ages.length - 1) return null;
-  return fmt.xpToNextOverride?.[ageIndex] ?? config.content.ages[age].xpToNext;
+  const base = fmt.xpToNextOverride?.[ageIndex] ?? config.content.ages[age].xpToNext;
+  if (base === null) return null;
+  return Math.trunc((base * 1000 * hudMods(config).xpThresholdBp) / 10000) / 1000;
+}
+
+/** A unit card's price for this match (Heavy Metal applied, as in the sim), in whole gold. */
+export function unitPrice(config: Readonly<MatchConfig>, card: CardId): number {
+  const def = config.content.units[card];
+  if (!def) return 0;
+  return Math.trunc((def.cost * 1000 * (hudMods(config).costBp[def.group] ?? 10000)) / 10000) / 1000;
 }
 
 /** XP bar fill in bp: of the threshold, or of the Overcharge amount in the final age (A2.4). */
@@ -119,6 +137,7 @@ function cardFor(
   let fill = 0;
   if (waiting) fill = 10000;
   else if (training && training.card === card && training.total > 0) fill = Math.min(10000, Math.floor((training.progress * 10000) / training.total));
+  const cost = unitPrice(config, card);
   let st: CardState = 'ready';
   const legendary = def.group === 'legendary';
   const legendaryOut =
@@ -127,8 +146,8 @@ function cardFor(
       state.units.some((u) => u.side === side && !u.summoned && config.content.units[u.card]?.group === 'legendary'));
   if (waiting) st = 'armyFull';
   else if (legendaryOut) st = 'legendaryInField';
-  else if (s.gold < def.cost * 1000 || queue.length >= eco.queueMax || state.phase === 'ended') st = 'unaffordable';
-  return { slot, card, cost: def.cost, queued, trainFillBp: fill, state: st, foil: foils[card] ?? 'none' };
+  else if (s.gold < cost * 1000 || queue.length >= eco.queueMax || state.phase === 'ended') st = 'unaffordable';
+  return { slot, card, cost, queued, trainFillBp: fill, state: st, foil: foils[card] ?? 'none' };
 }
 
 /** Builds the HUD model for `side` (the player is side 0; the replay viewer may show side 1). */
@@ -147,8 +166,11 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
   const noClock = config.training?.noClock === true;
   const clockMs = state.tick * 50;
   const doubled = state.phase === 'overdrive' || state.phase === 'siege';
+  const mods = hudMods(config);
   const goldPerSec =
-    (eco.passiveGoldPerSec * (doubled ? eco.overdrive.baseGoldBp : 10000)) / 10000 + (me.treasury * eco.treasuryMilliGoldPerSecPerLevel) / 1000;
+    (((eco.passiveGoldPerSec * mods.passiveGoldBp) / 10000) * (doubled ? eco.overdrive.baseGoldBp : 10000)) / 10000 +
+    (me.treasury * eco.treasuryMilliGoldPerSecPerLevel) / 1000;
+  const siegeMs = fmt?.siegeMs ?? null;
   const obs = src.observe(side);
   const foils = extras.foils ?? {};
   const cards: HudCard[] = [];
@@ -163,7 +185,7 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
     phase: state.phase,
     phaseMarks: noClock
       ? { overdriveMs: null, siegeMs: null, finalBellMs: null }
-      : { overdriveMs: fmt?.overdriveMs ?? null, siegeMs: fmt?.siegeMs ?? null, finalBellMs: fmt?.finalBellMs ?? null },
+      : { overdriveMs: fmt?.overdriveMs ?? null, siegeMs: siegeMs === null ? null : Math.max(50, siegeMs - mods.siegeEarlierMs), finalBellMs: fmt?.finalBellMs ?? null },
     me: {
       gold: Math.floor(me.gold / 1000),
       goldPerSec: Math.round(goldPerSec * 10) / 10,

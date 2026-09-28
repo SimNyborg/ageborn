@@ -52,14 +52,19 @@ const MOUNTS_ACTIVE_OLD: HudModel['mounts'] = [
 ];
 
 describe('HUD presses (A2.12, A9.2)', () => {
-  it('trains a ready card and denies every other state; empty slots do nothing', () => {
+  it('trains a ready card and denies unaffordable and Legendary-in-field cards; empty slots do nothing', () => {
     const m = model();
     expect(cmdOf(trainIntent(m, 0, 0))).toEqual({ t: 'train', side: 0, slot: 0 });
-    for (const state of ['unaffordable', 'armyFull', 'legendaryInField'] as const) {
+    for (const state of ['unaffordable', 'legendaryInField'] as const) {
       expect(trainIntent(withCard(m, 1, { state }), 1, 0)).toEqual({ k: 'deny', target: 'card1' });
     }
     expect(trainIntent(m, 4, 0)).toEqual({ k: 'none' });
     expect(cmdOf(trainIntent(m, 2, 1))).toEqual({ t: 'train', side: 1, slot: 2 });
+  });
+
+  it('an ARMY FULL card can still be queued: only the waiting instance lacks room (A2.7, C5 #10)', () => {
+    const m = withCard(model(), 1, { state: 'armyFull', queued: 1 });
+    expect(cmdOf(trainIntent(m, 1, 0))).toEqual({ t: 'train', side: 0, slot: 1 });
   });
 
   it('cancels the last queued instance of a card, or the last item (Backspace)', () => {
