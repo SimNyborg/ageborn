@@ -497,3 +497,5 @@ The owner accepted all recommendations:
   - **Six troops per battle:** a loadout has 6 unit slots (was 5), and the battle tray shows 6 cards.
   - **Equipping cards must be intuitive:** War Plan becomes a clear deck builder (drag or tap a card into a slot, see instantly which cards are equipped per age, filters by class, counters and advisor visible).
 - **Art realism (owner):** the current look is "too crude / not realistic enough". The art style exploration must include a more realistic direction; the owner chooses.
+- **Stationary class (owner, 2026-09-28 late):** add a stationary class of structures the player places on the lane (the A16 fortifications idea: walls, barricades, traps, bunkers, shields per age), as real cards with a class icon, placed by dragging onto your own half of the lane. A18 must specify rules, anti-turtle limits and AI use, and schedule it early.
+- **Capsule opening (owner):** must be much more satisfying (a capsule-show polish track is running).
