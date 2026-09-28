@@ -13,6 +13,8 @@
  *   advance, each gets at most floor(gap / 2) of the gap.
  * - followSupport units stay 60 lu behind the frontmost friendly non-follower ground unit (p ≤ 200 alone).
  * - Hold: units beyond 320 without a target walk back at 70% speed; at or below 320 they do not pass it.
+ * - Siege forced march (A17.3): unit movement ×`siege.moveSpeedBp` (×1.2) while the phase is Siege; it applies
+ *   to ground and air units (not to knockback, pulls, leaps, projectiles or power runners).
  * Air: ignore blocking; gunships stop for targets and obey stance; the bomber never stops, ignores Hold
  * and stops only at the enemy gate.
  */
@@ -88,13 +90,17 @@ function stepLeap(ctx: Ctx, u: UnitRt, r: UnitRules): void {
   u.mode = 'leap';
 }
 
-/** Effective speed (mlu/tick): slow and speed buff (A2.7 statuses). */
-function speedOf(m: Mover): number {
+/** Effective speed (mlu/tick): slow, speed buff (A2.7 statuses), then the Siege forced march (A17.3). */
+function speedOf(ctx: Ctx, m: Mover): number {
   let v = m.r.speed;
   const slow = statusBp(m.u, 'slow');
   if (slow > 0) v = Math.trunc((v * (BP - (slow > BP ? BP : slow))) / BP);
   const buff = statusBp(m.u, 'speedBuff');
   if (buff > 0) v = Math.trunc((v * (BP + buff)) / BP);
+  if (ctx.s.phase === 'siege') {
+    const march = ctx.econ.siege.moveSpeedBp;
+    if (march !== BP) v = Math.trunc((v * march) / BP);
+  }
   return v;
 }
 
@@ -104,7 +110,7 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
   m.newP = m.p;
   if (isStunned(u)) return;
   const e = ctx.econ;
-  const speed = speedOf(m);
+  const speed = speedOf(ctx, m);
   if (r.bomber) {
     m.want = speed;
     return;

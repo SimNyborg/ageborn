@@ -65,7 +65,7 @@ export interface BattleRulesLike {
 
 /** DESIGN values, used for content without a `battle` table (the contract fakes) and for missing fields. */
 export const DEFAULT_BATTLE: Readonly<BattleRulesLike> = {
-  midLane: 600,
+  midLane: 1000,
   windupPct: { melee: 40, ranged: 50, turret: 0 },
   braceKnockbackResistBp: BP,
   airKnockbackResistBp: BP,
@@ -76,6 +76,16 @@ export const DEFAULT_BATTLE: Readonly<BattleRulesLike> = {
 };
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/** A positive integer field, or `fallback` for content that predates it (contract fakes, old fixtures). */
+function posOr(v: unknown, fallback: number): number {
+  return isNum(v) && v > 0 ? Math.trunc(v) : fallback;
+}
+
+/** The walking speed multiplier (A17.2, `economy.marchSpeedBp`); ×1 for content without the field. */
+function marchBp(content: CompiledContent): number {
+  return posOr((content.economy as { marchSpeedBp?: unknown }).marchSpeedBp, BP);
+}
 
 /** The content's battle table, field by field, falling back to {@link DEFAULT_BATTLE}. */
 export function battleOf(content: CompiledContent): BattleRulesLike {
@@ -307,7 +317,8 @@ export interface EconRules {
   /** Stampede start without own ground units, own-side p in mlu (A5.7). */
   stampedeFallbackP: number;
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
-  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number };
+  /** Siege (A2.10); `moveSpeedBp` is the forced march (A17.3), `unitDamageTakenBp` lever L5 (A16.4). */
+  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; unitDamageTakenBp: number };
   lastStand: { thresholdBp: number; autoBp: number; radius: number; damagePerP: number; knockback: number; chargeTicks: number };
   spawnP: number;
   holdLine: number;
@@ -477,7 +488,8 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     pop: def.pop,
     trainTicks: msToTicks(def.trainMs),
     hp: def.hp,
-    speed: Math.trunc((def.speed * MILLI) / TICKS_PER_SECOND),
+    // A17.15: trunc(speed × 1,000 / 20 × marchSpeedBp / 10,000), applied once here (A17.2 walking ×1.25).
+    speed: Math.trunc((Math.trunc((def.speed * MILLI) / TICKS_PER_SECOND) * marchBp(content)) / BP),
     width,
     half: Math.trunc(width / 2),
     kbResistBp,
@@ -724,6 +736,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
       baseDamageBp: e.siege.baseDamageBp,
       decayBpPerStep: Math.trunc((e.siege.decayBpPerSec * decayStepTicks) / TICKS_PER_SECOND),
       decayStepTicks,
+      moveSpeedBp: posOr(e.siege.moveSpeedBp, BP),
+      unitDamageTakenBp: posOr(e.siege.unitDamageTakenBp, BP),
     },
     lastStand: {
       thresholdBp: e.lastStand.thresholdBp,

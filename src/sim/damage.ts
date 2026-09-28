@@ -116,8 +116,12 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
   // 6. mark
   const mark = isMarked(target);
   if (mark > 0) v = Math.trunc((v * (BP + mark)) / BP);
-  // 7. phase: turret damage ×0.5 in Siege
-  if (imp.turret && ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.turretDamageBp) / BP);
+  // 7. phase: turret damage ×0.5 in Siege; Siege lethality (A16.4 L5, `siege.unitDamageTakenBp`, 10,000 = off)
+  if (ctx.s.phase === 'siege') {
+    if (imp.turret) v = Math.trunc((v * ctx.econ.siege.turretDamageBp) / BP);
+    const taken = ctx.econ.siege.unitDamageTakenBp;
+    if (taken !== BP) v = Math.trunc((v * taken) / BP);
+  }
   // 8. Legendary target of a power or Last Stand
   if (imp.power && tr.legendary) v = Math.trunc((v * ctx.econ.legendaryPowerDamageBp) / BP);
   if (v < 100) v = 100;

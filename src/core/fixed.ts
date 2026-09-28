@@ -2,7 +2,7 @@
  * Integer and fixed-point helpers for the deterministic layers (DESIGN B3).
  *
  * Units used by the sim:
- * - positions: world x in milli-lu; the lane is 1,200,000 milli-lu long
+ * - positions: world x in milli-lu; the lane is 2,000,000 milli-lu long (DESIGN A17.2)
  * - HP, shields, heals, damage: centi-units (x100)
  * - gold, XP: milli-units (x1000)
  * - power charge: parts per million
@@ -25,8 +25,8 @@ export const PPM = 1000000;
 export const TICK_MS = 50;
 /** Ticks per second. */
 export const TICKS_PER_SECOND = 20;
-/** Lane length in milli-lu (DESIGN B3). */
-export const LANE_MLU = 1200000;
+/** Lane length in milli-lu (DESIGN B3, A17.2: 2,000 lu). `content.battle.laneLength` must match. */
+export const LANE_MLU = 2000000;
 
 /** Integer division truncating toward zero. `b` must not be 0. */
 export function idiv(a: number, b: number): number {

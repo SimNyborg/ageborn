@@ -3,7 +3,7 @@
  * countdowns; due impacts collected).
  *
  * - Charge 0 → 100% over 50 s (economy step); casting needs 100% and resets it.
- * - Tap = auto-aim (the `densest` scan over p 150-1,050), or a given own-side p, clamped to that range.
+ * - Tap = auto-aim (the `densest` scan over p 150-1,850, `economy.powerZoneClamp`), or a given own-side p, clamped to that range.
  * - A 1.0 s telegraph is visible to both sides; then the effect plays out.
  * - Barrage impact i lands at telegraphEnd + floor(i × durationTicks / count) at
  *   x = zoneStart + (i + 0.5) × zone / count + jitter (sim RNG, 0 for line patterns); zoneStart is the zone
@@ -80,7 +80,7 @@ export function castPower(ctx: Ctx, side: Side, aimP: number | undefined): strin
       const f = frontP(ctx, other(side));
       if (f < 0) centreP = fx.fallbackP;
       else {
-        // 150 lu beyond the enemy's frontmost ground unit, in the caster's frame, clamped to p ≤ 1,050.
+        // 150 lu beyond the enemy's frontmost ground unit, in the caster's frame, clamped to p ≤ 1,850 (the zone clamp).
         const land = pOf(xOf(f, other(side)), side) + fx.beyond;
         centreP = land > e.zoneMax ? e.zoneMax : land;
       }

@@ -74,9 +74,9 @@ export const powers: readonly PowerDef[] = [
   },
   {
     // 4 Riflemen at your Rifleman level land 150 lu beyond the enemy's frontmost ground unit (clamped to
-    // p ≤ 1,050, `economy.powerZoneClamp`; p = 600 if the enemy has no ground units); summoned, no pop, no bounty
+    // p ≤ 1,850 (L − 150, A17.3), `economy.powerZoneClamp`; p = 1,000 if the enemy has no ground units); summoned, no pop, no bounty
     id: 'paratroopers', kind: 'power', age: 'modern', slot: 'default', telegraphMs: 1000,
-    effect: { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 600 },
+    effect: { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 1000 },
     visualId: 'power.paratroopers', sfx: 'pw_paratroop', nameKey: 'card.paratroopers.name', descKey: 'card.paratroopers.desc',
   },
   {

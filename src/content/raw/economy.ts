@@ -119,7 +119,10 @@ export const economy: EconomyRules = {
   overchargeBp: 2500,
   // A2.10 phases
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
-  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50 },
+  // A17.3 Siege forced march: unit movement ×1.2; A16.4 L5 Siege lethality (10,000 = off)
+  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, unitDamageTakenBp: 10000 },
+  // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
+  marchSpeedBp: 12500,
   // A2.11 Last Stand: arms at ≤ 25%, auto at 10%, 450 lu, 200 × P damage, 80 lu knockback, 1.0 s charge
   lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
   // A2.1 / A2.7 positions and movement
@@ -144,8 +147,8 @@ export const economy: EconomyRules = {
   // A2.7 Heal: Legendaries receive 50% of all healing; A2.9: Legendaries take 50% power damage
   healLegendaryBp: 5000,
   legendaryPowerDamageBp: 5000,
-  // A2.1 Power zone centres clamped to p ∈ [150, 1,050]
-  powerZoneClamp: [150, 1050],
+  // A2.1 / A17.3 Power zone centres clamped to p ∈ [150, L − 150]
+  powerZoneClamp: [150, 1850],
   // Not in DESIGN; see docs/decisions.md (WP0 raw content)
   emoteCooldownMs: 3000,
   // A2.10 Final Bell: a gap ≤ 0.5% is a draw
@@ -157,10 +160,10 @@ export const economy: EconomyRules = {
 
 /** DESIGN A2.1-A2.11 and A5.1 numbers that `EconomyRules` has no field for. */
 export const battle: RawBattleRules = {
-  laneLength: 1200,
+  laneLength: 2000,
   baseDepth: 140,
   cameraMargin: 40,
-  midLane: 600,
+  midLane: 1000,
   windupPct: { melee: 40, ranged: 50, turret: 0 },
   trainMsByGroup: {
     infantry: 1500,

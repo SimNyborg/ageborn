@@ -17,7 +17,7 @@ export const FLOWS: Record<FlowId, { ready: boolean; needs: string }> = {
   quickBattle: { ready: true, needs: 'the Quick Battle dev route `?quick=short` (WP11, C3 Checkpoint A)' },
   gallery: { ready: true, needs: 'the art gallery checks on `window.__galleryInfo` (WP4)' },
   capsule: { ready: true, needs: 'capsule grants and opening wired after match 1 (WP7 meta, WP8 save, WP10 show; Phase 2b)' },
-  reload: { ready: false, needs: 'the localStorage save store (WP8) wired into boot (WP11; Phase 2b)' },
+  reload: { ready: true, needs: 'the localStorage save store (WP8) wired into boot (WP11; Phase 2b)' },
   home: { ready: true, needs: 'the Home screen (WP9) on the app router after onboarding (WP11; Phase 2b)' },
   skirmish: { ready: true, needs: 'the mode select and Skirmish setup (WP9) wired to a battle (WP11; Phase 2b)' },
 };

@@ -163,7 +163,7 @@ export const fakeEconomy: EconomyRules = {
   ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2,
   powerChargeMs: 50000, powerCarryCapBp: 5000, overchargeXp: 1200, overchargeBp: 2500,
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
-  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50 },
+  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, unitDamageTakenBp: 10000 }, marchSpeedBp: 12500,
   lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
   spawnP: 20, holdLine: 320, holdRetreatSpeedBp: 7000, leash: 20, spacingBp: 3000,
   retargetMs: 1000, retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: 2000,
@@ -171,7 +171,7 @@ export const fakeEconomy: EconomyRules = {
   sizes: { small: 24, medium: 32, large: 48, huge: 80 },
   knockbackResistBp: { small: 0, medium: 0, large: 5000, huge: 5000 },
   areaSecondaryBp: 5000, areaMaxTargets: 4, healLegendaryBp: 5000, legendaryPowerDamageBp: 5000,
-  powerZoneClamp: [150, 1050], emoteCooldownMs: 3000, drawGapBp: 50, levelStepBp: 500, maxLevel: 10,
+  powerZoneClamp: [150, 1850], emoteCooldownMs: 3000, drawGapBp: 50, levelStepBp: 500, maxLevel: 10,
 };
 
 /** `max(1, round(ms / 50))` (DESIGN B3). */

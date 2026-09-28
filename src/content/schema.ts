@@ -14,7 +14,7 @@
 import * as v from 'valibot';
 import type { AttackDef, UnitDef } from '@/contracts/content';
 import type { AgeId, CardId, Rarity, RoleGroup } from '@/contracts/ids';
-import { BP } from '@/core/fixed';
+import { BP, LANE_MLU, MILLI } from '@/core/fixed';
 import { skinnedVisualId } from '@/core/ids';
 import { AGE_ORDER } from './ages';
 import type { RawContent } from './raw/types';
@@ -231,7 +231,8 @@ const EconomySchema = v.strictObject({
   ascendMs: pos, evolveHealBp: bp, vanguardCount: nonNeg,
   powerChargeMs: pos, powerCarryCapBp: bp, overchargeXp: pos, overchargeBp: bp,
   overdrive: v.strictObject({ baseGoldBp: bp, xpBp: bp, powerBp: bp }),
-  siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp }),
+  siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp, moveSpeedBp: pos, unitDamageTakenBp: pos }),
+  marchSpeedBp: pos,
   lastStand: v.strictObject({ thresholdBp: bp, autoBp: bp, radius: pos, damagePerP: pos, knockback: nonNeg, chargeMs: pos }),
   spawnP: nonNeg, holdLine: pos, holdRetreatSpeedBp: bp, leash: nonNeg, spacingBp: bp,
   retargetMs: pos, retargetCloserLu: nonNeg, rangedSelfDefenseLu: nonNeg, firstHitIdleMs: pos,
@@ -768,6 +769,11 @@ function checkAgesAndFormats(issues: Issues, c: Content): void {
   }
   issues.check(c.economy.treasuryCosts.length === 3, 'economy.treasuryCosts', '3 Treasury levels (A2.3)');
   issues.check(c.economy.mountCosts.length === 4 && c.economy.mountCosts[0] === 0, 'economy.mountCosts', '4 mounts, the first free (A2.3)');
+  // A17.15: the lane lives in core (`LANE_MLU`); the content's lane numbers must follow it.
+  const lane = c.battle.laneLength;
+  issues.check(lane * MILLI === LANE_MLU, 'battle.laneLength', `lane length matches core LANE_MLU (${LANE_MLU / MILLI} lu)`);
+  issues.check(c.battle.midLane * 2 === lane, 'battle.midLane', 'mid-lane is L / 2 (A17.3)');
+  issues.check(c.economy.powerZoneClamp[1] === lane - c.economy.powerZoneClamp[0], 'economy.powerZoneClamp', 'power zone clamp is [150, L − 150] (A17.3)');
 }
 
 function loadoutCards(l: { units: (CardId | null)[]; turrets: (CardId | null)[]; power: CardId }): CardId[] {
