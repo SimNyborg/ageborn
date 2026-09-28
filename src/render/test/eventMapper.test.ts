@@ -267,6 +267,16 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     expect(pick(up, 'musicTranspose')).toEqual([{ a: 'musicTranspose', semitones: 2 }]);
     expect(pick(up, 'baseMorph')).toEqual([{ a: 'baseMorph', side: 0, age: 'medieval', ms: 1800 }]);
     expect(pick(up, 'backdropWipe')).toEqual([{ a: 'backdropWipe', side: 0, age: 'medieval', ms: 2000 }]);
+    // owner 2026-09-28: the base's build-up runs through the Ascension; the push holds past the beat
+    expect(pick(start, 'baseAscend')).toEqual([{ a: 'baseAscend', side: 0, ms: testContent().economy.ascendMs }]);
+    expect(pick(start, 'camera')[0]).toMatchObject({ holdMs: testContent().economy.ascendMs + 1400 });
+  });
+
+  it('Treasury and new slot moments: base actions and your "+income" pop', () => {
+    const out = run([ev('treasuryUp', { side: 0, level: 1 }), ev('mountBought', { side: 0, mount: 1 }), ev('treasuryUp', { side: 1, level: 1 })]);
+    expect(pick(out, 'baseMount')).toEqual([{ a: 'baseMount', side: 0, mount: 1 }]);
+    const perSec = testContent().economy.treasuryMilliGoldPerSecPerLevel / 1000;
+    expect(pick(out, 'number').filter((n) => n.kind === 'income')).toEqual([{ a: 'number', kind: 'income', value: perSec, at: { k: 'base', side: 0, part: 'center' }, important: true }]);
   });
 
   it('enemy evolve: trauma 0.1, smaller pillar, evolve_enemy, no freeze and no key change', () => {

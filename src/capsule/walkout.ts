@@ -522,6 +522,13 @@ export class Walkout {
       this.burst(640, 400, 36, [this.color, 0xffffff]);
     }
     this.unitHolder.scale.set(this.unit.baseScale * 0.72 * easeOutElastic(pop) * (1 - easeInCubic(out)));
+    // Rays burst out behind the unit as it pops.
+    this.heroRays.alpha = 0.4 * easeOutCubic(pop) * (1 - out);
+    this.heroRays.rotation += 0.012;
+    this.heroRays.scale.set((800 / 512) * (0.6 + 0.4 * easeOutBack(pop, 1.6)));
+    this.heroRays.position.set(640, 380);
+    this.heroGlow.alpha = 0.35 * pop * (1 - out);
+    this.heroGlow.position.set(640, 390);
     const act = span(t, B.act[0], B.act[1]);
     if (act > 0 && !this.moved.attack) {
       this.moved.attack = true;
@@ -543,7 +550,15 @@ export class Walkout {
     const bn = span(t, 250, 650);
     this.bannerTop.alpha = bn * (1 - out);
     this.bannerTop.scale.set(lerp(1.6, 1, easeOutBack(bn, 2)));
-    this.bannerName.alpha = span(t, 400, 750) * (1 - out);
+    // The name drops in and lands with a small thump.
+    const nm = span(t, 400, 560);
+    this.bannerName.alpha = Math.min(1, nm * 3) * (1 - out);
+    this.bannerName.scale.set(lerp(2, 1, easeInCubic(nm)) * (nm >= 1 ? 1 + 0.1 * Math.exp(-(t - 560) / 70) * Math.cos((t - 560) / 30) : 1));
+    if (nm >= 1 && !this.slammed) {
+      this.slammed = true;
+      this.d.impact('pop');
+      this.burst(640, this.bannerName.y, 16, [this.color, 0xffffff]);
+    }
     this.stampOrBar.alpha = span(t, 550, 900) * (1 - out);
     this.stampOrBar.scale.set(easeOutElastic(span(t, 550, 1100)));
   }

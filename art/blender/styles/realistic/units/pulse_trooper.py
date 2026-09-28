@@ -136,6 +136,7 @@ def build():
         C.xform(o, loc=fist)
         rig.rigid(o, "hand_F")
         o.hide_render = True
+        o["is_fx"] = 1
     dust = props.dust_cloud("dust", k, color="#9a968e")
     return dict(rig=rig, flash=flash, coils=coils, dust=dust)
 

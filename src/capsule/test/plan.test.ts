@@ -211,6 +211,44 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     expect(plan.steps.some((s) => s.kind === 'miniWalkout' || s.kind === 'walkout')).toBe(false);
   });
 
+  it('builds the burst longer for higher tiers, then pops inside the step', () => {
+    const build = (tier: 'clay' | 'silver' | 'aeon') => {
+      const b = planCapsuleShow(reveal({ tier, stacks: [stack('a', 'common')] }), { catalog }).steps.find((s) => s.kind === 'burst');
+      return b?.kind === 'burst' ? b : null;
+    };
+    const clay = build('clay');
+    const silver = build('silver');
+    const aeon = build('aeon');
+    expect(clay && silver && aeon).toBeTruthy();
+    if (!clay || !silver || !aeon) return;
+    expect(clay.buildMs).toBeLessThan(silver.buildMs);
+    expect(silver.buildMs).toBeLessThan(aeon.buildMs);
+    for (const b of [clay, silver, aeon]) {
+      expect(b.buildMs).toBeLessThan(b.durationMs);
+      expect(b.cues.find((c) => c.sound === 'cap_burst')?.atMs).toBe(b.buildMs);
+    }
+  });
+
+  it('makes every strike build: non-climb clunks rise in pitch and are never a penalty sound', () => {
+    const plan = planCapsuleShow(reveal({ tier: 'clay', stacks: [stack('a', 'common')] }), { catalog });
+    const strikes = plan.steps.filter((s): s is StrikeStep => s.kind === 'strike');
+    expect(strikes.every((s) => !s.climb)).toBe(true);
+    const pitches = strikes.map((s) => s.cues.find((c) => c.sound === 'cap_clunk')?.pitchBp ?? 0);
+    expect(pitches).toEqual([...pitches].sort((a, b) => a - b));
+    expect(new Set(pitches).size).toBe(4);
+  });
+
+  it('counts the copies up after a flip, inside the flip step', () => {
+    const plan = planCapsuleShow(reveal({ tier: 'bronze', stacks: [stack('a', 'common', { copies: 12 }), stack('b', 'rare', { copies: 1 })] }), { catalog });
+    const flips = plan.steps.filter((s) => s.kind === 'flip');
+    const many = flips.find((s) => s.kind === 'flip' && s.card.card === 'a');
+    const one = flips.find((s) => s.kind === 'flip' && s.card.card === 'b');
+    expect(many?.kind === 'flip' && many.countMs).toBeGreaterThan(0);
+    expect(one?.kind === 'flip' && one.countMs).toBe(0);
+    expect(many?.cues.some((c) => c.sound === 'xp_tick')).toBe(true);
+    expect(checkPlan(plan)).toEqual([]);
+  });
+
   it('flags a too-long step', () => {
     const plan = planCapsuleShow(bronze(), { catalog });
     const broken = { ...plan, steps: plan.steps.map((s) => (s.kind === 'burst' ? { ...s, durationMs: 1500 } : s)) };

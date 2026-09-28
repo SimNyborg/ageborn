@@ -83,6 +83,11 @@ def _pose_at(unit, ctx, clip, t, blur):
         sc.render.use_motion_blur = False
         unit.pose(ctx, clip.name, t)
         sc.frame_set(1)
+    if ctx.get("mode") == "mask":
+        # effects (dust, muzzle flash) are neither team nor outlined silhouette
+        for o in bpy.context.scene.objects:
+            if o.get("is_fx"):
+                o.hide_render = True
     bpy.context.view_layer.update()
 
 
@@ -92,6 +97,7 @@ def render_jobs(unit, ctx, jobs, tmp):
     t0 = time.time()
     for mode in ("beauty", "mask"):
         _mode(mode, ctx)
+        ctx["mode"] = mode
         for clip, i in jobs:
             _pose_at(unit, ctx, clip, clip.times[i], clip.blur.get(i, 0.0))
             bpy.context.scene.render.filepath = os.path.join(tmp, f"{mode}_{clip.name}_{i:02d}.png")

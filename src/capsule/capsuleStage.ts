@@ -662,7 +662,6 @@ export class CapsuleStage implements ShowView {
     this.pips.set(s.index, 'miss');
     this.squash(0.12 + 0.02 * s.index);
     this.trauma.add(0.1 + 0.04 * s.index);
-    this.drumWhite = Math.max(this.drumWhite, 0.25);
     const n = this.d.settings.reduceMotion ? 5 : 14;
     for (let i = 0; i < n; i++) {
       this.particles.spawn({

@@ -28,7 +28,24 @@ class Biped:
         self.L_fore = (ELBOW - WRIST) * H_
 
     # ------------------------------------------------------------------ skeleton
-    def bones(self, extra=None):
+    root = "root"
+    offset = (0.0, 0.0, 0.0)
+
+    def bones(self, extra=None, root_parent=None):
+        """Bone dict. `self.root` renames the root bone and `self.offset` moves the whole
+        skeleton (a rider sits on a mount: root_parent is the mount's body bone)."""
+        b = self._bones()
+        ox, oy, oz = self.offset
+        out = {}
+        for n, (h, t, p) in b.items():
+            n2 = self.root if n == "root" else n
+            p2 = (self.root if p == "root" else p) if p else root_parent
+            out[n2] = ((h[0] + ox, h[1] + oy, h[2] + oz), (t[0] + ox, t[1] + oy, t[2] + oz), p2)
+        if extra:
+            out.update(extra)
+        return out
+
+    def _bones(self):
         H, sw, hw = self.H, self.sw, self.hw
         z = lambda f: f * H
         b = {
@@ -46,8 +63,6 @@ class Biped:
             b["thigh_" + s] = ((0, y * hw, z(HIP)), (0, y * hw, z(KNEE)), "hips")
             b["shin_" + s] = ((0, y * hw, z(KNEE)), (0, y * hw, z(ANKLE)), "thigh_" + s)
             b["foot_" + s] = ((0, y * hw, z(ANKLE)), (0.11 * H, y * hw, 0.012 * H), "shin_" + s)
-        if extra:
-            b.update(extra)
         return b
 
     # ------------------------------------------------------------------ body
@@ -57,8 +72,10 @@ class Biped:
         k, bw = self.k, self.bulk
         sw, hw = self.sw / k, self.hw / k   # back to 68-lu units
 
+        ox, oy, oz = self.offset
+
         def S(p):   # scale a 68-lu position
-            return (p[0] * k, p[1] * k, p[2] * k)
+            return (p[0] * k + ox, p[1] * k + oy, p[2] * k + oz)
 
         def A(a, wide=True):
             return (a[0] * k * (bw if wide else 1), a[1] * k * bw, a[2] * k)
@@ -180,7 +197,7 @@ class Biped:
         rig.rest()
         f = self.fk(P)
         rx, rz = P.get("root", (0.0, 0.0))
-        rig.set("root", r=f["rr"], loc=(rx, P.get("root_dy", 0.0), rz))
+        rig.set(self.root, r=f["rr"], loc=(rx, P.get("root_dy", 0.0), rz))
         rig.set("hips", r=math.radians(P.get("hips", 0.0)), ry=math.radians(P.get("twist", 0.0)))
         rig.set("spine", r=math.radians(P.get("spine", 0.0)),
                 ry=math.radians(-0.5 * P.get("twist", 0.0)))

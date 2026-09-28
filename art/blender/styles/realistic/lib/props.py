@@ -42,22 +42,67 @@ def club(k, wood, flint, leather):
 
 
 def dust_cloud(name, k, n=16, seed=3, parent=None, spread=(22, 7), color="#b5a68d"):
-    m = C.mat("dust", color, rough=1.0, noise=0.22, nscale=0.6, bump=0.8, sheen=0.5)
+    m = dust_material(color)
     rnd = random.Random(seed)
     objs = []
     for i in range(n):
         bm = bmesh.new()
-        bmesh.ops.create_icosphere(bm, subdivisions=3, radius=1.0)
+        bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
         o = C.from_bm(f"{name}_{i}", bm, m)
-        C.displace(o, 0.35, 0.5)
         o["base"] = (rnd.uniform(-1, 1) * spread[0] * k, rnd.uniform(-1, 1) * spread[1] * k,
                      rnd.uniform(1.5, 5) * k)
-        o["r"] = rnd.uniform(3.2, 6.2) * k
+        o["r"] = rnd.uniform(5.0, 9.0) * k
         o["dir"] = (rnd.uniform(-1, 1), rnd.uniform(-0.5, 0.5), rnd.uniform(0.3, 1.0))
         o["delay"] = rnd.uniform(0, 0.15)
         o.hide_render = True
+        o["is_fx"] = 1
         objs.append(o)
     return objs
+
+
+def dust_material(color, density=0.45):
+    """Volumetric dust: noisy density that fades to zero toward the puff's edge."""
+    if "dust_vol" in C._MATS:
+        return C._MATS["dust_vol"]
+    m = bpy.data.materials.new("dust_vol")
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    vol = nt.nodes.new("ShaderNodeVolumePrincipled")
+    vol.inputs["Color"].default_value = C.col(color)
+    vol.inputs["Anisotropy"].default_value = 0.2
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    ln = nt.nodes.new("ShaderNodeVectorMath")
+    ln.operation = "LENGTH"
+    nt.links.new(tc.outputs["Object"], ln.inputs[0])
+    fall = nt.nodes.new("ShaderNodeMapRange")
+    fall.inputs["From Min"].default_value = 0.35
+    fall.inputs["From Max"].default_value = 1.0
+    fall.inputs["To Min"].default_value = 1.0
+    fall.inputs["To Max"].default_value = 0.0
+    nt.links.new(ln.outputs["Value"], fall.inputs["Value"])
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 2.2
+    nz.inputs["Detail"].default_value = 5.0
+    nt.links.new(tc.outputs["Object"], nz.inputs["Vector"])
+    nm = nt.nodes.new("ShaderNodeMapRange")
+    nm.inputs["From Min"].default_value = 0.35
+    nm.inputs["From Max"].default_value = 0.7
+    nt.links.new(nz.outputs["Fac"], nm.inputs["Value"])
+    mul = nt.nodes.new("ShaderNodeMath")
+    mul.operation = "MULTIPLY"
+    nt.links.new(fall.outputs[0], mul.inputs[0])
+    nt.links.new(nm.outputs[0], mul.inputs[1])
+    mul2 = nt.nodes.new("ShaderNodeMath")
+    mul2.operation = "MULTIPLY"
+    mul2.inputs[1].default_value = density
+    nt.links.new(mul.outputs[0], mul2.inputs[0])
+    nt.links.new(mul2.outputs[0], vol.inputs["Density"])
+    nt.links.new(vol.outputs[0], out.inputs["Volume"])
+    m["team"] = 0
+    C._MATS["dust_vol"] = m
+    return m
 
 
 def dust_state(objs, s, origin=(0, 0, 0), rig=None):

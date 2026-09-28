@@ -49,6 +49,7 @@ def reset(samples=40):
     cy.glossy_bounces = 1
     cy.transmission_bounces = 0
     cy.volume_bounces = 0
+    cy.volume_step_rate = 4.0
     cy.transparent_max_bounces = 4
     cy.caustics_reflective = False
     cy.caustics_refractive = False
@@ -186,7 +187,7 @@ def mat(name, base, rough=0.6, metal=0.0, noise=0.12, nscale=0.35, bump=0.25, co
     nz.inputs["Detail"].default_value = 6.0
     nz.inputs["Roughness"].default_value = 0.62
     nt.links.new(mapn.outputs[0], nz.inputs["Vector"])
-    base_c = col(base) if not team else (0.62, 0.62, 0.62, 1.0)
+    base_c = col(base) if not team else (0.36, 0.36, 0.36, 1.0)
     # colour variation: base * (1 +- noise)
     mr = nt.nodes.new("ShaderNodeMapRange")
     mr.inputs["To Min"].default_value = 1.0 - noise

@@ -616,7 +616,7 @@ export class AtlasBaseView implements BaseView {
   private makeCracks(): Crack[] {
     const spots = this.crackSpots();
     const idx = Math.max(0, AGES.indexOf(this.age));
-    const n = this.motion.lite ? 3 : Math.min(spots.length, 5 + Math.round(idx * 0.5));
+    const n = this.motion.lite ? 4 : Math.min(spots.length + 3, 7 + Math.round(idx * 0.5));
     const tint = LIGHT_COLORS[this.age];
     const out: Crack[] = [];
     for (let i = 0; i < n; i++) {
@@ -626,7 +626,7 @@ export class AtlasBaseView implements BaseView {
       const g = partSprite(this.o.decor, 'fx.p.glow', FX_ZONES);
       g.tint = tint;
       g.blendMode = 'add';
-      g.scale.set(1.3);
+      g.scale.set(2.2);
       c.addChild(g);
       const rot = -Math.PI / 2 + (this.rng.next() - 0.5) * 1.2;
       for (let j = 0; j < 2; j++) {
@@ -634,8 +634,8 @@ export class AtlasBaseView implements BaseView {
         s.tint = 0xfff8ea;
         s.blendMode = 'add';
         s.rotation = rot + (j ? 0.6 : -0.3);
-        s.scale.set(1.6 + this.rng.next(), 0.9);
-        s.position.set(j ? 3 : -2, j ? -5 : 4);
+        s.scale.set(2.6 + this.rng.next() * 1.4, 1.3);
+        s.position.set(j ? 4 : -3, j ? -7 : 6);
         c.addChild(s);
       }
       c.position.set(p.x + (this.rng.next() - 0.5) * 16, p.y + (this.rng.next() - 0.5) * 16);
@@ -673,10 +673,10 @@ export class AtlasBaseView implements BaseView {
     for (const c of a.cracks) {
       const v = clamp01((u - c.at) / 0.18);
       const flick = 0.82 + 0.18 * Math.sin(this.clockMs / 47 + c.phase) * Math.sin(this.clockMs / 113 + c.phase * 2);
-      c.c.alpha = v * flick * (0.55 + 0.45 * u);
-      c.c.scale.set(0.6 + 0.6 * v + 0.25 * u);
+      c.c.alpha = Math.min(1, v * flick * (0.7 + 0.5 * u));
+      c.c.scale.set(0.6 + 0.6 * v + 0.45 * u);
     }
-    a.footprint.alpha = 0.1 + 0.4 * u * (0.85 + 0.15 * Math.sin(this.clockMs / 90));
+    a.footprint.alpha = 0.15 + 0.55 * u * (0.85 + 0.15 * Math.sin(this.clockMs / 90));
     this.lightBoost = Math.max(this.lightBoost, 1.4 * u);
     // energy motes rising around the base, dust trickling off it
     const r = this.bodyRect();
@@ -702,7 +702,9 @@ export class AtlasBaseView implements BaseView {
       s.position.set((x0 + w * (0.15 + this.rng.next() * 0.7)) * this.facing, -h * (0.3 + this.rng.next() * 0.55));
       this.bits.add(s, { vx: (this.rng.next() - 0.5) * 20, vy: 10, g: 520, life: 700, s0: 0.5, s1: 0.35, a0: 0.8, spin: 3 });
     }
-    return { ox, oy, sx, sy, flash: (0.05 + 0.22 * u * u) * (0.8 + 0.2 * Math.sin(this.clockMs / 70)) };
+    // the body heats up: a pulsing glow that quickens toward the beat
+    const pulse = 0.75 + 0.25 * Math.sin((this.clockMs / 1000) * (4 + 10 * u) * Math.PI * 2);
+    return { ox, oy, sx, sy, flash: (0.06 + 0.5 * u * u) * pulse };
   }
 
   /** Ends the build-up; with `burst` its crack lights blow out as sparks. */
@@ -795,7 +797,7 @@ export class AtlasBaseView implements BaseView {
       this.art.visible = true;
       this.lightLayer.visible = true;
       // the settle thump: ground dust and a camera-free squash
-      if (!reduce) this.billows(this.motion.lite ? 1 : 2, 0.6);
+      if (!reduce) this.billows(this.motion.lite ? 1 : 2, 0.5);
       this.treasuryT = 0;
     }
     if (m.shown) {
@@ -810,7 +812,7 @@ export class AtlasBaseView implements BaseView {
       this.unfurlFlags(clamp01(st / (460 * f)));
       // flourish: a gleam over the new body and twinkles at its lights and ledges
       const fl = st - 220 * f;
-      flash = Math.max(flash, 0.42 * bump(fl / (520 * f), 0, 1));
+      flash = Math.max(flash, 0.5 * bump(fl / (520 * f), 0, 1));
       this.lightBoost = Math.max(this.lightBoost, 1.5 * bump(fl / (700 * f), 0, 1));
       const spots = this.crackSpots();
       const want = Math.min(spots.length, 6);
@@ -860,9 +862,9 @@ export class AtlasBaseView implements BaseView {
             p,
             // outward from the centre, biased away from the lane so the lane stays readable
             vx: reduce ? 0 : (dx - 0.35) * sp + (this.rng.next() - 0.5) * 60,
-            vy: reduce ? 0 : dy * sp * 0.6 - (180 + this.rng.next() * 220) * m.power,
+            vy: reduce ? 0 : dy * sp * 0.5 - (90 + this.rng.next() * 170) * m.power,
             spin: reduce ? 0 : (this.rng.next() - 0.5) * 9,
-            life: (reduce ? 320 : 650 + this.rng.next() * 350) * f,
+            life: (reduce ? 320 : 480 + this.rng.next() * 300) * f,
           });
         }
       }
@@ -926,7 +928,7 @@ export class AtlasBaseView implements BaseView {
     }
     this.sparks(cx * this.facing, hc.y, Math.round((lite ? 8 : 16) * m.power), 520 * m.power, energy);
     this.debrisOf(oldAge, Math.round((lite ? 4 : 8) * m.power), 1.2);
-    this.billows(lite ? 2 : 3);
+    this.billows(lite ? 2 : 3, 0.8);
     this.shakeMs = reduce ? 0 : 260;
     this.shakeAmp = 1.6 * m.power;
     // the ground squash: the shadow flattens and springs back
@@ -1159,7 +1161,7 @@ export class AtlasBaseView implements BaseView {
     s.tint = 0xfff8e6;
     s.blendMode = 'add';
     s.position.set(x, y);
-    this.bits.add(s, { life: 460, s0: 0.1, s1: 1.8 * size, spin: 4, pulse: true });
+    this.bits.add(s, { life: 520, s0: 0.1, s1: 2.8 * size, spin: 4, pulse: true });
   }
 
   private glint(x: number, y: number, size: number): void {

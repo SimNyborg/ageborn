@@ -234,6 +234,15 @@ export class AtlasTurretView implements TurretView {
     this.shadow.visible = false;
     if (this.mode === 'build' && this.emerge) {
       ({ sx, sy } = this.stepEmerge());
+      if (this.t >= BUILD_MS) {
+        this.mode = 'idle';
+        this.t = 0;
+        this.emerge = false;
+        this.body.alpha = 1;
+        sx = 1;
+        sy = 1;
+        this.flashA = 0;
+      }
     } else if (this.mode === 'build') {
       if (this.t < DROP_MS) {
         const u = this.t / DROP_MS;
