@@ -111,6 +111,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     return r.id === 'battle' ? r.battle : null;
   };
 
+  let pending: MatchRequest | null = null;
   const begin = (req: MatchRequest, opponent: OpponentSpec): void => {
     if (req.mode === 'tutorial') {
       controller.showTitle();
@@ -122,7 +123,15 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       opponentLabel: displayName(opponent.displayName, services.i18n),
       standardLevels: opponent.standardLevels === true || (req.mode === 'skirmish' && req.options.standardLevels),
     });
-    const battle = controller.startSetup(setup);
+    // The request is known before the route changes, so the route effect already sees the match
+    // as one of the meta screens'.
+    pending = req;
+    let battle: BattleHandle;
+    try {
+      battle = controller.startSetup(setup);
+    } finally {
+      pending = null;
+    }
     requests.set(battle, req);
     if (req.mode === 'skirmish' && req.speed !== 1) battle.session.setSpeed(req.speed);
     else if (s && s.settings.defaultSpeed !== 1) battle.session.setSpeed(s.settings.defaultSpeed);
@@ -155,14 +164,17 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     },
   });
 
+  // The meta screens draw Home and every match started from them (VS → battle → Result). The
+  // onboarding matches, the training match and the `?quick=` dev route keep the app's own screens.
   const owns = (route: AppRoute, step: string): boolean => {
     switch (route.id) {
       case 'title':
         return step === 'home';
       case 'battle':
-        return route.battle.setup.mode !== 'tutorial';
+        if (pending && !requests.has(route.battle)) requests.set(route.battle, pending);
+        return requests.has(route.battle);
       case 'result':
-        return route.result.setup.mode !== 'tutorial';
+        return !!route.result.battle && requests.has(route.result.battle);
       default:
         return false;
     }

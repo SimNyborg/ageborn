@@ -312,10 +312,30 @@
 
 .ab-rewards {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 8px;
   min-height: 24px;
+  max-width: 460px;
   align-items: center;
+}
+
+.ab-rewards .ab-muted {
+  flex-basis: 100%;
+  text-align: center;
+}
+
+@media (max-height: 460px) {
+  .ab-rewards .ab-reward {
+    font-size: 15px;
+    padding: 3px 12px 3px 8px;
+  }
+
+  .ab-rewards .ab-reward svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 /* Result: the battle's last frame stays behind, dimmed and tinted by the outcome (audit #16); a big
@@ -974,8 +994,13 @@
 }
 
 @media (max-height: 460px) {
-  .ab-upgrade-panel { gap: 6px; padding: 12px 20px 14px; }
-  .ab-upgrade-title { font-size: 22px; }
-  .ab-upgrade-portrait { width: 120px; height: 96px; }
-  .ab-upgrade-card { width: 150px; }
+  .ab-upgrade .ab-upgrade-panel { gap: 5px; padding: 10px 20px 12px; }
+  .ab-upgrade .ab-upgrade-title { font-size: 22px; }
+  .ab-upgrade .ab-upgrade-portrait { width: 110px; height: 80px; }
+  .ab-upgrade .ab-upgrade-card { width: 140px; padding: 6px 8px 8px; }
+  .ab-upgrade .ab-upgrade-name { font-size: 16px; margin-top: 2px; }
+  .ab-upgrade .ab-upgrade-level { font-size: 16px; margin-top: 2px; }
+  .ab-upgrade .ab-upgrade-bars { gap: 3px; }
+  .ab-upgrade .ab-upgrade-gain { font-size: 18px; }
+  .ab-upgrade .ab-upgrade-hammer { width: 72px; height: 72px; top: -24px; right: -30px; }
 }

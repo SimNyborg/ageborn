@@ -258,7 +258,8 @@ def pack(images):
     """Shelf-pack trimmed images; picks the width with the smallest area."""
     sizes = [im.size for im in images]
     best = None
-    for width in (128, 192, 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, 2048):
+    for width in (128, 192, 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, 2048, 2560,
+                  3072, 3584, 4096):  # the widest only for HD Legendary sheets
         if max(s[0] for s in sizes) + PAD * 2 > width:
             continue
         pos, height = _shelf_pack(sizes, width)
@@ -267,6 +268,8 @@ def pack(images):
         area = width * height * (1.0 + 0.25 * max(0.0, height / width - 1.5))
         if height <= 4096 and (best is None or area < best[0]):
             best = (area, width, height, pos)
+    if best is None:
+        raise ValueError(f"frames do not fit a 4096 x 4096 sheet ({len(images)} frames)")
     _, width, height, pos = best
     sheet = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     for im, p in zip(images, pos):

@@ -10,7 +10,7 @@
 import type { ReadonlySignal } from '@preact/signals';
 import type { CardId, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/contracts';
 import type { MetaRules } from '@/meta';
-import { markExported, saveFileFor, type SaveFile } from '@/save';
+import { IMPORT_MESSAGE_KEYS, markExported, saveFileFor, type SaveFile } from '@/save';
 import type { ActionResult, MatchRequest, Router, UiServices, WarPlan } from '@/ui/screens';
 import type { Services } from './services';
 
@@ -223,7 +223,8 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     },
     importCode(code) {
       const r = store.importCode(code.trim());
-      if (!r.ok) return { ok: false, reason: r.reason };
+      // The reason goes back as its message key (B8), so Settings can say what was wrong.
+      if (!r.ok) return { ok: false, reason: (IMPORT_MESSAGE_KEYS as Record<string, string>)[r.reason] ?? r.reason };
       d.commit(meta.tickTimers(r.value, clock), { immediate: true });
       router.reset({ id: 'home' });
       return OK;

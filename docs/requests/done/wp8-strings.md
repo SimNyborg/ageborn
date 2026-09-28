@@ -39,3 +39,6 @@ integrity tests do not see them; `src/save/test/strings.test.ts` checks that eve
 `src/i18n` as soon as any `save.*` key is there, else from the JSON block above (keep them in sync); `?dev=1#save` shows the proposed EN text marked "[string pending]"
 until then. `save.problem.unreadable` repeats the B8 banner text that WP11 also has as `tutorial.saveUnreadable`;
 either key works.
+
+
+## Status (2026-09-28): applied as `src/i18n/save.en.json`.

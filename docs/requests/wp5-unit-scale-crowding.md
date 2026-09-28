@@ -16,7 +16,7 @@ screens) and 1.23 px/lu (`<slug>.json`), with longer hit (5 frames, ~310 ms) and
    or stack overlapping bars with a 3 px step.
 3. **Heavy melee impact** (review fix 5): the heavy units' attack clips now hold the impact for 3 frames
    (`destrier_knight`, `cuirassier`, `mammoth_matriarch`, `tuskback`, `ursa_paladin`, `walker_mech`,
-   `chrono_titan`, `battering_ram`, `sabertooth`). A 2-3 px camera nudge on their impact tick would sell
+   `chrono_titan`, `battering_ram`). A 2-3 px camera nudge on their impact tick would sell
    the weight.
 4. **Muzzle flash and impact puff per age** (review fix 11): a 2-frame muzzle flash sprite at the
    unit's `muzzle` anchor on the fire frame, and a small per-age impact puff where shots land (A12).

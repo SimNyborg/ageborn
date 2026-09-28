@@ -27,7 +27,7 @@ IDLE_MS = 115
 # units whose melee attack uses the heavy timing (DESIGN A5 heavies and melee Legendaries)
 HEAVY_MELEE = {
     "destrier_knight", "cuirassier", "mammoth_matriarch", "tuskback", "ursa_paladin",
-    "walker_mech", "chrono_titan", "battering_ram", "sabertooth",
+    "walker_mech", "chrono_titan", "battering_ram",
 }
 
 SCALE = ("s", "sx", "sy", "sz", "alpha")
@@ -58,13 +58,23 @@ def _sub(pose, remove):
     return out
 
 
-def _idle(clip):
+# Heavies and Legendaries have big frames: they keep fewer unique poses and hold them in the
+# playback sequence (the timing is the same; the in-betweens are coarser).
+LEAN_IDLE_FRAMES, LEAN_IDLE_MS = 6, 150
+LEAN_DIE_KEEP = [0, 2, 3, 4, 5, 7, 9, 11]
+LEAN_DIE_SEQ = [0, 1, 1, 2, 3, 4, 4, 5, 5, 6, 6, 7]
+LEAN_ATTACK_KEEP = [0, 2, 4, 5, 6, 8, 9, 11, 12]
+LEAN_ATTACK_SEQ = [0, 0, 1, 1, 2, 3, 4, 4, 5, 6, 6, 7, 8]
+
+
+def _idle(clip, lean=False):
     seq = clip.sequence
     n = len(seq)
     src = clip.pose_fn
+    frames = LEAN_IDLE_FRAMES if lean else IDLE_FRAMES
 
     def pose(k):
-        s = k * n / IDLE_FRAMES
+        s = k * n / frames
         i = int(s)
         t = s - i
         a, b = seq[i % n], seq[(i + 1) % n]
@@ -72,7 +82,7 @@ def _idle(clip):
             return src(a)
         return lerp_pose(src(a), src(b), t)
 
-    return Clip("idle", IDLE_FRAMES, pose, loop=True, durations=IDLE_MS)
+    return Clip("idle", frames, pose, loop=True, durations=LEAN_IDLE_MS if lean else IDLE_MS)
 
 
 def _hit(clip, idle0):
@@ -161,6 +171,11 @@ def _die(clip, mod, heavy):
         ],
         "hideUnitAtMs": total,
     }
+    if heavy:
+        # big sheets: 8 unique poses, holds via the playback sequence (atlas size, see LEAN_*)
+        keep = LEAN_DIE_KEEP
+        return Clip("die", len(keep), lambda k: pose(keep[k]), sequence=LEAN_DIE_SEQ, durations=ms,
+                    extra=extra)
     return Clip("die", len(ms), pose, durations=ms, extra=extra)
 
 
@@ -188,7 +203,9 @@ def _heavy_melee(clip):
             p = merge(p, {"body": squash(sq)})
         return p
 
-    return Clip("attack", len(plan), pose, impact=6, smear=5, durations=ms, extra=clip.extra)
+    keep = LEAN_ATTACK_KEEP
+    return Clip("attack", len(keep), lambda k: pose(keep[k]), impact=keep.index(6), smear=keep.index(5),
+                sequence=LEAN_ATTACK_SEQ, durations=ms, extra=clip.extra)
 
 
 def _ranged(clip):
@@ -218,7 +235,7 @@ def retime(mod, clips):
     out = []
     for c in clips:
         if c.name == "idle" and c.frames == 4 and c.sequence == fx.IDLE_SEQUENCE:
-            out.append(_idle(c))
+            out.append(_idle(c, lean=heavy))
         elif c.name == "hit" and c.frames == 3:
             out.append(_hit(c, idle0))
         elif c.name == "die" and c.frames == 3:

@@ -46,6 +46,8 @@ OUTLINE_FACTOR = 0.60       # interior line = fill x 0.60
 UNIT_OUTLINE_V3 = (2.5, 0.55, 0.50)   # px at 1x, fill factor, HSV value cap
 CHARACTER_YAW_V3 = -10.0              # bipeds closer to profile (facing reads at 56 px)
 UNIT_SCALE_V3 = 3.0                    # render scale of the @2x sheet (0.82 x 3 = 2.46 px/lu)
+UNIT_SCALE_LEGENDARY_V3 = 2.5          # Legendaries (>= 170 lu): 2.05 px/lu HD, 1.03 px/lu 1x
+LEGENDARY_MIN_LU_V3 = 170
 FILTER_WIDTH = 1.5                     # Cycles pixel filter width (v3 units: 1.0)
 
 # Clip timing: the authoring rate for clips without explicit per-frame durations. The game
@@ -102,7 +104,8 @@ SPRING_HZ = 2.2
 SPRING_DAMPING = 0.42
 
 # Render quality. Emission-only shading needs samples just for antialiasing.
-SAMPLES = 12
+import os as _os
+SAMPLES = int(_os.environ.get("AGEBORN_SAMPLES", "12"))
 THREADS = 2  # the machine is shared with other agents
 
 # Team colours (DESIGN A11) used for previews; the game tints the team layer at runtime.

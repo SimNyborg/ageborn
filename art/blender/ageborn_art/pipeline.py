@@ -120,7 +120,10 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
     `<slug>.json` at 1.23 px/lu, downsampled from the same frames."""
     t0 = time.time()
     if v3:
-        C.set_render_scale(C.UNIT_SCALE_V3)
+        # Legendaries (170-220 lu) render at 2.05 px/lu (HD) / 1.03 (1x): still above the densest
+        # common screen (about 1.65 device px/lu) and their HD sheet fits one 4096 px texture
+        big = mod.HEIGHT_LU >= C.LEGENDARY_MIN_LU_V3
+        C.set_render_scale(C.UNIT_SCALE_LEGENDARY_V3 if big else C.UNIT_SCALE_V3)
         C.FILTER_WIDTH = 1.0
     scene.reset()
     canvas = (C.px(mod.CANVAS[0]), C.px(mod.CANVAS[1]))

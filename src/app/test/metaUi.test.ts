@@ -197,6 +197,16 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     ui.dispose();
   });
 
+  it('the training match and the ?quick dev route keep the app screens', async () => {
+    const { c, ui } = await app();
+    c.quickBattle('short');
+    expect(ui.owns(c.route.value, c.step.value)).toBe(false);
+    expect(ui.router.current.value.id).toBe('home');
+    c.training();
+    expect(ui.owns(c.route.value, c.step.value)).toBe(false);
+    ui.dispose();
+  });
+
   it('Retreat counts as a loss (A2.10)', async () => {
     const { c, ui } = await app();
     const req: MatchRequest = { mode: 'ladder', format: 'short' };

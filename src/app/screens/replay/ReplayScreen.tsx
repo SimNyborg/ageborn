@@ -18,7 +18,7 @@ import './replay.css';
 
 const TICKS_PER_SECOND = 20;
 /** The controls fade out after this long without a pointer move or tap while the replay plays. */
-const CONTROLS_IDLE_MS = 2600;
+const CONTROLS_IDLE_MS = 3500;
 
 function clock(ticks: number): string {
   const s = Math.max(0, Math.floor(ticks / TICKS_PER_SECOND));

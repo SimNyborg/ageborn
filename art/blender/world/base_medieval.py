@@ -64,8 +64,8 @@ def tower_blocks(rig, joint):
     row = 0
     z = 10.0
     while z < TH - 10:
-        h = 10.0
-        n = 12
+        h = 13.0
+        n = 9
         off = 0.5 if row % 2 else 0.0
         for i in range(n):
             a0 = math.pi * (1.02 + (i + off) / n * 0.98)

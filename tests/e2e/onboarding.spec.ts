@@ -70,9 +70,9 @@ test.describe('first session (A8)', () => {
     await expect(page.getByTestId('first-upgrade')).toHaveCount(0);
 
     // Home, and a reload stays there (the step and the upgrade are saved).
-    await expect(page.getByTestId('home')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('battle-button')).toBeVisible({ timeout: 20_000 });
     await page.reload();
-    await expect(page.getByTestId('home')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('battle-button')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('first-upgrade')).toHaveCount(0);
     expect(problems.errors).toEqual([]);
   });

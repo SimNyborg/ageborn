@@ -90,3 +90,8 @@ Failure reasons (for toasts; WP9 already maps `amber`): `upgrade`: `unknownCard`
 Every function returns a new save and never mutates its input. Save immediately (`{ immediate: true }`)
 after `applyMatchResult`, `grantCapsule`, `openCapsule`, `openWardrobe`, `claimRoadNode`,
 `claimQuest`, `claimDailyCapsule` and `upgrade` (B8: capsule rolls and upgrades flush at once).
+
+
+## Status (2026-09-28, meta-ui track): applied
+
+Loader and `LocalClock`-style clock (`systemClock.offsetMs`), `tickTimers` at boot and before every opponent pick and claim, `pickOpponent` for every mode (the Home preview is memoised per save so it equals the match), `applyMatchResult` via `flow.ts`, and every screen action through `MetaRules` (`src/app/uiServices.ts`). Still open: the Age Capsule age picker before `applyMatchResult` when `ageCapsuleDue` is true (meta's default age is used).

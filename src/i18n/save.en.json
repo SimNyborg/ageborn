@@ -1,0 +1,20 @@
+{
+  "save": {
+    "problem": {
+      "quota": "Storage is full, so your progress isn't being saved. Back it up in Settings.",
+      "unavailable": "This browser blocks saving. Your progress will be lost when you close the game. Back it up in Settings.",
+      "writeFailed": "Your progress couldn't be saved. Back it up in Settings.",
+      "recovered": "Your last save was damaged, so an earlier copy was loaded.",
+      "unreadable": "Save could not be read. Import a backup?",
+      "tooNew": "Your save is from a newer version of Ageborn. Reload the page to update. Nothing is saved until then."
+    },
+    "import": {
+      "empty": "Paste a save code first.",
+      "notACode": "That isn't an Ageborn save code.",
+      "corrupt": "That code is damaged. Copy the whole code and try again.",
+      "notASave": "That code doesn't contain a save.",
+      "tooNew": "That save is from a newer version. Reload the game to update, then try again.",
+      "invalid": "That save couldn't be read."
+    }
+  }
+}

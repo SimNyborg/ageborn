@@ -68,3 +68,8 @@ offer a "Reload" button. Keys and EN text: `docs/requests/wp8-strings.md`.
   since the app's `EventLog` rewrites its whole in-memory list on each record.
 - Replays: `pushReplay` / `loadReplays` as in the contract (ring of 20, oldest first, validated on read).
   When storage is full the rings give up space before the save does, so a replay may exist only for the session.
+
+
+## Status (2026-09-28, meta-ui track): applied
+
+Loader and default flip, boot load/new save, problems as toasts (`onProblem`, `problem`, the load notice), `persist()` on the first win, export code/file with `markExported`, import with `IMPORT_MESSAGE_KEYS`, reset via `store.reset()` then a new save. Still open: a sticky save-problem indicator and a Reload button for `tooNew`, and sharing the event log storage (`saveStore.storage`).

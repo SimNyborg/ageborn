@@ -315,7 +315,8 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
                   setDialog(null);
                   setImportText('');
                 } else {
-                  toasts.show(t('ui.settings.importFailed'), { tone: 'bad' });
+                  // The app passes the save system's message key (B8) when it knows what was wrong.
+                  toasts.show(r.reason.startsWith('save.') ? t(r.reason) : t('ui.settings.importFailed'), { tone: 'bad' });
                 }
               }}
             >
