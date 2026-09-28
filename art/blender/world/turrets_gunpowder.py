@@ -92,7 +92,10 @@ def grapeshot_build(rig):
     g = Geo()
     for y in (-6, 6):
         g.slab([(-14, 8), (12, 8), (10, 22), (-2, 24), (-14, 14)], y, 3.0)
-    rig.part("head", g, team=True)
+    rig.part("head", g, WOOD)
+    g = Geo()
+    box(g, (-5, -7.8, 16), (6, 0.8, 2.2), p=4, cuts=2)
+    rig.part("head", g, team=True, outline=0.4)
     g = Geo()
     for y in (-10, 10):
         cyl(g, (-2, y, 12), (-2, y * 1.3, 12), 5.5, bevel=0.6, segs=14)

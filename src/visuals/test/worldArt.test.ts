@@ -1,14 +1,13 @@
 /**
  * World art sheets (turrets and bases from art/blender/world): every manifest entry has its files,
- * the sheet contract holds, and base mounts are exactly the procedural puppets' mounts (so the
- * battle view's mount points and tap targets do not move when the tier changes).
+ * the sheet contract holds, and every base sheet exports the shared mount points that its modelled
+ * platforms were built on (the battle view's turrets and tap targets follow `mountPoints()`).
  */
 import { describe, expect, it } from 'vitest';
 import { Texture } from 'pixi.js';
 import { AGES } from '../ages';
-import { BASE_PUPPETS } from '../library';
 import { MANIFEST } from '../manifest';
-import { WORLD_OVERRIDES } from '../manifest.world';
+import { WORLD_BASE_MOUNTS_LU, WORLD_OVERRIDES } from '../manifest.world';
 import { frameIndex, WorldAtlas, worldSourceAge, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
 
 const JSONS = import.meta.glob<SheetFile>(['/public/art/turrets/*/*.json', '/public/art/bases/*.json'], { eager: true, import: 'default' });
@@ -51,9 +50,11 @@ describe('world art manifest', () => {
     expect(m.pivotLu).toHaveLength(2);
     const fire = m.clips['fire'];
     expect(fire?.anchorsLu?.['muzzle']?.length).toBe(5);
+    // turrets read next to 56 px infantry (art review: at least about 48 lu tall)
+    expect(m.heightLu).toBeGreaterThanOrEqual(48);
   });
 
-  it.each(AGES.map((a) => [a] as const))('base.%s: crumble stages, Treasury levels, flags and exact mounts', (age) => {
+  it.each(AGES.map((a) => [a] as const))('base.%s: crumble stages, Treasury levels, flags and the shared mounts', (age) => {
     const def = WORLD_OVERRIDES[`base.${age}`];
     if (!def) throw new Error('missing');
     const s = sheet(def.source);
@@ -62,15 +63,20 @@ describe('world art manifest', () => {
     expect(s.animations['treasury']).toHaveLength(3);
     const m = s.meta.ageborn;
     for (const f of m.flags ?? []) expect(s.animations[f.clip]?.length, f.clip).toBeGreaterThan(1);
-    const puppet = BASE_PUPPETS[age];
-    expect(m.mountsLu).toEqual(puppet?.mounts.map((p) => [p.x, -p.y]));
-    // the rendered mount trackers land on the same points (the ledges were placed for them)
+    expect(m.mountsLu).toEqual(WORLD_BASE_MOUNTS_LU.map(([x, y]) => [x, y]));
+    // the rendered mount trackers (on the modelled platforms) land on the exported points
     const tracked = (m.clips['body'] as { anchorsLu?: Record<string, [number, number][]> }).anchorsLu ?? {};
-    puppet?.mounts.forEach((p, i) => {
+    WORLD_BASE_MOUNTS_LU.forEach(([x, y], i) => {
       const t = tracked[`mount${i}`]?.[0];
-      expect(t?.[0]).toBeCloseTo(p.x, 0);
-      expect(t?.[1]).toBeCloseTo(-p.y, 0);
+      expect(t?.[0]).toBeCloseTo(x, 0);
+      expect(t?.[1]).toBeCloseTo(y, 0);
     });
+    // mounts spread over the base: consecutive mounts at least 70 lu apart (1.4x a turret)
+    for (let i = 1; i < WORLD_BASE_MOUNTS_LU.length; i++) {
+      const a = WORLD_BASE_MOUNTS_LU[i - 1] ?? [0, 0];
+      const b = WORLD_BASE_MOUNTS_LU[i] ?? [0, 0];
+      expect(Math.hypot(b[0] - a[0], b[1] - a[1])).toBeGreaterThanOrEqual(70);
+    }
   });
 });
 

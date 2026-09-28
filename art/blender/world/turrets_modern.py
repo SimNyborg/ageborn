@@ -34,7 +34,7 @@ def sandbag_ring(rig, r=17.0, rows=2):
 
 
 def mg_build(rig):
-    sandbag_ring(rig)
+    sandbag_ring(rig, r=19.0, rows=3)
     pennant(rig, "mount", -15, 6, 4, h=30, pole=STEEL, finial=STEEL)
     g = Geo()
     for dx, dy in ((-6, -5), (6, -5), (0, 6)):
@@ -77,7 +77,9 @@ def flak_build(rig):
     box(g, (0, 0, 16), (9, 7, 4.5), p=5)
     rig.part("head", g, OLIVE_LT)
     g = Geo().slab([(-6, 12), (8, 12), (10, 26), (-4, 26)], -8, 1.4)
-    rig.part("head", g, team=True)
+    rig.part("head", g, OLIVE)
+    g = Geo().slab([(-5, 19), (9, 19), (9.4, 22.4), (-4.4, 22.4)], -9.2, 0.8)
+    rig.part("head", g, team=True, outline=0.4)
     rig.joint("gun", "head", (0, 0, 20))
     for y in (-3, 3):
         g = Geo()
@@ -104,7 +106,9 @@ def howitzer_build(rig):
     rig.part("mount", g, OLIVE, outline=0.4)
     # the gun shield (team) and the barrel
     g = Geo().slab([(4, 10), (8, 10), (9, 30), (4, 32)], -7, 1.6)
-    rig.part("head", g, team=True)
+    rig.part("head", g, OLIVE)
+    g = Geo().slab([(4.2, 22), (8.6, 22), (8.8, 26), (4.2, 26)], -8.4, 0.8)
+    rig.part("head", g, team=True, outline=0.4)
     g = Geo()
     box(g, (-2, 0, 16), (9, 6, 4.5), p=5)
     rig.part("head", g, OLIVE)

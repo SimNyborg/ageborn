@@ -4,8 +4,11 @@
  * The static footing (`mount`) and the head (`idle` / `fire`) are separate sprites, so the head
  * rotates about its pivot to aim like the procedural rig; `build` and `destroyed` show the whole
  * turret. Code motion on top of the frames: the 1 s build drop-in with a landing squash and dust,
- * a 120 ms recoil squash with a one-frame muzzle flash at the sheet's per-frame muzzle anchor,
- * the sell / modernise sink with a poof, and the pulsing Modernise arrow.
+ * a 120 ms recoil squash plus a two-frame head kick-back with a one-frame muzzle flash at the
+ * sheet's per-frame muzzle anchor, an idle breathing bob and a slow head scan every few seconds
+ * while nothing is being aimed at (so turrets never sit frozen next to lively units), the sell /
+ * modernise sink with a poof, and the pulsing Modernise arrow. `muzzlePoint()` gives the render
+ * layer the live muzzle for projectile origins (docs/requests/wp5-turret-muzzle-anchor.md).
  *
  * Coordinates: the root sits on a mount point in the parent's space (lu); `aimAt(x)` aims at
  * ground level (y = 0) of that space, as in the procedural view.
@@ -35,6 +38,17 @@ const BUILD_MS = 1000;
 const DROP_MS = 380;
 const DROP_LU = 70;
 const SINK_MS = 650;
+/** Idle motion: head bob (lu, period ms), and a head scan (deg) every SCAN_EVERY_MS once aiming stops. */
+const BOB_LU = 1.2;
+const BOB_MS = 1700;
+const SCAN_DEG = 7;
+const SCAN_EVERY_MS = 3400;
+const SCAN_MS = 1300;
+const AIM_IDLE_MS = 1500;
+/** Fire kick-back: the head snaps back this far for two frames, then eases home. */
+const KICK_LU = 3.2;
+const KICK_HOLD_MS = 34;
+const KICK_MS = 150;
 
 function pair(): { team: Sprite; base: Sprite; c: Container } {
   const c = new Container();
@@ -68,6 +82,8 @@ export class AtlasTurretView implements TurretView {
   private aimTarget: number | null = null;
   private flashFrames = 0;
   private recoilMs = 0;
+  private kickMs = 0;
+  private sinceAimMs = 1e9;
   private outdated = false;
   private clockMs = 0;
   private landed = true;
@@ -107,6 +123,7 @@ export class AtlasTurretView implements TurretView {
   }
 
   aimAt(x: number): void {
+    this.sinceAimMs = 0;
     const dx = (x - this.root.x) * this.facing;
     const dy = -(this.root.y + this.pivot.y);
     const deg = (Math.atan2(dy, Math.max(1, dx)) * 180) / Math.PI;
@@ -123,6 +140,7 @@ export class AtlasTurretView implements TurretView {
     if (clip === 'fire') {
       this.flashFrames = 1;
       this.recoilMs = 120;
+      this.kickMs = KICK_MS;
     }
     if (clip === 'build') {
       this.landed = false;
@@ -142,6 +160,7 @@ export class AtlasTurretView implements TurretView {
     this.clockMs += dtMs;
     this.t += dtMs;
     this.idleT += dtMs;
+    this.sinceAimMs += dtMs;
     if (this.aimTarget !== null) {
       const step = (AIM_DEG_PER_SEC * dtMs) / 1000;
       const d = this.aimTarget - this.aimDeg;
@@ -181,6 +200,7 @@ export class AtlasTurretView implements TurretView {
     this.body.position.set(0, oy);
     this.body.scale.set(this.facing * sx, sy);
     this.show();
+    this.moveHead(dtMs);
     // A11: a one-frame muzzle flash on the shot, at the sheet's muzzle anchor turned with the aim
     if (this.flashFrames > 0) {
       const mz = this.muzzle();
@@ -197,6 +217,41 @@ export class AtlasTurretView implements TurretView {
       this.arrow.y = -this.o.sheet.meta.heightLu - 12 - 3 * k;
     }
     this.puffs.update(dtMs);
+  }
+
+  /** Idle bob and scan, and the fire kick-back, applied to the head's pivot container. */
+  private moveHead(dtMs: number): void {
+    const a = (this.aimDeg * Math.PI) / 180;
+    let dx = 0;
+    let dy = 0;
+    let scan = 0;
+    if (this.mode === 'idle' || this.mode === 'fire') {
+      dy = -BOB_LU * 0.5 * (1 - Math.cos((this.clockMs / BOB_MS) * Math.PI * 2));
+      if (this.sinceAimMs > AIM_IDLE_MS && this.mode === 'idle') {
+        const t = (this.clockMs % SCAN_EVERY_MS) / SCAN_MS;
+        if (t < 1) scan = SCAN_DEG * Math.sin(t * Math.PI) * (Math.floor(this.clockMs / SCAN_EVERY_MS) % 2 ? -1 : 1);
+      }
+    }
+    if (this.kickMs > 0) {
+      this.kickMs = Math.max(0, this.kickMs - dtMs);
+      const held = KICK_MS - this.kickMs <= KICK_HOLD_MS;
+      const k = held ? 1 : this.kickMs / (KICK_MS - KICK_HOLD_MS);
+      const d = KICK_LU * k * k;
+      dx -= Math.cos(a) * d;
+      dy -= Math.sin(a) * d;
+    }
+    this.headPivot.position.set((this.pivot.x + dx) / this.k, (this.pivot.y + dy) / this.k);
+    this.headPivot.rotation = ((this.aimDeg + scan) * Math.PI) / 180;
+  }
+
+  /**
+   * The current muzzle in the root's parent space (lu): where a shot leaves on this frame, following
+   * the aim and the fire clip's per-frame anchor. Render can launch projectiles from here.
+   */
+  muzzlePoint(): { x: number; y: number } {
+    const mz = this.muzzle();
+    const sx = this.root.scale.x * this.body.scale.x;
+    return { x: this.root.x + mz.x * sx, y: this.root.y + (this.body.y + mz.y * this.body.scale.y) * this.root.scale.y };
   }
 
   /** Muzzle point in body space (lu, y down, facing right) for the current fire frame and aim. */
@@ -234,7 +289,6 @@ export class AtlasTurretView implements TurretView {
     const i = frameIndex(d, clip === 'fire' ? this.t : this.idleT, clip === 'idle');
     setFrame(this.head.base, A[clip]?.[i]);
     setFrame(this.head.team, A[`${clip}_team`]?.[i]);
-    this.headPivot.rotation = (this.aimDeg * Math.PI) / 180;
   }
 
   private poof(n: number): void {
@@ -254,7 +308,7 @@ export class AtlasTurretView implements TurretView {
   }
 
   /** Test and gallery hooks. */
-  get debug(): { aimDeg: number; outdated: boolean; action: string | null; muzzleFlash: boolean } {
-    return { aimDeg: this.aimDeg, outdated: this.outdated, action: this.mode === 'idle' ? null : this.mode, muzzleFlash: this.muzzleFlash.visible };
+  get debug(): { aimDeg: number; outdated: boolean; action: string | null; muzzleFlash: boolean; kick: number } {
+    return { aimDeg: this.aimDeg, outdated: this.outdated, action: this.mode === 'idle' ? null : this.mode, muzzleFlash: this.muzzleFlash.visible, kick: this.kickMs };
   }
 }

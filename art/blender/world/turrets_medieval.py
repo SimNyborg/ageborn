@@ -52,7 +52,7 @@ def crossbow_build(rig):
     rig.joint("limbs", "head", (15, 0, 26))
     g = Geo()
     for s in (-1, 1):
-        g.capsule((15, 0, 26), (11, s * 16, 27), 1.8, 1.1)
+        g.capsule((15, 0, 26), (10, s * 21, 28), 2.2, 1.3)
     rig.part("limbs", g, WOOD_DK)
     g = Geo()
     box(g, (15, 0, 26), (2.2, 3.6, 2.2), p=4, cuts=2)
@@ -60,7 +60,7 @@ def crossbow_build(rig):
     rig.joint("string", "head", (4, 0, 27))
     g = Geo()
     for s in (-1, 1):
-        g.capsule((11, s * 16, 27), (4, 0, 27.5), 0.5)
+        g.capsule((10, s * 21, 28), (4, 0, 27.5), 0.5)
     rig.part("string", g, ROPE, outline=0)
     rig.joint("bolt", "head", (4, 0, 28.5))
     g = Geo().capsule((4, 0, 28.5), (22, 0, 28.5), 0.9)
@@ -108,14 +108,14 @@ def cauldron_build(rig):
     rig.part("head", g, PITCH, finish="gloss", outline=0)
     g = Geo().capsule((0, -12, 30), (0, 12, 30), 1.4)
     rig.part("head", g, STEEL, finish="metal", outline=0.5)
-    smoke_puff(rig, "head", (4, 0, 38), 0.7, name="steam")
+    smoke_puff(rig, "head", (4, 0, 40), 1.0, name="steam")
     rig.joint("pour", "head", (11, 0, 33), hidden=True)
     g = Geo().capsule((13, -1, 33), (18, -1, 24), 2.6, 1.6)
     rig.part("pour", g, PITCH, finish="gloss", outline=0.5)
 
 
 def cauldron_idle(f):
-    return {"head": {"r": 2.0 * math.sin(f / 4 * 2 * math.pi)}, "steam": {"show": f in (1, 2), "s": 0.8 + 0.1 * f}}
+    return {"head": {"r": 2.0 * math.sin(f / 4 * 2 * math.pi)}, "steam": {"show": True, "s": 0.85 + 0.1 * f, "z": 1.5 * f}}
 
 
 def cauldron_fire(f):
@@ -135,19 +135,19 @@ def trebuchet_build(rig):
     rig.part("mount", g, IRON, finish="metal", outline=0.5)
     pennant(rig, "mount", -18, 8, 7, h=34)
     rig.joint("arm", "head", (0, 0, 36))
-    g = Geo().capsule((-14, 0, 36), (30, 0, 36), 2.2, 1.4)
+    g = Geo().capsule((-16, 0, 36), (38, 0, 36), 2.6, 1.6)
     rig.part("arm", g, WOOD_DK)
     g = Geo()
-    box(g, (-17, 0, 30), (6, 5.5, 6), p=5)
+    box(g, (-19, 0, 29), (7.5, 6.5, 7.5), p=5)
     rig.part("arm", g, STONE_DK)
     g = Geo()
-    box(g, (-17, -5.8, 30), (4, 0.6, 4), p=4, cuts=2)
+    box(g, (-19, -6.8, 29), (5, 0.6, 5), p=4, cuts=2)
     rig.part("arm", g, team=True, outline=0.4)
     g = Geo()
-    rope(g, [(30, 0, 36), (32, -1, 30), (31, -1, 25)], 0.6)
+    rope(g, [(38, 0, 36), (40, -1, 29), (39, -1, 23)], 0.6)
     rig.part("arm", g, ROPE, outline=0)
-    rig.joint("stone", "arm", (31, -1, 23))
-    g = Geo().sphere((31, -1, 23), 3.8, cuts=3)
+    rig.joint("stone", "arm", (39, -1, 20))
+    g = Geo().sphere((39, -1, 20), 5.0, cuts=3)
     rig.part("stone", g, STONE)
 
 
@@ -175,7 +175,7 @@ def honk_build(rig):
     rig.joint("limbs", "head", (16, 0, 22))
     g = Geo()
     for s in (-1, 1):
-        g.capsule((16, 0, 22), (10, s * 20, 24), 2.2, 1.4)
+        g.capsule((16, 0, 22), (9, s * 26, 25), 2.6, 1.6)
     rig.part("limbs", g, WOOD_DK)
     g = Geo()
     box(g, (16, 0, 22), (2.8, 4.4, 2.8), p=4, cuts=2)
@@ -183,7 +183,7 @@ def honk_build(rig):
     rig.joint("string", "head", (0, 0, 24))
     g = Geo()
     for s in (-1, 1):
-        g.capsule((10, s * 20, 24), (-2, 0, 24.5), 0.5)
+        g.capsule((9, s * 26, 25), (-2, 0, 24.5), 0.5)
     rig.part("string", g, ROPE, outline=0)
     # the goose, sitting in the groove, beak forward
     rig.joint("goose", "head", (6, 0, 28))
@@ -218,7 +218,7 @@ TURRETS = [
                   crossbow_idle, crossbow_fire, fire_kind="recoil"),
     turret_module("pitch_cauldron", "Pitch Cauldron", "medieval", 46, CANVAS, FEET, (0, 30), (16, -1, 28), cauldron_build,
                   cauldron_idle, cauldron_fire, aim=(0, 20), fire_kind="pour"),
-    turret_module("trebuchet", "Trebuchet", "medieval", 50, CANVAS, FEET, (0, 36), (31, -1, 23), trebuchet_build,
+    turret_module("trebuchet", "Trebuchet", "medieval", 50, CANVAS, FEET, (0, 36), (39, -1, 20), trebuchet_build,
                   trebuchet_idle, trebuchet_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="stone"),
     turret_module("honk_ballista", "Honk Ballista", "medieval", 46, CANVAS, FEET, (0, 21), (22, 0, 36), honk_build,
                   honk_idle, honk_fire, fire_kind="recoil"),

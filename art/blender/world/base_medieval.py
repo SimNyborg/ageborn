@@ -246,7 +246,7 @@ def crumble(stage):
 
 
 MODULE = base_module(
-    "medieval", "Keep", height=330, width=180, canvas=(460, 740), feet=(350, 690),
+    "medieval", "Keep", height=330, width=180, canvas=(460, 820), feet=(350, 770),
     build=build, crumble=crumble, mount_depth=DEPTHS,
     flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
     lights=[((TX - 26, TY - TR - 6, 51), 3, 20), ((TX + 14, TY - TR - 4, 51), 3, 20), ((KX, KY - KD - 2, 150), 2, 40)],

@@ -73,9 +73,9 @@ def arc_build(rig):
     cyl(g, (0, 0, 15.2), (0, 0, 16.2), 8.8, bevel=0.2, segs=20)
     rig.part("mount", g, team=True, outline=0.3)
     # head: the orb on top (no aim), with sparks
-    g = Geo().sphere((0, 0, 40), 6.4, cuts=4)
+    g = Geo().sphere((0, 0, 41), 8.4, cuts=4)
     rig.part("head", g, glow=MINT, outline=0.8, outline_hex="#1E8A66")
-    g = Geo().sphere((-1.5, -4, 41.5), 3.0, cuts=3)
+    g = Geo().sphere((-2, -5.5, 43), 3.8, cuts=3)
     rig.part("head", g, glow=MINT_CORE, outline=0)
     for i in range(3):
         rig.joint(f"spark{i}", "head", (0, 0, 40), hidden=True)

@@ -3,8 +3,11 @@
  * sprite sheets (`art/blender/world`, installed in `public/art/turrets/<age>/` and
  * `public/art/bases/`). The main manifest merges `WORLD_OVERRIDES` over its generated entries.
  *
- * Anchors and heights come from the procedural puppets, which the sheets were rendered to match
- * (same mount points, same pivots), so switching tiers never moves a turret or a tap target.
+ * Base mounts: every base sheet carries the same four mount points (`WORLD_BASE_MOUNTS_LU`, modelled
+ * as real platforms in art/blender/world, `meta.ageborn.mountsLu`), and `AtlasBaseView.mountPoints()`
+ * returns them, so the battle view's turrets and tap targets follow the art and never move when a
+ * base morphs into the next age. Turrets render `turretArtScale(h)` times larger than the procedural
+ * puppets (art review: they must read next to 56 px infantry); their anchors scale with them.
  * The sheets themselves load per age (Stone and Medieval at boot, the rest in idle time) through
  * `WorldAtlas`; `?art=procedural` shows the old tier for comparison.
  */
@@ -32,6 +35,27 @@ export function baseSheetSource(age: AgeId): string {
   return `art/bases/${age}.json`;
 }
 
+/** Turret mounts of every 3D base (screen lu from the gate: x toward the lane, y UP), bottom to top. */
+export const WORLD_BASE_MOUNTS_LU: readonly (readonly [number, number])[] = [
+  [-6, 46],
+  [-50, 112],
+  [-8, 178],
+  [-56, 246],
+];
+
+/** Turret sheets are rendered this much larger than authored, capped at about 72 lu tall (world/common.py). */
+export const WORLD_TURRET_SCALE = 1.7;
+export const WORLD_TURRET_MAX_LU = 72;
+
+export function turretArtScale(heightLu: number): number {
+  return Math.min(WORLD_TURRET_SCALE, WORLD_TURRET_MAX_LU / Math.max(1, heightLu));
+}
+
+function scaleAnchors(a: VisualDef['anchors'], k: number): VisualDef['anchors'] {
+  const s = (p: { x: number; y: number }): { x: number; y: number } => ({ x: p.x * k, y: p.y * k });
+  return { feet: s(a.feet), head: s(a.head), muzzle: s(a.muzzle), hitCenter: s(a.hitCenter) };
+}
+
 function entry(source: string, anchors: VisualDef['anchors'], heightLu: number): VisualDef {
   return {
     kind: 'atlas',
@@ -49,7 +73,10 @@ export function buildWorldOverrides(): Record<string, VisualDef> {
   for (const p of TURRET_PUPPETS) {
     const age = p.age;
     const slug = p.id.replace(/^turret\./, '');
-    if (age && WORLD_TURRET_SHEETS[age].includes(slug)) out[p.id] = entry(turretSheetSource(age, slug), p.anchors, p.heightLu);
+    if (age && WORLD_TURRET_SHEETS[age].includes(slug)) {
+      const k = turretArtScale(p.heightLu);
+      out[p.id] = entry(turretSheetSource(age, slug), scaleAnchors(p.anchors, k), Math.round(p.heightLu * k));
+    }
   }
   for (const age of WORLD_BASE_SHEETS) {
     const b = BASE_PUPPETS[age];
