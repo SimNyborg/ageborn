@@ -57,6 +57,8 @@ export interface QuadSpec {
   legDeg?: number;
   /** World y of the head top (for the head anchor). */
   headTopY?: number;
+  /** Bone whose origin is the `muzzle` anchor (where projectiles leave, e.g. the Matriarch's riders). */
+  muzzleBone?: string;
 }
 
 export function quadruped(s: QuadSpec): PuppetDef {
@@ -105,6 +107,7 @@ export function quadruped(s: QuadSpec): PuppetDef {
     anchors: anchorsFrom(bones, {
       heightLu: s.height,
       headTop: { x: s.neck.x + s.head.x, y: s.headTopY ?? -s.height },
+      muzzleBone: s.muzzleBone,
       center: s.bodyHeight,
     }),
     motion: {

@@ -256,6 +256,188 @@ describe('A5 turret tables', () => {
   });
 });
 
+/**
+ * A14.2 per-card attack mapping: [card, projectile visual / instant effect / 'melee', attack SFX, damage type].
+ * Secondary attacks follow the primary in the order `attacks[1..]`, then riders. The Repair Drone has no attack.
+ */
+type FxRow = [string, string, string, AttackDef['dmgType']];
+
+const A14_2: Record<string, FxRow[]> = {
+  bonker: [['bonker', 'melee', 'swing_whoosh', 'blunt']],
+  pebbler: [['pebbler', 'proj.rock', 'shot_sling', 'blunt']],
+  tuskback: [['tuskback', 'melee', 'swing_whoosh', 'blunt']],
+  spear_hunter: [['spear_hunter', 'melee', 'swing_whoosh', 'pierce']],
+  drum_shaman: [['drum_shaman', 'proj.rock', 'shot_sling', 'blunt']],
+  sabertooth: [['sabertooth', 'melee', 'swing_whoosh', 'slash']],
+  mammoth_matriarch: [['mammoth_matriarch', 'melee', 'swing_whoosh', 'blast'], ['riders', 'proj.rock', 'shot_sling', 'blunt']],
+  footman: [['footman', 'melee', 'swing_whoosh', 'slash']],
+  longbowman: [['longbowman', 'proj.arrow', 'shot_bow', 'pierce']],
+  destrier_knight: [['destrier_knight', 'melee', 'swing_whoosh', 'pierce']],
+  pikeman: [['pikeman', 'melee', 'swing_whoosh', 'pierce']],
+  friar: [['friar', 'proj.rock', 'shot_sling', 'blunt']],
+  battering_ram: [['battering_ram', 'melee', 'swing_whoosh', 'blast']],
+  ursa_paladin: [['ursa_paladin', 'melee', 'swing_whoosh', 'slash']],
+  corsair: [['corsair', 'melee', 'swing_whoosh', 'slash']],
+  fusilier: [['fusilier', 'proj.musket', 'shot_musket', 'bullet']],
+  cuirassier: [['cuirassier', 'melee', 'swing_whoosh', 'slash']],
+  grenadier: [['grenadier', 'proj.lob', 'shot_lob', 'blast']],
+  field_surgeon: [['field_surgeon', 'proj.musket', 'shot_musket', 'bullet']],
+  bronze_cannon: [['bronze_cannon', 'proj.cannonball', 'shot_cannon', 'blast']],
+  balloon_admiral: [['balloon_admiral', 'proj.bomb', 'bomb_whistle', 'blast']],
+  trench_raider: [['trench_raider', 'melee', 'swing_whoosh', 'slash']],
+  rifleman: [['rifleman', 'proj.bullet', 'shot_rifle', 'bullet']],
+  tankette: [['tankette', 'proj.shell', 'shot_cannon', 'blast']],
+  bazooka_trooper: [['bazooka_trooper', 'proj.rocket', 'shot_rocket', 'blast']],
+  radio_operator: [['radio_operator', 'proj.bullet', 'shot_rifle', 'bullet']],
+  gyrocopter: [['gyrocopter', 'proj.bullet', 'shot_mg', 'bullet']],
+  behemoth_tank: [['main gun', 'proj.shell', 'shot_cannon', 'blast'], ['MG', 'proj.bullet', 'shot_mg', 'bullet']],
+  photon_knight: [['photon_knight', 'melee', 'swing_whoosh', 'laser']],
+  pulse_trooper: [['pulse_trooper', 'proj.plasma', 'shot_plasma', 'laser']],
+  walker_mech: [['walker_mech', 'melee', 'swing_whoosh', 'blunt']],
+  rail_gunner: [['rail_gunner', 'fx.beam_rail', 'shot_rail', 'laser']],
+  repair_drone: [],
+  emp_saboteur: [['emp_saboteur', 'melee', 'swing_whoosh', 'laser']],
+  chrono_titan: [['chrono_titan', 'melee', 'swing_whoosh', 'blunt']],
+  training_dummy: [['training_dummy', 'melee', 'swing_whoosh', 'blunt']],
+  rock_tosser: [['rock_tosser', 'proj.boulder', 'shot_catapult', 'blunt']],
+  angry_beehive: [['angry_beehive', 'proj.bee', 'bee_buzz', 'pierce']],
+  log_roller: [['log_roller', 'proj.log', 'log_roll', 'blunt']],
+  grumpy_toad: [['grumpy_toad', 'fx.tongue', 'toad_tongue', 'blunt']],
+  crossbow_nest: [['crossbow_nest', 'proj.bolt', 'shot_crossbow', 'pierce']],
+  pitch_cauldron: [['pitch_cauldron', 'fx.pitch_pour', 'cauldron_pour', 'blast']],
+  trebuchet: [['trebuchet', 'proj.boulder', 'shot_catapult', 'blast']],
+  honk_ballista: [['honk_ballista', 'proj.goose', 'goose_honk', 'blunt']],
+  swivel_gun: [['swivel_gun', 'proj.musket', 'shot_musket', 'bullet']],
+  grapeshot_gun: [['grapeshot_gun', 'proj.grapeshot', 'shot_grapeshot', 'bullet']],
+  congreve_rack: [['congreve_rack', 'proj.rocket', 'shot_rocket', 'blast']],
+  chainshot_cannon: [['chainshot_cannon', 'proj.chainshot', 'shot_cannon', 'blunt']],
+  mg_nest: [['mg_nest', 'proj.bullet', 'shot_mg', 'bullet']],
+  flak_gun: [['flak_gun', 'proj.flak', 'shot_flak', 'blast']],
+  howitzer: [['howitzer', 'proj.shell', 'shot_cannon', 'blast']],
+  searchlight_sniper: [['searchlight_sniper', 'proj.bullet', 'shot_rifle', 'bullet']],
+  pulse_laser: [['pulse_laser', 'fx.beam_laser', 'shot_laser', 'laser']],
+  arc_coil: [['arc_coil', 'fx.arc_chain', 'shot_arc', 'laser']],
+  plasma_mortar: [['plasma_mortar', 'proj.plasma_mortar', 'shot_plasma', 'blast']],
+  gravity_well: [['gravity_well', 'proj.gravity_orb', 'gravity_hum', 'blast']],
+};
+
+/** Every attack of a card, primary first, then secondary attacks, then riders. */
+function attacksOf(id: string): AttackDef[] {
+  const u = content.units[id];
+  if (u) {
+    const riders = u.abilities.flatMap((a) => (a.kind === 'riders' ? [a.attack] : []));
+    return [...u.attacks, ...riders];
+  }
+  const t = content.turrets[id];
+  return t ? [t.attack] : [];
+}
+
+function fxOf(a: AttackDef): string {
+  if (!a.projectile) return 'melee';
+  return 'instant' in a.projectile ? a.projectile.effectId : a.projectile.visualId;
+}
+
+/** A2.6 role-default mods, in order (bp). */
+const MODS = {
+  blunt: [{ vs: 'armored', bp: 7000 }],
+  meleeAA: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }],
+  rangedAA: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 5000 }],
+  grenadier: [{ vs: 'armored', bp: 15000 }, { vs: 'mech', bp: 15000 }, { vs: 'light', bp: 5000 }],
+  flak: [{ vs: 'air', bp: 20000 }],
+  congreve: [{ vs: 'air', bp: 15000 }],
+} as const;
+
+/** A2.6: which cards carry which mods on their first attack. Everything else has none. */
+const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
+  // Infantry melee ("blunt"), including the tutorial dummy (an Infantry melee unit, A5.6)
+  bonker: MODS.blunt, footman: MODS.blunt, corsair: MODS.blunt, trench_raider: MODS.blunt, photon_knight: MODS.blunt,
+  training_dummy: MODS.blunt,
+  spear_hunter: MODS.meleeAA, pikeman: MODS.meleeAA,
+  bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rangedAA,
+  grenadier: MODS.grenadier,
+  flak_gun: MODS.flak,
+  congreve_rack: MODS.congreve,
+};
+
+/** A5 target priorities of first attacks ("priority armored", "priority air", ...); everything else `front`. */
+const PRIORITY_BY_CARD: Record<string, string> = {
+  spear_hunter: 'armored', pikeman: 'armored', grenadier: 'armored', bazooka_trooper: 'armored', rail_gunner: 'armored',
+  searchlight_sniper: 'armored', flak_gun: 'air', gravity_well: 'densest',
+  // Grumpy Toad grabs "the nearest enemy ranged or support ground unit" first
+  grumpy_toad: 'backline',
+};
+
+describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {
+  const cards = [...content.order.units, ...content.order.hiddenUnits, ...content.order.turrets];
+
+  it('lists every unit and turret exactly once', () => {
+    expect(Object.keys(A14_2).sort()).toEqual([...cards].sort());
+  });
+
+  for (const id of cards) {
+    it(`${id}: projectile or effect, sound, damage type, mods and priority`, () => {
+      const attacks = attacksOf(id);
+      const rows = A14_2[id] ?? [];
+      expect(attacks.map((a) => [fxOf(a), a.sfx, a.dmgType])).toEqual(rows.map(([, fx, sfx, dmg]) => [fx, sfx, dmg]));
+      for (const a of attacks) {
+        const fx = fxOf(a);
+        // A5.1: lasers and rails are instant; `fx.*` ids are instant effects, `proj.*` ids fly.
+        if (fx.startsWith('fx.')) expect(a.projectile, id).toMatchObject({ instant: true });
+        if (fx.startsWith('proj.')) expect(a.projectile && 'speed' in a.projectile ? a.projectile.speed : 0, id).toBeGreaterThan(0);
+      }
+      const [first, ...rest] = attacks;
+      if (!first) return;
+      expect(first.mods ?? [], id).toEqual(MODS_BY_CARD[id] ?? []);
+      expect(first.priority ?? 'front', id).toBe(PRIORITY_BY_CARD[id] ?? 'front');
+      // Secondary attacks (the Behemoth MG, the Matriarch's riders) carry no mods.
+      for (const a of rest) expect(a.mods ?? [], id).toEqual([]);
+    });
+  }
+
+  it('encodes the remaining A5 notes: arcs, splash, minimum ranges, charges, base damage', () => {
+    const arc = (id: string, i = 0) => {
+      const p = attacksOf(id)[i]?.projectile;
+      return p !== undefined && 'speed' in p && p.arc === true;
+    };
+    // "Arc" in A5, and the Grenadier's lob over allies
+    for (const id of ['rock_tosser', 'trebuchet', 'bronze_cannon', 'howitzer', 'plasma_mortar', 'grenadier']) expect(arc(id), id).toBe(true);
+    for (const id of ['pebbler', 'longbowman', 'fusilier', 'rifleman', 'tankette', 'mg_nest', 'crossbow_nest']) expect(arc(id), id).toBe(false);
+    expect(content.units.mammoth_matriarch?.attacks[0]?.splashRadius).toBe(40);
+    expect(content.units.behemoth_tank?.attacks[0]).toMatchObject({ splashRadius: 40, range: 240, hitsGround: true, hitsAir: false });
+    expect(content.units.balloon_admiral?.attacks[0]).toMatchObject({ splashRadius: 50, vsBaseDamage: 110 });
+    expect(content.units.balloon_admiral?.abilities).toContainEqual({ kind: 'bomber', dropWindow: 40 });
+    expect(content.units.battering_ram?.abilities).toContainEqual({ kind: 'siegeOnly' });
+    expect(content.turrets.howitzer?.attack).toMatchObject({ splashRadius: 60, minRange: 180 });
+    expect(content.turrets.plasma_mortar?.attack).toMatchObject({ splashRadius: 60, minRange: 180 });
+    expect(content.turrets.grumpy_toad?.attack.drag).toEqual({ distance: 120 });
+    expect(content.turrets.gravity_well?.attack.onHit).toEqual([{ kind: 'slow', magnitudeBp: 5000, durationMs: 2500 }]);
+    // Heavy commons' first-hit charges (Gore, Lance charge, Charge): ×2 and 30 lu knockback
+    for (const id of ['tuskback', 'destrier_knight', 'cuirassier']) {
+      expect(content.units[id]?.abilities, id).toContainEqual({ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 });
+    }
+    // followSupport on every Support Rare (A5)
+    for (const id of ['drum_shaman', 'friar', 'field_surgeon', 'radio_operator', 'repair_drone']) {
+      expect(content.units[id]?.abilities, id).toContainEqual({ kind: 'followSupport', behindFront: 60, soloMaxP: 200 });
+    }
+  });
+});
+
+describe('A2.7 / A2.8 price rules', () => {
+  it('pop follows cost in 25-gold steps (A2.7)', () => {
+    for (const id of [...content.order.units, ...content.order.hiddenUnits]) {
+      const u = content.units[id];
+      expect(u?.pop, id).toBe(Math.floor((u?.cost ?? 0) / 25));
+    }
+  });
+
+  it('turrets cost 150 / 175 for the two Commons, 250 for the Rare and the Epic (A2.8)', () => {
+    for (const age of content.order.ages) {
+      const ts = content.order.turrets.map((id) => content.turrets[id]).filter((t) => t?.age === age);
+      expect(ts.map((t) => [t?.rarity, t?.cost]), age).toEqual([['common', 150], ['common', 175], ['rare', 250], ['epic', 250]]);
+    }
+  });
+});
+
 describe('A5.7 Age Powers', () => {
   for (const [slug, name, age, slot, effect] of POWERS) {
     it(`${age}: ${slug}`, () => {
@@ -277,7 +459,51 @@ describe('A5.7 Age Powers', () => {
         { kind: 'speedBuff', magnitudeBp: 2500, durationMs: 8000 },
       ],
     });
-    expect(content.powers.nanite_surge?.effect).toMatchObject({ kind: 'buffAll' });
+    // All your units get a regen of 40% of max HP over 4 s and a 150 shield for 6 s
+    expect(content.powers.nanite_surge?.effect).toEqual({
+      kind: 'buffAll',
+      statuses: [
+        { kind: 'regen', magnitudeBp: 4000, durationMs: 4000 },
+        { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 150 },
+      ],
+    });
+    // Orbital Lance: "dealing 450 once to each enemy it touches (±20 lu)"
+    expect(content.powers.orbital_lance?.effect).toMatchObject({ width: 40 });
     expect(Object.keys(content.powers)).toHaveLength(10);
+  });
+
+  /**
+   * A5.7 "Per unit" column: the coverage estimate of A2.9 (count × 2 × radius / zone hits per unit, or
+   * the per-enemy hit cap) against the age's L1 Infantry and Heavy commons, in whole percent.
+   * The Photon Knight's innate shield counts as HP.
+   */
+  it('reproduces the "Per unit" column from the tables (A2.9 coverage)', () => {
+    const PER_UNIT: [string, string, string, number, number][] = [
+      ['stampede', 'bonker', 'tuskback', 94, 27],
+      ['meteor_shower', 'bonker', 'tuskback', 88, 25],
+      ['arrow_storm', 'footman', 'destrier_knight', 66, 19],
+      ['broadside', 'corsair', 'cuirassier', 82, 24],
+      ['carpet_bomber', 'trench_raider', 'tankette', 91, 26],
+      ['orbital_lance', 'photon_knight', 'walker_mech', 80, 24],
+    ];
+    const ehp = (id: string): number => {
+      const u = content.units[id];
+      const shield = u?.abilities.find((a) => a.kind === 'innateShield');
+      return (u?.hp ?? 0) + (shield?.kind === 'innateShield' ? shield.amount : 0);
+    };
+    for (const [power, light, heavy, lightPct, heavyPct] of PER_UNIT) {
+      const e = content.powers[power]?.effect;
+      let perUnit = 0;
+      if (e?.kind === 'barrage') perUnit = (e.damage * e.count * 2 * e.radius) / e.zone;
+      else if (e?.kind === 'stampede') perUnit = e.damage * e.maxHitsPerEnemy;
+      else if (e?.kind === 'sweep') perUnit = e.damage;
+      expect(Math.round((perUnit * 100) / ehp(light)), `${power} vs ${light}`).toBe(lightPct);
+      expect(Math.round((perUnit * 100) / ehp(heavy)), `${power} vs ${heavy}`).toBe(heavyPct);
+      // A2.9 tuning target: 60-100% of the Light unit, 15-35% of the Heavy common.
+      expect(lightPct).toBeGreaterThanOrEqual(60);
+      expect(lightPct).toBeLessThanOrEqual(100);
+      expect(heavyPct).toBeGreaterThanOrEqual(15);
+      expect(heavyPct).toBeLessThanOrEqual(35);
+    }
   });
 });

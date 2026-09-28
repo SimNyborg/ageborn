@@ -225,7 +225,11 @@ export function restHeight(p: PuppetDef, parts: PartLookup): number {
   return -b.minY;
 }
 
-/** A11 scale bands for ground units by role group (air units and Epics vary). */
+/**
+ * A11 scale bands for ground units by role group, measured feet to the top of the drawing (hat,
+ * plume, pennant): heavies 100-120 lu and Legendaries 170-220 lu exactly as A11 states; infantry
+ * "~68 lu" gets a band of 54-90 for the small and medium roles. Air units and Epics vary.
+ */
 export function heightBand(p: PuppetDef): readonly [number, number] | null {
   if (p.kind !== 'unit' || p.motion.air) return null;
   switch (p.group) {
@@ -235,12 +239,26 @@ export function heightBand(p: PuppetDef): readonly [number, number] | null {
     case 'support':
       return [54, 90];
     case 'heavy':
-      return [90, 125];
+      return STYLE.heightHeavyLu;
     case 'legendary':
-      return [150, 225];
+      return STYLE.heightLegendaryLu;
     default:
       return null;
   }
+}
+
+/** Part ids that are pennant carriers by convention: flags, pennants, banners and pennoned lances. */
+const PENNANT_PART = /(^|\.)(pennant|flag|banner|lance)(\*|$)/;
+
+/**
+ * Pennants (A11 redundant team cue "pennant on heavies"): slots outside the body-width check whose
+ * part is a flag, pennant, banner or pennoned lance with a banner-type team layer.
+ */
+export function pennantSlots(p: PuppetDef, parts: PartLookup): string[] {
+  return p.slots
+    .filter((s) => (s.noWidth || s.tag === 'weapon') && PENNANT_PART.test(s.part))
+    .filter((s) => parts(s.part)?.layers.some((l) => l.banner === true && isTeamZone(l.zone)) ?? false)
+    .map((s) => slotId(s));
 }
 
 // ---------------------------------------------------------------------------------------------

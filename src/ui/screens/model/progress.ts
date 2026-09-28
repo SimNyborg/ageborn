@@ -69,16 +69,23 @@ export function chargesView(save: SaveDoc, content: Content, now: number): Charg
 }
 
 export interface DailyCapsuleView {
+  /** A6.3: the first Daily Capsule becomes available right after capsule 2 is opened. */
+  unlocked: boolean;
   bank: number;
   max: number;
   nextInMs: number | null;
 }
 
+/** Capsules opened before the Daily Capsule unlocks (A6.3). */
+export const DAILY_UNLOCK_OPENED = 2;
+
 export function dailyCapsuleView(save: SaveDoc, content: Content, now: number): DailyCapsuleView {
   const max = content.capsules.daily.bankMax;
   const at = save.capsules.dailyNextAt;
+  const bank = Math.min(max, save.capsules.dailyBank);
   return {
-    bank: Math.min(max, save.capsules.dailyBank),
+    unlocked: bank > 0 || at !== null || save.pity.opened >= DAILY_UNLOCK_OPENED,
+    bank,
     max,
     nextInMs: at !== null && save.capsules.dailyBank < max ? Math.max(0, at - now) : null,
   };

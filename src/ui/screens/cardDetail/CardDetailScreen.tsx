@@ -31,6 +31,7 @@ import {
   upgradeState,
   type StatRow,
 } from '../model/cards';
+import { reasonKey } from '../model/reasons';
 import { SkinOptions } from '../shared/SkinPicker';
 
 const STAT_KEYS: Record<StatRow['id'], string> = {
@@ -70,9 +71,14 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
     const tm = setTimeout(() => setSlam(0), 900);
     return () => clearTimeout(tm);
   }, [slam]);
+  // Looking at a card clears its NEW badge.
+  const isNew = s.collection[id]?.isNew === true;
+  useEffect(() => {
+    if (isNew) services.markSeen(id);
+  }, [id, isNew]);
   if (!def) {
     return (
-      <ScreenFrame id="cardDetail" title={id} onBack={() => router.back()}>
+      <ScreenFrame id="cardDetail" title={t('ui.nav.collection')} onBack={() => router.back()}>
         <p>{t('ui.error.generic')}</p>
       </ScreenFrame>
     );
@@ -105,13 +111,13 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
       setSlam((n) => n + 1);
       toasts.show(t('ui.card.upgraded', { n: level + 1 }), { tone: 'gold', icon: <HammerIcon size={22} /> });
     } else {
-      toasts.show(r.reason === 'amber' ? t('ui.error.notEnoughAmber') : t('ui.error.generic'), { tone: 'bad' });
+      toasts.show(t(reasonKey(r.reason)), { tone: 'bad' });
     }
   }
 
   function doCraft() {
     const r = services.craft(id);
-    toasts.show(r.ok ? t('ui.card.crafted') : t('ui.error.notEnoughDust'), { tone: r.ok ? 'good' : 'bad' });
+    toasts.show(r.ok ? t('ui.card.crafted') : t(reasonKey(r.reason)), { tone: r.ok ? 'good' : 'bad' });
   }
 
   const frame = rarity ? RARITY_COLOR[rarity] : '#f2c14e';

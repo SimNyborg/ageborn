@@ -15,7 +15,7 @@ import { FIXTURE_NOW, fixtureSave, type FixtureState } from '../fixtures/saves';
 import { createPreviewServices, type PreviewLog } from '../fixtures/services';
 import { ScreenHost } from '../ScreenHost';
 import type { UiServices } from '../services';
-import { installDom, type FakeDocument, type FakeElement } from './dom';
+import { installDom, text, type FakeDocument, type FakeElement } from './dom';
 
 export type HarnessState = FixtureState | 'raw';
 
@@ -33,6 +33,21 @@ export interface Mounted {
   unmount(): void;
 }
 
+/** Keys look like `ui.home.battle` or `card.bonker.name`; a visible one means a missing string. */
+export const RAW_KEY =
+  /\b(ui|card|age|format|rarity|role|group|tag|foil|capsuleTier|capsuleKind|arena|general|quest|modifier|banner|frame|title|emote|skin)\.[A-Za-z0-9_]+\.[A-Za-z0-9_.]+\b|\bui\.[A-Za-z0-9_]+\b/;
+
+/** The first raw string key visible in `el`'s text or aria-labels, or null. */
+export function rawKeyIn(el: FakeElement): string | null {
+  const hit = RAW_KEY.exec(text(el));
+  if (hit) return hit[0];
+  for (const x of el.querySelectorAll('[aria-label]')) {
+    const h = RAW_KEY.exec(x.getAttribute('aria-label') ?? '');
+    if (h) return h[0];
+  }
+  return null;
+}
+
 export const EN: Translate = (k, p) => i18n.t(k, p);
 
 /** Pseudo-locale: every translated string is wrapped in ‹…›, so untranslated text stands out. */
@@ -46,7 +61,7 @@ export function saveFor(state: HarnessState): SaveDoc {
 }
 
 export function mount(
-  o: { state?: HarnessState; routes?: Route[]; t?: Translate; save?: SaveDoc; patch?: Partial<UiServices> } = {},
+  o: { state?: HarnessState; routes?: Route[]; t?: Translate; save?: SaveDoc; patch?: Partial<UiServices>; now?: () => number } = {},
 ): Mounted {
   const { document, container } = installDom();
   const save = signal<SaveDoc>(o.save ?? saveFor(o.state ?? 'mid'));
@@ -55,7 +70,7 @@ export function mount(
   for (const r of routes.slice(1)) router.go(r);
   const log: PreviewLog = { calls: [] };
   const services: UiServices = { ...createPreviewServices({ save, content, router, log }), ...o.patch };
-  const env = { save, content, t: o.t ?? EN, locale: 'en', now: () => FIXTURE_NOW, router, services, portrait: null };
+  const env = { save, content, t: o.t ?? EN, locale: 'en', now: o.now ?? (() => FIXTURE_NOW), router, services, portrait: null };
   const slots = { battle: (): ComponentChildren => <div data-testid="battle-slot" /> };
   act(() => {
     render(<ScreenHost env={env} slots={slots} />, container as unknown as HTMLElement);

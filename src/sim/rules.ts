@@ -40,8 +40,70 @@ export const TAG: Readonly<Record<Tag, number>> = {
   melee: 512,
 };
 
-/** Knockback resist of Brace units and air units (DESIGN A2.7): 100%. */
-export const FULL_RESIST_BP = BP;
+/**
+ * The battle numbers `CompiledContent` has no contract field for (DESIGN A2.1-A2.11, A5.7). WP1's
+ * compiled content carries them as `content.battle` (`src/content/raw/economy.ts`), and so does the
+ * shim's output; the sim reads them structurally because it may not import the content layer (B2).
+ */
+export interface BattleRulesLike {
+  /** Mid-lane p, lu (A2.1): power auto-aim fallback. */
+  midLane: number;
+  /** Default windups in percent of the interval, for attacks that state none (A2.7). */
+  windupPct: { melee: number; ranged: number; turret: number };
+  /** Knockback resist of Brace units and air units, bp (A2.7). */
+  braceKnockbackResistBp: number;
+  airKnockbackResistBp: number;
+  /** Modernise credit: the share of the old turret's price taken off the new one, bp (A2.3, A2.8). */
+  moderniseCreditBp: number;
+  /** XP cap in the final age of the format, whole XP (A2.4). */
+  finalAgeXpCap: number;
+  /** Siege base decay is applied in steps of this period, ms (A2.10). */
+  siegeDecayStepMs: number;
+  /** Stampede start when the caster has no ground units, p in lu (A5.7). */
+  stampedeFallbackP: number;
+}
+
+/** DESIGN values, used for content without a `battle` table (the contract fakes) and for missing fields. */
+export const DEFAULT_BATTLE: Readonly<BattleRulesLike> = {
+  midLane: 600,
+  windupPct: { melee: 40, ranged: 50, turret: 0 },
+  braceKnockbackResistBp: BP,
+  airKnockbackResistBp: BP,
+  moderniseCreditBp: 5000,
+  finalAgeXpCap: 1200,
+  siegeDecayStepMs: 1000,
+  stampedeFallbackP: 200,
+};
+
+const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/** The content's battle table, field by field, falling back to {@link DEFAULT_BATTLE}. */
+export function battleOf(content: CompiledContent): BattleRulesLike {
+  const b = (content as { battle?: unknown }).battle;
+  const d = DEFAULT_BATTLE;
+  if (b === null || typeof b !== 'object') return { ...d, windupPct: { ...d.windupPct } };
+  const o = b as Partial<Record<keyof BattleRulesLike, unknown>>;
+  const w = (o.windupPct ?? {}) as Partial<Record<'melee' | 'ranged' | 'turret', unknown>>;
+  const n = (k: Exclude<keyof BattleRulesLike, 'windupPct'>): number => {
+    const v = o[k];
+    return isNum(v) ? v : d[k];
+  };
+  return {
+    midLane: n('midLane'),
+    windupPct: {
+      melee: isNum(w.melee) ? w.melee : d.windupPct.melee,
+      ranged: isNum(w.ranged) ? w.ranged : d.windupPct.ranged,
+      turret: isNum(w.turret) ? w.turret : d.windupPct.turret,
+    },
+    braceKnockbackResistBp: n('braceKnockbackResistBp'),
+    airKnockbackResistBp: n('airKnockbackResistBp'),
+    moderniseCreditBp: n('moderniseCreditBp'),
+    finalAgeXpCap: n('finalAgeXpCap'),
+    siegeDecayStepMs: n('siegeDecayStepMs'),
+    stampedeFallbackP: n('stampedeFallbackP'),
+  };
+}
+
 /** "Heavy hit" threshold for the `hit.heavy` flag: ≥ 15% of the victim's max HP (DESIGN A12). */
 export const HEAVY_HIT_BP = 1500;
 /** Density scan step for `densest` targeting and power auto-aim (DESIGN A2.7, A2.9): 10 lu. */
@@ -228,6 +290,8 @@ export interface EconRules {
   queueMax: number;
   legendaryLimit: number;
   sellRefundBp: number;
+  /** Modernise: the new price minus this share of the old turret's price (A2.3). */
+  moderniseCreditBp: number;
   turretRangeCap: number;
   turretBuildTicks: number;
   turretSellTicks: number;
@@ -238,6 +302,10 @@ export interface EconRules {
   powerCarryCap: number;
   overchargeXp: number;
   overchargePpm: number;
+  /** XP cap (milli) in the final age of the format (A2.4). */
+  finalAgeXpCap: number;
+  /** Stampede start without own ground units, own-side p in mlu (A5.7). */
+  stampedeFallbackP: number;
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
   siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number };
   lastStand: { thresholdBp: number; autoBp: number; radius: number; damagePerP: number; knockback: number; chargeTicks: number };
@@ -319,7 +387,13 @@ function tagMask(tags: readonly Tag[]): number {
   return m;
 }
 
-function attackRules(a: AttackDef, isTurret: boolean, areaMaxTargets: number, rangeCap: number | null): AttackRules {
+function attackRules(
+  a: AttackDef,
+  isTurret: boolean,
+  areaMaxTargets: number,
+  rangeCap: number | null,
+  windups: BattleRulesLike['windupPct'],
+): AttackRules {
   const proj = a.projectile;
   const melee = proj === undefined;
   const instant = proj !== undefined && 'instant' in proj;
@@ -350,7 +424,7 @@ function attackRules(a: AttackDef, isTurret: boolean, areaMaxTargets: number, ra
     reach = mlu(a.followBehind);
   }
   const range = mlu(a.range);
-  const windupDefault = isTurret ? 0 : melee ? 40 : 50;
+  const windupDefault = isTurret ? windups.turret : melee ? windups.melee : windups.ranged;
   return {
     damage: a.damage,
     vsBaseDamage: a.vsBaseDamage ?? a.damage,
@@ -381,13 +455,17 @@ function attackRules(a: AttackDef, isTurret: boolean, areaMaxTargets: number, ra
   };
 }
 
-function unitRules(def: UnitDef, idx: number, content: CompiledContent): UnitRules {
+function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: BattleRulesLike): UnitRules {
   const e = content.economy;
   const width = mlu(e.sizes[def.size]);
   const tags = tagMask(def.tags);
   const air = (tags & TAG.air) !== 0;
   const brace = def.abilities.some((a) => a.kind === 'brace');
-  const attacks = def.attacks.map((a) => attackRules(a, false, e.areaMaxTargets, null));
+  const attacks = def.attacks.map((a) => attackRules(a, false, e.areaMaxTargets, null, battle.windupPct));
+  // Knockback resist (A2.7): by size, or the Brace / air value; the strongest applies.
+  let kbResistBp = e.knockbackResistBp[def.size];
+  if (air && battle.airKnockbackResistBp > kbResistBp) kbResistBp = battle.airKnockbackResistBp;
+  if (brace && battle.braceKnockbackResistBp > kbResistBp) kbResistBp = battle.braceKnockbackResistBp;
   const r: UnitRules = {
     id: def.id,
     idx,
@@ -402,7 +480,7 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent): UnitRul
     speed: Math.trunc((def.speed * MILLI) / TICKS_PER_SECOND),
     width,
     half: Math.trunc(width / 2),
-    kbResistBp: air || brace ? FULL_RESIST_BP : e.knockbackResistBp[def.size],
+    kbResistBp,
     tags,
     air,
     legendary: (tags & TAG.legendary) !== 0,
@@ -454,7 +532,7 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent): UnitRul
         break;
       case 'riders':
         r.riders = { count: ab.count, spawn: ab.onDeathSpawn };
-        for (let i = 0; i < ab.count; i += 1) attacks.push(attackRules(ab.attack, false, e.areaMaxTargets, null));
+        for (let i = 0; i < ab.count; i += 1) attacks.push(attackRules(ab.attack, false, e.areaMaxTargets, null, battle.windupPct));
         break;
       case 'onDeathExplode':
         r.deathExplode = { damage: ab.damage, radius: mlu(ab.radius) };
@@ -602,9 +680,10 @@ function powerRules(def: PowerDef, idx: number): PowerRules {
   };
 }
 
-function econRules(content: CompiledContent): EconRules {
+function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules {
   const e = content.economy;
   const t = content.ticks;
+  const decayStepTicks = msToTicks(battle.siegeDecayStepMs);
   return {
     startGold: e.startGold * MILLI,
     passiveGoldPerTick: Math.trunc((e.passiveGoldPerSec * MILLI) / TICKS_PER_SECOND),
@@ -625,6 +704,7 @@ function econRules(content: CompiledContent): EconRules {
     queueMax: e.queueMax,
     legendaryLimit: e.legendaryLimit,
     sellRefundBp: e.sellRefundBp,
+    moderniseCreditBp: battle.moderniseCreditBp,
     turretRangeCap: mlu(e.turretRangeCap),
     turretBuildTicks: t.turretBuild,
     turretSellTicks: t.turretSell,
@@ -635,13 +715,15 @@ function econRules(content: CompiledContent): EconRules {
     powerCarryCap: Math.trunc((PPM * e.powerCarryCapBp) / BP),
     overchargeXp: e.overchargeXp * MILLI,
     overchargePpm: Math.trunc((PPM * e.overchargeBp) / BP),
+    finalAgeXpCap: battle.finalAgeXpCap * MILLI,
+    stampedeFallbackP: mlu(battle.stampedeFallbackP),
     overdrive: { ...e.overdrive },
-    // A2.10: decay is applied every 20 ticks (1 s), so the per-step loss equals the per-second rate.
+    // A2.10: decay is applied every 20 ticks (1 s); the per-step loss is the per-second rate × the step.
     siege: {
       turretDamageBp: e.siege.turretDamageBp,
       baseDamageBp: e.siege.baseDamageBp,
-      decayBpPerStep: e.siege.decayBpPerSec,
-      decayStepTicks: TICKS_PER_SECOND,
+      decayBpPerStep: Math.trunc((e.siege.decayBpPerSec * decayStepTicks) / TICKS_PER_SECOND),
+      decayStepTicks,
     },
     lastStand: {
       thresholdBp: e.lastStand.thresholdBp,
@@ -667,8 +749,7 @@ function econRules(content: CompiledContent): EconRules {
     legendaryPowerDamageBp: e.legendaryPowerDamageBp,
     zoneMin: mlu(e.powerZoneClamp[0]),
     zoneMax: mlu(e.powerZoneClamp[1]),
-    // Mid-lane (A2.1) is the centre of the power zone clamp.
-    midLane: mlu((e.powerZoneClamp[0] + e.powerZoneClamp[1]) / 2),
+    midLane: mlu(battle.midLane),
     drawGapBp: e.drawGapBp,
     levelStepBp: e.levelStepBp,
     maxLevel: e.maxLevel,
@@ -698,12 +779,13 @@ function formatRules(content: CompiledContent, id: FormatId): FormatRules {
 }
 
 function compileRules(content: CompiledContent): SimRules {
+  const battle = battleOf(content);
   const units: Record<CardId, UnitRules> = {};
   const unitList: UnitRules[] = [];
   for (const id of sortedKeys(content.units)) {
     const def = content.units[id];
     if (!def) continue;
-    const r = unitRules(def, unitList.length, content);
+    const r = unitRules(def, unitList.length, content, battle);
     units[id] = r;
     unitList.push(r);
   }
@@ -720,7 +802,7 @@ function compileRules(content: CompiledContent): SimRules {
       age: def.age,
       ageIdx: content.ages[def.age].index,
       cost: def.cost,
-      attack: attackRules(def.attack, true, content.economy.areaMaxTargets, rangeCap),
+      attack: attackRules(def.attack, true, content.economy.areaMaxTargets, rangeCap, battle.windupPct),
     };
     turrets[id] = r;
     turretList.push(r);
@@ -750,7 +832,7 @@ function compileRules(content: CompiledContent): SimRules {
   for (const f of sortedKeys(content.formats)) formats[f] = formatRules(content, f);
   return {
     content,
-    econ: econRules(content),
+    econ: econRules(content, battle),
     units,
     unitList,
     turrets,

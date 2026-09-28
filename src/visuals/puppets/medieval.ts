@@ -103,7 +103,7 @@ export const MEDIEVAL_UNITS: PuppetDef[] = [
       head: { part: 'medieval.horse.head', x: 0, y: 0 },
       eyes: { part: 'shared.eyes.beast', x: 12, y: -25 },
       tail: { part: 'medieval.horse.tail', x: -16, y: -8, rot: 14 },
-      saddle: { x: -6, y: -16 },
+      saddle: { x: -6, y: -13 },
       extras: [slot('medieval.horse.caparison', 'body', 21), slot('medieval.horse.chanfron', 'snout', 31), slot('medieval.horse.saddle', 'saddle', 24)],
       headTopY: -112,
     },
@@ -206,7 +206,13 @@ export const MEDIEVAL_UNITS: PuppetDef[] = [
       eyes: { part: 'shared.eyes.beast*1.5', x: 27, y: -22 },
       tail: { part: 'medieval.bear.tail', x: -34, y: -14 },
       saddle: { x: -6, y: -44 },
-      extras: [slot('medieval.bear.barding', 'body', 21), slot('medieval.bear.helm', 'snout', 31.5), slot('medieval.bear.saddle', 'saddle', 24)],
+      extras: [
+        slot('medieval.bear.barding', 'body', 21),
+        slot('medieval.bear.helm', 'snout', 31.5),
+        slot('medieval.bear.saddle', 'saddle', 24),
+        // A11 redundant team cue: a pennant on every heavy (mirrored so it trails behind the rider)
+        slot(sized('medieval.turret.flag', 1.8), 'body', 20.5, { x: -30, y: -40, sx: -1, noWidth: true }),
+      ],
       headTopY: -196,
     },
     rider: {

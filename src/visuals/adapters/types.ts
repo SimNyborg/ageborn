@@ -51,6 +51,8 @@ export interface PortraitRequest {
   side: Side;
   /** False: no age plate, transparent background (silhouettes of unowned cards). */
   plate: boolean;
+  /** Colourblind preset for the team areas (A11). */
+  teamPreset: TeamPreset;
 }
 
 /** What the provider is about to create (adapters may support only some, e.g. atlas units). */

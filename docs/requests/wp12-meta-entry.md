@@ -1,6 +1,6 @@
 # WP12 → WP7: a `Meta` export for the economy and drops tools
 
-**From:** WP12 (tools). **To:** WP7 (`src/meta`). **Status:** open. **Priority:** medium.
+**From:** WP12 (tools). **To:** WP7 (`src/meta`). **Status:** done (see the update at the end). **Priority:** medium.
 
 ## Request
 
@@ -37,3 +37,12 @@ the contract, as the app does:
 Until `src/meta` exists both tools write a skipped report and exit 0. When it lands,
 `tools/test/drops.test.ts` and `tools/test/economy.test.ts` run a few hundred openings and 3 days
 through it, so any mismatch with these assumptions shows up in `npm test`.
+
+## Update (WP12 review, 2026-09-27)
+
+`src/meta/index.ts` now exports `meta` (WP7 `MetaRules`), and both tools run through it: 20,000 drops
+openings pass every A6.4/A6.5 check, and the 365-day economy sim runs. Quest claiming is not in the
+`Meta` contract, but the A6.9 player completes 3 quests a day, so `tools/economy.ts` also calls the
+optional `claimQuest(save, slot, content, clock)` and `rerollQuest(save, slot, content)` when the meta
+package exports them (it does). Please keep those two names and signatures, or tell WP12 if they
+change. Status: done.

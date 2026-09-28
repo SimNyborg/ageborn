@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CapsuleTier, Rarity } from '@/contracts/ids';
 import { seedSfc32 } from '@/core/rng';
-import { commanderName, content, playerName, roadAmber } from '../index';
+import { AGE_ORDER, FORMAT_MODES, FORMAT_ORDER, commanderName, content, playerName, roadAmber } from '../index';
 
 const { capsules, rarities, arenas, trophyRoad, generals, quests, dailyModifiers, cosmetics, names } = content;
 
@@ -167,6 +167,9 @@ describe('Trophy Road (A6.3)', () => {
     }
     expect(roadAmber(trophyRoad, 50)).toBe(110);
     expect(roadAmber(trophyRoad, 3800)).toBe(860);
+    // Always an integer (B3 integer state), even between nodes.
+    expect(roadAmber(trophyRoad, 51)).toBe(110);
+    expect(roadAmber(trophyRoad, 54)).toBe(110);
   });
 
   it('places the powers, gates and big rewards as DESIGN lists them', () => {
@@ -265,6 +268,33 @@ describe('Quests and Codex (A6.7)', () => {
       .map((id) => content.units[id]?.rarity ?? content.turrets[id]?.rarity ?? 'common')
       .reduce((s, r) => s + 9 * rarities.cards[r].codexPoints, 0);
     expect(Math.floor(points / quests.codex.pointsPerLevel)).toBe(81);
+  });
+});
+
+describe('Formats (A2.10 "Used in")', () => {
+  it('lists the modes of each format, consistent with the arenas, Daily Challenge and Conquest', () => {
+    expect(FORMAT_ORDER).toEqual(['tutorial', 'short', 'standard', 'full']);
+    expect(FORMAT_MODES).toEqual({
+      tutorial: ['tutorial'],
+      short: ['ladder', 'skirmish'],
+      standard: ['ladder', 'daily', 'skirmish'],
+      full: ['ladder', 'conquest', 'skirmish'],
+    });
+    // Short War on the ladder in all arenas, Standard from Arena 2, Full from Arena 3.
+    const firstArena = (f: string) => arenas.list.find((a) => a.ladderFormats.some((x) => x === f))?.index;
+    expect([firstArena('short'), firstArena('standard'), firstArena('full')]).toEqual([1, 2, 3]);
+    for (const a of arenas.list) {
+      for (const f of a.ladderFormats) expect(FORMAT_MODES[f], `${a.id} ${f}`).toContain('ladder');
+      // Once a format is on the ladder it stays there.
+      const next = arenas.list[a.index];
+      if (next) for (const f of a.ladderFormats) expect(next.ladderFormats, `${next.id}`).toContain(f);
+    }
+    expect(FORMAT_MODES[dailyModifiers.challenge.format]).toContain('daily');
+    expect(FORMAT_MODES[generals.conquest.format]).toContain('conquest');
+    expect(content.formats.tutorial.ages).toHaveLength(5);
+    expect(content.formats.short.ages).toEqual(['stone', 'medieval', 'gunpowder']);
+    expect(content.formats.standard.ages).toEqual(['stone', 'medieval', 'gunpowder', 'modern']);
+    expect(content.formats.full.ages).toEqual(AGE_ORDER);
   });
 });
 

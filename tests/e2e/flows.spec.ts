@@ -113,7 +113,11 @@ test.describe('B13 flows', () => {
     await page.goto('./');
     await expect(page.getByTestId('home')).toBeVisible({ timeout: 20_000 });
     await page.getByTestId('battle-button').click();
-    await page.getByTestId('mode-skirmish').click();
+    // The Skirmish card (`mode-skirmish`) opens its setup dialog, which starts the match. Skirmish
+    // unlocks after the onboarding matches (A8), so the profile must be past them when this is wired.
+    await page.getByTestId('mode-skirmish').getByTestId('skirmish-open').click();
+    await expect(page.getByTestId('skirmish-setup')).toBeVisible();
+    await page.getByTestId('skirmish-start').click();
     await playToResult(page);
     await expect(page.getByTestId('result-title')).toHaveAttribute('data-outcome', /win|loss|draw/);
   });

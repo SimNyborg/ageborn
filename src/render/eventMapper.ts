@@ -7,7 +7,7 @@
  * Settings (hitstop off, reduce motion, shake slider, damage-number mode) are applied by the view when
  * it executes the actions, so the mapper output does not depend on them.
  */
-import type { AttackDef, CardId, CompiledContent, DmgType, EffectId, SimEvent, Side, SoundId, UnitDef } from '@/contracts';
+import type { AbilityDef, AttackDef, CardId, CompiledContent, DmgType, EffectId, PowerDef, SimEvent, Side, SoundId, UnitDef } from '@/contracts';
 import type { CosmeticRng } from '@/core';
 import { feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig';
 import { BASE_DEPTH_LU, LANE_LU, MILLI_LU, gateX } from './layout';
@@ -128,10 +128,20 @@ interface RuleTarget {
   base?: Side;
   dir?: { x: number; y: number };
   subs?: Subs;
+  /** Effect options in the art's names (WP4 `effects/recipes.ts`): side, dir, radius, zone, durationMs, ... */
   opts?: Record<string, number>;
   spreadLu?: number;
   gapKey?: string;
+  /** Keep the particles on the anchor unit while it lives (status effects). */
+  follow?: boolean;
+  /** Multiplies every particle count (Paratroopers: one parachute per trooper). */
+  countMul?: number;
+  /** The side whose units get `fxTarget: 'sideUnits'` particles. */
+  side?: Side;
 }
+
+/** +1 when `side` faces right (side 0), -1 otherwise: the art mirrors directional effects by `dir`. */
+const dirOf = (side: Side): number => (side === 0 ? 1 : -1);
 
 function resolve(s: string, subs: Subs | undefined): string | null {
   if (!s.startsWith('$')) return s;
@@ -155,6 +165,10 @@ export class EventMapper {
   private readonly rng: CosmeticRng;
   private crumble: [number, number] = [0, 0];
   private evolves: [number, number] = [0, 0];
+  /** Centre and width (lu) of recent casts, from their telegraphs (line barrages and sweeps play from the centre). */
+  private readonly casts = new Map<number, { x: number; zone: number }>();
+  /** Sources whose area ring already played in the current `map` call (one ring per impact, not per victim). */
+  private areaShown = new Set<string>();
 
   constructor(o: MapperOptions) {
     this.content = o.content;
@@ -168,6 +182,7 @@ export class EventMapper {
     const out: ViewAction[] = [];
     const diedNow = new Set<number>();
     for (const ev of events) if (ev.e === 'died') diedNow.add(ev.id);
+    this.areaShown = new Set();
     for (const ev of events) this.one(ev, unit, diedNow, out);
     return out;
   }
@@ -201,15 +216,21 @@ export class EventMapper {
     }
     for (const p of r.particles ?? []) {
       const id = resolve(p.effectId, t.subs);
-      if (!id || p.count <= 0) continue;
+      const count = p.count * (t.countMul ?? 1);
+      if (!id || count <= 0) continue;
+      if (r.fxTarget === 'sideUnits' && t.side !== undefined) {
+        out.push({ a: 'fxUnits', effectId: id, side: t.side, priority: p.priority, ...(t.opts ? { opts: t.opts } : {}) });
+        continue;
+      }
       out.push({
         a: 'fx',
         effectId: id,
         at: t.at,
-        count: p.count,
+        count,
         priority: p.priority,
-        ...(t.spreadLu !== undefined ? { spreadLu: t.spreadLu } : p.count > 1 ? { spreadLu: 10 } : {}),
+        ...(t.spreadLu !== undefined ? { spreadLu: t.spreadLu } : count > 1 ? { spreadLu: 10 } : {}),
         ...(t.opts ? { opts: t.opts } : {}),
+        ...(t.follow ? { follow: true } : {}),
       });
     }
     if (r.sound) {
@@ -288,11 +309,12 @@ export class EventMapper {
           at,
           victim: ev.targetId,
           ...(ev.sourceId > 0 ? { attacker: ev.sourceId } : {}),
-          ...(dir ? { dir } : {}),
+          ...(dir ? { dir, opts: { dir: dir.x } } : {}),
           subs,
           spreadLu: 6,
         }, out);
         if (victim) out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit' });
+        this.areaRing(ev, x, out);
         const power = ev.sourceKind === 'power' || ev.sourceKind === 'lastStand';
         const ownTurretKill = turret !== null && turret.side === this.mySide && diedNow.has(ev.targetId);
         const kind = power ? 'power' : ownTurretKill ? 'kill' : 'damage';
@@ -302,19 +324,24 @@ export class EventMapper {
         return;
       }
       case 'healed': {
-        this.rule('heal', { at: { k: 'unit', id: ev.id, part: 'head' } }, out);
+        this.rule('heal', { at: { k: 'unit', id: ev.id, part: 'head' }, follow: true }, out);
         out.push({ a: 'number', kind: 'heal', value: ev.amount / 100, at: { k: 'unit', id: ev.id, part: 'head' }, important: false, key: `h${ev.id}` });
         return;
       }
       case 'statusApplied': {
+        // Status effects follow their unit and last as long as the status (loops read `durationMs`).
         const at: Anchor = { k: 'unit', id: ev.id, part: 'head' };
         if (ev.kind === 'stun') {
           out.push({ a: 'unitClip', id: ev.id, clip: 'stun' });
-          this.rule(ev.frozen ? 'status.frozen' : 'status.stun', { at, opts: { ms: ev.ms } }, out);
+          const u = unit(ev.id);
+          const def = u ? C.units[u.card] : undefined;
+          const radius = def ? C.economy.sizes[def.size] : 32;
+          this.rule(ev.frozen ? 'status.frozen' : 'status.stun', { at, opts: { durationMs: ev.ms, radius }, follow: true }, out);
         } else if (ev.kind === 'shield') {
-          this.rule('status.shield', { at: { k: 'unit', id: ev.id, part: 'hit' }, opts: { ms: ev.ms } }, out);
+          // The lasting bubble is the art's (from `UnitPose.shieldBp`); this marks the moment it lands.
+          this.rule('status.shield', { at: { k: 'unit', id: ev.id, part: 'hit' }, opts: { durationMs: Math.min(ev.ms, tun.shieldPopMs) }, follow: true }, out);
         } else if (ev.kind === 'mark') {
-          this.rule('status.mark', { at, opts: { ms: ev.ms } }, out);
+          this.rule('status.mark', { at, opts: { durationMs: ev.ms }, follow: true }, out);
         }
         return;
       }
@@ -323,7 +350,8 @@ export class EventMapper {
       case 'abilityUsed': {
         out.push({ a: 'unitClip', id: ev.id, clip: 'ability' });
         const at: Anchor = ev.ability === 'callStrike' || ev.ability === 'pounce' ? { k: 'world', x: ev.x / MILLI_LU, y: 0 } : { k: 'unit', id: ev.id, part: 'hit' };
-        this.rule(`ability.${ev.ability}`, { at }, out);
+        const u = unit(ev.id);
+        this.rule(`ability.${ev.ability}`, { at, opts: this.abilityOpts(u, ev.ability) }, out);
         return;
       }
       case 'died': {
@@ -346,8 +374,11 @@ export class EventMapper {
             out.push({ a: 'view', ev: { t: 'coins', count: coinCount(ev.bountyGold) } });
           }
           if (ev.bountyXp > 0) {
-            const xp = feelRule(this.feel, 'xp.kill').particles?.[0];
+            const r = feelRule(this.feel, 'xp.kill');
+            const xp = r.particles?.[0];
             if (xp) out.push({ a: 'fxFly', effectId: xp.effectId, from: at, to: 'xp', count: xp.count, priority: xp.priority });
+            // The tick sounds when the sparkles reach the XP bar.
+            if (r.sound) out.push({ a: 'sound', id: r.sound, delayMs: tun.xpTravelMs, gap: { key: r.sound, gapMs: tun.coinSoundGapMs } });
           }
         }
         out.push({ a: 'intensity', amount: tun.intensity.death });
@@ -375,14 +406,21 @@ export class EventMapper {
         const card = this.turretOn(ev.side, ev.mount);
         out.push({ a: 'turret', side: ev.side, mount: ev.mount, op: 'fire', card: card ?? '', targetId: ev.targetId });
         const sfx = card ? C.turrets[card]?.attack.sfx : undefined;
-        this.rule('turret.fire', { at: { k: 'mount', side: ev.side, mount: ev.mount }, subs: sfx ? { attackSound: sfx } : {}, spreadLu: 4, opts: { side: ev.side } }, out);
+        this.rule('turret.fire', { at: { k: 'mount', side: ev.side, mount: ev.mount }, subs: sfx ? { attackSound: sfx } : {}, spreadLu: 4, opts: { side: ev.side, dir: dirOf(ev.side) } }, out);
         return;
       }
       case 'baseDamaged': {
-        out.push({ a: 'base', side: ev.side, op: 'hit' });
-        const dir = { x: ev.side === 0 ? -1 : 1, y: 0 };
-        this.rule('base.hit', { at: { k: 'base', side: ev.side, part: 'front' }, base: ev.side, dir, gapKey: String(ev.side), spreadLu: 18 }, out);
-        out.push({ a: 'number', kind: 'base', value: ev.damage / 100, at: { k: 'base', side: ev.side, part: 'front' }, important: true, key: `base${ev.side}` });
+        const front: Anchor = { k: 'base', side: ev.side, part: 'front' };
+        if (ev.sourceId === null) {
+          // Siege decay (A2.10: 0.5% per second, no attacker): crumbling debris only, no hit, shake or sound.
+          this.rule('base.decay', { at: front, spreadLu: 30 }, out);
+          out.push({ a: 'number', kind: 'base', value: ev.damage / 100, at: front, important: false, key: `decay${ev.side}` });
+        } else {
+          out.push({ a: 'base', side: ev.side, op: 'hit' });
+          const dir = { x: ev.side === 0 ? -1 : 1, y: 0 };
+          this.rule('base.hit', { at: front, base: ev.side, dir, gapKey: String(ev.side), spreadLu: 18 }, out);
+          out.push({ a: 'number', kind: 'base', value: ev.damage / 100, at: front, important: true, key: `base${ev.side}` });
+        }
         const stage = crumbleStage(ev.hp, ev.maxHp);
         if (stage > this.crumble[ev.side]) {
           this.crumble[ev.side] = stage;
@@ -441,20 +479,27 @@ export class EventMapper {
       case 'powerReady':
         if (ev.side === this.mySide) this.rule('power.ready', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
         return;
-      case 'powerTelegraph':
+      case 'powerTelegraph': {
         // `zone` is milli-lu like every sim position (B3; WP2 emits `zone: 500_000` for 500 lu).
-        out.push({ a: 'telegraph', side: ev.side, castId: ev.castId, power: ev.power, x: ev.x / MILLI_LU, zone: ev.zone / MILLI_LU, ms: this.content.powers[ev.power]?.telegraphMs ?? tun.telegraphMs });
-        this.rule('power.telegraph', { at: { k: 'world', x: ev.x / MILLI_LU, y: 0 } }, out);
+        const x = ev.x / MILLI_LU;
+        const zone = ev.zone / MILLI_LU;
+        this.casts.set(ev.castId, { x, zone });
+        if (this.casts.size > 16) this.casts.delete(this.casts.keys().next().value as number);
+        out.push({ a: 'telegraph', side: ev.side, castId: ev.castId, power: ev.power, x, zone, ms: this.content.powers[ev.power]?.telegraphMs ?? tun.telegraphMs });
+        this.rule('power.telegraph', { at: { k: 'world', x, y: 0 } }, out);
         return;
+      }
       case 'powerImpact': {
         const x = ev.x / MILLI_LU;
-        out.push({ a: 'powerFx', side: ev.side, power: ev.power, castId: ev.castId, x, index: ev.index });
+        const def = this.content.powers[ev.power];
         if (ev.index === 0) {
-          this.rule('power.impact', { at: { k: 'world', x, y: 0 }, subs: { powerSound: this.content.powers[ev.power]?.sfx ?? 'power_telegraph' } }, out);
+          this.rule('power.impact', { at: { k: 'world', x, y: 0 }, subs: { powerSound: def?.sfx ?? 'power_telegraph' } }, out);
           out.push({ a: 'intensity', amount: tun.intensity.power });
-        } else {
+        } else if (def?.effect.kind !== 'sweep') {
+          // Later barrage impacts and aurochs add a little shake; the Lance's per-tick sweep does not.
           this.rule('power.impact.more', { at: { k: 'world', x, y: 0 } }, out);
         }
+        if (def) this.powerPreset(ev, def, x, out);
         return;
       }
       case 'stanceChanged':
@@ -512,6 +557,103 @@ export class EventMapper {
         void never;
       }
     }
+  }
+
+  /**
+   * Per-power preset (A12 "Power lands"): the effect comes from the feel config, the sizes from the
+   * power's data, so a retuned zone or radius needs no config change.
+   */
+  private powerPreset(ev: Extract<SimEvent, { e: 'powerImpact' }>, def: PowerDef, x: number, out: ViewAction[]): void {
+    const e = def.effect;
+    const side = ev.side;
+    const dir = dirOf(side);
+    const cast = this.casts.get(ev.castId);
+    const centre = cast?.x ?? x;
+    const has = (key: string): boolean => this.feel.events[key] !== undefined;
+    const pick = (suffix: string): string => (has(`power.fx.${def.id}${suffix}`) ? `power.fx.${def.id}${suffix}` : `power.fx.${e.kind}${suffix}`);
+    let each: RuleTarget | null = null;
+    let first: RuleTarget | null = null;
+    switch (e.kind) {
+      case 'barrage':
+        each = { at: { k: 'world', x, y: 0 }, opts: { side, dir, radius: e.radius } };
+        first = { at: { k: 'world', x: centre, y: 0 }, opts: { side, dir, zone: e.zone, durationMs: e.durationMs } };
+        break;
+      case 'sweep':
+        first = { at: { k: 'world', x: centre, y: 0 }, opts: { side, dir, zone: e.zone, width: e.width, durationMs: e.durationMs } };
+        break;
+      case 'stampede':
+        each = { at: { k: 'world', x, y: 0 }, opts: { side, dir, distance: e.distance, speed: e.speed } };
+        break;
+      case 'cloud':
+        first = { at: { k: 'world', x, y: 0 }, opts: { side, width: e.width, durationMs: e.durationMs } };
+        break;
+      case 'paradrop':
+        first = { at: { k: 'world', x, y: 0 }, opts: { side, dir }, countMul: e.count, spreadLu: 30 };
+        break;
+      case 'buffAll': {
+        const ms = Math.max(0, ...e.statuses.map((s) => s.durationMs));
+        first = { at: { k: 'world', x, y: 0 }, opts: { side, durationMs: ms }, side };
+        break;
+      }
+    }
+    if (first && ev.index === 0) this.rule(pick('.first'), first, out);
+    if (each) this.rule(pick(''), each, out);
+  }
+
+  /** Size and timing options for an ability's effect (the art sizes rings by `radius`). */
+  private abilityOpts(u: UnitInfo | undefined, kind: AbilityDef['kind']): Record<string, number> | undefined {
+    const def = u ? this.content.units[u.card] : undefined;
+    const ab = def?.abilities.find((a) => a.kind === kind);
+    if (!ab || !u) return undefined;
+    const base = { side: u.side, dir: dirOf(u.side) };
+    switch (ab.kind) {
+      case 'periodicShieldAura':
+      case 'emp':
+      case 'timeStop':
+      case 'onDeathExplode':
+        return { ...base, radius: ab.radius };
+      case 'callStrike':
+        // The marker stays until the strike lands.
+        return { ...base, radius: ab.radius, durationMs: ab.delayMs };
+      default:
+        return base;
+    }
+  }
+
+  /**
+   * One area ring per impact (A12 VFX "splash rings"; a gravity swirl for pulls): hits of a splash
+   * attack arrive one per victim, so only the first hit of a source in a tick shows the ring.
+   */
+  private areaRing(ev: Extract<SimEvent, { e: 'hit' }>, x: number, out: ViewAction[]): void {
+    const area = this.areaOf(ev);
+    if (!area) return;
+    const key = `${ev.sourceId}:${ev.tick}`;
+    if (this.areaShown.has(key)) return;
+    this.areaShown.add(key);
+    this.rule(area.pull ? 'hit.pull' : 'hit.splash', { at: { k: 'world', x, y: 0 }, opts: { radius: area.radius } }, out);
+  }
+
+  /** The area of the attack behind a hit (splash, pull or a called strike), matched by damage type. */
+  private areaOf(ev: Extract<SimEvent, { e: 'hit' }>): { radius: number; pull: boolean } | null {
+    const C = this.content;
+    let attacks: AttackDef[] = [];
+    if (ev.sourceKind === 'turret') {
+      const t = C.turrets[ev.sourceCard];
+      if (t) attacks = [t.attack];
+    } else if (ev.sourceKind === 'unit') {
+      const d = C.units[ev.sourceCard];
+      if (d) {
+        attacks = [...d.attacks];
+        for (const a of d.abilities) if (a.kind === 'riders') attacks.push(a.attack);
+      }
+    } else if (ev.sourceKind === 'ability') {
+      const strike = C.units[ev.sourceCard]?.abilities.find((a) => a.kind === 'callStrike');
+      return strike && strike.kind === 'callStrike' && strike.radius > 0 ? { radius: strike.radius, pull: false } : null;
+    }
+    const atk = attacks.find((a) => a.dmgType === ev.dmgType && ((a.splashRadius ?? 0) > 0 || a.pull !== undefined));
+    if (!atk) return null;
+    const radius = atk.pull?.radius ?? atk.splashRadius ?? 0;
+    return radius > 0 ? { radius, pull: atk.pull !== undefined } : null;
   }
 
   private attackByVisual(def: UnitDef, visualId: string): AttackDef | undefined {

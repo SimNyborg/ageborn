@@ -164,6 +164,39 @@ describe('semantic checks', () => {
     expect(messages(c)).toContain('capsules.bag: the bag holds 100 capsules');
   });
 
+  it('catches onboarding script mistakes (A6.5, A3)', () => {
+    const c = copy();
+    // A starter Common cannot be revealed as NEW.
+    c.capsules.script[0]?.cards.push('bonker');
+    expect(messages(c)).toContain('capsules.script.0: "bonker" is a starter Common, so it cannot be NEW');
+    // Without the script, the Spear Hunter would never arrive.
+    const d = copy();
+    const first = d.capsules.script[0];
+    if (!first) throw new Error('script capsule 1');
+    first.cards = [];
+    expect(messages(d)).toContain('capsules.script: "spear_hunter" (the stone Anti-armor Rare) never arrives (A3)');
+    // Nor would the Rail Gunner without Arena 2's Age Unlock Capsules.
+    const e = copy();
+    const a2 = e.arenas.list[1];
+    if (!a2) throw new Error('arena 2');
+    a2.gateRewards = a2.gateRewards.filter((r) => r.kind !== 'ageUnlock');
+    expect(messages(e)).toContain('capsules.script: "rail_gunner" (the future Anti-armor Rare) never arrives (A3)');
+    // A Bronze capsule has 3 stacks.
+    const f = copy();
+    const bronze = f.capsules.script[0];
+    if (!bronze) throw new Error('script capsule 1');
+    bronze.cards = ['spear_hunter', 'pikeman', 'grenadier', 'log_roller'];
+    expect(messages(f)).toContain('capsules.script.0: more scripted cards than stacks');
+  });
+
+  it('catches a Conquest tier outside the General\'s tiers (A6.10, A7.4)', () => {
+    const c = copy();
+    const pip = c.generals.conquest.board[0];
+    if (!pip) throw new Error('board');
+    pip.tier = 5;
+    expect(messages(c)).toContain('generals.conquest.board: "pip" plays Conquest at tier 5, outside its tiers 0-2');
+  });
+
   it('catches a gate reward naming an unknown banner or skin', () => {
     const c = copy();
     c.arenas.list[7]?.gateRewards.push({ kind: 'skin', skin: 'gold_mammoth' });

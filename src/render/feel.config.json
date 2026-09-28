@@ -33,7 +33,8 @@
     "turretSellMs": 1000,
     "telegraphMs": 1000,
     "cheerMs": 900,
-    "mechExplodeOneIn": 3
+    "mechExplodeOneIn": 3,
+    "shieldPopMs": 500
   },
   "events": {
     "hit.light": {
@@ -54,6 +55,8 @@
       ],
       "sound": "hit_heavy"
     },
+    "hit.splash": { "particles": [{ "effectId": "fx.splash_ring", "count": 1, "priority": 2 }] },
+    "hit.pull": { "particles": [{ "effectId": "fx.gravity_swirl", "count": 1, "priority": 3 }] },
     "death.unit": {
       "hitstopLocalMs": { "victim": 50, "attacker": 0 },
       "trauma": 0.1,
@@ -87,7 +90,7 @@
       "sound": "explosion_s"
     },
     "death.coins": { "particles": [{ "effectId": "fx.coin", "count": 1, "priority": 4 }], "sound": "coin_gain" },
-    "xp.kill": { "particles": [{ "effectId": "fx.xp_sparkle", "count": 3, "priority": 1 }] },
+    "xp.kill": { "particles": [{ "effectId": "fx.xp_sparkle", "count": 3, "priority": 1 }], "sound": "xp_tick" },
     "turret.fire": {
       "particles": [
         { "effectId": "fx.muzzle", "count": 1, "priority": 2 },
@@ -108,6 +111,7 @@
       "particles": [{ "effectId": "fx.debris", "count": 4, "priority": 1 }],
       "sound": "base_hit"
     },
+    "base.decay": { "particles": [{ "effectId": "fx.debris", "count": 2, "priority": 0 }] },
     "base.crumble": { "trauma": 0.15, "particles": [{ "effectId": "fx.debris", "count": 16, "priority": 2 }], "sound": "base_crumble" },
     "power.ready": { "sound": "power_ready" },
     "power.telegraph": { "sound": "power_telegraph" },
@@ -123,6 +127,17 @@
       "duckMs": 1500
     },
     "power.impact.more": { "trauma": 0.06 },
+    "power.fx.barrage": { "particles": [{ "effectId": "fx.explosion_m", "count": 1, "priority": 4 }] },
+    "power.fx.meteor_shower": { "particles": [{ "effectId": "fx.meteor", "count": 1, "priority": 4 }] },
+    "power.fx.arrow_storm": { "particles": [{ "effectId": "fx.arrow_rain", "count": 1, "priority": 3 }] },
+    "power.fx.broadside": { "particles": [{ "effectId": "fx.cannonball_rain", "count": 1, "priority": 4 }] },
+    "power.fx.carpet_bomber.first": { "particles": [{ "effectId": "fx.plane_bomber", "count": 1, "priority": 5 }] },
+    "power.fx.stampede": { "particles": [{ "effectId": "fx.aurochs", "count": 1, "priority": 5 }] },
+    "power.fx.sweep.first": { "particles": [{ "effectId": "fx.orbital_beam", "count": 1, "priority": 5 }] },
+    "power.fx.cloud.first": { "particles": [{ "effectId": "fx.smoke_cloud", "count": 1, "priority": 5 }] },
+    "power.fx.paradrop.first": { "particles": [{ "effectId": "fx.parachute", "count": 1, "priority": 5 }] },
+    "power.fx.buffAll.first": { "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.decree_glow", "count": 1, "priority": 3 }] },
+    "power.fx.nanite_surge.first": { "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.nanite_swarm", "count": 1, "priority": 3 }] },
     "evolve.ready": { "sound": "evolve_ready" },
     "evolve.start.own": { "sound": "evolve_riser", "duckDb": -6, "duckMs": 2600 },
     "evolve.start.enemy": {},
@@ -173,7 +188,7 @@
     "status.frozen": { "particles": [{ "effectId": "fx.time_ripple", "count": 1, "priority": 2 }] },
     "status.shield": { "particles": [{ "effectId": "fx.shield_bubble", "count": 1, "priority": 2 }], "sound": "shield_up" },
     "status.mark": { "particles": [{ "effectId": "fx.mark_reticle", "count": 1, "priority": 1 }] },
-    "ability.periodicShieldAura": { "particles": [{ "effectId": "fx.shield_bubble", "count": 1, "priority": 2 }], "sound": "shield_up" },
+    "ability.periodicShieldAura": { "particles": [{ "effectId": "fx.roar_ring", "count": 1, "priority": 3 }], "sound": "shield_up" },
     "ability.callStrike": { "particles": [{ "effectId": "fx.call_marker", "count": 1, "priority": 3 }], "sound": "radio_call" },
     "ability.emp": { "trauma": 0.08, "particles": [{ "effectId": "fx.emp_ring", "count": 1, "priority": 3 }], "sound": "emp_pulse" },
     "ability.timeStop": {

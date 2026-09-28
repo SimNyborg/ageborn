@@ -8,8 +8,8 @@
 export { createBot } from './createBot';
 export type { AiBotController } from './controller';
 export { UtilityController, traceLine } from './controller';
-export { ScriptedController, GROGG_SCRIPT, parseScript } from './scripted';
-export type { ScriptAction, ScriptLine } from './scripted';
+export { ScriptedController, GROGG_SCRIPT, parseScript, parseScriptFull } from './scripted';
+export type { Script, ScriptAction, ScriptLine } from './scripted';
 export { BALANCED_BRAIN_ID, BALANCED_WEIGHTS, botProfile, personalityFor, readGeneral, weightBp } from './personalities';
 export type { BotProfileOptions, GeneralInfo, Personality, PersonalityId } from './personalities';
 export { COUNTER_DEPTH_ALL, tierLabel, tierParams } from './tiers';

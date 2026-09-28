@@ -31,13 +31,20 @@ function squashTrack(impactAt: number, lunge = 3): Key[] {
 // Common (every family)
 
 const common: ClipDef[] = [
-  clip('common.spawn', S.spawnMs, false, {
-    root: [
-      { t: 0, sx: 0.05, sy: 0.05 },
-      { t: 0.62, sx: S.spawnOvershoot, sy: S.spawnOvershoot, e: 'out' },
-      { t: 1, sx: 1, sy: 1, e: 'inOut' },
-    ],
-  }),
+  // The pop starts at scale ~0 at once (no cross-fade from the full-size idle pose).
+  clip(
+    'common.spawn',
+    S.spawnMs,
+    false,
+    {
+      root: [
+        { t: 0, sx: 0.05, sy: 0.05 },
+        { t: 0.62, sx: S.spawnOvershoot, sy: S.spawnOvershoot, e: 'out' },
+        { t: 1, sx: 1, sy: 1, e: 'inOut' },
+      ],
+    },
+    { blendInMs: 0 },
+  ),
   clip('common.hit', 170, false, {
     root: [{ t: 0 }, { t: 0.28, x: -S.hitRecoilLu, sx: 0.96, sy: 1.03, e: 'out' }, { t: 1, x: 0, e: 'inOut' }],
     torso: [{ t: 0 }, { t: 0.3, r: 7, e: 'out' }, { t: 1, r: 0, e: 'inOut' }],
@@ -432,14 +439,21 @@ const turret: ClipDef[] = [
     },
     { impactAt: 0.2 },
   ),
-  clip('turret.build', 460, false, {
-    root: [
-      { t: 0, y: -70, sx: 0.9, sy: 1.1 },
-      { t: 0.55, y: 0, sx: 0.95, sy: 1.08, e: 'in' },
-      { t: 0.72, sx: 1.18, sy: 0.82, e: 'out' },
-      { t: 1, sx: 1, sy: 1, e: 'outBack' },
-    ],
-  }),
+  // Drops in from above at once (no cross-fade from the resting pose).
+  clip(
+    'turret.build',
+    460,
+    false,
+    {
+      root: [
+        { t: 0, y: -70, sx: 0.9, sy: 1.1 },
+        { t: 0.55, y: 0, sx: 0.95, sy: 1.08, e: 'in' },
+        { t: 0.72, sx: 1.18, sy: 0.82, e: 'out' },
+        { t: 1, sx: 1, sy: 1, e: 'outBack' },
+      ],
+    },
+    { blendInMs: 0 },
+  ),
   clip(
     'turret.sell',
     380,

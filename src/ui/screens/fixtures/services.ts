@@ -218,15 +218,24 @@ export function createPreviewServices(o: {
     },
     setWarPlan(index, plan) {
       log('setWarPlan', index, plan);
+      // Same rule as `meta.setWarPlan`: a new preset must be the next one (no gaps), at most 3.
+      if (index < 0 || index >= 3 || index > save.value.warPlans.length) {
+        log('setWarPlan:rejected', index);
+        return;
+      }
       set((s) => {
         const plans = [...s.warPlans];
-        while (plans.length < index) plans.push(plans[0]!);
         plans[index] = plan;
         return { ...s, warPlans: plans };
       });
     },
     setActivePlan(index) {
       set((s) => ({ ...s, activePlan: index }));
+    },
+    markSeen(card) {
+      log('markSeen', card);
+      const e = save.value.collection[card];
+      if (e?.isNew) set((s) => ({ ...s, collection: { ...s.collection, [card]: { ...e, isNew: false } } }));
     },
     equipSkin(target, skin) {
       set((s) => {

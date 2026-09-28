@@ -32,8 +32,9 @@ export function fixtureOpponent(content: Content, which: OpponentFixture): Oppon
     case 'general':
       return opponent({ generalId: 'kettle', displayName: name('kettle'), tier: 3, level: 4, format: 'standard' });
     case 'commander':
+      // Procedural commanders carry `commander:<personality General>:<favourite card>` (meta, A7.4).
       return opponent({
-        generalId: 'commander',
+        generalId: 'commander:kettle:bonker',
         displayName: `${content.names.aiPrefix}Brakka Stonejaw`,
         tier: 2,
         level: 3,
@@ -41,7 +42,7 @@ export function fixtureOpponent(content: Content, which: OpponentFixture): Oppon
       });
     case 'warmUp':
       return opponent({
-        generalId: 'commander',
+        generalId: 'commander:moss:rock_tosser',
         displayName: `${content.names.aiPrefix}Mossa Flintfist`,
         tier: 1,
         level: 3,

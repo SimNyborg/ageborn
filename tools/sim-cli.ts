@@ -37,19 +37,48 @@ import { createProxy, isProxyId, STRATEGIES, type ProxyId } from './proxies';
 import { exitCode, fmtClock, printChecks, REPORTS_DIR, writeReport, type Report } from './report';
 import { replaySections, runReplayVerify } from './replayVerify';
 
-const HELP = `Ageborn headless tools (DESIGN B12)
+export const HELP = `Ageborn headless tools (DESIGN B12)
 
 Commands:
   balance         balance matrix: Balanced mirror, per-card win-rate deltas, scenarios (A2.14)
+                  --mode smoke|full --matches N (per card) --mirror N (per format) | --no-mirror
+                  --cards a,b --tier 5 --level 7 --seed 1 --bound 6 (CI half-width) --no-scenarios
   exploits        scripted exploit proxies vs the tier VII Balanced bot (A2.14)
+                  --mode smoke|full --matches N (per proxy) --proxies a,b --tier 7 --level 7 --seed 1
   economy         365-day economy sim against the A6.9 pacing table
+                  --days 365 --seed 1
   drops           capsule openings: bag totals, chi-square of published odds, pity (A6.4, A6.5)
+                  --mode smoke|full --openings N --streams N --seed 1
   replay-verify   re-simulate replay files or folders and compare hashes (B3)
+                  <file|dir>...
   csv             export|import the unit, turret and power tables as CSV (B4)
+                  --dir reports/csv --raw src/content/raw --dry-run
   match           play one headless match and print its summary (debugging)
+                  --format full --seed 1 --level 7 --p0 bot:echo:5 --p1 proxy:turret_turtle --replay out.json
 
 Common flags: --out <dir> (default reports/), --no-gate (exit 0 even when a target fails),
---workers N (default: cores - 1), --mode smoke|full (run size).`;
+--workers N (default: cores - 1). Unknown flags are refused.`;
+
+/** Flags every command takes. */
+const COMMON_FLAGS = ['out', 'gate', 'workers'];
+
+/** The flags of each command; anything else is a typo and must not silently start a default run. */
+export const COMMAND_FLAGS: Record<string, readonly string[]> = {
+  balance: ['mode', 'matches', 'mirror', 'cards', 'tier', 'level', 'seed', 'bound', 'scenarios'],
+  exploits: ['mode', 'matches', 'proxies', 'tier', 'level', 'seed'],
+  economy: ['days', 'seed'],
+  drops: ['mode', 'openings', 'streams', 'seed'],
+  'replay-verify': [],
+  csv: ['dir', 'raw', 'dry-run'],
+  match: ['format', 'seed', 'level', 'p0', 'p1', 'replay'],
+};
+
+function checkFlags(command: string, a: Args): void {
+  const allowed = COMMAND_FLAGS[command];
+  if (!allowed) return;
+  const unknown = Object.keys(a.flags).filter((f) => !allowed.includes(f) && !COMMON_FLAGS.includes(f));
+  if (unknown.length > 0) throw new Error(`${command}: unknown flag ${unknown.map((f) => `--${f}`).join(', ')} (known: ${[...allowed, ...COMMON_FLAGS].map((f) => `--${f}`).join(' ')})`);
+}
 
 function mode(a: Args): BalanceMode {
   const m = str(a, 'mode', 'smoke');
@@ -121,6 +150,7 @@ async function matchCommand(a: Args): Promise<number> {
 export async function main(argv: readonly string[]): Promise<number> {
   const [command, ...rest] = argv;
   const a = parseArgs(rest);
+  if (command !== undefined) checkFlags(command, a);
   const workers = int(a, 'workers', defaultWorkers());
   switch (command) {
     case 'balance': {

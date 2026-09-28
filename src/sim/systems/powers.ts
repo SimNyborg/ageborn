@@ -23,9 +23,6 @@ import { alive, spawnUnit, unitRules } from '../units';
 import { densestP } from './targeting';
 import { markPlayed } from './training';
 
-/** Stampede start when the caster has no ground units on the lane (A5.7 "or p = 200"). */
-export const STAMPEDE_FALLBACK_P = 200 * MILLI;
-
 /** Loadout multiplier in bp: the average level multiplier of the current loadout's unit cards (A2.9). */
 export function loadoutLevelBp(ctx: Ctx, side: Side): number {
   const lo = loadoutOf(ctx, side);
@@ -75,7 +72,8 @@ export function castPower(ctx: Ctx, side: Side, aimP: number | undefined): strin
     }
     case 'stampede': {
       const f = frontP(ctx, side);
-      centreP = (f >= 0 ? f : STAMPEDE_FALLBACK_P) + Math.trunc(fx.distance / 2);
+      // From the frontmost own ground unit, or p = 200 without one (A5.7, `battle.stampedeFallbackP`).
+      centreP = (f >= 0 ? f : e.stampedeFallbackP) + Math.trunc(fx.distance / 2);
       break;
     }
     case 'paradrop': {

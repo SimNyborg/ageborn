@@ -19,8 +19,8 @@ import { ScreenFrame } from '../../components/Layout';
 import { Modal } from '../../components/Modal';
 import type { MatchRequest, RouteOf } from '../../router';
 import { useUi } from '../context';
-import { activePlan } from '../model/plan';
-import { chargesView, conquestView, unlocks } from '../model/progress';
+import { agesAwaitingAntiArmor } from '../model/plan';
+import { chargesView, conquestView, unlocks, WAR_PLAN_UNLOCK_MATCHES } from '../model/progress';
 
 const SPEEDS = [1, 1.5, 2] as const;
 const ALL_FORMATS: FormatId[] = ['short', 'standard', 'full'];
@@ -76,8 +76,7 @@ function SkirmishSetup(p: { onStart: (req: MatchRequest) => void; onClose: () =>
   const [format, setFormat] = useState<FormatId>('short');
   const [speed, setSpeed] = useState<1 | 1.5 | 2>(s.settings.defaultSpeed);
   const [standard, setStandard] = useState(false);
-  const plan = activePlan(s, content).plan;
-  const shortAges: AgeId[] = content.formats[format].ages.filter((a) => (plan.loadouts[a]?.units.filter(Boolean).length ?? 0) <= 3);
+  const shortAges: AgeId[] = agesAwaitingAntiArmor(s, content, format);
   const g = content.generals.list[general];
   return (
     <Modal
@@ -264,7 +263,7 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           icon={<SwordsIcon size={64} />}
           title={t('ui.mode.skirmish.title')}
           desc={t('ui.mode.skirmish.desc')}
-          locked={u.skirmish ? null : t('ui.lock.afterMatches', { n: 3 })}
+          locked={u.skirmish ? null : t('ui.lock.afterMatches', { n: WAR_PLAN_UNLOCK_MATCHES })}
           action={
             <Button variant="green" size="lg" wide testid="skirmish-open" onClick={() => setSkirmish(true)}>
               {t('ui.mode.skirmish.setup')}

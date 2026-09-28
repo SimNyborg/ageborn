@@ -263,7 +263,9 @@ export class Animator {
     const act = this.action;
     if (act) {
       const u = clipU(act);
-      const w = act.hold ? Math.min(1, act.t / FADE_MS) : Math.min(1, act.t / FADE_MS, (act.durationMs - act.t) / FADE_MS);
+      const blendIn = act.clip.blendInMs ?? FADE_MS;
+      const wIn = blendIn > 0 ? Math.min(1, act.t / blendIn) : 1;
+      const w = act.hold ? wIn : Math.min(wIn, (act.durationMs - act.t) / FADE_MS);
       for (const [bone, keys] of Object.entries(act.clip.tracks)) {
         const d = sampleTrack(keys, u);
         const prev = out.get(bone) ?? { r: 0, x: 0, y: 0, sx: 1, sy: 1 };

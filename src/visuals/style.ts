@@ -37,6 +37,8 @@ export const STYLE = {
   collisionWidthLu: { small: 24, medium: 32, large: 48, huge: 80 } as const,
   /** The 12 px role glyph at 720p (DESIGN A11). */
   roleGlyphLu: 12 / (1280 / 1560),
+  /** Level trims are drawn at this scale beside the role glyph (they follow the colour rule, A11). */
+  levelTrimScale: 0.8,
   /** Health-bar-free units still need a readable minimum on screen (A12 checklist item 7). */
   minReadablePx: 32,
 } as const;

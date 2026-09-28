@@ -119,6 +119,20 @@ describe('movement (A2.7)', () => {
     expect(unitOf(sim, far.id)?.mode).toBe('hold');
   });
 
+  it('Hold: gunships obey the stance, the bomber ignores it', () => {
+    const sim = arena();
+    const st = new Stamper(sim);
+    const gyro = devSpawn(sim, 0, 'gyrocopter', { p: 600 });
+    const bomber = devSpawn(sim, 0, 'balloon_admiral', { p: 600 });
+    st.step({ t: 'stance', side: 0, stance: 'hold' });
+    // Gyrocopter 80 lu/s = 4 lu per tick, back at 70%: 2.8 lu; the Admiral advances 45 lu/s = 2.25 lu
+    expect(pLu(sim, gyro.id)).toBeCloseTo(597.2, 5);
+    expect(pLu(sim, bomber.id)).toBeCloseTo(602.25, 5);
+    stepN(sim, 200);
+    expect(pLu(sim, gyro.id)).toBe(320);
+    expect(pLu(sim, bomber.id)).toBeGreaterThan(1000);
+  });
+
   it('air units ignore blocking; the bomber never stops and halts at the enemy gate', () => {
     const sim = arena();
     const wall = devSpawn(sim, 1, 'tuskback', { p: 1200 - 300 });

@@ -12,7 +12,7 @@
  * To move a visual to sprite sheets, add `atlasVisualDef(json, url)` under its id in `OVERRIDES`
  * (manifest.ts); see docs/art-style.md.
  */
-export { ALL_AGES, artOverrideFromUrl, createArtProvider, VisualsArtProvider, type ArtProviderOptions } from './provider';
+export { ALL_AGES, artOverrideFromUrl, createArtProvider, screenWorldPxPerLu, VisualsArtProvider, type ArtProviderOptions } from './provider';
 export { MANIFEST, OVERRIDES, type VisualManifest } from './manifest';
 export { atlasVisualDef, type AtlasJson } from './adapters/atlas';
 export { TEAM_COLORS, TEAM_PRESETS, teamColor } from './palette';

@@ -8,7 +8,7 @@
  * `finalAge`, `ascending`, `notEnoughXp`, `powerNotReady`, `noPower`, `stanceLocked`, `sameStance`,
  * `stanceCooldown`, `lastStandAuto`, `lastStandNotArmed`, `emoteCooldown`, `retreatLocked`.
  */
-import type { Command, Side, TimedCommand, TrainingEvent } from '@/contracts';
+import type { Command, EmoteId, Side, TimedCommand, TrainingEvent } from '@/contracts';
 import { BP, MILLI, PPM } from '@/core';
 import { emit } from './events';
 import {
@@ -41,6 +41,9 @@ export function applyCommands(ctx: Ctx, cmds: readonly TimedCommand[]): void {
     if (reason !== null) emit(ctx, { e: 'commandRejected', side: c.side, t: c.t, reason });
   }
 }
+
+/** The six emotes (B15 `EmoteId`); anything else is rejected, so events only ever carry known ids. */
+const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
 
 const isSlot = (n: unknown, max: number): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < max;
 
@@ -123,7 +126,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       const tr = card ? ctx.rules.turrets[card] : undefined;
       if (!card || !tr) return 'emptySlot';
       // Modernise: the new price minus 50% of the old turret's price (A2.3, A2.8).
-      const credit = Math.trunc((old.cost * MILLI * e.sellRefundBp) / BP);
+      const credit = Math.trunc((old.cost * MILLI * e.moderniseCreditBp) / BP);
       const price = Math.max(0, tr.cost * MILLI - credit);
       if (s.gold < price) return 'noGold';
       s.gold -= price;
@@ -195,6 +198,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       return null;
     }
     case 'emote': {
+      if (!EMOTES.includes(c.emote)) return 'badCommand';
       if (ctx.tick < s.emoteReadyTick) return 'emoteCooldown';
       s.emoteReadyTick = ctx.tick + e.emoteCooldownTicks;
       emit(ctx, { e: 'emote', side, emote: c.emote });

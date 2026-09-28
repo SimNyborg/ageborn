@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { TimedCommand } from '@/contracts';
+import type { Command, TimedCommand } from '@/contracts';
 import { createSim } from '../createSim';
 import { devSetBaseBp, devSetGold, devSpawn, simCtx, stepN } from '../debug';
 import { Stamper, arena, fixture, matchConfig, ofKind, sideConfig, stun } from './helpers';
@@ -161,6 +161,15 @@ describe('commands (B3 step 1)', () => {
     const ev = [...st.step({ t: 'emote', side: 1, emote: 'laugh' }), ...st.step({ t: 'emote', side: 1, emote: 'gg' })];
     expect(ofKind(ev, 'emote')).toHaveLength(1);
     expect(ofKind(ev, 'commandRejected')[0]?.reason).toBe('emoteCooldown');
+  });
+
+  it('unknown emote ids are rejected, so events only carry the six emotes', () => {
+    const sim = arena();
+    const st = new Stamper(sim);
+    const bad = { t: 'emote', side: 0, emote: 'dance' } as unknown as Command;
+    const ev = st.step(bad);
+    expect(ofKind(ev, 'emote')).toHaveLength(0);
+    expect(ofKind(ev, 'commandRejected')[0]?.reason).toBe('badCommand');
   });
 });
 

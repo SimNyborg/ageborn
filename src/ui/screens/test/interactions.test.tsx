@@ -4,9 +4,10 @@
  * screen makes.
  */
 import { content } from '@/content';
+import { i18n } from '@/i18n';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixtureOpponent, fixturePause, fixtureRequest, fixtureResult } from '../fixtures/matches';
-import { midGameSave } from '../fixtures/saves';
+import { FIXTURE_NOW, midGameSave, newPlayerSave } from '../fixtures/saves';
 import { VS_MS } from '../vs/VsScreen';
 import { REWARD_STEP_MS } from '../model/result';
 import { input, keydown, text, type FakeElement } from './dom';
@@ -20,6 +21,7 @@ afterEach(() => {
 });
 
 const calls = (name: string) => m!.log.calls.filter((c) => c.name === name);
+const i18nText = (key: string) => i18n.t(key);
 
 describe('keyboard navigation', () => {
   it('focuses the Battle button on Home and the title elsewhere', () => {
@@ -137,6 +139,33 @@ describe('Home', () => {
   });
 });
 
+describe('Home details', () => {
+  it('the Trophy Road bar shows the next reward (A9 #2)', () => {
+    m = mount({ state: 'mid' });
+    // Mid-game best is 1,080: the next node is 1,100, which pays 100 Dust (A6.3 road table).
+    expect(content.trophyRoad.nodes.find((n) => n.trophies === 1100)!.rewards).toEqual([{ kind: 'dust', amount: 100 }]);
+    expect(text(m.q('[data-testid="home-road"]')!)).toContain('Next reward at 1,100');
+    expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100');
+  });
+
+  it('countdowns keep ticking', () => {
+    vi.useFakeTimers();
+    let clock = FIXTURE_NOW;
+    m = mount({ state: 'mid', now: () => clock });
+    expect(text(m.q('[data-testid="charges"]')!)).toContain('+1 in 4h 0m');
+    clock += 61_000;
+    flush(() => vi.advanceTimersByTime(1000));
+    expect(text(m.q('[data-testid="charges"]')!)).toContain('+1 in 3h 58m');
+  });
+
+  it('the Daily Capsule row explains the lock before capsule 2 is opened', () => {
+    const n = newPlayerSave(content);
+    m = mount({ save: { ...n, pity: { ...n.pity, opened: 1 }, capsules: { ...n.capsules, dailyBank: 0, dailyNextAt: null } } });
+    expect(text(m.q('[data-testid="daily-capsule"]')!)).toContain('Opens after your second capsule');
+    expect(m.q('[data-testid="daily-claim"]')).toBeNull();
+  });
+});
+
 describe('Mode select', () => {
   it('offers only the arena formats and locks Conquest and Skirmish for a new player', () => {
     m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'modeSelect' }] });
@@ -159,6 +188,19 @@ describe('Mode select', () => {
       options: { generalId: 'echo', tier: 7, format: 'short', standardLevels: true },
       speed: 1,
     });
+  });
+
+  it('notes the ages that still wait for their Anti-armor card (A3)', () => {
+    const n = { ...newPlayerSave(content), matchesPlayed: 3 };
+    m = mount({ save: n, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
+    m.click('[data-testid="skirmish-open"]');
+    expect(m.q('[data-testid^="skirmish-note-"]')).toBeNull();
+    const full = m.qa('[data-testid="skirmish-setup"] [role="radio"]').find((el) => text(el) === 'Full War')!;
+    flush(() => full.click());
+    expect(m.qa('[data-testid^="skirmish-note-"]').map((el) => el.getAttribute('data-testid'))).toEqual([
+      'skirmish-note-modern',
+      'skirmish-note-future',
+    ]);
   });
 
   it('starts the Daily Challenge', () => {
@@ -192,6 +234,18 @@ describe('VS (2 s, skippable)', () => {
   });
 });
 
+describe('VS personality', () => {
+  it("shows a procedural commander's personality", () => {
+    m = mount({
+      routes: [{ id: 'home' }, { id: 'vs', request: fixtureRequest('commander'), opponent: fixtureOpponent(content, 'commander') }],
+    });
+    const foe = text(m.q('[data-testid="vs-foe"]')!);
+    expect(foe).toContain(i18nText(content.generals.list.kettle.personalityKey));
+    // The quote line belongs to the named General, not to a commander.
+    expect(m.q('[data-testid="vs-line"]')).toBeNull();
+  });
+});
+
 describe('Result (rewards staged, each skippable)', () => {
   beforeEach(() => vi.useFakeTimers());
   const route = () => [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'win') }];
@@ -216,11 +270,20 @@ describe('Result (rewards staged, each skippable)', () => {
   });
 
   it('shows everything at once with reduce motion', () => {
-    const save = mount({ state: 'mid' }).save.value;
-    m?.unmount();
+    const first = mount({ state: 'mid' });
+    const save = first.save.value;
+    first.unmount();
     m = mount({ save: { ...save, settings: { ...save.settings, reduceMotion: true } }, routes: route() });
     expect(m.qa('.result-reward').length).toBe(5);
     expect(m.q('[data-testid="ui-root"]')!.getAttribute('data-reduce-motion')).toBe('true');
+  });
+
+  it('hides "Open capsule" once the earned capsule has been opened', () => {
+    const save = midGameSave(content);
+    save.capsules.pending = save.capsules.pending.filter((c) => c.id !== 'cap-mid-1');
+    m = mount({ save, routes: route() });
+    expect(m.q('[data-testid="result-open"]')).toBeNull();
+    expect(m.q('[data-testid="result-next"]')).not.toBeNull();
   });
 
   it('opens the earned capsule, replays, and starts the next battle of the same mode', () => {
@@ -316,6 +379,17 @@ describe('War Plan builder (A3)', () => {
     expect(units.filter((u) => u === 'sabertooth')).toHaveLength(1);
   });
 
+  it('editing preset C first stores B too, since presets are added in order (meta.setWarPlan)', () => {
+    const n = { ...newPlayerSave(content), matchesPlayed: 3 };
+    m = mount({ save: n, routes: [{ id: 'home' }, { id: 'warPlan', plan: 2 }] });
+    expect(m.save.value.warPlans).toHaveLength(1);
+    m.click('[data-testid="remove-unit-0"]');
+    expect(calls('setWarPlan:rejected')).toHaveLength(0);
+    expect(m.save.value.warPlans.map((p) => p.name)).toEqual(['A', 'B', 'C']);
+    expect(m.save.value.warPlans[2]!.loadouts.stone.units[0]).toBeNull();
+    expect(m.save.value.warPlans[1]!.loadouts.stone.units[0]).toBe('bonker');
+  });
+
   it('unowned cards cannot be picked', () => {
     m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'warPlan' }] });
     expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.hasAttribute('disabled')).toBe(true);
@@ -390,6 +464,22 @@ describe('Collection and card detail', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'cardDetail', card: 'friar' }] });
     m.click('[data-testid="card-craft"]');
     expect(m.save.value.currencies.dust).toBe(820 - content.rarities.cards.rare.craftCopyDust);
+  });
+
+  it('opening a NEW card clears its badge', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'cardDetail', card: 'gyrocopter' }] });
+    expect(calls('markSeen')[0]!.args).toEqual(['gyrocopter']);
+    expect(m.save.value.collection['gyrocopter']!.isNew).toBe(false);
+  });
+
+  it('a failed craft names the real reason', () => {
+    m = mount({
+      state: 'mid',
+      routes: [{ id: 'home' }, { id: 'cardDetail', card: 'friar' }],
+      patch: { craft: () => ({ ok: false, reason: 'maxLevel' }) },
+    });
+    m.click('[data-testid="card-craft"]');
+    expect(text(m.q('[data-testid="toasts"]')!)).toBe("That didn't work. Try again.");
   });
 
   it('shows the max level for maxed cards and the road source of a locked power', () => {

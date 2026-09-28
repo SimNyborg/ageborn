@@ -1,13 +1,15 @@
 import type { EffectView, Pt } from '@/contracts';
+import { FakeAudio } from '@/contracts/fakes/audio';
 import { mulberry32 } from '@/core';
 import { Container } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import { ScreenFlash } from '../feel/flash';
 import { GlobalFreeze, SlowMotion, scaleHitstop } from '../feel/hitstop';
 import { FloatingNumbers, formatNumber, numberVisible, type LabelFactory } from '../feel/numbers';
-import { ParticlePool } from '../feel/particlePool';
+import { FeelDirector } from '../feel/director';
+import { ParticlePool, type ParticleHandle } from '../feel/particlePool';
 import { Noise1D, Shake } from '../feel/shake';
-import { defaultFeelConfig, validateFeelConfig } from '../feelConfig';
+import { cloneFeelConfig, defaultFeelConfig, validateFeelConfig } from '../feelConfig';
 import { newBar, stepBar } from '../healthbars';
 import { AutoPresetMonitor, initialPreset, particleCap, presetDpr } from '../presets';
 
@@ -191,6 +193,42 @@ describe('particle pool (A12 Particles)', () => {
     expect(made.length).toBe(3);
     expect(p.fly('fx.coin', { x: 0, y: 0 }, { x: 5, y: 5 }, 300, true, 4)).toBe(true);
     expect(made.length).toBe(4);
+  });
+
+  it('hands out handles that go stale when a particle ends, is stopped or its view is reused', () => {
+    const { p } = pool(100);
+    const a: ParticleHandle[] = [];
+    p.emit('fx.mark_reticle', 2, 1, { x: 0, y: 0 }, { out: a });
+    expect(a).toHaveLength(2);
+    const [first, second] = a;
+    if (!first || !second) throw new Error('no handles');
+    expect(p.isLive(first)).toBe(true);
+    p.stop(first);
+    expect(p.isLive(first)).toBe(false);
+    expect(p.liveCount).toBe(1);
+    expect(first.view.root.parent).toBeNull();
+    // The stopped view is reused by the next emission; the old handle stays stale.
+    const b: ParticleHandle[] = [];
+    p.emit('fx.mark_reticle', 1, 1, { x: 0, y: 0 }, { out: b });
+    expect(b[0]?.view).toBe(first.view);
+    expect(p.isLive(first)).toBe(false);
+    expect(p.isLive(b[0] as ParticleHandle)).toBe(true);
+    p.update(150);
+    expect(p.isLive(second)).toBe(false);
+    expect(p.liveCount).toBe(0);
+  });
+});
+
+describe('feel director sounds', () => {
+  it('throttles a delayed sound when it plays, not when it is scheduled', () => {
+    const audio = new FakeAudio();
+    const d = new FeelDirector(cloneFeelConfig(), audio);
+    const gap = { key: 'xp_tick', gapMs: 40 };
+    d.sound('xp_tick', { delayMs: 100, gap });
+    d.sound('xp_tick', { delayMs: 110, gap });
+    d.sound('xp_tick', { delayMs: 300, gap });
+    for (let i = 0; i < 20; i++) d.update(20, 20);
+    expect(audio.played().filter((id) => id === 'xp_tick')).toHaveLength(2);
   });
 });
 

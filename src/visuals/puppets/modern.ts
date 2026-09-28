@@ -43,7 +43,7 @@ function scaleSlots(slots: SlotDef[], k: number): SlotDef[] {
   return slots.map((s) => ({ ...s, part: sized(s.part, k), x: (s.x ?? 0) * k, y: (s.y ?? 0) * k }));
 }
 
-const BEHEMOTH_K = 1;
+const BEHEMOTH_K = 1.03;
 const GYRO_K = 0.84;
 
 export const MODERN_UNITS: PuppetDef[] = [

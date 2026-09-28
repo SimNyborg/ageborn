@@ -5,32 +5,19 @@
  */
 import './trophyRoad.css';
 import { arenaNameKey, bannerNameKey, capsuleTierNameKey, formatNameKey, skinNameKey } from '@/content/keys';
-import type { ArenaDef, GateReward, RoadReward } from '@/content/types';
+import type { ArenaDef, GateReward } from '@/content/types';
 import type { JSX } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
 import { Button } from '../../components/Button';
-import { CardArt } from '../../components/CardTile';
 import { Pill } from '../../components/Chips';
 import { formatInt } from '../../components/format';
-import {
-  AmberIcon,
-  CapsuleIcon,
-  CastleIcon,
-  CheckIcon,
-  CrateIcon,
-  DustIcon,
-  FlagIcon,
-  LockIcon,
-  RobotIcon,
-  ScrollIcon,
-  TrophyIcon,
-} from '../../components/icons';
+import { CapsuleIcon, CastleIcon, CheckIcon, CrateIcon, FlagIcon, LockIcon, RobotIcon, ScrollIcon, TrophyIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
-import { cardDef, cardGlyph } from '../model/cards';
 import { roadNodes, roadProgress, type RoadNodeView } from '../model/progress';
+import { RoadRewardView } from '../shared/RoadReward';
 
 function GateLines(p: { arena: ArenaDef; prev: ArenaDef | null }) {
   const { t, content } = useUi();
@@ -93,57 +80,6 @@ function GateLines(p: { arena: ArenaDef; prev: ArenaDef | null }) {
   );
 }
 
-function RewardView(p: { r: RoadReward }) {
-  const { t, locale, content } = useUi();
-  const r = p.r;
-  switch (r.kind) {
-    case 'amber':
-      return (
-        <span class="road-rw">
-          <AmberIcon size={30} />
-          <b>{formatInt(r.amount, locale)}</b>
-        </span>
-      );
-    case 'dust':
-      return (
-        <span class="road-rw">
-          <DustIcon size={30} />
-          <b>{formatInt(r.amount, locale)}</b>
-        </span>
-      );
-    case 'power': {
-      const def = cardDef(content, r.card);
-      return (
-        <span class="road-rw road-rw--power">
-          <span class="road-rw__art">{def ? <CardArt card={r.card} age={def.age} glyph={cardGlyph(def)} size={40} /> : null}</span>
-          <b>{def ? t(def.nameKey) : r.card}</b>
-        </span>
-      );
-    }
-    case 'capsule':
-      return (
-        <span class="road-rw">
-          <CapsuleIcon tier={r.tier} size={36} />
-          <b>{t(capsuleTierNameKey(r.tier))}</b>
-        </span>
-      );
-    case 'wardrobe':
-      return (
-        <span class="road-rw">
-          <CrateIcon size={36} />
-          <b>{t('ui.reward.wardrobe')}</b>
-        </span>
-      );
-    case 'gate':
-      return (
-        <span class="road-rw">
-          <CastleIcon size={30} />
-          <b>{t('ui.road.gateN', { n: r.arena })}</b>
-        </span>
-      );
-  }
-}
-
 function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
   const { t, locale, services, toasts } = useUi();
   const { v } = p;
@@ -158,7 +94,7 @@ function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
         </span>
         <span class="road-node__rewards">
           {v.node.rewards.map((r, i) => (
-            <RewardView key={i} r={r} />
+            <RoadRewardView key={i} r={r} />
           ))}
         </span>
         {v.state === 'claimable' ? (

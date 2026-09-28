@@ -178,8 +178,10 @@ function collectProjectileImpact(ctx: Ctx, p: ProjectileRt): void {
     case 'splash':
     case 'line':
     case 'gateZone':
-      // Point or gate impacts: targets are found at resolution.
-      imp.targetId = a.area === 'splash' ? p.targetId : NO_TARGET;
+      // Point or gate impacts: targets are found at resolution. A splash projectile is aimed at a point
+      // (the target's x at fire time, A2.7), so its primary is the enemy whose centre is nearest the
+      // impact (A2.6), not necessarily the unit it was fired at.
+      imp.targetId = NO_TARGET;
       break;
     default: {
       // Homing: needs the target alive on the impact tick.

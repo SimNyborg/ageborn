@@ -43,10 +43,11 @@ export interface TierResult {
 }
 
 /**
- * Tier A vs tier B, both the Balanced brain with the same baseline plan (A2.14) at level 1, on Short
- * War, alternating sides with mirrored seeds so neither side's first-mover edge counts.
+ * Tier A vs tier B, both the Balanced brain with the same baseline plan (A2.14) at level 1, on Full
+ * War (the A2.14 reference format, all five ages), alternating sides with mirrored seeds so neither
+ * side's first-mover edge counts.
  */
-export function tierMatches(tierA: number, tierB: number, n: number, format: FormatId = 'short'): TierResult {
+export function tierMatches(tierA: number, tierB: number, n: number, format: FormatId = 'full'): TierResult {
   let winsA = 0;
   let winsB = 0;
   let draws = 0;

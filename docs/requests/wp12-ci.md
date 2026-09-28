@@ -53,7 +53,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
       - if: failure()
         uses: actions/upload-artifact@v4
@@ -117,11 +117,30 @@ jobs:
           retention-days: 30
 ```
 
+### Also: a WebKit project in `playwright.config.ts` (added by the WP12 review)
+
+DESIGN B13 runs the e2e specs in Chromium **and WebKit**, and C4.3 requires "determinism holds across
+Chromium and WebKit e2e" (risk table: golden replays in both engines from Phase 1). The root
+`playwright.config.ts` (WP0) only has a Chromium project. Please add a WebKit project that is on in CI
+and opt-in locally (the cloud session has no WebKit build and must not run `playwright install`):
+
+```ts
+projects: [
+  { name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: /* unchanged */ } },
+  ...(process.env['CI'] !== undefined || process.env['PW_WEBKIT'] === '1'
+    ? [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }]
+    : []),
+],
+```
+
+`tests/e2e/determinism.spec.ts` bundles the sim with Vite and re-simulates the 10 golden replays in Node
+and in each browser; with the WebKit project it compares V8 with JavaScriptCore hash for hash.
+
 ## Why
 
 - `npm test` already runs the integrity tests (`tests/integrity`) and the tool tests (`tools/test`);
   they need no extra step.
-- The e2e job installs Chromium itself (CI runners have no browsers; the cloud session does and must
+- The e2e job installs Chromium and WebKit itself (CI runners have no browsers; the cloud session does and must
   not run `playwright install`). The root `playwright.config.ts` builds and previews at `/ageborn/`.
 - The balance jobs write `reports/*.md` and `*.json` (git-ignored) and upload them as artifacts.
   Every tool exits non-zero when an A2.14 / A6.9 target fails; the smoke job is non-blocking until

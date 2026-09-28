@@ -67,6 +67,9 @@ function Card(p: { c: HudCtx; card: HudCard }) {
   const size = c.compact ? 72 : 88;
   const url = usePortrait(c.portrait, card.card, card.foil, size);
   const press = useRef<{ timer: ReturnType<typeof setTimeout> | null; x: number; y: number; fired: boolean }>({ timer: null, x: 0, y: 0, fired: false });
+  // The long press fires 450 ms later; it must read the model of that moment, not of the press.
+  const latest = useRef(c);
+  latest.current = c;
   useEffect(
     () => () => {
       if (press.current.timer) clearTimeout(press.current.timer);
@@ -122,7 +125,8 @@ function Card(p: { c: HudCtx; card: HudCard }) {
         press.current.timer = setTimeout(() => {
           press.current.timer = null;
           press.current.fired = true;
-          c.act(cancelIntent(m, c.side, card.slot));
+          const now = latest.current;
+          now.act(cancelIntent(now.m, now.side, card.slot));
         }, LONG_PRESS_MS);
       }}
       onPointerMove={(e) => {
@@ -237,12 +241,10 @@ function PowerButton(p: { c: HudCtx }) {
         else if (at !== null) c.act(powerIntent(m, c.side, at));
       }}
       onPointerCancel={stop}
-      onKeyDown={(e) => {
-        // The button is also reachable by keyboard focus; Enter casts with auto-aim.
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          c.act(powerIntent(m, c.side));
-        }
+      onClick={(e) => {
+        // Pointer presses are handled above; a keyboard click (Tab focus, then Enter or Space) casts
+        // with auto-aim, like the Space shortcut.
+        if (e.detail === 0) c.act(powerIntent(m, c.side));
       }}
     >
       <i class="hud-power-ring" />

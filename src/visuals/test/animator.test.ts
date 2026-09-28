@@ -112,6 +112,34 @@ describe('layers', () => {
     a.update(20);
     expect(a.frozen).toBe(false);
   });
+  it('spawn pops from scale ~0 to 1.15 and back to 1 over 180 ms, starting at once (A11)', () => {
+    const def = MANIFEST['unit.bonker'];
+    expect(def).toBeDefined();
+    if (!def) return;
+    const a = new Animator(clipResolver(def), ctx, 1);
+    a.play('spawn');
+    a.update(0);
+    expect(a.sample().get('root')?.sx ?? 1).toBeLessThan(0.1);
+    let peak = 0;
+    for (let t = 0; t < 180; t += 5) {
+      a.update(5);
+      peak = Math.max(peak, a.sample().get('root')?.sx ?? 1);
+    }
+    expect(peak).toBeGreaterThanOrEqual(1.1);
+    expect(peak).toBeLessThanOrEqual(1.16);
+    a.update(20);
+    expect(a.sample().get('root')?.sx ?? 1).toBeCloseTo(1, 6);
+    expect(a.state.action).toBe(null);
+  });
+  it('a turret build drops in from above at once (A11 turret clips)', () => {
+    const def = MANIFEST['turret.rock_tosser'];
+    expect(def).toBeDefined();
+    if (!def) return;
+    const a = new Animator(clipResolver(def), ctx, 1);
+    a.play('build');
+    a.update(0);
+    expect(a.sample().get('root')?.y ?? 0).toBeLessThan(-60);
+  });
   it('unknown clips are ignored', () => {
     const a = new Animator(resolverFor([idle]), ctx, 1);
     expect(a.play('nope')).toBe(false);

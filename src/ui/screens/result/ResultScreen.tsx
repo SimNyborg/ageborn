@@ -234,7 +234,9 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const reduce = save.value.settings.reduceMotion;
   const [shown, setShown] = useState(reduce ? rewards.length : 0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const capsule = earnedCapsule(info.rewards);
+  // Only offer "Open capsule" while the earned capsule is still unopened in the tray.
+  const earned = earnedCapsule(info.rewards);
+  const capsule = earned !== null && save.value.capsules.pending.some((c) => c.id === earned) ? earned : null;
   const stats = info.input.stats;
   const opp = info.input.opponent;
 

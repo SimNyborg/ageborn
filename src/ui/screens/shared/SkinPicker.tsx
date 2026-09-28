@@ -13,6 +13,7 @@ import { CheckIcon, DustIcon, LockIcon, RARITY_COLOR } from '../../components/ic
 import { Modal } from '../../components/Modal';
 import { useUi } from '../context';
 import { cardDef, cardGlyph, skinsFor } from '../model/cards';
+import { reasonKey } from '../model/reasons';
 
 export function SkinOptions(p: { card: CardId; compact?: boolean }) {
   const { save, content, t, locale, services, toasts } = useUi();
@@ -64,7 +65,7 @@ export function SkinOptions(p: { card: CardId; compact?: boolean }) {
                 inert={s.currencies.dust < price}
                 onClick={() => {
                   const r = services.craft(id!);
-                  toasts.show(r.ok ? t('ui.skins.crafted') : t('ui.error.notEnoughDust'), { tone: r.ok ? 'good' : 'bad' });
+                  toasts.show(r.ok ? t('ui.skins.crafted') : t(reasonKey(r.reason)), { tone: r.ok ? 'good' : 'bad' });
                 }}
               >
                 {formatInt(price, locale)}

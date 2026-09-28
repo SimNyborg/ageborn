@@ -11,12 +11,12 @@
  * the table within ±20% and checks that the copy and Amber finish dates are less than 30 days apart.
  * Without `src/meta` (WP7) the tool writes a skipped report and exits 0.
  */
-import type { AgeId, CardId, Clock, CompiledContent, MatchStats, Meta, PendingCapsule, Rarity, SaveDoc, Side } from '../src/contracts';
+import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchStats, Meta, PendingCapsule, Rarity, Result, SaveDoc, Side } from '../src/contracts';
 import { asContent, content as gameContent, type Content } from '../src/content';
-import { chanceBp, seedSfc32 } from '../src/core/rng';
+import { chanceBp, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { loadMeta } from './lib/modules';
 import { mean, median } from './lib/stats';
-import { fmtNum, markdownTable, rangeCheck, skippedCheck, startReport, type Check, type Report } from './report';
+import { fmtNum, infoCheck, markdownTable, rangeCheck, skippedCheck, startReport, type Check, type Report } from './report';
 
 const DAY_MS = 86_400_000;
 const MONTH_DAYS = 30.44;
@@ -39,6 +39,8 @@ export const ECONOMY_TARGETS = {
   planL7Days: 42,
   copiesDoneDays: 135,
   amberDoneDays: 160,
+  /** "Whole collection maxed: ~5-5.5 months" (the middle, 5.25 months). */
+  collectionMaxedDays: 5.25 * MONTH_DAYS,
   maxGapDays: 30,
 } as const;
 
@@ -64,13 +66,15 @@ export interface DayTotals {
   capsules: Partial<Record<PendingCapsule['kind'], number>>;
   matches: number;
   wins: number;
+  /** Quests claimed (daily and weekly). */
+  quests: number;
 }
 
 export interface EconomyMeasures {
   days: number;
   copiesPerBagCapsule: number;
   amberPerBagCapsule: number;
-  perDay: { win: number; daily: number; clay: number; copies: number; amber: number };
+  perDay: { win: number; daily: number; clay: number; copies: number; amber: number; quests: number };
   /** Median day a card of each rarity has received the copies for L10 (null = never). */
   maxDay: Record<Rarity, number | null>;
   allLegendariesDay: number | null;
@@ -109,7 +113,7 @@ export class EconomyRecorder {
   }
 
   private today(day: number): DayTotals {
-    while (this.totals.length <= day) this.totals.push({ copies: 0, amber: 0, capsules: {}, matches: 0, wins: 0 });
+    while (this.totals.length <= day) this.totals.push({ copies: 0, amber: 0, capsules: {}, matches: 0, wins: 0, quests: 0 });
     return this.totals[day] as DayTotals;
   }
 
@@ -117,6 +121,11 @@ export class EconomyRecorder {
     const t = this.today(day);
     t.matches += 1;
     if (won) t.wins += 1;
+  }
+
+  /** A claimed quest (its rewards arrive through `amber` and `capsule`). */
+  quest(day: number): void {
+    this.today(day).quests += 1;
   }
 
   amber(day: number, amount: number): void {
@@ -181,6 +190,7 @@ export class EconomyRecorder {
         clay: perDay((t) => t.capsules.meter ?? 0),
         copies: perDay((t) => t.copies),
         amber: perDay((t) => t.amber),
+        quests: perDay((t) => t.quests),
       },
       maxDay: { common: byRarity('common'), rare: byRarity('rare'), epic: byRarity('epic'), legendary: byRarity('legendary') },
       allLegendariesDay: allOwned,
@@ -219,30 +229,87 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     near('economy.planL7', 'Focused War Plan at L7', m.planL7Day, T.planL7Days, 'days'),
     near('economy.copiesDone', 'Copies for the whole collection', m.copiesDoneDay, T.copiesDoneDays, 'days'),
     near('economy.amberDone', 'Amber for the whole collection (273,350)', m.amberDoneDay, T.amberDoneDays, 'days'),
+    near('economy.collectionMaxed', 'Whole collection maxed', m.collectionMaxedDay, T.collectionMaxedDays, 'days'),
     rangeCheck('economy.finishGap', 'Gap between the copy and Amber finish dates', gap, 0, T.maxGapDays - 1e-9, { target: `< ${T.maxGapDays} days`, show: (x) => (Number.isFinite(x) ? `${fmtNum(x, 0)} days` : 'not reached') }),
+    // A model input rather than a result: the A6.9 player completes 3 quests a day.
+    infoCheck('economy.questsPerDay', 'Quests claimed per day (A6.9 assumes 3)', `${fmtNum(m.perDay.quests, 2)} /day`),
   ];
 }
 
 // ---------------------------------------------------------------------------------------------
 // The player model (drives Meta).
 
-/** Plausible per-match stats for quest progress (A6.7); the economy does not depend on them otherwise. */
-function syntheticStats(won: boolean, planCard: CardId | null): MatchStats {
+/** A2.4 expected evolve times (s): the n-th evolve lands near 1:00, 2:05, 3:20, 4:50. */
+const EVOLVE_AT_SEC = [60, 125, 200, 290] as const;
+/** Typical match length per format (s): the A2.14 medians (Full 7:00, Short 4:30), Standard in between. */
+const MATCH_SEC: Record<FormatId, number> = { tutorial: 240, short: 270, standard: 330, full: 420 };
+
+/**
+ * Plausible per-match stats of an engaged player, for quest progress only (A6.7): the economy does not
+ * depend on them otherwise. Evolves and the final-age time follow the format (A2.4), a third of the
+ * matches skip the Treasury, and Last Stand fires in every loss and in one win in five.
+ */
+export function syntheticStats(content: CompiledContent, format: FormatId, won: boolean, rng: Sfc32State, planCard: CardId | null): MatchStats {
+  const evolves = Math.max(0, content.formats[format].ages.length - 1);
   return {
     trained: 40,
     kills: won ? 38 : 30,
     turretKills: 7,
-    evolves: 4,
-    reachedFinalAgeAtMs: 290_000,
+    evolves,
+    reachedFinalAgeAtMs: evolves > 0 ? (EVOLVE_AT_SEC[Math.min(evolves, EVOLVE_AT_SEC.length) - 1] as number) * 1000 : null,
     powerMaxHits: 5,
     baseDamage: won ? 33_200 : 12_000,
     heavyKillsByAA: 2,
-    usedTreasury: true,
-    usedLastStand: !won,
+    usedTreasury: !chanceBp(rng, 3333),
+    usedLastStand: !won || chanceBp(rng, 2000),
     ownBaseHpBpAtEnd: won ? 5000 : 0,
-    durationMs: 420_000,
+    durationMs: MATCH_SEC[format] * 1000,
     mvpCard: planCard,
   };
+}
+
+/**
+ * Quest claiming is not part of the `Meta` contract (B15), but A6.9's engaged player completes 3 quests
+ * a day, so the model uses the meta package's own `claimQuest` and `rerollQuest` when it exports them
+ * (WP7 `MetaRules`); without them quests are left unclaimed and the report says so.
+ */
+interface QuestApi {
+  claimQuest(s: SaveDoc, slot: number | 'weekly', c: CompiledContent, clock: Clock): Result<SaveDoc>;
+  rerollQuest: ((s: SaveDoc, slot: number, c: CompiledContent) => Result<SaveDoc>) | null;
+}
+
+export function questApi(meta: Meta): QuestApi | null {
+  const m = meta as Meta & Partial<Record<'claimQuest' | 'rerollQuest', unknown>>;
+  if (typeof m.claimQuest !== 'function') return null;
+  return {
+    claimQuest: m.claimQuest as QuestApi['claimQuest'],
+    rerollQuest: typeof m.rerollQuest === 'function' ? (m.rerollQuest as NonNullable<QuestApi['rerollQuest']>) : null,
+  };
+}
+
+/** Claims every finished quest (daily slots and the weekly one). */
+function claimQuests(api: QuestApi, s: SaveDoc, content: CompiledContent, clock: Clock, day: number, rec: EconomyRecorder): SaveDoc {
+  let save = s;
+  const slots: (number | 'weekly')[] = [...save.quests.daily.map((_, i) => i), 'weekly'];
+  for (const slot of slots) {
+    const q = slot === 'weekly' ? save.quests.weekly : save.quests.daily[slot];
+    if (!q || q.claimed) continue;
+    const r = api.claimQuest(save, slot, content, clock);
+    if (!r.ok) continue;
+    income(rec, day, save, r.value);
+    save = r.value;
+    rec.quest(day);
+  }
+  return save;
+}
+
+/** The free daily reroll (A6.7) on the oldest quest still open at the end of the day. */
+function rerollStuck(api: QuestApi, s: SaveDoc, content: CompiledContent): SaveDoc {
+  if (!api.rerollQuest) return s;
+  const slot = s.quests.daily.findIndex((q) => !q.claimed);
+  if (slot < 0) return s;
+  const r = api.rerollQuest(s, slot, content);
+  return r.ok ? r.value : s;
 }
 
 function planCards(s: SaveDoc): CardId[] {
@@ -312,6 +379,7 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
   const c = asContent(content);
   const rng = seedSfc32(`economy:${m.seed}`);
   const rec = new EconomyRecorder(content);
+  const quests = questApi(meta);
   let now = Date.UTC(2026, 0, 1, 5);
   const clock: Clock = { now: () => now };
   let save = meta.newSave(content, clock, m.seed);
@@ -331,14 +399,15 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
       now += 10 * 60_000;
       const opp = meta.pickOpponent(save, 'ladder', content, clock);
       const won = chanceBp(rng, m.winRateBp);
+      const stats = syntheticStats(content, opp.format, won, rng, planCards(save)[0] ?? null);
       const r = meta.applyMatchResult(
         save,
         {
           mode: 'ladder',
-          outcome: { winner: won ? mySide : 1, reason: 'baseDestroyed', tick: 8400, baseHpBp: won ? [5000, 0] : [0, 5000] },
+          outcome: { winner: won ? mySide : 1, reason: 'baseDestroyed', tick: Math.trunc(stats.durationMs / 50), baseHpBp: won ? [5000, 0] : [0, 5000] },
           mySide,
           opponent: opp,
-          stats: syntheticStats(won, planCards(save)[0] ?? null),
+          stats,
         },
         content,
         clock,
@@ -359,6 +428,15 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
     }
     save = openAll(meta, save, day, rec);
     save = upgradeAll(meta, save, content, c, day, rec);
+    if (quests) {
+      // Twice: quest rewards open and upgrade into "Upgrade 2 cards", which can then be claimed too.
+      for (let pass = 0; pass < 2; pass += 1) {
+        save = claimQuests(quests, save, content, clock, day, rec);
+        save = openAll(meta, save, day, rec);
+        save = upgradeAll(meta, save, content, c, day, rec);
+      }
+      save = rerollStuck(quests, save, content);
+    }
     rec.snapshot(day, levelsOf(save), planCards(save), content.economy.maxLevel);
   }
   return rec;
@@ -380,9 +458,11 @@ export async function runEconomy(m: EconomyModel, content: CompiledContent = gam
   }
   try {
     const measures = simulateEconomy(meta, content, m).measures(m.averageDays);
-    return rep.finish(economyChecks(measures), { meta: 'src/meta', model: m, measures }, [
+    const notes = [
       `Per-day averages use days ${m.averageDays[0]}-${m.averageDays[1]}. Amber income is every increase of the Amber balance (matches, quests, capsules, road, Codex Levels) plus what upgrades spent.`,
-    ]);
+    ];
+    if (!questApi(meta)) notes.push('src/meta exports no claimQuest: quests were never claimed, so quest rewards are missing from every figure.');
+    return rep.finish(economyChecks(measures), { meta: 'src/meta', model: m, measures }, notes);
   } catch (e) {
     return rep.finish([{ id: 'economy.run', metric: 'Player model through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', model: m, measures: null });
   }

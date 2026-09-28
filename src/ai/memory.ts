@@ -11,6 +11,8 @@ import { BP, PPM, TICKS_PER_SECOND } from '@/core';
 import type { CardBook } from './book';
 import { FoeGoldEstimator } from './estimate';
 
+/** Own base HP history kept for burst estimates (5 s). */
+const BASE_TRAIL_TICKS = 5 * TICKS_PER_SECOND;
 /** How long a remembered enemy card stays in the composition memory. */
 const COMPOSITION_MEMORY_TICKS = 45 * TICKS_PER_SECOND;
 
@@ -48,7 +50,7 @@ export class BotMemory {
   private foeAge = 0;
   /** Enemy cards seen recently. */
   readonly composition = new Map<CardId, RememberedCard>();
-  /** Own base HP (bp) of the last second of observations, oldest first. */
+  /** Own base HP (bp) of the last 5 s of observations, oldest first. */
   private readonly baseTrail: number[] = [];
 
   constructor(private readonly book: CardBook) {
@@ -70,7 +72,7 @@ export class BotMemory {
 
     if (me.ageIndex === this.lastAge && me.baseHpBp < this.lastBaseBp) this.baseDamagedTick = obs.tick;
     this.baseTrail.push(me.baseHpBp);
-    if (this.baseTrail.length > TICKS_PER_SECOND + 1) this.baseTrail.shift();
+    if (this.baseTrail.length > BASE_TRAIL_TICKS + 1) this.baseTrail.shift();
     this.lastBaseBp = me.baseHpBp;
     this.lastAge = me.ageIndex;
 
@@ -98,12 +100,22 @@ export class BotMemory {
     this.estimator.observe(obs);
   }
 
-  /** Own base HP lost over the last second of observations, bp per tick (0 when not falling). */
-  baseLossPerTick(): number {
-    const n = this.baseTrail.length;
-    if (n < 2) return 0;
-    const lost = (this.baseTrail[0] as number) - (this.baseTrail[n - 1] as number);
-    return lost > 0 ? Math.ceil(lost / (n - 1)) : 0;
+  /**
+   * The most own base HP (bp) lost within any `span` consecutive observation ticks of the last 5 s.
+   * Base damage comes in bursts (a Bombard volley, a charge reaching the gate), so this is the
+   * cautious estimate of what the next `span` ticks may cost.
+   */
+  worstBaseLoss(span: number): number {
+    const t = this.baseTrail;
+    let worst = 0;
+    for (let i = 0; i < t.length; i += 1) {
+      const end = Math.min(t.length - 1, i + span);
+      for (let j = i + 1; j <= end; j += 1) {
+        const lost = (t[i] as number) - (t[j] as number);
+        if (lost > worst) worst = lost;
+      }
+    }
+    return worst;
   }
 
   /** The remembered enemy composition, sorted by card id. */

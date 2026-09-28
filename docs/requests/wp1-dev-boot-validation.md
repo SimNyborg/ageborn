@@ -1,6 +1,6 @@
 # WP1 → WP11: validate content at dev boot
 
-**From:** WP1 (content). **To:** WP11 (`src/app/boot.ts` or `main.tsx`). **Status:** open. **Priority:** low.
+**From:** WP1 (content). **To:** WP11 (`src/app/boot.ts` or `main.tsx`). **Status:** done (WP11: `validateContentInDev` in `src/app/boot.ts`, called from `src/app/main.tsx`; confirmed in the WP1 review). **Priority:** low.
 
 ## Request
 

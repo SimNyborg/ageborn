@@ -26,8 +26,12 @@ describe('contentHash (B4, B3 replays)', () => {
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
+    // The fixture never changes, so this value stays fixed even after a balance change updates the
+    // snapshot above. It changes only if the hash algorithm or the hashed slice changes, which
+    // invalidates every golden replay.
+    const FIXTURE_HASH = 'f63c08d8';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
-    expect(fixture.hash).toBe('f63c08d8');
+    expect(fixture.hash).toBe(FIXTURE_HASH);
   });
 
   it('is 8 lowercase hex digits and recomputes from the body', () => {

@@ -181,6 +181,11 @@ export interface ClipDef {
   proc?: readonly ProcId[];
   /** Whole-puppet opacity keys (die fade). */
   alpha?: readonly { t: number; v: number }[];
+  /**
+   * Cross-fade from the base loop into this action (ms; default 70). 0 for clips whose first key must
+   * show at once, such as the spawn pop starting at scale 0 or a turret dropping in from above.
+   */
+  blendInMs?: number;
 }
 
 /** A bone's pose delta from rest. */

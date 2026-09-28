@@ -68,13 +68,47 @@ describe('routing', () => {
     expect(art.visualIdForCard('icon.horn')).toBe('icon.horn');
   });
 
-  it('portraits resolve (empty without a DOM) and are cached by card, skin, size and plate', async () => {
+  it('portraits resolve (empty without a DOM) and are cached by card, skin, size, plate and preset', async () => {
     const { art } = quiet();
     const a = art.portrait({ card: 'bonker', size: 64 });
     expect(art.portrait({ card: 'bonker', size: 64 })).toBe(a);
     expect(art.portrait({ card: 'bonker', size: 64, skin: 'pumpkin_head' })).not.toBe(a);
     expect(art.portrait({ card: 'bonker', size: 64, plate: false })).not.toBe(a);
     expect(await a).toBe('');
+    // team areas follow the colourblind preset (A11)
+    const spy = vi.spyOn(art.procedural, 'portrait');
+    art.setTeamPreset('highContrast');
+    const b = art.portrait({ card: 'bonker', size: 64 });
+    expect(b).not.toBe(a);
+    await b;
+    expect(spy.mock.calls[0]?.[0].teamPreset).toBe('highContrast');
+  });
+
+  it('a unit moved to sprite sheets keeps its procedural card portrait until that tier draws portraits', async () => {
+    const atlasDef: VisualDef = { ...(MANIFEST['unit.bonker'] as VisualDef), kind: 'atlas', source: 'art/units/bonker.json' };
+    const art = createArtProvider({ warn: () => {}, manifest: { ...MANIFEST, 'unit.bonker': atlasDef } });
+    const proc = vi.spyOn(art.procedural, 'portrait');
+    const place = vi.spyOn(art.placeholder, 'portrait');
+    await art.portrait({ card: 'bonker', size: 64 });
+    expect(proc).toHaveBeenCalledOnce();
+    expect(proc.mock.calls[0]?.[0].def.source).toBe('unit.bonker');
+    expect(place).not.toHaveBeenCalled();
+    // ?art=placeholder still forces the placeholder tier
+    const forced = createArtProvider({ warn: () => {}, force: 'placeholder' });
+    const forcedPlace = vi.spyOn(forced.placeholder, 'portrait');
+    await forced.portrait({ card: 'bonker', size: 64 });
+    expect(forcedPlace).toHaveBeenCalledOnce();
+  });
+
+  it('bakes the atlas for the largest world scale the screen can show (A2.1 camera, B16 memory)', async () => {
+    const { screenWorldPxPerLu } = await import('../provider');
+    expect(screenWorldPxPerLu(1280, 720)).toBeCloseTo(1280 / 1560, 6); // desktop 720p: 1:1
+    expect(screenWorldPxPerLu(3840, 2160)).toBe(1.25); // capped: never larger than before
+    expect(screenWorldPxPerLu(390, 844)).toBeCloseTo((844 / 1560) * 1.6, 6); // phone: landscape width, pinch zoom 1.6x
+    expect(screenWorldPxPerLu(300, 200)).toBe(0.6);
+    expect(screenWorldPxPerLu(0, 0)).toBe(1.25);
+    expect(createArtProvider({ warn: () => {}, dpr: 2, worldPxPerLu: 0.9 }).procedural.baker.pxPerLu).toBeCloseTo(1.8, 6);
+    expect(createArtProvider({ warn: () => {}, dpr: 3, quality: 'lite', worldPxPerLu: 0.9 }).procedural.baker.pxPerLu).toBeCloseTo(0.9, 6);
   });
 
   it('preloads every age and records the bake', async () => {
@@ -166,11 +200,36 @@ describe('procedural turret, base, backdrop and effect views', () => {
     }
   });
 
-  it('keeps a crystal spire skin across the morph into the future age', () => {
-    const { art } = quiet();
-    const b = art.createBase({ age: 'future', skin: 'crystal_spire', side: 0, teamPreset: 'default' });
+  it('draws a base skin on the age it belongs to, including after evolving into that age', () => {
+    const { art, warn } = quiet();
+    const direct = art.createBase({ age: 'future', skin: 'crystal_spire', side: 0, teamPreset: 'default' });
+    expect(direct.root.label).toBe('base.future@crystal_spire');
+    direct.destroy();
+    // A match starts in the Stone Age: the Crystal Spire skin is carried along and appears on evolve.
+    const b = art.createBase({ age: 'stone', skin: 'crystal_spire', side: 1, teamPreset: 'default' });
+    expect(b.root.label).toBe('base.stone');
+    b.morphTo('medieval', 1800);
+    for (let t = 0; t < 1900; t += 50) b.update(50);
+    expect(b.root.label).toBe('base.medieval');
+    b.morphTo('future', 1800);
+    for (let t = 0; t < 1900; t += 50) b.update(50);
     expect(b.root.label).toBe('base.future@crystal_spire');
     b.destroy();
+    expect(warn).not.toHaveBeenCalled();
+    art.createBase({ age: 'stone', skin: 'no_such_skin', side: 0, teamPreset: 'default' }).destroy();
+    expect(warn).toHaveBeenCalledOnce();
+  });
+
+  it('turrets show a one-frame muzzle flash per shot (A11)', () => {
+    const { art } = quiet();
+    const t = art.createTurret({ visualId: 'turret.swivel_gun', side: 0, teamPreset: 'default' }) as unknown as { play(c: 'fire'): void; update(dt: number): void; debug: { muzzleFlash: boolean } };
+    t.update(16);
+    expect(t.debug.muzzleFlash).toBe(false);
+    t.play('fire');
+    t.update(16);
+    expect(t.debug.muzzleFlash).toBe(true);
+    t.update(16);
+    expect(t.debug.muzzleFlash).toBe(false);
   });
 
   it('backdrops clamp and drift the seam at 20 lu/s, and wipe a side to a new age', () => {
@@ -195,6 +254,46 @@ describe('procedural turret, base, backdrop and effect views', () => {
     d.update(WORLD.evolveWipeMs + 50);
     expect(d.state.wiping).toBe(false);
     expect(d.state.left).toBe('modern');
+  });
+
+  it('the seam cross-fades in thin strips (an opaque under-piece per pair) with a soft 30% haze', async () => {
+    const { ageRegions, composePieces, hazeAlpha } = await import('../adapters/procedural/backdropView');
+    const seam = 640;
+    const pieces = composePieces(ageRegions({ left: 'stone', right: 'future', seam, wipe: null }), seam);
+    const strips = pieces.filter((p) => p.alpha < 1 || p.under);
+    // pairs: the left age under the right age, alphas summing to 1, within 240 lu of the seam
+    const unders = strips.filter((p) => p.under);
+    expect(unders.length).toBeGreaterThanOrEqual(WORLD.seamBlendLu / 12);
+    for (const u of unders) {
+      expect(u.age).toBe('stone');
+      const over = strips.find((p) => !p.under && p.x0 === u.x0 && p.x1 === u.x1);
+      expect(over?.age).toBe('future');
+      expect((over?.alpha ?? 0) + u.alpha).toBeCloseTo(1, 6);
+      expect(u.x0).toBeGreaterThanOrEqual(seam - WORLD.seamBlendLu / 2 - 1e-6);
+      expect(u.x1).toBeLessThanOrEqual(seam + WORLD.seamBlendLu / 2 + 1e-6);
+      expect(pieces.indexOf(u)).toBeLessThan(pieces.indexOf(over as (typeof pieces)[number]));
+    }
+    // the fade is monotonic from the left age to the right age
+    const overs = strips.filter((p) => !p.under).sort((a, b) => a.x0 - b.x0);
+    for (let i = 1; i < overs.length; i++) expect(overs[i]?.alpha ?? 0).toBeGreaterThanOrEqual(overs[i - 1]?.alpha ?? 0);
+    // haze: 0 at the seam edges, 30% in the middle (A11 "30% desaturation"), no hard edge
+    expect(hazeAlpha(0)).toBe(0);
+    expect(hazeAlpha(1)).toBe(0);
+    expect(hazeAlpha(0.5)).toBeCloseTo(WORLD.seamDesaturate, 6);
+    expect(hazeAlpha(0.02)).toBeLessThan(0.02);
+  });
+
+  it('the enemy evolve pillar is smaller (`small: 1`, A12), and a pooled view resets on reuse', () => {
+    const { art } = quiet();
+    const e = art.createEffect('fx.evolve_pillar');
+    const layer = e.root.children[0];
+    e.playAt({ x: 0, y: 0 }, { small: 1 });
+    expect(layer?.scale.x).toBeCloseTo(0.6, 6);
+    e.playAt({ x: 0, y: 0 }, { scale: 1.5 });
+    expect(layer?.scale.x).toBeCloseTo(1.5, 6);
+    e.playAt({ x: 0, y: 0 });
+    expect(layer?.scale.x).toBe(1);
+    e.destroy();
   });
 
   it('every effect and projectile plays to completion', () => {

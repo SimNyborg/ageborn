@@ -4,7 +4,8 @@
  *
  * Options passed to `ArtProvider.createEffect(id, o)` / `EffectView.playAt(at, o)` (all numbers):
  *   side (0/1, team tint), dir (+1/-1, facing), radius, zone, width, height, length, toX, toY,
- *   durationMs, distance, speed, scale, fallMs.
+ *   durationMs, distance, speed, scale, fallMs; `scale` also sizes the whole effect, and `small: 1`
+ *   draws it at 0.6x (A12: the enemy's evolve pillar is smaller than your own).
  * `sizeWith` scales a sprite or particle by one of them relative to a 10 lu base sprite.
  *
  * Colour rule (A11): lane effects use pale warm tones and mint, magenta or lilac energy; saturated

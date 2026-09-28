@@ -17,7 +17,7 @@ import {
 } from '../fixtures/matches';
 import { SCREEN_COMPONENTS } from '../ScreenHost';
 import { text, textNodes } from './dom';
-import { mount, PSEUDO, type HarnessState, type Mounted } from './harness';
+import { mount, PSEUDO, RAW_KEY, type HarnessState, type Mounted } from './harness';
 
 const STATES: HarnessState[] = ['new', 'mid', 'maxed', 'raw'];
 
@@ -91,9 +91,6 @@ export const CASES: Case[] = [
   { name: 'conquest', screen: 'conquest', routes: () => [{ id: 'home' }, { id: 'conquest' }] },
 ];
 
-/** Keys look like `ui.home.battle` or `card.bonker.name`; a visible one means a missing string. */
-const RAW_KEY =
-  /\b(ui|card|age|format|rarity|role|group|tag|foil|capsuleTier|capsuleKind|arena|general|quest|modifier|banner|frame|title|emote|skin)\.[A-Za-z0-9_]+\.[A-Za-z0-9_.]+\b|\bui\.[A-Za-z0-9_]+\b/;
 
 let m: Mounted | null = null;
 afterEach(() => {

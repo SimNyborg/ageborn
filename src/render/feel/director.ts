@@ -20,6 +20,7 @@ interface Delayed {
   id: SoundId;
   pan: number;
   priority: number;
+  gap: Gap | undefined;
 }
 
 export class FeelDirector {
@@ -101,7 +102,8 @@ export class FeelDirector {
   /** Plays (or schedules, in game time) a sound. `pan` in -1..1. */
   sound(id: SoundId, o: { delayMs?: number; gap?: Gap; climb?: string; pan?: number; priority?: number } = {}): void {
     if (o.delayMs && o.delayMs > 0) {
-      this.delayed.push({ atMs: this.gameMs + o.delayMs, id, pan: o.pan ?? 0, priority: o.priority ?? 0 });
+      // The throttle applies when the sound actually plays.
+      this.delayed.push({ atMs: this.gameMs + o.delayMs, id, pan: o.pan ?? 0, priority: o.priority ?? 0, gap: o.gap });
       return;
     }
     if (this.gated(o.gap)) return;
@@ -160,7 +162,7 @@ export class FeelDirector {
       const due = this.delayed.filter((d) => d.atMs <= this.gameMs);
       if (due.length > 0) {
         this.delayed = this.delayed.filter((d) => d.atMs > this.gameMs);
-        for (const d of due) this.sound(d.id, { pan: d.pan, priority: d.priority });
+        for (const d of due) this.sound(d.id, { pan: d.pan, priority: d.priority, ...(d.gap ? { gap: d.gap } : {}) });
       }
     }
     const it = this.feel.tuning.intensity;

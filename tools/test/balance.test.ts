@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '../../src/content';
-import { balanceDefaults, balanceJobs, damagePerGold, mirrorStats, pairScores, runBalance, selectTests } from '../balance';
+import { balanceDefaults, balanceJobs, damagePerGold, mirrorChecks, mirrorStats, pairScores, runBalance, selectTests } from '../balance';
 import type { JobResult } from '../lib/jobs';
 import type { MatchSummary, SideStats } from '../lib/metrics';
 
@@ -73,6 +73,21 @@ describe('balance analysis', () => {
     expect(s.evolveMedianSec[1]).toBe(125);
     expect(s.firstMover.value).toBe(75);
     expect(s.turretSharePct).toBe(20);
+  });
+
+  it('a mirror of too few matches or evolves cannot pass a target (A2.14 gating)', () => {
+    // On-target numbers in 5 matches: every check is a statistic, so none may pass.
+    const onTarget = (): MatchSummary => summary({ ticks: 20 * 420, sides: [side({ evolveTicks: [1200, 2500, 4000, 5800] }), side({ evolveTicks: [1200, 2500, 4000, 5800] })] });
+    const few = mirrorChecks(mirrorStats('full', Array.from({ length: 5 }, onTarget)));
+    const gated = ['mirror.full.median', 'mirror.full.window', 'mirror.full.finalBell', 'mirror.full.firstEvolve', 'mirror.full.evolve2', 'mirror.full.evolve3', 'mirror.full.evolve4'];
+    for (const id of gated) expect(few.find((c) => c.id === id)).toMatchObject({ verdict: 'fail', note: expect.stringMatching(/samples/) });
+    const many = mirrorChecks(mirrorStats('full', Array.from({ length: 30 }, onTarget)));
+    for (const id of gated) expect(many.find((c) => c.id === id)?.verdict, id).toBe('pass');
+  });
+
+  it('reports the 5:00-9:00 window for Full War only', () => {
+    expect(mirrorStats('short', [summary({ ticks: 20 * 270 })]).withinWindowPct).toBeNaN();
+    expect(mirrorChecks(mirrorStats('short', [summary()])).map((c) => c.id)).toEqual(['mirror.short.median', 'mirror.short.finalBell']);
   });
 
   it('computes damage per gold per card', () => {

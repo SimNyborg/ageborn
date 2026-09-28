@@ -22,7 +22,7 @@ import type { PartBaker } from '../../bake';
 import { arenaId, GROUND_FRAME, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { CLOUD_TINT, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
-import { BACKDROP_PALETTES, mix } from '../../palette';
+import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
 import { fxSprite } from './effectView';
 
@@ -31,7 +31,7 @@ const LAYERS: readonly LayerKind[] = ['sky', 'far', 'mid'];
 const FRAMES: Record<LayerKind, LayerFrame> = { sky: SKY_FRAME, far: FAR_FRAME, mid: MID_FRAME };
 /** Parallax factors for the optional camera offset (mobile pinch-follow, A2.1). */
 const PARALLAX: Record<LayerKind | 'ground', number> = { sky: 0.08, far: 0.25, mid: 0.55, ground: 1 };
-const STRIP_LU = 12;
+const STRIP_LU = 6;
 const WIPE_EDGE_LU = 70;
 
 interface Painted {
@@ -93,11 +93,16 @@ export class BackdropTextures {
 }
 
 /** A horizontal slice [x0, x1] of a layer texture with a constant alpha. */
-interface Piece {
+export interface Piece {
   age: AgeId;
   x0: number;
   x1: number;
   alpha: number;
+  /**
+   * The lower half of a cross-fade pair (drawn first). An opaque layer (the sky) draws it at full
+   * alpha, so `under + over × s` is an exact cross-fade and nothing behind the backdrop shows through.
+   */
+  under?: boolean;
 }
 
 interface Region {
@@ -158,7 +163,7 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
       if (a.age === b.age) {
         pieces.push({ age: a.age, x0, x1, alpha: 1 });
       } else {
-        pieces.push({ age: a.age, x0, x1, alpha: 1 - s });
+        pieces.push({ age: a.age, x0, x1, alpha: 1 - s, under: true });
         pieces.push({ age: b.age, x0, x1, alpha: s });
       }
     }
@@ -215,7 +220,9 @@ class StripLayer {
       slot.t.update();
       slot.s.texture = slot.t;
       slot.s.visible = true;
-      slot.s.alpha = p.alpha;
+      // The sky is opaque: its lower cross-fade piece stays solid (see `Piece.under`). Silhouette
+      // layers are mostly transparent, so both halves fade.
+      slot.s.alpha = this.kind === 'sky' && p.under ? 1 : p.alpha;
       slot.s.position.set(x0, f.yTop);
       slot.s.width = x1 - x0;
       slot.s.height = f.height;
@@ -238,6 +245,50 @@ class StripLayer {
   }
 }
 
+/**
+ * Seam haze alpha at `t` ∈ [0, 1] across the 240 lu seam: 0 at both edges, `WORLD.seamDesaturate` in
+ * the middle, smooth in between (a hard-edged veil reads as a pillar of fog).
+ */
+export function hazeAlpha(t: number): number {
+  if (t <= 0 || t >= 1) return 0;
+  return WORLD.seamDesaturate * Math.sin(Math.PI * t);
+}
+
+/**
+ * The seam's 30% desaturation (A11): thin vertical strips of a neutral grey (the luma of the two ages'
+ * sky and silhouette colours) whose alpha rises from 0 at the seam edges to 30% at the seam. Drawn
+ * over the sky, far and mid layers and under the ground.
+ */
+class HazeLayer {
+  readonly container = new Container();
+  private readonly strips: Sprite[] = [];
+
+  constructor() {
+    const n = Math.ceil(WORLD.seamBlendLu / STRIP_LU);
+    for (let i = 0; i < n; i++) {
+      const s = new Sprite(Texture.WHITE);
+      this.strips.push(s);
+      this.container.addChild(s);
+    }
+  }
+
+  layout(seam: number, left: AgeId, right: AgeId): void {
+    const L = BACKDROP_PALETTES[left];
+    const R = BACKDROP_PALETTES[right];
+    const grey = desaturate(mix(mix(L.skyBottom, L.far, 0.5), mix(R.skyBottom, R.far, 0.5), 0.5), 1);
+    const n = this.strips.length;
+    const w = WORLD.seamBlendLu / n;
+    const top = SKY_FRAME.yTop;
+    this.strips.forEach((s, i) => {
+      s.position.set(seam - WORLD.seamBlendLu / 2 + i * w, top);
+      s.width = w;
+      s.height = -top;
+      s.tint = grey;
+      s.alpha = hazeAlpha((i + 0.5) / n);
+    });
+  }
+}
+
 export interface BackdropViewOptions {
   left: AgeId;
   right: AgeId;
@@ -251,9 +302,8 @@ export interface BackdropViewOptions {
 export class ProceduralBackdropView implements BackdropView {
   readonly root = new Container();
   private readonly layers: StripLayer[];
-  private readonly skyBack = new Container();
   private readonly clouds = new Container();
-  private readonly haze: Sprite;
+  private readonly haze = new HazeLayer();
   private readonly groundLayer = new Container();
   private readonly ambientLayers: Record<'sky' | 'far' | 'mid' | 'ground', Container>;
   private readonly rng: CosmeticRng;
@@ -278,7 +328,6 @@ export class ProceduralBackdropView implements BackdropView {
     this.layers = LAYERS.filter((k) => o.quality === 'high' || k !== 'mid').map((k) => new StripLayer(k, o.textures));
     this.ambientLayers = { sky: new Container(), far: new Container(), mid: new Container(), ground: new Container() };
     const byKind = (k: LayerKind): StripLayer | undefined => this.layers.find((l) => l.kind === k);
-    this.root.addChild(this.skyBack);
     const sky = byKind('sky');
     if (sky) this.root.addChild(sky.container);
     this.root.addChild(this.clouds, this.ambientLayers.sky);
@@ -288,9 +337,7 @@ export class ProceduralBackdropView implements BackdropView {
     const mid = byKind('mid');
     if (mid) this.root.addChild(mid.container);
     this.root.addChild(this.ambientLayers.mid);
-    this.haze = fxSprite(o.baker, 'fx.p.disc');
-    this.haze.alpha = WORLD.seamDesaturate;
-    this.root.addChild(this.haze);
+    this.root.addChild(this.haze.container);
     const ground = o.textures.ground(this.arena);
     if (ground.tex !== Texture.EMPTY) {
       const g = new Sprite(ground.tex);
@@ -363,11 +410,7 @@ export class ProceduralBackdropView implements BackdropView {
     const pieces = composePieces(regions, this.seam);
     for (const l of this.layers) l.layout(pieces);
     // seam haze: a soft grey veil, 240 lu wide (A11: 30% desaturation)
-    const top = SKY_FRAME.yTop;
-    this.haze.position.set(this.seam, top + (0 - top) / 2);
-    this.haze.scale.set(WORLD.seamBlendLu / 20, -top / 20);
-    this.haze.tint = mix(BACKDROP_PALETTES[this.left].far, BACKDROP_PALETTES[this.right].far, 0.5);
-    // sky backing colour under the strips (covers any sub-pixel gaps)
+    this.haze.layout(this.seam, this.left, this.right);
     for (const a of this.ambient) {
       if (!a.age) continue;
       const weight = regionWeight(regions, a.age, a.spec.x);

@@ -279,7 +279,8 @@ export function BakePanel(p: { quality: 'high' | 'lite' }) {
     let alive = true;
     void (async () => {
       const dpr = p.quality === 'lite' ? 1 : Math.min(2, window.devicePixelRatio || 1);
-      const art = createArtProvider({ quality: p.quality, dpr });
+      // Worst case: the largest bake scale the game uses (1.25 px/lu, a 1,950 px wide lane) at this DPR.
+      const art = createArtProvider({ quality: p.quality, dpr, worldPxPerLu: 1.25 });
       const t0 = performance.now();
       await art.preload([...BOOT_AGES]);
       const boot = performance.now() - t0;
@@ -293,7 +294,7 @@ export function BakePanel(p: { quality: 'high' | 'lite' }) {
       const bootCpu = bootEntry?.ms ?? boot;
       const pass = bootCpu <= 400;
       const lines = [
-        `DPR ${dpr} (${p.quality}), atlas ${(1.25 * dpr).toFixed(2)} px/lu`,
+        `DPR ${dpr} (${p.quality}), atlas ${art.procedural.baker.pxPerLu.toFixed(2)} px/lu (the largest bake scale; smaller screens bake smaller)`,
         `Boot bake (${BOOT_AGES.join(', ')}): ${bootCpu.toFixed(0)} ms CPU, ${boot.toFixed(0)} ms wall, ${bootEntry?.parts ?? 0} parts — budget 400 ms: ${pass ? 'PASS' : 'FAIL'}`,
         `Lazy bake (other ages, idle slices): ${(lazyEntry?.ms ?? 0).toFixed(0)} ms CPU over ${lazyWall.toFixed(0)} ms wall, ${lazyEntry?.parts ?? 0} parts`,
         `Totals: ${s.bake.parts} parts, ${s.bake.textures} textures, ${s.bake.pages} atlas pages, ${(s.bake.pixels / 1e6).toFixed(2)} Mpx`,

@@ -4,11 +4,14 @@
  * scale; and the structure every rig relies on.
  */
 import { describe, expect, it } from 'vitest';
-import { bodyWidth, clipPose, colorRule, effectColorRule, heightBand, maxBodyWidth, rasterizePuppet, restHeight, silhouetteIoU, structuralProblems } from '../checks';
+import { bodyWidth, clipPose, colorRule, colorRuleOfRaster, effectColorRule, heightBand, maxBodyWidth, pennantSlots, rasterizePuppet, restHeight, silhouetteIoU, structuralProblems } from '../checks';
 import { FX_RECIPES } from '../effects/recipes';
 import { allPuppets, puppetById, TURRET_PUPPETS, UNIT_PUPPETS } from '../library';
 import { getPart } from '../parts/registry';
+import { slotId, slotVisible } from '../pose';
+import type { BasePuppet } from '../rigs/base';
 import { SKIN_PUPPETS } from '../skins';
+import { STYLE } from '../style';
 
 const units = UNIT_PUPPETS;
 const skins = SKIN_PUPPETS;
@@ -79,7 +82,68 @@ describe('team readability (A11)', () => {
   it.each(units.map((p) => [p.id, p] as const))('%s carries a team-colour area of at least 7% of its silhouette', (_id, p) => {
     expect(teamShare(p, 0x2f7df6)).toBeGreaterThanOrEqual(0.07);
   });
+
+  // A11 redundant cues: "pennant on heavies". Heavies and ground Legendaries (the Siege heavies)
+  // carry a team pennant, flag or pennoned lance; skins inherit it (clarity parity, A5.8).
+  const heavies = [...units, ...skins.filter((s) => s.kind === 'unit')].filter((p) => (p.group === 'heavy' || p.group === 'legendary') && !p.motion.air);
+  it('the heavy set is complete (5 Heavies, 4 ground Legendaries, their skins)', () => {
+    expect(heavies.filter((p) => !p.skinOf).map((p) => p.id).sort()).toEqual(
+      ['unit.behemoth_tank', 'unit.chrono_titan', 'unit.cuirassier', 'unit.destrier_knight', 'unit.mammoth_matriarch', 'unit.tankette', 'unit.tuskback', 'unit.ursa_paladin', 'unit.walker_mech'].sort(),
+    );
+  });
+  it.each(heavies.map((p) => [p.id, p] as const))('%s carries a pennant', (_id, p) => {
+    expect(pennantSlots(p, getPart).length).toBeGreaterThan(0);
+  });
+
+  // A11: "Level trims ... follow the same rule". A trim sits on the ground ring beside the role glyph
+  // (drawn at STYLE.levelTrimScale by the unit view), so its saturated gold or bronze plus the unit's own accents
+  // must stay within 10% of the unit's silhouette, even on the smallest unit.
+  it.each((['bronze', 'silver', 'gold'] as const).map((t) => [t] as const))('trim.%s keeps every unit within the colour rule', (t) => {
+    const trim = puppetById(`trim.${t}`);
+    expect(trim).toBeDefined();
+    if (!trim) return;
+    const px = 1.5;
+    // drawn scaled by k: the same pixel count as rasterising it at k × the unit's px per lu
+    const trimRaster = rasterizePuppet(trim, getPart, { pxPerLu: px * STYLE.levelTrimScale, teamColor: null });
+    const trimBad = colorRuleOfRaster(trimRaster).share * countArea(trimRaster);
+    for (const u of units) {
+      const r = rasterizePuppet(u, getPart, { pxPerLu: px, teamColor: null });
+      const area = countArea(r);
+      const own = colorRuleOfRaster(r).share * area;
+      expect((own + trimBad) / area, u.id).toBeLessThanOrEqual(0.1);
+    }
+  });
 });
+
+describe('bases (A11 Bases, A2.2)', () => {
+  const bases = allPuppets().filter((p): p is BasePuppet => p.kind === 'base');
+  const visibleSlots = (b: BasePuppet, st: { crumble: number; treasury: number }): string => b.slots.filter((s) => slotVisible(s.when, st)).map((s) => slotId(s)).sort().join(',');
+
+  it('five bases plus the Crystal Spire skin', () => {
+    expect(bases.map((b) => b.id).sort()).toEqual(['base.future', 'base.future@crystal_spire', 'base.gunpowder', 'base.medieval', 'base.modern', 'base.stone']);
+  });
+  it.each(bases.map((b) => [b.id, b] as const))('%s shows each crumble stage (75/50/25%%) and each Treasury level (1-3) differently', (_id, b) => {
+    const crumble = [0, 1, 2, 3].map((c) => visibleSlots(b, { crumble: c, treasury: 0 }));
+    expect(new Set(crumble).size).toBe(4);
+    const treasury = [0, 1, 2, 3].map((t) => visibleSlots(b, { crumble: 0, treasury: t }));
+    expect(new Set(treasury).size).toBe(4);
+    // four mounts stacked bottom to top (A2.8)
+    for (let i = 1; i < 4; i++) expect(b.mounts[i]?.y ?? 0).toBeLessThan(b.mounts[i - 1]?.y ?? 0);
+  });
+  it('a base skin keeps the mounts and horn of its base (clarity parity, A5.8)', () => {
+    const skin = bases.find((b) => b.id === 'base.future@crystal_spire');
+    const base = bases.find((b) => b.id === 'base.future');
+    expect(skin?.mounts).toEqual(base?.mounts);
+    expect(skin?.hornAt).toEqual(base?.hornAt);
+  });
+});
+
+/** Painted pixels of a raster. */
+function countArea(r: { color: ArrayLike<number> }): number {
+  let n = 0;
+  for (let i = 0; i < r.color.length; i++) if ((r.color[i] ?? -1) >= 0) n++;
+  return n;
+}
 
 /** Share of the silhouette painted by team layers. */
 function teamShare(p: (typeof units)[number], team: number): number {

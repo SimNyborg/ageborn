@@ -86,7 +86,8 @@ export function PixiStage(p: StageProps) {
       app.canvas.setAttribute('data-testid', p.testId ?? 'gallery-canvas');
       el.appendChild(app.canvas);
       const overrides = p.atlas ? await atlasOverrides(p.atlas) : {};
-      const art = createArtProvider({ manifest: { ...MANIFEST, ...overrides }, quality: p.quality, teamPreset: p.preset, force: p.tier, dpr: Math.min(2, window.devicePixelRatio || 1) });
+      // Baked for the review zoom (the units grid defaults to 1.6 px per lu), not for this window's lane.
+      const art = createArtProvider({ manifest: { ...MANIFEST, ...overrides }, quality: p.quality, teamPreset: p.preset, force: p.tier, dpr: Math.min(2, window.devicePixelRatio || 1), worldPxPerLu: 1.6 });
       await art.preload([...ALL_AGES]);
       if (disposed) return;
       const root = new Container();
@@ -95,6 +96,8 @@ export function PixiStage(p: StageProps) {
       const freeze = props.current.freezeAtMs;
       if (freeze !== null) {
         const step = 1000 / 60;
+        // One zero-length update first: cells place their views in update(), so `t=0` shows the scene.
+        scene.update(0);
         for (let t = 0; t < freeze; t += step) scene.update(Math.min(step, freeze - t));
         app.ticker.stop();
         app.render();

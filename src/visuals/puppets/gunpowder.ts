@@ -98,7 +98,14 @@ export const GUNPOWDER_UNITS: PuppetDef[] = [
       eyes: { part: 'shared.eyes.beast', x: 12, y: -25 },
       tail: { part: 'medieval.horse.tail', x: -16, y: -8, rot: 14 },
       saddle: { x: -6, y: -16 },
-      extras: [slot('gunpowder.horse.shabraque', 'body', 21), slot('gunpowder.horse.bridle', 'snout', 31), slot('medieval.horse.saddle', 'saddle', 24)],
+      extras: [
+        slot('gunpowder.horse.shabraque', 'body', 21),
+        slot('gunpowder.horse.bridle', 'snout', 31),
+        slot('medieval.horse.saddle', 'saddle', 24),
+        // A11 redundant team cue: a pennant on every heavy (a guidon in a holster behind the saddle,
+        // mirrored so it trails behind the rider instead of hiding behind them)
+        slot(sized('gunpowder.cannon.pennant', 1.4), 'body', 20.5, { x: -20, y: -12, sx: -1, noWidth: true }),
+      ],
       headTopY: -112,
     },
     rider: {

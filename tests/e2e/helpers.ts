@@ -8,10 +8,11 @@
  */
 import { test, type Page } from '@playwright/test';
 
-export type FlowId = 'boot' | 'autopilot' | 'quickBattle' | 'gallery' | 'capsule' | 'reload' | 'home' | 'skirmish';
+export type FlowId = 'boot' | 'determinism' | 'autopilot' | 'quickBattle' | 'gallery' | 'capsule' | 'reload' | 'home' | 'skirmish';
 
 export const FLOWS: Record<FlowId, { ready: boolean; needs: string }> = {
   boot: { ready: true, needs: 'the app shell (WP0, WP11)' },
+  determinism: { ready: true, needs: 'the sim (WP2) and the golden replays on the fixture content (WP0, WP2)' },
   autopilot: { ready: true, needs: 'the tutorial autopilot and dev fast-forward (WP11) on the real sim (WP2)' },
   quickBattle: { ready: true, needs: 'the Quick Battle dev route `?quick=short` (WP11, C3 Checkpoint A)' },
   gallery: { ready: true, needs: 'the art gallery checks on `window.__galleryInfo` (WP4)' },
@@ -21,10 +22,14 @@ export const FLOWS: Record<FlowId, { ready: boolean; needs: string }> = {
   skirmish: { ready: false, needs: 'the mode select and Skirmish setup (WP9) wired to a battle (WP11; Phase 2b)' },
 };
 
+/** Whether a flow runs: it is ready, or `E2E_ALL=1` asks for every flow. */
+export function flowEnabled(id: FlowId): boolean {
+  return FLOWS[id].ready || process.env['E2E_ALL'] === '1';
+}
+
 /** Skips the current test unless its flow is ready (or `E2E_ALL=1`). */
 export function requireFlow(id: FlowId): void {
-  const f = FLOWS[id];
-  test.skip(!f.ready && process.env['E2E_ALL'] !== '1', `pending until wired: ${f.needs}`);
+  test.skip(!flowEnabled(id), `pending until wired: ${FLOWS[id].needs}`);
 }
 
 export interface PageProblems {

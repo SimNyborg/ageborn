@@ -33,14 +33,16 @@ team fill, its shadow and its outline in every preset.
   |---|---|---|---|
   | Infantry, ranged, support (small) | ~68 lu (band 54-90) | 24 lu | 37.3 lu |
   | Anti-armor, Epics (medium) | ~70 lu | 32 lu | 48.5 lu |
-  | Heavies (large) | 100-120 lu (band 90-125) | 48 lu | 70.9 lu |
-  | Legendaries (huge) | 170-220 lu (band 150-225) | 80 lu | 115.7 lu |
+  | Heavies (large) | 100-120 lu (checked exactly) | 48 lu | 70.9 lu |
+  | Legendaries (huge) | 170-220 lu (checked exactly on ground Legendaries) | 80 lu | 115.7 lu |
 
 - **Body width** is measured on the rest pose without weapons, held gear (shields, tools), arms,
   rotors, banners and pennants (slots marked `noWidth` or tagged `weapon`). Oversized weapons may stick
   out; the body may not.
 - The visual's `heightLu` and head anchor are measured from the drawing (the top of the silhouette), so
   health bars sit just above the art.
+- Readability (A12 checklist #7): every unit must still read when infantry are 32 px tall; the
+  gallery's smallest *zoom* option draws exactly that.
 
 ## 3. Coordinates and pivots
 
@@ -82,7 +84,8 @@ sparks land on `hitCenter`, health bars sit over `head`.
 Team colour goes on **large readable parts**: tabards, shield faces, plumes, pennants, caparisons,
 roundels, armbands. Every unit shows at least 7% of its silhouette in team colour. Redundant cues:
 facing, a ground ring (circle for you, diamond for the enemy) with a 12 px role glyph, pennants on
-heavies, and the health bar colour.
+heavies, and the health bar colour. Every Heavy and ground Legendary carries a team pennant, flag or
+pennoned lance (a test checks it); on riders it trails behind the rider (slot `sx: -1`) so it is not hidden.
 
 Zones named `team` (full team colour) and `team2` (a darker team shade) are baked in grey and tinted at
 runtime. Team layers must be contiguous inside a part (the bake splits each part into under, team and
@@ -102,7 +105,11 @@ The zone names every age uses (`skin`, `hair`, `cloth`, `cloth2`, `cloth3`, `lea
 `wood`, `wood2`, `stone`, `fur`, `bone`, `accent`, …) are in `palette.ts` (`AGE_ZONES`); each puppet
 adds its own (`robe`, `bronze`, `glass`, …). Skin tones stay at or below 38% saturation so faces never
 count against the colour rule. Large bronze and brass areas use muted, aged tones (`#9A8A62`); the
-bright metal is kept to bands and buttons. Backdrops stay desaturated and low contrast.
+bright metal is kept to bands and buttons. Backdrops stay desaturated and low contrast: three layers
+per age (sky, silhouettes, mid-ground) plus the arena's ground. At the split-age seam the two ages
+cross-fade over 240 lu in 6 lu strips (the sky's lower strip stays opaque, so nothing behind shows
+through) under a neutral grey haze that rises smoothly from 0 at the seam edges to 30% at the seam
+(A11 "30% desaturation").
 
 ### The colour rule (A11, MUST)
 
@@ -121,7 +128,7 @@ Every unit implements `spawn`, `idle`, `walk`, `attack`, `hit`, `stun`, `die`, `
 |---|---|
 | spawn | scale 0 → 1.15 → 1 over 180 ms (ease-out-back) plus a dust puff |
 | idle | 1.2 s breathing bob of 2 px, blinks, a weapon twirl every 6-10 s |
-| walk | legs ±25°, 3 px bob, 0.5 s cycle; the cycle follows ground distance, so feet do not slide |
+| walk | legs ±25°, 3 px bob; the cycle follows ground distance (one stride = 4 × leg × sin 25°), so feet do not slide (A12 #2 wins over A11's nominal 0.5 s at 80 lu/s: chunky short legs step a little faster) |
 | attack | wind-up squash 0.9/1.1 over 60% of the wind-up, strike at `impactAt`, short recovery |
 | hit | 80 ms white flash, 4 px recoil |
 | stun | dizzy stars (a clock ripple when frozen) |
@@ -134,7 +141,7 @@ authored `impactAt` (a 0..1 point of the clip) lands exactly on that tick; the r
 authored length. Art can therefore never change balance. Clips are keyframes on bone rotation, offset
 and scale (`clips/`), mixed with procedural helpers (walk cycles, bobs, wheels, rotors).
 
-Turrets: build drop-in, idle scan, aim, fire recoil (120 ms squash and a one-frame muzzle flash),
+Turrets: build drop-in, idle scan, aim, fire recoil (120 ms squash and a muzzle flash for exactly one frame),
 modernise (sink), sell poof, the outdated arrow. Bases: flags wave, torches flicker, hit shake with
 debris, crumble stages, the 1.8 s evolve morph, the Last Stand horn and glow, the collapse.
 
@@ -146,7 +153,9 @@ the idle flourish or the death prop, change effect colours and the projectile vi
 make the body translucent down to 70%, and override sounds. Replacement parts keep the outline of the
 part they replace. The silhouette test requires IoU ≥ 0.85 against the base, at rest and at the attack
 impact. Skins are declared in `skins.ts` (`SkinSpec`: palette, replace, add, bones, alpha, aura,
-twirlBone, projectile); their parts are in `parts/skins.ts`.
+twirlBone, projectile); their parts are in `parts/skins.ts`. Skin auras (snow with frosty breath, ghost
+glow, neon) belong to the skin; the white Legendary aura on Legendary units and Legendary skins is not
+part of any visual: the battle view adds `fx.legendary_aura`, so it looks the same in every art tier.
 
 ## 7. Replacing the procedural art (the swap contract, B5)
 
@@ -177,6 +186,9 @@ picks the tier; tiers can mix in one match, one unit at a time.
    and `play('attack', { impactAtMs })` must set the track's time scale so the impact event lands at
    `impactAtMs`.
 
+Card portraits: until a tier draws portraits itself (sprite sheets and Spine do not yet), a visual moved
+to that tier keeps the procedural portrait of the same visual id, so the cards do not change.
+
 `?art=placeholder|procedural|atlas|spine` forces one tier for every visual. An entry whose tier cannot
 draw it (not built yet, or its sheet failed to load) draws as a placeholder and logs once.
 
@@ -191,6 +203,9 @@ draw it (not built yet, or its sheet failed to load) draws as a placeholder and 
 - `npx vitest run src/visuals` runs the same checks in Node.
 - Bake budget (B16): ages 0-1 bake at boot within 400 ms, ages 2-4 lazily in idle slices. Measured in
   headless Chromium on the build machine: 150 ms (DPR 1), 113 ms (DPR 2), 96 ms (Lite).
+- The atlas is baked at the largest world scale the screen can show (lane width / 1,560 lu, ×1.6 pinch
+  zoom on narrow screens, at most 1.25 px/lu) times the DPR (capped at 2, 1 in Lite), so sprites draw
+  about 1:1. Parts are vector data, so a sharper screen simply bakes sharper.
 
 ## 9. File map
 

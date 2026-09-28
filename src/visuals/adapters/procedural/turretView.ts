@@ -82,7 +82,7 @@ export class ProceduralTurretView implements TurretView {
   play(clip: 'build' | 'idle' | 'fire' | 'sell' | 'modernise'): void {
     if (this.destroyed) return;
     this.animator.play(clip);
-    if (clip === 'fire') this.flashFrames = 2;
+    if (clip === 'fire') this.flashFrames = 1;
     if (clip === 'build') this.pendingBuildDust = true;
     if (clip === 'sell' || clip === 'modernise') this.poof(8);
   }
@@ -102,7 +102,8 @@ export class ProceduralTurretView implements TurretView {
       this.aimDeg += Math.max(-step, Math.min(step, d));
     }
     this.apply();
-    // one-frame muzzle flash (two frames at 60 fps, since it is drawn after this update)
+    // A11: a one-frame muzzle flash. `play('fire')` arms it; the next update shows it for exactly one
+    // rendered frame and the update after hides it (the fx.muzzle smoke puff comes from the feel layer).
     if (this.flashFrames > 0) {
       const m = this.rig.boneMatrix('muzzle');
       if (m) this.muzzleFlash.position.set(m[4], m[5]);
@@ -156,7 +157,7 @@ export class ProceduralTurretView implements TurretView {
   }
 
   /** Test and gallery hooks. */
-  get debug(): { aimDeg: number; outdated: boolean; action: string | null; hasPart: boolean } {
-    return { aimDeg: this.aimDeg, outdated: this.outdated, action: this.animator.state.action, hasPart: getPart('icon.modernise') !== undefined };
+  get debug(): { aimDeg: number; outdated: boolean; action: string | null; hasPart: boolean; muzzleFlash: boolean } {
+    return { aimDeg: this.aimDeg, outdated: this.outdated, action: this.animator.state.action, hasPart: getPart('icon.modernise') !== undefined, muzzleFlash: this.muzzleFlash.visible };
   }
 }

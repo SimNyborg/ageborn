@@ -40,10 +40,10 @@ import { depthRows, depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
 import { FeelDirector } from './feel/director';
 import { FloatingNumbers, bitmapLabelFactory, type LabelFactory } from './feel/numbers';
-import { ParticlePool } from './feel/particlePool';
+import { ParticlePool, type ParticleHandle } from './feel/particlePool';
 import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
-import { ageOrder } from './hudModel';
+import { ageOrder, canEvolve } from './hudModel';
 import { BattleInput } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { MILLI_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
@@ -130,9 +130,24 @@ interface ProjectileEntry {
   view: EffectView;
 }
 
+/** A particle that moves with a unit (status effects, buffs) and ends when the unit dies. */
+interface Follower {
+  h: ParticleHandle;
+  id: number;
+  part: 'feet' | 'hit' | 'head';
+  dx: number;
+  dy: number;
+}
+
 /** One-shot clip lengths used to know when to go back to walk/idle (ms of game time). */
 const ONE_SHOT_MS = { spawn: 260, hit: 160, ability: 650, stun: 900, victory: 900, attackRecover: 220 } as const;
 const AIR_TAGS = 'air';
+
+/** Legendary aura radius (lu): about half the figure's height, from its head anchor. */
+function auraRadius(view: UnitView): number {
+  const h = Math.abs(view.anchors.head.y - view.anchors.feet.y);
+  return Math.max(24, Math.round(h * 0.55));
+}
 
 function levelTrim(level: number): UnitPose['levelTrim'] {
   if (level >= 10) return 'gold';
@@ -184,6 +199,9 @@ export class BattleView {
   private hudAnchors: { gold: Pt | null; xp: Pt | null } = { gold: null, xp: null };
   private liveIds = new Set<number>();
   private frameGameDt = 0;
+  private followers: Follower[] = [];
+  /** Your Evolve was available after the last step (the chime plays on the rising edge, A13). */
+  private evolveReady: boolean;
 
   constructor(o: BattleViewOptions) {
     this.sim = o.sim;
@@ -221,6 +239,7 @@ export class BattleView {
     // A view created mid-match (replay seek) picks up what is already on the field.
     for (const u of st.units) this.ensureUnit(u);
     this.syncTurrets(0);
+    this.evolveReady = canEvolve(st, this.config, this.mySide);
   }
 
   // ------------------------------------------------------------------------------------------
@@ -246,7 +265,7 @@ export class BattleView {
   resize(width: number, height: number): void {
     this.camera.resize(width, height);
     this.director.flash.resize(width, height);
-    for (const fx of this.screenFx) fx.playAt({ x: width / 2, y: height / 2 }, { w: width, h: height });
+    for (const fx of this.screenFx) this.playScreenFx(fx);
   }
 
   setSpeed(s: number): void {
@@ -360,9 +379,20 @@ export class BattleView {
 
   /** Call after every `sim.step` with that tick's events. */
   onEvents(events: readonly SimEvent[]): void {
-    if (events.length === 0) return;
-    const actions = this.mapper.map(events, (id) => this.lookup(id));
-    for (const a of actions) this.exec(a);
+    // Muted AI emotes (Settings) show no bubble and make no sound.
+    const evs = this.settings.mutedEmotes ? events.filter((e) => !(e.e === 'emote' && e.side !== this.mySide)) : events;
+    if (evs.length > 0) {
+      const actions = this.mapper.map(evs, (id) => this.lookup(id));
+      for (const a of actions) this.exec(a);
+    }
+    // A13 `evolve_ready`: one soft chime when your Evolve becomes available (there is no sim event).
+    const ready = canEvolve(this.sim.state, this.config, this.mySide);
+    if (ready && !this.evolveReady && !this.ended) {
+      const out: ViewAction[] = [];
+      this.mapper.rule('evolve.ready', { at: { k: 'base', side: this.mySide, part: 'top' } }, out);
+      for (const a of out) this.exec(a);
+    }
+    this.evolveReady = ready;
   }
 
   /** Draws one frame. `alpha` = acc / 50 from the session, `frameMs` the real frame time. */
@@ -378,13 +408,14 @@ export class BattleView {
     this.director.update(this.paused ? 0 : realDt, gameDt);
 
     this.syncUnits(alpha, gameDt);
+    this.updateFollowers();
     this.syncTurrets(gameDt);
     this.syncBases(gameDt);
     this.updateProjectiles(gameDt);
     this.particles.update(gameDt);
     for (const fx of this.screenFx) {
       fx.update(gameDt);
-      if (fx.done) fx.playAt({ x: this.camera.layout.width / 2, y: this.camera.layout.height / 2 }, { w: this.camera.layout.width, h: this.camera.layout.height });
+      if (fx.done) this.playScreenFx(fx);
     }
 
     const mid = frontMidpoint(this.frontInputs());
@@ -442,6 +473,7 @@ export class BattleView {
     for (const list of this.projectilePool.values()) for (const v of list) v.destroy();
     this.projectilePool.clear();
     for (const fx of this.screenFx) fx.destroy();
+    this.followers = [];
     this.particles.destroy();
     this.numbers.destroy();
     for (const b of this.bases) b.view.destroy();
@@ -581,11 +613,25 @@ export class BattleView {
       case 'projectile':
         this.fireProjectile(a);
         return;
-      case 'fx':
-        this.particles.emit(a.effectId, a.count, a.priority, this.anchor(a.at), {
+      case 'fx': {
+        const at = this.anchor(a.at);
+        const handles: ParticleHandle[] = [];
+        this.particles.emit(a.effectId, a.count, a.priority, at, {
           ...(a.spreadLu !== undefined ? { spreadLu: a.spreadLu } : {}),
           ...(a.opts ? { opts: a.opts } : {}),
+          out: handles,
         });
+        if (a.follow && a.at.k === 'unit') this.follow(handles, a.at.id, a.at.part ?? 'hit', at);
+        return;
+      }
+      case 'fxUnits':
+        for (const e of this.units.values()) {
+          if (e.side !== a.side || e.dying) continue;
+          const at = this.anchor({ k: 'unit', id: e.id, part: 'hit' });
+          const handles: ParticleHandle[] = [];
+          this.particles.emit(a.effectId, 1, a.priority, at, { ...(a.opts ? { opts: a.opts } : {}), out: handles });
+          this.follow(handles, e.id, 'hit', at);
+        }
         return;
       case 'fxFly': {
         const from = this.anchor(a.from);
@@ -679,13 +725,9 @@ export class BattleView {
         return;
       case 'telegraph':
         this.zones.telegraph(a.x, a.zone, teamColor(this.settings.teamPreset, a.side), a.ms);
-        this.particles.emit('fx.telegraph_zone', 1, 3, { x: a.x, y: 0 }, { opts: { width: a.zone, side: a.side, ms: a.ms } });
+        // The art's decoration sizes itself by `zone` and loops for `durationMs` (WP4 recipe options).
+        if (a.zone > 0) this.particles.emit('fx.telegraph_zone', 1, 3, { x: a.x, y: 0 }, { opts: { zone: a.zone, side: a.side, durationMs: a.ms } });
         return;
-      case 'powerFx': {
-        const def = this.config.content.powers[a.power];
-        this.particles.emit(def?.visualId ?? `power.${a.power}`, 1, 5, { x: a.x, y: 0 }, { opts: { index: a.index, side: a.side, castId: a.castId } });
-        return;
-      }
       case 'phase':
         if (a.phase === 'overdrive') this.addScreenFx('fx.overdrive_frame');
         if (a.phase === 'siege') this.addScreenFx('fx.siege_vignette');
@@ -707,10 +749,40 @@ export class BattleView {
 
   private addScreenFx(effectId: string): void {
     const L = this.camera.layout;
-    const fx = this.art.createEffect(effectId, { w: L.width, h: L.height });
-    fx.playAt({ x: L.width / 2, y: L.height / 2 }, { w: L.width, h: L.height });
+    const fx = this.art.createEffect(effectId, { width: L.width, height: L.height });
+    this.playScreenFx(fx);
     this.layers.screenFx.addChild(fx.root);
     this.screenFx.push(fx);
+  }
+
+  /**
+   * (Re)starts a screen-space effect over the whole canvas: placed by its top-left corner and fitted by
+   * `width` / `height` in CSS px (the art's screen-effect convention, WP4 `screenFit` recipes).
+   */
+  private playScreenFx(fx: EffectView): void {
+    const L = this.camera.layout;
+    fx.playAt({ x: 0, y: 0 }, { width: L.width, height: L.height });
+  }
+
+  /** Keeps particles on unit `id` (offset kept from where they were emitted) until they end or it dies. */
+  private follow(handles: readonly ParticleHandle[], id: number, part: Follower['part'], at: Pt): void {
+    for (const h of handles) this.followers.push({ h, id, part, dx: h.view.root.x - at.x, dy: h.view.root.y - at.y });
+  }
+
+  private updateFollowers(): void {
+    if (this.followers.length === 0) return;
+    this.followers = this.followers.filter((f) => {
+      if (!this.particles.isLive(f.h)) return false;
+      const e = this.units.get(f.id);
+      if (!e || e.dying) {
+        // No effect outlasts its meaning (A12 checklist 10): a status ends with its unit.
+        this.particles.stop(f.h);
+        return false;
+      }
+      const p = this.anchor({ k: 'unit', id: f.id, part: f.part });
+      f.h.view.root.position.set(p.x + f.dx, p.y + f.dy);
+      return true;
+    });
   }
 
   // ------------------------------------------------------------------------------------------
@@ -772,14 +844,23 @@ export class BattleView {
     e.y = rows.get(id) ?? 0;
     this.layers.units.addChild(view.root);
     if ((def?.group === 'legendary' || (skin && this.config.content.skins[skin]?.rarity === 'legendary')) && PRESETS[this.preset].legendaryAuras) {
-      const aura = this.art.createEffect('fx.legendary_aura', { heightLu: 200, side });
-      aura.playAt({ x, y: e.y });
-      this.layers.units.addChild(aura.root);
+      // A white glow around the whole figure: centred on the hit centre, sized by the figure's height.
+      const radius = auraRadius(view);
+      const aura = this.art.createEffect('fx.legendary_aura', { radius, side });
       e.aura = aura;
+      this.placeAura(e);
+      aura.playAt({ x: aura.root.x, y: aura.root.y }, { radius, side });
+      this.layers.units.addChild(aura.root);
     }
     this.units.set(id, e);
     this.writePose(e);
     return e;
+  }
+
+  private placeAura(e: UnitEntry): void {
+    if (!e.aura) return;
+    const c = e.view.anchors.hitCenter;
+    e.aura.root.position.set(e.x + c.x * facingOf(e.side), e.y + c.y);
   }
 
   private dropAura(e: UnitEntry): void {
@@ -841,10 +922,13 @@ export class BattleView {
       this.writePose(e);
       e.view.update(gameDt);
       if (e.aura) {
-        e.aura.root.position.set(e.x, e.y);
+        this.placeAura(e);
         e.aura.root.zIndex = e.view.root.zIndex - 1;
         e.aura.update(gameDt);
-        if (e.aura.done) e.aura.playAt({ x: e.x, y: e.y });
+        if (e.aura.done) {
+          e.aura.playAt({ x: e.aura.root.x, y: e.aura.root.y }, { radius: auraRadius(e.view), side: e.side });
+          this.placeAura(e);
+        }
       }
     }
   }

@@ -6,7 +6,7 @@ import { arenaNameKey, capsuleKindNameKey, capsuleTierNameKey, questNameKey } fr
 import type { QuestReward } from '@/content/types';
 import type { OpponentSpec } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { AiBadge, Badge, CurrencyChip } from '../../components/Chips';
@@ -38,7 +38,18 @@ import { oddsModel } from '../../components/oddsModel';
 import type { Route } from '../../router';
 import { useUi } from '../context';
 import { opponentName } from '../model/opponent';
-import { arenaOf, chargesView, dailyCapsuleView, questViews, roadProgress, trayCapsules, unlocks, type QuestView } from '../model/progress';
+import {
+  arenaOf,
+  chargesView,
+  dailyCapsuleView,
+  questViews,
+  roadProgress,
+  trayCapsules,
+  unlocks,
+  WAR_PLAN_UNLOCK_MATCHES,
+  type QuestView,
+} from '../model/progress';
+import { RoadRewardView } from '../shared/RoadReward';
 
 export function ProfileChip() {
   const { save, content, t, locale, router } = useUi();
@@ -199,6 +210,16 @@ export function QuestsPanel() {
   );
 }
 
+/** Re-renders every `ms` while `active`, so countdowns on screen keep ticking. */
+function useTicker(ms: number, active: boolean): void {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    const id = setInterval(() => setTick((n) => n + 1), ms);
+    return () => clearInterval(id);
+  }, [ms, active]);
+}
+
 export function CapsuleTray() {
   const { save, content, t, services, now, toasts } = useUi();
   const [odds, setOdds] = useState(false);
@@ -207,6 +228,7 @@ export function CapsuleTray() {
   const crates = s.capsules.wardrobe;
   const charges = chargesView(s, content, now());
   const daily = dailyCapsuleView(s, content, now());
+  useTicker(1000, charges.nextInMs !== null || daily.nextInMs !== null);
   const arena = arenaOf(s, content);
   const best = pending[0];
   return (
@@ -264,11 +286,11 @@ export function CapsuleTray() {
           <span class="ui-grow">
             <b>{t('ui.home.daily')}</b>
             <small>
-              {daily.bank > 0
-                ? t('ui.home.dailyBank', { n: daily.bank, max: daily.max })
-                : daily.nextInMs !== null
+              {!daily.unlocked
+                ? t('ui.home.dailyLocked')
+                : daily.bank === 0 && daily.nextInMs !== null
                   ? t('ui.home.dailyNext', { time: formatCountdown(daily.nextInMs, t) })
-                  : t('ui.home.dailyLocked')}
+                  : t('ui.home.dailyBank', { n: daily.bank, max: daily.max })}
             </small>
           </span>
           {daily.bank > 0 ? (
@@ -368,6 +390,13 @@ export function RoadBar() {
         </span>
         <ProgressBar value={rp.best - rp.from} max={next ? next.trophies - rp.from : 1} tone="gold" thin label={t('ui.nav.trophyRoad')} />
       </span>
+      {next ? (
+        <span class="home-road__next" data-testid="home-road-next">
+          {next.rewards.map((r, i) => (
+            <RoadRewardView key={i} r={r} compact />
+          ))}
+        </span>
+      ) : null}
       {rp.claimable > 0 ? <Badge tone="green">{rp.claimable}</Badge> : null}
     </button>
   );
@@ -413,7 +442,7 @@ export function HomeNav() {
       icon: <ScrollIcon size={34} />,
       locked: !u.warPlan,
       lockKey: 'ui.lock.afterMatches',
-      lockParams: { n: 3 },
+      lockParams: { n: WAR_PLAN_UNLOCK_MATCHES },
     },
     { route: { id: 'collection' }, labelKey: 'ui.nav.collection', icon: <CardsIcon size={34} />, locked: false, lockKey: '', badge: ready },
     {

@@ -71,6 +71,35 @@ function keyUses(): KeyUse[] {
   return uses;
 }
 
+/**
+ * Keys that reach `t()` indirectly: a literal or template under a `*Key` property in production code
+ * (`{ labelKey: 'ui.home.play' }`, `nameKey: \`age.${id}.name\``). Dev pages, fixtures and the contract
+ * fakes are exempt; values that are not key-shaped (`dayKey: '2026-01-01'`) are not string keys.
+ */
+function keyProperties(): KeyUse[] {
+  const uses: KeyUse[] = [];
+  for (const file of productionFiles()) {
+    const r = rel(file);
+    if (r.startsWith('src/dev/') || r.includes('/dev/') || r.includes('/fixtures/') || r.startsWith('src/contracts/fakes/')) continue;
+    const sf = parse(file);
+    const visit = (node: ts.Node): void => {
+      if (ts.isPropertyAssignment(node) && /Key$/.test(node.name.getText(sf))) {
+        const v = node.initializer;
+        const where = `${r}:${sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1}`;
+        if ((ts.isStringLiteral(v) || ts.isNoSubstitutionTemplateLiteral(v)) && KEY_SHAPE.test(v.text)) {
+          uses.push({ where, key: v.text, source: node.getText(sf) });
+        } else if (ts.isTemplateExpression(v) && (v.head.text.includes('.') || v.templateSpans.some((s) => s.literal.text.includes('.')))) {
+          const parts = [escapeRe(v.head.text), ...v.templateSpans.map((s) => `.+${escapeRe(s.literal.text)}`)];
+          uses.push({ where, pattern: new RegExp(`^${parts.join('')}$`), source: node.getText(sf) });
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sf);
+  }
+  return uses;
+}
+
 /** Every string under a property whose name ends in `Key` (nameKey, descKey, messageKey ...). */
 function contentKeys(value: unknown, trail: string, out: { where: string; key: string }[]): void {
   if (Array.isArray(value)) {
@@ -111,6 +140,16 @@ describe('string keys (DESIGN B4 Strings)', () => {
   it('every template key used in code matches at least one EN key', () => {
     const keys = [...enKeys];
     const missing = uses.filter((u) => u.pattern !== undefined && !keys.some((k) => u.pattern?.test(k))).map((u) => `${u.where} ${u.source}`);
+    expect(missing).toEqual([]);
+  });
+
+  it('every `*Key` property in code names an EN key (keys that reach t() indirectly)', () => {
+    const props = keyProperties();
+    expect(props.length).toBeGreaterThan(50);
+    const keys = [...enKeys];
+    const missing = props
+      .filter((u) => (u.key !== undefined ? !enKeys.has(u.key) : !keys.some((k) => u.pattern?.test(k))))
+      .map((u) => `${u.where} ${u.source}`);
     expect(missing).toEqual([]);
   });
 

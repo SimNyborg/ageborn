@@ -94,7 +94,7 @@ const thump = (atMs: number, freq: number, vol: number, release: number, slide =
 
 const noiseBurst = (atMs: number, p: Zz): ZzfxNote => at(atMs, { shape: 'noise', attack: 0.002, ...p });
 
-const coin = (atMs: number, freq: number, vol = 0.3): ZzfxNote =>
+const coin = (atMs: number, freq: number, vol = 0.45): ZzfxNote =>
   at(atMs, { vol, freq, attack: 0.001, sustain: 0.03, release: 0.14, shape: 'tri', curve: 1.6, jump: freq / 2, jumpTime: 0.045 });
 
 /** The opening of "Dawn March" (C5 G4 C5 E5, see scores/dawnMarch.ts) as a fanfare in one timbre. */
@@ -267,7 +267,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     at(110, { vol: 0.4, freq: 700 * (1 + 0.05 * v), attack: 0.005, release: 0.1, slide: -12 }),
   ])),
   goose_honk: fx('medieval', variants(4, (v) => ({ vol: 0.5, freq: 400 * (1 + 0.1 * v), attack: 0.015, sustain: 0.12, release: 0.08, shape: 'saw', curve: 0.8, slide: -0.6, jump: -40, jumpTime: 0.03, lowpass: 4400 }))),
-  bomb_whistle: fx('gunpowder', variants(3, (v) => ({ vol: 0.3, freq: 1700 * (1 + 0.05 * v), attack: 0.06, sustain: 0.55, release: 0.08, slide: -2.6, tremolo: 0.08, repeat: 0.04 }))),
+  bomb_whistle: fx('gunpowder', variants(3, (v) => ({ vol: 0.45, freq: 1700 * (1 + 0.05 * v), attack: 0.06, sustain: 0.55, release: 0.08, slide: -2.6, tremolo: 0.08, repeat: 0.04 }))),
   radio_call: mix('modern', mixVariants(3, (v) => [
     noiseBurst(0, { vol: 0.2, freq: 4000, attack: 0.01, sustain: 0.35, release: 0.05, highpass: 2400, tremolo: 0.4, repeat: 0.07 }),
     at(0, { vol: 0.25, freq: 1000 * (1 + 0.03 * v), sustain: 0.06, release: 0.01, shape: 'square' }),
@@ -292,7 +292,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     noiseBurst(0, { vol: 0.2, freq: 900, attack: 0.001, release: 0.03, lowpass: 4800 }),
   ])),
   hit_slash: fx('battle', variants(4, (v) => ({ vol: 0.35, freq: 3000 * (1 + 0.08 * v), attack: 0.002, release: 0.09, shape: 'noise', slide: -6, highpass: 3200 }))),
-  hit_pierce: fx('battle', variants(4, (v) => ({ vol: 0.4, freq: 1900 * (1 + 0.08 * v), attack: 0.001, release: 0.05, shape: 'tri', slide: -18, noise: 0.6 }))),
+  hit_pierce: fx('battle', variants(4, (v) => ({ vol: 0.55, freq: 1900 * (1 + 0.08 * v), attack: 0.001, release: 0.05, shape: 'tri', slide: -18, noise: 0.6 }))),
   hit_bullet: mix('battle', mixVariants(4, (v) => [
     noiseBurst(0, { vol: 0.35, freq: 2600 * (1 + 0.1 * v), attack: 0.001, release: 0.05, highpass: 3000 }),
     at(0, { vol: 0.12, freq: 3100 * (1 + 0.06 * v), attack: 0.001, release: 0.09, slide: -3 }),
@@ -302,7 +302,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     thump(0, 95 * (1 + 0.08 * v), 0.8, 0.22, -1.4),
     noiseBurst(0, { vol: 0.4, freq: 600, attack: 0.001, decay: 0.02, sustainVol: 0.4, release: 0.16, lowpass: 3600 }),
   ])),
-  hit_effective: fx('battle', variants(3, (v) => ({ vol: 0.35, freq: 1500 * (1 + 0.04 * v), attack: 0.001, release: 0.14, shape: 'tri', jump: 750, jumpTime: 0.025 })), { pitchVarBp: 400 }),
+  hit_effective: fx('battle', variants(3, (v) => ({ vol: 0.5, freq: 1500 * (1 + 0.04 * v), attack: 0.001, release: 0.14, shape: 'tri', jump: 750, jumpTime: 0.025 })), { pitchVarBp: 400 }),
   explosion_s: mix('battle', mixVariants(4, (v) => [
     noiseBurst(0, { vol: 0.65, freq: 320 * (1 + 0.1 * v), attack: 0.003, decay: 0.05, sustainVol: 0.45, release: 0.32, lowpass: 4800 }),
     thump(0, 80, 0.5, 0.22),
@@ -325,7 +325,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     noiseBurst(0, { vol: 0.2, freq: 4000, release: 0.15, highpass: 6000, tremolo: 0.5, repeat: 0.03 }),
   ])),
   prop_drop: fx('battle', variants(3, (v) => ({ vol: 0.35, freq: 620 * (1 + 0.1 * v), attack: 0.001, release: 0.12, shape: 'tri', slide: -2.5, repeat: 0.045, tremolo: 0.4 }))),
-  heal_tick: fx('battle', variants(3, (v) => ({ vol: 0.25, freq: 1320 * (1 + 0.02 * v), attack: 0.005, release: 0.14, jump: 440, jumpTime: 0.04 })), { pitchVarBp: 300, gainDb: -2 }),
+  heal_tick: fx('battle', variants(3, (v) => ({ vol: 0.25, freq: 1320 * (1 + 0.02 * v), attack: 0.005, release: 0.14, jump: 440, jumpTime: 0.04 })), { pitchVarBp: 300 }),
   shield_up: fx('battle', variants(3, (v) => ({ vol: 0.3, freq: 520 * (1 + 0.04 * v), attack: 0.02, sustain: 0.05, release: 0.2, shape: 'tri', slide: 7, tremolo: 0.35, repeat: 0.03 }))),
 
   // Turrets and bases ---------------------------------------------------------------------------------
@@ -369,13 +369,13 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   coin_gain: mix('battle', mixVariants(3, (v) => [coin(0, 1500 * (1 + 0.02 * v))]), { pitchVarBp: 200 }),
   xp_tick: fx('battle', variants(3, (v) => ({ vol: 0.16, freq: 2500 * (1 + 0.05 * v), attack: 0.002, release: 0.05, slide: 5 })), { pitchVarBp: 300 }),
   treasury_up: mix('match', mixVariants(3, (_v, k) => [
-    coin(0, 1047), coin(70, 1319), coin(140, 1568), coin(210, 2093, k === 2 ? 0.35 : 0.25),
+    coin(0, 1047, 0.3), coin(70, k === 2 ? 1568 : 1319, 0.3), coin(140, k === 2 ? 2093 : 1568, 0.3), coin(210, k === 1 ? 2637 : 2093, k === 2 ? 0.45 : 0.35),
   ]), MUSICAL),
 
   // Evolve --------------------------------------------------------------------------------------------
   evolve_ready: mix('battle', mixVariants(3, (_v, k) => [
     note(0, 'C6', { vol: 0.35, attack: 0.003, release: 0.9 }),
-    note(0, k === 1 ? 'E6' : 'G6', { vol: 0.12, attack: 0.003, release: 0.6 }),
+    note(0, ['G6', 'E6', 'G5'][k] as string, { vol: 0.12, attack: 0.003, release: 0.6 }),
     note(0, 'C7', { vol: 0.05, attack: 0.003, release: 0.4 }),
   ]), MUSICAL),
   evolve_riser: mix('match', mixVariants(3, (v) => [
@@ -397,7 +397,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   // Powers --------------------------------------------------------------------------------------------
   power_ready: mix('battle', mixVariants(3, (_v, k) => [
     note(0, 'E6', { vol: 0.3, attack: 0.003, release: 0.35, shape: 'tri' }),
-    note(70, k === 1 ? 'G#6' : 'B6', { vol: 0.25, attack: 0.003, release: 0.45, shape: 'tri' }),
+    note(70, ['B6', 'G#6', 'E7'][k] as string, { vol: 0.25, attack: 0.003, release: 0.45, shape: 'tri' }),
   ]), MUSICAL),
   power_telegraph: fx('battle', variants(3, (v) => ({ vol: 0.4, freq: 300 * (1 + 0.03 * v), attack: 0.05, sustain: 0.75, release: 0.2, shape: 'saw', slide: 0.3, tremolo: 0.5, repeat: 0.25, lowpass: 3200 })), { pitchVarBp: 300 }),
   pw_stampede: mix('stone', mixVariants(3, (v) => [
@@ -421,7 +421,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
       note(0, 'G4', { ...horn, vol: 0.35, sustain: 0.08 }),
       note(130, 'C5', { ...horn, vol: 0.35, sustain: 0.08 }),
       note(260, 'E5', { ...horn, vol: 0.38, sustain: 0.08 }),
-      note(390, k === 2 ? 'C6' : 'G5', { ...horn, vol: 0.4, sustain: 0.45, release: 0.3 }),
+      note(390, ['G5', 'E5', 'C6'][k] as string, { ...horn, vol: 0.4, sustain: 0.45, release: 0.3 }),
       note(390, 'C4', { ...horn, vol: 0.22, sustain: 0.45, release: 0.3 }),
       thump(390, 98, 0.5, 0.5, -0.2),
     ];
@@ -458,7 +458,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   // Match ---------------------------------------------------------------------------------------------
   last_stand_armed: mix('match', mixVariants(3, (_v, k) => [
     note(0, 'D3', { vol: 0.45, attack: 0.12, sustain: 0.45, release: 0.4, shape: 'saw', slide: -0.05, lowpass: 2000 }),
-    note(0, k === 1 ? 'F3' : 'A3', { vol: 0.25, attack: 0.12, sustain: 0.45, release: 0.4, shape: 'saw', lowpass: 2000 }),
+    note(0, ['A3', 'F3', 'D4'][k] as string, { vol: 0.25, attack: 0.12, sustain: 0.45, release: 0.4, shape: 'saw', lowpass: 2000 }),
   ]), { ...MUSICAL, maxVoices: 1 }),
   last_stand_charge: mix('match', mixVariants(3, (v) => [
     at(0, { vol: 0.4, freq: 90 * (1 + 0.04 * v), attack: 0.9, release: 0.05, shape: 'saw', slide: 2.2, lowpass: 4800 }),
@@ -472,7 +472,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   overdrive_horn: mix('match', mixVariants(3, (_v, k) => [
     note(0, 'A3', { vol: 0.45, attack: 0.06, sustain: 0.2, release: 0.05, shape: 'saw', lowpass: 3000 }),
     note(250, 'D4', { vol: 0.45, attack: 0.03, sustain: 0.35, release: 0.25, shape: 'saw', lowpass: 3000 }),
-    note(250, k === 1 ? 'A3' : 'F#4', { vol: 0.2, attack: 0.03, sustain: 0.35, release: 0.25, shape: 'saw', lowpass: 3000 }),
+    note(250, ['F#4', 'A3', 'D5'][k] as string, { vol: 0.2, attack: 0.03, sustain: 0.35, release: 0.25, shape: 'saw', lowpass: 3000 }),
     note(250, 'D3', { vol: 0.25, attack: 0.03, sustain: 0.35, release: 0.25, shape: 'saw', lowpass: 2000 }),
   ]), { ...MUSICAL, maxVoices: 1 }),
   siege_bell: mix('match', mixVariants(3, (_v, k) => {
@@ -514,7 +514,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
       note(260, 'E4', { ...soft, vol: 0.3, sustain: 0.15 }),
       note(520, 'D4', { ...soft, vol: 0.3, sustain: 0.15 }),
       note(780, 'C4', { ...soft, vol: 0.32, sustain: 0.5, release: 0.6 }),
-      note(780, k === 1 ? 'G3' : 'E3', { ...soft, vol: 0.2, sustain: 0.5, release: 0.6 }),
+      note(780, ['E3', 'G3', 'G2'][k] as string, { ...soft, vol: 0.2, sustain: 0.5, release: 0.6 }),
       note(780, 'C3', { ...soft, vol: 0.2, sustain: 0.5, release: 0.6 }),
     ];
   }), { ...MUSICAL, maxVoices: 1 }),
@@ -547,20 +547,20 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     note(30, 'G6', { vol: 0.15, attack: 0.005, release: 0.9, shape: 'tri' }),
   ]), { ...MUSICAL, maxVoices: 2 }),
   card_flip: fx('capsule', variants(4, (v) => ({ vol: 0.3, freq: 2600 * (1 + 0.1 * v), attack: 0.004, release: 0.05, shape: 'noise', slide: -4, highpass: 3600 }))),
-  foil_shine: fx('capsule', variants(3, (v) => ({ vol: 0.22, freq: 2200 * (1 + 0.04 * v), attack: 0.05, sustain: 0.2, release: 0.25, shape: 'tri', slide: 5, tremolo: 0.5, repeat: 0.02 })), { pitchVarBp: 300 }),
+  foil_shine: fx('capsule', variants(3, (v) => ({ vol: 0.35, freq: 2200 * (1 + 0.04 * v), attack: 0.05, sustain: 0.2, release: 0.25, shape: 'tri', slide: 5, tremolo: 0.5, repeat: 0.02 })), { pitchVarBp: 300 }),
   rarity_common: mix('capsule', mixVariants(3, (_v, k) => [
-    note(0, ['G5', 'E5', 'C6'][k] as string, { vol: 0.4, attack: 0.001, release: 0.22, shape: 'tri', curve: 1.5 }),
+    note(0, ['G5', 'E5', 'C6'][k] as string, { vol: 0.55, attack: 0.001, release: 0.22, shape: 'tri', curve: 1.5 }),
   ]), MUSICAL),
   rarity_rare: mix('capsule', mixVariants(3, (_v, k) => [
     note(0, 'E5', { vol: 0.35, attack: 0.002, release: 0.25, shape: 'tri' }),
-    note(120, k === 1 ? 'A5' : 'B5', { vol: 0.38, attack: 0.002, release: 0.45, shape: 'tri' }),
+    note(120, ['B5', 'A5', 'E6'][k] as string, { vol: 0.38, attack: 0.002, release: 0.45, shape: 'tri' }),
     at(120, { vol: 0.1, freq: 3000, attack: 0.03, sustain: 0.1, release: 0.25, shape: 'tri', tremolo: 0.5, repeat: 0.02 }),
   ]), MUSICAL),
   rarity_epic: mix('capsule', mixVariants(3, (_v, k) => [
     note(0, 'C5', { vol: 0.32, attack: 0.002, release: 0.4, shape: 'tri' }),
     note(90, 'E5', { vol: 0.32, attack: 0.002, release: 0.4, shape: 'tri' }),
     note(180, 'G5', { vol: 0.32, attack: 0.002, release: 0.5, shape: 'tri' }),
-    note(270, k === 1 ? 'B5' : 'C6', { vol: 0.35, attack: 0.002, release: 0.7, shape: 'tri' }),
+    note(270, ['C6', 'B5', 'E6'][k] as string, { vol: 0.35, attack: 0.002, release: 0.7, shape: 'tri' }),
     at(180, { vol: 0.12, freq: 2600, attack: 0.08, sustain: 0.3, release: 0.4, shape: 'tri', slide: 2, tremolo: 0.5, repeat: 0.025 }),
   ]), MUSICAL),
   rarity_legendary: mix('capsule', mixVariants(3, (_v, k) => {
@@ -571,7 +571,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
       note(120, 'C5', { ...lead, vol: 0.3, sustain: 0.06 }),
       note(240, 'E5', { ...lead, vol: 0.32, sustain: 0.06 }),
       note(360, 'G5', { ...lead, vol: 0.32, sustain: 0.06 }),
-      note(480, k === 2 ? 'E6' : 'C6', { ...lead, vol: 0.34, sustain: 0.7, release: 0.4 }),
+      note(480, ['C6', 'G5', 'E6'][k] as string, { ...lead, vol: 0.34, sustain: 0.7, release: 0.4 }),
       note(480, 'C4', { ...pad, vol: 0.18 }),
       note(480, 'G4', { ...pad, vol: 0.15 }),
       at(480, { vol: 0.7, freq: 110, attack: 0.005, release: 1.0, slide: -0.7 }),
@@ -585,7 +585,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   upgrade_ready: mix('capsule', mixVariants(3, (_v, k) => [
     note(0, 'C6', { vol: 0.3, attack: 0.002, release: 0.2, shape: 'tri' }),
     note(90, 'E6', { vol: 0.3, attack: 0.002, release: 0.2, shape: 'tri' }),
-    note(180, k === 1 ? 'C7' : 'G6', { vol: 0.32, attack: 0.002, release: 0.4, shape: 'tri' }),
+    note(180, ['G6', 'C7', 'E7'][k] as string, { vol: 0.32, attack: 0.002, release: 0.4, shape: 'tri' }),
   ]), MUSICAL),
   upgrade_slam: mix('capsule', mixVariants(3, (v) => [
     thump(0, 85 * (1 + 0.05 * v), 0.8, 0.3, -0.9),
@@ -594,7 +594,7 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   ]), { pitchVarBp: 300 }),
   level_up: mix('capsule', mixVariants(3, (_v, k) => [
     ...['C5', 'E5', 'G5', 'C6'].map((n, i) => note(i * 70, n, { vol: 0.3, attack: 0.002, sustain: 0.03, release: 0.18, shape: 'square', curve: 1, lowpass: 5000 })),
-    note(280, k === 1 ? 'G6' : 'E6', { vol: 0.32, attack: 0.002, sustain: 0.1, release: 0.5, shape: 'tri' }),
+    note(280, ['E6', 'G6', 'C7'][k] as string, { vol: 0.32, attack: 0.002, sustain: 0.1, release: 0.5, shape: 'tri' }),
     at(280, { vol: 0.12, freq: 3000, attack: 0.05, sustain: 0.2, release: 0.3, shape: 'tri', slide: 3, tremolo: 0.5, repeat: 0.025 }),
   ]), { ...MUSICAL, maxVoices: 1 }),
   // The reel calls this per tile with a falling pitch (A10.1); ticks can come faster than 40 ms early on.

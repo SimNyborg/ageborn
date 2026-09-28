@@ -60,11 +60,66 @@ describe('attack cycle (A2.7)', () => {
     // 20 HP of 10,000 = 0.2% → 2.4 XP
     const xp = ofKind(ev, 'xpEarned').filter((e) => e.reason === 'base');
     expect(xp[0]?.amount).toBe(2400);
-    // an enemy unit in range takes priority after the next re-check
+    // An enemy unit in range takes priority at once: the base is never a sticky target (the Bonker is
+    // between swings at tick 30; its 1 s re-check is not due before tick 41).
     const foe = devSpawn(sim, 1, 'bonker', { p: 1200 - 1200 + 20 + 8 });
     stun(sim, foe.id, 100);
-    stepN(sim, 25);
+    expect(unitById(sim, b.id)?.attacks[0]?.impactTick).toBe(0);
+    stepN(sim, 1);
     expect(unitById(sim, b.id)?.attacks[0]?.targetId).toBe(foe.id);
+    const next = ofKind(stepN(sim, 12), 'attackStarted').find((e) => e.id === b.id);
+    expect(next?.targetId).toBe(foe.id);
+  });
+
+  it('stun: no movement and no attack starts; a pending windup is cancelled (the cooldown stays spent)', () => {
+    const sim = arena();
+    const walker = devSpawn(sim, 0, 'bonker', { p: 100 });
+    stun(sim, walker.id, 10);
+    stepN(sim, 9);
+    expect(pLu(sim, walker.id)).toBe(100);
+    stepN(sim, 2);
+    expect(pLu(sim, walker.id)).toBeGreaterThan(100);
+
+    const sim2 = arena();
+    const t = devSpawn(sim2, 1, 'tuskback', { p: 1200 - 150 });
+    stun(sim2, t.id, 1000);
+    const b = devSpawn(sim2, 0, 'bonker', { p: 100 });
+    let started = -1;
+    for (let i = 0; i < 60 && started < 0; i += 1) {
+      started = ofKind(stepN(sim2, 1), 'attackStarted').find((e) => e.id === b.id)?.tick ?? -1;
+    }
+    expect(started).toBeGreaterThan(0);
+    stepN(sim2, 2);
+    stun(sim2, b.id, 40);
+    expect(unitById(sim2, b.id)?.attacks[0]?.impactTick).toBe(0);
+    const during = stepN(sim2, 38);
+    expect(ofKind(during, 'hit').filter((h) => h.sourceId === b.id)).toHaveLength(0);
+    expect(ofKind(during, 'attackStarted').filter((e) => e.id === b.id)).toHaveLength(0);
+    const after = stepN(sim2, 20);
+    expect(ofKind(after, 'attackStarted').filter((e) => e.id === b.id).length).toBeGreaterThan(0);
+  });
+
+  it('statuses: reapplying keeps the larger magnitude and the later expiry; a new shield keeps the larger pool', () => {
+    const sim = arena();
+    const u = devSpawn(sim, 1, 'bonker', { p: 600 });
+    const ctx = simCtx(sim);
+    const rt = ctx.s.units.find((x) => x.id === u.id);
+    if (!rt) throw new Error('no unit');
+    applyStatus(ctx, rt, { kind: 'slow', magnitudeBp: 3000, ticks: 40, amount: 0, frozen: false }, 0);
+    applyStatus(ctx, rt, { kind: 'slow', magnitudeBp: 1500, ticks: 100, amount: 0, frozen: false }, 0);
+    const slows = rt.statuses.filter((s) => s.kind === 'slow');
+    expect(slows).toHaveLength(1);
+    expect(slows[0]).toMatchObject({ magnitudeBp: 3000, untilTick: ctx.s.tick + 100 });
+    // different statuses coexist
+    applyStatus(ctx, rt, { kind: 'mark', magnitudeBp: 2000, ticks: 20, amount: 0, frozen: false }, 0);
+    expect(rt.statuses.map((s) => s.kind).sort()).toEqual(['mark', 'slow']);
+    applyStatus(ctx, rt, { kind: 'shield', magnitudeBp: 0, ticks: 40, amount: 6000, frozen: false }, 0, 6000);
+    rt.shield = 1000;
+    applyStatus(ctx, rt, { kind: 'shield', magnitudeBp: 0, ticks: 20, amount: 4000, frozen: false }, 0, 4000);
+    expect(rt.shield).toBe(4000);
+    applyStatus(ctx, rt, { kind: 'shield', magnitudeBp: 0, ticks: 20, amount: 3000, frozen: false }, 0, 3000);
+    expect(rt.shield).toBe(4000);
+    expect(rt.statuses.find((s) => s.kind === 'shield')?.untilTick).toBe(ctx.s.tick + 40);
   });
 
   it('two-phase impacts: units that kill each other on the same tick both die', () => {
@@ -103,6 +158,19 @@ describe('targeting (A2.7)', () => {
     const u = unitById(sim, t.id);
     expect(u?.attacks[0]?.targetId).toBe(ground.id);
     expect(u?.attacks[1]?.targetId).toBe(gyro.id);
+  });
+
+  it('only attack 0 stops movement: the Behemoth walks on while its MG shoots an air unit', () => {
+    const sim = arena();
+    const gyro = devSpawn(sim, 1, 'gyrocopter', { p: 1200 - 200 });
+    stun(sim, gyro.id, 1000);
+    const t = devSpawn(sim, 0, 'behemoth_tank', { p: 100 });
+    const ev = stepN(sim, 20);
+    // the main gun hits ground only and has no target; the MG (G+A, range 150) fires at the Gyrocopter
+    expect(unitById(sim, t.id)?.attacks[0]?.targetId).toBe(0);
+    expect(ofKind(ev, 'attackStarted').filter((e) => e.id === t.id && e.attackIndex === 1).length).toBeGreaterThan(0);
+    // 35 lu/s = 1.75 lu per tick, 20 ticks
+    expect(pLu(sim, t.id)).toBe(135);
   });
 
   it('stickiness: keeps its target unless another is ≥ 60 lu closer at the 1 s re-check', () => {

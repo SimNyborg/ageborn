@@ -12,6 +12,18 @@ export function generalOf(content: Content, generalId: string): GeneralDef | nul
 }
 
 /**
+ * The General whose personality an opponent plays (A7.4): the General itself, or for a procedural AI
+ * Commander (`generalId` = `commander:<general>:<favourite card>`, as meta builds it) the General whose
+ * personality it copies. Null when neither is known.
+ */
+export function personalityOf(o: Pick<OpponentSpec, 'generalId'>, content: Content): GeneralDef | null {
+  const own = generalOf(content, o.generalId);
+  if (own) return own;
+  const parts = o.generalId.split(':');
+  return parts.length >= 2 && parts[1] ? generalOf(content, parts[1]) : null;
+}
+
+/**
  * The name to show: a General's name from the content strings; otherwise `displayName`, translated
  * when it is a string key (meta may pass keys) and shown as is for procedural commanders, whose
  * names already carry the "AI · " prefix (A7.4).

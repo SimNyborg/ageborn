@@ -106,6 +106,8 @@ export const FUTURE_UNITS: PuppetDef[] = [
         slot('future.mech.shin', 'shinB', 6, { tone: 'back' }),
         slot('future.mech.foot', 'footB', 7, { tone: 'back' }),
         slot('future.mech.pilot', 'pilot', 9, { tag: 'prop' }),
+        // A11 redundant team cue: a pennant on every heavy
+        slot('future.turret.flag', 'hull', 9.5, { x: -16, y: -20, id: 'pennant', noWidth: true }),
         slot('future.mech.hull', 'hull', 10),
         slot('future.mech.thigh', 'legF', 12, { id: 'thighF' }),
         slot('future.mech.shin', 'shinF', 13, { id: 'shinFs' }),
@@ -218,6 +220,8 @@ export const FUTURE_UNITS: PuppetDef[] = [
         slot('future.titan.thigh', 'legB', 5, { tone: 'back' }),
         slot('future.titan.shin', 'shinB', 6, { tone: 'back' }),
         slot('future.titan.foot', 'footB', 7, { tone: 'back' }),
+        // A11 redundant team cue: a pennant on every heavy
+        slot(sized('future.turret.flag', 1.5), 'hull', 9.5, { x: -24, y: -56, id: 'pennant', noWidth: true }),
         slot('future.titan.hull', 'hull', 10),
         slot('future.titan.clock', 'clock', 11),
         slot('future.titan.head', 'head', 11.5),

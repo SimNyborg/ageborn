@@ -4,6 +4,7 @@
  */
 import { Container, Graphics, Text } from 'pixi.js';
 import type { AgeId, Side, TeamPreset } from '@/contracts/ids';
+import { content } from '@/content';
 import { puppetBounds } from '@/visuals/draw';
 import { puppetById } from '@/visuals/library';
 import { MANIFEST } from '@/visuals/manifest';
@@ -88,6 +89,8 @@ export function buildGrid(ctx: StageContext, o: GridOptions): Scene {
       if (!def) return;
       if (o.kind === 'unit') {
         const [visualId, skin] = key.split('@') as [string, string | undefined];
+        // A12: a white idle aura on Legendary units and Legendary skins (the battle view adds it in a match)
+        const legendary = puppet.group === 'legendary' || (skin !== undefined && content.skins[skin]?.rarity === 'legendary');
         cells.push(
           new UnitCell({
             make: () => art.createUnit({ visualId, skin, side, teamPreset: o.preset }),
@@ -100,6 +103,7 @@ export function buildGrid(ctx: StageContext, o: GridOptions): Scene {
             trim: o.trim,
             mode: o.clip,
             label: i === 0 ? clipLabel : undefined,
+            ...(legendary ? { aura: (radius: number) => art.createEffect('fx.legendary_aura', { radius, side }) } : {}),
           }),
         );
       } else {

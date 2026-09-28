@@ -317,7 +317,14 @@
       "onlyThreeUnits": "{age} has only 3 units.",
       "noAntiArmor": "{age} has no anti-armor.",
       "noAir": "{age} cannot hit air.",
-      "noSplash": "No splash anywhere: swarms will hurt."
+      "noSplash": "No splash anywhere: swarms will hurt.",
+      "badShape": "{age} loadout is damaged. Use Auto-fill to repair it.",
+      "unknownCard": "{age} holds a card that no longer exists.",
+      "wrongAge": "{age} holds a card from another age.",
+      "notOwned": "{age} holds a card you don't own.",
+      "duplicate": "{age} holds the same card twice.",
+      "badPower": "{age} needs an Age Power you own.",
+      "generic": "{age} loadout needs a look."
     },
     "skins": {
       "title": "Skins: {name}",

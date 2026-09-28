@@ -106,14 +106,19 @@ const TURRET_DEFENCE = 300;
 /** Treasury only while no enemy is within 600 lu of the own gate and before 3:00. */
 const TREASURY_SAFE = 600 * MILLI;
 const TREASURY_BEFORE_TICKS = 180 * TICKS_PER_SECOND;
+/** A quiet-lane Treasury level must pay for itself by 6:00 (A2.3 payback 133 / 233 / 367 s). */
+const TREASURY_PAYBACK_BY_TICKS = 360 * TICKS_PER_SECOND;
 /** Evolve only while no enemy ground unit is within 300 lu of the own gate (unless greedy). */
 const EVOLVE_SAFE = 300 * MILLI;
 /** m_greed ≥ 1.3 ignores the evolve safety check. */
 const GREEDY_BP = 13000;
 /** Last Stand: ≥ 4 enemies within 450 lu. */
 const LAST_STAND_FOES = 4;
-/** Extra base HP (bp) above the automatic Last Stand trigger a manual Last Stand needs. */
-const LAST_STAND_MARGIN_BP = 100;
+/**
+ * A manual Last Stand needs the base this far (bp) above the automatic trigger, plus twice the worst
+ * burst of base damage seen over the bot's reaction time.
+ */
+const LAST_STAND_MARGIN_BP = 150;
 /** Power: own base took damage in the last 3 s and zone value ≥ 100. */
 const POWER_HURT_TICKS = 3 * TICKS_PER_SECOND;
 const POWER_MIN_VALUE = 100;
@@ -228,7 +233,9 @@ export class Brain {
       // Treasury pays back in 133-367 s (A2.3), so a bot banks for it while the lane near its gate is
       // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
       const quietGate = !v.foes.some((u) => u.p <= TREASURY_SAFE);
-      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || quietGate) && v.now < TREASURY_BEFORE_TICKS))) {
+      // In a quiet moment a level is only worth it while it still pays back by 6:00.
+      const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / e.treasuryGoldPerSecMilli) <= TREASURY_PAYBACK_BY_TICKS;
+      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
       } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP) {
         this.goal = { kind: 'legendary', amount: legendaryCard.cost, card: legendaryCard.id };
@@ -327,7 +334,7 @@ export class Brain {
 
     // Last Stand. It fires on its own at 10%; if the base may reach that before the command runs, the
     // command would find it already charging, so the bot leaves it to the automatic trigger.
-    const lsMargin = mem.baseLossPerTick() * (t.snapshotDelayTicks + 2) + LAST_STAND_MARGIN_BP;
+    const lsMargin = 2 * mem.worstBaseLoss(t.snapshotDelayTicks + 2) + LAST_STAND_MARGIN_BP;
     if (v.lastStandArmed && !this.opening.autoLastStand && v.baseHpBp - lsMargin > e.lastStandAutoBp) {
       const near = v.foes.filter((u) => u.p <= e.lastStandRadius).length;
       if (near >= LAST_STAND_FOES) add({ kind: 'lastStand' }, SCORE.lastStand);

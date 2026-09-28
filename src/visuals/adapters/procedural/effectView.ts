@@ -32,6 +32,9 @@ export function fxSprite(baker: PartBaker, partId: string): Sprite {
 
 const SIZE_BASE: Record<SizeKey, number> = { radius: 10, zone: 100, width: 100, height: 100, length: 10, scale: 1 };
 
+/** `small: 1` draws a whole effect at this size (A12: the enemy's evolve pillar is smaller). */
+export const SMALL_EFFECT_SCALE = 0.6;
+
 interface LiveSprite {
   spec: SpriteSpec;
   s: Sprite;
@@ -123,6 +126,7 @@ export class ProceduralEffectView implements EffectView {
 
   fly(from: Pt, to: Pt, travelMs: number, arc: boolean): void {
     this.reset();
+    this.layer.scale.set(1);
     this.started = true;
     this.root.position.set(from.x, from.y);
     const dist = Math.hypot(to.x - from.x, to.y - from.y);
@@ -150,6 +154,9 @@ export class ProceduralEffectView implements EffectView {
     this.dir = (this.o['dir'] ?? 1) < 0 ? -1 : 1;
     this.root.position.set(at.x, at.y);
     const r = this.opt.recipe;
+    // `scale` sizes a whole world effect, `small: 1` shrinks it to SMALL_EFFECT_SCALE (screen overlays keep their fit)
+    const whole = r?.screen ? 1 : (this.o['scale'] ?? 1) * ((this.o['small'] ?? 0) > 0 ? SMALL_EFFECT_SCALE : 1);
+    this.layer.scale.set(whole);
     if (!r) {
       this.dur = 0;
       return;

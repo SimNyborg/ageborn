@@ -435,9 +435,11 @@ export class PlaceholderAdapter implements VisualAdapter {
     c.width = c.height = r.size;
     const ctx = c.getContext('2d');
     if (!ctx) return '';
-    const col = teamColor(r.side, 'default');
-    ctx.fillStyle = '#2c2b44';
-    ctx.fillRect(0, 0, r.size, r.size);
+    const col = teamColor(r.side, r.teamPreset);
+    if (r.plate) {
+      ctx.fillStyle = '#2c2b44';
+      ctx.fillRect(0, 0, r.size, r.size);
+    }
     ctx.fillStyle = `#${col.toString(16).padStart(6, '0')}`;
     const w = r.size * 0.36;
     ctx.beginPath();

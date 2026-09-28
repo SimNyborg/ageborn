@@ -778,6 +778,14 @@ function checkGenerals(issues: Issues, c: Content): void {
   for (const b of board) {
     const gen = g.list[b.general];
     issues.check(gen !== undefined && !gen.scripted && !gen.mirror, 'generals.conquest.board', `"${b.general}" cannot be on the board`);
+    // A6.10's fixed Conquest tier is one of the General's own tiers (A7.4).
+    if (gen?.tiers) {
+      issues.check(
+        b.tier >= gen.tiers[0] && b.tier <= gen.tiers[1],
+        'generals.conquest.board',
+        `"${b.general}" plays Conquest at tier ${b.tier}, outside its tiers ${gen.tiers[0]}-${gen.tiers[1]}`,
+      );
+    }
   }
   for (const m of g.conquest.milestones) {
     if (m.title) issues.check(c.cosmetics.titles.some((t) => t.id === m.title), 'generals.conquest.milestones', `unknown title "${m.title}"`);
@@ -809,9 +817,24 @@ function checkMeta(issues: Issues, c: Content): void {
     issues.check(tier.guaranteed.length <= tier.stacks, `capsules.tiers.${t}`, 'more guarantees than stacks');
   });
   cap.script.forEach((s, i) => {
-    issues.check(s.capsule === i + 1, `capsules.script.${i}`, 'script capsules are numbered 1..n');
-    for (const x of s.cards) issues.check(c.units[x] !== undefined || c.turrets[x] !== undefined, `capsules.script.${i}`, `unknown card "${x}"`);
+    const p = `capsules.script.${i}`;
+    issues.check(s.capsule === i + 1, p, 'script capsules are numbered 1..n');
+    issues.check(s.cards.length + (s.randomUnownedEpic ? 1 : 0) <= cap.tiers[s.tier].stacks, p, 'more scripted cards than stacks');
+    for (const x of s.cards) {
+      const card = c.units[x] ?? c.turrets[x];
+      issues.check(card !== undefined, p, `unknown card "${x}"`);
+      // A6.5 reveals scripted cards as NEW, so none may be in the starter kit (every Common, A3).
+      issues.check(card === undefined || card.rarity !== 'common', p, `"${x}" is a starter Common, so it cannot be NEW`);
+    }
   });
+  // A3: each age's Anti-armor Rare arrives by script or by an Age Unlock Capsule at an arena gate.
+  const unlockAges = new Set(c.arenas.list.flatMap((a) => a.gateRewards.flatMap((r) => (r.kind === 'ageUnlock' ? r.ages : []))));
+  const scripted = new Set(cap.script.flatMap((s) => s.cards));
+  for (const age of AGE_ORDER) {
+    const aa = c.order.units.map((x) => c.units[x]).find((u) => u?.age === age && u.group === 'antiArmor');
+    if (!aa) continue;
+    issues.check(scripted.has(aa.id) || unlockAges.has(age), `capsules.script`, `"${aa.id}" (the ${age} Anti-armor Rare) never arrives (A3)`);
+  }
   // Arenas (A6.3)
   const list = c.arenas.list;
   list.forEach((a, i) => {

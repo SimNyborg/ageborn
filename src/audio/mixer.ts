@@ -17,11 +17,19 @@
  */
 import type { Bus } from '@/contracts';
 
-/** Fixed mix trim per bus (linear), applied on top of the player's volume setting. */
-export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 1, music: 0.55, sfx: 0.9, ui: 0.8 };
+/**
+ * Fixed mix trim per bus (linear), applied on top of the player's volume setting. The master trim
+ * sits before the limiter and offsets the limiter's automatic make-up gain, so a single sound plays at
+ * about the level it was designed at.
+ */
+export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 0.7, music: 0.55, sfx: 0.9, ui: 0.8 };
 
-/** Master limiter (a hard-knee compressor with the fastest useful attack). */
-export const LIMITER = { threshold: -6, knee: 0, ratio: 20, attack: 0.002, release: 0.15 } as const;
+/**
+ * Master limiter: a hard-knee 20:1 compressor with zero attack (the browser's compressor looks ahead a
+ * few ms). Measured in Chromium: 40 aligned worst-case hits come out at about 0.9 of full scale (the
+ * clipper only rounds the top), while a single hit plays at its designed level.
+ */
+export const LIMITER = { threshold: -10, knee: 0, ratio: 20, attack: 0, release: 0.15 } as const;
 
 /** Safety clipper: linear up to `knee`, then a tanh knee that approaches `ceiling` at 2× full scale. */
 export const CLIPPER = { knee: 0.8, ceiling: 0.98, points: 4097 } as const;
@@ -36,7 +44,7 @@ export function volumeGain(v01: number): number {
   return v * v;
 }
 
-/** The soft clip transfer function for a signal `y` (full scale = 1). |result| < ceiling always. */
+/** The soft clip transfer function for a signal `y` (full scale = 1). |result| ≤ ceiling < 1 always. */
 export function softClip(y: number): number {
   const a = Math.abs(y);
   if (a <= CLIPPER.knee) return y;

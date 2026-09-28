@@ -168,13 +168,24 @@ function trigger(api: StageApi, kind: string): void {
       api.inject([{ tick, e: 'turretFired', side: 0, mount: 0, targetId: foe?.id ?? 0 }]);
       return;
     case 'base hit':
-      api.inject([{ tick, e: 'baseDamaged', side: 1, sourceId: null, damage: 6000, hp: st.sides[1].baseHp, maxHp: st.sides[1].baseMaxHp }]);
+      // An attacker id: `sourceId: null` is Siege decay, which only crumbles quietly.
+      api.inject([{ tick, e: 'baseDamaged', side: 1, sourceId: mine?.id ?? 1, damage: 6000, hp: st.sides[1].baseHp, maxHp: st.sides[1].baseMaxHp }]);
       return;
     case 'power': {
+      // The whole cast, roughly as the sim plays it: telegraph, then every impact of the pattern.
       const x = foe?.x ?? 700_000;
       const power = powerOf(0);
-      api.inject([{ tick, e: 'powerTelegraph', side: 0, power, castId: 999, x, zone: 400 }]);
-      later(1000, [{ tick, e: 'powerImpact', side: 0, power, castId: 999, x, index: 0 }]);
+      const fx = api.source.sim.config.content.powers[power]?.effect;
+      const zone = fx === undefined ? 400 : 'zone' in fx ? fx.zone : fx.kind === 'cloud' ? fx.width : fx.kind === 'stampede' ? fx.distance : 0;
+      // Sim units: x and zone in milli-lu (B3).
+      api.inject([{ tick, e: 'powerTelegraph', side: 0, power, castId: 999, x, zone: zone * 1000 }]);
+      const spread = fx?.kind === 'barrage' || fx?.kind === 'sweep';
+      const impacts = fx?.kind === 'barrage' ? fx.count : fx?.kind === 'stampede' ? fx.runners : fx?.kind === 'sweep' ? Math.round(fx.durationMs / 50) : 1;
+      const spanMs = spread ? fx.durationMs : fx?.kind === 'stampede' ? fx.spacingMs * impacts : 0;
+      for (let i = 0; i < impacts; i++) {
+        const at = spread ? x - (zone * 1000) / 2 + Math.round(((i + 0.5) * zone * 1000) / impacts) : x;
+        later(1000 + Math.round((i * spanMs) / impacts), [{ tick, e: 'powerImpact', side: 0, power, castId: 999, x: at, index: i }]);
+      }
       return;
     }
     case 'evolve (you)':

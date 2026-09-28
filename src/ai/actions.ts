@@ -16,8 +16,6 @@ export type BotAction =
   | { kind: 'lastStand' }
   | { kind: 'emote'; emote: EmoteId };
 
-export type ActionKind = BotAction['kind'];
-
 type Slot5 = 0 | 1 | 2 | 3 | 4;
 type Mount = 0 | 1 | 2 | 3;
 type Slot2 = 0 | 1;

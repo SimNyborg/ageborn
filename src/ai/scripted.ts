@@ -10,6 +10,7 @@
  * |---|---|
  * | `at <ms> <action>` | once, at that time |
  * | `every <ms> [from <ms>] [until <ms>] <action>` | repeatedly |
+ * | `max-alive <n> <card>` | a due send of that card is dropped while n of Grogg's units are alive |
  *
  * Actions: `train <card>`, `turret <card>`, `power`, `emote <id>`. A due action waits until it is
  * legal and affordable (at most one pending occurrence per line), so Grogg never issues an illegal
@@ -41,15 +42,17 @@ export interface ScriptLine {
 }
 
 /**
- * Old Grogg's default tutorial script (A8): Training Dummies from the start, a Tuskback at 0:40, then
- * Dummies and the odd Tuskback until his base falls. WP11 retimes the tutorial beats from a scripted
- * sim run and may pass its own lines.
+ * Old Grogg's default tutorial script (A8), kept in line with the retimed match 1 schedule of
+ * `src/tutorial/scripts.ts` (WP11, `GROGG_SCRIPT`): Dummies at 0:02 and 0:12, the Tuskback at 0:19,
+ * then a Dummy every 8 s, skipped while 3 of his units are alive. The app plays match 1 with WP11's
+ * own `GroggBrain`; this script makes `createBot` give the same Grogg anywhere else (tools, dev pages).
  */
 export const GROGG_SCRIPT: readonly string[] = [
-  'every 8000 from 3000 until 38000 train training_dummy',
-  'at 40000 train tuskback',
-  'every 9000 from 48000 train training_dummy',
-  'every 30000 from 75000 train tuskback',
+  'max-alive 3 training_dummy',
+  'at 2000 train training_dummy',
+  'at 12000 train training_dummy',
+  'at 19000 train tuskback',
+  'every 8000 from 28000 until 600000 train training_dummy',
 ];
 
 const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
@@ -68,12 +71,27 @@ function ms(word: string | undefined): number | null {
   return msToTicks(Number(word));
 }
 
+export interface Script {
+  lines: ScriptLine[];
+  /** Sends of a card are dropped while this many of Grogg's units are alive. */
+  maxAlive: Record<CardId, number>;
+}
+
 /** Parses script lines. Unknown or malformed lines are skipped. */
 export function parseScript(lines: readonly string[]): ScriptLine[] {
+  return parseScriptFull(lines).lines;
+}
+
+/** Parses script lines and rules. */
+export function parseScriptFull(lines: readonly string[]): Script {
   const out: ScriptLine[] = [];
+  const maxAlive: Record<CardId, number> = {};
   for (const line of lines) {
     const w = line.trim().split(/\s+/);
-    if (w[0] === 'at') {
+    if (w[0] === 'max-alive') {
+      const n = Number(w[1]);
+      if (Number.isInteger(n) && n > 0 && w[2]) maxAlive[w[2]] = n;
+    } else if (w[0] === 'at') {
       const at = ms(w[1]);
       const action = parseAction(w.slice(2));
       if (at !== null && action) out.push({ from: at, every: null, until: null, action });
@@ -94,7 +112,7 @@ export function parseScript(lines: readonly string[]): ScriptLine[] {
       if (every !== null && action) out.push({ from, every, until, action });
     }
   }
-  return out;
+  return { lines: out, maxAlive };
 }
 
 interface LineState {
@@ -115,6 +133,7 @@ export class ScriptedController implements AiBotController {
   private readonly ledger: Ledger;
   private readonly emotes: EmotePolicy;
   private readonly lines: LineState[];
+  private readonly maxAlive: Record<CardId, number>;
 
   constructor(
     readonly profile: BotProfile,
@@ -129,8 +148,9 @@ export class ScriptedController implements AiBotController {
     this.memory = new BotMemory(this.book);
     this.ledger = new Ledger(this.book);
     this.emotes = new EmotePolicy(botSeed(seed, side, 'emote'));
-    const script = parseScript(profile.openings.length > 0 ? profile.openings : GROGG_SCRIPT);
-    this.lines = script.map((line) => ({ line, next: line.from, due: false }));
+    const script = parseScriptFull(profile.openings.length > 0 ? profile.openings : GROGG_SCRIPT);
+    this.lines = script.lines.map((line) => ({ line, next: line.from, due: false }));
+    this.maxAlive = script.maxAlive;
   }
 
   get foeGoldEstimate(): number {
@@ -157,6 +177,12 @@ export class ScriptedController implements AiBotController {
       }
       if (!s.due) continue;
       view ??= buildView(obs, now, this.book, this.ledger);
+      const cap = s.line.action.kind === 'train' ? this.maxAlive[s.line.action.card] : undefined;
+      if (cap !== undefined && view.mine.length + view.queue.length >= cap) {
+        // A dropped send: the lane already holds enough of Grogg's units (an idle player is not swamped).
+        s.due = false;
+        continue;
+      }
       const a = this.resolve(s.line.action, view, now);
       if (!a) continue;
       s.due = false;

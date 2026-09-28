@@ -156,13 +156,16 @@ export const STONE_UNITS: PuppetDef[] = [
       { id: 'rider1', parent: 'body', x: -22, y: -50 },
       { id: 'rider2', parent: 'body', x: 2, y: -52 },
       { id: 'howdah', parent: 'body', x: 0, y: -46 },
+      // the front rider's throwing hand: the riders' rocks leave here (A5.2, A14.2 riders proj.rock)
+      { id: 'muzzle', parent: 'rider2', x: 12.4, y: -23.6 },
     ],
+    muzzleBone: 'muzzle',
     extras: [
       slot('stone.mammoth.tusk', 'snout', 33, { x: 14, y: 6, tag: 'weapon' }),
-      slot('stone.mammoth.rider', 'rider1', 24, { tag: 'prop' }),
+      slot('stone.mammoth.rider', 'rider1', 24),
       slot('stone.mammoth.rider', 'rider2', 24.1),
       slot('stone.mammoth.howdah', 'howdah', 26, { x: 5 }),
-      slot(sized('stone.pennant', 1.6), 'howdah', 25.5, { x: 22, y: -10, noWidth: true }),
+      slot(sized('stone.pennant', 1.6), 'howdah', 25.5, { x: 22, y: -10, tag: 'prop', noWidth: true }),
     ],
     attack: 'quadruped.attack.stomp',
     ability: 'ability.stomp_riders',

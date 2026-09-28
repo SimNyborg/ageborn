@@ -26,11 +26,21 @@ export interface EmitOptions {
   spreadLu?: number;
   /** Passed through to the art (for example `{ side: 1 }`). */
   opts?: Record<string, number>;
+  /** Receives a handle per emitted particle (to move it along with a unit, or stop it early). */
+  out?: ParticleHandle[];
+}
+
+/** A live particle. It stays valid until the particle finishes or is stopped (see `isLive`). */
+export interface ParticleHandle {
+  readonly view: EffectView;
+  readonly seq: number;
 }
 
 export class ParticlePool {
   private readonly free = new Map<EffectId, EffectView[]>();
   private live: Live[] = [];
+  /** Live views and the emission they belong to (a pooled view is reused by later emissions). */
+  private readonly liveSeq = new Map<EffectView, number>();
   private seq = 0;
   /** Particles refused or evicted because of the cap (for the dev HUD). */
   dropped = 0;
@@ -55,7 +65,8 @@ export class ParticlePool {
       const spread = count > 1 ? (o.spreadLu ?? 0) : 0;
       const p = spread > 0 ? { x: at.x + (this.rng.next() * 2 - 1) * spread, y: at.y + (this.rng.next() * 2 - 1) * spread * 0.5 } : at;
       view.playAt(p, { ...o.opts, i, n: count, seed: this.rng.int(1 << 30) });
-      this.add(view, effectId, priority);
+      const seq = this.add(view, effectId, priority);
+      o.out?.push({ view, seq });
       n++;
     }
     return n;
@@ -79,7 +90,22 @@ export class ParticlePool {
         removed = true;
       }
     }
-    if (removed) this.live = this.live.filter((l) => l.view.root.parent !== null);
+    if (removed) this.live = this.live.filter((l) => this.liveSeq.get(l.view) === l.seq);
+  }
+
+  /** True while the particle behind `h` is still playing (it was not finished, stopped or reused). */
+  isLive(h: ParticleHandle): boolean {
+    return this.liveSeq.get(h.view) === h.seq;
+  }
+
+  /** Ends a live particle now (for example a status effect whose unit died). */
+  stop(h: ParticleHandle): void {
+    if (!this.isLive(h)) return;
+    const i = this.live.findIndex((l) => l.view === h.view);
+    const l = this.live[i];
+    if (!l) return;
+    this.release(l);
+    this.live.splice(i, 1);
   }
 
   /** Removes every live particle (match end, reset). */
@@ -94,9 +120,12 @@ export class ParticlePool {
     this.free.clear();
   }
 
-  private add(view: EffectView, effectId: EffectId, priority: number): void {
+  private add(view: EffectView, effectId: EffectId, priority: number): number {
+    const seq = this.seq++;
     this.layer.addChild(view.root);
-    this.live.push({ view, effectId, priority, seq: this.seq++ });
+    this.live.push({ view, effectId, priority, seq });
+    this.liveSeq.set(view, seq);
+    return seq;
   }
 
   /** Ensures one free slot for a particle of `priority`. False when the new particle should drop. */
@@ -129,6 +158,7 @@ export class ParticlePool {
   }
 
   private release(l: Live): void {
+    this.liveSeq.delete(l.view);
     l.view.root.parent?.removeChild(l.view.root);
     let list = this.free.get(l.effectId);
     if (!list) {

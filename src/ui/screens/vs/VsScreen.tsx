@@ -13,7 +13,7 @@ import { formatDec, formatInt, tierNumeral } from '../../components/format';
 import { TrophyIcon } from '../../components/icons';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
-import { opponentName, generalOf } from '../model/opponent';
+import { generalOf, opponentName, personalityOf } from '../model/opponent';
 import { activePlan, formatAges, planAvgLevel } from '../model/plan';
 
 /** A9 #4: the VS screen shows for 2 s. */
@@ -46,6 +46,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   }, []);
 
   const general = generalOf(content, o.generalId);
+  const persona = personalityOf(o, content);
   const plan = activePlan(s, content).plan;
   const avg = planAvgLevel(s, content, plan, formatAges(content, o.format));
   const name = opponentName(o, content, t);
@@ -90,7 +91,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
               {t('ui.vs.aiLevel', { n: o.level })}
             </span>
           </span>
-          {general ? <span class="vs__personality">{t(general.personalityKey)}</span> : null}
+          {persona ? <span class="vs__personality">{t(persona.personalityKey)}</span> : null}
           {general ? (
             <q class="vs__line" data-testid="vs-line">
               {t(general.lineKey)}

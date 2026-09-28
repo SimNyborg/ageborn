@@ -11,8 +11,18 @@ import { fixtureReplays, fixtureResult } from '../fixtures/matches';
 import { FIXTURE_NOW, maxedSave, midGameSave, newPlayerSave } from '../fixtures/saves';
 import { atLevel, cardTile, collectionProgress, levelMultBp, unitStats, upgradeCost, upgradeState } from '../model/cards';
 import { filterCards, NO_FILTER } from '../model/collection';
-import { opponentName } from '../model/opponent';
-import { assignCard, clearSlot, firstEmptySlot, loadoutAvgLevel, nextFormat, normalizeLoadout, planAvgLevel } from '../model/plan';
+import { opponentName, personalityOf } from '../model/opponent';
+import { reasonKey } from '../model/reasons';
+import {
+  agesAwaitingAntiArmor,
+  assignCard,
+  clearSlot,
+  firstEmptySlot,
+  loadoutAvgLevel,
+  nextFormat,
+  normalizeLoadout,
+  planAvgLevel,
+} from '../model/plan';
 import { historyRows, profileView } from '../model/profile';
 import { chargesView, conquestView, dailyCapsuleView, questViews, roadNodes, roadProgress, trayCapsules, unlocks } from '../model/progress';
 import { earnedCapsule, resultKind, stagedRewards } from '../model/result';
@@ -146,8 +156,17 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
   });
 
   it('shows the Daily Capsule bank and timer', () => {
-    expect(dailyCapsuleView(midGameSave(content), content, FIXTURE_NOW)).toEqual({ bank: 1, max: 3, nextInMs: 14 * HOUR });
-    expect(dailyCapsuleView(maxedSave(content), content, FIXTURE_NOW)).toEqual({ bank: 3, max: 3, nextInMs: null });
+    expect(dailyCapsuleView(midGameSave(content), content, FIXTURE_NOW)).toEqual({ unlocked: true, bank: 1, max: 3, nextInMs: 14 * HOUR });
+    expect(dailyCapsuleView(maxedSave(content), content, FIXTURE_NOW)).toEqual({ unlocked: true, bank: 3, max: 3, nextInMs: null });
+  });
+
+  it('unlocks the Daily Capsule right after capsule 2 is opened (A6.3)', () => {
+    const n = newPlayerSave(content);
+    const fresh = { ...n, pity: { ...n.pity, opened: 1 }, capsules: { ...n.capsules, dailyBank: 0, dailyNextAt: null } };
+    expect(dailyCapsuleView(fresh, content, FIXTURE_NOW).unlocked).toBe(false);
+    // Capsule 2 opened, the first Daily Capsule claimed, the 04:00 timer not started yet.
+    const claimed = { ...fresh, pity: { ...fresh.pity, opened: 2 } };
+    expect(dailyCapsuleView(claimed, content, FIXTURE_NOW)).toEqual({ unlocked: true, bank: 0, max: 3, nextInMs: null });
   });
 
   it('orders the tray best tier first', () => {
@@ -240,6 +259,31 @@ describe('misc', () => {
   it('names Generals from content and commanders as given', () => {
     expect(opponentName({ generalId: 'kettle', displayName: 'whatever' }, content, t)).toBe('Captain Kettle');
     expect(opponentName({ generalId: 'commander', displayName: 'AI · Brakka Stonejaw' }, content, t)).toBe('AI · Brakka Stonejaw');
+  });
+
+  it("finds a procedural commander's personality General (A7.4)", () => {
+    expect(personalityOf({ generalId: 'kettle' }, content)?.id).toBe('kettle');
+    expect(personalityOf({ generalId: 'commander:moss:rock_tosser' }, content)?.id).toBe('moss');
+    expect(personalityOf({ generalId: 'commander:nobody:' }, content)).toBeNull();
+    expect(personalityOf({ generalId: 'commander' }, content)).toBeNull();
+  });
+
+  it('turns failure reasons into toast keys, never raw codes', () => {
+    expect(reasonKey('amber')).toBe('ui.error.notEnoughAmber');
+    expect(reasonKey('dust')).toBe('ui.error.notEnoughDust');
+    expect(reasonKey('maxLevel')).toBe('ui.error.generic');
+    expect(reasonKey('someNewReason')).toBe('ui.error.generic');
+  });
+
+  it('notes the ages still waiting for their Anti-armor card (A3, Skirmish)', () => {
+    const n = newPlayerSave(content);
+    // The new player has Spear Hunter, Pikeman and Grenadier; Bazooka Trooper and Rail Gunner arrive at Arena 2.
+    expect(agesAwaitingAntiArmor(n, content, 'short')).toEqual([]);
+    expect(agesAwaitingAntiArmor(n, content, 'full')).toEqual(['modern', 'future']);
+    const early = { ...n, collection: { ...n.collection } };
+    delete early.collection['pikeman'];
+    expect(agesAwaitingAntiArmor(early, content, 'short')).toEqual(['medieval']);
+    expect(agesAwaitingAntiArmor(midGameSave(content), content, 'full')).toEqual([]);
   });
 
   it('filters the collection by age, role, rarity and ownership', () => {

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import type { Side } from '@/contracts';
 import { seedSfc32 } from '@/core';
 import { createSim } from '@/sim';
-import { BotMatch, GROGG_SCRIPT, ScriptedController, UtilityController, createBot, parseScript, personalityFor, readGeneral } from '@/ai';
+import { BotMatch, GROGG_SCRIPT, ScriptedController, UtilityController, createBot, parseScript, parseScriptFull, personalityFor, readGeneral } from '@/ai';
 import { cardBook } from '../book';
 import { BotMemory, evolveVisible } from '../memory';
 import { parseOpenings } from '../openings';
@@ -42,6 +42,24 @@ describe('openings (A7.2)', () => {
 });
 
 describe('Old Grogg, the scripted tutorial brain (A7.4, A8)', () => {
+  it('drops Dummy sends while 3 of his units are alive', () => {
+    const script = parseScriptFull(['max-alive 3 training_dummy', 'every 1000 train training_dummy']);
+    expect(script.maxAlive).toEqual({ training_dummy: 3 });
+    const bot = createBot({ ...balanced(0), generalId: 'grogg', openings: ['max-alive 3 training_dummy', 'every 1000 train training_dummy'] }, 1, 1, content);
+    const plan = (content.generals as { list: Record<string, { warPlan: object }> }).list.grogg?.warPlan;
+    const sim = createSim(matchConfig({ seed: 2, training: { noClock: true }, sides: [sideConfig(content), sideConfig(content, { loadouts: plan as never })] }));
+    const m = new BotMatch(sim, [{ side: 1 as Side, controller: bot }]);
+    let most = 0;
+    while (sim.state.tick < 1200) {
+      m.tick();
+      const mine = sim.state.units.filter((u) => u.side === 1).length + sim.state.sides[1].queue.length;
+      most = Math.max(most, mine);
+    }
+    // Nobody fights back: the first three Dummies live on, so every later send is dropped.
+    expect(m.botCommands.length).toBe(3);
+    expect(most).toBe(3);
+  });
+
   it('parses the script language', () => {
     expect(parseScript(['at 3000 train training_dummy', 'every 8000 from 1000 until 20000 turret rock_tosser', 'emote gg', 'at 500 emote salute', 'at x train y'])).toEqual([
       { from: 60, every: null, until: null, action: { kind: 'train', card: 'training_dummy' } },
@@ -78,10 +96,11 @@ describe('Old Grogg, the scripted tutorial brain (A7.4, A8)', () => {
     expect(rejected).toEqual([]);
     expect(evolved).toBe(false);
     const trains = m.botCommands.filter((c) => c.t === 'train');
-    expect(trains.length).toBeGreaterThanOrEqual(4);
-    // The first Dummy goes out 3 s in (plus the 1 s reaction delay), the Tuskback (slot 1) at 0:40.
-    expect(trains[0]?.tick).toBeGreaterThanOrEqual(60);
-    expect(trains.some((c) => c.t === 'train' && c.slot === 1 && c.tick >= 800)).toBe(true);
+    // Nobody fights back here, so after the first three sends his units stay alive and the rest drop.
+    expect(trains.length).toBeGreaterThanOrEqual(3);
+    // The first Dummy goes out at 0:02, the Tuskback (slot 1) at 0:19 (WP11's retimed match 1).
+    expect(trains[0]?.tick).toBeGreaterThanOrEqual(40);
+    expect(trains.some((c) => c.t === 'train' && c.slot === 1 && c.tick >= 380 && c.tick <= 420)).toBe(true);
     expect(m.botCommands.every((c) => c.t === 'train' || c.t === 'emote')).toBe(true);
     expect(GROGG_SCRIPT.length).toBeGreaterThan(0);
   });

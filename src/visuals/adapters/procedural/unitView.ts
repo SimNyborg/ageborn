@@ -94,9 +94,12 @@ export class ProceduralUnitView implements UnitView {
     this.ring.scale.set(this.sizeScale(), 1);
     this.ground.addChild(this.ring);
     this.root.addChild(this.ground);
-    // legendary aura (High preset only, B6)
+    // Skin auras (snow, ghost glow, neon; A5.8 "particle aura"), High preset only (B6). The white
+    // Legendary aura (A12) is not drawn here: the battle view adds `fx.legendary_aura` for Legendary
+    // units and Legendary skins, follows the graphics preset live and works for every art tier, so
+    // drawing it here as well would double it.
     this.aura = null;
-    const wantsAura = (p.aura ?? null) !== null && o.quality === 'high';
+    const wantsAura = p.aura !== undefined && p.aura !== null && p.aura !== 'legendary' && o.quality === 'high';
     if (wantsAura) {
       const a = partSprite(o.baker, 'fx.p.glow', UI_ZONES);
       a.position.set(this.anchors.hitCenter.x * this.facing, this.anchors.hitCenter.y);
@@ -184,7 +187,7 @@ export class ProceduralUnitView implements UnitView {
     if (t === 'none') return;
     this.trim = partSprite(this.o.baker, `trim.${t}`, UI_ZONES);
     this.trim.position.set(9.6, 5.4);
-    this.trim.scale.set(0.8);
+    this.trim.scale.set(STYLE.levelTrimScale);
     this.ground.addChild(this.trim);
   }
 

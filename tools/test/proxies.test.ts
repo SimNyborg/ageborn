@@ -66,6 +66,11 @@ describe('exploit proxies (DESIGN B12)', () => {
     expect(commands.some((c) => c.side === 0 && c.t === 'stance' && c.stance === 'hold')).toBe(true);
   });
 
+  it('heavy plus mass ranged holds while it masses', () => {
+    const stances = play('heavy_ranged', 120).commands.filter((c) => c.side === 0 && c.t === 'stance');
+    expect(stances[0]).toMatchObject({ stance: 'hold' });
+  });
+
   it('cheap spam only trains the cheapest unit', () => {
     const { stats } = play('cheap_spam', 60);
     const costs = Object.keys(stats.sides[0].trained).map((c) => content.units[c]?.cost);

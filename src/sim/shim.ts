@@ -6,7 +6,9 @@
  *
  * Output shape: every def exactly as in the raw tables (table units, see
  * docs/requests/wp2-content-units.md), ages completed with their visual and music ids, meta tables
- * `null`, empty counters, precompiled `ticks`, and `hash` = FNV-1a of the canonical JSON of the input.
+ * `null` (so daily modifiers use the sim's A9.1 defaults, `modifiers.ts`), empty counters, precompiled
+ * `ticks`, the raw `battle` table passed through as an extra `battle` field (as WP1's content has it,
+ * read by `rules.ts` `battleOf`), and `hash` = FNV-1a of the canonical JSON of the input.
  */
 import type {
   AgeDef,
@@ -21,6 +23,7 @@ import type {
   UnitDef,
 } from '@/contracts';
 import { hashCanonical, msToTicks } from '@/core';
+import type { BattleRulesLike } from './rules';
 
 /** The subset of `RawContent` (src/content/raw/types.ts) the shim needs. */
 export interface RawContentLike {
@@ -29,8 +32,8 @@ export interface RawContentLike {
   economy: EconomyRules;
   ageScale: Readonly<Record<AgeId, Pick<AgeDef, 'id' | 'index' | 'pBp' | 'baseHp' | 'xpToNext'>>>;
   formats: Readonly<Record<FormatId, FormatDef>>;
-  /** Raw-only battle numbers; the shim reads the heal pulse (A2.7: 0.5 s). */
-  battle?: { healPulseMs: number };
+  /** Raw-only battle numbers (`RawBattleRules`): the heal pulse (A2.7: 0.5 s) and the {@link BattleRulesLike} fields. */
+  battle?: Partial<BattleRulesLike> & { healPulseMs?: number };
 }
 
 export function compileForSim(raw: RawContentLike): CompiledContent {
@@ -54,7 +57,7 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
     };
   }
   const e = raw.economy;
-  const content: CompiledContent = {
+  const content: CompiledContent & { battle?: RawContentLike['battle'] } = {
     hash: hashCanonical({
       ages: raw.ages,
       powers: raw.powers,
@@ -92,5 +95,6 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
       lastStandCharge: msToTicks(e.lastStand.chargeMs),
     },
   };
+  if (raw.battle) content.battle = raw.battle;
   return Object.freeze(content);
 }

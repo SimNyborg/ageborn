@@ -107,7 +107,19 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const planAvg = planAvgLevel(s, content, plan, fAges);
   const inPlan = new Set([...loadout.units, ...loadout.turrets, loadout.power].filter(Boolean) as CardId[]);
 
+  /** Advisor text; a finding meta adds later without a string falls back to a generic line. */
+  function issueText(i: PlanIssue): string {
+    const age = t(ageNameKey(i.age));
+    const msg = t(i.messageKey, { age });
+    return msg === i.messageKey ? t('ui.advisor.generic', { age }) : msg;
+  }
+
   function commit(next: WarPlan) {
+    // Presets are added one at a time (`meta.setWarPlan` refuses gaps): editing C before B exists
+    // first stores B as a copy of the active plan.
+    for (let i = s.warPlans.length; i < preset; i++) {
+      services.setWarPlan(i, { ...(s.warPlans[s.activePlan] ?? emptyPlan(content, PRESET_LABELS[i]!)), name: PRESET_LABELS[i]! });
+    }
     services.setWarPlan(preset, next);
   }
   function setLoadout(l: typeof loadout) {
@@ -286,7 +298,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           <ul class="wp-advisor" data-testid="advisor" aria-live="polite">
             {ageIssues.map((i) => (
               <li key={i.code} class={`wp-issue wp-issue--${i.severity}`} data-testid={`issue-${i.code}`}>
-                {t(i.messageKey, { age: t(ageNameKey(i.age)) })}
+                {issueText(i)}
               </li>
             ))}
           </ul>

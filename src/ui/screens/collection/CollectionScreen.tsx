@@ -28,6 +28,7 @@ import {
   type RarityFilter,
   type RoleFilter,
 } from '../model/collection';
+import { reasonKey } from '../model/reasons';
 
 function SkinTile(p: { skin: SkinDef }) {
   const { save, content, t, locale, services, toasts } = useUi();
@@ -79,7 +80,7 @@ function SkinTile(p: { skin: SkinDef }) {
           testid={`craft-${k.id}`}
           onClick={() => {
             const r = services.craft(k.id);
-            toasts.show(r.ok ? t('ui.skins.crafted') : t('ui.error.notEnoughDust'), { tone: r.ok ? 'good' : 'bad' });
+            toasts.show(r.ok ? t('ui.skins.crafted') : t(reasonKey(r.reason)), { tone: r.ok ? 'good' : 'bad' });
           }}
         >
           {formatInt(price, locale)}

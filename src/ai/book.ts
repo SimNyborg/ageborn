@@ -6,7 +6,7 @@
  * Money is in milli-gold and distances in milli-lu, the units of `Observation` (DESIGN B3).
  */
 import type { AgeId, CardId, CompiledContent, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
-import { BP, MILLI, PPM, msToTicks } from '@/core';
+import { BP, MILLI, msToTicks } from '@/core';
 
 export interface UnitCard {
   id: CardId;
@@ -186,9 +186,4 @@ export function cardBook(content: CompiledContent): CardBook {
 /** Counter value M[a][b] in bp; 5,000 (even) when the matrix has no entry. */
 export function counterBp(book: CardBook, a: CardId, b: CardId): number {
   return book.counterBp[a]?.[b] ?? BP / 2;
-}
-
-/** Power charge is full. */
-export function powerFull(ppm: number): boolean {
-  return ppm >= PPM;
 }

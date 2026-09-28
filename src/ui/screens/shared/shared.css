@@ -1,4 +1,4 @@
-/* Shared screen pieces: the skin picker (A9 #9, #11). */
+/* Shared screen pieces: the skin picker (A9 #9, #11) and Trophy Road rewards (A6.3). */
 
 .skins {
   list-style: none;
@@ -82,4 +82,33 @@
   font-size: 12px;
   font-weight: 800;
   color: var(--ui-muted);
+}
+
+/* ---- Trophy Road rewards (Trophy Road nodes, the Home road bar) ---- */
+.road-rw {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+.road-rw b {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px var(--ui-ink);
+}
+.road-rw__art {
+  display: block;
+  width: 40px;
+  padding: 2px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 10px;
+  background: var(--ui-gold);
+}
+.road-rw--compact {
+  gap: 3px;
+  font-size: 13px;
+}
+.road-rw--compact .road-rw__art {
+  width: 28px;
+  padding: 1px;
+  border-radius: 7px;
 }

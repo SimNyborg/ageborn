@@ -74,12 +74,46 @@ type FakeUnit = ReturnType<FakeArtProvider['createUnit']>;
 
 class SpyArt extends FakeArtProvider {
   readonly unitViews: FakeUnit[] = [];
+  /** Every effect play with its options (pooled views get their options at `playAt`). */
+  readonly plays: { id: string; o: Record<string, number> }[] = [];
   override createUnit(o: Parameters<FakeArtProvider['createUnit']>[0]): FakeUnit {
     const v = super.createUnit(o);
     this.unitViews.push(v);
     return v;
   }
+  override createEffect(id: string, o?: Record<string, number>): ReturnType<FakeArtProvider['createEffect']> {
+    const v = super.createEffect(id, o);
+    const orig = v.playAt.bind(v);
+    v.playAt = (at, opts) => {
+      this.plays.push({ id, o: { ...o, ...opts } });
+      orig(at, opts);
+    };
+    return v;
+  }
 }
+
+/**
+ * Effects the art sizes from an option (the art's option names, WP4 `effects/recipes.ts`): without it
+ * they fall back to a 10 lu / 100 lu default and look wrong.
+ */
+const SIZED_EFFECTS: Record<string, string[]> = {
+  'fx.splash_ring': ['radius'],
+  'fx.gravity_swirl': ['radius'],
+  'fx.emp_ring': ['radius'],
+  'fx.time_ripple': ['radius'],
+  'fx.roar_ring': ['radius'],
+  'fx.last_stand_wave': ['radius'],
+  'fx.legendary_aura': ['radius'],
+  'fx.telegraph_zone': ['zone', 'durationMs'],
+  'fx.plane_bomber': ['zone'],
+  'fx.orbital_beam': ['zone', 'durationMs'],
+  'fx.smoke_cloud': ['width', 'durationMs'],
+  'fx.aurochs': ['distance', 'dir'],
+  'fx.overdrive_frame': ['width', 'height'],
+  'fx.siege_vignette': ['width', 'height'],
+  'fx.mark_reticle': ['durationMs'],
+  'fx.dizzy': ['durationMs'],
+};
 
 describe('BattleView on the real sim (Full War, scripted players)', () => {
   it('maps a whole match: every event kind, finite poses, particle cap, freeze budget, DESIGN ids', () => {
@@ -141,7 +175,7 @@ describe('BattleView on the real sim (Full War, scripted players)', () => {
     for (const c of art.calls) {
       if (c.method === 'createEffect') {
         const id = c.args[0] as string;
-        expect(A14_EFFECT_IDS.has(id) || id.startsWith('power.'), `effect ${id}`).toBe(true);
+        expect(A14_EFFECT_IDS.has(id), `effect ${id}`).toBe(true);
       }
       if (c.method === 'createProjectile') expect(A14_PROJECTILE_IDS.has(c.args[0] as string), `projectile ${String(c.args[0])}`).toBe(true);
     }
@@ -150,6 +184,15 @@ describe('BattleView on the real sim (Full War, scripted players)', () => {
       if (c.method === 'music.setCue') expect(A14_MUSIC_CUES.has(c.cue), `cue ${c.cue}`).toBe(true);
     }
     expect(badPose).toBe(0);
+    // Every sized effect got its size, and powers never play their HUD icon as an effect.
+    const sizedSeen = new Set<string>();
+    for (const p of art.plays) {
+      const need = SIZED_EFFECTS[p.id];
+      if (!need) continue;
+      sizedSeen.add(p.id);
+      for (const k of need) expect(typeof p.o[k], `${p.id} needs ${k}`).toBe('number');
+    }
+    for (const id of ['fx.telegraph_zone', 'fx.overdrive_frame']) expect(sizedSeen.has(id), id).toBe(true);
     view.destroy();
   });
 });

@@ -17,7 +17,7 @@
  * decide every 0.5 s, so they never outpace a human. Plans are derived from content by role and
  * ability, so the proxies follow content changes.
  */
-import type { AgeId, BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, Side, UnitDef } from '../src/contracts';
+import type { BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, Side, UnitDef } from '../src/contracts';
 import { pickWeighted, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { agesOf, baselinePlan, clonePlan, turretsOfAge, unitsOfAge, type Plan } from './lib/plans';
 
@@ -161,7 +161,6 @@ export class ScriptedPlayer implements BotController {
   readonly snapshotDelayTicks = PROXY_DELAY_TICKS;
   private readonly rng: Sfc32State;
   private readonly maxAgeIndex: number;
-  private readonly ages: AgeId[];
   private lastStanceTick = -1_000;
   private lastDecisionTick = -1;
   /** The observation lags, so recent orders are remembered to avoid repeating them. */
@@ -171,6 +170,8 @@ export class ScriptedPlayer implements BotController {
   private readonly mountWaitTicks: number;
   private heavyTrained = 0;
   private rangedTrained = 0;
+  /** `massThenCharge`: holding until the army nears the pop cap. */
+  private massing = true;
 
   constructor(
     readonly strategy: Strategy,
@@ -184,7 +185,6 @@ export class ScriptedPlayer implements BotController {
     this.ascendWaitTicks = content.ticks.ascend + PROXY_DELAY_TICKS + TICKS_PER_DECISION;
     this.mountWaitTicks = content.ticks.turretBuild + PROXY_DELAY_TICKS + TICKS_PER_DECISION;
     this.maxAgeIndex = content.formats[format].ages.length - 1;
-    this.ages = agesOf(content);
   }
 
   onTick(obs: Observation): Command[] {
@@ -239,7 +239,6 @@ export class ScriptedPlayer implements BotController {
     }
 
     // Turrets: build on owned empty mounts, modernise outdated ones, buy mounts (A2.8, A2.3).
-    const currentAge = this.ages[me.ageIndex];
     let boughtInfra = false;
     for (let m = 0; m < me.mountsOwned && m < 4 && !greedy; m += 1) {
       if (obs.tick < (this.mountBusyUntil[m] ?? 0)) continue;
@@ -253,7 +252,7 @@ export class ScriptedPlayer implements BotController {
         gold -= cost;
         boughtInfra = true;
         this.mountBusyUntil[m] = obs.tick + this.mountWaitTicks;
-      } else if (t !== null && st.modernise && currentAge !== undefined && this.content.ages[t.age].index < me.ageIndex) {
+      } else if (t !== null && st.modernise && this.content.ages[t.age].index < me.ageIndex) {
         const credit = Math.trunc(((this.content.turrets[t.card]?.cost ?? 0) * econ.sellRefundBp) / 10_000);
         const price = cost - credit;
         if (gold >= price) {
@@ -318,11 +317,14 @@ export class ScriptedPlayer implements BotController {
     return cards[alt] ? alt : null;
   }
 
+  /** `massThenCharge` holds until the army is 6 pop short of the cap, pushes, and masses again below half. */
   private wantedStance(pop: number): 'charge' | 'hold' {
     const st = this.strategy.stance;
     if (st !== 'massThenCharge') return st;
     const cap = this.content.economy.popCap;
-    return pop >= cap - 6 ? 'charge' : pop < cap / 2 ? 'hold' : 'charge';
+    if (this.massing && pop >= cap - 6) this.massing = false;
+    else if (!this.massing && pop < cap / 2) this.massing = true;
+    return this.massing ? 'hold' : 'charge';
   }
 
   private pickTrain(tray: readonly (CardId | null)[]): number | null {

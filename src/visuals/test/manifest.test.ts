@@ -74,6 +74,33 @@ describe('A14.1 coverage', () => {
   });
 });
 
+describe('visuals agree with the content (A5 tables, A2.7 sizes)', () => {
+  // The body-width check (A11) and the placeholder shapes read size and role group from the puppet,
+  // so they must match the card data; air units must be drawn as flyers.
+  it.each(Object.values(content.units).map((u) => [u.id, u] as const))('%s: same size class, role group, age and air flag', (_id, u) => {
+    const p = puppetById(MANIFEST[u.visualId]?.source ?? '');
+    expect(p).toBeDefined();
+    if (!p) return;
+    expect(p.size).toBe(u.size);
+    expect(p.group).toBe(u.group);
+    expect(p.age).toBe(u.age);
+    expect(p.motion.air ?? false).toBe(u.tags.includes('air'));
+    expect(p.legendary ?? false).toBe(u.rarity === 'legendary');
+  });
+  // Projectiles and beams leave from `anchors.muzzle` (B5 anchors): every shooter has a muzzle bone at
+  // its weapon, including the Matriarch, whose riders throw rocks (A5.2, A14.2).
+  const shooters = Object.values(content.units).filter((u) => u.id === 'mammoth_matriarch' || u.attacks.some((a) => a.projectile !== undefined));
+  it.each(shooters.map((u) => [u.id, u] as const))('%s: has a muzzle bone for its shots', (_id, u) => {
+    const p = puppetById(MANIFEST[u.visualId]?.source ?? '');
+    expect(p?.bones.some((b) => b.id === 'muzzle')).toBe(true);
+  });
+  it.each(Object.values(content.turrets).map((t) => [t.id, t] as const))('%s: turret of the same age, with a muzzle bone', (_id, t) => {
+    const p = puppetById(MANIFEST[t.visualId]?.source ?? '');
+    expect(p?.age).toBe(t.age);
+    expect(p?.bones.some((b) => b.id === 'muzzle')).toBe(true);
+  });
+});
+
 describe('clip contract (A11)', () => {
   const unitEntries = Object.entries(MANIFEST).filter(([id]) => id.startsWith('unit.'));
   it.each(unitEntries)('%s implements every clip name with a resolvable keyframe clip', (_id, def) => {

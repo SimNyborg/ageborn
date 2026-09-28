@@ -75,7 +75,8 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
         if (d <= imp.radius) cands.push({ u: e, d });
       }
       cands.sort(byDist);
-      // The aimed-at unit is the primary while it is inside the radius, else the one nearest the impact.
+      // Melee splash (a unit target) keeps that target as the primary while it is inside the radius;
+      // splash aimed at a point (projectiles, `targetId` 0) takes the enemy nearest the impact (A2.6).
       const aimed = imp.targetId > 0 ? cands.findIndex((c) => c.u.id === imp.targetId) : -1;
       if (aimed > 0) cands.unshift(cands.splice(aimed, 1)[0] as Cand);
       const max = a ? a.maxTargets : ctx.econ.areaMaxTargets;

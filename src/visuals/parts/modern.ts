@@ -168,8 +168,8 @@ part('modern.tank.commander', [
 ]);
 part('modern.tank.antenna', [{ d: limb(0, 0, 0.8, -4, -34, 0.5), zone: 'metal', line: 1.2 }]);
 part('modern.tank.flag', [
-  { d: limb(0, 0, 0.9, 0, -30, 0.7), zone: 'metal', line: 1.4 },
-  { d: blob([0, -30, 12, -28, 12, -21, 0, -20], 0.3), zone: 'team', banner: true, line: 1.8 },
+  { d: limb(0, 0, 0.9, 0, -36, 0.7), zone: 'metal', line: 1.4 },
+  { d: blob([0, -36, 12, -34, 12, -27, 0, -26], 0.3), zone: 'team', banner: true, line: 1.8 },
 ]);
 
 // ---------------------------------------------------------------------------------------------

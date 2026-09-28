@@ -104,7 +104,7 @@ function GeneralModal(p: { e: ConquestEntry; onClose: () => void; onFight: () =>
 }
 
 export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
-  const { save, content, t, router, services } = useUi();
+  const { save, content, t, locale, router, services } = useUi();
   const v = conquestView(save.value, content);
   const [open, setOpen] = useState<ConquestEntry | null>(null);
   const unlockArena = content.arenas.list.find((a) => a.index === v.unlockArena);
@@ -196,7 +196,7 @@ export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
             <p>
               {t('ui.conquest.locked', {
                 arena: unlockArena ? t(arenaNameKey(unlockArena.id)) : String(v.unlockArena),
-                n: formatInt(unlockArena?.trophies ?? 0),
+                n: formatInt(unlockArena?.trophies ?? 0, locale),
               })}
             </p>
           </div>

@@ -113,24 +113,6 @@
   font-weight: 800;
   color: var(--ui-green-hi);
 }
-.road-rw {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-}
-.road-rw b {
-  paint-order: stroke fill;
-  -webkit-text-stroke: 3px var(--ui-ink);
-}
-.road-rw__art {
-  display: block;
-  width: 40px;
-  padding: 2px;
-  border: 2px solid var(--ui-ink);
-  border-radius: 10px;
-  background: var(--ui-gold);
-}
 .road-gate {
   position: relative;
   z-index: 1;

@@ -1,0 +1,79 @@
+/** Test helpers for the save package: the frozen fixtures, manual timers and a store factory. */
+import type { ReplayDoc, SaveDoc } from '@/contracts';
+import { FixedClock } from '@/contracts/fakes/clock';
+import { LocalSaveStore, type LocalSaveStoreOptions, type Timers } from '../store.localStorage';
+import { MemoryStorage } from '../storage';
+import v1Json from './fixtures/v1.json';
+
+/** A fresh deep copy of the frozen v1 fixture. */
+export function v1Fixture(): SaveDoc {
+  return JSON.parse(JSON.stringify(v1Json)) as SaveDoc;
+}
+
+/** Every frozen save fixture by version (`fixtures/v<N>.json`). */
+export const SAVE_FIXTURES: Record<number, unknown> = Object.fromEntries(
+  Object.entries(import.meta.glob<unknown>('./fixtures/v*.json', { eager: true, import: 'default' })).map(([path, doc]) => [
+    Number(/v(\d+)\.json$/.exec(path)?.[1]),
+    doc,
+  ]),
+);
+
+/** WP2's golden replays: real `buildReplay` output (read-only here). */
+export function goldenReplays(): ReplayDoc[] {
+  const files = import.meta.glob<ReplayDoc>('../../sim/test/golden/*.json', { eager: true, import: 'default' });
+  return Object.keys(files)
+    .sort()
+    .map((k) => JSON.parse(JSON.stringify(files[k])) as ReplayDoc);
+}
+
+/** Timers that only fire when the test advances them. */
+export class ManualTimers implements Timers {
+  private now = 0;
+  private nextId = 1;
+  private readonly tasks = new Map<number, { at: number; fn: () => void }>();
+
+  set(fn: () => void, ms: number): unknown {
+    const id = this.nextId++;
+    this.tasks.set(id, { at: this.now + ms, fn });
+    return id;
+  }
+
+  clear(handle: unknown): void {
+    this.tasks.delete(handle as number);
+  }
+
+  get pending(): number {
+    return this.tasks.size;
+  }
+
+  advance(ms: number): void {
+    this.now += ms;
+    for (const [id, t] of [...this.tasks].sort((a, b) => a[1].at - b[1].at)) {
+      if (t.at > this.now) continue;
+      this.tasks.delete(id);
+      t.fn();
+    }
+  }
+}
+
+export interface TestStore {
+  store: LocalSaveStore;
+  storage: MemoryStorage;
+  timers: ManualTimers;
+  clock: FixedClock;
+}
+
+/** A store on fresh memory storage, manual timers and a fixed clock (or the given ones). */
+export function makeStore(o: Partial<LocalSaveStoreOptions> & { storage?: MemoryStorage } = {}): TestStore {
+  const storage = o.storage ?? new MemoryStorage();
+  const timers = (o.timers as ManualTimers | undefined) ?? new ManualTimers();
+  const clock = (o.clock as FixedClock | undefined) ?? new FixedClock(1_790_010_000_000);
+  const store = new LocalSaveStore({ ...o, storage, timers, clock });
+  return { store, storage, timers, clock };
+}
+
+/** Lets pending promise callbacks run. */
+export async function settle(): Promise<void> {
+  await Promise.resolve();
+  await Promise.resolve();
+}

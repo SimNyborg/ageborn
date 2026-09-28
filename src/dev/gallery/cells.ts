@@ -4,7 +4,7 @@
  * victory, ability; turret build/idle/aim/fire/outdated/modernise/sell).
  */
 import type { Container, Text } from 'pixi.js';
-import type { ClipName, TurretView, UnitPose, UnitView, VisualDef } from '@/contracts/art';
+import type { ClipName, EffectView, TurretView, UnitPose, UnitView, VisualDef } from '@/contracts/art';
 import type { RoleGroup, Side } from '@/contracts/ids';
 
 export const UNIT_CLIPS: readonly ClipName[] = ['spawn', 'idle', 'walk', 'attack', 'hit', 'stun', 'die', 'victory', 'ability'];
@@ -44,6 +44,11 @@ export interface UnitCellOptions {
   /** 'cycle' or one clip name. */
   mode: string;
   label?: Text;
+  /**
+   * The white Legendary aura (A12), for Legendary units and Legendary skins. In a match the battle view
+   * adds it (`fx.legendary_aura`, sized like render/battleView.ts); the gallery does the same.
+   */
+  aura?: (radius: number) => EffectView;
 }
 
 /** One unit view driven through its clips. */
@@ -54,9 +59,17 @@ export class UnitCell {
   private t = 0;
   private stunned = false;
   private walkX = 0;
+  private aura: EffectView | null = null;
+  private auraPlaying = false;
+  private readonly auraRadius: number;
 
   constructor(private readonly o: UnitCellOptions) {
     this.view = this.spawnView();
+    this.auraRadius = Math.max(24, Math.round(Math.abs(this.view.anchors.head.y - this.view.anchors.feet.y) * 0.55));
+    if (o.aura) {
+      this.aura = o.aura(this.auraRadius);
+      o.parent.addChildAt(this.aura.root, Math.max(0, o.parent.getChildIndex(this.view.root)));
+    }
     this.next();
   }
 
@@ -128,6 +141,7 @@ export class UnitCell {
     if (this.clip === 'walk') this.walkX = ((this.t / 1000) * 40) % 60 - 30;
     this.view.setPose(this.pose());
     this.view.update(dtMs);
+    this.updateAura(dtMs);
     const loops = this.clip === 'idle' || this.clip === 'walk' || this.clip === 'victory' || this.clip === 'stun';
     if (this.o.mode !== 'cycle' && loops) return;
     if (this.t >= showMs(this.clip, this.o.def)) {
@@ -140,7 +154,22 @@ export class UnitCell {
     }
   }
 
+  private updateAura(dtMs: number): void {
+    const a = this.aura;
+    if (!a) return;
+    a.root.visible = this.clip !== 'die';
+    const facing = this.o.side === 0 ? 1 : -1;
+    const at = { x: this.o.x + this.walkX + this.view.anchors.hitCenter.x * facing, y: this.o.y + this.view.anchors.hitCenter.y };
+    if (!this.auraPlaying || a.done) {
+      a.playAt(at, { radius: this.auraRadius, side: this.o.side });
+      this.auraPlaying = true;
+    }
+    a.root.position.set(at.x, at.y);
+    a.update(dtMs);
+  }
+
   destroy(): void {
+    this.aura?.destroy();
     this.view.destroy();
   }
 }

@@ -109,6 +109,16 @@ export function nextFormat(save: SaveDoc, content: Content): FormatId {
   return formats[formats.length - 1] ?? 'short';
 }
 
+/**
+ * Ages of a format whose Anti-armor card the player does not own yet (A3: "Until an AA Rare arrives,
+ * that loadout plays with 3 units. Skirmish shows a note on that age.").
+ */
+export function agesAwaitingAntiArmor(save: SaveDoc, content: Content, format: FormatId): AgeId[] {
+  return formatAges(content, format).filter(
+    (age) => !content.order.units.some((id) => content.units[id]?.age === age && content.units[id]?.group === 'antiArmor' && isOwned(save, id, content)),
+  );
+}
+
 /** Ages a format uses, in order. */
 export function formatAges(content: Content, format: FormatId): AgeId[] {
   return content.formats[format].ages;

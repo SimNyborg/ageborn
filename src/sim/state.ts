@@ -226,7 +226,7 @@ export function createCtx(cfg: MatchConfig): Ctx {
   const fmt = rules.formats[cfg.format];
   assert(fmt !== undefined, `unknown format ${cfg.format}`);
   assert(fmt.ages.length > 0, `format ${cfg.format} has no ages`);
-  const mods = matchMods(cfg.modifiers);
+  const mods = matchMods(cfg.modifiers, cfg.content);
   const econ = rules.econ;
   const t = cfg.training;
   const noClock = t?.noClock === true;
@@ -338,10 +338,10 @@ export function thresholdOf(ctx: Ctx, side: Side): number | null {
   return Math.trunc((t * MILLI * ctx.mods.xpThresholdBp) / BP);
 }
 
-/** XP cap (milli): 1.5 × threshold, or the Overcharge amount in the final age (A2.4). */
+/** XP cap (milli): 1.5 × threshold, or the final-age cap (1,200) in the format's final age (A2.4). */
 export function xpCapOf(ctx: Ctx, side: Side): number {
   const t = thresholdOf(ctx, side);
-  if (t === null) return ctx.econ.overchargeXp;
+  if (t === null) return ctx.econ.finalAgeXpCap;
   return Math.trunc((t * ctx.econ.xpCapBp) / BP);
 }
 

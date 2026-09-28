@@ -127,6 +127,7 @@ export interface MirrorStats {
   medianSec: number;
   p10Sec: number;
   p90Sec: number;
+  /** Share of matches between 5:00 and 9:00 (Full War only; NaN for other formats). */
   withinWindowPct: number;
   finalBellPct: number;
   /** Median seconds of evolve n (index 0 = first evolve), both sides pooled. */
@@ -165,7 +166,8 @@ export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): Mirr
     medianSec: median(lengths),
     p10Sec: quantile(lengths, 0.1),
     p90Sec: quantile(lengths, 0.9),
-    withinWindowPct: shareWithin(lengths, TARGETS.fullWindow.lo, TARGETS.fullWindow.hi) * 100,
+    // The 5:00-9:00 window is a Full War target (A2.14); other formats have none.
+    withinWindowPct: format === 'full' ? shareWithin(lengths, TARGETS.fullWindow.lo, TARGETS.fullWindow.hi) * 100 : Number.NaN,
     finalBellPct: ms.length ? (ms.filter((m) => m.finalBell).length * 100) / ms.length : Number.NaN,
     evolveMedianSec: evolves.map((xs) => median(xs)),
     evolveSamples: evolves.map((xs) => xs.length),
@@ -176,34 +178,49 @@ export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): Mirr
   };
 }
 
-function mirrorChecks(s: MirrorStats): Check[] {
+/**
+ * The A2.14 mirror targets. Every one is a statistic over matches (or over the evolves that happened),
+ * so each needs `MIN_SAMPLES` of them to pass (docs/decisions.md WP12, gating).
+ */
+export function mirrorChecks(s: MirrorStats): Check[] {
   const f = s.format;
   const checks: Check[] = [];
   const clock = (v: number): string => fmtClock(v);
+  const matches = (c: Check): Check => requireSamples(c, s.matches);
   if (f === 'full') {
     const t = TARGETS.fullMedian;
-    checks.push(rangeCheck('mirror.full.median', 'Full War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock }));
+    checks.push(matches(rangeCheck('mirror.full.median', 'Full War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
     checks.push(
-      rangeCheck('mirror.full.window', 'Full War matches between 5:00 and 9:00', s.withinWindowPct, TARGETS.fullWindow.minShare, 100, {
-        target: `≥ ${TARGETS.fullWindow.minShare}%`,
-        show: (v) => fmtPct(v),
-      }),
+      matches(
+        rangeCheck('mirror.full.window', 'Full War matches between 5:00 and 9:00', s.withinWindowPct, TARGETS.fullWindow.minShare, 100, {
+          target: `≥ ${TARGETS.fullWindow.minShare}%`,
+          show: (v) => fmtPct(v),
+        }),
+      ),
     );
   } else {
     const t = TARGETS.shortMedian;
-    checks.push(rangeCheck(`mirror.${f}.median`, 'Short War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock }));
+    checks.push(matches(rangeCheck(`mirror.${f}.median`, 'Short War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
   }
-  checks.push(maxCheck(`mirror.${f}.finalBell`, `${f === 'full' ? 'Full' : 'Short'} War Final Bell rate`, s.finalBellPct, TARGETS.finalBellMaxPct - 1e-9, { target: `< ${TARGETS.finalBellMaxPct}%`, show: (v) => fmtPct(v) }));
+  checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${f === 'full' ? 'Full' : 'Short'} War Final Bell rate`, s.finalBellPct, TARGETS.finalBellMaxPct - 1e-9, { target: `< ${TARGETS.finalBellMaxPct}%`, show: (v) => fmtPct(v) })));
   if (f === 'full') {
     const fe = TARGETS.firstEvolve;
-    checks.push(rangeCheck('mirror.full.firstEvolve', 'First evolve (median)', s.evolveMedianSec[0] ?? Number.NaN, fe.value - fe.tolerance, fe.value + fe.tolerance, { target: `${clock(fe.value)} ± ${fe.tolerance} s`, show: clock }));
+    checks.push(
+      requireSamples(
+        rangeCheck('mirror.full.firstEvolve', 'First evolve (median)', s.evolveMedianSec[0] ?? Number.NaN, fe.value - fe.tolerance, fe.value + fe.tolerance, { target: `${clock(fe.value)} ± ${fe.tolerance} s`, show: clock }),
+        s.evolveSamples[0] ?? 0,
+      ),
+    );
     TARGETS.laterEvolves.forEach((want, i) => {
       const got = s.evolveMedianSec[i + 1] ?? Number.NaN;
       checks.push(
-        rangeCheck(`mirror.full.evolve${i + 2}`, `Evolve ${i + 2} (median)`, got, want - TARGETS.laterTolerance, want + TARGETS.laterTolerance, {
-          target: `${clock(want)} ± ${TARGETS.laterTolerance} s (A2.4)`,
-          show: clock,
-        }),
+        requireSamples(
+          rangeCheck(`mirror.full.evolve${i + 2}`, `Evolve ${i + 2} (median)`, got, want - TARGETS.laterTolerance, want + TARGETS.laterTolerance, {
+            target: `${clock(want)} ± ${TARGETS.laterTolerance} s (A2.4)`,
+            show: clock,
+          }),
+          s.evolveSamples[i + 1] ?? 0,
+        ),
       );
     });
     const fm = TARGETS.firstMover;

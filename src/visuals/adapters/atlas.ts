@@ -345,7 +345,7 @@ class AtlasUnitView implements UnitView {
       this.trim = p.levelTrim === 'none' ? null : partSprite(this.decor, `trim.${p.levelTrim}`, UI_ZONES);
       if (this.trim) {
         this.trim.position.set(9.6, 5.4);
-        this.trim.scale.set(0.8);
+        this.trim.scale.set(STYLE.levelTrimScale);
         this.ground.addChild(this.trim);
       }
     }

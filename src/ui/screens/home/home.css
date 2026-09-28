@@ -374,6 +374,15 @@
   font-size: 13px;
   font-weight: 800;
 }
+.home-road__next {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  max-width: 45%;
+  overflow: hidden;
+  white-space: nowrap;
+}
 
 /* ---- quests ---- */
 .home-quests__list {

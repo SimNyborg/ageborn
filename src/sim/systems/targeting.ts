@@ -2,7 +2,8 @@
  * Targeting (DESIGN A2.7 Targeting, A2.8 turrets, A5 per-card rules).
  *
  * Candidates are enemy units in range that the attack can hit, in either direction. The enemy base
- * (target −1) is a candidate only when no unit candidate exists. Priority classes: `front` (all equal),
+ * (target −1) is a candidate only when no unit candidate exists, so a unit hitting the base switches to
+ * an enemy unit the moment one is in range (no stickiness for the base). Priority classes: `front` (all equal),
  * `armored` (armored or mech first), `backline` (ranged or support first), `air` (air first); ties go
  * to the smaller distance, then the lower id. Units keep their target (stickiness) until it dies,
  * leaves range plus the 20 lu leash or becomes unhittable, and re-check every 1.0 s, switching to a
@@ -153,6 +154,16 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
     }
   }
   const cur = currentTarget(ctx, u, r, a, st.targetId);
+  if (cur && cur.id === BASE_TARGET) {
+    // The base is a candidate only while no unit candidate exists (A2.7), so it is never sticky: a
+    // unit hitting the base turns to an enemy unit as soon as one is in range.
+    const best = bestUnitCandidate(ctx, u, r, a, a.range, false);
+    if (best) {
+      st.targetId = best.id;
+      st.retargetTick = tick + retarget;
+    }
+    return;
+  }
   if (!cur) {
     const best = bestUnitCandidate(ctx, u, r, a, a.range, false);
     if (best) st.targetId = best.id;

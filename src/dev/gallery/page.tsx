@@ -19,7 +19,7 @@ import { AGES } from '@/visuals/ages';
 import { ARENAS } from '@/visuals/backdrops/ground';
 import type { VisualKind } from '@/visuals/adapters/types';
 import { TEAM_PRESETS } from '@/visuals/palette';
-import { WORLD } from '@/visuals/style';
+import { STYLE, WORLD } from '@/visuals/style';
 import { UNIT_CLIPS } from './cells';
 import { buildEffects } from './effects';
 import { BakePanel, ChecksPanel, HandoffPanel, PortraitsPanel } from './panels';
@@ -29,6 +29,9 @@ import { buildGrid } from './units';
 import { buildWorld, type WorldControls } from './world';
 
 export const title = 'Art gallery';
+
+/** A12 checklist #7 "readable at 32 px height": the zoom that draws infantry 32 px tall (CSS px). */
+const READABLE_ZOOM = (Math.round((STYLE.minReadablePx / STYLE.heightInfantryLu) * 100) / 100).toString();
 
 const SECTIONS = ['units', 'turrets', 'world', 'effects', 'portraits', 'checks', 'handoff', 'bake'] as const;
 type Section = (typeof SECTIONS)[number];
@@ -97,7 +100,7 @@ export default function Gallery() {
           <Select label="sides" value={sidesParam} options={['both', '0', '1']} onChange={set('sides')} />
           {kind === 'unit' ? <Select label="skins" value={skins ? '1' : '0'} options={['1', '0']} onChange={set('skins')} /> : null}
           {kind === 'unit' ? <Select label="trim" value={trim} options={['none', 'bronze', 'silver', 'gold']} onChange={set('trim')} /> : null}
-          <Select label="zoom" value={String(zoom)} options={['1', '1.6', '2.4', '3.2']} onChange={set('zoom')} />
+          <Select label="zoom" value={String(zoom)} options={[READABLE_ZOOM, '1', '1.6', '2.4', '3.2']} onChange={set('zoom')} />
           {common}
         </div>
         <PixiStage

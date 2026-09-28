@@ -4,7 +4,7 @@
  * progress p in milli-lu (the observation's frame); money is milli-gold; card values are whole gold.
  */
 import type { AgeId, BotProfile, CardId, Observation, PowerDef, Side } from '@/contracts';
-import { LANE_MLU, PPM } from '@/core';
+import { PPM } from '@/core';
 import type { CardBook, UnitCard } from './book';
 import type { Ledger } from './ledger';
 import { evolveVisible } from './memory';
@@ -172,9 +172,6 @@ export function foeValueIn(v: View, lo: number, hi: number, groundOnly = false):
   for (const u of v.foes) if (u.p >= lo && u.p <= hi && !(groundOnly && u.air)) sum += u.value;
   return sum;
 }
-
-/** The enemy gate in the bot's frame. */
-export const FOE_GATE = LANE_MLU;
 
 /** Weight multipliers m = 0.5 + w / 100 in bp for every personality weight (A7.2). */
 export type WeightsBp = Record<keyof BotProfile['weights'], number>;

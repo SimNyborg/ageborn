@@ -5,7 +5,8 @@
  */
 import { Container } from 'pixi.js';
 import type { BackdropView, BaseView, TurretView, UnitView } from '@/contracts/art';
-import type { AgeId, Side, TeamPreset } from '@/contracts/ids';
+import type { AgeId, RoleGroup, Side, TeamPreset } from '@/contracts/ids';
+import { mulberry32 } from '@/core/rng';
 import { AGES } from '@/visuals/ages';
 import { AGE_PUPPETS } from '@/visuals/puppets';
 import { WORLD } from '@/visuals/style';
@@ -50,7 +51,7 @@ export function buildWorld(ctx: StageContext, o: WorldOptions, controls: { curre
   bases[0].root.position.set(0, 0);
   bases[1].root.position.set(WORLD.laneLu, 0);
   const turrets: { view: TurretView; side: Side }[] = [];
-  const units: { view: UnitView; side: Side; x: number; speed: number; t: number }[] = [];
+  const units: { view: UnitView; side: Side; x: number; speed: number; t: number; group: RoleGroup }[] = [];
   const unitLayer = new Container();
   for (const side of [0, 1] as const) {
     const b = bases[side];
@@ -76,15 +77,17 @@ export function buildWorld(ctx: StageContext, o: WorldOptions, controls: { curre
   placeTurrets(0);
   placeTurrets(1);
   world.addChild(unitLayer);
+  // Seeded, so a frozen `t=` screenshot of the parade is the same every time.
+  const rng = mulberry32(7);
   const spawnUnit = (side: Side): void => {
     const set = AGE_PUPPETS[ages[side]].units.filter((u) => !u.motion.air);
-    const p = set[Math.floor(Math.random() * set.length)];
+    const p = set[Math.floor(rng.next() * set.length)];
     if (!p) return;
     const view = art.createUnit({ visualId: p.id, side, teamPreset: o.preset });
     unitLayer.addChild(view.root);
     view.play('spawn');
     view.play('walk');
-    units.push({ view, side, x: side === 0 ? 30 : WORLD.laneLu - 30, speed: p.motion.speedLuPerSec ?? 60, t: 0 });
+    units.push({ view, side, x: side === 0 ? 30 : WORLD.laneLu - 30, speed: p.motion.speedLuPerSec ?? 60, t: 0, group: p.group ?? 'infantry' });
   };
   let spawnT = 0;
   controls.current = {
@@ -133,7 +136,7 @@ export function buildWorld(ctx: StageContext, o: WorldOptions, controls: { curre
           u.view.play('die');
           u.t = -2000;
         }
-        u.view.setPose({ x: u.x, y: (i % 3) * 8 - 8, facing: dir as 1 | -1, hpBp: 10000, shieldBp: 0, stunned: false, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: 'infantry' });
+        u.view.setPose({ x: u.x, y: (i % 3) * 8 - 8, facing: dir as 1 | -1, hpBp: 10000, shieldBp: 0, stunned: false, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: u.group });
         u.view.update(dt);
         if (u.t < 0 && u.t > -200) {
           u.view.destroy();

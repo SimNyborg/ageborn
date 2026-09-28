@@ -1,0 +1,189 @@
+/**
+ * The War Plan (DESIGN A3): five Age Loadouts, each with 5 unit slots, 2 turret slots and 1 Age
+ * Power, all from that age, all owned, no duplicates; three presets.
+ *
+ * - Starter plan: each age's 3 common units (Infantry, Ranged, Heavy) and 2 common turrets, plus its
+ *   default power. The starter kit always meets the minimum to play.
+ * - Auto-fill: the highest-level card per slot, keeping at least one Heavy or Legendary, one Ranged
+ *   and one Anti-armor unit per age, plus an air-hitter from Gunpowder on (a turret that hits air
+ *   counts). Ties keep the content order. Units sit in content order.
+ * - Equip now (after a capsule): a new card fills an empty slot, else the same-role slot, else the
+ *   lowest-level slot (ties: the last slot).
+ */
+import type { AgeId, CardId, FormatId, Loadout, Result, SaveDoc, SkinId } from '@/contracts';
+import type { Content } from '@/content';
+import { hitsAir, TURRET_SLOTS, UNIT_SLOTS, type WarPlan } from './advisor';
+import { FIRST_PLAN_NAME } from './rules';
+import { ageCards, defaultPower, isOwned } from './tables';
+
+/** Number of War Plan presets (A3). */
+export const PLAN_PRESETS = 3;
+
+function slots(ids: readonly CardId[], n: number): (CardId | null)[] {
+  return Array.from({ length: n }, (_, i) => ids[i] ?? null);
+}
+
+/** The starter loadout of an age (A3 starter kit). */
+export function starterLoadout(t: Content, age: AgeId): Loadout {
+  const { units, turrets } = ageCards(t, age);
+  const common = (id: CardId): boolean => (t.units[id] ?? t.turrets[id])?.rarity === 'common';
+  return { units: slots(units.filter(common), UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), power: defaultPower(t, age) };
+}
+
+/** The starter War Plan (A3; Arena 1's gate reward, given at the start). */
+export function starterPlan(t: Content, name: string = FIRST_PLAN_NAME): WarPlan {
+  const loadouts = {} as Record<AgeId, Loadout>;
+  for (const age of t.order.ages) loadouts[age] = starterLoadout(t, age);
+  return { name, loadouts };
+}
+
+/** The active War Plan (falls back to the first preset). */
+export function activePlan(s: SaveDoc): WarPlan | null {
+  return s.warPlans[s.activePlan] ?? s.warPlans[0] ?? null;
+}
+
+function levelOf(s: SaveDoc, id: CardId): number {
+  return s.collection[id]?.level ?? 0;
+}
+
+/** Owned cards, highest level first, content order on ties. */
+function byLevel(s: SaveDoc, ids: readonly CardId[]): CardId[] {
+  return ids
+    .filter((id) => isOwned(s, id))
+    .map((id, i) => ({ id, i }))
+    .sort((a, b) => levelOf(s, b.id) - levelOf(s, a.id) || a.i - b.i)
+    .map((x) => x.id);
+}
+
+/** The auto-filled loadout of one age (A3). */
+export function autoFillLoadout(s: SaveDoc, t: Content, age: AgeId, current?: Loadout): Loadout {
+  const { units, turrets } = ageCards(t, age);
+  const rankedUnits = byLevel(s, units);
+  const pickedTurrets = byLevel(s, turrets).slice(0, TURRET_SLOTS);
+  const picked: CardId[] = [];
+  const need = (pred: (id: CardId) => boolean): void => {
+    if (picked.some(pred)) return;
+    const id = rankedUnits.find((u) => !picked.includes(u) && pred(u));
+    if (id && picked.length < UNIT_SLOTS) picked.push(id);
+  };
+  const group = (id: CardId): string | undefined => t.units[id]?.group;
+  need((id) => group(id) === 'heavy' || group(id) === 'legendary');
+  need((id) => group(id) === 'ranged');
+  need((id) => group(id) === 'antiArmor');
+  if (t.ages[age].index >= t.ages.gunpowder.index && !pickedTurrets.some((id) => hitsAir(t, id))) need((id) => hitsAir(t, id));
+  for (const id of rankedUnits) if (picked.length < UNIT_SLOTS && !picked.includes(id)) picked.push(id);
+  const ordered = units.filter((id) => picked.includes(id));
+  const cur = current?.power;
+  const keepPower = cur !== undefined && t.powers[cur]?.age === age && s.powersOwned.includes(cur);
+  return {
+    units: slots(ordered, UNIT_SLOTS),
+    turrets: slots(turrets.filter((id) => pickedTurrets.includes(id)), TURRET_SLOTS),
+    power: keepPower ? cur : defaultPower(t, age),
+  };
+}
+
+/** Auto-fill for the active plan (A3); not saved until the player keeps it. */
+export function autoFill(s: SaveDoc, t: Content): WarPlan {
+  const plan = activePlan(s);
+  const loadouts = {} as Record<AgeId, Loadout>;
+  for (const age of t.order.ages) loadouts[age] = autoFillLoadout(s, t, age, plan?.loadouts[age]);
+  return { name: plan?.name ?? FIRST_PLAN_NAME, loadouts };
+}
+
+/** The index of the slot "Equip now" replaces, among `ids` (A3). */
+function equipSlot(s: SaveDoc, t: Content, ids: readonly (CardId | null)[], card: CardId): number {
+  const empty = ids.indexOf(null);
+  if (empty >= 0) return empty;
+  const lowest = (pred: (id: CardId) => boolean): number => {
+    let best = -1;
+    ids.forEach((id, i) => {
+      if (id === null || !pred(id)) return;
+      if (best < 0 || levelOf(s, id) <= levelOf(s, ids[best] as CardId)) best = i;
+    });
+    return best;
+  };
+  const role = t.units[card]?.group;
+  const same = role ? lowest((id) => t.units[id]?.group === role) : -1;
+  return same >= 0 ? same : lowest(() => true);
+}
+
+/** "Equip now" (A3): puts an owned card into its age's loadout of the active plan. */
+export function equipNow(s: SaveDoc, card: CardId, t: Content): SaveDoc {
+  const plan = activePlan(s);
+  const unit = t.units[card];
+  const turret = t.turrets[card];
+  const power = t.powers[card];
+  const age = unit?.age ?? turret?.age ?? power?.age;
+  if (!plan || !age || (unit?.hidden ?? false)) return s;
+  const owned = power ? s.powersOwned.includes(card) : isOwned(s, card);
+  const l = plan.loadouts[age];
+  if (!owned || !l) return s;
+  let next: Loadout;
+  if (power) {
+    if (l.power === card) return s;
+    next = { ...l, power: card };
+  } else if (unit) {
+    if (l.units.includes(card)) return s;
+    const units = [...l.units];
+    units[equipSlot(s, t, units, card)] = card;
+    next = { ...l, units };
+  } else {
+    if (l.turrets.includes(card)) return s;
+    const turrets = [...l.turrets];
+    turrets[equipSlot(s, t, turrets, card)] = card;
+    next = { ...l, turrets };
+  }
+  const idx = s.warPlans[s.activePlan] ? s.activePlan : 0;
+  const warPlans = s.warPlans.map((p, i) => (i === idx ? { ...p, loadouts: { ...p.loadouts, [age]: next } } : p));
+  return { ...s, warPlans };
+}
+
+/** Stores a preset (index 0-2; a new index adds the next preset). Reasons: badIndex. */
+export function setWarPlan(s: SaveDoc, index: number, plan: WarPlan): Result<SaveDoc> {
+  if (!Number.isInteger(index) || index < 0 || index >= PLAN_PRESETS || index > s.warPlans.length) return { ok: false, reason: 'badIndex' };
+  const warPlans = [...s.warPlans];
+  warPlans[index] = plan;
+  return { ok: true, value: { ...s, warPlans } };
+}
+
+/** Chooses the active preset. Reasons: badIndex. */
+export function setActivePlan(s: SaveDoc, index: number): Result<SaveDoc> {
+  if (!s.warPlans[index]) return { ok: false, reason: 'badIndex' };
+  return { ok: true, value: { ...s, activePlan: index } };
+}
+
+/** Equips an owned skin on its card or base, or clears the target with null. Reasons: notOwned, wrongTarget. */
+export function equipSkin(s: SaveDoc, target: string, skin: SkinId | null, t: Content): Result<SaveDoc> {
+  const equipped = { ...s.skins.equipped };
+  if (skin === null) delete equipped[target];
+  else {
+    const def = t.skins[skin];
+    if (!def || def.target !== target) return { ok: false, reason: 'wrongTarget' };
+    if (!s.skins.owned.includes(skin)) return { ok: false, reason: 'notOwned' };
+    equipped[target] = skin;
+  }
+  return { ok: true, value: { ...s, skins: { ...s.skins, equipped } } };
+}
+
+/** True when the active plan holds a Legendary in an age of `format` (A6.7, A6.8). */
+export function planHasLegendary(s: SaveDoc, t: Content, format: FormatId): boolean {
+  const plan = activePlan(s);
+  if (!plan) return false;
+  return (t.formats[format]?.ages ?? []).some((age) => plan.loadouts[age]?.units.some((id) => id !== null && t.units[id]?.rarity === 'legendary'));
+}
+
+/** Average card level of the plan's units and turrets over the ages of `format` (A3 builder), or null. */
+export function planAverageLevelCenti(s: SaveDoc, t: Content, format: FormatId, plan: WarPlan | null = activePlan(s)): number | null {
+  if (!plan) return null;
+  let sum = 0;
+  let n = 0;
+  for (const age of t.formats[format]?.ages ?? []) {
+    const l = plan.loadouts[age];
+    for (const id of [...(l?.units ?? []), ...(l?.turrets ?? [])]) {
+      if (id === null) continue;
+      sum += Math.max(1, levelOf(s, id));
+      n += 1;
+    }
+  }
+  return n === 0 ? null : Math.trunc((sum * 100) / n);
+}

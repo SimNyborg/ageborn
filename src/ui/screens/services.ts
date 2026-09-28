@@ -63,8 +63,14 @@ export interface UiServices {
   upgrade(card: CardId): ActionResult;
   /** Crafting with Dust: a card copy or a crate skin (A6.6; `meta.craft`). */
   craft(id: string): ActionResult;
+  /**
+   * Stores War Plan preset `index` (0-2; `meta.setWarPlan`). The UI only passes an index up to the
+   * current number of presets, so a new preset is always the next one.
+   */
   setWarPlan(index: number, plan: WarPlan): void;
   setActivePlan(index: number): void;
+  /** Clears a card's NEW badge once the player has looked at it (`meta.markSeen`). */
+  markSeen(card: CardId): void;
   /** Equips a skin on a card or base, or clears it with null. */
   equipSkin(target: string, skin: SkinId | null): void;
 

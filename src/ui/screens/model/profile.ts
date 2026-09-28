@@ -5,6 +5,7 @@
  */
 import type { Content } from '@/content/types';
 import type { CardId, FormatId, ReplayDoc, SaveDoc } from '@/contracts';
+import { TICK_MS } from '@/core';
 import { collectionProgress, isOwned } from './cards';
 import { arenaOf, conquestView } from './progress';
 
@@ -101,7 +102,7 @@ export function historyRows(replays: readonly ReplayDoc[], contentHash: string):
       isAI: r.sides[foe].isBot,
       result: w === null ? 'draw' : w === me ? 'win' : 'loss',
       format: r.format,
-      durationMs: r.result.tick * 50,
+      durationMs: r.result.tick * TICK_MS,
       playable: r.contentHash === contentHash,
     };
   });

@@ -108,6 +108,53 @@ describe('area rule (A2.6): primary 100%, others 50%, at most 4 unless the card 
     for (const h of crash) expect(h.damage).toBe(25000);
   });
 
+  it('splash aimed at a point: the primary is the enemy nearest the impact, not the unit fired at (A2.6)', () => {
+    const sim = arena();
+    // The Trebuchet fires at the walking Tuskback at 400; during the 18-tick flight it walks 49.5 lu toward
+    // the gate, still inside r50 of the impact point, while a stunned Tuskback sits 5 lu from it.
+    const walker = devSpawn(sim, 1, 'tuskback', { p: 1200 - 400 });
+    const [still] = clump(sim, 'tuskback', [405]);
+    devPlaceTurret(sim, 0, 0, 'trebuchet');
+    const ev = stepN(sim, 20);
+    expect(ofKind(ev, 'turretFired')[0]?.targetId).toBe(walker.id);
+    const hits = ofKind(ev, 'hit').filter((h) => h.sourceCard === 'trebuchet');
+    expect(hits.map((h) => [h.targetId, h.damage])).toEqual([
+      [still, 11000],
+      [walker.id, 5500],
+    ]);
+  });
+
+  it('chain (Honk Ballista): 3 targets, each ≤ 80 lu from the previous, all slowed 30% for 2 s', () => {
+    const sim = arena();
+    const [a, b, c, far] = clump(sim, 'bonker', [300, 360, 420, 600]);
+    devPlaceTurret(sim, 0, 0, 'honk_ballista');
+    const ev = stepN(sim, 15);
+    const hits = ofKind(ev, 'hit').filter((h) => h.sourceCard === 'honk_ballista');
+    expect(hits.map((h) => [h.targetId, h.damage])).toEqual([
+      [a, 7000],
+      [b, 3500],
+      [c, 3500],
+    ]);
+    const slows = ofKind(ev, 'statusApplied').filter((s) => s.kind === 'slow');
+    expect(slows.map((s) => s.id)).toEqual([a, b, c]);
+    expect(slows.every((s) => s.ms === 2000)).toBe(true);
+    expect(unitById(sim, a as number)?.statuses.find((s) => s.kind === 'slow')?.magnitudeBp).toBe(3000);
+    expect(hits.some((h) => h.targetId === far)).toBe(false);
+  });
+
+  it('pierce (Chainshot Cannon): 4 targets within 200 lu, starting at the frontmost', () => {
+    const sim = arena();
+    const ids = clump(sim, 'bonker', [200, 250, 300, 350, 390, 450]);
+    devPlaceTurret(sim, 0, 0, 'chainshot_cannon');
+    const hits = ofKind(stepN(sim, 8), 'hit').filter((h) => h.sourceCard === 'chainshot_cannon');
+    expect(hits.map((h) => [h.targetId, h.damage])).toEqual([
+      [ids[0], 7500],
+      [ids[1], 3750],
+      [ids[2], 3750],
+      [ids[3], 3750],
+    ]);
+  });
+
   it('splash projectiles aim at the target x at fire time; minimum range is respected (Trebuchet)', () => {
     const sim = arena();
     const [inner] = clump(sim, 'tuskback', [120]);
@@ -192,6 +239,30 @@ describe('turrets (A2.8)', () => {
     expect(pLu(sim, front as number)).toBe(1200 - 300);
   });
 
+  it('Grumpy Toad without a backline target drags the second-frontmost small or medium ground enemy', () => {
+    const sim = arena();
+    // Tuskbacks (large) are never grabbed; of the two Bonkers the second-frontmost (250) is dragged
+    // toward the gate and stops at the enemy's frontmost ground unit (the Bonker at 200).
+    clump(sim, 'tuskback', [150]);
+    const [, second] = clump(sim, 'bonker', [200, 250]);
+    devPlaceTurret(sim, 0, 0, 'grumpy_toad');
+    const ev = stepN(sim, 3);
+    expect(ofKind(ev, 'turretFired')[0]?.targetId).toBe(second);
+    expect(ofKind(ev, 'knockback').find((k) => k.id === second)?.toX).toBe(150000);
+
+    // a single small enemy is dragged the full 120 lu
+    const sim2 = arena();
+    const [only] = clump(sim2, 'bonker', [400]);
+    devPlaceTurret(sim2, 0, 0, 'grumpy_toad');
+    expect(ofKind(stepN(sim2, 3), 'knockback').find((k) => k.id === only)?.toX).toBe(280000);
+
+    // large units only: nothing to grab, the turret does not fire
+    const sim3 = arena();
+    clump(sim3, 'tuskback', [300]);
+    devPlaceTurret(sim3, 0, 0, 'grumpy_toad');
+    expect(ofKind(stepN(sim3, 5), 'turretFired')).toHaveLength(0);
+  });
+
   it('Gravity Well: aims at the densest point, pulls 60% toward the centre, slows everyone in the radius', () => {
     const sim = arena();
     const ids = clump(sim, 'bonker', [250, 300, 300, 310, 350, 390]);
@@ -224,6 +295,25 @@ describe('turrets (A2.8)', () => {
     devPlaceTurret(sim, 0, 1, 'rock_tosser');
     const rej = st.step({ t: 'replaceTurret', side: 0, mount: 1, slot: 0 });
     expect(ofKind(rej, 'commandRejected')[0]?.reason).toBe('notOutdated');
+  });
+
+  it('modernise: an older-age turret becomes a current-age card for the new price minus 50% of the old one, in 1 s', () => {
+    const sim = arena();
+    const st = new Stamper(sim);
+    simCtx(sim).s.sides[0].ageIndex = 1; // Medieval
+    devSetGold(sim, 0, 1000);
+    devPlaceTurret(sim, 0, 0, 'rock_tosser'); // Stone, 150
+    const card = sim.config.sides[0].loadouts.medieval?.turrets[0];
+    expect(card).toBe('crossbow_nest'); // 150
+    const before = sim.state.sides[0].gold;
+    const ev = [...st.step({ t: 'replaceTurret', side: 0, mount: 0, slot: 0 })];
+    expect(ofKind(ev, 'turretReplaced')[0]).toMatchObject({ side: 0, mount: 0, card });
+    // 150 − 75 = 75, plus one tick of passive income
+    expect(sim.state.sides[0].gold - before).toBe(-75000 + 300);
+    expect(sim.state.sides[0].turrets[0]).toMatchObject({ card, state: 'replacing' });
+    ev.push(...stepN(sim, 20));
+    expect(ofKind(ev, 'turretBuilt')[0]).toMatchObject({ mount: 0, card, tick: (ev[0]?.tick ?? 0) + 20 });
+    expect(sim.state.sides[0].turrets[0]?.state).toBe('active');
   });
 });
 

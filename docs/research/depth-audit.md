@@ -25,11 +25,16 @@
    - At 45%, cheap spam beats tier VII 88-92%.
    - At 75% (with the fixed AI), spam stays dead but Full War Final Bells rise from 8% to 21%.
    - Keep 60%. Loss XP, splash, Overcharge, Ascension length and card recharges showed no useful effect.
-8. **Stalemates are the biggest open rule problem.** Final Bell rates in AI mirrors: Short War 22-33%, Full War 4-15% (target < 3%). The turtle proxy goes to the Bell in 95-98% of Short Wars, so its 44-48% win rate means nothing. Earlier Overdrive and Siege did not help. A Siege-only bounty cut and turret shutdown are tested in section 3.7.
+8. **Stalemates are the biggest open rule problem, and they come from composition, not the clock.**
+   - Final Bell rates in AI mirrors: Short War 22-33%, Full War 4-15% (target < 3%).
+   - A plan with a Legendary pushes the tier VII mirror to 55% (Short) and 83% (Full).
+   - A Heavy-plus-Ranged scripted mirror (B12's proxy 4) reaches the Bell in 100% of matches.
+   - The turtle proxy goes to the Bell in 95-98% of Short Wars, so its 44-48% win rate means nothing.
+   - More than ten clock, economy and Siege variants did not fix it. Only lower unit HP (the `glass_armies` modifier, ×0.7) helped: the baseline mirror's Short War Bells fell from 28% to 8% and the turtle's from 95% to 46%. Even that did nothing for Legendary plans. Section 3.7.
 9. **Click speed is not the problem; attention is a mild tax.** Tier X does not beat tier V (43-61%), so reaction speed and precision do not convert into wins. But a script that decides every 3 s instead of every 1 s drops from 13% to 3% against tier VII, because idle gold piles up. Across the full sweep, the same script ranges from 25% (every tick) to 3% (every 3 s).
 10. **Levels outweigh skill.** One card level (+5%) is worth about 20 points: L8 beats L7 70% of the time and L10 beats L7 95%. The whole tier VII vs V skill gap is 50-64%. Ranked play must normalise levels (section 6).
 11. **The AI misses several A2.14 targets for reasons outside depth.** Numbers for Phase 3:
-    - the tier VII bot builds 0.3 turrets per match, so turrets make 0.4% of kills (target 20-35%);
+    - two tier VII bots together build 0.3 turrets per match, so turrets make 0.4% of kills (target 20-35%);
     - its first evolve lands at 1:23 (target 1:00 ± 10 s);
     - its Full War median is 5:23-6:19 (target 7:00).
 
@@ -40,7 +45,7 @@
 - **Code.** Sim and content at commit `d066c58`. The AI is a snapshot of `src/ai` taken at 23:00 on 2026-09-27, including WP3's uncommitted `brain.ts` edits of that hour. WP3 was editing the bot during this audit; each AI number describes that snapshot, not the final bot.
 - **Setup.** A2.14 baseline plan (3 Commons, the AA Rare and the Support Rare, both Common turrets, the default power), every card at L7, both sides.
 - **Scripted players.** Throwaway scripts in the session scratchpad (not in the repo). They read only the `Observation`, 300 ms delayed like a bot, and issue ordinary `Command`s. Rule changes were applied as content data (a patched clone of `CompiledContent`), or by a harness filter for the three that need code (evolve price, card recharge, Siege bounty). The AI copy was taught to save for an evolve price.
-- **Samples.** Every row swaps sides each seed. N = 24-60 matches per row: about 1,900 matches in the main runs and about 4,500 in the variant runs, roughly 6,500 in all.
+- **Samples.** Every row swaps sides each seed. N = 24-60 matches per row, about 12,000 matches in all.
 - **Noise.** The 95% interval at 50% is about ±20 points at N = 24, ±15 at N = 40 and ±12 at N = 60. It is narrower near 0% and 100%. Treat gaps under about 15 points as noise.
 
 | Script | What it does |
@@ -70,7 +75,7 @@ A trace shows why Short War stalls. The bot answered cheap spam with its own Inf
 
 ### 2.2 Skill expression: tier against tier (N = 40)
 
-| Winner-side tier | Short | Full | With the two AI fixes (Short / Full) |
+| Pairing (first tier's win %) | Short | Full | With the two AI fixes (Short / Full) |
 |---|---|---|---|
 | X vs V | 43% | 46% | 54% / 61% |
 | VII vs V (N = 60) | 61% | 59% | 64% / 60% |
@@ -120,7 +125,7 @@ The two fixes in the scratch copy:
 
 - Every Turtle pairing except the one against AA spam ran to the Final Bell in 17-96% of matches.
 - Ranged-only armies lose to everything: Ranged is support, as A2.6 intends.
-- The counter matrix (equal-gold 1v1 duels, `counters.json`) agrees. Heavy beats Infantry by 79% in every age. AA beats Heavy by 58-86%. Infantry beats AA by 67-77%.
+- The counter matrix (equal-gold 1v1 duels, `counters.json`) agrees. Heavy beats Infantry by 79-84% in every age. AA beats Heavy by 58-86%. Infantry beats AA by 67-77%.
 
 ### 2.5 What each decision is worth
 
@@ -148,7 +153,7 @@ Spam evolves early because it kills the bot's early Ranged. Cutting loss XP woul
 
 ### 2.6 Rule variants
 
-Win % of the row player. N = 24; snapshot AI unless marked.
+Cells give the first-named side's win %, except the two Final Bell columns. N = 24; snapshot AI unless marked.
 
 | Variant | Cheap spam vs VII (S / F) | Heavy spam vs VII (S / F) | Counter-picker vs cheap spam (S / F) | VII mirror Final Bell (S / F) | Balanced mirror Final Bell (S / F) | Verdict |
 |---|---|---|---|---|---|---|
@@ -165,7 +170,8 @@ Win % of the row player. N = 24; snapshot AI unless marked.
 | Fixed AI, current rules (N = 40) | **3 / 0** | 35 / 35 | | 28 / 8 | | Adopt (P1) |
 | Fixed AI + V3 | 0 / 0 | 38 / 42 | 58 / 100 | (mirror rows unreliable, see note) | 4 / 17 | Reject |
 | Fixed AI + V11 bounty 75% | 19 / 2 | 29 / 29 | 96 / 100 | 33 / **21** | 21 / 50 | Spam stays dead, stalls rise. Keep 60% |
-| Fixed AI + V12 Overdrive and Siege 30-60 s earlier | 10 / 0 | 38 / – | 100 / – | 33 / 13 | 17 / – | Does not cure stalls |
+| Fixed AI + V12 Overdrive and Siege 30-60 s earlier | 10 / 0 | 38 / 38 | 100 / 100 | 33 / 13 | 17 / 13 | Does not cure stalls |
+| Fixed AI + Siege-only rules, the rope, `power_hour`, `glass_armies` | see 3.7 | | | | | Only lethality helps |
 
 **Note on V3.** With the fixed AI, the tier VII mirror showed a seat bias (83% for the first seat in both formats) that I could not explain. Treat those two rows as unreliable. The rejection rests on the scripted rows.
 
@@ -189,7 +195,7 @@ The tug-of-war amplifies small stat edges: one level (+5% HP and damage) swings 
   - Behemoth Tank vs Bazooka Trooper 90%
   - only Chrono Titan loses to its counter (Rail Gunner beats it; the Titan scores 42%)
   - with one Legendary allowed and a 7 s train time this is contained, but "always buy the Legendary" is a rule of thumb, not a decision.
-- **Balloon Admiral** has no unit answer in Gunpowder at equal gold: Fusilier 30%, every other Gunpowder unit 0%. Only turrets answer it.
+- **Balloon Admiral** has no unit answer in Gunpowder at equal gold: Fusilier 30%, the other Gunpowder units 0-12%. Only turrets answer it.
 - **EMP Saboteur** loses to the mechs it should counter: Walker Mech 6%, Chrono Titan 1%.
 - These belong to Phase 3 per-card tuning. For depth, the rule is: every card needs an answer in its age that wins at equal gold (section 5, "has-an-answer" gate).
 
@@ -204,7 +210,7 @@ The tug-of-war amplifies small stat edges: one level (+5% HP and damage) swings 
 | A2.3 Bounty 60% / A2.4 kill XP 100% | Punishes feeding. It is the anti-spam engine, and also what funds a defender's endless replacements | 2.6 (V8, V11) | Keep 60%; it is tuned between spam and stalls |
 | A2.4 Evolve (free, heals 5%, 2.5 s training pause) | Evolve at once; fire the power first | 2.5, 2.6 (V2, V9) | Dominated. Keep it fast (Pillar 2); add a *what* choice (doctrines) |
 | A2.7 Queue of 5, train times | Never binds: gold is the only brake | Infantry trains in 1.5 s; passive gold pays for one every 8.3 s | Neutral. Recharges hurt the counter more than the spam (V3) |
-| A2.7 Stance (2 s cooldown) | Hold + push gate = stall; bots toggle 24 times per Full War (76-116 in an earlier build, per `depth-architecture.md`) | 2.3 turtle | APM more than decision; the Hold part feeds stalls |
+| A2.7 Stance (2 s cooldown) | Hold + push gate = stall; bots toggle about 12 times each per Full War (76-116 in an earlier build, per `depth-architecture.md`) | 2.3 turtle | APM more than decision; the Hold part feeds stalls |
 | A2.8 Turrets (invulnerable, never hit bases) | Worth it only against an attacker that walks into them. The bot's push gate refuses to, so 0 turrets did best against tier VII | 2.5 | Area denial is a fine decision, but it makes turtles force Bells |
 | A2.9 Age Power (charge on a timer, auto-aim, ring caps at 100%) | Fire at the first modest clump | 2.5 | Shallow: holding the ring wastes charge |
 | A2.10 Clock | 22-33% of Short Wars end at the Bell | 2.1, 2.6 | Open problem (section 3.7) |
@@ -212,16 +218,40 @@ The tug-of-war amplifies small stat edges: one level (+5% HP and damage) swings 
 | A2.12 Controls | Spend promptly; no micro exists | 2.2, 2.5 | Not click speed; a mild attention tax |
 | A3 Tray (all 5 cards always, no cycle) | Counter-pick what you see | 2.4, 2.5 | Solved by a script; commitment lives in the War Plan |
 | A5 Content | Triangle sound; a few red flags | 2.8 | Phase 3 numbers |
-| A7 AI | Loses to mono-armies; waits forever to evolve under pressure; builds 0.3 turrets per match | 2.3 | Fix before trusting any A2.14 exploit gate |
+| A7 AI | Loses to mono-armies; waits forever to evolve under pressure; two bots build 0.3 turrets per match between them | 2.3 | Fix before trusting any A2.14 exploit gate |
 
 ### 3.7 Stalemates: what the data says
 
-Short War reaches its last age at about 2:30 and then has 3.5 minutes with no tech left to race for. Several things make same-age armies grind:
+Several things make same-age armies grind at mid-lane:
 - The two-wide melee front caps melee damage, so a bigger army adds HP but not much damage.
+- Ranged units behind a Heavy front shoot over it.
 - Each side replaces its losses from the 60% bounty.
-- The push gate stops bots from attacking into turrets.
+- Turrets cover only 480 lu, so they never reach a mid-lane front.
+- Bots will not attack into turrets (the push gate).
 
-None of the tested knobs fixed it: loss XP, splash, Overcharge, Ascension, bounty ±15 points, or Siege 60 s earlier. The Siege-only rules (V13 bounty 30% in Siege, V14 turrets off in Siege, V15 both) were still running when this note was written, so there is no verdict on them here.
+Short War reaches its last age at about 2:30 and then has 3.5 minutes with no tech left to race for.
+
+Final Bell share, 24 matches per cell, S / F. Blank cells were not measured.
+
+| Change (the rope rows also remove the symmetric Siege decay) | VII mirror, baseline plan | VII mirror, plan with a Legendary | Heavy + Ranged scripted mirror | Turtle vs VII |
+|---|---|---|---|---|
+| Current rules (fixed AI) | 28 / 8 | **55 / 83** | 100 / 100 | 95 / 55 |
+| Overdrive and Siege 30-60 s earlier | 33 / 13 | | | 88 / 42 |
+| Bounty 30% in Siege only | 21 / 8 | | | 96 / 46 |
+| Turrets off in Siege | 29 / 8 | | | 96 / 33 |
+| Both Siege rules | 21 / 8 | | | 96 / 33 |
+| "The rope": in Siege, the side losing the contact point loses 1% base HP per second | 21 / 8 | 42 / 83 | 100 / 100 | 96 / 21 |
+| Power charge ×2 (`power_hour`) | 25 / 13 | 75 / 92 | 100 / 92 | 92 / 67 |
+| Unit HP ×0.7 (`glass_armies`) | **8 / 4** | 67 / 96 | 100 / 100 | **46** / 42 |
+
+Scripted mirrors with a Legendary in each plan stall less than the bots do: 4% / 21% for Balanced and 4% / 29% for the Counter-picker. The bots' mutual banking (the Legendary saving goal plus the push gate) adds the rest.
+
+The rope changed *who* wins at the Bell: the turtle dropped from 44% to 21-27% in Short War. It did not change *how often* matches reach the Bell. Contact points hover within ±25 lu of mid-lane.
+
+**Conclusion.** At equal strength, a defensive line of Heavy, Ranged or a Legendary behind turrets is stronger than an attack, and no clock rule changes that. The levers are:
+- lethality in the final phase (the only knob that moved the Bell rate);
+- Legendary tuning, since they beat their own counters (2.8);
+- the bots' banking behaviour.
 
 ---
 
@@ -236,7 +266,7 @@ Ordered by value for cost. Each has a test.
 | P3 | **Keep the kill bounty at 60%.** Record it in `docs/decisions.md` as the dial between spam and stalemate | A2.3 · lead · XS | 45%: spam 88-92%; 75%: Full War Bells 8% → 21% | Phase 3 re-checks both proxies after any bounty change |
 | P4 | **Teach and signal the wave.** Add an A8 failure-pattern hint and an A15.12 loss tip when units arrived one at a time. Personalities (Mama Moss, Madame Tempest) visibly bank, Hold, then Charge (A7.4 readable intent). Keep enemy gold hidden: reading a lull is the skill | A8, A15.12, A7.4 · WP11, WP1 strings, WP3 · XS | The largest decision in the rules (+21 to +48 points) is invisible | Strings in review; bot traces show bank → Charge |
 | P5 | **Power ring overflow.** Charge keeps filling to 150% at the same rate. A cast uses 100%. The 50% cap across Evolve stays. Both rings show the overflow | A2.9 · WP2 (sim, `SIM_VERSION` bump) and WP5 (ring) · S | Waiting for a clump or an evolve moment stops costing charge, so *when* becomes a choice the opponent can read | Zone-threshold proxy (≥ 450 gold) beats fire-when-full by ≥ 5 points |
-| P6 | **Stalemate fix: prototype behind data flags, then choose.** Candidates: bounty 30% in Siege only; turrets off in Siege. Each could be a new field in `EconomyRules.siege` (compile rules and `contentHash` only) | A2.10 · WP2, WP1 · S | Short War Bell 22-33%; no global knob helped (section 3.7) | Final Bell < 5% in the VII mirror and ≤ 15% in turtle matches, with cheap spam still ≤ 20% |
+| P6 | **Stalemates:** (a) a Siege lethality rule: in Siege all units take +40% damage, a new `EconomyRules.siege.unitDamageTakenBp` field (the tested proxy was HP ×0.7 all match); (b) Phase 3 tunes each Legendary so its age's counter beats it at equal gold; (c) the bot drops its Legendary saving goal while the push gate fails; (d) a new per-card gate: a card's test plan may not raise the Final Bell rate by more than 5 points | A2.10, A5, A7.2 · WP2, WP1, WP3, WP12 · S | Bells come from defensive compositions at parity; clock and economy knobs failed (3.7) | Final Bell < 5% in the VII mirror (baseline plan and plans with a Legendary) and ≤ 15% in turtle matches, with cheap spam still ≤ 20% |
 | P7 | **Do not add** per-card recharges, queue caps, an evolve price or a longer Ascension against spam. Recharges belong to fortifications (PvZ model) | A2.4, A2.7 · lead · XS (a decision) | V2, V2b, V3, V5 and V9 all hurt | none |
 | P8 | **Evolve depth through a choice, not a price** (the owner's doctrines): 1 of 2 mirrored offers from the seed; the Evolve button carries the pick; the bot scores both | A2.4 · v1.1 · M (see `depth-architecture.md` 4.1) | Evolve timing is dominated and should stay a celebration | Each doctrine's win-rate delta within ±5 points; the pick matters: the better pick for the lane state wins by ≥ 5 points |
 | P9 | **Repeat order (attention tax).** Long-press a card: the queue refills with that card whenever gold allows, until tapped again. The same command exists for bots (A7.1). It does not chain matches, so A15 red line 5 is untouched | A2.12 · v1.1 or with PvP · S | 1 s vs 3 s decisions: 13% vs 3%. PvP has no pause | The same brain at 1 s and 3 s cadence with Repeat order is within 5 points |
@@ -254,14 +284,16 @@ Exploit rows run against the tier VII Balanced bot at L7, in both Short and Full
 | Random spam (new) | – | 30% / 28% | 11% / 13% | **≤ 15%** |
 | Mono Heavy, AA and Ranged spam (new, each) | – | Heavy 98% / 98%; AA 0%; Ranged 0% | Heavy 35% / 35% | **≤ 25%** |
 | Turtle (4 turrets, Hold) | 35-45% | 48% / 19%, Bell 98% / 53% | 44% / 14%, Bell 95% / 55% | 35-45% **and ≤ 15% of its matches at the Final Bell** |
+| Heavy + mass Ranged (B12 proxy 4): vs VII, and its own mirror's Final Bell | ≤ 55% | 5% / 8%; mirror Bell 100% / 100% | – | ≤ 55% **and mirror Bell ≤ 20%** |
 | Counter-picker vs each mono spam (rules sanity, new) | – | 92-100% | – | **≥ 80%** |
 | Triangle (rules sanity, new): Heavy > Inf, AA > Heavy, Inf > AA (mono vs mono) | – | 100% / 92% / 100% | – | **each ≥ 70%** |
-| Final Bell, VII mirror | < 3% | 22% S / 5% F | 28% / 8% | < 3% Full; **< 5% Short**, after P6 |
+| Final Bell, VII mirror | < 3% | 22% S / 5% F (with a Legendary in each plan: 55% / 83%) | 28% / 8% | < 3% Full, **< 5% Short**, also measured with a Legendary in each plan; after P6 |
+| Per-card Final Bell delta (new) | – | – | – | a card's test plan raises the Bell rate by ≤ 5 points |
 | Skill gap (new) | – | VII vs V 59-61%; VII vs III 85-88% | 60-64% | **VII vs V ≥ 65%; X vs V ≥ 65%; VII vs III ≥ 80%** |
 | Attention gap (new): Balanced script at 1 s vs 3 s decisions, each vs VII | – | 13% vs 3% | – | ≤ 10 points today; ≤ 5 with P9 |
 | Power timing (new): threshold ≥ 450 gold vs fire-when-full | – | 5% vs 10% | – | threshold ≥ fire-when-full + 5, after P5 |
 | Has-an-answer (new, from `counters.json`, no match sims) | – | Balloon Admiral and EMP Saboteur fail | – | every card has a same-age card scoring ≥ 55% against it, with Legendaries reported |
-| Turret share of kills | 20-35% | 0.4% (bot builds 0.3 turrets per match) | – | keep; needs P1 (d) |
+| Turret share of kills | 20-35% | 0.4% (0.3 turrets per match, both bots together) | – | keep; needs P1 (d) |
 | Level edge +1 (report only) | – | 70% | – | reported; gates nothing in v1 |
 
 **Proxy definitions for WP12** (`tools/exploits.ts`). All issue ordinary commands from the delayed observation, decide every 0.25 s, cast Last Stand when armed, never sell turrets, and draw from a seeded RNG.
@@ -286,7 +318,7 @@ Exploit rows run against the tier VII Balanced bot at L7, in both Short and Full
 ## 7. Limits
 
 - The bot is mid-build. Every "vs tier VII" number is a snapshot, and the P1 effect comes from a scratch patch that WP3 must re-implement and re-measure.
-- The baseline plan has no Epics, Legendaries or alternate powers, so stall rates may fall with full plans. Balloon Admiral and Behemoth Tank are wall-breakers.
+- Most rows use the baseline plan, with no Epics, Legendaries or alternate powers. Plans with a Legendary stalled *more* (3.7). Epics and alternate powers were measured only in one mirror.
 - Scripts are not humans. Humans will find waves, Hold timing and power reads faster than scripts do, which is why the rules-only rows and the gates matter more than any single bot number.
-- The three code-dependent variants (evolve price, card recharge, Siege bounty) were emulated in the harness, not in the sim.
+- The four code-dependent variants (evolve price, card recharge, Siege-only bounty, the rope) were emulated in the harness, not in the sim.
 - The harness and scripts lived in the session scratchpad and are not in the repo. WP12 should build the proxies in section 5 as `tools/exploits.ts`.

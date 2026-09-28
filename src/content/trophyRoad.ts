@@ -5,6 +5,7 @@
  * written and a test checks them against the formula.
  */
 import type { CardId, CapsuleTier } from '@/contracts/ids';
+import { mulDiv } from '@/core/fixed';
 import type { RoadReward, TrophyRoad } from './types';
 
 const amber = (amount: number): RoadReward => ({ kind: 'amber', amount });
@@ -89,7 +90,10 @@ export const trophyRoad: TrophyRoad = {
   amberFormula: { base: 100, perHundred: 20 },
 };
 
-/** Amber paid by an Amber node at `trophies` (A6.3). Integer for every node on the road. */
+/**
+ * Amber paid by an Amber node at `trophies` (A6.3): base + perHundred × trophies / 100, truncated so
+ * the result is always an integer (exact for every node on the road, which sit on multiples of 50).
+ */
 export function roadAmber(road: TrophyRoad, trophies: number): number {
-  return road.amberFormula.base + (road.amberFormula.perHundred * trophies) / 100;
+  return road.amberFormula.base + mulDiv(road.amberFormula.perHundred, trophies, 100);
 }
