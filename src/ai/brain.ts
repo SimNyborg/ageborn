@@ -191,6 +191,14 @@ const COUNTER_GOAL_LAPSE = 300 * MILLI;
 const MONO_FROM_BP = 4000;
 const MONO_SLOPE = 25;
 const MONO_MAX_BP = 20000;
+/** `waveCommit`: a committed wave ends once it has lost half its peak value ... */
+const WAVE_END_BP = 5000;
+/** ... and a new one needs the push gate plus this margin. */
+const WAVE_MARGIN_BP = 11500;
+/** `econPlan`: the foe counts as passive after this long without a ground unit on the bot's half ... */
+const PASSIVE_FOE_TICKS = 20 * TICKS_PER_SECOND;
+/** ... and a Treasury level bought then must pay back within this long (A2.3: levels 1 and 2). */
+const PASSIVE_PAYBACK_TICKS = 240 * TICKS_PER_SECOND;
 
 /** A16.3 rule 3 factor for the visible enemy army, bp (10,000 = ×1, capped at ×2). */
 export function monoFactorBp(foes: readonly { value: number; def?: { group: RoleGroup } | undefined }[]): number {
@@ -217,6 +225,8 @@ export class Brain {
   private stanceTick = -1000000;
   /** A "float gold" mistake leaves the tray untouched until this tick. */
   private idleUntil = 0;
+  /** `waveCommit`: the peak army value of the wave now charging, or null while none is. */
+  private wavePeak: number | null = null;
   private readonly opening: OpeningPlan;
   private openingIndex = 0;
 
@@ -259,7 +269,15 @@ export class Brain {
     const gateBp = hot ? BP : Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
     // An army at the pop cap cannot grow by banking, so it goes.
     const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
-    const pushOk = siege || popFull || v.myArmy * BP >= gateBp * defence;
+    let pushOk = siege || popFull || v.myArmy * BP >= gateBp * defence;
+    if (t.waveCommit) {
+      // Waves, not trickles (owner feedback 2026-09-28): a wave that passed the gate keeps going until it
+      // has lost half its peak value; a new wave needs a 15% margin over the gate.
+      if (this.wavePeak !== null && v.myArmy < mulBp(this.wavePeak, WAVE_END_BP)) this.wavePeak = null;
+      if (this.wavePeak === null && v.myArmy > 0 && (siege || popFull || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) this.wavePeak = v.myArmy;
+      if (this.wavePeak !== null) this.wavePeak = Math.max(this.wavePeak, v.myArmy);
+      pushOk = siege || this.wavePeak !== null;
+    }
     const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane);
     const allIn = P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP));
     // Push gate (A7.2 anti-turtle): the bot charges past mid-lane only with myArmy ≥ gate × D. When the
@@ -267,9 +285,9 @@ export class Brain {
     // (below its cap), a preference for range ≥ 250, a Hold at the line where the tier allows it, and no
     // training until its gold can lift the army over the gate in one wave, which it then spends at once.
     const gateFailed = !pushOk && !foeOnMyHalf && !allIn;
-    const waveGold = mulBp(gateBp, defence) - v.myArmy;
+    const waveGold = mulBp(t.waveCommit ? mulBp(gateBp, WAVE_MARGIN_BP) : gateBp, defence) - v.myArmy;
     const banking = gateFailed && v.gold < waveGold * MILLI;
-    const wave = gateFailed && !banking;
+    let wave = gateFailed && !banking;
 
     // Saving goals (A7.2: "Bank 350 for a Legendary" or "bank for Treasury"): trains that would dip
     // below the goal wait, and the goal's own action gets a bonus once affordable, so the bot visibly
@@ -291,7 +309,7 @@ export class Brain {
       const quietGate = !v.foes.some((u) => u.p <= e.midLane);
       // In a quiet moment a level is only worth it while it still pays back by 6:00.
       const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / e.treasuryGoldPerSecMilli) <= TREASURY_PAYBACK_BY_TICKS;
-      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS))) {
+      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS) || (quietGate && this.passiveTreasury(v, mem, nextTreasury)))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
       } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP && !gateFailed) {
         // A16.3 rule 4: no Legendary saving goal while the push gate fails.
@@ -299,13 +317,18 @@ export class Brain {
       }
     }
     const goalBonus = (kind: BotAction['kind']): number => (this.goal?.kind === kind ? GOAL_BONUS : 0);
+    // `econPlan`: a Treasury goal is bought before the push-gate wave spends the gold.
+    if (t.econPlan && this.goal?.kind === 'treasury' && v.gold < this.goal.amount && !urgent) wave = false;
 
     // Wanted turrets (docs/decisions.md, WP3): a bot below its wanted turret count for the age buys a
     // turret or a mount under pressure, and a rebuilding tier modernises when things are calm. These do
     // not pause training; the bonus only makes them win when the gold is there.
     const mountCap = Math.min(e.mountCount, t.maxTurrets);
     const wantedTurrets = Math.min(t.maxTurrets, 1 + Math.trunc((v.ageIndex * W.turret) / BP));
-    const wantTurret = v.turretsBuilt < wantedTurrets && !allIn && pressure >= DEFENCE_PRESSURE_BP ? WANT_BONUS : 0;
+    // `baseTurrets` (owner feedback 2026-09-28): from Bronze on the upper tiers keep 1-2 turrets up on
+    // spare gold, without waiting for pressure (the turrets pay for themselves in bounties).
+    const baseTurrets = v.ageIndex >= 1 && !allIn && this.goal?.kind !== 'treasury' ? t.baseTurrets : 0;
+    const wantTurret = (v.turretsBuilt < wantedTurrets && !allIn && pressure >= DEFENCE_PRESSURE_BP) || v.turretsBuilt < baseTurrets ? WANT_BONUS : 0;
     const wantModernise = !urgent && !allIn ? WANT_BONUS : 0;
 
     // Gold float (A7.3): let gold pile up to the float target, then spend it down.
@@ -355,7 +378,7 @@ export class Brain {
     }
 
     // Treasury.
-    if (nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < TREASURY_BEFORE_TICKS || rushing)) {
+    if (nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < TREASURY_BEFORE_TICKS || rushing || this.passiveTreasury(v, mem, nextTreasury))) {
       const safe = !v.foes.some((u) => u.p <= e.midLane);
       if (safe) add({ kind: 'treasury', cost: nextTreasury }, mulBp(W.economy, fSpare(v.gold, nextTreasury)) + goalBonus('treasury'));
     }
@@ -384,7 +407,10 @@ export class Brain {
     // Power.
     if (v.powerReady && v.power) {
       const zone = bestPowerZone(v, v.power, e.zoneMin, e.zoneMax);
-      const threshold = mulBp(t.powerThreshold, W.patience);
+      let threshold = mulBp(t.powerThreshold, W.patience);
+      // Owner feedback 2026-09-28: the upper tiers also cast on a zone holding a set share of the visible
+      // enemy army, so the power is used in every age and not only when a Stone-gold bar is reached.
+      if (t.powerArmyShareBp > 0) threshold = Math.min(threshold, Math.max(POWER_MIN_VALUE, mulBp(v.foeArmy, t.powerArmyShareBp)));
       const hurt = obs.tick - mem.baseDamagedTick <= POWER_HURT_TICKS && zone.value >= POWER_MIN_VALUE;
       const desperate = t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP && zone.value > 0;
       const foeEvolved = P.powerForEvolveMoments && v.now - mem.foeEvolvedTick <= FOE_EVOLVE_WINDOW && zone.value >= POWER_MIN_VALUE;
@@ -492,6 +518,16 @@ export class Brain {
     trace.action = action;
     trace.reason = 'best';
     return trace;
+  }
+
+  /**
+   * `econPlan`: against a passive foe (no enemy ground unit on the bot's half for 20 s) a Treasury level
+   * is worth it in regulation after 3:00 too, while it pays back within 4:00.
+   */
+  private passiveTreasury(v: View, mem: BotMemory, cost: number): boolean {
+    const { book, tier: t } = this.cfg;
+    if (!t.econPlan || v.phase !== 'regulation' || v.now - mem.foeOnMyHalfTick < PASSIVE_FOE_TICKS) return false;
+    return Math.trunc((cost * TICKS_PER_SECOND) / book.econ.treasuryGoldPerSecMilli) <= PASSIVE_PAYBACK_TICKS;
   }
 
   /** Train candidates with their A7.2 scores, plus the alternatives two mistakes would pick. */

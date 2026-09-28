@@ -5,6 +5,7 @@
  */
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, DamageMod, Foil, PowerDef, Rarity, SaveDoc, SkinDef, TurretDef, UnitDef } from '@/contracts';
+import { counterClasses as classCounters, isLegendaryUnit, unitClass, type CardClass, type UnitClass } from '@/core/cardClass';
 import type { CardTileData } from '../../components/CardTile';
 import { roleGlyph, type GlyphKind } from '../../components/icons';
 import type { Translate } from '../../components/kit';
@@ -24,6 +25,17 @@ export function cardRarity(def: AnyCardDef): Rarity | null {
 export function cardGlyph(def: AnyCardDef): GlyphKind {
   if (def.kind === 'unit') return roleGlyph(def.role, def.group);
   return def.kind;
+}
+
+/** The class badge of a card (owner feedback 2026-09-28; A2.6 roles and tags). */
+export function cardClassOf(def: AnyCardDef): CardClass {
+  return def.kind === 'unit' ? unitClass(def) : def.kind;
+}
+
+/** The classes a unit beats and loses to, from the compiled counter lists (B4). */
+export function counterClasses(content: Content, def: AnyCardDef): { strong: UnitClass[]; weak: UnitClass[] } {
+  if (def.kind !== 'unit') return { strong: [], weak: [] };
+  return classCounters(def.strongVs, def.weakVs, content.units);
 }
 
 export function isOwned(save: SaveDoc, id: CardId, content: Content): boolean {
@@ -115,6 +127,9 @@ export function cardTile(save: SaveDoc, content: Content, id: CardId, t: Transla
     isNew: entry?.isNew ?? false,
     skin: equippedSkin(save, id),
     cost: def.kind === 'power' ? null : def.cost,
+    cls: cardClassOf(def),
+    legendary: def.kind === 'unit' && isLegendaryUnit(def),
+    ...counterClasses(content, def),
   };
 }
 

@@ -9,9 +9,11 @@
 import './warplan.css';
 import { ageNameKey, formatNameKey } from '@/content/keys';
 import type { AgeId, CardId, PlanIssue } from '@/contracts';
+import type { ClassGlyphId } from '@/core/cardClass';
 import { useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
+import { ClassIcon, CounterLegend } from '../../components/ClassIcon';
 import { CurrencyChip } from '../../components/Chips';
 import { formatDec } from '../../components/format';
 import { BoltIcon, CheckIcon, CloseIcon, PencilIcon, RefreshIcon, TowerIcon, SwordsIcon } from '../../components/icons';
@@ -44,6 +46,17 @@ import type { WarPlan } from '../services';
 import { SkinPicker } from '../shared/SkinPicker';
 
 const PRESET_LABELS = ['A', 'B', 'C'] as const;
+
+/** The class icon an advisor warning points at (owner feedback 2026-09-28), if any. */
+const ISSUE_CLASS: Readonly<Record<string, ClassGlyphId>> = {
+  noAntiArmor: 'antiArmor',
+  noAir: 'air',
+  noSplash: 'siege',
+  noTurret: 'turret',
+  tooFewUnits: 'infantry',
+  onlyThreeUnits: 'infantry',
+  badPower: 'power',
+};
 
 const SLOT_LABEL: Record<SlotRef['kind'], string> = {
   unit: 'ui.warplan.slot.unit',
@@ -290,12 +303,17 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           </div>
           {!fAges.includes(age) ? <p class="wp-note">{t('ui.warplan.notInFormat', { format: t(formatNameKey(format)) })}</p> : null}
           <ul class="wp-advisor" data-testid="advisor" aria-live="polite">
-            {ageIssues.map((i) => (
-              <li key={i.code} class={`wp-issue wp-issue--${i.severity}`} data-testid={`issue-${i.code}`}>
-                {planIssueText(i, t)}
-              </li>
-            ))}
+            {ageIssues.map((i) => {
+              const icon = ISSUE_CLASS[i.code];
+              return (
+                <li key={i.code} class={`wp-issue wp-issue--${i.severity}${icon ? ' has-class' : ''}`} data-testid={`issue-${i.code}`}>
+                  {icon ? <ClassIcon id={icon} size={24} class="wp-issue__class" /> : null}
+                  {planIssueText(i, t)}
+                </li>
+              );
+            })}
           </ul>
+          <CounterLegend compact />
         </div>
         <section class="wp-right" aria-labelledby="wp-cards-title">
           <header class="wp-right__head">

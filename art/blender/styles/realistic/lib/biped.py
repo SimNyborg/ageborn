@@ -139,8 +139,11 @@ class Biped:
         """Side-plane positions of the torso chain for pose P. Returns dict of points and
         cumulative angles (radians)."""
         H = self.H
-        rx, rz = P.get("root", (0.0, 0.0))
         rr = math.radians(P.get("root_r", 0.0))
+        if "pel" in P:
+            off = C.rot2((0, PELV * H), rr)
+            P["root"] = (P["pel"][0] - off[0], P["pel"][1] - off[1])
+        rx, rz = P.get("root", (0.0, 0.0))
         rh = rr + math.radians(P.get("hips", 0.0))
         rs = rh + math.radians(P.get("spine", 0.0))
         rc = rs + math.radians(P.get("chest", 0.0))

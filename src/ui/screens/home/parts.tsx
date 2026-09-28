@@ -13,6 +13,7 @@ import { AiBadge, Badge, CurrencyChip } from '../../components/Chips';
 import { formatInt, tierNumeral } from '../../components/format';
 import {
   AmberIcon,
+  BrushIcon,
   CalendarIcon,
   CapsuleIcon,
   CardsIcon,
@@ -41,6 +42,9 @@ import { opponentName } from '../model/opponent';
 import {
   arenaOf,
   bankRules,
+  match2Next,
+  pointerDue,
+  pointerFlag,
   chargesView,
   questViews,
   roadProgress,
@@ -49,8 +53,10 @@ import {
   unlocks,
   warChestView,
   WAR_PLAN_UNLOCK_MATCHES,
+  type PointerEntry,
   type QuestView,
 } from '../model/progress';
+import { useMatchStarter } from '../shared/MatchStarter';
 import { RoadRewardView } from '../shared/RoadReward';
 
 export function ProfileChip() {
@@ -409,10 +415,25 @@ export function OpponentPreview(p: { opponent: OpponentSpec | null }) {
   );
 }
 
+/**
+ * The big Battle button: Mode select, or, while onboarding match 2 is next, that match vs Pip
+ * (owner feedback 2026-09-28: Home is the hub from right after the training match and capsule 1).
+ */
 export function BattleButton() {
-  const { t, router } = useUi();
+  const { t, router, save, content } = useUi();
+  const starter = useMatchStarter();
+  const suggested = match2Next(save.value);
+  // Onboarding match 2 is always vs Pip (A8); the name comes from the content, not from meta.
+  const pip = suggested ? content.generals.list['pip' as keyof typeof content.generals.list] : undefined;
   return (
-    <button type="button" class="home-battle" data-testid="battle-button" data-autofocus="" onClick={() => router.go({ id: 'modeSelect' })}>
+    <>
+    <button
+      type="button"
+      class={`home-battle${suggested ? ' is-suggested' : ''}`}
+      data-testid="battle-button"
+      data-autofocus=""
+      onClick={() => (suggested ? starter.start({ mode: 'tutorial', match: 2 }) : router.go({ id: 'modeSelect' }))}
+    >
       <span class="home-battle__face">
         <span class="home-battle__icon">
           <SwordsIcon size={46} />
@@ -421,6 +442,14 @@ export function BattleButton() {
         <i class="home-battle__shine" aria-hidden="true" />
       </span>
     </button>
+    {pip ? (
+      <span class="home-battle__next" data-testid="battle-suggested">
+        {t('ui.home.suggested', { name: t(pip.nameKey) })}
+        <AiBadge size="sm" />
+      </span>
+    ) : null}
+    {starter.dialog}
+    </>
   );
 }
 
@@ -471,7 +500,11 @@ export function ArenaBanner() {
 }
 
 interface NavItem {
-  route: Route;
+  id: string;
+  /** Where the entry goes; null for the Capsules entry, which opens the tray sheet. */
+  route: Route | null;
+  /** The first-time pointer shown on this entry (once). */
+  pointer?: PointerEntry;
   labelKey: string;
   icon: ComponentChildren;
   locked: boolean;
@@ -480,10 +513,26 @@ interface NavItem {
   badge?: number;
 }
 
+/** The Capsules entry's sheet: the same tray as on Home's right side, for small screens too. */
+function CapsulesSheet(p: { onClose: () => void }) {
+  const { t } = useUi();
+  return (
+    <Modal title={t('ui.nav.capsules')} onClose={p.onClose} size="md" testid="capsules-sheet" icon={<CapsuleIcon tier="silver" size={28} />}>
+      <CapsuleTray />
+    </Modal>
+  );
+}
+
+/**
+ * Home's entries (owner feedback 2026-09-28): War Plan, Collection, Capsules, Customize, Trophy Road
+ * and Conquest, always visible, with a short first-time pointer on one new entry at a time.
+ */
 export function HomeNav() {
-  const { save, content, t, router, toasts } = useUi();
+  const { save, content, t, router, toasts, services } = useUi();
+  const [sheet, setSheet] = useState(false);
   const s = save.value;
   const u = unlocks(s, content);
+  const capsuleCount = s.capsules.pending.length + s.capsules.wardrobe.length;
   const ready = Object.keys(s.collection).filter((id) => {
     const e = s.collection[id]!;
     const def = content.units[id] ?? content.turrets[id];
@@ -494,16 +543,49 @@ export function HomeNav() {
   const rp = roadProgress(s, content);
   const items: NavItem[] = [
     {
+      id: 'warPlan',
       route: { id: 'warPlan' },
+      pointer: 'warPlan',
       labelKey: 'ui.nav.warPlan',
       icon: <ScrollIcon size={34} />,
       locked: !u.warPlan,
       lockKey: 'ui.lock.afterMatches',
       lockParams: { n: WAR_PLAN_UNLOCK_MATCHES },
     },
-    { route: { id: 'collection' }, labelKey: 'ui.nav.collection', icon: <CardsIcon size={34} />, locked: false, lockKey: '', badge: ready },
     {
+      id: 'collection',
+      route: { id: 'collection' },
+      pointer: 'collection',
+      labelKey: 'ui.nav.collection',
+      icon: <CardsIcon size={34} />,
+      locked: false,
+      lockKey: '',
+      badge: ready,
+    },
+    {
+      id: 'capsules',
+      route: null,
+      pointer: 'capsules',
+      labelKey: 'ui.nav.capsules',
+      icon: <CapsuleIcon tier="silver" size={34} />,
+      locked: false,
+      lockKey: '',
+      badge: capsuleCount,
+    },
+    {
+      id: 'customize',
+      route: { id: 'customize' },
+      pointer: 'customize',
+      labelKey: 'ui.nav.customize',
+      icon: <BrushIcon size={34} />,
+      locked: !u.warPlan,
+      lockKey: 'ui.lock.afterMatches',
+      lockParams: { n: WAR_PLAN_UNLOCK_MATCHES },
+    },
+    {
+      id: 'trophyRoad',
       route: { id: 'trophyRoad' },
+      pointer: 'trophyRoad',
       labelKey: 'ui.nav.trophyRoad',
       icon: <RoadIcon size={34} />,
       locked: false,
@@ -511,6 +593,7 @@ export function HomeNav() {
       badge: rp.claimable,
     },
     {
+      id: 'conquest',
       route: { id: 'conquest' },
       labelKey: 'ui.nav.conquest',
       icon: <CastleIcon size={34} />,
@@ -519,23 +602,32 @@ export function HomeNav() {
       lockParams: { n: u.conquestArena },
     },
   ];
+  // One pointer at a time, in this order, on an open entry the player has not opened yet.
+  const pointer = items.find((it) => it.pointer && !it.locked && pointerDue(s, it.pointer))?.pointer ?? null;
   return (
     <nav class="home-nav" aria-label={t('ui.nav.label')} data-testid="home-nav">
       {items.map((it) => (
         <button
-          key={it.route.id}
+          key={it.id}
           type="button"
-          class={`home-nav__btn${it.locked ? ' is-locked' : ''}`}
-          data-testid={`nav-${it.route.id}`}
+          class={`home-nav__btn${it.locked ? ' is-locked' : ''}${it.pointer && it.pointer === pointer ? ' has-pointer' : ''}`}
+          data-testid={`nav-${it.id}`}
           aria-disabled={it.locked ? 'true' : undefined}
           onClick={() => {
             if (it.locked) {
               toasts.show(t(it.lockKey, it.lockParams), { tone: 'info', icon: <LockIcon size={20} /> });
               return;
             }
-            router.go(it.route);
+            if (it.pointer && pointerDue(s, it.pointer)) services.setUiFlags({ [pointerFlag(it.pointer)]: true });
+            if (it.route) router.go(it.route);
+            else setSheet(true);
           }}
         >
+          {it.pointer && it.pointer === pointer ? (
+            <span class="home-nav__pointer" role="note" data-testid={`pointer-${it.pointer}`}>
+              {t(`ui.pointer.${it.pointer}`)}
+            </span>
+          ) : null}
           <span class="home-nav__icon">
             {it.icon}
             {it.locked ? (
@@ -555,6 +647,7 @@ export function HomeNav() {
           </span>
         </button>
       ))}
+      {sheet ? <CapsulesSheet onClose={() => setSheet(false)} /> : null}
     </nav>
   );
 }

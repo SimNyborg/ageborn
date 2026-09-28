@@ -11,6 +11,7 @@ import type { CardId, Foil } from '@/contracts';
 import { useEffect, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { CardArt, CardTile, type CardTileData } from '../../components/CardTile';
+import { ClassChip, ClassIcon, CounterRows } from '../../components/ClassIcon';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { formatDec, formatInt, formatSeconds } from '../../components/format';
 import { AgeGlyph, AmberIcon, CheckIcon, DustIcon, HammerIcon, LockIcon, RARITY_COLOR, RoadIcon } from '../../components/icons';
@@ -161,8 +162,14 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
               </span>
             ) : null}
             <i class="cd-stage__floor" aria-hidden="true" />
+            {tile.cls ? (
+              <span class="cd-stage__class" aria-hidden="true">
+                <ClassIcon id={tile.cls} size={52} />
+              </span>
+            ) : null}
           </div>
           <div class="cd-chips">
+            {tile.cls ? <ClassChip id={tile.cls} legendary={tile.legendary} testid="card-class" /> : null}
             <Pill icon={<AgeGlyph age={def.age} size={18} />}>{t(ageNameKey(def.age))}</Pill>
             {def.kind === 'unit' ? <Pill tone="blue">{t(roleNameKey(def.role))}</Pill> : null}
             {def.kind === 'turret' ? <Pill tone="blue">{t('ui.warplan.slot.turret')}</Pill> : null}
@@ -230,6 +237,9 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
           ) : null}
           {def.kind === 'unit' && (def.strongVs.length > 0 || def.weakVs.length > 0) ? (
             <div class="cd-counters">
+              <div class="cd-counter-classes" data-testid="counter-classes">
+                <CounterRows strong={tile.strong ?? []} weak={tile.weak ?? []} size={26} />
+              </div>
               <div class="cd-counter" data-testid="strong-vs">
                 <span class="cd-label cd-label--good">{t('ui.card.strongVs')}</span>
                 <div class="cd-counter__cards">

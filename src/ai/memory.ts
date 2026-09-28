@@ -45,6 +45,8 @@ export class BotMemory {
   private lastAge = 0;
   /** Last tick one of the bot's ground units stood past mid-lane (A7.2 attack clock). */
   pastMidTick = 0;
+  /** Last tick an enemy ground unit stood on the bot's half (a passive foe never comes; owner feedback 2026-09-28). */
+  foeOnMyHalfTick = 0;
   /** Tick the foe's age last went up. */
   foeEvolvedTick = -1000000;
   private foeAge = 0;
@@ -86,6 +88,7 @@ export class BotMemory {
       if (u.side === obs.side) {
         if (!u.air && u.p > mid) this.pastMidTick = obs.tick;
       } else {
+        if (!u.air && u.p < mid) this.foeOnMyHalfTick = obs.tick;
         counts.set(u.card, (counts.get(u.card) ?? 0) + 1);
       }
     }

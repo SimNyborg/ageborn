@@ -149,6 +149,8 @@ export const SCREENS: Readonly<Record<ScreenId, ScreenInfo>> = {
   replay: { a9: 14, owner: 'WP11', overlay: false },
   settings: { a9: 15, owner: 'WP9', overlay: false },
   conquest: { a9: 17, owner: 'WP9', overlay: false },
+  /** Not in the A9 table (owner feedback 2026-09-28); numbered after it. */
+  customize: { a9: 19, owner: 'WP9', overlay: false },
 };
 
 /** Screen ids rendered by this package (WP9). */

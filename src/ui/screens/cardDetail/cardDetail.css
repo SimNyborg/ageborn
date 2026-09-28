@@ -306,3 +306,35 @@
     font-size: 13px;
   }
 }
+
+/* Card class (owner feedback 2026-09-28): a big badge on the stage and class counter rows. */
+.cd-stage__class {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  z-index: 3;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.3));
+  animation: cd-class-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both 120ms;
+}
+@keyframes cd-class-pop {
+  from {
+    transform: scale(0.3) rotate(-25deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-stage__class {
+    animation: none;
+  }
+}
+.cd-counter-classes {
+  grid-column: 1 / -1;
+  padding: 8px 10px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 12px;
+  background: rgba(20, 16, 44, 0.45);
+}

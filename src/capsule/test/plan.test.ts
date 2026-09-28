@@ -19,6 +19,9 @@ const A13_SOUNDS = new Set([
   'cap_thud', 'cap_riser', 'cap_climb_1', 'cap_climb_2', 'cap_climb_3', 'cap_climb_4', 'cap_clunk', 'cap_burst',
   'card_flip', 'foil_shine', 'rarity_common', 'rarity_rare', 'rarity_epic', 'rarity_legendary', 'walkout_bass',
   'copy_tick', 'upgrade_ready', 'reel_tick', 'ui_confirm', 'spawn_pop', 'spawn_heavy', 'spawn_legendary', 'swing_whoosh',
+  // Juice layered from the shared sheet: the landing thump, strike hits, the burst riser and
+  // explosion, the card snap, count-up ticks and the name slam.
+  'step_heavy', 'hit_heavy', 'evolve_riser', 'explosion_m', 'explosion_l', 'flare_pop', 'xp_tick', 'upgrade_slam',
 ]);
 
 function kinds(steps: ShowStep[]): string[] {
@@ -79,7 +82,7 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     expect(checkPlan(plan)).toEqual([]);
   });
 
-  it('gives flips their rarity timing: Common 0.15 s, Rare 0.4 s, Epic 0.8 s, after a 0.3 s pre-signal', () => {
+  it('gives flips their rarity timing: Common 0.15 s, Rare 0.4 s, Epic 0.8 s, after a pre-signal that grows with the rarity', () => {
     const plan = planCapsuleShow(
       reveal({ tier: 'silver', stacks: [stack('a', 'common'), stack('b', 'rare'), stack('c', 'epic')] }),
       { catalog },
@@ -87,7 +90,9 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     const flips = plan.steps.filter((s) => s.kind === 'flip');
     expect(flips.map((s) => (s.kind === 'flip' ? s.flipMs : 0))).toEqual([150, 400, 800]);
     const signals = plan.steps.filter((s) => s.kind === 'signal');
-    expect(signals.every((s) => s.durationMs === 300)).toBe(true);
+    expect(signals.map((s) => s.durationMs)).toEqual([SHOW_TIMING.signalMs.common, SHOW_TIMING.signalMs.rare, SHOW_TIMING.signalMs.epic]);
+    expect(SHOW_TIMING.signalMs.common).toBeLessThan(SHOW_TIMING.signalMs.rare);
+    expect(SHOW_TIMING.signalMs.rare).toBeLessThan(SHOW_TIMING.signalMs.epic);
     expect(signals.map((s) => s.cues[0]?.sound)).toEqual(['rarity_common', 'rarity_rare', 'rarity_epic']);
   });
 
@@ -153,7 +158,7 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     expect(w1?.durationMs).toBeLessThanOrEqual(10000);
     expect(w1?.skippable).toBe(false);
     expect(w1?.fastForward).toBe(false);
-    expect(w1?.cues.map((c) => c.sound)).toEqual(['rarity_legendary', 'walkout_bass', 'spawn_legendary']);
+    expect(w1?.cues.map((c) => c.sound)).toEqual(['rarity_legendary', 'walkout_bass', 'spawn_legendary', 'upgrade_slam']);
     // The gold pre-signal comes first, the card lands face up after the walkout.
     const order = kinds(first.steps).filter((k) => ['signal', 'walkout', 'flip'].includes(k));
     expect(order).toEqual(['signal', 'walkout', 'flip']);
@@ -208,7 +213,7 @@ describe('planCapsuleShow (DESIGN A10)', () => {
 
   it('flags a too-long step', () => {
     const plan = planCapsuleShow(bronze(), { catalog });
-    const broken = { ...plan, steps: plan.steps.map((s) => (s.kind === 'burst' ? { ...s, durationMs: 900 } : s)) };
+    const broken = { ...plan, steps: plan.steps.map((s) => (s.kind === 'burst' ? { ...s, durationMs: 1500 } : s)) };
     expect(checkPlan(broken).some((m) => m.includes('burst'))).toBe(true);
   });
 

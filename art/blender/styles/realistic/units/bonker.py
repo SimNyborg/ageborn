@@ -62,8 +62,8 @@ def build():
     belt = C.blobs("belt", [(S(0.5, 0, 37.6), (7.3 * bw, 8.95 * bw, 1.2))], leather)
     rig.skin(belt, ["hips", "spine"], soft=2.0 * k)
     # bone toggle on the belt
-    C.sphere("toggle", 1.1 * k, bone, loc=S(6.5 * bw, -2.5, 37.8), scale=(0.6, 1, 1.4))
-    rig.rigid(bpy_last(), "hips")
+    rig.rigid(C.sphere("toggle", 1.1 * k, bone, loc=S(6.5 * bw, -2.5, 37.8), scale=(0.6, 1, 1.4)),
+              "hips")
 
     # --- fur mantle over the shoulders and upper back
     mantle = C.blobs("mantle", [
@@ -96,8 +96,7 @@ def build():
     C.displace(beard, 0.6, 0.3)
     rig.rigid(beard, "head")
     for y in (-1.55, 1.55):
-        C.sphere("eye", 0.55 * k, dark, loc=S(4.25, y, 63.0), scale=(0.5, 1, 0.6))
-        rig.rigid(bpy_last(), "head")
+        rig.rigid(C.sphere("eye", 0.55 * k, dark, loc=S(4.25, y, 63.0), scale=(0.5, 1, 0.6)), "head")
     # team war-paint headband
     band = C.lathe("band", [(4.55 * k, 64.4 * k), (4.75 * k, 65.0 * k), (4.55 * k, 65.6 * k)], hide,
                    scale=(1.0, 0.92, 1.0), loc=(0.2 * k, 0, 0))
@@ -133,11 +132,6 @@ def build():
     return dict(rig=rig, dust=dust)
 
 
-def bpy_last():
-    import bpy
-    return bpy.context.scene.collection.objects[-1]
-
-
 # ------------------------------------------------------------------------------ poses
 G = B.ANKLE * H
 
@@ -167,7 +161,7 @@ def pose(ctx, clip, t):
         P_ = hit(t)
     else:
         P_ = die(t)
-        props.dust_state(ctx["dust"], die_dust(t), origin=(-32 * BODY.k, 0, 0))
+        props.dust_state(ctx["dust"], die_dust(t), origin=(-22 * BODY.k, 0, 0), rig=rig.obj)
     BODY.apply(rig, P_)
 
 
@@ -230,26 +224,28 @@ def hit(t):
 
 
 def die(t):
+    pz = B.PELV * H
     base = stance()
-    k1 = dict(root=(-4.0, -2.0), hips=-10, spine=-12, chest=-8, neck=10, head=16,
+    base["pel"] = (0.0, pz + base.pop("root")[1])
+    k1 = dict(pel=(-4.0, pz - 2.0), hips=-10, spine=-12, chest=-8, neck=10, head=16,
               footF=(7.0, G + 1.0, 10.0), footB=(-12.5, G, 0.0),
               armF=(20, 60, -10), armB=(-40, 30, 10, -14))
-    k2 = dict(root=(-8.0, -12.0), root_r=8, hips=-18, spine=-10, chest=-8, neck=6, head=10,
-              legF=(70, -100, 10), legB=(40, -95, 20),
-              armF=(70, 40, -10, 14), armB=(60, 40, 10, -20))
-    k3 = dict(root=(-20.0, -18.0), root_r=48, hips=-10, spine=-6, chest=-4, neck=4, head=8,
-              legF=(80, -60, 20), legB=(55, -50, 20),
+    k2 = dict(pel=(-8.0, pz - 11.0), root_r=12, hips=-10, spine=-8, chest=-6, neck=6, head=10,
+              footF=(6.0, G, 8.0), footB=(-9.0, G, 0.0),
+              armF=(60, 50, -10, 14), armB=(50, 40, 10, -20))
+    k3 = dict(pel=(-15.0, pz - 21.0), root_r=46, hips=-6, spine=-4, chest=-4, neck=4, head=8,
+              footF=(5.0, G + 1.0, 20.0), footB=(-2.0, G + 2.0, 20.0),
               armF=(120, 30, 0, 24), armB=(110, 30, 0, -24))
-    k4 = dict(root=(-27.0, -27.4), root_r=88, hips=-4, spine=0, chest=0, neck=0, head=4,
-              legF=(38, -20, 30), legB=(26, -22, 30),
-              armF=(150, 10, 10, 40), armB=(140, 20, 0, -30))
-    k5 = dict(root=(-27.5, -26.6), root_r=84, hips=-6, spine=-2, chest=-2, neck=-8, head=-10,
-              legF=(44, -26, 26), legB=(30, -24, 26),
-              armF=(156, 8, 10, 40), armB=(146, 18, 0, -30))
-    k6 = dict(root=(-27.5, -27.4), root_r=88, hips=-4, spine=0, chest=0, neck=4, head=6,
-              legF=(34, -16, 24), legB=(24, -18, 26),
-              armF=(160, 6, 10, 42), armB=(150, 16, 0, -32))
-    keys = [(0, base), (1, k1), (2.5, k2), (4.0, k3), (5.0, k4), (5.8, k5), (7, k6), (11, k6)]
+    land = dict(pel=(-20.0, 6.0), root_r=86, hips=-4, spine=0, chest=0, neck=0, head=4,
+                footF=(1.0, G + 5.0, 60.0), footB=(-4.0, G + 3.0, 50.0),
+                armF=(168, 14, 10, 30), armB=(158, 20, 0, -30))
+    bounce = dict(land, pel=(-20.5, 7.6), root_r=80, neck=-6, head=-10,
+                  armF=(160, 20, 10, 34), footF=(1.0, G + 7.0, 60.0))
+    rest = dict(land, pel=(-20.8, 5.6), root_r=87, neck=2, head=6,
+                footF=(4.0, G + 3.0, 70.0), footB=(0.0, G + 2.0, 60.0),
+                armF=(172, 10, 10, 30))
+    keys = [(0, base), (1, k1), (2.5, k2), (4.0, k3), (5.0, land), (5.8, bounce), (7, rest),
+            (11, rest)]
     return B.keyed(keys, t)
 
 

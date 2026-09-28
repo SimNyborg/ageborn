@@ -28,8 +28,8 @@ export interface WalkoutDeps {
   teamPreset: TeamPreset;
   reduceMotion: boolean;
   progress: CardProgress | null;
-  /** Screen-level punch at the bass drop: flash, trauma, vibration. */
-  impact(kind: 'drop' | 'pop'): void;
+  /** Screen-level punch: the bass drop (flash, slow motion), a pop, or the name slamming down. */
+  impact(kind: 'drop' | 'pop' | 'slam'): void;
 }
 
 const FLOOR_Y = 520;
@@ -253,6 +253,10 @@ export class Walkout {
   private readonly lane: Container;
   private readonly flare = new Container();
   private readonly flareRays: Sprite;
+  /** God rays behind the unit once it has burst into colour. */
+  private readonly heroRays: Sprite;
+  private readonly heroGlow: Sprite;
+  private slammed = false;
   private readonly unitHolder = new Container();
   private readonly unit: UnitPair;
   private readonly shock = new Graphics();
@@ -312,6 +316,14 @@ export class Walkout {
     this.flare.position.set(640, 300);
     this.flare.alpha = 0;
 
+    this.heroRays = new Sprite(raysTexture(16));
+    this.heroRays.anchor.set(0.5);
+    this.heroRays.tint = this.color;
+    this.heroRays.blendMode = 'add';
+    this.heroRays.width = this.heroRays.height = 1100;
+    this.heroRays.alpha = 0;
+    this.heroGlow = glowSprite(glowTexture(), shade(this.color, 0.2), 620, 0);
+
     this.unit = new UnitPair(d.art, info, card.skin, d.teamPreset, this.color, this.mini ? 'epic' : 'legendary');
     this.unitHolder.addChild(this.unit.root);
     this.unitHolder.position.set(this.mini ? 640 : 560, this.mini ? 470 : FLOOR_Y);
@@ -336,7 +348,7 @@ export class Walkout {
     this.buildStampOrBar(card);
     this.stampOrBar.alpha = 0;
 
-    this.root.addChild(this.dim, this.lane, this.cone, this.floorGlow, this.rings.root, this.flare, this.shock, this.unitHolder, this.bolts, this.bannerTop, this.bannerName, this.stampOrBar);
+    this.root.addChild(this.dim, this.heroRays, this.heroGlow, this.lane, this.cone, this.floorGlow, this.rings.root, this.flare, this.shock, this.unitHolder, this.bolts, this.bannerTop, this.bannerName, this.stampOrBar);
     if (this.mini) {
       this.unit.setSilhouette(0);
       this.unit.setRim(0, 1);
@@ -419,6 +431,15 @@ export class Walkout {
     const col = span(t, b.drop, b.drop + 260);
     this.unit.setSilhouette(1 - col);
     this.lane.alpha = easeOutCubic(span(t, b.drop, b.drop + 400)) * (1 - outro);
+    // God rays and a halo behind the hero from the drop on; they swell as the banner lands.
+    const hr = span(t, b.drop, b.drop + 300);
+    const pulse = 1 + 0.15 * hump(span(t, b.banner[0] + 330, b.banner[0] + 900));
+    this.heroRays.alpha = 0.55 * hr * (1 - outro);
+    this.heroRays.rotation += dtMs / 2600;
+    this.heroRays.scale.set(((1100 / 512) * (0.85 + 0.15 * hr)) * pulse);
+    this.heroRays.position.set(this.unitHolder.x, FLOOR_Y - 150);
+    this.heroGlow.alpha = 0.45 * hr * (1 - outro);
+    this.heroGlow.position.set(this.unitHolder.x, FLOOR_Y - 150);
     const sw = span(t, b.drop, b.drop + 700);
     this.shock.clear();
     if (sw > 0 && sw < 1) {
@@ -456,9 +477,18 @@ export class Walkout {
     // Letters close in as the banner lands (re-rasterised only when the spacing changes).
     const spacing = Math.round(lerp(40, 6, easeOutCubic(bn)) / 2) * 2;
     if (this.bannerTop.style.letterSpacing !== spacing) this.bannerTop.style.letterSpacing = spacing;
-    const nm = span(t, b.banner[0] + 150, b.banner[0] + 550);
-    this.bannerName.alpha = nm * (1 - outro);
-    this.bannerName.y = 612 + 30 * (1 - easeOutCubic(nm));
+    // The name slams down from above, big, and lands with a shake and a puff of dust.
+    const nm = span(t, b.banner[0] + 150, b.banner[0] + 330);
+    this.bannerName.alpha = Math.min(1, nm * 3) * (1 - outro);
+    this.bannerName.scale.set(lerp(2.6, 1, easeInCubic(nm)) * (nm >= 1 ? 1 + 0.12 * Math.exp(-(t - b.banner[0] - 330) / 70) * Math.cos((t - b.banner[0] - 330) / 30) : 1));
+    this.bannerName.y = 612 - 40 * (1 - nm);
+    if (nm >= 1 && !this.slammed) {
+      this.slammed = true;
+      this.d.impact('slam');
+      this.dust(640 - 120, 640, 12);
+      this.dust(640 + 120, 640, 12);
+      this.burst(640, 612, 24, [this.color, 0xffffff]);
+    }
     const sb = span(t, b.banner[0] + 300, b.banner[0] + 700);
     this.stampOrBar.alpha = sb * (1 - outro);
     this.stampOrBar.scale.set(easeOutElastic(sb));

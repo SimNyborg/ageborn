@@ -3,7 +3,7 @@
  * (A6.3), quests (A6.7), Trophy Road nodes (A6.3) and the Conquest board (A6.10).
  * Pure over (save, content, now); the screens only render them.
  */
-import type { ArenaDef, DailyDifficulty, GeneralDef, LadderWin, QuestDef, RoadNode } from '@/content/types';
+import type { ArenaDef, DailyDifficulty, Difficulty, GeneralDef, LadderWin, QuestDef, RoadNode } from '@/content/types';
 import type { Content } from '@/content/types';
 import type { CapsuleTier, FormatId, SaveDoc } from '@/contracts';
 
@@ -17,8 +17,51 @@ export function nextArena(save: SaveDoc, content: Content): ArenaDef | null {
   return content.arenas.list[save.arenaIndex + 1] ?? null;
 }
 
-/** Matches before the War Plan screen and Skirmish open (A3, A8: "after match 3"). */
-export const WAR_PLAN_UNLOCK_MATCHES = 3;
+/**
+ * Matches before the War Plan screen, Customize and Skirmish open. A8 had "after match 3"; since the
+ * owner feedback of 2026-09-28 they open right after the training match.
+ */
+export const WAR_PLAN_UNLOCK_MATCHES = 1;
+
+/** `SaveDoc.tutorial.step` while onboarding match 2 (vs Pip) is next; it starts from Home's Battle. */
+export const MATCH2_STEP = 2;
+
+/** True while the next battle is onboarding match 2, suggested by Home's Battle button. */
+export function match2Next(save: SaveDoc): boolean {
+  return save.tutorial.step === MATCH2_STEP;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Difficulty (owner feedback 2026-09-28): Quick Battle and Skirmish pick Easy..Legendary
+// ---------------------------------------------------------------------------------------------
+
+const DIFFICULTY_FLAG = 'ui.difficulty.';
+
+/** The difficulty last picked in Quick Battle or Skirmish (stored as a `ui.difficulty.<id>` flag), else the default (Normal). */
+export function lastDifficulty(save: SaveDoc, content: Content): Difficulty {
+  const table = content.generals.difficulty;
+  return table.order.find((d) => save.flags[DIFFICULTY_FLAG + d]) ?? table.default;
+}
+
+/** The flag patch that remembers `d` as the last difficulty (and clears the others). */
+export function difficultyFlags(d: Difficulty, content: Content): Record<string, boolean> {
+  const out: Record<string, boolean> = {};
+  for (const x of content.generals.difficulty.order) out[DIFFICULTY_FLAG + x] = x === d;
+  return out;
+}
+
+// ---------------------------------------------------------------------------------------------
+// First-time pointers on Home's entries (owner feedback 2026-09-28): a short line, shown once
+// ---------------------------------------------------------------------------------------------
+
+export type PointerEntry = 'warPlan' | 'collection' | 'capsules' | 'customize' | 'trophyRoad';
+
+export const pointerFlag = (entry: PointerEntry): string => `ui.pointer.${entry}`;
+
+/** True while the entry's first-time pointer has not been dismissed (by opening the entry). */
+export function pointerDue(save: SaveDoc, entry: PointerEntry): boolean {
+  return !save.flags[pointerFlag(entry)];
+}
 
 export interface Unlocks {
   warPlan: boolean;

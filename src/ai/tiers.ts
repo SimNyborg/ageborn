@@ -47,6 +47,23 @@ export interface TierParams {
   /** Rebuilds outdated turrets by modernising them (A7.3 "Hold / turret rebuild"). */
   turretRebuild: boolean;
   maxTurrets: number;
+  /**
+   * Owner feedback 2026-09-28 ("too easy"): the craft of the upper tiers, all fair play on the same
+   * observation. Off below tier VI, so tiers 0-V play as A7.3 lists them.
+   *
+   * - `econPlan`: a Treasury goal is not spent into a push-gate wave, and against a passive foe (no
+   *   enemy on the bot's half) a level is bought while it still pays back before the Final Bell.
+   * - `waveCommit`: a wave that passed the push gate keeps charging until it has lost half its value,
+   *   and a held army goes again only with a 15% margin over the gate (no charge/hold flapping).
+   * - `powerArmyShareBp`: the power also fires on a zone holding this share of the visible enemy army
+   *   (the A7.3 gold threshold alone was fixed in Stone gold, so late ages barely ever reached it and
+   *   early ages never did); 0 = off.
+   * - `baseTurrets`: turrets built on spare gold from Bronze on without waiting for pressure.
+   */
+  econPlan: boolean;
+  waveCommit: boolean;
+  powerArmyShareBp: number;
+  baseTurrets: number;
 }
 
 interface Row {
@@ -79,6 +96,10 @@ const HOLD_FROM = 5;
 const REMEMBER_FROM = 7;
 const SAFE_WINDOW_FROM = 7;
 const PREDICT_FROM = 10;
+/** Owner feedback 2026-09-28: the upper-tier craft (`econPlan`, `waveCommit`, power share, turrets). */
+const CRAFT_FROM = 6;
+const POWER_SHARE_AT_CRAFT_BP = 5000;
+const POWER_SHARE_AT_X_BP = 3000;
 /** "No bot reacts faster than 300 ms" (A7.3). */
 const MIN_REACTION_MS = 300;
 
@@ -130,6 +151,10 @@ export function tierParams(tier: number): TierParams {
     hold: t >= HOLD_FROM * 100,
     turretRebuild: t >= HOLD_FROM * 100,
     maxTurrets: lo.maxTurrets,
+    econPlan: t >= CRAFT_FROM * 100,
+    waveCommit: t >= CRAFT_FROM * 100,
+    powerArmyShareBp: t >= CRAFT_FROM * 100 ? lerp(POWER_SHARE_AT_CRAFT_BP, POWER_SHARE_AT_X_BP, t, CRAFT_FROM * 100, 1000) : 0,
+    baseTurrets: t >= 800 ? 2 : t >= CRAFT_FROM * 100 ? 1 : 0,
   };
 }
 

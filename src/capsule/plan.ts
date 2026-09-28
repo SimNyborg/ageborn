@@ -48,9 +48,9 @@ export const SHOW_TIMING = {
   /** The honest rarity pre-signal grows with the rarity (a longer build for Epic and Legendary). */
   signalMs: { common: 260, rare: 380, epic: 640, legendary: 700 } as Readonly<Record<Rarity, number>>,
   flipMs: { common: 150, rare: 400, epic: 800, legendary: 400 } as Readonly<Record<Rarity, number>>,
-  /** After the flip lands: the snap settles and the copies badge counts up. */
-  settleMs: { common: 160, rare: 220, epic: 320, legendary: 320 } as Readonly<Record<Rarity, number>>,
-  countMs: 420,
+  /** After the flip lands: the snap settles while the copies badge counts up (both overlap the stamp and foil). */
+  settleMs: { common: 120, rare: 200, epic: 300, legendary: 300 } as Readonly<Record<Rarity, number>>,
+  countMs: { common: 220, rare: 300, epic: 360, legendary: 360 } as Readonly<Record<Rarity, number>>,
   foilMs: { none: 0, bronze: 500, silver: 500, holo: 1000 } as Readonly<Record<Foil, number>>,
   stampMs: 450,
   miniWalkoutMs: 2000,
@@ -275,7 +275,7 @@ function cardSteps(card: RevealCard, intro = false): ShowStep[] {
   const stamped = card.isNew || card.kind === 'skin';
   const stampMs = stamped ? T.stampMs : 0;
   const counted = card.kind === 'card' && card.copies > 1;
-  const countMs = counted ? T.countMs : 0;
+  const countMs = counted ? T.countMs[card.rarity] : 0;
   const settleMs = T.settleMs[card.rarity];
   const flipCues: Cue[] = [{ atMs: 0, sound: 'card_flip' }];
   // The snap as the face lands: brighter for rarer cards.
@@ -284,16 +284,16 @@ function cardSteps(card: RevealCard, intro = false): ShowStep[] {
   if (stamped) flipCues.push({ atMs: flipMs + foilMs + 60, sound: 'ui_confirm' });
   if (counted) {
     // A few ticks climbing in pitch while the copies badge counts up.
-    const ticks = Math.min(5, card.copies);
+    const ticks = Math.min(4, card.copies);
     for (let i = 0; i < ticks; i++) {
-      flipCues.push({ atMs: flipMs + 40 + Math.round((i * (countMs - 80)) / ticks), sound: 'xp_tick', pitchBp: 9000 + i * 900, volumeDb: -8 });
+      flipCues.push({ atMs: flipMs + 30 + Math.round((i * (countMs - 60)) / ticks), sound: 'xp_tick', pitchBp: 9000 + i * 900, volumeDb: -8 });
     }
   }
   out.push(
     step<FlipStep>({
       kind: 'flip',
       id: `flip-${card.key}`,
-      durationMs: flipMs + Math.max(foilMs + stampMs, countMs) + settleMs,
+      durationMs: flipMs + Math.max(foilMs + stampMs, countMs, settleMs),
       card,
       flipMs,
       foilMs,

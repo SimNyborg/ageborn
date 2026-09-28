@@ -1,0 +1,124 @@
+/* Customize (owner feedback 2026-09-28): skins, bases, banner, frame, title, emotes. */
+
+.cust-count {
+  margin: 0 0 8px;
+  font-weight: 900;
+  font-size: 15px;
+}
+.cust-hint {
+  margin: 0 0 12px;
+  color: var(--ui-muted);
+  font-weight: 700;
+}
+.cust-skins > * {
+  animation: ui-enter 320ms var(--ui-ease-out) both;
+}
+.cust-skins > *:nth-child(2) { animation-delay: 30ms; }
+.cust-skins > *:nth-child(3) { animation-delay: 60ms; }
+.cust-skins > *:nth-child(4) { animation-delay: 90ms; }
+.cust-skins > *:nth-child(n + 5) { animation-delay: 120ms; }
+
+.cust-look {
+  display: grid;
+  gap: 16px;
+}
+.cust-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cust-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cust-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 6px 14px 6px 8px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #5b8cff 0%, #3a6ee8 55%, #2a53bd 100%);
+  box-shadow: 0 4px 0 var(--ui-ink), inset 0 3px 0 rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 110ms var(--ui-ease-out), filter 110ms;
+}
+.cust-choice:hover {
+  transform: translateY(-2px);
+}
+.cust-choice:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ui-ink);
+}
+.cust-choice.is-on {
+  background: linear-gradient(180deg, #8ff08a 0%, #3fc35a 55%, #238a3c 100%);
+  animation: ui-pop 300ms var(--ui-ease-out);
+}
+.cust-choice.is-locked {
+  background: linear-gradient(180deg, #6b6790, #4b4870);
+  cursor: default;
+  filter: saturate(0.6);
+}
+.cust-choice.is-locked:hover {
+  transform: none;
+}
+.cust-choice__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(27, 19, 48, 0.35);
+}
+.cust-choice__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.cust-choice__text b {
+  font-weight: 900;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px var(--ui-ink);
+}
+.cust-choice__text small {
+  font-size: 11px;
+  font-weight: 800;
+  color: #e4e0f5;
+}
+
+.cust-emotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cust-emote__bubble {
+  position: relative;
+  display: inline-block;
+  padding: 10px 16px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffbe6, #ffe89a);
+  color: var(--ui-ink);
+  font-weight: 900;
+  box-shadow: 0 4px 0 var(--ui-ink);
+  animation: ui-bob 2.6s ease-in-out infinite;
+}
+.cust-emote:nth-child(2n) .cust-emote__bubble {
+  animation-delay: 0.4s;
+}
+.cust-emote:nth-child(3n) .cust-emote__bubble {
+  animation-delay: 0.9s;
+}

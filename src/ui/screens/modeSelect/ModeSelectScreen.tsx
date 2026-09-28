@@ -1,7 +1,11 @@
 /**
- * Mode select (A9 #3): Ladder (format picker from Arena 2), Conquest (from Arena 3), Skirmish (from
- * match 4: General or Echo, tier 0-X, format, speed, "Standard levels"; 5 Amber per win) and the
+ * Mode select (A9 #3): Quick Battle, Ladder (format picker from Arena 2), Conquest (from Arena 3),
+ * Skirmish (General or Echo, difficulty, format, speed, "Standard levels"; 5 Amber per win) and the
  * Daily Challenge (A9.1). Starting a mode asks the app for the opponent and shows VS.
+ *
+ * Owner feedback 2026-09-28: Quick Battle and Skirmish open after the training match and have a
+ * difficulty picker (Easy II, Normal IV, Hard VI, Expert VIII, Legendary X), remembered in the save.
+ * Quick Battle is a Short War Skirmish vs the General that fits the difficulty.
  */
 import "./modeSelect.css";
 import {
@@ -10,14 +14,19 @@ import {
   modifierDescKey,
   modifierNameKey,
 } from "@/content/keys";
-import type { DailyDifficulty, GeneralId } from "@/content/types";
+import type {
+  Content,
+  DailyDifficulty,
+  Difficulty,
+  GeneralId,
+} from "@/content/types";
 import type { AgeId, FormatId } from "@/contracts";
 import type { ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { GeneralPortrait } from "../../components/Avatar";
 import { Button } from "../../components/Button";
 import { AiBadge, Pill } from "../../components/Chips";
-import { Segmented, Slider, Toggle } from "../../components/Controls";
+import { Segmented, Toggle } from "../../components/Controls";
 import { formatInt, formatSigned, tierNumeral } from "../../components/format";
 import {
   AmberIcon,
@@ -39,7 +48,9 @@ import {
   conquestView,
   DAILY_DIFFICULTIES,
   defaultDailyDifficulty,
+  difficultyFlags,
   ladderWin,
+  lastDifficulty,
   unlocks,
   WAR_PLAN_UNLOCK_MATCHES,
 } from "../model/progress";
@@ -52,6 +63,45 @@ const DIFFICULTY_KEYS: Record<DailyDifficulty, string> = {
   warlord: "ui.mode.daily.warlord",
 };
 const ALL_FORMATS: FormatId[] = ["short", "standard", "full"];
+
+/**
+ * The Quick Battle opponent for a difficulty: the first ladder General (content order) whose tier
+ * range holds the difficulty's tier (Easy: Pip, Normal: Kettle, ..., Legendary: the Warden).
+ */
+export function quickGeneral(content: Content, d: Difficulty): GeneralId {
+  const tier = content.generals.difficulty.tiers[d];
+  const list = content.generals.order.map((g) => content.generals.list[g]);
+  const fit = list.find(
+    (g) => !g.scripted && !g.mirror && g.tiers && g.tiers[0] <= tier && tier <= g.tiers[1],
+  );
+  return fit?.id ?? "kettle";
+}
+
+/** The five named difficulties, each with its AI tier (owner feedback 2026-09-28). */
+export function DifficultyPicker(p: {
+  value: Difficulty;
+  onChange: (d: Difficulty) => void;
+  testid: string;
+}) {
+  const { content, t } = useUi();
+  const table = content.generals.difficulty;
+  return (
+    <div class="mode-card__diff">
+      <Segmented
+        label={t("ui.difficulty.label")}
+        value={p.value}
+        onChange={p.onChange}
+        options={table.order.map((d) => ({
+          value: d,
+          label: t(`ui.difficulty.${d}`),
+          hint: t("ui.vs.tier", { tier: tierNumeral(table.tiers[d]) }),
+        }))}
+        testid={p.testid}
+        size="sm"
+      />
+    </div>
+  );
+}
 
 function ModeCard(p: {
   id: string;
@@ -98,6 +148,8 @@ function ModeCard(p: {
 function SkirmishSetup(p: {
   onStart: (req: MatchRequest) => void;
   onClose: () => void;
+  difficulty: Difficulty;
+  onDifficulty: (d: Difficulty) => void;
 }) {
   const { content, save, t } = useUi();
   const s = save.value;
@@ -105,7 +157,7 @@ function SkirmishSetup(p: {
     (g) => !content.generals.list[g].scripted,
   );
   const [general, setGeneral] = useState<GeneralId>("pip");
-  const [tier, setTier] = useState(3);
+  const tier = content.generals.difficulty.tiers[p.difficulty];
   const [format, setFormat] = useState<FormatId>("short");
   const [speed, setSpeed] = useState<1 | 1.5 | 2>(s.settings.defaultSpeed);
   const [standard, setStandard] = useState(false);
@@ -179,16 +231,19 @@ function SkirmishSetup(p: {
           {g.mirror ? (
             <p class="skirmish__note">{t("ui.mode.skirmish.echo")}</p>
           ) : null}
-          <Slider
-            label={t("ui.mode.skirmish.tier")}
-            value={tier}
-            min={0}
-            max={content.arenas.ladder.maxTier}
-            step={1}
-            onChange={setTier}
-            format={(v) => tierNumeral(v)}
-            testid="skirmish-tier"
-          />
+          <div class="skirmish__row skirmish__row--diff">
+            <span class="skirmish__label">{t("ui.difficulty.label")}</span>
+            <DifficultyPicker
+              value={p.difficulty}
+              onChange={p.onDifficulty}
+              testid="skirmish-difficulty"
+            />
+          </div>
+          <p class="skirmish__note" data-testid="skirmish-tier">
+            <AiBadge size="sm" />{" "}
+            {t("ui.vs.tier", { tier: tierNumeral(tier) })} ·{" "}
+            {t("ui.difficulty.picked")}
+          </p>
           <div class="skirmish__row">
             <span class="skirmish__label">{t("ui.mode.format")}</span>
             <Segmented
@@ -264,6 +319,16 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
     defaultDailyDifficulty(s, content),
   );
   const win = ladderWin(s, content, format);
+  // Quick Battle and Skirmish share the last picked difficulty (Normal for a new player).
+  const [pick, setPick] = useState<Difficulty>(() =>
+    lastDifficulty(s, content),
+  );
+  const pickDifficulty = (d: Difficulty) => {
+    setPick(d);
+    services.setUiFlags(difficultyFlags(d, content));
+  };
+  const quickGen = quickGeneral(content, pick);
+  const quickTier = content.generals.difficulty.tiers[pick];
 
   const starter = useMatchStarter();
 
@@ -279,6 +344,58 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
       onBack={() => router.back()}
     >
       <div class="modes">
+        <ModeCard
+          id="quick"
+          tone="green"
+          icon={<SwordsIcon size={64} />}
+          title={t("ui.mode.quick.title")}
+          desc={t("ui.mode.quick.desc")}
+          locked={
+            u.skirmish
+              ? null
+              : t("ui.lock.afterMatches", { n: WAR_PLAN_UNLOCK_MATCHES })
+          }
+          action={
+            <Button
+              variant="green"
+              size="lg"
+              wide
+              testid="quick-start"
+              icon={<SwordsIcon size={26} />}
+              onClick={() =>
+                start({
+                  mode: "skirmish",
+                  options: {
+                    generalId: quickGen,
+                    tier: quickTier,
+                    format: "short",
+                    standardLevels: false,
+                  },
+                  speed: s.settings.defaultSpeed,
+                })
+              }
+            >
+              {t("ui.home.battle")}
+            </Button>
+          }
+        >
+          <DifficultyPicker
+            value={pick}
+            onChange={pickDifficulty}
+            testid="quick-difficulty"
+          />
+          <p class="mode-card__meta" data-testid="quick-opponent">
+            <AiBadge size="sm" />
+            <b>{t(content.generals.list[quickGen].nameKey)}</b>
+            <span>{t("ui.vs.tier", { tier: tierNumeral(quickTier) })}</span>
+          </p>
+          <p class="mode-card__help">
+            {t("ui.mode.quick.help", {
+              n: content.arenas.ladder.skirmishWinAmber,
+            })}
+          </p>
+        </ModeCard>
+
         <ModeCard
           id="ladder"
           tone="blue"
@@ -457,7 +574,12 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
         </ModeCard>
       </div>
       {skirmish ? (
-        <SkirmishSetup onStart={start} onClose={() => setSkirmish(false)} />
+        <SkirmishSetup
+          onStart={start}
+          onClose={() => setSkirmish(false)}
+          difficulty={pick}
+          onDifficulty={pickDifficulty}
+        />
       ) : null}
       {starter.dialog}
     </ScreenFrame>

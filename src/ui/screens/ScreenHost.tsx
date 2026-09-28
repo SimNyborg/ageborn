@@ -18,6 +18,7 @@ import { visibleEntries, type Route, type RouteOf, type ScreenId } from '../rout
 import { CardDetailScreen } from './cardDetail/CardDetailScreen';
 import { CollectionScreen } from './collection/CollectionScreen';
 import { ConquestScreen } from './conquest/ConquestScreen';
+import { CustomizeScreen } from './customize/CustomizeScreen';
 import { UiEnvContext, type UiEnv } from './context';
 import { HomeScreen } from './home/HomeScreen';
 import { ModeSelectScreen } from './modeSelect/ModeSelectScreen';
@@ -45,6 +46,7 @@ export const SCREEN_COMPONENTS: { [K in ScreenId]?: ScreenComponent<K> } = {
   profile: ProfileScreen,
   settings: SettingsScreen,
   conquest: ConquestScreen,
+  customize: CustomizeScreen,
 };
 
 export type ScreenSlots = { [K in ScreenId]?: (route: RouteOf<K>) => ComponentChildren };

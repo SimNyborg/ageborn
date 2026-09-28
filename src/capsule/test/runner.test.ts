@@ -64,7 +64,9 @@ describe('ShowRunner (DESIGN A10 Input)', () => {
     expect(view.waits).toBeGreaterThan(0);
     // Four strikes, each idles 1.5 s: the untouched show takes at least 4 × 1.5 s longer.
     expect(ms).toBeGreaterThan(4 * 1500);
-    expect(audio.played().slice(0, 7)).toEqual(['cap_thud', 'cap_riser', 'cap_clunk', 'cap_clunk', 'cap_climb_1', 'cap_climb_2', 'cap_burst']);
+    // Each strike lands with a thump under its clunk or climb note; the burst builds on a riser.
+    const capsuleSounds = audio.played().filter((id) => id.startsWith('cap_') || id === 'evolve_riser');
+    expect(capsuleSounds.slice(0, 8)).toEqual(['cap_thud', 'cap_riser', 'cap_clunk', 'cap_clunk', 'cap_climb_1', 'cap_climb_2', 'evolve_riser', 'cap_burst']);
     expect(audio.played()).toContain('cap_climb_2');
     expect(audio.played()).toContain('rarity_epic');
     // Every step entered once, in order, none instantly.
@@ -129,14 +131,16 @@ describe('ShowRunner (DESIGN A10 Input)', () => {
     const tapper = setup(silver());
     while (tapper.runner.state.kind !== 'flip') tapper.runner.update(16);
     const idx = tapper.runner.state.index;
+    const flipMs = tapper.runner.step?.durationMs ?? 0;
     tapper.runner.tap();
     let ms = 0;
     while (tapper.runner.state.index === idx) {
       tapper.runner.update(16);
       ms += 16;
     }
-    // The first flip is a Common (150 ms): hurried at 4× it ends within a couple of frames.
-    expect(ms).toBeLessThanOrEqual(48);
+    // Hurried at 4×, the flip (with its snap and count-up) ends in a quarter of its time.
+    expect(ms).toBeLessThanOrEqual(Math.ceil(flipMs / 4 / 16) * 16 + 32);
+    expect(ms).toBeLessThan(flipMs / 2);
   });
 
   it('skip jumps to the summary, finishing skipped steps silently', () => {

@@ -300,3 +300,11 @@
     display: none;
   }
 }
+
+/* Advisor warnings about a missing class show that class's icon instead of the "!" dot. */
+.wp-issue.has-class::before {
+  display: none;
+}
+.wp-issue__class {
+  flex: none;
+}

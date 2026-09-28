@@ -1,0 +1,21 @@
+name = "ageborn-online-spike"
+main = "src/worker.ts"
+compatibility_date = "2026-09-01"
+tsconfig = "tsconfig.json"
+
+[vars]
+# 1 = the Durable Object re-simulates every finished match (server anti-cheat).
+VERIFY = "1"
+
+[[durable_objects.bindings]]
+name = "MATCH"
+class_name = "MatchDO"
+
+[[durable_objects.bindings]]
+name = "LOBBY"
+class_name = "LobbyDO"
+
+# SQLite-backed Durable Objects are the ones available on the Workers Free plan.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatchDO", "LobbyDO"]

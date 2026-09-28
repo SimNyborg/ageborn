@@ -59,6 +59,32 @@ export function classesOf(ids: readonly CardId[], units: Readonly<Record<CardId,
 }
 
 /**
+ * Strong vs / Weak vs as classes. A class that shows up on both lists goes to the list that names
+ * more of its cards, and is dropped on a tie, so a card never reads "Strong vs Heavy, Weak vs Heavy".
+ */
+export function counterClasses(
+  strongVs: readonly CardId[],
+  weakVs: readonly CardId[],
+  units: Readonly<Record<CardId, Pick<UnitDef, 'role' | 'tags'> | undefined>>,
+): { strong: UnitClass[]; weak: UnitClass[] } {
+  const score = new Map<UnitClass, number>();
+  const add = (ids: readonly CardId[], d: number) => {
+    for (const id of ids) {
+      const u = units[id];
+      if (u) score.set(unitClass(u), (score.get(unitClass(u)) ?? 0) + d);
+    }
+  };
+  add(strongVs, 1);
+  add(weakVs, -1);
+  const s = new Set(classesOf(strongVs, units));
+  const w = new Set(classesOf(weakVs, units));
+  return {
+    strong: UNIT_CLASSES.filter((c) => s.has(c) && (!w.has(c) || (score.get(c) ?? 0) > 0)),
+    weak: UNIT_CLASSES.filter((c) => w.has(c) && (!s.has(c) || (score.get(c) ?? 0) < 0)),
+  };
+}
+
+/**
  * The counter legend (A2.6 counter triangle plus air and siege): `a` beats `b`. The first three
  * rows are the triangle the War Plan draws; the rest are the side notes.
  */

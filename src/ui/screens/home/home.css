@@ -781,6 +781,95 @@
   color: #e4e0f5;
 }
 
+/* The suggested battle under the Battle button (onboarding match 2 vs Pip). */
+.home-battle__next {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -2px;
+  padding: 4px 12px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 999px;
+  background: rgba(27, 19, 48, 0.78);
+  font-weight: 900;
+  font-size: 15px;
+  color: #fff;
+  box-shadow: 0 3px 0 var(--ui-ink);
+  animation: ui-pop 420ms var(--ui-ease-out) both;
+}
+
+/* Six entries: they share the row and wrap on narrow screens. */
+.home-nav {
+  flex-wrap: wrap;
+}
+.home-nav__btn {
+  min-width: 128px;
+}
+
+/* First-time pointer (owner feedback 2026-09-28): one short line above one new entry, once. */
+.home-nav__btn.has-pointer {
+  animation: ui-glow 1.8s ease-in-out infinite;
+}
+.home-nav__pointer {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  z-index: 3;
+  width: max-content;
+  max-width: 220px;
+  padding: 7px 12px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fffbe6, #ffe89a);
+  color: var(--ui-ink);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: center;
+  box-shadow: 0 4px 0 var(--ui-ink);
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  animation:
+    home-pointer-in 380ms var(--ui-ease-out) both,
+    home-pointer-bob 2.2s ease-in-out 380ms infinite;
+}
+.home-nav__pointer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 14px;
+  height: 14px;
+  margin: -6px 0 0 -7px;
+  border-right: 3px solid var(--ui-ink);
+  border-bottom: 3px solid var(--ui-ink);
+  background: #ffe89a;
+  transform: rotate(45deg);
+}
+@keyframes home-pointer-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.7);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -2px) scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+@keyframes home-pointer-bob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -4px);
+  }
+}
+
 /* ---- compact: landscape phones ---- */
 @media (max-height: 480px) {
   .home {

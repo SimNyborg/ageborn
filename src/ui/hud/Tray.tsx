@@ -20,6 +20,8 @@
 import type { HudCard, UnitDef } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
+import { counterClasses, isLegendaryUnit, unitClass } from '@/core/cardClass';
+import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
 import { ChargeFlagIcon, CoinIcon, HoldShieldIcon, HornIcon, RoleGlyph } from './icons';
 import {
   LONG_PRESS_MS,
@@ -100,27 +102,41 @@ function GoldCounter(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; 
   );
 }
 
-/** What a card is (hover on desktop, the "i" corner on touch). */
+/** What a card is (hover on desktop, the "i" corner on touch): class, counters as class icons. */
 function CardInfo(p: { c: HudCtx; def: UnitDef }) {
   const { c, def } = p;
-  const strong = def.strongVs
-    .slice(0, 2)
-    .map((id) => c.config.content.units[id])
-    .filter((u): u is UnitDef => !!u)
-    .map((u) => c.t(u.nameKey));
+  const units = c.config.content.units;
+  const klass = unitClass(def);
+  const { strong, weak } = counterClasses(def.strongVs, def.weakVs, units);
+  const row = (key: 'hud.info.strongVs' | 'hud.info.weakVs', list: typeof strong, tone: string) =>
+    list.length > 0 ? (
+      <div class={cls('hud-card-info-vs', tone)} data-testid={tone === 'is-good' ? 'hud-info-strong' : 'hud-info-weak'}>
+        <span class="hud-card-info-vs-label">{c.t(key)}</span>
+        {list.map((k) => (
+          <span key={k} class="hud-card-info-vs-item">
+            <ClassIcon id={k} size={18} />
+            {c.t(CLASS_NAME_KEY[k])}
+          </span>
+        ))}
+      </div>
+    ) : null;
   return (
     <div class="hud-card-info" role="tooltip" data-testid="hud-card-info">
       <div class="hud-card-info-name">
-        <RoleGlyph group={def.group} size={18} />
+        <ClassIcon id={klass} size={22} />
         {c.t(def.nameKey)}
       </div>
-      <div class="hud-card-info-role">{c.t(`role.${def.role}.name`)}</div>
+      <div class="hud-card-info-role" data-testid="hud-info-class">
+        {c.t(CLASS_NAME_KEY[klass])}
+        {isLegendaryUnit(def) ? <span class="hud-card-info-legendary">{c.t(CLASS_NAME_KEY.legendary)}</span> : null}
+      </div>
       <div class="hud-card-info-desc">{c.t(def.descKey)}</div>
       <div class="hud-card-info-stats">
         <span>{c.t('hud.info.hp', { n: def.hp })}</span>
         <span>{c.t('hud.info.cost', { n: def.cost })}</span>
       </div>
-      {strong.length > 0 ? <div class="hud-card-info-strong">{c.t('hud.info.strongVs', { list: strong.join(', ') })}</div> : null}
+      {row('hud.info.strongVs', strong, 'is-good')}
+      {row('hud.info.weakVs', weak, 'is-bad')}
     </div>
   );
 }
@@ -226,6 +242,9 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
         onPointerLeave={endPress}
       >
         <span class="hud-card-art">{url ? <img src={url} alt="" draggable={false} /> : <RoleGlyph group={def.group} size={size * 0.5} />}</span>
+        <span class="hud-card-class" data-testid={`hud-card-${card.slot}-class`} data-class={unitClass(def)}>
+          <ClassIcon id={unitClass(def)} size={c.compact ? 19 : 22} />
+        </span>
         {card.state === 'unaffordable' && poor ? <i class="hud-card-afford" /> : null}
         <i class="hud-card-fill" />
         <span class="hud-card-name">

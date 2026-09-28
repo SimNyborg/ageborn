@@ -8,7 +8,9 @@
  */
 import { rarityNameKey } from '@/content/keys';
 import type { AgeId, CardId, Foil, Rarity, SkinId } from '@/contracts';
+import type { CardClass, UnitClass } from '@/core/cardClass';
 import type { ComponentChildren } from 'preact';
+import { CardTip, CardTipBody, ClassIcon, CLASS_NAME_KEY, useCardTip } from './ClassIcon';
 import { formatInt } from './format';
 import { AGE_COLOR, ArrowUpIcon, CoinIcon, LockIcon, RARITY_COLOR, RoleGlyph, type GlyphKind } from './icons';
 import { useKit, usePortrait } from './kit';
@@ -33,11 +35,19 @@ export interface CardTileData {
   skin: SkinId | null;
   /** Gold cost in battle (units and turrets). */
   cost: number | null;
+  /** The card's class badge (owner feedback 2026-09-28); absent = no badge. */
+  cls?: CardClass;
+  /** Legendary units add a crown to the badge. */
+  legendary?: boolean;
+  /** Classes this unit beats / loses to (from the compiled `strongVs` / `weakVs`). */
+  strong?: readonly UnitClass[];
+  weak?: readonly UnitClass[];
 }
 
 export type CardTileSize = 'xs' | 'sm' | 'md' | 'lg';
 
 const ART_PX: Record<CardTileSize, number> = { xs: 56, sm: 72, md: 96, lg: 160 };
+const CLASS_PX: Record<CardTileSize, number> = { xs: 18, sm: 22, md: 26, lg: 34 };
 
 export function CardArt(p: {
   card: CardId;
@@ -87,10 +97,14 @@ export function CardTile(p: {
   testid?: string;
   label?: string;
   grid?: boolean;
+  /** Hover (desktop) / long-press (touch) tip with the class and counters. Default on for units. */
+  tip?: boolean;
 }) {
   const { t, locale } = useKit();
   const c = p.card;
   const size = p.size ?? 'md';
+  const hasTip = (p.tip ?? true) && c.kind === 'unit' && !!c.cls;
+  const tip = useCardTip(hasTip);
   const frame = c.rarity ? RARITY_COLOR[c.rarity] : '#f2c14e';
   const cls = [
     'ui-card',
@@ -110,6 +124,7 @@ export function CardTile(p: {
     [
       c.name,
       c.owned ? levelText : t('ui.card.notOwned'),
+      c.cls ? t(CLASS_NAME_KEY[c.cls]) : null,
       c.rarity ? t(rarityNameKey(c.rarity)) : null,
       c.upgradeReady ? t('ui.card.upgradeReady') : null,
     ]
@@ -138,20 +153,39 @@ export function CardTile(p: {
           </span>
         ) : null}
         {p.corner ? <span class="ui-card__corner">{p.corner}</span> : null}
+        {c.cls ? (
+          <span class="ui-card__class" data-testid={p.testid ? `${p.testid}-class` : undefined} data-class={c.cls}>
+            <ClassIcon id={c.cls} size={CLASS_PX[size]} />
+            {c.legendary ? <ClassIcon id="legendary" size={Math.round(CLASS_PX[size] * 0.8)} class="ui-card__crown" /> : null}
+          </span>
+        ) : null}
       </span>
       {size !== 'xs' ? <span class="ui-card__name">{c.name}</span> : null}
+      {c.cls && size !== 'xs' ? (
+        <span class="ui-card__classname" style={{ '--cls': `var(--cls-${c.cls})` }}>
+          {t(CLASS_NAME_KEY[c.cls])}
+        </span>
+      ) : null}
       {p.showCopies && c.owned && c.kind !== 'power' ? <CopiesBar copies={c.copies} needed={c.needed} ready={c.upgradeReady} /> : null}
     </>
   );
+  const tipView =
+    hasTip && tip.anchor && c.cls ? (
+      <CardTip anchor={tip.anchor}>
+        <CardTipBody name={c.name} cls={c.cls} legendary={c.legendary} strong={c.strong ?? []} weak={c.weak ?? []} />
+      </CardTip>
+    ) : null;
   if (!p.onClick) {
     return (
-      <div class={cls} data-testid={p.testid} role="img" aria-label={aria}>
+      <div class={cls} data-testid={p.testid} role="img" aria-label={aria} {...tip.handlers}>
         {body}
+        {tipView}
       </div>
     );
   }
   return (
     <button
+      {...tip.handlers}
       type="button"
       class={cls}
       data-testid={p.testid}
@@ -162,6 +196,7 @@ export function CardTile(p: {
       onClick={() => p.onClick?.()}
     >
       {body}
+      {tipView}
     </button>
   );
 }

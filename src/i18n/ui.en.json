@@ -398,6 +398,18 @@
       "notCraftable": "Crate only",
       "baseOf": "{age} base"
     },
+    "customize": {
+      "troops": "Troops",
+      "bases": "Bases",
+      "look": "Banner & title",
+      "emotes": "Emotes",
+      "owned": "{n}/{max} skins",
+      "howToGet": "Win skins from Wardrobe Crates, the Trophy Road and War Chests, or craft them with Dust.",
+      "none": "Nothing here yet.",
+      "codexLevel": "Codex Level {n}",
+      "titleLocked": "Earned by a feat or milestone",
+      "emotesHint": "Use these in battle. Every emote is yours."
+    },
     "collection": {
       "cards": "Cards",
       "skins": "Skins",

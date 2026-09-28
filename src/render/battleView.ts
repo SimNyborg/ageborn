@@ -501,9 +501,16 @@ export class BattleView {
    * else mid-band), clamped to the power band. Null when the power ignores the aim.
    */
   powerAimStart(): number | null {
-    const width = powerZoneLu(this.myPower());
-    if (width === null) return null;
     const band = this.config.content.economy.powerZoneClamp;
+    const width = powerZoneLu(this.myPower());
+    if (width === null) {
+      // The power picks its own spot (Stampede, Paratroopers, ...): the ghost shows it wherever the pointer is.
+      const z = this.ghostZone(0);
+      const p = z ? clampPowerP(xToP(z.x, this.mySide), band) : Math.round((band[0] + band[1]) / 2);
+      this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true };
+      this.camera.hold('powerDrag', true);
+      return p;
+    }
     let foe: number | null = null;
     let mine: number | null = null;
     for (const u of this.units.values()) {
@@ -550,19 +557,55 @@ export class BattleView {
    */
   previewPower(p: number | null, valid = true): void {
     const def = this.myPower();
-    const width = powerZoneLu(def);
     if (this.powerDrag) this.powerDrag.valid = valid;
-    if (p === null || width === null) {
+    const z = p === null ? null : this.ghostZone(p);
+    if (p === null || z === null) {
       this.zones.hidePreview();
-      if (this.powerDrag) this.powerDrag.p = null;
+      if (this.powerDrag) this.powerDrag.p = p;
       return;
     }
     if (this.powerDrag) this.powerDrag.p = p;
-    this.zones.showPreview(pToX(p, this.mySide), width, teamColor(this.settings.teamPreset, this.mySide), {
+    this.zones.showPreview(z.x, z.width, teamColor(this.settings.teamPreset, this.mySide), {
       valid,
       style: ghostStyle(def),
       dir: facingOf(this.mySide),
     });
+  }
+
+  /**
+   * Where the ghost goes for an aim at `p`: the aimed zone, or for a power that picks its own spot
+   * the area it will act on (WP2 "abilities and powers"): Stampede runs from your frontmost ground
+   * unit (p 200 without one) for its distance; Paratroopers land beyond the enemy front. Royal Decree
+   * and Nanite Surge act on all your units, so they have no ghost.
+   */
+  private ghostZone(p: number): { x: number; width: number } | null {
+    const def = this.myPower();
+    if (!def) return null;
+    const e = def.effect;
+    const width = powerZoneLu(def);
+    if (width !== null) return { x: pToX(p, this.mySide), width };
+    const band = this.config.content.economy.powerZoneClamp;
+    const front = (side: Side): number | null => {
+      let f: number | null = null;
+      for (const u of this.units.values()) {
+        if (u.dying || u.air || u.side !== side) continue;
+        const up = xToP(u.x, side);
+        f = f === null ? up : Math.max(f, up);
+      }
+      return f;
+    };
+    if (e.kind === 'stampede') {
+      const battle = (this.config.content as { battle?: { stampedeFallbackP?: number } }).battle;
+      const start = front(this.mySide) ?? battle?.stampedeFallbackP ?? 200;
+      return { x: pToX(start + e.distance / 2, this.mySide), width: e.distance };
+    }
+    if (e.kind === 'paradrop') {
+      const foe: Side = this.mySide === 0 ? 1 : 0;
+      const f = front(foe);
+      const land = f === null ? e.fallbackP : Math.min(band[1], LANE_LU - f + e.beyondFront);
+      return { x: pToX(land, this.mySide), width: 220 };
+    }
+    return null;
   }
 
   /** The enemy units the ghost would hit, refreshed every frame while it shows (they keep walking). */
@@ -572,8 +615,13 @@ export class BattleView {
       if (g) this.zones.setTargets([]);
       return;
     }
-    const e = this.myPower()?.effect as { hitsAir?: boolean } | undefined;
-    const air = e?.hitsAir !== false;
+    const fx = this.myPower()?.effect;
+    // Paratroopers hit nothing themselves; Stampede runs on the ground.
+    if (!fx || fx.kind === 'paradrop' || fx.kind === 'buffAll') {
+      this.zones.setTargets([]);
+      return;
+    }
+    const air = fx.kind === 'stampede' ? false : fx.kind === 'cloud' ? true : fx.hitsAir;
     const out: GhostTarget[] = [];
     for (const u of this.units.values()) {
       if (u.side === this.mySide || u.dying || (u.air && !air)) continue;
@@ -845,9 +893,8 @@ export class BattleView {
       };
     };
     const zones: MinimapZone[] = this.zoneTracks.map((z) => ({ x: z.x, width: z.width, side: z.side, kind: z.ageMs < z.telegraphMs ? 'telegraph' : 'effect' }));
-    const preview = this.powerDrag?.p;
-    const width = powerZoneLu(this.myPower());
-    if (preview !== null && preview !== undefined && width !== null) zones.push({ x: pToX(preview, this.mySide), width, side: this.mySide, kind: 'preview' });
+    const ghost = this.zones.preview;
+    if (ghost?.valid) zones.push({ x: ghost.x, width: ghost.width, side: this.mySide, kind: 'preview' });
     const L = this.camera.layout;
     const r = this.camera.viewRange();
     return {
