@@ -30,7 +30,7 @@ interface Death {
 export interface AdaptiveHintsOptions {
   /** Shows per hint id so far (from the save). Mutated copy is available via `shown()`. */
   shown?: Record<string, number>;
-  /** Hints switched off for this match (for example stance hints before match 4). */
+  /** Hints switched off for this match (for example stance hints when the stance is off). */
   disabled?: readonly AdaptiveHintId[];
 }
 

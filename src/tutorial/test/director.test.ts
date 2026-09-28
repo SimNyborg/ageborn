@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TutorialDirector, type DirectorLogEntry } from '../director';
-import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, MATCH5, sec } from '../scripts';
+import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, sec } from '../scripts';
 import { Harness, config, type Ev } from './helpers';
 
 function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } {
@@ -13,7 +13,7 @@ function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } 
 const kill = (): Ev => ({ e: 'died', id: 900, side: 1, card: 'training_dummy', killerId: 1, killerCard: 'bonker', killerKind: 'unit', killerSide: 0, bountyGold: 30000, bountyXp: 50000, x: 600_000 });
 
 describe('TutorialDirector: match 1 beats in A8 order', () => {
-  it('walks Bonker → kill → Pebbler → Rock Tosser → Evolve → Arrow Storm → Future', () => {
+  it('walks Bonker → kill → Pebbler → Rock Tosser → Evolve → Arrow Storm → stance → Future', () => {
     const { h, d, log } = match1();
     h.advance();
     d.update(h.input());
@@ -66,12 +66,19 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     d.update(h.input([{ e: 'powerTelegraph', side: 0, power: 'arrow_storm', castId: 1, x: 700_000, zone: 450 }]));
     expect(d.prompt).toBeNull();
 
-    for (const age of ['gunpowder', 'modern'] as const) {
-      h.advance(100);
-      d.update(h.input([{ e: 'ageUp', side: 0, age }]));
-      h.advance();
-      d.update(h.input());
-    }
+    // Gunpowder brings the one stance hint (owner feedback 2026-09-28); it points at the flag for 6 s.
+    h.advance(100);
+    d.update(h.input([{ e: 'ageUp', side: 0, age: 'gunpowder' }]));
+    h.advance();
+    d.update(h.input());
+    expect(d.prompt).toMatchObject({ id: 'm1.stance', textKey: 'tutorial.m1.stance', target: 'stance' });
+    h.advance(sec(6));
+    d.update(h.input());
+    expect(d.prompt).toBeNull();
+    h.advance(100);
+    d.update(h.input([{ e: 'ageUp', side: 0, age: 'modern' }]));
+    h.advance();
+    d.update(h.input());
     expect(d.prompt).toBeNull();
     h.advance(100);
     d.update(h.input([{ e: 'ageUp', side: 0, age: 'future' }]));
@@ -184,15 +191,16 @@ describe('TutorialDirector: other scripts and hints', () => {
     expect(d.prompt).toBeNull();
   });
 
-  it('match 5 points at Last Stand when it arms', () => {
+  it('match 2 points at Last Stand when it arms (owner feedback 2026-09-28: was match 5)', () => {
     const h = new Harness();
-    const d = new TutorialDirector(MATCH5, { adaptive: false });
+    const lastStandOnly = { ...MATCH2, beats: MATCH2.beats.filter((b) => b.id === 'm2.lastStand') };
+    const d = new TutorialDirector(lastStandOnly, { adaptive: false });
     d.update(h.input());
     expect(d.prompt).toBeNull();
     h.state.sides[0].lastStand = 'armed';
     h.advance();
     d.update(h.input());
-    expect(d.prompt).toMatchObject({ id: 'm5.lastStand', textKey: 'tutorial.m5.lastStand', target: 'lastStand' });
+    expect(d.prompt).toMatchObject({ id: 'm2.lastStand', textKey: 'tutorial.m2.lastStand', target: 'lastStand' });
   });
 
   it('shows adaptive hints only when no beat is on screen, and they can be dismissed', () => {

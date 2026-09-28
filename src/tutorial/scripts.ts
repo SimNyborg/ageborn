@@ -96,7 +96,7 @@ export interface GroggScript {
 }
 
 export interface MatchScript {
-  id: 'match1' | 'match2' | 'match4' | 'match5';
+  id: 'match1' | 'match2';
   /** Beats show one after another, in order (A8, C5 #2). */
   sequential: boolean;
   beats: Beat[];
@@ -202,7 +202,10 @@ export const MATCH1: MatchScript = {
     // ~0:55: the Ascension show speaks for itself.
     { id: 'm1.ascension', textKey: null, target: null, trigger: { k: 'ageUp', age: 'medieval' }, done: { k: 'shownFor', ticks: 1 } },
     { id: 'm1.arrowStorm', textKey: 'tutorial.m1.arrowStorm', target: 'power', hand: 'powerDrag', trigger: { k: 'powerReady' }, done: { k: 'event', e: 'powerTelegraph' }, timeoutTicks: sec(20), onlyInAge: 1 },
-    { id: 'm1.gunpowder', textKey: null, target: null, trigger: { k: 'ageUp', age: 'gunpowder' }, done: { k: 'shownFor', ticks: 1 } },
+    // Owner feedback 2026-09-28: the stance is there from match 1, with this one hint in Gunpowder
+    // (~1:33, a calm stretch after Arrow Storm). It points at the flag for 6 s and never waits for a
+    // tap, so a player who ignores it is not held up (the retimed run never taps it).
+    { id: 'm1.stance', textKey: 'tutorial.m1.stance', target: 'stance', trigger: { k: 'ageUp', age: 'gunpowder' }, done: { k: 'shownFor', ticks: sec(6) } },
     { id: 'm1.modern', textKey: null, target: null, trigger: { k: 'ageUp', age: 'modern' }, done: { k: 'shownFor', ticks: 1 } },
     { id: 'm1.future', textKey: 'tutorial.m1.future', target: null, trigger: { k: 'ageUp', age: 'future' }, done: { k: 'shownFor', ticks: sec(3) } },
   ],
@@ -228,7 +231,7 @@ export const MATCH1_TIMING = {
 export const MATCH1_TIMING_TOLERANCE = sec(3);
 
 // ---------------------------------------------------------------------------------------------
-// Match 2 (Short War vs Pip, tier 0) and the staged unlocks of matches 4 and 5
+// Match 2 (Short War vs Pip, tier 0), with the manual Last Stand (owner feedback 2026-09-28)
 // ---------------------------------------------------------------------------------------------
 
 export const MATCH2: MatchScript = {
@@ -241,19 +244,9 @@ export const MATCH2: MatchScript = {
     { id: 'm2.treasury', textKey: 'tutorial.m2.treasury', target: 'gold', trigger: { k: 'treasuryAffordable', afterTick: sec(15) }, done: { k: 'event', e: 'treasuryUp' }, timeoutTicks: sec(12) },
     // "Medieval teaches the second mount" (A8).
     { id: 'm2.secondMount', textKey: 'tutorial.m2.secondMount', target: 'mountBuy', trigger: { k: 'mountAffordable', minAgeIndex: 1 }, done: { k: 'event', e: 'mountBought' }, timeoutTicks: sec(12) },
+    // The manual Last Stand button arrives in match 2 (was match 5), shown when it is first armed.
+    { id: 'm2.lastStand', textKey: 'tutorial.m2.lastStand', target: 'lastStand', trigger: { k: 'lastStandArmed' }, done: { k: 'event', e: 'lastStandCharge' }, timeoutTicks: sec(8) },
   ],
-};
-
-export const MATCH4: MatchScript = {
-  id: 'match4',
-  sequential: false,
-  beats: [{ id: 'm4.stance', textKey: 'tutorial.m4.stance', target: 'stance', trigger: { k: 'atTick', tick: sec(3) }, done: { k: 'event', e: 'stanceChanged' }, timeoutTicks: sec(8) }],
-};
-
-export const MATCH5: MatchScript = {
-  id: 'match5',
-  sequential: false,
-  beats: [{ id: 'm5.lastStand', textKey: 'tutorial.m5.lastStand', target: 'lastStand', trigger: { k: 'lastStandArmed' }, done: { k: 'event', e: 'lastStandCharge' }, timeoutTicks: sec(8) }],
 };
 
 /**
@@ -263,13 +256,16 @@ export const MATCH5: MatchScript = {
 export const STAGES = {
   /** Match 2 onwards uses the full starter plan (match 1 uses scripted trays). */
   fullTrayFromMatch: 2,
-  /** The War Plan screen and Skirmish open after match 3 ("Your army, your plan"). */
-  warPlanAfterMatch: 3,
-  skirmishAfterMatch: 3,
-  /** The stance flag appears in match 4. */
-  stanceFromMatch: 4,
-  /** The manual Last Stand button appears in match 5; before that it is automatic only (A2.11). */
-  lastStandFromMatch: 5,
+  /**
+   * Owner feedback 2026-09-28: Home, the War Plan screen, Customize and Skirmish open right after
+   * match 1 (A8 had "after match 3").
+   */
+  warPlanAfterMatch: 1,
+  skirmishAfterMatch: 1,
+  /** The stance flag is there from match 1, with one hint (was match 4). */
+  stanceFromMatch: 1,
+  /** The manual Last Stand button appears in match 2 (was match 5); before that it is automatic only (A2.11). */
+  lastStandFromMatch: 2,
   /**
    * In-battle adaptive hints stop after the onboarding matches (A8: "only their in-battle hints
    * stop"); the detectors keep running for the Result tip.
@@ -281,8 +277,6 @@ export const STAGES = {
 export function scriptForMatch(n: number): MatchScript | null {
   if (n === 1) return MATCH1;
   if (n === 2) return MATCH2;
-  if (n === STAGES.stanceFromMatch) return MATCH4;
-  if (n === STAGES.lastStandFromMatch) return MATCH5;
   return null;
 }
 
@@ -294,8 +288,6 @@ export function stagedTraining(n: number): { manualLastStand: [boolean, boolean]
   };
 }
 
-/** The "Your army, your plan" prompt after match 3 (shown on Home by the app). */
-export const WAR_PLAN_PROMPT_KEY = 'tutorial.home.warPlan';
 
 // ---------------------------------------------------------------------------------------------
 // Adaptive hints (A8): at most once per 30 s, only on failure patterns, at most 3 times each

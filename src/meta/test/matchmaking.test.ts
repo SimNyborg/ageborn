@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { AgeId, CardId, OpponentSpec, SaveDoc } from '@/contracts';
-import { commanderInfo, ladderGenerals, newPlayerMistakeBonusBp } from '../matchmaking';
+import { commanderInfo, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply } from '../matchmaking';
 import { ELO_EXPECTED_BP, expectedScoreBp, ladderTier, tierRating, updateMmr } from '../mmr';
 import { C, M, TestClock, fresh, ownsAll, scripted } from './helpers';
 
@@ -163,10 +163,13 @@ describe('ladder opponents', () => {
     expect(M.pickOpponent(s, 'ladder', C, new TestClock())).toEqual(M.pickOpponent(s, 'ladder', C, new TestClock(123)));
   });
 
-  it('new players: +10 points of bot mistake rate in the first 20 matches', () => {
+  it('new players: +10 points of bot mistake rate in the two onboarding matches only (owner feedback 2026-09-28)', () => {
     expect(newPlayerMistakeBonusBp(fresh(), C)).toBe(1000);
-    expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 19 }, C)).toBe(1000);
-    expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 20 }, C)).toBe(0);
+    expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 1 }, C)).toBe(1000);
+    expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 2 }, C)).toBe(0);
+    // A picked difficulty never gets the handicap.
+    expect(newPlayerMistakesApply(fresh(), 'skirmish', C)).toBe(false);
+    expect(newPlayerMistakesApply({ ...fresh(), matchesPlayed: 1 }, 'tutorial', C)).toBe(true);
   });
 });
 
@@ -219,12 +222,15 @@ describe('other modes', () => {
 });
 
 describe('Rookie AI disclosure (A15.3)', () => {
-  it('the first 20 matches of a save disclose the extra mistakes on VS; later ones do not', () => {
+  it('the onboarding matches disclose the extra mistakes on VS; later ones and picked difficulties do not', () => {
     const c = new TestClock();
     const s = scripted();
-    for (const mode of ['ladder', 'daily', 'skirmish'] as const) {
-      expect(M.pickOpponent({ ...s, matchesPlayed: 19 }, mode, C, c).disclosures).toContain('app.disclosure.rookie');
-      expect(M.pickOpponent({ ...s, matchesPlayed: 20 }, mode, C, c).disclosures).not.toContain('app.disclosure.rookie');
+    for (const mode of ['ladder', 'daily'] as const) {
+      expect(M.pickOpponent({ ...s, matchesPlayed: 1 }, mode, C, c).disclosures).toContain('app.disclosure.rookie');
+      expect(M.pickOpponent({ ...s, matchesPlayed: 2 }, mode, C, c).disclosures).not.toContain('app.disclosure.rookie');
     }
+    expect(M.pickOpponent({ ...s, matchesPlayed: 1 }, 'tutorial', C, c).disclosures).toContain('app.disclosure.rookie');
+    // Skirmish and Quick Battle: the player picked the difficulty, so there is no handicap to disclose.
+    expect(M.pickOpponent({ ...s, matchesPlayed: 0 }, 'skirmish', C, c).disclosures).not.toContain('app.disclosure.rookie');
   });
 });

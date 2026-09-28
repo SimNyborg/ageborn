@@ -5,6 +5,8 @@
  *                                      [--tier 5] [--level 7] [--seed 1] [--workers N]
  *                                      [--no-mirror] [--no-scenarios] [--no-gate] [--patch file.json]
  *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,full] [--tier 7] [--workers N] [--no-gate] [--patch file.json]
+ *   npx tsx tools/sim-cli.ts strength  [--mode smoke|full] [--matches N] [--pairs N] [--tiers 2,4,6,8,10] [--proxies a,b]
+ *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
@@ -26,6 +28,7 @@ import { csvSections, runCsv } from './csv';
 import { dropsDefaults, dropsSections, runDrops } from './drops';
 import { economyDefaults, economySections, runEconomy } from './economy';
 import { exploitDefaults, exploitSections, runExploits } from './exploits';
+import { runStrength, strengthDefaults, strengthSections } from './strength';
 import { bool, int, list, parseArgs, str, type Args } from './lib/args';
 import { HeadlessMatch } from './lib/driver';
 import { PATCH_ENV, patchedGameContent } from './lib/patch';
@@ -47,6 +50,9 @@ Commands:
   exploits        scripted exploit proxies vs the tier VII Balanced bot (A2.14)
                   --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,full
                   --tier 7 --level 7 --seed 1
+  strength        AI tiers vs human-like scripted strategies, and adjacent tiers head to head
+                  --mode smoke|full --matches N (per cell) --pairs N (per tier pair, 0 = none)
+                  --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
   economy         365-day economy sim against the A6.9 pacing table
                   --days 365 --seed 1
   drops           capsule openings: bag totals, chi-square of published odds, pity (A6.4, A6.5)
@@ -69,6 +75,7 @@ const COMMON_FLAGS = ['out', 'gate', 'workers'];
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   balance: ['mode', 'matches', 'mirror', 'cards', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'patch'],
+  strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   economy: ['days', 'seed'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
@@ -203,6 +210,27 @@ export async function main(argv: readonly string[]): Promise<number> {
         onProgress: progressPrinter('exploits'),
       }, patchedGameContent());
       return finish(report, exploitSections(report), a);
+    }
+    case 'strength': {
+      const d = strengthDefaults(mode(a));
+      const proxies = list(a, 'proxies');
+      for (const p of proxies) if (!isProxyId(p)) throw new Error(`unknown proxy "${p}" (${Object.keys(STRATEGIES).join(', ')})`);
+      const tiers = list(a, 'tiers').map(Number);
+      for (const t of tiers) if (!Number.isFinite(t) || t < 0 || t > 10) throw new Error(`--tiers: "${t}" is not a tier 0-10`);
+      const report = await runStrength({
+        ...d,
+        matchesPerCell: int(a, 'matches', d.matchesPerCell),
+        matchesPerPair: int(a, 'pairs', d.matchesPerPair),
+        tiers: tiers.length > 0 ? tiers : d.tiers,
+        proxies: proxies.length > 0 ? (proxies as ProxyId[]) : d.proxies,
+        formats: formatList(list(a, 'formats'), d.formats),
+        generalId: str(a, 'general', d.generalId),
+        level: int(a, 'level', d.level),
+        seed: int(a, 'seed', d.seed),
+        workers,
+        onProgress: progressPrinter('strength'),
+      }, patchedGameContent());
+      return finish(report, strengthSections(report), a);
     }
     case 'economy': {
       const d = economyDefaults();

@@ -116,7 +116,7 @@ export type { LocalClock };
 export type { WarPlan, PlanIssueCode } from './advisor';
 export type { ConquestEntry } from './conquest';
 export type { OpponentOptions } from './matchmaking';
-export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPlayerMistakeBonusBp, ROOKIE_DISCLOSURE_KEY } from './matchmaking';
+export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply, ROOKIE_DISCLOSURE_KEY } from './matchmaking';
 export { bagLeft, bagSize, legendaryPityBp, strikePattern } from './capsules';
 export { nextChargeInMs } from './charges';
 export { craftCost } from './dust';

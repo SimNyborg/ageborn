@@ -149,7 +149,7 @@ describe('Arenas and ladder (A6.3, A6.8)', () => {
       lossProtection: { streak: 3, tierDrop: 1 },
       skirmishWinAmber: 5,
       mmr: { start: 1000, k: 32, tierRatingBase: 800, tierRatingStep: 100, tierOffset: 870, tierDivisor: 100 },
-      newPlayer: { matches: 20, mistakeBonusBp: 1000 },
+      newPlayer: { matches: 2, mistakeBonusBp: 1000 },
       levelRollBp: { minus: 2500, zero: 5000, plus: 2500 },
       standardLevel: 7,
     });

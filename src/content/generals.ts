@@ -231,4 +231,10 @@ export const generals: GeneralTables = {
     ],
   },
   commanderPersonalities: ['pip', 'kettle', 'moss', 'ledger', 'boomsworth', 'twins', 'rook', 'tempest'],
+  // Owner feedback 2026-09-28: Quick Battle and Skirmish pick a named difficulty, each an AI tier.
+  difficulty: {
+    order: ['easy', 'normal', 'hard', 'expert', 'legendary'],
+    tiers: { easy: 2, normal: 4, hard: 6, expert: 8, legendary: 10 },
+    default: 'normal',
+  },
 };

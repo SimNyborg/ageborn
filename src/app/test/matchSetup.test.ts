@@ -4,7 +4,7 @@ import { fakeContent } from '@/contracts/fakes/content';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
 import { commanderId } from '@/meta';
 import { MATCH1, MATCH1_SEED, MATCH1_TRAYS, MATCH2 } from '@/tutorial';
-import { botProfileFor, generalOpponent, generalPlan, matchSetupFor, nextMatchNumber, playerSide, quickBattle, standardLevel, tutorialMatch1, tutorialMatch2 } from '../matchSetup';
+import { botProfileFor, difficultyTable, difficultyTier, generalOpponent, generalPlan, matchSetupFor, nextMatchNumber, playerSide, quickBattle, standardLevel, tutorialMatch1, tutorialMatch2 } from '../matchSetup';
 
 describe('match 1 setup (A8)', () => {
   const s = tutorialMatch1(null, content, 'Old Grogg');
@@ -18,7 +18,7 @@ describe('match 1 setup (A8)', () => {
     expect(s.opponent).toMatchObject({ generalId: 'grogg', isAI: true, format: 'tutorial' });
     expect(s.opponent.disclosures).toEqual(['general.grogg.disclosure']);
     expect(s.config.sides[1].isBot).toBe(true);
-    expect(s.config.training).toMatchObject({ enemyBaseStartBp: 9000, noClock: true, manualLastStand: [false, true], stanceEnabled: [false, true] });
+    expect(s.config.training).toMatchObject({ enemyBaseStartBp: 9000, noClock: true, manualLastStand: [false, true], stanceEnabled: [true, true] });
     expect(s.config.training?.trays).toEqual(MATCH1_TRAYS);
     expect(s.script).toBe(MATCH1);
   });
@@ -45,7 +45,8 @@ describe('match 2 setup (A8)', () => {
       for (const c of lo!.units) if (c) expect(['common', 'rare']).toContain(content.units[c]!.rarity);
     }
     expect(s.config.sides[0].loadouts).toEqual(save.warPlans[0]!.loadouts);
-    expect(s.config.training).toEqual({ manualLastStand: [false, true], stanceEnabled: [false, true] });
+    // Owner feedback 2026-09-28: stance and the manual Last Stand are both on from match 2.
+    expect(s.config.training).toBeUndefined();
   });
 });
 
@@ -67,18 +68,19 @@ describe('matchSetupFor (B11)', () => {
     expect(s.brain).toMatchObject({ kind: 'general', profile: { generalId: 'kettle', tier: 2 } });
   });
 
-  it('applies the staged unlocks of matches 3-5 (A3, A2.11)', () => {
-    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 2 }), opponent, 'ladder', content).config.training).toEqual({ manualLastStand: [false, true], stanceEnabled: [false, true] });
-    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 3 }), opponent, 'ladder', content).config.training).toEqual({ manualLastStand: [false, true] });
-    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 4 }), opponent, 'ladder', content).config.training).toBeUndefined();
-    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 3 }), opponent, 'ladder', content).script?.id).toBe('match4');
+  it('applies the staged unlocks: stance from match 1, manual Last Stand from match 2 (owner feedback 2026-09-28)', () => {
+    expect(matchSetupFor(null, opponent, 'ladder', content).config.training).toEqual({ manualLastStand: [false, true] });
+    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 1 }), opponent, 'ladder', content).config.training).toBeUndefined();
+    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 3 }), opponent, 'ladder', content).config.training).toBeUndefined();
+    expect(matchSetupFor(fakeSaveDoc({ matchesPlayed: 3 }), opponent, 'ladder', content).script).toBeNull();
   });
 
-  it('gives new players the A6.8 mistake bonus (a missing save is a first launch)', () => {
-    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 3 })).mistakeBonusBp).toBe(1000);
-    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 19 })).mistakeBonusBp).toBe(1000);
-    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 20 })).mistakeBonusBp).toBe(0);
+  it('gives the A6.8 mistake bonus in the onboarding matches only, never to a picked difficulty (a missing save is a first launch)', () => {
+    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 1 })).mistakeBonusBp).toBe(1000);
+    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 2 })).mistakeBonusBp).toBe(0);
+    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 19 })).mistakeBonusBp).toBe(0);
     expect(botProfileFor(opponent, content, null).mistakeBonusBp).toBe(1000);
+    expect(botProfileFor(opponent, content, null, 'skirmish').mistakeBonusBp).toBe(0);
     expect(botProfileFor(opponent, content, null).weights).toEqual(content.generals.list.kettle.weights);
   });
 
@@ -125,11 +127,12 @@ describe('helpers', () => {
     expect(generalPlan(fakeContent, 'pip').stone?.units[0]).toBe('bonker');
   });
 
-  it('quickBattle is a Short War vs a tier III AI General with the staged unlocks and no script', () => {
+  it('quickBattle is a Short War vs an AI General at Normal (tier IV) with the staged unlocks and no script', () => {
     const q = quickBattle(null, content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
-    expect(q.opponent).toMatchObject({ tier: 3, isAI: true, format: 'short' });
-    // A new player: no stance flag before match 4, no Last Stand button before match 5 (A8).
-    expect(q.config.training).toEqual({ manualLastStand: [false, true], stanceEnabled: [false, true] });
+    expect(q.opponent).toMatchObject({ tier: 4, isAI: true, format: 'short' });
+    expect(quickBattle(null, content, { generalId: 'kettle', displayName: 'K', format: 'short', seed: 3, tier: difficultyTier(content, 'legendary') }).opponent.tier).toBe(10);
+    // A first launch: the stance is on, the manual Last Stand button comes in match 2 (owner feedback 2026-09-28).
+    expect(q.config.training).toEqual({ manualLastStand: [false, true] });
     expect(q.script).toBeNull();
     const veteran = quickBattle(fakeSaveDoc({ matchesPlayed: 9 }), content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
     expect(veteran.config.training).toBeUndefined();
@@ -139,12 +142,22 @@ describe('helpers', () => {
 
   it('discloses the Rookie AI whenever the bot gets the new-player mistakes (A15.3, A6.8)', () => {
     const rookie = 'app.disclosure.rookie';
-    const q = quickBattle(null, content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
-    expect(q.opponent.disclosures).toContain(rookie);
     const m2 = tutorialMatch2(fakeSaveDoc({ matchesPlayed: 1 }), content, 'Pip', 5);
     expect(m2.opponent.disclosures).toContain(rookie);
-    const veteran = quickBattle(fakeSaveDoc({ matchesPlayed: 25 }), content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
-    expect(veteran.opponent.disclosures).not.toContain(rookie);
+    expect(m2.brain).toMatchObject({ kind: 'general', profile: { mistakeBonusBp: 1000 } });
+    // Quick Battle: the player picked the difficulty, so no handicap and nothing to disclose.
+    const q = quickBattle(null, content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
+    expect(q.opponent.disclosures).not.toContain(rookie);
+    expect(q.brain).toMatchObject({ kind: 'general', profile: { mistakeBonusBp: 0 } });
+    const ladder = matchSetupFor(fakeSaveDoc({ matchesPlayed: 2 }), generalOpponent(content, { generalId: 'pip', displayName: 'Pip', tier: 1, level: 1, format: 'short', seed: 1 }), 'ladder', content);
+    expect(ladder.opponent.disclosures).not.toContain(rookie);
+  });
+
+  it('difficulties map to rising AI tiers (owner feedback 2026-09-28)', () => {
+    expect(difficultyTable(content).order).toEqual(['easy', 'normal', 'hard', 'expert', 'legendary']);
+    expect(difficultyTable(content).order.map((d) => difficultyTier(content, d))).toEqual([2, 4, 6, 8, 10]);
+    expect(difficultyTier(content)).toBe(4);
+    expect(difficultyTier(fakeContent, 'hard')).toBe(6);
   });
 
   it('nextMatchNumber', () => {

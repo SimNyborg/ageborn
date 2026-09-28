@@ -74,7 +74,7 @@ describe('Adaptive hints (DESIGN A8)', () => {
     expect(hints.update(h.input([{ e: 'baseDamaged', side: 0, sourceId: 1, damage: 100, hp: 900_000, maxHp: 1_000_000 }]))?.id).toBe('buyMount');
   });
 
-  it('"Hold": only when the stance is available (match 4 on), on Charge, after losses while outnumbered', () => {
+  it('"Hold": only when the stance is available (from match 1), on Charge, after losses while outnumbered', () => {
     const cfg = config({ training: { stanceEnabled: [false, true] } });
     const locked = new Harness(cfg);
     for (const x of [600_000, 650_000]) locked.addUnit(1, 'bonker', x);

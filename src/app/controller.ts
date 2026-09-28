@@ -8,14 +8,15 @@
  * replay parts.
  */
 import { signal, type ReadonlySignal, type Signal } from '@preact/signals';
+import type { Difficulty } from '@/content';
 import type { AgeId, FormatId, MatchResultInput, ReplayDoc, RewardStep, SaveDoc, Sim } from '@/contracts';
 import { STAGES } from '@/tutorial';
 import type { MetaRules } from '@/meta';
 import { AgePicker } from './agePick';
 import { createBattle, type BattleHandle } from './battle';
 import { finishMatch } from './flow';
-import { quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup, type SetupLabels } from './matchSetup';
-import { ONBOARDING_STEPS, afterOnboardingMatch, completeStep, onboardingStep, type OnboardingStep } from './onboarding';
+import { difficultyTier, quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup, type SetupLabels } from './matchSetup';
+import { ONBOARDING_STEPS, afterOnboardingMatch, completeStep, homeStep, onboardingStep, type OnboardingStep } from './onboarding';
 import type { Services } from './services';
 import type { FrameScheduler, SessionView, VisibilitySource } from './session';
 
@@ -38,9 +39,12 @@ export type AppRoute =
   | { id: 'result'; result: ResultState }
   | { id: 'replay'; replay: ReplayDoc };
 
-/** Quick Battle opponent (C3 Checkpoint A: "Short War vs a tier III bot"). */
+/**
+ * Quick Battle opponent on the title's dev panel (C3 Checkpoint A). Its tier comes from the picked
+ * difficulty (Normal, tier IV, by default; owner feedback 2026-09-28). Home's Mode select has its
+ * own Quick Battle card.
+ */
 export const QUICK_BATTLE_GENERAL = 'kettle';
-export const QUICK_BATTLE_TIER = 3;
 
 /** How long the end of a match plays (base collapse, slow motion, coins) before the result. */
 export const END_DELAY_MS = 2500;
@@ -66,7 +70,8 @@ export interface AppControllerOptions {
   countdown?: boolean;
   /**
    * Phase 2b: once onboarding is done the start screen is WP9's Home (an opaque screen), so the
-   * title builds no waiting battle behind it (main.tsx sets this; the Phase 2a tests do not).
+   * title builds no waiting battle behind it (main.tsx sets this; the Phase 2a tests do not). Since
+   * the owner feedback of 2026-09-28 Home is also the start screen while match 2 is next.
    */
   homeScreen?: boolean;
 }
@@ -89,6 +94,8 @@ export class AppController {
   private readonly services: Services;
   private readonly o: AppControllerOptions;
   private seedCounter = 1;
+  /** The difficulty of the last title Quick Battle, for "Play again". */
+  private lastQuickDifficulty: Difficulty | undefined;
   private countdownTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(services: Services, o: AppControllerOptions) {
@@ -212,8 +219,9 @@ export class AppController {
       this.routeSig.value = { id: 'title', battle: null };
       return;
     }
-    // After onboarding the start screen is Home (WP9): nothing waits behind it.
-    if (this.o.homeScreen && this.stepSig.peek() === 'home') {
+    // After capsule 1 the start screen is Home (WP9): nothing waits behind it. Match 2 starts from
+    // Home's Battle button (owner feedback 2026-09-28).
+    if (this.o.homeScreen && homeStep(this.stepSig.peek())) {
       this.routeSig.value = { id: 'title', battle: null };
       return;
     }
@@ -242,15 +250,33 @@ export class AppController {
     return battle;
   }
 
-  /** Quick Battle (C3 Checkpoint A): Short War (or another format) vs a tier III AI General. */
-  quickBattle(format: FormatId = 'short'): BattleHandle {
+  /**
+   * The next onboarding match, started at once (Home's Battle button while match 2 is next, owner
+   * feedback 2026-09-28). It keeps the onboarding screens (tutorial result, capsule 2). Null when
+   * no onboarding match is due.
+   */
+  startOnboardingMatch(): BattleHandle | null {
+    const setup = this.onboardingSetup();
+    if (!setup) return null;
     this.disposeRoute();
+    const battle = this.build(setup);
+    this.startBattle(battle);
+    return battle;
+  }
+
+  /**
+   * Quick Battle (C3 Checkpoint A): Short War (or another format) vs an AI General at the picked
+   * difficulty (Normal, tier IV, by default).
+   */
+  quickBattle(format: FormatId = 'short', difficulty?: Difficulty): BattleHandle {
+    this.disposeRoute();
+    this.lastQuickDifficulty = difficulty;
     const setup = quickBattle(this.saveSig.peek(), this.services.content, {
       generalId: QUICK_BATTLE_GENERAL,
       displayName: this.t(`general.${QUICK_BATTLE_GENERAL}.name`),
       format,
       seed: this.nextSeed(),
-      tier: QUICK_BATTLE_TIER,
+      tier: difficultyTier(this.services.content, difficulty),
       ...this.labels(),
     });
     const battle = this.build(setup);
@@ -314,7 +340,7 @@ export class AppController {
       }
       return;
     }
-    this.quickBattle(s.config.format);
+    this.quickBattle(s.config.format, this.lastQuickDifficulty);
   }
 
   /**

@@ -15,7 +15,6 @@ import { AppUiContext, type AppUi } from './context';
 import { MetaHost } from './MetaHost';
 import { ResultScreen } from './ResultScreen';
 import { TitleScreen } from './TitleScreen';
-import { WarPlanPrompt } from './WarPlanPrompt';
 import './app.css';
 
 /**
@@ -170,7 +169,6 @@ export function AppRoot(p: { ui: AppUi }) {
       <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
         <Screen ui={p.ui} meta={meta} shows={shows} />
         {shows?.current.value ? null : <FirstUpgrade />}
-        {shows?.current.value || !meta ? null : <WarPlanPrompt meta={meta} />}
         <AgeDialog />
         <div class="ab-rotate" data-testid="rotate">
           <div class="ab-rotate-phone" aria-hidden="true" />

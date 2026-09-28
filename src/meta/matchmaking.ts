@@ -66,6 +66,15 @@ export function newPlayerMistakeBonusBp(s: SaveDoc, t: Content): number {
   return s.matchesPlayed < np.matches ? np.mistakeBonusBp : 0;
 }
 
+/**
+ * True when the bot of a `mode` match gets A6.8's new-player mistakes: only during the onboarding
+ * matches (`newPlayer.matches`, 2 since the owner feedback of 2026-09-28) and never in Skirmish or
+ * Quick Battle, where the player picks the difficulty.
+ */
+export function newPlayerMistakesApply(s: SaveDoc, mode: MatchResultInput['mode'], t: Content): boolean {
+  return mode !== 'skirmish' && newPlayerMistakeBonusBp(s, t) > 0;
+}
+
 /** The player's Legendary per age in the active plan (for the A6.8 Legendary allowance). */
 function playerLegendaries(s: SaveDoc, t: Content, ages: readonly AgeId[]): Partial<Record<AgeId, CardId>> {
   const plan = activePlan(s);
@@ -385,14 +394,15 @@ export const ECHO_DISCLOSURE_KEY = 'app.disclosure.echo';
 /** The Warden's Legendaries at Standard levels (A6.8: the one exception, disclosed on VS). */
 export const WARDEN_STANDARD_DISCLOSURE_KEY = 'app.disclosure.wardenStandard';
 
-/** The VS disclosure of the A6.8 new-player bonus, first 20 matches of a save (A15.3). */
+/** The VS disclosure of the A6.8 new-player bonus, during the onboarding matches (A15.3). */
 export const ROOKIE_DISCLOSURE_KEY = 'app.disclosure.rookie';
 
 /** Picks the opponent for a match (see the module note). */
 export function pickOpponentAt(s: SaveDoc, mode: MatchResultInput['mode'], t: Content, lt: LocalTime, o: OpponentOptions = {}): OpponentSpec {
   const spec = pickOpponentRaw(s, mode, t, lt, o);
-  // A15.3: while the bot gets A6.8's extra mistakes, the VS screen says so.
-  if (newPlayerMistakeBonusBp(s, t) > 0 && !spec.disclosures.includes(ROOKIE_DISCLOSURE_KEY)) {
+  // A15.3: while the bot gets A6.8's extra mistakes, the VS screen says so. A difficulty the player
+  // picked (Skirmish, Quick Battle) never gets them (owner feedback 2026-09-28).
+  if (newPlayerMistakesApply(s, mode, t) && !spec.disclosures.includes(ROOKIE_DISCLOSURE_KEY)) {
     return { ...spec, disclosures: [...spec.disclosures, ROOKIE_DISCLOSURE_KEY] };
   }
   return spec;

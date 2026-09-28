@@ -11,7 +11,8 @@
  * - router → controller: leaving the Result (Home, Next battle → VS) disposes the finished battle;
  *   a battle that is no longer on the stack is quit.
  *
- * The onboarding matches (A8) keep the app's own title, battle and result screens.
+ * The onboarding matches (A8) keep the app's own battle and result screens; match 1 also keeps
+ * the title. Match 2 starts from Home (owner feedback 2026-09-28).
  */
 import { computed, effect, signal, type ReadonlySignal } from '@preact/signals';
 import type { OpponentSpec, ReplayDoc, SaveDoc } from '@/contracts';
@@ -23,6 +24,7 @@ import { applySettings } from './boot';
 import type { AppController, AppRoute } from './controller';
 import { matchSetupFor } from './matchSetup';
 import { displayName } from './names';
+import { homeStep } from './onboarding';
 import type { Services } from './services';
 import { StoppingCues } from './stopping';
 import { lossTipKey } from './trickle';
@@ -132,8 +134,10 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   let pending: MatchRequest | null = null;
   const begin = (req: MatchRequest, opponent: OpponentSpec): void => {
     if (req.mode === 'tutorial') {
-      controller.showTitle();
-      controller.play();
+      // Match 2 from Home's Battle button (owner feedback 2026-09-28): the app builds it and keeps
+      // its onboarding battle, result and capsule 2 screens, so the meta stack goes back to Home.
+      router.reset({ id: 'home' });
+      if (!controller.startOnboardingMatch()) controller.showTitle();
       return;
     }
     const s = controller.save.peek();
@@ -185,10 +189,11 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
 
   // The meta screens draw Home and every match started from them (VS → battle → Result). The
   // onboarding matches, the training match and the `?quick=` dev route keep the app's own screens.
+  // Home is the start screen from right after capsule 1 (owner feedback 2026-09-28).
   const owns = (route: AppRoute, step: string): boolean => {
     switch (route.id) {
       case 'title':
-        return step === 'home' || titleSettings.value;
+        return homeStep(step) || titleSettings.value;
       case 'battle':
         if (pending && !requests.has(route.battle)) requests.set(route.battle, pending);
         return requests.has(route.battle);

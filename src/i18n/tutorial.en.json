@@ -7,24 +7,14 @@
       "buildTurret": "Build a Rock Tosser",
       "evolve": "Evolve!",
       "arrowStorm": "Drag the arrows onto them",
+      "stance": "Hold guards your base. Charge attacks!",
       "future": "From clubs to lasers!"
     },
     "m2": {
       "treasury": "Tap your gold for Treasury",
       "secondMount": "Buy a second turret mount",
-      "scroll": "Drag the field or tap the map"
-    },
-    "m4": {
-      "stance": "Hold: gather at the line, then push."
-    },
-    "m5": {
+      "scroll": "Drag the field or tap the map",
       "lastStand": "Low base? Tap Last Stand."
-    },
-    "home": {
-      "warPlan": "Your army, your plan",
-      "warPlanBody": "Check your Stone Age cards. Swap favourites in.",
-      "warPlanOpen": "Open War Plan",
-      "later": "Later"
     },
     "hint": {
       "turretShredsMelee": "Their turret shreds melee. Try Pebblers.",

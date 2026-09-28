@@ -1,11 +1,15 @@
 /**
  * The first-session flow (DESIGN A8, A9 flow): Boot ─first launch─> Tutorial match 1 ─> Capsule 1
- * ─> Match 2 ─> Capsule 2 + upgrade ─> Home. No menu, name prompt or account screen before the
- * first win (A8).
+ * ─> Home ─Battle─> Match 2 ─> Capsule 2 + upgrade ─> Home. No menu, name prompt or account screen
+ * before the first win (A8).
+ *
+ * Owner feedback 2026-09-28: Home is the hub from right after capsule 1. While the step is `match2`
+ * the start screen is Home (with War Plan, Collection, Capsules, Customize and Trophy Road open)
+ * and its Battle button offers match 2 vs Pip as the suggested battle.
  *
  * The step lives in `SaveDoc.tutorial.step` (0-4), so a reload resumes where the player left off.
- * Staged unlocks after that (War Plan and Skirmish after match 3, stance in match 4, the Last Stand
- * button in match 5) follow the match count (`tutorial/scripts.ts` STAGES).
+ * Staged unlocks (War Plan, Customize and Skirmish after match 1, the stance from match 1, the Last
+ * Stand button from match 2) follow the match count (`tutorial/scripts.ts` STAGES).
  */
 import type { SaveDoc } from '@/contracts';
 import { STAGES } from '@/tutorial';
@@ -19,9 +23,17 @@ export function onboardingStep(save: SaveDoc | null): OnboardingStep {
   return ONBOARDING_STEPS[i]!;
 }
 
-/** B11 Boot step 6: route to the tutorial or Home. */
+/** B11 Boot step 6: route to the tutorial or Home (Home from match 2 on, owner feedback 2026-09-28). */
 export function bootRoute(save: SaveDoc | null): 'tutorial' | 'home' {
-  return onboardingStep(save) === 'home' ? 'home' : 'tutorial';
+  return homeStep(onboardingStep(save)) ? 'home' : 'tutorial';
+}
+
+/**
+ * True when the start screen is Home for this step: after onboarding, and already while match 2 is
+ * next (it starts from Home's Battle button).
+ */
+export function homeStep(step: OnboardingStep | string): boolean {
+  return step === 'home' || step === 'match2';
 }
 
 /** The save with the onboarding moved past `done` (never backwards). */
@@ -54,7 +66,3 @@ export function unlocks(save: SaveDoc | null): { warPlan: boolean; skirmish: boo
   };
 }
 
-/** True right after match 3: Home shows the "Your army, your plan" prompt once. */
-export function showWarPlanPrompt(save: SaveDoc | null): boolean {
-  return !!save && save.matchesPlayed === STAGES.warPlanAfterMatch && !save.flags['tutorial.warPlanPrompt'];
-}

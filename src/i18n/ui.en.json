@@ -538,7 +538,7 @@
       "dailyRule": "+1 each day. A Daily Challenge win uses one and pays an Age Capsule.",
       "clayRule": "Wins without a charge fill it. {n} pips make a Clay Capsule.",
       "kept": "Nothing you have earned is ever taken away.",
-      "rookie": "Your first 20 opponents make extra mistakes while you learn. After that, opponent difficulty adapts to your recent results."
+      "rookie": "Your first opponents make extra mistakes while you learn. After that, ladder opponents adapt to your recent results. In Quick Battle and Skirmish you pick the difficulty."
     },
     "parents": {
       "noMoney": "Nothing in Ageborn can be bought, and it shows no ads.",

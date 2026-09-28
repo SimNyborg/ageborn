@@ -53,6 +53,7 @@ const PRIORITY = v.picklist(['front', 'armored', 'backline', 'air', 'densest']);
 const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock']);
 const EMOTE = v.picklist(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']);
 const GENERAL = v.picklist(['grogg', 'pip', 'kettle', 'moss', 'ledger', 'boomsworth', 'twins', 'rook', 'tempest', 'warden', 'echo']);
+const DIFFICULTY = v.picklist(['easy', 'normal', 'hard', 'expert', 'legendary']);
 
 function byKeys<T extends v.GenericSchema>(keys: readonly string[], value: T) {
   return v.strictObject(Object.fromEntries(keys.map((k) => [k, value])) as Record<string, T>);
@@ -432,6 +433,11 @@ const GeneralsSchema = v.strictObject({
     milestones: v.array(v.strictObject({ stars: pos, capsule: TIER, title: v.nullable(id) })),
   }),
   commanderPersonalities: v.array(GENERAL),
+  difficulty: v.strictObject({
+    order: v.array(DIFFICULTY),
+    tiers: byKeys(['easy', 'normal', 'hard', 'expert', 'legendary'], nonNeg),
+    default: DIFFICULTY,
+  }),
 });
 
 const NamesSchema = v.strictObject({
@@ -844,6 +850,16 @@ function checkGenerals(issues: Issues, c: Content): void {
   }
   issues.check(g.conquest.milestones.at(-1)?.stars === board.length * 3, 'generals.conquest.milestones', 'the last milestone needs every star');
   for (const x of g.commanderPersonalities) issues.check(g.list[x] !== undefined, 'generals.commanderPersonalities', `unknown General "${x}"`);
+  // Owner feedback 2026-09-28: five difficulties, each an AI tier, rising, within the ladder's tiers.
+  const d = g.difficulty;
+  unique(issues, 'generals.difficulty.order', d.order);
+  issues.check(d.order.length === Object.keys(d.tiers).length, 'generals.difficulty.order', 'order lists every difficulty');
+  issues.check(d.order.includes(d.default), 'generals.difficulty.default', 'default is a listed difficulty');
+  d.order.forEach((k, i) => {
+    const tier = d.tiers[k];
+    issues.check(tier <= c.arenas.ladder.maxTier, `generals.difficulty.tiers.${k}`, 'tier within the ladder tiers');
+    if (i > 0) issues.check(tier > d.tiers[d.order[i - 1]!], `generals.difficulty.tiers.${k}`, 'tiers rise with difficulty');
+  });
 }
 
 function checkMeta(issues: Issues, c: Content): void {

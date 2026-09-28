@@ -386,12 +386,28 @@ export interface ConquestRules {
   milestones: { stars: number; capsule: CapsuleTier; title: string | null }[];
 }
 
+/**
+ * The difficulty picker of Quick Battle and Skirmish (owner feedback 2026-09-28): five named steps,
+ * each an AI tier (A7.3). The player picks one; the bot never gets the new-player mistakes then.
+ */
+export type Difficulty = 'easy' | 'normal' | 'hard' | 'expert' | 'legendary';
+
+export interface DifficultyTable {
+  order: Difficulty[];
+  /** The AI tier (0-X) each difficulty plays at. */
+  tiers: Record<Difficulty, number>;
+  /** The choice before the player has picked one. */
+  default: Difficulty;
+}
+
 export interface GeneralTables {
   order: GeneralId[];
   list: Record<GeneralId, GeneralDef>;
   conquest: ConquestRules;
   /** Personalities procedural AI Commanders may copy (A7.4). */
   commanderPersonalities: GeneralId[];
+  /** Quick Battle and Skirmish difficulties (owner feedback 2026-09-28). */
+  difficulty: DifficultyTable;
 }
 
 // ---------------------------------------------------------------------------------------------

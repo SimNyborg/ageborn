@@ -102,7 +102,8 @@ export const arenas: ArenaTables = {
     // A6.8: Elo K = 32 from 1,000; tier rating = 800 + 100 × tier; tier = round((MMR − 870) / 100)
     mmr: { start: 1000, k: 32, tierRatingBase: 800, tierRatingStep: 100, tierOffset: 870, tierDivisor: 100 },
     maxTier: 10,
-    newPlayer: { matches: 20, mistakeBonusBp: 1000 },
+    // Owner feedback 2026-09-28: the Rookie AI handicap covers the two onboarding matches only (was 20).
+    newPlayer: { matches: 2, mistakeBonusBp: 1000 },
     levelRollBp: { minus: 2500, zero: 5000, plus: 2500 },
     standardLevel: 7,
   },

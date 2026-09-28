@@ -15,8 +15,6 @@ import {
   MATCH1_TURRET_GRANT,
   MATCH1_TURRET_GRANT_TICK,
   MATCH2,
-  MATCH4,
-  MATCH5,
   STAGES,
   match1Loadouts,
   match1TrainingScript,
@@ -28,7 +26,7 @@ import {
 const words = (s: string): number => s.trim().split(/\s+/).length;
 
 describe('onboarding text (A8: at most 8 words on screen)', () => {
-  const keys = [...[MATCH1, MATCH2, MATCH4, MATCH5].flatMap((m) => m.beats.map((b) => b.textKey)), ...ADAPTIVE_HINTS.map((h) => h.textKey)].filter(
+  const keys = [...[MATCH1, MATCH2].flatMap((m) => m.beats.map((b) => b.textKey)), ...ADAPTIVE_HINTS.map((h) => h.textKey)].filter(
     (k): k is string => k !== null,
   );
 
@@ -83,21 +81,22 @@ describe('match 1 script (A8)', () => {
 });
 
 describe('staged unlocks (A3, A2.11)', () => {
-  it('stance from match 4, manual Last Stand from match 5', () => {
-    expect(stagedTraining(1)).toEqual({ manualLastStand: [false, true], stanceEnabled: [false, true] });
-    expect(stagedTraining(3)).toEqual({ manualLastStand: [false, true], stanceEnabled: [false, true] });
-    expect(stagedTraining(4)).toEqual({ manualLastStand: [false, true], stanceEnabled: [true, true] });
+  it('stance from match 1, manual Last Stand from match 2 (owner feedback 2026-09-28)', () => {
+    expect(stagedTraining(1)).toEqual({ manualLastStand: [false, true], stanceEnabled: [true, true] });
+    expect(stagedTraining(2)).toEqual({ manualLastStand: [true, true], stanceEnabled: [true, true] });
     expect(stagedTraining(5)).toEqual({ manualLastStand: [true, true], stanceEnabled: [true, true] });
-    expect(STAGES.warPlanAfterMatch).toBe(3);
+    expect(STAGES.warPlanAfterMatch).toBe(1);
+    expect(STAGES.skirmishAfterMatch).toBe(1);
   });
 
-  it('scripts per match', () => {
+  it('scripts per match: match 1 carries the one stance hint, match 2 the Last Stand hint', () => {
     expect(scriptForMatch(1)).toBe(MATCH1);
     expect(scriptForMatch(2)).toBe(MATCH2);
     expect(scriptForMatch(3)).toBeNull();
-    expect(scriptForMatch(4)).toBe(MATCH4);
-    expect(scriptForMatch(5)).toBe(MATCH5);
-    expect(scriptForMatch(6)).toBeNull();
+    expect(scriptForMatch(4)).toBeNull();
+    expect(scriptForMatch(5)).toBeNull();
+    expect(MATCH1.beats.filter((b) => b.target === 'stance').map((b) => b.id)).toEqual(['m1.stance']);
+    expect(MATCH2.beats.filter((b) => b.target === 'lastStand').map((b) => b.id)).toEqual(['m2.lastStand']);
   });
 });
 

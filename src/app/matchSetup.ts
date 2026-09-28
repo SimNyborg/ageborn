@@ -4,8 +4,9 @@
  * the opponent is driven (an AI General profile or Old Grogg's script).
  *
  * The onboarding matches (A8) are built here too: match 1 vs Old Grogg on the Tutorial format with
- * scripted trays, and match 2 vs Pip Quickstep (tier 0) on Short War. Staged unlocks (stance from
- * match 4, manual Last Stand from match 5, A2.11) come from `tutorial/scripts.ts`.
+ * scripted trays, and match 2 vs Pip Quickstep (tier 0) on Short War. Staged unlocks (the stance from
+ * match 1, manual Last Stand from match 2 since the owner feedback of 2026-09-28, A2.11) come from
+ * `tutorial/scripts.ts`.
  *
  * Every opponent is an AI and is labeled so (A7.1): `OpponentSpec.isAI` is always true.
  */
@@ -23,7 +24,7 @@ import type {
   SideConfig,
 } from '@/contracts';
 import { botProfile } from '@/ai';
-import type { Content, GeneralDef, GeneralId } from '@/content';
+import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from '@/content';
 import { commanderInfo, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
   GROGG_SCRIPT,
@@ -57,6 +58,24 @@ export interface MatchSetup {
 export interface SetupLabels {
   /** The player's side when there is no save yet (a save uses the profile name). */
   player?: string;
+}
+
+/** The Quick Battle and Skirmish difficulties when the content has no table (fake content). */
+const DIFFICULTY_FALLBACK: DifficultyTable = {
+  order: ['easy', 'normal', 'hard', 'expert', 'legendary'],
+  tiers: { easy: 2, normal: 4, hard: 6, expert: 8, legendary: 10 },
+  default: 'normal',
+};
+
+/** The difficulty table (owner feedback 2026-09-28): Easy II, Normal IV, Hard VI, Expert VIII, Legendary X. */
+export function difficultyTable(content: CompiledContent): DifficultyTable {
+  return tables(content).generals?.difficulty ?? DIFFICULTY_FALLBACK;
+}
+
+/** The AI tier of a difficulty (the table's default, Normal, when none is given). */
+export function difficultyTier(content: CompiledContent, d?: Difficulty): number {
+  const table = difficultyTable(content);
+  return table.tiers[d ?? table.default];
 }
 
 /** "Standard levels" in Skirmish (A6.8), when the content has no ladder table (fake content). */
@@ -139,10 +158,15 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
   return out;
 }
 
-/** The A6.8 new-player mistake bonus for this save (the first 20 matches; no save = a first launch). */
-export function newPlayerBonusBp(content: CompiledContent, save: SaveDoc | null): number {
+/**
+ * The A6.8 new-player mistake bonus for this save's next `mode` match: only in the onboarding
+ * matches (`newPlayer.matches`, 2; no save = a first launch), and never in Skirmish or Quick Battle,
+ * where the player picked the difficulty (owner feedback 2026-09-28).
+ */
+export function newPlayerBonusBp(content: CompiledContent, save: SaveDoc | null, mode: MatchMode = 'ladder'): number {
   const ladder = tables(content).arenas?.ladder;
   const played = save?.matchesPlayed ?? 0;
+  if (mode === 'skirmish') return 0;
   return ladder && played < ladder.newPlayer.matches ? ladder.newPlayer.mistakeBonusBp : 0;
 }
 
@@ -150,10 +174,11 @@ export function newPlayerBonusBp(content: CompiledContent, save: SaveDoc | null)
  * The bot profile for an opponent (A7.3, A7.4), built by WP3's `botProfile`: the General's weights
  * and opening, or, for a procedural AI Commander (`commander:<personality>:<favourite card>`, meta),
  * the personality General's weights and opening plus the favourite card (A7.4). New players (the
- * first 20 matches, a missing save being a first launch) get the A6.8 mistake bonus.
+ * onboarding matches, a missing save being a first launch) get the A6.8 mistake bonus, except in a
+ * match whose difficulty they picked.
  */
-export function botProfileFor(opponent: OpponentSpec, content: CompiledContent, save: SaveDoc | null): BotProfile {
-  const mistakeBonusBp = newPlayerBonusBp(content, save);
+export function botProfileFor(opponent: OpponentSpec, content: CompiledContent, save: SaveDoc | null, mode: MatchMode = 'ladder'): BotProfile {
+  const mistakeBonusBp = newPlayerBonusBp(content, save, mode);
   const commander = commanderInfo(opponent.generalId);
   return botProfile(content, {
     generalId: opponent.generalId,
@@ -208,7 +233,7 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
   // A15.3: whenever the bot gets A6.8's new-player mistakes, the opponent says so (meta adds this
   // for the opponents it picks; Quick Battle and onboarding match 2 are built here).
   const disclosed =
-    newPlayerBonusBp(content, save) > 0 && !opponent.disclosures.includes(ROOKIE_DISCLOSURE_KEY)
+    newPlayerBonusBp(content, save, mode) > 0 && !opponent.disclosures.includes(ROOKIE_DISCLOSURE_KEY)
       ? { ...opponent, disclosures: [...opponent.disclosures, ROOKIE_DISCLOSURE_KEY] }
       : opponent;
   return {
@@ -216,7 +241,7 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
     matchNumber: n,
     config,
     opponent: disclosed,
-    brain: { kind: 'general', profile: botProfileFor(opponent, content, save) },
+    brain: { kind: 'general', profile: botProfileFor(opponent, content, save, mode) },
     script: mode === 'tutorial' || n <= 5 ? scriptForMatch(n) : null,
   };
 }
@@ -313,8 +338,9 @@ export function tutorialMatch2(save: SaveDoc | null, content: CompiledContent, p
 }
 
 /**
- * Quick Battle (C3 Checkpoint A): Short War (or another format) vs an AI General at tier III. Uses
- * the save's War Plan when there is one, else the starter plan.
+ * Quick Battle (C3 Checkpoint A): Short War (or another format) vs an AI General at the picked
+ * difficulty's tier (Normal, tier IV, by default). Uses the save's War Plan when there is one, else
+ * the starter plan. The player picked the difficulty, so the bot never gets the Rookie mistakes.
  */
 export function quickBattle(
   save: SaveDoc | null,
@@ -324,13 +350,13 @@ export function quickBattle(
   const opponent = generalOpponent(content, {
     generalId: o.generalId,
     displayName: o.displayName,
-    tier: o.tier ?? 3,
+    tier: o.tier ?? difficultyTier(content),
     level: o.level ?? 1,
     format: o.format,
     seed: o.seed,
   });
   const setup = matchSetupFor(save, opponent, 'skirmish', content, o.player !== undefined ? { player: o.player } : {});
-  // Quick Battle has no tutorial script, but it keeps the staged unlocks (A8): a new player does not
-  // see the stance flag before match 4 or the Last Stand button before match 5 (audit #23).
+  // Quick Battle has no tutorial script, but it keeps the staged unlocks (A8): a first-launch player
+  // does not see the manual Last Stand button before match 2 (audit #23).
   return { ...setup, script: null };
 }
