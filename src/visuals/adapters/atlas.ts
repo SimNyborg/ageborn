@@ -32,9 +32,14 @@ import { clipU } from '../animator';
 import type { PartBaker } from '../bake';
 import { FX_ZONES } from '../effects/sprites';
 import { teamColor, TRIM_COLORS } from '../palette';
-import { STYLE } from '../style';
+import { mulberry32, type CosmeticRng } from '@/core/rng';
+import { CLIP_TIMING, STYLE } from '../style';
+import { BLOCKING_UNIT_SHEET_AGES, unitSheetAge } from '../unitSheetPaths';
 import type { ClipDef } from '../types';
-import { partSprite, tintPartSprite } from './procedural/shared';
+import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
+import { AtlasBaseView } from './world/atlasBaseView';
+import { AtlasTurretView } from './world/atlasTurretView';
+import { isWorldSource, WorldAtlas } from './worldAtlas';
 import type { BackdropRequest, BaseRequest, EffectRequest, PortraitRequest, ViewKind, ViewRequest, VisualAdapter } from './types';
 
 /** What the adapter needs from a loaded sheet (a Pixi Spritesheet, or a fake in tests). */
@@ -50,6 +55,11 @@ export interface AtlasClipMeta {
   durationMs?: number;
   loop?: boolean;
   impactAt?: number;
+  /** Walk only: ground speed at the authored timing (feet do not slide at this speed). */
+  naturalSpeedLuPerS?: number;
+  /** Die only: shared effects to spawn (the death hand-off) and when the body disappears. */
+  fx?: readonly { id: string; atMs: number; offsetLu?: readonly [number, number]; scale?: number; loops?: number }[];
+  hideUnitAtMs?: number;
 }
 
 /** The `meta.ageborn` block written by the art pipeline. */
@@ -129,6 +139,8 @@ export interface AtlasOptions {
   load?: (url: string) => Promise<AtlasData>;
   /** Base URL for relative sources (default the app base). */
   baseUrl?: string;
+  /** Graphics preset (B6): Lite drops the ground shadow. */
+  quality?: 'high' | 'lite';
 }
 
 function baseUrl(): string {
@@ -141,8 +153,14 @@ export class AtlasAdapter implements VisualAdapter {
   readonly available = true;
   private readonly sheets = new Map<string, AtlasData>();
   private readonly failed = new Set<string>();
+  private readonly pending = new Map<string, Promise<void>>();
 
-  constructor(private readonly o: AtlasOptions) {}
+  /** Turret and base sheets (3D world art), loaded per age. */
+  readonly world: WorldAtlas;
+
+  constructor(private readonly o: AtlasOptions) {
+    this.world = new WorldAtlas((s) => this.url(s));
+  }
 
   private url(source: string): string {
     if (/^(https?:|data:|\/)/.test(source)) return source;
@@ -155,23 +173,73 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   canDraw(what: ViewKind, def: VisualDef): boolean {
-    if (def.kind !== 'atlas' || !this.sheets.has(def.source)) return false;
+    if (def.kind === 'atlas' && isWorldSource(def.source)) {
+      if (what !== 'turret' && what !== 'base') return false;
+      if (this.world.get(def.source)) return true;
+      void this.world.ensure(def.source);
+      return false;
+    }
+    if (def.kind !== 'atlas') return false;
+    if (!this.sheets.has(def.source)) {
+      // a unit whose age has not streamed in yet: load it now, draw the fallback meanwhile
+      if (what === 'unit' && unitSheetAge(def.source)) void this.ensure(def.source);
+      return false;
+    }
     return what === 'unit' || what === 'effect' || what === 'projectile';
   }
 
-  async preload(_ages: AgeId[]): Promise<void> {
-    const load = this.o.load ?? loadWithAssets;
-    const todo = [...new Set(this.o.entries().filter((d) => d.kind === 'atlas').map((d) => d.source))].filter((s) => !this.sheets.has(s) && !this.failed.has(s));
-    await Promise.all(
-      todo.map(async (s) => {
-        try {
-          this.sheets.set(s, await load(this.url(s)));
-        } catch (e) {
-          this.failed.add(s);
-          console.warn(`[visuals] atlas "${s}" failed to load; placeholders are drawn instead`, e);
-        }
-      }),
-    );
+  /** Loads one unit or effect sheet (once); failures are remembered and warned about. */
+  ensure(source: string): Promise<void> {
+    if (this.sheets.has(source) || this.failed.has(source)) return Promise.resolve();
+    let p = this.pending.get(source);
+    if (!p) {
+      const load = this.o.load ?? loadWithAssets;
+      p = load(this.url(source))
+        .then((d) => void this.sheets.set(source, d))
+        .catch((e: unknown) => {
+          this.failed.add(source);
+          console.warn(`[visuals] atlas "${source}" failed to load; the procedural art is drawn instead`, e);
+        })
+        .finally(() => this.pending.delete(source));
+      this.pending.set(source, p);
+    }
+    return p;
+  }
+
+  /** Non-world sheet sources of the given ages (sheets outside `art/units/<age>/` count for every age). */
+  private unitSources(ages: readonly AgeId[]): string[] {
+    const set = new Set(ages);
+    return [...new Set(this.o.entries().filter((d) => d.kind === 'atlas' && !isWorldSource(d.source)).map((d) => d.source))].filter((s) => {
+      const a = unitSheetAge(s);
+      return a === null || set.has(a);
+    });
+  }
+
+  /**
+   * Loads the sheets of `ages`. Unit sheets of the blocking ages (Stone, where every match starts)
+   * and sheets without an age are awaited; the other ages stream in the background so the boot
+   * download stays small (B16). `unitSheetsReady` waits for all of them.
+   */
+  async preload(ages: AgeId[]): Promise<void> {
+    const world = this.world.preload(ages, this.o.entries());
+    const blocking = new Set<AgeId>(BLOCKING_UNIT_SHEET_AGES);
+    const now: Promise<void>[] = [];
+    for (const s of this.unitSources(ages)) {
+      const p = this.ensure(s);
+      const a = unitSheetAge(s);
+      if (a === null || blocking.has(a)) now.push(p);
+    }
+    await Promise.all([world, ...now]);
+  }
+
+  /** Resolves once every unit sheet of `ages` has loaded (or failed). Dev pages and screenshots use it. */
+  async unitSheetsReady(ages: readonly AgeId[]): Promise<void> {
+    await Promise.all(this.unitSources(ages).map((s) => this.ensure(s)));
+  }
+
+  /** True when the sheet is loaded (tests, gallery). */
+  hasSheet(source: string): boolean {
+    return this.sheets.has(source);
   }
 
   private sheet(def: VisualDef): AtlasData {
@@ -181,7 +249,7 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   createUnit(r: ViewRequest): UnitView {
-    return new AtlasUnitView(r.def, this.sheet(r.def), this.o.decor, r.side, teamColor(r.side, r.teamPreset));
+    return new AtlasUnitView(r.def, this.sheet(r.def), this.o.decor, r.side, teamColor(r.side, r.teamPreset), { seed: r.seed, ...(this.o.quality ? { quality: this.o.quality } : {}) });
   }
 
   createProjectile(r: EffectRequest): EffectView {
@@ -193,11 +261,28 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   createTurret(r: ViewRequest): TurretView {
-    throw new Error(`Atlas turrets are not supported yet (${r.key})`);
+    const sheet = this.world.get(r.def.source);
+    if (!sheet) throw new Error(`Atlas turret sheet "${r.def.source}" is not loaded (${r.key})`);
+    return new AtlasTurretView({ def: r.def, sheet, decor: this.o.decor, side: r.side, teamColor: teamColor(r.side, r.teamPreset), seed: r.seed });
   }
 
   createBase(r: BaseRequest): BaseView {
-    throw new Error(`Atlas bases are not supported yet (${r.key})`);
+    return new AtlasBaseView({
+      age: r.age,
+      side: r.side,
+      teamColor: teamColor(r.side, r.teamPreset),
+      decor: this.o.decor,
+      seed: r.seed,
+      world: this.world,
+      def: r.def,
+      // skinned bases without a sheet morph into the plain sheet of that age
+      sourceFor: (age) => {
+        const e = r.resolveAge(age);
+        if (e && e.def.kind === 'atlas' && isWorldSource(e.def.source)) return e.def.source;
+        const plain = this.o.entries().find((d) => d.kind === 'atlas' && d.source === `art/bases/${age}.json`);
+        return plain?.source;
+      },
+    });
   }
 
   createBackdrop(r: BackdropRequest): BackdropView {
@@ -276,6 +361,22 @@ function setFrame(s: Sprite, tex: Texture): void {
   if (a) s.anchor.set(a.x, a.y);
 }
 
+/** The unit speed (lu/s) a walk request stands for: the battle view sizes walk clips by the procedural convention (A11). */
+export function walkSpeedFromDuration(durationMs: number): number {
+  return (CLIP_TIMING.walkCycleMs * CLIP_TIMING.walkRefSpeedLuPerSec) / Math.max(1, durationMs);
+}
+
+/**
+ * Walk clip length for a sheet so the feet do not slide: the authored cycle scaled by
+ * `naturalSpeedLuPerS / unit speed` (art/blender README). Sheets without a natural speed (flyers)
+ * keep their authored cycle; the result is clamped to 0.5x-2x of it so odd speeds never look broken.
+ */
+export function atlasWalkDurationMs(authoredMs: number, naturalLuPerS: number | undefined, requestedMs: number | undefined): number {
+  if (requestedMs === undefined || !naturalLuPerS || !(naturalLuPerS > 0)) return authoredMs;
+  const d = (authoredMs * naturalLuPerS) / walkSpeedFromDuration(requestedMs);
+  return Math.min(authoredMs * 2, Math.max(authoredMs * 0.5, d));
+}
+
 class AtlasUnitView implements UnitView {
   readonly root = new Container();
   readonly anchors: Anchors;
@@ -284,34 +385,57 @@ class AtlasUnitView implements UnitView {
   private readonly baseSprite: Sprite;
   private readonly flashSprite: Sprite;
   private readonly ground = new Container();
+  private readonly overlay = new Container();
+  private readonly puffs: PuffList;
+  private readonly rng: CosmeticRng;
+  private readonly facing0: 1 | -1;
+  private facing: 1 | -1;
   private glyph: Container | null = null;
   private glyphGroup: RoleGroup | null = null;
   private trim: Container | null = null;
   private trimName: UnitPose['levelTrim'] = 'none';
+  private stars: Container | null = null;
+  private clock: Container | null = null;
+  private bubble: Container | null = null;
   private base: Track | null;
   private action: Track | null = null;
   private frozenMs = 0;
   private flashMs = 0;
   private flashDur = 1;
   private stunned = false;
+  private frozenPose = false;
   private requested = 'idle';
   private hop = 0;
+  private clockMs = 0;
   /** Spawn pop time (A11: scale 0 → 1.15 → 1 over 180 ms, ease-out-back), -1 when done. */
   private spawnT = -1;
   private dead = false;
+  /** Death hand-off (sheet `die.fx`): effects still to spawn, and when the body hides. */
+  private deathFx: { id: string; atMs: number; offsetLu?: readonly [number, number]; scale?: number; loops?: number }[] = [];
+  private hideAtMs = -1;
   private destroyed = false;
 
   constructor(
     private readonly def: VisualDef,
     private readonly sheet: AtlasData,
     private readonly decor: PartBaker,
-    private readonly side: Side,
+    side: Side,
     private readonly team: number,
+    o: { quality?: 'high' | 'lite'; seed?: number } = {},
   ) {
     this.anchors = def.anchors;
     this.root.label = def.source;
+    this.facing0 = side === 0 ? 1 : -1;
+    this.facing = this.facing0;
+    this.rng = mulberry32(o.seed ?? 1);
+    const size = def.heightLu > 150 ? 3.1 : def.heightLu > 90 ? 1.85 : 1;
+    if (o.quality !== 'lite') {
+      const sh = partSprite(decor, 'shared.shadow', UI_ZONES);
+      sh.scale.set(size * 1.1, 1);
+      this.ground.addChild(sh);
+    }
     const ring = partSprite(decor, side === 0 ? 'shared.ring.circle' : 'shared.ring.diamond', UI_ZONES, team);
-    ring.scale.set(Math.max(1, (def.heightLu > 150 ? 80 : def.heightLu > 90 ? 48 : 24) / 26), 1);
+    ring.scale.set(size, 1);
     this.ground.addChild(ring);
     this.teamSprite = new Sprite(Texture.EMPTY);
     this.teamSprite.tint = team;
@@ -320,16 +444,23 @@ class AtlasUnitView implements UnitView {
     this.flashSprite.blendMode = 'add';
     this.flashSprite.visible = false;
     this.body.addChild(this.teamSprite, this.baseSprite, this.flashSprite);
-    this.body.scale.set(sheet.luPerUnit * (side === 0 ? 1 : -1), sheet.luPerUnit);
-    this.root.addChild(this.ground, this.body);
+    this.body.scale.set(sheet.luPerUnit * this.facing, sheet.luPerUnit);
+    if (def.filters?.alpha !== undefined) this.body.alpha = def.filters.alpha;
+    this.root.addChild(this.ground, this.body, this.overlay);
+    this.puffs = new PuffList(this.overlay);
     this.base = track(sheet, def, 'idle', { loop: true });
+    if (this.base) this.base.t = this.rng.next() * this.base.durationMs; // crowds do not breathe in step
     this.show();
   }
 
   setPose(p: UnitPose): void {
     if (this.destroyed) return;
     this.root.position.set(p.x, p.y);
-    this.body.scale.x = this.sheet.luPerUnit * p.facing;
+    if (p.facing !== this.facing) {
+      this.facing = p.facing;
+      this.body.scale.x = this.sheet.luPerUnit * p.facing;
+      for (const o of [this.stars, this.clock, this.bubble]) if (o) o.x = this.anchors.hitCenter.x * p.facing;
+    }
     this.root.alpha = p.alpha;
     if (p.roleGlyph !== this.glyphGroup) {
       this.glyphGroup = p.roleGlyph;
@@ -351,22 +482,58 @@ class AtlasUnitView implements UnitView {
     }
     if (p.stunned !== this.stunned) {
       this.stunned = p.stunned;
+      this.showStars(p.stunned);
       this.play(p.stunned ? 'stun' : this.requested);
     }
-    this.body.tint = p.frozen ? 0xd9d2f2 : 0xffffff;
+    if (p.frozen !== this.frozenPose) {
+      this.frozenPose = p.frozen;
+      this.showClock(p.frozen);
+      this.body.tint = p.frozen ? 0xd9d2f2 : 0xffffff;
+    }
+    this.showBubble(p.shieldBp);
   }
 
   play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean }): void {
     if (this.destroyed || this.dead) return;
     if (clip === 'idle' || clip === 'walk' || clip === 'victory') this.requested = clip;
+    if (this.stunned && (clip === 'idle' || clip === 'walk')) return;
     const loops = clip === 'idle' || clip === 'walk' || clip === 'victory' || clip === 'stun';
-    const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...o } : o);
+    let opts = o;
+    if (clip === 'walk') {
+      // play the walk at the sim's speed so the feet stay planted (sheet `naturalSpeedLuPerS`)
+      const t0 = track(this.sheet, this.def, 'walk');
+      if (t0 && t0.name === 'walk' && t0.anim === 'walk') {
+        const meta = this.sheet.clips[t0.anim];
+        const authored = t0.steps.reduce((a, b) => a + b, 0);
+        opts = { ...o, durationMs: atlasWalkDurationMs(authored, meta?.naturalSpeedLuPerS, o?.durationMs) };
+      }
+    }
+    const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...opts } : opts);
     if (!t) return;
-    if (clip === 'spawn') this.spawnT = 0;
+    if (clip === 'spawn') {
+      this.spawnT = 0;
+      this.spawnDust();
+    }
     if (clip === 'victory') this.hop = 0;
-    if (clip === 'die') this.dead = true;
-    if (loops && o?.loop !== false) this.base = t;
-    else this.action = t;
+    if (clip === 'die') this.die();
+    if (loops && opts?.loop !== false) {
+      // keep the phase when a loop restarts at a new speed (no foot pop)
+      if (this.base && this.base.anim === t.anim && this.base.durationMs > 0) t.t = (this.base.t % this.base.durationMs) * (t.durationMs / this.base.durationMs);
+      this.base = t;
+    } else this.action = t;
+  }
+
+  private die(): void {
+    this.dead = true;
+    this.showStars(false);
+    if (this.bubble) this.bubble.visible = false;
+    const meta = this.sheet.clips['die'];
+    this.deathFx = [...(meta?.fx ?? [])].sort((a, b) => a.atMs - b.atMs);
+    this.hideAtMs = meta?.hideUnitAtMs ?? -1;
+    if (!meta?.fx) {
+      // sheets without a hand-off still leave a poof
+      this.deathFx = [{ id: 'fx.dust_poof', atMs: 160, offsetLu: [0, this.def.heightLu * 0.35], scale: 0.6 }];
+    }
   }
 
   freeze(ms: number): void {
@@ -381,36 +548,136 @@ class AtlasUnitView implements UnitView {
 
   update(dtMs: number): void {
     if (this.destroyed) return;
+    this.clockMs += dtMs;
+    let animDt = dtMs;
     if (this.frozenMs > 0) {
-      const used = Math.min(this.frozenMs, dtMs);
+      const used = Math.min(this.frozenMs, animDt);
       this.frozenMs -= used;
-      dtMs -= used;
-    }
-    if (dtMs > 0) {
-      if (this.base) this.base.t += dtMs;
+      animDt -= used;
+      // local hitstop jitter (A12: 1-2 px)
+      this.body.x = (this.rng.next() - 0.5) * 2.4;
+    } else if (this.body.x !== 0) this.body.x = 0;
+    if (animDt > 0 && !this.frozenPose) {
+      if (this.base) this.base.t += animDt;
       if (this.action) {
-        this.action.t += dtMs;
+        this.action.t += animDt;
         if (!this.action.hold && !this.action.loop && this.action.t >= this.action.durationMs) this.action = null;
       }
       // spawn pop and the victory hop are code motion, so every sheet gets them
       if (this.spawnT >= 0) {
-        this.spawnT += dtMs;
-        const u = Math.min(1, this.spawnT / 180);
-        this.root.scale.set(u < 0.62 ? 0.05 + (1.1 * u) / 0.62 : 1.15 - (0.15 * (u - 0.62)) / 0.38);
-        if (u >= 1) this.spawnT = -1;
+        this.spawnT += animDt;
+        const u = Math.min(1, this.spawnT / CLIP_TIMING.spawnMs);
+        const k = u < 0.62 ? 0.05 + (1.1 * u) / 0.62 : 1.15 - (0.15 * (u - 0.62)) / 0.38;
+        this.body.scale.set(this.sheet.luPerUnit * this.facing * k, this.sheet.luPerUnit * (u < 0.62 ? k : 1 + (k - 1) * 0.6));
+        if (u >= 1) {
+          this.spawnT = -1;
+          this.body.scale.set(this.sheet.luPerUnit * this.facing, this.sheet.luPerUnit);
+        }
       }
       if (this.requested === 'victory' && !this.action) {
-        this.hop += dtMs;
+        this.hop += animDt;
         this.body.y = -Math.abs(Math.sin((this.hop / 700) * Math.PI)) * 8;
       } else if (this.body.y !== 0) this.body.y = 0;
-      if (this.dead && this.action && this.action.t > this.action.durationMs) this.root.alpha = Math.max(0, 1 - (this.action.t - this.action.durationMs) / 300);
+      if (this.dead && this.action) this.deathHandoff(this.action.t);
     }
     if (this.flashMs > 0) {
+      // full for 60%, then fades (same curve as the procedural tier)
       this.flashMs = Math.max(0, this.flashMs - dtMs);
+      const t = 1 - this.flashMs / this.flashDur;
       this.flashSprite.visible = this.flashMs > 0;
-      this.flashSprite.alpha = this.flashMs / this.flashDur;
+      this.flashSprite.alpha = t < 0.6 ? 0.95 : 0.95 * (1 - (t - 0.6) / 0.4);
     }
+    if (this.stars?.visible) {
+      const n = this.stars.children.length;
+      this.stars.children.forEach((s, i) => {
+        const a = (this.clockMs / 520) * Math.PI + (i * Math.PI * 2) / n;
+        s.position.set(Math.cos(a) * 9, Math.sin(a) * 3);
+        s.scale.set(0.8 + 0.2 * Math.sin(a));
+      });
+    }
+    if (this.clock?.visible) this.clock.rotation = Math.sin(this.clockMs / 180) * 0.04;
+    if (this.bubble?.visible) this.bubble.scale.set(((this.def.heightLu * 0.62) / 10) * (1 + 0.03 * Math.sin(this.clockMs / 160)));
+    this.puffs.update(dtMs);
     this.show();
+  }
+
+  /** Spawns the sheet's death effects on time and hides the body at `hideUnitAtMs` (art/blender README). */
+  private deathHandoff(t: number): void {
+    while (this.deathFx.length > 0 && (this.deathFx[0]?.atMs ?? 0) <= t) {
+      const fx = this.deathFx.shift();
+      if (!fx) break;
+      const x = (fx.offsetLu?.[0] ?? 0) * this.facing;
+      const y = -(fx.offsetLu?.[1] ?? this.def.heightLu * 0.4);
+      const k = (fx.scale ?? 1) * Math.max(1, this.def.heightLu / 68);
+      if (fx.id === 'fx.ko_stars') this.koStars(x, y, k, fx.loops ?? 1);
+      else this.dustPoof(x, y, k);
+    }
+    if (this.hideAtMs >= 0 && t >= this.hideAtMs && this.body.visible) {
+      this.body.visible = false;
+      this.ground.alpha = 0.5;
+    }
+  }
+
+  private dustPoof(x: number, y: number, k: number): void {
+    for (let i = 0; i < 9; i++) {
+      const s = partSprite(this.decor, 'fx.p.dust', UI_ZONES);
+      const a = (i / 9) * Math.PI * 2 + this.rng.next() * 0.5;
+      s.position.set(x + Math.cos(a) * 6 * k, y + Math.sin(a) * 4 * k);
+      this.puffs.add(s, { vx: Math.cos(a) * (26 + this.rng.next() * 30) * k, vy: Math.sin(a) * (14 + this.rng.next() * 16) * k - 10, life: 420 + this.rng.next() * 220, s0: 0.7 * k, s1: 1.5 * k, a0: 0.9, g: 20 });
+    }
+  }
+
+  private koStars(x: number, y: number, k: number, loops: number): void {
+    for (let i = 0; i < 3; i++) {
+      const s = partSprite(this.decor, 'fx.p.star', UI_ZONES);
+      s.position.set(x, y);
+      const a = -Math.PI / 2 + (i - 1) * 0.7;
+      this.puffs.add(s, { vx: Math.cos(a) * 34 * k, vy: Math.sin(a) * 40 * k, life: 360 + 180 * loops, s0: 1 * k, s1: 0.6 * k, a0: 1, spin: (this.rng.next() - 0.5) * 8, g: 30 });
+    }
+  }
+
+  private spawnDust(): void {
+    for (let i = 0; i < 5; i++) {
+      const s = partSprite(this.decor, 'fx.p.dust', UI_ZONES);
+      const dir = i < 2 ? -1 : 1;
+      s.position.set((this.rng.next() - 0.5) * 16, -2);
+      this.puffs.add(s, { vx: dir * (30 + this.rng.next() * 50), vy: -20 - this.rng.next() * 30, life: 380 + this.rng.next() * 160, s0: 0.5, s1: 1.2, a0: 0.8 });
+    }
+  }
+
+  private showStars(on: boolean): void {
+    if (on && !this.stars) {
+      this.stars = new Container();
+      for (let i = 0; i < 3; i++) this.stars.addChild(partSprite(this.decor, 'fx.p.star', UI_ZONES));
+      this.stars.position.set(this.anchors.head.x * this.facing, this.anchors.head.y - 6);
+      this.overlay.addChild(this.stars);
+    }
+    if (this.stars) this.stars.visible = on;
+  }
+
+  private showClock(on: boolean): void {
+    if (on && !this.clock) {
+      this.clock = partSprite(this.decor, 'fx.p.clock', UI_ZONES);
+      this.clock.position.set(this.anchors.hitCenter.x * this.facing, this.anchors.hitCenter.y);
+      this.clock.scale.set(this.def.heightLu / 34);
+      this.clock.alpha = 0.75;
+      this.overlay.addChildAt(this.clock, 0);
+    }
+    if (this.clock) this.clock.visible = on;
+  }
+
+  private showBubble(shieldBp: number): void {
+    if (shieldBp > 0 && !this.bubble) {
+      this.bubble = partSprite(this.decor, 'fx.p.bubble', UI_ZONES);
+      this.bubble.position.set(this.anchors.hitCenter.x * this.facing, this.anchors.hitCenter.y);
+      this.bubble.scale.set((this.def.heightLu * 0.62) / 10);
+      this.bubble.tint = 0xe4fbf1;
+      this.overlay.addChildAt(this.bubble, 0);
+    }
+    if (this.bubble) {
+      this.bubble.visible = shieldBp > 0 && !this.dead;
+      this.bubble.alpha = 0.45 + 0.55 * Math.min(1, shieldBp / 10000);
+    }
   }
 
   private show(): void {

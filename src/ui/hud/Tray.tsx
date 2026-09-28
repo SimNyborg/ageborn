@@ -133,6 +133,9 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
   const url = usePortrait(c.portrait, card.card, card.foil, size);
   const press = useRef<{ timer: ReturnType<typeof setTimeout> | null; x: number; y: number; fired: boolean }>({ timer: null, x: 0, y: 0, fired: false });
   const [info, setInfo] = useState(false);
+  // A card you are tapping to train is not a card you want explained: after a tap the hover info
+  // stays away until the pointer leaves the card, so it never sits over the battlefield mid-fight.
+  const [quiet, setQuiet] = useState(false);
   const self = useRef<HTMLButtonElement>(null);
   // The long press fires 450 ms later; it must read the model of that moment, not of the press.
   const latest = useRef(c);
@@ -167,7 +170,7 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
   const afford = card.state === 'unaffordable' ? affordFraction(card.cost, m.me.gold) : 1;
   const poor = card.state === 'unaffordable' && m.me.gold < card.cost;
   return (
-    <div class="hud-card-slot">
+    <div class={cls('hud-card-slot', quiet && 'is-quiet')} onPointerLeave={() => setQuiet(false)}>
       <button
         ref={self}
         class={cls(
@@ -183,6 +186,7 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
         disabled={c.readOnly}
         style={{ '--fill': fill, '--afford': afford }}
         onClick={(e) => {
+          if (!quiet) setQuiet(true);
           if (press.current.fired) {
             press.current.fired = false;
             return;
@@ -232,7 +236,7 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
           {card.cost}
         </span>
         {waitS !== null && waitS > 0 && poor ? (
-          <span class="hud-card-wait" data-testid={`hud-card-${card.slot}-wait`}>
+          <span class={cls('hud-card-wait', card.queued > 0 && 'is-shifted')} data-testid={`hud-card-${card.slot}-wait`}>
             {t('hud.wait', { s: waitS })}
           </span>
         ) : null}

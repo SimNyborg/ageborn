@@ -16,6 +16,8 @@ import { BASE_PUPPETS, ICON_SPRITES, PROJECTILE_SPRITES, TURRET_PUPPETS, UNIT_PU
 import { isTeamZone } from './palette';
 import { SKIN_PUPPETS } from './skins';
 import { CLIP_TIMING, WORLD } from './style';
+import { WORLD_OVERRIDES } from './manifest.world';
+import { UNIT_OVERRIDES } from './manifest.units';
 import type { PuppetDef } from './types';
 
 export type VisualManifest = Readonly<Record<string, VisualDef>>;
@@ -88,7 +90,8 @@ function spriteDef(source: string, heightLu: number, team: TeamSpec = { kind: 'z
  */
 export const OVERRIDES: VisualManifest = {};
 
-export function buildManifest(): Record<string, VisualDef> {
+/** The generated procedural entries alone (the fallback while a sheet loads, and `?art=procedural`). */
+export function buildProceduralManifest(): Record<string, VisualDef> {
   const m: Record<string, VisualDef> = {};
   for (const p of UNIT_PUPPETS) m[p.id] = unitDef(p);
   for (const p of SKIN_PUPPETS) m[p.id] = p.kind === 'base' ? baseDef(p) : unitDef(p);
@@ -102,7 +105,14 @@ export function buildManifest(): Record<string, VisualDef> {
   for (const p of PROJECTILE_SPRITES) m[p.id] = spriteDef(p.id, p.heightLu, { kind: 'zones', zones: ['team'] });
   for (const r of FX_RECIPES) m[r.id] = spriteDef(r.id, 20, { kind: 'zones', zones: r.sprites?.some((s) => s.tint === 'team') ? ['team'] : [] }, { play: code(r.id, r.durationMs, r.loops ?? false) });
   for (const p of ICON_SPRITES) m[p.id] = spriteDef(p.id, p.heightLu, teamSpec(p));
-  return { ...m, ...OVERRIDES };
+  return m;
 }
+
+export function buildManifest(): Record<string, VisualDef> {
+  return { ...PROCEDURAL_MANIFEST, ...WORLD_OVERRIDES, ...UNIT_OVERRIDES, ...OVERRIDES };
+}
+
+/** Procedural entries only (see `buildProceduralManifest`). */
+export const PROCEDURAL_MANIFEST: VisualManifest = buildProceduralManifest();
 
 export const MANIFEST: VisualManifest = buildManifest();

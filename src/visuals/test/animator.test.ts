@@ -8,7 +8,7 @@ import { Animator, clipU, ease, sampleTrack, type ClipResolver } from '../animat
 import { getClip } from '../clips';
 import { legAngle, strideFor, type ProcContext } from '../clips/procedural';
 import { puppetById } from '../library';
-import { MANIFEST } from '../manifest';
+import { PROCEDURAL_MANIFEST as MANIFEST } from '../manifest';
 import { clipResolver, procContext } from '../adapters/procedural/shared';
 import type { ClipDef } from '../types';
 

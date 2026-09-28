@@ -97,6 +97,30 @@ describe('Adaptive hints (DESIGN A8)', () => {
     expect(run(new AdaptiveHints({ disabled: ['evolveFirst'] }), h, ADAPTIVE.outdatedTicks + 1)).toEqual(['modernise']);
   });
 
+  it('the modernise hint points at the old turret\'s mount', () => {
+    const h = new Harness();
+    h.state.sides[0].ageIndex = 1;
+    h.state.sides[0].turrets[1] = { card: 'rock_tosser', age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
+    h.gold(100);
+    const hints = new AdaptiveHints({ disabled: ['evolveFirst'] });
+    let got: ReturnType<AdaptiveHints['update']> = null;
+    for (let k = 0; k <= ADAPTIVE.outdatedTicks + 1 && !got; k += 1) {
+      got = hints.update(h.input());
+      h.advance();
+    }
+    expect(got?.id).toBe('modernise');
+    expect(got?.target).toBe('mount1');
+  });
+
+  it('the modernise hint stays quiet while Evolve is ready (evolving first is the better move)', () => {
+    const h = new Harness();
+    h.state.sides[0].ageIndex = 1;
+    h.state.sides[0].xp = 5_000_000;
+    h.state.sides[0].turrets[0] = { card: 'rock_tosser', age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
+    h.gold(100);
+    expect(run(new AdaptiveHints({ disabled: ['evolveFirst'] }), h, ADAPTIVE.outdatedTicks + 1)).toEqual([]);
+  });
+
   it('at most once per 30 s and at most 3 times each (counts persist)', () => {
     const h = new Harness();
     h.state.sides[0].xp = 700_000;

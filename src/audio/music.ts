@@ -48,6 +48,11 @@ export type MusicSource =
       layers?: Partial<Record<MusicLayer, string | MusicStem>>;
       fallback?: Score;
       prefetch?: readonly MusicCueId[];
+      /**
+       * The same cue recorded in other keys, by transposition in semitones (stingers: the battle ends
+       * in the key of the age it reached, so the stinger must not jump back to C).
+       */
+      keys?: Readonly<Record<number, string>>;
     };
 
 export type MusicDef = MusicSource & {
@@ -55,6 +60,9 @@ export type MusicDef = MusicSource & {
   /** Level trim in dB (default 0). */
   gainDb?: number;
 };
+
+/** Transpositions (semitones above C) the stingers are also recorded in: Medieval D ... Future F#. */
+export const STINGER_KEYS: readonly number[] = [2, 4, 5, 6];
 
 /** Level trims (`gainDb`) even out the arrangements, measured through the mixer with every layer up. */
 export const music: Readonly<Record<MusicCueId, MusicDef>> = {
@@ -76,11 +84,12 @@ export const AGE_CUES: readonly MusicCueId[] = ['music.stone', 'music.medieval',
 
 /**
  * Level trims for the composed files (mastered to about -16 LUFS). Battle music sits well under the
- * effects: through the music bus (0.55) and this trim it lands near -28 LUFS, so a single -26 LUFS
- * hit through the effects bus reads 6-8 LU above the music's momentary loudness, also on a phone.
- * The menu, with little to compete with, sits higher.
+ * effects: through the music bus (0.55) and this trim its momentary loudness runs around -33 LUFS, so
+ * a single hit (-26 LUFS in its loudest 200 ms, through the effects bus at 1.0) reads about 7 LU above
+ * it on full-range speakers and 6-7 LU on a phone speaker (measured on the files with the phone
+ * model of `tools/audio`). The menu, with little to compete with, sits higher.
  */
-export const FILE_GAIN_DB: Readonly<Record<MusicRole, number>> = { battle: -7, menu: -4, stinger: -3 };
+export const FILE_GAIN_DB: Readonly<Record<MusicRole, number>> = { battle: -12, menu: -4, stinger: -3 };
 
 function stem(id: string): MusicStem | undefined {
   const f = Object.hasOwn(MUSIC_FILES, id) ? MUSIC_FILES[id] : undefined;
@@ -106,6 +115,13 @@ export function buildFileMusic(seq: Readonly<Record<MusicCueId, MusicDef>> = mus
       continue;
     }
     const age = AGE_CUES.includes(cue) ? cue.slice('music.'.length) : null;
+    const keys: Record<number, string> = {};
+    if (def.role === 'stinger') {
+      for (const k of STINGER_KEYS) {
+        const kf = Object.hasOwn(MUSIC_FILES, `${cue}.k${k}`) ? MUSIC_FILES[`${cue}.k${k}`] : undefined;
+        if (kf) keys[k] = kf.src;
+      }
+    }
     const layers: Partial<Record<MusicLayer, MusicStem>> = {};
     if (age) {
       const intensity = stem(`layer.intensity.${age}`);
@@ -121,6 +137,7 @@ export function buildFileMusic(seq: Readonly<Record<MusicCueId, MusicDef>> = mus
       ...(f.loopStart !== undefined ? { loopStart: f.loopStart } : {}),
       ...(f.loopLength !== undefined ? { loopLength: f.loopLength } : {}),
       ...(Object.keys(layers).length > 0 ? { layers } : {}),
+      ...(Object.keys(keys).length > 0 ? { keys } : {}),
       ...(def.kind === 'seq' ? { fallback: def.score } : {}),
       prefetch: prefetchFor(cue),
       role: def.role,

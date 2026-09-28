@@ -1,0 +1,1623 @@
+{
+ "frames": {
+  "walker_mech_idle_00": {
+   "frame": {
+    "x": 2,
+    "y": 177,
+    "w": 86,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 57,
+    "w": 86,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_00_team": {
+   "frame": {
+    "x": 664,
+    "y": 515,
+    "w": 79,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 62,
+    "w": 79,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_01": {
+   "frame": {
+    "x": 744,
+    "y": 2,
+    "w": 86,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 56,
+    "w": 86,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_01_team": {
+   "frame": {
+    "x": 179,
+    "y": 661,
+    "w": 79,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 62,
+    "w": 79,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_02": {
+   "frame": {
+    "x": 379,
+    "y": 2,
+    "w": 87,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 55,
+    "w": 87,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_02_team": {
+   "frame": {
+    "x": 287,
+    "y": 515,
+    "w": 82,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 60,
+    "w": 82,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_03": {
+   "frame": {
+    "x": 106,
+    "y": 2,
+    "w": 88,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 54,
+    "w": 88,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_idle_03_team": {
+   "frame": {
+    "x": 199,
+    "y": 515,
+    "w": 84,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 59,
+    "w": 84,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_00": {
+   "frame": {
+    "x": 182,
+    "y": 177,
+    "w": 90,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 58,
+    "w": 90,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_00_team": {
+   "frame": {
+    "x": 747,
+    "y": 515,
+    "w": 76,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 57,
+    "y": 64,
+    "w": 76,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_01": {
+   "frame": {
+    "x": 287,
+    "y": 2,
+    "w": 88,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 55,
+    "w": 88,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_01_team": {
+   "frame": {
+    "x": 118,
+    "y": 515,
+    "w": 77,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 60,
+    "w": 77,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_02": {
+   "frame": {
+    "x": 198,
+    "y": 2,
+    "w": 85,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 53,
+    "w": 85,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_02_team": {
+   "frame": {
+    "x": 814,
+    "y": 348,
+    "w": 79,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 57,
+    "y": 55,
+    "w": 79,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_03": {
+   "frame": {
+    "x": 92,
+    "y": 177,
+    "w": 86,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 55,
+    "w": 86,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_03_team": {
+   "frame": {
+    "x": 91,
+    "y": 661,
+    "w": 84,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 60,
+    "w": 84,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_04": {
+   "frame": {
+    "x": 2,
+    "y": 348,
+    "w": 93,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 58,
+    "w": 93,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_04_team": {
+   "frame": {
+    "x": 711,
+    "y": 661,
+    "w": 82,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 57,
+    "y": 64,
+    "w": 82,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_05": {
+   "frame": {
+    "x": 415,
+    "y": 348,
+    "w": 89,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 54,
+    "w": 89,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 802,
+    "w": 79,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 60,
+    "w": 79,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_06": {
+   "frame": {
+    "x": 99,
+    "y": 348,
+    "w": 89,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 52,
+    "w": 89,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_06_team": {
+   "frame": {
+    "x": 445,
+    "y": 661,
+    "w": 73,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 54,
+    "w": 73,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_07": {
+   "frame": {
+    "x": 508,
+    "y": 348,
+    "w": 88,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 57,
+    "y": 55,
+    "w": 88,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_walk_07_team": {
+   "frame": {
+    "x": 632,
+    "y": 661,
+    "w": 75,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 59,
+    "w": 75,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_00": {
+   "frame": {
+    "x": 490,
+    "y": 177,
+    "w": 85,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 59,
+    "w": 85,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_00_team": {
+   "frame": {
+    "x": 262,
+    "y": 661,
+    "w": 84,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 64,
+    "w": 84,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_01": {
+   "frame": {
+    "x": 600,
+    "y": 348,
+    "w": 105,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 66,
+    "w": 105,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_01_team": {
+   "frame": {
+    "x": 186,
+    "y": 802,
+    "w": 95,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 73,
+    "w": 95,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_02": {
+   "frame": {
+    "x": 717,
+    "y": 177,
+    "w": 104,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 36,
+    "y": 61,
+    "w": 104,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_02_team": {
+   "frame": {
+    "x": 797,
+    "y": 661,
+    "w": 90,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 36,
+    "y": 68,
+    "w": 90,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 100,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 53,
+    "w": 100,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_03_team": {
+   "frame": {
+    "x": 709,
+    "y": 348,
+    "w": 101,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 52,
+    "w": 101,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_04": {
+   "frame": {
+    "x": 579,
+    "y": 177,
+    "w": 134,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 63,
+    "y": 61,
+    "w": 134,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 515,
+    "w": 112,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 57,
+    "w": 112,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_05": {
+   "frame": {
+    "x": 276,
+    "y": 177,
+    "w": 113,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 59,
+    "w": 113,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_05_team": {
+   "frame": {
+    "x": 454,
+    "y": 515,
+    "w": 112,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 61,
+    "w": 112,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_06": {
+   "frame": {
+    "x": 557,
+    "y": 2,
+    "w": 90,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 56,
+    "w": 90,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_06_team": {
+   "frame": {
+    "x": 570,
+    "y": 515,
+    "w": 90,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 61,
+    "w": 90,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_07": {
+   "frame": {
+    "x": 470,
+    "y": 2,
+    "w": 83,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 55,
+    "w": 83,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_attack_07_team": {
+   "frame": {
+    "x": 373,
+    "y": 515,
+    "w": 77,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 60,
+    "w": 77,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_hit_00": {
+   "frame": {
+    "x": 313,
+    "y": 348,
+    "w": 98,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 62,
+    "w": 98,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_hit_00_team": {
+   "frame": {
+    "x": 85,
+    "y": 802,
+    "w": 97,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 69,
+    "w": 97,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_hit_01": {
+   "frame": {
+    "x": 393,
+    "y": 177,
+    "w": 93,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 59,
+    "w": 93,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_hit_01_team": {
+   "frame": {
+    "x": 350,
+    "y": 661,
+    "w": 91,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 65,
+    "w": 91,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_hit_02": {
+   "frame": {
+    "x": 651,
+    "y": 2,
+    "w": 89,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 56,
+    "w": 89,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 661,
+    "w": 85,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 62,
+    "w": 85,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_die_00": {
+   "frame": {
+    "x": 192,
+    "y": 348,
+    "w": 117,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 24,
+    "y": 58,
+    "w": 117,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_die_00_team": {
+   "frame": {
+    "x": 522,
+    "y": 661,
+    "w": 106,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 19,
+    "y": 65,
+    "w": 106,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_die_01": {
+   "frame": {
+    "x": 285,
+    "y": 802,
+    "w": 128,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 22,
+    "y": 106,
+    "w": 128,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_die_01_team": {
+   "frame": {
+    "x": 417,
+    "y": 802,
+    "w": 129,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 17,
+    "y": 111,
+    "w": 129,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_die_02": {
+   "frame": {
+    "x": 550,
+    "y": 802,
+    "w": 124,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 30,
+    "y": 130,
+    "w": 124,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  },
+  "walker_mech_die_02_team": {
+   "frame": {
+    "x": 678,
+    "y": 802,
+    "w": 131,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 25,
+    "y": 134,
+    "w": 131,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 279,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.35484,
+    "y": 0.93333
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "walker_mech_idle_00",
+   "walker_mech_idle_01",
+   "walker_mech_idle_02",
+   "walker_mech_idle_03",
+   "walker_mech_idle_02",
+   "walker_mech_idle_01"
+  ],
+  "idle_team": [
+   "walker_mech_idle_00_team",
+   "walker_mech_idle_01_team",
+   "walker_mech_idle_02_team",
+   "walker_mech_idle_03_team",
+   "walker_mech_idle_02_team",
+   "walker_mech_idle_01_team"
+  ],
+  "walk": [
+   "walker_mech_walk_00",
+   "walker_mech_walk_01",
+   "walker_mech_walk_02",
+   "walker_mech_walk_03",
+   "walker_mech_walk_04",
+   "walker_mech_walk_05",
+   "walker_mech_walk_06",
+   "walker_mech_walk_07"
+  ],
+  "walk_team": [
+   "walker_mech_walk_00_team",
+   "walker_mech_walk_01_team",
+   "walker_mech_walk_02_team",
+   "walker_mech_walk_03_team",
+   "walker_mech_walk_04_team",
+   "walker_mech_walk_05_team",
+   "walker_mech_walk_06_team",
+   "walker_mech_walk_07_team"
+  ],
+  "attack": [
+   "walker_mech_attack_00",
+   "walker_mech_attack_01",
+   "walker_mech_attack_02",
+   "walker_mech_attack_03",
+   "walker_mech_attack_04",
+   "walker_mech_attack_05",
+   "walker_mech_attack_06",
+   "walker_mech_attack_07"
+  ],
+  "attack_team": [
+   "walker_mech_attack_00_team",
+   "walker_mech_attack_01_team",
+   "walker_mech_attack_02_team",
+   "walker_mech_attack_03_team",
+   "walker_mech_attack_04_team",
+   "walker_mech_attack_05_team",
+   "walker_mech_attack_06_team",
+   "walker_mech_attack_07_team"
+  ],
+  "hit": [
+   "walker_mech_hit_00",
+   "walker_mech_hit_01",
+   "walker_mech_hit_02"
+  ],
+  "hit_team": [
+   "walker_mech_hit_00_team",
+   "walker_mech_hit_01_team",
+   "walker_mech_hit_02_team"
+  ],
+  "die": [
+   "walker_mech_die_00",
+   "walker_mech_die_01",
+   "walker_mech_die_02"
+  ],
+  "die_team": [
+   "walker_mech_die_00_team",
+   "walker_mech_die_01_team",
+   "walker_mech_die_02_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "walker_mech.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 936
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.walker_mech",
+   "name": "Walker Mech",
+   "heightLu": 120,
+   "widthLu": 61.8,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    99,
+    210
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     116
+    ],
+    "hitCenter": [
+     0,
+     78
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      1
+     ],
+     "durationsMs": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+     ],
+     "durationMs": 1200,
+     "anchorsLu": {
+      "fist": [
+       [
+        13.2,
+        48.1
+       ],
+       [
+        13.4,
+        49.0
+       ],
+       [
+        14.5,
+        51.0
+       ],
+       [
+        15.9,
+        53.1
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125
+     ],
+     "durationMs": 1000,
+     "anchorsLu": {
+      "fist": [
+       [
+        11.6,
+        46.8
+       ],
+       [
+        11.7,
+        48.8
+       ],
+       [
+        14.5,
+        50.6
+       ],
+       [
+        17.6,
+        50.5
+       ],
+       [
+        17.2,
+        48.3
+       ],
+       [
+        13.4,
+        49.2
+       ],
+       [
+        11.3,
+        50.2
+       ],
+       [
+        11.3,
+        49.2
+       ]
+      ]
+     },
+     "strideLu": 47.0,
+     "naturalSpeedLuPerS": 47.0
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      167,
+      42,
+      125,
+      83,
+      83,
+      83
+     ],
+     "durationMs": 749,
+     "impactFrame": 4,
+     "impactAt": 0.5007,
+     "smearFrame": 3,
+     "anchorsLu": {
+      "fist": [
+       [
+        -13.6,
+        43.1
+       ],
+       [
+        -35.9,
+        55.2
+       ],
+       [
+        -36.5,
+        62.3
+       ],
+       [
+        36.2,
+        45.7
+       ],
+       [
+        51.6,
+        51.7
+       ],
+       [
+        49.2,
+        54.0
+       ],
+       [
+        25.9,
+        41.5
+       ],
+       [
+        6.5,
+        41.0
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "anchorsLu": {
+      "fist": [
+       [
+        19.6,
+        58.2
+       ],
+       [
+        17.8,
+        54.6
+       ],
+       [
+        16.1,
+        52.1
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 166,
+       "offsetLu": [
+        0,
+        50.4
+       ],
+       "scale": 0.772
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 249,
+       "offsetLu": [
+        0,
+        74.4
+       ],
+       "loops": 2,
+       "scale": 0.879
+      }
+     ],
+     "hideUnitAtMs": 249,
+     "anchorsLu": {
+      "fist": [
+       [
+        9.3,
+        79.0
+       ],
+       [
+        21.6,
+        50.1
+       ],
+       [
+        28.6,
+        31.6
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

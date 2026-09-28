@@ -270,19 +270,19 @@ def _idle(f):
     })
 
 
-WALK_MS = [150] * 8      # 1.2 s heavy stride
-STRIDE = 21.0            # natural speed 2 x 21 / 1.2 s = 35 lu/s (sim speed 35)
+WALK_MS = [175] * 8      # 1.4 s heavy stride
+STRIDE = 24.5            # natural speed 2 x 24.5 / 1.4 s = 35 lu/s (sim speed 35)
 
 
 def _walk(f):
-    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 12.0)
-    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 12.0, phase=0.5)
-    bob = [-3.0, -1.0, 1.4, 0.0, -3.0, -1.0, 1.4, 0.0][f]
-    lag = [0.0, -3.0, -1.0, 1.4, 0.0, -3.0, -1.0, 1.4][f]
+    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 17.0)
+    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 17.0, phase=0.5)
+    bob = [-4.0, -1.5, 2.0, 0.0, -4.0, -1.5, 2.0, 0.0][f]
+    lag = [0.0, -4.0, -1.5, 2.0, 0.0, -4.0, -1.5, 2.0][f]
     p = 2 * math.pi * f / 8
     return merge(legs((STANCE_X["r"] + xr, lr), (STANCE_X["l"] + xl, ll), (0.0, LIFT + bob)), REST,
                  clock(f), {
-        "torso": dict(r=-3.0 + 1.0 * math.cos(2 * p), rz=3.0 * math.sin(p)),
+        "torso": dict(r=-4.0 + 1.5 * math.cos(2 * p), rz=5.0 * math.sin(p), rx=2.0 * math.sin(p)),
         "head": {"r": 1.0 - 0.4 * lag},
         "arm_r": {"r": -5 * math.cos(p) + 0.8 * lag}, "hand_r": {"r": 1.2 * lag},
         "arm_l": {"r": 8 * math.cos(p)},

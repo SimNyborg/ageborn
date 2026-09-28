@@ -87,8 +87,9 @@ def ui_tab(v, rng):
 
 @sfx("ui_confirm", -25, 2, hp_hz=200)
 def ui_confirm(v, rng):
-    # C6 then G6, a bright "yes" (musical: fixed pitch).
-    return mixdown(chime(hz("C6"), 0.3, 0.09), at(0.07, chime(hz("G6"), 0.4, 0.12)), at(0, click(rng, 0.004, 2000, 6000), 0.2))
+    # C6 then G6, a bright "yes" (musical: fixed pitch): celesta over a soft chime, a woodblock tap.
+    cel = gm_notes(GM["celesta"], [(0, 0.2, mn("C6"), 96), (0.07, 0.35, mn("G6"), 100)], tail=0.6)
+    return mixdown(cel, at(0, chime(hz("C6"), 0.3, 0.09), 0.5), at(0.07, chime(hz("G6"), 0.4, 0.12), 0.5), at(0, sample(GM["woodblock"], 84, 90, 0.1, 0.2, length=0.06), 0.25))
 
 
 @sfx("meter_pip", -31, 3, hp_hz=400)
@@ -177,7 +178,7 @@ def shot_bow(v, rng):
     twang = pluck(140 * p, 0.25, rng, bright=0.5) * 0.9
     snap = click(rng, 0.004, 1200, 4000) * 0.4
     fly = whoosh(rng, 0.14, 1200, 3200, 2.0, 0.3) * 0.25
-    return mixdown(snap, at(0, twang), at(0.01, fly), at(0, thump(160 * p, 90, 0.05, 0.01, 0.015), 0.3))
+    return mixdown(snap, at(0, twang), at(0.01, fly), at(0, thump(160 * p, 90, 0.05, 0.01, 0.015), 0.3), at(0, perc(CLAVES, 90, pitch=0.7 * p, length=0.05), 0.25))
 
 
 @sfx("shot_crossbow", -26, 3)
@@ -195,7 +196,7 @@ def shot_catapult(v, rng):
     p = pv(v)
     creak_src = osc(dsp.glide(70 * p, 50 * p, 0.14), "saw")
     creak = bp(creak_src, 500, 1600) * env_exp(0.14, 0.06, 0.02) * 0.35
-    knock = mixdown(at(0, nburst(rng, 0.1, 150, 700, 0.04), 1.2), at(0, thump(120 * p, 60, 0.18, 0.03, 0.06), 0.8))
+    knock = mixdown(at(0, nburst(rng, 0.1, 300, 1200, 0.04), 1.0), at(0, thump(120 * p, 60, 0.18, 0.03, 0.06), 0.6), at(0, perc(TOM_LF, 116, KIT_ORCH, pitch=1.0 * p, length=0.35), 0.8), at(0, perc(WOOD_LO, 110, pitch=0.6 * p, length=0.12), 0.5))
     launch = whoosh(rng, 0.32, 250, 800, 1.2, 0.35) * 0.6
     return room(mixdown(creak, at(0.1, knock), at(0.12, launch), at(0.1, click(rng, 0.005, 400, 2500), 0.4)), rng, 0.3, 0.2)
 
@@ -444,10 +445,10 @@ def gravity_hum(v, rng):
 def hit_blunt(v, rng):
     # A club landing: a concert tom and a rimshot crack together, a short high-passed punch under them.
     p = pv(v)
-    tom = perc([TOM_HM, TOM_H, TOM_LM][v % 3], 118, KIT_ORCH, pitch=1.1 * p, length=0.2)
+    tom = perc([TOM_HM, TOM_H, TOM_HM][v % 3], 118, KIT_ORCH, pitch=1.2 * p, length=0.2)
     rim = perc(SIDE_STICK, 110, KIT_STD, pitch=0.85 * p, length=0.08)
     punch = thump(190 * p, 100, 0.1, 0.012, 0.03, 2.2, hp_hz=120)
-    return mixdown(tom, at(0, rim, 0.6), at(0, crack(rng, 0.045, 800, 3200, 0.011), 0.7), at(0, knock(900 * p, 0.07, 0.016), 0.35), at(0, punch, 0.35))
+    return mixdown(tom, at(0, rim, 0.6), at(0, crack(rng, 0.045, 800, 3200, 0.011), 0.8), at(0, knock(950 * p, 0.07, 0.016), 0.4), at(0, punch, 0.3))
 
 
 @sfx("hit_slash", -26, 3, noisy=True)
@@ -465,22 +466,22 @@ def hit_slash(v, rng):
 def hit_pierce(v, rng):
     # An arrow striking home: a woodblock "thwk" with a short high hiss of feathers.
     p = pv(v)
-    wood = sample(GM["woodblock"], 67, 116, 0.12, 0.3, pitch=p, length=0.1)
+    wood = sample(GM["woodblock"], 70, 116, 0.12, 0.3, pitch=p, length=0.1)
     hiss = nburst(rng, 0.03, 3000, 8000, 0.007, 0.0003)
     thud = thump(170 * p, 100, 0.06, 0.01, 0.02, hp_hz=120)
-    return mixdown(wood, at(0, knock(780 * p, 0.06, 0.013, rng), 0.45), at(0, hiss, 0.35), at(0, thud, 0.3))
+    return mixdown(wood, at(0, knock(820 * p, 0.06, 0.013, rng), 0.45), at(0, hiss, 0.4), at(0, thud, 0.22))
 
 
 @sfx("hit_bullet", -27, 3, noisy=True)
 def hit_bullet(v, rng):
     p = pv(v)
     smack = crack(rng, 0.04, 900, 4200, 0.008)
-    stick = perc(SIDE_STICK, 100, pitch=1.1 * p, length=0.05)
+    stick = perc(SIDE_STICK, 100, pitch=0.8 * p, length=0.05)
     dirt = debris(rng, 0.12, 200, 900, 4000, 0.05, 0.006) * 0.4
-    body = thump(170 * p, 95, 0.06, 0.01, 0.02, hp_hz=120) * 0.35
-    out = mixdown(smack, at(0, stick, 0.45), at(0, body), at(0.005, dirt))
+    body = thump(170 * p, 95, 0.06, 0.01, 0.02, hp_hz=120) * 0.45
+    out = mixdown(smack, at(0, stick, 0.3), at(0, knock(1100 * p, 0.05, 0.012), 0.3), at(0, body), at(0.005, dirt))
     if v == 2:
-        ric = osc(dsp.glide(2400, 1500, 0.16, 0.8), "sine") * env_exp(0.16, 0.06, 0.005) * 0.16
+        ric = osc(dsp.glide(1500, 950, 0.16, 0.8), "sine") * env_exp(0.16, 0.05, 0.005) * 0.09
         out = mixdown(out, at(0.02, ric))
     return out
 
@@ -596,7 +597,8 @@ def shield_up(v, rng):
 
 
 def hammer(rng, p: float = 1.0) -> np.ndarray:
-    return mixdown(nburst(rng, 0.05, 400 * p, 2500 * p, 0.012, 0.0005), at(0, bell(900 * p, 0.12, 0.7, 0.03, ((1, 1), (2.6, 0.6), (4.1, 0.3))), 0.3), at(0, thump(160 * p, 90, 0.07, 0.01, 0.02), 0.5))
+    # A mallet on wood and metal: a recorded rimshot and woodblock under a small metallic ring.
+    return mixdown(perc(SIDE_STICK, 104, pitch=0.9 * p, length=0.08), at(0, perc(WOOD_LO, 100, pitch=0.85 * p, length=0.1), 0.6), at(0, bell(900 * p, 0.12, 0.7, 0.03, ((1, 1), (2.6, 0.6), (4.1, 0.3))), 0.3), at(0, thump(160 * p, 90, 0.07, 0.01, 0.02), 0.4))
 
 
 @sfx("turret_build", -25, 3)
@@ -673,7 +675,9 @@ def base_destroyed(v, rng):
 def coin_gain(v, rng):
     f = hz("E6") * [1, 1.0, 1.0][v]
     detune = [1.0, 1.003, 0.997][v]
-    return mixdown(coin(f * detune), at(0.045, coin(f * 1.335 * detune), 0.8))
+    # Two coins a fourth apart (E6, A6) with a glockenspiel sparkle on the second.
+    glock = gm_note(GM["glock"], mn("A6"), 0.2, 84, 0.5)
+    return mixdown(coin(f * detune), at(0.045, coin(f * 1.335 * detune), 0.8), at(0.045, glock, 0.35))
 
 
 @sfx("xp_tick", -33, 3, hp_hz=500)

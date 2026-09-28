@@ -304,11 +304,11 @@ export const AGE_ZONES: Readonly<Record<AgeId, Palette>> = {
 export const BACKDROP_PALETTES: Readonly<
   Record<AgeId, { skyTop: number; skyBottom: number; far: number; mid: number; near: number; light: number }>
 > = {
-  stone: { skyTop: 0x9fb2c0, skyBottom: 0xe3d9c3, far: 0xa39c95, mid: 0x857d73, near: 0x6d6a55, light: 0xf2e6c8 },
-  medieval: { skyTop: 0xa4b6c8, skyBottom: 0xe0dccd, far: 0x9ea3ab, mid: 0x7f8590, near: 0x68705c, light: 0xf0e8d0 },
-  gunpowder: { skyTop: 0xa9bcc0, skyBottom: 0xe6ddc8, far: 0x98a39f, mid: 0x76857f, near: 0x5f6b58, light: 0xf2e8cc },
-  modern: { skyTop: 0x9aa3a8, skyBottom: 0xd8d2c2, far: 0x8f918c, mid: 0x6f726c, near: 0x5d6050, light: 0xe8e0c8 },
-  future: { skyTop: 0x3b3f55, skyBottom: 0x8d7f9e, far: 0x5a5874, mid: 0x46465e, near: 0x34354a, light: 0xd8f3ea },
+  stone: { skyTop: 0x8db3cf, skyBottom: 0xf0e2c4, far: 0x9c98a6, mid: 0x7f8762, near: 0x5f7247, light: 0xfff0cc },
+  medieval: { skyTop: 0x92b6d6, skyBottom: 0xeee6d0, far: 0x97a1b3, mid: 0x78886c, near: 0x5a6e4e, light: 0xfff4dc },
+  gunpowder: { skyTop: 0x8cb6c6, skyBottom: 0xf2e2c0, far: 0x8ea3a6, mid: 0x6c8874, near: 0x546c56, light: 0xfff0d0 },
+  modern: { skyTop: 0x98a8b6, skyBottom: 0xe6dcc4, far: 0x8a8f9a, mid: 0x6c7264, near: 0x565c4a, light: 0xf2ead2 },
+  future: { skyTop: 0x2c2e50, skyBottom: 0x9a7aa8, far: 0x524e78, mid: 0x3e3e60, near: 0x2c2e46, light: 0xd8f3ea },
 };
 
 /** Level trims (DESIGN A11: they follow the colour rule, so they stay small accents). */

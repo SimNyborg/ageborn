@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MUSIC_FILES, SFX_FILES, SFX_SHEETS } from '../assets.gen';
-import { assetUrl, SfxFileBank, type SfxFiles } from '../files';
+import { altSource, assetUrl, detectSync, SfxFileBank, sourceOrder, type SfxFiles } from '../files';
 import { AGE_CUES, fileMusic, MUSIC_CUES, music as seqMusic, type MusicDef } from '../music';
 import { FALLBACK_AFTER_S, MusicEngine, type FilePlayer } from '../musicEngine';
 import { WebAudioService, type WebAudioServiceOptions } from '../service';
@@ -71,13 +71,37 @@ describe('generated audio assets', () => {
     for (const cue of MUSIC_CUES) expect(MUSIC_FILES[cue], cue).toBeDefined();
     const lengths = AGE_CUES.map((c) => MUSIC_FILES[c]!.loopLength!);
     for (const l of lengths) expect(l).toBeCloseTo(lengths[0]!, 3);
-    // 45-75 s loops.
-    expect(lengths[0]).toBeGreaterThan(45);
-    expect(lengths[0]).toBeLessThan(75);
+    // The 44-bar battle form at 110 BPM: 96 s.
+    expect(lengths[0]).toBeGreaterThan(90);
+    expect(lengths[0]).toBeLessThan(100);
+    // Ogg Opus bytes (the AAC copies only load where Opus cannot play).
     const musicBytes = Object.values(MUSIC_FILES).reduce((a, f) => a + f.bytes, 0);
     const sfxBytes = Object.values(SFX_SHEETS).reduce((a, f) => a + f.bytes, 0);
-    expect(musicBytes).toBeLessThan(3.2 * 1024 * 1024);
+    expect(musicBytes).toBeLessThan(5 * 1024 * 1024);
     expect(sfxBytes).toBeLessThan(1.2 * 1024 * 1024);
+  });
+
+  it('has an AAC copy of every file, a sync time for every sheet, and stingers in every age key', () => {
+    for (const [g, sh] of Object.entries(SFX_SHEETS)) {
+      expect(sh.alt, g).toMatch(/\.m4a$/);
+      expect(sh.sync, g).toBeGreaterThan(0.01);
+      expect(sh.sync, g).toBeLessThan(0.05);
+      expect(altSource(sh.src)).toBe(sh.alt);
+    }
+    for (const [cue, f] of Object.entries(MUSIC_FILES)) expect(f.alt, cue).toMatch(/\.m4a$/);
+    for (const base of ['stinger.victory', 'stinger.defeat']) {
+      for (const k of [2, 4, 5, 6]) expect(MUSIC_FILES[`${base}.k${k}`], `${base}.k${k}`).toBeDefined();
+      const d = fileMusic[base]!;
+      if (d.kind !== 'file') throw new Error(base);
+      expect(Object.keys(d.keys ?? {}).sort()).toEqual(['2', '4', '5', '6']);
+    }
+  });
+
+  it('tries the AAC copy first where Opus cannot play, and as the retry elsewhere', () => {
+    const sheet = SFX_SHEETS.ui!;
+    expect(sourceOrder(sheet.src, true)).toEqual([sheet.src, sheet.alt]);
+    expect(sourceOrder(sheet.src, false)).toEqual([sheet.alt, sheet.src]);
+    expect(sourceOrder('audio/unknown.ogg', false)).toEqual(['audio/unknown.ogg']);
   });
 
   it('builds the file music manifest with fallbacks, stems and prefetch', () => {
@@ -121,6 +145,28 @@ describe('SfxFileBank', () => {
     ]);
     expect(bank.sheetState('battle')).toBe('ready');
     expect(bank.sheetState('ui')).toBe('idle');
+  });
+
+  it('finds the sync burst and shifts the clips by a decoder start delay', async () => {
+    const synced: SfxFiles = { sheets: { battle: { ...FILES.sheets.battle!, sync: 0.02 } }, entries: { hit_blunt: FILES.entries.hit_blunt! } };
+    const make = (delay: number): AudioBuffer => {
+      const b = new FakeBuffer(1, 48000 * 2, 48000);
+      const at = Math.round((0.02 + delay) * 48000);
+      for (let i = 0; i < 100; i++) b.data[0]![at + i] = 0.5 * Math.sin(i / 7);
+      return b as unknown as AudioBuffer;
+    };
+    expect(detectSync(make(0))).toBeCloseTo(0.02, 3);
+    const late = new SfxFileBank(synced, () => Promise.resolve(make(0.0214)));
+    await late.loadSheet('battle');
+    expect(late.sheetShift('battle')).toBeCloseTo(0.0214, 3);
+    expect(late.clips('hit_blunt')![0]!.offset).toBeCloseTo(0.05 + 0.0214, 3);
+    const exact = new SfxFileBank(synced, () => Promise.resolve(make(0)));
+    await exact.loadSheet('battle');
+    expect(exact.clips('hit_blunt')![0]!.offset).toBeCloseTo(0.05, 6);
+    // A silent or unreadable start changes nothing.
+    const silent = new SfxFileBank(synced, () => Promise.resolve(new FakeBuffer(1, 48000 * 2, 48000) as unknown as AudioBuffer));
+    await silent.loadSheet('battle');
+    expect(silent.sheetShift('battle')).toBe(0);
   });
 
   it('marks the bank failed when a sheet cannot be decoded', async () => {
@@ -268,6 +314,46 @@ describe('music files', () => {
     expect(engine.playing[0]!.source).toBe('file');
     const player = (engine as unknown as { players: FilePlayer[] }).players[0]!;
     expect(player.phaseAt(ctx.currentTime + 1)).not.toBeNull();
+  });
+
+  it('crossfades cues with equal-power curves', async () => {
+    let ctxRef: FakeContext | null = null;
+    const m = { 'music.stone': loopDef('stone.ogg'), 'music.medieval': loopDef('medieval.ogg') };
+    const { ctx, engine } = engineWith(m, () => Promise.resolve(buf(ctxRef!, 50.6)));
+    ctxRef = ctx;
+    engine.setCue('music.stone', 600);
+    await tick();
+    ctx.advance(5);
+    engine.setCue('music.medieval', 600);
+    const curves = ctx.nodes.flatMap((n) => ((n as unknown as { gain?: { events: { kind: string; value?: number; duration?: number }[] } }).gain?.events ?? []).filter((e) => e.kind === 'curve'));
+    // Stone faded in, Stone fades out, Medieval fades in: three 0.6 s curves, one of them to silence.
+    expect(curves.filter((e) => Math.abs((e.duration ?? 0) - 0.6) < 1e-9)).toHaveLength(3);
+    expect(curves.some((e) => e.value === 0)).toBe(true);
+  });
+
+  it('plays the stinger recorded in the key the battle ended in', async () => {
+    const loads: string[] = [];
+    const m: Record<string, MusicDef> = {
+      'music.future': loopDef('future.ogg', { prefetch: ['stinger.victory'] } as Partial<MusicDef>),
+      'stinger.victory': { kind: 'file', src: 'victory.ogg', keys: { 6: 'victory.k6.ogg' }, role: 'stinger' },
+    };
+    let ctxRef: FakeContext | null = null;
+    const { ctx, engine } = engineWith(m, (src) => {
+      loads.push(src);
+      return Promise.resolve(buf(ctxRef!, src === 'victory.k6.ogg' ? 7 : src === 'victory.ogg' ? 6 : 50.6));
+    });
+    ctxRef = ctx;
+    engine.setCue('music.future', 0);
+    expect(loads).toContain('victory.ogg');
+    engine.transpose(6);
+    // The key change prefetches the stinger in the new key.
+    expect(loads).toContain('victory.k6.ogg');
+    await tick();
+    engine.setCue('stinger.victory', 300);
+    await tick();
+    const played = ctx.of(FakeBufferSource).filter((s) => s.buffer && !s.loop);
+    expect(played).toHaveLength(1);
+    expect(played[0]!.buffer!.length).toBe(48000 * 7);
   });
 
   it('prefetches the next cue and releases files no cue needs', async () => {

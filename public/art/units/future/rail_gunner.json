@@ -1,0 +1,1622 @@
+{
+ "frames": {
+  "rail_gunner_idle_00": {
+   "frame": {
+    "x": 357,
+    "y": 303,
+    "w": 114,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 88,
+    "w": 114,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_00_team": {
+   "frame": {
+    "x": 119,
+    "y": 477,
+    "w": 61,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 82,
+    "w": 61,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_01": {
+   "frame": {
+    "x": 460,
+    "y": 212,
+    "w": 111,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 85,
+    "w": 111,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_01_team": {
+   "frame": {
+    "x": 422,
+    "y": 477,
+    "w": 58,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 80,
+    "w": 58,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_02": {
+   "frame": {
+    "x": 349,
+    "y": 120,
+    "w": 108,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 81,
+    "w": 108,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_02_team": {
+   "frame": {
+    "x": 299,
+    "y": 477,
+    "w": 58,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 75,
+    "w": 58,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_03": {
+   "frame": {
+    "x": 77,
+    "y": 2,
+    "w": 106,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 77,
+    "w": 106,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_idle_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 558,
+    "w": 57,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 72,
+    "w": 57,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_00": {
+   "frame": {
+    "x": 475,
+    "y": 303,
+    "w": 112,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 88,
+    "w": 112,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_00_team": {
+   "frame": {
+    "x": 61,
+    "y": 477,
+    "w": 54,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 82,
+    "w": 54,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_01": {
+   "frame": {
+    "x": 112,
+    "y": 212,
+    "w": 112,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 84,
+    "w": 112,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_01_team": {
+   "frame": {
+    "x": 483,
+    "y": 391,
+    "w": 54,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 79,
+    "w": 54,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 120,
+    "w": 112,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 80,
+    "w": 112,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_02_team": {
+   "frame": {
+    "x": 242,
+    "y": 477,
+    "w": 53,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 75,
+    "w": 53,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_03": {
+   "frame": {
+    "x": 118,
+    "y": 120,
+    "w": 112,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 84,
+    "w": 112,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_03_team": {
+   "frame": {
+    "x": 484,
+    "y": 477,
+    "w": 54,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 79,
+    "w": 54,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_04": {
+   "frame": {
+    "x": 228,
+    "y": 212,
+    "w": 112,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 88,
+    "w": 112,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_04_team": {
+   "frame": {
+    "x": 184,
+    "y": 477,
+    "w": 54,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 82,
+    "w": 54,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_05": {
+   "frame": {
+    "x": 453,
+    "y": 2,
+    "w": 106,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 84,
+    "w": 106,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_05_team": {
+   "frame": {
+    "x": 542,
+    "y": 477,
+    "w": 54,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 79,
+    "w": 54,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_06": {
+   "frame": {
+    "x": 187,
+    "y": 2,
+    "w": 101,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 80,
+    "w": 101,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 477,
+    "w": 55,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 75,
+    "w": 55,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_07": {
+   "frame": {
+    "x": 2,
+    "y": 212,
+    "w": 106,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 84,
+    "w": 106,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_walk_07_team": {
+   "frame": {
+    "x": 541,
+    "y": 391,
+    "w": 54,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 79,
+    "w": 54,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_00": {
+   "frame": {
+    "x": 234,
+    "y": 120,
+    "w": 111,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 82,
+    "w": 111,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_00_team": {
+   "frame": {
+    "x": 192,
+    "y": 558,
+    "w": 59,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 77,
+    "w": 59,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_01": {
+   "frame": {
+    "x": 123,
+    "y": 303,
+    "w": 115,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 88,
+    "w": 115,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_01_team": {
+   "frame": {
+    "x": 573,
+    "y": 558,
+    "w": 57,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 83,
+    "w": 57,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_02": {
+   "frame": {
+    "x": 126,
+    "y": 391,
+    "w": 117,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 90,
+    "w": 117,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_02_team": {
+   "frame": {
+    "x": 507,
+    "y": 558,
+    "w": 62,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 84,
+    "w": 62,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 391,
+    "w": 120,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 91,
+    "w": 120,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_03_team": {
+   "frame": {
+    "x": 255,
+    "y": 558,
+    "w": 62,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 85,
+    "w": 62,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_04": {
+   "frame": {
+    "x": 292,
+    "y": 2,
+    "w": 157,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 83,
+    "w": 157,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_04_team": {
+   "frame": {
+    "x": 321,
+    "y": 558,
+    "w": 58,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 78,
+    "w": 58,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_05": {
+   "frame": {
+    "x": 247,
+    "y": 391,
+    "w": 109,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 91,
+    "w": 109,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_05_team": {
+   "frame": {
+    "x": 195,
+    "y": 633,
+    "w": 53,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 87,
+    "w": 53,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_06": {
+   "frame": {
+    "x": 242,
+    "y": 303,
+    "w": 111,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 88,
+    "w": 111,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_06_team": {
+   "frame": {
+    "x": 66,
+    "y": 633,
+    "w": 56,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 83,
+    "w": 56,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_07": {
+   "frame": {
+    "x": 461,
+    "y": 120,
+    "w": 110,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 84,
+    "w": 110,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_attack_07_team": {
+   "frame": {
+    "x": 446,
+    "y": 558,
+    "w": 57,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 78,
+    "w": 57,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_hit_00": {
+   "frame": {
+    "x": 360,
+    "y": 391,
+    "w": 119,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 31,
+    "y": 89,
+    "w": 119,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_hit_00_team": {
+   "frame": {
+    "x": 126,
+    "y": 633,
+    "w": 65,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 85,
+    "w": 65,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_hit_01": {
+   "frame": {
+    "x": 2,
+    "y": 303,
+    "w": 117,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 37,
+    "y": 86,
+    "w": 117,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_hit_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 633,
+    "w": 60,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 42,
+    "y": 81,
+    "w": 60,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_hit_02": {
+   "frame": {
+    "x": 344,
+    "y": 212,
+    "w": 112,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 84,
+    "w": 112,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_hit_02_team": {
+   "frame": {
+    "x": 383,
+    "y": 558,
+    "w": 59,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 79,
+    "w": 59,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 71,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 18,
+    "y": 46,
+    "w": 71,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_die_00_team": {
+   "frame": {
+    "x": 361,
+    "y": 477,
+    "w": 57,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 14,
+    "y": 67,
+    "w": 57,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_die_01": {
+   "frame": {
+    "x": 63,
+    "y": 558,
+    "w": 125,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 18,
+    "y": 98,
+    "w": 125,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_die_01_team": {
+   "frame": {
+    "x": 252,
+    "y": 633,
+    "w": 67,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 25,
+    "y": 97,
+    "w": 67,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_die_02": {
+   "frame": {
+    "x": 323,
+    "y": 633,
+    "w": 119,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 28,
+    "y": 123,
+    "w": 119,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  },
+  "rail_gunner_die_02_team": {
+   "frame": {
+    "x": 446,
+    "y": 633,
+    "w": 63,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 33,
+    "y": 120,
+    "w": 63,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 248,
+    "h": 177
+   },
+   "anchor": {
+    "x": 0.31452,
+    "y": 0.90395
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "rail_gunner_idle_00",
+   "rail_gunner_idle_01",
+   "rail_gunner_idle_02",
+   "rail_gunner_idle_03",
+   "rail_gunner_idle_02",
+   "rail_gunner_idle_01"
+  ],
+  "idle_team": [
+   "rail_gunner_idle_00_team",
+   "rail_gunner_idle_01_team",
+   "rail_gunner_idle_02_team",
+   "rail_gunner_idle_03_team",
+   "rail_gunner_idle_02_team",
+   "rail_gunner_idle_01_team"
+  ],
+  "walk": [
+   "rail_gunner_walk_00",
+   "rail_gunner_walk_01",
+   "rail_gunner_walk_02",
+   "rail_gunner_walk_03",
+   "rail_gunner_walk_04",
+   "rail_gunner_walk_05",
+   "rail_gunner_walk_06",
+   "rail_gunner_walk_07"
+  ],
+  "walk_team": [
+   "rail_gunner_walk_00_team",
+   "rail_gunner_walk_01_team",
+   "rail_gunner_walk_02_team",
+   "rail_gunner_walk_03_team",
+   "rail_gunner_walk_04_team",
+   "rail_gunner_walk_05_team",
+   "rail_gunner_walk_06_team",
+   "rail_gunner_walk_07_team"
+  ],
+  "attack": [
+   "rail_gunner_attack_00",
+   "rail_gunner_attack_01",
+   "rail_gunner_attack_02",
+   "rail_gunner_attack_03",
+   "rail_gunner_attack_04",
+   "rail_gunner_attack_05",
+   "rail_gunner_attack_06",
+   "rail_gunner_attack_07"
+  ],
+  "attack_team": [
+   "rail_gunner_attack_00_team",
+   "rail_gunner_attack_01_team",
+   "rail_gunner_attack_02_team",
+   "rail_gunner_attack_03_team",
+   "rail_gunner_attack_04_team",
+   "rail_gunner_attack_05_team",
+   "rail_gunner_attack_06_team",
+   "rail_gunner_attack_07_team"
+  ],
+  "hit": [
+   "rail_gunner_hit_00",
+   "rail_gunner_hit_01",
+   "rail_gunner_hit_02"
+  ],
+  "hit_team": [
+   "rail_gunner_hit_00_team",
+   "rail_gunner_hit_01_team",
+   "rail_gunner_hit_02_team"
+  ],
+  "die": [
+   "rail_gunner_die_00",
+   "rail_gunner_die_01",
+   "rail_gunner_die_02"
+  ],
+  "die_team": [
+   "rail_gunner_die_00_team",
+   "rail_gunner_die_01_team",
+   "rail_gunner_die_02_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "rail_gunner.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 700
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.rail_gunner",
+   "name": "Rail Gunner",
+   "heightLu": 74,
+   "widthLu": 84.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    78,
+    160
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      1
+     ],
+     "durationsMs": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+     ],
+     "durationMs": 1200,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        60.0,
+        6.5
+       ],
+       [
+        58.6,
+        8.7
+       ],
+       [
+        56.4,
+        13.7
+       ],
+       [
+        55.0,
+        18.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        59.6,
+        4.7
+       ],
+       [
+        60.9,
+        8.2
+       ],
+       [
+        60.5,
+        8.7
+       ],
+       [
+        60.7,
+        5.9
+       ],
+       [
+        59.6,
+        4.7
+       ],
+       [
+        55.7,
+        5.9
+       ],
+       [
+        53.3,
+        5.4
+       ],
+       [
+        55.5,
+        3.5
+       ]
+      ]
+     },
+     "strideLu": 28.4,
+     "naturalSpeedLuPerS": 56.8
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      125,
+      125,
+      83,
+      125,
+      83,
+      125
+     ],
+     "durationMs": 832,
+     "impactFrame": 4,
+     "impactAt": 0.5,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        58.2,
+        20.9
+       ],
+       [
+        62.4,
+        11.9
+       ],
+       [
+        63.6,
+        10.1
+       ],
+       [
+        64.2,
+        9.6
+       ],
+       [
+        58.2,
+        14.3
+       ],
+       [
+        45.5,
+        36.4
+       ],
+       [
+        52.4,
+        25.1
+       ],
+       [
+        56.1,
+        16.5
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        50.6,
+        34.9
+       ],
+       [
+        55.6,
+        26.4
+       ],
+       [
+        57.4,
+        18.1
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 166,
+       "offsetLu": [
+        0,
+        31.1
+       ],
+       "scale": 1.057
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 249,
+       "offsetLu": [
+        0,
+        45.9
+       ],
+       "loops": 2,
+       "scale": 1.028
+      }
+     ],
+     "hideUnitAtMs": 249,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -1.0,
+        84.5
+       ],
+       [
+        43.5,
+        42.0
+       ],
+       [
+        47.9,
+        17.5
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

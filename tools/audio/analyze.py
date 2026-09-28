@@ -95,7 +95,8 @@ def check_sfx() -> list[str]:
             x = sf.read(str(CACHE / "sfx" / f"{sid}.{k}.wav"), dtype="float64")[0]
             r = loud.report(x, SR, short=True)
             r["len"] = len(x) / SR
-            r["phone"] = loud.max_window_lufs(signal.sosfilt(signal.butter(4, 300 / (SR / 2), "high", output="sos"), x), SR) - r["lufs"]
+            # Phone/laptop speaker model: 4th-order band pass 350 Hz-12 kHz (as in sfx/render_sfx.py).
+            r["phone"] = loud.max_window_lufs(signal.sosfilt(signal.butter(4, [350, 12000], "bandpass", fs=SR, output="sos"), x), SR) - r["lufs"]
             worst.append(r)
         r = worst[0]
         spread = max(w["lufs"] for w in worst) - min(w["lufs"] for w in worst)
@@ -108,7 +109,7 @@ def check_sfx() -> list[str]:
             flag.append("variant spread")
         if info.get("noisy") and max(w["presence_peak"] for w in worst) > 9:
             flag.append("harsh")
-        if min(w["phone"] for w in worst) < -12.5:
+        if min(w["phone"] for w in worst) < info.get("phone_gap", -4.0) - 1.0:
             flag.append("weak on phones")
         lines.append(
             f"{'!' if flag else ' '} {sid:26s} {groups.get(sid, {}).get('group', '?'):9s} x{info['variants']} {r['len']:4.2f}s  {r['lufs']:6.1f} LU(200ms)  tp {r['tp']:5.1f}  "

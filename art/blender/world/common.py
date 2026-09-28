@@ -214,7 +214,7 @@ def smoke_puff(rig, joint, at, size=1.0, name="smoke"):
 
 
 def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, idle=None, fire=None,
-                  yaw=TURRET_YAW, aim=(-55, 40), fire_kind="recoil"):
+                  yaw=TURRET_YAW, aim=(-55, 40), fire_kind="recoil", muzzle_joint="head"):
     """A pipeline module for turret.<slug>.
 
     build(rig): adds parts. Joints `mount` (static, origin) and `head` (rotates about `pivot`)
@@ -228,7 +228,7 @@ def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, i
         rig.joint("mount", "all", (0, 0, 0))
         rig.joint("head", "all", (px_, 0, pz_))
         build(rig)
-        rig.track("muzzle", "head", muzzle)
+        rig.track("muzzle", muzzle_joint, muzzle)
 
     idle_fn = idle or (lambda f: {})
     fire_fn = fire or (lambda f: {})
@@ -331,3 +331,57 @@ def base_module(age, name, height, width, canvas, feet, mounts, build, crumble, 
         },
         build=_build, clips=clips, AGE=age,
     )
+
+
+# -- shared base details ----------------------------------------------------------------------
+def cracks(rig, joint, specs, color=SHADOW_DARK):
+    """Dark wedges half sunk into a surface: specs = [(x, y, z, angle_deg, length)]."""
+    g = Geo()
+    for x, y, z, rot, L in specs:
+        g.blob((x, y, z), (2.0, 7, L), p=2.0, rot=(0, rot, 0))
+        g.blob((x + 0.3 * L, y, z - 0.8 * L), (1.5, 7, L * 0.5), p=2.0, rot=(0, rot - 40, 0))
+    rig.part(joint, g, color, outline=0, highlight=False)
+
+
+def rubble(rig, joint, pts, color, seed=0, size=1.0):
+    g = Geo()
+    for k, (x, y) in enumerate(pts):
+        rock(g, (x, y, 3 * size), (9 * size, 7 * size, 6 * size), seed=seed + k, jag=0.25, p=3.0)
+        rock(g, (x + 8 * size, y - 2, 2 * size), (5 * size, 4 * size, 4 * size), seed=seed + 40 + k, jag=0.25, p=3.0)
+    rig.part(joint, g, color)
+
+
+def torch(rig, joint, x, y, z, wood="#5E4836", fire="#FFC47A", core="#FFF0CC", length=26):
+    g = Geo().capsule((x, y, z - length), (x, y, z), 1.6)
+    g.lathe([(0.1, 0), (3.6, 3), (3.2, 7), (0.1, 7.5)], (x, y, z - 1), (x, y, z + 6), segs=10)
+    rig.part(joint, g, wood, outline=0.6)
+    g = Geo().blob((x, y - 1, z + 11), (3.8, 3.0, 6.8), p=2.0, taper=(1.0, 0.25))
+    rig.part(joint, g, glow=fire, outline=0)
+    g = Geo().blob((x, y - 3, z + 9), (1.8, 1.5, 3.4), p=2.0, taper=(1.0, 0.3))
+    rig.part(joint, g, glow=core, outline=0)
+
+
+def window(rig, joint, x, y, z, w, h, glow_hex="#FFD89A", frame="#4A3B2E", arch=True):
+    """A lit window on a wall facing the camera (-Y)."""
+    pts = [(x - w / 2, z - h / 2), (x + w / 2, z - h / 2), (x + w / 2, z + h / 2 - (w / 2 if arch else 0))]
+    if arch:
+        for i in range(1, 6):
+            a = math.pi * i / 6
+            pts.append((x + w / 2 * math.cos(a), z + h / 2 - w / 2 + w / 2 * math.sin(a)))
+    pts.append((x - w / 2, z + h / 2 - (w / 2 if arch else 0)))
+    g = Geo().slab([(px_ + (0.9 if px_ > x else -0.9), pz_ + (0.9 if pz_ > z else -0.9)) for px_, pz_ in pts], y, 1.2)
+    rig.part(joint, g, frame, outline=0)
+    g = Geo().slab(pts, y - 0.8, 1.0)
+    rig.part(joint, g, glow=glow_hex, outline=0)
+
+
+def pennant(rig, joint, x, y, z0, h=30.0, length=16.0, width=9.0, pole="#6B5440", finial="#C9A227"):
+    """A small static team pennant on a pole (turret mounts)."""
+    g = Geo().capsule((x, y, z0), (x, y, z0 + h), 1.1)
+    rig.part(joint, g, pole, outline=0.6)
+    g = Geo().sphere((x, y, z0 + h + 1.5), 1.8, cuts=2)
+    rig.part(joint, g, finial, finish="metal", outline=0.5)
+    zt = z0 + h - 1
+    g = Geo().slab([(x - 0.5, zt), (x - length, zt - width * 0.35), (x - length * 0.8, zt - width * 0.6),
+                    (x - 0.5, zt - width)], y, 1.2)
+    rig.part(joint, g, team=True, outline=0.5)

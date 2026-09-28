@@ -153,30 +153,24 @@
   min-width: min(360px, 70vw);
   font-size: clamp(34px, 5.4vw, 56px);
   letter-spacing: 0.06em;
-  animation: ab-hero 2.4s ease-in-out infinite;
+  box-shadow: 0 5px 0 var(--ui-ink, #1b1330), 0 8px 18px #0006, 0 0 30px 4px #ffc53d77;
 }
 
+/* The shine animates only transform, so it stays on the compositor. */
 .ab-btn--hero::after {
   content: '';
   position: absolute;
-  top: -20%;
-  bottom: -20%;
-  left: -40%;
-  width: 30%;
-  background: linear-gradient(100deg, transparent, #fff8 50%, transparent);
-  transform: skewX(-18deg);
-  animation: ab-shine 3.2s ease-in-out 0.8s infinite;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, transparent 35%, #fff8 50%, transparent 65%);
+  transform: translateX(-110%);
   pointer-events: none;
-}
-
-@keyframes ab-hero {
-  0%, 100% { box-shadow: 0 5px 0 var(--ui-ink, #1b1330), 0 8px 18px #0006, 0 0 0 0 #ffc53d00; }
-  50% { box-shadow: 0 5px 0 var(--ui-ink, #1b1330), 0 8px 18px #0006, 0 0 34px 6px #ffc53d88; }
+  animation: ab-shine 3.2s ease-in-out 0.8s infinite;
 }
 
 @keyframes ab-shine {
-  0%, 60% { left: -40%; }
-  100% { left: 130%; }
+  0%, 60% { transform: translateX(-110%); }
+  100% { transform: translateX(110%); }
 }
 
 .ab-format {
@@ -728,7 +722,7 @@
 }
 
 @keyframes ab-bob {
-  50% { margin-top: -5px; }
+  50% { translate: 0 -5px; }
 }
 
 @keyframes ab-pulse {
@@ -756,7 +750,6 @@
 }
 
 [data-reduce-motion] .ab-logo,
-[data-reduce-motion] .ab-btn--hero,
 [data-reduce-motion] .ab-btn--hero::after,
 [data-reduce-motion] .ab-card,
 [data-reduce-motion] .ab-bubble,
@@ -772,7 +765,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ab-logo, .ab-card, .ab-bubble, .ab-btn--hero, .ab-btn--hero::after, .ab-ring, .ab-panel, .ab-reward, .ab-rotate-phone, .ab-result-rays, .ab-result-panel, .ab-result-banner h2 {
+  .ab-logo, .ab-card, .ab-bubble, .ab-btn--hero::after, .ab-ring, .ab-panel, .ab-reward, .ab-rotate-phone, .ab-result-rays, .ab-result-panel, .ab-result-banner h2 {
     animation: none;
   }
 }

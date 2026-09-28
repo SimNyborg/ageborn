@@ -1,0 +1,1622 @@
+{
+ "frames": {
+  "repair_drone_idle_00": {
+   "frame": {
+    "x": 578,
+    "y": 2,
+    "w": 54,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 60,
+    "w": 54,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_00_team": {
+   "frame": {
+    "x": 437,
+    "y": 174,
+    "w": 45,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 77,
+    "w": 45,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_01": {
+   "frame": {
+    "x": 636,
+    "y": 2,
+    "w": 54,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 58,
+    "w": 54,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_01_team": {
+   "frame": {
+    "x": 337,
+    "y": 174,
+    "w": 46,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 76,
+    "w": 46,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_02": {
+   "frame": {
+    "x": 694,
+    "y": 2,
+    "w": 54,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 56,
+    "w": 54,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 232,
+    "w": 46,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 74,
+    "w": 46,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 91,
+    "w": 54,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 55,
+    "w": 54,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_idle_03_team": {
+   "frame": {
+    "x": 289,
+    "y": 174,
+    "w": 44,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 71,
+    "w": 44,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_00": {
+   "frame": {
+    "x": 127,
+    "y": 2,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 56,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_00_team": {
+   "frame": {
+    "x": 248,
+    "y": 232,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 75,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_01": {
+   "frame": {
+    "x": 70,
+    "y": 2,
+    "w": 53,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 55,
+    "w": 53,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_01_team": {
+   "frame": {
+    "x": 52,
+    "y": 232,
+    "w": 45,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 73,
+    "w": 45,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_02": {
+   "frame": {
+    "x": 183,
+    "y": 2,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 54,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_02_team": {
+   "frame": {
+    "x": 101,
+    "y": 232,
+    "w": 45,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 72,
+    "w": 45,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_03": {
+   "frame": {
+    "x": 463,
+    "y": 2,
+    "w": 52,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 55,
+    "w": 52,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_03_team": {
+   "frame": {
+    "x": 398,
+    "y": 232,
+    "w": 45,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 74,
+    "w": 45,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_04": {
+   "frame": {
+    "x": 239,
+    "y": 2,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 56,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_04_team": {
+   "frame": {
+    "x": 298,
+    "y": 232,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 75,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_05": {
+   "frame": {
+    "x": 295,
+    "y": 2,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 57,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_05_team": {
+   "frame": {
+    "x": 584,
+    "y": 174,
+    "w": 44,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 74,
+    "w": 44,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_06": {
+   "frame": {
+    "x": 351,
+    "y": 2,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 58,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_06_team": {
+   "frame": {
+    "x": 191,
+    "y": 174,
+    "w": 45,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 76,
+    "w": 45,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_07": {
+   "frame": {
+    "x": 407,
+    "y": 2,
+    "w": 52,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 58,
+    "w": 52,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_walk_07_team": {
+   "frame": {
+    "x": 150,
+    "y": 232,
+    "w": 45,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 76,
+    "w": 45,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_00": {
+   "frame": {
+    "x": 519,
+    "y": 2,
+    "w": 55,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 57,
+    "w": 55,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_00_team": {
+   "frame": {
+    "x": 486,
+    "y": 174,
+    "w": 45,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 75,
+    "w": 45,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_01": {
+   "frame": {
+    "x": 424,
+    "y": 91,
+    "w": 60,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 58,
+    "w": 60,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_01_team": {
+   "frame": {
+    "x": 348,
+    "y": 232,
+    "w": 46,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 76,
+    "w": 46,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_02": {
+   "frame": {
+    "x": 488,
+    "y": 91,
+    "w": 63,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 60,
+    "w": 63,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_02_team": {
+   "frame": {
+    "x": 680,
+    "y": 174,
+    "w": 49,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 77,
+    "w": 49,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 64,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 50,
+    "w": 64,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_03_team": {
+   "frame": {
+    "x": 145,
+    "y": 174,
+    "w": 42,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 68,
+    "w": 42,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_04": {
+   "frame": {
+    "x": 176,
+    "y": 91,
+    "w": 63,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 54,
+    "w": 63,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_04_team": {
+   "frame": {
+    "x": 632,
+    "y": 174,
+    "w": 44,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 72,
+    "w": 44,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_05": {
+   "frame": {
+    "x": 362,
+    "y": 91,
+    "w": 58,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 51,
+    "y": 58,
+    "w": 58,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_05_team": {
+   "frame": {
+    "x": 387,
+    "y": 174,
+    "w": 46,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 74,
+    "w": 46,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_06": {
+   "frame": {
+    "x": 60,
+    "y": 91,
+    "w": 54,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 57,
+    "w": 54,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_06_team": {
+   "frame": {
+    "x": 535,
+    "y": 174,
+    "w": 45,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 75,
+    "w": 45,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_07": {
+   "frame": {
+    "x": 118,
+    "y": 91,
+    "w": 54,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 58,
+    "w": 54,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_attack_07_team": {
+   "frame": {
+    "x": 199,
+    "y": 232,
+    "w": 45,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 75,
+    "w": 45,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_hit_00": {
+   "frame": {
+    "x": 622,
+    "y": 91,
+    "w": 69,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 41,
+    "y": 71,
+    "w": 69,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_hit_00_team": {
+   "frame": {
+    "x": 48,
+    "y": 174,
+    "w": 45,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 79,
+    "w": 45,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_hit_01": {
+   "frame": {
+    "x": 555,
+    "y": 91,
+    "w": 63,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 65,
+    "w": 63,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_hit_01_team": {
+   "frame": {
+    "x": 97,
+    "y": 174,
+    "w": 44,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 75,
+    "w": 44,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_hit_02": {
+   "frame": {
+    "x": 301,
+    "y": 91,
+    "w": 57,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 60,
+    "w": 57,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_hit_02_team": {
+   "frame": {
+    "x": 240,
+    "y": 174,
+    "w": 45,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 75,
+    "w": 45,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_die_00": {
+   "frame": {
+    "x": 243,
+    "y": 91,
+    "w": 54,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 44,
+    "w": 54,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_die_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 174,
+    "w": 42,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 62,
+    "w": 42,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_die_01": {
+   "frame": {
+    "x": 695,
+    "y": 91,
+    "w": 63,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 31,
+    "y": 74,
+    "w": 63,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_die_01_team": {
+   "frame": {
+    "x": 447,
+    "y": 232,
+    "w": 57,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 36,
+    "y": 88,
+    "w": 57,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_die_02": {
+   "frame": {
+    "x": 566,
+    "y": 232,
+    "w": 53,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 38,
+    "y": 102,
+    "w": 53,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  },
+  "repair_drone_die_02_team": {
+   "frame": {
+    "x": 508,
+    "y": 232,
+    "w": 54,
+    "h": 36
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 41,
+    "y": 98,
+    "w": 54,
+    "h": 36
+   },
+   "sourceSize": {
+    "w": 177,
+    "h": 147
+   },
+   "anchor": {
+    "x": 0.44068,
+    "y": 0.91156
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "repair_drone_idle_00",
+   "repair_drone_idle_01",
+   "repair_drone_idle_02",
+   "repair_drone_idle_03",
+   "repair_drone_idle_02",
+   "repair_drone_idle_01"
+  ],
+  "idle_team": [
+   "repair_drone_idle_00_team",
+   "repair_drone_idle_01_team",
+   "repair_drone_idle_02_team",
+   "repair_drone_idle_03_team",
+   "repair_drone_idle_02_team",
+   "repair_drone_idle_01_team"
+  ],
+  "walk": [
+   "repair_drone_walk_00",
+   "repair_drone_walk_01",
+   "repair_drone_walk_02",
+   "repair_drone_walk_03",
+   "repair_drone_walk_04",
+   "repair_drone_walk_05",
+   "repair_drone_walk_06",
+   "repair_drone_walk_07"
+  ],
+  "walk_team": [
+   "repair_drone_walk_00_team",
+   "repair_drone_walk_01_team",
+   "repair_drone_walk_02_team",
+   "repair_drone_walk_03_team",
+   "repair_drone_walk_04_team",
+   "repair_drone_walk_05_team",
+   "repair_drone_walk_06_team",
+   "repair_drone_walk_07_team"
+  ],
+  "attack": [
+   "repair_drone_attack_00",
+   "repair_drone_attack_01",
+   "repair_drone_attack_02",
+   "repair_drone_attack_03",
+   "repair_drone_attack_04",
+   "repair_drone_attack_05",
+   "repair_drone_attack_06",
+   "repair_drone_attack_07"
+  ],
+  "attack_team": [
+   "repair_drone_attack_00_team",
+   "repair_drone_attack_01_team",
+   "repair_drone_attack_02_team",
+   "repair_drone_attack_03_team",
+   "repair_drone_attack_04_team",
+   "repair_drone_attack_05_team",
+   "repair_drone_attack_06_team",
+   "repair_drone_attack_07_team"
+  ],
+  "hit": [
+   "repair_drone_hit_00",
+   "repair_drone_hit_01",
+   "repair_drone_hit_02"
+  ],
+  "hit_team": [
+   "repair_drone_hit_00_team",
+   "repair_drone_hit_01_team",
+   "repair_drone_hit_02_team"
+  ],
+  "die": [
+   "repair_drone_die_00",
+   "repair_drone_die_01",
+   "repair_drone_die_02"
+  ],
+  "die_team": [
+   "repair_drone_die_00_team",
+   "repair_drone_die_01_team",
+   "repair_drone_die_02_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "repair_drone.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 276
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.repair_drone",
+   "name": "Repair Drone",
+   "heightLu": 54,
+   "widthLu": 35.8,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    78,
+    134
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     52
+    ],
+    "hitCenter": [
+     0,
+     28
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      1
+     ],
+     "durationsMs": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+     ],
+     "durationMs": 1200,
+     "anchorsLu": {
+      "beam": [
+       [
+        18.3,
+        5.3
+       ],
+       [
+        18.3,
+        6.5
+       ],
+       [
+        18.3,
+        7.3
+       ],
+       [
+        18.3,
+        6.8
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "beam": [
+       [
+        16.0,
+        5.1
+       ],
+       [
+        16.2,
+        7.3
+       ],
+       [
+        16.2,
+        8.9
+       ],
+       [
+        15.9,
+        8.9
+       ],
+       [
+        15.6,
+        7.3
+       ],
+       [
+        15.4,
+        5.1
+       ],
+       [
+        15.3,
+        3.6
+       ],
+       [
+        15.6,
+        3.6
+       ]
+      ]
+     },
+     "strideLu": 33.2,
+     "naturalSpeedLuPerS": 66.4
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      83,
+      83,
+      125,
+      167,
+      125,
+      83,
+      83,
+      83
+     ],
+     "durationMs": 832,
+     "impactFrame": 3,
+     "impactAt": 0.3498,
+     "anchorsLu": {
+      "beam": [
+       [
+        18.9,
+        8.7
+       ],
+       [
+        21.2,
+        10.7
+       ],
+       [
+        21.6,
+        9.7
+       ],
+       [
+        18.5,
+        15.1
+       ],
+       [
+        20.1,
+        12.6
+       ],
+       [
+        19.8,
+        8.3
+       ],
+       [
+        18.6,
+        6.3
+       ],
+       [
+        18.3,
+        5.5
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "anchorsLu": {
+      "beam": [
+       [
+        20.5,
+        17.2
+       ],
+       [
+        21.1,
+        12.2
+       ],
+       [
+        19.7,
+        8.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 3,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2
+     ],
+     "durationsMs": [
+      83,
+      83,
+      83
+     ],
+     "durationMs": 249,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 166,
+       "offsetLu": [
+        0,
+        22.7
+       ],
+       "scale": 0.447
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 249,
+       "offsetLu": [
+        0,
+        33.5
+       ],
+       "loops": 2,
+       "scale": 0.669
+      }
+     ],
+     "hideUnitAtMs": 249,
+     "anchorsLu": {
+      "beam": [
+       [
+        2.8,
+        25.4
+       ],
+       [
+        8.1,
+        13.8
+       ],
+       [
+        7.6,
+        6.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

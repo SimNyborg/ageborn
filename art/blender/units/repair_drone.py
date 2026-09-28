@@ -129,7 +129,10 @@ def build(rig):
     g = Geo().sphere((BEAM[0], BEAM[1] - 2.4, BEAM[2]), 3.6, cuts=4)
     rig.part("flare", g, glow=F.WHITE, outline=0)
     F.sparks(rig, "orb", (cx + 4.0, -8.0, cz + 6.0), color=F.MINT, size=1.3, name="sparks", seed=3)
-    rig.track("_foot", "body", (0.0, 0.0, 0.0))
+    # a virtual ground contact that slides back at flight speed, so the walk clip exports a
+    # natural speed (70 lu/s, the sim speed) like the walkers do
+    rig.joint("odo", "root", (0, 0, 0))
+    rig.track("_foot", "odo", (0.0, 0.0, 0.0))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -152,7 +155,9 @@ def _idle(f):
 
 def _walk(f):
     p = 2 * math.pi * f / 8
+    odo, _, _ = F.walker_cycle(f, 8, 17.5, 0.0)
     return merge(REST, jets(f, 1.25, 22.0), {
+        "odo": {"x": odo},
         "body": {"z": 1.6 * math.sin(p)},
         "orb": {"r": -12.0 + 2.0 * math.cos(p)},
         "arm": {"r": 10 + 4 * math.sin(p - 0.8)}, "fore": {"r": 6 + 4 * math.sin(p - 1.2)},

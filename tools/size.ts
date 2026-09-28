@@ -3,7 +3,9 @@
  *
  * Initial download = index.html + the entry script + every modulepreload chunk + stylesheets
  * referenced from dist/index.html, measured gzipped. Fails when it exceeds 3 MB.
- * Also reports the total gzipped size of dist (budget 8 MB, warning only).
+ * Also reports the total gzipped size of dist (budget 16 MB, warning only). The total includes the
+ * 3D-rendered sprite sheets (dist/art) and audio, which load lazily per age after boot, so they never
+ * count toward the initial download (decision "Quality pass" in docs/decisions.md).
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -11,7 +13,7 @@ import { gzipSync } from 'node:zlib';
 
 const DIST = path.resolve(import.meta.dirname, '..', 'dist');
 const INITIAL_LIMIT = 3 * 1024 * 1024;
-const TOTAL_BUDGET = 8 * 1024 * 1024;
+const TOTAL_BUDGET = 16 * 1024 * 1024;
 const BASE = '/ageborn/';
 
 function gz(file: string): number {
@@ -61,16 +63,20 @@ for (const url of refs) {
   rows.push(`  ${rel}  ${kb(s)}`);
 }
 
-const total = walk(DIST)
-  .filter((f) => !f.endsWith('.map'))
-  .reduce((sum, f) => sum + gz(f), 0);
+const files = walk(DIST).filter((f) => !f.endsWith('.map'));
+const sizes = new Map(files.map((f) => [f, gz(f)] as const));
+const total = [...sizes.values()].reduce((a, b) => a + b, 0);
+const under = (dir: string): number => [...sizes].filter(([f]) => path.relative(DIST, f).split(path.sep)[0] === dir).reduce((a, [, n]) => a + n, 0);
+const lazyArt = under('art');
+const lazyAudio = under('audio');
 
 console.log('Initial download (gzip):');
 console.log(rows.join('\n'));
 console.log(`Initial total: ${kb(initial)} (limit ${kb(INITIAL_LIMIT)}, target 1536.0 KB)`);
+console.log(`Lazy art (dist/art, per age after boot): ${kb(lazyArt)}; lazy audio (dist/audio): ${kb(lazyAudio)}`);
 console.log(`Dist total (gzip, no source maps): ${kb(total)} (budget ${kb(TOTAL_BUDGET)})`);
 
-if (total > TOTAL_BUDGET) console.warn('size: WARNING total download exceeds the 8 MB budget (DESIGN B16).');
+if (total > TOTAL_BUDGET) console.warn('size: WARNING total download exceeds the 16 MB budget (DESIGN B16, Quality pass).');
 if (initial > INITIAL_LIMIT) {
   console.error('size: FAIL initial chunk exceeds 3 MB gzipped (DESIGN B16).');
   process.exit(1);

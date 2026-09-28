@@ -27,6 +27,7 @@ FUR = "#8A6E52"
 FIRE = "#FFC47A"
 FIRE_CORE = "#FFF0CC"
 
+CRACK = "#4E443B"
 MOUNTS = [(-10, -64), (-14, -110), (-20, -154), (-30, -198)]
 
 
@@ -152,7 +153,7 @@ def build(rig, M):
         for x, y, z, rot in specs:
             g.blob((x, y, z), (2.2, 6, 17), p=2.0, rot=(0, rot, 0))
             g.blob((x + 4, y, z - 14), (1.6, 6, 8), p=2.0, rot=(0, rot - 40, 0))
-        rig.part(j, g, SHADOW_DARK, outline=0, highlight=False)
+        rig.part(j, g, CRACK, outline=0, highlight=False)
     # rubble piles
     for j, pts in (("rubble1", [(-150, -44), (-128, -50)]), ("rubble2", [(-30, -58), (-100, -60), (-66, -62)]),
                    ("rubble3", [(-150, -62), (-4, -66), (-84, -68), (-120, -66)])):

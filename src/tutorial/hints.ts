@@ -11,7 +11,10 @@
  * | Evolve before they do. | Evolve available and unused for 10 s |
  * | Buy another turret mount. | Every owned mount built, the next one affordable, your base hit in the last 10 s |
  * | Hold: gather at the line, then push. | Stance available, on Charge, 4 losses within 20 s while outnumbered |
- * | Old turret? Tap it to modernise. | An older-age turret, Modernise affordable, for 15 s |
+ * | Old turret? Tap it to modernise. | An older-age turret, Modernise affordable, for 15 s, evolve not ready |
+ *
+ * The modernise hint points at the old turret's mount (mount 0 or 1), so the player sees which one
+ * is meant; while Evolve is ready it stays quiet, because evolving first is the better move.
  */
 import type { CardId, SimEvent } from '@/contracts';
 import { ADAPTIVE, ADAPTIVE_HINTS, type AdaptiveHintDef, type AdaptiveHintId } from './scripts';
@@ -65,6 +68,7 @@ export class AdaptiveHints {
       this.counts[def.id] = (this.counts[def.id] ?? 0) + 1;
       this.lastHintTick = i.state.tick;
       this.resetPattern(def.id);
+      if (def.id === 'modernise') return { ...def, target: this.outdatedMountTarget(i) };
       return def;
     }
     return null;
@@ -134,13 +138,21 @@ export class AdaptiveHints {
         return this.deaths.length >= ADAPTIVE.holdDeaths && theirs > mine;
       }
       case 'modernise':
-        return this.outdatedSince !== null && tick - this.outdatedSince >= ADAPTIVE.outdatedTicks;
+        return this.outdatedSince !== null && tick - this.outdatedSince >= ADAPTIVE.outdatedTicks && !evolveReady(i);
       default:
         return false;
     }
   }
 
   /** An active turret from an older age whose Modernise (new price − 50% of old) is affordable. */
+  /** The mount of the first older-age turret, as a prompt target (only mounts 0 and 1 have one). */
+  private outdatedMountTarget(i: TickInput): AdaptiveHintDef['target'] {
+    const me = i.state.sides[i.side];
+    const ages = i.config.content.ages;
+    const k = me.turrets.findIndex((t) => t !== null && t.state === 'active' && ages[t.age].index < me.ageIndex);
+    return k === 0 ? 'mount0' : k === 1 ? 'mount1' : null;
+  }
+
   private moderniseAffordable(i: TickInput): boolean {
     const me = i.state.sides[i.side];
     const content = i.config.content;

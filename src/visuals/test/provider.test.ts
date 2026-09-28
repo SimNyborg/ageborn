@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { ClipName, UnitPose, VisualDef } from '@/contracts/art';
 import { PlaceholderAdapter } from '../adapters/placeholder';
-import { MANIFEST } from '../manifest';
+import { MANIFEST, PROCEDURAL_MANIFEST } from '../manifest';
 import { artOverrideFromUrl, createArtProvider } from '../provider';
 import { WORLD } from '../style';
 
@@ -33,17 +33,21 @@ describe('routing', () => {
     u.destroy();
   });
 
-  it('falls back to placeholders for unknown ids and for tiers that are not built yet', () => {
+  it('falls back to placeholders for unknown ids, and to the puppet for a sheet that is not loaded', () => {
     const warn = vi.fn();
-    const atlasDef: VisualDef = { ...(MANIFEST['unit.bonker'] as VisualDef), kind: 'atlas', source: 'units/bonker' };
+    const atlasDef: VisualDef = { ...(PROCEDURAL_MANIFEST['unit.bonker'] as VisualDef), kind: 'atlas', source: 'units/bonker' };
     const art = createArtProvider({ warn, manifest: { ...MANIFEST, 'unit.bonker': atlasDef } });
     const a = art.createUnit({ visualId: 'unit.bonker', side: 0, teamPreset: 'default' });
-    expect(a.root.label).toContain('placeholder');
+    expect(a.root.label).toBe('unit.bonker');
     const b = art.createUnit({ visualId: 'unit.nope', side: 1, teamPreset: 'default' });
     expect(b.root.label).toContain('placeholder');
-    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledTimes(1);
     art.createUnit({ visualId: 'unit.nope', side: 1, teamPreset: 'default' });
-    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledTimes(1);
+    // a tier without a fallback puppet still draws a placeholder
+    const odd: VisualDef = { ...atlasDef, kind: 'spine', source: 'x' };
+    const art2 = createArtProvider({ warn, manifest: { ...MANIFEST, 'unit.bonker': odd } });
+    expect(art2.createUnit({ visualId: 'unit.bonker', side: 0, teamPreset: 'default' }).root.label).toContain('placeholder');
   });
 
   it('forces a tier for every visual with ?art=placeholder', () => {
@@ -85,7 +89,7 @@ describe('routing', () => {
   });
 
   it('a unit moved to sprite sheets keeps its procedural card portrait until that tier draws portraits', async () => {
-    const atlasDef: VisualDef = { ...(MANIFEST['unit.bonker'] as VisualDef), kind: 'atlas', source: 'art/units/bonker.json' };
+    const atlasDef: VisualDef = { ...(PROCEDURAL_MANIFEST['unit.bonker'] as VisualDef), kind: 'atlas', source: 'art/units/bonker.json' };
     const art = createArtProvider({ warn: () => {}, manifest: { ...MANIFEST, 'unit.bonker': atlasDef } });
     const proc = vi.spyOn(art.procedural, 'portrait');
     const place = vi.spyOn(art.placeholder, 'portrait');
@@ -398,14 +402,16 @@ describe('atlas tier (sprite sheets swap in by manifest entry)', () => {
     a.destroy();
   });
 
-  it('draws unloaded or unsupported atlas entries as placeholders', async () => {
+  it('draws units and turrets whose sheet failed as their puppet, and unsupported entries as placeholders', async () => {
     const { atlasVisualDef } = await import('../adapters/atlas');
     const def = atlasVisualDef(json, 'art/units/missing.json');
     const warn = vi.fn();
     const art = createArtProvider({ warn, manifest: { ...MANIFEST, 'unit.bonker': def, 'turret.rock_tosser': { ...def, source: 'x.json' } } });
     await art.preload(['stone']);
-    expect(art.createUnit({ visualId: 'unit.bonker', side: 0, teamPreset: 'default' }).root.label).toContain('placeholder');
-    expect(art.createTurret({ visualId: 'turret.rock_tosser', side: 0, teamPreset: 'default' }).root).toBeDefined();
+    expect(art.createUnit({ visualId: 'unit.bonker', side: 0, teamPreset: 'default' }).root.label).toBe('unit.bonker');
+    expect(art.createTurret({ visualId: 'turret.rock_tosser', side: 0, teamPreset: 'default' }).root.label).toBe('turret.rock_tosser');
+    const odd = createArtProvider({ warn, manifest: { ...MANIFEST, 'turret.rock_tosser': { ...def, kind: 'spine', source: 'x.json' } } });
+    expect(odd.createTurret({ visualId: 'turret.rock_tosser', side: 0, teamPreset: 'default' }).root).toBeDefined();
     expect(warn).toHaveBeenCalled();
   });
 });

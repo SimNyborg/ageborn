@@ -17,7 +17,7 @@ import type { ViewKind, VisualAdapter, VisualKind } from './adapters/types';
 import { AGES } from './ages';
 import { arenaId } from './backdrops/ground';
 import { puppetById } from './library';
-import { MANIFEST, type VisualManifest } from './manifest';
+import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from './manifest';
 import { STYLE, WORLD } from './style';
 
 export interface ArtProviderOptions {
@@ -81,7 +81,7 @@ export class VisualsArtProvider implements ArtProvider {
     const dpr = this.quality === 'lite' ? 1 : Math.min(2, Math.max(1, o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1)));
     const world = o.worldPxPerLu ?? (typeof window !== 'undefined' ? screenWorldPxPerLu(window.innerWidth, window.innerHeight) : 1.25);
     this.procedural = new ProceduralAdapter({ pxPerLu: world * dpr, quality: this.quality, teamPreset: () => this.preset });
-    this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker });
+    this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker, quality: this.quality });
     this.adapters = { placeholder: this.placeholder, procedural: this.procedural, atlas: this.atlas, spine: new SpineAdapter() };
     this.warn = o.warn ?? ((m) => console.warn(m));
   }
@@ -157,13 +157,30 @@ export class VisualsArtProvider implements ArtProvider {
     const r = this.resolve(o.visualId, o.skin);
     const def = r?.def ?? this.missing(o.visualId);
     const key = r?.key ?? o.visualId;
+    const fb = this.sheetFallback(key, r?.def, 'unit');
+    if (fb) return fb.adapter.createUnit({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
     return this.adapterFor(key, r?.def, 'unit').createUnit({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
+  }
+
+  /**
+   * A sprite-sheet unit whose sheet is not loaded yet (its age still streaming in) or failed to load
+   * is drawn with its procedural puppet instead of a placeholder (B5 fallback). Null when the sheet
+   * tier can draw it, when a tier is forced, or when there is no procedural entry.
+   */
+  private sheetFallback(key: string, def: VisualDef | undefined, what: ViewKind): { adapter: ProceduralAdapter; def: VisualDef } | null {
+    if (this.force || !def || def.kind !== 'atlas') return null;
+    if (this.atlas.canDraw(what, def)) return null;
+    const proc = PROCEDURAL_MANIFEST[key];
+    if (!proc || proc.kind !== 'procedural') return null;
+    return { adapter: this.procedural, def: proc };
   }
 
   createTurret(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): TurretView {
     const r = this.resolve(o.visualId, o.skin);
     const def = r?.def ?? this.missing(o.visualId);
     const key = r?.key ?? o.visualId;
+    const fb = this.sheetFallback(key, r?.def, 'turret');
+    if (fb) return fb.adapter.createTurret({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
     return this.adapterFor(key, r?.def, 'turret').createTurret({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
   }
 
@@ -187,6 +204,17 @@ export class VisualsArtProvider implements ArtProvider {
     const r = resolveAge(o.age);
     const def = r?.def ?? this.missing(`base.${o.age}`);
     const key = r?.key ?? `base.${o.age}`;
+    const fb = this.sheetFallback(key, r?.def, 'base');
+    if (fb) {
+      // the sheet is not loaded (yet): the procedural base, which morphs through procedural entries
+      const procAge = (age: AgeId): { key: string; def: VisualDef } | undefined => {
+        const e = resolveAge(age);
+        if (!e || e.def.kind !== 'atlas') return e;
+        const proc = PROCEDURAL_MANIFEST[e.key];
+        return proc ? { key: e.key, def: proc } : undefined;
+      };
+      return fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin, resolveAge: procAge });
+    }
     return this.adapterFor(key, r?.def, 'base').createBase({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin, resolveAge });
   }
 

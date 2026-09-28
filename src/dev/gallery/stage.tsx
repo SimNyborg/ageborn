@@ -89,6 +89,8 @@ export function PixiStage(p: StageProps) {
       // Baked for the review zoom (the units grid defaults to 1.6 px per lu), not for this window's lane.
       const art = createArtProvider({ manifest: { ...MANIFEST, ...overrides }, quality: p.quality, teamPreset: p.preset, force: p.tier, dpr: Math.min(2, window.devicePixelRatio || 1), worldPxPerLu: 1.6 });
       await art.preload([...ALL_AGES]);
+      // unit sheets of later ages stream in the background in the game; the gallery waits for all of them
+      await art.atlas.unitSheetsReady([...ALL_AGES]);
       if (disposed) return;
       const root = new Container();
       app.stage.addChild(root);

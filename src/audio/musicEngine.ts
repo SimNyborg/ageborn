@@ -62,12 +62,44 @@ interface Player {
   dispose(): void;
 }
 
+const CURVE_POINTS = 64;
+
+/**
+ * An equal-power gain ramp from `from` to `to` over [start, start + dur] (sine up, cosine down). Two
+ * cues crossfading this way keep the summed power steady; a linear crossfade dips about 3 dB in the
+ * middle. Falls back to a linear ramp where `setValueCurveAtTime` is missing.
+ */
+export function equalPowerRamp(p: AudioParam, from: number, to: number, start: number, dur: number): void {
+  const withCurve = p as AudioParam & { setValueCurveAtTime?: (v: Float32Array, t: number, d: number) => AudioParam };
+  if (dur <= 0 || typeof withCurve.setValueCurveAtTime !== 'function') {
+    p.linearRampToValueAtTime(to, start + Math.max(0, dur));
+    return;
+  }
+  const curve = new Float32Array(CURVE_POINTS);
+  for (let k = 0; k < CURVE_POINTS; k++) {
+    const x = (k / (CURVE_POINTS - 1)) * (Math.PI / 2);
+    curve[k] = to >= from ? from + (to - from) * Math.sin(x) : to + (from - to) * Math.cos(x);
+  }
+  withCurve.setValueCurveAtTime(curve, start, dur);
+}
+
+/** Holds a gain where it is and fades it out (equal power) over `ms`; returns when it is silent. */
+function fadeParamOut(p: AudioParam, now: number, ms: number): number {
+  const from = p.value;
+  holdParam(p, now);
+  // Start the curve just after the hold point: a curve may not overlap another automation event.
+  const start = now + 0.002;
+  const dur = Math.max(0.003, ms / 1000);
+  equalPowerRamp(p, from, 0, start, dur);
+  return start + dur;
+}
+
 function fadeNode(ctx: BaseAudioContext, dest: AudioNode, gainDb: number, start: number, fadeMs: number): GainNode {
   const g = ctx.createGain();
   const target = 10 ** (gainDb / 20);
   if (fadeMs > 0) {
-    g.gain.setValueAtTime(0, start);
-    g.gain.linearRampToValueAtTime(target, start + fadeMs / 1000);
+    g.gain.value = 0;
+    equalPowerRamp(g.gain, 0, target, start, fadeMs / 1000);
   } else {
     g.gain.setValueAtTime(target, start);
   }
@@ -172,9 +204,7 @@ export class SeqPlayer implements Player {
     const now = this.ctx.currentTime;
     const end = now + Math.max(0, ms) / 1000;
     if (this.stopAt !== null && this.stopAt <= end) return;
-    holdParam(this.fade.gain, now);
-    this.fade.gain.linearRampToValueAtTime(0, Math.max(end, now + 0.005));
-    this.stopAt = Math.max(end, now + 0.005);
+    this.stopAt = Math.max(fadeParamOut(this.fade.gain, now, Math.max(0, ms)), now + 0.005);
   }
 
   dispose(): void {
@@ -198,10 +228,16 @@ interface StemSpec {
   loopLength: number | null;
 }
 
-/** Every file a cue needs: the main file first, then its layer stems. */
-export function fileStems(def: MusicDef): StemSpec[] {
+/** The main file of a cue at a transposition: a stinger recorded in that key if there is one. */
+export function mainSrc(def: FileDef, transpose = 0): string {
+  const keyed = def.keys && Object.hasOwn(def.keys, transpose) ? def.keys[transpose] : undefined;
+  return keyed ?? def.src;
+}
+
+/** Every file a cue needs: the main file first (in the key of `transpose`), then its layer stems. */
+export function fileStems(def: MusicDef, transpose = 0): StemSpec[] {
   if (def.kind !== 'file') return [];
-  const main: StemSpec = { layer: null, src: def.src, loopStart: def.loopStart ?? 0, loopLength: def.loopLength ?? null };
+  const main: StemSpec = { layer: null, src: mainSrc(def, transpose), loopStart: def.loopStart ?? 0, loopLength: def.loopLength ?? null };
   const stems = Object.entries(def.layers ?? {}).map(([layer, s]): StemSpec => {
     const spec = typeof s === 'string' ? { src: s } : (s as { src: string; loopStart?: number; loopLength?: number });
     return { layer: layer as MusicLayer, src: spec.src, loopStart: spec.loopStart ?? 0, loopLength: spec.loopLength ?? null };
@@ -238,6 +274,8 @@ export class FilePlayer implements Player {
   private startedAt: number | null = null;
   private startPos = 0;
   readonly loopLength: number | null;
+  /** The transposition the cue started in (picks the stinger's key). */
+  readonly transpose: number;
 
   constructor(
     readonly ctx: BaseAudioContext,
@@ -250,10 +288,11 @@ export class FilePlayer implements Player {
     private readonly o: { fadeMs: number; lookahead: number; phaseAt?: (t: number) => number; fallbackGainDb?: number },
   ) {
     this.createdAt = ctx.currentTime;
+    this.transpose = state.transpose;
     this.fade = fadeNode(ctx, dest, def.gainDb ?? 0, ctx.currentTime, o.fadeMs);
     this.fileGain = ctx.createGain();
     this.fileGain.connect(this.fade);
-    const stems = fileStems(def);
+    const stems = fileStems(def, state.transpose);
     this.loopLength = def.loopLength ?? null;
     void Promise.all(stems.map((s) => load(s.src))).then(
       (buffers) => this.begin(stems, buffers),
@@ -287,8 +326,8 @@ export class FilePlayer implements Player {
     const phase = this.loopLength !== null && this.o.phaseAt ? mod(this.o.phaseAt(at), this.loopLength) : 0;
     if (this.fallback) {
       const g = this.fileGain.gain;
-      g.setValueAtTime(0, at);
-      g.linearRampToValueAtTime(1, at + FILE_FADE_IN_S);
+      g.value = 0;
+      equalPowerRamp(g, 0, 1, at, FILE_FADE_IN_S);
       this.fallback.fadeOut(FILE_FADE_IN_S * 1000);
     }
     buffers.forEach((buffer, k) => {
@@ -350,9 +389,7 @@ export class FilePlayer implements Player {
 
   fadeOut(ms: number): void {
     const now = this.ctx.currentTime;
-    holdParam(this.fade.gain, now);
-    this.stopAt = now + Math.max(0.005, ms / 1000);
-    this.fade.gain.linearRampToValueAtTime(0, this.stopAt);
+    this.stopAt = fadeParamOut(this.fade.gain, now, Math.max(5, ms));
     for (const s of this.sources) s.stop(this.stopAt + 0.05);
     this.fallback?.fadeOut(ms);
   }
@@ -385,6 +422,8 @@ export class MusicEngine {
   private readonly warned = new Set<string>();
   /** Files loaded for current or upcoming cues (see `manageFiles`). */
   private readonly requested = new Set<string>();
+  /** The manifest entry of the cue last set (to refresh the prefetch when the key changes). */
+  private lastDef: MusicDef | null = null;
 
   constructor(
     readonly ctx: BaseAudioContext,
@@ -468,6 +507,7 @@ export class MusicEngine {
     this.players.push(player);
     this.cue = cue;
     this.lastRole = def.role;
+    this.lastDef = def;
     this.manageFiles(def);
     this.update();
     return true;
@@ -481,16 +521,17 @@ export class MusicEngine {
     const load = this.o.loadFile;
     if (!load) return;
     const keep = new Set<string>();
-    for (const s of fileStems(def)) keep.add(s.src);
+    const key = this.state.transpose;
+    for (const s of fileStems(def, key)) keep.add(s.src);
     for (const p of this.players) {
       const d = this.manifest[p.cue];
-      if (d) for (const s of fileStems(d)) keep.add(s.src);
+      if (d) for (const s of fileStems(d, p instanceof FilePlayer ? p.transpose : key)) keep.add(s.src);
     }
     if (def.kind === 'file') {
       for (const next of def.prefetch ?? []) {
         const d = Object.hasOwn(this.manifest, next) ? this.manifest[next] : undefined;
         if (!d) continue;
-        for (const s of fileStems(d)) {
+        for (const s of fileStems(d, key)) {
           keep.add(s.src);
           if (!this.requested.has(s.src)) void load(s.src).catch(() => undefined);
         }
@@ -510,9 +551,15 @@ export class MusicEngine {
     for (const p of this.players) p.setLayer(l, v);
   }
 
-  /** Sets the total transposition in semitones (A13 key changes). */
+  /**
+   * Sets the total transposition in semitones (A13 key changes). Scores follow it from the next note;
+   * file cues are recorded per key, so this also prefetches the stingers in the new key.
+   */
   transpose(semitones: number): void {
-    this.state.transpose = Number.isFinite(semitones) ? Math.round(semitones) : 0;
+    const t = Number.isFinite(semitones) ? Math.round(semitones) : 0;
+    if (t === this.state.transpose) return;
+    this.state.transpose = t;
+    if (this.lastDef && this.cue !== null) this.manageFiles(this.lastDef);
   }
 
   /** Fades everything out. It also ends the battle context: the next cue starts in the home key. */

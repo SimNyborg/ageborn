@@ -21,6 +21,7 @@ import { mulberry32, type CosmeticRng } from '@/core/rng';
 import type { PartBaker } from '../../bake';
 import { arenaId, GROUND_FRAME, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
+import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { CLOUD_TINT, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
@@ -48,12 +49,15 @@ export class BackdropTextures {
   constructor(private readonly quality: 'high' | 'lite') {}
 
   layer(kind: LayerKind, age: AgeId): Painted {
-    return this.get(`${kind}.${age}`, FRAMES[kind], (ctx, f) => {
+    return this.get(`${kind}.${age}`, FRAMES[kind], (ctx, f, canvas) => {
       if (kind === 'sky') {
         paintSky(ctx, age, f);
         return [];
       }
-      return kind === 'far' ? paintFar(ctx, age, f) : paintMid(ctx, age, f);
+      const ambient = kind === 'far' ? paintFar(ctx, age, f) : paintMid(ctx, age, f);
+      // light the silhouettes like the 3D art and add atmospheric depth (backdrops/lighting.ts)
+      finishLayer(canvas, ctx, kind, age, f);
+      return ambient;
     });
   }
 
@@ -61,7 +65,7 @@ export class BackdropTextures {
     return this.get(`ground.${arena}`, GROUND_FRAME, (ctx, f) => paintGround(ctx, arena, f));
   }
 
-  private get(key: string, frame: LayerFrame, paint: (ctx: CanvasRenderingContext2D, f: LayerFrame) => AmbientSpec[]): Painted {
+  private get(key: string, frame: LayerFrame, paint: (ctx: CanvasRenderingContext2D, f: LayerFrame, canvas: HTMLCanvasElement) => AmbientSpec[]): Painted {
     const hit = this.cache.get(key);
     if (hit) return hit;
     if (!this.canBake) {
@@ -77,7 +81,7 @@ export class BackdropTextures {
     canvas.height = Math.ceil(frame.height * res);
     const ctx = canvas.getContext('2d');
     let ambient: AmbientSpec[] = [];
-    if (ctx) ambient = paint(ctx, f);
+    if (ctx) ambient = paint(ctx, f, canvas);
     const source = new CanvasSource({ resource: canvas, resolution: 1 });
     source.resolution = res;
     const p = { tex: new Texture({ source }), ambient };
@@ -429,12 +433,18 @@ export class ProceduralBackdropView implements BackdropView {
     }
   }
 
+  /** Cloud drift speeds (lu/s): nearer (bigger, lower) clouds move faster, a parallax cue. */
+  private cloudSpeed: number[] = [];
+
   private spawnClouds(): void {
-    for (let i = 0; i < 7; i++) {
-      const s = fxSprite(this.o.baker, i % 2 ? 'bd.cloud.a' : 'bd.cloud.b');
-      s.position.set(WORLD.worldLeftLu + this.rng.next() * (WORLD.worldRightLu - WORLD.worldLeftLu), -600 + this.rng.next() * 260);
-      s.scale.set(1.2 + this.rng.next() * 1.6);
-      s.alpha = 0.55 + this.rng.next() * 0.3;
+    const n = this.o.quality === 'lite' ? 6 : 10;
+    for (let i = 0; i < n; i++) {
+      const depth = i / (n - 1); // 0 far .. 1 near
+      const s = fxSprite(this.o.baker, i % 3 === 0 ? 'bd.cloud.c' : i % 2 ? 'bd.cloud.a' : 'bd.cloud.b');
+      s.position.set(WORLD.worldLeftLu + this.rng.next() * (WORLD.worldRightLu - WORLD.worldLeftLu), -470 - depth * 200 - this.rng.next() * 50);
+      s.scale.set(0.6 + depth * 1.1 + this.rng.next() * 0.3);
+      s.alpha = 0.35 + depth * 0.5;
+      this.cloudSpeed.push(2 + depth * 9);
       this.clouds.addChild(s);
     }
   }
@@ -449,6 +459,7 @@ export class ProceduralBackdropView implements BackdropView {
         if (kind === 'mid' && this.o.quality === 'lite') continue;
         for (const spec of this.o.textures.layer(kind, age).ambient) this.addAmbient(spec, age);
       }
+      for (const spec of extraAmbient(age)) if (this.o.quality === 'high' || spec.layer !== 'mid') this.addAmbient(spec, age);
     }
     for (const spec of this.o.textures.ground(this.arena).ambient) this.addAmbient(spec, null);
     // cloud tint follows the side ages
@@ -476,8 +487,10 @@ export class ProceduralBackdropView implements BackdropView {
   private stepAmbient(dtMs: number): void {
     const dt = dtMs / 1000;
     const lite = this.o.quality === 'lite';
-    for (const c of this.clouds.children) {
-      c.x += dt * 6;
+    for (let i = 0; i < this.clouds.children.length; i++) {
+      const c = this.clouds.children[i];
+      if (!c) continue;
+      c.x += dt * (this.cloudSpeed[i] ?? 6);
       if (c.x > WORLD.worldRightLu + 160) c.x = WORLD.worldLeftLu - 160;
     }
     for (const a of this.ambient) {
@@ -493,6 +506,13 @@ export class ProceduralBackdropView implements BackdropView {
         case 'drift': {
           a.node.x += (s.speed ?? 20) * dt;
           a.node.y = s.y + Math.sin(a.t / 700) * 4;
+          if (s.period) {
+            // flapping wings: squash the bird vertically, glide now and then
+            const flap = Math.sin((a.t / s.period) * Math.PI * 2);
+            const glide = Math.sin(a.t / 2300) > 0.55;
+            a.node.scale.y = (s.scale ?? 1) * (glide ? 0.8 : 0.35 + 0.65 * Math.abs(flap));
+            a.node.scale.x = (s.scale ?? 1) * Math.sign(s.speed ?? 1);
+          }
           if (a.node.x > WORLD.worldRightLu + 200) a.node.x = WORLD.worldLeftLu - 200;
           if (a.node.x < WORLD.worldLeftLu - 200) a.node.x = WORLD.worldRightLu + 200;
           break;

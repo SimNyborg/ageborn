@@ -344,7 +344,7 @@ def medieval(key: int = 2) -> Arrangement:
         Part(timp, rel=-6, pan=0.0, send=0.25, hp=45, swing_ms=3),
         Part(drums, rel=-4, pan=0.0, send=0.18, hp=60, swing_ms=3),
     ]
-    return Arrangement("music.medieval", BPM, LOOP_BARS, parts, reverb_s=2.4, reverb_damp=7000, reverb_wet=0.22, air_db=2.0)
+    return Arrangement("music.medieval", BPM, LOOP_BARS, parts, reverb_s=2.4, reverb_damp=7000, reverb_wet=0.22, air_db=2.5, presence_db=2.0)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -602,13 +602,13 @@ def menu(key: int = 0) -> Arrangement:
         Part(flute2, rel=-7, pan=0.2, send=0.4, hp=300),
         Part(harp, rel=-6, pan=0.3, send=0.3, hp=180),
         Part(strings, rel=-9, pan=0.0, send=0.4, hp=140, eq=PAD_EQ),
-        Part(violins, rel=-12, pan=-0.2, send=0.45, hp=300, eq=PAD_EQ),
+        Part(violins, rel=-10, pan=-0.2, send=0.45, hp=300, eq=PAD_EQ + [(6000, 3.0, 0.8)]),
         Part(cello, rel=-9, pan=-0.2, send=0.25, hp=50, eq=[(250, -2.0, 1.0)]),
         Part(celesta, rel=-10, pan=0.4, send=0.45, hp=600),
         Part(timp, rel=-15, pan=0.0, send=0.3, hp=45, swing_ms=3),
-        Part(perc, rel=-17, pan=-0.35, send=0.2, hp=2000, swing_ms=3),
+        Part(perc, rel=-14, pan=-0.35, send=0.2, hp=2000, swing_ms=3),
     ]
-    return Arrangement("music.menu", 84, 16, parts, reverb_s=2.8, reverb_damp=8000, reverb_wet=0.26, target_lufs=-17.0, air_db=2.5)
+    return Arrangement("music.menu", 84, 16, parts, reverb_s=2.8, reverb_damp=8000, reverb_wet=0.26, target_lufs=-17.0, air_db=4.0, presence_db=1.0)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -705,7 +705,7 @@ def victory(key: int = 0) -> Arrangement:
     kit.add(3, 2, CRASH, 110)
     kit.add(3, 1, KICK, 110)
     parts = [
-        Part(trumpet, rel=0, lead=True, pan=0.1, send=0.3, hp=200, swing_ms=0),
+        Part(trumpet, rel=0, lead=True, pan=0.1, send=0.3, hp=200, eq=[(3000, -3.0, 1.0)], swing_ms=0),  # a fanfare: tame the bite
         Part(horn, rel=-3, pan=-0.2, send=0.3, hp=100, swing_ms=0),
         Part(brass, rel=-4, pan=0.0, send=0.3, hp=110, eq=PAD_EQ, swing_ms=0),
         Part(strings, rel=-6, pan=0.0, send=0.35, hp=120, eq=PAD_EQ, swing_ms=0),
@@ -714,7 +714,7 @@ def victory(key: int = 0) -> Arrangement:
         Part(glock, rel=-9, pan=0.3, send=0.4, hp=600, swing_ms=0),
         Part(kit, rel=-5, pan=0.0, send=0.2, hp=50, swing_ms=0),
     ]
-    return Arrangement(stinger_cue("stinger.victory", key), 120, 3, parts, loop=False, reverb_s=2.4, reverb_wet=0.26, target_lufs=-15.0, tail_s=3.0, air_db=2.0)
+    return Arrangement(stinger_cue("stinger.victory", key), 120, 3, parts, loop=False, reverb_s=2.4, reverb_wet=0.26, target_lufs=-15.0, tail_s=3.0, air_db=2.0, presence_db=-2.5)
 
 
 def defeat(key: int = 0) -> Arrangement:
@@ -791,7 +791,7 @@ def intensity(age: str) -> Arrangement:
         grid16(d, bars, HAT, [64, 40, 70, 40] * 4)
         drum_pattern(d, bars, [(0.75, TOM_H, 66), (2.75, TOM_HM, 66)])
     parts = [
-        Part(ost, rel=0, lead=True, hp=150, send=0.15, pump=0.3 if age == "future" else 0.0, eq=[(300, -3.0, 1.0)]),
+        Part(ost, rel=0, lead=True, hp=150, send=0.15, pump=0.3 if age == "future" else 0.0, eq=[(300, -3.0, 1.0)] + ([(3000, -4.0, 0.8)] if age in ("gunpowder", "future") else [])),
         Part(d, rel=-3, hp=150, send=0.1, swing_ms=2),
     ]
     return _stem(f"layer.intensity.{age}", parts, STEM_LUFS)
@@ -805,7 +805,9 @@ def overdrive() -> Arrangement:
     drum_pattern(d, bars, [(k * 0.5, KICK, 100 if k % 2 == 0 else 78) for k in range(8)])
     drum_pattern(d, range(0, 3), [(3, SNARE, 96)])
     roll(d, 3, SNARE, 3, 4, 50, 104, 0.125)  # a roll into every fourth bar (the stem loops every 4 bars)
-    return _stem("layer.overdrive", [Part(d, rel=0, lead=True, hp=60, swing_ms=1)], -21.0)
+    stem = _stem("layer.overdrive", [Part(d, rel=0, lead=True, hp=60, swing_ms=1)], -22.0)
+    stem.ceiling_db = -6.0  # kick transients overshoot ~3 dB after low-bitrate Opus encoding
+    return stem
 
 
 def all_music() -> list[Arrangement]:

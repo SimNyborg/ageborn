@@ -22,7 +22,7 @@ import type { Bus } from '@/contracts';
  * sits before the limiter and offsets the limiter's automatic make-up gain, so a single sound plays at
  * about the level it was designed at.
  */
-export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 0.7, music: 0.55, sfx: 0.9, ui: 0.8 };
+export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 0.7, music: 0.55, sfx: 1.0, ui: 0.8 };
 
 /**
  * Master limiter: a hard-knee 20:1 compressor with zero attack (the browser's compressor looks ahead a

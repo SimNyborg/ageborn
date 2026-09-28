@@ -20,7 +20,7 @@ from ageborn_art.geometry import Geo
 SLUG = "emp_saboteur"
 NAME = "EMP Saboteur"
 HEIGHT_LU = 70
-CANVAS = (300, 250)
+CANVAS = (340, 262)
 FEET = (130, 222)
 ANCHORS = {"head": (6, 64), "hitCenter": (2, 30)}
 
@@ -34,7 +34,7 @@ RING = (-19.0, 6.0, 47.0)
 
 def build(rig):
     F.skeleton(rig, head=(2, 0, 37))
-    F.legs(rig, thigh_r=4.3, knee_pad=False)
+    F.legs(rig, thigh_r=4.3, knee_pad=False, team_thigh=True)
     rig.joint("baton", "hand_r", HR)
 
     # EMP generator ring on the back (behind everything): a white ring in the side plane
@@ -64,7 +64,7 @@ def build(rig):
     g.blob((-19.5, -2.0, 35.8), (4.2, 1.5, 2.0), p=2.4, rot=(0, 14, 0))
     rig.part("scarf", g, F.MAGENTA)
 
-    F.arm_parts(rig, "l", glove=F.SUIT_LT, bracer=True, r0=3.8, r1=3.4, fist=3.9)
+    F.arm_parts(rig, "l", glove=F.SUIT_LT, bracer=True, r0=3.8, r1=3.4, fist=3.9, team_sleeve=True)
     # torso: slim charcoal suit, team chest harness
     g = Geo().blob((0, 0, 28), (8.8, 8.8, 10.6), p=2.4, taper=(0.92, 1.05))
     g.blob((0, 0, 18.0), (8.2, 8.6, 4.0), p=2.6)
@@ -176,7 +176,7 @@ def _attack(f):
     # 4 held impact: lunge-jab, sparks, the back ring flashes; 5-7 recovery
     sa = pick(f, [-40, 10, 40, 0, -20, -25, -45, -62])
     sf = pick(f, [20, 70, 100, 20, -8, -10, -12, -14])
-    sw = pick(f, [80, 120, 140, 40, -8, -4, 16, 32])
+    sw = pick(f, [80, 120, 140, 40, 10, 12, 22, 32])
     pose = merge(grip(sa, sf, sw, pick(f, [-40, -55, -70, -30, 10, 0, -20, -35]),
                       pick(f, [10, -5, -20, 20, 30, 25, 15, 10])), {
         "body": dict(squash(pick(f, [-0.05, -0.10, 0.06, 0.05, -0.14, -0.08, -0.03, 0.0])),

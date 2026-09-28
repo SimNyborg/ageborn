@@ -4,7 +4,9 @@
  */
 
 export interface ParamEvent {
-  kind: 'set' | 'linear' | 'exp' | 'target' | 'cancel' | 'hold';
+  kind: 'set' | 'linear' | 'exp' | 'target' | 'cancel' | 'hold' | 'curve';
+  /** For 'curve': the length of the curve in seconds. */
+  duration?: number;
   value?: number;
   time: number;
   tau?: number;
@@ -27,6 +29,10 @@ export class FakeParam {
   }
   exponentialRampToValueAtTime(value: number, time: number): this {
     this.events.push({ kind: 'exp', value, time });
+    return this;
+  }
+  setValueCurveAtTime(values: Float32Array | number[], time: number, duration: number): this {
+    this.events.push({ kind: 'curve', value: values[values.length - 1] ?? 0, time, duration });
     return this;
   }
   setTargetAtTime(value: number, time: number, tau: number): this {

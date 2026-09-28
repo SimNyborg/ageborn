@@ -204,8 +204,8 @@ STRIDE = 25.0         # natural speed 2 x 25 / 1 s = 50 lu/s (sim speed 50)
 
 
 def _walk(f):
-    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 10.0)
-    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 10.0, phase=0.5)
+    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 14.0)
+    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 14.0, phase=0.5)
     bob = [-3.0, -1.0, 1.2, 0.0, -3.0, -1.0, 1.2, 0.0][f]
     lag = [0.0, -3.0, -1.0, 1.2, 0.0, -3.0, -1.0, 1.2][f]
     p = 2 * math.pi * f / 8

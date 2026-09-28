@@ -7,7 +7,7 @@ import type { ClipName } from '@/contracts/art';
 import type { AttackDef } from '@/contracts/content';
 import { content } from '@/content';
 import { CLIP_LIBRARY, UNIT_CLIP_NAMES } from '../clips';
-import { buildManifest, MANIFEST, OVERRIDES } from '../manifest';
+import { buildManifest, MANIFEST, OVERRIDES, PROCEDURAL_MANIFEST } from '../manifest';
 import { puppetById } from '../library';
 
 /** A14.1, spelled out here so the test checks the manifest against DESIGN rather than against itself. */
@@ -78,7 +78,7 @@ describe('visuals agree with the content (A5 tables, A2.7 sizes)', () => {
   // The body-width check (A11) and the placeholder shapes read size and role group from the puppet,
   // so they must match the card data; air units must be drawn as flyers.
   it.each(Object.values(content.units).map((u) => [u.id, u] as const))('%s: same size class, role group, age and air flag', (_id, u) => {
-    const p = puppetById(MANIFEST[u.visualId]?.source ?? '');
+    const p = puppetById(PROCEDURAL_MANIFEST[u.visualId]?.source ?? '');
     expect(p).toBeDefined();
     if (!p) return;
     expect(p.size).toBe(u.size);
@@ -91,18 +91,19 @@ describe('visuals agree with the content (A5 tables, A2.7 sizes)', () => {
   // its weapon, including the Matriarch, whose riders throw rocks (A5.2, A14.2).
   const shooters = Object.values(content.units).filter((u) => u.id === 'mammoth_matriarch' || u.attacks.some((a) => a.projectile !== undefined));
   it.each(shooters.map((u) => [u.id, u] as const))('%s: has a muzzle bone for its shots', (_id, u) => {
-    const p = puppetById(MANIFEST[u.visualId]?.source ?? '');
+    const p = puppetById(PROCEDURAL_MANIFEST[u.visualId]?.source ?? '');
     expect(p?.bones.some((b) => b.id === 'muzzle')).toBe(true);
   });
   it.each(Object.values(content.turrets).map((t) => [t.id, t] as const))('%s: turret of the same age, with a muzzle bone', (_id, t) => {
-    const p = puppetById(MANIFEST[t.visualId]?.source ?? '');
+    const p = puppetById(PROCEDURAL_MANIFEST[t.visualId]?.source ?? '');
     expect(p?.age).toBe(t.age);
     expect(p?.bones.some((b) => b.id === 'muzzle')).toBe(true);
   });
 });
 
 describe('clip contract (A11)', () => {
-  const unitEntries = Object.entries(MANIFEST).filter(([id]) => id.startsWith('unit.'));
+  // the procedural tier (the fallback for every unit, and the only tier for skins without a sheet)
+  const unitEntries = Object.entries(PROCEDURAL_MANIFEST).filter(([id]) => id.startsWith('unit.'));
   it.each(unitEntries)('%s implements every clip name with a resolvable keyframe clip', (_id, def) => {
     for (const name of UNIT_CLIP_NAMES as readonly ClipName[]) {
       const ref = def.clips[name];
@@ -123,14 +124,14 @@ describe('clip contract (A11)', () => {
     expect(def.anchors.head.y).toBeLessThan(def.anchors.hitCenter.y);
   });
 
-  it.each(Object.entries(MANIFEST).filter(([id]) => id.startsWith('turret.')))('%s implements the turret clips', (_id, def) => {
+  it.each(Object.entries(PROCEDURAL_MANIFEST).filter(([id]) => id.startsWith('turret.')))('%s implements the turret clips', (_id, def) => {
     for (const name of ['build', 'idle', 'fire', 'sell', 'modernise']) expect(CLIP_LIBRARY.get(def.clips[name]?.ref ?? ''), name).toBeDefined();
   });
 
   it('skins keep the base visual clips, anchors and height (clarity parity, A5.8)', () => {
-    for (const [id, def] of Object.entries(MANIFEST)) {
+    for (const [id, def] of Object.entries(PROCEDURAL_MANIFEST)) {
       if (!id.includes('@')) continue;
-      const base = MANIFEST[id.slice(0, id.indexOf('@'))];
+      const base = PROCEDURAL_MANIFEST[id.slice(0, id.indexOf('@'))];
       expect(base, id).toBeDefined();
       if (!base) continue;
       expect(def.anchors, id).toEqual(base.anchors);

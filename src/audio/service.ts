@@ -24,7 +24,7 @@
  */
 import type { AudioService, Bus, MusicCueId, MusicLayer, SoundId } from '@/contracts';
 import { SoundBank, type RenderStats } from './bank';
-import { assetUrl, sfxFiles as defaultSfxFiles, SfxFileBank, type Clip, type SfxFiles, type SheetState } from './files';
+import { assetUrl, sfxFiles as defaultSfxFiles, SfxFileBank, sourceOrder, type Clip, type SfxFiles, type SheetState } from './files';
 import { Mixer } from './mixer';
 import { continuesBattle, fileMusic, music as seqMusic, type MusicDef } from './music';
 import { MUSIC_LAYERS, MusicEngine } from './musicEngine';
@@ -432,7 +432,14 @@ export class WebAudioService implements AudioService {
     let p = this.fileLoads.get(src);
     if (!p) {
       const fetchFile = this.o.fetchFile ?? defaultFetch;
-      p = fetchFile(src).then((data) => ctx.decodeAudioData(data));
+      // The Ogg Opus file, then its AAC copy (AAC first where Opus is not supported).
+      const order = sourceOrder(src);
+      const attempt = (k: number): Promise<AudioBuffer> => {
+        const s = order[k] as string;
+        const next = fetchFile(s).then((data) => ctx.decodeAudioData(data));
+        return k + 1 < order.length ? next.catch(() => attempt(k + 1)) : next;
+      };
+      p = attempt(0);
       this.fileLoads.set(src, p);
       // A failed load may succeed later (a flaky network): do not cache the failure.
       p.catch(() => {
