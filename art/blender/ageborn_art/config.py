@@ -40,6 +40,13 @@ OUTER_OUTLINE_MAX_V = 0.38
 OUTLINE_LU = 1.2
 OUTLINE_FACTOR = 0.60       # interior line = fill x 0.60
 
+# Unit sheets v3 (art director review): colour-matched, thinner outer line (about 3 lu), a
+# sharper pixel filter, and sheets rendered at 2.46 px/lu (@2x) with a 1.23 px/lu (@1x) sheet
+# downsampled from the same frames. World renders (bases, turrets) keep the settings above.
+UNIT_OUTLINE_V3 = (2.5, 0.55, 0.50)   # px at 1x, fill factor, HSV value cap
+UNIT_SCALE_V3 = 3.0                    # render scale of the @2x sheet (0.82 x 3 = 2.46 px/lu)
+FILTER_WIDTH = 1.5                     # Cycles pixel filter width (v3 units: 1.0)
+
 # Clip timing: the authoring rate for clips without explicit per-frame durations. The game
 # time-scales attack clips so that `impactAt` lands on the sim's impact tick (DESIGN B5).
 FPS = 12

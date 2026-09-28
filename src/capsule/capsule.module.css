@@ -257,6 +257,20 @@
   transition: opacity 400ms ease, transform 400ms ease;
 }
 
+.kindMain {
+  display: block;
+}
+
+.kindSub {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #e9d9b0;
+}
+
 .kindOpened {
   opacity: 0;
   transform: translate(-50%, -12px);

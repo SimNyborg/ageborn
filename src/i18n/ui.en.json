@@ -207,7 +207,8 @@
       "ladder": {
         "title": "Ladder",
         "desc": "Win trophies and capsules.",
-        "help": "Opponent difficulty adapts to your recent results."
+        "help": "Opponent difficulty adapts to your recent results.",
+        "winPays": "A win pays"
       },
       "conquest": {
         "title": "Conquest",
@@ -233,7 +234,12 @@
         "desc": "{format} with today's twist.",
         "firstWin": "First win today: Age Capsule",
         "wonToday": "Won today. More wins: {n} Amber",
-        "rules": "Uses no charges and changes no trophies."
+        "rules": "Uses no charges and changes no trophies.",
+        "difficulty": "Difficulty",
+        "recruit": "Recruit",
+        "veteran": "Veteran",
+        "warlord": "Warlord",
+        "bankReady": "Next win: Age Capsule ({n} ready)"
       }
     },
     "vs": {
@@ -512,7 +518,12 @@
       "credits": "Credits",
       "creditsGame": "Ageborn: design, code and art made for this game.",
       "creditsSound": "Sound effects made with ZzFX by Frank Force (MIT).",
-      "creditsTech": "Built with PixiJS, Preact and Vite."
+      "creditsTech": "Built with PixiJS, Preact and Vite.",
+      "breakReminder": "Break reminder",
+      "breakReminderHint": "A gentle note after 60 minutes of play",
+      "quickReveal": "Quick reveal",
+      "quickRevealHint": "Capsules skip straight to the burst",
+      "parents": "For parents"
     },
     "info": {
       "title": "How capsules work",
@@ -525,6 +536,14 @@
       "clayRule": "Wins without a charge fill it. {n} pips make a Clay Capsule.",
       "kept": "Nothing you have earned is ever taken away.",
       "rookie": "Your first 20 opponents make extra mistakes while you learn. After that, opponent difficulty adapts to your recent results."
+    },
+    "parents": {
+      "noMoney": "Nothing in Ageborn can be bought, and it shows no ads.",
+      "noChat": "There is no chat. Players cannot contact each other. All opponents are AI.",
+      "noData": "No data leaves this device. Progress is saved in this browser.",
+      "capsules": "Capsules are earned by playing. Each one is decided when it is earned, and its odds are shown.",
+      "breaks": "A break reminder appears after 60 minutes of play. You can switch it off or on here.",
+      "kept": "Taking a break never takes away anything your child has earned."
     }
   }
 }

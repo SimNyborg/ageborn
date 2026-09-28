@@ -3,7 +3,8 @@ import { useEffect, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
-import { attachStopping, createMetaUi, type MetaUi } from '../metaUi';
+import { createMetaUi, type MetaUi } from '../metaUi';
+import { attachActivity } from '../stopping';
 import { ReplayScreen } from '../screens/replay/ReplayScreen';
 import { isMetaRules } from '../uiServices';
 import { BattleScreen } from './BattleScreen';
@@ -107,9 +108,12 @@ export function AppRoot(p: { ui: AppUi }) {
   useEffect(() => {
     if (!meta) return undefined;
     // A15.6 session counters: input, visibility and active battle time (memory only).
-    const detach = attachStopping(meta.stopping, () => {
-      const r = p.ui.controller.route.peek();
-      return r.id === 'battle' && r.battle.session.status.peek() === 'running';
+    const detach = attachActivity(meta.cues, {
+      battleRunning: () => {
+        const r = p.ui.controller.route.peek();
+        return r.id === 'battle' && r.battle.session.status.peek() === 'running';
+      },
+      collectionSize: () => Object.keys(p.ui.controller.save.peek()?.collection ?? {}).length,
     });
     return () => {
       detach();

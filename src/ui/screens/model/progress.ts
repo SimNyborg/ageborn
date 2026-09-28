@@ -3,7 +3,7 @@
  * (A6.3), quests (A6.7), Trophy Road nodes (A6.3) and the Conquest board (A6.10).
  * Pure over (save, content, now); the screens only render them.
  */
-import type { ArenaDef, GeneralDef, QuestDef, RoadNode } from '@/content/types';
+import type { ArenaDef, DailyDifficulty, GeneralDef, LadderWin, QuestDef, RoadNode } from '@/content/types';
 import type { Content } from '@/content/types';
 import type { CapsuleTier, FormatId, SaveDoc } from '@/contracts';
 
@@ -293,4 +293,33 @@ export function conquestView(save: SaveDoc, content: Content): ConquestView {
     maxStars: entries.length * 3,
     milestones: rules.milestones.map((m) => ({ ...m, reached: totalStars >= m.stars, claimed: claimed.has(m.stars) })),
   };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Ladder rewards by format (A15.8) and the Daily difficulty (A9.1, A15.7)
+// ---------------------------------------------------------------------------------------------
+
+/** What a ladder win pays in a format: the A15.8 table from 400 trophies, the A6.3 row below. */
+export function ladderWin(save: SaveDoc, content: Content, format: FormatId): LadderWin {
+  const l = content.arenas.ladder;
+  const by = l.winByFormat;
+  return save.trophies.current >= by.fromTrophies ? (by.formats[format] ?? l.win) : l.win;
+}
+
+export const DAILY_DIFFICULTIES: readonly DailyDifficulty[] = ['recruit', 'veteran', 'warlord'];
+
+/** The player's skill tier (A6.8, A15.9): clamp(round((MMR − 870) / 100), 0, max tier). Internal only. */
+export function skillTier(save: SaveDoc, content: Content): number {
+  const m = content.arenas.ladder.mmr;
+  const raw = Math.round((save.mmr - m.tierOffset) / m.tierDivisor);
+  return Math.max(0, Math.min(content.arenas.ladder.maxTier, raw));
+}
+
+/** The default Daily difficulty: the one whose tier is nearest the skill tier (A15.7). */
+export function defaultDailyDifficulty(save: SaveDoc, content: Content): DailyDifficulty {
+  const tiers = content.dailyModifiers.challenge.difficulties;
+  const tier = skillTier(save, content);
+  let best: DailyDifficulty = 'veteran';
+  for (const d of DAILY_DIFFICULTIES) if (Math.abs(tiers[d] - tier) < Math.abs(tiers[best] - tier)) best = d;
+  return best;
 }

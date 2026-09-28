@@ -2,7 +2,8 @@
  * Settings (A9 #15): Master / Music / SFX / UI volume; graphics preset; reduce motion; shake;
  * hitstop; damage numbers; colourblind preset; language (EN in v1, DA in v1.1); default speed; save
  * export (code and file), import and reset; the odds overview; About (with "All opponents in this
- * version are AI.", A7.1); credits; event log export (A8). A gentle backup reminder shows when the
+ * version are AI.", A7.1, and "Nothing you have earned is ever taken away.", A15.3); For parents
+ * (A15.6); break reminder, quick reveal and vibration (A15.6 safe defaults); credits; event log export (A8). A gentle backup reminder shows when the
  * last export is more than 5 days old (B8). Changes apply at once.
  */
 import './settings.css';
@@ -11,7 +12,18 @@ import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { Segmented, Slider, Toggle } from '../../components/Controls';
 import { formatInt } from '../../components/format';
-import { CopyIcon, DownloadIcon, InfoIcon, RobotIcon, ScrollIcon, SpeakerIcon, TrashIcon, UploadIcon } from '../../components/icons';
+import {
+  CheckIcon,
+  CopyIcon,
+  DownloadIcon,
+  InfoIcon,
+  ProfileIcon,
+  RobotIcon,
+  ScrollIcon,
+  SpeakerIcon,
+  TrashIcon,
+  UploadIcon,
+} from '../../components/icons';
 import { Panel, ScreenFrame } from '../../components/Layout';
 import { Modal } from '../../components/Modal';
 import { OddsSheet } from '../../components/OddsSheet';
@@ -34,7 +46,17 @@ export function needsBackup(lastExportAt: number | null, createdAt: number, now:
   return now - (lastExportAt ?? createdAt) > BACKUP_REMINDER_MS;
 }
 
-type Dialog = null | 'export' | 'import' | 'reset1' | 'reset2' | 'odds' | 'credits';
+type Dialog = null | 'export' | 'import' | 'reset1' | 'reset2' | 'odds' | 'credits' | 'parents';
+
+/** The "For parents" page (A15.6): six plain lines. */
+export const PARENT_LINES: readonly string[] = [
+  'ui.parents.noMoney',
+  'ui.parents.noChat',
+  'ui.parents.noData',
+  'ui.parents.capsules',
+  'ui.parents.breaks',
+  'ui.parents.kept',
+];
 
 export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
   const { save, content, t, locale, router, services, toasts, now } = useUi();
@@ -171,6 +193,20 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             </div>
             <Toggle label={t('ui.settings.vibrate')} checked={st.vibrate} onChange={(vibrate) => set({ vibrate })} testid="set-vibrate" />
             <Toggle
+              label={t('ui.settings.breakReminder')}
+              hint={t('ui.settings.breakReminderHint')}
+              checked={st.breakReminder !== false}
+              onChange={(breakReminder) => set({ breakReminder })}
+              testid="set-break"
+            />
+            <Toggle
+              label={t('ui.settings.quickReveal')}
+              hint={t('ui.settings.quickRevealHint')}
+              checked={st.quickReveal === true}
+              onChange={(quickReveal) => set({ quickReveal })}
+              testid="set-quick-reveal"
+            />
+            <Toggle
               label={t('ui.settings.muteEmotes')}
               checked={st.mutedEmotes}
               onChange={(mutedEmotes) => set({ mutedEmotes })}
@@ -228,8 +264,12 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
               <li>{t('ui.ai.adapts')}</li>
               <li>{t('ui.settings.noMoney')}</li>
               <li>{t('ui.settings.offline')}</li>
+              <li data-testid="about-kept">{t('ui.info.kept')}</li>
             </ul>
             <div class="set-buttons">
+              <Button variant="green" size="sm" icon={<ProfileIcon size={20} />} testid="parents" onClick={() => setDialog('parents')}>
+                {t('ui.settings.parents')}
+              </Button>
               <Button variant="gold" size="sm" icon={<InfoIcon size={20} />} testid="odds-overview" onClick={() => setDialog('odds')}>
                 {t('ui.settings.odds')}
               </Button>
@@ -346,6 +386,18 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
       {dialog === 'odds' ? (
         <Modal title={t('ui.odds.title')} size="lg" onClose={() => setDialog(null)} testid="odds-modal" icon={<InfoIcon size={28} />}>
           <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arenaOf(s, content).randomLegendaries)} />
+        </Modal>
+      ) : null}
+      {dialog === 'parents' ? (
+        <Modal title={t('ui.settings.parents')} size="md" onClose={() => setDialog(null)} testid="parents-modal" icon={<ProfileIcon size={28} />}>
+          <ul class="set-parents">
+            {PARENT_LINES.map((k) => (
+              <li key={k}>
+                <CheckIcon size={20} />
+                <span>{t(k)}</span>
+              </li>
+            ))}
+          </ul>
         </Modal>
       ) : null}
       {dialog === 'credits' ? (

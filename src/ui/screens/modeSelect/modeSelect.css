@@ -120,6 +120,30 @@
   font-weight: 800;
   font-size: 13px;
 }
+.mode-card__reward {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(10, 8, 26, 0.45);
+  font-weight: 900;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.mode-card__rewardLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ui-gold-hi);
+}
+.mode-card__rewardItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: ui-enter 240ms var(--ui-ease-out) both;
+}
 .mode-card__help {
   color: var(--ui-muted);
   font-size: 12px;

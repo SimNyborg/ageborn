@@ -23,13 +23,14 @@ import type { AppController, AppRoute } from './controller';
 import { matchSetupFor } from './matchSetup';
 import { displayName } from './names';
 import type { Services } from './services';
-import { StoppingWell } from './stopping';
+import { StoppingCues } from './stopping';
+import { lossTipKey } from './trickle';
 import { createUiServices } from './uiServices';
 
 export interface MetaUi {
   router: Router;
   /** Session counters for the stopping cards (A15.6). */
-  stopping: StoppingWell;
+  cues: StoppingCues;
   save: ReadonlySignal<SaveDoc>;
   services: UiServices;
   /** The match request that started a battle ("Next battle" on its Result). */
@@ -48,7 +49,7 @@ export interface MetaUiOptions {
   openCapsules?: (ids: string[]) => void;
   openWardrobe?: (id: string) => void;
   /** Session counters for the stopping cards (A15.6); tests pass their own. */
-  stopping?: StoppingWell;
+  cues?: StoppingCues;
 }
 
 /** Pause overlay contents from the battle on screen (A9 #6). */
@@ -85,10 +86,8 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   const requests = new WeakMap<BattleHandle, MatchRequest>();
   /** The save when each battle started (the wrap card compares charges and cards). */
   const saveAtStart = new WeakMap<BattleHandle, SaveDoc | null>();
-  const stopping =
-    o.stopping ??
-    new StoppingWell({ now: () => services.clock.now(), hourOf: (t) => new Date(t).getHours(), log: services.eventLog });
-  stopping.noteSave(controller.save.peek());
+  const cardsOwned = (): number => Object.keys(controller.save.peek()?.collection ?? {}).length;
+  const cues = o.cues ?? new StoppingCues(cardsOwned(), { now: () => services.clock.now(), log: services.eventLog });
   // The meta screens only mount once a save exists (meta makes one at boot).
   const save = computed(() => controller.save.value as SaveDoc);
 
@@ -181,30 +180,26 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       const after = controller.save.peek();
       const won = input.outcome.winner === input.mySide;
       const newestFirst = [...replays].reverse();
-      // The session agent may attach the card to the result itself; otherwise the counters here pick it.
-      const given = r.result as { card?: ResultCard | null; endedHour?: number };
-      let card: ResultCard | null;
-      let endedHour: number;
-      if ('card' in given || 'endedHour' in given) {
-        card = given.card ?? null;
-        endedHour = given.endedHour ?? new Date(services.clock.now()).getHours();
-      } else {
-        const picked = stopping.finish({
+      const before = r.result.battle ? saveAtStart.get(r.result.battle) : undefined;
+      const card = cues.onResult(
+        {
           mode: input.mode,
-          result: input.outcome.winner === null ? 'draw' : won ? 'win' : 'loss',
-          before: r.result.battle ? (saveAtStart.get(r.result.battle) ?? null) : null,
-          after,
-          enemyBaseBp: Math.max(0, 10_000 - input.stats.baseDamage),
-          replayId: kept ? String(r.result.replay.finalHash) : null,
-        });
-        card = picked.card;
-        endedHour = picked.endedHour;
-      }
-      if (card?.kind === 'tilt' && card.watchIndex === null) {
-        const id = stopping.closestLoss();
-        const i = id === null ? -1 : newestFirst.findIndex((x) => String(x.finalHash) === id);
-        card = { kind: 'tilt', watchIndex: i >= 0 ? i : null };
-      }
+          won,
+          lost: input.outcome.winner !== null && !won,
+          lossStreak: after?.lossStreak ?? 0,
+          usedLastCharge:
+            !!before && before.capsules.charges + before.capsules.freeCapsulesLeft > 0 && !!after && after.capsules.charges + after.capsules.freeCapsulesLeft === 0,
+          breakReminder: after?.settings.breakReminder !== false,
+          collectionSize: cardsOwned(),
+          baseDamage: input.stats.baseDamage,
+          replayHash: kept ? r.result.replay.finalHash : null,
+        },
+        (hash) => {
+          const i = newestFirst.findIndex((x) => x.finalHash === hash);
+          return i >= 0 ? i : null;
+        },
+      );
+      const endedHour = new Date(services.clock.now()).getHours();
       const now = services.clock.now();
       const challenge = (services.content as { dailyModifiers?: { challenge?: { difficulties?: Record<DailyDifficulty, number>; resetHour?: number } } }).dailyModifiers?.challenge;
       const modifier = input.mode === 'daily' ? meta.dailyModifier(services.content, services.clock) : null;
@@ -217,6 +212,8 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
           rewards: r.result.rewards,
           replayIndex: kept ? 0 : null,
           request,
+          // A16.6: the wave tip after a loss where the trickle detector fired.
+          tipKey: r.result.battle ? lossTipKey({ won: input.outcome.winner === input.mySide, draw: input.outcome.winner === null, trickled: r.result.battle.trickle.fired }) : null,
           card,
           endedHour,
           daily:
@@ -260,7 +257,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
 
   return {
     router,
-    stopping,
+    cues,
     save,
     services: uiServices,
     requestOf: (b) => requests.get(b) ?? null,
@@ -270,27 +267,5 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       stopStack();
       stopPause();
     },
-  };
-}
-
-/**
- * Browser hooks for the stopping counters (A15.6): input and visibility, and a sample about once a
- * second with whether a battle runs unpaused. Returns the detach function.
- */
-export function attachStopping(stopping: StoppingWell, battleRunning: () => boolean): () => void {
-  if (typeof document === 'undefined' || typeof window === 'undefined') return () => undefined;
-  const onInput = (): void => stopping.input();
-  const onVis = (): void => stopping.setVisible(document.visibilityState === 'visible');
-  const events = ['pointerdown', 'keydown'] as const;
-  for (const e of events) window.addEventListener(e, onInput, { passive: true });
-  document.addEventListener('visibilitychange', onVis);
-  const id = setInterval(() => {
-    stopping.setBattleRunning(battleRunning());
-    stopping.sample();
-  }, 1000);
-  return () => {
-    for (const e of events) window.removeEventListener(e, onInput);
-    document.removeEventListener('visibilitychange', onVis);
-    clearInterval(id);
   };
 }

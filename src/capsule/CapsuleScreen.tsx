@@ -143,6 +143,12 @@ export function capsuleKindLabel(r: CapsuleReveal, i18n: I18n): string {
   return i18n.t(`capsuleKind.${cap.kind}.name`);
 }
 
+/** "Starter Capsule · contents set to get you started" → a title and a smaller line. */
+function kindParts(label: string): string[] {
+  const i = label.indexOf(' · ');
+  return i < 0 ? [label] : [label.slice(0, i), label.slice(i + 3)];
+}
+
 /** The first capsule of a save shows the honesty line (A15.3). */
 export function isFirstCapsule(r: CapsuleReveal): boolean {
   return r.capsule.scriptIndex === 1 || r.pityBefore.opened === 0;
@@ -312,7 +318,11 @@ function ShowScreen(p: ShowScreenProps) {
       </div>
       {p.kindLabel && !inSummary ? (
         <div class={`${css.kind} ${opened ? css.kindOpened : ''}`} data-testid="capsule-kind">
-          {p.kindLabel}
+          {kindParts(p.kindLabel).map((part, i) => (
+            <span key={i} class={i === 0 ? css.kindMain : css.kindSub}>
+              {part}
+            </span>
+          ))}
         </div>
       ) : null}
       {state?.prompt === 'tap' ? (

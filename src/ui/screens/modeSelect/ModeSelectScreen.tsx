@@ -5,7 +5,7 @@
  */
 import './modeSelect.css';
 import { ageNameKey, formatNameKey, modifierDescKey, modifierNameKey } from '@/content/keys';
-import type { GeneralId } from '@/content/types';
+import type { DailyDifficulty, GeneralId } from '@/content/types';
 import type { AgeId, FormatId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
@@ -13,14 +13,22 @@ import { GeneralPortrait } from '../../components/Avatar';
 import { Button } from '../../components/Button';
 import { AiBadge, Pill } from '../../components/Chips';
 import { Segmented, Slider, Toggle } from '../../components/Controls';
-import { formatInt, tierNumeral } from '../../components/format';
+import { formatInt, formatSigned, tierNumeral } from '../../components/format';
 import { AmberIcon, CalendarIcon, CapsuleIcon, CastleIcon, LockIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
 import { Modal } from '../../components/Modal';
 import type { MatchRequest, RouteOf } from '../../router';
 import { useUi } from '../context';
 import { agesAwaitingAntiArmor } from '../model/plan';
-import { chargesView, conquestView, unlocks, WAR_PLAN_UNLOCK_MATCHES } from '../model/progress';
+import {
+  chargesView,
+  conquestView,
+  DAILY_DIFFICULTIES,
+  defaultDailyDifficulty,
+  ladderWin,
+  unlocks,
+  WAR_PLAN_UNLOCK_MATCHES,
+} from '../model/progress';
 import { useMatchStarter } from '../shared/MatchStarter';
 
 const SPEEDS = [1, 1.5, 2] as const;
@@ -192,6 +200,8 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
   const modifier = services.dailyModifier();
   const challenge = content.dailyModifiers.challenge;
   const wonToday = s.daily.bank <= 0;
+  const [difficulty, setDifficulty] = useState<DailyDifficulty>(() => defaultDailyDifficulty(s, content));
+  const win = ladderWin(s, content, format);
 
   const starter = useMatchStarter();
 
@@ -235,6 +245,15 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           ) : (
             <Pill tone="blue">{t(formatNameKey(format))}</Pill>
           )}
+          <p class="mode-card__reward" data-testid="ladder-reward" key={format}>
+            <span class="mode-card__rewardLabel">{t('ui.mode.ladder.winPays')}</span>
+            <span class="mode-card__rewardItem">
+              <TrophyIcon size={18} /> {formatSigned(win.trophies, locale)}
+            </span>
+            <span class="mode-card__rewardItem">
+              <AmberIcon size={18} /> {formatSigned(win.amber, locale)}
+            </span>
+          </p>
           <p class="mode-card__meta">
             <CapsuleIcon tier="bronze" size={20} />
             {charges.free > 0
@@ -291,11 +310,23 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           title={t('ui.mode.daily.title')}
           desc={t('ui.mode.daily.desc', { format: t(formatNameKey(challenge.format)) })}
           action={
-            <Button variant="gold" size="lg" wide testid="daily-start" onClick={() => start({ mode: 'daily' })}>
+            <Button variant="gold" size="lg" wide testid="daily-start" onClick={() => start({ mode: 'daily', difficulty })}>
               {t('ui.mode.play')}
             </Button>
           }
         >
+          <Segmented
+            label={t('ui.mode.daily.difficulty')}
+            value={difficulty}
+            onChange={setDifficulty}
+            options={DAILY_DIFFICULTIES.map((d) => ({
+              value: d,
+              label: t(`ui.mode.daily.${d}`),
+              hint: t('ui.vs.tier', { tier: tierNumeral(challenge.difficulties[d]) }),
+            }))}
+            testid="daily-difficulty"
+            size="sm"
+          />
           {modifier ? (
             <div class="mode-card__mod" data-testid="daily-modifier">
               <b>{t(modifierNameKey(modifier))}</b>
@@ -304,7 +335,9 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
           ) : null}
           <p class="mode-card__meta">
             {wonToday ? <AmberIcon size={20} /> : <CapsuleIcon tier="silver" size={22} />}
-            {wonToday ? t('ui.mode.daily.wonToday', { n: formatInt(challenge.winAmber, locale) }) : t('ui.mode.daily.firstWin')}
+            {wonToday
+              ? t('ui.mode.daily.wonToday', { n: formatInt(challenge.winAmber, locale) })
+              : t('ui.mode.daily.bankReady', { n: formatInt(s.daily.bank, locale) })}
           </p>
           <p class="mode-card__help">{t('ui.mode.daily.rules')}</p>
         </ModeCard>

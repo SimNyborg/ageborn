@@ -274,7 +274,8 @@ def pack(images):
     return sheet, pos
 
 
-def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale, file_slug=None):
+def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale, file_slug=None,
+                variants=True):
     """clip_frames: {clip: [(base_path, team_path|None)] per unique frame}.
     Writes <file_slug>.png/.json (+ .rgba.png and WebP variants for size comparison)."""
     file_slug = file_slug or slug
@@ -320,11 +321,13 @@ def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale, file_s
     # Shipping image: 256-colour palette PNG (toon shading has few distinct colours, so this
     # is ~4-5x smaller than RGBA with no visible loss at game size). The RGBA master and
     # WebP variants are written alongside for comparison.
-    sheet.save(os.path.join(out_dir, f"{file_slug}.rgba.png"), optimize=True)
     pal = sheet.quantize(256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
     pal.save(os.path.join(out_dir, f"{file_slug}.png"), optimize=True)
-    sheet.save(os.path.join(out_dir, f"{file_slug}.webp"), lossless=True, quality=100, method=6)
-    sheet.save(os.path.join(out_dir, f"{file_slug}.q90.webp"), quality=90, method=6, alpha_quality=90)
+    if variants:
+        sheet.save(os.path.join(out_dir, f"{file_slug}.rgba.png"), optimize=True)
+        sheet.save(os.path.join(out_dir, f"{file_slug}.webp"), lossless=True, quality=100, method=6)
+        sheet.save(os.path.join(out_dir, f"{file_slug}.q90.webp"), quality=90, method=6,
+                   alpha_quality=90)
     ageborn = dict(extra_meta, clips=clip_meta)
     if has_team:
         ageborn["team"] = {

@@ -131,7 +131,7 @@ describe('ladder opponents', () => {
       if (o.generalId !== 'warden') continue;
       warden += 1;
       expect(o.tier).toBe(10);
-      expect(o.disclosures).toEqual(C.generals.list.warden.disclosureKeys);
+      expect(o.disclosures.filter((d) => d !== 'app.disclosure.rookie')).toEqual(C.generals.list.warden.disclosureKeys);
       const legs = cardsOf(o).filter((id) => rarity(id) === 'legendary');
       expect(legs).toHaveLength(5);
       for (const id of legs) expect(o.side.levels[id]).toBe(9);
@@ -175,7 +175,7 @@ describe('other modes', () => {
     const s = fresh();
     const m1 = M.pickOpponent(s, 'tutorial', C, new TestClock());
     expect(m1).toMatchObject({ generalId: 'grogg', format: 'tutorial', tier: 0, level: 1, isAI: true });
-    expect(m1.disclosures).toEqual(C.generals.list.grogg.disclosureKeys);
+    expect(m1.disclosures).toEqual([...C.generals.list.grogg.disclosureKeys, 'app.disclosure.rookie']);
     expect(Object.keys(m1.side.loadouts)).toEqual(['stone']);
     const m2 = M.pickOpponent({ ...s, matchesPlayed: 1 }, 'tutorial', C, new TestClock());
     expect(m2).toMatchObject({ generalId: 'pip', format: 'short', tier: 0, level: 1 });
@@ -200,5 +200,16 @@ describe('other modes', () => {
     expect(echo).toMatchObject({ generalId: 'echo', tier: 6, format: 'short', level: 3 });
     expect(echo.side.loadouts.stone).toEqual(s.warPlans[0]!.loadouts.stone);
     expect(Object.keys(echo.side.loadouts).sort()).toEqual(['gunpowder', 'medieval', 'stone']);
+  });
+});
+
+describe('Rookie AI disclosure (A15.3)', () => {
+  it('the first 20 matches of a save disclose the extra mistakes on VS; later ones do not', () => {
+    const c = new TestClock();
+    const s = scripted();
+    for (const mode of ['ladder', 'daily', 'skirmish'] as const) {
+      expect(M.pickOpponent({ ...s, matchesPlayed: 19 }, mode, C, c).disclosures).toContain('app.disclosure.rookie');
+      expect(M.pickOpponent({ ...s, matchesPlayed: 20 }, mode, C, c).disclosures).not.toContain('app.disclosure.rookie');
+    }
   });
 });

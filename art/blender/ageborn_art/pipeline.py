@@ -19,8 +19,10 @@ import json
 import os
 import time
 
+import numpy as np
+
 from . import config as C
-from . import render, scene, sheet
+from . import render, retime, scene, sheet
 from .rig import Rig
 
 
@@ -77,15 +79,61 @@ def _edge_check(raw):
     return bad
 
 
-def run_unit(mod, out_dir, frame_root, log=print, previews=True):
+def _even(v):
+    return v + (v % 2)
+
+
+def _half(arr):
+    """Exact 2:1 downsample in premultiplied alpha (no dark fringe on the edges)."""
+    h, w = arr.shape[0] // 2 * 2, arr.shape[1] // 2 * 2
+    a = arr[:h, :w]
+    pm = a[..., :3] * a[..., 3:4]
+    pm = pm.reshape(h // 2, 2, w // 2, 2, 3).mean(axis=(1, 3))
+    al = a[..., 3].reshape(h // 2, 2, w // 2, 2).mean(axis=(1, 3))[..., None]
+    rgb = np.where(al > 1e-6, pm / np.maximum(al, 1e-6), 0)
+    return np.concatenate([rgb, al], -1)
+
+
+def _half_frames(frames, out_dir):
+    """The final @2x frames downsampled to the @1x sheet."""
+    os.makedirs(out_dir, exist_ok=True)
+    out = {}
+    for clip, fr in frames.items():
+        done = []
+        for bp, tp in fr:
+            pair = []
+            for p in (bp, tp):
+                if p is None:
+                    pair.append(None)
+                    continue
+                q = os.path.join(out_dir, os.path.basename(p))
+                sheet.save(_half(sheet.load(p)), q)
+                pair.append(q)
+            done.append(tuple(pair))
+        out[clip] = done
+    return out
+
+
+def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
+    """v3: unit sheets after the art director review: retimed clips (retime.py), a
+    colour-matched outline, and two sheets per unit: `<slug>.hd.json` at 2.46 px/lu and
+    `<slug>.json` at 1.23 px/lu, downsampled from the same frames."""
     t0 = time.time()
+    if v3:
+        C.set_render_scale(C.UNIT_SCALE_V3)
+        C.FILTER_WIDTH = 1.0
     scene.reset()
     canvas = (C.px(mod.CANVAS[0]), C.px(mod.CANVAS[1]))
     feet = (C.px(mod.FEET[0]), C.px(mod.FEET[1]))
+    if v3:
+        canvas = (_even(canvas[0]), _even(canvas[1]))
+        feet = (_even(feet[0]), _even(feet[1]))
     scene.camera(*canvas, feet)
     rig = Rig(mod.SLUG, yaw=getattr(mod, "YAW_DEG", C.CHARACTER_YAW_DEG))
     mod.build(rig)
     clips = mod.clips()
+    if v3:
+        clips = retime.retime(mod, clips)
     team = getattr(mod, "TEAM", True)
     file_slug = getattr(mod, "FILE_SLUG", mod.SLUG)
     t_build = time.time() - t0
@@ -96,7 +144,10 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True):
     clipped = _edge_check(raw)
     if clipped:
         log(f"  WARNING: silhouette touches the canvas edge in {clipped}")
-    frames = _outline_frames(raw, os.path.join(raw_dir, "final"), default_outline(mod))
+    spec = default_outline(mod)
+    if v3 and spec is not None and not hasattr(mod, "OUTER_OUTLINE"):
+        spec = C.UNIT_OUTLINE_V3
+    frames = _outline_frames(raw, os.path.join(raw_dir, "final"), spec)
     t_outline = time.time() - t1
 
     first = clips[0].name
@@ -136,7 +187,17 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True):
     check = sheet.checks(frames, {c: [f[:2] for f in fr] for c, fr in raw.items()},
                          C.TEAM_COVERAGE_MIN_PCT if team else None)
     check["clippedFrames"] = clipped
-    size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE, file_slug)
+    if v3:
+        size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE,
+                                 f"{file_slug}.hd", variants=False)
+        half = _half_frames(frames, os.path.join(raw_dir, "final1x"))
+        extra1 = dict(extra, pxPerLu=round(C.PX_PER_LU / 2, 4),
+                      feetPx=[feet[0] / 2, feet[1] / 2])
+        sheet.build_atlas(mod.SLUG, half, clip_meta, extra1, out_dir, C.RENDER_SCALE / 2,
+                          file_slug, variants=False)
+    else:
+        size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE,
+                                 file_slug)
     if previews:
         tints = {"blue": C.TEAM_COLORS["blue"], "orange": C.TEAM_COLORS["orange"]} if team \
             else {"plain": "#FFFFFF"}
@@ -162,9 +223,11 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True):
         "seconds": {"build": round(t_build, 1), "render": round(t_render, 1),
                     "outline": round(t_outline, 1), "pack_and_previews": round(t_pack, 1),
                     "total": round(time.time() - t0, 1)},
-        "kb": {"png8": kb(f"{file_slug}.png"), "png32": kb(f"{file_slug}.rgba.png"),
-               "webp_lossless": kb(f"{file_slug}.webp"),
-               "webp_q90": kb(f"{file_slug}.q90.webp"), "json": kb(f"{file_slug}.json")},
+        "kb": ({"png8": kb(f"{file_slug}.png"), "png8_hd": kb(f"{file_slug}.hd.png"),
+                "json": kb(f"{file_slug}.json")} if v3 else
+               {"png8": kb(f"{file_slug}.png"), "png32": kb(f"{file_slug}.rgba.png"),
+                "webp_lossless": kb(f"{file_slug}.webp"),
+                "webp_q90": kb(f"{file_slug}.q90.webp"), "json": kb(f"{file_slug}.json")}),
     }
     with open(os.path.join(out_dir, f"{file_slug}.stats.json"), "w") as fh:
         json.dump(stats, fh, indent=1)

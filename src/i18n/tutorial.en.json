@@ -34,6 +34,9 @@
     "dismiss": "Got it"
   },
   "app": {
+    "disclosure": {
+      "rookie": "Rookie AI: makes extra mistakes while you learn"
+    },
     "play": "Play",
     "quickBattle": "Quick Battle",
     "fight": "Fight!",

@@ -25,7 +25,7 @@ def reset():
     cy.volume_bounces = 0
     cy.transparent_max_bounces = 16  # outline hulls are see-through on their near side
     cy.pixel_filter_type = "BLACKMAN_HARRIS"
-    cy.filter_width = 1.5
+    cy.filter_width = C.FILTER_WIDTH
     scene.render.film_transparent = True
     scene.render.threads_mode = "FIXED"
     scene.render.threads = C.THREADS

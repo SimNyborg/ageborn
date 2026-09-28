@@ -376,8 +376,20 @@ function tutorialOpponent(s: SaveDoc, t: Content): OpponentSpec {
   return ladderGeneral(s, t, pip, TUTORIAL_MATCH2.tier, arena, TUTORIAL_MATCH2.format, seedOf(s, 'tutorial:2'));
 }
 
+/** The VS disclosure of the A6.8 new-player bonus, first 20 matches of a save (A15.3). */
+export const ROOKIE_DISCLOSURE_KEY = 'app.disclosure.rookie';
+
 /** Picks the opponent for a match (see the module note). */
 export function pickOpponentAt(s: SaveDoc, mode: MatchResultInput['mode'], t: Content, lt: LocalTime, o: OpponentOptions = {}): OpponentSpec {
+  const spec = pickOpponentRaw(s, mode, t, lt, o);
+  // A15.3: while the bot gets A6.8's extra mistakes, the VS screen says so.
+  if (newPlayerMistakeBonusBp(s, t) > 0 && !spec.disclosures.includes(ROOKIE_DISCLOSURE_KEY)) {
+    return { ...spec, disclosures: [...spec.disclosures, ROOKIE_DISCLOSURE_KEY] };
+  }
+  return spec;
+}
+
+function pickOpponentRaw(s: SaveDoc, mode: MatchResultInput['mode'], t: Content, lt: LocalTime, o: OpponentOptions): OpponentSpec {
   switch (mode) {
     case 'ladder':
       return ladderOpponent(s, t, o);
