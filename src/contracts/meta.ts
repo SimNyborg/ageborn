@@ -48,6 +48,8 @@ export interface OpponentSpec {
   seed: number;
   warmUp: boolean;
   disclosures: string[];
+  /** Daily Challenge and Skirmish "Standard levels": every card on both sides plays at L7 (A15.7, A16.7). */
+  standardLevels?: boolean;
 }
 
 export interface MatchResultInput {
@@ -56,6 +58,8 @@ export interface MatchResultInput {
   mySide: Side;
   opponent: OpponentSpec;
   stats: MatchStats;
+  /** Hidden feats found in this match by the feat tracker (A15.10). */
+  feats?: string[];
 }
 
 /** One step of the result screen reward sequence (DESIGN A6.3, A9). */
@@ -69,7 +73,8 @@ export type RewardStep =
   | { kind: 'quest'; questId: string; progress: number; done: boolean }
   | { kind: 'star'; generalId: string; star: 1 | 2 | 3 }
   | { kind: 'arena'; arenaIndex: number }
-  | { kind: 'title'; title: string };
+  | { kind: 'title'; title: string }
+  | { kind: 'feat'; featId: string };
 
 /** A War Plan validation finding (DESIGN A3). */
 export interface PlanIssue {
@@ -121,8 +126,14 @@ export interface Meta {
     mode: MatchResultInput['mode'],
     c: CompiledContent,
     clock: Clock,
-    o?: { format?: FormatId; conquestGeneral?: string; skirmish?: SkirmishOptions },
+    o?: {
+      format?: FormatId;
+      conquestGeneral?: string;
+      skirmish?: SkirmishOptions;
+      /** Daily Challenge difficulty (A15.7); default: the one nearest the player's skill tier. */
+      daily?: { difficulty: 'recruit' | 'veteran' | 'warlord' };
+    },
   ): OpponentSpec;
-  /** Charges, daily capsule, quests reset at 04:00. */
+  /** Charges, Supply allowance, quests and the Daily bank at 04:00; never resets the War Chest (A15.5). */
   tickTimers(s: SaveDoc, clock: Clock): SaveDoc;
 }

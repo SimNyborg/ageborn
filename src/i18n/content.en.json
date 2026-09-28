@@ -254,7 +254,7 @@
     "win_after_last_stand": { "name": "Win after using Last Stand" },
     "upgrade_2": { "name": "Upgrade {n} cards" },
     "daily_challenge_win": { "name": "Win a Daily Challenge" },
-    "weekly_win_15": { "name": "Win {n} battles this week" }
+    "war_chest": { "name": "War Chest: win {n} counting battles" }
   },
   "modifier": {
     "gold_rush": { "name": "Gold Rush", "desc": "Passive gold ×1.5 for both sides." },
@@ -297,7 +297,25 @@
     "curator": { "name": "Curator", "unlock": "Reach Codex Level 40" },
     "wardens_bane": { "name": "Warden's Bane", "unlock": "Beat The Warden" },
     "conqueror": { "name": "Conqueror", "unlock": "Earn 27 Conquest stars" },
-    "ageborn": { "name": "Ageborn", "unlock": "Reach Arena 8" }
+    "ageborn": { "name": "Ageborn", "unlock": "Reach Arena 8" },
+    "the_stubborn": { "name": "the Stubborn", "unlock": "Find a hidden feat" },
+    "photo_finisher": { "name": "Photo Finisher", "unlock": "Find a hidden feat" },
+    "stone_cold": { "name": "Stone Cold", "unlock": "Find a hidden feat" },
+    "keeper_of_ages": { "name": "Keeper of Ages", "unlock": "Find a hidden feat" }
+  },
+  "feat": {
+    "caveman_diplomacy": { "name": "Caveman Diplomacy", "riddle": "Old bones, new tricks.", "hint": "A Stone Age unit kills a Future Age unit." },
+    "arrows_into_tomorrow": { "name": "Arrows into Tomorrow", "riddle": "The sky of the past rains on the future.", "hint": "One Arrow Storm kills 3 or more Modern or Future units." },
+    "stubborn": { "name": "Stubborn", "riddle": "Some never leave the castle.", "hint": "Win a Standard or Full War without evolving past Medieval." },
+    "no_walls": { "name": "No Walls", "riddle": "Who needs towers?", "hint": "Win a Full War without building a turret." },
+    "photo_finish": { "name": "Photo Finish", "riddle": "By a hair.", "hint": "Win at the Final Bell by 2% base HP or less." },
+    "horn_of_legends": { "name": "Horn of Legends", "riddle": "One last blast.", "hint": "One Last Stand volley kills 8 or more units." },
+    "lightspeed": { "name": "Lightspeed", "riddle": "Clubs to lasers, fast.", "hint": "Reach the Future Age before 4:00 in a Full War." },
+    "underdog": { "name": "Underdog", "riddle": "Two ages behind, still standing.", "hint": "Win after your opponent was two ages ahead of you." },
+    "humble_beginnings": { "name": "Humble Beginnings", "riddle": "Commons can conquer.", "hint": "Win a Full War with only Common cards and default powers in your plan." },
+    "back_from_the_brink": { "name": "Back from the Brink", "riddle": "Almost dust.", "hint": "Win after your base fell below 5% HP." },
+    "stone_cold": { "name": "Stone Cold", "riddle": "The first stone is the last.", "hint": "A Stone Age unit deals the final blow to a base in the Future Age." },
+    "old_guard": { "name": "Old Guard", "riddle": "Five ages, one army.", "hint": "Have living units from all 5 ages on your side at the same time." }
   },
   "emote": {
     "laugh": { "name": "Laugh" },

@@ -232,8 +232,17 @@ export interface ArenaDef {
 }
 
 /** Ladder, Skirmish and matchmaking rules (DESIGN A6.3, A6.8). */
+export interface LadderWin {
+  trophies: number;
+  amber: number;
+  amberWithoutCharge: number;
+}
+
 export interface LadderRules {
-  win: { trophies: number; amber: number; amberWithoutCharge: number };
+  /** Every format below `winByFormat.fromTrophies` (A6.3). */
+  win: LadderWin;
+  /** Rewards by format from 400 trophies (A15.8). */
+  winByFormat: { fromTrophies: number; formats: Partial<Record<FormatId, LadderWin>> };
   loss: { trophies: number; amber: number; noLossBelowTrophies: number };
   draw: { trophies: number; amber: number };
   /** After 3 ladder losses in a row, the next opponent is one tier lower (A6.3). */
@@ -418,7 +427,9 @@ export type QuestMetric =
   | 'fastBaseKill'
   | 'winsAfterLastStand'
   | 'upgrades'
-  | 'dailyChallengeWins';
+  | 'dailyChallengeWins'
+  /** War Chest: counting wins (A15.5). */
+  | 'countingWins';
 
 export type QuestReward =
   | { kind: 'amber'; amount: number }
@@ -444,6 +455,8 @@ export interface QuestDef {
   beforeMs?: number;
   /** powerMultiHit: enemies hit by one Age Power (A6.7). */
   minHits?: number;
+  /** Draw weight (A6.7, A15.4): 1 for activity quests, 2 for skill and variety quests. */
+  weight: number;
   nameKey: string;
 }
 
@@ -459,10 +472,16 @@ export interface CodexRules {
 
 export interface QuestTables {
   daily: QuestDef[];
+  /**
+   * The War Chest (A15.5): `target` is `winsPerChest`; it counts counting wins, grants its rewards at
+   * once when full and restarts at 0. It never resets by time.
+   */
   weekly: QuestDef;
+  /** New quests per day (at 04:00) and the number of active quests at the front of the queue. */
   dailyCount: number;
   freeRerolls: number;
-  bankMax: number;
+  /** The quest queue holds up to this many (A15.4). */
+  queueMax: number;
   resetHour: number;
   codex: CodexRules;
 }
@@ -497,11 +516,72 @@ export interface DailyModifierTables {
   /** Daily Challenge rules (A9.1). */
   challenge: {
     format: FormatId;
-    /** The first win of the day gives an Age Capsule; other wins pay 20 Amber. */
+    /** A win that uses a banked Daily reward gives an Age Capsule; other wins pay `winAmber` (A15.7). */
     firstWinReward: 'ageCapsule';
     winAmber: number;
     resetHour: number;
+    /** The Daily reward bank: +1 at each reset, up to `bankMax`; a new save starts with `bankStart`. */
+    bankMax: number;
+    bankStart: number;
+    /** Every card on both sides plays at this level (A15.7). */
+    standardLevel: number;
+    /** AI tier per difficulty (A15.7). */
+    difficulties: Record<DailyDifficulty, number>;
+    /** The opponent pool: the 8 ladder Generals from Pip Quickstep to Madame Tempest (A15.7). */
+    generals: string[];
   };
+}
+
+export type DailyDifficulty = 'recruit' | 'veteran' | 'warlord';
+
+// ---------------------------------------------------------------------------------------------
+// Hidden feats (DESIGN A15.10)
+// ---------------------------------------------------------------------------------------------
+
+/** The closed list of feat predicates: only what the 12 v1 feats need. A new kind is code. */
+export type FeatPredicate =
+  /** A unit of `killerAge` kills a unit of `victimAge`. */
+  | { kind: 'crossAgeKill'; killerAge: AgeId; victimAge: AgeId }
+  /** One cast of `power` kills at least `min` units of `victimAges`. */
+  | { kind: 'castKills'; power: CardId; victimAges: AgeId[]; min: number }
+  /** Win a match of `formats` without evolving past `maxAge`. */
+  | { kind: 'winMaxAge'; formats: FormatId[]; maxAge: AgeId }
+  /** Win a match of `formats` without building a turret. */
+  | { kind: 'winNoTurret'; formats: FormatId[] }
+  /** Win at the Final Bell by at most `maxMarginBp` base HP. */
+  | { kind: 'winFinalBellMargin'; maxMarginBp: number }
+  /** One Last Stand volley kills at least `min` units. */
+  | { kind: 'lastStandKills'; min: number }
+  /** Reach `age` before `beforeMs` in a match of `formats`. */
+  | { kind: 'reachAgeBefore'; age: AgeId; beforeMs: number; formats: FormatId[] }
+  /** Win after the opponent was at least `ages` ages ahead. */
+  | { kind: 'winAfterAgesBehind'; ages: number }
+  /** Win a match of `formats` with only Common cards and default powers in the plan. */
+  | { kind: 'winCommonsOnly'; formats: FormatId[] }
+  /** Win after the own base fell below `belowBp`. */
+  | { kind: 'winAfterBaseBelow'; belowBp: number }
+  /** A unit of `unitAge` deals the final blow to an enemy base that is in `baseAge`. */
+  | { kind: 'finalBaseBlow'; unitAge: AgeId; baseAge: AgeId }
+  /** Living units from `ages` different ages on the own side at once. */
+  | { kind: 'agesAlive'; ages: number };
+
+export interface FeatDef {
+  id: string;
+  predicate: FeatPredicate;
+  /** Dust paid once when found (A15.10). */
+  dust: number;
+  /** A title id granted with the feat, or null. */
+  title: string | null;
+  /** "Obscure" feats are listed last. */
+  obscure: boolean;
+  nameKey: string;
+  riddleKey: string;
+  hintKey: string;
+}
+
+export interface FeatTables {
+  order: string[];
+  list: Record<string, FeatDef>;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -532,7 +612,9 @@ export type TitleUnlock =
   | { kind: 'finalAgeBefore'; format: FormatId; ms: number }
   | { kind: 'wins'; count: number }
   | { kind: 'beatGeneral'; general: GeneralId }
-  | { kind: 'conquestStars'; stars: number };
+  | { kind: 'conquestStars'; stars: number }
+  /** A hidden feat's title (A15.10). */
+  | { kind: 'feat'; feat: string };
 
 export interface TitleDef {
   id: string;
@@ -675,6 +757,7 @@ export interface Content extends CompiledContent {
   quests: QuestTables;
   dailyModifiers: DailyModifierTables;
   cosmetics: Cosmetics;
+  feats: FeatTables;
   int: IntegerTables;
   order: ContentOrder;
   /** A2.1-A2.11 and A5.1 battle numbers that `EconomyRules` has no field for (from `raw/economy.ts`). */
@@ -684,5 +767,5 @@ export interface Content extends CompiledContent {
 /** The meta tables compiled next to the battle tables (the typed `unknown` slots of the contract). */
 export type MetaTables = Pick<
   Content,
-  'rarities' | 'capsules' | 'arenas' | 'trophyRoad' | 'generals' | 'names' | 'quests' | 'dailyModifiers' | 'cosmetics'
+  'rarities' | 'capsules' | 'arenas' | 'trophyRoad' | 'generals' | 'names' | 'quests' | 'dailyModifiers' | 'cosmetics' | 'feats'
 >;

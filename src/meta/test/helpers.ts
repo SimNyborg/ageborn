@@ -51,6 +51,8 @@ export function scripted(seed = 1, arenaIndex = 0, c: TestClock = clock()): Save
     arenaIndex,
     trophies: { ...s.trophies, current: arena?.trophies ?? 0, best: arena?.trophies ?? 0 },
     scriptStep: C.capsules.script.length,
+    // Past capsule 2, so the Supply allowance is unlocked (A15.4).
+    flags: { ...s.flags, 'meta.dailyUnlocked': true },
   };
 }
 

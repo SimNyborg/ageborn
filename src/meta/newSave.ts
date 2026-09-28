@@ -35,8 +35,10 @@ export function defaultSettings(): Settings {
     teamPreset: 'default',
     locale: 'en',
     defaultSpeed: 1,
-    vibrate: true,
+    vibrate: false,
     mutedEmotes: false,
+    breakReminder: true,
+    quickReveal: false,
   };
 }
 
@@ -95,7 +97,7 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
     mmr: t.arenas.ladder.mmr.start,
     lossStreak: 0,
     matchesPlayed: 0,
-    daily: { dayKey: dayKeyOf(gameDay(lt, t.dailyModifiers.challenge.resetHour)), won: false },
+    daily: { dayKey: dayKeyOf(gameDay(lt, t.dailyModifiers.challenge.resetHour)), bank: 1 },
     conquest: { stars: {}, milestonesClaimed: [] },
     stats: {
       matches: 0,

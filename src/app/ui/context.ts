@@ -19,6 +19,8 @@ export interface AppUi {
   scheduler: FrameScheduler | null;
   portrait(card: CardId, foil: Foil, size: number): Promise<string>;
   t(key: string, params?: Record<string, string | number>): string;
+  /** Starts a file download (save file, event log); absent in tests. */
+  download?: (file: { name: string; mime: string; text: string }) => void;
 }
 
 export const AppUiContext = createContext<AppUi | null>(null);

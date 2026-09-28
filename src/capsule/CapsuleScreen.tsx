@@ -1,11 +1,12 @@
 /**
- * Capsule and Wardrobe Crate screens (DESIGN A10, A10.1, A9 screen 8).
+ * Capsule and Wardrobe Crate screens (DESIGN A10, A15.3, A15.6, A9 screen 8).
  *
  * Each screen plans the show from the reveal data, mounts a `CapsuleStage` into the app's
  * persistent Pixi canvas (B6), drives it with a `ShowRunner` on the Pixi ticker, and lays a DOM
  * overlay on top: the input surface (tap, hold to fast-forward, Skip), the pity panel shown on every
  * capsule screen (A6.5), the Amber counter and the summary. The result was rolled and saved before
- * this screen opens (A6.4, B8); nothing here can change it.
+ * this screen opens (A6.4, B8); nothing here can change it. The first capsule of a save and every
+ * odds panel say so (A15.3); scripted capsules 1-5 are labelled Starter Capsules.
  */
 import type { Application, Ticker } from 'pixi.js';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -65,8 +66,6 @@ export interface CapsuleScreenProps extends ShowScreenBase {
 
 export interface WardrobeScreenProps extends ShowScreenBase {
   reveal: WardrobeReveal;
-  /** `platform.features.reelReveal` (A10.1). */
-  reelReveal: boolean;
   /** The save's pity counters (Wardrobe counters are shown, A6.5). */
   pity?: PityCounters;
 }
@@ -75,7 +74,11 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
   // Planned once per set of capsules: a parent re-render (new array or callback identities) must
   // never restart the show.
   const showKey = p.reveals.map((r) => r.capsule.id).join('|');
-  const plan = useMemo(() => planOpenAll(p.reveals, { catalog: p.catalog, ...(p.progress ? { progress: p.progress } : {}) }), [showKey]);
+  const quick = p.settings?.quickReveal === true;
+  const plan = useMemo(
+    () => planOpenAll(p.reveals, { catalog: p.catalog, quickReveal: quick, ...(p.progress ? { progress: p.progress } : {}) }),
+    [showKey, quick],
+  );
   const i18n = p.i18n ?? appI18n;
   const rules = p.pityRules ?? DEFAULT_PITY_RULES;
   const before = plan.summary.pityBefore;
@@ -92,6 +95,8 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
       plan={plan}
       seed={seed}
       title={title}
+      kindLabel={plan.mode === 'openAll' || !first ? null : capsuleKindLabel(first, i18n)}
+      honesty={first !== undefined && isFirstCapsule(first)}
       ariaLabel={i18n.t('capsule.aria.stage')}
       pityBefore={before ? pityLines(before, rules, p.newCardProtection !== false) : []}
       pityAfter={after ? pityLines(after, rules, p.newCardProtection !== false) : []}
@@ -100,7 +105,7 @@ export function CapsuleScreen(p: CapsuleScreenProps) {
 }
 
 export function WardrobeScreen(p: WardrobeScreenProps) {
-  const plan = useMemo(() => planWardrobeShow(p.reveal, { catalog: p.catalog, reelReveal: p.reelReveal }), [p.reveal.crate.id, p.reelReveal]);
+  const plan = useMemo(() => planWardrobeShow(p.reveal, { catalog: p.catalog }), [p.reveal.crate.id]);
   const i18n = p.i18n ?? appI18n;
   const lines = p.pity ? wardrobePityLines(p.pity, p.pityRules ?? DEFAULT_PITY_RULES) : [];
   return (
@@ -109,6 +114,8 @@ export function WardrobeScreen(p: WardrobeScreenProps) {
       plan={plan}
       seed={fnv1a32(p.reveal.crate.id)}
       title={i18n.t('capsule.summary.crateTitle')}
+      kindLabel={i18n.t('capsule.summary.crateTitle')}
+      honesty={false}
       ariaLabel={i18n.t('capsule.aria.crateStage')}
       pityBefore={lines}
       pityAfter={lines}
@@ -116,11 +123,31 @@ export function WardrobeScreen(p: WardrobeScreenProps) {
   );
 }
 
+/**
+ * The label under the capsule (A15.3, A15.4): scripted capsules 1-5 are "Starter Capsule · contents
+ * set to get you started", a `daily` capsule is the Supply Capsule, the rest use their kind name.
+ */
+export function capsuleKindLabel(r: CapsuleReveal, i18n: I18n): string {
+  const cap = r.capsule;
+  if (cap.scriptIndex !== null) return i18n.t('capsule.kind.starter');
+  if (cap.kind === 'daily') return i18n.t('capsule.kind.supply');
+  return i18n.t(`capsuleKind.${cap.kind}.name`);
+}
+
+/** The first capsule of a save shows the honesty line (A15.3). */
+export function isFirstCapsule(r: CapsuleReveal): boolean {
+  return r.capsule.scriptIndex === 1 || r.pityBefore.opened === 0;
+}
+
 interface ShowScreenProps extends ShowScreenBase {
   plan: ShowPlan;
   progress?: ProgressLookup;
   seed: number;
   title: string;
+  /** Shown under the pity panel while the show runs (kind, Starter or Supply). */
+  kindLabel: string | null;
+  /** Show "The result was decided when you earned this capsule…" (A15.3). */
+  honesty: boolean;
   ariaLabel: string;
   pityBefore: PityLine[];
   pityAfter: PityLine[];
@@ -138,7 +165,7 @@ function ShowScreen(p: ShowScreenProps) {
   const cbs = useRef({ onCue: p.onCue, onState: p.onState });
   cbs.current = { onCue: p.onCue, onState: p.onState };
   const settings: ShowSettings = { ...DEFAULT_SHOW_SETTINGS, ...p.settings };
-  const settingsKey = `${settings.reduceMotion}|${settings.vibrate}|${settings.teamPreset}`;
+  const settingsKey = `${settings.reduceMotion}|${settings.vibrate}|${settings.teamPreset}|${settings.quickReveal}`;
 
   useEffect(() => {
     const app = p.pixi;
@@ -257,10 +284,20 @@ function ShowScreen(p: ShowScreenProps) {
         {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={p.onShowOdds} /> : <span />}
         {opened && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
+      {p.kindLabel && !inSummary ? (
+        <div class={`${css.kind} ${opened ? css.kindOpened : ''}`} data-testid="capsule-kind">
+          {p.kindLabel}
+        </div>
+      ) : null}
       {state?.prompt === 'tap' ? (
         <div class={css.tap} data-testid="capsule-tap">
           {t('capsule.tap')}
         </div>
+      ) : null}
+      {p.honesty && !opened ? (
+        <p class={css.honesty} data-testid="capsule-honesty">
+          {t('capsule.honesty')}
+        </p>
       ) : null}
       {!inSummary ? (
         <div class={css.bottom}>
@@ -296,6 +333,7 @@ function ShowScreen(p: ShowScreenProps) {
             ...(p.onEquipSkin ? { onEquipSkin: p.onEquipSkin } : {}),
             ...(p.onUpgrade ? { onUpgrade: p.onUpgrade } : {}),
             ...(p.onOpenNext ? { onOpenNext: p.onOpenNext } : {}),
+            ...(p.onOpenAll ? { onOpenAll: p.onOpenAll } : {}),
             ...(p.pendingCount !== undefined ? { pendingCount: p.pendingCount } : {}),
           }}
         />

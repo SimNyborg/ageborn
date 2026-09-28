@@ -1,19 +1,18 @@
 /**
  * Wardrobe Crates and skin rolls (DESIGN A6.4 "Wardrobe Crate", A6.5 wardrobe pity, A6.6 skin Dust,
- * A10.1 reel).
+ * A10 card-flip reveal).
  *
  * - A crate holds 1 skin: Rare 78%, Epic 18%, Legendary 4%; no duplicate until all crate skins of
  *   that rarity are owned. Epic or better at least every 5 crates; Legendary at least every 25.
  * - The skin is rolled when the crate is granted and saved before any animation; `openWardrobe`
  *   only reveals it. A skin owned by then turns into Dust (A6.6).
- * - The reel: 50 tiles with the winner at index 45. Filler tiles are drawn from the true odds with
- *   the cosmetic RNG (seeded by the crate id, so a reload shows the same reel), and the tile after
- *   the winner is never rarer than the winner, so there is no staged near miss.
+ * - There is no reel (A15.3): the crate is revealed with the card flip, so `WardrobeReveal.reelTiles`
+ *   is empty and `stopOffsetBp` is 0. `winnerIndex` stays 45 for contract stability.
  */
 import type { PendingCrate, SaveDoc, SkinId, SkinRarity, WardrobeReveal } from '@/contracts';
 import type { Content } from '@/content';
-import { fnv1a32, mulberry32, pickWeighted, randInt, rngId, cloneSfc32, type Sfc32State } from '@/core';
-import { REEL_TILES, REEL_WINNER_INDEX } from '../rules';
+import { pickWeighted, randInt, rngId, cloneSfc32, type Sfc32State } from '@/core';
+import { REEL_WINNER_INDEX } from '../rules';
 import { advanceWardrobePity, wardrobeDraw } from './pity';
 
 const SKIN_RARITIES: readonly SkinRarity[] = ['rare', 'epic', 'legendary'];
@@ -79,37 +78,6 @@ export function grantCrateAt(s: SaveDoc, source: PendingCrate['source'], t: Cont
   };
 }
 
-/** The reel for a crate (A10.1): 50 tiles, winner at 45, never a rarer tile right after it. */
-export function reelFor(crate: PendingCrate, t: Content): { reelTiles: SkinId[]; stopOffsetBp: number } {
-  const rng = mulberry32(fnv1a32(`reel:${crate.id}`));
-  const odds = SKIN_RARITIES.map((r) => t.rarities.skins[r].crateOddsBp);
-  const pickRarity = (maxIndex: number): SkinRarity => {
-    const w = odds.map((x, i) => (i <= maxIndex ? x : 0));
-    const total = w.reduce((a, b) => a + b, 0);
-    let r = rng.int(total);
-    for (let i = 0; i < w.length; i += 1) {
-      const x = w[i] ?? 0;
-      if (r < x) return SKIN_RARITIES[i] as SkinRarity;
-      r -= x;
-    }
-    return 'rare';
-  };
-  const everything = SKIN_RARITIES.flatMap((r) => crateSkins(t, r));
-  const tiles: SkinId[] = [];
-  for (let i = 0; i < REEL_TILES; i += 1) {
-    if (i === REEL_WINNER_INDEX) {
-      tiles.push(crate.skin);
-      continue;
-    }
-    const cap = i === REEL_WINNER_INDEX + 1 ? SKIN_RARITY_INDEX[crate.rarity] : SKIN_RARITIES.length - 1;
-    let pool: SkinId[] = [];
-    for (let r = SKIN_RARITY_INDEX[pickRarity(cap)]; r >= 0 && pool.length === 0; r -= 1) pool = crateSkins(t, SKIN_RARITIES[r] as SkinRarity);
-    if (pool.length === 0) pool = everything.length > 0 ? everything : [crate.skin];
-    tiles.push(pool[rng.int(pool.length)] ?? crate.skin);
-  }
-  return { reelTiles: tiles, stopOffsetBp: rng.int(10000) };
-}
-
 /** Opens a Wardrobe Crate: the pre-rolled skin, or its Dust when it is already owned (A6.6). */
 export function openCrate(s: SaveDoc, id: string, t: Content): { save: SaveDoc; reveal: WardrobeReveal } {
   const crate = s.capsules.wardrobe.find((c) => c.id === id);
@@ -124,6 +92,5 @@ export function openCrate(s: SaveDoc, id: string, t: Content): { save: SaveDoc; 
     capsules: { ...s.capsules, wardrobe: s.capsules.wardrobe.filter((c) => c.id !== id) },
     pity: advanceWardrobePity(s.pity, crate.rarity),
   };
-  const { reelTiles, stopOffsetBp } = reelFor(crate, t);
-  return { save, reveal: { crate: shown, reelTiles, winnerIndex: REEL_WINNER_INDEX, stopOffsetBp } };
+  return { save, reveal: { crate: shown, reelTiles: [], winnerIndex: REEL_WINNER_INDEX, stopOffsetBp: 0 } };
 }

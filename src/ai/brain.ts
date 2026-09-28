@@ -60,8 +60,14 @@ export interface Scored {
   score: number;
 }
 
-/** What the bot is saving for; `amount` is milli-gold. */
-export type SavingGoal = { kind: 'treasury'; amount: number } | { kind: 'legendary'; amount: number; card: CardId };
+/**
+ * What the bot is saving for; `amount` is milli-gold. `counter` is A16.3 rule 1: a counter card the bot
+ * cannot afford yet (it shares the Legendary goal's code: the card itself is exempt from f_save).
+ */
+export type SavingGoal =
+  | { kind: 'treasury'; amount: number }
+  | { kind: 'legendary'; amount: number; card: CardId }
+  | { kind: 'counter'; amount: number; card: CardId };
 
 /** Why the chosen action was chosen. */
 export type ChoiceReason = 'opening' | 'best' | 'mistake' | 'wait';
@@ -163,10 +169,45 @@ const WANT_BONUS = 8000;
 const LEGENDARY_GOAL_BP = 10000;
 /** Turret choice: anti-air turrets are worth this much more while enemy air is on the lane, bp. */
 const AIR_TURRET_BONUS_BP = 5000;
+/**
+ * A16.3 rule 1 (save for a counter): the best counter over the whole tray, gold ignored, must beat the
+ * best affordable counter by this much (0.15) to set a saving goal for it.
+ */
+const COUNTER_GOAL_EDGE_BP = 1500;
+/** The counter goal lapses after 8 s ... */
+const COUNTER_GOAL_TICKS = 8 * TICKS_PER_SECOND;
+/** ... or when an enemy unit comes within 300 lu of the own gate. */
+const COUNTER_GOAL_LAPSE = 300 * MILLI;
+/**
+ * A16.3 rule 3 (answer one-type armies): the counter weight is multiplied by
+ * 1 + 2.5 × max(0, s − 0.4), capped at 2, where s is the largest role-group share of the visible enemy
+ * army value. The diversity term and the gold float target shrink by the same factor.
+ */
+const MONO_FROM_BP = 4000;
+const MONO_SLOPE = 25;
+const MONO_MAX_BP = 20000;
+
+/** A16.3 rule 3 factor for the visible enemy army, bp (10,000 = ×1, capped at ×2). */
+export function monoFactorBp(foes: readonly { value: number; def?: { group: RoleGroup } | undefined }[]): number {
+  let total = 0;
+  const by = new Map<RoleGroup, number>();
+  for (const u of foes) {
+    if (!u.def || u.value <= 0) continue;
+    total += u.value;
+    by.set(u.def.group, (by.get(u.def.group) ?? 0) + u.value);
+  }
+  if (total <= 0) return BP;
+  let top = 0;
+  for (const x of by.values()) top = Math.max(top, x);
+  const shareBp = Math.trunc((top * BP) / total);
+  return Math.min(MONO_MAX_BP, BP + Math.trunc((MONO_SLOPE * Math.max(0, shareBp - MONO_FROM_BP)) / 10));
+}
 
 export class Brain {
   goal: SavingGoal | null = null;
   spending = true;
+  /** A16.3 rule 1: the counter the bot is saving for, and when that goal lapses. */
+  private counterGoal: { card: CardId; amount: number; until: number } | null = null;
   /** When the brain last chose a stance change. */
   private stanceTick = -1000000;
   /** A "float gold" mistake leaves the tray untouched until this tick. */
@@ -228,8 +269,14 @@ export class Brain {
     const nextTreasury = v.treasury < e.treasuryCosts.length ? (e.treasuryCosts[v.treasury] ?? null) : null;
     const rushing = P.treasuryRushLevel > 0 && v.treasury < P.treasuryRushLevel && v.now < msToTicks(P.treasuryRushByMs);
     const legendaryCard = v.tray.find((s) => s.card.legendary)?.card ?? null;
+    const mono = monoFactorBp(v.foes);
+    // A16.3 rule 1: a counter goal lives 8 s, or until an enemy unit reaches 300 lu of the own gate.
+    const cg = this.counterGoal;
+    if (cg && (v.now >= cg.until || allIn || v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE) || !v.tray.some((s) => s.card.id === cg.card))) this.counterGoal = null;
+    if (this.counterGoal && v.gold >= this.counterGoal.amount) this.counterGoal = null;
     this.goal = null;
-    if (!urgent && !allIn) {
+    if (this.counterGoal) this.goal = { kind: 'counter', amount: this.counterGoal.amount, card: this.counterGoal.card };
+    else if (!urgent && !allIn) {
       // Treasury pays back in 133-367 s (A2.3), so a bot banks for it while the lane near its gate is
       // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
       const quietGate = !v.foes.some((u) => u.p <= TREASURY_SAFE);
@@ -237,7 +284,8 @@ export class Brain {
       const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / e.treasuryGoldPerSecMilli) <= TREASURY_PAYBACK_BY_TICKS;
       if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
-      } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP) {
+      } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP && !gateFailed) {
+        // A16.3 rule 4: no Legendary saving goal while the push gate fails.
         this.goal = { kind: 'legendary', amount: legendaryCard.cost, card: legendaryCard.id };
       }
     }
@@ -254,7 +302,9 @@ export class Brain {
     // Gold float (A7.3): let gold pile up to the float target, then spend it down.
     // An active saving goal raises the float to the goal, so the bot visibly banks (A7.2 "pause training").
     const cheapest = v.tray.reduce((m, s) => Math.min(m, s.card.cost), Number.MAX_SAFE_INTEGER);
-    if (v.gold >= Math.max(t.goldFloat * MILLI, this.goal?.amount ?? 0) || wave) this.spending = true;
+    // A16.3 rule 3: the float target shrinks against a one-type army.
+    const floatTarget = Math.trunc((t.goldFloat * MILLI * BP) / mono);
+    if (v.gold >= Math.max(floatTarget, this.goal?.amount ?? 0) || wave) this.spending = true;
     else if (v.gold < cheapest) this.spending = false;
     const mayTrain = !banking && v.now >= this.idleUntil && (this.spending || urgent || allIn);
 
@@ -265,7 +315,16 @@ export class Brain {
     const opts: MistakeOptions = {};
 
     // Train.
-    const trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp });
+    let trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp, mono });
+    // A16.3 rule 1: the best counter is out of reach but clearly better than anything affordable: save
+    // for it (the goal replaces a Treasury or Legendary goal, and the trains are scored again under it).
+    if (!this.counterGoal && !allIn && trains.counterGoal && !v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE)) {
+      const c = trains.counterGoal;
+      this.counterGoal = { card: c.card, amount: c.cost, until: v.now + COUNTER_GOAL_TICKS };
+      this.goal = { kind: 'counter', amount: c.cost, card: c.card };
+      this.spending = false;
+      trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp, mono });
+    }
     if (mayTrain) for (const s of trains.scored) add(s.action, s.score);
     // Over-commit (mistake): keep feeding units forward while the push gate says bank.
     if (banking && trains.eager) opts.overCommit = trains.eager;
@@ -293,9 +352,13 @@ export class Brain {
     }
 
     // Evolve.
+    // Evolve on time (A7.3, A16.3 rule 2). Below tier VII the evolve delay applies as written, with no
+    // safety check. From tier VII the bot waits for a safe window, but never longer than the tier's cap
+    // (the evolve-delay column: 2 s at VII, 0.5 s at X); then it evolves anyway.
     let evolveWanted = false;
-    if (v.evolveReady && !P.neverEvolves && mem.evolveSince !== null && obs.tick - mem.evolveSince >= t.evolveDelayTicks) {
-      const safe = t.safeWindowEvolve ? this.safeWindow(v) : !v.foes.some((u) => !u.air && u.p <= EVOLVE_SAFE);
+    const evolveWaited = mem.evolveSince === null ? -1 : obs.tick - mem.evolveSince;
+    if (v.evolveReady && !P.neverEvolves && evolveWaited >= 0 && (t.safeWindowEvolve || evolveWaited >= t.evolveDelayTicks)) {
+      const safe = t.safeWindowEvolve ? this.safeWindow(v) || evolveWaited >= t.evolveDelayTicks : true;
       if (safe || W.greed >= GREEDY_BP) {
         evolveWanted = true;
         // Kettle pushes first: Evolve waits while units can still be trained into the all-in.
@@ -423,8 +486,8 @@ export class Brain {
   private trainCandidates(
     v: View,
     mem: BotMemory,
-    s: { banking: boolean; allIn: boolean; clockBp: number },
-  ): { scored: Scored[]; eager?: BotAction; noAntiAir?: BotAction } {
+    s: { banking: boolean; allIn: boolean; clockBp: number; mono?: number },
+  ): { scored: Scored[]; eager?: BotAction; noAntiAir?: BotAction; counterGoal?: { card: CardId; cost: number } } {
     const { book, tier: t, persona: P, weights: W } = this.cfg;
     const e = book.econ;
     if (v.ageUncertain) return { scored: [] };
@@ -440,17 +503,27 @@ export class Brain {
     const scored: Scored[] = [];
     let eager: Scored | null = null;
     let bestNoAir: Scored | null = null;
+    const mono = s.mono ?? BP;
+    // A16.3 rule 1: every tray card is scored for its counter value, gold ignored; an unaffordable card
+    // can only become a saving goal, never be trained.
+    let bestAll: { card: CardId; cost: number; fc: number } | null = null;
+    let bestAffordable = 0;
+    const counts = t.counterDepth > 0 && ctx.now.length > 0;
     for (const slot of v.tray) {
       const c = slot.card;
-      if (v.gold < c.cost || v.queue.length >= e.queueMax) continue;
       if (c.legendary && v.legendaryInField) continue;
       if (v.popCommitted + c.pop > e.popCap) continue;
       const fc = t.counterDepth === 0 ? BP / 2 : fCounter(ctx, c.id);
-      const saving = this.goal !== null && !(this.goal.kind === 'legendary' && this.goal.card === c.id) && v.gold - c.cost < this.goal.amount;
+      if (counts) {
+        if (!bestAll || fc > bestAll.fc) bestAll = { card: c.id, cost: c.cost, fc };
+        if (v.gold >= c.cost) bestAffordable = Math.max(bestAffordable, fc);
+      }
+      if (v.gold < c.cost || v.queue.length >= e.queueMax) continue;
+      const saving = this.goal !== null && !(this.goal.kind !== 'treasury' && this.goal.card === c.id) && v.gold - c.cost < this.goal.amount;
       let base =
-        mulBp(TRAIN.counter, mulBp(fc, P.counterWeightBp)) +
+        mulBp(TRAIN.counter, mulBp(mulBp(fc, P.counterWeightBp), mono)) +
         mulBp(TRAIN.push, mulBp(W.aggr, push)) +
-        mulBp(TRAIN.role, fRole(groupCount.get(c.group) ?? 0)) +
+        Math.trunc((mulBp(TRAIN.role, fRole(groupCount.get(c.group) ?? 0)) * BP) / mono) +
         (c.legendary ? mulBp(TRAIN.legendary, W.legendary) : 0) +
         (P.groupBiasBp[c.group] ?? 0) +
         (P.signatureCards.includes(c.id) ? P.signatureBiasBp : 0) +
@@ -465,7 +538,9 @@ export class Brain {
       if (!eager || base > eager.score) eager = { action, score: base };
       if (foeAir && !c.hitsAir && (!bestNoAir || score > bestNoAir.score)) bestNoAir = { action, score };
     }
-    const out: { scored: Scored[]; eager?: BotAction; noAntiAir?: BotAction } = { scored };
+    const out: { scored: Scored[]; eager?: BotAction; noAntiAir?: BotAction; counterGoal?: { card: CardId; cost: number } } = { scored };
+    const ba = bestAll as { card: CardId; cost: number; fc: number } | null;
+    if (ba && ba.cost > v.gold && ba.fc - bestAffordable >= COUNTER_GOAL_EDGE_BP) out.counterGoal = { card: ba.card, cost: ba.cost };
     if (eager) out.eager = eager.action;
     if (bestNoAir) out.noAntiAir = bestNoAir.action;
     return out;

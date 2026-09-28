@@ -10,7 +10,7 @@ import {
   type ShowStep,
   type StrikeStep,
 } from '../plan';
-import { crate, honestTiles, reveal, stack, testCatalog } from './fixtures';
+import { crate, reveal, stack, testCatalog } from './fixtures';
 
 const catalog = testCatalog();
 
@@ -247,33 +247,28 @@ describe('planOpenAll (DESIGN A10 Rules)', () => {
   });
 });
 
-describe('planWardrobeShow (DESIGN A10.1)', () => {
-  it('runs the 5.5 s reel with falling ticks, then the winner', () => {
-    const plan = planWardrobeShow(crate('ghost_corsair', 'epic', honestTiles('ghost_corsair')), { catalog, reelReveal: true });
-    expect(kinds(plan.steps)).toEqual(['crateArrival', 'reel', 'reelWinner', 'summary']);
-    const reel = plan.steps[1];
-    expect(reel?.durationMs).toBe(5500);
-    const ticks = reel?.cues ?? [];
-    expect(ticks.length).toBeGreaterThan(10);
-    expect(ticks.every((c) => c.sound === 'reel_tick')).toBe(true);
-    for (let i = 1; i < ticks.length; i++) {
-      expect((ticks[i]?.pitchBp ?? 0) <= (ticks[i - 1]?.pitchBp ?? 0)).toBe(true);
-    }
-    expect(checkPlan(plan)).toEqual([]);
-    expect(plan.summary.newSkins).toEqual(['ghost_corsair']);
-  });
-
-  it('replaces the reel with a card flip when the flag is off', () => {
-    const plan = planWardrobeShow(crate('frost_matriarch', 'legendary', honestTiles('frost_matriarch')), { catalog, reelReveal: false });
-    expect(kinds(plan.steps)).toEqual(['crateArrival', 'signal', 'flip', 'summary']);
-    expect(plan.steps[1]?.cues[0]?.sound).toBe('rarity_legendary');
-    expect(checkPlan(plan)).toEqual([]);
-  });
+describe('planWardrobeShow (DESIGN A10, A15.3: card flip, no reel)', () => {
+  for (const [skin, rarity] of [
+    ['tin_can', 'rare'],
+    ['ghost_corsair', 'epic'],
+    ['frost_matriarch', 'legendary'],
+  ] as const) {
+    it(`reveals a ${rarity} skin with the card flip: arrival, crate open, pre-signal, flip`, () => {
+      const plan = planWardrobeShow(crate(skin, rarity), { catalog });
+      expect(kinds(plan.steps)).toEqual(['crateArrival', 'crateOpen', 'signal', 'flip', 'summary']);
+      expect(plan.steps.some((x) => (x.kind as string).startsWith('reel'))).toBe(false);
+      expect(plan.steps.flatMap((x) => x.cues).some((c) => c.sound === 'reel_tick')).toBe(false);
+      expect(plan.steps[2]?.cues[0]?.sound).toBe(`rarity_${rarity}`);
+      expect(checkPlan(plan)).toEqual([]);
+      expect(plan.summary.newSkins).toEqual([skin]);
+    });
+  }
 
   it('shows a duplicate crate skin as Dust, not NEW', () => {
-    const plan = planWardrobeShow(crate('tin_can', 'rare', honestTiles('tin_can'), { duplicateDust: 50 }), { catalog, reelReveal: true });
+    const plan = planWardrobeShow(crate('tin_can', 'rare', { duplicateDust: 50 }), { catalog });
     expect(plan.cards[0]?.isNew).toBe(false);
     expect(plan.summary.dust).toBe(50);
     expect(plan.summary.newSkins).toEqual([]);
   });
 });
+

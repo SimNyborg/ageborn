@@ -137,7 +137,7 @@ export class AtlasBaseView implements BaseView {
       s.position.set(l.x, -l.y);
       s.scale.set(Math.max(0.5, l.r / 9));
       this.lightLayer.addChild(s);
-      return { s, phase: i * 1.7, crumbleMax: l.crumbleMax, a: 0.55 };
+      return { s, phase: i * 1.7, crumbleMax: l.crumbleMax, a: 0.38 };
     });
     this.placeHorn();
     this.show();

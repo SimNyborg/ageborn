@@ -9,14 +9,15 @@
  *
  * Copies always add to the card's upgrade copies, including a new card's first stack (a new card
  * starts at L1 with the stack's copies). Foils unlock when they beat the owned one. Counted capsules
- * advance the pity counters, which the reveal shows before and after (A6.5). The Daily Capsule
- * unlocks once the second capsule has been opened (A6.3).
+ * advance the pity counters, which the reveal shows before and after (A6.5). Opening the second
+ * counted capsule unlocks the Supply allowance and grants the first Supply Capsule at once, with no
+ * matches needed (A15.4); it is rolled after this capsule is applied, so it sees the new cards.
  */
 import type { CapsuleReveal, CapsuleStack, CardId, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { META_FLAGS } from '../rules';
-import { arenaOf, poolOf, TIER_INDEX } from '../tables';
-import { cardsForRoll } from './grant';
+import { arenaOf, lastKnownTime, poolOf, TIER_INDEX } from '../tables';
+import { cardsForRoll, grantCapsuleAt } from './grant';
 import { unlockTitles } from '../titles';
 import { betterFoil } from './foil';
 import { advancePity } from './pity';
@@ -82,9 +83,10 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
 
   let capsules = { ...s.capsules, pending: s.capsules.pending.filter((p) => p.id !== id) };
   let flags = s.flags;
-  if (pityAfter.opened >= t.capsules.daily.firstAfterCapsule && !s.flags[META_FLAGS.dailyUnlocked]) {
-    // A6.3: the first Daily Capsule is available right after capsule 2; `tickTimers` starts the day timer.
-    capsules = { ...capsules, dailyBank: Math.max(1, capsules.dailyBank), dailyNextAt: null };
+  const unlockSupply = pityAfter.opened >= t.capsules.daily.firstAfterCapsule && !s.flags[META_FLAGS.dailyUnlocked];
+  if (unlockSupply) {
+    // A15.4: the allowance starts empty; `tickTimers` starts the 04:00 timer that adds to it.
+    capsules = { ...capsules, dailyNextAt: null };
     flags = { ...flags, [META_FLAGS.dailyUnlocked]: true };
   }
 
@@ -100,7 +102,13 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
       dust: s.currencies.dust + rolledDust + skinDust + stackDust,
     },
   };
-  const { save } = unlockTitles(opened, t);
+  let { save } = unlockTitles(opened, t);
+  if (unlockSupply) {
+    // The first Supply Capsule, granted right after capsule 2 (A15.4). It never uses an allowance.
+    const bank = save.capsules.dailyBank;
+    save = grantCapsuleAt(save, 'daily', t, Math.max(cap.createdAt, lastKnownTime(save))).save;
+    save = { ...save, capsules: { ...save.capsules, dailyBank: bank } };
+  }
   const climbs = Math.max(0, TIER_INDEX[cap.tier] - TIER_INDEX[cap.startTier]);
   return {
     save,

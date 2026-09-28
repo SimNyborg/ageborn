@@ -254,8 +254,12 @@ describe('Quests and Codex (A6.7)', () => {
     expect(byId.win_with_legendary).toMatchObject({ requiresLegendary: true, rewards: [{ kind: 'dust', amount: 100 }] });
     expect(byId.win_after_last_stand).toMatchObject({ fromMatch: 5, rewards: [{ kind: 'amber', amount: 200 }] });
     expect(byId.daily_challenge_win?.rewards).toEqual([{ kind: 'ageCapsule' }]);
-    expect(quests.weekly).toMatchObject({ metric: 'wins', target: 15, rewards: [{ kind: 'wardrobe' }, { kind: 'ageCapsule' }] });
-    expect([quests.dailyCount, quests.freeRerolls, quests.bankMax, quests.resetHour]).toEqual([3, 1, 6, 4]);
+    expect(quests.weekly).toMatchObject({ id: 'war_chest', metric: 'countingWins', target: 20, rewards: [{ kind: 'wardrobe' }, { kind: 'ageCapsule' }] });
+    expect([quests.dailyCount, quests.freeRerolls, quests.queueMax, quests.resetHour]).toEqual([3, 1, 21, 4]);
+    // A15.4: activity quests weigh 1, skill and variety quests 2
+    const light = quests.daily.filter((q) => q.weight === 1).map((q) => q.id);
+    expect(light.sort()).toEqual(['play_3', 'train_30', 'upgrade_2']);
+    expect(quests.daily.every((q) => q.weight === 1 || q.weight === 2)).toBe(true);
   });
 
   it('has the Codex rules: ~81 levels from all upgrades', () => {

@@ -94,6 +94,8 @@ export const SettingsSchema = v.fallback(
     defaultSpeed: v.fallback(v.picklist([1, 1.5, 2]), d.defaultSpeed),
     vibrate: v.fallback(v.boolean(), d.vibrate),
     mutedEmotes: v.fallback(v.boolean(), d.mutedEmotes),
+    breakReminder: v.optional(v.fallback(v.boolean(), true)),
+    quickReveal: v.optional(v.fallback(v.boolean(), false)),
   }),
   defaultSettings,
 );
@@ -201,7 +203,7 @@ export const SaveDocSchema = v.pipe(
     mmr: num,
     lossStreak: count,
     matchesPlayed: count,
-    daily: v.object({ dayKey: v.string(), won: v.boolean() }),
+    daily: v.object({ dayKey: v.string(), bank: count }),
     conquest: v.object({ stars: v.record(v.string(), flag3), milestonesClaimed: v.array(int) }),
     stats: v.object({
       matches: count,

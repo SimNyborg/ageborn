@@ -43,6 +43,5 @@ export const META_FLAGS = {
 /** Prefix of a procedural AI Commander's `OpponentSpec.generalId` (`commander:<personality>:<favourite>`). */
 export const COMMANDER_ID_PREFIX = 'commander';
 
-/** Number of reel tiles and the winner's index (A10.1; the contract fixes 45). */
-export const REEL_TILES = 50;
+/** `WardrobeReveal.winnerIndex` (the contract fixes 45). There is no reel (A15.3); kept for contract stability. */
 export const REEL_WINNER_INDEX = 45;

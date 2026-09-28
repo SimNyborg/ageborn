@@ -77,6 +77,15 @@ export const arenas: ArenaTables = {
   ladder: {
     // A6.3 ladder results
     win: { trophies: 30, amber: 20, amberWithoutCharge: 40 },
+    // A15.8 rewards by format from 400 trophies (Arena 3): equal reward per minute
+    winByFormat: {
+      fromTrophies: 400,
+      formats: {
+        short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
+        standard: { trophies: 30, amber: 25, amberWithoutCharge: 50 },
+        full: { trophies: 34, amber: 30, amberWithoutCharge: 60 },
+      },
+    },
     loss: { trophies: -20, amber: 15, noLossBelowTrophies: 400 },
     draw: { trophies: 0, amber: 15 },
     lossProtection: { streak: 3, tierDrop: 1 },

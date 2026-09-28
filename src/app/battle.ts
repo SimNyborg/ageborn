@@ -12,6 +12,7 @@ import { createGroggBrain, createTutorialAutopilot, MATCH1_TURRET_GRANT_TICK, Tu
 import { createFallbackBot } from './fallbackBot';
 import type { MatchSetup } from './matchSetup';
 import type { Services } from './services';
+import { TrickleDetector } from './trickle';
 import { BattleSessionImpl, type BattleSpeed, type FrameScheduler, type SessionBot, type SessionView, type VisibilitySource } from './session';
 
 export interface BattleOptions {
@@ -35,6 +36,8 @@ export interface BattleHandle {
   readonly prompt: ReadonlySignal<TutorialPrompt | null>;
   /** "3-2-1 Fight!" before the start: 3, 2, 1, 0 = "Fight!", -1 = none (the controller runs it). */
   readonly countdown: Signal<number>;
+  /** A16.6: the player's "trickle" pattern; after a loss where it fired, the Result shows the wave tip. */
+  readonly trickle: TrickleDetector;
   dispose(): void;
 }
 
@@ -124,7 +127,11 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     simVersion: services.sim.simVersion,
     foils,
   });
-  session.onTick((events, s) => director.update({ state: s.state, config: s.config, events, side: 0 }));
+  const trickle = new TrickleDetector(content, 0);
+  session.onTick((events, s) => {
+    director.update({ state: s.state, config: s.config, events, side: 0 });
+    if (trickle.update(events, s.state)) log.record('trickle', `match${setup.matchNumber}`, { tick: s.state.tick });
+  });
   log.record('matchStart', `match${setup.matchNumber}`, { mode: setup.mode, format: setup.config.format, opponent: setup.opponent.generalId, tier: setup.opponent.tier });
   session.onEnd((r) => {
     log.record('matchEnd', `match${setup.matchNumber}`, {
@@ -139,6 +146,7 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     director,
     prompt,
     countdown: signal(-1),
+    trickle,
     dispose() {
       unsubscribePrompt();
       session.dispose();

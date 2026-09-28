@@ -1,5 +1,5 @@
 /**
- * The Pixi capsule stage (DESIGN A10, A10.1, A12): draws every step of a `ShowPlan` as the
+ * The Pixi capsule stage (DESIGN A10, A12): draws every step of a `ShowPlan` as the
  * `ShowRunner` plays it. Layout is authored in a 1280 × 720 design space and scaled to fit; the
  * room backdrop and the screen flash cover the whole screen.
  *
@@ -19,16 +19,13 @@ import type {
   BurstStep,
   FlipStep,
   MiniWalkoutStep,
-  ReelStep,
-  ReelWinnerStep,
   ShowPlan,
   ShowStep,
   StrikeStep,
   VolleyStep,
   WalkoutStep,
 } from './plan';
-import { reelPosAt } from './reelMath';
-import { CrateView, ReelView } from './reel';
+import { CrateView } from './crate';
 import type { ShowView } from './runner';
 import { coneTexture, confettiTexture, dotTexture, glowTexture, raysTexture, roomTexture, shardTexture, starTexture } from './textures';
 import { tierIndex } from './tiers';
@@ -43,8 +40,6 @@ const PED = { x: 640, y: 470 };
 const AMBER_TARGET = { x: 1190, y: 40 };
 /** Hammer grip position and angles (rest, and the angle where the head meets the drum). */
 const HAMMER = { x: 822, y: 474, rest: 0.38, hit: -0.74, impactMs: 90 };
-const REEL_Y = 250;
-const CRATE_DROP = 150;
 
 export interface StageDeps {
   art: ArtProvider;
@@ -88,19 +83,15 @@ export class CapsuleStage implements ShowView {
   private readonly shadow = new Graphics();
   private readonly waves = new Graphics();
   private readonly pedestal = new Pedestal();
-  /** Pedestal, pips, crate and drum: moves down as a unit when the reel opens. */
+  /** Pedestal, pips, crate and drum: sinks as a unit once the cards take the stage. */
   private readonly pedGroup = new Container();
   private readonly drum: CapsuleDrum;
   private readonly hammer = new Hammer();
   private readonly pips = new Pips();
   private readonly fan: CardFan | null;
   private readonly walkoutLayer = new Container();
-  private readonly reelLayer = new Container();
   private readonly flightLayer = new Container();
   private readonly crate = new CrateView();
-  private readonly winnerText = new Container();
-  private reel: ReelView | null = null;
-  private winner: CardView | null = null;
   private walkout: Walkout | null = null;
   private miniDrums: MiniDrum[] = [];
   private readonly flyers: Flyer[] = [];
@@ -203,12 +194,10 @@ export class CapsuleStage implements ShowView {
       this.pedGroup,
       this.hammer.root,
       this.waves,
-      this.reelLayer,
       ...(this.fan ? [this.fan.root] : []),
       this.flightLayer,
       this.walkoutLayer,
       this.particles.root,
-      this.winnerText,
     );
     this.root.addChild(this.bg, this.world, this.flashG);
     this.resize(DESIGN_W, DESIGN_H);
@@ -276,11 +265,8 @@ export class CapsuleStage implements ShowView {
         this.crate.root.visible = true;
         this.pedestal.setColor(ROOM.brassLight);
         break;
-      case 'reel':
-        this.enterReel(step);
-        break;
-      case 'reelWinner':
-        this.enterWinner(step, instant);
+      case 'crateOpen':
+        this.bigRays.tint = 0xffe7b0;
         break;
       case 'summary':
         this.focusSlot = -1;
@@ -328,11 +314,8 @@ export class CapsuleStage implements ShowView {
       case 'crateArrival':
         this.crateArrival(t);
         break;
-      case 'reel':
-        this.reelFrame(step, t);
-        break;
-      case 'reelWinner':
-        this.winnerFrame(step, t);
+      case 'crateOpen':
+        this.crateOpen(t, step.durationMs);
         break;
       case 'summary':
         break;
@@ -393,13 +376,12 @@ export class CapsuleStage implements ShowView {
         this.placeCrate(1e6);
         this.pedestal.setGlow(1);
         break;
-      case 'reel':
-        this.placeReel(step, step.durationMs);
-        break;
-      case 'reelWinner':
-        this.fire('winner-burst');
-        this.placeWinner(1);
-        this.winnerText.alpha = 1;
+      case 'crateOpen':
+        this.fire('crate-burst');
+        this.crate.box.position.set(0, 0);
+        this.crate.box.rotation = 0;
+        this.crate.glow.alpha = 0;
+        this.setLid(1);
         break;
       case 'summary':
         break;
@@ -691,7 +673,7 @@ export class CapsuleStage implements ShowView {
   }
 
   // ---------------------------------------------------------------------------------------------
-  // Wardrobe Crate (A10.1)
+  // Wardrobe Crate (A10, A15.3: the card flip, no reel)
   // ---------------------------------------------------------------------------------------------
 
   private placeCrate(t: number): void {
@@ -715,7 +697,50 @@ export class CapsuleStage implements ShowView {
     }
   }
 
-  /** Flag off (A10.1): the crate's lid flies and its single card rises out face down, 0..1. */
+  /** The lid flies off, 0..1. */
+  private setLid(u: number): void {
+    const k = clamp01(u);
+    this.crate.lid.y = -150 - 300 * easeOutCubic(k);
+    this.crate.lid.x = 90 * easeOutCubic(k);
+    this.crate.lid.rotation = 0.9 * k;
+    this.crate.lid.alpha = 1 - clamp01((k - 0.4) / 0.6);
+  }
+
+  /**
+   * The crate rattles harder and harder while warm light leaks from its seams (no rarity colour: the
+   * honest pre-signal belongs to the card), then the lid bursts off with a flash and golden rays.
+   */
+  private crateOpen(t: number, dur: number): void {
+    const burstAt = dur - 80;
+    const u = clamp01(t / burstAt);
+    const k = this.d.settings.reduceMotion ? 0.3 : 1;
+    if (t < burstAt) {
+      const amp = (1 + 7 * u * u) * k;
+      this.crate.box.x = Math.sin(t * 0.11) * amp;
+      this.crate.box.rotation = Math.sin(t * 0.083) * 0.03 * u * k;
+      this.crate.lid.y = -150 - Math.abs(Math.sin(t * 0.13)) * 6 * u * k;
+      this.crate.glow.alpha = 0.15 + 0.85 * u * u;
+      this.halo.tint = 0xffd98a;
+      this.halo.alpha = 0.35 * u;
+      this.bigRaysLevel = 0.15 * u;
+      this.moteT += 1;
+      if (u > 0.3 && this.moteT % 3 === 0) this.dustRing(PED.x + (this.rng.next() - 0.5) * 180, PED.y - 150, 2);
+      return;
+    }
+    if (this.fire('crate-burst')) {
+      this.crate.box.position.set(0, 0);
+      this.crate.box.rotation = 0;
+      this.flash(this.d.settings.reduceMotion ? 0.3 : 0.7, 0xfff1c8);
+      this.trauma.add(0.3);
+      this.crateSquash = 1;
+      this.shards(PED.x, PED.y - 150, ROOM.brassLight, this.d.settings.reduceMotion ? 8 : 28, 0.7);
+      this.bigRaysLevel = 0.55;
+    }
+    this.crate.glow.alpha = 1 - span(t, burstAt, dur);
+    this.setLid(span(t, burstAt, dur));
+  }
+
+  /** The single skin card rises out of the open crate face down, 0..1. */
   private riseFromCrate(u: number): void {
     const v = this.fan?.views[0];
     if (!v) return;
@@ -723,109 +748,8 @@ export class CapsuleStage implements ShowView {
     v.root.visible = true;
     v.root.position.set(v.home.x, lerp(PED.y - 90, v.home.y, e));
     v.root.scale.set(lerp(0.35, v.home.scale, easeOutCubic(clamp01(u))));
-    v.root.rotation = 0;
-    this.crate.lid.y = -150 - 260 * easeOutCubic(clamp01(u * 1.5));
-    this.crate.lid.rotation = -0.6 * clamp01(u * 1.5);
-    this.crate.lid.alpha = 1 - clamp01(u * 1.5);
-    if (u > 0 && this.fire('crate-open')) this.flash(0.25, 0xffe7b0);
-  }
-
-  private enterReel(s: ReelStep): void {
-    this.reel?.destroy();
-    this.reel = new ReelView(s.reel, this.d.art, this.d.i18n, this.d.catalog);
-    this.reel.root.position.set(640, REEL_Y);
-    this.reel.root.alpha = 0;
-    this.reelLayer.addChild(this.reel.root);
-    this.placeCrate(1e6);
-    this.bigRays.tint = 0xffe7b0;
-    this.bigRays.position.set(640, REEL_Y);
-  }
-
-  private placeReel(s: ReelStep, t: number): void {
-    const open = span(t, 0, 420);
-    this.pedGroup.y = CRATE_DROP * easeOutCubic(open);
-    this.crate.lid.y = -150 - 260 * easeOutCubic(open);
-    this.crate.lid.rotation = -0.6 * open;
-    this.crate.lid.alpha = 1 - open;
-    if (this.reel) {
-      this.reel.root.scale.set(1, easeOutBack(span(t, 120, 520), 1.2));
-      this.reel.root.alpha = span(t, 120, 300);
-      this.reel.setPos(reelPosAt(s.reel, t));
-    }
-  }
-
-  private reelFrame(s: ReelStep, t: number): void {
-    if (t > 0 && this.fire('reel-open')) this.flash(0.3, 0xffe7b0);
-    this.placeReel(s, t);
-    this.bigRaysLevel = 0.3 * (1 - span(t, 0, 1400));
-  }
-
-  private enterWinner(s: ReelWinnerStep, instant: boolean): void {
-    this.winner?.destroy();
-    const card = { ...s.card, sources: s.card.sources.slice() };
-    const v = new CardView(card, this.cardDeps());
-    v.settleFaceUp();
-    v.root.position.set(640, REEL_Y);
-    this.winner = v;
-    this.world.addChildAt(v.root, this.world.getChildIndex(this.walkoutLayer));
-    void this.art(card.card, card.skin).then((tex) => {
-      if (tex && !v.root.destroyed) v.setPortraitTexture(tex);
-    });
-    const c = RARITY_COLORS[card.rarity];
-    this.bigRays.tint = c;
-    this.bigRays.position.set(640, 318);
-    this.buildWinnerText(s);
-    if (instant) return;
-    this.flash(0.6, shade(c, 0.6));
-    this.trauma.add(card.rarity === 'legendary' ? 0.5 : 0.25);
-    this.vibrate(card.rarity === 'legendary' ? [40, 30, 90] : 30);
-    this.confettiOn = card.rarity !== 'rare';
-  }
-
-  private buildWinnerText(s: ReelWinnerStep): void {
-    const t = (k: string, o?: Record<string, string | number>) => this.d.i18n.t(k, o);
-    const card = s.card;
-    const c = RARITY_COLORS[card.rarity];
-    this.winnerText.removeChildren().forEach((x) => x.destroy());
-    const info = card.skin ? this.d.catalog.skin(card.skin) : null;
-    const rarity = label(t(`rarity.${card.rarity}.name`).toUpperCase(), 26, c, { outline: 6, letterSpacing: 4 });
-    rarity.position.set(640, 516);
-    const target = info?.target ?? card.card;
-    const targetName = target.startsWith('base.')
-      ? t('capsule.baseSkinFor', { age: t(`age.${target.slice(5)}.name`) })
-      : t('capsule.skinFor', { target: t(this.d.catalog.card(target).nameKey) });
-    const tl = label(targetName, 22, 0xffffff, { outline: 5 });
-    tl.position.set(640, 552);
-    const note = card.isNew ? t('capsule.wardrobe.newSkin') : t('capsule.wardrobe.duplicate', { n: card.dust });
-    const nl = label(note, 24, card.isNew ? ROOM.newStamp : 0xb8a0ff, { outline: 6 });
-    nl.position.set(640, 594);
-    this.winnerText.addChild(rarity, tl, nl);
-    this.winnerText.alpha = 0;
-  }
-
-  private placeWinner(u: number): void {
-    // The emptied crate sinks away so the winner's name reads clearly.
-    this.pedGroup.y = CRATE_DROP + 260 * easeOutCubic(u);
-    this.pedGroup.alpha = 1 - 0.7 * u;
-    const v = this.winner;
-    if (!v) return;
-    const from = this.reel ? this.reel.winnerCenter() : { x: 0, y: 0 };
-    const e = easeOutCubic(u);
-    v.root.position.set(lerp(640 + from.x, 640, e), lerp(REEL_Y + from.y, 318, e));
-    v.root.scale.set(lerp(1.05, 1.5, easeOutBack(u, 1.6)));
-    v.root.rotation = 0.06 * Math.sin(u * Math.PI);
-    this.reel?.focusWinner(u);
-    this.bigRaysLevel = Math.max(this.bigRaysLevel, 0.9 * e);
-  }
-
-  private winnerFrame(s: ReelWinnerStep, t: number): void {
-    this.placeWinner(span(t, 0, 520));
-    if (this.reel) this.reel.root.alpha = 1 - 0.8 * span(t, 300, 900);
-    this.winnerText.alpha = span(t, 350, 700);
-    if (t >= 60 && this.fire('winner-burst') && this.winner) {
-      this.fan?.flipBurst(this.winner, true);
-      this.shards(640, 318, RARITY_COLORS[s.card.rarity], this.d.settings.reduceMotion ? 10 : 40, 0.8);
-    }
+    v.root.rotation = 0.12 * (1 - e);
+    this.setLid(1);
   }
 
   private async art(card: string, skin: string | null) {
@@ -1101,12 +1025,6 @@ export class CapsuleStage implements ShowView {
       this.fanAlpha += (want - this.fanAlpha) * Math.min(1, dt / (this.walkout ? 260 : 200));
       this.fan.root.alpha = this.fanAlpha;
     }
-    if (this.summaryDim > 0) {
-      const k = Math.min(1, dt / 200);
-      if (this.winner) this.winner.root.alpha += (0.25 - this.winner.root.alpha) * k;
-      this.winnerText.alpha += (0 - this.winnerText.alpha) * k;
-      if (this.reel) this.reel.root.alpha += (0 - this.reel.root.alpha) * k;
-    }
   }
 
   private updateFlyers(dt: number): void {
@@ -1129,8 +1047,6 @@ export class CapsuleStage implements ShowView {
 
   destroy(): void {
     this.walkout?.destroy();
-    this.reel?.destroy();
-    this.winner?.destroy();
     // Flying halves first: they share the drums' drawing contexts.
     for (const f of this.flyers) f.c.destroy({ children: true });
     this.flyers.length = 0;

@@ -12,7 +12,11 @@ import { TutorialBubble } from './TutorialBubble';
 /** The "Scouted (n)" chip appears from match 3; new players have enough to read (audit #11). */
 export const SCOUTED_FROM_MATCH = 3;
 
-export function BattleScreen(p: { battle: BattleHandle }) {
+export function BattleScreen(p: {
+  battle: BattleHandle;
+  /** The meta screens draw WP9's Pause overlay instead of the simple panel (Phase 2b). */
+  externalPause?: boolean;
+}) {
   const ui = useApp();
   const root = useRef<HTMLDivElement>(null);
   const b = p.battle;
@@ -61,7 +65,7 @@ export function BattleScreen(p: { battle: BattleHandle }) {
         t={ui.t}
         onDismiss={() => b.director.dismissHint()}
       />
-      {status === 'paused' ? (
+      {status === 'paused' && !p.externalPause ? (
         <div class="ab-scrim" data-testid="pause">
           <div class="ab-panel">
             <h2>{ui.t('app.paused')}</h2>

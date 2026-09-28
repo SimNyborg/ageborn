@@ -15,6 +15,8 @@ export interface SummaryActions {
   onEquipSkin?: (skin: SkinId) => void;
   onUpgrade?: (card: CardId) => void;
   onOpenNext?: () => void;
+  /** "Open all (N)": every waiting capsule at once (A10 Rules). Shown when 2 or more wait. */
+  onOpenAll?: () => void;
   onDone: () => void;
   /** Capsules still waiting after this one ("Open next (N)"). */
   pendingCount?: number;
@@ -141,6 +143,11 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
           {pending > 0 && actions.onOpenNext ? (
             <button class={css.btnGhost} type="button" onClick={() => actions.onOpenNext?.()} data-testid="capsule-open-next">
               {t('capsule.summary.openNext', { n: pending })}
+            </button>
+          ) : null}
+          {pending > 1 && actions.onOpenAll ? (
+            <button class={css.btnGhost} type="button" onClick={() => actions.onOpenAll?.()} data-testid="capsule-open-all">
+              {t('capsule.summary.openAll', { n: pending })}
             </button>
           ) : null}
           <button class={css.btn} type="button" onClick={() => actions.onDone()} data-testid="capsule-done" autoFocus>

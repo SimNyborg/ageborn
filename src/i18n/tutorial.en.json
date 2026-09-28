@@ -88,7 +88,10 @@
     "bellWin": "You led when the bell rang at {time}",
     "bellLoss": "{name} led when the bell rang at {time}",
     "drawLine": "Even after {time}",
-    "newSlot": "New slot · {cost}"
+    "newSlot": "New slot · {cost}",
+    "tip": {
+      "trickle": "Tip: units sent one by one fall one by one. Bank gold, then send a wave."
+    }
   },
   "replay": {
     "title": "Replay",

@@ -191,7 +191,7 @@ export function ModeSelectScreen(p: { route: RouteOf<'modeSelect'> }) {
   const conquest = conquestView(s, content);
   const modifier = services.dailyModifier();
   const challenge = content.dailyModifiers.challenge;
-  const wonToday = s.daily.won;
+  const wonToday = s.daily.bank <= 0;
 
   const starter = useMatchStarter();
 

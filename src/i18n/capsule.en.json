@@ -38,7 +38,8 @@
       "upgrade": "Upgrade",
       "openNext": "Open next ({n})",
       "done": "Done",
-      "equipped": "Equipped"
+      "equipped": "Equipped",
+      "openAll": "Open all ({n})"
     },
     "wardrobe": {
       "duplicate": "Duplicate: +{n} Dust",
@@ -48,6 +49,19 @@
       "stage": "Capsule opening. Tap to strike, hold to fast-forward.",
       "crateStage": "Wardrobe Crate opening. Hold to fast-forward.",
       "skip": "Skip to the results"
+    },
+    "honesty": "The result was decided when you earned this capsule. Tapping only reveals it.",
+    "kind": {
+      "starter": "Starter Capsule · contents set to get you started",
+      "supply": "Supply Capsule"
+    },
+    "odds": {
+      "title": "Odds and guarantees",
+      "setContents": "Set contents",
+      "setContentsBody": "Starter Capsules 1-5 hold set cards chosen to get you started. They do not use the bag, and they still count for every guarantee.",
+      "close": "Close",
+      "thisCapsule": "This capsule",
+      "supplyOdds": "Supply Capsule tiers"
     }
   }
 }

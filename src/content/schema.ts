@@ -341,6 +341,10 @@ const ArenasSchema = v.strictObject({
   ),
   ladder: v.strictObject({
     win: v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg }),
+    winByFormat: v.strictObject({
+      fromTrophies: nonNeg,
+      formats: v.partial(byKeys(['tutorial', 'short', 'standard', 'full'], v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg }))),
+    }),
     loss: v.strictObject({ trophies: int, amber: nonNeg, noLossBelowTrophies: nonNeg }),
     draw: v.strictObject({ trophies: int, amber: nonNeg }),
     lossProtection: v.strictObject({ streak: pos, tierDrop: pos }),
@@ -444,7 +448,7 @@ const QuestSchema = v.strictObject({
   id,
   metric: v.picklist([
     'wins', 'battles', 'unitsTrained', 'evolves', 'fastFinalAge', 'turretKills', 'winsWithoutTreasury', 'powerMultiHit', 'baseDamage',
-    'heavyKillsByAA', 'winsWithLegendary', 'fastBaseKill', 'winsAfterLastStand', 'upgrades', 'dailyChallengeWins',
+    'heavyKillsByAA', 'winsWithLegendary', 'fastBaseKill', 'winsAfterLastStand', 'upgrades', 'dailyChallengeWins', 'countingWins',
   ]),
   target: pos,
   rewards: v.array(QuestRewardSchema),
@@ -454,6 +458,7 @@ const QuestSchema = v.strictObject({
   beforeMsByFormat: v.optional(v.partial(byKeys(['tutorial', 'short', 'standard', 'full'], pos))),
   beforeMs: v.optional(pos),
   minHits: v.optional(pos),
+  weight: pos,
   nameKey: key,
 });
 
@@ -462,7 +467,7 @@ const QuestsSchema = v.strictObject({
   weekly: QuestSchema,
   dailyCount: pos,
   freeRerolls: nonNeg,
-  bankMax: pos,
+  queueMax: pos,
   resetHour: v.pipe(int, v.minValue(0), v.maxValue(23)),
   codex: v.strictObject({
     pointsPerLevel: pos,
@@ -491,7 +496,17 @@ const DailyModifiersSchema = v.strictObject({
       descKey: key,
     }),
   ),
-  challenge: v.strictObject({ format: FORMAT, firstWinReward: v.literal('ageCapsule'), winAmber: pos, resetHour: nonNeg }),
+  challenge: v.strictObject({
+    format: FORMAT,
+    firstWinReward: v.literal('ageCapsule'),
+    winAmber: pos,
+    resetHour: nonNeg,
+    bankMax: pos,
+    bankStart: nonNeg,
+    standardLevel: pos,
+    difficulties: v.strictObject({ recruit: nonNeg, veteran: nonNeg, warlord: nonNeg }),
+    generals: v.array(GENERAL),
+  }),
 });
 
 const TitleUnlockSchema = v.variant('kind', [
@@ -506,7 +521,31 @@ const TitleUnlockSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('wins'), count: pos }),
   v.strictObject({ kind: v.literal('beatGeneral'), general: GENERAL }),
   v.strictObject({ kind: v.literal('conquestStars'), stars: pos }),
+  v.strictObject({ kind: v.literal('feat'), feat: id }),
 ]);
+
+const FeatPredicateSchema = v.variant('kind', [
+  v.strictObject({ kind: v.literal('crossAgeKill'), killerAge: AGE, victimAge: AGE }),
+  v.strictObject({ kind: v.literal('castKills'), power: id, victimAges: v.array(AGE), min: pos }),
+  v.strictObject({ kind: v.literal('winMaxAge'), formats: v.array(FORMAT), maxAge: AGE }),
+  v.strictObject({ kind: v.literal('winNoTurret'), formats: v.array(FORMAT) }),
+  v.strictObject({ kind: v.literal('winFinalBellMargin'), maxMarginBp: bp }),
+  v.strictObject({ kind: v.literal('lastStandKills'), min: pos }),
+  v.strictObject({ kind: v.literal('reachAgeBefore'), age: AGE, beforeMs: pos, formats: v.array(FORMAT) }),
+  v.strictObject({ kind: v.literal('winAfterAgesBehind'), ages: pos }),
+  v.strictObject({ kind: v.literal('winCommonsOnly'), formats: v.array(FORMAT) }),
+  v.strictObject({ kind: v.literal('winAfterBaseBelow'), belowBp: bp }),
+  v.strictObject({ kind: v.literal('finalBaseBlow'), unitAge: AGE, baseAge: AGE }),
+  v.strictObject({ kind: v.literal('agesAlive'), ages: pos }),
+]);
+
+const FeatsSchema = v.strictObject({
+  order: v.array(id),
+  list: v.record(
+    id,
+    v.strictObject({ id, predicate: FeatPredicateSchema, dust: pos, title: v.nullable(id), obscure: v.boolean(), nameKey: key, riddleKey: key, hintKey: key }),
+  ),
+});
 
 const CosmeticsSchema = v.strictObject({
   banners: v.array(v.strictObject({ id, arena: pos, nameKey: key })),
@@ -565,6 +604,7 @@ export const ContentSchema = v.strictObject({
   quests: QuestsSchema,
   dailyModifiers: DailyModifiersSchema,
   cosmetics: CosmeticsSchema,
+  feats: FeatsSchema,
   counters: v.record(id, v.record(id, v.pipe(v.number(), v.minValue(0), v.maxValue(1)))),
   ticks: TicksSchema,
   int: IntegerTablesSchema,

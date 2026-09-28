@@ -86,20 +86,12 @@ export function testCatalog(): CapsuleCatalog {
   };
 }
 
-export function crate(skin: SkinId, rarity: SkinRarity, tiles: SkinId[], o: Partial<PendingCrate> = {}, stopOffsetBp = 5000): WardrobeReveal {
+/** A Wardrobe Crate reveal as the meta writes it: no reel, so `reelTiles` is empty (A15.3). */
+export function crate(skin: SkinId, rarity: SkinRarity, o: Partial<PendingCrate> = {}): WardrobeReveal {
   return {
     crate: { id: 'crate-1', source: 'codex', skin, rarity, duplicateDust: 0, createdAt: 0, ...o },
-    reelTiles: tiles,
+    reelTiles: [],
     winnerIndex: 45,
-    stopOffsetBp,
+    stopOffsetBp: 0,
   };
-}
-
-/** 50 honest tiles: rare fillers, the winner at 45. */
-export function honestTiles(winner: SkinId): SkinId[] {
-  const fill = ['pumpkin_head', 'tin_can', 'toy_soldier', 'woolly_tuskback', 'pumpkin_head'];
-  const tiles = Array.from({ length: 50 }, (_, i) => fill[i % fill.length] ?? 'pumpkin_head');
-  tiles[45] = winner;
-  tiles[46] = 'tin_can';
-  return tiles;
 }

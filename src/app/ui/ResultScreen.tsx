@@ -9,6 +9,7 @@ import type { RewardStep } from '@/contracts';
 import type { ResultState } from '../controller';
 import { RewardStager } from '../flow';
 import { displayName } from '../names';
+import { lossTipKey } from '../trickle';
 import { useApp } from './context';
 
 function rewardText(t: (k: string, p?: Record<string, string | number>) => string, r: RewardStep): string {
@@ -96,6 +97,8 @@ export function ResultScreen(p: { result: ResultState }) {
   const retry = onboarding && c.canRetry(p.result);
   const next = onboarding && step !== 'match1';
   const name = displayName(input.opponent.displayName, ui.services.i18n);
+  // A16.6: one loss tip when the trickle detector fired.
+  const tip = lossTipKey({ won, draw, trickled: p.result.battle?.trickle.fired ?? false });
   const line = resultLine(ui.t, won, draw, input.outcome.reason, name, clock(input.stats.durationMs));
   // One main action (gold) and one second; replay and home are small icon buttons.
   const primary = next ? 'next' : retry ? 'retry' : 'again';
@@ -121,6 +124,11 @@ export function ResultScreen(p: { result: ResultState }) {
           <span>{ui.t('app.stats.trained', { n: input.stats.trained })}</span>
           <span>{ui.t('app.stats.kills', { n: input.stats.kills })}</span>
         </div>
+        {tip ? (
+          <p class="ab-result-tip" data-testid="result-tip">
+            {ui.t(tip)}
+          </p>
+        ) : null}
         {rewards.length > 0 ? (
           <div class="ab-rewards" data-testid="result-rewards">
             {rewards.slice(0, revealed).map((r, i) => (

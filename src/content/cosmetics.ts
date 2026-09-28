@@ -42,6 +42,11 @@ export const cosmetics: Cosmetics = {
     { id: 'wardens_bane', unlock: { kind: 'beatGeneral', general: 'warden' }, nameKey: 'title.wardens_bane.name' },
     { id: 'conqueror', unlock: { kind: 'conquestStars', stars: 27 }, nameKey: 'title.conqueror.name' },
     { id: 'ageborn', unlock: { kind: 'arena', arena: 8 }, nameKey: 'title.ageborn.name' },
+    // A15.10: four hidden feats give a title
+    { id: 'the_stubborn', unlock: { kind: 'feat', feat: 'stubborn' }, nameKey: 'title.the_stubborn.name' },
+    { id: 'photo_finisher', unlock: { kind: 'feat', feat: 'photo_finish' }, nameKey: 'title.photo_finisher.name' },
+    { id: 'stone_cold', unlock: { kind: 'feat', feat: 'stone_cold' }, nameKey: 'title.stone_cold.name' },
+    { id: 'keeper_of_ages', unlock: { kind: 'feat', feat: 'old_guard' }, nameKey: 'title.keeper_of_ages.name' },
   ],
   // A5.8 six emotes; A7.2 bots use only GG, Salute and Thumbs up
   emotes: [

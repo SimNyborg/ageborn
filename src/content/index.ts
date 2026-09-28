@@ -13,6 +13,7 @@ import { compileContent } from './compile';
 import { cosmetics } from './cosmetics';
 import { parseCounterFile } from './counters/matrix';
 import { dailyModifiers } from './dailyModifiers';
+import { feats } from './feats';
 import countersJson from './generated/counters.json';
 import { generals } from './generals';
 import { names } from './names';
@@ -41,6 +42,7 @@ export const metaTables: MetaTables = {
   quests,
   dailyModifiers,
   cosmetics,
+  feats,
 };
 
 /** The counter-matrix file as loaded (DESIGN B4). */

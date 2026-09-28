@@ -1,5 +1,5 @@
 /**
- * Capsule and crate show (WP10, DESIGN A10, A10.1).
+ * Capsule and crate show (WP10, DESIGN A10, A15.3, A15.6).
  *
  * The app mounts a screen after the meta has rolled and saved the result (A6.4, B8):
  *
@@ -8,9 +8,10 @@
  *   <CapsuleScreen pixi={app} art={art} audio={audio} catalog={catalog} reveals={[reveal]}
  *     progress={progress} pityRules={content.capsules.pity} settings={save.settings}
  *     pendingCount={n} onEquip={...} onUpgrade={...} onOpenNext={...} onDone={...} />
- *   <WardrobeScreen ... reveal={crateReveal} reelReveal={platform.features.reelReveal} pity={save.pity} />
+ *   <WardrobeScreen ... reveal={crateReveal} pity={save.pity} />
  *
- * The pure parts (plan, runner, reel math, summary model) have no Pixi imports and are unit-tested.
+ * The Wardrobe Crate uses the card flip; there is no reel (A15.3). The pure parts (plan, runner,
+ * summary model) have no Pixi imports and are unit-tested.
  */
 export { CapsuleScreen, WardrobeScreen, type CapsuleScreenProps, type WardrobeScreenProps } from './CapsuleScreen';
 export { CapsuleStage, DESIGN_H, DESIGN_W, type StageDeps } from './capsuleStage';
@@ -34,7 +35,6 @@ export {
   type WardrobePlanOptions,
 } from './plan';
 export { AEON_RIM, RARITY_COLORS, TIER_COLORS } from './palette';
-export { buildReelLayout, checkReel, REEL, reelPosAt, reelTicks, reelTilesForView, type ReelLayout } from './reelMath';
 export { ShowRunner, type RunnerOptions, type RunnerState, type ShowView } from './runner';
 export {
   buildSummary,

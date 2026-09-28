@@ -28,8 +28,13 @@ export interface Settings {
   teamPreset: TeamPreset;
   locale: Locale;
   defaultSpeed: 1 | 1.5 | 2;
+  /** Vibration on capsule climbs and Legendaries (A13); default false (A15.6). */
   vibrate: boolean;
   mutedEmotes: boolean;
+  /** Break reminder after each 60 min of active play (A15.6); default true when missing. */
+  breakReminder?: boolean;
+  /** Every capsule opens at the burst (A10 step 4) (A15.6); default false when missing. */
+  quickReveal?: boolean;
 }
 
 /** Profile statistics (DESIGN A6.1). */
@@ -38,6 +43,7 @@ export interface ProfileStats {
   wins: number;
   losses: number;
   draws: number;
+  /** Ladder, Daily Challenge and Conquest wins only (A15.9); Skirmish is practice. */
   winsByTier: number[];
   lossesByTier: number[];
   trainedByCard: Record<CardId, number>;
@@ -53,9 +59,14 @@ export interface QuestSlot {
 }
 
 export interface QuestState {
+  /** A queue of up to 21 quests; only the first 3 are active and progress (A6.7, A15.4). */
   daily: QuestSlot[];
   rerollUsed: boolean;
   dayKey: string;
+  /**
+   * War Chest progress (A15.5): `progress` counts counting wins (0-19) and is never reset by
+   * `tickTimers`; `weekKey` is unused and kept for contract stability.
+   */
   weekly: QuestSlot;
   weekKey: string;
 }
@@ -137,10 +148,12 @@ export interface SaveDoc {
   activePlan: number;
   capsules: {
     pending: PendingCapsule[];
+    /** Capsule charges; the bank holds up to 28 (A15.4). */
     charges: number;
     chargesUpdatedAt: number;
     freeCapsulesLeft: number;
     clayMeter: number;
+    /** The Supply Capsule allowance, up to 7 (A15.4); `PendingCapsule.kind 'daily'` shows as "Supply Capsule". */
     dailyBank: number;
     dailyNextAt: number | null;
     bag: number[];
@@ -164,12 +177,14 @@ export interface SaveDoc {
   mmr: number;
   lossStreak: number;
   matchesPlayed: number;
-  daily: { dayKey: string; won: boolean };
+  /** Daily Challenge reward bank (A15.7): +1 at each 04:00, up to 7; a new save starts with 1. */
+  daily: { dayKey: string; bank: number };
   conquest: { stars: Record<string, [boolean, boolean, boolean]>; milestonesClaimed: number[] };
   stats: ProfileStats;
   settings: Settings;
   tutorial: { step: number; hintsShown: Record<string, number> };
   lastExportAt: number | null;
+  /** Free flags; meta sets `feat.<id>` for found feats and `featHint.<id>` for shown hints (A15.10). */
   flags: Record<string, boolean>;
 }
 

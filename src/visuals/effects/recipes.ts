@@ -223,8 +223,9 @@ function explosion(id: string, s: number): FxRecipe {
     durationMs: 1100 * Math.min(1.4, s),
     sprites: [
       scorch(2.2 * s, 1000 * Math.min(1.4, s)),
-      bloom(2.4 * s, 420, 0xffe2b0, 0.85),
+      bloom(2.4 * s, 420, 0xffd9a0, 0.9),
       bloom(1.3 * s, 220, 0xffffff, 0.9),
+      { sprite: 'fx.p.disc', life: 300, keys: [{ t: 0, sx: 0.5 * s, sy: 0.5 * s, a: 1 }, { t: 0.3, sx: 1.5 * s, sy: 1.5 * s, a: 0.95 }, { t: 1, sx: 1.9 * s, sy: 1.7 * s, a: 0, y: -6 * s }], tint: 0xffdca6 },
       flash(2.6 * s, 0xfff1d2, 140),
       flash(1.4 * s, 0xffffff, 90),
       ring(3 * s, 320, 0xfff6e2),

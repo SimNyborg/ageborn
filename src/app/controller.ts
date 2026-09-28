@@ -61,6 +61,11 @@ export interface AppControllerOptions {
   seed?: () => number;
   /** "3-2-1 Fight!" before Quick Battles and other non-tutorial matches (off in tests and on autopilot). */
   countdown?: boolean;
+  /**
+   * Phase 2b: once onboarding is done the start screen is WP9's Home (an opaque screen), so the
+   * title builds no waiting battle behind it (main.tsx sets this; the Phase 2a tests do not).
+   */
+  homeScreen?: boolean;
 }
 
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -197,6 +202,11 @@ export class AppController {
     // capsule show here instead.
     const step = this.stepSig.peek();
     if ((step === 'capsule1' || step === 'capsule2') && !this.services.meta) this.completeStep(step);
+    // After onboarding the start screen is Home (WP9): nothing waits behind it.
+    if (this.o.homeScreen && this.stepSig.peek() === 'home') {
+      this.routeSig.value = { id: 'title', battle: null };
+      return;
+    }
     // The title is the live battlefield (A8 0:00): the next onboarding match waits behind it, or the
     // training match vs Old Grogg once onboarding is done.
     const setup = this.onboardingSetup() ?? tutorialMatch1(this.saveSig.peek(), this.services.content, this.t('general.grogg.name'), this.labels());
@@ -287,6 +297,27 @@ export class AppController {
       return;
     }
     this.quickBattle(s.config.format);
+  }
+
+  /**
+   * Starts a prepared match (the meta screens' VS → battle, `UiServices.beginBattle`): the setup
+   * comes from `matchSetupFor` with meta's opponent.
+   */
+  startSetup(setup: MatchSetup): BattleHandle {
+    this.disposeRoute();
+    const battle = this.build(setup);
+    this.startBattle(battle);
+    return battle;
+  }
+
+  /**
+   * Replaces the save (meta screen actions: upgrades, plans, settings, claims) and persists it.
+   * `immediate` for capsule rolls, upgrades and claims (B8).
+   */
+  setSave(next: SaveDoc, o: { immediate?: boolean } = {}): void {
+    this.saveSig.value = next;
+    this.stepSig.value = onboardingStep(next);
+    void this.services.saveStore.save(next, o.immediate ? { immediate: true } : undefined);
   }
 
   watchReplay(replay: ReplayDoc): void {

@@ -51,6 +51,8 @@ function earned(u: TitleUnlock, s: SaveDoc, t: Content, m: TitleMatchFacts | nul
       return !!m && m.win && m.generalId === u.general;
     case 'conquestStars':
       return conquestStarTotal(s) >= u.stars;
+    case 'feat':
+      return s.flags[`feat.${u.feat}`] === true;
   }
 }
 

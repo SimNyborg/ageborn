@@ -10,6 +10,12 @@ function openLast(s: SaveDoc) {
   return M.openCapsule(s, lastPending(s).id);
 }
 
+/** Opens the oldest waiting capsule, or grants and opens a Win Capsule when none waits. */
+function openNext(s: SaveDoc) {
+  const g = s.capsules.pending.length > 0 ? s : M.grantCapsule(s, 'win', C, clock());
+  return M.openCapsule(g, g.capsules.pending[0]!.id);
+}
+
 describe('onboarding script (A6.5)', () => {
   it('capsule 1 is a Bronze climb with Spear Hunter NEW and a Bonker stack; it uses no charge', () => {
     const s0 = fresh();
@@ -36,8 +42,7 @@ describe('onboarding script (A6.5)', () => {
     let s = fresh(7);
     const reveals = [];
     for (let i = 0; i < 6; i += 1) {
-      const g = M.grantCapsule(s, i === 2 ? 'daily' : 'win', C, clock());
-      const o = openLast(g);
+      const o = openNext(s);
       reveals.push(o.reveal);
       s = o.save;
     }
@@ -45,7 +50,8 @@ describe('onboarding script (A6.5)', () => {
     expect(c1?.capsule.contents.stacks.some((x) => x.card === 'spear_hunter' && x.isNew)).toBe(true);
     expect(c2?.capsule.tier).toBe('silver');
     expect(c2?.capsule.contents.stacks.filter((x) => x.isNew).map((x) => x.card).sort()).toEqual(['grenadier', 'pikeman']);
-    // The script overrides the kind: capsule 3 is a Daily Capsule here and still the scripted Bronze.
+    // Capsule 3 is the first Supply Capsule, granted right after capsule 2 (A15.4); the script
+    // overrides its tier: still the scripted Bronze.
     expect(c3?.capsule).toMatchObject({ kind: 'daily', tier: 'bronze', startTier: 'bronze', scriptIndex: 3 });
     expect(c3?.climbs).toBe(0);
     expect(c3?.capsule.contents.stacks.filter((x) => x.isNew).map((x) => x.card)).toEqual(['log_roller']);
@@ -78,7 +84,7 @@ describe('onboarding script (A6.5)', () => {
 
   it('a scripted Age Capsule follows the script, belongs to no age and needs no age dialog', () => {
     let s = fresh(11);
-    for (let i = 0; i < 4; i += 1) s = openLast(M.grantCapsule(s, 'win', C, clock())).save;
+    for (let i = 0; i < 4; i += 1) s = openNext(s).save;
     const c = clock();
     const scriptedWin = { ...s, flags: { ...s.flags, 'meta.ladderPlayed': true } };
     const win = matchInput('daily', 'win', M.pickOpponent(scriptedWin, 'daily', C, c));

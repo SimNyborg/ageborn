@@ -11,6 +11,10 @@
  * 6. `heal_stack`: healers behind a Heavy wall.
  * 7. `xp_bank`: banks XP to the cap before every evolve.
  * 8. `power_on_evolve`: saves the Age Power for the moment before each evolve.
+ * 9. `random_spam`: a uniformly random affordable tray unit, no turrets, no Treasury, evolves at once,
+ *    power on auto-aim when full (A16.5).
+ * 10. `mono_heavy`, `mono_ranged`, `mono_antiair`: the mono family at m = 100% (A16.5): only that role
+ *    group while the tray has one, otherwise random; no turrets, no Treasury.
  *
  * `balanced` is a plain reference player; the tools also use it as the stand-in bot when `src/ai`
  * cannot be loaded. Proxies see the same `Observation` as bots (A7.1) with a 300 ms reaction delay and
@@ -30,13 +34,23 @@ export type ProxyId =
   | 'mass_splash'
   | 'heal_stack'
   | 'xp_bank'
-  | 'power_on_evolve';
+  | 'power_on_evolve'
+  | 'random_spam'
+  | 'mono_heavy'
+  | 'mono_ranged'
+  | 'mono_antiair';
+
+/** Mono family groups (A16.5): Heavy, anti-air and Ranged. */
+export type MonoGroup = 'heavy' | 'antiAir' | 'ranged';
 
 export interface Strategy {
   id: ProxyId;
   title: string;
   /** How the next unit is chosen. */
-  train: 'weighted' | 'cheapest' | 'heavyRanged';
+  train: 'weighted' | 'cheapest' | 'heavyRanged' | 'random' | 'mono';
+  /** `mono`: the role group trained. */
+  mono?: MonoGroup;
+  /** Power: `value` casts on a clump, `full` casts on auto-aim as soon as the ring is full. */
   /** Tray-slot weights for `weighted` training. */
   weights: [number, number, number, number, number];
   /** Treasury levels to buy. */
@@ -48,7 +62,7 @@ export interface Strategy {
   modernise: boolean;
   stance: 'charge' | 'hold' | 'massThenCharge';
   evolve: 'asap' | 'bank';
-  power: 'value' | 'beforeEvolve';
+  power: 'value' | 'beforeEvolve' | 'full';
   /** Whole gold kept back before training. */
   reserve: number;
   plan(content: CompiledContent): Plan;
@@ -138,7 +152,18 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
   heal_stack: { ...BALANCED, id: 'heal_stack', title: 'Heal stacking', weights: [1, 1, 3, 1, 5], plan: healPlan },
   xp_bank: { ...BALANCED, id: 'xp_bank', title: 'XP bank and double evolve', evolve: 'bank' },
   power_on_evolve: { ...BALANCED, id: 'power_on_evolve', title: 'Power saved for evolve moments', power: 'beforeEvolve' },
+  random_spam: { ...BALANCED, id: 'random_spam', title: 'Random spam', train: 'random', treasury: 0, turrets: 0, modernise: false, power: 'full' },
+  mono_heavy: { ...BALANCED, id: 'mono_heavy', title: 'Mono Heavy spam', train: 'mono', mono: 'heavy', treasury: 0, turrets: 0, modernise: false, power: 'full' },
+  mono_ranged: { ...BALANCED, id: 'mono_ranged', title: 'Mono Ranged spam', train: 'mono', mono: 'ranged', treasury: 0, turrets: 0, modernise: false, power: 'full' },
+  mono_antiair: { ...BALANCED, id: 'mono_antiair', title: 'Mono anti-air spam', train: 'mono', mono: 'antiAir', treasury: 0, turrets: 0, modernise: false, power: 'full' },
 };
+
+/** Whether a unit belongs to a mono family group (anti-air: any unit that hits air). */
+export function inMonoGroup(u: UnitDef, g: MonoGroup): boolean {
+  if (g === 'antiAir') return u.attacks.some((a) => a.hitsAir) && !u.tags.includes('air');
+  if (g === 'heavy') return u.group === 'heavy';
+  return u.group === 'ranged';
+}
 
 /** The exploit proxies of B12, in DESIGN order (the reference player excluded). */
 export const EXPLOIT_PROXIES: readonly ProxyId[] = [
@@ -150,7 +175,12 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
   'heal_stack',
   'xp_bank',
   'power_on_evolve',
+  'random_spam',
+  'mono_heavy',
 ];
+
+/** Every other proxy the tools know (run with `--proxies`). */
+export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair'];
 
 export function isProxyId(s: string): s is ProxyId {
   return Object.hasOwn(STRATEGIES, s);
@@ -214,7 +244,7 @@ export class ScriptedPlayer implements BotController {
           out.push({ t: 'power', side });
           evolveNow = false; // evolve on the next decision, after the cast
         }
-      } else if (nearMid >= 3 || threat) {
+      } else if (st.power === 'full' || nearMid >= 3 || threat) {
         out.push({ t: 'power', side });
       }
     }
@@ -283,7 +313,7 @@ export class ScriptedPlayer implements BotController {
     const saving = threat || boughtInfra ? 0 : this.infrastructureGoal(me);
     let queued = me.queue.length;
     for (let i = 0; i < 4 && queued < econ.queueMax; i += 1) {
-      const slot = this.pickTrain(me.tray);
+      const slot = this.pickTrain(me.tray, gold);
       if (slot === null) break;
       const card = me.tray[slot] as CardId;
       const cost = this.content.units[card]?.cost ?? Number.POSITIVE_INFINITY;
@@ -327,11 +357,23 @@ export class ScriptedPlayer implements BotController {
     return this.massing ? 'hold' : 'charge';
   }
 
-  private pickTrain(tray: readonly (CardId | null)[]): number | null {
+  private pickTrain(tray: readonly (CardId | null)[], gold: number): number | null {
     const slots = tray.map((c, i) => (c !== null && this.content.units[c] ? i : -1)).filter((i) => i >= 0);
     if (slots.length === 0) return null;
     const unit = (i: number): UnitDef => this.content.units[tray[i] as CardId] as UnitDef;
     switch (this.strategy.train) {
+      case 'random': {
+        // Uniform over the affordable units; nothing affordable waits for gold.
+        const ok = slots.filter((i) => unit(i).cost <= gold);
+        if (ok.length === 0) return null;
+        return ok[pickWeighted(this.rng, ok.map(() => 1))] as number;
+      }
+      case 'mono': {
+        const g = this.strategy.mono ?? 'heavy';
+        const hit = slots.filter((i) => inMonoGroup(unit(i), g));
+        const pool = hit.length > 0 ? hit : slots;
+        return pool[pickWeighted(this.rng, pool.map(() => 1))] as number;
+      }
       case 'cheapest': {
         let best = slots[0] as number;
         for (const i of slots) if (unit(i).cost < unit(best).cost) best = i;

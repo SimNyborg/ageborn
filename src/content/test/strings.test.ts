@@ -65,6 +65,10 @@ function referencedKeys(): string[] {
   for (const f of c.cosmetics.frames) keys.push(f.nameKey, frameNameKey(f.id));
   for (const t of c.cosmetics.titles) keys.push(t.nameKey, titleNameKey(t.id), titleUnlockKey(t.id));
   for (const e of c.cosmetics.emotes) keys.push(e.nameKey, emoteNameKey(e.id));
+  for (const id of c.feats.order) {
+    const f = c.feats.list[id]!;
+    keys.push(f.nameKey, f.riddleKey, f.hintKey);
+  }
   return [...new Set(keys)].sort();
 }
 

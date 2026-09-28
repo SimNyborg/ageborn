@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { FakeAudio } from '@/contracts/fakes/audio';
 import { planCapsuleShow, planOpenAll, planWardrobeShow, type ShowPlan, type ShowStep } from '../plan';
 import { ShowRunner, type RunnerState, type ShowView } from '../runner';
-import { crate, honestTiles, reveal, stack, testCatalog } from './fixtures';
+import { crate, reveal, stack, testCatalog } from './fixtures';
 
 const catalog = testCatalog();
 
@@ -216,7 +216,7 @@ describe('ShowRunner (DESIGN A10 Input)', () => {
     expect(runner.state.index).toBeLessThanOrEqual(1);
   });
 
-  it('runs Open all and the wardrobe reel to their summaries', () => {
+  it('runs Open all and the Wardrobe Crate card flip to their summaries', () => {
     const all = planOpenAll(
       Array.from({ length: 10 }, (_, i) =>
         reveal({ id: `c${i}`, tier: i === 9 ? 'jade' : 'bronze', stacks: [stack(`u${i}`, i % 4 === 0 ? 'epic' : 'common', { isNew: i === 4 })] }),
@@ -228,10 +228,11 @@ describe('ShowRunner (DESIGN A10 Input)', () => {
     expect(a.runner.done).toBe(true);
     expect(a.audio.played().filter((s) => s === 'cap_burst')).toHaveLength(10);
 
-    const w = setup(planWardrobeShow(crate('ghost_corsair', 'epic', honestTiles('ghost_corsair')), { catalog, reelReveal: true }));
+    const w = setup(planWardrobeShow(crate('ghost_corsair', 'epic'), { catalog }));
     const ms = run(w.runner);
     expect(w.runner.done).toBe(true);
-    expect(ms).toBeGreaterThanOrEqual(500 + 5500 + 1600 - 32);
-    expect(w.audio.played().filter((s) => s === 'reel_tick').length).toBeGreaterThan(10);
+    expect(ms).toBeGreaterThanOrEqual(500 + 700 + 300 + 800 - 32);
+    expect(w.audio.played()).not.toContain('reel_tick');
+    expect(w.audio.played()).toContain('rarity_epic');
   });
 });

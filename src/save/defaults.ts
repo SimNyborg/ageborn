@@ -65,8 +65,10 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   teamPreset: 'default',
   locale: 'en',
   defaultSpeed: 1,
-  vibrate: true,
+  vibrate: false,
   mutedEmotes: false,
+  breakReminder: true,
+  quickReveal: false,
 }) as Readonly<Settings>;
 
 /** A fresh, mutable copy of the default settings (for a new profile or before any save exists). */

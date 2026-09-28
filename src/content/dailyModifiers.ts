@@ -28,5 +28,17 @@ const LIST: DailyModifierDef[] = [
 export const dailyModifiers: DailyModifierTables = {
   order: LIST.map((m) => m.id),
   list: Object.fromEntries(LIST.map((m) => [m.id, m])) as Record<ModifierId, DailyModifierDef>,
-  challenge: { format: 'standard', firstWinReward: 'ageCapsule', winAmber: 20, resetHour: 4 },
+  // A15.7 Daily Challenge 2.0: Standard War at L7; a banked reward (+1 a day, up to 7, a new save
+  // starts with 1) pays an Age Capsule, other wins 20 Amber; Recruit II, Veteran V, Warlord VIII
+  challenge: {
+    format: 'standard',
+    firstWinReward: 'ageCapsule',
+    winAmber: 20,
+    resetHour: 4,
+    bankMax: 7,
+    bankStart: 1,
+    standardLevel: 7,
+    difficulties: { recruit: 2, veteran: 5, warlord: 8 },
+    generals: ['pip', 'kettle', 'moss', 'ledger', 'boomsworth', 'twins', 'rook', 'tempest'],
+  },
 };

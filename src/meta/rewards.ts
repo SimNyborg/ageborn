@@ -12,7 +12,8 @@
  * | Conquest | one-time star rewards and milestones; no charges, no trophies, no MMR |
  *
  * Ladder results also move the hidden MMR and the loss streak (loss protection). Every mode updates
- * the profile stats, quest progress and titles. The returned steps are what the result screen stages
+ * the profile stats, quest progress and titles. A counting win fills the War Chest (A15.5), and every
+ * 3rd finished match outside the tutorial turns a banked allowance into a Supply Capsule (A15.4). The returned steps are what the result screen stages
  * one at a time: trophies, Amber, capsule or Clay pip, stars, quest progress, arenas, titles.
  */
 import type { AgeId, MatchResultInput, RewardStep, SaveDoc } from '@/contracts';
@@ -26,8 +27,11 @@ import { addQuestProgress, matchProgress } from './quests';
 import { META_FLAGS } from './rules';
 import { tickTimersAt } from './timers';
 import { unlockTitles } from './titles';
-import { applyTrophies, trophyDelta, type LadderResult } from './trophies';
-import { planHasLegendary } from './warplan';
+import { applyTrophies, ladderWinFor, trophyDelta, type LadderResult } from './trophies';
+import { planAverageLevelCenti, planHasLegendary } from './warplan';
+import { grantFeats } from './feats';
+import { supplyAfterMatch } from './supply';
+import { addWarChestWin, isCountingWin } from './warChest';
 import type { LocalTime } from './time';
 
 /** The player's result: win, loss (retreat included) or draw. */
@@ -49,6 +53,18 @@ function bump(list: readonly number[], index: number): number[] {
   return out;
 }
 
+/**
+ * A15.9 peak rank: "Highest AI tier beaten" (`winsByTier`) counts Ladder, Daily and Conquest wins
+ * only, and a Ladder or Conquest win only when the player's average level over the format's ages is
+ * at most 1 above the opponent's (A16.7). The Daily always counts (both sides play at L7).
+ */
+function raisesPeak(s: SaveDoc, t: Content, r: MatchResultInput): boolean {
+  if (r.mode === 'daily') return true;
+  if (r.mode !== 'ladder' && r.mode !== 'conquest') return false;
+  const avg = planAverageLevelCenti(s, t, r.opponent.format);
+  return avg === null || avg <= (r.opponent.level + 1) * 100;
+}
+
 /** Profile stats after one match (A6.1). */
 function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResult): SaveDoc {
   const st = s.stats;
@@ -65,7 +81,7 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
       wins: st.wins + (win ? 1 : 0),
       losses: st.losses + (result === 'loss' ? 1 : 0),
       draws: st.draws + (result === 'draw' ? 1 : 0),
-      winsByTier: win ? bump(st.winsByTier, tier) : st.winsByTier,
+      winsByTier: win && raisesPeak(s, t, r) ? bump(st.winsByTier, tier) : st.winsByTier,
       lossesByTier: result === 'loss' ? bump(st.lossesByTier, tier) : st.lossesByTier,
       fastestWinMs: win ? (st.fastestWinMs === null ? r.stats.durationMs : Math.min(st.fastestWinMs, r.stats.durationMs)) : st.fastestWinMs,
       futureReached: st.futureReached + (reachedFuture ? 1 : 0),
@@ -75,7 +91,9 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
 
 function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResult, now: number, steps: RewardStep[], arenas: number[]): SaveDoc {
   const rules = t.arenas.ladder;
-  const delta = trophyDelta(s, t, result);
+  const format = r.opponent.format;
+  const winRow = ladderWinFor(s, t, format);
+  const delta = trophyDelta(s, t, result, format);
   steps.push({ kind: 'trophies', delta });
   const moved = applyTrophies(s, t, delta);
   arenas.push(...moved.arenas);
@@ -89,12 +107,12 @@ function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResul
   if (result === 'win') {
     const paid = payForWinCapsule(save, t, now, true);
     if (paid) {
-      save = addAmber(paid.save, rules.win.amber, steps);
+      save = addAmber(paid.save, winRow.amber, steps);
       const g = grantCapsuleAt(save, 'win', t, now);
       save = g.save;
       steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
       pip = false;
-    } else save = addAmber(save, rules.win.amberWithoutCharge, steps);
+    } else save = addAmber(save, winRow.amberWithoutCharge, steps);
   } else save = addAmber(save, result === 'loss' ? rules.loss.amber : rules.draw.amber, steps);
   if (pip) {
     const p = addClayPip(save, t, now);
@@ -161,6 +179,24 @@ export function applyMatchResultAt(
   }
 
   save = recordStats(save, t, r, result);
+  if (r.mode !== 'tutorial') {
+    // A15.10: each new feat pays once and stages its own step.
+    const f = grantFeats(save, t, r.feats);
+    save = f.save;
+    steps.push(...f.steps);
+  }
+  const counting = isCountingWin(
+    { mode: r.mode, win, opponentTier: r.opponent.tier, earnedStar: steps.some((x) => x.kind === 'star'), mmr: s.mmr },
+    t,
+  );
+  if (counting) {
+    const w = addWarChestWin(save, t, now, o.age);
+    save = w.save;
+    steps.push(...w.steps);
+  }
+  const supply = supplyAfterMatch(save, t, r.mode, now);
+  save = supply.save;
+  if (supply.capsule) steps.push({ kind: 'capsule', capsuleId: supply.capsule.id });
   const facts = { mode: r.mode, win, format: r.opponent.format, outcome: r.outcome, stats: r.stats, legendaryInPlan: planHasLegendary(save, t, r.opponent.format) };
   const q = addQuestProgress(save, t, (def) => matchProgress(def, facts));
   save = q.save;
@@ -181,11 +217,11 @@ export function applyMatchResultAt(
 /**
  * True when applying `r` would grant an Age Capsule whose age the player picks in a dialog first
  * (A6.4 "all from one age picked in a dialog when granted"): the Daily Challenge's first win of the
- * day or a new Conquest star 3. The app asks for the age, then passes it to `applyMatchResult`. A
+ * day, a new Conquest star 3 or a full War Chest (A15.5). The app asks for the age, then passes it to `applyMatchResult`. A
  * scripted capsule (A6.5) ignores the age, so it needs no dialog.
  */
 export function ageCapsuleDue(s: SaveDoc, r: MatchResultInput, t: Content, lt: LocalTime): boolean {
-  if (r.mode !== 'daily' && r.mode !== 'conquest') return false;
+  if (r.mode === 'skirmish' || r.mode === 'tutorial') return false;
   const before = new Set(s.capsules.pending.map((p) => p.id));
   const { save } = applyMatchResultAt(s, r, t, lt);
   return save.capsules.pending.some((p) => !before.has(p.id) && p.kind === 'age' && p.scriptIndex === null);

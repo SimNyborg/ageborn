@@ -1,13 +1,16 @@
 /**
- * The show plan: the A10 storyboard as data (DESIGN A10, A10.1).
+ * The show plan: the A10 storyboard as data (DESIGN A10, A15.3, A15.6).
  *
  * `planCapsuleShow`, `planOpenAll` and `planWardrobeShow` turn reveal data into an ordered list of
  * timed steps with their sound cues. The plan is pure, so the time limits, the back-loaded climb
  * and the skip rules are tested without a renderer (`checkPlan`), and the runner and the Pixi stage
  * only play it back. The result is rolled and saved before any of this runs (A6.4, B8).
+ *
+ * There is no reel (A15.3): the Wardrobe Crate is revealed with the card flip. Quick reveal
+ * (Settings, A15.6) starts every capsule at the burst, as Trophy Road capsules do; the rarity
+ * pre-signals, walkouts and skips stay as they are.
  */
 import type { CapsuleReveal, CapsuleTier, Foil, Rarity, SoundId, WardrobeReveal } from '@/contracts';
-import { buildReelLayout, reelTicks, reelTilesForView, type ReelLayout } from './reelMath';
 import {
   buildSummary,
   buildWardrobeSummary,
@@ -46,7 +49,8 @@ export const SHOW_TIMING = {
   volleyMinMs: 600,
   volleyMaxMs: 2000,
   crateArrivalMs: 500,
-  reelWinnerMs: 1600,
+  /** The crate rattles, light leaks from its seams, then the lid bursts off. */
+  crateOpenMs: 700,
 } as const;
 
 /** Upper bounds per step (A10). `checkPlan` enforces them for every plan. */
@@ -68,8 +72,7 @@ export const SHOW_LIMITS = {
   duplicates: 500,
   volley: 2000,
   crateArrival: 500,
-  reel: 5500,
-  reelWinner: 2000,
+  crateOpen: 800,
   /** A10 Rules: nothing runs longer than 10 s without a skip. */
   unskippable: 10000,
 } as const;
@@ -146,8 +149,7 @@ export type WalkoutStep = StepBase & { kind: 'walkout'; card: RevealCard; first:
 export type MiniWalkoutStep = StepBase & { kind: 'miniWalkout'; card: RevealCard };
 export type DuplicatesStep = StepBase & { kind: 'duplicates'; card: RevealCard; progress: CardProgress | null; ticks: number };
 export type CrateArrivalStep = StepBase & { kind: 'crateArrival' };
-export type ReelStep = StepBase & { kind: 'reel'; reel: ReelLayout };
-export type ReelWinnerStep = StepBase & { kind: 'reelWinner'; card: RevealCard };
+export type CrateOpenStep = StepBase & { kind: 'crateOpen' };
 export type SummaryStep = StepBase & { kind: 'summary' };
 
 export type ShowStep =
@@ -163,8 +165,7 @@ export type ShowStep =
   | MiniWalkoutStep
   | DuplicatesStep
   | CrateArrivalStep
-  | ReelStep
-  | ReelWinnerStep
+  | CrateOpenStep
   | SummaryStep;
 
 export type StepKind = ShowStep['kind'];
@@ -185,6 +186,8 @@ export interface ShowPlan {
 export interface PlanOptions {
   catalog: CapsuleCatalog;
   progress?: ProgressLookup;
+  /** `Settings.quickReveal` (A15.6): open at the burst, with no arrival, charge or strikes. */
+  quickReveal?: boolean;
 }
 
 function step<T extends ShowStep>(s: Omit<T, 'skippable' | 'fastForward' | 'cues'> & Partial<StepBase>): T {
@@ -330,7 +333,7 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
   const T = SHOW_TIMING;
   const cap = reveal.capsule;
   const steps: ShowStep[] = [];
-  const climbs = o.catalog.hasClimb(cap.kind);
+  const climbs = o.catalog.hasClimb(cap.kind) && o.quickReveal !== true;
   const strikes = resolveStrikes(reveal);
   const issues = strikes.issues.slice();
   if (climbs) {
@@ -370,7 +373,7 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
       );
       from = to;
     }
-  } else if (cap.startTier !== cap.tier) {
+  } else if (!o.catalog.hasClimb(cap.kind) && cap.startTier !== cap.tier) {
     issues.push(`fixed-tier ${cap.kind} capsule has start tier ${cap.startTier} and tier ${cap.tier}; showing ${cap.tier}`);
   }
   steps.push(
@@ -441,11 +444,12 @@ export function planOpenAll(reveals: readonly CapsuleReveal[], o: PlanOptions): 
 
 export interface WardrobePlanOptions {
   catalog: CapsuleCatalog;
-  /** `platform.features.reelReveal` (A10.1); off → a card-flip reveal replaces the reel. */
-  reelReveal: boolean;
 }
 
-/** Wardrobe Crate: the CS-style reel, or a card flip when the flag is off (A10.1). */
+/**
+ * Wardrobe Crate: the card-flip reveal everywhere (A10, A15.3). The crate lands, rattles and bursts
+ * open, then its one skin card rises face down, pre-signals its rarity and flips. There is no reel.
+ */
 export function planWardrobeShow(reveal: WardrobeReveal, o: WardrobePlanOptions): ShowPlan {
   const T = SHOW_TIMING;
   const card = crateCard(reveal, o.catalog);
@@ -457,31 +461,18 @@ export function planWardrobeShow(reveal: WardrobeReveal, o: WardrobePlanOptions)
       cues: [{ atMs: T.arrivalImpactMs, sound: 'cap_thud' }],
     }),
   ];
-  if (o.reelReveal) {
-    const rarityOf = (s: string) => (s === reveal.crate.skin ? reveal.crate.rarity : o.catalog.skin(s).rarity);
-    const reel = buildReelLayout(reelTilesForView(reveal, rarityOf), reveal.stopOffsetBp, reveal.winnerIndex);
-    steps.push(
-      step<ReelStep>({
-        kind: 'reel',
-        id: 'reel',
-        durationMs: reel.durationMs,
-        reel,
-        cues: reelTicks(reel).map((t) => ({ atMs: t.atMs, sound: 'reel_tick', pitchBp: t.pitchBp })),
-      }),
-      step<ReelWinnerStep>({
-        kind: 'reelWinner',
-        id: 'reelWinner',
-        durationMs: T.reelWinnerMs,
-        card,
-        cues: [
-          { atMs: 0, sound: 'cap_burst' },
-          { atMs: 80, sound: `rarity_${card.rarity}` },
-        ],
-      }),
-    );
-  } else {
-    steps.push(...cardSteps(card));
-  }
+  steps.push(
+    step<CrateOpenStep>({
+      kind: 'crateOpen',
+      id: 'crateOpen',
+      durationMs: T.crateOpenMs,
+      cues: [
+        { atMs: 0, sound: 'cap_riser', volumeDb: -4 },
+        { atMs: T.crateOpenMs - 80, sound: 'cap_burst' },
+      ],
+    }),
+  );
+  steps.push(...cardSteps(card));
   steps.push(summaryStep());
   return {
     mode: 'wardrobe',
@@ -554,11 +545,8 @@ export function checkPlan(plan: ShowPlan): string[] {
       case 'crateArrival':
         over(s, 'crate arrival', s.durationMs, L.crateArrival);
         break;
-      case 'reel':
-        over(s, 'reel', s.durationMs, L.reel);
-        break;
-      case 'reelWinner':
-        over(s, 'winner', s.durationMs, L.reelWinner);
+      case 'crateOpen':
+        over(s, 'crate open', s.durationMs, L.crateOpen);
         break;
       case 'summary':
         break;

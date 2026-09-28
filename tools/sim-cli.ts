@@ -4,7 +4,7 @@
  *   npx tsx tools/sim-cli.ts balance   [--mode smoke|full] [--matches N] [--mirror N] [--cards a,b]
  *                                      [--tier 5] [--level 7] [--seed 1] [--workers N]
  *                                      [--no-mirror] [--no-scenarios] [--no-gate]
- *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--tier 7] [--workers N] [--no-gate]
+ *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,full] [--tier 7] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
@@ -44,7 +44,8 @@ Commands:
                   --mode smoke|full --matches N (per card) --mirror N (per format) | --no-mirror
                   --cards a,b --tier 5 --level 7 --seed 1 --bound 6 (CI half-width) --no-scenarios
   exploits        scripted exploit proxies vs the tier VII Balanced bot (A2.14)
-                  --mode smoke|full --matches N (per proxy) --proxies a,b --tier 7 --level 7 --seed 1
+                  --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,full
+                  --tier 7 --level 7 --seed 1
   economy         365-day economy sim against the A6.9 pacing table
                   --days 365 --seed 1
   drops           capsule openings: bag totals, chi-square of published odds, pity (A6.4, A6.5)
@@ -65,13 +66,20 @@ const COMMON_FLAGS = ['out', 'gate', 'workers'];
 /** The flags of each command; anything else is a typo and must not silently start a default run. */
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   balance: ['mode', 'matches', 'mirror', 'cards', 'tier', 'level', 'seed', 'bound', 'scenarios'],
-  exploits: ['mode', 'matches', 'proxies', 'tier', 'level', 'seed'],
+  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed'],
   economy: ['days', 'seed'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
   csv: ['dir', 'raw', 'dry-run'],
   match: ['format', 'seed', 'level', 'p0', 'p1', 'replay'],
 };
+
+/** `--formats short,full`: validated format ids, or the default. */
+function formatList(v: string[], fallback: FormatId[]): FormatId[] {
+  if (v.length === 0) return fallback;
+  for (const f of v) if (!Object.hasOwn(content.formats, f)) throw new Error(`unknown format "${f}" (${Object.keys(content.formats).join(', ')})`);
+  return v as FormatId[];
+}
 
 function checkFlags(command: string, a: Args): void {
   const allowed = COMMAND_FLAGS[command];
@@ -182,6 +190,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         ...d,
         matchesPerProxy: int(a, 'matches', d.matchesPerProxy),
         proxies: proxies.length > 0 ? (proxies as ProxyId[]) : d.proxies,
+        formats: formatList(list(a, 'formats'), d.formats),
         tier: int(a, 'tier', d.tier),
         level: int(a, 'level', d.level),
         seed: int(a, 'seed', d.seed),

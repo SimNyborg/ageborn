@@ -231,9 +231,10 @@
   background: none;
   cursor: pointer;
   border-radius: 34px;
-  animation: ui-breathe 2.8s ease-in-out infinite;
 }
+/* The face breathes, not the button, so the button's own box stays still (tests and hit-testing). */
 .home-battle__face {
+  animation: ui-breathe 2.8s ease-in-out infinite;
   position: relative;
   display: flex;
   align-items: center;

@@ -11,6 +11,7 @@ export {
   SCREENS,
   WP9_SCREENS,
   visibleEntries,
+  type DailyDifficulty,
   type MatchMode,
   type MatchRequest,
   type PauseInfo,

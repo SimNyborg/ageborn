@@ -76,11 +76,14 @@ export const DEFAULT_PITY_RULES: PityRules = {
   wardrobeLegendaryEvery: 25,
 };
 
-/** Player settings the show honours (A12 reduce motion, A13 vibrate). */
+/** Player settings the show honours (A12 reduce motion, A13 vibrate, A15.6 quick reveal). */
 export interface ShowSettings {
   reduceMotion: boolean;
+  /** Default false (A15.6). */
   vibrate: boolean;
   teamPreset: SaveDoc['settings']['teamPreset'];
+  /** Every capsule opens at the burst (A10 step 4, A15.6). Default false. */
+  quickReveal: boolean;
 }
 
-export const DEFAULT_SHOW_SETTINGS: ShowSettings = { reduceMotion: false, vibrate: true, teamPreset: 'default' };
+export const DEFAULT_SHOW_SETTINGS: ShowSettings = { reduceMotion: false, vibrate: false, teamPreset: 'default', quickReveal: false };

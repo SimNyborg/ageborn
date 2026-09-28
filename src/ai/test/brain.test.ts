@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Observation } from '@/contracts';
 import { seedSfc32 } from '@/core';
 import { cardBook } from '../book';
-import { Brain, type DecisionTrace } from '../brain';
+import { Brain, monoFactorBp, type DecisionTrace } from '../brain';
 import { Ledger } from '../ledger';
 import { BotMemory } from '../memory';
 import { BALANCED_WEIGHTS, personalityFor, weightsBp, type Weights } from '../personalities';
@@ -68,12 +68,24 @@ describe('evolve (A7.2)', () => {
     expect(decide(b2, ready(210), { history: [ready(10)] }).action).toEqual({ kind: 'evolve' });
   });
 
-  it('holds while an enemy ground unit is within 300 lu of the gate, unless greedy', () => {
+  it('below tier VII evolves after the delay with no safety check (A16.3 rule 2)', () => {
     const units = [unit(0, 'bonker', 250)];
-    const { brain } = brainFor();
-    expect(kinds(decide(brain, ready(40, { units }), { history: [ready(10, { units })] }))).not.toContain('evolve');
-    const { brain: greedy } = brainFor({ weights: { greed: 95 } });
-    expect(kinds(decide(greedy, ready(40, { units }), { history: [ready(10, { units })] }))).toContain('evolve');
+    // Tier V: 3 s delay (60 ticks), then it evolves even with a foe at the gate.
+    expect(kinds(decide(brainFor({ tier: 5 }).brain, ready(60, { units }), { history: [ready(10, { units })] }))).not.toContain('evolve');
+    expect(decide(brainFor({ tier: 5 }).brain, ready(75, { units }), { history: [ready(10, { units })] }).action).toEqual({ kind: 'evolve' });
+  });
+
+  it('tiers VII and X wait for a safe window for at most 2 s / 0.5 s, then evolve anyway (A16.3 rule 2)', () => {
+    const units = [unit(0, 'bonker', 250)];
+    // Tier VII: 1.5 s into constant pressure it still waits; after 2 s it evolves.
+    expect(kinds(decide(brainFor({ tier: 7 }).brain, ready(40, { units }), { history: [ready(10, { units })] }))).not.toContain('evolve');
+    expect(decide(brainFor({ tier: 7 }).brain, ready(51, { units }), { history: [ready(10, { units })] }).action).toEqual({ kind: 'evolve' });
+    // Tier X: the cap is 0.5 s.
+    expect(kinds(decide(brainFor({ tier: 10 }).brain, ready(18, { units }), { history: [ready(10, { units })] }))).not.toContain('evolve');
+    expect(decide(brainFor({ tier: 10 }).brain, ready(21, { units }), { history: [ready(10, { units })] }).action).toEqual({ kind: 'evolve' });
+    // m_greed ≥ 1.3 never waits.
+    const { brain: greedy } = brainFor({ tier: 7, weights: { greed: 95 } });
+    expect(kinds(decide(greedy, ready(20, { units }), { history: [ready(10, { units })] }))).toContain('evolve');
   });
 
   it('never evolves in the final age: XP sits at 100% only there, with a full charge', () => {
@@ -85,19 +97,19 @@ describe('evolve (A7.2)', () => {
   it('tiers VII and X wait for a safe window: no foe can reach 300 lu of the gate during the Ascension', () => {
     // A Bonker (70 lu/s) at 500 lu: outside 300 lu now, but tier VII sees it 0.5 s late and the
     // Ascension takes 2.5 s, so it would be within 300 lu (500 − 70 × 3.05 = 286) before the ageUp.
+    // Decided 1 s after XP filled, inside the 2 s cap.
     const near = [unit(0, 'bonker', 500)];
-    const t7 = decide(brainFor({ tier: 7 }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] });
+    const t7 = decide(brainFor({ tier: 7 }).brain, ready(30, { units: near }), { history: [ready(10, { units: near })] });
     expect(kinds(t7)).not.toContain('evolve');
-    // Tier V only checks where the foe stands, so it evolves into the push.
+    // Tier V has no safety check at all.
     const t5 = decide(brainFor({ tier: 5 }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] });
     expect(t5.action).toEqual({ kind: 'evolve' });
     // 30 lu further out the window is open for tier VII too.
     const far = [unit(0, 'bonker', 530)];
-    expect(decide(brainFor({ tier: 7 }).brain, ready(100, { units: far }), { history: [ready(10, { units: far })] }).action).toEqual({ kind: 'evolve' });
-    // Air units never block the window, and m_greed ≥ 1.3 ignores it.
+    expect(decide(brainFor({ tier: 7 }).brain, ready(30, { units: far }), { history: [ready(10, { units: far })] }).action).toEqual({ kind: 'evolve' });
+    // Air units never block the window.
     const air = [unit(0, 'bonker', 350, { air: true })];
-    expect(decide(brainFor({ tier: 10 }).brain, ready(100, { units: air }), { history: [ready(10, { units: air })] }).action).toEqual({ kind: 'evolve' });
-    expect(kinds(decide(brainFor({ tier: 7, weights: { greed: 95 } }).brain, ready(100, { units: near }), { history: [ready(10, { units: near })] }))).toContain('evolve');
+    expect(decide(brainFor({ tier: 10 }).brain, ready(12, { units: air }), { history: [ready(10, { units: air })] }).action).toEqual({ kind: 'evolve' });
   });
 
   it('fires a full power into a zone before evolving, so the 50% carry cap wastes nothing', () => {
@@ -412,5 +424,68 @@ describe('openings (A7.2)', () => {
     const units = [unit(0, 'tuskback', 200), unit(0, 'tuskback', 230), unit(0, 'tuskback', 260)];
     decide(brain, observation({ tick: 20, gold: 100 * MILLI, units }));
     expect(brain.inOpening).toBe(false);
+  });
+});
+
+describe('answers to spam (A16.3)', () => {
+  const heavies = (p: number) => [unit(0, 'tuskback', p), unit(0, 'tuskback', p + 20)];
+
+  it('rule 1: saves for an unaffordable counter instead of answering with what it can afford', () => {
+    const { brain } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
+    // 90 gold: Bonker and Pebbler are affordable, the Spear Hunter (100) is the counter to Heavies.
+    const t = decide(brain, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(700) }));
+    expect(t.goal).toEqual({ kind: 'counter', amount: 100 * MILLI, card: 'spear_hunter' });
+    expect(t.action?.kind === 'train' && t.action.card !== 'spear_hunter').toBe(false);
+    // Once affordable, the counter is trained.
+    const t2 = decide(brain, observation({ tick: 5040, gold: 105 * MILLI, units: heavies(650) }));
+    expect(t2.action).toMatchObject({ kind: 'train', card: 'spear_hunter' });
+  });
+
+  it('rule 1: an unaffordable card is never trained, and the goal lapses after 8 s or with a foe at 300 lu', () => {
+    const { brain } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
+    decide(brain, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(700) }));
+    const still = decide(brain, observation({ tick: 5100, gold: 90 * MILLI, units: heavies(700) }));
+    expect(still.goal?.kind).toBe('counter');
+    for (const c of still.candidates) if (c.action.kind === 'train') expect(c.action.cost).toBeLessThanOrEqual(90 * MILLI);
+    // 8 s later (160 ticks) the goal is gone (a fresh one may be set only by a new decision to save).
+    const { brain: b2 } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
+    decide(b2, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(700) }));
+    const close = decide(b2, observation({ tick: 5020, gold: 90 * MILLI, units: heavies(280) }));
+    expect(close.goal).toBeNull();
+    expect(close.action?.kind).toBe('train');
+  });
+
+  it('rule 1: no counter goal once the counter is affordable', () => {
+    const { brain } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
+    const t = decide(brain, observation({ tick: 5000, gold: 120 * MILLI, units: heavies(700) }));
+    expect(t.goal).toBeNull();
+  });
+
+  it('rule 3: the counter weight grows smoothly with the largest role-group share (×1 at 40%, ×1.5 at 60%, ×2 at 80%+)', () => {
+    const u = (group: 'heavy' | 'infantry' | 'ranged', value: number) => ({ value, def: { group } });
+    expect(monoFactorBp([])).toBe(10000);
+    expect(monoFactorBp([u('heavy', 40), u('infantry', 30), u('ranged', 30)])).toBe(10000);
+    expect(monoFactorBp([u('heavy', 60), u('infantry', 40)])).toBe(15000);
+    expect(monoFactorBp([u('heavy', 80), u('infantry', 20)])).toBe(20000);
+    expect(monoFactorBp([u('heavy', 100)])).toBe(20000);
+    // No cliff: 50% gives ×1.25.
+    expect(monoFactorBp([u('heavy', 50), u('infantry', 50)])).toBe(12500);
+  });
+
+  it('rule 3: against a one-type army the float target shrinks, so the bot answers sooner', () => {
+    // Tier 0 floats to 450; against pure Heavies (×2) the target is 225.
+    const { brain } = brainFor({ tier: 3, tierOverride: { treasuryMax: 0 } });
+    decide(brain, observation({ tick: 100, gold: 20 * MILLI }));
+    const t = decide(brain, observation({ tick: 5000, gold: 200 * MILLI, units: heavies(900) }));
+    expect(t.spending).toBe(true);
+  });
+
+  it('rule 4: no Legendary saving goal while the push gate fails', () => {
+    const tray = ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'mammoth_matriarch'];
+    const foe = { turrets: [{ card: 'rock_tosser', age: 'stone' as const }, null, null, null] as Observation['foe']['turrets'] };
+    const { brain } = brainFor({ tier: 7, weights: { legendary: 90 }, tierOverride: { treasuryMax: 0 } });
+    const t = decide(brain, observation({ tick: 1000, gold: 300 * MILLI, tray, foe }));
+    expect(t.pushOk).toBe(false);
+    expect(t.goal).toBeNull();
   });
 });

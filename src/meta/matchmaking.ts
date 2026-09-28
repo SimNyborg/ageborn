@@ -14,7 +14,8 @@
  *   that age holds one, at the player's level of it. The Warden is the only exception: all five
  *   Legendaries at L9, disclosed on the VS screen (A7.4).
  * - **Conquest.** The board General at its fixed tier and level, with its personal War Plan, Full War.
- * - **Daily Challenge.** Standard War at the ladder tier with the day's modifier.
+ * - **Daily Challenge.** The day's General, modifier and seed at the chosen difficulty's tier,
+ *   Standard War at L7 (A15.7).
  * - **Skirmish.** The chosen General (or Echo of You, the player's own plan) at the chosen tier and
  *   format; "Standard levels" puts every card at L7 (the app sets the player's side the same way).
  * - **Tutorial.** Match 1 is Old Grogg (Training match), match 2 Pip Quickstep at tier 0 (A8).
@@ -24,10 +25,10 @@
  * bot profile from it with {@link commanderInfo}.
  */
 import type { AgeId, CardId, FormatId, Loadout, MatchResultInput, OpponentSpec, Rarity, SaveDoc, SideConfig, SkirmishOptions } from '@/contracts';
-import { commanderName, type ArenaDef, type Content, type GeneralDef, type GeneralId } from '@/content';
+import { commanderName, type ArenaDef, type Content, type DailyDifficulty, type GeneralDef, type GeneralId } from '@/content';
 import { chanceBp, fnv1a32, pick, pickWeighted, seedSfc32, type Sfc32State } from '@/core';
 import { starterLoadout, activePlan } from './warplan';
-import { dailyModifierAt } from './daily';
+import { dailyDrawAt, defaultDailyDifficulty } from './daily';
 import { ladderTier } from './mmr';
 import { COMMANDER_ID_PREFIX, FIRST_LADDER_GENERAL, GENERAL_SHARE_BP, META_FLAGS, TUTORIAL_MATCH2 } from './rules';
 import { ageCards, arenaOf, RARITY_INDEX } from './tables';
@@ -37,6 +38,7 @@ export interface OpponentOptions {
   format?: FormatId;
   conquestGeneral?: string;
   skirmish?: SkirmishOptions;
+  daily?: { difficulty: DailyDifficulty };
 }
 
 type Plan = Partial<Record<AgeId, Loadout>>;
@@ -156,6 +158,7 @@ interface SpecParts {
   warmUp?: boolean;
   modifiers?: string[];
   disclosures?: string[];
+  standardLevels?: boolean;
 }
 
 function spec(p: SpecParts): OpponentSpec {
@@ -171,6 +174,7 @@ function spec(p: SpecParts): OpponentSpec {
     seed: p.seed,
     warmUp: p.warmUp ?? false,
     disclosures: p.disclosures ?? [],
+    ...(p.standardLevels ? { standardLevels: true } : {}),
   };
 }
 
@@ -260,12 +264,31 @@ function ladderOpponent(s: SaveDoc, t: Content, o: OpponentOptions): OpponentSpe
   return generalOrCommander(s, t, rng, tier, arena, format, seed, extra);
 }
 
-function dailyOpponent(s: SaveDoc, t: Content, lt: LocalTime): OpponentSpec {
-  const arena = arenaOf(s, t);
+/**
+ * The Daily Challenge opponent (A15.7): the day's General with its personal War Plan at the chosen
+ * difficulty's tier, the day's modifier and match seed (the same for everyone on that date and
+ * difficulty), Standard War with every card on both sides at L7. A6.8's Legendary rule still applies.
+ */
+function dailyOpponent(s: SaveDoc, t: Content, lt: LocalTime, difficulty: DailyDifficulty): OpponentSpec {
   const ch = t.dailyModifiers.challenge;
-  const tier = ladderTier(s.mmr, arena, t.arenas.ladder);
-  const seed = seedOf(s, `daily:${dayKeyOf(gameDay(lt, ch.resetHour))}`);
-  return generalOrCommander(s, t, seedSfc32(seed), tier, arena, ch.format, seed, { modifiers: [dailyModifierAt(t, lt)] });
+  const draw = dailyDrawAt(t, lt);
+  const g = generalDef(t, draw.generalId) ?? generalDef(t, 'pip');
+  if (!g) throw new Error('meta: the content has no Daily Generals');
+  const ages = t.formats[ch.format].ages;
+  const std = ch.standardLevel;
+  const loadouts = allowedPlan(t, g.warPlan, ages, 'epic', playerLegendaries(s, t, ages));
+  return spec({
+    generalId: g.id,
+    displayName: g.nameKey,
+    tier: ch.difficulties[difficulty],
+    level: std,
+    format: ch.format,
+    side: side(g.nameKey, loadouts, levelsFor(t, std)),
+    seed: draw.matchSeed,
+    modifiers: [draw.modifier],
+    disclosures: g.disclosureKeys,
+    standardLevels: true,
+  });
 }
 
 function conquestOpponent(s: SaveDoc, t: Content, id: string | undefined): OpponentSpec {
@@ -311,6 +334,7 @@ function skirmishOpponent(s: SaveDoc, t: Content, o: SkirmishOptions): OpponentS
       format: o.format,
       side: side(echo.nameKey, loadouts, levels, { ...s.skins.equipped }),
       seed,
+      standardLevels: o.standardLevels,
     });
   }
   const g = generalDef(t, o.generalId);
@@ -327,6 +351,7 @@ function skirmishOpponent(s: SaveDoc, t: Content, o: SkirmishOptions): OpponentS
     side: side(general.nameKey, fullPlan(t, general.warPlan, ages), levelsFor(t, level, legendary)),
     seed,
     disclosures: o.standardLevels ? [] : general.disclosureKeys,
+    standardLevels: o.standardLevels,
   });
 }
 
@@ -357,7 +382,7 @@ export function pickOpponentAt(s: SaveDoc, mode: MatchResultInput['mode'], t: Co
     case 'ladder':
       return ladderOpponent(s, t, o);
     case 'daily':
-      return dailyOpponent(s, t, lt);
+      return dailyOpponent(s, t, lt, o.daily?.difficulty ?? defaultDailyDifficulty(s, t));
     case 'conquest':
       return conquestOpponent(s, t, o.conquestGeneral);
     case 'skirmish':

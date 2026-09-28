@@ -99,6 +99,10 @@ export async function boot(o: BootOptions): Promise<Booted> {
   if (!save && services.meta) {
     save = services.meta.newSave(services.content, services.clock, o.newSaveSeed ?? services.clock.now() >>> 0);
     await services.saveStore.save(save, { immediate: true });
+  } else if (save && services.meta) {
+    // Charges, the Supply and Daily banks, quest arrivals and the Daily day move on while away (A6.3).
+    const ticked = services.meta.tickTimers(save, services.clock);
+    if (ticked !== save) void services.saveStore.save((save = ticked));
   }
   steps.push('save');
 

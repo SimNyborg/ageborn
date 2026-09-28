@@ -22,10 +22,13 @@ export type MatchRequest =
   | { mode: 'ladder'; format: FormatId }
   | { mode: 'conquest'; general: string }
   | { mode: 'skirmish'; options: SkirmishOptions; speed: 1 | 1.5 | 2 }
-  | { mode: 'daily' }
+  | { mode: 'daily'; difficulty?: DailyDifficulty }
   | { mode: 'tutorial'; match: 1 | 2 };
 
 export type MatchMode = MatchResultInput['mode'];
+
+/** Daily Challenge difficulty (A9.1, A15.7): Recruit (tier II), Veteran (V) or Warlord (VIII). */
+export type DailyDifficulty = 'recruit' | 'veteran' | 'warlord';
 
 /** What the Pause overlay shows (A9 #6). The app snapshots it from the HUD model when pausing. */
 export interface PauseInfo {

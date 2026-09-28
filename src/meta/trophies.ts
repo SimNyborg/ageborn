@@ -10,8 +10,8 @@
  *   The Warden follow the arena itself, so they need no claim. `trophies.roadClaimed` holds the
  *   claimed nodes' trophy values.
  */
-import type { Result, SaveDoc } from '@/contracts';
-import type { Content, GateReward, RoadReward } from '@/content';
+import type { FormatId, Result, SaveDoc } from '@/contracts';
+import type { Content, GateReward, LadderWin, RoadReward } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 import { grantCrateAt } from './capsules/wardrobe';
 import { arenaOf } from './tables';
@@ -19,10 +19,20 @@ import { addCosmetics, unlockTitles } from './titles';
 
 export type LadderResult = 'win' | 'loss' | 'draw';
 
-/** The trophy change of a ladder result (A6.3). */
-export function trophyDelta(s: SaveDoc, t: Content, result: LadderResult): number {
+/**
+ * The ladder win reward for a format (A15.8): from 400 trophies each format pays its own row (Short
+ * +26, Standard +30, Full +34 and more Amber for longer wars); below that every format pays A6.3's.
+ */
+export function ladderWinFor(s: Pick<SaveDoc, 'trophies'>, t: Content, format?: FormatId): LadderWin {
   const l = t.arenas.ladder;
-  if (result === 'win') return l.win.trophies;
+  if (!format || s.trophies.current < l.winByFormat.fromTrophies) return l.win;
+  return l.winByFormat.formats[format] ?? l.win;
+}
+
+/** The trophy change of a ladder result (A6.3, A15.8 for wins by format). */
+export function trophyDelta(s: SaveDoc, t: Content, result: LadderResult, format?: FormatId): number {
+  const l = t.arenas.ladder;
+  if (result === 'win') return ladderWinFor(s, t, format).trophies;
   if (result === 'draw') return l.draw.trophies;
   const cur = s.trophies.current;
   if (cur < l.loss.noLossBelowTrophies) return 0;

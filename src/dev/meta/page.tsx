@@ -64,6 +64,8 @@ function stepText(r: RewardStep): string {
       return `arena ${r.arenaIndex + 1}`;
     case 'title':
       return `title ${r.title}`;
+    case 'feat':
+      return `feat ${r.featId}`;
   }
 }
 
@@ -256,9 +258,6 @@ export default function MetaPage() {
               ) : (
                 <>
                   <b>{name(reveal.r.crate.skin)}</b> ({reveal.r.crate.rarity}){reveal.r.crate.duplicateDust ? ` duplicate → ${reveal.r.crate.duplicateDust} Dust` : ''}
-                  <div style={{ fontSize: '10px', opacity: 0.8 }}>
-                    reel: {reveal.r.reelTiles.map((s, i) => (i === reveal.r.winnerIndex ? `[${s}]` : s)).slice(40, 50).join(' ')} · stop {reveal.r.stopOffsetBp} bp
-                  </div>
                 </>
               )}
             </div>

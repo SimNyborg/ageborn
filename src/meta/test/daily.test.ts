@@ -21,7 +21,7 @@ describe('Daily Capsule (A6.3)', () => {
     expect(M.claimDailyCapsule(s, C, c)).toEqual({ ok: false, reason: 'noDailyCapsule' });
   });
 
-  it('one per day at local 04:00, banking up to 3', () => {
+  it('one per day at local 04:00, banking up to 7 (the Supply allowance, A15.4)', () => {
     const c = new TestClock(Date.UTC(2026, 2, 2, 12), 2 * HOUR); // 14:00 local
     let s = M.tickTimers(unlocked(fresh()), c);
     expect(s.capsules.dailyBank).toBe(1);
@@ -33,11 +33,11 @@ describe('Daily Capsule (A6.3)', () => {
     expect(s.capsules.dailyBank).toBe(2);
     c.advance(10 * DAY);
     s = M.tickTimers(s, c);
-    expect(s.capsules.dailyBank).toBe(3);
+    expect(s.capsules.dailyBank).toBe(7);
     const claimed = M.claimDailyCapsule(s, C, c);
     expect(claimed.ok).toBe(true);
     if (!claimed.ok) return;
-    expect(claimed.value.capsules.dailyBank).toBe(2);
+    expect(claimed.value.capsules.dailyBank).toBe(6);
     expect(lastPending(claimed.value)).toMatchObject({ kind: 'daily', startTier: 'bronze' });
   });
 

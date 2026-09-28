@@ -6,13 +6,12 @@
  * implementation or a stand-in per service. Loaders are dynamic imports, so a stand-in that is not
  * chosen is never downloaded, and the contracts' fakes stay out of the main chunk.
  *
- * Phase 2a status (what "real" means today):
+ * Status (Phase 2b):
  * - content (WP1), sim (WP2), bots (WP3 `createBot`), art (WP4) and audio (WP6) have real
  *   implementations. The bot stand-in `fallbackBot.ts` (honest, same API) stays available as
  *   `?bots=fallback`.
- * - save (WP8) and meta (WP7) use the in-memory store and no meta. Phase 2b adds their real loaders
- *   to `LOADERS` below and flips `DEFAULT_CHOICE`; nothing else in the app changes, because
- *   everything downstream only sees the contracts.
+ * - save (WP8, localStorage) and meta (WP7) are real too. `?save=memory` and `?meta=none` keep the
+ *   stand-ins for tests; everything downstream only sees the contracts.
  *
  * URL overrides for dev and tests: `?svc=fake` (every fake), or per service, for example
  * `?sim=fake&art=fake`. A fake sim forces fake content (its canned events use the fake cards).
@@ -35,15 +34,15 @@ export interface ServiceChoice {
 
 export type ServiceName = keyof ServiceChoice;
 
-/** What the app builds by default. Phase 2b switches save and meta to 'real'. */
+/** What the app builds by default (Phase 2b: the real save store and meta rules). */
 export const DEFAULT_CHOICE: ServiceChoice = {
   content: 'real',
   sim: 'real',
   bots: 'real',
   art: 'real',
   audio: 'real',
-  save: 'memory',
-  meta: 'none',
+  save: 'real',
+  meta: 'real',
 };
 
 /** Every stand-in (unit tests, `?svc=fake`). */
@@ -144,11 +143,13 @@ export const LOADERS: Loaders = {
     fake: async () => new (await import('@/contracts/fakes/audio')).FakeAudio(),
   },
   save: {
-    // real: WP8 localStorage store from '@/save' (Phase 2).
+    // WP8: localStorage (a memory stand-in when the browser blocks it), flushed on hide and pagehide.
+    real: async () => (await import('@/save')).createBrowserSaveStore(),
     memory: async () => new (await import('@/contracts/fakes/saveStore')).InMemorySaveStore(),
   },
   meta: {
-    // real: WP7 meta rules from '@/meta' (Phase 2).
+    // WP7: the meta rules bound to the game content (docs/requests/wp7-app-wiring.md).
+    real: async () => (await import('@/meta')).meta,
     none: async () => null,
   },
 };
@@ -209,8 +210,14 @@ export interface BuildServicesOptions {
   warn?: (msg: string) => void;
 }
 
-/** A wall clock for meta and the event log (DESIGN B2: meta gets time only through a Clock). */
-export const systemClock: Clock = { now: () => Date.now() };
+/**
+ * A wall clock for meta and the event log (DESIGN B2: meta gets time only through a Clock). It also
+ * tells meta the local time zone, so daily timers reset at local 04:00 (A6.3, WP7 `LocalClock`).
+ */
+export const systemClock: Clock & { offsetMs(t: number): number } = {
+  now: () => Date.now(),
+  offsetMs: (t) => -new Date(t).getTimezoneOffset() * 60_000,
+};
 
 /** Builds every service for the chosen implementations (B11 Boot). */
 export async function buildServices(o: BuildServicesOptions = {}): Promise<Services> {

@@ -17,4 +17,4 @@ export {
 } from './pity';
 export { pickCard, planSlots, rollStackRarity, rollStacks, sortStacks, type RollContext, type RollSpec } from './roll';
 export { rollScripted, scriptFor } from './script';
-export { crateSkins, grantCrateAt, openCrate, reelFor, rollSkinOfRarity, rollSkinRarity, skinsForRoll } from './wardrobe';
+export { crateSkins, grantCrateAt, openCrate, rollSkinOfRarity, rollSkinRarity, skinsForRoll } from './wardrobe';

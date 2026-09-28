@@ -51,9 +51,9 @@ export interface RunnerOptions {
 }
 
 /** Steps a tap speeds up ("Tap flips faster", A10 step 5). Strikes use taps as hammer blows instead. */
-const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'fan', 'signal', 'flip', 'duplicates', 'miniWalkout', 'walkout', 'reelWinner']);
+const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'fan', 'signal', 'flip', 'duplicates', 'miniWalkout', 'walkout', 'crateOpen']);
 /** Steps that are "visually" opened: after these the capsule is open. */
-const OPENING: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'reel', 'crateArrival']);
+const OPENING: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'crateOpen']);
 
 /** "Tap!" appears this far into the charge (A10 step 2); a tap from then on queues the first strike. */
 const CHARGE_PROMPT_AT = 0.6;

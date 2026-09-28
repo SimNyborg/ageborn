@@ -142,14 +142,15 @@ describe('openCapsule', () => {
     expect(o.save.pity).toEqual(o.reveal.pityAfter);
   });
 
-  it('the Daily Capsule unlocks right after capsule 2 is opened (A6.3)', () => {
+  it('the first Supply Capsule arrives right after capsule 2 is opened (A6.3, A15.4)', () => {
     let s = fresh();
     for (let i = 0; i < 2; i += 1) {
       expect(s.capsules.dailyBank).toBe(0);
       const g = M.grantCapsule(s, 'win', C, clock());
       s = M.openCapsule(g, lastPending(g).id).save;
     }
-    expect(s.capsules.dailyBank).toBe(1);
+    expect(s.capsules.pending.filter((p) => p.kind === 'daily')).toHaveLength(1);
+    expect(s.capsules.dailyBank).toBe(0);
     expect(s.capsules.dailyNextAt).toBeNull();
     const ticked = M.tickTimers(s, clock());
     expect(ticked.capsules.dailyNextAt).toBeGreaterThan(clock().now());
@@ -161,22 +162,18 @@ describe('openCapsule', () => {
 });
 
 describe('openWardrobe (A6.4, A6.5, A10.1)', () => {
-  it('reveals the pre-rolled skin on a 50-tile reel with the winner at 45 and no rarer tile after it', () => {
+  it('reveals the pre-rolled skin with no reel (A15.3): reelTiles is empty and a reload shows the same reveal', () => {
     let s = fresh(21);
-    for (let i = 0; i < 60; i += 1) {
+    for (let i = 0; i < 20; i += 1) {
       s = M.grantWardrobe(s, 'codex', C, clock());
       const crate = s.capsules.wardrobe[0]!;
       const o = M.openWardrobe(s, crate.id);
       const r = o.reveal;
-      expect(r.reelTiles).toHaveLength(50);
-      expect(r.winnerIndex).toBe(45);
-      expect(r.reelTiles[45]).toBe(crate.skin);
-      const rank = { rare: 0, epic: 1, legendary: 2 } as const;
-      expect(rank[C.skins[r.reelTiles[46]!]!.rarity]).toBeLessThanOrEqual(rank[crate.rarity]);
-      expect(r.stopOffsetBp).toBeGreaterThanOrEqual(0);
-      expect(r.stopOffsetBp).toBeLessThan(10000);
+      expect(r.reelTiles).toEqual([]);
+      expect(r.crate.skin).toBe(crate.skin);
+      expect(r.crate.rarity).toBe(crate.rarity);
       expect(M.openWardrobe(s, crate.id).reveal).toEqual(r);
-      for (const tile of r.reelTiles) expect(C.skins[tile]?.inCratePool).toBe(true);
+      expect(o.save.capsules.wardrobe.some((c) => c.id === crate.id)).toBe(false);
       s = o.save;
     }
   });

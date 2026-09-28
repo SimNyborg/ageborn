@@ -20,15 +20,17 @@ describe('service choice', () => {
 });
 
 describe('buildServices (B11 boot)', () => {
-  it('builds the real content, sim and audio by default and stands in for the rest', async () => {
+  it('builds the real content, sim, save, meta and audio by default', async () => {
     const warnings: string[] = [];
-    const s = await buildServices({ choice: { ...DEFAULT_CHOICE, meta: 'real', save: 'real', audio: 'real' }, warn: (m) => warnings.push(m) });
+    const s = await buildServices({ choice: { ...DEFAULT_CHOICE, audio: 'real' }, warn: (m) => warnings.push(m) });
     expect(s.content).toBe(content);
     expect(s.sim.simVersion).toBe(SIM_VERSION);
-    // Not in this build yet (Phase 2b): recorded as the stand-in, with a warning each.
-    expect(s.choice).toMatchObject({ bots: 'real', meta: 'none', save: 'memory', audio: 'real' });
-    expect(warnings).toHaveLength(2);
-    expect(s.meta).toBeNull();
+    expect(s.choice).toMatchObject({ bots: 'real', meta: 'real', save: 'real', audio: 'real' });
+    expect(warnings).toHaveLength(0);
+    expect(s.meta).not.toBeNull();
+    // Meta works on the game content with the app clock (local 04:00 needs the time zone offset).
+    const save = s.meta!.newSave(s.content, s.clock, 1);
+    expect(s.meta!.tickTimers(save, s.clock).matchesPlayed).toBe(0);
     expect(s.platform).toBeInstanceOf(NonePlatform);
     expect(typeof s.createArt).toBe('function');
     expect(s.i18n.t('app.play')).toBe('Play');

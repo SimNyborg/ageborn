@@ -125,6 +125,7 @@ async function start(root: HTMLElement): Promise<void> {
     visibility: documentVisibility(),
     autopilot: flags.autopilot,
     countdown: true,
+    homeScreen: true,
   });
   const ui: AppUi = {
     controller,
@@ -135,6 +136,15 @@ async function start(root: HTMLElement): Promise<void> {
     scheduler: pixi.scheduler,
     portrait: (card, foil, size) => art.portrait({ card, foil, size, side: 0 }),
     t: (key, params) => services.i18n.t(key, params),
+    download: (file) => {
+      const url = URL.createObjectURL(new Blob([file.text], { type: file.mime }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      a.rel = 'noopener';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    },
   };
 
   const quick = q.get('quick');
