@@ -306,16 +306,26 @@
   .modes {
     min-height: 0;
   }
-  .mode-card__art svg {
-    width: 38px;
-    height: 38px;
-  }
   .mode-card__body {
     gap: 6px;
     padding: 6px 10px;
   }
   .mode-card__help {
     display: none;
+  }
+  /* A phone in landscape: icon and title side by side, so Quick Battle's picker and its opponent line fit. */
+  .mode-card__head {
+    flex-direction: row;
+    min-height: 0;
+    gap: 8px;
+    padding: 6px 8px;
+  }
+  .mode-card__art svg {
+    width: 30px;
+    height: 30px;
+  }
+  .mode-card__title {
+    font-size: 17px;
   }
 }
 

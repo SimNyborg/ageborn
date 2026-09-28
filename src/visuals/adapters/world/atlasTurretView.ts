@@ -264,9 +264,12 @@ export class AtlasTurretView implements TurretView {
         }
         const i = this.t - DROP_MS;
         if (!reduce) {
+          // a sheet whose build clip has landing frames already squashes (a 3D-rendered squash of
+          // ~25%); stacking the full code squash on it flattened the turret into a pancake
           const s = springSettle(i / LAND_MS, 2, 4.5);
-          sx = 1.28 - 0.28 * s;
-          sy = 0.72 + 0.28 * s;
+          const k = (this.o.sheet.animations['build']?.length ?? 0) > 1 ? 0.05 : 0.28;
+          sx = 1 + k - k * s;
+          sy = 1 - k + k * s;
         }
         this.flashA = 0.85 * (1 - easeOutCubic(i / 220));
         // three bolts set one after another along the footing

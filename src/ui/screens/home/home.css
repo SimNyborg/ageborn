@@ -680,6 +680,20 @@
   flex-wrap: wrap;
   margin-bottom: 8px;
 }
+/* A long label ("Open Wardrobe Crate") wraps inside the panel instead of being cut off on a phone. */
+.home-tray__actions .ui-btn {
+  max-width: 100%;
+}
+.home-tray__actions .ui-btn__face {
+  min-width: 0;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.home-tray__actions .ui-btn__text {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.1;
+}
 .home-tray__rows {
   display: flex;
   flex-direction: column;

@@ -25,6 +25,23 @@ import { POWER_DRAG_PX, powerFraction, powerIntent } from './model';
 import { AIM_IDLE, NO_AIM, aimActive, ghostOf, stepPowerAim, type AimTarget, type PowerAimEffect, type PowerAimEvent, type PowerAimState } from './powerAim';
 import { usePortrait } from './usePortrait';
 
+/**
+ * For a power that picks its own spot, what a drop or field tap does (a drag or tap there casts it
+ * wherever the pointer is, so the token says where it will act instead). Null for aimed powers.
+ */
+export function autoAimKey(kind: string | undefined): string | null {
+  switch (kind) {
+    case 'stampede':
+      return 'hud.powerAim.auto.stampede';
+    case 'paradrop':
+      return 'hud.powerAim.auto.paradrop';
+    case 'buffAll':
+      return 'hud.powerAim.auto.buffAll';
+    default:
+      return null;
+  }
+}
+
 function cls(...parts: (string | false | null | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
 }
@@ -298,6 +315,7 @@ export function PowerButton(p: { c: HudCtx }) {
   const dragging = st.s === 'dragging';
   const aiming = st.s === 'aiming' || (st.s === 'pressed' && st.wasAiming);
   const overHud = dragging && st.aim.over === 'hud';
+  const autoKey = (dragging || aiming) && 'aimable' in st && !st.aimable ? autoAimKey(def?.effect.kind) : null;
   const root = aiming || dragging ? hudRoot() : null;
   const icon = (size: number) => (url ? <img src={url} alt="" draggable={false} /> : <BoltIcon size={size} />);
 
@@ -365,6 +383,7 @@ export function PowerButton(p: { c: HudCtx }) {
       {aiming ? (
         <div class="hud-power-chip" data-testid="hud-power-aiming" role="status">
           {t('hud.powerAim.tapField')}
+          {autoKey ? <span class="hud-power-chip-sub">{t(autoKey)}</span> : null}
         </div>
       ) : null}
       {root && aiming
@@ -386,7 +405,13 @@ export function PowerButton(p: { c: HudCtx }) {
         ? createPortal(
             <div class={cls('hud-power-token', overHud && 'is-cancel')} data-testid="hud-power-token" style={{ left: `${pos.x}px`, top: `${pos.y}px` }}>
               <span class="hud-power-token-core">{icon(26)}</span>
-              {overHud ? <span class="hud-power-token-label">{t('hud.powerAim.cancel')}</span> : null}
+              {overHud ? (
+                <span class="hud-power-token-label">{t('hud.powerAim.cancel')}</span>
+              ) : autoKey ? (
+                <span class="hud-power-token-label is-info" data-testid="hud-power-token-auto">
+                  {t(autoKey)}
+                </span>
+              ) : null}
             </div>,
             root,
           )

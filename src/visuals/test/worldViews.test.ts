@@ -82,7 +82,10 @@ describe('AtlasTurretView upgrades', () => {
       v.update(16);
       minSy = Math.min(minSy, (v.root.children[1] as { scale: { y: number } }).scale.y);
     }
-    expect(minSy).toBeLessThan(0.85);
+    // the fixture's build clip has landing frames that squash on their own, so the code adds only a
+    // light squash on top (a full one flattened real turrets into a pancake)
+    expect(minSy).toBeLessThan(0.97);
+    expect(minSy).toBeGreaterThan(0.85);
     expect(v.debug.action).toBeNull();
     const old = new AtlasTurretView({ def, sheet: turretSheet, decor: baker(), side: 0, teamColor: 0x2f7df6, seed: 2 });
     old.play('modernise');

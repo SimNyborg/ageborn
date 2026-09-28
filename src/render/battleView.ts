@@ -172,6 +172,8 @@ const MINIMAP_MAX_UNITS = 80;
 const TURRET_COVER_LU = 480;
 /** Priority moments (A17.4): your power zone at most 3.5 s; your Last Stand pans to your gate 1.5 s. */
 const POWER_MOMENT_MAX_MS = 3500;
+/** Tap-to-aim brings the ghost's centre at least this far inside the view (lu). */
+const AIM_REVEAL_MARGIN_LU = 120;
 const LAST_STAND_MOMENT_MS = 1500;
 /** Off-screen badges (A17.5). */
 const BADGE_BASE_HIT_MS = 2000;
@@ -509,6 +511,7 @@ export class BattleView {
       const p = z ? clampPowerP(xToP(z.x, this.mySide), band) : Math.round((band[0] + band[1]) / 2);
       this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true };
       this.camera.hold('powerDrag', true);
+      if (z) this.revealAim(z.x);
       return p;
     }
     let foe: number | null = null;
@@ -523,7 +526,18 @@ export class BattleView {
     const p = clampPowerP(at, band);
     this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true };
     this.camera.hold('powerDrag', true);
+    this.revealAim(pToX(p, this.mySide));
     return p;
+  }
+
+  /**
+   * Aiming mode starts with the ghost on screen: after the player scrolled away (a cancelled drag
+   * that edge-scrolled, a minimap jump), a tap would otherwise show "Tap the battlefield" with the
+   * ghost out of view. Eases there and stays Manual, like a minimap tap (A17.4).
+   */
+  private revealAim(x: number): void {
+    if (!this.cameraActive() || this.camera.inView(x, -AIM_REVEAL_MARGIN_LU)) return;
+    this.camera.jumpTo(x);
   }
 
   /** The drag ghost now: centre x (lu), width, validity and how many enemy units it would hit. */

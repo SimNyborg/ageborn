@@ -424,7 +424,19 @@ export class AtlasBaseView implements BaseView {
     lip.tint = colors[2] ?? 0xa08e78;
     lip.scale.set(1, 0.5);
     lip.position.set(0, -3.2);
-    ledge.addChild(slab, lip);
+    // a dark underside and a warm top edge so the grey ledge reads against the grey wall
+    const under = partSprite(this.o.decor, 'fx.p.beam', FX_ZONES);
+    under.tint = 0x2a2220;
+    under.alpha = 0.7;
+    under.scale.set(1, 0.9);
+    under.position.set(0, 2.4);
+    const edge = partSprite(this.o.decor, 'fx.p.beam', FX_ZONES);
+    edge.tint = 0xffe7b0;
+    edge.blendMode = 'add';
+    edge.alpha = 0.55;
+    edge.scale.set(1, 0.22);
+    edge.position.set(0, -4.4);
+    ledge.addChild(under, slab, lip, edge);
     // the ledge slides out of the wall toward the lane: its left end sits at the wall
     ledge.position.set(x - 18 * this.facing, y + 2);
     ledge.scale.set(0, 1.4);
@@ -861,9 +873,11 @@ export class AtlasBaseView implements BaseView {
           const sp = reduce ? 0 : (170 + this.rng.next() * 170) * m.power;
           m.shards.push({
             p,
-            // outward from the centre, biased away from the lane so the lane stays readable
-            vx: reduce ? 0 : (dx - 0.35) * sp + (this.rng.next() - 0.5) * 60,
-            vy: reduce ? 0 : dy * sp * 0.5 - (90 + this.rng.next() * 170) * m.power,
+            // outward from the centre and mostly up, only a little toward the back: the base sits
+            // at the world's end, so shards that fly backward leave the screen at once (review
+            // in a real battle); up-and-over arcs stay in view and clear the lane as they fall
+            vx: reduce ? 0 : (dx * 0.85 - 0.1) * sp + (this.rng.next() - 0.5) * 50,
+            vy: reduce ? 0 : dy * sp * 0.3 - (170 + this.rng.next() * 190) * m.power,
             spin: reduce ? 0 : (this.rng.next() - 0.5) * 9,
             life: (reduce ? 320 : 480 + this.rng.next() * 300) * f,
           });

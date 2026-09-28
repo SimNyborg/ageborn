@@ -1,8 +1,9 @@
 /**
  * Age Power targeting and zone display (DESIGN A2.9 Casting, B6 HUD "power drag targeting").
  *
- * - Tap = auto-aim (the sim's `densest` scan); drag = place. The HUD reports the pointer, the view
- *   converts it to own-side progress p, clamped to the power zone band p ∈ [150, 1,050].
+ * - Drag = place (owner decision "Age Power targeting"); a tap enters aiming mode, Space auto-aims
+ *   (the sim's `densest` scan). The HUD reports the pointer, the view converts it to own-side
+ *   progress p, clamped to the power zone band p ∈ [150, 1,050].
  * - While dragging (or aiming after a tap), a large ghost of the power's area follows the pointer at
  *   world scale: team colour when a drop there fires, red when it would cancel (over the HUD). The
  *   enemy units it would hit get a gold ring and a chevron.

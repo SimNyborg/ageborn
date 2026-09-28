@@ -17,7 +17,7 @@ CANVAS = (150, 104)
 FEET = (74, 9)
 YAW = -24.0
 
-BODY = B.Biped(H=H, bulk=1.0)
+BODY = B.Biped(H=H, bulk=1.1)
 FIST = (0.36, -2.4)          # fist centre relative to the wrist, hand hanging down (68-lu units)
 
 
@@ -32,7 +32,7 @@ def build():
     visor = C.mat("visor", "#123a31", rough=0.08, coat=1.0, emission="#3AF0B4", estrength=2.5,
                   noise=0.0, bump=0)
     mint = C.emit_mat("mint_glow", "#3AF0B4", 5.0)
-    magenta = C.emit_mat("magenta_glow", "#F03AA8", 6.0)
+    magenta = C.emit_mat("magenta_glow", "#F03AA8", 2.2)
 
     rig = C.Rig("trooper_rig", BODY.bones(), yaw_deg=YAW)
     BODY.body(rig, suit, parts=("torso", "arms", "legs"))
@@ -60,7 +60,7 @@ def build():
     rig.rigid(ant, "head")
 
     # --- chest and back armour
-    cuir = C.box("cuirass", 10.6 * k, 14.2 * k, 11.0 * k, plate, bevel=2.8 * k, loc=S(0.4, 0, 49.4), segs=3)
+    cuir = C.box("cuirass", 10.2 * k, 14.6 * k, 11.4 * k, plate, bevel=1.7 * k, loc=S(0.2, 0, 49.4), segs=2)
     C.team(cuir)
     rig.rigid(cuir, "chest")
     collar = C.lathe("collar", [(3.4 * k, 54.2 * k), (4.2 * k, 55.2 * k), (3.6 * k, 56.4 * k)], gun, seg=20,
@@ -68,6 +68,9 @@ def build():
     rig.rigid(collar, "chest")
     ab = C.box("abplate", 8.6 * k, 12.0 * k, 5.4 * k, gun, bevel=1.6 * k, loc=S(0.6, 0, 42.4), segs=2)
     rig.rigid(ab, "spine")
+    for y in (-3.6, 0.0, 3.6):
+        rig.rigid(C.box("mag_pouch", 2.6 * k, 3.0 * k, 4.2 * k, dark, bevel=0.5 * k, loc=S(5.6, y, 46.6)), "chest")
+    rig.rigid(C.box("chest_strap", 1.0 * k, 15.0 * k, 1.4 * k, dark, bevel=0.3 * k, loc=S(5.3, 0, 49.4)), "chest")
     pack = C.box("backpack", 6.0 * k, 10.0 * k, 12.5 * k, dark, bevel=1.0 * k, loc=S(-7.4, 0, 48.6))
     rig.rigid(pack, "chest")
     cell = C.cyl("cell", 1.5 * k, 1.5 * k, 8.0 * k, mint, loc=S(-10.8, -2.4, 44.6))
@@ -117,7 +120,7 @@ def build():
     parts.append(C.box("shroud", 8 * k, 2.2 * k, 2.6 * k, gun, bevel=0.5 * k, loc=(15.5 * k, 0, 3.4 * k)))
     coils = []
     for x in (20.5, 23.0, 25.5):
-        c = C.lathe("coil", [(1.25 * k, -0.45 * k), (1.55 * k, 0), (1.25 * k, 0.45 * k)], C.emit_mat("coil_glow", "#F03AA8", 6.0),
+        c = C.lathe("coil", [(1.25 * k, -0.45 * k), (1.55 * k, 0), (1.25 * k, 0.45 * k)], C.emit_mat("coil_glow", "#F03AA8", 2.0),
                     seg=16, rot=(0, math.pi / 2, 0), loc=(x * k, 0, 3.4 * k))
         coils.append(c)
     parts += coils
@@ -127,8 +130,8 @@ def build():
         C.xform(o, loc=fist)
         rig.rigid(o, "hand_F")
     # muzzle flash and bolt (shown on the fire frame only)
-    core = C.emit_mat("flash_core", "#fff4fb", 18.0)
-    flash = [C.sphere("flash", 3.4 * k, magenta, loc=(31.5 * k, 0, 3.4 * k), scale=(1.6, 1, 1)),
+    core = C.emit_mat("flash_core", "#ffd6ef", 5.0)
+    flash = [C.sphere("flash", 4.2 * k, magenta, loc=(32.0 * k, 0, 3.4 * k), scale=(1.7, 1.1, 1.1)),
              C.sphere("flash2", 2.0 * k, core, loc=(30.8 * k, 0, 3.4 * k), scale=(1.4, 1, 1)),
              C.tube("bolt", [(34 * k, 0, 3.4 * k), (58 * k, 0, 3.4 * k)], [0.5 * k, 1.7 * k], magenta, seg=12),
              C.tube("boltc", [(36 * k, 0, 3.4 * k), (57 * k, 0, 3.4 * k)], [0.2 * k, 0.8 * k], core, seg=10)]
@@ -187,7 +190,7 @@ def pose(ctx, clip, t):
     for o in ctx["flash"]:
         o.hide_render = not fire
     for c in ctx["coils"]:
-        c.data.materials[0].node_tree.nodes["Emission"].inputs["Strength"].default_value = 6.0 * glow
+        c.data.materials[0].node_tree.nodes["Emission"].inputs["Strength"].default_value = 1.6 * glow
     BODY.apply(rig, P_)
 
 

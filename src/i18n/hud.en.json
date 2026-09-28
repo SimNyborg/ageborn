@@ -41,7 +41,12 @@
       "hint": "Drag onto the battlefield!",
       "tapField": "Tap the battlefield to fire",
       "cancel": "Release to cancel",
-      "aimingLabel": "{name}: tap the battlefield to fire, tap again to cancel"
+      "aimingLabel": "{name}: tap the battlefield to fire, tap again to cancel",
+      "auto": {
+        "stampede": "Charges from your front line",
+        "paradrop": "Lands behind the enemy front",
+        "buffAll": "Boosts all your troops"
+      }
     },
     "lastStand": "Last Stand",
     "mount": {
