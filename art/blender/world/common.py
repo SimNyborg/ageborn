@@ -277,16 +277,18 @@ FLAG_MS = 110
 
 
 def base_module(age, name, height, width, canvas, feet, mounts, build, crumble, flags, treasury_levels=3,
-                lights=(), smoke=(), horn=(-80, 250), yaw=BASE_YAW, hit_center=None):
+                lights=(), smoke=(), horn=(-80, 250), yaw=BASE_YAW, hit_center=None, mount_depth=-40.0):
     """A pipeline module for base.<age>.
 
     mounts: the four sim-view mount points (x, y DOWN, lu) of BASE_PUPPETS; the build places
-    ledges there with `place()`. build(rig, M) gets M = list of character-space mount points.
+    ledges there (`place()` at `mount_depth`, in front of the walls).
+    lights / smoke: (character-space point, crumbleMax or crumbleMin[, radius lu]) for the
+    code-drawn torch glow and damage smoke; exported projected to screen lu. build(rig, M) gets M = list of character-space mount points.
     crumble(stage) -> pose dict for the body at stages 0-3 (joints under `body`).
     flags: list of dicts {name, crumbleMax, z} whose joints build() created under root.
     Treasury joints are `treasury1..3` under root (hidden in the body frames).
     """
-    M = [place(mx, my, -6.0, yaw) for mx, my in mounts]
+    M = [place(mx, my, mount_depth, yaw) for mx, my in mounts]
     flag_names = [f["name"] for f in flags]
 
     def _build(rig):
@@ -323,8 +325,8 @@ def base_module(age, name, height, width, canvas, feet, mounts, build, crumble, 
             "kind": "base", "age": age, "widthLu": width,
             "mountsLu": [[mx, -my] for mx, my in mounts],
             "flags": [{"clip": f["name"], "crumbleMax": f.get("crumbleMax", 3), "z": f.get("z", "front")} for f in flags],
-            "lightsLu": [{"x": x, "y": y, "crumbleMax": cm, "r": r} for x, y, cm, r in lights],
-            "smokeLu": [{"x": x, "y": y, "crumbleMin": cm} for x, y, cm in smoke],
+            "lightsLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMax=cm, r=r) for p, cm, r in lights],
+            "smokeLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMin=cm) for p, cm in smoke],
             "hornLu": list(horn),
         },
         build=_build, clips=clips, AGE=age,
