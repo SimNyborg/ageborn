@@ -53,6 +53,16 @@ export function portraitTexture(url: string): Promise<Texture | null> {
   return p;
 }
 
+/**
+ * The portrait without its age plate (transparent background). WP4's provider supports the optional
+ * `plate` flag (docs/requests/wp4-portrait-plate-contract.md); a provider without it returns the
+ * plated portrait, which only makes the NEW silhouette a plain dark window.
+ */
+function barePortrait(art: ArtProvider, req: Parameters<ArtProvider['portrait']>[0]): Promise<string> {
+  const portrait = art.portrait.bind(art) as (o: Parameters<ArtProvider['portrait']>[0] & { plate?: boolean }) => Promise<string>;
+  return portrait({ ...req, plate: false });
+}
+
 function cardShape(g: Graphics, inset = 0): Graphics {
   return g.roundRect(-CARD_W / 2 + inset, -CARD_H / 2 + inset, CARD_W - inset * 2, CARD_H - inset * 2, Math.max(4, R - inset));
 }
@@ -74,6 +84,7 @@ export class CardView {
   private readonly portrait = new Container();
   private readonly colourLayer = new Container();
   private readonly fillMask = new Graphics();
+  private readonly fillEdge = new Graphics();
   private readonly foilLayer = new Container();
   private readonly foilSweep: Sprite;
   private readonly foilTint = new Graphics();
@@ -138,6 +149,7 @@ export class CardView {
     this.front.addChild(this.foilLayer);
 
     this.bolts.blendMode = 'add';
+    this.fillEdge.blendMode = 'add';
 
     // Copies bar (A10 step 7), hidden until the duplicates step.
     const bar = new Graphics().roundRect(-60, 0, 120, 18, 9).fill(0x14121f).stroke({ width: 3, color: ROOM.brassDark });
@@ -247,24 +259,40 @@ export class CardView {
     this.setPortraitContent([g, t]);
   }
 
-  /** Swaps in the real portrait (async from the art provider). */
-  setPortraitTexture(tex: Texture): void {
+  /**
+   * Swaps in the real portrait (async from the art provider). `bare` is the same portrait without
+   * its age plate: its silhouette is the unit's shape against the card's own sky, so the NEW
+   * silhouette reads as "who is it?" rather than a black box.
+   */
+  setPortraitTexture(tex: Texture, bare?: Texture | null): void {
     const coloured = new Sprite(tex);
     coloured.anchor.set(0.5);
     const scale = Math.max(112 / tex.width, 116 / tex.height);
     coloured.scale.set(scale);
     coloured.position.set(0, -24);
-    this.setPortraitContent([coloured]);
+    let shape: Sprite | undefined;
+    if (bare) {
+      shape = new Sprite(bare);
+      shape.anchor.set(0.5);
+      shape.scale.set(Math.max(112 / bare.width, 116 / bare.height));
+      shape.position.set(0, -24);
+    }
+    this.setPortraitContent([coloured], shape);
   }
 
   /** Sets the portrait: a black silhouette underneath, the coloured copy on top behind `fillMask`. */
-  private setPortraitContent(nodes: Container[]): void {
+  private setPortraitContent(nodes: Container[], shape?: Sprite): void {
     this.fillMask.removeFromParent();
+    this.fillEdge.removeFromParent();
     this.colourLayer.removeChildren().forEach((c) => c.destroy({ children: true }));
     const silhouette = new Container();
     const colour = new Container();
+    if (shape) {
+      shape.tint = 0x0d0b16;
+      silhouette.addChild(shape);
+    }
     for (const n of nodes) {
-      const copy = n instanceof Sprite ? new Sprite(n.texture) : null;
+      const copy = n instanceof Sprite && !shape ? new Sprite(n.texture) : null;
       if (copy && n instanceof Sprite) {
         copy.anchor.copyFrom(n.anchor);
         copy.scale.copyFrom(n.scale);
@@ -280,16 +308,25 @@ export class CardView {
     }
     colour.addChild(this.fillMask);
     colour.mask = this.fillMask;
-    this.colourLayer.addChild(silhouette, colour);
+    this.colourLayer.addChild(silhouette, colour, this.fillEdge);
     this.setFill(this.card.isNew ? (this.flipped ? this.fillAmount : 0) : 1);
   }
 
   private fillAmount = 0;
-  /** Silhouette fill 0..1, bottom to top (NEW cards). */
+  /** Silhouette fill 0..1, bottom to top (NEW cards), with a bright line riding the fill front. */
   setFill(u: number): void {
     this.fillAmount = clamp01(u);
     const h = 116 * this.fillAmount;
     this.fillMask.clear().rect(-60, 34 - h, 120, h + 2).fill(0xffffff);
+    const e = this.fillEdge;
+    e.clear();
+    if (this.fillAmount > 0 && this.fillAmount < 1) {
+      const y = 34 - h;
+      const c = RARITY_COLORS[this.card.rarity];
+      e.rect(-60, y - 9, 120, 18).fill({ color: shade(c, 0.4), alpha: 0.35 });
+      e.rect(-60, y - 3.5, 120, 7).fill({ color: shade(c, 0.6), alpha: 0.85 });
+      e.rect(-60, y - 1.2, 120, 2.4).fill({ color: 0xffffff, alpha: 1 });
+    }
   }
 
   /** 0..1 pre-signal glow in the rarity colour (A10 step 5: honest). */
@@ -391,7 +428,8 @@ export class CardView {
   /** NEW stamp slam and silhouette fill, 0..1. */
   setStamp(u: number): void {
     const k = clamp01(u);
-    if (this.card.isNew) this.setFill(span(k, 0, 0.55));
+    // A short beat of silhouette first ("who is it?"), then the colour pours up.
+    if (this.card.isNew) this.setFill(span(k, 0.12, 0.62));
     const s = span(k, 0.35, 0.8);
     this.stamp.visible = s > 0;
     this.stamp.scale.set(lerp(2.4, 1, easeOutBack(s, 2.2)));
@@ -520,9 +558,11 @@ export class CardFan {
 
   private async loadPortrait(v: CardView): Promise<void> {
     try {
-      const url = await this.d.art.portrait({ card: v.card.card, ...(v.card.skin ? { skin: v.card.skin } : {}), foil: v.card.foil, size: 256 });
-      const tex = await portraitTexture(url);
-      if (tex && !v.root.destroyed) v.setPortraitTexture(tex);
+      const req = { card: v.card.card, ...(v.card.skin ? { skin: v.card.skin } : {}), foil: v.card.foil, size: 256 };
+      // NEW cards also load the bare portrait (no age plate) for their silhouette.
+      const [url, bareUrl] = await Promise.all([this.d.art.portrait(req), v.card.isNew ? barePortrait(this.d.art, req).catch(() => '') : Promise.resolve('')]);
+      const [tex, bare] = await Promise.all([portraitTexture(url), bareUrl ? portraitTexture(bareUrl) : Promise.resolve(null)]);
+      if (tex && !v.root.destroyed) v.setPortraitTexture(tex, bare);
     } catch {
       // Keep the drawn fallback portrait.
     }
@@ -579,8 +619,8 @@ export class CardFan {
       const sp = 140 + this.rng.next() * (strong ? 360 : 200);
       p.spawn({
         tex: this.rng.next() < 0.3 ? starTexture() : dotTexture(),
-        x: v.root.x + Math.cos(a) * 40,
-        y: v.root.y + Math.sin(a) * 60,
+        x: v.root.x + Math.cos(a) * 40 * v.root.scale.x,
+        y: v.root.y + Math.sin(a) * 60 * v.root.scale.x,
         vx: Math.cos(a) * sp,
         vy: Math.sin(a) * sp - 60,
         life: 500 + this.rng.next() * 400,
@@ -599,8 +639,8 @@ export class CardFan {
     if (this.rng.next() > amount) return;
     this.d.particles.spawn({
       tex: dotTexture(),
-      x: v.root.x + (this.rng.next() - 0.5) * CARD_W,
-      y: v.root.y + CARD_H / 2 - this.rng.next() * 40,
+      x: v.root.x + (this.rng.next() - 0.5) * CARD_W * v.root.scale.x,
+      y: v.root.y + (CARD_H / 2) * v.root.scale.x - this.rng.next() * 40,
       vx: (this.rng.next() - 0.5) * 30,
       vy: -120 - this.rng.next() * 120,
       life: 700,

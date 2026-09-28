@@ -13,9 +13,9 @@ from lib import pipe as P
 from lib import props
 
 SLUG = "destrier_knight"
-HR = 60.0                      # rider height
-CANVAS = (176, 128)
-FEET = (70, 8)
+HR = 66.0                      # rider height
+CANVAS = (206, 134)
+FEET = (96, 8)
 YAW = -14.0
 
 BODY = B.Biped(H=HR, bulk=1.05)
@@ -27,7 +27,7 @@ SHIELD_FORE = 100.0            # forearm angle the shield is modelled for
 
 def build():
     k = BODY.k
-    steel = C.mat("steel", "#9aa0a8", rough=0.26, metal=1.0, noise=0.1, nscale=0.9, bump=0.08)
+    steel = C.mat("steel", "#8b9098", rough=0.36, metal=1.0, noise=0.1, nscale=0.9, bump=0.08)
     dsteel = C.mat("dsteel", "#5d636b", rough=0.35, metal=1.0, noise=0.12, nscale=0.9, bump=0.1)
     gold = C.mat("gold", "#b89a55", rough=0.3, metal=1.0, noise=0.08, nscale=1.0, bump=0.05)
     leather = C.mat("leather", "#4f3e33", rough=0.55, noise=0.14, nscale=0.9, bump=0.3)
@@ -49,21 +49,23 @@ def build():
     Hs.body(rig, coat, sock, hoof, mane)
     # hack: eyes use the dark eye material
     cap = C.blobs("caparison", [
-        ((0, 0, 47.5), (20.8, 10.3, 11.6)),
-        ((16, 0, 47.0), (9.4, 10.0, 12.0)),
-        ((-15.5, 0, 49.0), (11.8, 10.9, 12.6)),
-        ((-18.5, 0, 55.0), (8.2, 9.4, 6.4)),
-        ((11, 0, 56.0), (8.6, 6.8, 6.2)),
-        ((2, 0, 36.0), (22.0, 10.4, 4.8)),
-        ((-15, 0, 35.5), (12.8, 11.2, 5.2)),
-        ((17, 0, 35.5), (9.8, 10.4, 5.2)),
-    ], cloth, res=0.7)
-    C.displace(cap, 0.9, 0.9)
+        ((0, 0, 47.2), (20.2, 9.7, 11.1)),
+        ((15.5, 0, 46.8), (8.9, 9.5, 11.6)),
+        ((22.3, 0, 44.5), (5.5, 7.9, 8.6)),
+        ((17.5, 0, 42.0), (5.6, 9.4, 6.6)),
+        ((-15.5, 0, 48.8), (11.4, 10.2, 12.2)),
+        ((-18.5, 0, 54.8), (8.0, 9.0, 6.2)),
+        ((10, 0, 55.8), (8.4, 6.3, 6.0)),
+        ((1, 0, 38.0), (20.5, 9.9, 3.6)),
+        ((-15, 0, 37.5), (11.8, 10.5, 4.0)),
+        ((16, 0, 37.5), (9.0, 9.9, 4.0)),
+    ], cloth, res=0.6)
+    C.displace(cap, 0.45, 2.2)
     C.team(cap)
     rig.skin(cap, ["h_body", "h_pelvis", "h_foreS_F", "h_foreS_B", "h_hindT_F", "h_hindT_B"], soft=4.0,
              bias={"h_foreS_F": 5.0, "h_foreS_B": 5.0, "h_hindT_F": 5.0, "h_hindT_B": 5.0})
-    trim = C.blobs("cap_trim", [((0, 0, 32.2), (22.4, 10.6, 1.0)), ((-15, 0, 31.8), (13.1, 11.4, 1.0)),
-                                ((17, 0, 31.8), (10.1, 10.6, 1.0))], gold, res=0.5)
+    trim = C.blobs("cap_trim", [((1, 0, 34.9), (20.9, 10.1, 0.8)), ((-15, 0, 34.3), (12.1, 10.7, 0.8)),
+                                ((16, 0, 34.3), (9.2, 10.1, 0.8))], gold, res=0.5)
     rig.skin(trim, ["h_body", "h_pelvis"], soft=4.0)
     saddle = C.blobs("saddle", [((-2.5, 0, 59.2), (8.0, 6.2, 2.0)), ((-9.5, 0, 61.2), (1.8, 5.2, 3.2)),
                                 ((4.5, 0, 61.0), (1.8, 4.2, 2.8))], leather, res=0.45)
@@ -248,7 +250,7 @@ def rider_apply(rig, R):
     for s, sg in (("F", -1), ("B", 1)):
         pb = rig.obj.pose.bones["thigh_" + s]
         e = pb.rotation_euler
-        pb.rotation_euler = (e[0], e[1], math.radians(34 * sg * -1))
+        pb.rotation_euler = (e[0], e[1], math.radians(30 * sg))
 
 
 def horse_to_rider(HP, pw):

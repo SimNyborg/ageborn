@@ -44,6 +44,12 @@ const AMBER_TARGET = { x: 1190, y: 40 };
 const HAMMER = { x: 822, y: 474, rest: 0.38, hit: -0.74, impactMs: 90 };
 /** How far the cracks have spread when the charge ends; the four strikes open the rest. */
 const CRACKS = { charge: 0.3 } as const;
+/**
+ * Centre stage: the card being revealed comes forward, large, for its pre-signal and flip, then
+ * flies back to its slot in the fan (the others dim meanwhile). Spring constants give a small
+ * overshoot on arrival and on the landing back home.
+ */
+const PRESENT = { x: 640, y: 322, scale: 1.72, omega: 21, zeta: 0.6, dim: 0.5 } as const;
 
 export interface StageDeps {
   art: ArtProvider;
@@ -149,6 +155,8 @@ export class CapsuleStage implements ShowView {
   private readonly fired = new Set<string>();
   private readonly lift = new Map<number, number>();
   private readonly signal = new Map<number, number>();
+  /** Centre-stage spring per slot: k 0 (home) .. 1 (presented), its velocity, and whether it left home. */
+  private readonly present = new Map<number, { k: number; v: number; away: boolean; peak: number }>();
   private w = DESIGN_W;
   private h = DESIGN_H;
   private scale = 1;
@@ -932,7 +940,7 @@ export class CapsuleStage implements ShowView {
       while (this.emberT > 16) {
         this.emberT -= 16;
         const a = this.rng.next() * Math.PI * 2;
-        const rr = 170 + this.rng.next() * 120;
+        const rr = (170 + this.rng.next() * 120) * Math.max(1, v.root.scale.x / 1.2);
         const life = 240 + this.rng.next() * 140;
         const sx = v.root.x + Math.cos(a) * rr;
         const sy = v.root.y + Math.sin(a) * rr;
@@ -976,8 +984,8 @@ export class CapsuleStage implements ShowView {
         // The NEW stamp slams on with a burst of sparks.
         this.trauma.add(0.12);
         this.addPunch(0.012);
-        const sx = v.root.x - 30 * v.home.scale * 1.16;
-        const sy = v.root.y - 92 * v.home.scale * 1.16;
+        const sx = v.root.x - 30 * v.root.scale.x * 1.16;
+        const sy = v.root.y - 92 * v.root.scale.x * 1.16;
         this.ring(sx, sy, 10, 90, s.card.kind === 'skin' ? RARITY_COLORS[r] : ROOM.newStamp, 7, 300, 0.9);
         this.sparkBurst(sx, sy, s.card.kind === 'skin' ? RARITY_COLORS[r] : ROOM.newStamp, this.d.settings.reduceMotion ? 5 : 16, 320);
       }
@@ -992,7 +1000,10 @@ export class CapsuleStage implements ShowView {
     v.snap(strength);
     this.fan?.flipBurst(v, r === 'epic' || r === 'legendary');
     this.signal.set(s.card.slot, 0);
-    this.ring(v.root.x, v.root.y - 26, 50, 150 + 170 * strength, c, 6 + 10 * strength, 320 + 260 * strength, 0.95);
+    const size = Math.max(1, v.root.scale.x / 1.2);
+    this.ring(v.root.x, v.root.y - 26, 50 * size, (150 + 170 * strength) * size, c, 6 + 10 * strength, 320 + 260 * strength, 0.95);
+    // A fast white inner ring sells the snap on every rarity.
+    this.ring(v.root.x, v.root.y - 26, 40 * size, 120 * size, 0xffffff, 5, 200, 0.8);
     this.trauma.add(0.06 + 0.2 * strength);
     this.addPunch(0.008 + 0.03 * strength);
     if (r !== 'common') this.hitstop = Math.max(this.hitstop, 30 + 50 * strength);
@@ -1551,6 +1562,7 @@ export class CapsuleStage implements ShowView {
 
   private updateCards(dt: number): void {
     if (this.fan) {
+      let spot = 0;
       for (const v of this.fan.views) {
         const slot = v.card.slot;
         const want = slot === this.focusSlot ? 1 : 0;
@@ -1559,12 +1571,71 @@ export class CapsuleStage implements ShowView {
         this.lift.set(slot, next);
         v.setLift(next);
         v.setSignal(this.signal.get(slot) ?? 0, this.time);
+        spot = Math.max(spot, this.presentCard(v, want, dt));
+      }
+      // The rest of the fan steps back while a card holds centre stage.
+      for (const v of this.fan.views) {
+        const k = this.present.get(v.card.slot)?.k ?? 0;
+        v.root.alpha = 1 - PRESENT.dim * clamp01(spot - Math.max(0, k));
       }
       // Walkouts own the screen; the summary dims the fan behind its panel.
       const want = this.walkout ? 0.08 : 1 - 0.94 * this.summaryDim;
       this.fanAlpha += (want - this.fanAlpha) * Math.min(1, dt / (this.walkout ? 260 : 200));
       this.fan.root.alpha = this.fanAlpha;
     }
+  }
+
+  /**
+   * Moves a dealt card between its fan slot and centre stage on a spring; returns how far it is
+   * presented (0..1). The wardrobe card already stands large above its crate and stays there.
+   */
+  private presentCard(v: CardView, want: number, dt: number): number {
+    if (this.plan.mode === 'wardrobe') return 0;
+    const slot = v.card.slot;
+    let s = this.present.get(slot);
+    if (!s) {
+      if (want === 0) return 0;
+      s = { k: 0, v: 0, away: false, peak: 0 };
+      this.present.set(slot, s);
+    }
+    if (want === 0 && !s.away) return 0;
+    if (this.d.settings.reduceMotion) {
+      s.k += (want - s.k) * Math.min(1, dt / 90);
+      s.v = 0;
+    } else {
+      // Semi-implicit spring in small sub-steps (stable at any frame time).
+      for (let left = dt; left > 0; left -= 8) {
+        const h = Math.min(8, left) / 1000;
+        s.v += (PRESENT.omega * PRESENT.omega * (want - s.k) - 2 * PRESENT.zeta * PRESENT.omega * s.v) * h;
+        s.k += s.v * h;
+      }
+    }
+    s.away = true;
+    s.peak = Math.max(s.peak, s.k);
+    const k = s.k;
+    const home = v.home;
+    v.root.position.set(lerp(home.x, PRESENT.x, k), lerp(home.y, PRESENT.y, k));
+    v.root.scale.set(Math.max(0.2, lerp(home.scale, PRESENT.scale, k)));
+    // Follow-through: the card leans into its flight.
+    const lean = this.d.settings.reduceMotion ? 0 : Math.max(-0.22, Math.min(0.22, s.v * 0.0016 * Math.sign(PRESENT.x - home.x || 1)));
+    v.root.rotation = lerp(home.rot, 0, clamp01(k)) + lean;
+    v.root.zIndex = 150 + (want > 0 ? 50 : 0) + Math.round(10 * clamp01(k));
+    if (want === 0 && Math.abs(k) < 0.004 && Math.abs(s.v) < 0.05) {
+      // Home again: snap exactly into the slot with a little landing pop.
+      s.away = false;
+      s.k = 0;
+      s.v = 0;
+      v.root.position.set(home.x, home.y);
+      v.root.scale.set(home.scale);
+      v.root.rotation = home.rot;
+      v.root.zIndex = slot;
+    }
+    if (want === 0 && s.peak > 0.5 && k < 0.15) {
+      s.peak = 0;
+      v.pop(0.1);
+      this.ring(home.x, home.y + (CARD_H / 2) * home.scale, 16, 90 * home.scale, RARITY_COLORS[v.card.rarity], 5, 260, 0.55, 0.3);
+    }
+    return clamp01(k);
   }
 
   private updateFlyers(dt: number): void {

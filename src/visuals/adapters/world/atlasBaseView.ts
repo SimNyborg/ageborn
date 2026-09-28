@@ -419,10 +419,11 @@ export class AtlasBaseView implements BaseView {
     const slab = partSprite(this.o.decor, 'fx.p.beam', FX_ZONES);
     slab.tint = colors[1] ?? 0x77695a;
     slab.position.set(0, -2);
+    slab.scale.set(1, 1.3);
     const lip = partSprite(this.o.decor, 'fx.p.beam', FX_ZONES);
     lip.tint = colors[2] ?? 0xa08e78;
-    lip.scale.set(1, 0.45);
-    lip.position.set(0, -2.6);
+    lip.scale.set(1, 0.5);
+    lip.position.set(0, -3.2);
     ledge.addChild(slab, lip);
     // the ledge slides out of the wall toward the lane: its left end sits at the wall
     ledge.position.set(x - 18 * this.facing, y + 2);
@@ -433,7 +434,7 @@ export class AtlasBaseView implements BaseView {
     for (let j = 0; j < n; j++) {
       const s = partSprite(this.o.decor, metal ? 'fx.p.chunk' : j % 2 ? 'fx.p.rock' : 'fx.p.rock2', FX_ZONES);
       s.tint = colors[j % 3] ?? 0x8c7b68;
-      s.scale.set(metal ? 1.2 : 1.1);
+      s.scale.set(metal ? 1.9 : 1.8);
       s.visible = false;
       this.overlay.addChild(s);
       const x1 = x + (-15 + (30 * j) / Math.max(1, n - 1)) * this.facing;
@@ -443,7 +444,7 @@ export class AtlasBaseView implements BaseView {
         y0: y + 50 + this.rng.next() * 30,
         x1,
         y1: y - 3,
-        arc: 30 + this.rng.next() * 20,
+        arc: 45 + this.rng.next() * 25,
         spin: (this.rng.next() - 0.5) * 14,
         delay: 140 + j * 70,
         t: 0,
@@ -1107,22 +1108,30 @@ export class AtlasBaseView implements BaseView {
             f.landed = true;
             f.s.position.set(f.x1, f.y1);
             f.s.rotation = 0;
-            if (sl.metal) this.sparks(f.x1, f.y1, 3, 180, 0xfff4dc);
-            else this.dust(f.x1, f.y1 + 2, 1, 0.5);
+            if (sl.metal) this.sparks(f.x1, f.y1, 4, 200, 0xfff4dc);
+            else this.dust(f.x1, f.y1 + 2, 2, 0.8);
+            this.twinkle(f.x1, f.y1 - 2, 0.35);
           }
           const lt = f.t - f.T;
           const sq = this.motion.reduce ? 0 : bump(lt / 160, 0, 1);
-          f.s.scale.set(1.15 * (1 + 0.3 * sq), 1.15 * (1 - 0.3 * sq));
+          f.s.scale.set(1.8 * (1 + 0.3 * sq), 1.8 * (1 - 0.3 * sq));
           f.s.alpha = 1 - clamp01((lt - f.hold) / 250);
         }
       }
       if (sl.t - dtMs < 720 && sl.t >= 720) {
+        // done: a golden ring and glow on the new ledge (a slot is a reward), sparks and a twinkle
         const ring = partSprite(this.o.decor, 'fx.p.ringThick', FX_ZONES);
-        ring.tint = 0xfff4e2;
-        ring.position.set(sl.x, sl.y);
-        this.bits.add(ring, { life: 380, s0: 0.8, s1: 4, a0: 0.7 });
-        ring.scale.y = 0.4;
-        this.twinkle(sl.x, sl.y - 8, 1);
+        ring.tint = GOLD;
+        ring.blendMode = 'add';
+        ring.position.set(sl.x, sl.y - 6);
+        this.bits.add(ring, { life: 460, s0: 0.8, s1: 5.5, a0: 0.9 });
+        const g = partSprite(this.o.decor, 'fx.p.glow', FX_ZONES);
+        g.tint = GOLD;
+        g.blendMode = 'add';
+        g.position.set(sl.x, sl.y - 8);
+        this.bits.add(g, { life: 600, s0: 1, s1: 4, a0: 0.7, pulse: true });
+        this.sparks(sl.x, sl.y - 6, this.motion.lite ? 4 : 8, 240, 0xfff1d2);
+        this.twinkle(sl.x, sl.y - 14, 1.2);
         this.popMs = 320;
       }
       if (sl.t > 1400) {

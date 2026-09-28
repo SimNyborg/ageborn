@@ -199,6 +199,8 @@ const WAVE_MARGIN_BP = 11500;
 const PASSIVE_FOE_TICKS = 20 * TICKS_PER_SECOND;
 /** ... and a Treasury level bought then must pay back within this long (A2.3: levels 1 and 2). */
 const PASSIVE_PAYBACK_TICKS = 240 * TICKS_PER_SECOND;
+/** `baseTurrets`: a missing base turret or its mount scores this × f_spare (so it waits for spare gold). */
+const BASE_TURRET_BONUS = 20000;
 
 /** A16.3 rule 3 factor for the visible enemy army, bp (10,000 = ×1, capped at ×2). */
 export function monoFactorBp(foes: readonly { value: number; def?: { group: RoleGroup } | undefined }[]): number {
@@ -328,7 +330,8 @@ export class Brain {
     // `baseTurrets` (owner feedback 2026-09-28): from Bronze on the upper tiers keep 1-2 turrets up on
     // spare gold, without waiting for pressure (the turrets pay for themselves in bounties).
     const baseTurrets = v.ageIndex >= 1 && !allIn && this.goal?.kind !== 'treasury' ? t.baseTurrets : 0;
-    const wantTurret = (v.turretsBuilt < wantedTurrets && !allIn && pressure >= DEFENCE_PRESSURE_BP) || v.turretsBuilt < baseTurrets ? WANT_BONUS : 0;
+    const wantTurret = v.turretsBuilt < wantedTurrets && !allIn && pressure >= DEFENCE_PRESSURE_BP ? WANT_BONUS : 0;
+    const baseWant = v.turretsBuilt < baseTurrets ? BASE_TURRET_BONUS : 0;
     const wantModernise = !urgent && !allIn ? WANT_BONUS : 0;
 
     // Gold float (A7.3): let gold pile up to the float target, then spend it down.
@@ -365,12 +368,12 @@ export class Brain {
     // Turrets.
     const turret = this.chooseTurret(v);
     if (turret && v.turretsBuilt < t.maxTurrets) {
-      add(turret, mulBp(W.turret, mulBp(pressure, fSpare(v.gold, turret.cost))) + wantTurret);
+      add(turret, mulBp(W.turret, mulBp(pressure, fSpare(v.gold, turret.cost))) + Math.max(wantTurret, mulBp(baseWant, fSpare(v.gold, turret.cost))));
     }
     const filled = v.turrets.every((x, m) => m >= v.mountsOwned || x !== null);
     if (filled && v.mountsOwned < mountCap) {
       const cost = e.mountCosts[v.mountsOwned] ?? 0;
-      if (v.gold >= cost) add({ kind: 'mount', cost }, mulBp(SCORE.mount, mulBp(W.turret, mulBp(pressure, fSpare(v.gold, cost)))) + wantTurret);
+      if (v.gold >= cost) add({ kind: 'mount', cost }, mulBp(SCORE.mount, mulBp(W.turret, mulBp(pressure, fSpare(v.gold, cost)))) + Math.max(wantTurret, mulBp(baseWant, fSpare(v.gold, cost))));
     }
     if (t.turretRebuild && !v.ageUncertain) {
       const mod = this.chooseModernise(v, v.gold);

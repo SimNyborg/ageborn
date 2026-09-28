@@ -57,7 +57,8 @@ test.describe('Age Power: drag onto the battlefield', () => {
     await page.mouse.move(btn.x - 30, btn.y - 50, { steps: 4 });
     await page.mouse.move(vp.width * 0.5, vp.height * 0.5, { steps: 8 });
     await expect(power).toHaveAttribute('data-aim', 'dragging');
-    await expect(page.getByTestId('hud-power-token')).toBeVisible();
+    // The token (a zero-size anchor at the pointer) carries the power's icon above the finger.
+    await expect(page.getByTestId('hud-power-token').locator('.hud-power-token-core')).toBeVisible();
     await expect.poll(async () => (await ghost(page))?.valid ?? null).toBe(true);
     // Back over the tray: the ghost turns invalid and says so; releasing puts the power back.
     await page.mouse.move(vp.width * 0.4, vp.height * 0.93, { steps: 6 });

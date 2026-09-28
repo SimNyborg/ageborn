@@ -592,8 +592,3 @@ function baselineTurretsObs(): Observation {
     turretCards: turrets.slice(0, 2).map((u) => u.id),
   });
 }
-it('debug', () => {
-  const history = [observation({ tick: 2350, units: [unit(1, 'bonker', L / 2 + 100)] })];
-  const t = decide(brainFor({ tier: 8, tierOverride: { treasuryMax: 0 } }).brain, baselineTurretsObs(), { history });
-  expect(JSON.stringify([t.candidates.slice(0, 6), t.goal, t.clockBp, baselineTurretsObs().me.turretCards])).toBe('');
-});

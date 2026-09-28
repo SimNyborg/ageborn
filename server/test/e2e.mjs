@@ -21,13 +21,13 @@ const WS = `ws://127.0.0.1:${PORT}`;
 
 if (!existsSync(path.join(root, 'client/dist/bot.js')) || args.includes('--rebuild')) execSync('node build-client.mjs', { cwd: root, stdio: 'inherit' });
 
-const wrangler = spawn('npx', ['wrangler', 'dev', '--port', String(PORT), '--ip', '127.0.0.1', '--inspector-port', String(PORT + 1)], { cwd: root, env: { ...process.env, WRANGLER_SEND_METRICS: 'false' } });
+const wrangler = spawn('npx', ['wrangler', 'dev', '--port', String(PORT), '--ip', '127.0.0.1', '--inspector-port', String(PORT + 1)], { cwd: root, detached: true, env: { ...process.env, WRANGLER_SEND_METRICS: 'false' } });
 let wlog = '';
 wrangler.stdout.on('data', (d) => (wlog += d));
 wrangler.stderr.on('data', (d) => (wlog += d));
 const stop = () => {
   try {
-    wrangler.kill('SIGTERM');
+    process.kill(-wrangler.pid, 'SIGTERM'); // the whole group: npx, wrangler and workerd
   } catch {}
 };
 process.on('exit', stop);
@@ -116,7 +116,7 @@ try {
   const results = await Promise.all(ONLY.map((n) => runScenario(browser, n, scenarios[n])));
   await browser.close();
   mkdirSync(path.join(root, 'test/results'), { recursive: true });
-  writeFileSync(path.join(root, 'test/results/e2e.json'), JSON.stringify(results, null, 2));
+  writeFileSync(path.join(root, `test/results/e2e-${ONLY.join('-')}.json`), JSON.stringify(results, null, 2));
   for (const r of results) {
     const s = r.stats;
     const minutes = (s.ticks * 50) / 60000;
@@ -133,4 +133,5 @@ try {
   process.exitCode = 1;
 } finally {
   stop();
+  setTimeout(() => process.exit(), 500);
 }
