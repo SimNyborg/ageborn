@@ -86,8 +86,11 @@ export function attackOf(def: UnitDef | undefined, index: number): AttackDef | u
   return riders && riders.kind === 'riders' ? riders.attack : undefined;
 }
 
-/** Semitones added by each own evolve, in turn (A13 Key changes: +2, +2, +1, +1). */
-export const TRANSPOSE_STEPS = [2, 2, 1, 1] as const;
+/**
+ * Semitones added by each own evolve, in turn (A13 / A17.8 key changes: +2, +2, +1, +1, +1, +1, +1,
+ * so +9 at Cosmic). The same rule as `@/audio` `EVOLVE_TRANSPOSE_STEPS`.
+ */
+export const TRANSPOSE_STEPS = [2, 2, 1, 1, 1, 1, 1] as const;
 
 /** Total transposition after `n` own evolves. */
 export function transposeAfter(n: number): number {
@@ -181,6 +184,10 @@ export function actingSide(ev: SimEvent, unit: (id: number) => UnitInfo | undefi
 
 /** The short freeze before your evolve's camera push (A12 evolve moment, audit #5). */
 export const EVOLVE_FREEZE_MS = 220;
+/** The new age's music takes over this fast on the fanfare (docs/requests/quality-audio-evolve.md). */
+export const EVOLVE_CUE_FADE_MS = 150;
+/** Length passed to an effect that loops on a unit for as long as it lives (it stops when the unit dies). */
+export const UNIT_LOOP_MS = 600_000;
 
 export class EventMapper {
   feel: RenderFeelConfig;
@@ -199,6 +206,11 @@ export class EventMapper {
     this.feel = o.feel;
     this.mySide = o.mySide;
     this.rng = o.rng;
+  }
+
+  /** True when the feel config has a rule for `key` (card-specific rules fall back to their kind's). */
+  private has(key: string): boolean {
+    return this.feel.events[key] !== undefined;
   }
 
   /** Maps one tick's (or several ticks') events. `unit` looks up live units by id. */
@@ -284,6 +296,9 @@ export class EventMapper {
         out.push({ a: 'unitSpawn', id: ev.id, side: ev.side, card: ev.card, x: ev.x / MILLI_LU, summoned: ev.summoned, level: ev.level });
         out.push({ a: 'unitClip', id: ev.id, clip: 'spawn' });
         this.rule('unit.spawn', { at: { k: 'unit', id: ev.id, part: 'feet' }, subs: { spawnSound: spawnSoundFor(def) } }, out);
+        // A per-card effect that loops on the unit while it lives (A17.12: the Sapper's lit fuse).
+        const alive = `unit.alive.${ev.card}`;
+        if (this.has(alive)) this.rule(alive, { at: { k: 'unit', id: ev.id, part: 'head' }, follow: true, opts: { side: ev.side, durationMs: UNIT_LOOP_MS } }, out);
         if (ev.side === this.mySide && !ev.summoned) out.push({ a: 'view', ev: { t: 'trained', card: ev.card } });
         return;
       }
@@ -386,7 +401,14 @@ export class EventMapper {
         out.push({ a: 'unitClip', id: ev.id, clip: 'ability' });
         const at: Anchor = ev.ability === 'callStrike' || ev.ability === 'pounce' ? { k: 'world', x: ev.x / MILLI_LU, y: 0 } : { k: 'unit', id: ev.id, part: 'hit' };
         const u = unit(ev.id);
-        this.rule(`ability.${ev.ability}`, { at, opts: this.abilityOpts(u, ev.ability) }, out);
+        // A card's own look wins over the ability kind's (A17.12: the Starwarden's beacon ring, the
+        // Bronze Colossus's Molten Heart stomp, the Warp Stalker's blink).
+        const own = u ? `ability.${ev.ability}.${u.card}` : '';
+        const key = own && this.has(own) ? own : `ability.${ev.ability}`;
+        const opts = this.abilityOpts(u, ev.ability);
+        this.rule(key, { at, ...(opts ? { opts } : {}) }, out);
+        // A blink shows at both ends: where the unit leaves and where it lands.
+        if (ev.ability === 'pounce' && key === own && u) this.rule(key, { at: { k: 'world', x: u.x, y: 0 }, ...(opts ? { opts } : {}) }, out);
         return;
       }
       case 'died': {
@@ -495,7 +517,12 @@ export class EventMapper {
           out.push({ a: 'camera', at: { k: 'base', side: ev.side, part: 'center' }, zoom: 1.3, inMs: 450, holdMs: Math.max(600, ms + 700), outMs: 800 });
         }
         out.push({ a: 'fx', effectId: 'fx.evolve_pillar', at: { k: 'base', side: ev.side, part: 'center' }, count: 1, priority: 4, opts: { phase: 0, ms: this.content.economy.ascendMs, small: own ? 0 : 1 } });
-        this.rule(own ? 'evolve.start.own' : 'evolve.start.enemy', { at: { k: 'base', side: ev.side, part: 'center' } }, out);
+        const key = own ? 'evolve.start.own' : 'evolve.start.enemy';
+        this.rule(key, { at: { k: 'base', side: ev.side, part: 'center' } }, out);
+        // The music ducks under the riser for the whole Ascension and comes back on the fanfare
+        // (docs/requests/quality-audio-evolve.md): a rule with `duckDb` and no `duckMs` lasts `ascendMs`.
+        const r = feelRule(this.feel, key);
+        if (r.duckDb !== undefined && r.duckMs === undefined) out.push({ a: 'duck', db: r.duckDb, ms: this.content.economy.ascendMs });
         out.push({ a: 'view', ev: { t: 'ascending', side: ev.side, age: ev.age } });
         return;
       }
@@ -507,7 +534,8 @@ export class EventMapper {
           this.rule('evolve.own', { at, subs: { fanfare: `evolve_fanfare_${ev.age}` }, opts: { phase: 1, age: this.content.ages[ev.age]?.index ?? 0 } }, out);
           out.push({ a: 'cheer', side: ev.side });
           const cue = this.content.ages[ev.age]?.musicCue;
-          if (cue) out.push({ a: 'musicCue', cue, fadeMs: 600 });
+          // A fast switch exactly on the fanfare: the two keys overlap for only 150 ms (quality-audio-evolve).
+          if (cue) out.push({ a: 'musicCue', cue, fadeMs: EVOLVE_CUE_FADE_MS });
           out.push({ a: 'musicTranspose', semitones: transposeAfter(this.evolves[ev.side]) });
           out.push({ a: 'intensity', amount: tun.intensity.evolve });
         } else {
@@ -614,8 +642,7 @@ export class EventMapper {
     const dir = dirOf(side);
     const cast = this.casts.get(ev.castId);
     const centre = cast?.x ?? x;
-    const has = (key: string): boolean => this.feel.events[key] !== undefined;
-    const pick = (suffix: string): string => (has(`power.fx.${def.id}${suffix}`) ? `power.fx.${def.id}${suffix}` : `power.fx.${e.kind}${suffix}`);
+    const pick = (suffix: string): string => (this.has(`power.fx.${def.id}${suffix}`) ? `power.fx.${def.id}${suffix}` : `power.fx.${e.kind}${suffix}`);
     let each: RuleTarget | null = null;
     let first: RuleTarget | null = null;
     switch (e.kind) {
@@ -675,7 +702,10 @@ export class EventMapper {
     const key = `${ev.sourceId}:${ev.tick}`;
     if (this.areaShown.has(key)) return;
     this.areaShown.add(key);
-    this.rule(area.pull ? 'hit.pull' : 'hit.splash', { at: { k: 'world', x, y: 0 }, opts: { radius: area.radius } }, out);
+    const kind = area.pull ? 'hit.pull' : 'hit.splash';
+    // A card's own ring wins (A17.12: the Bronze Colossus's slowing stomp).
+    const own = `${kind}.${ev.sourceCard}`;
+    this.rule(this.has(own) ? own : kind, { at: { k: 'world', x, y: 0 }, opts: { radius: area.radius } }, out);
   }
 
   /** The area of the attack behind a hit (splash, pull or a called strike), matched by damage type. */

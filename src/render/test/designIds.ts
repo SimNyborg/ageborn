@@ -1,10 +1,11 @@
 /**
- * The effect and sound IDs from DESIGN A14.1 and A13, copied verbatim so the render tests can check
+ * The effect and sound IDs from DESIGN A14.1 and A13 (with the merged A17.12 ids), copied verbatim so the render tests can check
  * that every ID the feel config and the event mapper use exists in the ID appendix.
  */
 export const A14_EFFECT_IDS = new Set([
   // Instant and attack effects
   'fx.beam_laser', 'fx.beam_rail', 'fx.arc_chain', 'fx.tongue', 'fx.pitch_pour', 'fx.heal_beam',
+  'fx.sun_beam', 'fx.gorgon_gaze', 'fx.tesla_arc', 'fx.beam_void', 'fx.beam_ion', 'fx.beam_tachyon',
   // Hit and death effects
   'fx.spark_blunt', 'fx.spark_slash', 'fx.spark_pierce', 'fx.spark_bullet', 'fx.scorch_laser', 'fx.blast',
   'fx.spark_effective', 'fx.puff_resisted', 'fx.muzzle', 'fx.trail', 'fx.splash_ring', 'fx.explosion_s',
@@ -12,9 +13,11 @@ export const A14_EFFECT_IDS = new Set([
   // Status and ability effects
   'fx.heal_glyph', 'fx.shield_bubble', 'fx.mark_reticle', 'fx.gravity_swirl', 'fx.smoke_cloud', 'fx.emp_ring',
   'fx.time_ripple', 'fx.roar_ring', 'fx.call_marker', 'fx.dizzy', 'fx.legendary_aura',
+  'fx.stomp_ring', 'fx.fuse_spark', 'fx.beacon_ring', 'fx.blink',
   // Power effects
   'fx.telegraph_zone', 'fx.aurochs', 'fx.meteor', 'fx.arrow_rain', 'fx.decree_glow', 'fx.cannonball_rain',
   'fx.plane_bomber', 'fx.parachute', 'fx.orbital_beam', 'fx.nanite_swarm',
+  'fx.tidal_wave', 'fx.aegis_glow', 'fx.iron_horse', 'fx.zeppelin', 'fx.star_shard_rain', 'fx.warp_portal',
   // Match effects
   'fx.evolve_pillar', 'fx.last_stand_wave', 'fx.overdrive_frame', 'fx.siege_vignette',
 ]);
@@ -55,4 +58,5 @@ export const A14_PROJECTILE_IDS = new Set([
   'proj.rock', 'proj.boulder', 'proj.bee', 'proj.log', 'proj.arrow', 'proj.bolt', 'proj.goose', 'proj.musket', 'proj.lob',
   'proj.cannonball', 'proj.grapeshot', 'proj.rocket', 'proj.chainshot', 'proj.bomb', 'proj.bullet', 'proj.shell', 'proj.flak',
   'proj.plasma', 'proj.plasma_mortar', 'proj.gravity_orb',
+  'proj.javelin', 'proj.scorpion_bolt', 'proj.harpoon', 'proj.flare', 'proj.ion', 'proj.starburst', 'proj.star_shard',
 ]);

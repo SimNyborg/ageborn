@@ -138,8 +138,14 @@
     "power.fx.paradrop.first": { "particles": [{ "effectId": "fx.parachute", "count": 1, "priority": 5 }] },
     "power.fx.buffAll.first": { "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.decree_glow", "count": 1, "priority": 3 }] },
     "power.fx.nanite_surge.first": { "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.nanite_swarm", "count": 1, "priority": 3 }] },
+    "power.fx.tidal_wave.first": { "particles": [{ "effectId": "fx.tidal_wave", "count": 1, "priority": 5 }] },
+    "power.fx.aegis.first": { "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.aegis_glow", "count": 1, "priority": 3 }] },
+    "power.fx.iron_horse": { "particles": [{ "effectId": "fx.iron_horse", "count": 1, "priority": 5 }] },
+    "power.fx.zeppelin_raid.first": { "particles": [{ "effectId": "fx.zeppelin", "count": 1, "priority": 5 }] },
+    "power.fx.starfall": { "particles": [{ "effectId": "fx.star_shard_rain", "count": 1, "priority": 4 }] },
+    "power.fx.warp_strike.first": { "particles": [{ "effectId": "fx.warp_portal", "count": 1, "priority": 5 }] },
     "evolve.ready": { "sound": "evolve_ready" },
-    "evolve.start.own": { "sound": "evolve_riser", "duckDb": -6, "duckMs": 2600 },
+    "evolve.start.own": { "sound": "evolve_riser", "duckDb": -8 },
     "evolve.start.enemy": {},
     "evolve.own": {
       "hitstopGlobalMs": 100,
@@ -197,6 +203,18 @@
       "sound": "time_stop"
     },
     "ability.pounce": { "particles": [{ "effectId": "fx.dust_poof", "count": 2, "priority": 1 }] },
+    "ability.pounce.warp_stalker": { "particles": [{ "effectId": "fx.blink", "count": 1, "priority": 3 }] },
+    "ability.periodicShieldAura.starwarden": { "particles": [{ "effectId": "fx.beacon_ring", "count": 1, "priority": 3 }], "sound": "shield_up" },
+    "ability.onDeathExplode.bronze_colossus": {
+      "trauma": 0.15,
+      "particles": [
+        { "effectId": "fx.stomp_ring", "count": 1, "priority": 4 },
+        { "effectId": "fx.explosion_m", "count": 1, "priority": 3 }
+      ],
+      "sound": "explosion_m"
+    },
+    "hit.splash.bronze_colossus": { "trauma": 0.06, "particles": [{ "effectId": "fx.stomp_ring", "count": 1, "priority": 3 }] },
+    "unit.alive.sapper": { "particles": [{ "effectId": "fx.fuse_spark", "count": 1, "priority": 2 }] },
     "ability.onDeathExplode": {
       "trauma": 0.12,
       "particles": [{ "effectId": "fx.explosion_m", "count": 1, "priority": 3 }],

@@ -260,7 +260,10 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     expect(pick(up, 'screenFlash')[0]).toMatchObject({ ms: 120, color: 0xffffff });
     expect(pick(up, 'sound').map((s) => s.id)).toEqual(['evolve_fanfare_medieval']);
     expect(pick(up, 'cheer')).toEqual([{ a: 'cheer', side: 0 }]);
-    expect(pick(up, 'musicCue')).toEqual([{ a: 'musicCue', cue: 'music.medieval', fadeMs: 600 }]);
+    // quality-audio-evolve: the music ducks 8 dB under the riser for the whole Ascension and the new
+    // age's cue takes over in 150 ms on the fanfare.
+    expect(pick(start, 'duck')).toEqual([{ a: 'duck', db: -8, ms: testContent().economy.ascendMs }]);
+    expect(pick(up, 'musicCue')).toEqual([{ a: 'musicCue', cue: 'music.medieval', fadeMs: 150 }]);
     expect(pick(up, 'musicTranspose')).toEqual([{ a: 'musicTranspose', semitones: 2 }]);
     expect(pick(up, 'baseMorph')).toEqual([{ a: 'baseMorph', side: 0, age: 'medieval', ms: 1800 }]);
     expect(pick(up, 'backdropWipe')).toEqual([{ a: 'backdropWipe', side: 0, age: 'medieval', ms: 2000 }]);
@@ -276,8 +279,12 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     expect(pick(up, 'view')).toEqual([{ a: 'view', ev: { t: 'evolved', side: 1, age: 'medieval' } }]);
   });
 
-  it('transposes +2, +2, +1, +1 over four own evolves', () => {
-    expect([1, 2, 3, 4].map(transposeAfter)).toEqual([2, 4, 5, 6]);
+  it('transposes +2, +2, +1, +1, +1, +1, +1 over seven own evolves (+9 at Cosmic, A17.8)', () => {
+    expect([1, 2, 3, 4, 5, 6, 7].map(transposeAfter)).toEqual([2, 4, 5, 6, 7, 8, 9]);
+  });
+
+  it('enemy Ascension does not duck your music', () => {
+    expect(pick(run([ev('ascendStart', { side: 1, age: 'medieval' })]), 'duck')).toEqual([]);
   });
 });
 
