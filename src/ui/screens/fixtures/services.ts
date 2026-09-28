@@ -241,6 +241,18 @@ export function createPreviewServices(o: {
       log('showFeatHint', id);
       set((s) => ({ ...s, flags: { ...s.flags, [`featHint.${id}`]: true } }));
     },
+    setUiFlags(patch) {
+      log('setUiFlags', patch);
+      set((s) => {
+        const flags = { ...s.flags };
+        for (const [k, on] of Object.entries(patch)) {
+          if (!k.startsWith('ui.')) continue;
+          if (on) flags[k] = true;
+          else delete flags[k];
+        }
+        return { ...s, flags };
+      });
+    },
     equipSkin(target, skin) {
       set((s) => {
         const equipped = { ...s.skins.equipped };

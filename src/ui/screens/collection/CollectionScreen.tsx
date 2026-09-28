@@ -31,7 +31,7 @@ import {
 } from '../model/collection';
 import { reasonKey } from '../model/reasons';
 
-function SkinTile(p: { skin: SkinDef }) {
+export function SkinTile(p: { skin: SkinDef }) {
   const { save, content, t, locale, services, toasts } = useUi();
   const s = save.value;
   const k = p.skin;

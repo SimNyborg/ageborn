@@ -72,6 +72,9 @@ export type ResultCard =
   | { kind: 'break' }
   | { kind: 'wrap'; wins: number; losses: number; newCards: number; chargesOut: boolean };
 
+/** The Customize screen's tabs. */
+export type CustomizeTab = 'troops' | 'bases' | 'look' | 'emotes';
+
 /** Screens without parameters. */
 export type NoParams = object;
 
@@ -109,6 +112,8 @@ export interface RouteParams {
   settings: NoParams;
   /** 17. */
   conquest: NoParams;
+  /** Customize (owner feedback 2026-09-28): troop and base skins, banner, frame, title, emotes. */
+  customize: { tab?: CustomizeTab };
 }
 
 export type ScreenId = keyof RouteParams;

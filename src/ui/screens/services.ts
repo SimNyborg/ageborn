@@ -73,6 +73,12 @@ export interface UiServices {
   markSeen(card: CardId): void;
   /** Reveals a hidden feat's hint (A15.10; stored in `flags['featHint.<id>']`). */
   showFeatHint(id: string): void;
+  /**
+   * Sets UI-only flags in `SaveDoc.flags` (keys start with `ui.`): first-time pointers already
+   * shown (`ui.pointer.<entry>`) and the last picked difficulty (`ui.difficulty.<id>`). Each key in
+   * `patch` is set to its value; a `false` value removes the key.
+   */
+  setUiFlags(patch: Record<string, boolean>): void;
   /** Equips a skin on a card or base, or clears it with null. */
   equipSkin(target: string, skin: SkinId | null): void;
 

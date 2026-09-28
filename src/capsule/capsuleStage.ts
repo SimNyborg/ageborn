@@ -10,11 +10,12 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import type { ArtProvider, CapsuleTier, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
-import { CardFan, portraitTexture } from './cardFan';
+import { CARD_H, CardFan, portraitTexture, type CardView } from './cardFan';
 import { CapsuleDrum, Hammer, Pedestal, Pips } from './climb';
 import { clamp01, easeInQuad, easeOutBack, easeOutCubic, lerp, span } from './ease';
 import { Particles, Trauma, glowSprite } from './fx';
-import { RARITY_COLORS, ROOM, TIER_COLORS, shade } from './palette';
+import { AEON_RIM, RARITY_COLORS, ROOM, TIER_COLORS, mixColor, shade } from './palette';
+import { SHOW_TIMING } from './plan';
 import type {
   BurstStep,
   FlipStep,
@@ -27,7 +28,8 @@ import type {
 } from './plan';
 import { CrateView } from './crate';
 import type { ShowView } from './runner';
-import { coneTexture, confettiTexture, dotTexture, glowTexture, raysTexture, roomTexture, shardTexture, starTexture } from './textures';
+import type { RevealCard } from './summaryModel';
+import { coneTexture, confettiTexture, dotTexture, glowTexture, raysTexture, roomTexture, shardTexture, starTexture, streakTexture } from './textures';
 import { tierIndex } from './tiers';
 import type { CapsuleCatalog, ProgressLookup, ShowSettings } from './types';
 import { Walkout } from './walkout';
@@ -40,6 +42,8 @@ const PED = { x: 640, y: 470 };
 const AMBER_TARGET = { x: 1190, y: 40 };
 /** Hammer grip position and angles (rest, and the angle where the head meets the drum). */
 const HAMMER = { x: 822, y: 474, rest: 0.38, hit: -0.74, impactMs: 90 };
+/** How far the cracks have spread when the charge ends; the four strikes open the rest. */
+const CRACKS = { charge: 0.3 } as const;
 
 export interface StageDeps {
   art: ArtProvider;
@@ -58,6 +62,25 @@ interface Flyer {
   life: number;
 }
 
+/** An expanding ring (shockwaves, landings, snaps); `squash` flattens it onto the floor. */
+interface Ring {
+  x: number;
+  y: number;
+  t: number;
+  dur: number;
+  r0: number;
+  r1: number;
+  width: number;
+  color: number;
+  alpha: number;
+  squash: number;
+}
+
+/** The hammer meets the drum here (design space). */
+const HIT = { x: PED.x + 78, y: PED.y - 138 };
+/** Centre of the drum body. */
+const CORE = { x: PED.x, y: PED.y - 125 };
+
 interface MiniDrum {
   drum: CapsuleDrum;
   x: number;
@@ -72,6 +95,34 @@ export class CapsuleStage implements ShowView {
   private readonly bg = new Sprite(roomTexture());
   private readonly world = new Container();
   private readonly flashG = new Graphics();
+  /** Darkens the room behind the stage for big moments (burst build of Jade and Aeon, Epic and Legendary signals). */
+  private readonly dimG = new Graphics();
+  private dimA = 0;
+  private dimTarget = 0;
+  /** The room tints towards this colour while `bgTintK` > 0. */
+  private bgTintColor = 0xffffff;
+  private bgTintK = 0;
+  private bgTintTarget = 0;
+  private readonly rings: Ring[] = [];
+  private readonly ringG = new Graphics();
+  /** Zoom punch (fraction of scale), decays fast. */
+  private punch = 0;
+  /** Freeze frame: particles, flyers and the shake hold still. */
+  private hitstop = 0;
+  /** Slow motion for effects (the walkout drop). */
+  private slowmo = 0;
+  /** Drum kick from a strike: rotation spring. */
+  private kickT = 1e6;
+  private kickA = 0;
+  /** The drum swells during the burst build. */
+  private swell = 0;
+  private emberT = 0;
+  private emberSpawnT = 0;
+  private embersOn = false;
+  private strikesDone = 0;
+  /** The pedestal dips under the landing drum, 1 → 0. */
+  private pedKick = 0;
+  private confettiLeft = 0;
   private readonly particles: Particles;
   private readonly motes: Particles;
   private readonly rng: CosmeticRng;
@@ -176,6 +227,7 @@ export class CapsuleStage implements ShowView {
     this.hammer.root.rotation = HAMMER.rest;
     this.hammer.root.alpha = 0;
     this.waves.blendMode = 'add';
+    this.ringG.blendMode = 'add';
     this.crate.root.position.set(PED.x, PED.y);
     this.crate.root.visible = false;
     this.pedGroup.visible = plan.mode !== 'openAll';
@@ -197,12 +249,14 @@ export class CapsuleStage implements ShowView {
       this.pedGroup,
       this.hammer.root,
       this.waves,
+      this.ringG,
       ...(this.fan ? [this.fan.root] : []),
       this.flightLayer,
       this.walkoutLayer,
       this.particles.root,
     );
-    this.root.addChild(this.bg, this.world, this.flashG);
+    this.dimG.alpha = 0;
+    this.root.addChild(this.bg, this.dimG, this.world, this.flashG);
     this.resize(DESIGN_W, DESIGN_H);
   }
 
@@ -221,6 +275,7 @@ export class CapsuleStage implements ShowView {
     this.bg.height = this.h;
     this.flashG.clear().rect(0, 0, this.w, this.h).fill(0xffffff);
     this.flashG.alpha = this.flashAlpha;
+    this.dimG.clear().rect(0, 0, this.w, this.h).fill(0x05040a);
   }
 
   /** Design-space point to screen pixels (for DOM overlays). */
@@ -256,6 +311,7 @@ export class CapsuleStage implements ShowView {
       case 'flip':
         this.focusSlot = step.card.slot;
         if (this.plan.mode === 'wardrobe') this.riseFromCrate(step.kind === 'signal' && !instant ? 0 : 1);
+        if (step.kind === 'signal' && !instant) this.signalMood(step.card.rarity, 1);
         break;
       case 'walkout':
       case 'miniWalkout':
@@ -275,8 +331,19 @@ export class CapsuleStage implements ShowView {
         this.focusSlot = -1;
         this.summaryDim = 1;
         this.confettiOn = false;
+        this.embersOn = false;
+        this.dimTarget = 0;
+        this.bgTintTarget = 0;
         break;
     }
+  }
+
+  /** Epic and Legendary pre-signals darken the room and tint it in the rarity colour (honest: the card's glow already shows it). */
+  private signalMood(r: RevealCard['rarity'], on: number): void {
+    const k = r === 'legendary' ? 1 : r === 'epic' ? 0.7 : r === 'rare' ? 0.25 : 0;
+    this.dimTarget = 0.5 * k * on;
+    this.bgTintColor = RARITY_COLORS[r];
+    this.bgTintTarget = k * on;
   }
 
   progress(step: ShowStep, t: number, dt: number): void {
@@ -291,18 +358,16 @@ export class CapsuleStage implements ShowView {
         this.strike(step, t);
         break;
       case 'burst':
-        this.burst(step, t);
+        this.burst(step, t, dt);
         break;
       case 'volley':
         this.volley(step, t);
         break;
       case 'fan':
-        this.fan?.deal(t / step.durationMs);
+        this.dealCards(t / step.durationMs, dt);
         break;
       case 'signal':
-        this.signal.set(step.card.slot, easeOutCubic(t / step.durationMs));
-        if (step.card.rarity === 'legendary') this.bigRaysLevel = lerp(0.35, 0.8, t / step.durationMs);
-        if (this.plan.mode === 'wardrobe') this.riseFromCrate(t / step.durationMs);
+        this.preSignal(step.card, t / step.durationMs, dt);
         break;
       case 'flip':
         this.flip(step, t);
@@ -311,9 +376,20 @@ export class CapsuleStage implements ShowView {
       case 'miniWalkout':
         this.walkout?.update(t, dt);
         break;
-      case 'duplicates':
-        this.fan?.view(step.card.slot)?.setBar(t / step.durationMs, step.progress, (k, o) => this.d.i18n.t(k, o));
+      case 'duplicates': {
+        const v = this.fan?.view(step.card.slot);
+        const u = t / step.durationMs;
+        v?.setBar(u, step.progress, (k, o) => this.d.i18n.t(k, o));
+        const p = step.progress;
+        if (v && p && p.need !== null && p.after >= p.need && p.before < p.need && u >= 0.8 && this.fire(`ready-${step.card.key}`)) {
+          // UPGRADE READY pops with a green burst.
+          const y = v.root.y + (CARD_H / 2) * v.home.scale;
+          this.ring(v.root.x, y, 10, 120, ROOM.ready, 8, 380, 0.5);
+          this.sparkBurst(v.root.x, y, ROOM.ready, this.d.settings.reduceMotion ? 6 : 18, 280);
+          v.pop(0.12);
+        }
         break;
+      }
       case 'crateArrival':
         this.crateArrival(t);
         break;
@@ -335,17 +411,21 @@ export class CapsuleStage implements ShowView {
       case 'charge':
         this.drum.body.position.set(0, 0);
         this.drum.body.rotation = 0;
-        this.drum.setCracks(0.85);
+        this.drum.setCracks(CRACKS.charge);
+        this.drum.setLeak(0.15);
         this.pips.root.alpha = 1;
         break;
       case 'strike':
         this.settleStrike(step);
         break;
       case 'burst':
+        this.fire('burst-pop');
         this.fire('burst');
         this.drum.root.visible = false;
         this.hammerTarget = 0;
+        this.swell = 0;
         this.pedestal.setGlow(0.4);
+        this.dimTarget = 0;
         break;
       case 'volley':
         // Hidden, not destroyed: their halves may still be flying and share the drawing context.
@@ -354,10 +434,13 @@ export class CapsuleStage implements ShowView {
       case 'fan':
         this.fan?.settleDealt();
         break;
-      case 'signal':
+      case 'signal': {
         this.signal.set(step.card.slot, 1);
         if (this.plan.mode === 'wardrobe') this.riseFromCrate(1);
+        const v = this.fan?.view(step.card.slot);
+        if (v) v.wobble = 0;
         break;
+      }
       case 'flip':
         this.fire(`flipped-${step.card.key}`);
         this.fire(`stamp-${step.card.key}`);
@@ -365,6 +448,7 @@ export class CapsuleStage implements ShowView {
         this.signal.set(step.card.slot, 0);
         this.focusSlot = -1;
         this.bigRaysLevel = Math.min(this.bigRaysLevel, 0.35);
+        this.signalMood(step.card.rarity, 0);
         break;
       case 'walkout':
       case 'miniWalkout':
@@ -403,8 +487,11 @@ export class CapsuleStage implements ShowView {
 
   private placeDrum(t: number): void {
     const fall = span(t, 0, 220);
-    this.drum.root.y = PED.y - 520 * (1 - easeInQuad(fall));
-    this.shadow.scale.set(lerp(0.4, 1, fall));
+    this.drum.root.y = PED.y - 560 * (1 - easeInQuad(fall));
+    // Stretched along the fall, square again on touch-down (the squash spring takes over).
+    const st = fall < 1 && !this.d.settings.reduceMotion ? 0.18 * fall : 0;
+    this.drum.root.scale.set(1 - st * 0.5, 1 + st);
+    this.shadow.scale.set(lerp(0.3, 1, fall));
     this.shadow.alpha = fall;
   }
 
@@ -413,9 +500,17 @@ export class CapsuleStage implements ShowView {
     this.pedestal.setGlow(span(t, 180, 500));
     this.halo.alpha = 0.25 * span(t, 180, 500);
     if (t >= 220 && this.fire('arrival-impact')) {
-      this.squash(0.28);
-      this.trauma.add(0.18);
-      this.dustRing(PED.x, PED.y, 30);
+      // A heavy, physical landing: squash, shake, a punch, a dust cloud and stone chips.
+      this.squash(0.36);
+      this.trauma.add(0.42);
+      this.addPunch(0.035);
+      this.hitstop = Math.max(this.hitstop, 50);
+      this.vibrate(35);
+      this.dustRing(PED.x, PED.y, 40);
+      this.dustCloud(PED.x, PED.y - 4, 12);
+      this.ring(PED.x, PED.y + 2, 60, 330, ROOM.dust, 10, 520, 0.28, 0.6);
+      this.chips(PED.x, PED.y - 6, ROOM.stoneLight, this.d.settings.reduceMotion ? 4 : 12);
+      this.pedKick = 1;
     }
   }
 
@@ -423,7 +518,9 @@ export class CapsuleStage implements ShowView {
     const k = this.d.settings.reduceMotion ? 0.3 : 1;
     this.drum.body.x = Math.sin(t * 0.09) * (0.8 + 4.5 * u) * k;
     this.drum.body.rotation = Math.sin(t * 0.071) * 0.018 * u * k;
-    this.drum.setCracks(u * 0.85);
+    // The first hairline cracks; every strike opens them further.
+    this.drum.setCracks(u * CRACKS.charge);
+    this.drum.setLeak(0.15 * u);
     this.drum.energy = Math.max(this.drum.energy, u * 0.8);
     this.halo.alpha = 0.25 + 0.35 * u;
     this.raysLevel = 0.15 * u;
@@ -451,6 +548,7 @@ export class CapsuleStage implements ShowView {
     this.hammerT = t;
     this.pips.pip(s.index)?.scale.set(1);
     if (t >= HAMMER.impactMs && this.fire(`strike-${s.index}`)) {
+      this.strikeImpact(s);
       if (s.climb) this.climbImpact(s);
       else this.missImpact(s);
     }
@@ -460,12 +558,68 @@ export class CapsuleStage implements ShowView {
     const c = TIER_COLORS[tier];
     this.tier = tier;
     this.drum.setTier(tier);
-    this.drum.setCracks(0.85);
     this.pedestal.setColor(c);
     this.halo.tint = c;
     this.backRays.tint = c;
     this.bigRays.tint = c;
     this.raysLevel = 0.25 + 0.14 * tierIndex(tier);
+  }
+
+  /** Cracks and light after `n` strikes (every strike cracks the capsule further, climb or not). */
+  private crackAfter(n: number): { cracks: number; leak: number } {
+    return { cracks: CRACKS.charge + ((1 - CRACKS.charge) * n) / 4, leak: 0.2 + 0.2 * n };
+  }
+
+  /** What every strike does: the hammer bites, the drum kicks, cracks spread and more light pours out. */
+  private strikeImpact(s: StrikeStep): void {
+    const n = s.index + 1;
+    this.strikesDone = n;
+    const after = this.crackAfter(n);
+    this.drum.setCracks(after.cracks);
+    this.drum.setLeak(after.leak + (s.climb ? 0.35 : 0));
+    this.kickT = 0;
+    this.kickA = this.d.settings.reduceMotion ? 0.02 : 0.05 + 0.012 * n;
+    this.hitstop = Math.max(this.hitstop, s.climb ? 70 : 45);
+    this.addPunch(0.01 + 0.006 * n + (s.climb ? 0.015 : 0));
+    // Sparks fly off the hammer head: warm white (no tier colour, so a non-climb never teases one).
+    const count = this.d.settings.reduceMotion ? 5 : 10 + 3 * n;
+    for (let i = 0; i < count; i++) {
+      const a = -Math.PI * 0.15 + (this.rng.next() - 0.5) * 1.9;
+      const sp = 380 + this.rng.next() * 520;
+      this.particles.spawn({
+        tex: streakTexture(),
+        x: HIT.x,
+        y: HIT.y + (this.rng.next() - 0.5) * 30,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 120,
+        life: 260 + this.rng.next() * 260,
+        drag: 0.05,
+        gravity: 1400,
+        scale: [0.55 + this.rng.next() * 0.4, 0.1],
+        alpha: [1, 0],
+        tint: i % 3 === 0 ? 0xffffff : 0xffd98a,
+        add: true,
+        align: true,
+      });
+    }
+    // Crumbs of the shell drop from the new cracks.
+    for (const [x, y] of this.drum.crackTips().slice(0, this.d.settings.reduceMotion ? 1 : 2 + n)) {
+      this.particles.spawn({
+        tex: shardTexture(),
+        x: PED.x + x,
+        y: PED.y + y,
+        vx: (x > 0 ? 1 : -1) * (40 + this.rng.next() * 120),
+        vy: -80 - this.rng.next() * 140,
+        life: 700,
+        gravity: 1300,
+        scale: [0.35 + this.rng.next() * 0.3, 0.3],
+        alpha: [1, 0.6],
+        rot: this.rng.next() * 6,
+        vr: (this.rng.next() - 0.5) * 16,
+        tint: shade(TIER_COLORS[this.tier], -0.2),
+      });
+    }
+    this.ring(HIT.x - 6, HIT.y, 8, 70 + 10 * n, 0xffffff, 6, 220, 0.8);
   }
 
   private climbImpact(s: StrikeStep): void {
@@ -481,6 +635,7 @@ export class CapsuleStage implements ShowView {
     this.flash(0.32, shade(c, 0.6));
     this.waveT = 0;
     this.waveColor = c;
+    this.ring(CORE.x, CORE.y, 60, 420, c, 14, 560, 0.9);
     this.vibrate(28);
     const n = this.d.settings.reduceMotion ? 14 : 44;
     for (let i = 0; i < n; i++) {
@@ -505,9 +660,10 @@ export class CapsuleStage implements ShowView {
 
   private missImpact(s: StrikeStep): void {
     this.pips.set(s.index, 'miss');
-    this.squash(0.1);
-    this.trauma.add(0.06);
-    const n = this.d.settings.reduceMotion ? 5 : 12;
+    this.squash(0.12 + 0.02 * s.index);
+    this.trauma.add(0.1 + 0.04 * s.index);
+    this.drumWhite = Math.max(this.drumWhite, 0.25);
+    const n = this.d.settings.reduceMotion ? 5 : 14;
     for (let i = 0; i < n; i++) {
       this.particles.spawn({
         tex: dotTexture(),
@@ -532,6 +688,10 @@ export class CapsuleStage implements ShowView {
     this.pips.set(s.index, s.climb ? s.to : 'miss');
     this.pips.pip(s.index)?.scale.set(1);
     if (s.climb && this.tier !== s.to) this.setShownTier(s.to);
+    const after = this.crackAfter(s.index + 1);
+    this.strikesDone = s.index + 1;
+    this.drum.setCracks(after.cracks);
+    this.drum.setLeak(after.leak);
   }
 
   private enterBurst(s: BurstStep, instant: boolean): void {
@@ -539,34 +699,134 @@ export class CapsuleStage implements ShowView {
     this.bigRaysLevel = 0.4;
     this.hammerTarget = 0;
     if (s.fixed) {
-      // Fixed-tier capsules start here (A6.4): the drum is simply there.
+      // Fixed-tier capsules start here (A6.4): the drum is simply there, already cracked.
       this.drum.root.visible = true;
       this.pedestal.setGlow(1);
       this.placeDrum(1e6);
+      this.drum.setCracks(0.7);
+      this.drum.setLeak(0.6);
     }
     if (instant) {
       this.drum.root.visible = false;
+      this.fire('burst-pop');
       this.fire('burst');
-      return;
     }
-    this.fire('burst');
-    const c = TIER_COLORS[s.tier];
-    this.flash(0.95, 0xffffff);
-    this.trauma.add(0.45);
-    this.vibrate(40);
-    this.drumWhite = 1;
-    this.drum.shatter();
-    this.bigRays.scale.set(0.3);
-    this.throwHalves(this.drum, PED.x, PED.y, 1);
-    this.shards(PED.x, PED.y - 130, c, this.d.settings.reduceMotion ? 18 : 56, 1);
-    if (s.amber > 0) this.pourAmber(PED.x, PED.y - 130, 16);
   }
 
-  private burst(s: BurstStep, t: number): void {
-    const u = t / s.durationMs;
+  /**
+   * The burst (A10 step 4) in three beats: the build (the drum swells, rattles harder and harder and
+   * pours light from every crack while motes are sucked in; longer for higher tiers), a freeze frame
+   * with the drum held white, and the explosion.
+   */
+  private burst(s: BurstStep, t: number, dt: number): void {
+    const B = s.buildMs;
+    const hold = SHOW_TIMING.burstHoldMs;
+    const idx = tierIndex(s.tier);
+    const rm = this.d.settings.reduceMotion;
+    if (t < B) {
+      const u = t / B;
+      const k = rm ? 0.25 : 1;
+      this.drum.body.x = Math.sin(t * 0.13) * (2 + 12 * u * u) * k;
+      this.drum.body.rotation = Math.sin(t * 0.097) * 0.045 * u * u * k;
+      this.swell = 0.1 * u * u;
+      this.drumWhite = Math.max(this.drumWhite, 0.55 * u * u * u);
+      this.drum.setLeak(1 + u);
+      this.drum.energy = 1 + u;
+      this.raysLevel = 0.4 + 0.5 * u;
+      this.halo.alpha = 0.5 + 0.5 * u;
+      this.dimTarget = idx >= 3 ? 0.5 * u : idx === 2 ? 0.25 * u : 0;
+      if (!rm) this.trauma.trauma = Math.max(this.trauma.trauma, (0.2 + 0.05 * idx) * u);
+      this.suck(dt, u, TIER_COLORS[s.tier]);
+      return;
+    }
+    if (this.fire('burst-pop')) {
+      // Freeze frame: everything holds still for a beat with the drum white-hot.
+      this.drumWhite = 1;
+      this.swell = 0.16;
+      this.drum.body.position.set(0, 0);
+      this.drum.body.rotation = 0;
+      this.hitstop = Math.max(this.hitstop, hold);
+      this.flash(0.35, 0xffffff);
+    }
+    if (t >= B + hold && this.fire('burst')) this.explode(s);
+    const u = span(t, B + hold, s.durationMs);
     this.bigRaysLevel = lerp(0.25, 0.55, easeOutCubic(u));
     this.bigRays.scale.set(lerp(0.4, 1.5, easeOutBack(u, 1.4)));
     this.halo.alpha = lerp(1, 0.4, u);
+  }
+
+  /** Motes of light sucked into the drum during the burst build. */
+  private suck(dt: number, u: number, color: number): void {
+    const rate = (this.d.settings.reduceMotion ? 0.2 : 1) * (0.6 + 2.4 * u);
+    this.emberT += dt * rate;
+    while (this.emberT > 16) {
+      this.emberT -= 16;
+      const a = this.rng.next() * Math.PI * 2;
+      const r = 240 + this.rng.next() * 160;
+      const life = 260 + this.rng.next() * 160;
+      const sx = CORE.x + Math.cos(a) * r;
+      const sy = CORE.y + Math.sin(a) * r * 0.8;
+      this.particles.spawn({
+        tex: streakTexture(),
+        x: sx,
+        y: sy,
+        vx: ((CORE.x - sx) / life) * 1000,
+        vy: ((CORE.y - sy) / life) * 1000,
+        life,
+        scale: [0.3, 0.8],
+        alpha: [0, 1],
+        tint: this.rng.next() < 0.4 ? 0xffffff : shade(color, 0.35),
+        add: true,
+        align: true,
+      });
+    }
+  }
+
+  /** The explosion: flash, shockwaves, the halves, shards, streaks, embers and Amber. */
+  private explode(s: BurstStep): void {
+    const c = TIER_COLORS[s.tier];
+    const idx = tierIndex(s.tier);
+    const rm = this.d.settings.reduceMotion;
+    this.flash(0.95, 0xffffff);
+    this.trauma.add(0.55 + 0.08 * idx);
+    this.addPunch(0.06 + 0.015 * idx);
+    this.vibrate(idx >= 3 ? [50, 30, 80] : 40);
+    this.drumWhite = 1;
+    this.swell = 0;
+    this.dimTarget = 0;
+    this.drum.shatter();
+    this.bigRays.scale.set(0.3);
+    this.throwHalves(this.drum, PED.x, PED.y, 1);
+    this.shards(CORE.x, CORE.y, c, rm ? 18 : 56, 1);
+    // Shockwaves: a wide ring in the tier colour, a fast white one, and one along the floor.
+    this.ring(CORE.x, CORE.y, 40, 620, c, 26, 620, 1);
+    this.ring(CORE.x, CORE.y, 30, 460, 0xffffff, 10, 380, 0.9);
+    this.ring(PED.x, PED.y, 80, 700, shade(c, 0.3), 14, 700, 0.8, 0.28);
+    if (s.tier === 'aeon') this.ring(CORE.x, CORE.y, 60, 760, AEON_RIM, 12, 820, 0.9);
+    // Radial light streaks.
+    const n = rm ? 12 : 40 + 10 * idx;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + this.rng.next() * 0.2;
+      const sp = 700 + this.rng.next() * 900;
+      this.particles.spawn({
+        tex: streakTexture(),
+        x: CORE.x + Math.cos(a) * 30,
+        y: CORE.y + Math.sin(a) * 30,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp,
+        life: 380 + this.rng.next() * 260,
+        drag: 0.04,
+        scale: [1.4 + this.rng.next(), 0.3],
+        alpha: [1, 0],
+        tint: i % 2 === 0 ? 0xffffff : shade(c, 0.4),
+        add: true,
+        align: true,
+      });
+    }
+    // Embers keep drifting up through the card reveal (Silver and up); confetti for Jade and Aeon.
+    this.embersOn = idx >= 1;
+    if (idx >= 3) this.confettiBurst(CORE.x, CORE.y, rm ? 14 : 50 + 30 * (idx - 3));
+    if (s.amber > 0) this.pourAmber(CORE.x, CORE.y, 16);
   }
 
   private enterVolley(s: VolleyStep, instant: boolean): void {
@@ -618,6 +878,82 @@ export class CapsuleStage implements ShowView {
   // Cards (A10 steps 5-7)
   // ---------------------------------------------------------------------------------------------
 
+  /** Cards fly out of the burst on arcs with sparkle trails and land with a snap. */
+  private dealCards(u: number, dt: number): void {
+    if (!this.fan) return;
+    const landed = this.fan.deal(u);
+    const rm = this.d.settings.reduceMotion;
+    for (const v of landed) {
+      v.pop(0.12);
+      this.ring(v.root.x, v.root.y + (CARD_H / 2) * v.home.scale, 20, 120 * v.home.scale, 0xfff0c8, 6, 300, 0.6, 0.3);
+      this.sparkBurst(v.root.x, v.root.y + (CARD_H / 2) * v.home.scale, 0xfff0c8, rm ? 3 : 8, 200);
+    }
+    // Trails behind the cards still in flight.
+    if (rm) return;
+    this.moteT += dt;
+    if (this.moteT < 24) return;
+    this.moteT = 0;
+    for (const v of this.fan.views) {
+      if (!v.root.visible || this.dealtHome(v)) continue;
+      this.particles.spawn({
+        tex: this.rng.next() < 0.3 ? starTexture() : dotTexture(),
+        x: v.root.x + (this.rng.next() - 0.5) * 30,
+        y: v.root.y + (this.rng.next() - 0.5) * 30,
+        vx: (this.rng.next() - 0.5) * 40,
+        vy: 20 + this.rng.next() * 40,
+        life: 380,
+        scale: [0.8, 0],
+        alpha: [0.9, 0],
+        tint: this.rng.next() < 0.5 ? 0xffffff : shade(TIER_COLORS[this.tier], 0.4),
+        add: true,
+      });
+    }
+  }
+
+  private dealtHome(v: CardView): boolean {
+    return Math.abs(v.root.x - v.home.x) < 1 && Math.abs(v.root.y - v.home.y) < 1;
+  }
+
+  /**
+   * The honest pre-signal (A10 step 5): the card lifts and glows in its rarity colour; Rare and up
+   * tremble harder and harder while light is drawn in, and the room darkens for Epic and Legendary.
+   */
+  private preSignal(card: RevealCard, u: number, dt: number): void {
+    const e = easeOutCubic(u);
+    this.signal.set(card.slot, e);
+    const r = card.rarity;
+    const rank = r === 'legendary' ? 1 : r === 'epic' ? 0.8 : r === 'rare' ? 0.45 : 0;
+    const v = this.fan?.view(card.slot);
+    if (v) v.wobble = rank * u;
+    if (r === 'legendary') this.bigRaysLevel = lerp(0.35, 0.9, u);
+    else if (r === 'epic') this.bigRaysLevel = lerp(0.35, 0.6, u);
+    if (this.plan.mode === 'wardrobe') this.riseFromCrate(u);
+    if (v && rank >= 0.8 && !this.d.settings.reduceMotion) {
+      this.emberT += dt * (0.5 + 2 * u);
+      while (this.emberT > 16) {
+        this.emberT -= 16;
+        const a = this.rng.next() * Math.PI * 2;
+        const rr = 170 + this.rng.next() * 120;
+        const life = 240 + this.rng.next() * 140;
+        const sx = v.root.x + Math.cos(a) * rr;
+        const sy = v.root.y + Math.sin(a) * rr;
+        this.particles.spawn({
+          tex: streakTexture(),
+          x: sx,
+          y: sy,
+          vx: ((v.root.x - sx) / life) * 1000,
+          vy: ((v.root.y - sy) / life) * 1000,
+          life,
+          scale: [0.3, 0.7],
+          alpha: [0, 1],
+          tint: this.rng.next() < 0.35 ? 0xffffff : RARITY_COLORS[r],
+          add: true,
+          align: true,
+        });
+      }
+    }
+  }
+
   private flip(s: FlipStep, t: number): void {
     const v = this.fan?.view(s.card.slot);
     if (!v) return;
@@ -631,22 +967,40 @@ export class CapsuleStage implements ShowView {
     } else {
       v.drawBolts(false, 0);
     }
-    if (f >= 1 && this.fire(`flipped-${s.card.key}`)) {
-      this.fan?.flipBurst(v, r === 'epic' || r === 'legendary');
-      this.signal.set(s.card.slot, 0);
-      if (r === 'epic' || r === 'legendary') {
-        this.trauma.add(0.12);
-        this.flash(0.18, shade(RARITY_COLORS[r], 0.5));
-      }
-    }
+    if (f >= 1 && this.fire(`flipped-${s.card.key}`)) this.snapCard(v, s);
+    if (s.countMs > 0) v.setCount(span(t, s.flipMs + 40, s.flipMs + s.countMs));
     if (s.foilMs > 0) v.setFoil(span(t, s.flipMs, s.flipMs + s.foilMs));
     if (s.stampMs > 0) {
       const st = span(t, s.flipMs + s.foilMs, s.flipMs + s.foilMs + s.stampMs);
       v.setStamp(st);
       if (st >= 0.6 && this.fire(`stamp-${s.card.key}`)) {
-        this.trauma.add(0.08);
-        this.dustRing(v.root.x - 30, v.root.y - 60, 8);
+        // The NEW stamp slams on with a burst of sparks.
+        this.trauma.add(0.12);
+        this.addPunch(0.012);
+        const sx = v.root.x - 30 * v.home.scale * 1.16;
+        const sy = v.root.y - 92 * v.home.scale * 1.16;
+        this.ring(sx, sy, 10, 90, s.card.kind === 'skin' ? RARITY_COLORS[r] : ROOM.newStamp, 7, 300, 0.9);
+        this.sparkBurst(sx, sy, s.card.kind === 'skin' ? RARITY_COLORS[r] : ROOM.newStamp, this.d.settings.reduceMotion ? 5 : 16, 320);
       }
+    }
+  }
+
+  /** The face lands: flash, pop, a ring in the rarity colour and sparks, stronger for rarer cards. */
+  private snapCard(v: CardView, s: FlipStep): void {
+    const r = s.card.rarity;
+    const strength = r === 'legendary' ? 1 : r === 'epic' ? 0.85 : r === 'rare' ? 0.5 : 0.2;
+    const c = RARITY_COLORS[r];
+    v.snap(strength);
+    this.fan?.flipBurst(v, r === 'epic' || r === 'legendary');
+    this.signal.set(s.card.slot, 0);
+    this.ring(v.root.x, v.root.y - 26, 50, 150 + 170 * strength, c, 6 + 10 * strength, 320 + 260 * strength, 0.95);
+    this.trauma.add(0.06 + 0.2 * strength);
+    this.addPunch(0.008 + 0.03 * strength);
+    if (r !== 'common') this.hitstop = Math.max(this.hitstop, 30 + 50 * strength);
+    if (r === 'epic' || r === 'legendary') {
+      this.flash(0.3, shade(c, 0.5));
+      this.sparkBurst(v.root.x, v.root.y - 26, c, this.d.settings.reduceMotion ? 8 : 30, 520);
+      this.vibrate(25);
     }
   }
 
@@ -665,8 +1019,16 @@ export class CapsuleStage implements ShowView {
       impact: (kind) => {
         if (kind === 'drop') {
           this.flash(0.9, 0xffffff);
-          this.trauma.add(0.6);
+          this.trauma.add(0.7);
+          this.addPunch(0.08);
+          this.hitstop = Math.max(this.hitstop, 90);
+          // A beat of slow motion as the unit bursts into colour (A12: never with Reduce motion).
+          if (!this.d.settings.reduceMotion) this.slowmo = 650;
           this.vibrate([40, 30, 90]);
+        } else if (kind === 'slam') {
+          this.trauma.add(0.35);
+          this.addPunch(0.03);
+          this.vibrate(30);
         } else {
           this.trauma.add(0.15);
         }
@@ -795,6 +1157,127 @@ export class CapsuleStage implements ShowView {
     }
   }
 
+  /** A zoom punch towards the stage centre (none with Reduce motion). */
+  private addPunch(a: number): void {
+    if (this.d.settings.reduceMotion) return;
+    this.punch = Math.min(0.12, this.punch + a);
+  }
+
+  /** An expanding ring; `squash` < 1 lays it on the floor. */
+  private ring(x: number, y: number, r0: number, r1: number, color: number, width: number, dur: number, alpha: number, squash = 1): void {
+    if (this.rings.length > 24) this.rings.shift();
+    this.rings.push({ x, y, t: 0, dur, r0, r1, width, color, alpha: this.d.settings.reduceMotion ? alpha * 0.5 : alpha, squash });
+  }
+
+  private sparkBurst(x: number, y: number, color: number, n: number, speed: number): void {
+    for (let i = 0; i < n; i++) {
+      const a = this.rng.next() * Math.PI * 2;
+      const sp = speed * (0.4 + this.rng.next() * 0.8);
+      this.particles.spawn({
+        tex: i % 3 === 0 ? starTexture() : dotTexture(),
+        x,
+        y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - speed * 0.3,
+        life: 420 + this.rng.next() * 300,
+        drag: 0.1,
+        gravity: 500,
+        scale: [0.7 + this.rng.next() * 0.6, 0],
+        alpha: [1, 0],
+        tint: i % 4 === 0 ? 0xffffff : color,
+        add: true,
+      });
+    }
+  }
+
+  /** Slow, soft dust puffs rolling out from a landing. */
+  private dustCloud(x: number, y: number, n: number): void {
+    const count = this.d.settings.reduceMotion ? Math.ceil(n / 3) : n;
+    for (let i = 0; i < count; i++) {
+      const dir = i % 2 === 0 ? -1 : 1;
+      this.particles.spawn({
+        tex: glowTexture(),
+        x: x + dir * (60 + this.rng.next() * 70),
+        y: y - this.rng.next() * 16,
+        vx: dir * (60 + this.rng.next() * 160),
+        vy: -20 - this.rng.next() * 50,
+        life: 900 + this.rng.next() * 500,
+        drag: 0.25,
+        scale: [0.35 + this.rng.next() * 0.2, 0.9 + this.rng.next() * 0.4],
+        alpha: [0.45, 0],
+        tint: ROOM.dust,
+      });
+    }
+  }
+
+  /** Stone chips knocked off the pedestal. */
+  private chips(x: number, y: number, color: number, n: number): void {
+    for (let i = 0; i < n; i++) {
+      const dir = i % 2 === 0 ? -1 : 1;
+      this.particles.spawn({
+        tex: shardTexture(),
+        x: x + dir * (80 + this.rng.next() * 60),
+        y,
+        vx: dir * (120 + this.rng.next() * 260),
+        vy: -260 - this.rng.next() * 260,
+        life: 800,
+        gravity: 1600,
+        scale: [0.4 + this.rng.next() * 0.4, 0.4],
+        alpha: [1, 0.7],
+        rot: this.rng.next() * 6,
+        vr: (this.rng.next() - 0.5) * 20,
+        tint: i % 3 === 0 ? shade(color, -0.3) : color,
+      });
+    }
+  }
+
+  /** A one-shot confetti fountain out of the burst (Jade and Aeon). */
+  private confettiBurst(x: number, y: number, n: number): void {
+    const colors = [0xffffff, RARITY_COLORS.legendary, RARITY_COLORS.epic, RARITY_COLORS.rare, 0xff8a5c, TIER_COLORS[this.tier]];
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (this.rng.next() - 0.5) * 2.2;
+      const sp = 500 + this.rng.next() * 700;
+      this.particles.spawn({
+        tex: confettiTexture(),
+        x,
+        y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp,
+        life: 1800 + this.rng.next() * 800,
+        drag: 0.35,
+        gravity: 520,
+        scale: [1.1 + this.rng.next() * 0.7, 1],
+        alpha: [1, 0.6],
+        rot: this.rng.next() * 6,
+        vr: (this.rng.next() - 0.5) * 14,
+        tint: colors[i % colors.length] ?? 0xffffff,
+        flutter: true,
+      });
+    }
+  }
+
+  /** Glowing embers drifting up after the burst. */
+  private embers(dt: number): void {
+    if (!this.embersOn) return;
+    this.emberSpawnT += dt;
+    const every = this.d.settings.reduceMotion ? 260 : 90;
+    while (this.emberSpawnT > every) {
+      this.emberSpawnT -= every;
+      this.particles.spawn({
+        tex: dotTexture(),
+        x: 200 + this.rng.next() * 880,
+        y: 700,
+        vx: (this.rng.next() - 0.5) * 30,
+        vy: -60 - this.rng.next() * 80,
+        life: 3200,
+        scale: [0.5 + this.rng.next() * 0.5, 0.1],
+        alpha: [0.9, 0],
+        tint: this.rng.next() < 0.3 ? 0xffffff : shade(TIER_COLORS[this.tier], 0.35),
+        add: true,
+      });
+    }
+  }
+
   private dustRing(x: number, y: number, n: number): void {
     const count = this.d.settings.reduceMotion ? Math.ceil(n / 3) : n;
     for (let i = 0; i < count; i++) {
@@ -914,25 +1397,63 @@ export class CapsuleStage implements ShowView {
   update(dtMs: number): void {
     const dt = Math.max(0, Math.min(100, dtMs));
     this.time += dt;
-    this.particles.update(dt);
+    // Hitstop freezes effects for a beat; slow motion stretches them (view only, A12).
+    const frozen = this.hitstop > 0;
+    this.hitstop = Math.max(0, this.hitstop - dt);
+    const slow = this.slowmo > 0 ? 0.3 : 1;
+    this.slowmo = Math.max(0, this.slowmo - dt);
+    const fx = frozen ? 0 : dt * slow;
+    this.particles.update(fx);
     this.motes.update(dt);
-    this.drum.update(dt);
+    this.drum.update(fx);
     for (const m of this.miniDrums) if (m.drum.root.visible) m.drum.update(dt);
     this.confetti(dt);
+    this.embers(fx);
     this.updateMotes(dt);
-    this.updateDrumAndHammer(dt);
+    this.updateDrumAndHammer(frozen ? 0 : dt);
     this.updateRays(dt);
     this.updatePedestal(dt);
     this.updateCards(dt);
-    this.updateFlyers(dt);
+    this.fan?.tick(frozen ? 0 : dt);
+    this.updateFlyers(fx);
+    this.updateRings(fx);
 
-    // Screen flash and shake.
+    // Room mood: dim and rarity tint.
+    this.dimA += (this.dimTarget - this.dimA) * Math.min(1, dt / 180);
+    this.dimG.alpha = this.dimA;
+    this.bgTintK += (this.bgTintTarget - this.bgTintK) * Math.min(1, dt / 220);
+    this.bg.tint = mixColor(0xffffff, shade(this.bgTintColor, 0.25), 0.55 * this.bgTintK);
+
+    // Screen flash, shake and the zoom punch.
     this.flashAlpha = Math.max(0, this.flashAlpha - dt / 200);
     this.flashG.alpha = this.flashAlpha;
     this.flashG.tint = this.flashColor;
-    const sh = this.trauma.update(dt);
+    const sh = frozen ? this.lastShake : this.trauma.update(dt);
+    this.lastShake = sh;
+    this.punch *= Math.exp(-dt / 110);
+    this.world.scale.set(this.scale * (1 + this.punch));
     this.world.position.set(this.w / 2 + sh.x * this.scale, this.h / 2 + sh.y * this.scale);
     this.world.rotation = sh.rot;
+  }
+
+  private lastShake = { x: 0, y: 0, rot: 0 };
+
+  private updateRings(dt: number): void {
+    const g = this.ringG;
+    g.clear();
+    for (let i = this.rings.length - 1; i >= 0; i--) {
+      const r = this.rings[i];
+      if (!r) continue;
+      r.t += dt;
+      const u = r.t / r.dur;
+      if (u >= 1) {
+        this.rings.splice(i, 1);
+        continue;
+      }
+      const e = easeOutCubic(u);
+      const rad = r.r0 + (r.r1 - r.r0) * e;
+      g.ellipse(r.x, r.y, rad, rad * r.squash).stroke({ width: Math.max(0.5, r.width * (1 - u)), color: r.color, alpha: r.alpha * (1 - u) });
+    }
   }
 
   private updateMotes(dt: number): void {
@@ -958,7 +1479,23 @@ export class CapsuleStage implements ShowView {
     // Squash and stretch (damped spring) at the drum's feet.
     this.squashT += dt;
     const sq = this.squashA * Math.exp(-this.squashT / 140) * Math.cos(this.squashT / 55);
-    this.drum.body.scale.set(1 + sq * 0.75, 1 - sq);
+    this.drum.body.scale.set((1 + sq * 0.75) * (1 + this.swell), (1 - sq) * (1 + this.swell));
+    // A strike kicks the drum away from the hammer; it rocks back on a spring.
+    this.kickT += dt;
+    if (this.kickA > 0) {
+      const kk = this.kickA * Math.exp(-this.kickT / 110) * Math.cos(this.kickT / 45);
+      this.drum.root.rotation = -kk;
+      if (this.kickT > 700) {
+        this.kickA = 0;
+        this.drum.root.rotation = 0;
+      }
+    }
+    if (this.pedKick > 0) {
+      this.pedKick = Math.max(0, this.pedKick - dt / 380);
+      const pk = 9 * this.pedKick * Math.cos((1 - this.pedKick) * 12);
+      this.pedestal.root.y = PED.y + pk;
+      this.drum.root.y = PED.y + pk;
+    }
     if (this.crateSquash > 0) {
       this.crateSquash = Math.max(0, this.crateSquash - dt / 400);
       const c = 0.22 * this.crateSquash * Math.cos((1 - this.crateSquash) * 14);

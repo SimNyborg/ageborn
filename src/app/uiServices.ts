@@ -183,6 +183,18 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       if (s.flags[`featHint.${id}`]) return;
       d.commit({ ...s, flags: { ...s.flags, [`featHint.${id}`]: true } });
     },
+    setUiFlags(patch) {
+      const s = d.save.peek();
+      const flags = { ...s.flags };
+      let changed = false;
+      for (const [k, on] of Object.entries(patch)) {
+        if (!k.startsWith('ui.') || !!flags[k] === on) continue;
+        changed = true;
+        if (on) flags[k] = true;
+        else delete flags[k];
+      }
+      if (changed) d.commit({ ...s, flags });
+    },
     equipSkin(target, skin) {
       apply(meta.equipSkin(d.save.peek(), target, skin, content));
     },

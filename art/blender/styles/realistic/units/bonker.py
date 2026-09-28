@@ -1,0 +1,274 @@
+"""Bonker: Stone Age club warrior, realistic-miniature style.
+
+A stocky hunter in a team-dyed hide vest and kilt under a natural fur mantle, bare arms and
+legs with leather wraps, shaggy hair and beard, and a heavy knotted club set with flints.
+"""
+import math
+
+from lib import biped as B
+from lib import core as C
+from lib import pipe as P
+from lib import props
+
+SLUG = "bonker"
+H = 66.0
+CANVAS = (136, 108)       # lu
+FEET = (74, 9)            # lu from the left / bottom
+YAW = -24.0
+
+BODY = B.Biped(H=H, bulk=1.14)
+
+
+def build():
+    k = BODY.k
+    skin = C.mat("skin", "#a98572", rough=0.55, noise=0.07, nscale=0.6, bump=0.12)
+    hair = C.mat("hair", "#3b312b", rough=0.75, noise=0.25, nscale=1.4, bump=0.9)
+    fur = C.mat("fur", "#76624f", rough=0.95, noise=0.32, nscale=1.1, bump=1.0, ramp2="#4f4236",
+                sheen=0.6)
+    leather = C.mat("leather", "#5a4a3e", rough=0.55, noise=0.14, nscale=0.9, bump=0.35)
+    wood = C.mat("wood", "#6b5847", rough=0.72, noise=0.18, nscale=0.5, bump=0.6, stripes=1.6,
+                 ramp2="#4e4035")
+    flint = C.mat("flint", "#8b8a86", rough=0.35, noise=0.28, nscale=1.2, bump=0.4, spec=0.7)
+    bone = C.mat("bone", "#d8cdb5", rough=0.5, noise=0.12, nscale=1.0, bump=0.2)
+    hide = C.mat("team_hide", "#999999", rough=0.8, noise=0.16, nscale=0.9, bump=0.45, team=True,
+                 sheen=0.3)
+    dark = C.mat("eye", "#1c1714", rough=0.4, noise=0.0, bump=0)
+
+    rig = C.Rig("bonker_rig", BODY.bones(), yaw_deg=YAW)
+    body = BODY.body(rig, skin)
+    S = lambda x, y, z: (x * k, y * k, z * k)
+    bw = BODY.bulk
+
+    # --- team-dyed hide vest over the torso and a kilt (the big team read)
+    vest = C.blobs("vest", [
+        (S(0.4, 0, 41.4), (5.9 * bw, 7.5 * bw, 6.0)),
+        (S(0.1, 0, 47.6), (6.9 * bw, 8.6 * bw, 6.8)),
+        (S(2.6, -3.4, 50.0), (3.7, 4.3, 3.0)),
+        (S(2.6, 3.4, 50.0), (3.7, 4.3, 3.0)),
+        (S(-2.4, 0, 49.0), (3.8, 7.2 * bw, 5.8)),
+    ], hide)
+    C.displace(vest, 0.35, 1.2)
+    C.team(vest)
+    rig.skin(vest, ["hips", "spine", "chest"], soft=2.0 * k)
+    kilt = C.blobs("kilt", [
+        (S(0.2, 0, 36.8), (7.0 * bw, 8.7 * bw, 3.4)),
+        (S(0.4, 0, 32.4), (7.6 * bw, 9.3 * bw, 4.6)),
+        (S(0.5, 0, 28.6), (7.9 * bw, 9.6 * bw, 2.4)),
+    ], hide)
+    C.displace(kilt, 0.6, 0.9)
+    C.team(kilt)
+    rig.skin(kilt, ["hips", "thigh_F", "thigh_B"], soft=3.0 * k,
+             bias={"thigh_F": 1.2 * k, "thigh_B": 1.2 * k})
+    belt = C.blobs("belt", [(S(0.5, 0, 37.6), (7.3 * bw, 8.95 * bw, 1.2))], leather)
+    rig.skin(belt, ["hips", "spine"], soft=2.0 * k)
+    # bone toggle on the belt
+    C.sphere("toggle", 1.1 * k, bone, loc=S(6.5 * bw, -2.5, 37.8), scale=(0.6, 1, 1.4))
+    rig.rigid(bpy_last(), "hips")
+
+    # --- fur mantle over the shoulders and upper back
+    mantle = C.blobs("mantle", [
+        (S(-1.2, 0, 54.0), (5.2, 10.8 * bw, 3.3)),
+        (S(-3.6, 0, 50.0), (3.6, 9.6 * bw, 5.4)),
+        (S(1.6, -6.4, 54.6), (3.4, 3.2, 2.6)),
+        (S(1.6, 6.4, 54.6), (3.4, 3.2, 2.6)),
+        (S(-4.4, 0, 45.6), (2.6, 7.4 * bw, 3.0)),
+    ], fur, res=0.5)
+    C.displace(mantle, 1.2, 0.55)
+    rig.skin(mantle, ["spine", "chest", "neck"], soft=2.0 * k)
+
+    # --- hair and beard
+    hair_o = C.blobs("hair", [
+        (S(-0.4, 0, 65.2), (4.9, 4.3, 3.9)),
+        (S(-2.6, 0, 62.4), (3.2, 4.1, 4.2)),
+        (S(-3.6, 0, 59.2), (2.6, 3.6, 3.2)),
+        (S(1.8, 0, 66.6), (3.0, 3.6, 2.0)),
+        (S(-1.0, -3.3, 62.6), (2.2, 1.4, 3.2)),
+        (S(-1.0, 3.3, 62.6), (2.2, 1.4, 3.2)),
+    ], hair, res=0.45)
+    C.displace(hair_o, 0.9, 0.35)
+    rig.rigid(hair_o, "head")
+    beard = C.blobs("beard", [
+        (S(3.5, 0, 60.4), (2.2, 3.0, 2.4)),
+        (S(4.0, 0, 58.6), (1.6, 2.1, 2.0)),
+        (S(2.0, -2.2, 61.2), (1.8, 1.2, 2.2)),
+        (S(2.0, 2.2, 61.2), (1.8, 1.2, 2.2)),
+    ], hair, res=0.4)
+    C.displace(beard, 0.6, 0.3)
+    rig.rigid(beard, "head")
+    for y in (-1.55, 1.55):
+        C.sphere("eye", 0.55 * k, dark, loc=S(4.25, y, 63.0), scale=(0.5, 1, 0.6))
+        rig.rigid(bpy_last(), "head")
+    # team war-paint headband
+    band = C.lathe("band", [(4.55 * k, 64.4 * k), (4.75 * k, 65.0 * k), (4.55 * k, 65.6 * k)], hide,
+                   scale=(1.0, 0.92, 1.0), loc=(0.2 * k, 0, 0))
+    C.team(band)
+    rig.rigid(band, "head")
+
+    # --- leather bracers and fur-wrapped shins / boots
+    for s, y in (("F", -BODY.sw / k), ("B", BODY.sw / k)):
+        br = C.blobs("bracer_" + s, [(S(0.3, y, 37.0), (2.6, 2.5, 3.1))], leather)
+        rig.skin(br, ["forearm_" + s, "hand_" + s], soft=1.5 * k)
+        hy = (-1 if s == "F" else 1) * BODY.hw / k
+        wrap = C.blobs("wrap_" + s, [
+            (S(-0.2, hy, 11.0), (2.9, 2.8, 5.8)),
+            (S(-0.8, hy, 15.6), (3.3, 3.1, 2.6)),
+        ], fur, res=0.5)
+        C.displace(wrap, 0.7, 0.5)
+        rig.skin(wrap, ["shin_" + s], soft=2 * k)
+        boot = C.blobs("boot_" + s, [
+            (S(0.2, hy, 3.8), (2.2, 2.1, 2.4)),
+            (S(3.2, hy, 1.6), (4.6, 2.2, 1.7)),
+        ], leather)
+        rig.skin(boot, ["shin_" + s, "foot_" + s], soft=1.0 * k, bias={"shin_" + s: 1.0 * k})
+
+    # --- the club: knotted hardwood, flint teeth, leather grip
+    club = props.club(k, wood, flint, leather)
+    # grip in the near fist (fist centre at the hand bone), club along +X
+    fist = (0.35 * k, -BODY.sw, 31.0 * k)
+    for o in club:
+        C.xform(o, loc=fist)
+        rig.rigid(o, "hand_F")
+
+    dust = props.dust_cloud("dust", k)
+    return dict(rig=rig, dust=dust)
+
+
+def bpy_last():
+    import bpy
+    return bpy.context.scene.collection.objects[-1]
+
+
+# ------------------------------------------------------------------------------ poses
+G = B.ANKLE * H
+
+
+def stance(breath=0.0, shift=0.0):
+    return dict(
+        root=(0.0, -1.4 - 0.3 * breath), root_dy=shift, hips=4, spine=3 + 1.2 * breath,
+        chest=2 - 0.8 * breath, neck=-4, head=-3 - 0.8 * breath,
+        footF=(9.0, G, 0.0), footB=(-10.0, G, 0.0),
+        armF=(28 + 1.5 * breath, 58 - 2 * breath, -18), armB=(-6 - 2 * breath, 16, 4, -4),
+    )
+
+
+def pose(ctx, clip, t):
+    rig = ctx["rig"]
+    props.dust_state(ctx["dust"], None)
+    if clip == "idle":
+        a = 2 * math.pi * t / 8.0
+        P_ = stance(breath=math.sin(a), shift=0.9 * math.sin(a + 0.8))
+        P_["hips"] += 1.2 * math.sin(a + 0.8)
+        P_["armF"] = (P_["armF"][0] + 2.5 * math.sin(a - 0.6), P_["armF"][1], P_["armF"][2])
+    elif clip == "walk":
+        P_ = walk(t / 12.0)
+    elif clip == "attack":
+        P_ = attack(t)
+    elif clip == "hit":
+        P_ = hit(t)
+    else:
+        P_ = die(t)
+        props.dust_state(ctx["dust"], die_dust(t), origin=(-32 * BODY.k, 0, 0))
+    BODY.apply(rig, P_)
+
+
+def walk(ph):
+    stride, lift = 27.0, 4.2
+    fF = B.walk_feet(ph, stride, lift, ground=G)
+    fB = B.walk_feet(ph + 0.5, stride, lift, ground=G)
+    c2 = math.cos(4 * math.pi * (ph - 0.06))       # low on contact (0, 0.5), high on passing
+    s1 = math.sin(2 * math.pi * ph)
+    return dict(
+        root=(1.2, -1.3 - 1.5 * c2), root_dy=1.1 * math.cos(2 * math.pi * ph),
+        hips=5 + 1.5 * c2, twist=7 * s1, spine=4, chest=1.5 - 1.2 * c2, neck=-5, head=-3 + 1.5 * c2,
+        footF=fF, footB=fB,
+        # club rests on the near shoulder, bouncing a little with each step
+        armF=(34 + 3 * c2, 118 - 4 * c2, -40, 8), armB=(24 * s1 - 4, 18 + 10 * max(0, s1), 6, -4),
+    )
+
+
+# attack keys (time in frames)
+def _atk_keys():
+    ready = stance()
+    wind1 = dict(root=(-2.5, -1.0), hips=-4, spine=-7, chest=-8, neck=2, head=4,
+                 footF=(10.0, G, 6.0), footB=(-11.0, G, 0.0),
+                 armF=(150, 55, -28, 10), armB=(38, 30, 0, -8))
+    wind2 = dict(root=(-4.0, -0.2), hips=-8, spine=-12, chest=-12, neck=4, head=6,
+                 footF=(10.5, G + 1.5, 16.0), footB=(-11.5, G, 0.0),
+                 armF=(176, 64, -30, 12), armB=(52, 34, 0, -10))
+    smash = dict(root=(6.5, -7.5), hips=22, spine=18, chest=12, neck=-8, head=-6,
+                 footF=(15.0, G, 0.0), footB=(-11.0, G + 0.5, -18.0),
+                 armF=(70, 10, -30, 6), armB=(-30, 20, 4, -4))
+    impact = dict(root=(7.5, -9.0), hips=26, spine=22, chest=14, neck=-10, head=-8,
+                  footF=(15.5, G, 0.0), footB=(-11.0, G + 0.8, -22.0),
+                  armF=(58, 6, -36, 4), armB=(-36, 22, 6, -4))
+    rebound = dict(root=(6.5, -7.8), hips=22, spine=18, chest=12, neck=-7, head=-6,
+                   footF=(15.5, G, 0.0), footB=(-11.0, G + 0.6, -20.0),
+                   armF=(68, 12, -26, 4), armB=(-30, 22, 6, -4))
+    rec = dict(root=(3.0, -3.5), hips=12, spine=9, chest=6, neck=-6, head=-5,
+               footF=(12.0, G, 0.0), footB=(-10.5, G, -4.0),
+               armF=(40, 40, -22, 2), armB=(-14, 18, 4, -4))
+    return [(0, ready), (1.2, wind1), (3.0, wind2), (3.6, wind2), (4.4, smash), (5.0, impact),
+            (6.0, impact), (7.0, rebound), (9.0, rec), (13.0, ready)]
+
+
+ATK = None
+
+
+def attack(t):
+    global ATK
+    ATK = ATK or _atk_keys()
+    return B.keyed(ATK, t)
+
+
+def hit(t):
+    base = stance()
+    knock = dict(root=(-5.0, -2.2), hips=-10, spine=-10, chest=-8, neck=8, head=14,
+                 footF=(7.0, G + 1.0, 10.0), footB=(-12.5, G, 0.0),
+                 armF=(10, 70, -10), armB=(-30, 30, 10, -14))
+    keys = [(0, base), (1, knock), (2.2, dict(knock, root=(-4.0, -2.8), head=6)), (4, base)]
+    return B.keyed(keys, t)
+
+
+def die(t):
+    base = stance()
+    k1 = dict(root=(-4.0, -2.0), hips=-10, spine=-12, chest=-8, neck=10, head=16,
+              footF=(7.0, G + 1.0, 10.0), footB=(-12.5, G, 0.0),
+              armF=(20, 60, -10), armB=(-40, 30, 10, -14))
+    k2 = dict(root=(-8.0, -12.0), root_r=8, hips=-18, spine=-10, chest=-8, neck=6, head=10,
+              legF=(70, -100, 10), legB=(40, -95, 20),
+              armF=(70, 40, -10, 14), armB=(60, 40, 10, -20))
+    k3 = dict(root=(-20.0, -18.0), root_r=48, hips=-10, spine=-6, chest=-4, neck=4, head=8,
+              legF=(80, -60, 20), legB=(55, -50, 20),
+              armF=(120, 30, 0, 24), armB=(110, 30, 0, -24))
+    k4 = dict(root=(-27.0, -27.4), root_r=88, hips=-4, spine=0, chest=0, neck=0, head=4,
+              legF=(38, -20, 30), legB=(26, -22, 30),
+              armF=(150, 10, 10, 40), armB=(140, 20, 0, -30))
+    k5 = dict(root=(-27.5, -26.6), root_r=84, hips=-6, spine=-2, chest=-2, neck=-8, head=-10,
+              legF=(44, -26, 26), legB=(30, -24, 26),
+              armF=(156, 8, 10, 40), armB=(146, 18, 0, -30))
+    k6 = dict(root=(-27.5, -27.4), root_r=88, hips=-4, spine=0, chest=0, neck=4, head=6,
+              legF=(34, -16, 24), legB=(24, -18, 26),
+              armF=(160, 6, 10, 42), armB=(150, 16, 0, -32))
+    keys = [(0, base), (1, k1), (2.5, k2), (4.0, k3), (5.0, k4), (5.8, k5), (7, k6), (11, k6)]
+    return B.keyed(keys, t)
+
+
+def die_dust(t):
+    """Dust pop when the body lands (frame 5 on)."""
+    if t < 4.9:
+        return None
+    return (t - 4.9) / 6.0
+
+
+def clips():
+    return [
+        P.Clip("idle", range(8), [150] * 8),
+        P.Clip("walk", range(12), [80] * 12),
+        P.Clip("attack", [0, 1, 2, 3, 3.6, 4.4, 5, 5.8, 7, 8, 9, 10, 11.5, 13],
+               [70, 70, 80, 150, 40, 40, 110, 90, 70, 70, 70, 70, 80, 90], loop=False,
+               blur={5: 0.6, 4: 0.5}, impact=6),
+        P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
+        P.Clip("die", [0, 1, 2, 3, 4, 5, 5.8, 6.6, 7.4, 8.4, 9.6, 11],
+               [70, 70, 70, 70, 70, 80, 80, 90, 100, 110, 120, 200], loop=False,
+               blur={3: 0.6, 4: 0.6}),
+    ]

@@ -116,10 +116,30 @@
       "collection": "Collection",
       "trophyRoad": "Trophy Road",
       "conquest": "Conquest",
-      "profile": "Profile"
+      "profile": "Profile",
+      "customize": "Customize",
+      "capsules": "Capsules"
+    },
+    "pointer": {
+      "warPlan": "New! Choose your troops for each age",
+      "collection": "See your cards and rarities",
+      "capsules": "Open your capsules here",
+      "customize": "New! Skins and looks for your army",
+      "trophyRoad": "Rewards for every trophy you win"
+    },
+    "difficulty": {
+      "label": "Difficulty",
+      "easy": "Easy",
+      "normal": "Normal",
+      "hard": "Hard",
+      "expert": "Expert",
+      "legendary": "Legendary",
+      "picked": "You picked this difficulty: no Rookie AI."
     },
     "home": {
       "title": "Home",
+      "suggested": "Next: {name}",
+      "capsulesNone": "No capsules right now. Win battles to earn more.",
       "openProfile": "Open your profile",
       "battle": "Battle",
       "nextOpponent": "Next opponent",
@@ -196,6 +216,11 @@
       "speed": "Speed",
       "start": "Start",
       "play": "Play",
+      "quick": {
+        "title": "Quick Battle",
+        "desc": "Pick a difficulty and fight an AI General.",
+        "help": "No trophies, no capsules. {n} Amber per win."
+      },
       "ladder": {
         "title": "Ladder",
         "desc": "Win trophies and capsules.",

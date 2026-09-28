@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { UtilityController } from '@/ai';
 import type { FakeAudio } from '@/contracts/fakes/audio';
 import { FixedClock } from '@/contracts/fakes/clock';
-import { AppController, QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
+import { AppController, QUICK_BATTLE_GENERAL } from '../controller';
+import { difficultyTier } from '../matchSetup';
 import { buildServices, DEFAULT_CHOICE } from '../services';
 
 /** The controller's own flow without meta and save (the meta screens are tested in metaUi.test.ts). */
@@ -108,10 +109,10 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     expect(r.battle.setup.config.sides[1].label).toBe(services.i18n.t('general.grogg.name'));
   });
 
-  it('Quick Battle: Short War vs a tier III AI General; play again, replay, quit', async () => {
-    const { c } = await controller();
+  it('Quick Battle: Short War vs an AI General at Normal (tier IV); play again, replay, quit', async () => {
+    const { c, services } = await controller();
     const b = c.quickBattle('short');
-    expect(b.setup.opponent).toMatchObject({ generalId: QUICK_BATTLE_GENERAL, tier: QUICK_BATTLE_TIER, isAI: true, format: 'short' });
+    expect(b.setup.opponent).toMatchObject({ generalId: QUICK_BATTLE_GENERAL, tier: difficultyTier(services.content), isAI: true, format: 'short' });
     expect(b.session.status.value).toBe('running');
     await finish(c);
     const r = c.route.value;

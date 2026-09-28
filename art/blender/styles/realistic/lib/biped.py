@@ -278,3 +278,80 @@ def walk_feet(phase, stride, lift, stance=0.62, ground=None):
     z = g + 3.2 * (1 - t) ** 2 + lift * math.sin(math.pi * min(1.0, t * 1.15))
     ang = lerp(-40, 14, ease_in_out(t))
     return x, z, ang
+
+
+def _flat(P, prefix=""):
+    out = {}
+    for k, v in P.items():
+        if isinstance(v, dict):
+            out.update(_flat(v, prefix + k + "/"))
+        elif isinstance(v, tuple):
+            for i, x in enumerate(v):
+                if isinstance(x, tuple):
+                    for j, y in enumerate(x):
+                        out[f"{prefix}{k}#{i}#{j}"] = y
+                else:
+                    out[f"{prefix}{k}#{i}"] = x
+        else:
+            out[prefix + k] = v
+    return out
+
+
+def _unflat(F):
+    out = {}
+    tup = {}
+    for key, v in F.items():
+        path, _, idx = key.partition("#")
+        parts = path.split("/")
+        d = out
+        for p in parts[:-1]:
+            d = d.setdefault(p, {})
+        if idx:
+            tup.setdefault(path, {})[idx] = v
+        else:
+            d[parts[-1]] = v
+    for path, items in tup.items():
+        parts = path.split("/")
+        d = out
+        for p in parts[:-1]:
+            d = d.setdefault(p, {})
+        top = {}
+        for idx, v in items.items():
+            ij = idx.split("#")
+            if len(ij) == 1:
+                top[int(ij[0])] = v
+            else:
+                top.setdefault(int(ij[0]), {})[int(ij[1])] = v
+        vals = []
+        for i in sorted(top):
+            x = top[i]
+            vals.append(tuple(x[j] for j in sorted(x)) if isinstance(x, dict) else x)
+        d[parts[-1]] = tuple(vals)
+    return out
+
+
+def keyed(keys, t, loop_len=None):
+    """Catmull-Rom interpolation through [(time, pose)] (every pose has the same keys,
+    missing ones fall back to the base = first pose). With loop_len the keys wrap."""
+    base = _flat(keys[0][1])
+    fl = [(tk, {**base, **_flat(p)}) for tk, p in keys]
+    n = len(fl)
+    if loop_len:
+        t = t % loop_len
+        ext = [(fl[-1][0] - loop_len, fl[-1][1])] + fl + [(fl[0][0] + loop_len, fl[0][1]),
+                                                         (fl[1 % n][0] + loop_len, fl[1 % n][1])]
+    else:
+        t = min(max(t, fl[0][0]), fl[-1][0])
+        ext = [fl[0]] + fl + [fl[-1]]
+    for j in range(1, len(ext) - 2):
+        t1, t2 = ext[j][0], ext[j + 1][0]
+        if t1 <= t <= t2:
+            u = 0.0 if t2 == t1 else (t - t1) / (t2 - t1)
+            p0, p1, p2, p3 = ext[j - 1][1], ext[j][1], ext[j + 1][1], ext[j + 2][1]
+            res = {}
+            for k in p1:
+                a, b, c, d = p0.get(k, p1[k]), p1[k], p2.get(k, p1[k]), p3.get(k, p2.get(k, p1[k]))
+                res[k] = 0.5 * ((2 * b) + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u
+                                + (-a + 3 * b - 3 * c + d) * u ** 3)
+            return _unflat(res)
+    return _unflat(fl[-1][1])

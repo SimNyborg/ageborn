@@ -84,6 +84,19 @@ export class CardView {
   private readonly readyBadge = new Container();
   private readonly chip: Text;
   private readonly copiesBadge = new Container();
+  private copiesText: Text | null = null;
+  private shownCount = -1;
+  /** White flash over the card as its face lands. */
+  private readonly flashG = new Graphics();
+  private flashA = 0;
+  /** Scale pop (the snap as the face lands, the landing of the deal), decaying spring. */
+  private popT = 1e6;
+  private popA = 0;
+  private countBumpT = 1e6;
+  private liftK = 0;
+  /** Wobble while the pre-signal builds (0..1, set by the stage). */
+  wobble = 0;
+  private time = 0;
   readonly name: string;
   private flipped = false;
   private barShown = false;
@@ -140,7 +153,9 @@ export class CardView {
     this.chip = label('', 22, 0xffffff);
     this.chip.visible = false;
 
-    this.body.addChild(this.rays, this.glow, this.back, this.front, this.bolts);
+    cardShape(this.flashG).fill(0xffffff);
+    this.flashG.alpha = 0;
+    this.body.addChild(this.rays, this.glow, this.back, this.front, this.flashG, this.bolts);
     this.root.addChild(this.body, this.barRoot, this.chip);
   }
 
@@ -192,6 +207,7 @@ export class CardView {
       const b = new Graphics().circle(0, 0, 18).fill(ROOM.ink).stroke({ width: 3, color: shade(color, 0.3) });
       const t = label(this.d.i18n.t('capsule.copiesTimes', { n: copies }), copies > 99 ? 11 : 14, 0xffffff, { outline: 3 });
       this.copiesBadge.addChild(b, t);
+      this.copiesText = t;
       this.copiesBadge.position.set(48, -74);
     }
     // NEW (or SKIN) stamp.
@@ -294,9 +310,54 @@ export class CardView {
   /** Lift 0..1 while the card is in focus. */
   setLift(u: number): void {
     const k = clamp01(u);
+    this.liftK = k;
     this.body.y = -26 * k;
-    this.body.scale.set(1 + 0.16 * k);
+    this.applyScale();
     this.root.zIndex = k > 0 ? 100 : this.card.slot;
+  }
+
+  private applyScale(): void {
+    const sq = this.popA * Math.exp(-this.popT / 120) * Math.cos(this.popT / 38);
+    this.body.scale.set((1 + 0.16 * this.liftK) * (1 + sq), (1 + 0.16 * this.liftK) * (1 + sq * 0.7));
+  }
+
+  /** A springy scale pop (landing, snap). */
+  pop(amount: number): void {
+    this.popT = 0;
+    this.popA = this.d.reduceMotion ? amount * 0.4 : amount;
+  }
+
+  /** The face lands: a white flash over the card and a big springy pop. */
+  snap(strength: number): void {
+    this.flashA = Math.min(1, 0.7 + 0.3 * strength);
+    this.pop(0.14 + 0.16 * strength);
+  }
+
+  /** The copies badge counts up from 0 to its copies, 0..1 (bumps on every new number). */
+  setCount(u: number): void {
+    const t = this.copiesText;
+    if (!t || this.card.kind !== 'card') return;
+    const n = Math.round(this.card.copies * easeOutCubic(clamp01(u)));
+    if (n === this.shownCount) return;
+    this.shownCount = n;
+    t.text = this.d.i18n.t('capsule.copiesTimes', { n: Math.max(1, n) });
+    this.countBumpT = 0;
+  }
+
+  /** Per-frame springs and flashes. */
+  tick(dtMs: number): void {
+    this.time += dtMs;
+    this.popT += dtMs;
+    this.countBumpT += dtMs;
+    this.flashA = Math.max(0, this.flashA - dtMs / 220);
+    this.flashG.alpha = this.flashA;
+    this.applyScale();
+    const b = Math.exp(-this.countBumpT / 90);
+    this.copiesBadge.scale.set(1 + 0.35 * b);
+    // The pre-signal: the card trembles harder as the build grows.
+    const w = this.d.reduceMotion ? 0 : this.wobble;
+    this.body.rotation = w > 0 ? Math.sin(this.time / 26) * 0.035 * w * w : 0;
+    this.body.x = w > 0 ? Math.sin(this.time / 19 + 1.3) * 3.5 * w * w : 0;
   }
 
   /** Foil sweep across the card, 0..1; afterwards a lasting soft sheen. */
@@ -385,6 +446,8 @@ export class CardView {
     this.stamp.visible = this.card.isNew || this.card.kind === 'skin';
     this.stamp.scale.set(1);
     this.stamp.alpha = 1;
+    this.setCount(1);
+    this.wobble = 0;
     this.glow.alpha = 0;
     this.rays.alpha = 0;
     this.drawBolts(false, 0);
@@ -456,23 +519,41 @@ export class CardFan {
     return this.views[slot];
   }
 
-  /** Deal face down from the burst point, staggered, 0..1 over the fan step. */
-  deal(u: number): void {
+  private readonly landed = new Set<number>();
+
+  /**
+   * Deal face down from the burst point, staggered, 0..1 over the fan step. Each card flies up out
+   * of the capsule on an arc, spinning, and lands with a snap. Returns the cards that landed now.
+   */
+  deal(u: number): CardView[] {
     const n = this.views.length;
+    const out: CardView[] = [];
     this.views.forEach((v, i) => {
       const start = n > 1 ? (i / n) * 0.55 : 0;
       const k = span(u, start, start + 0.45);
       v.root.visible = k > 0;
-      const e = easeOutBack(k, 1.3);
-      v.root.position.set(lerp(this.origin.x, v.home.x, e), lerp(this.origin.y, v.home.y, e) - 60 * hump(k));
-      v.root.rotation = lerp(-0.6 + i * 0.2, v.home.rot, e);
-      v.root.scale.set(lerp(0.25, v.home.scale, easeOutCubic(k)));
+      const e = easeOutCubic(k);
+      const side = v.home.x < this.origin.x - 1 ? -1 : v.home.x > this.origin.x + 1 ? 1 : i % 2 === 0 ? -1 : 1;
+      v.root.position.set(lerp(this.origin.x, v.home.x, e), lerp(this.origin.y, v.home.y, e) - 150 * hump(k));
+      // A full spin on the way, finishing square to its slot.
+      v.root.rotation = v.home.rot + side * (1 - e) * Math.PI * 2 * (this.d.reduceMotion ? 0 : 1);
+      v.root.scale.set(lerp(0.2, v.home.scale, easeOutBack(k, 1.6)));
+      if (k >= 1 && !this.landed.has(i)) {
+        this.landed.add(i);
+        out.push(v);
+      }
     });
+    return out;
   }
 
   /** All cards at home, face down. */
   settleDealt(): void {
     this.deal(1);
+  }
+
+  /** Per-frame springs of every card. */
+  tick(dtMs: number): void {
+    for (const v of this.views) v.tick(dtMs);
   }
 
   /** Sparkle bursts when a card's flip completes. */

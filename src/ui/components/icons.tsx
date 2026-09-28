@@ -453,6 +453,21 @@ export function FlagIcon(p: IconProps) {
   );
 }
 
+/** Customize (skins and looks): a paint brush over a palette. */
+export function BrushIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M12 3.5c5 0 9 3.4 9 7.6 0 2.4-1.9 3.4-3.6 3.4h-1.6c-1.2 0-1.8 1.3-1.1 2.2.9 1.2.1 3.8-2.7 3.8-5 0-9-3.8-9-8.5S7 3.5 12 3.5z" fill="#f2d7a6" {...O} />
+      <circle cx="7.6" cy="10.4" r="1.6" fill="#e05a3c" stroke={OUTLINE} stroke-width="1" />
+      <circle cx="11" cy="7.2" r="1.6" fill="#ffcf3a" stroke={OUTLINE} stroke-width="1" />
+      <circle cx="15.2" cy="7.8" r="1.6" fill="#22b8cf" stroke={OUTLINE} stroke-width="1" />
+      <circle cx="8.4" cy="14.6" r="1.6" fill="#a855f7" stroke={OUTLINE} stroke-width="1" />
+      <path d="m21.5 12.5-6.8 6.8" stroke="#8a5a2b" stroke-width="2.6" stroke-linecap="round" />
+      <path d="M14.9 19.1c-.9.9-2.6 1.4-3.4 1.4.1-.9.5-2.4 1.4-3.3.6-.6 1.5-.6 2 0 .5.5.5 1.3 0 1.9z" fill="#3a8ee0" {...O} />
+    </Svg>
+  );
+}
+
 export function CrownIcon(p: IconProps) {
   return (
     <Svg {...p}>

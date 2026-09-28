@@ -7,14 +7,16 @@
  * win"). Quick Battle only appears once onboarding is done and no Home is mounted (the Phase 2a
  * shell and dev builds), with formats that say how long they take ("Short · up to 6 min"). WP9's
  * Home replaces this in Phase 2b. Every opponent keeps its AI chip, its tier and its disclosures,
- * such as the Rookie AI line (A7.1, A15.3).
+ * such as the Rookie AI line (A7.1, A15.3). Quick Battle has the difficulty picker (Easy to Legendary,
+ * each an AI tier; owner feedback 2026-09-28), so its bot never gets the Rookie mistakes.
  */
 import { useState } from 'preact/hooks';
+import type { Difficulty } from '@/content';
 import type { FormatId } from '@/contracts';
 import { tierNumeral } from '@/ui/components/format';
 import { GearIcon } from '@/ui/components/icons';
-import { QUICK_BATTLE_GENERAL, QUICK_BATTLE_TIER } from '../controller';
-import { newPlayerBonusBp } from '../matchSetup';
+import { QUICK_BATTLE_GENERAL } from '../controller';
+import { difficultyTable } from '../matchSetup';
 import { displayName } from '../names';
 import { useApp } from './context';
 
@@ -42,6 +44,8 @@ export function TitleScreen(p: TitleScreenProps = {}) {
   const r = c.route.value;
   const battle = r.id === 'title' ? r.battle : null;
   const [format, setFormat] = useState<FormatId>('short');
+  const diffs = difficultyTable(ui.services.content);
+  const [difficulty, setDifficulty] = useState<Difficulty>(diffs.default);
   const replays = c.replays.value;
   const opponent = battle?.setup.opponent;
   const waitingIsTraining = battle?.setup.brain.kind === 'grogg';
@@ -70,10 +74,25 @@ export function TitleScreen(p: TitleScreenProps = {}) {
             );
           })}
       </div>
+      <div class="ab-row ab-formats" role="radiogroup" aria-label={ui.t('ui.difficulty.label')} data-testid="quick-difficulty">
+        {diffs.order.map((d) => (
+          <button
+            key={d}
+            class={`ab-btn ab-btn--plain ab-btn--small ab-format${d === difficulty ? ' is-on' : ''}`}
+            role="radio"
+            aria-checked={d === difficulty}
+            data-testid={`difficulty-${d}`}
+            onClick={() => setDifficulty(d)}
+          >
+            <span class="ab-format-name">{ui.t(`ui.difficulty.${d}`)}</span>
+            <span class="ab-format-len">{ui.t('app.vsTier', { tier: tierNumeral(diffs.tiers[d]) })}</span>
+          </button>
+        ))}
+      </div>
       <button
         class={`ab-btn ${newPlayer ? 'ab-btn--plain ab-btn--small' : 'ab-btn--gold ab-btn--big'}`}
         data-testid="quick-battle"
-        onClick={() => c.quickBattle(format)}
+        onClick={() => c.quickBattle(format, difficulty)}
       >
         {ui.t('app.quickBattle')}
       </button>
@@ -85,11 +104,8 @@ export function TitleScreen(p: TitleScreenProps = {}) {
           {ui.t('app.aiChip')}
         </span>
         <span class="ab-chip ab-chip--soft" data-testid="quick-tier">
-          {ui.t('app.vsTier', { tier: tierNumeral(QUICK_BATTLE_TIER) })}
+          {ui.t('app.vsTier', { tier: tierNumeral(diffs.tiers[difficulty]) })}
         </span>
-        {newPlayerBonusBp(ui.services.content, c.save.value) > 0 ? (
-          <span class="ab-chip">{ui.t('app.disclosure.rookie')}</span>
-        ) : null}
       </div>
     </div>
   );
