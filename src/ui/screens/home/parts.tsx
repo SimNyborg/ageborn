@@ -53,7 +53,6 @@ import {
   trayCapsules,
   unlocks,
   warChestView,
-  WAR_PLAN_UNLOCK_MATCHES,
   type PointerEntry,
   type QuestView,
 } from '../model/progress';
@@ -550,8 +549,7 @@ export function HomeNav() {
       labelKey: 'ui.nav.warPlan',
       icon: <ScrollIcon size={34} />,
       locked: !u.warPlan,
-      lockKey: 'ui.lock.afterMatches',
-      lockParams: { n: WAR_PLAN_UNLOCK_MATCHES },
+      lockKey: 'ui.lock.afterTraining',
     },
     {
       id: 'collection',
@@ -580,8 +578,7 @@ export function HomeNav() {
       labelKey: 'ui.nav.customize',
       icon: <BrushIcon size={34} />,
       locked: !u.warPlan,
-      lockKey: 'ui.lock.afterMatches',
-      lockParams: { n: WAR_PLAN_UNLOCK_MATCHES },
+      lockKey: 'ui.lock.afterTraining',
     },
     {
       id: 'trophyRoad',

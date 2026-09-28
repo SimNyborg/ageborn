@@ -53,7 +53,6 @@ import {
   ladderWin,
   lastDifficulty,
   unlocks,
-  WAR_PLAN_UNLOCK_MATCHES,
 } from "../model/progress";
 import { useMatchStarter } from "../shared/MatchStarter";
 
@@ -354,7 +353,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           locked={
             u.skirmish
               ? null
-              : t("ui.lock.afterMatches", { n: WAR_PLAN_UNLOCK_MATCHES })
+              : t("ui.lock.afterTraining")
           }
           action={
             <Button
@@ -492,7 +491,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           locked={
             u.skirmish
               ? null
-              : t("ui.lock.afterMatches", { n: WAR_PLAN_UNLOCK_MATCHES })
+              : t("ui.lock.afterTraining")
           }
           action={
             <Button

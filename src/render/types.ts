@@ -156,12 +156,16 @@ export type ViewAction =
   | { a: 'musicTranspose'; semitones: number }
   | { a: 'musicLayer'; layer: MusicLayer; v: number }
   | { a: 'intensity'; amount: number }
-  | { a: 'number'; kind: 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold'; value: number; at: Anchor; important: boolean; key?: string }
+  | { a: 'number'; kind: 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold' | 'income'; value: number; at: Anchor; important: boolean; key?: string }
   | { a: 'turret'; side: Side; mount: number; op: 'buildStart' | 'built' | 'sell' | 'replace' | 'fire'; card: CardId; targetId?: number }
   | { a: 'base'; side: Side; op: 'hit' | 'collapse' }
   | { a: 'baseTreasury'; side: Side; level: number }
   | { a: 'baseGlow'; side: Side; on: boolean }
   | { a: 'baseMorph'; side: Side; age: AgeId; ms: number }
+  /** The evolve build-up on the base during the Ascension (`ms` until `ageUp`). */
+  | { a: 'baseAscend'; side: Side; ms: number }
+  /** A new turret slot is built on the base. */
+  | { a: 'baseMount'; side: Side; mount: number }
   | { a: 'backdropWipe'; side: Side; age: AgeId; ms: number }
   | { a: 'telegraph'; side: Side; castId: number; power: CardId; x: number; zone: number; ms: number }
   | { a: 'phase'; phase: 'regulation' | 'overdrive' | 'siege' }

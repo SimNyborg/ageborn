@@ -16,7 +16,7 @@ import type { CosmeticRng } from '@/core';
 import { BitmapFont, BitmapText, Container } from 'pixi.js';
 import { easeOutCubic } from '../interpolate';
 
-export type NumberKind = 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold';
+export type NumberKind = 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold' | 'income';
 export type DamageNumberMode = 'off' | 'important' | 'all';
 
 export interface NumberStyle {
@@ -32,6 +32,8 @@ export const NUMBER_STYLES: Record<NumberKind, NumberStyle> = {
   kill: { color: 0xffb347, sizePx: 20, prefix: '' },
   heal: { color: 0x7ef59a, sizePx: 17, prefix: '+' },
   gold: { color: 0xffd447, sizePx: 21, prefix: '+' },
+  /** Treasury upgrade: "+1.5/s" gold per second (one decimal, a unit suffix, no words). */
+  income: { color: 0xffe27a, sizePx: 24, prefix: '+' },
 };
 
 /** One label node; the default is a bitmap text, tests may pass their own factory. */
@@ -58,7 +60,7 @@ export const bitmapLabelFactory: LabelFactory = () => {
         fill: 0xffffff,
         stroke: { color: 0x1c1026, width: 8, join: 'round' },
       },
-      chars: [['0', '9'], '+-.,kx!'],
+      chars: [['0', '9'], '+-.,kx!/s'],
       resolution: 2,
       padding: 6,
     });
@@ -185,7 +187,7 @@ export class FloatingNumbers {
       at: { x: at.x, y: at.y },
       offsetPx,
       ageMs: 0,
-      lifeMs: kind === 'gold' ? this.tuning.goldLifeMs : this.tuning.numberLifeMs,
+      lifeMs: kind === 'gold' ? this.tuning.goldLifeMs : kind === 'income' ? this.tuning.numberLifeMs * 1.6 : this.tuning.numberLifeMs,
     });
     return true;
   }
@@ -229,6 +231,7 @@ export class FloatingNumbers {
   }
 
   private text(kind: NumberKind, value: number): string {
+    if (kind === 'income') return `${NUMBER_STYLES[kind].prefix}${(Math.round(value * 10) / 10).toFixed(1).replace(/\.0$/, '')}/s`;
     return `${NUMBER_STYLES[kind].prefix}${formatNumber(value)}`;
   }
 

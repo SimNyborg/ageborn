@@ -103,7 +103,7 @@
       "notEnoughDust": "Not enough Dust"
     },
     "lock": {
-      "afterMatches": "Unlocks after {n} matches",
+      "afterTraining": "Unlocks after the training match",
       "arena": "Unlocks in Arena {n}"
     },
     "reward": {
@@ -139,7 +139,6 @@
     "home": {
       "title": "Home",
       "suggested": "Next: {name}",
-      "capsulesNone": "No capsules right now. Win battles to earn more.",
       "openProfile": "Open your profile",
       "battle": "Battle",
       "nextOpponent": "Next opponent",
@@ -239,7 +238,6 @@
         "help": "No trophies, no capsules.",
         "setup": "Set up",
         "general": "Opponent",
-        "tier": "Difficulty",
         "echo": "AI · Echo of You: an AI playing your War Plan",
         "standardLevels": "Standard levels",
         "standardLevelsHint": "Every card on both sides at Lv {n}",
