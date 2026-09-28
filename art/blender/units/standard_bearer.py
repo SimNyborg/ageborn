@@ -4,8 +4,8 @@ Look (A17.12): a veteran in a conical aged-bronze pilos helmet, a linen tunic wi
 belt sash and a team cloak clasped on the shoulders that streams behind him, greaves and
 sandals, a plum-and-sandstone frame drum at the hip. In the far hand a tall eagle standard:
 a pole with a crossbar and a big team banner (sandstone fringe, a lambda emblem) that swings
-with follow-through, crowned by an aged-bronze eagle with spread wings (the aura reads from
-far away). The near hand throws darts. The attack plants and dips the standard forward (the
+with follow-through, crowned by a polished-bronze eagle with its wings spread wide in the camera
+plane (the aura reads from far away). The near hand throws darts. The attack plants and dips the standard forward (the
 banner wave) while the near arm throws a dart; the dart leaves at the per-frame `muzzle`.
 """
 import math
@@ -25,6 +25,7 @@ ANCHORS = {"head": (2, 68), "hitCenter": (0, 32)}
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand: darts (modelled along +X)
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand: the standard (modelled pointing up)
 POLE_UP, POLE_DOWN = 78.0, 18.0
+WING_TILT = -40.0             # wings tipped back so their faces catch the highlight
 DART_F, DART_B = 26.0, 7.0
 SMEAR = {"joint": "dart", "inner": (HR[0] + DART_F - 10, HR[1] - 1.0, HR[2]),
          "outer": (HR[0] + DART_F, HR[1] - 1.0, HR[2]), "color": B.WOOD, "taper": 0.4, "start": 0.2, "behind": 4.0}
@@ -59,23 +60,29 @@ def build(rig):
     g.capsule((hx - 5.0, py - 2.5, bz - 20.0), (hx, py - 2.6, bz - 8.0), 1.4)
     g.capsule((hx, py - 2.6, bz - 8.0), (hx + 5.0, py - 2.5, bz - 20.0), 1.4)
     rig.part("banner", g, B.SAND_LT, outline=0.5)
-    # the eagle on top: body, spread wings, head with a polished beak, on a small plinth
-    ex, ez = hx, top + 2.0
-    g = Geo().blob((ex, py, ez - 0.8), (3.0, 3.0, 1.6), p=3.0)
-    rig.part("standard", g, B.AGED_DK, finish="metal", outline=0.6)
-    g = Geo().blob((ex + 0.5, py, ez + 5.2), (3.6, 3.2, 5.0), p=2.2, rot=(0, 18, 0))
-    g.sphere((ex + 3.0, py, ez + 10.8), 2.6, cuts=3)
-    for s in (-1, 1):
-        k = 1.0 if s < 0 else 0.8
-        g.slab([(ex - 1.0, ez + 7.0), (ex - 3.0 + 3.0 * s, ez + 7.0 + 14.0 * k), (ex - 7.0 + 3.0 * s, ez + 7.0 + 12.0 * k),
-                (ex - 8.0 + 3.0 * s, ez + 7.0 + 8.0 * k), (ex - 11.0 + 3.0 * s, ez + 7.0 + 5.0 * k),
-                (ex - 10.0 + 3.0 * s, ez + 5.0), (ex - 4.0, ez + 3.0)],
-               py + 2.6 * s, 1.4)
-    g.slab([(ex - 2.0, ez + 1.5), (ex - 7.5, ez - 1.0), (ex - 7.0, ez + 2.0), (ex - 2.0, ez + 4.0)], py, 1.6)
-    rig.part("standard", g, B.AGED, finish="metal", outline=0.7)
-    g = Geo().lathe([(1.2, 0), (0.7, 1.6), (0, 3.0)], (ex + 5.2, py, ez + 10.6), (ex + 8.2, py, ez + 9.6), segs=8)
-    rig.part("standard", g, B.BRONZE, finish=B.POLISH, outline=0.5)
-    g = Geo().sphere((ex + 4.0, py - 2.2, ez + 11.4), 0.7, cuts=2)
+    # the eagle on top (the aquila): polished bronze, wings spread wide in the camera plane so the
+    # shape reads at 1x, the body and head in profile facing the enemy, on a verdigris plinth
+    ex, ez = hx, top + 3.0
+    fy = py - 1.6
+    g = Geo().blob((ex, py, ez - 1.4), (4.2, 3.6, 2.2), p=3.0)
+    g.blob((ex, py, ez - 3.4), (2.6, 2.4, 1.4), p=3.0)
+    rig.part("standard", g, B.VERD, finish="metal", outline=0.6)
+    g = Geo()
+    for sgn in (-1, 1):   # one wing each side of the body, feathered tips raised
+        g.slab([(ex + 1.5 * sgn, ez + 3.0), (ex + 9.0 * sgn, ez + 7.0), (ex + 16.5 * sgn, ez + 15.0),
+                (ex + 20.0 * sgn, ez + 21.0), (ex + 17.0 * sgn, ez + 20.0), (ex + 18.0 * sgn, ez + 16.0),
+                (ex + 14.0 * sgn, ez + 15.5), (ex + 14.5 * sgn, ez + 12.0), (ex + 10.0 * sgn, ez + 11.5),
+                (ex + 9.5 * sgn, ez + 8.8), (ex + 1.5 * sgn, ez + 9.0)], fy + 1.2, 2.0,
+               rot=(WING_TILT, 0, 0), origin=(ex, fy + 1.2, ez + 6.0))
+    rig.part("standard", g, B.BRONZE, finish=B.POLISH, outline=0.8)
+    g = Geo().blob((ex + 0.6, fy - 0.6, ez + 5.0), (3.6, 3.0, 6.0), p=2.2, rot=(0, 14, 0))   # body
+    g.sphere((ex + 2.6, fy - 0.8, ez + 12.8), 3.2, cuts=3)                                  # head
+    g.slab([(ex - 2.0, ez + 0.5), (ex - 5.5, ez - 3.0), (ex + 1.0, ez - 3.0), (ex + 2.4, ez + 0.5)], fy - 0.6, 2.2)
+    rig.part("standard", g, "#DCC69C", finish=B.POLISH, outline=0.7, outline_hex=B.AGED_DK)
+    g = Geo().lathe([(1.4, 0), (0.8, 1.8), (0, 3.4)], (ex + 5.2, fy - 0.8, ez + 12.6), (ex + 8.6, fy - 0.8, ez + 11.4),
+                    segs=8)
+    rig.part("standard", g, B.AGED_DK, finish="metal", outline=0.5)
+    g = Geo().sphere((ex + 4.0, fy - 3.6, ez + 13.6), 0.9, cuts=2)
     rig.part("standard", g, B.PUPIL, outline=0)
 
     # team cloak clasped on the shoulders, streaming back (follow-through)
@@ -96,13 +103,21 @@ def build(rig):
     rig.part("torso", g, B.PLUM)
     g = Geo().sphere((7.6, -8.6, 37.2), 1.7, cuts=3)
     rig.part("torso", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
-    # frame drum at the near hip
-    rig.joint("drum", "hips", (2.0, -12.0, 16.0))
-    g = Geo().lathe([(0, -2.2), (7.4, -2.2), (7.8, 0), (7.4, 2.2), (0, 2.2)], (2.0, -12.0, 15.0), (2.0, -13.0, 15.0),
-                    segs=24)
+    # frame drum at the near hip, face to the camera: plum shell, sandstone skin, polished rim,
+    # a leather strap across the chest
+    rig.joint("drum", "hips", (5.0, -14.0, 14.0))
+    g = Geo().lathe([(0, -2.6), (8.0, -2.6), (8.5, 0), (8.0, 2.6), (0, 2.6)], (5.0, -13.0, 13.5), (5.0, -14.0, 13.5),
+                    segs=28)
     rig.part("drum", g, B.PLUM)
-    g = Geo().lathe([(0, 0), (6.4, 0), (6.2, 0.6), (0, 0.8)], (2.0, -14.3, 15.0), (2.0, -15.3, 15.0), segs=24)
+    g = Geo().lathe([(0, 0), (6.9, 0), (6.7, 0.7), (0, 0.9)], (5.0, -15.9, 13.5), (5.0, -16.9, 13.5), segs=28)
     rig.part("drum", g, B.SAND_LT, outline=0.5)
+    g = Geo()
+    for i in range(8):
+        a_ = 2 * math.pi * i / 8
+        g.sphere((5.0 + 7.8 * math.cos(a_), -15.8, 13.5 + 7.8 * math.sin(a_)), 0.9, cuts=2)
+    rig.part("drum", g, B.SAND_LT, outline=0.4)
+    g = Geo().capsule((7.0, -10.0, 36.5), (6.0, -14.0, 22.0), 1.1).capsule((-7.0, 9.0, 36.0), (7.0, -10.0, 36.5), 1.1)
+    rig.part("torso", g, B.LEATHER_DK, outline=0.5)
 
     # head: moustache, pilos helmet with a polished rim and a knob
     B.head_ball(rig)

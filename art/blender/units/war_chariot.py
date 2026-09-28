@@ -1,13 +1,16 @@
 """War Chariot: Bronze Age heavy (A17.9), rider rig. Scythe Charge (first hit x2, knockback), ~110 lu.
 
-Look (A17.12): a stocky dun horse in a team breast collar with a team plume on the bridle
+Look (A17.12): a stocky chestnut horse with a dark mane in a team breast collar with a team plume on the bridle
 pulls a light two-wheeled chariot: a plum wickerwork car with a big team side panel, sandstone
-rails and bronze studs, six-spoked wheels with aged-bronze scythe blades on the hubs, and a
+rails and bronze studs, six-spoked wheels (one spoke and a rim stud mark the roll) with polished-bronze scythe blades
+on the hubs, and a
 tall team swallowtail pennant on a pole at the back that trails in the wind. The charioteer
 (open-faced helmet with a team crest, linen cuirass) holds the reins in the far hand and a
-bronze khopesh in the near hand. The walk is a trot with the wheels rolling; the attack is
-the charge lean: the horse lunges, the car lurches forward, the khopesh sweeps down in a big
-smeared arc and the scythed hubs throw sparks on impact.
+bronze khopesh in the near hand. The walk is a gallop (a suspension phase with every hoof off
+the ground on two frames) with the wheels rolling at the ground speed; the attack is the charge
+lean: the horse lunges, the car lurches forward, the khopesh sweeps down in a big smeared arc
+and the scythed hubs throw sparks on impact. The death is a wreck: the horse stumbles onto its
+knees and the car tips over onto its side, throwing the driver.
 """
 import math
 
@@ -28,14 +31,14 @@ CANVAS = (470, 300)
 FEET = (250, 276)
 ANCHORS = {"head": (-10, 104), "hitCenter": (0, 42)}
 
-COAT = "#B8A07E"
-COAT_DK = "#9A8364"
-MANE = "#3F332B"
+COAT = "#7C604B"          # chestnut, held at ~39% saturation (the A11 colour rule)
+COAT_DK = "#634D3C"
+MANE = "#2A211D"
 HOOF = "#4A4038"
 
 HX = 26.0                    # the horse is this far ahead of the unit origin
 AX = -32.0                   # the chariot axle
-WHEEL_R = 16.0
+WHEEL_R = 14.0            # circumference 88 lu: 240 degrees per 0.8 s cycle = the ground speed
 FLOOR_Z = 20.0
 DRIVER = (-30.0, 0.0, 18.0)  # pose offset of the driver's skeleton (feet on the car floor)
 HR = (0.0, G.ARM_Y["r"], G.HAND_Z)
@@ -65,7 +68,8 @@ def _horse(rig):
     _leg(rig, "leg_br", HX - 15, -6.0, 36, False)
     g = Geo().blob((HX, 0, 38), (23, 11, 11.5), p=2.3)
     rig.part("horse", g, COAT)
-    g = Geo().blob((HX - 1, 0, 47.5), (12, 11.6, 3.0), p=2.6)          # saddle cloth / yoke pad
+    g = Geo().blob((HX - 1, 0, 45.0), (13.5, 11.9, 6.0), p=2.8)        # team saddle cloth over the back
+    g.clip((0, 0, 40.5), (0, 0, -1))
     rig.part("horse", g, team=True, outline=0.8)
     # neck, head (1.2x), mane, team breast collar
     rig.joint("neck", "horse", (HX + 19, 0, 46))
@@ -107,12 +111,22 @@ def _horse(rig):
     rig.part("tail", g, MANE, finish="hair")
 
 
+def _marker(rig, joint, y):
+    """One team-painted spoke and a bronze rim stud, so the roll reads (6 spokes alias)."""
+    cx, cz = AX, WHEEL_R
+    g = Geo().capsule((cx + 3.2, y - 0.8, cz), (cx + WHEEL_R - 4.0, y - 0.8, cz), 1.5, 1.2)
+    rig.part(joint, g, team=True, outline=0.5)
+    g = Geo().sphere((cx + WHEEL_R - 1.0, y - 1.8, cz), 1.9, cuts=3)
+    rig.part(joint, g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
+
+
 def _car(rig):
     rig.joint("cart", "unit", (AX, 0, WHEEL_R))
     rig.joint("wheel_l", "cart", (AX, 12.0, WHEEL_R))
     rig.joint("wheel_r", "cart", (AX, -12.0, WHEEL_R))
     G.wheel(rig, "wheel_l", (AX, 12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=6)
+    _marker(rig, "wheel_l", 12.0)
     # draught pole from the car floor up to the yoke on the horse, and the traces
     g = Geo().capsule((AX + 14, 0, FLOOR_Z), (HX - 6, 0, 36.0), 1.6).capsule((HX - 6, 0, 36.0), (HX + 2, 0, 49.0), 1.6)
     rig.part("cart", g, B.WOOD_DK, outline=0.6)
@@ -150,12 +164,14 @@ def _car(rig):
     # near wheel and the scythe blades on the hubs
     G.wheel(rig, "wheel_r", (AX, -12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=6)
+    _marker(rig, "wheel_r", -12.0)
+    # the scythed hubs: curved polished-bronze blades on the axle ends (fixed, they do not spin)
     g = Geo()
     for y in (-19.5, 17.5):
-        g.slab([(AX - 1, WHEEL_R + 1.8), (AX - 12, WHEEL_R + 3.0), (AX - 24, WHEEL_R + 0.5), (AX - 30, WHEEL_R - 4.0),
-                (AX - 22, WHEEL_R - 1.8), (AX - 11, WHEEL_R - 1.2), (AX - 1, WHEEL_R - 1.8)], y, 1.2)
-    rig.part("cart", g, B.AGED, finish="metal", outline=0.6)
-    g = Geo().capsule((AX - 12, -20.3, WHEEL_R + 2.4), (AX - 28, -20.3, WHEEL_R - 2.6), 0.5)
+        g.slab([(AX - 1, WHEEL_R + 1.4), (AX - 10, WHEEL_R + 2.6), (AX - 19, WHEEL_R + 1.0), (AX - 25, WHEEL_R - 3.5),
+                (AX - 18, WHEEL_R - 0.8), (AX - 10, WHEEL_R - 0.4), (AX - 1, WHEEL_R - 1.4)], y, 1.2)
+    rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.6)
+    g = Geo().capsule((AX - 10, -20.3, WHEEL_R + 2.2), (AX - 23, -20.3, WHEEL_R - 2.4), 0.5)
     rig.part("cart", g, B.SAND_LT, outline=0)
     B.sparks(rig, "cart", (AX - 20.0, -22.0, 4.0), size=1.6, name="sparks", seed=2)
     B.dust_puff(rig, "unit", (AX - 20.0, -8.0, 3.0), size=1.2, name="dust")
@@ -217,7 +233,7 @@ def reins(a=-30, f=-10):
 
 DRV = {"driver": {"x": DRIVER[0], "z": DRIVER[2]}}
 STANCE = merge(DRV, khopesh(-30, 40, 70), reins(), {"torso": {"r": -4}})
-SPIN_PER_FRAME = 15.0     # 6 spokes: 8 x 15 = 120 degrees, a seamless loop
+SPIN_PER_FRAME = 30.0     # 8 x 30 = 240 degrees per cycle = 57 lu of ground (r 14); seamless (6 spokes)
 
 
 def car(dx=0.0, dz=0.0, tilt=0.0, spin=0.0):
@@ -235,21 +251,27 @@ def _idle(f):
 
 
 def _walk(f):
-    # a trot: diagonal leg pairs move together, 0.8 s per cycle; the car bounces a frame behind
-    p = 2 * math.pi * f / 8
-    s, c = math.sin(p), math.cos(p)
-    bob = -1.6 * math.cos(2 * p)
-    lag = -1.0 * math.cos(2 * (p - 2 * math.pi / 8))
-    up = lambda v: max(0.0, v)
-    return merge(STANCE, car(dz=0.5 * lag, tilt=0.6 * lag, spin=SPIN_PER_FRAME * f), {
-        "horse": {"z": bob - 0.4, "r": 1.5 * s},
-        "leg_fr": {"r": 20 * s}, "leg_fr2": {"r": -46 * up(c)},
-        "leg_bl": {"r": 16 * s}, "leg_bl2": {"r": 32 * up(-c)},
-        "leg_fl": {"r": -20 * s}, "leg_fl2": {"r": -46 * up(-c)},
-        "leg_br": {"r": -16 * s}, "leg_br2": {"r": 32 * up(c)},
-        "neck": {"r": -7 * math.cos(2 * p)}, "hhead": {"r": 3 * math.cos(2 * p)},
-        "hips": {"z": 0.8 * lag}, "torso": {"r": -1.5 * lag},
-        "arm_r": {"r": 3 * lag}, "hand_r": {"r": 3 * lag},
+    # a gallop, 0.8 s per stride: hind pair lands (0-1), front pair lands (2-3), push-off (4),
+    # suspension with every hoof off the ground and the legs gathered (5-6), reach (7). The
+    # car bounces a frame behind; the wheels roll at the ground speed (SPIN_PER_FRAME).
+    hind_b = [18, 4, -12, -24, -30, -10, 14, 24]      # far hind upper leg (+ = forward)
+    hind_n = [26, 12, -4, -18, -28, -14, 10, 22]      # near hind leads by a beat
+    front_b = [-26, -30, 24, 10, -8, -24, -34, -20]   # far fore
+    front_n = [-30, -34, 30, 18, 0, -18, -30, -26]    # near fore
+    hind_bend = [4, 6, 10, 18, 26, 40, 30, 10]        # hocks gather in the suspension
+    front_bend = [-60, -70, -6, -4, -20, -80, -70, -40]
+    body_z = [-1.5, -2.0, -1.0, 0.0, 1.5, 4.5, 4.0, 0.5]
+    pitch = [3.0, 1.5, -2.5, -4.0, -2.0, 1.0, 2.5, 3.0]
+    lag = pick(f - 1 if f > 0 else 7, body_z)
+    return merge(STANCE, car(dz=0.35 * lag, tilt=0.5 * lag, spin=SPIN_PER_FRAME * f), {
+        "horse": {"z": body_z[f], "r": pitch[f]},
+        "leg_bl": {"r": hind_b[f]}, "leg_bl2": {"r": hind_bend[(f + 7) % 8]},
+        "leg_br": {"r": hind_n[f]}, "leg_br2": {"r": hind_bend[f]},
+        "leg_fl": {"r": front_b[f]}, "leg_fl2": {"r": front_bend[(f + 7) % 8]},
+        "leg_fr": {"r": front_n[f]}, "leg_fr2": {"r": front_bend[f]},
+        "neck": {"r": -2.0 * pitch[f] - 3.0}, "hhead": {"r": 1.5 * pitch[f]},
+        "hips": {"z": 0.6 * lag}, "torso": {"r": -2.0 - 0.8 * lag},
+        "arm_r": {"r": 2.5 * lag}, "hand_r": {"r": 2.5 * lag}, "arm_l": {"r": -2.0 * lag},
     })
 
 
@@ -297,24 +319,57 @@ def _hit(f):
     })
 
 
+# death: 8 unique poses, 12 steps (about 1 s). 0 struck (the horse throws its head up, the car
+# jolts), 1 the forelegs buckle and the car's near wheel lifts, 2 the horse drops onto its
+# knees, the car rolls toward the camera, 3 the car lands on its side and the driver is thrown,
+# 4 a small bounce, 5-6 settle (the horse's head sinks), 7 hand-off (the dust poof covers it)
+DIE_SEQ = [0, 1, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7]
+DIE_MS = [60, 70, 80, 70, 60, 60, 80, 90, 90, 100, 100, 110]
+
+
 def _die(f):
-    # the horse stumbles and pitches, the car tips back and the near wheel comes off
-    pose = merge(STANCE, car(pick(f, [-3, -6, -8]), 0, pick(f, [6, 12, 14]), pick(f, [-20, -40, -50])), {
-        "unit": dict(squash(pick(f, [0.04, -0.12, -0.22])), x=pick(f, [-4, -7, -8])),
-        "horse": {"r": pick(f, [-8, -12, -14]), "z": pick(f, [1, -3, -5])},
-        "neck": {"r": pick(f, [20, 12, 10])}, "hhead": {"r": -10},
-        "leg_fr": {"r": pick(f, [40, 60, 70])}, "leg_fl": {"r": pick(f, [30, 55, 65])},
-        "leg_fr2": {"r": -50}, "leg_fl2": {"r": -60},
-        "leg_br": {"r": pick(f, [-20, -40, -50])}, "leg_bl": {"r": pick(f, [-16, -36, -46])},
-        "wheel_r": {"x": pick(f, [0, -4, -8]), "y": pick(f, [0, -3, -5]), "z": pick(f, [0, -4, -6]),
-                    "rx": pick(f, [0, 20, 40])},
-        "torso": {"r": pick(f, [22, 30, 34])}, "head": {"r": pick(f, [12, -4, -6])},
-        "arm_r": {"r": pick(f, [60, 50, 50])}, "arm_l": {"r": pick(f, [90, 80, 80])},
-        "dust": {"show": f >= 1, "s": pick(f, [1, 1.0, 1.4])},
+    roll = pick(f, [0, 8, 26, 50, 44, 50, 52, 52])     # the car rolls away onto its side (rx)
+    pose = merge(STANCE, car(pick(f, [-3, -5, -6, -8, -8, -8, -8, -8]),
+                             pick(f, [1, 3, 5, -2, 1, -3, -3.5, -3.5]),
+                             pick(f, [4, 8, 12, 6, 7, 5, 5, 5]),
+                             pick(f, [-10, -25, -40, -45, -48, -50, -50, -50])), {
+        "cart": {"rx": roll, "y": pick(f, [0, 1, 3, 6, 6, 6, 6, 6])},
+        "unit": {"x": pick(f, [-3, -5, -6, -7, -7, -7, -7, -7]),
+                 "s": pick(f, [1, 1, 1, 1, 1, 1, 1, 0.94])},
+        "horse": {"r": pick(f, [6, -8, -18, -20, -18, -19, -19, -19]),
+                  "z": pick(f, [1, -4, -12, -15, -13, -15, -15.5, -15.5])},
+        "neck": {"r": pick(f, [22, 10, -6, -14, -10, -18, -24, -24])},
+        "hhead": {"r": pick(f, [-14, -6, 4, 8, 6, 10, 12, 12])},
+        # forelegs fold under the chest (kneeling), hind legs crouch
+        "leg_fr": {"r": pick(f, [20, 40, 70, 80, 78, 80, 80, 80])},
+        "leg_fr2": {"r": pick(f, [-30, -90, -140, -150, -148, -150, -150, -150])},
+        "leg_fl": {"r": pick(f, [10, 30, 64, 74, 72, 74, 74, 74])},
+        "leg_fl2": {"r": pick(f, [-20, -80, -134, -146, -144, -146, -146, -146])},
+        "leg_br": {"r": pick(f, [-6, 10, 26, 34, 32, 36, 38, 38])},
+        "leg_br2": {"r": pick(f, [10, 30, 50, 60, 58, 62, 64, 64])},
+        "leg_bl": {"r": pick(f, [-2, 14, 30, 38, 36, 40, 42, 42])},
+        "leg_bl2": {"r": pick(f, [6, 26, 46, 56, 54, 58, 60, 60])},
+        "torso": {"r": pick(f, [18, 26, 36, 50, 46, 50, 52, 52])}, "head": {"r": pick(f, [12, -4, -8, -10, -8, -10, -10, -10])},
+        "hips": {"x": pick(f, [0, -2, -5, -9, -9, -9, -9, -9]), "z": pick(f, [0, 2, 4, -2, 0, -2, -2, -2])},
+        "arm_r": {"r": pick(f, [60, 70, 90, 110, 100, 110, 110, 110])},
+        "arm_l": {"r": pick(f, [90, 100, 120, 130, 126, 130, 130, 130])},
+        "dust": {"show": f in (2, 3, 4, 5), "s": pick(f, [1, 1, 1.0, 1.3, 1.5, 1.6, 1, 1]),
+                 "z": pick(f, [0, 0, 0, 0, 2, 4, 0, 0])},
+        "sparks": {"show": f == 3},
     })
-    if f == 0:
+    if f in (0, 1):
         B.yell(pose)
     return pose
+
+
+def _die_extra():
+    total = sum(DIE_MS)
+    handoff = sum(DIE_MS[:len(DIE_MS) - 2])
+    h = HEIGHT_LU
+    return {"fx": [{"id": "fx.dust_poof", "atMs": handoff - 40, "offsetLu": [0, round(h * 0.36, 1)]},
+                   {"id": "fx.ko_stars", "atMs": handoff + 40, "offsetLu": [0, round(h * 0.55, 1)],
+                    "loops": 2, "scalePow": 0.5}],
+            "hideUnitAtMs": total}
 
 
 def clips():
@@ -323,5 +378,5 @@ def clips():
         Clip("walk", 8, _walk, loop=True, durations=100),
         Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=fx.MELEE_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+        Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]

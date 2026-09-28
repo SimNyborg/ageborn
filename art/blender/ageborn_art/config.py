@@ -83,9 +83,10 @@ FINISHES = {
     "hair":  {"shadow": 0.74, "gradient": 0.08, "hl_threshold": 0.90, "hl_mix": 0.12,
               "hl_color": "#E0C29A"},
     # polished bronze (Bronze Age accents, A17.12): a deep warm shadow and a big, clearly
-    # visible warm specular so the metal reads as polished, not khaki
-    "bronze": {"shadow": 0.60, "gradient": 0.16, "hl_threshold": 0.78, "hl_mix": 0.72,
-               "hl_color": "#FFF3D6"},
+    # visible warm specular so the metal reads as polished, not khaki; the shadow band is
+    # desaturated (it reflects the surroundings), which also keeps the A11 colour rule
+    "bronze": {"shadow": 0.62, "gradient": 0.16, "hl_threshold": 0.50, "hl_mix": 0.50,
+               "hl_color": "#FFF3D6", "shadow_sat": 0.55},
     # dust and smoke: a soft, light shadow so puffs read as air, not rocks
     "dust":  {"shadow": 0.87, "gradient": 0.04, "hl_threshold": 0.90, "hl_mix": 0.30},
 }

@@ -117,7 +117,7 @@ def beard(rig, color=HAIR, cx=11.0, z=42.0, full=True):
     rig.part("head", g, color, finish="hair")
 
 
-def helmet(rig, color=BRONZE, rim=BRONZE_HI, crest=True, crest_len=26.0, crest_h=10.0, tall=0.0, cheek=True,
+def helmet(rig, color=BRONZE, rim=VERD, crest=True, crest_len=26.0, crest_h=10.0, tall=0.0, cheek=True,
            crest_color=None, c=(1.5, 0, 55.0), crest_joint="crest"):
     """An open-faced bronze helmet (Chalcidian cut): a dome, a neck guard, cheek guards that
     leave the eyes free, a polished rim and a tall horsehair crest (team) on a stilt that trails
@@ -137,7 +137,7 @@ def helmet(rig, color=BRONZE, rim=BRONZE_HI, crest=True, crest_len=26.0, crest_h
         rig.part("head", g, AGED if color == BRONZE else color, finish="metal", outline=0.8)
     g = Geo().blob((cx + 0.4, cy, cz - 1.4), (12.9, 12.3, 1.3), p=2.8)       # polished rim
     g.capsule((cx + 12.0, -4.5, cz + 2.8), (cx + 12.4, 4.5, cz + 2.8), 1.0)   # brow ridge
-    rig.part("head", g, rim, finish=POLISH, outline=0.6)
+    rig.part("head", g, rim, finish=POLISH if rim in (BRONZE, BRONZE_HI) else "metal", outline=0.6)
     if not crest:
         return None
     top = cz + 10.0 + tall

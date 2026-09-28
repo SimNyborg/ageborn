@@ -117,6 +117,11 @@ def _toon_color(nodes, links, fill_hex, highlight=True, finish="matte"):
     F = C.FINISHES[finish]
     m = _shading(nodes, links, finish)
     dark = shadow(fill_hex, F["shadow"], C.WARM_SHADOW_HUE_SHIFT)
+    if "shadow_sat" in F:   # polished metal: the shadow band reflects the (grey) surroundings
+        import colorsys
+        from .colors import hex_to_rgb, rgb_to_hex
+        hh, ss, vv = colorsys.rgb_to_hsv(*hex_to_rgb(dark))
+        dark = rgb_to_hex(colorsys.hsv_to_rgb(hh, ss * F["shadow_sat"], vv))
     col = _mix_rgb(nodes, links, m["lit"], to_linear(dark), to_linear(fill_hex))
     g = nodes.new("ShaderNodeMixRGB")
     g.blend_type = "MULTIPLY"

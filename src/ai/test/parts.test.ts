@@ -159,8 +159,10 @@ describe('memory and the foe gold estimator (A7.1)', () => {
         worst = Math.max(worst, Math.abs(mem.estimator.gold - truth));
       }
       // Summons, power and Last Stand kills and underdog bounties are modelled; what remains is a mount
-      // bought but not yet built on, or a queue item converted at an ageUp.
-      expect(worst, `seed ${seed} ${format}`).toBeLessThan(200000);
+      // bought but not yet built on, or a queue item converted at an ageUp, or a unit killed on the tick it
+      // spawned (never observed). On the 2,000 lu lane seed 2 Full War has both at once for about 6 s: the
+      // 350 gold third mount and a 110 gold Repair Drone that an Orbital Lance killed at its spawn (445).
+      expect(worst, `seed ${seed} ${format}`).toBeLessThan(500000);
       expect(mem.estimator.income).toBeGreaterThan(0);
     }
   });

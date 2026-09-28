@@ -1,13 +1,17 @@
 """Scorpion: Bronze Age artillery (A17.9), vehicle rig. A bolt that pierces 3 targets, ~80 lu.
 
 Look (A17.12): a wheeled torsion bolt-thrower. A plum carriage with a long trail and two
-six-spoked wheels carries the weapon on a pivot: a long wooden stock, a big team-painted
-torsion housing up front with aged-bronze washers and two swept bow arms, a taut string, a
+six-spoked wheels (a team spoke and a rim stud mark the roll) carries the weapon on a pivot:
+a long wooden stock, a plum torsion housing up front with aged-bronze washers and two swept
+team-painted bow arms (the team colour stays off the bolt, which reads as a projectile), a taut string, a
 heavy bolt with a polished head and sandstone fletching, and a windlass with a crank at the
 back. A crewman in a leather cap and a team tunic stands behind it, hands on the crank. The
-walk: he pushes it along (the wheels roll). The attack: crank, crank (the string winds back),
+walk: he leans in and pushes it along with a pumping stride (the wheels roll at the ground
+speed). The attack: crank, crank (the string winds back),
 aim (held), release (the arms whip forward, the frame kicks and the bolt leaves at the
-per-frame `muzzle`), a recoil bounce, and he cranks the next bolt into place.
+per-frame `muzzle`), a recoil bounce, and he cranks the next bolt into place. The death: the
+frame tips back, the near wheel comes off, and the crewman is knocked backward and lands flat
+on the ground (contact on frame 4, a small bounce) before the dust hand-off.
 """
 import math
 
@@ -21,8 +25,8 @@ SLUG = "scorpion"
 NAME = "Scorpion"
 HEIGHT_LU = 76
 YAW_DEG = -10.0
-CANVAS = (480, 270)
-FEET = (266, 246)
+CANVAS = (540, 270)
+FEET = (326, 246)
 ANCHORS = {"head": (-20, 74), "hitCenter": (0, 32)}
 
 WHEEL_R = 15.0
@@ -49,6 +53,14 @@ def _cheek(y):
     return Geo().slab(pts, y, 3.0)
 
 
+def _marker(rig, joint, y):
+    """One team-painted spoke and a bronze rim stud, so the roll reads (6 spokes alias)."""
+    g = Geo().capsule((3.2, y - 0.8, WHEEL_R), (WHEEL_R - 4.0, y - 0.8, WHEEL_R), 1.5, 1.2)
+    rig.part(joint, g, team=True, outline=0.5)
+    g = Geo().sphere((WHEEL_R - 1.0, y - 1.8, WHEEL_R), 1.8, cuts=3)
+    rig.part(joint, g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
+
+
 def build(rig):
     rig.joint("unit", "root", (0, 0, 0))
     rig.joint("machine", "unit", (0, 0, 0), scale=MS)
@@ -58,6 +70,7 @@ def build(rig):
     rig.joint("wheel_r", "cart", (0.0, -12.0, WHEEL_R))
     G.wheel(rig, "wheel_l", (0.0, 12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=6)
+    _marker(rig, "wheel_l", 12.0)
 
     # carriage: plum cheeks, axle, trail end, a team drape over the near cheek
     for y in (6.0, -6.0):
@@ -78,8 +91,10 @@ def build(rig):
     g = Geo().blob((4.0, 0, tz + 3.8), (30.0, 2.2, 0.8), p=4.0)       # slider groove
     rig.part("frame", g, B.WOOD_DK, outline=0.4)
     hx = HOUSING_X
-    g = Geo().blob((hx, 0, tz + 3.0), (6.4, 13.0, 11.0), p=4.0)       # torsion housing (team)
-    rig.part("frame", g, team=True)
+    g = Geo().blob((hx, 0, tz + 3.0), (6.4, 13.0, 11.0), p=4.0)       # torsion housing
+    rig.part("frame", g, B.PLUM)
+    g = Geo().blob((hx - 0.4, 0, tz + 3.0), (6.8, 13.4, 2.2), p=3.0)   # verdigris strap
+    rig.part("frame", g, B.VERD, outline=0.6)
     g = Geo()
     for y in (-8.5, 8.5):
         for z in (tz + 14.4, tz - 8.4):
@@ -95,8 +110,8 @@ def build(rig):
         rig.joint(f"bow_{s}", "frame", (hx, 8.5 * y, tz + 3.0))
         tip = (hx - 16.0, 21.0 * y, tz + 3.0 + dz)
         TIPS[s] = tip
-        g = Geo().capsule((hx, 8.5 * y, tz + 3.0), tip, 2.6, 1.5)
-        rig.part(f"bow_{s}", g, B.WOOD_DK)
+        g = Geo().capsule((hx, 8.5 * y, tz + 3.0), tip, 3.2, 1.8)
+        rig.part(f"bow_{s}", g, team=True)
         g = Geo().sphere(tip, 1.9, cuts=2)
         rig.part(f"bow_{s}", g, B.AGED, finish="metal", outline=0.5)
     # the string: two runs from the arm tips to the claw (the claw joint slides back)
@@ -132,6 +147,7 @@ def build(rig):
     rig.track("muzzle", "frame", (STRING_REST + BOLT_LEN + 1.0, -0.5, bz))
     G.wheel(rig, "wheel_r", (0.0, -12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=6)
+    _marker(rig, "wheel_r", -12.0)
     B.dust_puff(rig, "unit", (-14.0, -6.0, 2.0), size=0.9, name="dust")
 
     # the crewman behind the windlass
@@ -195,10 +211,18 @@ WALK_MS = 100
 
 
 def _walk(f):
-    pose, p, bl = B.walk_legs(f, lean=-16.0, stride=26.0)
-    spin = 15.0 * f     # 6 spokes: a seamless 120 degree loop
-    return merge(_crew(2.0), pose, gun(IDLE_ELEV, hop=0.4 * abs(math.sin(2 * p)), tilt=0.6 * math.sin(2 * p), spin=spin),
-                 crank_hands(-60.0, crew_dx=2.0))
+    # the crewman leans hard into the trail and pushes: his torso pumps with each step, his arms
+    # bend and straighten on the handles, and the machine rolls (6 spokes: 8 x 15 = 120 degrees
+    # per cycle = 39 lu of ground at MS 1.25, matched by the 34 lu stride)
+    pose, p, bl = B.walk_legs(f, lean=-24.0, stride=34.0)
+    push = math.cos(2 * p)              # +1 on the contact frames (arms bent), -1 when passing
+    spin = 15.0 * f
+    return merge(_crew(2.0 + 1.6 * push), pose,
+                 gun(IDLE_ELEV, hop=0.5 * abs(math.sin(2 * p)), tilt=0.6 * math.sin(2 * p), spin=spin),
+                 crank_hands(-70.0 + 10.0 * push, crew_dx=2.0 + 1.6 * push), {
+        "torso": {"r": -4.0 - 4.0 * push}, "head": {"r": 6.0 + 2.0 * push},
+        "hips": {"x": 0.8 * push},
+    })
 
 
 ATTACK_MS = [100, 100, 167, 83, 83, 100, 125, 125]
@@ -240,19 +264,47 @@ def _hit(f):
                  crank_hands(-30.0, crew_dx=-2.0 * a))
 
 
+# death: 8 unique poses, 12 steps (about 0.95 s). 0 struck (the frame kicks up), 1 the crewman
+# is knocked back into the air, 2 falling, 3 he lands flat on his back (contact), 4 a small
+# bounce, 5 settled, the near wheel off; 6 slump, 7 hand-off (the dust poof covers it)
+DIE_SEQ = [0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7]
+DIE_MS = [60, 70, 70, 60, 70, 80, 80, 90, 90, 100, 100, 100]
+
+
 def _die(f):
-    # the frame tips back off its pivot, the near wheel falls off, the crewman is flung
-    pose = merge(_crew(), gun(IDLE_ELEV + pick(f, [16, 24, 26]), tilt=pick(f, [6, 4, 2]), spin=pick(f, [-30, -40, -40])), {
-        "unit": dict(squash(pick(f, [0.05, -0.16, -0.28])), x=pick(f, [-3, -6, -7]), r=pick(f, [6, 4, 2])),
-        "wheel_r": {"x": pick(f, [0, -4, -6]), "z": pick(f, [0, -3, -4]), "rx": pick(f, [0, 25, 40])},
-        "crew": {"y": CREW_Y, "x": CREW_X - pick(f, [3, 6, 7]), "r": pick(f, [10, 18, 24]), "z": pick(f, [3, 1, 0])},
-        "arm_r": {"r": pick(f, [120, 90, 90])}, "arm_l": {"r": pick(f, [150, 120, 120])},
-        "thigh_r": {"r": pick(f, [25, 10, 10])}, "thigh_l": {"r": pick(f, [-10, -5, -5])},
+    crew_r = pick(f, [12, 38, 66, 90, 86, 90, 90, 90])
+    crew_z = pick(f, [3, 9, 7, 1.5, 4.5, 1.5, 1.5, 1.5])      # lying on his back: the torso's thickness
+    crew_x = pick(f, [-2, -5, -7, -8, -8.5, -9, -9, -9])
+    pose = merge(_crew(), gun(IDLE_ELEV + pick(f, [14, 22, 26, 26, 24, 25, 25, 25]),
+                              tilt=pick(f, [6, 8, 7, 4, 5, 4, 4, 4]), spin=pick(f, [-20, -30, -40, -45, -45, -45, -45, -45]),
+                              hop=pick(f, [2, 3, 1, 0, 0.5, 0, 0, 0])), {
+        "unit": {"x": pick(f, [-2, -4, -5, -6, -6, -6, -6, -6]), "s": pick(f, [1, 1, 1, 1, 1, 1, 1, 0.94])},
+        "wheel_r": {"x": pick(f, [0, -2, -4, -6, -7, -8, -8, -8]), "y": pick(f, [0, -2, -3, -4, -4, -4, -4, -4]),
+                    "z": pick(f, [0, 0, -2, -4, -5, -6, -6, -6]), "rx": pick(f, [0, 12, 26, 40, 50, 56, 58, 58])},
+        "crew": {"y": CREW_Y, "x": CREW_X + crew_x, "r": crew_r, "z": crew_z},
+        "arm_r": {"r": pick(f, [110, 150, 170, 150, 160, 150, 150, 150])},
+        "arm_l": {"r": pick(f, [140, 170, 190, 170, 176, 170, 170, 170])},
+        "thigh_r": {"r": pick(f, [25, 40, 30, 10, 20, 12, 12, 12])},
+        "thigh_l": {"r": pick(f, [-10, 10, 20, 4, 12, 6, 6, 6])},
+        "shin_r": {"r": pick(f, [0, -30, -20, -4, -12, -6, -6, -6])},
+        "head": {"r": pick(f, [10, 14, 6, -6, 4, -4, -4, -4])},
         "bolt": {"hide": f >= 1},
+        "dust": {"show": f in (3, 4, 5), "s": pick(f, [1, 1, 1, 0.9, 1.2, 1.4, 1, 1]),
+                 "x": -58.0, "z": pick(f, [0, 0, 0, 0, 2, 3, 0, 0])},
     })
-    if f == 0:
+    if f in (0, 1):
         B.yell(pose)
     return pose
+
+
+def _die_extra():
+    total = sum(DIE_MS)
+    handoff = sum(DIE_MS[:len(DIE_MS) - 2])
+    h = HEIGHT_LU
+    return {"fx": [{"id": "fx.dust_poof", "atMs": handoff - 40, "offsetLu": [0, round(h * 0.36, 1)]},
+                   {"id": "fx.ko_stars", "atMs": handoff + 40, "offsetLu": [0, round(h * 0.55, 1)],
+                    "loops": 2, "scalePow": 0.5}],
+            "hideUnitAtMs": total}
 
 
 def clips():
@@ -261,5 +313,5 @@ def clips():
         Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
         Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
         Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+        Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
