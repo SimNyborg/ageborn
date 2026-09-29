@@ -111,12 +111,12 @@ describe('BattleSession loop (DESIGN B6)', () => {
     s.issue({ t: 'train', side: 0, slot: 0 }); // before start: ignored
     s.start();
     s.issue({ t: 'train', side: 0, slot: 0 });
-    s.issue({ t: 'treasury', side: 0 });
+    s.issue({ t: 'research', side: 0, track: 'economy', rank: 1, pick: 0 });
     s.issue({ t: 'train', side: 1, slot: 0 }); // not the player's side: ignored
     s.advance(50);
     expect(sim.received).toEqual([
       { t: 'train', side: 0, slot: 0, tick: 1, seq: 1 },
-      { t: 'treasury', side: 0, tick: 1, seq: 2 },
+      { t: 'research', side: 0, track: 'economy', rank: 1, pick: 0, tick: 1, seq: 2 },
     ]);
     s.issue({ t: 'evolve', side: 0 });
     s.advance(50);

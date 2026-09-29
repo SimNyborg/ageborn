@@ -96,7 +96,8 @@ describe('export codes (DESIGN B8 Export/import)', () => {
       ['hello there', 'notACode'],
       ['ageborn1.***', 'notACode'],
       [code.slice(0, 40), 'corrupt'],
-      [code.slice(0, -3), 'corrupt'],
+      // a whole base64 quantum short (-4 keeps the length valid base64 for any fixture)
+      [code.slice(0, -4), 'corrupt'],
       [flip(Math.floor(code.length / 2)), 'corrupt'],
       [flip(code.length - 2), 'corrupt'],
       ['{"v":1,', 'corrupt'],

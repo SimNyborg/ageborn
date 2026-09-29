@@ -18,7 +18,8 @@ describe('battle table (content.battle)', () => {
   }
 
   it('the fixture, WP1’s content and the fakes all give the DESIGN values', () => {
-    expect(battleOf(fixture)).toEqual(DEFAULT_BATTLE);
+    // The frozen fixture keeps the A17 final-age XP cap (1,200); A18.3.2 raised it to 1,650.
+    expect(battleOf(fixture)).toEqual({ ...DEFAULT_BATTLE, finalAgeXpCap: 1200 });
     expect(battleOf(realContent)).toEqual(DEFAULT_BATTLE);
     // the contract fakes carry no battle table
     expect(battleOf(fakeContent)).toEqual(DEFAULT_BATTLE);
@@ -79,7 +80,7 @@ describe('battle table (content.battle)', () => {
   it('malformed fields fall back to the DESIGN values', () => {
     const c = withBattle({ finalAgeXpCap: 'x', windupPct: { melee: null }, midLane: Number.NaN });
     const b = battleOf(c);
-    expect(b.finalAgeXpCap).toBe(1200);
+    expect(b.finalAgeXpCap).toBe(DEFAULT_BATTLE.finalAgeXpCap);
     expect(b.windupPct.melee).toBe(40);
     expect(b.midLane).toBe(1000);
   });

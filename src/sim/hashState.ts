@@ -13,7 +13,20 @@ export function hashState(s: SimStateRt): number {
   if (s.outcome) h.int(s.outcome.winner ?? -1).str(s.outcome.reason).int(s.outcome.tick);
   for (const side of s.sides) {
     h.int(side.gold).int(side.xp).int(side.ageIndex).int(side.ascendUntil).int(side.pop).int(side.treasury);
-    h.int(side.mountsOwned).int(side.powerPpm).str(side.stance).int(side.stanceReadyTick);
+    h.int(side.mountsOwned).int(side.powerPpm).str(side.stance).int(side.stanceReadyTick).int(side.holdP).int(side.flagReadyTick);
+    // A18.5.1: the owned picks (as a bitmask per 30 picks), the item in progress and its end tick.
+    const r = side.research;
+    let mask = 0;
+    let base = 0;
+    for (const i of [...r.owned].sort((a, b) => a - b)) {
+      while (i >= base + 30) {
+        h.int(mask);
+        mask = 0;
+        base += 30;
+      }
+      mask |= 1 << (i - base);
+    }
+    h.int(mask).int(r.cur).int(r.endTick).int(r.paid).int(side.markHp);
     h.int(side.baseHp).int(side.baseMaxHp).str(side.lastStand).bool(side.retreated).int(side.callStrikeReadyTick);
     h.int(side.emoteReadyTick).int(side.lastStandFireTick).int(side.played.length);
     h.int(side.queue.length);
@@ -31,6 +44,8 @@ export function hashState(s: SimStateRt): number {
   for (const u of s.units) {
     h.int(u.id).int(u.side).str(u.card).int(u.level).int(u.x).int(u.hp).int(u.maxHp);
     h.int(u.shield).int(u.innateShield).str(u.mode).bool(u.summoned).int(u.lastDamageTick).int(u.leapEnd);
+    h.int(u.lastEngagedTick).int(u.picks.length);
+    for (const i of u.picks) h.int(i);
     for (const a of u.attacks) {
       h.int(a.targetId).int(a.impactTick).int(a.nextAttackTick).int(a.lastAttackTick).int(a.retargetTick);
       h.bool(a.firstHit).bool(a.bite);

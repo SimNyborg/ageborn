@@ -20,6 +20,7 @@
 import type {
   AgeDef,
   AttackDef,
+  ResearchRules,
   CompiledContent,
   CompiledTicks,
   EconomyRules,
@@ -81,6 +82,7 @@ export function compileContent(input: CompileInput): Content {
   assertDistinctCardIds(allUnits, turretList, powerList);
 
   const formats = cloneData(raw.formats);
+  const research = cloneData(raw.research ?? EMPTY_RESEARCH);
   const ticks = compileTicks(economy, battle);
   const counters = countersFromFile(input.counters, collectable);
   const int = compileIntegers(allUnits, turretList, ages, economy, battle);
@@ -103,6 +105,7 @@ export function compileContent(input: CompileInput): Content {
     turrets,
     powers,
     skins,
+    research,
     ...metaCopy,
     counters,
     ticks,
@@ -126,6 +129,7 @@ export function hashedSlice(c: Omit<CompiledContent, 'hash'> & Pick<Content, 'ba
     units: c.units,
     turrets: c.turrets,
     powers: c.powers,
+    research: c.research,
     modifiers: c.dailyModifiers.list,
     ticks: c.ticks,
   });
@@ -135,6 +139,30 @@ export function hashedSlice(c: Omit<CompiledContent, 'hash'> & Pick<Content, 'ba
 export function contentHash(c: Omit<CompiledContent, 'hash'> & Pick<Content, 'battle' | 'dailyModifiers'>): string {
   return hashCanonical(hashedSlice(c));
 }
+
+/** The War Council of raw copies that predate it (the frozen fixture): no picks, so research is never valid. */
+export const EMPTY_RESEARCH: ResearchRules = {
+  picks: [],
+  cost: { troops: [], defences: [], economy: [], command: [] },
+  timeMs: [],
+  cancelRefundBp: 0,
+  underdog: { discountBp: 0, baseGapBp: 0 },
+  unlockAt: {},
+  classOfRole: {
+    infantry: 'infantry',
+    skirmisher: 'infantry',
+    ranged: 'ranged',
+    artillery: 'ranged',
+    airBomber: 'ranged',
+    airGunship: 'ranged',
+    heavy: 'heavy',
+    siege: 'heavy',
+    siegeHeavy: 'heavy',
+    antiArmor: 'antiArmor',
+    antiMech: 'antiArmor',
+    support: 'support',
+  },
+};
 
 /** Pop and train time follow the role group (A2.7); the raw values are checked against these by schema tests. */
 function deriveUnit(u: UnitDef, economy: EconomyRules, battle: RawBattleRules): UnitDef {

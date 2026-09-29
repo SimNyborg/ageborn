@@ -47,7 +47,10 @@ export interface CardBook {
   units: Readonly<Record<CardId, UnitCard>>;
   turrets: Readonly<Record<CardId, TurretCard>>;
   powers: Readonly<Record<CardId, PowerDef>>;
-  /** Age ids ordered by `AgeDef.index`. Every format runs a prefix of this order (A2.10). */
+  /**
+   * Age ids ordered by `AgeDef.index`. A format is a window of this order (A18.3.4); `View.ageIndex`
+   * converts the observation's window position into this order.
+   */
   ageOrder: readonly AgeId[];
   /** Non-hidden unit cards per age index (for predicting the next enemy age). */
   unitsByAge: readonly (readonly UnitCard[])[];
@@ -60,12 +63,9 @@ export interface CardBook {
     /** Milli-gold per mount purchase, index = mounts owned. */
     mountCosts: readonly number[];
     mountCount: number;
-    /** Milli-gold per Treasury level, index = current level. */
-    treasuryCosts: readonly number[];
     sellRefundBp: number;
     startGold: number;
     passiveGoldPerSec: number;
-    treasuryGoldPerSecMilli: number;
     overdriveGoldBp: number;
     bountyGoldBp: number;
     /** A2.3 underdog bounty bonus, bp. */
@@ -171,11 +171,9 @@ export function cardBook(content: CompiledContent): CardBook {
       legendaryLimit: e.legendaryLimit,
       mountCosts: e.mountCosts.map((c) => c * MILLI),
       mountCount: e.mountCosts.length,
-      treasuryCosts: e.treasuryCosts.map((c) => c * MILLI),
       sellRefundBp: e.sellRefundBp,
       startGold: e.startGold * MILLI,
       passiveGoldPerSec: e.passiveGoldPerSec * MILLI,
-      treasuryGoldPerSecMilli: e.treasuryMilliGoldPerSecPerLevel,
       overdriveGoldBp: e.overdrive.baseGoldBp,
       bountyGoldBp: e.bountyGoldBp,
       underdogBp: e.underdogBp,

@@ -4,9 +4,10 @@
  *
  * Invalid commands are ignored and emit `commandRejected` with a reason code:
  * `badCommand`, `emptySlot`, `lockedSlot`, `queueFull`, `legendaryLimit`, `noGold`, `nothingToCancel`,
- * `badMount`, `mountLocked`, `mountBusy`, `mountEmpty`, `notOutdated`, `maxMounts`, `maxTreasury`,
+ * `badMount`, `mountLocked`, `mountBusy`, `mountEmpty`, `notOutdated`, `maxMounts`,
  * `finalAge`, `ascending`, `notEnoughXp`, `powerNotReady`, `noPower`, `stanceLocked`, `sameStance`,
- * `stanceCooldown`, `lastStandAuto`, `lastStandNotArmed`, `emoteCooldown`, `retreatLocked`.
+ * `stanceCooldown`, `flagCooldown`, `lastStandAuto`, `lastStandNotArmed`, `emoteCooldown`, `retreatLocked`,
+ * and the War Council reasons in `research.ts` (A18.5.1).
  */
 import type { Command, Side, TimedCommand, TrainingEvent } from '@/contracts';
 import { BP, MILLI, PPM } from '@/core';
@@ -22,8 +23,10 @@ import {
   NEVER,
   NO_TARGET,
   type Ctx,
+  type SideRt,
   type TurretRt,
 } from './state';
+import { cancelResearch, startResearch } from './research';
 import { addPower } from './systems/economy';
 import { startLastStand } from './systems/laststand';
 import { castPower } from './systems/powers';
@@ -45,6 +48,24 @@ export function applyCommands(ctx: Ctx, cmds: readonly TimedCommand[]): void {
 
 const isSlot = (n: unknown, max: number): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < max;
 
+/** Tray slots per loadout (A18.9: six troops). */
+export const TRAY_SLOTS = 6;
+
+/** Clamps a Hold flag p (lu) to the flag range and snaps it to the flag step (A18.4.2), in mlu. */
+export function clampHoldP(ctx: Ctx, holdP: number): number {
+  const e = ctx.econ;
+  const want = Math.trunc(holdP * MILLI);
+  const c = want < e.holdMin ? e.holdMin : want > e.holdMax ? e.holdMax : want;
+  if (e.holdSnap <= 0) return c;
+  const snapped = e.holdMin + Math.trunc((c - e.holdMin + (e.holdSnap >> 1)) / e.holdSnap) * e.holdSnap;
+  return snapped > e.holdMax ? e.holdMax : snapped;
+}
+
+/** A command may not touch the marked turret of a `target` victory (A18.7.3). */
+function markedMount(s: SideRt, mount: number): boolean {
+  return s.markMount >= 0 && s.markMount === mount && s.markHp !== 0;
+}
+
 function freshAttack(): TurretRt['attack'] {
   return { targetId: NO_TARGET, impactTick: 0, nextAttackTick: 0, lastAttackTick: NEVER, retargetTick: 0, firstHit: false, bite: false };
 }
@@ -56,7 +77,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
   const e = ctx.econ;
   switch (c.t) {
     case 'train': {
-      if (!isSlot(c.slot, 5)) return 'badCommand';
+      if (!isSlot(c.slot, TRAY_SLOTS)) return 'badCommand';
       const card = loadoutOf(ctx, side)?.units[c.slot] ?? null;
       const r = card ? ctx.rules.units[card] : undefined;
       if (!card || !r) return 'emptySlot';
@@ -74,7 +95,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
     case 'cancelTrain': {
       let idx = s.queue.length - 1;
       if (c.slot !== undefined) {
-        if (!isSlot(c.slot, 5)) return 'badCommand';
+        if (!isSlot(c.slot, TRAY_SLOTS)) return 'badCommand';
         const card = loadoutOf(ctx, side)?.units[c.slot] ?? null;
         idx = -1;
         for (let i = s.queue.length - 1; i >= 0; i -= 1) {
@@ -117,15 +138,17 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       if (!isSlot(c.mount, e.mountCount) || !isSlot(c.slot, 2)) return 'badCommand';
       const t = s.turrets[c.mount];
       if (!t) return 'mountEmpty';
+      if (markedMount(s, c.mount)) return 'mountLocked';
       if (t.state !== 'active') return 'mountBusy';
       const old = ctx.rules.turrets[t.card];
       if (!old || old.ageIdx >= ctx.rules.ageIdx[ageOf(ctx, side)]) return 'notOutdated';
       const card = loadoutOf(ctx, side)?.turrets[c.slot] ?? null;
       const tr = card ? ctx.rules.turrets[card] : undefined;
       if (!card || !tr) return 'emptySlot';
-      // Modernise: the new price minus 50% of the old turret's price (A2.3, A2.8).
+      // Modernise: the new price minus 50% of the old turret's price (A2.3, A2.8); Engineers halve it
+      // and build in 0.5 s (A18.5.3).
       const credit = Math.trunc((old.cost * MILLI * e.moderniseCreditBp) / BP);
-      const price = Math.max(0, tr.cost * MILLI - credit);
+      const price = Math.trunc((Math.max(0, tr.cost * MILLI - credit) * s.fx.moderniseBp) / BP);
       if (s.gold < price) return 'noGold';
       s.gold -= price;
       s.turrets[c.mount] = {
@@ -133,7 +156,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
         age: tr.age,
         level: cardLevel(ctx, side, card),
         state: 'replacing',
-        readyTick: ctx.tick + e.turretBuildTicks,
+        readyTick: ctx.tick + (s.fx.moderniseTicks > 0 ? s.fx.moderniseTicks : e.turretBuildTicks),
         attack: freshAttack(),
       };
       markPlayed(s, card);
@@ -144,6 +167,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       if (!isSlot(c.mount, e.mountCount)) return 'badCommand';
       const t = s.turrets[c.mount];
       if (!t) return 'mountEmpty';
+      if (markedMount(s, c.mount)) return 'mountLocked';
       if (t.state !== 'active') return 'mountBusy';
       t.state = 'selling';
       t.readyTick = ctx.tick + e.turretSellTicks;
@@ -160,15 +184,10 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       emit(ctx, { e: 'mountBought', side, mount });
       return null;
     }
-    case 'treasury': {
-      if (s.treasury >= e.treasuryCosts.length) return 'maxTreasury';
-      const cost = e.treasuryCosts[s.treasury] ?? 0;
-      if (s.gold < cost) return 'noGold';
-      s.gold -= cost;
-      s.treasury += 1;
-      emit(ctx, { e: 'treasuryUp', side, level: s.treasury });
-      return null;
-    }
+    case 'research':
+      return startResearch(ctx, side, c);
+    case 'researchCancel':
+      return cancelResearch(ctx, side);
     case 'evolve': {
       if (isFinalAge(ctx, side)) return 'finalAge';
       if (isAscending(ctx, side)) return 'ascending';
@@ -180,13 +199,28 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
     case 'power':
       return castPower(ctx, side, c.p);
     case 'stance': {
+      // A18.4.2: three stances; a mode change at most once per 3 s, a flag move at most once per 1 s.
       if (!ctx.stanceEnabled[side]) return 'stanceLocked';
-      if (c.stance !== 'charge' && c.stance !== 'hold') return 'badCommand';
-      if (c.stance === s.stance) return 'sameStance';
+      if (c.mode !== 'charge' && c.mode !== 'hold' && c.mode !== 'fallback') return 'badCommand';
+      if (c.holdP !== undefined && (typeof c.holdP !== 'number' || !Number.isFinite(c.holdP))) return 'badCommand';
+      const flag = c.holdP === undefined ? s.holdP : clampHoldP(ctx, c.holdP);
+      if (c.mode === s.stance) {
+        // Same mode: a Hold flag move while holding, else nothing to do.
+        if (c.mode !== 'hold' || flag === s.holdP) return 'sameStance';
+        if (ctx.tick < s.flagReadyTick) return 'flagCooldown';
+        s.holdP = flag;
+        s.flagReadyTick = ctx.tick + e.flagMoveTicks;
+        emit(ctx, { e: 'stanceChanged', side, stance: s.stance, holdP: Math.trunc(s.holdP / MILLI) });
+        return null;
+      }
       if (ctx.tick < s.stanceReadyTick) return 'stanceCooldown';
-      s.stance = c.stance;
+      s.stance = c.mode;
       s.stanceReadyTick = ctx.tick + e.stanceCooldownTicks;
-      emit(ctx, { e: 'stanceChanged', side, stance: c.stance });
+      if (flag !== s.holdP) {
+        s.holdP = flag;
+        s.flagReadyTick = ctx.tick + e.flagMoveTicks;
+      }
+      emit(ctx, { e: 'stanceChanged', side, stance: s.stance, holdP: Math.trunc(s.holdP / MILLI) });
       return null;
     }
     case 'lastStand': {

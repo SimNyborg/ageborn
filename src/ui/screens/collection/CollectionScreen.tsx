@@ -20,6 +20,7 @@ import { Empty, ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { CompletionStrip } from '../customize/CollectionPanels';
 import { cardDef, cardGlyph, cardTile, collectionProgress } from '../model/cards';
 import {
   featViews,
@@ -270,11 +271,20 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
               )}
             </>
           ) : tab === 'skins' ? (
-            <div class="col-skins" data-testid="col-skins">
-              {skins.map((k) => (
-                <SkinTile key={k.id} skin={k} />
-              ))}
-            </div>
+            <>
+              {/* A18.9.4: completion of every cosmetic collection; Customize equips them */}
+              <div class="col-cosmetics">
+                <CompletionStrip />
+                <Button size="sm" variant="violet" testid="open-customize" onClick={() => router.go({ id: 'customize', tab: 'flags' })}>
+                  {t('ui.nav.customize')}
+                </Button>
+              </div>
+              <div class="col-skins" data-testid="col-skins">
+                {skins.map((k) => (
+                  <SkinTile key={k.id} skin={k} />
+                ))}
+              </div>
+            </>
           ) : (
             <FeatsPanel />
           )}

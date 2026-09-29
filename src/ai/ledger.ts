@@ -9,7 +9,7 @@
  * and an Evolve that never started means the bot is in the format's final age. This keeps every bot
  * command legal without seeing anything a player could not.
  */
-import type { CardId, Observation } from '@/contracts';
+import type { CardId, Observation, StanceMode } from '@/contracts';
 import { actionCost, type BotAction } from './actions';
 import type { CardBook } from './book';
 
@@ -41,7 +41,7 @@ export class Ledger {
   lastEmoteTick = -1000000;
   /** Ticks of every command issued, for the action cap. */
   private readonly issued: number[] = [];
-  private stanceCheck: { execTick: number; stance: 'charge' | 'hold' } | null = null;
+  private stanceCheck: { execTick: number; stance: StanceMode } | null = null;
   private lastStandCheck: number | null = null;
 
   constructor(private readonly book: CardBook) {

@@ -262,7 +262,6 @@ describe('Mode select', () => {
       'skirmish-note-industrial',
       'skirmish-note-modern',
       'skirmish-note-future',
-      'skirmish-note-cosmic',
     ]);
   });
 

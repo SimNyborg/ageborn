@@ -18,7 +18,10 @@ import type { ViewEvent } from '../types';
 import { WORLD_LEFT_LU, WORLD_RIGHT_LU } from '../layout';
 import { A13_SOUND_IDS, A14_EFFECT_IDS, A14_MUSIC_CUES, A14_PROJECTILE_IDS } from './designIds';
 
-const AGES: AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+/** Every age of the content: a Full War is a window of 7 of them (A18.3.4), so every age needs a loadout. */
+const AGES: AgeId[] = Object.values(content.ages)
+  .sort((a, b) => a.index - b.index)
+  .map((a) => a.id);
 
 function plan(age: AgeId): Loadout {
   const units = Object.values(content.units).filter((u) => u.age === age && !u.hidden);
@@ -59,6 +62,8 @@ function orders(sim: ReturnType<typeof createSim>, s: 0 | 1, turn: number): Comm
   const free = me.turrets.findIndex((t, i) => t === null && i < me.mountsOwned);
   const turret = lo?.turrets[0] ? cfg.content.turrets[lo.turrets[0]] : undefined;
   if (free >= 0 && turret && me.gold >= turret.cost * 1000 && turn % 3 === 0) return [...out, { t: 'buildTurret', side: s, mount: free as 0, slot: 0 }];
+  // Save for the first turret in the opening minute (a turret is part of every match this test maps).
+  if (free >= 0 && turret && me.turrets.every((t) => t === null) && st.tick < 1200) return out;
   if (me.queue.length < 3 && lo) {
     const slot = (turn + s) % 5;
     if (lo.units[slot]) out.push({ t: 'train', side: s, slot: slot as 0 | 1 | 2 | 3 | 4 });
@@ -116,9 +121,9 @@ const SIZED_EFFECTS: Record<string, string[]> = {
   'fx.dizzy': ['durationMs'],
 };
 
-describe('BattleView on the real sim (Full War, scripted players)', () => {
+describe('BattleView on the real sim (Short War, scripted players; A18 matches reach Overdrive there)', () => {
   it('maps a whole match: every event kind, finite poses, particle cap, freeze budget, DESIGN ids', () => {
-    const cfg: MatchConfig = { seed: 11, format: 'full', content, sides: [side('Player', false), side('AI Test', true)] };
+    const cfg: MatchConfig = { seed: 11, format: 'short', content, sides: [side('Player', false), side('AI Test', true)] };
     const sim = createSim(cfg);
     const art = new SpyArt();
     const audio = new FakeAudio();

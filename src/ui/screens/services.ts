@@ -6,7 +6,7 @@
  *
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
-import type { CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId } from '@/contracts';
+import type { AgeId, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId } from '@/contracts';
 import type { MatchRequest } from '../router';
 
 export type WarPlan = SaveDoc['warPlans'][number];
@@ -22,6 +22,16 @@ export interface ProfileLookPatch {
   /** null clears the unit portrait and shows the face again. */
   portraitCard?: CardId | null;
 }
+
+/**
+ * One change of the equipped cosmetic collection items (A18.9.4); a null key clears the slot. Only
+ * owned items equip; the national flag is only ever the player's own pick.
+ */
+export type CosmeticEquipPatch =
+  | { slot: 'baseFlag' | 'nationalFlag'; key: string | null }
+  | { slot: 'baseSkin'; age: AgeId; key: string | null }
+  | { slot: 'decoration'; anchor: number; key: string | null }
+  | { slot: 'emotes' | 'quotes'; keys: string[] };
 
 export interface UiServices {
   // ---- queries -------------------------------------------------------------------------------
@@ -81,6 +91,10 @@ export interface UiServices {
   setUiFlags(patch: Record<string, boolean>): void;
   /** Equips a skin on a card or base, or clears it with null. */
   equipSkin(target: string, skin: SkinId | null): void;
+  /** Equips cosmetic collection items (A18.9.4; `meta.equipCosmetic`). */
+  equipCosmetic(e: CosmeticEquipPatch): ActionResult;
+  /** Crafts a Time Capsule or Wardrobe Crate collection item with Dust (`meta.craftCosmetic`). */
+  craftCosmetic(key: string): ActionResult;
 
   // ---- progression ---------------------------------------------------------------------------
   /** Trophy Road (A6.3; `meta.claimRoadNode`). */

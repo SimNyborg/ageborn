@@ -272,10 +272,16 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     expect(pick(start, 'camera')[0]).toMatchObject({ holdMs: testContent().economy.ascendMs + 1400 });
   });
 
-  it('Treasury and new slot moments: base actions and your "+income" pop', () => {
-    const out = run([ev('treasuryUp', { side: 0, level: 1 }), ev('mountBought', { side: 0, mount: 1 }), ev('treasuryUp', { side: 1, level: 1 })]);
+  it('Economy research and new slot moments: base actions and your "+income" pop (A18.5.4)', () => {
+    const out = run([
+      ev('treasuryUp', { side: 0, level: 1 }),
+      ev('researchDone', { side: 0, pick: 'economy.granary' }),
+      ev('mountBought', { side: 0, mount: 1 }),
+      ev('treasuryUp', { side: 1, level: 1 }),
+      ev('researchDone', { side: 1, pick: 'economy.granary' }),
+    ]);
     expect(pick(out, 'baseMount')).toEqual([{ a: 'baseMount', side: 0, mount: 1 }]);
-    const perSec = testContent().economy.treasuryMilliGoldPerSecPerLevel / 1000;
+    const perSec = 1.5;
     expect(pick(out, 'number').filter((n) => n.kind === 'income')).toEqual([{ a: 'number', kind: 'income', value: perSec, at: { k: 'base', side: 0, part: 'center' }, important: true }]);
   });
 
@@ -333,7 +339,7 @@ describe('event mapper: coverage', () => {
     ev('powerReady', { side: 0 }),
     ev('powerTelegraph', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, zone: 450_000 }),
     ev('powerImpact', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, index: 0 }),
-    ev('stanceChanged', { side: 0, stance: 'hold' }),
+    ev('stanceChanged', { side: 0, stance: 'hold', holdP: 320 }),
     ev('lastStandArmed', { side: 0 }),
     ev('lastStandCharge', { side: 0 }),
     ev('lastStandFire', { side: 0 }),

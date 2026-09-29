@@ -400,7 +400,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
       ) : null}
       {dialog === 'odds' ? (
         <Modal title={t('ui.odds.title')} size="lg" onClose={() => setDialog(null)} testid="odds-modal" icon={<InfoIcon size={28} />}>
-          <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arenaOf(s, content).randomLegendaries)} />
+          <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arenaOf(s, content).randomLegendaries, content.cosmetics.collections)} />
         </Modal>
       ) : null}
       {dialog === 'parents' ? (

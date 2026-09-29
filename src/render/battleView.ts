@@ -21,6 +21,7 @@ import type {
   ArtProvider,
   AudioService,
   BackdropView,
+  BaseDressingView,
   BaseView,
   CardId,
   EffectView,
@@ -142,6 +143,8 @@ interface BaseEntry {
   glow: boolean;
   flashLeftMs: number;
   mountsLocal: Pt[];
+  /** Base flag, national flag, decorations and skin (A18.9.4), when the side has a look. */
+  dressing?: BaseDressingView;
 }
 
 interface ProjectileEntry {
@@ -218,6 +221,8 @@ export class BattleView {
   private readonly sim: BattleViewOptions['sim'];
   private readonly config: Readonly<MatchConfig>;
   private readonly art: ArtProvider;
+  /** The HUD's per-match opponent mute (A18.9.4). */
+  private matchMute = false;
   private readonly rng: CosmeticRng;
   private readonly mapper: EventMapper;
   private readonly units = new Map<number, UnitEntry>();
@@ -347,6 +352,16 @@ export class BattleView {
   setPaused(p: boolean): void {
     this.paused = p;
     if (!p) this.started = true;
+  }
+
+  /** Mutes the opponent's emotes and quotes for this match (HUD wheel, A18.9.4), on top of Settings. */
+  muteEmotes(on: boolean): void {
+    this.matchMute = on;
+  }
+
+  /** True while the opponent's emotes are muted: the Settings switch or the per-match mute. */
+  emotesMuted(): boolean {
+    return this.settings.mutedEmotes || this.matchMute;
   }
 
   setSettings(s: Partial<ViewSettings>): void {
@@ -647,7 +662,7 @@ export class BattleView {
   /** Call after every `sim.step` with that tick's events. */
   onEvents(events: readonly SimEvent[]): void {
     // Muted AI emotes (Settings) show no bubble and make no sound.
-    const evs = this.settings.mutedEmotes ? events.filter((e) => !(e.e === 'emote' && e.side !== this.mySide)) : events;
+    const evs = this.emotesMuted() ? events.filter((e) => !(e.e === 'emote' && e.side !== this.mySide)) : events;
     for (const ev of evs) this.watchEvent(ev);
     if (evs.length > 0) {
       const actions = this.mapper.map(evs, (id) => this.lookup(id));
@@ -980,7 +995,10 @@ export class BattleView {
     this.followers = [];
     this.particles.destroy();
     this.numbers.destroy();
-    for (const b of this.bases) b.view.destroy();
+    for (const b of this.bases) {
+      b.dressing?.destroy();
+      b.view.destroy();
+    }
     this.backdrop.destroy();
     this.director.destroy();
     this.listeners.clear();
@@ -1003,7 +1021,10 @@ export class BattleView {
       for (const e of this.units.values()) this.dropAura(e);
     }
     // base and turret upgrade moments follow Reduce motion and Lite (duck-typed `setMotion`)
-    for (const b of this.bases ?? []) withMotion(b.view, this.viewMotion());
+    for (const b of this.bases ?? []) {
+      withMotion(b.view, this.viewMotion());
+      if (b.dressing) withMotion(b.dressing, this.viewMotion());
+    }
     for (const e of this.turrets?.values() ?? []) withMotion(e.view, this.viewMotion());
   }
 
@@ -1230,8 +1251,13 @@ export class BattleView {
         return;
       case 'base': {
         const b = this.bases[a.side];
-        if (a.op === 'hit') b.view.hit();
-        else b.view.collapse();
+        if (a.op === 'hit') {
+          b.view.hit();
+          b.dressing?.hit();
+        } else {
+          b.view.collapse();
+          b.dressing?.collapse();
+        }
         return;
       }
       case 'baseTreasury': {
@@ -1250,6 +1276,7 @@ export class BattleView {
         const b = this.bases[a.side];
         b.age = a.age;
         b.view.morphTo(a.age, a.ms);
+        b.dressing?.setAge(a.age, a.ms);
         b.mountsLocal = b.view.mountPoints();
         return;
       }
@@ -1273,7 +1300,7 @@ export class BattleView {
         if (a.phase === 'siege') this.addScreenFx('fx.siege_vignette');
         return;
       case 'view':
-        if (a.ev.t === 'emote' && a.ev.side !== this.mySide && this.settings.mutedEmotes) return;
+        if (a.ev.t === 'emote' && a.ev.side !== this.mySide && this.emotesMuted()) return;
         if (a.ev.t === 'matchEnded') this.ended = true;
         this.emit(a.ev);
         return;
@@ -1653,7 +1680,11 @@ export class BattleView {
     if (s.treasury > 0) view.setTreasury(s.treasury);
     const glow = s.lastStand === 'armed' || s.lastStand === 'charging';
     if (glow) view.lastStandGlow(true);
-    return { side, view, age, crumble, treasury: s.treasury, glow, flashLeftMs: 0, mountsLocal: view.mountPoints() };
+    // A18.9.4: the side's flags, decorations and base skin, attached to the base (both sides see them)
+    const look = this.config.sides[side].look;
+    const dressing = look ? this.art.createBaseDressing?.({ age, side, look, teamPreset: this.settings.teamPreset, base: view }) : undefined;
+    if (dressing) withMotion(dressing, this.viewMotion());
+    return { side, view, age, crumble, treasury: s.treasury, glow, flashLeftMs: 0, mountsLocal: view.mountPoints(), ...(dressing ? { dressing } : {}) };
   }
 
   private syncBases(gameDt: number): void {
@@ -1679,6 +1710,7 @@ export class BattleView {
         if (f) b.view.root.filters = b.flashLeftMs > 0 ? [f] : [];
       }
       b.view.update(gameDt);
+      b.dressing?.update(gameDt);
     }
   }
 

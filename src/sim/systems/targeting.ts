@@ -11,12 +11,17 @@
  * within 30 lu (self-defence). Turrets measure from their own gate and pick afresh for every shot.
  */
 import type { Side, TargetPriority } from '@/contracts';
-import { isLeaping } from '../damage';
+import { isLeaping, rangeBonus } from '../damage';
 import { centreDist, distFromGate, distToEnemyGate, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import { DENSE_SCAN_STEP, TAG, type AttackRules, type UnitRules } from '../rules';
 import { MAX_HALF, unitsBetween } from '../spatial';
 import { BASE_TARGET, LANE, NO_TARGET, other, type Ctx, type UnitRt } from '../state';
 import { alive, findUnit, unitRules } from '../units';
+
+/** An attack's range for this unit: the card range plus research (Long Draw, ranged attacks only; A18.5.2). */
+export function rangeOf(ctx: Ctx, u: UnitRt, a: AttackRules): number {
+  return a.range + rangeBonus(ctx, u, a.melee);
+}
 
 /** Priority class of a base target: below every unit. */
 const BASE_CLASS = 2;
@@ -79,7 +84,7 @@ function bestUnitCandidate(
 export function baseInRange(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, extra: number): boolean {
   if (!a.hitsGround) return false;
   const d = distToEnemyGate(u.side, u.x, r.half);
-  return d <= a.range + extra && d >= a.minRange;
+  return d <= rangeOf(ctx, u, a) + extra && d >= a.minRange;
 }
 
 /** Distance and class of the current target, or null when it is no longer valid (range + leash). */
@@ -93,7 +98,7 @@ function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, target
   if (!e || !alive(e) || e.side === u.side || !canHit(a, e)) return null;
   const er = unitRules(ctx, e);
   const d = edgeDist(u.x, r.half, e.x, er.half);
-  if (d > a.range + leash || d < a.minRange) return null;
+  if (d > rangeOf(ctx, u, a) + leash || d < a.minRange) return null;
   return { id: e.id, cls: priorityClass(a.priority, er), dist: d };
 }
 
@@ -125,6 +130,7 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
   if (!st) return;
   const tick = ctx.tick;
   const retarget = ctx.econ.retargetTicks;
+  const range = rangeOf(ctx, u, a);
   if (r.bomber) {
     st.targetId = bomberTarget(ctx, u, r, a, r.bomber.window);
     return;
@@ -136,8 +142,8 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
       return;
     }
     const cur = currentTarget(ctx, u, r, a, st.targetId);
-    if (cur && cur.id !== BASE_TARGET && cur.dist <= a.range) return;
-    const blocker = bestUnitCandidate(ctx, u, r, a, a.range, true);
+    if (cur && cur.id !== BASE_TARGET && cur.dist <= range) return;
+    const blocker = bestUnitCandidate(ctx, u, r, a, range, true);
     st.targetId = blocker ? blocker.id : NO_TARGET;
     return;
   }
@@ -145,7 +151,7 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
   if (r.ranged) {
     const cur = st.targetId > 0 ? currentTarget(ctx, u, r, a, st.targetId) : null;
     if (!cur || cur.dist > ctx.econ.selfDefense) {
-      const near = bestUnitCandidate(ctx, u, r, a, Math.min(a.range, ctx.econ.selfDefense), false, 'front');
+      const near = bestUnitCandidate(ctx, u, r, a, Math.min(range, ctx.econ.selfDefense), false, 'front');
       if (near && near.id !== st.targetId) {
         st.targetId = near.id;
         st.retargetTick = tick + retarget;
@@ -157,7 +163,7 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
   if (cur && cur.id === BASE_TARGET) {
     // The base is a candidate only while no unit candidate exists (A2.7), so it is never sticky: a
     // unit hitting the base turns to an enemy unit as soon as one is in range.
-    const best = bestUnitCandidate(ctx, u, r, a, a.range, false);
+    const best = bestUnitCandidate(ctx, u, r, a, range, false);
     if (best) {
       st.targetId = best.id;
       st.retargetTick = tick + retarget;
@@ -165,7 +171,7 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
     return;
   }
   if (!cur) {
-    const best = bestUnitCandidate(ctx, u, r, a, a.range, false);
+    const best = bestUnitCandidate(ctx, u, r, a, range, false);
     if (best) st.targetId = best.id;
     else st.targetId = baseInRange(ctx, u, r, a, 0) ? BASE_TARGET : NO_TARGET;
     st.retargetTick = tick + retarget;
@@ -173,7 +179,7 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
   }
   if (tick >= st.retargetTick) {
     st.retargetTick = tick + retarget;
-    const best = bestUnitCandidate(ctx, u, r, a, a.range, false);
+    const best = bestUnitCandidate(ctx, u, r, a, range, false);
     if (best && best.id !== cur.id && (best.cls < cur.cls || best.dist + ctx.econ.retargetCloser <= cur.dist)) {
       st.targetId = best.id;
     }
@@ -190,7 +196,7 @@ export function targetInRange(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): bo
   if (!e || !alive(e) || !canHit(a, e)) return false;
   if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window;
   const d = edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half);
-  return d <= a.range && d >= a.minRange;
+  return d <= rangeOf(ctx, u, a) && d >= a.minRange;
 }
 
 /** Is the target still valid for a pending impact (alive, hittable, within range + leash)? */
@@ -202,7 +208,7 @@ export function targetValidForImpact(ctx: Ctx, u: UnitRt, r: UnitRules, ai: numb
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
   if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window + ctx.econ.leash;
-  return edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= a.range + ctx.econ.leash;
+  return edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= rangeOf(ctx, u, a) + ctx.econ.leash;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -214,11 +220,18 @@ export interface TurretPick {
   x: number;
 }
 
-function turretCandidate(a: AttackRules, side: Side, e: UnitRt, er: UnitRules): number {
+function turretCandidate(a: AttackRules, range: number, side: Side, e: UnitRt, er: UnitRules): number {
   if (e.side === side || !alive(e) || !canHit(a, e)) return -1;
   const d = distFromGate(side, e.x, er.half);
-  if (d > a.range || d < a.minRange) return -1;
+  if (d > range || d < a.minRange) return -1;
   return d;
+}
+
+/** A turret's range now: the card range plus research (Watchtowers), at most the 560 lu hard cap (A18.2). */
+export function turretRange(ctx: Ctx, side: Side, a: AttackRules): number {
+  const r = a.range + ctx.s.sides[side].fx.turretRange;
+  const cap = ctx.econ.turretRangeHardCap;
+  return r > cap ? (a.range > cap ? a.range : cap) : r;
 }
 
 /** Enemy units whose centre is within `range` + the largest half-width of `side`'s gate. */
@@ -231,12 +244,13 @@ function nearGate(ctx: Ctx, side: Side, range: number): UnitRt[] {
 
 /** Picks a turret target for a shot, or null. */
 export function pickTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick | null {
-  if (a.priority === 'densest') return densestTurretTarget(ctx, side, a);
-  if (a.drag > 0) return toadTarget(ctx, side, a);
+  const range = turretRange(ctx, side, a);
+  if (a.priority === 'densest') return densestTurretTarget(ctx, side, a, range);
+  if (a.drag > 0) return toadTarget(ctx, side, a, range);
   let best: (Pick & { x: number }) | null = null;
-  for (const e of nearGate(ctx, side, a.range)) {
+  for (const e of nearGate(ctx, side, range)) {
     const er = unitRules(ctx, e);
-    const d = turretCandidate(a, side, e, er);
+    const d = turretCandidate(a, range, side, e, er);
     if (d < 0) continue;
     const cls = priorityClass(a.priority, er);
     if (!best || cls < best.cls || (cls === best.cls && (d < best.dist || (d === best.dist && e.id < best.id)))) {
@@ -250,12 +264,12 @@ export function pickTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPi
  * Grumpy Toad (A5.2): the nearest enemy ranged or support ground unit in range, else the
  * second-frontmost small or medium ground enemy in range (the frontmost when it is the only one).
  */
-function toadTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick | null {
+function toadTarget(ctx: Ctx, side: Side, a: AttackRules, range: number): TurretPick | null {
   let back: Pick | null = null;
   const small: Pick[] = [];
-  for (const e of nearGate(ctx, side, a.range)) {
+  for (const e of nearGate(ctx, side, range)) {
     const er = unitRules(ctx, e);
-    const d = turretCandidate(a, side, e, er);
+    const d = turretCandidate(a, range, side, e, er);
     if (d < 0 || e.air) continue;
     if ((er.tags & (TAG.ranged | TAG.support)) !== 0) {
       if (!back || d < back.dist || (d === back.dist && e.id < back.id)) back = { id: e.id, cls: 0, dist: d };
@@ -304,12 +318,12 @@ export function densestP(
 }
 
 /** Gravity Well: aim at the densest point in range; the primary is the enemy nearest that point. */
-function densestTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick | null {
+function densestTurretTarget(ctx: Ctx, side: Side, a: AttackRules, range: number): TurretPick | null {
   let lo = -1;
   let hi = -1;
-  for (const e of nearGate(ctx, side, a.range)) {
+  for (const e of nearGate(ctx, side, range)) {
     const er = unitRules(ctx, e);
-    const d = turretCandidate(a, side, e, er);
+    const d = turretCandidate(a, range, side, e, er);
     if (d < 0) continue;
     const p = pOf(e.x, side);
     if (lo < 0 || p < lo) lo = p;
@@ -318,7 +332,7 @@ function densestTurretTarget(ctx: Ctx, side: Side, a: AttackRules): TurretPick |
   if (lo < 0) return null;
   // Scan the candidates' span on the 10 lu grid measured from the gate.
   const start = Math.max(0, Math.trunc((lo - a.radius) / DENSE_SCAN_STEP) * DENSE_SCAN_STEP);
-  const end = Math.min(a.range, hi + a.radius);
+  const end = Math.min(range, hi + a.radius);
   const p = densestP(ctx, side, start, end, a.radius, a.hitsGround, a.hitsAir);
   if (p === null) return null;
   const x = xOf(p, side);

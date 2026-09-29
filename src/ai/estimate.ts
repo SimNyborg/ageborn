@@ -1,24 +1,24 @@
 /**
  * The foe gold estimator (DESIGN A7.1): bots never see the opponent's gold, so they estimate it from
- * time, the visible Treasury level and kills, minus what they saw the opponent spend (units that
- * walked out, turrets, mounts implied by turrets, Treasury levels).
+ * time, the visible Economy research and kills, minus what they saw the opponent spend (units that
+ * walked out, turrets, mounts implied by turrets, research items, which are public: A18.5.1).
  *
  * Everything comes from the observation stream, so a human watching the same screen could keep the
  * same tally:
  *
- * - income: passive gold (×2 in Overdrive and Siege) plus Treasury (never doubled), A2.3;
+ * - income: passive gold (×2 in Overdrive and Siege) plus Economy research income (never doubled), A18.5.4;
  * - kills: 60% of the victim's cost, 30% while a foe power or Last Stand is hitting, +50% underdog
  *   when the victim's card age is above the foe's age and the foe's Evolve is not available;
  * - summons (Vanguard after an ageUp, Paratroopers after a paradrop telegraph, riders after their
  *   mount falls) cost nothing and pay no bounty, on either side (A2.3 "Summoned units");
- * - spending: Treasury levels, turrets (modernising gets 50% of the old price back), the mounts a
+ * - spending: research at list price, turrets (modernising gets 50% of the old price back), the mounts a
  *   turret implies, units that appear on the lane; a sold turret refunds 50%.
  *
  * The estimate over-counts gold sitting in the foe's (invisible) training queue; that is the honest
  * price of not seeing it. Daily modifiers are not observable and are not modelled.
  */
 import type { CardId, Observation, RoleGroup } from '@/contracts';
-import { BP, TICKS_PER_SECOND } from '@/core';
+import { BP, MILLI, TICKS_PER_SECOND, incomeMilliPerSec, researchCost, researchPick } from '@/core';
 import type { CardBook, UnitCard } from './book';
 
 /** Seconds after an ageUp during which new Infantry of that side is assumed to be the free Vanguard. */
@@ -71,7 +71,8 @@ export class FoeGoldEstimator {
   private alive = new Map<number, { card: CardId; mine: boolean }>();
   private readonly summons: [SummonWatch, SummonWatch] = [new SummonWatch(), new SummonWatch()];
   private readonly telegraphs = new Set<string>();
-  private foeTreasury = 0;
+  /** Foe research items seen starting (research is public, A18.5.1). */
+  private readonly foeResearch = new Set<string>();
   private foeTurrets: (CardId | null)[] = [];
   /** Mounts the foe must own, implied by the highest mount holding a turret (mount 0 is free). */
   private foeMounts = 1;
@@ -92,7 +93,8 @@ export class FoeGoldEstimator {
     if (dt > 0) {
       let perSec = b.econ.passiveGoldPerSec;
       if (obs.phase === 'overdrive' || obs.phase === 'siege') perSec = Math.trunc((perSec * b.econ.overdriveGoldBp) / BP);
-      perSec += obs.foe.treasury * b.econ.treasuryGoldPerSecMilli;
+      // Economy research income, never doubled (A18.5.4).
+      perSec += incomeMilliPerSec(b.content, obs.foe.research?.owned ?? []);
       this.earn(Math.trunc((perSec * dt) / TICKS_PER_SECOND));
       this.lastTick = obs.tick;
     }
@@ -120,10 +122,13 @@ export class FoeGoldEstimator {
     }
     this.ages = ages;
 
-    // Treasury levels bought.
-    while (this.foeTreasury < obs.foe.treasury) {
-      this.spend(b.econ.treasuryCosts[this.foeTreasury] ?? 0);
-      this.foeTreasury += 1;
+    // Research started (public, A18.5.1), at list price; the −20% underdog discount is ignored.
+    const cur = obs.foe.research?.current ?? null;
+    for (const id of [...(obs.foe.research?.owned ?? []), ...(cur ? [cur] : [])]) {
+      if (this.foeResearch.has(id)) continue;
+      this.foeResearch.add(id);
+      const p = researchPick(b.content, id);
+      if (p) this.spend(researchCost(b.content, p) * MILLI);
     }
 
     // Turrets built, modernised or sold, and the mounts they imply.
@@ -178,9 +183,16 @@ export class FoeGoldEstimator {
   /** The foe's bounty for one of the bot's units (A2.3): 60%, 30% for power kills, +50% underdog. */
   private bounty(card: UnitCard, obs: Observation): number {
     const e = this.book.econ;
-    let gold = Math.trunc((card.cost * (obs.tick <= this.powerKillUntil ? e.powerKillGoldBp : e.bountyGoldBp)) / BP);
+    // Bounty Hunters raise the foe's bounty rate (A18.5.4).
+    let rate = e.bountyGoldBp;
+    for (const id of obs.foe.research?.owned ?? []) {
+      for (const fx of researchPick(this.book.content, id)?.effects ?? []) if (fx.kind === 'bounty') rate += fx.addBp;
+    }
+    let gold = Math.trunc((card.cost * (obs.tick <= this.powerKillUntil ? e.powerKillGoldBp : rate)) / BP);
     // The foe's Evolve is available from a full XP bar (in its final age no card can out-age it).
-    if (card.ageIndex > obs.foe.ageIndex && obs.foe.xpBp < BP) gold = Math.trunc((gold * (BP + e.underdogBp)) / BP);
+    const foeAge = obs.ages?.[obs.foe.ageIndex];
+    const foeAgeIndex = foeAge ? this.book.ageOrder.indexOf(foeAge) : obs.foe.ageIndex;
+    if (card.ageIndex > foeAgeIndex && obs.foe.xpBp < BP) gold = Math.trunc((gold * (BP + e.underdogBp)) / BP);
     return gold;
   }
 

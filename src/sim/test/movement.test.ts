@@ -140,7 +140,7 @@ describe('movement (A2.7)', () => {
     const st = new Stamper(sim);
     const far = devSpawn(sim, 0, 'bonker', { p: 400 });
     const near = devSpawn(sim, 0, 'bonker', { p: 300 });
-    st.step({ t: 'stance', side: 0, stance: 'hold' });
+    st.step({ t: 'stance', side: 0, mode: 'hold' });
     // tick 1: stance applies at step 1, then movement: far walks back 4.375 × 0.7 = 3.062 lu (truncated in milli-lu)
     expect(pLu(sim, far.id)).toBeCloseTo(396.938, 5);
     stepN(sim, 60);
@@ -154,7 +154,7 @@ describe('movement (A2.7)', () => {
     const st = new Stamper(sim);
     const gyro = devSpawn(sim, 0, 'gyrocopter', { p: 600 });
     const bomber = devSpawn(sim, 0, 'balloon_admiral', { p: 600 });
-    st.step({ t: 'stance', side: 0, stance: 'hold' });
+    st.step({ t: 'stance', side: 0, mode: 'hold' });
     // Gyrocopter 80 × 1.25 = 100 lu/s = 5 lu per tick, back at 70%: 3.5 lu; the Admiral advances 45 × 1.25 lu/s = 2.812 lu
     expect(pLu(sim, gyro.id)).toBeCloseTo(596.5, 5);
     expect(pLu(sim, bomber.id)).toBeCloseTo(602.812, 5);

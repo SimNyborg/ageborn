@@ -59,8 +59,21 @@ export interface SideLook {
   decorations?: (CosmeticKey | null)[];
 }
 
-/** Match formats (DESIGN A2.10). */
-export type FormatId = 'tutorial' | 'short' | 'standard' | 'full';
+/**
+ * A match format: an open string key into `content.formats` (DESIGN A18.3.4, A18.11). A format is a
+ * window of consecutive ages with its clocks; the named ones are {@link FormatKind}s, and a window that
+ * starts in a later age is one more `FormatDef` (e.g. `short.bronze`, `w2.medieval`).
+ */
+export type FormatId = string;
+
+/**
+ * The family of a format, for rewards, labels and ladder tables (A18.3.4): the tutorial, the three
+ * named lengths (3, 5 and 7 ages) and `window` for the shorter War Path and custom windows (1, 2 and 4).
+ */
+export type FormatKind = 'tutorial' | 'short' | 'standard' | 'full' | 'window';
+
+/** The named formats the ladder, Skirmish and Quick Battle offer (A2.10, A18.3.4). */
+export type NamedFormatId = 'tutorial' | 'short' | 'standard' | 'full';
 
 /** Time Capsule tiers, lowest to highest (DESIGN A6.4). */
 export type CapsuleTier = 'clay' | 'bronze' | 'silver' | 'jade' | 'aeon';

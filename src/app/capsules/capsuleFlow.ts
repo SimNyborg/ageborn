@@ -53,6 +53,12 @@ export type ShowRecord =
       content?: string;
     };
 
+/** The cosmetic collection items a finished show's capsules or crate held (A18.9.4). */
+export function foundCosmetics(rec: ShowRecord): string[] {
+  const keys = rec.kind === 'capsules' ? rec.reveals.map((r) => r.capsule.contents.cosmetic) : [rec.reveal.crate.cosmetic];
+  return keys.filter((k): k is string => typeof k === 'string' && k.length > 0);
+}
+
 /** The meta calls the flow needs (the `Meta` contract). */
 export interface ShowMeta {
   openCapsule(s: SaveDoc, id: string): { save: SaveDoc; reveal: CapsuleReveal };

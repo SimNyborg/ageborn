@@ -60,17 +60,17 @@ def build():
     rig.rigid(ant, "head")
 
     # --- chest and back armour
-    cuir = C.box("cuirass", 10.2 * k, 14.6 * k, 11.4 * k, plate, bevel=1.7 * k, loc=S(0.2, 0, 49.4), segs=2)
+    cuir = C.box("cuirass", 12.8 * k, 17.0 * k, 12.4 * k, plate, bevel=2.2 * k, loc=S(0.4, 0, 49.2), segs=2)
     C.team(cuir)
     rig.rigid(cuir, "chest")
     collar = C.lathe("collar", [(3.4 * k, 54.2 * k), (4.2 * k, 55.2 * k), (3.6 * k, 56.4 * k)], gun, seg=20,
                      loc=(0.5 * k, 0, 0))
     rig.rigid(collar, "chest")
-    ab = C.box("abplate", 8.6 * k, 12.0 * k, 5.4 * k, gun, bevel=1.6 * k, loc=S(0.6, 0, 42.4), segs=2)
+    ab = C.box("abplate", 10.8 * k, 14.4 * k, 5.6 * k, gun, bevel=1.6 * k, loc=S(0.6, 0, 42.4), segs=2)
     rig.rigid(ab, "spine")
     for y in (-3.6, 0.0, 3.6):
-        rig.rigid(C.box("mag_pouch", 2.6 * k, 3.0 * k, 4.2 * k, dark, bevel=0.5 * k, loc=S(5.6, y, 46.6)), "chest")
-    rig.rigid(C.box("chest_strap", 1.0 * k, 15.0 * k, 1.4 * k, dark, bevel=0.3 * k, loc=S(5.3, 0, 49.4)), "chest")
+        rig.rigid(C.box("mag_pouch", 2.6 * k, 3.0 * k, 4.2 * k, dark, bevel=0.5 * k, loc=S(7.2, y, 46.4)), "chest")
+    rig.rigid(C.box("chest_strap", 1.0 * k, 15.0 * k, 1.4 * k, dark, bevel=0.3 * k, loc=S(6.9, 0, 49.6)), "chest")
     pack = C.box("backpack", 6.0 * k, 10.0 * k, 12.5 * k, dark, bevel=1.0 * k, loc=S(-7.4, 0, 48.6))
     rig.rigid(pack, "chest")
     cell = C.cyl("cell", 1.5 * k, 1.5 * k, 8.0 * k, mint, loc=S(-10.8, -2.4, 44.6))

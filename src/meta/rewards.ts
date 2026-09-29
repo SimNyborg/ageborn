@@ -30,6 +30,7 @@ import { addQuestProgress, matchProgress } from './quests';
 import { META_FLAGS } from './rules';
 import { tickTimersAt } from './timers';
 import { unlockTitles } from './titles';
+import { rewardFormat } from './formats';
 import { applyTrophies, ladderWinFor, trophyDelta, type LadderResult } from './trophies';
 import { planAverageLevelCenti, planHasLegendary } from './warplan';
 import { grantFeats } from './feats';
@@ -209,7 +210,8 @@ export function applyMatchResultAt(
   const supply = supplyAfterMatch(save, t, r.mode, now);
   save = supply.save;
   if (supply.capsule) steps.push({ kind: 'capsule', capsuleId: supply.capsule.id });
-  const facts = { mode: r.mode, win, format: r.opponent.format, outcome: r.outcome, stats: r.stats, legendaryInPlan: planHasLegendary(save, t, r.opponent.format) };
+  // Quest thresholds are per named format; a window counts as its family (A18.3.4).
+  const facts = { mode: r.mode, win, format: rewardFormat(t, r.opponent.format), outcome: r.outcome, stats: r.stats, legendaryInPlan: planHasLegendary(save, t, r.opponent.format) };
   const q = addQuestProgress(save, t, (def) => matchProgress(def, facts));
   save = q.save;
   steps.push(...q.steps);

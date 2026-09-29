@@ -28,7 +28,8 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
     me: {
       gold: 245,
       goldPerSec: 6,
-      nextTreasuryCost: eco.treasuryCosts[0] ?? null,
+      nextTreasuryCost: config.content.research.cost.economy[0] ?? null,
+      nextIncome: { track: 'economy', rank: 1, pick: 0 },
       baseHpBp: 8600,
       ageIndex,
       xpBp: 5200,

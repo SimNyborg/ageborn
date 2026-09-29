@@ -12,7 +12,9 @@
  * - Symmetric resolution: both sides' moves come from pre-move positions; when two facing units both
  *   advance, each gets at most floor(gap / 2) of the gap.
  * - followSupport units stay 60 lu behind the frontmost friendly non-follower ground unit (p ≤ 200 alone).
- * - Hold: units beyond 320 without a target walk back at 70% speed; at or below 320 they do not pass it.
+ * - Stance (A18.4.2): Hold keeps units at the side's Hold flag (default 320, [320, 800]): units beyond it
+ *   without a target walk back at 70% speed; units behind it do not pass it. Fall back walks units with
+ *   no target back to p = 200 at full speed and holds them there. Engaged units keep fighting.
  * - Open gate (A16.4 stall fix, `economy.openGateLu`): while the defender has no ground unit within that
  *   distance of its own gate, the attackers close up at the gate as in the siege crowd, in every phase.
  * - Siege forced march (A17.3): unit movement ×`siege.moveSpeedBp` (×1.2) while the phase is Siege; it applies
@@ -21,7 +23,7 @@
  * and stops only at the enemy gate.
  */
 import { BP } from '@/core';
-import { isLeaping, isStunned, statusBp } from '../damage';
+import { capSum, isLeaping, isStunned, statusBp } from '../damage';
 import { clampToLane, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import type { UnitRules } from '../rules';
 import { LANE, type Ctx, type UnitRt } from '../state';
@@ -93,13 +95,20 @@ function stepLeap(ctx: Ctx, u: UnitRt, r: UnitRules): void {
   u.mode = 'leap';
 }
 
-/** Effective speed (mlu/tick): slow, speed buff (A2.7 statuses), then the Siege forced march (A17.3). */
+/**
+ * Effective speed (mlu/tick): research, side modifiers and War Horns with the speed buff (A2.7 statuses)
+ * summed and capped (A18.2: +20%, a stronger timed buff keeps its own value), then slows, then the
+ * Siege forced march (A17.3).
+ */
 function speedOf(ctx: Ctx, m: Mover): number {
   let v = m.r.speed;
+  const fx = m.u.fx;
+  let fixed = fx ? fx.speedBp : 0;
+  if (fx?.horns && !m.u.air && ctx.s.sides[m.u.side].stance === 'charge') fixed += fx.horns.chargeSpeedBp;
+  const bonus = capSum(fixed, statusBp(m.u, 'speedBuff'), ctx.econ.caps.speedBp);
+  if (bonus !== 0) v = Math.trunc((v * (BP + bonus)) / BP);
   const slow = statusBp(m.u, 'slow');
   if (slow > 0) v = Math.trunc((v * (BP - (slow > BP ? BP : slow))) / BP);
-  const buff = statusBp(m.u, 'speedBuff');
-  if (buff > 0) v = Math.trunc((v * (BP + buff)) / BP);
   if (ctx.s.phase === 'siege') {
     const march = ctx.econ.siege.moveSpeedBp;
     if (march !== BP) v = Math.trunc((v * march) / BP);
@@ -125,12 +134,15 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
   }
   let want = speed;
   const side = ctx.s.sides[u.side];
-  if (side.stance === 'hold') {
-    if (m.p > e.holdLine) {
-      const back = Math.trunc((speed * e.holdRetreatSpeedBp) / BP);
-      want = -(back < m.p - e.holdLine ? back : m.p - e.holdLine);
+  if (side.stance !== 'charge') {
+    // A18.4.2: Hold at the side's flag (walk back at 70% speed); Fall back to p = 200 at full speed.
+    const hold = side.stance === 'hold';
+    const line = hold ? side.holdP : e.fallbackP;
+    if (m.p > line) {
+      const back = hold ? Math.trunc((speed * e.holdRetreatSpeedBp) / BP) : speed;
+      want = -(back < m.p - line ? back : m.p - line);
     } else {
-      want = Math.min(want, e.holdLine - m.p);
+      want = Math.min(want, line - m.p);
     }
   }
   if (r.follow && want > 0) {

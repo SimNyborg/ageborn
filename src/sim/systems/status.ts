@@ -5,10 +5,11 @@
  * - Timed statuses keep one entry per kind (reapplying takes the max magnitude and expiry).
  * - Regen heals its total evenly over its duration, pulsing on the shared heal grid.
  * - Innate shields (Photon Knight) regenerate after the delay without damage.
- * - Auras (Drum Shaman attack speed, Smoke Screen ally damage) are recomputed every tick and never
- *   stack: the strongest applies. Auras affect allies, not the source itself.
+ * - Auras (Drum Shaman attack speed, Smoke Screen ally damage, the War Council's War Drums, Rally and
+ *   Bulwark) are recomputed every tick and never stack: the strongest applies. Auras affect allies,
+ *   not the source itself.
  */
-import { edgeDist, centreDist } from '../geometry';
+import { edgeDist, centreDist, pOf } from '../geometry';
 import { healUnit } from '../damage';
 import type { UnitRules } from '../rules';
 import type { Ctx, UnitRt } from '../state';
@@ -53,6 +54,7 @@ export function statusSystem(ctx: Ctx): void {
     }
     u.auraAttackSpeedBp = 0;
     u.auraDamageBp = 0;
+    u.auraGuardBp = 0;
   }
   // Unit auras.
   for (let i = 0; i < units.length; i += 1) {
@@ -71,6 +73,25 @@ export function statusSystem(ctx: Ctx): void {
       } else if (aura.status.kind === 'damageBuff' && aura.status.magnitudeBp > u.auraDamageBp) {
         u.auraDamageBp = aura.status.magnitudeBp;
       }
+    }
+  }
+  // Research auras (A18.5.2): War Drums (attack speed), Rally and Bulwark (less damage taken; Bulwark
+  // only for allies behind the source). They never stack: the strongest applies.
+  for (let i = 0; i < units.length; i += 1) {
+    const src = units[i] as UnitRt;
+    const aura = src.fx?.aura;
+    if (!aura || !alive(src)) continue;
+    const r = unitRules(ctx, src);
+    const srcP = pOf(src.x, src.side);
+    for (let j = 0; j < units.length; j += 1) {
+      const u = units[j] as UnitRt;
+      if (u === src || u.side !== src.side || !alive(u)) continue;
+      if (aura.behindOnly && pOf(u.x, u.side) > srcP) continue;
+      const ur = ctx.rules.unitList[u.ci] as UnitRules;
+      if (edgeDist(src.x, r.half, u.x, ur.half) > aura.radius) continue;
+      if (aura.stat === 'attackSpeed') {
+        if (aura.bp > u.auraAttackSpeedBp) u.auraAttackSpeedBp = aura.bp;
+      } else if (aura.bp > u.auraGuardBp) u.auraGuardBp = aura.bp;
     }
   }
   // Smoke Screen: the caster's units inside the cloud deal +20% damage (A5.7).

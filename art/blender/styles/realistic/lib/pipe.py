@@ -130,10 +130,11 @@ def build_layers(L, lref, dust=None, feet_px=None):
     g = np.clip(L["lum"] / lref, 0, 1.0)
     team = np.dstack([g * L["t"]] * 3 + [L["t"]])
     base = np.dstack([L["rgb"] * L["ab"][..., None], L["ab"]])
+    d = None
     if dust:
         h, w = base.shape[:2]
-        base = over(dust2d(h, w, feet_px, C.PX_PER_LU_1X * C.RENDER_MULT, **dust), base)
-    return team, base, L["obj"]
+        d = dust2d(h, w, feet_px, C.PX_PER_LU_1X * C.RENDER_MULT, **dust)
+    return team, base, L["obj"], d
 
 
 def _down(img, s, full):
@@ -178,7 +179,7 @@ def _sharpen(base, amt):
     return np.dstack([out, base[..., 3]])
 
 
-def finish(team, base, obj, s, full=3, sharpen=0.0):
+def finish(team, base, obj, s, full=3, sharpen=0.0, dust=None):
     """Downsample to scale s and add the thin dark outline (in the base layer)."""
     team = _down(team, s, full)
     base = _down(base, s, full)
@@ -190,7 +191,10 @@ def finish(team, base, obj, s, full=3, sharpen=0.0):
     ol = np.clip(_dilate(obj, OUTLINE_PX[s]) - obj, 0, 1) * OUTLINE_A
     a = ol + base[..., 3] * (1 - ol)
     rgb = OUTLINE_RGB[None, None, :] * ol[..., None] + base[..., :3] * (1 - ol[..., None])
-    return team, np.dstack([rgb, a]), obj
+    base = np.dstack([rgb, a])
+    if dust is not None:
+        base = over(_down(dust, s, full), base)     # dust in front, after the outline
+    return team, base, obj
 
 
 def composite(team, base, tint_hex, bg=None):
@@ -307,14 +311,14 @@ def strip(tmp, jobs, feet_px, out_png, lref=None, teams=("#2F7DF6", "#F28A1E"), 
     big, small = [], []
     for c, i in jobs:
         L = load_layers(tmp, c, i)
-        tm, bs, ob = build_layers(L, lref, (fx or {}).get((c, i)), feet_px)
-        t3, b3, _ = finish(tm, bs, ob, 3)
+        tm, bs, ob, du = build_layers(L, lref, (fx or {}).get((c, i)), feet_px)
+        t3, b3, _ = finish(tm, bs, ob, 3, dust=du)
         h, w = b3.shape[:2]
         bg = preview_bg(w, h, feet_px[1])
         big.append(composite(t3, b3, teams[0], bg))
         row = []
         for tc in teams:
-            t1, b1, _ = finish(tm, bs, ob, 1)
+            t1, b1, _ = finish(tm, bs, ob, 1, dust=du)
             bg1 = preview_bg(t1.shape[1], t1.shape[0], feet_px[1] / 3)
             row.append(composite(t1, b1, tc, bg1))
         small.append(np.hstack(row))

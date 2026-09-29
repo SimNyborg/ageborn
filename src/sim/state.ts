@@ -29,6 +29,7 @@ import type {
 } from '@/contracts';
 import { BP, LANE_MLU, MILLI, TICK_MS, assert, seedSfc32 } from '@/core';
 import { matchMods, type MatchMods } from './modifiers';
+import { emptySideFx, unlockPositions, type SideFx, type UnitFx } from './researchRules';
 import { rulesFor, type AreaKind, type AttackRules, type EconRules, type FormatRules, type SimRules } from './rules';
 import { createSpatial, type SpatialIndex } from './spatial';
 
@@ -82,6 +83,18 @@ export interface UnitRt extends UnitState {
   leapEnd: number;
   /** Signed displacement of the last movement step (overtaking uses "is moving"). */
   moved: number;
+  /** Troops class index (`researchRules.CLASSES`) of the card. */
+  cls: number;
+  /** Research picks that applied at spawn (A18.2 rule 2: never retroactive), for the hash. */
+  picks: number[];
+  /** Summed research and side-modifier effects fixed at spawn (A18.5), or null for none. */
+  fx: UnitFx | null;
+  /** Mail: flat reduction per hit taken, centi (A18.5.2). */
+  mail: number;
+  /** Last tick attack 0 had a target in range or a pending windup (A18.4.2 engagement freshness). */
+  lastEngagedTick: number;
+  /** Research aura (Bulwark, Rally) recomputed every tick: less damage taken, bp. */
+  auraGuardBp: number;
 }
 
 export interface QueueItemRt extends QueueItem {
@@ -114,6 +127,11 @@ export interface ProjectileRt extends ProjectileState {
   /** First-hit bonus of a ranged unit attack, applied to the homing primary (A17.15; BP and 0 otherwise). */
   bonusBp: number;
   bonusKb: number;
+  /** Research: extra damage against targets with these tag bits (Hunters). */
+  vsTags: number;
+  vsBp: number;
+  /** Troops class index of the source unit (−1 for turrets and powers): Plating, Skirmish (A18.5.2). */
+  srcCls: number;
 }
 
 export interface CastRt extends PowerCastState {
@@ -142,6 +160,12 @@ export interface SideRt extends SideState {
   passiveXpAcc: number;
   /** Unlocked tray slots per age (tutorial trays, A8); null = every slot. */
   trays: Partial<Record<AgeId, number[]>> | null;
+  /** Summed side effects of the owned research picks (A18.5.3-A18.5.5), recomputed when a pick completes. */
+  fx: SideFx;
+  /** A18.7.3 `target` victory: HP of this side's marked turret (centi), −1 when none. */
+  markHp: number;
+  /** Mount of the marked turret (−1 when none): it cannot be sold or modernised. */
+  markMount: number;
 }
 
 export interface SimStateRt extends SimState {
@@ -185,6 +209,11 @@ export interface Impact {
   srcX: number;
   /** Range of the source attack or ability (mlu); Shield Wall resists sources with range ≥ 100 lu (A5.3). */
   srcRange: number;
+  /** Research: extra damage against targets with these tag bits (Hunters, A18.5.2). */
+  vsTags: number;
+  vsBp: number;
+  /** Troops class index of the source unit (−1 for turrets, powers and Last Stand). */
+  srcCls: number;
 }
 
 /** A queued displacement, applied after all damage in step 13 (A2.7 Knockback and pulls). */
@@ -215,6 +244,13 @@ export interface Ctx {
   siegeTick: number | null;
   finalBellTick: number | null;
   retreatTick: number | null;
+  /** A18.7.3 `survive` victory: the tick and the side that wins by holding out (null = none). */
+  surviveTick: number | null;
+  surviveSide: Side;
+  /** A18.7.3 `target` victory: the side that wins by destroying the marked turret. */
+  targetSide: Side | null;
+  /** Rank unlock positions for this window (A18.5.1), see `researchRules.unlockPositions`. */
+  rankUnlock: readonly number[];
   /** Training script sorted by tick; `scriptCursor` is the next event. */
   script: readonly TrainingEvent[];
   scriptCursor: number;
@@ -238,8 +274,9 @@ export function createCtx(cfg: MatchConfig): Ctx {
   const script = [...(t?.script ?? [])].sort((a, b) => a.tick - b.tick || a.side - b.side);
 
   const firstAge = fmt.ages[0] as AgeId;
-  const baseMax = rules.baseHp[firstAge] * 100;
+  const victory = cfg.victory;
   const sides = [0, 1].map((side) => {
+    const baseMax = baseMaxHpFor(rules, cfg, side as Side, firstAge);
     const hp = side === 1 && t?.enemyBaseStartBp !== undefined ? Math.trunc((baseMax * t.enemyBaseStartBp) / BP) : baseMax;
     const s: SideRt = {
       gold: econ.startGold,
@@ -254,6 +291,9 @@ export function createCtx(cfg: MatchConfig): Ctx {
       powerPpm: 0,
       stance: 'charge',
       stanceReadyTick: 0,
+      holdP: econ.holdMin,
+      flagReadyTick: 0,
+      research: { owned: [], cur: -1, startTick: 0, endTick: 0, paid: 0 },
       baseHp: hp,
       baseMaxHp: baseMax,
       lastStand: 'locked',
@@ -266,9 +306,37 @@ export function createCtx(cfg: MatchConfig): Ctx {
       passiveXpAcc: 0,
       // Tutorial trays restrict the learner (side 0) only; bots train from their full loadout (A8).
       trays: side === 0 && t?.trays ? cloneTrays(t.trays) : null,
+      fx: emptySideFx(),
+      markHp: -1,
+      markMount: -1,
     };
     return s;
   }) as [SideRt, SideRt];
+  // A18.11 side modifiers: one extra fixed turret on a fifth mount (a boss base), active from the start.
+  for (const side of [0, 1] as const) {
+    const extra = cfg.sides[side].sideMods?.extraTurret;
+    const tr = extra ? rules.turrets[extra] : undefined;
+    if (!extra || !tr) continue;
+    const sd = sides[side];
+    sd.turrets.length = econ.mountCount;
+    sd.turrets.push({
+      card: extra,
+      age: tr.age,
+      level: cfg.sides[side].levels[extra] ?? 1,
+      state: 'active',
+      readyTick: 0,
+      attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: NEVER, retargetTick: 0, firstHit: false, bite: false },
+    });
+  }
+  // A18.7.3 target victory: the enemy's marked turret gets its own HP.
+  if (victory?.kind === 'target') {
+    const winner = victory.side === 1 ? 1 : 0;
+    const d = sides[winner === 0 ? 1 : 0];
+    if (Number.isInteger(victory.mount) && victory.mount >= 0 && victory.mount < d.turrets.length && victory.hp > 0) {
+      d.markMount = victory.mount;
+      d.markHp = Math.trunc(victory.hp) * 100;
+    }
+  }
 
   const s: SimStateRt = {
     tick: 0,
@@ -299,11 +367,22 @@ export function createCtx(cfg: MatchConfig): Ctx {
     siegeTick,
     finalBellTick: noClock ? null : fmt.finalBellTick,
     retreatTick: noClock ? null : fmt.retreatTick,
+    surviveTick: victory?.kind === 'survive' && victory.atMs > 0 ? Math.max(1, Math.trunc(victory.atMs / TICK_MS)) : null,
+    surviveSide: victory?.kind === 'survive' && victory.side === 1 ? 1 : 0,
+    targetSide: victory?.kind === 'target' ? (victory.side === 1 ? 1 : 0) : null,
+    rankUnlock: unlockPositions(rules.research, fmt.ages.length),
     script,
     scriptCursor: 0,
     spatial: createSpatial(),
     scratch: [],
   };
+}
+
+/** Base max HP (centi) of a side in an age: 10,000 × P, plus its `sideMods.baseHpBp` (A2.2, A18.11). */
+export function baseMaxHpFor(rules: SimRules, cfg: MatchConfig, side: Side, age: AgeId): number {
+  const base = rules.baseHp[age] * 100;
+  const bp = cfg.sides[side].sideMods?.baseHpBp ?? 0;
+  return bp > 0 ? Math.trunc((base * (BP + Math.trunc(bp))) / BP) : base;
 }
 
 function cloneTrays(t: Partial<Record<AgeId, number[]>>): Partial<Record<AgeId, number[]>> {

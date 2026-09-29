@@ -123,7 +123,7 @@ describe('ladder opponents', () => {
     }
   });
 
-  it('The Warden: 1 in 5 Arena 8 ladder matches, all eight Legendaries at L9, disclosed (A7.4)', () => {
+  it('The Warden: 1 in 5 Arena 8 ladder matches, every Legendary of the window at L9, disclosed (A7.4)', () => {
     let warden = 0;
     const n = 1000;
     for (let m = 0; m < n; m += 1) {
@@ -133,7 +133,8 @@ describe('ladder opponents', () => {
       expect(o.tier).toBe(10);
       expect(o.disclosures.filter((d) => d !== 'app.disclosure.rookie')).toEqual(C.generals.list.warden.disclosureKeys);
       const legs = cardsOf(o).filter((id) => rarity(id) === 'legendary');
-      expect(legs).toHaveLength(8);
+      // Full War is a window of 7 ages (A18.3.4): one Legendary per age
+      expect(legs).toHaveLength(C.formats.full!.ages.length);
       for (const id of legs) expect(o.side.levels[id]).toBe(9);
     }
     expect(warden / n).toBeGreaterThan(0.16);
@@ -191,7 +192,7 @@ describe('other modes', () => {
       const o = M.pickOpponent(s, 'conquest', C, new TestClock(), { conquestGeneral: b.general });
       expect(o).toMatchObject({ generalId: b.general, tier: b.tier, level: b.level, format: 'standard' });
       const plan = C.generals.list[b.general].warPlan ?? {};
-      expect(o.side.loadouts).toEqual(Object.fromEntries(C.formats.standard.ages.map((a) => [a, plan[a]])));
+      expect(o.side.loadouts).toEqual(Object.fromEntries(C.formats.standard!.ages.map((a) => [a, plan[a]])));
     }
   });
 
@@ -203,7 +204,7 @@ describe('other modes', () => {
     const echo = M.pickOpponent(s, 'skirmish', C, new TestClock(), { skirmish: { generalId: 'echo', tier: 6, format: 'short', standardLevels: false } });
     expect(echo).toMatchObject({ generalId: 'echo', tier: 6, format: 'short', level: 3 });
     expect(echo.side.loadouts.stone).toEqual(s.warPlans[0]!.loadouts.stone);
-    expect(Object.keys(echo.side.loadouts).sort()).toEqual(['bronze', 'gunpowder', 'medieval', 'stone']);
+    expect(Object.keys(echo.side.loadouts).sort()).toEqual(['bronze', 'medieval', 'stone']);
   });
 
   it('Skirmish discloses Echo of You as an AI playing your plan, and The Warden\'s Legendaries at Standard levels too (A7.1, A15.3, A6.8)', () => {

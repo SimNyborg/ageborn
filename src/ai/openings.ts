@@ -8,7 +8,7 @@
  * | `train:any` | train the cheapest tray card |
  * | `turret` | build a turret on the first empty owned mount |
  * | `mount` | buy the next mount |
- * | `treasury` | buy a Treasury level |
+ * | `treasury` | start the next Economy income research (Granary, then Market; A18.5.4) |
  * | `a\|b` | one of the alternatives, chosen by the bot's seeded RNG |
  * | `favorite:<card>` | not a step: a procedural Commander's favourite card (A7.4), trained a little more often |
  * | `rule:noStance` | not a step: the match locks this side's stance (training matches), so the bot never toggles it |
@@ -18,7 +18,7 @@
  * first may swap (seeded), so two matches against the same General do not open identically.
  */
 import type { CardId, RoleGroup } from '@/contracts';
-import { chanceBp, randInt, type Sfc32State } from '@/core';
+import { chanceBp, MILLI, nextIncomePick, randInt, researchCost, type Sfc32State } from '@/core';
 import type { BotAction } from './actions';
 import type { CardBook } from './book';
 import type { View } from './view';
@@ -122,9 +122,12 @@ export function resolveStep(
       return v.gold >= cost ? { kind: 'mount', cost } : 'wait';
     }
     case 'treasury': {
-      if (v.treasury >= Math.min(book.econ.treasuryCosts.length, limits.treasuryMax)) return 'skip';
-      const cost = book.econ.treasuryCosts[v.treasury] ?? 0;
-      return v.gold >= cost ? { kind: 'treasury', cost } : 'wait';
+      // The Treasury is now the Economy track's income picks (A18.5.4): Granary, then Market.
+      if (v.treasury >= limits.treasuryMax) return 'skip';
+      const pick = nextIncomePick(book.content, v.research);
+      if (!pick) return v.research.current !== null ? 'wait' : 'skip';
+      const cost = researchCost(book.content, pick) * MILLI;
+      return v.gold >= cost ? { kind: 'research', pick, cost } : 'wait';
     }
   }
 }

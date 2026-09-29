@@ -10,6 +10,7 @@
  * The retiming run (`test/retime.test.ts`) uses it to measure the A8 beat times.
  */
 import type { BotController, Command, CompiledContent, Observation, Side } from '@/contracts';
+import { nextIncomePick, researchCommand, researchCost } from '@/core';
 
 export interface AutopilotOptions {
   side?: Side;
@@ -77,8 +78,9 @@ export class TutorialAutopilot implements BotController {
     if (obs.tick >= this.o.turretFromTick && me.turrets[0] === null && me.mountsOwned > 0 && gold >= turretCost) {
       return { t: 'buildTurret', side, mount: 0, slot: 0 };
     }
-    const treasuryCost = this.content.economy.treasuryCosts[me.treasury];
-    if (this.o.treasury && me.treasury === 0 && treasuryCost !== undefined && gold >= treasuryCost) return { t: 'treasury', side };
+    // The Treasury is the Economy track's income research now (A18.5.4): the first pick is Granary.
+    const income = nextIncomePick(this.content, me.research);
+    if (this.o.treasury && me.treasury === 0 && income && gold >= researchCost(this.content, income)) return researchCommand(side, income);
     const mountCost = this.content.economy.mountCosts[me.mountsOwned];
     if (
       this.o.secondMountFromAge !== null &&

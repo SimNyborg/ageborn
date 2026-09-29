@@ -76,9 +76,11 @@ describe('HUD presses (A2.12, A9.2)', () => {
     expect(cancelIntent(model(), 0, 4)).toEqual({ k: 'none' });
   });
 
-  it('buys Treasury from the gold counter only when affordable and not maxed', () => {
-    expect(cmdOf(treasuryIntent(model({ me: { gold: 200 } }), 0))).toEqual({ t: 'treasury', side: 0 });
-    expect(treasuryIntent(model({ me: { gold: 199 } }), 0)).toEqual({ k: 'deny', target: 'gold' });
+  it('starts the Economy income research from the gold counter only when affordable and open (A18.5.4)', () => {
+    const granary = { t: 'research', side: 0, track: 'economy', rank: 1, pick: 0 };
+    expect(cmdOf(treasuryIntent(model({ me: { gold: 150 } }), 0))).toEqual(granary);
+    expect(treasuryIntent(model({ me: { gold: 149 } }), 0)).toEqual({ k: 'deny', target: 'gold' });
+    expect(treasuryIntent(model({ me: { gold: 5000, nextIncome: null } }), 0)).toEqual({ k: 'deny', target: 'gold' });
     expect(treasuryIntent(model({ me: { gold: 5000, nextTreasuryCost: null } }), 0)).toEqual({ k: 'deny', target: 'gold' });
   });
 
@@ -98,8 +100,8 @@ describe('HUD presses (A2.12, A9.2)', () => {
   });
 
   it('toggles the stance only when the flag is shown (from match 4)', () => {
-    expect(cmdOf(stanceIntent(model(), 0))).toEqual({ t: 'stance', side: 0, stance: 'hold' });
-    expect(cmdOf(stanceIntent(model({ me: { stance: 'hold' } }), 0))).toEqual({ t: 'stance', side: 0, stance: 'charge' });
+    expect(cmdOf(stanceIntent(model(), 0))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
+    expect(cmdOf(stanceIntent(model({ me: { stance: 'hold' } }), 0))).toEqual({ t: 'stance', side: 0, mode: 'charge' });
     expect(stanceIntent(model({ me: { stanceVisible: false } }), 0)).toEqual({ k: 'none' });
   });
 
@@ -186,10 +188,10 @@ describe('keyboard (A2.12)', () => {
     expect(key('Backspace')).toEqual({ k: 'deny', target: 'army' });
     expect(cmdOf(key('q'))).toEqual({ t: 'buildTurret', side: 0, mount: 0, slot: 0 });
     expect(cmdOf(key('B'))).toEqual({ t: 'buyMount', side: 0 });
-    expect(cmdOf(key('t'))).toEqual({ t: 'treasury', side: 0 });
+    expect(cmdOf(key('t'))).toEqual({ t: 'research', side: 0, track: 'economy', rank: 1, pick: 0 });
     expect(cmdOf(key('e'))).toEqual({ t: 'evolve', side: 0 });
     expect(cmdOf(key(' '))).toEqual({ t: 'power', side: 0 });
-    expect(cmdOf(key('s'))).toEqual({ t: 'stance', side: 0, stance: 'hold' });
+    expect(cmdOf(key('s'))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
     expect(cmdOf(key('l'))).toEqual({ t: 'lastStand', side: 0 });
     expect(key('p')).toEqual({ k: 'pause' });
     expect(key('f')).toEqual({ k: 'speed' });
@@ -231,7 +233,7 @@ describe('clock and warnings', () => {
 
   it('points a rejected command at the element that sends it', () => {
     expect(denyTargetFor('train')).toBe('army');
-    expect(denyTargetFor('treasury')).toBe('gold');
+    expect(denyTargetFor('research')).toBe('gold');
     expect(denyTargetFor('buildTurret')).toBe('mounts');
     expect(denyTargetFor('power')).toBe('power');
     expect(denyTargetFor('emote')).toBe('emote');

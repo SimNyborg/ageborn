@@ -311,8 +311,8 @@ def attack(t):
     std = Hs.stand()
     ready_h = dict(std, h_neck=-4, h_head=6, h_tail=6)
     ready_r = dict(rider_base(3), absF=(28, SHIELD_FORE, 60), absB=(10, 80, 30, 6))
-    rear_h = dict(h_root=(-3.0, 4.0), h_pitch=16, h_hip=-6, h_neck=-14, h_head=18, h_tail=26, h_tail2=18,
-                  fore_F=(24.0, 22.0, -60.0, 20.0), fore_B=(20.0, 16.0, -50.0, 14.0),
+    rear_h = dict(h_root=(-5.0, 7.0), h_pitch=24, h_hip=-9, h_neck=-14, h_head=18, h_tail=26, h_tail2=18,
+                  fore_F=(26.0, 30.0, -70.0, 28.0), fore_B=(22.0, 24.0, -60.0, 20.0),
                   hind_F=(-13.0, 0.6, Hs.PASTERN_H, 0.0), hind_B=(-15.0, 0.6, Hs.PASTERN_H, 0.0))
     rear_r = dict(rider_base(10), absF=(30, SHIELD_FORE, 60), absB=(-20, 50, 26, 8))
     lunge_h = dict(h_root=(8.0, -3.5), h_pitch=-7, h_hip=2, h_neck=6, h_head=-4, h_tail=14, h_tail2=10,
@@ -324,7 +324,7 @@ def attack(t):
     rec_h = dict(ready_h, h_root=(4.0, -1.0), h_pitch=-2,
                  fore_F=(28.0, 0.6, Hs.PASTERN_F, 0.0), fore_B=(25.0, 0.6, Hs.PASTERN_F, 0.0))
     rec_r = dict(rider_base(6), absF=(28, SHIELD_FORE, 60), absB=(30, 86, 10, 6))
-    kh = [(0, ready_h), (1.5, rear_h), (3.0, dict(rear_h, h_pitch=18, h_root=(-3.5, 5.0))), (3.6, rear_h),
+    kh = [(0, ready_h), (1.5, rear_h), (3.0, dict(rear_h, h_pitch=27, h_root=(-5.5, 8.5))), (3.6, rear_h),
           (4.6, lunge_h), (5.2, hold_h), (6.4, hold_h), (8.5, rec_h), (13, ready_h)]
     kr = [(0, ready_r), (1.5, rear_r), (3.0, dict(rear_r, absB=(-26, 44, 30, 8))), (3.6, rear_r),
           (4.6, lunge_r), (5.2, hold_r), (6.4, hold_r), (8.5, rec_r), (13, ready_r)]
@@ -388,7 +388,7 @@ def clips():
         P.Clip("walk", range(10), [60] * 10),
         P.Clip("attack", [0, 0.8, 1.5, 2.3, 3.0, 3.6, 4.2, 4.6, 5.2, 6.4, 7.5, 8.5, 10.5, 13],
                [70, 70, 80, 90, 120, 60, 40, 40, 110, 90, 80, 80, 90, 100], loop=False,
-               blur={6: 0.3, 7: 0.25}, impact=8),
+               blur={6: 0.22, 7: 0.18}, impact=8),
         P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
         P.Clip("die", [0, 1, 1.8, 2.6, 3.4, 4.0, 4.8, 5.4, 6.0, 7.5, 9, 11],
                [80, 80, 80, 80, 80, 80, 90, 100, 110, 120, 140, 220], loop=False,

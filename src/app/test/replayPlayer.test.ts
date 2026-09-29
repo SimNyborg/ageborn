@@ -24,7 +24,7 @@ function playMatch(seed: number, format: FormatId = 'short'): ReplayDoc {
     ],
   });
   s.start();
-  s.fastForward(20 * 60 * 12);
+  s.fastForward(20 * 60 * 13);
   const r = s.result;
   if (!r) throw new Error('match did not end');
   return r.replay;

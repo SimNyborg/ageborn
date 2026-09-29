@@ -3,7 +3,7 @@
  * commands (ledger.ts), with the derived quantities the A7.2 scoring terms use. Positions are own-side
  * progress p in milli-lu (the observation's frame); money is milli-gold; card values are whole gold.
  */
-import type { AgeId, BotProfile, CardId, Observation, PowerDef, Side } from '@/contracts';
+import type { AgeId, BotProfile, CardId, Observation, PowerDef, ResearchView, Side, StanceMode } from '@/contracts';
 import { PPM } from '@/core';
 import type { CardBook, UnitCard } from './book';
 import type { Ledger } from './ledger';
@@ -34,6 +34,7 @@ export interface View {
   obs: Observation;
   /** Own gold after pending commands, milli. */
   gold: number;
+  /** The current age in `book.ageOrder` (the window position plus where the window starts, A18.3.4). */
   ageIndex: number;
   age: AgeId | null;
   /** Evolve is legal as far as the bot can tell (A2.4). */
@@ -41,7 +42,10 @@ export interface View {
   queue: CardId[];
   /** Pop of units alive plus queued (A2.7). */
   popCommitted: number;
+  /** Economy research picks owned or pending (the Treasury level before A18.5.4). */
   treasury: number;
+  /** The War Council as seen (A18.5.1), with a pending research counted as in progress. */
+  research: ResearchView;
   mountsOwned: number;
   /** Turret per mount after pending builds: card and age index. */
   turrets: ({ card: CardId; ageIndex: number } | null)[];
@@ -50,7 +54,7 @@ export interface View {
   mountBusy: boolean[];
   powerReady: boolean;
   power: PowerDef | undefined;
-  stance: 'charge' | 'hold';
+  stance: StanceMode;
   stanceReady: boolean;
   baseHpBp: number;
   lastStandArmed: boolean;
@@ -82,13 +86,17 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
   if (gold < 0) gold = 0;
   const queue = [...me.queue, ...ledger.pendingTrains()];
   let treasury = me.treasury;
+  let research: ResearchView = me.research;
   let mountsOwned = me.mountsOwned;
   let powerUsed = false;
   let stance = me.stance;
   const turrets = me.turrets.map((t) => (t ? { card: t.card, ageIndex: book.turrets[t.card]?.ageIndex ?? 0 } : null));
   for (const p of pending) {
     const a = p.action;
-    if (a.kind === 'treasury') treasury += 1;
+    if (a.kind === 'research') {
+      if (a.pick.track === 'economy') treasury += 1;
+      research = { ...research, current: a.pick.id, progressBp: 0 };
+    }
     else if (a.kind === 'mount') mountsOwned += 1;
     else if (a.kind === 'power') powerUsed = true;
     else if (a.kind === 'stance') stance = a.stance;
@@ -129,7 +137,8 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     const card = c ? book.units[c] : undefined;
     if (card) tray.push({ slot, card });
   });
-  const age = book.ageOrder[me.ageIndex] ?? null;
+  const age = obs.ages?.[me.ageIndex] ?? book.ageOrder[me.ageIndex] ?? null;
+  const ageIndex = age ? Math.max(0, book.ageOrder.indexOf(age)) : me.ageIndex;
   const ageUncertain = ledger.ageUncertain(now);
   return {
     now,
@@ -137,12 +146,13 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     phase: obs.phase,
     obs,
     gold,
-    ageIndex: me.ageIndex,
+    ageIndex,
     age,
     evolveReady: evolveVisible(obs) && ledger.evolve === null && !ledger.finalAge,
     queue,
     popCommitted,
     treasury,
+    research,
     mountsOwned,
     turrets,
     turretsBuilt: turrets.filter((t) => t !== null).length,

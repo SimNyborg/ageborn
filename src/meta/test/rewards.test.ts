@@ -179,12 +179,13 @@ describe('other modes', () => {
     expect(tutorial.save.cosmetics.owned).not.toContain('evolver');
     expect(tutorial.save.stats.futureReached).toBe(0);
     const full = { ...noFree(), arenaIndex: 2, trophies: { current: 400, best: 400, roadClaimed: [] } };
-    // Cosmic before 6:15 in a Full War: Evolver and Speedrunner
-    const fast = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 374_000 } });
+    // A18 pacing: the Full War's final age (Future, 7-age window) before 10:00: Evolver and Speedrunner
+    const fast = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 599_000 } });
     expect(fast.rewards).toContainEqual({ kind: 'title', title: 'speedrunner' });
     expect(fast.rewards).toContainEqual({ kind: 'title', title: 'evolver' });
-    expect(fast.save.stats.futureReached).toBe(1);
-    const slow = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 376_000 } });
+    // `futureReached` counts the game's last age (Cosmic): a Stone-start Full War window now ends at Future
+    expect(fast.save.stats.futureReached).toBe(0);
+    const slow = play(full, 'ladder', 'loss', clock(), { format: 'full', stats: { reachedFinalAgeAtMs: 601_000 } });
     expect(slow.rewards).not.toContainEqual({ kind: 'title', title: 'speedrunner' });
     const vet = play({ ...s, stats: { ...s.stats, wins: 99 } }, 'ladder', 'win');
     expect(vet.save.cosmetics.owned).toContain('veteran');

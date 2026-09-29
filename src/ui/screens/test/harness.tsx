@@ -35,7 +35,7 @@ export interface Mounted {
 
 /** Keys look like `ui.home.battle` or `card.bonker.name`; a visible one means a missing string. */
 export const RAW_KEY =
-  /\b(ui|card|age|format|rarity|role|group|tag|foil|capsuleTier|capsuleKind|arena|general|quest|modifier|banner|frame|title|emote|skin)\.[A-Za-z0-9_]+\.[A-Za-z0-9_.]+\b|\bui\.[A-Za-z0-9_]+\b/;
+  /\b(ui|card|age|format|rarity|role|group|tag|foil|capsuleTier|capsuleKind|arena|general|quest|modifier|banner|frame|title|emote|skin|cosmetic)\.[A-Za-z0-9_]+\.[A-Za-z0-9_.]+\b|\bui\.[A-Za-z0-9_]+\b/;
 
 /** The first raw string key visible in `el`'s text or aria-labels, or null. */
 export function rawKeyIn(el: FakeElement): string | null {

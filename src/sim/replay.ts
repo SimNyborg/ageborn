@@ -9,7 +9,7 @@ import type { CompiledContent, MatchConfig, ReplayDoc, ReplayMatch, Sim, TimedCo
 import { SimImpl } from './createSim';
 
 /** Bumped whenever a sim change alters the outcome of recorded commands (golden replays re-recorded). */
-export const SIM_VERSION = '2.2.0';
+export const SIM_VERSION = '3.0.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {
@@ -35,6 +35,7 @@ export function buildReplay(sim: Sim): ReplayDoc {
     sides: [cfg.sides[0], cfg.sides[1]],
     modifiers: [...(cfg.modifiers ?? [])],
     training: cfg.training ?? null,
+    ...(cfg.victory ? { victory: cfg.victory } : {}),
     commands: sim.log.map((c) => ({ ...c })),
     result: { ...outcome, baseHpBp: [outcome.baseHpBp[0], outcome.baseHpBp[1]] },
     finalHash: sim.hash(),
@@ -46,6 +47,7 @@ export function buildReplay(sim: Sim): ReplayDoc {
 export function replayConfig(r: ReplayDoc, content: CompiledContent): MatchConfig {
   const cfg: MatchConfig = { seed: r.seed, format: r.format, content, sides: [r.sides[0], r.sides[1]], modifiers: [...r.modifiers] };
   if (r.training) cfg.training = r.training;
+  if (r.victory) cfg.victory = r.victory;
   return cfg;
 }
 

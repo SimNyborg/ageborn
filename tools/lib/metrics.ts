@@ -31,7 +31,16 @@ export interface SideStats {
   powers: Record<CardId, { casts: number; unitsHit: number }>;
   /** `commandRejected` events by reason. */
   rejected: Record<string, number>;
+  /** Economy level (Economy research picks done; the Treasury before A18.5.4). */
   treasury: number;
+  /** War Council (A18.5): picks started, in order; gold spent net of cancel refunds (whole); picks done. */
+  research: string[];
+  researchGold: number;
+  researchDone: number;
+  /** Gold earned in the match (start gold, passive income and bounties), whole. */
+  goldEarned: number;
+  /** Stance changes (A18.4.2; the stance toggler proxy). */
+  stanceChanges: number;
   lastStandFired: boolean;
   /** Most trained units alive at once (summons excluded). */
   maxUnitsAlive: number;
@@ -79,6 +88,11 @@ function emptySide(): SideStats {
     powers: {},
     rejected: {},
     treasury: 0,
+    research: [],
+    researchGold: 0,
+    researchDone: 0,
+    goldEarned: 0,
+    stanceChanges: 0,
     lastStandFired: false,
     maxUnitsAlive: 0,
   };
@@ -105,6 +119,7 @@ export class MatchTally {
 
   constructor(private readonly content: CompiledContent) {
     this.refundBp = content.economy.sellRefundBp;
+    for (const s of this.sides) s.goldEarned = content.economy.startGold;
   }
 
   private turretCost(card: CardId | null | undefined): number {
@@ -188,6 +203,27 @@ export class MatchTally {
       }
       case 'treasuryUp':
         this.sides[e.side].treasury = e.level;
+        break;
+      case 'researchStarted': {
+        const s = this.sides[e.side];
+        s.research.push(e.pick);
+        s.researchGold += e.cost / 1000;
+        break;
+      }
+      case 'researchCancelled': {
+        const s = this.sides[e.side];
+        s.researchGold -= e.refund / 1000;
+        s.research = s.research.filter((p, i, a) => !(p === e.pick && i === a.lastIndexOf(e.pick)));
+        break;
+      }
+      case 'researchDone':
+        this.sides[e.side].researchDone += 1;
+        break;
+      case 'goldEarned':
+        this.sides[e.side].goldEarned += e.amount / 1000;
+        break;
+      case 'stanceChanged':
+        this.sides[e.side].stanceChanges += 1;
         break;
       case 'lastStandFire':
         this.sides[e.side].lastStandFired = true;

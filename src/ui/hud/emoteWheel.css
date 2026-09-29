@@ -1,0 +1,151 @@
+/* The battle emote wheel and bubbles (DESIGN A9.2, A18.9.4). */
+
+.hud-emote-picker.hud-wheel {
+  display: flex;
+  grid-template-columns: none;
+  flex-direction: column;
+  gap: 6px;
+  width: max-content;
+  max-width: min(76vw, 360px);
+  padding: 8px;
+  transform-origin: 90% 0;
+  animation: hud-wheel-in 180ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes hud-wheel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.86);
+  }
+}
+.hud-wheel-emotes {
+  display: grid;
+  grid-template-columns: repeat(4, 44px);
+  gap: 5px;
+}
+.hud-wheel .hud-emote-pick {
+  display: grid;
+  place-items: center;
+  animation: hud-wheel-pop 220ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  transition: transform 100ms ease-out, background 100ms;
+}
+.hud-wheel .hud-emote-pick:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.14);
+}
+.hud-wheel .hud-emote-pick:active {
+  transform: scale(0.94);
+}
+@keyframes hud-wheel-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+.hud-emote-art {
+  display: grid;
+  place-items: center;
+}
+.hud-emote-art .cos-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.hud-wheel-quotes {
+  display: grid;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+}
+.hud-wheel .hud-quote-pick {
+  padding: 5px 10px;
+  border: 2px solid var(--hud-ink, #1b1330);
+  border-radius: 10px 10px 10px 3px;
+  background: #fff8e6;
+  color: var(--hud-ink, #1b1330);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  animation: hud-wheel-pop 220ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  transition: transform 100ms ease-out, filter 100ms;
+}
+.hud-wheel .hud-quote-pick:hover:not(:disabled) {
+  transform: translateX(2px);
+  filter: brightness(1.05);
+}
+.hud-wheel .hud-quote-pick:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.hud-wheel .hud-mute {
+  justify-self: stretch;
+  padding: 4px 8px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.hud-wheel .hud-mute.is-on {
+  border-color: #ef5a4a;
+  background: rgba(239, 90, 74, 0.25);
+}
+.hud-bubble--quote {
+  max-width: 220px;
+  padding: 6px 10px;
+  border-radius: 14px 14px 14px 4px;
+}
+.hud-bubble-foe.hud-bubble--quote {
+  border-radius: 14px 14px 4px 14px;
+}
+.hud-quote-text {
+  display: block;
+  color: #1b1330;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: normal;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-wheel,
+  .hud-wheel .hud-emote-pick,
+  .hud-quote-pick {
+    animation: none;
+  }
+}
+
+/* Phones: one row of emotes, quotes in two columns, so the wheel stays above the tray */
+.hud.is-compact .hud-emote-picker.hud-wheel {
+  gap: 4px;
+  padding: 6px;
+  max-width: min(92vw, 420px);
+}
+.hud.is-compact .hud-wheel-emotes {
+  grid-template-columns: repeat(8, 34px);
+  gap: 4px;
+}
+.hud.is-compact .hud-wheel .hud-emote-pick {
+  width: 34px;
+  height: 34px;
+}
+.hud.is-compact .hud-wheel .hud-emote-pick > * {
+  transform: scale(0.8);
+}
+.hud.is-compact .hud-wheel-quotes {
+  grid-template-columns: 1fr 1fr;
+  padding-top: 4px;
+}
+.hud.is-compact .hud-wheel .hud-quote-pick {
+  padding: 3px 7px;
+  font-size: 11.5px;
+  white-space: normal;
+}
+.hud.is-compact .hud-wheel .hud-mute {
+  padding: 2px 6px;
+  font-size: 11px;
+}

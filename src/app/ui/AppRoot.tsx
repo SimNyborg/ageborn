@@ -2,6 +2,10 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
+import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
+import { cosmeticImageUrl, parseCosmeticKey } from '@/visuals/cosmetics/art';
+import { cosmeticCollectionKey, cosmeticNameKey } from '@/content/keys';
+import { foundCosmetics } from '../capsules/capsuleFlow';
 import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
 import { createMetaUi, type MetaUi } from '../metaUi';
@@ -83,6 +87,12 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
           onDone={(rec) => {
             if (rec.kind === 'capsules' && rec.onboarding) ui.controller.finishCapsuleStep();
             else ui.services.audio.music.setCue('music.menu', { fadeMs: 600 });
+            // A18.9.4: the collection items the capsules or crate held (the show reveals cards and skins)
+            for (const key of foundCosmetics(rec)) {
+              const k = parseCosmeticKey(key);
+              if (!k) continue;
+              p.meta?.toasts.show(ui.t('cosmetic.ui.alsoFound', { name: ui.t(cosmeticNameKey(k.collection, k.id)), collection: ui.t(cosmeticCollectionKey(k.collection)) }), { tone: 'gold', ms: 4200 });
+            }
           }}
         />
       </ShowGuard>
@@ -166,15 +176,18 @@ export function AppRoot(p: { ui: AppUi }) {
   const reduceMotion = p.ui.controller.save.value?.settings.reduceMotion ?? false;
   return (
     <AppUiContext.Provider value={p.ui}>
-      <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
-        <Screen ui={p.ui} meta={meta} shows={shows} />
-        {shows?.current.value ? null : <FirstUpgrade />}
-        <AgeDialog />
-        <div class="ab-rotate" data-testid="rotate">
-          <div class="ab-rotate-phone" aria-hidden="true" />
-          <span>{p.ui.t('app.rotate')}</span>
+      {/* A18.9.4: the code-drawn cosmetic art (flags, decorations, emotes) for the screens and the HUD */}
+      <CosmeticArtContext.Provider value={cosmeticImageUrl}>
+        <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
+          <Screen ui={p.ui} meta={meta} shows={shows} />
+          {shows?.current.value ? null : <FirstUpgrade />}
+          <AgeDialog />
+          <div class="ab-rotate" data-testid="rotate">
+            <div class="ab-rotate-phone" aria-hidden="true" />
+            <span>{p.ui.t('app.rotate')}</span>
+          </div>
         </div>
-      </div>
+      </CosmeticArtContext.Provider>
     </AppUiContext.Provider>
   );
 }

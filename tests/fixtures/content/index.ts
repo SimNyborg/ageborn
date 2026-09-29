@@ -15,11 +15,12 @@ import { gunpowder } from './gunpowder';
 import { medieval } from './medieval';
 import { modern } from './modern';
 import { powers } from './powers';
+import { research } from './research';
 import { stone } from './stone';
 import type { RawContent } from './types';
 
 export type { RawAgeScale, RawAgeTables, RawBattleRules, RawContent, RawDamageMods } from './types';
-export { ageScale, battle, damageMods, economy, formats, future, gunpowder, medieval, modern, powers, stone };
+export { ageScale, battle, damageMods, economy, formats, future, gunpowder, medieval, modern, powers, research, stone };
 
 export const raw: RawContent = {
   ages: [stone, medieval, gunpowder, modern, future],
@@ -29,4 +30,5 @@ export const raw: RawContent = {
   formats,
   battle,
   damageMods,
+  research,
 };

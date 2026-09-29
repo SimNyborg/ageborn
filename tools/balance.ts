@@ -3,11 +3,15 @@
  *
  * Runs, with both sides at tier V on the Balanced brain and every card at L7:
  *
- * - **Balanced mirror** (baseline vs baseline) in Full War and Short War: match length distribution,
- *   Final Bell rate, evolve timings, first-mover advantage, turret share of kills, power coverage.
+ * - **Balanced mirror** (baseline vs baseline) in Short and Standard War on every run, Full War only at
+ *   gates (`--full-war` or the full mode; A18.3.4): match length distribution against the A18.12 medians
+ *   and 80% bands, Final Bell rate, the median stay per window position (A18.3.1), the winner's evolve
+ *   lead at the 3rd evolve, the War Council's share of gold and items per side (A18.12), evolve timings,
+ *   first-mover advantage, turret share of kills, power coverage.
  * - **Per card**: mirrored-seed matches of the card's test plan vs the baseline plan (each seed twice,
- *   the test plan once on each side). Passes when the 95% CI of the win-rate delta lies within ±3 points
- *   (full: 2,000 matches per card) or ±6 (smoke: 400 matches). Cards in the baseline plan are the control.
+ *   the test plan once on each side) in the Standard window that holds the card's age (its second
+ *   position where possible). Passes when the 95% CI of the win-rate delta lies within ±3 points (full:
+ *   2,000 matches per card) or ±6 (smoke: 400 matches). Cards in the baseline plan are the control.
  * - **Scenarios**: base time to kill per age and the A2.9 power damage per unit in zone.
  * - **Damage per gold per card**, per age (reported, not gated).
  *
@@ -58,6 +62,8 @@ export interface BalanceOptions {
   /** CI half-width bound in win-rate points (A2.14: 3 full, 6 smoke). */
   bound: number;
   mirror: boolean;
+  /** Mirror formats; Full War only at gates (A18.3.4). */
+  mirrorFormats: FormatId[];
   scenarios: boolean;
   onProgress?: (done: number, total: number) => void;
 }
@@ -65,28 +71,39 @@ export interface BalanceOptions {
 /** A2.14 run sizes: full 2,000 matches per card (±3), smoke 400 (±6). */
 export function balanceDefaults(mode: BalanceMode): Omit<BalanceOptions, 'workers' | 'onProgress'> {
   return mode === 'full'
-    ? { mode, pairsPerCard: 1000, mirrorMatches: 1000, cards: null, tier: 5, level: 7, seed: 1, bound: 3, mirror: true, scenarios: true }
-    : { mode, pairsPerCard: 200, mirrorMatches: 200, cards: null, tier: 5, level: 7, seed: 1, bound: 6, mirror: true, scenarios: true };
+    ? { mode, pairsPerCard: 1000, mirrorMatches: 1000, cards: null, tier: 5, level: 7, seed: 1, bound: 3, mirror: true, mirrorFormats: ['short', 'standard', 'full'], scenarios: true }
+    : { mode, pairsPerCard: 200, mirrorMatches: 200, cards: null, tier: 5, level: 7, seed: 1, bound: 6, mirror: true, mirrorFormats: ['short', 'standard'], scenarios: true };
 }
 
-/** DESIGN A2.14 target numbers as changed by A17.14 for eight ages (seconds, percent). */
+/** DESIGN A2.14 target numbers as set by A18.12 for age windows (seconds, percent). */
 export const TARGETS = {
-  /** A17.14: Full War (8 ages) median 8:30, 80% of matches 6:45-10:15; Short War (4 ages) 4:45. */
-  fullMedian: { value: 510, tolerance: 30 },
-  shortMedian: { value: 285, tolerance: 30 },
-  fullWindow: { lo: 405, hi: 615, minShare: 80 },
-  /** A17.14: Standard War (6 ages) median 6:30, 80% of matches 5:00-8:00. */
-  standardMedian: { value: 390, tolerance: 30 },
-  standardWindow: { lo: 300, hi: 480, minShare: 80 },
-  /** A16.5 v1 gate: Final Bell ≤ 10% of Short Wars and ≤ 5% of Full Wars (tier VII mirror, baseline plan). */
-  finalBellMaxPct: { short: 10, full: 5 },
+  /** A18.3.4 / A18.12: medians 7:00 / 10:30 / 15:00, 80% of matches in 5:30-8:30 / 8:30-12:30 / 12:00-17:00. */
+  shortMedian: { value: 420, tolerance: 30 },
+  shortWindow: { lo: 330, hi: 510, minShare: 80 },
+  standardMedian: { value: 630, tolerance: 30 },
+  standardWindow: { lo: 510, hi: 750, minShare: 80 },
+  fullMedian: { value: 900, tolerance: 45 },
+  fullWindow: { lo: 720, hi: 1020, minShare: 80 },
+  /** A18.12: Final Bell ≤ 10% of Short Wars, ≤ 8% of Standard Wars, ≤ 5% of Full Wars. */
+  finalBellMaxPct: { short: 10, standard: 8, full: 5 },
   /** A17.14: first clash (the first unit-on-unit hit) median 0:11-0:16 on the 2,000 lu lane. */
   firstClash: { lo: 11, hi: 16 },
-  /** A17.14: first evolve (into Bronze) median 0:52 ± 10 s. */
-  firstEvolve: { value: 52, tolerance: 10 },
-  /** A17.8 expected evolve times after the first: 1:25, 2:25, 3:10, 4:00, 5:10, 6:30 (Cosmic). */
-  laterEvolves: [85, 145, 190, 240, 310, 390],
-  laterTolerance: 20,
+  /** A18.3.1: median stay in each position of the window (1st to 6th), Balanced mirror. */
+  stays: [
+    [60, 75],
+    [90, 105],
+    [95, 110],
+    [100, 115],
+    [105, 120],
+    [110, 125],
+  ] as readonly (readonly [number, number])[],
+  /** A18.3.1: no age after the first under 75 s (median). */
+  minLaterStay: 75,
+  /** A18.12: the winner's evolve lead at the 3rd evolve, median ≤ 30 s. */
+  evolveLeadMax: 30,
+  /** A18.12: research takes 15-25% of the gold; 5-8 items per side in a Standard War (median). */
+  researchShare: { lo: 15, hi: 25 },
+  researchItems: { lo: 5, hi: 8 },
   firstMover: { lo: 47, hi: 53 },
   baseKill: { lo: 40, hi: 60 },
   powerLight: { lo: 60, hi: 100 },
@@ -94,7 +111,23 @@ export const TARGETS = {
 } as const;
 
 const TICKS_PER_SEC = 20;
-const MIRROR_FORMATS: readonly FormatId[] = ['full', 'standard', 'short'];
+
+/** The named format family of a mirror (`short`, `standard`, `full`). */
+function family(f: FormatId): 'short' | 'standard' | 'full' {
+  return f.startsWith('full') ? 'full' : f.startsWith('standard') ? 'standard' : 'short';
+}
+
+/**
+ * The Standard window a card is tested in (A18.3.4): the 5-age window that holds the card's age, at its
+ * second position where possible (so the card plays from the first evolve on).
+ */
+export function cardFormat(content: CompiledContent, age: AgeId): FormatId {
+  const ages = agesOf(content);
+  const i = Math.max(0, ages.indexOf(age));
+  const start = Math.max(0, Math.min(i - 1, ages.length - 5));
+  const key = start === 0 ? 'standard' : `standard.${ages[start]}`;
+  return content.formats[key] ? key : 'standard';
+}
 
 function botSeat(tier: number): MatchJob['seats'][number] {
   return { kind: 'bot', generalId: BALANCED_GENERAL, tier };
@@ -111,7 +144,7 @@ export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: 
   const base = baselinePlan(content);
   const seats: MatchJob['seats'] = [botSeat(o.tier), botSeat(o.tier)];
   if (o.mirror) {
-    for (const format of MIRROR_FORMATS) {
+    for (const format of o.mirrorFormats) {
       for (let k = 0; k < o.mirrorMatches; k += 1) {
         jobs.push({ id: jobs.length, tag: `mirror.${format}`, seed: o.seed + k, format, level: o.level, plans: [base, base], seats, subject: null });
       }
@@ -119,10 +152,11 @@ export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: 
   }
   for (const t of tests) {
     if (t.inBaseline) continue;
+    const format = cardFormat(content, t.age);
     for (let k = 0; k < o.pairsPerCard; k += 1) {
       const seed = o.seed + k;
-      jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format: 'full', level: o.level, plans: [t.plan, base], seats, subject: 0 });
-      jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format: 'full', level: o.level, plans: [base, t.plan], seats, subject: 1 });
+      jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format, level: o.level, plans: [t.plan, base], seats, subject: 0 });
+      jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format, level: o.level, plans: [base, t.plan], seats, subject: 1 });
     }
   }
   return jobs;
@@ -134,8 +168,18 @@ export interface MirrorStats {
   medianSec: number;
   p10Sec: number;
   p90Sec: number;
-  /** Share of matches between 5:00 and 9:00 (Full War only; NaN for other formats). */
+  /** Share of matches inside the format's 80% band (A18.3.4). */
   withinWindowPct: number;
+  /** Median stay per window position (1st, 2nd, ...), seconds, both sides pooled (A18.3.1). */
+  stayMedianSec: number[];
+  staySamples: number[];
+  /** Median of the winner's lead at the 3rd evolve (A18.12), seconds; NaN below 3 evolves. */
+  evolveLeadSec: number;
+  evolveLeadSamples: number;
+  /** Research gold as a share of all gold earned (A18.12), percent. */
+  researchSharePct: number;
+  /** Median research items started per side (A18.12). */
+  researchItems: number;
   finalBellPct: number;
   /** Median seconds of evolve n (index 0 = first evolve), both sides pooled. */
   evolveMedianSec: number[];
@@ -172,19 +216,42 @@ export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): Mirr
     turret += k.turret;
     kills += Object.values(k).reduce((a, b) => a + b, 0);
   }
+  // A18.3.1 stays: the time from arriving in a position (0:00 for the first) to pressing Evolve out of it.
+  const stays: number[][] = [];
+  const leads: number[] = [];
+  let researchGold = 0;
+  let goldEarned = 0;
+  const items: number[] = [];
+  for (const m of ms) {
+    for (const s of m.sides) {
+      let from = 0;
+      s.evolveTicks.forEach((t, i) => {
+        (stays[i] ??= []).push((t - from) / TICKS_PER_SEC);
+        from = t;
+      });
+      researchGold += s.researchGold ?? 0;
+      goldEarned += s.goldEarned ?? 0;
+      items.push(s.research?.length ?? 0);
+    }
+    if (m.winner !== null) {
+      const w = m.sides[m.winner].evolveTicks[2];
+      if (w !== undefined) leads.push(((m.sides[m.winner === 0 ? 1 : 0].evolveTicks[2] ?? m.ticks) - w) / TICKS_PER_SEC);
+    }
+  }
+  const band = TARGETS[`${family(format)}Window`];
   return {
     format,
     matches: ms.length,
     medianSec: median(lengths),
     p10Sec: quantile(lengths, 0.1),
     p90Sec: quantile(lengths, 0.9),
-    // The 6:45-10:15 window is a Full War target (A17.14); other formats have none.
-    withinWindowPct:
-      format === 'full'
-        ? shareWithin(lengths, TARGETS.fullWindow.lo, TARGETS.fullWindow.hi) * 100
-        : format === 'standard'
-          ? shareWithin(lengths, TARGETS.standardWindow.lo, TARGETS.standardWindow.hi) * 100
-          : Number.NaN,
+    withinWindowPct: shareWithin(lengths, band.lo, band.hi) * 100,
+    stayMedianSec: stays.map((xs) => median(xs)),
+    staySamples: stays.map((xs) => xs.length),
+    evolveLeadSec: median(leads),
+    evolveLeadSamples: leads.length,
+    researchSharePct: goldEarned > 0 ? (researchGold * 100) / goldEarned : Number.NaN,
+    researchItems: median(items),
     finalBellPct: ms.length ? (ms.filter((m) => m.finalBell).length * 100) / ms.length : Number.NaN,
     evolveMedianSec: evolves.map((xs) => median(xs)),
     evolveSamples: evolves.map((xs) => xs.length),
@@ -213,44 +280,24 @@ function clashAndContact(ms: readonly MatchSummary[]): Pick<MirrorStats, 'firstC
  */
 export function mirrorChecks(s: MirrorStats): Check[] {
   const f = s.format;
+  const fam = family(f);
   const checks: Check[] = [];
   const clock = (v: number): string => fmtClock(v);
   const matches = (c: Check): Check => requireSamples(c, s.matches);
-  if (f === 'full') {
-    const t = TARGETS.fullMedian;
-    checks.push(matches(rangeCheck('mirror.full.median', 'Full War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
-    checks.push(
-      matches(
-        rangeCheck('mirror.full.window', `Full War matches between ${fmtClock(TARGETS.fullWindow.lo)} and ${fmtClock(TARGETS.fullWindow.hi)}`, s.withinWindowPct, TARGETS.fullWindow.minShare, 100, {
-          target: `≥ ${TARGETS.fullWindow.minShare}%`,
-          show: (v) => fmtPct(v),
-        }),
-      ),
-    );
-  } else if (f === 'standard') {
-    const t = TARGETS.standardMedian;
-    const w = TARGETS.standardWindow;
-    checks.push(matches(rangeCheck('mirror.standard.median', 'Standard War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s (A17.14)`, show: clock })));
-    checks.push(
-      matches(
-        rangeCheck('mirror.standard.window', `Standard War matches between ${fmtClock(w.lo)} and ${fmtClock(w.hi)}`, s.withinWindowPct, w.minShare, 100, {
-          target: `≥ ${w.minShare}%`,
-          show: (v) => fmtPct(v),
-        }),
-      ),
-    );
-  } else {
-    const t = TARGETS.shortMedian;
-    checks.push(matches(rangeCheck(`mirror.${f}.median`, 'Short War median length', s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s`, show: clock })));
-  }
-  const name = f === 'full' ? 'Full' : f === 'standard' ? 'Standard' : 'Short';
-  if (f === 'standard') {
-    // A16.5 gates the Bell in Short and Full War only; Standard War's is reported.
-    checks.push(infoCheck('info.standard.finalBell', 'Standard War Final Bell rate', fmtPct(s.finalBellPct), 'reported (A16.5 gates Short and Full)'));
-  } else {
-    const bellMax = f === 'full' ? TARGETS.finalBellMaxPct.full : TARGETS.finalBellMaxPct.short;
-    checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${name} War Final Bell rate`, s.finalBellPct, bellMax, { target: `≤ ${bellMax}% (A16.5)`, show: (v) => fmtPct(v) })));
-  }
+  const name = fam === 'full' ? 'Full' : fam === 'standard' ? 'Standard' : 'Short';
+  const t = TARGETS[`${fam}Median`];
+  const w = TARGETS[`${fam}Window`];
+  checks.push(matches(rangeCheck(`mirror.${f}.median`, `${name} War median length`, s.medianSec, t.value - t.tolerance, t.value + t.tolerance, { target: `${clock(t.value)} ± ${t.tolerance} s (A18.12)`, show: clock })));
+  checks.push(
+    matches(
+      rangeCheck(`mirror.${f}.window`, `${name} War matches between ${fmtClock(w.lo)} and ${fmtClock(w.hi)}`, s.withinWindowPct, w.minShare, 100, {
+        target: `≥ ${w.minShare}%`,
+        show: (v) => fmtPct(v),
+      }),
+    ),
+  );
+  const bellMax = TARGETS.finalBellMaxPct[fam];
+  checks.push(matches(maxCheck(`mirror.${f}.finalBell`, `${name} War Final Bell rate`, s.finalBellPct, bellMax, { target: `≤ ${bellMax}% (A18.12)`, show: (v) => fmtPct(v) })));
   const fc = TARGETS.firstClash;
   checks.push(
     requireSamples(
@@ -259,35 +306,57 @@ export function mirrorChecks(s: MirrorStats): Check[] {
     ),
   );
   checks.push(infoCheck(`info.${f}.contactMiddle`, `${name} War contact between the turret covers`, fmtPct(s.contactMiddlePct), 'share of seconds with a contact point (A17.14, reported)'));
-  if (f === 'full') {
-    const fe = TARGETS.firstEvolve;
-    checks.push(
-      requireSamples(
-        rangeCheck('mirror.full.firstEvolve', 'First evolve (median)', s.evolveMedianSec[0] ?? Number.NaN, fe.value - fe.tolerance, fe.value + fe.tolerance, { target: `${clock(fe.value)} ± ${fe.tolerance} s`, show: clock }),
-        s.evolveSamples[0] ?? 0,
-      ),
-    );
-    TARGETS.laterEvolves.forEach((want, i) => {
-      const got = s.evolveMedianSec[i + 1] ?? Number.NaN;
+  // A18.3.1: the stay in each position of the window; no age after the first under 75 s.
+  s.stayMedianSec.forEach((got, i) => {
+    const band = TARGETS.stays[i];
+    if (!band) return;
+    const n = s.staySamples[i] ?? 0;
+    // The first stay is gated in every format, the later ones in Standard and Full War (Short reports them).
+    if (i === 0 || fam !== 'short') {
       checks.push(
         requireSamples(
-          rangeCheck(`mirror.full.evolve${i + 2}`, `Evolve ${i + 2} (median)`, got, want - TARGETS.laterTolerance, want + TARGETS.laterTolerance, {
-            target: `${clock(want)} ± ${TARGETS.laterTolerance} s (A17.8)`,
-            show: clock,
-          }),
-          s.evolveSamples[i + 1] ?? 0,
+          rangeCheck(`mirror.${f}.stay${i + 1}`, `${name} War stay in position ${i + 1} (median)`, got, band[0], band[1], { target: `${clock(band[0])}-${clock(band[1])} (A18.3.1)`, show: clock }),
+          n,
         ),
       );
-    });
+    } else {
+      checks.push(infoCheck(`info.${f}.stay${i + 1}`, `${name} War stay in position ${i + 1} (median)`, clock(got), `${clock(band[0])}-${clock(band[1])} (A18.3.1)`));
+    }
+    if (i > 0) {
+      checks.push(
+        requireSamples(
+          rangeCheck(`mirror.${f}.stay${i + 1}.min`, `${name} War stay in position ${i + 1} is not under 75 s`, got, TARGETS.minLaterStay, Number.POSITIVE_INFINITY, { target: `≥ ${clock(TARGETS.minLaterStay)} (A18.3.1)`, show: clock }),
+          n,
+        ),
+      );
+    }
+  });
+  if (fam !== 'short') {
+    checks.push(
+      requireSamples(
+        maxCheck(`mirror.${f}.evolveLead`, `${name} War: the winner's lead at the 3rd evolve (median)`, s.evolveLeadSec, TARGETS.evolveLeadMax, { target: `≤ ${TARGETS.evolveLeadMax} s (A18.12)`, show: (v) => `${fmtNum(v, 1)} s` }),
+        s.evolveLeadSamples,
+      ),
+    );
+  }
+  const rs = TARGETS.researchShare;
+  checks.push(matches(rangeCheck(`mirror.${f}.researchShare`, `${name} War: research share of gold`, s.researchSharePct, rs.lo, rs.hi, { target: `${rs.lo}-${rs.hi}% (A18.12)`, show: (v) => fmtPct(v) })));
+  if (fam === 'standard') {
+    const ri = TARGETS.researchItems;
+    checks.push(matches(rangeCheck(`mirror.${f}.researchItems`, 'Standard War: research items per side (median)', s.researchItems, ri.lo, ri.hi, { target: `${ri.lo}-${ri.hi} (A18.12)`, show: (v) => fmtNum(v, 1) })));
+  } else {
+    checks.push(infoCheck(`info.${f}.researchItems`, `${name} War: research items per side (median)`, fmtNum(s.researchItems, 1), 'reported'));
+  }
+  if (fam === 'standard' || fam === 'full') {
     const fm = TARGETS.firstMover;
     checks.push(
       requireSamples(
-        rangeCheck('mirror.full.firstMover', 'First-mover advantage (side 0 score)', s.firstMover.value, fm.lo, fm.hi, { target: `${fm.lo}-${fm.hi}%`, show: () => fmtEstimate(s.firstMover, 1, '%') }),
+        rangeCheck(`mirror.${f}.firstMover`, `${name} War first-mover advantage (side 0 score)`, s.firstMover.value, fm.lo, fm.hi, { target: `${fm.lo}-${fm.hi}%`, show: () => fmtEstimate(s.firstMover, 1, '%') }),
         s.matches,
       ),
     );
     // A16.5: turret share of kills is reported only.
-    checks.push(infoCheck('info.full.turretShare', 'Turret share of kills', fmtPct(s.turretSharePct), 'reported only (A16.5)'));
+    checks.push(infoCheck(`info.${f}.turretShare`, `${name} War turret share of kills`, fmtPct(s.turretSharePct), 'reported only (A16.5)'));
   }
   return checks;
 }
@@ -446,7 +515,7 @@ export async function runBalance(o: BalanceOptions, content: CompiledContent = g
 
   const mirrors: MirrorStats[] = [];
   if (o.mirror) {
-    for (const f of MIRROR_FORMATS) {
+    for (const f of o.mirrorFormats) {
       const s = mirrorStats(f, (byTag.get(`mirror.${f}`) ?? []).map((r) => r.summary));
       mirrors.push(s);
       checks.push(...mirrorChecks(s));
@@ -511,7 +580,7 @@ export function balanceSections(r: Report<BalanceData>): string[] {
       '## Balanced mirror',
       '',
       markdownTable(
-        ['Format', 'Matches', 'Median', 'P10', 'P90', 'In window (Full 6:45-10:15, Standard 5:00-8:00)', 'Final Bell', 'Evolves (median)', 'Side 0 score', 'Turret kill share'],
+        ['Format', 'Matches', 'Median', 'P10', 'P90', 'In 80% band (A18.3.4)', 'Final Bell', 'Evolves (median)', 'Stays per position (median)', 'Lead at 3rd evolve', 'Research share', 'Research items', 'Side 0 score', 'Turret kill share'],
         d.mirrors.map((m) => [
           m.format,
           m.matches,
@@ -521,6 +590,10 @@ export function balanceSections(r: Report<BalanceData>): string[] {
           fmtPct(m.withinWindowPct),
           fmtPct(m.finalBellPct),
           m.evolveMedianSec.map((s) => fmtClock(s)).join(' / '),
+          (m.stayMedianSec ?? []).map((s) => fmtClock(s)).join(' / '),
+          Number.isFinite(m.evolveLeadSec) ? `${fmtNum(m.evolveLeadSec, 1)} s` : '-',
+          fmtPct(m.researchSharePct),
+          fmtNum(m.researchItems, 1),
           fmtEstimate(m.firstMover, 1, '%'),
           fmtPct(m.turretSharePct),
         ]),

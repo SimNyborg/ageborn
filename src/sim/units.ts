@@ -6,6 +6,7 @@ import type { CardId, Side } from '@/contracts';
 import { BP, assert } from '@/core';
 import { emit } from './events';
 import { clampToLane } from './geometry';
+import { unitFxAtSpawn } from './research';
 import { levelBp, scaleCenti, type UnitRules } from './rules';
 import { NEVER, NO_TARGET, type AttackRt, type Ctx, type UnitRt } from './state';
 
@@ -18,7 +19,13 @@ export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: 
   const r = ctx.rules.units[card];
   assert(r !== undefined, `unknown unit card ${card}`);
   const lvl = levelBp(ctx.econ, level);
-  const maxHp = Math.trunc((scaleCenti(r.hp, lvl) * ctx.mods.unitHpBp) / BP);
+  // Research that completed before this spawn and the side's modifiers (A18.2 rule 2, A18.11).
+  const at = unitFxAtSpawn(ctx, side, r);
+  const fx = at.fx;
+  const caps = ctx.econ.caps;
+  let maxHp = Math.trunc((scaleCenti(r.hp, lvl) * ctx.mods.unitHpBp) / BP);
+  if (fx && fx.hpBp !== 0) maxHp = Math.trunc((maxHp * (BP + Math.min(caps.hpBp, fx.hpBp))) / BP);
+  const healBp = fx && fx.healBp !== 0 ? BP + fx.healBp : BP;
   const innateMax = r.innate ? scaleCenti(r.innate.amount, lvl) : 0;
   const attacks: AttackRt[] = r.attacks.map(() => ({
     targetId: NO_TARGET,
@@ -53,7 +60,7 @@ export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: 
     vsBase: r.attacks.map((a) => scaleCenti(a.vsBaseDamage, lvl)),
     innateMax,
     innateRegen: r.innate ? Math.trunc((r.innate.regenPerTick * lvl) / BP) : 0,
-    healPool: r.heal ? Math.trunc((r.heal.poolPerPulse * lvl) / BP) : 0,
+    healPool: r.heal ? Math.trunc((Math.trunc((r.heal.poolPerPulse * lvl) / BP) * healBp) / BP) : 0,
     lastHitId: NO_TARGET,
     lastHitCard: '',
     lastHitKind: null,
@@ -66,6 +73,12 @@ export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: 
     leapStart: 0,
     leapEnd: 0,
     moved: 0,
+    cls: ctx.rules.research.classOfRole[r.def.role] ?? -1,
+    picks: at.picks,
+    fx,
+    mail: at.mail,
+    lastEngagedTick: NEVER,
+    auraGuardBp: 0,
   };
   ctx.s.nextId += 1;
   ctx.s.units.push(u);

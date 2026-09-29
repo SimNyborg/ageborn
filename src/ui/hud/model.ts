@@ -16,6 +16,7 @@ export type DenyTarget =
   | 'card2'
   | 'card3'
   | 'card4'
+  | 'card5'
   | 'gold'
   | 'evolve'
   | 'power'
@@ -45,11 +46,12 @@ export const DENY_MS = 280;
 export const BUBBLE_MS = 2200;
 export const BANNER_MS = 2600;
 
-type Slot = 0 | 1 | 2 | 3 | 4;
+/** Six troops per battle (A18.9). */
+type Slot = 0 | 1 | 2 | 3 | 4 | 5;
 type Mount = 0 | 1 | 2 | 3;
 
 export function cardTarget(slot: number): DenyTarget {
-  return `card${Math.max(0, Math.min(4, slot)) as Slot}`;
+  return `card${Math.max(0, Math.min(5, slot)) as Slot}`;
 }
 
 function cmd(c: Command, target: DenyTarget): HudIntent {
@@ -83,10 +85,15 @@ export function cancelIntent(m: HudModel, side: Side, slot?: number): HudIntent 
   return cmd({ t: 'cancelTrain', side, slot: slot as Slot }, cardTarget(slot));
 }
 
+/**
+ * The gold counter's tap starts the next Economy income research (Granary, then Market; A18.5.4
+ * replaced the Treasury) until the War Council sheet ships (A18.5.7).
+ */
 export function treasuryIntent(m: HudModel, side: Side): HudIntent {
   const cost = m.me.nextTreasuryCost;
-  if (cost === null || m.me.gold < cost) return deny('gold');
-  return cmd({ t: 'treasury', side }, 'gold');
+  const next = m.me.nextIncome;
+  if (cost === null || !next || m.me.gold < cost) return deny('gold');
+  return cmd({ t: 'research', side, track: next.track, rank: next.rank, pick: next.pick }, 'gold');
 }
 
 export function evolveIntent(m: HudModel, side: Side): HudIntent {
@@ -101,7 +108,8 @@ export function powerIntent(m: HudModel, side: Side, p?: number): HudIntent {
 
 export function stanceIntent(m: HudModel, side: Side): HudIntent {
   if (!m.me.stanceVisible) return NONE;
-  return cmd({ t: 'stance', side, stance: m.me.stance === 'charge' ? 'hold' : 'charge' }, 'stance');
+  // S toggles Charge and Hold (A18.4.2); Fall back comes with the three-segment control (A18.13 phase 4).
+  return cmd({ t: 'stance', side, mode: m.me.stance === 'charge' ? 'hold' : 'charge' }, 'stance');
 }
 
 /** The manual Last Stand button exists only when armed and from match 5 (A2.11, A8). */
@@ -284,7 +292,8 @@ export function denyTargetFor(t: Command['t']): DenyTarget | null {
     case 'sellTurret':
     case 'buyMount':
       return 'mounts';
-    case 'treasury':
+    case 'research':
+    case 'researchCancel':
       return 'gold';
     case 'evolve':
       return 'evolve';

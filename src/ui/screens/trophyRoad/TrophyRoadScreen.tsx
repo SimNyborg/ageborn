@@ -10,12 +10,14 @@ import type { JSX } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
 import { Button } from '../../components/Button';
+import { CosmeticImage } from '../../components/cosmeticArt';
 import { Pill } from '../../components/Chips';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CastleIcon, CheckIcon, CrateIcon, FlagIcon, LockIcon, RobotIcon, ScrollIcon, TrophyIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { itemKey, roadItemsAt } from '../model/cosmetics';
 import { roadNodes, roadProgress, type RoadNodeView } from '../model/progress';
 import { RoadRewardView } from '../shared/RoadReward';
 
@@ -81,8 +83,10 @@ function GateLines(p: { arena: ArenaDef; prev: ArenaDef | null }) {
 }
 
 function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
-  const { t, locale, services, toasts } = useUi();
+  const { t, locale, services, toasts, content } = useUi();
   const { v } = p;
+  // collection items (A18.9.4) this node grants, so the Collection's "Trophy Road at N" is visible here
+  const items = roadItemsAt(content, v.node.trophies);
   return (
     <li class={`road-node road-node--${p.side} is-${v.state}`} data-testid={`road-node-${v.node.trophies}`}>
       <span class="road-node__dot" aria-hidden="true">
@@ -95,6 +99,17 @@ function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
         <span class="road-node__rewards">
           {v.node.rewards.map((r, i) => (
             <RoadRewardView key={i} r={r} />
+          ))}
+          {items.map((x) => (
+            <span key={x.id} class={`road-rw road-rw--cosmetic road-rw--${x.collection}`} data-testid={`road-item-${itemKey(x)}`}>
+              <span class="road-rw__art">
+                <CosmeticImage item={itemKey(x)} />
+              </span>
+              <span class="road-rw__text">
+                <b>{t(x.nameKey)}</b>
+                <small>{t(`cosmetic.ui.kind.${x.collection}`)}</small>
+              </span>
+            </span>
           ))}
         </span>
         {v.state === 'claimable' ? (

@@ -241,10 +241,10 @@ export function economyChecks(m: EconomyMeasures): Check[] {
 // ---------------------------------------------------------------------------------------------
 // The player model (drives Meta).
 
-/** A17.8 expected evolve times (s): Bronze 0:52, Medieval 1:25, Gunpowder 2:25, Industrial 3:10, Modern 4:00, Future 5:10, Cosmic 6:30. */
-const EVOLVE_AT_SEC = [52, 85, 145, 190, 240, 310, 390] as const;
-/** Typical match length per format (s): the A17.2 medians (Short 4:45, Standard 6:30, Full 8:30). */
-const MATCH_SEC: Record<FormatId, number> = { tutorial: 240, short: 285, standard: 390, full: 510 };
+/** A18.3.4 expected evolve times (s): ~1:10, 2:50, 4:35, 6:25, 8:20, 10:20 (by position in the window). */
+const EVOLVE_AT_SEC = [70, 170, 275, 385, 500, 620] as const;
+/** Typical match length per format (s): the A18.3.4 medians (Short 7:00, Standard 10:30, Full 15:00). */
+const MATCH_SEC: Record<FormatId, number> = { tutorial: 180, short: 420, standard: 630, full: 900 };
 
 /**
  * Plausible per-match stats of an engaged player, for quest progress only (A6.7): the economy does not
@@ -252,7 +252,7 @@ const MATCH_SEC: Record<FormatId, number> = { tutorial: 240, short: 285, standar
  * matches skip the Treasury, and Last Stand fires in every loss and in one win in five.
  */
 export function syntheticStats(content: CompiledContent, format: FormatId, won: boolean, rng: Sfc32State, planCard: CardId | null): MatchStats {
-  const evolves = Math.max(0, content.formats[format].ages.length - 1);
+  const evolves = Math.max(0, (content.formats[format]?.ages.length ?? 1) - 1);
   return {
     trained: 40,
     kills: won ? 38 : 30,
@@ -265,7 +265,7 @@ export function syntheticStats(content: CompiledContent, format: FormatId, won: 
     usedTreasury: !chanceBp(rng, 3333),
     usedLastStand: !won || chanceBp(rng, 2000),
     ownBaseHpBpAtEnd: won ? 5000 : 0,
-    durationMs: MATCH_SEC[format] * 1000,
+    durationMs: (MATCH_SEC[format] ?? 420) * 1000,
     mvpCard: planCard,
   };
 }

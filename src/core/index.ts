@@ -4,5 +4,6 @@ export * from './fixed';
 export * from './hash';
 export * from './ids';
 export * from './modifiers';
+export * from './research';
 export * from './ring';
 export * from './rng';

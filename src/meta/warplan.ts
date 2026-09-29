@@ -1,6 +1,6 @@
 /**
- * The War Plan (DESIGN A3): five Age Loadouts, each with 5 unit slots, 2 turret slots and 1 Age
- * Power, all from that age, all owned, no duplicates; three presets.
+ * The War Plan (DESIGN A3): one Age Loadout per age, each with 6 unit slots (A18.9), 2 turret slots
+ * and 1 Age Power, all from that age, all owned, no duplicates; three presets.
  *
  * - Starter plan: each age's 3 common units (Infantry, Ranged, Heavy) and 2 common turrets, plus its
  *   default power. The starter kit always meets the minimum to play.
@@ -80,6 +80,31 @@ export function autoFillLoadout(s: SaveDoc, t: Content, age: AgeId, current?: Lo
     turrets: slots(turrets.filter((id) => pickedTurrets.includes(id)), TURRET_SLOTS),
     power: keepPower ? cur : defaultPower(t, age),
   };
+}
+
+/** Save flag: the sixth troop slot of save v4 has been filled once (A18.9, A18.11). */
+export const SIXTH_SLOT_FLAG = 'meta-troop-slot-6';
+
+/**
+ * Six troops (A18.9): the sixth unit slot that save v4 added empty is filled once, in every plan and
+ * age, with the highest-level owned unit of that age not already in the loadout (ties: content
+ * order). A slot the player empties later stays empty.
+ */
+export function fillNewTroopSlots(s: SaveDoc, t: Content): SaveDoc {
+  if (s.flags[SIXTH_SLOT_FLAG]) return s;
+  const warPlans = s.warPlans.map((plan) => {
+    const loadouts = { ...plan.loadouts };
+    for (const age of Object.keys(loadouts) as AgeId[]) {
+      const l = loadouts[age];
+      if (!l || (l.units[UNIT_SLOTS - 1] ?? null) !== null) continue;
+      const pick = byLevel(s, ageCards(t, age).units).find((id) => !l.units.includes(id));
+      const units: (CardId | null)[] = Array.from({ length: UNIT_SLOTS }, (_, i) => l.units[i] ?? null);
+      if (pick) units[UNIT_SLOTS - 1] = pick;
+      loadouts[age] = { ...l, units };
+    }
+    return { ...plan, loadouts };
+  });
+  return { ...s, warPlans, flags: { ...s.flags, [SIXTH_SLOT_FLAG]: true } };
 }
 
 /** Auto-fill for the active plan (A3); not saved until the player keeps it. */

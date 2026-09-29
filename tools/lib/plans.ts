@@ -23,7 +23,7 @@ export function agesOf(content: CompiledContent): AgeId[] {
 
 /** The ages a format plays, in order. */
 export function formatAges(content: CompiledContent, format: FormatId): AgeId[] {
-  return [...content.formats[format].ages];
+  return [...(content.formats[format]?.ages ?? [])];
 }
 
 /** Collectable unit cards of an age, in table order. */
@@ -54,6 +54,8 @@ export function baselineLoadout(content: CompiledContent, age: AgeId): Loadout {
       unitId(content, age, 'heavy', 'common'),
       unitId(content, age, 'antiArmor', 'rare'),
       unitId(content, age, 'support', 'rare'),
+      // A18.9: a loadout has six troop slots; the A2.14 baseline keeps the sixth empty
+      null,
     ],
     turrets: [commons[0]?.id ?? null, commons[1]?.id ?? null],
     power: power?.id ?? '',
@@ -166,7 +168,7 @@ export function planIssues(content: CompiledContent, plan: Plan, format: FormatI
       issues.push(`${age}: no loadout`);
       continue;
     }
-    if (l.units.length !== 5) issues.push(`${age}: ${l.units.length} unit slots, want 5`);
+    if (l.units.length !== 6) issues.push(`${age}: ${l.units.length} unit slots, want 6`);
     if (l.turrets.length !== 2) issues.push(`${age}: ${l.turrets.length} turret slots, want 2`);
     const units = l.units.filter((c): c is CardId => c !== null);
     const turrets = l.turrets.filter((c): c is CardId => c !== null);

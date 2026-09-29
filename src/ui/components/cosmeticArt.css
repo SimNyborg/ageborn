@@ -1,0 +1,87 @@
+/* Cosmetic collection art in the UI (DESIGN A18.9.4). */
+.cos-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+/* A base with a skin (BaseLook): the base picture, the tint multiplied over it inside its own
+   silhouette, and the particle layer. */
+.cos-base {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+}
+.cos-base__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.cos-base__tint {
+  object-fit: fill;
+  mix-blend-mode: multiply;
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+}
+.cos-base__fx {
+  object-fit: fill;
+  inset: auto;
+  top: 4%;
+  left: 8%;
+  width: 84%;
+  height: 82%;
+}
+.cos-flags {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 6px;
+}
+.cos-flags__flag {
+  display: block;
+  width: 64px;
+  aspect-ratio: 64 / 44;
+  transform-origin: 0 50%;
+  filter: drop-shadow(0 3px 0 rgba(27, 19, 48, 0.35));
+  animation: cos-flag-wave 2.3s ease-in-out infinite, ui-pop 360ms var(--ui-ease-back, ease-out) both;
+}
+.cos-flags__flag--nation {
+  width: 52px;
+  animation-delay: -0.8s, 90ms;
+}
+@keyframes cos-flag-wave {
+  0%,
+  100% {
+    transform: perspective(220px) rotateY(0deg) skewY(0deg);
+  }
+  50% {
+    transform: perspective(220px) rotateY(-15deg) skewY(-2.5deg) scaleX(0.97);
+  }
+}
+.cos-flags--lg .cos-flags__flag {
+  width: 92px;
+}
+.cos-flags--lg .cos-flags__flag--nation {
+  width: 74px;
+}
+.cos-flags.is-still .cos-flags__flag {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-flags__flag {
+    animation: none;
+  }
+}

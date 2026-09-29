@@ -9,6 +9,7 @@ import type { CardId, Side, Sim, SimEvent, UnitState } from '@/contracts';
 import { BP, MILLI, PPM, assert } from '@/core';
 import { SimImpl } from './createSim';
 import { xOf } from './geometry';
+import { refreshSideFx } from './research';
 import { NEVER, NO_TARGET, cardLevel, type Ctx, type UnitRt } from './state';
 import { spawnUnit } from './units';
 
@@ -107,4 +108,14 @@ export function devClearLane(sim: Sim): void {
 /** The live unit with this id, typed with the internal fields (tests only). */
 export function unitById(sim: Sim, id: number): UnitRt | undefined {
   return simCtx(sim).s.units.find((u) => u.id === id);
+}
+
+/** Grants a side a research pick at once, as if it had just completed (tests and dev pages; A18.5). */
+export function devGrantResearch(sim: Sim, side: Side, pickId: string): void {
+  const ctx = impl(sim).ctx;
+  const p = ctx.rules.research.picks.find((q) => q.id === pickId);
+  assert(p !== undefined, `unknown research pick ${pickId}`);
+  const s = ctx.s.sides[side];
+  if (!s.research.owned.includes(p.idx)) s.research.owned.push(p.idx);
+  refreshSideFx(ctx, side);
 }

@@ -52,24 +52,41 @@ describe('exploit proxies (DESIGN B12)', () => {
     }
   });
 
-  it('Treasury greed buys all three levels before any turret or mount', () => {
-    const commands = play('treasury_greed', 240).commands.filter((c) => c.side === 0);
-    const lastTreasury = commands.filter((c) => c.t === 'treasury').map((c) => c.tick);
-    expect(lastTreasury).toHaveLength(content.economy.treasuryCosts.length);
+  it('Economy greed researches Granary and Market before any turret or mount (A18.12 eco_greed)', () => {
+    const commands = play('eco_greed', 240).commands.filter((c) => c.side === 0);
+    const econ = commands.filter((c) => c.t === 'research' && c.track === 'economy');
+    expect(econ.slice(0, 2).map((c) => (c.t === 'research' ? [c.rank, c.pick] : []))).toEqual([
+      [1, 0],
+      [2, 0],
+    ]);
     const firstBuild = commands.find((c) => c.t === 'buildTurret' || c.t === 'buyMount')?.tick ?? Number.POSITIVE_INFINITY;
-    expect(firstBuild).toBeGreaterThan(lastTreasury.at(-1) as number);
+    expect(firstBuild).toBeGreaterThan(econ[1]?.tick ?? Number.POSITIVE_INFINITY);
+  });
+
+  it('the Balanced reference researches (A18.12); no_research never does', () => {
+    expect(play('balanced', 240).commands.some((c) => c.side === 0 && c.t === 'research')).toBe(true);
+    expect(play('no_research', 240).commands.some((c) => c.side === 0 && c.t === 'research')).toBe(false);
+  });
+
+  it('flag ball holds at 800; fallback turtle falls back; the toggler flips its stance in fights', () => {
+    const ball = play('flag_ball', 120).commands.filter((c) => c.side === 0 && c.t === 'stance');
+    expect(ball[0]).toMatchObject({ mode: 'hold', holdP: 800 });
+    const back = play('fallback_turtle', 120).commands.filter((c) => c.side === 0 && c.t === 'stance');
+    expect(back[0]).toMatchObject({ mode: 'fallback' });
+    const flips = play('stance_toggler', 240).commands.filter((c) => c.side === 0 && c.t === 'stance');
+    expect(flips.length).toBeGreaterThan(2);
   });
 
   it('the turtle fills four mounts and holds', () => {
     const { sim, commands } = play('turret_turtle', 330);
     expect(sim.state.sides[0].mountsOwned).toBe(4);
     expect(sim.state.sides[0].turrets.filter((t) => t !== null).length).toBeGreaterThanOrEqual(3);
-    expect(commands.some((c) => c.side === 0 && c.t === 'stance' && c.stance === 'hold')).toBe(true);
+    expect(commands.some((c) => c.side === 0 && c.t === 'stance' && c.mode === 'hold')).toBe(true);
   });
 
   it('heavy plus mass ranged holds while it masses', () => {
     const stances = play('heavy_ranged', 120).commands.filter((c) => c.side === 0 && c.t === 'stance');
-    expect(stances[0]).toMatchObject({ stance: 'hold' });
+    expect(stances[0]).toMatchObject({ mode: 'hold' });
   });
 
   it('cheap spam only trains the cheapest unit', () => {

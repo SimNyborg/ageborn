@@ -4,7 +4,7 @@
  */
 export { ScreenHost, SCREEN_COMPONENTS, onEscape, type ScreenHostProps, type ScreenSlots } from './ScreenHost';
 export type { UiEnv } from './context';
-export type { ActionResult, ProfileLookPatch, UiServices, WarPlan } from './services';
+export type { ActionResult, CosmeticEquipPatch, ProfileLookPatch, UiServices, WarPlan } from './services';
 export { HomeScreen } from './home/HomeScreen';
 export {
   createRouter,

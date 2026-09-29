@@ -215,10 +215,12 @@ describe('v1 → v2: eight ages (A17.13)', () => {
     doc.warPlans.forEach((p, i) => {
       const before = old.warPlans[i]!;
       expect(Object.keys(p.loadouts)).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
-      for (const age of ['stone', 'medieval', 'gunpowder', 'modern', 'future'] as const) expect(p.loadouts[age]).toEqual(before.loadouts[age]);
-      expect(p.loadouts.bronze).toEqual({ units: ['hoplite', 'javelineer', 'war_chariot', null, null], turrets: ['archer_tower', 'sun_mirror'], power: 'tidal_wave' });
-      expect(p.loadouts.industrial).toEqual({ units: ['riveter', 'carbineer', 'steam_golem', null, null], turrets: ['gatling_gun', 'mortar_pit'], power: 'iron_horse' });
-      expect(p.loadouts.cosmic).toEqual({ units: ['star_legionnaire', 'ion_ranger', 'hover_tank', null, null], turrets: ['ion_turret', 'starburst_gun'], power: 'starfall' });
+      // v4 (A18.9) then adds an empty sixth troop slot to every loadout
+      const six = (l: { units: (string | null)[] } & Record<string, unknown>) => ({ ...l, units: [...l.units, null] });
+      for (const age of ['stone', 'medieval', 'gunpowder', 'modern', 'future'] as const) expect(p.loadouts[age]).toEqual(six(before.loadouts[age]));
+      expect(p.loadouts.bronze).toEqual({ units: ['hoplite', 'javelineer', 'war_chariot', null, null, null], turrets: ['archer_tower', 'sun_mirror'], power: 'tidal_wave' });
+      expect(p.loadouts.industrial).toEqual({ units: ['riveter', 'carbineer', 'steam_golem', null, null, null], turrets: ['gatling_gun', 'mortar_pit'], power: 'iron_horse' });
+      expect(p.loadouts.cosmic).toEqual({ units: ['star_legionnaire', 'ion_ranger', 'hover_tank', null, null, null], turrets: ['ion_turret', 'starburst_gun'], power: 'starfall' });
       expect(p.name).toBe(before.name);
     });
   });

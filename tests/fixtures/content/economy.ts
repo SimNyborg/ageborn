@@ -85,9 +85,6 @@ export const economy: EconomyRules = {
   passiveGoldPerSec: 6,
   // A2.4 XP
   passiveXpPerSec: 4,
-  // A2.3 Treasury: 3 levels, each +1.5 gold/s (1,500 milli-gold/s); never doubled by Overdrive
-  treasuryCosts: [200, 350, 550],
-  treasuryMilliGoldPerSecPerLevel: 1500,
   // A2.3 Turret slots: index i is the price of mount i + 1; mount 1 is free
   mountCosts: [0, 150, 350, 700],
   // A2.3 / A2.4 / A5.1 bounties
@@ -109,6 +106,8 @@ export const economy: EconomyRules = {
   // A2.3 / A2.8 Turrets
   sellRefundBp: 5000,
   turretRangeCap: 480,
+  // A18 contract bump (SIM_VERSION 3.0.0): fields added to the frozen copy with the A18 values
+  turretRangeHardCapLu: 560,
   turretBuildMs: 1000,
   turretSellMs: 1000,
   // A2.2 / A2.4 Evolve
@@ -144,6 +143,9 @@ export const economy: EconomyRules = {
   firstHitIdleMs: 2000,
   // A2.7 Stance: 2 s toggle cooldown
   stanceCooldownMs: 2000,
+  holdFlag: { minP: 320, maxP: 800, snapLu: 20, moveCooldownMs: 1000 },
+  fallbackP: 200,
+  statCaps: { damageBp: 3500, takenBp: 3500, hpBp: 3000, attackSpeedBp: 2500, speedBp: 2000, rangeLu: 60 },
   // A2.7 Sizes (collision widths) and knockback resist
   sizes: { small: 24, medium: 32, large: 48, huge: 80 },
   knockbackResistBp: { small: 0, medium: 0, large: 5000, huge: 5000 },

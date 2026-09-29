@@ -26,9 +26,12 @@ interface BrainOptions {
   seed?: string;
 }
 
-/** A brain with mistakes off unless the test turns them on, and no opening unless given. */
+/**
+ * A brain with mistakes off unless the test turns them on, and no opening unless given. The War Council
+ * items other than the Economy income picks (A18.5.8) are off unless the test sets `researchFromTicks`.
+ */
 function brainFor(o: BrainOptions = {}): { brain: Brain; tier: TierParams } {
-  const tier = { ...tierParams(o.tier ?? 10), mistakeBp: 0, ...o.tierOverride };
+  const tier = { ...tierParams(o.tier ?? 10), mistakeBp: 0, researchFromTicks: 1_000_000_000, ...o.tierOverride };
   const brain = new Brain(
     {
       book,
@@ -52,7 +55,11 @@ function decide(brain: Brain, obs: Observation, o: { history?: Observation[]; no
   return brain.decide(v, mem, seedSfc32(o.rng ?? 'decide'));
 }
 
-const kinds = (t: DecisionTrace): string[] => t.candidates.map((c) => c.action.kind);
+/** Candidate action kinds; an Economy income research (the Treasury before A18.5.4) reads `treasury`. */
+const kinds = (t: DecisionTrace): string[] =>
+  t.candidates.map((c) => (c.action.kind === 'research' && c.action.pick.track === 'economy' ? 'treasury' : c.action.kind));
+/** The Granary research (the first Economy income pick, 150 gold; A18.5.4). */
+const GRANARY = { kind: 'research', cost: 150 * MILLI, pick: { id: 'economy.granary' } };
 
 /** The upper-tier craft (owner feedback 2026-09-28) switched off, for tests of the plain A7.2/A7.3 rules. */
 const NO_CRAFT: Partial<TierParams> = { econPlan: false, waveCommit: false, powerArmyShareBp: 0, baseTurrets: 0 };
@@ -201,7 +208,7 @@ describe('push gate, banking and stance (A7.2)', () => {
     expect(t.pushOk).toBe(false);
     expect(t.banking).toBe(true);
     expect(t.defence).toBe(300);
-    expect(t.goal).toEqual({ kind: 'treasury', amount: 200 * MILLI });
+    expect(t.goal).toEqual({ kind: 'treasury', amount: 150 * MILLI });
     expect(t.action).toEqual({ kind: 'stance', stance: 'hold' });
     expect(kinds(t)).not.toContain('train');
   });
@@ -280,8 +287,8 @@ describe('saving goals and economy', () => {
   it('banks for Treasury while the gate is quiet in the first 3:00, then buys it', () => {
     const { brain } = brainFor({ tier: 7 });
     const t = decide(brain, observation({ tick: 600, gold: 220 * MILLI }));
-    expect(t.goal).toEqual({ kind: 'treasury', amount: 200 * MILLI });
-    expect(t.action).toEqual({ kind: 'treasury', cost: 200 * MILLI });
+    expect(t.goal).toEqual({ kind: 'treasury', amount: 150 * MILLI });
+    expect(t.action).toMatchObject(GRANARY);
   });
 
   it('does not buy Treasury after 3:00, above the tier max, or with enemies on its own half (A17.13)', () => {
@@ -311,7 +318,7 @@ describe('saving goals and economy', () => {
 
   it('modernises an outdated turret at rebuild tiers when calm', () => {
     const { brain } = brainFor({ tier: 5 });
-    const med = content.formats.full.ages[2];
+    const med = content.formats.full!.ages[2];
     expect(med).toBe('medieval');
     const t = decide(
       brain,
@@ -407,11 +414,12 @@ describe('personalities (A7.4)', () => {
     expect(t.action?.kind).toBe('train');
   });
 
-  it('Ledger rushes Treasury 3 by 2:30 whatever its tier', () => {
+  it('Ledger rushes the Economy income research (Granary, then Market) by 2:30 whatever its tier', () => {
     const w = content.generals as { list: Record<string, { weights: Weights }> };
     const { brain } = brainFor({ tier: 3, general: 'ledger', weights: w.list.ledger?.weights });
-    const t = decide(brain, observation({ tick: 1000, gold: 400 * MILLI, treasury: 2 }));
-    expect(t.goal).toEqual({ kind: 'treasury', amount: 550 * MILLI });
+    const granary = { owned: ['economy.granary'], current: null, progressBp: 0, ranksOpen: 2 };
+    const t = decide(brain, observation({ tick: 1000, gold: 400 * MILLI, treasury: 1, research: granary }));
+    expect(t.goal).toEqual({ kind: 'treasury', amount: 300 * MILLI });
   });
 
   it('Moss holds at her tiers (II-IV) although A7.3 allows Hold only from tier V', () => {
@@ -535,10 +543,11 @@ describe('upper-tier craft (owner feedback 2026-09-28)', () => {
     // No enemy has been on the bot's half since the start: a passive foe. (An own unit past mid-lane a
     // moment ago keeps the attack clock at ×1.)
     const history = [observation({ tick: 3650, units: [unit(1, 'bonker', L / 2 + 100)] })];
-    expect(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 600 * MILLI }), { history }).action).toEqual({ kind: 'treasury', cost: 200 * MILLI });
+    expect(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 600 * MILLI }), { history }).action).toMatchObject(GRANARY);
     expect(kinds(decide(brainFor({ tier: 5 }).brain, observation({ tick: 3700, gold: 600 * MILLI })))).not.toContain('treasury');
-    // Level 3 (550 gold) pays back in 367 s: not worth it.
-    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 900 * MILLI, treasury: 2 })))).not.toContain('treasury');
+    // Both income picks owned (Granary, Market): nothing left to buy.
+    const both = { owned: ['economy.granary', 'economy.market'], current: null, progressBp: 0, ranksOpen: 2 };
+    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 900 * MILLI, treasury: 2, research: both })))).not.toContain('treasury');
     // A foe on the bot's half in the last 20 s is not passive.
     const mem = new BotMemory(book);
     const raid = observation({ tick: 3400, units: [unit(0, 'bonker', 700)] });
@@ -550,7 +559,7 @@ describe('upper-tier craft (owner feedback 2026-09-28)', () => {
   it('does not spend a Treasury goal into a push-gate wave', () => {
     // Tier VII, D = 300: 180 gold would be a wave for the plain rule, but the bot banks for the level.
     const t = decide(brainFor({ tier: 7 }).brain, observation({ tick: 400, gold: 180 * MILLI, foe: foeTurret }));
-    expect(t.goal).toEqual({ kind: 'treasury', amount: 200 * MILLI });
+    expect(t.goal).toEqual({ kind: 'treasury', amount: 150 * MILLI });
     expect(kinds(t)).not.toContain('train');
   });
 
@@ -592,3 +601,50 @@ function baselineTurretsObs(): Observation {
     turretCards: turrets.slice(0, 2).map((u) => u.id),
   });
 }
+
+describe('War Council use (A18.5.8)', () => {
+  const research = (t: DecisionTrace) => (t.action?.kind === 'research' ? t.action.pick : null);
+  const RESEARCH_ON = { treasuryMax: 0, goldFloat: 0 };
+
+  it('saves for a research item once the tier\'s time has come, then starts it', () => {
+    const early = decide(brainFor({ tier: 7, tierOverride: { ...RESEARCH_ON, researchFromTicks: 600 } }).brain, observation({ tick: 400, gold: 400 * MILLI }));
+    expect(early.goal?.kind === 'research').toBe(false);
+    const { brain } = brainFor({ tier: 7, tierOverride: { ...RESEARCH_ON, researchFromTicks: 600 } });
+    const t = decide(brain, observation({ tick: 700, gold: 400 * MILLI }));
+    expect(t.goal?.kind).toBe('research');
+    expect(research(t)?.rank).toBe(1);
+    // the slot is busy while it runs: no second item
+    const busy = { owned: [], current: research(t)?.id ?? '', progressBp: 100, ranksOpen: 1 };
+    expect(kinds(decide(brain, observation({ tick: 900, gold: 900 * MILLI, research: busy })))).not.toContain('research');
+  });
+
+  it('opens Troops lines only for classes in its tray (research compatibility, A18.5.2)', () => {
+    for (const seed of ['a', 'b', 'c', 'd']) {
+      const { brain } = brainFor({ tier: 3, seed, tierOverride: { ...RESEARCH_ON, researchFromTicks: 0 } });
+      const p = research(decide(brain, observation({ tick: 700, gold: 400 * MILLI, tray: ['bonker', 'pebbler', null, null, null] })));
+      expect(p === null || p.group === null || p.group === 'infantry' || p.group === 'ranged', p?.id).toBe(true);
+    }
+  });
+
+  it('counter scoring (tier V and up) answers what it sees: Heavies call for an anti-Heavy pick', () => {
+    const heavy = Array.from({ length: 6 }, (_, i) => unit(0, 'tuskback', 1200 + i * 20));
+    const { brain } = brainFor({ tier: 8, tierOverride: { ...RESEARCH_ON, researchFromTicks: 0 } });
+    const p = research(decide(brain, observation({ tick: 700, gold: 400 * MILLI, units: heavy })));
+    expect(p?.aiHint).toBe('vsHeavy');
+  });
+
+  it('Mama Moss researches Defences first; Kettle never takes Forage', () => {
+    const w = content.generals as { list: Record<string, { weights: Weights }> };
+    const moss = brainFor({ tier: 6, general: 'moss', weights: w.list.moss?.weights, tierOverride: { ...RESEARCH_ON, researchFromTicks: 0 } }).brain;
+    expect(research(decide(moss, observation({ tick: 700, gold: 400 * MILLI })))?.track).toBe('defences');
+    for (const seed of ['a', 'b', 'c', 'd', 'e']) {
+      const kettle = brainFor({ tier: 1, seed, general: 'kettle', weights: w.list.kettle?.weights, tierOverride: { ...RESEARCH_ON, researchFromTicks: 0 } }).brain;
+      expect(research(decide(kettle, observation({ tick: 700, gold: 400 * MILLI })))?.id).not.toBe('economy.forage');
+    }
+  });
+
+  it('tiers: first research 1:30 at 0-I, 1:00 at II-IV, 0:45 at V-VI, 0:30 from VII', () => {
+    expect([0, 3, 6, 8].map((t) => tierParams(t).researchFromTicks)).toEqual([1800, 1200, 900, 600]);
+    expect([0, 3, 6, 8].map((t) => tierParams(t).researchMode)).toEqual(['random', 'hint', 'counter', 'counter']);
+  });
+});

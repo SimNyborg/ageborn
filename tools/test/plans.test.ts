@@ -15,6 +15,8 @@ describe('A2.14 baseline plan', () => {
       ['common', 'heavy'],
       ['rare', 'antiArmor'],
       ['rare', 'support'],
+      // A18.9: six troop slots; the baseline keeps the sixth empty
+      [undefined, undefined],
     ]);
     expect(l.turrets.map((id) => (id ? content.turrets[id]?.rarity : null))).toEqual(['common', 'common']);
     expect(content.powers[l.power]?.slot).toBe('default');
@@ -28,7 +30,7 @@ describe('A2.14 baseline plan', () => {
   it('planIssues catches A3 violations', () => {
     const plan = baselinePlan(content);
     const stone = plan.stone as Loadout;
-    stone.units = [stone.units[0] ?? null, stone.units[0] ?? null, null, null, null];
+    stone.units = [stone.units[0] ?? null, stone.units[0] ?? null, null, null, null, null];
     stone.turrets = [null, null];
     const issues = planIssues(content, plan, 'short');
     expect(issues.some((i) => i.includes('duplicate'))).toBe(true);

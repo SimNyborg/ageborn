@@ -122,19 +122,19 @@
   },
   "age": {
     "stone": { "name": "Stone Age", "mechanic": "Melee, ranged, heavies, knockback, charges and ricochet" },
-    "bronze": { "name": "Bronze Age", "mechanic": "Piercing throws, damage auras, turret stuns and the sweep power" },
+    "bronze": { "name": "Bronze Age: Hellas", "mechanic": "Piercing throws, damage auras, turret stuns and the sweep power", "flavour": "Hoplites, gorgons and bronze giants under the eyes of the old gods." },
     "medieval": { "name": "Medieval Age", "mechanic": "Reach, shields, damage resistance and siege damage to bases" },
-    "gunpowder": { "name": "Gunpowder Age", "mechanic": "Splash artillery, pulls, mech units and the first air unit" },
-    "industrial": { "name": "Industrial Age", "mechanic": "Mech heavies, marking support, exploding runners, stun chains and a crewed Legendary" },
+    "gunpowder": { "name": "Age of Muskets", "mechanic": "Splash artillery, pulls, mech units and the first air unit", "flavour": "Drums, drilled lines of muskets and cannon smoke over the field." },
+    "industrial": { "name": "Industrial Age: Great War", "mechanic": "Mech heavies, marking support, exploding runners, stun chains and a crewed Legendary", "flavour": "Steam, rail and landships grinding across the trenches." },
     "modern": { "name": "Modern Age", "mechanic": "Air as a regular option, suppression and called strikes" },
     "future": { "name": "Future Age", "mechanic": "Energy shields, EMP stuns and time control" },
     "cosmic": { "name": "Cosmic Age", "mechanic": "Blink skirmishers, shield projectors and an air Legendary with called strikes" }
   },
   "format": {
     "tutorial": { "name": "Training", "desc": "Stone Age to Future Age, no clock." },
-    "short": { "name": "Short War", "desc": "Four ages: Stone to Gunpowder." },
-    "standard": { "name": "Standard War", "desc": "Six ages: Stone to Modern." },
-    "full": { "name": "Full War", "desc": "All eight ages: Stone to Cosmic." }
+    "short": { "name": "Short War", "desc": "Three ages, about 7 min." },
+    "standard": { "name": "Standard War", "desc": "Five ages, about 10 min." },
+    "full": { "name": "Full War", "desc": "Seven ages, about 15 min." }
   },
   "rarity": {
     "common": { "name": "Common" },
@@ -239,7 +239,7 @@
     "ledger": {
       "name": "Baroness Ledger",
       "personality": "Greedy evolver",
-      "signature": "Treasury 3 by 2:30 and evolves first. Weak before 1:00.",
+      "signature": "Economy research first and evolves first. Weak before 1:00.",
       "line": "Money first. Manners later."
     },
     "boomsworth": {
@@ -285,9 +285,9 @@
     "play_3": { "name": "Play {n} battles" },
     "train_30": { "name": "Train {n} units" },
     "evolve_6": { "name": "Evolve {n} times" },
-    "fast_final_age": { "name": "Reach your format's final age before 2:40 (Short), 4:15 (Standard) or 6:45 (Full)" },
+    "fast_final_age": { "name": "Reach your format's final age before 2:30 (Short), 5:45 (Standard) or 10:00 (Full)" },
     "turret_kills_20": { "name": "Kill {n} units with turrets" },
-    "win_no_treasury": { "name": "Win without buying Treasury" },
+    "win_no_treasury": { "name": "Win without Economy research" },
     "power_hits_5": { "name": "Hit 5+ enemies with one Age Power" },
     "base_damage_15000": { "name": "Deal {n} damage to enemy bases" },
     "aa_heavy_kills_5": { "name": "Kill {n} Heavies with Anti-armor units" },
@@ -329,12 +329,12 @@
   "title": {
     "recruit": { "name": "Recruit", "unlock": "Start playing" },
     "firestarter": { "name": "Firestarter", "unlock": "Win your first battle" },
-    "evolver": { "name": "Evolver", "unlock": "Reach the Cosmic Age" },
+    "evolver": { "name": "Evolver", "unlock": "Reach the last age of a Full War" },
     "mammoth_tamer": { "name": "Mammoth Tamer", "unlock": "Own the Mammoth Matriarch" },
     "collector": { "name": "Collector", "unlock": "Reach Codex Level 10" },
     "siege_scholar": { "name": "Siege Scholar", "unlock": "Reach Arena 4" },
     "last_stander": { "name": "Last Stander", "unlock": "Win after your Last Stand" },
-    "speedrunner": { "name": "Speedrunner", "unlock": "Reach the Cosmic Age before 6:15 in a Full War" },
+    "speedrunner": { "name": "Speedrunner", "unlock": "Reach the last age of a Full War before 10:00" },
     "veteran": { "name": "Veteran", "unlock": "Win 100 battles" },
     "curator": { "name": "Curator", "unlock": "Reach Codex Level 40" },
     "wardens_bane": { "name": "Warden's Bane", "unlock": "Beat The Warden" },
@@ -352,7 +352,7 @@
     "no_walls": { "name": "No Walls", "riddle": "Who needs towers?", "hint": "Win a Full War without building a turret." },
     "photo_finish": { "name": "Photo Finish", "riddle": "By a hair.", "hint": "Win at the Final Bell by 2% base HP or less." },
     "horn_of_legends": { "name": "Horn of Legends", "riddle": "One last blast.", "hint": "One Last Stand volley kills 8 or more units." },
-    "lightspeed": { "name": "Lightspeed", "riddle": "Clubs to lasers, fast.", "hint": "Reach the Future Age before 4:10 in a Full War." },
+    "lightspeed": { "name": "Lightspeed", "riddle": "Clubs to lasers, fast.", "hint": "Reach the Future Age before 9:00 in a Full War." },
     "underdog": { "name": "Underdog", "riddle": "Two ages behind, still standing.", "hint": "Win after your opponent was two ages ahead of you." },
     "humble_beginnings": { "name": "Humble Beginnings", "riddle": "Commons can conquer.", "hint": "Win a Full War with only Common cards and default powers in your plan." },
     "back_from_the_brink": { "name": "Back from the Brink", "riddle": "Almost dust.", "hint": "Win after your base fell below 5% HP." },
@@ -366,5 +366,53 @@
     "angry": { "name": "Angry" },
     "thumbsUp": { "name": "Thumbs up" },
     "gg": { "name": "GG" }
+  },
+  "research": {
+    "economy": {
+      "granary": { "name": "Granary", "desc": "+1.5 gold per second." },
+      "forage": { "name": "Forage", "desc": "+40% kill bounty for kills in your own half." },
+      "market": { "name": "Market", "desc": "+2 gold per second." },
+      "bounty_hunters": { "name": "Bounty Hunters", "desc": "Kill bounty rises from 50% to 65%." }
+    },
+    "defences": {
+      "watchtowers": { "name": "Watchtowers", "desc": "Turret range +40." },
+      "quick_loaders": { "name": "Quick Loaders", "desc": "Turret attack speed +15%." },
+      "engineers": { "name": "Engineers", "desc": "Modernise costs 50% less and takes 0.5 s." },
+      "arsenal": { "name": "Arsenal", "desc": "Turret damage +12%." }
+    },
+    "troops": {
+      "infantry": {
+        "weapons": { "name": "Weapons", "desc": "Infantry deal +10% damage." },
+        "mail": { "name": "Mail", "desc": "Infantry take less damage from every hit." },
+        "shield_wall": { "name": "Shield Wall", "desc": "Infantry take 20% less damage from ranged attackers, but move 8% slower." },
+        "rush": { "name": "Rush", "desc": "Infantry move 15% faster and their first hit in a fight deals +30%." }
+      },
+      "ranged": {
+        "weapons": { "name": "Weapons", "desc": "Ranged units deal +10% damage." },
+        "long_draw": { "name": "Long Draw", "desc": "Ranged units reach 30 further, but attack 8% slower." }
+      },
+      "heavy": {
+        "plating": { "name": "Plating", "desc": "Heavies take 15% less damage from Infantry." },
+        "weapons": { "name": "Weapons", "desc": "Heavies deal +10% damage." },
+        "trample": { "name": "Trample", "desc": "A Heavy's first hit in a fight knocks the enemy back." },
+        "bulwark": { "name": "Bulwark", "desc": "Allies just behind a Heavy take 10% less damage." }
+      },
+      "antiArmor": {
+        "hunters": { "name": "Hunters", "desc": "Anti-armor units deal +12% damage to armored enemies." },
+        "lightfoot": { "name": "Lightfoot", "desc": "Anti-armor units move 12% faster." },
+        "ambush": { "name": "Ambush", "desc": "While you Hold, their first hit in a fight deals +40%." },
+        "skirmish": { "name": "Skirmish", "desc": "Anti-armor units take 20% less damage from Infantry." }
+      },
+      "support": {
+        "field_care": { "name": "Field Care", "desc": "Heals and shields are 20% stronger." },
+        "mail": { "name": "Mail", "desc": "Support units take less damage from every hit." },
+        "war_drums": { "name": "War Drums", "desc": "Allies near a Support unit attack 8% faster." },
+        "rally": { "name": "Rally", "desc": "Allies near a Support unit take 10% less damage." }
+      }
+    },
+    "command": {
+      "signal_fires": { "name": "Signal Fires", "desc": "Your Age Power charges 15% faster." },
+      "war_horns": { "name": "War Horns", "desc": "Charging units move 8% faster; units at a forward Hold flag deal +10% damage." }
+    }
   }
 }

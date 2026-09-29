@@ -143,7 +143,11 @@ export interface ArtProvider {
   createProjectile(visualId: VisualId, side: Side): EffectView;
   createEffect(effectId: EffectId, o?: Record<string, number>): EffectView;
   /** Base flag, national flag, decorations and skin restyle of one side (A18.9.4); optional. */
-  createBaseDressing?(o: { age: AgeId; side: Side; look: SideLook; teamPreset: TeamPreset }): BaseDressingView;
+  /**
+   * `base`: the side's base view; the dressing attaches itself to its root and restyles its body
+   * (a base view may offer a duck-typed `setSkinTint(tint | null)`).
+   */
+  createBaseDressing?(o: { age: AgeId; side: Side; look: SideLook; teamPreset: TeamPreset; base?: BaseView }): BaseDressingView;
   /** Data URL, cached by (card, skin, size) (DESIGN B5 Portraits). */
   portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side }): Promise<string>;
 }

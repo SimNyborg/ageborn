@@ -47,9 +47,9 @@ const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon', 'welcome']);
 // Parts
 // ---------------------------------------------------------------------------------------------
 
-/** One age of a War Plan: 5 unit slots, 2 turret slots, 1 power (DESIGN A3). */
+/** One age of a War Plan: 6 unit slots (A18.9; 5 before save v4), 2 turret slots, 1 power (DESIGN A3). */
 export const LoadoutSchema = v.object({
-  units: v.pipe(v.array(v.nullable(id)), v.length(5)),
+  units: v.pipe(v.array(v.nullable(id)), v.length(6)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
   power: id,
 });

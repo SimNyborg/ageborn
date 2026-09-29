@@ -11,6 +11,7 @@ import type { DamageMod, Side, StatusKind } from '@/contracts';
 import { BP } from '@/core';
 import { emit } from './events';
 import { HEAVY_HIT_BP, type StatusRules, type UnitRules } from './rules';
+import { pOf } from './geometry';
 import { NO_TARGET, baseHpBp, other, type Ctx, type Impact, type UnitRt } from './state';
 import { addXp } from './systems/economy';
 
@@ -46,6 +47,46 @@ export function damageBuffBp(u: UnitRt): number {
 export function attackSpeedBuffBp(u: UnitRt): number {
   const t = statusBp(u, 'attackSpeedBuff');
   return t > u.auraAttackSpeedBp ? t : u.auraAttackSpeedBp;
+}
+
+/**
+ * A18.2 rule 4 stacking cap: `fixed` (research, side modifiers, War Horns) plus `buff` (the strongest
+ * timed buff or aura), at most the cap, but never below what the buff alone gives, so an Age Power or
+ * card aura keeps its A5 value while research cannot stack past the cap on top of it.
+ */
+export function capSum(fixed: number, buff: number, cap: number): number {
+  const sum = fixed + buff;
+  const limit = buff > cap ? buff : cap;
+  return sum > limit ? limit : sum;
+}
+
+/** War Horns (A18.5.5): while Holding with the flag at p ≤ 480, own units near the flag deal more damage. */
+function hornsDamageBp(ctx: Ctx, u: UnitRt): number {
+  const h = u.fx?.horns;
+  if (!h) return 0;
+  const s = ctx.s.sides[u.side];
+  if (s.stance !== 'hold' || s.holdP > h.flagMaxP) return 0;
+  const p = pOf(u.x, u.side);
+  const d = p > s.holdP ? p - s.holdP : s.holdP - p;
+  return d <= h.near ? h.holdDamageBp : 0;
+}
+
+/** Damage dealt bonus of a unit's attack now, bp: research and side modifiers plus buffs, capped (A18.2). */
+export function unitDamageBonusBp(ctx: Ctx, u: UnitRt): number {
+  const fixed = (u.fx ? u.fx.damageBp : 0) + hornsDamageBp(ctx, u);
+  return capSum(fixed, damageBuffBp(u), ctx.econ.caps.damageBp);
+}
+
+/** Attack speed bonus of a unit now, bp (may be negative: Long Draw), capped (A18.2). */
+export function unitAttackSpeedBp(ctx: Ctx, u: UnitRt): number {
+  return capSum(u.fx ? u.fx.attackSpeedBp : 0, attackSpeedBuffBp(u), ctx.econ.caps.attackSpeedBp);
+}
+
+/** Extra range of a unit's ranged attacks, mlu (Long Draw), capped (A18.2). Melee attacks never gain range. */
+export function rangeBonus(ctx: Ctx, u: UnitRt, melee: boolean): number {
+  if (melee || !u.fx || u.fx.range <= 0) return 0;
+  const cap = ctx.econ.caps.range;
+  return u.fx.range > cap ? cap : u.fx.range;
 }
 
 export function isLeaping(u: UnitRt): boolean {
@@ -109,10 +150,24 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
   if (modBp !== BP) v = Math.trunc((v * modBp) / BP);
   // 3. area secondary (exempt: powers, Last Stand, death explosions)
   if (!primary && imp.area !== 'blast') v = Math.trunc((v * ctx.econ.areaSecondaryBp) / BP);
-  // 4. target resist (Shield Wall: attacks with range ≥ 100, never powers)
-  if (tr.resist && !imp.power && imp.srcRange >= tr.resist.minRange) v = Math.trunc((v * (BP - tr.resist.bp)) / BP);
-  // 5. attacker damage buff
-  if (imp.dmgBuffBp > 0) v = Math.trunc((v * (BP + imp.dmgBuffBp)) / BP);
+  // 4. target damage taken, all sources summed and floored at −35% (A18.2): Shield Wall (card or
+  // research; attacks with range ≥ 100, never powers), Plating / Skirmish against Infantry, and the
+  // Bulwark / Rally aura.
+  const caps = ctx.econ.caps;
+  let red = 0;
+  if (tr.resist && !imp.power && imp.srcRange >= tr.resist.minRange) red += tr.resist.bp;
+  const fx = target.fx;
+  if (fx) {
+    if (fx.resistBp > 0 && !imp.power && imp.srcRange >= fx.resistMin) red += fx.resistBp;
+    if (fx.takenFrom >= 0 && imp.srcCls === fx.takenFrom) red += fx.takenBp;
+  }
+  red += target.auraGuardBp;
+  if (red > caps.takenBp) red = caps.takenBp;
+  if (red > 0) v = Math.trunc((v * (BP - red)) / BP);
+  // 5. attacker damage buff (already capped at fire time), plus research against the target's tags (Hunters)
+  let buff = imp.dmgBuffBp;
+  if (imp.vsBp > 0 && (tr.tags & imp.vsTags) !== 0) buff = capSum(imp.vsBp, buff, caps.damageBp);
+  if (buff !== 0) v = Math.trunc((v * (BP + buff)) / BP);
   // 6. mark
   const mark = isMarked(target);
   if (mark > 0) v = Math.trunc((v * (BP + mark)) / BP);
@@ -120,6 +175,11 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
   if (imp.turret && ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.turretDamageBp) / BP);
   // 8. Legendary target of a power or Last Stand
   if (imp.power && tr.legendary) v = Math.trunc((v * ctx.econ.legendaryPowerDamageBp) / BP);
+  // Mail (A18.5.2): a flat cut per hit, never below 1 HP and never past the −35% damage-taken floor.
+  if (target.mail > 0) {
+    const floor = Math.trunc((v * (BP - caps.takenBp)) / (red < BP ? BP - red : 1));
+    v = v - target.mail > floor ? v - target.mail : floor;
+  }
   if (v < 100) v = 100;
   return { dmg: v, modBp };
 }
@@ -174,9 +234,11 @@ export function damageBase(ctx: Ctx, baseSide: Side, imp: Impact | null, raw: nu
   if (b.baseHp <= 0) return;
   let v = raw;
   if (imp) {
-    if (imp.dmgBuffBp > 0) v = Math.trunc((v * (BP + imp.dmgBuffBp)) / BP);
+    if (imp.dmgBuffBp !== 0) v = Math.trunc((v * (BP + imp.dmgBuffBp)) / BP);
     if (ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.baseDamageBp) / BP);
     if (v < 100) v = 100;
+    // A18.7.3 "Take the tower": every hit aimed at this base also hits its marked turret.
+    if (b.markHp > 0) b.markHp = v < b.markHp ? b.markHp - v : 0;
   }
   const dealt = v < b.baseHp ? v : b.baseHp;
   b.baseHp -= dealt;
@@ -226,5 +288,8 @@ export function makeImpact(side: Side, sourceId: number, sourceCard: string): Im
     kb: 0,
     srcX: 0,
     srcRange: 0,
+    vsTags: 0,
+    vsBp: 0,
+    srcCls: -1,
   };
 }

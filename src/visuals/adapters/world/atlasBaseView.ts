@@ -278,6 +278,8 @@ export class AtlasBaseView implements BaseView {
   private lightBoost = 0;
   private collapseT = -1;
   private destroyed = false;
+  /** A cosmetic base skin's body tint (A18.9.4), or null; the team layer keeps its colour. */
+  private skinTint: number | null = null;
 
   constructor(private readonly o: AtlasBaseOptions) {
     const s = o.world.get(o.def.source);
@@ -332,6 +334,7 @@ export class AtlasBaseView implements BaseView {
     this.art.scale.set(k);
     const tint = this.o.teamColor;
     this.bodyPair = pair(tint);
+    if (this.skinTint !== null) this.bodyPair.base.tint = this.skinTint;
     this.treasuryPair = pair(tint);
     const flags = m.flags ?? [];
     this.backFlags = flags.filter((f) => f.z === 'back').map(() => pair(tint));
@@ -360,6 +363,12 @@ export class AtlasBaseView implements BaseView {
     const hc = this.o.def.anchors.hitCenter;
     this.glow.position.set(hc.x * this.facing, hc.y);
     this.glow.scale.set(this.sheet.meta.heightLu / 14);
+  }
+
+  /** Duck-typed by the base dressing (A18.9.4): tints the body, never the team layer (A11). */
+  setSkinTint(tint: number | null): void {
+    this.skinTint = tint;
+    this.bodyPair.base.tint = tint ?? 0xffffff;
   }
 
   mountPoints(): Pt[] {

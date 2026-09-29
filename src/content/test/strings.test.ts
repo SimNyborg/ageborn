@@ -8,6 +8,8 @@ import type { CapsuleTier, Foil, Rarity, Role, RoleGroup, Tag } from '@/contract
 import { flattenStrings, i18n } from '@/i18n';
 import strings from '@/i18n/content.en.json';
 import {
+  THEMED_AGES,
+  ageFlavourKey,
   ageMechanicKey,
   ageNameKey,
   bannerNameKey,
@@ -44,6 +46,8 @@ function referencedKeys(): string[] {
   for (const p of Object.values(c.powers)) keys.push(p.nameKey, p.descKey);
   for (const s of Object.values(c.skins)) keys.push(s.nameKey, skinLookKey(s.id));
   for (const a of c.order.ages) keys.push(ageNameKey(a), ageMechanicKey(a));
+  // A18.8.2 presentation themes: Hellas, Muskets, Great War
+  for (const a of THEMED_AGES) keys.push(ageFlavourKey(a));
   for (const f of c.order.formats) keys.push(formatNameKey(f), formatDescKey(f));
   for (const r of c.rarities.order as Rarity[]) keys.push(c.rarities.cards[r].nameKey, rarityNameKey(r));
   for (const r of c.rarities.skinOrder) keys.push(c.rarities.skins[r].nameKey);
@@ -69,6 +73,8 @@ function referencedKeys(): string[] {
     const f = c.feats.list[id]!;
     keys.push(f.nameKey, f.riddleKey, f.hintKey);
   }
+  // A18.5 War Council picks
+  for (const p of c.research.picks) keys.push(p.nameKey, p.descKey);
   return [...new Set(keys)].sort();
 }
 

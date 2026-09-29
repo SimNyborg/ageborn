@@ -271,7 +271,7 @@ describe('Quests and Codex (A6.7)', () => {
     expect(byId.play_3?.skirmishCounts).toBe(true);
     expect(byId.train_30?.skirmishCounts).toBe(true);
     expect(quests.daily.filter((q) => q.skirmishCounts).map((q) => q.id)).toEqual(['play_3', 'train_30']);
-    expect(byId.fast_final_age?.beforeMsByFormat).toEqual({ short: 160000, standard: 255000, full: 405000 });
+    expect(byId.fast_final_age?.beforeMsByFormat).toEqual({ short: 150000, standard: 345000, full: 600000 });
     expect(byId.win_with_legendary).toMatchObject({ requiresLegendary: true, rewards: [{ kind: 'dust', amount: 100 }] });
     expect(byId.win_after_last_stand).toMatchObject({ fromMatch: 5, rewards: [{ kind: 'amber', amount: 200 }] });
     expect(byId.daily_challenge_win?.rewards).toEqual([{ kind: 'ageCapsule' }]);
@@ -316,10 +316,12 @@ describe('Formats (A2.10 "Used in")', () => {
     }
     expect(FORMAT_MODES[dailyModifiers.challenge.format]).toContain('daily');
     expect(FORMAT_MODES[generals.conquest.format]).toContain('conquest');
-    expect(content.formats.tutorial.ages).toHaveLength(5);
-    expect(content.formats.short.ages).toEqual(AGE_ORDER.slice(0, 4));
-    expect(content.formats.standard.ages).toEqual(AGE_ORDER.slice(0, 6));
-    expect(content.formats.full.ages).toEqual(AGE_ORDER);
+    // A18.3.4: formats are windows of 3, 5 and 7 ages (from Stone unless a later start is picked)
+    expect(content.formats.tutorial?.ages).toHaveLength(5);
+    expect(content.formats.short?.ages).toEqual(AGE_ORDER.slice(0, 3));
+    expect(content.formats.standard?.ages).toEqual(AGE_ORDER.slice(0, 5));
+    expect(content.formats.full?.ages).toEqual(AGE_ORDER.slice(0, 7));
+    expect(content.formats['full.bronze']?.ages).toEqual(AGE_ORDER.slice(1, 8));
   });
 });
 

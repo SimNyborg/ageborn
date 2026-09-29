@@ -14,7 +14,7 @@ function chaos(side: Side, seed: number): (obs: Observation) => Command[] {
   const rng = seedSfc32(`chaos:${seed}:${side}`);
   return () => {
     if (randInt(rng, 4) !== 0) return [];
-    const slot = randInt(rng, 7) as 0 | 1 | 2 | 3 | 4;
+    const slot = randInt(rng, 8) as 0 | 1 | 2 | 3 | 4 | 5;
     const mount = randInt(rng, 5) as 0 | 1 | 2 | 3;
     const two = randInt(rng, 3) as 0 | 1;
     switch (randInt(rng, 13)) {
@@ -31,13 +31,31 @@ function chaos(side: Side, seed: number): (obs: Observation) => Command[] {
       case 5:
         return [{ t: 'buyMount', side }];
       case 6:
-        return [{ t: 'treasury', side }];
+        return [
+          randInt(rng, 5) === 0
+            ? { t: 'researchCancel', side }
+            : {
+                t: 'research',
+                side,
+                track: (['troops', 'defences', 'economy', 'command'] as const)[randInt(rng, 4)] ?? 'economy',
+                group: (['infantry', 'ranged', 'heavy', 'antiArmor', 'support'] as const)[randInt(rng, 5)] ?? 'infantry',
+                rank: (randInt(rng, 3) + 1) as 1 | 2 | 3,
+                pick: randInt(rng, 2) as 0 | 1,
+              },
+        ];
       case 7:
         return [{ t: 'evolve', side }];
       case 8:
         return [randInt(rng, 2) ? { t: 'power', side } : { t: 'power', side, p: randInt(rng, 1400) - 100 }];
       case 9:
-        return [{ t: 'stance', side, stance: randInt(rng, 2) ? 'hold' : 'charge' }];
+        return [
+          {
+            t: 'stance',
+            side,
+            mode: (['charge', 'hold', 'fallback'] as const)[randInt(rng, 3)] ?? 'charge',
+            ...(randInt(rng, 2) ? { holdP: randInt(rng, 1200) - 100 } : {}),
+          },
+        ];
       case 10:
         return [{ t: 'lastStand', side }];
       case 11:

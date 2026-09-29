@@ -11,7 +11,7 @@ const stream: SimEvent[] = [
   { tick: 11, e: 'unitSpawned', id: 3, side: 0, card: 'footman', x: 20000, summoned: true, level: 1 },
   { tick: 12, e: 'unitSpawned', id: 4, side: 1, card: 'bonker', x: 1180000, summoned: false, level: 1 },
   { tick: 12, e: 'unitSpawned', id: 5, side: 1, card: 'bonker', x: 1180000, summoned: false, level: 1 },
-  { tick: 13, e: 'treasuryUp', side: 0, level: 1 },
+  { tick: 13, e: 'researchStarted', side: 0, pick: 'economy.granary', cost: 150000, endTick: 213 },
   { tick: 20, e: 'powerTelegraph', side: 0, power: 'stampede', castId: 9, x: 500000, zone: 500000 },
   ...[2, 4, 5, 4].map(
     (id): SimEvent => ({

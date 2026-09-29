@@ -3,7 +3,8 @@
  *
  * Each proxy is a deterministic `BotController` that plays like a human with one fixed habit:
  *
- * 1. `treasury_greed`: buys all 3 Treasury levels first.
+ * 1. `eco_greed`: the Economy track first (Granary, Market), saving for it before training (A18.12;
+ *    the Treasury greed proxy before A18.5.4).
  * 2. `turret_turtle`: 4 turrets with Hold (target: wins 35-45% against tier VII).
  * 3. `cheap_spam`: only ever trains the cheapest unit.
  * 4. `heavy_ranged`: Heavy plus mass Ranged, held back until the pop cap, then one push.
@@ -11,34 +12,45 @@
  * 6. `heal_stack`: healers behind a Heavy wall.
  * 7. `xp_bank`: banks XP to the cap before every evolve.
  * 8. `power_on_evolve`: saves the Age Power for the moment before each evolve.
- * 9. `random_spam`: a uniformly random affordable tray unit, no turrets, no Treasury, evolves at once,
+ * 9. `random_spam`: a uniformly random affordable tray unit, no turrets, no research, evolves at once,
  *    power on auto-aim when full (A16.5).
  * 10. `mono_heavy`, `mono_ranged`, `mono_antiair`: the mono family at m = 100% (A16.5): only that role
- *    group while the tray has one, otherwise random; no turrets, no Treasury.
+ *    group while the tray has one, otherwise random; no turrets, no research.
  *
  * Human-like strategies for the AI strength matrix (`strength.ts`, owner feedback 2026-09-28):
  *
  * 11. `few_then_evolve`: a casual player who keeps a few soldiers on the lane (at most 4 alive), one
  *     turret, and evolves as soon as it can.
  * 12. `rush`: spends every coin at once on the strongest melee it can afford (Heavy, then Infantry),
- *     always Charges, no turrets, no Treasury.
+ *     always Charges, no turrets, no research.
  * 13. `save_counter`: A16.5's Save-and-counter, the skilled scripted player: counter-picks from the
  *     counter matrix against what it sees, banks to 300 gold and then spends it all (defends at once
- *     when threatened), 2 turrets, Treasury 1, casts the power on a zone worth 350+ gold, evolves in a
- *     safe window of at most 2 s, and fires Last Stand when 4+ enemies are at the gate.
+ *     when threatened), 2 turrets, Granary and a Troops line, casts the power on a zone worth 350+ gold,
+ *     evolves in a safe window of at most 2 s, and fires Last Stand when 4+ enemies are at the gate.
+ *
+ * War Council and stance proxies (A18.12):
+ *
+ * 14. `no_research`: the Balanced reference player without any research (must lose ≥ 70% to it).
+ * 15. `drill_rush`: the melee rush with Infantry Weapons, Rush and War Horns.
+ * 16. `tech_turtle`: Defences first, Hold at home, 4 turrets.
+ * 17. `flag_ball`: Hold with the flag at 800 behind a Ranged, Support and Heavy ball (Bulwark, Rally,
+ *     Shield Wall), charging only at the pop cap or in Siege.
+ * 18. `fallback_turtle`: Fall back, 4 turrets, Defences research (Keep Walls and Last Stand Drill are v1.1).
+ * 19. `stance_toggler`: the Balanced reference player that flips Charge and Hold on every engagement.
  *
  * `balanced` is a plain reference player; the tools also use it as the stand-in bot when `src/ai`
  * cannot be loaded. Proxies see the same `Observation` as bots (A7.1) with a 300 ms reaction delay and
  * decide every 0.5 s, so they never outpace a human. Plans are derived from content by role and
  * ability, so the proxies follow content changes.
  */
-import type { BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, Side, UnitDef } from '../src/contracts';
+import type { BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, ResearchPickDef, ResearchView, Side, StanceMode, UnitDef } from '../src/contracts';
+import { nextIncomePick, researchCommand, researchCost, startablePicks } from '../src/core/research';
 import { pickWeighted, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { agesOf, baselinePlan, clonePlan, turretsOfAge, unitsOfAge, type Plan } from './lib/plans';
 
 export type ProxyId =
   | 'balanced'
-  | 'treasury_greed'
+  | 'eco_greed'
   | 'turret_turtle'
   | 'cheap_spam'
   | 'heavy_ranged'
@@ -52,7 +64,13 @@ export type ProxyId =
   | 'mono_antiair'
   | 'few_then_evolve'
   | 'rush'
-  | 'save_counter';
+  | 'save_counter'
+  | 'no_research'
+  | 'drill_rush'
+  | 'tech_turtle'
+  | 'flag_ball'
+  | 'fallback_turtle'
+  | 'stance_toggler';
 
 /** Mono family groups (A16.5): Heavy, anti-air and Ranged. */
 export type MonoGroup = 'heavy' | 'antiAir' | 'ranged';
@@ -67,14 +85,25 @@ export interface Strategy {
   /** Power: `value` casts on a clump, `full` casts on auto-aim as soon as the ring is full. */
   /** Tray-slot weights for `weighted` training. */
   weights: [number, number, number, number, number];
-  /** Treasury levels to buy. */
-  treasury: number;
-  /** Save for the Treasury before training (unless the base is threatened). */
-  treasuryFirst: boolean;
+  /** Economy income research to buy: Granary, then Market (A18.5.4; the Treasury levels before). */
+  income: number;
+  /** Save for the income research before training (unless the base is threatened). */
+  incomeFirst: boolean;
+  /** War Council picks in preference order (A18.5): the first one that can start is researched when the slot is free. */
+  research: readonly string[];
+  /** No listed research before this match time (ms). */
+  researchFromMs?: number;
   /** Mounts to fill with turrets. */
   turrets: number;
   modernise: boolean;
-  stance: 'charge' | 'hold' | 'massThenCharge';
+  /**
+   * `hold` at `holdP` (default the 320 line), `fallback` (A18.4.2), `massThenCharge` holds until the pop
+   * cap, `flagBall` holds at `holdP` and charges at the pop cap or in Siege, `toggle` flips Charge and Hold
+   * on every engagement (the stance toggler).
+   */
+  stance: 'charge' | 'hold' | 'massThenCharge' | 'fallback' | 'flagBall' | 'toggle';
+  /** Hold flag p in lu (A18.4.2: 320-800). */
+  holdP?: number;
   evolve: 'asap' | 'bank';
   power: 'value' | 'beforeEvolve' | 'full';
   /** Whole gold kept back before training. */
@@ -142,13 +171,33 @@ function healPlan(content: CompiledContent): Plan {
 
 const base = (content: CompiledContent): Plan => baselinePlan(content);
 
+/**
+ * The researching Balanced script (A18.12 reference): Granary first, then a Troops line for the classes
+ * of the baseline plan, the Defences range pick and the rank II abilities as they open.
+ */
+const BALANCED_RESEARCH: readonly string[] = [
+  'troops.infantry.weapons',
+  'defences.watchtowers',
+  'troops.heavy.plating',
+  'troops.antiArmor.hunters',
+  'troops.infantry.rush',
+  'troops.heavy.trample',
+  'economy.market',
+  'troops.support.field_care',
+  'troops.support.war_drums',
+  'defences.arsenal',
+  'troops.ranged.weapons',
+];
+
 const BALANCED: Strategy = {
   id: 'balanced',
-  title: 'Balanced reference player',
+  title: 'Balanced reference player (researching)',
   train: 'weighted',
   weights: [4, 3, 2, 2, 1],
-  treasury: 1,
-  treasuryFirst: false,
+  income: 1,
+  incomeFirst: false,
+  research: BALANCED_RESEARCH,
+  researchFromMs: 30000,
   turrets: 2,
   modernise: true,
   stance: 'charge',
@@ -160,7 +209,15 @@ const BALANCED: Strategy = {
 
 export const STRATEGIES: Record<ProxyId, Strategy> = {
   balanced: BALANCED,
-  treasury_greed: { ...BALANCED, id: 'treasury_greed', title: 'Treasury 3 greed', treasury: 3, treasuryFirst: true },
+  eco_greed: {
+    ...BALANCED,
+    id: 'eco_greed',
+    title: 'Economy greed (Granary, Market, Bounty Hunters first)',
+    income: 2,
+    incomeFirst: true,
+    research: ['economy.bounty_hunters', ...BALANCED_RESEARCH],
+    researchFromMs: 0,
+  },
   turret_turtle: {
     ...BALANCED,
     id: 'turret_turtle',
@@ -170,30 +227,86 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
     stance: 'hold',
     reserve: 50,
   },
-  cheap_spam: { ...BALANCED, id: 'cheap_spam', title: 'Cheapest-unit spam', train: 'cheapest', treasury: 0, turrets: 1 },
+  cheap_spam: { ...BALANCED, id: 'cheap_spam', title: 'Cheapest-unit spam', train: 'cheapest', income: 0, research: [], turrets: 1 },
   heavy_ranged: { ...BALANCED, id: 'heavy_ranged', title: 'Heavy plus mass Ranged at the pop cap', train: 'heavyRanged', stance: 'massThenCharge' },
   mass_splash: { ...BALANCED, id: 'mass_splash', title: 'Mass splash', weights: [2, 1, 3, 3, 3], plan: splashPlan },
   heal_stack: { ...BALANCED, id: 'heal_stack', title: 'Heal stacking', weights: [1, 1, 3, 1, 5], plan: healPlan },
   xp_bank: { ...BALANCED, id: 'xp_bank', title: 'XP bank and double evolve', evolve: 'bank' },
   power_on_evolve: { ...BALANCED, id: 'power_on_evolve', title: 'Power saved for evolve moments', power: 'beforeEvolve' },
-  random_spam: { ...BALANCED, id: 'random_spam', title: 'Random spam', train: 'random', treasury: 0, turrets: 0, modernise: false, power: 'full' },
-  mono_heavy: { ...BALANCED, id: 'mono_heavy', title: 'Mono Heavy spam', train: 'mono', mono: 'heavy', treasury: 0, turrets: 0, modernise: false, power: 'full' },
-  mono_ranged: { ...BALANCED, id: 'mono_ranged', title: 'Mono Ranged spam', train: 'mono', mono: 'ranged', treasury: 0, turrets: 0, modernise: false, power: 'full' },
-  mono_antiair: { ...BALANCED, id: 'mono_antiair', title: 'Mono anti-air spam', train: 'mono', mono: 'antiAir', treasury: 0, turrets: 0, modernise: false, power: 'full' },
-  few_then_evolve: { ...BALANCED, id: 'few_then_evolve', title: 'A few soldiers, then evolve', treasury: 0, turrets: 1, maxAlive: 4 },
-  rush: { ...BALANCED, id: 'rush', title: 'All-out melee rush', train: 'melee', treasury: 0, turrets: 0, modernise: false, power: 'full' },
+  random_spam: { ...BALANCED, id: 'random_spam', title: 'Random spam', train: 'random', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
+  mono_heavy: { ...BALANCED, id: 'mono_heavy', title: 'Mono Heavy spam', train: 'mono', mono: 'heavy', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
+  mono_ranged: { ...BALANCED, id: 'mono_ranged', title: 'Mono Ranged spam', train: 'mono', mono: 'ranged', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
+  mono_antiair: { ...BALANCED, id: 'mono_antiair', title: 'Mono anti-air spam', train: 'mono', mono: 'antiAir', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
+  few_then_evolve: { ...BALANCED, id: 'few_then_evolve', title: 'A few soldiers, then evolve', income: 0, research: [], turrets: 1, maxAlive: 4 },
+  rush: { ...BALANCED, id: 'rush', title: 'All-out melee rush', train: 'melee', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   save_counter: {
     ...BALANCED,
     id: 'save_counter',
     title: 'Save-and-counter (skilled player)',
     train: 'counter',
     turrets: 2,
-    treasury: 1,
+    income: 1,
+    research: ['troops.infantry.weapons', 'troops.antiArmor.hunters', 'defences.watchtowers', 'troops.heavy.plating', 'troops.infantry.rush', 'troops.antiArmor.skirmish'],
+    researchFromMs: 30000,
     bankTo: 300,
     powerMinValue: 350,
     safeEvolveMs: 2000,
     lastStandFoes: 4,
   },
+  no_research: { ...BALANCED, id: 'no_research', title: 'Balanced without research', income: 0, research: [] },
+  drill_rush: {
+    ...BALANCED,
+    id: 'drill_rush',
+    title: 'Drilled Infantry rush (Weapons, Rush, War Horns)',
+    train: 'melee',
+    income: 0,
+    research: ['troops.infantry.weapons', 'command.war_horns', 'troops.infantry.rush', 'troops.heavy.weapons', 'troops.heavy.trample'],
+    researchFromMs: 0,
+    turrets: 0,
+    modernise: false,
+    power: 'full',
+  },
+  tech_turtle: {
+    ...BALANCED,
+    id: 'tech_turtle',
+    title: 'Tech turtle (Defences first, Hold at home, 4 turrets)',
+    weights: [2, 4, 1, 3, 1],
+    turrets: 4,
+    stance: 'hold',
+    reserve: 50,
+    research: ['defences.watchtowers', 'defences.arsenal', 'troops.ranged.long_draw', 'troops.antiArmor.hunters', 'troops.antiArmor.ambush', 'economy.market'],
+    researchFromMs: 0,
+  },
+  flag_ball: {
+    ...BALANCED,
+    id: 'flag_ball',
+    title: 'Flag ball (Hold at 800: Ranged, Support auras, Bulwark, Shield Wall)',
+    weights: [2, 4, 3, 1, 3],
+    stance: 'flagBall',
+    holdP: 800,
+    research: [
+      'troops.ranged.weapons',
+      'troops.support.field_care',
+      'troops.support.rally',
+      'troops.heavy.plating',
+      'troops.heavy.bulwark',
+      'troops.infantry.mail',
+      'troops.infantry.shield_wall',
+      'command.war_horns',
+    ],
+  },
+  fallback_turtle: {
+    ...BALANCED,
+    id: 'fallback_turtle',
+    title: 'Fall-back turtle (Fall back, 4 turrets, Defences)',
+    weights: [2, 4, 1, 3, 1],
+    turrets: 4,
+    stance: 'fallback',
+    reserve: 50,
+    research: ['defences.quick_loaders', 'defences.arsenal', 'troops.ranged.long_draw', 'economy.market'],
+    researchFromMs: 0,
+  },
+  stance_toggler: { ...BALANCED, id: 'stance_toggler', title: 'Stance toggler (flips on every engagement)', stance: 'toggle' },
 };
 
 /** Whether a unit belongs to a mono family group (anti-air: any unit that hits air). */
@@ -205,7 +318,7 @@ export function inMonoGroup(u: UnitDef, g: MonoGroup): boolean {
 
 /** The exploit proxies of B12, in DESIGN order (the reference player excluded). */
 export const EXPLOIT_PROXIES: readonly ProxyId[] = [
-  'treasury_greed',
+  'eco_greed',
   'turret_turtle',
   'cheap_spam',
   'heavy_ranged',
@@ -215,10 +328,16 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
   'power_on_evolve',
   'random_spam',
   'mono_heavy',
+  // A18.12
+  'drill_rush',
+  'tech_turtle',
+  'flag_ball',
+  'fallback_turtle',
+  'stance_toggler',
 ];
 
 /** Every other proxy the tools know (run with `--proxies`). */
-export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'few_then_evolve', 'rush', 'save_counter'];
+export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'few_then_evolve', 'rush', 'save_counter', 'no_research'];
 
 /** Enemy ground units this close to the own gate make an evolve unsafe (A7.2). */
 const EVOLVE_SAFE_P = 300_000;
@@ -262,7 +381,7 @@ export class ScriptedPlayer implements BotController {
     // Wait out the Ascension (or a turret build) plus the observation delay before acting on it again.
     this.ascendWaitTicks = content.ticks.ascend + PROXY_DELAY_TICKS + TICKS_PER_DECISION;
     this.mountWaitTicks = content.ticks.turretBuild + PROXY_DELAY_TICKS + TICKS_PER_DECISION;
-    this.maxAgeIndex = content.formats[format].ages.length - 1;
+    this.maxAgeIndex = (content.formats[format]?.ages.length ?? 1) - 1;
   }
 
   onTick(obs: Observation): Command[] {
@@ -313,19 +432,24 @@ export class ScriptedPlayer implements BotController {
       this.evolveIssuedTick = obs.tick;
     }
 
-    // Treasury (A2.3). A Treasury-first player buys nothing else until it is maxed, and trains only
-    // when the base is threatened.
+    // War Council (A18.5): the Economy income picks first (the Treasury before A18.5.4), then the
+    // strategy's list. An income-first player buys nothing else until it has them, and trains only when
+    // the base is threatened.
     let greedy = false;
-    if (me.treasury < st.treasury) {
-      const cost = econ.treasuryCosts[me.treasury] ?? Number.POSITIVE_INFINITY;
-      if (gold >= cost) {
-        out.push({ t: 'treasury', side });
+    const wantIncome = me.treasury < st.income;
+    const income = wantIncome ? nextIncomePick(this.content, me.research) : null;
+    const listed = !wantIncome || !st.incomeFirst ? this.nextListed(me.research, obs.tick) : null;
+    const pick = income ?? listed;
+    if (pick) {
+      const cost = researchCost(this.content, pick);
+      if (gold >= cost + (income ? 0 : st.reserve)) {
+        out.push(researchCommand(side, pick));
         gold -= cost;
       }
-      if (st.treasuryFirst) {
-        if (!threat) return out;
-        greedy = true;
-      }
+    }
+    if (wantIncome && st.incomeFirst && me.research.current === null) {
+      if (!threat) return out;
+      greedy = true;
     }
 
     // Turrets: build on owned empty mounts, modernise outdated ones, buy mounts (A2.8, A2.3).
@@ -361,11 +485,14 @@ export class ScriptedPlayer implements BotController {
       }
     }
 
-    // Stance (A2.7, 2 s cooldown).
-    const want = this.wantedStance(me.pop);
-    if (want !== me.stance && obs.tick - this.lastStanceTick >= 60) {
-      out.push({ t: 'stance', side, stance: want });
-      this.lastStanceTick = obs.tick;
+    // Stance (A18.4.2: 3 s cooldown; the Hold flag at `holdP`).
+    const want = this.wantedStance(me.pop, obs);
+    if (obs.tick - this.lastStanceTick >= 60) {
+      const flag = want === 'hold' ? st.holdP : undefined;
+      if (want !== me.stance || (flag !== undefined && flag !== me.holdP)) {
+        out.push(flag === undefined ? { t: 'stance', side, mode: want } : { t: 'stance', side, mode: want, holdP: flag });
+        this.lastStanceTick = obs.tick;
+      }
     }
 
     // Training (A2.7): fill the shared queue while gold allows, but save for the next turret or mount
@@ -387,7 +514,7 @@ export class ScriptedPlayer implements BotController {
       const card = me.tray[slot] as CardId;
       const cost = this.content.units[card]?.cost ?? Number.POSITIVE_INFINITY;
       if (gold < cost + (threat ? 0 : st.reserve) + saving) break;
-      out.push({ t: 'train', side, slot: slot as 0 | 1 | 2 | 3 | 4 });
+      out.push({ t: 'train', side, slot: slot as 0 | 1 | 2 | 3 | 4 | 5 });
       gold -= cost;
       queued += 1;
       const group = this.content.units[card]?.group;
@@ -416,14 +543,38 @@ export class ScriptedPlayer implements BotController {
     return cards[alt] ? alt : null;
   }
 
-  /** `massThenCharge` holds until the army is 6 pop short of the cap, pushes, and masses again below half. */
-  private wantedStance(pop: number): 'charge' | 'hold' {
+  /**
+   * `massThenCharge` and `flagBall` hold until the army is 6 pop short of the cap, push, and mass again
+   * below half (`flagBall` also charges in Siege); `toggle` flips Charge and Hold whenever its front is in
+   * a fight (an enemy within 120 lu of its frontmost ground unit).
+   */
+  private wantedStance(pop: number, obs: Observation): StanceMode {
     const st = this.strategy.stance;
-    if (st !== 'massThenCharge') return st;
+    if (st === 'toggle') {
+      const mine = obs.units.filter((u) => u.side === this.side && !u.air && u.hp > 0);
+      const front = mine.reduce((m, u) => Math.max(m, u.p), -1);
+      // Observation positions are in the observer's frame, enemies included (A2.1).
+      const fighting = front >= 0 && obs.units.some((u) => u.side !== this.side && u.hp > 0 && !u.air && u.p - front <= 120_000);
+      if (!fighting) return 'charge';
+      return obs.me.stance === 'charge' ? 'hold' : 'charge';
+    }
+    if (st !== 'massThenCharge' && st !== 'flagBall') return st;
+    if (st === 'flagBall' && obs.phase === 'siege') return 'charge';
     const cap = this.content.economy.popCap;
     if (this.massing && pop >= cap - 6) this.massing = false;
     else if (!this.massing && pop < cap / 2) this.massing = true;
     return this.massing ? 'hold' : 'charge';
+  }
+
+  /** The first pick of the strategy's research list that can start now (after `researchFromMs`). */
+  private nextListed(view: ResearchView, tick: number): ResearchPickDef | null {
+    if (tick * 50 < (this.strategy.researchFromMs ?? 0) || view.current !== null) return null;
+    const open = startablePicks(this.content, view);
+    for (const id of this.strategy.research) {
+      const p = open.find((q) => q.id === id);
+      if (p) return p;
+    }
+    return null;
   }
 
   private cheapestInTray(tray: readonly (CardId | null)[]): number {

@@ -3,7 +3,7 @@
  * bp for percentages. Data only. The WP1 compiler converts to milli-gold, ticks and so on (B3, B4).
  */
 import type { EconomyRules, FormatDef } from '@/contracts/content';
-import type { AgeId, FormatId } from '@/contracts/ids';
+import type { AgeId, FormatId, FormatKind } from '@/contracts/ids';
 import type { RawAgeScale, RawBattleRules, RawDamageMods } from './types';
 
 /**
@@ -22,44 +22,82 @@ export const ageScale: Record<AgeId, RawAgeScale> = {
 };
 
 /**
- * DESIGN A17.8 match formats: every ladder format is a range of consecutive ages from Stone (Short 4,
- * Standard 6, Full 8). The tutorial alone skips ages and keeps its five-age run and retimed
- * thresholds, so onboarding match 1 is unchanged. Times are ms from match start; null means "none".
+ * XP to evolve out of each position of a window (DESIGN A18.3.2): thresholds follow the position in
+ * the match's age window, not the age (every card costs the same in every age, so XP income does not
+ * depend on the age). The first age stays shortest so a new player sees the first evolve by ~1:10.
+ */
+export const WINDOW_XP: readonly number[] = [620, 1300, 1580, 1800, 1850, 2000];
+
+/** Clocks by window length (DESIGN A18.3.4), ms from match start, and the format family of each length. */
+export const WINDOW_CLOCKS: Readonly<Record<number, { kind: FormatKind; overdriveMs: number; siegeMs: number; finalBellMs: number }>> = {
+  1: { kind: 'window', overdriveMs: 210000, siegeMs: 270000, finalBellMs: 360000 },
+  2: { kind: 'window', overdriveMs: 255000, siegeMs: 330000, finalBellMs: 435000 },
+  3: { kind: 'short', overdriveMs: 300000, siegeMs: 390000, finalBellMs: 510000 },
+  4: { kind: 'window', overdriveMs: 390000, siegeMs: 495000, finalBellMs: 630000 },
+  5: { kind: 'standard', overdriveMs: 480000, siegeMs: 600000, finalBellMs: 750000 },
+  7: { kind: 'full', overdriveMs: 720000, siegeMs: 870000, finalBellMs: 1050000 },
+};
+
+/** Retreat unlocks after 1:00 in every window (A2.10). */
+const RETREAT_MS = 60000;
+
+/**
+ * The id of the window of `length` ages starting at `start` (DESIGN A18.3.4): the named formats from
+ * Stone (`short`, `standard`, `full`), `short.bronze` style ids for later starts, `w<length>.<start>`
+ * for the shorter War Path and custom windows (1, 2 and 4 ages).
+ */
+export function windowFormatId(length: number, start: AgeId): FormatId {
+  const kind = WINDOW_CLOCKS[length]?.kind ?? 'window';
+  if (kind === 'window') return `w${length}.${start}`;
+  return start === 'stone' ? kind : `${kind}.${start}`;
+}
+
+/** Every window of every length in {@link WINDOW_CLOCKS} over these ages (in age order). */
+function windowFormats(ageOrder: readonly AgeId[]): Record<FormatId, FormatDef> {
+  const out: Record<FormatId, FormatDef> = {};
+  for (const length of Object.keys(WINDOW_CLOCKS).map(Number)) {
+    const c = WINDOW_CLOCKS[length];
+    if (!c) continue;
+    for (let i = 0; i + length <= ageOrder.length; i += 1) {
+      const ages = ageOrder.slice(i, i + length);
+      const id = windowFormatId(length, ages[0] as AgeId);
+      out[id] = {
+        id,
+        kind: c.kind,
+        ages,
+        overdriveMs: c.overdriveMs,
+        siegeMs: c.siegeMs,
+        finalBellMs: c.finalBellMs,
+        retreatAfterMs: RETREAT_MS,
+        xpToNextOverride: WINDOW_XP.slice(0, length - 1),
+      };
+    }
+  }
+  return out;
+}
+
+/** Ages in `AgeDef.index` order. */
+const AGE_LIST: readonly AgeId[] = (Object.values(ageScale) as RawAgeScale[]).sort((a, b) => a.index - b.index).map((a) => a.id);
+
+/**
+ * DESIGN A18.3.4 match formats: every format is a window of consecutive ages. Short War is 3 ages,
+ * Standard 5, Full 7 (from Stone unless the player picks a later start era); War Path and custom
+ * windows of 1, 2 and 4 ages use their own clocks. The tutorial alone skips ages and keeps its
+ * five-age run and retimed thresholds (onboarding match 1 is unchanged).
  */
 export const formats: Record<FormatId, FormatDef> = {
   tutorial: {
     id: 'tutorial',
+    kind: 'tutorial',
     ages: ['stone', 'medieval', 'gunpowder', 'modern', 'future'],
     overdriveMs: null,
     siegeMs: null,
     finalBellMs: null,
     retreatAfterMs: null,
-    xpToNextOverride: [680, 690, 520, 700],
+    // A8 beat times kept under the A18.3.2 XP sources (retimed 2026-09-29; A17 values 680 / 690 / 520 / 700)
+    xpToNextOverride: [610, 580, 390, 900],
   },
-  short: {
-    id: 'short',
-    ages: ['stone', 'bronze', 'medieval', 'gunpowder'],
-    overdriveMs: 225000,
-    siegeMs: 285000,
-    finalBellMs: 375000,
-    retreatAfterMs: 60000,
-  },
-  standard: {
-    id: 'standard',
-    ages: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern'],
-    overdriveMs: 300000,
-    siegeMs: 405000,
-    finalBellMs: 510000,
-    retreatAfterMs: 60000,
-  },
-  full: {
-    id: 'full',
-    ages: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'],
-    overdriveMs: 405000,
-    siegeMs: 525000,
-    finalBellMs: 645000,
-    retreatAfterMs: 60000,
-  },
+  ...windowFormats(AGE_LIST),
 };
 
 /** DESIGN A2.6 role-default damage mods, in order. Multipliers in bp (10,000 = ×1.0). */
@@ -89,22 +127,19 @@ export const economy: EconomyRules = {
   // A2.3 Gold
   startGold: 175,
   passiveGoldPerSec: 6,
-  // A2.4 XP
-  passiveXpPerSec: 4,
-  // A2.3 Treasury: 3 levels, each +1.5 gold/s (1,500 milli-gold/s); never doubled by Overdrive
-  treasuryCosts: [200, 350, 550],
-  treasuryMilliGoldPerSecPerLevel: 1500,
+  // A18.3.2 XP: 5 XP/s passive (the Treasury is replaced by the War Council's Economy track, A18.5.4)
+  passiveXpPerSec: 5,
   // A2.3 Turret slots: index i is the price of mount i + 1; mount 1 is free
   mountCosts: [0, 150, 350, 700],
-  // A2.3 / A2.4 / A5.1 bounties
-  bountyGoldBp: 6000,
-  bountyXpBp: 10000,
+  // A18.3.2 / A18.3.3 bounties: the winner is not paid twice (kill bounty 50%, kill XP 70%, loss XP 50%)
+  bountyGoldBp: 5000,
+  bountyXpBp: 7000,
   powerKillGoldBp: 3000,
   powerKillXpBp: 0,
-  ownLossXpBp: 4000,
+  ownLossXpBp: 5000,
   underdogBp: 5000,
-  // A2.4: 12 XP per 1% of the enemy base's current max HP
-  baseDamageXpPerPct: 12,
+  // A18.3.2: 8 XP per 1% of the enemy base's current max HP
+  baseDamageXpPerPct: 8,
   // A2.4: XP never exceeds 1.5× the current threshold
   xpCapBp: 15000,
   // A2.7 Population and training
@@ -115,6 +150,8 @@ export const economy: EconomyRules = {
   // A2.3 / A2.8 Turrets
   sellRefundBp: 5000,
   turretRangeCap: 480,
+  // A18.2 rule 4: research, relics and modifiers never push a turret past 560 lu from its gate
+  turretRangeHardCapLu: 560,
   turretBuildMs: 1000,
   turretSellMs: 1000,
   // A2.2 / A2.4 Evolve
@@ -124,8 +161,8 @@ export const economy: EconomyRules = {
   // A2.9 Age Powers: 0 → 100% over 50 s; 50% carry cap across an evolve
   powerChargeMs: 50000,
   powerCarryCapBp: 5000,
-  // A2.4 Overcharge: in the final age every 1,200 XP adds +25% charge
-  overchargeXp: 1200,
+  // A18.3.2 Overcharge: in the final age every 1,650 XP adds +25% charge
+  overchargeXp: 1650,
   overchargeBp: 2500,
   // A2.10 phases
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
@@ -150,9 +187,14 @@ export const economy: EconomyRules = {
   retargetMs: 1000,
   retargetCloserLu: 60,
   rangedSelfDefenseLu: 30,
-  firstHitIdleMs: 2000,
-  // A2.7 Stance: 2 s toggle cooldown
-  stanceCooldownMs: 2000,
+  // A18.4.2 engagement freshness: fresh after 4 s with no target (stance changes never reset it)
+  firstHitIdleMs: 4000,
+  // A18.4.2 Stance: a change at most once per 3 s; the Hold flag in [320, 800], 20 lu steps, moved once per 1 s
+  stanceCooldownMs: 3000,
+  holdFlag: { minP: 320, maxP: 800, snapLu: 20, moveCooldownMs: 1000 },
+  fallbackP: 200,
+  // A18.2 rule 4 hard stacking caps (all sources summed)
+  statCaps: { damageBp: 3500, takenBp: 3500, hpBp: 3000, attackSpeedBp: 2500, speedBp: 2000, rangeLu: 60 },
   // A2.7 Sizes (collision widths) and knockback resist
   sizes: { small: 24, medium: 32, large: 48, huge: 80 },
   knockbackResistBp: { small: 0, medium: 0, large: 5000, huge: 5000 },
@@ -194,7 +236,7 @@ export const battle: RawBattleRules = {
   markDamageBp: 12000,
   healPulseMs: 500,
   moderniseCreditBp: 5000,
-  finalAgeXpCap: 1200,
+  finalAgeXpCap: 1650,
   siegeDecayStepMs: 1000,
   stampedeFallbackP: 200,
   projectileSpeed: {

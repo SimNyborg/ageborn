@@ -147,7 +147,7 @@ def actors(sp):
         (T, BLUE, walker(T, 175, 262, 0, 1300, "attack", False, -3)),
         (B, BLUE, walker(B, 295, 378, 0, 1500, "attack", False, 0,
                          events=[((3900, 4300), "hit")])),
-        (T, ORANGE, walker(T, 712, 640, 0, 1100, "attack", True, -3)),
+        (T, ORANGE, walker(T, 780, 712, 0, 1100, "attack", True, -3)),
         (B, ORANGE, walker(B, 540, 452, 0, 1550, "attack", True, 0,
                            events=[((2700, 3050), "hit"), ((3050, None), "die")])),
         (K, ORANGE, walker(K, 960, 488, 0, 3250, "attack", True, -6)),
@@ -209,7 +209,7 @@ def glow(c, x, y, d, s):
 
 # ---------------------------------------------------------------------- style sheet
 def style_sheet(sp):
-    W, H = 1800, 1180
+    W, H = 1800, 1640
     img = Image.new("RGB", (W, H), (30, 31, 34))
     d = ImageDraw.Draw(img)
     f_t = ImageFont.truetype(FONTB, 40)
@@ -278,10 +278,11 @@ def style_sheet(sp):
     tile = pipe.to_rgb(c)
     img.paste(tile, (40, yi + 34))
     img.paste(tile.resize((strip_w * 2, strip_h * 2), Image.NEAREST).crop((0, 0, W - 80 - strip_w - 20, strip_h * 2)),
-              (40 + strip_w + 20, yi + 34 - 60 + 60))
+              (40 + strip_w + 20, yi + 34))
+    d.text((40 + strip_w + 28, yi + 38), "same pixels, 2x nearest", font=f_s, fill=(40, 40, 40))
     # notes and palette
     xn = 40
-    yn = yi + 34 + strip_h + 16
+    yn = yi + 34 + strip_h * 2 + 20
     notes = [
         "Look: tabletop-miniature realism. Adult proportions (head ~1/7.5), anatomical metaball bodies,",
         "PBR fur, hide, leather, wood, flint, steel and painted plate with procedural colour noise and bump.",
@@ -298,7 +299,7 @@ def style_sheet(sp):
     sw = [("team blue", BLUE), ("team orange", ORANGE), ("skin", "#9c7862"), ("fur", "#76624f"), ("hide/leather", "#5a4a3e"),
           ("hardwood", "#6b5847"), ("steel", "#9aa0a8"), ("bay coat", "#4a3a31"), ("suit", "#3b3e45"),
           ("gunmetal", "#3c4047"), ("plasma", "#F03AA8"), ("visor", "#3AF0B4")]
-    xs, ys = 1040, yi + 34 + strip_h + 16
+    xs, ys = 1040, yi + 34 + strip_h * 2 + 20
     for i, (n, hx) in enumerate(sw):
         cx = xs + (i % 4) * 185
         cy = ys + (i // 4) * 44

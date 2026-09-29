@@ -39,6 +39,9 @@ const AGE = v.picklist(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial'
 const RARITY = v.picklist(['common', 'rare', 'epic', 'legendary']);
 const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
 const FORMAT = v.picklist(['tutorial', 'short', 'standard', 'full']);
+/** Any content format key (A18.3.4: named formats and windows such as `short.bronze`, `w2.medieval`). */
+const FORMAT_KEY = v.pipe(v.string(), v.regex(/^[a-z][a-z0-9]*(\.[a-z]+)?$/, 'format keys look like "short" or "w2.bronze"'));
+const FORMAT_KIND = v.picklist(['tutorial', 'short', 'standard', 'full', 'window']);
 const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
 const TAG = v.picklist(['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee']);
@@ -213,7 +216,8 @@ const AgeSchema = v.strictObject({
 });
 
 const FormatSchema = v.strictObject({
-  id: FORMAT,
+  id: FORMAT_KEY,
+  kind: v.optional(FORMAT_KIND),
   ages: v.array(AGE),
   overdriveMs: v.nullable(pos),
   siegeMs: v.nullable(pos),
@@ -224,11 +228,11 @@ const FormatSchema = v.strictObject({
 
 const EconomySchema = v.strictObject({
   startGold: nonNeg, passiveGoldPerSec: nonNeg, passiveXpPerSec: nonNeg,
-  treasuryCosts: v.array(pos), treasuryMilliGoldPerSecPerLevel: pos, mountCosts: v.array(nonNeg),
+  mountCosts: v.array(nonNeg),
   bountyGoldBp: bp, bountyXpBp: bp, powerKillGoldBp: bp, powerKillXpBp: bp,
   ownLossXpBp: bp, underdogBp: bp, baseDamageXpPerPct: nonNeg, xpCapBp: bp,
   popCap: pos, popByGroup: perGroup(pos), queueMax: pos, legendaryLimit: pos,
-  sellRefundBp: bp, turretRangeCap: pos, turretBuildMs: pos, turretSellMs: pos,
+  sellRefundBp: bp, turretRangeCap: pos, turretRangeHardCapLu: pos, turretBuildMs: pos, turretSellMs: pos,
   ascendMs: pos, evolveHealBp: bp, vanguardCount: nonNeg,
   powerChargeMs: pos, powerCarryCapBp: bp, overchargeXp: pos, overchargeBp: bp,
   overdrive: v.strictObject({ baseGoldBp: bp, xpBp: bp, powerBp: bp }),
@@ -240,8 +244,53 @@ const EconomySchema = v.strictObject({
   spawnP: nonNeg, holdLine: pos, holdRetreatSpeedBp: bp, leash: nonNeg, spacingBp: bp,
   retargetMs: pos, retargetCloserLu: nonNeg, rangedSelfDefenseLu: nonNeg, firstHitIdleMs: pos,
   stanceCooldownMs: pos, sizes: perSize(pos), knockbackResistBp: perSize(bp),
+  holdFlag: v.strictObject({ minP: pos, maxP: pos, snapLu: pos, moveCooldownMs: pos }),
+  fallbackP: pos,
+  statCaps: v.strictObject({ damageBp: bp, takenBp: bp, hpBp: bp, attackSpeedBp: bp, speedBp: bp, rangeLu: nonNeg }),
   areaSecondaryBp: bp, areaMaxTargets: pos, healLegendaryBp: bp, legendaryPowerDamageBp: bp,
   powerZoneClamp: v.tuple([nonNeg, pos]), emoteCooldownMs: pos, drawGapBp: bp, levelStepBp: bp, maxLevel: pos,
+});
+
+// War Council (A18.5)
+const RESEARCH_TRACK = v.picklist(['troops', 'defences', 'economy', 'command']);
+const RESEARCH_CLASS = v.picklist(['infantry', 'ranged', 'heavy', 'antiArmor', 'support']);
+const sbp = int;
+const ResearchEffectSchema = v.variant('kind', [
+  v.strictObject({ kind: v.literal('unitStat'), stat: v.picklist(['damage', 'hp', 'speed', 'attackSpeed', 'heal']), bp: sbp }),
+  v.strictObject({ kind: v.literal('unitRange'), lu: pos }),
+  v.strictObject({ kind: v.literal('damageVs'), tags: v.array(TAG), bp: pos }),
+  v.strictObject({ kind: v.literal('mail'), ofInfantryDamageBp: pos }),
+  v.strictObject({ kind: v.literal('resist'), minSourceRange: nonNeg, bp: pos }),
+  v.strictObject({ kind: v.literal('takenFrom'), from: RESEARCH_CLASS, bp: pos }),
+  v.strictObject({ kind: v.literal('firstHit'), bp: nonNeg, knockback: nonNeg, whileHolding: v.optional(v.boolean()) }),
+  v.strictObject({ kind: v.literal('aura'), radius: pos, stat: v.picklist(['attackSpeed', 'guard']), bp: pos, behindOnly: v.optional(v.boolean()) }),
+  v.strictObject({ kind: v.literal('turret'), stat: v.picklist(['range', 'attackSpeed', 'damage']), value: pos }),
+  v.strictObject({ kind: v.literal('modernise'), priceBp: bp, buildMs: pos }),
+  v.strictObject({ kind: v.literal('income'), milliGoldPerSec: pos }),
+  v.strictObject({ kind: v.literal('bounty'), addBp: nonNeg, bonusBp: nonNeg, ownHalfOnly: v.boolean() }),
+  v.strictObject({ kind: v.literal('powerCharge'), bp: pos }),
+  v.strictObject({ kind: v.literal('warHorns'), chargeSpeedBp: nonNeg, holdDamageBp: nonNeg, flagMaxP: pos, nearLu: pos }),
+]);
+const ResearchPickSchema = v.strictObject({
+  id: v.pipe(v.string(), v.regex(/^[a-z]+(\.[a-zA-Z]+)?\.[a-z_]+$/, 'research ids look like "economy.granary" or "troops.infantry.mail"')),
+  track: RESEARCH_TRACK,
+  group: v.nullable(RESEARCH_CLASS),
+  rank: v.picklist([1, 2, 3]),
+  pick: v.picklist([0, 1]),
+  effects: v.pipe(v.array(ResearchEffectSchema), v.minLength(1)),
+  aiHint: v.picklist(['opener', 'vsSwarm', 'vsHeavy', 'vsRanged', 'defend', 'push', 'busy', 'quiet', 'power']),
+  visualId: v.optional(visual),
+  nameKey: key,
+  descKey: key,
+});
+export const ResearchSchema = v.strictObject({
+  picks: v.array(ResearchPickSchema),
+  cost: byKeys(['troops', 'defences', 'economy', 'command'], v.array(pos)),
+  timeMs: v.array(pos),
+  cancelRefundBp: bp,
+  underdog: v.strictObject({ discountBp: bp, baseGapBp: bp }),
+  unlockAt: v.record(v.pipe(v.string(), v.regex(/^[1-9]$/)), v.array(nonNeg)),
+  classOfRole: byKeys(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'skirmisher', 'siege', 'artillery', 'airBomber', 'airGunship', 'antiMech', 'siegeHeavy'], RESEARCH_CLASS),
 });
 
 const SkinSchema = v.strictObject({
@@ -646,12 +695,13 @@ const BattleSchema = v.strictObject({
 export const ContentSchema = v.strictObject({
   hash: v.pipe(v.string(), v.regex(/^[0-9a-f]{8}$/)),
   ages: perAge(AgeSchema),
-  formats: byKeys(['tutorial', 'short', 'standard', 'full'], FormatSchema),
+  formats: v.record(FORMAT_KEY, FormatSchema),
   economy: EconomySchema,
   units: v.record(id, UnitSchema),
   turrets: v.record(id, TurretSchema),
   powers: v.record(id, PowerSchema),
   skins: v.record(id, SkinSchema),
+  research: ResearchSchema,
   rarities: RaritiesSchema,
   capsules: CapsulesSchema,
   arenas: ArenasSchema,
@@ -807,6 +857,34 @@ function checkCollection(issues: Issues, c: Content): void {
   issues.check(skins.filter((s) => s.inCratePool).length === 11, 'skins', 'the crate pool holds 11 skins (A5.8)');
 }
 
+/** War Council (A18.5): pairs of exclusive picks, a rank I for every line, prices and times for every rank used. */
+function checkResearch(issues: Issues, c: Content): void {
+  const r = c.research;
+  const seen = new Set<string>();
+  for (const p of r.picks) {
+    const path = `research.${p.id}`;
+    issues.check(!seen.has(p.id), path, 'research ids are unique');
+    seen.add(p.id);
+    issues.check((p.track === 'troops') === (p.group !== null), path, 'only Troops picks name a class line');
+    issues.check((r.cost[p.track][p.rank - 1] ?? 0) > 0, path, 'the rank has a price');
+    issues.check((r.timeMs[p.rank - 1] ?? 0) > 0, path, 'the rank has a research time');
+    const pair = r.picks.filter((q) => q.track === p.track && q.group === p.group && q.rank === p.rank);
+    issues.check(pair.length === 2 && pair[0]?.pick !== pair[1]?.pick, path, 'every rank is a pair of picks A and B (A18.5)');
+    if (p.rank > 1) {
+      issues.check(
+        r.picks.some((q) => q.track === p.track && q.group === p.group && q.rank === p.rank - 1),
+        path,
+        'the rank below exists',
+      );
+    }
+    const a = r.picks.find((q) => q !== p && q.track === p.track && q.group === p.group && q.rank === p.rank);
+    if (a) issues.check(JSON.stringify(a.effects) !== JSON.stringify(p.effects), path, 'the two picks of a pair differ (A18.2 rule 3)');
+  }
+  // A18.5.4: every rank-I price is 150 g in every track
+  for (const t of ['troops', 'defences', 'economy', 'command'] as const) issues.check(r.cost[t][0] === 150, `research.cost.${t}`, 'rank I costs 150 (A18.5.4)');
+  issues.check(r.picks.length === 0 || r.unlockAt['1']?.[0] === 0, 'research.unlockAt', 'rank I opens from the start');
+}
+
 function checkAgesAndFormats(issues: Issues, c: Content): void {
   AGE_ORDER.forEach((age, i) => {
     const a = c.ages[age];
@@ -814,18 +892,25 @@ function checkAgesAndFormats(issues: Issues, c: Content): void {
     issues.check(a.baseHp === a.pBp, `ages.${age}`, 'base max HP = 10,000 × P (A2.2)');
     issues.check((a.xpToNext === null) === (i === AGE_ORDER.length - 1), `ages.${age}`, 'only the last age has no threshold');
   });
-  for (const f of Object.values(c.formats)) {
+  for (const [key, f] of Object.entries(c.formats)) {
     const idx = f.ages.map((a) => AGE_ORDER.indexOf(a));
-    // A17.15 rule 4: ages in increasing order from Stone; only the tutorial may skip ages.
-    issues.check(idx[0] === 0 && idx.every((x, i) => x >= 0 && (i === 0 || x > (idx[i - 1] as number))), `formats.${f.id}`, 'a format lists ages in increasing order from Stone');
-    if (f.id !== 'tutorial') issues.check(idx.every((x, i) => x === i), `formats.${f.id}`, 'a ladder format spans consecutive ages from Stone (A17.8)');
+    issues.check(f.id === key, `formats.${key}`, 'a format is stored under its id');
+    // A17.15 rule 4 / A18.3.4: ages in increasing order; every format but the tutorial is a window of
+    // consecutive ages (it may start in a later age).
+    issues.check(idx.length > 0 && idx.every((x, i) => x >= 0 && (i === 0 || x > (idx[i - 1] as number))), `formats.${key}`, 'a format lists ages in increasing order');
+    if (f.id === 'tutorial') issues.check(idx[0] === 0, `formats.${key}`, 'the tutorial starts in the Stone Age');
+    else issues.check(idx.every((x, i) => x === (idx[0] as number) + i), `formats.${key}`, 'a format is a window of consecutive ages (A18.3.4)');
     if (f.xpToNextOverride) {
-      issues.check(f.xpToNextOverride.length === f.ages.length - 1, `formats.${f.id}`, 'one override per evolve');
+      issues.check(f.xpToNextOverride.length === f.ages.length - 1, `formats.${key}`, 'one override per evolve');
     }
+    if (f.kind === 'short') issues.check(f.ages.length === 3, `formats.${key}`, 'Short War is 3 ages (A18.3.4)');
+    if (f.kind === 'standard') issues.check(f.ages.length === 5, `formats.${key}`, 'Standard War is 5 ages (A18.3.4)');
+    if (f.kind === 'full') issues.check(f.ages.length === 7, `formats.${key}`, 'Full War is 7 ages (A18.3.4)');
     const t = [f.overdriveMs, f.siegeMs, f.finalBellMs].filter((x): x is number => x !== null);
-    issues.check(t.every((x, i) => i === 0 || x > (t[i - 1] as number)), `formats.${f.id}`, 'phases are in order');
+    issues.check(t.every((x, i) => i === 0 || x > (t[i - 1] as number)), `formats.${key}`, 'phases are in order');
   }
-  issues.check(c.economy.treasuryCosts.length === 3, 'economy.treasuryCosts', '3 Treasury levels (A2.3)');
+  for (const named of ['tutorial', 'short', 'standard', 'full']) issues.check(c.formats[named] !== undefined, `formats.${named}`, 'the named formats exist');
+  checkResearch(issues, c);
   issues.check(c.economy.mountCosts.length === 4 && c.economy.mountCosts[0] === 0, 'economy.mountCosts', '4 mounts, the first free (A2.3)');
   // A17.15: the lane lives in core (`LANE_MLU`); the content's lane numbers must follow it.
   const lane = c.battle.laneLength;

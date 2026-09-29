@@ -42,7 +42,7 @@ function starterPlan(ages: readonly AgeId[], o: { rare?: boolean } = {}): Partia
 }
 
 function run(format: 'short' | 'standard' | 'full', events: SimEvent[], outcome: MatchOutcome | null = WIN, o: { rare?: boolean; turret?: boolean } = {}): string[] {
-  const tr = createFeatTracker({ content: C, format, side: ME, loadouts: starterPlan(C.formats[format].ages, o) });
+  const tr = createFeatTracker({ content: C, format, side: ME, loadouts: starterPlan(C.formats[format]!.ages, o) });
   const all = [...events];
   // A turret keeps Humble Beginnings and No Walls apart from the other fixtures unless asked.
   if (o.turret !== false) all.unshift({ e: 'turretBuilt', side: ME, mount: 0, card: 'rock_tosser', tick: 1 });
@@ -77,11 +77,11 @@ describe('feat tracker (A15.10)', () => {
   });
 
   it('Stubborn: win a Standard or Full War without evolving past Medieval', () => {
-    const tr = createFeatTracker({ content: C, format: 'standard', side: ME, loadouts: starterPlan(C.formats.standard.ages, { rare: true }) });
+    const tr = createFeatTracker({ content: C, format: 'standard', side: ME, loadouts: starterPlan(C.formats.standard!.ages, { rare: true }) });
     tr.push([{ e: 'turretBuilt', side: ME, mount: 0, card: 'rock_tosser', tick: 1 }, ageUp(ME, 'medieval', sec(60))]);
     expect(tr.found(WIN)).toEqual(['stubborn']);
     expect(tr.found(LOSS)).toEqual([]);
-    const short = createFeatTracker({ content: C, format: 'short', side: ME, loadouts: starterPlan(C.formats.short.ages, { rare: true }) });
+    const short = createFeatTracker({ content: C, format: 'short', side: ME, loadouts: starterPlan(C.formats.short!.ages, { rare: true }) });
     short.push([{ e: 'turretBuilt', side: ME, mount: 0, card: 'rock_tosser', tick: 1 }]);
     expect(short.found(WIN)).toEqual([]);
   });
@@ -107,14 +107,14 @@ describe('feat tracker (A15.10)', () => {
     expect(run('standard', evs.slice(0, 14), LOSS)).toEqual([]);
   });
 
-  it('Lightspeed: the Future Age before 4:10 in a Full War', () => {
-    expect(run('full', [ageUp(ME, 'future', sec(249))], LOSS)).toEqual(['lightspeed']);
-    expect(run('full', [ageUp(ME, 'future', sec(251))], LOSS)).toEqual([]);
+  it('Lightspeed: the Future Age before 9:00 in a Full War (A18 pacing)', () => {
+    expect(run('full', [ageUp(ME, 'future', sec(539))], LOSS)).toEqual(['lightspeed']);
+    expect(run('full', [ageUp(ME, 'future', sec(541))], LOSS)).toEqual([]);
     expect(run('standard', [ageUp(ME, 'future', sec(100))], LOSS)).toEqual([]);
   });
 
   it('Underdog: win after the opponent was two ages ahead', () => {
-    const tr = createFeatTracker({ content: C, format: 'full', side: ME, loadouts: starterPlan(C.formats.full.ages, { rare: true }) });
+    const tr = createFeatTracker({ content: C, format: 'full', side: ME, loadouts: starterPlan(C.formats.full!.ages, { rare: true }) });
     tr.push([{ e: 'turretBuilt', side: ME, mount: 0, card: 'rock_tosser', tick: 1 }, ageUp(FOE, 'medieval', 10), ageUp(FOE, 'gunpowder', 20), ageUp(ME, 'medieval', 30), ageUp(ME, 'gunpowder', 40)]);
     expect(tr.found(WIN)).toEqual(['underdog']);
   });

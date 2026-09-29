@@ -68,7 +68,8 @@ export function strengthDefaults(mode: StrengthMode): Omit<StrengthOptions, 'wor
     matchesPerPair: mode === 'full' ? 200 : 40,
     tiers: [2, 4, 6, 8, 10],
     proxies: [...SIMPLE, SKILLED],
-    formats: ['short', 'standard', 'full'],
+    // A18.3.4: Short and Standard on every run, Full War only at gates (`--formats short,standard,full`)
+    formats: ['short', 'standard'],
     generalId: BALANCED_GENERAL,
     level: 7,
     seed: 1,

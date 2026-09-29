@@ -28,7 +28,8 @@ describe('fakes', () => {
     for (const age of FAKE_AGES) {
       expect(Object.values(c.units).filter((u) => u.age === age)).toHaveLength(3);
       const lo = fakeLoadouts[age as 'stone' | 'medieval'];
-      expect(lo.units).toHaveLength(5);
+      // six troops per battle (A18.9)
+      expect(lo.units).toHaveLength(6);
       expect(lo.turrets).toHaveLength(2);
       for (const id of lo.units) if (id) expect(c.units[id]?.age).toBe(age);
       for (const id of lo.turrets) if (id) expect(c.turrets[id]?.age).toBe(age);

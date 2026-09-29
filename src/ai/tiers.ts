@@ -64,6 +64,13 @@ export interface TierParams {
   waveCommit: boolean;
   powerArmyShareBp: number;
   baseTurrets: number;
+  /**
+   * War Council use (A18.5.8): the first research start, the least time between two starts, and how
+   * the pick is made (0-I at random, II-IV by `aiHint`, V and up by counter scoring on the visible army).
+   */
+  researchFromTicks: number;
+  researchGapTicks: number;
+  researchMode: 'random' | 'hint' | 'counter';
 }
 
 interface Row {
@@ -155,6 +162,10 @@ export function tierParams(tier: number): TierParams {
     waveCommit: t >= CRAFT_FROM * 100,
     powerArmyShareBp: t >= CRAFT_FROM * 100 ? lerp(POWER_SHARE_AT_CRAFT_BP, POWER_SHARE_AT_X_BP, t, CRAFT_FROM * 100, 1000) : 0,
     baseTurrets: t >= 800 ? 2 : t >= CRAFT_FROM * 100 ? 1 : 0,
+    // A18.5.8 tier columns: first research after 1:30 (0-I), 1:00 (II-IV), 0:45 (V-VI), 0:30 (VII-X)
+    researchFromTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 60000 : t < 700 ? 45000 : 30000),
+    researchGapTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 65000 : t < 700 ? 50000 : 45000),
+    researchMode: t < 200 ? 'random' : t < 500 ? 'hint' : 'counter',
   };
 }
 

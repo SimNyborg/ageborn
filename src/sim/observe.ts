@@ -6,9 +6,33 @@
  * the Scouted list, and its own gold, queue and tray. Never the opponent's gold, queue or War Plan.
  * Units: positions `p` in milli-lu from the observer's gate; gold in milli-gold (B3 units).
  */
-import type { Observation, Side } from '@/contracts';
+import type { Observation, ResearchView, Side } from '@/contracts';
+import { MILLI } from '@/core';
 import { pOf } from './geometry';
+import { ranksOpen, researchProgressBp } from './research';
 import { baseHpBp, loadoutOf, other, xpBp, type Ctx, type SideRt } from './state';
+
+/** A side's War Council as both players see it (A18.5.1: research is public). */
+function researchView(ctx: Ctx, side: Side): ResearchView {
+  const r = ctx.s.sides[side].research;
+  const picks = ctx.rules.research.picks;
+  return {
+    owned: r.owned.map((i) => picks[i]?.id ?? ''),
+    current: r.cur >= 0 ? (picks[r.cur]?.id ?? null) : null,
+    progressBp: researchProgressBp(ctx, side),
+    ranksOpen: ranksOpen(ctx, side),
+  };
+}
+
+/** The six tray slots (A18.9): a shorter loadout plays as empty slots; tutorial trays hide locked slots. */
+function trayOf(units: readonly (string | null)[] | undefined, tray: readonly number[] | undefined): Observation['me']['tray'] {
+  const out: Observation['me']['tray'] = [];
+  for (let i = 0; i < 6; i += 1) {
+    const c = units?.[i] ?? null;
+    out.push(c && (!tray || tray.includes(i)) ? c : null);
+  }
+  return out;
+}
 
 function turretsOf(s: SideRt): Observation['me']['turrets'] {
   return s.turrets.map((t) => (t ? { card: t.card, age: t.age } : null));
@@ -25,6 +49,7 @@ export function observe(ctx: Ctx, side: Side): Observation {
     tick: s.tick,
     side,
     phase: s.phase,
+    ages: [...ctx.fmt.ages],
     me: {
       gold: me.gold,
       xpBp: xpBp(ctx, side),
@@ -36,9 +61,11 @@ export function observe(ctx: Ctx, side: Side): Observation {
       turrets: turretsOf(me),
       powerPpm: me.powerPpm,
       stance: me.stance,
+      holdP: Math.trunc(me.holdP / MILLI),
+      research: researchView(ctx, side),
       baseHpBp: baseHpBp(me),
       lastStand: me.lastStand,
-      tray: lo ? lo.units.map((c, i) => (c && (!tray || tray.includes(i)) ? c : null)) : [null, null, null, null, null],
+      tray: trayOf(lo?.units, tray),
       turretCards: lo ? [...lo.turrets] : [null, null],
       power: lo ? lo.power : '',
     },
@@ -49,6 +76,8 @@ export function observe(ctx: Ctx, side: Side): Observation {
       turrets: turretsOf(foe),
       baseHpBp: baseHpBp(foe),
       stance: foe.stance,
+      holdP: Math.trunc(foe.holdP / MILLI),
+      research: researchView(ctx, foeSide),
       treasury: foe.treasury,
       lastStand: foe.lastStand,
       scouted: [...foe.played],

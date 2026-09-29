@@ -39,6 +39,10 @@ export interface FireOpts {
   /** First-hit bonus carried by a ranged attack (A17.15: Harpoon Gunner's Reel In); default ×1.0, no knockback. */
   bonusBp?: number;
   bonusKb?: number;
+  /** Research of the source unit (A18.5.2): extra damage against tags, and its Troops class. */
+  vsTags?: number;
+  vsBp?: number;
+  srcCls?: number;
 }
 
 /** Travel time in ticks for a distance (mlu) at a speed (lu/s): ceil(d × 20 / (speed × 1,000)), min 1. */
@@ -96,6 +100,9 @@ export function fireProjectile(ctx: Ctx, o: FireOpts): ProjectileRt {
     mount: o.mount,
     bonusBp: o.bonusBp ?? BP,
     bonusKb: o.bonusKb ?? 0,
+    vsTags: o.vsTags ?? 0,
+    vsBp: o.vsBp ?? 0,
+    srcCls: o.srcCls ?? -1,
   };
   ctx.s.nextId += 1;
   ctx.s.projectiles.push(p);
@@ -149,6 +156,9 @@ function collectProjectileImpact(ctx: Ctx, p: ProjectileRt): void {
   imp.dmg = p.dmg;
   imp.vsBase = p.vsBase;
   imp.dmgBuffBp = p.dmgBuffBp;
+  imp.vsTags = p.vsTags;
+  imp.vsBp = p.vsBp;
+  imp.srcCls = p.srcCls;
   imp.turret = p.owner === 'turret';
   imp.srcX = p.fromX;
   imp.x = p.toX;

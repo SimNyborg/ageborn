@@ -23,7 +23,9 @@ import {
 import { FIXTURE_NOW, FIXTURE_STATES, fixtureSave, type FixtureState } from '@/ui/screens/fixtures/saves';
 import { createPreviewServices } from '@/ui/screens/fixtures/services';
 import { ScreenHost } from '@/ui/screens/ScreenHost';
+import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
 import { createArtProvider } from '@/visuals';
+import { cosmeticImageUrl } from '@/visuals/cosmetics/art';
 import { signal } from '@preact/signals';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 
@@ -91,6 +93,9 @@ const VARIANTS: Variant[] = [
   { id: 'profile', label: 'Profile', route: () => [{ id: 'home' }, { id: 'profile' }] },
   { id: 'settings', label: 'Settings', route: () => [{ id: 'home' }, { id: 'settings' }] },
   { id: 'conquest', label: 'Conquest', route: () => [{ id: 'home' }, { id: 'conquest' }] },
+  ...(['troops', 'bases', 'flags', 'decorations', 'emotes', 'quotes', 'look'] as const).map(
+    (tab): Variant => ({ id: `customize-${tab}`, label: `Customize: ${tab}`, route: () => [{ id: 'home' }, { id: 'customize', tab }] }),
+  ),
 ];
 
 const VIEWPORTS = ['fill', '1280x720', '1920x1080', '844x390', '667x375', '1024x768', '390x844'] as const;
@@ -186,8 +191,9 @@ export default function ScreensPage() {
         <button onClick={() => setEpoch(epoch + 1)}>reset</button>
       </div>
       <div style={frame} key={`${variant}|${state}|${portraits}|${epoch}`}>
-        <ScreenHost
-          env={env}
+        <CosmeticArtContext.Provider value={cosmeticImageUrl}>
+          <ScreenHost
+            env={env}
           slots={{
             battle: () => (
               <div
@@ -205,7 +211,8 @@ export default function ScreensPage() {
               </div>
             ),
           }}
-        />
+          />
+        </CosmeticArtContext.Provider>
       </div>
     </div>
   );

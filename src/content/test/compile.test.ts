@@ -22,14 +22,14 @@ describe('contentHash (B4, B3 replays)', () => {
   it('matches the snapshot (update only when battle content changes on purpose)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
-    expect(content.hash).toBe('04660d28');
+    expect(content.hash).toBe('67c9912c');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
     // The fixture never changes, so this value stays fixed even after a balance change updates the
     // snapshot above. It changes only if the hash algorithm or the hashed slice changes, which
     // invalidates every golden replay.
-    const FIXTURE_HASH = '53d42a0d';
+    const FIXTURE_HASH = '786da415';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
     expect(fixture.hash).toBe(FIXTURE_HASH);
   });
@@ -155,10 +155,10 @@ describe('ticks (B3: max(1, round(ms / 50)))', () => {
       powerCharge: 1000,
       turretBuild: 20,
       turretSell: 20,
-      stanceCooldown: 40,
+      stanceCooldown: 60,
       retarget: 20,
       healPulse: 10,
-      firstHitIdle: 40,
+      firstHitIdle: 80,
       lastStandCharge: 20,
     });
   });
@@ -173,8 +173,8 @@ describe('integer view (B3 units)', () => {
       trainTicks: 30,
       pop: 2,
       cost: 50000,
-      // A2.3 / A2.4: 60% gold, 100% XP to the killer; 40% XP to the owner; 30% gold for power kills
-      bounty: { gold: 30000, xp: 50000, lossXp: 20000, powerGold: 15000 },
+      // A18.3.2-A18.3.3: 50% gold, 70% XP to the killer; 50% XP to the owner; 30% gold for power kills
+      bounty: { gold: 25000, xp: 35000, lossXp: 25000, powerGold: 15000 },
       attacks: [
         { damage: 2000, vsBaseDamage: null, intervalTicks: 20, windupTicks: 8, range: 16000, minRange: 0, projectileSpeed: null, instant: false },
       ],

@@ -10,10 +10,13 @@ import { accrueCharges } from './charges';
 import { accrueDaily, dailyRecord } from './daily';
 import { refreshQuests } from './quests';
 import type { LocalTime } from './time';
+import { fillNewTroopSlots } from './warplan';
 
 /** Brings every timer up to `lt`. Returns the same object when nothing changed. */
 export function tickTimersAt(s: SaveDoc, t: Content, lt: LocalTime): SaveDoc {
-  let save = accrueCharges(s, t, lt.t);
+  // A18.9: the sixth troop slot a save v4 migration added is filled once at the first tick after load.
+  let save = fillNewTroopSlots(s, t);
+  save = accrueCharges(save, t, lt.t);
   save = accrueDaily(save, t, lt);
   save = refreshQuests(save, t, lt);
   const daily = dailyRecord(save, t, lt);

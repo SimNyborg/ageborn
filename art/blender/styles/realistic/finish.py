@@ -18,9 +18,9 @@ def load_all(unit, r):
     frames = {}
     for c, i in r["jobs"]:
         L = pipe.load_layers(tmp, c, i)
-        tm, bs, ob = pipe.build_layers(L, lref, r["fx"].get((c, i)), r["feet_px"])
+        tm, bs, ob, du = pipe.build_layers(L, lref, r["fx"].get((c, i)), r["feet_px"])
         for s in (1, 2, 3):
-            frames[(c, i, s)] = pipe.finish(tm, bs, ob, s, sharpen=0.25 if s == 1 else 0.0)
+            frames[(c, i, s)] = pipe.finish(tm, bs, ob, s, sharpen=0.25 if s == 1 else 0.0, dust=du)
     return frames, lref
 
 

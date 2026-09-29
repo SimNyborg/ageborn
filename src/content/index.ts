@@ -25,7 +25,7 @@ import { trophyRoad } from './trophyRoad';
 import type { Content, MetaTables } from './types';
 
 export type * from './types';
-export { AGE_ORDER } from './ages';
+export { AGE_ORDER, THEMED_AGES, ageFlavourKey } from './ages';
 export { FORMAT_MODES, FORMAT_ORDER } from './formats';
 export { commanderName, playerName } from './names';
 export { roadAmber } from './trophyRoad';

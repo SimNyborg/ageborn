@@ -3,11 +3,12 @@
  * (rider summons, explosions) and `died` events. Passes repeat in id order until no new deaths, at most
  * 8 passes, then dead units are compacted out.
  *
- * - Kills by units, turrets and unit abilities pay the killer 60% of the victim's cost in gold and 100%
- *   in XP; kills by powers and Last Stand pay 30% gold and no XP.
+ * - Kills by units, turrets and unit abilities pay the killer 50% of the victim's cost in gold and 70%
+ *   in XP (A18.3.2-A18.3.3; Bounty Hunters and Forage research add to the gold); kills by powers and
+ *   Last Stand pay 30% gold and no XP.
  * - Underdog: +50% gold and XP when the victim's card age is above the killer's current age, unless
  *   the killer's Evolve is available.
- * - The owner gets 40% of the cost in XP. Summoned units pay nothing either way.
+ * - The owner gets 50% of the cost in XP. Summoned units pay nothing either way.
  */
 import { BP } from '@/core';
 import { damageBase, makeImpact } from '../damage';
@@ -62,7 +63,10 @@ function processDeath(ctx: Ctx, u: UnitRt): void {
     loss = Math.trunc((cost * ctx.econ.ownLossXpBp) / BP);
     if (kind !== null && killerSide !== u.side) {
       const byPower = kind === 'power' || kind === 'lastStand';
-      gold = Math.trunc((cost * (byPower ? ctx.econ.powerKillGoldBp : ctx.econ.bountyGoldBp)) / BP);
+      // A18.5.4 Bounty Hunters raise the bounty rate; Forage pays more for kills in the killer's own half.
+      const kfx = ctx.s.sides[killerSide].fx;
+      gold = Math.trunc((cost * (byPower ? ctx.econ.powerKillGoldBp : ctx.econ.bountyGoldBp + kfx.bountyAddBp)) / BP);
+      if (!byPower && kfx.forageBp > 0 && pOf(u.x, killerSide) <= ctx.econ.midLane) gold = Math.trunc((gold * (BP + kfx.forageBp)) / BP);
       xp = Math.trunc((cost * (byPower ? ctx.econ.powerKillXpBp : ctx.econ.bountyXpBp)) / BP);
       if (r.ageIdx > ageIdxOf(ctx, killerSide) && !canEvolve(ctx, killerSide)) {
         gold = Math.trunc((gold * (BP + ctx.econ.underdogBp)) / BP);

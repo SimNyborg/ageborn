@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { devSetGold, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
+import { devGrantResearch, devSetGold, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
 import { arena, L, ofKind, Stamper, stun } from './helpers';
 
 describe('gold and XP (A2.3, A2.4)', () => {
@@ -12,37 +12,19 @@ describe('gold and XP (A2.3, A2.4)', () => {
     expect(g).toEqual([{ e: 'goldEarned', side: 0, amount: 6000, reason: 'passive', tick: 20 }]);
   });
 
-  it('Overdrive doubles base passive gold and XP, not Treasury; power charge ×1.25', () => {
+  it('Overdrive doubles base passive gold and XP, not Economy research income; power charge ×1.25', () => {
     const sim = arena();
-    const st = new Stamper(sim);
-    devSetGold(sim, 0, 1000);
-    st.step({ t: 'treasury', side: 0 });
+    devGrantResearch(sim, 0, 'economy.granary');
     const ctx = simCtx(sim);
     ctx.overdriveTick = 2;
+    stepN(sim, 1);
     const g0 = sim.state.sides[0].gold;
     const p0 = sim.state.sides[0].powerPpm;
     stepN(sim, 1);
     expect(sim.state.phase).toBe('overdrive');
-    // 600 base (×2) + 75 Treasury
+    // 600 base (×2) + 75 Granary (A18.5.4: never doubled)
     expect(sim.state.sides[0].gold - g0).toBe(675);
     expect(sim.state.sides[0].powerPpm - p0).toBe(1250);
-  });
-
-  it('Treasury: 3 levels at 200 / 350 / 550, +1.5 gold/s each', () => {
-    const sim = arena();
-    const st = new Stamper(sim);
-    devSetGold(sim, 0, 1100);
-    const ev = [
-      ...st.step({ t: 'treasury', side: 0 }),
-      ...st.step({ t: 'treasury', side: 0 }),
-      ...st.step({ t: 'treasury', side: 0 }),
-      ...st.step({ t: 'treasury', side: 0 }),
-    ];
-    expect(ofKind(ev, 'treasuryUp').map((e) => e.level)).toEqual([1, 2, 3]);
-    expect(ofKind(ev, 'commandRejected')[0]?.reason).toBe('maxTreasury');
-    const g = sim.state.sides[0].gold;
-    stepN(sim, 1);
-    expect(sim.state.sides[0].gold - g).toBe(300 + 3 * 75);
   });
 
   it('XP cap: 1.5 × the threshold (1,050 in Stone)', () => {

@@ -15,6 +15,7 @@ import type {
   CompiledContent,
   DamageMod,
   DmgType,
+  EconomyRules,
   FormatId,
   PowerDef,
   RoleGroup,
@@ -25,6 +26,7 @@ import type {
   UnitDef,
 } from '@/contracts';
 import { BP, MILLI, PPM, TICKS_PER_SECOND, assert, msToTicks } from '@/core';
+import { researchRules, type ResearchSimRules } from './researchRules';
 
 /** Tag bit flags (DESIGN A2.6). */
 export const TAG: Readonly<Record<Tag, number>> = {
@@ -70,7 +72,7 @@ export const DEFAULT_BATTLE: Readonly<BattleRulesLike> = {
   braceKnockbackResistBp: BP,
   airKnockbackResistBp: BP,
   moderniseCreditBp: 5000,
-  finalAgeXpCap: 1200,
+  finalAgeXpCap: 1650,
   siegeDecayStepMs: 1000,
   stampedeFallbackP: 200,
 };
@@ -96,6 +98,13 @@ export const DEFAULT_MARCH_BP = 12500;
 export const DEFAULT_SIEGE_MOVE_BP = 12000;
 export const DEFAULT_FRONT_WIDTH = 3;
 export const DEFAULT_GATE_CROWD_LU = 60;
+/** DESIGN A18.2 / A18.4.2 values for content that predates them. */
+export const DEFAULT_TURRET_HARD_CAP_LU = 560;
+export const DEFAULT_HOLD_MAX_LU = 800;
+export const DEFAULT_HOLD_SNAP_LU = 20;
+export const DEFAULT_FLAG_MOVE_MS = 1000;
+export const DEFAULT_FALLBACK_P_LU = 200;
+export const DEFAULT_CAPS: Readonly<EconomyRules['statCaps']> = { damageBp: 3500, takenBp: 3500, hpBp: 3000, attackSpeedBp: 2500, speedBp: 2000, rangeLu: 60 };
 
 /** The walking speed multiplier (A17.2, `economy.marchSpeedBp`). */
 function marchBp(content: CompiledContent): number {
@@ -299,8 +308,6 @@ export interface EconRules {
   startGold: number;
   passiveGoldPerTick: number;
   passiveXpPerTick: number;
-  treasuryCosts: readonly number[];
-  treasuryGoldPerTickPerLevel: number;
   mountCosts: readonly number[];
   mountCount: number;
   bountyGoldBp: number;
@@ -318,6 +325,8 @@ export interface EconRules {
   /** Modernise: the new price minus this share of the old turret's price (A2.3). */
   moderniseCreditBp: number;
   turretRangeCap: number;
+  /** A18.2: turret range with research and modifiers never exceeds this (mlu from the own gate). */
+  turretRangeHardCap: number;
   turretBuildTicks: number;
   turretSellTicks: number;
   ascendTicks: number;
@@ -344,6 +353,16 @@ export interface EconRules {
   retargetCloser: number;
   selfDefense: number;
   stanceCooldownTicks: number;
+  /** A18.4.2 Hold flag range and snap (mlu), flag move cooldown (ticks); Fall back line (mlu). */
+  holdMin: number;
+  holdMax: number;
+  holdSnap: number;
+  flagMoveTicks: number;
+  fallbackP: number;
+  /** A18.4.2 engagement freshness: ticks with no target before the next hit is a first hit. */
+  freshTicks: number;
+  /** A18.2 rule 4 hard stacking caps (bp; `range` in mlu). */
+  caps: { damageBp: number; takenBp: number; hpBp: number; attackSpeedBp: number; speedBp: number; range: number };
   emoteCooldownTicks: number;
   areaSecondaryBp: number;
   areaMaxTargets: number;
@@ -383,6 +402,8 @@ export interface SimRules {
   vanguard: Readonly<Record<AgeId, CardId | null>>;
   /** Every id an `emote` command may carry (see {@link emoteIds}). */
   emotes: ReadonlySet<string>;
+  /** The War Council (A18.5), see `research.ts`. */
+  research: ResearchSimRules;
 }
 
 /** The six starter emotes (B15 `BaseEmoteId`). */
@@ -739,13 +760,15 @@ function powerRules(def: PowerDef, idx: number): PowerRules {
 function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules {
   const e = content.economy;
   const t = content.ticks;
+  // A18 fields read with a shape check, so content that predates them (old fixtures) keeps working.
+  const eo = e as Partial<EconomyRules>;
+  const flag = eo.holdFlag as Partial<EconomyRules['holdFlag']> | undefined;
+  const caps = eo.statCaps as Partial<EconomyRules['statCaps']> | undefined;
   const decayStepTicks = msToTicks(battle.siegeDecayStepMs);
   return {
     startGold: e.startGold * MILLI,
     passiveGoldPerTick: Math.trunc((e.passiveGoldPerSec * MILLI) / TICKS_PER_SECOND),
     passiveXpPerTick: Math.trunc((e.passiveXpPerSec * MILLI) / TICKS_PER_SECOND),
-    treasuryCosts: e.treasuryCosts.map((c) => c * MILLI),
-    treasuryGoldPerTickPerLevel: Math.trunc(e.treasuryMilliGoldPerSecPerLevel / TICKS_PER_SECOND),
     mountCosts: e.mountCosts.map((c) => c * MILLI),
     mountCount: e.mountCosts.length,
     bountyGoldBp: e.bountyGoldBp,
@@ -762,6 +785,7 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     sellRefundBp: e.sellRefundBp,
     moderniseCreditBp: battle.moderniseCreditBp,
     turretRangeCap: mlu(e.turretRangeCap),
+    turretRangeHardCap: mlu(posOr(eo.turretRangeHardCapLu, DEFAULT_TURRET_HARD_CAP_LU)),
     turretBuildTicks: t.turretBuild,
     turretSellTicks: t.turretSell,
     ascendTicks: t.ascend,
@@ -800,6 +824,20 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     retargetCloser: mlu(e.retargetCloserLu),
     selfDefense: mlu(e.rangedSelfDefenseLu),
     stanceCooldownTicks: t.stanceCooldown,
+    holdMin: mlu(posOr(flag?.minP, e.holdLine)),
+    holdMax: mlu(posOr(flag?.maxP, DEFAULT_HOLD_MAX_LU)),
+    holdSnap: mlu(posOr(flag?.snapLu, DEFAULT_HOLD_SNAP_LU)),
+    flagMoveTicks: msToTicks(posOr(flag?.moveCooldownMs, DEFAULT_FLAG_MOVE_MS)),
+    fallbackP: mlu(posOr(eo.fallbackP, DEFAULT_FALLBACK_P_LU)),
+    freshTicks: t.firstHitIdle,
+    caps: {
+      damageBp: nonNegOr(caps?.damageBp, DEFAULT_CAPS.damageBp),
+      takenBp: nonNegOr(caps?.takenBp, DEFAULT_CAPS.takenBp),
+      hpBp: nonNegOr(caps?.hpBp, DEFAULT_CAPS.hpBp),
+      attackSpeedBp: nonNegOr(caps?.attackSpeedBp, DEFAULT_CAPS.attackSpeedBp),
+      speedBp: nonNegOr(caps?.speedBp, DEFAULT_CAPS.speedBp),
+      range: mlu(nonNegOr(caps?.rangeLu, DEFAULT_CAPS.rangeLu)),
+    },
     emoteCooldownTicks: msToTicks(e.emoteCooldownMs),
     areaSecondaryBp: e.areaSecondaryBp,
     areaMaxTargets: e.areaMaxTargets,
@@ -821,6 +859,7 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
 
 function formatRules(content: CompiledContent, id: FormatId): FormatRules {
   const f = content.formats[id];
+  assert(f !== undefined, `unknown format ${id}`);
   const toTick = (ms: number | null): number | null => (ms === null ? null : msToTicks(ms));
   const thresholds = f.ages.map((age, i) => {
     if (i === f.ages.length - 1) return null;
@@ -906,6 +945,7 @@ function compileRules(content: CompiledContent): SimRules {
     pBp,
     vanguard,
     emotes: emoteIds(content),
+    research: researchRules(content, unitList, vanguard),
   };
 }
 

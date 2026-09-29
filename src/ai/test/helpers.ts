@@ -86,6 +86,7 @@ export function observation(o: {
   turrets?: Observation['me']['turrets'];
   powerPpm?: number;
   stance?: 'charge' | 'hold';
+  research?: Observation['me']['research'];
   baseHpBp?: number;
   lastStand?: Observation['me']['lastStand'];
   tray?: (CardId | null)[];
@@ -100,6 +101,7 @@ export function observation(o: {
     tick: o.tick ?? 100,
     side: o.side ?? 1,
     phase: o.phase ?? 'regulation',
+    ages: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future'],
     me: {
       gold: o.gold ?? 0,
       xpBp: o.xpBp ?? 0,
@@ -111,6 +113,8 @@ export function observation(o: {
       turrets: o.turrets ?? [null, null, null, null],
       powerPpm: o.powerPpm ?? 0,
       stance: o.stance ?? 'charge',
+      holdP: 320,
+      research: o.research ?? { owned: [], current: null, progressBp: 0, ranksOpen: 1 },
       baseHpBp: o.baseHpBp ?? 10000,
       lastStand: o.lastStand ?? 'locked',
       tray: o.tray ?? [...stone.units],
@@ -124,6 +128,8 @@ export function observation(o: {
       turrets: [null, null, null, null],
       baseHpBp: 10000,
       stance: 'charge',
+      holdP: 320,
+      research: { owned: [], current: null, progressBp: 0, ranksOpen: 1 },
       treasury: 0,
       lastStand: 'locked',
       scouted: [],

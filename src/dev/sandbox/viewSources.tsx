@@ -178,8 +178,9 @@ export class DevAutoplayer implements Seat {
       out.push({ t: 'buildTurret', side, mount: free as 0 | 1 | 2 | 3, slot: tCard === turretCard(slot) ? slot : 0 });
     } else if (me.mountsOwned < 3 && gold > (eco.mountCosts[me.mountsOwned] ?? 9999) + 250 && this.rng.next() < 0.15) {
       out.push({ t: 'buyMount', side });
-    } else if (me.treasury < 2 && gold > (eco.treasuryCosts[me.treasury] ?? 9999) + 150 && st.tick > 400 && this.rng.next() < 0.2) {
-      out.push({ t: 'treasury', side });
+    } else if (me.treasury < 2 && me.research.cur < 0 && gold > 300 && st.tick > 400 && this.rng.next() < 0.2) {
+      // Economy income research (the Treasury before A18.5.4): Granary, then Market.
+      out.push({ t: 'research', side, track: 'economy', rank: me.treasury === 0 ? 1 : 2, pick: 0 });
     }
 
     // Training: keep the queue busy with what we can afford, heavier picks when rich.
@@ -192,7 +193,7 @@ export class DevAutoplayer implements Seat {
         if (pick) out.push({ t: 'train', side, slot: pick.i as 0 | 1 | 2 | 3 | 4 });
       }
     }
-    if (foe.baseHp < foe.baseMaxHp * 0.3 && me.stance === 'hold') out.push({ t: 'stance', side, stance: 'charge' });
+    if (foe.baseHp < foe.baseMaxHp * 0.3 && me.stance === 'hold') out.push({ t: 'stance', side, mode: 'charge' });
     if (this.rng.next() < 0.004) out.push({ t: 'emote', side, emote: this.rng.next() < 0.5 ? 'thumbsUp' : 'laugh' });
     return out;
   }

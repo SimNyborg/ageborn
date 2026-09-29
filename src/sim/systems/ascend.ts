@@ -8,7 +8,7 @@ import type { Side } from '@/contracts';
 import { BP } from '@/core';
 import { emit } from '../events';
 import { xOf } from '../geometry';
-import { ageOf, cardLevel, loadoutOf, thresholdOf, type Ctx } from '../state';
+import { ageOf, baseMaxHpFor, cardLevel, loadoutOf, thresholdOf, type Ctx } from '../state';
 import { spawnUnit } from '../units';
 
 export function ascendSystem(ctx: Ctx): void {
@@ -27,7 +27,7 @@ function ageUp(ctx: Ctx, side: Side): void {
   const age = ageOf(ctx, side);
   // Base HP: keep the percentage, then heal 5% of the new max (A2.2).
   const oldMax = s.baseMaxHp;
-  const newMax = ctx.rules.baseHp[age] * 100;
+  const newMax = baseMaxHpFor(ctx.rules, ctx.cfg, side, age);
   let hp = oldMax > 0 ? Math.trunc((s.baseHp * newMax) / oldMax) : newMax;
   hp += Math.trunc((newMax * ctx.econ.evolveHealBp) / BP);
   s.baseMaxHp = newMax;

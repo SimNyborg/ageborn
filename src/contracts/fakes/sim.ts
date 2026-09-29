@@ -78,6 +78,9 @@ function sideState(): SideState {
     powerPpm: 0,
     stance: 'charge',
     stanceReadyTick: 0,
+    holdP: 320_000,
+    flagReadyTick: 0,
+    research: { owned: [], cur: -1, startTick: 0, endTick: 0, paid: 0 },
     baseHp: BASE_HP_CENTI,
     baseMaxHp: BASE_HP_CENTI,
     lastStand: 'locked',
@@ -177,10 +180,18 @@ export class FakeSim implements Sim {
     const turretsOf = (st: SideState): Observation['me']['turrets'] =>
       st.turrets.map((t) => (t ? { card: t.card, age: t.age } : null));
     const hpBp = (st: SideState): number => Math.trunc((st.baseHp * 10000) / st.baseMaxHp);
+    const picks = this.config.content.research.picks;
+    const researchView = (st: SideState): Observation['me']['research'] => ({
+      owned: st.research.owned.map((i) => picks[i]?.id ?? ''),
+      current: st.research.cur >= 0 ? (picks[st.research.cur]?.id ?? null) : null,
+      progressBp: 0,
+      ranksOpen: 1,
+    });
     return {
       tick: s.tick,
       side,
       phase: s.phase,
+      ages: ages.map((a) => a.id),
       me: {
         gold: me.gold,
         xpBp: 0,
@@ -192,6 +203,8 @@ export class FakeSim implements Sim {
         turrets: turretsOf(me),
         powerPpm: me.powerPpm,
         stance: me.stance,
+        holdP: Math.trunc(me.holdP / 1000),
+        research: researchView(me),
         baseHpBp: hpBp(me),
         lastStand: me.lastStand,
         tray: loadout ? [...loadout.units] : [],
@@ -205,6 +218,8 @@ export class FakeSim implements Sim {
         turrets: turretsOf(foe),
         baseHpBp: hpBp(foe),
         stance: foe.stance,
+        holdP: Math.trunc(foe.holdP / 1000),
+        research: researchView(foe),
         treasury: foe.treasury,
         lastStand: foe.lastStand,
         scouted: [...new Set(s.units.filter((u) => u.side !== side).map((u) => u.card))],
@@ -324,6 +339,7 @@ export class FakeSim implements Sim {
         break;
       case 'stanceChanged':
         s.sides[ev.side].stance = ev.stance;
+        s.sides[ev.side].holdP = ev.holdP * 1000;
         break;
       case 'lastStandArmed':
         s.sides[ev.side].lastStand = 'armed';

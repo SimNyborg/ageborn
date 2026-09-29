@@ -100,7 +100,8 @@ describe('ledger: own commands the delayed observation does not show yet', () =>
   it('never spends the same gold twice before the observation catches up', () => {
     const ledger = new Ledger(book);
     ledger.record({ kind: 'train', slot: 0, card: 'bonker', cost: 50000 }, 100, 101);
-    ledger.record({ kind: 'treasury', cost: 200000 }, 110, 111);
+    const granary = content.research.picks.find((p) => p.id === 'economy.granary')!;
+    ledger.record({ kind: 'research', pick: granary, cost: 200000 }, 110, 111);
     expect(ledger.pendingGold()).toBe(250000);
     expect(ledger.pendingTrains()).toEqual(['bonker']);
     ledger.sync(observation({ tick: 101 }));

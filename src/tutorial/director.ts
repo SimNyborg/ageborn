@@ -10,6 +10,7 @@
  * cases are logged, so playtests can see where new players drop off.
  */
 import type { Side } from '@/contracts';
+import { nextIncomePick, researchCost } from '@/core';
 import { AdaptiveHints, type AdaptiveHintsOptions } from './hints';
 import { ADAPTIVE, type AdaptiveHintId, type Beat, type MatchScript, type PromptTarget } from './scripts';
 import { PPM_FULL, evolveReady, eventOfSide, goldOf, trayCard, type TickInput } from './view';
@@ -218,8 +219,17 @@ export class TutorialDirector {
       case 'ageUp':
         return this.agesReached.has(t.age);
       case 'treasuryAffordable': {
-        const cost = eco.treasuryCosts[me.treasury];
-        return i.state.tick >= t.afterTick && cost !== undefined && goldOf(i) >= cost;
+        // The Economy income research (Granary, then Market) replaced the Treasury (A18.5.4).
+        const picks = i.config.content.research.picks;
+        const r = me.research;
+        const view = {
+          owned: r.owned.map((x) => picks[x]?.id ?? ''),
+          current: r.cur >= 0 ? (picks[r.cur]?.id ?? null) : null,
+          progressBp: 0,
+          ranksOpen: 1,
+        };
+        const pick = nextIncomePick(i.config.content, view);
+        return i.state.tick >= t.afterTick && pick !== null && goldOf(i) >= researchCost(i.config.content, pick);
       }
       case 'mountAffordable': {
         const cost = eco.mountCosts[me.mountsOwned];

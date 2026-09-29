@@ -4,7 +4,7 @@
  * the game's ink outline, so a Danish, a Brazilian and a Mammoth flag read as one family.
  *
  * - National flags are country flags only, simplified where a flag carries a detailed coat of arms
- *   (Spain and Portugal show their plain civil forms). No political or hate symbols, and a player's
+ *   (Spain shows its plain civil form, Portugal a simplified sphere and shield). No political or hate symbols, and a player's
  *   flag is only ever their own pick.
  * - Base flags are emblems on the side's team colour (A11: the team reads first), cut as swallowtail
  *   banners so they never look like a country.
@@ -76,11 +76,12 @@ function unionFlag(x: number, y: number, w: number, h: number): Shape[] {
         rect(x, y, w, h, blue),
         band(x, y, x + w, y + h, 8 * k, '#ffffff'),
         band(x + w, y, x, y + h, 8 * k, '#ffffff'),
-        // the red diagonals sit off-centre, counter-changed (simplified)
+        // the red diagonals are counterchanged like a pinwheel: facing out from the centre, each
+        // arm's red lies on its anticlockwise side (below the white at the upper hoist)
         band(x - off, y + off, cx - off, cy + off, 2.6 * k, red),
         band(cx + off, cy - off, x + w + off, y + h - off, 2.6 * k, red),
-        band(x + w - off, y - off, cx + off, cy - off, 2.6 * k, red),
-        band(cx - off, cy + off, x - off, y + h + off, 2.6 * k, red),
+        band(x + w - off, y - off, cx - off, cy - off, 2.6 * k, red),
+        band(cx + off, cy + off, x + off, y + h + off, 2.6 * k, red),
         rect(cx - 6.5 * k, y, 13 * k, h, '#ffffff'),
         rect(x, cy - 6.5 * k, w, 13 * k, '#ffffff'),
         rect(cx - 4 * k, y, 8 * k, h, red),
@@ -108,37 +109,58 @@ function usStars(): Shape[] {
 const MAPLE =
   'M30 7.5l-2 4.2c-.3.5-.7.4-1.2.2l-1.5-.8 1.1 5.9c.2 1.1-.4 1.1-.8.6l-2.6-2.9-.4 1.5c-.1.3-.4.5-.8.4l-3.3-.7.9 3.2c.2.7.3 1-.2 1.2l-1.2.5 5.7 4.6c.2.2.3.5.3.8l-.5 1.6c2-.2 3.8-.6 5.8-.8.2 0 .5.2.5.4l-.3 6.2h1.1l-.3-6.2c0-.2.3-.4.5-.4 2 .2 3.8.6 5.8.8l-.5-1.6c-.1-.3 0-.6.3-.8l5.7-4.6-1.2-.5c-.5-.2-.4-.5-.2-1.2l.9-3.2-3.3.7c-.4.1-.7-.1-.8-.4l-.4-1.5-2.6 2.9c-.4.5-1 .5-.8-.6l1.1-5.9-1.5.8c-.5.2-.9.3-1.2-.2z';
 
+/**
+ * Taegukgi. The taegeuk's S-line and the geon/gon trigrams lie on the upper-left to lower-right
+ * diagonal (the gam/ri pair on the other one); red is on top with its head at the upper left, blue
+ * below with its head at the lower right. Each trigram's bars stand across its diagonal, facing the
+ * centre: geon ☰ upper left, gam ☵ upper right, ri ☲ lower left, gon ☷ lower right.
+ */
 function taeguk(): Shape[] {
   const cx = 30;
   const cy = 20;
-  const r = 9;
-  // a 33.7° tilt as on the flag
-  const a = (-33.7 * Math.PI) / 180;
-  const ux = Math.cos(a);
-  const uy = Math.sin(a);
+  const r = 10; // diameter = half the flag's height
+  const diag = (Math.atan2(H, W) * 180) / Math.PI; // 33.7° on a 3:2 field
+  const rad = (diag * Math.PI) / 180;
+  const ux = Math.cos(rad);
+  const uy = Math.sin(rad);
   const p = (t: number) => `${(cx + ux * t).toFixed(2)} ${(cy + uy * t).toFixed(2)}`;
   const red = '#cd2e3a';
   const blue = '#0047a0';
-  const top = `M${p(-r)}A${r} ${r} 0 0 1 ${p(r)}A${r / 2} ${r / 2} 0 0 1 ${p(0)}A${r / 2} ${r / 2} 0 0 0 ${p(-r)}z`;
-  const trigram = (tx: number, ty: number, deg: number, broken: readonly boolean[]): Shape[] =>
-    broken.flatMap((b, i) => {
-      const off = (i - 1) * 2.3;
-      const rad = (deg * Math.PI) / 180;
-      const ox = tx + Math.cos(rad) * off;
-      const oy = ty + Math.sin(rad) * off;
-      if (!b) return [rotRect(ox, oy, 1.5, 9, deg, '#111111')];
-      const dx = -Math.sin(rad) * 2.6;
-      const dy = Math.cos(rad) * 2.6;
-      return [rotRect(ox - dx, oy - dy, 1.5, 3.9, deg, '#111111'), rotRect(ox + dx, oy + dy, 1.5, 3.9, deg, '#111111')];
+  // the big upper half, minus the lower-right small circle, plus the upper-left small circle
+  const top = `M${p(-r)}A${r} ${r} 0 0 1 ${p(r)}A${r / 2} ${r / 2} 0 0 0 ${p(0)}A${r / 2} ${r / 2} 0 0 1 ${p(-r)}z`;
+  const ink = '#111111';
+  const barLen = H / 4; // 10
+  const barW = 1.7;
+  const step = 2.55; // bar thickness plus the gap
+  const gap = 1.3;
+  const dist = r + 5 + step; // trigram centre from the flag centre
+  /** One trigram centred on the diagonal at angle `axisDeg`, bars across it; `broken` lists the bars from the centre out. */
+  const trigram = (axisDeg: number, sign: 1 | -1, broken: readonly boolean[]): Shape[] => {
+    const a = (axisDeg * Math.PI) / 180;
+    const ax = Math.cos(a) * sign;
+    const ay = Math.sin(a) * sign;
+    // the bar direction is the axis turned 90°
+    const bx = -ay;
+    const by = ax;
+    const barDeg = (Math.atan2(-bx, by) * 180) / Math.PI; // rotRect's long side (h) is (−sin, cos)
+    return broken.flatMap((isBroken, i) => {
+      const d = dist + (i - 1) * step;
+      const ox = cx + ax * d;
+      const oy = cy + ay * d;
+      if (!isBroken) return [rotRect(ox, oy, barW, barLen, barDeg, ink)];
+      const half = (barLen - gap) / 2;
+      const o = (half + gap) / 2;
+      return [rotRect(ox - bx * o, oy - by * o, barW, half, barDeg, ink), rotRect(ox + bx * o, oy + by * o, barW, half, barDeg, ink)];
     });
+  };
   return [
     rect(0, 0, W, H, '#ffffff'),
-    { ...ellipse(cx, cy, r, r, blue) },
+    circle(cx, cy, r, blue),
     { d: top, fill: red },
-    ...trigram(15, 10, -33.7, [false, false, false]),
-    ...trigram(45, 30, -33.7, [true, true, true]),
-    ...trigram(45, 10, 33.7, [false, true, false]),
-    ...trigram(15, 30, 33.7, [true, false, true]),
+    ...trigram(diag, -1, [false, false, false]), // geon, upper left
+    ...trigram(diag, 1, [true, true, true]), // gon, lower right
+    ...trigram(-diag, 1, [true, false, true]), // gam, upper right
+    ...trigram(-diag, -1, [false, true, false]), // ri, lower left
   ];
 }
 
@@ -160,9 +182,11 @@ function crescentStar(bg: string, cx: number): Shape[] {
   return [rect(0, 0, W, H, bg), circle(cx, 20, 10, '#ffffff'), circle(cx + 2.6, 20, 8, bg), star(cx + 11.5, 20, 5, '#ffffff', { rotDeg: -90, ri: 2 })];
 }
 
+/** The Southern Cross: Australia's stars have seven points, New Zealand's five (red, white-edged). */
 function southernCross(fill: string, outline?: string): Shape[] {
-  const o = outline ? { stroke: outline, width: 0.8 } : {};
-  return [star(45, 31, 2.6, fill, o), star(38, 18, 2.4, fill, o), star(46, 8, 2.2, fill, o), star(52, 16.5, 2.4, fill, o)];
+  const s = (x: number, y: number, r: number) =>
+    outline ? star(x, y, r, fill, { stroke: outline, width: 0.8 }) : star(x, y, r * 1.1, fill, { n: 7, ri: r * 0.5 });
+  return [s(45, 31, 2.6), s(38, 18, 2.4), s(46, 8, 2.2), s(52, 16.5, 2.4)];
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -201,12 +225,14 @@ export const NATIONAL_FLAGS: Readonly<Record<string, readonly Shape[]>> = {
     rect(24, 0, 36, H, '#da291c'),
     ring(24, 20, 7.5, '#ffe900', 2.2),
     { d: 'M20 15h8v6.5c0 2.6-1.8 4-4 4.8-2.2-.8-4-2.2-4-4.8z', fill: '#ffffff', stroke: '#da291c', width: 1.4 },
+    // the five blue quinas, set as a cross
     ...[
-      [24, 18],
-      [22, 20.5],
-      [26, 20.5],
-      [24, 23],
-    ].map(([x, y]) => circle(x!, y!, 0.9, '#003399')),
+      [24, 17.6],
+      [21.9, 20.2],
+      [24, 20.2],
+      [26.1, 20.2],
+      [24, 22.8],
+    ].map(([x, y]) => circle(x!, y!, 0.85, '#003399')),
   ],
   pl: hStripes(['#ffffff', '#dc143c']),
   cz: [rect(0, 0, W, H / 2, '#ffffff'), rect(0, H / 2, W, H / 2, '#d7141a'), poly([0, 0, 30, 20, 0, 40], '#11457e')],
@@ -333,13 +359,14 @@ export const BASE_FLAGS: Readonly<Record<string, readonly Shape[]>> = {
     circle(27, 20, 2.2, GOLD, { stroke: INK, width: 0.9 }),
   ]),
   laurel: emblem([
-    ...Array.from({ length: 6 }, (_, i) => {
-      const a = ((200 + i * 22) * Math.PI) / 180;
-      return rotRect(27 + Math.cos(a) * 10, 21 + Math.sin(a) * 10, 3.2, 6.4, (a * 180) / Math.PI + 60, '#9be07a', { stroke: INK, width: 0.8 });
+    // two leafy branches meeting at the bottom, open at the top (y down: 90° is the bottom)
+    ...[115, 140, 165, 190, 215, 240].map((deg) => {
+      const a = (deg * Math.PI) / 180;
+      return rotRect(27 + Math.cos(a) * 10.5, 21 + Math.sin(a) * 10.5, 3, 6.6, deg + 20, '#9be07a', { stroke: INK, width: 0.8 });
     }),
-    ...Array.from({ length: 6 }, (_, i) => {
-      const a = ((-20 - i * 22) * Math.PI) / 180;
-      return rotRect(27 + Math.cos(a) * 10, 21 + Math.sin(a) * 10, 3.2, 6.4, (a * 180) / Math.PI - 60, '#9be07a', { stroke: INK, width: 0.8 });
+    ...[65, 40, 15, -10, -35, -60].map((deg) => {
+      const a = (deg * Math.PI) / 180;
+      return rotRect(27 + Math.cos(a) * 10.5, 21 + Math.sin(a) * 10.5, 3, 6.6, deg - 20, '#9be07a', { stroke: INK, width: 0.8 });
     }),
     star(27, 20, 4.5, GOLD, { stroke: INK, width: 0.9 }),
   ]),

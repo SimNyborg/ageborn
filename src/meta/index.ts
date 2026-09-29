@@ -173,3 +173,4 @@ export { META_FLAGS, SAVE_VERSION } from './rules';
 export { dayKeyOf, gameDay, nextResetAt, weekKeyOf } from './time';
 export { countsForSupply, supplyMatchesLeft, supplyRules, type SupplyRules } from './supply';
 export { isCountingWin, skillTier, warChestProgress, winsPerChest, type CountingFacts } from './warChest';
+export { formatAges, formatKind, rewardFormat, windowOf } from './formats';

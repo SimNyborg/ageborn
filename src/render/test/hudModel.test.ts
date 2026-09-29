@@ -24,23 +24,27 @@ function q(card: string, o: Partial<QueueItem> = {}): QueueItem {
 }
 
 describe('HUD model (A9.2)', () => {
-  it('reports gold, income, Treasury, base HP, clock and phase marks', () => {
+  it('reports gold, income (Economy research, A18.5.4), base HP, clock and phase marks', () => {
     const sim = new FakeSim();
     sim.state.tick = 600;
     sim.state.sides[0].gold = 212_345;
+    // Granary owned (pick 0 of the fake War Council)
+    sim.state.sides[0].research.owned = [0];
     sim.state.sides[0].treasury = 1;
     sim.state.sides[0].baseHp = 400_000;
     const m = buildHudModel(sim, EXTRAS);
     expect(m.clockMs).toBe(30_000);
     expect(m.me.gold).toBe(212);
     expect(m.me.goldPerSec).toBe(7.5);
-    expect(m.me.nextTreasuryCost).toBe(350);
+    // Market is rank II: the fake observation opens rank I only
+    expect(m.me.nextTreasuryCost).toBeNull();
     expect(m.me.baseHpBp).toBe(4000);
     expect(m.phaseMarks).toEqual({ overdriveMs: 210_000, siegeMs: 270_000, finalBellMs: 360_000 });
     sim.state.phase = 'overdrive';
     expect(buildHudModel(sim, EXTRAS).me.goldPerSec).toBe(13.5);
-    sim.state.sides[0].treasury = 3;
-    expect(buildHudModel(sim, EXTRAS).me.nextTreasuryCost).toBeNull();
+    sim.state.sides[0].research.owned = [];
+    expect(buildHudModel(sim, EXTRAS).me.nextTreasuryCost).toBe(150);
+    expect(buildHudModel(sim, EXTRAS).me.nextIncome).toEqual({ track: 'economy', rank: 1, pick: 0 });
   });
 
   it('labels the opponent as AI and lists what it has scouted', () => {
@@ -165,13 +169,13 @@ describe('HUD model (A9.2)', () => {
     expect(m.me.stanceVisible).toBe(false);
     expect(m.me.lastStandManual).toBe(false);
     expect(m.canRetreat).toBe(false);
-    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, true, true, true, true]);
+    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, true, true, true, true, true]);
     for (let i = 0; i < 6; i++) {
       sim.step([]);
       b.afterStep();
     }
     m = b.build(EXTRAS);
-    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, false, true, true, true]);
+    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, false, true, true, true, true]);
     // Trays only restrict the learner (side 0).
     expect(new TrayUnlocks(cfg).unlocked(1, 'stone', 4)).toBe(true);
   });

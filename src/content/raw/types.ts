@@ -5,7 +5,7 @@
  * percentages (`windupPct` stays a plain percent, as in the contract). The WP1 compiler
  * (`src/content/compile.ts`) converts to ticks, milli-lu, centi-HP and milli-gold (DESIGN B3, B4).
  */
-import type { AgeDef, DamageMod, EconomyRules, FormatDef, PowerDef, TurretDef, UnitDef } from '@/contracts/content';
+import type { AgeDef, DamageMod, EconomyRules, FormatDef, PowerDef, ResearchRules, TurretDef, UnitDef } from '@/contracts/content';
 import type { AgeId, FormatId, RoleGroup } from '@/contracts/ids';
 
 /** One age's unit and turret tables, in DESIGN table order (A5.2-A5.6). */
@@ -91,4 +91,6 @@ export interface RawContent {
   formats: Record<FormatId, FormatDef>;
   battle: RawBattleRules;
   damageMods: RawDamageMods;
+  /** The War Council (A18.5); optional so older raw copies (the frozen fixture) still compile. */
+  research?: ResearchRules;
 }

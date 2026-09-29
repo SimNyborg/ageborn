@@ -7,7 +7,7 @@
  * current 100-slot bag as tier indices (0 = Clay ... 4 = Aeon). An empty bag means the next Win Capsule
  * starts a fresh bag.
  */
-import type { CapsuleTables, Rarities } from '@/content/types';
+import type { CapsuleTables, CosmeticCollections, Rarities } from '@/content/types';
 import type { CapsuleTier, Foil, Rarity, SaveDoc, SkinRarity } from '@/contracts';
 
 export interface TierRow {
@@ -50,6 +50,12 @@ export interface OddsModel {
   pity: PityRow[];
   /** False in arenas without random Legendaries (A6.4 step 1.2). */
   randomLegendaries: boolean;
+  /** The cosmetic collection drops (A18.9.4): chance per Time Capsule tier and both pools' rarity odds. */
+  cosmetics?: {
+    capsuleChanceBp: { tier: CapsuleTier; bp: number }[];
+    capsuleRarityBp: { rarity: Rarity; bp: number; items: number }[];
+    crateRarityBp: { rarity: Rarity; bp: number; items: number }[];
+  };
 }
 
 /** Remaining slots per tier in the current bag (a fresh bag when empty). */
@@ -83,6 +89,7 @@ export function oddsModel(
   rarities: Rarities,
   save: Pick<SaveDoc, 'pity' | 'capsules'>,
   randomLegendaries: boolean,
+  collections?: CosmeticCollections,
 ): OddsModel {
   const left = bagLeft(capsules, save.capsules.bag);
   const pity = save.pity;
@@ -92,7 +99,18 @@ export function oddsModel(
   // pity, as the roll does (meta pityDraw).
   const ahead = (save.capsules.pending ?? []).filter((c) => capsules.kinds[c.kind]?.countsForPity !== false).length;
   const nextLegendary = pity.sinceLegendary + ahead + 1;
+  const pool = (kind: 'capsule' | 'crate', odds: Record<Rarity, number>) =>
+    rarities.order.filter((rarity) => odds[rarity] > 0).map((rarity) => ({ rarity, bp: odds[rarity], items: collections?.items.filter((x) => x.source.kind === kind && x.rarity === rarity).length ?? 0 }));
   return {
+    ...(collections
+      ? {
+          cosmetics: {
+            capsuleChanceBp: capsules.tierOrder.map((tier) => ({ tier, bp: collections.drops.capsuleChanceBp[tier] })),
+            capsuleRarityBp: pool('capsule', collections.drops.capsuleRarityBp),
+            crateRarityBp: pool('crate', collections.drops.crateRarityBp),
+          },
+        }
+      : {}),
     bag: capsules.tierOrder.map((tier) => ({ tier, perHundred: capsules.bag[tier], leftInBag: left[tier] })),
     bagLeftTotal: capsules.tierOrder.reduce((n, tier) => n + left[tier], 0),
     bagSize: capsules.tierOrder.reduce((n, tier) => n + capsules.bag[tier], 0),

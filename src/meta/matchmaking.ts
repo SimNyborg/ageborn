@@ -27,6 +27,7 @@
 import type { AgeId, CardId, FormatId, Loadout, MatchResultInput, OpponentSpec, Rarity, SaveDoc, SideConfig, SkirmishOptions } from '@/contracts';
 import { commanderName, type ArenaDef, type Content, type DailyDifficulty, type GeneralDef, type GeneralId } from '@/content';
 import { chanceBp, fnv1a32, pick, pickWeighted, seedSfc32, type Sfc32State } from '@/core';
+import { formatAges } from './formats';
 import { starterLoadout, activePlan } from './warplan';
 import { dailyDrawAt, defaultDailyDifficulty } from './daily';
 import { ladderTier } from './mmr';
@@ -193,7 +194,7 @@ function seedOf(s: SaveDoc, parts: string): number {
 
 /** A named General on the ladder or in the Daily Challenge (rarity allowance applied, except The Warden). */
 function ladderGeneral(s: SaveDoc, t: Content, g: GeneralDef, tier: number, arena: ArenaDef, format: FormatId, seed: number, extra: Partial<SpecParts> = {}): OpponentSpec {
-  const ages = t.formats[format].ages;
+  const ages = formatAges(t, format);
   const level = clampLevel(t, arena.botLevel);
   let loadouts: Plan;
   let legendaryLevels: Record<CardId, number>;
@@ -221,7 +222,7 @@ function ladderGeneral(s: SaveDoc, t: Content, g: GeneralDef, tier: number, aren
 
 /** A procedural AI Commander (A7.4): seeded personality, name, favourite card, level roll and plan. */
 function commander(s: SaveDoc, t: Content, rng: Sfc32State, tier: number, arena: ArenaDef, format: FormatId, seed: number, extra: Partial<SpecParts> = {}): OpponentSpec {
-  const ages = t.formats[format].ages;
+  const ages = formatAges(t, format);
   const personality = pick(rng, t.generals.commanderPersonalities);
   const name = commanderName(rng, t.names);
   const roll = t.arenas.ladder.levelRollBp;
@@ -283,7 +284,7 @@ function dailyOpponent(s: SaveDoc, t: Content, lt: LocalTime, difficulty: DailyD
   const draw = dailyDrawAt(t, lt);
   const g = generalDef(t, draw.generalId) ?? generalDef(t, 'pip');
   if (!g) throw new Error('meta: the content has no Daily Generals');
-  const ages = t.formats[ch.format].ages;
+  const ages = formatAges(t, ch.format);
   const std = ch.standardLevel;
   const loadouts = allowedPlan(t, g.warPlan, ages, 'epic', playerLegendaries(s, t, ages));
   return spec({
@@ -314,7 +315,7 @@ function conquestOpponent(s: SaveDoc, t: Content, id: string | undefined): Oppon
     tier: entry.tier,
     level,
     format,
-    side: side(g.nameKey, fullPlan(t, g.warPlan, t.formats[format].ages), levelsFor(t, level, legendary)),
+    side: side(g.nameKey, fullPlan(t, g.warPlan, formatAges(t, format)), levelsFor(t, level, legendary)),
     seed: seedOf(s, `conquest:${g.id}`),
     disclosures: g.disclosureKeys,
   });
@@ -323,7 +324,7 @@ function conquestOpponent(s: SaveDoc, t: Content, id: string | undefined): Oppon
 function skirmishOpponent(s: SaveDoc, t: Content, o: SkirmishOptions): OpponentSpec {
   const arena = arenaOf(s, t);
   const tier = Math.max(0, Math.min(t.arenas.ladder.maxTier, Math.trunc(o.tier)));
-  const ages = t.formats[o.format].ages;
+  const ages = formatAges(t, o.format);
   const std = t.arenas.ladder.standardLevel;
   const seed = seedOf(s, `skirmish:${o.generalId}:${tier}:${o.format}:${o.standardLevels ? 1 : 0}`);
   const echo = generalDef(t, 'echo');

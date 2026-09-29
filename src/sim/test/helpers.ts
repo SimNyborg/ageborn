@@ -19,7 +19,7 @@ import type {
   SimEvent,
   TimedCommand,
 } from '@/contracts';
-import { LANE_MLU, MILLI, randInt, seedSfc32, type Sfc32State } from '@/core';
+import { LANE_MLU, MILLI, nextIncomePick, randInt, researchCommand, researchCost, seedSfc32, startablePicks, type Sfc32State } from '@/core';
 import { raw as fixtureRaw } from '../../../tests/fixtures/content';
 import { createSim } from '../createSim';
 import { applyStatus } from '../damage';
@@ -71,12 +71,14 @@ export function baselineLoadout(
   age: AgeId,
   o: { epic?: boolean; legendary?: boolean; rareTurret?: boolean; epicTurret?: boolean; altPower?: boolean } = {},
 ): Loadout {
+  // Six troop slots (A18.9); the A2.14 baseline fills five and leaves the sixth empty.
   const units = [
     byGroup(content, age, 'infantry', 'common'),
     byGroup(content, age, 'ranged', 'common'),
     byGroup(content, age, 'heavy', 'common'),
     byGroup(content, age, 'antiArmor'),
     byGroup(content, age, 'support'),
+    null,
   ];
   if (o.epic) units[4] = byGroup(content, age, 'epic');
   if (o.legendary) units[o.epic ? 3 : 4] = byGroup(content, age, 'legendary');
@@ -108,6 +110,7 @@ export function matchConfig(o: Partial<MatchConfig> & { content?: CompiledConten
     sides: o.sides ?? [sideConfig(content), sideConfig(content, { label: 'AI Test', isBot: true })],
     ...(o.modifiers ? { modifiers: o.modifiers } : {}),
     ...(o.training ? { training: o.training } : {}),
+    ...(o.victory ? { victory: o.victory } : {}),
   };
 }
 
@@ -143,8 +146,13 @@ export interface Strategy {
   weights: [number, number, number, number, number];
   /** Turrets to keep (mounts to fill). */
   turrets: number;
-  /** Treasury levels to buy. */
+  /** Economy income research to buy (Granary, then Market; the Treasury before A18.5.4). */
   treasury: number;
+  /** War Council picks to research, in order, when the slot is free (A18.5). */
+  research?: string[];
+  /** Hold at this flag p (lu) instead of the default line, and Fall back when badly outnumbered (A18.4.2). */
+  flagP?: number;
+  fallback?: boolean;
   /** Save gold above this before training (whole gold). */
   reserve: number;
   /** Cast the power at once when ready (else only with 3+ enemy units near mid-lane). */
@@ -160,11 +168,63 @@ export interface Strategy {
 }
 
 export const STRATEGIES: Record<string, Strategy> = {
-  balanced: { weights: [4, 3, 2, 2, 1], turrets: 2, treasury: 1, reserve: 0, powerAsap: true, useHold: false, every: 10, noisy: false },
-  rush: { weights: [6, 2, 1, 1, 0], turrets: 1, treasury: 0, reserve: 0, powerAsap: true, useHold: false, every: 5, noisy: false },
-  turtle: { weights: [2, 4, 1, 2, 1], turrets: 4, treasury: 2, reserve: 50, powerAsap: false, useHold: true, every: 10, noisy: false },
-  greedy: { weights: [2, 2, 3, 2, 2], turrets: 2, treasury: 3, reserve: 100, powerAsap: false, useHold: false, every: 15, noisy: false },
-  heavy: { weights: [1, 2, 5, 2, 3], turrets: 2, treasury: 1, reserve: 0, powerAsap: true, useHold: false, every: 10, noisy: true },
+  balanced: {
+    weights: [4, 3, 2, 2, 1],
+    turrets: 2,
+    treasury: 1,
+    research: ['troops.infantry.weapons', 'defences.watchtowers', 'troops.heavy.plating', 'troops.infantry.rush'],
+    reserve: 0,
+    powerAsap: true,
+    useHold: false,
+    every: 10,
+    noisy: false,
+  },
+  rush: {
+    weights: [6, 2, 1, 1, 0],
+    turrets: 1,
+    treasury: 0,
+    research: ['troops.infantry.mail', 'command.war_horns', 'troops.infantry.rush'],
+    reserve: 0,
+    powerAsap: true,
+    useHold: false,
+    every: 5,
+    noisy: false,
+  },
+  turtle: {
+    weights: [2, 4, 1, 2, 1],
+    turrets: 4,
+    treasury: 2,
+    research: ['defences.quick_loaders', 'troops.ranged.long_draw', 'defences.arsenal', 'troops.antiArmor.hunters', 'troops.antiArmor.ambush'],
+    flagP: 440,
+    fallback: true,
+    reserve: 50,
+    powerAsap: false,
+    useHold: true,
+    every: 10,
+    noisy: false,
+  },
+  greedy: {
+    weights: [2, 2, 3, 2, 2],
+    turrets: 2,
+    treasury: 2,
+    research: ['economy.bounty_hunters', 'command.signal_fires', 'troops.support.field_care', 'troops.support.rally'],
+    reserve: 100,
+    powerAsap: false,
+    useHold: false,
+    every: 15,
+    noisy: false,
+  },
+  heavy: {
+    weights: [1, 2, 5, 2, 3],
+    turrets: 2,
+    treasury: 1,
+    research: ['troops.heavy.weapons', 'troops.heavy.bulwark', 'troops.support.mail', 'troops.support.war_drums', 'defences.engineers'],
+    reserve: 0,
+    powerAsap: true,
+    useHold: false,
+    every: 10,
+    noisy: true,
+  },
 };
 
 export function scriptedPlayer(content: CompiledContent, side: Side, seed: number, strat: Strategy): (obs: Observation) => Command[] {
@@ -182,10 +242,14 @@ export function scriptedPlayer(content: CompiledContent, side: Side, seed: numbe
       const near = obs.units.filter((u) => u.side !== side && u.p > 150000 && u.p < LANE_MLU - 150000).length;
       if (strat.powerAsap || near >= 3) out.push({ t: 'power', side, ...(randInt(rng, 3) === 0 ? { p: 300 + randInt(rng, L - 600) } : {}) });
     }
-    if (me.treasury < strat.treasury) {
-      const cost = econ.treasuryCosts[me.treasury] ?? 99999;
+    // War Council (A18.5): the Economy income picks first (the Treasury before), then the strategy's list.
+    const income = me.treasury < strat.treasury ? nextIncomePick(content, me.research) : null;
+    const listed = (strat.research ?? []).map((id) => startablePicks(content, me.research).find((p) => p.id === id)).find((p) => p !== undefined);
+    const next = income ?? listed ?? null;
+    if (next) {
+      const cost = researchCost(content, next);
       if (gold >= cost + strat.reserve) {
-        out.push({ t: 'treasury', side });
+        out.push(researchCommand(side, next));
         gold -= cost;
       }
     }
@@ -215,9 +279,9 @@ export function scriptedPlayer(content: CompiledContent, side: Side, seed: numbe
     if (strat.useHold && obs.tick - lastHoldToggle > 200) {
       const mine = obs.units.filter((u) => u.side === side).length;
       const theirs = obs.units.filter((u) => u.side !== side).length;
-      const want = mine + 2 < theirs ? 'hold' : 'charge';
+      const want = strat.fallback && mine * 2 + 2 < theirs ? 'fallback' : mine + 2 < theirs ? 'hold' : 'charge';
       if (want !== me.stance) {
-        out.push({ t: 'stance', side, stance: want });
+        out.push(want === 'hold' && strat.flagP !== undefined ? { t: 'stance', side, mode: want, holdP: strat.flagP } : { t: 'stance', side, mode: want });
         lastHoldToggle = obs.tick;
       }
     }
@@ -237,7 +301,7 @@ export function scriptedPlayer(content: CompiledContent, side: Side, seed: numbe
       const card = me.tray[slot];
       const cost = card ? (content.units[card]?.cost ?? 99999) : 99999;
       if (gold >= cost + strat.reserve) {
-        out.push({ t: 'train', side, slot: slot as 0 | 1 | 2 | 3 | 4 });
+        out.push({ t: 'train', side, slot: slot as 0 | 1 | 2 | 3 | 4 | 5 });
         gold -= cost;
       }
     }

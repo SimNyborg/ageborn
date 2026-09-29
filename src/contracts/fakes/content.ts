@@ -18,6 +18,8 @@ import type {
   EconomyRules,
   FormatDef,
   PowerDef,
+  ResearchPickDef,
+  ResearchRules,
   TurretDef,
   UnitDef,
 } from '../content';
@@ -157,12 +159,12 @@ const formats: Record<FormatId, FormatDef> = {
 /** DESIGN A2.3, A2.4, A2.7-A2.11 values. `emoteCooldownMs` is not in DESIGN; 3 s is a fake value. */
 export const fakeEconomy: EconomyRules = {
   startGold: 175, passiveGoldPerSec: 6, passiveXpPerSec: 4,
-  treasuryCosts: [200, 350, 550], treasuryMilliGoldPerSecPerLevel: 1500, mountCosts: [0, 150, 350, 700],
+  mountCosts: [0, 150, 350, 700],
   bountyGoldBp: 6000, bountyXpBp: 10000, powerKillGoldBp: 3000, powerKillXpBp: 0,
   ownLossXpBp: 4000, underdogBp: 5000, baseDamageXpPerPct: 12, xpCapBp: 15000,
   popCap: 60,
   popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14 },
-  queueMax: 5, legendaryLimit: 1, sellRefundBp: 5000, turretRangeCap: 480, turretBuildMs: 1000, turretSellMs: 1000,
+  queueMax: 5, legendaryLimit: 1, sellRefundBp: 5000, turretRangeCap: 480, turretRangeHardCapLu: 560, turretBuildMs: 1000, turretSellMs: 1000,
   ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2,
   powerChargeMs: 50000, powerCarryCapBp: 5000, overchargeXp: 1200, overchargeBp: 2500,
   overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
@@ -171,10 +173,35 @@ export const fakeEconomy: EconomyRules = {
   spawnP: 20, holdLine: 320, holdRetreatSpeedBp: 7000, leash: 20, spacingBp: 3000,
   retargetMs: 1000, retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: 2000,
   stanceCooldownMs: 2000,
+  holdFlag: { minP: 320, maxP: 800, snapLu: 20, moveCooldownMs: 1000 }, fallbackP: 200,
+  statCaps: { damageBp: 3500, takenBp: 3500, hpBp: 3000, attackSpeedBp: 2500, speedBp: 2000, rangeLu: 60 },
   sizes: { small: 24, medium: 32, large: 48, huge: 80 },
   knockbackResistBp: { small: 0, medium: 0, large: 5000, huge: 5000 },
   areaSecondaryBp: 5000, areaMaxTargets: 4, healLegendaryBp: 5000, legendaryPowerDamageBp: 5000,
   powerZoneClamp: [150, 1850], emoteCooldownMs: 3000, drawGapBp: 50, levelStepBp: 500, maxLevel: 10,
+};
+
+/** A small War Council (DESIGN A18.5.4): the Economy track only, enough for HUD and AI fakes. */
+function econPick(rank: 1 | 2, pick: 0 | 1, slug: string, effects: ResearchPickDef['effects']): ResearchPickDef {
+  const id = `economy.${slug}`;
+  return { id, track: 'economy', group: null, rank, pick, effects, aiHint: 'opener', visualId: `research.${id}`, nameKey: `research.${id}.name`, descKey: `research.${id}.desc` };
+}
+export const fakeResearch: ResearchRules = {
+  picks: [
+    econPick(1, 0, 'granary', [{ kind: 'income', milliGoldPerSec: 1500 }]),
+    econPick(1, 1, 'forage', [{ kind: 'bounty', addBp: 0, bonusBp: 4000, ownHalfOnly: true }]),
+    econPick(2, 0, 'market', [{ kind: 'income', milliGoldPerSec: 2000 }]),
+    econPick(2, 1, 'bounty_hunters', [{ kind: 'bounty', addBp: 1500, bonusBp: 0, ownHalfOnly: false }]),
+  ],
+  cost: { troops: [150, 300, 500], defences: [150, 300, 450], economy: [150, 300, 450], command: [150, 300, 450] },
+  timeMs: [10000, 14000, 18000],
+  cancelRefundBp: 7500,
+  underdog: { discountBp: 2000, baseGapBp: 2000 },
+  unlockAt: { '1': [0], '2': [0, 1], '3': [0, 1, 2] },
+  classOfRole: {
+    infantry: 'infantry', skirmisher: 'infantry', ranged: 'ranged', artillery: 'ranged', airBomber: 'ranged', airGunship: 'ranged',
+    heavy: 'heavy', siege: 'heavy', siegeHeavy: 'heavy', antiArmor: 'antiArmor', antiMech: 'antiArmor', support: 'support',
+  },
 };
 
 /** `max(1, round(ms / 50))` (DESIGN B3). */
@@ -191,6 +218,7 @@ export const fakeContent: CompiledContent = deepFreeze({
   units,
   turrets,
   powers,
+  research: fakeResearch,
   skins: {
     pumpkin_head: {
       id: 'pumpkin_head', target: 'bonker', rarity: 'rare', visualId: 'unit.bonker@pumpkin_head',
@@ -222,9 +250,9 @@ export const fakeContent: CompiledContent = deepFreeze({
 
 /** A complete fake loadout per fake age. */
 export const fakeLoadouts: Record<'stone' | 'medieval', Loadout> = {
-  stone: { units: ['bonker', 'pebbler', 'tuskback', null, null], turrets: ['rock_tosser', null], power: 'stampede' },
+  stone: { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: ['rock_tosser', null], power: 'stampede' },
   medieval: {
-    units: ['footman', 'longbowman', 'destrier_knight', null, null],
+    units: ['footman', 'longbowman', 'destrier_knight', null, null, null],
     turrets: ['crossbow_nest', null],
     power: 'arrow_storm',
   },

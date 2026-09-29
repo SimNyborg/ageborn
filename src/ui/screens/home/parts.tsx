@@ -302,7 +302,7 @@ function CapsuleInfo(p: { onClose: () => void }) {
       <p class="home-info__kept">{t('ui.info.kept')}</p>
       <p class="home-info__rookie">{t('ui.info.rookie')}</p>
       <h3 class="home-info__h">{t('ui.odds.title')}</h3>
-      <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arena.randomLegendaries)} />
+      <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arena.randomLegendaries, content.cosmetics.collections)} />
     </Modal>
   );
 }

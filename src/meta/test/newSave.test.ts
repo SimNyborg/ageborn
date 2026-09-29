@@ -35,7 +35,7 @@ describe('newSave', () => {
     for (const age of C.order.ages as AgeId[]) {
       const l = plan.loadouts[age];
       expect(l.units.filter(Boolean)).toHaveLength(3);
-      expect(l.units.slice(3)).toEqual([null, null]);
+      expect(l.units.slice(3)).toEqual([null, null, null]);
       expect(l.turrets.filter(Boolean)).toHaveLength(2);
       expect(C.powers[l.power]?.slot).toBe('default');
     }

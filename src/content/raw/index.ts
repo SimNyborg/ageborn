@@ -7,13 +7,14 @@
  */
 import { bronze, bronzePowers } from './bronze';
 import { cosmic, cosmicPowers } from './cosmic';
-import { ageScale, battle, damageMods, economy, formats } from './economy';
+import { ageScale, battle, damageMods, economy, formats, windowFormatId, WINDOW_CLOCKS, WINDOW_XP } from './economy';
 import { future } from './future';
 import { gunpowder } from './gunpowder';
 import { industrial, industrialPowers } from './industrial';
 import { medieval } from './medieval';
 import { modern } from './modern';
 import { powers } from './powers';
+import { research } from './research';
 import { stone } from './stone';
 import type { RawContent } from './types';
 
@@ -28,6 +29,9 @@ export {
   damageMods,
   economy,
   formats,
+  windowFormatId,
+  WINDOW_CLOCKS,
+  WINDOW_XP,
   future,
   gunpowder,
   industrial,
@@ -35,6 +39,7 @@ export {
   medieval,
   modern,
   powers,
+  research,
   stone,
 };
 
@@ -47,4 +52,5 @@ export const raw: RawContent = {
   formats,
   battle,
   damageMods,
+  research,
 };

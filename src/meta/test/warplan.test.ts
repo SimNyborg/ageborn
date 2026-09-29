@@ -22,7 +22,7 @@ describe('validatePlan and the advisor (A3)', () => {
     for (const f of ['short', 'standard', 'full'] as const) {
       const issues = M.validatePlan(plan, s, C, f);
       expect(issues.filter((i) => i.severity === 'error')).toEqual([]);
-      for (const i of issues) expect(C.formats[f].ages).toContain(i.age);
+      for (const i of issues) expect(C.formats[f]!.ages).toContain(i.age);
     }
     const short = codes(plan, s);
     expect(short).toContain('stone:warning:onlyThreeUnits');
@@ -73,7 +73,7 @@ describe('auto-fill (A3)', () => {
     s = { ...s, collection: { ...s.collection, sabertooth: { level: 9, copies: 0, isNew: false, foil: 'none' }, drum_shaman: { level: 8, copies: 0, isNew: false, foil: 'none' } } };
     const plan = autoFill(s, C);
     const stone = plan.loadouts.stone;
-    expect(stone.units.filter(Boolean)).toHaveLength(5);
+    expect(stone.units.filter(Boolean)).toHaveLength(6);
     const groups = stone.units.map((id) => (id ? C.units[id]?.group : null));
     expect(groups.some((g) => g === 'heavy' || g === 'legendary')).toBe(true);
     expect(groups).toContain('ranged');
@@ -100,14 +100,15 @@ describe('Equip now (A3)', () => {
   it('fills an empty slot, else the same-role slot, else the lowest-level slot', () => {
     let s: SaveDoc = { ...fresh(), collection: { ...fresh().collection, spear_hunter: { level: 1, copies: 0, isNew: true, foil: 'none' as const } } };
     s = equipNow(s, 'spear_hunter', C);
-    expect(s.warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null]);
-    // Full loadout: a Support replaces nothing of its role, so the lowest level (ties: last) goes.
-    const full = withLoadout(s.warPlans[0]!, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth'] });
+    expect(s.warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null]);
+    // Full loadout (six troops, A18.9): a Support replaces nothing of its role, so the lowest level (ties: last) goes.
+    const full = withLoadout(s.warPlans[0]!, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'mammoth_matriarch'] });
     let t: SaveDoc = ownsAll({ ...s, warPlans: [full] }, 2);
     t = { ...t, collection: { ...t.collection, tuskback: { level: 1, copies: 0, isNew: false, foil: 'none' } } };
-    expect(equipNow(t, 'drum_shaman', C).warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'drum_shaman', 'spear_hunter', 'sabertooth']);
+    expect(equipNow(t, 'drum_shaman', C).warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'drum_shaman', 'spear_hunter', 'sabertooth', 'mammoth_matriarch']);
     // Same role: the Matriarch (Legendary group) has no same-group card here; a Heavy for a Heavy.
-    const heavy = { ...t, collection: { ...t.collection, tuskback: { level: 5, copies: 0, isNew: false, foil: 'none' as const } } };
+    const noMatriarch = withLoadout(full, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'drum_shaman'] });
+    const heavy = { ...t, warPlans: [noMatriarch], collection: { ...t.collection, tuskback: { level: 5, copies: 0, isNew: false, foil: 'none' as const } } };
     expect(equipNow(heavy, 'mammoth_matriarch', C).warPlans[0]!.loadouts.stone.units).toContain('mammoth_matriarch');
     // Turrets and powers.
     expect(equipNow(t, 'grumpy_toad', C).warPlans[0]!.loadouts.stone.turrets).toContain('grumpy_toad');

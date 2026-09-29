@@ -124,20 +124,20 @@ describe('commands (B3 step 1)', () => {
     expect(sim.state.sides[0].queue.map((q) => q.card)).toEqual(['pebbler', 'bonker', 'tuskback']);
   });
 
-  it('stance: 2 s cooldown; can be locked by training', () => {
+  it('stance: 2 s cooldown on the frozen fixture (3 s live, A18.4.2); can be locked by training', () => {
     const sim = arena();
     const st = new Stamper(sim);
     const ev = [
-      ...st.step({ t: 'stance', side: 0, stance: 'hold' }),
-      ...st.step({ t: 'stance', side: 0, stance: 'charge' }),
-      ...st.step({ t: 'stance', side: 0, stance: 'charge' }),
+      ...st.step({ t: 'stance', side: 0, mode: 'hold' }),
+      ...st.step({ t: 'stance', side: 0, mode: 'charge' }),
+      ...st.step({ t: 'stance', side: 0, mode: 'charge' }),
     ];
     expect(ofKind(ev, 'stanceChanged')).toHaveLength(1);
     expect(ofKind(ev, 'commandRejected').map((r) => r.reason)).toEqual(['stanceCooldown', 'stanceCooldown']);
     stepN(sim, 40);
-    expect(ofKind(st.step({ t: 'stance', side: 0, stance: 'charge' }), 'stanceChanged')).toHaveLength(1);
+    expect(ofKind(st.step({ t: 'stance', side: 0, mode: 'charge' }), 'stanceChanged')).toHaveLength(1);
     const locked = createSim(matchConfig({ training: { stanceEnabled: [false, true] } }));
-    expect(ofKind(new Stamper(locked).step({ t: 'stance', side: 0, stance: 'hold' }), 'commandRejected')[0]?.reason).toBe(
+    expect(ofKind(new Stamper(locked).step({ t: 'stance', side: 0, mode: 'hold' }), 'commandRejected')[0]?.reason).toBe(
       'stanceLocked',
     );
   });
@@ -182,7 +182,7 @@ describe('observation (A7.1)', () => {
     stepN(sim, 30);
     const o = sim.observe(0);
     expect(o.me.gold).toBe(sim.state.sides[0].gold);
-    expect(o.me.tray).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman']);
+    expect(o.me.tray.slice(0, 5)).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman']);
     expect(o.me.turretCards).toEqual(['rock_tosser', 'angry_beehive']);
     expect(o.me.power).toBe('stampede');
     expect(Object.keys(o.foe)).not.toContain('gold');

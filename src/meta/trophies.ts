@@ -14,6 +14,7 @@ import type { FormatId, Result, SaveDoc } from '@/contracts';
 import type { Content, GateReward, LadderWin, RoadReward } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 import { grantCrateAt } from './capsules/wardrobe';
+import { rewardFormat } from './formats';
 import { arenaOf } from './tables';
 import { addCosmetics, unlockTitles } from './titles';
 
@@ -26,7 +27,8 @@ export type LadderResult = 'win' | 'loss' | 'draw';
 export function ladderWinFor(s: Pick<SaveDoc, 'trophies'>, t: Content, format?: FormatId): LadderWin {
   const l = t.arenas.ladder;
   if (!format || s.trophies.current < l.winByFormat.fromTrophies) return l.win;
-  return l.winByFormat.formats[format] ?? l.win;
+  // A window pays the row of its family (A18.3.4: `short.bronze` pays Short War's).
+  return l.winByFormat.formats[rewardFormat(t, format)] ?? l.win;
 }
 
 /** The trophy change of a ladder result (A6.3, A15.8 for wins by format). */

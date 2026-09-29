@@ -507,14 +507,23 @@ export class EventMapper {
         out.push({ a: 'baseMount', side: ev.side, mount: ev.mount });
         this.rule('mount.buy', { at: { k: 'mount', side: ev.side, mount: ev.mount } }, out);
         return;
-      case 'treasuryUp': {
+      case 'treasuryUp':
+        // The base's economy prop grows with each Economy research pick (A18.5.4 replaced the Treasury).
         out.push({ a: 'baseTreasury', side: ev.side, level: ev.level });
         this.rule('treasury.up', { at: { k: 'base', side: ev.side, part: 'center' } }, out);
-        // "+1.5/s": the income the new level adds, popped over your own base
-        const perSec = this.content.economy.treasuryMilliGoldPerSecPerLevel / 1000;
-        if (ev.side === this.mySide && perSec > 0) out.push({ a: 'number', kind: 'income', value: perSec, at: { k: 'base', side: ev.side, part: 'center' }, important: true });
+        return;
+      case 'researchDone': {
+        // "+1.5/s": an Economy income pick pops the income it adds over your own base (A18.5.4).
+        const pick = this.content.research.picks.find((p) => p.id === ev.pick);
+        let milli = 0;
+        for (const fx of pick?.effects ?? []) if (fx.kind === 'income') milli += fx.milliGoldPerSec;
+        if (ev.side === this.mySide && milli > 0) out.push({ a: 'number', kind: 'income', value: milli / 1000, at: { k: 'base', side: ev.side, part: 'center' }, important: true });
         return;
       }
+      // The War Council HUD (A18.5.7) reads research from the observation; no view action yet.
+      case 'researchStarted':
+      case 'researchCancelled':
+        return;
       case 'ascendStart': {
         const own = ev.side === this.mySide;
         if (own) {

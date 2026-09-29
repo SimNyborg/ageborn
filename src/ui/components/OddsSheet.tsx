@@ -169,6 +169,38 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
               </span>
             ))}
           </div>
+
+          {m.cosmetics ? (
+            <div data-testid="odds-cosmetics">
+              <h3>{t('cosmetic.odds.title')}</h3>
+              <p class="ui-odds__note">{t('cosmetic.odds.capsuleLine')}</p>
+              <div class="ui-odds__chips">
+                {m.cosmetics.capsuleChanceBp.map((c) => (
+                  <span key={c.tier} class="ui-odds__chip" style={{ '--c': TIER_COLOR[c.tier] }}>
+                    <CapsuleIcon tier={c.tier} size={18} />
+                    {t(capsuleTierNameKey(c.tier))} <b>{formatBp(c.bp, locale)}</b>
+                  </span>
+                ))}
+              </div>
+              <div class="ui-odds__chips">
+                {m.cosmetics.capsuleRarityBp.map((r) => (
+                  <span key={r.rarity} class="ui-odds__chip" style={{ '--c': RARITY_COLOR[r.rarity] }}>
+                    {t(rarityNameKey(r.rarity))} <b>{formatBp(r.bp, locale)}</b> {t('cosmetic.odds.items', { n: r.items })}
+                  </span>
+                ))}
+              </div>
+              <p class="ui-odds__note">{t('cosmetic.odds.crateLine')}</p>
+              <div class="ui-odds__chips">
+                <CrateIcon size={22} />
+                {m.cosmetics.crateRarityBp.map((r) => (
+                  <span key={r.rarity} class="ui-odds__chip" style={{ '--c': RARITY_COLOR[r.rarity] }}>
+                    {t(rarityNameKey(r.rarity))} <b>{formatBp(r.bp, locale)}</b> {t('cosmetic.odds.items', { n: r.items })}
+                  </span>
+                ))}
+              </div>
+              <p class="ui-odds__note">{t('cosmetic.odds.rules')}</p>
+            </div>
+          ) : null}
         </section>
       </div>
     </div>

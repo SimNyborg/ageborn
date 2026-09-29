@@ -59,7 +59,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
   const oddsSheet = () => (
     <UiKitContext.Provider value={kit}>
       <div class="ui-root ab-capsule-odds">
-        <OddsSheet hideHonest model={oddsModel(c.capsules, c.rarities, p.save, c.arenas.list[p.save.arenaIndex]?.randomLegendaries ?? true)} />
+        <OddsSheet hideHonest model={oddsModel(c.capsules, c.rarities, p.save, c.arenas.list[p.save.arenaIndex]?.randomLegendaries ?? true, c.cosmetics.collections)} />
       </div>
     </UiKitContext.Provider>
   );

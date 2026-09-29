@@ -22,10 +22,11 @@ import type {
   OpponentSpec,
   SaveDoc,
   SideConfig,
+  SideLook,
 } from '@/contracts';
 import { botProfile } from '@/ai';
 import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from '@/content';
-import { commanderInfo, ROOKIE_DISCLOSURE_KEY } from '@/meta';
+import { commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
   GROGG_SCRIPT,
   MATCH1_SEED,
@@ -117,6 +118,22 @@ export function standardLevel(content: CompiledContent): number {
   return tables(content).arenas?.ladder.standardLevel ?? STANDARD_LEVEL_FALLBACK;
 }
 
+/** True when the content carries the A18.9.4 collections (the fakes do not). */
+function hasCollections(content: CompiledContent): boolean {
+  const c = content.cosmetics as { collections?: unknown } | null | undefined;
+  return !!c && !!c.collections;
+}
+
+/** The player's base look (A18.9.4): only owned items, never a national flag they did not pick. */
+export function playerLook(save: SaveDoc | null, content: CompiledContent): SideLook | undefined {
+  return save && hasCollections(content) ? meta.sideLook(save, content) : undefined;
+}
+
+/** An AI opponent's base look, seeded by who it is (never a national flag, A7.1 labels stay). */
+export function opponentLook(content: CompiledContent, seed: string): SideLook | undefined {
+  return hasCollections(content) ? meta.botLook(content, seed) : undefined;
+}
+
 /**
  * The player's side from the save: the active War Plan, card levels and equipped skins. Without a
  * save (a first launch before meta exists) the starter plan at level 1, labeled `fallbackLabel`.
@@ -127,12 +144,14 @@ export function playerSide(save: SaveDoc | null, content: CompiledContent, fallb
   if (save) {
     for (const id of Object.keys(save.collection).sort()) levels[id] = save.collection[id]!.level;
   }
+  const look = playerLook(save, content);
   return {
     label: save?.profile.name ?? fallbackLabel,
     isBot: false,
     loadouts: { ...(plan?.loadouts ?? starterLoadouts(content)) },
     levels,
     skins: { ...(save?.skins.equipped ?? {}) },
+    ...(look ? { look } : {}),
   };
 }
 
@@ -225,7 +244,7 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
     seed: opponent.seed,
     format: opponent.format,
     content,
-    sides: [player, { ...opponent.side, label: o.opponentLabel ?? opponent.displayName, isBot: true }],
+    sides: [player, withBotLook({ ...opponent.side, label: o.opponentLabel ?? opponent.displayName, isBot: true }, content, opponent.generalId)],
     modifiers: [...opponent.modifiers],
   };
   const training = trainingFor(n);
@@ -244,6 +263,13 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
     brain: { kind: 'general', profile: botProfileFor(opponent, content, save, mode) },
     script: mode === 'tutorial' || n <= 5 ? scriptForMatch(n) : null,
   };
+}
+
+/** The opponent side with an AI base look unless it already has one. */
+function withBotLook(side: SideConfig, content: CompiledContent, seed: string): SideConfig {
+  if (side.look) return side;
+  const look = opponentLook(content, seed);
+  return look ? { ...side, look } : side;
 }
 
 /** An AI General as an `OpponentSpec` (the displayName comes from the caller's i18n). */
@@ -301,7 +327,7 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
     seed: MATCH1_SEED,
     format: 'tutorial',
     content,
-    sides: [player, opponent.side],
+    sides: [player, withBotLook(opponent.side, content, 'grogg')],
     modifiers: [],
     training: {
       enemyBaseStartBp: grogg?.baseStartBp ?? 9000,

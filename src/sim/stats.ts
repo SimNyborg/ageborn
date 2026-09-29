@@ -98,8 +98,9 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
       case 'baseDamaged':
         if (ev.side !== side && ev.sourceId !== null) st.baseDamageCenti += ev.damage;
         break;
-      case 'treasuryUp':
-        if (ev.side === side) st.usedTreasury = true;
+      case 'researchStarted':
+        // A18.5.4: the Economy track replaced the Treasury ("won without the Treasury" quests).
+        if (ev.side === side && ev.pick.startsWith('economy.')) st.usedTreasury = true;
         break;
       case 'lastStandFire':
         if (ev.side === side) st.usedLastStand = true;

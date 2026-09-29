@@ -44,12 +44,15 @@ export function addPower(ctx: Ctx, side: Side, ppm: number): void {
   }
 }
 
-/** Passive gold per tick for a side (milli): base × phase × modifier, plus Treasury (never doubled). */
+/**
+ * Passive gold per tick for a side (milli): base × phase × modifier, plus the Economy research income
+ * (Granary, Market), which Overdrive never doubles (A18.5.4).
+ */
 export function passiveGoldPerTick(ctx: Ctx, side: Side): number {
   const e = ctx.econ;
   let base = Math.trunc((e.passiveGoldPerTick * ctx.mods.passiveGoldBp) / BP);
   if (ctx.s.phase === 'overdrive' || ctx.s.phase === 'siege') base = Math.trunc((base * e.overdrive.baseGoldBp) / BP);
-  return base + ctx.s.sides[side].treasury * e.treasuryGoldPerTickPerLevel;
+  return base + ctx.s.sides[side].fx.incomePerTick;
 }
 
 export function economySystem(ctx: Ctx): void {
@@ -68,14 +71,16 @@ export function economySystem(ctx: Ctx): void {
     // XP cap (the cap can drop at ageUp; every gain is clamped too).
     const cap = xpCapOf(ctx, side);
     if (s.xp > cap) s.xp = cap;
-    // Overcharge (A2.4): in the final age, while the charge is below 100%, every 1,200 XP becomes +25%.
+    // Overcharge (A2.4, A18.3.2): in the final age, while the charge is below 100%, every 1,650 XP becomes +25%.
     if (isFinalAge(ctx, side)) {
       while (s.xp >= e.overchargeXp && s.powerPpm < PPM) {
         s.xp -= e.overchargeXp;
         addPower(ctx, side, e.overchargePpm);
       }
     }
-    addPower(ctx, side, powerTick);
+    // Signal Fires (A18.5.5): this side's charge runs faster.
+    const charge = s.fx.powerChargeBp > 0 ? Math.trunc((powerTick * (BP + s.fx.powerChargeBp)) / BP) : powerTick;
+    addPower(ctx, side, charge);
     if (ctx.tick % TICKS_PER_SECOND === 0) {
       if (s.passiveGoldAcc > 0) emit(ctx, { e: 'goldEarned', side, amount: s.passiveGoldAcc, reason: 'passive' });
       if (s.passiveXpAcc > 0) emit(ctx, { e: 'xpEarned', side, amount: s.passiveXpAcc, reason: 'passive' });

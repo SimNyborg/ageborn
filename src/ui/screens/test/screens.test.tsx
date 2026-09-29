@@ -92,6 +92,10 @@ export const CASES: Case[] = [
   { name: 'customize', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize' }] },
   { name: 'customize-look', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'look' }] },
   { name: 'customize-emotes', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'emotes' }] },
+  { name: 'customize-bases', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'bases' }] },
+  { name: 'customize-flags', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'flags' }] },
+  { name: 'customize-decorations', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'decorations' }] },
+  { name: 'customize-quotes', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'quotes' }] },
 ];
 
 

@@ -18,10 +18,12 @@ function lane(o: { format?: FormatId; age?: string; altPower?: boolean } = {}) {
     sideConfig(real, { plan: { altPower: o.altPower ?? false } }),
     sideConfig(real, { isBot: true, label: 'AI Test' }),
   ] as const;
-  const sim = createSim(matchConfig({ content: real, format: o.format ?? 'full', training: { noClock: true }, sides: [sides[0], sides[1]] }));
+  // Full War is 7 ages from Stone (A18.3.4); the Cosmic Age is in the window that starts in Bronze.
+  const format = o.format ?? (o.age && !real.formats.full?.ages.includes(o.age as never) ? 'full.bronze' : 'full');
+  const sim = createSim(matchConfig({ content: real, format, training: { noClock: true }, sides: [sides[0], sides[1]] }));
   if (o.age) {
-    const fmt = real.formats[o.format ?? 'full'];
-    simCtx(sim).s.sides[0].ageIndex = fmt.ages.indexOf(o.age as never);
+    const fmt = real.formats[format];
+    simCtx(sim).s.sides[0].ageIndex = fmt?.ages.indexOf(o.age as never) ?? 0;
   }
   return sim;
 }
@@ -49,19 +51,27 @@ function cast(sim: ReturnType<typeof lane>, p?: number): SimEvent[] {
 }
 
 describe('A17 content runs on the sim', () => {
-  it('the live content has 8 ages and a Full War walks through all of them', () => {
+  it('the live content has 8 ages; Full War walks 7 of them and the Bronze window reaches Cosmic (A18.3.4)', () => {
     expect(agesOf(real)).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
-    const sim = lane();
-    const ctx = simCtx(sim);
-    for (let i = 0; i < 7; i += 1) {
+    const walk = (format: FormatId, evolves: number): ReturnType<typeof simCtx> => {
+      const sim = lane({ format });
+      for (let i = 0; i < evolves; i += 1) {
+        devSetXp(sim, 0, 5000);
+        const ev = [...new Stamper(sim).step({ t: 'evolve', side: 0 })];
+        expect(ofKind(ev, 'ascendStart'), `${format} evolve ${i}`).toHaveLength(1);
+        stepN(sim, 60);
+      }
       devSetXp(sim, 0, 5000);
-      const ev = [...new Stamper(sim).step({ t: 'evolve', side: 0 })];
-      expect(ofKind(ev, 'ascendStart'), `evolve ${i}`).toHaveLength(1);
-      stepN(sim, 60);
-    }
-    expect(ctx.s.sides[0].ageIndex).toBe(7);
+      expect(ofKind(new Stamper(sim).step({ t: 'evolve', side: 0 }), 'commandRejected')[0]?.reason).toBe('finalAge');
+      return simCtx(sim);
+    };
+    const full = walk('full', 6);
+    expect(full.s.sides[0].ageIndex).toBe(6);
+    // Base max HP follows the Future age (A2.2: 33,200)
+    expect(full.s.sides[0].baseMaxHp).toBe(3320000);
+    const late = walk('full.bronze', 6);
     // Base max HP follows the Cosmic age (A17.8: 44,800)
-    expect(ctx.s.sides[0].baseMaxHp).toBe(4480000);
+    expect(late.s.sides[0].baseMaxHp).toBe(4480000);
   });
 });
 
@@ -271,12 +281,16 @@ describe('A17.15 rule 4: the underdog bounty compares global age indices', () =>
   }
 
   it('the tutorial skips Bronze: a Medieval side (position 1, index 2) killing a Medieval card gets no underdog bonus', () => {
-    // 60% of the Footman's 50 gold = 30; the underdog bonus would make it 45.
-    expect(killBounty('tutorial', 'medieval', 'footman')).toBe(30000);
+    // 50% of the Footman's 50 gold = 25 (A18.3.3); the underdog bonus would make it 37.5.
+    expect(killBounty('tutorial', 'medieval', 'footman')).toBe(25000);
     // A Gunpowder card (index 3) is a real underdog kill: +50%.
-    expect(killBounty('tutorial', 'medieval', 'corsair')).toBe(45000);
+    expect(killBounty('tutorial', 'medieval', 'corsair')).toBe(37500);
     // The same in Full War, where position and index agree.
-    expect(killBounty('full', 'medieval', 'footman')).toBe(30000);
-    expect(killBounty('full', 'bronze', 'footman')).toBe(45000);
+    expect(killBounty('full', 'medieval', 'footman')).toBe(25000);
+    expect(killBounty('full', 'bronze', 'footman')).toBe(37500);
+    // A window that starts in Bronze (A18.3.4): position 0 is index 1, so a Bronze side is no underdog
+    // against a Bronze card, and a Medieval card still pays the bonus.
+    expect(killBounty('short.bronze', 'bronze', 'phalangite')).toBe(Math.trunc((((real.units.phalangite?.cost ?? 0) * 1000) / 2)));
+    expect(killBounty('short.bronze', 'bronze', 'footman')).toBe(37500);
   });
 });

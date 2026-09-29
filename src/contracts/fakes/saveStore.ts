@@ -97,7 +97,7 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
     loadouts[age] = clone(age === 'stone' ? fakeLoadouts.stone : fakeLoadouts.medieval);
   }
   const doc: SaveDoc = {
-    v: 3,
+    v: 4,
     createdAt: FAKE_EPOCH_MS,
     profile: { name: 'Player', avatar: { seed: 1, parts: {} }, banner: 'default', frame: 'default', title: '' },
     currencies: { amber: 0, dust: 0 },

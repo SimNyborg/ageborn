@@ -117,8 +117,8 @@ const DUMMY = 0 as const;
 const TUSKBACK = 1 as const;
 
 /**
- * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (680 / 690 /
- * 520 / 700 XP) and Grogg's base at 90% (content, `docs/requests/wp1-tutorial-pacing.md`) the match
+ * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (610 / 580 /
+ * 390 / 900 XP since the A18.3.2 XP sources; 680 / 690 / 520 / 700 before) and Grogg's base at 90% (content, `docs/requests/wp1-tutorial-pacing.md`) the match
  * follows the A8 draft: Medieval at ~0:55, Gunpowder ~1:33, Modern ~1:55, Future ~2:25 and Grogg
  * falls at ~2:30 (A17's longer lane with faster walking and the three-wide front end it about 30 s
  * before A8's 3:00). Grogg sends three dummies before his Tuskback,
@@ -224,7 +224,7 @@ export const MATCH1_TIMING = {
   gunpowder: 1851, // 1:32.6 [1:30]
   modern: 2301, // 1:55.1 [2:00]
   future: 2901, // 2:25.1 [2:35]
-  groggFalls: 3006, // 2:30.3 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner
+  groggFalls: 2945, // 2:27.3 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0)
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */
@@ -366,6 +366,6 @@ export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
 /** Match 1 loadouts for every age of the Tutorial format. */
 export function match1Loadouts(content: CompiledContent): Partial<Record<AgeId, Loadout>> {
   const out: Partial<Record<AgeId, Loadout>> = {};
-  for (const age of content.formats.tutorial.ages) out[age] = starterLoadout(content, age);
+  for (const age of content.formats.tutorial?.ages ?? []) out[age] = starterLoadout(content, age);
   return out;
 }

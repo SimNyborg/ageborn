@@ -34,8 +34,8 @@ class Recorder implements BotController {
 describe('HeadlessMatch (DESIGN B6 loop)', () => {
   it('hands each controller the observation from snapshotDelayTicks ago', () => {
     const sim = newSim();
-    const slow = new Recorder(6, 0, -1, (side) => ({ t: 'treasury', side }));
-    const fast = new Recorder(0, 1, -1, (side) => ({ t: 'treasury', side }));
+    const slow = new Recorder(6, 0, -1, (side) => ({ t: 'researchCancel', side }));
+    const fast = new Recorder(0, 1, -1, (side) => ({ t: 'researchCancel', side }));
     const m = new HeadlessMatch(sim, [
       { side: 0, controller: slow },
       { side: 1, controller: fast },
@@ -49,7 +49,7 @@ describe('HeadlessMatch (DESIGN B6 loop)', () => {
 
   it('stamps commands with tick + 1 and a per-side sequence, and drops commands for the other side', () => {
     const sim = newSim();
-    const mine = new Recorder(0, 0, 3, (side) => ({ t: 'stance', side, stance: 'hold' }));
+    const mine = new Recorder(0, 0, 3, (side) => ({ t: 'stance', side, mode: 'hold' }));
     const cheat = new Recorder(0, 1, 3, () => ({ t: 'retreat', side: 0 }));
     const m = new HeadlessMatch(sim, [
       { side: 0, controller: mine },
@@ -57,14 +57,14 @@ describe('HeadlessMatch (DESIGN B6 loop)', () => {
     ]);
     for (let i = 0; i < 6; i += 1) m.step(i === 4 ? [{ t: 'emote', side: 0, emote: 'gg' }] : []);
     expect(m.commands).toEqual([
-      { t: 'stance', side: 0, stance: 'hold', tick: 4, seq: 1 },
+      { t: 'stance', side: 0, mode: 'hold', tick: 4, seq: 1 },
       { t: 'emote', side: 0, emote: 'gg', tick: 5, seq: 2 },
     ]);
     expect(sim.state.outcome).toBeNull();
   });
 
   it('refuses two controllers on one side', () => {
-    const c = new Recorder(0, 0, -1, (side) => ({ t: 'treasury', side }));
+    const c = new Recorder(0, 0, -1, (side) => ({ t: 'researchCancel', side }));
     expect(() => new HeadlessMatch(newSim(), [{ side: 0, controller: c }, { side: 0, controller: c }])).toThrow(/two controllers/);
   });
 

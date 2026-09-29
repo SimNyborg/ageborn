@@ -8,6 +8,17 @@ import type { AgeDef } from '@/contracts/content';
 import type { AgeId } from '@/contracts/ids';
 import type { RawAgeScale } from './raw';
 
+/**
+ * Presentation themes (A18.8.2): Bronze is shown as "Bronze Age: Hellas", Gunpowder as "Age of
+ * Muskets", Industrial with Great War flavour. Strings only; each has a flavour line.
+ */
+export const THEMED_AGES: readonly AgeId[] = ['bronze', 'gunpowder', 'industrial'];
+
+/** The flavour line of a themed age (A18.8.2). */
+export function ageFlavourKey(id: AgeId): string {
+  return `age.${id}.flavour`;
+}
+
 /** Stone to Cosmic (A17.8). */
 export const AGE_ORDER: readonly AgeId[] = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 

@@ -1,26 +1,33 @@
 /**
- * Customize (owner feedback 2026-09-28): one place for how your army and profile look.
+ * Customize (owner feedback 2026-09-28, DESIGN A18.9.4): one place for how your army, your base and
+ * your profile look.
  *
  * - Troops: every unit and turret skin (owned ones equip at once; locked ones show their rarity and
  *   the Dust price when craftable), the same tiles as the Collection's Skins tab.
- * - Bases: the base skins per age.
+ * - Bases: the base skins per age (the collection's restyles and the A5.8 base skins).
+ * - Flags: the base flag and the national flag (only ever the player's own pick).
+ * - Decorations: three fixed spots on the base.
+ * - Emotes and Quotes: the battle wheel (fixed lines only; no text chat).
  * - Look: banner, frame and title (owned ones pick; locked ones say how they unlock).
- * - Emotes: the battle emotes you can use.
  *
- * Everything shown exists in the content; nothing here can be bought (A15 red lines).
+ * Base tabs show a live mock-up of the base; every collection shows "12/40 found". Everything shown
+ * exists in the content; nothing here can be bought (A15 red lines).
  */
 import './customize.css';
-import { bannerNameKey, emoteNameKey, frameNameKey, titleNameKey } from '@/content/keys';
+import { bannerNameKey, frameNameKey, titleNameKey } from '@/content/keys';
 import type { SkinDef } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import { Pill } from '../../components/Chips';
 import { BrushIcon, CastleIcon, CheckIcon, CrownIcon, FlagIcon, LockIcon } from '../../components/icons';
-import { Empty, ScreenFrame } from '../../components/Layout';
+import { ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
 import type { CustomizeTab, RouteOf } from '../../router';
 import { SkinTile } from '../collection/CollectionScreen';
 import { useUi } from '../context';
+import { COLLECTIONS, progressOf } from '../model/cosmetics';
+import { BasesPanel, CompletionStrip, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
+import { FlagsTabIcon, QuoteTabIcon, SmileTabIcon, StatueTabIcon } from './icons';
 
 const isBaseSkin = (k: SkinDef): boolean => k.target.startsWith('base.');
 
@@ -138,22 +145,6 @@ function LookPanel() {
   );
 }
 
-function EmotesPanel() {
-  const { content, t } = useUi();
-  return (
-    <div data-testid="cust-emotes">
-      <p class="cust-hint">{t('ui.customize.emotesHint')}</p>
-      <ul class="cust-emotes">
-        {content.cosmetics.emotes.map((e) => (
-          <li key={e.id} class="cust-emote" data-testid={`emote-${e.id}`}>
-            <span class="cust-emote__bubble">{t(emoteNameKey(e.id))}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
   const { save, content, t, router } = useUi();
   const s = save.value;
@@ -161,7 +152,20 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
   const all = content.order.skins.map((id) => content.skins[id]!);
   const troops = all.filter((k) => !isBaseSkin(k));
   const bases = all.filter(isBaseSkin);
-  const owned = all.filter((k) => s.skins.owned.includes(k.id)).length;
+  // "N/M found" over every skin and every cosmetic collection
+  const skinsOwned = all.filter((k) => s.skins.owned.includes(k.id)).length;
+  const cos = COLLECTIONS.map((c) => progressOf(s, content, c));
+  const owned = skinsOwned + cos.reduce((n, g) => n + g.owned, 0);
+  const total = all.length + cos.reduce((n, g) => n + g.total, 0);
+  const tabs = [
+    { value: 'troops', label: t('ui.customize.troops'), icon: <BrushIcon size={20} />, testid: 'tab-troops' },
+    { value: 'bases', label: t('ui.customize.bases'), icon: <CastleIcon size={20} />, testid: 'tab-bases' },
+    { value: 'flags', label: t('cosmetic.ui.tab.flags'), icon: <FlagsTabIcon size={20} />, testid: 'tab-flags' },
+    { value: 'decorations', label: t('cosmetic.ui.tab.decorations'), icon: <StatueTabIcon size={20} />, testid: 'tab-decorations' },
+    { value: 'emotes', label: t('ui.customize.emotes'), icon: <SmileTabIcon size={20} />, testid: 'tab-emotes' },
+    { value: 'quotes', label: t('cosmetic.ui.tab.quotes'), icon: <QuoteTabIcon size={20} />, testid: 'tab-quotes' },
+    { value: 'look', label: t('ui.customize.look'), icon: <CrownIcon size={20} />, testid: 'tab-look' },
+  ] as const;
   return (
     <ScreenFrame
       id="customize"
@@ -169,37 +173,35 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
       onBack={() => router.back()}
       subtitle={
         <Pill tone="violet" icon={<BrushIcon size={16} />} testid="cust-total">
-          {t('ui.customize.owned', { n: owned, max: all.length })}
+          {t('cosmetic.ui.found', { n: owned, max: total })}
         </Pill>
       }
     >
       <div class="col cust">
-        <Tabs
-          label={t('ui.nav.customize')}
-          value={tab}
-          onChange={setTab}
-          variant="folder"
-          idPrefix="cust"
-          items={[
-            { value: 'troops', label: t('ui.customize.troops'), icon: <BrushIcon size={20} />, testid: 'tab-troops' },
-            { value: 'bases', label: t('ui.customize.bases'), icon: <CastleIcon size={20} />, testid: 'tab-bases' },
-            { value: 'look', label: t('ui.customize.look'), icon: <FlagIcon size={20} />, testid: 'tab-look' },
-            { value: 'emotes', label: t('ui.customize.emotes'), testid: 'tab-emotes' },
-          ]}
-        />
-        <div class="col-panel" role="tabpanel" id="cust-panel" aria-labelledby={`cust-tab-${tab}`}>
+        <Tabs label={t('ui.nav.customize')} value={tab} onChange={setTab} variant="folder" idPrefix="cust" compact items={tabs} />
+        <div class={`col-panel cust-panel cust-panel--${tab}`} role="tabpanel" id="cust-panel" aria-labelledby={`cust-tab-${tab}`} key={tab}>
           {tab === 'troops' ? (
-            <SkinGrid skins={troops} testid="cust-troops" />
+            <>
+              <CompletionStrip />
+              <SkinGrid skins={troops} testid="cust-troops" />
+            </>
           ) : tab === 'bases' ? (
-            bases.length > 0 ? (
-              <SkinGrid skins={bases} testid="cust-bases" />
-            ) : (
-              <Empty>{t('ui.customize.none')}</Empty>
-            )
-          ) : tab === 'look' ? (
-            <LookPanel />
-          ) : (
+            <BasesPanel
+              extra={(age) => {
+                const list = bases.filter((k) => k.target === `base.${age}`);
+                return list.length > 0 ? <SkinGrid skins={list} testid="cust-base-skins" /> : null;
+              }}
+            />
+          ) : tab === 'flags' ? (
+            <FlagsPanel />
+          ) : tab === 'decorations' ? (
+            <DecorationsPanel />
+          ) : tab === 'emotes' ? (
             <EmotesPanel />
+          ) : tab === 'quotes' ? (
+            <QuotesPanel />
+          ) : (
+            <LookPanel />
           )}
         </div>
       </div>

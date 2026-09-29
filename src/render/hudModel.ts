@@ -7,7 +7,7 @@
  * of the format it is measured against the Overcharge amount), power charge is ppm, times are ms.
  */
 import type { AgeId, CardId, CardState, Foil, HudCard, HudModel, MatchConfig, Observation, Side, SimState } from '@/contracts';
-import { matchMods, type MatchMods } from '@/core';
+import { incomeMilliPerSec, matchMods, nextIncomePick, researchCost, type MatchMods } from '@/core';
 
 /** HUD refresh rate (B6). */
 export const HUD_HZ = 15;
@@ -172,14 +172,18 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
   const clockMs = state.tick * 50;
   const doubled = state.phase === 'overdrive' || state.phase === 'siege';
   const mods = hudMods(config);
+  const obs = src.observe(side);
+  const obsMe = obs.me;
+  // Economy research income is never doubled (A18.5.4, the Treasury before).
   const goldPerSec =
     (((eco.passiveGoldPerSec * mods.passiveGoldBp) / 10000) * (doubled ? eco.overdrive.baseGoldBp : 10000)) / 10000 +
-    (me.treasury * eco.treasuryMilliGoldPerSecPerLevel) / 1000;
+    incomeMilliPerSec(content, obsMe.research.owned) / 1000;
+  const incomePick = nextIncomePick(content, obsMe.research);
   const siegeMs = fmt?.siegeMs ?? null;
-  const obs = src.observe(side);
   const foils = extras.foils ?? {};
   const cards: HudCard[] = [];
-  for (let slot = 0; slot < 5; slot++) {
+  // Six troops per battle (A18.9).
+  for (let slot = 0; slot < 6; slot++) {
     const card = loadout?.units[slot] ?? null;
     const unlocked = tray ? tray.unlocked(side, myAge, slot) : true;
     cards.push(cardFor(state, config, side, slot, card, unlocked, foils));
@@ -194,7 +198,8 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
     me: {
       gold: Math.floor(me.gold / 1000),
       goldPerSec: Math.round(goldPerSec * 10) / 10,
-      nextTreasuryCost: eco.treasuryCosts[me.treasury] ?? null,
+      nextTreasuryCost: incomePick ? researchCost(content, incomePick) : null,
+      nextIncome: incomePick ? { track: incomePick.track, rank: incomePick.rank, pick: incomePick.pick } : null,
       baseHpBp: hpBp(me.baseHp, me.baseMaxHp),
       ageIndex: me.ageIndex,
       xpBp: xpBarBp(config, me.ageIndex, me.xp),

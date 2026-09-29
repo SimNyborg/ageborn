@@ -37,7 +37,12 @@ export interface Personality {
   signatureBiasBp: number;
   /** Kettle: an all-in push before each evolve. */
   allInBeforeEvolve: boolean;
-  /** Ledger: Treasury to this level by `treasuryRushByMs`, overriding the tier's Treasury max. */
+  /**
+   * War Council style (A18.5.8): bp added to a research pick's score, keyed by pick id, track or
+   * `troops.<class>`; −10,000 on a pick id means "never".
+   */
+  researchBiasBp: Readonly<Record<string, number>>;
+  /** Ledger: Economy income research (the Treasury) to this level by `treasuryRushByMs`, over the tier's max. */
   treasuryRushLevel: number;
   treasuryRushByMs: number;
   /** Push gate factor before Overdrive in bp (A7.2 default 1.3; Moss holds out until Overdrive). */
@@ -64,6 +69,7 @@ const BASE: Personality = {
   signatureCards: [],
   signatureBiasBp: 0,
   allInBeforeEvolve: false,
+  researchBiasBp: {},
   treasuryRushLevel: 0,
   treasuryRushByMs: 0,
   pushGateBp: DEFAULT_PUSH_GATE_BP,
@@ -87,20 +93,23 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     id: 'rusher',
     groupBiasBp: { infantry: 2500 },
     allInBeforeEvolve: true,
+    // A18.5.8: Infantry Rush, never Forage
+    researchBiasBp: { 'troops.infantry': 6000, 'troops.infantry.rush': 6000, 'economy.forage': -BP },
     opening: ['train:infantry', 'train:infantry', 'train:infantry|train:ranged', 'train:infantry'],
   },
   // Mama Moss: "Early turrets, Hold, pushes in Overdrive".
-  turtle: { ...BASE, id: 'turtle', pushGateBp: 20000, holdAnyTier: true, opening: ['turret', 'train:ranged', 'train:infantry', 'mount|train:ranged'] },
+  turtle: { ...BASE, id: 'turtle', pushGateBp: 20000, holdAnyTier: true, researchBiasBp: { defences: 15000 }, opening: ['turret', 'train:ranged', 'train:infantry', 'mount|train:ranged'] },
   // Baroness Ledger: "Treasury 3 by 2:30, evolves first, weak before 1:00".
   greedy: {
     ...BASE,
     id: 'greedy',
     treasuryRushLevel: 3,
     treasuryRushByMs: 150000,
+    researchBiasBp: { economy: 8000 },
     opening: ['train:infantry', 'treasury', 'train:ranged', 'treasury|train:infantry'],
   },
   // Sgt. Boomsworth: "Trebuchet, Bronze Cannon, Howitzer, Grenadier".
-  artillery: { ...BASE, id: 'artillery', signatureBiasBp: 2500, opening: ['train:infantry', 'train:ranged', 'turret', 'train:ranged|train:infantry'] },
+  artillery: { ...BASE, id: 'artillery', signatureBiasBp: 2500, researchBiasBp: { command: 6000, 'troops.ranged': 6000 }, opening: ['train:infantry', 'train:ranged', 'turret', 'train:ranged|train:infantry'] },
   // Ada & Ivo: balanced counters.
   counters: { ...BASE, id: 'counters', opening: ['train:infantry', 'train:ranged', 'train:antiArmor|train:heavy'] },
   // Rook: "Counter weight ×1.5, switches within seconds" (the weight comes from content).
@@ -110,6 +119,8 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     ...BASE,
     id: 'powerTiming',
     powerForEvolveMoments: true,
+    // A18.5.8: Signal Fires (Reserve Charge in v1.1)
+    researchBiasBp: { 'command.signal_fires': 12000 },
     opening: ['train:infantry', 'train:ranged', 'train:ranged|train:infantry', 'turret'],
   },
   // The Warden: all-round boss with Legendaries.

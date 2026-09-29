@@ -121,7 +121,7 @@ export function agesAwaitingAntiArmor(save: SaveDoc, content: Content, format: F
 
 /** Ages a format uses, in order. */
 export function formatAges(content: Content, format: FormatId): AgeId[] {
-  return content.formats[format].ages;
+  return content.formats[format]?.ages ?? [];
 }
 
 /** The active plan, or the first, or an empty plan so screens can always render. */

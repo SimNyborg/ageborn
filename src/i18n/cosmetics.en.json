@@ -548,6 +548,90 @@
       "crystal_flower": {
         "name": "Crystal Flower"
       }
+    },
+    "ui": {
+      "found": "{n}/{max} found",
+      "foundAll": "{n}/{max} found across all collections",
+      "tab": {
+        "flags": "Flags",
+        "decorations": "Decorations",
+        "quotes": "Quotes"
+      },
+      "equipped": "Equipped",
+      "equip": "Equip",
+      "remove": "Remove",
+      "none": "None",
+      "craft": "Craft",
+      "crafted": "Crafted!",
+      "new": "New",
+      "preview": "Your base",
+      "previewHint": "Both sides see your base look in battle and on the VS screen.",
+      "baseFlag": "Base flag",
+      "nationalFlag": "National flag",
+      "nationalHint": "Only ever your own pick. Nothing is chosen from where you are.",
+      "noNational": "No national flag",
+      "baseSkin": "Base skin for this age",
+      "defaultSkin": "Standard base",
+      "anchors": "Pick a spot, then a decoration",
+      "anchor": {
+        "0": "Back wall",
+        "1": "Courtyard",
+        "2": "By the gate"
+      },
+      "emptySpot": "Empty spot",
+      "kind": {
+        "emote": "Emote",
+        "quote": "Quote",
+        "baseFlag": "Base flag",
+        "nationalFlag": "National flag",
+        "baseSkin": "Base skin",
+        "decoration": "Decoration"
+      },
+      "wheel": "Battle wheel",
+      "wheelHint": "Tap an emote to add or remove it. {n} of {max} slots used.",
+      "quoteHint": "Fixed, friendly lines only. {n} of {max} slots used.",
+      "wheelFull": "The wheel is full. Remove one first.",
+      "starters": "Starter emotes",
+      "collected": "Collected emotes",
+      "search": "Search countries",
+      "age": "Age",
+      "odds": "Drop odds",
+      "oddsCapsule": "Time Capsules: {pct} chance of one item (by tier: {tiers})",
+      "oddsCrate": "Wardrobe Crate: always one item",
+      "oddsRarity": "{rarity} {pct}",
+      "source": {
+        "start": "Starter item",
+        "capsule": "Found in Time Capsules",
+        "crate": "Found in Wardrobe Crates",
+        "road": "Trophy Road at {n} trophies",
+        "feat": "A hidden feat",
+        "arena": "Reach Arena {n}",
+        "codex": "Codex Level {n}",
+        "warPath": "War Path (coming later)"
+      },
+      "reason": {
+        "notOwned": "You do not own that yet.",
+        "wheelFull": "The wheel is full. Remove one first.",
+        "dust": "Not enough Dust.",
+        "notEnoughDust": "Not enough Dust.",
+        "owned": "Already yours.",
+        "notCraftable": "This one is earned, not crafted."
+      },
+      "collectionsTitle": "Cosmetic collections",
+      "inWheel": "In wheel",
+      "add": "Add",
+      "alsoFound": "Also found: {name} ({collection})"
+    },
+    "hud": {
+      "mute": "Mute opponent",
+      "unmute": "Unmute opponent"
+    },
+    "odds": {
+      "title": "Cosmetic collections",
+      "capsuleLine": "Chance that a Time Capsule holds one collection item (emote, quote, flag or decoration):",
+      "crateLine": "Every Wardrobe Crate also holds one collection item:",
+      "items": "({n} items)",
+      "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust."
     }
   }
 }

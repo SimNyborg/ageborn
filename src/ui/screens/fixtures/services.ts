@@ -66,7 +66,7 @@ export function createPreviewServices(o: {
       return content.dailyModifiers.order[0] ?? null;
     },
     validatePlan(plan, format) {
-      return previewIssues(content, plan, content.formats[format].ages);
+      return previewIssues(content, plan, content.formats[format]?.ages ?? []);
     },
     autoFill() {
       const s = save.value;
@@ -260,6 +260,38 @@ export function createPreviewServices(o: {
         else delete equipped[target];
         return { ...s, skins: { ...s.skins, equipped } };
       });
+    },
+    equipCosmetic(e) {
+      log('equipCosmetic', e);
+      // Preview only: the real rules (ownership, wheel sizes) live in meta.equipCosmetic.
+      set((s) => {
+        const eq = { ...s.cosmetics.equipped };
+        if (e.slot === 'emotes' || e.slot === 'quotes') eq[e.slot] = [...e.keys];
+        else if (e.slot === 'baseFlag' || e.slot === 'nationalFlag') eq[e.slot] = e.key;
+        else if (e.slot === 'baseSkin') {
+          const baseSkins = { ...eq.baseSkins };
+          if (e.key) baseSkins[e.age] = e.key;
+          else delete baseSkins[e.age];
+          eq.baseSkins = baseSkins;
+        } else if (e.slot === 'decoration') {
+          const decorations = eq.decorations.map((k) => (e.key !== null && k === e.key ? null : k));
+          decorations[e.anchor] = e.key;
+          eq.decorations = decorations;
+        }
+        return { ...s, cosmetics: { ...s.cosmetics, equipped: eq } };
+      });
+      return ok;
+    },
+    craftCosmetic(key) {
+      log('craftCosmetic', key);
+      const x = content.cosmetics.collections.items.find((i) => `${i.collection}.${i.id}` === key);
+      if (!x || (x.source.kind !== 'capsule' && x.source.kind !== 'crate')) return fail('notCraftable');
+      const price = content.cosmetics.collections.drops.craftDust[x.rarity];
+      const s = save.value;
+      if (s.cosmetics.owned.includes(key)) return fail('owned');
+      if (s.currencies.dust < price) return fail('dust');
+      set((y) => ({ ...y, currencies: { ...y.currencies, dust: y.currencies.dust - price }, cosmetics: { ...y.cosmetics, owned: [...y.cosmetics.owned, key] } }));
+      return ok;
     },
     claimRoadNode(trophies) {
       const s = save.value;

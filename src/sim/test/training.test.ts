@@ -105,7 +105,7 @@ describe('training (A2.7)', () => {
     expect(ofKind(st.step({ t: 'train', side: 0, slot: 1 }), 'commandRejected')[0]?.reason).toBe('lockedSlot');
     // the bot side is not restricted
     expect(ofKind(st.step({ t: 'train', side: 1, slot: 1 }), 'commandRejected')).toHaveLength(0);
-    expect(sim.observe(0).me.tray).toEqual(['bonker', null, null, null, null]);
+    expect(sim.observe(0).me.tray).toEqual(['bonker', null, null, null, null, null]);
     stepN(sim, 2);
     const g = sim.state.sides[0].gold;
     stepN(sim, 1);

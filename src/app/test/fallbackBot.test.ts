@@ -57,10 +57,10 @@ describe('fallback bot honesty (A7.1)', () => {
         ],
       });
       s.start();
-      s.fastForward(20 * 60 * 7);
+      s.fastForward(20 * 60 * 9);
       winners.add(s.result!.input.outcome.winner);
     }
     expect(winners.size).toBeGreaterThan(1);
-    // Six Short Wars of up to 6:15 (four ages since A17.8) take a few seconds headless.
+    // Six Short Wars of up to 8:30 (three ages since A18.3.4) take a few seconds headless.
   }, 30000);
 });

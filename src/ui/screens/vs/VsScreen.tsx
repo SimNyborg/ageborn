@@ -9,10 +9,13 @@ import { formatNameKey, modifierDescKey, modifierNameKey } from '@/content/keys'
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { AiBadge, Pill } from '../../components/Chips';
+import { LookFlags } from '../../components/cosmeticArt';
 import { formatDec, formatInt, tierNumeral } from '../../components/format';
 import { TrophyIcon } from '../../components/icons';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { hudTeamColors } from '../../hud/model';
+import { equippedOf, owns } from '../model/cosmetics';
 import { generalOf, opponentName, personalityOf } from '../model/opponent';
 import { activePlan, formatAges, planAvgLevel } from '../model/plan';
 
@@ -53,6 +56,12 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   const std = o.standardLevels === true;
   const avg = std ? o.level : planAvgLevel(s, content, plan, formatAges(content, o.format));
   const name = opponentName(o, content, t);
+  // A18.9.4: both sides' flags, in their team colours (only owned items for the player)
+  const teams = hudTeamColors(s.settings.teamPreset, 0);
+  const hex = (c: string) => Number.parseInt(c.replace('#', ''), 16);
+  const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
+  const mine = (k: string | null | undefined) => (k && owns(s, content, k) ? k : null);
+  const foeLook = o.side.look;
 
   return (
     <section
@@ -81,6 +90,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
           <span class="vs__level" data-testid="vs-plan-level">
             {avg === null ? t('ui.vs.planLevelNone') : t('ui.vs.planLevel', { n: formatDec(avg, 1, locale) })}
           </span>
+          {eq ? <LookFlags baseFlag={mine(eq.baseFlag)} nationalFlag={mine(eq.nationalFlag)} team={hex(teams.me)} testid="vs-flags-me" still={s.settings.reduceMotion} large /> : null}
         </div>
       </div>
       <div class="vs__half vs__half--foe">
@@ -101,6 +111,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
             </q>
           ) : null}
           <span class="vs__rules">{t('ui.ai.sameRules')}</span>
+          {foeLook ? <LookFlags baseFlag={foeLook.baseFlag} nationalFlag={foeLook.nationalFlag} team={hex(teams.foe)} testid="vs-flags-foe" still={s.settings.reduceMotion} large /> : null}
         </div>
       </div>
       <div class="vs__emblem" aria-hidden="true">

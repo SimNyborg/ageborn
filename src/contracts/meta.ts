@@ -25,6 +25,7 @@ export interface MatchStats {
   powerMaxHits: number;
   baseDamage: number;
   heavyKillsByAA: number;
+  /** Bought any Economy research (A18.5.4; the Treasury before A18). */
   usedTreasury: boolean;
   usedLastStand: boolean;
   ownBaseHpBpAtEnd: number;

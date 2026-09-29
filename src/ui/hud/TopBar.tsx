@@ -18,7 +18,8 @@ import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
 import type { AgeId, CardId, EmoteId } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
-import { AgeGlyph, EmoteGlyph, HornIcon, PauseIcon, PlayIcon, RobotIcon, SmileIcon, SpeedIcon } from './icons';
+import { EmoteBubble, EmoteButton } from './EmoteWheel';
+import { AgeGlyph, HornIcon, PauseIcon, PlayIcon, RobotIcon, SpeedIcon } from './icons';
 import { Minimap } from './Minimap';
 import { ageIds, clockView, evolveIntent, formatClock, frontStrip, powerFraction, xpProgress, type FrontLine } from './model';
 import { usePortrait } from './usePortrait';
@@ -145,61 +146,6 @@ function Scouted(p: { c: HudCtx }) {
   );
 }
 
-function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
-  const { c } = p;
-  const [open, setOpen] = useState(false);
-  const [cooling, setCooling] = useState(false);
-  const cooldownMs = c.config.content.economy.emoteCooldownMs;
-  useEffect(() => {
-    if (!cooling) return;
-    const id = setTimeout(() => setCooling(false), cooldownMs);
-    return () => clearTimeout(id);
-  }, [cooling, cooldownMs]);
-  const off = c.readOnly || c.m.phase === 'ended';
-  return (
-    <div class="hud-emote">
-      <button
-        class={`hud-round hud-round--small hud-emote-btn${cooling ? ' is-cooling' : ''}${c.denied('emote') ? ' is-denied' : ''}`}
-        data-testid="hud-emote"
-        aria-label={c.t('hud.emote')}
-        aria-expanded={open}
-        disabled={off}
-        onClick={() => {
-          if (cooling) {
-            c.act({ k: 'deny', target: 'emote' });
-            return;
-          }
-          c.audio?.play('ui_click');
-          setOpen(!open);
-        }}
-      >
-        <SmileIcon size={18} />
-      </button>
-      {open && !off ? (
-        <div class="hud-emote-picker" role="menu" data-testid="hud-emote-picker">
-          {EMOTES.map((e) => (
-            <button
-              key={e}
-              role="menuitem"
-              class="hud-emote-pick"
-              title={c.t(`emote.${e}.name`)}
-              aria-label={c.t(`emote.${e}.name`)}
-              onClick={() => {
-                setOpen(false);
-                setCooling(true);
-                p.onEmote(e);
-              }}
-            >
-              <EmoteGlyph emote={e} size={30} />
-            </button>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-/** The round Evolve button at the end of your XP bar (audit #4). */
 function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; progress: number }) {
   const { c } = p;
   const { m, t } = c;
@@ -303,11 +249,7 @@ export function TopBar(p: {
           </div>
         </div>
         {finalAge ? null : <EvolveButton c={c} nextAge={nextAge} progress={m.me.xpBp / 10000} />}
-        {myBubble ? (
-          <div key={myBubble.id} class="hud-bubble hud-bubble-me" data-testid="hud-bubble-me">
-            <EmoteGlyph emote={myBubble.emote} size={34} />
-          </div>
-        ) : null}
+        {myBubble ? <EmoteBubble key={myBubble.id} id={myBubble.id} emote={myBubble.emote} side="me" t={t} /> : null}
       </div>
 
       <div class="hud-center">
@@ -356,16 +298,12 @@ export function TopBar(p: {
             ) : null}
           </div>
           <Medallion age={foeAge} team="foe" ring={powerFraction(m.foe.powerPpm)} horn={m.foe.lastStandArmed} hornLabel={t('hud.lastStand')} />
-          {foeBubble ? (
-            <div key={foeBubble.id} class="hud-bubble hud-bubble-foe" data-testid="hud-bubble-foe">
-              <EmoteGlyph emote={foeBubble.emote} size={34} />
-            </div>
-          ) : null}
+          {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} emote={foeBubble.emote} side="foe" t={t} /> : null}
         </div>
         <div class="hud-controls">
           {p.controls ? (
             <div class="hud-buttons">
-              {c.compact ? null : <EmoteButton c={c} onEmote={(emote) => c.act({ k: 'command', cmd: { t: 'emote', side: c.side, emote }, target: 'emote' })} />}
+              <EmoteButton c={c} onEmote={(emote) => c.act({ k: 'command', cmd: { t: 'emote', side: c.side, emote }, target: 'emote' })} />
               <button class="hud-round" data-testid="hud-pause" aria-label={m.paused ? t('hud.resume') : t('hud.pause')} disabled={c.readOnly} onClick={p.onPause}>
                 {m.paused ? <PlayIcon size={20} /> : <PauseIcon size={20} />}
               </button>

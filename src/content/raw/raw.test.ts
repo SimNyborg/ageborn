@@ -412,14 +412,21 @@ describe.each([
     it('formats and clocks (A2.10)', () => {
       // The Tutorial thresholds were retimed for the A8 pace (wp1-tutorial-pacing); the frozen fixture keeps the old ones.
       expect(c.formats.tutorial).toMatchObject({ ages: AGES, overdriveMs: null, siegeMs: null, finalBellMs: null,
-        retreatAfterMs: null, xpToNextOverride: c === raw ? [680, 690, 520, 700] : [250, 300, 350, 400] });
+        retreatAfterMs: null, xpToNextOverride: c === raw ? [610, 580, 390, 900] : [250, 300, 350, 400] });
       if (c === raw) {
-        // A17.8: Short 4 ages, Standard 6, Full 8, on the A17.2 clocks
-        expect(c.formats.short).toMatchObject({ ages: AGES8.slice(0, 4), overdriveMs: 225000, siegeMs: 285000,
-          finalBellMs: 375000, retreatAfterMs: 60000 });
-        expect(c.formats.standard).toMatchObject({ ages: AGES8.slice(0, 6), overdriveMs: 300000,
-          siegeMs: 405000, finalBellMs: 510000, retreatAfterMs: 60000 });
-        expect(c.formats.full).toMatchObject({ ages: AGES8, overdriveMs: 405000, siegeMs: 525000, finalBellMs: 645000, retreatAfterMs: 60000 });
+        // A18.3.4: windows of 3, 5 and 7 ages on the A18 clocks; thresholds by position (A18.3.2),
+        // tuned from 700/1,250/1,350/1,450/1,550/1,650 by the A18 pacing run (docs/decisions.md)
+        expect(c.formats.short).toMatchObject({ kind: 'short', ages: AGES8.slice(0, 3), overdriveMs: 300000, siegeMs: 390000,
+          finalBellMs: 510000, retreatAfterMs: 60000, xpToNextOverride: [620, 1300] });
+        expect(c.formats.standard).toMatchObject({ kind: 'standard', ages: AGES8.slice(0, 5), overdriveMs: 480000,
+          siegeMs: 600000, finalBellMs: 750000, retreatAfterMs: 60000, xpToNextOverride: [620, 1300, 1580, 1800] });
+        expect(c.formats.full).toMatchObject({ kind: 'full', ages: AGES8.slice(0, 7), overdriveMs: 720000, siegeMs: 870000,
+          finalBellMs: 1050000, retreatAfterMs: 60000, xpToNextOverride: [620, 1300, 1580, 1800, 1850, 2000] });
+        // a window may start in a later age; it never runs past the last age
+        expect(c.formats['short.modern']?.ages).toEqual(['modern', 'future', 'cosmic']);
+        expect(c.formats['short.future']).toBeUndefined();
+        expect(c.formats['w2.cosmic']).toBeUndefined();
+        expect(c.formats['w1.cosmic']).toMatchObject({ kind: 'window', ages: ['cosmic'], overdriveMs: 210000, siegeMs: 270000, finalBellMs: 360000 });
         return;
       }
       expect(c.formats.short).toMatchObject({ ages: ['stone', 'medieval', 'gunpowder'], overdriveMs: 210000, siegeMs: 270000,
@@ -429,29 +436,33 @@ describe.each([
       expect(c.formats.full).toMatchObject({ ages: AGES, overdriveMs: 330000, siegeMs: 450000, finalBellMs: 570000, retreatAfterMs: 60000 });
     });
 
-    it('gold, XP, turrets, powers, phases and Last Stand (A2.3-A2.11)', () => {
+    it('gold, XP, turrets, powers, phases and Last Stand (A2.3-A2.11; A18.3 on the live tables)', () => {
+      // A18.3.2-A18.3.3: 5 XP/s, kill XP 70%, loss XP 50%, 8 XP per 1% of base damage, bounty 50%,
+      // Overcharge 1,650; A18.4.2 stance 3 s and freshness 4 s. The frozen fixture keeps the A17 numbers.
+      const a18 = c === raw;
       expect(c.economy).toMatchObject({
-        startGold: 175, passiveGoldPerSec: 6, passiveXpPerSec: 4, treasuryCosts: [200, 350, 550],
-        treasuryMilliGoldPerSecPerLevel: 1500, mountCosts: [0, 150, 350, 700],
-        bountyGoldBp: 6000, bountyXpBp: 10000, powerKillGoldBp: 3000, powerKillXpBp: 0, ownLossXpBp: 4000,
-        underdogBp: 5000, baseDamageXpPerPct: 12, xpCapBp: 15000, popCap: 60, queueMax: 5, legendaryLimit: 1,
+        startGold: 175, passiveGoldPerSec: 6, passiveXpPerSec: a18 ? 5 : 4, mountCosts: [0, 150, 350, 700],
+        bountyGoldBp: a18 ? 5000 : 6000, bountyXpBp: a18 ? 7000 : 10000, powerKillGoldBp: 3000, powerKillXpBp: 0, ownLossXpBp: a18 ? 5000 : 4000,
+        underdogBp: 5000, baseDamageXpPerPct: a18 ? 8 : 12, xpCapBp: 15000, popCap: 60, queueMax: 5, legendaryLimit: 1,
         popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14 },
         sellRefundBp: 5000, turretRangeCap: 480, turretBuildMs: 1000, turretSellMs: 1000,
         ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2, powerChargeMs: 50000, powerCarryCapBp: 5000,
-        overchargeXp: 1200, overchargeBp: 2500,
+        overchargeXp: a18 ? 1650 : 1200, overchargeBp: 2500, turretRangeHardCapLu: 560,
+        holdFlag: { minP: 320, maxP: 800, snapLu: 20, moveCooldownMs: 1000 }, fallbackP: 200,
+        statCaps: { damageBp: 3500, takenBp: 3500, hpBp: 3000, attackSpeedBp: 2500, speedBp: 2000, rangeLu: 60 },
         overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
         siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
         marchSpeedBp: 12500, frontWidth: 3,
         lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
         spawnP: 20, holdLine: 320, holdRetreatSpeedBp: 7000, leash: 20, spacingBp: 3000, retargetMs: 1000,
-        retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: 2000, stanceCooldownMs: 2000,
+        retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: a18 ? 4000 : 2000, stanceCooldownMs: a18 ? 3000 : 2000,
         sizes: { small: 24, medium: 32, large: 48, huge: 80 },
         knockbackResistBp: { small: 0, medium: 0, large: 5000, huge: 5000 },
         areaSecondaryBp: 5000, areaMaxTargets: 4, healLegendaryBp: 5000, legendaryPowerDamageBp: 5000,
         powerZoneClamp: [150, 1850], drawGapBp: 50, levelStepBp: 500, maxLevel: 10,
       });
       expect(c.battle).toMatchObject({ laneLength: 2000, baseDepth: 140, midLane: 1000, windupPct: { melee: 40, ranged: 50, turret: 0 },
-        markDamageBp: 12000, healPulseMs: 500, finalAgeXpCap: 1200, stampedeFallbackP: 200 });
+        markDamageBp: 12000, healPulseMs: 500, finalAgeXpCap: a18 ? 1650 : 1200, stampedeFallbackP: 200 });
     });
   });
 });

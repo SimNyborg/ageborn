@@ -23,7 +23,7 @@ import { t as i18nT } from '@/i18n';
 import { Signal, type ReadonlySignal } from '@preact/signals';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { HudViewBridge, HudViewEvent } from './bridge';
-import type { HudCtx, Translate } from './context';
+import type { EmoteWheel, HudCtx, Translate } from './context';
 import { EdgeBadges } from './Minimap';
 import { MountPopover, type MountPopoverState } from './MountPopover';
 import {
@@ -90,6 +90,8 @@ export interface HudProps {
    * onboarding matches, whose scripted beats own the on-screen text (A8).
    */
   callouts?: boolean;
+  /** The player's equipped emotes and quotes (A18.9.4). Default: the six starter emotes, no quotes. */
+  emoteWheel?: EmoteWheel;
 }
 
 /** Remembers that this player uses the keyboard, so the hint badges show from then on. */
@@ -389,6 +391,7 @@ export function Hud(props: HudProps) {
     view,
     audio,
     compact,
+    ...(props.emoteWheel ? { wheel: props.emoteWheel } : {}),
     readOnly,
     keys: keys && !readOnly,
     hints: props.callouts !== false && !readOnly,

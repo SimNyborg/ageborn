@@ -423,8 +423,8 @@ function SideBox(props: { sim: Sim; side: Side; issue: (c: Command) => void; ref
         <button style={btn} onClick={() => issue({ t: 'buyMount', side })}>
           buy mount
         </button>
-        <button style={btn} onClick={() => issue({ t: 'treasury', side })}>
-          treasury
+        <button style={btn} onClick={() => issue({ t: 'research', side, track: 'economy', rank: 1, pick: 0 })}>
+          research granary
         </button>
         <button style={btn} onClick={() => issue({ t: 'evolve', side })}>
           evolve
@@ -432,7 +432,7 @@ function SideBox(props: { sim: Sim; side: Side; issue: (c: Command) => void; ref
         <button style={btn} onClick={() => issue({ t: 'power', side })}>
           power ({o.me.power})
         </button>
-        <button style={btn} onClick={() => issue({ t: 'stance', side, stance: st.stance === 'charge' ? 'hold' : 'charge' })}>
+        <button style={btn} onClick={() => issue({ t: 'stance', side, mode: st.stance === 'charge' ? 'hold' : 'charge' })}>
           stance → {st.stance === 'charge' ? 'hold' : 'charge'}
         </button>
         <button style={btn} onClick={() => issue({ t: 'lastStand', side })}>

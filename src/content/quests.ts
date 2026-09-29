@@ -40,11 +40,13 @@ export const quests: QuestTables = {
     quest('play_3', 'battles', 3, [amber(100)], { skirmishCounts: true, weight: 1 }),
     quest('train_30', 'unitsTrained', 30, [amber(100)], { skirmishCounts: true, weight: 1 }),
     quest('evolve_6', 'evolves', 6, [amber(100)]),
-    // Reach your format's final age before 2:40 (Short), 4:15 (Standard) or 6:45 (Full) (A17.13)
+    // Reach your format's final age before 2:30 (Short), 5:45 (Standard) or 10:00 (Full): about 15% ahead
+    // of the A18 pace (Balanced mirror: 2:56 / 6:38 / 11:30)
     quest('fast_final_age', 'fastFinalAge', 1, [amber(150)], {
-      beforeMsByFormat: { short: 160000, standard: 255000, full: 405000 },
+      beforeMsByFormat: { short: 150000, standard: 345000, full: 600000 },
     }),
     quest('turret_kills_20', 'turretKills', 20, [amber(150)]),
+    // A18.5.4: a win without any Economy research (the Treasury before)
     quest('win_no_treasury', 'winsWithoutTreasury', 1, [amber(150)]),
     quest('power_hits_5', 'powerMultiHit', 1, [amber(150)], { minHits: 5 }),
     quest('base_damage_15000', 'baseDamage', 15000, [amber(100)]),

@@ -1,10 +1,10 @@
 /**
  * Headless tools entry point (DESIGN B12). Run with tsx:
  *
- *   npx tsx tools/sim-cli.ts balance   [--mode smoke|full] [--matches N] [--mirror N] [--cards a,b]
+ *   npx tsx tools/sim-cli.ts balance   [--mode smoke|full] [--matches N] [--mirror N] [--cards a,b] [--formats short,standard,full]
  *                                      [--tier 5] [--level 7] [--seed 1] [--workers N]
  *                                      [--no-mirror] [--no-scenarios] [--no-gate] [--patch file.json]
- *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,full] [--tier 7] [--workers N] [--no-gate] [--patch file.json]
+ *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,standard] [--tier 7] [--workers N] [--no-a18] [--no-gate] [--patch file.json]
  *   npx tsx tools/sim-cli.ts strength  [--mode smoke|full] [--matches N] [--pairs N] [--tiers 2,4,6,8,10] [--proxies a,b]
  *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--no-gate]
@@ -46,10 +46,11 @@ export const HELP = `Ageborn headless tools (DESIGN B12)
 Commands:
   balance         balance matrix: Balanced mirror, per-card win-rate deltas, scenarios (A2.14)
                   --mode smoke|full --matches N (per card) --mirror N (per format) | --no-mirror
+                  --formats short,standard (mirror formats; Full War only at gates, A18.3.4)
                   --cards a,b --tier 5 --level 7 --seed 1 --bound 6 (CI half-width) --no-scenarios
   exploits        scripted exploit proxies vs the tier VII Balanced bot (A2.14)
-                  --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,full
-                  --tier 7 --level 7 --seed 1
+                  --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,standard
+                  --tier 7 --level 7 --seed 1 --no-a18 (skip the A18.12 duel and difficulty rows)
   strength        AI tiers vs human-like scripted strategies, and adjacent tiers head to head
                   --mode smoke|full --matches N (per cell) --pairs N (per tier pair, 0 = none)
                   --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
@@ -73,8 +74,8 @@ const COMMON_FLAGS = ['out', 'gate', 'workers'];
 
 /** The flags of each command; anything else is a typo and must not silently start a default run. */
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
-  balance: ['mode', 'matches', 'mirror', 'cards', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
-  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'patch'],
+  balance: ['mode', 'matches', 'mirror', 'cards', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
+  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   economy: ['days', 'seed'],
   drops: ['mode', 'openings', 'streams', 'seed'],
@@ -153,7 +154,9 @@ async function matchCommand(a: Args): Promise<number> {
       .filter(([, n]) => n > 0)
       .map(([k, n]) => `${k} ${n}`)
       .join(', ');
-    console.log(`side ${i}: evolves ${s.evolveTicks.map((t) => fmtClock(t / 20)).join(' ') || '-'}; kills ${kills || '-'}; lost ${s.lost}; treasury ${s.treasury}; rejected ${Object.values(s.rejected).reduce((x, y) => x + y, 0)}`);
+    console.log(
+      `side ${i}: evolves ${s.evolveTicks.map((t) => fmtClock(t / 20)).join(' ') || '-'}; kills ${kills || '-'}; lost ${s.lost}; research ${s.research.join(' ') || '-'} (${Math.round(s.researchGold)} of ${Math.round(s.goldEarned)} gold); rejected ${Object.values(s.rejected).reduce((x, y) => x + y, 0)}`,
+    );
   });
   console.log(`${(performance.now() - started).toFixed(0)} ms`);
   const file = str(a, 'replay', '');
@@ -181,6 +184,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         ...d,
         pairsPerCard: Math.max(1, Math.ceil(matches / 2)),
         mirrorMatches: int(a, 'mirror', d.mirrorMatches),
+        mirrorFormats: formatList(list(a, 'formats'), d.mirrorFormats),
         cards: cards.length > 0 ? cards : null,
         tier: int(a, 'tier', d.tier),
         level: int(a, 'level', d.level),
@@ -206,6 +210,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         tier: int(a, 'tier', d.tier),
         level: int(a, 'level', d.level),
         seed: int(a, 'seed', d.seed),
+        a18Rows: bool(a, 'a18', true),
         workers,
         onProgress: progressPrinter('exploits'),
       }, patchedGameContent());

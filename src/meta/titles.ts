@@ -5,6 +5,7 @@
  */
 import type { FormatId, SaveDoc } from '@/contracts';
 import type { Content, TitleUnlock } from '@/content';
+import { formatKind } from './formats';
 import { isOwned } from './tables';
 
 /** Facts of the match that just ended, for the match-based titles. */
@@ -45,7 +46,8 @@ function earned(u: TitleUnlock, s: SaveDoc, t: Content, m: TitleMatchFacts | nul
     case 'winAfterLastStand':
       return !!m && m.win && m.usedLastStand;
     case 'finalAgeBefore':
-      return !!m && m.format === u.format && m.reachedFinalAgeAtMs !== null && m.reachedFinalAgeAtMs < u.ms;
+      // A window counts as its family (A18.3.4: a Full War from Bronze is a Full War).
+      return !!m && formatKind(t, m.format) === u.format && m.reachedFinalAgeAtMs !== null && m.reachedFinalAgeAtMs < u.ms;
     case 'wins':
       return s.stats.wins >= u.count;
     case 'beatGeneral':

@@ -6,7 +6,7 @@
  * Views must never need anything beyond events and read-only state to animate (DESIGN B5: the sim owns timing).
  */
 import type { AbilityDef, StatusKind } from './content';
-import type { Command } from './commands';
+import type { Command, StanceMode } from './commands';
 import type { AgeId, CardId, DmgType, EmoteId, Side, VisualId } from './ids';
 
 /** What dealt the killing blow; decides bounty rules (DESIGN A2.3, A2.4). */
@@ -57,7 +57,12 @@ type EventBody =
   /** Queue conversion on evolve (DESIGN A2.4). */
   | { e: 'queueConverted'; side: Side; from: CardId; to: CardId }
   | { e: 'mountBought'; side: Side; mount: number }
+  /** The base's economy level rose (an Economy research pick completed; A18.5.4 replaced the Treasury). */
   | { e: 'treasuryUp'; side: Side; level: number }
+  /** War Council (A18.5.1): `pick` is the pick id; public to both sides. */
+  | { e: 'researchStarted'; side: Side; pick: string; cost: number; endTick: number }
+  | { e: 'researchDone'; side: Side; pick: string }
+  | { e: 'researchCancelled'; side: Side; pick: string; refund: number }
   /** Ascension start and end (DESIGN A2.4). */
   | { e: 'ascendStart' | 'ageUp'; side: Side; age: AgeId }
   | { e: 'powerReady'; side: Side }
@@ -65,7 +70,8 @@ type EventBody =
   /** `x` and the zone width `zone` are in milli-lu, like every sim position (B3). */
   | { e: 'powerTelegraph'; side: Side; power: CardId; castId: number; x: number; zone: number }
   | { e: 'powerImpact'; side: Side; power: CardId; castId: number; x: number; index: number }
-  | { e: 'stanceChanged'; side: Side; stance: 'charge' | 'hold' }
+  /** Stance or Hold flag change (A18.4.2); `holdP` is the flag's own-side p in lu. */
+  | { e: 'stanceChanged'; side: Side; stance: StanceMode; holdP: number }
   /** Last Stand lifecycle (DESIGN A2.11). */
   | { e: 'lastStandArmed' | 'lastStandCharge' | 'lastStandFire'; side: Side }
   | { e: 'phaseChanged'; phase: 'regulation' | 'overdrive' | 'siege' }
@@ -82,7 +88,8 @@ export type SimEvent = EventBody & { tick: number };
  */
 export interface MatchOutcome {
   winner: Side | null;
-  reason: 'baseDestroyed' | 'bothDestroyed' | 'finalBell' | 'retreat';
+  /** `objective`: a War Path victory rule was met (A18.7.3: held out, or took the marked tower). */
+  reason: 'baseDestroyed' | 'bothDestroyed' | 'finalBell' | 'retreat' | 'objective';
   tick: number;
   baseHpBp: [number, number];
 }

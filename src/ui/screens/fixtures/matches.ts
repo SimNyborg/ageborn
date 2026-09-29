@@ -9,7 +9,8 @@ import { fakeSideConfig } from '@/contracts/fakes/content';
 import type { MatchRequest, PauseInfo, ResultInfo } from '../../router';
 
 function side(label: string, isBot: boolean): SideConfig {
-  return { ...fakeSideConfig({ label, isBot }) };
+  // A18.9.4: an AI's base look (a base flag and decorations; AIs never fly a national flag)
+  return { ...fakeSideConfig({ label, isBot }), look: { baseFlag: 'baseFlag.cogwheel', nationalFlag: null, baseSkins: {}, decorations: ['decoration.iron_brazier', null, 'decoration.shield_rack'] } };
 }
 
 function opponent(o: Partial<OpponentSpec> & Pick<OpponentSpec, 'generalId' | 'displayName' | 'tier' | 'level' | 'format'>): OpponentSpec {

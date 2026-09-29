@@ -8,7 +8,8 @@
  * | Build turret on an empty mount | m_turret · f_pressure · f_spare |
  * | Buy mount (all owned mounts filled) | 0.8 · m_turret · f_pressure · f_spare |
  * | Modernise | 0.8 · m_turret · [turret age < current age] · f_spare |
- * | Treasury | m_econ · [before 3:00] · [no enemy on its own half (A17.13; 600 lu on the old 1,200 lu lane)] · [level < tier max] · f_spare |
+ * | Economy income research (was Treasury, A18.5.4) | m_econ · [before 3:00] · [no enemy on its own half (A17.13; 600 lu on the old 1,200 lu lane)] · [level < tier max] · f_spare |
+ * | Other research (A18.5.8) | a saving goal once the tier's research time has come, then the goal bonus; picked at random (0-I), by `aiHint` (II-IV) or by counter scoring (V+) |
  * | Evolve | 1.2 when XP ≥ threshold and (no enemy ground unit within 300 lu of own gate, or m_greed ≥ 1.3), after the tier's evolve delay |
  * | Power | 1.0 when the best zone's enemy value ≥ tier threshold × m_patience, or own base took damage in the last 3 s and zone value ≥ 100; aim error applied |
  * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; otherwise Charge |
@@ -20,8 +21,24 @@
  * dwell) is itself derived from earlier inputs. Rules the DESIGN leaves open are logged in
  * docs/decisions.md under WP3.
  */
-import type { CardId, RoleGroup } from '@/contracts';
-import { BP, LANE_MLU, MILLI, TICKS_PER_SECOND, chanceBp, clamp, msToTicks, pickWeighted, randRange, type Sfc32State } from '@/core';
+import type { CardId, ResearchPickDef, RoleGroup } from '@/contracts';
+import {
+  BP,
+  LANE_MLU,
+  MILLI,
+  TICKS_PER_SECOND,
+  chanceBp,
+  clamp,
+  msToTicks,
+  nextIncomePick,
+  pickIncomeMilliPerSec,
+  pickWeighted,
+  randInt,
+  randRange,
+  researchCost,
+  startablePicks,
+  type Sfc32State,
+} from '@/core';
 import type { BotAction } from './actions';
 import type { CardBook } from './book';
 import {
@@ -66,6 +83,8 @@ export interface Scored {
  */
 export type SavingGoal =
   | { kind: 'treasury'; amount: number }
+  /** A War Council item the bot is saving for (A18.5.8). */
+  | { kind: 'research'; amount: number; pick: string }
   | { kind: 'legendary'; amount: number; card: CardId }
   | { kind: 'counter'; amount: number; card: CardId };
 
@@ -201,6 +220,21 @@ const PASSIVE_FOE_TICKS = 20 * TICKS_PER_SECOND;
 const PASSIVE_PAYBACK_TICKS = 240 * TICKS_PER_SECOND;
 /** `baseTurrets`: a missing base turret or its mount scores this × f_spare (so it waits for spare gold). */
 const BASE_TURRET_BONUS = 20000;
+/** Research (A18.5.8) scores this once affordable, plus the goal bonus (below a wanted base turret). */
+const RESEARCH_SCORE = 3000;
+/** Research hint weights (bp): the base preference and how much a matching situation adds. */
+const HINT_BASE_BP = 5000;
+const HINT_MATCH_BP = 10000;
+/** A group share of the visible enemy army (bp) from which a hint counts as matching. */
+const HINT_SHARE_BP = 3500;
+/** Deepening an open line (rank II) scores this much more; a third Troops line this much less. */
+const HINT_DEEPEN_BP = 6000;
+const MAX_OPEN_LINES = 2;
+
+/** Research picks the bot could start (the view counts a pending research as in progress). */
+function startableFor(content: CardBook['content'], v: View): ResearchPickDef[] {
+  return startablePicks(content, v.research);
+}
 
 /** A16.3 rule 3 factor for the visible enemy army, bp (10,000 = ×1, capped at ×2). */
 export function monoFactorBp(foes: readonly { value: number; def?: { group: RoleGroup } | undefined }[]): number {
@@ -225,6 +259,10 @@ export class Brain {
   private counterGoal: { card: CardId; amount: number; until: number } | null = null;
   /** When the brain last chose a stance change. */
   private stanceTick = -1000000;
+  /** When the brain last started a research item (A18.5.8 research gap). */
+  private researchTick = -1000000;
+  /** The research pick the bot is saving for. */
+  private researchPlan: string | null = null;
   /** A "float gold" mistake leaves the tray untouched until this tick. */
   private idleUntil = 0;
   /** `waveCommit`: the peak army value of the wave now charging, or null while none is. */
@@ -294,8 +332,11 @@ export class Brain {
     // Saving goals (A7.2: "Bank 350 for a Legendary" or "bank for Treasury"): trains that would dip
     // below the goal wait, and the goal's own action gets a bonus once affordable, so the bot visibly
     // saves and then buys.
+    // The Treasury is the Economy track's income picks now (A18.5.4): Granary, then Market.
     const treasuryMax = Math.max(t.treasuryMax, P.treasuryRushLevel);
-    const nextTreasury = v.treasury < e.treasuryCosts.length ? (e.treasuryCosts[v.treasury] ?? null) : null;
+    const incomePick = nextIncomePick(book.content, v.research);
+    const nextTreasury = incomePick ? researchCost(book.content, incomePick) * MILLI : null;
+    const incomePerSec = incomePick ? Math.max(1, pickIncomeMilliPerSec(incomePick)) : 1;
     const rushing = P.treasuryRushLevel > 0 && v.treasury < P.treasuryRushLevel && v.now < msToTicks(P.treasuryRushByMs);
     const legendaryCard = v.tray.find((s) => s.card.legendary)?.card ?? null;
     const mono = monoFactorBp(v.foes);
@@ -310,15 +351,19 @@ export class Brain {
       // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
       const quietGate = !v.foes.some((u) => u.p <= e.midLane);
       // In a quiet moment a level is only worth it while it still pays back by 6:00.
-      const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / e.treasuryGoldPerSecMilli) <= TREASURY_PAYBACK_BY_TICKS;
-      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS) || (quietGate && this.passiveTreasury(v, mem, nextTreasury)))) {
+      const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / incomePerSec) <= TREASURY_PAYBACK_BY_TICKS;
+      const research = this.researchDue(v) ? this.plannedResearch(v, mem, rng) : null;
+      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS) || (quietGate && this.passiveTreasury(v, mem, nextTreasury, incomePerSec)))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
       } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP && !gateFailed) {
         // A16.3 rule 4: no Legendary saving goal while the push gate fails.
         this.goal = { kind: 'legendary', amount: legendaryCard.cost, card: legendaryCard.id };
+      } else if (research) {
+        // A18.5.8: the War Council item comes after the Treasury (income) and Legendary goals.
+        this.goal = { kind: 'research', amount: researchCost(book.content, research) * MILLI, pick: research.id };
       }
     }
-    const goalBonus = (kind: BotAction['kind']): number => (this.goal?.kind === kind ? GOAL_BONUS : 0);
+    const goalBonus = (kind: SavingGoal['kind']): number => (this.goal?.kind === kind ? GOAL_BONUS : 0);
     // `econPlan`: a Treasury goal is bought before the push-gate wave spends the gold.
     if (t.econPlan && this.goal?.kind === 'treasury' && v.gold < this.goal.amount && !urgent) wave = false;
 
@@ -380,10 +425,16 @@ export class Brain {
       if (mod) add(mod, mulBp(SCORE.modernise, mulBp(W.turret, fSpare(v.gold, mod.cost))) + wantModernise);
     }
 
-    // Treasury.
-    if (nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < TREASURY_BEFORE_TICKS || rushing || this.passiveTreasury(v, mem, nextTreasury))) {
+    // Economy income research (the Treasury before A18.5.4).
+    if (incomePick && nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < TREASURY_BEFORE_TICKS || rushing || this.passiveTreasury(v, mem, nextTreasury, incomePerSec))) {
       const safe = !v.foes.some((u) => u.p <= e.midLane);
-      if (safe) add({ kind: 'treasury', cost: nextTreasury }, mulBp(W.economy, fSpare(v.gold, nextTreasury)) + goalBonus('treasury'));
+      if (safe) add({ kind: 'research', pick: incomePick, cost: nextTreasury }, mulBp(W.economy, fSpare(v.gold, nextTreasury)) + goalBonus('treasury'));
+    }
+    // Other War Council research (A18.5.8): the goal's pick once affordable.
+    const g = this.goal;
+    if (g?.kind === 'research' && v.gold >= g.amount && v.research.current === null) {
+      const pick = book.content.research.picks.find((q) => q.id === g.pick);
+      if (pick) add({ kind: 'research', pick, cost: g.amount }, RESEARCH_SCORE + GOAL_BONUS);
     }
 
     // Evolve.
@@ -518,6 +569,10 @@ export class Brain {
       if (i >= 0) action = (ts[i] as Scored).action;
     }
     if (action.kind === 'stance') this.stanceTick = v.now;
+    if (action.kind === 'research') {
+      this.researchTick = v.now;
+      this.researchPlan = null;
+    }
     trace.action = action;
     trace.reason = 'best';
     return trace;
@@ -527,10 +582,99 @@ export class Brain {
    * `econPlan`: against a passive foe (no enemy ground unit on the bot's half for 20 s) a Treasury level
    * is worth it in regulation after 3:00 too, while it pays back within 4:00.
    */
-  private passiveTreasury(v: View, mem: BotMemory, cost: number): boolean {
-    const { book, tier: t } = this.cfg;
+  private passiveTreasury(v: View, mem: BotMemory, cost: number, incomePerSec: number): boolean {
+    const t = this.cfg.tier;
     if (!t.econPlan || v.phase !== 'regulation' || v.now - mem.foeOnMyHalfTick < PASSIVE_FOE_TICKS) return false;
-    return Math.trunc((cost * TICKS_PER_SECOND) / book.econ.treasuryGoldPerSecMilli) <= PASSIVE_PAYBACK_TICKS;
+    return Math.trunc((cost * TICKS_PER_SECOND) / incomePerSec) <= PASSIVE_PAYBACK_TICKS;
+  }
+
+  /** The research the bot is saving for: kept until bought or no longer startable, then chosen afresh. */
+  private plannedResearch(v: View, mem: BotMemory, rng: Sfc32State): ResearchPickDef | null {
+    const open = startableFor(this.cfg.book.content, v);
+    const kept = this.researchPlan ? open.find((p) => p.id === this.researchPlan) : undefined;
+    if (kept) return kept;
+    const pick = this.chooseResearch(v, mem, rng);
+    this.researchPlan = pick ? pick.id : null;
+    return pick;
+  }
+
+  /** The tier's research time has come (A18.5.8: first research, then at most one start per gap). */
+  private researchDue(v: View): boolean {
+    const t = this.cfg.tier;
+    if (v.research.current !== null || v.phase === 'siege') return false;
+    return v.now >= t.researchFromTicks && v.now - this.researchTick >= t.researchGapTicks;
+  }
+
+  /**
+   * The research pick the bot wants now (A18.5.8), or null. Troops lines only for classes in the tray
+   * (research compatibility, A18.5.2); the income picks are the Treasury logic's. Tiers 0-I pick at
+   * random, II-IV by `aiHint` with a fixed preference, V and up read the visible enemy army.
+   */
+  private chooseResearch(v: View, mem: BotMemory, rng: Sfc32State): ResearchPickDef | null {
+    const { book, tier: t, persona: P } = this.cfg;
+    const content = book.content;
+    const classes = new Set<string>();
+    for (const s of v.tray) {
+      const role = content.units[s.card.id]?.role;
+      if (role) classes.add(content.research.classOfRole[role]);
+    }
+    const picks = startableFor(content, v).filter(
+      (p) => (p.group === null || classes.has(p.group)) && !(p.track === 'economy' && pickIncomeMilliPerSec(p) > 0) && P.researchBiasBp[p.id] !== -BP,
+    );
+    if (picks.length === 0) return null;
+    if (t.researchMode === 'random') return picks[randInt(rng, picks.length)] ?? null;
+    // Situation: shares of the visible enemy army by role group, pressure, and how busy the lane is.
+    let total = 0;
+    const share = new Map<RoleGroup, number>();
+    const foes = t.researchMode === 'counter' ? v.foes : [];
+    for (const u of foes) {
+      if (!u.def) continue;
+      total += u.value;
+      share.set(u.def.group, (share.get(u.def.group) ?? 0) + u.value);
+    }
+    const bp = (g: RoleGroup): number => (total > 0 ? Math.trunc(((share.get(g) ?? 0) * BP) / total) : 0);
+    const pressure = fPressure(foeValueIn(v, 0, PRESSURE_RADIUS));
+    const busy = v.mine.length + v.foes.length >= 12;
+    const matches = (p: ResearchPickDef): boolean => {
+      switch (p.aiHint) {
+        case 'vsSwarm':
+          return bp('infantry') >= HINT_SHARE_BP;
+        case 'vsHeavy':
+          return bp('heavy') + bp('epic') >= HINT_SHARE_BP;
+        case 'vsRanged':
+          return bp('ranged') >= HINT_SHARE_BP;
+        case 'defend':
+          return pressure >= DEFENCE_PRESSURE_BP;
+        case 'push':
+          return v.myArmy > v.foeArmy;
+        case 'busy':
+          return busy;
+        case 'quiet':
+          return !busy && mem.foeOnMyHalfTick < v.now - PASSIVE_FOE_TICKS;
+        case 'power':
+          return v.power !== undefined;
+        case 'opener':
+          return true;
+      }
+    };
+    // A18.5.2 budget: a player specialises in 2-3 classes, so once two Troops lines are open the bot
+    // deepens them (rank II) instead of opening a third.
+    const owned = new Set(v.research.owned);
+    const openLines = new Set(content.research.picks.filter((q) => q.group !== null && owned.has(q.id)).map((q) => q.group));
+    let best: ResearchPickDef | null = null;
+    let bestScore = -1;
+    for (const p of picks) {
+      let score = HINT_BASE_BP + (P.researchBiasBp[p.id] ?? 0) + (P.researchBiasBp[p.track] ?? 0) + (p.group ? (P.researchBiasBp[`troops.${p.group}`] ?? 0) : 0);
+      if (t.researchMode === 'counter' && matches(p)) score += HINT_MATCH_BP;
+      if (p.rank > 1) score += HINT_DEEPEN_BP;
+      else if (p.group !== null && !openLines.has(p.group) && openLines.size >= MAX_OPEN_LINES) score -= HINT_DEEPEN_BP;
+      score += randInt(rng, 1000);
+      if (score > bestScore) {
+        best = p;
+        bestScore = score;
+      }
+    }
+    return best;
   }
 
   /** Train candidates with their A7.2 scores, plus the alternatives two mistakes would pick. */
@@ -570,7 +714,8 @@ export class Brain {
         if (v.gold >= c.cost) bestAffordable = Math.max(bestAffordable, fc);
       }
       if (v.gold < c.cost || v.queue.length >= e.queueMax) continue;
-      const saving = this.goal !== null && !(this.goal.kind !== 'treasury' && this.goal.card === c.id) && v.gold - c.cost < this.goal.amount;
+      const goal = this.goal;
+      const saving = goal !== null && !((goal.kind === 'legendary' || goal.kind === 'counter') && goal.card === c.id) && v.gold - c.cost < goal.amount;
       let base =
         mulBp(TRAIN.counter, mulBp(mulBp(fc, P.counterWeightBp), mono)) +
         mulBp(TRAIN.push, mulBp(W.aggr, push)) +

@@ -19,6 +19,7 @@ import type {
   FormatDef,
   FormatId,
   PowerDef,
+  ResearchRules,
   TurretDef,
   UnitDef,
 } from '@/contracts';
@@ -34,7 +35,33 @@ export interface RawContentLike {
   formats: Readonly<Record<FormatId, FormatDef>>;
   /** Raw-only battle numbers (`RawBattleRules`): the heal pulse (A2.7: 0.5 s) and the {@link BattleRulesLike} fields. */
   battle?: Partial<BattleRulesLike> & { healPulseMs?: number };
+  /** The War Council (A18.5); absent in raw copies that predate it (no picks). */
+  research?: ResearchRules;
 }
+
+/** No War Council: every `research` command is rejected (content that predates A18). */
+const NO_RESEARCH: ResearchRules = {
+  picks: [],
+  cost: { troops: [], defences: [], economy: [], command: [] },
+  timeMs: [],
+  cancelRefundBp: 0,
+  underdog: { discountBp: 0, baseGapBp: 0 },
+  unlockAt: {},
+  classOfRole: {
+    infantry: 'infantry',
+    skirmisher: 'infantry',
+    ranged: 'ranged',
+    artillery: 'ranged',
+    airBomber: 'ranged',
+    airGunship: 'ranged',
+    heavy: 'heavy',
+    siege: 'heavy',
+    siegeHeavy: 'heavy',
+    antiArmor: 'antiArmor',
+    antiMech: 'antiArmor',
+    support: 'support',
+  },
+};
 
 export function compileForSim(raw: RawContentLike): CompiledContent {
   const units: Record<CardId, UnitDef> = {};
@@ -66,6 +93,7 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
       ageScale: raw.ageScale,
       formats: raw.formats,
       battle: raw.battle ?? null,
+      research: raw.research ?? null,
     }),
     ages,
     formats: { ...raw.formats },
@@ -74,6 +102,7 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
     turrets,
     powers,
     skins: {},
+    research: raw.research ?? NO_RESEARCH,
     rarities: null,
     capsules: null,
     arenas: null,

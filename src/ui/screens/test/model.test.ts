@@ -126,9 +126,9 @@ describe('War Plan edits (A3)', () => {
     expect(loadoutAvgLevel(s, content, base)).toBeCloseTo((7 + 6 + 6 + 5) / 4, 5);
     const plan = s.warPlans[0]!;
     expect(nextFormat(s, content)).toBe('full');
-    const avg = planAvgLevel(s, content, plan, content.formats.full.ages)!;
+    const avg = planAvgLevel(s, content, plan, content.formats.full!.ages)!;
     expect(avg).toBeGreaterThan(1);
-    expect(planAvgLevel(maxedSave(content), content, maxedSave(content).warPlans[0]!, content.formats.full.ages)).toBe(10);
+    expect(planAvgLevel(maxedSave(content), content, maxedSave(content).warPlans[0]!, content.formats.full!.ages)).toBe(10);
   });
 });
 
@@ -303,8 +303,9 @@ describe('misc', () => {
     // The new player has Spear Hunter, Phalangite, Pikeman and Grenadier; Harpoon Gunner and Bazooka Trooper
     // arrive at Arena 2, Rail Gunner and Graviton Halberdier at Arena 3 (A17.13).
     expect(agesAwaitingAntiArmor(n, content, 'short')).toEqual([]);
-    expect(agesAwaitingAntiArmor(n, content, 'standard')).toEqual(['industrial', 'modern']);
-    expect(agesAwaitingAntiArmor(n, content, 'full')).toEqual(['industrial', 'modern', 'future', 'cosmic']);
+    // A18.3.4: Standard War is Stone to Industrial, Full War Stone to Future
+    expect(agesAwaitingAntiArmor(n, content, 'standard')).toEqual(['industrial']);
+    expect(agesAwaitingAntiArmor(n, content, 'full')).toEqual(['industrial', 'modern', 'future']);
     const early = { ...n, collection: { ...n.collection } };
     delete early.collection['pikeman'];
     expect(agesAwaitingAntiArmor(early, content, 'short')).toEqual(['medieval']);

@@ -11,6 +11,7 @@ import type {
   DmgType,
   EffectId,
   FormatId,
+  FormatKind,
   MusicCueId,
   Rarity,
   RoleGroup,
@@ -219,15 +220,20 @@ export interface AgeDef {
   musicCue: MusicCueId;
 }
 
-/** A match format (DESIGN A2.10). Null timers mean "none" (Tutorial). */
+/**
+ * A match format: a window of consecutive ages with its clocks (DESIGN A2.10, A18.3.4). Null timers
+ * mean "none" (Tutorial). `xpToNextOverride` holds the thresholds by position in the window (A18.3.2).
+ */
 export interface FormatDef {
   id: FormatId;
+  /** The family (rewards, labels): tutorial, short (3 ages), standard (5), full (7) or a shorter window. */
+  kind?: FormatKind;
   ages: AgeId[];
   overdriveMs: number | null;
   siegeMs: number | null;
   finalBellMs: number | null;
   retreatAfterMs: number | null;
-  /** Tutorial thresholds 250 / 300 / 350 / 400 (DESIGN A2.10). */
+  /** XP to leave each position of the window (A18.3.2: 700, 1,250, 1,350, ...; tutorial 610 / 580 / 390 / 900). */
   xpToNextOverride?: number[];
 }
 
@@ -239,8 +245,6 @@ export interface EconomyRules {
   startGold: number;
   passiveGoldPerSec: number;
   passiveXpPerSec: number;
-  treasuryCosts: number[];
-  treasuryMilliGoldPerSecPerLevel: number;
   mountCosts: number[];
   bountyGoldBp: number;
   bountyXpBp: number;
@@ -255,7 +259,10 @@ export interface EconomyRules {
   queueMax: number;
   legendaryLimit: number;
   sellRefundBp: number;
+  /** Range cap on a turret card, lu from the own gate (A2.8: 480). */
   turretRangeCap: number;
+  /** Hard cap on turret range with research, relics and modifiers, lu from the own gate (A18.2: 560). */
+  turretRangeHardCapLu: number;
   turretBuildMs: number;
   turretSellMs: number;
   ascendMs: number;
@@ -300,8 +307,22 @@ export interface EconomyRules {
   retargetMs: number;
   retargetCloserLu: number;
   rangedSelfDefenseLu: number;
+  /**
+   * Engagement freshness (A18.4.2): a unit is fresh after this long with no target in range; a fresh
+   * unit's next hit is the first hit of an engagement (4,000 from A18; 2,000 before, "without attacking").
+   */
   firstHitIdleMs: number;
+  /** A stance change is accepted at most once per this long (A18.4.2: 3,000). */
   stanceCooldownMs: number;
+  /** The Hold flag (A18.4.2): default p, allowed range [min, max] in lu, snap step, flag move cooldown. */
+  holdFlag: { minP: number; maxP: number; snapLu: number; moveCooldownMs: number };
+  /** Fall back (A18.4.2): units with no target walk back to this p (lu) and hold there. */
+  fallbackP: number;
+  /**
+   * Hard stacking caps (A18.2 rule 4), all sources summed in bp: damage dealt, damage taken (a floor:
+   * no unit takes less than 100% − `takenBp` of a hit), max HP, attack speed, move speed, unit range (lu).
+   */
+  statCaps: { damageBp: number; takenBp: number; hpBp: number; attackSpeedBp: number; speedBp: number; rangeLu: number };
   sizes: Record<'small' | 'medium' | 'large' | 'huge', number>;
   knockbackResistBp: Record<'small' | 'medium' | 'large' | 'huge', number>;
   areaSecondaryBp: number;
@@ -313,6 +334,99 @@ export interface EconomyRules {
   drawGapBp: number;
   levelStepBp: number;
   maxLevel: number;
+}
+
+/** The four War Council tracks (DESIGN A18.5). */
+export type ResearchTrack = 'troops' | 'defences' | 'economy' | 'command';
+
+/**
+ * A Troops research line (DESIGN A18.5.2): bought per class; Epics and Legendaries count in their base
+ * role's class (`ResearchRules.classOfRole`). Air and Underground lines join with their classes (A18.9).
+ */
+export type ResearchClass = 'infantry' | 'ranged' | 'heavy' | 'antiArmor' | 'support';
+
+/**
+ * What a research pick does (DESIGN A18.5.2-A18.5.5). Unit effects apply to own units of the pick's
+ * class spawned after it completes, never to units already on the lane (A18.2 rule 2); turret, economy
+ * and command effects apply at once. All sums are clamped to `economy.statCaps` (A18.2 rule 4).
+ */
+export type ResearchEffect =
+  /** A unit stat in bp: damage dealt, max HP, move speed, attack speed, or heals and shields given. */
+  | { kind: 'unitStat'; stat: 'damage' | 'hp' | 'speed' | 'attackSpeed' | 'heal'; bp: number }
+  /** Unit attack range (ranged attacks only), lu. */
+  | { kind: 'unitRange'; lu: number }
+  /** Extra damage against targets with any of these tags (Hunters: armored). */
+  | { kind: 'damageVs'; tags: Tag[]; bp: number }
+  /** Mail: each hit taken −N flat, N = `ofInfantryDamageBp` of the unit's age's Infantry Common L1 damage; a hit never drops below 1. */
+  | { kind: 'mail'; ofInfantryDamageBp: number }
+  /** Less damage taken from attacks with range ≥ `minSourceRange` lu (Shield Wall, as the `resist` ability). */
+  | { kind: 'resist'; minSourceRange: number; bp: number }
+  /** Less damage taken from units of a class (Plating, Skirmish: Infantry). */
+  | { kind: 'takenFrom'; from: ResearchClass; bp: number }
+  /** First hit of each engagement (A18.4.2 freshness): +bp damage and knockback (lu); `whileHolding` only in Hold. */
+  | { kind: 'firstHit'; bp: number; knockback: number; whileHolding?: boolean }
+  /** An aura on allies within `radius` lu (never stacking with itself): attack speed or less damage taken; `behindOnly` = allies behind the source. */
+  | { kind: 'aura'; radius: number; stat: 'attackSpeed' | 'guard'; bp: number; behindOnly?: boolean }
+  /** Own turrets, at once: range (lu, hard cap `turretRangeHardCapLu`), attack speed or damage (bp). */
+  | { kind: 'turret'; stat: 'range' | 'attackSpeed' | 'damage'; value: number }
+  /** Modernise price × `priceBp` and build time `buildMs` (Engineers). */
+  | { kind: 'modernise'; priceBp: number; buildMs: number }
+  /** Economy income, milli-gold per second; never doubled by Overdrive (A18.5.4). */
+  | { kind: 'income'; milliGoldPerSec: number }
+  /** Kill bounty: `addBp` to the bounty rate, or ×(1 + `bonusBp`) for kills made in your own half (p ≤ L / 2). */
+  | { kind: 'bounty'; addBp: number; bonusBp: number; ownHalfOnly: boolean }
+  /** Age Power charge rate +bp (Signal Fires). */
+  | { kind: 'powerCharge'; bp: number }
+  /**
+   * War Horns: while Charging, own ground units +`chargeSpeedBp` speed; while Holding with the flag at
+   * p ≤ `flagMaxP`, own units within `nearLu` of the flag deal +`holdDamageBp` damage.
+   */
+  | { kind: 'warHorns'; chargeSpeedBp: number; holdDamageBp: number; flagMaxP: number; nearLu: number };
+
+/** How the AI reads a pick (A18.5.8 tiers II-IV pick by hint; higher tiers score counters). */
+export type ResearchAiHint = 'opener' | 'vsSwarm' | 'vsHeavy' | 'vsRanged' | 'defend' | 'push' | 'busy' | 'quiet' | 'power';
+
+/** One research pick: 1 of 2 at a rank of a track (and class line for Troops) (DESIGN A18.5). */
+export interface ResearchPickDef {
+  /** Stable id, e.g. `economy.granary`, `troops.infantry.mail`. */
+  id: string;
+  track: ResearchTrack;
+  /** The class line for Troops; null for the other tracks. */
+  group: ResearchClass | null;
+  rank: 1 | 2 | 3;
+  /** 0 = pick A, 1 = pick B; the two picks of a rank exclude each other. */
+  pick: 0 | 1;
+  effects: ResearchEffect[];
+  aiHint: ResearchAiHint;
+  /**
+   * Badge art (A18.5.7; per-age looks later through the manifest). Optional until WP4 draws the
+   * Council badges (docs/requests/wp4-council-badges.md): Troops picks use their class icon, the
+   * others have none yet and the HUD shows the track's own mark.
+   */
+  visualId?: VisualId;
+  nameKey: string;
+  descKey: string;
+}
+
+/** The War Council tables (DESIGN A18.5.1): picks, prices, times and the rules around them. */
+export interface ResearchRules {
+  picks: ResearchPickDef[];
+  /** Gold per rank (index 0 = rank I) per track. */
+  cost: Record<ResearchTrack, number[]>;
+  /** Research time per rank, ms (10 / 14 / 18 s). */
+  timeMs: number[];
+  /** Cancel refunds this share of the price paid (75%). */
+  cancelRefundBp: number;
+  /** −20% for a side behind in age position or 20+ points of base HP when it starts research. */
+  underdog: { discountBp: number; baseGapBp: number };
+  /**
+   * Window position (0-based) at which each rank unlocks, by window length (key: length as a string);
+   * a missing rank never unlocks in that window (A18.5.1 table). Lengths without a row use the longest
+   * row not longer than them.
+   */
+  unlockAt: Record<string, number[]>;
+  /** The Troops class of each card role (Epics and Legendaries count in their base role's class). */
+  classOfRole: Record<Role, ResearchClass>;
 }
 
 /** A skin (DESIGN A5.8). Target is a card or a base (`base.<age>`); visual lives in the manifest (B5). */
@@ -356,6 +470,8 @@ export interface CompiledContent {
   turrets: Record<CardId, TurretDef>;
   powers: Record<CardId, PowerDef>;
   skins: Record<SkinId, SkinDef>;
+  /** The War Council (DESIGN A18.5). */
+  research: ResearchRules;
   rarities: unknown;
   capsules: unknown;
   arenas: unknown;

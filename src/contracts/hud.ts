@@ -2,6 +2,8 @@
  * Battle HUD model (DESIGN B15 `hud.ts`, A9.2, B6). Built by `render/hudModel.ts` (WP5) at 15 Hz and
  * rendered by the Preact DOM overlay in `ui/hud` (DESIGN B6 HUD).
  */
+import type { StanceMode } from './commands';
+import type { ResearchTrack } from './content';
 import type { CardId, Foil } from './ids';
 import type { SideState, SimState, TurretState } from './sim';
 
@@ -25,7 +27,13 @@ export interface HudModel {
   me: {
     gold: number;
     goldPerSec: number;
+    /**
+     * Price of the next Economy income research (Granary, then Market), or null when none can start now.
+     * Until the War Council sheet ships (A18.5.7), the gold counter's tap buys it.
+     */
     nextTreasuryCost: number | null;
+    /** The Economy income research the gold-counter tap starts (A18.5.4), or null/absent when none can start. */
+    nextIncome?: { track: ResearchTrack; rank: 1 | 2 | 3; pick: 0 | 1 } | null;
     baseHpBp: number;
     ageIndex: number;
     xpBp: number;
@@ -34,7 +42,7 @@ export interface HudModel {
     ascending: boolean;
     pop: number;
     popCap: number;
-    stance: 'charge' | 'hold';
+    stance: StanceMode;
     stanceVisible: boolean;
     powerPpm: number;
     power: CardId;

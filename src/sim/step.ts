@@ -4,6 +4,7 @@
 import type { SimEvent, TimedCommand } from '@/contracts';
 import { applyCommands, applyScript } from './commands';
 import { hashState } from './hashState';
+import { researchSystem } from './research';
 import { buildSpatial } from './spatial';
 import type { Ctx } from './state';
 import { abilitySystem } from './systems/abilities';
@@ -39,8 +40,9 @@ export function stepTick(ctx: Ctx, cmds: readonly TimedCommand[]): SimEvent[] {
   applyScript(ctx);
   clockSystem(ctx); //                        2. clock and phase, Siege decay
   economySystem(ctx); //                      3. passive gold and XP, XP cap, Overcharge, power charge
-  ascendSystem(ctx); //                       4. Ascension (queue conversion, Vanguard), turret timers
-  turretTimerSystem(ctx);
+  ascendSystem(ctx); //                       4. Ascension (queue conversion, Vanguard), turret timers,
+  turretTimerSystem(ctx); //                     War Council research completion (A18.5.1)
+  researchSystem(ctx);
   trainingSystem(ctx); //                     5. training and spawns
   statusSystem(ctx); //                       6. statuses, regen, innate shields, auras
   buildSpatial(ctx); //                          (index for the range queries of steps 7-9)

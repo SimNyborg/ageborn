@@ -5,8 +5,8 @@
  *
  * `?art=placeholder|procedural|atlas` forces a tier for comparison (`artOverrideFromUrl`).
  */
-import type { ArtProvider, BackdropView, BaseView, EffectView, TurretView, UnitView, VisualDef } from '@/contracts/art';
-import type { AgeId, CardId, EffectId, Foil, Side, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
+import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView, TurretView, UnitView, VisualDef } from '@/contracts/art';
+import type { AgeId, CardId, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets } from './adapters/atlas';
 import type { BakeStats } from './bake';
@@ -15,6 +15,8 @@ import { ProceduralAdapter } from './adapters/procedural';
 import { SpineAdapter } from './adapters/spine';
 import type { ViewKind, VisualAdapter, VisualKind } from './adapters/types';
 import { AGES } from './ages';
+import { BaseDressing } from './cosmetics/dressing';
+import { teamColor } from './palette';
 import { arenaId } from './backdrops/ground';
 import { puppetById } from './library';
 import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from './manifest';
@@ -221,6 +223,11 @@ export class VisualsArtProvider implements ArtProvider {
       return fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin, resolveAge: procAge });
     }
     return this.adapterFor(key, r?.def, 'base').createBase({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin, resolveAge });
+  }
+
+  /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */
+  createBaseDressing(o: { age: AgeId; side: Side; look: SideLook; teamPreset: TeamPreset; base?: BaseView }): BaseDressingView {
+    return new BaseDressing({ ...o, team: teamColor(o.side, o.teamPreset), seed: this.nextSeed++ });
   }
 
   createBackdrop(o: { left: AgeId; right: AgeId; arena: string }): BackdropView {

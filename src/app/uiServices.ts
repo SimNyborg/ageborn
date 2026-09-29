@@ -12,6 +12,7 @@ import type { AgeId, CardId, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/
 import type { MetaRules } from '@/meta';
 import { IMPORT_MESSAGE_KEYS, markExported, saveFileFor, type SaveFile } from '@/save';
 import type { ActionResult, MatchRequest, Router, UiServices, WarPlan } from '@/ui/screens';
+import { opponentLook } from './matchSetup';
 import type { Services } from './services';
 
 /** What the app does for the flows the screens start. */
@@ -125,8 +126,10 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     // ---- match flow --------------------------------------------------------------------------
     prepareMatch(req) {
       const s = ticked();
-      if (req.mode === 'tutorial') return meta.pickOpponent(s, 'tutorial', content, clock, {});
-      return meta.pickOpponent(s, req.mode, content, clock, opponentOptions(req));
+      const o = req.mode === 'tutorial' ? meta.pickOpponent(s, 'tutorial', content, clock, {}) : meta.pickOpponent(s, req.mode, content, clock, opponentOptions(req));
+      // A18.9.4: the AI's base look, fixed here so the VS screen and the battle show the same one
+      const look = o.side.look ?? opponentLook(content, o.generalId);
+      return look ? { ...o, side: { ...o.side, look } } : o;
     },
     beginBattle(req, opponent) {
       flow.begin(req, opponent);
@@ -197,6 +200,12 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     },
     equipSkin(target, skin) {
       apply(meta.equipSkin(d.save.peek(), target, skin, content));
+    },
+    equipCosmetic(e) {
+      return apply(meta.equipCosmetic(d.save.peek(), e, content));
+    },
+    craftCosmetic(key) {
+      return apply(meta.craftCosmetic(d.save.peek(), key, content), true);
     },
 
     // ---- progression -------------------------------------------------------------------------

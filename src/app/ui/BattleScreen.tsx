@@ -8,6 +8,7 @@
 import { useRef } from 'preact/hooks';
 import { Hud } from '@/ui/hud';
 import type { BattleHandle } from '../battle';
+import { emoteWheelOf } from '../cosmetics';
 import { useApp } from './context';
 import { TutorialBubble } from './TutorialBubble';
 
@@ -26,7 +27,9 @@ export function BattleScreen(p: {
   const status = s.status.value;
   const hud = s.hud.value;
   const view = ui.viewOf(s.sim);
-  const settings = ui.controller.save.value?.settings;
+  const save = ui.controller.save.value;
+  const settings = save?.settings;
+  const wheel = emoteWheelOf(save, ui.services.content);
   const countdown = b.countdown.value;
   const prompt = b.prompt.value;
   const togglePause = (): void => {
@@ -51,6 +54,7 @@ export function BattleScreen(p: {
         teamPreset={settings?.teamPreset ?? 'default'}
         scouted={b.setup.matchNumber >= SCOUTED_FROM_MATCH}
         callouts={b.setup.mode !== 'tutorial' && b.setup.script === null}
+        {...(wheel ? { emoteWheel: wheel } : {})}
         t={ui.t}
       />
       {countdown >= 0 ? (
