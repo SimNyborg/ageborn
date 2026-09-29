@@ -1558,12 +1558,29 @@ export class BattleView {
       case 'backdropWipe':
         this.backdrop.wipe(a.side, a.age, a.ms);
         return;
-      case 'telegraph':
+      case 'telegraph': {
         this.trackZone(a);
-        this.zones.telegraph(a.x, a.zone, teamColor(this.settings.teamPreset, a.side), a.ms);
+        const color = teamColor(this.settings.teamPreset, a.side);
+        this.zones.telegraph(a.x, a.zone, color, a.ms);
+        const kind = this.config.content.powers[a.power]?.effect.kind;
+        // A strike's lock ring on its target, Suppress's jam marks on every enemy mount (A2.9.10).
+        if (kind === 'strike' && a.targetId !== undefined) {
+          const id = a.targetId;
+          this.zones.lockTelegraph(() => this.targetAt(id)[0] ?? null, color, a.ms);
+        }
+        if (kind === 'suppress') {
+          const foe: Side = a.side === 0 ? 1 : 0;
+          for (const pt of this.mountPoints(foe)) this.zones.jam(pt.x, pt.y, color, a.ms, false);
+        }
         // The art's decoration sizes itself by `zone` and loops for `durationMs` (WP4 recipe options).
         if (a.zone > 0) this.particles.emit('fx.telegraph_zone', 1, 3, { x: a.x, y: 0 }, { opts: { zone: a.zone, side: a.side, durationMs: a.ms } });
         return;
+      }
+      case 'jam': {
+        const pt = this.mountPoints(a.side)[a.mount];
+        if (pt && a.ms > 0) this.zones.jam(pt.x, pt.y, teamColor(this.settings.teamPreset, a.side === 0 ? 1 : 0), a.ms, true);
+        return;
+      }
       case 'phase':
         if (a.phase === 'overdrive') this.addScreenFx('fx.overdrive_frame');
         if (a.phase === 'siege') this.addScreenFx('fx.siege_vignette');

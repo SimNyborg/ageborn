@@ -179,7 +179,9 @@ export type ViewAction =
   /** A new turret slot is built on the base. */
   | { a: 'baseMount'; side: Side; mount: number }
   | { a: 'backdropWipe'; side: Side; age: AgeId; ms: number }
-  | { a: 'telegraph'; side: Side; castId: number; power: CardId; x: number; zone: number; ms: number }
+  | { a: 'telegraph'; side: Side; castId: number; power: CardId; x: number; zone: number; ms: number; targetId?: number }
+  /** Suppress (A2.9.7): a mount of `side` is silenced for `ms` (its jam mark shows). */
+  | { a: 'jam'; side: Side; mount: number; ms: number }
   | { a: 'phase'; phase: 'regulation' | 'overdrive' | 'siege' }
   | { a: 'view'; ev: ViewEvent };
 

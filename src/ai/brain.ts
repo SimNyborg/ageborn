@@ -212,7 +212,7 @@ const BAIT_COOLDOWN_TICKS = 30 * TICKS_PER_SECOND;
 /** A bait train outranks every other candidate but Last Stand. */
 const BAIT_TRAIN_SCORE = 16000;
 /** TEMP experiment switches (removed before hand-off). */
-export const POWER_TUNE = { ring: true, reserve: true, bait: true, hotHomeBarBp: 0, hotFieldBarBp: 0, roiScaleBp: 10000, noHome: false, noField: false, discipline: true, barOverride: 0, bars: {} as Record<string, number> };
+export const POWER_TUNE = { ring: true, reserve: true, bait: true, hotHomeBarBp: 0, hotFieldBarBp: 0, roiScaleBp: 10000, noHome: false, noField: false, discipline: true, barOverride: 0, bars: {} as Record<string, number>, baitBank: false };
 /** X: any zone value when the own base is below 25%. */
 const LOW_BASE_BP = 2500;
 /** Tempest casts into the burst right after the foe evolves. */
@@ -441,6 +441,12 @@ export class Brain {
     } else if (baitOn && v.now >= this.baitCooldownUntil && foeHomeReady && (pushOk || wave) && v.gold >= BAIT_BANK && !foeOnMyHalf && !urgent && !siege && !allIn) {
       this.bait = { start: v.now, spent: 0 };
     }
+    // TEMP experiment: bank up to the bait's 500 while the enemy Home area power is ready.
+    let baitHold = false;
+    if (POWER_TUNE.baitBank && baitOn && !this.bait && foeHomeReady && (pushOk || wave) && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
+      wave = false;
+      baitHold = true;
+    }
     const baiting = this.bait !== null;
 
     // Saving goals (A7.2: "Bank 350 for a Legendary" or "bank for Treasury"): trains that would dip
@@ -505,7 +511,7 @@ export class Brain {
     const floatTarget = Math.trunc((t.goldFloat * MILLI * BP) / mono) + reserve;
     if (v.gold >= Math.max(floatTarget, this.goal?.amount ?? 0) || wave) this.spending = true;
     else if (v.gold < cheapest) this.spending = false;
-    const mayTrain = !banking && !baiting && v.now >= this.idleUntil && (this.spending || urgent || allIn);
+    const mayTrain = !banking && !baiting && !baitHold && v.now >= this.idleUntil && (this.spending || urgent || allIn);
 
     const cand: Scored[] = [];
     const add = (action: BotAction, score: number): void => {

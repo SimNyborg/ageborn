@@ -175,6 +175,10 @@ export class ZoneOverlay {
   private bandText: Text | null = null;
   private invalidText: Text | null = null;
   private zones: Zone[] = [];
+  /** Strike telegraphs: a lock ring that follows its target (game ms left). */
+  private locks: { at: () => GhostTarget | null; color: number; leftMs: number; totalMs: number }[] = [];
+  /** Suppress: jam marks over mounts, during the telegraph (`silenced` false) and the silence. */
+  private jams: { x: number; y: number; color: number; leftMs: number; totalMs: number; silenced: boolean }[] = [];
   private ghost: Ghost | null = null;
   private targets: GhostTarget[] = [];
   private pips: GhostPip[] = [];
@@ -253,6 +257,17 @@ export class ZoneOverlay {
     this.zones.push({ x, width, color, leftMs: ms, totalMs: ms, preview: false });
   }
 
+  /** A strike's telegraph (A2.9.10): a lock ring on its target for `ms`; `at` finds the unit each frame. */
+  lockTelegraph(at: () => GhostTarget | null, color: number, ms: number): void {
+    this.locks.push({ at, color, leftMs: ms, totalMs: ms });
+  }
+
+  /** A jam mark over a mount (Suppress): pulsing while telegraphed, steady sparks while silenced. */
+  jam(x: number, y: number, color: number, ms: number, silenced: boolean): void {
+    this.jams = this.jams.filter((j) => !(Math.abs(j.x - x) < 1 && Math.abs(j.y - y) < 1 && j.silenced === silenced));
+    this.jams.push({ x, y, color, leftMs: ms, totalMs: ms, silenced });
+  }
+
   /**
    * Shows the drag ghost of the power's area centred on world x. `valid` false tints it as a cancel
    * (the pointer is over the HUD). The ghost pops in when it first appears.
@@ -323,6 +338,10 @@ export class ZoneOverlay {
     this.rt += realMs;
     for (const z of this.zones) z.leftMs -= dtMs;
     this.zones = this.zones.filter((z) => z.leftMs > 0);
+    for (const l of this.locks) l.leftMs -= dtMs;
+    this.locks = this.locks.filter((l) => l.leftMs > 0);
+    for (const j of this.jams) j.leftMs -= dtMs;
+    this.jams = this.jams.filter((j) => j.leftMs > 0);
     if (this.ghost) {
       this.ghost.ageMs += realMs;
       this.ghost.flipMs += realMs;
@@ -334,6 +353,8 @@ export class ZoneOverlay {
     this.groundRoot.clear();
     const px = 1 / Math.max(0.0001, scale);
     for (const z of this.zones) this.drawZone(g, z, px);
+    for (const l of this.locks) this.drawLockTelegraph(g, l, px);
+    for (const j of this.jams) this.drawJam(g, j, px);
     this.drawBand(px);
     let pipsUsed = 0;
     if (this.ghost) {
@@ -352,6 +373,8 @@ export class ZoneOverlay {
 
   clear(): void {
     this.zones = [];
+    this.locks = [];
+    this.jams = [];
     this.hidePreview();
     this.leaving = null;
     this.g.clear();
@@ -513,6 +536,59 @@ export class ZoneOverlay {
       t.alpha = 1;
       t.visible = true;
     } else if (this.invalidText) this.invalidText.visible = false;
+  }
+
+  /** A strike's telegraph: brackets closing in on the target as the shot nears (A2.9.10). */
+  private drawLockTelegraph(g: Graphics, l: { at: () => GhostTarget | null; color: number; leftMs: number; totalMs: number }, px: number): void {
+    const u = l.at();
+    if (!u) return;
+    const k = 1 - Math.max(0, l.leftMs) / Math.max(1, l.totalMs);
+    const r = Math.max(22, u.size * 0.75) * (1.5 - 0.5 * k);
+    const y = u.y - Math.max(18, u.size * 0.6);
+    const spin = this.reduceMotion ? 0 : this.t / 500;
+    const warn = 0.55 + 0.45 * Math.abs(Math.sin(this.t / (120 - 60 * k)));
+    g.circle(u.x, y, r + 3 * px).stroke({ color: 0x1b1330, width: 5 * px, alpha: 0.4 });
+    for (let i = 0; i < 4; i++) {
+      const a0 = spin + (i * Math.PI) / 2 - 0.4;
+      const steps = 5;
+      g.moveTo(u.x + Math.cos(a0) * r, y + Math.sin(a0) * r);
+      for (let s2 = 1; s2 <= steps; s2++) {
+        const a = a0 + (0.8 * s2) / steps;
+        g.lineTo(u.x + Math.cos(a) * r, y + Math.sin(a) * r);
+      }
+      g.stroke({ color: tint(l.color, 0.35), width: 3.5 * px, alpha: warn });
+    }
+    g.circle(u.x, y, 3 * px).fill({ color: 0xffffff, alpha: warn });
+  }
+
+  /** A jammed mount (Suppress): a pulsing ring while telegraphed; crossed sparks while silenced. */
+  private drawJam(g: Graphics, j: { x: number; y: number; color: number; leftMs: number; totalMs: number; silenced: boolean }, px: number): void {
+    const fade = Math.min(1, j.leftMs / 200);
+    const r = 20 * px * 1.4;
+    if (!j.silenced) {
+      const p = 0.5 + 0.5 * Math.sin(this.t / 90);
+      g.circle(j.x, j.y, r * (1 + 0.15 * p)).stroke({ color: tint(j.color, 0.3), width: 3 * px, alpha: (0.5 + 0.5 * p) * fade });
+      return;
+    }
+    g.circle(j.x, j.y, r).fill({ color: 0x1b1330, alpha: 0.55 * fade });
+    g.circle(j.x, j.y, r).stroke({ color: tint(j.color, 0.4), width: 2.5 * px, alpha: fade });
+    const c = r * 0.55;
+    g.moveTo(j.x - c, j.y - c)
+      .lineTo(j.x + c, j.y + c)
+      .moveTo(j.x + c, j.y - c)
+      .lineTo(j.x - c, j.y + c)
+      .stroke({ color: 0xffffff, width: 3 * px, alpha: fade });
+    // Sparks flicking around the rim.
+    if (!this.reduceMotion) {
+      for (let i = 0; i < 3; i++) {
+        const a = this.t / 160 + i * 2.1;
+        const sx = j.x + Math.cos(a) * r;
+        const sy = j.y + Math.sin(a) * r;
+        g.moveTo(sx, sy)
+          .lineTo(sx + Math.cos(a + 1.2) * 6 * px, sy + Math.sin(a + 1.2) * 6 * px)
+          .stroke({ color: 0xfff1a8, width: 2 * px, alpha: fade * (0.5 + 0.5 * Math.sin(this.t / 50 + i)) });
+      }
+    }
   }
 
   /** Keeps a plate of width `w` centred near `x` inside the visible range (8 px margin). */

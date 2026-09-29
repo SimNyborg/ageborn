@@ -581,7 +581,17 @@ export class EventMapper {
         const zone = ev.zone / MILLI_LU;
         this.casts.set(ev.castId, { x, zone });
         if (this.casts.size > 16) this.casts.delete(this.casts.keys().next().value as number);
-        out.push({ a: 'telegraph', side: ev.side, castId: ev.castId, power: ev.power, x, zone, ms: ev.telegraphMs > 0 ? ev.telegraphMs : tun.telegraphMs });
+        out.push({
+          a: 'telegraph',
+          side: ev.side,
+          castId: ev.castId,
+          power: ev.power,
+          x,
+          zone,
+          ms: ev.telegraphMs > 0 ? ev.telegraphMs : tun.telegraphMs,
+          // A strike's lock ring follows its target through the telegraph (A2.9.10).
+          ...(ev.targetId >= 0 ? { targetId: ev.targetId } : {}),
+        });
         this.rule('power.telegraph', { at: { k: 'world', x, y: 0 } }, out);
         return;
       }
@@ -599,7 +609,9 @@ export class EventMapper {
         return;
       }
       case 'turretSilenced':
-        // Suppress (A2.9.7): the jammed-mount effect (`fx.turret_jammed`) is the visuals package's P3 work.
+        // Suppress (A2.9.7): a jam mark over the mount while it is silenced (the polished
+        // `fx.turret_jammed` effect is the visuals package's P3 work).
+        out.push({ a: 'jam', side: ev.side, mount: ev.mount, ms: Math.max(0, (ev.untilTick - ev.tick) * 50) });
         return;
       case 'stanceChanged':
         if (ev.side === this.mySide) this.rule('stance', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
