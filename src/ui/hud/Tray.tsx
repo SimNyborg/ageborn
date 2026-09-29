@@ -346,11 +346,11 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
           ))}
         </span>
         <span class="hud-card-cost">
-          <CoinIcon size={c.compact ? 11 : 13} />
+          <CoinIcon size={c.compact ? 10 : 13} />
           {card.cost}
         </span>
         <span class="hud-card-class" data-testid={`hud-card-${card.slot}-class`} data-class={klass}>
-          <ClassIcon id={klass} size={c.compact ? 18 : 22} title={t(CLASS_NAME_KEY[klass])} />
+          <ClassIcon id={klass} size={c.compact ? 16 : 22} title={t(CLASS_NAME_KEY[klass])} />
         </span>
         {waitS !== null && waitS > 0 ? (
           <span class="hud-card-wait" data-testid={`hud-card-${card.slot}-wait`}>

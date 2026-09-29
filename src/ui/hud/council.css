@@ -1090,19 +1090,24 @@ button.hud-track:active {
 
 /* ---------------------------------------------------------------- their research */
 
+/* Their research: a small ring on their age medallion's inner corner, so their name keeps its room. */
 .hud-foe-research {
-  position: relative;
+  position: absolute;
+  right: 26px;
+  bottom: -6px;
+  z-index: 2;
   display: grid;
-  flex: none;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 .hud.is-compact .hud-foe-research {
-  width: 26px;
-  height: 26px;
+  right: 20px;
+  bottom: -7px;
+  width: 24px;
+  height: 24px;
 }
 
 .hud-foe-research-ring {

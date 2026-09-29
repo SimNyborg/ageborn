@@ -1074,9 +1074,15 @@
 }
 
 @container hud (max-height: 499px) {
-  /* 44 (the gold's hit box, a 38 px face) + 48 (Council, Evolve) - 2 overlap = 90 in the 94 tray. */
+  /* 44 (the gold's hit box; its face is the top 37 px) + 48 (Council, Evolve) - 5 overlap = 87 in the
+     94 tray; the round buttons' tops meet the face only at their apex. */
   .hud-cluster-row {
-    margin-top: -4px;
+    margin-top: -5px;
+  }
+
+  .hud-cbtn-label,
+  .hud-evolve-label {
+    padding: 0 3px;
   }
 
   .hud-cbtn-sale {
@@ -1122,8 +1128,12 @@
 }
 
 @container hud (max-height: 499px) {
+  .hud-gold {
+    padding-bottom: 6px;
+  }
+
   .hud-gold::before {
-    inset: 3px 0;
+    inset: 1px 0 6px;
     border-radius: 10px;
   }
 }
@@ -1322,6 +1332,16 @@
   line-height: 18px;
   font-variant-numeric: tabular-nums;
   transition: color var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud-card-cost svg {
+    display: none;
+  }
+
+  .hud-card-cost {
+    padding: 0 4px;
+  }
 }
 
 /* Class icon, top-right (A18.9.1). */
