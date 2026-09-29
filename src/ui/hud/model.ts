@@ -6,7 +6,7 @@
  * A press the HUD can already tell is invalid becomes a `deny` intent (red flash, 2-frame shake,
  * `ui_deny`, A9.2) instead of a command; everything else is sent and the sim has the final word.
  */
-import type { AgeId, CardId, Command, HudModel, MatchConfig, Side, TeamPreset } from '@/contracts';
+import type { AgeId, CardId, Command, HudModel, MatchConfig, Side, StanceMode, TeamPreset } from '@/contracts';
 import { matchMods } from '@/core';
 
 /** Elements that can show the denied-press feedback. */
@@ -24,13 +24,19 @@ export type DenyTarget =
   | 'lastStand'
   | 'mounts'
   | 'army'
-  | 'emote';
+  | 'emote'
+  | 'council'
+  | 'flag';
 
 export type HudIntent =
   | { k: 'command'; cmd: Command; target: DenyTarget }
   | { k: 'deny'; target: DenyTarget }
   | { k: 'pause' }
   | { k: 'speed' }
+  /** Opens or closes the War Council sheet (G, the Council button); `line` opens a line's picks. */
+  | { k: 'council'; line?: string }
+  /** Closes whatever the HUD has open (Escape). */
+  | { k: 'close' }
   | { k: 'none' };
 
 const NONE: HudIntent = { k: 'none' };
@@ -86,14 +92,12 @@ export function cancelIntent(m: HudModel, side: Side, slot?: number): HudIntent 
 }
 
 /**
- * The gold counter's tap starts the next Economy income research (Granary, then Market; A18.5.4
- * replaced the Treasury) until the War Council sheet ships (A18.5.7).
+ * The gold counter's tap opens the War Council on the Economy track (A18.5.4: the Treasury became
+ * the Economy research; A18.5.7: a spend takes two taps, so the tap no longer buys by itself).
  */
-export function treasuryIntent(m: HudModel, side: Side): HudIntent {
-  const cost = m.me.nextTreasuryCost;
-  const next = m.me.nextIncome;
-  if (cost === null || !next || m.me.gold < cost) return deny('gold');
-  return cmd({ t: 'research', side, track: next.track, rank: next.rank, pick: next.pick }, 'gold');
+export function goldIntent(m: HudModel): HudIntent {
+  if (m.phase === 'ended' || !m.me.research) return NONE;
+  return { k: 'council', line: 'economy' };
 }
 
 export function evolveIntent(m: HudModel, side: Side): HudIntent {
@@ -106,10 +110,45 @@ export function powerIntent(m: HudModel, side: Side, p?: number): HudIntent {
   return cmd(p === undefined ? { t: 'power', side } : { t: 'power', side, p }, 'power');
 }
 
-export function stanceIntent(m: HudModel, side: Side): HudIntent {
+/** The three stances in control order (A18.4.2). */
+export const STANCES: readonly StanceMode[] = ['charge', 'hold', 'fallback'];
+
+/**
+ * A press on a stance segment (A18.4.2). The sim accepts a change at most once per 3 s; a press the HUD
+ * can see is too early is denied on the control (a short fill shows the wait).
+ */
+export function stanceSetIntent(m: HudModel, side: Side, mode: StanceMode): HudIntent {
+  if (!m.me.stanceVisible || m.phase === 'ended') return NONE;
+  if (mode === m.me.stance) return NONE;
+  if ((m.me.stanceWaitMs ?? 0) > 0) return deny('stance');
+  return cmd({ t: 'stance', side, mode }, 'stance');
+}
+
+/** S toggles Charge and Hold (from Fall back it goes to Charge); Shift+S is Fall back (A18.4.2). */
+export function stanceIntent(m: HudModel, side: Side, shift = false): HudIntent {
   if (!m.me.stanceVisible) return NONE;
-  // S toggles Charge and Hold (A18.4.2); Fall back comes with the three-segment control (A18.13 phase 4).
-  return cmd({ t: 'stance', side, mode: m.me.stance === 'charge' ? 'hold' : 'charge' }, 'stance');
+  if (shift) return stanceSetIntent(m, side, 'fallback');
+  return stanceSetIntent(m, side, m.me.stance === 'charge' ? 'hold' : 'charge');
+}
+
+/** The Hold flag's range and snap (A18.4.2: p in [320, 800], 20 lu steps). */
+export const FLAG_MIN_P = 320;
+export const FLAG_MAX_P = 800;
+export const FLAG_SNAP = 20;
+
+/** Clamps and snaps a flag p as the sim does. */
+export function snapFlagP(p: number): number {
+  const c = Math.max(FLAG_MIN_P, Math.min(FLAG_MAX_P, p));
+  return Math.max(FLAG_MIN_P, Math.min(FLAG_MAX_P, Math.round(c / FLAG_SNAP) * FLAG_SNAP));
+}
+
+/** Drops the Hold flag at `p` (own-side lu): Hold there. From Charge or Fall back it also switches to Hold. */
+export function flagIntent(m: HudModel, side: Side, p: number): HudIntent {
+  if (!m.me.stanceVisible || m.phase === 'ended') return NONE;
+  const holdP = snapFlagP(p);
+  if (m.me.stance !== 'hold' && (m.me.stanceWaitMs ?? 0) > 0) return deny('flag');
+  if (m.me.stance === 'hold' && holdP === m.me.holdP) return NONE;
+  return cmd({ t: 'stance', side, mode: 'hold', holdP }, 'flag');
 }
 
 /** The manual Last Stand button exists only when armed and from match 5 (A2.11, A8). */
@@ -245,11 +284,14 @@ export function quickTurretIntent(m: HudModel, config: Readonly<MatchConfig>, si
   return opt ? moderniseIntent(m, side, oldest.index, opt) : deny('mounts');
 }
 
-/** Keyboard controls (A2.12). `key` is `KeyboardEvent.key`. P pauses (never Esc). */
-export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side): HudIntent {
+/**
+ * Keyboard controls (A2.12, A18.4.2, A18.5.7). `key` is `KeyboardEvent.key`. P pauses (never Esc);
+ * Escape closes the Council; G opens and closes it; S and Shift+S set the stance; T is free.
+ */
+export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side, shift = false): HudIntent {
   if (m.phase === 'ended') return NONE;
   const k = key.length === 1 ? key.toLowerCase() : key;
-  if (k >= '1' && k <= '5') return trainIntent(m, Number(k) - 1, side);
+  if (k >= '1' && k <= '6') return trainIntent(m, Number(k) - 1, side);
   switch (k) {
     case 'Backspace':
       return cancelIntent(m, side);
@@ -259,14 +301,16 @@ export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig
       return quickTurretIntent(m, config, side, 1);
     case 'b':
       return buyMountIntent(m, config, side);
-    case 't':
-      return treasuryIntent(m, side);
+    case 'g':
+      return m.me.research ? { k: 'council' } : NONE;
+    case 'Escape':
+      return { k: 'close' };
     case 'e':
       return evolveIntent(m, side);
     case ' ':
       return powerIntent(m, side);
     case 's':
-      return stanceIntent(m, side);
+      return stanceIntent(m, side, shift);
     case 'l':
       return lastStandIntent(m, side);
     case 'p':
@@ -294,7 +338,7 @@ export function denyTargetFor(t: Command['t']): DenyTarget | null {
       return 'mounts';
     case 'research':
     case 'researchCancel':
-      return 'gold';
+      return 'council';
     case 'evolve':
       return 'evolve';
     case 'power':

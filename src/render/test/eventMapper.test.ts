@@ -285,6 +285,19 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     expect(pick(out, 'number').filter((n) => n.kind === 'income')).toEqual([{ a: 'number', kind: 'income', value: perSec, at: { k: 'base', side: 0, part: 'center' }, important: true }]);
   });
 
+  it('a finished Troops pick shimmers along that class only, on either side; other tracks do not (A18.5.1)', () => {
+    const c = testContent();
+    const weapons = { id: 'troops.heavy.weapons', track: 'troops' as const, group: 'heavy' as const, rank: 1 as const, pick: 1 as const, effects: [], aiHint: 'vsHeavy' as const, nameKey: 'n', descKey: 'd' };
+    const content: CompiledContent = { ...c, research: { ...c.research, picks: [...c.research.picks, weapons], classOfRole: { ...c.research.classOfRole, heavy: 'heavy', siegeHeavy: 'heavy' } } };
+    const m = new EventMapper({ content, feel: defaultFeelConfig, mySide: 0, rng: mulberry32(1) });
+    const out = run([ev('researchDone', { side: 1, pick: 'troops.heavy.weapons' }), ev('researchDone', { side: 0, pick: 'economy.granary' })], m);
+    const fx = pick(out, 'fxUnits');
+    expect(fx).toHaveLength(1);
+    expect(fx[0]).toMatchObject({ effectId: 'fx.decree_glow', side: 1 });
+    expect(fx[0]?.roles).toContain('heavy');
+    expect(fx[0]?.roles).not.toContain('infantry');
+  });
+
   it('enemy evolve: trauma 0.1, smaller pillar, evolve_enemy, no freeze and no key change', () => {
     const up = run([ev('ageUp', { side: 1, age: 'medieval' })]);
     expect(pick(up, 'freeze')).toEqual([]);

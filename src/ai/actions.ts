@@ -14,7 +14,10 @@ export type BotAction =
   | { kind: 'research'; pick: ResearchPickDef; cost: number }
   | { kind: 'evolve' }
   | { kind: 'power'; p: number | null }
-  | { kind: 'stance'; stance: StanceMode }
+  /** A stance change; a change to Hold may also place the flag (`holdP`, whole lu, A18.4.2). */
+  | { kind: 'stance'; stance: StanceMode; holdP?: number }
+  /** Moves the Hold flag while Holding (A18.4.2: at most once per 1 s, no stance cooldown). */
+  | { kind: 'flag'; holdP: number }
   | { kind: 'lastStand' }
   | { kind: 'emote'; emote: EmoteId };
 
@@ -39,7 +42,9 @@ export function toCommand(a: BotAction, side: Side): Command {
     case 'power':
       return a.p === null ? { t: 'power', side } : { t: 'power', side, p: a.p };
     case 'stance':
-      return { t: 'stance', side, mode: a.stance };
+      return a.holdP === undefined ? { t: 'stance', side, mode: a.stance } : { t: 'stance', side, mode: a.stance, holdP: a.holdP };
+    case 'flag':
+      return { t: 'stance', side, mode: 'hold', holdP: a.holdP };
     case 'lastStand':
       return { t: 'lastStand', side };
     case 'emote':
@@ -80,7 +85,9 @@ export function describeAction(a: BotAction | null): string {
     case 'power':
       return a.p === null ? 'power (auto)' : `power at p ${a.p}`;
     case 'stance':
-      return `stance ${a.stance}`;
+      return a.holdP === undefined ? `stance ${a.stance}` : `stance ${a.stance} flag ${a.holdP}`;
+    case 'flag':
+      return `flag ${a.holdP}`;
     case 'lastStand':
       return 'last stand';
     case 'emote':

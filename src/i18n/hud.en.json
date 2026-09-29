@@ -22,9 +22,7 @@
     "speedLabel": "Game speed",
     "speed": "{s}x",
     "goldRate": "+{n}/s",
-    "treasury": "+Income · {cost}",
-    "treasuryMax": "Income max",
-    "treasuryBuy": "Raise your income for {cost} gold",
+    "goldLabel": "{n} gold. Tap for income research",
     "cardLabel": "Train {name} for {cost} gold",
     "queued": "{n} queued",
     "armyFull": "Army full",
@@ -33,7 +31,20 @@
     "stanceLabel": "Stance: {stance}",
     "stance": {
       "charge": "Charge",
-      "hold": "Hold"
+      "hold": "Hold",
+      "fallback": "Fall back"
+    },
+    "stanceHint": {
+      "charge": "Advance and fight",
+      "hold": "Hold the line at your flag",
+      "fallback": "Pull back to your base"
+    },
+    "flag": {
+      "label": "Hold flag: drag along the lane to move it, tap for arrows",
+      "hint": "Drag the flag",
+      "distance": "{n} from your gate",
+      "back": "Move the flag back",
+      "forward": "Move the flag forward"
     },
     "power": "Age Power",
     "powerLabel": "{name}, {pct}% charged",
@@ -103,6 +114,46 @@
     "key": {
       "space": "Space"
     },
-    "newUnits": "New units!"
+    "newUnits": "New units!",
+    "council": {
+      "title": "War Council",
+      "buttonShort": "Council",
+      "buttonLabel": "War Council: research upgrades",
+      "buttonBusy": "War Council: {name}, {s} s left",
+      "idle": "Pick one research. It runs while you fight.",
+      "researching": "{name} · {s} s",
+      "cancel": "Cancel",
+      "cancelConfirm": "Tap again: {pct}% back",
+      "discount": "Behind: −{pct}%",
+      "saleShort": "−{pct}%",
+      "discountHint": "You are behind, so research costs less.",
+      "close": "Close the War Council",
+      "back": "Back to all tracks",
+      "track": {
+        "troops": "Troops",
+        "defences": "Defences",
+        "economy": "Economy",
+        "command": "Command"
+      },
+      "pairOr": "{a} or {b}",
+      "rank": "Rank {n}",
+      "or": "or",
+      "choose": "Pick one. The other is gone for this match.",
+      "spawnNote": "Pick one. Troops trained after it finishes get it.",
+      "seconds": "{s} s",
+      "tapAgain": "Tap again to research",
+      "owned": "Owned",
+      "notChosen": "Not chosen",
+      "opensIn": "Opens in {age}",
+      "notThisWar": "Not in this war",
+      "busy": "One research at a time",
+      "inProgress": "Researching…",
+      "need": "Need {n}",
+      "allDone": "All researched",
+      "notInTray": "Not in this tray",
+      "complete": "Research complete",
+      "foeResearching": "Their research: {name}, {s} s left",
+      "foeTitle": "Their research"
+    }
   }
 }

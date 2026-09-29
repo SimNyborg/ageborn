@@ -8,8 +8,9 @@
  *   that draws a minimap (tests, the state gallery) the old front-line strip shows instead. The
  *   training match has no clock, only the strip;
  * - right: the AI opponent's nameplate (robot icon and "AI" chip, A7.1), base HP, XP, age icon with
- *   its power charge ring, a horn while their Last Stand is armed, the "Scouted (n)" chip (from
- *   match 3), emotes, pause and speed.
+ *   its power charge ring, a horn while their Last Stand is armed, their War Council research (the
+ *   pick's badge in a progress ring beside their medallion; A18.5.1: research is public), the
+ *   "Scouted (n)" chip (from match 3, with their finished research), emotes, pause and speed.
  *
  * Every hit on a base kicks that side's panel (flash and shake), so it is clear who is winning.
  */
@@ -23,6 +24,8 @@ import { AgeGlyph, HornIcon, PauseIcon, PlayIcon, RobotIcon, SpeedIcon } from '.
 import { Minimap } from './Minimap';
 import { ageIds, clockView, evolveIntent, formatClock, frontStrip, powerFraction, xpProgress, type FrontLine } from './model';
 import { usePortrait } from './usePortrait';
+import { PickBadge } from './councilIcons';
+import { secondsLeft } from './council';
 
 export const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
 export const SCOUTED_COLLAPSE_MS = 3000;
@@ -123,6 +126,8 @@ function Scouted(p: { c: HudCtx }) {
     return () => clearTimeout(id);
   }, [open]);
   const list = c.m.foe.scouted;
+  const picks = c.config.content.research.picks;
+  const research = (c.m.foe.research?.owned ?? []).flatMap((id) => picks.filter((x) => x.id === id));
   return (
     <div class="hud-scouted">
       <button
@@ -140,6 +145,19 @@ function Scouted(p: { c: HudCtx }) {
         <div class="hud-dropdown" data-testid="hud-scouted-list">
           <div class="hud-dropdown-title">{c.t('hud.scoutedTitle')}</div>
           {list.length === 0 ? <div class="hud-dropdown-empty">{c.t('hud.scoutedNone')}</div> : <ul>{list.map((card) => <ScoutedItem key={card} c={c} card={card} />)}</ul>}
+          {research.length > 0 ? (
+            <>
+              <div class="hud-dropdown-title">{c.t('hud.council.foeTitle')}</div>
+              <ul data-testid="hud-scouted-research">
+                {research.map((d) => (
+                  <li key={d.id} class="hud-scouted-item">
+                    <PickBadge def={d} size={28} />
+                    <span>{c.t(d.nameKey)}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -167,6 +185,21 @@ function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; progress: numb
       <span class="hud-evolve-label">{label}</span>
       {c.keys ? <kbd class="hud-key">E</kbd> : null}
     </button>
+  );
+}
+
+/** Their research in progress (A18.5.1 public, A18.5.7 "the enemy's research icon and ring"). */
+function FoeResearch(p: { c: HudCtx }) {
+  const { c } = p;
+  const r = c.m.foe.research;
+  const def = r?.current ? c.config.content.research.picks.find((x) => x.id === r.current) : undefined;
+  if (!r || !def) return null;
+  const label = c.t('hud.council.foeResearching', { name: c.t(def.nameKey), s: secondsLeft(r.leftMs) });
+  return (
+    <span key={def.id} class="hud-foe-research" data-testid="hud-foe-research" style={{ '--prog': r.progressBp / 10000 }} role="img" aria-label={label} title={label}>
+      <i class="hud-foe-research-ring" />
+      <PickBadge def={def} size={c.compact ? 18 : 22} corner={false} />
+    </span>
   );
 }
 
@@ -298,6 +331,7 @@ export function TopBar(p: {
             ) : null}
           </div>
           <Medallion age={foeAge} team="foe" ring={powerFraction(m.foe.powerPpm)} horn={m.foe.lastStandArmed} hornLabel={t('hud.lastStand')} />
+          <FoeResearch c={c} />
           {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} emote={foeBubble.emote} side="foe" t={t} /> : null}
         </div>
         <div class="hud-controls">

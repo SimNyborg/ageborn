@@ -212,6 +212,7 @@
     "mode": {
       "title": "Choose a battle",
       "format": "Format",
+      "formatWindow": "{from} to {to}. {desc}",
       "speed": "Speed",
       "start": "Start",
       "play": "Play",

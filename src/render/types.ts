@@ -141,7 +141,8 @@ export type ViewAction =
    */
   | { a: 'fx'; effectId: EffectId; at: Anchor; count: number; priority: number; spreadLu?: number; opts?: Record<string, number>; follow?: boolean }
   /** One effect on every live unit of `side`, following each unit (Royal Decree, Nanite Surge). */
-  | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number> }
+  /** An effect on every visible unit of a side; `roles` limits it to units of those roles (a research shimmer). */
+  | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number>; roles?: readonly string[] }
   | { a: 'fxFly'; effectId: EffectId; from: Anchor; to: 'gold' | 'xp'; count: number; priority: number }
   | { a: 'sound'; id: SoundId; delayMs?: number; gap?: Gap; climb?: string; priority?: number }
   | { a: 'trauma'; amount: number; dir?: Pt; gap?: Gap }

@@ -78,7 +78,8 @@ export function playJob(job: MatchJob, bots: BotFactory, content: CompiledConten
   const tally = new MatchTally(content);
   const cover = content.economy.turretRangeCap * 1000;
   const outcome = match.run({
-    maxTicks: job.maxTicks ?? 20_000,
+    // A18.3.4: Full War's Final Bell is 17:30 (21,000 ticks); 20:00 leaves room for any window.
+    maxTicks: job.maxTicks ?? 24_000,
     onEvents: (ev) => {
       tally.push(ev);
       if (sim.state.tick % 20 === 0) tally.sampleContact(sim.state.units, LANE_MLU, cover);

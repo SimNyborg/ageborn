@@ -85,7 +85,9 @@ export function observation(o: {
   mountsOwned?: number;
   turrets?: Observation['me']['turrets'];
   powerPpm?: number;
-  stance?: 'charge' | 'hold';
+  stance?: 'charge' | 'hold' | 'fallback';
+  /** The Hold flag, whole lu (A18.4.2; default 320). */
+  holdP?: number;
   research?: Observation['me']['research'];
   baseHpBp?: number;
   lastStand?: Observation['me']['lastStand'];
@@ -113,7 +115,7 @@ export function observation(o: {
       turrets: o.turrets ?? [null, null, null, null],
       powerPpm: o.powerPpm ?? 0,
       stance: o.stance ?? 'charge',
-      holdP: 320,
+      holdP: o.holdP ?? 320,
       research: o.research ?? { owned: [], current: null, progressBp: 0, ranksOpen: 1 },
       baseHpBp: o.baseHpBp ?? 10000,
       lastStand: o.lastStand ?? 'locked',

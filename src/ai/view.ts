@@ -4,7 +4,7 @@
  * progress p in milli-lu (the observation's frame); money is milli-gold; card values are whole gold.
  */
 import type { AgeId, BotProfile, CardId, Observation, PowerDef, ResearchView, Side, StanceMode } from '@/contracts';
-import { PPM } from '@/core';
+import { MILLI, PPM } from '@/core';
 import type { CardBook, UnitCard } from './book';
 import type { Ledger } from './ledger';
 import { evolveVisible } from './memory';
@@ -56,6 +56,9 @@ export interface View {
   power: PowerDef | undefined;
   stance: StanceMode;
   stanceReady: boolean;
+  /** The Hold flag after pending commands, own-side p in milli-lu (A18.4.2), and whether it may move now. */
+  holdP: number;
+  flagReady: boolean;
   baseHpBp: number;
   lastStandArmed: boolean;
   tray: TraySlot[];
@@ -90,6 +93,7 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
   let mountsOwned = me.mountsOwned;
   let powerUsed = false;
   let stance = me.stance;
+  let holdP = me.holdP * MILLI;
   const turrets = me.turrets.map((t) => (t ? { card: t.card, ageIndex: book.turrets[t.card]?.ageIndex ?? 0 } : null));
   for (const p of pending) {
     const a = p.action;
@@ -99,7 +103,10 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     }
     else if (a.kind === 'mount') mountsOwned += 1;
     else if (a.kind === 'power') powerUsed = true;
-    else if (a.kind === 'stance') stance = a.stance;
+    else if (a.kind === 'stance') {
+      stance = a.stance;
+      if (a.holdP !== undefined) holdP = a.holdP * MILLI;
+    } else if (a.kind === 'flag') holdP = a.holdP * MILLI;
     else if (a.kind === 'build' || a.kind === 'modernise') turrets[a.mount] = { card: a.card, ageIndex: book.turrets[a.card]?.ageIndex ?? 0 };
   }
   while (turrets.length < book.econ.mountCount) turrets.push(null);
@@ -161,6 +168,8 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     power: book.powers[me.power],
     stance,
     stanceReady: ledger.stanceEnabled && now >= ledger.stanceReadyTick,
+    holdP,
+    flagReady: ledger.stanceEnabled && now >= ledger.flagReadyTick,
     baseHpBp: me.baseHpBp,
     lastStandArmed: me.lastStand === 'armed' && ledger.lastStandManual && !ledger.has('lastStand'),
     tray,

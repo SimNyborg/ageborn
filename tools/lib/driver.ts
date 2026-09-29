@@ -68,7 +68,8 @@ export class HeadlessMatch {
 
   /** Steps until the match ends or `maxTicks` is reached. */
   run(o: { maxTicks?: number; onEvents?: (events: readonly SimEvent[]) => void } = {}): MatchOutcome | null {
-    const max = o.maxTicks ?? 20000;
+    // A18.3.4: Full War's Final Bell is 17:30 (21,000 ticks); 20:00 leaves room for any window.
+    const max = o.maxTicks ?? 24000;
     while (!this.ended && this.sim.state.tick < max) {
       const ev = this.step();
       o.onEvents?.(ev);

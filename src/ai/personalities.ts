@@ -42,6 +42,8 @@ export interface Personality {
    * `troops.<class>`; −10,000 on a pick id means "never".
    */
   researchBiasBp: Readonly<Record<string, number>>;
+  /** Rook (A18.5.8): research counters the enemy's scouted classes, not only the ones on the lane. */
+  researchScouted: boolean;
   /** Ledger: Economy income research (the Treasury) to this level by `treasuryRushByMs`, over the tier's max. */
   treasuryRushLevel: number;
   treasuryRushByMs: number;
@@ -70,6 +72,7 @@ const BASE: Personality = {
   signatureBiasBp: 0,
   allInBeforeEvolve: false,
   researchBiasBp: {},
+  researchScouted: false,
   treasuryRushLevel: 0,
   treasuryRushByMs: 0,
   pushGateBp: DEFAULT_PUSH_GATE_BP,
@@ -105,6 +108,7 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     id: 'greedy',
     treasuryRushLevel: 3,
     treasuryRushByMs: 150000,
+    // A18.5.8: Economy first (Guildhall is Economy III, v1.1: joins the bias with its pick)
     researchBiasBp: { economy: 8000 },
     opening: ['train:infantry', 'treasury', 'train:ranged', 'treasury|train:infantry'],
   },
@@ -113,13 +117,14 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
   // Ada & Ivo: balanced counters.
   counters: { ...BASE, id: 'counters', opening: ['train:infantry', 'train:ranged', 'train:antiArmor|train:heavy'] },
   // Rook: "Counter weight ×1.5, switches within seconds" (the weight comes from content).
-  counterPicker: { ...BASE, id: 'counterPicker', opening: ['train:ranged', 'train:infantry', 'train:infantry|train:antiArmor'] },
+  // A18.5.8: "counters your scouted classes".
+  counterPicker: { ...BASE, id: 'counterPicker', researchScouted: true, opening: ['train:ranged', 'train:infantry', 'train:infantry|train:antiArmor'] },
   // Madame Tempest: "Banks powers for evolve moments and clumps".
   powerTiming: {
     ...BASE,
     id: 'powerTiming',
     powerForEvolveMoments: true,
-    // A18.5.8: Signal Fires (Reserve Charge in v1.1)
+    // A18.5.8: Signal Fires, Reserve Charge (Command III, v1.1: joins the bias with its pick)
     researchBiasBp: { 'command.signal_fires': 12000 },
     opening: ['train:infantry', 'train:ranged', 'train:ranged|train:infantry', 'turret'],
   },

@@ -149,6 +149,31 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     expect(pebbler?.destroyed).toBe(true);
   });
 
+  it('stands your Hold flag on the lane only while you Hold, where the sim put it (A18.4.2)', () => {
+    const s = setup();
+    s.view.render(0, 16);
+    expect(s.view.holdFlagScreen()).toBeNull();
+    s.sim.state.sides[0].stance = 'hold';
+    s.sim.state.sides[0].holdP = 320_000;
+    s.view.render(0, 16);
+    const a = s.view.holdFlagScreen();
+    s.sim.state.sides[0].holdP = 560_000;
+    s.view.render(0, 16);
+    const b = s.view.holdFlagScreen();
+    if (!a || !b) throw new Error('no flag');
+    expect(b.x).toBeGreaterThan(a.x);
+    expect(a.top).toBeLessThan(a.y);
+    // The drag preview holds the camera and clears.
+    s.view.previewHoldFlag(700);
+    s.view.render(0, 16);
+    s.view.previewHoldFlag(null);
+    expect(() => s.view.render(0, 16)).not.toThrow();
+    // A replay (spectator) shows no flag grip.
+    const r = setup({ spectator: true });
+    r.sim.state.sides[0].stance = 'hold';
+    expect(r.view.holdFlagScreen()).toBeNull();
+  });
+
   it('reports taps on your mounts and the "+" mount, not on empty lane', () => {
     const s = setup();
     s.view.render(0, 16);

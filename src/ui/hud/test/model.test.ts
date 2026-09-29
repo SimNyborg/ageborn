@@ -8,7 +8,9 @@ import {
   clockView,
   denyTargetFor,
   evolveIntent,
+  flagIntent,
   formatClock,
+  goldIntent,
   hudTeamColors,
   keyIntent,
   lastStandIntent,
@@ -22,9 +24,10 @@ import {
   powerIntent,
   quickTurretIntent,
   sellIntent,
+  snapFlagP,
   stanceIntent,
+  stanceSetIntent,
   trainIntent,
-  treasuryIntent,
   type HudIntent,
 } from '../model';
 import { sampleHudModel } from '../samples';
@@ -76,12 +79,12 @@ describe('HUD presses (A2.12, A9.2)', () => {
     expect(cancelIntent(model(), 0, 4)).toEqual({ k: 'none' });
   });
 
-  it('starts the Economy income research from the gold counter only when affordable and open (A18.5.4)', () => {
-    const granary = { t: 'research', side: 0, track: 'economy', rank: 1, pick: 0 };
-    expect(cmdOf(treasuryIntent(model({ me: { gold: 150 } }), 0))).toEqual(granary);
-    expect(treasuryIntent(model({ me: { gold: 149 } }), 0)).toEqual({ k: 'deny', target: 'gold' });
-    expect(treasuryIntent(model({ me: { gold: 5000, nextIncome: null } }), 0)).toEqual({ k: 'deny', target: 'gold' });
-    expect(treasuryIntent(model({ me: { gold: 5000, nextTreasuryCost: null } }), 0)).toEqual({ k: 'deny', target: 'gold' });
+  it('opens the War Council on the Economy track from the gold counter; a spend takes a second tap (A18.5.4, A18.5.7)', () => {
+    expect(goldIntent(model({ me: { gold: 150 } }))).toEqual({ k: 'council', line: 'economy' });
+    expect(goldIntent(model({ phase: 'ended' }))).toEqual({ k: 'none' });
+    const plain = model();
+    const { research: _r, ...me } = plain.me;
+    expect(goldIntent({ ...plain, me })).toEqual({ k: 'none' });
   });
 
   it('evolves only when ready', () => {
@@ -99,10 +102,31 @@ describe('HUD presses (A2.12, A9.2)', () => {
     expect(powerFraction(2_000_000)).toBe(1);
   });
 
-  it('toggles the stance only when the flag is shown (from match 4)', () => {
+  it('S toggles Charge and Hold, Shift+S is Fall back; hidden stance does nothing (A18.4.2)', () => {
     expect(cmdOf(stanceIntent(model(), 0))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
     expect(cmdOf(stanceIntent(model({ me: { stance: 'hold' } }), 0))).toEqual({ t: 'stance', side: 0, mode: 'charge' });
+    expect(cmdOf(stanceIntent(model({ me: { stance: 'fallback' } }), 0))).toEqual({ t: 'stance', side: 0, mode: 'charge' });
+    expect(cmdOf(stanceIntent(model(), 0, true))).toEqual({ t: 'stance', side: 0, mode: 'fallback' });
     expect(stanceIntent(model({ me: { stanceVisible: false } }), 0)).toEqual({ k: 'none' });
+  });
+
+  it('a stance segment sends its mode; the current one does nothing; the 3 s wait denies (A18.4.2)', () => {
+    expect(cmdOf(stanceSetIntent(model(), 0, 'fallback'))).toEqual({ t: 'stance', side: 0, mode: 'fallback' });
+    expect(stanceSetIntent(model(), 0, 'charge')).toEqual({ k: 'none' });
+    expect(stanceSetIntent(model({ me: { stanceWaitMs: 1200 } }), 0, 'hold')).toEqual({ k: 'deny', target: 'stance' });
+    expect(stanceSetIntent(model({ phase: 'ended' }), 0, 'hold')).toEqual({ k: 'none' });
+  });
+
+  it('drops the Hold flag clamped to [320, 800] in 20 lu steps, switching to Hold (A18.4.2)', () => {
+    expect(snapFlagP(100)).toBe(320);
+    expect(snapFlagP(911)).toBe(800);
+    expect(snapFlagP(531)).toBe(540);
+    const hold = model({ me: { stance: 'hold', holdP: 320 } });
+    expect(cmdOf(flagIntent(hold, 0, 509))).toEqual({ t: 'stance', side: 0, mode: 'hold', holdP: 500 });
+    expect(flagIntent(hold, 0, 325)).toEqual({ k: 'none' });
+    // From Charge the drop also switches to Hold, unless the stance wait runs.
+    expect(cmdOf(flagIntent(model(), 0, 400))).toEqual({ t: 'stance', side: 0, mode: 'hold', holdP: 400 });
+    expect(flagIntent(model({ me: { stanceWaitMs: 900 } }), 0, 400)).toEqual({ k: 'deny', target: 'flag' });
   });
 
   it('shows the Last Stand button only while armed or charging and when manual (A2.11, A8)', () => {
@@ -188,7 +212,11 @@ describe('keyboard (A2.12)', () => {
     expect(key('Backspace')).toEqual({ k: 'deny', target: 'army' });
     expect(cmdOf(key('q'))).toEqual({ t: 'buildTurret', side: 0, mount: 0, slot: 0 });
     expect(cmdOf(key('B'))).toEqual({ t: 'buyMount', side: 0 });
-    expect(cmdOf(key('t'))).toEqual({ t: 'research', side: 0, track: 'economy', rank: 1, pick: 0 });
+    expect(key('t')).toEqual({ k: 'none' });
+    expect(key('g')).toEqual({ k: 'council' });
+    // 6 trains the sixth slot (A18.9); the fake plan leaves it empty.
+    expect(key('6')).toEqual({ k: 'none' });
+    expect(cmdOf(key('6', withCard(m, 5, { card: 'bonker', state: 'ready' })))).toEqual({ t: 'train', side: 0, slot: 5 });
     expect(cmdOf(key('e'))).toEqual({ t: 'evolve', side: 0 });
     expect(cmdOf(key(' '))).toEqual({ t: 'power', side: 0 });
     expect(cmdOf(key('s'))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
@@ -197,8 +225,8 @@ describe('keyboard (A2.12)', () => {
     expect(key('f')).toEqual({ k: 'speed' });
   });
 
-  it('never pauses on Escape, ignores unknown keys and every key after the end', () => {
-    expect(key('Escape')).toEqual({ k: 'none' });
+  it('never pauses on Escape (it only closes the Council), ignores unknown keys and every key after the end', () => {
+    expect(key('Escape')).toEqual({ k: 'close' });
     expect(key('x')).toEqual({ k: 'none' });
     expect(key('1', { ...m, phase: 'ended' })).toEqual({ k: 'none' });
   });
@@ -233,7 +261,7 @@ describe('clock and warnings', () => {
 
   it('points a rejected command at the element that sends it', () => {
     expect(denyTargetFor('train')).toBe('army');
-    expect(denyTargetFor('research')).toBe('gold');
+    expect(denyTargetFor('research')).toBe('council');
     expect(denyTargetFor('buildTurret')).toBe('mounts');
     expect(denyTargetFor('power')).toBe('power');
     expect(denyTargetFor('emote')).toBe('emote');

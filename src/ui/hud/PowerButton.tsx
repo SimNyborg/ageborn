@@ -300,7 +300,11 @@ export function PowerButton(p: { c: HudCtx }) {
     }, POWER_HINT_DELAY_MS);
     return () => {
       clearInterval(poll);
-      if (hide) clearTimeout(hide);
+      // Hints switched off (the War Council sheet opened) or the power fired: the shown hint goes.
+      if (hide) {
+        clearTimeout(hide);
+        setHint(false);
+      }
     };
   }, [ready, hintsOn]);
 

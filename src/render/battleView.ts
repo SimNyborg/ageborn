@@ -47,6 +47,7 @@ import { FloatingNumbers, type LabelFactory } from './feel/numbers';
 import { ParticlePool, type ParticleHandle } from './feel/particlePool';
 import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
+import { HOLD_FLAG_FOOT_Y, HOLD_FLAG_TOP_Y, HoldFlagMarker } from './holdFlag';
 import { ageOrder, canEvolve } from './hudModel';
 import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
@@ -238,6 +239,9 @@ export class BattleView {
   private readonly shadows = new Graphics();
   private readonly zones = new ZoneOverlay();
   private readonly markers: MountMarkers;
+  /** Your Hold flag on the lane (A18.4.2) and the p a flag drag previews (null when not dragging). */
+  private readonly holdFlag = new HoldFlagMarker();
+  private flagGhostP: number | null = null;
   private readonly screenFx: EffectView[] = [];
   private readonly listeners = new Set<ViewEventListener>();
   private readonly ages: AgeId[];
@@ -306,6 +310,7 @@ export class BattleView {
     this.bases = [this.createBase(0), this.createBase(1)];
     this.layers.bars.addChild(this.bars.root);
     this.layers.telegraphs.addChild(this.zones.root, this.markers.root);
+    this.layers.structures.addChildAt(this.holdFlag.root, 0);
 
     this.applySettings(this.settings);
     this.resize(1280, 720);
@@ -480,6 +485,53 @@ export class BattleView {
   showBase(): void {
     if (!this.cameraActive()) return;
     if (!this.camera.inView(baseCenterX(this.mySide), -60)) this.camera.jumpHome();
+  }
+
+  // ------------------------------------------------------------------------------------------
+  // The Hold flag (A18.4.2): drawn here, dragged by the HUD.
+
+  private updateHoldFlag(realDt: number): void {
+    const me = this.sim.state.sides[this.mySide];
+    const rule = this.config.content.economy.holdFlag;
+    const on = !this.spectator && !this.ended && me.stance === 'hold';
+    this.holdFlag.update(realDt, {
+      on,
+      x: pToX(me.holdP / MILLI_LU, this.mySide),
+      color: teamColor(this.settings.teamPreset, this.mySide),
+      ghostX: this.flagGhostP === null || this.spectator ? null : pToX(this.flagGhostP, this.mySide),
+      range: [pToX(rule.minP, this.mySide), pToX(rule.maxP, this.mySide)],
+      dir: facingOf(this.mySide),
+      reduce: this.settings.reduceMotion,
+    });
+  }
+
+  /**
+   * Your Hold flag's screen point (view-local CSS px): its foot and the top of its pole, or null when
+   * it is not standing (not holding, spectating, match over).
+   */
+  holdFlagScreen(): { x: number; y: number; top: number } | null {
+    const me = this.sim.state.sides[this.mySide];
+    if (this.spectator || this.ended || me.stance !== 'hold') return null;
+    const x = pToX(me.holdP / MILLI_LU, this.mySide);
+    const foot = this.camera.worldToScreen(x, HOLD_FLAG_FOOT_Y);
+    const top = this.camera.worldToScreen(x, HOLD_FLAG_TOP_Y);
+    return { x: foot.x, y: foot.y, top: top.y };
+  }
+
+  /** Own-side p (lu, unclamped) under a client point, or null off the lane band: for the flag drag. */
+  flagPAt(clientX: number, clientY: number): number | null {
+    const r = this.inputEl?.getBoundingClientRect();
+    const sx = clientX - (r?.left ?? 0);
+    const sy = clientY - (r?.top ?? 0);
+    const L = this.camera.layout;
+    if (sx < 0 || sx > L.width || sy < L.bandY - L.bandH * 0.1 || sy > L.bandY + L.bandH * 1.1) return null;
+    return xToP(this.camera.screenToWorld(sx, sy).x, this.mySide);
+  }
+
+  /** Shows the flag drag's ghost at own-side p (lu), or hides it with null; holds the camera while shown. */
+  previewHoldFlag(p: number | null): void {
+    this.flagGhostP = p;
+    this.camera.hold('powerDrag', p !== null);
   }
 
   /** The screen point (view-local CSS px) of one of your mounts, for placing the HUD popover. */
@@ -724,6 +776,7 @@ export class BattleView {
     this.updateGhostTargets();
     this.zones.update(gameDt, t.scale, realDt);
     this.updateMarkers(realDt, t.scale);
+    this.updateHoldFlag(realDt);
     this.numbers.update(this.paused ? 0 : realDt, t.scale);
     this.drawBars(t.scale);
     this.drawShadows();
@@ -1163,6 +1216,7 @@ export class BattleView {
       case 'fxUnits':
         for (const e of this.units.values()) {
           if (e.side !== a.side || e.dying || !this.nearView(e.x)) continue;
+          if (a.roles && !(e.def && a.roles.includes(e.def.role))) continue;
           const at = this.anchor({ k: 'unit', id: e.id, part: 'hit' });
           const handles: ParticleHandle[] = [];
           this.particles.emit(a.effectId, 1, a.priority, at, { ...(a.opts ? { opts: a.opts } : {}), out: handles });

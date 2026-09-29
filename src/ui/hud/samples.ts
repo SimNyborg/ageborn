@@ -16,7 +16,7 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
   const lo = config.sides[side].loadouts[age];
   const fmt = config.content.formats[config.format];
   const eco = config.content.economy;
-  const cards: HudCard[] = [0, 1, 2, 3, 4].map((slot) => {
+  const cards: HudCard[] = [0, 1, 2, 3, 4, 5].map((slot) => {
     const card = lo?.units[slot] ?? null;
     const def = card ? config.content.units[card] : undefined;
     return { slot, card, cost: def?.cost ?? 0, queued: 0, trainFillBp: 0, state: card ? 'ready' : 'empty', foil: 'none' };
@@ -39,6 +39,9 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
       popCap: eco.popCap,
       stance: 'charge',
       stanceVisible: true,
+      holdP: 320,
+      stanceWaitMs: 0,
+      research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false },
       powerPpm: 640_000,
       power: lo?.power ?? '',
       lastStand: 'locked',
@@ -54,6 +57,8 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
       powerPpm: 420_000,
       lastStandArmed: false,
       scouted: [],
+      research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false },
+      stance: 'charge',
     },
     mounts: [0, 1, 2, 3].map((index) => ({ index, owned: index < 1, card: null, outdated: false, state: 'empty' as const })),
     speed: 1,
@@ -174,6 +179,20 @@ export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSa
         { index: 3, owned: false, card: null, outdated: false, state: 'empty' },
       ],
     }),
+    s('council', 'War Council: Granary researching (ring, seconds), their Watchtowers in progress, underdog discount', {
+      me: {
+        gold: 520,
+        research: { owned: ['troops.infantry.weapons'], current: 'economy.granary', progressBp: 4200, leftMs: 5800, ranksOpen: 2, discount: true },
+      },
+      foe: { ageIndex: Math.min(1, lastAge), research: { owned: ['economy.granary'], current: 'defences.watchtowers', progressBp: 6500, leftMs: 3500, ranksOpen: 2, discount: false } },
+    }),
+    s('councilReady', 'War Council idle with something affordable: the green dot and gold halo', {
+      me: { gold: 400, research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false } },
+    }),
+    s('holdStance', 'Hold stance with the flag forward; stance wait running (3 s cooldown)', {
+      me: { stance: 'hold', holdP: 560, stanceWaitMs: 1800 },
+    }),
+    s('fallback', 'Fall back stance', { me: { stance: 'fallback' } }),
     s('fast', 'Speed 2x and paused', { speed: 2, paused: true }),
     s('ended', 'Match over: the tray is disabled', { phase: 'ended', clockMs: 402_000, foe: { baseHpBp: 0 } }),
   ];

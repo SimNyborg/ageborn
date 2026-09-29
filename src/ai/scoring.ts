@@ -66,6 +66,8 @@ export const SCORE = {
   power: 10000,
   lastStand: 20000,
   stance: 15000,
+  /** A Hold flag move (A18.4.2): below a stance change, above training. */
+  flag: 14000,
   /** A power cast right before an own Evolve, so the 50% carry cap does not waste charge (A2.13). */
   powerBeforeEvolve: 13000,
   /** While a saving goal is active, candidates below this wait (a train paused by f_save lands below it). */

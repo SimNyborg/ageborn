@@ -6,7 +6,7 @@
  * (`xpBp` is XP as bp of the current threshold, can exceed 10,000 up to the 1.5× cap; in the final age
  * of the format it is measured against the Overcharge amount), power charge is ppm, times are ms.
  */
-import type { AgeId, CardId, CardState, Foil, HudCard, HudModel, MatchConfig, Observation, Side, SimState } from '@/contracts';
+import type { AgeId, CardId, CardState, Foil, HudCard, HudModel, HudResearch, MatchConfig, Observation, Side, SideState, SimState } from '@/contracts';
 import { incomeMilliPerSec, matchMods, nextIncomePick, researchCost, type MatchMods } from '@/core';
 
 /** HUD refresh rate (B6). */
@@ -83,6 +83,39 @@ export function canEvolve(state: Readonly<SimState>, config: Readonly<MatchConfi
 
 function hpBp(hp: number, max: number): number {
   return max > 0 ? Math.max(0, Math.floor((hp * 10000) / max)) : 0;
+}
+
+/** Base HP in bp as the sim's underdog rule reads it (truncated, never below 0). */
+function simHpBp(s: Readonly<SideState>): number {
+  if (s.baseMaxHp <= 0) return 0;
+  return Math.trunc((Math.max(0, s.baseHp) * 10000) / s.baseMaxHp);
+}
+
+/**
+ * The underdog research discount (A18.5.1), read exactly as the sim reads it: a lower age position
+ * than the enemy's, or a base HP 20 or more points below theirs.
+ */
+export function researchDiscount(state: Readonly<SimState>, config: Readonly<MatchConfig>, side: Side): boolean {
+  const u = config.content.research.underdog;
+  if (u.discountBp <= 0) return false;
+  const me = state.sides[side];
+  const foe = state.sides[other(side)];
+  if (me.ageIndex < foe.ageIndex) return true;
+  return u.baseGapBp > 0 && simHpBp(foe) - simHpBp(me) >= u.baseGapBp;
+}
+
+/** A side's War Council for the HUD (A18.5.7), from its observation view and the research timer. */
+function hudResearch(state: Readonly<SimState>, config: Readonly<MatchConfig>, side: Side, view: Observation['me']['research']): HudResearch {
+  const r = state.sides[side].research;
+  const busy = r.cur >= 0;
+  return {
+    owned: [...view.owned],
+    current: view.current,
+    progressBp: view.progressBp,
+    leftMs: busy ? Math.max(0, (r.endTick - state.tick) * 50) : 0,
+    ranksOpen: view.ranksOpen,
+    discount: researchDiscount(state, config, side),
+  };
 }
 
 /**
@@ -209,6 +242,9 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
       popCap: eco.popCap,
       stance: me.stance,
       stanceVisible: config.training?.stanceEnabled?.[side] ?? true,
+      holdP: obsMe.holdP,
+      stanceWaitMs: Math.max(0, (me.stanceReadyTick - state.tick) * 50),
+      research: hudResearch(state, config, side, obsMe.research),
       powerPpm: me.powerPpm,
       power: loadout?.power ?? '',
       lastStand: me.lastStand,
@@ -224,6 +260,8 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
       powerPpm: foe.powerPpm,
       lastStandArmed: foe.lastStand === 'armed' || foe.lastStand === 'charging',
       scouted: [...obs.foe.scouted],
+      research: hudResearch(state, config, foeSide, obs.foe.research),
+      stance: obs.foe.stance,
     },
     mounts: [0, 1, 2, 3].map((index) => {
       const t = me.turrets[index] ?? null;

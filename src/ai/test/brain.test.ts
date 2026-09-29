@@ -209,6 +209,7 @@ describe('push gate, banking and stance (A7.2)', () => {
     expect(t.banking).toBe(true);
     expect(t.defence).toBe(300);
     expect(t.goal).toEqual({ kind: 'treasury', amount: 150 * MILLI });
+    // A18.4.2: tier V moves the flag; with no army out it stays at the default (320).
     expect(t.action).toEqual({ kind: 'stance', stance: 'hold' });
     expect(kinds(t)).not.toContain('train');
   });
@@ -225,7 +226,7 @@ describe('push gate, banking and stance (A7.2)', () => {
     expect(t.pushOk).toBe(false);
     expect(t.banking).toBe(false);
     // It still holds at the line while the wave gathers; the trains are on the table.
-    expect(t.action).toEqual({ kind: 'stance', stance: 'hold' });
+    expect(t.action).toMatchObject({ kind: 'stance', stance: 'hold' });
     expect(kinds(t)).toContain('train');
   });
 
@@ -291,8 +292,10 @@ describe('saving goals and economy', () => {
     expect(t.action).toMatchObject(GRANARY);
   });
 
-  it('does not buy Treasury after 3:00, above the tier max, or with enemies on its own half (A17.13)', () => {
-    expect(kinds(decide(brainFor({ tier: 7, tierOverride: NO_CRAFT }).brain, observation({ tick: 3700, gold: 600 * MILLI })))).not.toContain('treasury');
+  it('does not buy Treasury late (3/5 of the Overdrive time: 7:12 in Full War), above the tier max, or with enemies on its own half (A17.13)', () => {
+    expect(kinds(decide(brainFor({ tier: 7, tierOverride: NO_CRAFT }).brain, observation({ tick: 8700, gold: 600 * MILLI })))).not.toContain('treasury');
+    // Before then it does.
+    expect(kinds(decide(brainFor({ tier: 7, tierOverride: NO_CRAFT }).brain, observation({ tick: 8500, gold: 600 * MILLI })))).toContain('treasury');
     expect(kinds(decide(brainFor({ tier: 1 }).brain, observation({ tick: 600, gold: 600 * MILLI })))).not.toContain('treasury');
     expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 600, gold: 600 * MILLI, units: [unit(0, 'bonker', L / 2 - 50)] })))).not.toContain(
       'treasury',
@@ -523,37 +526,37 @@ describe('answers to spam (A16.3)', () => {
 describe('upper-tier craft (owner feedback 2026-09-28)', () => {
   const foeTurret = { turrets: [{ card: 'rock_tosser', age: 'stone' as const }, null, null, null] };
 
-  it('waves: needs a 15% margin over the gate to go, then keeps charging until half the wave is lost', () => {
-    const { brain } = brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } });
+  it('waves: needs a 15% margin over the gate to go, then keeps charging until half the wave is lost or it is worth less than D', () => {
+    const { brain } = brainFor({ tier: 7, tierOverride: { treasuryMax: 0, punishThin: false } });
     const army = (n: number) => Array.from({ length: n }, (_, i) => unit(1, 'bonker', 300 + i * 10));
     // D = 300, gate ×1.3 = 390; 8 Bonkers (400) pass the plain gate but not the 15% margin (448).
     expect(decide(brain, observation({ tick: 1000, units: army(8), foe: foeTurret })).pushOk).toBe(false);
     // 9 Bonkers (450) start a wave ...
     expect(decide(brain, observation({ tick: 1010, units: army(9), foe: foeTurret })).pushOk).toBe(true);
-    // ... that keeps going at 5 (250 ≥ half of 450), though the plain gate would now fail ...
-    expect(decide(brain, observation({ tick: 1020, units: army(5), foe: foeTurret })).pushOk).toBe(true);
-    // ... and ends at 4 (200 < 225).
-    expect(decide(brain, observation({ tick: 1030, units: army(4), foe: foeTurret })).pushOk).toBe(false);
+    // ... that keeps going at 7 (350 ≥ half of 450 and ≥ D), though the plain gate would now fail ...
+    expect(decide(brain, observation({ tick: 1020, units: army(7), foe: foeTurret })).pushOk).toBe(true);
+    // ... and ends at 5 (250 < D = 300; A18 retune).
+    expect(decide(brain, observation({ tick: 1030, units: army(5), foe: foeTurret })).pushOk).toBe(false);
     // Without the craft (tier V) the plain gate flips at once.
     const { brain: plain } = brainFor({ tier: 5 });
     expect(decide(plain, observation({ tick: 1000, units: army(8), foe: foeTurret })).pushOk).toBe(true);
   });
 
-  it('buys Treasury after 3:00 against a passive foe while it pays back within 4:00; tier V does not', () => {
+  it('buys Treasury late (after 7:12 in Full War) against a passive foe while it pays back within 4:00; tier V does not', () => {
     // No enemy has been on the bot's half since the start: a passive foe. (An own unit past mid-lane a
     // moment ago keeps the attack clock at ×1.)
-    const history = [observation({ tick: 3650, units: [unit(1, 'bonker', L / 2 + 100)] })];
-    expect(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 600 * MILLI }), { history }).action).toMatchObject(GRANARY);
-    expect(kinds(decide(brainFor({ tier: 5 }).brain, observation({ tick: 3700, gold: 600 * MILLI })))).not.toContain('treasury');
+    const history = [observation({ tick: 8650, units: [unit(1, 'bonker', L / 2 + 100)] })];
+    expect(decide(brainFor({ tier: 7 }).brain, observation({ tick: 8700, gold: 600 * MILLI }), { history }).action).toMatchObject(GRANARY);
+    expect(kinds(decide(brainFor({ tier: 5 }).brain, observation({ tick: 8700, gold: 600 * MILLI })))).not.toContain('treasury');
     // Both income picks owned (Granary, Market): nothing left to buy.
     const both = { owned: ['economy.granary', 'economy.market'], current: null, progressBp: 0, ranksOpen: 2 };
-    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 900 * MILLI, treasury: 2, research: both })))).not.toContain('treasury');
+    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 8700, gold: 900 * MILLI, treasury: 2, research: both })))).not.toContain('treasury');
     // A foe on the bot's half in the last 20 s is not passive.
     const mem = new BotMemory(book);
-    const raid = observation({ tick: 3400, units: [unit(0, 'bonker', 700)] });
-    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, gold: 600 * MILLI }), { history: [raid], memory: mem }))).not.toContain('treasury');
+    const raid = observation({ tick: 8400, units: [unit(0, 'bonker', 700)] });
+    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 8700, gold: 600 * MILLI }), { history: [raid], memory: mem }))).not.toContain('treasury');
     // Not in Overdrive.
-    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 3700, phase: 'overdrive', gold: 600 * MILLI })))).not.toContain('treasury');
+    expect(kinds(decide(brainFor({ tier: 7 }).brain, observation({ tick: 8700, phase: 'overdrive', gold: 600 * MILLI })))).not.toContain('treasury');
   });
 
   it('does not spend a Treasury goal into a push-gate wave', () => {

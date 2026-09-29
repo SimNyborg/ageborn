@@ -518,6 +518,13 @@ export class EventMapper {
         let milli = 0;
         for (const fx of pick?.effects ?? []) if (fx.kind === 'income') milli += fx.milliGoldPerSec;
         if (ev.side === this.mySide && milli > 0) out.push({ a: 'number', kind: 'income', value: milli / 1000, at: { k: 'base', side: ev.side, part: 'center' }, important: true });
+        // A18.5.1: completion sends a shimmer along the units of the pick's class. Visual only: those
+        // units keep their stats; the pick applies to units trained from now on (A18.2 rule 2).
+        if (pick?.track === 'troops' && pick.group) {
+          const cls = this.content.research.classOfRole;
+          const roles = (Object.keys(cls) as (keyof typeof cls)[]).filter((r) => cls[r] === pick.group);
+          out.push({ a: 'fxUnits', effectId: 'fx.decree_glow', side: ev.side, priority: 2, roles });
+        }
         return;
       }
       // The War Council HUD (A18.5.7) reads research from the observation; no view action yet.

@@ -79,7 +79,17 @@ function roundRect(g: CanvasRenderingContext2D, x: number, y: number, w: number,
 }
 
 /** Draws one frame of the strip (A17.5 content, back to front). `t` is a clock in ms for pulses. */
-export function drawMinimap(g: CanvasRenderingContext2D, m: HudMinimap, w: number, h: number, colors: { me: string; foe: string }, t: number, big: boolean): void {
+export function drawMinimap(
+  g: CanvasRenderingContext2D,
+  m: HudMinimap,
+  w: number,
+  h: number,
+  colors: { me: string; foe: string },
+  t: number,
+  big: boolean,
+  /** Your Hold flag (A18.4.2), own-side p in lu, or null when not holding. */
+  flagP: number | null = null,
+): void {
   g.clearRect(0, 0, w, h);
   const X = (x: number): number => minimapX(x, m, w);
   const col = (side: 0 | 1): string => (side === m.mySide ? colors.me : colors.foe);
@@ -193,6 +203,31 @@ export function drawMinimap(g: CanvasRenderingContext2D, m: HudMinimap, w: numbe
     }
   }
 
+  // The Hold flag: a small pennant on a pole in your colour (A18.4.2).
+  if (flagP !== null) {
+    const fx = X(m.mySide === 0 ? flagP : m.lane - flagP);
+    const dir = m.mySide === 0 ? 1 : -1;
+    g.strokeStyle = 'rgba(20, 12, 36, 0.95)';
+    g.lineWidth = 3;
+    g.beginPath();
+    g.moveTo(fx, h - 1);
+    g.lineTo(fx, 1);
+    g.stroke();
+    g.strokeStyle = '#fff8e8';
+    g.lineWidth = 1.2;
+    g.stroke();
+    g.fillStyle = colors.me;
+    g.strokeStyle = 'rgba(20, 12, 36, 0.95)';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.moveTo(fx, 1);
+    g.lineTo(fx + dir * Math.max(6, h * 0.45), 1 + h * 0.2);
+    g.lineTo(fx, 1 + h * 0.42);
+    g.closePath();
+    g.fill();
+    g.stroke();
+  }
+
   // 7. The camera window.
   const vx0 = X(m.view.left);
   const vx1 = X(m.view.right);
@@ -269,6 +304,9 @@ export function Minimap(p: { c: HudCtx }) {
   const uiRef = useRef<StripUi | null>(null);
   const snap = useRef<HudMinimap | null>(null);
   const press = useRef<{ id: number; x: number; scrub: boolean; grab: number } | null>(null);
+  // The Hold flag for the strip, read by the draw loop.
+  const flag = useRef<number | null>(null);
+  flag.current = c.m.me.stance === 'hold' && c.m.me.holdP !== undefined && c.m.phase !== 'ended' ? c.m.me.holdP : null;
 
   useEffect(() => {
     if (!view?.minimap) return undefined;
@@ -295,7 +333,7 @@ export function Minimap(p: { c: HudCtx }) {
       const g = el.getContext('2d');
       if (g) {
         g.setTransform(dpr, 0, 0, dpr, 0, 0);
-        drawMinimap(g, m, w, h, { me: cssVar(el, '--hud-me', '#3b82f6'), foe: cssVar(el, '--hud-foe', '#f97316') }, now, h >= 20);
+        drawMinimap(g, m, w, h, { me: cssVar(el, '--hud-me', '#3b82f6'), foe: cssVar(el, '--hud-foe', '#f97316') }, now, h >= 20, flag.current);
       }
       const next = stripUi(m);
       if (!sameUi(uiRef.current, next)) {

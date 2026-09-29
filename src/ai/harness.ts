@@ -100,7 +100,8 @@ export function runHeadless(
 ): HeadlessResult {
   const match = new BotMatch(sim, seats);
   const rejected: (SimEvent & { e: 'commandRejected' })[] = [];
-  const max = o.maxTicks ?? 20000;
+  // A18.3.4: Full War's Final Bell is 17:30 (21,000 ticks); 20:00 leaves room for any window.
+  const max = o.maxTicks ?? 24000;
   while (!match.ended && sim.state.tick < max) {
     const ev = match.tick();
     for (const e of ev) if (e.e === 'commandRejected') rejected.push(e);

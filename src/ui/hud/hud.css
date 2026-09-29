@@ -989,7 +989,7 @@
   pointer-events: none;
 }
 
-/* Gold counter: tap buys the income upgrade (Treasury). */
+/* Gold counter: tap opens the War Council on the Economy track (A18.5.4). */
 .hud-gold {
   position: relative;
   display: flex;
@@ -1019,6 +1019,17 @@
   width: 94px;
 }
 
+/* Phones: six cards, the Council button and the stance control share 844 px (A18.9, A18.5.7). */
+@container hud (max-height: 499px) {
+  .hud.is-compact .hud-gold {
+    width: 80px;
+  }
+
+  .hud.is-compact .hud-cards.hud-cards {
+    gap: 4px;
+  }
+}
+
 .hud-gold-main {
   display: flex;
   align-items: center;
@@ -1040,28 +1051,9 @@
   font-size: 1.7em;
 }
 
-.hud.is-compact .hud-gold-treasury {
-  padding: 0 5px;
-  font-size: 0.72em;
-}
-
 .hud-gold-rate {
   color: #fff3c4;
   font-size: 0.85em;
-}
-
-.hud-gold-treasury {
-  padding: 1px 7px;
-  border-radius: 99px;
-  background: rgba(0, 0, 0, 0.3);
-  color: var(--hud-dim);
-  font-size: 0.8em;
-  white-space: nowrap;
-}
-
-.hud-gold.can-buy .hud-gold-treasury {
-  background: var(--hud-gold);
-  color: var(--hud-ink);
 }
 
 /* Coins landing pop the counter up to 1.15 (audit #25). */
@@ -1617,34 +1609,6 @@
 
 .hud-army-count.is-full {
   background: #8a2430;
-}
-
-.hud-stance {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 36px;
-  padding: 0 8px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 10px;
-  background: linear-gradient(180deg, #54447f, #2e2450);
-  font-size: 0.95em;
-  text-transform: uppercase;
-}
-
-.hud-stance.stance-charge {
-  color: #ffd9b0;
-}
-
-.hud-stance.stance-hold {
-  color: #bfe0ff;
-}
-
-.hud-stance .hud-key {
-  top: -8px;
-  left: -6px;
 }
 
 /* Age Power: charge ring and name; tap = auto-aim, drag = place. Full: burst, bob and "READY". */

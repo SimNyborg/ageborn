@@ -9,10 +9,12 @@
  * | Buy mount (all owned mounts filled) | 0.8 · m_turret · f_pressure · f_spare |
  * | Modernise | 0.8 · m_turret · [turret age < current age] · f_spare |
  * | Economy income research (was Treasury, A18.5.4) | m_econ · [before 3:00] · [no enemy on its own half (A17.13; 600 lu on the old 1,200 lu lane)] · [level < tier max] · f_spare |
- * | Other research (A18.5.8) | a saving goal once the tier's research time has come, then the goal bonus; picked at random (0-I), by `aiHint` (II-IV) or by counter scoring (V+) |
+ * | Other research (A18.5.8) | a saving goal once the tier's research time has come and enough match is left, then the goal bonus; picked at random weighted by the General's style (0-I), by `aiHint` against its own situation (II-IV) or by counter scoring on the enemy army (V+; Rook also reads the Scouted list) |
+ * | Research timing (A18.5.8) | V-VI: the push gate eases for 20 s after an own Troops item lands; VII-X also while the enemy's Troops item is past half, stiffens for 15 s after it lands, and evolves away from it |
+ * | Thin army (A18.6) | Normal (IV) and up push whenever myArmy ≥ 1.5 × foeArmy (and can soak the turrets) |
  * | Evolve | 1.2 when XP ≥ threshold and (no enemy ground unit within 300 lu of own gate, or m_greed ≥ 1.3), after the tier's evolve delay |
  * | Power | 1.0 when the best zone's enemy value ≥ tier threshold × m_patience, or own base took damage in the last 3 s and zone value ≥ 100; aim error applied |
- * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; otherwise Charge |
+ * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; Fall back (V+) when myArmy < 0.5 × foeArmy and the enemy is past mid-lane; otherwise Charge. The Hold flag (III+, A18.4.2) goes where the turrets cover when defending, or forward where the army gathers for a wave |
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
  *
  * Plus the push gate, the attack clock, saving goals, the gold float target (A7.3), openings and the
@@ -40,7 +42,7 @@ import {
   type Sfc32State,
 } from '@/core';
 import type { BotAction } from './actions';
-import type { CardBook } from './book';
+import { matchClock, type CardBook, type MatchClock } from './book';
 import {
   counterTargets,
   fCounter,
@@ -50,7 +52,7 @@ import {
   sampleOfUnits,
   type CounterContext,
 } from './counters';
-import type { BotMemory } from './memory';
+import { isTroops, type BotMemory } from './memory';
 import { pickMistake, type MistakeKind, type MistakeOptions } from './mistakes';
 import { parseOpenings, resolveStep, type OpeningPlan } from './openings';
 import type { Personality } from './personalities';
@@ -128,9 +130,41 @@ export interface BrainConfig {
 const GATE_ZONE = 500 * MILLI;
 /** Push gate: each enemy turret counts as 300 gold of defence. */
 const TURRET_DEFENCE = 300;
+/**
+ * Income research while the lane is quiet: before 3:00 and paying back by 6:00 in a format without
+ * clocks. With clocks (A18.3.4) both follow the match: before 3/5 of the Overdrive time, and paid back
+ * by a minute into Overdrive (Short 3:00 / 6:00 as before, Standard 4:48 / 9:00, Full 7:12 / 13:00).
+ */
 const TREASURY_BEFORE_TICKS = 180 * TICKS_PER_SECOND;
-/** A quiet-lane Treasury level must pay for itself by 6:00 (A2.3 payback 133 / 233 / 367 s). */
 const TREASURY_PAYBACK_BY_TICKS = 360 * TICKS_PER_SECOND;
+const PAYBACK_AFTER_OVERDRIVE = 60 * TICKS_PER_SECOND;
+/** No new research with less than this left before the Final Bell: it would not pay (A18.5.8 "value over the rest"). */
+const RESEARCH_HORIZON_TICKS = 90 * TICKS_PER_SECOND;
+/** Research timing (A18.5.8): the push gate × 0.8 for 20 s after an own Troops item lands (V+) ... */
+const OWN_DONE_TICKS = 20 * TICKS_PER_SECOND;
+const OWN_DONE_GATE_BP = 8000;
+/** ... × 0.9 while the enemy's Troops item is past half (strike before it lands, VII+) ... */
+const FOE_STRIKE_FROM_BP = 5000;
+const FOE_STRIKE_GATE_BP = 9000;
+/** ... and × 1.15 for 15 s after it lands (let the fresh enemy wave come, VII+). */
+const FOE_FRESH_TICKS = 15 * TICKS_PER_SECOND;
+const FOE_FRESH_GATE_BP = 11500;
+/** The timed gate never drops below 0.8 × D. */
+const TIMED_GATE_MIN_BP = 8000;
+/** A18.6 thin army: myArmy ≥ 1.5 × foeArmy, worth at least 250 gold. */
+const THIN_RATIO_BP = 15000;
+const THIN_MIN_ARMY = 250;
+/** A18.4.2 Fall back: myArmy < 0.5 × foeArmy (foe worth 300+) with the enemy past mid-lane. */
+const FALLBACK_RATIO_BP = 5000;
+const FALLBACK_MIN_FOE = 300;
+/** Hold flag spots: this far inside the turret cover when defending ... */
+const FLAG_COVER_MARGIN = 80 * MILLI;
+/** ... and, gathering a wave, this far short of mid-lane and of the nearest enemy ground unit. */
+const FLAG_STAGE_GAP = 200 * MILLI;
+/** A flag move smaller than this is not worth a command. */
+const FLAG_MIN_MOVE = 60 * MILLI;
+/** The over-commit mistake (Hold → Charge) only after holding this long. */
+const OVERCOMMIT_AFTER_TICKS = 15 * TICKS_PER_SECOND;
 /** Evolve only while no enemy ground unit is within 300 lu of the own gate (unless greedy). */
 const EVOLVE_SAFE = 300 * MILLI;
 /** m_greed ≥ 1.3 ignores the evolve safety check. */
@@ -210,7 +244,11 @@ const COUNTER_GOAL_LAPSE = 300 * MILLI;
 const MONO_FROM_BP = 4000;
 const MONO_SLOPE = 25;
 const MONO_MAX_BP = 20000;
-/** `waveCommit`: a committed wave ends once it has lost half its peak value ... */
+/**
+ * `waveCommit`: a committed wave ends once it has lost half its peak value, or once it is worth less
+ * than the defence D it faces (A18 retune: charging on below D fed the defender, and tier VI lost 65% of
+ * Standard Wars to tier V) ...
+ */
 const WAVE_END_BP = 5000;
 /** ... and a new one needs the push gate plus this margin. */
 const WAVE_MARGIN_BP = 11500;
@@ -250,6 +288,13 @@ export function monoFactorBp(foes: readonly { value: number; def?: { group: Role
   for (const x of by.values()) top = Math.max(top, x);
   const shareBp = Math.trunc((top * BP) / total);
   return Math.min(MONO_MAX_BP, BP + Math.trunc((MONO_SLOPE * Math.max(0, shareBp - MONO_FROM_BP)) / 10));
+}
+
+/** When income research is worth buying on a quiet lane (see TREASURY_BEFORE_TICKS). */
+function incomeTiming(clock: MatchClock): { before: number; paybackBy: number } {
+  const od = clock.overdrive;
+  if (od === null) return { before: TREASURY_BEFORE_TICKS, paybackBy: TREASURY_PAYBACK_BY_TICKS };
+  return { before: Math.trunc((od * 3) / 5), paybackBy: od + PAYBACK_AFTER_OVERDRIVE };
 }
 
 export class Brain {
@@ -306,15 +351,19 @@ export class Brain {
     const quiet = v.now - mem.pastMidTick;
     const clockSteps = quiet >= CLOCK_START ? Math.trunc((quiet - CLOCK_START) / CLOCK_STEP) : 0;
     const clockBp = Math.min(CLOCK_MAX_BP, BP + CLOCK_STEP_BP * clockSteps);
-    const gateBp = hot ? BP : Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
+    const clock = matchClock(book, obs.ages);
+    const baseGateBp = Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
+    const gateBp = hot ? BP : Math.max(TIMED_GATE_MIN_BP, mulBp(baseGateBp, this.researchTimingBp(v, mem)));
     // An army at the pop cap cannot grow by banking, so it goes.
     const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
-    let pushOk = siege || popFull || v.myArmy * BP >= gateBp * defence;
+    // A18.6 (Normal and up): an army 1.5× the enemy's that can soak its turrets goes, whatever the gate.
+    const thin = t.punishThin && v.myArmy >= THIN_MIN_ARMY && v.myArmy * BP >= THIN_RATIO_BP * v.foeArmy && v.myArmy >= TURRET_DEFENCE * foeTurrets;
+    let pushOk = siege || popFull || thin || v.myArmy * BP >= gateBp * defence;
     if (t.waveCommit) {
       // Waves, not trickles (owner feedback 2026-09-28): a wave that passed the gate keeps going until it
-      // has lost half its peak value; a new wave needs a 15% margin over the gate.
-      if (this.wavePeak !== null && v.myArmy < mulBp(this.wavePeak, WAVE_END_BP)) this.wavePeak = null;
-      if (this.wavePeak === null && (siege || popFull || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) this.wavePeak = v.myArmy;
+      // has lost half its peak value or is worth less than D; a new wave needs a 15% margin over the gate.
+      if (this.wavePeak !== null && (v.myArmy < mulBp(this.wavePeak, WAVE_END_BP) || v.myArmy < defence)) this.wavePeak = null;
+      if (this.wavePeak === null && (siege || popFull || thin || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) this.wavePeak = v.myArmy;
       if (this.wavePeak !== null) this.wavePeak = Math.max(this.wavePeak, v.myArmy);
       pushOk = siege || this.wavePeak !== null;
     }
@@ -337,6 +386,7 @@ export class Brain {
     const incomePick = nextIncomePick(book.content, v.research);
     const nextTreasury = incomePick ? researchCost(book.content, incomePick) * MILLI : null;
     const incomePerSec = incomePick ? Math.max(1, pickIncomeMilliPerSec(incomePick)) : 1;
+    const incomeWindow = incomeTiming(clock);
     const rushing = P.treasuryRushLevel > 0 && v.treasury < P.treasuryRushLevel && v.now < msToTicks(P.treasuryRushByMs);
     const legendaryCard = v.tray.find((s) => s.card.legendary)?.card ?? null;
     const mono = monoFactorBp(v.foes);
@@ -351,9 +401,9 @@ export class Brain {
       // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
       const quietGate = !v.foes.some((u) => u.p <= e.midLane);
       // In a quiet moment a level is only worth it while it still pays back by 6:00.
-      const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / incomePerSec) <= TREASURY_PAYBACK_BY_TICKS;
-      const research = this.researchDue(v) ? this.plannedResearch(v, mem, rng) : null;
-      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < TREASURY_BEFORE_TICKS) || (quietGate && this.passiveTreasury(v, mem, nextTreasury, incomePerSec)))) {
+      const paysBack = nextTreasury !== null && v.now + Math.trunc((nextTreasury * TICKS_PER_SECOND) / incomePerSec) <= incomeWindow.paybackBy;
+      const research = this.researchDue(v, clock) ? this.plannedResearch(v, mem, rng) : null;
+      if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < incomeWindow.before) || (quietGate && this.passiveTreasury(v, mem, nextTreasury, incomePerSec)))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
       } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP && !gateFailed) {
         // A16.3 rule 4: no Legendary saving goal while the push gate fails.
@@ -426,7 +476,7 @@ export class Brain {
     }
 
     // Economy income research (the Treasury before A18.5.4).
-    if (incomePick && nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < TREASURY_BEFORE_TICKS || rushing || this.passiveTreasury(v, mem, nextTreasury, incomePerSec))) {
+    if (incomePick && nextTreasury !== null && v.treasury < treasuryMax && v.gold >= nextTreasury && (v.now < incomeWindow.before || rushing || this.passiveTreasury(v, mem, nextTreasury, incomePerSec))) {
       const safe = !v.foes.some((u) => u.p <= e.midLane);
       if (safe) add({ kind: 'research', pick: incomePick, cost: nextTreasury }, mulBp(W.economy, fSpare(v.gold, nextTreasury)) + goalBonus('treasury'));
     }
@@ -447,7 +497,9 @@ export class Brain {
     // acts at once only on XP above the threshold, and otherwise after its cap as before.
     const earlyOk = t.safeWindowEvolve && obs.me.xpBp > BP;
     if (v.evolveReady && !P.neverEvolves && evolveWaited >= 0 && (earlyOk || evolveWaited >= t.evolveDelayTicks)) {
-      const safe = t.safeWindowEvolve ? this.safeWindow(v) || evolveWaited >= t.evolveDelayTicks : true;
+      // VII-X evolve away from the enemy's research (A18.5.8): not while its fresh Troops wave is on the bot's half.
+      const foeFresh = t.researchTiming === 'both' && obs.tick - mem.foeTroopsDoneTick <= FOE_FRESH_TICKS && v.foes.some((u) => !u.air && u.p < e.midLane);
+      const safe = t.safeWindowEvolve ? (this.safeWindow(v) && !foeFresh) || evolveWaited >= t.evolveDelayTicks : true;
       if (safe || W.greed >= GREEDY_BP) {
         evolveWanted = true;
         // Kettle pushes first: Evolve waits while units can still be trained into the all-in.
@@ -475,16 +527,27 @@ export class Brain {
       else if (zone.value > 0) opts.powerOnFew = { kind: 'power', p: zone.p === null ? null : Math.trunc(zone.p / MILLI) };
     }
 
-    // Stance. A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her tiers too.
-    if ((t.hold || P.holdAnyTier) && !this.opening.noStance && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
-      const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && (v.turretsBuilt >= HOLD_MIN_TURRETS || (mono >= HOLD_MONO_BP && v.foeArmy >= HOLD_MONO_ARMY));
+    // Stance (A18.4.2). A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her
+    // tiers too. Fall back from tier V when badly outnumbered with the enemy past mid-lane; the Hold flag
+    // moves from tier III (tiers 0-II keep it at the default).
+    const stanceTier = (t.hold || P.holdAnyTier) && !this.opening.noStance;
+    const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && (v.turretsBuilt >= HOLD_MIN_TURRETS || (mono >= HOLD_MONO_BP && v.foeArmy >= HOLD_MONO_ARMY));
+    if (stanceTier && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
+      const falling =
+        t.fallback && !siege && !allIn && v.myArmy > 0 && v.foeArmy >= FALLBACK_MIN_FOE && v.myArmy * BP < mulBp(FALLBACK_RATIO_BP, v.foeArmy) && v.foeFront !== null && v.foeFront < e.midLane;
       const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
-      const want = wantHold ? 'hold' : 'charge';
+      const want = falling ? 'fallback' : wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
-        add({ kind: 'stance', stance: want }, SCORE.stance);
-      } else if (want === 'hold') {
+        const spot = want === 'hold' && t.movesFlag ? this.flagSpot(v, weak) : null;
+        add(spot !== null && spot * MILLI !== v.holdP ? { kind: 'stance', stance: want, holdP: spot } : { kind: 'stance', stance: want }, SCORE.stance);
+      } else if (want !== 'charge' && v.now - this.stanceTick >= OVERCOMMIT_AFTER_TICKS) {
         opts.overCommit = { kind: 'stance', stance: 'charge' };
       }
+    }
+    // Hold flag moves while Holding (no stance cooldown, at most once per 1 s).
+    if (stanceTier && t.movesFlag && v.stance === 'hold' && v.flagReady && !siege) {
+      const spot = this.flagSpot(v, weak);
+      if (Math.abs(spot * MILLI - v.holdP) >= FLAG_MIN_MOVE) add({ kind: 'flag', holdP: spot }, SCORE.flag);
     }
 
     // Last Stand. It fires on its own at 10%; if the base may reach that before the command runs, the
@@ -598,11 +661,67 @@ export class Brain {
     return pick;
   }
 
-  /** The tier's research time has come (A18.5.8: first research, then at most one start per gap). */
-  private researchDue(v: View): boolean {
+  /**
+   * The tier's research time has come (A18.5.8: first research, then at most one start per gap), and
+   * enough of the match is left for an item to pay back ("value over the rest").
+   */
+  private researchDue(v: View, clock: MatchClock): boolean {
     const t = this.cfg.tier;
     if (v.research.current !== null || v.phase === 'siege') return false;
+    if (clock.finalBell !== null && clock.finalBell - v.now < RESEARCH_HORIZON_TICKS) return false;
     return v.now >= t.researchFromTicks && v.now - this.researchTick >= t.researchGapTicks;
+  }
+
+  /**
+   * The push gate factor from research timing (A18.5.8 "Uses enemy research"), bp. V-VI push when their
+   * own Troops item lands; VII-X also strike while the enemy's Troops item is past half and let its
+   * fresh wave come first. All from public research (A7.1).
+   */
+  private researchTimingBp(v: View, mem: BotMemory): number {
+    const t = this.cfg.tier;
+    if (t.researchTiming === 'none') return BP;
+    const tick = v.obs.tick;
+    let bp = BP;
+    if (tick - mem.ownTroopsDoneTick <= OWN_DONE_TICKS) bp = mulBp(bp, OWN_DONE_GATE_BP);
+    if (t.researchTiming === 'both') {
+      const foe = v.obs.foe.research;
+      if (foe && isTroops(foe.current) && foe.progressBp >= FOE_STRIKE_FROM_BP) bp = mulBp(bp, FOE_STRIKE_GATE_BP);
+      else if (tick - mem.foeTroopsDoneTick <= FOE_FRESH_TICKS) bp = mulBp(bp, FOE_FRESH_GATE_BP);
+    }
+    return bp;
+  }
+
+  /**
+   * Where the Hold flag goes (A18.4.2), whole lu: defending, just inside the turret cover (the default
+   * without turrets); gathering a wave with the lane clear, where its army value is highest, short of
+   * mid-lane and of the nearest enemy ground unit. War Horns' damage needs the flag at p ≤ 480.
+   */
+  flagSpot(v: View, defending: boolean): number {
+    const { book } = this.cfg;
+    const e = book.econ;
+    let p: number;
+    if (defending || (v.foeFront !== null && v.foeFront < e.midLane)) {
+      p = v.turretsBuilt > 0 ? e.turretCover - FLAG_COVER_MARGIN : e.flagMin;
+    } else {
+      // Where its army value is highest: the value-weighted centre of its ground units, so the units
+      // already out stay put and new ones gather to them, short of mid-lane and of the enemy.
+      let sum = 0;
+      let weight = 0;
+      for (const u of v.mine) {
+        if (u.air || u.value <= 0) continue;
+        sum += u.p * u.value;
+        weight += u.value;
+      }
+      p = weight > 0 ? Math.trunc(sum / weight) : e.flagMin;
+      p = Math.min(p, e.midLane - FLAG_STAGE_GAP);
+      if (v.foeFront !== null) p = Math.min(p, v.foeFront - FLAG_STAGE_GAP);
+    }
+    for (const id of v.research.owned) {
+      const pick = book.content.research.picks.find((q) => q.id === id);
+      for (const fx of pick?.effects ?? []) if (fx.kind === 'warHorns') p = Math.min(p, fx.flagMaxP * MILLI);
+    }
+    p = clamp(p, e.flagMin, e.flagMax);
+    return Math.trunc(Math.trunc(p / e.flagSnap) * e.flagSnap / MILLI);
   }
 
   /**
@@ -618,23 +737,34 @@ export class Brain {
       const role = content.units[s.card.id]?.role;
       if (role) classes.add(content.research.classOfRole[role]);
     }
+    // Defences improve turrets: worth it with a turret up, or for a General who plans them (Moss).
+    const defencesOk = v.turretsBuilt > 0 || (P.researchBiasBp.defences ?? 0) > 0;
     const picks = startableFor(content, v).filter(
-      (p) => (p.group === null || classes.has(p.group)) && !(p.track === 'economy' && pickIncomeMilliPerSec(p) > 0) && P.researchBiasBp[p.id] !== -BP,
+      (p) =>
+        (p.group === null || classes.has(p.group)) &&
+        !(p.track === 'economy' && pickIncomeMilliPerSec(p) > 0) &&
+        P.researchBiasBp[p.id] !== -BP &&
+        (p.track !== 'defences' || defencesOk),
     );
     if (picks.length === 0) return null;
-    if (t.researchMode === 'random') return picks[randInt(rng, picks.length)] ?? null;
-    // Situation: shares of the visible enemy army by role group, pressure, and how busy the lane is.
-    let total = 0;
-    const share = new Map<RoleGroup, number>();
-    const foes = t.researchMode === 'counter' ? v.foes : [];
-    for (const u of foes) {
-      if (!u.def) continue;
-      total += u.value;
-      share.set(u.def.group, (share.get(u.def.group) ?? 0) + u.value);
+    // The General's research style (A18.5.8), by pick id, track and Troops class.
+    const style = (p: ResearchPickDef): number =>
+      (P.researchBiasBp[p.id] ?? 0) + (P.researchBiasBp[p.track] ?? 0) + (p.group ? (P.researchBiasBp[`troops.${p.group}`] ?? 0) : 0);
+    // Tiers 0-I: seeded random among the affordable-in-time picks, weighted by the General's style.
+    if (t.researchMode === 'random') {
+      const i = pickWeighted(
+        rng,
+        picks.map((p) => Math.max(1, HINT_BASE_BP + style(p))),
+      );
+      return picks[i] ?? null;
     }
-    const bp = (g: RoleGroup): number => (total > 0 ? Math.trunc(((share.get(g) ?? 0) * BP) / total) : 0);
+    // Situation: shares of the enemy army by role group (counter scoring only: what it sees, what a
+    // remembering tier recalls, and for Rook the Scouted list), pressure, and how busy the lane is.
+    const share = t.researchMode === 'counter' ? this.foeGroupShares(v, mem) : null;
+    const bp = (g: RoleGroup): number => share?.get(g) ?? 0;
     const pressure = fPressure(foeValueIn(v, 0, PRESSURE_RADIUS));
     const busy = v.mine.length + v.foes.length >= 12;
+    // Tiers II-IV read the pick's `aiHint` against their own situation; V and up also against the enemy army.
     const matches = (p: ResearchPickDef): boolean => {
       switch (p.aiHint) {
         case 'vsSwarm':
@@ -652,11 +782,13 @@ export class Brain {
         case 'quiet':
           return !busy && mem.foeOnMyHalfTick < v.now - PASSIVE_FOE_TICKS;
         case 'power':
-          return v.power !== undefined;
+          // A faster charge is a style (Tempest's bias), not a situation.
+          return false;
         case 'opener':
           return true;
       }
     };
+    const composition = (p: ResearchPickDef): boolean => p.aiHint === 'vsSwarm' || p.aiHint === 'vsHeavy' || p.aiHint === 'vsRanged';
     // A18.5.2 budget: a player specialises in 2-3 classes, so once two Troops lines are open the bot
     // deepens them (rank II) instead of opening a third.
     const owned = new Set(v.research.owned);
@@ -664,8 +796,9 @@ export class Brain {
     let best: ResearchPickDef | null = null;
     let bestScore = -1;
     for (const p of picks) {
-      let score = HINT_BASE_BP + (P.researchBiasBp[p.id] ?? 0) + (P.researchBiasBp[p.track] ?? 0) + (p.group ? (P.researchBiasBp[`troops.${p.group}`] ?? 0) : 0);
-      if (t.researchMode === 'counter' && matches(p)) score += HINT_MATCH_BP;
+      let score = HINT_BASE_BP + style(p);
+      // Rook weighs counters by his counter weight (×1.5).
+      if (matches(p)) score += composition(p) ? mulBp(HINT_MATCH_BP, P.counterWeightBp) : HINT_MATCH_BP;
       if (p.rank > 1) score += HINT_DEEPEN_BP;
       else if (p.group !== null && !openLines.has(p.group) && openLines.size >= MAX_OPEN_LINES) score -= HINT_DEEPEN_BP;
       score += randInt(rng, 1000);
@@ -675,6 +808,48 @@ export class Brain {
       }
     }
     return best;
+  }
+
+  /**
+   * Shares (bp) of the enemy army by role group for counter scoring: the visible army, plus recently
+   * seen cards for tiers that remember composition (VII+), plus one of each Scouted card for Rook.
+   */
+  private foeGroupShares(v: View, mem: BotMemory): Map<RoleGroup, number> {
+    const { book, tier: t, persona: P } = this.cfg;
+    const value = new Map<RoleGroup, number>();
+    const add = (g: RoleGroup, x: number): void => {
+      value.set(g, (value.get(g) ?? 0) + x);
+    };
+    const seen = new Set<string>();
+    for (const u of v.foes) {
+      if (!u.def) continue;
+      add(u.def.group, u.value);
+      seen.add(u.card);
+    }
+    if (t.remembersComposition) {
+      for (const r of mem.remembered()) {
+        const d = book.units[r.card];
+        if (d && !seen.has(r.card)) {
+          add(d.group, d.value * r.count);
+          seen.add(r.card);
+        }
+      }
+    }
+    if (P.researchScouted) {
+      for (const c of v.obs.foe.scouted ?? []) {
+        const d = book.units[c];
+        if (d && !seen.has(c)) {
+          add(d.group, d.value);
+          seen.add(c);
+        }
+      }
+    }
+    let total = 0;
+    for (const x of value.values()) total += x;
+    const out = new Map<RoleGroup, number>();
+    if (total <= 0) return out;
+    for (const [g, x] of value) out.set(g, Math.trunc((x * BP) / total));
+    return out;
   }
 
   /** Train candidates with their A7.2 scores, plus the alternatives two mistakes would pick. */

@@ -33,6 +33,11 @@ export function evolveVisible(obs: Observation): boolean {
   return obs.me.xpBp > BP || (obs.me.xpBp === BP && obs.me.powerPpm < PPM);
 }
 
+/** A Troops research pick (ids are `troops.<class>.<pick>`, A18.5.2). */
+export function isTroops(id: string | null | undefined): boolean {
+  return typeof id === 'string' && id.startsWith('troops.');
+}
+
 export class BotMemory {
   readonly estimator: FoeGoldEstimator;
   lastObsTick = -1;
@@ -50,6 +55,11 @@ export class BotMemory {
   /** Tick the foe's age last went up. */
   foeEvolvedTick = -1000000;
   private foeAge = 0;
+  /** When an own / foe Troops research item last completed (A18.5.8 research timing). */
+  ownTroopsDoneTick = -1000000;
+  foeTroopsDoneTick = -1000000;
+  private ownOwned = 0;
+  private foeOwned = 0;
   /** Enemy cards seen recently. */
   readonly composition = new Map<CardId, RememberedCard>();
   /** Own base HP (bp) of the last 5 s of observations, oldest first. */
@@ -77,6 +87,14 @@ export class BotMemory {
     if (this.baseTrail.length > BASE_TRAIL_TICKS + 1) this.baseTrail.shift();
     this.lastBaseBp = me.baseHpBp;
     this.lastAge = me.ageIndex;
+
+    // Research is public (A18.5.1): a newly owned Troops pick marks its completion.
+    const ownOwned = me.research?.owned ?? [];
+    for (let i = this.ownOwned; i < ownOwned.length; i += 1) if (isTroops(ownOwned[i])) this.ownTroopsDoneTick = obs.tick;
+    this.ownOwned = ownOwned.length;
+    const foeOwned = obs.foe.research?.owned ?? [];
+    for (let i = this.foeOwned; i < foeOwned.length; i += 1) if (isTroops(foeOwned[i])) this.foeTroopsDoneTick = obs.tick;
+    this.foeOwned = foeOwned.length;
 
     if (obs.foe.ageIndex > this.foeAge) this.foeEvolvedTick = obs.tick;
     this.foeAge = obs.foe.ageIndex;

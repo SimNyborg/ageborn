@@ -1,0 +1,1599 @@
+/*
+ * War Council, stance control and Hold flag grip (DESIGN A18.4.2, A18.5.7). Same HUD style as
+ * hud.css: dark ink outlines, flat fills with one highlight, chunky 3 px borders. Colours: gold = go,
+ * green = spend or progress, slate = neutral, red = denied (A15 U10); the stance segments add a label
+ * and a glyph to their colour, so nothing reads by colour alone.
+ *
+ * Motion (A12, A15 U16-U20): the sheet slides up in 180 ms ease-out and leaves in 130 ms; small
+ * things (cards, badges, the thumb) keep their overshoot, the sheet decelerates without bounce.
+ * Reduce motion swaps movement for fades (end of file).
+ */
+
+.hud {
+  --cn-green: #3fd07a;
+  --cn-green-deep: #1f8a4c;
+  --cn-panel: #2a2150;
+  --cn-panel-hi: #3b2f6e;
+  --cn-slate: #8e86a8;
+  --cn-red: #ff6a5a;
+}
+
+/* ---------------------------------------------------------------- the Council button */
+
+.hud-cbtn-wrap {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.hud-cbtn {
+  --cb: 60px;
+  position: relative;
+  flex: none;
+  width: var(--cb);
+  height: var(--cb);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+}
+
+.hud.is-compact .hud-cbtn {
+  --cb: 50px;
+}
+
+/* The ring: dark track, green progress while researching. */
+.hud-cbtn-ring {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--hud-ink);
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--cn-green) calc(var(--prog, 0) * 360deg), rgba(255, 255, 255, 0.1) 0) border-box;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
+  transition: background 90ms linear;
+}
+
+.hud-cbtn-core {
+  position: absolute;
+  inset: 7px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, #5c4a9a, #2a2048 75%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    translate 90ms ease-out,
+    filter 120ms ease-out;
+}
+
+.hud-cbtn:active .hud-cbtn-core {
+  translate: 0 2px;
+  filter: brightness(0.92);
+}
+
+.hud-cbtn.is-open .hud-cbtn-core {
+  background: radial-gradient(circle at 50% 30%, #7a66c4, #3a2c6a 75%);
+}
+
+.hud-cbtn-badge {
+  animation: hud-cb-in 300ms cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+
+@keyframes hud-cb-in {
+  from {
+    scale: 0.3;
+    rotate: -30deg;
+  }
+}
+
+/* Ready: a soft steady gold halo (never flashing, A15 U15) and the dot. */
+.hud-cbtn.is-ready .hud-cbtn-ring {
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.45),
+    0 0 0 2px rgba(255, 212, 71, 0.55),
+    0 0 16px rgba(255, 212, 71, 0.45);
+}
+
+.hud-cbtn-dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid var(--hud-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #b8ffd3, var(--cn-green) 60%, var(--cn-green-deep));
+  animation: hud-pop 280ms cubic-bezier(0.3, 1.9, 0.5, 1);
+}
+
+.hud-cbtn-time {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  translate: -50% 0;
+  padding: 0 6px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: var(--cn-green-deep);
+  color: #effff4;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 15px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hud-cbtn-sale {
+  position: absolute;
+  top: -6px;
+  left: -10px;
+  padding: 0 5px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 7px;
+  background: linear-gradient(180deg, #7dffb0, var(--cn-green));
+  color: var(--hud-ink);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 14px;
+  rotate: -8deg;
+  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+.hud-cbtn-label {
+  padding: 0 7px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #2e2450;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.hud-cbtn.is-busy + .hud-cbtn-label {
+  opacity: 0;
+}
+
+.hud-cbtn .hud-key {
+  top: -6px;
+  left: auto;
+  right: -8px;
+}
+
+.hud-cbtn.is-denied .hud-cbtn-ring {
+  background: var(--hud-deny) border-box;
+}
+
+/* Completion burst: ten sparks fly out and a ring expands (the button pops in Council.tsx). */
+.hud-cbtn-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud-cbtn-burst::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 4px solid #fff7c2;
+  border-radius: 50%;
+  animation: hud-cb-ring 520ms ease-out forwards;
+}
+
+.hud-cbtn-burst i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border-radius: 2px;
+  background: #ffe27a;
+  box-shadow: 0 0 6px #ffd447;
+  rotate: var(--a);
+  animation: hud-cb-spark 560ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+.hud-cbtn-burst i:nth-child(even) {
+  background: #9fffc4;
+  box-shadow: 0 0 6px var(--cn-green);
+}
+
+@keyframes hud-cb-ring {
+  from {
+    scale: 0.7;
+    opacity: 1;
+  }
+  to {
+    scale: 1.9;
+    opacity: 0;
+  }
+}
+
+@keyframes hud-cb-spark {
+  from {
+    transform: translateY(-10px) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-58px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- the sheet */
+
+.hud-council {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  height: max(24%, 172px);
+  padding: 6px max(12px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  box-sizing: border-box;
+  border-top: 3px solid var(--hud-ink);
+  border-radius: 18px 18px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 40px),
+    linear-gradient(180deg, #342a63, #1c1538);
+  box-shadow:
+    0 -2px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -10px 30px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  animation: hud-sheet-in 180ms cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+.hud-council.is-closing {
+  animation: hud-sheet-out 130ms ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes hud-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes hud-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.hud-council-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+}
+
+.hud-council-title {
+  flex: none;
+  color: var(--hud-gold);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 0 var(--hud-ink);
+  white-space: nowrap;
+}
+
+.hud-council-hint {
+  min-width: 0;
+  color: var(--hud-dim);
+  font-size: 13px;
+}
+
+.hud-council-cur {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hud-council-curbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 170px;
+  height: 30px;
+  padding: 0 10px 0 4px;
+  overflow: hidden;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #1a1433;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.hud-council-curbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(var(--prog, 0));
+  background: linear-gradient(180deg, #5fe39a, var(--cn-green-deep));
+  transition: transform 90ms linear;
+}
+
+.hud-council-curbar > * {
+  position: relative;
+}
+
+.hud-council-curtext {
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 var(--hud-ink);
+}
+
+.hud-council-cancel {
+  height: 30px;
+  padding: 0 12px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: linear-gradient(180deg, #5b4f7e, #3a3160);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.hud-council-cancel.is-confirm {
+  background: linear-gradient(180deg, #ff8a7a, #c8392c);
+  animation: hud-pop 200ms cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+
+.hud-council-sale {
+  flex: none;
+  padding: 3px 10px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: linear-gradient(180deg, #8cffba, var(--cn-green));
+  color: var(--hud-ink);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+.hud-council-close {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  border: 3px solid var(--hud-ink);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #5c4a8a, #2e2450);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.hud-council-close:active {
+  translate: 0 2px;
+}
+
+.hud-council-close .hud-key {
+  top: -6px;
+  left: -8px;
+}
+
+.hud-council-body {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 0;
+  padding-top: 6px;
+}
+
+/* ---------------------------------------------------------------- overview: four tracks */
+
+.hud-council-tracks {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 10px;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.hud-track {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 260px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  border: 3px solid var(--hud-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--cn-panel-hi), var(--cn-panel));
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.14),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+  text-align: left;
+  animation: hud-track-in 260ms cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 40ms);
+  transition:
+    translate 90ms ease-out,
+    filter 120ms ease-out;
+}
+
+@keyframes hud-track-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+  }
+}
+
+button.hud-track:active {
+  translate: 0 2px;
+}
+
+.hud-track.is-ready {
+  border-color: var(--hud-ink);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -4px 0 var(--cn-green),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+.hud-track.is-locked,
+.hud-track.is-done {
+  filter: saturate(0.5) brightness(0.8);
+}
+
+.hud-track-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hud-track-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.hud-track-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.hud-track-next {
+  color: var(--hud-dim);
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.hud-track-dot {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid var(--hud-ink);
+  border-radius: 50%;
+  background: var(--cn-green);
+}
+
+/* Troops: five class buttons with rank pips. */
+.hud-track-troops {
+  flex: 1.5 1 0;
+  max-width: 380px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px 10px;
+}
+
+.hud-troops-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-troops-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.hud-class-line {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 48px;
+  padding: 5px 2px 4px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  transition:
+    translate 90ms ease-out,
+    background 120ms ease-out;
+}
+
+.hud-class-line:active {
+  translate: 0 2px;
+}
+
+.hud-class-line.is-ready {
+  background: rgba(63, 208, 122, 0.18);
+  box-shadow: inset 0 -3px 0 var(--cn-green);
+}
+
+.hud-class-line.is-absent {
+  opacity: 0.55;
+}
+
+/* "Not in this tray": a slash over the class badge (shape, not only colour). */
+.hud-class-absent {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 36px;
+  height: 4px;
+  margin-left: -18px;
+  translate: 0 14px;
+  rotate: -40deg;
+  border-radius: 2px;
+  background: var(--hud-ink);
+  box-shadow: 0 0 0 1.5px #d8cfe8;
+}
+
+.hud-class-busy {
+  position: absolute;
+  inset: -3px;
+  border: 3px solid var(--cn-green);
+  border-radius: 13px;
+}
+
+.hud-pips {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.hud-pip {
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hud-pip.is-on {
+  background: radial-gradient(circle at 40% 35%, #fff4b0, var(--hud-gold) 60%, var(--hud-gold-deep));
+}
+
+/* Prices: coin, the struck-out list price under the underdog discount, the price now. */
+.hud-price {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px 2px 4px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #1a1433;
+  color: var(--hud-gold);
+  font-size: 14px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hud-price s {
+  color: var(--hud-dim);
+  font-size: 0.8em;
+  text-decoration-thickness: 2px;
+}
+
+.hud-price.is-sale b {
+  color: #8cffba;
+}
+
+/* ---------------------------------------------------------------- a line's two picks */
+
+.hud-council-pair {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hud-council-back {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  border: 3px solid var(--hud-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #5c4a8a, #2e2450);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+.hud-council-back:active {
+  translate: 0 2px;
+}
+
+.hud-council-lineinfo {
+  display: flex;
+  flex: 0 1 190px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hud-council-linename {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.hud-council-rank {
+  color: var(--hud-gold);
+  font-size: 13px;
+}
+
+.hud-council-warn {
+  align-self: flex-start;
+  padding: 1px 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #6b3a2a;
+  color: #ffd9c9;
+  font-size: 12px;
+}
+
+.hud-council-rule {
+  color: var(--hud-dim);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.hud-council-picks {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  perspective: 700px;
+}
+
+.hud-council-or {
+  display: grid;
+  flex: none;
+  place-items: center;
+  align-self: center;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--hud-ink);
+  border-radius: 50%;
+  background: var(--hud-gold);
+  color: var(--hud-ink);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  z-index: 1;
+  animation: hud-pop 260ms 120ms cubic-bezier(0.3, 1.8, 0.5, 1) backwards;
+}
+
+.hud-pick {
+  position: relative;
+  display: grid;
+  flex: 1 1 0;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  column-gap: 10px;
+  row-gap: 4px;
+  align-items: center;
+  min-width: 0;
+  max-width: 360px;
+  padding: 8px 12px 8px 8px;
+  box-sizing: border-box;
+  border: 3px solid var(--hud-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #45397e, #2b2152);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.16),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+  text-align: left;
+  transform-origin: 50% 100%;
+  animation: hud-pick-in 320ms cubic-bezier(0.3, 1.4, 0.5, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  transition:
+    transform 160ms cubic-bezier(0.3, 1.6, 0.5, 1),
+    box-shadow 160ms ease-out,
+    filter 160ms ease-out;
+}
+
+@keyframes hud-pick-in {
+  from {
+    opacity: 0;
+    transform: rotateY(-70deg) translateY(10px) scale(0.9);
+  }
+}
+
+.hud-pick-badge {
+  grid-row: 1 / span 2;
+}
+
+.hud-pick-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hud-pick-name {
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.hud-pick-desc {
+  color: #ddd4ef;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.22;
+}
+
+.hud-pick-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-pick-time {
+  color: var(--hud-dim);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-pick-note {
+  position: absolute;
+  top: -11px;
+  right: 10px;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1px 8px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #3a3160;
+  color: #e6def6;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.hud-pick-note.is-poor {
+  background: #6e2630;
+  color: #ffd0d0;
+}
+
+.hud-pick-note.is-owned {
+  background: var(--cn-green-deep);
+  color: #effff4;
+}
+
+/* States. */
+.hud-pick.is-ready {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -4px 0 var(--cn-green),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+.hud-pick.is-ready:hover {
+  transform: translateY(-2px);
+}
+
+.hud-pick.is-selected {
+  transform: translateY(-5px) scale(1.03);
+  border-color: #fff4c0;
+  box-shadow:
+    0 0 0 3px var(--hud-ink),
+    0 0 18px rgba(255, 212, 71, 0.7),
+    inset 0 -4px 0 var(--cn-green),
+    0 9px 0 rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, #5a4a9c, #34285f);
+}
+
+.hud-pick.is-poor .hud-price b {
+  color: var(--cn-red);
+}
+
+.hud-pick.is-poor,
+.hud-pick.is-busy {
+  filter: saturate(0.7) brightness(0.9);
+}
+
+.hud-pick.is-locked {
+  filter: saturate(0.35) brightness(0.75);
+}
+
+.hud-pick.is-excluded {
+  filter: grayscale(0.9) brightness(0.7);
+  opacity: 0.7;
+}
+
+.hud-pick.is-excluded .hud-pick-name {
+  text-decoration: line-through 3px rgba(255, 255, 255, 0.55);
+}
+
+.hud-pick.is-owned {
+  background: linear-gradient(180deg, #2f6d55, #1f4a3c);
+}
+
+.hud-pick-check {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--hud-ink);
+  border-radius: 50%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%231b1330' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / 16px no-repeat,
+    var(--cn-green);
+  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+/* The second tap: a green ribbon across the card's foot. */
+.hud-pick-cta {
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  translate: -50% 0;
+  padding: 2px 12px;
+  border: 3px solid var(--hud-ink);
+  border-radius: 99px;
+  background: linear-gradient(180deg, #8cffba, var(--cn-green) 60%, var(--cn-green-deep));
+  color: var(--hud-ink);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  animation: hud-cta-in 240ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+@keyframes hud-cta-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.6);
+  }
+}
+
+.hud-council-owned {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-council-ownedpick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px 3px 3px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #1f4a3c;
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------- badges */
+
+.hud-cbadge {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  border: 2.5px solid var(--hud-ink);
+  border-radius: 30%;
+  background:
+    radial-gradient(ellipse 45% 24% at 50% 16%, rgba(255, 255, 255, 0.55), transparent 100%),
+    linear-gradient(165deg, color-mix(in srgb, var(--cb-main) 75%, #fff) 0%, var(--cb-main) 50%, var(--cb-dark) 100%);
+  box-shadow:
+    0 2px 0 var(--hud-ink),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22);
+  line-height: 0;
+}
+
+.hud-cbadge .hud-cg {
+  filter: drop-shadow(0 1px 0 rgba(27, 19, 48, 0.55));
+}
+
+.hud-cbadge-cls {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  width: 44%;
+  height: 44%;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: linear-gradient(170deg, color-mix(in srgb, var(--cb-main) 78%, #fff), var(--cb-dark));
+}
+
+/* The chosen badge flies on an arc into the Council button. */
+.hud-cfly {
+  position: absolute;
+  z-index: 9;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
+}
+
+/* ---------------------------------------------------------------- research complete */
+
+.hud-cdone {
+  position: absolute;
+  left: 50%;
+  bottom: calc(max(24%, 150px) + 10px);
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(460px, 70cqw);
+  padding: 8px 18px 8px 10px;
+  translate: -50% 0;
+  border: 3px solid var(--hud-ink);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #4a3d8a, #2a2152);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 2px rgba(255, 212, 71, 0.6),
+    0 8px 22px rgba(0, 0, 0, 0.5);
+  text-align: left;
+  pointer-events: auto;
+  animation:
+    hud-done-in 420ms cubic-bezier(0.3, 1.6, 0.45, 1),
+    hud-done-out 260ms ease-in 2340ms forwards;
+}
+
+@keyframes hud-done-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.5, 0.4);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.08, 0.94);
+  }
+  78% {
+    transform: translateY(1px) scale(0.97, 1.03);
+  }
+}
+
+@keyframes hud-done-out {
+  to {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+}
+
+.hud-cdone-rays {
+  position: absolute;
+  left: 38px;
+  top: 50%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 226, 122, 0.4) 0 10deg, transparent 10deg 30deg);
+  mask: radial-gradient(circle, #000 20%, transparent 68%);
+  pointer-events: none;
+  animation: hud-done-rays 2600ms linear;
+}
+
+@keyframes hud-done-rays {
+  from {
+    rotate: 0deg;
+    scale: 0.3;
+  }
+  15% {
+    scale: 1;
+  }
+  to {
+    rotate: 70deg;
+    scale: 1;
+  }
+}
+
+.hud-cdone-badge {
+  animation: hud-done-badge 560ms 80ms cubic-bezier(0.3, 1.8, 0.45, 1) backwards;
+}
+
+@keyframes hud-done-badge {
+  0% {
+    transform: scale(0.2) rotate(-40deg);
+  }
+  50% {
+    transform: scale(1.25, 0.85) rotate(6deg);
+  }
+  75% {
+    transform: scale(0.94, 1.08) rotate(-2deg);
+  }
+}
+
+.hud-cdone-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.hud-cdone-kicker {
+  color: var(--cn-green);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hud-cdone-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--hud-gold);
+  font-size: 20px;
+  font-weight: 900;
+  text-shadow: 0 2px 0 var(--hud-ink);
+}
+
+.hud-cdone-desc {
+  color: #e6def6;
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- their research */
+
+.hud-foe-research {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+.hud.is-compact .hud-foe-research {
+  width: 26px;
+  height: 26px;
+}
+
+.hud-foe-research-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--hud-ink);
+  border-radius: 50%;
+  background: conic-gradient(var(--hud-foe) calc(var(--prog, 0) * 360deg), rgba(255, 255, 255, 0.15) 0);
+}
+
+.hud-foe-research .hud-cbadge {
+  position: relative;
+}
+
+/* ---------------------------------------------------------------- stance control */
+
+.hud-stances {
+  --seg: 58px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, var(--seg));
+  height: 52px;
+  padding: 0;
+  border: 3px solid var(--hud-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #2a2150, #1c1538);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    0 4px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+}
+
+.hud-stances-thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc(var(--seg) - 4px);
+  border: 2px solid var(--hud-ink);
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--st-hi), var(--st-lo));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  translate: calc(var(--idx, 0) * var(--seg)) 0;
+  transition:
+    translate 240ms cubic-bezier(0.3, 1.5, 0.5, 1),
+    background 200ms ease-out;
+}
+
+.hud-stances.is-charge {
+  --st-hi: #ff9a6a;
+  --st-lo: #c9452a;
+}
+
+.hud-stances.is-hold {
+  --st-hi: #7fe0d0;
+  --st-lo: #1f8a7c;
+}
+
+.hud-stances.is-fallback {
+  --st-hi: #b9a8ff;
+  --st-lo: #5b47c0;
+}
+
+.hud-stance-seg {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #b9aecb;
+  z-index: 1;
+  transition:
+    color 150ms ease-out,
+    scale 120ms ease-out;
+}
+
+.hud-stance-seg:active {
+  scale: 0.92;
+}
+
+.hud-stance-seg.is-on {
+  color: #fff;
+}
+
+.hud-stance-seg .hud-stance-glyph {
+  filter: drop-shadow(0 1px 0 rgba(27, 19, 48, 0.6));
+}
+
+.hud-stance-name {
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 var(--hud-ink);
+}
+
+/* The 3 s wait: a bar that runs down along the bottom. */
+.hud-stances-wait {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 3px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.75);
+  transform-origin: left;
+  transform: scaleX(var(--wait, 0));
+  transition: transform 70ms linear;
+  z-index: 2;
+}
+
+.hud-stances.is-waiting .hud-stance-seg:not(.is-on) {
+  color: #7d7496;
+}
+
+.hud-stances.is-denied {
+  animation: hud-deny-shake 280ms ease-out;
+  border-color: var(--hud-deny);
+}
+
+@keyframes hud-deny-shake {
+  25% {
+    translate: -5px 0;
+  }
+  50% {
+    translate: 5px 0;
+  }
+  75% {
+    translate: -3px 0;
+  }
+}
+
+.hud-stances .hud-key {
+  top: -9px;
+  left: -8px;
+  z-index: 3;
+}
+
+.hud.is-compact .hud-stances {
+  --seg: 46px;
+}
+
+/* ---------------------------------------------------------------- Hold flag grip */
+
+.hud-flag {
+  position: absolute;
+  z-index: 3;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.hud-flag-grip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  border: 2px dashed transparent;
+  border-radius: 14px;
+  background: none;
+  cursor: grab;
+  touch-action: none;
+  transition: border-color 150ms ease-out;
+}
+
+.hud-flag-grip:hover,
+.hud-flag-grip.is-dragging {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.hud-flag-grip.is-dragging {
+  cursor: grabbing;
+}
+
+.hud-flag-handle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 22px;
+  margin-bottom: -12px;
+  border: 2.5px solid var(--hud-ink);
+  border-radius: 99px;
+  background: linear-gradient(180deg, #fff, #d9d2ea);
+  color: var(--hud-ink);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
+  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+.hud-flag-grip.is-dragging .hud-flag-handle {
+  scale: 1.12;
+  background: linear-gradient(180deg, #fff6c8, var(--hud-gold));
+}
+
+.hud-flag-grip.is-denied .hud-flag-handle {
+  background: var(--hud-deny);
+}
+
+.hud-flag-p,
+.hud-flag-hint {
+  position: absolute;
+  left: 0;
+  top: -26px;
+  translate: -50% 0;
+  padding: 2px 9px;
+  border: 2px solid var(--hud-ink);
+  border-radius: 99px;
+  background: #fff8e8;
+  color: var(--hud-ink);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hud-flag-hint {
+  animation: hud-pop 300ms 200ms cubic-bezier(0.3, 1.8, 0.5, 1) backwards;
+}
+
+.hud-flag-nudge {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--hud-ink);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #5c4a8a, #2e2450);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  animation: hud-pop 220ms cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+.hud-flag-nudge:disabled {
+  opacity: 0.4;
+}
+
+.hud-flag-nudge:active {
+  scale: 0.92;
+}
+
+/* ---------------------------------------------------------------- phones (A17.7) */
+
+@container hud (max-height: 499px) {
+  .hud-cbtn-label {
+    padding: 0 5px;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .hud-cbtn-wrap {
+    gap: 2px;
+  }
+
+  .hud .hud-stances,
+  .hud.is-compact .hud-stances {
+    --seg: 40px;
+    height: 48px;
+  }
+
+  .hud.is-compact .hud-cbtn {
+    --cb: 46px;
+  }
+
+  .hud-stance-name {
+    display: none;
+  }
+
+  /* The sheet: header as a left column so the sheet stays low (the lane band keeps its units). */
+  .hud-council {
+    flex-direction: row;
+    gap: 10px;
+    height: 122px;
+    padding-top: 8px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    border-radius: 14px 14px 0 0;
+  }
+
+  .hud-council-head {
+    flex: 0 0 118px;
+    min-width: 0;
+    max-width: 118px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 5px;
+  }
+
+  .hud-council-title {
+    font-size: 15px;
+  }
+
+  .hud-council-hint {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .hud-council-cur {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .hud-council-curbar {
+    min-width: 0;
+    max-width: 118px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .hud-council-cancel {
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .hud-council-sale {
+    padding: 1px 8px;
+    font-size: 12px;
+  }
+
+  .hud-council-close {
+    position: absolute;
+    top: -22px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .hud-council-body {
+    padding-top: 0;
+  }
+
+  .hud-council-tracks {
+    gap: 6px;
+  }
+
+  .hud-track {
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px 8px 6px 6px;
+  }
+
+  .hud-track-name {
+    gap: 4px;
+    font-size: 14px;
+  }
+
+  .hud-track-next {
+    font-size: 12px;
+  }
+
+  /* The price rides the card's top edge as a tag, so the text keeps the width. */
+  .hud-track .hud-price {
+    position: absolute;
+    top: -11px;
+    left: 8px;
+    margin-left: 0;
+  }
+
+  .hud-track-dot {
+    display: none;
+  }
+
+  .hud-track .hud-pip {
+    width: 6px;
+    height: 6px;
+    border-width: 1.5px;
+  }
+
+  .hud-track-troops {
+    padding: 6px 8px 5px;
+  }
+
+  .hud-track-troops .hud-price {
+    position: static;
+    margin-left: auto;
+  }
+
+  .hud-track-troops {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+
+  .hud-troops-row {
+    gap: 4px;
+  }
+
+  .hud-class-line {
+    min-width: 40px;
+    padding: 3px 1px 3px;
+  }
+
+  .hud-council-back {
+    width: 44px;
+  }
+
+  .hud-council-lineinfo {
+    display: none;
+  }
+
+  .hud-pick {
+    padding: 6px 8px 6px 6px;
+    column-gap: 8px;
+    row-gap: 2px;
+  }
+
+  .hud-pick-name {
+    font-size: 14px;
+  }
+
+  .hud-pick-desc {
+    font-size: 12px;
+    line-height: 1.18;
+  }
+
+  .hud-pick-foot {
+    gap: 4px;
+  }
+
+  .hud-price {
+    padding: 1px 6px 1px 3px;
+    font-size: 12px;
+  }
+
+  .hud-pick-time,
+  .hud-pick-note {
+    font-size: 12px;
+  }
+
+  .hud-pick-cta {
+    bottom: -10px;
+    font-size: 12px;
+  }
+
+  .hud-council-or {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .hud-cdone {
+    bottom: calc(22% + 8px);
+    padding: 6px 14px 6px 8px;
+  }
+
+  .hud-cdone-name {
+    font-size: 16px;
+  }
+
+  .hud-cdone-desc {
+    font-size: 12px;
+  }
+}
+
+/* ---------------------------------------------------------------- Reduce motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-council,
+  .hud-track,
+  .hud-pick,
+  .hud-cdone,
+  .hud-cdone-badge,
+  .hud-cbtn-badge {
+    animation-name: hud-fade-in;
+  }
+
+  .hud-cdone {
+    animation: hud-fade-in 150ms ease-out;
+  }
+
+  .hud-council.is-closing {
+    animation: hud-fade-out 130ms ease-in forwards;
+  }
+
+  .hud-cdone-rays,
+  .hud-cbtn-burst i {
+    display: none;
+  }
+
+  .hud-stances-thumb,
+  .hud-pick {
+    transition: none;
+  }
+}
+
+@keyframes hud-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes hud-fade-out {
+  to {
+    opacity: 0;
+  }
+}

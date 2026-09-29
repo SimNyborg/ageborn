@@ -28,8 +28,10 @@ export class Ledger {
   private items: Pending[] = [];
   /** Tick each mount stops building or modernising (A2.8: 1 s). */
   readonly mountBusyUntil: number[];
-  /** Earliest tick the next stance change is legal (A2.7: 2 s cooldown). */
+  /** Earliest tick the next stance change is legal (A18.4.2: 3 s cooldown). */
   stanceReadyTick = 0;
+  /** Earliest tick the next Hold flag move is legal (A18.4.2: 1 s). */
+  flagReadyTick = 0;
   /** False once a stance command had no effect (stance locked in training matches). */
   stanceEnabled = true;
   /** False once a Last Stand command had no effect (Last Stand is automatic-only, A2.11). */
@@ -60,7 +62,11 @@ export class Ledger {
         break;
       case 'stance':
         this.stanceReadyTick = execTick + this.book.econ.stanceCooldownTicks;
+        if (action.holdP !== undefined) this.flagReadyTick = execTick + this.book.econ.flagMoveTicks;
         this.stanceCheck = { execTick, stance: action.stance };
+        break;
+      case 'flag':
+        this.flagReadyTick = execTick + this.book.econ.flagMoveTicks;
         break;
       case 'lastStand':
         this.lastStandCheck = execTick;

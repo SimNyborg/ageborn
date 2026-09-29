@@ -52,7 +52,12 @@ export function HudStates() {
         </label>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px' }}>
-        {samples.map((s) => (
+        {[
+          ...samples,
+          { id: 'councilSheet', note: 'War Council sheet: the four tracks', model: samples.find((x) => x.id === 'council')?.model, open: null },
+          { id: 'councilPicks', note: 'War Council sheet: Infantry rank II picks (Shield Wall or Rush)', model: samples.find((x) => x.id === 'council')?.model, open: 'troops.infantry' },
+          { id: 'councilEconomy', note: 'War Council sheet: Economy rank I (Granary or Forage)', model: samples.find((x) => x.id === 'councilReady')?.model, open: 'economy' },
+        ].map((s) => (
           <figure key={s.id} style={{ margin: 0 }} data-testid={`hud-state-${s.id}`}>
             <figcaption style={{ marginBottom: '4px', maxWidth: `${dim.w * dim.scale}px` }}>
               <b>{s.id}</b>: {s.note}
@@ -68,7 +73,9 @@ export function HudStates() {
                   background: LANE_BG,
                 }}
               >
-                <Hud model={s.model} config={config} readOnly keyboard={false} teamPreset={preset} />
+                {s.model ? (
+                  <Hud model={s.model} config={config} readOnly keyboard={false} teamPreset={preset} {...('open' in s ? { councilOpen: s.open } : {})} />
+                ) : null}
               </div>
             </div>
           </figure>

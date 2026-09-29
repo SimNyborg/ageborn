@@ -20,6 +20,25 @@ export interface HudCard {
   foil: Foil;
 }
 
+/**
+ * A side's War Council as the HUD shows it (A18.5.7; research is public, A18.5.1). Pick ids index
+ * `content.research.picks` by id.
+ */
+export interface HudResearch {
+  /** Owned pick ids, in completion order. */
+  owned: string[];
+  /** The pick in the one research slot, or null. */
+  current: string | null;
+  /** Progress of `current`, bp (0 when idle). */
+  progressBp: number;
+  /** Time left on `current`, ms (0 when idle). */
+  leftMs: number;
+  /** The highest rank open in this window at the side's current age (A18.5.1): 0-3. */
+  ranksOpen: number;
+  /** Research started now gets the underdog discount (−20%, A18.5.1). */
+  discount: boolean;
+}
+
 export interface HudModel {
   clockMs: number;
   phase: SimState['phase'];
@@ -44,6 +63,12 @@ export interface HudModel {
     popCap: number;
     stance: StanceMode;
     stanceVisible: boolean;
+    /** The Hold flag, own-side p in lu (A18.4.2); absent in older models. */
+    holdP?: number;
+    /** Until a stance change is accepted again, ms (3 s cooldown, A18.4.2); 0 when ready. */
+    stanceWaitMs?: number;
+    /** The War Council (A18.5.7); absent in older models and plain test models. */
+    research?: HudResearch;
     powerPpm: number;
     power: CardId;
     lastStand: SideState['lastStand'];
@@ -61,6 +86,10 @@ export interface HudModel {
     powerPpm: number;
     lastStandArmed: boolean;
     scouted: CardId[];
+    /** Their War Council: public (A18.5.1), shown on their panel and in the Scouted list. */
+    research?: HudResearch;
+    /** Their stance (public on the lane). */
+    stance?: StanceMode;
   };
   mounts: { index: number; owned: boolean; card: CardId | null; outdated: boolean; state: TurretState['state'] | 'empty' }[];
   /** Speed and pause are allowed in every v1 mode (DESIGN A2.12). */

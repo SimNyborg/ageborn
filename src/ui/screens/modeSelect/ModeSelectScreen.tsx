@@ -10,6 +10,7 @@
 import "./modeSelect.css";
 import {
   ageNameKey,
+  formatDescKey,
   formatNameKey,
   modifierDescKey,
   modifierNameKey,
@@ -63,6 +64,22 @@ const DIFFICULTY_KEYS: Record<DailyDifficulty, string> = {
   warlord: "ui.mode.daily.warlord",
 };
 const ALL_FORMATS: FormatId[] = ["short", "standard", "full"];
+
+/**
+ * What a format plays (A18.3.4: formats are age windows): its first and last age and its length,
+ * under the format picker ("Stone Age to Medieval Age. 3 ages, about 7 min.").
+ */
+function FormatNote(p: { content: Content; format: FormatId; t: (k: string, v?: Record<string, string | number>) => string; testid: string }) {
+  const ages = p.content.formats[p.format]?.ages ?? [];
+  const from = ages[0];
+  const to = ages[ages.length - 1];
+  if (!from || !to) return null;
+  return (
+    <p class="skirmish__note" data-testid={p.testid}>
+      {p.t("ui.mode.formatWindow", { from: p.t(ageNameKey(from)), to: p.t(ageNameKey(to)), desc: p.t(formatDescKey(p.format)) })}
+    </p>
+  );
+}
 
 /**
  * The Quick Battle opponent for a difficulty: the first ladder General (content order) whose tier
@@ -257,6 +274,7 @@ function SkirmishSetup(p: {
               size="sm"
             />
           </div>
+          <FormatNote content={content} format={format} t={t} testid="skirmish-format-note" />
           <div class="skirmish__row">
             <span class="skirmish__label">{t("ui.mode.speed")}</span>
             <Segmented
@@ -431,6 +449,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           ) : (
             <Pill tone="blue">{t(formatNameKey(format))}</Pill>
           )}
+          <FormatNote content={content} format={format} t={t} testid="ladder-format-note" />
           <p class="mode-card__reward" data-testid="ladder-reward" key={format}>
             <span class="mode-card__rewardLabel">
               {t("ui.mode.ladder.winPays")}

@@ -119,4 +119,13 @@ export interface HudViewBridge {
   muteEmotes?(on: boolean): void;
   /** True while the opponent's emotes are muted (the Settings default or the per-match mute). */
   emotesMuted?(): boolean;
+  /**
+   * Your Hold flag on the lane (A18.4.2): its foot and pole top in view-local CSS px, or null while it
+   * is not standing. The HUD puts its drag grip there.
+   */
+  holdFlagScreen?(): { x: number; y: number; top: number } | null;
+  /** Own-side p (lu, not clamped) under a client point, or null off the lane: the flag drag. */
+  flagPAt?(clientX: number, clientY: number): number | null;
+  /** Shows the flag drag's ghost at own-side p (lu), or hides it with null. */
+  previewHoldFlag?(p: number | null): void;
 }

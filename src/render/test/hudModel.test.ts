@@ -47,6 +47,32 @@ describe('HUD model (A9.2)', () => {
     expect(buildHudModel(sim, EXTRAS).me.nextIncome).toEqual({ track: 'economy', rank: 1, pick: 0 });
   });
 
+  it('carries both War Councils, the underdog discount, the Hold flag and the stance wait (A18.4.2, A18.5.7)', () => {
+    const sim = new FakeSim();
+    sim.state.tick = 100;
+    const me = sim.state.sides[0];
+    me.research.cur = 0;
+    me.research.startTick = 60;
+    me.research.endTick = 260;
+    me.stance = 'hold';
+    me.holdP = 560_000;
+    me.stanceReadyTick = 130;
+    const m = buildHudModel(sim, EXTRAS);
+    expect(m.me.research?.current).toBe(sim.config.content.research.picks[0]?.id);
+    expect(m.me.research?.leftMs).toBe(8000);
+    expect(m.me.holdP).toBe(560);
+    expect(m.me.stanceWaitMs).toBe(1500);
+    expect(m.me.research?.discount).toBe(false);
+    expect(m.foe.research?.current).toBeNull();
+    // Behind by 20+ points of base HP: research costs less (A18.5.1).
+    me.baseHp = Math.floor(me.baseMaxHp * 0.7);
+    expect(buildHudModel(sim, EXTRAS).me.research?.discount).toBe(true);
+    me.baseHp = me.baseMaxHp;
+    // Behind in age position.
+    sim.state.sides[1].ageIndex = 1;
+    expect(buildHudModel(sim, EXTRAS).me.research?.discount).toBe(true);
+  });
+
   it('labels the opponent as AI and lists what it has scouted', () => {
     const sim = new FakeSim();
     for (let i = 0; i < 3; i++) sim.step([]);

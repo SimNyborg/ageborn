@@ -132,9 +132,9 @@
   },
   "format": {
     "tutorial": { "name": "Training", "desc": "Stone Age to Future Age, no clock." },
-    "short": { "name": "Short War", "desc": "Three ages, about 7 min." },
-    "standard": { "name": "Standard War", "desc": "Five ages, about 10 min." },
-    "full": { "name": "Full War", "desc": "Seven ages, about 15 min." }
+    "short": { "name": "Short War", "desc": "3 ages, about 7 min." },
+    "standard": { "name": "Standard War", "desc": "5 ages, about 10 min." },
+    "full": { "name": "Full War", "desc": "7 ages, about 15 min." }
   },
   "rarity": {
     "common": { "name": "Common" },

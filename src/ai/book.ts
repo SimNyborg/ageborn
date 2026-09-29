@@ -82,6 +82,13 @@ export interface CardBook {
     ascendTicks: number;
     turretBuildTicks: number;
     stanceCooldownTicks: number;
+    /** Hold flag range and snap (A18.4.2), milli-lu, and its move cooldown in ticks. */
+    flagMin: number;
+    flagMax: number;
+    flagSnap: number;
+    flagMoveTicks: number;
+    /** Turret range cap from the own gate (A2.8), milli-lu: where the turret cover ends. */
+    turretCover: number;
     emoteCooldownTicks: number;
   };
 }
@@ -187,11 +194,52 @@ export function cardBook(content: CompiledContent): CardBook {
       ascendTicks: content.ticks.ascend,
       turretBuildTicks: content.ticks.turretBuild,
       stanceCooldownTicks: content.ticks.stanceCooldown,
+      flagMin: e.holdFlag.minP * MILLI,
+      flagMax: e.holdFlag.maxP * MILLI,
+      flagSnap: Math.max(1, e.holdFlag.snapLu) * MILLI,
+      flagMoveTicks: msToTicks(e.holdFlag.moveCooldownMs),
+      turretCover: e.turretRangeCap * MILLI,
       emoteCooldownTicks: msToTicks(e.emoteCooldownMs),
     },
   };
   books.set(content, book);
   return book;
+}
+
+/** A match's clocks in ticks (A18.3.4), null where the format has none (the tutorial). */
+export interface MatchClock {
+  overdrive: number | null;
+  siege: number | null;
+  finalBell: number | null;
+}
+
+const clocks = new WeakMap<CardBook, Map<string, MatchClock>>();
+
+/**
+ * The clocks of the match's age window (public: the start screen shows the format). Formats with the
+ * same window share their clocks (A18.3.4: clocks follow the window length), so the window in the
+ * observation is enough.
+ */
+export function matchClock(book: CardBook, ages: readonly AgeId[] | undefined): MatchClock {
+  const key = (ages ?? []).join(',');
+  let byKey = clocks.get(book);
+  if (!byKey) {
+    byKey = new Map();
+    clocks.set(book, byKey);
+  }
+  const hit = byKey.get(key);
+  if (hit) return hit;
+  const ticks = (ms: number | null): number | null => (ms === null ? null : msToTicks(ms));
+  const formats = Object.keys(book.content.formats).sort();
+  let out: MatchClock = { overdrive: null, siege: null, finalBell: null };
+  for (const id of formats) {
+    const f = book.content.formats[id];
+    if (!f || f.ages.join(',') !== key || f.finalBellMs === null) continue;
+    out = { overdrive: ticks(f.overdriveMs), siege: ticks(f.siegeMs), finalBell: ticks(f.finalBellMs) };
+    break;
+  }
+  byKey.set(key, out);
+  return out;
 }
 
 /** Counter value M[a][b] in bp; 5,000 (even) when the matrix has no entry. */

@@ -9,7 +9,11 @@
  *   gets the denied feedback (red flash, 2-frame shake, `ui_deny`); everything else becomes a command
  *   for `issue` and the sim has the final word. A command the sim rejects flashes the element that sent
  *   it (the view plays `ui_deny`).
- * - Keyboard controls from A2.12 (1-5, Backspace, Q/W, B, T, E, Space, S, L, P, F; P pauses, never Esc).
+ * - Keyboard controls from A2.12 and A18 (1-6, Backspace, Q/W, B, G, E, Space, S, Shift+S, L, P, F; P
+ *   pauses, never Esc; Esc closes the War Council).
+ * - The War Council (A18.5.7, `Council.tsx`): its button sits in the tray, its sheet slides up over
+ *   the tray; a started pick's badge flies into the button and a finished one pops a card above it.
+ * - The Hold flag's drag grip over the lane (A18.4.2, `HoldFlag.tsx`).
  * - View events: mount taps open the popover (Shift sells, the "+" mount buys), emotes show bubbles,
  *   evolves show a banner on that side's XP bar, coins bump the gold counter, and power drag targeting
  *   previews the zone on the canvas.
@@ -23,6 +27,9 @@ import { t as i18nT } from '@/i18n';
 import { Signal, type ReadonlySignal } from '@preact/signals';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { HudViewBridge, HudViewEvent } from './bridge';
+import { CouncilSheet, DoneCard, FlyBadge, type CouncilDone, type CouncilFly } from './Council';
+import { councilView, researchIntent, type CouncilPick } from './council';
+import { FlagGrip } from './HoldFlag';
 import type { EmoteWheel, HudCtx, Translate } from './context';
 import { EdgeBadges } from './Minimap';
 import { MountPopover, type MountPopoverState } from './MountPopover';
@@ -92,6 +99,8 @@ export interface HudProps {
   callouts?: boolean;
   /** The player's equipped emotes and quotes (A18.9.4). Default: the six starter emotes, no quotes. */
   emoteWheel?: EmoteWheel;
+  /** Opens the War Council sheet at mount (the dev state gallery): null = the overview, a line key = its picks. */
+  councilOpen?: string | null;
 }
 
 /** Remembers that this player uses the keyboard, so the hint badges show from then on. */
@@ -125,6 +134,10 @@ interface Moment {
 }
 
 const MOMENT_MS: Record<Moment['kind'], number> = { evolve: 2400, phase: 2600, blocked: 4200 };
+/** The War Council sheet leaves in 130 ms (0.7 × its 180 ms entrance, A15 motion rules). */
+const SHEET_EXIT_MS = 130;
+/** The research-complete card stays this long (a tap skips it). */
+const DONE_MS = 2600;
 
 function isSignal(model: ReadonlySignal<HudModel> | HudModel): model is ReadonlySignal<HudModel> {
   return model instanceof Signal;
@@ -208,6 +221,23 @@ export function Hud(props: HudProps) {
   const [hits, setHits] = useState<[number, number]>([0, 0]);
   const [keys, setKeys] = useState(() => props.showKeys === true || keysUsedBefore());
   const [moment, setMoment] = useState<Moment | null>(null);
+  // War Council: the sheet (open, which line), its exit, the flying badge, the completion card.
+  const [council, setCouncil] = useState<{ open: boolean; line: string | null; closing: boolean }>(() => ({
+    open: props.councilOpen !== undefined,
+    line: props.councilOpen ?? null,
+    closing: false,
+  }));
+  const councilRef = useRef(council);
+  councilRef.current = council;
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const councilBtn = useRef<HTMLElement | null>(null);
+  const [flies, setFlies] = useState<CouncilFly[]>([]);
+  const flySeq = useRef(0);
+  const [done, setDone] = useState<CouncilDone | null>(null);
+  const doneTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [burst, setBurst] = useState(0);
+  const [stamp, setStamp] = useState(0);
+  const [spend, setSpend] = useState<{ id: number; amount: number } | null>(null);
   const momentSeq = useRef(0);
   const momentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showMoment = useCallback((mo: Omit<Moment, 'id'>) => {
@@ -223,11 +253,33 @@ export function Hud(props: HudProps) {
     [],
   );
 
+  const closeCouncil = useCallback(() => {
+    if (!councilRef.current.open || councilRef.current.closing) return;
+    setCouncil((c) => ({ ...c, closing: true }));
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setCouncil({ open: false, line: null, closing: false }), SHEET_EXIT_MS);
+  }, []);
+
+  const openCouncil = useCallback((line: string | null) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setCouncil({ open: true, line, closing: false });
+  }, []);
+
   const act = useCallback(
     (i: HudIntent) => {
       const { m: cur, props: p } = live.current;
       switch (i.k) {
         case 'none':
+          return;
+        case 'council': {
+          if (cur.phase === 'ended' || !cur.me.research) return;
+          const st = councilRef.current;
+          if (st.open && !st.closing && (i.line === undefined || st.line === i.line)) closeCouncil();
+          else openCouncil(i.line ?? null);
+          return;
+        }
+        case 'close':
+          closeCouncil();
           return;
         case 'pause':
           p.onPause?.();
@@ -247,7 +299,7 @@ export function Hud(props: HudProps) {
           return;
       }
     },
-    [flash],
+    [flash, closeCouncil, openCouncil],
   );
 
   // View events.
@@ -305,8 +357,10 @@ export function Hud(props: HudProps) {
       // A keyboard-focused button keeps its native Space / Enter.
       if ((e.key === ' ' || e.key === 'Enter') && e.target instanceof HTMLButtonElement) return;
       const { m: cur, props: p, side: me } = live.current;
-      const i = keyIntent(e.key, cur, p.config, me);
+      const i = keyIntent(e.key, cur, p.config, me, e.shiftKey);
       if (i.k === 'none') return;
+      // Escape belongs to the screen underneath unless the Council is open.
+      if (i.k === 'close' && !councilRef.current.open) return;
       e.preventDefault();
       if (!keysUsedThisSession) {
         rememberKeysUsed();
@@ -334,8 +388,36 @@ export function Hud(props: HudProps) {
   }, [view, compact]);
 
   useEffect(() => {
-    if (m.phase === 'ended') setPopover(null);
-  }, [m.phase]);
+    if (m.phase === 'ended') {
+      setPopover(null);
+      closeCouncil();
+    }
+  }, [m.phase, closeCouncil]);
+
+  // Research completion (A18.5.7): the button bursts, a card with the badge pops above it, a stinger.
+  const owned = m.me.research?.owned;
+  const ownedCount = useRef(owned?.length ?? 0);
+  useEffect(() => {
+    const n = owned?.length ?? 0;
+    if (n > ownedCount.current && owned) {
+      const id = owned[n - 1];
+      if (id && !readOnly) {
+        setBurst((b) => b + 1);
+        setDone({ id: n, pick: id });
+        audio?.play('level_up');
+        if (doneTimer.current) clearTimeout(doneTimer.current);
+        doneTimer.current = setTimeout(() => setDone(null), DONE_MS);
+      }
+    }
+    ownedCount.current = n;
+  }, [owned?.length, readOnly, audio]);
+  useEffect(
+    () => () => {
+      if (doneTimer.current) clearTimeout(doneTimer.current);
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    },
+    [],
+  );
 
   // A17.6: while the mount popover is open the auto camera holds, the popover stays on its mount as
   // the camera moves, and it closes once its mount scrolls off-screen.
@@ -394,10 +476,30 @@ export function Hud(props: HudProps) {
     ...(props.emoteWheel ? { wheel: props.emoteWheel } : {}),
     readOnly,
     keys: keys && !readOnly,
-    hints: props.callouts !== false && !readOnly,
+    // One thing at a time: the power hint waits while the War Council sheet is open.
+    hints: props.callouts !== false && !readOnly && !council.open,
   };
 
   const colors = useMemo(() => hudTeamColors(props.teamPreset ?? 'default', side), [props.teamPreset, side]);
+
+  // The War Council (A18.5.7). The first match (no clock) keeps it off the tray; the gold tap still opens it.
+  const cv = m.me.research ? councilView(m, config, side) : null;
+  const councilOn = cv !== null && cv.enabled && config.training?.noClock !== true;
+  const startPick = (pick: CouncilPick, from: HTMLElement): void => {
+    const i = researchIntent(pick, side);
+    act(i);
+    if (i.k !== 'command') return;
+    audio?.play('turret_upgrade');
+    setSpend({ id: ++flySeq.current, amount: pick.price });
+    const rootEl = root.current;
+    const a = rootEl ? center(from.querySelector<HTMLElement>('.hud-pick-badge') ?? from, rootEl) : null;
+    const b = rootEl ? center(councilBtn.current, rootEl) : null;
+    if (a && b) {
+      const id = flySeq.current;
+      setFlies((f) => [...f.slice(-2), { id, pick: pick.def.id, from: a, to: b }]);
+    } else setStamp((s) => s + 1);
+    closeCouncil();
+  };
   const style = { '--hud-me': colors.me, '--hud-foe': colors.foe };
 
   return (
@@ -438,7 +540,46 @@ export function Hud(props: HudProps) {
           goldEl.current = el;
         }}
         goldBump={goldBump}
+        spend={spend}
+        council={
+          councilOn && cv
+            ? {
+                v: cv,
+                open: council.open && !council.closing,
+                toggle: () => act({ k: 'council' }),
+                burst,
+                stamp,
+                btnRef: (el) => {
+                  councilBtn.current = el;
+                },
+              }
+            : null
+        }
       />
+      {council.open && cv && (!readOnly || props.councilOpen !== undefined) ? (
+        <CouncilSheet
+          c={ctx}
+          v={cv}
+          line={council.line}
+          onLine={(line) => setCouncil((cur) => ({ ...cur, line }))}
+          onClose={closeCouncil}
+          onStart={startPick}
+          closing={council.closing}
+        />
+      ) : null}
+      {flies.map((f) => (
+        <FlyBadge
+          key={f.id}
+          c={ctx}
+          fly={f}
+          onDone={(id) => {
+            setFlies((list) => list.filter((x) => x.id !== id));
+            setStamp((s) => s + 1);
+          }}
+        />
+      ))}
+      {done && councilOn ? <DoneCard c={ctx} done={done} onSkip={() => setDone(null)} /> : null}
+      <FlagGrip c={ctx} />
       {popover && !readOnly ? <MountPopover c={ctx} at={popover} onClose={closePopover} /> : null}
       <EdgeBadges c={ctx} />
     </div>

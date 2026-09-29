@@ -1,8 +1,9 @@
 /**
  * The HUD bottom tray (DESIGN A9.2, 24% of the height), left to right:
  *
- * 1. Gold counter with income per second and the next income upgrade ("+Income · 200", the
- *    Treasury); tapping it buys it. Spending floats "-50" up from it; coins landing pop it.
+ * 1. Gold counter with income per second; a tap opens the War Council on the Economy track (A18.5.4:
+ *    Economy research replaced the Treasury). Spending floats "-50" up from it; coins landing pop it.
+ *    The round War Council button sits right of it (`Council.tsx`, A18.5.7).
  * 2. The unit cards (88 px targets on screens >= 900 px wide, 72 px below). Each shows its name
  *    ribbon and role icon, its cost, a gold queue badge, the training fill rising from the bottom, the
  *    affordable glow, the foil frame and the "ARMY FULL" / "LEGENDARY IN FIELD" states. A card you
@@ -11,7 +12,7 @@
  *    the last queued instance (A2.12). Empty slots are hidden; a match that unlocks a card later
  *    shows one padlock slot. Hovering a card (desktop) or its "i" corner (touch) shows what it is.
  *    After an evolve the cards flip over to the new age's units.
- * 3. Army counter and the stance flag (from match 4).
+ * 3. Army counter and the three-stance control (`Stance.tsx`, A18.4.2).
  * 4. The large round Age Power button with its charge ring and name (`PowerButton.tsx`): drag it
  *    onto the battlefield to place it; a tap starts aiming mode (A2.9, owner decision "Age Power
  *    targeting"). When full it bursts, lifts, bobs and says "READY".
@@ -22,7 +23,9 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
 import { counterClasses, isLegendaryUnit, unitClass } from '@/core/cardClass';
 import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
-import { ChargeFlagIcon, CoinIcon, HoldShieldIcon, HornIcon, RoleGlyph } from './icons';
+import { CouncilButton } from './Council';
+import type { CouncilView } from './council';
+import { CoinIcon, HornIcon, RoleGlyph } from './icons';
 import {
   LONG_PRESS_MS,
   POWER_DRAG_PX,
@@ -30,14 +33,14 @@ import {
   ageIds,
   cancelIntent,
   cardTarget,
+  goldIntent,
   lastStandIntent,
   lastStandVisible,
   secondsUntilAffordable,
-  stanceIntent,
   trainIntent,
-  treasuryIntent,
 } from './model';
 import { PowerButton } from './PowerButton';
+import { StanceControl } from './Stance';
 import { usePortrait } from './usePortrait';
 
 function cls(...parts: (string | false | null | undefined)[]): string {
@@ -71,16 +74,14 @@ function kick(el: Element | null, frames: Keyframe[], ms: number): void {
 function GoldCounter(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; bump: boolean; floats: Float[] }) {
   const { c } = p;
   const { m, t } = c;
-  const cost = m.me.nextTreasuryCost;
-  const affordable = cost !== null && m.me.gold >= cost;
   return (
     <button
       ref={p.goldRef}
-      class={cls('hud-gold', affordable && 'can-buy', p.bump && 'is-bump', c.denied('gold') && 'is-denied')}
+      class={cls('hud-gold', p.bump && 'is-bump', c.denied('gold') && 'is-denied')}
       data-testid="hud-gold"
-      aria-label={cost !== null ? t('hud.treasuryBuy', { cost }) : t('hud.treasuryMax')}
+      aria-label={t('hud.goldLabel', { n: m.me.gold })}
       disabled={c.readOnly}
-      onClick={() => c.act(treasuryIntent(m, c.side))}
+      onClick={() => c.act(goldIntent(m))}
     >
       <span class="hud-gold-main">
         <CoinIcon size={c.compact ? 22 : 28} />
@@ -89,7 +90,6 @@ function GoldCounter(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; 
         </span>
       </span>
       <span class="hud-gold-rate">{t('hud.goldRate', { n: m.me.goldPerSec })}</span>
-      <span class="hud-gold-treasury">{cost !== null ? t('hud.treasury', { cost }) : t('hud.treasuryMax')}</span>
       {p.floats
         .filter((f) => f.slot === -1)
         .map((f) => (
@@ -97,7 +97,6 @@ function GoldCounter(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; 
             {f.text}
           </span>
         ))}
-      {c.keys ? <kbd class="hud-key">T</kbd> : null}
     </button>
   );
 }
@@ -317,20 +316,7 @@ function Army(p: { c: HudCtx }) {
         <RoleGlyph group="infantry" size={16} />
         {t('hud.army', { pop: m.me.pop, cap: m.me.popCap })}
       </span>
-      {m.me.stanceVisible ? (
-        <button
-          class={cls('hud-stance', `stance-${m.me.stance}`, c.denied('stance') && 'is-denied')}
-          data-testid="hud-stance"
-          data-stance={m.me.stance}
-          aria-label={t('hud.stanceLabel', { stance: t(`hud.stance.${m.me.stance}`) })}
-          disabled={c.readOnly}
-          onClick={() => c.act(stanceIntent(m, c.side))}
-        >
-          {m.me.stance === 'charge' ? <ChargeFlagIcon size={20} /> : <HoldShieldIcon size={20} />}
-          <span>{t(`hud.stance.${m.me.stance}`)}</span>
-          {c.keys ? <kbd class="hud-key">S</kbd> : null}
-        </button>
-      ) : null}
+      <StanceControl c={c} />
     </div>
   );
 }
@@ -367,7 +353,24 @@ export function hasPendingUnlock(c: HudCtx): boolean {
   return script.some((e) => e.side === c.side && e.unlockSlot !== undefined && e.tick > tick);
 }
 
-export function Tray(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; goldBump: boolean }) {
+/** The War Council button's state, owned by `Hud.tsx` (the sheet lives there). */
+export interface TrayCouncil {
+  v: CouncilView;
+  open: boolean;
+  toggle: () => void;
+  burst: number;
+  stamp: number;
+  btnRef: (el: HTMLElement | null) => void;
+}
+
+export function Tray(p: {
+  c: HudCtx;
+  goldRef: (el: HTMLElement | null) => void;
+  goldBump: boolean;
+  council?: TrayCouncil | null;
+  /** A research spend to float from the gold counter ("-150"); a new `id` floats once. */
+  spend?: { id: number; amount: number } | null;
+}) {
   const { c } = p;
   const [floats, setFloats] = useState<Float[]>([]);
   const nextId = useRef(1);
@@ -387,11 +390,17 @@ export function Tray(p: { c: HudCtx; goldRef: (el: HTMLElement | null) => void; 
     }, FLOAT_MS);
     timers.current.add(timer);
   };
+  const spendId = p.spend?.id ?? 0;
+  useEffect(() => {
+    if (p.spend) addFloat({ text: `-${p.spend.amount}`, kind: 'spend', slot: -1 });
+    // One float per spend id.
+  }, [spendId]);
   const age = ageIds(c.config)[c.m.me.ageIndex] ?? 'stone';
   const cards = c.m.me.cards.filter((card) => card.state !== 'empty' && card.card);
   return (
     <div class="hud-tray" data-testid="hud-tray">
       <GoldCounter c={c} goldRef={p.goldRef} bump={p.goldBump} floats={floats} />
+      {p.council ? <CouncilButton c={c} v={p.council.v} open={p.council.open} onToggle={p.council.toggle} burst={p.council.burst} stamp={p.council.stamp} btnRef={p.council.btnRef} /> : null}
       <div class="hud-cards">
         {cards.map((card, i) => (
           // Keyed by age: after an evolve the new cards flip in, one after another.

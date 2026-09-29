@@ -53,8 +53,9 @@ export interface TierParams {
    *
    * - `econPlan`: a Treasury goal is not spent into a push-gate wave, and against a passive foe (no
    *   enemy on the bot's half) a level is bought while it still pays back before the Final Bell.
-   * - `waveCommit`: a wave that passed the push gate keeps charging until it has lost half its value,
-   *   and a held army goes again only with a 15% margin over the gate (no charge/hold flapping).
+   * - `waveCommit`: a wave that passed the push gate keeps charging until it has lost half its value
+   *   or is worth less than the defence it faces, and a held army goes again only with a 15% margin
+   *   over the gate (no charge/hold flapping).
    * - `powerArmyShareBp`: the power also fires on a zone holding this share of the visible enemy army
    *   (the A7.3 gold threshold alone was fixed in Stone gold, so late ages barely ever reached it and
    *   early ages never did); 0 = off.
@@ -71,6 +72,21 @@ export interface TierParams {
   researchFromTicks: number;
   researchGapTicks: number;
   researchMode: 'random' | 'hint' | 'counter';
+  /**
+   * How the tier uses research timing (A18.5.8 "Uses enemy research"): `none` (0-IV); `own` (V-VI)
+   * pushes when its own Troops rank completes; `both` (VII-X) also strikes while the enemy's Troops item
+   * is still running and waits out the first seconds after it lands, and times evolves away from it.
+   */
+  researchTiming: 'none' | 'own' | 'both';
+  /** Moves the Hold flag (A18.4.2: tiers 0-II never move it). */
+  movesFlag: boolean;
+  /** Uses Fall back (A18.4.2: tiers V and up). */
+  fallback: boolean;
+  /**
+   * Punishes a thin army (A18.6, from Normal = tier IV): pushes when its army value is ≥ 1.5× the
+   * enemy's, even if the push gate would bank, so "a few soldiers, then evolve" loses.
+   */
+  punishThin: boolean;
 }
 
 interface Row {
@@ -103,6 +119,10 @@ const HOLD_FROM = 5;
 const REMEMBER_FROM = 7;
 const SAFE_WINDOW_FROM = 7;
 const PREDICT_FROM = 10;
+/** A18.4.2: tiers 0-II never move the Hold flag. */
+const FLAG_FROM = 3;
+/** A18.6: Normal (tier IV) and up punish a thin army. */
+const PUNISH_THIN_FROM = 4;
 /** Owner feedback 2026-09-28: the upper-tier craft (`econPlan`, `waveCommit`, power share, turrets). */
 const CRAFT_FROM = 6;
 const POWER_SHARE_AT_CRAFT_BP = 5000;
@@ -166,6 +186,10 @@ export function tierParams(tier: number): TierParams {
     researchFromTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 60000 : t < 700 ? 45000 : 30000),
     researchGapTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 65000 : t < 700 ? 50000 : 45000),
     researchMode: t < 200 ? 'random' : t < 500 ? 'hint' : 'counter',
+    researchTiming: t < 500 ? 'none' : t < 700 ? 'own' : 'both',
+    movesFlag: t >= FLAG_FROM * 100,
+    fallback: t >= HOLD_FROM * 100,
+    punishThin: t >= PUNISH_THIN_FROM * 100,
   };
 }
 
