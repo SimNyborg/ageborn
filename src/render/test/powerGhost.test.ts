@@ -54,11 +54,12 @@ describe('Age Power drag ghost (owner decision "Age Power targeting")', () => {
     expect(view.powerGhost()).toBeNull();
   });
 
-  it('tap-to-aim starts the ghost over the enemy front, reaching into their group', () => {
+  it('tap-to-aim starts the ghost over the enemy front, clamped into the reach band', () => {
     const { view } = setup();
-    // Enemy front at p 700; 35% of the 450 lu zone beyond it.
-    expect(view.powerAimStart()).toBe(858);
-    expect(view.previewedP()).toBe(858);
+    // Enemy front at p 700; 35% of the 450 lu zone beyond it is 858, but a Home power's centre stays at
+    // or below the Home line minus half its zone: 1,000 − 225 = 775 (A2.9.4).
+    expect(view.powerAimStart()).toBe(775);
+    expect(view.previewedP()).toBe(775);
     view.cameraHold('powerDrag', false);
     expect(view.previewedP()).toBeNull();
   });

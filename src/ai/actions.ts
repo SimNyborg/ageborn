@@ -13,8 +13,11 @@ export type BotAction =
   /** A War Council research item (A18.5; the Economy income picks replaced the Treasury). */
   | { kind: 'research'; pick: ResearchPickDef; cost: number }
   | { kind: 'evolve' }
-  /** Cast the power in `slot` (default Home; A2.9.1) at `p` (null = auto-aim). */
-  | { kind: 'power'; p: number | null; slot?: PowerSlot }
+  /**
+   * Cast the power in `slot` (default Home; A2.9.1) at `p` (null = auto-aim). `cost` is the effective
+   * price in milli-gold (A2.9.2), so the ledger never spends the same gold twice.
+   */
+  | { kind: 'power'; p: number | null; slot?: PowerSlot; cost?: number }
   /** A stance change; a change to Hold may also place the flag (`holdP`, whole lu, A18.4.2). */
   | { kind: 'stance'; stance: StanceMode; holdP?: number }
   /** Moves the Hold flag while Holding (A18.4.2: at most once per 1 s, no stance cooldown). */
@@ -62,6 +65,8 @@ export function actionCost(a: BotAction): number {
     case 'modernise':
     case 'research':
       return a.cost;
+    case 'power':
+      return a.cost ?? 0;
     default:
       return 0;
   }
@@ -84,7 +89,7 @@ export function describeAction(a: BotAction | null): string {
     case 'evolve':
       return 'evolve';
     case 'power':
-      return a.p === null ? 'power (auto)' : `power at p ${a.p}`;
+      return `power ${a.slot ?? 'home'} ${a.p === null ? '(auto)' : `at p ${a.p}`}`;
     case 'stance':
       return a.holdP === undefined ? `stance ${a.stance}` : `stance ${a.stance} flag ${a.holdP}`;
     case 'flag':

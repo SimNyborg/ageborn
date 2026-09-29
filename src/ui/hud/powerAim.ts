@@ -14,22 +14,64 @@
  *   will act). A press on a power that is not ready asks for the (denied) command, so the button
  *   shakes as before. The keyboard (Space, Enter on the focused button) auto-aims.
  */
+import type { PowerReach } from '@/contracts';
 import { POWER_DRAG_PX } from './model';
 
 /** What the pointer is over. `minimap` counts as the lane (A17.6: a power can be dropped on it). */
 export type AimOver = 'lane' | 'minimap' | 'hud' | 'off';
 
 export interface AimTarget {
-  /** Own-side progress p (lu), clamped to the power band; null when the pointer is not over the lane. */
+  /** Own-side progress p (lu), resolved against the reach band; null when the pointer is not over the lane. */
   p: number | null;
   over: AimOver;
+  /**
+   * False when the point is beyond the power's reach (A2.9.4: "Only in your half"): the ghost turns red
+   * and hatched, and a drop there puts the power back. Absent = within reach.
+   */
+  inReach?: boolean;
+  /** The aim sticks to the band's edge (the magnetic edge, A2.9.10 step 3). */
+  edge?: boolean;
 }
 
 export const NO_AIM: AimTarget = { p: null, over: 'off' };
 
 /** A drop here fires the power. */
 export function aimValid(a: AimTarget): boolean {
-  return a.p !== null && (a.over === 'lane' || a.over === 'minimap');
+  return a.p !== null && (a.over === 'lane' || a.over === 'minimap') && a.inReach !== false;
+}
+
+/**
+ * Past the band's far edge the ghost sticks to the edge for this much overshoot (lu) and stays valid
+ * (A2.9.10 step 3, the magnetic edge); beyond it the aim is out of reach.
+ */
+export const EDGE_STICK_LU = 120;
+
+/** The A2.1 aim clamp: a zone centre is never nearer a gate than this (lu). */
+export const LANE_AIM_MIN = 150;
+export const LANE_AIM_MAX = 1850;
+
+/** Where a slot's power may land now (from the view: the band follows your front live). */
+export interface AimBand {
+  reach: PowerReach;
+  /** Legal zone centres [min, max], own-side lu; null for powers that take no aim (the whole lane casts). */
+  band: readonly [number, number] | null;
+}
+
+/**
+ * Resolves a raw lane point (own-side lu) against a reach band (A2.9.4, A2.9.10): inside the band it is
+ * used as it is; below it (toward your gate) it clamps; up to `EDGE_STICK_LU` past the far edge it
+ * sticks to the edge and stays valid; beyond that it is out of reach (the ghost shows where the pointer
+ * is, red). Powers without an aim (charges, drops, buffs, Suppress) are valid anywhere on the lane.
+ */
+export function resolveAim(raw: number, b: AimBand | null): { p: number; inReach: boolean; edge: boolean } {
+  const lane = Math.round(Math.min(LANE_AIM_MAX, Math.max(LANE_AIM_MIN, raw)));
+  const band = b?.band ?? null;
+  if (!band) return { p: lane, inReach: true, edge: false };
+  const [min, max] = band;
+  if (raw <= min) return { p: Math.round(min), inReach: true, edge: false };
+  if (raw <= max) return { p: Math.round(raw), inReach: true, edge: false };
+  if (raw <= max + EDGE_STICK_LU) return { p: Math.round(max), inReach: true, edge: true };
+  return { p: lane, inReach: false, edge: false };
 }
 
 export type PowerAimState =
@@ -86,6 +128,9 @@ export function aimActive(s: PowerAimState): boolean {
 export function ghostOf(s: PowerAimState): { p: number | null; valid: boolean } {
   switch (s.s) {
     case 'dragging':
+      // Out of reach: the ghost follows the pointer, red (A2.9.10 step 4); over the HUD it stays at the
+      // last lane point, red ("Release to cancel").
+      if (s.aim.p !== null && s.aim.inReach === false && s.aim.over !== 'hud' && s.aim.over !== 'off') return { p: s.aim.p, valid: false };
       return aimValid(s.aim) ? { p: s.aim.p, valid: true } : { p: s.last, valid: false };
     case 'aiming':
       return { p: s.aim.p, valid: aimValid(s.aim) };

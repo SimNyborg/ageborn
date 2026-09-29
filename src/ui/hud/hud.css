@@ -8,12 +8,12 @@
  * The HUD root is a size container over the canvas box. Status along the top, actions along the bottom,
  * nothing persistent over the lane band between them (A9.2). Sizes come from the 4.7 budget:
  *
- * | | top band | tray | cards | left cluster | stance | power |
+ * | | top band | tray | cards | left cluster | stance | power dock (A2.9.10) |
  * |---|---|---|---|---|---|---|
- * | desktop (height >= 500) | 56 | 128 | 88 x 116 | 132 | 64 | 112 |
- * | phone (height < 500) | 44 | 94 | 62 x 84 | 100 | 56 | 88 |
- * | phone, width >= 900 | 44 | 104 | 72 x 96 | 100 | 56 | 88 |
- * | phone, width < 820 | 44 | 94 | 56 x 76 | 92 | 56 | 80 |
+ * | desktop (height >= 500) | 56 | 128 | 88 x 116 | 132 | 64 | 2 x 96 + 8 |
+ * | phone (height < 500) | 44 | 94 | 62 x 84 | 100 | 56 | 2 x 64 + 6 |
+ * | phone, width >= 900 | 44 | 104 | 72 x 96 | 100 | 56 | 2 x 64 + 6 |
+ * | phone, width < 820 | 44 | 94 | 56 x 76 | 92 | 56 | 2 x 56 + 5 |
  *
  * Motion uses the tokens (5.2): presses on `pointerdown` (--ui-dur-press, --ui-press-scale), small
  * things keep their overshoot (--ui-ease-back), and nothing loops except the one attention pulse
@@ -50,7 +50,6 @@
   --hud-gold-h: 56px;
   --hud-round: 60px;
   --hud-stance: 64px;
-  --hud-power: 112px;
   --hud-btn: 40px;
   --hud-btn-hit: 48px;
   --hud-me-w: 300px;
@@ -91,7 +90,6 @@
     --hud-gold-h: 44px;
     --hud-round: 48px;
     --hud-stance: 56px;
-    --hud-power: 88px;
     --hud-btn: 36px;
     --hud-btn-hit: 44px;
     --hud-me-w: 190px;
@@ -119,7 +117,6 @@
     --hud-card-gap: 5px;
     --hud-cluster-w: 92px;
     --hud-round: 44px;
-    --hud-power: 80px;
     --hud-me-w: 176px;
     --hud-foe-w: 184px;
     --hud-gap: 6px;
@@ -528,7 +525,7 @@
 }
 
 .hud-medal-foe .hud-medal-core {
-  inset: 5px;
+  inset: 3px;
 }
 
 .hud-medal-ring {
@@ -2121,160 +2118,627 @@
   }
 }
 
-/* ---------------------------------------------------------------- Age Power */
+/* ---------------------------------------------------------------- power dock (A2.9.10) */
 
+/*
+ * Two round buttons, Home (left, a shield frame) and Field (right, a banner frame): 96 px on desktops,
+ * 64 on phones, 56 below 820 px, 6 px apart. Each: the icon, a 5 px reload arc, the seconds left while
+ * reloading, a cost chip top-left (red with a gold fill while gold is short), a reach glyph bottom-right.
+ */
 .hud-power-col {
+  --hud-pw: 96px;
+  --hud-pw-gap: 8px;
   position: relative;
   display: flex;
   flex: none;
   justify-content: center;
-  width: var(--hud-power);
 }
 
-.hud-power-wrap {
+.hud-dock {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  gap: var(--hud-pw-gap);
+}
+
+@container hud (max-height: 499px) {
+  .hud-power-col {
+    --hud-pw: 64px;
+    --hud-pw-gap: 6px;
+  }
+}
+
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud-power-col {
+    --hud-pw: 56px;
+    --hud-pw-gap: 5px;
+  }
+}
+
+.hud-pw-slot {
   position: relative;
   display: flex;
   flex: none;
   flex-direction: column;
   align-items: center;
+  width: var(--hud-pw);
 }
 
-.hud-power {
+.hud-pw-slot.is-gap {
+  height: var(--hud-pw);
+}
+
+.hud-pw {
   position: relative;
   flex: none;
-  width: var(--hud-power);
-  height: var(--hud-power);
+  width: var(--hud-pw);
+  height: var(--hud-pw);
   padding: 0;
   border: none;
   border-radius: 50%;
   background: none;
   touch-action: none;
-}
-
-.hud-power-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(var(--hud-gold) calc(var(--charge, 0) * 1turn), rgba(8, 10, 14, 0.88) 0);
-  box-shadow:
-    0 0 0 2px var(--hud-ink),
-    0 3px 0 1px rgba(0, 0, 0, 0.45);
-  transition: box-shadow var(--ui-dur-medium) var(--ui-ease-out);
-}
-
-.hud-power-core {
-  position: absolute;
-  inset: 8%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, #56647c, #1e2531 72%);
-  box-shadow: 0 0 0 2px var(--hud-ink);
-  filter: grayscale(0.65) brightness(0.72);
-  transition: filter var(--ui-dur-medium) var(--ui-ease-out);
-}
-
-.hud-power.is-ready .hud-power-core {
-  filter: none;
-}
-
-/* MR-69: the ring closes with a bright sweep, the button lifts 4 px and rests in a steady glow. */
-.hud-power.is-ready .hud-power-ring {
-  box-shadow:
-    0 0 0 2px var(--hud-ink),
-    0 0 0 5px rgba(255, 212, 102, 0.35),
-    0 0 20px 5px rgba(242, 181, 44, 0.7),
-    0 3px 0 1px rgba(0, 0, 0, 0.45);
-}
-
-/* The name (charging) or READY (ready) sits inside the ring, never clipped (UA-14). */
-.hud-power-name,
-.hud-power-ready {
-  position: absolute;
-  left: 50%;
-  bottom: 7%;
-  z-index: 2;
-  padding: 0 5px;
-  box-sizing: border-box;
-  translate: -50% 0;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 15px;
-  white-space: nowrap;
-  box-shadow: 0 0 0 1.5px var(--hud-ink);
-}
-
-/* A label wider than its space is condensed to fit, never cut (fit.ts sets --fit and --fit-m). */
-.hud-power-name > span,
-.hud-fit {
-  display: inline-block;
-  transform: scaleX(var(--fit, 1));
-  margin: 0 var(--fit-m, 0px);
-}
-
-.hud-power-name {
-  background: var(--ui-surface-3, #313a4b);
-  color: var(--hud-text);
-}
-
-.hud-power-ready {
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold-face));
-  color: var(--ui-ink, #1d1405);
-  text-transform: uppercase;
-  animation: hud-pop var(--ui-dur-medium) var(--ui-ease-back);
-}
-
-.hud-power-burst {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 5px solid #fff4c2;
-  pointer-events: none;
-  animation: hud-burst 700ms var(--ui-ease-out) forwards;
-}
-
-@keyframes hud-burst {
-  0% {
-    scale: 0.8;
-    opacity: 1;
-  }
-  100% {
-    scale: 1.6;
-    opacity: 0;
-    border-width: 1px;
-  }
-}
-
-/* Ready = grabbable: lifted off the tray with a deeper shadow and a small drag arrow. */
-.hud-power.is-ready {
-  cursor: grab;
-  translate: 0 -4px;
-  filter: drop-shadow(0 7px 5px rgba(0, 0, 0, 0.5));
   transition:
     translate var(--ui-dur-small) var(--ui-ease-back),
     filter var(--ui-dur-small) var(--ui-ease-out),
     scale var(--ui-dur-micro) var(--ui-ease-out);
 }
 
-.hud-power.is-ready:active {
+/* The slot frame behind the round face: a shield (Home) or a swallow-tailed banner (Field). */
+.hud-pw-frame {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 30%;
+  bottom: -13%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, #7b8aa6, #43506a 60%, #2c3548);
+  filter: drop-shadow(0 0 0 var(--hud-ink)) drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5));
+  clip-path: polygon(0 0, 100% 0, 100% 62%, 50% 100%, 0 62%);
+}
+
+.hud-pw--field .hud-pw-frame {
+  background: linear-gradient(180deg, #c8553f, #8e2f25 60%, #5e1c17);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+}
+
+.hud-pw-ring {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  rotate: -90deg;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hud-pw-ring circle {
+  fill: none;
+  stroke-width: 5.2;
+}
+
+.hud-pw-ring-track {
+  fill: rgba(8, 10, 14, 0.9) !important;
+  stroke: rgba(8, 10, 14, 0.92);
+  stroke-width: 7 !important;
+}
+
+.hud-pw-ring-fill {
+  stroke: #d6e6ff;
+  stroke-dasharray: 100 100;
+  stroke-linecap: butt;
+  /* The model arrives at 15 Hz: a linear glide between samples keeps the fill smooth. */
+  transition: stroke-dashoffset 90ms linear, stroke var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-pw.state-castable .hud-pw-ring-fill {
+  stroke: var(--hud-gold);
+}
+
+.hud-pw.state-poor .hud-pw-ring-fill {
+  stroke: #b8923a;
+  opacity: 0.7;
+}
+
+.hud-pw.state-lockout .hud-pw-ring-fill {
+  stroke: #9aa6ba;
+}
+
+/* MR-70b: the ring drains with a bright tail when a cast is committed (200 ms, `out`). */
+.hud-pw-ring-drain {
+  stroke: #fff6cf;
+  stroke-width: 6.5 !important;
+  stroke-dasharray: 100 100;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 3px #ffd466);
+  animation: hud-pw-drain var(--ui-dur-small-out, 200ms) var(--ui-ease-out) forwards;
+}
+
+@keyframes hud-pw-drain {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 100;
+    opacity: 0.2;
+  }
+}
+
+.hud-pw-core {
+  position: absolute;
+  inset: 11%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #56647c, #1e2531 72%);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+  transition:
+    filter var(--ui-dur-medium) var(--ui-ease-out),
+    opacity var(--ui-dur-medium) var(--ui-ease-out);
+}
+
+.hud-pw-core > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Reloading or locked: the icon at 40% under the seconds. Gold short: dimmed, not greyed. */
+.hud-pw.state-reloading .hud-pw-core,
+.hud-pw.state-lockout .hud-pw-core {
+  opacity: 0.4;
+  filter: grayscale(0.7);
+}
+
+.hud-pw.state-poor .hud-pw-core {
+  filter: saturate(0.55) brightness(0.72);
+}
+
+.hud-pw-secs {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow:
+    0 0 2px var(--hud-ink),
+    0 2px 0 var(--hud-ink),
+    0 0 8px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+@container hud (max-height: 499px) {
+  .hud-pw-secs {
+    font-size: 16px;
+  }
+}
+
+/* A lockout (the lever): a thin lock arc over the dim icon. */
+.hud-pw-lock {
+  position: absolute;
+  inset: 20%;
+  z-index: 2;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.75);
+  pointer-events: none;
+}
+
+/* The cost chip, the unit card's grammar: a coin and the effective price. */
+.hud-pw-cost {
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 3px;
+  box-sizing: border-box;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #2c3446, #151a24);
+  color: #fff4c8;
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@container hud (max-height: 499px) {
+  .hud-pw-cost {
+    height: 18px;
+    font-size: 12px;
+    line-height: 18px;
+    padding: 0 5px 0 2px;
+  }
+}
+
+.hud-pw-cost.is-poor {
+  background: linear-gradient(180deg, #b8372c, #7c1d17);
+  color: #fff;
+}
+
+/* While gold is short a thin gold underline fills toward the cost. */
+.hud-pw-cost-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: calc(var(--afford, 0) * 100%);
+  background: var(--hud-gold);
+  transition: width var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-pw-reach {
+  position: absolute;
+  right: -3px;
+  bottom: -2px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #3a4459, #171c27);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+@container hud (max-height: 499px) {
+  .hud-pw-reach {
+    width: 22px;
+    height: 22px;
+    right: -4px;
+    bottom: -3px;
+  }
+}
+
+/* MR-69: castable = lifted 4 px, a steady gold glow, the grab arrow; one bright sweep round the ring. */
+.hud-pw.is-ready {
+  cursor: grab;
+  translate: 0 -4px;
+  filter: drop-shadow(0 0 10px rgba(242, 181, 44, 0.65)) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.5));
+}
+
+.hud-pw.is-ready:active {
   cursor: grabbing;
 }
 
-/* The one pulse: the power breathes (MR-05) only when nothing ranks above it (U11). */
-.hud-power.is-pulse > .hud-power-ring,
-.hud-power.is-pulse > .hud-power-core {
+@media (hover: hover) {
+  .hud-pw.is-ready:hover:not(.is-aiming) {
+    translate: 0 -7px;
+    scale: 1.04;
+  }
+}
+
+.hud-pw-burst {
+  position: absolute;
+  inset: -4px;
+  z-index: 2;
+  border-radius: 50%;
+  border: 4px solid #fff4c2;
+  pointer-events: none;
+  animation: hud-burst 700ms var(--ui-ease-out) forwards;
+}
+
+.hud-pw-sweep {
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 70%, rgba(255, 250, 220, 0.95) 88%, transparent 90%);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 62%, #000 72%, transparent 74%);
+  mask: radial-gradient(circle, transparent 60%, #000 62%, #000 72%, transparent 74%);
+  pointer-events: none;
+  animation: hud-pw-sweep 620ms var(--ui-ease-out) forwards;
+}
+
+@keyframes hud-pw-sweep {
+  0% {
+    rotate: -90deg;
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    rotate: 270deg;
+    opacity: 0;
+  }
+}
+
+/* The one pulse: the castable slot breathes (MR-05) only when nothing ranks above it (U11). */
+.hud-pw.is-pulse > .hud-pw-core,
+.hud-pw.is-pulse > .hud-pw-ring {
   animation: hud-breathe var(--ui-dur-breathe) ease-in-out infinite;
 }
 
-@media (hover: hover) {
-  .hud-power.is-ready:hover:not(.is-aiming) {
-    translate: 0 -7px;
-    scale: 1.04;
-    filter: drop-shadow(0 10px 7px rgba(0, 0, 0, 0.45));
+/* MR-70b: the icon dips to 0.94 and back (70 / 140 ms, `back`) when the cast is committed. */
+.hud-pw.is-cast > .hud-pw-core {
+  animation: hud-pw-dip 210ms var(--ui-ease-back);
+}
+
+@keyframes hud-pw-dip {
+  33% {
+    scale: 0.94;
   }
+  100% {
+    scale: 1;
+  }
+}
+
+.hud-pw .hud-power-grab {
+  right: -5px;
+  top: auto;
+  bottom: 60%;
+}
+
+.hud-pw .hud-key {
+  top: auto;
+  bottom: -2px;
+  left: -2px;
+  z-index: 4;
+}
+
+/* Dragging: the power has left its socket (the token carries it). */
+.hud-pw.is-lifted {
+  cursor: grabbing;
+  translate: 0 0;
+  scale: 0.9;
+  filter: none;
+}
+
+.hud-pw.is-lifted > .hud-pw-core {
+  opacity: 0.35;
+  filter: grayscale(1) brightness(0.7);
+}
+
+/* Tap-to-aim: the button is pressed in, its ring glows, and a cross says "tap again to cancel". */
+.hud-pw-slot.is-aiming .hud-pw:not(.is-lifted) {
+  translate: 0 1px;
+  filter: drop-shadow(0 0 10px rgba(255, 244, 194, 0.9));
+}
+
+.hud-pw.is-denied {
+  animation:
+    hud-deny-flash 280ms var(--ui-ease-out),
+    ui-deny var(--ui-dur-small) var(--ui-ease-out);
+  border-radius: 50%;
+}
+
+/* The tip (long-press 450 ms, or hover on desktops after 350 ms). */
+.hud-pw-tip {
+  position: absolute;
+  right: -6px;
+  bottom: calc(100% + 14px);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 190px;
+  max-width: 260px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel-hi);
+  color: var(--hud-text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  box-shadow:
+    0 0 0 2px rgba(8, 10, 14, 0.85),
+    var(--ui-e3);
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 6px;
+  pointer-events: none;
+  transition:
+    opacity var(--ui-dur-micro) var(--ui-ease-out),
+    translate var(--ui-dur-micro) var(--ui-ease-out),
+    visibility 0s linear var(--ui-dur-micro);
+}
+
+.hud-pw-slot.is-home .hud-pw-tip {
+  right: auto;
+  left: -6px;
+}
+
+.hud-pw.is-tip + .hud-pw-tip {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition-delay: 0s;
+}
+
+@media (hover: hover) {
+  .hud-pw:hover:not(.is-aiming):not(.is-lifted) + .hud-pw-tip {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+    transition-delay: var(--ui-dur-tip-hover, 350ms);
+  }
+}
+
+.hud-pw-tip-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.hud-pw-tip-line {
+  color: var(--hud-dim);
+}
+
+.hud-pw-tip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.hud-pw-tip-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #fff4c8;
+}
+
+.hud-pw-tip-unit {
+  color: var(--hud-dim);
+}
+
+/* The token's second line: the price of the cast ("−100"). */
+.hud-power-token-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-power-chip-sub.is-bad {
+  color: var(--hud-deny);
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- enemy power rings (A2.9.10) */
+
+.hud-foe-rings {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+.hud-foe-ring {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  pointer-events: auto;
+}
+
+@container hud (max-height: 499px) {
+  .hud-foe-ring {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.hud-foe-ring-arc {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  rotate: -90deg;
+  overflow: visible;
+}
+
+.hud-foe-ring-arc circle {
+  fill: none;
+  stroke-width: 4;
+}
+
+.hud-foe-ring-track {
+  stroke: rgba(8, 10, 14, 0.9);
+  stroke-width: 5.5 !important;
+}
+
+.hud-foe-ring-fill {
+  stroke: color-mix(in srgb, var(--hud-foe) 70%, #fff);
+  stroke-dasharray: 100 100;
+  transition: stroke-dashoffset 90ms linear;
+}
+
+.hud-foe-ring-drain {
+  stroke: #fff;
+  stroke-dasharray: 100 100;
+  animation: hud-pw-drain 200ms var(--ui-ease-out) forwards;
+}
+
+.hud-foe-ring-core {
+  position: absolute;
+  inset: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #4b556b, #1b202b 75%);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+}
+
+@container hud (max-height: 499px) {
+  .hud-foe-ring-core {
+    inset: 3px;
+    font-size: 11px;
+  }
+}
+
+.hud-foe-ring-core > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Reloaded: a steady orange rim (enemy events never pulse). */
+.hud-foe-ring.is-ready .hud-foe-ring-fill {
+  stroke: #ff8a3d;
+}
+
+.hud-foe-ring.is-ready {
+  box-shadow: 0 0 8px 1px rgba(255, 138, 61, 0.65);
+}
+
+.hud-foe-ring-tip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: var(--hud-panel-hi);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    var(--ui-e3);
+  font-size: 12px;
+  white-space: nowrap;
+  animation: hud-pop var(--ui-dur-micro) var(--ui-ease-back);
+}
+
+.hud-foe-ring-tip > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--hud-dim);
 }
 
 .hud-power-grab {
@@ -2318,32 +2782,6 @@
   40% {
     translate: -1px 1px;
   }
-}
-
-/* Dragging: the power has left its socket (the token carries it). */
-.hud-power.is-lifted {
-  cursor: grabbing;
-  translate: 0 0;
-  scale: 0.9;
-  filter: none;
-}
-
-.hud-power.is-lifted > .hud-power-core {
-  opacity: 0.35;
-  filter: grayscale(1) brightness(0.7);
-}
-
-/* Tap-to-aim: the button is pressed in, its ring glows, and a cross says "tap again to cancel". */
-.hud-power-wrap.is-aiming .hud-power:not(.is-lifted) {
-  translate: 0 1px;
-  filter: drop-shadow(0 0 10px rgba(255, 244, 194, 0.9));
-}
-
-.hud-power-wrap.is-aiming .hud-power:not(.is-lifted) > .hud-power-ring {
-  box-shadow:
-    0 0 0 2px var(--hud-ink),
-    0 0 0 6px rgba(255, 255, 255, 0.75),
-    0 0 20px 8px rgba(242, 181, 44, 0.8);
 }
 
 .hud-power-x {
@@ -2598,7 +3036,7 @@
 .hud-power-hand {
   position: absolute;
   left: calc(50% - 22px);
-  top: calc(var(--hud-power) / 2 - 3px);
+  top: calc(var(--hud-pw, 64px) / 2 - 3px);
   z-index: 4;
   pointer-events: none;
   width: 48px;
@@ -2692,16 +3130,11 @@
   }
 }
 
-.hud-power .hud-key {
-  top: auto;
-  bottom: 0;
-  left: 0;
-}
 
-/* Last Stand (A2.11): 56 px round, floating above the power only while armed. */
+/* Last Stand (A2.11): 56 px round, floating above the Home power only while armed. */
 .hud-laststand {
   position: absolute;
-  left: 50%;
+  left: calc(var(--hud-pw, 64px) / 2);
   bottom: calc(100% + 10px);
   z-index: 3;
   display: flex;
@@ -3440,7 +3873,7 @@
   opacity: 0.6;
 }
 
-.hud[data-reduce-motion='true'] :is(.hud-power.is-pulse > *, .hud-power-grab, .hud-power-token-core, .hud-evolve.is-pulse > *, .hud-card-flip, .hud-power-burst, .hud-mm-hammer, .hud-badge-base .hud-badge-ring, .hud-card-queue) {
+.hud[data-reduce-motion='true'] :is(.hud-power.is-pulse > *, .hud-power-grab, .hud-power-token-core, .hud-pw-sweep, .hud-pw.is-cast > .hud-pw-core, .hud-pw-burst, .hud-evolve.is-pulse > *, .hud-card-flip, .hud-power-burst, .hud-mm-hammer, .hud-badge-base .hud-badge-ring, .hud-card-queue) {
   animation: none;
 }
 
@@ -3471,6 +3904,9 @@
   .hud-power.is-pulse > *,
   .hud-power-grab,
   .hud-power-token-core,
+  .hud-pw-sweep,
+  .hud-pw.is-cast > .hud-pw-core,
+  .hud-pw-burst,
   .hud-evolve.is-pulse > *,
   .hud-card-flip,
   .hud-power-burst,

@@ -6,7 +6,7 @@
  * satisfies it and the app (WP11) passes the view in. `HudViewEvent` mirrors `render/types.ts`
  * `ViewEvent`.
  */
-import type { AgeId, CardId, Command, EmoteId, MatchOutcome, Pt, Side } from '@/contracts';
+import type { AgeId, CardId, Command, EmoteId, MatchOutcome, PowerReach, PowerSlot, Pt, Side } from '@/contracts';
 
 export type HudViewEvent =
   | { t: 'emote'; side: Side; emote: EmoteId }
@@ -28,6 +28,48 @@ export interface HudMinimapUnit {
   side: Side;
   air: boolean;
   size: 0 | 1 | 2;
+}
+
+/**
+ * The reach band of the power being aimed (A2.9.10 step 1): world x from and to (lu). The minimap washes
+ * it in your colour; `invalid` tints the rest while the aim is out of reach.
+ */
+export interface HudMinimapReach {
+  from: number;
+  to: number;
+  side: Side;
+  invalid: boolean;
+}
+
+/** Options of a power preview (A2.9.10 targeting). */
+export interface HudPowerPreview {
+  /** Which slot's power is shown (default Home). */
+  slot?: PowerSlot;
+  /** Why the ghost is invalid: over the HUD (a drop puts it back) or beyond the power's reach. */
+  invalid?: 'hud' | 'reach';
+  /** The aim sticks to the band's edge (the magnetic edge: a small bump on first contact). */
+  edge?: boolean;
+  /** The label plate on the band ("Your half", "Near your army"). */
+  bandLabel?: string;
+  /** The label on an out-of-reach ghost ("Only in your half"). */
+  invalidLabel?: string;
+}
+
+/** What the ghost would do now (A2.9.10 step 2): for the token "Hits 4 of 5". */
+export interface HudPowerGhost {
+  /** Eligible enemies the zone covers now. */
+  covered: number;
+  /** Eligible enemies (the first N nearest your gate in the reach area). */
+  eligible: number;
+  /** A strike's lock (true when a unit is locked), null for other powers. */
+  locked: boolean | null;
+  valid: boolean;
+}
+
+/** A power slot's reach for aiming: the legal zone centres now (own-side lu), or null without an aim. */
+export interface HudPowerReach {
+  reach: PowerReach;
+  band: [number, number] | null;
 }
 
 export interface HudMinimapZone {
@@ -73,6 +115,8 @@ export interface HudMinimap {
   zones: HudMinimapZone[];
   badges: HudEdgeBadge[];
   band: { y: number; h: number };
+  /** The reach band of the power being aimed; absent or null when nothing is aimed. */
+  reach?: HudMinimapReach | null;
 }
 
 export type HudCameraCommand = { t: 'base' } | { t: 'front' } | { t: 'center'; x: number } | { t: 'scrub'; x: number };
@@ -84,12 +128,22 @@ export interface HudViewBridge {
   /** Own-side progress p (lu) under a client point, clamped to the power band; null off the lane. */
   laneP(clientX: number, clientY: number): number | null;
   /**
-   * Shows (p) or hides (null) the power's drag ghost. `valid` false tints it as a cancel (the pointer
-   * is over the HUD). Default true.
+   * Shows (p) or hides (null) a power's drag ghost. `valid` false tints it red: over the HUD (a drop
+   * puts it back) or beyond the power's reach (`o.invalid`). Default true, the Home slot.
    */
-  previewPower(p: number | null, valid?: boolean): void;
-  /** True when the current power can be placed by dragging. */
-  powerAimable(): boolean;
+  previewPower(p: number | null, valid?: boolean, o?: HudPowerPreview): void;
+  /** True when the slot's power (default Home) can be placed by dragging. */
+  powerAimable(slot?: PowerSlot): boolean;
+  /** The slot's reach band now (it follows your front live), or null without a power. */
+  powerReach?(slot: PowerSlot): HudPowerReach | null;
+  /** Own-side p (lu, not clamped to any band) under a client point, or null off the lane: power aiming. */
+  laneRawP?(clientX: number, clientY: number): number | null;
+  /** Own-side p for a world x, not clamped (a power dragged over the minimap). */
+  pAtWorld?(x: number): number;
+  /** What the ghost would hit now ("Hits 4 of 5"), or null without a ghost. */
+  powerGhostInfo?(): HudPowerGhost | null;
+  /** A cast was sent: the ghost contracts and fades (MR-70b) instead of vanishing. */
+  powerCommit?(): void;
   on(listener: (ev: HudViewEvent) => void): () => void;
   /**
    * Where the fighting is: your and their front unit as progress 0..1 from your gate (the top bar's
@@ -118,7 +172,7 @@ export interface HudViewBridge {
    * Starts tap-to-aim: holds the camera and returns the p where the ghost starts (the enemy front), or
    * null when the power ignores the aim.
    */
-  powerAimStart?(): number | null;
+  powerAimStart?(slot?: PowerSlot): number | null;
   /** Your mount's screen point (view-local CSS px), for keeping the popover on it while scrolling. */
   mountScreenPoint?(mount: number): Pt | null;
   /** Mutes (or unmutes) the opponent's emotes and quotes for this match: no bubble, no sound (A18.9.4). */

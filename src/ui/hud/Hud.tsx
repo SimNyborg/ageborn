@@ -48,9 +48,10 @@ import {
   keyIntent,
   lowHp,
   nextSpeed,
-  powerFraction,
+  pulseSlot,
   sellIntent,
   simDenyReason,
+  powerSlotOf,
   type DenyReason,
   type DenyTarget,
   type HudIntent,
@@ -344,7 +345,7 @@ export function Hud(props: HudProps) {
           if (!target) return;
           flash(target);
           const slot = /^card(\d)$/.exec(target);
-          const why = simDenyReason(ev.reason, cur, slot ? Number(slot[1]) : undefined);
+          const why = simDenyReason(ev.reason, cur, slot ? Number(slot[1]) : undefined, powerSlotOf(target) ?? undefined);
           if (why) say(target, why);
           haptic('deny');
           return;
@@ -521,7 +522,7 @@ export function Hud(props: HudProps) {
     : hudPulse({
         tutorial,
         evolve: m.me.evolveReady && !rearming && !m.me.ascending && m.phase !== 'ended',
-        power: powerFraction(m.me.powerPpm) >= 1 && m.phase !== 'ended',
+        power: pulseSlot(m) !== null,
         mount: hammerBadge(pulseBase),
       });
 

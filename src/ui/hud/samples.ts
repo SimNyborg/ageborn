@@ -3,8 +3,32 @@
  * by the sandbox's HUD states page and by the tests; the game builds real models from the sim
  * (`render/hudModel.ts`).
  */
-import type { AgeId, CardId, HudCard, HudModel, MatchConfig, Side } from '@/contracts';
+import type { AgeId, CardId, HudCard, HudFoePowerSlot, HudModel, HudPowerSlot, MatchConfig, PowerSlot, Side } from '@/contracts';
 import { ageIds } from './model';
+
+/** A dock slot for a sample (A2.9.10): the card's price and reload, `ppm` reloaded, affordable at `gold`. */
+function samplePower(config: Readonly<MatchConfig>, card: CardId | null | undefined, slot: PowerSlot, ppm: number, gold: number): HudPowerSlot | null {
+  const def = card ? config.content.powers[card] : undefined;
+  if (!card || !def) return null;
+  const fx = def.effect;
+  const zone = fx.kind === 'barrage' || fx.kind === 'sweep' || fx.kind === 'field' ? fx.zone : fx.kind === 'cloud' ? fx.width : fx.kind === 'stampede' ? fx.distance : 0;
+  const reloadMs = def.reloadMs ?? 40_000;
+  return {
+    slot,
+    card,
+    ppm,
+    cost: def.cost ?? 100,
+    affordable: gold >= (def.cost ?? 100),
+    secondsLeft: Math.ceil(((1_000_000 - Math.min(1_000_000, ppm)) * reloadMs) / 1_000_000 / 1000),
+    reloadMs,
+    reach: def.reach ?? 'anywhere',
+    family: def.family ?? 'bombard',
+    maxTargets: fx.kind === 'buffAll' ? fx.maxTargets : (def.maxTargets ?? 0),
+    zone,
+    lockoutUntilMs: 0,
+    slotLocked: false,
+  };
+}
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? (T[K] extends unknown[] ? T[K] : DeepPartial<T[K]>) : T[K] };
 
@@ -14,8 +38,11 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
   const ageIndex = over.me?.ageIndex ?? 0;
   const age: AgeId = ages[ageIndex] ?? 'stone';
   const lo = config.sides[side].loadouts[age];
+  const foeLo = config.sides[side === 0 ? 1 : 0].loadouts[age];
   const fmt = config.content.formats[config.format];
   const eco = config.content.economy;
+  const gold = over.me?.gold ?? 245;
+  const foeField: HudFoePowerSlot | null = foeLo?.powers.field ? { card: foeLo.powers.field, ppm: 1_000_000 } : null;
   const cards: HudCard[] = [0, 1, 2, 3, 4, 5].map((slot) => {
     const card = lo?.units[slot] ?? null;
     const def = card ? config.content.units[card] : undefined;
@@ -44,6 +71,7 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
       research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false },
       powerPpm: 640_000,
       power: lo?.powers.home ?? '',
+      powers: { home: samplePower(config, lo?.powers.home, 'home', 640_000, gold), field: samplePower(config, lo?.powers.field, 'field', 1_000_000, gold) },
       lastStand: 'locked',
       lastStandManual: true,
       cards,
@@ -55,6 +83,7 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
       ageIndex: 0,
       xpBp: 6100,
       powerPpm: 420_000,
+      powers: { home: { card: null, ppm: 420_000 }, field: foeField },
       lastStandArmed: false,
       scouted: [],
       research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false },
@@ -125,6 +154,18 @@ export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSa
     }
   });
   const legendary = firstOfGroup(config, side, ages[0] ?? 'stone', 'legendary');
+  const lo0 = config.sides[side].loadouts[ages[0] ?? 'stone'];
+  const foe0 = config.sides[side === 0 ? 1 : 0].loadouts[ages[0] ?? 'stone'];
+  /** A model with the dock at `home` / `field` ppm and `gold`. */
+  const powerModel = (home: number, field: number, gold: number): HudModel =>
+    sampleHudModel(config, side, {
+      me: {
+        gold,
+        powerPpm: home,
+        powers: { home: samplePower(config, lo0?.powers.home, 'home', home, gold), field: samplePower(config, lo0?.powers.field, 'field', field, gold) },
+      },
+      foe: { powers: { home: { card: foe0?.powers.home ?? null, ppm: home >= 1_000_000 ? 1_000_000 : 550_000 }, field: foe0?.powers.field ? { card: null, ppm: 300_000 } : null } },
+    });
 
   return [
     s('opening', 'Match start: 175 gold, Treasury affordable later, one free mount, nothing scouted', {
@@ -139,6 +180,9 @@ export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSa
       foe: { scouted: legendary ? [legendary] : [] },
     }),
     s('ascending', 'Ascension in progress (Evolve shows "Evolving")', { me: { xpBp: 10_000, ascending: true } }),
+    { id: 'powersCastable', note: 'Power dock: Home castable (the pulse), Field castable; their Home ring full and scouted', model: powerModel(1_000_000, 1_000_000, 480) },
+    { id: 'powersPoor', note: 'Power dock: Home reloaded but gold short (red cost chip, gold fill), Field reloading 23 s', model: powerModel(1_000_000, 420_000, 60) },
+    { id: 'powersReload', note: 'Power dock: both reloading (seconds in the centre); their rings part-filled', model: powerModel(250_000, 700_000, 400) },
     s('foeLastStand', 'Opponent Last Stand armed: horn on their medallion; their power ring full', {
       foe: { lastStandArmed: true, baseHpBp: 2100, powerPpm: 1_000_000, ageIndex: 1 },
     }),

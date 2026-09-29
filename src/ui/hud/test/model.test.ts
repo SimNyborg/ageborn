@@ -22,6 +22,8 @@ import {
   nextSpeed,
   powerFraction,
   powerIntent,
+  powerSlotView,
+  pulseSlot,
   queueLength,
   quickTurretIntent,
   hudPulse,
@@ -45,6 +47,16 @@ function model(over: Over = {}): HudModel {
 
 function withCard(m: HudModel, slot: number, c: Partial<HudCard>): HudModel {
   return { ...m, me: { ...m.me, cards: m.me.cards.map((x) => (x.slot === slot ? { ...x, ...c } : x)) } };
+}
+
+/** The dock's slots at `home` / `field` ppm with `gold` (A2.9.10); a null ppm empties the slot. */
+function withPowers(m: HudModel, home: number | null, field: number | null, gold = m.me.gold, lockoutUntilMs = 0): HudModel {
+  const one = (slot: 'home' | 'field', ppm: number | null) => {
+    const s = m.me.powers?.[slot];
+    if (ppm === null || !s) return null;
+    return { ...s, ppm, affordable: gold >= s.cost, secondsLeft: ppm >= 1_000_000 ? 0 : 12, lockoutUntilMs };
+  };
+  return { ...m, me: { ...m.me, gold, powerPpm: home ?? 0, powers: { home: one('home', home), field: one('field', field) } } };
 }
 
 function cmdOf(i: HudIntent): Command | null {
@@ -130,14 +142,43 @@ describe('HUD presses (A2.12, A9.2)', () => {
     expect(i.k === 'deny' && i.reason?.key).toMatch(/^hud\.(deny\.xp|finalAge)$/);
   });
 
-  it('casts the power: tap = auto-aim, drag = the placed p; denied until charged or after the end', () => {
-    const full = model({ me: { powerPpm: 1_000_000 } });
+  it('casts a power slot: tap = auto-aim, drag = the placed p; says why it is denied (A2.9.10)', () => {
+    const full = withPowers(model(), 1_000_000, 1_000_000, 900);
     expect(cmdOf(powerIntent(full, 0))).toEqual({ t: 'power', side: 0, slot: 'home' });
     expect(cmdOf(powerIntent(full, 0, 640))).toEqual({ t: 'power', side: 0, slot: 'home', p: 640 });
-    expect(powerIntent(model({ me: { powerPpm: 999_999 } }), 0)).toEqual({ k: 'deny', target: 'power', reason: { key: 'hud.deny.power', params: { pct: 99 } } });
-    expect(powerIntent(model({ me: { powerPpm: 1_000_000 }, phase: 'ended' }), 0)).toEqual({ k: 'deny', target: 'power' });
+    expect(cmdOf(powerIntent(full, 0, 900, 'field'))).toEqual({ t: 'power', side: 0, slot: 'field', p: 900 });
+    // Reloading: "Ready in 12 s" on the slot's own button.
+    expect(powerIntent(withPowers(model(), 400_000, null), 0)).toEqual({ k: 'deny', target: 'power', reason: { key: 'hud.deny.powerReload', params: { s: 12 } } });
+    // Reloaded but gold short: "Need 60 gold".
+    const poor = withPowers(model(), 1_000_000, 1_000_000, 40);
+    const cost = poor.me.powers!.field!.cost;
+    expect(powerIntent(poor, 0, undefined, 'field')).toEqual({ k: 'deny', target: 'powerField', reason: { key: 'hud.deny.powerGold', params: { n: cost - 40 } } });
+    // The lockout lever: "Wait 3 s".
+    const locked = withPowers({ ...model(), clockMs: 10_000 }, 1_000_000, 1_000_000, 900, 12_500);
+    expect(powerIntent(locked, 0, undefined, 'field')).toEqual({ k: 'deny', target: 'powerField', reason: { key: 'hud.deny.powerLockout', params: { s: 3 } } });
+    // An empty (or locked) slot is not drawn: nothing happens.
+    expect(powerIntent(withPowers(model(), 1_000_000, null, 900), 0, undefined, 'field')).toEqual({ k: 'none' });
+    expect(powerIntent({ ...full, phase: 'ended' }, 0)).toEqual({ k: 'deny', target: 'power' });
     expect(powerFraction(500_000)).toBe(0.5);
     expect(powerFraction(2_000_000)).toBe(1);
+  });
+
+  it('reads each slot state and puts the one pulse on the first castable slot, Home before Field', () => {
+    expect(powerSlotView(withPowers(model(), 400_000, 1_000_000, 900), 'home').state).toBe('reloading');
+    expect(powerSlotView(withPowers(model(), 1_000_000, 1_000_000, 10), 'home').state).toBe('poor');
+    expect(powerSlotView(withPowers(model(), 1_000_000, null, 900), 'field').state).toBe('empty');
+    expect(pulseSlot(withPowers(model(), 1_000_000, 1_000_000, 900))).toBe('home');
+    expect(pulseSlot(withPowers(model(), 300_000, 1_000_000, 900))).toBe('field');
+    expect(pulseSlot(withPowers(model(), 300_000, 200_000, 900))).toBeNull();
+  });
+
+  it('maps the sim power rejections to their reasons', () => {
+    const m = withPowers(model(), 400_000, 1_000_000, 900);
+    expect(simDenyReason('powerReloading', m, undefined, 'home')).toEqual({ key: 'hud.deny.powerReload', params: { s: 12 } });
+    expect(simDenyReason('powerNoTarget', m, undefined, 'field')).toEqual({ key: 'hud.deny.powerNoTarget' });
+    expect(simDenyReason('powerOutOfReach', m, undefined, 'field')).toEqual({ key: 'hud.deny.powerOutOfReach' });
+    const poor = withPowers(model(), 1_000_000, 1_000_000, 10);
+    expect(simDenyReason('noGold', poor, undefined, 'home')).toEqual({ key: 'hud.deny.powerGold', params: { n: poor.me.powers!.home!.cost - 10 } });
   });
 
   it('S toggles Charge and Hold, Shift+S is Fall back; hidden stance does nothing (A18.4.2)', () => {
@@ -241,7 +282,7 @@ describe('turret mounts (A2.8, A2.12)', () => {
 });
 
 describe('keyboard (A2.12)', () => {
-  const m = model({ me: { gold: 900, evolveReady: true, powerPpm: 1_000_000, lastStand: 'armed' } });
+  const m = withPowers(model({ me: { gold: 900, evolveReady: true, lastStand: 'armed' } }), 1_000_000, 1_000_000, 900);
   const key = (k: string, mm: HudModel = m) => keyIntent(k, mm, config, 0);
 
   it('maps every key of the controls table', () => {
@@ -257,6 +298,7 @@ describe('keyboard (A2.12)', () => {
     expect(cmdOf(key('6', withCard(m, 5, { card: 'bonker', state: 'ready' })))).toEqual({ t: 'train', side: 0, slot: 5 });
     expect(cmdOf(key('e'))).toEqual({ t: 'evolve', side: 0 });
     expect(cmdOf(key(' '))).toEqual({ t: 'power', side: 0, slot: 'home' });
+    expect(cmdOf(key('x'))).toEqual({ t: 'power', side: 0, slot: 'field' });
     expect(cmdOf(key('s'))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
     expect(cmdOf(key('l'))).toEqual({ t: 'lastStand', side: 0 });
     expect(key('p')).toEqual({ k: 'pause' });
@@ -265,7 +307,9 @@ describe('keyboard (A2.12)', () => {
 
   it('never pauses on Escape (it only closes the Council), ignores unknown keys and every key after the end', () => {
     expect(key('Escape')).toEqual({ k: 'close' });
-    expect(key('x')).toEqual({ k: 'none' });
+    expect(key('y')).toEqual({ k: 'none' });
+    // X without a Field power (a Home-only match) does nothing.
+    expect(key('x', withPowers(m, 1_000_000, null))).toEqual({ k: 'none' });
     expect(key('1', { ...m, phase: 'ended' })).toEqual({ k: 'none' });
   });
 });

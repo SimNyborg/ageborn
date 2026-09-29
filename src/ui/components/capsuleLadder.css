@@ -134,6 +134,23 @@
   color: var(--ui-text);
   font-weight: 800;
 }
+/* Phone landscape: the card is one-time, but it should not push the whole shelf off the tab. */
+@container ui-root (max-height: 480px) {
+  .cap-notice {
+    gap: 2px;
+    padding: 4px 4px 8px 10px;
+  }
+  .cap-notice__head {
+    gap: 8px;
+  }
+  .cap-notice__title {
+    font-size: 16px;
+  }
+  .cap-notice__body {
+    font-size: 12px;
+    line-height: 1.32;
+  }
+}
 @keyframes cap-notice-in {
   from {
     opacity: 0;

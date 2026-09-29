@@ -80,6 +80,9 @@ describe('unopened capsules show only what is already true', () => {
     expect(text(row)).toContain('Win Capsule');
     expect(text(row)).not.toContain('Aeon');
     expect(tierOf(row)).toBe('clay');
+    // The Open capsule primary draws the same visible tier, never the rolled one.
+    expect(tierOf(m.q('[data-testid="result-open"]')!)).toBe('clay');
+    expect(m.qa('svg[data-tier="aeon"]')).toEqual([]);
   });
 });
 

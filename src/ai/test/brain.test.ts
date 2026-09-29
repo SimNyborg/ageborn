@@ -62,7 +62,7 @@ const kinds = (t: DecisionTrace): string[] =>
 const GRANARY = { kind: 'research', cost: 150 * MILLI, pick: { id: 'economy.granary' } };
 
 /** The upper-tier craft (owner feedback 2026-09-28) switched off, for tests of the plain A7.2/A7.3 rules. */
-const NO_CRAFT: Partial<TierParams> = { econPlan: false, waveCommit: false, powerArmyShareBp: 0, baseTurrets: 0 };
+const NO_CRAFT: Partial<TierParams> = { econPlan: false, waveCommit: false, baseTurrets: 0 };
 
 describe('evolve (A7.2)', () => {
   const ready = (tick: number, extra: Parameters<typeof observation>[0] = {}) => observation({ tick, xpBp: 10200, ...extra });
@@ -126,53 +126,193 @@ describe('evolve (A7.2)', () => {
     expect(decide(brainFor({ tier: 10 }).brain, ready(12, { units: air }), { history: [ready(10, { units: air })] }).action).toEqual({ kind: 'evolve' });
   });
 
-  it('fires a full power into a zone before evolving, so the 50% carry cap wastes nothing', () => {
-    const units = [unit(0, 'tuskback', 500)];
-    const o = (tick: number) => ready(tick, { powerPpm: 1000000, powerCost: 0, units, power: 'meteor_shower' });
+  it('casts a power whose ROI clears the bar before evolving (the new slot keeps at most 75%)', () => {
+    // Four weakened Bonkers: Meteor Shower kills them (4 × 65 = 260 gold for 100 → ROI 26,000).
+    const units = [500, 510, 520, 530].map((p) => unit(0, 'bonker', p, { hp: 5000 }));
+    const o = (tick: number) => ready(tick, { powerPpm: 1000000, gold: 1000 * MILLI, units, power: 'meteor_shower' });
     const { brain } = brainFor();
-    expect(decide(brain, o(40), { history: [o(10)] }).action?.kind).toBe('power');
+    const t = decide(brain, o(40), { history: [o(10)] });
+    expect(t.action?.kind).toBe('power');
+    expect(t.candidates[0]?.score).toBe(SCORE.power);
   });
 });
 
-describe('power (A7.2)', () => {
-  // A barrage power, and enemies on the bot's half (so the push gate stays out of the way).
+describe('power (A2.9.9)', () => {
+  // Meteor Shower: Home bombard, 100 gold, cap 5, ~140 damage per touched unit at L1.
   const power = 'meteor_shower';
-  const crowd = (n: number) => Array.from({ length: n }, (_, i) => unit(0, 'bonker', 500 + i * 10));
+  const gold = 1000 * MILLI;
+  /** Bonkers on the bot's half; `hp` in centi (a 100 HP Bonker dies to 140, a 400 HP one takes chip damage). */
+  const crowd = (n: number, hp = 10000, at = 500) => Array.from({ length: n }, (_, i) => unit(0, 'bonker', at + i * 10, { hp }));
+  const obs = (units: ReturnType<typeof unit>[], o: Parameters<typeof observation>[0] = {}) => observation({ powerPpm: 1000000, power, gold, units, ...o });
+  const castsAt = (tier: number, o: Observation, extra: Partial<TierParams> = {}, general?: string) =>
+    kinds(decide(brainFor({ tier, tierOverride: extra, ...(general ? { general } : {}) }).brain, o)).includes('power');
 
-  it('casts when the best zone holds at least threshold × m_patience', () => {
-    // Tier III threshold 250 gold; 6 Bonkers = 300 gold.
-    const { brain } = brainFor({ tier: 3 });
-    const t = decide(brain, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(6) }));
-    expect(t.action?.kind).toBe('power');
-    // Tier V threshold 350: not enough.
-    const { brain: b5 } = brainFor({ tier: 5 });
-    expect(decide(b5, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(6) })).action).toBeNull();
-    // Patience 95 (m 1.45) raises tier III's bar to 362.
-    const { brain: patient } = brainFor({ tier: 3, weights: { patience: 95 } });
-    expect(decide(patient, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(6) })).action).toBeNull();
+  it('casts when value × 10,000 ÷ cost clears the tier ROI bar', () => {
+    // Two kills (2 × 65) and a full-HP Bonker (0.4 × 50 × 140 / 400 = 7): 137 gold → ROI 13,700.
+    const units = [...crowd(2), unit(0, 'bonker', 530, { hp: 40000 })];
+    expect(castsAt(5, obs(units))).toBe(true); // bar 12,000
+    expect(castsAt(7, obs(units))).toBe(false); // bar 15,000
+    // Four kills: 260 → ROI 26,000 clears X's 18,000.
+    expect(castsAt(10, obs(crowd(4)))).toBe(true);
   });
 
-  it('casts on ≥ 100 gold when the own base took damage in the last 3 s', () => {
-    const { brain } = brainFor({ tier: 7 });
-    const units = crowd(3);
-    const t = decide(brain, observation({ tick: 50, powerPpm: 1000000, powerCost: 0, power, units, baseHpBp: 9000 }), {
-      history: [observation({ tick: 20, powerPpm: 1000000, powerCost: 0, power, units, baseHpBp: 10000 })],
-    });
+  it('easy tiers waste casts on chip damage; better tiers wait for kills', () => {
+    // Five full-HP Bonkers: 5 × 0.4 × 50 × 140 / 200 = 70 gold → ROI 7,000.
+    const units = crowd(5, 20000);
+    expect(castsAt(0, obs(units))).toBe(true); // bar 6,000
+    expect(castsAt(1, obs(units))).toBe(false); // bar 8,000
+    expect(castsAt(5, obs(units))).toBe(false);
+  });
+
+  it('the power patience weight shifts the bar by (w − 50) × 40', () => {
+    // ROI 13,700 vs tier V 12,000: patience 95 adds 1,800 → 13,800, which it no longer clears.
+    const units = [...crowd(2), unit(0, 'bonker', 530, { hp: 40000 })];
+    const patient = brainFor({ tier: 5, weights: { patience: 95 } }).brain;
+    expect(kinds(decide(patient, obs(units)))).not.toContain('power');
+    const { brain: plain6 } = brainFor({ tier: 6 }); // 13,500
+    expect(kinds(decide(plain6, obs(units)))).toContain('power');
+    const patient6 = brainFor({ tier: 6, weights: { patience: 95 } }).brain; // 15,300
+    expect(kinds(decide(patient6, obs(units)))).not.toContain('power');
+    const eager = brainFor({ tier: 6, weights: { patience: 0 } }).brain; // 13,500 − 2,000
+    expect(kinds(decide(eager, obs(units)))).toContain('power');
+  });
+
+  it('never counts enemies past the Home line for a Home power', () => {
+    expect(castsAt(0, obs(crowd(5, 10000, 1100)))).toBe(false);
+  });
+
+  it('casts whatever the bar when the own base took damage in the last 3 s and the value is ≥ 100', () => {
+    const units = [...crowd(2), unit(0, 'bonker', 530, { hp: 40000 })];
+    const t = decide(brainFor({ tier: 10 }).brain, obs(units, { tick: 50, baseHpBp: 9000 }), { history: [obs(units, { tick: 20, baseHpBp: 10000 })] });
     expect(t.action?.kind).toBe('power');
   });
 
-  it('aims within the tier aim error of the zone centre, clamped to 150-1,850 (L − 150)', () => {
+  it('bait discipline (VII+): no Home cast on covered targets worth < 200 unless the base was just hit', () => {
+    // Three dying Bonkers (150 card value): ROI 19,500 clears VII's bar, but it is a bait.
+    expect(castsAt(5, obs(crowd(3)))).toBe(true);
+    expect(castsAt(7, obs(crowd(3)))).toBe(false);
+    expect(castsAt(7, obs(crowd(4)))).toBe(true);
+    const t = decide(brainFor({ tier: 7 }).brain, obs(crowd(3), { tick: 50, baseHpBp: 9000 }), { history: [obs(crowd(3), { tick: 20, baseHpBp: 10000 })] });
+    expect(kinds(t)).toContain('power');
+  });
+
+  it('pays the effective cost: an unaffordable slot is never a candidate, and a pending cast books its gold', () => {
+    expect(castsAt(5, obs(crowd(4), { gold: 99 * MILLI }))).toBe(false);
+    const { brain } = brainFor({ tier: 5 });
+    const t = decide(brain, obs(crowd(4)));
+    const a = t.action;
+    expect(a?.kind).toBe('power');
+    if (a?.kind === 'power') {
+      expect(a.cost).toBe(100 * MILLI);
+      expect(a.slot).toBe('home');
+      // Aimed inside the Home band: [150, 1,000 − 200].
+      expect(a.p).not.toBeNull();
+      expect(a.p ?? 0).toBeGreaterThanOrEqual(150);
+      expect(a.p ?? 0).toBeLessThanOrEqual(800);
+      const ledger = new Ledger(book);
+      ledger.record(a, 106, 107);
+      const v = buildView(obs(crowd(4)), 106, book, ledger);
+      expect(v.gold).toBe(gold - 100 * MILLI);
+      expect(v.powerSlots).toEqual([]);
+    }
+  });
+
+  it('tiers 0-II keep to the Home slot', () => {
+    // Stampede (Field charge): own front at 400, four dying Bonkers in its run.
+    const units = [unit(1, 'bonker', 400), ...crowd(4, 5000, 450)];
+    const o = observation({ powerPpm: 1000000, power: 'stampede', gold, units });
+    expect(castsAt(2, o, { powerRoiBp: 0 })).toBe(false);
+    expect(castsAt(3, o)).toBe(true);
+  });
+
+  it('aims area powers within the tier aim error, clamped into the reach band', () => {
     for (const seed of ['a', 'b', 'c', 'd']) {
-      const { brain } = brainFor({ tier: 0, tierOverride: { powerThreshold: 100 } });
-      const t = decide(brain, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(4) }), { rng: seed });
+      const { brain } = brainFor({ tier: 0 });
+      const t = decide(brain, obs(crowd(4)), { rng: seed });
       const a = t.action;
       expect(a?.kind).toBe('power');
       if (a?.kind === 'power' && a.p !== null) {
         expect(a.p).toBeGreaterThanOrEqual(150);
-        expect(a.p).toBeLessThanOrEqual(L - 150);
+        expect(a.p).toBeLessThanOrEqual(800);
         expect(Math.abs(a.p - 515)).toBeLessThanOrEqual(250 + 200);
       }
     }
+  });
+
+  it('takes the slot with the best value − cost when both are castable', () => {
+    // Home Meteor Shower on three dying Bonkers near the gate; Field Stampede only reaches one of them.
+    const units = [unit(1, 'bonker', 800), ...crowd(3, 5000, 400), unit(0, 'bonker', 850, { hp: 5000 })];
+    const powers: Observation['me']['powers'] = {
+      home: { card: 'meteor_shower', ppm: 1000000, cost: 100, reloadMs: 40000, rateBp: 10000 },
+      field: { card: 'stampede', ppm: 1000000, cost: 100, reloadMs: 40000, rateBp: 10000 },
+    };
+    const t = decide(brainFor({ tier: 3 }).brain, observation({ powers, gold, units }));
+    const a = t.action;
+    expect(a?.kind).toBe('power');
+    if (a?.kind === 'power') expect(a.slot).toBe('home');
+  });
+
+  it('reads the enemy rings (V+): a ready, scouted enemy Home bombard or sweep stiffens the push gate', () => {
+    // D = 300 (one enemy turret); 8 own Bonkers (400) clear 1.3 × D = 390 but not × 1.2 = 468.
+    // Six enemy Bonkers at 1,400 (outside their gate zone) keep the thin-army rule out of it.
+    const mine = [...Array.from({ length: 8 }, (_, i) => unit(1, 'bonker', 700 + i * 10)), ...Array.from({ length: 6 }, (_, i) => unit(0, 'bonker', 1400 + i * 5))];
+    const foe = (ppm: number): Partial<Observation['foe']> => ({
+      turrets: [{ card: 'rock_tosser', age: 'stone' }, null, null, null],
+      powers: { home: { card: 'rockslide', ppm }, field: { card: null, ppm: 0 } },
+    });
+    const at = (tier: number, ppm: number) => decide(brainFor({ tier, tierOverride: NO_CRAFT }).brain, observation({ tick: 900, units: mine, foe: foe(ppm) })).pushOk;
+    expect(at(5, 500000)).toBe(true);
+    expect(at(5, 1000000)).toBe(false);
+    expect(at(4, 1000000)).toBe(true);
+  });
+
+  it('bait, then wave (VII+): sends only cheap bait while the enemy Home power is up, then releases the bank', () => {
+    const foe: Partial<Observation['foe']> = {
+      turrets: [{ card: 'rock_tosser', age: 'stone' }, null, null, null],
+      powers: { home: { card: 'rockslide', ppm: 1000000 }, field: { card: null, ppm: 0 } },
+    };
+    const { brain } = brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } });
+    const mem = new BotMemory(book);
+    const o1 = observation({ tick: 900, gold: 600 * MILLI, foe });
+    const t1 = decide(brain, o1, { memory: mem });
+    // The bait is the cheapest tray unit (the Bonker, 50), and nothing else is bought.
+    expect(t1.action).toMatchObject({ kind: 'train', card: 'bonker' });
+    expect(kinds(t1).filter((k) => k !== 'train' && k !== 'stance')).toEqual([]);
+    // Once 150 gold of bait is out, it trains nothing more while it waits.
+    const again = (tick: number) => decide(brain, observation({ tick, gold: 550 * MILLI, foe }), { memory: mem });
+    again(920);
+    again(940);
+    expect(kinds(again(960))).not.toContain('train');
+    // The enemy casts its Home power (its telegraph shows): the bank is released into the wave.
+    const cast = observation({ tick: 980, gold: 450 * MILLI, foe: { ...foe, powers: { home: { card: 'rockslide', ppm: 0 }, field: { card: null, ppm: 0 } } }, telegraphs: [{ side: 0, slot: 'home', power: 'rockslide', p: 1500000, zone: 450000, impactTick: 1000, targetId: -1 }] });
+    const t2 = decide(brain, cast, { memory: mem });
+    expect(kinds(t2).filter((k) => k === 'train').length).toBeGreaterThan(1);
+  });
+
+  it('counter-timing (X): the Home bar rises by 3,000 while the enemy banks', () => {
+    // Three kills and chip damage on a fourth: ROI 20,200 clears X's 18,000, not 21,000. The enemy army
+    // is 200 gold (< 300); the gold estimate says whether it is banking.
+    const units = crowd(3, 5000, 600).concat([unit(0, 'bonker', 700, { hp: 40000 })]);
+    const o = obs(units, { tick: 1200 });
+    const mem = new BotMemory(book);
+    mem.estimator.gold = 500 * MILLI;
+    expect(kinds(decide(brainFor({ tier: 10 }).brain, o, { memory: mem }))).not.toContain('power');
+    const poor = new BotMemory(book);
+    poor.estimator.gold = 0;
+    expect(kinds(decide(brainFor({ tier: 10 }).brain, o, { memory: poor }))).toContain('power');
+  });
+
+  it('offers the "power on a unit or two" mistake below the bar', () => {
+    const units = crowd(1, 20000);
+    let seen = false;
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']) {
+      const t = decide(brainFor({ tier: 5, tierOverride: { mistakeBp: 10000 }, seed }).brain, obs(units), { rng: seed });
+      if (t.mistake === 'powerOnFew') {
+        seen = true;
+        expect(t.action?.kind).toBe('power');
+      }
+    }
+    expect(seen).toBe(true);
   });
 });
 
@@ -566,14 +706,6 @@ describe('upper-tier craft (owner feedback 2026-09-28)', () => {
     expect(kinds(t)).not.toContain('train');
   });
 
-  it('casts the power on a zone holding its share of the visible enemy army', () => {
-    const power = 'meteor_shower';
-    // Two Bonkers together (100 gold) out of three on the lane (150): 67% ≥ tier X's 30%, far below 600.
-    const units = [unit(0, 'bonker', 700), unit(0, 'bonker', 710), unit(0, 'bonker', 1500)];
-    expect(decide(brainFor({ tier: 10 }).brain, observation({ powerPpm: 1000000, powerCost: 0, power, units })).action?.kind).toBe('power');
-    expect(decide(brainFor({ tier: 10, tierOverride: NO_CRAFT }).brain, observation({ powerPpm: 1000000, powerCost: 0, power, units })).action?.kind).not.toBe('power');
-  });
-
   it('keeps base turrets from Bronze on without pressure (1 from tier VI, 2 from VIII)', () => {
     const bronze = baselineTurretsObs();
     const history = [observation({ tick: 2350, units: [unit(1, 'bonker', L / 2 + 100)] })];
@@ -584,10 +716,10 @@ describe('upper-tier craft (owner feedback 2026-09-28)', () => {
   });
 
   it('turns the craft on from tier VI', () => {
-    expect(tierParams(5)).toMatchObject({ econPlan: false, waveCommit: false, powerArmyShareBp: 0, baseTurrets: 0 });
-    expect(tierParams(6)).toMatchObject({ econPlan: true, waveCommit: true, powerArmyShareBp: 5000, baseTurrets: 1 });
-    expect(tierParams(8)).toMatchObject({ powerArmyShareBp: 4000, baseTurrets: 2 });
-    expect(tierParams(10)).toMatchObject({ powerArmyShareBp: 3000, baseTurrets: 2 });
+    expect(tierParams(5)).toMatchObject({ econPlan: false, waveCommit: false, baseTurrets: 0 });
+    expect(tierParams(6)).toMatchObject({ econPlan: true, waveCommit: true, baseTurrets: 1 });
+    expect(tierParams(8)).toMatchObject({ baseTurrets: 2 });
+    expect(tierParams(10)).toMatchObject({ baseTurrets: 2 });
   });
 });
 

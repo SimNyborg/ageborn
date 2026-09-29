@@ -21,11 +21,13 @@
  *    - A train pops the card (MR-65) with a short flash and floats "-50" from the gold; a denied press
  *      flashes red, shakes and says why above the card (MR-03, MR-67).
  * 3. **Stance** (`Stance.tsx`): one 56 px button with a flyout (A18.4 as changed by ui-plan 2.9 #5).
- * 4. **Age Power** (`PowerButton.tsx`): 88 px round, drag onto the field (A18.9.2). Last Stand floats
- *    above it only while armed (A2.11).
+ * 4. **The power dock** (`PowerButton.tsx`, A2.9.10): Home and Field, 64 px each on phones (96 on
+ *    desktops), 6 px apart; drag onto the field (A18.9.2). Last Stand floats above the Home button only
+ *    while armed (A2.11).
  *
- * Width check at 844 (ui-plan 4.7): cluster 100 + 8 + cards 402 + 8 + stance 56 + 8 + power 88 = 670
- * (+ the reserved Fort slot 68 when forts ship) within 750.
+ * Width check at 844 (A2.9.10): cluster 100 + 8 + cards 402 + 8 + stance 56 + 8 + dock 134 = 716 within
+ * 750 (the reserved Fort space goes to the dock until forts ship); below 820 px 92 + 6 + 361 + 6 + 56 +
+ * 6 + 117 = 644 within 686.
  */
 import type { AgeId, HudCard, UnitDef } from '@/contracts';
 import { Fragment } from 'preact';
@@ -54,7 +56,7 @@ import {
   trainIntent,
   type HudPulse,
 } from './model';
-import { PowerButton } from './PowerButton';
+import { PowerDock } from './PowerButton';
 import { useFitLabel } from './fit';
 import { ReasonTip } from './Reason';
 import { StanceControl } from './Stance';
@@ -474,7 +476,7 @@ function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; rearming: bool
 // The Age Power button and its drag / tap-to-aim targeting live in `PowerButton.tsx`.
 export { MINIMAP_HIT_PX, minimapDropX } from './PowerButton';
 
-/** Last Stand (A2.11): 56 px round, floating above the power only while armed. */
+/** Last Stand (A2.11): 56 px round, floating above the Home power only while armed. */
 function LastStandButton(p: { c: HudCtx }) {
   const { c } = p;
   const { m, t } = c;
@@ -588,7 +590,7 @@ export function Tray(p: {
       <StanceControl c={c} />
       <div class="hud-power-col">
         <LastStandButton c={c} />
-        <PowerButton c={c} pulse={p.pulse === 'power'} />
+        <PowerDock c={c} pulse={p.pulse === 'power'} onSpend={(n) => addFloat({ text: `-${n}`, kind: 'spend', slot: -1 })} />
       </div>
     </div>
   );

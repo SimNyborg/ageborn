@@ -2,7 +2,7 @@
  * Shared render types: view settings, view actions (the event mapper's output) and view events
  * (what the battle view tells the HUD).
  */
-import type { AgeId, CardId, ClipName, Command, EffectId, EmoteId, MatchOutcome, MusicCueId, MusicLayer, Pt, Side, SoundId, TeamPreset, VisualId } from '@/contracts';
+import type { AgeId, CardId, ClipName, Command, EffectId, EmoteId, MatchOutcome, MusicCueId, MusicLayer, PowerSlot, Pt, Side, SoundId, TeamPreset, VisualId } from '@/contracts';
 import type { GraphicsSetting } from './presets';
 
 /** The player settings the battle view reads (a subset of `Settings`, DESIGN A9 Settings, A12). */
@@ -88,6 +88,17 @@ export interface MinimapSnapshot {
   badges: EdgeBadge[];
   /** The lane band in CSS px (the badges sit at its edges). */
   band: { y: number; h: number };
+  /** The reach band of the power being aimed (world x), or null (A2.9.10: the minimap shows the same tint). */
+  reach: { from: number; to: number; side: Side; invalid: boolean } | null;
+}
+
+/** Options of a power preview (mirrors `ui/hud/bridge.ts` `HudPowerPreview`, A2.9.10 targeting). */
+export interface PowerPreviewOpts {
+  slot?: PowerSlot;
+  invalid?: 'hud' | 'reach' | undefined;
+  edge?: boolean;
+  bandLabel?: string;
+  invalidLabel?: string;
 }
 
 export interface MinimapBase {

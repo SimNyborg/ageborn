@@ -44,8 +44,42 @@
       "back": "Move the flag back",
       "forward": "Move the flag forward"
     },
-    "power": "Age Power",
-    "powerLabel": "{name}, {pct}% charged",
+    "power": {
+      "label": "{name}, {slot} power: {state}",
+      "stateReady": "ready",
+      "slot": {
+        "home": "Home",
+        "field": "Field"
+      },
+      "family": {
+        "bombard": "Bombard",
+        "sweep": "Sweep",
+        "snare": "Snare",
+        "pull": "Pull",
+        "stun": "Stun",
+        "flak": "Flak",
+        "charge": "Charge",
+        "frontBarrage": "Barrage",
+        "strike": "Strike",
+        "suppress": "Jammer",
+        "rally": "Rally",
+        "ward": "Ward",
+        "mend": "Mend",
+        "cloud": "Cloud",
+        "drop": "Drop"
+      },
+      "reach": {
+        "home": "Your half",
+        "front": "Near your army",
+        "anywhere": "Anywhere",
+        "army": "Your army",
+        "drop": "Drop"
+      },
+      "hits": "Hits up to {n}",
+      "hitsOwn": "Your {n} frontmost units",
+      "reload": "⟳ {s} s",
+      "perUnit": "Each enemy: {i}% of an Infantry, {h}% of a Heavy"
+    },
     "powerAim": {
       "hint": "Drag onto the battlefield!",
       "tapField": "Tap the battlefield to fire",
@@ -54,8 +88,17 @@
       "auto": {
         "stampede": "Charges from your front line",
         "paradrop": "Lands behind the enemy front",
-        "buffAll": "Boosts all your troops"
-      }
+        "buffAll": "Boosts your 8 frontmost troops",
+        "suppress": "Jams their turrets",
+        "strike": "Locks this enemy"
+      },
+      "hits": "Hits {n} of {m}",
+      "cost": "−{n}",
+      "home": "Your half",
+      "front": "Near your army",
+      "onlyHome": "Only in your half",
+      "onlyFront": "Only near your army",
+      "noTarget": "No target here"
     },
     "lastStand": "Last Stand",
     "mount": {
@@ -106,9 +149,9 @@
     },
     "lockedSlot": "A new card unlocks soon",
     "armyLabel": "Your units on the field",
-    "ready": "Ready",
     "key": {
-      "space": "Space"
+      "space": "Space",
+      "x": "X"
     },
     "newUnits": "New units!",
     "council": {
@@ -152,7 +195,14 @@
       "foeTitle": "Their research"
     },
     "scoutedShort": "Scouted",
-    "foePower": "{age}. Their power: {pct}%",
+    "foeRing": {
+      "label": "Their {slot} power: {name}. {state}",
+      "unknown": "Their {slot} power: not seen yet. {state}",
+      "unseen": "Not seen yet",
+      "ready": "Reloaded",
+      "secs": "Ready in {s} s",
+      "pct": "{pct}% reloaded"
+    },
     "stanceButton": "Stance: {stance}. Press and slide up to change",
     "tip": {
       "cancelOne": "Cancel one ({n} queued)"
@@ -164,10 +214,14 @@
       "legendary": "Legendary in field",
       "xp": "Need {n} more XP",
       "evolving": "Evolving…",
-      "power": "Charging: {pct}%",
       "stanceWait": "Ready in {s}s",
       "wait": "Not yet",
-      "powerGold": "Need {n} gold"
+      "powerGold": "Need {n} gold",
+      "powerReload": "Ready in {s} s",
+      "powerLockout": "Wait {s} s",
+      "powerNoTarget": "No target there",
+      "powerOutOfReach": "Get closer to their turrets",
+      "powerEmpty": "No power in this slot"
     },
     "inField": "In field"
   }

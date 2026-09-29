@@ -53,6 +53,10 @@ export interface Personality {
   holdAnyTier: boolean;
   /** Tempest: banks the power for evolve moments (the foe's and its own). */
   powerForEvolveMoments: boolean;
+  /** Added to the power ROI bar, bp (A2.9.9: Baroness Ledger is cost-averse, +2,000). */
+  powerBarBp: number;
+  /** "Bait, then wave" from this tier (A2.9.9: VII; Tempest's signature from V). */
+  baitFromTier: number;
   /** Old Grogg: never evolves. */
   neverEvolves: boolean;
   /** Old Grogg: scripted brain instead of the utility AI. */
@@ -78,6 +82,8 @@ const BASE: Personality = {
   pushGateBp: DEFAULT_PUSH_GATE_BP,
   holdAnyTier: false,
   powerForEvolveMoments: false,
+  powerBarBp: 0,
+  baitFromTier: 7,
   neverEvolves: false,
   scripted: false,
   opening: ['train:infantry', 'train:ranged', 'train:infantry|train:ranged'],
@@ -108,6 +114,8 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     id: 'greedy',
     treasuryRushLevel: 3,
     treasuryRushByMs: 150000,
+    // A2.9.9: cost-averse with powers.
+    powerBarBp: 2000,
     // A18.5.8: Economy first (Guildhall is Economy III, v1.1: joins the bias with its pick)
     researchBiasBp: { economy: 8000 },
     opening: ['train:infantry', 'treasury', 'train:ranged', 'treasury|train:infantry'],
@@ -124,6 +132,8 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     ...BASE,
     id: 'powerTiming',
     powerForEvolveMoments: true,
+    // A7.4 signature: "Times powers to evolves; baits your power, then waves".
+    baitFromTier: 5,
     // A18.5.8: Signal Fires, Reserve Charge (Command III, v1.1: joins the bias with its pick)
     researchBiasBp: { 'command.signal_fires': 12000 },
     opening: ['train:infantry', 'train:ranged', 'train:ranged|train:infantry', 'turret'],

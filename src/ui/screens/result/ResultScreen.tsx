@@ -9,7 +9,7 @@
 import './result.css';
 import { arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
-import type { MatchStats, RewardStep } from '@/contracts';
+import type { CapsuleTier, MatchStats, RewardStep } from '@/contracts';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -615,6 +615,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   // Only offer "Open capsule" while the earned capsule is still unopened in the tray.
   const earned = earnedCapsule(info.rewards);
   const capsule = earned !== null && save.value.capsules.pending.some((c) => c.id === earned) ? earned : null;
+  const earnedCap = capsule !== null ? save.value.capsules.pending.find((c) => c.id === capsule) : undefined;
+  const capsuleTier: CapsuleTier = earnedCap ? visibleTier(content.capsules, earnedCap) : 'silver';
   const stats = info.input.stats;
   const opp = info.input.opponent;
   const night = info.endedHour !== undefined && isNight(info.endedHour);
@@ -804,7 +806,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           ) : null}
         </section>
       }
-      actions={resultBar(actions, run, t, done)}
+      actions={resultBar(actions, run, t, done, {}, capsuleTier)}
     >
       {starter.dialog}
     </ResultLayout>
@@ -834,12 +836,12 @@ const RESULT_ACTION_KEY: Readonly<Record<ResultActionId, string>> = {
   replay: 'ui.result.replay',
 };
 
-function actionIcon(id: ResultActionId, size: number): ComponentChildren {
+function actionIcon(id: ResultActionId, size: number, capsuleTier: CapsuleTier): ComponentChildren {
   switch (id) {
     case 'continue':
       return <RoadIcon size={size} />;
     case 'openCapsule':
-      return <CapsuleIcon tier="silver" size={size + 2} />;
+      return <CapsuleIcon tier={capsuleTier} size={size + 2} />;
     case 'tryAgain':
     case 'tryEasy':
     case 'next':
@@ -864,18 +866,20 @@ export function resultBar(
   t: (k: string, p?: Record<string, string | number>) => string,
   settled: boolean,
   testids: Partial<Record<ResultActionId, string>> = {},
+  /** The tier Open capsule shows: the capsule's visible tier (a Win Capsule's start tier, never its rolled one). */
+  capsuleTier: CapsuleTier = 'silver',
 ): ActionBarProps {
   const id = (x: ResultActionId) => testids[x] ?? RESULT_ACTION_TESTID[x];
   return {
     primary: (
-      <Button kind="primary" size="l" icon={actionIcon(a.primary, 26)} testid={id(a.primary)} autofocus pulse={settled} onClick={() => run[a.primary]?.()}>
+      <Button kind="primary" size="l" icon={actionIcon(a.primary, 26, capsuleTier)} testid={id(a.primary)} autofocus pulse={settled} onClick={() => run[a.primary]?.()}>
         {t(RESULT_ACTION_KEY[a.primary])}
       </Button>
     ),
     secondary: a.secondary.length ? (
       <>
         {a.secondary.map((x) => (
-          <Button key={x} kind="secondary" size="m" icon={actionIcon(x, 22)} testid={id(x)} onClick={() => run[x]?.()}>
+          <Button key={x} kind="secondary" size="m" icon={actionIcon(x, 22, capsuleTier)} testid={id(x)} onClick={() => run[x]?.()}>
             {t(RESULT_ACTION_KEY[x])}
           </Button>
         ))}
@@ -884,7 +888,7 @@ export function resultBar(
     tertiary: a.tertiary.length ? (
       <>
         {a.tertiary.map((x) => (
-          <Button key={x} kind="tertiary" size="m" icon={actionIcon(x, 22)} testid={id(x)} onClick={() => run[x]?.()}>
+          <Button key={x} kind="tertiary" size="m" icon={actionIcon(x, 22, capsuleTier)} testid={id(x)} onClick={() => run[x]?.()}>
             {t(RESULT_ACTION_KEY[x])}
           </Button>
         ))}

@@ -1822,6 +1822,9 @@ button.ui-chip {
   inset: 0;
   z-index: 50;
   display: grid;
+  /* One track the size of the modal, so the panel's max-height: 100% caps it and a long body
+     (the odds sheet) scrolls inside the panel instead of running off the screen. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
   padding: max(12px, var(--ui-safe-t)) max(12px, var(--ui-safe-r)) max(12px, var(--ui-safe-b)) max(12px, var(--ui-safe-l));
 }

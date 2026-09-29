@@ -50,6 +50,11 @@ export function drumState(tier: CapsuleTier): DrumState {
   return { tier, crests: crestCount(tier), gems: Array.from({ length: summitGemCount(tier) }, (_, i) => tierAt(top + 1 + i)) };
 }
 
+/** Relative lightness of a colour in [0, 1] (Rec. 709 weights on the sRGB channels). */
+function lightness(c: number): number {
+  return (0.2126 * ((c >> 16) & 0xff) + 0.7152 * ((c >> 8) & 0xff) + 0.0722 * (c & 0xff)) / 255;
+}
+
 /** The n slots of a centred row, `gap` apart. */
 function slotX(i: number, n: number, gap: number): number {
   return (i - (n - 1) / 2) * gap;
@@ -188,7 +193,12 @@ function drawMaterial(g: GraphicsContext, tier: CapsuleTier): void {
           g.circle(x + 7, y - 2, 1.4).fill({ color: line, alpha: 0.42 });
         }
       }
-      g.rect(-58, BODY.top + 6, 8, BODY.bottom - BODY.top - 8).fill({ color: 0xffffff, alpha: 0.35 });
+      // Polished metal reads by its contrast: a soft dark reflection down the middle, then a crisp
+      // specular pair on the lit side (champagne tones only; no saturated gold anywhere).
+      for (let k = 0; k < 4; k++) g.rect(-14 + k * 3, BODY.top + 2, 22 - k * 6, BODY.bottom - BODY.top - 2).fill({ color: r.shadow, alpha: 0.09 });
+      g.rect(-60, BODY.top + 6, 9, BODY.bottom - BODY.top - 8).fill({ color: 0xffffff, alpha: 0.5 });
+      g.rect(-45, BODY.top + 6, 3, BODY.bottom - BODY.top - 8).fill({ color: 0xffffff, alpha: 0.4 });
+      g.rect(46, BODY.top + 8, 4, BODY.bottom - BODY.top - 12).fill({ color: r.highlight, alpha: 0.28 });
       break;
     }
     case 'platinum': {
@@ -283,8 +293,9 @@ export function drawCrest(g: GraphicsContext | Graphics, x: number, y: number, s
  */
 export function drawSummitGem(g: GraphicsContext | Graphics, x: number, y: number, tier: CapsuleTier | null, scale = 1, alpha = 1): void {
   const k = scale;
-  g.ellipse(x, y + 1 * k, 10 * k, 10.5 * k).fill({ color: ROOM.brassDark, alpha }).stroke({ width: 1.5 * k, color: shade(ROOM.brassDark, -0.5), alpha });
-  g.ellipse(x, y + 0.5 * k, 8.5 * k, 9 * k).fill({ color: ROOM.brass, alpha });
+  // A brass rim around a dark enamel setting, so a light gem (Platinum ice) reads against it.
+  g.ellipse(x, y + 1 * k, 10.5 * k, 11 * k).fill({ color: ROOM.brass, alpha }).stroke({ width: 1.5 * k, color: shade(ROOM.brassDark, -0.5), alpha });
+  g.ellipse(x, y + 0.8 * k, 8.3 * k, 8.8 * k).fill({ color: CREST.shield, alpha });
   const c = tier ? TIER_COLORS[tier] : SUMMIT_GEM_UNLIT;
   const pts = [x, y - 8 * k, x + 6 * k, y - 3 * k, x + 6 * k, y + 3.5 * k, x, y + 8.5 * k, x - 6 * k, y + 3.5 * k, x - 6 * k, y - 3 * k];
   g.poly(pts).fill({ color: tier ? c : mixColor(c, 0x8c93a0, 0.25), alpha }).stroke({ width: 1.5 * k, color: tier ? 0xffffff : 0x6b7280, alpha: 0.9 * alpha });
@@ -329,10 +340,14 @@ export function drawDrum(g: GraphicsContext, state: DrumState, o: DrawOptions = 
     g.moveTo(-hw + 3, y + 3).quadraticCurveTo(0, y + 13, hw - 3, y + 3).stroke({ width: 1.6, color: ramp.highlight, alpha: tier === 'aeon' ? 0.35 : 0.5 });
     const gy = y + 5;
     const gc = TIER_COLORS[tierAt(i)];
+    // A dark bezel under every gem, so its own colour reads on the light materials too (Silver to Platinum).
+    g.poly([0, gy - 12.5, 10, gy, 0, gy + 12.5, -10, gy]).fill({ color: bodyLine, alpha: 0.85 });
     g.poly([0, gy - 9, 7, gy, 0, gy + 9, -7, gy]).fill(on ? shade(gc, 0.15) : shade(stone, -0.35)).stroke({ width: 2.5, color: on ? 0xffffff : stoneLine, alpha: on ? 0.9 : 1 });
     if (on) {
-      g.poly([0, gy - 9, 7, gy, 0, gy]).fill({ color: shade(gc, 0.55), alpha: 0.9 });
-      g.poly([0, gy - 6, 3, gy - 1, 0, gy + 1, -3, gy - 1]).fill({ color: 0xffffff, alpha: 0.9 });
+      // Cel facets: a lit upper-right face, a shaded lower-left face and a small white glint.
+      g.poly([0, gy - 9, 7, gy, 0, gy]).fill({ color: shade(gc, 0.35), alpha: 0.85 });
+      g.poly([0, gy, -7, gy, 0, gy + 9]).fill({ color: shade(gc, -0.3), alpha: 0.7 });
+      g.poly([0, gy - 6, 2.4, gy - 3, 0, gy - 1.2, -2.4, gy - 3]).fill({ color: 0xffffff, alpha: 0.9 });
     }
   });
   // Cel highlight: one shape per part (A11).
@@ -729,17 +744,23 @@ export class CapsuleDrum {
     g.clear();
     const c = TIER_COLORS[this.tier];
     const lit = Math.min(tierIndex(this.tier), tierIndex(SUMMIT_ABOVE)) + 1;
+    // Additive light washes out to white on a light body, so light materials get a softer halo and
+    // the gems keep their own colours (the ladder reads bottom-up on every drum).
+    const soft = 1 - 0.7 * lightness(TIER_RAMPS[this.tier].key);
     RING_Y.forEach((y, i) => {
       if (i >= lit) return;
       const own = TIER_COLORS[tierAt(i)];
-      g.moveTo(-DRUM.halfW + 6, y).quadraticCurveTo(0, y + 10, DRUM.halfW - 6, y).stroke({ width: 10, color: c, alpha: 0.22 });
-      g.moveTo(-DRUM.halfW + 6, y).quadraticCurveTo(0, y + 10, DRUM.halfW - 6, y).stroke({ width: 2.5, color: shade(c, 0.6), alpha: 0.7 });
-      g.circle(0, y + 5, 17).fill({ color: own, alpha: 0.4 });
-      g.circle(0, y + 5, 9).fill({ color: shade(own, 0.5), alpha: 0.35 });
+      g.moveTo(-DRUM.halfW + 6, y).quadraticCurveTo(0, y + 10, DRUM.halfW - 6, y).stroke({ width: 10, color: c, alpha: 0.22 * soft });
+      g.moveTo(-DRUM.halfW + 6, y).quadraticCurveTo(0, y + 10, DRUM.halfW - 6, y).stroke({ width: 2.5, color: shade(c, 0.6), alpha: 0.7 * soft });
+      g.circle(0, y + 5, 16).fill({ color: own, alpha: 0.18 + 0.22 * soft });
+      g.circle(0, y + 5, 9).fill({ color: shade(own, 0.5), alpha: 0.35 * soft });
     });
     this.stateNow.gems.forEach((gt, i, a) => {
       if (!gt) return;
-      g.circle(slotX(i, a.length, GEM_GAP), GEM_Y, 20).fill({ color: TIER_COLORS[gt], alpha: 0.45 });
+      const x = slotX(i, a.length, GEM_GAP);
+      const own = TIER_COLORS[gt];
+      g.circle(x, GEM_Y, 17).fill({ color: own, alpha: 0.06 + 0.3 * (1 - lightness(own)) });
+      g.circle(x, GEM_Y, 11).fill({ color: own, alpha: 0.08 + 0.12 * (1 - lightness(own)) });
     });
   }
 

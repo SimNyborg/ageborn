@@ -13,7 +13,7 @@
  * | Research timing (A18.5.8) | V-VI: the push gate eases for 20 s after an own Troops item lands; VII-X also while the enemy's Troops item is past half, stiffens for 15 s after it lands, and evolves away from it |
  * | Thin army (A18.6) | Normal (IV) and up push whenever myArmy ≥ 1.5 × foeArmy (and can soak the turrets) |
  * | Evolve | 1.2 when XP ≥ threshold and (no enemy ground unit within 300 lu of own gate, or m_greed ≥ 1.3), after the tier's evolve delay |
- * | Power | 1.0 when the best zone's enemy value ≥ tier threshold × m_patience, or own base took damage in the last 3 s and zone value ≥ 100; aim error applied |
+ * | Power | 1.0 per slot (A2.9.9) when value × 10,000 ÷ effective cost ≥ the tier's ROI bar + (patience − 50) × 40, or own base took damage in the last 3 s and value ≥ 100; the best value − cost wins; aim error on area powers, best-k pick on strikes |
  * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; Fall back (V+, before Overdrive) when myArmy < 0.5 × foeArmy and the enemy is past mid-lane, within 200 lu of the turret cover; otherwise Charge. The Hold flag (III+, A18.4.2) goes where the turrets cover when defending, or forward where the army gathers for a wave |
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
  *
@@ -23,11 +23,12 @@
  * dwell) is itself derived from earlier inputs. Rules the DESIGN leaves open are logged in
  * docs/decisions.md under WP3.
  */
-import type { CardId, PowerSlot, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
+import type { CardId, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
 import {
   BP,
   LANE_MLU,
   MILLI,
+  PPM,
   TICKS_PER_SECOND,
   chanceBp,
   clamp,
@@ -37,6 +38,7 @@ import {
   pickWeighted,
   randInt,
   randRange,
+  reachBand,
   researchCost,
   startablePicks,
   type Sfc32State,
@@ -58,19 +60,20 @@ import { parseOpenings, resolveStep, type OpeningPlan } from './openings';
 import type { Personality } from './personalities';
 import {
   BANKING_RANGE,
-  bestPowerZone,
   fPressure,
   fPush,
   fRole,
   fSpare,
   mulBp,
+  powerOption,
   PRESSURE_RADIUS,
   SCORE,
   TRAIN,
-  type PowerZone,
+  type PowerContext,
+  type PowerOption,
 } from './scoring';
 import type { TierParams } from './tiers';
-import { foeValueIn, type View, type WeightsBp } from './view';
+import { foeValueIn, type PowerSlotView, type View, type WeightsBp } from './view';
 
 /** A scored candidate action. */
 export interface Scored {
@@ -127,8 +130,6 @@ export interface BrainConfig {
 }
 
 /** "within 500 lu of their gate" (push gate). */
-/** A2.9.9: tiers below III cast only their Home slot. */
-const FIELD_SLOT_TIER = 3;
 const GATE_ZONE = 500 * MILLI;
 /** Push gate: each enemy turret counts as 300 gold of defence. */
 const TURRET_DEFENCE = 300;
@@ -184,9 +185,34 @@ const LAST_STAND_FOES = 4;
  * burst of base damage seen over the bot's reaction time.
  */
 const LAST_STAND_MARGIN_BP = 150;
-/** Power: own base took damage in the last 3 s and zone value ≥ 100. */
+/** Power: own base took damage in the last 3 s and value ≥ 100 gold casts whatever the bar (A2.9.9). */
 const POWER_HURT_TICKS = 3 * TICKS_PER_SECOND;
-const POWER_MIN_VALUE = 100;
+const POWER_MIN_VALUE = 100 * MILLI;
+/** Personality shift of the ROI bar: (power patience − 50) × 40 bp = (m_patience − 1) × 0.4 (A2.9.9). */
+const PATIENCE_SHIFT_NUM = 2;
+const PATIENCE_SHIFT_DEN = 5;
+/** A cast that would break an active saving goal needs this much more ROI (A2.9.9 gold ledger). */
+const GOAL_BAR_BP = 5000;
+/** Counter-timing (X): the Home bar rises this much while the enemy banks (army on the lane < 300, gold estimate ≥ 300). */
+const COUNTER_TIMING_BP = 3000;
+const FOE_BANKING_ARMY = 300;
+/** Bait discipline (VII+): no Home cast on covered targets worth less than this (whole gold). */
+const BAIT_DISCIPLINE_VALUE = 200;
+/** Home reserve (V+): while the Home slot is this far reloaded and the enemy army is worth this much. */
+const RESERVE_PPM = 750000;
+const RESERVE_FOE_ARMY = 300;
+/** Ring reading (V+): the push gate × 1.2 while a scouted enemy Home damage power is ready. */
+const RING_GATE_BP = 12000;
+/** Bait, then wave (A2.9.9): needs this much banked (milli), sends at most 150 gold of bait, releases after 12 s. */
+const BAIT_BANK = 500 * MILLI;
+const BAIT_SPEND = 150 * MILLI;
+const BAIT_RELEASE_TICKS = 12 * TICKS_PER_SECOND;
+/** No new bait for this long after a release (one bait per enemy reload). */
+const BAIT_COOLDOWN_TICKS = 30 * TICKS_PER_SECOND;
+/** A bait train outranks every other candidate but Last Stand. */
+const BAIT_TRAIN_SCORE = 16000;
+/** TEMP experiment switches (removed before hand-off). */
+export const POWER_TUNE = { ring: true, reserve: true, bait: true, hotHomeBarBp: 0, hotFieldBarBp: 0, roiScaleBp: 10000 };
 /** X: any zone value when the own base is below 25%. */
 const LOW_BASE_BP = 2500;
 /** Tempest casts into the burst right after the foe evolves. */
@@ -324,6 +350,9 @@ export class Brain {
   private idleUntil = 0;
   /** `waveCommit`: the peak army value of the wave now charging, or null while none is. */
   private wavePeak: number | null = null;
+  /** Bait, then wave (A2.9.9): when the bait started and the gold (milli) spent on it; null when not baiting. */
+  private bait: { start: number; spent: number } | null = null;
+  private baitCooldownUntil = 0;
   private readonly opening: OpeningPlan;
   private openingIndex = 0;
 
@@ -365,7 +394,14 @@ export class Brain {
     const clockBp = Math.min(CLOCK_MAX_BP, BP + CLOCK_STEP_BP * clockSteps);
     const clock = matchClock(book, obs.ages);
     const baseGateBp = Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
-    const gateBp = hot ? BP : Math.max(TIMED_GATE_MIN_BP, mulBp(baseGateBp, this.researchTimingBp(v, mem)));
+    let gateBp = hot ? BP : Math.max(TIMED_GATE_MIN_BP, mulBp(baseGateBp, this.researchTimingBp(v, mem)));
+    // A2.9.9 ring reading (V+): a scouted enemy Home bombard or sweep that is ready asks 20% more army
+    // (the ring and the card are public once cast; the enemy's gold is not, so it is a read, not a certainty).
+    const foeHome = obs.foe.powers.home;
+    const foeHomeInfo = foeHome?.card ? book.powerInfo[foeHome.card] : undefined;
+    const foeHomeArea = foeHomeInfo !== undefined && (foeHomeInfo.def.family === 'bombard' || foeHomeInfo.def.family === 'sweep');
+    const foeHomeReady = foeHomeArea && (foeHome?.ppm ?? 0) >= PPM;
+    if (POWER_TUNE.ring && t.readsRings && foeHomeReady && !hot) gateBp = mulBp(gateBp, RING_GATE_BP);
     // An army at the pop cap cannot grow by banking, so it goes.
     const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
     // A18.6 (Normal and up): an army 1.5× the enemy's that can soak its turrets goes, whatever the gate.
@@ -389,6 +425,23 @@ export class Brain {
     const waveGold = mulBp(t.waveCommit ? mulBp(gateBp, WAVE_MARGIN_BP) : gateBp, defence) - v.myArmy;
     const banking = gateFailed && v.gold < waveGold * MILLI;
     let wave = gateFailed && !banking;
+
+    // Bait, then wave (A2.9.9, VII+; Tempest from V): with a wave's gold banked and the enemy's Home
+    // bombard or sweep ready, send ≤ 150 gold of the cheapest units first, train nothing else, and release
+    // the bank when the enemy casts (their telegraph) or after 12 s.
+    const baitOn = POWER_TUNE.bait && (t.bait || t.tier >= P.baitFromTier);
+    if (this.bait) {
+      const b = this.bait;
+      if (mem.foeCastTick.home >= b.start || v.now - b.start >= BAIT_RELEASE_TICKS || urgent || foeOnMyHalf || siege) {
+        this.bait = null;
+        this.baitCooldownUntil = v.now + BAIT_COOLDOWN_TICKS;
+        wave = true;
+        this.spending = true;
+      }
+    } else if (baitOn && v.now >= this.baitCooldownUntil && foeHomeReady && (pushOk || wave) && v.gold >= BAIT_BANK && !foeOnMyHalf && !urgent && !siege && !allIn) {
+      this.bait = { start: v.now, spent: 0 };
+    }
+    const baiting = this.bait !== null;
 
     // Saving goals (A7.2: "Bank 350 for a Legendary" or "bank for Treasury"): trains that would dip
     // below the goal wait, and the goal's own action gets a bonus once affordable, so the bot visibly
@@ -445,10 +498,14 @@ export class Brain {
     // An active saving goal raises the float to the goal, so the bot visibly banks (A7.2 "pause training").
     const cheapest = v.tray.reduce((m, s) => Math.min(m, s.card.cost), Number.MAX_SAFE_INTEGER);
     // A16.3 rule 3: the float target shrinks against a one-type army.
-    const floatTarget = Math.trunc((t.goldFloat * MILLI * BP) / mono);
+    // A2.9.9 gold ledger (V+): the Home power's cost joins the float target while its slot is ≥ 75%
+    // reloaded and an enemy army worth 300+ is on the lane.
+    const home = v.powerSlots.find((x) => x.slot === 'home');
+    const reserve = POWER_TUNE.reserve && t.homeReserve && home && home.info.harmful && home.ppm >= RESERVE_PPM && v.foeArmy >= RESERVE_FOE_ARMY ? home.cost : 0;
+    const floatTarget = Math.trunc((t.goldFloat * MILLI * BP) / mono) + reserve;
     if (v.gold >= Math.max(floatTarget, this.goal?.amount ?? 0) || wave) this.spending = true;
     else if (v.gold < cheapest) this.spending = false;
-    const mayTrain = !banking && v.now >= this.idleUntil && (this.spending || urgent || allIn);
+    const mayTrain = !banking && !baiting && v.now >= this.idleUntil && (this.spending || urgent || allIn);
 
     const cand: Scored[] = [];
     const add = (action: BotAction, score: number): void => {
@@ -468,6 +525,14 @@ export class Brain {
       trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp, mono });
     }
     if (mayTrain) for (const s of trains.scored) add(s.action, s.score);
+    if (this.bait && !v.ageUncertain) {
+      // The bait: the cheapest tray unit while the bait stays within 150 gold.
+      const b = this.bait;
+      const cheap = v.tray.filter((x) => !x.card.legendary && v.popCommitted + x.card.pop <= e.popCap).sort((a, c) => a.card.cost - c.card.cost || a.slot - c.slot)[0];
+      if (cheap && b.spent + cheap.card.cost <= BAIT_SPEND && v.gold >= cheap.card.cost && v.queue.length < e.queueMax) {
+        add({ kind: 'train', slot: cheap.slot, card: cheap.card.id, cost: cheap.card.cost }, BAIT_TRAIN_SCORE);
+      }
+    }
     // Over-commit (mistake): keep feeding units forward while the push gate says bank.
     if (banking && trains.eager) opts.overCommit = trains.eager;
     if (trains.noAntiAir) opts.forgetAntiAir = trains.noAntiAir;
@@ -522,26 +587,11 @@ export class Brain {
       }
     }
 
-    // Power. A2.9.9: tiers 0-II use the Home slot only.
-    if (v.powerReady && v.power && (v.powerSlot === 'home' || t.tier >= FIELD_SLOT_TIER)) {
-      const zone = bestPowerZone(v, v.power, e.zoneMin, e.zoneMax, e.powerReach);
-      const slot = v.powerSlot ?? 'home';
-      let threshold = mulBp(t.powerThreshold, W.patience);
-      // Owner feedback 2026-09-28: the upper tiers also cast on a zone holding a set share of the visible
-      // enemy army, so the power is used in every age and not only when a Stone-gold bar is reached.
-      if (t.powerArmyShareBp > 0) threshold = Math.min(threshold, Math.max(POWER_MIN_VALUE, mulBp(v.foeArmy, t.powerArmyShareBp)));
-      const hurt = obs.tick - mem.baseDamagedTick <= POWER_HURT_TICKS && zone.value >= POWER_MIN_VALUE;
-      const desperate = t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP && zone.value > 0;
-      const foeEvolved = P.powerForEvolveMoments && v.now - mem.foeEvolvedTick <= FOE_EVOLVE_WINDOW && zone.value >= POWER_MIN_VALUE;
-      const beforeEvolve = evolveWanted && zone.value >= POWER_MIN_VALUE;
-      // A2.9.9: a strike locks its target (the sim's auto-aim ranks by strike value); the tier's
-      // positional aim error applies to area powers only. P1 minimum: the best target (k = 1).
-      const strike = v.power.effect.kind === 'strike';
-      const aim = (): BotAction => (strike ? { kind: 'power', slot, p: null } : this.aimPower(zone, rng, slot));
-      if (beforeEvolve) add(aim(), SCORE.powerBeforeEvolve);
-      else if ((zone.value > 0 && zone.value >= threshold) || hurt || desperate || foeEvolved) add(aim(), SCORE.power);
-      else if (zone.value > 0) opts.powerOnFew = { kind: 'power', slot, p: zone.p === null || strike ? null : Math.trunc(zone.p / MILLI) };
-    }
+    // Power (A2.9.9): per reloaded, affordable slot, value per gold against the tier's ROI bar.
+    const hurt = obs.tick - mem.baseDamagedTick <= POWER_HURT_TICKS;
+    const pw = this.powerChoice(v, mem, rng, hurt);
+    if (pw.cast) add(pw.cast, SCORE.power);
+    if (pw.onFew) opts.powerOnFew = pw.onFew;
 
     // Stance (A18.4.2). A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her
     // tiers too. Fall back from tier V when badly outnumbered with the enemy past mid-lane; the Hold flag
@@ -554,7 +604,7 @@ export class Brain {
       const falling =
         t.fallback && !hot && !allIn && v.myArmy > 0 && v.foeArmy >= FALLBACK_MIN_FOE && v.myArmy * BP < FALLBACK_RATIO_BP * v.foeArmy && v.foeFront !== null && v.foeFront < e.turretCover + FALLBACK_REACH;
       const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
-      const want = falling ? 'fallback' : wantHold ? 'hold' : 'charge';
+      const want = baiting ? 'charge' : falling ? 'fallback' : wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
         const spot = want === 'hold' && t.movesFlag ? this.flagSpot(v, weak) : null;
         add(spot !== null && spot * MILLI !== v.holdP ? { kind: 'stance', stance: want, holdP: spot } : { kind: 'stance', stance: want }, SCORE.stance);
@@ -576,6 +626,14 @@ export class Brain {
       if (near >= LAST_STAND_FOES) add({ kind: 'lastStand' }, SCORE.lastStand);
     }
 
+    // While baiting the bank stays banked: only the bait, stance, casts, Evolve and Last Stand (A2.9.9).
+    if (baiting) {
+      for (let i = cand.length - 1; i >= 0; i -= 1) {
+        const c = cand[i] as Scored;
+        const k = c.action.kind;
+        if (k === 'build' || k === 'mount' || k === 'modernise' || k === 'research' || (k === 'train' && c.score !== BAIT_TRAIN_SCORE)) cand.splice(i, 1);
+      }
+    }
     cand.sort((a, b) => b.score - a.score);
     // Any useful action beats waiting, except while saving: then weak candidates wait for the goal.
     const bar = this.goal ? SCORE.savingBar : 1;
@@ -650,6 +708,7 @@ export class Brain {
       if (i >= 0) action = (ts[i] as Scored).action;
     }
     if (action.kind === 'stance') this.stanceTick = v.now;
+    if (this.bait && action.kind === 'train') this.bait.spent += action.cost;
     if (action.kind === 'research') {
       this.researchTick = v.now;
       this.researchPlan = null;
@@ -812,7 +871,7 @@ export class Brain {
         case 'quiet':
           return !busy && mem.foeOnMyHalfTick < v.now - PASSIVE_FOE_TICKS;
         case 'power':
-          return counter && v.power !== undefined;
+          return counter && (v.obs.me.powers.home !== null || v.obs.me.powers.field !== null);
         case 'opener':
           return true;
       }
@@ -1040,12 +1099,71 @@ export class Brain {
     return !v.foes.some((u) => !u.air && u.p - Math.trunc(((u.def?.speed ?? 0) * MILLI * horizon) / TICKS_PER_SECOND) <= EVOLVE_SAFE);
   }
 
-  private aimPower(zone: PowerZone, rng: Sfc32State, slot: PowerSlot): BotAction {
-    if (zone.p === null) return { kind: 'power', slot, p: null };
-    const { book, tier: t } = this.cfg;
+  /**
+   * The power decision (A2.9.9 steps 1-6): for each reloaded, affordable slot (Home only below tier III)
+   * the best option; cast when ROI = value × 10,000 ÷ effective cost clears the bar (tier + patience
+   * shift + the General's own shift + 5,000 while it would break a saving goal + 3,000 counter-timing on
+   * the Home slot), or on the overrides (base hit in the last 3 s and value ≥ 100; X with its base below
+   * 25%). Bait discipline (VII+) skips Home casts on covered value < 200. Of several castable slots, the
+   * best value − cost. `onFew` is the A7.2 mistake: a Home cast on 1-2 covered targets below the bar.
+   */
+  private powerChoice(v: View, mem: BotMemory, rng: Sfc32State, hurt: boolean): { cast: BotAction | null; onFew: BotAction | null } {
+    const { book, tier: t, persona: P, weights: W } = this.cfg;
     const e = book.econ;
+    const ctx: PowerContext = {
+      reach: e.powerReach,
+      turretCover: e.turretCover,
+      legendaryPowerDamageBp: e.legendaryPowerDamageBp,
+      strikeEpicBp: e.strikeEpicBp,
+      strikeK: t.strikeK,
+      delayTicks: t.snapshotDelayTicks + 1,
+      rng,
+    };
+    const shift = Math.trunc(((W.patience - BP) * PATIENCE_SHIFT_NUM) / PATIENCE_SHIFT_DEN) + P.powerBarBp;
+    // Counter-timing (X): the enemy is banking (its army on the lane is under 300 while the gold estimate
+    // says it holds 300+), so the Home power waits for the wave that gold becomes (A7.1 estimate).
+    const foeBanking = t.counterTiming && v.foeArmy < FOE_BANKING_ARMY && mem.estimator.gold >= FOE_BANKING_ARMY * MILLI;
+    // Tempest casts into the burst right after the foe evolves: half the bar for 5 s.
+    const foeEvolved = P.powerForEvolveMoments && v.now - mem.foeEvolvedTick <= FOE_EVOLVE_WINDOW;
+    let best: { opt: PowerOption; sv: PowerSlotView; net: number } | null = null;
+    let onFew: BotAction | null = null;
+    for (const sv of v.powerSlots) {
+      if (!sv.reloaded || !sv.affordable || (sv.slot === 'field' && !t.fieldSlot)) continue;
+      const opt = powerOption(v, sv.slot, sv.info, ctx);
+      if (opt.value <= 0) continue;
+      let bar = mulBp(t.powerRoiBp, POWER_TUNE.roiScaleBp) + shift;
+      if (v.phase === 'overdrive' || v.phase === 'siege') bar += sv.slot === 'home' ? POWER_TUNE.hotHomeBarBp : POWER_TUNE.hotFieldBarBp;
+      const goal = this.goal;
+      if (goal && v.gold - sv.cost < goal.amount && !hurt) bar += GOAL_BAR_BP;
+      if (sv.slot === 'home' && foeBanking) bar += COUNTER_TIMING_BP;
+      if (foeEvolved) bar = Math.trunc(bar / 2);
+      const roi = Math.trunc((opt.value * BP) / Math.max(1, sv.cost));
+      const discipline = t.baitDiscipline && sv.slot === 'home' && sv.info.harmful && opt.covered < BAIT_DISCIPLINE_VALUE && !hurt;
+      const override = (hurt && opt.value >= POWER_MIN_VALUE) || (t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP);
+      if (!discipline && (roi >= bar || override)) {
+        const net = opt.value - sv.cost;
+        if (!best || net > best.net) best = { opt, sv, net };
+      } else if (sv.slot === 'home' && sv.info.harmful && opt.count >= 1 && opt.count <= 2) {
+        onFew = this.aimPower(v, opt, sv, rng);
+      }
+    }
+    return { cast: best ? this.aimPower(v, best.opt, best.sv, rng) : null, onFew };
+  }
+
+  /**
+   * The cast for an option: area powers get the tier's positional aim error (± lu) and are clamped back
+   * into their band (A2.9.9 step 1); a strike aims at its chosen target; no-aim kinds send no `p`.
+   */
+  private aimPower(v: View, opt: PowerOption, sv: PowerSlotView, rng: Sfc32State): BotAction {
+    const base = { kind: 'power' as const, slot: sv.slot, cost: sv.cost };
+    if (opt.p === null) return { ...base, p: null };
+    // A strike aims at its chosen target (A2.9.7 manual pick: the enemy nearest the aim).
+    if (opt.targetId !== null) return { ...base, p: Math.trunc(opt.p / MILLI) };
+    const { book, tier: t } = this.cfg;
+    const r = book.econ.powerReach;
+    const band = reachBand(sv.info.def.reach, sv.info.zone, v.powerFront, r) ?? [r.zoneMin, r.zoneMax];
     const err = t.powerAimErrorLu > 0 ? randRange(rng, -t.powerAimErrorLu, t.powerAimErrorLu) : 0;
-    const p = clamp(Math.trunc(zone.p / MILLI) + err, Math.trunc(e.zoneMin / MILLI), Math.trunc(e.zoneMax / MILLI));
-    return { kind: 'power', slot, p };
+    const p = clamp(Math.trunc(opt.p / MILLI) + err, Math.trunc(band[0] / MILLI), Math.trunc(band[1] / MILLI));
+    return { ...base, p };
   }
 }

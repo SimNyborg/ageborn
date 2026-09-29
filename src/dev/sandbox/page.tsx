@@ -10,11 +10,16 @@
  * - Sim: WP2's sim panel (spawn any card on either side and step; docs/requests/wp2-sandbox-page.md).
  *
  * `#sandbox/battle`, `#sandbox/hud` and `#sandbox/sim` open a tab directly;
- * `?source=real&art=procedural&opponent=ai&autoplay=1` preselects the battle options.
+ * `?source=real&art=procedural&opponent=ai&autoplay=1` preselects the battle options; `&stage=1` shows
+ * only the battle (no bars or panel) for screenshots at a device size, `&format=standard` picks the
+ * format. Browser checks reach the running stage through `window.__sandbox` and the dev cheats through
+ * `window.__sandboxDev` (gold, power reload, spawns, a lane clear).
  */
 import type { FormatId } from '@/contracts';
 import { DEFAULT_VIEW_SETTINGS, type ViewSettings } from '@/render';
 import { useEffect, useState } from 'preact/hooks';
+import type { CardId, PowerSlot, Side } from '@/contracts';
+import { devClearLane, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
 import { SimPanel } from './simPanel';
 import { BattleStage, type ArtKind, type OpponentKind, type StageApi, type StageOptions, type StageStats } from './viewBattle';
 import { HudStates } from './viewHudStates';
@@ -144,11 +149,11 @@ function SoundLog(p: { api: StageApi | null }) {
   );
 }
 
-function BattleTab() {
+function BattleTab(p: { bare?: boolean }) {
   const [source, setSource] = useState<SourceKind>(() => param('source', ['fake', 'real', 'stress'] as const, 'fake'));
   const [art, setArt] = useState<ArtKind>(() => param('art', ['fake', 'procedural'] as const, 'fake'));
   const [opponent, setOpponent] = useState<OpponentKind>(() => param('opponent', ['ai', 'autoplayer'] as const, 'ai'));
-  const [format, setFormat] = useState<FormatId>('full');
+  const [format, setFormat] = useState<FormatId>(() => param('format', ['full', 'standard', 'short', 'tutorial'] as const, 'full'));
   const [seed, setSeed] = useState(1);
   const [autoplayMe, setAutoplayMe] = useState(() => param('autoplay', ['1', '0'] as const, '0') === '1');
   const [settings, setSettings] = useState<ViewSettings>({ ...DEFAULT_VIEW_SETTINGS });
@@ -163,7 +168,24 @@ function BattleTab() {
   // Browser checks (Playwright) reach the running stage through this dev-only handle.
   useEffect(() => {
     (window as unknown as { __sandbox?: StageApi | null }).__sandbox = api;
+    const sim = api?.source.sim;
+    (window as unknown as { __sandboxDev?: unknown }).__sandboxDev = sim
+      ? {
+          gold: (side: Side, n: number) => devSetGold(sim, side, n),
+          power: (side: Side, ppm: number, slot?: PowerSlot) => devSetPower(sim, side, ppm, slot),
+          spawn: (side: Side, card: CardId, p: number) => devSpawn(sim, side, card, p),
+          clear: () => devClearLane(sim),
+          pause: (on: boolean) => setPaused(on),
+        }
+      : null;
   }, [api]);
+  if (p.bare) {
+    return (
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <BattleStage options={options} runKey={runKey} onApi={setApi} onStats={setStats} onPause={() => setPaused((v) => !v)} onSpeed={setSpeed} />
+      </div>
+    );
+  }
   return (
     <>
       <div style={bar}>
@@ -256,6 +278,7 @@ function BattleTab() {
 
 export default function Sandbox() {
   const [tab, setTab] = useState<Tab>(tabFromHash());
+  if (new URLSearchParams(window.location.search).get('stage') === '1') return <BattleTab bare />;
   useEffect(() => {
     const on = () => setTab(tabFromHash());
     window.addEventListener('hashchange', on);

@@ -6,7 +6,9 @@
  * reveal and the Wardrobe Crate card flip for each skin rarity. Shows the plan checks (time limits, back-loaded climb),
  * the live step and a sound log. URL: `?dev=1#capsuleBench/<caseId>`; add `&art=fake` to the query
  * for the fake art provider, `&bare=1` for the stage alone (screenshots at phone size), `&rm=1` for
- * Reduce motion and `&lite=1` for the Lite graphics preset. Dev pages are exempt from the i18n rule.
+ * Reduce motion and `&lite=1` for the Lite graphics preset. `#capsuleBench/drums` shows every tier's
+ * drum at rest side by side (materials, lit rings, crests, summit gems). Dev pages are exempt from the
+ * i18n rule.
  */
 import { Application } from 'pixi.js';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -34,6 +36,10 @@ import { oddsModel } from '@/ui/components/oddsModel';
 import '@/ui/theme.css';
 import '@/app/capsules/capsuleHost.css';
 import { BENCH_CASES, type BenchCase } from './cases';
+import { bodySamplePoints, mountDrumGallery } from './drumGallery';
+
+/** The drum gallery's pseudo case id. */
+const DRUMS = 'drums';
 
 export const title = 'Capsule bench';
 
@@ -42,7 +48,7 @@ const pityRules = asContent(content).capsules.pity;
 
 function caseFromHash(): string {
   const part = decodeURIComponent(window.location.hash.replace(/^#/, '')).split('/')[1];
-  return part && BENCH_CASES.some((c) => c.id === part) ? part : (BENCH_CASES[0]?.id ?? '');
+  return part && (part === DRUMS || BENCH_CASES.some((c) => c.id === part)) ? part : (BENCH_CASES[0]?.id ?? '');
 }
 
 function planFor(c: BenchCase): ShowPlan {
@@ -95,7 +101,8 @@ export default function CapsuleBench() {
   const audio = useMemo(() => new FakeAudio(), []);
   const t0 = useRef(performance.now());
 
-  const bench = BENCH_CASES.find((c) => c.id === caseId) ?? BENCH_CASES[0];
+  const gallery = caseId === DRUMS;
+  const bench = gallery ? undefined : (BENCH_CASES.find((c) => c.id === caseId) ?? BENCH_CASES[0]);
   const plan = useMemo(() => (bench ? planFor(bench) : null), [bench]);
   const issues = useMemo(() => (plan ? checkPlan(plan) : []), [plan]);
 
@@ -175,6 +182,18 @@ export default function CapsuleBench() {
     if (app) app.ticker.speed = speed;
   }, [app, speed]);
 
+  // The drum gallery: every tier at rest, for comparing the materials (and the bench colour check).
+  useEffect(() => {
+    if (!app || caseId !== DRUMS) return;
+    const gallery = mountDrumGallery(app);
+    const w = window as unknown as { __drumGallery?: object };
+    w.__drumGallery = { gallery, points: bodySamplePoints() };
+    return () => {
+      delete w.__drumGallery;
+      gallery.destroy();
+    };
+  }, [app, caseId]);
+
   const choose = (id: string) => {
     window.location.hash = `capsuleBench/${id}`;
     setCaseId(id);
@@ -250,6 +269,10 @@ export default function CapsuleBench() {
             ⟲ Replay
           </button>
         </div>
+        <div style={S.group}>Materials</div>
+        <button style={{ ...S.btn, ...(gallery ? S.sel : {}) }} onClick={() => choose(DRUMS)} data-testid="bench-case-drums">
+          Every tier's drum at rest
+        </button>
         {groups.map((g) => (
           <div key={g}>
             <div style={S.group}>{g}</div>
@@ -284,7 +307,7 @@ export default function CapsuleBench() {
         </a>
       </div>
       <div style={S.stage} ref={host} data-testid="capsule-bench-stage">
-        {app && art && bench ? (
+        {gallery ? null : app && art && bench ? (
           bench.crate ? (
             <WardrobeScreen key={`${bench.id}-${runKey}-${artKind}`} {...common} pixi={app} art={art} reveal={bench.crate} {...(bench.pity ? { pity: bench.pity } : {})} />
           ) : (

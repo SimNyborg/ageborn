@@ -27,6 +27,8 @@ import type {
   EffectView,
   MatchConfig,
   PowerDef,
+  PowerReach,
+  PowerSlot,
   Pt,
   Side,
   SimEvent,
@@ -38,6 +40,7 @@ import type {
   UnitView,
 } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
+import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
 import { ColorMatrixFilter, Graphics, type Container } from 'pixi.js';
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { depthRows, depthZ, easeToward } from './depth';
@@ -53,7 +56,8 @@ import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
 import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, textLabelFactory } from './mounts';
-import { ZoneOverlay, clampPowerP, ghostStyle, inZone, powerZoneLu, type GhostTarget } from './powerTargeting';
+import { previewBand, previewFront, previewTargets, powerTakesAim, powerZoneWidth, reachRulesLu, resolveAim, type PreviewTargets, type PreviewUnit } from './powerPreview';
+import { ZoneOverlay, clampPowerP, ghostStyle, powerZoneLu, type GhostTarget } from './powerTargeting';
 import { AutoPresetMonitor, PRESETS, particleCap, presetDpr, type GraphicsPreset } from './presets';
 import { SEAM_START_LU, cameraFronts, followFocus, frontLines, frontMidpoint, framingCenter, spectatorFocus, stepSeam } from './seam';
 import { teamColor } from './teamColors';
@@ -65,6 +69,7 @@ import {
   type MinimapSnapshot,
   type MinimapUnit,
   type MinimapZone,
+  type PowerPreviewOpts as HudPowerPreviewOpts,
   type ViewAction,
   type ViewEvent,
   type ViewEventListener,
@@ -277,7 +282,7 @@ export class BattleView {
   private lastAlertAt = -Infinity;
   private legendaryBadges: { id: string; x: number; unitId: number; side: Side; card: CardId; ageMs: number }[] = [];
   /** Your power drag: the pointer (client px) and the previewed p, kept current while edge-scrolling. */
-  private powerDrag: { clientX: number; clientY: number; p: number | null; valid: boolean } | null = null;
+  private powerDrag: { clientX: number; clientY: number; p: number | null; valid: boolean; raw: boolean } | null = null;
 
   constructor(o: BattleViewOptions) {
     this.sim = o.sim;
@@ -310,6 +315,7 @@ export class BattleView {
     this.bases = [this.createBase(0), this.createBase(1)];
     this.layers.bars.addChild(this.bars.root);
     this.layers.telegraphs.addChild(this.zones.root, this.markers.root);
+    this.layers.ground.addChild(this.zones.groundRoot);
     this.layers.structures.addChildAt(this.holdFlag.root, 0);
 
     this.applySettings(this.settings);
@@ -562,16 +568,58 @@ export class BattleView {
     return p ? this.camera.worldToScreen(p.x, p.y) : null;
   }
 
-  /** The Home power in your current loadout, if any (P1: the single power button is the Home slot, A2.9.13). */
-  private myPower(): PowerDef | undefined {
+  /** The slot the HUD aims now (A2.9.10: the dock has a Home and a Field button). */
+  private aimSlot: PowerSlot = 'home';
+  /** The preview's labels and reason, kept for the edge-scroll re-preview. */
+  private previewOpts: HudPowerPreviewOpts = {};
+
+  /** A slot's power in your current loadout, if any (default: the slot being aimed). */
+  private myPower(slot: PowerSlot = this.aimSlot): PowerDef | undefined {
     const age = this.ageOf(this.mySide);
-    const id = this.config.sides[this.mySide].loadouts[age]?.powers.home;
+    const id = this.config.sides[this.mySide].loadouts[age]?.powers[slot];
     return id ? this.config.content.powers[id] : undefined;
   }
 
-  /** True when your current power can be placed by dragging (others only auto-aim). */
-  powerAimable(): boolean {
-    return powerZoneLu(this.myPower()) !== null;
+  /** True when the slot's power (default Home) is placed by dragging (area powers and strikes). */
+  powerAimable(slot: PowerSlot = 'home'): boolean {
+    const def = this.myPower(slot);
+    return !!def && powerTakesAim(def);
+  }
+
+  /** Units as the power preview sees them: own-frame p (lu) of your side, from the sim. */
+  private previewUnits(): PreviewUnit[] {
+    const out: PreviewUnit[] = [];
+    const eco = this.config.content.economy;
+    for (const u of this.sim.state.units) {
+      if (u.mode === 'dying' || u.hp <= 0) continue;
+      const def = this.config.content.units[u.card];
+      out.push({
+        id: u.id,
+        own: u.side === this.mySide,
+        p: xToP(u.x / MILLI_LU, this.mySide),
+        air: u.air,
+        summoned: u.summoned,
+        leaping: u.mode === 'leap',
+        cost: def?.cost ?? 0,
+        half: (def ? eco.sizes[def.size] : 24) / 2,
+      });
+    }
+    return out;
+  }
+
+  private reachRules(): PowerReachRules {
+    return reachRulesLu(this.config.content.economy);
+  }
+
+  /**
+   * A slot's reach band now (A2.9.4): the legal zone centres in own-side lu; null for powers that take
+   * no aim. The Front band follows your front live.
+   */
+  powerReach(slot: PowerSlot): { reach: PowerReach; band: [number, number] | null } | null {
+    const def = this.myPower(slot);
+    if (!def) return null;
+    const rules = this.reachRules();
+    return { reach: def.reach, band: previewBand(def, previewFront(this.previewUnits(), rules), rules) };
   }
 
   /**
@@ -581,39 +629,64 @@ export class BattleView {
   laneP(clientX: number, clientY: number): number | null {
     const p = this.lanePAt(clientX, clientY);
     // A drag near the band's edge scrolls the camera (A17.6); remember the pointer for that.
-    this.powerDrag = { clientX, clientY, p, valid: this.powerDrag?.valid ?? true };
+    this.powerDrag = { clientX, clientY, p, valid: this.powerDrag?.valid ?? true, raw: false };
     this.camera.hold('powerDrag', true);
     return p;
   }
 
   /**
-   * Starts tap-to-aim (owner decision "Age Power targeting"): holds the camera like a drag and returns
-   * where the ghost starts: over the enemy front, reaching into their group (else ahead of your front,
-   * else mid-band), clamped to the power band. Null when the power ignores the aim.
+   * Own-side p (lu) under a client point, not clamped to any band (0 to the lane length), or null off
+   * the lane: the HUD resolves it against the slot's reach (the magnetic edge, A2.9.10).
    */
-  powerAimStart(): number | null {
-    const band = this.config.content.economy.powerZoneClamp;
-    const width = powerZoneLu(this.myPower());
-    if (width === null) {
-      // The power picks its own spot (Stampede, Paratroopers, ...): the ghost shows it wherever the pointer is.
+  laneRawP(clientX: number, clientY: number): number | null {
+    const p = this.laneRawAt(clientX, clientY);
+    this.powerDrag = { clientX, clientY, p, valid: this.powerDrag?.valid ?? true, raw: true };
+    this.camera.hold('powerDrag', true);
+    return p;
+  }
+
+  private laneRawAt(clientX: number, clientY: number): number | null {
+    const r = this.inputEl?.getBoundingClientRect();
+    const sx = clientX - (r?.left ?? 0);
+    const sy = clientY - (r?.top ?? 0);
+    const L = this.camera.layout;
+    if (sy < L.bandY - L.bandH * 0.05 || sy > L.bandY + L.bandH * 1.02 || sx < 0 || sx > L.width) return null;
+    const w = this.camera.screenToWorld(sx, sy);
+    return Math.round(Math.max(0, Math.min(LANE_LU, xToP(w.x, this.mySide))));
+  }
+
+  /**
+   * Starts tap-to-aim (owner decision "Age Power targeting"): holds the camera like a drag and returns
+   * where the ghost starts: over the eligible enemies nearest your gate inside the reach band (else
+   * ahead of your front, else mid-band). Powers without an aim show where they act.
+   */
+  powerAimStart(slot: PowerSlot = 'home'): number | null {
+    this.aimSlot = slot;
+    const def = this.myPower(slot);
+    const legacy = this.config.content.economy.powerZoneClamp;
+    if (!def || !powerTakesAim(def)) {
+      // The power picks its own spot (a charge, a drop, a buff, Suppress): the ghost shows it.
       const z = this.ghostZone(0);
-      const p = z ? clampPowerP(xToP(z.x, this.mySide), band) : Math.round((band[0] + band[1]) / 2);
-      this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true };
+      const p = z ? clampPowerP(xToP(z.x, this.mySide), legacy) : Math.round((legacy[0] + legacy[1]) / 2);
+      this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true, raw: false };
       this.camera.hold('powerDrag', true);
       if (z) this.revealAim(z.x);
       return p;
     }
+    const rules = this.reachRules();
+    const units = this.previewUnits();
+    const front = previewFront(units, rules);
+    const band = previewBand(def, front, rules) ?? legacy;
+    const width = powerZoneWidth(def);
     let foe: number | null = null;
     let mine: number | null = null;
-    for (const u of this.units.values()) {
-      if (u.dying) continue;
-      const p = xToP(u.x, this.mySide);
-      if (u.side === this.mySide) mine = mine === null ? p : Math.max(mine, p);
-      else foe = foe === null ? p : Math.min(foe, p);
+    for (const u of units) {
+      if (u.own) mine = mine === null ? u.p : Math.max(mine, u.p);
+      else foe = foe === null ? u.p : Math.min(foe, u.p);
     }
     const at = foe !== null ? foe + width * 0.35 : mine !== null ? mine + width * 0.5 : (band[0] + band[1]) / 2;
     const p = clampPowerP(at, band);
-    this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true };
+    this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true, raw: false };
     this.camera.hold('powerDrag', true);
     this.revealAim(pToX(p, this.mySide));
     return p;
@@ -634,19 +707,29 @@ export class BattleView {
     return this.zones.preview;
   }
 
+  /** What the ghost would do now, for the HUD token ("Hits 4 of 5"; a strike's lock). */
+  powerGhostInfo(): { covered: number; eligible: number; locked: boolean | null; valid: boolean } | null {
+    const g = this.zones.preview;
+    if (!g) return null;
+    const def = this.myPower();
+    const strike = def?.effect.kind === 'strike';
+    const t = this.ghostTargets;
+    return { covered: t ? t.covered.size : 0, eligible: t ? t.eligible.length : 0, locked: strike ? !!t && t.lock !== null : null, valid: g.valid };
+  }
+
   private lanePAt(clientX: number, clientY: number): number | null {
-    const r = this.inputEl?.getBoundingClientRect();
-    const sx = clientX - (r?.left ?? 0);
-    const sy = clientY - (r?.top ?? 0);
-    const L = this.camera.layout;
-    if (sy < L.bandY - L.bandH * 0.05 || sy > L.bandY + L.bandH * 1.02 || sx < 0 || sx > L.width) return null;
-    const w = this.camera.screenToWorld(sx, sy);
-    return clampPowerP(xToP(w.x, this.mySide), this.config.content.economy.powerZoneClamp);
+    const raw = this.laneRawAt(clientX, clientY);
+    return raw === null ? null : clampPowerP(raw, this.config.content.economy.powerZoneClamp);
   }
 
   /** Own-side p for a world x (the minimap drop), clamped to the power band. */
   powerPAtWorld(x: number): number {
     return clampPowerP(xToP(x, this.mySide), this.config.content.economy.powerZoneClamp);
+  }
+
+  /** Own-side p for a world x, not clamped (a power dragged over the minimap). */
+  pAtWorld(x: number): number {
+    return Math.round(Math.max(0, Math.min(LANE_LU, xToP(x, this.mySide))));
   }
 
   /** The p the drag preview shows right now (it moves while the camera edge-scrolls under the finger). */
@@ -655,31 +738,63 @@ export class BattleView {
   }
 
   /**
-   * Shows the power's ghost at own-side progress `p` (lu), or hides it with null. `valid` false tints
-   * it as a cancel (the pointer is over the HUD, so a drop there puts the power back).
+   * Shows a slot's ghost at own-side progress `p` (lu), or hides it with null. `valid` false tints it
+   * red: over the HUD (a drop there puts it back) or beyond the power's reach (`o.invalid` 'reach':
+   * hatched, with `o.invalidLabel`). The reach band shows while a ghost is out.
    */
-  previewPower(p: number | null, valid = true): void {
+  previewPower(p: number | null, valid = true, o: HudPowerPreviewOpts = {}): void {
+    if (o.slot) this.aimSlot = o.slot;
+    this.previewOpts = o;
     const def = this.myPower();
     if (this.powerDrag) this.powerDrag.valid = valid;
     const z = p === null ? null : this.ghostZone(p);
     if (p === null || z === null) {
       this.zones.hidePreview();
+      this.ghostTargets = null;
       if (this.powerDrag) this.powerDrag.p = p;
       return;
     }
     if (this.powerDrag) this.powerDrag.p = p;
-    this.zones.showPreview(z.x, z.width, teamColor(this.settings.teamPreset, this.mySide), {
+    const color = teamColor(this.settings.teamPreset, this.mySide);
+    const rules = this.reachRules();
+    const units = this.previewUnits();
+    const front = def ? previewFront(units, rules) : null;
+    const zone = def ? powerZoneWidth(def) : 0;
+    const band = def ? previewBand(def, front, rules) : null;
+    // The reach area's far edge: the Home line for Home powers, the band's reach for Front ones.
+    const areaMax = def && band && def.reach !== 'anywhere' ? reachAreaMax(def.reach, zone, band, rules) : null;
+    const fx = def?.effect;
+    this.zones.showPreview(z.x, z.width, color, {
       valid,
       style: ghostStyle(def),
       dir: facingOf(this.mySide),
+      outOfReach: o.invalid === 'reach',
+      edge: o.edge === true,
+      invalidLabel: o.invalidLabel ?? null,
+      clipX: areaMax === null ? null : pToX(areaMax, this.mySide),
+      fringe: fx?.kind === 'barrage' ? fx.radius : 0,
+    });
+    this.zones.setBand({
+      gateX: pToX(0, this.mySide),
+      edgeX: areaMax === null ? null : pToX(areaMax, this.mySide),
+      farX: pToX(LANE_LU, this.mySide),
+      dir: facingOf(this.mySide),
+      color,
+      label: o.bandLabel ?? null,
     });
   }
 
+  /** A cast was sent: the ghost contracts and fades (MR-70b) instead of vanishing. */
+  powerCommit(): void {
+    this.zones.commit();
+    this.ghostTargets = null;
+  }
+
   /**
-   * Where the ghost goes for an aim at `p`: the aimed zone, or for a power that picks its own spot
-   * the area it will act on (WP2 "abilities and powers"): Stampede runs from your frontmost ground
-   * unit (p 200 without one) for its distance; Paratroopers land beyond the enemy front. Royal Decree
-   * and Nanite Surge act on all your units, so they have no ghost.
+   * Where the ghost goes for an aim at `p`: the aimed zone (a strike's pick range), or for a power that
+   * picks its own spot the area it will act on (WP2 "abilities and powers"): a charge runs from your
+   * front F (p 200 without one) for its distance; a drop lands beyond the enemy front; a buff glows
+   * over your front group; Suppress over the enemy wall.
    */
   private ghostZone(p: number): { x: number; width: number } | null {
     const def = this.myPower();
@@ -688,53 +803,94 @@ export class BattleView {
     const width = powerZoneLu(def);
     if (width !== null) return { x: pToX(p, this.mySide), width };
     const band = this.config.content.economy.powerZoneClamp;
-    const front = (side: Side): number | null => {
-      let f: number | null = null;
-      for (const u of this.units.values()) {
-        if (u.dying || u.air || u.side !== side) continue;
-        const up = xToP(u.x, side);
-        f = f === null ? up : Math.max(f, up);
-      }
-      return f;
-    };
+    const rules = this.reachRules();
+    const units = this.previewUnits();
     if (e.kind === 'stampede') {
       const battle = (this.config.content as { battle?: { stampedeFallbackP?: number } }).battle;
-      const start = front(this.mySide) ?? battle?.stampedeFallbackP ?? 200;
+      const start = previewFront(units, rules) ?? battle?.stampedeFallbackP ?? 200;
       return { x: pToX(start + e.distance / 2, this.mySide), width: e.distance };
     }
     if (e.kind === 'paradrop') {
-      const foe: Side = this.mySide === 0 ? 1 : 0;
-      const f = front(foe);
-      const land = f === null ? e.fallbackP : Math.min(band[1], LANE_LU - f + e.beyondFront);
+      let f: number | null = null;
+      for (const u of units) if (!u.own && !u.air) f = f === null ? u.p : Math.min(f, u.p);
+      const land = f === null ? e.fallbackP : Math.min(band[1], f + e.beyondFront);
       return { x: pToX(land, this.mySide), width: 220 };
+    }
+    if (e.kind === 'buffAll') {
+      // Your 8 frontmost units glow (A2.9.5): the ghost spans them.
+      const own = units.filter((u) => u.own).sort((a, b) => b.p - a.p || a.id - b.id).slice(0, e.maxTargets);
+      if (own.length === 0) return { x: pToX(300, this.mySide), width: 200 };
+      const lo = Math.min(...own.map((u) => u.p)) - 30;
+      const hi = Math.max(...own.map((u) => u.p)) + 30;
+      return { x: pToX((lo + hi) / 2, this.mySide), width: Math.max(120, hi - lo) };
+    }
+    if (e.kind === 'suppress') {
+      // The jam lands on the enemy wall (every enemy mount).
+      return { x: pToX(LANE_LU - rules.turretRangeCap / 2, this.mySide), width: rules.turretRangeCap };
     }
     return null;
   }
+
+  /** The last prediction for the ghost (pips, covered, lock), refreshed every frame. */
+  private ghostTargets: PreviewTargets | null = null;
 
   /** The enemy units the ghost would hit, refreshed every frame while it shows (they keep walking). */
   private updateGhostTargets(): void {
     const g = this.zones.preview;
     if (!g || !g.valid) {
-      if (g) this.zones.setTargets([]);
+      if (g) {
+        this.zones.setTargets([]);
+        this.zones.setPips([]);
+        this.zones.setNotHit([]);
+        this.zones.setLock(null);
+      }
+      this.ghostTargets = null;
       return;
     }
-    const fx = this.myPower()?.effect;
-    // Paratroopers hit nothing themselves; Stampede runs on the ground.
-    if (!fx || fx.kind === 'paradrop' || fx.kind === 'buffAll') {
+    const def = this.myPower();
+    const fx = def?.effect;
+    if (!def || !fx || fx.kind === 'paradrop' || fx.kind === 'suppress') {
       this.zones.setTargets([]);
+      this.zones.setPips([]);
+      this.zones.setNotHit([]);
+      this.zones.setLock(null);
+      this.ghostTargets = null;
       return;
     }
-    if (fx.kind === 'suppress') {
-      this.zones.setTargets([]);
+    const rules = this.reachRules();
+    const units = this.previewUnits();
+    const front = previewFront(units, rules);
+    const aimP = xToP(g.x, this.mySide);
+    const battle = (this.config.content as { battle?: { stampedeFallbackP?: number } }).battle;
+    if (fx.kind === 'buffAll') {
+      // A buff glows over your 8 frontmost units (the gold ring marks each).
+      const own = units.filter((u) => u.own).sort((a, b) => b.p - a.p || a.id - b.id).slice(0, fx.maxTargets);
+      this.zones.setTargets(own.flatMap((u) => this.targetAt(u.id)));
+      this.zones.setPips([]);
+      this.zones.setNotHit([]);
+      this.zones.setLock(null);
+      this.ghostTargets = { eligible: own.map((u) => u.id), covered: new Set(own.map((u) => u.id)), notHit: [], lock: null, areaMax: rules.lane, run: null };
       return;
     }
-    const air = fx.kind === 'stampede' ? false : fx.kind === 'cloud' ? true : fx.hitsAir;
-    const out: GhostTarget[] = [];
-    for (const u of this.units.values()) {
-      if (u.side === this.mySide || u.dying || (u.air && !air)) continue;
-      if (inZone(u.x, u.sizeLu, g.x, g.width)) out.push({ x: u.x, y: u.y, size: u.sizeLu });
-    }
-    this.zones.setTargets(out);
+    const pt = previewTargets(def, units, aimP, front, rules, battle?.stampedeFallbackP ?? 200);
+    this.ghostTargets = pt;
+    const capped = fx.kind !== 'cloud' && fx.kind !== 'strike';
+    this.zones.setTargets([...pt.covered].flatMap((id) => this.targetAt(id)));
+    this.zones.setPips(
+      capped
+        ? pt.eligible.flatMap((id, i) => {
+            const u = this.units.get(id);
+            return u && !u.dying ? [{ x: u.x, y: u.y, size: u.sizeLu, n: i + 1, covered: pt.covered.has(id) }] : [];
+          })
+        : [],
+    );
+    this.zones.setNotHit(pt.notHit.flatMap((id) => this.targetAt(id)));
+    this.zones.setLock(pt.lock === null ? null : (this.targetAt(pt.lock)[0] ?? null));
+  }
+
+  private targetAt(id: number): GhostTarget[] {
+    const u = this.units.get(id);
+    return u && !u.dying ? [{ x: u.x, y: u.y, size: u.sizeLu }] : [];
   }
 
   /** Call after every `sim.step` with that tick's events. */
@@ -908,8 +1064,20 @@ export class BattleView {
       this.camera.setEdge(speed);
       this.dragEdgeOn = true;
       if (d) {
-        d.p = this.lanePAt(d.clientX, d.clientY);
-        this.previewPower(d.p, d.valid);
+        if (d.raw) {
+          // The HUD aims with raw points: resolve them against the reach band as it does.
+          const raw = this.laneRawAt(d.clientX, d.clientY);
+          const def = this.myPower();
+          if (raw !== null && def) {
+            const rules = this.reachRules();
+            const r = resolveAim(raw, previewBand(def, previewFront(this.previewUnits(), rules), rules));
+            this.previewPower(r.p, r.inReach, { ...this.previewOpts, invalid: r.inReach ? undefined : 'reach', edge: r.edge });
+            d.raw = true;
+          }
+        } else {
+          d.p = this.lanePAt(d.clientX, d.clientY);
+          this.previewPower(d.p, d.valid, this.previewOpts);
+        }
       }
     } else if (this.dragEdgeOn) {
       this.camera.setEdge(0);
@@ -1003,6 +1171,9 @@ export class BattleView {
     const zones: MinimapZone[] = this.zoneTracks.map((z) => ({ x: z.x, width: z.width, side: z.side, kind: z.ageMs < z.telegraphMs ? 'telegraph' : 'effect' }));
     const ghost = this.zones.preview;
     if (ghost?.valid) zones.push({ x: ghost.x, width: ghost.width, side: this.mySide, kind: 'preview' });
+    // The reach band of the power being aimed (A2.9.10 step 1): the minimap shows the same tint.
+    const rb = this.zones.bandShown;
+    const reach = rb && rb.edgeX !== null ? { from: Math.min(rb.gateX, rb.edgeX), to: Math.max(rb.gateX, rb.edgeX), side: this.mySide, invalid: this.zones.outOfReach } : null;
     const L = this.camera.layout;
     const r = this.camera.viewRange();
     return {
@@ -1021,6 +1192,7 @@ export class BattleView {
       zones,
       badges: this.started ? this.badges() : [],
       band: { y: L.bandY, h: L.bandH },
+      reach,
     };
   }
 
@@ -1090,6 +1262,7 @@ export class BattleView {
 
   private applySettings(s: ViewSettings): void {
     this.director.applySettings({ hitstop: s.hitstop, reduceMotion: s.reduceMotion, shake: s.shake });
+    this.zones.setReduceMotion(s.reduceMotion);
     this.camera.autoCamera = s.autoCamera;
     this.camera.reduceMotion = s.reduceMotion;
     this.numbers.mode = s.damageNumbers;

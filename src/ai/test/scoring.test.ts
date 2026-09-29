@@ -3,7 +3,7 @@ import { cardBook } from '../book';
 import { counterScore, counterTargets, fCounter, PREDICT_BLEND_BP, sampleOfAge, sampleOfMemory, type CounterSample } from '../counters';
 import { Ledger } from '../ledger';
 import { weightBp } from '../personalities';
-import { bestPowerZone, fPressure, fPush, fRole, fSpare, mulBp } from '../scoring';
+import { fPressure, fPush, fRole, fSpare, mulBp } from '../scoring';
 import { buildView, type SeenUnit } from '../view';
 import { content, observation, unit } from './helpers';
 
@@ -54,7 +54,7 @@ describe('A7.2 scoring terms (bp)', () => {
 });
 
 describe('f_counter (A7.2, B4 matrix)', () => {
-  const seen = (card: string, pLu: number, id: number): SeenUnit => ({ id, card, def: book.units[card], value: book.units[card]?.value ?? 0, p: pLu * 1000, hp: 1, air: false });
+  const seen = (card: string, pLu: number, id: number): SeenUnit => ({ id, card, def: book.units[card], value: book.units[card]?.value ?? 0, p: pLu * 1000, hp: 1, hpTotal: 1, air: false, summoned: false, level: 1 });
 
   it('is the value-weighted mean of M[c][e]; 0.5 without enemies', () => {
     const m = (a: string, b: string): number => Math.round((content.counters[a]?.[b] ?? 0) * 10000);
@@ -95,38 +95,5 @@ describe('f_counter (A7.2, B4 matrix)', () => {
     const nxt = counterScore(book, 'footman', next);
     expect(fCounter({ book, now, next }, 'footman')).toBe(Math.trunc((cur * (10000 - PREDICT_BLEND_BP) + nxt * PREDICT_BLEND_BP) / 10000));
     expect(fCounter({ book, now, next: null }, 'footman')).toBe(cur);
-  });
-});
-
-describe('best power zone', () => {
-  const view = (units: ReturnType<typeof unit>[], power: string) =>
-    buildView(observation({ units, powerPpm: 1000000, power }), 120, book, new Ledger(book));
-
-  it('barrage: centres the zone on the most enemy value, ground only when it cannot hit air', () => {
-    const v = view([unit(0, 'bonker', 700), unit(0, 'bonker', 710), unit(0, 'tuskback', 720), unit(0, 'pebbler', 300)], 'meteor_shower');
-    const z = bestPowerZone(v, book.powers.meteor_shower!, book.econ.zoneMin, book.econ.zoneMax);
-    expect(z.value).toBe(250);
-    expect(z.p).not.toBeNull();
-    expect(Math.abs((z.p ?? 0) - 710000)).toBeLessThanOrEqual(200000);
-  });
-
-  it('stampede runs from the own front (or p 200) and ignores air', () => {
-    const v = view([unit(1, 'bonker', 300), unit(0, 'bonker', 500), unit(0, 'tuskback', 900)], 'stampede');
-    const z = bestPowerZone(v, book.powers.stampede!, book.econ.zoneMin, book.econ.zoneMax);
-    expect(z.p).toBeNull();
-    // Front 300, distance 500 → [300, 800]: only the Bonker at 500 counts.
-    expect(z.value).toBe(50);
-  });
-
-  it('buffs count the own army only while it is close to a fight', () => {
-    const far = view([unit(1, 'bonker', 200), unit(0, 'bonker', 900)], 'royal_decree');
-    expect(bestPowerZone(far, book.powers.royal_decree!, book.econ.zoneMin, book.econ.zoneMax).value).toBe(0);
-    const close = view([unit(1, 'bonker', 600), unit(1, 'tuskback', 580), unit(0, 'bonker', 700)], 'royal_decree');
-    expect(bestPowerZone(close, book.powers.royal_decree!, book.econ.zoneMin, book.econ.zoneMax).value).toBe(200);
-  });
-
-  it('paratroopers value the enemies just behind the enemy front', () => {
-    const v = view([unit(0, 'bonker', 500), unit(0, 'pebbler', 800), unit(0, 'pebbler', 1100)], 'paratroopers');
-    expect(bestPowerZone(v, book.powers.paratroopers!, book.econ.zoneMin, book.econ.zoneMax).value).toBe(125);
   });
 });

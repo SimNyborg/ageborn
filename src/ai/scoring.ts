@@ -11,8 +11,24 @@
  * | f_pressure | enemy value within 480 lu of own gate / 400 |
  * | f_spare | (gold − cost) / 300 |
  */
-import type { PowerDef } from '@/contracts';
-import { BP, MILLI, clamp, eligibleIds, reachAreaMax, reachBand, type PowerReachRules } from '@/core';
+import type { PowerSlot } from '@/contracts';
+import {
+  BP,
+  MILLI,
+  TICKS_PER_SECOND,
+  clamp,
+  damageValue,
+  eligibleIds,
+  randInt,
+  reachAreaMax,
+  reachBand,
+  strikeRank,
+  suppressLegal,
+  type PowerReachRules,
+  type Sfc32State,
+  type StrikeCandidate,
+} from '@/core';
+import type { PowerInfo } from './book';
 import type { SeenUnit, View } from './view';
 
 /** Truncated product of two bp values. */
@@ -63,13 +79,16 @@ export const SCORE = {
   mount: 8000,
   modernise: 8000,
   evolve: 12000,
-  power: 10000,
+  /**
+   * A cast that clears its ROI bar (A2.9.9). Its value is gone in seconds and the gold is already
+   * counted against the bar, so it outranks every other action but Last Stand: trains wait one decision,
+   * and Evolve waits too (the new age's slot would keep at most 75% of its progress, A2.9.3).
+   */
+  power: 19000,
   lastStand: 20000,
   stance: 15000,
   /** A Hold flag move (A18.4.2): below a stance change, above training. */
   flag: 14000,
-  /** A power cast right before an own Evolve, so the 50% carry cap does not waste charge (A2.13). */
-  powerBeforeEvolve: 13000,
   /** While a saving goal is active, candidates below this wait (a train paused by f_save lands below it). */
   savingBar: 5000,
 } as const;
@@ -77,91 +96,204 @@ export const SCORE = {
 /** "range ≥ 250" (A7.2 banking preference). */
 export const BANKING_RANGE = 250 * MILLI;
 
-/** Where a power would do the most good and how much enemy value (whole gold) it covers. */
-export interface PowerZone {
-  /** Zone centre in the bot's frame, milli-lu; null for powers that take no aim. */
+/**
+ * A power slot's best use now (DESIGN A2.9.9 `powerOption`): where to aim, the value in milli-gold,
+ * and the covered eligible targets. Aim `p` is milli-lu in the bot's frame (null = no aim).
+ */
+export interface PowerOption {
+  slot: PowerSlot;
+  info: PowerInfo;
   p: number | null;
+  /** A strike's chosen target (A2.9.7), else null. */
+  targetId: number | null;
+  /** A2.9.9 value, milli-gold. */
   value: number;
+  /** Card value (whole gold) of the eligible enemies the cast covers (bait discipline, mistakes). */
+  covered: number;
+  /** How many eligible enemies it covers. */
+  count: number;
 }
 
-/** Power aim scan step (A2.9 auto-aim uses 10 lu). */
-const SCAN_STEP = 10 * MILLI;
-/** A buff power is worth casting only when the bot's units are this close to a fight. */
-const BUFF_ENGAGE = 300 * MILLI;
-/** Paratroopers fight the enemy units this far behind the enemy front. */
-const PARADROP_REACH = 450 * MILLI;
-/** Stampede's start without own ground units (A5.7 "or p = 200"). */
+/** What `powerOption` needs besides the view (all public or the bot's own). */
+export interface PowerContext {
+  reach: PowerReachRules;
+  /** Own-frame p where the own turret cover ends (480 lu), milli-lu. */
+  turretCover: number;
+  legendaryPowerDamageBp: number;
+  strikeEpicBp: number;
+  /** Strike aim: choose among the best k targets (A2.9.9). */
+  strikeK: number;
+  /** Ticks between the observation and the command running (snapshot delay + 1), for aim leads. */
+  delayTicks: number;
+  rng: Sfc32State | null;
+}
+
+/** A strike target within its range plus this of an own unit is fighting and stands still. */
+const STRIKE_ENGAGED_SLACK = 40 * MILLI;
+/** Stampede's start without a power front (A2.9.4 `battle.stampedeFallbackP`, p 200). */
 const STAMPEDE_FALLBACK = 200 * MILLI;
+/** "×1.25 when the target is within p ≤ 480 of the bot's gate" (A2.9.9). */
+const NEAR_GATE_BP = 12500;
+/** Controls and buffs count units within 300 lu of the other side (A2.9.9 "engaged"). */
+const ENGAGED = 300 * MILLI;
+/** A drop is worth 0.8 × its card value with an enemy ranged or support unit this close behind the enemy front, else 0.4. */
+const DROP_NEAR = 300 * MILLI;
+const DROP_GOOD_BP = 8000;
+const DROP_POOR_BP = 4000;
+/** Suppress: needs 2+ enemy turrets; values 0.5 × the own army within 600 lu of the enemy gate. */
+const SUPPRESS_MIN_TURRETS = 2;
+const SUPPRESS_REACH = 600 * MILLI;
+const SUPPRESS_BP = 5000;
+/** The cloud counts 150 gold per enemy turret whose range covers it. */
+const CLOUD_TURRET_VALUE = 150;
+/** Units with at least this range count as ranged for the cloud and the drop (A2.9.9; melee reach ≤ 60 lu). */
+const RANGED_RANGE = 100 * MILLI;
+
+/** Expected power damage on one target, centi-HP (A2.9.6 Legendary and Epic rules, not stacked). */
+function expectedDamage(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerContext): number {
+  let d = Math.trunc((info.perUnit * 100 * levelBp) / BP);
+  if (u.def?.legendary) d = Math.trunc((d * c.legendaryPowerDamageBp) / BP);
+  else if (info.def.effect.kind === 'strike' && u.def?.epic) d = Math.trunc((d * c.strikeEpicBp) / BP);
+  return d;
+}
+
+/** A2.9.9 damage value of one target, milli-gold: kill-weighted, ×1.25 near the own gate. */
+export function targetValue(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerContext): number {
+  const v = damageValue(u.value, expectedDamage(u, info, levelBp, c), u.hpTotal);
+  return u.p <= c.turretCover ? mulBp(v, NEAR_GATE_BP) : v;
+}
+
+/** Can this power touch that enemy (air or ground as the effect says)? */
+function hittable(u: SeenUnit, info: PowerInfo): boolean {
+  return u.air ? info.hitsAir : info.hitsGround;
+}
+
+/** The bot is near this enemy: an own unit within 300 lu, or inside the own turret cover with a turret up. */
+function engaged(u: SeenUnit, v: View, cover: number): boolean {
+  if (u.p <= cover && v.turretsBuilt > 0) return true;
+  return v.mine.some((m) => (m.p > u.p ? m.p - u.p : u.p - m.p) <= ENGAGED);
+}
 
 /**
- * The best zone for the equipped power (A7.2 "the best zone's enemy value"), per effect kind, inside
- * the power's reach band (A2.9.4) and counting only the enemies the cap and the screen make eligible
- * (A2.9.5: the first `maxTargets` nearest the bot's gate in the reach area): barrage, sweep and field
- * scan their zone over the band; the smoke cloud its width; the stampede runs from the bot's front;
- * a strike locks the most valuable target; buffs count the bot's own army (8 frontmost) when it is
- * engaged; drops the enemy value just behind the enemy front; Suppress is left to the P1 AI work.
+ * The best option for one slot (A2.9.9 steps 1-2): area powers scan their legal band in 10 lu steps
+ * over the eligible enemies (the cap and the screen, A2.9.5), strikes rank targets by value and pick
+ * among the tier's best k, and the no-aim kinds (charges, buffs, drops, Suppress) value what they act on.
  */
-export function bestPowerZone(v: View, power: PowerDef, zoneMin: number, zoneMax: number, reach?: PowerReachRules): PowerZone {
-  const fx = power.effect;
-  const cap = power.maxTargets ?? 0;
-  const front = v.myFront;
+export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerContext): PowerOption {
+  const def = info.def;
+  const fx = def.effect;
+  const r = c.reach;
+  const none: PowerOption = { slot, info, p: null, targetId: null, value: 0, covered: 0, count: 0 };
+  const lvl = v.levelBp;
   switch (fx.kind) {
     case 'barrage':
     case 'sweep':
     case 'field':
     case 'cloud': {
-      const width = (fx.kind === 'cloud' ? fx.width : fx.zone) * MILLI;
-      const hitsAir = fx.kind === 'cloud' ? true : fx.hitsAir;
-      const hitsGround = fx.kind === 'barrage' ? fx.hitsGround !== false : true;
-      const half = Math.trunc(width / 2);
-      const band = reach ? (reachBand(power.reach, width, front, reach) ?? [zoneMin, zoneMax]) : [zoneMin, zoneMax];
-      const areaMax = reach ? reachAreaMax(power.reach, width, band as [number, number], reach) : zoneMax + half;
-      const inArea = v.foes.filter((u) => (u.air ? hitsAir : hitsGround) && u.p <= areaMax);
-      const elig = fx.kind === 'cloud' || cap <= 0 ? null : eligibleIds(inArea, cap, []);
-      let bestP: number | null = null;
-      let best = 0;
-      for (let p = band[0] as number; p <= (band[1] as number); p += SCAN_STEP) {
-        let sum = 0;
-        for (const u of inArea) {
-          if (elig && !elig.has(u.id)) continue;
-          const d = u.p > p ? u.p - p : p - u.p;
-          if (d <= half) sum += u.value;
+      const band = reachBand(def.reach, info.zone, v.powerFront, r) ?? ([r.zoneMin, r.zoneMax] as [number, number]);
+      const areaMax = reachAreaMax(def.reach, info.zone, band, r);
+      const half = Math.trunc(info.zone / 2);
+      if (fx.kind === 'cloud') {
+        // (enemy ranged value in the cloud + 150 per enemy turret whose range covers it) × 4,000 bp.
+        const turrets = v.obs.foe.turrets.filter((x) => x !== null).length;
+        let best = none;
+        for (let p = band[0]; p <= band[1]; p += r.scanStep) {
+          let ranged = 0;
+          for (const u of v.foes) if ((u.def?.range ?? 0) >= RANGED_RANGE && (u.p > p ? u.p - p : p - u.p) <= half) ranged += u.value;
+          const covered = p + half >= r.lane - c.turretCover ? turrets : 0;
+          const value = Math.trunc(((ranged + CLOUD_TURRET_VALUE * covered) * MILLI * info.aiValueBp) / BP);
+          if (value > best.value) best = { ...none, p, value, covered: ranged, count: 0 };
         }
-        if (sum > best) {
-          best = sum;
-          bestP = p;
-        }
+        return best;
       }
-      return { p: bestP, value: best };
+      const inArea = v.foes.filter((u) => hittable(u, info) && u.p <= areaMax);
+      const elig = eligibleIds(inArea, info.cap > 0 ? info.cap : inArea.length, []);
+      const cands = inArea.filter((u) => elig.has(u.id));
+      // Per-target value: kill-weighted damage, or for controls the A2.9.9 weight on engaged targets.
+      const worth = cands.map((u) => (info.control ? (engaged(u, v, c.turretCover) ? Math.trunc((u.value * MILLI * info.aiValueBp) / BP) : 0) : targetValue(u, info, lvl, c)));
+      let best = none;
+      for (let p = band[0]; p <= band[1]; p += r.scanStep) {
+        let value = 0;
+        let covered = 0;
+        let count = 0;
+        cands.forEach((u, i) => {
+          if ((u.p > p ? u.p - p : p - u.p) > half) return;
+          value += worth[i] as number;
+          covered += u.value;
+          count += 1;
+        });
+        if (value > best.value) best = { ...none, p, value, covered, count };
+      }
+      return best;
     }
     case 'stampede': {
-      const start = front ?? STAMPEDE_FALLBACK;
-      const inRun = v.foes.filter((u) => !u.air && u.p >= start && u.p <= start + fx.distance * MILLI);
-      const elig = cap > 0 ? eligibleIds(inRun, cap, []) : null;
-      let sum = 0;
-      for (const u of inRun) if (!elig || elig.has(u.id)) sum += u.value;
-      return { p: null, value: sum };
+      // The run from F (or p 200), `distance` long; its eligible enemies are the first N in cap order.
+      const start = v.powerFront ?? STAMPEDE_FALLBACK;
+      const end = start + info.zone;
+      const inRun = v.foes.filter((u) => !u.air && u.p >= start && u.p <= end);
+      const elig = eligibleIds(inRun, info.cap > 0 ? info.cap : inRun.length, []);
+      let value = 0;
+      let covered = 0;
+      let count = 0;
+      for (const u of inRun) {
+        if (!elig.has(u.id)) continue;
+        value += targetValue(u, info, lvl, c);
+        covered += u.value;
+        count += 1;
+      }
+      return { ...none, value, covered, count };
     }
     case 'strike': {
-      let best: SeenUnit | null = null;
+      const cands: StrikeCandidate[] = [];
+      const byId = new Map<number, SeenUnit>();
       for (const u of v.foes) {
-        if (u.air && !fx.hitsAir) continue;
-        if (!best || u.value > best.value || (u.value === best.value && u.p < best.p)) best = u;
+        if (!hittable(u, info)) continue;
+        byId.set(u.id, u);
+        cands.push({ id: u.id, p: u.p, cost: u.value, hp: u.hpTotal, epic: u.def?.epic === true, legendary: u.def?.legendary === true });
       }
-      return best ? { p: best.p, value: best.value } : { p: null, value: 0 };
+      const total = Math.trunc((info.perUnit * 100 * lvl) / BP);
+      const ranked = strikeRank(cands, total, c.strikeEpicBp, c.legendaryPowerDamageBp);
+      if (ranked.length === 0) return none;
+      // A2.9.9: the tier's aim error is a choice among its best k targets, never a positional offset.
+      const k = Math.min(ranked.length, Math.max(1, c.strikeK));
+      const pickIdx = k > 1 && c.rng ? randInt(c.rng, k) : 0;
+      const t = ranked[pickIdx] as StrikeCandidate;
+      const u = byId.get(t.id) as SeenUnit;
+      const value = targetValue(u, info, lvl, c);
+      // The best target is the sim's own auto-aim ranking (no `p`); a lesser pick aims where the target
+      // should be now: where it stands when it is fighting, else moved on at its march speed over the
+      // observation delay (A7.1: the same guess a player makes).
+      if (pickIdx === 0) return { ...none, targetId: u.id, value, covered: u.value, count: 1 };
+      const fighting = v.mine.some((m) => (m.p > u.p ? m.p - u.p : u.p - m.p) <= (u.def?.range ?? 0) + STRIKE_ENGAGED_SLACK) || u.p <= (u.def?.range ?? 0);
+      const lead = fighting ? 0 : Math.trunc(((u.def?.speed ?? 0) * MILLI * c.delayTicks) / TICKS_PER_SECOND);
+      return { ...none, p: Math.max(0, u.p - lead), targetId: u.id, value, covered: u.value, count: 1 };
     }
-    case 'suppress':
-      return { p: null, value: 0 };
+    case 'suppress': {
+      // Legal only while F ≥ 1,370 (A2.9.4): the bot also wants its second front unit there, so the loss
+      // of one runner during the observation delay cannot turn the cast into `powerOutOfReach`.
+      const turrets = v.obs.foe.turrets.filter((x) => x !== null).length;
+      if (!suppressLegal(v.powerFront, r) || !suppressLegal(v.powerFront2, r) || turrets < SUPPRESS_MIN_TURRETS) return none;
+      let army = 0;
+      for (const u of v.mine) if (u.p >= r.lane - SUPPRESS_REACH) army += u.value;
+      return { ...none, value: Math.trunc((army * MILLI * SUPPRESS_BP) / BP) };
+    }
     case 'buffAll': {
-      if (v.myFront === null || v.foeFront === null || v.foeFront - v.myFront > BUFF_ENGAGE) return { p: null, value: 0 };
-      const mine = [...v.mine].sort((a, b) => b.p - a.p).slice(0, fx.maxTargets);
-      return { p: null, value: mine.reduce((acc, u) => acc + u.value, 0) };
+      // The 8 frontmost own units (ties to the lower id) that are within 300 lu of an enemy.
+      const front = [...v.mine].sort((a, b) => b.p - a.p || a.id - b.id).slice(0, fx.maxTargets);
+      let value = 0;
+      let count = 0;
+      for (const m of front) {
+        if (!v.foes.some((u) => (u.p > m.p ? u.p - m.p : m.p - u.p) <= ENGAGED)) continue;
+        value += Math.trunc((m.value * MILLI * info.aiValueBp) / BP);
+        count += 1;
+      }
+      return { ...none, value, count };
     }
     case 'paradrop': {
-      if (v.foeFront === null) return { p: null, value: 0 };
-      let sum = 0;
-      for (const u of v.foes) if (u.p >= v.foeFront && u.p <= v.foeFront + PARADROP_REACH) sum += u.value;
-      return { p: null, value: sum };
+      const worth = info.dropValue;
+      const f = v.foeFront;
+      const soft = f !== null && v.foes.some((u) => u.p >= f && u.p <= f + DROP_NEAR && ((u.def?.range ?? 0) >= RANGED_RANGE || u.def?.group === 'support'));
+      return { ...none, value: Math.trunc((worth * MILLI * (soft ? DROP_GOOD_BP : DROP_POOR_BP)) / BP) };
     }
   }
 }

@@ -145,6 +145,21 @@ export function drawMinimap(
   g.fillRect(leftGate - 0.5, 0, 1, h);
   g.fillRect(rightGate - 0.5, 0, 1, h);
 
+  // The reach band of the power being aimed (A2.9.10 step 1): washed in your colour, the rest dimmed,
+  // a bright edge (red while the aim is out of reach).
+  if (m.reach) {
+    const a = X(m.reach.from);
+    const b = X(m.reach.to);
+    const edgeX = m.reach.side === 0 ? b : a;
+    g.fillStyle = 'rgba(5, 7, 12, 0.35)';
+    if (m.reach.side === 0) g.fillRect(b, 0, w - b, h);
+    else g.fillRect(0, 0, a, h);
+    g.fillStyle = withAlpha(col(m.reach.side), 0.45);
+    g.fillRect(a, 0, b - a, h);
+    g.fillStyle = m.reach.invalid ? '#ff5a4e' : '#ffffff';
+    g.fillRect(edgeX - 1, 0, 2, h);
+  }
+
   // 6. Power telegraphs and zones (under the dots so the units stay readable).
   const pulse = 0.5 + 0.5 * Math.sin(t / 110);
   for (const z of m.zones) {

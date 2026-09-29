@@ -5,12 +5,12 @@ import { COUNTER_DEPTH_ALL, tierLabel, tierParams } from '../tiers';
 describe('tier table (A7.3)', () => {
   it('reproduces every listed row', () => {
     const rows = [
-      { tier: 0, dec: 40, snap: 20, mistake: 4500, actions: 2, depth: 0, evolve: 200, aim: 250, power: 100, treasury: 0, float: 450, hold: false, turrets: 1 },
-      { tier: 1, dec: 32, snap: 18, mistake: 3500, actions: 3, depth: 0, evolve: 160, aim: 200, power: 100, treasury: 0, float: 400, hold: false, turrets: 4 },
-      { tier: 3, dec: 27, snap: 15, mistake: 2500, actions: 5, depth: 1, evolve: 100, aim: 140, power: 250, treasury: 1, float: 250, hold: false, turrets: 4 },
-      { tier: 5, dec: 22, snap: 13, mistake: 1600, actions: 7, depth: 3, evolve: 60, aim: 90, power: 350, treasury: 2, float: 180, hold: true, turrets: 4 },
-      { tier: 7, dec: 17, snap: 10, mistake: 900, actions: 9, depth: COUNTER_DEPTH_ALL, evolve: 40, aim: 50, power: 450, treasury: 3, float: 120, hold: true, turrets: 4 },
-      { tier: 10, dec: 10, snap: 6, mistake: 300, actions: 12, depth: COUNTER_DEPTH_ALL, evolve: 10, aim: 20, power: 600, treasury: 3, float: 80, hold: true, turrets: 4 },
+      { tier: 0, dec: 40, snap: 20, mistake: 4500, actions: 2, depth: 0, evolve: 200, aim: 250, roi: 6000, k: 3, treasury: 0, float: 450, hold: false, turrets: 1 },
+      { tier: 1, dec: 32, snap: 18, mistake: 3500, actions: 3, depth: 0, evolve: 160, aim: 200, roi: 8000, k: 3, treasury: 0, float: 400, hold: false, turrets: 4 },
+      { tier: 3, dec: 27, snap: 15, mistake: 2500, actions: 5, depth: 1, evolve: 100, aim: 140, roi: 10000, k: 2, treasury: 1, float: 250, hold: false, turrets: 4 },
+      { tier: 5, dec: 22, snap: 13, mistake: 1600, actions: 7, depth: 3, evolve: 60, aim: 90, roi: 12000, k: 2, treasury: 2, float: 180, hold: true, turrets: 4 },
+      { tier: 7, dec: 17, snap: 10, mistake: 900, actions: 9, depth: COUNTER_DEPTH_ALL, evolve: 40, aim: 50, roi: 15000, k: 1, treasury: 3, float: 120, hold: true, turrets: 4 },
+      { tier: 10, dec: 10, snap: 6, mistake: 300, actions: 12, depth: COUNTER_DEPTH_ALL, evolve: 10, aim: 20, roi: 18000, k: 1, treasury: 3, float: 80, hold: true, turrets: 4 },
     ];
     for (const r of rows) {
       const p = tierParams(r.tier);
@@ -21,7 +21,8 @@ describe('tier table (A7.3)', () => {
       expect(p.counterDepth).toBe(r.depth);
       expect(p.evolveDelayTicks).toBe(r.evolve);
       expect(p.powerAimErrorLu).toBe(r.aim);
-      expect(p.powerThreshold).toBe(r.power);
+      expect(p.powerRoiBp).toBe(r.roi);
+      expect(p.strikeK).toBe(r.k);
       expect(p.treasuryMax).toBe(r.treasury);
       expect(p.goldFloat).toBe(r.float);
       expect(p.hold).toBe(r.hold);
@@ -43,13 +44,31 @@ describe('tier table (A7.3)', () => {
     expect(tierParams(10).powerAnyWhenLowBase).toBe(true);
   });
 
+  it('switches the A2.9.9 power columns on at their tiers', () => {
+    const at = (t: number) => tierParams(t);
+    // Slots used: Home only below III.
+    expect([0, 1, 2, 3].map((t) => at(t).fieldSlot)).toEqual([false, false, false, true]);
+    // Home reserve and ring reading from V; bait discipline and bait from VII; counter-timing at X.
+    expect([4, 5].map((t) => at(t).homeReserve)).toEqual([false, true]);
+    expect([4, 5].map((t) => at(t).readsRings)).toEqual([false, true]);
+    expect([6, 7].map((t) => at(t).baitDiscipline)).toEqual([false, true]);
+    expect([6, 7].map((t) => at(t).bait)).toEqual([false, true]);
+    expect([9, 10].map((t) => at(t).counterTiming)).toEqual([false, true]);
+  });
+
   it('interpolates numeric columns for II, IV, VI, VIII and IX', () => {
     // II: halfway between I and III.
     const ii = tierParams(2);
     expect(ii.mistakeBp).toBe(3000);
     expect(ii.maxActionsPer10s).toBe(4);
     expect(ii.goldFloat).toBe(325);
-    expect(ii.powerThreshold).toBe(175);
+    expect(ii.powerRoiBp).toBe(9000);
+    // Strike k interpolates and rounds down: II 2.5 → 2, VI 1.5 → 1.
+    expect(ii.strikeK).toBe(2);
+    expect(tierParams(6).strikeK).toBe(1);
+    expect(tierParams(6).powerRoiBp).toBe(13500);
+    expect(tierParams(8).powerRoiBp).toBe(16000);
+    expect(tierParams(9).powerRoiBp).toBe(17000);
     expect(ii.treasuryMax).toBe(0); // 0.5 truncates toward the lower tier
     // VIII and IX: one and two thirds of the way from VII to X.
     expect(tierParams(8).mistakeBp).toBe(700);

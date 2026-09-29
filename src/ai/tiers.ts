@@ -33,10 +33,27 @@ export interface TierParams {
    * before the Ascension ends (brain.ts). Their evolve delay (2 s at VII, 0.5 s at X) is the reaction time.
    */
   safeWindowEvolve: boolean;
-  /** ± lu added to the power aim. */
+  /** ± lu added to the aim of area powers (A2.9.9: unchanged; strikes use `strikeK`). */
   powerAimErrorLu: number;
-  /** Enemy card value (gold) the best power zone must hold before the bot casts. */
-  powerThreshold: number;
+  /**
+   * The power ROI bar (A2.9.9, replaces the old gold threshold): a cast needs value × 10,000 ÷ effective
+   * cost ≥ this, in bp (6,000 at tier 0 to 18,000 at X).
+   */
+  powerRoiBp: number;
+  /** Strike aim (A2.9.9): the bot picks among its best k strike targets (3 at 0-II, 2 at III-VI, 1 from VII). */
+  strikeK: number;
+  /** Casts its Field slot too (A2.9.9: tiers 0-II use the Home slot only). */
+  fieldSlot: boolean;
+  /** Keeps its Home power's cost in reserve while the Home slot is ≥ 75% reloaded and an army comes (V+). */
+  homeReserve: boolean;
+  /** Reads the enemy's rings: the push gate wants 20% more while a scouted enemy Home damage power is ready (V+). */
+  readsRings: boolean;
+  /** Bait discipline (VII+): no Home cast on covered targets worth < 200 unless the base was just hit. */
+  baitDiscipline: boolean;
+  /** Bait, then wave (VII+): lure the enemy's Home power with cheap units, then send the banked wave. */
+  bait: boolean;
+  /** Counter-timing (X): the Home bar rises by 3,000 while the enemy banks, saving it for their wave. */
+  counterTiming: boolean;
   /** X: any zone value qualifies when the own base is below 25%. */
   powerAnyWhenLowBase: boolean;
   treasuryMax: number;
@@ -56,14 +73,10 @@ export interface TierParams {
    * - `waveCommit`: a wave that passed the push gate keeps charging until it has lost half its value
    *   or is worth less than the defence it faces, and a held army goes again only with a 15% margin
    *   over the gate (no charge/hold flapping).
-   * - `powerArmyShareBp`: the power also fires on a zone holding this share of the visible enemy army
-   *   (the A7.3 gold threshold alone was fixed in Stone gold, so late ages barely ever reached it and
-   *   early ages never did); 0 = off.
    * - `baseTurrets`: turrets built on spare gold from Bronze on without waiting for pressure.
    */
   econPlan: boolean;
   waveCommit: boolean;
-  powerArmyShareBp: number;
   baseTurrets: number;
   /**
    * War Council use (A18.5.8): the first research start, the least time between two starts, and how
@@ -98,7 +111,8 @@ interface Row {
   counterDepth: number;
   evolveDelayMs: number;
   aimErrorLu: number;
-  powerThreshold: number;
+  powerRoiBp: number;
+  strikeK: number;
   treasuryMax: number;
   goldFloat: number;
   maxTurrets: number;
@@ -106,12 +120,12 @@ interface Row {
 
 /** DESIGN A7.3, one row per listed tier. Counter depth "all" is COUNTER_DEPTH_ALL. */
 const ROWS: readonly Row[] = [
-  { tier: 0, decisionMs: 2000, snapshotMs: 1000, mistakeBp: 4500, maxActions: 2, counterDepth: 0, evolveDelayMs: 10000, aimErrorLu: 250, powerThreshold: 100, treasuryMax: 0, goldFloat: 450, maxTurrets: 1 },
-  { tier: 1, decisionMs: 1600, snapshotMs: 900, mistakeBp: 3500, maxActions: 3, counterDepth: 0, evolveDelayMs: 8000, aimErrorLu: 200, powerThreshold: 100, treasuryMax: 0, goldFloat: 400, maxTurrets: 4 },
-  { tier: 3, decisionMs: 1350, snapshotMs: 770, mistakeBp: 2500, maxActions: 5, counterDepth: 1, evolveDelayMs: 5000, aimErrorLu: 140, powerThreshold: 250, treasuryMax: 1, goldFloat: 250, maxTurrets: 4 },
-  { tier: 5, decisionMs: 1100, snapshotMs: 640, mistakeBp: 1600, maxActions: 7, counterDepth: 3, evolveDelayMs: 3000, aimErrorLu: 90, powerThreshold: 350, treasuryMax: 2, goldFloat: 180, maxTurrets: 4 },
-  { tier: 7, decisionMs: 850, snapshotMs: 510, mistakeBp: 900, maxActions: 9, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 2000, aimErrorLu: 50, powerThreshold: 450, treasuryMax: 3, goldFloat: 120, maxTurrets: 4 },
-  { tier: 10, decisionMs: 500, snapshotMs: 300, mistakeBp: 300, maxActions: 12, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 500, aimErrorLu: 20, powerThreshold: 600, treasuryMax: 3, goldFloat: 80, maxTurrets: 4 },
+  { tier: 0, decisionMs: 2000, snapshotMs: 1000, mistakeBp: 4500, maxActions: 2, counterDepth: 0, evolveDelayMs: 10000, aimErrorLu: 250, powerRoiBp: 6000, strikeK: 3, treasuryMax: 0, goldFloat: 450, maxTurrets: 1 },
+  { tier: 1, decisionMs: 1600, snapshotMs: 900, mistakeBp: 3500, maxActions: 3, counterDepth: 0, evolveDelayMs: 8000, aimErrorLu: 200, powerRoiBp: 8000, strikeK: 3, treasuryMax: 0, goldFloat: 400, maxTurrets: 4 },
+  { tier: 3, decisionMs: 1350, snapshotMs: 770, mistakeBp: 2500, maxActions: 5, counterDepth: 1, evolveDelayMs: 5000, aimErrorLu: 140, powerRoiBp: 10000, strikeK: 2, treasuryMax: 1, goldFloat: 250, maxTurrets: 4 },
+  { tier: 5, decisionMs: 1100, snapshotMs: 640, mistakeBp: 1600, maxActions: 7, counterDepth: 3, evolveDelayMs: 3000, aimErrorLu: 90, powerRoiBp: 12000, strikeK: 2, treasuryMax: 2, goldFloat: 180, maxTurrets: 4 },
+  { tier: 7, decisionMs: 850, snapshotMs: 510, mistakeBp: 900, maxActions: 9, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 2000, aimErrorLu: 50, powerRoiBp: 15000, strikeK: 1, treasuryMax: 3, goldFloat: 120, maxTurrets: 4 },
+  { tier: 10, decisionMs: 500, snapshotMs: 300, mistakeBp: 300, maxActions: 12, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 500, aimErrorLu: 20, powerRoiBp: 18000, strikeK: 1, treasuryMax: 3, goldFloat: 80, maxTurrets: 4 },
 ];
 
 /** Tiers where the yes/no columns switch on (A7.3). */
@@ -123,10 +137,13 @@ const PREDICT_FROM = 10;
 const FLAG_FROM = 3;
 /** A18.6: Normal (tier IV) and up punish a thin army. */
 const PUNISH_THIN_FROM = 4;
-/** Owner feedback 2026-09-28: the upper-tier craft (`econPlan`, `waveCommit`, power share, turrets). */
+/** Owner feedback 2026-09-28: the upper-tier craft (`econPlan`, `waveCommit`, turrets). */
 const CRAFT_FROM = 6;
-const POWER_SHARE_AT_CRAFT_BP = 5000;
-const POWER_SHARE_AT_X_BP = 3000;
+/** A2.9.9 power columns: Field slot from III; reserve and ring reading from V; bait from VII; counter-timing at X. */
+const FIELD_SLOT_FROM = 3;
+const POWER_READ_FROM = 5;
+const BAIT_FROM = 7;
+const COUNTER_TIMING_FROM = 10;
 /** "No bot reacts faster than 300 ms" (A7.3). */
 const MIN_REACTION_MS = 300;
 
@@ -154,6 +171,8 @@ export function tierParams(tier: number): TierParams {
   const ta = lo.tier * 100;
   const tb = hi.tier * 100;
   const num = (k: keyof Omit<Row, 'tier' | 'counterDepth' | 'maxTurrets'>): number => lerp(lo[k], hi[k], t, ta, tb);
+  // A2.9.9: k interpolates and rounds down (a lower k is the sharper aim, so "down" favours the lower tier).
+  const strikeK = Math.max(1, Math.floor(lerp(lo.strikeK * 100, hi.strikeK * 100, t, ta, tb) / 100));
   const snapshotMs = Math.max(MIN_REACTION_MS, num('snapshotMs'));
   const snapshotDelayTicks = msToTicks(snapshotMs);
   // The decision interval always exceeds the snapshot delay in A7.3; keep that true after rounding, so
@@ -171,7 +190,14 @@ export function tierParams(tier: number): TierParams {
     evolveDelayTicks: msToTicks(num('evolveDelayMs')),
     safeWindowEvolve: t >= SAFE_WINDOW_FROM * 100,
     powerAimErrorLu: num('aimErrorLu'),
-    powerThreshold: num('powerThreshold'),
+    powerRoiBp: num('powerRoiBp'),
+    strikeK,
+    fieldSlot: t >= FIELD_SLOT_FROM * 100,
+    homeReserve: t >= POWER_READ_FROM * 100,
+    readsRings: t >= POWER_READ_FROM * 100,
+    baitDiscipline: t >= BAIT_FROM * 100,
+    bait: t >= BAIT_FROM * 100,
+    counterTiming: t >= COUNTER_TIMING_FROM * 100,
     powerAnyWhenLowBase: t >= PREDICT_FROM * 100,
     treasuryMax: num('treasuryMax'),
     goldFloat: num('goldFloat'),
@@ -180,7 +206,6 @@ export function tierParams(tier: number): TierParams {
     maxTurrets: lo.maxTurrets,
     econPlan: t >= CRAFT_FROM * 100,
     waveCommit: t >= CRAFT_FROM * 100,
-    powerArmyShareBp: t >= CRAFT_FROM * 100 ? lerp(POWER_SHARE_AT_CRAFT_BP, POWER_SHARE_AT_X_BP, t, CRAFT_FROM * 100, 1000) : 0,
     baseTurrets: t >= 800 ? 2 : t >= CRAFT_FROM * 100 ? 1 : 0,
     // A18.5.8 tier columns: first research after 1:30 (0-I), 1:00 (II-IV), 0:45 (V-VI), 0:30 (VII-X)
     researchFromTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 60000 : t < 700 ? 45000 : 30000),

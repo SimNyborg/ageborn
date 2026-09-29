@@ -8,22 +8,26 @@
  *   and the emote button. Under the band hangs the minimap strip with the base and front buttons
  *   (A17.5; `Minimap.tsx`); without a view that draws one (tests, the state gallery) the front-line
  *   strip shows instead. The training match has no clock;
- * - right: the AI opponent's block (the "AI" chip and robot, A7.1, their name, base HP, XP, the age
- *   icon inside their power charge ring, a horn while their Last Stand is armed, their research
- *   ring; A18.5.1: research is public), then the "Scouted (n)" chip (from match 3), pause and speed
- *   (36 px faces with 44 px hit areas, top-right as rare actions, T3).
+ * - right: the AI opponent's block (the "AI" chip and robot, A7.1, their name, base HP, XP, their two
+ *   power rings (A2.9.10: the reload arc is public, "?" until that power is first cast, a steady orange
+ *   rim when reloaded, a drain when they cast), the age icon, a horn while their Last Stand is armed,
+ *   their research ring; A18.5.1: research is public), then the "Scouted (n)" chip (from match 3),
+ *   pause and speed (36 px faces with 44 px hit areas, top-right as rare actions, T3).
  *
  * Every hit on a base kicks that side's block (flash and shake), so it is clear who is winning.
  */
 import { unitClass } from '@/core/cardClass';
 import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
-import type { AgeId, CardId, EmoteId } from '@/contracts';
+import type { AgeId, CardId, EmoteId, HudFoePowerSlot, PowerSlot } from '@/contracts';
+import { SlotGlyph } from '../components/PowerGlyphs';
+import { reachLabel } from '../components/powerInfo';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
 import { EmoteBubble, EmoteButton } from './EmoteWheel';
 import { AgeGlyph, EyeIcon, HornIcon, PauseIcon, PlayIcon, RobotIcon } from './icons';
 import { Minimap } from './Minimap';
 import { ageIds, clockView, formatClock, frontStrip, powerFraction, xpProgress, type FrontLine } from './model';
+import { CoinIcon } from './icons';
 import { usePortrait } from './usePortrait';
 import { PickBadge } from './councilIcons';
 import { secondsLeft } from './council';
@@ -182,6 +186,94 @@ function FoeResearch(p: { c: HudCtx }) {
   );
 }
 
+/**
+ * One of the opponent's power rings (A2.9.10): the reload arc (its speed is public), "?" until that
+ * power's first cast, then its icon; a steady orange rim when reloaded (enemy events never pulse); the
+ * ring drains (200 ms) when they cast. A long-press or hover shows name, cost, reach and seconds left.
+ */
+function FoeRing(p: { c: HudCtx; slot: PowerSlot; s: HudFoePowerSlot }) {
+  const { c, slot, s } = p;
+  const def = s.card ? c.config.content.powers[s.card] : undefined;
+  const url = usePortrait(c.portrait, def ? s.card : null, 'none', 40);
+  const frac = powerFraction(s.ppm);
+  const ready = frac >= 1;
+  const [drain, setDrain] = useState(0);
+  const [tip, setTip] = useState(false);
+  const last = useRef(s.ppm);
+  useEffect(() => {
+    const prev = last.current;
+    last.current = s.ppm;
+    if (prev >= 1_000_000 && s.ppm < prev) setDrain((n) => n + 1);
+  }, [s.ppm]);
+  useEffect(() => {
+    if (!tip) return undefined;
+    const id = setTimeout(() => setTip(false), 2600);
+    return () => clearTimeout(id);
+  }, [tip]);
+  const secs = def ? Math.max(0, Math.ceil(((1 - frac) * def.reloadMs) / 1000)) : null;
+  const slotName = c.t(`hud.power.slot.${slot}`);
+  const state = ready ? c.t('hud.foeRing.ready') : secs !== null ? c.t('hud.foeRing.secs', { s: secs }) : c.t('hud.foeRing.pct', { pct: Math.floor(frac * 100) });
+  const label = def ? c.t('hud.foeRing.label', { slot: slotName, name: c.t(def.nameKey), state }) : c.t('hud.foeRing.unknown', { slot: slotName, state });
+  const off = Math.max(0, Math.min(100, 100 - frac * 100));
+  let press: ReturnType<typeof setTimeout> | null = null;
+  return (
+    <span
+      class={`hud-foe-ring is-${slot}${ready ? ' is-ready' : ''}${def ? ' is-scouted' : ''}`}
+      data-testid={`hud-foe-ring-${slot}`}
+      data-ready={ready}
+      role="img"
+      aria-label={label}
+      title={label}
+      onPointerDown={() => {
+        press = setTimeout(() => setTip(true), 450);
+      }}
+      onPointerUp={() => {
+        if (press) clearTimeout(press);
+      }}
+      onPointerLeave={() => {
+        if (press) clearTimeout(press);
+      }}
+    >
+      <svg class="hud-foe-ring-arc" viewBox="0 0 32 32" aria-hidden="true">
+        <circle class="hud-foe-ring-track" cx="16" cy="16" r="13.5" pathLength="100" />
+        <circle class="hud-foe-ring-fill" cx="16" cy="16" r="13.5" pathLength="100" style={{ strokeDashoffset: off }} />
+        {drain > 0 ? <circle key={drain} class="hud-foe-ring-drain" cx="16" cy="16" r="13.5" pathLength="100" /> : null}
+      </svg>
+      <span class="hud-foe-ring-core">{def ? url ? <img src={url} alt="" draggable={false} /> : <SlotGlyph slot={slot} size={14} /> : <b>?</b>}</span>
+      {tip ? (
+        <span class="hud-foe-ring-tip" role="tooltip" data-testid={`hud-foe-ring-tip-${slot}`}>
+          <b>{def ? c.t(def.nameKey) : c.t('hud.foeRing.unseen')}</b>
+          {def ? (
+            <span>
+              <CoinIcon size={12} /> {def.cost} · {c.t(`hud.power.reach.${reachLabel(def)}`)}
+            </span>
+          ) : null}
+          <span>{state}</span>
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+/** Their two rings (Home, Field) inside the enemy block; one ring for older models. */
+function FoeRings(p: { c: HudCtx }) {
+  const f = p.c.m.foe;
+  const rings: { slot: PowerSlot; s: HudFoePowerSlot }[] = f.powers
+    ? (['home', 'field'] as const).flatMap((slot) => {
+        const s = f.powers?.[slot];
+        return s ? [{ slot, s }] : [];
+      })
+    : [{ slot: 'home', s: { card: null, ppm: f.powerPpm } }];
+  if (rings.length === 0) return null;
+  return (
+    <span class="hud-foe-rings" data-testid="hud-foe-rings">
+      {rings.map((r) => (
+        <FoeRing key={r.slot} c={p.c} slot={r.slot} s={r.s} />
+      ))}
+    </span>
+  );
+}
+
 /** Where the fighting is: your colour from the left, theirs from the right, a spark at the clash. */
 function FrontStripView(p: { front: FrontLine | null; label: string }) {
   const s = frontStrip(p.front);
@@ -305,14 +397,8 @@ export function TopBar(p: {
             </div>
           ) : null}
         </div>
-        <Medallion
-          age={foeAge}
-          team="foe"
-          ring={powerFraction(m.foe.powerPpm)}
-          horn={m.foe.lastStandArmed}
-          hornLabel={t('hud.lastStand')}
-          label={t('hud.foePower', { age: t(`age.${foeAge}.name`), pct: Math.floor(powerFraction(m.foe.powerPpm) * 100) })}
-        />
+        <FoeRings c={c} />
+        <Medallion age={foeAge} team="foe" horn={m.foe.lastStandArmed} hornLabel={t('hud.lastStand')} label={t(`age.${foeAge}.name`)} />
         <FoeResearch c={c} />
         {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} emote={foeBubble.emote} side="foe" t={t} /> : null}
       </div>

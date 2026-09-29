@@ -4,8 +4,8 @@
  * progress p in milli-lu (the observation's frame); money is milli-gold; card values are whole gold.
  */
 import type { AgeId, BotProfile, CardId, Observation, PowerDef, PowerSlot, ResearchView, Side, StanceMode } from '@/contracts';
-import { MILLI, PPM } from '@/core';
-import type { CardBook, UnitCard } from './book';
+import { BP, MILLI, PPM, frontP } from '@/core';
+import type { CardBook, PowerInfo, UnitCard } from './book';
 import type { Ledger } from './ledger';
 import { evolveVisible } from './memory';
 
@@ -18,7 +18,26 @@ export interface SeenUnit {
   value: number;
   p: number;
   hp: number;
+  /** HP plus shields (centi), what a power's damage must get through. */
+  hpTotal: number;
   air: boolean;
+  /** Summoned (drops, Vanguard, riders): never the power front F (A2.9.4). */
+  summoned: boolean;
+  level: number;
+}
+
+/**
+ * One of the bot's power slots as it can use it now (A2.9.1-A2.9.3): the equipped power, its effective
+ * cost (milli-gold) and whether it is reloaded and affordable after pending commands.
+ */
+export interface PowerSlotView {
+  slot: PowerSlot;
+  info: PowerInfo;
+  /** Effective cost, milli-gold. */
+  cost: number;
+  ppm: number;
+  reloaded: boolean;
+  affordable: boolean;
 }
 
 export interface TraySlot {
@@ -56,6 +75,14 @@ export interface View {
   powerReady: boolean;
   powerSlot: PowerSlot | null;
   power: PowerDef | undefined;
+  /** Both equipped slots (Home first), empty ones left out; no slot while a cast is pending or the age is uncertain. */
+  powerSlots: PowerSlotView[];
+  /** The power front F (A2.9.4): the frontmost trained, landed ground unit, or null. */
+  powerFront: number | null;
+  /** The second front unit's p (A2.9.4 `frontRank` 2), or null. */
+  powerFront2: number | null;
+  /** The bot's loadout multiplier estimate, bp: the average level multiplier of its own units on the lane. */
+  levelBp: number;
   stance: StanceMode;
   stanceReady: boolean;
   /** The Hold flag after pending commands, own-side p in milli-lu (A18.4.2), and whether it may move now. */
@@ -80,7 +107,13 @@ export interface View {
 
 function seen(book: CardBook, u: Observation['units'][number]): SeenUnit {
   const def = book.units[u.card];
-  return { id: u.id, card: u.card, def, value: def?.value ?? 0, p: u.p, hp: u.hp, air: u.air };
+  return { id: u.id, card: u.card, def, value: def?.value ?? 0, p: u.p, hp: u.hp, hpTotal: u.hp + u.shield, air: u.air, summoned: u.summoned, level: u.level };
+}
+
+/** Level multiplier in bp (A5.1): 10,000 + step × (L − 1), L in 1..max. */
+export function levelMultBp(book: CardBook, level: number): number {
+  const l = Math.max(1, Math.min(book.econ.maxLevel, Math.trunc(level)));
+  return BP + book.econ.levelStepBp * (l - 1);
 }
 
 /** Builds the decision-time view from a delayed observation and the ledger. */
@@ -93,7 +126,7 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
   let treasury = me.treasury;
   let research: ResearchView = me.research;
   let mountsOwned = me.mountsOwned;
-  let powerUsed = false;
+  const pendingSlots = new Set<PowerSlot>();
   let stance = me.stance;
   let holdP = me.holdP * MILLI;
   const turrets = me.turrets.map((t) => (t ? { card: t.card, ageIndex: book.turrets[t.card]?.ageIndex ?? 0 } : null));
@@ -104,7 +137,7 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
       research = { ...research, current: a.pick.id, progressBp: 0 };
     }
     else if (a.kind === 'mount') mountsOwned += 1;
-    else if (a.kind === 'power') powerUsed = true;
+    else if (a.kind === 'power') pendingSlots.add(a.slot ?? 'home');
     else if (a.kind === 'stance') {
       stance = a.stance;
       if (a.holdP !== undefined) holdP = a.holdP * MILLI;
@@ -154,7 +187,26 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     const o = me.powers[slot];
     return o !== null && o.ppm >= PPM && gold >= o.cost * MILLI && book.powers[o.card] !== undefined;
   };
-  const powerSlot: PowerSlot | null = powerUsed || ageUncertain ? null : slotReady('home') ? 'home' : slotReady('field') ? 'field' : null;
+  const blocked = pendingSlots.size > 0 || ageUncertain || me.powerLockoutUntil > now;
+  const powerSlot: PowerSlot | null = blocked ? null : slotReady('home') ? 'home' : slotReady('field') ? 'field' : null;
+  const powerSlots: PowerSlotView[] = [];
+  if (!blocked) {
+    for (const slot of ['home', 'field'] as const) {
+      const o = me.powers[slot];
+      const info = o ? book.powerInfo[o.card] : undefined;
+      if (!o || !info) continue;
+      powerSlots.push({ slot, info, cost: o.cost * MILLI, ppm: o.ppm, reloaded: o.ppm >= PPM, affordable: gold >= o.cost * MILLI });
+    }
+  }
+  // The loadout multiplier (A2.9.6) from the levels of the bot's own trained units.
+  let lvlSum = 0;
+  let lvlN = 0;
+  for (const u of mine) {
+    if (u.summoned) continue;
+    lvlSum += levelMultBp(book, u.level);
+    lvlN += 1;
+  }
+  const own = obs.units.filter((u) => u.side === obs.side && u.hp > 0).map((u) => ({ id: u.id, p: u.p, air: u.air, summoned: u.summoned }));
   return {
     now,
     side: obs.side,
@@ -175,6 +227,10 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     powerReady: powerSlot !== null,
     powerSlot,
     power: powerSlot ? book.powers[me.powers[powerSlot]?.card ?? ''] : undefined,
+    powerSlots,
+    powerFront: frontP(own, book.econ.powerReach.frontRank),
+    powerFront2: frontP(own, book.econ.powerReach.frontRank + 1),
+    levelBp: lvlN > 0 ? Math.trunc(lvlSum / lvlN) : BP,
     stance,
     stanceReady: ledger.stanceEnabled && now >= ledger.stanceReadyTick,
     holdP,

@@ -6,7 +6,7 @@
  * Money is in milli-gold and distances in milli-lu, the units of `Observation` (DESIGN B3).
  */
 import type { AgeId, CardId, CompiledContent, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
-import { BP, MILLI, msToTicks, powerReachRules, type PowerReachRules } from '@/core';
+import { BP, MILLI, fieldPulses, msToTicks, powerEconomyOf, powerReachRules, type PowerReachRules } from '@/core';
 
 export interface UnitCard {
   id: CardId;
@@ -15,6 +15,8 @@ export interface UnitCard {
   ageIndex: number;
   group: RoleGroup;
   legendary: boolean;
+  /** An Epic card: strikes deal it 50% (A2.9.6 `strikeEpicBp`). */
+  epic: boolean;
   /** Card value V(u) = card cost in whole gold (DESIGN A7.2 "Values"). */
   value: number;
   /** Cost in milli-gold. */
@@ -42,11 +44,43 @@ export interface TurretCard {
   strength: number;
 }
 
+/**
+ * What a bot needs to know about an Age Power (DESIGN A2.9.9 "book.ts: cost, reload, reach, family,
+ * per-unit estimate and aiValueBp from content"), all public card-detail numbers.
+ */
+export interface PowerInfo {
+  def: PowerDef;
+  /** List price, whole gold (the observation carries the effective price). */
+  cost: number;
+  /**
+   * The family's expected damage per touched unit at loadout multiplier 1.0, whole HP (A2.9.6 coverage
+   * estimate): barrage count × 2 × radius ÷ zone hits (at most count) × damage; sweep damage once;
+   * charge min(runners, hits per enemy) × damage; field damage per pulse × pulses; strike shots × damage.
+   */
+  perUnit: number;
+  hitsAir: boolean;
+  hitsGround: boolean;
+  /** Zone (or cloud width) in milli-lu; 0 for powers without a zone. */
+  zone: number;
+  /** `maxTargets` (0 = no cap: drops, Suppress). */
+  cap: number;
+  /** Damages or controls enemy units (auto-aim with nothing eligible is rejected before payment). */
+  harmful: boolean;
+  /** A control field (snare, pull, stun): valued by `aiValueBp` on engaged targets (A2.9.9). */
+  control: boolean;
+  /** A2.9.9 value weight, bp of card cost (controls and buffs; the cloud 4,000). */
+  aiValueBp: number;
+  /** A drop's summoned card value, whole gold (card cost × count); 0 for other kinds. */
+  dropValue: number;
+}
+
 export interface CardBook {
   content: CompiledContent;
   units: Readonly<Record<CardId, UnitCard>>;
   turrets: Readonly<Record<CardId, TurretCard>>;
   powers: Readonly<Record<CardId, PowerDef>>;
+  /** AI facts per power (A2.9.9). */
+  powerInfo: Readonly<Record<CardId, PowerInfo>>;
   /**
    * Age ids ordered by `AgeDef.index`. A format is a window of this order (A18.3.4); `View.ageIndex`
    * converts the observation's window position into this order.
@@ -71,6 +105,13 @@ export interface CardBook {
     /** A2.3 underdog bounty bonus, bp. */
     underdogBp: number;
     powerKillGoldBp: number;
+    /** Legendaries take this share of power damage (A2.9.6). */
+    legendaryPowerDamageBp: number;
+    /** Epics take this share of strike damage (A2.9.6). */
+    strikeEpicBp: number;
+    /** Level multiplier step and cap (A5.1: 10,000 + step × (L − 1)). */
+    levelStepBp: number;
+    maxLevel: number;
     vanguardCount: number;
     lastStandRadius: number;
     /** Last Stand fires on its own at this base HP, bp (A2.11: 10%). */
@@ -107,6 +148,73 @@ function turretStrength(t: TurretDef): number {
   return per * area;
 }
 
+/** The cloud's A2.9.9 value weight when content gives none. */
+const CLOUD_VALUE_BP = 4000;
+
+/** The A2.9.9 facts of one power. */
+export function powerInfo(p: PowerDef): PowerInfo {
+  const fx = p.effect;
+  let perUnit = 0;
+  let hitsAir = true;
+  let hitsGround = true;
+  let zone = 0;
+  let harmful = false;
+  let control = false;
+  switch (fx.kind) {
+    case 'barrage': {
+      const cover = fx.zone > 0 ? Math.trunc((fx.count * 2 * fx.radius * BP) / fx.zone) : fx.count * BP;
+      perUnit = Math.trunc((Math.min(fx.count * BP, cover) * fx.damage) / BP);
+      hitsAir = fx.hitsAir;
+      hitsGround = fx.hitsGround !== false;
+      zone = fx.zone * MILLI;
+      harmful = true;
+      break;
+    }
+    case 'sweep':
+      perUnit = fx.damage;
+      hitsAir = fx.hitsAir;
+      zone = fx.zone * MILLI;
+      harmful = true;
+      break;
+    case 'stampede':
+      perUnit = Math.min(fx.runners, fx.maxHitsPerEnemy) * fx.damage;
+      hitsAir = false;
+      zone = fx.distance * MILLI;
+      harmful = true;
+      break;
+    case 'field':
+      perUnit = (fx.damagePerPulse ?? 0) * fieldPulses(fx.durationMs);
+      hitsAir = fx.hitsAir;
+      zone = fx.zone * MILLI;
+      harmful = true;
+      control = (fx.statuses?.length ?? 0) > 0 || (fx.pullBp ?? 0) > 0;
+      break;
+    case 'strike':
+      perUnit = fx.shots * fx.damage;
+      hitsAir = fx.hitsAir;
+      harmful = true;
+      break;
+    case 'cloud':
+      zone = fx.width * MILLI;
+      break;
+    default:
+      break;
+  }
+  return {
+    def: p,
+    cost: p.cost,
+    perUnit,
+    hitsAir,
+    hitsGround,
+    zone,
+    cap: p.maxTargets ?? 0,
+    harmful,
+    control,
+    aiValueBp: p.aiValueBp ?? (fx.kind === 'cloud' ? CLOUD_VALUE_BP : 0),
+    dropValue: 0,
+  };
+}
+
 const books = new WeakMap<CompiledContent, CardBook>();
 
 /** The card book of a content object (cached). */
@@ -128,6 +236,7 @@ export function cardBook(content: CompiledContent): CardBook {
       ageIndex: ageIndex(u.age),
       group: u.group,
       legendary: u.group === 'legendary' || u.rarity === 'legendary',
+      epic: u.rarity === 'epic',
       value: u.cost,
       cost: u.cost * MILLI,
       pop: e.popByGroup[u.group] ?? 0,
@@ -166,11 +275,21 @@ export function cardBook(content: CompiledContent): CardBook {
     counterBp[a] = out;
   }
 
+  const infos: Record<CardId, PowerInfo> = {};
+  for (const id of Object.keys(content.powers).sort()) {
+    const p = content.powers[id];
+    if (!p) continue;
+    const info = powerInfo(p);
+    if (p.effect.kind === 'paradrop') info.dropValue = (units[p.effect.card]?.value ?? 0) * p.effect.count;
+    infos[id] = info;
+  }
+
   const book: CardBook = {
     content,
     units,
     turrets,
     powers: content.powers,
+    powerInfo: infos,
     ageOrder,
     unitsByAge,
     counterBp,
@@ -187,6 +306,10 @@ export function cardBook(content: CompiledContent): CardBook {
       bountyGoldBp: e.bountyGoldBp,
       underdogBp: e.underdogBp,
       powerKillGoldBp: e.powerKillGoldBp,
+      legendaryPowerDamageBp: e.legendaryPowerDamageBp,
+      strikeEpicBp: powerEconomyOf(e).strikeEpicBp,
+      levelStepBp: e.levelStepBp,
+      maxLevel: e.maxLevel,
       vanguardCount: e.vanguardCount,
       lastStandRadius: e.lastStand.radius * MILLI,
       lastStandAutoBp: e.lastStand.autoBp,

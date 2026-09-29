@@ -6,7 +6,7 @@
  * - The enemy composition seen recently (A7.3 "Remembers composition") and when the foe last evolved.
  * - The foe gold estimate (estimate.ts).
  */
-import type { CardId, Observation } from '@/contracts';
+import type { CardId, Observation, PowerSlot } from '@/contracts';
 import { BP, PPM, TICKS_PER_SECOND } from '@/core';
 import type { CardBook } from './book';
 import { FoeGoldEstimator } from './estimate';
@@ -62,6 +62,9 @@ export class BotMemory {
   foeTroopsDoneTick = -1000000;
   private ownOwned = 0;
   private foeOwned = 0;
+  /** When the foe last cast from each power slot (its telegraph appeared; A2.9.7 telegraphs are public). */
+  readonly foeCastTick: Record<PowerSlot, number> = { home: -1000000, field: -1000000 };
+  private readonly foeTelegraphs = new Set<string>();
   /** Enemy cards seen recently. */
   readonly composition = new Map<CardId, RememberedCard>();
   /** Own base HP (bp) of the last 5 s of observations, oldest first. */
@@ -97,6 +100,14 @@ export class BotMemory {
     const foeOwned = obs.foe.research?.owned ?? [];
     for (let i = this.foeOwned; i < foeOwned.length; i += 1) if (isTroops(foeOwned[i])) this.foeTroopsDoneTick = obs.tick;
     this.foeOwned = foeOwned.length;
+
+    for (const t of obs.telegraphs) {
+      if (t.side === obs.side) continue;
+      const key = `${t.slot}:${t.power}:${t.impactTick}`;
+      if (this.foeTelegraphs.has(key)) continue;
+      this.foeTelegraphs.add(key);
+      this.foeCastTick[t.slot] = obs.tick;
+    }
 
     if (obs.foe.ageIndex > this.foeAge) this.foeEvolvedTick = obs.tick;
     this.foeAge = obs.foe.ageIndex;

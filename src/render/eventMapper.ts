@@ -572,7 +572,8 @@ export class EventMapper {
         return;
       }
       case 'powerReady':
-        if (ev.side === this.mySide) this.rule('power.ready', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
+        // A2.9.10 (MR-69 per slot): a reloaded power may still be short of gold, so the ready chime is
+        // the HUD's: it plays when a slot first becomes castable (reloaded and affordable).
         return;
       case 'powerTelegraph': {
         // `zone` is milli-lu like every sim position (B3; WP2 emits `zone: 500_000` for 500 lu).

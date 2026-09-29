@@ -6,7 +6,7 @@
  * A press the HUD can already tell is invalid becomes a `deny` intent (red flash, 2-frame shake,
  * `ui_deny`, A9.2) instead of a command; everything else is sent and the sim has the final word.
  */
-import type { AgeId, CardId, Command, HudModel, MatchConfig, Side, StanceMode, TeamPreset } from '@/contracts';
+import type { AgeId, CardId, Command, HudModel, HudPowerSlot, MatchConfig, PowerSlot, Side, StanceMode, TeamPreset } from '@/contracts';
 import { matchMods } from '@/core';
 
 /** Elements that can show the denied-press feedback. */
@@ -20,6 +20,7 @@ export type DenyTarget =
   | 'gold'
   | 'evolve'
   | 'power'
+  | 'powerField'
   | 'stance'
   | 'lastStand'
   | 'mounts'
@@ -144,15 +145,115 @@ export function evolveIntent(m: HudModel, side: Side, config?: Readonly<MatchCon
   return deny('evolve', { key: 'hud.deny.xp', params: { n: Math.max(1, xp.need - xp.xp) } });
 }
 
-/** Tap = auto-aim (no p); a drag passes the placed p (A2.9). P1: the one button casts the Home slot (A2.9.13). */
-export function powerIntent(m: HudModel, side: Side, p?: number): HudIntent {
-  if (m.phase === 'ended') return deny('power');
-  if (m.me.powerPpm < PPM_FULL) return deny('power', { key: 'hud.deny.power', params: { pct: Math.floor(powerFraction(m.me.powerPpm) * 100) } });
-  // A2.9.2: a cast costs gold, paid on acceptance.
-  const home = m.me.powers?.home;
-  if (home && !home.affordable) return deny('power', { key: 'hud.deny.powerGold', params: { n: Math.max(1, home.cost - m.me.gold) } });
-  return cmd(p === undefined ? { t: 'power', side, slot: 'home' } : { t: 'power', side, slot: 'home', p }, 'power');
+/** The deny target of a power slot: `power` is the Home button (the tutorial points at it), `powerField` the Field one. */
+export function powerTarget(slot: PowerSlot): DenyTarget {
+  return slot === 'home' ? 'power' : 'powerField';
 }
+
+/** The power slot a deny target belongs to, or null. */
+export function powerSlotOf(target: DenyTarget): PowerSlot | null {
+  return target === 'power' ? 'home' : target === 'powerField' ? 'field' : null;
+}
+
+/**
+ * How a dock button looks (A2.9.10, ui-plan 4.7 "States"): reloading (ring filling, seconds shown), a
+ * lockout (the lever), reloaded but gold short (ring closed and dim, the cost chip red), castable
+ * (MR-69), or no power in the slot (not drawn: its space stays a gap).
+ */
+export type PowerSlotState = 'empty' | 'reloading' | 'lockout' | 'poor' | 'castable';
+
+export interface PowerSlotView {
+  slot: PowerSlot;
+  /** The slot as the HUD model has it; null when the slot is empty (or locked by progression). */
+  p: HudPowerSlot | null;
+  state: PowerSlotState;
+  /** Reload progress 0..1. */
+  frac: number;
+  /** Whole seconds until reloaded (the sim's own formula), 0 when reloaded. */
+  secondsLeft: number;
+  /** Gold still missing for the cast (0 when affordable). */
+  need: number;
+  /** Whole seconds left on a lockout (0 when none). */
+  lockS: number;
+}
+
+/**
+ * Both slots of the dock. Older models (tests, the P1 adapter) carry only `power` / `powerPpm`: they
+ * read as a Home slot without a price.
+ */
+export function powerSlotData(m: HudModel, slot: PowerSlot): HudPowerSlot | null {
+  if (m.me.powers) return m.me.powers[slot] ?? null;
+  if (slot !== 'home' || !m.me.power) return null;
+  const ppm = m.me.powerPpm;
+  return {
+    slot: 'home',
+    card: m.me.power,
+    ppm,
+    cost: 0,
+    affordable: true,
+    secondsLeft: 0,
+    reloadMs: 0,
+    reach: 'anywhere',
+    family: 'bombard',
+    maxTargets: 0,
+    zone: 0,
+    lockoutUntilMs: 0,
+    slotLocked: false,
+  };
+}
+
+export function powerSlotView(m: HudModel, slot: PowerSlot): PowerSlotView {
+  const p = powerSlotData(m, slot);
+  if (!p || p.slotLocked) return { slot, p: null, state: 'empty', frac: 0, secondsLeft: 0, need: 0, lockS: 0 };
+  const frac = powerFraction(p.ppm);
+  const need = p.affordable ? 0 : Math.max(1, p.cost - m.me.gold);
+  const lockS = p.lockoutUntilMs > m.clockMs ? Math.max(1, Math.ceil((p.lockoutUntilMs - m.clockMs) / 1000)) : 0;
+  const secondsLeft = frac >= 1 ? 0 : Math.max(1, p.secondsLeft);
+  const state: PowerSlotState = frac < 1 ? 'reloading' : lockS > 0 ? 'lockout' : !p.affordable ? 'poor' : 'castable';
+  return { slot, p, state, frac, secondsLeft, need, lockS };
+}
+
+/** Castable now: reloaded, affordable, no lockout, match running. */
+export function powerCastable(m: HudModel, slot: PowerSlot): boolean {
+  return m.phase !== 'ended' && powerSlotView(m, slot).state === 'castable';
+}
+
+/** The slot that holds the one power pulse (U11: the first castable slot, Home before Field), or null. */
+export function pulseSlot(m: HudModel): PowerSlot | null {
+  if (powerCastable(m, 'home')) return 'home';
+  if (powerCastable(m, 'field')) return 'field';
+  return null;
+}
+
+/**
+ * A press, a drop or a key on a power slot (A2.9.10). Tap = aiming mode and keys auto-aim (no p); a
+ * drag passes the placed p. What the HUD can already see is denied with its reason (MR-03): "Ready in
+ * 12 s", "Wait 3 s", "Need 40 gold". The sim has the last word on the rest (no target, out of reach).
+ * A slot without a power (not drawn) does nothing.
+ */
+export function powerIntent(m: HudModel, side: Side, p?: number, slot: PowerSlot = 'home'): HudIntent {
+  const target = powerTarget(slot);
+  if (m.phase === 'ended') return deny(target);
+  const v = powerSlotView(m, slot);
+  switch (v.state) {
+    case 'empty':
+      return NONE;
+    case 'reloading':
+      return deny(target, { key: 'hud.deny.powerReload', params: { s: v.secondsLeft } });
+    case 'lockout':
+      return deny(target, { key: 'hud.deny.powerLockout', params: { s: v.lockS } });
+    case 'poor':
+      return deny(target, { key: 'hud.deny.powerGold', params: { n: v.need } });
+    case 'castable':
+      return cmd(p === undefined ? { t: 'power', side, slot } : { t: 'power', side, slot, p }, target);
+  }
+}
+
+/**
+ * Whether the power `power_ready` chime may play for a slot (MR-69 as changed by A2.9.10): when a slot
+ * becomes castable for the first time since its last cast, at most once per 3 s across both slots.
+ */
+export const POWER_CHIME_GAP_MS = 3000;
 
 /**
  * The one attention pulse (U11, ui-plan 4.7): a tutorial target, then Evolve, then the Age Power,
@@ -172,7 +273,27 @@ export function hudPulse(s: { tutorial: boolean; evolve: boolean; power: boolean
  * The deny label for a command the sim rejected (the view's `denied` event carries the sim's
  * reason), or null when the HUD has nothing useful to add to the flash.
  */
-export function simDenyReason(reason: string, m: HudModel, slot?: number): DenyReason | null {
+export function simDenyReason(reason: string, m: HudModel, slot?: number, power?: PowerSlot): DenyReason | null {
+  if (power) {
+    const v = powerSlotView(m, power);
+    switch (reason) {
+      case 'powerReloading':
+      case 'powerNotReady':
+        return { key: 'hud.deny.powerReload', params: { s: Math.max(1, v.secondsLeft) } };
+      case 'powerLockout':
+        return { key: 'hud.deny.powerLockout', params: { s: Math.max(1, v.lockS) } };
+      case 'powerNoTarget':
+        return { key: 'hud.deny.powerNoTarget' };
+      case 'powerOutOfReach':
+        return { key: 'hud.deny.powerOutOfReach' };
+      case 'noGold':
+        return v.p && v.p.cost > m.me.gold ? { key: 'hud.deny.powerGold', params: { n: v.p.cost - m.me.gold } } : { key: 'hud.deny.noGold' };
+      case 'noPower':
+        return { key: 'hud.deny.powerEmpty' };
+      default:
+        break;
+    }
+  }
   switch (reason) {
     case 'queueFull':
       return { key: 'hud.deny.queueFull' };
@@ -369,7 +490,8 @@ export function quickTurretIntent(m: HudModel, config: Readonly<MatchConfig>, si
 
 /**
  * Keyboard controls (A2.12, A18.4.2, A18.5.7). `key` is `KeyboardEvent.key`. P pauses (never Esc);
- * Escape closes the Council; G opens and closes it; S and Shift+S set the stance; T is free.
+ * Escape closes the Council; G opens and closes it; S and Shift+S set the stance; Space casts the Home
+ * power and X the Field power, both auto-aimed (A2.9.10); T is free.
  */
 export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side, shift = false, rearming = false): HudIntent {
   if (m.phase === 'ended') return NONE;
@@ -391,7 +513,9 @@ export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig
     case 'e':
       return evolveIntent(m, side, config, rearming);
     case ' ':
-      return powerIntent(m, side);
+      return powerIntent(m, side, undefined, 'home');
+    case 'x':
+      return powerIntent(m, side, undefined, 'field');
     case 's':
       return stanceIntent(m, side, shift);
     case 'l':

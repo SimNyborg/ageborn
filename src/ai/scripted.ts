@@ -233,8 +233,11 @@ export class ScriptedController implements AiBotController {
         if (slot < 0 || !def || mount < 0 || v.gold < def.cost || v.ageUncertain) return null;
         return { kind: 'build', mount, slot, card: sa.card, cost: def.cost };
       }
-      case 'power':
-        return v.powerReady && v.powerSlot !== null ? { kind: 'power', p: null, slot: v.powerSlot } : null;
+      case 'power': {
+        // Scripted casts auto-aim the first ready slot; its price is booked so no gold is spent twice.
+        const ready = v.powerReady && v.powerSlot !== null ? v.powerSlots.find((x) => x.slot === v.powerSlot) : undefined;
+        return ready ? { kind: 'power', p: null, slot: ready.slot, cost: ready.cost } : null;
+      }
       case 'emote':
         return now >= this.ledger.lastEmoteTick + e.emoteCooldownTicks + 1 ? { kind: 'emote', emote: sa.emote } : null;
     }
