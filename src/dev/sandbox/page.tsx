@@ -173,7 +173,7 @@ function BattleTab(p: { bare?: boolean }) {
       ? {
           gold: (side: Side, n: number) => devSetGold(sim, side, n),
           power: (side: Side, ppm: number, slot?: PowerSlot) => devSetPower(sim, side, ppm, slot),
-          spawn: (side: Side, card: CardId, p: number) => devSpawn(sim, side, card, p),
+          spawn: (side: Side, card: CardId, p: number) => devSpawn(sim, side, card, { p }).id,
           clear: () => devClearLane(sim),
           pause: (on: boolean) => setPaused(on),
         }
@@ -278,7 +278,7 @@ function BattleTab(p: { bare?: boolean }) {
 
 export default function Sandbox() {
   const [tab, setTab] = useState<Tab>(tabFromHash());
-  if (new URLSearchParams(window.location.search).get('stage') === '1') return <BattleTab bare />;
+  const bare = new URLSearchParams(window.location.search).get('stage') === '1';
   useEffect(() => {
     const on = () => setTab(tabFromHash());
     window.addEventListener('hashchange', on);
@@ -288,6 +288,7 @@ export default function Sandbox() {
     window.location.hash = `sandbox/${t}`;
     setTab(t);
   };
+  if (bare) return <BattleTab bare />;
   return (
     <div style={page} data-testid="sandbox-page">
       <div style={bar}>
