@@ -18,6 +18,17 @@ export const A14_EFFECT_IDS = new Set([
   'fx.telegraph_zone', 'fx.aurochs', 'fx.meteor', 'fx.arrow_rain', 'fx.decree_glow', 'fx.cannonball_rain',
   'fx.plane_bomber', 'fx.parachute', 'fx.orbital_beam', 'fx.nanite_swarm',
   'fx.tidal_wave', 'fx.aegis_glow', 'fx.iron_horse', 'fx.zeppelin', 'fx.star_shard_rain', 'fx.warp_portal',
+  // The power rework (A5.7): per-power effects, the shared cues and their parts (telegraph decorations,
+  // sub-effects).
+  'fx.rockslide', 'fx.sticky_tar', 'fx.hunt_cry', 'fx.spear_throw', 'fx.lightning_bolt', 'fx.medusa_gaze',
+  'fx.chariot_rush', 'fx.golden_arrow', 'fx.caltrops', 'fx.boiling_oil', 'fx.knights_charge', 'fx.undermine',
+  'fx.volley_fire', 'fx.boarding_nets', 'fx.horse_artillery', 'fx.sharpshot', 'fx.gun_line', 'fx.barbed_wire',
+  'fx.railway_shell', 'fx.field_hospital', 'fx.strafing_run', 'fx.flak_burst', 'fx.tank_rush', 'fx.sniper_trace',
+  'fx.point_defense', 'fx.stasis_dome', 'fx.drone_swarm', 'fx.emp_blackout', 'fx.singularity', 'fx.solar_flare',
+  'fx.comet_run', 'fx.ion_cannon',
+  'fx.field_zone', 'fx.target_lock', 'fx.turret_jammed', 'fx.power_cast_cue',
+  'fx.tele_shadow', 'fx.tele_rumble', 'fx.tele_glint', 'fx.tele_gather', 'fx.storm_cloud', 'fx.dirt_blast',
+  'fx.plasma_pop', 'fx.drone_cloud', 'fx.jammed_rubble',
   // Match effects
   'fx.evolve_pillar', 'fx.last_stand_wave', 'fx.overdrive_frame', 'fx.siege_vignette',
 ]);

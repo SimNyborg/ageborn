@@ -17,15 +17,11 @@ from __future__ import annotations
 import numpy as np
 
 from kit import (
-    CLAVES, KIT_ORCH, KIT_POWER, SIDE_STICK, SNARE, TAMB, TOM_H, TOM_HM, TOM_L, TOM_LF, TOM_LM, WOOD_HI, WOOD_LO,
-    GM, at, bell, bp, chime, click, crack, crackle, debris, dsp, env_exp, fade, fm_bell, formant, gm_note, gm_notes,
-    grunt, hp, hz, knock, lp, mixdown, mn, n_of, nburst, noise, osc, perc, pluck, room, rumble, sample, sat, thump,
-    whoosh,
+    CLAVES, KIT_ORCH, KIT_POWER, SIDE_STICK, SNARE, TOM_L, TOM_LF, TOM_LM, WOOD_HI, WOOD_LO, GM, at, bell, bp,
+    chime, click, crack, crackle, debris, dsp, env_exp, fade, fm_bell, formant, gm_notes, hz, knock, lp, mixdown,
+    mn, n_of, nburst, noise, osc, perc, pluck, room, rumble, sample, sat, thump, whoosh,
 )
-from sounds import (
-    bronze_clang, chord_hit, explosion, flutter, hit_pierce, pv, sfx, shot_cannon, shot_mg, shot_musket, shot_rifle,
-    train_whistle,
-)
+from sounds import bronze_clang, chord_hit, explosion, hit_pierce, pv, sfx, shot_cannon, shot_mg, shot_musket, shot_rifle
 
 
 def _cut(x: np.ndarray, d: float, fout: float = 0.25) -> np.ndarray:

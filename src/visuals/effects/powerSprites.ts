@@ -5,7 +5,7 @@
  * saturated colour appears only as small accents or in the mint, magenta and lilac energy hues.
  */
 import { part } from '../parts/registry';
-import { arcBand, blob, circle, ellipse, join, limb, ngon, poly, rect, rotate, rrect, star } from '../svg';
+import { arcBand, blob, circle, ellipse, join, limb, poly, rect, rotate, rrect, star } from '../svg';
 
 // ---------------------------------------------------------------------------------------------
 // Shared: ground decals, glints, locks and cues
@@ -94,8 +94,10 @@ part('fx.p.lightning', [
 ]);
 /** A storm cloud, 100 lu wide (dark, cool grey). */
 part('fx.p.stormCloud', [
-  { d: join(ellipse(0, 0, 44, 11), ellipse(-26, -4, 20, 11), ellipse(22, -5, 22, 12), ellipse(-4, -12, 20, 12), ellipse(8, 4, 26, 8)), zone: '#5E5B68', line: 0, alpha: 0.95 },
-  { d: join(ellipse(-12, -14, 14, 6), ellipse(18, -12, 12, 5)), zone: '#8E8A99', line: 0, alpha: 0.8, shade: false, light: false },
+  // a towering, bumpy thunderhead: dark belly, billowing crown, lit rims
+  { d: join(ellipse(0, 2, 46, 10), circle(-32, -6, 14), circle(-16, -14, 17), circle(4, -20, 19), circle(24, -12, 16), circle(38, -3, 11), circle(-42, 1, 8)), zone: '#6A6676', line: 1.4, alpha: 0.97 },
+  { d: join(ellipse(0, 5, 42, 6), ellipse(-20, 4, 16, 5), ellipse(22, 4, 16, 5)), zone: '#46434F', line: 0, alpha: 0.9, shade: false, light: false },
+  { d: join(ellipse(-18, -24, 9, 4), ellipse(4, -32, 11, 4.5), ellipse(24, -22, 8, 3.5), ellipse(-34, -14, 6, 3)), zone: '#B4B0C0', line: 0, alpha: 0.85, shade: false, light: false },
 ]);
 /** Medusa's Gaze: the Gorgon's eye with serpent locks, 36 lu wide. */
 part('fx.p.gorgonEye', [

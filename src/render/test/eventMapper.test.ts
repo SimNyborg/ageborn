@@ -202,24 +202,37 @@ describe('event mapper: turrets, bases, powers', () => {
     expect([crumbleStage(80, 100), crumbleStage(75, 100), crumbleStage(50, 100), crumbleStage(25, 100)]).toEqual([0, 1, 2, 3]);
   });
 
-  it('power telegraph and power lands: global 120 ms, trauma 0.5, 1-frame 30% white, duck 6 dB for 1.5 s', () => {
+  it('power telegraph and power lands, scaled by family (A2.9.10): a Home bombard 120 ms, trauma 0.5, 1-frame 30% white, duck 6 dB; a charge 60 ms, 0.3, 3 dB', () => {
     const tel = run([ev('powerTelegraph', { side: 0, slot: 'field', power: 'stampede', castId: 1, x: 700_000, zone: 500_000, cost: 100, targetId: -1, telegraphMs: 1000 })]);
     expect(pick(tel, 'telegraph')).toEqual([{ a: 'telegraph', side: 0, castId: 1, power: 'stampede', x: 700, zone: 500, ms: 1000 }]);
     expect(pick(tel, 'sound').map((s) => s.id)).toEqual(['power_telegraph']);
+    // Anticipation: the ground rumbles for the telegraph, and a cue rises at the caster's base.
+    expect(pick(tel, 'fx').map((f) => [f.effectId, f.opts?.['durationMs']])).toEqual([['fx.tele_rumble', 1000], ['fx.power_cast_cue', undefined]]);
     const out = run([ev('powerImpact', { side: 0, power: 'stampede', castId: 1, x: 703_000, index: 0 })]);
     // Per-power preset: the first aurochs runs 500 lu toward the enemy from x = 703.
     expect(pick(out, 'fx')).toEqual([
       { a: 'fx', effectId: 'fx.aurochs', at: { k: 'world', x: 703, y: 0 }, count: 1, priority: 5, opts: { side: 0, dir: 1, distance: 500, speed: 400 } },
     ]);
-    expect(pick(out, 'freeze')).toEqual([{ a: 'freeze', ms: 120, exempt: false }]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.5 }]);
-    expect(pick(out, 'screenFlash')).toEqual([{ a: 'screenFlash', ms: 16, color: 0xffffff, alpha: 0.3 }]);
+    expect(pick(out, 'freeze')).toEqual([{ a: 'freeze', ms: 60, exempt: false }]);
+    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.3 }]);
+    expect(pick(out, 'screenFlash')).toEqual([]);
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['pw_stampede']);
-    expect(pick(out, 'duck')).toEqual([{ a: 'duck', db: -6, ms: 1500 }]);
+    expect(pick(out, 'duck')).toEqual([{ a: 'duck', db: -3, ms: 800 }]);
     const more = run([ev('powerImpact', { side: 0, power: 'stampede', castId: 1, x: 703_000, index: 3 })]);
     expect(pick(more, 'freeze')).toEqual([]);
     expect(pick(more, 'sound')).toEqual([]);
     expect(pick(more, 'fx').map((f) => f.effectId)).toEqual(['fx.aurochs']);
+    const bomb = run([
+      ev('powerTelegraph', { side: 0, slot: 'home', power: 'meteor_shower', castId: 2, x: 600_000, zone: 400_000, cost: 100, targetId: -1, telegraphMs: 1000 }),
+      ev('powerImpact', { side: 0, power: 'meteor_shower', castId: 2, x: 420_000, index: 0 }),
+    ]);
+    expect(pick(bomb, 'freeze')).toEqual([{ a: 'freeze', ms: 120, exempt: false }]);
+    expect(pick(bomb, 'trauma')).toMatchObject([{ amount: 0.5 }]);
+    expect(pick(bomb, 'screenFlash')).toEqual([{ a: 'screenFlash', ms: 16, color: 0xffffff, alpha: 0.3 }]);
+    // The telegraph's warning, then the power's own sound (the fixture content may leave `sfx` unset).
+    expect(pick(bomb, 'sound')).toHaveLength(2);
+    expect(pick(bomb, 'sound')[0]?.id).toBe('power_telegraph');
+    expect(pick(bomb, 'duck')).toEqual([{ a: 'duck', db: -6, ms: 1500 }]);
   });
 
   it('Last Stand: armed shows the horn, fire freezes 150 ms with trauma 0.5, red flash 100 ms and the wave', () => {
@@ -424,7 +437,9 @@ describe('event mapper: effect presets and sizes on the real content', () => {
       ev('powerImpact', { side, power, castId: 40, x, index }),
     ];
   };
-  const fxOf = (out: ViewAction[]) => pick(out, 'fx').filter((f) => f.effectId !== 'fx.telegraph_zone');
+  /** The impact's effects (without the telegraph's decorations and cue). */
+  const TELEGRAPH_FX = new Set(['fx.telegraph_zone', 'fx.tele_shadow', 'fx.tele_rumble', 'fx.tele_glint', 'fx.tele_gather', 'fx.target_lock', 'fx.storm_cloud', 'fx.power_cast_cue']);
+  const fxOf = (out: ViewAction[]) => pick(out, 'fx').filter((f) => !TELEGRAPH_FX.has(f.effectId));
 
   it('plays a per-power preset for every power, never the HUD icon (A12 "per-power preset", A14.1)', () => {
     for (const id of Object.keys(content.powers)) {
@@ -460,10 +475,10 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     expect(fxOf(runReal(cast('stampede', 1, 2)))).toMatchObject([{ effectId: 'fx.aurochs', opts: { dir: -1, distance: 500 } }]);
   });
 
-  it('drops one parachute per trooper and puts buffs on every unit of the caster', () => {
+  it('drops one parachute per trooper and puts buffs on the caster\'s 8 frontmost units (A2.9.6)', () => {
     expect(fxOf(runReal(cast('paratroopers', 0, 0)))).toMatchObject([{ effectId: 'fx.parachute', count: 3 }]);
     expect(pick(runReal(cast('royal_decree', 0, 0)), 'fxUnits')).toEqual([
-      { a: 'fxUnits', effectId: 'fx.decree_glow', side: 0, priority: 3, opts: { side: 0, durationMs: 8000 } },
+      { a: 'fxUnits', effectId: 'fx.decree_glow', side: 0, priority: 3, opts: { side: 0, durationMs: 8000 }, max: 8 },
     ]);
     expect(pick(runReal(cast('nanite_surge', 1, 0)), 'fxUnits')).toMatchObject([{ effectId: 'fx.nanite_swarm', side: 1, opts: { durationMs: 6000 } }]);
   });

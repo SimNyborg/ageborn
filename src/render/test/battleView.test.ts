@@ -112,9 +112,10 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
   it('holds the sim during global freezes and respects the 150 ms cap', () => {
     const s = setup();
     const { frozenFrames } = play(s);
-    // The power (120 ms) and the evolve (100 ms) freeze globally; the stream has no other freezes.
-    expect(frozenFrames).toBeGreaterThanOrEqual(12);
-    expect(frozenFrames).toBeLessThanOrEqual(16);
+    // The power (Stampede, a charge: 60 ms, A2.9.10) and the evolve (100 ms) freeze globally; the stream
+    // has no other freezes.
+    expect(frozenFrames).toBeGreaterThanOrEqual(9);
+    expect(frozenFrames).toBeLessThanOrEqual(13);
   });
 
   it('turns global and local hitstop off with the hitstop setting', () => {

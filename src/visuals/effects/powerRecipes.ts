@@ -185,7 +185,8 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       loops: true,
       sprites: [
         { ...flash(1.6, 0xe7dcff, 80), keys: [{ t: 0, y: -8, sx: 1, sy: 1, a: 1 }, { t: 1, y: -8, sx: 2.2, sy: 2.2, a: 0 }] },
-        { sprite: 'fx.p.glow', life: 0, loop: 260, blendAdd: true, tint: 0xe7dcff, keys: [{ t: 0, y: -8, sx: 1.2, sy: 1.2, a: 0.05 }, { t: 0.2, y: -8, sx: 1.6, sy: 1.6, a: 0.45 }, { t: 0.45, y: -8, sx: 1.3, sy: 1.3, a: 0.05 }, { t: 1, y: -8, sx: 1.2, sy: 1.2, a: 0.05 }] },
+        // a slow sick glow (0.7 s), never a strobe
+        { sprite: 'fx.p.glow', life: 0, loop: 700, blendAdd: true, tint: 0xe7dcff, keys: [{ t: 0, y: -8, sx: 1.2, sy: 1.2, a: 0.08 }, { t: 0.5, y: -8, sx: 1.6, sy: 1.6, a: 0.35 }, { t: 1, y: -8, sx: 1.2, sy: 1.2, a: 0.08 }] },
       ],
       particles: [
         { sprite: 'fx.p.bolt', rate: 12, life: [80, 160], box: [10, 8], speed: [60, 140], angle: [-180, 0], spread: 8, scale: [1.2, 0.5], alpha: [1, 0], align: true, tint: 0xe7dcff },
@@ -317,12 +318,12 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 6000,
       loops: true,
       sprites: [
-        { sprite: 'fx.p.tarPool', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.25, sy: 0.3, a: 0, y: 2 }, { t: 0.015, sx: 1.12, sy: 1.8, a: 1, y: 1 }, { t: 0.03, sx: 0.96, sy: 0.8, y: 2 }, { t: 0.045, sx: 1, sy: 1 }, { t: 0.93, sx: 1, sy: 1, a: 1 }, { t: 1, sx: 0.9, sy: 0.7, a: 0 }] },
+        { sprite: 'fx.p.tarPool', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.25, sy: 0.5, a: 0, y: 2 }, { t: 0.015, sx: 1.12, sy: 3.6, a: 1, y: 1 }, { t: 0.03, sx: 0.96, sy: 1.8, y: 2 }, { t: 0.045, sx: 1, sy: 2.2 }, { t: 0.93, sx: 1, sy: 2.2, a: 1 }, { t: 1, sx: 0.9, sy: 1.4, a: 0 }] },
         { sprite: 'fx.p.shadow', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.3, sy: 1.2, a: 0 }, { t: 0.02, sx: 1.05, sy: 1.3, a: 0.35 }, { t: 0.93, a: 0.35 }, { t: 1, a: 0 }] },
       ],
       particles: [
-        { sprite: 'fx.p.drop', count: 16, life: [380, 600], box: [40, 2], sizeWith: 'zone', speed: [90, 200], angle: [-130, -50], gravity: 900, scale: [1.6, 1.2], alpha: [1, 0.6], spin: [-200, 200] },
-        { sprite: 'fx.p.tarBubble', rate: 7, life: [500, 900], box: [44, 2], sizeWith: 'zone', scale: [0.5, 1.4], alpha: [1, 0], tint: 0xffffff },
+        { sprite: 'fx.p.drop', count: 20, life: [420, 700], box: [40, 2], sizeWith: 'zone', speed: [120, 260], angle: [-130, -50], gravity: 900, scale: [2.6, 2], alpha: [1, 0.6], spin: [-200, 200], tint: 0x3a332d },
+        { sprite: 'fx.p.tarBubble', rate: 9, life: [500, 900], box: [42, 3], sizeWith: 'zone', scale: [1, 2.6], alpha: [1, 0], tint: 0xffffff },
         { sprite: 'fx.p.snow', rate: 3, life: [300, 500], box: [40, 2], sizeWith: 'zone', speed: [4, 12], angle: [-100, -80], scale: [1, 0.3], alpha: [0.8, 0], tint: 0xe8e2d8 },
       ],
     },
@@ -405,7 +406,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       id: 'fx.chariot_rush',
       durationMs: 1111,
       timedBy: 'run',
-      sprites: [runner('fx.p.chariot', 170, 4, 3, 1.25), pennantOn(170, 4, -18, -58, 0.8)],
+      sprites: [runner('fx.p.chariot', 170, 5, 3, 1.6), pennantOn(170, 5, -23, -74, 1)],
       particles: [
         { ...dust(10, 1.4), tint: 0xd8ccb4 },
         { sprite: 'fx.p.dust', rate: 36, life: [360, 640], speed: [10, 50], angle: [-175, -120], spread: 8, scale: [0.7, 1.6], alpha: [0.8, 0], followMove: true, tint: 0xd8ccb4 },
@@ -419,13 +420,14 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 1100,
       sprites: [
         ...strikeFlight('fx.p.goldArrow', -120, -280, 0.06, 1000, 1.7, true),
-        { sprite: 'fx.p.sunburst', life: 520, delay: 60, keys: [{ t: 0, sx: 0.8, sy: 0.8, a: 1, r: 0 }, { t: 0.25, sx: 3.4, sy: 3.4, a: 0.9, r: 20 }, { t: 1, sx: 4.4, sy: 4.4, a: 0, r: 45 }] },
-        { ...bloom(2.4, 420, 0xfff2d6, 0.7), delay: 60 },
-        { ...flash(1.5, 0xffffff, 80), delay: 60 },
-        { ...ring(3, 380, 0xfff2d6, 0.8), delay: 60 },
+        { sprite: 'fx.p.sunburst', life: 620, delay: 60, keys: [{ t: 0, sx: 1.2, sy: 1.2, a: 1, r: 0 }, { t: 0.2, sx: 6, sy: 6, a: 0.95, r: 20 }, { t: 1, sx: 7.6, sy: 7.6, a: 0, r: 50 }], tint: 0xfff0cc },
+        { sprite: 'fx.p.pillar', life: 420, delay: 40, keys: [{ t: 0, sx: 0.6, sy: 2.2, a: 0.9 }, { t: 0.2, sx: 1.4, sy: 2.2, a: 0.7 }, { t: 1, sx: 0.2, sy: 2.2, a: 0 }], tint: 0xfff2d6, blendAdd: true },
+        { ...bloom(3.6, 480, 0xfff2d6, 0.8), delay: 60 },
+        { ...flash(2.2, 0xffffff, 80), delay: 60 },
+        { ...ring(4.6, 420, 0xfff2d6, 0.8), delay: 60 },
       ],
       particles: [
-        { sprite: 'fx.p.xp', count: 10, life: [380, 700], speed: [90, 200], angle: [-180, 0], spread: 4, delay: [60, 80], gravity: 120, scale: [1.2, 0.3], alpha: [1, 0], tint: 0xfff2d6, blendAdd: true },
+        { sprite: 'fx.p.xp', count: 16, life: [420, 800], speed: [120, 260], angle: [-180, 0], spread: 4, delay: [60, 80], gravity: 120, scale: [1.8, 0.4], alpha: [1, 0], tint: 0xfff2d6, blendAdd: true },
         { ...sparks(4, [140, 240]), delay: [60, 70] },
       ],
     },
@@ -439,8 +441,8 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 8000,
       loops: true,
       sprites: [
-        ...[-44, -30, -18, -6, 6, 18, 30, 44].map((x, i) => dropIn('fx.p.caltrop', x, i * 25, { y: i % 2 === 0 ? 2 : -2, scale: 1.7, from: 60, r: (i * 47) % 40 - 20 })),
-        ...[-38, -12, 12, 38].map((x, i) => dropIn('fx.p.caltrop', x, 60 + i * 30, { y: 4, scale: 1.4, from: 50, r: 15 })),
+        ...[-44, -30, -18, -6, 6, 18, 30, 44].map((x, i) => dropIn('fx.p.caltrop', x, i * 25, { y: i % 2 === 0 ? 2 : -2, scale: 2.6, from: 70, r: (i * 47) % 40 - 20 })),
+        ...[-38, -12, 12, 38].map((x, i) => dropIn('fx.p.caltrop', x, 60 + i * 30, { y: 4, scale: 2.2, from: 60, r: 15 })),
       ],
       particles: [
         { ...dust(8, 0.9), box: [44, 2], sizeWith: 'zone', delay: [120, 220] },
@@ -453,12 +455,12 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 1000,
       loops: true,
       sprites: [
-        crossing('fx.p.oilWave', [{ t: 0, x: -52, y: 0, sx: 0.6, sy: 0.4, a: 0 }, { t: 0.08, x: -48, sx: 1.3, sy: 1.4, a: 1 }, { t: 0.5, x: 0, sx: 1.5, sy: 1.25, a: 1 }, { t: 0.92, x: 46, sx: 1.4, sy: 1.1, a: 1 }, { t: 1, x: 50, sx: 1, sy: 0.4, a: 0 }]),
+        crossing('fx.p.oilWave', [{ t: 0, x: -52, y: 0, sx: 1, sy: 0.6, a: 0 }, { t: 0.08, x: -48, sx: 2.2, sy: 2.4, a: 1 }, { t: 0.5, x: 0, sx: 2.5, sy: 2.1, a: 1 }, { t: 0.92, x: 46, sx: 2.3, sy: 1.8, a: 1 }, { t: 1, x: 50, sx: 1.6, sy: 0.6, a: 0 }]),
         { sprite: 'fx.p.tarPool', life: 0, sizeWith: 'zone', keys: [{ t: 0, x: -50, sx: 0, sy: 0.8, a: 0.9, y: 2 }, { t: 1, x: 0, sx: 1, sy: 0.8, a: 0.85, y: 2 }], tint: 0xb8a88e },
       ],
       particles: [
-        { sprite: 'fx.p.smoke', rate: 40, life: [600, 1100], speed: [20, 60], angle: [-120, -60], spread: 12, gravity: -60, drag: 1.2, scale: [0.8, 2], alpha: [0.75, 0], followMove: true, tint: 0xf2eee8 },
-        { sprite: 'fx.p.oilDrop', rate: 34, life: [300, 520], speed: [80, 190], angle: [-140, -40], spread: 10, gravity: 900, scale: [1.3, 1], alpha: [1, 0.6], followMove: true },
+        { sprite: 'fx.p.smoke', rate: 44, life: [700, 1200], speed: [30, 80], angle: [-120, -60], spread: 16, gravity: -60, drag: 1.2, scale: [1.4, 3.4], alpha: [0.8, 0], followMove: true, tint: 0xf2eee8 },
+        { sprite: 'fx.p.oilDrop', rate: 40, life: [320, 560], speed: [120, 260], angle: [-140, -40], spread: 14, gravity: 900, scale: [2.2, 1.6], alpha: [1, 0.6], followMove: true },
         { sprite: 'fx.p.smoke', count: 8, delay: [950, 1000], life: [900, 1500], speed: [10, 40], angle: [-110, -70], box: [45, 2], sizeWith: 'zone', gravity: -40, scale: [0.8, 1.8], alpha: [0.6, 0], tint: 0xf2eee8 },
       ],
     },
@@ -467,7 +469,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       id: 'fx.knights_charge',
       durationMs: 1125,
       timedBy: 'run',
-      sprites: [runner('fx.p.knight', 200, 5, 3, 1.15), pennantOn(200, 5, 34, -50, 0.6)],
+      sprites: [runner('fx.p.knight', 200, 6, 3, 1.45), pennantOn(200, 6, 43, -63, 0.75)],
       particles: [
         { ...dust(10, 1.4), tint: 0xd8ccb4 },
         { sprite: 'fx.p.dust', rate: 34, life: [360, 640], speed: [10, 50], angle: [-175, -120], spread: 8, scale: [0.7, 1.6], alpha: [0.8, 0], followMove: true, tint: 0xd8ccb4 },
@@ -689,13 +691,13 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 1714,
       timedBy: 'run',
       sprites: [
-        runner('fx.p.tank', 110, 1.2, 0.8, 1.25),
-        pennantOn(110, 1.2, -16, -40, 0.7),
-        { ...bloom(1.8, 220, 0xfff0d0, 0.8), keys: [{ t: 0, x: 60, y: -36, sx: 0.6, sy: 0.6, a: 0.9 }, { t: 1, x: 66, y: -36, sx: 1.8, sy: 1.8, a: 0 }] },
-        { sprite: 'fx.p.muzzleFlash', life: 90, keys: [{ t: 0, x: 52, y: -36, sx: 2.6, sy: 2.2, a: 1 }, { t: 1, x: 56, y: -36, sx: 3, sy: 1.4, a: 0 }] },
+        runner('fx.p.tank', 110, 1.4, 0.8, 1.55),
+        pennantOn(110, 1.4, -20, -50, 0.85),
+        { ...bloom(2.2, 240, 0xfff0d0, 0.8), keys: [{ t: 0, x: 72, y: -43, sx: 0.7, sy: 0.7, a: 0.9 }, { t: 1, x: 80, y: -43, sx: 2.2, sy: 2.2, a: 0 }] },
+        { sprite: 'fx.p.muzzleFlash', life: 90, keys: [{ t: 0, x: 62, y: -43, sx: 3.2, sy: 2.6, a: 1 }, { t: 1, x: 66, y: -43, sx: 3.6, sy: 1.6, a: 0 }] },
       ],
       particles: [
-        { sprite: 'fx.p.smoke', count: 6, life: [700, 1100], box: [8, 4], speed: [30, 80], angle: [-40, 20], gravity: -20, drag: 1.4, scale: [0.8, 2], alpha: [0.7, 0], tint: 0xdcd8d2 },
+        { sprite: 'fx.p.smoke', count: 7, life: [700, 1100], box: [8, 4], speed: [30, 80], angle: [-40, 20], gravity: -20, drag: 1.4, scale: [1.2, 2.8], alpha: [0.75, 0], tint: 0xdcd8d2 },
         { sprite: 'fx.p.dust', rate: 30, life: [400, 700], speed: [10, 40], angle: [-175, -120], spread: 10, scale: [0.8, 1.8], alpha: [0.8, 0], followMove: true, tint: 0xc9bfae },
         { sprite: 'fx.p.smoke', rate: 10, life: [600, 1000], speed: [10, 30], angle: [-150, -110], spread: 6, gravity: -30, scale: [0.4, 1.1], alpha: [0.55, 0], followMove: true, tint: 0x8e8984 },
         { sprite: 'fx.p.clod', rate: 12, life: [260, 420], speed: [60, 140], angle: [-170, -120], spread: 10, gravity: 800, scale: [0.9, 0.7], alpha: [1, 0.5], spin: [-400, 400], followMove: true },
@@ -832,7 +834,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 1000,
       timedBy: 'run',
       sprites: [
-        runner('fx.p.comet', 120, 2, 0, 1.5, -16),
+        runner('fx.p.comet', 120, 2, 0, 1.9, -18),
         { sprite: 'fx.p.glow', life: 0, moveBy: 'distance', blendAdd: true, keys: [{ t: 0, y: -16, sx: 3, sy: 2, a: 0.6 }, { t: 1, y: -16, sx: 3, sy: 2, a: 0.6 }], tint: 0xe7dcff },
         { ...flash(2, 0xe7dcff, 90), keys: [{ t: 0, y: -16, sx: 1, sy: 1, a: 1 }, { t: 1, y: -16, sx: 2.4, sy: 2.4, a: 0 }] },
       ],
