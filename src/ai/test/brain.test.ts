@@ -151,9 +151,12 @@ describe('power (A2.9.9)', () => {
     // Two kills (2 × 65) and a full-HP Bonker (0.4 × 50 × 140 / 400 = 7): 137 gold → ROI 13,700.
     const units = [...crowd(2), unit(0, 'bonker', 530, { hp: 40000 })];
     expect(castsAt(5, obs(units))).toBe(true); // bar 12,000
-    expect(castsAt(7, obs(units))).toBe(false); // bar 15,000
-    // Four kills: 260 → ROI 26,000 clears X's 18,000.
-    expect(castsAt(10, obs(crowd(4)))).toBe(true);
+    expect(castsAt(5, obs(units), { powerRoiBp: 14000 })).toBe(false);
+    // One kill and chip damage on four more: 65 + 4 × 7 = 93 → ROI 9,300 clears VII's and X's 9,000, not V's.
+    const thin = [...crowd(1, 5000, 600), ...crowd(4, 40000, 610)];
+    expect(castsAt(7, obs(thin))).toBe(true);
+    expect(castsAt(10, obs(thin))).toBe(true);
+    expect(castsAt(5, obs(thin))).toBe(false);
   });
 
   it('easy tiers waste casts on chip damage; better tiers wait for kills', () => {
@@ -169,12 +172,13 @@ describe('power (A2.9.9)', () => {
     const units = [...crowd(2), unit(0, 'bonker', 530, { hp: 40000 })];
     const patient = brainFor({ tier: 5, weights: { patience: 95 } }).brain;
     expect(kinds(decide(patient, obs(units)))).not.toContain('power');
-    const { brain: plain6 } = brainFor({ tier: 6 }); // 13,500
-    expect(kinds(decide(plain6, obs(units)))).toContain('power');
-    const patient6 = brainFor({ tier: 6, weights: { patience: 95 } }).brain; // 15,300
-    expect(kinds(decide(patient6, obs(units)))).not.toContain('power');
-    const eager = brainFor({ tier: 6, weights: { patience: 0 } }).brain; // 13,500 − 2,000
+    const { brain: plain5 } = brainFor({ tier: 5 }); // 12,000
+    expect(kinds(decide(plain5, obs(units)))).toContain('power');
+    // A bar of 14,000 with patience 0 is 12,000: it casts; with patience 95 it is 15,800: it waits.
+    const eager = brainFor({ tier: 5, tierOverride: { powerRoiBp: 14000 }, weights: { patience: 0 } }).brain;
     expect(kinds(decide(eager, obs(units)))).toContain('power');
+    const patient14 = brainFor({ tier: 5, tierOverride: { powerRoiBp: 14000 }, weights: { patience: 95 } }).brain;
+    expect(kinds(decide(patient14, obs(units)))).not.toContain('power');
   });
 
   it('never counts enemies past the Home line for a Home power', () => {
@@ -188,7 +192,7 @@ describe('power (A2.9.9)', () => {
   });
 
   it('tier X casts on any value while its own base is below 25%; lower tiers keep their bar', () => {
-    // Five full-HP Bonkers: ROI 7,000, far below X's 18,000.
+    // Five full-HP Bonkers: ROI 7,000, below X's 9,000.
     const units = crowd(5, 20000);
     expect(castsAt(10, obs(units))).toBe(false);
     expect(castsAt(10, obs(units, { baseHpBp: 2000 }))).toBe(true);
@@ -309,9 +313,9 @@ describe('power (A2.9.9)', () => {
   });
 
   it('counter-timing (X): the Home bar rises by 3,000 while the enemy banks', () => {
-    // Three kills and chip damage on a fourth: ROI 20,200 clears X's 18,000, not 21,000. The enemy army
-    // is 200 gold (< 300); the gold estimate says whether it is banking.
-    const units = crowd(3, 5000, 600).concat([unit(0, 'bonker', 700, { hp: 40000 })]);
+    // One kill and chip damage on four more: ROI 9,300 clears X's 9,000, not 12,000. The enemy army is
+    // 250 gold (< 300); the gold estimate says whether it is banking.
+    const units = [...crowd(1, 5000, 600), ...crowd(4, 40000, 610)];
     const o = obs(units, { tick: 1200 });
     const mem = new BotMemory(book);
     mem.estimator.gold = 500 * MILLI;

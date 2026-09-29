@@ -36,7 +36,7 @@ import { oddsModel } from '@/ui/components/oddsModel';
 import '@/ui/theme.css';
 import '@/app/capsules/capsuleHost.css';
 import { BENCH_CASES, type BenchCase } from './cases';
-import { bodySamplePoints, mountDrumGallery } from './drumGallery';
+import { bodySamplePoints, gemSamplePoints, mountDrumGallery } from './drumGallery';
 
 /** The drum gallery's pseudo case id. */
 const DRUMS = 'drums';
@@ -187,7 +187,7 @@ export default function CapsuleBench() {
     if (!app || caseId !== DRUMS) return;
     const gallery = mountDrumGallery(app);
     const w = window as unknown as { __drumGallery?: object };
-    w.__drumGallery = { gallery, points: bodySamplePoints() };
+    w.__drumGallery = { gallery, points: bodySamplePoints(), pointsFor: bodySamplePoints, gems: gemSamplePoints() };
     return () => {
       delete w.__drumGallery;
       gallery.destroy();

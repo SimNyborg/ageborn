@@ -1112,6 +1112,16 @@ export class BattleView {
     }
   }
 
+  /** The ids of a side's `max` frontmost live units (own-frame p high to low, ties to the lower id). */
+  private frontmostUnits(side: Side, max: number): number[] {
+    return this.sim.state.units
+      .filter((u) => u.side === side && u.mode !== 'dying' && u.hp > 0)
+      .map((u) => ({ id: u.id, p: side === 0 ? u.x : -u.x }))
+      .sort((a, b) => b.p - a.p || a.id - b.id)
+      .slice(0, Math.max(0, max))
+      .map((u) => u.id);
+  }
+
   /** True when a world x is near enough the view to be worth emitting particles for (A17.7). */
   private nearView(x: number): boolean {
     return x >= this.viewL - CULL_LU && x <= this.viewR + CULL_LU;
@@ -1424,9 +1434,13 @@ export class BattleView {
         if (a.follow && a.at.k === 'unit') this.follow(handles, a.at.id, a.at.part ?? 'hit', at);
         return;
       }
-      case 'fxUnits':
+      case 'fxUnits': {
+        // A capped buff glows on the side's `max` frontmost units (own-frame p high to low, ties to the
+        // lower id), as the sim picks them (A2.9.6).
+        const front = a.max !== undefined ? new Set(this.frontmostUnits(a.side, a.max)) : null;
         for (const e of this.units.values()) {
           if (e.side !== a.side || e.dying || !this.nearView(e.x)) continue;
+          if (front && !front.has(e.id)) continue;
           if (a.roles && !(e.def && a.roles.includes(e.def.role))) continue;
           const at = this.anchor({ k: 'unit', id: e.id, part: 'hit' });
           const handles: ParticleHandle[] = [];
@@ -1434,6 +1448,7 @@ export class BattleView {
           this.follow(handles, e.id, 'hit', at);
         }
         return;
+      }
       case 'fxFly': {
         const from = this.anchor(a.from);
         const target = this.hudTarget(a.to);
@@ -1512,6 +1527,7 @@ export class BattleView {
         this.numbers.show(a.kind, a.value, this.anchor(a.at), {
           important: a.important,
           ...(a.key !== undefined ? { key: a.key } : {}),
+          ...(a.mergeMs !== undefined ? { mergeMs: a.mergeMs } : {}),
           scale: this.camera.scale,
         });
         return;

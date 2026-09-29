@@ -153,7 +153,7 @@ export type ViewAction =
   | { a: 'fx'; effectId: EffectId; at: Anchor; count: number; priority: number; spreadLu?: number; opts?: Record<string, number>; follow?: boolean }
   /** One effect on every live unit of `side`, following each unit (Royal Decree, Nanite Surge). */
   /** An effect on every visible unit of a side; `roles` limits it to units of those roles (a research shimmer). */
-  | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number>; roles?: readonly string[] }
+  | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number>; roles?: readonly string[]; /** Only the side's `max` frontmost units (a capped buff, A2.9.6). */ max?: number }
   | { a: 'fxFly'; effectId: EffectId; from: Anchor; to: 'gold' | 'xp'; count: number; priority: number }
   | { a: 'sound'; id: SoundId; delayMs?: number; gap?: Gap; climb?: string; priority?: number }
   | { a: 'trauma'; amount: number; dir?: Pt; gap?: Gap }
@@ -168,7 +168,7 @@ export type ViewAction =
   | { a: 'musicTranspose'; semitones: number }
   | { a: 'musicLayer'; layer: MusicLayer; v: number }
   | { a: 'intensity'; amount: number }
-  | { a: 'number'; kind: 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold' | 'income'; value: number; at: Anchor; important: boolean; key?: string }
+  | { a: 'number'; kind: 'damage' | 'power' | 'base' | 'kill' | 'heal' | 'gold' | 'income'; value: number; at: Anchor; important: boolean; key?: string; /** Merge window for `key` (default the tuning's). */ mergeMs?: number }
   | { a: 'turret'; side: Side; mount: number; op: 'buildStart' | 'built' | 'sell' | 'replace' | 'fire'; card: CardId; targetId?: number }
   | { a: 'base'; side: Side; op: 'hit' | 'collapse' }
   | { a: 'baseTreasury'; side: Side; level: number }

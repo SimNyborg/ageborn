@@ -4,7 +4,7 @@ From: the lead designer, 2026-09-29 (revised after review). Owner request: more 
 
 Please apply this once the capsule-tier work has landed `'gold'` and `'platinum'` in `CapsuleTier` (`src/contracts/ids.ts`) and in the content schema's `TIER` picklist (`capsule-tiers-wp0.md`, `capsule-tiers-wp1.md`). Before that, `'gold'` does not typecheck.
 
-**Status (rules build, 2026-09-29):** `'gold'` and `'platinum'` have landed in `CapsuleTier`, the content `TIER` picklist and the save schema, so this change can be applied now. The legacy grant (`src/meta/legacyAeons.ts`) finds the finale as the War Path level whose `reward.capsule` is the top tier (`aeon`) and reads `isBeaten`; it needs no War Path edit.
+**Status (review fixes, 2026-09-29): NOT APPLIED YET.** `src/content/raw/warPath.ts` still has `bossCapsule: 'jade'` for the `future` region (the boss capsules read Bronze, Silver, Silver, Silver, Jade, Jade, **Jade**, Aeon). The capsule-tier work may not edit that file, so the War Path owner must make the one-value change in section 1 and add the test in section 3. `'gold'` and `'platinum'` are in `CapsuleTier`, the content `TIER` picklist and the save schema, so the change typechecks today. Until it lands, DESIGN A6.4 "Every source" overstates the War Path's one-time value by +3,035 Dust-equivalent and +1,240 Amber. The legacy grant (`src/meta/legacyAeons.ts`) finds the finale as the War Path level whose `reward.capsule` is the top tier (`aeon`) and reads `isBeaten`; it needs no War Path edit.
 
 ## 1. `src/content/raw/warPath.ts` (one value)
 
@@ -23,7 +23,16 @@ The capsule-tier work (WP7, `capsule-tiers-wp7.md`) reads the existing export `i
 
 ## 3. Tests and previews
 
-- Any War Path content test that pins the boss tiers (for example a list of `bossCapsule` values) must expect `gold` for the Future region.
+- Add this content test (for example in `src/content/test/meta.test.ts`, or the War Path's own content test), so the ladder of boss rewards cannot drift again. It reads each region's boss level from the compiled content instead of hard-coding ids (checked against today's content: it prints `…, 'jade', 'jade', 'jade', 'aeon'` until section 1 is applied):
+
+```ts
+it('War Path boss capsules climb the capsule ladder (A6.4 "Every source")', () => {
+  const bosses = content.warPath.order.map((id) => content.warPath.levels[id]).filter((l) => l?.role === 'boss');
+  expect(bosses.map((l) => l?.reward.capsule)).toEqual(['bronze', 'silver', 'silver', 'silver', 'jade', 'jade', 'gold', 'aeon']);
+});
+```
+
+- Any existing War Path content test that pins the boss tiers (for example a list of `bossCapsule` values) must expect `gold` for the Future region.
 - The node preview and the level sheet show the boss capsule through `CapsuleIcon` and `capsuleTier.gold.name` ("Gold Capsule"), which the capsule-tier work adds. Boss capsules have a fixed tier, so showing the tier and its Legendary crests before the fight is correct (A9, A10). No War Path string changes.
 
 ## 4. The War Path save migration

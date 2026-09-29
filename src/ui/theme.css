@@ -64,7 +64,10 @@
   --ui-tier-bronze: #c27c3a;
   --ui-tier-silver: #c9d1dc;
   --ui-tier-jade: #2fbf71;
-  --ui-tier-aeon: #8b5cf6;
+  --ui-tier-gold: #efe0b0;
+  --ui-tier-platinum: #c4f2ea;
+  /* Electric indigo since the 2026-09-29 ladder (the old violet #8b5cf6 was ΔE 5 from Epic). */
+  --ui-tier-aeon: #5d3dff;
 
   /* ---- Light (3.7): one key light from the top-left ---------------------------------------- */
   --ui-light-angle: 160deg;

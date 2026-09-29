@@ -119,7 +119,7 @@ describe('design tokens (ui-plan 3.2-3.4) are all defined', () => {
       'secondary', 'secondary-light', 'secondary-lip', 'destructive', 'destructive-light', 'destructive-lip',
       'good', 'warn', 'bad', 'info',
       'common', 'rare', 'epic', 'epic-text', 'legendary', 'team-me', 'team-me-text', 'team-foe',
-      'tier-clay', 'tier-clay-text', 'tier-bronze', 'tier-silver', 'tier-jade', 'tier-aeon',
+      'tier-clay', 'tier-clay-text', 'tier-bronze', 'tier-silver', 'tier-jade', 'tier-gold', 'tier-platinum', 'tier-aeon',
       'font-text', 'font-display', 'fs-tag', 'fs-caption', 'fs-body', 'fs-label', 'fs-title-s', 'fs-title', 'fs-headline', 'fs-display',
       's1', 's2', 's3', 's4', 's5', 's6', 's7', 'r-sm', 'r-md', 'r-lg', 'r-xl', 'r-pill',
       'e1', 'e2', 'e3', 'e4', 'e5', 'light-angle',
@@ -130,6 +130,10 @@ describe('design tokens (ui-plan 3.2-3.4) are all defined', () => {
     expect(root.get('--ui-text-3')).toBe('#a39d91');
     expect(root.get('--ui-s4')).toBe('16px');
     expect(root.get('--ui-r-md')).toBe('12px');
+    // The seven capsule tiers (the 2026-09-29 ladder; ui-plan 3.2): Aeon is indigo, never Epic's violet.
+    expect(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon'].map((t) => root.get(`--ui-tier-${t}`))).toEqual([
+      '#9c6b4a', '#c27c3a', '#c9d1dc', '#2fbf71', '#efe0b0', '#c4f2ea', '#5d3dff',
+    ]);
   });
 
   it('the compact breakpoint keeps text at 11 px or more', () => {

@@ -10,13 +10,25 @@
 import { Container, Sprite, Text, type Application } from 'pixi.js';
 import type { CapsuleTier } from '@/contracts';
 import { TIER_ORDER } from '@/capsule';
-import { CapsuleDrum } from '@/capsule/climb';
+import { bodyStops, CapsuleDrum, ornamentScaleFor, ringGemSamplePoint } from '@/capsule/climb';
+import { TIER_RAMPS } from '@/capsule/palette';
 import { roomTexture } from '@/capsule/textures';
 
-/** Drum-space x of the body gradient's highlight (offset 0.17) and mid-tone (0.64) stops, and a y between rings 1 and 2. */
-export function bodySamplePoints(): { highlight: [number, number]; mid: [number, number] } {
+/**
+ * Drum-space x of the body gradient's highlight and mid-tone stops of `tier` (0.17 and 0.64 on most
+ * drums; Gold's polished-metal gradient puts them at 0.18 and 0.46), and a y between rings 1 and 2.
+ */
+export function bodySamplePoints(tier: CapsuleTier = 'clay'): { highlight: [number, number]; mid: [number, number] } {
   const hw = 90;
-  return { highlight: [-hw + 2 * hw * 0.17 + 4, -70], mid: [-hw + 2 * hw * 0.64, -70] };
+  const stops = bodyStops(tier);
+  const ramp = TIER_RAMPS[tier];
+  const at = (c: number, fallback: number) => stops.find((s) => s.color === c)?.offset ?? fallback;
+  return { highlight: [-hw + 2 * hw * at(ramp.highlight, 0.17) + 4, -70], mid: [-hw + 2 * hw * at(ramp.mid, 0.64), -70] };
+}
+
+/** Drum-space points on the face of each lit ring gem, bottom-up (the bench's gem colour check). */
+export function gemSamplePoints(): [number, number][] {
+  return [0, 1, 2, 3, 4].map((i) => ringGemSamplePoint(i));
 }
 
 export interface DrumGallery {
@@ -53,6 +65,7 @@ export function mountDrumGallery(app: Application, tiers: readonly CapsuleTier[]
     base = h / 2 + 150 * scale;
     drums.forEach(({ d, label }, i) => {
       d.root.scale.set(scale);
+      d.setOrnamentScale(ornamentScaleFor(scale));
       d.root.position.set(x0 + i * gap, base);
       label.position.set(x0 + i * gap, base + 6);
       label.scale.set(Math.max(0.6, scale));

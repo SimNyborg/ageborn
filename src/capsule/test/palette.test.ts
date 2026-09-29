@@ -7,8 +7,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { CapsuleTier } from '@/contracts';
-import { bodyStops } from '../climb';
-import { CREST, ROOM, TIER_COLORS, TIER_RAMPS } from '../palette';
+import { bodyStops, ornamentScaleFor } from '../climb';
+import { CREST, ROOM, TIER_COLORS, TIER_RAMPS, ringGemColors } from '../palette';
 import { TIER_ORDER } from '../tiers';
 
 function lab(hex: number): [number, number, number] {
@@ -112,7 +112,7 @@ const MIN_DE = 12;
 describe('tier colours (DESIGN A10)', () => {
   it('uses the A10 keys and reference ramps', () => {
     expect(TIER_COLORS).toEqual({ clay: 0x9c6b4a, bronze: 0xc27c3a, silver: 0xc9d1dc, jade: 0x2fbf71, gold: 0xefe0b0, platinum: 0xc4f2ea, aeon: 0x5d3dff });
-    expect(TIER_RAMPS.gold).toEqual({ highlight: 0xfff6dc, key: 0xefe0b0, mid: 0xcdb887, shadow: 0x8a7a5a });
+    expect(TIER_RAMPS.gold).toEqual({ highlight: 0xfff6dc, key: 0xefe0b0, mid: 0xbca45a, shadow: 0x6b5a2a });
     expect(TIER_RAMPS.platinum).toEqual({ highlight: 0xf2fffc, key: 0xc4f2ea, mid: 0xa6d4cd, shadow: 0x7e9e99 });
     expect(TIER_RAMPS.aeon).toEqual({ highlight: 0xb8aaff, key: 0x5d3dff, mid: 0x3a2a9e, shadow: 0x241c4a });
     for (const t of TIER_ORDER) expect(TIER_RAMPS[t].key, t).toBe(TIER_COLORS[t]);
@@ -137,6 +137,32 @@ describe('tier colours (DESIGN A10)', () => {
         for (const [name, c] of Object.entries(OTHERS)) expect(deltaE2000(sample, c), `${t} ${sample.toString(16)} vs ${name}`).toBeGreaterThanOrEqual(MIN_DE);
       }
     }
+  });
+
+  it('keeps the Gold drum a metal, not ivory: its mid-tone clear of the UI parchment and deep enough to read as gold', () => {
+    const r = TIER_RAMPS.gold;
+    expect(deltaE2000(r.mid, ROOM.parchment)).toBeGreaterThanOrEqual(MIN_DE);
+    // Polished metal needs contrast: the highlight-to-shadow span is at least 4.5:1.
+    expect(contrast(r.highlight, r.shadow)).toBeGreaterThanOrEqual(4.5);
+    // The key is the champagne tier colour (chips, gems); it sits 8.6 from parchment, which is why
+    // the drum body carries the mid-tone and the icon a dark outline inside the parchment band.
+    expect(deltaE2000(TIER_COLORS.gold, ROOM.parchment)).toBeCloseTo(8.6, 0);
+  });
+
+  it('lights each ring gem in its own tier colour, clear of its neighbours and Silver of Gold (A10)', () => {
+    const rings = TIER_ORDER.slice(0, TIER_ORDER.indexOf('gold') + 1);
+    const faces = rings.map((t) => ringGemColors(t).face);
+    rings.forEach((t, i) => expect(faces[i], t).toBe(TIER_COLORS[t]));
+    for (let i = 0; i + 1 < faces.length; i++) expect(deltaE2000(faces[i]!, faces[i + 1]!), `${rings[i]} vs ${rings[i + 1]}`).toBeGreaterThanOrEqual(10);
+    expect(deltaE2000(ringGemColors('silver').face, ringGemColors('gold').face)).toBeGreaterThanOrEqual(10);
+  });
+
+  it('draws crests and summit gems larger on a phone stage (a crest shield of at least 14 CSS px)', () => {
+    expect(ornamentScaleFor(1)).toBe(1);
+    expect(ornamentScaleFor(1280 / 1280)).toBe(1);
+    const phone = Math.min(844 / 1280, 390 / 720);
+    expect(19.5 * ornamentScaleFor(phone) * phone).toBeGreaterThanOrEqual(14);
+    expect(ornamentScaleFor(0.1)).toBeLessThanOrEqual(1.5);
   });
 
   it('lists the known exceptions of the older keys and nothing else', () => {

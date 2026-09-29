@@ -37,7 +37,11 @@ export interface TierParams {
   powerAimErrorLu: number;
   /**
    * The power ROI bar (A2.9.9, replaces the old gold threshold): a cast needs value × 10,000 ÷ effective
-   * cost ≥ this, in bp (6,000 at tier 0 to 18,000 at X).
+   * cost ≥ this, in bp. P1 calibration: 6,000 at tier 0 rising to 12,000 at V, then 9,000 from VII
+   * (the A2.9.9 starting bars were 15,000 at VII and 18,000 at X). A reload spent waiting is value lost,
+   * so a picky bar made the upper tiers weaker, not stronger: tier VII vs V (Standard and Short, 240
+   * mirrored each, draws half) scored 46% at 15,000 and 50-52% at 9,000. What the upper tiers do better
+   * is choose: bait discipline, precise aim, the best strike target and the bait-then-wave play.
    */
   powerRoiBp: number;
   /** Strike aim (A2.9.9): the bot picks among its best k strike targets (3 at 0-II, 2 at III-VI, 1 from VII). */
@@ -124,8 +128,8 @@ const ROWS: readonly Row[] = [
   { tier: 1, decisionMs: 1600, snapshotMs: 900, mistakeBp: 3500, maxActions: 3, counterDepth: 0, evolveDelayMs: 8000, aimErrorLu: 200, powerRoiBp: 8000, strikeK: 3, treasuryMax: 0, goldFloat: 400, maxTurrets: 4 },
   { tier: 3, decisionMs: 1350, snapshotMs: 770, mistakeBp: 2500, maxActions: 5, counterDepth: 1, evolveDelayMs: 5000, aimErrorLu: 140, powerRoiBp: 10000, strikeK: 2, treasuryMax: 1, goldFloat: 250, maxTurrets: 4 },
   { tier: 5, decisionMs: 1100, snapshotMs: 640, mistakeBp: 1600, maxActions: 7, counterDepth: 3, evolveDelayMs: 3000, aimErrorLu: 90, powerRoiBp: 12000, strikeK: 2, treasuryMax: 2, goldFloat: 180, maxTurrets: 4 },
-  { tier: 7, decisionMs: 850, snapshotMs: 510, mistakeBp: 900, maxActions: 9, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 2000, aimErrorLu: 50, powerRoiBp: 15000, strikeK: 1, treasuryMax: 3, goldFloat: 120, maxTurrets: 4 },
-  { tier: 10, decisionMs: 500, snapshotMs: 300, mistakeBp: 300, maxActions: 12, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 500, aimErrorLu: 20, powerRoiBp: 18000, strikeK: 1, treasuryMax: 3, goldFloat: 80, maxTurrets: 4 },
+  { tier: 7, decisionMs: 850, snapshotMs: 510, mistakeBp: 900, maxActions: 9, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 2000, aimErrorLu: 50, powerRoiBp: 9000, strikeK: 1, treasuryMax: 3, goldFloat: 120, maxTurrets: 4 },
+  { tier: 10, decisionMs: 500, snapshotMs: 300, mistakeBp: 300, maxActions: 12, counterDepth: COUNTER_DEPTH_ALL, evolveDelayMs: 500, aimErrorLu: 20, powerRoiBp: 9000, strikeK: 1, treasuryMax: 3, goldFloat: 80, maxTurrets: 4 },
 ];
 
 /** Tiers where the yes/no columns switch on (A7.3). */

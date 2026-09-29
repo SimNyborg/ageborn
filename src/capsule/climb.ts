@@ -22,6 +22,12 @@ export const DRUM = { halfW: 90, height: 262 } as const;
 
 /** Heights (drum coordinates, y up is negative) of the five carved age rings, bottom to top. */
 const RING_Y = [-62, -91, -120, -149, -178];
+/** A ring gem's half-width and half-height (drum units). */
+const RING_GEM = { w: 8, h: 10.4 } as const;
+/** Where lit ring gem `i`'s own face colour shows (drum coordinates): the middle of its lower-right face, clear of the facets, rim and glint. */
+export function ringGemSamplePoint(i: number): [number, number] {
+  return [RING_GEM.w * 0.22, (RING_Y[i] ?? 0) + 5 + RING_GEM.h * 0.25];
+}
 /** Body, the upper brass (crest) band and the stone cap band. */
 const BODY = { top: -192, bottom: -40 } as const;
 const CREST_BAND = { top: -214, bottom: -192 } as const;
@@ -121,6 +127,19 @@ export function bodyStops(tier: CapsuleTier): { offset: number; color: number }[
       { offset: 0.38, color: r.shadow },
       { offset: 0.8, color: r.shadow },
       { offset: 1, color: shade(r.shadow, -0.45) },
+    ];
+  }
+  if (tier === 'gold') {
+    // Polished gold: a narrow specular band over the champagne key, then the deep old-gold mid-tone
+    // and a dark shadow carry most of the body, so it reads as metal and not as ivory.
+    return [
+      { offset: 0, color: shade(r.shadow, -0.25) },
+      { offset: 0.09, color: r.mid },
+      { offset: 0.18, color: r.highlight },
+      { offset: 0.26, color: r.key },
+      { offset: 0.46, color: r.mid },
+      { offset: 0.8, color: r.shadow },
+      { offset: 1, color: shade(r.shadow, -0.4) },
     ];
   }
   return [
@@ -363,17 +382,24 @@ export function drawDrum(g: GraphicsContext, state: DrumState, o: DrawOptions = 
     g.moveTo(-hw + 3, y + 3).quadraticCurveTo(0, y + 13, hw - 3, y + 3).stroke({ width: 1.6, color: ramp.highlight, alpha: tier === 'aeon' ? 0.35 : 0.5 });
     const gy = y + 5;
     // A dark bezel under every gem, so its own colour reads on the light materials too (Silver to Platinum).
-    g.poly([0, gy - 12.5, 10, gy, 0, gy + 12.5, -10, gy]).fill({ color: bodyLine, alpha: 0.85 });
+    const [gw, gh] = [RING_GEM.w, RING_GEM.h];
+    if (on) {
+      // A soft glow of the gem's own colour behind its bezel (the pulsing ring light stays off the face).
+      const own = TIER_COLORS[tierAt(i)];
+      g.circle(0, gy, 16).fill({ color: own, alpha: 0.22 });
+      g.circle(0, gy, 13).fill({ color: own, alpha: 0.3 });
+    }
+    g.poly([0, gy - gh - 3.5, gw + 3, gy, 0, gy + gh + 3.5, -gw - 3, gy]).fill({ color: bodyLine, alpha: 0.85 });
     if (on) {
       // The gem face is its tier's own key colour (A10: the drum reads brown, bronze, silver, green,
       // champagne bottom-up); a dark rim, cel facets and one small glint, so no white washes it out.
       const gem = ringGemColors(tierAt(i));
-      g.poly([0, gy - 9, 7, gy, 0, gy + 9, -7, gy]).fill(gem.face).stroke({ width: 1.6, color: gem.rim });
-      g.poly([0, gy - 7.6, 5.6, gy, 0, gy]).fill({ color: gem.light, alpha: 0.75 });
-      g.poly([0, gy, -5.6, gy, 0, gy + 7.6]).fill({ color: gem.dark, alpha: 0.75 });
-      g.poly([-1.6, gy - 4.6, 0, gy - 6.4, 1.2, gy - 4.6, 0, gy - 3.2]).fill({ color: 0xffffff, alpha: 0.85 });
+      g.poly([0, gy - gh, gw, gy, 0, gy + gh, -gw, gy]).fill(gem.face).stroke({ width: 1.6, color: gem.rim });
+      g.poly([0, gy - gh * 0.84, gw * 0.8, gy, 0, gy]).fill({ color: gem.light, alpha: 0.75 });
+      g.poly([0, gy, -gw * 0.8, gy, 0, gy + gh * 0.84]).fill({ color: gem.dark, alpha: 0.75 });
+      g.poly([-1.8, gy - gh * 0.5, 0, gy - gh * 0.7, 1.4, gy - gh * 0.5, 0, gy - gh * 0.35]).fill({ color: 0xffffff, alpha: 0.85 });
     } else {
-      g.poly([0, gy - 9, 7, gy, 0, gy + 9, -7, gy]).fill(shade(stone, -0.35)).stroke({ width: 2.5, color: stoneLine });
+      g.poly([0, gy - gh, gw, gy, 0, gy + gh, -gw, gy]).fill(shade(stone, -0.35)).stroke({ width: 2.5, color: stoneLine });
     }
   });
   // Cel highlight: one shape per part (A11).
@@ -805,7 +831,6 @@ export class CapsuleDrum {
     const gap = 14;
     RING_Y.forEach((y, i) => {
       if (i >= lit) return;
-      const own = TIER_COLORS[tierAt(i)];
       for (const [from, to] of [
         [-DRUM.halfW + 6, -gap],
         [gap, DRUM.halfW - 6],
@@ -815,7 +840,6 @@ export class CapsuleDrum {
         arc(y, from, to);
         g.stroke({ width: 2.5, color: shade(c, 0.6), alpha: 0.7 * soft, cap: 'round' });
       }
-      g.circle(0, y + 5, 15.5).stroke({ width: 5, color: own, alpha: 0.28 + 0.3 * soft });
     });
     const L = ornamentLayout(this.ornScale);
     this.stateNow.gems.forEach((gt, i, a) => {

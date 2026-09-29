@@ -14,8 +14,8 @@
  *   from `skinMinRarity` up, renormalised: Gold and Platinum 78/18/4, Aeon 81.82/18.18).
  *   Gate policy (C4.5): the k chi-square checks of one run share the 0.01 false-alarm budget, so each
  *   passes at p > 0.01 / k. A correct build then fails a run by chance at most 1% of the time, not
- *   about k% as with 0.01 per check; a real bias still fails (a 1-point shift in a 15 bp tier gives
- *   p < 1e-6 in the full run).
+ *   about k% as with 0.01 per check; a real bias still fails (a Supply Aeon at 20 bp instead of 15
+ *   gives χ² ≈ 33, p < 0.00001, in the full run).
  * - **Zero violations**: the tier's stack count and guaranteed rarities; `guaranteed` Legendaries as
  *   that many different cards, the extra ones holding `extraLegendaryCopies`; a skin in every sure-skin
  *   tier, never below `skinMinRarity`; capsule skins never move the Wardrobe pity counters; the honest

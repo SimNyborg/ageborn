@@ -1162,7 +1162,7 @@ Amber nodes pay 100 + 20 × (trophies / 100). Road capsules have a fixed tier an
 
 Stacks, Legendaries, Epic guarantees, Amber, Dust and skin chance never fall going up the ladder. Foils stay purely rolled on every stack: no tier has a foil floor (A15.11, A15.22). Tier data fields (`CapsuleTierDef`): `extraLegendaryCopies` (1 for Platinum and Aeon), `skinChanceBp` (Gold 3,000, Platinum and Aeon 10,000), `skinMinRarity` (Aeon `epic`), `exclusiveItems` (Aeon); tables: `summitAbove: 'gold'`, `legendaryCatchUp: true`, `exclusiveCompleteDust: 500`, `exclusiveCraftDust: 3000`. The content bag size is the sum of the bag counts. The collection item chance (`capsuleChanceBp`, A18.9.4) is Clay 800, Bronze 1,200, Silver 2,000, Jade 3,500, Gold 6,000, Platinum 8,000, Aeon 10,000 bp.
 
-Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsules carry about ×1.75 copies and Amber so the time to max a card stays as before (A17.13). The 2026-09-29 ladder was checked with the economy sim over 100 seeds (median days to max Common / Rare / Epic / Legendary 107.5 / 99.5 / 66.5 / 112 against 110.3 / 101 / 69 / 111.5 before; details in `docs/decisions.md`). Expected values per bag capsule, before pity: 16.1 copies, 411 Amber and 13 Dust (was 15.7, 399 and 7; before A17 9.1 and 227). The per-tier expected copies come from `meta/economy.ts`.
+Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsules carry about ×1.75 copies and Amber so the time to max a card stays as before (A17.13). The 2026-09-29 ladder was checked with the economy sim over 100 seeds on the shipped code (median days to max Common / Rare / Epic / Legendary 108.5 / 97.3 / 66 / 111.5 against 110.3 / 101 / 69 / 111.5 before; details in `docs/decisions.md`). Expected values per bag capsule, before pity: 16.1 copies, 411 Amber and 13 Dust (was 15.7, 399 and 7; before A17 9.1 and 227). The per-tier expected copies come from `meta/economy.ts`.
 
 **Aeon Collection** (the top-tier exclusive, A18.9.4 items with source `{ kind: 'capsuleTier', tier: 'aeon' }`, rarity Legendary): Aeon Hourglass (decoration), Eternal Dawn (base flag), Frozen Moment (emote, `frozen_moment`) and the quote "Well met, across the ages!". They come from Aeon Capsules, one the player lacks in each Aeon until the set is complete. Once the save has opened an Aeon (`flags['capsule.first.aeon']`), each can also be crafted for 3,000 Dust (the Legendary crate-skin price), so the set keeps A15.1 rule 2's crafting path. They are never tradable or sold and never leave the game. An engaged player completes the set in about 2-3 months, mostly through the skill Aeons; a casual player opens a first Aeon after about 6 months and can then craft the rest. Class: Grey (a random cosmetic); safeguards: earned, pre-rolled, no duplicates, the bag and three skill Aeons guarantee access, a crafting path, set progress on the odds panel, no value number.
 
@@ -1183,7 +1183,7 @@ Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsul
    - A stack set by new-card protection picks only unowned cards.
 5. Each stack rolls a foil on a 10,000-bp scale: Holo 25 bp (0.25%), Silver foil 100 bp (1%), Bronze foil 400 bp (4%), else none. A foil unlocks for that card if it beats the one owned. No tier sets a foil floor.
 6. Owned cards at max level convert their copies to Dust at reveal time (shown on the card).
-7. Skin: with the tier's skin chance, one crate skin at Wardrobe odds from `skinMinRarity` up (Platinum: Rare 78%, Epic 18%, Legendary 4%; Aeon: Epic 82%, Legendary 18%); no duplicate until every crate skin of that rarity is owned. Capsule skins never read or advance the Wardrobe pity counters.
+7. Skin: with the tier's skin chance, one crate skin at Wardrobe odds from `skinMinRarity` up, renormalised (Gold and Platinum: Rare 78%, Epic 18%, Legendary 4%; Aeon: the Wardrobe weights 1,800 : 400, so Epic 81.82% and Legendary 18.18%, exactly 9 : 2); no duplicate until every crate skin of that rarity is owned. Capsule skins never read or advance the Wardrobe pity counters. The odds panel prints each tier's split next to its skin line, from the same weights.
 8. Aeon Collection item (on the `rng.cosmetic` stream, so the cards never change): while the player lacks an Aeon Collection item that no unopened capsule holds, the Aeon's collection item is one of those (uniform). Once all 4 are owned, it rolls the normal capsule collection pool and adds 500 Dust.
 
 **Other capsule types:**
@@ -1286,23 +1286,23 @@ In battle, a unit's level shows as a trim on its ground ring: bronze at L4-6, si
 
 ### A6.9 Pacing check (engaged player: 4 charged ladder wins at 60%, Supply Capsule, 3 quests)
 
-Rebased 2026-09-29 on the measured values (88 cards, A17; the capsule ladder, A6.4). "Measured" is the median of 100 seeds of `tools/economy.ts` with the 2026-09-29 ladder. The time-to-max targets are today's measured medians, because the owner's rule is "keep today's time to max a card" (A17.18 question 5); the old 55-card values (9.1 copies, 227 Amber, ~48 copies a day) are retired.
+Rebased 2026-09-29 on the measured values (88 cards, A17; the capsule ladder, A6.4). "Measured" is the median of 100 seeds (1-100) of `tools/economy.ts` on the shipped code with the 2026-09-29 ladder (re-measured in the review fixes; the first figures came from a prototype that consumed the RNG differently). The time-to-max targets are today's measured medians, because the owner's rule is "keep today's time to max a card" (A17.18 question 5); the old 55-card values (9.1 copies, 227 Amber, ~48 copies a day) are retired.
 
 | Measure | Target (±20%) | Measured |
 |---|---|---|
 | Copies per bag capsule | 16.0 | 15.9 (16.05 expected before pity) |
 | Amber per bag capsule | 411 | 411 |
 | Capsules per day | 4 win + 1 Supply + ~0.9 Clay meter | as targeted |
-| Daily income | ~98 copies and ~3,030 Amber | 97.8 and 3,030 |
-| Common to max (153 copies) | 110 days | 107.5 |
-| Rare to max (130 copies) | 101 days | 99.5 |
-| Epic to max (44 copies) | 69 days | 66.5 |
-| Legendary to max (11 copies each) | 112 days | 112 |
+| Daily income | ~98 copies and ~3,030 Amber | 97.6 and 3,036 |
+| Common to max (153 copies) | 110 days | 108.5 |
+| Rare to max (130 copies) | 101 days | 97.3 |
+| Epic to max (44 copies) | 69 days | 66 |
+| Legendary to max (11 copies each) | 112 days | 111.5 (p10-p90 97-124; worst year 138) |
 | All 8 Legendaries owned | ~2 weeks (script, pity, no duplicates) | 9 days (open: Phase 3) |
-| Focused War Plan at L7 | ~6 weeks, faster with Dust crafting | 78 days (open: Phase 3) |
-| Whole collection maxed | ~5-5.5 months, copies and Amber finishing within 30 days of each other | copies at 192.5 days, Amber at 143 (gap 50 days; open: Phase 3) |
+| Focused War Plan at L7 | ~6 weeks, faster with Dust crafting | 82.5 days (78 before the ladder; open: Phase 3) |
+| Whole collection maxed | ~5-5.5 months, copies and Amber finishing within 30 days of each other | copies at 200 days (p90 227, worst 310), Amber at 143 (gap 57 days; open: Phase 3) |
 
-A 365-day economy sim (B12) MUST confirm these figures within ±20%, gating on the median of 30 seeds (one seed is too noisy: today's seed 1 misses the old Rare band on its own), and keep the gap between the copy and Amber finish dates under 30 days before release. The four rows marked open miss today too; they are Phase 3 tuning items and were not caused by the capsule ladder. Phase 3 re-runs it with the A15 sources (Supply Capsules, charges banking 28, the War Chest at 20, rewards by format, Dust from feats); these gates stay and nothing new is gated (A15.20).
+A 365-day economy sim (B12) MUST confirm these figures within ±20%, gating on the median of 30 seeds (one seed is too noisy: today's seed 1 misses the old Rare band on its own), and keep the gap between the copy and Amber finish dates under 30 days before release. The four rows marked open missed before the ladder too; they are Phase 3 tuning items. One of them moved: the Legendary catch-up (A6.4 step 4) makes the focused War Plan reach L7 about 3.5 days later (79 days without catch-up, 82.5 with, same 100 seeds; 78 before the ladder). Once every Legendary is owned, catch-up aims Legendary copies at the Legendaries furthest from max, and those are not the War Plan's (the plan's cards are upgraded first). Accepted: the row misses its 6-week target by far either way, and catch-up is what brings the whole collection in 8.5 days sooner (208.5 → 200 days; p90 248 → 227). Phase 3 re-runs it with the A15 sources (Supply Capsules, charges banking 28, the War Chest at 20, rewards by format, Dust from feats); these gates stay and nothing new is gated (A15.20).
 
 ### A6.10 Conquest (mastery board)
 
@@ -1592,7 +1592,7 @@ Tier colours (none of them is a rarity colour). Every new or changed key (Gold, 
 | Bronze | #C27C3A | cast bronze, verdigris in the grooves |
 | Silver | #C9D1DC | polished sterling |
 | Jade | #2FBF71 | carved translucent jade, brass fittings |
-| Gold | #EFE0B0 champagne (ΔE 12.3 from the primary button light, 17.8 from Legendary) | champagne gold (ramp #FFF6DC / #EFE0B0 / #CDB887 / #8A7A5A; no saturated gold), lapis enamel (#2B4C9B) in the ring grooves; 1 crest |
+| Gold | #EFE0B0 champagne (ΔE 12.3 from the primary button light, 17.8 from Legendary) | polished gold (ramp #FFF6DC / #EFE0B0 / #BCA45A / #6B5A2A: a narrow specular band over the champagne key, then a deep old-gold mid-tone and a dark shadow, so it reads as metal and not as ivory; key and mid-tone stay ≥ 12 from Legendary and every button gold, the mid-tone ≥ 12 from the UI parchment), lapis enamel (#2B4C9B) in the ring grooves; 1 crest |
 | Platinum | #C4F2EA ice platinum | brushed platinum with streak highlights and a thin-film prismatic edge (ramp #F2FFFC / #C4F2EA / #A6D4CD / #7E9E99); 2 crests; the first summit gem |
 | Aeon | #5D3DFF electric indigo (was violet #8B5CF6, ΔE 5 from Epic; now 13.2 from Epic and 13.1 from the nearest team blue) | faceted time crystal: a midnight body (#241C4A) with a drifting starfield, indigo facets (#3A2A9E, #5D3DFF), highlights #B8AAFF and white-gold filigree; 3 crests; the second summit gem |
 
@@ -1618,7 +1618,8 @@ Rules:
 - "Open all" shows the summary plus any Epic-or-better reveals. A batch holding a Platinum or Aeon ends its volley with that tier's stinger and a 600 ms flare, and a batch with first-of-tier capsules shows one combined banner for the highest first tier (all within 2 s).
 - Rarity colours appear in UI only: Common #B8C0CC, Rare #22B8CF, Epic #A855F7, Legendary #F5B82E. Legendary units in the lane get a neutral white aura instead.
 - **Quick reveal** (Settings, default Off, A15.6): when on, every capsule opens at step 4 (burst), as Trophy Road capsules do. Rarity pre-signals, walkouts and skips are unchanged; summit strikes are skipped, and the tier's crests, stinger and first-of-tier step stay.
-- **Reduce motion:** rings, summit gems and crests fade in over 150 ms; no push, tilt or shake; at most 3 flashes a second at ≤ 20%.
+- **Reduce motion:** rings, summit gems and crests fade in over 150 ms; no push, tilt or shake; at most 3 flashes a second at ≤ 20%. The drum's own white-out counts as a flash (capped at 20%, sharing the 3-a-second budget).
+- **Ring gems and crests on a phone:** each lit ring's gem face is its tier's key colour (no white core), so the rings read brown, bronze, silver, green, champagne on every drum. On a small stage crests and summit gems draw up to 1.5× larger, so a crest shield is at least 14 CSS px; a crest stamps after the strike's white-out has faded.
 - **Capsule icon** (tray, road nodes, odds sheet, Result): from 32 px a mini drum with its lit ring ticks (1-5) in tier colours, 0-2 summit gems on the cap and, for Gold and up, 1-3 crest stars; below 32 px a flat drum in the tier colour with the parchment outline and a "★n" crest badge for Gold and up. Always with the name beside it; for an unopened climbing capsule, its start tier and kind name, with no crests.
 - **Honesty lines** (A15.3): the first capsule and every odds panel say "The result was decided when you earned this capsule. Tapping only reveals it." Scripted capsules 1-5 are labelled "Starter Capsule · contents set to get you started" and their odds panel shows "Set contents".
 - **Wardrobe Crate.** The crate uses the card-flip reveal (steps 4-5 with one skin card) everywhere. There is no reel, and players cannot switch one on (A15.3). `WardrobeReveal.reelTiles` may be empty.
@@ -6685,7 +6686,7 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 2. **Content.** Every card, power, skin and cosmetic in Part A exists, validates, has a procedural visual with all clips and sounds, and has EN strings. Every string key is ready for the v1.1 Danish files.
 3. **Rules.** Every rule in A2 has at least one unit test. The 10 golden replays pass. Determinism holds across two runs and across Chromium and WebKit e2e.
 4. **Balance.** The A2.14 targets pass in a full run (2,000 matches per card plus the exploit proxies), with the report committed to `docs/balance-log.md`.
-5. **Meta honesty.** Published odds pass the chi-square test at p > 0.01; pity boundaries, foil rates and the onboarding script are verified; capsule results persist before animation.
+5. **Meta honesty.** Published odds pass the chi-square test at p > 0.01 for the run as a whole: with k chi-square checks in one `sim:drops` run (Supply tiers, stack rarity, foils, each partial skin chance and each tier's skin rarity split), each check passes at p > 0.01 / k (Bonferroni), so a correct build fails a run by chance at most 1% of the time; pity boundaries, foil rates and the onboarding script are verified; capsule results persist before animation.
 6. **Bots.** AI labeling appears on every surface listed in A7.1. Bot controllers receive only `Observation` (enforced by type and test).
 7. **Save durability.** Survives reload, a corrupt slot and an export/import round trip; the v1 migration fixture exists.
 8. **Performance.** B16 budgets are met on a mid-range Android phone (Chrome) and an iPhone (Safari), measured on the Full War sandbox with 80 units.

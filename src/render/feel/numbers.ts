@@ -150,7 +150,7 @@ export class FloatingNumbers {
    * Shows `value` at world point `at` (lu) if the mode allows it. `key` merges repeated hits
    * (same source and target) into one label. `scale` is the camera's px per lu.
    */
-  show(kind: NumberKind, value: number, at: Pt, o: { important?: boolean; key?: string; scale?: number } = {}): boolean {
+  show(kind: NumberKind, value: number, at: Pt, o: { important?: boolean; key?: string; scale?: number; mergeMs?: number } = {}): boolean {
     if (!(value > 0) || !numberVisible(this.mode, kind, o.important ?? false)) return false;
     const key = o.key ?? null;
     if (kind === 'gold' && key === null) {
@@ -162,7 +162,7 @@ export class FloatingNumbers {
       }
     }
     if (key !== null) {
-      const same = this.live.find((l) => l.key === key && l.ageMs < this.tuning.numberMergeMs);
+      const same = this.live.find((l) => l.key === key && l.ageMs < (o.mergeMs ?? this.tuning.numberMergeMs));
       if (same) {
         same.value += value;
         same.ageMs = Math.min(same.ageMs, 60);

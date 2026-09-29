@@ -141,7 +141,12 @@ interface RuleTarget {
   countMul?: number;
   /** The side whose units get `fxTarget: 'sideUnits'` particles. */
   side?: Side;
+  /** With `side`: only that side's `maxUnits` frontmost units (a capped buff). */
+  maxUnits?: number;
 }
+
+/** A field's damage numbers merge across its 0.5 s pulses into one running total per unit. */
+const FIELD_NUMBER_MERGE_MS = 700;
 
 /** +1 when `side` faces right (side 0), -1 otherwise: the art mirrors directional effects by `dir`. */
 const dirOf = (side: Side): number => (side === 0 ? 1 : -1);
@@ -199,7 +204,11 @@ export class EventMapper {
   private crumble: [number, number] = [0, 0];
   private evolves: [number, number] = [0, 0];
   /** Centre and width (lu) of recent casts, from their telegraphs (line barrages and sweeps play from the centre). */
-  private readonly casts = new Map<number, { x: number; zone: number; targetId: number }>();
+  private readonly casts = new Map<number, { x: number; zone: number; targetId: number; power: string }>();
+  /** Units a field cast already hit (`castId:unitId`): a field's later pulses only add to the number. */
+  private fieldHits = new Set<string>();
+  /** The Suppress power each side cast last (its silenced mounts play that power's jam effect). */
+  private suppressBy: [string, string] = ['', ''];
   /** Sources whose area ring already played in the current `map` call (one ring per impact, not per victim). */
   private areaShown = new Set<string>();
 
@@ -267,7 +276,7 @@ export class EventMapper {
       const count = p.count * (t.countMul ?? 1);
       if (!id || count <= 0) continue;
       if (r.fxTarget === 'sideUnits' && t.side !== undefined) {
-        out.push({ a: 'fxUnits', effectId: id, side: t.side, priority: p.priority, ...(t.opts ? { opts: t.opts } : {}) });
+        out.push({ a: 'fxUnits', effectId: id, side: t.side, priority: p.priority, ...(t.opts ? { opts: t.opts } : {}), ...(t.maxUnits ? { max: t.maxUnits } : {}) });
         continue;
       }
       out.push({
@@ -357,6 +366,19 @@ export class EventMapper {
         const fromX = src ? src.x : turret ? gateX(turret.side) : undefined;
         const dir = fromX !== undefined ? { x: Math.sign(x - fromX) || 1, y: 0 } : undefined;
         const subs: Subs = { spark: sparkFor(ev.dmgType, ev.modBp), hitSound: hitSoundFor(ev.dmgType, ev.modBp) };
+        // A field's pulses (A2.9.7, every 0.5 s) hit the same units again and again: the first pulse
+        // plays the hit, the later ones only roll into one running number per unit.
+        const cast = ev.sourceKind === 'power' && ev.castId !== undefined && ev.castId !== null ? this.casts.get(ev.castId) : undefined;
+        const field = cast !== undefined && this.content.powers[cast.power]?.effect.kind === 'field';
+        if (field) {
+          const k = `${ev.castId}:${ev.targetId}`;
+          if (this.fieldHits.has(k)) {
+            out.push({ a: 'number', kind: 'power', value: ev.damage / 100, at, important: true, key: `c${ev.castId}:${ev.targetId}`, mergeMs: FIELD_NUMBER_MERGE_MS });
+            return;
+          }
+          if (this.fieldHits.size > 512) this.fieldHits = new Set();
+          this.fieldHits.add(k);
+        }
         this.rule(ev.heavy ? 'hit.heavy' : 'hit.light', {
           at,
           victim: ev.targetId,
@@ -371,7 +393,7 @@ export class EventMapper {
         const ownTurretKill = turret !== null && turret.side === this.mySide && diedNow.has(ev.targetId);
         const kind = power ? 'power' : ownTurretKill ? 'kill' : 'damage';
         const key = power ? `c${ev.castId ?? ev.sourceId}:${ev.targetId}` : `${ev.sourceId}:${ev.targetId}`;
-        out.push({ a: 'number', kind, value: ev.damage / 100, at, important: power || ownTurretKill, key });
+        out.push({ a: 'number', kind, value: ev.damage / 100, at, important: power || ownTurretKill, key, ...(field ? { mergeMs: FIELD_NUMBER_MERGE_MS } : {}) });
         out.push({ a: 'intensity', amount: ev.heavy ? tun.intensity.heavy : tun.intensity.hit });
         return;
       }
@@ -579,7 +601,7 @@ export class EventMapper {
         // `zone` is milli-lu like every sim position (B3; WP2 emits `zone: 500_000` for 500 lu).
         const x = ev.x / MILLI_LU;
         const zone = ev.zone / MILLI_LU;
-        this.casts.set(ev.castId, { x, zone, targetId: ev.targetId });
+        this.casts.set(ev.castId, { x, zone, targetId: ev.targetId, power: ev.power });
         if (this.casts.size > 16) this.casts.delete(this.casts.keys().next().value as number);
         out.push({
           a: 'telegraph',
@@ -617,7 +639,12 @@ export class EventMapper {
         // Suppress (A2.9.7): a jam mark over the mount while it is silenced (the polished
         // `fx.turret_jammed` effect is the visuals package's P3 work).
         out.push({ a: 'jam', side: ev.side, mount: ev.mount, ms: Math.max(0, (ev.untilTick - ev.tick) * 50) });
-        this.rule('power.jammed', { at: { k: 'mount', side: ev.side, mount: ev.mount }, opts: { durationMs: Math.max(0, (ev.untilTick - ev.tick) * 50) } }, out);
+        {
+          // The silencing power's own jam (sappers' rubble, an EMP's arcs), else the shared one.
+          const by = this.suppressBy[ev.side === 0 ? 1 : 0];
+          const key = by && this.has(`power.jammed.${by}`) ? `power.jammed.${by}` : 'power.jammed';
+          this.rule(key, { at: { k: 'mount', side: ev.side, mount: ev.mount }, opts: { side: ev.side, durationMs: Math.max(0, (ev.untilTick - ev.tick) * 50) } }, out);
+        }
         return;
       case 'stanceChanged':
         if (ev.side === this.mySide) this.rule('stance', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
@@ -711,7 +738,8 @@ export class EventMapper {
         break;
       case 'buffAll': {
         const ms = Math.max(0, ...e.statuses.map((s) => s.durationMs));
-        first = { at: { k: 'world', x, y: 0 }, opts: { side, durationMs: ms }, side };
+        // A buff reaches the caster's `maxTargets` frontmost units (A2.9.6): only they glow.
+        first = { at: { k: 'world', x, y: 0 }, opts: { side, durationMs: ms }, side, ...(e.maxTargets > 0 ? { maxUnits: e.maxTargets } : {}) };
         break;
       }
       // Rework kinds (A2.9.7): placeholder presets until the visuals package draws the P3 effects.
@@ -726,6 +754,7 @@ export class EventMapper {
         break;
       }
       case 'suppress':
+        this.suppressBy[side] = def.id;
         // Suppress acts on the enemy's mounts: its burst plays at their gate.
         first = { at: { k: 'base', side: side === 0 ? 1 : 0, part: 'front' }, opts: { side, dir, durationMs: e.durationMs } };
         break;
