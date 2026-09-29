@@ -88,11 +88,17 @@ def build():
     # the belly, with a dark wool hem
     cap_bones = ["h_body", "h_pelvis", "h_foreS_F", "h_foreS_B", "h_hindT_F", "h_hindT_B"]
     cap_bias = {"h_foreS_F": 5.0, "h_foreS_B": 5.0, "h_hindT_F": 5.0, "h_hindT_B": 5.0}
-    CAP = dict(xs=(-29.5, 25.0),
-               top_z=lambda x: 60.4 - 0.004 * (x + 4) ** 2 + (1.6 if 6 < x < 16 else 0.0) * math.sin(max(0.0, min(1.0, (x - 6) / 10)) * math.pi),
-               half_w=lambda x: 10.4 - 2.4 * max(0.0, (x - 14) / 11) ** 2 + 0.6 * math.cos((x + 16) * 0.12) - 1.6 * max(0.0, (-x - 24) / 6),
-               hem_z=lambda x: 31.0 - 2.0 * max(0.0, (-x - 10) / 20) + 1.6 * max(0.0, (x - 12) / 13),
-               folds=1.3, fold_len=5.0, seed=0.4)
+    def _top(x):
+        pts = [(-30.5, 47.0), (-26.0, 54.5), (-19.0, 59.8), (-8.0, 59.6), (4.0, 59.2), (12.0, 61.6), (19.0, 60.0), (24.5, 55.0)]
+        for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+            if x <= x1:
+                t = max(0.0, min(1.0, (x - x0) / (x1 - x0)))
+                return z0 + (z1 - z0) * (3 * t * t - 2 * t * t * t)
+        return pts[-1][1]
+    CAP = dict(xs=(-30.5, 24.5), top_z=_top,
+               half_w=lambda x: 10.3 - 2.6 * max(0.0, (x - 14) / 10.5) ** 2 + 0.5 * math.cos((x + 16) * 0.12) - 2.4 * max(0.0, (-x - 22) / 8.5) ** 2,
+               hem_z=lambda x: 29.0 + 4.5 * max(0.0, (x - 6) / 18.5) ** 1.5 + 3.0 * max(0.0, (-x - 16) / 14.5) ** 1.5,
+               folds=1.1, fold_len=4.2, seed=0.4, round_top=0.4)
     cap = MD.drape("caparison", team, thick=0.6, **CAP)
     C.displace(cap, 0.35, 1.6)
     C.team(cap)
@@ -114,7 +120,7 @@ def build():
     rein = C.tube("rein", [(39.5, -2.8, 59.6), (30, -4.0, 62), (18, -5.4, 63.5), (6.5, -5.4, 62.8)], [0.32] * 4, leather, seg=6)
     rig.skin(rein, ["h_head", "h_neck", "h_body"], soft=3.0)
     for sd in (-1, 1):
-        sl = C.tube("stirrup_leather", [(-1.0, sd * 7.2, 59.0), (-0.6, sd * 9.8, 44.0)], [0.35, 0.35], leather, seg=5, flat=0.5)
+        sl = C.tube("stirrup_leather", [(-1.0, sd * 7.2, 59.6), (-0.8, sd * 12.2, 55.0), (-0.4, sd * 15.6, 43.0)], [0.35, 0.35, 0.35], leather, seg=5, flat=0.5)
         rig.rigid(sl, "h_body")
 
     # ---------------- the knight
@@ -178,9 +184,13 @@ def rider_base(lean=0.0, b=0.0):
 def rider_apply(rig, R):
     BODY.apply(rig, R, rest=False)
     for s, sg in (("F", -1), ("B", 1)):
+        # thighs round the barrel (over the caparison), lower legs hanging close to the flank
         pb = rig.obj.pose.bones["thigh_" + s]
         e = pb.rotation_euler
-        pb.rotation_euler = (e[0], e[1], math.radians(26 * sg))
+        pb.rotation_euler = (e[0], e[1], math.radians(44 * sg))
+        pb = rig.obj.pose.bones["shin_" + s]
+        e = pb.rotation_euler
+        pb.rotation_euler = (e[0], e[1], math.radians(-30 * sg))
 
 
 def horse_to_rider(HP, pw):
