@@ -15,7 +15,6 @@ import type { PowerSlot } from '@/contracts';
 import {
   BP,
   MILLI,
-  TICKS_PER_SECOND,
   clamp,
   damageValue,
   eligibleIds,
@@ -123,23 +122,31 @@ export interface PowerContext {
   strikeEpicBp: number;
   /** Strike aim: choose among the best k targets (A2.9.9). */
   strikeK: number;
-  /** Ticks between the observation and the command running (snapshot delay + 1), for aim leads. */
-  delayTicks: number;
   rng: Sfc32State | null;
 }
 
 /** A strike target within its range plus this of an own unit is fighting and stands still. */
 const STRIKE_ENGAGED_SLACK = 40 * MILLI;
+/** Strikes skip targets below this share of their HP, and need this many hittable enemies on the lane. */
+const STRIKE_HEALTHY_BP = 2500;
+const STRIKE_MIN_FOES = 2;
+/** A manual strike aim needs another hittable enemy this close to its target (inside the 80 lu pick). */
+const STRIKE_BACKUP = 60 * MILLI;
 /** Stampede's start without a power front (A2.9.4 `battle.stampedeFallbackP`, p 200). */
 const STAMPEDE_FALLBACK = 200 * MILLI;
 /** "×1.25 when the target is within p ≤ 480 of the bot's gate" (A2.9.9). */
 const NEAR_GATE_BP = 12500;
 /** Controls and buffs count units within 300 lu of the other side (A2.9.9 "engaged"). */
 const ENGAGED = 300 * MILLI;
-/** A drop is worth 0.8 × its card value with an enemy ranged or support unit this close behind the enemy front, else 0.4. */
+/**
+ * A drop is worth 1.2 × its card value with an enemy ranged or support unit this close behind the enemy
+ * front, else 0.6. P1 calibration: the A2.9.9 starting weights (0.8 / 0.4) put the best drop at ROI
+ * 12,000 (Paratroopers) and 10,700 (Warp Strike), so no tier from VI up ever cast one; the summoned
+ * units fight like trained ones, so their card value is the floor of what they are worth on a soft target.
+ */
 const DROP_NEAR = 300 * MILLI;
-const DROP_GOOD_BP = 8000;
-const DROP_POOR_BP = 4000;
+const DROP_GOOD_BP = 12000;
+const DROP_POOR_BP = 6000;
 /** Suppress: needs 2+ enemy turrets; values 0.5 × the own army within 600 lu of the enemy gate. */
 const SUPPRESS_MIN_TURRETS = 2;
 const SUPPRESS_REACH = 600 * MILLI;
@@ -244,10 +251,15 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       return { ...none, value, covered, count };
     }
     case 'strike': {
+      // A strike is only worth its price on a target that will still be there when the shot lands: units
+      // under a quarter of their HP are left to whatever is already killing them, and with fewer than two
+      // enemies on the lane the lock could find nobody (A2.9.7 `powerNoTarget`) after the observation delay.
+      const hittables = v.foes.filter((u) => hittable(u, info));
+      if (hittables.length < STRIKE_MIN_FOES) return none;
       const cands: StrikeCandidate[] = [];
       const byId = new Map<number, SeenUnit>();
-      for (const u of v.foes) {
-        if (!hittable(u, info)) continue;
+      for (const u of hittables) {
+        if (u.hpTotal * BP < u.maxHp * STRIKE_HEALTHY_BP) continue;
         byId.set(u.id, u);
         cands.push({ id: u.id, p: u.p, cost: u.value, hp: u.hpTotal, epic: u.def?.epic === true, legendary: u.def?.legendary === true });
       }
@@ -257,16 +269,22 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       // A2.9.9: the tier's aim error is a choice among its best k targets, never a positional offset.
       const k = Math.min(ranked.length, Math.max(1, c.strikeK));
       const pickIdx = k > 1 && c.rng ? randInt(c.rng, k) : 0;
-      const t = ranked[pickIdx] as StrikeCandidate;
-      const u = byId.get(t.id) as SeenUnit;
+      const u = byId.get((ranked[pickIdx] as StrikeCandidate).id) as SeenUnit;
       const value = targetValue(u, info, lvl, c);
-      // The best target is the sim's own auto-aim ranking (no `p`); a lesser pick aims where the target
-      // should be now: where it stands when it is fighting, else moved on at its march speed over the
-      // observation delay (A7.1: the same guess a player makes).
-      if (pickIdx === 0) return { ...none, targetId: u.id, value, covered: u.value, count: 1 };
-      const fighting = v.mine.some((m) => (m.p > u.p ? m.p - u.p : u.p - m.p) <= (u.def?.range ?? 0) + STRIKE_ENGAGED_SLACK) || u.p <= (u.def?.range ?? 0);
-      const lead = fighting ? 0 : Math.trunc(((u.def?.speed ?? 0) * MILLI * c.delayTicks) / TICKS_PER_SECOND);
-      return { ...none, p: Math.max(0, u.p - lead), targetId: u.id, value, covered: u.value, count: 1 };
+      // The lock goes where the bot aims (the manual pick: the enemy nearest the aim). A fighting ground
+      // target stands still, so its delayed position still holds; for a moving or flying one the bot uses
+      // the auto-aim ranking instead, the lock a hurried tap would give.
+      const fighting = !u.air && v.mine.some((m) => (m.p > u.p ? m.p - u.p : u.p - m.p) <= (u.def?.range ?? 0) + STRIKE_ENGAGED_SLACK);
+      // An aim is clamped into the lane's power clamp (A2.1), so a target at a gate is locked by auto-aim;
+      // and the aim needs a second enemy near the target, so the lock still finds someone if the target
+      // falls during the observation delay.
+      const aimable = u.p >= r.zoneMin && u.p <= r.zoneMax;
+      const backed = hittables.some((o) => o.id !== u.id && (o.p > u.p ? o.p - u.p : u.p - o.p) <= STRIKE_BACKUP);
+      if (!fighting || !aimable || !backed) {
+        const b = byId.get((ranked[0] as StrikeCandidate).id) as SeenUnit;
+        return { ...none, targetId: b.id, value: targetValue(b, info, lvl, c), covered: b.value, count: 1 };
+      }
+      return { ...none, p: u.p, targetId: u.id, value, covered: u.value, count: 1 };
     }
     case 'suppress': {
       // Legal only while F ≥ 1,370 (A2.9.4): the bot also wants its second front unit there, so the loss

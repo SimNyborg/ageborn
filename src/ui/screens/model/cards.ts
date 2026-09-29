@@ -8,6 +8,7 @@ import type { AgeId, CardId, DamageMod, Foil, PowerDef, Rarity, SaveDoc, SkinDef
 import { counterClasses as classCounters, isLegendaryUnit, unitClass, type CardClass, type UnitClass } from '@/core/cardClass';
 import type { CardTileData } from '../../components/CardTile';
 import { roleGlyph, type GlyphKind } from '../../components/icons';
+import { reachGlyph, reloadSeconds } from '../../components/powerInfo';
 import type { Translate } from '../../components/kit';
 
 export type CardKind = 'unit' | 'turret' | 'power';
@@ -18,8 +19,9 @@ export function cardDef(content: Content, id: CardId): AnyCardDef | null {
   return content.units[id] ?? content.turrets[id] ?? content.powers[id] ?? null;
 }
 
+/** A card's rarity; powers are Common, Rare or Epic (A5.7: rarity marks the source, a sidegrade). */
 export function cardRarity(def: AnyCardDef): Rarity | null {
-  return def.kind === 'power' ? null : def.rarity;
+  return def.rarity ?? null;
 }
 
 export function cardGlyph(def: AnyCardDef): GlyphKind {
@@ -126,8 +128,9 @@ export function cardTile(save: SaveDoc, content: Content, id: CardId, t: Transla
     foil: (entry?.foil ?? 'none') as Foil,
     isNew: entry?.isNew ?? false,
     skin: equippedSkin(save, id),
-    cost: def.kind === 'power' ? null : def.cost,
+    cost: def.kind === 'power' ? (def.cost ?? null) : def.cost,
     cls: cardClassOf(def),
+    ...(def.kind === 'power' && def.slot ? { power: { slot: def.slot, reach: reachGlyph(def), reloadS: reloadSeconds(def) } } : {}),
     legendary: def.kind === 'unit' && isLegendaryUnit(def),
     ...counterClasses(content, def),
   };

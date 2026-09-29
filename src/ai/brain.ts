@@ -212,7 +212,7 @@ const BAIT_COOLDOWN_TICKS = 30 * TICKS_PER_SECOND;
 /** A bait train outranks every other candidate but Last Stand. */
 const BAIT_TRAIN_SCORE = 16000;
 /** TEMP experiment switches (removed before hand-off). */
-export const POWER_TUNE = { ring: true, reserve: true, bait: true, hotHomeBarBp: 0, hotFieldBarBp: 0, roiScaleBp: 10000 };
+export const POWER_TUNE = { ring: true, reserve: true, bait: true, hotHomeBarBp: 0, hotFieldBarBp: 0, roiScaleBp: 10000, noHome: false, noField: false, discipline: true, barOverride: 0, bars: {} as Record<string, number> };
 /** X: any zone value when the own base is below 25%. */
 const LOW_BASE_BP = 2500;
 /** Tempest casts into the burst right after the foe evolves. */
@@ -568,7 +568,6 @@ export class Brain {
     // Evolve on time (A7.3, A16.3 rule 2). Below tier VII the evolve delay applies as written, with no
     // safety check. From tier VII the bot waits for a safe window, but never longer than the tier's cap
     // (the evolve-delay column: 2 s at VII, 0.5 s at X); then it evolves anyway.
-    let evolveWanted = false;
     const evolveWaited = mem.evolveSince === null ? -1 : obs.tick - mem.evolveSince;
     // XP at exactly 100% can also be the final age (memory.ts `evolveVisible`), so a safe-window tier
     // acts at once only on XP above the threshold, and otherwise after its cap as before.
@@ -578,7 +577,6 @@ export class Brain {
       const foeFresh = t.researchTiming === 'both' && obs.tick - mem.foeTroopsDoneTick <= FOE_FRESH_TICKS && v.foes.some((u) => !u.air && u.p < e.midLane);
       const safe = t.safeWindowEvolve ? (this.safeWindow(v) && !foeFresh) || evolveWaited >= t.evolveDelayTicks : true;
       if (safe || W.greed >= GREEDY_BP) {
-        evolveWanted = true;
         // Kettle pushes first: Evolve waits while units can still be trained into the all-in.
         const waitForAllIn = allIn && trains.scored.length > 0 && v.queue.length < 3;
         if (!waitForAllIn) add({ kind: 'evolve' }, SCORE.evolve);
@@ -1116,7 +1114,6 @@ export class Brain {
       legendaryPowerDamageBp: e.legendaryPowerDamageBp,
       strikeEpicBp: e.strikeEpicBp,
       strikeK: t.strikeK,
-      delayTicks: t.snapshotDelayTicks + 1,
       rng,
     };
     const shift = Math.trunc(((W.patience - BP) * PATIENCE_SHIFT_NUM) / PATIENCE_SHIFT_DEN) + P.powerBarBp;
@@ -1129,16 +1126,18 @@ export class Brain {
     let onFew: BotAction | null = null;
     for (const sv of v.powerSlots) {
       if (!sv.reloaded || !sv.affordable || (sv.slot === 'field' && !t.fieldSlot)) continue;
+      if ((sv.slot === 'home' && POWER_TUNE.noHome) || (sv.slot === 'field' && POWER_TUNE.noField)) continue;
       const opt = powerOption(v, sv.slot, sv.info, ctx);
       if (opt.value <= 0) continue;
-      let bar = mulBp(t.powerRoiBp, POWER_TUNE.roiScaleBp) + shift;
+      const tb = POWER_TUNE.bars[String(Math.round(t.tier))];
+      let bar = mulBp(tb !== undefined ? tb : POWER_TUNE.barOverride > 0 ? POWER_TUNE.barOverride : t.powerRoiBp, POWER_TUNE.roiScaleBp) + shift;
       if (v.phase === 'overdrive' || v.phase === 'siege') bar += sv.slot === 'home' ? POWER_TUNE.hotHomeBarBp : POWER_TUNE.hotFieldBarBp;
       const goal = this.goal;
       if (goal && v.gold - sv.cost < goal.amount && !hurt) bar += GOAL_BAR_BP;
       if (sv.slot === 'home' && foeBanking) bar += COUNTER_TIMING_BP;
       if (foeEvolved) bar = Math.trunc(bar / 2);
       const roi = Math.trunc((opt.value * BP) / Math.max(1, sv.cost));
-      const discipline = t.baitDiscipline && sv.slot === 'home' && sv.info.harmful && opt.covered < BAIT_DISCIPLINE_VALUE && !hurt;
+      const discipline = POWER_TUNE.discipline && t.baitDiscipline && sv.slot === 'home' && sv.info.harmful && opt.covered < BAIT_DISCIPLINE_VALUE && !hurt;
       const override = (hurt && opt.value >= POWER_MIN_VALUE) || (t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP);
       if (!discipline && (roi >= bar || override)) {
         const net = opt.value - sv.cost;

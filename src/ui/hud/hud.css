@@ -2184,23 +2184,44 @@
     scale var(--ui-dur-micro) var(--ui-ease-out);
 }
 
-/* The slot frame behind the round face: a shield (Home) or a swallow-tailed banner (Field). */
+/* The slot frame behind the round face: a shield (Home) or a swallow-tailed banner (Field), with a dark
+   outline (the outer layer) and a metal or cloth face (the inner layer, 2 px in). */
 .hud-pw-frame {
   position: absolute;
-  left: 9%;
-  right: 9%;
-  top: 30%;
-  bottom: -13%;
+  left: 3%;
+  right: 3%;
+  top: 34%;
+  bottom: -17%;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, #7b8aa6, #43506a 60%, #2c3548);
-  filter: drop-shadow(0 0 0 var(--hud-ink)) drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5));
-  clip-path: polygon(0 0, 100% 0, 100% 62%, 50% 100%, 0 62%);
+  background: var(--hud-ink);
+  clip-path: polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%);
 }
 
-.hud-pw--field .hud-pw-frame {
-  background: linear-gradient(180deg, #c8553f, #8e2f25 60%, #5e1c17);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+.hud-pw-frame::after {
+  content: '';
+  position: absolute;
+  inset: 2px 2px 3px;
+  background: linear-gradient(180deg, #9aa9c4 0%, #5a6a88 45%, #323c52 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 58%, 50% 100%, 0 58%);
+}
+
+.hud-pw--field .hud-pw-frame,
+.hud-pw--field .hud-pw-frame::after {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+}
+
+.hud-pw--field .hud-pw-frame::after {
+  background: linear-gradient(180deg, #e0765c 0%, #a93a2c 45%, #6c211a 100%);
+}
+
+/* Castable: the frame catches the gold light. */
+.hud-pw.is-ready .hud-pw-frame::after {
+  background: linear-gradient(180deg, #ffe9a8 0%, #c9a24a 40%, #6a4c16 100%);
+}
+
+.hud-pw--field.is-ready .hud-pw-frame::after {
+  background: linear-gradient(180deg, #ffd0a0 0%, #d0703a 40%, #7a2a16 100%);
 }
 
 .hud-pw-ring {
@@ -2489,9 +2510,16 @@
 }
 
 .hud-pw .hud-power-grab {
-  right: -5px;
-  top: auto;
-  bottom: 60%;
+  left: 50%;
+  right: auto;
+  top: -13px;
+  margin-left: -13px;
+  rotate: -45deg;
+}
+
+.hud.is-compact .hud-pw .hud-power-grab {
+  margin-left: -11px;
+  top: -12px;
 }
 
 .hud-pw .hud-key {
@@ -2608,6 +2636,22 @@
 
 .hud-pw-tip-unit {
   color: var(--hud-dim);
+}
+
+/* Over the lane the ghost shows the power at world scale: the token shrinks and fades so it never
+   hides the units and pips under the finger; its label stays. */
+.hud-power-token.is-on-lane .hud-power-token-core {
+  opacity: 0.55;
+  scale: 0.62;
+  translate: 0 18px;
+}
+
+.hud-power-token.is-on-lane::after {
+  opacity: 0.4;
+}
+
+.hud-power-token.is-on-lane .hud-power-token-label {
+  top: -104px;
 }
 
 /* The token's second line: the price of the cast ("−100"). */

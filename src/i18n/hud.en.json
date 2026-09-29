@@ -71,6 +71,7 @@
       "reach": {
         "home": "Your half",
         "front": "Near your army",
+        "fromFront": "From your front",
         "anywhere": "Anywhere",
         "army": "Your army",
         "drop": "Drop"

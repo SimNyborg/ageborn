@@ -65,9 +65,8 @@ describe('Equip now (A3, ui-plan 4.2 "Use")', () => {
     expect(slot.kind).toBe('unit');
     expect(levels[(slot as { index: number }).index]).toBe(Math.min(...levels));
     expect(equipSlot(mid, content, stone(), 'bonker')).toEqual(slotOfCard(stone(), 'bonker'));
-    expect(equipSlot(mid, content, stone(), 'meteor_shower')).toEqual({
-      kind: 'power',
-    });
+    // A power takes its own slot (A2.9.10): Meteor Shower is a Home power.
+    expect(equipSlot(mid, content, stone(), 'meteor_shower')).toEqual({ kind: 'power', slot: 'home' });
   });
 
   it('a card fits a slot only when it is the same kind, the same age and owned', () => {
@@ -80,8 +79,8 @@ describe('Equip now (A3, ui-plan 4.2 "Use")', () => {
 });
 
 describe('slots and changes', () => {
-  it('has six troops, two turrets and the power, with stable keys', () => {
-    expect(ALL_SLOTS.map(slotKey)).toEqual(['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'turret-0', 'turret-1', 'power']);
+  it('has six troops, two turrets and the Home and Field powers, with stable keys', () => {
+    expect(ALL_SLOTS.map(slotKey)).toEqual(['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'turret-0', 'turret-1', 'power-home', 'power-field']);
     for (const s of ALL_SLOTS) expect(slotFromKey(slotKey(s))).toEqual(s);
     expect(slotFromKey('grid')).toBeNull();
   });
@@ -177,7 +176,12 @@ describe('the Army grid (4.2 "Right column")', () => {
       view: 'all',
       rarity: 'epic',
     });
-    expect(epics.every((id) => (content.units[id] ?? content.turrets[id])?.rarity === 'epic')).toBe(true);
+    // Powers have rarities too (A5.7: Common starters, Rare and Epic War Path and Road powers).
+    expect(epics.every((id) => (content.units[id] ?? content.turrets[id] ?? content.powers[id])?.rarity === 'epic')).toBe(true);
+    // The Power chip's Home / Field chips narrow the powers only (A2.9.10).
+    const homes = armyCards(mid, content, 'stone', { ...ARMY_FILTER, view: 'all', classes: ['power'], powerSlots: ['home'] });
+    expect(homes.length).toBeGreaterThan(0);
+    expect(homes.every((id) => content.powers[id]?.slot === 'home')).toBe(true);
     const all = armyCards(mid, content, 'stone', {
       ...ARMY_FILTER,
       view: 'all',

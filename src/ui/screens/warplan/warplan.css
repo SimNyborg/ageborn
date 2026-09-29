@@ -342,8 +342,8 @@
   display: grid;
   grid-template-columns: repeat(4, var(--slot-w)) 1px var(--slot-w);
   grid-template-areas:
-    'u0 u1 u2 u3 div p'
-    'u4 u5 t0 t1 div p';
+    'u0 u1 u2 u3 div ph'
+    'u4 u5 t0 t1 div pf';
   column-gap: var(--slot-gap);
   row-gap: calc(var(--slot-gap) + 8px);
   align-content: start;
@@ -381,21 +381,21 @@
 .army-slot--turret-1 {
   grid-area: t1;
 }
-.army-slot--power {
-  grid-area: p;
-  align-self: center;
+/* The two power slots (A2.9.10): Home beside the first troop row, Field beside the second. */
+.army-slot--power-home {
+  grid-area: ph;
+}
+.army-slot--power-field {
+  grid-area: pf;
 }
 /* Regular screens: six troops in one row when the deck has the room, else three and three. */
 @container ui-root (min-height: 481px) {
   .army-slots {
     grid-template-columns: repeat(3, var(--slot-w)) 1px var(--slot-w);
     grid-template-areas:
-      'u0 u1 u2 div p'
-      'u3 u4 u5 div .'
+      'u0 u1 u2 div ph'
+      'u3 u4 u5 div pf'
       't0 t1 . div .';
-  }
-  .army-slot--power {
-    align-self: start;
   }
 }
 @container ui-root (min-height: 481px) and (min-width: 1180px) {
@@ -403,7 +403,7 @@
     grid-template-columns: repeat(6, var(--slot-w));
     grid-template-areas:
       'u0 u1 u2 u3 u4 u5'
-      't0 t1 div p . .';
+      't0 t1 div ph pf .';
   }
   .army-slots::before {
     justify-self: center;
@@ -1002,4 +1002,59 @@
   flex: 1;
   font-size: var(--ui-fs-label);
   font-weight: 800;
+}
+
+/* Power slots (A2.9.10): the empty slot carries a big faded house (Home) or flag (Field); a filled one
+   a small slot tag under the card; the locked Field slot a padlock and how it opens. */
+.army-slot__watermark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0.16;
+  pointer-events: none;
+}
+.army-slot--power .army-slot__empty {
+  position: relative;
+  overflow: hidden;
+}
+.army-slot--power-home .army-slot__empty {
+  border-color: rgba(154, 169, 196, 0.55);
+}
+.army-slot--power-field .army-slot__empty {
+  border-color: rgba(224, 118, 92, 0.55);
+}
+.army-slot__locked {
+  gap: 3px;
+  cursor: help;
+  color: var(--ui-text-3);
+}
+.army-slot__locked .army-slot__more {
+  color: var(--ui-text-2);
+}
+.army-slot__tag {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--slot-w) * 4 / 3 - 9px);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px 1px 4px;
+  translate: -50% 0;
+  border-radius: var(--ui-r-pill);
+  background: #3a4660;
+  color: var(--ui-text);
+  font-size: var(--ui-fs-tag);
+  font-weight: 800;
+  line-height: 16px;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.9);
+  pointer-events: none;
+}
+.army-slot__tag--field {
+  background: #8e3b2e;
+}
+.army-filter__slots {
+  margin-top: 8px;
 }

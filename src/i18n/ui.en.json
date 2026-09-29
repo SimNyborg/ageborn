@@ -752,6 +752,93 @@
         "legacy": "You had already earned {n} of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so {n} new Aeon Capsules are on your shelf.",
         "legacyOne": "You had already earned one of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so a new Aeon Capsule is on your shelf."
       }
+    },
+    "power": {
+      "slot": {
+        "home": "Home",
+        "field": "Field"
+      },
+      "slotLong": {
+        "home": "Home power",
+        "field": "Field power"
+      },
+      "family": {
+        "bombard": "Bombard",
+        "sweep": "Sweep",
+        "snare": "Snare",
+        "pull": "Pull",
+        "stun": "Stun",
+        "flak": "Flak",
+        "charge": "Charge",
+        "frontBarrage": "Barrage",
+        "strike": "Strike",
+        "suppress": "Jammer",
+        "rally": "Rally",
+        "ward": "Ward",
+        "mend": "Mend",
+        "cloud": "Cloud",
+        "drop": "Drop"
+      },
+      "reach": {
+        "home": "Your half",
+        "front": "Near your army",
+        "fromFront": "From your front",
+        "anywhere": "Anywhere",
+        "army": "Your army",
+        "drop": "Drop"
+      },
+      "reachWhy": {
+        "home": "Lands only on enemies in your half of the lane.",
+        "front": "Lands near your army: up to 150 past your front line.",
+        "fromFront": "Starts from your front line.",
+        "anywhere": "Pick any enemy on the lane.",
+        "army": "Boosts your own troops.",
+        "drop": "Lands behind the enemy front."
+      },
+      "hits": "Hits up to {n}",
+      "hitsOwn": "Your {n} frontmost units",
+      "hitsNote": "The enemies nearest your gate are hit first.",
+      "reloadShort": "{s} s",
+      "cost": "Cost",
+      "reload": "Reload",
+      "telegraph": "Warning time",
+      "targets": "Targets",
+      "perUnit": "Per enemy",
+      "perUnitValue": "{i}% of an Infantry · {h}% of a Heavy",
+      "strikeValue": "{n} damage to one enemy",
+      "counters": {
+        "bombard": "Counters: a wave pushing into your half",
+        "sweep": "Counters: a wave pushing into your half",
+        "snare": "Counters: fast pushes; holds them under your turrets",
+        "pull": "Counters: spread-out waves; clumps them for splash",
+        "stun": "Counters: a Heavy-led push at your wall",
+        "flak": "Counters: air units over your half",
+        "charge": "Counters: their front line; knocks it back",
+        "frontBarrage": "Counters: the group your army is fighting",
+        "strike": "Counters: one key backline unit",
+        "suppress": "Counters: a turret wall your army has reached",
+        "rally": "Helps: your front line in a fight",
+        "ward": "Helps: your front line in a fight",
+        "mend": "Helps: a worn front line",
+        "cloud": "Counters: ranged units and turrets",
+        "drop": "Counters: an exposed backline"
+      },
+      "where": "Where it lands",
+      "laneYou": "You",
+      "laneThem": "Them",
+      "source": {
+        "starter": "Starter power",
+        "road": "Trophy Road {n}",
+        "warPath": "War Path · {region} {level}",
+        "warPathOr": "War Path · {region} {level}, or Trophy Road {n}"
+      },
+      "lockedField": "War Path Stone 5 or 150 trophies",
+      "lockedFieldShort": "Opens at Stone 5",
+      "wrongSlot": {
+        "home": "Home powers go in the Home slot",
+        "field": "Field powers go in the Field slot"
+      },
+      "filterSlots": "Power slot"
     }
   }
 }

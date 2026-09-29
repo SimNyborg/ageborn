@@ -6,7 +6,8 @@
  *   bottom-left corner and the level and copies beside it.
  * - **Right** (scrolls on its own): Strong vs / Weak vs as class icons plus one plain sentence (the
  *   owner's request), then the stats with the next level's green deltas, traits, the description,
- *   skins, the card-by-card counters and foils.
+ *   skins, the card-by-card counters and foils. A power shows its slot, a lane diagram of where it
+ *   lands, cost, reload, the cap, the per-enemy line, what it counters and its source (A2.9.10).
  * - **Action bar** (never scrolls, UA-03): Show odds (tertiary); Craft copy and Use (or the "In
  *   army" pill) as secondaries; Upgrade as the one primary when it is possible. Disabled, Upgrade
  *   keeps its place and says what is missing (U1, U3).
@@ -37,7 +38,9 @@ import { oddsModel } from '../../components/oddsModel';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardGlyph, cardRarity, cardTile, hitsOf, isOwned, modsOf, turretStats, unitStats, upgradeState, type StatRow } from '../model/cards';
-import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, normalizeLoadout, slotOfCard } from '../model/plan';
+import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, fieldSlotOpen, normalizeLoadout, slotOfCard } from '../model/plan';
+import { powerSourceText } from '../model/powerText';
+import { PowerFacts } from './PowerFacts';
 import { arenaOf } from '../model/progress';
 import { reasonKey } from '../model/reasons';
 import { SkinOptions } from '../shared/SkinPicker';
@@ -137,10 +140,11 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   const mods = modsOf(def);
   const foilRank = content.rarities.foils[tile.foil].rank;
   const craftPrice = rarity ? content.rarities.cards[rarity].craftCopyDust : null;
-  const roadNode = def.kind === 'power' ? content.trophyRoad.nodes.find((n) => n.rewards.some((r) => r.kind === 'power' && r.card === id)) : undefined;
   const { index: planIndex, plan } = activePlan(s, content);
-  const loadout = normalizeLoadout(plan.loadouts[def.age] ?? { units: [], turrets: [], power: '' });
+  const loadout = normalizeLoadout(plan.loadouts[def.age] ?? { units: [], turrets: [], powers: { home: null, field: null } });
   const inArmy = slotOfCard(loadout, id) !== null;
+  // A Field power waits for its slot (A2.9.1): no Use until the slot opens.
+  const slotLocked = def.kind === 'power' && def.slot === 'field' && !fieldSlotOpen(s);
 
   function valueText(r: StatRow, v: number | string): string {
     if (typeof v === 'string') return v;
@@ -235,16 +239,11 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   if (def.kind === 'power') {
     tertiary = owned ? (
       <p class="cd-owned">
-        <CheckIcon size={20} /> {t('ui.card.powerOwned')}
+        <CheckIcon size={20} /> {slotLocked ? t('ui.power.lockedField') : t('ui.card.powerOwned')}
       </p>
     ) : (
-      <p class="cd-owned">
-        <RoadIcon size={22} />{' '}
-        {roadNode
-          ? t('ui.card.powerFromRoad', {
-              n: formatInt(roadNode.trophies, locale),
-            })
-          : t('ui.card.notOwned')}
+      <p class="cd-owned" data-testid="power-source-bar">
+        <RoadIcon size={22} /> {def.source === 'road' && def.road !== undefined ? t('ui.card.powerFromRoad', { n: formatInt(def.road, locale) }) : powerSourceText(def, t)}
       </p>
     );
   } else if (!owned) {
@@ -335,7 +334,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
       );
     }
   }
-  if (owned) {
+  if (owned && !slotLocked) {
     secondary.push(
       inArmy ? (
         <span class="cd-inarmy" data-testid="card-in-army" key="use">
@@ -411,6 +410,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
         </div>
 
         <div class="cd-right" data-scroll="">
+          {def.kind === 'power' ? <PowerFacts def={def} content={content} t={t} locale={locale} /> : null}
           {def.kind === 'unit' && ((tile.strong?.length ?? 0) > 0 || (tile.weak?.length ?? 0) > 0) ? (
             <section class="cd-counters" data-testid="counter-classes">
               {tile.strong?.length ? (

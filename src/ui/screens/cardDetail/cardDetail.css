@@ -772,3 +772,110 @@
   text-transform: uppercase;
   color: var(--ui-primary-light);
 }
+
+/* A power's facts (A2.9.10): slot, family and reach, the lane diagram, the numbers and the lines. */
+.cd-power {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+}
+.cd-power__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px var(--ui-s2);
+}
+.cd-power__slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 6px;
+  border-radius: var(--ui-r-pill);
+  background: #3a4660;
+  color: var(--ui-text);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.cd-power__slot.is-field {
+  background: #8e3b2e;
+}
+.cd-power__family,
+.cd-power__reach {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+}
+.cd-lane {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+}
+.cd-lane__ground {
+  fill: var(--ui-surface-3);
+}
+.cd-lane__band {
+  fill: color-mix(in srgb, var(--ui-team-me, #2f7df6) 42%, transparent);
+  stroke: color-mix(in srgb, var(--ui-team-me, #2f7df6) 80%, #fff);
+  stroke-width: 1;
+}
+.cd-lane__band.is-foe {
+  fill: color-mix(in srgb, var(--ui-team-me, #2f7df6) 30%, transparent);
+  stroke-dasharray: 3 2;
+}
+.cd-lane__edge {
+  stroke: #fff;
+  stroke-width: 2;
+}
+.cd-lane__edge.is-moving {
+  stroke-dasharray: 4 3;
+}
+.cd-lane__zone {
+  fill: color-mix(in srgb, var(--ui-primary, #f2b52c) 65%, transparent);
+  stroke: var(--ui-primary, #f2b52c);
+  stroke-width: 1.5;
+}
+.cd-lane__mid {
+  stroke: var(--ui-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.cd-lane__gate.is-me {
+  fill: var(--ui-team-me, #2f7df6);
+}
+.cd-lane__gate.is-foe {
+  fill: var(--ui-team-foe, #f28a1e);
+}
+.cd-lane-wrap {
+  max-width: 460px;
+}
+.cd-lane__labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+}
+.cd-power__why,
+.cd-power__unit,
+.cd-power__note,
+.cd-power__counters,
+.cd-power__source {
+  margin: 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+  font-weight: 600;
+}
+.cd-power__unit b {
+  color: var(--ui-text);
+  font-weight: 800;
+}
+.cd-power__counters {
+  color: var(--ui-text);
+  font-weight: 800;
+}

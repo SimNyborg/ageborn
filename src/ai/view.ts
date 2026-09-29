@@ -20,6 +20,7 @@ export interface SeenUnit {
   hp: number;
   /** HP plus shields (centi), what a power's damage must get through. */
   hpTotal: number;
+  maxHp: number;
   air: boolean;
   /** Summoned (drops, Vanguard, riders): never the power front F (A2.9.4). */
   summoned: boolean;
@@ -107,7 +108,7 @@ export interface View {
 
 function seen(book: CardBook, u: Observation['units'][number]): SeenUnit {
   const def = book.units[u.card];
-  return { id: u.id, card: u.card, def, value: def?.value ?? 0, p: u.p, hp: u.hp, hpTotal: u.hp + u.shield, air: u.air, summoned: u.summoned, level: u.level };
+  return { id: u.id, card: u.card, def, value: def?.value ?? 0, p: u.p, hp: u.hp, hpTotal: u.hp + u.shield, maxHp: u.maxHp, air: u.air, summoned: u.summoned, level: u.level };
 }
 
 /** Level multiplier in bp (A5.1): 10,000 + step × (L − 1), L in 1..max. */

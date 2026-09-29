@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { POWER_DRAG_PX } from '../model';
-import { AIM_IDLE, NO_AIM, aimActive, aimValid, ghostOf, stepPowerAim, type AimTarget, type PowerAimEvent, type PowerAimState, type PowerAimStep } from '../powerAim';
+import { AIM_IDLE, EDGE_STICK_LU, NO_AIM, aimActive, aimValid, ghostOf, resolveAim, stepPowerAim, type AimTarget, type PowerAimEvent, type PowerAimState, type PowerAimStep } from '../powerAim';
 
 const lane = (p: number): AimTarget => ({ p, over: 'lane' });
 const hud: AimTarget = { p: null, over: 'hud' };
@@ -135,5 +135,35 @@ describe('power aim state machine (owner decision "Age Power targeting")', () =>
     expect(aimValid({ p: 300, over: 'minimap' })).toBe(true);
     expect(aimValid(hud)).toBe(false);
     expect(aimValid(NO_AIM)).toBe(false);
+  });
+});
+
+describe('reach (A2.9.4, A2.9.10: the band, the magnetic edge, out of reach)', () => {
+  // A Home sweep with a 450 lu zone: centres in [150, 1,000 − 225 = 775].
+  const home = { reach: 'home' as const, band: [150, 775] as [number, number] };
+
+  it('uses a point inside the band as it is and clamps toward your gate', () => {
+    expect(resolveAim(600, home)).toEqual({ p: 600, inReach: true, edge: false });
+    expect(resolveAim(40, home)).toEqual({ p: 150, inReach: true, edge: false });
+  });
+
+  it('sticks to the far edge for up to 120 lu of overshoot, then is out of reach', () => {
+    expect(resolveAim(775 + EDGE_STICK_LU, home)).toEqual({ p: 775, inReach: true, edge: true });
+    expect(resolveAim(900, home)).toEqual({ p: 900, inReach: false, edge: false });
+    // The out-of-reach ghost follows the pointer, inside the A2.1 lane clamp.
+    expect(resolveAim(1990, home).p).toBe(1850);
+  });
+
+  it('lets powers without an aim land anywhere on the lane', () => {
+    expect(resolveAim(1500, { reach: 'front', band: null })).toEqual({ p: 1500, inReach: true, edge: false });
+    expect(resolveAim(1500, null)).toEqual({ p: 1500, inReach: true, edge: false });
+  });
+
+  it('never fires a drop out of reach: the power goes back and the ghost turns red at the pointer', () => {
+    const far: AimTarget = { p: 1300, over: 'lane', inReach: false };
+    expect(aimValid(far)).toBe(false);
+    const r = run([down(), move(40, lane(600)), move(80, far)]);
+    expect(ghostOf(r.state)).toEqual({ p: 1300, valid: false });
+    expect(run([up(far)], r.state).effects).toEqual([{ k: 'cancel' }]);
   });
 });

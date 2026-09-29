@@ -13,7 +13,7 @@
  * - Hover (desktop, 350 ms) or long-press (touch, 450 ms) opens the tip with class and counters.
  */
 import { rarityNameKey } from '@/content/keys';
-import type { AgeId, CardId, Foil, Rarity, SkinId } from '@/contracts';
+import type { AgeId, CardId, Foil, PowerSlot, Rarity, SkinId } from '@/contracts';
 import type { CardClass, UnitClass } from '@/core/cardClass';
 import type { ComponentChildren } from 'preact';
 import { CardTip, CardTipBody, ClassIcon, CLASS_NAME_KEY, useCardTip } from './ClassIcon';
@@ -22,6 +22,8 @@ import './cardTile.css';
 import { AGE_COLOR, ArrowUpIcon, CheckIcon, CoinIcon, LockIcon, RARITY_COLOR, RarityGem, RoleGlyph, type GlyphKind } from './icons';
 import { useKit, usePortrait } from './kit';
 import { CopiesBar } from './Meters';
+import { ReachGlyphIcon, ReloadGlyph } from './PowerGlyphs';
+import type { ReachGlyph } from './powerInfo';
 
 export interface CardTileData {
   id: CardId;
@@ -49,6 +51,11 @@ export interface CardTileData {
   /** Classes this unit beats / loses to (from the compiled `strongVs` / `weakVs`). */
   strong?: readonly UnitClass[];
   weak?: readonly UnitClass[];
+  /**
+   * A power card (A2.9.10 power tile): its slot, the reach glyph shown top-right where units show
+   * their class, and the reload shown at the bottom ("⟳ 40 s").
+   */
+  power?: { slot: PowerSlot; reach: ReachGlyph; reloadS: number };
 }
 
 export type CardTileSize = 'xs' | 'sm' | 'md' | 'lg';
@@ -179,10 +186,20 @@ export function CardTile(p: {
           </span>
         ) : null}
         {p.corner ? <span class="ui-card__corner">{p.corner}</span> : null}
-        {c.cls ? (
+        {c.power ? (
+          <span class="ui-card__class ui-card__reach" data-testid={p.testid ? `${p.testid}-class` : undefined} data-class="power" data-reach={c.power.reach}>
+            <ReachGlyphIcon kind={c.power.reach} size={CLASS_PX[size] - 4} />
+          </span>
+        ) : c.cls ? (
           <span class="ui-card__class" data-testid={p.testid ? `${p.testid}-class` : undefined} data-class={c.cls}>
             <ClassIcon id={c.cls} size={CLASS_PX[size]} />
             {c.legendary ? <ClassIcon id="legendary" size={Math.round(CLASS_PX[size] * 0.8)} class="ui-card__crown" /> : null}
+          </span>
+        ) : null}
+        {c.power && size !== 'xs' ? (
+          <span class="ui-card__reload" data-tag="">
+            <ReloadGlyph size={size === 'lg' ? 14 : 11} />
+            {t('ui.power.reloadShort', { s: c.power.reloadS })}
           </span>
         ) : null}
         {p.equipped ? (

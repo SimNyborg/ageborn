@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { cardBook } from '../book';
 import { counterScore, counterTargets, fCounter, PREDICT_BLEND_BP, sampleOfAge, sampleOfMemory, type CounterSample } from '../counters';
-import { Ledger } from '../ledger';
 import { weightBp } from '../personalities';
 import { fPressure, fPush, fRole, fSpare, mulBp } from '../scoring';
-import { buildView, type SeenUnit } from '../view';
-import { content, observation, unit } from './helpers';
+import type { SeenUnit } from '../view';
+import { content } from './helpers';
 
 const book = cardBook(content);
 
@@ -54,7 +53,7 @@ describe('A7.2 scoring terms (bp)', () => {
 });
 
 describe('f_counter (A7.2, B4 matrix)', () => {
-  const seen = (card: string, pLu: number, id: number): SeenUnit => ({ id, card, def: book.units[card], value: book.units[card]?.value ?? 0, p: pLu * 1000, hp: 1, hpTotal: 1, air: false, summoned: false, level: 1 });
+  const seen = (card: string, pLu: number, id: number): SeenUnit => ({ id, card, def: book.units[card], value: book.units[card]?.value ?? 0, p: pLu * 1000, hp: 1, hpTotal: 1, maxHp: 1, air: false, summoned: false, level: 1 });
 
   it('is the value-weighted mean of M[c][e]; 0.5 without enemies', () => {
     const m = (a: string, b: string): number => Math.round((content.counters[a]?.[b] ?? 0) * 10000);

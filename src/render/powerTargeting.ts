@@ -184,6 +184,9 @@ export class ZoneOverlay {
   /** A committed ghost playing its exit (MR-70b); real ms since the commit. */
   private leaving: { ghost: Ghost; ms: number } | null = null;
   private reduceMotion = false;
+  /** The visible world range (labels stay inside it). */
+  private viewL = -Infinity;
+  private viewR = Infinity;
   private t = 0;
   private rt = 0;
 
@@ -193,6 +196,12 @@ export class ZoneOverlay {
     this.groundRoot.label = 'reachBand';
     this.groundRoot.eventMode = 'none';
     this.root.addChild(this.g, this.texts);
+  }
+
+  /** The visible world range (lu): the band and ghost labels are kept inside it. */
+  setView(left: number, right: number): void {
+    this.viewL = left;
+    this.viewR = right;
   }
 
   /** Reduce motion (U14): no pop, no bump, no chevron march; the band still fades in. */
@@ -352,7 +361,9 @@ export class ZoneOverlay {
     if (this.invalidText) this.invalidText.visible = false;
   }
 
-  private text(size: number): Text {
+  /** Canvas text needs a document; headless tests draw the plates and pips without their words. */
+  private text(size: number): Text | null {
+    if (typeof document === 'undefined') return null;
     const t = new Text({
       text: '',
       resolution: 2,
@@ -376,7 +387,8 @@ export class ZoneOverlay {
    */
   private drawBand(px: number): void {
     const b = this.band;
-    if (!b) return;
+    // A power that may land anywhere (a strike) or needs no aim has no band to show.
+    if (!b || b.edgeX === null) return;
     const k = Math.min(1, b.ageMs / BAND_IN_MS);
     const fade = 1 - Math.pow(1 - k, 3);
     const top = -150;
@@ -385,19 +397,25 @@ export class ZoneOverlay {
     const x0 = Math.min(b.gateX, edge);
     const x1 = Math.max(b.gateX, edge);
     const wash = this.groundRoot;
-    // The wash: brighter near the ground, fading up.
-    const bands = 5;
+    // The wash: strongest on the ground, fading out upward (no hard top edge).
+    const bands = 8;
     for (let i = 0; i < bands; i++) {
       const y0 = bottom - ((bottom - top) * (i + 1)) / bands;
       const h = (bottom - top) / bands;
-      wash.rect(x0, y0, x1 - x0, h).fill({ color: b.color, alpha: 0.18 * fade * (1 - i * 0.14) });
+      const k2 = i / (bands - 1);
+      wash.rect(x0, y0, x1 - x0, h + 0.5).fill({ color: b.color, alpha: 0.2 * fade * Math.pow(1 - k2, 1.6) });
     }
     if (b.edgeX === null) return;
     const g = this.g;
-    // The rest of the lane dims 15%.
+    // The rest of the lane dims 15%, fading out above the lane.
     const d0 = Math.min(b.edgeX, b.farX);
     const d1 = Math.max(b.edgeX, b.farX);
-    g.rect(d0, top - 400, d1 - d0, bottom - top + 400).fill({ color: 0x05070c, alpha: 0.15 * fade });
+    const dimBands = 6;
+    for (let i = 0; i < dimBands; i++) {
+      const y0 = bottom - ((bottom - top - 60) * (i + 1)) / dimBands;
+      const h = (bottom - top - 60) / dimBands;
+      g.rect(d0, y0, d1 - d0, h + 0.5).fill({ color: 0x05070c, alpha: 0.15 * fade * (1 - i / dimBands) });
+    }
     // The edge line: a glow and a crisp 2 px line with a bright foot.
     const light = tint(b.color, 0.55);
     g.moveTo(b.edgeX, bottom).lineTo(b.edgeX, top).stroke({ color: b.color, width: 9 * px, alpha: 0.28 * fade });
@@ -431,9 +449,13 @@ export class ZoneOverlay {
       const r = PIP_PX * px;
       g.circle(p.x, hy, r + 2 * px).fill({ color: 0x1b1330, alpha: 0.85 });
       g.circle(p.x, hy, r).fill({ color: p.covered ? GHOST_TARGET : 0xf4efe4, alpha: p.covered ? 1 : 0.82 });
-      let t = this.pipTexts[used];
+      let t = this.pipTexts[used] ?? null;
       if (!t) {
         t = this.text(13);
+        if (!t) {
+          used += 1;
+          continue;
+        }
         this.pipTexts.push(t);
       }
       t.text = String(p.n);
@@ -454,6 +476,7 @@ export class ZoneOverlay {
     if (show) {
       if (!this.bandText) this.bandText = this.text(14);
       const t = this.bandText;
+      if (!t) return;
       t.text = show.label!;
       t.style.stroke = { color: 0x0b0e14, width: 0 };
       t.style.fill = 0xffffff;
@@ -461,7 +484,7 @@ export class ZoneOverlay {
       const w = t.width / Math.max(0.0001, t.scale.x);
       const plateW = (w + 20) * px;
       const plateH = 24 * px;
-      const cx = show.edgeX! - show.dir * (plateW / 2 + 8 * px);
+      const cx = this.inView(show.edgeX! - show.dir * (plateW / 2 + 8 * px), plateW, px);
       const cy = -150 - plateH / 2 - 4 * px;
       this.g.roundRect(cx - plateW / 2, cy - plateH / 2, plateW, plateH, 12 * px).fill({ color: shade(show.color, 0.45), alpha: 0.92 * fade });
       this.g.roundRect(cx - plateW / 2, cy - plateH / 2, plateW, plateH, 12 * px).stroke({ color: tint(show.color, 0.55), width: 1.5 * px, alpha: fade });
@@ -474,20 +497,30 @@ export class ZoneOverlay {
     if (gh && gh.outOfReach && gh.invalidLabel) {
       if (!this.invalidText) this.invalidText = this.text(15);
       const t = this.invalidText;
+      if (!t) return;
       t.text = gh.invalidLabel;
       t.style.fill = 0xffffff;
       t.style.stroke = { color: 0x0b0e14, width: 0 };
       const w = t.width / Math.max(0.0001, t.scale.x);
       const plateW = (w + 22) * px;
       const plateH = 26 * px;
-      const cy = -CURTAIN_LU - 70;
-      this.g.roundRect(gh.x - plateW / 2, cy - plateH / 2, plateW, plateH, 13 * px).fill({ color: 0x8e1f1a, alpha: 0.95 });
-      this.g.roundRect(gh.x - plateW / 2, cy - plateH / 2, plateW, plateH, 13 * px).stroke({ color: 0xffb3a8, width: 1.5 * px, alpha: 1 });
-      t.position.set(gh.x, cy);
+      const cy = -CURTAIN_LU * 0.5;
+      const lx = this.inView(gh.x, plateW, px);
+      this.g.roundRect(lx - plateW / 2, cy - plateH / 2, plateW, plateH, 13 * px).fill({ color: 0x8e1f1a, alpha: 0.95 });
+      this.g.roundRect(lx - plateW / 2, cy - plateH / 2, plateW, plateH, 13 * px).stroke({ color: 0xffb3a8, width: 1.5 * px, alpha: 1 });
+      t.position.set(lx, cy);
       t.scale.set(px);
       t.alpha = 1;
       t.visible = true;
     } else if (this.invalidText) this.invalidText.visible = false;
+  }
+
+  /** Keeps a plate of width `w` centred near `x` inside the visible range (8 px margin). */
+  private inView(x: number, w: number, px: number): number {
+    const lo = this.viewL + w / 2 + 8 * px;
+    const hi = this.viewR - w / 2 - 8 * px;
+    if (!(hi > lo)) return x;
+    return Math.min(hi, Math.max(lo, x));
   }
 
   /**

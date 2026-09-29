@@ -109,6 +109,8 @@ function warPathFixture(content: Content, beaten: number, stars: (i: number) => 
     flags['ui-seen.amber'] = true;
     flags['ui-seen.dust'] = true;
   }
+  // A2.9.1: the Field power slot opens with the first clear of War Path Stone L5 (meta's `power.field`).
+  if (beaten >= 5 || legacy) flags['power.field'] = true;
   return { warPath: out, flags };
 }
 

@@ -109,3 +109,51 @@ describe('ZoneOverlay ghost', () => {
     expect(ghostStyle(undefined)).toBe('plain');
   });
 });
+
+describe('reach band, pips and the committed cast (A2.9.10 targeting)', () => {
+  it('shows the Home band up to the Home line, on the lane and the minimap, and numbers the eligible enemy', () => {
+    const { view } = setup();
+    view.powerAimStart('home');
+    view.previewPower(700, true, { slot: 'home', bandLabel: 'Your half' });
+    view.render(0, 16);
+    // The minimap tints your half (world x 0 to the Home line, side 0).
+    expect(view.minimap().reach).toEqual({ from: 0, to: 1000, side: 0, invalid: false });
+    // One enemy stands in the reach area (p 700; the other is at p 1,500, past the line): pip 1, covered.
+    expect(view.powerGhostInfo()).toEqual({ covered: 1, eligible: 1, locked: null, valid: true });
+    // Out of reach: red and hatched; the minimap edge turns red.
+    view.previewPower(1300, false, { slot: 'home', invalid: 'reach', invalidLabel: 'Only in your half' });
+    view.render(0, 16);
+    expect(view.minimap().reach?.invalid).toBe(true);
+    expect(view.powerGhost()).toMatchObject({ valid: false });
+  });
+
+  it('a committed cast contracts the ghost and clears the band', () => {
+    const { view } = setup();
+    view.powerAimStart('home');
+    view.previewPower(700, true, { slot: 'home' });
+    view.render(0, 16);
+    view.powerCommit();
+    view.previewPower(null);
+    view.render(0, 16);
+    expect(view.powerGhost()).toBeNull();
+    expect(view.minimap().reach).toBeNull();
+  });
+});
+
+describe('ZoneOverlay reach and pips', () => {
+  it('draws pips only while the ghost is valid and forgets them when hidden', () => {
+    const z = new ZoneOverlay();
+    z.setBand({ gateX: 0, edgeX: 1000, farX: 2000, dir: 1, color: 0x2f7df6, label: 'Your half' });
+    z.showPreview(600, 450, 0x2f7df6, { style: 'sweep' });
+    z.setPips([{ x: 620, y: 0, size: 24, n: 1, covered: true }]);
+    z.update(16, 0.5, 16);
+    expect(z.pipCount).toBe(1);
+    expect(z.bandShown?.edgeX).toBe(1000);
+    z.showPreview(1300, 450, 0x2f7df6, { valid: false, outOfReach: true, invalidLabel: 'Only in your half' });
+    z.update(16, 0.5, 16);
+    expect(z.pipCount).toBe(0);
+    expect(z.outOfReach).toBe(true);
+    z.hidePreview();
+    expect(z.bandShown).toBeNull();
+  });
+});

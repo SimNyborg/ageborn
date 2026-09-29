@@ -412,3 +412,31 @@
   pointer-events: none;
   box-shadow: 0 0 6px currentColor;
 }
+
+/* Power tiles (A2.9.10): the reach glyph sits on a dark disc where units show their class, and the
+   reload ("⟳ 40 s") where units show their level. */
+.ui-card__reach {
+  padding: 2px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #3a4459, #151a24);
+  box-shadow: 0 0 0 1.5px rgba(11, 14, 20, 0.9);
+}
+.ui-card__reload {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--card-w) * 0.1);
+  z-index: 1;
+  transform: translateX(-50%);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 5px 1px 3px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(8, 10, 14, 0.72);
+  color: #d6e6ff;
+}

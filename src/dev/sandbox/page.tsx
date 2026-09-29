@@ -175,6 +175,10 @@ function BattleTab(p: { bare?: boolean }) {
           power: (side: Side, ppm: number, slot?: PowerSlot) => devSetPower(sim, side, ppm, slot),
           spawn: (side: Side, card: CardId, p: number) => devSpawn(sim, side, card, { p }).id,
           clear: () => devClearLane(sim),
+          /** Puts powers in a side's current loadout (every age), for trying a power in the sandbox. */
+          powers: (side: Side, home: CardId | null, field: CardId | null) => {
+            for (const lo of Object.values(sim.config.sides[side].loadouts)) if (lo) (lo as { powers: { home: CardId | null; field: CardId | null } }).powers = { home, field };
+          },
           pause: (on: boolean) => setPaused(on),
         }
       : null;

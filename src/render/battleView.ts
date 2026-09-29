@@ -756,13 +756,7 @@ export class BattleView {
     }
     if (this.powerDrag) this.powerDrag.p = p;
     const color = teamColor(this.settings.teamPreset, this.mySide);
-    const rules = this.reachRules();
-    const units = this.previewUnits();
-    const front = def ? previewFront(units, rules) : null;
-    const zone = def ? powerZoneWidth(def) : 0;
-    const band = def ? previewBand(def, front, rules) : null;
-    // The reach area's far edge: the Home line for Home powers, the band's reach for Front ones.
-    const areaMax = def && band && def.reach !== 'anywhere' ? reachAreaMax(def.reach, zone, band, rules) : null;
+    const areaMax = this.refreshBand(def);
     const fx = def?.effect;
     this.zones.showPreview(z.x, z.width, color, {
       valid,
@@ -774,14 +768,30 @@ export class BattleView {
       clipX: areaMax === null ? null : pToX(areaMax, this.mySide),
       fringe: fx?.kind === 'barrage' ? fx.radius : 0,
     });
+  }
+
+  /**
+   * Shows the reach band of the power being aimed (A2.9.10 step 1) and returns its far edge (own-side
+   * lu; null without one): the Home line for Home powers, the band's reach for Front ones. Called on
+   * every preview and every frame, so a Front band's edge follows your front live.
+   */
+  private refreshBand(def: PowerDef | undefined): number | null {
+    if (!def) {
+      this.zones.setBand(null);
+      return null;
+    }
+    const rules = this.reachRules();
+    const band = previewBand(def, previewFront(this.previewUnits(), rules), rules);
+    const areaMax = band && def.reach !== 'anywhere' ? reachAreaMax(def.reach, powerZoneWidth(def), band, rules) : null;
     this.zones.setBand({
       gateX: pToX(0, this.mySide),
       edgeX: areaMax === null ? null : pToX(areaMax, this.mySide),
       farX: pToX(LANE_LU, this.mySide),
       dir: facingOf(this.mySide),
-      color,
-      label: o.bandLabel ?? null,
+      color: teamColor(this.settings.teamPreset, this.mySide),
+      label: this.previewOpts.bandLabel ?? null,
     });
+    return areaMax;
   }
 
   /** A cast was sent: the ghost contracts and fades (MR-70b) instead of vanishing. */
@@ -837,6 +847,7 @@ export class BattleView {
   /** The enemy units the ghost would hit, refreshed every frame while it shows (they keep walking). */
   private updateGhostTargets(): void {
     const g = this.zones.preview;
+    if (g) this.refreshBand(this.myPower());
     if (!g || !g.valid) {
       if (g) {
         this.zones.setTargets([]);
@@ -956,6 +967,7 @@ export class BattleView {
     this.cull();
 
     this.updateGhostTargets();
+    this.zones.setView(this.viewL, this.viewR);
     this.zones.update(gameDt, t.scale, realDt);
     this.updateMarkers(realDt, t.scale);
     this.updateHoldFlag(realDt);

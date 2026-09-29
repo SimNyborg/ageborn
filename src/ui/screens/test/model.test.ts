@@ -74,8 +74,12 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
     expect(ursa.owned).toBe(false);
     const power = cardTile(s, content, 'meteor_shower', t)!;
     expect(power.kind).toBe('power');
-    expect(power.rarity).toBeNull();
+    // A5.7: power rarity marks the source (Meteor Shower is the Stone Road power, Rare).
+    expect(power.rarity).toBe('rare');
     expect(power.needed).toBeNull();
+    // The power tile (A2.9.10): its slot, reach glyph and reload, and the gold cost as its price.
+    expect(power.power).toEqual({ slot: 'home', reach: 'house', reloadS: 40 });
+    expect(power.cost).toBe(100);
   });
 
   it('upgrade state needs copies and Amber', () => {
@@ -115,13 +119,16 @@ describe('War Plan edits (A3)', () => {
   it('rejects a card of the wrong kind and handles turrets and the power', () => {
     expect(assignCard(content, base, { kind: 'unit', index: 0 }, 'rock_tosser')).toBe(base);
     expect(assignCard(content, base, { kind: 'turret', index: 1 }, 'angry_beehive').turrets).toEqual(['rock_tosser', 'angry_beehive']);
-    // A2.9.1: a power goes into its own slot.
-    expect(assignCard(content, base, { kind: 'power' }, 'meteor_shower').powers).toEqual({ home: 'meteor_shower', field: 'stampede' });
+    // A2.9.1: a power goes only into its own slot; the other slot refuses it.
+    expect(assignCard(content, base, { kind: 'power', slot: 'home' }, 'meteor_shower').powers).toEqual({ home: 'meteor_shower', field: 'stampede' });
+    expect(assignCard(content, base, { kind: 'power', slot: 'field' }, 'meteor_shower')).toBe(base);
+    expect(assignCard(content, base, { kind: 'power', slot: 'field' }, 'hunt_cry').powers).toEqual({ home: 'rockslide', field: 'hunt_cry' });
   });
 
   it('clears slots and finds the first empty one', () => {
     expect(clearSlot(base, { kind: 'unit', index: 1 }).units).toEqual(['bonker', null, 'tuskback', null, null, null]);
-    expect(clearSlot(base, { kind: 'power' }).powers).toEqual({ home: 'rockslide', field: 'stampede' });
+    // Empty power slots are legal (A2.9.1); the advisor warns about them.
+    expect(clearSlot(base, { kind: 'power', slot: 'field' }).powers).toEqual({ home: 'rockslide', field: null });
     expect(firstEmptySlot(content, base, 'spear_hunter')).toEqual({ kind: 'unit', index: 3 });
     expect(firstEmptySlot(content, base, 'angry_beehive')).toEqual({ kind: 'turret', index: 1 });
     expect(firstEmptySlot(content, normalizeLoadout({ units: [], turrets: [], powers: { home: 'x', field: null } }), 'bonker')).toEqual({ kind: 'unit', index: 0 });

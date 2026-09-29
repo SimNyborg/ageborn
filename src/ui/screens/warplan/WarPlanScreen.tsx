@@ -3,8 +3,10 @@
  * loadout per age and the whole card collection, like Clash Royale's Cards tab.
  *
  * - **Left:** the loadout of the selected age, always visible (U4, "which cards are equipped"): six
- *   troop slots, two turrets and the Age Power, with the War Council lines it can use (A18.5.2) and
- *   the advisor's first warning (A3; never a blocker).
+ *   troop slots, two turrets and the two power slots, Home (house) and Field (flag) (A2.9.10; the
+ *   Field slot shows a padlock and its unlock line until it opens), with the War Council lines it can
+ *   use (A18.5.2) and the advisor's first warning (A3; never a blocker). A power fits only its own
+ *   slot; dropped on the other one it bounces back with "Home powers go in the Home slot".
  * - **Right:** "This age" (the cards that fit its slots) or "All cards" (the album with completion),
  *   with a filter and sort panel and removable filter chips. Equipped cards carry a check and a green
  *   underline; upgrade-ready cards the green arrow; unowned cards are silhouettes with a padlock.
@@ -22,6 +24,8 @@ import './warplan.css';
 import { ageNameKey, rarityNameKey } from '@/content/keys';
 import type { AgeId, CardId, Loadout, PlanIssue, Rarity } from '@/contracts';
 import { UNIT_CLASSES, type CardClass, type ClassGlyphId } from '@/core/cardClass';
+import type { PowerSlot } from '@/contracts';
+import { SlotGlyph } from '../../components/PowerGlyphs';
 import { MOTION_DUR } from '@/core/motion';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
@@ -55,6 +59,7 @@ import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardTile, isOwned, upgradeState } from '../model/cards';
 import { planIssueText } from '../model/match';
+import { POWER_SLOT_KEY, POWER_SLOT_LONG_KEY, POWER_WRONG_SLOT_KEY } from '../model/powerText';
 import { beatenCount } from '../model/warPath';
 import {
   activeFilterCount,
@@ -70,10 +75,12 @@ import {
   clearSlot,
   emptyPlan,
   equipSlot,
+  fieldSlotOpen,
   fitsSlot,
   loadoutAvgLevel,
   loadoutCards,
   normalizeLoadout,
+  powerSlotOf,
   presetsOpen,
   PRESETS,
   reachedAges,
@@ -107,6 +114,11 @@ const SLOT_LABEL: Record<SlotRef['kind'], string> = {
   turret: 'ui.army.slot.turret',
   power: 'ui.army.slot.power',
 };
+
+/** A slot's name: "Troop", "Turret", "Home power", "Field power". */
+function slotLabelKey(slot: SlotRef): string {
+  return slot.kind === 'power' ? POWER_SLOT_LONG_KEY[slot.slot] : SLOT_LABEL[slot.kind];
+}
 
 const AGE_SHORT = AGE_SHORT_KEY;
 
@@ -322,7 +334,8 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const inArmy = new Set(ALL_SLOTS.map((x) => slotCard(loadout, x)).filter((c): c is CardId => !!c));
   const selSlot = sel?.type === 'slot' ? slotFromKey(sel.key) : null;
   const selCard = sel?.type === 'card' ? sel.id : null;
-  const cards = armyCards(s, content, age, filter, selSlot ? selSlot.kind : null);
+  const cards = armyCards(s, content, age, filter, selSlot ? selSlot.kind : null, selSlot?.kind === 'power' ? selSlot.slot : null);
+  const fieldOpen = fieldSlotOpen(s);
   const album = albumProgress(s, content);
   const firstVisit = s.flags['ui-seen.army'] !== true;
 
@@ -485,7 +498,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   }
   function removeSlot(slot: SlotRef) {
     const was = slotCard(loadout, slot);
-    if (!was || slot.kind === 'power') return;
+    if (!was) return;
     const from = snapshot(tileIn(slotEl(slotKey(slot))));
     fx.current = { land: [], back: [{ card: was, from }] };
     commit({
@@ -499,10 +512,16 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     const slot = equipSlot(s, content, loadout, card);
     if (slot) placeCard(slot, card, from);
   }
-  function denySlot(key: string) {
+  function denySlot(key: string, card?: CardId | null) {
     setDeny((d) => ({ key, n: (d?.n ?? 0) + 1 }));
     ui.sound?.('ui_deny');
     haptic('deny');
+    // A power on the other power slot bounces back and says where it goes (A2.9.10).
+    const target = slotFromKey(key);
+    const own = card ? powerSlotOf(content, card) : null;
+    if (target?.kind !== 'power') return;
+    if (target.slot === 'field' && !fieldOpen) toasts.show(t('ui.power.lockedField'), { tone: 'bad', anchor: slotEl(key) });
+    else if (own && own !== target.slot) toasts.show(t(POWER_WRONG_SLOT_KEY[own]), { tone: 'bad', anchor: slotEl(key) });
   }
   function undoLast() {
     const last = undo[undo.length - 1];
@@ -581,6 +600,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
         placeCard(slot, selCard, from ?? null);
         return;
       }
+      denySlot(key, selCard);
+      return;
+    }
+    if (slot.kind === 'power' && slot.slot === 'field' && !fieldOpen) {
+      // The locked Field slot says how it opens (U8), nothing to select yet.
       denySlot(key);
       return;
     }
@@ -596,7 +620,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
         return;
       }
     }
-    select({ type: 'slot', key }, el, slot.kind === 'power' || (slot.kind === 'unit' && slot.index < 4));
+    select({ type: 'slot', key }, el, (slot.kind === 'power' && slot.slot === 'home') || (slot.kind === 'unit' && slot.index < 4));
   }
 
   // ---- drags ------------------------------------------------------------------------------------
@@ -618,7 +642,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       onDrop: (key, bad) => {
         const slot = key ? slotFromKey(key) : null;
         if (slot) placeCard(slot, id, null);
-        else if (bad) denySlot(bad);
+        else if (bad) denySlot(bad, id);
       },
     });
   }
@@ -629,7 +653,8 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     const key = slotKey(slot);
     beginDrag(e, el, {
       axis: 'free',
-      accepts: (k) => (k === 'grid' ? slot.kind !== 'power' : k !== key && slotFromKey(k)?.kind === slot.kind),
+      // Powers never move between the Home and Field slots (A2.9.1); any slot may go back to the grid.
+      accepts: (k) => (k === 'grid' ? true : k !== key && slot.kind !== 'power' && slotFromKey(k)?.kind === slot.kind),
       onStart: () => {
         setSel(null);
         ui.sound?.('card_lift');
@@ -695,6 +720,32 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       style: { '--i': i, '--land-delay': `${landing?.delay ?? 0}ms` },
       key: `${key}-${denied}`,
     };
+    if (slot.kind === 'power' && slot.slot === 'field' && !fieldOpen) {
+      // The Field slot before its unlock (A2.9.1): a padlock and how it opens, even when a migrated save
+      // already holds a Field power there (the sim plays it empty until it opens); a tap says it again.
+      return (
+        <div {...common} class={`${cls} is-locked`}>
+          <button
+            type="button"
+            class="army-slot__empty army-slot__locked"
+            onClick={() => tapSlot(slot, slotEl(key))}
+            aria-label={`${t(POWER_SLOT_LONG_KEY.field)}: ${t('ui.power.lockedField')}`}
+            data-testid={`slot-${key}`}
+          >
+            <span class="army-slot__watermark" aria-hidden="true">
+              <SlotGlyph slot="field" size={34} />
+            </span>
+            <LockIcon size={20} />
+            <span class="army-slot__label" data-tag="">
+              {t(POWER_SLOT_KEY.field)}
+            </span>
+            <span class="army-slot__more" data-tag="">
+              {t('ui.power.lockedFieldShort')}
+            </span>
+          </button>
+        </div>
+      );
+    }
     if (tile) {
       return (
         <div {...common} class={cls} data-testid={`slot-${key}`} onPointerDown={(e) => dragFromSlot(e as unknown as PointerEvent, slot)}>
@@ -707,10 +758,16 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             tip={!isSel}
             onClick={() => tapSlot(slot, slotEl(key))}
             label={t('ui.warplan.slotFilled', {
-              slot: t(SLOT_LABEL[slot.kind]),
+              slot: t(slotLabelKey(slot)),
               name: tile.name,
             })}
           />
+          {slot.kind === 'power' ? (
+            <span class={`army-slot__tag army-slot__tag--${slot.slot}`} data-tag="" aria-hidden="true">
+              <SlotGlyph slot={slot.slot} size={12} />
+              {t(POWER_SLOT_KEY[slot.slot])}
+            </span>
+          ) : null}
           {isSel ? slotActions(slot, card!) : null}
         </div>
       );
@@ -723,15 +780,20 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           onClick={() => tapSlot(slot, slotEl(key))}
           aria-pressed={isSel}
           aria-label={t('ui.warplan.emptySlot', {
-            slot: t(SLOT_LABEL[slot.kind]),
+            slot: t(slotLabelKey(slot)),
           })}
           data-testid={`slot-${key}`}
         >
+          {slot.kind === 'power' ? (
+            <span class="army-slot__watermark" aria-hidden="true">
+              <SlotGlyph slot={slot.slot} size={40} />
+            </span>
+          ) : null}
           <span class="army-slot__plus" aria-hidden="true">
             +
           </span>
           <span class="army-slot__label" data-tag="">
-            {t(SLOT_LABEL[slot.kind])}
+            {slot.kind === 'power' ? t(POWER_SLOT_KEY[slot.slot]) : t(SLOT_LABEL[slot.kind])}
           </span>
           {slot.kind === 'unit' && !spareTroop ? (
             // Nothing owned can fill it yet: say where more troops come from (U8, review 11).
@@ -758,11 +820,9 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           <Button kind="secondary" size="s" testid="slot-info" onClick={() => router.go({ id: 'cardDetail', card })}>
             {t('ui.army.info')}
           </Button>
-          {slot.kind !== 'power' ? (
-            <Button kind="secondary" size="s" testid={`remove-${slotKey(slot)}`} onClick={() => removeSlot(slot)}>
-              {t('ui.army.remove')}
-            </Button>
-          ) : null}
+          <Button kind="secondary" size="s" testid={`remove-${slotKey(slot)}`} onClick={() => removeSlot(slot)}>
+            {t('ui.army.remove')}
+          </Button>
         </span>
       </div>
     );
@@ -774,7 +834,9 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     const up = upgradeState(s, content, id);
     const here = inAge(id);
     const equipped = here && inArmy.has(id);
-    const otherAge = !here ? t('ui.army.otherAge', { age: t(AGE_SHORT[def.age]) }) : null;
+    // A Field power waits for its slot to open (A2.9.1).
+    const locked = def.kind === 'power' && def.slot === 'field' && !fieldOpen;
+    const otherAge = !here ? t('ui.army.otherAge', { age: t(AGE_SHORT[def.age]) }) : locked ? t('ui.power.lockedField') : null;
     return (
       <div class={barClass()} role="group" data-army-keep="" data-testid="card-actions">
         <span class="army-bar__title" data-clip-check="">
@@ -793,7 +855,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
               size="s"
               primary={false}
               testid="card-use"
-              disabled={!here}
+              disabled={!here || locked}
               reason={otherAge ?? undefined}
               sound={null}
               onClick={() => use(id, gridRef.current?.querySelector?.(`[data-army-cell="${id}"]`) as HTMLElement | null)}
@@ -1069,13 +1131,13 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                   data-testid="chip-slot"
                   aria-label={t('ui.army.removeFilter', {
                     name: t('ui.army.onlyKind', {
-                      slot: t(SLOT_LABEL[selSlot.kind]),
+                      slot: t(slotLabelKey(selSlot)),
                     }),
                   })}
                 >
                   <span class="army-chip__face">
                     {t('ui.army.onlyKind', {
-                      slot: t(SLOT_LABEL[selSlot.kind]),
+                      slot: t(slotLabelKey(selSlot)),
                     })}
                     <CloseIcon size={14} />
                   </span>
@@ -1099,6 +1161,21 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                   <span class="army-chip__face">
                     <ClassIcon id={c} size={16} />
                     {t(CLASS_NAME_KEY[c])}
+                    <CloseIcon size={14} />
+                  </span>
+                </button>
+              ))}
+              {(filter.powerSlots ?? []).map((slot) => (
+                <button
+                  key={`ps-${slot}`}
+                  type="button"
+                  class="army-chip"
+                  onClick={() => setFilter({ ...filter, powerSlots: (filter.powerSlots ?? []).filter((x) => x !== slot) })}
+                  aria-label={t('ui.army.removeFilter', { name: t(POWER_SLOT_LONG_KEY[slot]) })}
+                >
+                  <span class="army-chip__face">
+                    <SlotGlyph slot={slot} size={16} />
+                    {t(POWER_SLOT_KEY[slot])}
                     <CloseIcon size={14} />
                   </span>
                 </button>
@@ -1289,7 +1366,12 @@ function FilterSheet(p: { filter: ArmyFilter; onChange: (f: ArmyFilter) => void;
     p.onChange({
       ...f,
       classes: f.classes.includes(c) ? f.classes.filter((x) => x !== c) : [...f.classes, c],
+      // The Home / Field chips belong to the Power chip (A2.9.10): they go when it goes.
+      ...(c === 'power' && f.classes.includes('power') ? { powerSlots: [] } : {}),
     });
+  const powerSlots = f.powerSlots ?? [];
+  const toggleSlot = (slot: PowerSlot) =>
+    p.onChange({ ...f, powerSlots: powerSlots.includes(slot) ? powerSlots.filter((x) => x !== slot) : [...powerSlots, slot] });
   return (
     <Sheet
       title={t('ui.army.filterTitle')}
@@ -1317,6 +1399,19 @@ function FilterSheet(p: { filter: ArmyFilter; onChange: (f: ArmyFilter) => void;
             );
           })}
         </div>
+        {f.classes.includes('power') ? (
+          <div class="army-filter__classes army-filter__slots" role="group" aria-label={t('ui.power.filterSlots')} data-testid="filter-power-slots">
+            {(['home', 'field'] as const).map((slot) => {
+              const on = powerSlots.includes(slot);
+              return (
+                <button key={slot} type="button" class={`army-fchip${on ? ' is-on' : ''}`} aria-pressed={on} onClick={() => toggleSlot(slot)} data-testid={`filter-power-${slot}`}>
+                  <SlotGlyph slot={slot} size={20} />
+                  <span>{t(POWER_SLOT_KEY[slot])}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
         <h3 class="army-filter__label">{t('ui.army.filterRarity')}</h3>
         <Segmented
           label={t('ui.army.filterRarity')}
