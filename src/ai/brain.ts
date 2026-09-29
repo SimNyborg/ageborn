@@ -14,7 +14,7 @@
  * | Thin army (A18.6) | Normal (IV) and up push whenever myArmy ≥ 1.5 × foeArmy (and can soak the turrets) |
  * | Evolve | 1.2 when XP ≥ threshold and (no enemy ground unit within 300 lu of own gate, or m_greed ≥ 1.3), after the tier's evolve delay |
  * | Power | 1.0 when the best zone's enemy value ≥ tier threshold × m_patience, or own base took damage in the last 3 s and zone value ≥ 100; aim error applied |
- * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; Fall back (V+) when myArmy < 0.5 × foeArmy and the enemy is past mid-lane; otherwise Charge. The Hold flag (III+, A18.4.2) goes where the turrets cover when defending, or forward where the army gathers for a wave |
+ * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; Fall back (V+, before Overdrive) when myArmy < 0.5 × foeArmy and the enemy is past mid-lane, within 200 lu of the turret cover; otherwise Charge. The Hold flag (III+, A18.4.2) goes where the turrets cover when defending, or forward where the army gathers for a wave |
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
  *
  * Plus the push gate, the attack clock, saving goals, the gold float target (A7.3), openings and the
@@ -23,7 +23,7 @@
  * dwell) is itself derived from earlier inputs. Rules the DESIGN leaves open are logged in
  * docs/decisions.md under WP3.
  */
-import type { CardId, ResearchPickDef, RoleGroup } from '@/contracts';
+import type { CardId, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
 import {
   BP,
   LANE_MLU,
@@ -157,6 +157,12 @@ const THIN_MIN_ARMY = 250;
 /** A18.4.2 Fall back: myArmy < 0.5 × foeArmy (foe worth 300+) with the enemy past mid-lane. */
 const FALLBACK_RATIO_BP = 5000;
 const FALLBACK_MIN_FOE = 300;
+/**
+ * ... and only once the enemy front is within 200 lu of the turret cover (past mid-lane, and close): falling
+ * back from anything past mid-lane added 10 points of Final Bells to the tier V mirror (Standard 26% →
+ * 36%, 600 matches); this keeps the win-rate gain over lower tiers at 29.5%.
+ */
+const FALLBACK_REACH = 200 * MILLI;
 /** Hold flag spots: this far inside the turret cover when defending ... */
 const FLAG_COVER_MARGIN = 80 * MILLI;
 /** ... and, gathering a wave, this far short of mid-lane and of the nearest enemy ground unit. */
@@ -265,6 +271,10 @@ const HINT_BASE_BP = 5000;
 const HINT_MATCH_BP = 10000;
 /** A group share of the visible enemy army (bp) from which a hint counts as matching. */
 const HINT_SHARE_BP = 3500;
+/** A Troops pick scores up to this much more for the class's share of the bot's own army. */
+const HINT_OWN_BP = 8000;
+/** m_aggr from which "push" picks suit the bot's style (aggression weight ≥ 80, Kettle). */
+const AGGRESSIVE_BP = 13000;
 /** Deepening an open line (rank II) scores this much more; a third Troops line this much less. */
 const HINT_DEEPEN_BP = 6000;
 const MAX_OPEN_LINES = 2;
@@ -533,8 +543,10 @@ export class Brain {
     const stanceTier = (t.hold || P.holdAnyTier) && !this.opening.noStance;
     const weak = v.myArmy > 0 && v.myArmy * BP < mulBp(HOLD_RATIO_BP, W.hold) * v.foeArmy && (v.turretsBuilt >= HOLD_MIN_TURRETS || (mono >= HOLD_MONO_BP && v.foeArmy >= HOLD_MONO_ARMY));
     if (stanceTier && v.stanceReady && (siege || v.now - this.stanceTick >= STANCE_DWELL)) {
+      // Not from Overdrive on: the late game pushes (the gate drops to 1.0 × D, A7.2), and falling back
+      // then only dragged mirrors to the Final Bell (tier VIII mirror, Standard: 75% → 86%).
       const falling =
-        t.fallback && !siege && !allIn && v.myArmy > 0 && v.foeArmy >= FALLBACK_MIN_FOE && v.myArmy * BP < mulBp(FALLBACK_RATIO_BP, v.foeArmy) && v.foeFront !== null && v.foeFront < e.midLane;
+        t.fallback && !hot && !allIn && v.myArmy > 0 && v.foeArmy >= FALLBACK_MIN_FOE && v.myArmy * BP < FALLBACK_RATIO_BP * v.foeArmy && v.foeFront !== null && v.foeFront < e.turretCover + FALLBACK_REACH;
       const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = falling ? 'fallback' : wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
@@ -730,7 +742,7 @@ export class Brain {
    * random, II-IV by `aiHint` with a fixed preference, V and up read the visible enemy army.
    */
   private chooseResearch(v: View, mem: BotMemory, rng: Sfc32State): ResearchPickDef | null {
-    const { book, tier: t, persona: P } = this.cfg;
+    const { book, tier: t, persona: P, weights: W } = this.cfg;
     const content = book.content;
     const classes = new Set<string>();
     for (const s of v.tray) {
@@ -739,12 +751,15 @@ export class Brain {
     }
     // Defences improve turrets: worth it with a turret up, or for a General who plans them (Moss).
     const defencesOk = v.turretsBuilt > 0 || (P.researchBiasBp.defences ?? 0) > 0;
+    // Ambush pays only while Holding: not for a bot that never holds.
+    const holds = (t.hold || P.holdAnyTier) && !this.opening.noStance;
     const picks = startableFor(content, v).filter(
       (p) =>
         (p.group === null || classes.has(p.group)) &&
         !(p.track === 'economy' && pickIncomeMilliPerSec(p) > 0) &&
         P.researchBiasBp[p.id] !== -BP &&
-        (p.track !== 'defences' || defencesOk),
+        (p.track !== 'defences' || defencesOk) &&
+        (holds || !p.effects.some((fx) => fx.kind === 'firstHit' && fx.whileHolding === true)),
     );
     if (picks.length === 0) return null;
     // The General's research style (A18.5.8), by pick id, track and Troops class.
@@ -758,32 +773,40 @@ export class Brain {
       );
       return picks[i] ?? null;
     }
-    // Situation: shares of the enemy army by role group (counter scoring only: what it sees, what a
-    // remembering tier recalls, and for Rook the Scouted list), pressure, and how busy the lane is.
-    const share = t.researchMode === 'counter' ? this.foeGroupShares(v, mem) : null;
-    const bp = (g: RoleGroup): number => share?.get(g) ?? 0;
+    // Situation: shares of the enemy army by class (II-IV: what it sees; counter scoring adds what a
+    // remembering tier recalls and, for Rook, the Scouted list), pressure, and how busy the lane is.
+    const share = this.foeClassShares(v, mem, t.researchMode === 'counter');
+    const bp = (c: ResearchClass): number => share.get(c) ?? 0;
+    // Value over the rest of the match: a Troops line pays in proportion to how much of its own army
+    // the class makes up (units on the lane and in the queue).
+    const own = this.ownClassShares(v);
     const pressure = fPressure(foeValueIn(v, 0, PRESSURE_RADIUS));
     const busy = v.mine.length + v.foes.length >= 12;
-    // Tiers II-IV read the pick's `aiHint` against their own situation; V and up also against the enemy army.
+    // The pick's `aiHint` against the situation (A18.5.8). Push and power picks: counter scoring (V+)
+    // takes them while its army is the bigger one (they break standoffs: with defensive picks only, the
+    // tier V mirror reached the Final Bell 33% of Standard Wars instead of 19%) and for the power, which
+    // every age has; tiers II-IV take them only as a style (aggression ≥ 80, Kettle), since matching them
+    // on the moment made tier IV buy Lightfoot and War Horns over Weapons and lose 49% → 35% to the
+    // researching reference player.
+    const counter = t.researchMode === 'counter';
     const matches = (p: ResearchPickDef): boolean => {
       switch (p.aiHint) {
         case 'vsSwarm':
           return bp('infantry') >= HINT_SHARE_BP;
         case 'vsHeavy':
-          return bp('heavy') + bp('epic') >= HINT_SHARE_BP;
+          return bp('heavy') >= HINT_SHARE_BP;
         case 'vsRanged':
           return bp('ranged') >= HINT_SHARE_BP;
         case 'defend':
           return pressure >= DEFENCE_PRESSURE_BP;
         case 'push':
-          return v.myArmy > v.foeArmy;
+          return W.aggr >= AGGRESSIVE_BP || (counter && v.myArmy > v.foeArmy);
         case 'busy':
           return busy;
         case 'quiet':
           return !busy && mem.foeOnMyHalfTick < v.now - PASSIVE_FOE_TICKS;
         case 'power':
-          // A faster charge is a style (Tempest's bias), not a situation.
-          return false;
+          return counter && v.power !== undefined;
         case 'opener':
           return true;
       }
@@ -796,9 +819,9 @@ export class Brain {
     let best: ResearchPickDef | null = null;
     let bestScore = -1;
     for (const p of picks) {
-      let score = HINT_BASE_BP + style(p);
-      // Rook weighs counters by his counter weight (×1.5).
-      if (matches(p)) score += composition(p) ? mulBp(HINT_MATCH_BP, P.counterWeightBp) : HINT_MATCH_BP;
+      let score = HINT_BASE_BP + style(p) + (p.group ? mulBp(HINT_OWN_BP, own.get(p.group) ?? 0) : 0);
+      // Counter scoring weighs counters by the counter weight (Rook ×1.5).
+      if (matches(p)) score += composition(p) && counter ? mulBp(HINT_MATCH_BP, P.counterWeightBp) : HINT_MATCH_BP;
       if (p.rank > 1) score += HINT_DEEPEN_BP;
       else if (p.group !== null && !openLines.has(p.group) && openLines.size >= MAX_OPEN_LINES) score -= HINT_DEEPEN_BP;
       score += randInt(rng, 1000);
@@ -810,45 +833,61 @@ export class Brain {
     return best;
   }
 
-  /**
-   * Shares (bp) of the enemy army by role group for counter scoring: the visible army, plus recently
-   * seen cards for tiers that remember composition (VII+), plus one of each Scouted card for Rook.
-   */
-  private foeGroupShares(v: View, mem: BotMemory): Map<RoleGroup, number> {
-    const { book, tier: t, persona: P } = this.cfg;
-    const value = new Map<RoleGroup, number>();
-    const add = (g: RoleGroup, x: number): void => {
-      value.set(g, (value.get(g) ?? 0) + x);
+  /** Shares (bp) of the bot's own army (lane and queue) by War Council class. */
+  private ownClassShares(v: View): Map<ResearchClass, number> {
+    const content = this.cfg.book.content;
+    const value = new Map<ResearchClass, number>();
+    let total = 0;
+    const add = (card: string, x: number): void => {
+      const role = content.units[card]?.role;
+      if (!role || x <= 0) return;
+      const c = content.research.classOfRole[role];
+      value.set(c, (value.get(c) ?? 0) + x);
+      total += x;
     };
+    for (const u of v.mine) add(u.card, u.value);
+    for (const c of v.queue) add(c, this.cfg.book.units[c]?.value ?? 0);
+    const out = new Map<ResearchClass, number>();
+    if (total <= 0) return out;
+    for (const [c, x] of value) out.set(c, Math.trunc((x * BP) / total));
+    return out;
+  }
+
+  /**
+   * Shares (bp) of the enemy army by War Council class (A18.5.2: Epics and Legendaries count in their
+   * base role's class): the visible army, and with `deep` (counter scoring) recently seen cards for
+   * tiers that remember composition (VII+) plus one of each Scouted card for Rook.
+   */
+  private foeClassShares(v: View, mem: BotMemory, deep: boolean): Map<ResearchClass, number> {
+    const { book, tier: t, persona: P } = this.cfg;
+    const content = book.content;
+    const value = new Map<ResearchClass, number>();
     const seen = new Set<string>();
-    for (const u of v.foes) {
-      if (!u.def) continue;
-      add(u.def.group, u.value);
-      seen.add(u.card);
-    }
-    if (t.remembersComposition) {
+    const add = (card: string, x: number): void => {
+      const role = content.units[card]?.role;
+      if (!role) return;
+      const c = content.research.classOfRole[role];
+      value.set(c, (value.get(c) ?? 0) + x);
+      seen.add(card);
+    };
+    for (const u of v.foes) add(u.card, u.value);
+    if (deep && t.remembersComposition) {
       for (const r of mem.remembered()) {
         const d = book.units[r.card];
-        if (d && !seen.has(r.card)) {
-          add(d.group, d.value * r.count);
-          seen.add(r.card);
-        }
+        if (d && !seen.has(r.card)) add(r.card, d.value * r.count);
       }
     }
-    if (P.researchScouted) {
+    if (deep && P.researchScouted) {
       for (const c of v.obs.foe.scouted ?? []) {
         const d = book.units[c];
-        if (d && !seen.has(c)) {
-          add(d.group, d.value);
-          seen.add(c);
-        }
+        if (d && !seen.has(c)) add(c, d.value);
       }
     }
     let total = 0;
     for (const x of value.values()) total += x;
-    const out = new Map<RoleGroup, number>();
+    const out = new Map<ResearchClass, number>();
     if (total <= 0) return out;
-    for (const [g, x] of value) out.set(g, Math.trunc((x * BP) / total));
+    for (const [c, x] of value) out.set(c, Math.trunc((x * BP) / total));
     return out;
   }
 
