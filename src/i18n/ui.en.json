@@ -436,6 +436,11 @@
       "upgrade": "Upgrade",
       "remove": "Remove",
       "inArmy": "In army",
+      "group": {
+        "free": "Not in army · {n}",
+        "used": "In your army · {n}",
+        "locked": "Not found yet · {n}"
+      },
       "otherAge": "{age} card: switch to {age}",
       "notOwned": "Not found yet",
       "hintFirst": "Tap a card, then Use",
@@ -449,7 +454,7 @@
       "presetUse": "Use army {name}",
       "presetInUse": "In use",
       "cardsTitle": "Cards",
-      "deckTitle": "Your {age} army"
+      "deckTitle": "Your army · {age}"
     },
     "advisor": {
       "tooFewUnits": "{age} needs at least 3 units.",

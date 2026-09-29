@@ -53,7 +53,7 @@ import { countDuration } from '@/core/motion';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
-import { cardDef, cardTile, upgradeState } from '../model/cards';
+import { cardDef, cardTile, isOwned, upgradeState } from '../model/cards';
 import { planIssueText } from '../model/match';
 import {
   activeFilterCount,
@@ -71,6 +71,7 @@ import {
   equipSlot,
   fitsSlot,
   loadoutAvgLevel,
+  loadoutCards,
   normalizeLoadout,
   presetsOpen,
   PRESETS,
@@ -107,6 +108,13 @@ const SLOT_LABEL: Record<SlotRef['kind'], string> = {
 };
 
 const AGE_SHORT = AGE_SHORT_KEY;
+
+/** The three groups of the "This age" grid (4.2, U4). */
+const GROUP_KEY = {
+  free: 'ui.army.group.free',
+  used: 'ui.army.group.used',
+  locked: 'ui.army.group.locked',
+} as const;
 
 const STATUS_KEY: Record<AgeStatus, string> = {
   ok: 'ui.army.status.ok',
@@ -229,7 +237,10 @@ function placeOf(el: HTMLElement | null, row0: boolean): Place {
   if (!el || !box || typeof el.getBoundingClientRect !== 'function') return { v: row0 ? 'below' : 'above', h: 'center' };
   const r = el.getBoundingClientRect();
   const b = box.getBoundingClientRect();
-  const v = r.top - b.top < 84 ? 'below' : 'above';
+  // A grid card's bar must fit inside the scrolling grid (it clips, and the sticky head covers the
+  // top); a slot's bar may overlap the strip above the slots.
+  const scroller = el.closest?.('[data-scroll]') as HTMLElement | null;
+  const v = scroller && box.contains(scroller) ? (r.top - scroller.getBoundingClientRect().top < 96 ? 'below' : 'above') : r.top - b.top < 84 ? 'below' : 'above';
   const h = r.left - b.left < 80 ? 'start' : b.right - r.right < 80 ? 'end' : 'center';
   return { v, h };
 }
@@ -371,6 +382,8 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     }
     for (const b of f.back) {
       const target = gridRef.current?.querySelector?.(`[data-army-cell="${b.card}"]`) as HTMLElement | null;
+      // Land where the cell ends up, not where its regroup move starts.
+      for (const a of target?.getAnimations?.() ?? []) a.finish();
       if (b.from)
         flyCard(b.from, tileIn(target), { pull: false })?.done.then(() => {
           if (target && typeof target.animate === 'function')
@@ -381,6 +394,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   });
 
   function commit(next: WarPlan, record = true) {
+    regroup();
     if (record) setUndo((u) => [...u, { preset, plan }].slice(-40));
     // Presets are added one at a time (`meta.setWarPlan` refuses gaps): editing C before B exists
     // first stores B as a copy of the active plan.
@@ -392,6 +406,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     }
     services.setWarPlan(preset, next);
     if (firstVisit) services.setUiFlags({ 'ui-seen.army': true });
+  }
+  /** Grid cells that change group after an edit move to their new place (MR-38's FLIP). */
+  function regroup() {
+    flipper.current.first();
+    flipping.current = true;
   }
   function setLoadout(l: Loadout, f: Fx) {
     fx.current = f;
@@ -412,7 +431,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     }
     const origin = slotOfCard(loadout, card);
     const next = assignCard(content, loadout, slot, card);
-    const f: Fx = { land: [{ key, from, delay: 0 }], back: [] };
+    // The grid regroups after the change ("In your army"), so the flight starts from where the card
+    // is now, not from where its grid cell moves to.
+    const src = from && !('rect' in from) ? (snapshot(tileIn(from)) ?? from) : from;
+    const f: Fx = { land: [{ key, from: src, delay: 0 }], back: [] };
     if (origin && was) {
       // A swap inside the loadout (MR-35): the other card crosses to the first card's old slot.
       f.land.push({
@@ -457,6 +479,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       })),
       back: [],
     };
+    regroup();
     services.setWarPlan(last.preset, last.plan);
     setSel(null);
   }
@@ -637,6 +660,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             size="sm"
             showCost
             selected={isSel}
+            tip={!isSel}
             onClick={() => tapSlot(slot, slotEl(key))}
             label={t('ui.warplan.slotFilled', {
               slot: t(SLOT_LABEL[slot.kind]),
@@ -736,6 +760,50 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             </Button>
           ) : null}
         </span>
+      </div>
+    );
+  }
+
+  /** Every card placed in any age of the army you look at ("In army" on the album, 4.2). */
+  const inAnyArmy = new Set(content.order.ages.flatMap((a) => (plan.loadouts[a] ? loadoutCards(plan.loadouts[a]) : [])));
+  const groups: { id: keyof typeof GROUP_KEY; ids: CardId[] }[] = [
+    { id: 'free', ids: cards.filter((id) => !inArmy.has(id) && isOwned(s, id, content)) },
+    { id: 'used', ids: cards.filter((id) => inArmy.has(id)) },
+    { id: 'locked', ids: cards.filter((id) => !inArmy.has(id) && !isOwned(s, id, content)) },
+  ];
+  let n = 0;
+
+  function cell(id: CardId, i: number) {
+    const tile = cardTile(s, content, id, t)!;
+    const here = inAge(id);
+    const isSel = selCard === id;
+    return (
+      <div
+        key={id}
+        class={`army-cell${isSel ? ' is-selected' : ''}${here ? '' : ' is-other'}`}
+        data-army-cell={id}
+        data-army-keep=""
+        style={{ '--i': Math.min(i, 12) }}
+        onPointerDown={(e) => dragFromGrid(e as unknown as PointerEvent, id)}
+      >
+        <CardTile
+          card={tile}
+          size="sm"
+          grid
+          showCost
+          showCopies
+          selected={isSel}
+          tip={!isSel}
+          equipped={here ? inArmy.has(id) : inAnyArmy.has(id)}
+          onClick={() => tapCard(id, gridRef.current?.querySelector?.(`[data-army-cell="${id}"]`) as HTMLElement | null)}
+          testid={`cand-${id}`}
+        />
+        {filter.view === 'all' ? (
+          <span class="army-cell__age" data-tag="">
+            {t(AGE_SHORT[tile.age])}
+          </span>
+        ) : null}
+        {isSel ? cardActions(id) : null}
       </div>
     );
   }
@@ -845,7 +913,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   return (
     <ScreenFrame id="warPlan" title={t('ui.army.title')} onBack={() => router.back()} right={header} class="army-screen">
       <div class={`army${sel ? ' has-sel' : ''}`} ref={root}>
-        <section class="army-deck" data-army-col="" aria-label={t('ui.army.deckTitle', { age: t(ageNameKey(age)) })}>
+        <section class="army-deck" data-army-col="" aria-labelledby="army-deck-title">
+          <h2 id="army-deck-title" class="army-deck__title">
+            {t('ui.army.deckTitle', { age: t(ageNameKey(age)) })}
+          </h2>
           <div class="army-strip">
             <ul class="army-lines" aria-label={t('ui.warplan.councilLines')} data-testid="wp-council-lines">
               {lines.map((l) => {
@@ -1036,40 +1107,23 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                   {t('ui.army.clear')}
                 </Button>
               </div>
+            ) : filter.view === 'age' ? (
+              // "This age" in three labelled groups (U4, the owner's "which cards are equipped"): the
+              // cards that could still join first, then the ones already in this army, then the ones
+              // not found yet. The loadout on the left shows the same army in its slots.
+              groups.flatMap((g) =>
+                g.ids.length
+                  ? [
+                      <p key={`g-${g.id}`} class={`army-group army-group--${g.id}`} data-testid={`army-group-${g.id}`}>
+                        {g.id === 'used' ? <CheckIcon size={14} /> : g.id === 'locked' ? <LockIcon size={14} /> : null}
+                        <span>{t(GROUP_KEY[g.id], { n: g.ids.length })}</span>
+                      </p>,
+                      ...g.ids.map((id) => cell(id, n++)),
+                    ]
+                  : [],
+              )
             ) : (
-              cards.map((id, i) => {
-                const tile = cardTile(s, content, id, t)!;
-                const here = inAge(id);
-                const isSel = selCard === id;
-                return (
-                  <div
-                    key={id}
-                    class={`army-cell${isSel ? ' is-selected' : ''}${here ? '' : ' is-other'}`}
-                    data-army-cell={id}
-                    data-army-keep=""
-                    style={{ '--i': Math.min(i, 12) }}
-                    onPointerDown={(e) => dragFromGrid(e as unknown as PointerEvent, id)}
-                  >
-                    <CardTile
-                      card={tile}
-                      size="sm"
-                      grid
-                      showCost
-                      showCopies
-                      selected={isSel}
-                      equipped={here && inArmy.has(id)}
-                      onClick={() => tapCard(id, gridRef.current?.querySelector?.(`[data-army-cell="${id}"]`) as HTMLElement | null)}
-                      testid={`cand-${id}`}
-                    />
-                    {filter.view === 'all' ? (
-                      <span class="army-cell__age" data-tag="">
-                        {t(AGE_SHORT[tile.age])}
-                      </span>
-                    ) : null}
-                    {isSel ? cardActions(id) : null}
-                  </div>
-                );
-              })
+              cards.map((id, i) => cell(id, i))
             )}
           </div>
         </section>

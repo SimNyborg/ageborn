@@ -29,10 +29,8 @@ import { CardTile, type CardTileData } from '../../components/CardTile';
 import { CLASS_NAME_KEY, ClassChip, ClassIcon, counterNoteKey } from '../../components/ClassIcon';
 import { CurrencyChip, Pill } from '../../components/Chips';
 import { formatDec, formatInt, formatSeconds } from '../../components/format';
-import { AGE_COLOR, AgeGlyph, AmberIcon, CheckIcon, DustIcon, HammerIcon, LockIcon, RarityGem, RoadIcon, RoleGlyph } from '../../components/icons';
-import { usePortrait } from '../../components/kit';
+import { AgeGlyph, AmberIcon, CheckIcon, DustIcon, RarityGem, RoadIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
-import { CopiesBar } from '../../components/Meters';
 import { Sheet } from '../../components/Modal';
 import { OddsSheet } from '../../components/OddsSheet';
 import { oddsModel } from '../../components/oddsModel';
@@ -43,6 +41,7 @@ import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, normalizeLoadout, slo
 import { arenaOf } from '../model/progress';
 import { reasonKey } from '../model/reasons';
 import { SkinOptions } from '../shared/SkinPicker';
+import { CardStage } from './CardStage';
 
 const STAT_KEYS: Record<StatRow['id'], string> = {
   hp: 'ui.stat.hp',
@@ -72,16 +71,6 @@ const FOILS: Exclude<Foil, 'none'>[] = ['bronze', 'silver', 'holo'];
 
 /** MR-39 after the 300 ms charge: burst, hold, level flip, stat ticks and chips (1,470 ms in all). */
 const IMPACT_MS = MOTION_DUR.beatMax - MOTION_DUR.medium;
-
-/** The unit on the stage: the plate-free portrait (DESIGN B5), or the role glyph without art. */
-function StageArt(p: { card: CardId; glyph: ReturnType<typeof cardGlyph>; skin: string | null; silhouette: boolean }) {
-  const url = usePortrait(p.card, { skin: p.skin, size: 320, plate: false });
-  return (
-    <span class={`cd-stage__figure${p.silhouette ? ' is-silhouette' : ''}`} aria-hidden="true">
-      {url ? <img src={url} alt="" draggable={false} /> : <RoleGlyph kind={p.glyph} size={120} color="#e8e1d2" />}
-    </span>
-  );
-}
 
 export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   const { save, content, t, locale, router, services, toasts } = useUi();
@@ -363,7 +352,6 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   }
 
   const armed = upgrade.armed;
-  const age = AGE_COLOR[def.age];
   const myCls = tile.cls;
   const strongNote = myCls && tile.strong?.length ? tile.strong.map((c) => counterNoteKey(myCls, c)).find(Boolean) : null;
   const weakNote = myCls && tile.weak?.length ? tile.weak.map((c) => counterNoteKey(c, myCls)).find(Boolean) : null;
@@ -409,59 +397,17 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
         }}
       >
         <div class="cd-left">
-          <div
-            ref={stageRef}
-            class={`cd-stage cd-stage--${def.kind}${cer ? ` is-${cer.phase}` : ''}${armed ? ' is-armed' : ''}`}
-            data-testid="card-stage"
-            data-anim={cer ? '' : undefined}
-            style={{
-              '--age-main': age.main,
-              '--age-accent': age.accent,
-              '--age-light': age.light,
-            }}
-            onClick={() => cer && setCer(null)}
-          >
-            <i class="cd-stage__sky" aria-hidden="true" />
-            <i class="cd-stage__hills" aria-hidden="true" />
-            <i class="cd-stage__ground" aria-hidden="true" />
-            <i class="cd-stage__dust" aria-hidden="true" />
-            <div class="cd-stage__actor">
-              <i class="cd-stage__shadow" aria-hidden="true" />
-              <StageArt card={id} glyph={cardGlyph(def)} skin={tile.skin} silhouette={!owned} />
-            </div>
-            <div class="cd-stage__card">
-              <CardTile card={{ ...tile, isNew: false }} size="lg" showCost showName={false} tip={false} />
-              {!owned ? (
-                <span class="cd-stage__lock">
-                  <LockIcon size={28} />
-                </span>
-              ) : null}
-            </div>
-            <div class="cd-stage__meta">
-              {owned && def.kind !== 'power' ? (
-                <span class="cd-stage__level" data-testid="card-level" key={`lv${level}-${cer?.phase === 'impact' ? cer.n : 0}`}>
-                  {t('ui.card.level', { n: level })}
-                </span>
-              ) : null}
-              {owned && up && !up.maxed ? (
-                <div class="cd-copies" data-testid="card-upgrade">
-                  <span class="cd-copies__label">{up.copiesReady ? t('ui.card.upgradeReady') : t('ui.card.copies')}</span>
-                  <CopiesBar copies={up.copies} needed={up.cost?.copies ?? null} ready={up.copiesReady} />
-                </div>
-              ) : null}
-            </div>
-            {cer?.phase === 'impact' ? (
-              <>
-                <i class="cd-stage__burst" aria-hidden="true" />
-                <span class="cd-stage__hammer" aria-hidden="true">
-                  <HammerIcon size={72} />
-                </span>
-                <span class="cd-stage__levelup" aria-hidden="true">
-                  {t('ui.card.levelUp', { n: level })}
-                </span>
-              </>
-            ) : null}
-          </div>
+          <CardStage
+            stageRef={stageRef}
+            tile={tile}
+            kind={def.kind}
+            glyph={cardGlyph(def)}
+            owned={owned}
+            copies={owned && up && !up.maxed ? { copies: up.copies, needed: up.cost?.copies ?? null, ready: up.copiesReady } : null}
+            ceremony={cer ? { phase: cer.phase, n: cer.n } : null}
+            armed={armed}
+            onSkip={() => setCer(null)}
+          />
         </div>
 
         <div class="cd-right" data-scroll="">

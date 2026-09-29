@@ -830,192 +830,173 @@
 /* Onboarding: the one forced upgrade (A8 ~9:00, A6.6 hammer slam)                           */
 /* ---------------------------------------------------------------------------------------- */
 
-.ab-upgrade {
-  position: absolute;
-  inset: 0;
+/* Card detail's stage and MR-39 ceremony (CardStage) inside a centred panel on the 72% scrim. */
+.ui-root.ab-upgrade {
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--ui-s3) calc(var(--ui-s4) + var(--ui-safe-l, 0px));
   pointer-events: auto;
-  z-index: 40;
-  background: radial-gradient(circle at 50% 45%, rgba(58, 40, 110, 0.55) 0%, rgba(10, 6, 24, 0.86) 70%);
-  animation: ab-fade-in 240ms ease-out;
+  background: var(--ui-scrim);
+  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
 }
 
 .ab-upgrade-panel {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 28px 22px;
-  min-width: 320px;
-  animation: ab-pop 320ms var(--ui-ease-back, ease-out);
+  gap: var(--ui-s3);
+  width: min(720px, 100%);
+  max-height: 100%;
+  padding: var(--ui-s4);
+  border: 1px solid rgba(107, 120, 144, 0.45);
+  border-radius: var(--ui-r-xl);
+  background: var(--ui-surface-1);
+  box-shadow: var(--ui-e4);
+  animation: ui-rise var(--ui-dur-medium) var(--ui-ease-enter) both;
 }
 
 .ab-upgrade-title {
   margin: 0;
-  font-size: 30px;
-  font-weight: 900;
-  color: #ffe58a;
-  text-shadow: 0 3px 0 #3a2200, 0 0 18px rgba(255, 200, 80, 0.35);
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-fs-title);
+  line-height: var(--ui-lh-title);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ui-text);
 }
 
-.ab-upgrade-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 200px;
-  padding: 10px 10px 12px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #4b7cc9 0%, #2b4c8a 100%);
-  border: 3px solid #1b2c55;
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.25), 0 6px 0 rgba(0, 0, 0, 0.35);
-}
-
-.ab-upgrade-portrait {
-  width: 170px;
-  height: 150px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 40%, #e8f2ff 0%, #9ab8e6 75%);
-}
-
-.ab-upgrade-portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ab-upgrade-name {
-  margin-top: 6px;
-  font-weight: 900;
-  font-size: 20px;
-  color: #fff;
-  text-shadow: 0 2px 0 #10214a;
-}
-
-.ab-upgrade-level {
-  margin-top: 4px;
-  padding: 2px 14px;
-  border-radius: 999px;
-  font-weight: 900;
-  font-size: 20px;
-  color: #3a2200;
-  background: linear-gradient(180deg, #ffe07a, #f2a93b);
-  box-shadow: 0 2px 0 #6b3a0c;
-}
-
-.ab-upgrade--slam .ab-upgrade-level,
-.ab-upgrade--done .ab-upgrade-level {
-  animation: ab-level-flip 520ms var(--ui-ease-back, ease-out) 260ms both;
-}
-
-.ab-upgrade-hammer {
-  position: absolute;
-  top: -34px;
-  right: -40px;
-  transform-origin: 20% 90%;
-  animation: ab-hammer 520ms var(--ui-ease-exit, ease-out) both;
-  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.35));
-}
-
-.ab-upgrade--done .ab-upgrade-hammer {
-  animation: ab-hammer 520ms var(--ui-ease-exit, ease-out) both, ab-fade-out 260ms ease-in 700ms forwards;
-}
-
-.ab-upgrade--slam .ab-upgrade-card {
-  animation: ab-card-slam 420ms ease-out 260ms both;
-}
-
-.ab-upgrade-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 260px;
-}
-
-.ab-upgrade-bar {
+.ab-upgrade-body {
   display: grid;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 272px);
+  gap: var(--ui-s4);
+  min-height: 0;
+}
+
+.ab-upgrade-body .cd-stage {
+  height: clamp(200px, calc(100cqh - 150px), 340px);
+}
+
+/* The stage here is wider than Card detail's column: size the unit by the stage's height. */
+.ab-upgrade-body .cd-stage__actor {
+  width: auto;
+  height: 76%;
+  max-width: 66%;
+}
+
+.ab-upgrade-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+  min-width: 0;
+}
+
+.ab-upgrade-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ab-upgrade-row {
+  display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  min-height: 44px;
+  padding: 0 var(--ui-s3);
+  border: 1px solid transparent;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-surface-2);
+  box-shadow: var(--ui-e1);
+}
+
+.ab-upgrade--offer .ab-upgrade-row {
+  border-color: rgba(95, 208, 138, 0.45);
+}
+
+.ab-upgrade-row__label {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+}
+
+.ab-upgrade-row__value {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--ui-s2);
+  color: var(--ui-text);
+  font-size: var(--ui-fs-label);
   font-weight: 800;
-  font-size: 14px;
-  color: #d8d2ff;
+  font-variant-numeric: tabular-nums;
 }
 
-.ab-upgrade-bar i {
-  display: block;
-  height: 10px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #6fe38a, #3fbf63);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  transition: width 700ms var(--ui-ease-back, ease-out) 400ms;
+.ab-upgrade-row__next {
+  color: var(--ui-good);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
 }
 
-.ab-upgrade-cost {
-  margin-left: 12px;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 18px;
-  background: rgba(58, 34, 0, 0.25);
+/* MR-39 follow-through: the rows tick one by one and a green "+N" rises and settles. */
+.ab-upgrade-row.is-tick .ab-upgrade-row__value {
+  color: var(--ui-good);
+  animation: ui-bump var(--ui-dur-small) var(--ui-ease-back) calc(var(--ui-dur-hold-medium) + var(--i, 0) * var(--ui-dur-stagger) * 1.5) both;
+}
+
+.ab-upgrade-row__gain {
+  color: var(--ui-good);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-back) calc(var(--ui-dur-hold-medium) + var(--i, 0) * var(--ui-dur-stagger) * 1.5) both;
+}
+
+.ab-upgrade-hint,
+.ab-upgrade-gain {
+  margin: 0;
+  font-size: var(--ui-fs-body);
+  line-height: var(--ui-lh-body);
+  font-weight: 700;
+}
+
+.ab-upgrade-hint {
+  color: var(--ui-text-2);
 }
 
 .ab-upgrade-gain {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 900;
-  color: #8dffa8;
-  text-shadow: 0 2px 0 #0d3a1a;
-  animation: ab-pop 320ms var(--ui-ease-back, ease-out) 500ms both;
+  color: var(--ui-good);
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back) var(--ui-dur-medium) both;
 }
 
-@keyframes ab-hammer {
-  0% { transform: translate(40px, -60px) rotate(-70deg); opacity: 0; }
-  45% { transform: translate(10px, -20px) rotate(-85deg); opacity: 1; }
-  75% { transform: translate(0, 0) rotate(10deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+.ab-upgrade-gain.is-waiting {
+  visibility: hidden;
+  animation: none;
 }
 
-@keyframes ab-card-slam {
-  0% { transform: scale(1); }
-  20% { transform: scale(0.9, 1.08) translateY(4px); }
-  45% { transform: scale(1.08, 0.94); }
-  70% { transform: scale(0.98, 1.02); }
-  100% { transform: scale(1); }
+.ab-upgrade-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: var(--ui-s2);
 }
 
-@keyframes ab-level-flip {
-  0% { transform: rotateX(90deg) scale(0.6); }
-  100% { transform: rotateX(0) scale(1); }
+.ab-upgrade-actions .ui-btn {
+  width: 100%;
 }
 
-@keyframes ab-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes ab-fade-out {
-  to { opacity: 0; }
-}
-
-[data-reduce-motion] .ab-upgrade,
-[data-reduce-motion] .ab-upgrade * {
-  animation: none !important;
-  transition: none !important;
-}
-
-@media (max-height: 460px) {
-  .ab-upgrade .ab-upgrade-panel { gap: 5px; padding: 10px 20px 12px; }
-  .ab-upgrade .ab-upgrade-title { font-size: 22px; }
-  .ab-upgrade .ab-upgrade-portrait { width: 110px; height: 80px; }
-  .ab-upgrade .ab-upgrade-card { width: 140px; padding: 6px 8px 8px; }
-  .ab-upgrade .ab-upgrade-name { font-size: 16px; margin-top: 2px; }
-  .ab-upgrade .ab-upgrade-level { font-size: 16px; margin-top: 2px; }
-  .ab-upgrade .ab-upgrade-bars { gap: 3px; }
-  .ab-upgrade .ab-upgrade-gain { font-size: 18px; }
-  .ab-upgrade .ab-upgrade-hammer { width: 72px; height: 72px; top: -24px; right: -30px; }
+@container ui-root (max-height: 480px) {
+  .ab-upgrade-panel {
+    gap: var(--ui-s2);
+    padding: var(--ui-s3);
+  }
+  .ab-upgrade-body {
+    gap: var(--ui-s3);
+  }
+  .ab-upgrade-body .cd-stage {
+    height: clamp(180px, calc(100cqh - 112px), 300px);
+  }
 }
 
 /* ---------------------------------------------------------------------------------------- */

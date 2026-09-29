@@ -578,6 +578,32 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
     expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-equipped');
   });
 
+  it('"This age" groups the grid: not in army, in your army, not found yet; an equip moves the card', () => {
+    m = army();
+    const order = () =>
+      (m!.q('[data-testid="wp-cards"]') as FakeElement).children.map((el) => el.getAttribute('data-testid') ?? el.getAttribute('data-army-cell') ?? '');
+    const groupOf = (id: string): string => {
+      let g = '';
+      for (const x of order()) {
+        if (x.startsWith('army-group-')) g = x.slice('army-group-'.length);
+        if (x === id) return g;
+      }
+      return '';
+    };
+    expect(order()[0]).toBe('army-group-free');
+    expect(text(m.q('[data-testid="army-group-used"]')!)).toMatch(/In your army · \d+/);
+    // Every card in the Stone loadout is in the "used" group, and nothing else is.
+    const inArmy = [...stone().units, ...stone().turrets, stone().power].filter((c): c is string => !!c);
+    for (const id of inArmy) expect(groupOf(id)).toBe('used');
+    expect(groupOf('mammoth_matriarch')).toBe('free');
+    m.click('[data-testid="slot-unit-4"] .ui-card');
+    m.click('[data-testid="remove-unit-4"]');
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    m.click('[data-testid="card-use"]');
+    expect(groupOf('mammoth_matriarch')).toBe('used');
+    expect(groupOf('drum_shaman')).toBe('free');
+  });
+
   it('tap-tap both ways: a selected card goes into the tapped slot, a selected slot takes the tapped card', () => {
     m = army();
     m.click('[data-testid="cand-mammoth_matriarch"]');
