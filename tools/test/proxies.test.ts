@@ -28,9 +28,10 @@ function play(id: ProxyId, seconds: number, seed = 3) {
 }
 
 describe('exploit proxies (DESIGN B12)', () => {
-  it('lists the eight B12 proxies plus the A16.5 random-spam and mono-heavy proxies', () => {
-    expect(EXPLOIT_PROXIES).toHaveLength(10);
-    expect(EXPLOIT_PROXIES.slice(8)).toEqual(['random_spam', 'mono_heavy']);
+  it('lists the eight B12 proxies, the A16.5 random-spam and mono-heavy proxies and the five A18.12 proxies', () => {
+    expect(EXPLOIT_PROXIES).toHaveLength(15);
+    expect(EXPLOIT_PROXIES.slice(8, 10)).toEqual(['random_spam', 'mono_heavy']);
+    expect(EXPLOIT_PROXIES.slice(10)).toEqual(['drill_rush', 'tech_turtle', 'flag_ball', 'fallback_turtle', 'stance_toggler']);
     expect(isProxyId('turret_turtle')).toBe(true);
     expect(isProxyId('nope')).toBe(false);
   });
@@ -53,7 +54,8 @@ describe('exploit proxies (DESIGN B12)', () => {
   });
 
   it('Economy greed researches Granary and Market before any turret or mount (A18.12 eco_greed)', () => {
-    const commands = play('eco_greed', 240).commands.filter((c) => c.side === 0);
+    // Market is rank II: in a 7-age window it opens in the third age (A18.5.1)
+    const commands = play('eco_greed', 330).commands.filter((c) => c.side === 0);
     const econ = commands.filter((c) => c.t === 'research' && c.track === 'economy');
     expect(econ.slice(0, 2).map((c) => (c.t === 'research' ? [c.rank, c.pick] : []))).toEqual([
       [1, 0],
@@ -78,7 +80,8 @@ describe('exploit proxies (DESIGN B12)', () => {
   });
 
   it('the turtle fills four mounts and holds', () => {
-    const { sim, commands } = play('turret_turtle', 330);
+    // A18: the turtle also researches (the Balanced list), so the fourth mount comes later
+    const { sim, commands } = play('turret_turtle', 600);
     expect(sim.state.sides[0].mountsOwned).toBe(4);
     expect(sim.state.sides[0].turrets.filter((t) => t !== null).length).toBeGreaterThanOrEqual(3);
     expect(commands.some((c) => c.side === 0 && c.t === 'stance' && c.mode === 'hold')).toBe(true);

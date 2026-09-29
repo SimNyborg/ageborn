@@ -20,7 +20,7 @@ describe('A2.14 baseline plan', () => {
     ]);
     expect(l.turrets.map((id) => (id ? content.turrets[id]?.rarity : null))).toEqual(['common', 'common']);
     expect(content.powers[l.power]?.slot).toBe('default');
-    for (const id of [...l.units, ...l.turrets]) expect(content.units[id ?? '']?.age ?? content.turrets[id ?? '']?.age).toBe(age);
+    for (const id of [...l.units, ...l.turrets]) if (id !== null) expect(content.units[id]?.age ?? content.turrets[id]?.age).toBe(age);
   });
 
   it('is a valid A3 War Plan for every format', () => {
