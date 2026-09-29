@@ -61,7 +61,7 @@ def build():
     BODY.body(rig, skin)
     S = lambda x, y, z: (x * k, y * k, z * k)
     bw = BODY.bulk
-    BZ.linothorax(rig, BODY, m, pteruges="linen", skirt="team", skirt_len=1.15)
+    BZ.linothorax(rig, BODY, m, pteruges="linen", skirt="linen_dk", skirt_len=1.15)
     BZ.helmet(rig, k, m, "pilos")
     grey = M.hair("#8a847a", name="greyhair")
     BZ.hair_beard(rig, k, m, hair=grey, beard=True, nape=True)
@@ -90,12 +90,12 @@ def build():
     pole = C.tube("pole", [(BX, BY, BZZ - POLE_DOWN), (BX, BY, BZZ + POLE_UP)], [0.95, 0.85], wood, seg=10)
     rig.rigid(pole, "hand_B")
     rig.rigid(C.tube("ferrule", [(BX, BY, BZZ - POLE_DOWN - 2.5), (BX, BY, BZZ - POLE_DOWN + 1.0)], [0.3, 1.05], m["bronze"], seg=8), "hand_B")
-    bar = C.tube("crossbar", [(BX + 1.0, BY, BAN_TOP + 1.5), (BX - 24.0, BY, BAN_TOP + 1.5)], [0.65, 0.6], wood, seg=8)
+    bar = C.tube("crossbar", [(BX + 1.0, BY, BAN_TOP + 1.5), (BX - 19.5, BY, BAN_TOP + 1.5)], [0.65, 0.6], wood, seg=8)
     rig.rigid(bar, "hand_B")
-    for x in (BX + 1.0, BX - 24.0):
+    for x in (BX + 1.0, BX - 19.5):
         rig.rigid(C.sphere("barknob", 1.0, m["polished"], loc=(x, BY, BAN_TOP + 1.5)), "hand_B")
     # banner: hangs from the crossbar toward the back, skinned to three bones for follow-through
-    xs = [BX - 0.6 - 23.0 * i / 6 for i in range(7)]
+    xs = [BX - 0.6 - 18.0 * i / 6 for i in range(7)]
     rows = []
     import bmesh
     bm = bmesh.new()
@@ -106,10 +106,10 @@ def build():
         row = []
         for ix, x in enumerate(xs):
             u = ix / 6
-            z = BAN_TOP + 0.5 - v * (36.0 - 5.0 * math.sin(math.pi * u) * 0.0)
+            z = BAN_TOP + 0.5 - v * 31.0
             # swallow-tail cut at the bottom edge
             z -= 4.0 * v * abs(u - 0.5) * 2 if v > 0.95 else 0.0
-            y = BY + 0.9 * math.sin(u * 5.0 + v * 3.0)
+            y = BY + 1.6 * math.sin(u * 7.0 + v * 2.2) * (0.4 + 0.6 * u)
             row.append(bm.verts.new((x, y, z)))
         grid.append(row)
     for iz in range(NZ):
@@ -123,12 +123,19 @@ def build():
     C.team(ban)
     rig.skin(ban, ["ban0", "ban1", "ban2"], soft=5.0)
     # a painted device (a dark sun disc and rays) and a leather fringe along the bottom
-    dev = C.cyl("device", 4.6, 4.6, 0.3, M.dark("#3a2c22", name="device"), seg=28, loc=(BX - 12.0, BY - 1.2, BAN_TOP - 15.0),
-                rot=(math.pi / 2, 0, 0))
+    # a painted moon-and-horns device (pale, non-team): a crescent over a disc
+    cx_, cz_ = BX - 9.6, BAN_TOP - 13.0
+    def on_banner(x, z, lift=0.75):
+        u, v = (BX - 0.6 - x) / 18.0, (BAN_TOP + 0.5 - z) / 31.0
+        return (x, BY + 1.6 * math.sin(u * 7.0 + v * 2.2) * (0.4 + 0.6 * u) - lift, z)
+    arc = [on_banner(cx_ + 5.0 * math.cos(math.radians(a)), cz_ + 1.0 + 5.0 * math.sin(math.radians(a))) for a in range(200, 345, 12)]
+    dev = C.tube("device", arc, [0.75] * len(arc), m["blazon"], seg=8)
+    dev2 = C.blobs("device2", [(on_banner(cx_, cz_ - 1.2, 0.6), (2.1, 0.35, 2.1))], m["blazon"], res=0.2)
+    rig.skin(dev2, ["ban0", "ban1", "ban2"], soft=5.0)
     rig.skin(dev, ["ban0", "ban1", "ban2"], soft=5.0)
     for i in range(9):
-        x = BX - 1.5 - 21.0 * i / 8
-        fr = C.tube("fringe", [(x, BY, BAN_TOP - 35.2), (x, BY, BAN_TOP - 38.6)], [0.4, 0.25], m["leather"], seg=5)
+        x = BX - 1.5 - 16.5 * i / 8
+        fr = C.tube("fringe", [(x, BY, BAN_TOP - 30.2), (x, BY, BAN_TOP - 33.8)], [0.4, 0.25], m["leather"], seg=5)
         rig.skin(fr, ["ban1", "ban2"], soft=5.0)
     # the cast bronze eagle, wings spread in the camera plane
     ex, ez = BX, BZZ + POLE_UP + 1.0
@@ -238,6 +245,8 @@ def pose(ctx, clip, t):
     gone = (clip == "attack" and 280 <= t < 560) or (clip == "die" and t >= 100)
     for o in ctx["dart"]:
         o.hide_render = gone
+    if clip == "die" and t <= 0.0:
+        clip = "idle"          # the first death frame matches the idle pose (no pop)
     P = {"idle": idle, "walk": walk, "hit": hit, "die": die}.get(clip)
     BODY.apply(ctx["rig"], P(t) if P else B.keyed(_ATK, t))
 

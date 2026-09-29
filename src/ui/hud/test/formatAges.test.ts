@@ -20,8 +20,8 @@ function loadout(age: AgeId): Loadout {
     .filter((t) => t.age === age)
     .slice(0, 2)
     .map((t) => t.id);
-  const power = Object.values(content.powers).find((p) => p.age === age)?.id ?? '';
-  return { units: [units[0] ?? null, units[1] ?? null, null, null, null], turrets: [turrets[0] ?? null, turrets[1] ?? null], power };
+  const home = Object.values(content.powers).find((p) => p.age === age && p.slot === 'home' && p.source === 'starter')?.id ?? null;
+  return { units: [units[0] ?? null, units[1] ?? null, null, null, null], turrets: [turrets[0] ?? null, turrets[1] ?? null], powers: { home, field: null } };
 }
 
 function tutorialConfig(): MatchConfig {

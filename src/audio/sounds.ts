@@ -254,6 +254,90 @@ function summitClimb(step: 5 | 6): SoundDef {
 }
 
 // ---------------------------------------------------------------------------------------------------
+// Power family recipes (A2.9, A5.7): the power rework's sounds until `tools/audio` renders them.
+
+/** A sweep: a whoosh that crosses the zone, with a hit at the peak. `freq` colours it, `ms` its length. */
+function powerSweep(id: string, group: SoundGroup, freq: number, ms: number): Record<string, SoundDef> {
+  const t = ms / 1000;
+  return {
+    [id]: mix(group, mixVariants(3, (v) => [
+      noiseBurst(0, { vol: 0.5, freq: freq * (1 + 0.05 * v), attack: t * 0.4, sustain: t * 0.3, release: t * 0.4, slide: -0.2, tremolo: 0.3, repeat: 0.12, lowpass: 3200 }),
+      at(0, { vol: 0.3, freq: 55, attack: t * 0.3, sustain: t * 0.5, release: 0.4 }),
+      thump(Math.trunc(ms * 0.45), 70, 0.45, 0.35, -0.3),
+    ]), { maxVoices: 2 }),
+  };
+}
+
+/** A bombard: a row of impacts at `hits` (ms), each a noise thud; `freq` sets the whistle. */
+function powerBombard(id: string, group: SoundGroup, freq: number, hits: readonly number[]): Record<string, SoundDef> {
+  return {
+    [id]: mix(group, mixVariants(3, (v) => [
+      at(0, { vol: 0.2, freq: freq * (1 + 0.04 * v), attack: 0.05, sustain: 0.25, release: 0.05, shape: 'tri', slide: -2.5 }),
+      ...hits.flatMap((ms, i) => [
+        noiseBurst(200 + ms, { vol: 0.45, freq: 200 * (1 + 0.05 * (i - 1)), decay: 0.05, sustainVol: 0.45, release: 0.35, lowpass: 2800 }),
+        thump(200 + ms, 58, 0.4, 0.3, -0.3),
+      ]),
+    ]), { maxVoices: 2 }),
+  };
+}
+
+/** A ground field (snare, pull, stun): a creak that settles and holds; `hold` in seconds. */
+function powerField(id: string, group: SoundGroup, freq: number, hold: number): Record<string, SoundDef> {
+  return {
+    [id]: mix(group, mixVariants(3, (v) => [
+      thump(0, 90, 0.4, 0.3, -0.4),
+      at(0, { vol: 0.3, freq: freq * (1 + 0.05 * v), attack: 0.05, sustain: hold, release: 0.4, shape: 'saw', mod: 4, tremolo: 0.3, repeat: 0.09, lowpass: 2400 }),
+      noiseBurst(60, { vol: 0.25, freq: 500, attack: 0.1, sustain: hold * 0.6, release: 0.3, lowpass: 2000 }),
+    ]), { maxVoices: 2 }),
+  };
+}
+
+/** A strike: a rising charge for `charge` seconds, then a crack on the locked target. */
+function powerStrike(id: string, group: SoundGroup, freq: number, charge: number): Record<string, SoundDef> {
+  const hitMs = Math.trunc(charge * 1000);
+  return {
+    [id]: mix(group, mixVariants(3, (v) => [
+      at(0, { vol: 0.25, freq: freq * (1 + 0.04 * v), attack: charge * 0.9, release: 0.05, shape: 'tri', slide: 1.5, lowpass: 6000 }),
+      noiseBurst(hitMs, { vol: 0.6, freq: 1800, decay: 0.02, sustainVol: 0.3, release: 0.25, lowpass: 7000 }),
+      thump(hitMs, 80, 0.55, 0.3, -0.5),
+    ]), { maxVoices: 2 }),
+  };
+}
+
+/** A charge: runners that rumble in at `starts` (ms) with a low drone underneath. */
+function powerCharge(id: string, group: SoundGroup, freq: number, starts: readonly number[]): Record<string, SoundDef> {
+  return {
+    [id]: mix(group, mixVariants(3, (v) => [
+      ...starts.map((ms) => noiseBurst(ms, { vol: 0.45, freq: freq * (1 + 0.06 * v), attack: 0.04, sustain: 0.35, release: 0.25, tremolo: 0.5, repeat: 0.08, lowpass: 1500 })),
+      at(0, { vol: 0.35, freq: 48, attack: 0.15, sustain: 1.0, release: 0.4 }),
+    ]), { maxVoices: 2 }),
+  };
+}
+
+/** A buff: a rising three-note chime with a shimmer. */
+function powerBuff(id: string, group: SoundGroup, chord: readonly [string, string, string]): Record<string, SoundDef> {
+  return {
+    [id]: mix(group, mixVariants(3, (_v, k) => [
+      note(0, chord[0], { vol: 0.28, attack: 0.02, sustain: 0.2, release: 0.5, shape: 'tri' }),
+      note(120, chord[1], { vol: 0.24, attack: 0.02, sustain: 0.2, release: 0.5, shape: 'tri' }),
+      note(240, chord[k % 3] as string, { vol: 0.22, attack: 0.01, release: 0.8, shape: 'tri' }, 12),
+      at(0, { vol: 0.16, freq: 900, attack: 0.05, sustain: 0.3, release: 0.4, shape: 'tri', slide: 4, tremolo: 0.4, repeat: 0.04 }),
+    ]), { ...MUSICAL, maxVoices: 2 }),
+  };
+}
+
+/** Suppress: a sabotage clank, then crackling static while the turrets are jammed. */
+function powerJam(id: string, group: SoundGroup, freq: number): Record<string, SoundDef> {
+  return {
+    [id]: mix(group, mixVariants(3, (v) => [
+      noiseBurst(0, { vol: 0.45, freq: 400, decay: 0.03, sustainVol: 0.3, release: 0.2, lowpass: 5000 }),
+      at(120, { vol: 0.3, freq: freq * (1 + 0.05 * v), attack: 0.02, sustain: 0.9, release: 0.3, shape: 'square', crush: 0.2, tremolo: 0.6, repeat: 0.05, lowpass: 3000 }),
+      noiseBurst(120, { vol: 0.2, freq: 3000, sustain: 0.8, release: 0.2, tremolo: 0.7, repeat: 0.03, highpass: 2000 }),
+    ]), { maxVoices: 1 }),
+  };
+}
+
+// ---------------------------------------------------------------------------------------------------
 // The manifest
 
 export const sounds: Readonly<Record<SoundId, SoundDef>> = {
@@ -653,6 +737,43 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     at(450, { vol: 0.35, freq: 1800 * (1 + 0.04 * v), attack: 0.004, release: 0.35, shape: 'tri', slide: -14 }),
     thump(450, 70, 0.5, 0.3, -0.5),
   ]), { maxVoices: 2 }),
+
+  // The power rework (A2.9, A5.7): first-pass ZzFX from the family recipes until the next `tools/audio`
+  // render (WP6 P3/P4). Sweeps whoosh across, bombards thud in a row, fields creak and hold, strikes
+  // charge then crack, charges rumble, buffs chime, drops land, Suppress jams with static. The Stone and
+  // Bronze ones sit in the `match` group for now: the boot groups are at their pre-render budget.
+  ...powerSweep('pw_rockslide', 'match', 120, 1500),
+  ...powerField('pw_tar', 'match', 70, 0.6),
+  ...powerBuff('pw_huntcry', 'match', ['A4', 'E5', 'A5']),
+  ...powerStrike('pw_spear', 'match', 420, 0.9),
+  ...powerBombard('pw_bolts', 'match', 900, [0, 250, 500, 750]),
+  ...powerField('pw_gaze', 'match', 300, 0.3),
+  ...powerCharge('pw_chariots', 'match', 150, [0, 500, 1000]),
+  ...powerStrike('pw_apollo', 'match', 900, 1.2),
+  ...powerField('pw_caltrops', 'medieval', 1800, 0.25),
+  ...powerSweep('pw_oil', 'medieval', 260, 1000),
+  ...powerCharge('pw_knights', 'medieval', 130, [0, 500, 1000]),
+  ...powerJam('pw_undermine', 'medieval', 90),
+  ...powerSweep('pw_volley', 'gunpowder', 400, 1000),
+  ...powerField('pw_nets', 'gunpowder', 220, 0.4),
+  ...powerBombard('pw_horse_art', 'gunpowder', 140, [0, 250, 500]),
+  ...powerStrike('pw_sharpshooter', 'gunpowder', 700, 0.8),
+  ...powerSweep('pw_gunline', 'industrial', 350, 1500),
+  ...powerField('pw_wire', 'industrial', 1200, 0.3),
+  ...powerStrike('pw_railgun', 'industrial', 180, 2.0),
+  ...powerBuff('pw_hospital', 'industrial', ['C5', 'E5', 'G5']),
+  ...powerSweep('pw_strafe', 'modern', 520, 1500),
+  ...powerBombard('pw_flak', 'modern', 700, [0, 200, 400]),
+  ...powerCharge('pw_tanks', 'modern', 70, [0, 600]),
+  ...powerStrike('pw_sniper', 'modern', 1100, 0.7),
+  ...powerBombard('pw_pdg', 'future', 1500, [0, 150, 300, 450, 600]),
+  ...powerField('pw_stasis', 'future', 900, 0.2),
+  ...powerBombard('pw_drones', 'future', 1200, [0, 200, 400, 600]),
+  ...powerJam('pw_emp', 'future', 160),
+  ...powerField('pw_singularity', 'cosmic', 60, 0.5),
+  ...powerSweep('pw_flare', 'cosmic', 800, 1500),
+  ...powerCharge('pw_comet', 'cosmic', 200, [0, 400, 800]),
+  ...powerStrike('pw_ion', 'cosmic', 1400, 1.1),
 
   // Match ---------------------------------------------------------------------------------------------
   last_stand_armed: mix('match', mixVariants(3, (_v, k) => [

@@ -6,10 +6,14 @@ import {
   planCapsuleShow,
   planOpenAll,
   planWardrobeShow,
+  SHOW_LIMITS,
   SHOW_TIMING,
+  stingerFor,
+  type ShowPlan,
   type ShowStep,
   type StrikeStep,
 } from '../plan';
+import { TIER_ORDER } from '../tiers';
 import { crate, reveal, stack, testCatalog } from './fixtures';
 
 const catalog = testCatalog();
@@ -22,6 +26,8 @@ const A13_SOUNDS = new Set([
   // Juice layered from the shared sheet: the landing thump, strike hits, the burst riser and
   // explosion, the card snap, count-up ticks and the name slam.
   'step_heavy', 'hit_heavy', 'evolve_riser', 'explosion_m', 'explosion_l', 'flare_pop', 'xp_tick', 'upgrade_slam',
+  // The 2026-09-29 ladder: summit climbs, the summit gem and the Platinum and Aeon stingers.
+  'cap_climb_5', 'cap_climb_6', 'cap_summit_rise', 'cap_burst_platinum', 'cap_burst_aeon',
 ]);
 
 function kinds(steps: ShowStep[]): string[] {
@@ -315,3 +321,154 @@ describe('planWardrobeShow (DESIGN A10, A15.3: card flip, no reel)', () => {
   });
 });
 
+
+/** A capsule of the given tier with its guaranteed Legendaries (all NEW unless said otherwise). */
+function legendaryCapsule(tier: 'gold' | 'platinum' | 'aeon', o: { isNew?: boolean; id?: string; startTier?: 'clay' | 'bronze'; firstOfTier?: boolean; kind?: 'win' | 'road' } = {}) {
+  const n = tier === 'gold' ? 1 : tier === 'platinum' ? 2 : 3;
+  const legends = ['mammoth_matriarch', 'ursa_paladin', 'balloon_admiral'].slice(0, n);
+  return reveal({
+    tier,
+    ...(o.startTier ? { startTier: o.startTier } : {}),
+    ...(o.kind ? { kind: o.kind } : {}),
+    ...(o.id ? { id: o.id } : {}),
+    firstOfTier: o.firstOfTier ?? false,
+    stacks: [stack('bonker', 'common', { copies: 20 }), stack('battering_ram', 'epic', { copies: 5 }), ...legends.map((c, i) => stack(c, 'legendary', { copies: i === 0 ? 2 : 1, isNew: o.isNew ?? true }))],
+  });
+}
+
+const upToStrike4 = (p: ShowPlan): ShowStep[] => p.steps.slice(0, p.steps.findIndex((s) => s.id === 'strike-3') + 1);
+
+describe('summit strikes and the Legendary tiers (A10 step 3b, 2026-09-29 ladder)', () => {
+  it('adds one summit gem rise and strike per tier above Gold, after the 4 main strikes', () => {
+    const k = (p: ShowPlan) => kinds(p.steps).filter((x) => x === 'strike' || x === 'summitRise' || x === 'summitStrike' || x === 'burst');
+    expect(k(planCapsuleShow(legendaryCapsule('gold'), { catalog }))).toEqual(['strike', 'strike', 'strike', 'strike', 'burst']);
+    expect(k(planCapsuleShow(legendaryCapsule('platinum'), { catalog }))).toEqual(['strike', 'strike', 'strike', 'strike', 'summitRise', 'summitStrike', 'burst']);
+    expect(k(planCapsuleShow(legendaryCapsule('aeon'), { catalog }))).toEqual(['strike', 'strike', 'strike', 'strike', 'summitRise', 'summitStrike', 'summitRise', 'summitStrike', 'burst']);
+    const aeon = planCapsuleShow(legendaryCapsule('aeon'), { catalog });
+    const summit = aeon.steps.filter((s) => s.kind === 'summitStrike');
+    expect(summit.map((s) => (s.kind === 'summitStrike' ? [s.from, s.to, s.index] : []))).toEqual([
+      ['gold', 'platinum', 0],
+      ['platinum', 'aeon', 1],
+    ]);
+    expect(checkPlan(aeon)).toEqual([]);
+  });
+
+  it('plays exactly the same show up to strike 4 for Gold, Platinum and Aeon: no hesitation, no early hint', () => {
+    const gold = upToStrike4(planCapsuleShow(legendaryCapsule('gold'), { catalog }));
+    for (const t of ['platinum', 'aeon'] as const) {
+      const other = upToStrike4(planCapsuleShow(legendaryCapsule(t), { catalog }));
+      expect(other).toEqual(gold);
+    }
+    // And the same from Bronze (a Supply Capsule): one miss, then three climbs to Gold.
+    const sup = upToStrike4(planCapsuleShow(legendaryCapsule('gold', { startTier: 'bronze' }), { catalog }));
+    expect(sup.flatMap((s) => (s.kind === 'strike' ? [s.climb] : []))).toEqual([false, true, true, true]);
+    expect(upToStrike4(planCapsuleShow(legendaryCapsule('aeon', { startTier: 'bronze' }), { catalog }))).toEqual(sup);
+  });
+
+  it('times the summit steps per A10: 400 ms rise with its grind, 900 ms strike landing at 380 ms with the slam at -6 dB', () => {
+    const p = planCapsuleShow(legendaryCapsule('aeon'), { catalog });
+    const rise = p.steps.find((s) => s.kind === 'summitRise');
+    expect(rise?.durationMs).toBe(400);
+    expect(rise?.cues).toEqual([{ atMs: 0, sound: 'cap_summit_rise' }]);
+    const strikes = p.steps.filter((s) => s.kind === 'summitStrike');
+    expect(strikes.map((s) => s.durationMs)).toEqual([900, 900]);
+    for (const [i, s] of strikes.entries()) {
+      if (s.kind !== 'summitStrike') continue;
+      expect(s.maxWaitMs).toBe(SHOW_TIMING.strikeIdleMs);
+      expect(s.cues).toContainEqual({ atMs: s.impactMs, sound: `cap_climb_${5 + i}` });
+      expect(s.cues).toContainEqual({ atMs: s.impactMs, sound: 'upgrade_slam', volumeDb: -6 });
+      // Nothing sounds before the hammer lands.
+      expect(Math.min(...s.cues.map((c) => c.atMs))).toBe(s.impactMs);
+    }
+  });
+
+  it('reaches the pop of the longest climb (an Aeon from Clay, prompt taps) in about 8.6 s', () => {
+    const p = planCapsuleShow(legendaryCapsule('aeon'), { catalog });
+    const burst = p.steps.findIndex((s) => s.kind === 'burst');
+    const b = p.steps[burst];
+    const toPop = p.steps.slice(0, burst).reduce((a, s) => a + s.durationMs, 0) + (b?.kind === 'burst' ? b.buildMs + SHOW_TIMING.burstPopMs : 0);
+    expect(toPop).toBe(8560);
+    expect(longestUnskippableMs(p)).toBeLessThanOrEqual(SHOW_LIMITS.unskippable);
+  });
+
+  it('gives each tier its stinger: the final climb note up to Gold, its own stinger above, and ducks the music for those', () => {
+    expect(TIER_ORDER.map(stingerFor)).toEqual([null, 'cap_climb_1', 'cap_climb_2', 'cap_climb_3', 'cap_climb_4', 'cap_burst_platinum', 'cap_burst_aeon']);
+    for (const t of ['gold', 'platinum', 'aeon'] as const) {
+      const b = planCapsuleShow(legendaryCapsule(t), { catalog }).steps.find((s) => s.kind === 'burst');
+      if (b?.kind !== 'burst') throw new Error('no burst');
+      expect(b.cues.map((c) => c.sound)).toContain(stingerFor(t));
+      expect(b.duckDb).toBe(t === 'gold' ? 0 : -6);
+      expect(b.buildMs).toBe({ gold: 820, platinum: 1000, aeon: 1200 }[t]);
+    }
+  });
+
+  it('adds the skippable first-of-tier step after the pop only for the first capsule of that tier', () => {
+    const first = planCapsuleShow(legendaryCapsule('platinum', { firstOfTier: true }), { catalog });
+    const i = first.steps.findIndex((s) => s.kind === 'firstTier');
+    expect(first.steps[i - 1]?.kind).toBe('burst');
+    expect(first.steps[i]).toMatchObject({ kind: 'firstTier', tier: 'platinum', durationMs: 1000, skippable: true, cues: [] });
+    expect(checkPlan(first)).toEqual([]);
+    expect(planCapsuleShow(legendaryCapsule('platinum'), { catalog }).steps.some((s) => s.kind === 'firstTier')).toBe(false);
+  });
+
+  it('starts fixed-tier and quick-reveal capsules at the burst: no summit steps, the first-of-tier step stays', () => {
+    for (const p of [
+      planCapsuleShow(legendaryCapsule('aeon', { kind: 'road', firstOfTier: true }), { catalog }),
+      planCapsuleShow(legendaryCapsule('aeon', { firstOfTier: true }), { catalog, quickReveal: true }),
+    ]) {
+      expect(p.steps[0]?.kind).toBe('burst');
+      expect(p.steps.some((s) => s.kind === 'summitRise' || s.kind === 'summitStrike')).toBe(false);
+      expect(p.steps[1]?.kind).toBe('firstTier');
+      expect(checkPlan(p)).toEqual([]);
+    }
+  });
+
+  it('gives only the first NEW Legendary of an opening the full walkout; the rest are 3 s and skippable', () => {
+    const p = planCapsuleShow(legendaryCapsule('aeon'), { catalog });
+    const walks = p.steps.filter((s) => s.kind === 'walkout');
+    expect(walks).toHaveLength(3);
+    expect(walks.map((s) => (s.kind === 'walkout' ? [s.first, s.skippable, s.durationMs] : []))).toEqual([
+      [true, false, 9000],
+      [false, true, 3000],
+      [false, true, 3000],
+    ]);
+    expect(p.steps.filter((s) => !s.skippable)).toHaveLength(1);
+    expect(checkPlan(p)).toEqual([]);
+    // One Open all batch: two capsules with NEW Legendaries still have one full walkout.
+    const batch = planOpenAll([legendaryCapsule('gold', { id: 'a' }), reveal({ tier: 'gold', id: 'b', stacks: [stack('behemoth_tank', 'legendary', { isNew: true })] })], { catalog });
+    expect(batch.steps.filter((s) => s.kind === 'walkout' && s.first)).toHaveLength(1);
+    expect(batch.steps.filter((s) => !s.skippable)).toHaveLength(1);
+    expect(checkPlan(batch)).toEqual([]);
+  });
+
+  it('flags a plan with more than one unskippable step', () => {
+    const p = planCapsuleShow(legendaryCapsule('platinum'), { catalog });
+    const bad: ShowPlan = { ...p, steps: p.steps.map((s) => (s.kind === 'walkout' ? { ...s, first: true, skippable: false, fastForward: false, durationMs: 9000 } : s)) };
+    expect(checkPlan(bad).some((e) => e.includes('cannot be skipped'))).toBe(true);
+  });
+
+  it('flags a summit strike that does not follow the 4 main strikes or does not climb', () => {
+    const p = planCapsuleShow(legendaryCapsule('platinum'), { catalog });
+    const i = p.steps.findIndex((s) => s.kind === 'summitRise');
+    const early: ShowPlan = { ...p, steps: [...p.steps.slice(0, 2), ...p.steps.slice(i, i + 2), ...p.steps.slice(2, i), ...p.steps.slice(i + 2)] };
+    expect(checkPlan(early).length).toBeGreaterThan(0);
+    const flat: ShowPlan = { ...p, steps: p.steps.map((s) => (s.kind === 'summitStrike' ? { ...s, to: 'gold' as const } : s)) };
+    expect(checkPlan(flat).length).toBeGreaterThan(0);
+  });
+
+  it('ends an Open all volley holding a Platinum or Aeon with its stinger and a 600 ms flare, within 2 s', () => {
+    for (const n of [2, 10]) {
+      const reveals = Array.from({ length: n }, (_, i) => (i === n - 1 ? legendaryCapsule('aeon', { id: `x${i}`, isNew: false, firstOfTier: true }) : i === 0 ? legendaryCapsule('platinum', { id: `x${i}`, isNew: false, firstOfTier: true }) : bronze()));
+      reveals.forEach((r, i) => (r.capsule.id = `x${i}`));
+      const p = planOpenAll(reveals, { catalog });
+      const v = p.steps[0];
+      if (v?.kind !== 'volley') throw new Error('no volley');
+      expect(v.flare).toBe('aeon');
+      expect(v.firstTier).toBe('aeon');
+      expect(v.cues).toContainEqual({ atMs: v.flareAtMs, sound: 'cap_burst_aeon', volumeDb: -1 });
+      expect(v.flareAtMs + SHOW_TIMING.volleyFlareMs).toBeLessThanOrEqual(v.durationMs);
+      expect(v.durationMs).toBeLessThanOrEqual(2000);
+      expect(checkPlan(p)).toEqual([]);
+    }
+  });
+});

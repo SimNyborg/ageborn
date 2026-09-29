@@ -55,6 +55,13 @@ const A13: Record<string, string[]> = {
     'flare_pop', 'fuse_hiss', 'shot_gatling', 'tesla_zap', 'shot_ion', 'shot_void', 'shot_starburst', 'shot_tachyon',
     'blink_warp', 'drone_launch', 'pw_wave', 'pw_aegis', 'pw_iron_horse', 'pw_zeppelin', 'pw_starfall', 'pw_warp',
   ],
+  /** The power rework (A2.9, A5.7): the 32 new power sounds. */
+  rework: [
+    'pw_rockslide', 'pw_tar', 'pw_huntcry', 'pw_spear', 'pw_bolts', 'pw_gaze', 'pw_chariots', 'pw_apollo', 'pw_caltrops',
+    'pw_oil', 'pw_knights', 'pw_undermine', 'pw_volley', 'pw_nets', 'pw_horse_art', 'pw_sharpshooter', 'pw_gunline',
+    'pw_wire', 'pw_railgun', 'pw_hospital', 'pw_strafe', 'pw_flak', 'pw_tanks', 'pw_sniper', 'pw_pdg', 'pw_stasis',
+    'pw_drones', 'pw_emp', 'pw_singularity', 'pw_flare', 'pw_comet', 'pw_ion',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -68,7 +75,7 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    expect(A13_IDS).toHaveLength(144);
+    expect(A13_IDS).toHaveLength(176);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

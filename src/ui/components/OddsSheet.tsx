@@ -11,7 +11,7 @@
 import { capsuleTierNameKey, capsuleTierShortKey, foilNameKey, rarityNameKey } from '@/content/keys';
 import type { Rarity } from '@/contracts';
 import { formatInt } from './format';
-import { CapsuleIcon, CrateIcon, EyeIcon, RARITY_COLOR, RarityGem, TIER_COLOR } from './icons';
+import { CapsuleIcon, CrateIcon, CrestBadge, CrestIcon, EyeIcon, RARITY_COLOR, RarityGem, TIER_COLOR } from './icons';
 import { useKit, type Translate } from './kit';
 import { LadderNotice } from './LadderNotice';
 import { ProgressBar } from './Meters';
@@ -91,7 +91,10 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
               return (
                 <li key={r.tier} class={`ui-odds__bagrow${crests > 0 ? ' ui-odds__bagrow--crest' : ''}`} data-testid={`odds-bag-${r.tier}`}>
                   <CapsuleIcon tier={r.tier} size={32} crests={crests} />
-                  <span class="ui-odds__name">{t(capsuleTierNameKey(r.tier))}</span>
+                  <span class="ui-odds__name">
+                    {t(capsuleTierNameKey(r.tier))}
+                    {crests > 0 ? <CrestBadge n={crests} /> : null}
+                  </span>
                   <span class="ui-odds__count">{t('ui.odds.perHundred', { n: r.perHundred, size: m.bagSize })}</span>
                   <span class="ui-odds__left">{t('ui.odds.left', { n: r.leftInBag })}</span>
                 </li>
@@ -184,7 +187,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
           <ul class="ui-odds__rules" data-testid="odds-ladder-rules">
             {crestTier ? (
               <li>
-                <RarityGem rarity="legendary" size={18} />
+                <CrestIcon size={20} />
                 <span>{t('ui.odds.crestRule')}</span>
               </li>
             ) : null}

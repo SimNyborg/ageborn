@@ -38,7 +38,7 @@ FRONT, BACK = 40.0 * K, 26.0 * K
 HEAD_L = 6.0 * K
 TRACKERS = {"spearTip": ("hand_B", (FIST_B[0] + FRONT + HEAD_L * 1.25, FIST_B[1], FIST_B[2]))}
 EXTRA_BONES = {"crest": ((-0.6 * K, 0, 70.6 * K), (-7.0 * K, 0, 67.0 * K), "head")}
-SHIELD_R = 14.2 * K
+SHIELD_R = 13.2 * K
 
 STANCE = 0.62
 STRIDE = 24.0
@@ -55,7 +55,7 @@ def build():
     skin = M.skin("#8c6a56")
     rig = C.Rig("hoplite_rig", BODY.bones(extra=EXTRA_BONES), yaw_deg=YAW)
     BODY.body(rig, skin)
-    BZ.linothorax(rig, BODY, m, pteruges="team", skirt="team")
+    BZ.linothorax(rig, BODY, m, pteruges="linen", skirt="linen_dk")
     BZ.helmet(rig, k, m, "chalcidian")
     BZ.crest(rig, k, m, bone="crest")
     BZ.hair_beard(rig, k, m)
@@ -71,7 +71,7 @@ def build():
     el_z = B.ELBOW * H
     nrm = (0.866, -0.5, 0.0)
     ctr = (nrm[0] * 3.4 * k, -sw + nrm[1] * 3.4 * k, el_z - 2.0 * k)
-    for o in BZ.aspis(m, SHIELD_R):
+    for o in BZ.aspis(m, SHIELD_R, emblem=("lambda", "ring")):
         C.xform(o, rot=(0, math.radians(90), 0))
         C.xform(o, rot=(0, 0, math.radians(-30)))
         C.xform(o, loc=ctr)
@@ -179,6 +179,8 @@ def pose(ctx, clip, t):
         o.hide_render = drop
     for o in ctx["dropped"]:
         o.hide_render = not drop
+    if clip == "die" and t <= 0.0:
+        clip = "idle"          # the first death frame matches the idle pose (no pop)
     P = {"idle": idle, "walk": walk, "hit": hit, "die": die}.get(clip)
     BODY.apply(ctx["rig"], P(t) if P else B.keyed(_ATK, t))
 

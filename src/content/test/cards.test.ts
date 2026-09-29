@@ -653,7 +653,7 @@ describe('A5.7 Age Powers', () => {
   it('per-unit damage is within each family target (A2.9.6)', () => {
     for (const pw of Object.values(content.powers)) {
       const e = pw.effect;
-      let perUnit = 0;
+      let perUnit: number;
       if (e.kind === 'barrage') perUnit = (e.damage * e.count * 2 * e.radius) / e.zone;
       else if (e.kind === 'stampede') perUnit = e.damage * e.maxHitsPerEnemy;
       else if (e.kind === 'sweep') perUnit = e.damage;

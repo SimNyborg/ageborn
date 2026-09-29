@@ -27,7 +27,7 @@ function plan(age: AgeId): Loadout {
   const units = Object.values(content.units).filter((u) => u.age === age && !u.hidden);
   const pick = (f: (u: (typeof units)[number]) => boolean): CardId | null => units.find(f)?.id ?? null;
   const turrets = Object.values(content.turrets).filter((t) => t.age === age);
-  const power = Object.values(content.powers).find((p) => p.age === age && p.slot === 'default');
+  const starter = (slot: 'home' | 'field'): CardId | null => Object.values(content.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
   return {
     units: [
       pick((u) => u.group === 'infantry'),
@@ -37,7 +37,7 @@ function plan(age: AgeId): Loadout {
       pick((u) => u.group === 'legendary'),
     ],
     turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null],
-    power: power?.id ?? '',
+    powers: { home: starter('home'), field: starter('field') },
   };
 }
 
@@ -57,7 +57,8 @@ function orders(sim: ReturnType<typeof createSim>, s: 0 | 1, turn: number): Comm
   const lo = cfg.sides[s].loadouts[ageOrder(cfg)[me.ageIndex] ?? 'stone'];
   if (canEvolve(st, cfg, s)) return [{ t: 'evolve', side: s }];
   const out: Command[] = [];
-  if (me.powerPpm >= 1_000_000) out.push({ t: 'power', side: s });
+  if (me.powerPpm[0] >= 1_000_000 && me.gold >= 150_000) out.push({ t: 'power', side: s, slot: 'home' });
+  if (me.powerPpm[1] >= 1_000_000 && me.gold >= 300_000) out.push({ t: 'power', side: s, slot: 'field' });
   if (me.lastStand === 'armed') out.push({ t: 'lastStand', side: s });
   const free = me.turrets.findIndex((t, i) => t === null && i < me.mountsOwned);
   const turret = lo?.turrets[0] ? cfg.content.turrets[lo.turrets[0]] : undefined;

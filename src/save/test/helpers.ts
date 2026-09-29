@@ -4,7 +4,7 @@ import { FixedClock } from '@/contracts/fakes/clock';
 import { LocalSaveStore, type LocalSaveStoreOptions, type Timers } from '../store.localStorage';
 import { MemoryStorage } from '../storage';
 import v1Json from './fixtures/v1.json';
-import v6Json from './fixtures/v6.json';
+import v7Json from './fixtures/v7.json';
 import capsuleLadderPreJson from './fixtures/capsule-ladder-pre.json';
 
 /** A fresh deep copy of the frozen v1 fixture (five ages; migrate it before validating). */
@@ -12,9 +12,9 @@ export function v1Fixture(): SaveDoc {
   return JSON.parse(JSON.stringify(v1Json)) as SaveDoc;
 }
 
-/** A fresh deep copy of the frozen fixture of the version this build writes (v6: the capsule ladder, A6.4). */
+/** A fresh deep copy of the frozen fixture of the version this build writes (v7: two power slots, A2.9). */
 export function currentFixture(): SaveDoc {
-  return JSON.parse(JSON.stringify(v6Json)) as SaveDoc;
+  return JSON.parse(JSON.stringify(v7Json)) as SaveDoc;
 }
 
 /**

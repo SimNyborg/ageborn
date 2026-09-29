@@ -19,7 +19,7 @@ function config(): MatchConfig {
   const sides = structuredClone(c.sides) as [MatchConfig['sides'][0], MatchConfig['sides'][1]];
   const stone = sides[0].loadouts['stone'];
   if (!stone) throw new Error('no stone loadout');
-  stone.power = 'arrow_storm';
+  stone.powers = { home: 'arrow_storm', field: null };
   return { ...c, sides };
 }
 

@@ -68,13 +68,15 @@ function starterOf(content: CompiledContent, age: AgeId, slot: PowerSlot): CardI
  * The age's powers (A2.9.1): both starters; `altPower` puts the age's Trophy Road power into its slot;
  * `warPath` puts the War Path power of that level (5, 7 or 9) into its slot.
  */
-function powersOf(content: CompiledContent, age: AgeId, o: { altPower?: boolean; warPath?: number; power?: CardId }): LoadoutPowers {
+function powersOf(content: CompiledContent, age: AgeId, o: { altPower?: boolean; warPath?: number | number[]; power?: CardId }): LoadoutPowers {
   const out: LoadoutPowers = { home: starterOf(content, age, 'home'), field: starterOf(content, age, 'field') };
   const put = (p: { id: CardId; slot: PowerSlot } | undefined): void => {
     if (p) out[p.slot] = p.id;
   };
   if (o.altPower) put(Object.values(content.powers).find((d) => d.age === age && d.source === 'road'));
-  if (o.warPath !== undefined) put(Object.values(content.powers).find((d) => d.age === age && d.source === 'warPath' && d.warPathLevel === o.warPath));
+  for (const lvl of o.warPath === undefined ? [] : Array.isArray(o.warPath) ? o.warPath : [o.warPath]) {
+    put(Object.values(content.powers).find((d) => d.age === age && d.source === 'warPath' && d.warPathLevel === lvl));
+  }
   const named = o.power ? content.powers[o.power] : undefined;
   if (named && named.age === age) put(named);
   return out;
@@ -87,7 +89,7 @@ function powersOf(content: CompiledContent, age: AgeId, o: { altPower?: boolean;
 export function baselineLoadout(
   content: CompiledContent,
   age: AgeId,
-  o: { epic?: boolean; legendary?: boolean; rareTurret?: boolean; epicTurret?: boolean; altPower?: boolean; warPath?: number; power?: CardId } = {},
+  o: { epic?: boolean; legendary?: boolean; rareTurret?: boolean; epicTurret?: boolean; altPower?: boolean; warPath?: number | number[]; power?: CardId } = {},
 ): Loadout {
   // Six troop slots (A18.9); the A2.14 baseline fills five and leaves the sixth empty.
   const units = [

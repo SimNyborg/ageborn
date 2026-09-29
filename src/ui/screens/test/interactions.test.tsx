@@ -259,10 +259,14 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
 
   it('the Trophy Road bar shows the next reward (A9 #2)', () => {
     m = mount({ state: 'mid', routes: [{ id: 'progress' }] });
-    // Mid-game best is 1,080: the next node is 1,100, which pays 100 Dust (A6.3 road table).
-    expect(content.trophyRoad.nodes.find((n) => n.trophies === 1100)!.rewards).toEqual([{ kind: 'dust', amount: 100 }]);
+    // Mid-game best is 1,080: the next node is 1,100, which pays 100 Dust (A6.3 road table) and the
+    // War Path fallback power Boarding Nets (A2.9.8).
+    expect(content.trophyRoad.nodes.find((n) => n.trophies === 1100)!.rewards).toEqual([
+      { kind: 'dust', amount: 100 },
+      { kind: 'power', card: 'boarding_nets' },
+    ]);
     expect(text(m.q('[data-testid="home-road"]')!)).toContain('Next reward at 1,100');
-    expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100');
+    expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100Boarding Nets');
   });
 
   it('charges show "n/max" with no timer (A15.13)', () => {
@@ -593,7 +597,7 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
     expect(order()[0]).toBe('army-group-free');
     expect(text(m.q('[data-testid="army-group-used"]')!)).toMatch(/In your army · \d+/);
     // Every card in the Stone loadout is in the "used" group, and nothing else is.
-    const inArmy = [...stone().units, ...stone().turrets, stone().power].filter((c): c is string => !!c);
+    const inArmy = [...stone().units, ...stone().turrets, stone().powers.home].filter((c): c is string => !!c);
     for (const id of inArmy) expect(groupOf(id)).toBe('used');
     expect(groupOf('mammoth_matriarch')).toBe('free');
     m.click('[data-testid="slot-unit-4"] .ui-card');
@@ -743,7 +747,7 @@ describe('Collection and card detail', () => {
   it('filters the grid', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'collection' }] });
     const all = m.qa('[data-testid="col-grid"] .ui-card').length;
-    expect(all).toBe(104);
+    expect(all).toBe(136);
     const legendary = m.q('[data-testid="filter-rarity"] [role="radio"]:not([aria-checked="true"])');
     expect(legendary).not.toBeNull();
     const radios = m.qa('[data-testid="filter-rarity"] [role="radio"]');
@@ -879,7 +883,7 @@ describe('Trophy Road, Conquest, Profile, Settings', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'settings' }] });
     m.click('[data-testid="odds-overview"]');
     const sheet = m.q('[data-testid="odds-sheet"]')!;
-    expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon in every 200 Win Capsules.');
+    expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon, 2 Platinum, and 4 Gold in every 200 Win Capsules.');
     expect(text(sheet.querySelector('[data-testid="odds-bag-jade"]')!)).toContain('10 left');
     expect(text(sheet.querySelector('[data-testid="odds-pity-legendary"]')!)).toContain('Next capsule you earn: 45%');
   });

@@ -507,3 +507,130 @@ def arm_fist(BODY, P, side, fist_local):
     w = (e[0] + BODY.L_fore * math.sin(fa), e[1] - BODY.L_fore * math.cos(fa))
     d = C.rot2(fist_local, ha)
     return (w[0] + d[0], w[1] + d[1]), ha
+
+
+# ------------------------------------------------------------------------------------ drapes
+def drape(name, mat, xs, top_z, half_w, hem_z, folds=1.2, fold_len=5.5, seed=0.0, nu=60, nv=36, thick=0.7,
+          round_top=0.35):
+    """A hanging cloth (caparison, trapper) over an animal's back: for each x in [xs[0], xs[1]] the
+    cross-section is an arc over the back at `top_z(x)` between y = -half_w(x) and +half_w(x), then
+    the cloth hangs straight down both sides to `hem_z(x)`. Vertical pleats grow toward the hem
+    (amplitude `folds`, wavelength `fold_len`), so it reads as heavy wool, not a pillow.
+    Returns the mesh (not rigged)."""
+    bm = bmesh.new()
+    x0, x1 = xs
+    grid = {}
+    for j in range(nv + 1):
+        v = -1 + 2 * j / nv
+        for i in range(nu + 1):
+            u = i / nu
+            x = x0 + (x1 - x0) * u
+            w, zt, zh = half_w(x), top_z(x), hem_z(x)
+            av = abs(v)
+            arc = round_top
+            if av <= arc:
+                a = (av / arc) * (PI / 2)
+                y = w * math.sin(a)
+                z = zt - (1 - math.cos(a)) * w * 0.55
+                drop = 0.0
+            else:
+                t = (av - arc) / (1 - arc)
+                y = w
+                z0 = zt - w * 0.55
+                z = z0 - (z0 - zh) * t
+                drop = t
+            amp = folds * (0.15 + 0.85 * drop ** 1.3)
+            ph = 2 * PI * x / fold_len + seed + 0.6 * math.sin(x * 0.21 + seed)
+            y = y + amp * (0.5 + 0.5 * math.sin(ph)) * (1.0 if av > arc * 0.6 else 0.3)
+            z += 0.35 * drop * math.sin(ph * 0.5 + 1.3)
+            y *= 1 if v >= 0 else -1
+            grid[(i, j)] = bm.verts.new((x, y, z))
+    for j in range(nv):
+        for i in range(nu):
+            bm.faces.new((grid[(i, j)], grid[(i + 1, j)], grid[(i + 1, j + 1)], grid[(i, j + 1)]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    o = C.from_bm(name, bm, mat)
+    so = o.modifiers.new("so", "SOLIDIFY")
+    so.thickness = thick
+    so.offset = 1.0
+    C.apply_mods(o)
+    o.data.shade_smooth()
+    return o
+
+
+def drape_hem(name, mat, xs, top_z, half_w, hem_z, folds=1.2, fold_len=5.5, seed=0.0, band=1.4, n=60, round_top=0.35):
+    """Dark hem bands along the bottom edges of `drape` (same parameters), just proud of the cloth."""
+    out = []
+    for sg in (-1, 1):
+        pts = []
+        for i in range(n + 1):
+            x = xs[0] + (xs[1] - xs[0]) * i / n
+            w, zh = half_w(x), hem_z(x)
+            ph = 2 * PI * x / fold_len + seed + 0.6 * math.sin(x * 0.21 + seed)
+            y = w + folds * (0.5 + 0.5 * math.sin(ph)) + 0.45
+            pts.append((x, sg * y, zh + band * 0.5 + 0.35 * math.sin(ph * 0.5 + 1.3)))
+        out.append(C.tube(name, pts, [band * 0.5] * len(pts), mat, seg=6, flat=0.45))
+    return out
+
+
+def fringe(name, mat, xs, half_w, hem_z, folds=1.2, fold_len=5.5, seed=0.0, step=2.2, length=2.6, r=0.4):
+    """Wool fringe hanging from the hem (tubes)."""
+    out = []
+    n = int((xs[1] - xs[0]) / step)
+    for sg in (-1, 1):
+        for i in range(n + 1):
+            x = xs[0] + step * i
+            w, zh = half_w(x), hem_z(x)
+            ph = 2 * PI * x / fold_len + seed + 0.6 * math.sin(x * 0.21 + seed)
+            y = sg * (w + folds * (0.5 + 0.5 * math.sin(ph)) + 0.3)
+            z = zh + 0.35 * math.sin(ph * 0.5 + 1.3)
+            out.append(C.tube(name, [(x, y, z + 0.4), (x - 0.2, y + sg * 0.2, z - length)], [r, r * 0.6], mat, seg=5))
+    return out
+
+
+def pavise(k, face_mat, rim_mat, charge_mat=None, height=24.0, width=14.0):
+    """A pavise: a tall rectangular shield with a rounded top and a vertical central ridge (the
+    'channel'); face toward -Y, centred at the origin. Returns [face, rim, (charge)]."""
+    Hh, W = height * k, width * k / 2
+    rows, cols = 18, 10
+    bm = bmesh.new()
+    grid = {}
+
+    def pt(u, v, off):
+        x = u * W * (1.0 - 0.06 * v)
+        top = Hh * 0.5 + 1.2 * k * math.cos(u * PI / 2)
+        z = top - v * Hh
+        ridge = 1.6 * k * max(0.0, 1 - abs(u) / 0.22)
+        y = 1.2 * k * u * u + off - ridge
+        return (x, y, z)
+
+    for side, off in ((0, 0.0), (1, 0.9 * k)):
+        for j in range(rows + 1):
+            for i in range(cols + 1):
+                grid[(side, i, j)] = bm.verts.new(pt(-1 + 2 * i / cols, j / rows, off))
+    for side in (0, 1):
+        for j in range(rows):
+            for i in range(cols):
+                q = [grid[(side, i, j)], grid[(side, i + 1, j)], grid[(side, i + 1, j + 1)], grid[(side, i, j + 1)]]
+                bm.faces.new(q if side else list(reversed(q)))
+    ring = [(i, 0) for i in range(cols + 1)] + [(cols, j) for j in range(1, rows + 1)] + \
+           [(i, rows) for i in range(cols - 1, -1, -1)] + [(0, j) for j in range(rows - 1, 0, -1)]
+    for a, b in zip(ring, ring[1:] + ring[:1]):
+        try:
+            bm.faces.new([grid[(0, *a)], grid[(0, *b)], grid[(1, *b)], grid[(1, *a)]])
+        except ValueError:
+            pass
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    face_o = C.from_bm("pavise", bm, face_mat, sharp_deg=70)
+    C.team(face_o)
+    rimpts = [pt(1, j / rows, -0.2 * k) for j in range(rows + 1)] + [pt(-1, j / rows, -0.2 * k) for j in range(rows, -1, -1)]
+    rimpts += [pt(u, 0, -0.2 * k) for u in (-0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0)]
+    out = [face_o, C.tube("pavise_rim", rimpts, [0.45 * k] * len(rimpts), rim_mat, seg=6, caps=False)]
+    if charge_mat is not None:
+        pts = [(0.0, -2.0 * k, Hh * 0.28 - t * Hh * 0.5) for t in (0, 0.25, 0.5, 0.75, 1.0)]
+        out.append(C.tube("pavise_charge", pts, [1.0 * k] * 5, charge_mat, seg=6, flat=0.4))
+        for z in (Hh * 0.12,):
+            out.append(C.tube("pavise_charge2", [(-W * 0.55, -1.4 * k + 1.2 * k * 0.3, z), (0, -2.0 * k, z), (W * 0.55, -1.4 * k + 1.2 * k * 0.3, z)],
+                              [0.9 * k] * 3, charge_mat, seg=6, flat=0.4))
+    return out

@@ -208,10 +208,11 @@ describe('v1 → v2: eight ages (A17.13)', () => {
 
   it('every War Plan gains Bronze, Industrial and Cosmic starter loadouts; the old loadouts are untouched', () => {
     const old = v1Fixture();
-    const m = migrate(old);
+    // Up to v6: v7 (A2.9) then moves every power into its typed slot (powerSlots.test.ts).
+    const m = migrate(old, { versions: SAVE_VERSIONS.filter((s) => s.v < 7) });
     if (!m.ok) throw new Error(m.reason);
     const doc = m.doc as SaveDoc;
-    expect(doc.v).toBe(SAVE_VERSION);
+    expect(doc.v).toBe(6);
     doc.warPlans.forEach((p, i) => {
       const before = old.warPlans[i]!;
       expect(Object.keys(p.loadouts)).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);

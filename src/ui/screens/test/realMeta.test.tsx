@@ -110,7 +110,7 @@ describe('War Plan advisor findings from meta (A3)', () => {
         ...base,
         loadouts: {
           ...base.loadouts,
-          stone: { units: ['bonker', 'bonker', 'footman', 'no_such_card', null], turrets: [null, null], power: 'arrow_storm' },
+          stone: { units: ['bonker', 'bonker', 'footman', 'no_such_card', null], turrets: [null, null], powers: { home: 'arrow_storm', field: null } },
         },
       },
       // badShape, notOwned (Stone), onlyThreeUnits and noAntiArmor (Medieval), noAir (Gunpowder)

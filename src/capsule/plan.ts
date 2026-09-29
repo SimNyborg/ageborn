@@ -175,7 +175,7 @@ export type StrikeStep = StepBase & {
  * A summit gem rises out of the cap (A10 step 3b). Only planned when the strike after it climbs; the
  * gem rises clear and colourless, so nothing here shows the tier its strike will reach.
  */
-export type SummitRiseStep = StepBase & { kind: 'summitRise'; /** 0 = the first summit gem. */ index: number };
+export type SummitRiseStep = StepBase & { kind: 'summitRise'; /** The gem's slot in the cap band: 0 = the first summit gem. */ index: number };
 /** A summit strike: always a climb, into the next tier above Gold (A10 step 3b). */
 export type SummitStrikeStep = StepBase & {
   kind: 'summitStrike';
@@ -493,19 +493,21 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
     // Summit strikes (A10 step 3b): only when the rolled tier is above Gold, each one a climb. The
     // step after strike 4 starts at the same moment for every tier (this rise, or the burst build).
     strikes.summitTiers.forEach((to, k) => {
+      // The gem's slot in the cap band (0 = the first summit gem; a drum shown above Gold has some).
+      const gem = summitGemCount(from);
       steps.push(
         step<SummitRiseStep>({
           kind: 'summitRise',
           id: `summitRise-${k}`,
           durationMs: T.summitRiseMs,
-          index: k,
+          index: gem,
           cues: [{ atMs: 0, sound: 'cap_summit_rise' }],
         }),
         step<SummitStrikeStep>({
           kind: 'summitStrike',
           id: `summitStrike-${k}`,
           durationMs: T.summitStrikeMs,
-          index: k,
+          index: gem,
           from,
           to,
           maxWaitMs: T.strikeIdleMs,
@@ -704,7 +706,7 @@ export function checkPlan(plan: ShowPlan): string[] {
         over(s, 'burst', s.durationMs, L.burst);
         burstTier = s.tier;
         if (!s.fixed && lastShown !== s.tier) out.push(`${s.id}: the climb shows ${String(lastShown)} but the capsule is ${s.tier}`);
-        if (!s.fixed && summitStrikes !== summitGemCount(s.tier)) out.push(`${s.id}: ${summitStrikes} summit strikes for a ${s.tier} capsule`);
+        if (!s.fixed && summitStrikes !== summitGemCount(s.tier) - summitGemCount(plan.startTier ?? s.tier)) out.push(`${s.id}: ${summitStrikes} summit strikes for a ${s.tier} capsule`);
         if (s.fixed && summitStrikes > 0) out.push(`${s.id}: a fixed-tier capsule has no summit strikes`);
         if (s.buildMs < 0 || s.buildMs >= s.durationMs) out.push(`${s.id}: the pop at ${s.buildMs} ms is outside the step`);
         break;

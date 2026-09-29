@@ -42,6 +42,8 @@ export interface RevealSpec {
   id?: string;
   /** The onboarding script's capsule number (1-based, as the meta writes it). */
   scriptIndex?: number | null;
+  /** The first capsule of this Legendary tier the save opens (A10 step 4b). */
+  firstOfTier?: boolean;
 }
 
 export function reveal(spec: RevealSpec): CapsuleReveal {
@@ -63,7 +65,7 @@ export function reveal(spec: RevealSpec): CapsuleReveal {
     pityBefore: PITY,
     pityAfter: { ...PITY, sinceEpic: PITY.sinceEpic + 1, sinceLegendary: PITY.sinceLegendary + 1, opened: PITY.opened + 1 },
     firstLegendaryReveal: spec.firstLegendary ?? [],
-    firstOfTier: false,
+    firstOfTier: spec.firstOfTier ?? false,
   };
 }
 

@@ -93,6 +93,8 @@ interface RevealSpec {
   scriptIndex?: number | null;
   pity?: SaveDoc['pity'];
   seed?: number;
+  /** The first capsule of this Legendary tier the save opens (A10 step 4b). */
+  firstOfTier?: boolean;
 }
 
 export function makeReveal(spec: RevealSpec): CapsuleReveal {
@@ -102,6 +104,7 @@ export function makeReveal(spec: RevealSpec): CapsuleReveal {
   const startTier = spec.startTier ?? climbFrom ?? spec.tier;
   const def = C.capsules.tiers[spec.tier];
   const used = new Set<CardId>();
+  let legendaries = 0;
   const stacks: CapsuleStack[] = (spec.stacks ?? tierStacks(spec.tier)).map((s) => {
     let card = s.card;
     if (!card) {
@@ -109,10 +112,12 @@ export function makeReveal(spec: RevealSpec): CapsuleReveal {
       card = pool[rng.int(pool.length)] ?? POOL[s.rarity][0] ?? 'bonker';
     }
     used.add(card);
+    // The 2nd and 3rd guaranteed Legendary stacks hold `extraLegendaryCopies` (A6.4).
+    const extra = s.rarity === 'legendary' && legendaries++ > 0;
     return {
       card,
       rarity: s.rarity,
-      copies: s.copies ?? def.copies[s.rarity],
+      copies: s.copies ?? (extra ? def.extraLegendaryCopies : def.copies[s.rarity]),
       isNew: s.isNew ?? !OWNED.has(card),
       foil: s.foil ?? 'none',
       dust: s.dust ?? 0,
@@ -136,7 +141,7 @@ export function makeReveal(spec: RevealSpec): CapsuleReveal {
     pityBefore: pity,
     pityAfter: nextPity(pity, stacks),
     firstLegendaryReveal: spec.firstLegendary ?? [],
-    firstOfTier: false,
+    firstOfTier: spec.firstOfTier ?? false,
   };
 }
 
@@ -199,8 +204,16 @@ function buildCases(): BenchCase[] {
     single('fixed-road', 'Fixed tier', 'Trophy Road Silver (starts at the burst)', { tier: 'silver', kind: 'road' }),
     single('fixed-codex', 'Fixed tier', 'Codex Capsule (Silver)', { tier: 'silver', kind: 'codex' }),
     single('fixed-meter', 'Fixed tier', 'Clay meter (climb from Clay, no climbs)', { tier: 'clay', kind: 'meter' }),
+    // Fixed Legendary tiers start at the burst with their staging and crests (A10 step 4).
+    single('fixed-gold', 'Fixed tier', 'Gate 7 Gold (burst, 1 crest)', { tier: 'gold', kind: 'road' }),
+    single('fixed-platinum', 'Fixed tier', 'Gate 8 Platinum (burst, 2 crests)', { tier: 'platinum', kind: 'road' }),
+    single('fixed-aeon', 'Fixed tier', 'Trophy Road 4,000 Aeon (burst, 3 crests)', { tier: 'aeon', kind: 'road' }),
+    // The first capsule of each Legendary tier (A10 step 4b): the banner after the pop.
+    single('first-gold', 'First of a tier', 'First Gold Capsule (Win, from Clay)', { tier: 'gold', firstOfTier: true }),
+    single('first-platinum', 'First of a tier', 'First Platinum Capsule (Win, from Clay)', { tier: 'platinum', firstOfTier: true }),
+    single('first-aeon', 'First of a tier', 'First Aeon Capsule (Win, from Clay)', { tier: 'aeon', firstOfTier: true }),
     single('legendary-first', 'Legendary', 'First-time Legendary (full walkout, unskippable)', {
-      tier: 'aeon',
+      tier: 'gold',
       stacks: [
         { rarity: 'common' }, { rarity: 'common' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram' }, { rarity: 'epic', card: 'bronze_cannon' },
         { rarity: 'legendary', card: 'mammoth_matriarch', isNew: true },
@@ -208,10 +221,18 @@ function buildCases(): BenchCase[] {
       firstLegendary: ['mammoth_matriarch'],
     }),
     single('legendary-repeat', 'Legendary', 'Repeat Legendary (3 s walkout, skippable)', {
-      tier: 'aeon',
+      tier: 'gold',
       stacks: [{ rarity: 'common' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram' }, { rarity: 'legendary', card: 'ursa_paladin', isNew: false }],
     }),
-    single('legendary-jade', 'Legendary', 'Jade with a converted Legendary stack', {
+    single('legendary-three', 'Legendary', 'Aeon with 3 NEW Legendaries (one full walkout, two 3 s)', {
+      tier: 'aeon',
+      skin: 'ghost_corsair',
+      stacks: [
+        { rarity: 'common' }, { rarity: 'common' }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram', isNew: false }, { rarity: 'epic' },
+        { rarity: 'legendary', card: 'mammoth_matriarch', isNew: true }, { rarity: 'legendary', card: 'behemoth_tank', isNew: true }, { rarity: 'legendary', card: 'balloon_admiral', isNew: true },
+      ],
+    }),
+    single('legendary-jade', 'Legendary', 'Jade with a rolled Legendary stack (1% stack roll)', {
       tier: 'jade',
       stacks: [{ rarity: 'common' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram' }, { rarity: 'epic' }, { rarity: 'legendary', card: 'balloon_admiral' }],
       firstLegendary: ['balloon_admiral'],
@@ -231,10 +252,13 @@ function buildCases(): BenchCase[] {
       tier: 'jade',
       stacks: [{ rarity: 'common', card: 'bonker', dust: 70, copies: 14 }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic' }, { rarity: 'epic', card: 'battering_ram', isNew: false }],
     }),
-    single('aeon-skin', 'Other', 'Aeon with a bonus skin', {
-      tier: 'aeon',
+    single('aeon-skin', 'Other', 'Platinum with its sure skin (owned Legendaries)', {
+      tier: 'platinum',
       skin: 'ghost_corsair',
-      stacks: [{ rarity: 'common' }, { rarity: 'common' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram', isNew: false }, { rarity: 'epic' }, { rarity: 'legendary', card: 'ursa_paladin', isNew: false }],
+      stacks: [
+        { rarity: 'common' }, { rarity: 'common' }, { rarity: 'rare' }, { rarity: 'epic', card: 'battering_ram', isNew: false }, { rarity: 'epic' },
+        { rarity: 'legendary', card: 'ursa_paladin', isNew: false }, { rarity: 'legendary', card: 'chrono_titan', isNew: false },
+      ],
     }),
   );
   // Onboarding script (A6.5), shaped as the meta rolls it: the scripted cards replace the tier's
@@ -273,6 +297,26 @@ function buildCases(): BenchCase[] {
     return r;
   });
   cases.push({ id: 'open-all-10', group: 'Open all', title: '10 capsules (Epic+ reveals, one summary)', reveals: all, progress: benchProgress(all) });
+  // Open all with a Platinum (its stinger and flare end the volley), a first Aeon (one combined
+  // banner) and two NEW Legendaries in different capsules (one full walkout per batch).
+  {
+    const mix: CapsuleTier[] = ['bronze', 'platinum', 'clay', 'silver', 'aeon'];
+    let p2 = PITY;
+    const batch = mix.map((tier, i) => {
+      const r = makeReveal({
+        id: `peak-${i}`,
+        tier,
+        pity: p2,
+        seed: 3000 + i,
+        firstOfTier: tier === 'aeon',
+        ...(tier === 'platinum' ? { stacks: [...tierStacks('platinum').filter((st) => st.rarity !== 'legendary'), { rarity: 'legendary' as Rarity, card: 'mammoth_matriarch', isNew: true }, { rarity: 'legendary' as Rarity, card: 'ursa_paladin', isNew: false }] } : {}),
+        ...(tier === 'aeon' ? { stacks: [...tierStacks('aeon').filter((st) => st.rarity !== 'legendary'), { rarity: 'legendary' as Rarity, card: 'behemoth_tank', isNew: true }, { rarity: 'legendary' as Rarity, card: 'ursa_paladin', isNew: false }, { rarity: 'legendary' as Rarity, card: 'chrono_titan', isNew: false }] } : {}),
+      });
+      p2 = r.pityAfter;
+      return r;
+    });
+    cases.push({ id: 'open-all-peak', group: 'Open all', title: '5 capsules with a Platinum and a first Aeon (flare, banner, one full walkout)', reveals: batch, progress: benchProgress(batch) });
+  }
   cases.push({
     id: 'open-all-3',
     group: 'Open all',
@@ -285,6 +329,8 @@ function buildCases(): BenchCase[] {
   {
     const quick = makeReveal({ id: 'quick-jade', tier: 'jade', startTier: 'clay', seed: 77, pity: PITY });
     cases.push({ id: 'quick-jade', group: 'Quick reveal', title: 'Quick reveal: a Jade Win Capsule opens at the burst', reveals: [quick], progress: benchProgress([quick]), quickReveal: true });
+    const quickAeon = makeReveal({ id: 'quick-aeon', tier: 'aeon', startTier: 'clay', seed: 78, pity: PITY, firstOfTier: true });
+    cases.push({ id: 'quick-aeon', group: 'Quick reveal', title: 'Quick reveal: a first Aeon (no summit strikes; crests, stinger and banner stay)', reveals: [quickAeon], progress: benchProgress([quickAeon]), quickReveal: true });
   }
   // Wardrobe Crate: the card flip for each skin rarity (A10, A15.3; there is no reel).
   cases.push(

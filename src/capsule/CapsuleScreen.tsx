@@ -187,7 +187,7 @@ function ShowScreen(p: ShowScreenProps) {
   const cbs = useRef({ onCue: p.onCue, onState: p.onState });
   cbs.current = { onCue: p.onCue, onState: p.onState };
   const settings: ShowSettings = { ...DEFAULT_SHOW_SETTINGS, ...p.settings };
-  const settingsKey = `${settings.reduceMotion}|${settings.vibrate}|${settings.teamPreset}|${settings.quickReveal}`;
+  const settingsKey = `${settings.reduceMotion}|${settings.vibrate}|${settings.teamPreset}|${settings.quickReveal}|${settings.lite === true}`;
 
   useEffect(() => {
     const app = p.pixi;
@@ -315,6 +315,7 @@ function ShowScreen(p: ShowScreenProps) {
       data-testid="capsule-screen"
       data-reduce-motion={settings.reduceMotion ? '' : undefined}
       data-step={state?.kind ?? ''}
+      data-step-id={state ? (p.plan.steps[state.index]?.id ?? '') : ''}
       data-phase={state?.phase ?? ''}
       onPointerDown={(e) => {
         if (e.button !== 0 && e.pointerType === 'mouse') return;

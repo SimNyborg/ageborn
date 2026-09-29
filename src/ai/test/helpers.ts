@@ -22,16 +22,20 @@ import { botProfile, createBot, runHeadless, BALANCED_BRAIN_ID, type HeadlessRes
 export const content: CompiledContent = realContent;
 export const AGES: readonly AgeId[] = realContent.order.ages;
 
-/** The A2.14 baseline plan of an age: the 3 Commons, the AA Rare, the Support Rare, both Common turrets, the default power. */
+/** The age's starter power of a slot (A2.9.8). */
+export function starterPower(c: CompiledContent, age: AgeId, slot: 'home' | 'field'): CardId | null {
+  return Object.values(c.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
+}
+
+/** The A2.14 baseline plan of an age: the 3 Commons, the AA Rare, the Support Rare, both Common turrets, both starter powers. */
 export function baselineLoadout(c: CompiledContent, age: AgeId): Loadout {
   const units = Object.values(c.units).filter((u) => u.age === age && !u.hidden);
   const pick = (group: string, rarity?: string): CardId | null => units.find((u) => u.group === group && (!rarity || u.rarity === rarity))?.id ?? null;
   const turrets = Object.values(c.turrets).filter((t) => t.age === age && t.rarity === 'common');
-  const power = Object.values(c.powers).find((p) => p.age === age && p.slot === 'default');
   return {
     units: [pick('infantry', 'common'), pick('ranged', 'common'), pick('heavy', 'common'), pick('antiArmor'), pick('support')],
     turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null],
-    power: power?.id ?? '',
+    powers: { home: starterPower(c, age, 'home'), field: starterPower(c, age, 'field') },
   };
 }
 
@@ -84,7 +88,11 @@ export function observation(o: {
   treasury?: number;
   mountsOwned?: number;
   turrets?: Observation['me']['turrets'];
+  /** Reload of `power`'s slot (the other slot is empty unless `powers` is given). */
   powerPpm?: number;
+  /** Effective cost of `power` (default 100). */
+  powerCost?: number;
+  powers?: Observation['me']['powers'];
   stance?: 'charge' | 'hold' | 'fallback';
   /** The Hold flag, whole lu (A18.4.2; default 320). */
   holdP?: number;
@@ -99,6 +107,11 @@ export function observation(o: {
   telegraphs?: Observation['telegraphs'];
 }): Observation {
   const stone = baselineLoadout(content, 'stone');
+  // A2.9.1: `power` sits in its own slot with `powerPpm`; the other slot is empty.
+  const card = o.power ?? stone.powers.home ?? 'rockslide';
+  const def = content.powers[card];
+  const seen = { card, ppm: o.powerPpm ?? 0, cost: o.powerCost ?? def?.cost ?? 100, reloadMs: def?.reloadMs ?? 40000, rateBp: 10000 };
+  const powers: Observation['me']['powers'] = o.powers ?? (def?.slot === 'field' ? { home: null, field: seen } : { home: seen, field: null });
   return {
     tick: o.tick ?? 100,
     side: o.side ?? 1,
@@ -113,7 +126,8 @@ export function observation(o: {
       treasury: o.treasury ?? 0,
       mountsOwned: o.mountsOwned ?? 1,
       turrets: o.turrets ?? [null, null, null, null],
-      powerPpm: o.powerPpm ?? 0,
+      powers,
+      powerLockoutUntil: 0,
       stance: o.stance ?? 'charge',
       holdP: o.holdP ?? 320,
       research: o.research ?? { owned: [], current: null, progressBp: 0, ranksOpen: 1 },
@@ -121,12 +135,11 @@ export function observation(o: {
       lastStand: o.lastStand ?? 'locked',
       tray: o.tray ?? [...stone.units],
       turretCards: o.turretCards ?? [...stone.turrets],
-      power: o.power ?? stone.power,
     },
     foe: {
       ageIndex: 0,
       xpBp: 0,
-      powerPpm: 0,
+      powers: { home: { card: null, ppm: 0 }, field: { card: null, ppm: 0 } },
       turrets: [null, null, null, null],
       baseHpBp: 10000,
       stance: 'charge',
@@ -146,5 +159,5 @@ let nextUnitId = 1000;
 /** An observed unit at own-side progress `pLu` (whole lu) of the observer. */
 export function unit(side: Side, card: CardId, pLu: number, o: { hp?: number; air?: boolean; id?: number } = {}): Observation['units'][number] {
   nextUnitId += 1;
-  return { id: o.id ?? nextUnitId, side, card, level: 1, p: pLu * 1000, hp: o.hp ?? 10000, maxHp: 10000, shield: 0, air: o.air ?? false };
+  return { id: o.id ?? nextUnitId, side, card, level: 1, p: pLu * 1000, hp: o.hp ?? 10000, maxHp: 10000, shield: 0, air: o.air ?? false, summoned: false };
 }

@@ -132,8 +132,8 @@ describe('HUD presses (A2.12, A9.2)', () => {
 
   it('casts the power: tap = auto-aim, drag = the placed p; denied until charged or after the end', () => {
     const full = model({ me: { powerPpm: 1_000_000 } });
-    expect(cmdOf(powerIntent(full, 0))).toEqual({ t: 'power', side: 0 });
-    expect(cmdOf(powerIntent(full, 0, 640))).toEqual({ t: 'power', side: 0, p: 640 });
+    expect(cmdOf(powerIntent(full, 0))).toEqual({ t: 'power', side: 0, slot: 'home' });
+    expect(cmdOf(powerIntent(full, 0, 640))).toEqual({ t: 'power', side: 0, slot: 'home', p: 640 });
     expect(powerIntent(model({ me: { powerPpm: 999_999 } }), 0)).toEqual({ k: 'deny', target: 'power', reason: { key: 'hud.deny.power', params: { pct: 99 } } });
     expect(powerIntent(model({ me: { powerPpm: 1_000_000 }, phase: 'ended' }), 0)).toEqual({ k: 'deny', target: 'power' });
     expect(powerFraction(500_000)).toBe(0.5);
@@ -256,7 +256,7 @@ describe('keyboard (A2.12)', () => {
     expect(key('6')).toEqual({ k: 'none' });
     expect(cmdOf(key('6', withCard(m, 5, { card: 'bonker', state: 'ready' })))).toEqual({ t: 'train', side: 0, slot: 5 });
     expect(cmdOf(key('e'))).toEqual({ t: 'evolve', side: 0 });
-    expect(cmdOf(key(' '))).toEqual({ t: 'power', side: 0 });
+    expect(cmdOf(key(' '))).toEqual({ t: 'power', side: 0, slot: 'home' });
     expect(cmdOf(key('s'))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
     expect(cmdOf(key('l'))).toEqual({ t: 'lastStand', side: 0 });
     expect(key('p')).toEqual({ k: 'pause' });

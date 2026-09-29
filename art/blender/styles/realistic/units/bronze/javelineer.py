@@ -114,9 +114,10 @@ def build():
 
 # ------------------------------------------------------------------------------------ poses
 def stance(breath=0.0):
+    # the javelin carried low in the near hand, point up and forward; the far arm loose
     return dict(root=(0.0, -1.4), hips=0, spine=-2, chest=-2 - 0.8 * breath, neck=1, head=-6 - 0.5 * breath,
                 footF=(10.5, G0, 0.0), footB=(-10.0, G0, 0.0),
-                handF=((6.0, 45.0 + 0.4 * breath), 32), absB=(62, 78, 80, -4), bones={"tails": 0})
+                handF=((7.5, 33.5 + 0.4 * breath), 24), absB=(14, 34, 40, -4), bones={"tails": 0})
 
 
 def idle(t):
@@ -127,36 +128,40 @@ def idle(t):
     P["root_dy"] = 1.2 * math.sin(a + 0.8)
     P["hips"] += 1.0 * math.sin(a + 0.8)
     P["head"] += 2.0 * math.sin(a + 0.3)
-    P["handF"] = ((6.0 + 0.6 * math.sin(a - 0.6), 45.0 + 0.5 * b), 32 + 3 * math.sin(a - 1.0))
-    P["absB"] = (62 + 3 * math.sin(a - 0.4), 78 + 3 * math.sin(a - 0.8), 80, -4)
+    P["handF"] = ((7.5 + 0.5 * math.sin(a - 0.6), 33.5 + 0.5 * b), 24 + 2.5 * math.sin(a - 1.0))
+    P["absB"] = (14 + 3 * math.sin(a - 0.4), 34 + 3 * math.sin(a - 0.8), 40, -4)
     P["bones"] = {"tails": 6 * math.sin(a - 1.4)}
     return P
 
 
 def walk(t):
     P, ph, s1, c2 = MO.walk_legs(t, STRIDE, 4.4, STANCE, G0, lean=5.0)
-    P["handF"] = ((7.0 - 1.5 * s1, 44.0 - 1.0 * c2), 30 + 3 * s1)
-    P["armB"] = MO.arm_swing(s1, "B", amp=20)
+    P["handF"] = ((8.5 - 2.0 * s1, 33.0 - 1.0 * c2), 22 + 3 * s1)
+    P["armB"] = MO.arm_swing(s1, "B", amp=22)
     P["bones"] = {"tails": -10 - 5 * c2}
     return P
 
 
 def _atk_keys():
     ready = stance()
-    coil = dict(root=(-2.5, -1.6), hips=-5, spine=-8, chest=-6, neck=3, head=-2, footF=(11.5, G0, 6.0), footB=(-11.0, G0, 0.0),
-                handF=((-10.0, 55.0), 14), absB=(78, 86, 88, -4), bones={"tails": 8})
-    cock = dict(root=(-4.2, -1.2), hips=-9, spine=-13, chest=-9, neck=5, head=0, footF=(12.5, G0 + 1.2, 14.0),
-                footB=(-11.5, G0, 0.0), handF=((-15.0, 52.5), 18), absB=(86, 90, 92, -4), bones={"tails": 12})
-    cock2 = dict(cock, root=(-4.5, -1.1), spine=-14, handF=((-15.6, 52.2), 19))
+    # raise: the javelin comes up to the shoulder, the far arm starts to reach for the target
+    lift = dict(root=(-1.5, -1.6), hips=-3, spine=-5, chest=-4, neck=2, head=-3, footF=(11.5, G0, 6.0), footB=(-11.0, G0, 0.0),
+                handF=((-2.0, 52.0), 10), absB=(50, 70, 72, -4), bones={"tails": 6})
+    # cock: drawn right back at shoulder height, weight on the back foot, the far arm aimed at the enemy (held)
+    cock = dict(root=(-4.2, -1.4), hips=-9, spine=-12, chest=-8, neck=5, head=-1, footF=(12.5, G0 + 1.2, 14.0),
+                footB=(-11.5, G0, 0.0), handF=((-17.0, 50.5), 6), absB=(84, 92, 94, -4), bones={"tails": 12})
+    cock2 = dict(cock, root=(-4.5, -1.3), spine=-13, handF=((-17.8, 50.0), 6))
+    # whip over the top: the hips and shoulders fire first, the elbow leads, the far arm pulls down
     whip = dict(root=(1.5, -3.0), hips=7, spine=5, chest=2, neck=-3, head=-6, footF=(14.0, G0, 2.0),
-                footB=(-11.0, G0 + 0.4, -10.0), handF=((8.0, 60.0), 12), absB=(20, 40, 40, -4), bones={"tails": -8})
+                footB=(-11.0, G0 + 0.4, -10.0), handF=((4.0, 58.5), 6), absB=(40, 50, 50, -4), bones={"tails": -8})
     release = dict(root=(4.5, -4.6), hips=14, spine=10, chest=5, neck=-7, head=-8, footF=(15.5, G0, 0.0),
-                   footB=(-10.5, G0 + 0.8, -18.0), handF=((20.0, 52.0), 4), absB=(-20, 10, 10, -4), bones={"tails": -16})
+                   footB=(-10.5, G0 + 0.8, -18.0), handF=((19.0, 52.0), -4), absB=(-12, 10, 10, -4), bones={"tails": -16})
     follow = dict(root=(5.0, -6.0), hips=18, spine=13, chest=6, neck=-8, head=-8, footF=(15.5, G0, 0.0),
-                  footB=(-10.0, G0 + 1.0, -20.0), handF=((14.0, 34.0), -40), absB=(-34, -10, -10, -4), bones={"tails": -12})
+                  footB=(-10.0, G0 + 1.0, -20.0), handF=((15.0, 31.0), -50), absB=(-30, -8, -10, -4), bones={"tails": -12})
+    # reach back to the case over the far shoulder for the next javelin
     reach = dict(root=(2.0, -3.0), hips=8, spine=6, chest=2, neck=-3, head=-4, footF=(12.0, G0, 0.0),
-                 footB=(-10.0, G0, -4.0), handF=((-8.0, 50.0), 70), absB=(30, 50, 50, -4), bones={"tails": -4})
-    keys = MO.flip_torso([(65, coil), (135, cock), (250, cock2), (268, whip), (290, release), (430, follow),
+                 footB=(-10.0, G0, -4.0), handF=((-4.0, 52.0), 70), absB=(20, 40, 40, -4), bones={"tails": -4})
+    keys = MO.flip_torso([(65, lift), (135, cock), (250, cock2), (268, whip), (290, release), (430, follow),
                           (520, reach), (610, dict(ready, bones={"tails": 2}))])
     return [(0, ready)] + keys + [(680, ready)]
 
@@ -165,7 +170,7 @@ _ATK = _atk_keys()
 
 
 def hit(t):
-    return MO.knock_hit(stance(), t, dict(handF=((2.0, 47.0), 48), absB=(30, 70, 70, -4), bones={"tails": 16}))
+    return MO.knock_hit(stance(), t, dict(handF=((3.0, 38.0), 40), absB=(30, 60, 60, -4), bones={"tails": 16}))
 
 
 def die(t):
@@ -184,6 +189,8 @@ def pose(ctx, clip, t):
     gone = (clip == "attack" and 280 <= t < 600) or (clip == "die" and t >= 100)
     for o in ctx["jav"]:
         o.hide_render = gone
+    if clip == "die" and t <= 0.0:
+        clip = "idle"          # the first death frame matches the idle pose (no pop)
     P = {"idle": idle, "walk": walk, "hit": hit, "die": die}.get(clip)
     BODY.apply(ctx["rig"], P(t) if P else B.keyed(_ATK, t))
 

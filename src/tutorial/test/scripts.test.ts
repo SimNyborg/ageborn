@@ -104,10 +104,10 @@ describe("Old Grogg's scripted brain (A7.4, B10)", () => {
   function obs(tick: number, groggUnits = 0) {
     const sim = createSim({ seed: 1, format: 'tutorial', content, sides: [
       { label: 'P', isBot: false, loadouts: match1Loadouts(content), levels: {}, skins: {} },
-      { label: 'G', isBot: true, loadouts: { stone: { units: ['training_dummy', 'tuskback', null, null, null], turrets: [null, null], power: 'stampede' } }, levels: {}, skins: {} },
+      { label: 'G', isBot: true, loadouts: { stone: { units: ['training_dummy', 'tuskback', null, null, null], turrets: [null, null], powers: { home: 'rockslide', field: 'stampede' } } }, levels: {}, skins: {} },
     ] });
     const o = sim.observe(1);
-    return { ...o, tick, units: Array.from({ length: groggUnits }, (_, i) => ({ id: i + 1, side: 1 as const, card: 'training_dummy', level: 1, p: 100_000, hp: 1, maxHp: 1, shield: 0, air: false })) };
+    return { ...o, tick, units: Array.from({ length: groggUnits }, (_, i) => ({ id: i + 1, side: 1 as const, card: 'training_dummy', level: 1, p: 100_000, hp: 1, maxHp: 1, shield: 0, air: false, summoned: false })) };
   }
 
   it('issues train commands on schedule, for his side only, and never evolves', () => {

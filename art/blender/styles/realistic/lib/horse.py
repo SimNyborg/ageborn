@@ -40,7 +40,7 @@ def bones():
     return b
 
 
-def body(rig, coat, dark, hoof, mane_mat):
+def body(rig, coat, dark, hoof, mane_mat, heavy=1.0):
     out = {}
     els = [
         ((0, 0, 47), (19.5, 9.0, 10.5)),         # barrel
@@ -84,23 +84,24 @@ def body(rig, coat, dark, hoof, mane_mat):
     C.displace(tail, 0.9, 0.35)
     rig.skin(tail, ["h_tail", "h_tail2"], soft=2.0)
     for s, y in Y.items():
+        hv = lambda a: (a[0] * heavy, a[1] * heavy, a[2])
         fore = C.blobs("fore_" + s, [
-            ((18.0, y, 30.0), (3.9, 3.1, 7.4)),
-            ((18.0, y, 23.0), (2.5, 2.2, 3.6)),
-            ((18.0, y, 19.0), (1.95, 1.85, 2.6)),
-            ((18.2, y, 13.0), (1.75, 1.6, 5.6)),
-            ((18.4, y, 7.0), (1.85, 1.75, 1.9)),
-            ((19.6, y, 4.0), (1.5, 1.45, 2.3)),
+            ((18.0, y, 30.0), hv((3.9, 3.1, 7.4))),
+            ((18.0, y, 23.0), hv((2.5, 2.2, 3.6))),
+            ((18.0, y, 19.0), hv((1.95, 1.85, 2.6))),
+            ((18.2, y, 13.0), hv((1.75, 1.6, 5.6))),
+            ((18.4, y, 7.0), hv((1.85, 1.75, 1.9))),
+            ((19.6, y, 4.0), hv((1.5, 1.45, 2.3))),
         ], coat, res=0.4)
         rig.skin(fore, ["h_foreS_" + s, "h_foreU_" + s, "h_foreC_" + s, "h_foreP_" + s], soft=1.0,
                  bias={"h_foreS_" + s: 2.0})
         hind = C.blobs("hind_" + s, [
-            ((-16.5, y, 30.0), (4.0, 3.1, 6.6), (0, 0.5, 0)),
-            ((-19.8, y, 25.0), (2.7, 2.2, 3.4), (0, 0.5, 0)),
-            ((-21.3, y, 21.5), (2.1, 1.85, 2.7)),
-            ((-21.4, y, 14.0), (1.8, 1.65, 6.0)),
-            ((-21.2, y, 7.0), (1.85, 1.75, 1.9)),
-            ((-20.0, y, 4.0), (1.5, 1.45, 2.3)),
+            ((-16.5, y, 30.0), hv((4.0, 3.1, 6.6)), (0, 0.5, 0)),
+            ((-19.8, y, 25.0), hv((2.7, 2.2, 3.4)), (0, 0.5, 0)),
+            ((-21.3, y, 21.5), hv((2.1, 1.85, 2.7))),
+            ((-21.4, y, 14.0), hv((1.8, 1.65, 6.0))),
+            ((-21.2, y, 7.0), hv((1.85, 1.75, 1.9))),
+            ((-20.0, y, 4.0), hv((1.5, 1.45, 2.3))),
         ], coat, res=0.4)
         rig.skin(hind, ["h_hindT_" + s, "h_hindG_" + s, "h_hindC_" + s, "h_hindP_" + s], soft=1.0,
                  bias={"h_hindT_" + s: 2.0})
@@ -108,8 +109,14 @@ def body(rig, coat, dark, hoof, mane_mat):
             h = C.lathe(nm + s, [(0.0, 0.0), (2.2, 0.0), (1.8, 2.3), (1.2, 2.9), (0.0, 2.9)], hoof,
                         seg=16, loc=(x, y, 0.0), scale=(1.15, 0.95, 1.0))
             rig.rigid(h, bone + s)
-            sock = C.blobs("sock" + nm + s, [((x - 1.0, y, 5.0), (1.75, 1.7, 2.6))], dark, res=0.35)
+            sock = C.blobs("sock" + nm + s, [((x - 1.0, y, 5.0), (1.75 * heavy, 1.7 * heavy, 2.6))], dark, res=0.35)
             rig.rigid(sock, bone + s)
+            if heavy > 1.0:
+                # a destrier's feathering: long dark hair over the fetlock and the back of the pastern
+                fe = C.blobs("feather" + nm + s, [((x - 2.0, y, 5.6), (2.0 * heavy, 1.9 * heavy, 2.6)), ((x - 2.6, y, 3.2), (1.6, 1.8, 1.6))],
+                             mane_mat, res=0.3)
+                C.displace(fe, 0.5, 0.5)
+                rig.rigid(fe, bone + s)
     return out
 
 

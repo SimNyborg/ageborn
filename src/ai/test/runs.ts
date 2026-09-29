@@ -89,7 +89,8 @@ function randomPlan(rng: Sfc32State): Record<AgeId, Loadout> {
     const t1 = turrets.splice(randInt(rng, turrets.length), 1)[0];
     const t2 = randInt(rng, 5) === 0 ? null : turrets[randInt(rng, turrets.length)];
     const powers = Object.values(content.powers).filter((p) => p.age === age);
-    out[age] = { units, turrets: [t1?.id ?? null, t2?.id ?? null], power: pick(rng, powers).id };
+    const slot = (s: 'home' | 'field'): string | null => (randInt(rng, 6) === 0 ? null : pick(rng, powers.filter((p) => p.slot === s)).id);
+    out[age] = { units, turrets: [t1?.id ?? null, t2?.id ?? null], powers: { home: slot('home'), field: slot('field') } };
   }
   return out;
 }

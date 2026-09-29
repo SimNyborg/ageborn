@@ -203,7 +203,7 @@ describe('event mapper: turrets, bases, powers', () => {
   });
 
   it('power telegraph and power lands: global 120 ms, trauma 0.5, 1-frame 30% white, duck 6 dB for 1.5 s', () => {
-    const tel = run([ev('powerTelegraph', { side: 0, power: 'stampede', castId: 1, x: 700_000, zone: 500_000 })]);
+    const tel = run([ev('powerTelegraph', { side: 0, slot: 'field', power: 'stampede', castId: 1, x: 700_000, zone: 500_000, cost: 100, targetId: -1, telegraphMs: 1000 })]);
     expect(pick(tel, 'telegraph')).toEqual([{ a: 'telegraph', side: 0, castId: 1, power: 'stampede', x: 700, zone: 500, ms: 1000 }]);
     expect(pick(tel, 'sound').map((s) => s.id)).toEqual(['power_telegraph']);
     const out = run([ev('powerImpact', { side: 0, power: 'stampede', castId: 1, x: 703_000, index: 0 })]);
@@ -351,8 +351,8 @@ describe('event mapper: coverage', () => {
     ev('treasuryUp', { side: 0, level: 1 }),
     ev('ascendStart', { side: 1, age: 'medieval' }),
     ev('ageUp', { side: 1, age: 'medieval' }),
-    ev('powerReady', { side: 0 }),
-    ev('powerTelegraph', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, zone: 450_000 }),
+    ev('powerReady', { side: 0, slot: 'home' }),
+    ev('powerTelegraph', { side: 1, slot: 'home', power: 'arrow_storm', castId: 2, x: 500_000, zone: 450_000, cost: 100, targetId: -1, telegraphMs: 1000 }),
     ev('powerImpact', { side: 1, power: 'arrow_storm', castId: 2, x: 500_000, index: 0 }),
     ev('stanceChanged', { side: 0, stance: 'hold', holdP: 320 }),
     ev('lastStandArmed', { side: 0 }),
@@ -419,7 +419,10 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     const def = content.powers[power];
     const e = def?.effect;
     const zone = e && 'zone' in e ? e.zone : e?.kind === 'cloud' ? e.width : e?.kind === 'stampede' ? e.distance : 0;
-    return [ev('powerTelegraph', { side, power, castId: 40, x: 600_000, zone: zone * 1000 }), ev('powerImpact', { side, power, castId: 40, x, index })];
+    return [
+      ev('powerTelegraph', { side, slot: def?.slot ?? 'home', power, castId: 40, x: 600_000, zone: zone * 1000, cost: def?.cost ?? 100, targetId: -1, telegraphMs: def?.telegraphMs ?? 1000 }),
+      ev('powerImpact', { side, power, castId: 40, x, index }),
+    ];
   };
   const fxOf = (out: ViewAction[]) => pick(out, 'fx').filter((f) => f.effectId !== 'fx.telegraph_zone');
 

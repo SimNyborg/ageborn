@@ -88,9 +88,9 @@ def build():
                                     (Sx(1.6, (-1 if s == "F" else 1) * BODY.hw / k, 2.4), (1.2, 2.3, 0.5))], leather, res=0.3 * k)
         rig.skin(sd, ["foot_" + s], soft=1.0 * k)
     # the team scapular (front and back panels) and the team cowl folded on the shoulders
-    for nm, sg in (("scap_f", 1), ("scap_b", -1)):
-        sc = C.blobs(nm, [(Sx(sg * 6.6 + 0.6, 0, 43.0), (1.3, 4.8, 8.4)), (Sx(sg * 7.6 + 0.4, 0, 31.0), (1.2, 4.7, 5.6)),
-                          (Sx(sg * 8.4 + 0.3, 0, 21.0), (1.1, 4.6, 5.0))], team, res=0.3 * k)
+    for nm, sg, fwd in (("scap_f", 1, 1.3), ("scap_b", -1, 0.0)):
+        sc = C.blobs(nm, [(Sx(sg * (6.6 + fwd) + 0.6, 0, 43.0), (1.3, 5.2, 8.4)), (Sx(sg * (7.6 + fwd) + 0.4, 0, 31.0), (1.2, 5.0, 5.6)),
+                          (Sx(sg * (8.4 + fwd * 0.8) + 0.3, 0, 21.0), (1.1, 4.8, 5.0))], team, res=0.3 * k)
         C.displace(sc, 0.3 * k, 1.0)
         C.team(sc)
         rig.skin(sc, ["hips", "spine", "chest", "thigh_F", "thigh_B"], soft=3.0 * k, bias={"thigh_F": 2.0 * k, "thigh_B": 2.0 * k})
@@ -215,7 +215,7 @@ def pose(ctx, clip, t):
         base["pel"] = (0.0, B.PELV * H + base.pop("root")[1])
         base.pop("absB")
         base["armB"] = (14, 104, 30, -10)
-        P = MO.fall_back(base, t, H, G0)
+        P = MO.fall_back(base, t, H, G0, smooth=True)
         P.pop("absF", None)
         P["absF"] = _die_arm(t)
         P["sling"] = _die_arm(t)[2] - 20

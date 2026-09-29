@@ -59,11 +59,11 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     expect(d.prompt).toBeNull();
 
     h.advance();
-    h.state.sides[0].powerPpm = 1_000_000;
+    h.state.sides[0].powerPpm = [1_000_000, 0];
     d.update(h.input());
     expect(d.prompt).toMatchObject({ id: 'm1.arrowStorm', target: 'power', hand: 'powerDrag' });
     h.advance();
-    d.update(h.input([{ e: 'powerTelegraph', side: 0, power: 'arrow_storm', castId: 1, x: 700_000, zone: 450 }]));
+    d.update(h.input([{ e: 'powerTelegraph', side: 0, slot: 'home', power: 'arrow_storm', castId: 1, x: 700_000, zone: 450, cost: 100, targetId: -1, telegraphMs: 1000 }]));
     expect(d.prompt).toBeNull();
 
     // Gunpowder brings the one stance hint (owner feedback 2026-09-28); it points at the flag for 6 s.

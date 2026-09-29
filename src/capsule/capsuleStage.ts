@@ -452,6 +452,9 @@ export class CapsuleStage implements ShowView {
         this.hammerRaiseTarget = 1;
         this.heatTarget = 1;
         if (!instant) this.drum.beginGemRise(this.d.settings.reduceMotion);
+        // The capsule calms for a beat: the light draws back into the cracks while the gem rises.
+        this.drum.setLeak(0.35);
+        this.dimTarget = Math.max(this.dimTarget, 0.2);
         break;
       case 'summitStrike':
         this.hammerTarget = 1;
@@ -937,7 +940,8 @@ export class CapsuleStage implements ShowView {
       this.drum.body.rotation = Math.sin(t * 0.097) * 0.045 * u * u * k;
       this.swell = 0.1 * u * u;
       this.drumWhite = Math.max(this.drumWhite, 0.55 * u * u * u);
-      this.drum.setLeak(1 + u);
+      // Staged tiers hold their light in at first, so the new material shows under its staging.
+      this.drum.setLeak(stagingLevel(s.tier) > 0 ? 0.35 + 1.65 * u * u : 1 + u);
       this.drum.energy = 1 + u;
       this.raysLevel = 0.4 + 0.5 * u;
       this.halo.alpha = 0.5 + 0.5 * u;
@@ -1055,8 +1059,9 @@ export class CapsuleStage implements ShowView {
   /** A clear gem grinds up out of the cap's top face and settles, unlit, in the cap band. */
   private summitRise(s: SummitRiseStep, t: number): void {
     const u = t / s.durationMs;
-    this.drum.setOrnament(u);
     const rm = this.d.settings.reduceMotion;
+    // Reduce motion: the gem fades in where it settles, over 150 ms (A10).
+    this.drum.setOrnament(rm ? t / 150 : u);
     const top = { x: PED.x, y: PED.y - 236 };
     if (this.fire(`rise-grit-${s.index}`)) {
       // The stone grinds open: grit and a puff of dust from the top face, a soft white light.
@@ -1106,7 +1111,7 @@ export class CapsuleStage implements ShowView {
     if (t >= impact && this.fire(`summit-impact-${s.index}`)) {
       // Impact: a white-hot hit and a held frame (colour comes after the hold).
       this.hitstop = Math.max(this.hitstop, T.summitHoldMs);
-      this.drumWhite = 1;
+      this.drumWhite = 0.85;
       this.heatTarget = 0;
       this.heat = 0.6;
       this.kickT = 0;
@@ -1114,12 +1119,12 @@ export class CapsuleStage implements ShowView {
       this.squash(0.3);
       this.trauma.add(0.5);
       this.addPunch(0.05);
-      this.flash(0.5, 0xffffff);
+      this.flash(0.3, 0xffffff);
       this.vibrate([40, 40, 90]);
-      this.drum.setLeak(1.6);
-      this.drum.energy = 1.6;
+      this.drum.setLeak(1.1);
+      this.drum.energy = 1.2;
       this.ring(HIT.x - 6, HIT.y, 10, 160, 0xffffff, 10, 300, 1);
-      for (let i = 0; i < (rm ? 6 : 26); i++) {
+      for (let i = 0; i < (rm ? 6 : 18); i++) {
         const a = -Math.PI * 0.15 + (this.rng.next() - 0.5) * 2.4;
         const sp = 500 + this.rng.next() * 700;
         this.particles.spawn({ tex: streakTexture(), x: HIT.x, y: HIT.y + (this.rng.next() - 0.5) * 30, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 160, life: 320 + this.rng.next() * 300, drag: 0.05, gravity: 1400, scale: [0.7 + this.rng.next() * 0.5, 0.1], alpha: [1, 0], tint: 0xffffff, add: true, align: true });
@@ -1131,15 +1136,14 @@ export class CapsuleStage implements ShowView {
       this.setShownTier(s.to, 'morph', T.summitTransmuteMs);
       this.halo.alpha = 1;
       this.flash(0.4, shade(c, 0.6));
-      this.ring(CORE.x, CORE.y, 50, 560, c, 22, 700, 1);
-      this.ring(CORE.x, CORE.y, 40, 380, 0xffffff, 8, 420, 0.9);
+      this.ring(CORE.x, CORE.y, 120, 600, c, 20, 700, 0.9);
       this.ring(PED.x, PED.y, 70, 560, shade(c, 0.3), 12, 700, 0.8, 0.28);
       this.waveT = 0;
       this.waveColor = c;
       this.pips.root.alpha = 1;
       const [gx, gy] = this.drum.gemPos(s.index, s.index + 1);
       this.sparkBurst(PED.x + gx, PED.y + gy, c, rm ? 8 : 26, 360);
-      const n = rm ? 14 : this.lite ? 30 : 56;
+      const n = rm ? 10 : this.lite ? 16 : 30;
       for (let i = 0; i < n; i++) {
         const a = this.rng.next() * Math.PI * 2;
         const sp = 300 + this.rng.next() * 600;
@@ -1243,7 +1247,7 @@ export class CapsuleStage implements ShowView {
     if (level === 1) {
       // Gold: 16 sparks and champagne gold leaf fluttering down for 1.5 s.
       this.sparkBurst(CORE.x, CORE.y, TIER_RAMPS.gold.highlight, 16, 620);
-      this.goldLeaf(Math.round(40 * k));
+      this.goldLeaf(Math.round(48 * k));
       this.godRaysLevel = 0.5;
     } else if (level === 2) {
       // Platinum: ice-crystal splinters and a frost ring on the pedestal (3 s).
@@ -1274,8 +1278,8 @@ export class CapsuleStage implements ShowView {
       const x = CORE.x + Math.sign(cx) * Math.pow(Math.abs(cx), 0.45) * 104;
       const y = CORE.y - 14 + Math.sign(sy) * Math.pow(Math.abs(sy), 0.45) * 138;
       const tint = HOLO_BANDS[Math.floor(u * 20) % HOLO_BANDS.length] ?? 0xffffff;
-      this.particles.spawn({ tex: starTexture(), x, y, vx: 0, vy: 0, life: 220, scale: [1.3, 0.2], alpha: [1, 0], tint: 0xffffff, add: true });
-      this.particles.spawn({ tex: dotTexture(), x, y, vx: (this.rng.next() - 0.5) * 40, vy: (this.rng.next() - 0.5) * 40, life: 420, scale: [1.1, 0], alpha: [0.9, 0], tint, add: true });
+      this.particles.spawn({ tex: starTexture(), x, y, vx: 0, vy: 0, life: 200, scale: [2.4, 0.4], alpha: [1, 0], tint: 0xffffff, add: true });
+      this.particles.spawn({ tex: dotTexture(), x, y, vx: (this.rng.next() - 0.5) * 50, vy: (this.rng.next() - 0.5) * 50, life: 520, scale: [1.8, 0], alpha: [1, 0], tint, add: true });
     }
   }
 
@@ -1306,7 +1310,7 @@ export class CapsuleStage implements ShowView {
   }
 
   private goldLeaf(n: number): void {
-    const tints = [TIER_RAMPS.gold.highlight, TIER_RAMPS.gold.key, TIER_RAMPS.gold.mid, 0xfffbef];
+    const tints = [TIER_RAMPS.gold.key, TIER_RAMPS.gold.mid, TIER_RAMPS.gold.highlight, TIER_RAMPS.gold.mid];
     for (let i = 0; i < n; i++) {
       const a = -Math.PI / 2 + (this.rng.next() - 0.5) * 2.6;
       const sp = 250 + this.rng.next() * 450;
@@ -1319,8 +1323,8 @@ export class CapsuleStage implements ShowView {
         life: 1500,
         drag: 0.12,
         gravity: 170,
-        scale: [0.9 + this.rng.next() * 0.8, 0.8],
-        alpha: [1, 0.4],
+        scale: [1.4 + this.rng.next() * 1.1, 1.1],
+        alpha: [1, 0.5],
         rot: this.rng.next() * 6,
         vr: (this.rng.next() - 0.5) * 7,
         tint: tints[i % tints.length] ?? 0xffffff,

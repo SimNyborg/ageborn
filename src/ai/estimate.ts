@@ -104,9 +104,12 @@ export class FoeGoldEstimator {
       const key = `${t.side}:${t.power}:${t.impactTick}`;
       if (this.telegraphs.has(key)) continue;
       this.telegraphs.add(key);
-      const fx = b.powers[t.power]?.effect;
-      const damaging = fx?.kind === 'barrage' || fx?.kind === 'sweep' || fx?.kind === 'stampede';
+      const def = b.powers[t.power];
+      const fx = def?.effect;
+      const damaging = fx?.kind === 'barrage' || fx?.kind === 'sweep' || fx?.kind === 'stampede' || fx?.kind === 'field' || fx?.kind === 'strike';
       if (t.side !== me && damaging) this.powerKillUntil = Math.max(this.powerKillUntil, t.impactTick + POWER_KILL_WINDOW_TICKS);
+      // A2.9.2: every foe cast was paid in gold (list price; Power Hour and research discounts ignored).
+      if (t.side !== me && def) this.spend(def.cost * MILLI);
       if (fx?.kind === 'paradrop') {
         this.summons[t.side].expect({ card: fx.card, group: null, left: fx.count, until: t.impactTick + PARADROP_WINDOW_TICKS });
       }

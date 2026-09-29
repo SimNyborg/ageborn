@@ -46,7 +46,41 @@ function fileService(o: WebAudioServiceOptions & { fail?: boolean; hold?: boolea
 describe('generated audio assets', () => {
   it('has a file for every sound id, inside its sheet, with 2-3 variants for frequent sounds', () => {
     // Ids added after the last `tools/audio` render play their ZzFX definition until the next render.
-    const zzfxOnly = new Set<string>();
+    // The power rework (A2.9, A5.7): the 32 new power sounds play ZzFX until WP6 renders them (P3/P4).
+    const zzfxOnly = new Set<string>([
+      'pw_rockslide',
+      'pw_tar',
+      'pw_huntcry',
+      'pw_spear',
+      'pw_bolts',
+      'pw_gaze',
+      'pw_chariots',
+      'pw_apollo',
+      'pw_caltrops',
+      'pw_oil',
+      'pw_knights',
+      'pw_undermine',
+      'pw_volley',
+      'pw_nets',
+      'pw_horse_art',
+      'pw_sharpshooter',
+      'pw_gunline',
+      'pw_wire',
+      'pw_railgun',
+      'pw_hospital',
+      'pw_strafe',
+      'pw_flak',
+      'pw_tanks',
+      'pw_sniper',
+      'pw_pdg',
+      'pw_stasis',
+      'pw_drones',
+      'pw_emp',
+      'pw_singularity',
+      'pw_flare',
+      'pw_comet',
+      'pw_ion',
+    ]);
     expect(Object.keys(SFX_FILES).sort()).toEqual([...SOUND_IDS].filter((id) => !zzfxOnly.has(id) || SFX_FILES[id]).sort());
     expect(Object.keys(SFX_SHEETS).sort()).toEqual([...SOUND_GROUPS].sort());
     for (const [id, e] of Object.entries(SFX_FILES)) {

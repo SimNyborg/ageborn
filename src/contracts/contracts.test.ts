@@ -33,7 +33,9 @@ describe('fakes', () => {
       expect(lo.turrets).toHaveLength(2);
       for (const id of lo.units) if (id) expect(c.units[id]?.age).toBe(age);
       for (const id of lo.turrets) if (id) expect(c.turrets[id]?.age).toBe(age);
-      expect(c.powers[lo.power]?.age).toBe(age);
+      for (const id of [lo.powers.home, lo.powers.field]) if (id) expect(c.powers[id]?.age).toBe(age);
+      if (lo.powers.home) expect(c.powers[lo.powers.home]?.slot).toBe('home');
+      if (lo.powers.field) expect(c.powers[lo.powers.field]?.slot).toBe('field');
     }
     for (const u of Object.values(c.units)) {
       for (const a of u.attacks) expect(typeof a.hitsAir).toBe('boolean');

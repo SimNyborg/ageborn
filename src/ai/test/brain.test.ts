@@ -128,7 +128,7 @@ describe('evolve (A7.2)', () => {
 
   it('fires a full power into a zone before evolving, so the 50% carry cap wastes nothing', () => {
     const units = [unit(0, 'tuskback', 500)];
-    const o = (tick: number) => ready(tick, { powerPpm: 1000000, units, power: 'meteor_shower' });
+    const o = (tick: number) => ready(tick, { powerPpm: 1000000, powerCost: 0, units, power: 'meteor_shower' });
     const { brain } = brainFor();
     expect(decide(brain, o(40), { history: [o(10)] }).action?.kind).toBe('power');
   });
@@ -142,21 +142,21 @@ describe('power (A7.2)', () => {
   it('casts when the best zone holds at least threshold × m_patience', () => {
     // Tier III threshold 250 gold; 6 Bonkers = 300 gold.
     const { brain } = brainFor({ tier: 3 });
-    const t = decide(brain, observation({ powerPpm: 1000000, power, units: crowd(6) }));
+    const t = decide(brain, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(6) }));
     expect(t.action?.kind).toBe('power');
     // Tier V threshold 350: not enough.
     const { brain: b5 } = brainFor({ tier: 5 });
-    expect(decide(b5, observation({ powerPpm: 1000000, power, units: crowd(6) })).action).toBeNull();
+    expect(decide(b5, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(6) })).action).toBeNull();
     // Patience 95 (m 1.45) raises tier III's bar to 362.
     const { brain: patient } = brainFor({ tier: 3, weights: { patience: 95 } });
-    expect(decide(patient, observation({ powerPpm: 1000000, power, units: crowd(6) })).action).toBeNull();
+    expect(decide(patient, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(6) })).action).toBeNull();
   });
 
   it('casts on ≥ 100 gold when the own base took damage in the last 3 s', () => {
     const { brain } = brainFor({ tier: 7 });
     const units = crowd(3);
-    const t = decide(brain, observation({ tick: 50, powerPpm: 1000000, power, units, baseHpBp: 9000 }), {
-      history: [observation({ tick: 20, powerPpm: 1000000, power, units, baseHpBp: 10000 })],
+    const t = decide(brain, observation({ tick: 50, powerPpm: 1000000, powerCost: 0, power, units, baseHpBp: 9000 }), {
+      history: [observation({ tick: 20, powerPpm: 1000000, powerCost: 0, power, units, baseHpBp: 10000 })],
     });
     expect(t.action?.kind).toBe('power');
   });
@@ -164,7 +164,7 @@ describe('power (A7.2)', () => {
   it('aims within the tier aim error of the zone centre, clamped to 150-1,850 (L − 150)', () => {
     for (const seed of ['a', 'b', 'c', 'd']) {
       const { brain } = brainFor({ tier: 0, tierOverride: { powerThreshold: 100 } });
-      const t = decide(brain, observation({ powerPpm: 1000000, power, units: crowd(4) }), { rng: seed });
+      const t = decide(brain, observation({ powerPpm: 1000000, powerCost: 0, power, units: crowd(4) }), { rng: seed });
       const a = t.action;
       expect(a?.kind).toBe('power');
       if (a?.kind === 'power' && a.p !== null) {
@@ -570,8 +570,8 @@ describe('upper-tier craft (owner feedback 2026-09-28)', () => {
     const power = 'meteor_shower';
     // Two Bonkers together (100 gold) out of three on the lane (150): 67% ≥ tier X's 30%, far below 600.
     const units = [unit(0, 'bonker', 700), unit(0, 'bonker', 710), unit(0, 'bonker', 1500)];
-    expect(decide(brainFor({ tier: 10 }).brain, observation({ powerPpm: 1000000, power, units })).action?.kind).toBe('power');
-    expect(decide(brainFor({ tier: 10, tierOverride: NO_CRAFT }).brain, observation({ powerPpm: 1000000, power, units })).action?.kind).not.toBe('power');
+    expect(decide(brainFor({ tier: 10 }).brain, observation({ powerPpm: 1000000, powerCost: 0, power, units })).action?.kind).toBe('power');
+    expect(decide(brainFor({ tier: 10, tierOverride: NO_CRAFT }).brain, observation({ powerPpm: 1000000, powerCost: 0, power, units })).action?.kind).not.toBe('power');
   });
 
   it('keeps base turrets from Bronze on without pressure (1 from tier VI, 2 from VIII)', () => {

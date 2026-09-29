@@ -253,8 +253,9 @@ function extendedConfig(): MatchConfig {
   if (!tusk) throw new Error('fake content changed');
   const legend: UnitDef = { ...tusk, id: 'big_legend', group: 'legendary', rarity: 'legendary' };
   const decree: PowerDef = {
-    id: 'royal_decree', kind: 'power', age: 'stone', slot: 'alternate', telegraphMs: 1000,
-    effect: { kind: 'buffAll', statuses: [{ kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 }] },
+    id: 'royal_decree', kind: 'power', age: 'stone', slot: 'field', reach: 'army', family: 'rally', rarity: 'rare', source: 'road',
+    cost: 125, reloadMs: 45000, telegraphMs: 1000, maxTargets: 8,
+    effect: { kind: 'buffAll', maxTargets: 8, statuses: [{ kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 }] },
     visualId: 'power.royal_decree', sfx: 'pw_decree', nameKey: 'card.royal_decree.name', descKey: 'card.royal_decree.desc',
   };
   return {
@@ -277,7 +278,7 @@ const spawn = (id: number, side: 0 | 1, card: string, x: number, tick = 1): SimE
 describe('BattleView effects: art options, following and settings', () => {
   it('sizes the telegraph decoration by the zone and fits screen effects to the screen (WP4 option names)', () => {
     const s = setupFx([
-      { tick: 1, e: 'powerTelegraph', side: 1, power: 'arrow_storm', castId: 7, x: 600_000, zone: 450_000 },
+      { tick: 1, e: 'powerTelegraph', side: 1, slot: 'home', power: 'arrow_storm', castId: 7, x: 600_000, zone: 450_000, cost: 100, targetId: -1, telegraphMs: 1000 },
       { tick: 1, e: 'phaseChanged', phase: 'siege' },
     ]);
     s.view.onEvents(s.sim.step([]));
@@ -318,7 +319,7 @@ describe('BattleView effects: art options, following and settings', () => {
       spawn(1, 0, 'bonker', 400_000),
       spawn(2, 0, 'pebbler', 380_000),
       spawn(3, 1, 'bonker', 800_000),
-      { tick: 1, e: 'powerTelegraph', side: 0, power: 'royal_decree', castId: 9, x: 400_000, zone: 0 },
+      { tick: 1, e: 'powerTelegraph', side: 0, slot: 'field', power: 'royal_decree', castId: 9, x: 400_000, zone: 0, cost: 125, targetId: -1, telegraphMs: 1000 },
       { tick: 1, e: 'powerImpact', side: 0, power: 'royal_decree', castId: 9, x: 400_000, index: 0 },
     ]);
     s.view.onEvents(s.sim.step([]));

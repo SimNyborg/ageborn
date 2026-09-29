@@ -150,6 +150,147 @@ medallion('power.warp_strike', [
   { d: join(poly([-2, -13, 2, -13, 1.2, 2, -1.2, 2]), poly([-5, -4, 5, -4, 4, -2, -4, -2])), zone: 'mint', line: 1.2 },
 ]);
 
+// The power rework (A2.9, A5.7): the 32 new powers. First-pass medallions from the family recipes
+// (sweep, bombard, field, strike, charge, buff, drop, suppress); P3 and P4 polish them (A2.9.13).
+medallion('power.rockslide', [
+  { d: poly([-14, 10, -6, -8, 2, 2, 8, -4, 14, 10]), zone: 'stone' },
+  { d: join(circle(-4, 4, 3.4), circle(5, 6, 2.8), circle(10, -8, 2.4)), zone: 'bone', line: 1.2 },
+]);
+medallion('power.sticky_tar', [
+  { d: blob([-13, 4, -8, -2, 0, 0, 8, -3, 13, 4, 6, 9, -6, 9], 0.8), zone: 'coal' },
+  { d: join(circle(-3, 1, 2), circle(5, 2, 1.6)), zone: 'smoke', line: 0 },
+  { d: limb(-2, -12, 1.2, -1, -3, 1.8), zone: 'coal', line: 1.2 },
+]);
+medallion('power.hunt_cry', [
+  { d: blob([-12, 6, -10, -4, -2, -10, 6, -8, 4, -2, -4, 2], 0.7), zone: 'bone' },
+  { d: join(arcBand(4, 0, 7, 8.6, -60, 60), arcBand(4, 0, 11, 12.6, -50, 50)), zone: 'ember', line: 1 },
+]);
+medallion('power.hunters_spear', [
+  { d: limb(-12, 12, 1.4, 9, -9, 1.4), zone: 'wood' },
+  { d: poly([7, -7, 14, -14, 11, -5]), zone: 'stone' },
+  { d: arcBand(0, 0, 12, 13.6, 0, 360), zone: 'ember', line: 0 },
+]);
+medallion('power.zeus_bolts', [
+  { d: poly([2, -14, -6, 1, 0, 1, -4, 14, 8, -3, 2, -3, 6, -14]), zone: 'gold' },
+  { d: ellipse(-5, -10, 6, 3), zone: 'smoke', line: 1.2 },
+]);
+medallion('power.medusa_gaze', [
+  { d: circle(0, 1, 8), zone: 'verdigris' },
+  { d: join(ellipse(-3, 0, 2.2, 1.4), ellipse(3, 0, 2.2, 1.4)), zone: 'gold', line: 0 },
+  { d: join(limb(-7, -5, 1.4, -13, -11, 1), limb(7, -5, 1.4, 13, -11, 1), limb(0, -7, 1.4, 0, -14, 1)), zone: 'verdigris', line: 1.2 },
+]);
+medallion('power.chariot_rush', [
+  { d: join(rrect(-12, -4, 16, 8, 2), poly([4, -4, 12, -8, 12, 4, 4, 4])), zone: 'bronze' },
+  { d: circle(-5, 7, 5), zone: 'wood', line: 1.4 },
+  { d: circle(-5, 7, 1.6), zone: 'gold', line: 0 },
+]);
+medallion('power.apollo_arrow', [
+  { d: join(limb(-13, 10, 1, 9, -8, 1), poly([7, -6, 14, -12, 11, -3])), zone: 'gold' },
+  { d: star(-8, -7, 8, 1.6, 4.6), zone: 'starwhite', line: 1 },
+]);
+medallion('power.caltrops', [
+  ...[-8, 0, 8].map((x) => ({ d: join(poly([x - 4, 6, x, -3, x + 4, 6]), poly([x - 1, 6, x, 12, x + 1, 6])), zone: 'iron' })),
+]);
+medallion('power.boiling_oil', [
+  { d: join(rrect(-10, -12, 20, 8, 3), rect(-2, -4, 4, 3)), zone: 'iron' },
+  { d: blob([-8, 2, 0, -1, 8, 2, 6, 12, 0, 14, -6, 12], 0.8), zone: 'ember' },
+]);
+medallion('power.knights_charge', [
+  { d: limb(-13, 8, 1.8, 12, -6, 1), zone: 'metal' },
+  { d: poly([-12, 2, -4, -6, -2, 4]), zone: 'wine' },
+  { d: blob([-10, 10, -6, 4, 0, 6, -2, 12], 0.7), zone: 'metal', line: 1.2 },
+]);
+medallion('power.undermine', [
+  { d: join(rect(-12, -12, 24, 10), rect(-12, -12, 5, 4), rect(7, -12, 5, 4)), zone: 'brick' },
+  { d: join(limb(-8, 12, 1.2, 2, 0, 1.2), poly([0, -2, 6, 2, 3, 4])), zone: 'iron' },
+  { d: star(6, 8, 6, 1.6, 4.4), zone: 'ember', line: 1 },
+]);
+medallion('power.volley_fire', [
+  ...[-7, 0, 7].map((y) => ({ d: limb(-12, y, 1.2, 8, y - 2, 1), zone: 'wood' })),
+  { d: join(circle(11, -9, 2.4), circle(12, -2, 2.4), circle(11, 5, 2.4)), zone: 'smoke', line: 1 },
+]);
+medallion('power.boarding_nets', [
+  { d: blob([-12, -10, 12, -10, 10, 10, -10, 10], 0.4), zone: 'canopy' },
+  { d: join(rect(-11, -5, 22, 1.2), rect(-11, 1, 22, 1.2), rect(-5, -10, 1.2, 20), rect(3, -10, 1.2, 20)), zone: 'wood', line: 0 },
+]);
+medallion('power.horse_artillery', [
+  { d: limb(-10, 4, 3.4, 8, -4, 2.4), zone: 'iron' },
+  { d: circle(-4, 8, 4.4), zone: 'wood', line: 1.4 },
+  { d: blob([10, -12, 14, -10, 13, -6, 9, -8], 0.6), zone: 'smoke', line: 1 },
+]);
+medallion('power.sharpshooter', [
+  { d: join(arcBand(0, 0, 9, 11, 0, 360), rect(-1, -14, 2, 8), rect(-1, 6, 2, 8), rect(-14, -1, 8, 2), rect(6, -1, 8, 2)), zone: 'wine', line: 0 },
+  { d: circle(0, 0, 2.4), zone: 'gold', line: 0 },
+]);
+medallion('power.gun_line', [
+  ...[-9, -3, 3, 9].map((x) => ({ d: rect(x - 1.4, -12, 2.8, 16), zone: 'iron' })),
+  { d: rect(-13, 4, 26, 5), zone: 'olive', line: 1.4 },
+]);
+medallion('power.barbed_wire', [
+  { d: join(ellipse(-6, 0, 6, 4), ellipse(6, 0, 6, 4)), zone: 'metal', line: 1.6 },
+  { d: join(poly([-9, -5, -8, -8, -7, -5]), poly([3, 5, 4, 8, 5, 5]), poly([9, -5, 10, -8, 11, -5])), zone: 'iron', line: 0 },
+]);
+medallion('power.railway_gun', [
+  { d: join(rrect(-13, 2, 26, 6, 2), limb(-6, 2, 2.4, 12, -12, 1.8)), zone: 'iron' },
+  { d: join(circle(-8, 10, 2.4), circle(0, 10, 2.4), circle(8, 10, 2.4)), zone: 'coal', line: 1.2 },
+]);
+medallion('power.field_hospital', [
+  { d: poly([-12, 8, 0, -10, 12, 8]), zone: 'canopy' },
+  { d: join(rect(-1.8, -3, 3.6, 10), rect(-5, 0.2, 10, 3.6)), zone: 'wine', line: 0 },
+]);
+medallion('power.strafing_run', [
+  { d: join(blob([-12, 0, -4, -3, 10, -2, 13, 0, 10, 2, -4, 3], 0.6), poly([-2, -2, 3, -10, 5, -2])), zone: 'olive' },
+  { d: join(rect(-10, 7, 4, 1.4), rect(-2, 9, 4, 1.4), rect(6, 11, 4, 1.4)), zone: 'ember', line: 0 },
+]);
+medallion('power.aa_screen', [
+  { d: join(star(-5, -4, 8, 2.6, 6), star(6, 2, 8, 2, 4.6)), zone: 'ember', line: 1.2 },
+  { d: limb(-2, 13, 1.6, 8, 3, 1.2), zone: 'iron' },
+]);
+medallion('power.tank_rush', [
+  { d: join(rrect(-12, -2, 22, 8, 3), rrect(-6, -8, 10, 6, 2)), zone: 'olive' },
+  { d: limb(3, -5, 1.2, 14, -7, 1.2), zone: 'iron' },
+  { d: rrect(-12, 5, 22, 4, 2), zone: 'coal', line: 1.2 },
+]);
+medallion('power.sniper_team', [
+  { d: join(arcBand(0, 0, 10, 12, 0, 360), rect(-0.8, -12, 1.6, 7), rect(-0.8, 5, 1.6, 7), rect(-12, -0.8, 7, 1.6), rect(5, -0.8, 7, 1.6)), zone: 'olive', line: 0 },
+  { d: circle(0, 0, 2), zone: 'ember', line: 0 },
+]);
+medallion('power.point_defense', [
+  ...[-7, 0, 7].map((x) => ({ d: join(rrect(x - 1.6, -8, 3.2, 12, 1.6), poly([x - 1.6, -8, x, -12, x + 1.6, -8])), zone: 'metal' })),
+  { d: rect(-12, 5, 24, 5), zone: 'mint', line: 1.2 },
+]);
+medallion('power.stasis_field', [
+  { d: arcBand(0, 4, 8, 12, 180, 360), zone: 'sky' },
+  { d: join(ngon(0, -2, 6, 3.4), ngon(0, -2, 6, 1.4, -60)), zone: 'mint', line: 1 },
+]);
+medallion('power.drone_swarm', [
+  ...[[-7, -5], [6, -7], [0, 5]].map(([x, y]) => ({ d: join(rrect((x as number) - 4, (y as number) - 1.4, 8, 2.8, 1.4), circle((x as number) - 4, (y as number) - 2, 1.4), circle((x as number) + 4, (y as number) - 2, 1.4)), zone: 'metal' })),
+  { d: join(circle(-7, -5, 0.9), circle(6, -7, 0.9), circle(0, 5, 0.9)), zone: 'magenta', line: 0 },
+]);
+medallion('power.emp_blackout', [
+  { d: circle(0, 0, 6), zone: 'sky' },
+  { d: join(arcBand(0, 0, 9, 10.6, 200, 340), arcBand(0, 0, 9, 10.6, 20, 160)), zone: 'mint', line: 0 },
+  { d: poly([1, -5, -3, 1, 0, 1, -2, 6, 3, -1, 0, -1, 2, -5]), zone: 'white', line: 1 },
+]);
+medallion('power.singularity', [
+  { d: circle(0, 0, 11), zone: 'violet' },
+  { d: arcBand(0, 0, 5, 8, 30, 300), zone: 'starwhite', line: 0 },
+  { d: circle(0, 0, 3.6), zone: 'void', line: 0 },
+]);
+medallion('power.solar_flare', [
+  { d: star(0, 0, 12, 7, 13), zone: 'ember' },
+  { d: circle(0, 0, 6.4), zone: 'gold', line: 1.2 },
+]);
+medallion('power.comet_run', [
+  { d: blob([-13, 10, -6, 2, 2, -6, 6, -4, -2, 6], 0.6), zone: 'sky' },
+  { d: circle(6, -6, 5), zone: 'starwhite' },
+  { d: circle(6, -6, 2), zone: 'violet', line: 0 },
+]);
+medallion('power.ion_cannon', [
+  { d: join(rrect(-12, -4, 14, 8, 3), limb(0, 0, 3, 13, 0, 2)), zone: 'metal' },
+  { d: join(circle(-5, 0, 2.4), rect(13, -1, 2, 2)), zone: 'mint', line: 0 },
+]);
+
 // A17.12: the three new ages
 medallion('icon.age.bronze', [
   { d: join(rect(-12, 4, 24, 6), rect(-9, -2, 18, 6), rect(-6, -8, 12, 6)), zone: 'sand' },

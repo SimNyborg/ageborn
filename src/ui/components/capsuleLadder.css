@@ -28,14 +28,14 @@
 }
 
 /* Odds sheet: the Win Capsule bag as a ladder, top tiers first in the lead line. */
-.ui-odds__bagrow--crest {
-  background: linear-gradient(90deg, rgba(245, 184, 46, 0.1), rgba(255, 255, 255, 0.04) 55%);
+.ui-odds .ui-odds__bagrow--crest {
+  background: linear-gradient(90deg, rgba(244, 236, 216, 0.1), rgba(255, 255, 255, 0.04) 60%);
 }
-.ui-odds__bagrow .ui-odds__crests {
+.ui-odds__bagrow .ui-odds__name {
   display: inline-flex;
-  gap: 2px;
-  margin-left: 6px;
-  vertical-align: -2px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 .ui-odds__tiername {
   display: inline-flex;

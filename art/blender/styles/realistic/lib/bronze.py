@@ -21,15 +21,37 @@ from mathutils import Vector
 
 from . import core as C
 from . import mats as M
+from . import pipe as _pipe
+
+
+def _border_safe(fn, px=3):
+    """Denoiser noise can leave a few faint pixels in the corners of a wide render; one of them
+    makes every packed frame span the whole canvas. Clear a thin border before the layers are built
+    (content never belongs there: the canvas is sized with a margin)."""
+    def load(tmp, clip, i):
+        L = fn(tmp, clip, i)
+        for key in ("t", "ab", "obj"):
+            a = L[key]
+            a[:px, :] = 0
+            a[-px:, :] = 0
+            a[:, :px] = 0
+            a[:, -px:] = 0
+        return L
+    load._bronze = True
+    return load
+
+
+if not getattr(_pipe.load_layers, "_bronze", False):
+    _pipe.load_layers = _border_safe(_pipe.load_layers)
 
 
 # ---------------------------------------------------------------------------------- materials
-def bronze(name="bronze", base="#8c7a5e", patina="#6b7b6c", rough=0.34, amount=0.2, nscale=1.6):
+def bronze(name="bronze", base="#857559", patina="#65766a", rough=0.45, amount=0.3, nscale=1.6):
     """Aged bronze: metallic, with a matte grey-green patina in noise patches (metallic and roughness
     follow the patina mask, so the patina reads as corrosion, not green metal)."""
     if name in C._MATS:
         return C._MATS[name]
-    m = C.mat(name, base, rough=rough, metal=1.0, noise=0.12, nscale=nscale, bump=0.12, ramp2=patina)
+    m = C.mat(name, base, rough=rough, metal=1.0, noise=0.16, nscale=nscale, bump=0.22, ramp2=patina)
     nt = m.node_tree
     cr = next(n for n in nt.nodes if n.type == "VALTORGB")
     lo, hi = 0.62 - 0.3 * amount, 0.72 - 0.2 * amount
@@ -56,12 +78,49 @@ def bronze(name="bronze", base="#8c7a5e", patina="#6b7b6c", rough=0.34, amount=0
     return m
 
 
+def strands(m, scale=0.55, axis="X", amount=(0.6, 1.05), bump=0.9):
+    """Horsehair / combed strands: fine wave bands across `axis` darken the colour and drive the bump,
+    so a crest or a plume reads as hair instead of a smooth painted slab."""
+    if m.get("_strands"):
+        return m
+    nt = m.node_tree
+    bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    wv = nt.nodes.new("ShaderNodeTexWave")
+    wv.bands_direction = axis
+    wv.inputs["Scale"].default_value = scale
+    wv.inputs["Distortion"].default_value = 3.0
+    wv.inputs["Detail"].default_value = 3.0
+    nt.links.new(tc.outputs["Object"], wv.inputs["Vector"])
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    mr.inputs["To Min"].default_value, mr.inputs["To Max"].default_value = amount
+    nt.links.new(wv.outputs["Fac"], mr.inputs["Value"])
+    src = bsdf.inputs["Base Color"].links[0].from_socket
+    mul = nt.nodes.new("ShaderNodeMix")
+    mul.data_type, mul.blend_type = "RGBA", "MULTIPLY"
+    mul.inputs["Factor"].default_value = 1.0
+    nt.links.new(src, mul.inputs[6])
+    nt.links.new(mr.outputs[0], mul.inputs[7])
+    nt.links.new(mul.outputs[2], bsdf.inputs["Base Color"])
+    bn = nt.nodes.new("ShaderNodeBump")
+    bn.inputs["Strength"].default_value = bump
+    bn.inputs["Distance"].default_value = 0.2
+    nt.links.new(wv.outputs["Fac"], bn.inputs["Height"])
+    old = bsdf.inputs["Normal"].links[0].from_socket if bsdf.inputs["Normal"].links else None
+    if old is not None:
+        nt.links.new(old, bn.inputs["Normal"])
+    nt.links.new(bn.outputs[0], bsdf.inputs["Normal"])
+    m["_strands"] = 1
+    return m
+
+
 def kit():
     """The Bronze Age material set (created once per scene; presets are cached by name)."""
     return dict(
         bronze=bronze(),
-        polished=bronze("polished", "#9c8458", "#76806a", rough=0.24, amount=0.08),
-        dark_bronze=bronze("dark_bronze", "#6e604c", "#5d6b5e", rough=0.4, amount=0.4),
+        polished=bronze("polished", "#968462", "#76806a", rough=0.34, amount=0.1),
+        dark_bronze=bronze("dark_bronze", "#665c4c", "#5d6b5e", rough=0.48, amount=0.45),
+        blazon=C.mat("blazon", "#d9d0bc", rough=0.6, noise=0.1, nscale=1.2, bump=0.1),
         linen=C.mat("linen", "#d2cbb6", rough=0.9, noise=0.08, nscale=1.6, bump=0.45, sheen=0.35),
         linen_dk=C.mat("linen_dk", "#a89c84", rough=0.9, noise=0.1, nscale=1.6, bump=0.45, sheen=0.3),
         wool=C.mat("wool", "#7c6e5c", rough=0.95, noise=0.12, nscale=1.4, bump=0.6, sheen=0.5),
@@ -73,8 +132,8 @@ def kit():
         eye=M.eye(),
         dark=M.dark(),
         team_cloth=M.team_cloth(),
-        team_paint=C.mat("team_paint", "#999999", rough=0.55, noise=0.14, nscale=0.9, bump=0.3, team=True, coat=0.1),
-        team_hair=C.mat("team_hair", "#9a9a9a", rough=0.75, noise=0.2, nscale=3.0, bump=1.0, team=True, sheen=0.5),
+        team_paint=C.mat("team_paint", "#999999", rough=0.55, noise=0.24, nscale=0.8, bump=0.35, team=True, coat=0.1),
+        team_hair=strands(C.mat("team_hair", "#9a9a9a", rough=0.75, noise=0.2, nscale=3.0, bump=0.6, team=True, sheen=0.5)),
     )
 
 
@@ -361,25 +420,49 @@ def bracers(rig, BODY, m, mat=None, sides=("F", "B")):
 
 
 # ---------------------------------------------------------------------------------- arms
-def aspis(m, R, name="aspis", emblem=True):
-    """Round shield modelled facing +Z (the axis is the face normal), centred at the origin, the
-    convex face toward +Z: team face, polished rim, bronze boss, wooden back, a dark painted blazon."""
+def aspis(m, R, name="aspis", emblem="lambda", depth=None):
+    """Round hoplite shield modelled facing +Z (the axis is the face normal), centred at the origin:
+    a team-painted face on a shallow bowl, a broad offset bronze rim (the aspis' defining shape),
+    a wooden back and a painted blazon in off-white (`emblem` 'lambda', 'horns', 'ring' or None),
+    kept small so the team paint stays the read."""
     out = []
-    prof = [(0.0, 3.4), (R * 0.3, 3.1), (R * 0.6, 2.2), (R * 0.85, 1.0), (R * 0.97, 0.15)]
+    d = depth if depth is not None else R * 0.24
+    prof = [(0.0, d), (R * 0.3, d * 0.93), (R * 0.6, d * 0.68), (R * 0.8, d * 0.4), (R * 0.9, d * 0.18)]
     face = C.lathe(name + "_face", prof, m["team_paint"], seg=48)
     C.team(face)
     out.append(face)
-    back = C.lathe(name + "_back", [(R * 0.97, 0.1), (R * 0.9, -0.3), (R * 0.5, 1.0), (0.0, 1.8)], m["cedar"], seg=48)
+    back = C.lathe(name + "_back", [(R * 0.97, -0.2), (R * 0.9, -0.5), (R * 0.5, d * 0.3), (0.0, d * 0.5)], m["cedar"], seg=48)
     out.append(back)
-    rim = C.lathe(name + "_rim", [(R * 0.93, -0.6), (R * 1.03, -0.2), (R * 1.05, 0.35), (R * 0.95, 0.55), (R * 0.9, 0.2)],
-                  m["polished"], seg=48)
+    # the offset rim: a flat bronze band standing proud of the face, rolled at its outer edge
+    rim = C.lathe(name + "_rim", [(R * 0.86, d * 0.24), (R * 0.9, d * 0.3), (R * 0.97, d * 0.2), (R * 1.03, 0.1),
+                                  (R * 1.04, -0.35), (R * 0.99, -0.6), (R * 0.9, -0.3)], m["polished"], seg=48)
     out.append(rim)
-    if emblem:
-        # a painted blazon ring and a small bronze boss (non-team marks on the team face)
-        ring = C.lathe(name + "_ring", [(R * 0.62, 2.05), (R * 0.66, 2.15), (R * 0.7, 1.92)], M.dark("#2e2620", name="blazon"), seg=48)
-        out.append(ring)
-        boss = C.lathe(name + "_boss", [(0.0, 4.6), (R * 0.1, 4.3), (R * 0.16, 3.6), (R * 0.19, 3.2)], m["bronze"], seg=24)
-        out.append(boss)
+
+    def zf(r):   # face height at radius r (profile interpolation) + a paint lift
+        for (r0, z0), (r1, z1) in zip(prof, prof[1:]):
+            if r0 <= r <= r1:
+                return z0 + (z1 - z0) * (r - r0) / max(1e-6, r1 - r0) + 0.12
+        return prof[-1][1] + 0.12
+
+    def stroke(tag, pts2, w):
+        # (u, v) = (across, up) on the shield; placed shields map local -x to screen up (disc_xform)
+        pts = [(-v, u, zf(math.hypot(u, v))) for u, v in pts2]
+        o = C.tube(name + tag, pts, [w] * len(pts), m["blazon"], seg=10, flat=0.18)
+        out.append(o)
+    ems = emblem if isinstance(emblem, (tuple, list)) else (emblem,)
+    if "lambda" in ems:
+        a, h = R * 0.34, R * 0.42
+        stroke("_lam1", [(-a, -h), (-a * 0.45, -h * 0.05), (0.0, h * 0.95)], R * 0.095)
+        stroke("_lam2", [(0.0, h * 0.95), (a * 0.45, -h * 0.05), (a, -h)], R * 0.095)
+    if "horns" in ems:
+        n = 12
+        pts = [(R * 0.4 * math.cos(math.radians(200 + 140 * i / n)), R * 0.1 + R * 0.4 * math.sin(math.radians(200 + 140 * i / n)) + R * 0.3)
+               for i in range(n + 1)]
+        stroke("_horns", pts, R * 0.07)
+        stroke("_disc", [(0.0, R * 0.05), (0.0, R * 0.12)], R * 0.12)
+    if "ring" in ems:
+        n = 36
+        stroke("_ring", [(R * 0.71 * math.cos(2 * math.pi * i / n), R * 0.71 * math.sin(2 * math.pi * i / n)) for i in range(n + 1)], R * 0.05)
     return out
 
 
@@ -396,3 +479,130 @@ def spear(m, fist, front, back, r=0.8, head=6.0, name="spear", shaft="ash", head
                       m["bronze"], seg=10))
     out.append(C.tube(name + "_butt", [(fx - back - 0.2, fy, fz), (fx - back - 3.4, fy, fz)], [r * 1.05, 0.2], m["bronze"], seg=8))
     return out
+
+
+def pteruges(rig, BODY, mat, n=14, z0=38.6, z1=30.6, team=True, width=2.3, rx=5.35, ry=7.25):
+    """A row of hanging strips (dyed leather or linen) around the hips, skinned so they follow the
+    thighs. Authored on the 68-lu figure."""
+    k, bw = BODY.k, BODY.bulk
+    ox, oy, oz = BODY.offset
+    S = lambda x, y, z: (x * k + ox, y * k + oy, z * k + oz)
+    strips = []
+    for i in range(n):
+        a = 2 * math.pi * (i + 0.5) / n
+        cx, cy = math.cos(a) * rx * bw, math.sin(a) * ry * bw
+        dx, dy = math.cos(a) * 0.8, math.sin(a) * 0.8
+        p = [S(cx, cy, z0), S(cx + dx * 0.5, cy + dy * 0.5, (z0 + z1) / 2), S(cx + dx, cy + dy, z1)]
+        tang = (-math.sin(a), math.cos(a), 0)
+        strips.append(ribbon("ptx", p, [width * k] * 3, mat, thick=0.55 * k, ups=[tang] * 3, seg_w=1))
+    pt = C.join("pteruges", strips)
+    if team:
+        C.team(pt)
+    rig.skin(pt, ["hips", "thigh_F", "thigh_B"], soft=2.4 * k, bias={"thigh_F": 1.6 * k, "thigh_B": 1.6 * k})
+    return pt
+
+
+def xiphos(m, fist, length=16.0, r=1.0, name="xiphos"):
+    """A leaf-bladed bronze short sword along +X from the fist: a bone grip, a bar guard and a
+    leaf-shaped blade with a raised midrib (a flat ribbon, edge-on to the camera less often)."""
+    fx, fy, fz = fist
+    out = [C.tube(name + "_grip", [(fx - 2.6 * r, fy, fz), (fx + 2.2 * r, fy, fz)], [0.75 * r, 0.8 * r], M.bone("#cdbf9f", name="gripbone"), seg=8),
+           C.sphere(name + "_pommel", 1.05 * r, m["polished"], loc=(fx - 3.0 * r, fy, fz), scale=(0.7, 1.2, 1.0)),
+           C.tube(name + "_guard", [(fx + 2.4 * r, fy, fz - 2.2 * r), (fx + 2.4 * r, fy, fz + 2.2 * r)], [0.6 * r, 0.6 * r], m["bronze"], seg=8)]
+    L = length
+    pts = [(fx + 2.6 * r + L * u, fy, fz) for u in (0.0, 0.25, 0.55, 0.8, 0.95, 1.0)]
+    widths = [1.9 * r, 2.2 * r, 2.9 * r, 2.4 * r, 1.0 * r, 0.1 * r]
+    out.append(ribbon(name + "_blade", pts, widths, m["polished"], thick=0.5 * r, up=(0, 0, 1), center=0.5))
+    out.append(C.tube(name + "_rib", pts[:5], [0.4 * r] * 5, m["bronze"], seg=6))
+    return out
+
+
+def ring(name, centre, axis_rot, r, w, mat):
+    """A thin torus-like ring (lathe) around a joint; `axis_rot` euler for the ring axis (default +Z)."""
+    o = C.lathe(name, [(r - w * 0.4, -w), (r + w * 0.5, 0.0), (r - w * 0.4, w)], mat, seg=24)
+    C.xform(o, rot=axis_rot)
+    C.xform(o, loc=centre)
+    return o
+
+
+def cast_bronze(name, base="#75674f", patina="#5f7a6a", rough=0.42, dist=3.0, gain=1.6, streak=0.35):
+    """Weathered cast bronze for statues: verdigris gathers where the metal is occluded (an ambient
+    occlusion mask: folds, joints, under the chin) and runs down in faint streaks, instead of random
+    blotches; the exposed, rubbed surfaces stay metallic."""
+    if name in C._MATS:
+        return C._MATS[name]
+    import bpy
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    nt.links.new(bsdf.outputs[0], out.inputs["Surface"])
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = dist
+    ao.samples = 8
+    inv = nt.nodes.new("ShaderNodeMath")
+    inv.operation = "MULTIPLY_ADD"          # (AO * -gain) + gain  = gain * (1 - AO)
+    inv.inputs[1].default_value = -gain
+    inv.inputs[2].default_value = gain
+    nt.links.new(ao.outputs["AO"], inv.inputs[0])
+    # vertical streaks: a noise stretched along Z
+    sm = nt.nodes.new("ShaderNodeMapping")
+    sm.inputs["Scale"].default_value = (0.6, 0.6, 0.04)
+    nt.links.new(tc.outputs["Object"], sm.inputs["Vector"])
+    sn = nt.nodes.new("ShaderNodeTexNoise")
+    sn.inputs["Scale"].default_value = 1.0
+    sn.inputs["Detail"].default_value = 5.0
+    nt.links.new(sm.outputs[0], sn.inputs["Vector"])
+    sr = nt.nodes.new("ShaderNodeMapRange")
+    sr.inputs["From Min"].default_value = 0.52
+    sr.inputs["From Max"].default_value = 0.72
+    sr.inputs["To Max"].default_value = streak
+    nt.links.new(sn.outputs["Fac"], sr.inputs["Value"])
+    add = nt.nodes.new("ShaderNodeMath")
+    add.operation = "ADD"
+    add.use_clamp = True
+    nt.links.new(inv.outputs[0], add.inputs[0])
+    nt.links.new(sr.outputs[0], add.inputs[1])
+    # fine hammered variation of the metal colour
+    fn = nt.nodes.new("ShaderNodeTexNoise")
+    fn.inputs["Scale"].default_value = 1.4
+    fn.inputs["Detail"].default_value = 6.0
+    nt.links.new(tc.outputs["Object"], fn.inputs["Vector"])
+    fr = nt.nodes.new("ShaderNodeMapRange")
+    fr.inputs["To Min"].default_value = 0.85
+    fr.inputs["To Max"].default_value = 1.12
+    nt.links.new(fn.outputs["Fac"], fr.inputs["Value"])
+    mc = nt.nodes.new("ShaderNodeMix")
+    mc.data_type, mc.blend_type = "RGBA", "MULTIPLY"
+    mc.inputs["Factor"].default_value = 1.0
+    mc.inputs[6].default_value = C.col(base)
+    nt.links.new(fr.outputs[0], mc.inputs[7])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    nt.links.new(add.outputs[0], mix.inputs["Factor"])
+    nt.links.new(mc.outputs[2], mix.inputs[6])
+    mix.inputs[7].default_value = C.col(patina)
+    nt.links.new(mix.outputs[2], bsdf.inputs["Base Color"])
+    met = nt.nodes.new("ShaderNodeMath")
+    met.operation = "MULTIPLY_ADD"
+    met.inputs[1].default_value = -0.9
+    met.inputs[2].default_value = 1.0
+    nt.links.new(add.outputs[0], met.inputs[0])
+    nt.links.new(met.outputs[0], bsdf.inputs["Metallic"])
+    rg = nt.nodes.new("ShaderNodeMath")
+    rg.operation = "MULTIPLY_ADD"
+    rg.inputs[1].default_value = 0.45
+    rg.inputs[2].default_value = rough
+    nt.links.new(add.outputs[0], rg.inputs[0])
+    nt.links.new(rg.outputs[0], bsdf.inputs["Roughness"])
+    bn = nt.nodes.new("ShaderNodeBump")
+    bn.inputs["Strength"].default_value = 0.25
+    bn.inputs["Distance"].default_value = 0.3
+    nt.links.new(fn.outputs["Fac"], bn.inputs["Height"])
+    nt.links.new(bn.outputs[0], bsdf.inputs["Normal"])
+    m["team"] = 0
+    C._MATS[name] = m
+    return m

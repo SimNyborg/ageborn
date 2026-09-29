@@ -49,7 +49,7 @@ SMEAR_N = 30
 
 def build():
     k = K
-    skin = M.skin("#b08a70")
+    skin = M.skin("#b89478")
     hair = M.hair("#3a2e26")
     beard = M.hair("#4a3a2e", name="beard")
     eye = M.eye()
@@ -57,7 +57,7 @@ def build():
     st = MD.steel()
     dst = MD.dark_steel()
     brass = MD.brass()
-    hose = MD.wool("#6b5f52", name="hose", dark="#5a5046")
+    hose = MD.wool("#57514a", name="hose", dark="#48433d")
     leather = M.leather("#4b3b30")
     glove = M.leather("#5a4636", name="glove")
     hem = MD.wool("#2e2622", name="hem")
@@ -71,7 +71,7 @@ def build():
     MD.hauberk(rig, BODY, mail)
     MD.tabard(rig, BODY, tab, hem_mat=hem, length=25.0)
     MD.belt(rig, BODY, leather, z=37.0, bulk=1.12, buckle=brass)
-    MD.boots(rig, BODY, leather)
+    MD.boots(rig, BODY, M.leather("#3a2e27", name="boot"), high=True)
     MD.face(rig, BODY, hair, eye, beard=None, moustache=True, hair=None)
     MD.coif(rig, BODY, mail)
     MD.kettle_hat(rig, BODY, st, rim=dst, brim=7.8, tilt=-9.0)
@@ -155,7 +155,7 @@ def die(t):
     base.pop("absB")
     base["armF"] = (22, 74, 0)
     base["armB"] = (28, 90, -10, -4)
-    return MO.fall_back(base, t, H, G0)
+    return MO.fall_back(base, t, H, G0, smooth=True)
 
 
 def pose(ctx, clip, t):

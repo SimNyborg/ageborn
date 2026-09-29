@@ -52,7 +52,7 @@ describe('Adaptive hints (DESIGN A8)', () => {
   it('"Your power is ready": full for 15 s with 3 enemies on your half', () => {
     const h = new Harness();
     const hints = new AdaptiveHints();
-    h.state.sides[0].powerPpm = 1_000_000;
+    h.state.sides[0].powerPpm = [1_000_000, 0];
     for (const x of [400_000, 450_000, 500_000]) h.addUnit(1, 'bonker', x);
     const fired = run(hints, h, ADAPTIVE.powerIdleTicks + 1);
     expect(fired).toEqual(['powerReady']);
@@ -140,7 +140,7 @@ describe('Adaptive hints (DESIGN A8)', () => {
   it('two different patterns still wait 30 s between hints', () => {
     const h = new Harness();
     h.state.sides[0].xp = 700_000;
-    h.state.sides[0].powerPpm = 1_000_000;
+    h.state.sides[0].powerPpm = [1_000_000, 0];
     for (const x of [400_000, 450_000, 500_000]) h.addUnit(1, 'bonker', x);
     const fired: [string, number][] = [];
     const hints = new AdaptiveHints();

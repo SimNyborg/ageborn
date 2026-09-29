@@ -255,12 +255,13 @@ describe('Trophy Road (A6.3)', () => {
     expect(at(450)).toEqual([{ kind: 'power', card: 'nanite_surge' }]);
     expect(at(500)).toEqual([{ kind: 'power', card: 'warp_strike' }]);
     // The displaced Silver Capsule, 100 Dust and Amber node join 550-650 as second items
-    expect(at(550)).toEqual([{ kind: 'dust', amount: 100 }, { kind: 'capsule', tier: 'silver' }]);
-    expect(at(600)).toEqual([{ kind: 'amber', amount: 220 }, { kind: 'dust', amount: 100 }]);
-    expect(at(650)).toEqual([{ kind: 'capsule', tier: 'silver' }, { kind: 'amber', amount: 230 }]);
+    // (A2.9.8: from 550 the War Path power fallback items join as the last item)
+    expect(at(550)).toEqual([{ kind: 'dust', amount: 100 }, { kind: 'capsule', tier: 'silver' }, { kind: 'power', card: 'sticky_tar' }]);
+    expect(at(600)).toEqual([{ kind: 'amber', amount: 220 }, { kind: 'dust', amount: 100 }, { kind: 'power', card: 'hunt_cry' }]);
+    expect(at(650)).toEqual([{ kind: 'capsule', tier: 'silver' }, { kind: 'amber', amount: 230 }, { kind: 'power', card: 'hunters_spear' }]);
     expect(at(1000)).toEqual([{ kind: 'wardrobe' }]);
     expect(at(1500)).toEqual([{ kind: 'capsule', tier: 'jade' }]);
-    expect(at(1600)).toEqual([{ kind: 'dust', amount: 400 }]);
+    expect(at(1600)).toEqual([{ kind: 'dust', amount: 400 }, { kind: 'power', card: 'sniper_team' }]);
     expect(at(3400)).toEqual([{ kind: 'gate', arena: 8 }]);
     expect(at(4000)).toEqual([{ kind: 'capsule', tier: 'aeon' }]);
     const gates = trophyRoad.nodes.flatMap((n) => n.rewards.filter((r) => r.kind === 'gate').map(() => n.trophies));
@@ -396,7 +397,7 @@ describe('Daily Challenge (A9.1)', () => {
     expect(dailyModifiers.order.map((m) => [dailyModifiers.list[m].index, m, dailyModifiers.list[m].effect])).toEqual([
       [1, 'gold_rush', { kind: 'passiveGold', bp: 15000 }],
       [2, 'glass_armies', { kind: 'unitHp', bp: 7000 }],
-      [3, 'power_hour', { kind: 'powerCharge', bp: 20000 }],
+      [3, 'power_hour', { kind: 'powers', reloadBp: 10000, costBp: 5000 }],
       [4, 'fast_forward', { kind: 'xpThreshold', bp: 7000 }],
       [5, 'heavy_metal', { kind: 'unitCost', groups: ['heavy', 'legendary'], bp: 7000 }],
       [6, 'sudden_siege', { kind: 'siegeShift', ms: -75000 }],

@@ -104,6 +104,18 @@ const SCENARIOS: Scenario[] = [
     cfg: () => matchConfig({ seed: 1010, format: 'short', modifiers: ['fast_forward'] }),
     players: [S.heavy, { ...S.turtle, noisy: true }],
   },
+  {
+    // SIM_VERSION 4.0.0 (A2.9): both slots on both sides; the cap and the screen; the War Path powers:
+    // fields (snare, pull, stun), strikes, front barrages, Suppress, Flak and a rally buff.
+    name: '11-full-powers',
+    cfg: () =>
+      matchConfig({
+        seed: 1112,
+        format: 'full',
+        sides: [side(fixture, { plan: { warPath: [5, 7] }, level: 4 }), bot({ plan: { warPath: 9 }, level: 4 })],
+      }),
+    players: [S.heavy, S.balanced],
+  },
 ];
 
 function record(sc: Scenario): ReplayDoc {
@@ -138,8 +150,8 @@ async function writeGolden(): Promise<void> {
 if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
-  it('has all 10 recorded files', () => {
-    expect(SCENARIOS).toHaveLength(10);
+  it('has all 11 recorded files', () => {
+    expect(SCENARIOS).toHaveLength(11);
     for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
   });
 

@@ -127,6 +127,8 @@ export interface BrainConfig {
 }
 
 /** "within 500 lu of their gate" (push gate). */
+/** A2.9.9: tiers below III cast only their Home slot. */
+const FIELD_SLOT_TIER = 3;
 const GATE_ZONE = 500 * MILLI;
 /** Push gate: each enemy turret counts as 300 gold of defence. */
 const TURRET_DEFENCE = 300;
@@ -520,8 +522,8 @@ export class Brain {
       }
     }
 
-    // Power.
-    if (v.powerReady && v.power) {
+    // Power. A2.9.9: tiers 0-II use the Home slot only.
+    if (v.powerReady && v.power && (v.powerSlot === 'home' || t.tier >= FIELD_SLOT_TIER)) {
       const zone = bestPowerZone(v, v.power, e.zoneMin, e.zoneMax, e.powerReach);
       const slot = v.powerSlot ?? 'home';
       let threshold = mulBp(t.powerThreshold, W.patience);
@@ -532,10 +534,13 @@ export class Brain {
       const desperate = t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP && zone.value > 0;
       const foeEvolved = P.powerForEvolveMoments && v.now - mem.foeEvolvedTick <= FOE_EVOLVE_WINDOW && zone.value >= POWER_MIN_VALUE;
       const beforeEvolve = evolveWanted && zone.value >= POWER_MIN_VALUE;
-      const aim = (): BotAction => this.aimPower(zone, rng, slot);
+      // A2.9.9: a strike locks its target (the sim's auto-aim ranks by strike value); the tier's
+      // positional aim error applies to area powers only. P1 minimum: the best target (k = 1).
+      const strike = v.power.effect.kind === 'strike';
+      const aim = (): BotAction => (strike ? { kind: 'power', slot, p: null } : this.aimPower(zone, rng, slot));
       if (beforeEvolve) add(aim(), SCORE.powerBeforeEvolve);
       else if ((zone.value > 0 && zone.value >= threshold) || hurt || desperate || foeEvolved) add(aim(), SCORE.power);
-      else if (zone.value > 0) opts.powerOnFew = { kind: 'power', slot, p: zone.p === null ? null : Math.trunc(zone.p / MILLI) };
+      else if (zone.value > 0) opts.powerOnFew = { kind: 'power', slot, p: zone.p === null || strike ? null : Math.trunc(zone.p / MILLI) };
     }
 
     // Stance (A18.4.2). A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her

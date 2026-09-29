@@ -6,9 +6,9 @@
 import { describe, expect, it } from 'vitest';
 import type { CapsuleReveal, SaveDoc } from '@/contracts';
 import { content } from '@/content';
-import { createMeta, strikeCounts } from '@/meta';
+import { createMeta, guaranteedLegendaries, strikeCounts } from '@/meta';
 import { createCatalog } from '../catalog';
-import { resolveStrikes, strikePattern, SUMMIT_ABOVE, TIER_ORDER } from '../tiers';
+import { LEGENDARY_CRESTS, resolveStrikes, strikePattern, SUMMIT_ABOVE, TIER_ORDER } from '../tiers';
 import { checkPlan, longestUnskippableMs, planCapsuleShow, planOpenAll, SHOW_LIMITS } from '../plan';
 import { pityLines } from '../summaryModel';
 
@@ -28,6 +28,10 @@ describe('the show and the meta agree on the ladder (A6.4, A10)', () => {
   it('mirrors the content tier order and summit tier', () => {
     expect(TIER_ORDER).toEqual(content.capsules.tierOrder);
     expect(SUMMIT_ABOVE).toBe(content.capsules.summitAbove);
+  });
+
+  it('stamps one crest per guaranteed Legendary of the content tier table', () => {
+    for (const t of TIER_ORDER) expect(LEGENDARY_CRESTS[t], t).toBe(guaranteedLegendaries(content, t));
   });
 
   it('meta strikes and resolveStrikes agree for every start and final pair', () => {

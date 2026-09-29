@@ -126,9 +126,11 @@ def knock_hit(base, t, knock, back=6.0):
     return B.keyed([(0, base), (55, k), (140, k2), (310, base)], t)
 
 
-def fall_back(base, t, H, ground, arms_up=None, hold_ms=695):
+def fall_back(base, t, H, ground, arms_up=None, hold_ms=695, smooth=False):
     """Death: knocked off the feet, a heavy fall on the back, one bounce, still. `base` must use
-    `pel` (not `root`). Contact with the ground at ~238 ms."""
+    `pel` (not `root`). Contact with the ground at ~238 ms. `smooth` adds a later, lower key before
+    the landing so the die 3 -> 4 frames do not pop from mid-air to flat (the frame at 175 ms is
+    already most of the way down)."""
     pz = B.PELV * H
     G0 = ground
     k1 = dict(pel=(-4.0, pz - 2.0), hips=-10, spine=-12, chest=-8, neck=10, head=16,
@@ -144,6 +146,10 @@ def fall_back(base, t, H, ground, arms_up=None, hold_ms=695):
     rest = dict(land, pel=(-20.8 * H / 66, 5.6), root_r=87, neck=2, head=6, footF=(4.0, G0 + 3.0, 70.0),
                 footB=(0.0, G0 + 2.0, 60.0), armF=(172, 10, -85, 30))
     keys = [(0, base), (50, k1), (120, k2), (185, k3), (238, land), (290, bounce), (360, rest), (hold_ms, rest)]
+    if smooth:
+        k3s = dict(k3, pel=(-18.0 * H / 66, pz - 27.0), root_r=66, footF=(3.0, G0 + 3.0, 40.0), footB=(-3.0, G0 + 3.0, 36.0),
+                   armF=(150, 22, -40, 28), armB=(138, 24, 0, -28))
+        keys = [(0, base), (50, k1), (112, k2), (175, k3s), (238, land), (290, bounce), (360, rest), (hold_ms, rest)]
     if arms_up:
         keys = [(tk, dict(p, **arms_up(i))) for i, (tk, p) in enumerate(keys)]
     return B.keyed(keys, t)

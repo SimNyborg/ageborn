@@ -95,7 +95,7 @@ def build():
     MD.face(rig, BODY, hair, eye, beard=M.hair("#5a4432", name="stubble"), moustache=False, hair="short")
     # the hood: a cowl around the head and a shoulder cape; the liripipe tail follows through
     hd = C.blobs("hood", [(Sx(-0.4, 0, 65.0), (5.2, 4.6, 4.6)), (Sx(-1.4, 0, 60.6), (4.4, 4.9, 4.0)),
-                          (Sx(4.8, 0, 62.0), (3.4, 3.4, 3.8), None, -1)], hood, res=0.3 * k)
+                          (Sx(5.4, 0, 62.2), (3.3, 3.2, 4.3), None, -1)], hood, res=0.3 * k)
     rig.skin(hd, ["head", "neck"], soft=1.2 * k, bias={"neck": 3.0 * k})
     cape = C.blobs("capelet", [(Sx(-0.6, 0, 55.4), (5.6, 8.6, 2.6)), (Sx(-2.2, 0, 52.8), (3.6, 7.8, 3.0)),
                                (Sx(2.0, -4.4, 54.4), (2.9, 3.4, 2.2)), (Sx(2.0, 4.4, 54.4), (2.9, 3.4, 2.2))], hood, res=0.3 * k)
@@ -266,7 +266,7 @@ def die(t):
     base["pel"] = (0.0, B.PELV * H + base.pop("root")[1])
     base.pop("absB")
     base["armB"] = (14, 30, 40, -4)
-    P = MO.fall_back(base, t, H, G0)
+    P = MO.fall_back(base, t, H, G0, smooth=True)
     P["bones"] = {"liripipe": B.keyed([(0, {"l": 0}), (185, {"l": 30}), (238, {"l": 60}), (290, {"l": 40}), (360, {"l": 70}), (695, {"l": 70})], t)["l"]}
     return P
 

@@ -2,7 +2,7 @@
 
 A late 14th-century knight on a bay destrier. The horse: a heavy, deep-chested bay with black
 points (mane, tail, lower legs), a steel chanfron, a leather bridle and reins, and a team-dyed wool
-caparison over the body to below the belly with a dark wool hem and a fringe, a high war saddle
+caparison over the body to below the belly with a dark wool hem, a high war saddle
 with iron stirrups. The knight: a full plate harness (pauldrons, couters, vambraces, gauntlets,
 cuisses, poleyns, greaves, sabatons) under a team jupon, a visored bascinet (hounskull) with a
 mail aventail and a team plume, a team heater shield with a pale cross on the near arm and an ash
@@ -73,7 +73,6 @@ def build():
     team = MD.team_wool()
     paint = MD.team_paint()
     hem = MD.wool("#2e2622", name="hem")
-    fringe_m = MD.wool("#3a302a", name="fringe")
     cream = MD.linen("#cfc3a6", name="charge")
     wood = M.wood("#9a8468", "#7e6a52", stripes=0.6, name="lance")
     slit = M.dark("#0e0d0d", name="slit")
@@ -84,33 +83,22 @@ def build():
     rig = C.Rig("knight_rig", bones, yaw_deg=YAW)
 
     # ---------------- the horse
-    Hs.body(rig, coat, points, hoof, mane)
-    # the caparison: a thin team cloth over the barrel and quarters, hanging below the belly
-    cap_els = [
-        ((0, 0, 48.2), (20.4, 9.7, 10.8)),
-        ((14.5, 0, 47.4), (8.6, 9.5, 11.2)),
-        ((-15.2, 0, 49.4), (11.2, 10.2, 11.6)),
-        ((-18.0, 0, 55.2), (7.8, 8.9, 5.8)),
-        ((9.5, 0, 56.0), (8.0, 6.5, 5.6)),
-        ((0.5, 0, 36.2), (20.0, 10.0, 5.0)),
-        ((-14.5, 0, 36.6), (11.6, 10.5, 5.4)),
-        ((14.5, 0, 37.0), (8.4, 10.0, 5.0)),
-    ]
-    cap = C.blobs("caparison", cap_els, team, res=0.6)
-    C.displace(cap, 0.7, 2.0)
-    C.team(cap)
+    Hs.body(rig, coat, points, hoof, mane, heavy=1.18)
+    # the caparison: heavy team-dyed wool over the back and hindquarters, hanging in pleats to below
+    # the belly, with a dark wool hem
     cap_bones = ["h_body", "h_pelvis", "h_foreS_F", "h_foreS_B", "h_hindT_F", "h_hindT_B"]
     cap_bias = {"h_foreS_F": 5.0, "h_foreS_B": 5.0, "h_hindT_F": 5.0, "h_hindT_B": 5.0}
+    CAP = dict(xs=(-29.5, 25.0),
+               top_z=lambda x: 60.4 - 0.004 * (x + 4) ** 2 + (1.6 if 6 < x < 16 else 0.0) * math.sin(max(0.0, min(1.0, (x - 6) / 10)) * math.pi),
+               half_w=lambda x: 10.4 - 2.4 * max(0.0, (x - 14) / 11) ** 2 + 0.6 * math.cos((x + 16) * 0.12) - 1.6 * max(0.0, (-x - 24) / 6),
+               hem_z=lambda x: 31.0 - 2.0 * max(0.0, (-x - 10) / 20) + 1.6 * max(0.0, (x - 12) / 13),
+               folds=1.3, fold_len=5.0, seed=0.4)
+    cap = MD.drape("caparison", team, thick=0.6, **CAP)
+    C.displace(cap, 0.35, 1.6)
+    C.team(cap)
     rig.skin(cap, cap_bones, soft=4.0, bias=cap_bias)
-    # the hem: the lower wrap copied DOWN 2.4 lu and pulled in, so only a dark band shows at the edge
-    hm = C.blobs("cap_hem", [((0.5, 0, 33.8), (20.6, 9.2, 5.0)), ((-14.5, 0, 34.2), (12.2, 9.7, 5.4)),
-                             ((14.5, 0, 34.6), (9.0, 9.2, 5.0))], hem, res=0.6)
-    rig.skin(hm, cap_bones, soft=4.0, bias=cap_bias)
-    for sd in (-1, 1):
-        for i in range(17):
-            x = -25.0 + 3.1 * i
-            fr = C.tube("fringe", [(x, sd * 10.0, 30.4), (x - 0.3, sd * 10.2, 27.2)], [0.45, 0.3], fringe_m, seg=5)
-            rig.skin(fr, cap_bones, soft=4.0, bias=cap_bias)
+    for hm in MD.drape_hem("cap_hem", hem, band=1.5, **CAP):
+        rig.skin(hm, cap_bones, soft=4.0, bias=cap_bias)
     # the war saddle and stirrup leathers
     saddle = C.blobs("saddle", [((-2.5, 0, 59.4), (8.2, 6.8, 2.0)), ((-10.0, 0, 62.4), (1.8, 5.6, 4.0)),
                                 ((5.0, 0, 62.0), (2.0, 5.0, 3.6))], leather, res=0.45)

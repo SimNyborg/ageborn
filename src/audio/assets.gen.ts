@@ -35,7 +35,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 1351638;
+export const SFX_BYTES = 1438274;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -50,7 +50,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   modern: { src: "audio/sfx/modern.24d81b7f.ogg", bytes: 72908, seconds: 14.41, alt: "audio/sfx/modern.eb04a7cd.m4a", sync: 0.02031 },
   future: { src: "audio/sfx/future.1483ac88.ogg", bytes: 91316, seconds: 17.904, alt: "audio/sfx/future.cf3467c8.m4a", sync: 0.02031 },
   cosmic: { src: "audio/sfx/cosmic.5823bf10.ogg", bytes: 104067, seconds: 20.554, alt: "audio/sfx/cosmic.bf886a1d.m4a", sync: 0.02031 },
-  capsule: { src: "audio/sfx/capsule.d9f20835.ogg", bytes: 160989, seconds: 31.971, alt: "audio/sfx/capsule.ea6d8fe3.m4a", sync: 0.02031 },
+  capsule: { src: "audio/sfx/capsule.fca2ee66.ogg", bytes: 247625, seconds: 48.968, alt: "audio/sfx/capsule.a942a98d.m4a", sync: 0.02031 },
 };
 
 export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
@@ -179,20 +179,25 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   cap_climb_2: { sheet: "capsule", variants: [[5.58613, 1.3], [6.93612, 1.3]] },
   cap_climb_3: { sheet: "capsule", variants: [[8.28613, 1.4], [9.73612, 1.4]] },
   cap_climb_4: { sheet: "capsule", variants: [[11.18613, 1.43446], [12.67058, 1.43446]] },
-  cap_clunk: { sheet: "capsule", variants: [[14.15504, 0.2], [14.40504, 0.2], [14.65504, 0.2]] },
-  cap_burst: { sheet: "capsule", variants: [[14.90504, 1.58475]] },
-  card_flip: { sheet: "capsule", variants: [[16.53979, 0.06848], [16.65827, 0.06858], [16.77685, 0.06856]] },
-  foil_shine: { sheet: "capsule", variants: [[16.89542, 0.5245], [17.46992, 0.52704]] },
-  rarity_common: { sheet: "capsule", variants: [[18.04696, 1.3]] },
-  rarity_rare: { sheet: "capsule", variants: [[19.39696, 1.758]] },
-  rarity_epic: { sheet: "capsule", variants: [[21.20496, 1.6]] },
-  rarity_legendary: { sheet: "capsule", variants: [[22.85496, 2.6]] },
-  walkout_bass: { sheet: "capsule", variants: [[25.50496, 1.6]] },
-  copy_tick: { sheet: "capsule", variants: [[27.15496, 0.03], [27.23496, 0.03], [27.31496, 0.03]] },
-  upgrade_ready: { sheet: "capsule", variants: [[27.39496, 0.7]] },
-  upgrade_slam: { sheet: "capsule", variants: [[28.14496, 0.93835], [29.13331, 0.92756]] },
-  level_up: { sheet: "capsule", variants: [[30.11088, 1.6]] },
-  reel_tick: { sheet: "capsule", variants: [[31.76087, 0.02], [31.83087, 0.02], [31.90087, 0.02]] },
+  cap_climb_5: { sheet: "capsule", variants: [[14.15504, 1.91383], [16.11887, 1.87854]] },
+  cap_climb_6: { sheet: "capsule", variants: [[18.04742, 2.35681], [20.45423, 2.39827]] },
+  cap_summit_rise: { sheet: "capsule", variants: [[22.9025, 0.75], [23.7025, 0.75]] },
+  cap_clunk: { sheet: "capsule", variants: [[24.5025, 0.2], [24.7525, 0.2], [25.0025, 0.2]] },
+  cap_burst: { sheet: "capsule", variants: [[25.2525, 1.58475]] },
+  cap_burst_platinum: { sheet: "capsule", variants: [[26.88725, 3.0]] },
+  cap_burst_aeon: { sheet: "capsule", variants: [[29.93725, 3.54981]] },
+  card_flip: { sheet: "capsule", variants: [[33.53706, 0.06848], [33.65554, 0.06858], [33.77412, 0.06856]] },
+  foil_shine: { sheet: "capsule", variants: [[33.89269, 0.5245], [34.46719, 0.52704]] },
+  rarity_common: { sheet: "capsule", variants: [[35.04423, 1.3]] },
+  rarity_rare: { sheet: "capsule", variants: [[36.39423, 1.758]] },
+  rarity_epic: { sheet: "capsule", variants: [[38.20223, 1.6]] },
+  rarity_legendary: { sheet: "capsule", variants: [[39.85223, 2.6]] },
+  walkout_bass: { sheet: "capsule", variants: [[42.50223, 1.6]] },
+  copy_tick: { sheet: "capsule", variants: [[44.15223, 0.03], [44.23223, 0.03], [44.31223, 0.03]] },
+  upgrade_ready: { sheet: "capsule", variants: [[44.39223, 0.7]] },
+  upgrade_slam: { sheet: "capsule", variants: [[45.14223, 0.93835], [46.13058, 0.92756]] },
+  level_up: { sheet: "capsule", variants: [[47.10815, 1.6]] },
+  reel_tick: { sheet: "capsule", variants: [[48.75815, 0.02], [48.82815, 0.02], [48.89815, 0.02]] },
 };
 
 export const MUSIC_FILES: Readonly<Record<string, MusicFile>> = {

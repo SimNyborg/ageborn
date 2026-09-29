@@ -177,7 +177,7 @@ describe('memory and the foe gold estimator (A7.1)', () => {
 
   it('remembers enemy cards for 45 s', () => {
     const mem = new BotMemory(book);
-    mem.observe(observation({ tick: 10, units: [{ id: 1, side: 0, card: 'tuskback', level: 1, p: 500000, hp: 1, maxHp: 1, shield: 0, air: false }] }));
+    mem.observe(observation({ tick: 10, units: [{ id: 1, side: 0, card: 'tuskback', level: 1, p: 500000, hp: 1, maxHp: 1, shield: 0, air: false, summoned: false }] }));
     mem.observe(observation({ tick: 20 }));
     expect(mem.remembered().map((r) => r.card)).toEqual(['tuskback']);
     mem.observe(observation({ tick: 20 + 45 * 20 + 1 }));

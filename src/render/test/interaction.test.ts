@@ -13,7 +13,10 @@ describe('power targeting (A2.9)', () => {
     expect(powerZoneLu(fakeContent.powers['stampede'])).toBeNull();
     expect(powerZoneLu(power({ kind: 'sweep', zone: 600, durationMs: 2000, damage: 1, width: 40, hitsAir: true }))).toBe(600);
     expect(powerZoneLu(power({ kind: 'cloud', width: 350, durationMs: 1, enemyMissBp: 1, allyDamageBp: 1 }))).toBe(350);
-    expect(powerZoneLu(power({ kind: 'buffAll', statuses: [] }))).toBeNull();
+    expect(powerZoneLu(power({ kind: 'buffAll', statuses: [], maxTargets: 8 }))).toBeNull();
+    expect(powerZoneLu(power({ kind: 'field', zone: 300, durationMs: 6000, hitsAir: false }))).toBe(300);
+    expect(powerZoneLu(power({ kind: 'strike', shots: 1, intervalMs: 0, damage: 1, hitsAir: true }))).toBe(160);
+    expect(powerZoneLu(power({ kind: 'suppress', durationMs: 5000 }))).toBeNull();
     expect(powerZoneLu(power({ kind: 'paradrop', card: 'x', count: 3, beyondFront: 150, fallbackP: 600 }))).toBeNull();
     expect(powerZoneLu(undefined)).toBeNull();
   });

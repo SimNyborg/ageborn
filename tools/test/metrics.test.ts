@@ -65,7 +65,7 @@ describe('MatchTally details', () => {
     const ev: SimEvent[] = [
       { tick: 1, e: 'unitSpawned', id: 1, side: 1, card: 'bonker', x: 0, summoned: false, level: 1 },
       { tick: 1, e: 'unitSpawned', id: 2, side: 1, card: 'bonker', x: 0, summoned: false, level: 1 },
-      { tick: 2, e: 'powerTelegraph', side: 0, power: 'stampede', castId: 9, x: 0, zone: 500_000 },
+      { tick: 2, e: 'powerTelegraph', side: 0, slot: 'field', power: 'stampede', castId: 9, x: 0, zone: 500_000, cost: 100, targetId: -1, telegraphMs: 1000 },
       ...[1, 1, 2].map((id): SimEvent => ({
         tick: 3, e: 'hit', targetId: id, sourceId: -1, sourceCard: 'stampede', castId: 9, sourceKind: 'power',
         damage: 100, shieldAbsorbed: 0, heavy: false, modBp: 10000, x: 0, dmgType: 'blunt',

@@ -197,7 +197,7 @@ def _die(t):
         base.pop(kk)
     base["armF"] = (24, 60, 50)
     base["armB"] = (8, 60, 10, -4)
-    return MO.fall_back(base, t, H, G0)
+    return MO.fall_back(base, t, H, G0, smooth=True)
 
 
 def pose(ctx, clip, t):

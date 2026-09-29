@@ -16,7 +16,7 @@ const config: MatchConfig = {
   content,
   sides: [
     // A Stone tray with Infantry, Ranged and Heavy only (no Anti-armor, no Support).
-    { ...base.sides[0], loadouts: { stone: { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: [null, null], power: '' } } },
+    { ...base.sides[0], loadouts: { stone: { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: [null, null], powers: { home: null, field: null } } } },
     base.sides[1],
   ] as MatchConfig['sides'],
 };

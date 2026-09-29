@@ -53,7 +53,7 @@ def build():
     skin = M.skin("#94705b")
     rig = C.Rig("phalangite_rig", BODY.bones(extra=EXTRA_BONES), yaw_deg=YAW)
     BODY.body(rig, skin)
-    BZ.linothorax(rig, BODY, m, pteruges="team", skirt="team")
+    BZ.linothorax(rig, BODY, m, pteruges="team", skirt="linen_dk")
     # team sleeves of the chiton under the cuirass flaps
     for s, y in (("F", -BODY.sw / k), ("B", BODY.sw / k)):
         S = lambda x, yy, z: (x * k, yy * k, z * k)
@@ -68,7 +68,7 @@ def build():
     BZ.sandals(rig, BODY, m)
 
     # the pelte: a small round shield slung on the near shoulder, facing forward and out
-    for o in BZ.aspis(m, 8.6 * k, name="pelte"):
+    for o in BZ.aspis(m, 8.6 * k, name="pelte", emblem="horns"):
         BZ.disc_xform(o, (3.8 * k, -BODY.sw - 3.6 * k, 46.0 * k), -34.0, tilt_deg=8.0)
         rig.rigid(o, "chest")
     strap = C.tube("peltestrap", [(3.4 * k, -BODY.sw - 1.0 * k, 53.0 * k), (1.0 * k, -2.0 * k, 56.0 * k), (-3.0 * k, 4.0 * k, 54.5 * k)],
@@ -172,6 +172,8 @@ def pose(ctx, clip, t):
         a = [(0, (12.0, 34.5, 3)), (55, (5.0, 37.0, 16)), (140, (6.0, 36.0, 11)), (310, (12.0, 34.5, 3))]
         x, z, wa = B.keyed([(tk, {"v": v}) for tk, v in a], t)["v"]
         P = grip(P, x, z, wa)
+    elif t <= 0.0:
+        P = stance()          # the first death frame matches the idle pose (no pop)
     else:
         P = _die(t)
     BODY.apply(ctx["rig"], P)
@@ -180,4 +182,4 @@ def pose(ctx, clip, t):
 def clips():
     return MO.biped_clips(attack_blur={3: 22},
                           die_fx=[{"id": "fx.dust_poof", "atMs": 595, "offsetLu": [-22, 8], "scale": 0.74}],
-                          dust=dict(t0=236, origin=(-24, 0), spread=24, size=9.5))
+                          dust=dict(t0=236, origin=(-14, 0), spread=22, size=9.5))

@@ -19,7 +19,8 @@ describe('A2.14 baseline plan', () => {
       [undefined, undefined],
     ]);
     expect(l.turrets.map((id) => (id ? content.turrets[id]?.rarity : null))).toEqual(['common', 'common']);
-    expect(content.powers[l.power]?.slot).toBe('default');
+    expect(content.powers[l.powers.home ?? '']).toMatchObject({ slot: 'home', source: 'starter', age });
+    expect(content.powers[l.powers.field ?? '']).toMatchObject({ slot: 'field', source: 'starter', age });
     for (const id of [...l.units, ...l.turrets]) if (id !== null) expect(content.units[id]?.age ?? content.turrets[id]?.age).toBe(age);
   });
 
@@ -66,11 +67,16 @@ describe('A2.14 test plans', () => {
       }
       const l = t.plan[t.age] as Loadout;
       const b = base[t.age] as Loadout;
-      const diff = [...l.units.map((c, i) => [c, b.units[i]]), ...l.turrets.map((c, i) => [c, b.turrets[i]]), [l.power, b.power]].filter(([x, y]) => x !== y);
+      const diff = [
+        ...l.units.map((c, i) => [c, b.units[i]]),
+        ...l.turrets.map((c, i) => [c, b.turrets[i]]),
+        [l.powers.home, b.powers.home],
+        [l.powers.field, b.powers.field],
+      ].filter(([x, y]) => x !== y);
       expect(diff).toEqual([[t.card, t.replaces]]);
       if (t.kind === 'unit' && (t.rarity === 'epic' || t.rarity === 'legendary')) expect(l.units[4]).toBe(t.card);
       if (t.kind === 'turret') expect(l.turrets[1]).toBe(t.card);
-      if (t.kind === 'power') expect(l.power).toBe(t.card);
+      if (t.kind === 'power') expect(l.powers[content.powers[t.card]?.slot ?? 'home']).toBe(t.card);
       expect(planIssues(content, t.plan, 'full')).toEqual([]);
     }
   });

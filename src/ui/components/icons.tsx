@@ -49,11 +49,12 @@ export const AGE_COLOR: Record<AgeId, { main: string; accent: string; light: str
   cosmic: { main: '#1E1830', accent: '#3FE0B0', light: '#8E44C8' },
 };
 
-function Svg(p: IconProps & { children: ComponentChildren; view?: string }) {
+function Svg(p: IconProps & { children: ComponentChildren; view?: string; tier?: CapsuleTier }) {
   const s = p.size ?? 24;
   return (
     <svg
       class={p.class ? `ui-icon ${p.class}` : 'ui-icon'}
+      data-tier={p.tier}
       width={s}
       height={s}
       viewBox={p.view ?? '0 0 24 24'}
@@ -822,9 +823,7 @@ export function CapsuleIcon(p: IconProps & { tier: CapsuleTier; crests?: number 
     return (
       <span class="ui-capicon">
         {svg}
-        <span class="ui-capicon__crest" aria-hidden="true">
-          ★{crests}
-        </span>
+        <CrestBadge n={crests} />
       </span>
     );
   }
@@ -879,7 +878,7 @@ export function CapsuleIcon(p: IconProps & { tier: CapsuleTier; crests?: number 
         if (i >= lit) return <g key={i}>{cut}</g>;
         const c = TIER_RAMP[TIER_LADDER[i] ?? p.tier][1];
         return (
-          <g key={i}>
+          <g key={i} class="ui-capicon__ring">
             {cut}
             <path d={d} fill="none" stroke={groove} stroke-width="1.7" opacity=".55" />
             <path d={d} fill="none" stroke={c} stroke-width=".95" />
@@ -899,7 +898,7 @@ export function CapsuleIcon(p: IconProps & { tier: CapsuleTier; crests?: number 
         const y = 9.75 + arcDrop(x);
         const c = TIER_RAMP[TIER_LADDER[DRUM_RINGS + g] ?? p.tier][1];
         return (
-          <g key={`s${g}`}>
+          <g key={`s${g}`} class="ui-capicon__summit">
             <path d={`M${x} ${y - 2.1}L${x + 2.1} ${y}L${x} ${y + 2.1}L${x - 2.1} ${y}Z`} fill={c} stroke={OUTLINE} stroke-width={line} stroke-linejoin="round" />
             <path d={`M${x - 0.9} ${y - 0.2}L${x} ${y - 1.2}`} stroke="#fff" stroke-width=".6" stroke-linecap="round" />
           </g>
@@ -908,7 +907,7 @@ export function CapsuleIcon(p: IconProps & { tier: CapsuleTier; crests?: number 
       {spread(crests, 6.6).map((x, c) => {
         const y = 13.6 + arcDrop(x);
         return (
-          <g key={`c${c}`}>
+          <g key={`c${c}`} class="ui-capicon__crestmark">
             <path
               d={`M${x - 2.2} ${y - 2.1}h4.4v2.2q0 1.9-2.2 2.8q-2.2-.9-2.2-2.8z`}
               fill={CREST_SHIELD}
@@ -920,6 +919,25 @@ export function CapsuleIcon(p: IconProps & { tier: CapsuleTier; crests?: number 
           </g>
         );
       })}
+    </Svg>
+  );
+}
+
+/** The "★n" crest badge: n guaranteed Legendaries (the small form of the drum's crests). */
+export function CrestBadge(p: { n: number }) {
+  return (
+    <span class="ui-capicon__crest" aria-hidden="true">
+      ★{p.n}
+    </span>
+  );
+}
+
+/** One Legendary crest: the Legendary star on its dark enamel shield with a white-gold rim. */
+export function CrestIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M5 3.5h14v7.2c0 5.4-3.6 8.2-7 9.8-3.4-1.6-7-4.4-7-9.8z" fill={CREST_SHIELD} stroke={PARCHMENT} stroke-width="1.5" stroke-linejoin="round" />
+      <path d={star(12, 11, 5.2)} fill={RARITY_COLOR.legendary} />
     </Svg>
   );
 }

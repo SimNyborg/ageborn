@@ -7,6 +7,7 @@ import type { Loadout, ReplayDoc } from '@/contracts';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
 import { i18n } from '@/i18n';
 import { describe, expect, it } from 'vitest';
+import { visibleTier } from '../../components/capsuleLook';
 import { fixtureReplays, fixtureResult } from '../fixtures/matches';
 import { FIXTURE_NOW, maxedSave, midGameSave, newPlayerSave } from '../fixtures/saves';
 import { atLevel, cardTile, collectionProgress, levelMultBp, unitStats, upgradeCost, upgradeState } from '../model/cards';
@@ -97,7 +98,7 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
 });
 
 describe('War Plan edits (A3)', () => {
-  const base: Loadout = { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: ['rock_tosser', null], power: 'stampede' };
+  const base: Loadout = { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: ['rock_tosser', null], powers: { home: 'rockslide', field: 'stampede' } };
 
   it('puts a card in a slot and never duplicates it', () => {
     const moved = assignCard(content, base, { kind: 'unit', index: 0 }, 'pebbler');
@@ -114,27 +115,28 @@ describe('War Plan edits (A3)', () => {
   it('rejects a card of the wrong kind and handles turrets and the power', () => {
     expect(assignCard(content, base, { kind: 'unit', index: 0 }, 'rock_tosser')).toBe(base);
     expect(assignCard(content, base, { kind: 'turret', index: 1 }, 'angry_beehive').turrets).toEqual(['rock_tosser', 'angry_beehive']);
-    expect(assignCard(content, base, { kind: 'power' }, 'meteor_shower').power).toBe('meteor_shower');
+    // A2.9.1: a power goes into its own slot.
+    expect(assignCard(content, base, { kind: 'power' }, 'meteor_shower').powers).toEqual({ home: 'meteor_shower', field: 'stampede' });
   });
 
   it('clears slots and finds the first empty one', () => {
     expect(clearSlot(base, { kind: 'unit', index: 1 }).units).toEqual(['bonker', null, 'tuskback', null, null, null]);
-    expect(clearSlot(base, { kind: 'power' }).power).toBe('stampede');
+    expect(clearSlot(base, { kind: 'power' }).powers).toEqual({ home: 'rockslide', field: 'stampede' });
     expect(firstEmptySlot(content, base, 'spear_hunter')).toEqual({ kind: 'unit', index: 3 });
     expect(firstEmptySlot(content, base, 'angry_beehive')).toEqual({ kind: 'turret', index: 1 });
-    expect(firstEmptySlot(content, normalizeLoadout({ units: [], turrets: [], power: 'x' }), 'bonker')).toEqual({ kind: 'unit', index: 0 });
+    expect(firstEmptySlot(content, normalizeLoadout({ units: [], turrets: [], powers: { home: 'x', field: null } }), 'bonker')).toEqual({ kind: 'unit', index: 0 });
   });
 
   it('marks the War Council Troops lines a loadout can use (A18.5.2 research compatibility)', () => {
-    const l = normalizeLoadout({ units: ['bonker', 'pebbler', null, null, null, null], turrets: [], power: 'stampede' });
+    const l = normalizeLoadout({ units: ['bonker', 'pebbler', null, null, null, null], turrets: [], powers: { home: 'rockslide', field: 'stampede' } });
     const on = researchLines(content, l)
       .filter((x) => x.has)
       .map((x) => x.cls);
     expect(on).toEqual(['infantry', 'ranged']);
     expect(researchLines(content, l).map((x) => x.cls)).toEqual(['infantry', 'ranged', 'heavy', 'antiArmor', 'support']);
     // Epics and Legendaries count in their base role's class.
-    expect(researchLines(content, normalizeLoadout({ units: ['mammoth_matriarch'], turrets: [], power: 'x' })).find((x) => x.has)?.cls).toBe('heavy');
-    expect(researchLines(content, normalizeLoadout({ units: ['sabertooth'], turrets: [], power: 'x' })).find((x) => x.has)?.cls).toBe('infantry');
+    expect(researchLines(content, normalizeLoadout({ units: ['mammoth_matriarch'], turrets: [], powers: { home: 'x', field: null } })).find((x) => x.has)?.cls).toBe('heavy');
+    expect(researchLines(content, normalizeLoadout({ units: ['sabertooth'], turrets: [], powers: { home: 'x', field: null } })).find((x) => x.has)?.cls).toBe('infantry');
   });
 
   it('averages levels over the loadout and over the format ages', () => {
@@ -187,8 +189,11 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
     expect(dailyCapsuleView(claimed, content, FIXTURE_NOW)).toEqual({ unlocked: true, bank: 0, max: 3, nextInMs: null });
   });
 
-  it('orders the tray best tier first', () => {
-    expect(trayCapsules(midGameSave(content), content).map((c) => c.tier)).toEqual(['jade', 'silver', 'bronze', 'bronze', 'clay']);
+  it('orders the tray by the tier the player can see, never by a Win Capsule\'s hidden tier', () => {
+    const tray = trayCapsules(midGameSave(content), content);
+    expect(tray.map((c) => visibleTier(content.capsules, c))).toEqual(['jade', 'bronze', 'clay', 'clay', 'clay']);
+    // The Win Capsules rolled Silver and Bronze: they keep their earned order behind their Clay start tier.
+    expect(tray.map((c) => c.id)).toEqual(['cap-mid-5', 'cap-mid-3', 'cap-mid-1', 'cap-mid-2', 'cap-mid-4']);
   });
 
   it('builds quest rows with progress, done and claimed', () => {
@@ -330,9 +335,9 @@ describe('misc', () => {
 
   it('filters the collection by age, role, rarity and ownership', () => {
     const s = midGameSave(content);
-    expect(filterCards(s, content, NO_FILTER)).toHaveLength(56 + 32 + 16);
+    expect(filterCards(s, content, NO_FILTER)).toHaveLength(56 + 32 + 48);
     expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(32);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(16);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(48);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'stone', rarity: 'legendary' })).toEqual(['mammoth_matriarch']);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'bronze', rarity: 'legendary' })).toEqual(['bronze_colossus']);
     expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(7);

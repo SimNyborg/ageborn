@@ -5,7 +5,8 @@
  * a NEW Epic, each foil, Dust, a bonus skin, the onboarding script, a 10-capsule "Open all", quick
  * reveal and the Wardrobe Crate card flip for each skin rarity. Shows the plan checks (time limits, back-loaded climb),
  * the live step and a sound log. URL: `?dev=1#capsuleBench/<caseId>`; add `&art=fake` to the query
- * for the fake art provider. Dev pages are exempt from the i18n rule.
+ * for the fake art provider, `&bare=1` for the stage alone (screenshots at phone size), `&rm=1` for
+ * Reduce motion and `&lite=1` for the Lite graphics preset. Dev pages are exempt from the i18n rule.
  */
 import { Application } from 'pixi.js';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -84,7 +85,10 @@ export default function CapsuleBench() {
   const [app, setApp] = useState<Application | null>(null);
   const [runKey, setRunKey] = useState(0);
   const [speed, setSpeed] = useState(1);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const query = new URLSearchParams(window.location.search);
+  const bare = query.get('bare') === '1';
+  const [reduceMotion, setReduceMotion] = useState(query.get('rm') === '1');
+  const [lite, setLite] = useState(query.get('lite') === '1');
   const [state, setState] = useState<RunnerState | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const host = useRef<HTMLDivElement>(null);
@@ -192,7 +196,7 @@ export default function CapsuleBench() {
     audio,
     catalog,
     pityRules,
-    settings: { reduceMotion, vibrate: false, teamPreset: 'default' as const, quickReveal: bench?.quickReveal === true },
+    settings: { reduceMotion, lite, vibrate: false, teamPreset: 'default' as const, quickReveal: bench?.quickReveal === true },
     playMusic: false,
     onCue,
     onState: (s: RunnerState) => {
@@ -219,7 +223,7 @@ export default function CapsuleBench() {
 
   return (
     <div style={S.root} data-testid="capsule-bench">
-      <div style={S.side}>
+      <div style={bare ? { display: 'none' } : S.side}>
         <div style={{ fontWeight: 900, fontSize: '15px' }}>Capsule bench</div>
         <div style={S.row}>
           <button style={{ ...S.small, ...(artKind === 'real' ? S.on : {}) }} onClick={() => setArtKind('real')}>
@@ -230,6 +234,9 @@ export default function CapsuleBench() {
           </button>
           <button style={{ ...S.small, ...(reduceMotion ? S.on : {}) }} onClick={() => (setReduceMotion((v) => !v), replay())}>
             Reduce motion
+          </button>
+          <button style={{ ...S.small, ...(lite ? S.on : {}) }} onClick={() => (setLite((v) => !v), replay())}>
+            Lite
           </button>
         </div>
         <div style={S.row}>

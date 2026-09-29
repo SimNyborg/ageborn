@@ -28,9 +28,12 @@ const CREST_BAND = { top: -214, bottom: -192 } as const;
 const CAP = { top: -236, bottom: -214 } as const;
 /** Front centres of the crest band and the cap band (the bands sag 9 and 8 px at the front). */
 const CREST_Y = (CREST_BAND.top + CREST_BAND.bottom) / 2 + 4.5;
-const GEM_Y = (CAP.top + CAP.bottom) / 2 + 4;
+/** The front of the cap band below the top face's rim (the top face covers its upper half). */
+const GEM_Y = CAP.bottom - 3;
 const CREST_GAP = 24;
-const GEM_GAP = 34;
+const GEM_GAP = 36;
+/** Summit gems sit a little proud of the cap band so they read at phone size. */
+const GEM_SCALE = 1.1;
 
 /** What a drum shows: its material, the crests stamped and the summit gems that have risen. */
 export interface DrumState {
@@ -341,9 +344,9 @@ export function drawDrum(g: GraphicsContext, state: DrumState, o: DrawOptions = 
   if (o.crests !== false) for (let i = 0; i < state.crests; i++) drawCrest(g, slotX(i, state.crests, CREST_GAP), CREST_Y);
   // Stone cap band: plain stone; summit gems only once they have risen.
   band(g, CAP.top, CAP.bottom, hw + 7, 8).fill(cylinder(stone)).stroke({ width: 4, color: stoneLine });
-  if (o.gems !== false) state.gems.forEach((gt, i) => drawSummitGem(g, slotX(i, state.gems.length, GEM_GAP), GEM_Y, gt));
   g.ellipse(0, CAP.top, hw + 7, 15).fill(shade(stone, 0.2)).stroke({ width: 4, color: stoneLine });
   g.ellipse(0, CAP.top + 1, hw - 12, 9).fill(shade(stone, -0.18));
+  if (o.gems !== false) state.gems.forEach((gt, i) => drawSummitGem(g, slotX(i, state.gems.length, GEM_GAP), GEM_Y, gt, GEM_SCALE));
   // Brass knob.
   g.ellipse(0, CAP.top - 4, 30, 9).fill(cylinder(metal)).stroke({ width: 3, color: metalLine });
   g.circle(0, CAP.top - 15, 11).fill(metal).stroke({ width: 3, color: metalLine });
@@ -468,7 +471,6 @@ export class CapsuleDrum {
     this.nextArt = new Graphics(this.nextCtx);
     this.nextArt.mask = this.wipeMask;
     this.nextArt.visible = false;
-    this.wipeMask.visible = false;
     band(this.starsMask.context, BODY.top + 2, BODY.bottom - 2, DRUM.halfW - 2).fill(0xffffff);
     this.starsG.mask = this.starsMask;
     const r = mulberry32(seed ^ 0x57a2);
@@ -611,10 +613,10 @@ export class CapsuleDrum {
     if (a.kind === 'gem') {
       const n = s.gems.length + 1;
       const slide = a.fade ? 1 : easeOutCubic(span(u, 0.2, 0.75));
-      s.gems.forEach((gt, i) => drawSummitGem(g, lerp(slotX(i, n - 1, GEM_GAP), slotX(i, n, GEM_GAP), slide), GEM_Y, gt));
+      s.gems.forEach((gt, i) => drawSummitGem(g, lerp(slotX(i, n - 1, GEM_GAP), slotX(i, n, GEM_GAP), slide), GEM_Y, gt, GEM_SCALE));
       const x = slotX(n - 1, n, GEM_GAP);
       if (a.fade) {
-        drawSummitGem(g, x, GEM_Y, null, 1, u);
+        drawSummitGem(g, x, GEM_Y, null, GEM_SCALE, u);
         return;
       }
       // Out of the top face, up in an arc, a turn, and down into the band with a little bounce.
@@ -622,7 +624,7 @@ export class CapsuleDrum {
       const down = easeOutBounce(span(u, 0.5, 1));
       const peak = CAP.top - 44;
       const y = u < 0.5 ? lerp(CAP.top - 2, peak, up) : lerp(peak, GEM_Y, down);
-      const scale = u < 0.5 ? lerp(0.5, 1.25, up) : lerp(1.25, 1, down);
+      const scale = GEM_SCALE * (u < 0.5 ? lerp(0.5, 1.3, up) : lerp(1.3, 1, down));
       g.ellipse(x, CAP.top, 18 * (1 - span(u, 0.4, 0.6)), 5 * (1 - span(u, 0.4, 0.6))).fill({ color: 0xffffff, alpha: 0.35 * (1 - span(u, 0.3, 0.6)) });
       drawSummitGem(g, x, y, null, scale, span(u, 0, 0.15));
       return;

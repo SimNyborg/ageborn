@@ -456,16 +456,16 @@ The palette moves from the cartoon purple-navy to a neutral dark slate with warm
 |---|---|---|
 | Rarity | Common `#B8C0CC`, Rare `#22B8CF`, Epic `#A855F7` (text variant `#B77BF9`), Legendary `#F5B82E` | a gem shape (3.5) and a label in detail views |
 | Team | me `#2F7DF6` (text variant `#5B9BFF`), foe `#F28A1E`; colourblind presets unchanged | side position, "YOU"/"AI" labels, the A11 redundant cues |
-| Capsule tier | Clay `#9C6B4A` (text `#C08A62`), Bronze `#C27C3A`, Silver `#C9D1DC`, Jade `#2FBF71`, Aeon `#8B5CF6` + gold rim | tier pips 1-5 and the tier name |
+| Capsule tier | Clay `#9C6B4A` (text `#C08A62`), Bronze `#C27C3A`, Silver `#C9D1DC`, Jade `#2FBF71`, Gold `#EFE0B0`, Platinum `#C4F2EA`, Aeon `#5D3DFF`, each with a 1.5 px parchment outline | the lit ring count (1-5), the summit gems (0-2), the Legendary crests (0-3) and the tier name |
 | Class | the Okabe-Ito based disc colours of `ClassIcon` | the glyph shape and the class word |
 
-**Separation by object, not by hue.** Several reserved colours are near-identical in hue: Jade tier vs progress green (1.06:1), Silver tier vs Common (1.19), Aeon tier vs Epic (1.07), Bronze tier vs foe orange (1.35), primary gold vs Legendary (1.03). The A10 and A11 values stay (the capsule show and the team presets are built on them), so each group is confined to its own kind of object and always carries its non-colour cue:
+**Separation by object, not by hue.** Several reserved colours are near-identical in hue: Jade tier vs progress green (1.06:1), Silver tier vs Common (1.19), Aeon tier vs Epic (ΔE2000 13.2; the old violet was 5.0), Bronze tier vs foe orange (1.35), primary gold vs Legendary (1.03). Gold tier vs primary gold: the Gold tier is a pale champagne, ΔE2000 ≥ 12.3 from every button face. The A10 and A11 values stay (the capsule show and the team presets are built on them), so each group is confined to its own kind of object and always carries its non-colour cue:
 
 | Group | Only on | Never on | Its non-colour cue |
 |---|---|---|---|
 | Button faces (gold, green, slate, red) | buttons with a lip and a verb | frames, bars, gems, text | the button shape and the verb |
-| Rarity | card frames, rarity gems, the rarity word, reveal glows | capsules, buttons, bars | gem shape (circle, rhombus, hexagon, star) |
-| Capsule tier | capsule drums, capsule tiles' rims, tier pips, the tier name | cards, buttons, bars, text other than the tier name, battle | pip count 1-5 and the name |
+| Rarity | card frames, rarity gems, the rarity word, reveal glows | capsules (except the Legendary crest on Gold, Platinum and Aeon capsules: the Legendary star on a dark shield, always the star shape), buttons, bars | gem shape (circle, rhombus, hexagon, star) |
+| Capsule tier | capsule drums, capsule tiles' rims, tier pips, the tier name | cards, buttons, bars, text other than the tier name, battle | lit ring count 1-5, summit gems 0-2, crest count and the name |
 | Team | battle, VS, Result sides, replay | meta screens, buttons, capsules | side position, "YOU" / "AI" labels |
 | Progress green (`--ui-good`) | "+N" text, claimable marks, valid drop targets, full copies bars | capsule objects | a check or arrow glyph beside it |
 
@@ -490,6 +490,7 @@ So Jade never sits next to a green button (capsule tiles carry gold Open, never 
 | good / warn / bad text on surface-1 | 8.55 / 8.09 / 6.48 | 4.5 | pass |
 | text on scrim over pure white art (72%) | 7.37 | 4.5 | pass (a 60% scrim gives 4.65, too close: 72% is the minimum) |
 | focus ring white on bg | 18.75 | 3.0 | pass |
+| Tier icons on surface-1 / 2 / 3 (the parchment outline) | 5.87 / 5.29 / 4.63 | 3.0 | pass (the Aeon fill alone is 2.81 / 2.39 / 1.95, so the outline carries WCAG 1.4.11) |
 
 The old `--ui-dim` (#817AA8 on the old panel) was 3.47:1 and fails for text; it is retired.
 
@@ -548,7 +549,7 @@ Rules:
 | Classes (A18.9.1, built) | Infantry sword, Ranged bow, Heavy shield, Anti-armor spear through a plate, Siege lit bomb, Support cross, Air wings; markers Legendary crown, Turret tower, Age Power bolt; later Underground pick and Fort wall | 20 (tiles), 24 (tray), 32 (detail, legend), 48 (filters on desktop) | always in the same corner of a card (top-right); the class word under the name on md and larger tiles; one glyph set shared by UI and capsule (`src/core` path data) |
 | Currencies | Amber: a faceted amber drop; Dust: a spark over a small heap; Trophies: a cup; battle Gold: a coin; XP: a four-point star; Charges: a lightning capsule | 20 inline, 24 chips, 32 panels | each chip opens its info panel with the A15.3 line |
 | Rarity gems | Common circle, Rare rhombus, Epic hexagon, Legendary five-point star | 12 on xs tiles, 16 on sm-md, 24 on lg-xl | gem plus frame colour plus the rarity word in detail (A3) |
-| Capsule tiers | the drum with 1-5 lit ring pips (Clay 1 ... Aeon 5) | 32-96 | the pip count is the non-colour cue |
+| Capsule tiers | the drum with 1-5 lit ring ticks, 0-2 summit gems and 0-3 crest stars | 32-96; below 32 a flat silhouette with a ★n badge | ring count, summit gems, crests and the name |
 | War Path | node disc (normal), shield (Lieutenant), crowned banner (boss), small flag (side node), padlock, three star sockets, crown by difficulty with 1-5 points (Easy 1 ... Legendary 5) | nodes 56 / 72; stars 16 / 20; crowns 16 / 20 | crowns differ by point count, not only by metal colour |
 | System | back (chevron left), close (×), gear, info (i), pause, speed, undo, lock, check, plus, filter, sort, replay, share-copy | 24 in a 44-48 hit area | universal icons may stand alone; any other icon has a label (H6) |
 
@@ -799,7 +800,7 @@ Note: the UI layer cannot import Pixi (B2). WP11 provides a `PreviewStage` slot 
 
 ### 4.6 Capsules tab (S8) and the capsule summary
 
-- **Capsules tab:** a shelf of capsule tiles (tier drum and pips, name, source: "From level 4", "Supply Capsule"), the selected one large on the left with Open (gold) and "i" (the odds and pity panel with the A15.3 line; the full panel also shows once before the first open of each tier). Every capsule on the shelf can be opened now: charges never block opening (A6: they decide whether a ladder win earns a capsule), so Open is never disabled and the tab's badge counts the shelf. "Open all" (secondary) when 2 or more wait. Beside the shelf, the three banks, each shown only after its first progress (2.6), each as an icon, a label, its value and under it the A15.3 caption **"Holds up to N. When full, it stops filling."** (12 px): charges ("Charges 12/28 · each ladder win with a charge brings a capsule"), the Supply allowance ("Supply Capsule: 2 more matches"), the Clay meter ("3 pips make a Clay capsule"). No timers. Wardrobe Crates sit on the same shelf with their own look.
+- **Capsules tab:** a shelf of capsule tiles (the drum at its visible tier: a Win or Supply Capsule shows its start tier and kind name until opened, a fixed-tier capsule its tier, crests and name; the source: "From level 4", "From finishing matches"), the selected one large on the left with Open (gold) and "i" (the odds and pity panel with the A15.3 line; the full panel also shows once before the first open of each *visible* tier). The one-time "Two new capsule tiers" card sits at the top of this tab until closed. Every capsule on the shelf can be opened now: charges never block opening (A6: they decide whether a ladder win earns a capsule), so Open is never disabled and the tab's badge counts the shelf. "Open all" (secondary) when 2 or more wait. Beside the shelf, the three banks, each shown only after its first progress (2.6), each as an icon, a label, its value and under it the A15.3 caption **"Holds up to N. When full, it stops filling."** (12 px): charges ("Charges 12/28 · each ladder win with a charge brings a capsule"), the Supply allowance ("Supply Capsule: 2 more matches"), the Clay meter ("3 pips make a Clay capsule"). No timers. Wardrobe Crates sit on the same shelf with their own look.
 - **Charges on the Result:** a ladder win without a charge says so where the capsule would have been: "No charge left: +1 Clay pip" with the Clay pip flying to the meter, and the charges line below it, so the player learns the rule at the moment it matters.
 - **Opening:** the tile grows into the capsule stage (MR-50), then A10 as built and polished by WP10.
 - **Summary** (WP10, fixes UA-18): cards stagger in in reveal order (MR-52); NEW cards show "Equipped" as a state label (flat pill, not a grey button) or an "Equip" (green) when not auto-equipped; copies bars read "8/10" and never "5/2" (over-full bars cap and show "Upgrade ready"); Amber flies into the Amber chip (MR-21). One primary at the right, by where the capsule was opened: from the Result, the Result's own path ("Continue" to the map after a War Path win, "Next battle" in other modes; 2.5); from the Capsules tab, "Open next (2)" while more wait there, else "Done" (back to the tab). "Upgrade" (secondary) jumps to Card detail for the best ready upgrade, in its confirm state, and returns here; "Home" (secondary) when the primary is not already Home. On leaving, new cards fly to the Army tab and cosmetics to Customize (MR-53); a new cosmetic also offers "Try it on" (a cross-tab jump that returns here).
@@ -880,7 +881,7 @@ One Result design for every mode (training included; fixes UA-10). The app's onb
 | Night (22:00-06:00) or a stopping card (A15.6) | Home | Continue / Next battle | |
 | Onboarding L1 | Open capsule | none | none |
 
-When a capsule is earned the next battle is still 1 tap away as the secondary (U2). An "Upgrade" chip appears in the recap when a card became upgradable during this match; it jumps to Card detail in its confirm state and returns here (2.2).
+When a capsule is earned the next battle is still 1 tap away as the secondary (U2). A Win Capsule reward shows its start tier and "Win Capsule", never its rolled tier. An "Upgrade" chip appears in the recap when a card became upgradable during this match; it jumps to Card detail in its confirm state and returns here (2.2).
 
 Staging: MR-90 (victory) or MR-91 (defeat), then the rewards (MR-21, MR-22), then the primary arrives last with the pulse. A tap anywhere skips to the end state. A trophy loss is shown calmly (MR-27): the number steps down once, no count and no red; a loss's earned Amber still counts up (positive framing). The MVP tile does a small one-shot victory pose on a win (MR-90).
 
