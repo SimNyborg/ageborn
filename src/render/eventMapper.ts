@@ -614,8 +614,11 @@ export class EventMapper {
           // A strike's lock ring follows its target through the telegraph (A2.9.10).
           ...(ev.targetId >= 0 ? { targetId: ev.targetId } : {}),
         });
-        this.rule('power.telegraph', { at: { k: 'world', x, y: 0 } }, out);
         const tdef = this.content.powers[ev.power];
+        // One sound per event (A2.9.10): a power whose telegraph has its own sound (a strike's lock)
+        // plays that instead of the shared warning.
+        const teleKey = tdef ? [`power.tele.${tdef.id}`, `power.tele.${tdef.effect.kind}`].find((k) => this.has(k)) : undefined;
+        if (!(teleKey && feelRule(this.feel, teleKey).sound)) this.rule('power.telegraph', { at: { k: 'world', x, y: 0 } }, out);
         if (tdef) this.powerTelegraphFx(ev, tdef, x, zone, out);
         return;
       }

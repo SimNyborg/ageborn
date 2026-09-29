@@ -483,6 +483,35 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     expect(pick(runReal(cast('nanite_surge', 1, 0)), 'fxUnits')).toMatchObject([{ effectId: 'fx.nanite_swarm', side: 1, opts: { durationMs: 6000 } }]);
   });
 
+  it('power rework cues (A2.9.10): a strike telegraphs with its lock alone; a field hits once, then rolls its pulses into one number; a silenced mount plays its power\'s jam', () => {
+    // One sound per event: the lock replaces the shared warning.
+    const spear = runReal([ev('powerTelegraph', { side: 0, slot: 'field', power: 'hunters_spear', castId: 50, x: 600_000, zone: 0, cost: 75, targetId: 5, telegraphMs: 1500 })]);
+    expect(pick(spear, 'sound').map((s) => s.id)).toEqual(['power_lock']);
+    expect(fxOf(spear)).toEqual([]);
+    expect(pick(spear, 'fx').map((f) => f.effectId)).toEqual(expect.arrayContaining(['fx.target_lock', 'fx.tele_glint', 'fx.power_cast_cue']));
+    // Sticky Tar: the first pulse plays the hit, the later ones only add to the running number.
+    const m = real();
+    runReal(cast('sticky_tar', 0, 0), m);
+    const pulse = (): ViewAction[] => runReal([hit({ targetId: 5, sourceId: 0, sourceKind: 'power', sourceCard: 'sticky_tar', castId: 40, damage: 500 })], m);
+    const first = pulse();
+    const later = pulse();
+    expect(pick(first, 'unitFlash').length).toBe(1);
+    expect(pick(later, 'unitFlash')).toEqual([]);
+    expect(pick(later, 'sound')).toEqual([]);
+    expect(pick(later, 'number')).toEqual([{ a: 'number', kind: 'power', value: 5, at: { k: 'unit', id: 5, part: 'hit' }, important: true, key: 'c40:5', mergeMs: 700 }]);
+    // Undermine silences a mount: its rubble, the shared jam sound and the overlay's mark.
+    const mm = real();
+    runReal(cast('undermine', 0, 0), mm);
+    const jam = runReal([ev('turretSilenced', { side: 1, mount: 2, untilTick: T + 100 })], mm);
+    expect(pick(jam, 'jam')).toEqual([{ a: 'jam', side: 1, mount: 2, ms: 5000 }]);
+    expect(pick(jam, 'fx').map((f) => f.effectId)).toEqual(['fx.jammed_rubble']);
+    expect(pick(jam, 'sound').map((s) => s.id)).toEqual(['turret_jammed']);
+    // Any other Suppress (EMP Blackout) uses the shared arcs and sparks.
+    const me = real();
+    runReal(cast('emp_blackout', 0, 0), me);
+    expect(pick(runReal([ev('turretSilenced', { side: 1, mount: 0, untilTick: T + 100 })], me), 'fx').map((f) => f.effectId)).toEqual(['fx.turret_jammed']);
+  });
+
   it('sizes ability rings by the ability radius; the Roar shows its ring; the call marker waits for the strike', () => {
     const emp = fxOf(runReal([ev('abilityUsed', { id: 1, ability: 'emp', x: 500_000 })]));
     expect(emp).toMatchObject([{ effectId: 'fx.emp_ring', opts: { radius: 120 } }]);

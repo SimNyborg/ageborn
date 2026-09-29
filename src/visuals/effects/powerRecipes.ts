@@ -564,12 +564,12 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 800,
       sprites: [
         { sprite: 'fx.p.beam', life: 110, keys: [{ t: 0, x: -340, y: -18, r: 3, sx: 34, sy: 0.5, a: 0.95 }, { t: 1, x: -340, y: -18, r: 3, sx: 34, sy: 0.15, a: 0 }], tint: 0xfff6e2 },
-        bloom(1.4, 200, 0xfff1d2, 0.65),
-        flash(1.3, 0xffffff, 60),
-        ring(1.8, 220, 0xffffff, 0.8),
+        bloom(2.2, 240, 0xfff1d2, 0.7),
+        flash(1.8, 0xffffff, 60),
+        ring(2.8, 260, 0xffffff, 0.8),
         { sprite: 'fx.p.glint', life: 240, keys: [{ t: 0, sx: 0.4, sy: 0.4, a: 1, r: 0 }, { t: 0.3, sx: 1.2, sy: 1.2, a: 1, r: 30 }, { t: 1, sx: 0.3, sy: 0.3, a: 0, r: 60 }] },
       ],
-      particles: [sparks(6, [150, 280], 'fx.p.spark', [-40, 40]), { ...smoke(2, 0.6, [400, 700]), tint: 0xdcd8d2 }],
+      particles: [sparks(8, [180, 320], 'fx.p.spark', [-40, 40]), { ...smoke(3, 1, [500, 800]), tint: 0xdcd8d2 }, { ...dust(4, 1) }],
     },
 
     // -----------------------------------------------------------------------------------------

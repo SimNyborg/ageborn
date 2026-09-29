@@ -339,6 +339,20 @@ describe('BattleView effects: art options, following and settings', () => {
     expect(s.art.played.some((p) => p.id === 'fx.telegraph_zone')).toBe(false);
   });
 
+  it('puts a capped buff on the caster\'s 8 frontmost units only (A2.9.6)', () => {
+    const units = Array.from({ length: 10 }, (_, i) => spawn(i + 1, 0, 'bonker', 200_000 + i * 40_000));
+    const s = setupFx([
+      ...units,
+      spawn(20, 1, 'bonker', 1_200_000),
+      { tick: 1, e: 'powerTelegraph', side: 0, slot: 'field', power: 'royal_decree', castId: 9, x: 400_000, zone: 0, cost: 125, targetId: -1, telegraphMs: 500 },
+      { tick: 1, e: 'powerImpact', side: 0, power: 'royal_decree', castId: 9, x: 400_000, index: 0 },
+    ]);
+    s.view.onEvents(s.sim.step([]));
+    const glows = s.art.played.filter((p) => p.id === 'fx.decree_glow');
+    // The two rearmost (x 200 and 240) get nothing.
+    expect(glows.map((g) => Math.round(g.at.x)).sort((a, b) => a - b)).toEqual([280, 320, 360, 400, 440, 480, 520, 560]);
+  });
+
   it('silences muted AI emotes completely (no bubble, no sound)', () => {
     const s = setupFx([{ tick: 1, e: 'emote', side: 1, emote: 'gg' }], { settings: { mutedEmotes: true } });
     s.view.onEvents(s.sim.step([]));
