@@ -17,6 +17,7 @@ import { AgePicker } from '../../components/Tabs';
 import { EmoteGlyph } from '../../hud/icons';
 import { useUi } from '../context';
 import { craftPrice, equippedOf, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceHint } from '../model/cosmetics';
+import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
 
 // ---------------------------------------------------------------------------------------------
@@ -37,6 +38,27 @@ export function Found(p: { collection: CosmeticCollection; label?: boolean }) {
       </span>
     </span>
   );
+}
+
+/**
+ * Equips at once and offers Undo (U10: reversible changes are instant with Undo): the tile shows the
+ * new state where the finger is, and a short toast carries the Undo back to what was worn before.
+ */
+function useEquipWithUndo() {
+  const { services, toasts, t } = useUi();
+  const act = useAct();
+  return (patch: CosmeticEquipPatch, before: CosmeticEquipPatch, name: string) => {
+    const r = services.equipCosmetic(patch);
+    act(r);
+    if (r.ok) toasts.show(t('cosmetic.ui.equippedName', { name }), { tone: 'good', undo: () => act(services.equipCosmetic(before)) });
+  };
+}
+
+/** The age the player plays now (the base mock-ups show it, not always the Stone Age). */
+function useCurrentAge(): AgeId {
+  const { save, content } = useUi();
+  const level = content.warPath?.levels[playLevelId(save.value, content)];
+  return level?.region ?? content.order.ages[0] ?? 'stone';
 }
 
 /** Shows a toast for an action's result (known reasons have their own line). */
@@ -91,7 +113,9 @@ export function ItemTile(p: {
         <span class="cos-tile__art">{p.art ?? <CosmeticImage item={key} animate={!save.value.settings.reduceMotion} />}</span>
         {p.wide && p.item.textKey ? <span class="cos-tile__quote">“{t(p.item.textKey)}”</span> : null}
         <span class="cos-tile__name">{t(p.item.nameKey)}</span>
-        <span class="cos-tile__rarity">{t(rarityNameKey(rarity))}</span>
+        <span class="cos-tile__rarity" data-tag="">
+          {t(rarityNameKey(rarity))}
+        </span>
         {p.on ? (
           <span class="cos-tile__on" aria-hidden="true">
             <CheckIcon size={16} />
@@ -221,11 +245,14 @@ export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
   const { save, content, t, services } = useUi();
   const act = useAct();
   const ages = content.order.ages;
-  const [age, setAge] = useState<AgeId>(ages[0] ?? 'stone');
+  const now = useCurrentAge();
+  const [age, setAge] = useState<AgeId>(now);
   const eq = equippedOf(save.value, content);
   const cur = eq.baseSkins[age] ?? null;
   const items = itemsOf(content, 'baseSkin').filter((x) => x.age === age);
-  const equip = (key: string | null) => act(services.equipCosmetic({ slot: 'baseSkin', age, key }));
+  const withUndo = useEquipWithUndo();
+  const equip = (key: string | null, name?: string) =>
+    key === null || !name ? act(services.equipCosmetic({ slot: 'baseSkin', age, key })) : withUndo({ slot: 'baseSkin', age, key }, { slot: 'baseSkin', age, key: cur }, name);
   return (
     <MockLayout testid="cust-bases" mock={<BaseMock age={age} />}>
       <div class="cos-head">
@@ -250,7 +277,7 @@ export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
             key={x.id}
             item={x}
             on={cur === itemKey(x)}
-            onPick={() => equip(itemKey(x))}
+            onPick={() => equip(itemKey(x), t(x.nameKey))}
             art={<BaseLook age={age} skin={itemKey(x)} animate={!save.value.settings.reduceMotion} />}
           />
         ))}
@@ -264,19 +291,21 @@ export function FlagsPanel() {
   const { save, content, t, services } = useUi();
   const act = useAct();
   const eq = equippedOf(save.value, content);
+  const age = useCurrentAge();
+  const withUndo = useEquipWithUndo();
   const equip = (e: CosmeticEquipPatch) => act(services.equipCosmetic(e));
   const [query, setQuery] = useState('');
   const q = query.trim().toLocaleLowerCase();
   const nations = ownedFirst(save.value, content, itemsOf(content, 'nationalFlag')).filter((x) => q === '' || t(x.nameKey).toLocaleLowerCase().includes(q));
   return (
-    <MockLayout testid="cust-flags" mock={<BaseMock age={content.order.ages[0] ?? 'stone'} />}>
+    <MockLayout testid="cust-flags" mock={<BaseMock age={age} />}>
       <div class="cos-head">
         <h3 class="cust-h">{t('cosmetic.ui.baseFlag')}</h3>
         <Found collection="baseFlag" />
       </div>
       <div class="cos-grid cos-grid--flags">
         {ownedFirst(save.value, content, itemsOf(content, 'baseFlag')).map((x) => (
-          <ItemTile key={x.id} item={x} on={eq.baseFlag === itemKey(x)} onPick={() => equip({ slot: 'baseFlag', key: itemKey(x) })} />
+          <ItemTile key={x.id} item={x} on={eq.baseFlag === itemKey(x)} onPick={() => withUndo({ slot: 'baseFlag', key: itemKey(x) }, { slot: 'baseFlag', key: eq.baseFlag }, t(x.nameKey))} />
         ))}
       </div>
       <div class="cos-head">
@@ -310,7 +339,7 @@ export function FlagsPanel() {
           ) : null}
         </button>
         {nations.map((x) => (
-          <ItemTile key={x.id} item={x} on={eq.nationalFlag === itemKey(x)} onPick={() => equip({ slot: 'nationalFlag', key: itemKey(x) })} />
+          <ItemTile key={x.id} item={x} on={eq.nationalFlag === itemKey(x)} onPick={() => withUndo({ slot: 'nationalFlag', key: itemKey(x) }, { slot: 'nationalFlag', key: eq.nationalFlag }, t(x.nameKey))} />
         ))}
       </div>
     </MockLayout>
@@ -323,8 +352,10 @@ export function DecorationsPanel() {
   const [anchor, setAnchor] = useState(0);
   const eq = equippedOf(save.value, content);
   const cur = eq.decorations[anchor] ?? null;
+  const age = useCurrentAge();
+  const withUndo = useEquipWithUndo();
   return (
-    <MockLayout testid="cust-decorations" mock={<BaseMock age={content.order.ages[0] ?? 'stone'} anchor={anchor} onAnchor={setAnchor} />}>
+    <MockLayout testid="cust-decorations" mock={<BaseMock age={age} anchor={anchor} onAnchor={setAnchor} />}>
       <div class="cos-head">
         <h3 class="cust-h">{t(`cosmetic.ui.anchor.${anchor}`)}</h3>
         <Found collection="decoration" />
@@ -347,7 +378,7 @@ export function DecorationsPanel() {
           ) : null}
         </button>
         {ownedFirst(save.value, content, itemsOf(content, 'decoration')).map((x) => (
-          <ItemTile key={x.id} item={x} on={cur === itemKey(x)} onPick={() => act(services.equipCosmetic({ slot: 'decoration', anchor, key: itemKey(x) }))} />
+          <ItemTile key={x.id} item={x} on={cur === itemKey(x)} onPick={() => withUndo({ slot: 'decoration', anchor, key: itemKey(x) }, { slot: 'decoration', anchor, key: cur }, t(x.nameKey))} />
         ))}
       </div>
     </MockLayout>

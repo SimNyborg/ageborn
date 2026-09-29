@@ -244,6 +244,26 @@ export function CounterLegend(p: { compact?: boolean }) {
 export const TIP_HOVER_MS = 350;
 export const TIP_PRESS_MS = 450;
 
+/**
+ * Hover tips are for real mice only: not on devices without hover, and not for the compatibility
+ * mouse events a browser sends after a touch (review: a tip opened by itself after a tab tap).
+ */
+let lastTouchAt = -Infinity;
+if (typeof document !== 'undefined') {
+  document.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (e.pointerType !== 'mouse') lastTouchAt = e.timeStamp;
+    },
+    true,
+  );
+}
+function hoverAllowed(e: PointerEvent): boolean {
+  if (e.pointerType !== 'mouse') return false;
+  if (e.timeStamp - lastTouchAt < 1500) return false;
+  return typeof matchMedia !== 'function' || matchMedia('(hover: hover)').matches;
+}
+
 export interface TipAnchor {
   x: number;
   top: number;
@@ -284,7 +304,7 @@ export function useCardTip(enabled: boolean) {
     close: () => setAnchor(null),
     handlers: {
       onPointerEnter: (e: PointerEvent) => {
-        if (e.pointerType !== 'mouse') return;
+        if (!hoverAllowed(e)) return;
         const el = e.currentTarget as Element;
         clear();
         timer.current = setTimeout(() => openFor(el), TIP_HOVER_MS);

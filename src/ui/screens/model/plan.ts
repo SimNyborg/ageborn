@@ -143,6 +143,23 @@ export function formatAges(content: Content, format: FormatId): AgeId[] {
   return content.formats[format]?.ages ?? [];
 }
 
+/**
+ * A readable name for any format (U9: no ids on screen). The named formats have their own string
+ * (`format.<id>.name`: "Short War"); the generated age windows (`w2.stone`, `short.bronze`, ...) have
+ * none, so they read as their ages: "Stone to Bronze", or one age's name.
+ */
+export function formatName(content: Content, t: (key: string, params?: Record<string, string | number>) => string, format: FormatId): string {
+  const key = `format.${format}.name`;
+  const named = t(key);
+  if (named !== key) return named;
+  const ages = formatAges(content, format);
+  const first = ages[0];
+  const last = ages[ages.length - 1];
+  if (!first || !last) return t('ui.format.custom');
+  if (first === last) return t(`warPath.region.${first}`);
+  return t('ui.format.span', { from: t(`warPath.regionShort.${first}`), to: t(`warPath.regionShort.${last}`) });
+}
+
 /** The active plan, or the first, or an empty plan so screens can always render. */
 export function activePlan(save: SaveDoc, content: Content): { index: number; plan: WarPlan } {
   const index = save.warPlans[save.activePlan] ? save.activePlan : 0;

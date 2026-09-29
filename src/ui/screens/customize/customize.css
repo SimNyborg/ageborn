@@ -475,7 +475,7 @@ button.cos-mock__deco.is-picked {
   border-radius: 8px;
   background: rgba(27, 19, 48, 0.72);
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.02em;
 }
@@ -601,7 +601,7 @@ button.cos-mock__deco.is-picked {
   line-height: 1.1;
 }
 .cos-tile__rarity {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -634,7 +634,7 @@ button.cos-mock__deco.is-picked {
   text-align: center;
 }
 .cos-tile__how small {
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.15;
   color: #4b4870;
@@ -775,15 +775,19 @@ button.cos-mock__deco.is-picked {
   padding: 2px 10px;
   border: 2px solid var(--ui-ink);
   border-radius: 999px;
-  background: linear-gradient(180deg, #8cc0ff, #3b8cff 60%, #1f5fd6);
+  /* Equip is a progress action: green (U5); "Equipped" is a state, a flat pill (UA-18). */
+  background: linear-gradient(180deg, #8ceaa8, #3cc46b 60%, #1f8f45);
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   box-shadow: 0 2px 0 var(--ui-ink);
   pointer-events: none;
 }
 .cos-tile__state.is-on {
-  background: linear-gradient(180deg, #8ceaa8, #3cc46b 60%, #1f8f45);
+  border-color: #1f8f45;
+  background: rgba(255, 255, 255, 0.7);
+  color: #1f6f38;
+  box-shadow: none;
 }
 .cos-tile--plain .cos-tile__state {
   margin-bottom: 0;

@@ -218,17 +218,48 @@
   }
 }
 
-@media (max-height: 480px) {
+@container ui-root (max-height: 480px) {
+  /* Phones held sideways: everything above the strip must fit (portraits and flags were cut). */
+  .vs__half {
+    padding: 8px 40px;
+  }
   .vs__card .ui-avatar,
   .vs__card .ui-general {
-    width: 84px !important;
-    height: 84px !important;
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 18px;
+  }
+  .vs__name {
+    font-size: 24px;
   }
   .vs__line {
-    padding: 4px 10px;
+    padding: 3px 10px;
     font-size: 13px;
   }
   .vs__card {
+    gap: 3px;
+  }
+  .vs__personality {
+    display: none;
+  }
+  .vs__level {
+    font-size: 14px;
+    padding: 0 10px;
+  }
+  .vs__row {
+    font-size: 15px;
+  }
+  .vs__card .cos-flags {
+    margin-top: 2px;
+  }
+  .vs__card .cos-flags--lg .cos-flags__flag {
+    width: 58px;
+  }
+  .vs__card .cos-flags--lg .cos-flags__flag--nation {
+    width: 48px;
+  }
+  .vs__strip {
+    padding-top: 6px;
     gap: 4px;
   }
 }

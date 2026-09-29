@@ -479,6 +479,14 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+.army-slot__more {
+  max-width: calc(var(--slot-w) - 8px);
+  color: var(--ui-text-3);
+  font-size: var(--ui-fs-tag);
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
 /* Valid drop targets light up green (U5) with a soft inner glow; the one under the finger grows. */
 .army-slot::before {
   content: '';
@@ -800,12 +808,31 @@
     gap: var(--ui-s3) var(--ui-s2);
     padding: var(--ui-s3) var(--ui-s2) var(--ui-s4);
   }
-  .army-grid .ui-card__name,
+  /* The grid scrolls, so its cards keep their names on phones (U4: no remembering art); the
+     loadout's two rows have no room for them (the selection bar names the card). */
   .army-grid .ui-card__classname,
   .army-slot .ui-card__name,
   .army-slot .ui-card__classname {
     display: none;
   }
+  .army-head .army-avg {
+    display: none;
+  }
+  .army-strip .army-avg--strip {
+    display: inline-flex;
+    order: 2;
+    margin-left: auto;
+    height: 28px;
+    padding: 0 var(--ui-s2);
+    font-size: var(--ui-fs-caption);
+  }
+}
+.army-avg--strip {
+  display: none;
+}
+/* Room under the last row, so a selected card's bar below it can scroll into view. */
+.army-grid.is-selecting {
+  padding-bottom: 104px;
 }
 .army-grid.is-drop-valid {
   box-shadow: inset 0 0 0 2px rgba(95, 208, 138, 0.5);

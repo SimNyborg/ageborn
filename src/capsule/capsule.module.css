@@ -80,17 +80,24 @@
   100% { transform: scale(1); }
 }
 
+/* A 44 px hit area around a compact 12 px chip (4.6 "Odds" chip, 44 hit, 12 px label). */
 .odds {
+  position: relative;
   font: inherit;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   color: #1b1a2e;
   background: #f2c14e;
   border: none;
   border-radius: 8px;
-  padding: 2px 7px;
+  padding: 3px 10px;
   cursor: pointer;
   pointer-events: auto;
+}
+.odds::after {
+  content: '';
+  position: absolute;
+  inset: -12px -6px;
 }
 
 .amber {
@@ -408,6 +415,8 @@
   padding: 64px 12px 12px;
   box-sizing: border-box;
   cursor: default;
+  /* The stage steps back behind the summary (the pedestal no longer competes with the panel). */
+  background: radial-gradient(ellipse at 50% 60%, rgba(8, 7, 16, 0.45), rgba(8, 7, 16, 0.78));
   animation: fadeIn 260ms ease-out both;
 }
 
@@ -614,7 +623,7 @@
 }
 
 .foil {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   padding: 1px 6px;
   border-radius: 6px;
@@ -698,6 +707,19 @@
   color: #5fd08a;
   font-size: 12px;
   font-weight: 800;
+}
+/* Equipped in an age the player has not reached yet: neutral, not the green "done" state. */
+.equippedLater {
+  border-color: rgba(154, 166, 188, 0.6);
+  color: #c9d1de;
+  text-align: center;
+  height: auto;
+  min-height: 24px;
+  line-height: 1.2;
+  padding: 2px 8px;
+}
+.equippedLater::before {
+  display: none;
 }
 .equippedPill::before {
   content: '';

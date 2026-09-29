@@ -21,6 +21,9 @@ import { difficultyFlags, lastDifficulty, unlocks } from '../model/progress';
 import { featureOpen } from '../model/warPath';
 
 type ModeId = 'quick' | 'ladder' | 'daily' | 'skirmish' | 'conquest';
+const MODE_IDS: readonly ModeId[] = ['quick', 'ladder', 'daily', 'skirmish', 'conquest'];
+/** The panel opens on the last mode started (task 2.8: a Ladder battle in 2 taps). */
+const LAST_MODE_FLAG = 'ui-lastMode.';
 
 export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): void }) {
   const { save, content, t, locale, services, router } = useUi();
@@ -29,7 +32,7 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
   const ladderOpen = featureOpen(s, content, 'ladder');
   const dailyOpen = featureOpen(s, content, 'daily');
   const [pick, setPick] = useState<Difficulty>(() => lastDifficulty(s, content));
-  const [sel, setSel] = useState<ModeId>('quick');
+  const [sel, setSel] = useState<ModeId>(() => MODE_IDS.find((m) => s.flags[LAST_MODE_FLAG + m]) ?? 'quick');
   const quickGen = quickGeneral(content, pick);
   const quickTier = content.generals.difficulty.tiers[pick];
 
@@ -74,6 +77,7 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
   ];
 
   function start(id: ModeId) {
+    services.setUiFlags(Object.fromEntries(MODE_IDS.map((m) => [LAST_MODE_FLAG + m, m === id])));
     switch (id) {
       case 'quick':
         p.onStart({ mode: 'skirmish', options: { generalId: quickGen, tier: quickTier, format: 'short', standardLevels: false }, speed: s.settings.defaultSpeed });
@@ -96,7 +100,7 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
   }
 
   const selected = cards.find((c) => c.id === sel) ?? cards[0]!;
-  const primaryLabel = sel === 'skirmish' ? t('warPath.ui.skirmishSetUp') : sel === 'conquest' ? t('warPath.ui.conquestOpen') : t('warPath.ui.playMode');
+  const primaryLabel = selected.id === 'skirmish' ? t('warPath.ui.skirmishSetUp') : selected.id === 'conquest' ? t('warPath.ui.conquestOpen') : t('warPath.ui.playMode');
 
   return (
     <Sheet
@@ -106,7 +110,7 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
       icon={<SwordsIcon size={24} />}
       actions={{
         primary: selected.lock ? undefined : (
-          <Button kind="primary" size="l" icon={<SwordsIcon size={22} />} testid="modes-play" autofocus onClick={() => start(sel)}>
+          <Button kind="primary" size="l" icon={<SwordsIcon size={22} />} testid="modes-play" autofocus onClick={() => start(selected.id)}>
             {primaryLabel}
           </Button>
         ),
@@ -127,7 +131,7 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
     >
       <ul class="md-list" role="listbox" aria-label={t('warPath.ui.modesTitle')}>
         {cards.map((c) => {
-          const on = c.id === sel;
+          const on = c.id === selected.id;
           return (
             <li key={c.id}>
               <button

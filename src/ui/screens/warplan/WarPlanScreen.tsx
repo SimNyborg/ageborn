@@ -55,6 +55,7 @@ import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardTile, isOwned, upgradeState } from '../model/cards';
 import { planIssueText } from '../model/match';
+import { beatenCount } from '../model/warPath';
 import {
   activeFilterCount,
   AGE_SHORT_KEY,
@@ -231,6 +232,25 @@ function useCompact(ref: { current: HTMLElement | null }): boolean {
   return compact;
 }
 
+/** Room a selection's action bar needs next to its card (title, one 44 px row, gap and arrow). */
+const BAR_ROOM = 96;
+
+/**
+ * Keeps a grid card's action bar inside the visible part of the scrolling grid (blocker: the bar was
+ * cut in half by the bottom of the panel on phones). Runs after each selection change.
+ */
+function barIntoView(grid: HTMLElement | null): void {
+  const bar = grid?.querySelector?.('.army-bar') as HTMLElement | null;
+  if (!grid || !bar || typeof bar.getBoundingClientRect !== 'function') return;
+  const g = grid.getBoundingClientRect();
+  const r = bar.getBoundingClientRect();
+  const pad = 8;
+  let dy = 0;
+  if (r.bottom > g.bottom - pad) dy = r.bottom - (g.bottom - pad);
+  else if (r.top < g.top + pad) dy = r.top - (g.top + pad);
+  if (dy !== 0) grid.scrollTop += dy;
+}
+
 /** Where a selection's action bar goes, from the selected element's place in its column. */
 function placeOf(el: HTMLElement | null, row0: boolean): Place {
   const box = el?.closest?.('[data-army-col]') as HTMLElement | null;
@@ -240,7 +260,16 @@ function placeOf(el: HTMLElement | null, row0: boolean): Place {
   // A grid card's bar must fit inside the scrolling grid (it clips, and the sticky head covers the
   // top); a slot's bar may overlap the strip above the slots.
   const scroller = el.closest?.('[data-scroll]') as HTMLElement | null;
-  const v = scroller && box.contains(scroller) ? (r.top - scroller.getBoundingClientRect().top < 96 ? 'below' : 'above') : r.top - b.top < 84 ? 'below' : 'above';
+  let v: Place['v'];
+  if (scroller && box.contains(scroller)) {
+    // Below when the bar fits under the card inside the visible grid, else above when it fits there,
+    // else below: the grid gets room under its last row while a card is selected and scrolls the bar
+    // into view (`barIntoView`); it can always scroll down, not always up.
+    const sr = scroller.getBoundingClientRect();
+    const below = sr.bottom - r.bottom;
+    const above = r.top - sr.top;
+    v = below >= BAR_ROOM || above < BAR_ROOM + 12 ? 'below' : 'above';
+  } else v = r.top - b.top < 84 ? 'below' : 'above';
   const h = r.left - b.left < 80 ? 'start' : b.right - r.right < 80 ? 'end' : 'center';
   return { v, h };
 }
@@ -283,7 +312,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     name: PRESET_LABELS[preset]!,
   };
   const loadout = normalizeLoadout(plan.loadouts[age] ?? emptyPlan(content, '').loadouts[age]);
-  const issues: PlanIssue[] = services.validatePlan(plan, formatFor(s, content));
+  // 2.6: the average level, the advisor and Auto-fill arrive with level 3; a new player's first
+  // armies are small on purpose and need no warnings.
+  const seasoned = beatenCount(s) >= 3 || !!s.warPath?.legacy;
+  // Errors (a card that cannot be used) always show; warnings wait for level 3.
+  const issues: PlanIssue[] = services.validatePlan(plan, formatFor(s, content)).filter((i) => seasoned || i.severity === 'error');
   const ageIssues = issues.filter((i) => i.age === age).sort((a, b) => (a.severity === b.severity ? 0 : a.severity === 'error' ? -1 : 1));
   const avg = loadoutAvgLevel(s, content, loadout);
   const inArmy = new Set(ALL_SLOTS.map((x) => slotCard(loadout, x)).filter((c): c is CardId => !!c));
@@ -307,10 +340,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   function select(next: Selection, el?: HTMLElement | null, row0 = false) {
     setSel(next);
     if (next) {
+      if (next.type === 'card' && typeof (el as HTMLElement | null)?.scrollIntoView === 'function') el!.scrollIntoView({ block: 'nearest' });
       setPlace(placeOf(el ?? null, row0));
       ui.sound?.('card_lift');
       haptic('tick');
-      if (next.type === 'card' && typeof (el as HTMLElement | null)?.scrollIntoView === 'function') el!.scrollIntoView({ block: 'nearest' });
     }
   }
 
@@ -337,6 +370,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       document.removeEventListener('keydown', onKey, true);
     };
   }, [sel]);
+
+  // A grid card's action bar is always fully visible (review blocker 2).
+  useLayoutEffect(() => {
+    if (sel?.type === 'card') barIntoView(gridRef.current);
+  }, [sel, place]);
 
   // The selected age sits centred in its strip (3.6 "Age tabs").
   const agesRef = useRef<HTMLDivElement>(null);
@@ -622,7 +660,13 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
 
   // ---- views ------------------------------------------------------------------------------------
 
-  const status = (a: AgeId) => ageStatus(issues, a, normalizeLoadout(plan.loadouts[a] ?? loadout));
+  /** An owned troop of this age that is not in its army yet (else empty troop slots point at capsules). */
+  const spareTroop = content.order.units.some((id) => content.units[id]?.age === age && !inArmy.has(id) && isOwned(s, id, content));
+  // A new player's small first army is not a warning (2.6): only errors mark an age before level 3.
+  const status = (a: AgeId): AgeStatus => {
+    const st = ageStatus(issues, a, normalizeLoadout(plan.loadouts[a] ?? loadout));
+    return seasoned || st === 'error' ? st : 'ok';
+  };
   const valid = (slot: SlotRef) => !!selCard && fitsSlot(s, content, age, slot, selCard);
 
   function slotView(slot: SlotRef, i: number) {
@@ -689,6 +733,12 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           <span class="army-slot__label" data-tag="">
             {t(SLOT_LABEL[slot.kind])}
           </span>
+          {slot.kind === 'unit' && !spareTroop ? (
+            // Nothing owned can fill it yet: say where more troops come from (U8, review 11).
+            <span class="army-slot__more" data-tag="" data-testid={`slot-more-${key}`}>
+              {t('ui.army.slot.more')}
+            </span>
+          ) : null}
         </button>
       </div>
     );
@@ -894,18 +944,22 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           </Button>
         ) : null}
       </div>
-      <span class="army-avg" title={t('ui.army.avgLabel', { age: t(ageNameKey(age)) })} aria-label={t('ui.army.avgLabel', { age: t(ageNameKey(age)) })}>
-        <span ref={avgRef} class="ui-num" data-testid="loadout-avg">
-          {t('ui.army.avg', {
-            n: shownAvg === null ? '-' : formatDec(shownAvg / 10, 1, locale),
-          })}
+      {seasoned ? (
+        <span class="army-avg" title={t('ui.army.avgLabel', { age: t(ageNameKey(age)) })} aria-label={t('ui.army.avgLabel', { age: t(ageNameKey(age)) })}>
+          <span ref={avgRef} class="ui-num" data-testid="loadout-avg">
+            {t('ui.army.avg', {
+              n: shownAvg === null ? '-' : formatDec(shownAvg / 10, 1, locale),
+            })}
+          </span>
         </span>
-      </span>
-      <span ref={autoRef} class="army-auto">
-        <Button kind="secondary" size="s" icon={<RefreshIcon size={18} />} testid="auto-fill" label={t('ui.warplan.autoFill')} onClick={autoFill}>
-          {t('ui.warplan.autoFill')}
-        </Button>
-      </span>
+      ) : null}
+      {seasoned ? (
+        <span ref={autoRef} class="army-auto">
+          <Button kind="secondary" size="s" icon={<RefreshIcon size={18} />} testid="auto-fill" label={t('ui.warplan.autoFill')} onClick={autoFill}>
+            {t('ui.warplan.autoFill')}
+          </Button>
+        </span>
+      ) : null}
       <IconButton icon={<CountersIcon size={24} />} label={t('ui.army.counters')} onClick={() => setSheet('legend')} testid="army-legend" />
     </div>
   );
@@ -928,6 +982,12 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                 );
               })}
             </ul>
+            {seasoned && avg !== null ? (
+              // Phones: the average level sits here, so the header strip has room for more ages.
+              <span class="army-avg army-avg--strip" aria-hidden="true">
+                {t('ui.army.avg', { n: formatDec(avg, 1, locale) })}
+              </span>
+            ) : null}
             {hint && !(lead && !sel) ? (
               <p class="army-hint" key={hint} data-testid="army-hint">
                 {hint}
@@ -1092,7 +1152,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             </div>
           </div>
           <div
-            class={`army-grid${filter.view === 'all' ? ' is-all' : ''}`}
+            class={`army-grid${filter.view === 'all' ? ' is-all' : ''}${sel?.type === 'card' ? ' is-selecting' : ''}`}
             ref={gridRef}
             data-scroll=""
             data-drop="grid"

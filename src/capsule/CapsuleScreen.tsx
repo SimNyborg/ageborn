@@ -319,7 +319,8 @@ function ShowScreen(p: ShowScreenProps) {
       onKeyUp={onKeyUp}
     >
       <div class={css.top}>
-        {pity.length > 0 ? <PityPanel lines={pity} t={t} onShowOdds={showOdds} /> : <span />}
+        {/* The Starter Capsule's summary keeps to its cards (review: the guarantees box competed with them). */}
+        {pity.length > 0 && !(inSummary && p.scripted) ? <PityPanel lines={pity} t={t} onShowOdds={showOdds} /> : <span />}
         {opened && !inSummary && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} delayMs={pourDelay} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
       {p.kindLabel && !inSummary ? (
@@ -378,6 +379,8 @@ function ShowScreen(p: ShowScreenProps) {
             ...(p.onOpenAll ? { onOpenAll: p.onOpenAll } : {}),
             ...(p.pendingCount !== undefined ? { pendingCount: p.pendingCount } : {}),
             ...(p.isEquipped ? { isEquipped: p.isEquipped } : {}),
+            ...(p.equippedNote ? { equippedNote: p.equippedNote } : {}),
+            ...(p.upgradesTaught !== undefined ? { upgradesTaught: p.upgradesTaught } : {}),
             ...(p.doneLabel ? { doneLabel: p.doneLabel } : {}),
           }}
         />
@@ -413,7 +416,7 @@ function PityPanel(p: { lines: PityLine[]; t: (k: string, o?: Record<string, str
   return (
     <div class={css.pity} data-testid="capsule-pity" onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
       <div class={css.pityTitle}>
-        <span>{p.t('capsule.pity.title')}</span>
+        <span data-tag="">{p.t('capsule.pity.title')}</span>
         {p.onShowOdds ? (
           <button class={css.odds} type="button" onClick={() => p.onShowOdds?.()}>
             {p.t('capsule.pity.odds')}

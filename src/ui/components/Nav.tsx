@@ -17,8 +17,11 @@ import { useKit } from './kit';
 
 export interface NavTab {
   id: TabId;
-  /** Ready badge: a number (capsules that can be opened now), 'dot' for a NEW dot, or null. */
-  badge?: number | 'dot' | null;
+  /**
+   * Ready badge: a number (capsules that can be opened now), 'ready' for a ready mark without a count
+   * (an upgrade can be made now; a count would read as a backlog, U11), 'dot' for a NEW dot, or null.
+   */
+  badge?: number | 'ready' | 'dot' | null;
   /** Locked until this War Path level; `showLevel` marks the next one to unlock ("Lv 5"). */
   lockedUntil?: number | null;
   showLevel?: boolean;
@@ -35,8 +38,8 @@ export const NAV_LABEL_KEY: Readonly<Record<TabId, string>> = {
 };
 
 /** Picks the at most 2 ready badges Home may show (2.2: Capsules, then Army, then Progress). */
-export function homeBadges(ready: Partial<Record<TabId, number | 'dot' | null>>): Partial<Record<TabId, number | 'dot'>> {
-  const out: Partial<Record<TabId, number | 'dot'>> = {};
+export function homeBadges(ready: Partial<Record<TabId, number | 'ready' | 'dot' | null>>): Partial<Record<TabId, number | 'ready' | 'dot'>> {
+  const out: Partial<Record<TabId, number | 'ready' | 'dot'>> = {};
   let n = 0;
   for (const id of ['capsules', 'army', 'progress'] as const) {
     const v = ready[id];
@@ -102,15 +105,22 @@ export function TabBar(p: { tabs: readonly NavTab[]; active: TabId | null; onSel
             <span class={`ui-tabbar__icon${popped === tab.id ? ' is-pop' : ''}`} onAnimationEnd={() => setPopped(null)}>
               <NavIcon id={tab.id} />
               {tab.badge === 'dot' ? <i class="ui-badge ui-badge--dot ui-tabbar__badge" data-badge="new" /> : null}
+              {tab.badge === 'ready' ? <i class="ui-badge ui-badge--green ui-badge--dot ui-tabbar__badge ui-tabbar__ready" data-badge="ready" /> : null}
               {typeof tab.badge === 'number' && tab.badge > 0 ? (
                 <span class="ui-badge ui-badge--green ui-tabbar__badge" data-badge="ready">
                   {tab.badge}
                 </span>
               ) : null}
               {locked ? <LockMark /> : null}
+              {/* 2.6: the next tab to unlock keeps its name and adds "Lv N" as a tag on its icon. */}
+              {locked && tab.showLevel ? (
+                <span class="ui-tabbar__lv" data-tag="">
+                  {t('ui.nav.lockedLv', { n: tab.lockedUntil! })}
+                </span>
+              ) : null}
             </span>
             <span class="ui-tabbar__label" data-clip-check="">
-              {locked && tab.showLevel ? t('ui.nav.lockedLv', { n: tab.lockedUntil! }) : label}
+              {label}
             </span>
             {pointer && pointer.id === tab.id ? (
               <span class="ui-tabbar__pointer" role="status" key={pointer.n}>

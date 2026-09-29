@@ -36,7 +36,7 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
           <h1 id="pause-title" class="pause__title">
             {t('ui.pause.title')}
           </h1>
-          <span class="pause__clock">{formatClock(info.clockMs)}</span>
+          <span class="pause__clock">{t('ui.pause.clock', { time: formatClock(info.clockMs) })}</span>
         </header>
         <div class="pause__body" data-scroll="">
           <div class="pause__scouted" data-testid="pause-scouted">

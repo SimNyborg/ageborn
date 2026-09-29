@@ -5,7 +5,7 @@
  * disclosures (A7.4). Then the app starts the battle.
  */
 import './vs.css';
-import { formatNameKey, modifierDescKey, modifierNameKey } from '@/content/keys';
+import { modifierDescKey, modifierNameKey } from '@/content/keys';
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { AiBadge, Pill } from '../../components/Chips';
@@ -17,7 +17,8 @@ import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
 import { equippedOf, owns } from '../model/cosmetics';
 import { generalOf, opponentName, personalityOf } from '../model/opponent';
-import { activePlan, formatAges, planAvgLevel } from '../model/plan';
+import { activePlan, formatAges, formatName, planAvgLevel } from '../model/plan';
+import { featureOpen, levelNameKey } from '../model/warPath';
 
 /** A9 #4: the VS screen shows for 2 s. */
 export const VS_MS = 2000;
@@ -63,6 +64,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
   const mine = (k: string | null | undefined) => (k && owns(s, content, k) ? k : null);
   const foeLook = o.side.look;
+  const tutorial = request.mode === 'tutorial';
 
   return (
     <section
@@ -84,13 +86,18 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
         <div class="vs__card vs__card--me" data-testid="vs-me">
           <Avatar spec={s.profile.avatar} size={120} frameColor="var(--ui-team-me)" />
           <span class="vs__name">{s.profile.name}</span>
-          <span class="vs__row">
-            <TrophyIcon size={20} />
-            {formatInt(s.trophies.current, locale)}
-          </span>
-          <span class="vs__level" data-testid="vs-plan-level">
-            {avg === null ? t('ui.vs.planLevelNone') : t('ui.vs.planLevel', { n: formatDec(avg, 1, locale) })}
-          </span>
+          {/* 2.6: trophies only once the Ladder is open; no plan level in the scripted first matches. */}
+          {featureOpen(s, content, 'ladder') ? (
+            <span class="vs__row">
+              <TrophyIcon size={20} />
+              {formatInt(s.trophies.current, locale)}
+            </span>
+          ) : null}
+          {tutorial ? null : (
+            <span class="vs__level" data-testid="vs-plan-level">
+              {avg === null ? t('ui.vs.planLevelNone') : t('ui.vs.planLevel', { n: formatDec(avg, 1, locale) })}
+            </span>
+          )}
           {eq ? <LookFlags baseFlag={mine(eq.baseFlag)} nationalFlag={mine(eq.nationalFlag)} team={hex(teams.me)} testid="vs-flags-me" still={s.settings.reduceMotion} large /> : null}
         </div>
       </div>
@@ -101,9 +108,11 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
           <span class="vs__name">{name}</span>
           <span class="vs__row">
             {general?.scripted ? null : <Pill tone="violet">{t('ui.vs.tier', { tier: tierNumeral(o.tier) })}</Pill>}
-            <span class="vs__level" data-testid="vs-ai-level">
-              {t('ui.vs.aiLevel', { n: o.level })}
-            </span>
+            {tutorial ? null : (
+              <span class="vs__level" data-testid="vs-ai-level">
+                {t('ui.vs.aiLevel', { n: o.level })}
+              </span>
+            )}
           </span>
           {persona ? <span class="vs__personality">{t(persona.personalityKey)}</span> : null}
           {general ? (
@@ -121,7 +130,15 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
       <footer class="vs__strip">
         <div class="vs__chips">
           {request.mode === 'tutorial' ? null : <Pill tone="blue">{t(MODE_KEYS[request.mode])}</Pill>}
-          <Pill tone="gold">{t(formatNameKey(o.format))}</Pill>
+          {request.mode === 'warPath' && content.warPath.levels[request.level] ? (
+            <Pill tone="gold" testid="vs-level">
+              {t('ui.vs.level', { n: content.warPath.levels[request.level]!.index, name: t(levelNameKey(request.level)) })}
+            </Pill>
+          ) : (
+            <Pill tone="gold" testid="vs-format">
+              {formatName(content, t, o.format)}
+            </Pill>
+          )}
           {std ? (
             <Pill tone="green" testid="vs-standard">
               {t('ui.vs.standardLevels', { n: o.level })}

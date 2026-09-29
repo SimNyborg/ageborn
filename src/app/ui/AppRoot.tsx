@@ -50,7 +50,8 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
     const onboardingStep = show.kind === 'capsules' ? show.onboarding : null;
     // Opened from the Result: the summary's primary continues the Result's path (ui-plan 2.5).
     const top = p.meta?.router.current.peek();
-    const doneLabel = !onboarding && top?.id === 'result' ? ui.t(resultActionKey(resultPathAfterCapsule(top.info))) : undefined;
+    // Onboarding capsules continue to the map: "Continue", as after every War Path win (4.6).
+    const doneLabel = onboarding ? ui.t('ui.result.continue') : top?.id === 'result' ? ui.t(resultActionKey(resultPathAfterCapsule(top.info))) : undefined;
     return (
       <ShowGuard
         key={show}

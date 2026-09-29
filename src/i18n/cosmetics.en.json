@@ -558,6 +558,7 @@
         "quotes": "Quotes"
       },
       "equipped": "Equipped",
+      "equippedName": "{name} equipped",
       "equip": "Equip",
       "remove": "Remove",
       "none": "None",

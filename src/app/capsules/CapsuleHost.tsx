@@ -14,6 +14,8 @@ import { asContent } from '@/content';
 import { OddsSheet } from '@/ui/components/OddsSheet';
 import { oddsModel } from '@/ui/components/oddsModel';
 import { UiKitContext, type UiKit } from '@/ui/components/kit';
+import { reachedAges } from '@/ui/screens/model/plan';
+import { upgradesTaught } from '@/ui/screens/model/warPath';
 import type { ArtProvider, AudioService } from '@/contracts';
 import '@/ui/theme.css';
 import './capsuleHost.css';
@@ -72,6 +74,14 @@ export function CapsuleHost(p: CapsuleHostProps) {
   const plan = p.save.warPlans[p.save.activePlan];
   const isEquipped = (card: CardId) =>
     !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.power === card);
+  // Equipped into the army of an age not reached yet: say where, never a plain "Equipped" (U15).
+  const reached = new Set(reachedAges(p.save, c));
+  const equippedNote = (card: CardId): string | null => {
+    const age = (c.units[card] ?? c.turrets[card])?.age;
+    return age && !reached.has(age) ? p.t('app.equippedFor', { age: p.t(`warPath.regionShort.${age}`) }) : null;
+  };
+  // 2.6: "Upgrade ready" appears once the onboarding's forced upgrade has taught upgrades.
+  const taught = upgradesTaught(p.save);
   const pending = p.allowMore ? p.save.capsules.pending.length : 0;
   const common = {
     pixi: p.pixi,
@@ -82,6 +92,8 @@ export function CapsuleHost(p: CapsuleHostProps) {
     settings: showSettings(p.save),
     oddsSheet,
     isEquipped,
+    equippedNote,
+    upgradesTaught: taught,
     onDone: done,
     ...(p.doneLabel ? { doneLabel: p.doneLabel } : {}),
     ...(p.onEquip ? { onEquip: p.onEquip } : {}),

@@ -8,7 +8,7 @@
  */
 import './result.css';
 import { arenaNameKey, capsuleKindNameKey, questNameKey, titleNameKey } from '@/content/keys';
-import type { QuestDef } from '@/content/types';
+import type { Content, QuestDef } from '@/content/types';
 import type { MatchStats, RewardStep } from '@/contracts';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
@@ -72,13 +72,30 @@ const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 
 function LevelBadge(p: { level: string; rewards: readonly RewardStep[]; stats: MatchStats; won: boolean; difficulty: string }) {
   const { t, content, save } = useUi();
   const kit = useKit();
+  return <LevelBadgeView content={content} t={t} sound={kit.sound} best={save.peek().warPath?.stars[p.level] ?? 0} level={p.level} rewards={p.rewards} stats={p.stats} won={p.won} />;
+}
+
+/**
+ * The level badge without the screen context, so the app's onboarding Result (levels 1 and 2) shows
+ * the same badge (4.9: one Result design for every mode).
+ */
+export function LevelBadgeView(p: {
+  content: Content;
+  t: (k: string, p?: Record<string, string | number>) => string;
+  sound?: ((id: string) => void) | undefined;
+  best: number;
+  level: string;
+  rewards: readonly RewardStep[];
+  stats: MatchStats;
+  won: boolean;
+}) {
+  const { t, content, best } = p;
   const level = content.warPath.levels[p.level];
   const fresh = p.rewards.filter((r): r is Extract<RewardStep, { kind: 'pathStar' }> => r.kind === 'pathStar').map((r) => r.star);
-  const best = save.peek().warPath?.stars[p.level] ?? 0;
   const first = fresh.length ? Math.min(...fresh) : best + 1;
   useEffect(() => {
     if (!fresh.length) return;
-    const ids = fresh.map((_, i) => setTimeout(() => kit.sound?.('star_stamp'), 700 + i * 200));
+    const ids = fresh.map((_, i) => setTimeout(() => p.sound?.('star_stamp'), 700 + i * 200));
     return () => ids.forEach(clearTimeout);
   }, []);
   if (!level) return null;
@@ -460,9 +477,10 @@ function SummaryChip(p: { r: RewardStep }) {
         </span>
       );
     case 'title':
+      // The title's own name, never a row of identical "New title!" chips (review).
       return (
         <span class="result-sum__chip is-done">
-          <CrownIcon size={16} /> {t('ui.result.newTitle')}
+          <CrownIcon size={16} /> {t(titleNameKey(r.title))}
         </span>
       );
     case 'star':
@@ -487,6 +505,9 @@ function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null }) {
   const { t } = useUi();
   const [open, setOpen] = useState(false);
   if (p.steps.length === 0 && !p.tipKey) return null;
+  // Several titles at once read as one chip ("3 new titles"); the open list names each.
+  const titles = p.steps.filter((r) => r.kind === 'title').length;
+  const chips = titles > 1 ? p.steps.filter((r) => r.kind !== 'title') : p.steps;
   return (
     <div class={`result-sum${open ? ' is-open' : ''}`} data-testid="result-summary">
       <button
@@ -501,9 +522,14 @@ function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null }) {
       >
         <span class="result-sum__label">{t('ui.result.alsoEarned')}</span>
         <span class="result-sum__chips">
-          {p.steps.map((r, i) => (
+          {chips.map((r, i) => (
             <SummaryChip key={i} r={r} />
           ))}
+          {titles > 1 ? (
+            <span class="result-sum__chip is-done" data-testid="sum-titles">
+              <CrownIcon size={16} /> {t('ui.result.newTitles', { n: titles })}
+            </span>
+          ) : null}
         </span>
         <span class="result-sum__caret" aria-hidden="true" />
       </button>

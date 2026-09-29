@@ -98,10 +98,10 @@
   white-space: nowrap;
 }
 .prof-stat__label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
+  text-align: center;
   color: var(--ui-muted);
 }
 .prof-row {
@@ -205,7 +205,7 @@
   color: var(--ui-muted);
 }
 .prof-match__old {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--ui-dim);
   max-width: 80px;

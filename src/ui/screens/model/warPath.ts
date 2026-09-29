@@ -93,6 +93,14 @@ export function featureOpen(save: SaveDoc, content: Content, f: WarPathUnlock): 
   return progressOf(save).legacy || beatenCount(save) >= content.warPath.unlocks[f];
 }
 
+/**
+ * Whether upgrades have been taught (2.6): the onboarding's forced upgrade is done, or the player is
+ * past it (level 3 on) or had a save from before the War Path. Until then no "Upgrade ready" marks.
+ */
+export function upgradesTaught(save: SaveDoc): boolean {
+  return !!save.flags['tutorial.firstUpgrade'] || progressOf(save).legacy || beatenCount(save) >= 3;
+}
+
 /** The tab each feature opens (Modes, Ladder and Daily live inside Home's Modes panel). */
 export const TAB_FEATURE: Readonly<Record<Exclude<TabId, 'warPath'>, WarPathUnlock>> = {
   army: 'army',

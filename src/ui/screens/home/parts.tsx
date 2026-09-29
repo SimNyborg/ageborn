@@ -288,6 +288,10 @@ export function CapsuleInfo(p: { onClose: () => void }) {
   ];
   return (
     <Modal title={t('ui.info.title')} onClose={p.onClose} size="lg" testid="odds-modal" icon={<InfoIcon size={28} />}>
+      {/* The odds first (task 2.8: odds in 2 taps, no scrolling), then how each bank fills. */}
+      <h3 class="home-info__h">{t('ui.odds.title')}</h3>
+      <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arena.randomLegendaries, content.cosmetics.collections)} />
+      <h3 class="home-info__h">{t('ui.info.banksTitle')}</h3>
       <ul class="home-info" data-testid="capsule-info">
         {rows.map((row) => (
           <li key={row.id} class="home-info__row" data-testid={`info-${row.id}`}>
@@ -302,8 +306,6 @@ export function CapsuleInfo(p: { onClose: () => void }) {
       </ul>
       <p class="home-info__kept">{t('ui.info.kept')}</p>
       <p class="home-info__rookie">{t('ui.info.rookie')}</p>
-      <h3 class="home-info__h">{t('ui.odds.title')}</h3>
-      <OddsSheet model={oddsModel(content.capsules, content.rarities, s, arena.randomLegendaries, content.cosmetics.collections)} />
     </Modal>
   );
 }

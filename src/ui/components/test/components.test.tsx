@@ -305,7 +305,7 @@ describe('controls', () => {
       </>,
     );
     expect(text(container!.querySelector('.ui-chip')!)).toBe('3,450');
-    expect(text(container!.querySelector('[data-testid="ai-badge"]')!)).toBe('AIAI General');
+    expect(text(container!.querySelector('[data-testid="ai-badge"]')!)).toBe('AI General');
     expect(container!.querySelectorAll('.ui-clay__pip.is-on')).toHaveLength(2);
   });
 });

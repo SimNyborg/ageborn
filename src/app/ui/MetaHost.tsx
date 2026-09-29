@@ -18,7 +18,7 @@ import './meta.css';
  * UI sound ids the plan adds (ui-plan 5.4) that WP6 has not made yet, played as their nearest
  * existing sound meanwhile (docs/requests/wp6-ui-sounds.md).
  */
-const UI_SOUND_FALLBACK: Readonly<Record<string, string>> = {
+export const UI_SOUND_FALLBACK: Readonly<Record<string, string>> = {
   ui_sheet: 'ui_toggle',
   ui_pop: 'ui_toggle',
   ui_whoosh: 'ui_tab',

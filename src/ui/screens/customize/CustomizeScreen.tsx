@@ -26,7 +26,7 @@ import type { CustomizeTab, RouteOf } from '../../router';
 import { SkinTile } from '../collection/CollectionScreen';
 import { useUi } from '../context';
 import { COLLECTIONS, progressOf } from '../model/cosmetics';
-import { BasesPanel, CompletionStrip, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
+import { BasesPanel, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
 import { FlagsTabIcon, QuoteTabIcon, SmileTabIcon, StatueTabIcon } from './icons';
 
 const isBaseSkin = (k: SkinDef): boolean => k.target.startsWith('base.');
@@ -178,13 +178,11 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
       }
     >
       <div class="col cust">
-        <Tabs label={t('ui.nav.customize')} value={tab} onChange={setTab} variant="folder" idPrefix="cust" compact items={tabs} />
+        {/* Every tab keeps its label (U9: icon plus label). */}
+        <Tabs label={t('ui.nav.customize')} value={tab} onChange={setTab} variant="folder" idPrefix="cust" items={tabs} />
         <div class={`col-panel cust-panel cust-panel--${tab}`} role="tabpanel" id="cust-panel" aria-labelledby={`cust-tab-${tab}`} key={tab}>
           {tab === 'troops' ? (
-            <>
-              <CompletionStrip />
-              <SkinGrid skins={troops} testid="cust-troops" />
-            </>
+            <SkinGrid skins={troops} testid="cust-troops" />
           ) : tab === 'bases' ? (
             <BasesPanel
               extra={(age) => {

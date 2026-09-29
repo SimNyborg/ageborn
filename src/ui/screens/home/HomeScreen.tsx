@@ -29,6 +29,7 @@ import { formatInt } from '../../components/format';
 import { haptic } from '../../components/haptics';
 import { AmberIcon, CapsuleIcon, CardsIcon, GearIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { useKit } from '../../components/kit';
+import { blockingOverlays } from '../../components/overlay';
 import type { MatchRequest, RouteOf, TabId } from '../../router';
 import { useUi } from '../context';
 import {
@@ -164,13 +165,18 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const map = useRef<WarPathMapHandle | null>(null);
 
+  // An app overlay on top (the first forced upgrade, the age dialog) holds every Home moment and
+  // takes Home's primary and pulse away until it closes (U1, U11, U13).
+  const covered = blockingOverlays.value > 0;
+  const started = useRef(false);
   useEffect(() => {
-    if (!cer) return;
+    if (!cer || covered || started.current) return;
+    started.current = true;
     if (reduce) {
       // U14: the stars fade in and the road appears whole, without movement.
       setPhase('stamp');
       timers.current.push(setTimeout(() => setPhase('done'), 600));
-      return () => timers.current.forEach(clearTimeout);
+      return;
     }
     const at = (ms: number, f: () => void) => timers.current.push(setTimeout(f, ms));
     let tm = 0;
@@ -210,8 +216,8 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
       }
     }
     at(tm, () => setPhase('done'));
-    return () => timers.current.forEach(clearTimeout);
-  }, []);
+  }, [covered]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   function finishCeremony() {
     if (phase === 'done') return;
@@ -240,13 +246,13 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   // MR-40: a feature that just opened (after the level ceremony; never for a legacy save).
   const [unlock, setUnlock] = useState<WarPathUnlock | null>(null);
   useEffect(() => {
-    if (ceremonyOn || unlock) return;
+    if (ceremonyOn || unlock || covered) return;
     const f = pendingUnlock(s, content);
     if (!f) return;
     services.setUiFlags({ [unlockFlag(f)]: true });
     setUnlock(f);
     kit.sound?.('ui_unlock');
-  }, [ceremonyOn, wp]);
+  }, [ceremonyOn, wp, covered]);
 
   // ---- panels and play --------------------------------------------------------------------------
   const [sheet, setSheet] = useState<MapNode | null>(null);
@@ -350,7 +356,8 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
             {t('warPath.ui.levelOf', { region: t(`warPath.regionShort.${next.region}`), n: next.index, max: region.levels.length })}
           </span>
         </span>
-        <TopRight quiet={ceremonyOn || !!unlock} />
+        {/* One new thing at a time (U8, U13): the first-seen captions wait for the unlock moment. */}
+        <TopRight quiet={ceremonyOn || !!unlock || covered || !!pendingUnlock(s, content)} />
       </header>
 
       {phase === 'region' && cer?.region !== null && cer ? (
@@ -421,8 +428,8 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
             kind="primary"
             size="xl"
             class="wp-play"
-            pulse={!ceremonyOn && !sheet && !modes}
-            primary={!sheet && !modes}
+            pulse={!ceremonyOn && !sheet && !modes && !covered}
+            primary={!sheet && !modes && !covered}
             testid="play"
             autofocus
             icon={<SwordsIcon size={28} />}
@@ -431,7 +438,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
               play(playId);
             }}
           >
-            {firstLaunch ? t('warPath.ui.playFirst') : t('warPath.ui.play', { n: next.index })}
+            {t('warPath.ui.play', { n: next.index })}
           </Button>
         </div>
       </div>
@@ -508,11 +515,18 @@ function TopRight(p: { quiet: boolean }) {
   // One first-seen caption at a time, never over a ceremony (MR-28, U13).
   const caption = p.quiet ? null : showAmber && !s.flags['ui-seen.amber'] ? 'amber' : showDust && !s.flags['ui-seen.dust'] ? 'dust' : null;
   const [shown, setShown] = useState<'amber' | 'dust' | null>(null);
+  // The caption counts as seen once it has shown in full; a ceremony or unlock that starts meanwhile
+  // hides it, and it comes back afterwards (never two new things at once, U8).
   useEffect(() => {
-    if (!caption) return;
+    if (!caption) {
+      setShown(null);
+      return;
+    }
     setShown(caption);
-    services.setUiFlags({ [`ui-seen.${caption}`]: true });
-    const id = setTimeout(() => setShown(null), 4000);
+    const id = setTimeout(() => {
+      setShown(null);
+      services.setUiFlags({ [`ui-seen.${caption}`]: true });
+    }, 4000);
     return () => clearTimeout(id);
   }, [caption]);
   return (
@@ -565,9 +579,18 @@ function UnlockPointer(p: { feature: WarPathUnlock; onOpen(): void; onDone(): vo
     find();
     const id = setTimeout(find, 350);
     const done = setTimeout(() => p.onDone(), 6000);
+    // A tap anywhere else goes through and folds the pointer away, so a locked tab's own hint or a
+    // panel never stacks on top of it.
+    const onDown = (e: Event) => {
+      const tgt = e.target as HTMLElement | null;
+      if (tgt?.closest?.('.wp-unlock__line')) return;
+      p.onDone();
+    };
+    document.addEventListener('pointerdown', onDown, true);
     return () => {
       clearTimeout(id);
       clearTimeout(done);
+      document.removeEventListener('pointerdown', onDown, true);
     };
   }, [p.feature]);
   const box = rect && host ? { left: rect.left - host.left, top: rect.top - host.top, width: rect.width, height: rect.height } : null;

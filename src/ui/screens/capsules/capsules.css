@@ -1,9 +1,282 @@
-/* The Capsules tab (ui-plan 4.6), interim layout around the Home tray. */
-.caps-tab {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--ui-s2) 0 var(--ui-s4);
-}
-.caps-tab .home-tray {
+/*
+ * The Capsules tab (ui-plan 4.6): the stage with the best capsule on the left (Open bottom-right of
+ * it), the shelf and the banks on the right. Phones: two columns inside the 844 x 390 budget
+ * (header 56, tab bar 56: about 260 px of height); regular screens get more air.
+ */
+.caps {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) 1.1fr;
+  gap: var(--ui-s4);
   width: 100%;
+  max-width: 1080px;
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  padding: var(--ui-s3) 0 var(--ui-s3);
+}
+.caps.is-empty {
+  grid-template-columns: minmax(300px, 520px);
+  justify-content: center;
+}
+
+/* ---- the stage ---- */
+.caps-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 0;
+  padding: var(--ui-s3) var(--ui-s3) var(--ui-s3);
+  overflow: hidden;
+  border: 1px solid rgba(255, 227, 154, 0.28);
+  border-radius: var(--ui-r-lg);
+  background:
+    radial-gradient(70% 55% at 50% 38%, rgba(255, 213, 110, 0.16), transparent 70%),
+    linear-gradient(180deg, rgba(37, 44, 57, 0.95), rgba(21, 25, 32, 0.95));
+  box-shadow: var(--ui-e2);
+}
+.caps-stage__hero {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 0;
+  align-self: stretch;
+}
+.caps-stage__glow {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: 180px;
+  height: 180px;
+  margin: -90px 0 0 -90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 223, 128, 0.28), transparent 65%);
+  pointer-events: none;
+}
+.caps-stage__drum {
+  position: relative;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 14px rgba(255, 229, 138, 0.4));
+  animation:
+    ui-pop var(--ui-dur-medium) var(--ui-ease-back) both,
+    ui-bob 2.4s ease-in-out var(--ui-dur-medium) infinite;
+}
+.caps-stage__drum--jade {
+  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 16px rgba(74, 222, 128, 0.55));
+}
+.caps-stage__drum--aeon {
+  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 18px rgba(139, 92, 246, 0.8));
+}
+.caps-stage__drum.is-empty {
+  opacity: 0.35;
+  filter: grayscale(0.8);
+  animation: none;
+}
+.caps-stage__name {
+  position: relative;
+  max-width: 100%;
+  margin-top: var(--ui-s1);
+  color: var(--ui-text);
+  font: 800 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+  text-align: center;
+}
+.caps-stage__source {
+  position: relative;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  text-align: center;
+}
+.caps-stage__actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ui-s2);
+  align-self: stretch;
+  padding-top: var(--ui-s2);
+}
+
+/* ---- the right column ---- */
+.caps-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s3);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.caps-h {
+  margin: 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.caps-shelf__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  min-height: 44px;
+}
+.caps-shelf__list {
+  display: flex;
+  gap: var(--ui-s2);
+  margin: 0;
+  padding: 6px 2px 6px;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  scrollbar-width: thin;
+}
+.caps-shelf__list > li {
+  flex: none;
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) calc(var(--i, 0) * var(--ui-dur-stagger)) both;
+}
+.caps-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 108px;
+  min-height: 112px;
+  padding: var(--ui-s2) 6px;
+  border: 1px solid rgba(107, 120, 144, 0.45);
+  border-radius: var(--ui-r-md);
+  background: linear-gradient(180deg, var(--ui-surface-2), var(--ui-surface-1));
+  color: var(--ui-text);
+  cursor: pointer;
+  transition:
+    transform var(--ui-dur-press) var(--ui-ease-standard),
+    border-color var(--ui-dur-micro) var(--ui-ease-standard);
+}
+.caps-tile:active,
+.caps-tile[data-pressed] {
+  transform: scale(var(--ui-press-scale));
+}
+@media (hover: hover) {
+  .caps-tile:hover {
+    border-color: var(--ui-text-2);
+    transform: translateY(-2px);
+  }
+}
+.caps-tile.is-best {
+  border-color: rgba(255, 227, 154, 0.6);
+}
+.caps-tile__icon {
+  display: grid;
+  place-items: center;
+  height: 50px;
+  filter: drop-shadow(0 3px 0 rgba(8, 5, 20, 0.5));
+}
+.caps-tile__name {
+  font-size: var(--ui-fs-caption);
+  line-height: 1.2;
+  font-weight: 800;
+  text-align: center;
+}
+.caps-tile__source {
+  color: var(--ui-text-3);
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ---- the banks ---- */
+.caps-banks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+}
+.caps-bank {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s3);
+  padding: var(--ui-s2) var(--ui-s3);
+  border-radius: var(--ui-r-md);
+  background: rgba(8, 10, 14, 0.45);
+}
+.caps-bank__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+}
+.caps-bank__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  font-size: var(--ui-fs-caption);
+  color: var(--ui-text-2);
+}
+.caps-bank__text b {
+  color: var(--ui-text);
+  font-size: var(--ui-fs-label);
+}
+.caps-bank__text small {
+  color: var(--ui-text-3);
+  font-size: 12px;
+}
+.caps-bank--clay .ui-clay {
+  flex: none;
+}
+
+/* Regular screens have the height for the whole shelf. */
+@container ui-root (min-height: 481px) {
+  .caps-shelf__list {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
+/* ---- phones ---- */
+@container ui-root (max-height: 480px) {
+  .caps {
+    grid-template-columns: 300px 1fr;
+    gap: var(--ui-s3);
+    padding: var(--ui-s2) 0;
+  }
+  .caps-stage {
+    padding: var(--ui-s2);
+  }
+  .caps-stage__drum svg {
+    width: 72px;
+    height: 72px;
+  }
+  .caps-stage__glow {
+    width: 140px;
+    height: 140px;
+    margin: -70px 0 0 -70px;
+    top: 32%;
+  }
+  .caps-tile {
+    width: 100px;
+    min-height: 104px;
+  }
+  .caps-bank {
+    padding: 6px var(--ui-s2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caps-stage__glow,
+  .caps-stage__drum {
+    animation: none;
+  }
+}
+[data-reduce-motion='true'] .caps-stage__glow,
+[data-reduce-motion='true'] .caps-stage__drum {
+  animation: none;
 }

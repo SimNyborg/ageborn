@@ -80,7 +80,7 @@
       "inArmy": "In army",
       "use": "Use",
       "usedIn": "In your {age} army",
-      "showOdds": "Show odds",
+      "showOdds": "Capsule odds",
       "oddsTitle": "Capsule odds",
       "stats": "Stats",
       "traits": "Traits",
@@ -189,7 +189,7 @@
       "rerollHint": "One quest swap today",
       "rerollUsed": "Quest swap used today",
       "none": "New quests arrive at 04:00",
-      "queueLine": "New quests arrive each day. Up to 21 can wait for you."
+      "queueLine": "New quests arrive each day. Holds up to 21. When full, it stops filling."
     },
     "odds": {
       "title": "Odds and pity",
@@ -276,8 +276,44 @@
         "bankReady": "Next win: Age Capsule ({n} ready)"
       }
     },
+    "capsules": {
+      "open": "Open",
+      "openAll": "Open all ({n})",
+      "odds": "Odds",
+      "shelf": "Ready to open",
+      "banks": "How you earn more",
+      "starter": "Starter Capsule",
+      "starterSource": "Set to get you started",
+      "crate": "Wardrobe Crate",
+      "emptyTitle": "No capsules right now",
+      "chargesNote": "Each Ladder win with a charge brings a capsule.",
+      "clayNote": "Wins without a charge fill it. {n} pips make a Clay Capsule.",
+      "from": {
+        "win": "From a Ladder win",
+        "daily": "Supply Capsule",
+        "road": "From the Trophy Road",
+        "meter": "From the Clay meter",
+        "age": "Age Capsule",
+        "codex": "From the Codex",
+        "conquest": "From Conquest",
+        "ageUnlock": "For reaching a new age",
+        "warPath": "From the War Path"
+      },
+      "crateFrom": {
+        "codex": "From the Codex",
+        "weekly": "From the War Chest",
+        "road": "From the Trophy Road",
+        "aeon": "From an Aeon Capsule",
+        "welcome": "For your first win"
+      }
+    },
+    "format": {
+      "span": "{from} to {to}",
+      "custom": "Custom war"
+    },
     "vs": {
       "title": "Versus {name}",
+      "level": "Level {n} · {name}",
       "vs": "VS",
       "tier": "Tier {tier}",
       "aiLevel": "Lv {n}",
@@ -296,6 +332,7 @@
     },
     "pause": {
       "title": "Paused",
+      "clock": "Battle time {time}",
       "resume": "Resume",
       "retreat": "Retreat",
       "retreatLocked": "Retreat unlocks at {time}",
@@ -327,6 +364,7 @@
       "star": "Star {n}: {name}",
       "newArena": "New arena!",
       "newTitle": "New title!",
+      "newTitles": "{n} new titles",
       "tapToSkip": "Tap to skip",
       "home": "Home",
       "replay": "Watch replay",
@@ -408,7 +446,8 @@
       "slot": {
         "unit": "Troop",
         "turret": "Turret",
-        "power": "Power"
+        "power": "Power",
+        "more": "More in capsules"
       },
       "view": {
         "label": "Which cards",
@@ -646,7 +685,8 @@
       "parents": "For parents"
     },
     "info": {
-      "title": "How capsules work",
+      "title": "Odds and how capsules work",
+      "banksTitle": "How capsules are earned",
       "bankCap": "Holds up to {n}. When full, it stops filling.",
       "charges": "Capsule charges",
       "chargesRule": "A ladder win uses one charge and earns a capsule. You get +1 charge every {h} hours.",

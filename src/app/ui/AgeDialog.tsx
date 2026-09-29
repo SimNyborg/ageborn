@@ -7,12 +7,14 @@ import { useEffect } from 'preact/hooks';
 import { ageNameKey } from '@/content';
 import { useApp } from './context';
 import { Button } from '@/ui/components/Button';
+import { useBlockingOverlay } from '@/ui/components/overlay';
 
 export function AgeDialog() {
   const ui = useApp();
   const picker = ui.controller.agePicker;
   useEffect(() => picker.attach(), [picker]);
   const req = picker.request.value;
+  useBlockingOverlay(!!req);
   // Focus the suggested age when the dialog opens (Enter picks it).
   useEffect(() => {
     if (!req || typeof document === 'undefined') return;

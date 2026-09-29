@@ -1,0 +1,76 @@
+# Request to the War Path and Trophy Road owners: sources for the 24 War Path powers
+
+From: the lead designer, 2026-09-29. Owner request: powers cost gold and reload, there are many more of them, and some land only in your own half (DESIGN A2.9, roster A5.7; decision record in `docs/decisions.md`, "Owner request 2026-09-29: powers cost gold, reload, more powers, own-half limits").
+
+The rework adds 32 powers: 8 new starters (owned from the first launch, no source needed) and 24 **War Path powers**, three per region, granted on the first clears of levels 5, 7 and 9, with a Trophy Road fallback for players who mostly play the ladder. **Powers never go into capsules**: no change to `src/content/capsules.ts`, `src/meta/capsules/*`, `tools/economy.ts` or `tools/drops.ts`.
+
+Apply this in build phase P4 (DESIGN A2.9.13), after the power content (phase P1) has added the 32 ids to `content.powers`; before that the ids do not exist and the integrity tests fail.
+
+## 1. The reward table
+
+| Region | L5 (Rare, Home) | L7 (Epic) | L9 (Epic) |
+|---|---|---|---|
+| stone | `sticky_tar` | `hunt_cry` | `hunters_spear` |
+| bronze | `zeus_bolts` | `apollo_arrow` | `medusa_gaze` |
+| medieval | `caltrops` | `undermine` | `boiling_oil` |
+| gunpowder | `boarding_nets` | `horse_artillery` | `sharpshooter` |
+| industrial | `barbed_wire` | `railway_gun` | `saboteurs` |
+| modern | `aa_screen` | `tank_rush` | `sniper_team` |
+| future | `point_defense` | `emp_blackout` | `stasis_field` |
+| cosmic | `singularity` | `ion_cannon` | `solar_flare` |
+
+## 2. `src/content/types.ts` (WP1)
+
+- `WarPathReward` gains `power: CardId | null` ("an Age Power granted on first clear; an owned power pays `powerOwnedAmber` instead").
+- `WarPathTables` gains `powerOwnedAmber: number` (60).
+
+## 3. `src/content/raw/warPath.ts`
+
+- `RegionRow` gains `powers: readonly [CardId, CardId, CardId]` (the L5, L7 and L9 rewards), filled per region from the table in 1.
+- In `buildLevels`, `reward` gains `power: index === 5 ? r.powers[0] : index === 7 ? r.powers[1] : index === 9 ? r.powers[2] : null`.
+- `warPath` gains `powerOwnedAmber: 60`.
+- Nothing else changes (Amber, capsules and card rewards stay as they are).
+
+## 4. `src/meta/warPath.ts`
+
+- In the first-clear block of the result function (next to the `r.card` grant): if `r.power` is set and exists in `t.powers`, add it to `save.powersOwned` and push a reward step `{ kind: 'power', card }`; if the save already owns it, add `t.warPath.powerOwnedAmber` Amber instead and push the Amber step.
+- On the first clear of `wp.stone.l05`, set the Field power slot flag `flags['power.field'] = true` (the same flag the Trophy Road sets at 150 trophies, section 6) and push an unlock step (`unlock.powerField`, the MR-40 ceremony).
+- The node and Level preview show the power reward (icon, name, "New power"; "Owned: 60 Amber" when owned), as they show card rewards (A18.7.8: every reward is shown before the fight).
+
+## 5. `src/content/trophyRoad.ts`
+
+Add one extra `power(...)` item to each of these nodes (the existing items stay; "no reward is lost"):
+
+| Node | Power | Node | Power | Node | Power |
+|---|---|---|---|---|---|
+| 550 | `sticky_tar` | 1,100 | `boarding_nets` | 1,650 | `point_defense` |
+| 600 | `hunt_cry` | 1,150 | `horse_artillery` | 1,700 | `emp_blackout` |
+| 650 | `hunters_spear` | 1,200 | `sharpshooter` | 1,750 | `stasis_field` |
+| 700 | `zeus_bolts` | 1,250 | `barbed_wire` | 1,800 | `singularity` |
+| 750 | `apollo_arrow` | 1,350 | `railway_gun` | 1,850 | `ion_cannon` |
+| 850 | `medusa_gaze` | 1,400 | `saboteurs` | 1,950 | `solar_flare` |
+| 900 | `caltrops` | 1,450 | `aa_screen` | | |
+| 950 | `undermine` | 1,550 | `tank_rush` | | |
+| 1,050 | `boiling_oil` | 1,600 | `sniper_team` | | |
+
+Gates (800, 1,300, 1,900), Wardrobe nodes (1,000, 2,000) and the Jade node 1,500 get none.
+
+## 6. `src/meta/trophies.ts`
+
+- `payRoad` case `'power'`: when the power is already owned, pay 60 Amber (`t.warPath.powerOwnedAmber`) instead of nothing, and show "Owned: 60 Amber" on the node (`road.ownedAmber`).
+- Reaching 150 trophies (the Gate 2 node) also sets `flags['power.field'] = true` if it is not set yet.
+
+## 7. Bots (the opponent builder in `src/meta`, WP7)
+
+Bot War Plans may only use powers a player at that point could own: starters, Road powers with node ≤ the player's best trophies + 100, and War Path powers whose region boss the player has beaten. A power a General's plan lists but may not use is replaced by the age's starter of the same slot. War Path level bots may use their own region's War Path powers. While the player's Field slot is locked, every bot loadout's Field slot is empty (DESIGN A2.9.1, the match rule).
+
+## 8. Save migration (WP8, its own next version)
+
+The power save migration (DESIGN A2.9.8) grants every War Path power whose level the save has already first-cleared and sets the Field slot flag for a save that cleared `wp.stone.l05` or has best trophies ≥ 150. Road fallback items on passed nodes become claimable through the normal claim flow, so nothing is granted twice.
+
+## 9. Tests
+
+- Every `reward.power` id exists in `content.powers`, has `source: 'warPath'` and the region's age; each region grants three distinct powers; no power is both a starter and a reward.
+- Every road `power` item from 550 up exists and is one of the 24 War Path powers, each exactly once.
+- Granting a power twice (War Path, then road, or the other way round) pays 60 Amber the second time and never duplicates `powersOwned`.
+- The Field slot flag is set by the first of the two sources.

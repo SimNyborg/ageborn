@@ -693,3 +693,126 @@ Owner: "the capsule opening animation must be much more satisfying". Everything 
 - 2026-09-29 (budget): `tests/e2e/ui-budget.spec.ts` checks Army (mid, new, maxed, a selected card, a selected slot) and three more Card details strictly, and War Plan is strict now; `tests/e2e/army.spec.ts` covers Use, tap-tap, a mouse drag, a finger drag, a vertical swipe that scrolls, Undo, Info and Upgrade. Open: the first forced upgrade (`src/app/ui/FirstUpgrade.tsx`, WP11) still has its own slam, not the Card detail ceremony.
 - 2026-09-29 (Army, which cards are equipped): "This age" shows the grid in three labelled groups: "Not in army · N" (owned cards that could still join, first, because that is where a swap starts), "In your army · N" (with a green check) and "Not found yet · N". An equip, remove, swap or Undo moves the card to its new group with a FLIP move while it flies to or from its slot; the flight starts from where the card was tapped. On regular screens the loadout carries the title "Your army · Stone Age". "All cards" keeps the album order and marks every card that sits in any age's loadout with the check. A selected card or slot never opens the hover tip over its own action bar. (ui-plan 4.2, U4)
 - 2026-09-29 (first forced upgrade, ui-plan 6.6): `src/app/ui/FirstUpgrade.tsx` plays the Card detail moment instead of its own cartoon slam: the shared `CardStage` (`src/ui/screens/cardDetail/CardStage.tsx`, also used by Card detail) with Bonker on its lane and the lg card lifted and glowing, the Health and Damage rows with the green "+N" of the next level, and one green "Upgrade · 20" (the primary and the pulse). The tap spends at once (the onboarding teaches it, so no confirm tap), charges for 500 ms (MR-39's longer first-upgrade anticipation), then the burst, hammer and "Level 2" banner land, the level flips and the rows tick; a tap on the stage skips; "Continue" is gold. The panel is a token-styled `ui-root`, so the reduce-motion setting and the compact type scale apply. Test ids kept. (MR-39, A8)
+
+## Owner request 2026-09-29: more capsule tiers
+
+Owner: "Til kapslerne mangler der flere niveauer, tilføj f.eks. guld, platinium, så de øverste kapsler bliver virkeligt sjældne og eftertragtede." The lead designer scored three proposals (economy 21.0, desire 18.5, reveal 17.5 of 25, on the owner goal, economy stability, honesty, phone clarity and build cost). The economy proposal is the base. The ladder order and exclusives come from desire; colours, rings, crests and sounds from reveal. Full spec: DESIGN A6.3, A6.4, A6.5 and A10, and the scratchpad `capsule-tiers/SPEC.md` of this session.
+
+- 2026-09-29 (the ladder): 7 tiers, lowest first: Clay, Bronze, Silver, Jade, **Gold**, **Platinum**, **Aeon** (ids `gold` and `platinum` are new; indices 0-6).
+  - The four existing tiers keep their places (Jade stays index 3), so nothing a player learned moves. The owner's two metals go on top in the order everyone knows, and Aeon stays the pinnacle (our name, the game's theme).
+  - Gold, Platinum and Aeon always hold 1, 2 and 3 Legendaries. That is the one rule a player needs, shown by 1-3 Legendary crests on the drum.
+  - Rejected:
+    - economy's Gold as a mid tier below Jade (7%, more common than Jade, so "gold" would not be a top capsule);
+    - reveal's 8th tier "Eternal" (not asked for);
+    - desire's 11 Crown items, Crown Shelf, titles and stats (too costly for the gain).
+- 2026-09-29 (odds):
+  - Win Capsules come from a **200-slot bag of exactly 60 / 80 / 40 / 13 / 4 / 2 / 1**. Clay, Bronze and Silver keep their shares, Jade or better stays exactly 10%, and Legendary capsules are 7 in 200 (3.5%; the old Aeon was 3%). Aeon is 1 in 200, 6x rarer than before.
+  - Supply: Bronze 78 / Silver 15 / Jade 5 / Gold 1.5 / Platinum 0.35 / Aeon 0.15 % (the old 2% Aeon split).
+  - The bag is the tier guarantee ("luck decides when, never whether"), so no tier pity counter is added.
+  - Why 13/4 and not desire's 12/5: 12/5 made every rarity 3-4% faster and Amber +4%. 13/4 keeps every time-to-max median within 3.6% of today.
+- 2026-09-29 (contents):
+  - Gold = the old Aeon (6 stacks, 26/10/5/2, 1 Legendary, 30% skin, 2,640 Amber) + 100 Dust.
+  - Platinum: 7 stacks, 26/12/5/2, 2 different Legendaries (the 2nd holds 1 copy), ≥ 2 Epic, first Legendary at least Silver foil, 50% skin, 2,800 Amber, 200 Dust.
+  - Aeon: 8 stacks, 40/14/6/2, 3 different Legendaries (2nd and 3rd hold 1 copy), ≥ 3 Epic, first Legendary Holo (on a Legendary without Holo when possible; 800 Dust if all have Holo), a skin Epic or better, an Aeon Collection item, 3,600 Amber, 500 Dust.
+  - Jade loses its 25% Rare-to-Legendary conversion: Legendaries now come from Gold up, the 1% stack roll and pity. The conversion funded the top without inflating Legendary copies, and Jade becomes "the Epic capsule".
+  - Extra Legendary stacks hold 1 copy so Legendary copy inflow stays flat: the thrill of a 2nd or 3rd Legendary is the card, not the copy count.
+  - Every column (stacks, Legendaries, Epics, Amber, Dust, skin) is non-decreasing up the ladder.
+- 2026-09-29 (top-tier exclusive): the **Aeon Collection**, 4 A18.9.4 items (Aeon Hourglass decoration, Eternal Dawn base flag, Time Stop emote, quote "Well met, across the ages!"), source kind `capsuleTier`.
+  - Only from Aeon Capsules; not craftable, tradable or sold; never rotated or time-limited.
+  - Each Aeon holds one the player lacks until the set is complete; after that, a normal collection item and +500 Dust.
+  - Access is guaranteed by the bag and by three skill Aeons: the Trophy Road 4,000 summit, the War Path Cosmic finale, and Conquest's 27 stars until the War Path fold. So status never depends on luck alone.
+  - Kept at 4 items (not 11) for build cost; the items may ship one release after the drums.
+- 2026-09-29 (roll rules; DESIGN A6.4 steps):
+  - A 2nd or 3rd Legendary stack counts cards already picked in the capsule as owned, so it picks an owned Legendary instead of falling back to Epic. Today's `pickCard` would drop it to Epic.
+  - **Legendary catch-up** (required): once every Legendary in the pool is owned, Legendary stacks weigh each card 1 + the copies it still needs to reach L10. Without it, 1 of 100 simulated years had a Legendary that never maxed; with it, none, and the worst year's Legendary median fell from 163 to 132.5 days. Disclosed on the odds panel.
+- 2026-09-29 (sources):
+  - Gate 7: Gold (the old Aeon's contents under the new name).
+  - Gate 8: Platinum.
+  - Trophy Road 4,000 and Conquest 27 stars: Aeon (now the new Aeon).
+  - Script capsule 5 (Mammoth Matriarch): Gold. The first Platinum and Aeon are always earned, never scripted (A15: no early generosity that sets false expectations).
+  - War Path Future boss: Jade → Gold, and the Cosmic boss is now the new Aeon (request `docs/requests/capsule-tiers-warpath.md`).
+  - Net one-time change for a player who clears everything: about +19,000 Dust-equivalent and +4,300 Amber, about 2 days of income.
+- 2026-09-29 (climb and show, A10):
+  - 4 main strikes climb at most to Gold (`crownAbove: 'gold'`). Platinum gets 1 and Aeon 2 crown strikes.
+  - A crown pip is never drawn in advance or empty, and the step after strike 4 starts at the same moment for every tier, so no Gold ever looks "almost Platinum".
+  - Contract: `strikeClimbs` stays 4 booleans and `climbs` is the total. New `CapsuleReveal.firstOfTier` drives a 1 s "Your first Aeon Capsule" banner (meta flag `capsule.first.<tier>`).
+  - The drum has 7 rings, one per tier, each lit ring in its own tier colour. Legendary crests replace the Aeon gold rim.
+  - Colours:
+    - Gold `#F0DC9A` champagne: ΔE2000 14.7 from Legendary, while a saturated gold sits 3-9 from it.
+    - Platinum `#C4F2EA` ice: 16.8 from Silver.
+    - Aeon `#4F66E6` deep indigo: 15.5 from Epic, which ends the old violet Aeon vs Epic clash at 5.0; contrast 3.5:1 on the dark theme.
+    - Silver vs Common (4.2) stays a known exception.
+  - Staging escalates with the tier already shown: Gold small, Platinum medium, Aeon large.
+  - Sounds: `cap_climb_5`, `cap_climb_6`, `cap_crown_rise`, `cap_burst_platinum`, `cap_burst_aeon`. No casino imagery or copy; "jackpot", "almost", "so close" and "only N left" are banned in capsule copy.
+- 2026-09-29 (save): the next save version after the newest (v6 when written). Re-read `src/save/migrations` before adding it.
+  - `capsules.bag` remaps tier index 4 → 6 (0-3 do not move).
+  - New `capsules.bagSize` (100 for a bag in progress, 0 when empty, 200 after a refill), so the odds panel says "N of 100 left" truthfully.
+  - The bag in progress finishes its old mix and its Aeon slots are the new Aeon: the displayed promise "Aeon: 2 left" is kept, at most 3 extra Aeons per save, once.
+  - Pending `aeon` capsules become `gold` (tier and startTier) with +100 Dust. Their pre-rolled contents are exactly the Gold table: names follow contents, nothing is re-rolled or taken.
+  - Rejected: desire's post-load "top-up to the new Aeon" (impure, a WP7 step after load) and economy's `table: 1` legacy label (an "Aeon" drum with 1 Legendary would break the crest rule).
+  - `flags['notice.capsuleLadder']` drives a one-time, closable Home notice with no timer.
+- 2026-09-29 (economy, measured): a scratch copy of the repo with the final numbers ran `tools/economy.ts` over 100 seeds against an untouched copy.
+  - Medians (today → new):
+    - Common to max 110.3 → 107.5 days
+    - Rare 101.0 → 99.5
+    - Epic 69.0 → 66.5
+    - Legendary 111.5 → 112.0 (p90 129 → 123)
+    - copies done 209.5 → 192.5 (p90 264 → 217)
+    - Amber done 146 → 143
+    - per day: 96.5 → 97.8 copies and 2,981 → 3,030 Amber
+  - Per bag capsule before pity: 15.7 → 16.1 copies, 399 → 411 Amber, 7 → 13 Dust.
+  - `sim-cli economy` seed 1: 9 pass / 8 fail (today 10 / 7). The extra fail is Rare to max at 105 days against a 105-157 band, which today's own 100-seed median (101) also misses: single-seed noise. WP12 should gate on a 30-seed median.
+  - `sim-cli drops --mode smoke`: 10 / 10 pass (400 / 400 bags of 200 exact, Supply χ² p = 0.58, 0 guarantee violations, every Platinum 2 and every Aeon 3 Legendaries).
+  - The owner's "keep today's time to max a card" holds.
+
+## Owner request 2026-09-29: powers cost gold, reload, more powers, own-half limits
+
+Owner: "Speciallen burde koste penge og have reload time, der skal være mange flere specials og nogle af dem f.eks. begrænset til egen banehalvdel så man ikke bare kan vente på, at modstanderen har bygget en hær som man så bare ødelægger på en gang." Money means in-battle gold; there is no real money, ever. The lead designer scored three proposals (strategy 50, feel 50, content 47; owner goals weighted ×2, then depth, phone clarity, AI feasibility, balance risk, build cost and fit with the work in flight) and wrote one spec on the strategy base. Rules: DESIGN A2.9; roster: A5.7; requests: `docs/requests/powers-sources.md`, `docs/requests/powers-hud-army.md`. Decided, not built (build phases P1-P5, A2.9.13).
+
+- 2026-09-29 (evidence, headless on `013d958`, `SIM_VERSION` 3.0.0, from the three proposals' runs):
+  - Free powers are the main stall engine: Standard War tier V mirror Final Bell 37-39% with powers, 1-5% without (150-200 matches each).
+  - A cast zone holds 71-82% of the enemy's on-lane army; power kills were 9% / 19% / 21% of all enemy value killed in Short / Standard / Full War.
+  - Priced Home-only powers: 15-17% Bell and a 10:14-10:35 median (target 10:30); cost plus own half: 16%, 9:56.
+  - Reach alone backfires: a Home clamp without a cap sent a hoarding turtle to the Bell in 60% of matches (19% today) and let the attacker's charge kill 9.9 units per cast of an army massed at home (2.5 today); "own half" alone raised the largest single cast from 675 to 810 gold killed.
+  - Free vs no power 93%; 100 g Home powers vs no power 38% with the AI not adapted; one side paying against a free side won 1 of 80.
+  - Full War shortened to 8:27-9:58 in both priced prototypes (target 15:00).
+- 2026-09-29 (base): the strategy proposal's rule skeleton wins the tie with feel on the owner's central complaint: typed Home and Field slots, reach, and a hard target cap on every damaging or controlling power. It is the only proposal that measured why reach alone is not enough.
+- 2026-09-29 (cost and reload): every power costs 75-150 gold, flat across ages, paid on acceptance and never refunded (the telegraph is a commitment, which keeps baiting real); each slot reloads on its own, 25-60 s by power.
+  - Reload stays progress in ppm per slot (from feel), so Overcharge, Signal Fires, Power Hour, the HUD ring and the evolve carry keep one shape.
+  - Every slot starts 25% reloaded (a 40 s power is ready at 0:30, after the first clash); the evolve carry is min(progress, 75%) per slot, so a new-age power is always at least a quarter of its reload away.
+  - Overdrive and Siege no longer speed reloads (passive gold already doubles); Overcharge adds 25% to the less-reloaded slot.
+  - Rejected: a gold cost on top of the charge meter (it still says "fire when full"), rising cost per cast (rewards one big cast), stored charges (a double wipe), power levels (a grind axis the loadout multiplier already covers).
+- 2026-09-29 (slots and reach): a Home slot (reach `home`: the whole zone at p ≤ 1,000) and a Field slot (reach `front`: centre ≤ max(front, 480) + 150; `anywhere` only for one-target strikes and drops; `army` for buffs).
+  - Why a fixed half: it never moves, is drawn once, matches the Hold flag range and Forage, and favours the side being pushed (the comeback direction). Why "front + 150" with a 480 floor: you can only reach where your army stands, and a Front power can always defend home.
+  - The front counts only trained ground units (no air, no summons), so a flyer or a drop cannot carry reach forward; `frontRank` 2 is the lever if a lone runner is abused.
+  - Typed slots replace content's "one Barrage per loadout" and command lock: a loadout can never hold two area nukes. The lock stays as a data lever at 0.
+  - The Home slot is there from match 1 (the tutorial's Arrow Storm beat is already a Home cast); the Field slot unlocks at the War Path Stone L5 first clear or 150 trophies. Both sides always play the same slots (feel's match rule).
+- 2026-09-29 (the cap): one cast affects at most `maxTargets` enemy units (1-6), nearest the caster's gate first, through one `hitIds` rule for every kind.
+  - Chosen over feel's crowd damage share: a cap keeps kills clean and satisfying ("five go down"), shows as numbered pips before the cast, and makes formation a skill (cheap units in front screen the Heavies). A damage share makes every cast into a big army feel weak.
+  - With the cap, a bigger army is worth no more than a small one, so waiting for the enemy to mass earns nothing: the owner's "wait, then destroy it all at once" is closed by reach, the cap and the price together.
+- 2026-09-29 (roster): 48 powers, 6 per age (3 Home, 3 Field) on a role template (from content): Home = an area damage power, a second one of another family, a control; Field = an assault (charge or front barrage), a strike or Suppress, a support.
+  - 16 built powers kept (retagged and priced; Tidal Wave 130 → 150 and Iron Horse 150 → 130 from feel's per-power value data; Arrow Storm 40 → 50 and Royal Decree speed 25% → 20% to sit in the band and the A18.2 cap; Smoke Screen 7 → 6 s; Paratroopers 4 → 3 Riflemen and Warp Strike 3 → 4 Legionnaires to price drops at 150 g).
+  - 32 new: 8 starters (so every age has a Home and a Field starter) and 24 War Path powers.
+  - Three new sim kinds only: `field` (snares, pulls, stuns), `strike` (one locked target), `suppress` (silences enemy turrets; one in the final age of every ladder format, as a tool against turret stalls); plus `barrage.hitsGround` for Flak. Everything else reuses `barrage`, `sweep`, `stampede`, `buffAll`, `cloud` and `paradrop`.
+  - Benched: Barricade (waits for the fort entity), Tremor (waits for Underground), Minefield, Star Shells, a Trojan Horse drop, summon lifetimes and a summon cap (levers only), Legendary powers.
+  - Why 48 and not 32 or 40: "mange flere" asks for a clear jump, and 3 options per slot per age makes each slot a real 1-of-3 pick; families and effect recipes keep the build cost per power small.
+- 2026-09-29 (sources): starters, the existing Trophy Road 100-500 nodes, the War Path (each region's L5, L7 and L9 first clear) and a Trophy Road fallback on nodes 550-1,950; whichever comes first grants the power, the other pays 60 Amber.
+  - Never capsules (strategy's capsule cards rejected): powers have no copies or levels, capsule odds and the pacing sims stay untouched, and the capsule-tier work in flight is not disturbed.
+  - Bots use only powers a player at that point could own.
+- 2026-09-29 (AI, from feel): per slot, value per gold (ROI) over the capped targets in the legal band against a tier bar (7,000 at tier 0 to 17,000 at X), a gold ledger, a Home reserve from tier V, ring reading from V, bait-then-wave from VII and counter-timing at X; tiers 0-II use the Home slot only.
+- 2026-09-29 (HUD, from feel): a dock of two round buttons (64 px on phones) using the reserved Fort space until forts ship (714 of 750 px); a cost chip, reach glyph, reload ring and seconds; a reach band with a magnetic edge; numbered target pips ("Hits 5 of 9 · −100"); two enemy mini-rings with "?" until scouted; feel scaled by family inside the A12 freeze budget. Space = Home, X = Field.
+- 2026-09-29 (contracts): one WP0 bump and `SIM_VERSION` 4.0.0 with one golden re-record on the frozen fixture (the 3.0.0 replay policy: old replays keep their result, no longer play); a new golden covers both slots, the cap, a field, a strike and Suppress. Save: the next version after the newest at build time moves each loadout's power into its slot, fills the other with the age's starter, grants the new starters and already-earned War Path powers; nothing is lost.
+- 2026-09-29 (gates): power share of gold 8-16%, of enemy value killed 5-12%; one cast touches ≤ 40% (p50) of an army worth ≥ 750; p99 of card value killed per cast ≤ 350; 1.5-3.5 casts per side per age; `power_hoarder` ≤ 40% with ≤ 20% at the Bell; `bait_wave` beats `plain_wave` by 5-20 points; `power_spam`, `drop_spam`, `runner_reach` ≤ 45%; `no_power` loses 60-80%; `home_turtle` in the turtle band; per power ±3 against its slot's starter; Final Bell not above today's at P1 and Standard ≤ 20% before P2; Full War median ≥ 12:00. Levers in order: cap ±1, Home cost or reload, the Home line, Front reach or `frontRank`, the power-kill bounty, the Overdrive reload bonus, the slot lock, Suppress length.
+- 2026-09-29 (risks accepted): Full War may shorten (tuned together with pacing in P5, Home 100 → 75 first); a capped power can feel stingy (per-unit damage stays at the top of the old band, the pips make the cap a visible promise); two slots crowd the phone tray (fits at 714 of 750 px, 748 once forts ship).
+
+## UI review fixes (fixer, 2026-09-29)
+
+- 2026-09-29 (overlays): the app's blocking overlays (the first forced upgrade, the Age Capsule dialog) register in `src/ui/components/overlay.ts`; while one is open Home drops its primary and pulse and holds its level ceremony, unlock moment and first-seen captions until it closes (U1, U11, U13).
+- 2026-09-29 (one new thing): the Amber/Dust first-seen captions wait for a pending unlock moment and count as seen only after showing in full; the unlock pointer folds away on any tap outside it, so a locked tab's hint never stacks on it.
+- 2026-09-29 (tabs): a locked tab keeps its label; the next one to unlock adds a "Lv N" tag on its icon (2.6). Army's ready badge is a dot without a count (a count read as a backlog), and only when an upgrade is affordable (copies and Amber) after upgrades have been taught (`upgradesTaught`: the forced upgrade, level 3, or a legacy save). The capsule summary hides "Upgrade ready" before that too.
+- 2026-09-29 (Army, 2.6): the average level, the advisor's warnings and Auto-fill arrive with level 3 (errors always show); empty troop slots with no owned troop left say "More in capsules". Phones: the average level moves from the header into the strip above the slots, and grid cards keep their names. A grid card's action bar picks the side with room and the grid scrolls it fully into view.
+- 2026-09-29 (formats): `formatName` (UI model) names generated age windows by their ages ("Stone to Bronze"); VS shows "Level N · name" for War Path levels. "AI" and "AI General" are one chip.
+- 2026-09-29 (onboarding Result): the app's onboarding Result uses the shared level badge (`LevelBadgeView`), the icon recap rows and the shared reward icons; War Path stars are no longer listed as reward rows (the badge stamps them). The onboarding capsule summary's primary reads "Continue". A card equipped into an age the player has not reached reads "Equipped for Bronze", not "Equipped".
+- 2026-09-29 (Capsules tab, 4.6): stage with the best capsule (display tier, name, source, Odds, Open) and a shelf where a tile tap opens that capsule or crate directly (kept one tap; no select step). Banks show only after their first progress: charges once the Ladder is open, Supply when banked, Clay when it has a pip. The odds panel shows the odds first, then the bank rules.
+- 2026-09-29 (Customize): U10's "instant with Undo" instead of a try-on step: equipping a flag, base skin or decoration shows the new state on the tile and a toast with Undo. Equip pills are green, "Equipped" is a flat state pill, every category tab has its label, and the base mock-up shows the player's current War Path age.
+- 2026-09-29 (Modes): the Modes panel opens on the last mode started, so a Ladder battle is 2 taps after the first.

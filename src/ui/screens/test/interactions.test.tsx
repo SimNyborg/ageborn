@@ -288,7 +288,7 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
     expect(text(m.q('[data-testid="war-chest"]')!)).toContain(`War Chest 13/${content.quests.weekly.target}`);
     expect(m.qa('[data-testid^="quest-"][data-testid$="0"], [data-testid="quest-1"], [data-testid="quest-2"]').length).toBeGreaterThan(0);
     expect(m.q('[data-testid="quest-3"]')).toBeNull();
-    expect(text(m.q('[data-testid="home-quests"]')!)).toContain('Up to 21 can wait for you.');
+    expect(text(m.q('[data-testid="home-quests"]')!)).toContain('Holds up to 21. When full, it stops filling.');
   });
 
   it('the capsule info panel states each bank cap and that nothing earned is taken away (A15.3)', () => {

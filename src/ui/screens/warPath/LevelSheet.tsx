@@ -24,6 +24,9 @@ import { useUi } from '../context';
 import { DIFFICULTY_NAME_KEYS } from '../model/progress';
 import { goalsShown, goalText, hardMarked, levelNameKey, levelTier, progressOf, regionNameKey, type MapNode } from '../model/warPath';
 
+/** Roles that mean something to a player (the others are the designer's pacing words, U9). */
+const SHOWN_ROLES: ReadonlySet<string> = new Set(['boss', 'lieutenant', 'puzzle', 'relief']);
+
 export function LevelSheet(p: {
   node: MapNode;
   /** The current level's number, for the locked line and "Go to my level". */
@@ -110,7 +113,8 @@ export function LevelSheet(p: {
           </span>
           <span class="lv-head__text">
             <span class="lv-head__role" data-clip-check="">
-              {t('warPath.ui.levelN', { n: level.index })} · {t(roleKey)}
+              {t('warPath.ui.levelN', { n: level.index })}
+              {SHOWN_ROLES.has(level.role) ? ` · ${t(roleKey)}` : ''}
               {hardMarked(level) ? (
                 <span class="lv-tag" data-tag="">
                   {t('warPath.ui.hard')}
@@ -123,6 +127,19 @@ export function LevelSheet(p: {
             </span>
           </span>
         </header>
+
+        {shown && !locked ? (
+          <div class="lv-diff" data-testid="level-diff">
+            <Segmented
+              label={t('warPath.ui.difficulty')}
+              value={diff}
+              size="sm"
+              testid="level-difficulty"
+              onChange={(d) => services.setWarPathDifficulty(d)}
+              options={content.warPath.difficulty.order.map((d) => ({ value: d, label: t(DIFFICULTY_NAME_KEYS[d]) }))}
+            />
+          </div>
+        ) : null}
 
         <ul class="lv-rows">
           <li class="lv-row">
@@ -194,19 +211,6 @@ export function LevelSheet(p: {
             </span>
           </div>
         </div>
-
-        {shown && !locked ? (
-          <div class="lv-diff">
-            <Segmented
-              label={t('warPath.ui.difficulty')}
-              value={diff}
-              size="sm"
-              testid="level-difficulty"
-              onChange={(d) => services.setWarPathDifficulty(d)}
-              options={content.warPath.difficulty.order.map((d) => ({ value: d, label: t(DIFFICULTY_NAME_KEYS[d]) }))}
-            />
-          </div>
-        ) : null}
 
         {level.teaches ? (
           <p class="lv-tip" data-testid="level-tip">

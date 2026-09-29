@@ -601,3 +601,88 @@
     height: 40px;
   }
 }
+
+/*
+ * Phones with a War Path level badge, and every short phone (review: the recap box clipped at
+ * 844 x 340, and nothing may scroll inside a box, 4.9): the stats sit in two compact columns; with a
+ * level badge the badge carries the story, so the MVP tile steps aside.
+ */
+@container ui-root (max-height: 480px) {
+  .result__left:has(.result-level) .result__mvp {
+    display: none;
+  }
+}
+@container ui-root (max-height: 380px) {
+  .result__stats {
+    gap: 3px;
+  }
+  .result__stats li {
+    min-width: 0;
+    padding: 1px 6px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .result__stats b {
+    font-size: 13px;
+  }
+  .result__statIcon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .result__h {
+    margin-bottom: 2px;
+  }
+  .result__mvp .ui-card__name {
+    display: none;
+  }
+}
+@container ui-root (max-height: 480px) {
+  .result__left:has(.result-level) .result__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: start;
+    gap: 3px 6px;
+  }
+  .result__left:has(.result-level) .result__stats li {
+    min-width: 0;
+    padding: 1px 6px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .result__left:has(.result-level) .result__stats b {
+    font-size: 13px;
+  }
+  .result__left:has(.result-level) .result__stats .ui-grow {
+    white-space: nowrap;
+  }
+  .result__left:has(.result-level) .result__stats li {
+    gap: 4px;
+    padding: 1px 5px;
+  }
+  .result__left:has(.result-level) .result__statIcon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .result__left:has(.result-level) .result__h {
+    margin-bottom: 2px;
+  }
+}
+@container ui-root (max-height: 380px) {
+  /* The badge, then the four stats that tell the story; turret kills and evolves step aside. */
+  .result__left:has(.result-level) [data-testid='recap-turretKills'],
+  .result__left:has(.result-level) [data-testid='recap-evolves'] {
+    display: none;
+  }
+  .result-level {
+    margin: 2px 0 var(--ui-s1);
+    padding: 4px var(--ui-s2);
+  }
+  .result-level__disc {
+    width: 36px;
+    height: 36px;
+  }
+  .result-level__star svg {
+    width: 22px;
+    height: 22px;
+  }
+}

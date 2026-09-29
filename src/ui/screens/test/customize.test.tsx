@@ -21,7 +21,8 @@ describe('Customize: collections (A18.9.4)', () => {
     m = cust('troops');
     for (const tab of ['troops', 'bases', 'flags', 'decorations', 'emotes', 'quotes', 'look']) expect(m.q(`[data-testid="tab-${tab}"]`), tab).not.toBeNull();
     expect(text(m.q('[data-testid="cust-total"]')!)).toMatch(/^\d+\/\d+ found$/);
-    expect(m.q('[data-testid="cosmetic-completion"]')).not.toBeNull();
+    // The per-collection counts live on each collection's own tab (review 9: not on Troops).
+    expect(m.q('[data-testid="cosmetic-completion"]')).toBeNull();
   });
 
   it('flags: the mock-up, "found" counts, equip an owned flag, clear the national flag', () => {
@@ -65,6 +66,8 @@ describe('Customize: collections (A18.9.4)', () => {
 
   it('bases: a skin equips on its own age', () => {
     m = cust('bases');
+    // The tab opens on the age the player is in (Bronze in the fixture); pick Stone.
+    m.click('[data-testid="age-tab-stone"]');
     m.click('[data-testid="item-baseSkin.frost_cave"] button');
     // already on for Stone in the fixture: nothing to do; the standard base clears it
     m.click('[data-testid="base-default"]');

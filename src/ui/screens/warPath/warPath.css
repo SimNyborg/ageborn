@@ -664,7 +664,8 @@
 .wp-node__tag {
   position: absolute;
   left: 50%;
-  top: -10px;
+  /* Clear of the crown badge on the node's top-right (review: they collided). */
+  top: -24px;
   transform: translateX(-50%);
   padding: 1px 6px;
   border-radius: var(--ui-r-sm);
@@ -677,7 +678,7 @@
   white-space: nowrap;
 }
 .wp-node--current .wp-node__tag {
-  top: -18px;
+  top: -30px;
 }
 .wp-node__tag--boss {
   top: auto;

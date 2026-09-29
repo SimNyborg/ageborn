@@ -23,6 +23,7 @@ import { formatInt } from '@/ui/components/format';
 import { haptic } from '@/ui/components/haptics';
 import { AmberIcon } from '@/ui/components/icons';
 import { UiKitContext, type UiKit } from '@/ui/components/kit';
+import { useBlockingOverlay } from '@/ui/components/overlay';
 import { CardStage } from '@/ui/screens/cardDetail/CardStage';
 import { cardDef, cardGlyph, cardTile, unitStats, type StatRow } from '@/ui/screens/model/cards';
 
@@ -98,7 +99,10 @@ export function FirstUpgrade() {
     return () => clearTimeout(timer);
   }, [phase]);
 
-  if (!due || !save || !typed || !isMetaRules(meta) || (phase === 'offer' && blocked !== null)) return null;
+  const open = due && !!save && !!typed && isMetaRules(meta) && !(phase === 'offer' && blocked !== null);
+  // Home under it drops its primary and pulse and holds its ceremonies until this closes (U1, U13).
+  useBlockingOverlay(open);
+  if (!open || !save || !typed || !isMetaRules(meta)) return null;
   const def = cardDef(typed, FIRST_UPGRADE_CARD);
   const tile = cardTile(save, typed, FIRST_UPGRADE_CARD, ui.t);
   if (!def || def.kind !== 'unit' || !tile) return null;

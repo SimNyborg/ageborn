@@ -27,6 +27,13 @@ export interface SummaryActions {
   /** Already in the active War Plan (the first Starter Capsule equips its NEW card, A8): shows "Equipped". */
   isEquipped?: (card: CardId) => boolean;
   /**
+   * When an equipped card sits in the army of an age the player has not reached yet, the honest
+   * label for it ("In the Bronze Age army"); null keeps "Equipped".
+   */
+  equippedNote?: (card: CardId) => string | null;
+  /** False until upgrades have been taught (2.6): no "Upgrade ready" ribbons before that. Default true. */
+  upgradesTaught?: boolean;
+  /**
    * Set when the capsule was opened from the Result: the label of the Result's own path ("Continue",
    * "Next battle"). `onDone` then continues that path, and it is the primary (ui-plan 2.5).
    */
@@ -92,6 +99,7 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
   const name = item.kind === 'skin' && item.skin ? t(catalog.skin(item.skin).nameKey) : t(catalog.card(item.card).nameKey);
   const color = RARITY_COLORS[item.rarity];
   const pr = item.progress;
+  const note = item.kind === 'card' ? (p.actions.equippedNote?.(item.card) ?? null) : null;
   const canEquip = item.isNew && ((item.kind === 'card' && p.actions.onEquip) || (item.kind === 'skin' && item.skin && p.actions.onEquipSkin));
   const style = {
     '--rarity': cssHex(color),
@@ -107,33 +115,41 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
     <div class={`${css.item} ${item.isNew ? css.itemNew : ''}`} style={style} data-testid="capsule-summary-item" data-card={item.card}>
       <div class={css.badges}>
         {item.isNew ? (
-          <span class={css.badge}>{t('capsule.new')}</span>
+          <span class={css.badge} data-tag="">
+            {t('capsule.new')}
+          </span>
         ) : item.kind === 'skin' ? (
-          <span class={css.badgeSkin}>{t('capsule.skinStamp')}</span>
+          <span class={css.badgeSkin} data-tag="">
+            {t('capsule.skinStamp')}
+          </span>
         ) : (
           <span />
         )}
-        {item.kind === 'card' && item.copies > 0 ? <span class={css.badgeCount}>{t('capsule.copiesTimes', { n: item.copies })}</span> : null}
+        {item.kind === 'card' && item.copies > 0 ? <span class={css.badgeCount} data-tag="">{t('capsule.copiesTimes', { n: item.copies })}</span> : null}
       </div>
       <div class={css.portrait}>{url ? <img src={url} alt="" draggable={false} /> : initials(name)}</div>
       <div class={css.itemName}>{name}</div>
       {item.kind === 'skin' && item.skin ? <div class={css.itemSub}>{skinTarget(catalog, item.skin, t)}</div> : null}
-      {item.foil !== 'none' ? <span class={css.foil}>{t('capsule.foilUnlocked', { foil: t(`foil.${item.foil}.name`) })}</span> : null}
+      {item.foil !== 'none' ? <span class={css.foil} data-tag="">{t('capsule.foilUnlocked', { foil: t(`foil.${item.foil}.name`) })}</span> : null}
       {item.dust > 0 ? <span class={css.dust}>{t('capsule.dustPlus', { n: item.dust })}</span> : null}
       {pr && pr.need !== null ? (
         <div class={`${css.bar} ${item.upgradeReady || pr.after >= pr.need ? css.barReady : ''}`}>
           <div class={css.barFill} style={{ width: `${Math.min(100, Math.round((pr.after / Math.max(1, pr.need)) * 100))}%` }} />
-          <div class={css.barText}>{t('capsule.copiesOf', { have: Math.min(pr.after, pr.need), need: pr.need })}</div>
+          <div class={css.barText} data-tag="">{t('capsule.copiesOf', { have: Math.min(pr.after, pr.need), need: pr.need })}</div>
         </div>
       ) : pr && pr.need === null ? (
         <div class={css.bar}>
           <div class={css.barText}>{t('capsule.max')}</div>
         </div>
       ) : null}
-      {item.upgradeReady || (pr && pr.need !== null && copiesText(pr.after, pr.need) === null) ? <span class={css.ready}>{t('capsule.upgradeReady')}</span> : null}
+      {p.actions.upgradesTaught !== false && (item.upgradeReady || (pr && pr.need !== null && copiesText(pr.after, pr.need) === null)) ? (
+        <span class={css.ready} data-tag="">
+          {t('capsule.upgradeReady')}
+        </span>
+      ) : null}
       {canEquip && equipped ? (
-        <span class={css.equippedPill} data-testid="capsule-equipped">
-          {t('capsule.summary.equipped')}
+        <span class={`${css.equippedPill} ${note ? css.equippedLater : ''}`} data-testid="capsule-equipped">
+          {note ?? t('capsule.summary.equipped')}
         </span>
       ) : canEquip ? (
         <button class={css.equip} type="button" onClick={equip} data-testid="capsule-equip">

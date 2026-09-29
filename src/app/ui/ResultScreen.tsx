@@ -7,19 +7,26 @@
  */
 import { useEffect, useMemo } from 'preact/hooks';
 import { resultActions, type ResultActionId } from '@/ui/screens/model/result';
-import { ResultLayout, resultBar } from '@/ui/screens/result/ResultScreen';
+import { LevelBadgeView, ResultLayout, resultBar } from '@/ui/screens/result/ResultScreen';
+import { AiBadge } from '@/ui/components/Chips';
+import { formatClock, formatInt } from '@/ui/components/format';
+import { AmberIcon, CapsuleIcon, CheckIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, StarIcon, SwordsIcon, TrophyIcon } from '@/ui/components/icons';
+import { UiKitContext, type UiKit } from '@/ui/components/kit';
+import { asContent } from '@/content';
+import { isMetaRules } from '../uiServices';
 import type { RewardStep } from '@/contracts';
 import type { ResultState } from '../controller';
 import { RewardStager } from '../flow';
 import { displayName } from '../names';
 import { lossTipKey } from '../trickle';
 import { useApp } from './context';
+import { UI_SOUND_FALLBACK } from './MetaHost';
 import { titleNameKey } from '@/content';
 
 type T = (k: string, p?: Record<string, string | number>) => string;
 
 /** The chip of one reward step: an icon kind and its text (names through i18n, never raw ids). */
-export type RewardIconKind = 'amber' | 'dust' | 'capsule' | 'trophy' | 'title' | 'star' | 'feat' | 'plain';
+export type RewardIconKind = 'amber' | 'dust' | 'capsule' | 'crate' | 'trophy' | 'title' | 'star' | 'feat' | 'plain';
 
 export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): { icon: RewardIconKind; text: string } | null {
   switch (r.kind) {
@@ -32,7 +39,7 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
     case 'capsule':
       return { icon: 'capsule', text: t(o.starter ? 'app.reward.starterCapsule' : 'app.reward.capsule') };
     case 'crate':
-      return { icon: 'plain', text: t('app.reward.crate') };
+      return { icon: 'crate', text: t('app.reward.crate') };
     case 'clayPip':
       return { icon: 'plain', text: t('app.reward.clayPip', { meter: r.meter }) };
     case 'codex':
@@ -43,7 +50,8 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
     case 'star':
       return { icon: 'star', text: t('app.reward.star', { star: r.star }) };
     case 'pathStar':
-      return { icon: 'star', text: t('app.reward.pathStar', { star: r.star }) };
+      // The level badge stamps these in (4.9); a row per star would repeat it.
+      return null;
     case 'card':
       return { icon: 'plain', text: t('app.reward.card', { name: t(`card.${r.card}.name`) }) };
     case 'arena':
@@ -57,49 +65,27 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
   }
 }
 
+/** The shared UI icons, so the onboarding rewards look like every other Result (4.9). */
 function RewardIcon(p: { kind: RewardIconKind }) {
   switch (p.kind) {
     case 'amber':
-      return (
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <path d="M12 2.5 19.5 8 17 19 12 21.5 7 19 4.5 8z" fill="#f2a93b" stroke="#6b3a0c" stroke-width="1.6" stroke-linejoin="round" />
-          <path d="M12 2.5 12 21.5M4.5 8 19.5 8" stroke="#ffd98a" stroke-width="1.2" opacity="0.7" />
-          <path d="M8 7.5 10.5 5" stroke="#fff4d6" stroke-width="1.8" stroke-linecap="round" />
-        </svg>
-      );
+      return <AmberIcon size={30} />;
     case 'dust':
-      return (
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <path d="M12 3 14 10 21 12 14 14 12 21 10 14 3 12 10 10z" fill="#9fd8ff" stroke="#23456b" stroke-width="1.5" stroke-linejoin="round" />
-        </svg>
-      );
+      return <DustIcon size={30} />;
     case 'capsule':
-      return (
-        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-          <rect x="5" y="4" width="14" height="17" rx="6" fill="#c9854a" stroke="#4a2410" stroke-width="1.6" />
-          <rect x="4" y="11" width="16" height="3.4" rx="1.4" fill="#ffd257" stroke="#4a2410" stroke-width="1.3" />
-          <circle cx="12" cy="12.7" r="2.2" fill="#fff3c4" stroke="#4a2410" stroke-width="1.1" />
-          <path d="M8 7.5c1-1.5 2.2-2 3.5-2" stroke="#ffe3b8" stroke-width="1.6" stroke-linecap="round" fill="none" />
-        </svg>
-      );
+      return <CapsuleIcon tier="bronze" size={36} />;
+    case 'crate':
+      return <CrateIcon size={32} />;
     case 'trophy':
-      return (
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#ffc93c" stroke="#5a3a00" stroke-width="1.6" />
-          <path d="M9.5 18h5l1 3h-7z" fill="#ffc93c" stroke="#5a3a00" stroke-width="1.5" stroke-linejoin="round" />
-          <path d="M12 14v4" stroke="#5a3a00" stroke-width="2" />
-        </svg>
-      );
+      return <TrophyIcon size={30} />;
     case 'title':
-    case 'feat':
+      return <CrownIcon size={30} />;
     case 'star':
-      return (
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-          <path d="M12 2.8 14.7 8.6 21 9.2 16.2 13.4 17.7 19.6 12 16.4 6.3 19.6 7.8 13.4 3 9.2 9.3 8.6z" fill={p.kind === 'feat' ? '#c89bff' : '#ffd84a'} stroke="#3a2a00" stroke-width="1.5" stroke-linejoin="round" />
-        </svg>
-      );
+      return <StarIcon size={30} />;
+    case 'feat':
+      return <StarIcon size={30} />;
     default:
-      return null;
+      return <CheckIcon size={24} />;
   }
 }
 
@@ -175,56 +161,80 @@ export function ResultScreen(p: { result: ResultState }) {
     home: 'home',
     replay: 'watch-replay',
   });
+  // 4.9: the same level badge as every War Path Result (levels 1 and 2 are the onboarding matches).
+  const pathLevel = input.warPath?.level ?? (rewards.find((r) => r.kind === 'pathStar') as { level?: string } | undefined)?.level ?? null;
+  const typed = isMetaRules(ui.services.meta) ? asContent(ui.services.content) : null;
+  const best = pathLevel ? (c.save.value?.warPath?.stars[pathLevel] ?? 0) : 0;
+  const reduce = ui.controller.save.value?.settings.reduceMotion ?? false;
+  const kit: UiKit = useMemo(
+    () => ({ t: ui.t, locale: 'en', portrait: ui.art.portrait.bind(ui.art), reduceMotion: reduce, sound: (id: string) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id) }),
+    [ui, reduce],
+  );
+  const recap = [
+    { id: 'time', icon: <FlagIcon size={22} />, label: ui.t('ui.result.time'), value: formatClock(input.stats.durationMs) },
+    { id: 'trained', icon: <SwordsIcon size={22} />, label: ui.t('ui.result.trained'), value: formatInt(input.stats.trained, 'en') },
+    { id: 'kills', icon: <CrownIcon size={22} />, label: ui.t('ui.result.kills'), value: formatInt(input.stats.kills, 'en') },
+  ];
   return (
-    <div class="ui-root ab-result-host" data-reduce-motion={ui.controller.save.value?.settings.reduceMotion ? 'true' : 'false'}>
-      <ResultLayout
-        kind={kind}
-        title={title}
-        onTap={() => stager.tap()}
-        vs={
-          <>
-            <span data-testid="result-line">{line}</span>
-            <span class="ui-ai">
-              <span class="ui-ai__chip">{ui.t('app.aiChip')}</span>
-            </span>
-          </>
-        }
-        recap={
-          <section class="result__recap" data-testid="result-recap">
-            <ul class="result__stats">
-              <li>
-                <span class="ui-grow">{ui.t('app.stats.trained', { n: input.stats.trained })}</span>
-              </li>
-              <li>
-                <span class="ui-grow">{ui.t('app.stats.kills', { n: input.stats.kills })}</span>
-              </li>
-            </ul>
-            {tip ? (
-              <p class="result-sum__tip" data-testid="result-tip">
-                {ui.t(tip)}
-              </p>
-            ) : null}
-          </section>
-        }
-        rewards={
-          <section class="result__rewards" data-testid="result-rewards" hidden={shown.length === 0}>
-            <ul class="result__list">
-              {shown.slice(0, revealed).map(({ r, chip }, i) => (
-                <li class={`result-reward result-reward--${chip.icon}`} key={i} data-testid="result-reward" data-kind={r.kind}>
-                  <span class="result-reward__icon">
-                    <RewardIcon kind={chip.icon} />
-                  </span>
-                  <span class="result-reward__main">
-                    <span class="result-reward__label">{chip.text}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {!stager.done ? <span class="result__tap">{ui.t('app.tapToSkip')}</span> : null}
-          </section>
-        }
-        actions={bar}
-      />
-    </div>
+    <UiKitContext.Provider value={kit}>
+      <div class="ui-root ab-result-host" data-reduce-motion={reduce ? 'true' : 'false'}>
+        <ResultLayout
+          kind={kind}
+          title={title}
+          onTap={() => stager.tap()}
+          badge={
+            pathLevel && typed ? (
+              <LevelBadgeView content={typed} t={ui.t} sound={kit.sound} best={best} level={pathLevel} rewards={rewards} stats={input.stats} won={won} />
+            ) : null
+          }
+          vs={
+            <>
+              <span data-testid="result-line">{line}</span> <AiBadge size="sm" />
+            </>
+          }
+          recap={
+            <section class="result__recap" data-testid="result-recap">
+              <h2 class="result__h">{ui.t('ui.result.recap')}</h2>
+              <ul class="result__stats">
+                {recap.map((r) => (
+                  <li key={r.id} data-testid={`recap-${r.id}`}>
+                    <span class="result__statIcon">{r.icon}</span>
+                    <span class="ui-grow">{r.label}</span>
+                    <b class="ui-num">{r.value}</b>
+                  </li>
+                ))}
+              </ul>
+              {tip ? (
+                <p class="result-sum__tip" data-testid="result-tip">
+                  {ui.t(tip)}
+                </p>
+              ) : null}
+            </section>
+          }
+          rewards={
+            <section class="result__rewards" data-testid="result-rewards" hidden={shown.length === 0}>
+              <h2 class="result__h">{ui.t('ui.result.rewards')}</h2>
+              <ul class="result__list">
+                {shown.slice(0, revealed).map(({ r, chip }, i) => (
+                  <li class={`result-reward result-reward--${chip.icon === 'amber' || chip.icon === 'dust' ? 'good' : 'gold'}`} key={i} data-testid="result-reward" data-kind={r.kind}>
+                    <span class="result-reward__icon">
+                      <RewardIcon kind={chip.icon} />
+                    </span>
+                    <span class="result-reward__main">
+                      <span class="result-reward__label">{chip.text}</span>
+                    </span>
+                    <span class="result-reward__value">
+                      <CheckIcon size={22} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {!stager.done ? <span class="result__tap">{ui.t('app.tapToSkip')}</span> : null}
+            </section>
+          }
+          actions={bar}
+        />
+      </div>
+    </UiKitContext.Provider>
   );
 }

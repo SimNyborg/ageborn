@@ -64,7 +64,9 @@ export function SkinTile(p: { skin: SkinDef }) {
       <span class="col-skin__target">
         {target ? t(target.nameKey) : baseAge ? t('ui.skins.baseOf', { age: t(ageNameKey(baseAge)) }) : k.target}
       </span>
-      <span class="col-skin__rarity">{t(rarityNameKey(k.rarity))}</span>
+      <span class="col-skin__rarity" data-tag="">
+        {t(rarityNameKey(k.rarity))}
+      </span>
       {owned ? (
         equipped ? (
           <span class="col-skin__on">

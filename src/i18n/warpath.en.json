@@ -175,7 +175,7 @@
       "backMineLabel": "Back to my level",
       "editArmy": "Edit army",
       "difficulty": "Difficulty",
-      "tierLine": "AI · Tier {tier}",
+      "tierLine": "AI strength {tier}",
       "objective": "Objective",
       "objectiveBase": "Destroy the enemy base",
       "window": "Ages",

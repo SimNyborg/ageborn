@@ -161,8 +161,11 @@ describe('War Plan advisor findings from meta (A3)', () => {
     expect(missing).toEqual([]);
   });
 
+  // The advisor's warnings arrive with War Path level 3 (ui-plan 2.6); these saves are past it.
+  const seasoned = (s: SaveDoc): SaveDoc => ({ ...s, warPath: { ...s.warPath, legacy: true } });
+
   it('the builder shows them as text', () => {
-    const s = playedSave();
+    const s = seasoned(playedSave());
     const broken = brokenPlans(s)[0]!;
     m = mountWithMeta({ ...s, warPlans: [broken] }, [{ id: 'home' }, { id: 'warPlan', age: 'stone' }]);
     const advisor = m.q('[data-testid="advisor"]')!;
@@ -172,7 +175,7 @@ describe('War Plan advisor findings from meta (A3)', () => {
   });
 
   it('an unknown future finding still reads as text', () => {
-    const s = playedSave();
+    const s = seasoned(playedSave());
     m = mount({
       save: s,
       routes: [{ id: 'home' }, { id: 'warPlan' }],
