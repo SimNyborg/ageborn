@@ -11,6 +11,7 @@ import {
   GROGG_SCRIPT,
   MATCH1,
   MATCH1_PEBBLER_TICK,
+  MATCH1_POWER_GOLD,
   MATCH1_POWER_TICK,
   MATCH1_TURRET_GRANT,
   MATCH1_TURRET_GRANT_TICK,
@@ -54,7 +55,8 @@ describe('match 1 script (A8)', () => {
     expect(script.map((e) => e.tick)).toEqual([...script.map((e) => e.tick)].sort((a, b) => a - b));
     expect(script).toContainEqual({ tick: MATCH1_PEBBLER_TICK, side: 0, unlockSlot: 1 });
     expect(script).toContainEqual({ tick: MATCH1_TURRET_GRANT_TICK, side: 0, grantGold: MATCH1_TURRET_GRANT });
-    expect(script).toContainEqual({ tick: MATCH1_POWER_TICK, side: 0, setPowerPpm: 1_000_000 });
+    // The Home slot is charged and its gold cost paid (A2.9.2): Rockslide fires on the pinned beat.
+    expect(script).toContainEqual({ tick: MATCH1_POWER_TICK, side: 0, grantGold: MATCH1_POWER_GOLD, setPowerPpm: { slot: 'home', ppm: 1_000_000 } });
     expect(MATCH1_PEBBLER_TICK).toBeLessThan(MATCH1_TURRET_GRANT_TICK);
     expect(MATCH1_TURRET_GRANT_TICK).toBeLessThan(MATCH1_POWER_TICK);
   });
@@ -74,7 +76,7 @@ describe('match 1 script (A8)', () => {
   });
 
   it('uses the starter commons: Infantry, Ranged, Heavy, both Common turrets, the default power', () => {
-    expect(starterLoadout(content, 'stone')).toEqual({ units: ['bonker', 'pebbler', 'tuskback', null, null], turrets: ['rock_tosser', 'angry_beehive'], power: 'stampede' });
+    expect(starterLoadout(content, 'stone')).toEqual({ units: ['bonker', 'pebbler', 'tuskback', null, null], turrets: ['rock_tosser', 'angry_beehive'], powers: { home: 'rockslide', field: 'stampede' } });
     expect(starterLoadout(content, 'medieval').units.slice(0, 2)).toEqual(['footman', 'longbowman']);
     expect(Object.keys(match1Loadouts(content))).toEqual(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
   });

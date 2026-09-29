@@ -389,15 +389,16 @@ describe('LocalSaveStore: problems shown to the player (DESIGN B8 Durability)', 
 
   it('gives up replay space before failing a save', async () => {
     const { store, storage } = makeStore();
-    for (const r of goldenReplays()) store.pushReplay(r);
+    const goldens = goldenReplays();
+    for (const r of goldens) store.pushReplay(r);
     await store.save(docWith(1), { immediate: true });
     const replaysBefore = store.replays.persisted;
-    expect(replaysBefore).toBe(10);
+    expect(replaysBefore).toBe(goldens.length);
     storage.quota = storage.used() + 2000; // the second slot needs room the replays hold
     await store.save(docWith(2), { immediate: true });
     expect(store.problem).toBeNull();
     expect(store.replays.persisted).toBeLessThan(replaysBefore);
-    expect(store.loadReplays()).toHaveLength(10); // this session still lists them all
+    expect(store.loadReplays()).toHaveLength(goldens.length); // this session still lists them all
     expect((await makeStore({ storage }).store.load())?.currencies.amber).toBe(2);
   });
 

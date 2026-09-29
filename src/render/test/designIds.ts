@@ -24,6 +24,14 @@ export const A14_EFFECT_IDS = new Set([
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
+/** The power sounds added by the Age Power rework (A2.9, A5.7; DESIGN A13 "Powers" row). */
+const REWORK_POWER_SOUND_IDS = [
+  'pw_rockslide', 'pw_tar', 'pw_huntcry', 'pw_spear', 'pw_chariots', 'pw_bolts', 'pw_apollo', 'pw_gaze',
+  'pw_knights', 'pw_caltrops', 'pw_undermine', 'pw_oil', 'pw_volley', 'pw_nets', 'pw_sharpshooter', 'pw_horse_art',
+  'pw_gunline', 'pw_wire', 'pw_flak', 'pw_hospital', 'pw_strafe', 'pw_emp', 'pw_sniper', 'pw_tanks',
+  'pw_drones', 'pw_stasis', 'pw_pdg', 'pw_railgun', 'pw_comet', 'pw_flare', 'pw_ion', 'pw_singularity',
+];
+
 /** Sound ids added by A17 (docs/design-lane-ages.md, A17.12). */
 const A17_SOUND_IDS = [
   'shot_javelin', 'shot_scorpion', 'stomp_colossus', 'mirror_beam', 'gorgon_gaze', 'shot_carbine', 'shot_harpoon',
@@ -33,6 +41,7 @@ const A17_SOUND_IDS = [
 
 export const A13_SOUND_IDS = new Set([
   ...A17_SOUND_IDS,
+  ...REWORK_POWER_SOUND_IDS,
   'ui_click', 'ui_hover', 'ui_deny', 'ui_toggle', 'ui_tab', 'ui_confirm', 'meter_pip',
   'spawn_pop', 'spawn_heavy', 'spawn_legendary', 'step_heavy', 'step_mech',
   'swing_whoosh', 'shot_sling', 'shot_bow', 'shot_crossbow', 'shot_catapult', 'shot_musket', 'shot_lob', 'shot_cannon',

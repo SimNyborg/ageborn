@@ -80,8 +80,9 @@ describe('exploit proxies (DESIGN B12)', () => {
   });
 
   it('the turtle fills four mounts and holds', () => {
-    // A18: the turtle also researches (the Balanced list), so the fourth mount comes later
-    const { sim, commands } = play('turret_turtle', 600);
+    // A18: the turtle also researches (the Balanced list), so the fourth mount comes later; since the
+    // power rework (A2.9.2) its casts cost gold too, which moves the fourth mount to ~13 min.
+    const { sim, commands } = play('turret_turtle', 800);
     expect(sim.state.sides[0].mountsOwned).toBe(4);
     expect(sim.state.sides[0].turrets.filter((t) => t !== null).length).toBeGreaterThanOrEqual(3);
     expect(commands.some((c) => c.side === 0 && c.t === 'stance' && c.mode === 'hold')).toBe(true);

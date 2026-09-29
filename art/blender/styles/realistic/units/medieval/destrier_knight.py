@@ -103,7 +103,7 @@ def build():
     C.displace(cap, 0.35, 1.6)
     C.team(cap)
     rig.skin(cap, cap_bones, soft=4.0, bias=cap_bias)
-    for hm in MD.drape_hem("cap_hem", hem, band=1.5, **CAP):
+    for hm in MD.drape_hem("cap_hem", hem, band=2.2, **CAP):
         rig.skin(hm, cap_bones, soft=4.0, bias=cap_bias)
     # the war saddle and stirrup leathers
     saddle = C.blobs("saddle", [((-2.5, 0, 59.4), (8.2, 6.8, 2.0)), ((-10.0, 0, 62.4), (1.8, 5.6, 4.0)),

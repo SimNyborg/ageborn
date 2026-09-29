@@ -40,7 +40,7 @@ FEET = (140, 12)
 YAW = -24.0
 ANCHORS = {"head": (6, 196), "hitCenter": (0, 104)}
 
-BODY = B.Biped(H=H, bulk=1.18)
+BODY = B.Biped(H=H, bulk=1.06)
 K = BODY.k
 FIST = (0.35 * K, -BODY.sw, 31.0 * K)
 SWORD_L = 19.0 * K
@@ -65,8 +65,8 @@ DIE_MS = [70, 80, 90, 80, 70, 60, 70, 90, 100, 110, 110, 120]
 def build():
     k = K
     m = BZ.kit()
-    statue = BZ.cast_bronze("statue", "#74664e", "#5d7a6a", rough=0.4, dist=4.0, gain=1.5)
-    armour = BZ.cast_bronze("armour", "#827151", "#607a6b", rough=0.36, dist=3.0, gain=1.3)
+    statue = BZ.cast_bronze("statue", "#6e6450", "#5a7868", rough=0.42, dist=12.0, gain=1.5, streak=0.34)
+    armour = BZ.cast_bronze("armour", "#7a6c52", "#5d786a", rough=0.38, dist=9.0, gain=1.2, streak=0.26)
     glow = C.emit_mat("seam", "#ffb35c", 7.0)
     core_m = C.emit_mat("heart", "#ffe0a0", 14.0)
     rig = C.Rig("colossus_rig", BODY.bones(extra=EXTRA_BONES), yaw_deg=YAW)

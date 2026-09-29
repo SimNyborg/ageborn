@@ -14,12 +14,12 @@ const labels: LabelFactory = () => {
 };
 
 /** Side 0 carries Arrow Storm (an aimable barrage, zone 450 lu) in the Stone Age. */
-function config(): MatchConfig {
+function config(home = 'arrow_storm'): MatchConfig {
   const c = fakeMatchConfig();
   const sides = structuredClone(c.sides) as [MatchConfig['sides'][0], MatchConfig['sides'][1]];
   const stone = sides[0].loadouts['stone'];
   if (!stone) throw new Error('no stone loadout');
-  stone.powers = { home: 'arrow_storm', field: null };
+  stone.powers = { home, field: null };
   return { ...c, sides };
 }
 
@@ -73,7 +73,8 @@ describe('Age Power drag ghost (owner decision "Age Power targeting")', () => {
 
 describe('Age Power ghost for a power that picks its own spot', () => {
   it('Stampede shows the run from your front wherever the pointer is', () => {
-    const sim = new FakeSim({ events });
+    // The single power button drives the Home slot (A2.9.13); put Stampede there to test the path.
+    const sim = new FakeSim({ events, config: config('stampede') });
     const view = new BattleView({ sim, art: new FakeArtProvider(), audio: new FakeAudio(), labelFactory: labels });
     view.resize(1280, 720);
     view.onEvents(sim.step([]));

@@ -102,7 +102,10 @@ def build():
     bones.update(CREW.bones(root_parent="root"))
     rig = C.Rig("scorpion_rig", bones, yaw_deg=YAW)
     ctx = dict(rig=rig)
-    wood, dark = m["cedar"], M.wood("#57402e", "#443224", name="darkwood")
+    # a weathered, greyer timber than the kit cedar: the machine is mostly wood and must stay clear of
+    # the orange team hue (colour rule)
+    wood, dark = M.wood("#6e5f4e", "#5a4d40", name="gunwood", stripes=1.4), M.wood("#54483c", "#463c32", name="darkwood")
+    m = dict(m, cedar=wood)
 
     # ---- carriage: axle, two side cheeks rising to the pivot, the trail with handles and a prop leg
     rig.rigid(C.tube("axle", [(AX, -TRACK - 2, WR), (AX, TRACK + 2, WR)], [1.4, 1.4], dark, seg=10), "cart")

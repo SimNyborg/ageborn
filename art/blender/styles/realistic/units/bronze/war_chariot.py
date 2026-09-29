@@ -46,7 +46,7 @@ def _shift(pts):
 
 
 def _quad(prefix):
-    return Quad(_shift(FORE), _shift(HIND), (HX, 47.0), 5.2, neck=((HX + 20, 54), (HX + 31, 70)), head=((HX + 31, 71), (HX + 41, 58)),
+    return Quad(_shift(FORE), _shift(HIND), (HX, 47.0), 5.2, neck=((HX + 19, 55), (HX + 31, 76)), head=((HX + 31, 77), (HX + 42, 62)),
                 tail=((HX - 27, 55), (HX - 31, 44), (HX - 32, 30)), prefix=prefix)
 
 
@@ -100,22 +100,22 @@ def horse_body(rig, Q, coat, dark, hoof, mane_mat, sock_mat):
     els = [((0, 0, 47), (19.5, 8.6, 10.5)), ((16, 0, 46.5), (8.5, 8.4, 11.2)), ((22.5, 0, 44.5), (4.8, 6.9, 8.0)),
            ((-15.5, 0, 48.5), (10.8, 9.2, 11.6)), ((-18.5, 0, 54.5), (7.5, 8.0, 5.8)), ((11, 0, 55.5), (8.0, 5.6, 5.8)),
            ((2, 0, 40.5), (15, 7.9, 6.0)), ((-12.5, 0, 40), (7.0, 8.0, 8.0)), ((17.5, 0, 42), (5.0, 8.2, 6.0)),
-           ((21.5, 0, 56.5), (8.0, 5.8, 9.2), (0, 0.6, 0)), ((26.0, 0, 62.5), (6.3, 4.7, 8.0), (0, 0.6, 0)),
-           ((30, 0, 67.5), (4.9, 3.9, 5.8), (0, 0.6, 0))]
+           ((21.5, 0, 58.5), (7.6, 5.6, 9.6), (0, 0.6, 0)), ((26.5, 0, 66.5), (5.8, 4.4, 8.4), (0, 0.55, 0)),
+           ((30.5, 0, 73.0), (4.5, 3.7, 6.0), (0, 0.5, 0))]
     b = C.blobs(p + "body", [(T(c), a) + tuple(r) for c, a, *r in els], coat, res=0.7)
     rig.skin(b, [p + "body", p + "pelvis", p + "neck", p + "foreS_F", p + "foreS_B", p + "hindT_F", p + "hindT_B"],
              soft=3.0, bias={p + "foreS_F": 3.0, p + "foreS_B": 3.0, p + "hindT_F": 3.0, p + "hindT_B": 3.0, p + "neck": 1.0})
-    head = C.blobs(p + "head", [(T((33.2, 0, 70.0)), (4.6, 4.0, 4.8)), (T((36.8, 0, 64.3)), (3.7, 3.2, 6.8), (0, -0.62, 0)),
-                                (T((34.6, 0, 66.5)), (4.1, 3.7, 4.2)), (T((41.0, 0, 59.0)), (3.3, 2.9, 3.3)),
-                                (T((39.8, 0, 57.8)), (2.8, 2.5, 2.6))], coat, res=0.45)
+    head = C.blobs(p + "head", [(T((34.0, 0, 76.5)), (4.4, 3.7, 4.4)), (T((38.2, 0, 70.0)), (3.4, 3.0, 7.4), (0, -0.62, 0)),
+                                (T((35.6, 0, 73.0)), (3.9, 3.5, 4.0)), (T((42.2, 0, 64.2)), (3.0, 2.6, 3.0)),
+                                (T((40.8, 0, 63.2)), (2.6, 2.3, 2.4))], coat, res=0.45)
     rig.rigid(head, p + "head")
-    muzzle = C.blobs(p + "muzzle", [(T((41.2, 0, 58.6)), (3.0, 2.7, 2.9))], dark, res=0.35)
+    muzzle = C.blobs(p + "muzzle", [(T((42.4, 0, 64.0)), (2.8, 2.5, 2.7))], dark, res=0.35)
     rig.rigid(muzzle, p + "head")
     for y in (-1.9, 1.9):
-        ear = C.blobs(p + "ear", [(T((31.8, y, 75.2)), (0.9, 0.6, 2.3), (0, -0.25, 0))], coat, res=0.3)
+        ear = C.blobs(p + "ear", [(T((32.6, y, 81.2)), (0.8, 0.55, 1.7), (0, -0.25, 0))], coat, res=0.3)
         rig.rigid(ear, p + "head")
-        rig.rigid(C.sphere(p + "eye", 0.75, M.eye(), loc=T((35.3, y * 1.72, 68.6)), scale=(0.7, 0.5, 0.8)), p + "head")
-    mane = C.blobs(p + "mane", [(T((20 + 11 * u, 0, 58.5 + 14.5 * u)), (2.6, 1.5, 3.2), (0, 0.6, 0)) for u in (0.0, 0.25, 0.5, 0.75, 1.0)],
+        rig.rigid(C.sphere(p + "eye", 0.75, M.eye(), loc=T((36.4, y * 1.72, 74.8)), scale=(0.7, 0.5, 0.8)), p + "head")
+    mane = C.blobs(p + "mane", [(T((18.5 + 12.5 * u, 0, 60.5 + 19.0 * u)), (2.6, 1.5, 3.2), (0, 0.6, 0)) for u in (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)],
                    mane_mat, res=0.45)
     C.displace(mane, 0.8, 0.35)
     rig.skin(mane, [p + "body", p + "neck", p + "head"], soft=2.0)
@@ -146,7 +146,7 @@ def harness(rig, Q, m, team_cloth):
     def T(c):
         return (c[0] + HX, c[1] + dy, c[2])
     # team breast collar with a bronze-studded strap and a yoke saddle
-    col = C.blobs(p + "collar", [(T((22.8, 0, 50.5)), (3.6, 7.4, 3.0), (0, -0.5, 0)), (T((17.0, 0, 55.5)), (3.2, 6.8, 2.4), (0, 0.4, 0))],
+    col = C.blobs(p + "collar", [(T((23.0, 0, 50.5)), (3.4, 7.8, 4.4), (0, -0.5, 0)), (T((17.5, 0, 56.0)), (3.2, 7.0, 3.2), (0, 0.4, 0))],
                   team_cloth, res=0.4)
     C.displace(col, 0.3, 1.2)
     C.team(col)
@@ -160,17 +160,20 @@ def harness(rig, Q, m, team_cloth):
     girth = C.blobs(p + "girth", [(T((8.0, 0, 47.0)), (1.2, 9.0, 12.0))], m["leather"], res=0.4)
     rig.skin(girth, [p + "body"], soft=3.0)
     # bridle, bronze cheek disc, team plume on the head
-    br = C.blobs(p + "bridle", [(T((37.2, 0, 62.6)), (0.6, 3.6, 5.8), (0, -0.62, 0)), (T((33.6, 0, 70.6)), (1.2, 4.3, 0.6))],
+    br = C.blobs(p + "bridle", [(T((38.2, 0, 68.4)), (0.6, 3.5, 5.8), (0, -0.62, 0)), (T((34.4, 0, 77.0)), (1.2, 4.1, 0.6))],
                  m["leather"], res=0.3)
     rig.rigid(br, p + "head")
     for y in (-3.3, 3.3):
-        rig.rigid(C.cyl(p + "cheekdisc", 1.4, 1.4, 0.4, m["polished"], seg=16, loc=T((38.6, y, 61.5)), rot=(math.pi / 2, 0, 0)), p + "head")
-    pl = BZ.ribbon(p + "plume", [T((32.0, 0, 73.5)), T((31.0, 0, 78.0)), T((28.5, 0, 81.5)), T((25.0, 0, 82.5))], [2.4, 3.2, 3.0, 1.2],
-                   m["team_hair"], thick=1.6, ups=[(1, 0, 0), (1, 0, 0.3), (0.6, 0, 1), (0.2, 0, 1)], center=0.5)
+        rig.rigid(C.cyl(p + "cheekdisc", 1.4, 1.4, 0.4, m["polished"], seg=16, loc=T((39.6, y, 67.2)), rot=(math.pi / 2, 0, 0)), p + "head")
+    if p != QN.p:
+        return          # one tall plume on the near horse (a second one behind it read as a pair of horns)
+    pl = BZ.ribbon(p + "plume", [T((33.2, 0, 79.6)), T((33.0, 0, 84.5)), T((31.0, 0, 88.5)), T((27.5, 0, 90.5)), T((23.5, 0, 90.0))],
+                   [2.0, 3.4, 4.2, 3.6, 1.4],
+                   m["team_hair"], thick=1.6, ups=[(1, 0, 0), (1, 0, 0.2), (0.7, 0, 1), (0.2, 0, 1), (0.0, 0, 1)], center=0.5)
     C.displace(pl, 0.35, 0.8)
     C.team(pl)
     rig.rigid(pl, p + "head")
-    rig.rigid(C.cyl(p + "plumebase", 0.9, 0.7, 2.0, m["polished"], seg=10, loc=T((32.3, 0, 72.0))), p + "head")
+    rig.rigid(C.cyl(p + "plumebase", 0.9, 0.7, 2.0, m["polished"], seg=10, loc=T((33.2, 0, 78.2))), p + "head")
 
 
 def khopesh(m):
@@ -196,8 +199,8 @@ def build():
     bones.update(DRV.bones(root_parent="root"))
     rig = C.Rig("chariot_rig", bones, yaw_deg=YAW)
     ctx = dict(rig=rig)
-    bay = M.coat("#58463a", "#4a3a30", name="bay", bump=0.15, sheen=0.2)
-    grey = M.coat("#8e8780", "#6f6964", name="grey", bump=0.15, sheen=0.2, noise=0.18, nscale=1.2)
+    bay = M.coat("#5b4637", "#4a372b", name="bay", bump=0.12, sheen=0.2, noise=0.06, nscale=0.7)
+    grey = M.coat("#8e8780", "#6f6964", name="grey", bump=0.12, sheen=0.2, noise=0.14, nscale=0.9)
     mane_dk = M.hair("#1f1a18", name="mane")
     mane_gr = M.hair("#58524c", name="mane_grey")
     dark = C.mat("muzzledark", "#2e2724", rough=0.5, noise=0.1, bump=0.2)
@@ -314,7 +317,7 @@ def build():
     # the reins: from both bits to the driver's far hand (skinned between the bits and the hand)
     for Q in (QN, QF):
         dy = DY[Q.p]
-        a = (HX + 40.0, dy - 3.0, 60.0)
+        a = (HX + 41.5, dy - 3.0, 65.5)
         bft = (FIST[0] + 0.0, DRV.sw, FIST[2])
         n = 7
         pts = [(a[0] + (bft[0] - a[0]) * u, a[1] + (bft[1] - a[1]) * u, a[2] + (bft[2] - a[2]) * u - 4.0 * math.sin(math.pi * u)) for u in

@@ -44,6 +44,7 @@
  * ability, so the proxies follow content changes.
  */
 import type { BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, ResearchPickDef, ResearchView, Side, StanceMode, UnitDef } from '../src/contracts';
+import { frontP, powerReachRules, reachAreaMax, reachBand, suppressLegal } from '../src/core/powerReach';
 import { nextIncomePick, researchCommand, researchCost, startablePicks } from '../src/core/research';
 import { pickWeighted, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { agesOf, baselinePlan, clonePlan, turretsOfAge, unitsOfAge, type Plan } from './lib/plans';
@@ -412,7 +413,7 @@ export class ScriptedPlayer implements BotController {
     // same trigger when equipped; a slot needs to be reloaded and affordable.
     const castable = (['home', 'field'] as const).filter((slot) => {
       const o = me.powers[slot];
-      return o !== null && o.ppm >= CHARGED_PPM && gold >= o.cost;
+      return o !== null && o.ppm >= CHARGED_PPM && gold >= o.cost && this.reachable(obs, side, o.card);
     });
     let evolveNow = canEvolve && (st.evolve === 'asap' || me.xpBp >= BANK_XP_BP);
     if (evolveNow && st.safeEvolveMs !== undefined) {
@@ -421,6 +422,8 @@ export class ScriptedPlayer implements BotController {
     }
     for (const slot of castable) {
       const card = me.powers[slot]?.card ?? '';
+      // Both slots may be ready; the second cast needs the gold the first left (A2.9.2).
+      if (gold < (me.powers[slot]?.cost ?? 0)) continue;
       if (st.power === 'beforeEvolve' && me.ageIndex < this.maxAgeIndex) {
         if (evolveNow) {
           out.push({ t: 'power', side, slot });
@@ -596,6 +599,29 @@ export class ScriptedPlayer implements BotController {
       if (u && u.cost < min) min = u.cost;
     }
     return min;
+  }
+
+  /**
+   * A power has something to act on (A2.9.4): an army power always; Suppress only when its front
+   * reaches the enemy turrets; any other power only with an enemy inside its reach area (a proxy casts
+   * like a player who looks first, so auto-aim never meets `powerNoTarget` or `powerOutOfReach`).
+   */
+  private reachable(obs: Observation, side: Side, card: CardId): boolean {
+    const def = this.content.powers[card];
+    if (!def) return false;
+    const e = def.effect;
+    if (def.reach === 'army' || e.kind === 'buffAll' || e.kind === 'paradrop') return true;
+    const r = powerReachRules(this.content.economy);
+    const own = obs.units.filter((u) => u.side === side && u.hp > 0).map((u) => ({ id: u.id, p: u.p, air: u.air, summoned: u.summoned }));
+    const front = frontP(own, r.frontRank);
+    if (e.kind === 'suppress') return suppressLegal(front, r);
+    const zone = ('zone' in e ? e.zone : e.kind === 'cloud' ? e.width : e.kind === 'stampede' ? e.distance : 300) * 1000;
+    const band = reachBand(def.reach, zone, front, r);
+    if (!band) return true;
+    const lo = band[0] - Math.trunc(zone / 2);
+    const hi = Math.min(band[1] + Math.trunc(zone / 2), reachAreaMax(def.reach, zone, band, r));
+    const air = 'hitsAir' in e ? e.hitsAir !== false : true;
+    return obs.units.some((u) => u.side !== side && u.hp > 0 && (air || !u.air) && u.p >= lo && u.p <= hi);
   }
 
   /**

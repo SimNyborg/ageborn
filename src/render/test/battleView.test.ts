@@ -196,13 +196,20 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
   it('converts pointer positions to power zone progress and previews aimable powers only', () => {
     const s = setup();
     s.view.render(0, 16);
+    const rockslide = s.view.powerAimable();
     const mid = s.view.camera.worldToScreen(600, -20);
     expect(s.view.laneP(mid.x, mid.y)).toBe(600);
     const edge = s.view.camera.worldToScreen(20, -20);
     expect(s.view.laneP(edge.x, edge.y)).toBe(150);
     expect(s.view.laneP(mid.x, 5)).toBeNull();
-    // Stampede ignores the aim, so no drag preview.
-    expect(s.view.powerAimable()).toBe(false);
+    // The Home slot (Rockslide, a barrage) is placed by dragging; Stampede ignores the aim.
+    expect(rockslide).toBe(true);
+    const c = fakeMatchConfig();
+    const sides = structuredClone(c.sides) as [MatchConfig['sides'][0], MatchConfig['sides'][1]];
+    const stone = sides[0].loadouts['stone'];
+    if (stone) stone.powers = { home: 'stampede', field: null };
+    const st = new BattleView({ sim: new FakeSim({ config: { ...c, sides } }), art: new SpyArt(), audio: new FakeAudio(), labelFactory: labels });
+    expect(st.powerAimable()).toBe(false);
   });
 
   it('lets muted emotes through only for your own side', () => {

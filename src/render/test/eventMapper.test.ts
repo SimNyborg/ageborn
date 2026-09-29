@@ -456,12 +456,12 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     const tick = runReal(cast('orbital_lance', 0, 7));
     expect(fxOf(tick)).toEqual([]);
     expect(pick(tick, 'trauma')).toEqual([]);
-    expect(fxOf(runReal(cast('smoke_screen', 1, 0)))).toMatchObject([{ effectId: 'fx.smoke_cloud', opts: { width: 350, durationMs: 7000 } }]);
+    expect(fxOf(runReal(cast('smoke_screen', 1, 0)))).toMatchObject([{ effectId: 'fx.smoke_cloud', opts: { width: 350, durationMs: 6000 } }]);
     expect(fxOf(runReal(cast('stampede', 1, 2)))).toMatchObject([{ effectId: 'fx.aurochs', opts: { dir: -1, distance: 500 } }]);
   });
 
   it('drops one parachute per trooper and puts buffs on every unit of the caster', () => {
-    expect(fxOf(runReal(cast('paratroopers', 0, 0)))).toMatchObject([{ effectId: 'fx.parachute', count: 4 }]);
+    expect(fxOf(runReal(cast('paratroopers', 0, 0)))).toMatchObject([{ effectId: 'fx.parachute', count: 3 }]);
     expect(pick(runReal(cast('royal_decree', 0, 0)), 'fxUnits')).toEqual([
       { a: 'fxUnits', effectId: 'fx.decree_glow', side: 0, priority: 3, opts: { side: 0, durationMs: 8000 } },
     ]);

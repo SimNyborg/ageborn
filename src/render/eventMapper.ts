@@ -695,6 +695,16 @@ export class EventMapper {
         first = { at: { k: 'world', x, y: 0 }, opts: { side, durationMs: ms }, side };
         break;
       }
+      // Rework kinds (A2.9.7): placeholder presets until the visuals package draws the P3 effects.
+      case 'field':
+        first = { at: { k: 'world', x: centre, y: 0 }, opts: { side, width: e.zone, durationMs: e.durationMs } };
+        break;
+      case 'strike':
+        each = { at: { k: 'world', x, y: 0 }, opts: { side, dir, radius: 20 } };
+        break;
+      case 'suppress':
+        first = { at: { k: 'world', x, y: 0 }, opts: { side, durationMs: e.durationMs } };
+        break;
     }
     if (first && ev.index === 0) this.rule(pick('.first'), first, out);
     if (each) this.rule(pick(''), each, out);

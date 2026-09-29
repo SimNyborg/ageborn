@@ -557,8 +557,9 @@ def cast_bronze(name, base="#75674f", patina="#5f7a6a", rough=0.42, dist=3.0, ga
     sn.inputs["Detail"].default_value = 5.0
     nt.links.new(sm.outputs[0], sn.inputs["Vector"])
     sr = nt.nodes.new("ShaderNodeMapRange")
-    sr.inputs["From Min"].default_value = 0.52
-    sr.inputs["From Max"].default_value = 0.72
+    sr.inputs["From Min"].default_value = 0.42
+    sr.inputs["From Max"].default_value = 0.7
+    sr.inputs["To Min"].default_value = 0.02
     sr.inputs["To Max"].default_value = streak
     nt.links.new(sn.outputs["Fac"], sr.inputs["Value"])
     add = nt.nodes.new("ShaderNodeMath")

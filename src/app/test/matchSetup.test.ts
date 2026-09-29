@@ -44,7 +44,11 @@ describe('match 2 setup (A8)', () => {
     for (const lo of Object.values(s.opponent.side.loadouts)) {
       for (const c of lo!.units) if (c) expect(['common', 'rare']).toContain(content.units[c]!.rarity);
     }
-    expect(s.config.sides[0].loadouts).toEqual(save.warPlans[0]!.loadouts);
+    // The player plan, played with the Home slot only (A2.9.1 match rule: the tutorial has no Field slot).
+    const homeOnly = Object.fromEntries(
+      Object.entries(save.warPlans[0]!.loadouts).map(([age, l]) => [age, { ...l, powers: { home: l.powers.home, field: null } }]),
+    );
+    expect(s.config.sides[0].loadouts).toEqual(homeOnly);
     // Owner feedback 2026-09-28: stance and the manual Last Stand are both on from match 2.
     expect(s.config.training).toBeUndefined();
   });

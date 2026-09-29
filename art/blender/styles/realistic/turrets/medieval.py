@@ -298,7 +298,7 @@ def cauldron_build(rig, m, ctx):
     C.displace(pot, 0.15, 1.2)
     H = [pot]
     H.append(C.cyl("pitch", 10.8, 10.8, 0.6, C.mat("pitch", "#1a1614", rough=0.12, noise=0.1, nscale=1.0, bump=0.35, coat=1.0,
-                                                  emission="#ff5a18", estrength=0.25), seg=24, loc=(0, 1.5, 38.6)))
+                                                  emission="#ff5a18", estrength=0.08), seg=24, loc=(0, 1.5, 38.6)))
     for y, sg in ((-10.4, -1), (13.4, 1)):
         H.append(C.cyl("trunnion", 1.4, 1.4, 4.4, m["iron"], seg=12, loc=(0, y, 41.0), rot=(-sg * math.pi / 2, 0, 0)))
     H.append(C.tube("bail", [(0, -11.0, 41.0), (-3, -10.8, 38.0), (-8, -9.0, 35.5)], [0.6] * 3, m["iron"], seg=6))
@@ -314,8 +314,8 @@ def cauldron_build(rig, m, ctx):
         rig.rigid(W.grp(o, "head"), "head")
     # the pour: a thick rope of hot pitch from the lip, falling in front (world space: on root)
     pour = C.tube("pour", [(10.5, 1.5, 32.5), (15.0, 1.5, 30.0), (18.0, 1.5, 24.0), (19.4, 1.5, 16.0), (20.0, 1.5, 9.0)],
-                  [2.2, 2.0, 1.6, 1.3, 1.0], C.mat("pourpitch", "#221a16", rough=0.1, noise=0.1, nscale=1.0, bump=0.2, coat=1.0,
-                                                 emission="#ff6a20", estrength=0.5), seg=10)
+                  [2.2, 2.0, 1.6, 1.3, 1.0], C.mat("pourpitch", "#1e1612", rough=0.08, noise=0.1, nscale=1.0, bump=0.2, coat=1.0,
+                                                 emission="#ff5a18", estrength=0.06), seg=10)
     rig.rigid(W.grp(pour, "head"), "root")
     ctx["pour"] = [pour]
 

@@ -68,11 +68,15 @@ lib/game.py            the game contract: Clip, render (+ per-frame trackers, 2D
 lib/world.py           turret and base clip contracts, visibility groups, BASE_MOUNTS
 lib/review.py          age contact sheet built from the installed sheets
 units/<age>/<slug>.py  one unit each (the stone age: bonker, pebbler, spear_hunter, drum_shaman,
-                       training_dummy, sabertooth, tuskback, mammoth_matriarch)
+                       training_dummy, sabertooth, tuskback, mammoth_matriarch; the medieval age: footman,
+                       pikeman, longbowman, friar, destrier_knight, battering_ram, ursa_paladin)
+lib/medieval.py        the medieval kit: steel, mail, wool and team materials, hauberk, tabard, coif,
+                       helmets, plate harness, heater shield, pavise, arming sword, and pleated drapes
+                       (`drape`, `drape_hem`, `fringe`: caparisons and trappers that read as heavy wool)
 turrets/<age>.py       the age's four turrets (TURRETS)
 bases/<age>.py         the age's base (MODULE)
 backdrops/<age>.py     the age's far and mid backdrop layers; backdrops/<arena>.py an arena ground
-units/medieval/destrier_knight.py, units/future/pulse_trooper.py, units/stone/bonker_study.py
+units/future/pulse_trooper.py, units/stone/bonker_study.py
                        the original style study (study clip timing, `pipe.Clip`); convert them to
                        the game contract like units/stone/bonker.py before shipping them
 ```

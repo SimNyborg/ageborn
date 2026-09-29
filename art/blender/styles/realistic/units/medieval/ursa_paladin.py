@@ -44,7 +44,7 @@ Q = Quad(FORE, HIND, (0, 67.2), 17.0,
 HR = 70.0
 BODY = B.Biped(H=HR, bulk=1.12)
 BODY.root = "rider"
-SEAT = (4.6, 0.0, 96.0)
+SEAT = (-6.0, 0.0, 105.5)
 BODY.offset = (SEAT[0], SEAT[1], SEAT[2] - B.PELV * HR)
 K = BODY.k
 FIST_F = (0.35 * K + BODY.offset[0], -BODY.sw + BODY.offset[1], 31.0 * K + BODY.offset[2])
@@ -192,15 +192,15 @@ def build():
     cap_bias = {p + "foreS_F": 8.0, p + "foreS_B": 8.0, p + "hindT_F": 8.0, p + "hindT_B": 8.0}
 
     def _top(x):
-        pts = [(-62, 74.0), (-48, 85.5), (-30, 88.5), (0, 89.5), (16, 92.0), (30, 99.5), (44, 95.0), (53, 88.0)]
+        pts = [(-66, 82.0), (-58, 86.4), (-46, 90.3), (-34, 93.9), (-22, 97.9), (-10, 99.8), (-3, 100.8), (4, 108.4), (12, 113.0), (22, 115.0), (32, 115.0), (42, 113.2), (50, 109.4), (58, 103.0)]
         for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
             if x <= x1:
                 t = max(0.0, min(1.0, (x - x0) / (x1 - x0)))
                 return z0 + (z1 - z0) * (3 * t * t - 2 * t * t * t)
         return pts[-1][1]
-    CAP = dict(xs=(-62.0, 53.0), top_z=_top,
-               half_w=lambda x: 23.6 - 3.0 * max(0.0, (x - 34) / 19) ** 2 - 3.0 * max(0.0, (-x - 46) / 16) ** 2,
-               hem_z=lambda x: 58.0 + 3.0 * max(0.0, (x - 28) / 25) + 1.5 * math.sin(x * 0.05),
+    CAP = dict(xs=(-66.0, 58.0), top_z=_top,
+               half_w=lambda x: 23.6 - 3.5 * max(0.0, (x - 44) / 14) ** 2 - 8.0 * max(0.0, (-x - 52) / 14) ** 2,
+               hem_z=lambda x: 70.0 + 4.0 * max(0.0, (x - 30) / 28) + 3.0 * max(0.0, (-x - 50) / 16) + 1.5 * math.sin(x * 0.05),
                folds=2.0, fold_len=7.5, seed=1.1, round_top=0.42)
     cap = MD.drape("caparison", quilt, thick=0.9, nu=70, nv=40, **CAP)
     C.displace(cap, 0.5, 1.4)
@@ -208,11 +208,14 @@ def build():
     rig.skin(cap, cap_b, soft=6.0, bias=cap_bias)
     for hm in MD.drape_hem("cap_hem", hem, band=2.4, **CAP):
         rig.skin(hm, cap_b, soft=6.0, bias=cap_bias)
-    saddle = C.blobs("saddle", [((4.6, 0, 92.6), (14.95, 10, 2.35)), ((-8.05, 0, 96.4), (2.76, 9, 4.54)), ((17.25, 0, 95.6), (2.99, 8, 3.86))],
+    # a pale heraldic cross on the near flank (the company mark; not team)
+    crs = C.blobs("capcross", [((8.0, -25.3, 86.0), (2.4, 0.6, 12.0)), ((8.0, -25.1, 90.0), (11.0, 0.6, 2.4))], charge, res=0.4)
+    rig.skin(crs, cap_b, soft=6.0, bias=cap_bias)
+    saddle = C.blobs("saddle", [((-6.0, 0, 102.4), (13.0, 11, 2.4)), ((-17.5, 0, 106.0), (2.8, 10, 4.6)), ((5.5, 0, 107.0), (3.0, 9, 4.2))],
                      leather, res=0.6)
     rig.skin(saddle, [p + "body"], soft=4.0)
     for sy in (-1, 1):
-        g = C.tube("girth", [(4.6, sy * 10, 91.4), (4.6, sy * 25.6, 78.0), (4.6, sy * 26.0, 60.5)], [1.3, 1.3, 1.3], leather, seg=6, flat=0.4)
+        g = C.tube("girth", [(-6.0, sy * 11, 101.4), (-6.0, sy * 25.2, 86.0), (-6.0, sy * 25.6, 64.0)], [1.3, 1.3, 1.3], leather, seg=6, flat=0.4)
         rig.skin(g, [p + "body"], soft=4.0)
 
     # ---------------------------------------------------------------- the paladin

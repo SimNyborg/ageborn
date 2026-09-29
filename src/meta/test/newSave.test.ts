@@ -14,7 +14,11 @@ describe('newSave', () => {
     expect(Object.keys(s.collection).sort()).toEqual([...commons].sort());
     expect(commons).toHaveLength(40);
     for (const e of Object.values(s.collection)) expect(e).toEqual({ level: 1, copies: 0, isNew: false, foil: 'none' });
-    expect(s.powersOwned).toEqual(['stampede', 'tidal_wave', 'arrow_storm', 'smoke_screen', 'iron_horse', 'paratroopers', 'orbital_lance', 'starfall']);
+    // Both starters of every age (A2.9.8): Home then Field per age, in age order.
+    expect(s.powersOwned).toEqual([
+      'rockslide', 'stampede', 'tidal_wave', 'chariot_rush', 'arrow_storm', 'knights_charge', 'volley_fire', 'smoke_screen',
+      'gun_line', 'iron_horse', 'strafing_run', 'paratroopers', 'orbital_lance', 'drone_swarm', 'starfall', 'comet_run',
+    ]);
     expect(s.collection['training_dummy']).toBeUndefined();
   });
 

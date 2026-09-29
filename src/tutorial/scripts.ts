@@ -369,9 +369,16 @@ export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
   };
 }
 
-/** Match 1 loadouts for every age of the Tutorial format. */
+/**
+ * Match 1 loadouts for every age of the Tutorial format. The first age carries no power: the power
+ * beat is the Medieval Arrow Storm as built (A8), so no Stone power may reload and spend the turret
+ * gold before it (A2.9.2: powers cost gold).
+ */
 export function match1Loadouts(content: CompiledContent): Partial<Record<AgeId, Loadout>> {
   const out: Partial<Record<AgeId, Loadout>> = {};
-  for (const age of content.formats.tutorial?.ages ?? []) out[age] = starterLoadout(content, age);
+  (content.formats.tutorial?.ages ?? []).forEach((age, i) => {
+    const l = starterLoadout(content, age);
+    out[age] = i === 0 ? { ...l, powers: { home: null, field: null } } : l;
+  });
   return out;
 }
