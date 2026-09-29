@@ -5,9 +5,10 @@
  * `../metaUi.ts`.
  */
 import type { ComponentChildren } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { useEffect, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
-import { ScreenHost, visibleEntries, type ScreenSlots, type UiEnv } from '@/ui/screens';
+import { bindHistory } from '@/ui/history';
+import { handleBack, ScreenHost, visibleEntries, type ScreenSlots, type UiEnv } from '@/ui/screens';
 import type { MetaUi } from '../metaUi';
 import { BattleScreen } from './BattleScreen';
 import { useApp } from './context';
@@ -32,9 +33,28 @@ export function MetaHost(p: MetaHostProps) {
       services: p.meta.services,
       portrait: ui.art.portrait.bind(ui.art),
       toasts: p.meta.toasts,
+      // UI sounds (ui-plan 5.4): press, deny, tab, toggle, sheet.
+      sound: (id: string) => ui.services.audio.play(id),
     }),
     [p.meta, ui],
   );
+  // Browser and Android back (ui-plan 2.2, U7): close the top sheet, go back, or pause in battle;
+  // at Home the first back warns and only a second one within 2 s leaves the site.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.history || typeof window.history.pushState !== 'function') return undefined;
+    return bindHistory({
+      host: window,
+      onBack: () => {
+        const r = ui.controller.route.peek();
+        if (r.id === 'battle' && env.router.current.peek().id === 'battle') {
+          if (r.battle.session.status.peek() === 'running') r.battle.session.pause();
+          return true;
+        }
+        return handleBack(env);
+      },
+      onLeaveWarning: () => p.meta.toasts.show(ui.t('ui.nav.leaveAgain')),
+    });
+  }, [env]);
   const slots: ScreenSlots = useMemo(
     () => ({
       battle: (): ComponentChildren => {

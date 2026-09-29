@@ -52,7 +52,7 @@ export function useMatchStarter(): MatchStarter {
       testid="plan-blocked"
       footer={
         <Button
-          variant="green"
+          kind="primary"
           icon={<ScrollIcon size={22} />}
           autofocus
           testid="plan-blocked-fix"

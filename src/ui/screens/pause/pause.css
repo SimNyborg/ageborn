@@ -1,100 +1,78 @@
-/* Pause (A9 #6), an overlay above the battle. */
+/* Pause (A9 #6, ui-plan 4.7): an overlay card above the battle, Resume bottom-right. */
 
 .pause {
   display: grid;
   place-items: center;
-  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom))
-    max(16px, env(safe-area-inset-left));
-  background: radial-gradient(circle at 50% 45%, rgba(27, 22, 60, 0.7), rgba(6, 4, 16, 0.88));
-  backdrop-filter: blur(4px);
-  animation: ui-fade 180ms ease-out both;
+  padding: max(12px, var(--ui-safe-t)) max(16px, var(--ui-safe-r)) max(12px, var(--ui-safe-b)) max(16px, var(--ui-safe-l));
+  background: var(--ui-scrim);
+  animation: ui-fade var(--ui-dur-micro) var(--ui-ease-out) both;
 }
 .pause__panel {
   display: flex;
   flex-direction: column;
-  width: min(760px, 100%);
+  width: min(720px, 100%);
   max-height: 100%;
-  border: 4px solid var(--ui-ink);
-  border-radius: 24px;
-  background: linear-gradient(180deg, var(--ui-panel-hi), var(--ui-panel) 25%, var(--ui-panel-lo));
-  box-shadow: 0 10px 0 rgba(8, 5, 20, 0.6), 0 30px 60px rgba(0, 0, 0, 0.5);
-  animation: ui-pop 300ms var(--ui-ease-back) both;
+  border: 1px solid rgba(107, 120, 144, 0.45);
+  border-radius: var(--ui-r-xl);
+  background: linear-gradient(var(--ui-light-angle), #222834, var(--ui-surface-1) 40%, #161a22);
+  box-shadow: var(--ui-e4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: ui-modal-in var(--ui-dur-small) var(--ui-ease-back) both;
   overflow: hidden;
 }
 .pause__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 18px;
-  border-bottom: 3px solid var(--ui-ink);
-  background: linear-gradient(180deg, #5d53ad, var(--ui-panel-head));
+  min-height: var(--ui-header-h);
+  padding: 0 var(--ui-s5);
+  border-bottom: 1px solid rgba(107, 120, 144, 0.3);
 }
 .pause__title {
-  font-size: clamp(24px, 5vh, 34px);
-  font-weight: 900;
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-fs-title);
+  line-height: var(--ui-lh-title);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 6px var(--ui-ink);
-  text-shadow: 0 3px 0 var(--ui-ink);
 }
 .pause__clock {
-  padding: 4px 12px;
-  border: 3px solid var(--ui-ink);
-  border-radius: 12px;
-  background: var(--ui-well);
-  font-size: 20px;
-  font-weight: 900;
+  padding: 2px 12px;
+  border: 1px solid rgba(107, 120, 144, 0.5);
+  border-radius: var(--ui-r-sm);
+  background: #10141b;
+  font-size: var(--ui-fs-title-s);
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 .pause__body {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
-  gap: 18px;
-  padding: 16px 18px 18px;
+  padding: var(--ui-s3) var(--ui-s5);
   min-height: 0;
   overflow: auto;
 }
-.pause__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.pause .ui-actionbar {
+  gap: var(--ui-s3);
+  padding-left: var(--ui-s5);
+  padding-right: var(--ui-s4);
+  background: rgba(15, 18, 24, 0.6);
 }
-.pause__note {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ui-muted);
-  text-align: center;
+/* Retreat sits at the far left, at least 24 px from Resume (UA-21). */
+.pause .ui-actionbar__spacer {
+  min-width: var(--ui-s5);
 }
 .pause__sub {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 15px;
-  font-weight: 900;
+  gap: var(--ui-s2);
+  margin-bottom: var(--ui-s2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--ui-gold-hi);
-}
-.pause__scouted {
-  padding: 10px 12px;
-  border: 2px solid rgba(0, 0, 0, 0.35);
-  border-radius: 16px;
-  background: rgba(10, 8, 26, 0.45);
+  color: var(--ui-text-2);
 }
 .pause__cards {
   display: flex;
   flex-wrap: wrap;
   gap: 16px 10px;
-  padding-top: 8px;
-}
-@media (max-height: 480px) {
-  .pause__body {
-    gap: 12px;
-    padding: 10px 14px 12px;
-  }
-  .pause__actions {
-    gap: 6px;
-  }
+  padding-top: var(--ui-s2);
 }

@@ -114,7 +114,7 @@ export function ItemTile(p: {
           {price !== null ? (
             <Button
               size="sm"
-              variant="violet"
+              kind="secondary"
               testid={`craft-${key}`}
               disabled={save.value.currencies.dust < price}
               onClick={() => act(services.craftCosmetic(key), t('cosmetic.ui.crafted'))}

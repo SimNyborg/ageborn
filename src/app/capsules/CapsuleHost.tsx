@@ -37,6 +37,11 @@ export interface CapsuleHostProps {
   onDone: (record: ShowRecord) => void;
   /** Offer "Open next" and "Open all" (not during onboarding). */
   allowMore: boolean;
+  /**
+   * Opened from the Result: the label of the Result's own path ("Continue", "Next battle"); the
+   * summary's primary then continues that path instead of returning to the Result (ui-plan 2.5).
+   */
+  doneLabel?: string;
 }
 
 function showSettings(s: SaveDoc): Partial<ShowSettings> {
@@ -78,6 +83,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
     oddsSheet,
     isEquipped,
     onDone: done,
+    ...(p.doneLabel ? { doneLabel: p.doneLabel } : {}),
     ...(p.onEquip ? { onEquip: p.onEquip } : {}),
     ...(p.onEquipSkin ? { onEquipSkin: p.onEquipSkin } : {}),
     ...(p.onUpgrade ? { onUpgrade: p.onUpgrade } : {}),
@@ -98,8 +104,8 @@ export function CapsuleHost(p: CapsuleHostProps) {
         reveals={r.reveals}
         progress={(card) => r.progress[card] ?? null}
         newCardProtection={r.newCardProtection}
-        pendingCount={pending}
-        {...(pending > 0
+        pendingCount={p.doneLabel ? 0 : pending}
+        {...(pending > 0 && !p.doneLabel
           ? {
               onOpenNext: () => {
                 p.shows.done();

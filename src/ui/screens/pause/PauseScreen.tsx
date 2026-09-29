@@ -1,6 +1,8 @@
 /**
- * Pause (A9 #6), an overlay above the battle: Resume, the Scouted list (A3), Settings, Retreat
- * (after 1:00; counts as a loss, A2.10) and Quit Skirmish (Skirmish only). Escape resumes.
+ * Pause (A9 #6, ui-plan 4.7 and UA-21), an overlay above the battle: the Scouted list (A3), then the
+ * action bar: Resume (gold, the primary, 56 tall on phones) bottom-right, Settings beside it, and the
+ * small red Retreat (after 1:00; counts as a loss, A2.10) and Quit Skirmish at the far left, well
+ * away from Resume. A locked Retreat says why on tap. Escape resumes.
  */
 import './pause.css';
 import type { CardId } from '@/contracts';
@@ -9,7 +11,7 @@ import { Button } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { formatClock } from '../../components/format';
 import { EyeIcon, FlagIcon, GearIcon, HomeIcon, PlayIcon } from '../../components/icons';
-import { Empty } from '../../components/Layout';
+import { ActionBar, Empty } from '../../components/Layout';
 import { Modal } from '../../components/Modal';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
@@ -36,46 +38,7 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
           </h1>
           <span class="pause__clock">{formatClock(info.clockMs)}</span>
         </header>
-        <div class="pause__body">
-          <div class="pause__actions">
-            <Button variant="green" size="lg" wide autofocus testid="pause-resume" icon={<PlayIcon size={26} />} onClick={resume}>
-              {t('ui.pause.resume')}
-            </Button>
-            <Button
-              variant="blue"
-              size="md"
-              wide
-              testid="pause-settings"
-              icon={<GearIcon size={24} />}
-              onClick={() => router.go({ id: 'settings' }, { overlay: true })}
-            >
-              {t('ui.nav.settings')}
-            </Button>
-            {info.mode === 'skirmish' ? (
-              <Button variant="plain" size="md" wide testid="pause-quit" icon={<HomeIcon size={24} />} onClick={() => setConfirm('quit')}>
-                {t('ui.pause.quitSkirmish')}
-              </Button>
-            ) : null}
-            {info.retreatAfterMs !== null ? (
-              <Button
-                variant="red"
-                size="md"
-                wide
-                testid="pause-retreat"
-                inert={!info.canRetreat}
-                icon={<FlagIcon size={24} />}
-                onClick={() => setConfirm('retreat')}
-                title={info.canRetreat ? undefined : t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
-              >
-                {t('ui.pause.retreat')}
-              </Button>
-            ) : null}
-            {info.retreatAfterMs !== null && !info.canRetreat ? (
-              <p class="pause__note" data-testid="pause-retreat-locked">
-                {t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
-              </p>
-            ) : null}
-          </div>
+        <div class="pause__body" data-scroll="">
           <div class="pause__scouted" data-testid="pause-scouted">
             <h2 class="pause__sub">
               <EyeIcon size={22} /> {t('ui.pause.scouted', { n: tiles.length })}
@@ -91,6 +54,46 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
             )}
           </div>
         </div>
+        <ActionBar
+          testid="pause-actions"
+          tertiary={
+            <>
+              {info.retreatAfterMs !== null ? (
+                <Button
+                  kind="destructive"
+                  size="s"
+                  testid="pause-retreat"
+                  disabled={!info.canRetreat}
+                  reason={t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
+                  icon={<FlagIcon size={20} />}
+                  onClick={() => setConfirm('retreat')}
+                >
+                  {t('ui.pause.retreat')}
+                </Button>
+              ) : null}
+              {info.mode === 'skirmish' ? (
+                <Button kind="secondary" size="s" testid="pause-quit" icon={<HomeIcon size={20} />} onClick={() => setConfirm('quit')}>
+                  {t('ui.pause.quitSkirmish')}
+                </Button>
+              ) : null}
+            </>
+          }
+          secondary={
+            <Button kind="secondary" size="m" testid="pause-settings" icon={<GearIcon size={22} />} onClick={() => router.go({ id: 'settings' }, { overlay: true })}>
+              {t('ui.nav.settings')}
+            </Button>
+          }
+          primary={
+            <Button kind="primary" size="l" autofocus testid="pause-resume" icon={<PlayIcon size={26} />} onClick={resume}>
+              {t('ui.pause.resume')}
+            </Button>
+          }
+        />
+        {info.retreatAfterMs !== null && !info.canRetreat ? (
+          <p class="ui-sr" data-testid="pause-retreat-locked">
+            {t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
+          </p>
+        ) : null}
       </div>
       {confirm === 'retreat' ? (
         <Modal
@@ -101,11 +104,11 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
           testid="retreat-confirm"
           footer={
             <>
-              <Button variant="plain" onClick={() => setConfirm(null)} autofocus>
+              <Button kind="secondary" onClick={() => setConfirm(null)} autofocus>
                 {t('ui.common.cancel')}
               </Button>
               <Button
-                variant="red"
+                kind="destructive"
                 testid="retreat-yes"
                 onClick={() => {
                   setConfirm(null);
@@ -129,11 +132,11 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
           testid="quit-confirm"
           footer={
             <>
-              <Button variant="plain" onClick={() => setConfirm(null)} autofocus>
+              <Button kind="secondary" onClick={() => setConfirm(null)} autofocus>
                 {t('ui.common.cancel')}
               </Button>
               <Button
-                variant="red"
+                kind="destructive"
                 testid="quit-yes"
                 onClick={() => {
                   setConfirm(null);

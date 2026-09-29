@@ -6,6 +6,8 @@
  *   UI layer never imports visuals (B2); without a provider, components draw a stylised fallback.
  * - `reduceMotion`: the player's setting (A9 Settings); CSS also honours `prefers-reduced-motion`.
  * - `locale`: for number formatting.
+ * - `sound`: optional UI sound hook (`ui_click`, `ui_deny`, `ui_tab`, `ui_toggle`, `ui_sheet`...;
+ *   ui-plan 5.4). The app passes the audio service's `play`; without it the UI is silent.
  */
 import type { ArtProvider, CardId, Foil, SkinId } from '@/contracts';
 import { i18n } from '@/i18n';
@@ -28,6 +30,7 @@ export interface UiKit {
   locale: string;
   portrait: PortraitFn | null;
   reduceMotion: boolean;
+  sound?: (id: string) => void;
 }
 
 export const defaultKit: UiKit = {

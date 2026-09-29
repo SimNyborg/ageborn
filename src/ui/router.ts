@@ -8,6 +8,12 @@
  * - Route params are typed per screen id ({@link RouteParams}); screens owned by other packages
  *   (boot, battle, capsule, replay) are routed here too and rendered by the app through slots.
  *
+ * - **Tabs** (docs/ui-plan.md 2.2): five destinations, one per verb (Army, Capsules, War Path,
+ *   Progress, Customize). The router keeps one stack per tab, so returning to a tab shows where the
+ *   player left it; `back()` on a tab root other than War Path goes to War Path (Home). A
+ *   **cross-tab jump** (`jump`) remembers where it came from, and Back returns there in the state it
+ *   was left; tapping a tab instead clears the origin.
+ *
  * The app (WP11) creates one router and passes it to the `ScreenHost`; screens reach it through the
  * UI context. Pure apart from its signals, so it is unit-tested in Node.
  */
@@ -161,6 +167,20 @@ export interface RouteEntry {
   readonly overlay: boolean;
   /** Unique per push, so a screen re-mounts when the same id is pushed again. */
   readonly key: number;
+  /** Set on the entry a cross-tab jump pushed: where Back returns to. */
+  readonly origin?: JumpOrigin;
+}
+
+/** The five bottom tabs, left to right (ui-plan 2.2). War Path is Home, in the centre. */
+export type TabId = 'army' | 'capsules' | 'warPath' | 'progress' | 'customize';
+export const TABS: readonly TabId[] = ['army', 'capsules', 'warPath', 'progress', 'customize'];
+/** The Home tab. */
+export const HOME_TAB: TabId = 'warPath';
+
+/** Where a cross-tab jump came from: the tab and its whole stack, restored by Back. */
+export interface JumpOrigin {
+  readonly tab: TabId | null;
+  readonly stack: readonly RouteEntry[];
 }
 
 export interface Router {
@@ -177,6 +197,21 @@ export interface Router {
   back(): boolean;
   /** Clears the stack to a single root route (for example Home after a match). */
   reset(route: Route): void;
+  /** The active bottom tab, or null outside the tab shell (flows such as VS, battle, Result). */
+  readonly tab: ReadonlySignal<TabId | null>;
+  /**
+   * Switches to a tab. The current tab's stack is kept; the target tab shows its kept stack, or
+   * `root` when it has none. Tapping the active tab returns it to its root. Clears jump origins.
+   */
+  switchTab(tab: TabId, root: Route): void;
+  /**
+   * A cross-tab jump (Level preview "Edit army" to Army, Result "Upgrade" to Card detail, "Try it
+   * on" to Customize): pushes `route` on `tab` (or on the current stack when null) and records the
+   * origin, so Back, Esc and the back gesture return to it in the state it was left.
+   */
+  jump(route: Route, tab?: TabId | null): void;
+  /** Leaves the tab shell for a flow (VS, battle, Result): clears the kept tab stacks. */
+  leaveTabs(): void;
 }
 
 /** Deep stacks are trimmed from the bottom (keeping the root) so they cannot grow without end. */
@@ -197,7 +232,9 @@ export function createRouter(initial: Route = { id: 'home' }): Router {
   const entry = (route: Route, overlay: boolean): RouteEntry => ({ route, overlay, key: nextKey++ });
   const stack = signal<readonly RouteEntry[]>([entry(initial, false)]);
   const current = computed(() => stack.value[stack.value.length - 1]!.route);
-  const canGoBack = computed(() => stack.value.length > 1);
+  const tab = signal<TabId | null>(null);
+  const kept = new Map<TabId, readonly RouteEntry[]>();
+  const canGoBack = computed(() => stack.value.length > 1 || (tab.value !== null && tab.value !== HOME_TAB));
 
   function trim(list: RouteEntry[]): RouteEntry[] {
     if (list.length <= MAX_STACK) return list;
@@ -220,12 +257,65 @@ export function createRouter(initial: Route = { id: 'home' }): Router {
     },
     back() {
       const list = stack.value;
-      if (list.length <= 1) return false;
+      const top = list[list.length - 1]!;
+      if (top.origin) {
+        // A cross-tab jump: return to the origin exactly as it was left.
+        if (tab.value && tab.value !== top.origin.tab) {
+          const rest = list.slice(0, -1).filter((e) => !e.origin);
+          if (rest.length) kept.set(tab.value, rest);
+          else kept.delete(tab.value);
+        }
+        tab.value = top.origin.tab;
+        stack.value = top.origin.stack;
+        return true;
+      }
+      if (list.length <= 1) {
+        // Back on a tab root goes to Home (2.2); Home itself is the root.
+        if (tab.value !== null && tab.value !== HOME_TAB) {
+          kept.set(tab.value, list);
+          const home = kept.get(HOME_TAB);
+          tab.value = HOME_TAB;
+          stack.value = home ? [home[0]!] : [entry({ id: 'home' }, false)];
+          return true;
+        }
+        return false;
+      }
       stack.value = list.slice(0, -1);
       return true;
     },
     reset(route) {
       stack.value = [entry(route, false)];
+    },
+    tab,
+    switchTab(next, root) {
+      const cur = tab.value;
+      const clean = (list: readonly RouteEntry[]) => list.filter((e) => !e.origin);
+      if (cur === next) {
+        // Tapping the active tab returns it to its root.
+        const list = stack.value;
+        stack.value = list.length > 1 ? [clean(list)[0] ?? entry(root, false)] : list;
+        return;
+      }
+      if (cur) kept.set(cur, clean(stack.value));
+      tab.value = next;
+      const saved = kept.get(next);
+      stack.value = saved && saved.length ? saved : [entry(root, false)];
+    },
+    jump(route, target) {
+      const origin: JumpOrigin = { tab: tab.value, stack: stack.value };
+      const e: RouteEntry = { route, overlay: false, key: nextKey++, origin };
+      if (target && target !== tab.value) {
+        if (tab.value) kept.set(tab.value, stack.value);
+        const saved = kept.get(target);
+        tab.value = target;
+        stack.value = trim([...(saved ?? []), e]);
+      } else {
+        stack.value = trim([...stack.value, e]);
+      }
+    },
+    leaveTabs() {
+      kept.clear();
+      tab.value = null;
     },
   };
 }

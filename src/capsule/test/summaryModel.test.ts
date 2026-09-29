@@ -12,6 +12,7 @@ import {
 } from '../summaryModel';
 import { DEFAULT_PITY_RULES } from '../types';
 import { PITY, reveal, stack, testCatalog } from './fixtures';
+import { copiesText, summaryButtons } from '../summary';
 
 const catalog = testCatalog();
 
@@ -113,5 +114,25 @@ describe('catalog', () => {
     expect(c.hasClimb('meter')).toBe(true);
     expect(c.hasClimb('road')).toBe(false);
     expect(c.hasClimb('ageUnlock')).toBe(false);
+  });
+});
+
+describe('summary buttons (ui-plan 4.6, UA-18)', () => {
+  it('has exactly one primary: Open next while more wait, else Done', () => {
+    expect(summaryButtons({ pending: 2, openNext: true, openAll: true, upgrade: true, fromResult: false })).toEqual({
+      primary: 'openNext',
+      secondary: ['upgrade', 'openAll', 'done'],
+    });
+    expect(summaryButtons({ pending: 0, openNext: true, openAll: true, upgrade: false, fromResult: false })).toEqual({ primary: 'done', secondary: [] });
+  });
+
+  it('opened from the Result, the primary continues the Result path and never offers more capsules', () => {
+    expect(summaryButtons({ pending: 3, openNext: true, openAll: true, upgrade: true, fromResult: true })).toEqual({ primary: 'done', secondary: ['upgrade'] });
+  });
+
+  it('copies never read over-full: a full bar says Upgrade ready', () => {
+    expect(copiesText(8, 10)).toBe('8/10');
+    expect(copiesText(10, 10)).toBeNull();
+    expect(copiesText(5, 2)).toBeNull();
   });
 });

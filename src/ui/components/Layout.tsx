@@ -1,8 +1,11 @@
 /**
- * Screen layout pieces:
- * - `ScreenFrame`: the standard screen with a header (back button, title, right-side slot such as
- *   currency chips) and a body, laid out for landscape phones up to desktop (A2.1: v1 is landscape).
- * - `Panel`: the framed wooden-and-ink panel used for grouped content.
+ * Screen layout pieces (docs/ui-plan.md 3.1, 3.6):
+ * - `ScreenFrame`: the screen template: a fixed header (Back top-left, title, right-side slot such
+ *   as currency chips), a content area that scrolls on its own, and an optional fixed `ActionBar`
+ *   (primary bottom-right). Header and action bar never scroll away (fixes UA-03). Heights come
+ *   from the tokens: header 44 / 40 short / 56 regular, action bar 64 / 56 / 80.
+ * - `ActionBar`: tertiary at the left edge, secondary left of the primary, primary at the right.
+ * - `Panel`: a slate surface for grouped content.
  * - `RotateOverlay`: "Rotate your device" shown in portrait (A2.1, C5 #44), CSS-driven so it needs
  *   no resize listener.
  */
@@ -20,11 +23,13 @@ export function ScreenFrame(p: {
   theme?: string;
   subtitle?: ComponentChildren;
   class?: string;
+  /** The fixed action bar at the bottom (the screen's primary lives here, bottom-right). */
+  actions?: ActionBarProps;
 }) {
   const { t } = useKit();
   return (
     <section
-      class={`ui-screen ui-screen--${p.id} ${p.class ?? ''}`}
+      class={`ui-screen ui-screen--${p.id}${p.actions ? ' ui-screen--has-bar' : ''} ${p.class ?? ''}`}
       data-screen={p.id}
       data-theme={p.theme}
       aria-labelledby={`${p.id}-title`}
@@ -35,7 +40,7 @@ export function ScreenFrame(p: {
             icon={<BackIcon size={26} />}
             label={t('ui.common.back')}
             onClick={p.onBack}
-            variant="blue"
+            kind="secondary"
             testid="back"
             class="ui-screen__back"
           />
@@ -48,8 +53,34 @@ export function ScreenFrame(p: {
         </div>
         <div class="ui-screen__right">{p.right}</div>
       </header>
-      <div class="ui-screen__body">{p.children}</div>
+      <div class="ui-screen__body" data-scroll="">
+        {p.children}
+      </div>
+      {p.actions ? <ActionBar {...p.actions} /> : null}
     </section>
+  );
+}
+
+export interface ActionBarProps {
+  /** The one primary (a `Button` of kind primary or progress, size l), at the right edge. */
+  primary?: ComponentChildren;
+  /** Secondary actions, left of the primary. */
+  secondary?: ComponentChildren;
+  /** Tertiary actions (text buttons) or a note, at the left edge. */
+  tertiary?: ComponentChildren;
+  testid?: string;
+  class?: string;
+}
+
+/** The fixed action bar of sub-screens, panels and sheets (3.6). */
+export function ActionBar(p: ActionBarProps) {
+  return (
+    <footer class={`ui-actionbar ${p.class ?? ''}`} data-testid={p.testid ?? 'action-bar'}>
+      <div class="ui-actionbar__tertiary">{p.tertiary}</div>
+      <div class="ui-actionbar__spacer" />
+      {p.secondary ? <div class="ui-actionbar__secondary">{p.secondary}</div> : null}
+      {p.primary ? <div class="ui-actionbar__primary">{p.primary}</div> : null}
+    </footer>
   );
 }
 

@@ -11,8 +11,8 @@ import bpy
 import numpy as np
 from mathutils import Euler, Matrix, Quaternion, Vector
 
-PX_PER_LU_1X = 0.9      # infantry of ~68 lu are ~62 px tall on an 844x390 phone
-RENDER_MULT = 3         # frames are rendered at 3x and downsampled to 2x and 1x
+PX_PER_LU_1X = 0.9      # style-study default; game sheets pass their own (1.23, or 1.025 for huge units)
+RENDER_MULT = 2         # game sheets: rendered at the 2x (hd) density, box-downsampled to 1x (study: 3)
 ELEV_DEG = 12.0         # camera tilt down
 THREADS = 2
 
@@ -130,10 +130,11 @@ def _ground(sc):
     return o
 
 
-def camera(w_lu, h_lu, feet_lu, mult=RENDER_MULT):
-    """Orthographic camera; `feet_lu` = (x from the left, y from the bottom) of the canvas."""
+def camera(w_lu, h_lu, feet_lu, mult=RENDER_MULT, px1=None):
+    """Orthographic camera; `feet_lu` = (x from the left, y from the bottom) of the canvas.
+    `px1` is the 1x sheet density (px per lu); the render is `mult` times that."""
     sc = bpy.context.scene
-    pxlu = PX_PER_LU_1X * mult
+    pxlu = (px1 or PX_PER_LU_1X) * mult
     wpx, hpx = int(math.ceil(w_lu * pxlu / 6) * 6), int(math.ceil(h_lu * pxlu / 6) * 6)
     w_lu, h_lu = wpx / pxlu, hpx / pxlu
     sc.render.resolution_x, sc.render.resolution_y = wpx, hpx
@@ -153,6 +154,24 @@ def camera(w_lu, h_lu, feet_lu, mult=RENDER_MULT):
     cam.rotation_euler = (math.pi / 2 - e, 0.0, 0.0)
     sc.camera = cam
     return cam, (wpx, hpx), (fx * pxlu, hpx - fy * pxlu)
+
+
+def screen_lu(p):
+    """Screen-plane lu (x right, y up) of a world point, measured from the feet (world origin)."""
+    e = math.radians(ELEV_DEG)
+    return (p[0], p[1] * math.sin(e) + p[2] * math.cos(e))
+
+
+def place(sx, sy, depth, yaw_deg):
+    """Character-space point (before the rig's yaw) whose screen projection is (sx, sy) lu
+    (x right, y up) at world depth `depth` (world y after yaw, + away from the camera)."""
+    e = math.radians(ELEV_DEG)
+    wx, wy = sx, depth
+    wz = (sy - wy * math.sin(e)) / math.cos(e)
+    psi = -math.radians(yaw_deg)
+    x = wx * math.cos(psi) - wy * math.sin(psi)
+    y = wx * math.sin(psi) + wy * math.cos(psi)
+    return (x, y, wz)
 
 
 # --------------------------------------------------------------------------- materials
@@ -569,6 +588,12 @@ class Rig:
             pb.location = bm.inverted() @ Vector(loc)
         if s is not None:
             pb.scale = s if isinstance(s, tuple) else (s, s, s)
+
+    def world_point(self, bone, p):
+        """World position of the rest-pose character-space point `p` carried by `bone`."""
+        pb = self.obj.pose.bones[bone]
+        M = self.obj.matrix_world @ pb.matrix @ self.obj.data.bones[bone].matrix_local.inverted()
+        return M @ Vector(p)
 
     def key(self, frame):
         for pb in self.obj.pose.bones:

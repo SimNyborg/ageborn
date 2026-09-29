@@ -87,7 +87,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           <div class="set-backup" role="note" data-testid="backup-reminder">
             <DownloadIcon size={26} />
             <span class="ui-grow">{t('ui.settings.backupReminder')}</span>
-            <Button variant="gold" size="sm" onClick={openExport} testid="backup-now">
+            <Button kind="secondary" size="sm" onClick={openExport} testid="backup-now">
               {t('ui.settings.backupNow')}
             </Button>
           </div>
@@ -246,11 +246,11 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           <Panel title={t('ui.settings.save')} icon={<DownloadIcon size={24} />} testid="set-save" labelledBy="set-save-t">
             <p class="set-note">{t('ui.settings.saveLocal')}</p>
             <div class="set-buttons">
-              <Button variant="blue" size="sm" icon={<CopyIcon size={20} />} testid="export-code" onClick={openExport}>
+              <Button kind="secondary" size="sm" icon={<CopyIcon size={20} />} testid="export-code" onClick={openExport}>
                 {t('ui.settings.exportCode')}
               </Button>
               <Button
-                variant="blue"
+                kind="secondary"
                 size="sm"
                 icon={<DownloadIcon size={20} />}
                 testid="export-file"
@@ -258,15 +258,15 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
               >
                 {t('ui.settings.exportFile')}
               </Button>
-              <Button variant="green" size="sm" icon={<UploadIcon size={20} />} testid="import" onClick={() => setDialog('import')}>
+              <Button kind="progress" size="sm" icon={<UploadIcon size={20} />} testid="import" onClick={() => setDialog('import')}>
                 {t('ui.settings.import')}
               </Button>
-              <Button variant="red" size="sm" icon={<TrashIcon size={20} />} testid="reset" onClick={() => setDialog('reset1')}>
+              <Button kind="destructive" size="sm" icon={<TrashIcon size={20} />} testid="reset" onClick={() => setDialog('reset1')}>
                 {t('ui.settings.reset')}
               </Button>
             </div>
             <div class="set-buttons">
-              <Button variant="plain" size="sm" testid="export-log" onClick={() => services.exportEventLog()}>
+              <Button kind="secondary" size="sm" testid="export-log" onClick={() => services.exportEventLog()}>
                 {t('ui.settings.exportLog')}
               </Button>
             </div>
@@ -281,13 +281,13 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
               <li data-testid="about-kept">{t('ui.info.kept')}</li>
             </ul>
             <div class="set-buttons">
-              <Button variant="green" size="sm" icon={<ProfileIcon size={20} />} testid="parents" onClick={() => setDialog('parents')}>
+              <Button kind="progress" size="sm" icon={<ProfileIcon size={20} />} testid="parents" onClick={() => setDialog('parents')}>
                 {t('ui.settings.parents')}
               </Button>
-              <Button variant="gold" size="sm" icon={<InfoIcon size={20} />} testid="odds-overview" onClick={() => setDialog('odds')}>
+              <Button kind="secondary" size="sm" icon={<InfoIcon size={20} />} testid="odds-overview" onClick={() => setDialog('odds')}>
                 {t('ui.settings.odds')}
               </Button>
-              <Button variant="plain" size="sm" testid="credits" onClick={() => setDialog('credits')}>
+              <Button kind="secondary" size="sm" testid="credits" onClick={() => setDialog('credits')}>
                 {t('ui.settings.credits')}
               </Button>
             </div>
@@ -301,7 +301,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           onClose={() => setDialog(null)}
           testid="export-modal"
           footer={
-            <Button variant="blue" icon={<CopyIcon size={20} />} onClick={copy} testid="copy-code">
+            <Button kind="secondary" icon={<CopyIcon size={20} />} onClick={copy} testid="copy-code">
               {t('ui.settings.copy')}
             </Button>
           }
@@ -318,7 +318,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           testid="import-modal"
           footer={
             <Button
-              variant="green"
+              kind="progress"
               icon={<UploadIcon size={20} />}
               disabled={importText.trim().length === 0}
               testid="import-go"
@@ -358,10 +358,10 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           testid="reset-1"
           footer={
             <>
-              <Button variant="plain" autofocus onClick={() => setDialog(null)}>
+              <Button kind="secondary" autofocus onClick={() => setDialog(null)}>
                 {t('ui.common.cancel')}
               </Button>
-              <Button variant="red" testid="reset-next" onClick={() => setDialog('reset2')}>
+              <Button kind="destructive" testid="reset-next" onClick={() => setDialog('reset2')}>
                 {t('ui.settings.reset')}
               </Button>
             </>
@@ -379,11 +379,11 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           testid="reset-2"
           footer={
             <>
-              <Button variant="plain" autofocus onClick={() => setDialog(null)}>
+              <Button kind="secondary" autofocus onClick={() => setDialog(null)}>
                 {t('ui.common.cancel')}
               </Button>
               <Button
-                variant="red"
+                kind="destructive"
                 testid="reset-yes"
                 onClick={() => {
                   setDialog(null);

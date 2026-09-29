@@ -15,6 +15,7 @@ import { displayName } from '../../names';
 import { REPLAY_SPEEDS, ReplayPlayer } from '../../replayPlayer';
 import { useApp } from '../../ui/context';
 import './replay.css';
+import { Button } from '@/ui/components/Button';
 
 const TICKS_PER_SECOND = 20;
 /** The controls fade out after this long without a pointer move or tap while the replay plays. */
@@ -122,9 +123,9 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
         <div class="ab-panel">
           <h2>{ui.t('replay.title')}</h2>
           <p>{ui.t('replay.olderVersion')}</p>
-          <button class="ab-btn ab-btn--plain" onClick={p.onBack}>
+          <Button kind="secondary" size="m" onClick={p.onBack}>
             {ui.t('replay.back')}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -214,12 +215,12 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
               {verified ? ui.t('replay.verified') : ui.t('replay.mismatch')}
             </span>
             <div class="ab-row ab-replay-endactions">
-              <button class="ab-btn ab-btn--gold" data-testid="replay-again" onClick={() => player.restart()}>
-                {ui.t('replay.watchAgain')}
-              </button>
-              <button class="ab-btn ab-btn--plain" data-testid="replay-done" onClick={p.onBack}>
+              <Button kind="secondary" size="m" testid="replay-done" onClick={p.onBack}>
                 {ui.t('replay.back')}
-              </button>
+              </Button>
+              <Button kind="primary" size="l" testid="replay-again" onClick={() => player.restart()}>
+                {ui.t('replay.watchAgain')}
+              </Button>
             </div>
           </div>
         </div>

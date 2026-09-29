@@ -85,6 +85,8 @@ const VARIANTS: Variant[] = [
   { id: 'collection', label: 'Collection', route: () => [{ id: 'home' }, { id: 'collection' }] },
   { id: 'collection-skins', label: 'Collection: skins', route: () => [{ id: 'home' }, { id: 'collection', tab: 'skins' }] },
   card('bonker'),
+  card('pikeman'),
+  card('friar'),
   card('mammoth_matriarch'),
   card('chrono_titan'),
   card('rock_tosser'),

@@ -53,13 +53,13 @@ export function SkinOptions(p: { card: CardId; compact?: boolean }) {
                 <CheckIcon size={18} /> {t('ui.skins.equipped')}
               </span>
             ) : owned ? (
-              <Button size="sm" variant="blue" testid={`equip-${id ?? 'default'}`} onClick={() => services.equipSkin(p.card, id)}>
+              <Button size="sm" kind="progress" testid={`equip-${id ?? 'default'}`} onClick={() => services.equipSkin(p.card, id)}>
                 {t('ui.skins.equip')}
               </Button>
             ) : price !== null ? (
               <Button
                 size="sm"
-                variant="violet"
+                kind="secondary"
                 icon={<DustIcon size={18} />}
                 testid={`craft-${id}`}
                 inert={s.currencies.dust < price}

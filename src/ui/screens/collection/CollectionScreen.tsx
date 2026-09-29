@@ -71,14 +71,14 @@ export function SkinTile(p: { skin: SkinDef }) {
             <CheckIcon size={18} /> {t('ui.skins.equipped')}
           </span>
         ) : (
-          <Button size="sm" variant="blue" onClick={() => services.equipSkin(k.target, k.id)} testid={`equip-${k.id}`}>
+          <Button size="sm" kind="progress" onClick={() => services.equipSkin(k.target, k.id)} testid={`equip-${k.id}`}>
             {t('ui.skins.equip')}
           </Button>
         )
       ) : price !== null ? (
         <Button
           size="sm"
-          variant="violet"
+          kind="secondary"
           icon={<DustIcon size={18} />}
           inert={s.currencies.dust < price}
           testid={`craft-${k.id}`}
@@ -126,7 +126,7 @@ function FeatsPanel() {
               </span>
             </span>
             {!v.found && !v.hinted ? (
-              <Button variant="plain" size="sm" testid={`feat-hint-${v.id}`} onClick={() => services.showFeatHint(v.id)}>
+              <Button kind="secondary" size="sm" testid={`feat-hint-${v.id}`} onClick={() => services.showFeatHint(v.id)}>
                 {t('ui.feats.showHint')}
               </Button>
             ) : null}
@@ -275,7 +275,7 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
               {/* A18.9.4: completion of every cosmetic collection; Customize equips them */}
               <div class="col-cosmetics">
                 <CompletionStrip />
-                <Button size="sm" variant="violet" testid="open-customize" onClick={() => router.go({ id: 'customize', tab: 'flags' })}>
+                <Button size="sm" kind="secondary" testid="open-customize" onClick={() => router.go({ id: 'customize', tab: 'flags' })}>
                   {t('ui.nav.customize')}
                 </Button>
               </div>

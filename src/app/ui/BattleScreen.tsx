@@ -11,6 +11,7 @@ import type { BattleHandle } from '../battle';
 import { emoteWheelOf } from '../cosmetics';
 import { useApp } from './context';
 import { TutorialBubble } from './TutorialBubble';
+import { Button } from '@/ui/components/Button';
 
 /** The "Scouted (n)" chip appears from match 3; new players have enough to read (audit #11). */
 export const SCOUTED_FROM_MATCH = 3;
@@ -78,29 +79,30 @@ export function BattleScreen(p: {
             <h2 id="ab-pause-title">{ui.t('app.paused')}</h2>
             <p class="ab-pause-hint">{ui.t('app.pauseScout')}</p>
             <div class="ab-row">
-              <button class="ab-btn ab-btn--gold" data-testid="resume" onClick={() => s.resume()}>
+              <Button kind="primary" size="l" testid="resume" onClick={() => s.resume()}>
                 {ui.t('app.resume')}
-              </button>
+              </Button>
               {hud.canRetreat && b.setup.mode !== 'tutorial' ? (
-                <button
-                  class="ab-btn ab-btn--plain"
-                  data-testid="retreat"
+                <Button
+                  kind="destructive"
+                  size="s"
+                  testid="retreat"
                   onClick={() => {
                     s.resume();
                     s.issue({ t: 'retreat', side: 0 });
                   }}
                 >
                   {ui.t('app.retreat')}
-                </button>
+                </Button>
               ) : null}
               {b.setup.mode === 'skirmish' ? (
-                <button class="ab-btn ab-btn--plain" data-testid="restart" onClick={() => ui.controller.quickBattle(b.setup.config.format)}>
+                <Button kind="secondary" size="m" testid="restart" onClick={() => ui.controller.quickBattle(b.setup.config.format)}>
                   {ui.t('app.restart')}
-                </button>
+                </Button>
               ) : null}
-              <button class="ab-btn ab-btn--plain" data-testid="quit" onClick={() => ui.controller.quit()}>
+              <Button kind="secondary" size="m" testid="quit" onClick={() => ui.controller.quit()}>
                 {ui.t('app.quit')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

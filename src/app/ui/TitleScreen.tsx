@@ -19,6 +19,7 @@ import { QUICK_BATTLE_GENERAL } from '../controller';
 import { difficultyTable } from '../matchSetup';
 import { displayName } from '../names';
 import { useApp } from './context';
+import { Button, IconButton } from '@/ui/components/Button';
 
 /** The game's name is a brand, not translatable UI copy. */
 export const GAME_NAME = 'Ageborn';
@@ -56,13 +57,14 @@ export function TitleScreen(p: TitleScreenProps = {}) {
 
   const quickCard = (
     <div class={`ab-card${newPlayer ? ' ab-card--quiet ab-card--col' : ''}`} data-testid="quick-panel">
-      <div class="ab-row ab-formats" role="radiogroup" aria-label={ui.t('app.formatPick')}>
+      <div class="ui-seg ab-formats" role="radiogroup" aria-label={ui.t('app.formatPick')}>
           {QUICK_FORMATS.map((f) => {
             const min = formatMinutes(formats[f]?.finalBellMs);
             return (
               <button
                 key={f}
-                class={`ab-btn ab-btn--plain ab-btn--small ab-format${f === format ? ' is-on' : ''}`}
+                type="button"
+                class={`ui-seg__opt ab-format${f === format ? ' is-on' : ''}`}
                 role="radio"
                 aria-checked={f === format}
                 data-testid={`format-${f}`}
@@ -74,11 +76,12 @@ export function TitleScreen(p: TitleScreenProps = {}) {
             );
           })}
       </div>
-      <div class="ab-row ab-formats" role="radiogroup" aria-label={ui.t('ui.difficulty.label')} data-testid="quick-difficulty">
+      <div class="ui-seg ab-formats" role="radiogroup" aria-label={ui.t('ui.difficulty.label')} data-testid="quick-difficulty">
         {diffs.order.map((d) => (
           <button
             key={d}
-            class={`ab-btn ab-btn--plain ab-btn--small ab-format${d === difficulty ? ' is-on' : ''}`}
+            type="button"
+            class={`ui-seg__opt ab-format${d === difficulty ? ' is-on' : ''}`}
             role="radio"
             aria-checked={d === difficulty}
             data-testid={`difficulty-${d}`}
@@ -89,13 +92,9 @@ export function TitleScreen(p: TitleScreenProps = {}) {
           </button>
         ))}
       </div>
-      <button
-        class={`ab-btn ${newPlayer ? 'ab-btn--plain ab-btn--small' : 'ab-btn--gold ab-btn--big'}`}
-        data-testid="quick-battle"
-        onClick={() => c.quickBattle(format, difficulty)}
-      >
+      <Button kind={newPlayer ? 'secondary' : 'primary'} size={newPlayer ? 's' : 'l'} testid="quick-battle" onClick={() => c.quickBattle(format, difficulty)}>
         {ui.t('app.quickBattle')}
-      </button>
+      </Button>
       <div class="ab-row">
         <span class="ab-chip">
           {ui.t('app.vs')} {ui.t(`general.${QUICK_BATTLE_GENERAL}.name`)}
@@ -113,9 +112,9 @@ export function TitleScreen(p: TitleScreenProps = {}) {
   const playCard =
     battle && opponent ? (
       <div class={`ab-card${newPlayer ? ' ab-card--hero' : ' ab-card--quiet'}`} data-testid="training-panel">
-        <button class={`ab-btn ${newPlayer ? 'ab-btn--gold ab-btn--big ab-btn--hero' : 'ab-btn--plain'}`} data-testid="play" onClick={() => c.play()}>
+        <Button kind={newPlayer ? 'primary' : 'secondary'} size={newPlayer ? 'xl' : 'm'} pulse={newPlayer} testid="play" class={newPlayer ? 'ab-hero' : ''} onClick={() => c.play()}>
           {newPlayer ? ui.t('app.play') : waitingIsTraining ? ui.t('app.trainingMatch') : ui.t('app.play')}
-        </button>
+        </Button>
         <div class="ab-row">
           <span class="ab-chip">
             {ui.t('app.vs')} {displayName(opponent.displayName, ui.services.i18n)}
@@ -136,9 +135,9 @@ export function TitleScreen(p: TitleScreenProps = {}) {
           ))}
         </div>
         {!waitingIsTraining && !newPlayer ? (
-          <button class="ab-btn ab-btn--plain ab-btn--small" data-testid="training" onClick={() => c.training()}>
+          <Button kind="secondary" size="s" testid="training" onClick={() => c.training()}>
             {ui.t('app.trainingMatch')}
-          </button>
+          </Button>
         ) : null}
       </div>
     ) : null;
@@ -146,22 +145,20 @@ export function TitleScreen(p: TitleScreenProps = {}) {
   return (
     <div class={`ab-title${newPlayer ? ' ab-title--new' : ''}`} data-testid="title">
       {p.onSettings ? (
-        <button type="button" class="ab-btn ab-btn--plain ab-gear" data-testid="title-settings" aria-label={ui.t('ui.nav.settings')} title={ui.t('ui.nav.settings')} onClick={p.onSettings}>
-          <GearIcon size={26} />
-        </button>
+        <IconButton class="ab-gear" testid="title-settings" label={ui.t('ui.nav.settings')} icon={<GearIcon size={26} />} onClick={p.onSettings} />
       ) : null}
       {p.notice ? (
         <div class="ab-notice" role="alert" data-testid="save-notice">
           <span class="ab-notice__text">{ui.t(p.notice.messageKey)}</span>
           {p.notice.kind === 'unreadable' && p.onSettings ? (
-            <button type="button" class="ab-btn ab-btn--gold ab-btn--small" data-testid="save-notice-import" onClick={p.onSettings}>
+            <Button kind="secondary" size="s" testid="save-notice-import" onClick={p.onSettings}>
               {ui.t('ui.settings.import')}
-            </button>
+            </Button>
           ) : null}
           {p.onDismissNotice ? (
-            <button type="button" class="ab-btn ab-btn--plain ab-btn--small" data-testid="save-notice-close" onClick={p.onDismissNotice}>
+            <Button kind="tertiary" size="s" testid="save-notice-close" onClick={p.onDismissNotice}>
               {ui.t('ui.common.close')}
-            </button>
+            </Button>
           ) : null}
         </div>
       ) : null}
@@ -180,9 +177,9 @@ export function TitleScreen(p: TitleScreenProps = {}) {
             .slice(-3)
             .reverse()
             .map((rep, i) => (
-              <button key={`${rep.seed}-${i}`} class="ab-btn ab-btn--plain ab-btn--small" data-testid="title-replay" onClick={() => c.watchReplay(rep)}>
+              <Button key={`${rep.seed}-${i}`} kind="tertiary" size="s" testid="title-replay" onClick={() => c.watchReplay(rep)}>
                 {ui.t('app.watchReplay')} · {displayName(rep.sides[1].label, ui.services.i18n)} · {ui.t('app.aiChip')}
-              </button>
+              </Button>
             ))}
         </div>
       ) : null}

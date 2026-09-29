@@ -60,7 +60,9 @@ export function AiBadge(p: { general?: boolean; size?: 'sm' | 'md' }) {
   return (
     <span class={`ui-ai ui-ai--${p.size ?? 'md'}`} data-testid="ai-badge">
       <RobotIcon size={p.size === 'sm' ? 16 : 20} />
-      <span class="ui-ai__chip">{t('ui.ai.chip')}</span>
+      <span class="ui-ai__chip" data-tag="">
+        {t('ui.ai.chip')}
+      </span>
       {p.general ? <span class="ui-ai__general">{t('ui.ai.general')}</span> : null}
     </span>
   );

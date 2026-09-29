@@ -69,7 +69,7 @@ function GeneralModal(p: { e: ConquestEntry; onClose: () => void; onFight: () =>
       testid="cq-general"
       footer={
         p.e.open ? (
-          <Button variant="red" size="lg" icon={<SwordsIcon size={26} />} onClick={p.onFight} testid="cq-fight" autofocus>
+          <Button kind="primary" size="lg" icon={<SwordsIcon size={26} />} onClick={p.onFight} testid="cq-fight" autofocus>
             {t('ui.conquest.fight')}
           </Button>
         ) : undefined

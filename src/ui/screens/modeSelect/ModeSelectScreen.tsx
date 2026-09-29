@@ -188,7 +188,7 @@ function SkirmishSetup(p: {
       testid="skirmish-setup"
       footer={
         <Button
-          variant="green"
+          kind="primary"
           size="lg"
           testid="skirmish-start"
           icon={<SwordsIcon size={26} />}
@@ -375,7 +375,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           }
           action={
             <Button
-              variant="green"
+              kind="primary" primary={false}
               size="lg"
               wide
               testid="quick-start"
@@ -422,7 +422,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           desc={t("ui.mode.ladder.desc")}
           action={
             <Button
-              variant="gold"
+              kind="primary" primary={false}
               size="lg"
               wide
               testid="ladder-start"
@@ -481,7 +481,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           }
           action={
             <Button
-              variant="red"
+              kind="secondary"
               size="lg"
               wide
               testid="conquest-open"
@@ -514,7 +514,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           }
           action={
             <Button
-              variant="green"
+              kind="secondary"
               size="lg"
               wide
               testid="skirmish-open"
@@ -543,7 +543,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           })}
           action={
             <Button
-              variant="gold"
+              kind="primary" primary={false}
               size="lg"
               wide
               testid="daily-start"

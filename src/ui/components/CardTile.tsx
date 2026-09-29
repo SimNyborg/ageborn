@@ -160,9 +160,9 @@ export function CardTile(p: {
           </span>
         ) : null}
       </span>
-      {size !== 'xs' ? <span class="ui-card__name">{c.name}</span> : null}
+      {size !== 'xs' ? <span class="ui-card__name" data-clip-check="">{c.name}</span> : null}
       {c.cls && size !== 'xs' ? (
-        <span class="ui-card__classname" style={{ '--cls': `var(--cls-${c.cls})` }}>
+        <span class="ui-card__classname" data-tag="" style={{ '--cls': `var(--cls-${c.cls})` }}>
           {t(CLASS_NAME_KEY[c.cls])}
         </span>
       ) : null}

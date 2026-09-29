@@ -35,28 +35,27 @@
   filter: drop-shadow(0 1px 0 rgba(27, 19, 48, 0.55));
 }
 
+/* The class chip (ui-plan 3.5, 3.6): a flat info pill, never pressable-looking; the class colour
+   lives on the badge disc and a tinted edge, and the word carries the meaning. */
 .ui-class-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 9px 2px 3px;
-  border: 2px solid #1b1330;
+  height: 28px;
+  padding: 0 10px 0 3px;
+  border: 1px solid color-mix(in srgb, var(--cls-main) 60%, #6b7890);
   border-radius: 999px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--cls-main) 30%, #2b2754),
-    color-mix(in srgb, var(--cls-main) 16%, #1f1b3e)
-  );
-  box-shadow: 0 2px 0 #1b1330;
-  color: #fff;
-  font-weight: 900;
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--cls-main) 18%, #252c39), color-mix(in srgb, var(--cls-main) 10%, #1a1f29));
+  color: #f4efe4;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 16px;
   white-space: nowrap;
 }
 .ui-class-chip--sm {
   gap: 4px;
-  padding: 1px 7px 1px 2px;
+  height: 24px;
+  padding: 0 8px 0 2px;
   font-size: 12px;
 }
 .ui-class-chip .ui-class-icon + .ui-class-chip__label + .ui-class-icon {
@@ -121,7 +120,7 @@
   display: inline-flex;
   align-items: flex-end;
   filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
-  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 160ms var(--ui-ease-back);
 }
 .ui-card.is-button:hover .ui-card__class {
   transform: scale(1.12) rotate(-6deg);
@@ -150,7 +149,7 @@
   text-overflow: ellipsis;
 }
 .ui-card--sm .ui-card__classname {
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0;
 }
 .ui-card--lg .ui-card__classname {
@@ -175,7 +174,7 @@
   text-align: left;
   pointer-events: none;
   transform-origin: 50% 100%;
-  animation: ui-card-tip-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: ui-card-tip-in 180ms var(--ui-ease-back);
 }
 .ui-card-tip.is-below {
   transform-origin: 50% 0;

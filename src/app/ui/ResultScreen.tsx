@@ -1,10 +1,13 @@
 /**
- * The result (DESIGN A9 #7): Victory / Defeat / Draw, a short recap, the rewards staged one at a
- * time (each tap skips to the next), and Next / Play again, Watch replay, Home. A lost onboarding
- * match offers Retry (A8). The opponent keeps its AI badge (A7.1, C5 #38). WP9's Result screen takes
- * over in Phase 2.
+ * The onboarding Result (DESIGN A9 #7, A8; ui-plan 4.9 "one Result design for every mode"): the app
+ * keeps its controller logic (Next, Retry, Play again) but draws WP9's Result design through
+ * `ResultLayout` and `resultBar`: the banner, a short recap, the rewards staged one at a time (each
+ * tap skips to the next) and the fixed action bar with one primary bottom-right. A lost onboarding
+ * match offers Retry (A8). The opponent keeps its AI badge (A7.1, C5 #38).
  */
 import { useEffect, useMemo } from 'preact/hooks';
+import { resultActions, type ResultActionId } from '@/ui/screens/model/result';
+import { ResultLayout, resultBar } from '@/ui/screens/result/ResultScreen';
 import type { RewardStep } from '@/contracts';
 import type { ResultState } from '../controller';
 import { RewardStager } from '../flow';
@@ -108,25 +111,6 @@ export function resultLine(t: (k: string, p?: Record<string, string | number>) =
   return won ? t('app.toppled', { name, time }) : t('app.fell', { name, time });
 }
 
-function HomeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-      <path d="M3.5 11.5 12 4l8.5 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M6 10.5V20h4.5v-5h3v5H18v-9.5" fill="currentColor" stroke="#1b1330" stroke-width="1.4" stroke-linejoin="round" />
-    </svg>
-  );
-}
-
-function ReplayIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-      <path d="M19 12a7 7 0 1 1-2.05-4.95" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" />
-      <path d="M19.5 3.5v5h-5z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
-      <path d="M10 9v6l5-3z" fill="currentColor" />
-    </svg>
-  );
-}
-
 export function ResultScreen(p: { result: ResultState }) {
   const ui = useApp();
   const c = ui.controller;
@@ -169,77 +153,74 @@ export function ResultScreen(p: { result: ResultState }) {
   const line = resultLine(ui.t, won, draw, input.outcome.reason, name, clock(input.stats.durationMs));
   // One main action (gold). During onboarding that is Next (a capsule waits) or Retry; nothing
   // competes with it (A8, A9 #7). Outside onboarding: Play again, Watch replay and Home, all labeled.
-  const primary = next ? 'next' : retry ? 'retry' : 'again';
+  const kind = draw ? 'draw' : won ? 'win' : 'loss';
+  const capsule = next && rewards.some((r) => r.kind === 'capsule');
+  const actions = onboarding
+    ? resultActions({ mode: 'tutorial', outcome: kind, capsule, daily: false, stop: false, replay: false, onboarding: true, canRetry: retry })
+    : { primary: 'next' as ResultActionId, secondary: ['home' as ResultActionId], tertiary: ['replay' as ResultActionId] };
+  // After match 1 a loss has only Retry (A8); Next is the capsule step or the next match.
+  if (onboarding && !next && !retry) actions.primary = 'continue';
+  const run: Partial<Record<ResultActionId, () => void>> = onboarding
+    ? { openCapsule: () => c.next(), continue: () => (next ? c.next() : c.home()), tryAgain: () => c.retry() }
+    : { next: () => c.playAgain(), home: () => c.home(), replay: () => c.watchReplay(replay) };
+  const bar = resultBar(actions, run, ui.t, stager.done, {
+    openCapsule: 'next',
+    continue: 'next',
+    tryAgain: 'retry',
+    next: 'play-again',
+    home: 'home',
+    replay: 'watch-replay',
+  });
   return (
-    <div class={`ab-scrim ab-result ab-result--${draw ? 'draw' : won ? 'win' : 'loss'}`} data-testid="result" onClick={() => stager.tap()}>
-      <div class="ab-result-rays" aria-hidden="true" />
-      <div class="ab-result-banner">
-        <h2 class={won ? 'ab-win' : 'ab-loss'} data-testid="result-title" data-outcome={draw ? 'draw' : won ? 'win' : 'loss'}>
-          {title}
-        </h2>
-      </div>
-      <div class="ab-panel ab-result-panel">
-        <p class="ab-result-line" data-testid="result-line">
-          {line}
-        </p>
-        <div class="ab-row ab-result-vs">
-          <span class="ab-chip">
-            {ui.t('app.vs')} {name}
-          </span>
-          <span class="ab-chip ab-chip--ai">{ui.t('app.aiChip')}</span>
-        </div>
-        <div class="ab-stats">
-          <span>{ui.t('app.stats.trained', { n: input.stats.trained })}</span>
-          <span>{ui.t('app.stats.kills', { n: input.stats.kills })}</span>
-        </div>
-        {tip ? (
-          <p class="ab-result-tip" data-testid="result-tip">
-            {ui.t(tip)}
-          </p>
-        ) : null}
-        {shown.length > 0 ? (
-          <div class="ab-rewards" data-testid="result-rewards">
-            {shown.slice(0, revealed).map(({ r, chip }, i) => (
-              <div class={`ab-reward ab-reward--${chip.icon}`} key={i} data-testid="result-reward" data-kind={r.kind}>
-                <RewardIcon kind={chip.icon} />
-                <span>{chip.text}</span>
-              </div>
-            ))}
-            {!stager.done ? <span class="ab-muted">{ui.t('app.tapToSkip')}</span> : null}
-          </div>
-        ) : (
-          <div data-testid="result-rewards" hidden />
-        )}
-        <div class="ab-row ab-result-actions" onClick={(e) => e.stopPropagation()}>
-          {retry ? (
-            <button class={`ab-btn ${primary === 'retry' ? 'ab-btn--gold ab-btn--wide' : 'ab-btn--plain'}`} data-testid="retry" onClick={() => c.retry()}>
-              {ui.t('app.retry')}
-            </button>
-          ) : null}
-          {next ? (
-            <button class="ab-btn ab-btn--gold ab-btn--wide" data-testid="next" onClick={() => c.next()}>
-              {ui.t('app.next')}
-            </button>
-          ) : null}
-          {!retry && !onboarding ? (
-            <button class={`ab-btn ${primary === 'again' ? 'ab-btn--gold ab-btn--wide' : 'ab-btn--plain'}`} data-testid="play-again" onClick={() => c.playAgain()}>
-              {ui.t('app.playAgain')}
-            </button>
-          ) : null}
-          {onboarding ? null : (
-            <>
-              <button class="ab-btn ab-btn--plain ab-btn--labeled" data-testid="watch-replay" onClick={() => c.watchReplay(replay)}>
-                <ReplayIcon />
-                <span>{ui.t('app.watchReplay')}</span>
-              </button>
-              <button class="ab-btn ab-btn--plain ab-btn--labeled" data-testid="home" onClick={() => c.home()}>
-                <HomeIcon />
-                <span>{ui.t('app.home')}</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+    <div class="ui-root ab-result-host" data-reduce-motion={ui.controller.save.value?.settings.reduceMotion ? 'true' : 'false'}>
+      <ResultLayout
+        kind={kind}
+        title={title}
+        onTap={() => stager.tap()}
+        vs={
+          <>
+            <span data-testid="result-line">{line}</span>
+            <span class="ui-ai">
+              <span class="ui-ai__chip">{ui.t('app.aiChip')}</span>
+            </span>
+          </>
+        }
+        recap={
+          <section class="result__recap" data-testid="result-recap">
+            <ul class="result__stats">
+              <li>
+                <span class="ui-grow">{ui.t('app.stats.trained', { n: input.stats.trained })}</span>
+              </li>
+              <li>
+                <span class="ui-grow">{ui.t('app.stats.kills', { n: input.stats.kills })}</span>
+              </li>
+            </ul>
+            {tip ? (
+              <p class="result-sum__tip" data-testid="result-tip">
+                {ui.t(tip)}
+              </p>
+            ) : null}
+          </section>
+        }
+        rewards={
+          <section class="result__rewards" data-testid="result-rewards" hidden={shown.length === 0}>
+            <ul class="result__list">
+              {shown.slice(0, revealed).map(({ r, chip }, i) => (
+                <li class={`result-reward result-reward--${chip.icon}`} key={i} data-testid="result-reward" data-kind={r.kind}>
+                  <span class="result-reward__icon">
+                    <RewardIcon kind={chip.icon} />
+                  </span>
+                  <span class="result-reward__main">
+                    <span class="result-reward__label">{chip.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {!stager.done ? <span class="result__tap">{ui.t('app.tapToSkip')}</span> : null}
+          </section>
+        }
+        actions={bar}
+      />
     </div>
   );
 }

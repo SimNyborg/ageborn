@@ -119,7 +119,7 @@ describe('Result screen cards (A15.6)', () => {
     expect(m.q('[data-testid="result-card-break"]')).toBeNull();
     m.click('[data-testid="result-skip"]');
     expect(text(m.q('[data-testid="result-card-break"]')!)).toContain('A good moment for a break?');
-    expect(m.q('[data-testid="result-home"]')!.getAttribute('class')).toContain('ui-btn--gold');
+    expect(m.q('[data-testid="result-home"]')!.getAttribute('data-primary')).toBe('');
     // Keep playing only closes the card; nothing advances by itself.
     m.click('[data-testid="result-card-keep"]');
     expect(m.q('[data-testid="result-card-break"]')).toBeNull();
@@ -147,7 +147,7 @@ describe('Result screen cards (A15.6)', () => {
     m = mount({ state: 'mid', routes: route({ endedHour: 23 }) });
     m.click('[data-testid="result-skip"]');
     expect(text(m.q('[data-testid="result-night"]')!)).toContain("It's late.");
-    expect(m.q('[data-testid="result-home"]')!.getAttribute('class')).toContain('ui-btn--gold');
+    expect(m.q('[data-testid="result-home"]')!.getAttribute('data-primary')).toBe('');
   });
 
   it('a Daily result has a Copy result button', () => {

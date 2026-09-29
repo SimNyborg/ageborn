@@ -81,7 +81,7 @@
 }
 
 .hud-cbtn-badge {
-  animation: hud-cb-in 300ms cubic-bezier(0.3, 1.7, 0.5, 1);
+  animation: hud-cb-in 300ms var(--ui-ease-back, ease-out);
 }
 
 @keyframes hud-cb-in {
@@ -108,7 +108,7 @@
   border: 2.5px solid var(--hud-ink);
   border-radius: 50%;
   background: radial-gradient(circle at 40% 35%, #b8ffd3, var(--cn-green) 60%, var(--cn-green-deep));
-  animation: hud-pop 280ms cubic-bezier(0.3, 1.9, 0.5, 1);
+  animation: hud-pop 280ms var(--ui-ease-back, ease-out);
 }
 
 .hud-cbtn-time {
@@ -141,7 +141,7 @@
   font-weight: 900;
   line-height: 14px;
   rotate: -8deg;
-  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 .hud-cbtn-label {
@@ -196,7 +196,7 @@
   background: #ffe27a;
   box-shadow: 0 0 6px #ffd447;
   rotate: var(--a);
-  animation: hud-cb-spark 560ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  animation: hud-cb-spark 560ms var(--ui-ease-out, ease-out) forwards;
 }
 
 .hud-cbtn-burst i:nth-child(even) {
@@ -248,7 +248,7 @@
     0 -2px 0 rgba(255, 255, 255, 0.12) inset,
     0 -10px 30px rgba(0, 0, 0, 0.45);
   pointer-events: auto;
-  animation: hud-sheet-in 180ms cubic-bezier(0.2, 0.8, 0.25, 1);
+  animation: hud-sheet-in 180ms var(--ui-ease-out, ease-out);
 }
 
 .hud-council.is-closing {
@@ -347,7 +347,7 @@
 
 .hud-council-cancel.is-confirm {
   background: linear-gradient(180deg, #ff8a7a, #c8392c);
-  animation: hud-pop 200ms cubic-bezier(0.3, 1.7, 0.5, 1);
+  animation: hud-pop 200ms var(--ui-ease-back, ease-out);
 }
 
 .hud-council-sale {
@@ -360,7 +360,7 @@
   font-size: 13px;
   font-weight: 900;
   white-space: nowrap;
-  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 .hud-council-close {
@@ -423,7 +423,7 @@
     inset 0 2px 0 rgba(255, 255, 255, 0.14),
     0 4px 0 rgba(0, 0, 0, 0.45);
   text-align: left;
-  animation: hud-track-in 260ms cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
+  animation: hud-track-in 260ms var(--ui-ease-back, ease-out) backwards;
   animation-delay: calc(var(--i, 0) * 40ms);
   transition:
     translate 90ms ease-out,
@@ -701,7 +701,7 @@ button.hud-track:active {
   font-weight: 900;
   text-transform: uppercase;
   z-index: 1;
-  animation: hud-pop 260ms 120ms cubic-bezier(0.3, 1.8, 0.5, 1) backwards;
+  animation: hud-pop 260ms 120ms var(--ui-ease-back, ease-out) backwards;
 }
 
 .hud-pick {
@@ -725,10 +725,10 @@ button.hud-track:active {
     0 4px 0 rgba(0, 0, 0, 0.45);
   text-align: left;
   transform-origin: 50% 100%;
-  animation: hud-pick-in 320ms cubic-bezier(0.3, 1.4, 0.5, 1) backwards;
+  animation: hud-pick-in 320ms var(--ui-ease-back, ease-out) backwards;
   animation-delay: calc(var(--i, 0) * 70ms);
   transition:
-    transform 160ms cubic-bezier(0.3, 1.6, 0.5, 1),
+    transform 160ms var(--ui-ease-back, ease-out),
     box-shadow 160ms ease-out,
     filter 160ms ease-out;
 }
@@ -864,7 +864,7 @@ button.hud-track:active {
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%231b1330' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
       center / 16px no-repeat,
     var(--cn-green);
-  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 /* The second tap: a green ribbon across the card's foot. */
@@ -882,7 +882,7 @@ button.hud-track:active {
   font-weight: 900;
   white-space: nowrap;
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
-  animation: hud-cta-in 240ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-cta-in 240ms var(--ui-ease-back, ease-out);
 }
 
 @keyframes hud-cta-in {
@@ -978,7 +978,7 @@ button.hud-track:active {
   text-align: left;
   pointer-events: auto;
   animation:
-    hud-done-in 420ms cubic-bezier(0.3, 1.6, 0.45, 1),
+    hud-done-in 420ms var(--ui-ease-back, ease-out),
     hud-done-out 260ms ease-in 2340ms forwards;
 }
 
@@ -1032,7 +1032,7 @@ button.hud-track:active {
 }
 
 .hud-cdone-badge {
-  animation: hud-done-badge 560ms 80ms cubic-bezier(0.3, 1.8, 0.45, 1) backwards;
+  animation: hud-done-badge 560ms 80ms var(--ui-ease-back, ease-out) backwards;
 }
 
 @keyframes hud-done-badge {
@@ -1087,7 +1087,7 @@ button.hud-track:active {
   place-items: center;
   width: 32px;
   height: 32px;
-  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 .hud.is-compact .hud-foe-research {
@@ -1137,7 +1137,7 @@ button.hud-track:active {
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
   translate: calc(var(--idx, 0) * var(--seg)) 0;
   transition:
-    translate 240ms cubic-bezier(0.3, 1.5, 0.5, 1),
+    translate 240ms var(--ui-ease-back, ease-out),
     background 200ms ease-out;
 }
 
@@ -1285,7 +1285,7 @@ button.hud-track:active {
   background: linear-gradient(180deg, #fff, #d9d2ea);
   color: var(--hud-ink);
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
-  animation: hud-pop 260ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 .hud-flag-grip.is-dragging .hud-flag-handle {
@@ -1315,7 +1315,7 @@ button.hud-track:active {
 }
 
 .hud-flag-hint {
-  animation: hud-pop 300ms 200ms cubic-bezier(0.3, 1.8, 0.5, 1) backwards;
+  animation: hud-pop 300ms 200ms var(--ui-ease-back, ease-out) backwards;
 }
 
 .hud-flag-nudge {
@@ -1331,7 +1331,7 @@ button.hud-track:active {
   background: linear-gradient(180deg, #5c4a8a, #2e2450);
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
   pointer-events: auto;
-  animation: hud-pop 220ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  animation: hud-pop 220ms var(--ui-ease-back, ease-out);
 }
 
 .hud-flag-nudge:disabled {

@@ -1,32 +1,36 @@
-/* Result (A9 #7). */
+/* Result (A9 #7, ui-plan 4.9): banner and recap left, rewards right, the fixed action bar below. */
 
 .result {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: clamp(8px, 2vh, 16px);
-  padding: max(10px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom))
-    max(18px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  padding: var(--ui-safe-t) 0 0;
   overflow: hidden;
 }
 .result--win {
-  background: radial-gradient(circle at 50% 10%, rgba(255, 207, 58, 0.45), transparent 50%), linear-gradient(180deg, #3a2a5c, #16122e);
+  background:
+    radial-gradient(70% 90% at 25% 0%, rgba(242, 181, 44, 0.3), transparent 60%),
+    linear-gradient(180deg, #1d1f24, #0f1218);
 }
 .result--loss {
-  background: radial-gradient(circle at 50% 10%, rgba(120, 140, 190, 0.35), transparent 50%), linear-gradient(180deg, #232a44, #10121f);
+  background:
+    radial-gradient(70% 90% at 25% 0%, rgba(120, 140, 170, 0.22), transparent 60%),
+    linear-gradient(180deg, #181c24, #0d1016);
 }
 .result--draw {
-  background: radial-gradient(circle at 50% 10%, rgba(200, 200, 230, 0.3), transparent 50%), linear-gradient(180deg, #2c2a4c, #141226);
+  background:
+    radial-gradient(70% 90% at 25% 0%, rgba(195, 188, 174, 0.2), transparent 60%),
+    linear-gradient(180deg, #1a1d24, #0e1117);
 }
 .result__rays {
   position: absolute;
-  left: 50%;
+  left: 25%;
   top: -40vh;
   width: 140vh;
   height: 140vh;
   margin-left: -70vh;
-  background: repeating-conic-gradient(rgba(255, 229, 138, 0.12) 0deg 8deg, transparent 8deg 20deg);
-  mask-image: radial-gradient(circle, #000 20%, transparent 62%);
-  animation: ui-spin 40s linear infinite;
+  background: repeating-conic-gradient(rgba(255, 229, 160, 0.08) 0deg 7deg, transparent 7deg 20deg);
+  mask-image: radial-gradient(circle, #000 18%, transparent 60%);
+  animation: ui-spin 60s linear infinite;
   pointer-events: none;
 }
 .result--loss .result__rays,
@@ -43,13 +47,12 @@
 .result__confetti i {
   position: absolute;
   top: -20px;
-  width: 9px;
-  height: 14px;
-  border: 1.5px solid rgba(27, 19, 48, 0.6);
+  width: 8px;
+  height: 12px;
   border-radius: 2px;
   opacity: 0;
   animation-name: result-confetti;
-  animation-timing-function: cubic-bezier(0.3, 0.6, 0.5, 1);
+  animation-timing-function: var(--ui-ease-out);
   animation-iteration-count: 1;
   animation-fill-mode: both;
 }
@@ -66,6 +69,29 @@
     transform: translate(var(--drift), 105vh) rotate(var(--spin));
   }
 }
+.result__body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--ui-s4);
+  padding: var(--ui-s3) calc(var(--ui-margin) + var(--ui-safe-r)) var(--ui-s3) calc(var(--ui-margin) + var(--ui-safe-l));
+}
+.result__left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s3);
+  min-height: 0;
+}
+.result__right {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.result__bar {
+  position: relative;
+  z-index: 3;
+}
 .result > :not(.result__rays):not(.result__confetti) {
   position: relative;
   z-index: 1;
@@ -74,13 +100,14 @@
 .result__banner {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 2px;
   animation: result-banner 620ms var(--ui-ease-back) both;
 }
+/* MR-90 as built: the banner drops in with a small overshoot. */
 @keyframes result-banner {
   0% {
-    transform: translateY(-40px) scale(0.6);
+    transform: translateY(calc(var(--ui-axis) * -1.5)) scale(calc(1 - (var(--ui-pop) - 1) * 2.5));
     opacity: 0;
   }
   100% {
@@ -89,72 +116,83 @@
   }
 }
 .result__bannerIcon {
-  display: flex;
-  filter: drop-shadow(0 4px 0 var(--ui-ink));
-  animation: ui-bob 2.6s ease-in-out infinite;
+  display: none;
 }
 .result__title {
   position: relative;
-  padding: 2px 60px 6px;
-  font-size: clamp(36px, 8.5vh, 64px);
-  font-weight: 900;
+  padding: 2px 34px 2px 18px;
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-fs-display);
+  line-height: var(--ui-lh-display);
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fff;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 9px var(--ui-ink);
-  text-shadow: 0 6px 0 var(--ui-ink);
+  color: var(--ui-ink);
 }
 .result__title::before {
   content: '';
   position: absolute;
-  inset: 12% 0 8%;
+  inset: 0;
   z-index: -1;
-  border: 4px solid var(--ui-ink);
-  clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%, 5% 50%);
-  background: linear-gradient(180deg, #ffd766, #e0a21c);
+  clip-path: polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 40%),
+    linear-gradient(180deg, var(--ui-primary-light), var(--ui-primary) 50%, var(--ui-primary-lip));
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+.result--loss .result__title,
+.result--draw .result__title {
+  color: var(--ui-text);
 }
 .result--loss .result__title::before {
-  background: linear-gradient(180deg, #8a97b8, #4d5878);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 40%),
+    linear-gradient(180deg, #5d6c86, #46536a 50%, #2a3242);
 }
 .result--draw .result__title::before {
-  background: linear-gradient(180deg, #b7b2d8, #6f69a0);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 40%),
+    linear-gradient(180deg, #8a8474, #6b6558 50%, #4a4539);
 }
 .result__vs {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  color: var(--ui-muted);
+  gap: var(--ui-s2);
+  padding-left: 4px;
+  font-weight: 700;
+  font-size: var(--ui-fs-body);
+  color: var(--ui-text-2);
 }
 
-.result__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: clamp(10px, 2vw, 24px);
-  min-height: 0;
-}
 .result__recap,
 .result__rewards {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 10px 14px 12px;
-  border: 3px solid var(--ui-ink);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(58, 53, 111, 0.92), rgba(31, 27, 62, 0.94));
-  box-shadow: var(--ui-shadow-drop);
+  padding: var(--ui-s2) var(--ui-s3) var(--ui-s3);
+  border: 1px solid rgba(107, 120, 144, 0.35);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(var(--ui-light-angle), rgba(32, 38, 51, 0.94), rgba(26, 31, 41, 0.94) 40%, rgba(21, 25, 32, 0.94));
+  box-shadow: var(--ui-e1);
+}
+.result__recap {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+.result__rewards {
+  flex: 0 1 auto;
 }
 .result__rewards {
   cursor: pointer;
 }
 .result__h {
-  margin-bottom: 8px;
-  font-size: 15px;
-  font-weight: 900;
+  margin-bottom: var(--ui-s2);
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ui-gold-hi);
+  color: var(--ui-text-2);
 }
 .result__recapBody {
   display: flex;
@@ -194,7 +232,7 @@
   gap: 8px;
   padding: 4px 8px;
   border-radius: 10px;
-  background: rgba(10, 8, 26, 0.4);
+  background: rgba(8, 10, 14, 0.4);
   font-weight: 800;
   font-size: 14px;
 }
@@ -221,7 +259,7 @@
   padding: 5px 10px;
   border: 2px solid rgba(0, 0, 0, 0.4);
   border-radius: 14px;
-  background: rgba(10, 8, 26, 0.5);
+  background: rgba(8, 10, 14, 0.5);
   animation: result-reward-in 420ms var(--ui-ease-back) both;
 }
 @keyframes result-reward-in {
@@ -261,7 +299,7 @@
   font-size: 22px;
   font-weight: 900;
   paint-order: stroke fill;
-  -webkit-text-stroke: 5px var(--ui-ink);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   color: var(--ui-gold-hi);
 }
 .result-reward--good .result-reward__value {
@@ -273,34 +311,21 @@
 .result__tap {
   margin-top: auto;
   align-self: center;
-  min-height: 48px;
+  min-height: 44px;
   padding: 0 16px;
   border: 0;
   background: none;
-  color: var(--ui-muted);
-  font-weight: 800;
-  font-size: 13px;
+  color: var(--ui-text-3);
+  font-weight: 700;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  animation: result-blink 1.6s ease-in-out infinite;
-}
-@keyframes result-blink {
-  50% {
-    opacity: 0.45;
-  }
-}
-.result__actions {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
-@media (max-height: 480px), (max-width: 900px) {
-  .result__mvp .ui-card--lg {
-    --card-w: 104px;
+@container ui-root (max-height: 480px) {
+  .result__mvp .ui-card--md {
+    --card-w: 72px;
   }
   .result__recapBody {
     gap: 10px;
@@ -309,13 +334,7 @@
     gap: 6px;
   }
 }
-@media (max-height: 480px) {
-  .result__bannerIcon {
-    display: none;
-  }
-  .result__title {
-    font-size: 34px;
-  }
+@container ui-root (max-height: 480px) {
   .result__stats li {
     padding: 2px 8px;
     font-size: 13px;
@@ -337,9 +356,9 @@
   width: 100%;
   min-height: 44px;
   padding: 6px 12px;
-  border: 2px dashed rgba(255, 229, 138, 0.35);
+  border: 1px dashed rgba(255, 229, 138, 0.35);
   border-radius: 14px;
-  background: rgba(10, 8, 26, 0.35);
+  background: rgba(8, 10, 14, 0.35);
   color: var(--ui-text);
   cursor: pointer;
   transition: background 160ms var(--ui-ease-out), transform 160ms var(--ui-ease-out);
@@ -482,7 +501,7 @@
 .result-reward {
   flex-shrink: 0;
 }
-@media (max-height: 480px) {
+@container ui-root (max-height: 480px) {
   .result-reward {
     padding: 2px 8px;
     min-height: 0;
@@ -491,7 +510,6 @@
     transform: scale(0.8);
   }
   .result-sum__row {
-    min-height: 38px;
     padding: 4px 10px;
   }
 }

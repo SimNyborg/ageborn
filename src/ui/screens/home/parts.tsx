@@ -184,7 +184,8 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
         </span>
       ) : q.done ? (
         <Button
-          variant="green"
+          kind="primary"
+          primary={false}
           size="sm"
           testid={`quest-claim-${q.slot}`}
           onClick={() => {
@@ -198,7 +199,7 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
         <IconButton
           icon={<RefreshIcon size={22} />}
           label={t('ui.quest.reroll')}
-          variant="violet"
+          kind="secondary"
           testid={`quest-reroll-${q.slot}`}
           onClick={() => {
             const r = services.rerollQuest(q.slot as number);
@@ -354,18 +355,18 @@ export function CapsuleTray(p: { sheet?: boolean } = {}) {
       </div>
       {pending.length === 0 && crates[0] ? (
         <div class="home-tray__actions">
-          <Button variant="violet" size="md" testid="open-crate" icon={<CrateIcon size={22} />} onClick={() => services.openWardrobe(crates[0]!.id)}>
+          <Button kind="secondary" size="md" testid="open-crate" icon={<CrateIcon size={22} />} onClick={() => services.openWardrobe(crates[0]!.id)}>
             {t('ui.home.openCrate')}
           </Button>
         </div>
       ) : null}
       {pending.length > 0 ? (
         <div class="home-tray__actions">
-          <Button variant="gold" size="md" testid="open-one" onClick={() => best && services.openCapsule(best.id)}>
+          <Button kind="primary" size="md" testid="open-one" onClick={() => best && services.openCapsule(best.id)}>
             {t('ui.home.open', { n: pending.length })}
           </Button>
           {pending.length > 1 ? (
-            <Button variant="violet" size="md" testid="open-all" onClick={() => services.openAllCapsules()}>
+            <Button kind="secondary" size="md" testid="open-all" onClick={() => services.openAllCapsules()}>
               {t('ui.home.openAll')}
             </Button>
           ) : null}

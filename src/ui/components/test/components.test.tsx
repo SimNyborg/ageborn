@@ -148,14 +148,28 @@ describe('avatars (A6.1)', () => {
 });
 
 describe('toasts', () => {
-  it('keeps at most three and dismisses on schedule', () => {
+  it('keeps at most two (ui-plan 3.6) and dismisses on schedule', () => {
     const timers: (() => void)[] = [];
     const store = createToastStore((fn) => timers.push(fn));
     for (let i = 0; i < 5; i++) store.show(`t${i}`);
-    expect(store.list.value.map((x) => x.text)).toEqual(['t2', 't3', 't4']);
+    expect(store.list.value.map((x) => x.text)).toEqual(['t3', 't4']);
     expect(store.list.value.length).toBe(MAX_TOASTS);
     timers[4]!();
-    expect(store.list.value.map((x) => x.text)).toEqual(['t2', 't3']);
+    expect(store.list.value.map((x) => x.text)).toEqual(['t3']);
+  });
+
+  it('anchors a toast near its source and gives reversible actions a longer stay with Undo', () => {
+    const waits: number[] = [];
+    const store = createToastStore((_fn, ms) => waits.push(ms));
+    let undone = 0;
+    store.show('Equipped', { anchor: { x: 200, y: 120 }, undo: () => undone++ });
+    store.show('Saved');
+    const [a, b] = store.list.value;
+    expect(a!.anchor).toEqual({ x: 200, y: 120 });
+    expect(b!.anchor).toBeUndefined();
+    expect(waits).toEqual([4000, 2600]);
+    a!.undo!();
+    expect(undone).toBe(1);
   });
 });
 

@@ -36,7 +36,7 @@ function NameModal(p: { name: string; onSave: (n: string) => void; onClose: () =
       onClose={p.onClose}
       testid="edit-name"
       footer={
-        <Button variant="green" disabled={trimmed.length === 0} testid="name-save" onClick={() => p.onSave(trimmed)}>
+        <Button kind="progress" disabled={trimmed.length === 0} testid="name-save" onClick={() => p.onSave(trimmed)}>
           {t('ui.common.done')}
         </Button>
       }

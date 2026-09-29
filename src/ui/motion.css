@@ -1,0 +1,85 @@
+/*
+ * Motion utilities (docs/ui-plan.md 5.1-5.6). Every value comes from the tokens in theme.css
+ * (which mirror src/core/motion.ts); this file and theme.css are the only CSS files allowed to
+ * contain `cubic-bezier(` (tests/integrity/motion.test.ts), and neither needs to here.
+ *
+ * Reduce motion needs no extra rules: the tokens switch (theme.css), so each utility becomes a
+ * 150 ms fade with no scale or offset.
+ */
+
+/* Entrances */
+.ui-m-fade {
+  animation: ui-fade var(--ui-dur-micro) var(--ui-ease-out) both;
+}
+.ui-m-rise {
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+.ui-m-pop {
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back) both;
+}
+.ui-m-bump {
+  animation: ui-bump var(--ui-dur-small) var(--ui-ease-back);
+}
+.ui-m-deny {
+  animation: ui-deny 120ms linear 2;
+}
+
+/* MR-17: first view of a grid or list; items rise 8 px, 40 ms apart, at most 6 steps (240 ms). */
+[data-stagger] > * {
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+[data-stagger] > :nth-child(2) {
+  animation-delay: calc(var(--ui-dur-stagger) * 1);
+}
+[data-stagger] > :nth-child(3) {
+  animation-delay: calc(var(--ui-dur-stagger) * 2);
+}
+[data-stagger] > :nth-child(4) {
+  animation-delay: calc(var(--ui-dur-stagger) * 3);
+}
+[data-stagger] > :nth-child(5) {
+  animation-delay: calc(var(--ui-dur-stagger) * 4);
+}
+[data-stagger] > :nth-child(6) {
+  animation-delay: calc(var(--ui-dur-stagger) * 5);
+}
+[data-stagger] > :nth-child(n + 7) {
+  animation-delay: var(--ui-dur-stagger-max);
+}
+
+/* MR-10: a tab switch slides the incoming content 24 px from the tab's side. */
+@keyframes ui-axis-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--ui-axis) * -1));
+  }
+}
+@keyframes ui-axis-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(var(--ui-axis));
+  }
+}
+.ui-shell__content[data-dir='left'] > * {
+  animation: ui-axis-in-left var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+.ui-shell__content[data-dir='right'] > * {
+  animation: ui-axis-in-right var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+.ui-shell__content[data-dir] > * > .ui-screen {
+  animation: none;
+}
+
+/* MR-13: an overlay screen (Settings over Pause) comes in on the Z axis. */
+.ui-layer--overlay > .ui-screen {
+  animation: ui-enter var(--ui-dur-medium) var(--ui-ease-enter) both;
+}
+
+/* The one attention pulse on anything that is not a Button (a Button takes `pulse`). */
+.ui-m-breathe {
+  animation: ui-breathe var(--ui-dur-breathe) ease-in-out infinite;
+}
+.ui-root[data-reduce-motion='true'] .ui-m-breathe {
+  animation: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 212, 102, 0.7);
+}

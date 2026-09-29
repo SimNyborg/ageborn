@@ -1,8 +1,10 @@
 /**
- * Result (A9 #7): Victory, Defeat or Draw banner; the recap (units trained and killed, base damage,
- * turret kills, evolves, time, MVP card); rewards staged one at a time (trophies tick, Amber, capsule
- * or Clay pip, Codex points, quest progress, stars), each skippable with a tap; then Next battle,
- * Watch replay, Home, and "Open capsule" when one was earned (A9 flow).
+ * Result (A9 #7, ui-plan 4.9): one design for every mode, the onboarding matches included (the app
+ * renders its onboarding variant with {@link ResultLayout}). Left: the Victory, Defeat or Draw banner
+ * and the recap (MVP card, time, units trained and killed, base damage). Right: the rewards staged
+ * one at a time (each skippable with a tap) and one summary row. The fixed action bar holds the one
+ * primary bottom-right, in the same spot as Home's Play, chosen by {@link resultActions}: Continue,
+ * Try again, Next battle, Open capsule or Home; the next battle is always at most one tap away.
  */
 import './result.css';
 import { arenaNameKey, capsuleKindNameKey, questNameKey, titleNameKey } from '@/content/keys';
@@ -11,6 +13,7 @@ import type { RewardStep } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
+import { ActionBar, type ActionBarProps } from '../../components/Layout';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge } from '../../components/Chips';
 import { formatClock, formatInt, formatSigned } from '../../components/format';
@@ -49,6 +52,9 @@ import {
   resultKind,
   resultPlan,
   REWARD_STEP_MS,
+  resultActions,
+  type ResultActions,
+  type ResultActionId,
   type ResultProgress,
   type ResultStage,
 } from '../model/result';
@@ -56,6 +62,32 @@ import { RoadRewardView } from '../shared/RoadReward';
 import { useMatchStarter } from '../shared/MatchStarter';
 
 const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 'ui.result.draw' } as const;
+
+/**
+ * Results whose capsule was opened from the Result. When the capsule summary closes, the Result
+ * does not come back: it continues its own path at once (ui-plan 2.5, "the summary never returns
+ * to the Result").
+ */
+const OPENED_HERE = new WeakSet<object>();
+
+/** The Result's path after its capsule: what the summary's primary does and says (2.5, 4.9). */
+export function resultPathAfterCapsule(info: { input: { mode: string; outcome: { winner: 0 | 1 | null }; mySide: 0 | 1 }; daily?: unknown; card?: unknown; endedHour?: number }): ResultActionId {
+  const outcome = info.input.outcome.winner === null ? 'draw' : info.input.outcome.winner === info.input.mySide ? 'win' : 'loss';
+  const a = resultActions({
+    mode: info.input.mode,
+    outcome,
+    capsule: true,
+    daily: !!info.daily,
+    stop: !!info.card || (info.endedHour !== undefined && isNight(info.endedHour)),
+    replay: false,
+  });
+  return a.secondary.find((x) => x === 'continue' || x === 'next' || x === 'tryAgain') ?? 'home';
+}
+
+/** The i18n key of a Result action's label. */
+export function resultActionKey(id: ResultActionId): string {
+  return RESULT_ACTION_KEY[id];
+}
 
 /** Counts from `from` to `to` over `ms` once `active`. */
 function useCountUp(from: number, to: number, ms: number, active: boolean): number {
@@ -417,7 +449,7 @@ function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null }) {
 }
 
 /** The stopping cards (A15.6): tilt, break or wrap. Never blocks input or advances by itself. */
-function StopCard(p: { card: ResultCard; onHome: () => void; onNext: () => void; onDismiss: () => void }) {
+function StopCard(p: { card: ResultCard; onNext: () => void; onDismiss: () => void }) {
   const { t, locale, services, save, content } = useUi();
   const c = p.card;
   const next = c.kind === 'wrap' ? roadProgress(save.value, content).next : null;
@@ -442,25 +474,25 @@ function StopCard(p: { card: ResultCard; onHome: () => void; onNext: () => void;
           ) : null}
         </>
       ) : null}
-      <div class="result-card__actions">
-        <Button variant="gold" size="md" icon={<HomeIcon size={22} />} testid="result-card-home" autofocus onClick={p.onHome}>
-          {t('ui.result.home')}
-        </Button>
-        {c.kind === 'tilt' && c.watchIndex !== null ? (
-          <Button variant="blue" size="md" icon={<ReplayIcon size={22} />} testid="result-card-watch" onClick={() => services.watchReplay(c.watchIndex!)}>
-            {t('ui.result.watch')}
-          </Button>
-        ) : null}
-        {c.kind === 'break' ? (
-          <Button variant="plain" size="md" testid="result-card-keep" onClick={p.onDismiss}>
-            {t('ui.result.keepPlaying')}
-          </Button>
-        ) : (
-          <Button variant="plain" size="md" icon={<SwordsIcon size={22} />} testid="result-card-next" onClick={p.onNext}>
-            {c.kind === 'tilt' ? t('ui.result.warmUp') : t('ui.result.next')}
-          </Button>
-        )}
-      </div>
+      {/* Home is the action bar's primary while a card shows; the card only adds its own options. */}
+      {c.kind !== 'wrap' ? (
+        <div class="result-card__actions">
+          {c.kind === 'tilt' && c.watchIndex !== null ? (
+            <Button kind="secondary" size="s" icon={<ReplayIcon size={20} />} testid="result-card-watch" onClick={() => services.watchReplay(c.watchIndex!)}>
+              {t('ui.result.watch')}
+            </Button>
+          ) : null}
+          {c.kind === 'break' ? (
+            <Button kind="secondary" size="s" testid="result-card-keep" onClick={p.onDismiss}>
+              {t('ui.result.keepPlaying')}
+            </Button>
+          ) : (
+            <Button kind="secondary" size="s" icon={<SwordsIcon size={20} />} testid="result-card-next" onClick={p.onNext}>
+              {t('ui.result.warmUp')}
+            </Button>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -534,7 +566,6 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     }
   }
 
-  const BannerIcon = kind === 'win' ? CrownIcon : kind === 'loss' ? ShieldBrokenIcon : ScalesIcon;
   const recap: { id: string; icon: ComponentChildren; label: string; value: string }[] = [
     { id: 'time', icon: <FlagIcon size={22} />, label: t('ui.result.time'), value: formatClock(stats.durationMs) },
     { id: 'trained', icon: <SwordsIcon size={22} />, label: t('ui.result.trained'), value: formatInt(stats.trained, locale) },
@@ -549,22 +580,55 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     { id: 'evolves', icon: <StarIcon size={22} />, label: t('ui.result.evolves'), value: formatInt(stats.evolves, locale) },
   ];
 
+  // Back from the capsule summary: continue the Result's path instead of showing it again.
+  const after = OPENED_HERE.has(info) && capsule === null ? resultPathAfterCapsule(info) : null;
+  useEffect(() => {
+    if (!after) return;
+    OPENED_HERE.delete(info);
+    if (after === 'next' || after === 'tryAgain') nextBattle();
+    else if (after === 'continue') {
+      router.reset({ id: 'home' });
+      if (info.input.mode === 'conquest') router.go({ id: 'conquest' });
+    } else router.reset({ id: 'home' });
+  }, [after]);
+
+  const actions = resultActions({
+    mode: info.input.mode,
+    outcome: kind,
+    capsule: capsule !== null,
+    daily: !!info.daily,
+    stop: homePrimary,
+    replay: info.replayIndex !== null,
+  });
+  const run: Record<ResultActionId, () => void> = {
+    continue: () => {
+      router.reset({ id: 'home' });
+      if (info.input.mode === 'conquest') router.go({ id: 'conquest' });
+    },
+    openCapsule: () => {
+      if (!capsule) return;
+      OPENED_HERE.add(info);
+      services.openCapsule(capsule);
+    },
+    tryAgain: nextBattle,
+    next: nextBattle,
+    home: () => router.reset({ id: 'home' }),
+    copy: copyDaily,
+    replay: () => info.replayIndex !== null && services.watchReplay(info.replayIndex),
+  };
+
+  // Leaving for the next step: draw nothing for the frame before the effect runs.
+  if (after) return <section class="ui-screen result" data-screen="result" aria-hidden="true" />;
   return (
-    <section class={`ui-screen result result--${kind}`} data-screen="result" data-testid="result" data-result={kind} aria-labelledby="result-title">
-      <div class="result__rays" aria-hidden="true" />
-      {kind === 'win' ? <Confetti /> : null}
-      <header class="result__banner">
-        <span class="result__bannerIcon">
-          <BannerIcon size={54} />
-        </span>
-        <h1 class="result__title" id="result-title" data-testid="result-title" data-outcome={kind}>
-          {t(BANNER_KEYS[kind])}
-        </h1>
-        <p class="result__vs">
+    <ResultLayout
+      kind={kind}
+      title={t(BANNER_KEYS[kind])}
+      vs={
+        <>
           {t('ui.result.vs', { name: opponentName(opp, content, t) })} <AiBadge size="sm" />
-        </p>
-      </header>
-      <div class="result__grid">
+        </>
+      }
+      recap={
         <section class="result__recap" aria-labelledby="result-recap-title" data-testid="result-recap">
           <h2 class="result__h" id="result-recap-title">
             {t('ui.result.recap')}
@@ -573,7 +637,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             {mvp ? (
               <div class="result__mvp" data-testid="result-mvp">
                 <span class="result__mvpLabel">{t('ui.result.mvp')}</span>
-                <CardTile card={mvp} size="lg" />
+                <CardTile card={mvp} size="md" />
               </div>
             ) : null}
             <ul class="result__stats">
@@ -587,11 +651,14 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             </ul>
           </div>
         </section>
+      }
+      rewards={
         <section
           class="result__rewards"
           aria-labelledby="result-rewards-title"
           data-testid="result-rewards"
           data-stages={stages.length}
+          data-scroll=""
           aria-live="polite"
           onClick={skipOne}
         >
@@ -609,9 +676,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
               {t('ui.result.night')}
             </p>
           ) : null}
-          {card ? (
-            <StopCard card={card} onHome={() => router.reset({ id: 'home' })} onNext={nextBattle} onDismiss={() => setCardOpen(false)} />
-          ) : null}
+          {card ? <StopCard card={card} onNext={nextBattle} onDismiss={() => setCardOpen(false)} /> : null}
           {!done ? (
             <button
               type="button"
@@ -626,58 +691,138 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             </button>
           ) : null}
         </section>
-      </div>
-      <footer class="result__actions">
-        <Button
-          variant={homePrimary ? 'gold' : 'plain'}
-          size={homePrimary ? 'lg' : 'md'}
-          icon={<HomeIcon size={24} />}
-          testid="result-home"
-          autofocus={homePrimary}
-          onClick={() => router.reset({ id: 'home' })}
-        >
-          {t('ui.result.home')}
-        </Button>
-        {info.daily ? (
-          <Button variant="plain" size="md" icon={<CopyIcon size={22} />} testid="result-copy" onClick={copyDaily}>
-            {t('ui.result.copy')}
-          </Button>
-        ) : null}
-        {info.replayIndex !== null ? (
-          <Button
-            variant="blue"
-            size="md"
-            icon={<ReplayIcon size={24} />}
-            testid="result-replay"
-            onClick={() => services.watchReplay(info.replayIndex!)}
-          >
-            {t('ui.result.replay')}
-          </Button>
-        ) : null}
-        {capsule ? (
-          <Button
-            variant="violet"
-            size="lg"
-            autofocus={!homePrimary}
-            icon={<CapsuleIcon tier="silver" size={28} />}
-            testid="result-open"
-            onClick={() => services.openCapsule(capsule)}
-          >
-            {t('ui.result.openCapsule')}
-          </Button>
-        ) : null}
-        <Button
-          variant={homePrimary ? 'plain' : 'gold'}
-          size={homePrimary ? 'md' : 'lg'}
-          autofocus={!capsule && !homePrimary}
-          icon={<SwordsIcon size={26} />}
-          testid="result-next"
-          onClick={nextBattle}
-        >
-          {t('ui.result.next')}
-        </Button>
-      </footer>
+      }
+      actions={resultBar(actions, run, t, done)}
+    >
       {starter.dialog}
+    </ResultLayout>
+  );
+}
+
+/** Test ids of the actions (kept from the earlier Result, so specs and tools keep working). */
+export const RESULT_ACTION_TESTID: Readonly<Record<ResultActionId, string>> = {
+  continue: 'result-continue',
+  openCapsule: 'result-open',
+  tryAgain: 'result-again',
+  next: 'result-next',
+  home: 'result-home',
+  copy: 'result-copy',
+  replay: 'result-replay',
+};
+
+const RESULT_ACTION_KEY: Readonly<Record<ResultActionId, string>> = {
+  continue: 'ui.result.continue',
+  openCapsule: 'ui.result.openCapsule',
+  tryAgain: 'ui.result.tryAgain',
+  next: 'ui.result.next',
+  home: 'ui.result.home',
+  copy: 'ui.result.copy',
+  replay: 'ui.result.replay',
+};
+
+function actionIcon(id: ResultActionId, size: number): ComponentChildren {
+  switch (id) {
+    case 'continue':
+      return <RoadIcon size={size} />;
+    case 'openCapsule':
+      return <CapsuleIcon tier="silver" size={size + 2} />;
+    case 'tryAgain':
+    case 'next':
+      return <SwordsIcon size={size} />;
+    case 'home':
+      return <HomeIcon size={size} />;
+    case 'copy':
+      return <CopyIcon size={size} />;
+    case 'replay':
+      return <ReplayIcon size={size} />;
+  }
+}
+
+/**
+ * Builds the Result action bar from the action table: the primary (gold, size L, bottom-right, the
+ * pulse once the rewards are in), secondaries (slate) and the tertiary Watch replay. The app's
+ * onboarding Result passes its own handlers and test ids.
+ */
+export function resultBar(
+  a: ResultActions,
+  run: Partial<Record<ResultActionId, () => void>>,
+  t: (k: string, p?: Record<string, string | number>) => string,
+  settled: boolean,
+  testids: Partial<Record<ResultActionId, string>> = {},
+): ActionBarProps {
+  const id = (x: ResultActionId) => testids[x] ?? RESULT_ACTION_TESTID[x];
+  return {
+    primary: (
+      <Button kind="primary" size="l" icon={actionIcon(a.primary, 26)} testid={id(a.primary)} autofocus pulse={settled} onClick={() => run[a.primary]?.()}>
+        {t(RESULT_ACTION_KEY[a.primary])}
+      </Button>
+    ),
+    secondary: a.secondary.length ? (
+      <>
+        {a.secondary.map((x) => (
+          <Button key={x} kind="secondary" size="m" icon={actionIcon(x, 22)} testid={id(x)} onClick={() => run[x]?.()}>
+            {t(RESULT_ACTION_KEY[x])}
+          </Button>
+        ))}
+      </>
+    ) : null,
+    tertiary: a.tertiary.length ? (
+      <>
+        {a.tertiary.map((x) => (
+          <Button key={x} kind="tertiary" size="m" icon={actionIcon(x, 22)} testid={id(x)} onClick={() => run[x]?.()}>
+            {t(RESULT_ACTION_KEY[x])}
+          </Button>
+        ))}
+      </>
+    ) : null,
+  };
+}
+
+/**
+ * The Result frame shared by every mode and the app's onboarding variant: rays and confetti behind,
+ * the banner and recap on the left, the rewards on the right, the fixed action bar at the bottom.
+ */
+export function ResultLayout(p: {
+  kind: 'win' | 'loss' | 'draw';
+  title: string;
+  vs?: ComponentChildren;
+  recap?: ComponentChildren;
+  rewards: ComponentChildren;
+  actions: ActionBarProps;
+  children?: ComponentChildren;
+  onTap?: () => void;
+}) {
+  const BannerIcon = p.kind === 'win' ? CrownIcon : p.kind === 'loss' ? ShieldBrokenIcon : ScalesIcon;
+  return (
+    <section
+      class={`ui-screen result result--${p.kind}`}
+      data-screen="result"
+      data-testid="result"
+      data-result={p.kind}
+      aria-labelledby="result-title"
+      onClick={p.onTap}
+    >
+      <div class="result__rays" aria-hidden="true" />
+      {p.kind === 'win' ? <Confetti /> : null}
+      <div class="result__body">
+        <div class="result__left">
+          <header class="result__banner">
+            <span class="result__bannerIcon">
+              <BannerIcon size={44} />
+            </span>
+            <h1 class="result__title" id="result-title" data-testid="result-title" data-outcome={p.kind}>
+              {p.title}
+            </h1>
+            {p.vs ? <p class="result__vs">{p.vs}</p> : null}
+          </header>
+          {p.recap}
+        </div>
+        <div class="result__right">{p.rewards}</div>
+      </div>
+      <div class="result__bar" onClick={(e) => e.stopPropagation()}>
+        <ActionBar {...p.actions} testid="result-actions" />
+      </div>
+      {p.children}
     </section>
   );
 }

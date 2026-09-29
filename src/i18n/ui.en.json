@@ -5,7 +5,8 @@
       "close": "Close",
       "progress": "{n}/{max}",
       "cancel": "Cancel",
-      "done": "Done"
+      "done": "Done",
+      "undo": "Undo"
     },
     "time": {
       "dh": "{d}d {h}h",
@@ -55,12 +56,7 @@
       "strongVs": "Strong vs",
       "weakVs": "Weak vs",
       "nextDelta": "+{n}",
-      "upgradeFor": "Upgrade {n}",
-      "upgraded": "Level {n}!",
-      "needCopies": "{n} more copies needed",
       "maxLevel": "Max level",
-      "craft": "Craft for {n}",
-      "craftCopy": "Craft a copy: {n}",
       "craftUnlock": "Craft a copy with Dust to unlock this card.",
       "crafted": "Crafted!",
       "powerOwned": "Unlocked",
@@ -71,7 +67,17 @@
         "medium": "Medium",
         "large": "Large",
         "huge": "Huge"
-      }
+      },
+      "upgradeAction": "Upgrade · {n}",
+      "confirmAction": "Confirm · {n}",
+      "leaves": "Leaves {n}",
+      "levelStep": "Lv {a} → {b}",
+      "needMoreCopies": "Need {n} more copies",
+      "needAmber": "Need {n} Amber",
+      "needDust": "Need {n} Dust",
+      "craftAction": "Craft · {n}",
+      "craftCopyAction": "Craft copy · {n}",
+      "levelUp": "Level {n}"
     },
     "stat": {
       "hp": "HP",
@@ -118,7 +124,13 @@
       "conquest": "Conquest",
       "profile": "Profile",
       "customize": "Customize",
-      "capsules": "Capsules"
+      "capsules": "Capsules",
+      "army": "Army",
+      "warPath": "War Path",
+      "progress": "Progress",
+      "lockedLv": "Lv {n}",
+      "unlocksAt": "Unlocks at War Path level {n}",
+      "leaveAgain": "Press back again to leave"
     },
     "pointer": {
       "warPlan": "New! Choose your troops for each age",
@@ -266,7 +278,7 @@
       "planLevelNone": "Plan Lv -",
       "standardLevels": "Both sides: every card Lv {n}",
       "warmUp": "Warm-up match",
-      "skip": "Tap to start",
+      "skip": "Tap to start now",
       "mode": {
         "ladder": "Ladder",
         "conquest": "Conquest",
@@ -338,7 +350,9 @@
       "dailyLineLost": "Ageborn Daily {date} · {modifier} · {difficulty} · Lost at {time}",
       "outcomeWon": "Won",
       "outcomeLost": "Lost",
-      "outcomeDraw": "Draw"
+      "outcomeDraw": "Draw",
+      "continue": "Continue",
+      "tryAgain": "Try again"
     },
     "warplan": {
       "presets": "War Plan presets",

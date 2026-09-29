@@ -114,7 +114,8 @@ function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
         </span>
         {v.state === 'claimable' ? (
           <Button
-            variant="green"
+            kind="primary"
+            primary={false}
             size="sm"
             testid={`road-claim-${v.node.trophies}`}
             onClick={() => {

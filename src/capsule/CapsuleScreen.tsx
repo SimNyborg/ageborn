@@ -378,6 +378,7 @@ function ShowScreen(p: ShowScreenProps) {
             ...(p.onOpenAll ? { onOpenAll: p.onOpenAll } : {}),
             ...(p.pendingCount !== undefined ? { pendingCount: p.pendingCount } : {}),
             ...(p.isEquipped ? { isEquipped: p.isEquipped } : {}),
+            ...(p.doneLabel ? { doneLabel: p.doneLabel } : {}),
           }}
         />
       ) : null}

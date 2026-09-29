@@ -549,14 +549,30 @@ describe('Collection and card detail', () => {
     expect(m.q('[data-testid="card-mammoth_matriarch"] .ui-art.is-silhouette')).not.toBeNull();
   });
 
-  it('upgrades a ready card with a toast and crafts a missing one', () => {
+  it('upgrades a ready card in two taps (confirm, then spend) and crafts a missing one the same way', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'cardDetail', card: 'pikeman' }] });
     const before = m.save.value.collection['pikeman']!.level;
-    m.click('[data-testid="card-upgrade-btn"]');
+    const btn = '[data-testid="card-upgrade-btn"]';
+    // The Upgrade button lives in the fixed action bar and is the screen's one primary.
+    expect(m.q(`[data-testid="action-bar"] ${btn}`)).not.toBeNull();
+    expect(m.q(btn)!.getAttribute('data-primary')).toBe('');
+    expect(text(m.q(btn)!)).toContain('Upgrade');
+    m.click(btn);
+    // First tap: the confirm state, nothing spent yet (U10, MR-38b).
+    expect(m.save.value.collection['pikeman']!.level).toBe(before);
+    expect(text(m.q(btn)!)).toContain('Confirm');
+    m.click(btn);
     expect(m.save.value.collection['pikeman']!.level).toBe(before + 1);
-    expect(text(m.q('[data-testid="toasts"]')!)).toBe(`Level ${before + 1}!`);
+    // The ceremony plays on the card (MR-39), not in a toast across the screen.
+    expect(m.q('[data-testid="card-stage"]')!.getAttribute('class')).toContain('is-charge');
+    // A third fast tap cannot spend again: the button re-arms only after 600 ms (UA-08).
+    m.click(btn);
+    m.click(btn);
+    expect(m.save.value.collection['pikeman']!.level).toBe(before + 1);
     m.unmount();
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'cardDetail', card: 'friar' }] });
+    m.click('[data-testid="card-craft"]');
+    expect(m.save.value.currencies.dust).toBe(820);
     m.click('[data-testid="card-craft"]');
     expect(m.save.value.currencies.dust).toBe(820 - content.rarities.cards.rare.craftCopyDust);
   });
@@ -574,7 +590,8 @@ describe('Collection and card detail', () => {
       patch: { craft: () => ({ ok: false, reason: 'maxLevel' }) },
     });
     m.click('[data-testid="card-craft"]');
-    expect(text(m.q('[data-testid="toasts"]')!)).toBe("That didn't work. Try again.");
+    m.click('[data-testid="card-craft"]');
+    expect(text(m.q('[data-testid="toast"]')!)).toBe("That didn't work. Try again.");
   });
 
   it('shows the max level for maxed cards and the road source of a locked power', () => {
@@ -582,7 +599,7 @@ describe('Collection and card detail', () => {
     expect(m.q('[data-testid="card-max"]')).not.toBeNull();
     m.unmount();
     m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'cardDetail', card: 'meteor_shower' }] });
-    expect(text(m.q('[data-testid="card-upgrade"]')!)).toBe('Unlocks on the Trophy Road at 100');
+    expect(text(m.q('[data-testid="action-bar"]')!)).toBe('Unlocks on the Trophy Road at 100');
   });
 });
 

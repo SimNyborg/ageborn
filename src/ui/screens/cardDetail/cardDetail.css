@@ -18,13 +18,14 @@
   place-items: center;
   width: 100%;
   min-height: clamp(210px, 46vh, 330px);
-  border: 3px solid var(--ui-ink);
-  border-radius: 22px;
+  border: 1px solid rgba(107, 120, 144, 0.4);
+  border-radius: var(--ui-r-lg);
   background:
-    radial-gradient(ellipse at 50% 20%, color-mix(in srgb, var(--frame) 40%, transparent), transparent 60%),
-    linear-gradient(180deg, #2b2754, #151230);
-  box-shadow: var(--ui-shadow-drop), inset 0 0 40px rgba(0, 0, 0, 0.45);
+    radial-gradient(ellipse at 50% 20%, color-mix(in srgb, var(--frame) 30%, transparent), transparent 60%),
+    linear-gradient(180deg, #232a36, #11151b);
+  box-shadow: var(--ui-e1), inset 0 0 40px rgba(0, 0, 0, 0.45);
   overflow: hidden;
+  cursor: default;
 }
 .cd-stage__spot {
   position: absolute;
@@ -95,25 +96,203 @@
   display: grid;
   place-items: center;
 }
-.cd-stage.is-slam .cd-stage__card {
-  animation: cd-slam 700ms var(--ui-ease-back) both;
+/* MR-38b: the confirm state. The card lifts and starts to charge; the green deltas brighten. */
+.cd-stage__card {
+  transition: transform var(--ui-dur-small) var(--ui-ease-back);
 }
-.cd-stage.is-slam .cd-stage__level {
-  animation: ui-pop 500ms 300ms var(--ui-ease-back) both;
+.cd-stage.is-armed .cd-stage__card {
+  animation: none;
+  transform: translateY(-6px) scale(calc(1 + (var(--ui-lift) - 1) * 0.66));
+}
+.cd-stage.is-armed .cd-stage__frame {
+  box-shadow:
+    0 6px 0 var(--ui-ink),
+    0 0 26px 6px color-mix(in srgb, var(--ui-progress-light) 55%, transparent);
+  transition: box-shadow var(--ui-dur-small) var(--ui-ease-out);
+}
+.cd.is-armed .cd-next {
+  color: #b9f5cb;
+  text-shadow: 0 0 10px rgba(95, 208, 138, 0.7);
+  transition:
+    color var(--ui-dur-micro) var(--ui-ease-out),
+    text-shadow var(--ui-dur-micro) var(--ui-ease-out);
+}
+/* MR-39 charge (300 ms): the card trembles while the glow builds. */
+.cd-stage.is-charge .cd-stage__card {
+  animation: cd-tremble 125ms linear infinite;
+}
+.cd-stage.is-charge .cd-stage__frame {
+  box-shadow:
+    0 6px 0 var(--ui-ink),
+    0 0 40px 12px color-mix(in srgb, var(--ui-progress-light) 70%, transparent);
+  transition: box-shadow 300ms var(--ui-ease-out);
+}
+@keyframes cd-tremble {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(calc(var(--ui-axis) / 12), calc(var(--ui-axis) / -24));
+  }
+  75% {
+    transform: translate(calc(var(--ui-axis) / -12), calc(var(--ui-axis) / 24));
+  }
+}
+/* MR-39 impact: a burst and a shine; the card lands with a squash; the level flips. */
+.cd-stage.is-impact .cd-stage__card {
+  animation: cd-slam 520ms var(--ui-ease-back) both;
+}
+.cd-stage.is-impact .cd-stage__level {
+  animation: cd-level-flip var(--ui-dur-small) var(--ui-ease-back) 120ms both;
   background: linear-gradient(180deg, #8ceaa8, #2fb35a);
+  color: var(--ui-ink);
+  -webkit-text-stroke: 0;
+}
+@keyframes cd-level-flip {
+  from {
+    transform: translateX(-50%) scale(calc(1 + (var(--ui-pop) - 1) * 2.6));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
 }
 @keyframes cd-slam {
   0% {
-    transform: none;
+    transform: scale(1.02);
   }
   30% {
-    transform: translateY(10px) scale(1.08, 0.88);
+    transform: translateY(calc(var(--ui-axis) * 0.3)) scale(calc(1 + (var(--ui-bump) - 1) * 0.5), calc(1 - (var(--ui-bump) - 1) * 0.8));
   }
-  55% {
-    transform: translateY(-14px) scale(0.96, 1.06);
+  60% {
+    transform: translateY(calc(var(--ui-axis) * -0.4)) scale(calc(1 - (var(--ui-bump) - 1) * 0.25), calc(1 + (var(--ui-bump) - 1) * 0.4));
   }
   100% {
     transform: none;
+  }
+}
+.cd-stage__burst {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  z-index: 0;
+  width: 150%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255, 240, 190, 0.35) 0deg 8deg, transparent 8deg 22deg),
+    radial-gradient(circle, rgba(255, 244, 200, 0.85) 0%, rgba(140, 234, 168, 0.35) 25%, transparent 55%);
+  animation: cd-burst 900ms var(--ui-ease-out) both;
+  pointer-events: none;
+}
+@keyframes cd-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1) rotate(25deg);
+  }
+}
+.cd-stage__levelup {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  z-index: 4;
+  transform: translateX(-50%);
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-fs-headline);
+  line-height: var(--ui-lh-headline);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff6d6;
+  white-space: nowrap;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px var(--ui-bg);
+  text-shadow: 0 2px 10px rgba(242, 181, 44, 0.8);
+  animation: cd-levelup 1100ms var(--ui-ease-back) both;
+  pointer-events: none;
+}
+@keyframes cd-levelup {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(var(--ui-axis) * 0.5)) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+  30% {
+    transform: translateX(-50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(var(--ui-axis) * -0.5));
+  }
+}
+/* Follow-through: the stat rows tick one by one with a green "+N" chip that rises and fades. */
+.cd-stats tr.is-tick td:first-of-type {
+  animation: ui-bump var(--ui-dur-small) var(--ui-ease-back) both;
+  animation-delay: calc(240ms + var(--i) * 60ms);
+  color: var(--ui-good);
+}
+.cd-gain {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--ui-good);
+  font-size: 12px;
+  animation: cd-gain 900ms var(--ui-ease-out) both;
+  animation-delay: calc(240ms + var(--i) * 60ms);
+}
+@keyframes cd-gain {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--ui-axis) * -0.6));
+  }
+}
+.cd-copies {
+  width: min(100%, 320px);
+}
+.cd-copies .ui-copies {
+  height: 22px;
+}
+.cd-action {
+  display: inline-flex;
+}
+.cd-action .ui-btn__sub {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+  opacity: 0.82;
+  letter-spacing: 0;
+}
+.cd-action .is-armed .ui-btn__text > span {
+  animation: cd-label-in var(--ui-dur-micro) var(--ui-ease-standard);
+}
+@keyframes cd-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--ui-axis) * 0.4));
   }
 }
 .cd-stage__hammer {
@@ -254,49 +433,26 @@
   gap: 6px;
   margin-top: 6px;
 }
-.cd-upgrade {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 12px 14px;
-  border: 3px solid var(--ui-ink);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(58, 53, 111, 0.9), rgba(31, 27, 62, 0.95));
-  box-shadow: var(--ui-shadow-drop);
-}
-.cd-upgrade__bar {
-  width: 100%;
-}
-.cd-upgrade__bar .ui-copies {
-  height: 26px;
-}
-.cd-upgrade__bar .ui-copies__text {
-  line-height: 22px;
-  font-size: 14px;
-}
-.cd-need {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ui-muted);
-}
 .cd-owned {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+  color: var(--ui-text-2);
 }
 .cd-max {
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--ui-gold-hi);
-  paint-order: stroke fill;
-  -webkit-text-stroke: 5px var(--ui-ink);
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-fs-title);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ui-primary-light);
 }
 .cd-skins {
   margin-top: 12px;
 }
-@media (max-height: 480px) {
+@container ui-root (max-height: 480px) {
   .cd-stage {
     min-height: 200px;
   }
@@ -314,7 +470,7 @@
   top: 12px;
   z-index: 3;
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.3));
-  animation: cd-class-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both 120ms;
+  animation: cd-class-pop 420ms var(--ui-ease-back) both 120ms;
 }
 @keyframes cd-class-pop {
   from {
@@ -326,11 +482,7 @@
     opacity: 1;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .cd-stage__class {
-    animation: none;
-  }
-}
+
 .cd-counter-classes {
   grid-column: 1 / -1;
   padding: 8px 10px;

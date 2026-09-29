@@ -2,7 +2,7 @@
  * The meta UI (WP9) as the app sees it: mount one `ScreenHost` with a `UiEnv`, drive it with the
  * router, and implement `UiServices` on top of meta and save. See docs/requests/wp9-app-wiring.md.
  */
-export { ScreenHost, SCREEN_COMPONENTS, onEscape, type ScreenHostProps, type ScreenSlots } from './ScreenHost';
+export { handleBack, ScreenHost, SCREEN_COMPONENTS, onEscape, type ScreenHostProps, type ScreenSlots, type ShellConfig } from './ScreenHost';
 export type { UiEnv } from './context';
 export type { ActionResult, CosmeticEquipPatch, ProfileLookPatch, UiServices, WarPlan } from './services';
 export { HomeScreen } from './home/HomeScreen';

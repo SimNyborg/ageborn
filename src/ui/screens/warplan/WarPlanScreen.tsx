@@ -77,7 +77,7 @@ function RenameModal(p: { name: string; onSave: (name: string) => void; onClose:
       onClose={p.onClose}
       testid="rename-plan"
       footer={
-        <Button variant="green" testid="rename-save" disabled={trimmed.length === 0} onClick={() => p.onSave(trimmed)}>
+        <Button kind="progress" testid="rename-save" disabled={trimmed.length === 0} onClick={() => p.onSave(trimmed)}>
           {t('ui.common.done')}
         </Button>
       }
@@ -252,7 +252,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
               </span>
             ) : (
               <Button
-                variant="green"
+                kind="progress"
                 size="sm"
                 testid="use-plan"
                 onClick={() => {
@@ -301,7 +301,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
               {t('ui.warplan.planLevel', { format: t(formatNameKey(format)), n: planAvg === null ? '-' : formatDec(planAvg, 1, locale) })}
             </span>
             <Button
-              variant="violet"
+              kind="secondary"
               size="sm"
               icon={<RefreshIcon size={20} />}
               testid="auto-fill"

@@ -26,6 +26,8 @@ export interface UiEnv {
   services: UiServices;
   portrait: PortraitFn | null;
   toasts: ToastStore;
+  /** Optional UI sound hook (ui-plan 5.4): the app passes the audio service's `play`. */
+  sound?: (id: string) => void;
 }
 
 export const UiEnvContext = createContext<UiEnv | null>(null);

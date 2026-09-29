@@ -102,11 +102,15 @@ class Biped:
             out["torso"] = o
         if "head" in parts:
             els = [
-                ((0.6, 0, 64.0), (4.5, 3.8, 4.3)),            # cranium
-                ((2.5, 0, 61.4), (2.7, 2.9, 2.8)),            # face / jaw
-                ((1.6, 0, 60.6), (2.4, 2.5, 1.8)),            # chin / jaw line
-                ((4.8, 0, 62.4), (0.9, 0.6, 1.1)),            # nose
-                ((4.0, 0, 63.9), (1.0, 2.6, 0.75)),           # brow ridge
+                ((0.2, 0, 64.5), (4.4, 3.8, 4.1)),            # cranium
+                ((3.2, 0, 65.3), (1.9, 3.0, 2.0)),            # forehead (upright)
+                ((2.6, 0, 61.6), (2.6, 2.8, 2.6)),            # face / jaw
+                ((3.3, 0, 59.5), (1.6, 1.9, 1.3)),            # chin (forward and down)
+                ((1.2, 0, 60.4), (2.2, 2.5, 1.6)),            # jaw line
+                ((4.9, 0, 62.5), (0.9, 0.6, 1.1)),            # nose
+                ((4.1, 0, 64.0), (1.0, 2.6, 0.75)),           # brow ridge
+                ((3.4, -2.3, 62.6), (1.3, 1.0, 1.0)),         # cheekbones
+                ((3.4, 2.3, 62.6), (1.3, 1.0, 1.0)),
                 ((0.3, -3.6, 62.6), (1.0, 0.5, 1.4)),         # ears
                 ((0.3, 3.6, 62.6), (1.0, 0.5, 1.4)),
             ]
@@ -388,3 +392,32 @@ def keyed(keys, t, loop_len=None):
                                 + (-a + 3 * b - 3 * c + d) * u ** 3)
             return _unflat(res)
     return _unflat(fl[-1][1])
+
+
+def far_grip(x, z, dy, yaw_deg, elev_deg=12.0):
+    """Side-plane target (x, z) for a hand at depth +dy (char y) behind a point (x, z) on a held
+    prop at depth 0, adjusted so that both project to the same screen point."""
+    yw = math.radians(yaw_deg)
+    e = math.radians(elev_deg)
+    c, s = math.cos(yw), math.sin(yw)
+    # screen x = x c - y s ; world depth = x s + y c ; screen y = z cos e + depth sin e
+    dx = dy * s / c
+    ddepth = dx * s + dy * c
+    dz = -ddepth * math.sin(e) / math.cos(e)
+    return x + dx, z + dz
+
+
+def abs_to_hand(body, P, side="F"):
+    """Convert P['abs<side>'] (upper, fore, hand angles) into an IK target P['hand<side>'] =
+    ((wrist x, wrist z), hand angle) that reproduces the same pose (so keys can be mixed)."""
+    P = dict(P)
+    a = P.pop("abs" + side)
+    f = body.fk(P)
+    s = f["shoulder"]
+    ua, fa = math.radians(a[0]), math.radians(a[1])
+    e = (s[0] + body.L_upper * math.sin(ua), s[1] - body.L_upper * math.cos(ua))
+    w = (e[0] + body.L_fore * math.sin(fa), e[1] - body.L_fore * math.cos(fa))
+    P["hand" + side] = (w, a[2])
+    if len(a) > 3:
+        P["abduct" + side] = a[3]
+    return P

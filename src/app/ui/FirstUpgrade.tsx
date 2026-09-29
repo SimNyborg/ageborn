@@ -14,6 +14,7 @@ import { upgradeBlocker, upgradeCost } from '@/meta';
 import { asContent } from '@/content';
 import { isMetaRules } from '../uiServices';
 import { useApp } from './context';
+import { Button } from '@/ui/components/Button';
 
 export const FIRST_UPGRADE_FLAG = 'tutorial.firstUpgrade';
 export const FIRST_UPGRADE_CARD = 'bonker';
@@ -111,18 +112,18 @@ export function FirstUpgrade() {
           </div>
         </div>
         {phase === 'offer' ? (
-          <button class="ab-btn ab-btn--gold ab-btn--big" data-testid="first-upgrade-go" onClick={upgrade}>
+          <Button kind="progress" size="xl" primary pulse testid="first-upgrade-go" onClick={upgrade}>
             {ui.t('app.upgrade.go')}
             {cost ? <span class="ab-upgrade-cost">{ui.t('app.reward.amber', { amount: cost.amber }).replace('+', '')}</span> : null}
-          </button>
+          </Button>
         ) : (
           <>
             <p class="ab-upgrade-gain" data-testid="first-upgrade-gain">
               {ui.t('tutorial.upgrade.gain')}
             </p>
-            <button class="ab-btn ab-btn--gold ab-btn--wide" data-testid="first-upgrade-continue" disabled={phase === 'slam'} onClick={() => setPhase('offer')}>
+            <Button kind="primary" size="l" testid="first-upgrade-continue" disabled={phase === 'slam'} onClick={() => setPhase('offer')}>
               {ui.t('app.next')}
-            </button>
+            </Button>
           </>
         )}
       </div>

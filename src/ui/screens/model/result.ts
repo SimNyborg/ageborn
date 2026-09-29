@@ -164,3 +164,59 @@ export function dailyResultLine(o: {
     base: Math.max(0, Math.min(100, Math.round(o.basePercent))),
   });
 }
+
+/** The Result's actions (ui-plan 4.9, U2). */
+export type ResultActionId = 'continue' | 'openCapsule' | 'tryAgain' | 'next' | 'home' | 'copy' | 'replay';
+
+export interface ResultActions {
+  /** The one primary, gold, bottom-right (the same spot as Home's Play). */
+  primary: ResultActionId;
+  secondary: ResultActionId[];
+  tertiary: ResultActionId[];
+}
+
+/**
+ * The action table of ui-plan 4.9, one design for every mode:
+ *
+ * | Situation | Primary | Secondary |
+ * |---|---|---|
+ * | War Path (and Conquest) win | Continue | none |
+ * | ... with a capsule earned | Open capsule | Continue |
+ * | War Path (and Conquest) loss | Try again | Home |
+ * | Ladder, Quick Battle, Skirmish | Next battle | Home |
+ * | ... with a capsule earned | Open capsule | Next battle, Home |
+ * | Daily | Home | Copy result |
+ * | Night or a stopping card (A15.6) | Home | Continue / Next battle |
+ * | Onboarding | Open capsule, else Continue (Try again after a loss) | none |
+ *
+ * Watch replay is the tertiary wherever a replay was kept (not in onboarding). The next battle is
+ * always at most one tap away.
+ */
+export function resultActions(o: {
+  mode: string;
+  outcome: 'win' | 'loss' | 'draw';
+  capsule: boolean;
+  daily: boolean;
+  /** Night (22:00-06:00) or a stopping card (A15.6). */
+  stop: boolean;
+  replay: boolean;
+  onboarding?: boolean;
+  /** Onboarding: a retry is offered (A8). */
+  canRetry?: boolean;
+}): ResultActions {
+  if (o.onboarding) {
+    if (o.capsule) return { primary: 'openCapsule', secondary: o.canRetry ? ['tryAgain'] : [], tertiary: [] };
+    if (o.outcome !== 'win' && o.canRetry) return { primary: 'tryAgain', secondary: [], tertiary: [] };
+    return { primary: 'continue', secondary: o.canRetry ? ['tryAgain'] : [], tertiary: [] };
+  }
+  const tertiary: ResultActionId[] = o.replay ? ['replay'] : [];
+  const path = o.mode === 'warPath' || o.mode === 'conquest';
+  const won = o.outcome === 'win';
+  if (o.daily) return { primary: 'home', secondary: ['copy'], tertiary };
+  if (o.stop) return { primary: 'home', secondary: path ? (won ? ['continue'] : ['tryAgain']) : ['next'], tertiary };
+  if (path) {
+    if (!won) return { primary: 'tryAgain', secondary: ['home'], tertiary };
+    return o.capsule ? { primary: 'openCapsule', secondary: ['continue'], tertiary } : { primary: 'continue', secondary: [], tertiary };
+  }
+  return o.capsule ? { primary: 'openCapsule', secondary: ['next', 'home'], tertiary } : { primary: 'next', secondary: ['home'], tertiary };
+}

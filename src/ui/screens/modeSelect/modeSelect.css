@@ -1,12 +1,18 @@
 /* Mode select (A9 #3). */
 
 .modes {
+  /* UI-1 (UA-01): one row of cards that scrolls sideways, never 4 + 1, never a clipped body, so every
+     picker is on screen and tappable. The Modes panel replaces this screen in UI-2. */
   display: grid;
-  /* Quick Battle first and a little wider (its difficulty picker), then the four A9 modes. */
-  grid-template-columns: minmax(0, 1.35fr) repeat(4, minmax(0, 1fr));
-  gap: clamp(10px, 1.6vw, 22px);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(250px, 1fr);
+  grid-template-columns: none;
+  gap: var(--ui-s3);
   height: 100%;
-  min-height: 330px;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
 }
 
 .mode-card {
@@ -286,14 +292,6 @@
 }
 
 @media (max-width: 900px) {
-  .modes {
-    grid-template-columns: minmax(270px, 1.35fr) repeat(4, minmax(190px, 1fr));
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-  }
-  .mode-card {
-    scroll-snap-align: start;
-  }
   .mode-card__art svg {
     width: 44px;
     height: 44px;
@@ -302,10 +300,7 @@
     grid-template-columns: 1fr;
   }
 }
-@media (max-height: 480px) {
-  .modes {
-    min-height: 0;
-  }
+@container ui-root (max-height: 480px) {
   .mode-card__body {
     gap: 6px;
     padding: 6px 10px;
@@ -343,12 +338,11 @@
   flex: 1 1 0;
   justify-content: center;
   min-width: 0;
-  min-height: 40px;
+  min-height: 44px;
   padding-inline: 2px;
-  font-size: 11.5px;
-  letter-spacing: -0.01em;
+  font-size: 12px;
 }
-@media (max-height: 480px) {
+@container ui-root (max-height: 480px) {
   .mode-card__desc {
     font-size: 12px;
   }
@@ -372,8 +366,22 @@
 }
 .mode-card .mode-card__diff [data-testid='quick-difficulty'] .ui-seg__opt {
   flex: 1 1 30%;
-  min-height: 34px;
-  font-size: 12.5px;
+  min-height: 44px;
+  font-size: 13px;
+}
+/* The ladder format picker: one row of three, so it fits a 340 px tall phone. */
+.mode-card .ui-seg[data-testid='ladder-format'] {
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.mode-card .ui-seg[data-testid='ladder-format'] .ui-seg__opt {
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+  padding-inline: 4px;
+  white-space: normal;
+  line-height: 1.1;
+  text-align: center;
 }
 .skirmish__row--diff {
   flex-wrap: wrap;

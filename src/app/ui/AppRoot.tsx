@@ -11,6 +11,7 @@ import { CapsuleShows } from '../capsules/capsuleFlow';
 import { createMetaUi, type MetaUi } from '../metaUi';
 import { attachActivity } from '../stopping';
 import { ReplayScreen } from '../screens/replay/ReplayScreen';
+import { resultActionKey, resultPathAfterCapsule } from '@/ui/screens/result/ResultScreen';
 import { isMetaRules } from '../uiServices';
 import { AgeDialog } from './AgeDialog';
 import { BattleScreen } from './BattleScreen';
@@ -47,6 +48,9 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
     const commit = (next: typeof save) => ui.controller.setSave(next, { immediate: true });
     const onboarding = show.kind === 'capsules' && show.onboarding !== null;
     const onboardingStep = show.kind === 'capsules' ? show.onboarding : null;
+    // Opened from the Result: the summary's primary continues the Result's path (ui-plan 2.5).
+    const top = p.meta?.router.current.peek();
+    const doneLabel = !onboarding && top?.id === 'result' ? ui.t(resultActionKey(resultPathAfterCapsule(top.info))) : undefined;
     return (
       <ShowGuard
         key={show}
@@ -65,6 +69,7 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
           save={save}
           t={ui.t}
           allowMore={!onboarding}
+          {...(doneLabel ? { doneLabel } : {})}
           onEquip={(card) => {
             const s = ui.controller.save.peek();
             if (s) commit(m.equipNow(s, card, content));
