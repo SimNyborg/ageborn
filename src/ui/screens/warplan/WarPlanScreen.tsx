@@ -358,7 +358,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     for (const l of f.land) {
       const el = scope?.querySelector?.(`[data-drop="${l.key}"]`) as HTMLElement | null;
       const flight = l.from ? flyCard('rect' in l.from ? l.from : tileIn(l.from), tileIn(el)) : null;
-      const delay = flight && l.from ? MOTION_DUR.medium + MOTION_DUR.hold : l.delay;
+      const delay = flight ? MOTION_DUR.medium + MOTION_DUR.hold : l.delay;
       landings.push({ key: l.key, delay, n: ++landN.current });
       const cardId = el?.getAttribute?.('data-card-id');
       const def = cardId ? cardDef(content, cardId) : null;
@@ -372,7 +372,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     for (const b of f.back) {
       const target = gridRef.current?.querySelector?.(`[data-army-cell="${b.card}"]`) as HTMLElement | null;
       if (b.from)
-        flyCard(b.from, tileIn(target), { pull: false }).done.then(() => {
+        flyCard(b.from, tileIn(target), { pull: false })?.done.then(() => {
           if (target && typeof target.animate === 'function')
             target.animate([{ transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: MOTION_DUR.small, easing: ease('back') });
         });

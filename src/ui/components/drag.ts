@@ -293,10 +293,7 @@ export function beginDrag(e: PointerEvent, source: HTMLElement, o: DragOptions):
     },
   };
   active = handle;
-  window.addEventListener('pointermove', move, {
-    capture: true,
-    passive: false,
-  });
+  window.addEventListener('pointermove', move, { capture: true, passive: false });
   window.addEventListener('pointerup', up, true);
   window.addEventListener('pointercancel', cancel, true);
   window.addEventListener('keydown', key, true);
@@ -305,14 +302,11 @@ export function beginDrag(e: PointerEvent, source: HTMLElement, o: DragOptions):
 /**
  * MR-32 / MR-34 flight on the tap paths: a clone of `from` pulls back 5 px (60, `anticipate`), then
  * flies on an arc to `to` (280, `standard`) and fades as it lands; the caller plays the landing on
- * the target. Reduced: nothing flies (the target cross-fades on its own).
+ * the target. Reduced: nothing flies (the target cross-fades on its own) and it returns null, as it
+ * does when either end is missing.
  */
-export function flyCard(from: HTMLElement | FlightSource | null, to: HTMLElement | null, o?: { pull?: boolean; duration?: number }): MotionHandle {
-  const none: MotionHandle = {
-    done: Promise.resolve(),
-    finish() {},
-    cancel() {},
-  };
+export function flyCard(from: HTMLElement | FlightSource | null, to: HTMLElement | null, o?: { pull?: boolean; duration?: number }): MotionHandle | null {
+  const none = null;
   if (!from || !to || typeof document === 'undefined' || reducedMotion(to)) return none;
   const layer = layerOf(to);
   const a = 'rect' in from ? from.rect : from.getBoundingClientRect();

@@ -48,7 +48,7 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
             ) : (
               <div class="pause__cards">
                 {tiles.map((c) => (
-                  <CardTile key={c.id} card={c} size="sm" hideLevel />
+                  <CardTile key={c.id} card={c} size="md" hideLevel />
                 ))}
               </div>
             )}

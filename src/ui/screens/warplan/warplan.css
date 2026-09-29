@@ -520,7 +520,7 @@
 @keyframes army-land {
   0% {
     opacity: 0;
-    transform: scale(calc(2 - var(--ui-bump) + 0.09));
+    transform: scale(calc(1 - (var(--ui-bump) - 1) * 0.4));
   }
   1% {
     opacity: 1;
@@ -610,7 +610,7 @@
 @keyframes army-bar-in {
   from {
     opacity: 0;
-    transform: translateY(calc(var(--ui-axis-tabs) * 0.4)) scale(calc(2 - var(--ui-pop) + 0.05));
+    transform: translateY(calc(var(--ui-axis-tabs) * 0.4)) scale(calc(1 - (var(--ui-pop) - 1) * 0.66));
   }
 }
 .army-bar--below {

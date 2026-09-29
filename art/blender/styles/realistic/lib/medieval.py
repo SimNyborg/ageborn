@@ -265,10 +265,10 @@ def coif(rig, BODY, mat, open_face=True):
     Sx = S(k, BODY.offset)
     els = [(Sx(-0.2, 0, 64.8), (4.9, 4.35, 4.4)),
            (Sx(-1.4, 0, 60.5), (4.0, 4.5, 3.6)),
-           (Sx(0.8, 0, 57.6), (4.2, 5.2, 2.2)),
+           (Sx(0.2, 0, 57.6), (4.0, 5.2, 2.2)),
            (Sx(-0.6, 0, 55.8), (4.6, 6.2, 1.8))]
     if open_face:
-        els.append((Sx(4.2, 0, 62.2), (2.4, 2.6, 3.4), None, -1))
+        els.append((Sx(4.6, 0, 62.4), (3.4, 2.9, 3.6), None, -1))
     o = C.blobs("coif", els, mat, res=0.35 * k)
     rig.skin(o, ["neck", "head", "chest"], soft=1.6 * k, bias={"chest": 2.0 * k})
     return o
@@ -278,16 +278,16 @@ def kettle_hat(rig, BODY, mat, rim=None, brim=8.6, tilt=-4.0):
     """Chapel de fer: a rounded skull with a wide sloping brim (14th-15th c. infantry)."""
     k = BODY.k
     ox, oy, oz = BODY.offset
-    prof = [(0.0, 70.3), (2.6, 70.0), (4.4, 68.6), (5.1, 66.6), (5.25, 64.9), (5.35, 64.1),
-            (brim * 0.78, 63.0), (brim, 61.9), (brim + 0.1, 61.5), (brim - 0.3, 61.55), (brim * 0.76, 62.6), (5.0, 63.7)]
+    prof = [(0.0, 70.6), (2.8, 70.3), (4.7, 68.9), (5.5, 66.8), (5.65, 65.0), (5.75, 64.3),
+            (brim * 0.8, 63.2), (brim, 62.2), (brim + 0.1, 61.8), (brim - 0.3, 61.85), (brim * 0.78, 62.8), (5.4, 63.9)]
     o = C.lathe("kettle", [(r * k, z * k) for r, z in prof], mat, seg=36, scale=(1.0, 0.94, 1.0),
-                loc=(0.3 * k + ox, oy, oz), sharp=60)
-    rot_about(o, (0.3 * k + ox, 0, 64 * k + oz), tilt)
+                loc=(0.9 * k + ox, oy, oz), sharp=60)
+    rot_about(o, (0.9 * k + ox, 0, 64 * k + oz), tilt)
     rig.rigid(o, "head")
     if rim is not None:
         r = C.lathe("kettle_rim", [((brim - 0.1) * k, 61.3 * k), ((brim + 0.35) * k, 61.6 * k), ((brim - 0.1) * k, 61.95 * k)],
-                    rim, seg=36, scale=(1.0, 0.94, 1.0), loc=(0.3 * k + ox, oy, oz))
-        rot_about(r, (0.3 * k + ox, 0, 64 * k + oz), tilt)
+                    rim, seg=36, scale=(1.0, 0.94, 1.0), loc=(0.9 * k + ox, oy, oz + 0.3 * k))
+        rot_about(r, (0.9 * k + ox, 0, 64 * k + oz), tilt)
         rig.rigid(r, "head")
     return o
 
@@ -296,10 +296,10 @@ def sallet(rig, BODY, mat, tail=True):
     """A 15th c. sallet: a rounded bowl with a flared tail at the back and an open face."""
     k = BODY.k
     Sx = S(k, BODY.offset)
-    els = [(Sx(0.0, 0, 65.4), (5.2, 4.7, 4.7)), (Sx(-3.6, 0, 62.6), (3.2, 4.8, 2.2), (0, -0.35, 0))]
+    els = [(Sx(0.7, 0, 65.2), (5.3, 4.7, 4.8)), (Sx(-3.2, 0, 62.6), (3.2, 4.8, 2.2), (0, -0.35, 0))]
     if tail:
-        els.append((Sx(-6.2, 0, 61.2), (2.6, 4.2, 0.9), (0, -0.25, 0)))
-    els.append((Sx(4.6, 0, 61.4), (3.0, 3.4, 3.8), None, -1))
+        els.append((Sx(-6.0, 0, 61.2), (2.8, 4.3, 0.9), (0, -0.25, 0)))
+    els.append((Sx(5.6, 0, 61.0), (2.6, 3.6, 2.6), None, -1))
     o = C.blobs("sallet", els, mat, res=0.3 * k)
     rig.rigid(o, "head")
     return o

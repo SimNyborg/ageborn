@@ -24,7 +24,7 @@ from . import mats as M
 
 
 # ---------------------------------------------------------------------------------- materials
-def bronze(name="bronze", base="#8c7a5e", patina="#6b7b6c", rough=0.34, amount=0.3, nscale=0.9):
+def bronze(name="bronze", base="#8c7a5e", patina="#6b7b6c", rough=0.34, amount=0.2, nscale=1.6):
     """Aged bronze: metallic, with a matte grey-green patina in noise patches (metallic and roughness
     follow the patina mask, so the patina reads as corrosion, not green metal)."""
     if name in C._MATS:
@@ -62,7 +62,7 @@ def kit():
         bronze=bronze(),
         polished=bronze("polished", "#9c8458", "#76806a", rough=0.24, amount=0.08),
         dark_bronze=bronze("dark_bronze", "#6e604c", "#5d6b5e", rough=0.4, amount=0.4),
-        linen=C.mat("linen", "#c8bba0", rough=0.9, noise=0.08, nscale=1.6, bump=0.45, sheen=0.35),
+        linen=C.mat("linen", "#d2cbb6", rough=0.9, noise=0.08, nscale=1.6, bump=0.45, sheen=0.35),
         linen_dk=C.mat("linen_dk", "#a89c84", rough=0.9, noise=0.1, nscale=1.6, bump=0.45, sheen=0.3),
         wool=C.mat("wool", "#7c6e5c", rough=0.95, noise=0.12, nscale=1.4, bump=0.6, sheen=0.5),
         leather=M.leather("#4f3f33"),
@@ -73,7 +73,7 @@ def kit():
         eye=M.eye(),
         dark=M.dark(),
         team_cloth=M.team_cloth(),
-        team_paint=C.mat("team_paint", "#999999", rough=0.5, noise=0.08, nscale=0.7, bump=0.12, team=True, coat=0.15),
+        team_paint=C.mat("team_paint", "#999999", rough=0.55, noise=0.14, nscale=0.9, bump=0.3, team=True, coat=0.1),
         team_hair=C.mat("team_hair", "#9a9a9a", rough=0.75, noise=0.2, nscale=3.0, bump=1.0, team=True, sheen=0.5),
     )
 
@@ -365,20 +365,20 @@ def aspis(m, R, name="aspis", emblem=True):
     """Round shield modelled facing +Z (the axis is the face normal), centred at the origin, the
     convex face toward +Z: team face, polished rim, bronze boss, wooden back, a dark painted blazon."""
     out = []
-    prof = [(0.0, 1.6), (R * 0.5, 1.35), (R * 0.85, 0.7), (R * 0.97, 0.15)]
+    prof = [(0.0, 3.4), (R * 0.3, 3.1), (R * 0.6, 2.2), (R * 0.85, 1.0), (R * 0.97, 0.15)]
     face = C.lathe(name + "_face", prof, m["team_paint"], seg=48)
     C.team(face)
     out.append(face)
-    back = C.lathe(name + "_back", [(R * 0.97, 0.1), (R * 0.9, -0.5), (R * 0.5, -1.2), (0.0, -1.4)], m["cedar"], seg=48)
+    back = C.lathe(name + "_back", [(R * 0.97, 0.1), (R * 0.9, -0.3), (R * 0.5, 1.0), (0.0, 1.8)], m["cedar"], seg=48)
     out.append(back)
     rim = C.lathe(name + "_rim", [(R * 0.93, -0.6), (R * 1.03, -0.2), (R * 1.05, 0.35), (R * 0.95, 0.55), (R * 0.9, 0.2)],
                   m["polished"], seg=48)
     out.append(rim)
     if emblem:
         # a painted blazon ring and a small bronze boss (non-team marks on the team face)
-        ring = C.lathe(name + "_ring", [(R * 0.62, 1.12), (R * 0.66, 1.2), (R * 0.7, 1.12)], M.dark("#2e2620", name="blazon"), seg=48)
+        ring = C.lathe(name + "_ring", [(R * 0.62, 2.05), (R * 0.66, 2.15), (R * 0.7, 1.92)], M.dark("#2e2620", name="blazon"), seg=48)
         out.append(ring)
-        boss = C.lathe(name + "_boss", [(0.0, 2.9), (R * 0.1, 2.6), (R * 0.16, 1.9), (R * 0.19, 1.45)], m["bronze"], seg=24)
+        boss = C.lathe(name + "_boss", [(0.0, 4.6), (R * 0.1, 4.3), (R * 0.16, 3.6), (R * 0.19, 3.2)], m["bronze"], seg=24)
         out.append(boss)
     return out
 

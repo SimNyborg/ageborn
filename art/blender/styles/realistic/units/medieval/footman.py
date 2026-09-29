@@ -49,7 +49,7 @@ SMEAR_N = 30
 
 def build():
     k = K
-    skin = M.skin("#a07c64")
+    skin = M.skin("#b08a70")
     hair = M.hair("#3a2e26")
     beard = M.hair("#4a3a2e", name="beard")
     eye = M.eye()
@@ -57,7 +57,7 @@ def build():
     st = MD.steel()
     dst = MD.dark_steel()
     brass = MD.brass()
-    hose = MD.wool("#4f463e", name="hose", dark="#433b34")
+    hose = MD.wool("#6b5f52", name="hose", dark="#5a5046")
     leather = M.leather("#4b3b30")
     glove = M.leather("#5a4636", name="glove")
     hem = MD.wool("#2e2622", name="hem")
@@ -72,9 +72,9 @@ def build():
     MD.tabard(rig, BODY, tab, hem_mat=hem, length=25.0)
     MD.belt(rig, BODY, leather, z=37.0, bulk=1.12, buckle=brass)
     MD.boots(rig, BODY, leather)
-    MD.face(rig, BODY, hair, eye, beard=beard, moustache=True, hair=None)
+    MD.face(rig, BODY, hair, eye, beard=None, moustache=True, hair=None)
     MD.coif(rig, BODY, mail)
-    MD.kettle_hat(rig, BODY, st, rim=dst, brim=8.4)
+    MD.kettle_hat(rig, BODY, st, rim=dst, brim=7.8, tilt=-9.0)
     # a scabbard on the far hip (the sword is drawn), hanging back
     Sx = MD.S(k)
     sc = C.tube("scabbard", [Sx(-1.0, 7.8, 36.0), Sx(-6.0, 8.2, 24.0), Sx(-10.5, 8.4, 13.5)], [0.95 * k, 0.8 * k, 0.6 * k],
@@ -83,8 +83,8 @@ def build():
     rig.rigid(C.sphere("chape", 0.7 * k, dst, loc=Sx(-10.7, 8.4, 13.2)), "hips")
 
     # the heater shield on the near forearm, facing the camera, turned a little toward the enemy
-    parts = MD.heater_shield(k, paint, dst, charge_mat=cream, height=27.0, width=19.0, charge="chevron", boss=None)
-    MD.mount_on_forearm(parts, BODY, "F", SHIELD_FORE, (6.2 * k, 3.4 * k, 1.6 * k), yaw_deg=18.0, roll_deg=-6.0)
+    parts = MD.heater_shield(k, paint, dst, charge_mat=cream, height=23.0, width=16.0, charge="chevron", boss=None)
+    MD.mount_on_forearm(parts, BODY, "F", SHIELD_FORE, (7.4 * k, 3.2 * k, 0.6 * k), yaw_deg=38.0, roll_deg=-4.0)
     for o in parts:
         rig.rigid(o, "forearm_F")
 
@@ -101,7 +101,7 @@ def stance(breath=0.0, shift=0.0):
     return dict(root=(0.0, -1.3 - 0.3 * breath), root_dy=shift, hips=0, spine=-2 + 1.2 * breath,
                 chest=-2 - 0.8 * breath, neck=2, head=-3 - 0.8 * breath,
                 footF=(9.5, G0, 0.0), footB=(-10.0, G0, 0.0),
-                absF=(22 + 1.0 * breath, SHIELD_FORE, 96), absB=(28 + 1.5 * breath, 118 - 2 * breath, 78, -4))
+                absF=(12 + 1.0 * breath, SHIELD_FORE, 96), absB=(28 + 1.5 * breath, 118 - 2 * breath, 78, -4))
 
 
 def idle(t):
