@@ -95,8 +95,14 @@ describe('semantic checks', () => {
     const c = copy();
     const plan = c.generals.list.pip.warPlan?.stone;
     if (!plan) throw new Error('pip has a Stone loadout');
-    plan.power = 'arrow_storm';
+    plan.powers = { home: 'arrow_storm', field: 'stampede' };
     expect(messages(c)).toContain('generals.pip.warPlan.stone: "arrow_storm" is not a power of this age (A3)');
+    // A2.9.1: a power in the other slot
+    const d = copy();
+    const p2 = d.generals.list.pip.warPlan?.stone;
+    if (!p2) throw new Error('pip has a Stone loadout');
+    p2.powers = { home: 'stampede', field: null };
+    expect(messages(d)).toContain('generals.pip.warPlan.stone: "stampede" does not fit the home slot (A2.9.1)');
   });
 
   it('catches duplicates in a loadout (A3)', () => {
@@ -119,7 +125,29 @@ describe('semantic checks', () => {
     const c = copy();
     (c.powers.stampede as { age: string }).age = 'future';
     const m = messages(c).join('\n');
-    expect(m).toMatch(/ages\.stone: one default Age Power/);
+    expect(m).toMatch(/ages\.stone: 6 Age Powers per age: 3 Home and 3 Field/);
+    expect(m).toMatch(/ages\.stone: one Field starter/);
+  });
+
+  it('catches the power rules of A2.9: reach, the cap, slot families, sources (A2.9.4-A2.9.8)', () => {
+    const c = copy();
+    (c.powers.meteor_shower as { reach: string }).reach = 'anywhere';
+    (c.powers.rockslide as { maxTargets?: number }).maxTargets = undefined;
+    (c.powers.stampede as { family: string }).family = 'sweep';
+    (c.powers.hunters_spear as { maxTargets: number }).maxTargets = 2;
+    (c.powers.sticky_tar as { warPathLevel: number }).warPathLevel = 6;
+    (c.powers.aegis as { cost: number }).cost = 300;
+    const m = messages(c).join('\n');
+    expect(m).toMatch(/powers\.meteor_shower: every Home power has reach home/);
+    expect(m).toMatch(/powers\.meteor_shower: area damage is never "anywhere"/);
+    expect(m).toMatch(/powers\.rockslide: sweep needs maxTargets/);
+    expect(m).toMatch(/powers\.stampede: family "sweep" does not fit the field slot/);
+    expect(m).toMatch(/powers\.hunters_spear: a strike has maxTargets 1/);
+    expect(m).toMatch(/powers\.sticky_tar: War Path powers come from levels 5, 7 and 9/);
+    expect(m).toMatch(/powers\.aegis: a power costs 75-150 gold/);
+    const d = copy();
+    (d.powers.sticky_tar as { effect: { zone: number } }).effect.zone = 900;
+    expect(messages(d).join('\n')).toMatch(/powers\.sticky_tar: a Home zone is at most 850 lu/);
   });
 
   it('catches melee attacks that hit air (A2.6)', () => {
@@ -154,7 +182,8 @@ describe('semantic checks', () => {
     const d = copy();
     d.trophyRoad.nodes[2] = { index: 2, trophies: 150, rewards: [{ kind: 'power', card: 'stampede' }] };
     const m = messages(d).join('\n');
-    expect(m).toMatch(/"stampede" is not an alternate power/);
+    expect(m).toMatch(/"stampede" names another road node/);
+    expect(m).toMatch(/"stampede" is not a Trophy Road power/);
     expect(m).toMatch(/each arena after the first has one gate node/);
   });
 

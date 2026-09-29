@@ -14,25 +14,25 @@ export function LadderNotice(p: { tiers: readonly { tier: CapsuleTier; crests: n
   const legacy = p.legacy ?? 0;
   return (
     <section class="cap-notice ui-rm-own" data-testid="capsule-ladder-notice" aria-labelledby="cap-notice-title">
-      <span class="cap-notice__icons" aria-hidden="true">
-        {p.tiers.map((x, i) => (
-          <CapsuleIcon key={x.tier} tier={x.tier} crests={x.crests} size={i === p.tiers.length - 1 ? 44 : 38} />
-        ))}
-      </span>
-      <span class="cap-notice__text">
-        <b id="cap-notice-title">{t('ui.notice.capsuleLadder.title')}</b>
-        <span>{t('ui.notice.capsuleLadder.body')}</span>
-        {legacy > 0 ? (
-          <span class="is-legacy" data-testid="capsule-ladder-legacy">
-            {legacy === 1 ? t('ui.notice.capsuleLadder.legacyOne') : t('ui.notice.capsuleLadder.legacy', { n: legacy })}
-          </span>
+      <header class="cap-notice__head">
+        <span class="cap-notice__icons" aria-hidden="true">
+          {p.tiers.map((x) => (
+            <CapsuleIcon key={x.tier} tier={x.tier} crests={x.crests} size={36} />
+          ))}
+        </span>
+        <b id="cap-notice-title" class="cap-notice__title">
+          {t('ui.notice.capsuleLadder.title')}
+        </b>
+        {p.onClose ? (
+          <IconButton icon={<CloseIcon size={22} />} label={t('ui.common.close')} kind="tertiary" onClick={p.onClose} testid="capsule-ladder-notice-close" />
         ) : null}
-      </span>
-      {p.onClose ? (
-        <IconButton icon={<CloseIcon size={22} />} label={t('ui.common.close')} kind="tertiary" onClick={p.onClose} testid="capsule-ladder-notice-close" />
-      ) : (
-        <span />
-      )}
+      </header>
+      <p class="cap-notice__body">{t('ui.notice.capsuleLadder.body')}</p>
+      {legacy > 0 ? (
+        <p class="cap-notice__body is-legacy" data-testid="capsule-ladder-legacy">
+          {legacy === 1 ? t('ui.notice.capsuleLadder.legacyOne') : t('ui.notice.capsuleLadder.legacy', { n: legacy })}
+        </p>
+      ) : null}
     </section>
   );
 }

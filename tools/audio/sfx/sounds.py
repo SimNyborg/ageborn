@@ -1072,6 +1072,84 @@ def cap_climb_4(v, rng):
     return climb(4, rng)
 
 
+# The 2026-09-29 ladder (DESIGN A10 step 3b, A13): Platinum and Aeon are summit tiers. Platinum climbs
+# the next step up the arpeggio (E6) with a glass-bell partial at x2.76; Aeon is richer and lower, not
+# shriller: a choir chord under the chime and a clock tick 60 ms after the hit. Time, bells, stone and
+# choir; no coin, slot or jackpot colour.
+
+
+def glass_bell(freq: float, dur: float, tau: float = 0.9, glass: float = 0.7) -> np.ndarray:
+    # A struck glass bell: the fundamental, a strong inharmonic x2.76 partial and a faint x5.4 shimmer.
+    return bell(freq, dur, 1.0, tau, partials=((1, 1.0), (2.0, 0.25), (2.76, glass), (5.4, 0.18)))
+
+
+@sfx("cap_climb_5", -19, 2, max_s=2.0)
+def cap_climb_5(v, rng):
+    name = "E6"
+    f = hz(name)
+    hit = mixdown(thump(118, 50, 0.3, 0.02, 0.08, 2.0), at(0, nburst(rng, 0.07, 300, 2400, 0.016), 0.6))
+    ring = mixdown(at(0, gm_note(GM["glock"], mn(name), 0.4, 104, 1.6), 0.55), at(0, glass_bell(f, 1.8, 0.8), 0.45), at(0, chime(f, 1.2, 0.5), 0.3))
+    body = mixdown(
+        at(0, gm_note(GM["harp"], mn(name) - 12, 0.5, 92, 1.2), 0.4),
+        at(0, gm_notes(GM["strings"], [(0, 0.7, mn("C5"), 88), (0, 0.7, mn("E5"), 84), (0, 0.7, mn("G5"), 80)], tail=0.9), 0.35),
+        at(0, gm_notes(GM["choir"], [(0, 0.7, mn("C5"), 84), (0, 0.7, mn("G5"), 80)], tail=0.8), 0.3),
+    )
+    sheen = whoosh(rng, 0.5, 2500, 7000, 2.0, 0.3)
+    return room(mixdown(hit, at(0.005, ring), at(0.005, body), at(0.04, sheen, 0.2)), rng, 0.45, 0.2)
+
+
+@sfx("cap_climb_6", -18, 2, max_s=2.4)
+def cap_climb_6(v, rng):
+    # Lower and fuller: the chime on C5, a deep bell an octave under, a choir chord, and a clock tick.
+    hit = mixdown(thump(90, 42, 0.4, 0.025, 0.1, 2.2), at(0, nburst(rng, 0.08, 200, 1800, 0.02), 0.6))
+    ring = mixdown(at(0, gm_note(GM["glock"], mn("C5"), 0.4, 100, 1.6), 0.4), at(0, glass_bell(hz("C5"), 2.0, 1.0, 0.5), 0.4), at(0, bell(hz("C4"), 2.2, 0.8, 1.2), 0.45))
+    choir = gm_notes(GM["choir"], [(0, 1.0, mn(n), 92) for n in ("C4", "G4", "C5", "E5")], tail=1.2)
+    pad = lp(gm_notes(GM["space_voice"], [(0, 1.0, mn(n), 80) for n in ("C3", "G3", "C4")], tail=1.0), 2400)
+    tick = mixdown(perc(WOOD_HI, 100, pitch=1.4, length=0.05), at(0, knock(3200, 0.04, 0.008), 0.4))
+    return room(mixdown(hit, at(0.005, ring), at(0.01, choir, 0.45), at(0.01, pad, 0.3), at(0.06, tick, 0.5)), rng, 0.6, 0.24)
+
+
+@sfx("cap_summit_rise", -23, 2, max_s=0.75)
+def cap_summit_rise(v, rng):
+    # A summit gem rising out of the capsule's cap: a stone grind under a rising glass chime (400 ms).
+    d = 0.4
+    grind = lp(debris(rng, d, 220, 120, 1800, 0.25, 0.008), 2400) * np.linspace(0.6, 1.0, n_of(d))
+    rub = lp(noise(d, rng, "brown"), 500) * env_exp(d, 0.3, 0.02) * 0.6
+    notes = gm_notes(GM["celesta"], [(0.0, 0.2, mn("G5"), 70), (0.12, 0.2, mn("C6"), 78), (0.24, 0.3, mn("E6"), 86)], tail=0.5)
+    glide = osc(dsp.glide(hz("G5"), hz("E6"), d, 0.7), "sine") * np.linspace(0.2, 0.8, n_of(d)) * 0.35
+    return mixdown(fade(mixdown(grind, at(0, rub)), 0.01, 0.08), at(0, notes, 0.6), at(0, glide), at(0.34, glass_bell(hz("E6"), 0.4, 0.3), 0.3))
+
+
+@sfx("cap_burst_platinum", -17, 1, max_s=3.0)
+def cap_burst_platinum(v, rng):
+    # Platinum stinger: a struck glass-bell chord with a long tail, over cap_burst.
+    chord = mixdown(*[at(k * 0.018, glass_bell(hz(n), 2.8, 1.1, 0.8), g) for k, (n, g) in enumerate((("C5", 0.5), ("E5", 0.45), ("G5", 0.45), ("C6", 0.5), ("E6", 0.4)))])
+    vibes = gm_notes(GM["vibes"], [(0, 1.6, mn(n), 96) for n in ("C5", "E5", "G5", "C6")], tail=1.4)
+    celesta = gm_notes(GM["celesta"], [(0.08 + k * 0.05, 0.6, mn(n), 84) for k, n in enumerate(("G6", "C7", "E7"))], tail=1.2)
+    strings = gm_notes(GM["strings"], [(0, 1.4, mn(n), 76) for n in ("C4", "G4", "E5")], tail=1.2)
+    shimmer = bp(noise(2.4, rng, "pink"), 4000, 9000) * env_exp(2.4, 0.9, 0.2) * 0.08
+    return room(mixdown(chord, at(0, vibes, 0.45), at(0, celesta, 0.35), at(0, strings, 0.3), at(0.05, shimmer)), rng, 0.8, 0.28)
+
+
+@sfx("cap_burst_aeon", -16, 1, max_s=3.6)
+def cap_burst_aeon(v, rng):
+    # Aeon stinger: a deep bell, a choir chord and a clock chime, with a 2 s star-glitter tail.
+    deep = mixdown(at(0, bell(hz("C3"), 3.2, 0.8, 1.6), 0.8), at(0, gm_note(GM["tubular"], mn("C4"), 2.0, 110, 2.0), 0.5), at(0, thump(70, 36, 0.8, 0.04, 0.3, 2.2, hp_hz=40), 0.5))
+    choir = gm_notes(GM["choir"], [(0.02, 1.8, mn(n), 96) for n in ("C4", "E4", "G4", "C5", "E5")], tail=1.4)
+    pad = lp(gm_notes(GM["space_voice"], [(0.02, 1.8, mn(n), 84) for n in ("C3", "G3")], tail=1.2), 2400)
+    clock = gm_notes(GM["tubular"], [(0.35, 0.5, mn("G5"), 92), (0.6, 0.5, mn("E5"), 88), (0.85, 0.9, mn("C5"), 96)], tail=1.4)
+    ticks = mixdown(*[at(0.12 + k * 0.25, mixdown(perc(WOOD_HI, 84, pitch=1.5, length=0.04), at(0, knock(3400, 0.03, 0.006), 0.3)), 0.35) for k in range(4)])
+    glitter = np.zeros(n_of(2.6))
+    for k in range(40):
+        t0 = 0.5 + rng.uniform(0, 2.0)
+        f = hz("C7") * 2 ** (rng.choice([0, 4, 7, 12, 16, 19]) / 12)
+        g = blip(f, 0.16, 0.05) * (1.0 - (t0 - 0.5) / 2.2) * 0.5
+        i = n_of(t0 - 0.5)
+        e = min(len(glitter), i + len(g))
+        glitter[i:e] += g[: e - i]
+    return room(mixdown(deep, at(0, choir, 0.5), at(0, pad, 0.35), at(0, clock, 0.4), at(0, ticks), at(0.5, glitter, 0.6)), rng, 0.9, 0.3)
+
+
 @sfx("cap_clunk", -27, 3)
 def cap_clunk(v, rng):
     # A neutral knock, never a penalty sound (A10).
