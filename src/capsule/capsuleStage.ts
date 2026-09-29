@@ -11,9 +11,10 @@ import { Container, Graphics, Sprite } from 'pixi.js';
 import type { AgeId, ArtProvider, CapsuleTier, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { CARD_H, CardFan, portraitTexture, type CardView } from './cardFan';
+import { BLOW, HAMMER, blowAngle, cockOf, type BlowPose } from './blow';
 import { CapsuleDrum, Hammer, Pedestal, Pips, drumState, ornamentScaleFor, type DrumState } from './climb';
 import { clamp01, easeInQuad, easeOutBack, easeOutCubic, hump, lerp, span } from './ease';
-import { Particles, Trauma, glowSprite } from './fx';
+import { Particles, Trauma, glowSprite, label } from './fx';
 import { AEON_FILIGREE, HOLO_BANDS, RARITY_COLORS, ROOM, TIER_COLORS, TIER_RAMPS, mixColor, shade } from './palette';
 import { SHOW_TIMING } from './plan';
 import type {
@@ -30,7 +31,7 @@ import type {
   WalkoutStep,
 } from './plan';
 import { CrateView } from './crate';
-import type { ShowView } from './runner';
+import type { ShowView, StrikeHit, TimedStrike } from './runner';
 import type { RevealCard } from './summaryModel';
 import { coneTexture, confettiTexture, dotTexture, glowTexture, leafTexture, raysTexture, roomTexture, shaftsTexture, shardTexture, splinterTexture, starTexture, streakTexture } from './textures';
 import { crestCount, summitGemCount, tierIndex } from './tiers';
@@ -43,8 +44,6 @@ export const DESIGN_H = 720;
 const PED = { x: 640, y: 470 };
 /** Where the Amber counter sits (the DOM overlay's top right), in design space. */
 const AMBER_TARGET = { x: 1190, y: 40 };
-/** Hammer grip position and angles (rest, and the angle where the head meets the drum). */
-const HAMMER = { x: 822, y: 474, rest: 0.38, hit: -0.74, impactMs: 90 };
 /** How far the cracks have spread when the charge ends; the four strikes open the rest. */
 const CRACKS = { charge: 0.3 } as const;
 /**
@@ -89,6 +88,36 @@ interface Ring {
 
 /** The hammer meets the drum here (design space). */
 const HIT = { x: PED.x + 78, y: PED.y - 138 };
+/**
+ * The timing cue (A10 step 3): a neutral warm-white ring closes on the hit point over the count-in
+ * and meets the target ring on the beat; three beads on the target light with the ticks. Never a
+ * tier colour, so it cannot hint at a climb.
+ */
+const CUE_RING = { r0: 150, r1: 30, color: 0xfff1cf, bead: 0xffd98a } as const;
+/** Where "Perfect!" pops (above and right of the hit, clear of the drum's top). */
+const POP = { x: HIT.x + 84, y: HIT.y - 104 } as const;
+/** The graded hit's layers (A10 step 3): hit-stop, flash, punch, sparks, haptics. Feel only. */
+const GRADE_FX = {
+  perfect: { hitstop: 110, flash: 0.5, punch: 0.05, trauma: 0.22, sparks: 30, stars: 14, shards: 8, energy: 2, leak: 0.55, vibrate: [30, 20, 45] as number[] },
+  good: { hitstop: 60, flash: 0.22, punch: 0.022, trauma: 0.08, sparks: 12, stars: 5, shards: 3, energy: 0.9, leak: 0.25, vibrate: [18] as number[] },
+} as const;
+
+/** A timed blow in progress (the hammer's pose is a pure function of its time, `blow.ts`). */
+interface Blow extends BlowPose {
+  id: string;
+  index: number;
+  t: number;
+  landed: boolean;
+  /** The grade given so far (before the hit it dresses the hit, after it adds a flourish). */
+  hit: StrikeHit | null;
+}
+
+/** A "Perfect!" or "Good!" pop over the hit. */
+interface Pop {
+  c: Container;
+  t: number;
+  big: boolean;
+}
 /** Centre of the drum body. */
 const CORE = { x: PED.x, y: PED.y - 125 };
 /** The eight ages, for the Aeon glyph halo when the catalog has no age list. */
@@ -214,7 +243,6 @@ export class CapsuleStage implements ShowView {
   private squashA = 0;
   private crateSquash = 0;
   private drumWhite = 0;
-  private hammerT = -1;
   private hammerShown = 0;
   private hammerTarget = 0;
   private raysLevel = 0;
@@ -260,10 +288,29 @@ export class CapsuleStage implements ShowView {
   private heatTarget = 0;
   private hammerRaise = 0;
   private hammerRaiseTarget = 0;
-  /** Set while a summit strike drives the hammer itself. */
-  private hammerAngle: number | null = null;
+  /** The timed blow being played (A10 steps 3 and 3b); null between blows. */
+  private blow: Blow | null = null;
+  /** The closing timing ring and its beads. */
+  private readonly cueG = new Graphics();
+  /** The swing's motion smear. */
+  private readonly smearG = new Graphics();
+  /** The glint on the hammer head on the last count-in tick. */
+  private readonly glint: Sprite;
+  /** The graded hit's star burst and glow at the hit point. */
+  private readonly impactStar: Sprite;
+  private readonly impactGlow: Sprite;
+  private impactT = -1;
+  private impactBig = false;
+  private readonly popLayer = new Container();
+  private readonly pops: Pop[] = [];
+  /** Per pip: a tick or a climb pops it, then it springs back. */
+  private readonly pipPop = [0, 0, 0, 0];
+  /** The target ring's beat pulse, 1 → 0. */
+  private cuePulse = 0;
   private heatSparkT = 0;
   private glintT = 0;
+  /** A combo of 4+ Perfects kicks the back rays for a moment. */
+  private raysKick = 0;
 
   constructor(
     readonly plan: ShowPlan,
@@ -352,6 +399,13 @@ export class CapsuleStage implements ShowView {
     }
     this.glyphHalo.position.set(CORE.x, CORE.y - 6);
     this.frostG.blendMode = 'add';
+    this.cueG.blendMode = 'add';
+    this.smearG.blendMode = 'add';
+    this.glint = glowSprite(starTexture(), 0xffffff, 90, 0);
+    this.impactStar = glowSprite(starTexture(), 0xffffff, 260, 0);
+    this.impactStar.position.set(HIT.x - 6, HIT.y);
+    this.impactGlow = glowSprite(glowTexture(), 0xffffff, 420, 0);
+    this.impactGlow.position.set(HIT.x - 20, HIT.y);
 
     this.shadow.ellipse(0, 0, 100, 16).fill({ color: 0x000000, alpha: 0.45 });
     this.shadow.position.set(PED.x, PED.y + 4);
@@ -395,13 +449,19 @@ export class CapsuleStage implements ShowView {
       this.halo,
       this.glyphHalo,
       this.pedGroup,
+      this.smearG,
       this.hammer.root,
+      this.impactGlow,
+      this.glint,
       this.waves,
       this.ringG,
+      this.cueG,
+      this.impactStar,
       ...(this.fan ? [this.fan.root] : []),
       this.flightLayer,
       this.walkoutLayer,
       this.particles.root,
+      this.popLayer,
     );
     this.dimG.alpha = 0;
     this.root.addChild(this.bg, this.dimG, this.world, this.flashG);
@@ -446,6 +506,7 @@ export class CapsuleStage implements ShowView {
         break;
       case 'strike':
         this.hammerTarget = 1;
+        if (!instant) this.beginBlow(step);
         break;
       case 'summitRise':
         // The same beat as a burst build after strike 4 (A10 step 3b): the hammer stays, heats neutral
@@ -462,6 +523,7 @@ export class CapsuleStage implements ShowView {
         this.hammerTarget = 1;
         this.hammerRaiseTarget = 1;
         this.heatTarget = 1;
+        if (!instant) this.beginBlow(step);
         break;
       case 'burst':
         this.enterBurst(step, instant);
@@ -671,16 +733,24 @@ export class CapsuleStage implements ShowView {
     }
   }
 
-  waiting(step: StrikeStep | SummitStrikeStep, idleMs: number): void {
-    this.hammerTarget = 1;
-    if (step.kind === 'summitStrike') {
-      // The hammer hangs high, white-hot and breathing, over the waiting gem.
-      this.hammerRaiseTarget = 1;
-      this.heatTarget = 0.75 + 0.25 * Math.sin(idleMs / 140);
+  /**
+   * A tap on a hammer blow was graded (A10 step 3). Before the hit it dresses the coming hit (a
+   * longer hit-stop, more light); after it the flourish plays at once. Feel only: nothing here
+   * changes the tier, the climb or what the drum shows.
+   */
+  strikeHit(step: TimedStrike, hit: StrikeHit): void {
+    const b = this.blow;
+    if (!b || b.id !== step.id) return;
+    b.hit = hit;
+    if (hit.grade === 'miss') return;
+    const pin = hit.grade === 'perfect' ? BLOW.pinMs.perfect : BLOW.pinMs.good;
+    if (!b.landed) {
+      b.pinMs = Math.max(b.pinMs, pin);
       return;
     }
-    // The next pip breathes and the hammer hovers, inviting the tap.
-    this.pips.pip(step.index)?.scale.set(1 + 0.2 * Math.max(0, Math.sin(idleMs / 110)));
+    // A tap just after the hit: the hammer stays down through the flourish that starts now.
+    b.pinMs = Math.min(BLOW.pinMs.max, Math.max(b.pinMs, Math.round(b.t - b.impactMs) + GRADE_FX[hit.grade].hitstop));
+    this.gradeFx(step, hit);
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -747,13 +817,170 @@ export class CapsuleStage implements ShowView {
 
   private strike(s: StrikeStep, t: number): void {
     this.drum.body.x *= 0.8;
-    this.hammerT = t;
-    this.pips.pip(s.index)?.scale.set(1);
-    if (t >= HAMMER.impactMs && this.fire(`strike-${s.index}`)) {
+    this.countIn(s, t);
+    if (t >= s.impactMs && this.fire(`strike-${s.index}`)) {
+      if (this.blow?.id === s.id) this.blow.landed = true;
       this.strikeImpact(s);
       if (s.climb) this.climbImpact(s);
       else this.missImpact(s);
+      const hit = this.blow?.id === s.id ? this.blow.hit : null;
+      if (hit && hit.grade !== 'miss') this.gradeFx(s, hit);
     }
+  }
+
+  /** A timed blow starts: the hammer takes it from wherever it is (the charge's hover or the last rebound). */
+  private beginBlow(s: TimedStrike): void {
+    const next = this.plan.steps[this.plan.steps.indexOf(s) + 1];
+    this.blow = {
+      id: s.id,
+      index: s.index,
+      kind: s.kind,
+      impactMs: s.impactMs,
+      durationMs: s.durationMs,
+      from: this.hammer.root.rotation,
+      pinMs: s.kind === 'summitStrike' ? SHOW_TIMING.summitHoldMs : s.climb ? BLOW.pinMs.climb : BLOW.pinMs.none,
+      last: next?.kind !== 'strike',
+      holdMs: SHOW_TIMING.summitHoldMs,
+      t: 0,
+      landed: false,
+      hit: null,
+    };
+  }
+
+  /**
+   * The count-in (A10 step 3): each tick notches the hammer up (its pose, `blow.ts`), lights a bead
+   * on the target ring, pulses it and the strike's pip; the last tick glints on the hammer head.
+   * The same for every strike, climb or not.
+   */
+  private countIn(s: TimedStrike, t: number): void {
+    const b = this.blow;
+    if (b?.id === s.id) b.t = t;
+    for (let k = 0; k < SHOW_TIMING.strikeTicks; k++) {
+      if (t < k * SHOW_TIMING.strikeBeatMs || !this.fire(`tick-${s.id}-${k}`)) continue;
+      this.cuePulse = 1;
+      if (s.kind === 'strike') this.pipPop[s.index] = 0.35 + 0.1 * k;
+      const [bx, by] = this.beadPos(k);
+      this.sparkBurst(bx, by, CUE_RING.bead, this.d.settings.reduceMotion ? 1 : 3, 90);
+    }
+  }
+
+  /** The k-th bead on the target ring (top, then clockwise). */
+  private beadPos(k: number): [number, number] {
+    const a = -Math.PI / 2 + (k * Math.PI * 2) / 3;
+    return [HIT.x - 6 + Math.cos(a) * CUE_RING.r1, HIT.y + Math.sin(a) * CUE_RING.r1];
+  }
+
+  /**
+   * The graded hit's flourish (A10 step 3), on top of the strike's own impact: hit-stop, a flash and
+   * crack light in the colour the drum already shows, sparks and debris, a camera punch, a haptic
+   * pulse and a "Perfect!" pop; a Good gets a lighter version, a miss nothing. The same size on a
+   * climb and a non-climb, so the grade never reads as a result (and never as a near miss).
+   */
+  private gradeFx(s: TimedStrike, hit: StrikeHit): void {
+    if (hit.grade === 'miss' || !this.fire(`grade-${s.id}`)) return;
+    const perfect = hit.grade === 'perfect';
+    const G = GRADE_FX[hit.grade];
+    const rm = this.d.settings.reduceMotion;
+    // Summit strikes are white-hot at the hit (their colour comes after the hold).
+    const c = s.kind === 'summitStrike' ? 0xfff6e8 : TIER_COLORS[this.tier];
+    const combo = perfect ? hit.combo : 0;
+    this.hitstop = Math.max(this.hitstop, G.hitstop);
+    // Reduce motion: no shake and no flash; the pop, the light in the cracks and the sound stay.
+    if (!rm) this.flash(G.flash + 0.03 * Math.min(4, combo), shade(c, 0.55));
+    this.addPunch(G.punch + 0.006 * Math.min(4, combo));
+    this.trauma.add(G.trauma);
+    this.vibrate(G.vibrate);
+    this.drum.energy = Math.max(this.drum.energy, G.energy);
+    if (s.kind === 'strike') {
+      const after = this.crackAfter(s.index + 1);
+      this.drum.setLeak(after.leak + (s.climb ? 0.35 : 0) + G.leak);
+      this.pipPop[s.index] = Math.max(this.pipPop[s.index] ?? 0, perfect ? 0.8 : 0.45);
+    }
+    this.impactT = 0;
+    this.impactBig = perfect;
+    this.impactStar.tint = perfect ? 0xffffff : 0xfff1cf;
+    this.impactGlow.tint = c;
+    // Two rings: a white core and one in the drum's colour; a Perfect adds a floor shockwave.
+    this.ring(HIT.x - 6, HIT.y, 16, perfect ? 190 : 120, 0xffffff, perfect ? 12 : 7, perfect ? 280 : 220, 1);
+    this.ring(HIT.x - 6, HIT.y, 26, perfect ? 270 : 160, c, perfect ? 18 : 9, perfect ? 420 : 300, 0.9);
+    if (perfect) this.ring(PED.x, PED.y + 2, 50, 300, shade(c, 0.3), 10, 460, 0.5, 0.28);
+    const k = rm ? 0.35 : this.lite ? 0.6 : 1;
+    for (let i = 0; i < Math.round(G.sparks * k); i++) {
+      const a = -Math.PI * 0.1 + (this.rng.next() - 0.5) * 2.6;
+      const sp = (perfect ? 620 : 460) + this.rng.next() * (perfect ? 700 : 420);
+      this.particles.spawn({
+        tex: streakTexture(),
+        x: HIT.x,
+        y: HIT.y + (this.rng.next() - 0.5) * 24,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 160,
+        life: 300 + this.rng.next() * 320,
+        drag: 0.05,
+        gravity: 1500,
+        scale: [0.7 + this.rng.next() * 0.6, 0.1],
+        alpha: [1, 0],
+        tint: i % 3 === 0 ? 0xffffff : 0xffe7a8,
+        add: true,
+        align: true,
+      });
+    }
+    this.sparkBurst(HIT.x, HIT.y, c, Math.round(G.stars * k), perfect ? 420 : 300);
+    // Chips of the shell (its own material) knocked off the rim.
+    for (let i = 0; i < Math.round(G.shards * k); i++) {
+      this.particles.spawn({
+        tex: shardTexture(),
+        x: HIT.x - 10,
+        y: HIT.y + (this.rng.next() - 0.5) * 40,
+        vx: 80 + this.rng.next() * 320,
+        vy: -200 - this.rng.next() * 260,
+        life: 800,
+        gravity: 1500,
+        scale: [0.35 + this.rng.next() * 0.35, 0.3],
+        alpha: [1, 0.7],
+        rot: this.rng.next() * 6,
+        vr: (this.rng.next() - 0.5) * 20,
+        tint: shade(s.kind === 'summitStrike' ? TIER_COLORS[s.from] : c, -0.15),
+      });
+    }
+    // The combo flourish: a ring of stars thrown out evenly, one more per Perfect in the run.
+    if (combo >= 2) {
+      const n = Math.min(12, 3 * combo) * (rm ? 0.5 : 1);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + this.rng.next() * 0.2;
+        this.particles.spawn({ tex: starTexture(), x: HIT.x - 6, y: HIT.y, vx: Math.cos(a) * 340, vy: Math.sin(a) * 340, life: 520, drag: 0.02, gravity: 0, scale: [1.1, 0], alpha: [1, 0], rot: a, vr: 6, tint: i % 2 ? 0xffffff : 0xffe7a8, add: true });
+      }
+      if (combo >= 4 && !rm) this.raysKick = 1;
+    }
+    this.popText(perfect, combo);
+  }
+
+  /** "Perfect!" (with "×N" in a run) or "Good!" pops over the hit, then floats up and fades. */
+  private popText(perfect: boolean, combo: number): void {
+    const t = (k: string, o?: Record<string, string | number>) => this.d.i18n.t(k, o);
+    const c = new Container();
+    const main = label(t(perfect ? 'capsule.strike.perfect' : 'capsule.strike.good'), perfect ? 46 : 32, perfect ? 0xfff4d6 : 0xeef3ff, {
+      outline: perfect ? 7 : 5,
+      outlineColor: perfect ? 0x7a3e0e : 0x2a3350,
+    });
+    if (perfect) {
+      const glow = glowSprite(glowTexture(), 0xffd98a, 230, 0.55);
+      glow.height = 120;
+      c.addChild(glow);
+    }
+    c.addChild(main);
+    if (combo >= 2) {
+      const x = label(t('capsule.strike.combo', { n: combo }), 30, 0xffe7a8, { outline: 5, outlineColor: 0x7a3e0e });
+      x.position.set(0, 40);
+      c.addChild(x);
+    }
+    c.position.set(POP.x, POP.y);
+    c.rotation = perfect ? -0.06 : -0.03;
+    c.scale.set(this.d.settings.reduceMotion ? 1 : 0.2);
+    c.alpha = this.d.settings.reduceMotion ? 0 : 1;
+    // One pop at a time: the last one leaves at once.
+    for (const p of this.pops) p.t = Math.max(p.t, 900);
+    this.pops.push({ c, t: 0, big: perfect });
+    this.popLayer.addChild(c);
   }
 
   /**
@@ -839,7 +1066,7 @@ export class CapsuleStage implements ShowView {
     this.drum.energy = 1.2;
     this.halo.alpha = 0.55 + 0.1 * tierIndex(s.to);
     this.pips.set(s.index, s.to);
-    this.pips.pip(s.index)?.scale.set(1.7);
+    this.pipPop[s.index] = 0.7;
     this.squash(0.22);
     this.trauma.add(0.25);
     this.flash(0.32, shade(c, 0.6));
@@ -893,14 +1120,21 @@ export class CapsuleStage implements ShowView {
   /** End state of a strike, whether it played or was skipped. */
   private settleStrike(s: StrikeStep): void {
     this.fire(`strike-${s.index}`);
-    this.hammerT = -1;
+    this.endBlow(s.id);
     this.pips.set(s.index, s.climb ? s.to : 'miss');
-    this.pips.pip(s.index)?.scale.set(1);
     if (s.climb) this.setShownTier(s.to);
     const after = this.crackAfter(s.index + 1);
     this.strikesDone = s.index + 1;
     this.drum.setCracks(after.cracks);
     this.drum.setLeak(after.leak);
+  }
+
+  /** The blow is over (or skipped): the hammer holds its end pose and the cue ring clears. */
+  private endBlow(id: string): void {
+    const b = this.blow;
+    if (!b || b.id !== id) return;
+    this.hammer.root.rotation = blowAngle(b, b.durationMs);
+    this.blow = null;
   }
 
   private enterBurst(s: BurstStep, instant: boolean): void {
@@ -909,7 +1143,7 @@ export class CapsuleStage implements ShowView {
     this.hammerTarget = 0;
     this.hammerRaiseTarget = 0;
     this.heatTarget = 0;
-    this.hammerAngle = null;
+    this.blow = null;
     if (s.fixed) {
       // Fixed-tier capsules start here (A6.4): the drum is simply there, already cracked.
       this.drum.root.visible = true;
@@ -1091,7 +1325,8 @@ export class CapsuleStage implements ShowView {
   }
 
   /**
-   * The summit strike (900 ms): a slow descent (the last 200 ms at half speed), the impact and a
+   * The summit strike (1,020 ms): the same count-in as a strike over the white-hot hammer (two
+   * notches up, `blow.ts`), a slow descent over the last beat, the impact on the fourth beat and a
    * 120 ms hold, a shockwave, then the new material wipes down while the gem ignites in the new
    * tier's colour and one more crest stamps.
    */
@@ -1099,19 +1334,13 @@ export class CapsuleStage implements ShowView {
     const T = SHOW_TIMING;
     const impact = s.impactMs;
     const rm = this.d.settings.reduceMotion;
-    const wind = HAMMER.rest + 0.62;
-    const fast = impact - 200;
-    if (t < impact) {
-      const p = t < fast ? 0.64 * easeInQuad(t / fast) : 0.64 + 0.36 * ((t - fast) / 200);
-      this.hammerAngle = lerp(wind, HAMMER.hit, p);
-      // The room holds its breath.
-      this.dimTarget = Math.max(this.dimTarget, 0.18 * span(t, 0, impact));
-    } else if (t < impact + T.summitHoldMs) {
-      this.hammerAngle = HAMMER.hit;
-    } else {
-      this.hammerAngle = lerp(HAMMER.hit, HAMMER.rest + 0.2, easeOutBack(span(t, impact + T.summitHoldMs, s.durationMs), 1.4));
-    }
+    this.countIn(s, t);
+    // The room holds its breath.
+    if (t < impact) this.dimTarget = Math.max(this.dimTarget, 0.18 * span(t, 0, impact));
     if (t >= impact && this.fire(`summit-impact-${s.index}`)) {
+      if (this.blow?.id === s.id) this.blow.landed = true;
+      const hit = this.blow?.id === s.id ? this.blow.hit : null;
+      if (hit && hit.grade !== 'miss') this.gradeFx(s, hit);
       // Impact: a white-hot hit and a held frame (colour comes after the hold).
       this.hitstop = Math.max(this.hitstop, T.summitHoldMs);
       this.whiteOut(0.85);
@@ -1158,7 +1387,7 @@ export class CapsuleStage implements ShowView {
   private settleSummit(s: SummitStrikeStep): void {
     this.fire(`summit-impact-${s.index}`);
     this.fire(`summit-wave-${s.index}`);
-    this.hammerAngle = null;
+    this.endBlow(s.id);
     this.drum.body.position.set(0, 0);
     this.setShownTier(s.to);
     // The next gem (if any) rises at once; otherwise the burst cools the hammer.
@@ -2205,17 +2434,7 @@ export class CapsuleStage implements ShowView {
         this.particles.spawn({ tex: dotTexture(), x: h.x + (this.rng.next() - 0.5) * 90, y: h.y + (this.rng.next() - 0.5) * 50, vx: (this.rng.next() - 0.5) * 40, vy: -70 - this.rng.next() * 90, life: 520, scale: [0.6, 0], alpha: [0.9 * this.heat, 0], tint: 0xfff6e8, add: true });
       }
     }
-    if (this.hammerAngle !== null) {
-      this.hammer.root.rotation = this.hammerAngle;
-    } else if (this.hammerT >= 0) {
-      const t = this.hammerT;
-      this.hammer.root.rotation =
-        t < HAMMER.impactMs
-          ? lerp(HAMMER.rest + 0.12, HAMMER.hit, easeInQuad(t / HAMMER.impactMs))
-          : lerp(HAMMER.hit, HAMMER.rest, easeOutBack(span(t, HAMMER.impactMs, 520), 1.8));
-    } else {
-      this.hammer.root.rotation = HAMMER.rest + 0.5 * this.hammerRaise + Math.sin(this.time / 240) * 0.05;
-    }
+    this.updateBlow(dt);
 
     // Climb wave ring.
     this.waves.clear();
@@ -2230,6 +2449,159 @@ export class CapsuleStage implements ShowView {
     }
   }
 
+  /**
+   * The hammer over a timed blow (its pose from `blow.ts`: notches on the ticks, the swing, the pin
+   * and the rebound), with squash and stretch, the swing's smear, the glint on the last tick, the
+   * closing timing ring, the pips' pops and the graded hit's star; between blows it hovers.
+   */
+  private updateBlow(dt: number): void {
+    const rm = this.d.settings.reduceMotion;
+    const b = this.blow;
+    const h = this.hammer.root;
+    this.smearG.clear();
+    if (b) {
+      const a = blowAngle(b, b.t);
+      h.rotation = a;
+      // The grip rises as the hammer cocks back and dips into the hit.
+      const since = b.t - b.impactMs;
+      const dip = since >= 0 && since < 200 ? 7 * (1 - since / 200) : 0;
+      h.y = HAMMER.y - 16 * cockOf(a) + dip;
+      // Stretch along the swing, squash on the drum, a wobble back (none with Reduce motion).
+      const down0 = b.impactMs - BLOW.downMs;
+      let st = 0;
+      if (!rm) {
+        if (b.t >= down0 && b.t < b.impactMs) st = 0.07 * span(b.t, down0, b.impactMs);
+        else if (since >= 0 && since < 220) st = -0.08 * (1 - since / 220) * Math.cos(since / 34);
+      }
+      h.scale.set(1 - st * 0.6, 1 + st);
+      // The smear: a pale band swept behind the head through the swing and just after.
+      if (!rm && b.t >= down0 && since < 50) {
+        const a0 = blowAngle(b, Math.max(down0, b.t - 55));
+        const a1 = Math.min(a, a0);
+        const th0 = a1 - Math.PI / 2;
+        const th1 = a0 - Math.PI / 2;
+        if (th1 - th0 > 0.02) {
+          const fade = since > 0 ? 1 - since / 50 : 1;
+          const cx = h.x;
+          const cy = h.y;
+          for (const [r0, r1, al] of [
+            [132, 206, 0.16],
+            [150, 190, 0.22],
+          ] as const) {
+            this.smearG.arc(cx, cy, r1, th0, th1).arc(cx, cy, r0, th1, th0, true).closePath().fill({ color: 0xfff6e8, alpha: al * fade });
+          }
+        }
+      }
+      // The glint on the hammer head: the last tick says "now it comes".
+      const g0 = (SHOW_TIMING.strikeTicks - 1) * SHOW_TIMING.strikeBeatMs;
+      const gu = span(b.t, g0, g0 + 170);
+      if (gu > 0 && gu < 1) {
+        const head = this.hammerHead();
+        this.glint.position.set(head.x - 26, head.y - 22);
+        this.glint.alpha = hump(gu);
+        const k = rm ? 1 : 0.4 + 1.1 * hump(gu);
+        this.glint.scale.set(k * 0.5);
+        this.glint.rotation = rm ? 0 : gu * 1.6;
+      } else this.glint.alpha = 0;
+    } else {
+      // Between blows the hammer hovers (and rises before a summit gem), easing in from its last pose.
+      const idle = HAMMER.rest + 0.5 * this.hammerRaise + Math.sin(this.time / 240) * 0.05;
+      h.rotation += (idle - h.rotation) * Math.min(1, dt / 90);
+      h.y += (HAMMER.y - h.y) * Math.min(1, dt / 90);
+      h.scale.set(1);
+      this.glint.alpha = 0;
+    }
+    this.updateCue(dt);
+    // The pips pop on a tick, a climb or a graded hit, then spring back.
+    for (let i = 0; i < this.pipPop.length; i++) {
+      const v = this.pipPop[i] ?? 0;
+      this.pips.pip(i)?.scale.set(rm ? 1 : 1 + v);
+      this.pipPop[i] = v * Math.exp(-dt / 120);
+    }
+    // The graded hit's star and glow at the hit point.
+    if (this.impactT >= 0) {
+      this.impactT += dt;
+      const dur = this.impactBig ? 300 : 220;
+      const u = this.impactT / dur;
+      if (u >= 1) {
+        this.impactT = -1;
+        this.impactStar.alpha = 0;
+        this.impactGlow.alpha = 0;
+      } else {
+        const k = this.impactBig ? 1 : 0.62;
+        this.impactStar.alpha = rm ? 0 : 1 - u;
+        this.impactStar.scale.set(k * (0.2 + 0.9 * easeOutCubic(Math.min(1, u * 2.4))));
+        this.impactStar.rotation = 0.5 * u;
+        this.impactGlow.alpha = (rm ? 0.3 : 0.85) * (1 - u) * k;
+        this.impactGlow.scale.set(k * (0.8 + 0.4 * u));
+      }
+    }
+    this.updatePops(dt);
+  }
+
+  /** The closing timing ring (A10 step 3): neutral warm white, the same for every blow. */
+  private updateCue(dt: number): void {
+    const g = this.cueG;
+    g.clear();
+    this.cuePulse = Math.max(0, this.cuePulse - dt / 150);
+    const b = this.blow;
+    if (!b) return;
+    const rm = this.d.settings.reduceMotion;
+    const t = b.t;
+    const I = b.impactMs;
+    const cx = HIT.x - 6;
+    const cy = HIT.y;
+    const R = CUE_RING;
+    if (t < I) {
+      const fade = span(t, 0, 90);
+      const u = t / I;
+      const p = rm ? 0 : this.cuePulse;
+      // The target: where the ring will close. It pulses on each tick.
+      g.circle(cx, cy, R.r1 + 7 * p).stroke({ width: 3 + 2.5 * p, color: R.color, alpha: (0.4 + 0.45 * p) * fade });
+      g.circle(cx, cy, R.r1 - 6).fill({ color: R.color, alpha: (0.05 + 0.1 * u) * fade });
+      for (let k = 0; k < SHOW_TIMING.strikeTicks; k++) {
+        const lit = t >= k * SHOW_TIMING.strikeBeatMs;
+        const [bx, by] = this.beadPos(k);
+        if (lit) g.circle(bx, by, 11).fill({ color: R.bead, alpha: 0.25 * fade });
+        g.circle(bx, by, lit ? 6 : 4).fill({ color: lit ? R.bead : R.color, alpha: (lit ? 1 : 0.4) * fade });
+      }
+      // The closing ring: linear in time, so the eye can read the hit coming.
+      const r = lerp(R.r0, R.r1, u);
+      g.circle(cx, cy, r).stroke({ width: 3 + 4 * u, color: R.color, alpha: (0.3 + 0.65 * u) * fade });
+      g.circle(cx, cy, r + 5).stroke({ width: 8 + 6 * u, color: R.color, alpha: 0.12 * u * fade });
+    } else {
+      // On the beat both rings meet and ring out.
+      const v = span(t, I, I + 220);
+      if (v < 1) {
+        const e = easeOutCubic(v);
+        g.circle(cx, cy, R.r1 + (rm ? 0 : 56 * e)).stroke({ width: 7 * (1 - v), color: R.color, alpha: 0.85 * (1 - v) });
+      }
+    }
+  }
+
+  private updatePops(dt: number): void {
+    const rm = this.d.settings.reduceMotion;
+    for (let i = this.pops.length - 1; i >= 0; i--) {
+      const p = this.pops[i];
+      if (!p) continue;
+      p.t += dt;
+      const out = span(p.t, 640, 900);
+      if (rm) {
+        p.c.alpha = span(p.t, 0, 150) * (1 - out);
+      } else {
+        const inU = span(p.t, 0, p.big ? 240 : 200);
+        const sc = 0.2 + 0.8 * easeOutBack(inU, p.big ? 3.2 : 2);
+        p.c.scale.set(Math.max(0.05, sc) * (1 - 0.12 * out));
+        p.c.alpha = 1 - out;
+      }
+      p.c.y = POP.y - 12 * easeOutCubic(span(p.t, 0, 640)) - 28 * easeInQuad(out);
+      if (p.t >= 900) {
+        p.c.destroy({ children: true });
+        this.pops.splice(i, 1);
+      }
+    }
+  }
+
   private updatePedestal(dt: number): void {
     if (this.plan.mode === 'wardrobe') return;
     this.pedSink += (this.pedSinkTarget - this.pedSink) * Math.min(1, dt / 220);
@@ -2240,6 +2612,10 @@ export class CapsuleStage implements ShowView {
   private updateRays(dt: number): void {
     this.backRays.rotation += dt / 5200;
     this.backRays.alpha += (this.raysLevel * (this.drum.root.visible ? 1 : 0) - this.backRays.alpha) * Math.min(1, dt / 120);
+    if (this.raysKick > 0) {
+      this.backRays.alpha = Math.max(this.backRays.alpha, 0.9 * this.raysKick);
+      this.raysKick = Math.max(0, this.raysKick - dt / 500);
+    }
     this.backRays.scale.set(0.95 + 0.05 * Math.sin(this.time / 600) + this.raysLevel * 0.6);
     this.bigRays.rotation -= dt / 7000;
     const target = this.bigRaysLevel * (1 - 0.7 * this.summaryDim);

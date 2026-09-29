@@ -9,8 +9,8 @@ describe('tier table (A7.3)', () => {
       { tier: 1, dec: 32, snap: 18, mistake: 3500, actions: 3, depth: 0, evolve: 160, aim: 200, roi: 8000, k: 3, treasury: 0, float: 400, hold: false, turrets: 4 },
       { tier: 3, dec: 27, snap: 15, mistake: 2500, actions: 5, depth: 1, evolve: 100, aim: 140, roi: 10000, k: 2, treasury: 1, float: 250, hold: false, turrets: 4 },
       { tier: 5, dec: 22, snap: 13, mistake: 1600, actions: 7, depth: 3, evolve: 60, aim: 90, roi: 12000, k: 2, treasury: 2, float: 180, hold: true, turrets: 4 },
-      { tier: 7, dec: 17, snap: 10, mistake: 900, actions: 9, depth: COUNTER_DEPTH_ALL, evolve: 40, aim: 50, roi: 9000, k: 1, treasury: 3, float: 120, hold: true, turrets: 4 },
-      { tier: 10, dec: 10, snap: 6, mistake: 300, actions: 12, depth: COUNTER_DEPTH_ALL, evolve: 10, aim: 20, roi: 9000, k: 1, treasury: 3, float: 80, hold: true, turrets: 4 },
+      { tier: 7, dec: 17, snap: 10, mistake: 900, actions: 9, depth: COUNTER_DEPTH_ALL, evolve: 40, aim: 50, roi: 15000, k: 1, treasury: 3, float: 120, hold: true, turrets: 4 },
+      { tier: 10, dec: 10, snap: 6, mistake: 300, actions: 12, depth: COUNTER_DEPTH_ALL, evolve: 10, aim: 20, roi: 18000, k: 1, treasury: 3, float: 80, hold: true, turrets: 4 },
     ];
     for (const r of rows) {
       const p = tierParams(r.tier);
@@ -66,10 +66,9 @@ describe('tier table (A7.3)', () => {
     // Strike k interpolates and rounds down: II 2.5 → 2, VI 1.5 → 1.
     expect(ii.strikeK).toBe(2);
     expect(tierParams(6).strikeK).toBe(1);
-    // P1 calibration: the bar rises to V (12,000) and settles at 9,000 from VII.
-    expect(tierParams(6).powerRoiBp).toBe(10500);
-    expect(tierParams(8).powerRoiBp).toBe(9000);
-    expect(tierParams(9).powerRoiBp).toBe(9000);
+    expect(tierParams(6).powerRoiBp).toBe(13500);
+    expect(tierParams(8).powerRoiBp).toBe(16000);
+    expect(tierParams(9).powerRoiBp).toBe(17000);
     expect(ii.treasuryMax).toBe(0); // 0.5 truncates toward the lower tier
     // VIII and IX: one and two thirds of the way from VII to X.
     expect(tierParams(8).mistakeBp).toBe(700);

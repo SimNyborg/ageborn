@@ -29,16 +29,25 @@ export const SHOW_TIMING = {
   /** The capsule touches the pedestal (thud, dust ring). */
   arrivalImpactMs: 220,
   chargeMs: 1500,
-  strikeMs: 600,
-  /** The hammer lands this long after the tap. */
-  strikeImpactMs: 90,
-  /** A strike fires by itself after this much idle time (A10 step 3). */
-  strikeIdleMs: 1500,
+  /**
+   * A strike is one bar of four beats on a steady clock (A10 step 3, owner request 2026-09-29): three
+   * rising count-in ticks while the hammer cocks, the hit on the fourth beat, and the rebound into the
+   * next count-in. It lands by itself; a tap on the hit only changes its feel (`strikeTiming.ts`).
+   */
+  strikeMs: 800,
+  /** The beat: one count-in tick every 200 ms (0, 200, 400), the hit on the fourth. */
+  strikeBeatMs: 200,
+  strikeTicks: 3,
+  /** The hammer lands this far into the strike (3 beats of count-in). */
+  strikeImpactMs: 600,
   /** A summit gem grinds up out of the cap and settles, unlit (A10 step 3b). */
   summitRiseMs: 400,
-  /** A summit strike: the slow descent lands here, a 120 ms hold, then the transmutation (300 ms). */
-  summitStrikeMs: 900,
-  summitImpactMs: 380,
+  /**
+   * A summit strike: the same count-in (ticks at 0, 200 and 400 ms) over the white-hot hammer, a
+   * slow descent landing on the fourth beat, a 120 ms hold, then the transmutation (300 ms).
+   */
+  summitStrikeMs: 1020,
+  summitImpactMs: 600,
   summitHoldMs: 120,
   summitTransmuteMs: 300,
   /** "Your first Gold Capsule" after the pop (A10 step 4b), skippable. */
@@ -83,10 +92,9 @@ export const SHOW_TIMING = {
 export const SHOW_LIMITS = {
   arrival: 500,
   charge: 1500,
-  strike: 600,
-  strikeIdle: 1500,
+  strike: 800,
   summitRise: 400,
-  summitStrike: 900,
+  summitStrike: 1100,
   firstTier: 1000,
   /** Build (up to 1,200 ms for Aeon, A10 step 4 since the 2026-09-29 ladder) plus the pop. */
   burst: 1600,
@@ -168,8 +176,8 @@ export type StrikeStep = StepBase & {
   climb: boolean;
   from: CapsuleTier;
   to: CapsuleTier;
-  /** Waits for a tap, at most this long (A10 step 3: auto after 1.5 s idle). */
-  maxWaitMs: number;
+  /** The hammer lands this far in, on the fourth beat, whether or not the player taps. */
+  impactMs: number;
 };
 /**
  * A summit gem rises out of the cap (A10 step 3b). Only planned when the strike after it climbs; the
@@ -182,9 +190,7 @@ export type SummitStrikeStep = StepBase & {
   index: number;
   from: CapsuleTier;
   to: CapsuleTier;
-  /** Waits for a tap, at most this long (auto after 1.5 s idle). */
-  maxWaitMs: number;
-  /** The hammer lands this far in (a slow descent), then holds and transmutes the drum. */
+  /** The hammer lands this far in (a slow descent on the fourth beat), then holds and transmutes the drum. */
   impactMs: number;
 };
 export type BurstStep = StepBase & {
@@ -438,6 +444,15 @@ function burstCues(tier: CapsuleTier, buildMs: number): Cue[] {
   return cues;
 }
 
+/** Tick pitches of the count-in: root, +2 and +4 semitones (a rising "ta-ta-ta" before the hit). */
+export const COUNT_IN_PITCH_BP = [10000, 11225, 12599] as const;
+
+/** The count-in before a hammer blow: one tick per beat, rising (A10 step 3). */
+export function countIn(): Cue[] {
+  const T = SHOW_TIMING;
+  return COUNT_IN_PITCH_BP.slice(0, T.strikeTicks).map((pitchBp, k) => ({ atMs: k * T.strikeBeatMs, sound: 'cap_strike_tick', pitchBp, volumeDb: -4 + 2 * k }));
+}
+
 /** The full A10 storyboard for one capsule. */
 export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan {
   const T = SHOW_TIMING;
@@ -479,12 +494,14 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
           climb,
           from,
           to,
-          maxWaitMs: T.strikeIdleMs,
+          impactMs: T.strikeImpactMs,
           // Each climb is a step higher: the note of the tier reached (cap_climb_1 = Bronze ... 4 = Gold).
-          // A non-climb is never a penalty sound; its clunk rises with each strike, so every tap builds.
+          // A non-climb is never a penalty sound; its clunk rises with each strike, so every strike builds.
+          // The count-in ticks are the same for every strike, climb or not (they never hint at the result).
           cues: [
             climb ? { atMs: T.strikeImpactMs, sound: `cap_climb_${tierIndex(to)}` } : { atMs: T.strikeImpactMs, sound: 'cap_clunk', pitchBp: 10000 + i * 900 },
             { atMs: T.strikeImpactMs, sound: 'hit_heavy', volumeDb: climb ? -9 : -13, pitchBp: 8500 + i * 700 },
+            ...countIn(),
           ],
         }),
       );
@@ -510,9 +527,9 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
           index: gem,
           from,
           to,
-          maxWaitMs: T.strikeIdleMs,
           impactMs: T.summitImpactMs,
           cues: [
+            ...countIn(),
             { atMs: T.summitImpactMs, sound: `cap_climb_${tierIndex(to)}` },
             { atMs: T.summitImpactMs, sound: 'upgrade_slam', volumeDb: -6 },
             { atMs: T.summitImpactMs, sound: 'hit_heavy', volumeDb: -8, pitchBp: 7200 },
@@ -678,7 +695,7 @@ export function checkPlan(plan: ShowPlan): string[] {
         break;
       case 'strike':
         over(s, 'strike', s.durationMs, L.strike);
-        over(s, 'idle wait', s.maxWaitMs, L.strikeIdle);
+        if (s.impactMs <= 0 || s.impactMs >= s.durationMs) out.push(`${s.id}: the hit at ${s.impactMs} ms is outside the step`);
         strikes.push(s.climb);
         if (s.climb) lastShown = s.to;
         if (summitRises > 0) out.push(`${s.id}: a main strike after a summit strike`);
@@ -691,7 +708,7 @@ export function checkPlan(plan: ShowPlan): string[] {
         break;
       case 'summitStrike':
         over(s, 'summit strike', s.durationMs, L.summitStrike);
-        over(s, 'idle wait', s.maxWaitMs, L.strikeIdle);
+        if (s.impactMs <= 0 || s.impactMs >= s.durationMs) out.push(`${s.id}: the hit at ${s.impactMs} ms is outside the step`);
         summitStrikes++;
         if (summitStrikes !== summitRises) out.push(`${s.id}: a summit strike without its rising gem`);
         if (!isSummitTier(s.to) || tierIndex(s.to) !== tierIndex(s.from) + 1) out.push(`${s.id}: a summit strike must climb one tier above Gold (${s.from} → ${s.to})`);
@@ -771,7 +788,7 @@ export function longestUnskippableMs(plan: ShowPlan): number {
   return best;
 }
 
-/** Nominal duration at 1× with instant taps (strikes do not wait), summary excluded. */
+/** Nominal duration at 1× (strikes land on their beat, taps or not), summary excluded. */
 export function nominalDurationMs(plan: ShowPlan): number {
   return plan.steps.reduce((s, st) => (st.kind === 'summary' ? s : s + st.durationMs), 0);
 }

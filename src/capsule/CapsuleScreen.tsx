@@ -19,7 +19,7 @@ import { CapsuleStage } from './capsuleStage';
 import { OddsPanel } from './OddsPanel';
 import { RARITY_COLORS, TIER_COLORS, cssHex } from './palette';
 import { planOpenAll, planWardrobeShow, SHOW_TIMING, type Cue, type ShowPlan, type ShowStep } from './plan';
-import { ShowRunner, type RunnerState } from './runner';
+import { ShowRunner, type RunnerState, type StrikeHit } from './runner';
 import { SummaryPanel, type SummaryActions } from './summary';
 import { pityLines, wardrobePityLines, type PityLine } from './summaryModel';
 import {
@@ -57,6 +57,8 @@ interface ShowScreenBase extends SummaryActions {
   /** Dev and tests: every cue as it plays, and every runner state change. */
   onCue?: (cue: Cue, step: ShowStep) => void;
   onState?: (s: RunnerState) => void;
+  /** Dev and tests: every graded tap on a hammer blow (feel only). */
+  onHit?: (hit: StrikeHit) => void;
 }
 
 export interface CapsuleScreenProps extends ShowScreenBase {
@@ -177,15 +179,17 @@ interface Controls {
   runner: ShowRunner | null;
   /** The odds panel is open: the show holds still behind it. */
   paused: boolean;
+  /** When the runner last advanced (the ticker's frame time, `performance.now` base). */
+  frameAt: number;
 }
 
 function ShowScreen(p: ShowScreenProps) {
   const i18n = p.i18n ?? appI18n;
   const t = (k: string, o?: Record<string, string | number>) => i18n.t(k, o);
   const [state, setState] = useState<RunnerState | null>(null);
-  const ctl = useRef<Controls>({ runner: null, paused: false });
-  const cbs = useRef({ onCue: p.onCue, onState: p.onState });
-  cbs.current = { onCue: p.onCue, onState: p.onState };
+  const ctl = useRef<Controls>({ runner: null, paused: false, frameAt: 0 });
+  const cbs = useRef({ onCue: p.onCue, onState: p.onState, onHit: p.onHit });
+  cbs.current = { onCue: p.onCue, onState: p.onState, onHit: p.onHit };
   const settings: ShowSettings = { ...DEFAULT_SHOW_SETTINGS, ...p.settings };
   const settingsKey = `${settings.reduceMotion}|${settings.vibrate}|${settings.teamPreset}|${settings.quickReveal}|${settings.lite === true}`;
 
@@ -207,6 +211,7 @@ function ShowScreen(p: ShowScreenProps) {
     const runner = new ShowRunner(p.plan, stage, {
       audio: p.audio ?? null,
       onCue: (c, s) => cbs.current.onCue?.(c, s),
+      onHit: (h) => cbs.current.onHit?.(h),
       onState: (s) => {
         setState(s);
         cbs.current.onState?.(s);
@@ -218,6 +223,7 @@ function ShowScreen(p: ShowScreenProps) {
     const tick = (tk: Ticker) => {
       if (ctl.current.paused) return;
       runner.update(tk.deltaMS);
+      ctl.current.frameAt = tk.lastTime;
       stage.update(Math.min(250, tk.deltaMS) * runner.timeScale);
     };
     app.ticker.add(tick);
@@ -231,14 +237,17 @@ function ShowScreen(p: ShowScreenProps) {
     // The show restarts only for a new plan or other settings; callbacks are read through refs.
   }, [p.plan, p.pixi, p.art, p.audio, settingsKey, p.seed]);
 
-  // Input: a press taps at once (the hammer lands on touch, not on release; a flip hurries), and a
-  // press held past HOLD_MS also fast-forwards until it is released. Skip is its own button.
+  // Input: a press taps at once (on touch, not on release: a strike is judged against the beat from
+  // the event's own time stamp, a flip hurries), and a press held past HOLD_MS also fast-forwards
+  // until it is released. Skip is its own button.
   const hold = useRef<{ timer: ReturnType<typeof setTimeout> | null; held: boolean }>({ timer: null, held: false });
-  const press = () => {
+  const press = (at?: number) => {
     const h = hold.current;
     if (h.timer) clearTimeout(h.timer);
     h.held = false;
-    ctl.current.runner?.tap();
+    // How long after the last frame the finger landed (a tap between frames is judged where it was).
+    const now = at !== undefined && at > 0 ? at : performance.now();
+    ctl.current.runner?.tap(Math.max(0, now - ctl.current.frameAt));
     h.timer = setTimeout(() => {
       h.held = true;
       ctl.current.runner?.setHold(true);
@@ -260,7 +269,7 @@ function ShowScreen(p: ShowScreenProps) {
     if (e.target !== e.currentTarget) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
-      if (!e.repeat) press();
+      if (!e.repeat) press(e.timeStamp);
     } else if (e.key === 'Escape' || e.key === 's' || e.key === 'S') {
       ctl.current.runner?.skip();
     }
@@ -319,7 +328,7 @@ function ShowScreen(p: ShowScreenProps) {
       data-phase={state?.phase ?? ''}
       onPointerDown={(e) => {
         if (e.button !== 0 && e.pointerType === 'mouse') return;
-        press();
+        press(e.timeStamp);
       }}
       onPointerUp={() => release()}
       onPointerCancel={() => release()}
@@ -344,7 +353,7 @@ function ShowScreen(p: ShowScreenProps) {
       ) : null}
       {state?.prompt === 'tap' ? (
         <div
-          class={`${css.tap} ${state.kind === 'summitStrike' ? css.tapSummit : ''}`}
+          class={`${css.tap} ${state.kind === 'summitStrike' || state.kind === 'summitRise' ? css.tapSummit : ''}`}
           data-testid="capsule-tap"
           {...(state.kind === 'summitStrike' ? { role: 'status', 'aria-label': t('capsule.aria.summitStrike') } : {})}
         >

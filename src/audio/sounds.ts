@@ -881,6 +881,28 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     at(0, { vol: 0.22, freq: 1400, attack: 0.05, sustain: 0.2, release: 0.12, shape: 'tri', slide: 6, tremolo: 0.4, repeat: 0.04 }),
     at(300, { vol: 0.18, freq: hz('G6'), attack: 0.002, release: 0.35, shape: 'sin' }),
   ]), { ...TIMED, maxVoices: 2 }),
+  // The hammer's count-in (A10 step 3): a dry brass-and-wood tick; the plan pitches the three ticks up.
+  cap_strike_tick: mix('capsule', mixVariants(3, (v) => [
+    at(0, { vol: 0.32, freq: 1320 * (1 + 0.012 * v), attack: 0.001, release: 0.045, shape: 'tri', slide: -2 }),
+    at(0, { vol: 0.12, freq: 2640 * (1 + 0.012 * v), attack: 0.001, release: 0.025, shape: 'sin' }),
+    noiseBurst(0, { vol: 0.12, freq: 2400, attack: 0.001, release: 0.02, highpass: 1800 }),
+  ]), { ...CALLER_PITCHED, maxVoices: 2 }),
+  // A Perfect hit (A10 step 3): an anvil clang and a heavy thump under a bright bell ring (C7 and
+  // G7). Feel only; the runner raises its pitch with the combo.
+  cap_strike_perfect: mix('capsule', mixVariants(3, (v) => [
+    thump(0, 95 * (1 + 0.03 * v), 0.75, 0.28, -0.9),
+    noiseBurst(0, { vol: 0.35, freq: 900, decay: 0.02, sustainVol: 0.3, release: 0.12, lowpass: 5200 }),
+    at(0, { vol: 0.2, freq: 1244 * (1 + 0.01 * v), attack: 0.001, release: 0.5, shape: 'square', curve: 0.5, lowpass: 7000 }),
+    note(8, 'C7', { vol: 0.24, attack: 0.001, release: 0.9, shape: 'sin' }),
+    note(8, 'G7', { vol: 0.12, attack: 0.001, release: 0.6, shape: 'sin' }),
+    at(8, { vol: 0.08, freq: hz('C7') * 2.76, attack: 0.001, release: 0.35, shape: 'sin' }),
+  ]), { ...MUSICAL, maxVoices: 2 }),
+  // A Good hit: a lighter ring over a small knock.
+  cap_strike_good: mix('capsule', mixVariants(3, (v) => [
+    thump(0, 120 * (1 + 0.03 * v), 0.4, 0.14, -0.8),
+    note(6, 'G6', { vol: 0.2, attack: 0.001, release: 0.45, shape: 'sin' }),
+    at(6, { vol: 0.06, freq: hz('G6') * 2.76, attack: 0.001, release: 0.2, shape: 'sin' }),
+  ]), { ...MUSICAL, maxVoices: 2 }),
   // A neutral knock, never a penalty sound (A10).
   cap_clunk: mix('capsule', mixVariants(3, (v) => [
     at(0, { vol: 0.45, freq: 160 * (1 + 0.06 * v), attack: 0.001, release: 0.14, shape: 'tri', slide: -1.5 }),

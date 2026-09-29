@@ -280,7 +280,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       id: 'fx.tele_sap',
       durationMs: 1500,
       loops: true,
-      sprites: [{ sprite: 'fx.p.petrify', life: 0, keys: [{ t: 0, x: -24, y: 46, sx: 0.1, sy: 1.6, a: 0 }, { t: 0.6, x: -24, y: 46, sx: 1.2, sy: 2.4, a: 0.8 }, { t: 1, x: -24, y: 46, sx: 2, sy: 3, a: 1 }], tint: 0x4a3f35 }],
+      sprites: [{ sprite: 'fx.p.petrify', life: 0, keys: [{ t: 0, x: -24, y: 46, sx: 0.1, sy: 1.6, a: 0 }, { t: 0.6, x: -24, y: 46, sx: 1.2, sy: 2.4, a: 0.8 }, { t: 1, x: -24, y: 46, sx: 2, sy: 3, a: 1 }], tint: 0x4a4540 }],
       particles: [
         { sprite: 'fx.p.dust', rate: 16, life: [400, 700], box: [60, 2], speed: [20, 60], angle: [-120, -60], gravity: -10, scale: [1, 2.4], alpha: [0.85, 0], tint: 0x9a8a74 },
         { sprite: 'fx.p.rock', rate: 12, life: [250, 400], box: [60, 2], speed: [60, 130], angle: [-110, -70], gravity: 900, scale: [1.3, 1], alpha: [1, 0.5], spin: [-400, 400], tint: 0x6e665c },
@@ -535,14 +535,14 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       id: 'fx.undermine',
       durationMs: 1800,
       sprites: [
-        { sprite: 'fx.p.petrify', life: 1700, keys: [{ t: 0, x: -24, y: 46, sx: 0.3, sy: 2, a: 0 }, { t: 0.05, x: -24, y: 46, sx: 2.2, sy: 3.4, a: 1 }, { t: 0.8, a: 0.9 }, { t: 1, x: -24, y: 46, sx: 2.2, sy: 3.4, a: 0 }], tint: 0x4a3f35 },
+        { sprite: 'fx.p.petrify', life: 1700, keys: [{ t: 0, x: -24, y: 46, sx: 0.3, sy: 2, a: 0 }, { t: 0.05, x: -24, y: 46, sx: 2.2, sy: 3.4, a: 1 }, { t: 0.8, a: 0.9 }, { t: 1, x: -24, y: 46, sx: 2.2, sy: 3.4, a: 0 }], tint: 0x4a4540 },
         { ...flash(2.2, 0xfff0d8, 80), keys: [{ t: 0, x: -24, y: 40, sx: 0.8, sy: 0.5, a: 0.9 }, { t: 1, x: -24, y: 36, sx: 2.4, sy: 1.2, a: 0 }] },
-        { sprite: 'fx.p.pillar', life: 700, keys: [{ t: 0, x: -24, y: 46, sx: 1.2, sy: 0.05, a: 0.95 }, { t: 0.18, x: -24, y: 46, sx: 2.6, sy: 0.9, a: 0.9 }, { t: 0.5, x: -24, y: 46, sx: 3.2, sy: 1.05, a: 0.55 }, { t: 1, x: -24, y: 46, sx: 3.8, sy: 1.1, a: 0 }], tint: 0x6e5a48 },
+        { sprite: 'fx.p.pillar', life: 700, keys: [{ t: 0, x: -24, y: 46, sx: 1.2, sy: 0.05, a: 0.95 }, { t: 0.18, x: -24, y: 46, sx: 2.6, sy: 0.9, a: 0.9 }, { t: 0.5, x: -24, y: 46, sx: 3.2, sy: 1.05, a: 0.55 }, { t: 1, x: -24, y: 46, sx: 3.8, sy: 1.1, a: 0 }], tint: 0x6b625a },
         ...[-60, -36, -12, 12].map((x, i): SpriteSpec => ({
           sprite: 'fx.p.smokeLobe',
           life: 1300,
           delay: 30 + i * 60,
-          tint: i % 2 === 0 ? 0x6e5a48 : 0x8a7a64,
+          tint: i % 2 === 0 ? 0x6b625a : 0x857b70,
           keys: [
             { t: 0, x, y: 44, sx: 0.8, sy: 0.6, a: 1 },
             { t: 0.15, x: x + 2, y: 14, sx: 3.2, sy: 2.8, a: 0.95 },
@@ -553,10 +553,10 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { ...ring(6, 520, 0xd8ccb4, 0.4), keys: [{ t: 0, x: -24, y: 46, sx: 1, sy: 0.3, a: 0.9 }, { t: 1, x: -24, y: 46, sx: 6, sy: 1.6, a: 0 }] },
       ],
       particles: [
-        { ...clods(14, [220, 420]), box: [50, 2], tint: 0x6e5a48 },
+        { ...clods(14, [220, 420]), box: [50, 2], tint: 0x6b625a },
         { sprite: 'fx.p.rock', count: 10, life: [700, 1000], box: [50, 2], speed: [220, 400], angle: [-118, -62], gravity: 900, scale: [2, 1.6], alpha: [1, 0.4], spin: [-600, 600], delay: [0, 200], tint: 0x6e665c },
         { sprite: 'fx.p.timber', count: 5, life: [800, 1100], box: [40, 2], speed: [240, 380], angle: [-125, -55], gravity: 900, scale: [1.8, 1.6], alpha: [1, 0.5], spin: [-700, 700], delay: [40, 200] },
-        { sprite: 'fx.p.dust', count: 10, life: [900, 1400], box: [60, 2], speed: [30, 90], angle: [-150, -30], gravity: 30, drag: 1.4, scale: [1.8, 3.6], alpha: [0.85, 0], delay: [200, 600], tint: 0x9a8a74 },
+        { sprite: 'fx.p.dust', count: 10, life: [900, 1400], box: [60, 2], speed: [30, 90], angle: [-150, -30], gravity: 30, drag: 1.4, scale: [1.8, 3.6], alpha: [0.85, 0], delay: [200, 600], tint: 0x958c82 },
       ],
     },
 

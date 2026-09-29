@@ -1150,6 +1150,41 @@ def cap_burst_aeon(v, rng):
     return room(mixdown(deep, at(0, choir, 0.5), at(0, pad, 0.35), at(0, clock, 0.4), at(0, ticks), at(0.5, glitter, 0.6)), rng, 0.9, 0.3)
 
 
+# The hammer's timing (DESIGN A10 step 3, owner request 2026-09-29): a count-in tick the plan pitches up
+# (root, +2, +4 semitones), and the graded layers over the hit. Feel only: they never follow the result.
+
+
+@sfx("cap_strike_tick", -29, 3, hp_hz=300)
+def cap_strike_tick(v, rng):
+    # A dry, bright "tk": a high woodblock with a small brass ping, short enough for a 200 ms beat.
+    p = pv(v) ** 0.3
+    wood = sample(GM["woodblock"], 86, 100, 0.08, 0.2, pitch=1.05 * p, length=0.07)
+    ping = bell(1320 * p, 0.09, 0.6, 0.03)
+    return mixdown(wood, at(0, knock(2200 * p, 0.04, 0.008), 0.45), at(0, ping, 0.3), at(0, click(rng, 0.004, 3000, 9000), 0.25))
+
+
+@sfx("cap_strike_perfect", -18, 3, max_s=1.3)
+def cap_strike_perfect(v, rng):
+    # A Perfect hit: a forge-anvil clang and a heavy low punch, then a bright bell ring (C7 with G7 and
+    # a glass partial) and a short sparkle. Layered over the strike's own thump and note.
+    p = [1.0, 1.01, 0.99][v % 3]
+    punch = thump(120 * p, 48, 0.3, 0.02, 0.07, 2.2, hp_hz=70)
+    anvil = bell(1244 * p, 0.7, 0.9, 0.16, partials=((1, 1.0), (1.47, 0.6), (2.09, 0.45), (2.56, 0.35), (3.9, 0.2)))
+    crackle = mixdown(crack(rng, 0.03, 1200, 6000, 0.008), at(0, nburst(rng, 0.08, 500, 3000, 0.02), 0.6))
+    ring = mixdown(at(0, bell(hz("C7"), 1.1, 0.8, 0.45, partials=((1, 1.0), (2.0, 0.3), (2.76, 0.35))), 0.7), at(0, bell(hz("G7"), 0.7, 0.5, 0.3), 0.3))
+    sparkle = gm_notes(GM["celesta"], [(0.04, 0.2, mn("C7"), 80), (0.09, 0.3, mn("G7"), 70)], tail=0.5)
+    return room(mixdown(punch, at(0, anvil, 0.55), at(0, crackle, 0.6), at(0.006, ring), at(0, sparkle, 0.35)), rng, 0.35, 0.16)
+
+
+@sfx("cap_strike_good", -22, 3, max_s=0.9)
+def cap_strike_good(v, rng):
+    # A Good hit: a lighter knock and one clear ring (G6).
+    p = [1.0, 1.01, 0.99][v % 3]
+    knockx = mixdown(thump(150 * p, 80, 0.14, 0.015, 0.04, 1.6, hp_hz=110), at(0, knock(900 * p, 0.06, 0.015), 0.5))
+    ring = bell(hz("G6"), 0.7, 0.6, 0.3, partials=((1, 1.0), (2.0, 0.25), (2.76, 0.3)))
+    return room(mixdown(knockx, at(0.004, ring, 0.7)), rng, 0.3, 0.14)
+
+
 @sfx("cap_clunk", -27, 3)
 def cap_clunk(v, rng):
     # A neutral knock, never a penalty sound (A10).

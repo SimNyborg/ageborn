@@ -44,6 +44,8 @@ const A13: Record<string, string[]> = {
     'cap_thud', 'cap_riser', 'cap_climb_1', 'cap_climb_2', 'cap_climb_3', 'cap_climb_4', 'cap_clunk', 'cap_burst',
     // The 2026-09-29 ladder: the summit climbs, the summit gem and the Platinum and Aeon stingers.
     'cap_climb_5', 'cap_climb_6', 'cap_summit_rise', 'cap_burst_platinum', 'cap_burst_aeon',
+    // The hammer's count-in and the graded hit layers (A10 step 3, 2026-09-29).
+    'cap_strike_tick', 'cap_strike_perfect', 'cap_strike_good',
     'card_flip', 'foil_shine', 'rarity_common', 'rarity_rare', 'rarity_epic', 'rarity_legendary', 'walkout_bass',
     'copy_tick', 'upgrade_ready', 'upgrade_slam', 'level_up', 'reel_tick',
   ],
@@ -76,7 +78,7 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    expect(A13_IDS).toHaveLength(179);
+    expect(A13_IDS).toHaveLength(182);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

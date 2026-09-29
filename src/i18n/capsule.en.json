@@ -1,6 +1,11 @@
 {
   "capsule": {
-    "tap": "Tap!",
+    "tap": "Tap as the hammer lands!",
+    "strike": {
+      "perfect": "Perfect!",
+      "good": "Good!",
+      "combo": "×{n}"
+    },
     "skip": "Skip",
     "holdHint": "Hold to fast-forward",
     "fastForward": "Fast-forward",
