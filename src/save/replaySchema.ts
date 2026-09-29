@@ -37,8 +37,18 @@ function partialPerAge<TSchema extends v.GenericSchema>(schema: TSchema) {
 const ReplayLoadoutSchema = v.object({
   units: v.pipe(v.array(v.nullable(v.string())), v.minLength(5), v.maxLength(6)),
   turrets: v.pipe(v.array(v.nullable(v.string())), v.length(2)),
+  // Two typed power slots from SIM_VERSION 4.0.0 (A2.9.1)
+  powers: v.object({ home: v.nullable(v.string()), field: v.nullable(v.string()) }),
+});
+
+/** A loadout of a replay recorded before SIM_VERSION 4.0.0: one power (kept for its result card, D8). */
+const LegacyReplayLoadoutSchema = v.object({
+  units: v.pipe(v.array(v.nullable(v.string())), v.minLength(5), v.maxLength(6)),
+  turrets: v.pipe(v.array(v.nullable(v.string())), v.length(2)),
   power: v.string(),
 });
+
+const POWER_SLOT = v.picklist(['home', 'field']);
 
 export const SideConfigSchema = v.object({
   label: v.string(),
@@ -73,7 +83,7 @@ export const TrainingEventSchema = v.object({
   side: SIDE,
   grantGold: v.optional(int),
   unlockSlot: v.optional(int),
-  setPowerPpm: v.optional(int),
+  setPowerPpm: v.optional(v.object({ slot: POWER_SLOT, ppm: int })),
 });
 
 export const TrainingSchema = v.object({
@@ -108,7 +118,8 @@ export const TimedCommandSchema = v.variant('t', [
   }),
   cmd({ t: v.literal('researchCancel'), side: SIDE }),
   cmd({ t: v.literal('evolve'), side: SIDE }),
-  cmd({ t: v.literal('power'), side: SIDE, p: v.optional(num) }),
+  // A2.9 two power slots (SIM_VERSION 4.0.0)
+  cmd({ t: v.literal('power'), side: SIDE, slot: POWER_SLOT, p: v.optional(num) }),
   // A18.4.2 three stances and the Hold flag
   cmd({ t: v.literal('stance'), side: SIDE, mode: v.picklist(['charge', 'hold', 'fallback']), holdP: v.optional(num) }),
   cmd({ t: v.literal('lastStand'), side: SIDE }),
@@ -149,18 +160,32 @@ export const ReplayDocSchema = v.object({
 });
 
 /**
- * Commands of replays recorded before SIM_VERSION 3.0.0: the Treasury and the two-stance toggle. Such a
- * replay keeps its result card (owner decision D8); the replay player refuses to play it because its
- * `simVersion` differs.
+ * Commands of replays recorded before SIM_VERSION 4.0.0: the Treasury and the two-stance toggle (before
+ * 3.0.0) and the one-slot power command (before 4.0.0). Such a replay keeps its result card (owner
+ * decision D8); the replay player refuses to play it because its `simVersion` differs.
  */
 const LegacyTimedCommandSchema = v.union([
   TimedCommandSchema,
+  cmd({ t: v.literal('power'), side: SIDE, p: v.optional(num) }),
   cmd({ t: v.literal('treasury'), side: SIDE }),
   cmd({ t: v.literal('stance'), side: SIDE, stance: v.picklist(['charge', 'hold']) }),
 ]);
-const LegacyReplayDocSchema = v.object({ ...ReplayDocSchema.entries, commands: v.array(LegacyTimedCommandSchema) });
+const LegacySideConfigSchema = v.object({
+  ...SideConfigSchema.entries,
+  loadouts: partialPerAge(v.union([ReplayLoadoutSchema, LegacyReplayLoadoutSchema])),
+});
+const LegacyTrainingSchema = v.object({
+  ...TrainingSchema.entries,
+  script: v.optional(v.array(v.object({ ...TrainingEventSchema.entries, setPowerPpm: v.optional(v.union([int, v.object({ slot: POWER_SLOT, ppm: int })])) }))),
+});
+const LegacyReplayDocSchema = v.object({
+  ...ReplayDocSchema.entries,
+  sides: v.tuple([LegacySideConfigSchema, LegacySideConfigSchema]),
+  training: v.optional(v.union([LegacyTrainingSchema, v.null(), v.undefined()]), null),
+  commands: v.array(LegacyTimedCommandSchema),
+});
 
-/** Validates a stored replay: the current shape, else a pre-3.0.0 replay kept for its result card (D8). */
+/** Validates a stored replay: the current shape, else a pre-4.0.0 replay kept for its result card (D8). */
 export function validateReplay(input: unknown): Validation<ReplayDoc> {
   const r = validateWith(ReplayDocSchema, input);
   if (r.ok) return r;

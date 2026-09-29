@@ -69,7 +69,12 @@ interface Setup {
   sides: [SideSetup, SideSetup];
 }
 
-/** The A2.14 baseline loadout of an age: 3 Commons, AA and Support Rares, Common turrets, default power. */
+/** The age's starter power of a slot (A2.9.8). */
+function starter(c: CompiledContent, age: AgeId, slot: 'home' | 'field'): CardId | null {
+  return Object.values(c.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
+}
+
+/** The A2.14 baseline loadout of an age: 3 Commons, AA and Support Rares, Common turrets, both starter powers. */
 function baseline(c: CompiledContent, age: AgeId): Loadout {
   const units = Object.values(c.units).filter((u) => u.age === age && !u.hidden);
   const pick = (group: string, rarity?: string): CardId | null => units.find((u) => u.group === group && (!rarity || u.rarity === rarity))?.id ?? null;
@@ -77,7 +82,7 @@ function baseline(c: CompiledContent, age: AgeId): Loadout {
   return {
     units: [pick('infantry', 'common'), pick('ranged', 'common'), pick('heavy', 'common'), pick('antiArmor'), pick('support')],
     turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null],
-    power: Object.values(c.powers).find((p) => p.age === age && p.slot === 'default')?.id ?? '',
+    powers: { home: starter(c, age, 'home'), field: starter(c, age, 'field') },
   };
 }
 
@@ -166,7 +171,7 @@ function SideCard(props: { side: Side; match: BotMatch; bot: AiBotController; se
       </div>
       <div>
         gold {Math.trunc(s.gold / 1000)} · age {s.ageIndex} · base {Math.round((Math.max(0, s.baseHp) * 100) / Math.max(1, s.baseMaxHp))}% · treasury {s.treasury} ·
-        mounts {s.mountsOwned} · pop {s.pop} · queue {s.queue.length} · power {Math.trunc(s.powerPpm / 10000)}% · {s.stance}
+        mounts {s.mountsOwned} · pop {s.pop} · queue {s.queue.length} · power {Math.trunc(s.powerPpm[0] / 10000)}%/{Math.trunc(s.powerPpm[1] / 10000)}% · {s.stance}
       </div>
       <div>
         foe gold estimate {Math.trunc(bot.foeGoldEstimate / 1000)} (actual {Math.trunc(other.gold / 1000)}) · delay {bot.snapshotDelayTicks} ticks · every{' '}

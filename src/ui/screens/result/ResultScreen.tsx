@@ -7,7 +7,7 @@
  * Try again, Next battle, Open capsule or Home; the next battle is always at most one tap away.
  */
 import './result.css';
-import { arenaNameKey, capsuleKindNameKey, questNameKey, titleNameKey } from '@/content/keys';
+import { arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
 import type { MatchStats, RewardStep } from '@/contracts';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
@@ -38,6 +38,7 @@ import {
   TowerIcon,
   TrophyIcon,
 } from '../../components/icons';
+import { pendingCrests, pendingNameKey, visibleTier } from '../../components/capsuleLook';
 import { useKit } from '../../components/kit';
 import { ClayMeter, ProgressBar } from '../../components/Meters';
 import type { ResultCard, RouteOf } from '../../router';
@@ -236,8 +237,8 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
       return (
         <RewardRow
           testid="reward-capsule"
-          icon={<CapsuleIcon tier={cap?.tier ?? 'bronze'} size={44} />}
-          label={cap ? t(capsuleKindNameKey(cap.kind)) : t('ui.result.capsule')}
+          icon={cap ? <CapsuleIcon tier={visibleTier(content.capsules, cap)} crests={pendingCrests(content.capsules, cap)} size={44} /> : <CapsuleIcon tier="bronze" size={44} />}
+          label={cap ? t(pendingNameKey(content.capsules, cap)) : t('ui.result.capsule')}
           value={<CheckIcon size={26} />}
         />
       );
@@ -428,7 +429,8 @@ function SummaryChip(p: { r: RewardStep }) {
       const cap = save.value.capsules.pending.find((c) => c.id === r.capsuleId);
       return (
         <span class="result-sum__chip is-done" data-testid="sum-capsule">
-          <CapsuleIcon tier={cap?.tier ?? 'bronze'} size={18} /> {cap ? t(capsuleKindNameKey(cap.kind)) : t('ui.result.capsule')}
+          <CapsuleIcon tier={cap ? visibleTier(content.capsules, cap) : 'bronze'} crests={cap ? pendingCrests(content.capsules, cap) : 0} size={18} />{' '}
+          {cap ? t(pendingNameKey(content.capsules, cap)) : t('ui.result.capsule')}
         </span>
       );
     }

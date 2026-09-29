@@ -665,8 +665,14 @@
 .home-drum.is-best {
   filter: drop-shadow(0 4px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 12px rgba(255, 229, 138, 0.55));
 }
+.home-drum--gold.is-best {
+  filter: drop-shadow(0 4px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 14px rgba(239, 224, 176, 0.65));
+}
+.home-drum--platinum.is-best {
+  filter: drop-shadow(0 4px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 15px rgba(196, 242, 234, 0.75));
+}
 .home-drum--aeon.is-best {
-  filter: drop-shadow(0 4px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 16px rgba(139, 92, 246, 0.9));
+  filter: drop-shadow(0 4px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 16px rgba(93, 61, 255, 0.9));
 }
 .home-tray__more {
   align-self: center;

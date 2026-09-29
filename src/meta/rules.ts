@@ -6,7 +6,7 @@
 import type { CapsuleTier, CardId } from '@/contracts';
 
 /** The `SaveDoc.v` that `newSave` writes (WP8 migrates from this version on). */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 7;
 
 /**
  * Share of ladder and Daily Challenge opponents that are named AI Generals; the rest are procedural
@@ -38,7 +38,29 @@ export const META_FLAGS = {
   ladderPlayed: 'meta.ladderPlayed',
   /** The Daily Capsule has been unlocked (A6.3: right after capsule 2 is opened). */
   dailyUnlocked: 'meta.dailyUnlocked',
+  /**
+   * The Field power slot is unlocked (A2.9.1): the first of War Path Stone L5 cleared or 150 trophies;
+   * the v7 save migration sets it for every save that has played. Same key as `save/migrations/v7.ts`.
+   */
+  powerField: 'power.field',
 } as const;
+
+/** Best trophies that unlock the Field power slot (A2.9.1: the Gate 2 node). */
+export const POWER_FIELD_TROPHIES = 150;
+
+/**
+ * Amber paid instead of a power the save already owns (A2.9.8: a War Path power granted by the Trophy
+ * Road fallback, or the other way round). Moves to `content.warPath.powerOwnedAmber` with
+ * docs/requests/powers-sources.md.
+ */
+export const POWER_OWNED_AMBER = 60;
+
+/**
+ * Whether battles send each side's Field power (A2.9.13). P1 keeps it off (one power button, the Home
+ * slot) so `main` stays playable until the HUD dock ships in P2; P2 turns it on and the match rule then
+ * follows the Field slot flag (and the Daily always plays both slots).
+ */
+export const FIELD_SLOT_IN_BATTLE = false;
 
 /** Prefix of a procedural AI Commander's `OpponentSpec.generalId` (`commander:<personality>:<favourite>`). */
 export const COMMANDER_ID_PREFIX = 'commander';

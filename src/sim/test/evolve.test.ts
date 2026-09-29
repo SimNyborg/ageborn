@@ -32,14 +32,17 @@ describe('evolving (A2.4)', () => {
     expect(sim.state.sides[0].baseHp).toBe(675000 + 67500);
   });
 
-  it('Age Power charge is capped at 50% across an evolve', () => {
+  it('each power slot carries at most 75% across an evolve (A2.9.3)', () => {
     const sim = arena();
     const st = new Stamper(sim);
-    devSetPower(sim, 0, 900000);
+    devSetPower(sim, 0, 900000, 'home');
+    devSetPower(sim, 0, 600000, 'field');
     devSetXp(sim, 0, 700);
     st.step({ t: 'evolve', side: 0 });
     stepN(sim, 50);
-    expect(sim.state.sides[0].powerPpm).toBe(500000);
+    // Home was 90% and is cut to 75%; Field kept reloading at 1,250 ppm a tick for 51 ticks
+    expect(sim.state.sides[0].powerPpm).toEqual([750000, 600000 + 51 * 1250]);
+    expect(sim.state.sides[0].powerRem[0]).toBe(0);
   });
 
   it('queue conversion keeps progress; 2 Vanguard Common Infantry spawn free', () => {

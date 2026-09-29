@@ -5,6 +5,7 @@
  * minimum of 1 HP (100 centi):
  *   1 base × level (and first-hit bonus)  2 × type mod  3 × area secondary  4 × target resist
  *   5 × attacker damage buff  6 × mark  7 × phase mods  8 × Legendary target of a power or Last Stand
+ *   (or an Epic target of a strike, A2.9.6)
  * Damage is absorbed by the temporary shield first, then the innate shield, then HP.
  */
 import type { DamageMod, Side, StatusKind } from '@/contracts';
@@ -173,8 +174,9 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
   if (mark > 0) v = Math.trunc((v * (BP + mark)) / BP);
   // 7. phase: turret damage ×0.5 in Siege
   if (imp.turret && ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.turretDamageBp) / BP);
-  // 8. Legendary target of a power or Last Stand
+  // 8. Legendary target of a power or Last Stand; an Epic hit by a strike (A2.9.6; not stacked)
   if (imp.power && tr.legendary) v = Math.trunc((v * ctx.econ.legendaryPowerDamageBp) / BP);
+  else if (imp.strike && tr.def.rarity === 'epic') v = Math.trunc((v * ctx.econ.power.strikeEpicBp) / BP);
   // Mail (A18.5.2): a flat cut per hit, never below 1 HP and never past the −35% damage-taken floor.
   if (target.mail > 0) {
     const floor = Math.trunc((v * (BP - caps.takenBp)) / (red < BP ? BP - red : 1));
@@ -265,6 +267,9 @@ export function baseBp(ctx: Ctx, side: Side): number {
 /** A blank impact; callers fill what they need. */
 export function makeImpact(side: Side, sourceId: number, sourceCard: string): Impact {
   return {
+    cast: null,
+    strike: false,
+    powerStatuses: null,
     side,
     sourceId,
     sourceCard,

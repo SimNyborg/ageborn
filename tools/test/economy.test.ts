@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CardId, Meta } from '../../src/contracts';
 import { content } from '../../src/content';
 import { seedSfc32 } from '../../src/core/rng';
-import { ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
+import { ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
 import { loadMeta } from '../lib/modules';
 
 const cards = [
@@ -56,8 +56,8 @@ describe('economyChecks', () => {
     days: 365,
     copiesPerBagCapsule: T.copiesPerBagCapsule,
     amberPerBagCapsule: T.amberPerBagCapsule,
-    perDay: { win: 4, daily: 1, clay: 0.9, copies: 84, amber: 2975, quests: 3 },
-    maxDay: { common: 137, rare: 131, epic: 91, legendary: 137 },
+    perDay: { win: 4, daily: 1, clay: 0.9, copies: 98, amber: 3030, quests: 3 },
+    maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
     allLegendariesDay: 14,
     planL7Day: 42,
     copiesDoneDay: 135,
@@ -74,6 +74,34 @@ describe('economyChecks', () => {
     const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 3700 }, copiesDoneDay: 130, amberDoneDay: 160, planL7Day: null });
     const failed = bad.filter((c) => c.verdict === 'fail').map((c) => c.id);
     expect(failed).toEqual(['economy.amberPerDay', 'economy.planL7', 'economy.finishGap']);
+  });
+});
+
+describe('medianMeasures (the 30-seed gate)', () => {
+  const base: EconomyMeasures = {
+    days: 365,
+    copiesPerBagCapsule: 16,
+    amberPerBagCapsule: 411,
+    perDay: { win: 4, daily: 1, clay: 0.9, copies: 98, amber: 3030, quests: 3 },
+    maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
+    allLegendariesDay: 9,
+    planL7Day: 78,
+    copiesDoneDay: 190,
+    amberDoneDay: 143,
+    collectionMaxedDay: 200,
+  };
+
+  it('takes the median of every measure; a milestone missed by half the runs is not reached', () => {
+    const runs = [
+      { ...base, copiesPerBagCapsule: 15, maxDay: { ...base.maxDay, legendary: 100 }, collectionMaxedDay: null },
+      { ...base, copiesPerBagCapsule: 17, maxDay: { ...base.maxDay, legendary: 130 }, collectionMaxedDay: null },
+      { ...base, copiesPerBagCapsule: 16, maxDay: { ...base.maxDay, legendary: null }, collectionMaxedDay: 210 },
+    ];
+    const m = medianMeasures(runs);
+    expect(m.copiesPerBagCapsule).toBe(16);
+    expect(m.maxDay.legendary).toBe(130);
+    expect(m.collectionMaxedDay).toBeNull();
+    expect(economyDefaults().seeds).toBe(30);
   });
 });
 
@@ -102,7 +130,7 @@ describe('the engaged player model (A6.7, A6.9)', () => {
 describe('runEconomy', () => {
   it('skips with a reason until src/meta exists, and otherwise runs through the Meta contract', async () => {
     const { meta } = await loadMeta();
-    const r = await runEconomy({ ...economyDefaults(), days: 3 });
+    const r = await runEconomy({ ...economyDefaults(), days: 3, seeds: 1 });
     if (!meta) {
       expect(r.checks.map((x) => x.verdict)).toEqual(['skipped']);
       expect(r.checks[0]?.note).toMatch(/src\/meta/);

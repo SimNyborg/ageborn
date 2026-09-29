@@ -65,7 +65,8 @@ export const arenas: ArenaTables = {
       index: 7, id: 'orbital_ring', trophies: 2600, ladderFormats: ['short', 'standard', 'full'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [6, 8], botLevel: 7, botMaxRarity: 'epic', wardenChanceBp: 0,
-      gateRewards: [{ kind: 'banner', banner: 'starfield' }, { kind: 'capsule', tier: 'aeon' }],
+      // A6.4 ladder 2026-09-29: Gate 7 gives a Gold Capsule (the old Aeon's contents)
+      gateRewards: [{ kind: 'banner', banner: 'starfield' }, { kind: 'capsule', tier: 'gold' }],
       groundVisualId: 'ground.orbital_ring', nameKey: 'arena.orbital_ring.name',
     },
     {
@@ -75,7 +76,8 @@ export const arenas: ArenaTables = {
       botTiers: [8, 10], botLevel: 8, botMaxRarity: 'epic', wardenChanceBp: 2000,
       gateRewards: [
         { kind: 'banner', banner: 'rift' },
-        { kind: 'capsule', tier: 'aeon' },
+        // A6.4 ladder 2026-09-29: Gate 8 gives a Platinum Capsule
+        { kind: 'capsule', tier: 'platinum' },
         { kind: 'skin', skin: 'crystal_spire' },
         { kind: 'wardenJoins' },
       ],

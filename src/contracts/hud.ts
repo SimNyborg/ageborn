@@ -3,7 +3,7 @@
  * rendered by the Preact DOM overlay in `ui/hud` (DESIGN B6 HUD).
  */
 import type { StanceMode } from './commands';
-import type { ResearchTrack } from './content';
+import type { PowerFamily, PowerReach, PowerSlot, ResearchTrack } from './content';
 import type { CardId, Foil } from './ids';
 import type { SideState, SimState, TurretState } from './sim';
 
@@ -39,6 +39,38 @@ export interface HudResearch {
   discount: boolean;
 }
 
+/** One of my power slots on the dock (A2.9.10, A9.2); built from the Observation-equivalent state. */
+export interface HudPowerSlot {
+  slot: PowerSlot;
+  card: CardId;
+  /** Reload progress, ppm. */
+  ppm: number;
+  /** Effective cost, whole gold (modifiers applied, A2.9.2). */
+  cost: number;
+  /** Gold ≥ cost now. */
+  affordable: boolean;
+  /** Whole seconds until reloaded (rounded up), 0 when reloaded. */
+  secondsLeft: number;
+  /** Effective reload, ms. */
+  reloadMs: number;
+  reach: PowerReach;
+  family: PowerFamily;
+  /** The cap (A2.9.5); 0 for powers without one (drops, Suppress). */
+  maxTargets: number;
+  /** Zone width, lu (0 without a zone). */
+  zone: number;
+  /** The shared lockout lever: no cast before this match time, ms (0 when none). */
+  lockoutUntilMs: number;
+  /** The slot is locked by progression (meta, the Field slot before its unlock); the sim sees it empty. */
+  slotLocked: boolean;
+}
+
+/** One of the opponent's rings (public) and its card once scouted (A2.9.7). */
+export interface HudFoePowerSlot {
+  card: CardId | null;
+  ppm: number;
+}
+
 export interface HudModel {
   clockMs: number;
   phase: SimState['phase'];
@@ -69,8 +101,14 @@ export interface HudModel {
     stanceWaitMs?: number;
     /** The War Council (A18.5.7); absent in older models and plain test models. */
     research?: HudResearch;
+    /**
+     * P1 compatibility (A2.9.13): the Home slot on the single power button. `power` is '' when the Home
+     * slot is empty. The dock reads `powers`.
+     */
     powerPpm: number;
     power: CardId;
+    /** Both power slots (A2.9.10); absent in older models and plain test models. */
+    powers?: Record<PowerSlot, HudPowerSlot | null>;
     lastStand: SideState['lastStand'];
     /** False in the first 4 matches: Last Stand is automatic only (DESIGN A2.11, A8). */
     lastStandManual: boolean;
@@ -83,7 +121,10 @@ export interface HudModel {
     baseHpBp: number;
     ageIndex: number;
     xpBp: number;
+    /** P1 compatibility: their Home ring. */
     powerPpm: number;
+    /** Both of their rings (A2.9.10); absent in older models. */
+    powers?: Record<PowerSlot, HudFoePowerSlot | null>;
     lastStandArmed: boolean;
     scouted: CardId[];
     /** Their War Council: public (A18.5.1), shown on their panel and in the Scouted list. */

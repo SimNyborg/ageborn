@@ -8,7 +8,7 @@ import { content } from '@/content';
 import { flattenStrings, i18n } from '@/i18n';
 import strings from '@/i18n/capsule.en.json';
 import { createCatalog } from '../catalog';
-import { TIER_ORDER } from '../tiers';
+import { LEGENDARY_CRESTS, TIER_ORDER } from '../tiers';
 
 const sources = import.meta.glob<string>('../*.{ts,tsx}', { query: '?raw', import: 'default', eager: true });
 const code = Object.values(sources).join('\n');
@@ -22,7 +22,15 @@ describe('capsule strings (i18n)', () => {
   });
 
   it('uses every key it defines', () => {
-    for (const key of defined) expect(code.includes(`'${key}'`), key).toBe(true);
+    // Keys built from a tier id (`capsule.firstTier.${tier}`) count as used through their prefix.
+    const prefixes = [...code.matchAll(/`(capsule\.[A-Za-z.]+\.)\$\{/g)].map((m) => m[1] ?? '');
+    for (const key of defined) expect(code.includes(`'${key}'`) || prefixes.some((p) => key.startsWith(p)), key).toBe(true);
+  });
+
+  it('names the first capsule of every Legendary tier (A10 step 4b)', () => {
+    for (const tier of TIER_ORDER) {
+      if (LEGENDARY_CRESTS[tier] > 0) expect(defined, tier).toContain(`capsule.firstTier.${tier}`);
+    }
   });
 
   it('resolves the content names it builds from ids', () => {

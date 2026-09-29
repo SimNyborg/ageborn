@@ -43,7 +43,7 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
       stanceWaitMs: 0,
       research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false },
       powerPpm: 640_000,
-      power: lo?.power ?? '',
+      power: lo?.powers.home ?? '',
       lastStand: 'locked',
       lastStandManual: true,
       cards,

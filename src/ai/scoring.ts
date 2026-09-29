@@ -12,8 +12,8 @@
  * | f_spare | (gold − cost) / 300 |
  */
 import type { PowerDef } from '@/contracts';
-import { BP, MILLI, clamp } from '@/core';
-import type { View } from './view';
+import { BP, MILLI, clamp, eligibleIds, reachAreaMax, reachBand, type PowerReachRules } from '@/core';
+import type { SeenUnit, View } from './view';
 
 /** Truncated product of two bp values. */
 export function mulBp(a: number, b: number): number {
@@ -94,26 +94,36 @@ const PARADROP_REACH = 450 * MILLI;
 const STAMPEDE_FALLBACK = 200 * MILLI;
 
 /**
- * The best zone for the equipped power (A7.2 "the best zone's enemy value"), per effect kind:
- * barrage and sweep scan their zone over the clamp; the smoke cloud its width; the stampede runs from
- * the bot's front; buffs count the bot's own army when it is engaged; paratroopers the enemy value
- * just behind the enemy front.
+ * The best zone for the equipped power (A7.2 "the best zone's enemy value"), per effect kind, inside
+ * the power's reach band (A2.9.4) and counting only the enemies the cap and the screen make eligible
+ * (A2.9.5: the first `maxTargets` nearest the bot's gate in the reach area): barrage, sweep and field
+ * scan their zone over the band; the smoke cloud its width; the stampede runs from the bot's front;
+ * a strike locks the most valuable target; buffs count the bot's own army (8 frontmost) when it is
+ * engaged; drops the enemy value just behind the enemy front; Suppress is left to the P1 AI work.
  */
-export function bestPowerZone(v: View, power: PowerDef, zoneMin: number, zoneMax: number): PowerZone {
+export function bestPowerZone(v: View, power: PowerDef, zoneMin: number, zoneMax: number, reach?: PowerReachRules): PowerZone {
   const fx = power.effect;
+  const cap = power.maxTargets ?? 0;
+  const front = v.myFront;
   switch (fx.kind) {
     case 'barrage':
     case 'sweep':
+    case 'field':
     case 'cloud': {
       const width = (fx.kind === 'cloud' ? fx.width : fx.zone) * MILLI;
       const hitsAir = fx.kind === 'cloud' ? true : fx.hitsAir;
+      const hitsGround = fx.kind === 'barrage' ? fx.hitsGround !== false : true;
       const half = Math.trunc(width / 2);
+      const band = reach ? (reachBand(power.reach, width, front, reach) ?? [zoneMin, zoneMax]) : [zoneMin, zoneMax];
+      const areaMax = reach ? reachAreaMax(power.reach, width, band as [number, number], reach) : zoneMax + half;
+      const inArea = v.foes.filter((u) => (u.air ? hitsAir : hitsGround) && u.p <= areaMax);
+      const elig = fx.kind === 'cloud' || cap <= 0 ? null : eligibleIds(inArea, cap, []);
       let bestP: number | null = null;
       let best = 0;
-      for (let p = zoneMin; p <= zoneMax; p += SCAN_STEP) {
+      for (let p = band[0] as number; p <= (band[1] as number); p += SCAN_STEP) {
         let sum = 0;
-        for (const u of v.foes) {
-          if (u.air && !hitsAir) continue;
+        for (const u of inArea) {
+          if (elig && !elig.has(u.id)) continue;
           const d = u.p > p ? u.p - p : p - u.p;
           if (d <= half) sum += u.value;
         }
@@ -125,14 +135,27 @@ export function bestPowerZone(v: View, power: PowerDef, zoneMin: number, zoneMax
       return { p: bestP, value: best };
     }
     case 'stampede': {
-      const start = v.myFront ?? STAMPEDE_FALLBACK;
+      const start = front ?? STAMPEDE_FALLBACK;
+      const inRun = v.foes.filter((u) => !u.air && u.p >= start && u.p <= start + fx.distance * MILLI);
+      const elig = cap > 0 ? eligibleIds(inRun, cap, []) : null;
       let sum = 0;
-      for (const u of v.foes) if (!u.air && u.p >= start && u.p <= start + fx.distance * MILLI) sum += u.value;
+      for (const u of inRun) if (!elig || elig.has(u.id)) sum += u.value;
       return { p: null, value: sum };
     }
+    case 'strike': {
+      let best: SeenUnit | null = null;
+      for (const u of v.foes) {
+        if (u.air && !fx.hitsAir) continue;
+        if (!best || u.value > best.value || (u.value === best.value && u.p < best.p)) best = u;
+      }
+      return best ? { p: best.p, value: best.value } : { p: null, value: 0 };
+    }
+    case 'suppress':
+      return { p: null, value: 0 };
     case 'buffAll': {
       if (v.myFront === null || v.foeFront === null || v.foeFront - v.myFront > BUFF_ENGAGE) return { p: null, value: 0 };
-      return { p: null, value: v.myArmy };
+      const mine = [...v.mine].sort((a, b) => b.p - a.p).slice(0, fx.maxTargets);
+      return { p: null, value: mine.reduce((acc, u) => acc + u.value, 0) };
     }
     case 'paradrop': {
       if (v.foeFront === null) return { p: null, value: 0 };

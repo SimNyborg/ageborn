@@ -160,8 +160,21 @@ describe('semantic checks', () => {
 
   it('catches capsule odds that do not add up (A6.4)', () => {
     const c = copy();
-    c.capsules.bag.aeon = 4;
-    expect(messages(c)).toContain('capsules.bag: the bag holds 100 capsules');
+    c.capsules.dailyOddsBp.aeon += 1;
+    expect(messages(c)).toContain('capsules.dailyOddsBp: Daily odds sum to 100%');
+    const e = copy();
+    for (const t of e.capsules.tierOrder) e.capsules.bag[t] = 0;
+    expect(messages(e)).toContain('capsules.bag: the bag holds capsules');
+  });
+
+  it('catches ladder mistakes (A6.4, A10)', () => {
+    const c = copy();
+    c.capsules.tiers.platinum.extraLegendaryCopies = 3;
+    expect(messages(c)).toContain('capsules.tiers.platinum: extraLegendaryCopies is 1..copies.legendary');
+    const d = copy();
+    d.capsules.tierOrder = d.capsules.tierOrder.filter((t) => t !== 'gold');
+    expect(messages(d)).toContain('capsules.summitAbove: is a tier of the ladder');
+    expect(messages(d)).toContain('capsules.tierOrder: lists every tier once');
   });
 
   it('catches onboarding script mistakes (A6.5, A3)', () => {

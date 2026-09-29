@@ -23,7 +23,7 @@
  * dwell) is itself derived from earlier inputs. Rules the DESIGN leaves open are logged in
  * docs/decisions.md under WP3.
  */
-import type { CardId, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
+import type { CardId, PowerSlot, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
 import {
   BP,
   LANE_MLU,
@@ -522,7 +522,8 @@ export class Brain {
 
     // Power.
     if (v.powerReady && v.power) {
-      const zone = bestPowerZone(v, v.power, e.zoneMin, e.zoneMax);
+      const zone = bestPowerZone(v, v.power, e.zoneMin, e.zoneMax, e.powerReach);
+      const slot = v.powerSlot ?? 'home';
       let threshold = mulBp(t.powerThreshold, W.patience);
       // Owner feedback 2026-09-28: the upper tiers also cast on a zone holding a set share of the visible
       // enemy army, so the power is used in every age and not only when a Stone-gold bar is reached.
@@ -531,10 +532,10 @@ export class Brain {
       const desperate = t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP && zone.value > 0;
       const foeEvolved = P.powerForEvolveMoments && v.now - mem.foeEvolvedTick <= FOE_EVOLVE_WINDOW && zone.value >= POWER_MIN_VALUE;
       const beforeEvolve = evolveWanted && zone.value >= POWER_MIN_VALUE;
-      const aim = (): BotAction => this.aimPower(zone, rng);
+      const aim = (): BotAction => this.aimPower(zone, rng, slot);
       if (beforeEvolve) add(aim(), SCORE.powerBeforeEvolve);
       else if ((zone.value > 0 && zone.value >= threshold) || hurt || desperate || foeEvolved) add(aim(), SCORE.power);
-      else if (zone.value > 0) opts.powerOnFew = { kind: 'power', p: zone.p === null ? null : Math.trunc(zone.p / MILLI) };
+      else if (zone.value > 0) opts.powerOnFew = { kind: 'power', slot, p: zone.p === null ? null : Math.trunc(zone.p / MILLI) };
     }
 
     // Stance (A18.4.2). A7.3 allows Hold from tier V; Mama Moss's signature Hold (A7.4) applies at her
@@ -1034,12 +1035,12 @@ export class Brain {
     return !v.foes.some((u) => !u.air && u.p - Math.trunc(((u.def?.speed ?? 0) * MILLI * horizon) / TICKS_PER_SECOND) <= EVOLVE_SAFE);
   }
 
-  private aimPower(zone: PowerZone, rng: Sfc32State): BotAction {
-    if (zone.p === null) return { kind: 'power', p: null };
+  private aimPower(zone: PowerZone, rng: Sfc32State, slot: PowerSlot): BotAction {
+    if (zone.p === null) return { kind: 'power', slot, p: null };
     const { book, tier: t } = this.cfg;
     const e = book.econ;
     const err = t.powerAimErrorLu > 0 ? randRange(rng, -t.powerAimErrorLu, t.powerAimErrorLu) : 0;
     const p = clamp(Math.trunc(zone.p / MILLI) + err, Math.trunc(e.zoneMin / MILLI), Math.trunc(e.zoneMax / MILLI));
-    return { kind: 'power', p };
+    return { kind: 'power', slot, p };
   }
 }

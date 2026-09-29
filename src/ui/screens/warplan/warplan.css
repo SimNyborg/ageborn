@@ -810,6 +810,12 @@
   }
   /* The grid scrolls, so its cards keep their names on phones (U4: no remembering art); the
      loadout's two rows have no room for them (the selection bar names the card). */
+  .army-grid .army-cell .ui-card__name {
+    /* A long single word ("Legionnaire") gets the gap beside the card too, never an ellipsis. */
+    margin-left: -12px;
+    margin-right: -12px;
+    letter-spacing: -0.02em;
+  }
   .army-grid .ui-card__classname,
   .army-slot .ui-card__name,
   .army-slot .ui-card__classname {

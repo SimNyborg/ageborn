@@ -71,7 +71,8 @@ export class TutorialAutopilot implements BotController {
     if (me.lastStand === 'armed') return { t: 'lastStand', side };
     // A ready power goes first: the prompt asks for it, and the evolve would halve its charge.
     const aim = this.powerAim(obs);
-    if (me.powerPpm >= PPM_FULL && aim !== null) return { t: 'power', side, p: aim };
+    const home = me.powers.home;
+    if (home && home.ppm >= PPM_FULL && gold >= home.cost && aim !== null) return { t: 'power', side, slot: 'home', p: aim };
     if (me.xpBp >= 10000 && me.ageIndex < this.o.maxAgeIndex) return { t: 'evolve', side };
     const turretCard = me.turretCards[0] ?? null;
     const turretCost = turretCard ? (this.content.turrets[turretCard]?.cost ?? Infinity) : Infinity;

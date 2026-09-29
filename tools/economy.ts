@@ -9,7 +9,11 @@
  *
  * `EconomyRecorder` (pure) turns what happened into the A6.9 measures; `economyChecks` compares them with
  * the table within ±20% and checks that the copy and Amber finish dates are less than 30 days apart.
+ * The gate uses the median of `seeds` runs (30 by default: one seed is too noisy for a ±20% band).
  * Without `src/meta` (WP7) the tool writes a skipped report and exits 0.
+ *
+ * The capsule rules (the 7-tier ladder, the 200-slot bag, the Supply odds, the Legendary catch-up) run
+ * through the real meta code; nothing here copies them.
  */
 import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchStats, Meta, PendingCapsule, Rarity, Result, SaveDoc, Side } from '../src/contracts';
 import { asContent, content as gameContent, type Content } from '../src/content';
@@ -24,19 +28,23 @@ const MONTH_DAYS = 30.44;
 /** A6.9 targets. Months are converted at 30.44 days. */
 export const ECONOMY_TARGETS = {
   tolerance: 0.2,
-  // A17.13: 88 cards instead of 55, so capsules carry about ×1.75 copies and Amber to keep the time to
-  // max a card (owner decision); the per-capsule and per-day income targets scale with them.
-  copiesPerBagCapsule: 15.7,
-  amberPerBagCapsule: 399,
+  // The 2026-09-29 capsule ladder (owner: "keep today's time to max a card"): income and time-to-max
+  // targets are rebased on the measured 100-seed medians of the model before the ladder (A6.9). The
+  // old month-based bands (4.5 / 4.3 / 3 / 4.5 months) were stale: that model's own Rare median (101
+  // days) was below its band.
+  copiesPerBagCapsule: 16.0,
+  amberPerBagCapsule: 411,
   winCapsulesPerDay: 4,
   dailyCapsulesPerDay: 1,
   clayCapsulesPerDay: 0.9,
-  copiesPerDay: 84,
-  amberPerDay: 2975,
-  commonMaxDays: 4.5 * MONTH_DAYS,
-  rareMaxDays: 4.3 * MONTH_DAYS,
-  epicMaxDays: 3 * MONTH_DAYS,
-  legendaryMaxDays: 4.5 * MONTH_DAYS,
+  copiesPerDay: 98,
+  amberPerDay: 3030,
+  commonMaxDays: 110,
+  rareMaxDays: 101,
+  epicMaxDays: 69,
+  legendaryMaxDays: 112,
+  // Design targets the model misses both before and after the ladder: Phase 3 tuning items (A6.9).
+
   allLegendariesDays: 14,
   planL7Days: 42,
   copiesDoneDays: 135,
@@ -51,12 +59,55 @@ export interface EconomyModel {
   winRateBp: number;
   chargedWinsPerDay: number;
   seed: number;
+  /** Runs seeds `seed` .. `seed + seeds − 1` and gates on the median of each measure. */
+  seeds: number;
   /** Days used for the per-day averages (steady state before the collection maxes out). */
   averageDays: [number, number];
 }
 
 export function economyDefaults(): EconomyModel {
-  return { days: 365, winRateBp: 6000, chargedWinsPerDay: 4, seed: 1, averageDays: [11, 120] };
+  return { days: 365, winRateBp: 6000, chargedWinsPerDay: 4, seed: 1, seeds: 30, averageDays: [11, 120] };
+}
+
+/**
+ * The median of each measure over several runs. A milestone some runs never reach counts as later
+ * than every reached day, so it is null when at least half the runs miss it.
+ */
+export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasures {
+  const first = list[0];
+  if (!first) throw new Error('medianMeasures: no runs');
+  if (list.length === 1) return first;
+  const num = (f: (m: EconomyMeasures) => number): number => median(list.map(f));
+  const day = (f: (m: EconomyMeasures) => number | null): number | null => {
+    const xs = list.map((m) => f(m) ?? Number.POSITIVE_INFINITY).sort((a, b) => a - b);
+    const hi = xs[Math.floor(xs.length / 2)] as number;
+    const v = xs.length % 2 === 1 ? hi : ((xs[xs.length / 2 - 1] as number) + hi) / 2;
+    return Number.isFinite(v) ? v : null;
+  };
+  return {
+    days: first.days,
+    copiesPerBagCapsule: num((m) => m.copiesPerBagCapsule),
+    amberPerBagCapsule: num((m) => m.amberPerBagCapsule),
+    perDay: {
+      win: num((m) => m.perDay.win),
+      daily: num((m) => m.perDay.daily),
+      clay: num((m) => m.perDay.clay),
+      copies: num((m) => m.perDay.copies),
+      amber: num((m) => m.perDay.amber),
+      quests: num((m) => m.perDay.quests),
+    },
+    maxDay: {
+      common: day((m) => m.maxDay.common),
+      rare: day((m) => m.maxDay.rare),
+      epic: day((m) => m.maxDay.epic),
+      legendary: day((m) => m.maxDay.legendary),
+    },
+    allLegendariesDay: day((m) => m.allLegendariesDay),
+    planL7Day: day((m) => m.planL7Day),
+    copiesDoneDay: day((m) => m.copiesDoneDay),
+    amberDoneDay: day((m) => m.amberDoneDay),
+    collectionMaxedDay: day((m) => m.collectionMaxedDay),
+  };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -459,8 +510,11 @@ export async function runEconomy(m: EconomyModel, content: CompiledContent = gam
     ]);
   }
   try {
-    const measures = simulateEconomy(meta, content, m).measures(m.averageDays);
+    const seeds = Math.max(1, m.seeds);
+    const runs = Array.from({ length: seeds }, (_, i) => simulateEconomy(meta, content, { ...m, seed: m.seed + i }).measures(m.averageDays));
+    const measures = medianMeasures(runs);
     const notes = [
+      `Median of ${seeds} seed${seeds === 1 ? '' : 's'} (${m.seed}-${m.seed + seeds - 1}).`,
       `Per-day averages use days ${m.averageDays[0]}-${m.averageDays[1]}. Amber income is every increase of the Amber balance (matches, quests, capsules, road, Codex Levels) plus what upgrades spent.`,
     ];
     if (!questApi(meta)) notes.push('src/meta exports no claimQuest: quests were never claimed, so quest rewards are missing from every figure.');

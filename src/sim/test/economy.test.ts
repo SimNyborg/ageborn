@@ -19,12 +19,13 @@ describe('gold and XP (A2.3, A2.4)', () => {
     ctx.overdriveTick = 2;
     stepN(sim, 1);
     const g0 = sim.state.sides[0].gold;
-    const p0 = sim.state.sides[0].powerPpm;
+    const p0 = sim.state.sides[0].powerPpm[0];
     stepN(sim, 1);
     expect(sim.state.phase).toBe('overdrive');
     // 600 base (×2) + 75 Granary (A18.5.4: never doubled)
     expect(sim.state.sides[0].gold - g0).toBe(675);
-    expect(sim.state.sides[0].powerPpm - p0).toBe(1250);
+    // A2.9.3: no reload bonus in Overdrive; Rockslide reloads in 40 s = 800 ticks, 1,250 ppm a tick
+    expect(sim.state.sides[0].powerPpm[0] - p0).toBe(1250);
   });
 
   it('XP cap: 1.5 × the threshold (1,050 in Stone)', () => {
@@ -34,18 +35,19 @@ describe('gold and XP (A2.3, A2.4)', () => {
     expect(sim.state.sides[0].xp).toBe(1050000);
   });
 
-  it('Overcharge: in the final age every 1,200 XP becomes +25% charge while below 100%', () => {
+  it('Overcharge: in the final age every 1,200 XP adds +25% to the less-reloaded equipped slot (ties: Home)', () => {
     const sim = arena({ format: 'short' });
     const ctx = simCtx(sim);
     ctx.s.sides[0].ageIndex = 2; // Gunpowder is the last age of Short War
     devSetXp(sim, 0, 1199);
     devSetPower(sim, 0, 100000);
     stepN(sim, 1);
-    // 1,199 + 0.2 = 1,199.2 → no conversion yet
-    expect(sim.state.sides[0].powerPpm).toBe(101000);
+    // 1,199 + 0.2 = 1,199.2 → no conversion yet; both 40 s slots reload 1,250 ppm a tick
+    expect(sim.state.sides[0].powerPpm).toEqual([101250, 101250]);
     stepN(sim, 4);
     expect(sim.state.sides[0].xp).toBeLessThan(1000);
-    expect(sim.state.sides[0].powerPpm).toBeGreaterThanOrEqual(355000);
+    expect(sim.state.sides[0].powerPpm[0]).toBeGreaterThanOrEqual(355000);
+    expect(sim.state.sides[0].powerPpm[1]).toBeLessThan(110000);
   });
 
   function killWith(o: { killer: string; victim: string; summoned?: boolean; victimLevel?: number; power?: boolean }) {
@@ -94,7 +96,7 @@ describe('gold and XP (A2.3, A2.4)', () => {
     if (vu) vu.hp = 100;
     devSetPower(sim, 0, 1000000);
     const st = new Stamper(sim);
-    const ev = [...st.step({ t: 'power', side: 0, p: 400 })];
+    const ev = [...st.step({ t: 'power', side: 0, slot: 'home', p: 400 })];
     ev.push(...stepN(sim, 60));
     const d = ofKind(ev, 'died').find((x) => x.id === v.id);
     expect(d?.killerKind).toBe('power');

@@ -18,6 +18,9 @@ import type {
   EconomyRules,
   FormatId,
   PowerDef,
+  PowerFamily,
+  PowerReach,
+  PowerSlot,
   RoleGroup,
   StatusKind,
   Tag,
@@ -25,7 +28,7 @@ import type {
   TurretDef,
   UnitDef,
 } from '@/contracts';
-import { BP, MILLI, PPM, TICKS_PER_SECOND, assert, msToTicks } from '@/core';
+import { BP, MILLI, PPM, TICKS_PER_SECOND, assert, fieldPulses, msToTicks, powerEconomyOf, powerReachRules, type PowerReachRules } from '@/core';
 import { researchRules, type ResearchSimRules } from './researchRules';
 
 /** Tag bit flags (DESIGN A2.6). */
@@ -264,6 +267,7 @@ export type PowerEffectRules =
       radius: number;
       jitter: number;
       hitsAir: boolean;
+      hitsGround: boolean;
     }
   | { kind: 'sweep'; zone: number; durationTicks: number; damage: number; halfWidth: number; hitsAir: boolean }
   | {
@@ -276,20 +280,48 @@ export type PowerEffectRules =
       knockback: number;
       maxHits: number;
     }
-  | { kind: 'buffAll'; statuses: StatusRules[] }
-  | { kind: 'cloud'; halfWidth: number; durationTicks: number; missBp: number; allyDamageBp: number }
-  | { kind: 'paradrop'; card: CardId; count: number; beyond: number; fallbackP: number };
+  | { kind: 'buffAll'; statuses: StatusRules[]; maxTargets: number }
+  /** `allyMax`: the most own units that get the ally damage bonus (A2.9.5: 8). */
+  | { kind: 'cloud'; halfWidth: number; durationTicks: number; missBp: number; allyDamageBp: number; allyMax: number }
+  | { kind: 'paradrop'; card: CardId; count: number; beyond: number; fallbackP: number }
+  /** A ground field (A2.9.7): `pulses` pulses 10 ticks apart; statuses, damage (whole), pull (bp). */
+  | { kind: 'field'; halfZone: number; pulses: number; hitsAir: boolean; statuses: StatusRules[]; damage: number; pullBp: number }
+  /** A homing strike on one locked target (A2.9.7). */
+  | { kind: 'strike'; shots: number; intervalTicks: number; damage: number; hitsAir: boolean }
+  /** Every enemy mount is silenced for `ticks` (A2.9.7). */
+  | { kind: 'suppress'; ticks: number };
 
 export interface PowerRules {
   id: CardId;
   idx: number;
   def: PowerDef;
   age: AgeId;
+  slot: PowerSlot;
+  reach: PowerReach;
+  family: PowerFamily;
+  /** Whole gold per cast before modifiers (A2.9.2). */
+  cost: number;
+  reloadTicks: number;
   telegraphTicks: number;
+  /** The cap (A2.9.5): enemy units for damage and control, own units for buffs and the cloud; 0 = none. */
+  maxTargets: number;
   /** Zone width shown by the telegraph (mlu); 0 for powers without a zone. */
   zone: number;
   dmgType: DmgType;
+  /** Damages or controls enemy units (auto-aim with nothing eligible is rejected before payment, A2.9.4). */
+  harmful: boolean;
   effect: PowerEffectRules;
+}
+
+/** Age Power rules in runtime units (A2.9.3-A2.9.6). */
+export interface PowerEconRules {
+  startPpm: number;
+  emptyReloadTicks: number;
+  strikeEpicBp: number;
+  legendaryControlBp: number;
+  lockTicks: number;
+  /** Reach rules in mlu, own frame (core `powerReach`). */
+  reach: PowerReachRules;
 }
 
 export interface FormatRules {
@@ -332,8 +364,9 @@ export interface EconRules {
   ascendTicks: number;
   evolveHealBp: number;
   vanguardCount: number;
-  powerPerTick: number;
+  /** Each slot's progress at an evolve becomes min(progress, this), ppm (A2.9.3). */
   powerCarryCap: number;
+  power: PowerEconRules;
   overchargeXp: number;
   overchargePpm: number;
   /** XP cap (milli) in the final age of the format (A2.4). */
@@ -683,6 +716,7 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
 function powerDmgType(kind: PowerDef['effect']['kind']): DmgType {
   if (kind === 'stampede') return 'blunt';
   if (kind === 'sweep') return 'laser';
+  if (kind === 'strike') return 'pierce';
   return 'blast';
 }
 
@@ -702,6 +736,7 @@ function powerRules(def: PowerDef, idx: number): PowerRules {
         radius: mlu(fx.radius),
         jitter: fx.pattern === 'line' ? 0 : mlu(fx.jitter),
         hitsAir: fx.hitsAir,
+        hitsGround: fx.hitsGround !== false,
       };
       break;
     case 'sweep':
@@ -729,7 +764,7 @@ function powerRules(def: PowerDef, idx: number): PowerRules {
       };
       break;
     case 'buffAll':
-      effect = { kind: 'buffAll', statuses: fx.statuses.map(statusRules) };
+      effect = { kind: 'buffAll', statuses: fx.statuses.map(statusRules), maxTargets: fx.maxTargets > 0 ? fx.maxTargets : BUFF_MAX_TARGETS };
       break;
     case 'cloud':
       zone = mlu(fx.width);
@@ -739,21 +774,72 @@ function powerRules(def: PowerDef, idx: number): PowerRules {
         durationTicks: msToTicks(fx.durationMs),
         missBp: fx.enemyMissBp,
         allyDamageBp: fx.allyDamageBp,
+        allyMax: def.maxTargets !== undefined && def.maxTargets > 0 ? def.maxTargets : BUFF_MAX_TARGETS,
       };
       break;
     case 'paradrop':
       effect = { kind: 'paradrop', card: fx.card, count: fx.count, beyond: mlu(fx.beyondFront), fallbackP: mlu(fx.fallbackP) };
       break;
+    case 'field':
+      zone = mlu(fx.zone);
+      effect = {
+        kind: 'field',
+        halfZone: Math.trunc(zone / 2),
+        pulses: fieldPulses(fx.durationMs),
+        hitsAir: fx.hitsAir,
+        statuses: (fx.statuses ?? []).map(statusRules),
+        damage: fx.damagePerPulse ?? 0,
+        pullBp: fx.pullBp ?? 0,
+      };
+      break;
+    case 'strike':
+      effect = { kind: 'strike', shots: fx.shots, intervalTicks: fx.intervalMs > 0 ? msToTicks(fx.intervalMs) : 0, damage: fx.damage, hitsAir: fx.hitsAir };
+      break;
+    case 'suppress':
+      effect = { kind: 'suppress', ticks: msToTicks(fx.durationMs) };
+      break;
   }
+  const harmful = fx.kind === 'barrage' || fx.kind === 'sweep' || fx.kind === 'stampede' || fx.kind === 'field' || fx.kind === 'strike';
   return {
     id: def.id,
     idx,
     def,
     age: def.age,
+    slot: def.slot,
+    reach: def.reach,
+    family: def.family,
+    cost: def.cost,
+    reloadTicks: msToTicks(def.reloadMs),
     telegraphTicks: msToTicks(def.telegraphMs),
+    maxTargets: capOf(def, effect),
     zone,
     dmgType: powerDmgType(fx.kind),
+    harmful,
     effect,
+  };
+}
+
+/** Buffs and the cloud's ally bonus affect at most this many own units by default (A2.9.5). */
+export const BUFF_MAX_TARGETS = 8;
+
+/** The cap of a power (A2.9.5): the card's `maxTargets`; a buff's effect cap; strikes always 1; 0 = none. */
+function capOf(def: PowerDef, effect: PowerEffectRules): number {
+  if (effect.kind === 'strike') return 1;
+  if (def.maxTargets !== undefined && def.maxTargets > 0) return def.maxTargets;
+  if (effect.kind === 'buffAll') return effect.maxTargets;
+  if (effect.kind === 'cloud') return effect.allyMax;
+  return 0;
+}
+
+function powerEcon(e: EconomyRules): PowerEconRules {
+  const pe = powerEconomyOf(e);
+  return {
+    startPpm: Math.trunc((PPM * pe.startBp) / BP),
+    emptyReloadTicks: msToTicks(pe.emptyReloadMs),
+    strikeEpicBp: pe.strikeEpicBp,
+    legendaryControlBp: pe.legendaryControlBp,
+    lockTicks: pe.lockMs > 0 ? msToTicks(pe.lockMs) : 0,
+    reach: powerReachRules(e, MILLI),
   };
 }
 
@@ -791,8 +877,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     ascendTicks: t.ascend,
     evolveHealBp: e.evolveHealBp,
     vanguardCount: e.vanguardCount,
-    powerPerTick: Math.trunc(PPM / t.powerCharge),
     powerCarryCap: Math.trunc((PPM * e.powerCarryCapBp) / BP),
+    power: powerEcon(e),
     overchargeXp: e.overchargeXp * MILLI,
     overchargePpm: Math.trunc((PPM * e.overchargeBp) / BP),
     finalAgeXpCap: battle.finalAgeXpCap * MILLI,

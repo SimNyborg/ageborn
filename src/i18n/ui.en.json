@@ -195,7 +195,7 @@
       "title": "Odds and pity",
       "honest": "The result was decided when you earned this capsule. Tapping only reveals it.",
       "bagTitle": "Win Capsule bag",
-      "bagLine": "Exactly {n} Aeon in every {size} Win Capsules.",
+      "bagLine": "Exactly {list} in every {size} Win Capsules.",
       "perHundred": "{n} in {size}",
       "left": "{n} left",
       "bagLeftTotal": "{n} of {size} left in your current bag",
@@ -226,7 +226,17 @@
       "unownedWeight": "Cards you don't own yet are three times as likely.",
       "supplyTitle": "Supply Capsule",
       "foilTitle": "Foil per stack",
-      "wardrobeTitle": "Wardrobe Crate"
+      "wardrobeTitle": "Wardrobe Crate",
+      "bagItem": "{n} {tier}",
+      "bagLegacy": "Your current bag was filled before Gold and Platinum arrived, so it finishes with its old mix. Each Aeon left in it is the new Aeon.",
+      "crestRule": "Each Legendary crest on a capsule stands for one Legendary inside.",
+      "extraLegendary": "Second and third Legendary: {n} copy each.",
+      "skinSure": "A skin, {rarity} or better.",
+      "aeonSet": "An Aeon Collection item you don't have yet ({owned}/{total}). Once you have all {total}: a collection item and +{dust} Dust.",
+      "aeonSetRule": "Aeon Collection items come from Aeon Capsules. After your first Aeon Capsule you can also craft them for {dust} Dust each. They can't be bought or traded, and they never leave the game.",
+      "catchUp": "Once you own every Legendary here, Legendary stacks favour the ones you are furthest from maxing.",
+      "summitRule": "Platinum and Aeon get summit strikes after the four strikes. A summit strike appears only when the capsule really is Platinum or Aeon.",
+      "extraLegendarySecond": "Second Legendary: {n} copy."
     },
     "mode": {
       "title": "Choose a battle",
@@ -305,7 +315,8 @@
         "road": "From the Trophy Road",
         "aeon": "From an Aeon Capsule",
         "welcome": "For your first win"
-      }
+      },
+      "revealNote": "Win and Supply Capsules show their tier when you open them."
     },
     "format": {
       "span": "{from} to {to}",
@@ -732,6 +743,14 @@
         "melee": "Melee cannot reach the sky.",
         "shootDown": "Shots bring fliers down.",
         "splash": "Outranges and smashes defenses."
+      }
+    },
+    "notice": {
+      "capsuleLadder": {
+        "title": "Two new capsule tiers",
+        "body": "Gold and Platinum join the ladder above Jade, and Aeon now holds 3 Legendaries. Jade no longer turns a Rare into a Legendary. Unopened Aeon Capsules keep what they hold, get 100 Dust more and are now called Gold. The Aeons left in your current bag stay Aeon.",
+        "legacy": "You had already earned {n} of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so {n} new Aeon Capsules are on your shelf.",
+        "legacyOne": "You had already earned one of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so a new Aeon Capsule is on your shelf."
       }
     }
   }

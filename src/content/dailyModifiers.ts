@@ -15,8 +15,8 @@ const LIST: DailyModifierDef[] = [
   mod('gold_rush', 1, { kind: 'passiveGold', bp: 15000 }),
   // Unit HP ×0.7
   mod('glass_armies', 2, { kind: 'unitHp', bp: 7000 }),
-  // Age Power charge ×2
-  mod('power_hour', 3, { kind: 'powerCharge', bp: 20000 }),
+  // Power reload ×2 and power prices −50% (A2.9.2-A2.9.3)
+  mod('power_hour', 3, { kind: 'powers', reloadBp: 10000, costBp: 5000 }),
   // XP thresholds ×0.7
   mod('fast_forward', 4, { kind: 'xpThreshold', bp: 7000 }),
   // Heavy and Legendary cost −30%

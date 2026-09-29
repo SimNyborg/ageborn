@@ -42,6 +42,8 @@ const A13: Record<string, string[]> = {
   ],
   capsules: [
     'cap_thud', 'cap_riser', 'cap_climb_1', 'cap_climb_2', 'cap_climb_3', 'cap_climb_4', 'cap_clunk', 'cap_burst',
+    // The 2026-09-29 ladder: the summit climbs, the summit gem and the Platinum and Aeon stingers.
+    'cap_climb_5', 'cap_climb_6', 'cap_summit_rise', 'cap_burst_platinum', 'cap_burst_aeon',
     'card_flip', 'foil_shine', 'rarity_common', 'rarity_rare', 'rarity_epic', 'rarity_legendary', 'walkout_bass',
     'copy_tick', 'upgrade_ready', 'upgrade_slam', 'level_up', 'reel_tick',
   ],
@@ -66,7 +68,7 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    expect(A13_IDS).toHaveLength(139);
+    expect(A13_IDS).toHaveLength(144);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 
@@ -133,21 +135,25 @@ describe('sound manifest (A13)', () => {
     }
   });
 
-  it('climbs cap_climb_1..4 in pitch, a step each (A10)', () => {
+  it('climbs cap_climb_1..5 in pitch, a step each, and Aeon lower, not shriller (A10, A13)', () => {
     const tone = (id: string): number => {
       const d = sounds[id]!;
       if (d.kind !== 'zzfxMix') throw new Error(id);
-      // The chime is the triangle voice.
-      return Math.max(...d.variants[0]!.filter((n) => n.params[6] === 1).map((n) => n.params[2] as number));
+      // The chime is the loudest triangle voice (a quieter glitter may sit above it).
+      const tri = d.variants[0]!.filter((n) => n.params[6] === 1);
+      const loud = tri.reduce((a, b) => ((b.params[0] as number) > (a.params[0] as number) ? b : a));
+      return loud.params[2] as number;
     };
-    const f = [1, 2, 3, 4].map((n) => tone(`cap_climb_${n}`));
+    const f = [1, 2, 3, 4, 5].map((n) => tone(`cap_climb_${n}`));
     for (let k = 1; k < f.length; k++) expect(f[k]!).toBeGreaterThan(f[k - 1]!);
+    // Aeon is richer and lower, not shriller (A13).
+    expect(tone('cap_climb_6')).toBeLessThan(tone('cap_climb_5'));
   });
 
   it('plays musical sounds in tune: no random pitch on jingles, fanfares and reveals', () => {
     const musical = [
       ...AGES.map((a) => `evolve_fanfare_${a}`), 'victory_jingle', 'defeat_jingle', 'rarity_common', 'rarity_rare', 'rarity_epic',
-      'rarity_legendary', 'level_up', 'upgrade_ready', 'cap_climb_1', 'cap_climb_4', 'evolve_ready', 'pw_decree', 'siege_bell',
+      'rarity_legendary', 'level_up', 'upgrade_ready', 'cap_climb_1', 'cap_climb_4', 'cap_climb_5', 'cap_climb_6', 'cap_burst_platinum', 'cap_burst_aeon', 'evolve_ready', 'pw_decree', 'siege_bell',
     ];
     for (const id of musical) expect(sounds[id]!.pitchVarBp, id).toBe(0);
     // Timed sounds keep their length, and the caller owns the pitch of climbs and the reel.

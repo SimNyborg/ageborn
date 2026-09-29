@@ -1,9 +1,10 @@
 /**
  * The War Plan (DESIGN A3): one Age Loadout per age, each with 6 unit slots (A18.9), 2 turret slots
- * and 1 Age Power, all from that age, all owned, no duplicates; three presets.
+ * and 2 typed power slots, Home and Field (A2.9.1), all from that age, all owned, no duplicates; three
+ * presets.
  *
  * - Starter plan: each age's 3 common units (Infantry, Ranged, Heavy) and 2 common turrets, plus its
- *   default power. The starter kit always meets the minimum to play.
+ *   two starter powers. The starter kit always meets the minimum to play.
  * - Auto-fill: the highest-level card per slot, keeping at least one Heavy or Legendary, one Ranged
  *   and one Anti-armor unit per age, plus an air-hitter from Gunpowder on (a turret that hits air
  *   counts). Ties keep the content order. Units sit in content order.
@@ -14,7 +15,7 @@ import type { AgeId, CardId, FormatId, Loadout, Result, SaveDoc, SkinId } from '
 import type { Content } from '@/content';
 import { hitsAir, TURRET_SLOTS, UNIT_SLOTS, type WarPlan } from './advisor';
 import { FIRST_PLAN_NAME } from './rules';
-import { ageCards, defaultPower, isOwned } from './tables';
+import { ageCards, isOwned, starterPower, starterPowers } from './tables';
 
 /** Number of War Plan presets (A3). */
 export const PLAN_PRESETS = 3;
@@ -27,7 +28,7 @@ function slots(ids: readonly CardId[], n: number): (CardId | null)[] {
 export function starterLoadout(t: Content, age: AgeId): Loadout {
   const { units, turrets } = ageCards(t, age);
   const common = (id: CardId): boolean => (t.units[id] ?? t.turrets[id])?.rarity === 'common';
-  return { units: slots(units.filter(common), UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), power: defaultPower(t, age) };
+  return { units: slots(units.filter(common), UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), powers: starterPowers(t, age) };
 }
 
 /** The starter War Plan (A3; Arena 1's gate reward, given at the start). */
@@ -73,12 +74,16 @@ export function autoFillLoadout(s: SaveDoc, t: Content, age: AgeId, current?: Lo
   if (t.ages[age].index >= t.ages.gunpowder.index && !pickedTurrets.some((id) => hitsAir(t, id))) need((id) => hitsAir(t, id));
   for (const id of rankedUnits) if (picked.length < UNIT_SLOTS && !picked.includes(id)) picked.push(id);
   const ordered = units.filter((id) => picked.includes(id));
-  const cur = current?.power;
-  const keepPower = cur !== undefined && t.powers[cur]?.age === age && s.powersOwned.includes(cur);
+  // Powers (A2.9.1): keep an owned power of this age in its own slot, else the age's starter.
+  const keep = (slot: 'home' | 'field'): CardId => {
+    const cur = current?.powers?.[slot] ?? null;
+    const ok = cur !== null && t.powers[cur]?.age === age && t.powers[cur]?.slot === slot && s.powersOwned.includes(cur);
+    return ok ? cur : starterPower(t, age, slot);
+  };
   return {
     units: slots(ordered, UNIT_SLOTS),
     turrets: slots(turrets.filter((id) => pickedTurrets.includes(id)), TURRET_SLOTS),
-    power: keepPower ? cur : defaultPower(t, age),
+    powers: { home: keep('home'), field: keep('field') },
   };
 }
 
@@ -145,8 +150,9 @@ export function equipNow(s: SaveDoc, card: CardId, t: Content): SaveDoc {
   if (!owned || !l) return s;
   let next: Loadout;
   if (power) {
-    if (l.power === card) return s;
-    next = { ...l, power: card };
+    // A2.9.1: a power goes into its own slot (Home or Field).
+    if (l.powers[power.slot] === card) return s;
+    next = { ...l, powers: { ...l.powers, [power.slot]: card } };
   } else if (unit) {
     if (l.units.includes(card)) return s;
     const units = [...l.units];

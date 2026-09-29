@@ -2,7 +2,7 @@
  * Mini content set for tests and dev pages (DESIGN C2/WP0 task 5): 2 ages × 3 units.
  *
  * Stone: bonker, pebbler, tuskback. Medieval: footman, longbowman, destrier_knight.
- * Plus one turret and one default power per age so loadouts are complete.
+ * Plus one turret and the starter powers per age so loadouts are complete.
  *
  * Values are the DESIGN A5.2/A5.3 table values in table units (lu, ms, whole HP, gold), not the
  * compiled integer units of B3/B4. The shape is exactly `CompiledContent`; this set is for UI,
@@ -113,14 +113,22 @@ const turrets: Record<CardId, TurretDef> = {
 };
 
 const powers: Record<CardId, PowerDef> = {
+  rockslide: {
+    id: 'rockslide', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common', source: 'starter',
+    cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 130, width: 40, hitsAir: false },
+    visualId: 'power.rockslide', sfx: 'pw_rockslide', nameKey: 'card.rockslide.name', descKey: 'card.rockslide.desc',
+  },
   stampede: {
-    id: 'stampede', kind: 'power', age: 'stone', slot: 'default', telegraphMs: 1000,
+    id: 'stampede', kind: 'power', age: 'stone', slot: 'field', reach: 'front', family: 'charge', rarity: 'common', source: 'starter',
+    cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
     effect: { kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400, damage: 50, knockback: 40, maxHitsPerEnemy: 3 },
     visualId: 'power.stampede', sfx: 'pw_stampede', nameKey: 'card.stampede.name', descKey: 'card.stampede.desc',
   },
   arrow_storm: {
-    id: 'arrow_storm', kind: 'power', age: 'medieval', slot: 'default', telegraphMs: 1000,
-    effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 40, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' },
+    id: 'arrow_storm', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common', source: 'starter',
+    cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 50, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' },
     visualId: 'power.arrow_storm', sfx: 'pw_arrows', nameKey: 'card.arrow_storm.name', descKey: 'card.arrow_storm.desc',
   },
 };
@@ -166,8 +174,12 @@ export const fakeEconomy: EconomyRules = {
   popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14 },
   queueMax: 5, legendaryLimit: 1, sellRefundBp: 5000, turretRangeCap: 480, turretRangeHardCapLu: 560, turretBuildMs: 1000, turretSellMs: 1000,
   ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2,
-  powerChargeMs: 50000, powerCarryCapBp: 5000, overchargeXp: 1200, overchargeBp: 2500,
-  overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
+  powerCarryCapBp: 7500, overchargeXp: 1200, overchargeBp: 2500,
+  overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 10000 },
+  power: {
+    startBp: 2500, emptyReloadMs: 40000, homeLineP: 1000, frontReachLu: 150, frontFloorP: 480, frontRank: 1,
+    strikePickLu: 80, strikeEpicBp: 5000, legendaryControlBp: 5000, lockMs: 0,
+  },
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 }, marchSpeedBp: 12500, frontWidth: 3,
   lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
   spawnP: 20, holdLine: 320, holdRetreatSpeedBp: 7000, leash: 20, spacingBp: 3000,
@@ -237,7 +249,6 @@ export const fakeContent: CompiledContent = deepFreeze({
   counters: {},
   ticks: {
     ascend: ticks(2500),
-    powerCharge: ticks(50000),
     turretBuild: ticks(1000),
     turretSell: ticks(1000),
     stanceCooldown: ticks(2000),
@@ -250,11 +261,15 @@ export const fakeContent: CompiledContent = deepFreeze({
 
 /** A complete fake loadout per fake age. */
 export const fakeLoadouts: Record<'stone' | 'medieval', Loadout> = {
-  stone: { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: ['rock_tosser', null], power: 'stampede' },
+  stone: {
+    units: ['bonker', 'pebbler', 'tuskback', null, null, null],
+    turrets: ['rock_tosser', null],
+    powers: { home: 'rockslide', field: 'stampede' },
+  },
   medieval: {
     units: ['footman', 'longbowman', 'destrier_knight', null, null, null],
     turrets: ['crossbow_nest', null],
-    power: 'arrow_storm',
+    powers: { home: 'arrow_storm', field: null },
   },
 };
 

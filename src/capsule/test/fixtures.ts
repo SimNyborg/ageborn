@@ -14,7 +14,7 @@ import type {
   WardrobeReveal,
 } from '@/contracts';
 import { createCatalog } from '../catalog';
-import { climbCount, strikePattern } from '../tiers';
+import { climbCount, strikePattern, strikeSplit } from '../tiers';
 import type { CapsuleCatalog } from '../types';
 
 export const PITY: SaveDoc['pity'] = {
@@ -59,10 +59,11 @@ export function reveal(spec: RevealSpec): CapsuleReveal {
       createdAt: 0,
     },
     climbs: k,
-    strikeClimbs: strikePattern(k),
+    strikeClimbs: strikePattern(strikeSplit(startTier, spec.tier).main),
     pityBefore: PITY,
     pityAfter: { ...PITY, sinceEpic: PITY.sinceEpic + 1, sinceLegendary: PITY.sinceLegendary + 1, opened: PITY.opened + 1 },
     firstLegendaryReveal: spec.firstLegendary ?? [],
+    firstOfTier: false,
   };
 }
 

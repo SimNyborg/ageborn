@@ -14,6 +14,7 @@ import { CosmeticImage } from '../../components/cosmeticArt';
 import { Pill } from '../../components/Chips';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CastleIcon, CheckIcon, CrateIcon, FlagIcon, LockIcon, RobotIcon, ScrollIcon, TrophyIcon } from '../../components/icons';
+import { tierCrests } from '../../components/capsuleLook';
 import { ScreenFrame } from '../../components/Layout';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
@@ -41,7 +42,7 @@ function GateLines(p: { arena: ArenaDef; prev: ArenaDef | null }) {
       case 'capsule':
         return (
           <li key={i}>
-            <CapsuleIcon tier={g.tier} size={20} /> {t(capsuleTierNameKey(g.tier))}
+            <CapsuleIcon tier={g.tier} crests={tierCrests(content.capsules, g.tier)} size={20} /> {t(capsuleTierNameKey(g.tier))}
           </li>
         );
       case 'ageUnlock':

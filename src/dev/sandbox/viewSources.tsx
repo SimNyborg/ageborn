@@ -55,8 +55,8 @@ export function showcaseLoadout(c: CompiledContent, age: AgeId): Loadout {
     pick((u) => u.group === 'legendary') ?? pick((u) => u.group === 'support'),
   ];
   const turrets = Object.values(c.turrets).filter((t) => t.age === age);
-  const power = Object.values(c.powers).find((p) => p.age === age && p.slot === 'default') ?? Object.values(c.powers).find((p) => p.age === age);
-  return { units: chosen, turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null], power: power?.id ?? '' };
+  const starter = (slot: 'home' | 'field') => Object.values(c.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
+  return { units: chosen, turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null], powers: { home: starter('home'), field: starter('field') } };
 }
 
 function sideConfig(c: CompiledContent, label: string, isBot: boolean, level: number): SideConfig {
@@ -163,7 +163,7 @@ export class DevAutoplayer implements Seat {
 
     if (canEvolve(st, cfg, side)) return [{ t: 'evolve', side }];
     if (me.lastStand === 'armed') out.push({ t: 'lastStand', side });
-    if (me.powerPpm >= 1_000_000 && st.units.some((u) => u.side !== side)) out.push({ t: 'power', side });
+    if (me.powerPpm[0] >= 1_000_000 && st.units.some((u) => u.side !== side)) out.push({ t: 'power', side, slot: 'home' });
 
     // Turrets: modernise outdated ones, fill a free mount, buy a second mount.
     const turretCard = (slot: 0 | 1): CardId | null => lo?.turrets[slot] ?? null;

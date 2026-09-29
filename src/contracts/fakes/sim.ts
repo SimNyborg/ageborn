@@ -38,8 +38,11 @@ export const cannedBattleEvents: readonly SimEvent[] = [
     damage: 2000, shieldAbsorbed: 0, heavy: false, modBp: 10000, x: 700_000, dmgType: 'blunt',
   },
   { tick: 40, e: 'knockback', id: 2, fromX: 700_000, toX: 703_000 },
-  { tick: 50, e: 'powerReady', side: 0 },
-  { tick: 51, e: 'powerTelegraph', side: 0, power: 'stampede', castId: 1, x: 700_000, zone: 500_000 },
+  { tick: 50, e: 'powerReady', side: 0, slot: 'field' },
+  {
+    tick: 51, e: 'powerTelegraph', side: 0, slot: 'field', power: 'stampede', castId: 1, x: 700_000, zone: 500_000,
+    cost: 100, targetId: -1, telegraphMs: 1000,
+  },
   { tick: 71, e: 'powerImpact', side: 0, power: 'stampede', castId: 1, x: 703_000, index: 0 },
   {
     tick: 71, e: 'hit', targetId: 2, sourceId: -1, sourceCard: 'stampede', castId: 1, sourceKind: 'power',
@@ -75,7 +78,10 @@ function sideState(): SideState {
     treasury: 0,
     mountsOwned: 1,
     turrets: [null, null, null, null],
-    powerPpm: 0,
+    powerPpm: [250_000, 250_000],
+    powerRem: [0, 0],
+    powerLockoutUntil: 0,
+    mountSilencedUntil: [0, 0, 0, 0],
     stance: 'charge',
     stanceReadyTick: 0,
     holdP: 320_000,
@@ -201,7 +207,11 @@ export class FakeSim implements Sim {
         treasury: me.treasury,
         mountsOwned: me.mountsOwned,
         turrets: turretsOf(me),
-        powerPpm: me.powerPpm,
+        powers: {
+          home: loadout?.powers.home ? { card: loadout.powers.home, ppm: me.powerPpm[0], cost: 100, reloadMs: 40000, rateBp: 10000 } : null,
+          field: loadout?.powers.field ? { card: loadout.powers.field, ppm: me.powerPpm[1], cost: 100, reloadMs: 40000, rateBp: 10000 } : null,
+        },
+        powerLockoutUntil: 0,
         stance: me.stance,
         holdP: Math.trunc(me.holdP / 1000),
         research: researchView(me),
@@ -209,12 +219,11 @@ export class FakeSim implements Sim {
         lastStand: me.lastStand,
         tray: loadout ? [...loadout.units] : [],
         turretCards: loadout ? [...loadout.turrets] : [],
-        power: loadout?.power ?? '',
       },
       foe: {
         ageIndex: foe.ageIndex,
         xpBp: 0,
-        powerPpm: foe.powerPpm,
+        powers: { home: { card: null, ppm: foe.powerPpm[0] }, field: { card: null, ppm: foe.powerPpm[1] } },
         turrets: turretsOf(foe),
         baseHpBp: hpBp(foe),
         stance: foe.stance,
@@ -235,6 +244,7 @@ export class FakeSim implements Sim {
         maxHp: u.maxHp,
         shield: u.shield,
         air: u.air,
+        summoned: u.summoned,
       })),
     };
   }
@@ -332,10 +342,10 @@ export class FakeSim implements Sim {
         s.sides[ev.side].ascendUntil = 0;
         break;
       case 'powerReady':
-        s.sides[ev.side].powerPpm = 1_000_000;
+        s.sides[ev.side].powerPpm[ev.slot === 'home' ? 0 : 1] = 1_000_000;
         break;
       case 'powerTelegraph':
-        s.sides[ev.side].powerPpm = 0;
+        s.sides[ev.side].powerPpm[ev.slot === 'home' ? 0 : 1] = 0;
         break;
       case 'stanceChanged':
         s.sides[ev.side].stance = ev.stance;

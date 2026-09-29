@@ -84,9 +84,9 @@ describe('formatting', () => {
 });
 
 describe('odds model (A6.4, A6.5)', () => {
-  it('shows a fresh bag of 30/40/20/7/3 when the bag is empty', () => {
-    expect(bagLeft(content.capsules, [])).toEqual({ clay: 30, bronze: 40, silver: 20, jade: 7, aeon: 3 });
-    expect(bagLeft(content.capsules, [0, 0, 4, 3])).toEqual({ clay: 2, bronze: 0, silver: 0, jade: 1, aeon: 1 });
+  it('shows a fresh bag of 60/80/40/13/4/2/1 when the bag is empty', () => {
+    expect(bagLeft(content.capsules, [])).toEqual({ clay: 60, bronze: 80, silver: 40, jade: 13, gold: 4, platinum: 2, aeon: 1 });
+    expect(bagLeft(content.capsules, [0, 0, 4, 3, 6])).toEqual({ clay: 2, bronze: 0, silver: 0, jade: 1, gold: 1, platinum: 0, aeon: 1 });
   });
 
   it('follows the Legendary pity curve: none to 25, +5% from 26, sure at 40', () => {
@@ -103,14 +103,17 @@ describe('odds model (A6.4, A6.5)', () => {
     // 28 since the last Legendary plus 5 pre-rolled pending capsules: the next one earned is n = 34.
     expect(byId['legendary']).toMatchObject({ since: 28, guaranteedIn: 12, nextChanceBp: 4500 });
     expect(byId['newCard']).toMatchObject({ guaranteedIn: 3 });
-    expect(m.bagSize).toBe(100);
-    expect(m.bagLeftTotal).toBe(64);
+    expect(m.bagSize).toBe(200);
+    expect(m.bagTotal).toBe(200);
+    expect(m.bagLeftTotal).toBe(131);
     expect(m.stackBp.map((s) => s.bp)).toEqual([7200, 2200, 500, 100]);
     expect(m.dailyBp.map((d) => [d.tier, d.bp])).toEqual([
       ['bronze', 7800],
       ['silver', 1500],
       ['jade', 500],
-      ['aeon', 200],
+      ['gold', 150],
+      ['platinum', 35],
+      ['aeon', 15],
     ]);
     expect(m.foils.map((f) => [f.foil, f.bp])).toEqual([
       ['holo', 25],

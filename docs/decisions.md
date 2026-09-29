@@ -696,74 +696,85 @@ Owner: "the capsule opening animation must be much more satisfying". Everything 
 
 ## Owner request 2026-09-29: more capsule tiers
 
-Owner: "Til kapslerne mangler der flere niveauer, tilføj f.eks. guld, platinium, så de øverste kapsler bliver virkeligt sjældne og eftertragtede." The lead designer scored three proposals (economy 21.0, desire 18.5, reveal 17.5 of 25, on the owner goal, economy stability, honesty, phone clarity and build cost). The economy proposal is the base. The ladder order and exclusives come from desire; colours, rings, crests and sounds from reveal. Full spec: DESIGN A6.3, A6.4, A6.5 and A10, and the scratchpad `capsule-tiers/SPEC.md` of this session.
+Owner: "Til kapslerne mangler der flere niveauer, tilføj f.eks. guld, platinium, så de øverste kapsler bliver virkeligt sjældne og eftertragtede." The lead designer scored three proposals (economy 21.0, desire 18.5, reveal 17.5 of 25, on the owner goal, economy stability, honesty, phone clarity and build cost). The economy proposal is the base. The ladder order and exclusives come from desire; colours, rings, crests and sounds from reveal. A critic then reviewed the spec (6 major, 14 minor issues); the entries below are the revised decisions, and the review round at the end lists what changed. The spec lives in DESIGN A6.3, A6.4, A6.5, A6.9, A9, A10 (follow-ups in A6.2, A13, A15.4, A16.18, A17.13, B8, B13, B15, C5) and in the per-package requests `docs/requests/capsule-tiers-wp0.md`, `-wp1.md`, `-wp6.md`, `-wp7.md`, `-wp8.md`, `-wp9.md` (with the `docs/ui-plan.md` follow-ups), `-wp10.md`, `-wp12.md` and `-warpath.md`.
 
 - 2026-09-29 (the ladder): 7 tiers, lowest first: Clay, Bronze, Silver, Jade, **Gold**, **Platinum**, **Aeon** (ids `gold` and `platinum` are new; indices 0-6).
-  - The four existing tiers keep their places (Jade stays index 3), so nothing a player learned moves. The owner's two metals go on top in the order everyone knows, and Aeon stays the pinnacle (our name, the game's theme).
-  - Gold, Platinum and Aeon always hold 1, 2 and 3 Legendaries. That is the one rule a player needs, shown by 1-3 Legendary crests on the drum.
-  - Rejected:
-    - economy's Gold as a mid tier below Jade (7%, more common than Jade, so "gold" would not be a top capsule);
-    - reveal's 8th tier "Eternal" (not asked for);
-    - desire's 11 Crown items, Crown Shelf, titles and stats (too costly for the gain).
+  - The four existing tiers keep their places (Jade stays index 3), so nothing a player learned moves. The owner's two metals go on top in the order everyone knows, and Aeon stays the pinnacle (our name, the game's theme). The owner is asked whether Platinum should be on top instead.
+  - Gold, Platinum and Aeon always hold 1, 2 and 3 Legendaries. That is the one rule a player needs, shown by 1-3 Legendary crests once the tier is shown.
+  - Rejected: economy's Gold as a mid tier below Jade (7%, more common than Jade, so "gold" would not be a top capsule); reveal's 8th tier "Eternal" (not asked for); desire's 11 Crown items, Crown Shelf, titles and stats (too costly for the gain).
 - 2026-09-29 (odds):
   - Win Capsules come from a **200-slot bag of exactly 60 / 80 / 40 / 13 / 4 / 2 / 1**. Clay, Bronze and Silver keep their shares, Jade or better stays exactly 10%, and Legendary capsules are 7 in 200 (3.5%; the old Aeon was 3%). Aeon is 1 in 200, 6x rarer than before.
   - Supply: Bronze 78 / Silver 15 / Jade 5 / Gold 1.5 / Platinum 0.35 / Aeon 0.15 % (the old 2% Aeon split).
   - The bag is the tier guarantee ("luck decides when, never whether"), so no tier pity counter is added.
   - Why 13/4 and not desire's 12/5: 12/5 made every rarity 3-4% faster and Amber +4%. 13/4 keeps every time-to-max median within 3.6% of today.
+- 2026-09-29 (hidden until opened): a capsule that climbs (Win, Supply, Clay meter) shows only its start tier and kind name until it is opened, everywhere (tray, shelf, Result, aria labels, odds panel), with no crests and no sorting by the rolled tier. Showing the rolled tier and then "revealing" it with strikes would be a staged tease (A15.1 red line 7, A15.3). Fixed-tier capsules show their tier.
 - 2026-09-29 (contents):
   - Gold = the old Aeon (6 stacks, 26/10/5/2, 1 Legendary, 30% skin, 2,640 Amber) + 100 Dust.
-  - Platinum: 7 stacks, 26/12/5/2, 2 different Legendaries (the 2nd holds 1 copy), ≥ 2 Epic, first Legendary at least Silver foil, 50% skin, 2,800 Amber, 200 Dust.
-  - Aeon: 8 stacks, 40/14/6/2, 3 different Legendaries (2nd and 3rd hold 1 copy), ≥ 3 Epic, first Legendary Holo (on a Legendary without Holo when possible; 800 Dust if all have Holo), a skin Epic or better, an Aeon Collection item, 3,600 Amber, 500 Dust.
+  - Platinum: 7 stacks, 26/12/5/2, 2 different Legendaries (the 2nd holds 1 copy), ≥ 2 Epic, a sure skin at Wardrobe odds, 2,800 Amber, 200 Dust.
+  - Aeon: 8 stacks, 40/14/6/2, 3 different Legendaries (2nd and 3rd hold 1 copy), ≥ 3 Epic, a skin Epic or better, an Aeon Collection item, 3,600 Amber, 500 Dust.
+  - Foils stay purely rolled on every stack. No tier has a foil floor: a guaranteed Holo per Aeon would be the foil pity that A15.22 and A16.28 rejected, and at A15.11 prices (80,000 Dust per Legendary Holo) it would dwarf the rest of the capsule and empty the foil tail within about a year.
   - Jade loses its 25% Rare-to-Legendary conversion: Legendaries now come from Gold up, the 1% stack roll and pity. The conversion funded the top without inflating Legendary copies, and Jade becomes "the Epic capsule".
   - Extra Legendary stacks hold 1 copy so Legendary copy inflow stays flat: the thrill of a 2nd or 3rd Legendary is the card, not the copy count.
-  - Every column (stacks, Legendaries, Epics, Amber, Dust, skin) is non-decreasing up the ladder.
-- 2026-09-29 (top-tier exclusive): the **Aeon Collection**, 4 A18.9.4 items (Aeon Hourglass decoration, Eternal Dawn base flag, Time Stop emote, quote "Well met, across the ages!"), source kind `capsuleTier`.
-  - Only from Aeon Capsules; not craftable, tradable or sold; never rotated or time-limited.
+  - Every column (stacks, Legendaries, Epics, Amber, Dust, skin) is non-decreasing up the ladder. Dust-equivalent at craft prices: Jade 7,143, Gold 10,728, Platinum 12,854, Aeon 18,520 (skin valued Epic-or-better, 1,196) plus the Aeon item; the mean bag capsule is 1,730.
+- 2026-09-29 (top-tier exclusive): the **Aeon Collection**, 4 A18.9.4 items (Aeon Hourglass decoration, Eternal Dawn base flag, Frozen Moment emote `frozen_moment`, quote "Well met, across the ages!"), source kind `capsuleTier`.
   - Each Aeon holds one the player lacks until the set is complete; after that, a normal collection item and +500 Dust.
-  - Access is guaranteed by the bag and by three skill Aeons: the Trophy Road 4,000 summit, the War Path Cosmic finale, and Conquest's 27 stars until the War Path fold. So status never depends on luck alone.
+  - Craftable for 3,000 Dust each once the save has opened an Aeon (flag `capsule.first.aeon`). A15.1 engagement rule 2 says randomness appears only with a crafting path; every other random-pool cosmetic is craftable, so these must be too. Gating crafting on a first Aeon keeps the meaning "I have opened an Aeon".
+  - Never rotated, time-limited, sold or tradable. Class Grey with the A6.4 safeguards.
+  - Pace: about 2-3 months for an engaged player (mostly the skill Aeons); a casual player's first Aeon comes after about 6 months, then crafting.
+  - Access is guaranteed by the bag and by three skill Aeons: the Trophy Road 4,000 summit, the War Path Cosmic finale, and Conquest's 27 stars until the War Path fold.
   - Kept at 4 items (not 11) for build cost; the items may ship one release after the drums.
+  - After about a year (set done, the 8 Epic and Legendary crate skins owned), an engaged player's Aeon is "the biggest pile" (about 10x the mean capsule). Accepted and told to the owner; later Aeon items (added, never rotated) renew it.
 - 2026-09-29 (roll rules; DESIGN A6.4 steps):
   - A 2nd or 3rd Legendary stack counts cards already picked in the capsule as owned, so it picks an owned Legendary instead of falling back to Epic. Today's `pickCard` would drop it to Epic.
-  - **Legendary catch-up** (required): once every Legendary in the pool is owned, Legendary stacks weigh each card 1 + the copies it still needs to reach L10. Without it, 1 of 100 simulated years had a Legendary that never maxed; with it, none, and the worst year's Legendary median fell from 163 to 132.5 days. Disclosed on the odds panel.
+  - **Legendary catch-up** (required): a Legendary pick uses it whenever every Legendary in the pool is owned, promised by an unopened capsule or already picked in this capsule (as the prototype did); each card then weighs 1 + the copies it still needs to reach L10. Without it, 1 of 100 simulated years had a Legendary that never maxed; with it, none, and the worst year's Legendary median fell from 163 to 132.5 days. Disclosed on the odds panel.
+  - Capsule skins never read or advance the Wardrobe pity counters (as today's `bonusSkin`).
 - 2026-09-29 (sources):
-  - Gate 7: Gold (the old Aeon's contents under the new name).
-  - Gate 8: Platinum.
+  - Gate 7: Gold (the old Aeon's contents under the new name). Gate 8: Platinum.
   - Trophy Road 4,000 and Conquest 27 stars: Aeon (now the new Aeon).
   - Script capsule 5 (Mammoth Matriarch): Gold. The first Platinum and Aeon are always earned, never scripted (A15: no early generosity that sets false expectations).
   - War Path Future boss: Jade → Gold, and the Cosmic boss is now the new Aeon (request `docs/requests/capsule-tiers-warpath.md`).
-  - Net one-time change for a player who clears everything: about +19,000 Dust-equivalent and +4,300 Amber, about 2 days of income.
+  - Net one-time change for a player who clears everything: about +21,400 Dust-equivalent and +4,300 Amber, about 2.5 days of income.
+- 2026-09-29 (veterans at the update):
+  - The bag in progress finishes its old mix and its Aeon slots are the new Aeon: the displayed promise "Aeon: 2 left" is kept. Windfall: at most 3 new Aeons per save, once (up to 3 × +7,892 Dust-equivalent and 3 Aeon items).
+  - A save that claimed the Trophy Road 4,000 node, the Conquest 27-star milestone or the War Path Cosmic boss before the update got an old Aeon (a Gold) there. It gets one new Aeon per claimed source, once, so "every player can earn an Aeon by skill" is literally true (up to 3 × 18,520 Dust-equivalent and 3 × 3,600 Amber for the most advanced saves). This is a one-time grant through the normal pure grant path (flag `capsule.legacySkillAeon`, granted on the next `tickTimers`), not the "top-up" rejected below.
+  - A veteran who claimed Gate 8 got an old Aeon (a Gold) where a new player gets a Platinum (+2,226). Accepted and stated; not topped up.
 - 2026-09-29 (climb and show, A10):
-  - 4 main strikes climb at most to Gold (`crownAbove: 'gold'`). Platinum gets 1 and Aeon 2 crown strikes.
-  - A crown pip is never drawn in advance or empty, and the step after strike 4 starts at the same moment for every tier, so no Gold ever looks "almost Platinum".
-  - Contract: `strikeClimbs` stays 4 booleans and `climbs` is the total. New `CapsuleReveal.firstOfTier` drives a 1 s "Your first Aeon Capsule" banner (meta flag `capsule.first.<tier>`).
-  - The drum has 7 rings, one per tier, each lit ring in its own tier colour. Legendary crests replace the Aeon gold rim.
-  - Colours:
-    - Gold `#F0DC9A` champagne: ΔE2000 14.7 from Legendary, while a saturated gold sits 3-9 from it.
-    - Platinum `#C4F2EA` ice: 16.8 from Silver.
-    - Aeon `#4F66E6` deep indigo: 15.5 from Epic, which ends the old violet Aeon vs Epic clash at 5.0; contrast 3.5:1 on the dark theme.
-    - Silver vs Common (4.2) stays a known exception.
-  - Staging escalates with the tier already shown: Gold small, Platinum medium, Aeon large.
-  - Sounds: `cap_climb_5`, `cap_climb_6`, `cap_crown_rise`, `cap_burst_platinum`, `cap_burst_aeon`. No casino imagery or copy; "jackpot", "almost", "so close" and "only N left" are banned in capsule copy.
-- 2026-09-29 (save): the next save version after the newest (v6 when written). Re-read `src/save/migrations` before adding it.
-  - `capsules.bag` remaps tier index 4 → 6 (0-3 do not move).
-  - New `capsules.bagSize` (100 for a bag in progress, 0 when empty, 200 after a refill), so the odds panel says "N of 100 left" truthfully.
-  - The bag in progress finishes its old mix and its Aeon slots are the new Aeon: the displayed promise "Aeon: 2 left" is kept, at most 3 extra Aeons per save, once.
+  - 4 main strikes climb at most to Gold (`summitAbove: 'gold'`). Platinum gets 1 and Aeon 2 **summit strikes** ("crown" would clash with War Path crowns).
+  - The drum keeps its 5 carved rings (Clay to Gold). Platinum and Aeon are summit gems that rise out of the cap only when their strike will climb; nothing above the result is ever drawn empty. The step after strike 4 starts at the same moment for every tier, so no Gold ever looks "almost Platinum".
+  - Crests: the Legendary star on a dark enamel shield (10.2:1), on the upper brass band; the one rarity colour allowed on a capsule (a ui-plan 3.2 exception), never drawn empty.
+  - Contract: `strikeClimbs` stays 4 booleans and `climbs` is the total. New `CapsuleReveal.firstOfTier` drives a skippable 1 s "Your first Aeon Capsule" step after the pop (meta flag `capsule.first.<tier>`).
+  - In one opening (a show or an Open all batch) only the first NEW Legendary gets the full walkout; every other one is 3 s and skippable.
+  - Colours: Gold `#EFE0B0` champagne (12.3 from the primary button light, 17.8 from Legendary; the rendered drum's mid-tone and highlight are tested too, so no saturated gold); Platinum `#C4F2EA` ice (16.8 from Silver); Aeon `#5D3DFF` electric indigo (13.2 from Epic, 13.1 from the high-contrast team blue; the first pick `#4F66E6` was only 5.9 from it). The ΔE ≥ 12 test covers rarity, team (all presets) and button colours. A parchment outline on every surface gives each icon at least 4.63:1. Silver vs Common (4.2) stays a known exception.
+  - Staging escalates with the tier already shown: Gold small, Platinum medium, Aeon large; the Aeon's age-glyph halo reads the content age list within 900 ms.
+  - Sounds: `cap_climb_5`, `cap_climb_6`, `cap_summit_rise`, `cap_burst_platinum`, `cap_burst_aeon`. No casino imagery or copy; "jackpot", "rarest", "almost", "so close" and "only N left" are banned in capsule copy (C5 copy scan).
+- 2026-09-29 (save): the next save version after the newest (v6 when written; v7 if the War Path migration lands first). Re-read `src/save/migrations` before adding it.
+  - `capsules.bag` remaps tier index 4 → 6 (0-3 do not move) and then sorts.
+  - New `capsules.bagSize` (100 for a bag in progress, 0 when empty, 200 after a refill), so the odds panel says "N of 100 left" truthfully; the UI reads `bagSize || content bag size`.
   - Pending `aeon` capsules become `gold` (tier and startTier) with +100 Dust. Their pre-rolled contents are exactly the Gold table: names follow contents, nothing is re-rolled or taken.
-  - Rejected: desire's post-load "top-up to the new Aeon" (impure, a WP7 step after load) and economy's `table: 1` legacy label (an "Aeon" drum with 1 Legendary would break the crest rule).
-  - `flags['notice.capsuleLadder']` drives a one-time, closable Home notice with no timer.
-- 2026-09-29 (economy, measured): a scratch copy of the repo with the final numbers ran `tools/economy.ts` over 100 seeds against an untouched copy.
-  - Medians (today → new):
-    - Common to max 110.3 → 107.5 days
-    - Rare 101.0 → 99.5
-    - Epic 69.0 → 66.5
-    - Legendary 111.5 → 112.0 (p90 129 → 123)
-    - copies done 209.5 → 192.5 (p90 264 → 217)
-    - Amber done 146 → 143
-    - per day: 96.5 → 97.8 copies and 2,981 → 3,030 Amber
+  - `flags['notice.capsuleLadder']` drives a one-time, closable notice in the Capsules tab (not Home, A15.13), only for saves past the script (`pity.opened` > 5), with a relabelled Aeon or with a legacy Aeon due.
+  - Tests use a named fixture outside the `fixtures/v*.json` glob (`capsule-ladder-pre.json`) plus the usual frozen `vN.json`.
+  - Rejected: desire's post-load "top-up" of old Aeons to the new Aeon (it changes pre-rolled contents); economy's `table: 1` legacy label (an "Aeon" drum with 1 Legendary would break the crest rule).
+- 2026-09-29 (economy, measured): a scratch copy of the repo with the final numbers ran `tools/economy.ts` over 100 seeds against an untouched copy. The review round changed only foils, skins and cosmetics, which do not move copies or Amber.
+  - Medians (today → new): Common to max 110.3 → 107.5 days; Rare 101.0 → 99.5; Epic 69.0 → 66.5; Legendary 111.5 → 112.0 (p90 129 → 123); whole collection (copies done) 209.5 → 192.5 (p90 264 → 217), about 17 days (8%) sooner, 12 of them from catch-up; Amber done 146 → 143; per day 96.5 → 97.8 copies and 2,981 → 3,030 Amber.
   - Per bag capsule before pity: 15.7 → 16.1 copies, 399 → 411 Amber, 7 → 13 Dust.
-  - `sim-cli economy` seed 1: 9 pass / 8 fail (today 10 / 7). The extra fail is Rare to max at 105 days against a 105-157 band, which today's own 100-seed median (101) also misses: single-seed noise. WP12 should gate on a 30-seed median.
+  - The old Rare band (4.3 months ± 20%) is stale, not noise: today's own 100-seed median (101) is below it. ECONOMY_TARGETS' time-to-max targets are rebased on today's measured medians (110 / 101 / 69 / 112), which is what the owner's "keep today's time to max a card" means, and WP12 gates on a 30-seed median. A6.9 now shows target and measured values; the plan-L7, all-Legendaries, copies-done and finish-gap misses exist today and stay Phase 3 items.
   - `sim-cli drops --mode smoke`: 10 / 10 pass (400 / 400 bags of 200 exact, Supply χ² p = 0.58, 0 guarantee violations, every Platinum 2 and every Aeon 3 Legendaries).
-  - The owner's "keep today's time to max a card" holds.
+- 2026-09-29 (review round): what the critic changed, in short.
+  - Climbing capsules hide their rolled tier until opened (was shown in the tray and Result).
+  - Foil floors (Platinum Silver foil, Aeon Holo) and the Holo preference and fallback Dust are removed.
+  - The Aeon Collection is craftable after a first Aeon (was never craftable, breaking A15.1 rule 2).
+  - The spec moved from the session scratchpad into DESIGN and `docs/requests/capsule-tiers-*.md`; ui-plan follow-ups are requested in `capsule-tiers-wp9.md`.
+  - A16.18 (Mythic columns, Holo rate), A17.13 and A6.9 were brought in line.
+  - The drum keeps 5 rings plus summit gems (7 rings did not fit and drew empty slots above the result); crests sit on a widened brass band; icons below 32 px use a silhouette with a "★n" badge.
+  - "Crown strike" became "summit strike"; the emote "Time Stop" became "Frozen Moment"; the glyph halo reads the content age list.
+  - Gold and Aeon colours moved (see climb and show); the crest has a dark shield.
+  - The first-of-tier banner is its own skippable step; one full walkout per opening, not per capsule.
+  - Platinum's skin is now certain; the Aeon skin is valued correctly.
+  - The notice copy names the Jade change, drops "rarest", and moves to the Capsules tab.
+  - Veterans get legacy skill Aeons; the asymmetries are stated.
+  - Economy targets rebased, 30-seed gate.
+  - The owner gets four yes/no questions in Danish.
+- **Til ejeren (dansk):** Kapslerne får 7 niveauer (Ler, Bronze, Sølv, Jade, Guld, Platin, Aeon). Aeon er nu 1 ud af 200 sejrskapsler og har 3 Legendaries, et sikkert skin og et af 4 Aeon-samlerobjekter; de kan også laves med Dust efter din første Aeon. En sejrskapsel viser først sit niveau, når du åbner den. Tiden til at maksimere et kort er næsten uændret, og hele samlingen bliver færdig ca. 17 dage tidligere. Spørgsmål: (1) Skal Aeon blive over Guld og Platin, eller vil du have Platin øverst? (2) Er det OK, at Aeon-samlerobjekterne kan laves med Dust (3.000 hver) efter din første Aeon? (3) Er det OK, at uåbnede gamle Aeon-kapsler bliver til Guld med +100 Dust, og at spillere, der allerede har hentet en "dygtigheds-Aeon", får en ny Aeon én gang? (4) Gate 7 Guld, Gate 8 Platin og War Path-bossen i Fremtiden Guld?
 
 ## Owner request 2026-09-29: powers cost gold, reload, more powers, own-half limits
 
@@ -816,3 +827,36 @@ Owner: "Speciallen burde koste penge og have reload time, der skal være mange f
 - 2026-09-29 (Capsules tab, 4.6): stage with the best capsule (display tier, name, source, Odds, Open) and a shelf where a tile tap opens that capsule or crate directly (kept one tap; no select step). Banks show only after their first progress: charges once the Ladder is open, Supply when banked, Clay when it has a pip. The odds panel shows the odds first, then the bank rules.
 - 2026-09-29 (Customize): U10's "instant with Undo" instead of a try-on step: equipping a flag, base skin or decoration shows the new state on the tile and a toast with Undo. Equip pills are green, "Equipped" is a flat state pill, every category tab has its label, and the base mock-up shows the player's current War Path age.
 - 2026-09-29 (Modes): the Modes panel opens on the last mode started, so a Ladder battle is 2 taps after the first.
+
+## Power rework: review fixes (lead, 2026-09-29)
+
+A critic reviewed the power rework spec ("Owner request 2026-09-29: powers cost gold, reload, more powers, own-half limits" above). The lead checked every issue against the code and DESIGN; the fixes below are in DESIGN A2.9 and A5.7 and supersede the entry above where they differ.
+
+- 2026-09-29 (measurement): the combined rule set was never measured; the 15-17% Bell came from priced Home-only prototypes without a cap and with an unadapted AI (100 g Home powers lost to no powers, 38%). New build phase **P0**: a `--patch` or harness prototype of the full rules with pre-registered go/no-go (Standard tier V Bell ≤ 25%, Short not above today, `no_power` loses ≥ 55%, `power_hoarder` ≤ 45%, Home starters' value per gold ≥ 1.0) and a fixed fallback order (Home 75 g, caps +1, power bounty 50%) before any contract change. The owner summary now says the package is not measured yet.
+- 2026-09-29 (P1 keeps `main` playable): the contract bump breaks today's HUD, render, app, War Plan and tutorial readers of `Loadout.power` and `powerPpm`, so P1 now ships the save migration and one-button compatibility adapters (meta sends `field: null` for both sides until P2; `render/hudModel.ts` maps the Home slot onto the single button), placeholder manifest entries and template sounds for the 8 new starters (the ids test), and starts only after the UI rebuild's in-flight HUD and War Plan edits are committed. Requests: `docs/requests/powers-p1-compat.md`.
+- 2026-09-29 (the screen is real): cap order only ranked units inside the zone, so the zone could skip cheap front units. Now eligibility is decided over the whole reach area: the first `maxTargets` enemies nearest the caster's gate (plus units already hit); the zone only decides which of them are touched. The loss tip "Lead with cheap units" is now true, the pips mark the eligible units, and backline sniping with area powers is gone.
+- 2026-09-29 (Home mask): blasts, jitter and sweep widths reached 29-60 lu past mid-lane at the band edge. The reach area is a hard mask: a Home effect touches only enemies with own-frame p ≤ 1,000 (inclusive); the reach test asserts on hit positions.
+- 2026-09-29 (strikes): four strikes killed their age's Epic in one cast (about 3.5× their cost every 30 s). Epics take 50% from strikes (`strikeEpicBp`); the static check now asserts a strike never kills a full-HP same-age Heavy or non-Legendary Epic. A manual strike locks the unit nearest the aim (the aim is never overridden); auto-aim and bots rank by value, and bots' aim error is a choice among their best k targets.
+- 2026-09-29 (buffs): buffs scaled with army size (mass, then press). Buffs now affect at most 8 own units (frontmost), the cloud's ally bonus too; buffs have a static budget (shields plus heals ≤ 70% of the age's Infantry per target) and are gated through the per-power ±3 row.
+- 2026-09-29 (controls): slows only cut move speed, so controls did little to a wave already fighting. New status `snare` (move and attack speed); snares and pulls get chip damage of 30-40% of Infantry; stuns cost 75 g, cap 5, 2.0 s; all controls must reach ≥ 12 disabled unit-seconds per 100 gold (static check). Field pulse count is max(1, durationMs ÷ 500) (the old "≤" gave one pulse too many).
+- 2026-09-29 (AI): damage was valued as cost × damage ÷ HP, so chip damage passed every bar. Value is now kill-weighted (a kill counts cost × 1.3, other damage 40%); starting bars 6,000-18,000, calibrated in P1 (tier V median 1.5-3.5 casts per age; tier VII casts on small groups at most half as often). Tier VII+ keep bait discipline (no Home cast on targets worth < 200 unless the base was hit), so a bait draws tier V and not tier VII.
+- 2026-09-29 (gates): `power_hoarder` now casts at a covered value ≥ 150 (the bait size), so `bait_wave` can gain; bait is also run against tier V and VII bots. Flak and Suppress are gated in matchups, not on the baseline. The army-share row counts value, not units. `home_turtle` uses the age's Home damage starter plus its Field starter. One setup statement for all power gates (proxies in Short, Standard and Full War; P0 and P1 Bell on tier V mirrors, release on tier VII).
+- 2026-09-29 (Suppress is not a Bell answer): Era of the Week and chosen start eras end windows in ages without Suppress, and all Suppress powers are War Path Epics that the starter-only Bell gates never measure. Removed from the Bell mitigations; Suppress stays a situational tool (Medieval, Future). Its silence now belongs to the mount (selling or rebuilding does not clear it).
+- 2026-09-29 (roster template): Modern Home had two bombards and no control; Industrial Field had no support. The Modern Home starter is now **Strafing Run** (a sweep; replaces the never-built Rocket Artillery) and Flak fills the control role in Modern; Industrial's L9 power is now **Field Hospital** (a mend; replaces Saboteurs). "Typed slots mean no two area nukes" was false: one power per slot, the cap bounds both, `lockMs` is the lever. The schema checks the template.
+- 2026-09-29 (save): eight built powers move to the Field slot, so the migration unlocks the Field slot for every save with a match played; it also grants the new item of every already claimed Trophy Road node ≥ 550 directly (claimed nodes are stored as whole values), 60 Amber for a double grant. New fixtures "Stampede equipped, 50 trophies" and "road claimed to 1,000".
+- 2026-09-29 (locks and names): the sim knows no meta unlock; meta sends `field: null` while the Field slot is locked. The lockout lever's reject code is `powerLockout` (HUD `lockoutUntil`); the progression state is `slotLocked`. An auto-aimed damage or control cast with nothing to hit is rejected before payment.
+- 2026-09-29 (smaller rules): empty slots accrue and carry; cost modifiers multiply and rate bonuses add; the observation and the HUD show effective cost and reload; the reload keeps a remainder so every reload is exact; the power bounty ignores Forage and Bounty Hunters (as built); `power_ready` plays when a slot first becomes castable; ring speed is public; the power-incoming badge counts down the power's own telegraph; F ignores burrowed, structure and mid-leap units, and forts are never eligible; bots may use any power the player could own by either source; the Daily always plays both slots; the phone HUD keeps ≥ 16 px slack with forts and the enemy research icon; Last Stand floats above the Home button.
+- 2026-09-29 (rejected or partly taken): the critic's option (b) for the screen (keep zone-local order) was rejected in favour of a real screen; a "value per gold 1.2-2.0" gate for buffs was not added, because a buff's marginal value is not measurable per cast: buffs are gated by the ±3 row and a static budget, and their value per gold is reported.
+
+## Capsule ladder: rules and data build (WP0, WP1, WP7, WP8, WP12 tools; 2026-09-29)
+
+Built from "Owner request 2026-09-29: more capsule tiers" above and `docs/requests/capsule-tiers-*.md`.
+
+- 2026-09-29 (save v6): the ladder migration is save v6 (the newest was v5 when it landed). Any later migration (the War Path or the power rework) takes v7 or later. `meta/rules.ts` `SAVE_VERSION` is 6.
+- 2026-09-29 (tier order is data): meta reads the ladder from `content.capsules.tierOrder` (`tierOrder`, `tierIndex`, `topTier`, `guaranteedLegendaries` in `meta/tables.ts`); the old `TIER_ORDER` / `TIER_INDEX` constants are gone. A test checks that the capsule rule files name no tier id. `capsule/tiers.ts` keeps its own `TIER_ORDER` and `SUMMIT_ABOVE` (the capsule layer may not import content, B2); `capsule/test/metaReveals.test.ts` checks that they match the content and that meta's strikes agree with `resolveStrikes` for all 49 pairs.
+- 2026-09-29 (catch-up input): `copiesStillNeeded` counts, per card, the copies to L10 after the collection and every unopened capsule. A card that is only promised (not owned yet) counts from L1. The weights apply only when no Legendary is left that is unowned, unpromised and unpicked in this capsule, as A6.4 step 4 says.
+- 2026-09-29 (Aeon Collection not in content yet): the 4 Aeon Collection items need code-drawn art first (the visuals test requires art for every item), so they are not in `raw/cosmetics.ts` yet. The rules are built and tested with a content fixture: an Aeon rolls the normal pool without the +500 Dust until the items exist (as the request says). Their strings are ready.
+- 2026-09-29 (strings file): the new UI, capsule and cosmetic strings live in `src/i18n/capsuleLadder.en.json`, because `ui.en.json` and `capsule.en.json` fail their tests on keys no code uses yet. The owning packages move each key into their own file when they use it. `ui.odds.bagLine` keeps its current text and params until WP9 switches to the list form.
+- 2026-09-29 (legacy count): the legacy grant sets `capsule.legacySkillAeon.<kind>` for each Aeon it gave. `legacySkillAeonCount` then counts those, so a source claimed after the update never shows in the "You had already earned {n}" line.
+- 2026-09-29 (economy gate): `tools/economy.ts` gates on the median of 30 seeds (`--seeds`, about 20 s) against the rebased targets. Measured medians over 100 seeds, before and after the ladder: Common to max 110 → 108.5 days, Rare 101 → 97.3, Epic 69 → 66, Legendary 112 → 111.5, whole collection 210 → 200, Amber done 146 → 143, focused plan at L7 78 → 82.5.
+- 2026-09-29 (show placeholders): `capsule/plan.ts` gets the Gold, Platinum and Aeon burst builds (820 / 1,000 / 1,200 ms) and `SHOW_LIMITS.burst` 1,600. Until WP6 adds `cap_climb_5` / `cap_climb_6` and the new stingers, tiers above Gold reuse `cap_climb_4`. The summit steps, crests and first-of-tier step are WP10's.

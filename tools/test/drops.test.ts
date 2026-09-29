@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CapsuleTier, Foil, Rarity, SaveDoc } from '../../src/contracts';
 import { asContent, content } from '../../src/content';
 import { seedSfc32, shuffle } from '../../src/core/rng';
-import { dropsChecks, dropsDefaults, DropsTally, runDrops, type OpenedCapsule } from '../drops';
+import { climbIssue, contentBagSize, dropsChecks, dropsDefaults, DropsTally, runDrops, type OpenedCapsule } from '../drops';
 import { loadMeta } from '../lib/modules';
 
 const c = asContent(content);
@@ -87,13 +87,68 @@ describe('DropsTally (A6.4, A6.5)', () => {
     expect(verdicts).toMatchObject({ 'drops.epicPity': 'fail', 'drops.newCard': 'fail', 'drops.guarantees': 'fail', 'drops.legendaryPity': 'pass' });
   });
 
-  it('allows the Jade Rare that became a Legendary', () => {
+  it('checks the Legendary guarantees from the data: count, different cards, extra-stack copies', () => {
+    const multi = c.capsules.tierOrder.filter((t) => c.capsules.tiers[t].guaranteed.filter((r) => r === 'legendary').length >= 2);
+    expect(multi.length).toBeGreaterThan(0);
+    for (const tier of multi) {
+      const def = c.capsules.tiers[tier];
+      let n = 0;
+      const good = capsule(tier);
+      good.stacks = good.stacks.map((x, i) => {
+        if (x.rarity !== 'legendary') return { ...x, card: `c${i}` };
+        n += 1;
+        return { ...x, card: `L${i}`, copies: n === 1 ? def.copies.legendary : def.extraLegendaryCopies };
+      });
+      const ok = new DropsTally(content);
+      ok.add({ ...good, skin: true });
+      expect(ok.summary().legendaryViolations, tier).toBe(0);
+      // the same Legendary twice
+      const dup = new DropsTally(content);
+      dup.add({ ...good, skin: true, stacks: good.stacks.map((x) => (x.rarity === 'legendary' ? { ...x, card: 'same' } : x)) });
+      expect(dup.summary().legendaryViolations, tier).toBe(1);
+      // one Legendary short (the extra stack fell back to Epic)
+      const short = new DropsTally(content);
+      const idx = good.stacks.findIndex((x) => x.rarity === 'legendary');
+      short.add({ ...good, skin: true, stacks: good.stacks.map((x, i) => (i === idx ? { ...x, rarity: 'epic' as Rarity } : x)) });
+      expect(short.summary().legendaryViolations, tier).toBe(1);
+    }
+  });
+
+  it('checks sure skins, skin floors and the Wardrobe pity counters', () => {
+    const sure = c.capsules.tierOrder.filter((t) => c.capsules.tiers[t].skinChanceBp >= 10_000);
+    expect(sure.length).toBeGreaterThan(0);
     const t = new DropsTally(content);
-    const jade = capsule('jade');
-    const i = jade.stacks.findIndex((s) => s.rarity === 'rare');
-    jade.stacks[i] = { ...(jade.stacks[i] as OpenedCapsule['stacks'][number]), rarity: 'legendary' };
-    t.add(jade);
-    expect(t.summary().guaranteeViolations).toBe(0);
+    for (const tier of sure) t.add({ ...capsule(tier), skin: false });
+    const floor = sure.find((x) => c.capsules.tiers[x].skinMinRarity !== 'rare');
+    if (floor) t.add({ ...capsule(floor), skin: true, skinRarity: 'rare' });
+    t.add({ ...capsule('clay'), pityAfter: { ...PITY0, wardrobeSinceEpic: 1 } });
+    const s = t.summary();
+    expect(s.sureSkinViolations).toBe(sure.length + (floor ? 1 : 0));
+    expect(s.wardrobePityViolations).toBe(1);
+    const verdicts = Object.fromEntries(dropsChecks(s, content).map((x) => [x.id, x.verdict]));
+    expect(verdicts).toMatchObject({ 'drops.sureSkin': 'fail', 'drops.wardrobePity': 'fail' });
+  });
+
+  it('checks the honest climb for every start and final pair (A10)', () => {
+    const order = c.capsules.tierOrder;
+    const top = order.indexOf(c.capsules.summitAbove);
+    for (let a = 0; a < order.length; a += 1) {
+      for (let b = a; b < order.length; b += 1) {
+        const main = Math.max(0, Math.min(4, Math.min(b, top) - a));
+        const summit = Math.max(0, b - Math.max(top, a));
+        const strikeClimbs = [0, 1, 2, 3].map((i) => i >= 4 - main);
+        expect(climbIssue(c, order[b]!, { startTier: order[a]!, climbs: main + summit, strikeClimbs }), `${order[a]}>${order[b]}`).toBeNull();
+      }
+    }
+    expect(climbIssue(c, 'aeon', { startTier: 'clay', climbs: 6, strikeClimbs: [true, false, true, true] })).toMatch(/non-climb/);
+    expect(climbIssue(c, 'gold', { startTier: 'clay', climbs: 5, strikeClimbs: [true, true, true, true] })).toMatch(/summit/);
+    const t = new DropsTally(content);
+    t.add({ ...capsule('silver'), climb: { startTier: 'clay', climbs: 2, strikeClimbs: [true, true, false, false] } });
+    expect(t.summary().climbViolations).toBe(1);
+  });
+
+  it('uses the content bag size (200) for the bag groups', () => {
+    expect(contentBagSize(c)).toBe(200);
   });
 });
 

@@ -36,11 +36,11 @@ function baselinePlan(c: CompiledContent): Partial<Record<AgeId, Loadout>> {
     const units = Object.values(c.units).filter((u) => u.age === age && !u.hidden);
     const pick = (group: string, rarity?: string): CardId | null => units.find((u) => u.group === group && (!rarity || u.rarity === rarity))?.id ?? null;
     const turrets = Object.values(c.turrets).filter((t) => t.age === age && t.rarity === 'common');
-    const power = Object.values(c.powers).find((p) => p.age === age && p.slot === 'default');
+    const starter = (slot: 'home' | 'field') => Object.values(c.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
     out[age] = {
       units: [pick('infantry', 'common'), pick('ranged', 'common'), pick('heavy', 'common'), pick('antiArmor'), pick('support')],
       turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null],
-      power: power?.id ?? '',
+      powers: { home: starter('home'), field: starter('field') },
     };
   }
   return out;

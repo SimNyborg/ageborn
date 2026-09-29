@@ -36,8 +36,11 @@ export interface DamageMod {
 /** Target priority classes (DESIGN A2.7 Targeting). Default is `front`. */
 export type TargetPriority = 'front' | 'armored' | 'backline' | 'air' | 'densest';
 
-/** Status effect kinds (DESIGN A2.7 Status effects). */
-export type StatusKind = 'stun' | 'slow' | 'mark' | 'shield' | 'regen' | 'damageBuff' | 'speedBuff' | 'attackSpeedBuff';
+/**
+ * Status effect kinds (DESIGN A2.7 Status effects). `slow` lowers move speed only; `snare` lowers move
+ * speed and attack speed × (1 − s) (A2.9.6, power controls); both apply after the A18.2 caps.
+ */
+export type StatusKind = 'stun' | 'slow' | 'snare' | 'mark' | 'shield' | 'regen' | 'damageBuff' | 'speedBuff' | 'attackSpeedBuff';
 
 /**
  * A status to apply. Reapplying sets magnitude and expiry to the max of old and new (DESIGN A2.7).
@@ -163,9 +166,15 @@ export interface TurretDef {
   descKey: string;
 }
 
-/** Age Power effects (DESIGN A2.9, A5.7). Powers hit units only, never bases or turrets. */
+/**
+ * Age Power effects (DESIGN A2.9, A5.7). Powers hit units only, never bases, turrets or forts. Every
+ * damaging or controlling effect is bounded by `PowerDef.maxTargets` and the screen (A2.9.5).
+ */
 export type PowerEffect =
-  /** Impact i lands at telegraphEnd + floor(i × durationTicks / count) (DESIGN A2.9 Barrage sequencing). */
+  /**
+   * Impact i lands at telegraphEnd + floor(i × durationTicks / count) (DESIGN A2.9.6 Barrage sequencing).
+   * `hitsGround` defaults to true; false = air only (Flak).
+   */
   | {
       kind: 'barrage';
       count: number;
@@ -175,6 +184,7 @@ export type PowerEffect =
       radius: number;
       jitter: number;
       hitsAir: boolean;
+      hitsGround?: boolean;
       pattern: 'even' | 'line';
     }
   | { kind: 'sweep'; zone: number; durationMs: number; damage: number; width: number; hitsAir: boolean }
@@ -188,17 +198,87 @@ export type PowerEffect =
       knockback: number;
       maxHitsPerEnemy: number;
     }
-  | { kind: 'buffAll'; statuses: StatusApply[] }
+  /** Own units: at most `maxTargets` (8) of the caster's frontmost units (A2.9.5). */
+  | { kind: 'buffAll'; statuses: StatusApply[]; maxTargets: number }
   | { kind: 'cloud'; width: number; durationMs: number; enemyMissBp: number; allyDamageBp: number }
-  | { kind: 'paradrop'; card: CardId; count: number; beyondFront: number; fallbackP: number };
+  | { kind: 'paradrop'; card: CardId; count: number; beyondFront: number; fallbackP: number }
+  /**
+   * A ground field (A2.9.7): pulse k lands at telegraphEnd + 10k ticks, max(1, durationMs ÷ 500) pulses.
+   * Each pulse hits the eligible enemies whose centre is within zone / 2 of the cast centre: damage,
+   * then statuses; the first pulse also pulls `pullBp` of the distance to the centre. Hits ground
+   * units always and air units when `hitsAir`.
+   */
+  | { kind: 'field'; zone: number; durationMs: number; hitsAir: boolean; statuses?: StatusApply[]; damagePerPulse?: number; pullBp?: number }
+  /** A homing strike on one locked target (A2.9.7): shot i lands at telegraphEnd + i × interval. */
+  | { kind: 'strike'; shots: number; intervalMs: number; damage: number; hitsAir: boolean }
+  /** Every enemy mount starts no turret attack for `durationMs` (A2.9.7). No damage. */
+  | { kind: 'suppress'; durationMs: number };
 
-/** An Age Power (DESIGN A2.9, A5.7). Every power has a 1.0 s telegraph visible to both sides. */
+/** The two typed power slots of an age loadout (DESIGN A2.9.1); index 0 is Home, 1 Field in per-slot arrays. */
+export type PowerSlot = 'home' | 'field';
+
+/**
+ * Where a power may act (DESIGN A2.9.4): `home` your half, `front` near your army, `anywhere` the whole
+ * lane (strikes and drops only), `army` your own units (no aim).
+ */
+export type PowerReach = 'home' | 'front' | 'anywhere' | 'army';
+
+/** Power families (DESIGN A5.7 role template); each has its own budget (A2.9.6). */
+export type PowerFamily =
+  | 'bombard'
+  | 'sweep'
+  | 'snare'
+  | 'pull'
+  | 'stun'
+  | 'flak'
+  | 'charge'
+  | 'frontBarrage'
+  | 'strike'
+  | 'suppress'
+  | 'rally'
+  | 'ward'
+  | 'mend'
+  | 'cloud'
+  | 'drop';
+
+/** Power rarity marks the source and the specialisation, never raw power (A3 sidegrades). */
+export type PowerRarity = 'common' | 'rare' | 'epic';
+
+/** How a power is owned (DESIGN A2.9.8): the starter kit, a Trophy Road node, or a War Path first clear. */
+export type PowerSource = 'starter' | 'road' | 'warPath';
+
+/** An Age Power (DESIGN A2.9, A5.7). */
 export interface PowerDef {
   id: CardId;
   kind: 'power';
   age: AgeId;
-  slot: 'default' | 'alternate';
+  /** The loadout slot this power fits (A2.9.1). */
+  slot: PowerSlot;
+  reach: PowerReach;
+  family: PowerFamily;
+  rarity: PowerRarity;
+  source: PowerSource;
+  /**
+   * Trophy Road node that grants it: the node of a Road power, the fallback node of a War Path power
+   * (A2.9.8). Absent for starters.
+   */
+  road?: number;
+  /** War Path level (in the power's own region, `age`) whose first clear grants it (A2.9.8). */
+  warPathLevel?: number;
+  /** Whole gold per cast, flat across ages (A2.9.2). */
+  cost: number;
+  /** Reload after a cast, ms (A2.9.3). */
+  reloadMs: number;
+  /** Telegraph visible to both sides, ms: 0.5-2.0 s by family (A2.9.6). */
   telegraphMs: number;
+  /**
+   * The cap (A2.9.5): the most distinct enemy units one cast affects (1-6) for damaging and controlling
+   * effects; the most own units for buffs (8) and the cloud's ally bonus (8). Required for barrage,
+   * sweep, stampede, field and buffAll.
+   */
+  maxTargets?: number;
+  /** AI value weight of controls and buffs, bp of the affected card cost (A2.9.9). */
+  aiValueBp?: number;
   effect: PowerEffect;
   visualId: VisualId;
   sfx: SoundId;
@@ -268,11 +348,14 @@ export interface EconomyRules {
   ascendMs: number;
   evolveHealBp: number;
   vanguardCount: number;
-  powerChargeMs: number;
+  /** Each power slot's progress at an evolve becomes min(progress, this) (A2.9.3: 7,500). */
   powerCarryCapBp: number;
   overchargeXp: number;
   overchargeBp: number;
+  /** `powerBp` scales power reload in Overdrive and Siege (A2.9.3: 10,000, no bonus; a lever). */
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
+  /** Age Power rules and data levers (DESIGN A2.9.3-A2.9.6). */
+  power: PowerEconomyRules;
   /**
    * Siege (A2.10). `moveSpeedBp` is the forced march (A17.3: unit movement ×1.2 while in Siege);
    * `gateCrowdLu` the siege crowd (A16.4 step 2): in Siege a unit may stand level with the ally ahead of it
@@ -329,11 +412,36 @@ export interface EconomyRules {
   areaMaxTargets: number;
   healLegendaryBp: number;
   legendaryPowerDamageBp: number;
+  /** The lane clamp of every power aim, p in lu (A2.1: [150, 1,850]). */
   powerZoneClamp: [number, number];
   emoteCooldownMs: number;
   drawGapBp: number;
   levelStepBp: number;
   maxLevel: number;
+}
+
+/** Age Power rules and data levers (DESIGN A2.9.3-A2.9.6, A2.9.12 levers). Positions in lu. */
+export interface PowerEconomyRules {
+  /** Every slot's progress at match start, bp (2,500). */
+  startBp: number;
+  /** Reload of an empty slot, which still accrues and carries (40,000 ms). */
+  emptyReloadMs: number;
+  /** The Home line: Home powers touch only enemies with own-frame p ≤ this (1,000, inclusive). */
+  homeLineP: number;
+  /** Front reach beyond the front F (150). */
+  frontReachLu: number;
+  /** F never counts below this for Front reach (480, the turret cover edge). */
+  frontFloorP: number;
+  /** F is the p of the `frontRank`-th frontmost trained ground unit (1; lever 2). */
+  frontRank: number;
+  /** A manual strike picks among eligible enemies within this of the aim (80). */
+  strikePickLu: number;
+  /** Epics take this share of strike damage (5,000). */
+  strikeEpicBp: number;
+  /** Legendaries take this share of a power's stun, snare, slow and mark duration and pull distance (5,000). */
+  legendaryControlBp: number;
+  /** Optional shared lockout after a cast, ms (0 = off; a lever). */
+  lockMs: number;
 }
 
 /** The four War Council tracks (DESIGN A18.5). */
@@ -375,8 +483,10 @@ export type ResearchEffect =
   | { kind: 'income'; milliGoldPerSec: number }
   /** Kill bounty: `addBp` to the bounty rate, or ×(1 + `bonusBp`) for kills made in your own half (p ≤ L / 2). */
   | { kind: 'bounty'; addBp: number; bonusBp: number; ownHalfOnly: boolean }
-  /** Age Power charge rate +bp (Signal Fires). */
-  | { kind: 'powerCharge'; bp: number }
+  /** Age Power reload rate +bp (Signal Fires; rate bonuses add, A2.9.3). */
+  | { kind: 'powerReload'; bp: number }
+  /** Age Power price −bp (Quartermasters, v1.1; cost modifiers multiply, A2.9.2). */
+  | { kind: 'powerCost'; bp: number }
   /**
    * War Horns: while Charging, own ground units +`chargeSpeedBp` speed; while Holding with the flag at
    * p ≤ `flagMaxP`, own units within `nearLu` of the flag deal +`holdDamageBp` damage.
@@ -444,7 +554,6 @@ export interface SkinDef {
 /** Durations precompiled to 50 ms ticks: `max(1, round(ms / 50))` (DESIGN B3, B4 Compilation). */
 export interface CompiledTicks {
   ascend: number;
-  powerCharge: number;
   turretBuild: number;
   turretSell: number;
   stanceCooldown: number;

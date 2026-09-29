@@ -90,20 +90,29 @@ export interface Rarities {
 /** One capsule tier (DESIGN A6.4 tier table). */
 export interface CapsuleTierDef {
   id: CapsuleTier;
-  /** 0 = Clay ... 4 = Aeon; the climb count is the tier index above the start tier (A10). */
+  /** 0 = Clay ... 6 = Aeon; the climb count is the tier index above the start tier (A10). */
   index: number;
   stacks: number;
   /** Copies per stack by the stack's rarity (A6.4 step 3). */
   copies: Record<Rarity, number>;
   /** Stack rarities fixed before the random roll, in order (A6.4 step 1.1). */
   guaranteed: Rarity[];
-  /** Jade: chance that one guaranteed Rare stack becomes Legendary (A6.4 step 1.3). */
+  /**
+   * Chance that one guaranteed Rare stack becomes Legendary (the removed A6.4 step 1.3); 0 on every
+   * tier since the 2026-09-29 ladder, kept so the odds sheet can show it only when above 0.
+   */
   rareToLegendaryBp: number;
-  /** Aeon: the guaranteed Legendary prefers an unowned card (A6.4). */
+  /** Gold, Platinum, Aeon: the guaranteed Legendaries prefer unowned cards (A6.4). */
   legendaryUnownedFirst: boolean;
-  /** Aeon: chance of a bonus skin at Wardrobe odds (A6.4). */
+  /** Chance of a capsule skin (A6.4 step 7): Gold 30%, Platinum and Aeon 100%. */
   skinChanceBp: number;
-  /** Jade: +100 Dust (A6.4). */
+  /** The capsule skin's lowest rarity; `rare` = full Wardrobe odds, Aeon `epic` (A6.4 step 7). */
+  skinMinRarity: SkinRarity;
+  /** Copies of the 2nd and later guaranteed Legendary stacks (Platinum and Aeon 1; A6.4 step 3). */
+  extraLegendaryCopies: number;
+  /** Aeon: holds an Aeon Collection item (a `capsuleTier` cosmetic source) while the set is incomplete (A6.4 step 8). */
+  exclusiveItems: boolean;
+  /** Bonus Dust (Jade and Gold +100, Platinum +200, Aeon +500; A6.4). */
   bonusDust: number;
   amber: number;
   /** DESIGN's "Expected copies" column ×100 (3.4 → 340), checked against the table by tests. */
@@ -135,15 +144,26 @@ export interface ScriptedCapsuleDef {
 }
 
 export interface CapsuleTables {
-  /** Clay → Aeon. */
+  /** Clay → Aeon: the ladder, lowest first; a tier's index is its place here. */
   tierOrder: CapsuleTier[];
   tiers: Record<CapsuleTier, CapsuleTierDef>;
   /** Remaining stacks roll these rarities (A6.4 step 1.2). */
   stackRollBp: Record<Rarity, number>;
-  /** Win Capsule shuffle bag contents, 100 slots (A6.4). */
+  /** Win Capsule shuffle bag contents (A6.4); the bag size is the sum of the counts (200), never a constant. */
   bag: Record<CapsuleTier, number>;
-  /** Daily Capsule odds (A6.4). */
+  /** Supply Capsule odds (A6.4). */
   dailyOddsBp: Record<CapsuleTier, number>;
+  /**
+   * The highest tier the 4 main strikes climb to (A10); each tier above it is one summit strike
+   * (Platinum 1, Aeon 2).
+   */
+  summitAbove: CapsuleTier;
+  /** Legendary catch-up once every Legendary of the pool is owned (A6.4 step 4). */
+  legendaryCatchUp: boolean;
+  /** Dust an `exclusiveItems` capsule adds once its collection is complete (A6.4 step 8). */
+  exclusiveCompleteDust: number;
+  /** Dust price to craft a `capsuleTier` cosmetic after the first capsule of that tier (A6.4, A18.9.4). */
+  exclusiveCraftDust: number;
   /** Unowned cards weigh ×3 when picking stack cards (A6.4 step 4). */
   unownedWeight: number;
   pity: {
@@ -514,7 +534,8 @@ export type ModifierId = 'gold_rush' | 'glass_armies' | 'power_hour' | 'fast_for
 export type ModifierEffect =
   | { kind: 'passiveGold'; bp: number }
   | { kind: 'unitHp'; bp: number }
-  | { kind: 'powerCharge'; bp: number }
+  /** Power reload +bp (rate bonus) and price −bp (A2.9.2-A2.9.3: Power Hour +10,000 / 5,000). */
+  | { kind: 'powers'; reloadBp: number; costBp: number }
   | { kind: 'xpThreshold'; bp: number }
   | { kind: 'unitCost'; groups: RoleGroup[]; bp: number }
   | { kind: 'siegeShift'; ms: number };
@@ -664,7 +685,9 @@ export type CosmeticSource =
   | { kind: 'feat'; feat: string }
   | { kind: 'arena'; arena: number }
   | { kind: 'codexLevel'; level: number }
-  | { kind: 'warPath' };
+  | { kind: 'warPath' }
+  /** A top-tier exclusive (the Aeon Collection, A6.4 step 8): from that tier's capsules, craftable after the first one. */
+  | { kind: 'capsuleTier'; tier: CapsuleTier };
 
 export type DecorationKind = 'statue' | 'banner' | 'brazier' | 'trophy' | 'plant';
 

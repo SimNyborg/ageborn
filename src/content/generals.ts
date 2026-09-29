@@ -9,13 +9,23 @@
  */
 import type { Loadout } from '@/contracts/sim';
 import type { AgeId, CardId } from '@/contracts/ids';
+import { raw } from './raw';
 import type { GeneralDef, GeneralId, GeneralTables, GeneralWeights, Personality } from './types';
 
 type U = CardId | null;
 type Plan = Record<AgeId, Loadout>;
 
+/**
+ * A General's age loadout (A2.9.1 two power slots): the named power goes into its own slot and the
+ * age's starter of the other slot fills the rest (DESIGN A2.9.9: Generals play both slots).
+ */
 function lo(units: [U, U, U, U, U], turrets: [U, U], power: CardId): Loadout {
-  return { units, turrets, power };
+  const def = raw.powers.find((p) => p.id === power);
+  const starter = (slot: 'home' | 'field'): CardId | null =>
+    raw.powers.find((p) => p.age === def?.age && p.slot === slot && p.source === 'starter')?.id ?? null;
+  const home = def?.slot === 'home' ? power : starter('home');
+  const field = def?.slot === 'field' ? power : starter('field');
+  return { units, turrets, powers: { home, field } };
 }
 
 /** The Balanced brain's weights (all 50), used where a General has no weights of its own. */

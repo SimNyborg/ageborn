@@ -10,7 +10,7 @@
  * Only attack 0 stops movement; secondary attacks (riders, the Behemoth MG) fire whenever they have a target.
  */
 import { BP, roundDiv } from '@/core';
-import { isLeaping, isStunned, makeImpact, unitAttackSpeedBp, unitDamageBonusBp } from '../damage';
+import { isLeaping, isStunned, makeImpact, statusBp, unitAttackSpeedBp, unitDamageBonusBp } from '../damage';
 import { emit } from '../events';
 import { xOf } from '../geometry';
 import type { AttackRules, UnitRules } from '../rules';
@@ -68,7 +68,10 @@ function firstHitBonus(ctx: Ctx, u: UnitRt, r: UnitRules): { bp: number; kb: num
 function startAttack(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRules, st: AttackRt): void {
   const tick = ctx.tick;
   const speedBp = unitAttackSpeedBp(ctx, u);
-  const interval = speedBp !== 0 ? Math.max(1, roundDiv(a.intervalTicks * BP, BP + speedBp)) : a.intervalTicks;
+  let interval = speedBp !== 0 ? Math.max(1, roundDiv(a.intervalTicks * BP, BP + speedBp)) : a.intervalTicks;
+  // A snare (A2.9.6) slows attacks too: attack speed × (1 − s), after the A18.2 caps.
+  const snare = statusBp(u, 'snare');
+  if (snare > 0) interval = Math.max(1, roundDiv(interval * BP, BP - (snare >= BP ? BP - 1 : snare)));
   const windup = roundDiv(interval * a.windupPct, 100);
   // A18.4.2: the first hit of an engagement is the first attack after 4 s with no target in range.
   st.firstHit = ai === 0 && tick - u.lastEngagedTick >= ctx.econ.freshTicks && hasFirstHit(ctx, u, r);

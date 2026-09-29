@@ -37,7 +37,8 @@ describe('newSave', () => {
       expect(l.units.filter(Boolean)).toHaveLength(3);
       expect(l.units.slice(3)).toEqual([null, null, null]);
       expect(l.turrets.filter(Boolean)).toHaveLength(2);
-      expect(C.powers[l.power]?.slot).toBe('default');
+      expect(C.powers[l.powers.home!]).toMatchObject({ slot: 'home', source: 'starter', age });
+      expect(C.powers[l.powers.field!]).toMatchObject({ slot: 'field', source: 'starter', age });
     }
     expect(plan.loadouts.stone.units.slice(0, 3)).toEqual(['bonker', 'pebbler', 'tuskback']);
   });
@@ -58,16 +59,17 @@ describe('newSave', () => {
 
 describe('economy entry points (A6.4, A6.6, A6.9)', () => {
   it('per-tier expected copies match the A6.4 table', () => {
-    for (const tier of ['clay', 'bronze', 'silver', 'jade', 'aeon'] as const) {
+    for (const tier of C.capsules.tierOrder) {
       expect(Math.round(expectedCopiesX10k(C, tier) / 1000) / 10).toBeCloseTo(C.capsules.tiers[tier].expectedCopiesCenti / 100, 5);
     }
   });
 
-  it('15.7 copies and 398.7 Amber per bag capsule before pity (A17.13: about ×1.75)', () => {
+  it('16.1 copies and 411.3 Amber per bag capsule before pity (the 2026-09-29 ladder; A6.9)', () => {
     const a = bagCapsuleAverages(C);
-    expect(Math.round(a.copiesCenti / 10) / 10).toBe(15.7);
-    expect(a.amberCenti).toBe(39870);
+    expect(Math.round(a.copiesCenti / 10) / 10).toBe(16.1);
+    expect(a.amberCenti).toBe(41130);
   });
+
 
   it('copies and Amber to max one card', () => {
     expect(copiesToMax(C, 'common')).toEqual({ copies: 153, amber: 4970 });

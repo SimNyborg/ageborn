@@ -31,15 +31,16 @@ function byAge(content: Content, age: AgeId) {
   };
 }
 
-function defaultPower(content: Content, age: AgeId): CardId {
-  return content.order.powers.find((id) => content.powers[id]!.age === age && content.powers[id]!.slot === 'default')!;
+/** The age's starter power of a slot (A2.9.8: by `source`, never by slot name). */
+function starterPower(content: Content, age: AgeId, slot: 'home' | 'field'): CardId {
+  return content.order.powers.find((id) => content.powers[id]!.age === age && content.powers[id]!.slot === slot && content.powers[id]!.source === 'starter')!;
 }
 
-function loadout(units: (CardId | null)[], turrets: (CardId | null)[], power: CardId): Loadout {
+function loadout(units: (CardId | null)[], turrets: (CardId | null)[], powers: Loadout['powers']): Loadout {
   return {
     units: Array.from({ length: 6 }, (_, i) => units[i] ?? null),
     turrets: Array.from({ length: 2 }, (_, i) => turrets[i] ?? null),
-    power,
+    powers,
   };
 }
 
@@ -55,7 +56,7 @@ function planFrom(
     const a = byAge(content, age);
     const units = pick(a.units.filter((id) => collection[id])).slice(0, 6);
     const turrets = a.turrets.filter((id) => collection[id]).slice(0, 2);
-    loadouts[age] = loadout(units, turrets, defaultPower(content, age));
+    loadouts[age] = loadout(units, turrets, { home: starterPower(content, age, 'home'), field: starterPower(content, age, 'field') });
   }
   return { name, loadouts };
 }
@@ -127,7 +128,7 @@ export function newPlayerSave(content: Content): SaveDoc {
   collection['phalangite'] = entry(1, 0);
   collection['pikeman'] = entry(1, 0, 'none', true);
   collection['grenadier'] = entry(1, 0, 'none', true);
-  const powersOwned = content.order.ages.map((a) => defaultPower(content, a));
+  const powersOwned = content.order.powers.filter((id) => content.powers[id]!.source === 'starter');
   return fakeSaveDoc({
     createdAt: FIXTURE_NOW - 12 * 60 * 1000,
     profile: { name: 'Chief-4821', avatar: { seed: 4821, parts: {} }, banner: 'tar_pit', frame: 'none', title: 'recruit' },
@@ -148,6 +149,7 @@ export function newPlayerSave(content: Content): SaveDoc {
       dailyBank: 1,
       dailyNextAt: FIXTURE_NOW + 14 * HOUR,
       bag: [],
+      bagSize: 0,
       wardrobe: [],
     },
     pity: { sinceEpic: 2, sinceLegendary: 2, sinceNewCard: 0, opened: 2, wardrobeSinceEpic: 0, wardrobeSinceLegendary: 0 },
@@ -310,7 +312,9 @@ export function midGameSave(content: Content): SaveDoc {
       clayMeter: 2,
       dailyBank: 1,
       dailyNextAt: FIXTURE_NOW + 14 * HOUR,
-      bag: [...Array(18).fill(0), ...Array(26).fill(1), ...Array(14).fill(2), ...Array(5).fill(3), ...Array(1).fill(4)],
+      // A 200-slot bag in progress (the 2026-09-29 ladder: tier indices 0-6, Clay to Aeon)
+      bag: [...Array(36).fill(0), ...Array(52).fill(1), ...Array(28).fill(2), ...Array(10).fill(3), ...Array(3).fill(4), ...Array(1).fill(5), ...Array(1).fill(6)],
+      bagSize: 200,
       wardrobe: [
         { id: 'crate-mid-1', source: 'road', skin: 'arctic_rifleman', rarity: 'rare', duplicateDust: 0, createdAt: FIXTURE_NOW - DAY },
       ],
@@ -358,14 +362,14 @@ export function midGameSave(content: Content): SaveDoc {
 export function maxedSave(content: Content): SaveDoc {
   const collection: SaveDoc['collection'] = {};
   for (const id of [...content.order.units, ...content.order.turrets]) collection[id] = entry(10, 0, 'holo');
-  const pending: PendingCapsule[] = Array.from({ length: 10 }, (_, i) =>
-    capsule(
-      `cap-max-${i + 1}`,
-      i === 0 ? 'road' : 'win',
-      (['aeon', 'jade', 'silver', 'bronze', 'bronze', 'clay', 'silver', 'bronze', 'clay', 'jade'] as const)[i]!,
-      i === 0 ? 'aeon' : 'clay',
-    ),
-  );
+  // The 2026-09-29 ladder: the fixed-tier capsules show their tier (a road Aeon, a Gate 8 Platinum, a
+  // War Path Gold); the Win Capsules keep their rolled tiers hidden behind their Clay start tier.
+  const fixed = { 0: ['road', 'aeon'], 1: ['road', 'platinum'], 2: ['warPath', 'gold'] } as const;
+  const pending: PendingCapsule[] = Array.from({ length: 10 }, (_, i) => {
+    const f = fixed[i as keyof typeof fixed];
+    const rolled = (['aeon', 'platinum', 'gold', 'bronze', 'bronze', 'clay', 'silver', 'jade', 'clay', 'gold'] as const)[i]!;
+    return capsule(`cap-max-${i + 1}`, f ? f[0] : 'win', f ? f[1] : rolled, f ? f[1] : 'clay');
+  });
   const stars: SaveDoc['conquest']['stars'] = {};
   for (const b of content.generals.conquest.board) stars[b.general] = [true, true, true];
   const plan = planFrom(content, collection, 'Legends', (ids) => [...ids].reverse());
@@ -403,6 +407,7 @@ export function maxedSave(content: Content): SaveDoc {
       dailyBank: 3,
       dailyNextAt: null,
       bag: [],
+      bagSize: 0,
       wardrobe: [],
     },
     pity: { sinceEpic: 0, sinceLegendary: 12, sinceNewCard: 0, opened: 812, wardrobeSinceEpic: 3, wardrobeSinceLegendary: 7 },

@@ -4,16 +4,26 @@ import { FixedClock } from '@/contracts/fakes/clock';
 import { LocalSaveStore, type LocalSaveStoreOptions, type Timers } from '../store.localStorage';
 import { MemoryStorage } from '../storage';
 import v1Json from './fixtures/v1.json';
-import v5Json from './fixtures/v5.json';
+import v6Json from './fixtures/v6.json';
+import capsuleLadderPreJson from './fixtures/capsule-ladder-pre.json';
 
 /** A fresh deep copy of the frozen v1 fixture (five ages; migrate it before validating). */
 export function v1Fixture(): SaveDoc {
   return JSON.parse(JSON.stringify(v1Json)) as SaveDoc;
 }
 
-/** A fresh deep copy of the frozen fixture of the version this build writes (v4: six troop slots, A18.9). */
+/** A fresh deep copy of the frozen fixture of the version this build writes (v6: the capsule ladder, A6.4). */
 export function currentFixture(): SaveDoc {
-  return JSON.parse(JSON.stringify(v5Json)) as SaveDoc;
+  return JSON.parse(JSON.stringify(v6Json)) as SaveDoc;
+}
+
+/**
+ * The v5 doc the capsule ladder migration (v6) is tested on: a half-drawn unsorted bag holding old
+ * Aeons (index 4), a pending Win Aeon, a road Aeon, a scripted capsule 5 Aeon, the road summit claimed
+ * and 30 capsules opened. Kept outside the `v*.json` glob, which keys fixtures by version.
+ */
+export function capsuleLadderPreFixture(): Record<string, unknown> {
+  return JSON.parse(JSON.stringify(capsuleLadderPreJson)) as Record<string, unknown>;
 }
 
 /** Every frozen save fixture by version (`fixtures/v<N>.json`). */

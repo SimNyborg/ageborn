@@ -25,6 +25,7 @@ export {
   planOpenAll,
   planWardrobeShow,
   SHOW_LIMITS,
+  stingerFor,
   SHOW_TIMING,
   WALKOUT_BEATS,
   type Cue,
@@ -34,7 +35,7 @@ export {
   type StepKind,
   type WardrobePlanOptions,
 } from './plan';
-export { AEON_RIM, RARITY_COLORS, TIER_COLORS } from './palette';
+export { CREST, RARITY_COLORS, TIER_COLORS, TIER_RAMPS } from './palette';
 export { ShowRunner, type RunnerOptions, type RunnerState, type ShowView } from './runner';
 export {
   buildSummary,
@@ -47,7 +48,7 @@ export {
   type SummaryItem,
   type SummaryModel,
 } from './summaryModel';
-export { climbCount, isBackLoaded, resolveStrikes, strikePattern, TIER_ORDER, tierIndex } from './tiers';
+export { climbCount, crestCount, isBackLoaded, isSummitTier, LEGENDARY_CRESTS, resolveStrikes, strikePattern, strikeSplit, summitGemCount, SUMMIT_ABOVE, TIER_ORDER, tierIndex } from './tiers';
 export {
   DEFAULT_PITY_RULES,
   DEFAULT_SHOW_SETTINGS,

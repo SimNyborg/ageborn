@@ -104,7 +104,7 @@ describe('battle table (content.battle)', () => {
     // Stampede with no own ground units starts at p = 300: centre 300 + 250
     ctx.s.sides[0].ageIndex = 0;
     devSetPower(sim, 0, 1000000);
-    const tel = ofKind(st.step({ t: 'power', side: 0 }), 'powerTelegraph')[0];
+    const tel = ofKind(st.step({ t: 'power', side: 0, slot: 'field' }), 'powerTelegraph')[0];
     expect(tel?.power).toBe('stampede');
     expect(tel?.x).toBe(550000);
     stepN(sim, 1);

@@ -7,6 +7,7 @@
  *
  * - `kills`: enemy units killed by this side (any killer kind). `turretKills`: by turrets.
  * - `powerMaxHits`: the most distinct enemies hit by one of this side's Age Power casts.
+ * - `powerGoldSpent`, `powerCasts`: gold paid for this side's casts and its casts per slot [Home, Field] (A2.9.12).
  * - `baseDamage`: whole HP dealt to the enemy base by attacks (Siege decay excluded).
  * - `heavyKillsByAA`: enemy Heavy-group units killed by this side's Anti-armor units.
  * - `mvpCard`: this side's unit or turret card with the most damage dealt (ties: more kills, then id).
@@ -41,6 +42,8 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
     evolves: 0,
     reachedFinalAgeAtMs: null as number | null,
     powerMaxHits: 0,
+    powerGoldSpent: 0,
+    powerCasts: [0, 0] as [number, number],
     baseDamageCenti: 0,
     heavyKillsByAA: 0,
     usedTreasury: false,
@@ -60,6 +63,10 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
         break;
       case 'powerTelegraph':
         castSide.set(ev.castId, ev.side);
+        if (ev.side === side) {
+          st.powerGoldSpent += ev.cost;
+          st.powerCasts[ev.slot === 'home' ? 0 : 1] += 1;
+        }
         break;
       case 'hit': {
         const targetSide = unitSide.get(ev.targetId);
@@ -140,6 +147,8 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
         evolves: st.evolves,
         reachedFinalAgeAtMs: st.reachedFinalAgeAtMs,
         powerMaxHits: st.powerMaxHits,
+        powerGoldSpent: st.powerGoldSpent,
+        powerCasts: [st.powerCasts[0], st.powerCasts[1]],
         baseDamage: Math.trunc(st.baseDamageCenti / 100),
         heavyKillsByAA: st.heavyKillsByAA,
         usedTreasury: st.usedTreasury,

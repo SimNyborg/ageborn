@@ -14,11 +14,13 @@ describe('Daily Challenge modifiers (A9.1)', () => {
     expect(m.unitHpBp).toBe(10000);
   });
 
-  it('Gold Rush: passive gold ×1.5; Power Hour: charge ×2', () => {
+  it('Gold Rush: passive gold ×1.5; Power Hour: power reload ×2 and prices −50%', () => {
     const sim = createSim(matchConfig({ modifiers: ['gold_rush', 'power_hour'] }));
     stepN(sim, 20);
     expect(sim.state.sides[0].gold).toBe(175000 + 9000);
-    expect(sim.state.sides[0].powerPpm).toBe(40000);
+    // 25% start, 40 s reloads at twice the rate: 2,500 ppm a tick
+    expect(sim.state.sides[0].powerPpm).toEqual([300000, 300000]);
+    expect(sim.observe(0).me.powers.home?.cost).toBe(50);
   });
 
   it('Glass Armies: unit HP ×0.7; Heavy Metal: Heavy and Legendary cost −30%', () => {

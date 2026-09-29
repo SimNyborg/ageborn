@@ -15,6 +15,7 @@ import type { Content, GateReward, LadderWin, RoadReward } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 import { grantCrateAt } from './capsules/wardrobe';
 import { rewardFormat } from './formats';
+import { META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER } from './rules';
 import { arenaOf } from './tables';
 import { addCosmetics, unlockTitles } from './titles';
 
@@ -59,6 +60,8 @@ export function applyTrophies(s: SaveDoc, t: Content, delta: number): { save: Sa
   const arenas: number[] = [];
   for (let i = s.arenaIndex + 1; i <= reached; i += 1) arenas.push(i);
   let save: SaveDoc = { ...s, trophies: { ...s.trophies, current, best }, arenaIndex: reached };
+  // A2.9.1: 150 trophies (the Gate 2 node) unlock the Field power slot, if War Path Stone L5 has not.
+  if (best >= POWER_FIELD_TROPHIES && !save.flags[META_FLAGS.powerField]) save = { ...save, flags: { ...save.flags, [META_FLAGS.powerField]: true } };
   if (arenas.length > 0) save = unlockTitles(save, t).save;
   return { save, arenas };
 }
@@ -101,7 +104,8 @@ function payRoad(s: SaveDoc, r: RoadReward, t: Content, now: number): SaveDoc {
     case 'dust':
       return addDust(s, r.amount);
     case 'power':
-      return s.powersOwned.includes(r.card) ? s : { ...s, powersOwned: [...s.powersOwned, r.card] };
+      // A2.9.8: a power the save already owns (from the War Path) pays 60 Amber instead.
+      return s.powersOwned.includes(r.card) ? addAmber(s, POWER_OWNED_AMBER) : { ...s, powersOwned: [...s.powersOwned, r.card] };
     case 'capsule':
       return grantCapsuleAt(s, 'road', t, now, { tier: r.tier }).save;
     case 'wardrobe':

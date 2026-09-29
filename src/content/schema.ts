@@ -12,8 +12,9 @@
  * Visual, effect and sound ids are checked against the manifests in `tests/integrity` (WP12, B4).
  */
 import * as v from 'valibot';
-import type { AttackDef, UnitDef } from '@/contracts/content';
+import type { AttackDef, PowerDef, PowerEffect, PowerFamily, UnitDef } from '@/contracts/content';
 import type { AgeId, CardId, Rarity, RoleGroup } from '@/contracts/ids';
+import type { Loadout } from '@/contracts/sim';
 import { BP, LANE_MLU, MILLI } from '@/core/fixed';
 import { skinnedVisualId } from '@/core/ids';
 import { AGE_ORDER } from './ages';
@@ -42,7 +43,7 @@ const FORMAT = v.picklist(['tutorial', 'short', 'standard', 'full']);
 /** Any content format key (A18.3.4: named formats and windows such as `short.bronze`, `w2.medieval`). */
 const FORMAT_KEY = v.pipe(v.string(), v.regex(/^[a-z][a-z0-9]*(\.[a-z]+)?$/, 'format keys look like "short" or "w2.bronze"'));
 const FORMAT_KIND = v.picklist(['tutorial', 'short', 'standard', 'full', 'window']);
-const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'aeon']);
+const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
 const TAG = v.picklist(['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee']);
 const ROLE = v.picklist([
@@ -51,7 +52,7 @@ const ROLE = v.picklist([
 const GROUP = v.picklist(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary']);
 const DMG = v.picklist(['blunt', 'slash', 'pierce', 'bullet', 'laser', 'blast']);
 const SIZE = v.picklist(['small', 'medium', 'large', 'huge']);
-const STATUS = v.picklist(['stun', 'slow', 'mark', 'shield', 'regen', 'damageBuff', 'speedBuff', 'attackSpeedBuff']);
+const STATUS = v.picklist(['stun', 'slow', 'snare', 'mark', 'shield', 'regen', 'damageBuff', 'speedBuff', 'attackSpeedBuff']);
 const PRIORITY = v.picklist(['front', 'armored', 'backline', 'air', 'densest']);
 const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock', 'warPath']);
 const EMOTE = v.picklist(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']);
@@ -62,7 +63,7 @@ function byKeys<T extends v.GenericSchema>(keys: readonly string[], value: T) {
   return v.strictObject(Object.fromEntries(keys.map((k) => [k, value])) as Record<string, T>);
 }
 const perRarity = <T extends v.GenericSchema>(s: T) => byKeys(['common', 'rare', 'epic', 'legendary'], s);
-const perTier = <T extends v.GenericSchema>(s: T) => byKeys(['clay', 'bronze', 'silver', 'jade', 'aeon'], s);
+const perTier = <T extends v.GenericSchema>(s: T) => byKeys(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon'], s);
 const perSize = <T extends v.GenericSchema>(s: T) => byKeys(['small', 'medium', 'large', 'huge'], s);
 const perGroup = <T extends v.GenericSchema>(s: T) =>
   byKeys(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'], s);
@@ -178,24 +179,42 @@ export const TurretSchema = v.strictObject({
 const PowerEffectSchema = v.variant('kind', [
   v.strictObject({
     kind: v.literal('barrage'), count: pos, durationMs: pos, zone: pos, damage: pos, radius: pos, jitter: nonNeg,
-    hitsAir: v.boolean(), pattern: v.picklist(['even', 'line']),
+    hitsAir: v.boolean(), hitsGround: v.optional(v.boolean()), pattern: v.picklist(['even', 'line']),
   }),
   v.strictObject({ kind: v.literal('sweep'), zone: pos, durationMs: pos, damage: pos, width: pos, hitsAir: v.boolean() }),
   v.strictObject({
     kind: v.literal('stampede'), runners: pos, spacingMs: pos, distance: pos, speed: pos, damage: pos, knockback: nonNeg,
     maxHitsPerEnemy: pos,
   }),
-  v.strictObject({ kind: v.literal('buffAll'), statuses: v.array(StatusApplyS) }),
+  v.strictObject({ kind: v.literal('buffAll'), statuses: v.array(StatusApplyS), maxTargets: pos }),
   v.strictObject({ kind: v.literal('cloud'), width: pos, durationMs: pos, enemyMissBp: bp, allyDamageBp: bp }),
   v.strictObject({ kind: v.literal('paradrop'), card: id, count: pos, beyondFront: pos, fallbackP: pos }),
+  v.strictObject({
+    kind: v.literal('field'), zone: pos, durationMs: nonNeg, hitsAir: v.boolean(), statuses: v.optional(v.array(StatusApplyS)),
+    damagePerPulse: v.optional(nonNeg), pullBp: v.optional(bp),
+  }),
+  v.strictObject({ kind: v.literal('strike'), shots: pos, intervalMs: nonNeg, damage: pos, hitsAir: v.boolean() }),
+  v.strictObject({ kind: v.literal('suppress'), durationMs: pos }),
 ]);
 
 export const PowerSchema = v.strictObject({
   id,
   kind: v.literal('power'),
   age: AGE,
-  slot: v.picklist(['default', 'alternate']),
+  slot: v.picklist(['home', 'field']),
+  reach: v.picklist(['home', 'front', 'anywhere', 'army']),
+  family: v.picklist([
+    'bombard', 'sweep', 'snare', 'pull', 'stun', 'flak', 'charge', 'frontBarrage', 'strike', 'suppress', 'rally', 'ward', 'mend', 'cloud', 'drop',
+  ]),
+  rarity: v.picklist(['common', 'rare', 'epic']),
+  source: v.picklist(['starter', 'road', 'warPath']),
+  road: v.optional(pos),
+  warPathLevel: v.optional(pos),
+  cost: pos,
+  reloadMs: pos,
   telegraphMs: pos,
+  maxTargets: v.optional(pos),
+  aiValueBp: v.optional(bp),
   effect: PowerEffectSchema,
   visualId: visual,
   sfx: sound,
@@ -234,8 +253,12 @@ const EconomySchema = v.strictObject({
   popCap: pos, popByGroup: perGroup(pos), queueMax: pos, legendaryLimit: pos,
   sellRefundBp: bp, turretRangeCap: pos, turretRangeHardCapLu: pos, turretBuildMs: pos, turretSellMs: pos,
   ascendMs: pos, evolveHealBp: bp, vanguardCount: nonNeg,
-  powerChargeMs: pos, powerCarryCapBp: bp, overchargeXp: pos, overchargeBp: bp,
+  powerCarryCapBp: bp, overchargeXp: pos, overchargeBp: bp,
   overdrive: v.strictObject({ baseGoldBp: bp, xpBp: bp, powerBp: bp }),
+  power: v.strictObject({
+    startBp: bp, emptyReloadMs: pos, homeLineP: pos, frontReachLu: nonNeg, frontFloorP: nonNeg, frontRank: pos,
+    strikePickLu: pos, strikeEpicBp: bp, legendaryControlBp: bp, lockMs: nonNeg,
+  }),
   siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp, moveSpeedBp: pos, gateCrowdLu: nonNeg }),
   marchSpeedBp: pos, frontWidth: pos,
   gateFall: v.optional(v.strictObject({ lu: nonNeg, hpBp: bp })),
@@ -268,7 +291,8 @@ const ResearchEffectSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('modernise'), priceBp: bp, buildMs: pos }),
   v.strictObject({ kind: v.literal('income'), milliGoldPerSec: pos }),
   v.strictObject({ kind: v.literal('bounty'), addBp: nonNeg, bonusBp: nonNeg, ownHalfOnly: v.boolean() }),
-  v.strictObject({ kind: v.literal('powerCharge'), bp: pos }),
+  v.strictObject({ kind: v.literal('powerReload'), bp: pos }),
+  v.strictObject({ kind: v.literal('powerCost'), bp: pos }),
   v.strictObject({ kind: v.literal('warHorns'), chargeSpeedBp: nonNeg, holdDamageBp: nonNeg, flagMaxP: pos, nearLu: pos }),
 ]);
 const ResearchPickSchema = v.strictObject({
@@ -305,7 +329,7 @@ const SkinSchema = v.strictObject({
 });
 
 const TicksSchema = v.strictObject({
-  ascend: pos, powerCharge: pos, turretBuild: pos, turretSell: pos, stanceCooldown: pos,
+  ascend: pos, turretBuild: pos, turretSell: pos, stanceCooldown: pos,
   retarget: pos, healPulse: pos, firstHitIdle: pos, lastStandCharge: pos,
 });
 
@@ -336,12 +360,17 @@ const CapsulesSchema = v.strictObject({
   tiers: perTier(
     v.strictObject({
       id: TIER, index: nonNeg, stacks: pos, copies: perRarity(pos), guaranteed: v.array(RARITY), rareToLegendaryBp: bp,
-      legendaryUnownedFirst: v.boolean(), skinChanceBp: bp, bonusDust: nonNeg, amber: pos, expectedCopiesCenti: pos, nameKey: key,
+      legendaryUnownedFirst: v.boolean(), skinChanceBp: bp, skinMinRarity: SKIN_RARITY, extraLegendaryCopies: pos,
+      exclusiveItems: v.boolean(), bonusDust: nonNeg, amber: pos, expectedCopiesCenti: pos, nameKey: key,
     }),
   ),
   stackRollBp: perRarity(bp),
   bag: perTier(nonNeg),
   dailyOddsBp: perTier(bp),
+  summitAbove: TIER,
+  legendaryCatchUp: v.boolean(),
+  exclusiveCompleteDust: nonNeg,
+  exclusiveCraftDust: pos,
   unownedWeight: pos,
   pity: v.strictObject({
     epicEvery: pos, legendaryFreeUntil: pos, legendaryStepBp: bp, legendaryGuaranteeAt: pos, newCardEvery: pos,
@@ -428,7 +457,7 @@ const TrophyRoadSchema = v.strictObject({
 const LoadoutSchema = v.strictObject({
   units: v.pipe(v.array(v.nullable(id)), v.length(5)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
-  power: id,
+  powers: v.strictObject({ home: v.nullable(id), field: v.nullable(id) }),
 });
 
 const GeneralsSchema = v.strictObject({
@@ -546,7 +575,7 @@ const DailyModifiersSchema = v.strictObject({
       effect: v.variant('kind', [
         v.strictObject({ kind: v.literal('passiveGold'), bp }),
         v.strictObject({ kind: v.literal('unitHp'), bp }),
-        v.strictObject({ kind: v.literal('powerCharge'), bp }),
+        v.strictObject({ kind: v.literal('powers'), reloadBp: bp, costBp: bp }),
         v.strictObject({ kind: v.literal('xpThreshold'), bp }),
         v.strictObject({ kind: v.literal('unitCost'), groups: v.array(GROUP), bp }),
         v.strictObject({ kind: v.literal('siegeShift'), ms: int }),
@@ -616,6 +645,7 @@ const CosmeticSourceSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('arena'), arena: pos }),
   v.strictObject({ kind: v.literal('codexLevel'), level: pos }),
   v.strictObject({ kind: v.literal('warPath') }),
+  v.strictObject({ kind: v.literal('capsuleTier'), tier: TIER }),
 ]);
 const CosmeticItemSchema = v.strictObject({
   id,
@@ -850,6 +880,7 @@ function checkCards(issues: Issues, c: Content): void {
       const drop = c.units[pw.effect.card];
       issues.check(drop !== undefined && drop.age === pw.age, p, 'Paratroopers drop a unit of the power\'s age');
     }
+    checkPower(issues, p, pw);
   }
   for (const s of Object.values(c.skins)) {
     const p = `skins.${s.id}`;
@@ -872,7 +903,7 @@ function checkCollection(issues: Issues, c: Content): void {
   // A17.13: 8 ages of 7 units, 4 turrets and 2 powers each.
   issues.check(units.length === 56, 'order.units', `56 collectable units (A17.13), found ${units.length}`);
   issues.check(turrets.length === 32, 'order.turrets', `32 turrets (A17.13), found ${turrets.length}`);
-  issues.check(c.order.powers.length === 16, 'order.powers', `16 Age Powers (A17.13), found ${c.order.powers.length}`);
+  issues.check(c.order.powers.length === 48, 'order.powers', `48 Age Powers (A5.7), found ${c.order.powers.length}`);
   issues.check(c.order.skins.length === 12, 'order.skins', `12 skins (A5.8), found ${c.order.skins.length}`);
   const count = (r: Rarity): number => [...units, ...turrets].filter((x) => x?.rarity === r).length;
   const want: Record<Rarity, number> = { common: 40, rare: 24, epic: 16, legendary: 8 };
@@ -890,9 +921,7 @@ function checkCollection(issues: Issues, c: Content): void {
     const ts = turrets.filter((t) => t?.age === age);
     issues.check(ts.length === 4, `ages.${age}`, '4 turrets per age (A5)');
     issues.check(ts.filter((t) => t?.rarity === 'common').length === 2, `ages.${age}`, '2 Common turrets per age (A3)');
-    const ps = Object.values(c.powers).filter((p) => p.age === age);
-    issues.check(ps.filter((p) => p.slot === 'default').length === 1, `ages.${age}`, 'one default Age Power (A2.9)');
-    issues.check(ps.filter((p) => p.slot === 'alternate').length === 1, `ages.${age}`, 'one alternate Age Power (A2.9)');
+    checkAgePowers(issues, `ages.${age}`, Object.values(c.powers).filter((p) => p.age === age));
   }
   const skins = Object.values(c.skins);
   for (const r of ['rare', 'epic', 'legendary'] as const) {
@@ -963,8 +992,84 @@ function checkAgesAndFormats(issues: Issues, c: Content): void {
   issues.check(c.economy.powerZoneClamp[1] === lane - c.economy.powerZoneClamp[0], 'economy.powerZoneClamp', 'power zone clamp is [150, L − 150] (A17.3)');
 }
 
-function loadoutCards(l: { units: (CardId | null)[]; turrets: (CardId | null)[]; power: CardId }): CardId[] {
-  return [...l.units, ...l.turrets, l.power].filter((x): x is CardId => x !== null);
+function loadoutCards(l: { units: (CardId | null)[]; turrets: (CardId | null)[]; powers: { home: CardId | null; field: CardId | null } }): CardId[] {
+  return [...l.units, ...l.turrets, l.powers.home, l.powers.field].filter((x): x is CardId => x !== null);
+}
+
+/** Families per slot (A5.7 role template). */
+const HOME_FAMILIES: readonly PowerFamily[] = ['bombard', 'sweep', 'snare', 'pull', 'stun', 'flak'];
+const FIELD_FAMILIES: readonly PowerFamily[] = ['charge', 'frontBarrage', 'strike', 'suppress', 'rally', 'ward', 'mend', 'cloud', 'drop'];
+/** Kinds whose effect damages or controls enemy units: `maxTargets` required (A2.9.5). */
+const CAPPED_KINDS: readonly PowerEffect['kind'][] = ['barrage', 'sweep', 'stampede', 'field', 'buffAll', 'strike'];
+
+/** Area damage (A2.9.4 content rule): a barrage with a cap ≥ 2, a sweep, a charge, or a damaging field. */
+function isAreaDamage(pw: PowerDef): boolean {
+  const fx = pw.effect;
+  if (fx.kind === 'barrage') return (pw.maxTargets ?? 0) >= 2;
+  if (fx.kind === 'sweep' || fx.kind === 'stampede') return true;
+  if (fx.kind === 'field') return (fx.damagePerPulse ?? 0) > 0;
+  return false;
+}
+
+/** One power's slot, reach, cap and family rules (A2.9.1, A2.9.4-A2.9.6, A5.7). */
+function checkPower(issues: Issues, p: string, pw: PowerDef): void {
+  const fx = pw.effect;
+  issues.check(pw.nameKey === `card.${pw.id}.name` && pw.descKey === `card.${pw.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
+  issues.check((pw.slot === 'home' ? HOME_FAMILIES : FIELD_FAMILIES).includes(pw.family), p, `family "${pw.family}" does not fit the ${pw.slot} slot (A5.7)`);
+  if (pw.slot === 'home') issues.check(pw.reach === 'home', p, 'every Home power has reach home (A2.9.1)');
+  else issues.check(pw.reach !== 'home', p, 'a Field power reaches front, anywhere or army (A2.9.1)');
+  if (isAreaDamage(pw)) issues.check(pw.reach === 'home' || pw.reach === 'front', p, 'area damage is never "anywhere" (A2.9.4)');
+  if (pw.reach === 'anywhere') issues.check(fx.kind === 'strike' || fx.kind === 'paradrop', p, '"anywhere" is only for strikes and drops (A2.9.4)');
+  if (pw.reach === 'army') issues.check(fx.kind === 'buffAll', p, 'army reach is for buffs (A2.9.4)');
+  if (fx.kind === 'buffAll') issues.check(pw.reach === 'army', p, 'buffs reach your army (A2.9.4)');
+  if (pw.reach === 'home' && 'zone' in fx) issues.check(fx.zone <= 850, p, 'a Home zone is at most 850 lu (A2.9.4)');
+  if (CAPPED_KINDS.includes(fx.kind)) {
+    const cap = pw.maxTargets ?? 0;
+    issues.check(cap >= 1, p, `${fx.kind} needs maxTargets (A2.9.5)`);
+    if (fx.kind === 'buffAll') issues.check(fx.maxTargets === cap && cap <= 8, p, 'a buff affects at most 8 own units; effect and card caps agree (A2.9.5)');
+    else if (fx.kind === 'strike') issues.check(cap === 1, p, 'a strike has maxTargets 1 (A2.9.7)');
+    else issues.check(cap <= 6, p, 'a cast affects at most 6 enemy units (A2.9.5)');
+  }
+  if (fx.kind === 'cloud') issues.check((pw.maxTargets ?? 0) >= 1 && (pw.maxTargets ?? 0) <= 8, p, 'the cloud\'s ally bonus reaches at most 8 own units (A2.9.5)');
+  if (fx.kind === 'stampede') issues.check(pw.reach === 'front', p, 'charges run from your front (A2.9.4)');
+  if (fx.kind === 'suppress') issues.check(pw.reach === 'front' && pw.family === 'suppress', p, 'Suppress reaches from your front (A2.9.4)');
+  if (fx.kind === 'strike') issues.check(pw.reach === 'anywhere' && pw.family === 'strike', p, 'strikes reach anywhere (A2.9.4)');
+  if (fx.kind === 'paradrop') issues.check(pw.reach === 'anywhere' && pw.family === 'drop', p, 'drops land anywhere (A2.9.4)');
+  if (pw.family === 'flak') issues.check(fx.kind === 'barrage' && fx.hitsAir && fx.hitsGround === false, p, 'Flak is an air-only barrage (A2.9.7)');
+  if (pw.source === 'starter') issues.check(pw.rarity === 'common' && pw.road === undefined && pw.warPathLevel === undefined, p, 'starters are Common and have no source node (A2.9.8)');
+  if (pw.source === 'road') issues.check(pw.rarity === 'rare' && pw.road !== undefined && pw.road <= 500 && pw.warPathLevel === undefined, p, 'Road powers are Rare, on nodes 100-500 (A2.9.8)');
+  if (pw.source === 'warPath') {
+    const lvl = pw.warPathLevel ?? 0;
+    issues.check([5, 7, 9].includes(lvl), p, 'War Path powers come from levels 5, 7 and 9 (A2.9.8)');
+    issues.check(pw.rarity === (lvl === 5 ? 'rare' : 'epic'), p, 'War Path L5 powers are Rare, L7 and L9 Epic (A5.7)');
+    issues.check(pw.road !== undefined && pw.road >= 550, p, 'War Path powers have a Trophy Road fallback node ≥ 550 (A2.9.8)');
+  }
+  issues.check(pw.cost >= 75 && pw.cost <= 150, p, 'a power costs 75-150 gold (A2.9.2)');
+  issues.check(pw.reloadMs >= 25000 && pw.reloadMs <= 60000, p, 'a power reloads in 25-60 s (A2.9.3)');
+  issues.check(pw.telegraphMs >= 500 && pw.telegraphMs <= 2000, p, 'a telegraph lasts 0.5-2.0 s (A2.9.6)');
+}
+
+/** A5.7 role template per age: 6 powers, 3 Home and 3 Field, one starter per slot, 1 Road, 3 War Path. */
+function checkAgePowers(issues: Issues, p: string, ps: readonly PowerDef[]): void {
+  const home = ps.filter((x) => x.slot === 'home');
+  const field = ps.filter((x) => x.slot === 'field');
+  issues.check(ps.length === 6 && home.length === 3 && field.length === 3, p, '6 Age Powers per age: 3 Home and 3 Field (A5.7)');
+  issues.check(home.filter((x) => x.source === 'starter').length === 1, p, 'one Home starter (A2.9.8)');
+  issues.check(field.filter((x) => x.source === 'starter').length === 1, p, 'one Field starter (A2.9.8)');
+  issues.check(ps.filter((x) => x.source === 'road').length === 1, p, 'one Trophy Road power (A2.9.8)');
+  issues.check(ps.filter((x) => x.source === 'warPath').length === 3, p, 'three War Path powers (A2.9.8)');
+  const levels = ps.filter((x) => x.source === 'warPath').map((x) => x.warPathLevel).sort();
+  issues.check(levels.join() === '5,7,9', p, 'War Path powers at levels 5, 7 and 9 (A2.9.8)');
+  const has = (list: readonly PowerDef[], fams: readonly PowerFamily[]): number => list.filter((x) => fams.includes(x.family)).length;
+  // Home: a bombard and a sweep (one of each family), and a control (Flak in an air age).
+  issues.check(has(home, ['bombard']) >= 1 && has(home, ['sweep']) >= 1, p, 'Home: a bombard and a sweep (A5.7)');
+  issues.check(has(home, ['snare', 'pull', 'stun', 'flak']) === 1, p, 'Home: one control (Flak in an air age) (A5.7)');
+  const starterHome = home.find((x) => x.source === 'starter');
+  issues.check(starterHome !== undefined && isAreaDamage(starterHome), p, 'the Home starter is an area damage power (A5.7)');
+  // Field: an assault, a precision or siege tool, and a support.
+  issues.check(has(field, ['charge', 'frontBarrage']) === 1, p, 'Field: one assault (charge or front barrage) (A5.7)');
+  issues.check(has(field, ['strike', 'suppress']) === 1, p, 'Field: one precision or siege tool (strike or Suppress) (A5.7)');
+  issues.check(has(field, ['rally', 'ward', 'mend', 'cloud', 'drop']) === 1, p, 'Field: one support (buff, cloud or drop) (A5.7)');
 }
 
 function checkGenerals(issues: Issues, c: Content): void {
@@ -979,7 +1084,7 @@ function checkGenerals(issues: Issues, c: Content): void {
     for (const x of gen.signatureCards) issues.check(c.units[x] !== undefined || c.turrets[x] !== undefined, p, `unknown signature card "${x}"`);
     if (!gen.warPlan) continue;
     for (const age of Object.keys(gen.warPlan) as AgeId[]) {
-      const l = gen.warPlan[age];
+      const l: Loadout | undefined = gen.warPlan[age];
       if (!l) continue;
       const lp = `${p}.warPlan.${age}`;
       unique(issues, lp, loadoutCards(l));
@@ -995,7 +1100,12 @@ function checkGenerals(issues: Issues, c: Content): void {
         if (t === null) continue;
         issues.check(c.turrets[t]?.age === age, lp, `"${t}" is not a turret of this age (A3)`);
       }
-      issues.check(c.powers[l.power]?.age === age, lp, `"${l.power}" is not a power of this age (A3)`);
+      for (const slot of ['home', 'field'] as const) {
+        const pw: CardId | null = l.powers[slot];
+        if (pw === null) continue;
+        issues.check(c.powers[pw]?.age === age, lp, `"${pw}" is not a power of this age (A3)`);
+        issues.check(c.powers[pw]?.slot === slot, lp, `"${pw}" does not fit the ${slot} slot (A2.9.1)`);
+      }
       if (!gen.scripted) {
         // A3 minimum to play: 3 units and 1 turret per age.
         issues.check(l.units.filter((x) => x !== null).length >= 3, lp, 'at least 3 units (A3)');
@@ -1052,14 +1162,23 @@ function checkMeta(issues: Issues, c: Content): void {
   // Capsules (A6.4)
   const cap = c.capsules;
   const sum = (r: Record<string, number>): number => Object.values(r).reduce((a, b) => a + b, 0);
-  issues.check(sum(cap.bag) === 100, 'capsules.bag', 'the bag holds 100 capsules');
+  // The bag size is the sum of its counts (A6.4: 200), never a separate constant.
+  issues.check(sum(cap.bag) > 0, 'capsules.bag', 'the bag holds capsules');
   issues.check(sum(cap.dailyOddsBp) === BP, 'capsules.dailyOddsBp', 'Daily odds sum to 100%');
   issues.check(sum(cap.stackRollBp) === BP, 'capsules.stackRollBp', 'stack rarity odds sum to 100%');
   cap.tierOrder.forEach((t, i) => {
     const tier = cap.tiers[t];
     issues.check(tier.index === i, `capsules.tiers.${t}`, 'index follows tier order');
     issues.check(tier.guaranteed.length <= tier.stacks, `capsules.tiers.${t}`, 'more guarantees than stacks');
+    issues.check(tier.id === t, `capsules.tiers.${t}`, 'id matches its key');
+    issues.check(
+      tier.extraLegendaryCopies >= 1 && tier.extraLegendaryCopies <= tier.copies.legendary,
+      `capsules.tiers.${t}`,
+      'extraLegendaryCopies is 1..copies.legendary',
+    );
   });
+  issues.check(new Set(cap.tierOrder).size === cap.tierOrder.length && cap.tierOrder.length === Object.keys(cap.tiers).length, 'capsules.tierOrder', 'lists every tier once');
+  issues.check(cap.tierOrder.includes(cap.summitAbove), 'capsules.summitAbove', 'is a tier of the ladder');
   cap.script.forEach((s, i) => {
     const p = `capsules.script.${i}`;
     issues.check(s.capsule === i + 1, p, 'script capsules are numbered 1..n');
@@ -1105,7 +1224,12 @@ function checkMeta(issues: Issues, c: Content): void {
     issues.check(n.rewards.length > 0, p, 'a node gives something');
     for (const r of n.rewards) {
       if (r.kind === 'amber') issues.check(r.amount === roadAmber(c.trophyRoad, n.trophies), p, 'Amber = 100 + 20 × trophies / 100');
-      if (r.kind === 'power') issues.check(c.powers[r.card]?.slot === 'alternate', p, `"${r.card}" is not an alternate power`);
+      if (r.kind === 'power') {
+        const pw = c.powers[r.card];
+        issues.check(pw !== undefined && pw.road === n.trophies, p, `"${r.card}" names another road node (A2.9.8)`);
+        if (n.trophies <= 500) issues.check(pw?.source === 'road', p, `"${r.card}" is not a Trophy Road power (A2.9.8)`);
+        else issues.check(pw?.source === 'warPath', p, `"${r.card}" is not a War Path power (the fallback items, A2.9.8)`);
+      }
       if (r.kind === 'gate') issues.check(list[r.arena - 1]?.trophies === n.trophies, p, `gate ${r.arena} sits at its arena's trophies`);
     }
   });
@@ -1113,9 +1237,10 @@ function checkMeta(issues: Issues, c: Content): void {
     const gates = nodes.filter((n) => n.rewards.some((r) => r.kind === 'gate' && r.arena === a.index));
     issues.check(gates.length === 1, `arenas.${a.id}`, 'each arena after the first has one gate node');
   }
-  const alternates = Object.values(c.powers).filter((p) => p.slot === 'alternate').map((p) => p.id);
-  for (const alt of alternates) {
-    issues.check(nodes.some((n) => n.rewards.some((r) => r.kind === 'power' && r.card === alt)), 'trophyRoad', `no node gives "${alt}"`);
+  const roadPowers = Object.values(c.powers).filter((p) => p.road !== undefined).map((p) => p.id);
+  for (const pw of roadPowers) {
+    const n = nodes.filter((x) => x.rewards.some((r) => r.kind === 'power' && r.card === pw)).length;
+    issues.check(n === 1, 'trophyRoad', `one node gives "${pw}", found ${n}`);
   }
   // Quests (A6.7)
   unique(issues, 'quests', [...c.quests.daily.map((q) => q.id), c.quests.weekly.id]);

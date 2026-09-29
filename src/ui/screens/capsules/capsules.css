@@ -71,8 +71,15 @@
 .caps-stage__drum--jade {
   filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 16px rgba(74, 222, 128, 0.55));
 }
+/* The Legendary tiers (2026-09-29 ladder): a glow in the tier's own colour, never a rarity colour. */
+.caps-stage__drum--gold {
+  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 18px rgba(239, 224, 176, 0.6));
+}
+.caps-stage__drum--platinum {
+  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 20px rgba(196, 242, 234, 0.7));
+}
 .caps-stage__drum--aeon {
-  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 18px rgba(139, 92, 246, 0.8));
+  filter: drop-shadow(0 6px 0 rgba(8, 5, 20, 0.5)) drop-shadow(0 0 22px rgba(93, 61, 255, 0.85));
 }
 .caps-stage__drum.is-empty {
   opacity: 0.35;

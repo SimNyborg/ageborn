@@ -75,8 +75,11 @@ export type FormatKind = 'tutorial' | 'short' | 'standard' | 'full' | 'window';
 /** The named formats the ladder, Skirmish and Quick Battle offer (A2.10, A18.3.4). */
 export type NamedFormatId = 'tutorial' | 'short' | 'standard' | 'full';
 
-/** Time Capsule tiers, lowest to highest (DESIGN A6.4). */
-export type CapsuleTier = 'clay' | 'bronze' | 'silver' | 'jade' | 'aeon';
+/**
+ * Time Capsule tiers, lowest to highest (DESIGN A6.4): the ladder, index 0-6. Gold, Platinum and Aeon
+ * always hold 1, 2 and 3 Legendaries (the 2026-09-29 ladder; Jade stays index 3, Aeon moved 4 → 6).
+ */
+export type CapsuleTier = 'clay' | 'bronze' | 'silver' | 'jade' | 'gold' | 'platinum' | 'aeon';
 
 /** Card foil variants (DESIGN A5.1 collection, A6.4). */
 export type Foil = 'none' | 'bronze' | 'silver' | 'holo';

@@ -189,12 +189,14 @@ describe('War Council: Economy, Defences, Command (A18.5.3-A18.5.5)', () => {
     expect(sim.state.sides[0].turrets[0]!.readyTick - sim.state.tick).toBe(10);
   });
 
-  it('Signal Fires: the side’s power charges 15% faster', () => {
+  it('Signal Fires: the side’s powers reload 15% faster (rate bonuses add, the remainder is carried)', () => {
     const sim = arena();
     devGrantResearch(sim, 0, 'command.signal_fires');
     stepN(sim, 20);
-    expect(sim.state.sides[0].powerPpm).toBe(20 * 1150);
-    expect(sim.state.sides[1].powerPpm).toBe(20 * 1000);
+    // Rockslide and Stampede reload in 40 s (800 ticks) from 25%: 1,250 ppm a tick, × 1.15 = 1,437.5
+    expect(sim.state.sides[0].powerPpm).toEqual([250000 + 28750, 250000 + 28750]);
+    expect(sim.state.sides[1].powerPpm).toEqual([250000 + 25000, 250000 + 25000]);
+    expect(sim.observe(0).me.powers.home?.reloadMs).toBe(34782);
   });
 
   it('War Horns: +8% speed while Charging for units spawned after it', () => {

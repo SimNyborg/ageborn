@@ -35,8 +35,8 @@ function starterPlan(ages: readonly AgeId[], o: { rare?: boolean } = {}): Partia
     const units = C.order.units.filter((id) => C.units[id]?.age === a && C.units[id]?.rarity === 'common' && !C.units[id]?.hidden).slice(0, 3);
     if (o.rare && a === ages[0]) units[0] = C.order.units.find((id) => C.units[id]?.age === a && C.units[id]?.rarity === 'rare') ?? units[0]!;
     const turrets = C.order.turrets.filter((id) => C.turrets[id]?.age === a && C.turrets[id]?.rarity === 'common').slice(0, 2);
-    const power = C.order.powers.find((p) => C.powers[p]?.age === a && C.powers[p]?.slot === 'default')!;
-    out[a] = { units: [...units, null, null], turrets, power };
+    const starter = (slot: 'home' | 'field') => C.order.powers.find((p) => C.powers[p]?.age === a && C.powers[p]?.slot === slot && C.powers[p]?.source === 'starter')!;
+    out[a] = { units: [...units, null, null], turrets, powers: { home: starter('home'), field: starter('field') } };
   }
   return out;
 }

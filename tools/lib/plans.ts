@@ -2,9 +2,10 @@
  * War Plans for the headless tools (DESIGN A2.14 baseline plan, A3 deck rules).
  *
  * **Baseline plan per age** (A2.14): the 3 Commons, the AA Rare and the Support Rare, both Common turrets
- * and the default power. A tested Rare replaces its same-role card; a tested Epic or Legendary replaces
- * the Support Rare; a tested turret replaces the same-rarity-slot Common turret (the second slot for
- * Rare and Epic turrets); a tested alternate power replaces the default power. A card that is already in
+ * and both starter powers (A2.9.8: found by `source: 'starter'` and `slot`). A tested Rare replaces its
+ * same-role card; a tested Epic or Legendary replaces the Support Rare; a tested turret replaces the
+ * same-rarity-slot Common turret (the second slot for Rare and Epic turrets); a tested power replaces
+ * the starter of its own slot (A2.9.12: per-power rows vs the slot's starter). A card that is already in
  * its age's baseline has no separate test plan: it is part of the control (the Balanced mirror).
  *
  * Everything is derived from content, so new ages and cards need no tool change (A2.5).
@@ -46,7 +47,7 @@ function unitId(content: CompiledContent, age: AgeId, group: UnitDef['group'], r
 /** The A2.14 baseline loadout of one age. */
 export function baselineLoadout(content: CompiledContent, age: AgeId): Loadout {
   const commons = turretsOfAge(content, age).filter((t) => t.rarity === 'common');
-  const power = powersOfAge(content, age).find((p) => p.slot === 'default') ?? powersOfAge(content, age)[0];
+  const starter = (slot: 'home' | 'field'): CardId | null => powersOfAge(content, age).find((p) => p.slot === slot && p.source === 'starter')?.id ?? null;
   return {
     units: [
       unitId(content, age, 'infantry', 'common'),
@@ -58,7 +59,7 @@ export function baselineLoadout(content: CompiledContent, age: AgeId): Loadout {
       null,
     ],
     turrets: [commons[0]?.id ?? null, commons[1]?.id ?? null],
-    power: power?.id ?? '',
+    powers: { home: starter('home'), field: starter('field') },
   };
 }
 
@@ -70,7 +71,7 @@ export function baselinePlan(content: CompiledContent): Plan {
 }
 
 export function cloneLoadout(l: Loadout): Loadout {
-  return { units: [...l.units], turrets: [...l.turrets], power: l.power };
+  return { units: [...l.units], turrets: [...l.turrets], powers: { ...l.powers } };
 }
 
 export function clonePlan(p: Plan): Plan {
@@ -131,9 +132,9 @@ export function cardTest(content: CompiledContent, card: CardId): CardTest {
   }
   const p = content.powers[card] as PowerDef;
   const l = plan[p.age] as Loadout;
-  if (l.power === card) return { card, kind, age: p.age, rarity: p.slot, inBaseline: true, replaces: null, plan };
-  const replaces = l.power;
-  l.power = card;
+  if (l.powers[p.slot] === card) return { card, kind, age: p.age, rarity: p.slot, inBaseline: true, replaces: null, plan };
+  const replaces = l.powers[p.slot];
+  l.powers = { ...l.powers, [p.slot]: card };
   return { card, kind, age: p.age, rarity: p.slot, inBaseline: false, replaces, plan };
 }
 
@@ -157,8 +158,9 @@ export function sideConfig(content: CompiledContent, plan: Plan, o: { level: num
 }
 
 /**
- * A3 checks for a plan over the ages a format uses: 5 unit and 2 turret slots, all cards from that
- * age, no duplicates, at least 3 units and 1 turret, a power from that age. Returns the problems found.
+ * A3 checks for a plan over the ages a format uses: 6 unit and 2 turret slots, all cards from that
+ * age, no duplicates, at least 3 units and 1 turret, powers from that age in their own slots (A2.9.1).
+ * Returns the problems found.
  */
 export function planIssues(content: CompiledContent, plan: Plan, format: FormatId): string[] {
   const issues: string[] = [];
@@ -177,7 +179,11 @@ export function planIssues(content: CompiledContent, plan: Plan, format: FormatI
     if (new Set(units).size !== units.length || new Set(turrets).size !== turrets.length) issues.push(`${age}: duplicate card`);
     for (const c of units) if (content.units[c]?.age !== age || content.units[c]?.hidden === true) issues.push(`${age}: unit ${c} is not a ${age} card`);
     for (const c of turrets) if (content.turrets[c]?.age !== age) issues.push(`${age}: turret ${c} is not a ${age} card`);
-    if (content.powers[l.power]?.age !== age) issues.push(`${age}: power ${l.power} is not a ${age} power`);
+    for (const slot of ['home', 'field'] as const) {
+      const id = l.powers[slot];
+      if (id === null) continue;
+      if (content.powers[id]?.age !== age || content.powers[id]?.slot !== slot) issues.push(`${age}: power ${id} is not a ${age} ${slot} power`);
+    }
   }
   return issues;
 }

@@ -9,7 +9,7 @@
  */
 import type { ReadonlySignal } from '@preact/signals';
 import type { AgeId, CardId, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/contracts';
-import type { MetaRules } from '@/meta';
+import { legacySkillAeonCount, type MetaRules } from '@/meta';
 import { IMPORT_MESSAGE_KEYS, markExported, saveFileFor, type SaveFile } from '@/save';
 import type { ActionResult, MatchRequest, Router, UiServices, WarPlan } from '@/ui/screens';
 import { opponentLook } from './matchSetup';
@@ -163,6 +163,17 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     },
     claimDailyCapsule() {
       return apply(meta.claimDailyCapsule(ticked(), content, clock), true);
+    },
+    legacySkillAeons() {
+      return legacySkillAeonCount(d.save.value, meta.content);
+    },
+    dismissNotice(id) {
+      const s = d.save.peek();
+      const key = `notice.${id}`;
+      if (!s.flags[key]) return;
+      const flags = { ...s.flags };
+      delete flags[key];
+      d.commit({ ...s, flags });
     },
 
     // ---- cards and plans ---------------------------------------------------------------------

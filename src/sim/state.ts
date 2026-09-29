@@ -17,6 +17,7 @@ import type {
   Loadout,
   MatchConfig,
   PowerCastState,
+  PowerSlot,
   ProjectileState,
   QueueItem,
   Side,
@@ -30,7 +31,7 @@ import type {
 import { BP, LANE_MLU, MILLI, TICK_MS, assert, seedSfc32 } from '@/core';
 import { matchMods, type MatchMods } from './modifiers';
 import { emptySideFx, unlockPositions, type SideFx, type UnitFx } from './researchRules';
-import { rulesFor, type AreaKind, type AttackRules, type EconRules, type FormatRules, type SimRules } from './rules';
+import { rulesFor, type AreaKind, type AttackRules, type EconRules, type FormatRules, type SimRules, type StatusRules } from './rules';
 import { createSpatial, type SpatialIndex } from './spatial';
 
 /** No target (ids start at 1). */
@@ -138,7 +139,18 @@ export interface CastRt extends PowerCastState {
   telegraphEnd: number;
   /** Last tick of the effect (inclusive). */
   endTick: number;
-  /** Enemies already hit (sweep: once each; stampede: with `hitCounts`). */
+  /** Whole gold paid (the effective cost, A2.9.2). */
+  cost: number;
+  /**
+   * The reach area (A2.9.4, the hard mask), own-frame p in mlu, inclusive: only enemies whose centre
+   * lies in [areaMin, areaMax] are eligible (charges: whose body overlaps the run).
+   */
+  areaMin: number;
+  areaMax: number;
+  /**
+   * Enemies this cast has affected (A2.9.5: they stay eligible; a dead one keeps its place). Sweeps hit
+   * each once; stampedes count hits in `hitCounts`.
+   */
   hitIds: number[];
   hitCounts: number[];
   /** Stampede: per runner, the ids it already hit. */
@@ -177,6 +189,12 @@ export interface SimStateRt extends SimState {
 
 /** One impact collected during a tick and applied in step 13 (A2.7 Impact resolution). */
 export interface Impact {
+  /** The power cast this impact belongs to (barrage blasts pick their eligible targets through it, A2.9.5). */
+  cast: CastRt | null;
+  /** A strike shot: Epics take `economy.power.strikeEpicBp` (A2.9.6). */
+  strike: boolean;
+  /** Statuses a power applies to each unit it damages, after the damage (fields, A2.9.7). */
+  powerStatuses: readonly StatusRules[] | null;
   side: Side;
   sourceId: number;
   sourceCard: CardId;
@@ -288,7 +306,11 @@ export function createCtx(cfg: MatchConfig): Ctx {
       treasury: 0,
       mountsOwned: 1,
       turrets: new Array<TurretRt | null>(econ.mountCount).fill(null),
-      powerPpm: 0,
+      // A2.9.3: every slot starts 25% reloaded (empty slots too).
+      powerPpm: [econ.power.startPpm, econ.power.startPpm],
+      powerRem: [0, 0],
+      powerLockoutUntil: 0,
+      mountSilencedUntil: new Array<number>(econ.mountCount).fill(0),
       stance: 'charge',
       stanceReadyTick: 0,
       holdP: econ.holdMin,
@@ -319,6 +341,7 @@ export function createCtx(cfg: MatchConfig): Ctx {
     if (!extra || !tr) continue;
     const sd = sides[side];
     sd.turrets.length = econ.mountCount;
+    sd.mountSilencedUntil = new Array<number>(econ.mountCount + 1).fill(0);
     sd.turrets.push({
       card: extra,
       age: tr.age,
@@ -445,6 +468,13 @@ export function canEvolve(ctx: Ctx, side: Side): boolean {
 
 export function loadoutOf(ctx: Ctx, side: Side): Loadout | undefined {
   return ctx.cfg.sides[side].loadouts[ageOf(ctx, side)];
+}
+
+/** The power card in a slot of the side's current loadout, or null (A2.9.1). Unknown ids read as empty. */
+export function slotPower(ctx: Ctx, side: Side, slot: PowerSlot): CardId | null {
+  const lo = loadoutOf(ctx, side);
+  const id = lo?.powers?.[slot] ?? null;
+  return id !== null && ctx.rules.powers[id] ? id : null;
 }
 
 export function cardLevel(ctx: Ctx, side: Side, card: CardId): number {

@@ -8,6 +8,7 @@ import type { SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { accrueCharges } from './charges';
 import { accrueDaily, dailyRecord } from './daily';
+import { grantLegacySkillAeons } from './legacyAeons';
 import { refreshQuests } from './quests';
 import type { LocalTime } from './time';
 import { fillNewTroopSlots } from './warplan';
@@ -16,6 +17,8 @@ import { fillNewTroopSlots } from './warplan';
 export function tickTimersAt(s: SaveDoc, t: Content, lt: LocalTime): SaveDoc {
   // A18.9: the sixth troop slot a save v4 migration added is filled once at the first tick after load.
   let save = fillNewTroopSlots(s, t);
+  // A6.4, B8: the capsule ladder migration's one-time legacy skill Aeons
+  save = grantLegacySkillAeons(save, t, lt.t);
   save = accrueCharges(save, t, lt.t);
   save = accrueDaily(save, t, lt);
   save = refreshQuests(save, t, lt);

@@ -19,6 +19,7 @@ import { AiBadge } from '../../components/Chips';
 import { Segmented } from '../../components/Controls';
 import { formatInt, tierNumeral } from '../../components/format';
 import { AmberIcon, CapsuleIcon, CardsIcon, CastleIcon, CrownIcon, FlagIcon, InfoIcon, LockIcon, ScrollIcon, StarIcon, SwordsIcon } from '../../components/icons';
+import { tierCrests } from '../../components/capsuleLook';
 import { Sheet } from '../../components/Modal';
 import { useUi } from '../context';
 import { DIFFICULTY_NAME_KEYS } from '../model/progress';
@@ -199,7 +200,7 @@ export function LevelSheet(p: {
               ) : null}
               {reward.capsule ? (
                 <span class="lv-reward__item" title={t(capsuleTierNameKey(reward.capsule))}>
-                  <CapsuleIcon tier={reward.capsule} size={30} />
+                  <CapsuleIcon tier={reward.capsule} crests={tierCrests(content.capsules, reward.capsule)} size={30} />
                 </span>
               ) : null}
               {card ? (

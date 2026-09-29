@@ -11,8 +11,10 @@ import type {
   CompiledContent,
   FormatId,
   Loadout,
+  LoadoutPowers,
   MatchConfig,
   Observation,
+  PowerSlot,
   Side,
   SideConfig,
   Sim,
@@ -57,19 +59,35 @@ function byGroup(content: CompiledContent, age: AgeId, group: string, rarity?: s
   return u ? u.id : null;
 }
 
-function powerOf(content: CompiledContent, age: AgeId, slot: 'default' | 'alternate'): CardId {
-  const p = Object.values(content.powers).find((d) => d.age === age && d.slot === slot);
-  return p ? p.id : '';
+/** The age's starter power of a slot (A2.9.8). */
+function starterOf(content: CompiledContent, age: AgeId, slot: PowerSlot): CardId | null {
+  return Object.values(content.powers).find((d) => d.age === age && d.slot === slot && d.source === 'starter')?.id ?? null;
+}
+
+/**
+ * The age's powers (A2.9.1): both starters; `altPower` puts the age's Trophy Road power into its slot;
+ * `warPath` puts the War Path power of that level (5, 7 or 9) into its slot.
+ */
+function powersOf(content: CompiledContent, age: AgeId, o: { altPower?: boolean; warPath?: number; power?: CardId }): LoadoutPowers {
+  const out: LoadoutPowers = { home: starterOf(content, age, 'home'), field: starterOf(content, age, 'field') };
+  const put = (p: { id: CardId; slot: PowerSlot } | undefined): void => {
+    if (p) out[p.slot] = p.id;
+  };
+  if (o.altPower) put(Object.values(content.powers).find((d) => d.age === age && d.source === 'road'));
+  if (o.warPath !== undefined) put(Object.values(content.powers).find((d) => d.age === age && d.source === 'warPath' && d.warPathLevel === o.warPath));
+  const named = o.power ? content.powers[o.power] : undefined;
+  if (named && named.age === age) put(named);
+  return out;
 }
 
 /**
  * The A2.14 baseline loadout of an age: the 3 Commons, the AA Rare and the Support Rare, both Common
- * turrets and the default power. `swap` replaces a card by role group (units) or rarity (turrets).
+ * turrets and both starter powers (A2.9.8). `swap` replaces a card by role group (units) or rarity (turrets).
  */
 export function baselineLoadout(
   content: CompiledContent,
   age: AgeId,
-  o: { epic?: boolean; legendary?: boolean; rareTurret?: boolean; epicTurret?: boolean; altPower?: boolean } = {},
+  o: { epic?: boolean; legendary?: boolean; rareTurret?: boolean; epicTurret?: boolean; altPower?: boolean; warPath?: number; power?: CardId } = {},
 ): Loadout {
   // Six troop slots (A18.9); the A2.14 baseline fills five and leaves the sixth empty.
   const units = [
@@ -87,7 +105,7 @@ export function baselineLoadout(
   const turrets: (CardId | null)[] = [commons[0] ?? null, commons[1] ?? null];
   if (o.rareTurret) turrets[0] = t.find((d) => d.rarity === 'rare')?.id ?? turrets[0] ?? null;
   if (o.epicTurret) turrets[1] = t.find((d) => d.rarity === 'epic')?.id ?? turrets[1] ?? null;
-  return { units, turrets, power: powerOf(content, age, o.altPower ? 'alternate' : 'default') };
+  return { units, turrets, powers: powersOf(content, age, o) };
 }
 
 export function sideConfig(
@@ -238,9 +256,15 @@ export function scriptedPlayer(content: CompiledContent, side: Side, seed: numbe
     let gold = Math.trunc(me.gold / 1000);
     if (me.lastStand === 'armed') out.push({ t: 'lastStand', side });
     if (!strat.noEvolve && me.xpBp >= 10000 && me.ageIndex < 4) out.push({ t: 'evolve', side });
-    if (me.powerPpm >= 1000000) {
+    // A2.9: each slot casts when reloaded and affordable; a third of the casts aim somewhere random.
+    for (const slot of ['home', 'field'] as const) {
+      const pw = me.powers[slot];
+      if (!pw || pw.ppm < 1000000 || gold < pw.cost) continue;
       const near = obs.units.filter((u) => u.side !== side && u.p > 150000 && u.p < LANE_MLU - 150000).length;
-      if (strat.powerAsap || near >= 3) out.push({ t: 'power', side, ...(randInt(rng, 3) === 0 ? { p: 300 + randInt(rng, L - 600) } : {}) });
+      if (strat.powerAsap || near >= 3) {
+        out.push({ t: 'power', side, slot, ...(randInt(rng, 3) === 0 ? { p: 300 + randInt(rng, L - 600) } : {}) });
+        gold -= pw.cost;
+      }
     }
     // War Council (A18.5): the Economy income picks first (the Treasury before), then the strategy's list.
     const income = me.treasury < strat.treasury ? nextIncomePick(content, me.research) : null;

@@ -23,6 +23,10 @@ export interface MatchStats {
   evolves: number;
   reachedFinalAgeAtMs: number | null;
   powerMaxHits: number;
+  /** Whole gold paid for this side's power casts (A2.9.12); absent in stats stored before 4.0.0. */
+  powerGoldSpent?: number;
+  /** This side's casts per slot, [Home, Field] (A2.9.12). */
+  powerCasts?: [number, number];
   baseDamage: number;
   heavyKillsByAA: number;
   /** Bought any Economy research (A18.5.4; the Treasury before A18). */

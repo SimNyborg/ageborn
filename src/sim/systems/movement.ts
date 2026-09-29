@@ -107,7 +107,10 @@ function speedOf(ctx: Ctx, m: Mover): number {
   if (fx?.horns && !m.u.air && ctx.s.sides[m.u.side].stance === 'charge') fixed += fx.horns.chargeSpeedBp;
   const bonus = capSum(fixed, statusBp(m.u, 'speedBuff'), ctx.econ.caps.speedBp);
   if (bonus !== 0) v = Math.trunc((v * (BP + bonus)) / BP);
-  const slow = statusBp(m.u, 'slow');
+  // Slows and snares (A2.9.6): the stronger applies, after the A18.2 caps.
+  const slowBp = statusBp(m.u, 'slow');
+  const snareBp = statusBp(m.u, 'snare');
+  const slow = slowBp > snareBp ? slowBp : snareBp;
   if (slow > 0) v = Math.trunc((v * (BP - (slow > BP ? BP : slow))) / BP);
   if (ctx.s.phase === 'siege') {
     const march = ctx.econ.siege.moveSpeedBp;

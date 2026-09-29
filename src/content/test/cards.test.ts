@@ -6,7 +6,7 @@
  * either side fails. When balance tuning changes a number, update DESIGN and the row here.
  */
 import { describe, expect, it } from 'vitest';
-import type { AttackDef, PowerEffect, UnitDef } from '@/contracts/content';
+import type { AttackDef, PowerFamily, PowerSlot, PowerSource, UnitDef } from '@/contracts/content';
 import type { AgeId, Rarity, Role, Tag } from '@/contracts/ids';
 import strings from '@/i18n/content.en.json';
 import { content } from '../index';
@@ -157,38 +157,58 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
 };
 
 /** A5.7: [slug, name, age, slot, effect fields to match] */
-type PowerRow = [string, string, AgeId, 'default' | 'alternate', Partial<PowerEffect> & { kind: PowerEffect['kind'] }];
+/** A5.7 roster (the power rework, A2.9): slug, name, age, slot, family, source, cost, reload, telegraph, cap (0 = none). */
+type PowerRow = [string, string, AgeId, PowerSlot, PowerFamily, PowerSource, number, number, number, number];
 
 const POWERS: PowerRow[] = [
-  ['stampede', 'Stampede', 'stone', 'default',
-    { kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400, damage: 50, knockback: 40, maxHitsPerEnemy: 3 }],
-  ['meteor_shower', 'Meteor Shower', 'stone', 'alternate',
-    { kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40, jitter: 20, hitsAir: false, pattern: 'even' }],
-  ['tidal_wave', 'Tidal Wave', 'bronze', 'default',
-    { kind: 'sweep', zone: 450, durationMs: 2000, damage: 130, width: 40, hitsAir: false }],
-  ['aegis', 'Aegis', 'bronze', 'alternate', { kind: 'buffAll' }],
-  ['arrow_storm', 'Arrow Storm', 'medieval', 'default',
-    { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 40, radius: 20, hitsAir: true, pattern: 'even' }],
-  ['royal_decree', 'Royal Decree', 'medieval', 'alternate', { kind: 'buffAll' }],
-  ['smoke_screen', 'Smoke Screen', 'gunpowder', 'default',
-    { kind: 'cloud', width: 350, durationMs: 7000, enemyMissBp: 5000, allyDamageBp: 2000 }],
-  ['broadside', 'Broadside', 'gunpowder', 'alternate',
-    { kind: 'barrage', count: 10, durationMs: 3000, zone: 450, damage: 120, radius: 45, hitsAir: false }],
-  ['iron_horse', 'Iron Horse', 'industrial', 'default',
-    { kind: 'stampede', runners: 3, spacingMs: 500, distance: 600, speed: 450, damage: 150, knockback: 50, maxHitsPerEnemy: 2 }],
-  ['zeppelin_raid', 'Zeppelin Raid', 'industrial', 'alternate',
-    { kind: 'barrage', count: 10, durationMs: 2000, zone: 480, damage: 150, radius: 45, jitter: 0, hitsAir: false, pattern: 'line' }],
-  ['paratroopers', 'Paratroopers', 'modern', 'default',
-    { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 1000 }],
-  ['carpet_bomber', 'Carpet Bomber', 'modern', 'alternate',
-    { kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50, jitter: 0, hitsAir: false, pattern: 'line' }],
-  ['orbital_lance', 'Orbital Lance', 'future', 'default',
-    { kind: 'sweep', zone: 500, durationMs: 2000, damage: 450, hitsAir: true }],
-  ['nanite_surge', 'Nanite Surge', 'future', 'alternate', { kind: 'buffAll' }],
-  ['starfall', 'Starfall', 'cosmic', 'default',
-    { kind: 'barrage', count: 6, durationMs: 2000, zone: 450, damage: 380, radius: 60, jitter: 20, hitsAir: true, pattern: 'even' }],
-  ['warp_strike', 'Warp Strike', 'cosmic', 'alternate',
-    { kind: 'paradrop', card: 'star_legionnaire', count: 3, beyondFront: 150, fallbackP: 1000 }],
+  ['rockslide', 'Rockslide', 'stone', 'home', 'sweep', 'starter', 100, 40000, 1000, 6],
+  ['meteor_shower', 'Meteor Shower', 'stone', 'home', 'bombard', 'road', 100, 40000, 1000, 5],
+  ['sticky_tar', 'Sticky Tar', 'stone', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
+  ['stampede', 'Stampede', 'stone', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['hunt_cry', 'Hunt Cry', 'stone', 'field', 'rally', 'warPath', 125, 45000, 500, 8],
+  ['hunters_spear', 'Hunter’s Spear', 'stone', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
+  ['tidal_wave', 'Tidal Wave', 'bronze', 'home', 'sweep', 'starter', 100, 40000, 1000, 6],
+  ['zeus_bolts', 'Zeus’s Bolts', 'bronze', 'home', 'bombard', 'warPath', 100, 40000, 1000, 5],
+  ['medusa_gaze', 'Medusa’s Gaze', 'bronze', 'home', 'stun', 'warPath', 75, 35000, 1000, 5],
+  ['chariot_rush', 'Chariot Rush', 'bronze', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['aegis', 'Aegis', 'bronze', 'field', 'ward', 'road', 125, 45000, 500, 8],
+  ['apollo_arrow', 'Apollo’s Arrow', 'bronze', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
+  ['arrow_storm', 'Arrow Storm', 'medieval', 'home', 'bombard', 'starter', 100, 40000, 1000, 5],
+  ['caltrops', 'Caltrops', 'medieval', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
+  ['boiling_oil', 'Boiling Oil', 'medieval', 'home', 'sweep', 'warPath', 100, 40000, 1000, 4],
+  ['knights_charge', 'Knights’ Charge', 'medieval', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['royal_decree', 'Royal Decree', 'medieval', 'field', 'rally', 'road', 125, 45000, 500, 8],
+  ['undermine', 'Undermine', 'medieval', 'field', 'suppress', 'warPath', 125, 60000, 1500, 0],
+  ['volley_fire', 'Volley Fire', 'gunpowder', 'home', 'sweep', 'starter', 100, 40000, 1000, 6],
+  ['broadside', 'Broadside', 'gunpowder', 'home', 'bombard', 'road', 100, 40000, 1000, 5],
+  ['boarding_nets', 'Boarding Nets', 'gunpowder', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
+  ['smoke_screen', 'Smoke Screen', 'gunpowder', 'field', 'cloud', 'starter', 100, 40000, 1000, 8],
+  ['horse_artillery', 'Horse Artillery', 'gunpowder', 'field', 'frontBarrage', 'warPath', 100, 35000, 1000, 5],
+  ['sharpshooter', 'Sharpshooter', 'gunpowder', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
+  ['gun_line', 'Gun Line', 'industrial', 'home', 'sweep', 'starter', 100, 40000, 1000, 6],
+  ['zeppelin_raid', 'Zeppelin Raid', 'industrial', 'home', 'bombard', 'road', 100, 40000, 1000, 5],
+  ['barbed_wire', 'Barbed Wire', 'industrial', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
+  ['iron_horse', 'Iron Horse', 'industrial', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['railway_gun', 'Railway Gun', 'industrial', 'field', 'strike', 'warPath', 75, 30000, 2000, 1],
+  ['field_hospital', 'Field Hospital', 'industrial', 'field', 'mend', 'warPath', 125, 45000, 500, 8],
+  ['strafing_run', 'Strafing Run', 'modern', 'home', 'sweep', 'starter', 100, 40000, 1000, 6],
+  ['carpet_bomber', 'Carpet Bomber', 'modern', 'home', 'bombard', 'road', 100, 40000, 1000, 5],
+  ['aa_screen', 'AA Screen', 'modern', 'home', 'flak', 'warPath', 75, 25000, 500, 3],
+  ['paratroopers', 'Paratroopers', 'modern', 'field', 'drop', 'starter', 150, 60000, 1000, 0],
+  ['tank_rush', 'Tank Rush', 'modern', 'field', 'charge', 'warPath', 100, 40000, 1000, 6],
+  ['sniper_team', 'Sniper Team', 'modern', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
+  ['orbital_lance', 'Orbital Lance', 'future', 'home', 'sweep', 'starter', 100, 40000, 1000, 6],
+  ['point_defense', 'Point Defense Grid', 'future', 'home', 'bombard', 'warPath', 100, 40000, 1000, 5],
+  ['stasis_field', 'Stasis Field', 'future', 'home', 'stun', 'warPath', 75, 35000, 1000, 5],
+  ['drone_swarm', 'Drone Swarm', 'future', 'field', 'frontBarrage', 'starter', 100, 35000, 1000, 5],
+  ['nanite_surge', 'Nanite Surge', 'future', 'field', 'mend', 'road', 150, 50000, 500, 8],
+  ['emp_blackout', 'EMP Blackout', 'future', 'field', 'suppress', 'warPath', 125, 60000, 1500, 0],
+  ['starfall', 'Starfall', 'cosmic', 'home', 'bombard', 'starter', 100, 40000, 1000, 5],
+  ['singularity', 'Singularity', 'cosmic', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
+  ['solar_flare', 'Solar Flare', 'cosmic', 'home', 'sweep', 'warPath', 100, 40000, 1000, 6],
+  ['comet_run', 'Comet Run', 'cosmic', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['warp_strike', 'Warp Strike', 'cosmic', 'field', 'drop', 'road', 150, 60000, 1000, 0],
+  ['ion_cannon', 'Ion Cannon', 'cosmic', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
 ];
 
 /** A2.7 train times and pop per role group (derived by the compiler). */
@@ -568,84 +588,151 @@ describe('A2.7 / A2.8 price rules', () => {
 });
 
 describe('A5.7 Age Powers', () => {
-  for (const [slug, name, age, slot, effect] of POWERS) {
+  for (const [slug, name, age, slot, family, source, cost, reloadMs, telegraphMs, cap] of POWERS) {
     it(`${age}: ${slug}`, () => {
       const p = content.powers[slug];
       expect(p, slug).toBeDefined();
-      expect(p?.age).toBe(age);
-      expect(p?.slot).toBe(slot);
-      expect(p?.telegraphMs).toBe(1000);
-      expect(p?.effect).toMatchObject(effect);
+      expect(p).toMatchObject({ age, slot, family, source, cost, reloadMs, telegraphMs });
+      expect(p?.maxTargets ?? 0).toBe(cap);
       expect(en.card[slug]?.name).toBe(name);
     });
   }
 
-  it('encodes the buffs', () => {
+  it('has the 48 powers of the roster and nothing else', () => {
+    expect(Object.keys(content.powers).sort()).toEqual(POWERS.map((r) => r[0]).sort());
+  });
+
+  it('encodes the buffs (8 frontmost own units)', () => {
     expect(content.powers.royal_decree?.effect).toEqual({
       kind: 'buffAll',
+      maxTargets: 8,
       statuses: [
         { kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 },
-        { kind: 'speedBuff', magnitudeBp: 2500, durationMs: 8000 },
+        { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 8000 },
       ],
     });
-    // All your units get a regen of 40% of max HP over 4 s and a 150 shield for 6 s
     expect(content.powers.nanite_surge?.effect).toEqual({
       kind: 'buffAll',
+      maxTargets: 8,
       statuses: [
         { kind: 'regen', magnitudeBp: 4000, durationMs: 4000 },
         { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 150 },
       ],
     });
-    // Orbital Lance: "dealing 450 once to each enemy it touches (±20 lu)"
-    expect(content.powers.orbital_lance?.effect).toMatchObject({ width: 40 });
-    // Aegis (A17.11): all your units get an 80 shield and +15% damage for 6 s
     expect(content.powers.aegis?.effect).toEqual({
       kind: 'buffAll',
+      maxTargets: 8,
       statuses: [
         { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 80 },
         { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 6000 },
       ],
     });
-    expect(Object.keys(content.powers)).toHaveLength(16);
   });
 
-  /**
-   * A5.7 "Per unit" column: the coverage estimate of A2.9 (count × 2 × radius / zone hits per unit, or
-   * the per-enemy hit cap) against the age's L1 Infantry and Heavy commons, in whole percent.
-   * The Photon Knight's innate shield counts as HP.
-   */
-  it('reproduces the "Per unit" column from the tables (A2.9 coverage)', () => {
-    const PER_UNIT: [string, string, string, number, number][] = [
-      ['stampede', 'bonker', 'tuskback', 94, 27],
-      ['meteor_shower', 'bonker', 'tuskback', 88, 25],
-      ['arrow_storm', 'footman', 'destrier_knight', 66, 19],
-      ['broadside', 'corsair', 'cuirassier', 82, 24],
-      ['carpet_bomber', 'trench_raider', 'tankette', 91, 26],
-      ['orbital_lance', 'photon_knight', 'walker_mech', 80, 24],
-      // A17.11
-      ['tidal_wave', 'hoplite', 'war_chariot', 70, 21],
-      ['iron_horse', 'riveter', 'steam_golem', 91, 25],
-      ['zeppelin_raid', 'riveter', 'steam_golem', 85, 24],
-      ['starfall', 'star_legionnaire', 'hover_tank', 87, 24],
-    ];
-    const ehp = (id: string): number => {
-      const u = content.units[id];
-      const shield = u?.abilities.find((a) => a.kind === 'innateShield');
-      return (u?.hp ?? 0) + (shield?.kind === 'innateShield' ? shield.amount : 0);
+  /** The age's L1 Infantry Common, Heavy Common and non-Legendary Epic (A2.9.6 "I" and "H"). */
+  const ageUnits = (age: AgeId) => {
+    const us = Object.values(content.units).filter((u) => u.age === age && !u.hidden);
+    const find = (group: string, rarity: string): UnitDef => {
+      const u = us.find((x) => x.group === group && x.rarity === rarity);
+      if (!u) throw new Error(`${age} ${group}`);
+      return u;
     };
-    for (const [power, light, heavy, lightPct, heavyPct] of PER_UNIT) {
-      const e = content.powers[power]?.effect;
+    return { i: find('infantry', 'common'), h: find('heavy', 'common'), epic: find('epic', 'epic') };
+  };
+  /** HP with the innate shield (the Photon Knight's counts as HP). */
+  const ehp = (u: UnitDef): number => {
+    const shield = u.abilities.find((a) => a.kind === 'innateShield');
+    return u.hp + (shield?.kind === 'innateShield' ? shield.amount : 0);
+  };
+
+  /**
+   * The static per-power checks of A2.9.6 and A2.9.12: coverage per unit (count × 2 × radius / zone
+   * for barrages, the damage for sweeps, the per-enemy hit cap for charges) against L1 Infantry and
+   * Heavy, in whole percent, within the family target.
+   */
+  it('per-unit damage is within each family target (A2.9.6)', () => {
+    for (const pw of Object.values(content.powers)) {
+      const e = pw.effect;
       let perUnit = 0;
-      if (e?.kind === 'barrage') perUnit = (e.damage * e.count * 2 * e.radius) / e.zone;
-      else if (e?.kind === 'stampede') perUnit = e.damage * e.maxHitsPerEnemy;
-      else if (e?.kind === 'sweep') perUnit = e.damage;
-      expect(Math.round((perUnit * 100) / ehp(light)), `${power} vs ${light}`).toBe(lightPct);
-      expect(Math.round((perUnit * 100) / ehp(heavy)), `${power} vs ${heavy}`).toBe(heavyPct);
-      // A2.9 tuning target: 60-100% of the Light unit, 15-35% of the Heavy common.
-      expect(lightPct).toBeGreaterThanOrEqual(60);
-      expect(lightPct).toBeLessThanOrEqual(100);
-      expect(heavyPct).toBeGreaterThanOrEqual(15);
-      expect(heavyPct).toBeLessThanOrEqual(35);
+      if (e.kind === 'barrage') perUnit = (e.damage * e.count * 2 * e.radius) / e.zone;
+      else if (e.kind === 'stampede') perUnit = e.damage * e.maxHitsPerEnemy;
+      else if (e.kind === 'sweep') perUnit = e.damage;
+      else continue;
+      if (pw.family === 'flak') continue;
+      const { i, h } = ageUnits(pw.age);
+      const li = Math.round((perUnit * 100) / ehp(i));
+      const hi = Math.round((perUnit * 100) / ehp(h));
+      if (pw.family === 'bombard' || pw.family === 'sweep') {
+        expect(li, `${pw.id} vs ${i.id}`).toBeGreaterThanOrEqual(80);
+        expect(li, `${pw.id} vs ${i.id}`).toBeLessThanOrEqual(100);
+        expect(hi, `${pw.id} vs ${h.id}`).toBeGreaterThanOrEqual(20);
+        expect(hi, `${pw.id} vs ${h.id}`).toBeLessThanOrEqual(30);
+      } else {
+        expect(li, `${pw.id} vs ${i.id}`).toBeGreaterThanOrEqual(60);
+        expect(li, `${pw.id} vs ${i.id}`).toBeLessThanOrEqual(95);
+        expect(hi, `${pw.id} vs ${h.id}`).toBeGreaterThanOrEqual(15);
+        expect(hi, `${pw.id} vs ${h.id}`).toBeLessThanOrEqual(27);
+      }
+    }
+  });
+
+  it('strikes deal 55-65% of the Heavy and never kill a full-HP same-age Heavy or Epic (Epics take 50%)', () => {
+    const epicBp = content.economy.power.strikeEpicBp;
+    for (const pw of Object.values(content.powers)) {
+      const e = pw.effect;
+      if (e.kind !== 'strike') continue;
+      const { h, epic } = ageUnits(pw.age);
+      const total = e.damage * e.shots;
+      const pct = Math.round((total * 100) / ehp(h));
+      expect(pct, pw.id).toBeGreaterThanOrEqual(55);
+      expect(pct, pw.id).toBeLessThanOrEqual(65);
+      expect(total, `${pw.id} vs ${h.id}`).toBeLessThan(ehp(h));
+      expect(Math.trunc((total * epicBp) / 10000), `${pw.id} vs ${epic.id}`).toBeLessThan(ehp(epic));
+    }
+  });
+
+  it('controls give at least 12 disabled unit-seconds per 100 gold at the cap; their damage stays small', () => {
+    for (const pw of Object.values(content.powers)) {
+      const e = pw.effect;
+      if (e.kind !== 'field') continue;
+      const pulses = Math.max(1, Math.trunc(e.durationMs / 500));
+      const cap = pw.maxTargets ?? 0;
+      let ds = 0;
+      for (const st of e.statuses ?? []) {
+        if (st.kind === 'stun') ds += (cap * st.durationMs) / 1000;
+        if (st.kind === 'snare') ds += (cap * (st.magnitudeBp / 10000) * pulses * 500) / 1000;
+      }
+      expect((ds * 100) / pw.cost, pw.id).toBeGreaterThanOrEqual(12);
+      const { i } = ageUnits(pw.age);
+      const dmg = (e.damagePerPulse ?? 0) * pulses;
+      expect((dmg * 100) / ehp(i), pw.id).toBeLessThanOrEqual(45);
+      if (pw.family === 'snare' || pw.family === 'pull') {
+        expect(Math.round((dmg * 100) / i.hp), pw.id).toBeGreaterThanOrEqual(30);
+        expect(Math.round((dmg * 100) / i.hp), pw.id).toBeLessThanOrEqual(40);
+      }
+    }
+  });
+
+  it('Flak never takes out its age’s air Epic in one cast; buffs give at most 70% of the Infantry in shields and heals', () => {
+    for (const pw of Object.values(content.powers)) {
+      const e = pw.effect;
+      if (pw.family === 'flak' && e.kind === 'barrage') {
+        expect(e.damage * e.count, pw.id).toBeLessThanOrEqual(ehp(ageUnits(pw.age).epic));
+      }
+      if (e.kind === 'buffAll') {
+        const { i } = ageUnits(pw.age);
+        let total = 0;
+        for (const st of e.statuses) {
+          if (st.kind === 'shield') total += st.amount ?? 0;
+          if (st.kind === 'regen') total += (i.hp * st.magnitudeBp) / 10000;
+        }
+        expect((total * 100) / ehp(i), pw.id).toBeLessThanOrEqual(70);
+        for (const st of e.statuses) {
+          if (st.kind === 'speedBuff') expect(st.magnitudeBp, pw.id).toBeLessThanOrEqual(content.economy.statCaps.speedBp);
+          if (st.kind === 'attackSpeedBuff') expect(st.magnitudeBp, pw.id).toBeLessThanOrEqual(content.economy.statCaps.attackSpeedBp);
+          if (st.kind === 'damageBuff') expect(st.magnitudeBp, pw.id).toBeLessThanOrEqual(content.economy.statCaps.damageBp);
+        }
+      }
     }
   });
 });

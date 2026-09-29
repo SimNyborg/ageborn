@@ -73,7 +73,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
   const done = () => p.onDone(p.shows.done() ?? r);
   const plan = p.save.warPlans[p.save.activePlan];
   const isEquipped = (card: CardId) =>
-    !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.power === card);
+    !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.powers.home === card || l.powers.field === card);
   // Equipped into the army of an age not reached yet: say where, never a plain "Equipped" (U15).
   const reached = new Set(reachedAges(p.save, c));
   const equippedNote = (card: CardId): string | null => {

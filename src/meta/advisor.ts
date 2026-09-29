@@ -3,7 +3,7 @@
  *
  * Errors (the plan cannot be played in this format): a loadout needs at least 3 units and 1 turret
  * in every age the format uses; every card must be owned, from that age, and in one slot only; the
- * power must be an owned power of that age. Warnings never block: "Stone has no anti-armor",
+ * powers must be owned powers of that age in their own slots (A2.9.1). Warnings never block: "Stone has no anti-armor",
  * "Modern cannot hit air" (from Gunpowder on, no air-hitting unit or turret), "Medieval has only 3
  * units", "No splash anywhere: swarms will hurt" (no area attack in any unit or turret of the plan).
  *
@@ -84,8 +84,15 @@ export function validatePlan(plan: WarPlan, s: SaveDoc, t: Content, format: Form
       if (seen.has(id)) bad.add('duplicate');
       seen.add(id);
     }
-    const power = t.powers[l.power];
-    if (!power || power.age !== age || !s.powersOwned.includes(l.power)) bad.add('badPower');
+    // A2.9.1: each power slot is empty or holds an owned power of this age that fits it.
+    for (const slot of ['home', 'field'] as const) {
+      const id = l.powers?.[slot] ?? null;
+      if (id === null) continue;
+      const power = t.powers[id];
+      if (!power || power.age !== age || power.slot !== slot || !s.powersOwned.includes(id)) bad.add('badPower');
+      if (seen.has(id)) bad.add('duplicate');
+      seen.add(id);
+    }
     for (const code of bad) out.push(issue(age, 'error', code));
     if (units.length < MIN_UNITS) out.push(issue(age, 'error', 'tooFewUnits'));
     if (turrets.length < MIN_TURRETS) out.push(issue(age, 'error', 'noTurret'));

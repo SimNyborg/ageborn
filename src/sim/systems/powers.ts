@@ -1,29 +1,62 @@
 /**
- * Age Powers (DESIGN A2.9, A5.7): casting (from the `power` command) and B3 step 11 (telegraph
- * countdowns; due impacts collected).
+ * Age Powers (DESIGN A2.9): casting (the `power` command), reload (B3 step 3, via `economy.ts`) and
+ * B3 step 11 (telegraph countdowns; due effects collected).
  *
- * - Charge 0 → 100% over 50 s (economy step); casting needs 100% and resets it.
- * - Tap = auto-aim (the `densest` scan over p 150-1,850, `economy.powerZoneClamp`), or a given own-side p, clamped to that range.
- * - A 1.0 s telegraph is visible to both sides; then the effect plays out.
- * - Barrage impact i lands at telegraphEnd + floor(i × durationTicks / count) at
- *   x = zoneStart + (i + 0.5) × zone / count + jitter (sim RNG, 0 for line patterns); zoneStart is the zone
- *   edge nearer the caster's gate.
- * - Powers hit units only; Legendaries take 50%; kills pay 30% gold and no XP.
+ * - Two typed slots per age loadout, Home and Field (A2.9.1). Each slot reloads on its own in ppm with
+ *   an exact integer remainder (A2.9.3, `core/powerReach.ts`).
+ * - A cast costs gold, paid in full on acceptance; no refund (A2.9.2). Validation order (A2.9.7):
+ *   `badCommand`, `noPower`, `powerReloading`, `powerLockout`, `powerOutOfReach`, `powerNoTarget`, `noGold`.
+ * - Reach (A2.9.4): Home powers aim in [150, 1,000 − zone/2] and touch only enemies with own-frame
+ *   p ≤ 1,000; Front powers aim up to F + 150 (F never below 480) and touch up to the band max + zone/2;
+ *   strikes lock one enemy anywhere; drops, buffs, charges and Suppress have no aim. A given `p` is
+ *   clamped into the band; no `p` = auto-aim (the capped-value scan); a damage or control power whose
+ *   auto-aim finds nothing eligible is rejected before payment.
+ * - The cap and the screen (A2.9.5): one cast affects at most `maxTargets` distinct enemies, and only
+ *   the first ones in cap order (nearest the caster's gate) across the whole reach area are eligible.
+ *   The cast keeps `hitIds`; barrage blasts pick at impact resolution (step 13, `impacts.ts`), sweeps,
+ *   charges, fields and strikes when they select targets here.
+ * - Buffs affect the caster's 8 frontmost units (A2.9.5); the cloud's ally bonus is capped in `status.ts`.
+ * - Powers hit units only; Legendaries take 50% damage and 50% of a power's control; Epics take 50% from
+ *   strikes; kills pay 30% gold and no XP (A2.9.6, `deaths.ts`).
  * - Damage, heals and shields scale with the caster's loadout multiplier: the average level multiplier
- *   over the unit cards in the current age loadout. Paratroopers use the caster's Rifleman level.
+ *   over the unit cards in the current age loadout; a drop uses the dropped card's level.
+ * - Barrage impact i lands at telegraphEnd + floor(i × durationTicks / count) at
+ *   x = zoneStart + (i + 0.5) × zone / count + jitter (sim RNG, 0 for line patterns); zoneStart is the
+ *   zone edge nearer the caster's gate.
  */
-import type { Side } from '@/contracts';
-import { BP, MILLI, PPM, randRange } from '@/core';
+import type { PowerSlot, Side } from '@/contracts';
+import {
+  BP,
+  LANE_MLU,
+  MILLI,
+  PPM,
+  autoAim,
+  capCompare,
+  clampToBand,
+  effectiveCost,
+  eligibleIds,
+  frontP,
+  isPowerSlot,
+  randRange,
+  reachAreaMax,
+  reachBand,
+  slotIndex,
+  strikePick,
+  strikeRank,
+  suppressLegal,
+  type CapCandidate,
+  type FrontCandidate,
+  type StrikeCandidate,
+} from '@/core';
 import { applyStatus, makeImpact } from '../damage';
 import { emit } from '../events';
-import { pOf, pointDist, xOf } from '../geometry';
-import { levelBp, scaleCenti, type PowerRules } from '../rules';
-import { cardLevel, loadoutOf, other, type CastRt, type Ctx, type Impact, type UnitRt } from '../state';
-import { alive, spawnUnit, unitRules } from '../units';
-import { densestP } from './targeting';
+import { centreDist, pOf, pointDist, xOf } from '../geometry';
+import { levelBp, scaleCenti, type PowerRules, type StatusRules } from '../rules';
+import { cardLevel, loadoutOf, other, slotPower, type CastRt, type Ctx, type Impact, type UnitRt } from '../state';
+import { alive, findUnit, spawnUnit, unitRules } from '../units';
 import { markPlayed } from './training';
 
-/** Loadout multiplier in bp: the average level multiplier of the current loadout's unit cards (A2.9). */
+/** Loadout multiplier in bp: the average level multiplier of the current loadout's unit cards (A2.9.6). */
 export function loadoutLevelBp(ctx: Ctx, side: Side): number {
   const lo = loadoutOf(ctx, side);
   let sum = 0;
@@ -36,8 +69,8 @@ export function loadoutLevelBp(ctx: Ctx, side: Side): number {
   return n > 0 ? Math.trunc(sum / n) : BP;
 }
 
-/** The caster's frontmost ground unit p (own frame), or −1. */
-function frontP(ctx: Ctx, side: Side): number {
+/** The side's frontmost ground unit p (own frame, any unit), or −1: where drops land beyond (A5.7). */
+function frontmostGround(ctx: Ctx, side: Side): number {
   let best = -1;
   for (const u of ctx.s.units) {
     if (u.side !== side || !alive(u) || u.air) continue;
@@ -47,75 +80,269 @@ function frontP(ctx: Ctx, side: Side): number {
   return best;
 }
 
-/** Validates and starts a cast. Returns a rejection reason or null. */
-export function castPower(ctx: Ctx, side: Side, aimP: number | undefined): string | null {
-  const s = ctx.s.sides[side];
-  if (s.powerPpm < PPM) return 'powerNotReady';
-  const lo = loadoutOf(ctx, side);
-  const pr = lo ? ctx.rules.powers[lo.power] : undefined;
-  if (!pr) return 'noPower';
-  const e = ctx.econ;
+/** The front F of a side (A2.9.4), own-frame mlu, or null: trained, surfaced, landed ground units only. */
+export function powerFront(ctx: Ctx, side: Side): number | null {
+  const own: FrontCandidate[] = [];
+  for (const u of ctx.s.units) {
+    if (u.side !== side || !alive(u)) continue;
+    own.push({ id: u.id, p: pOf(u.x, side), air: u.air, summoned: u.summoned, leaping: u.leapEnd > 0 });
+  }
+  return frontP(own, ctx.rules.econ.power.reach.frontRank);
+}
+
+/**
+ * The effective price of a power for a side, whole gold (A2.9.2): Power Hour and research discounts
+ * multiply, truncated.
+ */
+export function powerCost(ctx: Ctx, side: Side, pr: PowerRules): number {
+  return effectiveCost(pr.cost, [ctx.mods.powerCostBp, ctx.s.sides[side].fx.powerCostBp]);
+}
+
+/** Reload rate of a side's slots in bp (A2.9.3): 10,000 + research + modifier bonuses, × the Overdrive lever. */
+export function powerRateBp(ctx: Ctx, side: Side): number {
+  let rate = BP + ctx.s.sides[side].fx.powerReloadBp + ctx.mods.powerReloadBp;
+  const hot = ctx.s.phase === 'overdrive' || ctx.s.phase === 'siege';
+  if (hot && ctx.econ.overdrive.powerBp !== BP) rate = Math.trunc((rate * ctx.econ.overdrive.powerBp) / BP);
+  return rate > 0 ? rate : 1;
+}
+
+/** Reload length of a slot in ticks: the equipped power's, or `economy.power.emptyReloadMs` when empty. */
+export function slotReloadTicks(ctx: Ctx, side: Side, slot: PowerSlot): number {
+  const id = slotPower(ctx, side, slot);
+  const pr = id ? ctx.rules.powers[id] : undefined;
+  return pr ? pr.reloadTicks : ctx.econ.power.emptyReloadTicks;
+}
+
+/** Can this power touch that enemy (alive, air or ground as the effect says)? Forts and burrow come later. */
+function hittableBy(e: UnitRt, side: Side, hitsAir: boolean, hitsGround: boolean): boolean {
+  if (e.side === side || !alive(e)) return false;
+  return e.air ? hitsAir : hitsGround;
+}
+
+/** What an effect may touch (A2.9.6: every power states air and ground). */
+function effectTargets(pr: PowerRules): { air: boolean; ground: boolean } {
   const fx = pr.effect;
-  let centreP: number;
+  switch (fx.kind) {
+    case 'barrage':
+      return { air: fx.hitsAir, ground: fx.hitsGround };
+    case 'sweep':
+    case 'field':
+    case 'strike':
+      return { air: fx.hitsAir, ground: true };
+    case 'stampede':
+      return { air: false, ground: true };
+    default:
+      return { air: true, ground: true };
+  }
+}
+
+/**
+ * The hittable enemies in a cast's reach area (A2.9.4 hard mask), own-frame p (mlu). Charges use the
+ * run: a body overlapping [areaMin, areaMax]; everything else the centre.
+ */
+function areaCandidates(ctx: Ctx, c: CastRt, pr: PowerRules): { u: UnitRt; cand: CapCandidate }[] {
+  const t = effectTargets(pr);
+  const byBody = pr.effect.kind === 'stampede';
+  const out: { u: UnitRt; cand: CapCandidate }[] = [];
+  for (const e of ctx.s.units) {
+    if (!hittableBy(e, c.side, t.air, t.ground)) continue;
+    const p = pOf(e.x, c.side);
+    if (byBody) {
+      const half = unitRules(ctx, e).half;
+      if (p + half < c.areaMin || p - half > c.areaMax) continue;
+    } else if (p < c.areaMin || p > c.areaMax) continue;
+    out.push({ u: e, cand: { id: e.id, p } });
+  }
+  return out;
+}
+
+/** The eligible set of a cast now (A2.9.5): its `hitIds` plus the first free cap slots in cap order. */
+export function castEligible(ctx: Ctx, c: CastRt, pr: PowerRules): Set<number> {
+  const cands = areaCandidates(ctx, c, pr).map((x) => x.cand);
+  return eligibleIds(cands, pr.maxTargets > 0 ? pr.maxTargets : cands.length, c.hitIds);
+}
+
+/** Validates and starts a cast (A2.9.7). Returns a rejection reason or null. */
+export function castPower(ctx: Ctx, side: Side, slot: unknown, aimP: unknown): string | null {
+  if (!isPowerSlot(slot)) return 'badCommand';
+  if (aimP !== undefined && (typeof aimP !== 'number' || !Number.isFinite(aimP))) return 'badCommand';
+  const s = ctx.s.sides[side];
+  const si = slotIndex(slot);
+  const id = slotPower(ctx, side, slot);
+  const pr = id ? ctx.rules.powers[id] : undefined;
+  if (!pr) return 'noPower';
+  if (s.powerPpm[si] < PPM) return 'powerReloading';
+  if (ctx.tick < s.powerLockoutUntil) return 'powerLockout';
+  const e = ctx.econ;
+  const r = e.power.reach;
+  const fx = pr.effect;
+  const front = powerFront(ctx, side);
+  if (fx.kind === 'suppress' && !suppressLegal(front, r)) return 'powerOutOfReach';
+
+  // Where the cast lands and the reach area (own-frame mlu).
+  let centreP = r.zoneMin;
+  let areaMin = 0;
+  let areaMax = r.lane;
+  let targetId = -1;
+  const band = reachBand(pr.reach, pr.zone, front, r);
   switch (fx.kind) {
     case 'barrage':
     case 'sweep':
+    case 'field':
     case 'cloud': {
-      if (aimP !== undefined && Number.isFinite(aimP)) {
-        centreP = Math.trunc(aimP * MILLI);
+      const b = band ?? [r.zoneMin, r.zoneMax];
+      areaMax = reachAreaMax(pr.reach, pr.zone, b, r);
+      if (aimP !== undefined) {
+        centreP = clampToBand(Math.trunc((aimP as number) * MILLI), b);
       } else {
-        const hitsAir = fx.kind === 'cloud' ? true : fx.hitsAir;
-        centreP = densestP(ctx, side, e.zoneMin, e.zoneMax, Math.trunc(pr.zone / 2), true, hitsAir) ?? e.midLane;
+        const probe = probeCast(side, pr, areaMin, areaMax);
+        const cands = areaCandidates(ctx, probe, pr);
+        const elig = fx.kind === 'cloud' ? null : eligibleIds(cands.map((x) => x.cand), pr.maxTargets > 0 ? pr.maxTargets : cands.length, []);
+        const scored = cands.filter((x) => !elig || elig.has(x.u.id)).map((x) => ({ p: x.cand.p, value: unitRules(ctx, x.u).cost }));
+        const aim = autoAim(b, pr.zone, scored, r.scanStep);
+        if (aim.score <= 0 && pr.harmful) return 'powerNoTarget';
+        // Nothing to aim at (a cloud): just in front of your army, as far as the band allows.
+        centreP = aim.score > 0 ? aim.p : b[1];
       }
-      centreP = centreP < e.zoneMin ? e.zoneMin : centreP > e.zoneMax ? e.zoneMax : centreP;
       break;
     }
     case 'stampede': {
-      const f = frontP(ctx, side);
-      // From the frontmost own ground unit, or p = 200 without one (A5.7, `battle.stampedeFallbackP`).
-      centreP = (f >= 0 ? f : e.stampedeFallbackP) + Math.trunc(fx.distance / 2);
+      // From F, or p = 200 without one (A2.9.4, `battle.stampedeFallbackP`); the run is the reach area.
+      const start = front !== null ? front : e.stampedeFallbackP;
+      areaMin = start;
+      areaMax = start + fx.distance;
+      centreP = start + Math.trunc(fx.distance / 2);
+      break;
+    }
+    case 'strike': {
+      const cands = strikeCandidates(ctx, side, pr);
+      if (aimP !== undefined) {
+        const aim = clampToBand(Math.trunc((aimP as number) * MILLI), [r.zoneMin, r.zoneMax]);
+        const pick = strikePick(cands, aim, r.strikePick);
+        if (pick === null) return 'powerNoTarget';
+        targetId = pick;
+      } else {
+        const total = scaleCenti(fx.damage * fx.shots, loadoutLevelBp(ctx, side));
+        const best = strikeRank(cands, total, e.power.strikeEpicBp, e.legendaryPowerDamageBp)[0];
+        if (!best) return 'powerNoTarget';
+        targetId = best.id;
+      }
+      const t = findUnit(ctx, targetId);
+      centreP = t ? pOf(t.x, side) : r.zoneMin;
       break;
     }
     case 'paradrop': {
-      const f = frontP(ctx, other(side));
+      const f = frontmostGround(ctx, other(side));
       if (f < 0) centreP = fx.fallbackP;
       else {
-        // 150 lu beyond the enemy's frontmost ground unit, in the caster's frame, clamped to p ≤ 1,850 (the zone clamp).
+        // 150 lu beyond the enemy's frontmost ground unit, in the caster's frame, clamped to p ≤ 1,850.
         const land = pOf(xOf(f, other(side)), side) + fx.beyond;
-        centreP = land > e.zoneMax ? e.zoneMax : land;
+        centreP = land > r.zoneMax ? r.zoneMax : land;
       }
       break;
     }
     case 'buffAll': {
-      const f = frontP(ctx, side);
-      centreP = f >= 0 ? f : e.spawnP;
+      centreP = front !== null ? front : e.spawnP;
+      break;
+    }
+    case 'suppress': {
+      // No aim: the jam lands on the enemy wall (the telegraph marks every enemy mount).
+      centreP = LANE_MLU - r.turretRangeCap;
       break;
     }
   }
+
+  const cost = powerCost(ctx, side, pr);
+  if (s.gold < cost * MILLI) return 'noGold';
+
+  // Accept: pay, reset the slot, start the cast.
+  s.gold -= cost * MILLI;
+  s.powerPpm[si] = 0;
+  s.powerRem[si] = 0;
+  if (e.power.lockTicks > 0) s.powerLockoutUntil = ctx.tick + e.power.lockTicks;
   const castId = ctx.s.nextId;
   ctx.s.nextId += 1;
   const tele = ctx.tick + pr.telegraphTicks;
   const cast: CastRt = {
     castId,
     side,
+    slot,
     power: pr.id,
     startTick: ctx.tick,
     x: xOf(centreP, side),
     zone: pr.zone,
     nextIndex: 0,
     levelBp: fx.kind === 'paradrop' ? levelBp(e, cardLevel(ctx, side, fx.card)) : loadoutLevelBp(ctx, side),
+    targetId,
     telegraphEnd: tele,
     endTick: tele + effectTicks(pr),
+    cost,
+    areaMin,
+    areaMax,
     hitIds: [],
     hitCounts: [],
     runnerHits: fx.kind === 'stampede' ? Array.from({ length: fx.runners }, () => []) : [],
     applied: false,
   };
-  s.powerPpm = 0;
   ctx.s.casts.push(cast);
   markPlayed(s, pr.id);
-  emit(ctx, { e: 'powerTelegraph', side, power: pr.id, castId, x: cast.x, zone: pr.zone });
+  emit(ctx, {
+    e: 'powerTelegraph',
+    side,
+    slot,
+    power: pr.id,
+    castId,
+    x: cast.x,
+    zone: pr.zone,
+    cost,
+    targetId,
+    telegraphMs: pr.def.telegraphMs,
+  });
   return null;
+}
+
+/** A throwaway cast shell for the auto-aim scan (no hits yet). */
+function probeCast(side: Side, pr: PowerRules, areaMin: number, areaMax: number): CastRt {
+  return {
+    castId: 0,
+    side,
+    slot: pr.slot,
+    power: pr.id,
+    startTick: 0,
+    x: 0,
+    zone: pr.zone,
+    nextIndex: 0,
+    levelBp: BP,
+    targetId: -1,
+    telegraphEnd: 0,
+    endTick: 0,
+    cost: 0,
+    areaMin,
+    areaMax,
+    hitIds: [],
+    hitCounts: [],
+    runnerHits: [],
+    applied: false,
+  };
+}
+
+/** Every enemy a strike may lock (A2.9.7): hittable, anywhere on the lane. */
+function strikeCandidates(ctx: Ctx, side: Side, pr: PowerRules): StrikeCandidate[] {
+  const t = effectTargets(pr);
+  const out: StrikeCandidate[] = [];
+  for (const e of ctx.s.units) {
+    if (!hittableBy(e, side, t.air, t.ground)) continue;
+    const ur = unitRules(ctx, e);
+    out.push({
+      id: e.id,
+      p: pOf(e.x, side),
+      cost: ur.cost,
+      hp: e.hp + e.shield + e.innateShield,
+      epic: ur.def.rarity === 'epic',
+      legendary: ur.legendary,
+    });
+  }
+  return out;
 }
 
 /** Ticks from the telegraph end to the last tick of the effect. */
@@ -128,15 +355,23 @@ function effectTicks(pr: PowerRules): number {
       return fx.durationTicks;
     case 'stampede':
       return (fx.runners - 1) * fx.spacingTicks + Math.trunc((fx.distance + fx.step - 1) / fx.step);
+    case 'field':
+      return (fx.pulses - 1) * FIELD_PULSE_TICKS;
+    case 'strike':
+      return (fx.shots - 1) * fx.intervalTicks;
     default:
       return 0;
   }
 }
 
-function powerImpact(ctx: Ctx, c: CastRt, pr: PowerRules, dmgWhole: number): Impact {
+/** Field pulses are 10 ticks (0.5 s) apart (A2.9.7). */
+export const FIELD_PULSE_TICKS = 10;
+
+function powerImpact(c: CastRt, pr: PowerRules, dmgWhole: number): Impact {
   const imp = makeImpact(c.side, -1, pr.id);
   imp.sourceKind = 'power';
   imp.castId = c.castId;
+  imp.cast = c;
   imp.dmgType = pr.dmgType;
   imp.dmg = scaleCenti(dmgWhole, c.levelBp);
   imp.power = true;
@@ -144,7 +379,22 @@ function powerImpact(ctx: Ctx, c: CastRt, pr: PowerRules, dmgWhole: number): Imp
   return imp;
 }
 
-/** B3 step 11: telegraph countdowns and due power impacts. */
+/**
+ * A power's status on an enemy (A2.9.6): Legendaries keep `economy.power.legendaryControlBp` of a stun,
+ * snare, slow or mark's duration.
+ */
+export function applyPowerStatus(ctx: Ctx, u: UnitRt, st: StatusRules): void {
+  const control = st.kind === 'stun' || st.kind === 'snare' || st.kind === 'slow' || st.kind === 'mark';
+  if (control && unitRules(ctx, u).legendary) {
+    const ticks = Math.trunc((st.ticks * ctx.econ.power.legendaryControlBp) / BP);
+    if (ticks <= 0) return;
+    applyStatus(ctx, u, { ...st, ticks }, -1);
+    return;
+  }
+  applyStatus(ctx, u, st, -1);
+}
+
+/** B3 step 11: telegraph countdowns and due power effects. */
 export function powerSystem(ctx: Ctx): void {
   const casts = ctx.s.casts;
   let w = 0;
@@ -160,6 +410,11 @@ export function powerSystem(ctx: Ctx): void {
   casts.length = w;
 }
 
+/** Adds a unit to the cast's `hitIds` once. */
+function markHit(c: CastRt, id: number): void {
+  if (!c.hitIds.includes(id)) c.hitIds.push(id);
+}
+
 function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
   const fx = pr.effect;
   const tick = ctx.tick;
@@ -173,11 +428,12 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
         const p = zoneStartP + Math.trunc(((2 * idx + 1) * fx.zone) / (2 * fx.count)) + jitter;
         const x = xOf(p, c.side);
         emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x, index: idx });
-        const imp = powerImpact(ctx, c, pr, fx.damage);
+        // The blast picks its eligible targets at resolution (step 13, `impacts.ts`).
+        const imp = powerImpact(c, pr, fx.damage);
         imp.area = 'blast';
         imp.radius = fx.radius;
         imp.x = x;
-        imp.hitsGround = true;
+        imp.hitsGround = fx.hitsGround;
         imp.hitsAir = fx.hitsAir;
         ctx.impacts.push(imp);
         c.nextIndex += 1;
@@ -189,20 +445,27 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       const beamP = zoneStartP + Math.trunc((fx.zone * k) / fx.durationTicks);
       const beamX = xOf(beamP, c.side);
       emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x: beamX, index: k });
+      const elig = castEligible(ctx, c, pr);
+      const touched: { u: UnitRt; cand: CapCandidate }[] = [];
       for (const e of ctx.s.units) {
-        if (e.side === c.side || !alive(e) || (e.air && !fx.hitsAir) || c.hitIds.includes(e.id)) continue;
+        if (!elig.has(e.id) || c.hitIds.includes(e.id) || !hittableBy(e, c.side, fx.hitsAir, true)) continue;
         if (pointDist(beamX, e.x, unitRules(ctx, e).half) > fx.halfWidth) continue;
-        c.hitIds.push(e.id);
-        const imp = powerImpact(ctx, c, pr, fx.damage);
-        imp.targetId = e.id;
-        imp.x = e.x;
+        touched.push({ u: e, cand: { id: e.id, p: pOf(e.x, c.side) } });
+      }
+      touched.sort((a, b) => capCompare(a.cand, b.cand));
+      for (const { u } of touched) {
+        markHit(c, u.id);
+        const imp = powerImpact(c, pr, fx.damage);
+        imp.targetId = u.id;
+        imp.x = u.x;
         imp.hitsAir = fx.hitsAir;
         ctx.impacts.push(imp);
       }
       return;
     }
     case 'stampede': {
-      const startP = pOf(c.x, c.side) - Math.trunc(fx.distance / 2);
+      const startP = c.areaMin;
+      let elig: Set<number> | null = null;
       for (let r = 0; r < fx.runners; r += 1) {
         const launch = c.telegraphEnd + r * fx.spacingTicks;
         if (tick < launch) break;
@@ -211,12 +474,18 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
         if (tick === launch) {
           emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x: xOf(startP, c.side), index: r });
         } else if (lo >= fx.distance) continue;
+        if (!elig) elig = castEligible(ctx, c, pr);
         const hits = c.runnerHits[r] as number[];
+        const touched: { u: UnitRt; cand: CapCandidate }[] = [];
         for (const e of ctx.s.units) {
-          if (e.side === c.side || !alive(e) || e.air || hits.includes(e.id)) continue;
+          if (!elig.has(e.id) || e.side === c.side || !alive(e) || e.air || hits.includes(e.id)) continue;
           const ep = pOf(e.x, c.side);
           const half = unitRules(ctx, e).half;
           if (ep + half < startP + lo || ep - half > startP + hi) continue;
+          touched.push({ u: e, cand: { id: e.id, p: ep } });
+        }
+        touched.sort((a, b) => capCompare(a.cand, b.cand));
+        for (const { u: e } of touched) {
           const hi2 = c.hitIds.indexOf(e.id);
           const count = hi2 >= 0 ? (c.hitCounts[hi2] as number) : 0;
           if (count >= fx.maxHits) continue;
@@ -226,12 +495,85 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
             c.hitCounts.push(1);
           }
           hits.push(e.id);
-          const imp = powerImpact(ctx, c, pr, fx.damage);
+          const imp = powerImpact(c, pr, fx.damage);
           imp.targetId = e.id;
           imp.x = e.x;
           imp.kb = fx.knockback;
           ctx.impacts.push(imp);
         }
+      }
+      return;
+    }
+    case 'field': {
+      // Pulse k lands at telegraphEnd + 10k (A2.9.7).
+      if (k < 0 || k % FIELD_PULSE_TICKS !== 0) return;
+      const pulse = Math.trunc(k / FIELD_PULSE_TICKS);
+      if (pulse >= fx.pulses) return;
+      c.nextIndex = pulse + 1;
+      emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x: c.x, index: pulse });
+      const elig = castEligible(ctx, c, pr);
+      const touched: { u: UnitRt; cand: CapCandidate }[] = [];
+      for (const e of ctx.s.units) {
+        if (!elig.has(e.id) || !hittableBy(e, c.side, fx.hitsAir, true)) continue;
+        if (centreDist(c.x, e.x) > fx.halfZone) continue;
+        touched.push({ u: e, cand: { id: e.id, p: pOf(e.x, c.side) } });
+      }
+      touched.sort((a, b) => capCompare(a.cand, b.cand));
+      for (const { u } of touched) {
+        markHit(c, u.id);
+        if (fx.damage > 0) {
+          // 1. damage, then 2. statuses (after the damage, in step 13).
+          const imp = powerImpact(c, pr, fx.damage);
+          imp.targetId = u.id;
+          imp.x = u.x;
+          imp.hitsAir = fx.hitsAir;
+          imp.powerStatuses = fx.statuses;
+          ctx.impacts.push(imp);
+        } else {
+          for (const st of fx.statuses) applyPowerStatus(ctx, u, st);
+        }
+        // 3. the first pulse pulls toward the centre (knockback resist applies; air is immune).
+        if (pulse === 0 && fx.pullBp > 0 && !u.air) {
+          let pull = Math.trunc(((c.x - u.x) * fx.pullBp) / BP);
+          if (unitRules(ctx, u).legendary) pull = Math.trunc((pull * ctx.econ.power.legendaryControlBp) / BP);
+          const dp = u.side === 0 ? pull : -pull;
+          if (dp !== 0) ctx.knocks.push({ id: u.id, dp, drag: false });
+        }
+      }
+      return;
+    }
+    case 'strike': {
+      // Shot i lands at telegraphEnd + i × interval on the locked unit, if it is still alive and
+      // hittable (homing, no miss); otherwise it fizzles (A2.9.7).
+      while (c.nextIndex < fx.shots && c.telegraphEnd + c.nextIndex * fx.intervalTicks <= tick) {
+        const idx = c.nextIndex;
+        c.nextIndex += 1;
+        const t = findUnit(ctx, c.targetId);
+        const x = t ? t.x : c.x;
+        emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x, index: idx });
+        if (!t || !hittableBy(t, c.side, fx.hitsAir, true)) continue;
+        markHit(c, t.id);
+        const imp = powerImpact(c, pr, fx.damage);
+        imp.targetId = t.id;
+        imp.x = t.x;
+        imp.hitsAir = fx.hitsAir;
+        imp.strike = true;
+        ctx.impacts.push(imp);
+      }
+      return;
+    }
+    case 'suppress': {
+      if (c.applied) return;
+      c.applied = true;
+      emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x: c.x, index: 0 });
+      // Every enemy mount (built or empty, a boss's extra mount and a marked turret included) starts no
+      // turret attack until then; the silence belongs to the mount (A2.9.7).
+      const foe = other(c.side);
+      const fs = ctx.s.sides[foe];
+      const until = tick + fx.ticks;
+      for (let m = 0; m < fs.mountSilencedUntil.length; m += 1) {
+        if ((fs.mountSilencedUntil[m] ?? 0) < until) fs.mountSilencedUntil[m] = until;
+        emit(ctx, { e: 'turretSilenced', side: foe, mount: m, untilTick: fs.mountSilencedUntil[m] as number });
       }
       return;
     }
@@ -243,8 +585,13 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       if (c.applied) return;
       c.applied = true;
       emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x: c.x, index: 0 });
-      for (const u of ctx.s.units) {
-        if (u.side !== c.side || !alive(u)) continue;
+      // The caster's frontmost units (highest own-frame p, ties the lower id), air and summons included (A2.9.5).
+      const own = ctx.s.units.filter((u) => u.side === c.side && alive(u));
+      own.sort((a, b) => pOf(b.x, c.side) - pOf(a.x, c.side) || a.id - b.id);
+      const n = own.length < fx.maxTargets ? own.length : fx.maxTargets;
+      for (let i = 0; i < n; i += 1) {
+        const u = own[i] as UnitRt;
+        c.hitIds.push(u.id);
         for (const st of fx.statuses) applyStatus(ctx, u, st, -1, buffAmount(u, st.kind, st.magnitudeBp, st.amount, c.levelBp));
       }
       return;

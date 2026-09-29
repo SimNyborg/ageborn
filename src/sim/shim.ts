@@ -115,7 +115,6 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
     counters: {},
     ticks: {
       ascend: msToTicks(e.ascendMs),
-      powerCharge: msToTicks(e.powerChargeMs),
       turretBuild: msToTicks(e.turretBuildMs),
       turretSell: msToTicks(e.turretSellMs),
       stanceCooldown: msToTicks(e.stanceCooldownMs),

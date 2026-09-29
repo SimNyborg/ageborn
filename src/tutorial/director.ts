@@ -215,7 +215,8 @@ export class TutorialDirector {
       case 'evolveReady':
         return evolveReady(i);
       case 'powerReady':
-        return me.powerPpm >= PPM_FULL;
+        // P1 (A2.9.13): the one power button is the Home slot.
+        return me.powerPpm[0] >= PPM_FULL;
       case 'ageUp':
         return this.agesReached.has(t.age);
       case 'treasuryAffordable': {

@@ -11,13 +11,13 @@
 import type { ComponentChildren } from 'preact';
 import type { Application, Ticker } from 'pixi.js';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import type { ArtProvider, AudioService, CapsuleReveal, I18n, WardrobeReveal } from '@/contracts';
+import type { ArtProvider, AudioService, CapsuleReveal, CapsuleTier, I18n, WardrobeReveal } from '@/contracts';
 import { fnv1a32 } from '@/core';
 import { i18n as appI18n } from '@/i18n';
 import css from './capsule.module.css';
 import { CapsuleStage } from './capsuleStage';
 import { OddsPanel } from './OddsPanel';
-import { RARITY_COLORS, cssHex } from './palette';
+import { RARITY_COLORS, TIER_COLORS, cssHex } from './palette';
 import { planOpenAll, planWardrobeShow, SHOW_TIMING, type Cue, type ShowPlan, type ShowStep } from './plan';
 import { ShowRunner, type RunnerState } from './runner';
 import { SummaryPanel, type SummaryActions } from './summary';
@@ -274,6 +274,15 @@ function ShowScreen(p: ShowScreenProps) {
   };
 
   const inSummary = state?.kind === 'summary';
+  // "Your first Aeon Capsule" (A10 step 4b): its own step after the pop, or, in Open all, one
+  // combined banner for the highest first tier over the end of the volley.
+  const volley = p.plan.steps.find((s) => s.kind === 'volley');
+  const firstBanner: { tier: CapsuleTier; delayMs: number } | null =
+    state?.kind === 'firstTier' && p.plan.finalTier
+      ? { tier: p.plan.finalTier, delayMs: 0 }
+      : state?.kind === 'volley' && volley?.kind === 'volley' && volley.firstTier
+        ? { tier: volley.firstTier, delayMs: volley.flareAtMs }
+        : null;
   const opened = state?.opened ?? false;
   const amber = p.plan.summary.amber;
   // The Amber pours once the capsule has actually burst (after its build), not when the burst step starts.
@@ -333,8 +342,23 @@ function ShowScreen(p: ShowScreenProps) {
         </div>
       ) : null}
       {state?.prompt === 'tap' ? (
-        <div class={css.tap} data-testid="capsule-tap">
+        <div
+          class={`${css.tap} ${state.kind === 'summitStrike' ? css.tapSummit : ''}`}
+          data-testid="capsule-tap"
+          {...(state.kind === 'summitStrike' ? { role: 'status', 'aria-label': t('capsule.aria.summitStrike') } : {})}
+        >
           {t('capsule.tap')}
+        </div>
+      ) : null}
+      {firstBanner ? (
+        <div
+          key={`first-${firstBanner.tier}`}
+          class={css.firstTier}
+          role="status"
+          data-testid="capsule-first-tier"
+          style={{ '--tier': cssHex(TIER_COLORS[firstBanner.tier]), animationDelay: `${firstBanner.delayMs}ms` }}
+        >
+          <span class={css.firstTierText}>{t(`capsule.firstTier.${firstBanner.tier}`)}</span>
         </div>
       ) : null}
       {p.honesty && !opened ? (

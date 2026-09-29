@@ -238,6 +238,12 @@
   opacity: 0.3;
   transform: translateX(24px);
 }
+/* The unlock moment's line may sit where the plate is: the plate steps out until it folds away. */
+.wp-plate.is-away {
+  opacity: 0;
+  transform: translateX(24px);
+  pointer-events: none;
+}
 @keyframes wp-plate-in {
   from {
     opacity: 0;

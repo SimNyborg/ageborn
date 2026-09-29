@@ -12,7 +12,7 @@ const stream: SimEvent[] = [
   { tick: 12, e: 'unitSpawned', id: 4, side: 1, card: 'bonker', x: 1180000, summoned: false, level: 1 },
   { tick: 12, e: 'unitSpawned', id: 5, side: 1, card: 'bonker', x: 1180000, summoned: false, level: 1 },
   { tick: 13, e: 'researchStarted', side: 0, pick: 'economy.granary', cost: 150000, endTick: 213 },
-  { tick: 20, e: 'powerTelegraph', side: 0, power: 'stampede', castId: 9, x: 500000, zone: 500000 },
+  { tick: 20, e: 'powerTelegraph', side: 0, slot: 'field', power: 'stampede', castId: 9, x: 500000, zone: 500000, cost: 100, targetId: -1, telegraphMs: 1000 },
   ...[2, 4, 5, 4].map(
     (id): SimEvent => ({
       tick: 40, e: 'hit', targetId: id, sourceId: -1, sourceCard: 'stampede', castId: 9, sourceKind: 'power',
@@ -56,6 +56,8 @@ describe('MatchStats reducer (B3)', () => {
       evolves: 2,
       reachedFinalAgeAtMs: 4500,
       powerMaxHits: 3,
+      powerGoldSpent: 100,
+      powerCasts: [0, 1],
       baseDamage: 26,
       heavyKillsByAA: 1,
       usedTreasury: true,
@@ -65,7 +67,7 @@ describe('MatchStats reducer (B3)', () => {
       mvpCard: 'spear_hunter',
     });
     const foe = computeMatchStats(stream, cfg, 1);
-    expect(foe).toMatchObject({ trained: 3, kills: 1, usedLastStand: true, ownBaseHpBpAtEnd: 0, mvpCard: null, powerMaxHits: 0 });
+    expect(foe).toMatchObject({ trained: 3, kills: 1, usedLastStand: true, ownBaseHpBpAtEnd: 0, mvpCard: null, powerMaxHits: 0, powerGoldSpent: 0, powerCasts: [0, 0] });
   });
 
   it('is incremental: pushing in chunks gives the same result', () => {

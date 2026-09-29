@@ -25,7 +25,7 @@ export interface DuelResult {
 const START_P = LANE_MLU / 2 - 150 * MILLI;
 
 function emptySide(label: string): SideConfig {
-  const empty: Loadout = { units: [null, null, null, null, null, null], turrets: [null, null], power: '' };
+  const empty: Loadout = { units: [null, null, null, null, null, null], turrets: [null, null], powers: { home: null, field: null } };
   return { label, isBot: true, loadouts: { stone: empty }, levels: {}, skins: {} };
 }
 

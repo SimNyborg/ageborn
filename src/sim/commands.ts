@@ -5,12 +5,13 @@
  * Invalid commands are ignored and emit `commandRejected` with a reason code:
  * `badCommand`, `emptySlot`, `lockedSlot`, `queueFull`, `legendaryLimit`, `noGold`, `nothingToCancel`,
  * `badMount`, `mountLocked`, `mountBusy`, `mountEmpty`, `notOutdated`, `maxMounts`,
- * `finalAge`, `ascending`, `notEnoughXp`, `powerNotReady`, `noPower`, `stanceLocked`, `sameStance`,
+ * `finalAge`, `ascending`, `notEnoughXp`, the power reasons (`noPower`, `powerReloading`, `powerLockout`,
+ * `powerOutOfReach`, `powerNoTarget`, `noGold`; A2.9.7), `stanceLocked`, `sameStance`,
  * `stanceCooldown`, `flagCooldown`, `lastStandAuto`, `lastStandNotArmed`, `emoteCooldown`, `retreatLocked`,
  * and the War Council reasons in `research.ts` (A18.5.1).
  */
 import type { Command, Side, TimedCommand, TrainingEvent } from '@/contracts';
-import { BP, MILLI, PPM } from '@/core';
+import { BP, MILLI, PPM, isPowerSlot, slotIndex } from '@/core';
 import { emit } from './events';
 import {
   ageOf,
@@ -41,7 +42,10 @@ export function applyCommands(ctx: Ctx, cmds: readonly TimedCommand[]): void {
   for (const c of cmds) {
     if (c.side !== 0 && c.side !== 1) continue;
     const reason = applyCommand(ctx, c);
-    if (reason !== null) emit(ctx, { e: 'commandRejected', side: c.side, t: c.t, reason });
+    if (reason === null) continue;
+    if (c.t === 'power' && (c.slot === 'home' || c.slot === 'field')) {
+      emit(ctx, { e: 'commandRejected', side: c.side, t: c.t, reason, slot: c.slot });
+    } else emit(ctx, { e: 'commandRejected', side: c.side, t: c.t, reason });
   }
 }
 
@@ -197,7 +201,7 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       return null;
     }
     case 'power':
-      return castPower(ctx, side, c.p);
+      return castPower(ctx, side, c.slot, c.p);
     case 'stance': {
       // A18.4.2: three stances; a mode change at most once per 3 s, a flag move at most once per 1 s.
       if (!ctx.stanceEnabled[side]) return 'stanceLocked';
@@ -270,9 +274,14 @@ function applyTrainingEvent(ctx: Ctx, ev: TrainingEvent): void {
       tray.sort((a, b) => a - b);
     }
   }
-  if (ev.setPowerPpm !== undefined) {
-    const v = Math.max(0, Math.min(PPM, Math.trunc(ev.setPowerPpm)));
-    if (v >= PPM) addPower(ctx, ev.side, PPM - s.powerPpm);
-    else s.powerPpm = v;
+  const set = ev.setPowerPpm;
+  if (set !== undefined && isPowerSlot(set.slot) && typeof set.ppm === 'number' && Number.isFinite(set.ppm)) {
+    const i = slotIndex(set.slot);
+    const v = Math.max(0, Math.min(PPM, Math.trunc(set.ppm)));
+    if (v >= PPM) addPower(ctx, ev.side, set.slot, PPM - s.powerPpm[i]);
+    else {
+      s.powerPpm[i] = v;
+      s.powerRem[i] = 0;
+    }
   }
 }

@@ -6,8 +6,9 @@
 import { describe, expect, it } from 'vitest';
 import type { CapsuleReveal, SaveDoc } from '@/contracts';
 import { content } from '@/content';
-import { createMeta } from '@/meta';
+import { createMeta, strikeCounts } from '@/meta';
 import { createCatalog } from '../catalog';
+import { resolveStrikes, strikePattern, SUMMIT_ABOVE, TIER_ORDER } from '../tiers';
 import { checkPlan, longestUnskippableMs, planCapsuleShow, planOpenAll, SHOW_LIMITS } from '../plan';
 import { pityLines } from '../summaryModel';
 
@@ -22,6 +23,28 @@ function openNext(s: SaveDoc, kind: 'win' | 'daily' | 'meter' = 'win'): { save: 
   if (!cap) throw new Error('no capsule granted');
   return M.openCapsule(g, cap.id);
 }
+
+describe('the show and the meta agree on the ladder (A6.4, A10)', () => {
+  it('mirrors the content tier order and summit tier', () => {
+    expect(TIER_ORDER).toEqual(content.capsules.tierOrder);
+    expect(SUMMIT_ABOVE).toBe(content.capsules.summitAbove);
+  });
+
+  it('meta strikes and resolveStrikes agree for every start and final pair', () => {
+    for (const start of TIER_ORDER) {
+      for (const tier of TIER_ORDER.slice(TIER_ORDER.indexOf(start))) {
+        const { main, summit } = strikeCounts(content, start, tier);
+        const r = resolveStrikes({
+          capsule: { id: 'x', kind: 'win', tier, startTier: start, scriptIndex: null, age: null, createdAt: 0, contents: { stacks: [], amber: 0, dust: 0, skin: null } },
+          climbs: main + summit,
+          strikeClimbs: strikePattern(main),
+        });
+        expect(r.issues, `${start}>${tier}`).toEqual([]);
+        expect(r.summitTiers, `${start}>${tier}`).toHaveLength(summit);
+      }
+    }
+  });
+});
 
 describe('shows planned from meta reveals', () => {
   it('plays the onboarding script as A8 describes it', () => {

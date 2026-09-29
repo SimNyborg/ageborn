@@ -125,11 +125,24 @@ export interface PendingCrate {
 /** Everything the capsule show needs; pity counters shown before and after (DESIGN A6.5, A10). */
 export interface CapsuleReveal {
   capsule: PendingCapsule;
+  /**
+   * Tiers climbed in total: the climbs of the 4 main strikes plus the summit strikes above
+   * `capsules.summitAbove` (Platinum 1, Aeon 2) (DESIGN A10).
+   */
   climbs: number;
+  /**
+   * The 4 main strikes only, back-loaded (a climb is never followed by a non-climb). Summit strikes =
+   * `climbs` − the number of `true` entries.
+   */
   strikeClimbs: boolean[];
   pityBefore: SaveDoc['pity'];
   pityAfter: SaveDoc['pity'];
   firstLegendaryReveal: CardId[];
+  /**
+   * True when this is the first Gold, Platinum or Aeon Capsule the save opens (flag
+   * `capsule.first.<tier>`); drives the skippable first-of-tier step (A10 step 4b).
+   */
+  firstOfTier: boolean;
 }
 
 /** CS-style reel: the winner always sits at tile index 45 (DESIGN A10.1). */
@@ -209,7 +222,13 @@ export interface SaveDoc {
     /** The Supply Capsule allowance, up to 7 (A15.4); `PendingCapsule.kind 'daily'` shows as "Supply Capsule". */
     dailyBank: number;
     dailyNextAt: number | null;
+    /** Sorted tier indices left in the current Win Capsule bag (DESIGN A6.4); empty = the next draw refills it. */
     bag: number[];
+    /**
+     * The size of the Win Capsule bag that `bag` belongs to: 100 for a bag filled before the 2026-09-29
+     * ladder, 200 after; 0 when `bag` is empty (DESIGN A6.4).
+     */
+    bagSize: number;
     wardrobe: PendingCrate[];
   };
   /** Pity counters, visible on every capsule screen (DESIGN A6.5). */
@@ -242,7 +261,12 @@ export interface SaveDoc {
   settings: Settings;
   tutorial: { step: number; hintsShown: Record<string, number> };
   lastExportAt: number | null;
-  /** Free flags; meta sets `feat.<id>` for found feats and `featHint.<id>` for shown hints (A15.10). */
+  /**
+   * Free flags; meta sets `feat.<id>` for found feats and `featHint.<id>` for shown hints (A15.10).
+   * Capsule ladder keys (A6.4, B8): `capsule.first.<tier>` (the save has opened a capsule of that
+   * Legendary tier), `capsule.legacySkillAeon` (set by the ladder migration until the legacy skill
+   * Aeons are granted) and `notice.capsuleLadder` (the one-time Capsules tab card; cleared when closed).
+   */
   flags: Record<string, boolean>;
 }
 

@@ -81,7 +81,9 @@ class FallbackBot implements BotController {
     const gold = Math.floor(me.gold / 1000);
     if (me.lastStand === 'armed') return { t: 'lastStand', side };
     const foesNear = obs.units.filter((u) => u.side !== side && u.p < OWN_HALF_MILLI).length;
-    if (me.powerPpm >= PPM_FULL && me.power && foesNear >= 2) return { t: 'power', side };
+    // A2.9: the Home slot, when reloaded and affordable (the sim rejects a cast with nothing in range).
+    const home = me.powers.home;
+    if (home && home.ppm >= PPM_FULL && gold >= home.cost && foesNear >= 2) return { t: 'power', side, slot: 'home' };
     if (me.xpBp >= 10000 && obs.tick - this.lastEvolveTry >= EVOLVE_RETRY_TICKS) {
       this.lastEvolveTry = obs.tick;
       return { t: 'evolve', side };

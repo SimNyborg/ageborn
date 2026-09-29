@@ -6,6 +6,7 @@
 import type { ArenaDef, DailyDifficulty, Difficulty, GeneralDef, LadderWin, QuestDef, RoadNode } from '@/content/types';
 import type { Content } from '@/content/types';
 import type { CapsuleTier, FormatId, SaveDoc } from '@/contracts';
+import { byVisibleTier } from '../../components/capsuleLook';
 
 /** The player's arena (`save.arenaIndex` is 0-based into `arenas.list`). */
 export function arenaOf(save: SaveDoc, content: Content): ArenaDef {
@@ -203,10 +204,13 @@ export function warChestView(save: SaveDoc, content: Content): { wins: number; o
   return { wins: Math.max(0, Math.min(of, save.quests.weekly.progress)), of };
 }
 
-/** Pending capsules, best tier first (the tray shows the best one biggest). */
+/**
+ * Pending capsules, best visible tier first (the tray shows the best one biggest), then oldest first.
+ * A Win or Supply Capsule counts by its start tier: its rolled tier stays hidden until it is opened
+ * (A10, A15.1 red line 7), so the order never hints at it.
+ */
 export function trayCapsules(save: SaveDoc, content: Content): SaveDoc['capsules']['pending'] {
-  const rank = (t: CapsuleTier) => content.capsules.tierOrder.indexOf(t);
-  return [...save.capsules.pending].sort((a, b) => rank(b.tier) - rank(a.tier) || a.createdAt - b.createdAt);
+  return byVisibleTier(content.capsules, save.capsules.pending);
 }
 
 // ---------------------------------------------------------------------------------------------

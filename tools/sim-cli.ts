@@ -7,7 +7,7 @@
  *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,standard] [--tier 7] [--workers N] [--no-a18] [--no-gate] [--patch file.json]
  *   npx tsx tools/sim-cli.ts strength  [--mode smoke|full] [--matches N] [--pairs N] [--tiers 2,4,6,8,10] [--proxies a,b]
  *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
- *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--no-gate]
+ *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
  *   npx tsx tools/sim-cli.ts csv export|import [--dir reports/csv] [--raw src/content/raw] [--dry-run]
@@ -54,8 +54,8 @@ Commands:
   strength        AI tiers vs human-like scripted strategies, and adjacent tiers head to head
                   --mode smoke|full --matches N (per cell) --pairs N (per tier pair, 0 = none)
                   --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
-  economy         365-day economy sim against the A6.9 pacing table
-                  --days 365 --seed 1
+  economy         365-day economy sim against the A6.9 pacing table (median of --seeds runs)
+                  --days 365 --seed 1 --seeds 30
   drops           capsule openings: bag totals, chi-square of published odds, pity (A6.4, A6.5)
                   --mode smoke|full --openings N --streams N --seed 1
   replay-verify   re-simulate replay files or folders and compare hashes (B3)
@@ -77,7 +77,7 @@ export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   balance: ['mode', 'matches', 'mirror', 'cards', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
-  economy: ['days', 'seed'],
+  economy: ['days', 'seed', 'seeds'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
   csv: ['dir', 'raw', 'dry-run'],
@@ -239,7 +239,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     }
     case 'economy': {
       const d = economyDefaults();
-      const report = await runEconomy({ ...d, days: int(a, 'days', d.days), seed: int(a, 'seed', d.seed) });
+      const report = await runEconomy({ ...d, days: int(a, 'days', d.days), seed: int(a, 'seed', d.seed), seeds: int(a, 'seeds', d.seeds) });
       return finish(report, economySections(report), a);
     }
     case 'drops': {

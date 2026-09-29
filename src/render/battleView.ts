@@ -562,10 +562,10 @@ export class BattleView {
     return p ? this.camera.worldToScreen(p.x, p.y) : null;
   }
 
-  /** The power in your current loadout, if any. */
+  /** The Home power in your current loadout, if any (P1: the single power button is the Home slot, A2.9.13). */
   private myPower(): PowerDef | undefined {
     const age = this.ageOf(this.mySide);
-    const id = this.config.sides[this.mySide].loadouts[age]?.power;
+    const id = this.config.sides[this.mySide].loadouts[age]?.powers.home;
     return id ? this.config.content.powers[id] : undefined;
   }
 
@@ -721,6 +721,10 @@ export class BattleView {
     const fx = this.myPower()?.effect;
     // Paratroopers hit nothing themselves; Stampede runs on the ground.
     if (!fx || fx.kind === 'paradrop' || fx.kind === 'buffAll') {
+      this.zones.setTargets([]);
+      return;
+    }
+    if (fx.kind === 'suppress') {
       this.zones.setTargets([]);
       return;
     }

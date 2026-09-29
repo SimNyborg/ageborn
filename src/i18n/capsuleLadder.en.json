@@ -1,0 +1,35 @@
+{
+  "ui": {
+    "odds": {
+      "bagMix": "Every {size} Win Capsules hold exactly {list}. Luck only decides the order."
+    }
+  },
+  "cosmetic": {
+    "set": {
+      "aeon": {
+        "name": "Aeon Collection"
+      }
+    },
+    "decoration": {
+      "aeon_hourglass": {
+        "name": "Aeon Hourglass"
+      }
+    },
+    "baseFlag": {
+      "eternal_dawn": {
+        "name": "Eternal Dawn"
+      }
+    },
+    "emote": {
+      "frozen_moment": {
+        "name": "Frozen Moment"
+      }
+    },
+    "quote": {
+      "across_the_ages": {
+        "name": "Across the Ages",
+        "text": "Well met, across the ages!"
+      }
+    }
+  }
+}

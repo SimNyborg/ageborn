@@ -42,6 +42,8 @@ export interface CapsuleCatalog {
   skin(id: SkinId): SkinInfo;
   /** False for fixed-tier kinds (Trophy Road, Age, Codex, Conquest, Age Unlock): the show starts at the burst (A6.4, A10). */
   hasClimb(kind: CapsuleKind): boolean;
+  /** The content age list in order: the Aeon burst's glyph halo (A10 step 4). Defaults to the eight ages. */
+  ages?: readonly AgeId[];
 }
 
 /**
@@ -89,6 +91,11 @@ export interface ShowSettings {
   teamPreset: SaveDoc['settings']['teamPreset'];
   /** Every capsule opens at the burst (A10 step 4, A15.6). Default false. */
   quickReveal: boolean;
+  /**
+   * The Lite graphics preset (`Settings.graphics === 'lite'`): half the particles, a static starfield
+   * and a static sheen (A10 step 4). Default false.
+   */
+  lite?: boolean;
 }
 
 export const DEFAULT_SHOW_SETTINGS: ShowSettings = { reduceMotion: false, vibrate: false, teamPreset: 'default', quickReveal: false };

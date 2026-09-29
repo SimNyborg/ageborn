@@ -7,6 +7,7 @@ import './shared.css';
 import { capsuleTierNameKey } from '@/content/keys';
 import type { RoadReward } from '@/content/types';
 import { CardArt } from '../../components/CardTile';
+import { tierCrests } from '../../components/capsuleLook';
 import { formatInt } from '../../components/format';
 import { AmberIcon, CapsuleIcon, CastleIcon, CrateIcon, DustIcon } from '../../components/icons';
 import { useUi } from '../context';
@@ -45,7 +46,7 @@ export function RoadRewardView(p: { r: RoadReward; compact?: boolean }) {
     case 'capsule':
       return (
         <span class={cls}>
-          <CapsuleIcon tier={r.tier} size={px(36)} />
+          <CapsuleIcon tier={r.tier} crests={tierCrests(content.capsules, r.tier)} size={px(36)} />
           <b>{t(capsuleTierNameKey(r.tier))}</b>
         </span>
       );

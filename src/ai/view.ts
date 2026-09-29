@@ -3,7 +3,7 @@
  * commands (ledger.ts), with the derived quantities the A7.2 scoring terms use. Positions are own-side
  * progress p in milli-lu (the observation's frame); money is milli-gold; card values are whole gold.
  */
-import type { AgeId, BotProfile, CardId, Observation, PowerDef, ResearchView, Side, StanceMode } from '@/contracts';
+import type { AgeId, BotProfile, CardId, Observation, PowerDef, PowerSlot, ResearchView, Side, StanceMode } from '@/contracts';
 import { MILLI, PPM } from '@/core';
 import type { CardBook, UnitCard } from './book';
 import type { Ledger } from './ledger';
@@ -52,7 +52,9 @@ export interface View {
   turretsBuilt: number;
   /** Mount is building or modernising. */
   mountBusy: boolean[];
+  /** A power slot is reloaded and affordable (A2.9.2-A2.9.3); `powerSlot` is it (Home first). */
   powerReady: boolean;
+  powerSlot: PowerSlot | null;
   power: PowerDef | undefined;
   stance: StanceMode;
   stanceReady: boolean;
@@ -147,6 +149,12 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
   const age = obs.ages?.[me.ageIndex] ?? book.ageOrder[me.ageIndex] ?? null;
   const ageIndex = age ? Math.max(0, book.ageOrder.indexOf(age)) : me.ageIndex;
   const ageUncertain = ledger.ageUncertain(now);
+  // A2.9.2-A2.9.3: a slot can be cast when it is reloaded and its effective cost is affordable.
+  const slotReady = (slot: PowerSlot): boolean => {
+    const o = me.powers[slot];
+    return o !== null && o.ppm >= PPM && gold >= o.cost * MILLI && book.powers[o.card] !== undefined;
+  };
+  const powerSlot: PowerSlot | null = powerUsed || ageUncertain ? null : slotReady('home') ? 'home' : slotReady('field') ? 'field' : null;
   return {
     now,
     side: obs.side,
@@ -164,8 +172,9 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     turrets,
     turretsBuilt: turrets.filter((t) => t !== null).length,
     mountBusy: ledger.mountBusyUntil.map((t) => now < t),
-    powerReady: me.powerPpm >= PPM && !powerUsed && !ageUncertain && book.powers[me.power] !== undefined,
-    power: book.powers[me.power],
+    powerReady: powerSlot !== null,
+    powerSlot,
+    power: powerSlot ? book.powers[me.powers[powerSlot]?.card ?? ''] : undefined,
     stance,
     stanceReady: ledger.stanceEnabled && now >= ledger.stanceReadyTick,
     holdP,

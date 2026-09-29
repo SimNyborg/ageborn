@@ -172,7 +172,7 @@ export function createFeatTracker(cfg: FeatTrackerConfig): FeatTracker {
         const r = t.units[id]?.rarity ?? t.turrets[id]?.rarity;
         if (r !== 'common') return false;
       }
-      if (t.powers[l.power]?.slot !== 'default') return false;
+      for (const id of [l.powers.home, l.powers.field]) if (id !== null && t.powers[id]?.source !== 'starter') return false;
     }
     return true;
   }

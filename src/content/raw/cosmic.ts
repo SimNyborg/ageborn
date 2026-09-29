@@ -177,12 +177,13 @@ export const cosmic: RawAgeTables = {
   ],
 };
 
-/** A17.11 Cosmic Age Powers (values at P 4.48 and L1 loadouts; every power has a 1.0 s telegraph). */
+/** A5.7 Cosmic Age Powers (values at P 4.48 and L1 loadouts; I 700, H 2,509; Epic Warp Stalker 1,600). */
 export const cosmicPowers: readonly PowerDef[] = [
   {
-    // 6 star shards over 2.0 s across a 450 lu zone (even pattern, ±20 lu jitter); each 380 damage,
-    // splash r60; hits air. Per unit ~608: 87% / 24% (Star Legionnaire / Hover Tank)
-    id: 'starfall', kind: 'power', age: 'cosmic', slot: 'default', telegraphMs: 1000,
+    // Starter. 6 star shards over 2.0 s across a 450 lu zone (even, ±20 lu); each 380, splash r60; hits
+    // air. Per unit ~608: 87% / 24% (Star Legionnaire / Hover Tank)
+    id: 'starfall', kind: 'power', age: 'cosmic', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common',
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: {
       kind: 'barrage', count: 6, durationMs: 2000, zone: 450, damage: 380, radius: 60,
       jitter: 20, hitsAir: true, pattern: 'even',
@@ -190,11 +191,49 @@ export const cosmicPowers: readonly PowerDef[] = [
     visualId: 'power.starfall', sfx: 'pw_starfall', nameKey: 'card.starfall.name', descKey: 'card.starfall.desc',
   },
   {
-    // Road 500. 3 Star Legionnaires at your Star Legionnaire level warp in 150 lu beyond the enemy's
-    // frontmost ground unit (clamped by `economy.powerZoneClamp`; p = mid-lane, 1,000 on the A17 lane, if the
-    // enemy has no ground units); summoned, no pop, no bounty (the Paratroopers rule)
-    id: 'warp_strike', kind: 'power', age: 'cosmic', slot: 'alternate', telegraphMs: 1000,
-    effect: { kind: 'paradrop', card: 'star_legionnaire', count: 3, beyondFront: 150, fallbackP: 1000 },
+    // War Path Cosmic L5 (Road 1,800). A singularity over 350 lu for 4 s (8 pulses), ground only: the first
+    // pulse pulls 60% of the way to the centre; each pulse 30 damage and snare 40% for 1.0 s.
+    // 240: 34% of I; 9.6 disabled unit-seconds (12.8 per 100 gold)
+    id: 'singularity', kind: 'power', age: 'cosmic', slot: 'home', reach: 'home', family: 'pull', rarity: 'rare',
+    source: 'warPath', warPathLevel: 5, road: 1800, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 3000,
+    effect: {
+      kind: 'field', zone: 350, durationMs: 4000, hitsAir: false, damagePerPulse: 30, pullBp: 6000,
+      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
+    },
+    visualId: 'power.singularity', sfx: 'pw_singularity', nameKey: 'card.singularity.name', descKey: 'card.singularity.desc',
+  },
+  {
+    // War Path Cosmic L9 (Road 1,950). A flare sweeps a 450 lu zone over 1.5 s: 600 once, ground and air.
+    // Per unit 600: 86% / 24%
+    id: 'solar_flare', kind: 'power', age: 'cosmic', slot: 'home', reach: 'home', family: 'sweep', rarity: 'epic',
+    source: 'warPath', warPathLevel: 9, road: 1950, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 600, width: 40, hitsAir: true },
+    visualId: 'power.solar_flare', sfx: 'pw_flare', nameKey: 'card.solar_flare.name', descKey: 'card.solar_flare.desc',
+  },
+  {
+    // Starter. 3 comets, 0.4 s apart, run 500 lu at 500 lu/s from your front; 300 and 40 lu knockback;
+    // max 2 hits; ground only. Per unit ≤ 600: 86% / 24%
+    id: 'comet_run', kind: 'power', age: 'cosmic', slot: 'field', reach: 'front', family: 'charge', rarity: 'common',
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    effect: {
+      kind: 'stampede', runners: 3, spacingMs: 400, distance: 500, speed: 500,
+      damage: 300, knockback: 40, maxHitsPerEnemy: 2,
+    },
+    visualId: 'power.comet_run', sfx: 'pw_comet', nameKey: 'card.comet_run.name', descKey: 'card.comet_run.desc',
+  },
+  {
+    // Road 500. 4 Star Legionnaires at your Star Legionnaire level warp in 150 lu beyond the enemy's
+    // frontmost ground unit (p ≤ 1,850; p = 1,000 without one); summoned, no pop, no bounty
+    id: 'warp_strike', kind: 'power', age: 'cosmic', slot: 'field', reach: 'anywhere', family: 'drop', rarity: 'rare',
+    source: 'road', road: 500, cost: 150, reloadMs: 60000, telegraphMs: 1000,
+    effect: { kind: 'paradrop', card: 'star_legionnaire', count: 4, beyondFront: 150, fallbackP: 1000 },
     visualId: 'power.warp_strike', sfx: 'pw_warp', nameKey: 'card.warp_strike.name', descKey: 'card.warp_strike.desc',
+  },
+  {
+    // War Path Cosmic L7 (Road 1,850). One shot, 1,500, ground and air: 60% of H; the Warp Stalker takes 750
+    id: 'ion_cannon', kind: 'power', age: 'cosmic', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
+    source: 'warPath', warPathLevel: 7, road: 1850, cost: 75, reloadMs: 30000, telegraphMs: 1500, maxTargets: 1,
+    effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 1500, hitsAir: true },
+    visualId: 'power.ion_cannon', sfx: 'pw_ion', nameKey: 'card.ion_cannon.name', descKey: 'card.ion_cannon.desc',
   },
 ];

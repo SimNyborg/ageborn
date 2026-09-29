@@ -14,9 +14,13 @@ const { capsules, rarities, arenas, trophyRoad, generals, quests, dailyModifiers
 function expectedCopies(tier: CapsuleTier): number {
   const t = capsules.tiers[tier];
   const copies = (r: Rarity): number => t.copies[r];
-  // Guaranteed stacks; Jade may turn one guaranteed Rare into a Legendary.
-  let sum = t.guaranteed.reduce((s, r) => s + copies(r) * 10000, 0);
-  if (t.rareToLegendaryBp > 0) sum += (copies('legendary') - copies('rare')) * t.rareToLegendaryBp;
+  // Guaranteed stacks; the 2nd and later guaranteed Legendary stacks hold `extraLegendaryCopies`.
+  let legendaries = 0;
+  const sum = t.guaranteed.reduce((s, r) => {
+    if (r !== 'legendary') return s + copies(r) * 10000;
+    legendaries += 1;
+    return s + (legendaries >= 2 ? t.extraLegendaryCopies : copies(r)) * 10000;
+  }, 0);
   const rolled = (Object.keys(capsules.stackRollBp) as Rarity[]).reduce((s, r) => s + capsules.stackRollBp[r] * copies(r), 0);
   return sum + rolled * (t.stacks - t.guaranteed.length);
 }
@@ -32,11 +36,64 @@ describe('Time Capsules (A6.4)', () => {
     expect(row('bronze')).toEqual([3, 5, 2, 2, 1, 210]);
     expect(row('silver')).toEqual([4, 10, 5, 2, 1, 530]);
     expect(row('jade')).toEqual([5, 24, 10, 5, 2, 1400]);
-    expect(row('aeon')).toEqual([6, 26, 10, 5, 2, 2640]);
+    // The 2026-09-29 ladder: Gold is the old Aeon (+100 Dust), then Platinum and the new Aeon
+    expect(row('gold')).toEqual([6, 26, 10, 5, 2, 2640]);
+    expect(row('platinum')).toEqual([7, 26, 12, 5, 2, 2800]);
+    expect(row('aeon')).toEqual([8, 40, 14, 6, 2, 3600]);
+    expect(capsules.tierOrder).toEqual(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
     expect(capsules.tiers.bronze.guaranteed).toEqual(['rare']);
     expect(capsules.tiers.silver.guaranteed).toEqual(['rare', 'rare', 'epic']);
-    expect(capsules.tiers.jade).toMatchObject({ guaranteed: ['rare', 'rare', 'epic', 'epic'], rareToLegendaryBp: 2500, bonusDust: 100 });
-    expect(capsules.tiers.aeon).toMatchObject({ guaranteed: ['legendary', 'epic', 'epic'], legendaryUnownedFirst: true, skinChanceBp: 3000 });
+    expect(capsules.tiers.jade).toMatchObject({ guaranteed: ['rare', 'rare', 'epic', 'epic'], rareToLegendaryBp: 0, bonusDust: 100 });
+    expect(capsules.tiers.gold).toMatchObject({
+      guaranteed: ['legendary', 'epic', 'epic'], legendaryUnownedFirst: true, skinChanceBp: 3000, skinMinRarity: 'rare', bonusDust: 100,
+      extraLegendaryCopies: 2, exclusiveItems: false,
+    });
+    expect(capsules.tiers.platinum).toMatchObject({
+      guaranteed: ['legendary', 'legendary', 'epic', 'epic'], legendaryUnownedFirst: true, skinChanceBp: 10000, skinMinRarity: 'rare',
+      bonusDust: 200, extraLegendaryCopies: 1, exclusiveItems: false,
+    });
+    expect(capsules.tiers.aeon).toMatchObject({
+      guaranteed: ['legendary', 'legendary', 'legendary', 'epic', 'epic', 'epic'], legendaryUnownedFirst: true, skinChanceBp: 10000,
+      skinMinRarity: 'epic', bonusDust: 500, extraLegendaryCopies: 1, exclusiveItems: true,
+    });
+    for (const t of capsules.tierOrder) expect(capsules.tiers[t].rareToLegendaryBp, t).toBe(0);
+    expect(capsules).toMatchObject({ summitAbove: 'gold', legendaryCatchUp: true, exclusiveCompleteDust: 500, exclusiveCraftDust: 3000 });
+  });
+
+  it('never falls going up the ladder (stacks, Legendaries, Epics, Amber, Dust, skin chance)', () => {
+    const count = (t: CapsuleTier, r: Rarity): number => capsules.tiers[t].guaranteed.filter((x) => x === r).length;
+    for (let i = 1; i < capsules.tierOrder.length; i += 1) {
+      const lo = capsules.tierOrder[i - 1]!;
+      const hi = capsules.tierOrder[i]!;
+      const a = capsules.tiers[lo];
+      const b = capsules.tiers[hi];
+      expect(b.stacks, hi).toBeGreaterThanOrEqual(a.stacks);
+      expect(count(hi, 'legendary'), hi).toBeGreaterThanOrEqual(count(lo, 'legendary'));
+      expect(count(hi, 'epic'), hi).toBeGreaterThanOrEqual(count(lo, 'epic'));
+      expect(b.amber, hi).toBeGreaterThanOrEqual(a.amber);
+      expect(b.bonusDust, hi).toBeGreaterThanOrEqual(a.bonusDust);
+      expect(b.skinChanceBp, hi).toBeGreaterThanOrEqual(a.skinChanceBp);
+    }
+  });
+
+  it('summit tiers each guarantee more Legendaries than the tier below (A10)', () => {
+    const order = capsules.tierOrder;
+    const top = order.indexOf(capsules.summitAbove);
+    expect(top).toBeGreaterThanOrEqual(0);
+    const legs = (i: number): number => capsules.tiers[order[i]!].guaranteed.filter((r) => r === 'legendary').length;
+    expect(legs(top)).toBeGreaterThan(0);
+    for (let i = top + 1; i < order.length; i += 1) expect(legs(i), order[i]).toBeGreaterThan(legs(i - 1));
+  });
+
+  it('every arena drop pool holds at least 4 Legendaries (3 distinct ones always fit)', () => {
+    const max = Math.max(...capsules.tierOrder.map((t) => capsules.tiers[t].guaranteed.filter((r) => r === 'legendary').length));
+    for (const a of arenas.list) {
+      const legendaries = [...content.order.units, ...content.order.turrets].filter((id) => {
+        const def = content.units[id] ?? content.turrets[id];
+        return def !== undefined && def.rarity === 'legendary' && a.dropAges.includes(def.age) && !(content.units[id]?.hidden ?? false);
+      });
+      expect(legendaries.length, a.id).toBeGreaterThanOrEqual(Math.max(4, max));
+    }
   });
 
   it('reproduces DESIGN\'s "Expected copies" column from the table', () => {
@@ -46,25 +103,31 @@ describe('Time Capsules (A6.4)', () => {
       expect(tenths, t).toBe(Math.round(capsules.tiers[t].expectedCopiesCenti / 10));
     }
     expect(capsules.tiers.clay.expectedCopiesCenti).toBe(630);
-    expect(capsules.tiers.aeon.expectedCopiesCenti).toBe(7560);
+    expect(capsules.tiers.jade.expectedCopiesCenti).toBe(4980);
+    expect(capsules.tiers.gold.expectedCopiesCenti).toBe(7560);
+    expect(capsules.tiers.platinum.expectedCopiesCenti).toBe(7790);
+    expect(capsules.tiers.aeon.expectedCopiesCenti).toBe(8640);
   });
 
-  it('averages 15.7 copies and 398.7 Amber per bag capsule (A6.4, A17.13)', () => {
+  it('averages 16.1 copies and 411.3 Amber per bag capsule (A6.4, A6.9)', () => {
     const bag = capsules.bag;
-    expect(bag).toEqual({ clay: 30, bronze: 40, silver: 20, jade: 7, aeon: 3 });
+    expect(bag).toEqual({ clay: 60, bronze: 80, silver: 40, jade: 13, gold: 4, platinum: 2, aeon: 1 });
+    const size = capsules.tierOrder.reduce((n, t) => n + bag[t], 0);
+    expect(size).toBe(200);
     let copies = 0;
     let amber = 0;
     for (const t of capsules.tierOrder) {
       copies += bag[t] * expectedCopies(t);
       amber += bag[t] * capsules.tiers[t].amber;
     }
-    expect(Math.round(copies / 100 / 1000)).toBe(157);
-    expect(amber / 100).toBe(398.7);
+    expect(Math.round(copies / size / 1000)).toBe(161);
+    expect(amber / size).toBe(411.3);
   });
 
   it('has the odds, pity, charges and script', () => {
     expect(capsules.stackRollBp).toEqual({ common: 7200, rare: 2200, epic: 500, legendary: 100 });
-    expect(capsules.dailyOddsBp).toEqual({ clay: 0, bronze: 7800, silver: 1500, jade: 500, aeon: 200 });
+    expect(capsules.dailyOddsBp).toEqual({ clay: 0, bronze: 7800, silver: 1500, jade: 500, gold: 150, platinum: 35, aeon: 15 });
+    expect(Object.values(capsules.dailyOddsBp).reduce((a, b) => a + b, 0)).toBe(10000);
     expect(capsules.pity).toEqual({
       epicEvery: 10, legendaryFreeUntil: 25, legendaryStepBp: 500, legendaryGuaranteeAt: 40, newCardEvery: 5,
       wardrobeEpicEvery: 5, wardrobeLegendaryEvery: 25,
@@ -79,7 +142,7 @@ describe('Time Capsules (A6.4)', () => {
       ['silver', ['pikeman', 'grenadier']],
       ['bronze', ['log_roller']],
       ['silver', []],
-      ['aeon', ['mammoth_matriarch']],
+      ['gold', ['mammoth_matriarch']],
     ]);
     expect(capsules.script[3]?.randomUnownedEpic).toBe(true);
     expect(capsules.script[4]?.fullWalkout).toBe(true);
@@ -138,6 +201,9 @@ describe('Arenas and ladder (A6.3, A6.8)', () => {
     expect(a3?.gateRewards).toContainEqual({ kind: 'conquestUnlock' });
     for (const a of arenas.list.slice(2)) expect(a.dropAges, a.id).toEqual(AGE_ORDER);
     expect(arenas.list[7]?.gateRewards).toContainEqual({ kind: 'skin', skin: 'crystal_spire' });
+    // The 2026-09-29 ladder: Gate 7 gives Gold (the old Aeon), Gate 8 Platinum
+    expect(arenas.list[6]?.gateRewards).toContainEqual({ kind: 'capsule', tier: 'gold' });
+    expect(arenas.list[7]?.gateRewards).toContainEqual({ kind: 'capsule', tier: 'platinum' });
     expect(arenas.list[7]?.wardenChanceBp).toBe(2000);
   });
 

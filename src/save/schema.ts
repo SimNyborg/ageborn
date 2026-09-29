@@ -38,7 +38,7 @@ export const AGE_IDS = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial'
 const AGE = v.picklist(AGE_IDS);
 const RARITY = v.picklist(['common', 'rare', 'epic', 'legendary']);
 const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
-const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'aeon']);
+const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
 const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock', 'warPath']);
 const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon', 'welcome']);
@@ -47,11 +47,14 @@ const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon', 'welcome']);
 // Parts
 // ---------------------------------------------------------------------------------------------
 
-/** One age of a War Plan: 6 unit slots (A18.9; 5 before save v4), 2 turret slots, 1 power (DESIGN A3). */
+/**
+ * One age of a War Plan: 6 unit slots (A18.9; 5 before save v4), 2 turret slots, the Home and Field power
+ * slots (A2.9.1; one `power` before save v7).
+ */
 export const LoadoutSchema = v.object({
   units: v.pipe(v.array(v.nullable(id)), v.length(6)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
-  power: id,
+  powers: v.object({ home: v.nullable(id), field: v.nullable(id) }),
 });
 
 export const WarPlanSchema = v.object({
@@ -198,6 +201,8 @@ export const SaveDocSchema = v.pipe(
       dailyBank: count,
       dailyNextAt: v.nullable(time),
       bag: v.array(int),
+      /** The size of the bag `bag` belongs to (100 before the 2026-09-29 ladder, 200 after; 0 when empty). */
+      bagSize: count,
       wardrobe: v.array(PendingCrateSchema),
     }),
     pity: v.object({

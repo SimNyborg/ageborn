@@ -22,7 +22,7 @@ import { mulberry32 } from '@/core';
 import { asContent, content } from '@/content';
 // Pure capsule modules only, so the bench cases load in Node tests without Pixi or CSS.
 import { progressFromCollections } from '@/capsule/summaryModel';
-import { climbCount, strikePattern, TIER_ORDER } from '@/capsule/tiers';
+import { climbCount, strikePattern, strikeSplit, TIER_ORDER } from '@/capsule/tiers';
 import type { ProgressLookup } from '@/capsule/types';
 
 const C = asContent(content);
@@ -132,10 +132,11 @@ export function makeReveal(spec: RevealSpec): CapsuleReveal {
       createdAt: 0,
     },
     climbs: k,
-    strikeClimbs: strikePattern(k),
+    strikeClimbs: strikePattern(strikeSplit(startTier, spec.tier).main),
     pityBefore: pity,
     pityAfter: nextPity(pity, stacks),
     firstLegendaryReveal: spec.firstLegendary ?? [],
+    firstOfTier: false,
   };
 }
 

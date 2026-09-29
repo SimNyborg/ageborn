@@ -48,7 +48,10 @@ export interface SideFx {
   incomePerTick: number;
   bountyAddBp: number;
   forageBp: number;
-  powerChargeBp: number;
+  /** Power reload rate bonus, bp (Signal Fires; A2.9.3). */
+  powerReloadBp: number;
+  /** Power price discount, bp (Quartermasters, v1.1; A2.9.2). */
+  powerCostBp: number;
 }
 
 export interface PickRules {
@@ -127,7 +130,8 @@ export function emptySideFx(): SideFx {
     incomePerTick: 0,
     bountyAddBp: 0,
     forageBp: 0,
-    powerChargeBp: 0,
+    powerReloadBp: 0,
+    powerCostBp: 0,
   };
 }
 
@@ -192,8 +196,11 @@ function compilePick(def: ResearchPickDef, idx: number, clsIndex: (c: ResearchCl
         sd().bountyAddBp += fx.addBp;
         if (fx.ownHalfOnly) sd().forageBp += fx.bonusBp;
         break;
-      case 'powerCharge':
-        sd().powerChargeBp += fx.bp;
+      case 'powerReload':
+        sd().powerReloadBp += fx.bp;
+        break;
+      case 'powerCost':
+        sd().powerCostBp += fx.bp;
         break;
     }
   }
@@ -334,5 +341,6 @@ export function addSideFx(into: SideFx, fx: SideFx): void {
   into.incomePerTick += fx.incomePerTick;
   into.bountyAddBp += fx.bountyAddBp;
   into.forageBp += fx.forageBp;
-  into.powerChargeBp += fx.powerChargeBp;
+  into.powerReloadBp += fx.powerReloadBp;
+  into.powerCostBp += fx.powerCostBp;
 }

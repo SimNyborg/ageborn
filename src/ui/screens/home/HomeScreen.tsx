@@ -28,6 +28,7 @@ import { AiBadge, CurrencyChip } from '../../components/Chips';
 import { formatInt } from '../../components/format';
 import { haptic } from '../../components/haptics';
 import { AmberIcon, CapsuleIcon, CardsIcon, GearIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
+import { tierCrests } from '../../components/capsuleLook';
 import { useKit } from '../../components/kit';
 import { blockingOverlays } from '../../components/overlay';
 import type { MatchRequest, RouteOf, TabId } from '../../router';
@@ -375,7 +376,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
         ) : (
           <button
             type="button"
-            class={`wp-plate${panning ? ' is-aside' : ''}`}
+            class={`wp-plate${unlock ? ' is-away' : panning ? ' is-aside' : ''}`}
             data-testid="level-plate"
             key={playId}
             onClick={() => setSheet(playNode)}
@@ -409,7 +410,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
                         <AmberIcon size={16} /> {formatInt(next.reward.amber, locale)}
                       </b>
                     ) : null}
-                    {next.reward.capsule ? <CapsuleIcon tier={next.reward.capsule} size={20} /> : null}
+                    {next.reward.capsule ? <CapsuleIcon tier={next.reward.capsule} crests={tierCrests(content.capsules, next.reward.capsule)} size={20} /> : null}
                     {next.reward.card ? <CardsIcon size={16} /> : null}
                     {next.reward.amber === 0 && !next.reward.capsule && !next.reward.card ? <CapsuleIcon tier="bronze" size={20} /> : null}
                   </>

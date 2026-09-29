@@ -879,8 +879,8 @@ describe('Trophy Road, Conquest, Profile, Settings', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'settings' }] });
     m.click('[data-testid="odds-overview"]');
     const sheet = m.q('[data-testid="odds-sheet"]')!;
-    expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 3 Aeon in every 100 Win Capsules.');
-    expect(text(sheet.querySelector('[data-testid="odds-bag-jade"]')!)).toContain('5 left');
+    expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon in every 200 Win Capsules.');
+    expect(text(sheet.querySelector('[data-testid="odds-bag-jade"]')!)).toContain('10 left');
     expect(text(sheet.querySelector('[data-testid="odds-pity-legendary"]')!)).toContain('Next capsule you earn: 45%');
   });
 });

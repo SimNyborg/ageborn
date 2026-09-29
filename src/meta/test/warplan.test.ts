@@ -39,8 +39,12 @@ describe('validatePlan and the advisor (A3)', () => {
     expect(codes(withLoadout(base, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'drum_shaman', null] }), s)).toContain('stone:error:notOwned');
     expect(codes(withLoadout(base, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'footman', null] }), s)).toContain('stone:error:wrongAge');
     expect(codes(withLoadout(base, 'stone', { units: ['bonker', 'bonker', 'tuskback', 'pebbler', null] }), s)).toContain('stone:error:duplicate');
-    expect(codes(withLoadout(base, 'stone', { power: 'meteor_shower' }), s)).toContain('stone:error:badPower');
-    expect(codes(withLoadout(base, 'stone', { power: 'arrow_storm' }), s)).toContain('stone:error:badPower');
+    expect(codes(withLoadout(base, 'stone', { powers: { home: 'meteor_shower', field: 'stampede' } }), s)).toContain('stone:error:badPower');
+    expect(codes(withLoadout(base, 'stone', { powers: { home: 'arrow_storm', field: 'stampede' } }), s)).toContain('stone:error:badPower');
+    // A power in the wrong slot (A2.9.1).
+    expect(codes(withLoadout(base, 'stone', { powers: { home: 'stampede', field: 'rockslide' } }), s)).toContain('stone:error:badPower');
+    // Empty slots are legal.
+    expect(codes(withLoadout(base, 'stone', { powers: { home: null, field: null } }), s)).not.toContain('stone:error:badPower');
     expect(codes(withLoadout(base, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'training_dummy', null] }), s)).toContain('stone:error:unknownCard');
     // Errors only for ages the format uses.
     expect(codes(withLoadout(base, 'future', { turrets: [null, null] }), s, 'short')).toEqual(codes(base, s, 'short'));
@@ -91,8 +95,11 @@ describe('auto-fill (A3)', () => {
     const s = fresh();
     const plan = autoFill(s, C);
     expect(M.validatePlan(plan, s, C, 'full').filter((i) => i.severity === 'error')).toEqual([]);
-    const withAlt = { ...s, powersOwned: [...s.powersOwned, 'meteor_shower'], warPlans: [withLoadout(s.warPlans[0]!, 'stone', { power: 'meteor_shower' })] };
-    expect(autoFill(withAlt, C).loadouts.stone.power).toBe('meteor_shower');
+    const withAlt = { ...s, powersOwned: [...s.powersOwned, 'meteor_shower'], warPlans: [withLoadout(s.warPlans[0]!, 'stone', { powers: { home: 'meteor_shower', field: 'stampede' } })] };
+    expect(autoFill(withAlt, C).loadouts.stone.powers).toEqual({ home: 'meteor_shower', field: 'stampede' });
+    // An empty slot is filled with the age's starter (A2.9.10 auto-fill).
+    const empty = { ...s, warPlans: [withLoadout(s.warPlans[0]!, 'stone', { powers: { home: null, field: null } })] };
+    expect(autoFill(empty, C).loadouts.stone.powers).toEqual({ home: 'rockslide', field: 'stampede' });
   });
 });
 
@@ -112,7 +119,7 @@ describe('Equip now (A3)', () => {
     expect(equipNow(heavy, 'mammoth_matriarch', C).warPlans[0]!.loadouts.stone.units).toContain('mammoth_matriarch');
     // Turrets and powers.
     expect(equipNow(t, 'grumpy_toad', C).warPlans[0]!.loadouts.stone.turrets).toContain('grumpy_toad');
-    expect(equipNow(t, 'meteor_shower', C).warPlans[0]!.loadouts.stone.power).toBe('meteor_shower');
+    expect(equipNow(t, 'meteor_shower', C).warPlans[0]!.loadouts.stone.powers).toEqual({ home: 'meteor_shower', field: 'stampede' });
     // Unowned cards and cards already in the loadout change nothing.
     expect(equipNow(fresh(), 'sabertooth', C)).toEqual(fresh());
     expect(equipNow(t, 'bonker', C)).toBe(t);

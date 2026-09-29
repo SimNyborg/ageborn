@@ -2,7 +2,7 @@
  * Bot actions: what the brain can choose (DESIGN A7.2 action table), and their commands (B15).
  * Costs are milli-gold. Power aim `p` is own-side progress in whole lu, as the `power` command wants.
  */
-import type { CardId, Command, EmoteId, ResearchPickDef, Side, StanceMode, TraySlot } from '@/contracts';
+import type { CardId, Command, EmoteId, PowerSlot, ResearchPickDef, Side, StanceMode, TraySlot } from '@/contracts';
 import { researchCommand } from '@/core';
 
 export type BotAction =
@@ -13,7 +13,8 @@ export type BotAction =
   /** A War Council research item (A18.5; the Economy income picks replaced the Treasury). */
   | { kind: 'research'; pick: ResearchPickDef; cost: number }
   | { kind: 'evolve' }
-  | { kind: 'power'; p: number | null }
+  /** Cast the power in `slot` (default Home; A2.9.1) at `p` (null = auto-aim). */
+  | { kind: 'power'; p: number | null; slot?: PowerSlot }
   /** A stance change; a change to Hold may also place the flag (`holdP`, whole lu, A18.4.2). */
   | { kind: 'stance'; stance: StanceMode; holdP?: number }
   /** Moves the Hold flag while Holding (A18.4.2: at most once per 1 s, no stance cooldown). */
@@ -40,7 +41,7 @@ export function toCommand(a: BotAction, side: Side): Command {
     case 'evolve':
       return { t: 'evolve', side };
     case 'power':
-      return a.p === null ? { t: 'power', side } : { t: 'power', side, p: a.p };
+      return a.p === null ? { t: 'power', side, slot: a.slot ?? 'home' } : { t: 'power', side, slot: a.slot ?? 'home', p: a.p };
     case 'stance':
       return a.holdP === undefined ? { t: 'stance', side, mode: a.stance } : { t: 'stance', side, mode: a.stance, holdP: a.holdP };
     case 'flag':

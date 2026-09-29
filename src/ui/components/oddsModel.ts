@@ -3,12 +3,14 @@
  * Pure: everything comes from the content tables and the save, so what the sheet says is exactly
  * what the rules use.
  *
- * Save encoding assumption (WP7 owns it): `capsules.bag` holds the Win Capsule tiers still left in the
- * current 100-slot bag as tier indices (0 = Clay ... 4 = Aeon). An empty bag means the next Win Capsule
- * starts a fresh bag.
+ * Save encoding (WP7 owns it): `capsules.bag` holds the Win Capsule tiers still left in the current
+ * bag as tier indices (`content.capsules.tierOrder`: 0 = Clay ... 6 = Aeon) and `capsules.bagSize` the
+ * size of that bag (100 for a bag filled before the 2026-09-29 ladder, then the content bag size). An
+ * empty bag means the next Win Capsule starts a fresh bag.
  */
 import type { CapsuleTables, CosmeticCollections, Rarities } from '@/content/types';
 import type { CapsuleTier, Foil, Rarity, SaveDoc, SkinRarity } from '@/contracts';
+import { legendaryBagTiers, tierCrests } from './capsuleLook';
 
 export interface TierRow {
   tier: CapsuleTier;
@@ -35,13 +37,47 @@ export interface TierContentsRow {
   amber: number;
   bonusDust: number;
   skinChanceBp: number;
+  /** The lowest skin rarity this tier's skin can be (Wardrobe odds from there up). */
+  skinMinRarity: SkinRarity;
   rareToLegendaryBp: number;
+  /** Guaranteed Legendary stacks: the tier's Legendary crests (Gold 1, Platinum 2, Aeon 3). */
+  crests: number;
+  /** Copies in the 2nd and later guaranteed Legendary stacks. */
+  extraLegendaryCopies: number;
+  /** Holds one item of this tier's own collection (the Aeon Collection) while the set is incomplete. */
+  exclusiveItems: boolean;
+}
+
+/** A tier's own cosmetic set (A6.4 step 8, A18.9.4): progress and the crafting path. */
+export interface ExclusiveSetRow {
+  tier: CapsuleTier;
+  owned: number;
+  total: number;
+  /** The save has opened a capsule of this tier (`flags['capsule.first.<tier>']`), so items can be crafted. */
+  craftable: boolean;
+  craftDust: number;
+  completeDust: number;
 }
 
 export interface OddsModel {
   bag: TierRow[];
   bagLeftTotal: number;
+  /** The content bag size (200): the per-tier counts are "n in {bagSize}". */
   bagSize: number;
+  /** The size of the bag in progress: `capsules.bagSize` (100 for a bag from before the 2026-09-29 ladder), or a fresh bag's. */
+  bagTotal: number;
+  /** The bag in progress was filled before the 2026-09-29 ladder (its size differs from today's bag). */
+  legacyBag: boolean;
+  /** The tiers that always hold a Legendary, with their exact count per bag, from the top. */
+  legendaryBag: { tier: CapsuleTier; n: number }[];
+  /** Tiers above this one climb with summit strikes (A10). */
+  summitAbove: CapsuleTier;
+  /** Legendary catch-up once every Legendary is owned (A6.4 step 4). */
+  catchUp: boolean;
+  /** Tier-exclusive cosmetic sets that exist in content (none until their items ship). */
+  exclusive: ExclusiveSetRow[];
+  /** The one-time "Two new capsule tiers" notice is still open (`flags['notice.capsuleLadder']`). */
+  notice: boolean;
   dailyBp: { tier: CapsuleTier; bp: number }[];
   stackBp: { rarity: Rarity; bp: number }[];
   tiers: TierContentsRow[];
@@ -60,7 +96,7 @@ export interface OddsModel {
 
 /** Remaining slots per tier in the current bag (a fresh bag when empty). */
 export function bagLeft(capsules: CapsuleTables, bag: readonly number[]): Record<CapsuleTier, number> {
-  const out = { clay: 0, bronze: 0, silver: 0, jade: 0, aeon: 0 } as Record<CapsuleTier, number>;
+  const out = Object.fromEntries(capsules.tierOrder.map((tier) => [tier, 0])) as Record<CapsuleTier, number>;
   if (bag.length === 0) {
     for (const tier of capsules.tierOrder) out[tier] = capsules.bag[tier];
     return out;
@@ -87,11 +123,29 @@ function guaranteeIn(every: number, since: number): number {
 export function oddsModel(
   capsules: CapsuleTables,
   rarities: Rarities,
-  save: Pick<SaveDoc, 'pity' | 'capsules'>,
+  save: Pick<SaveDoc, 'pity' | 'capsules'> & Partial<Pick<SaveDoc, 'cosmetics' | 'flags'>>,
   randomLegendaries: boolean,
   collections?: CosmeticCollections,
 ): OddsModel {
   const left = bagLeft(capsules, save.capsules.bag);
+  const bagSize = capsules.tierOrder.reduce((n, tier) => n + capsules.bag[tier], 0);
+  const bagTotal = save.capsules.bag.length > 0 && (save.capsules.bagSize ?? 0) > 0 ? save.capsules.bagSize : bagSize;
+  const flags = save.flags ?? {};
+  const owned = new Set(save.cosmetics?.owned ?? []);
+  const exclusive: ExclusiveSetRow[] = capsules.tierOrder
+    .filter((tier) => capsules.tiers[tier].exclusiveItems)
+    .map((tier) => {
+      const items = (collections?.items ?? []).filter((x) => x.source.kind === 'capsuleTier' && x.source.tier === tier);
+      return {
+        tier,
+        owned: items.filter((x) => owned.has(`${x.collection}.${x.id}`)).length,
+        total: items.length,
+        craftable: flags[`capsule.first.${tier}`] === true,
+        craftDust: capsules.exclusiveCraftDust,
+        completeDust: capsules.exclusiveCompleteDust,
+      };
+    })
+    .filter((x) => x.total > 0);
   const pity = save.pity;
   const p = capsules.pity;
   // Capsules already in the tray were rolled when they were earned (A6.4), so the chance shown is
@@ -113,7 +167,14 @@ export function oddsModel(
       : {}),
     bag: capsules.tierOrder.map((tier) => ({ tier, perHundred: capsules.bag[tier], leftInBag: left[tier] })),
     bagLeftTotal: capsules.tierOrder.reduce((n, tier) => n + left[tier], 0),
-    bagSize: capsules.tierOrder.reduce((n, tier) => n + capsules.bag[tier], 0),
+    bagSize,
+    bagTotal,
+    legacyBag: bagTotal !== bagSize,
+    legendaryBag: legendaryBagTiers(capsules),
+    summitAbove: capsules.summitAbove,
+    catchUp: capsules.legendaryCatchUp,
+    exclusive,
+    notice: flags['notice.capsuleLadder'] === true,
     dailyBp: capsules.tierOrder.filter((tier) => capsules.dailyOddsBp[tier] > 0).map((tier) => ({ tier, bp: capsules.dailyOddsBp[tier] })),
     stackBp: rarities.order.map((rarity) => ({ rarity, bp: capsules.stackRollBp[rarity] })),
     tiers: capsules.tierOrder.map((tier) => {
@@ -126,7 +187,11 @@ export function oddsModel(
         amber: d.amber,
         bonusDust: d.bonusDust,
         skinChanceBp: d.skinChanceBp,
+        skinMinRarity: d.skinMinRarity,
         rareToLegendaryBp: d.rareToLegendaryBp,
+        crests: tierCrests(capsules, tier),
+        extraLegendaryCopies: d.extraLegendaryCopies,
+        exclusiveItems: d.exclusiveItems,
       };
     }),
     foils: rarities.foilOrder

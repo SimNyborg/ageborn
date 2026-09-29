@@ -15,6 +15,7 @@ import {
   bannerNameKey,
   capsuleKindNameKey,
   capsuleTierNameKey,
+  capsuleTierShortKey,
   content,
   emoteNameKey,
   foilNameKey,
@@ -55,7 +56,7 @@ function referencedKeys(): string[] {
   for (const r of ROLES) keys.push(roleNameKey(r));
   for (const g of GROUPS) keys.push(groupNameKey(g));
   for (const t of TAGS) keys.push(tagNameKey(t));
-  for (const t of c.capsules.tierOrder as CapsuleTier[]) keys.push(c.capsules.tiers[t].nameKey, capsuleTierNameKey(t));
+  for (const t of c.capsules.tierOrder as CapsuleTier[]) keys.push(c.capsules.tiers[t].nameKey, capsuleTierNameKey(t), capsuleTierShortKey(t));
   for (const k of Object.values(c.capsules.kinds)) keys.push(k.nameKey, capsuleKindNameKey(k.kind));
   for (const a of c.arenas.list) keys.push(a.nameKey);
   for (const id of c.generals.order) {
@@ -200,8 +201,10 @@ describe('strings that spell out table numbers', () => {
     expect(s('modifier.gold_rush.desc')).toContain(timesOf(bpOf(effect('gold_rush'))));
     expect(s('modifier.glass_armies.desc')).toContain(timesOf(bpOf(effect('glass_armies'))));
     expect(s('modifier.fast_forward.desc')).toContain(timesOf(bpOf(effect('fast_forward'))));
-    expect(bpOf(effect('power_hour'))).toBe(20000);
+    const hour = effect('power_hour');
+    expect(hour).toEqual({ kind: 'powers', reloadBp: 10000, costBp: 5000 });
     expect(s('modifier.power_hour.desc')).toContain('twice');
+    expect(s('modifier.power_hour.desc')).toContain('half');
     expect(s('modifier.heavy_metal.desc')).toContain(`${pctOf(10000 - bpOf(effect('heavy_metal')))} less`);
     const siege = effect('sudden_siege');
     expect(s('modifier.sudden_siege.desc')).toContain(mmss(siege.kind === 'siegeShift' ? -siege.ms : 0));
@@ -268,5 +271,13 @@ describe('strings that spell out table numbers', () => {
       expect(d('nanite_surge')).toContain(secs(regen?.durationMs ?? 0));
     }
     expect([stampede.kind, para.kind, decree.kind, nanite.kind]).toEqual(['stampede', 'paradrop', 'buffAll', 'buffAll']);
+    // A2.9.5: every capped power names its cap; buffs name the 8 frontmost units.
+    for (const pw of Object.values(c.powers)) {
+      const cap = pw.maxTargets ?? 0;
+      if (pw.effect.kind === 'buffAll') expect(d(pw.id), pw.id).toContain(`${cap} frontmost`);
+      else if (pw.effect.kind === 'strike') expect(d(pw.id), pw.id).toMatch(/one (ground )?enemy/);
+      else if (pw.effect.kind === 'cloud') expect(d(pw.id), pw.id).toContain(`up to ${cap}`);
+      else if (cap > 0) expect(d(pw.id), pw.id).toContain(`up to ${cap}`);
+    }
   });
 });

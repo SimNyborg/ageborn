@@ -204,3 +204,73 @@ export function holoTexture(): Texture {
     ctx.fillRect(0, 0, 256, 32);
   });
 }
+
+/** Sunlight shafts falling from above (the Gold burst): soft beams fanning down from the top centre. */
+export function shaftsTexture(): Texture {
+  return canvasTexture('shafts', 512, 512, (ctx) => {
+    const beams: [number, number, number][] = [
+      [-0.34, 0.05, 0.5],
+      [-0.2, 0.08, 0.8],
+      [-0.08, 0.05, 0.6],
+      [0.03, 0.09, 1],
+      [0.15, 0.05, 0.65],
+      [0.27, 0.07, 0.8],
+      [0.38, 0.04, 0.45],
+    ];
+    for (const [a, w, k] of beams) {
+      const g = ctx.createLinearGradient(256, 0, 256, 512);
+      g.addColorStop(0, `rgba(255,255,255,${0.75 * k})`);
+      g.addColorStop(0.55, `rgba(255,255,255,${0.25 * k})`);
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(256 + Math.sin(a - w * 0.2) * 20, 0);
+      ctx.lineTo(256 + Math.sin(a + w * 0.2) * 20, 0);
+      ctx.lineTo(256 + Math.tan(a + w) * 512, 512);
+      ctx.lineTo(256 + Math.tan(a - w) * 512, 512);
+      ctx.closePath();
+      ctx.fill();
+    }
+  });
+}
+
+/** A crinkled leaf of gold (the Gold burst's residue): an irregular flake with a fold line. */
+export function leafTexture(): Texture {
+  return canvasTexture('leaf', 20, 16, (ctx) => {
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(2, 7);
+    ctx.lineTo(7, 1);
+    ctx.lineTo(13, 3);
+    ctx.lineTo(19, 1);
+    ctx.lineTo(17, 9);
+    ctx.lineTo(12, 15);
+    ctx.lineTo(5, 13);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath();
+    ctx.moveTo(7, 1);
+    ctx.lineTo(13, 3);
+    ctx.lineTo(12, 15);
+    ctx.lineTo(9, 8);
+    ctx.closePath();
+    ctx.fill();
+  });
+}
+
+/** A long ice splinter (the Platinum burst): a thin diamond with a bright spine. */
+export function splinterTexture(): Texture {
+  return canvasTexture('splinter', 48, 12, (ctx) => {
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(0, 6);
+    ctx.lineTo(30, 1);
+    ctx.lineTo(48, 6);
+    ctx.lineTo(30, 11);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(6, 5, 38, 2);
+  });
+}

@@ -4,7 +4,7 @@ From: the lead designer, 2026-09-29. Owner request: powers cost gold and reload,
 
 The rework adds 32 powers: 8 new starters (owned from the first launch, no source needed) and 24 **War Path powers**, three per region, granted on the first clears of levels 5, 7 and 9, with a Trophy Road fallback for players who mostly play the ladder. **Powers never go into capsules**: no change to `src/content/capsules.ts`, `src/meta/capsules/*`, `tools/economy.ts` or `tools/drops.ts`.
 
-Apply this in build phase P4 (DESIGN A2.9.13), after the power content (phase P1) has added the 32 ids to `content.powers`; before that the ids do not exist and the integrity tests fail.
+Apply this in build phase P4 (DESIGN A2.9.13), together with the P4 content that adds the 24 War Path powers to `content.powers` (P1 adds only the 8 new starters); before that the ids do not exist and the integrity tests fail. Sections 6 (the 150-trophy flag), 7 (the bot filter and the match rule) and 8 (the save migration) are needed earlier, in P1 and P2, as noted there.
 
 ## 1. The reward table
 
@@ -14,7 +14,7 @@ Apply this in build phase P4 (DESIGN A2.9.13), after the power content (phase P1
 | bronze | `zeus_bolts` | `apollo_arrow` | `medusa_gaze` |
 | medieval | `caltrops` | `undermine` | `boiling_oil` |
 | gunpowder | `boarding_nets` | `horse_artillery` | `sharpshooter` |
-| industrial | `barbed_wire` | `railway_gun` | `saboteurs` |
+| industrial | `barbed_wire` | `railway_gun` | `field_hospital` |
 | modern | `aa_screen` | `tank_rush` | `sniper_team` |
 | future | `point_defense` | `emp_blackout` | `stasis_field` |
 | cosmic | `singularity` | `ion_cannon` | `solar_flare` |
@@ -48,7 +48,7 @@ Add one extra `power(...)` item to each of these nodes (the existing items stay;
 | 650 | `hunters_spear` | 1,200 | `sharpshooter` | 1,750 | `stasis_field` |
 | 700 | `zeus_bolts` | 1,250 | `barbed_wire` | 1,800 | `singularity` |
 | 750 | `apollo_arrow` | 1,350 | `railway_gun` | 1,850 | `ion_cannon` |
-| 850 | `medusa_gaze` | 1,400 | `saboteurs` | 1,950 | `solar_flare` |
+| 850 | `medusa_gaze` | 1,400 | `field_hospital` | 1,950 | `solar_flare` |
 | 900 | `caltrops` | 1,450 | `aa_screen` | | |
 | 950 | `undermine` | 1,550 | `tank_rush` | | |
 | 1,050 | `boiling_oil` | 1,600 | `sniper_team` | | |
@@ -58,15 +58,24 @@ Gates (800, 1,300, 1,900), Wardrobe nodes (1,000, 2,000) and the Jade node 1,500
 ## 6. `src/meta/trophies.ts`
 
 - `payRoad` case `'power'`: when the power is already owned, pay 60 Amber (`t.warPath.powerOwnedAmber`) instead of nothing, and show "Owned: 60 Amber" on the node (`road.ownedAmber`).
-- Reaching 150 trophies (the Gate 2 node) also sets `flags['power.field'] = true` if it is not set yet.
+- Reaching 150 trophies (the Gate 2 node) also sets `flags['power.field'] = true` if it is not set yet (needed from P2, when the Field slot turns on).
 
-## 7. Bots (the opponent builder in `src/meta`, WP7)
+## 7. Bots and the match config (the opponent builder and match setup in `src/meta`, WP7)
 
-Bot War Plans may only use powers a player at that point could own: starters, Road powers with node ≤ the player's best trophies + 100, and War Path powers whose region boss the player has beaten. A power a General's plan lists but may not use is replaced by the age's starter of the same slot. War Path level bots may use their own region's War Path powers. While the player's Field slot is locked, every bot loadout's Field slot is empty (DESIGN A2.9.1, the match rule).
+- Bot War Plans may only use powers a player at that point could own **by either source**: starters; Road powers (the 8 alternates and the 24 fallback items) whose node is ≤ the player's best trophies + 100; War Path powers whose granting level the player has first-cleared. A power a General's plan lists but may not use is replaced by the age's starter of the same slot. War Path level bots may use their own region's War Path powers.
+- **The sim knows no unlock.** While the player's Field slot is locked, meta sends `field: null` in the player's `SideConfig` and in every bot's (DESIGN A2.9.1, the match rule). In P1 (before the HUD has a Field button) meta sends `field: null` for both sides in every match; P2 switches to the flag.
+- **Daily Challenge:** always both slots. A player whose Field slot is still locked gets each age's Field starter in that slot for Daily matches only, so everyone plays the same match (A9.1).
 
-## 8. Save migration (WP8, its own next version)
+## 8. Save migration (WP8, its own next version, **in P1** with the contract bump)
 
-The power save migration (DESIGN A2.9.8) grants every War Path power whose level the save has already first-cleared and sets the Field slot flag for a save that cleared `wp.stone.l05` or has best trophies ≥ 150. Road fallback items on passed nodes become claimable through the normal claim flow, so nothing is granted twice.
+The power save migration (DESIGN A2.9.8):
+
+- moves each loadout's `power` into the slot its card belongs to and fills the other slot with the age's starter;
+- sets `flags['power.field']` for every save with `matchesPlayed` ≥ 1, or that cleared `wp.stone.l05`, or has best trophies ≥ 150 (eight built powers move to the Field slot, so a player who has played keeps the power they know);
+- grants the 8 new starters and every War Path power whose level the save has already first-cleared;
+- grants the new power item of every **already claimed** Trophy Road node ≥ 550 directly: `trophies.roadClaimed` stores whole node values, so a claimed node would never offer its new item through the claim flow. Idempotent; a power granted by both sources pays 60 Amber once for the second grant.
+
+Fixtures: fresh; default power equipped; a Road alternate equipped; "Stampede equipped, 50 trophies"; War Path Stone L7 cleared; "road claimed to 1,000"; 160 trophies. Re-read `src/save/migrations` right before editing and add the next version after the newest.
 
 ## 9. Tests
 
@@ -74,3 +83,5 @@ The power save migration (DESIGN A2.9.8) grants every War Path power whose level
 - Every road `power` item from 550 up exists and is one of the 24 War Path powers, each exactly once.
 - Granting a power twice (War Path, then road, or the other way round) pays 60 Amber the second time and never duplicates `powersOwned`.
 - The Field slot flag is set by the first of the two sources.
+- The migration grants the items of already claimed nodes ≥ 550 exactly once and is idempotent.
+- Bot plans never hold a power the player could not own by either source; while the Field slot is locked every bot's Field slot is empty, except in the Daily.

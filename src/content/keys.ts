@@ -22,6 +22,8 @@ export const groupNameKey = (group: RoleGroup): string => `group.${group}.name`;
 export const tagNameKey = (tag: Tag): string => `tag.${tag}.name`;
 export const foilNameKey = (foil: Foil): string => `foil.${foil}.name`;
 export const capsuleTierNameKey = (tier: CapsuleTier): string => `capsuleTier.${tier}.name`;
+/** The tier's short name ("Gold"), for odds lines and chips (A6.4). */
+export const capsuleTierShortKey = (tier: CapsuleTier): string => `capsuleTier.${tier}.short`;
 export const capsuleKindNameKey = (kind: PendingCapsule['kind']): string => `capsuleKind.${kind}.name`;
 export const arenaNameKey = (id: string): string => `arena.${id}.name`;
 export const skinNameKey = (id: string): string => `skin.${id}.name`;

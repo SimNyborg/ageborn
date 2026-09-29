@@ -202,22 +202,36 @@ const TURRET_ROWS: TurretRow[] = [
       pull: { radius: 90, fractionBp: 6000 }, onHit: [{ kind: 'slow', magnitudeBp: 5000, durationMs: 2500 }] }) },
 ];
 
-/** A5.7 rows. */
-const POWER_ROWS: { id: string; age: AgeId; slot: PowerDef['slot']; sfx: string; effect: PowerDef['effect'] }[] = [
-  { id: 'stampede', age: 'stone', slot: 'default', sfx: 'pw_stampede',
+/** A5.7 rows (the power rework, A2.9). */
+const POWER_ROWS: Pick<PowerDef, 'id' | 'age' | 'slot' | 'reach' | 'family' | 'rarity' | 'source' | 'cost' | 'reloadMs' | 'telegraphMs' | 'sfx' | 'effect'>[] = [
+  { id: 'stampede', age: 'stone', slot: 'field', reach: 'front', family: 'charge', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
+    telegraphMs: 1000, sfx: 'pw_stampede',
     effect: { kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400, damage: 50, knockback: 40, maxHitsPerEnemy: 3 } },
-  { id: 'meteor_shower', age: 'stone', slot: 'alternate', sfx: 'pw_meteor',
+  { id: 'meteor_shower', age: 'stone', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare', source: 'road', cost: 100, reloadMs: 40000,
+    telegraphMs: 1000, sfx: 'pw_meteor',
     effect: { kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40, jitter: 20, hitsAir: false, pattern: 'even' } },
-  { id: 'arrow_storm', age: 'medieval', slot: 'default', sfx: 'pw_arrows',
-    effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 40, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' } },
-  { id: 'smoke_screen', age: 'gunpowder', slot: 'default', sfx: 'pw_smoke',
-    effect: { kind: 'cloud', width: 350, durationMs: 7000, enemyMissBp: 5000, allyDamageBp: 2000 } },
-  { id: 'paratroopers', age: 'modern', slot: 'default', sfx: 'pw_paratroop',
-    effect: { kind: 'paradrop', card: 'rifleman', count: 4, beyondFront: 150, fallbackP: 1000 } },
-  { id: 'carpet_bomber', age: 'modern', slot: 'alternate', sfx: 'pw_bomber',
+  { id: 'arrow_storm', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
+    telegraphMs: 1000, sfx: 'pw_arrows',
+    effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 50, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' } },
+  { id: 'smoke_screen', age: 'gunpowder', slot: 'field', reach: 'front', family: 'cloud', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
+    telegraphMs: 1000, sfx: 'pw_smoke',
+    effect: { kind: 'cloud', width: 350, durationMs: 6000, enemyMissBp: 5000, allyDamageBp: 2000 } },
+  { id: 'paratroopers', age: 'modern', slot: 'field', reach: 'anywhere', family: 'drop', rarity: 'common', source: 'starter', cost: 150, reloadMs: 60000,
+    telegraphMs: 1000, sfx: 'pw_paratroop',
+    effect: { kind: 'paradrop', card: 'rifleman', count: 3, beyondFront: 150, fallbackP: 1000 } },
+  { id: 'carpet_bomber', age: 'modern', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare', source: 'road', cost: 100, reloadMs: 40000,
+    telegraphMs: 1000, sfx: 'pw_bomber',
     effect: { kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50, jitter: 0, hitsAir: false, pattern: 'line' } },
-  { id: 'orbital_lance', age: 'future', slot: 'default', sfx: 'pw_lance',
+  { id: 'orbital_lance', age: 'future', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
+    telegraphMs: 1000, sfx: 'pw_lance',
     effect: { kind: 'sweep', zone: 500, durationMs: 2000, damage: 450, width: 40, hitsAir: true } },
+  { id: 'caltrops', age: 'medieval', slot: 'home', reach: 'home', family: 'snare', rarity: 'rare', source: 'warPath', cost: 75, reloadMs: 30000,
+    telegraphMs: 1000, sfx: 'pw_caltrops',
+    effect: { kind: 'field', zone: 300, durationMs: 8000, hitsAir: false, damagePerPulse: 5, statuses: [{ kind: 'snare', magnitudeBp: 3500, durationMs: 1000 }] } },
+  { id: 'sharpshooter', age: 'gunpowder', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic', source: 'warPath', cost: 75, reloadMs: 30000,
+    telegraphMs: 1500, sfx: 'pw_sharpshooter', effect: { kind: 'strike', shots: 2, intervalMs: 300, damage: 305, hitsAir: true } },
+  { id: 'undermine', age: 'medieval', slot: 'field', reach: 'front', family: 'suppress', rarity: 'epic', source: 'warPath', cost: 125, reloadMs: 60000,
+    telegraphMs: 1500, sfx: 'pw_undermine', effect: { kind: 'suppress', durationMs: 5000 } },
 ];
 
 function allUnits(c: RawContent): UnitDef[] {
@@ -289,13 +303,13 @@ describe.each([
   describe('A5.7 power sample', () => {
     it.each(POWER_ROWS.map((r) => [r.id, r] as const))('%s matches its A5.7 row', (_id, r) => {
       const p = c.powers.find((x) => x.id === r.id);
-      expect(p).toEqual({ id: r.id, kind: 'power', age: r.age, slot: r.slot, telegraphMs: 1000, effect: r.effect,
-        visualId: `power.${r.id}`, sfx: r.sfx, nameKey: `card.${r.id}.name`, descKey: `card.${r.id}.desc` });
+      expect(p).toMatchObject({ ...r, kind: 'power', visualId: `power.${r.id}`, nameKey: `card.${r.id}.name`, descKey: `card.${r.id}.desc` });
+      expect(p?.effect).toEqual(r.effect);
     });
-    it('royal_decree and nanite_surge buff every own unit', () => {
-      expect(c.powers.find((p) => p.id === 'royal_decree')?.effect).toEqual({ kind: 'buffAll', statuses: [
-        { kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 }, { kind: 'speedBuff', magnitudeBp: 2500, durationMs: 8000 }] });
-      expect(c.powers.find((p) => p.id === 'nanite_surge')?.effect).toEqual({ kind: 'buffAll', statuses: [
+    it('royal_decree and nanite_surge buff the 8 frontmost own units', () => {
+      expect(c.powers.find((p) => p.id === 'royal_decree')?.effect).toEqual({ kind: 'buffAll', maxTargets: 8, statuses: [
+        { kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 }, { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 8000 }] });
+      expect(c.powers.find((p) => p.id === 'nanite_surge')?.effect).toEqual({ kind: 'buffAll', maxTargets: 8, statuses: [
         { kind: 'regen', magnitudeBp: 4000, durationMs: 4000 }, { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 150 }] });
     });
   });
@@ -329,10 +343,12 @@ describe.each([
         attacks: [{ damage: 4, intervalMs: 1000, range: 16, hitsGround: true, hitsAir: false }] });
     });
 
-    it('has one default and one alternate Age Power per age (16 live, 10 in the fixture)', () => {
-      expect(c.powers).toHaveLength(c === raw ? 16 : 10);
+    it('has 6 Age Powers per age, 3 Home and 3 Field, one starter per slot (48 live, 30 in the fixture; A5.7)', () => {
+      expect(c.powers).toHaveLength(c === raw ? 48 : 30);
       for (const age of c === raw ? AGES8 : AGES) {
-        expect(c.powers.filter((p) => p.age === age).map((p) => p.slot).sort()).toEqual(['alternate', 'default']);
+        const ps = c.powers.filter((p) => p.age === age);
+        expect(ps.map((p) => p.slot).sort()).toEqual(['field', 'field', 'field', 'home', 'home', 'home']);
+        expect(ps.filter((p) => p.source === 'starter').map((p) => p.slot).sort()).toEqual(['field', 'home']);
       }
     });
 
@@ -446,11 +462,15 @@ describe.each([
         underdogBp: 5000, baseDamageXpPerPct: a18 ? 8 : 12, xpCapBp: 15000, popCap: 60, queueMax: 5, legendaryLimit: 1,
         popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14 },
         sellRefundBp: 5000, turretRangeCap: 480, turretBuildMs: 1000, turretSellMs: 1000,
-        ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2, powerChargeMs: 50000, powerCarryCapBp: 5000,
+        ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2, powerCarryCapBp: 7500,
         overchargeXp: a18 ? 1650 : 1200, overchargeBp: 2500, turretRangeHardCapLu: 560,
         holdFlag: { minP: 320, maxP: 800, snapLu: 20, moveCooldownMs: 1000 }, fallbackP: 200,
         statCaps: { damageBp: 3500, takenBp: 3500, hpBp: 3000, attackSpeedBp: 2500, speedBp: 2000, rangeLu: 60 },
-        overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
+        overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 10000 },
+        power: {
+          startBp: 2500, emptyReloadMs: 40000, homeLineP: 1000, frontReachLu: 150, frontFloorP: 480, frontRank: 1,
+          strikePickLu: 80, strikeEpicBp: 5000, legendaryControlBp: 5000, lockMs: 0,
+        },
         siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
         marchSpeedBp: 12500, frontWidth: 3,
         lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },

@@ -267,9 +267,17 @@ export function rollPoolItem(t: Content, rng: Sfc32State, pool: CosmeticPool, ra
   return x ? cosmeticKey(x) : null;
 }
 
+/** Items only capsules of `tier` hold (source `capsuleTier`, e.g. the Aeon Collection; A6.4 step 8). */
+export function tierExclusiveItems(t: Content, tier: CapsuleTier): CosmeticItemDef[] {
+  return t.cosmetics.collections.items.filter((x) => x.source.kind === 'capsuleTier' && x.source.tier === tier);
+}
+
 /**
  * The collection item of a Time Capsule being granted: a chance by tier (A18.9.4 drop table), none in
- * onboarding script and Age Unlock capsules. Returns the key (or null) and the advanced stream.
+ * onboarding script and Age Unlock capsules. An `exclusiveItems` tier (Aeon, A6.4 step 8) holds one
+ * of its exclusive items the player lacks and no unopened capsule holds (uniform) in place of that
+ * roll; once every one is owned or promised it rolls the normal pool and adds `exclusiveCompleteDust`.
+ * Returns the key (or null), that bonus Dust and the advanced stream.
  */
 export function rollCapsuleCosmetic(
   s: SaveDoc,
@@ -277,13 +285,25 @@ export function rollCapsuleCosmetic(
   tier: CapsuleTier,
   kind: PendingCapsule['kind'],
   scripted: boolean,
-): { key: string | null; rng: Sfc32State } {
+): { key: string | null; dust: number; rng: Sfc32State } {
   const rng = cosmeticRng(s);
-  if (scripted || kind === 'ageUnlock') return { key: null, rng };
+  if (scripted || kind === 'ageUnlock') return { key: null, dust: 0, rng };
   const d = t.cosmetics.collections.drops;
+  let dust = 0;
+  if (t.capsules.tiers[tier].exclusiveItems) {
+    const all = tierExclusiveItems(t, tier);
+    const held = cosmeticsForRoll(s);
+    const lacking = all.filter((x) => !held.has(cosmeticKey(x)));
+    if (lacking.length > 0) {
+      const x = lacking[randInt(rng, lacking.length)];
+      if (x) return { key: cosmeticKey(x), dust: 0, rng };
+    }
+    // The set is complete (or has no items yet: then no Dust either).
+    if (all.length > 0) dust = t.capsules.exclusiveCompleteDust;
+  }
   const chance = d.capsuleChanceBp[tier];
-  if (chance <= 0 || randInt(rng, 10000) >= chance) return { key: null, rng };
-  return { key: rollPoolItem(t, rng, 'capsule', d.capsuleRarityBp, cosmeticsForRoll(s)), rng };
+  if (chance <= 0 || randInt(rng, 10000) >= chance) return { key: null, dust, rng };
+  return { key: rollPoolItem(t, rng, 'capsule', d.capsuleRarityBp, cosmeticsForRoll(s)), dust, rng };
 }
 
 /** The collection item every Wardrobe Crate holds next to its skin (A18.9.4). */
@@ -304,13 +324,30 @@ export function grantOpened(s: SaveDoc, t: Content, key: string | null | undefin
   return key ? grantCosmetics(s, t, [key]) : { save: s, fresh: [], dust: 0 };
 }
 
-/** Crafts a drop-pool item with Dust (A15.11-style fallback). Reasons: unknownItem, notCraftable, owned, notEnoughDust. */
+/** The flag set when a save opens its first capsule of a Legendary tier (A6.4, A10 step 4b). */
+export const firstOfTierFlag = (tier: CapsuleTier): string => `capsule.first.${tier}`;
+
+/**
+ * The Dust price to craft an item, or null when it cannot be crafted: pool items at their rarity's
+ * price; a tier-exclusive item (the Aeon Collection) at `capsules.exclusiveCraftDust`.
+ */
+export function cosmeticCraftPrice(t: Content, x: CosmeticItemDef): number | null {
+  if (x.source.kind === 'capsule' || x.source.kind === 'crate') return t.cosmetics.collections.drops.craftDust[x.rarity];
+  if (x.source.kind === 'capsuleTier') return t.capsules.exclusiveCraftDust;
+  return null;
+}
+
+/**
+ * Crafts a drop-pool item with Dust (A15.11-style fallback), or a tier-exclusive item once the save has
+ * opened a capsule of that tier (A6.4). Reasons: unknownItem, notCraftable, locked, owned, notEnoughDust.
+ */
 export function craftCosmetic(s: SaveDoc, t: Content, key: string): Result<SaveDoc> {
   const x = cosmeticItem(t, key);
   if (!x) return fail('unknownItem');
-  if (x.source.kind !== 'capsule' && x.source.kind !== 'crate') return fail('notCraftable');
+  const price = cosmeticCraftPrice(t, x);
+  if (price === null) return fail('notCraftable');
+  if (x.source.kind === 'capsuleTier' && s.flags[firstOfTierFlag(x.source.tier)] !== true) return fail('locked');
   if (ownsCosmetic(s, t, key)) return fail('owned');
-  const price = t.cosmetics.collections.drops.craftDust[x.rarity];
   if (s.currencies.dust < price) return fail('notEnoughDust');
   return {
     ok: true,
@@ -328,8 +365,41 @@ export interface PoolOdds {
   rarities: { rarity: Rarity; bp: number; items: number; owned: number }[];
 }
 
+/** A tier-exclusive set (the Aeon Collection): how many of its items the save owns (A6.4 step 8). */
+export interface ExclusiveSetOdds {
+  tier: CapsuleTier;
+  owned: number;
+  total: number;
+  /** Craftable now: the save has opened a capsule of this tier. */
+  craftable: boolean;
+  craftDust: number;
+  completeDust: number;
+}
+
+/** Every tier-exclusive set with at least one item, in ladder order. */
+export function exclusiveSets(s: SaveDoc, t: Content): ExclusiveSetOdds[] {
+  const out: ExclusiveSetOdds[] = [];
+  for (const tier of t.capsules.tierOrder) {
+    if (!t.capsules.tiers[tier].exclusiveItems) continue;
+    const items = tierExclusiveItems(t, tier);
+    if (items.length === 0) continue;
+    out.push({
+      tier,
+      owned: items.filter((x) => s.cosmetics.owned.includes(cosmeticKey(x))).length,
+      total: items.length,
+      craftable: s.flags[firstOfTierFlag(tier)] === true,
+      craftDust: t.capsules.exclusiveCraftDust,
+      completeDust: t.capsules.exclusiveCompleteDust,
+    });
+  }
+  return out;
+}
+
 /** The disclosed drop tables (A15.3 honesty): the capsule chance per tier and both pools' rarity odds. */
-export function cosmeticOdds(s: SaveDoc, t: Content): { capsuleChanceBp: Record<CapsuleTier, number>; capsule: PoolOdds; crate: PoolOdds } {
+export function cosmeticOdds(
+  s: SaveDoc,
+  t: Content,
+): { capsuleChanceBp: Record<CapsuleTier, number>; capsule: PoolOdds; crate: PoolOdds; exclusive: ExclusiveSetOdds[] } {
   const d = t.cosmetics.collections.drops;
   const pool = (p: CosmeticPool, odds: Record<Rarity, number>): PoolOdds => ({
     pool: p,
@@ -338,7 +408,12 @@ export function cosmeticOdds(s: SaveDoc, t: Content): { capsuleChanceBp: Record<
       return { rarity, bp: odds[rarity], items: items.length, owned: items.filter((x) => s.cosmetics.owned.includes(cosmeticKey(x))).length };
     }),
   });
-  return { capsuleChanceBp: { ...d.capsuleChanceBp }, capsule: pool('capsule', d.capsuleRarityBp), crate: pool('crate', d.crateRarityBp) };
+  return {
+    capsuleChanceBp: { ...d.capsuleChanceBp },
+    capsule: pool('capsule', d.capsuleRarityBp),
+    crate: pool('crate', d.crateRarityBp),
+    exclusive: exclusiveSets(s, t),
+  };
 }
 
 /** "12/40 found" per collection (A18.9.4 completion counts). Starters count as found. */

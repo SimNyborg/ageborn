@@ -6,7 +6,7 @@
  * Money is in milli-gold and distances in milli-lu, the units of `Observation` (DESIGN B3).
  */
 import type { AgeId, CardId, CompiledContent, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
-import { BP, MILLI, msToTicks } from '@/core';
+import { BP, MILLI, msToTicks, powerReachRules, type PowerReachRules } from '@/core';
 
 export interface UnitCard {
   id: CardId;
@@ -79,6 +79,8 @@ export interface CardBook {
     midLane: number;
     zoneMin: number;
     zoneMax: number;
+    /** Power reach rules in milli-lu (A2.9.4, core `powerReach`). */
+    powerReach: PowerReachRules;
     ascendTicks: number;
     turretBuildTicks: number;
     stanceCooldownTicks: number;
@@ -191,6 +193,7 @@ export function cardBook(content: CompiledContent): CardBook {
       midLane: Math.trunc(((e.powerZoneClamp[0] + e.powerZoneClamp[1]) * MILLI) / 2),
       zoneMin: e.powerZoneClamp[0] * MILLI,
       zoneMax: e.powerZoneClamp[1] * MILLI,
+      powerReach: powerReachRules(e, MILLI),
       ascendTicks: content.ticks.ascend,
       turretBuildTicks: content.ticks.turretBuild,
       stanceCooldownTicks: content.ticks.stanceCooldown,

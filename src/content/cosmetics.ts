@@ -69,7 +69,7 @@ export const cosmetics: Cosmetics = {
     items: collectionItems,
     drops: {
       // Script (onboarding) and Age Unlock capsules never hold a collection item.
-      capsuleChanceBp: { clay: 800, bronze: 1200, silver: 2000, jade: 3500, aeon: 6000 },
+      capsuleChanceBp: { clay: 800, bronze: 1200, silver: 2000, jade: 3500, gold: 6000, platinum: 8000, aeon: 10000 },
       // No Legendary item is in the capsule pool (Legendaries come from crates, feats and the road)
       capsuleRarityBp: { common: 6800, rare: 2600, epic: 600, legendary: 0 },
       // Every crate holds one item next to its skin

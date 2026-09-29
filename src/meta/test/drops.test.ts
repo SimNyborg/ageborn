@@ -9,7 +9,9 @@ import { C, M, clock, lastPending, passesChi2, scripted } from './helpers';
 
 const RARITIES: Rarity[] = ['common', 'rare', 'epic', 'legendary'];
 const FOILS: Foil[] = ['holo', 'silver', 'bronze', 'none'];
-const TIERS: CapsuleTier[] = ['clay', 'bronze', 'silver', 'jade', 'aeon'];
+const TIERS: readonly CapsuleTier[] = C.capsules.tierOrder;
+const BAG_SIZE = TIERS.reduce((n, t) => n + C.capsules.bag[t], 0);
+const SKIN_RARITIES = ['rare', 'epic', 'legendary'] as const;
 const OPENINGS = 100_000;
 const STREAMS = 10;
 
@@ -19,8 +21,12 @@ interface Tally {
   daily: number[];
   foils: number[];
   rolled: number[];
-  aeon: number;
-  aeonSkins: number;
+  /** Per tier with 0 < skinChanceBp < 100%: capsules and skins. */
+  skinTier: Map<CapsuleTier, [number, number]>;
+  /** Sure-skin tiers without a skin, or with one below `skinMinRarity`. */
+  skinMisses: number;
+  /** Fewer Legendary stacks than guaranteed, a repeated card, or wrong extra-stack copies. */
+  legendaryMisses: number;
   maxNoEpic: number;
   maxNoLegendary: number;
   maxNoNew: number;
@@ -32,11 +38,12 @@ function run(): Tally {
   const tally: Tally = {
     bagGroups: 0,
     badBagGroups: 0,
-    daily: [0, 0, 0, 0, 0],
+    daily: TIERS.map(() => 0),
     foils: [0, 0, 0, 0],
     rolled: [0, 0, 0, 0],
-    aeon: 0,
-    aeonSkins: 0,
+    skinTier: new Map(),
+    skinMisses: 0,
+    legendaryMisses: 0,
     maxNoEpic: 0,
     maxNoLegendary: 0,
     maxNoNew: 0,
@@ -62,13 +69,24 @@ function run(): Tally {
       const rs = cap.contents.stacks.map((x) => x.rarity);
       for (const st of cap.contents.stacks) tally.foils[FOILS.indexOf(st.foil)]! += 1;
       if (kind === 'daily') tally.daily[TIERS.indexOf(cap.tier)]! += 1;
-      if (cap.tier === 'aeon') {
-        tally.aeon += 1;
-        if (cap.contents.skin) tally.aeonSkins += 1;
+      if (def.skinChanceBp > 0 && def.skinChanceBp < 10000) {
+        const acc = tally.skinTier.get(cap.tier) ?? [0, 0];
+        acc[0] += 1;
+        if (cap.contents.skin) acc[1] += 1;
+        tally.skinTier.set(cap.tier, acc);
       }
+      if (def.skinChanceBp >= 10000) {
+        const skin = cap.contents.skin ? C.skins[cap.contents.skin] : undefined;
+        if (!skin || SKIN_RARITIES.indexOf(skin.rarity) < SKIN_RARITIES.indexOf(def.skinMinRarity)) tally.skinMisses += 1;
+      }
+      const wantLegendaries = def.guaranteed.filter((r) => r === 'legendary').length;
+      const legendaryStacks = cap.contents.stacks.filter((x) => x.rarity === 'legendary');
+      if (legendaryStacks.length < wantLegendaries) tally.legendaryMisses += 1;
+      if (new Set(cap.contents.stacks.map((x) => x.card)).size !== cap.contents.stacks.length) tally.legendaryMisses += 1;
+      if (wantLegendaries >= 2 && !legendaryStacks.some((x) => x.copies === def.extraLegendaryCopies)) tally.legendaryMisses += 1;
       if (kind === 'win') {
         group.push(cap.tier);
-        if (group.length === 100) {
+        if (group.length === BAG_SIZE) {
           tally.bagGroups += 1;
           if (TIERS.some((t) => group.filter((x) => x === t).length !== C.capsules.bag[t])) tally.badBagGroups += 1;
           group = [];
@@ -78,16 +96,15 @@ function run(): Tally {
       const left = [...rs];
       let ok = true;
       for (const r of def.guaranteed) {
-        let k = left.indexOf(r);
-        if (k < 0 && r === 'rare' && def.rareToLegendaryBp > 0) k = left.indexOf('legendary');
+        const k = left.indexOf(r);
         if (k < 0) ok = false;
         else left.splice(k, 1);
       }
       if (!ok) tally.guaranteeMisses += 1;
-      // Stacks no pity rule could touch (A6.5 thresholds with a margin); Jade's conversion looks like a roll.
+      // Stacks no pity rule could touch (A6.5 thresholds with a margin).
       const p = o.reveal.pityBefore;
       const pityFree = p.sinceEpic <= 7 && p.sinceLegendary <= 23 && (!unownedBefore || p.sinceNewCard <= 2);
-      if (ok && pityFree && cap.tier !== 'jade') for (const r of left) tally.rolled[RARITIES.indexOf(r)]! += 1;
+      if (ok && pityFree) for (const r of left) tally.rolled[RARITIES.indexOf(r)]! += 1;
       noEpic = rs.includes('epic') ? 0 : noEpic + 1;
       noLegendary = rs.includes('legendary') ? 0 : noLegendary + 1;
       noNew = cap.contents.stacks.some((x) => x.isNew) || !unownedBefore ? 0 : noNew + 1;
@@ -102,14 +119,20 @@ function run(): Tally {
 describe(`${OPENINGS} capsule openings through Meta (A6.4, A6.5, C4 #5)`, () => {
   const t = run();
 
-  it('every 100 Win Capsules hold exactly 30 Clay, 40 Bronze, 20 Silver, 7 Jade and 3 Aeon', () => {
-    expect(t.bagGroups).toBe(OPENINGS * 0.8 / 100);
+  it('every 200 Win Capsules hold exactly 60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum and 1 Aeon', () => {
+    expect(BAG_SIZE).toBe(200);
+    expect(t.bagGroups).toBe(OPENINGS * 0.8 / BAG_SIZE);
     expect(t.badBagGroups).toBe(0);
   });
 
   it('stack counts and guarantees always hold', () => {
     expect(t.stackCountMisses).toBe(0);
     expect(t.guaranteeMisses).toBe(0);
+  });
+
+  it('Gold, Platinum and Aeon hold 1, 2 and 3 different Legendaries; sure skins are never missing or below their floor', () => {
+    expect(t.legendaryMisses).toBe(0);
+    expect(t.skinMisses).toBe(0);
   });
 
   it('pity boundaries: an Epic every 10, a Legendary by 40, a new card every 5 while any remain', () => {
@@ -124,9 +147,13 @@ describe(`${OPENINGS} capsule openings through Meta (A6.4, A6.5, C4 #5)`, () => 
     const f = C.rarities.foils;
     const none = 10000 - f.holo.rollBp - f.silver.rollBp - f.bronze.rollBp;
     expect(passesChi2(t.foils, [f.holo.rollBp, f.silver.rollBp, f.bronze.rollBp, none])).toBe(true);
-    expect(passesChi2(t.daily, TIERS.map((tier) => C.capsules.dailyOddsBp[tier]))).toBe(true);
-    const skin = C.capsules.tiers.aeon.skinChanceBp;
-    expect(passesChi2([t.aeonSkins, t.aeon - t.aeonSkins], [skin, 10000 - skin])).toBe(true);
+    const supply = TIERS.filter((tier) => C.capsules.dailyOddsBp[tier] > 0);
+    expect(passesChi2(supply.map((tier) => t.daily[TIERS.indexOf(tier)]!), supply.map((tier) => C.capsules.dailyOddsBp[tier]))).toBe(true);
+    expect(t.skinTier.size).toBeGreaterThan(0);
+    for (const [tier, [n, skins]] of t.skinTier) {
+      const skin = C.capsules.tiers[tier].skinChanceBp;
+      expect(passesChi2([skins, n - skins], [skin, 10000 - skin]), tier).toBe(true);
+    }
   });
 });
 

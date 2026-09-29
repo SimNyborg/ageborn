@@ -5,7 +5,13 @@
  *
  * - `isNew`: the card is not owned when revealed (a crafted card is no longer new).
  * - `dust`: copies of a card at max level convert to Dust (A6.4 step 6), per stack.
- * - `contents.dust`: the capsule's bonus Dust (Jade +100) plus a duplicate bonus skin's Dust.
+ * - `contents.dust`: the capsule's bonus Dust (Jade and Gold +100, Platinum +200, Aeon +500, plus 500
+ *   for an Aeon after its collection set is complete) plus a duplicate skin's Dust.
+ *
+ * Strikes (A10): the 4 main strikes climb up to `capsules.summitAbove` (Gold), back-loaded; each tier
+ * above it is one summit strike that always climbs (Platinum 1, Aeon 2). Opening the first Gold,
+ * Platinum or Aeon (a tier that guarantees a Legendary) sets `capsule.first.<tier>` and reports
+ * `firstOfTier` for the first-of-tier moment (A10 step 4b).
  *
  * Copies always add to the card's upgrade copies, including a new card's first stack (a new card
  * starts at L1 with the stack's copies). Foils unlock when they beat the owned one. Counted capsules
@@ -13,12 +19,12 @@
  * counted capsule unlocks the Supply allowance and grants the first Supply Capsule at once, with no
  * matches needed (A15.4); it is rolled after this capsule is applied, so it sees the new cards.
  */
-import type { CapsuleReveal, CapsuleStack, CardId, SaveDoc } from '@/contracts';
+import type { CapsuleReveal, CapsuleStack, CapsuleTier, CardId, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { META_FLAGS } from '../rules';
-import { arenaOf, lastKnownTime, poolOf, TIER_INDEX } from '../tables';
+import { arenaOf, guaranteedLegendaries, lastKnownTime, poolOf, tierIndex } from '../tables';
 import { cardsForRoll, grantCapsuleAt } from './grant';
-import { duplicateDustOf, grantOpened } from '../cosmetics';
+import { duplicateDustOf, firstOfTierFlag, grantOpened } from '../cosmetics';
 import { unlockTitles } from '../titles';
 import { betterFoil } from './foil';
 import { advancePity } from './pity';
@@ -30,6 +36,20 @@ export const STRIKES = 4;
 export function strikePattern(climbs: number): boolean[] {
   const k = Math.max(0, Math.min(STRIKES, climbs));
   return Array.from({ length: STRIKES }, (_, i) => i >= STRIKES - k);
+}
+
+/**
+ * The strikes of a capsule climbing from `start` to `tier` (A10): `main` climbs of the 4 main strikes
+ * (up to `summitAbove`, clamped to 0..4) and `summit` strikes above it (each always climbs). A fixed
+ * capsule (start = tier) has none.
+ */
+export function strikeCounts(t: Pick<Content, 'capsules'>, start: CapsuleTier, tier: CapsuleTier): { main: number; summit: number } {
+  const s = tierIndex(t, start);
+  const f = tierIndex(t, tier);
+  const top = tierIndex(t, t.capsules.summitAbove);
+  const main = Math.max(0, Math.min(STRIKES, Math.min(f, top) - s));
+  const summit = Math.max(0, f - Math.max(top, s));
+  return { main, summit };
 }
 
 export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: SaveDoc; reveal: CapsuleReveal } {
@@ -86,6 +106,10 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
 
   let capsules = { ...s.capsules, pending: s.capsules.pending.filter((p) => p.id !== id) };
   let flags = s.flags;
+  // A10 step 4b: the first capsule of a Legendary tier (Gold, Platinum, Aeon) the save opens
+  const firstFlag = firstOfTierFlag(cap.tier);
+  const firstOfTier = guaranteedLegendaries(t, cap.tier) > 0 && flags[firstFlag] !== true;
+  if (firstOfTier) flags = { ...flags, [firstFlag]: true };
   const unlockSupply = pityAfter.opened >= t.capsules.daily.firstAfterCapsule && !s.flags[META_FLAGS.dailyUnlocked];
   if (unlockSupply) {
     // A15.4: the allowance starts empty; `tickTimers` starts the 04:00 timer that adds to it.
@@ -114,9 +138,17 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
     save = grantCapsuleAt(save, 'daily', t, Math.max(cap.createdAt, lastKnownTime(save))).save;
     save = { ...save, capsules: { ...save.capsules, dailyBank: bank } };
   }
-  const climbs = Math.max(0, TIER_INDEX[cap.tier] - TIER_INDEX[cap.startTier]);
+  const strikes = strikeCounts(t, cap.startTier, cap.tier);
   return {
     save,
-    reveal: { capsule: shown, climbs, strikeClimbs: strikePattern(climbs), pityBefore, pityAfter, firstLegendaryReveal },
+    reveal: {
+      capsule: shown,
+      climbs: strikes.main + strikes.summit,
+      strikeClimbs: strikePattern(strikes.main),
+      pityBefore,
+      pityAfter,
+      firstLegendaryReveal,
+      firstOfTier,
+    },
   };
 }

@@ -63,14 +63,15 @@ describe('onboarding script (A6.5)', () => {
     expect(epics[0]?.isNew).toBe(true);
     for (const r of [c1, c2, c3]) expect(r?.capsule.contents.stacks.some((x) => x.rarity === 'epic' || x.rarity === 'legendary')).toBe(false);
     // Capsule 5: Aeon with the Mammoth Matriarch and its first-ever walkout.
-    expect(c5?.capsule.tier).toBe('aeon');
+    expect(c5?.capsule.tier).toBe('gold');
     expect(c5?.capsule.contents.stacks.find((x) => x.rarity === 'legendary')?.card).toBe('mammoth_matriarch');
     expect(c5?.firstLegendaryReveal).toEqual(['mammoth_matriarch']);
     expect(s.cosmetics.owned).toContain('mammoth_tamer');
     // After the script: bag capsules with pity again.
     expect(c6?.capsule.scriptIndex).toBeNull();
     expect(s.scriptStep).toBe(5);
-    expect(s.capsules.bag.length).toBe(99);
+    expect(s.capsules.bag.length).toBe(199);
+    expect(s.capsules.bagSize).toBe(200);
   });
 
   it('after capsule 2 the forced Bonker upgrade (A8) is affordable', () => {
@@ -92,7 +93,7 @@ describe('onboarding script (A6.5)', () => {
     const win = matchInput('daily', 'win', M.pickOpponent(scriptedWin, 'daily', C, c));
     expect(M.ageCapsuleDue(scriptedWin, win, C, c)).toBe(false);
     const cap = lastPending(M.applyMatchResult(scriptedWin, win, C, c, { age: 'modern' }).save);
-    expect(cap).toMatchObject({ kind: 'age', tier: 'aeon', scriptIndex: 5, age: null });
+    expect(cap).toMatchObject({ kind: 'age', tier: 'gold', scriptIndex: 5, age: null });
     expect(cap.contents.stacks.some((x) => x.card === 'mammoth_matriarch')).toBe(true);
   });
 

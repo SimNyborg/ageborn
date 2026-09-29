@@ -2,7 +2,7 @@
  * The capsule roll algorithm step by step (DESIGN A6.4 "MUST be implemented exactly", A6.5 pity).
  */
 import { describe, expect, it } from 'vitest';
-import type { CardId, Rarity, SaveDoc } from '@/contracts';
+import type { CapsuleTier, CardId, Rarity, SaveDoc } from '@/contracts';
 import { seedSfc32 } from '@/core';
 import { cardsForRoll, legendaryPityBp, planSlots, rollStacks, type PityDraw, type RollSpec } from '../capsules';
 import { poolOf } from '../tables';
@@ -13,14 +13,17 @@ const NO_PITY: PityDraw = { epicN: 1, legendaryN: 1, newCardN: 1 };
 const ARENA1 = C.arenas.list[0]!;
 const ARENA8 = C.arenas.list[7]!;
 
-function tierSpec(tier: 'clay' | 'bronze' | 'silver' | 'jade' | 'aeon', randomLegendaries = true): RollSpec {
+function tierSpec(tier: CapsuleTier, randomLegendaries = true): RollSpec {
   const d = C.capsules.tiers[tier];
-  return { stacks: d.stacks, guaranteed: d.guaranteed, copies: d.copies, rareToLegendaryBp: d.rareToLegendaryBp, randomLegendaries };
+  return { stacks: d.stacks, guaranteed: d.guaranteed, copies: d.copies, extraLegendaryCopies: d.extraLegendaryCopies, randomLegendaries };
 }
 
-function ctx(seed: number, owned: Iterable<CardId>, pity: PityDraw | null, ages = ARENA8.dropAges) {
-  return { t: C, rng: seedSfc32(seed), pool: poolOf(C, ages), owned: new Set(owned), pity };
+function ctx(seed: number, owned: Iterable<CardId>, pity: PityDraw | null, ages = ARENA8.dropAges, need?: ReadonlyMap<CardId, number>) {
+  return { t: C, rng: seedSfc32(seed), pool: poolOf(C, ages), owned: new Set(owned), pity, ...(need ? { need } : {}) };
 }
+
+/** Guaranteed Legendary stacks of a tier (Gold 1, Platinum 2, Aeon 3). */
+const legendariesOf = (tier: CapsuleTier): number => C.capsules.tiers[tier].guaranteed.filter((r) => r === 'legendary').length;
 
 const allCards = [...C.order.units, ...C.order.turrets];
 
@@ -54,15 +57,14 @@ describe('step 1: stack rarities', () => {
     }
   });
 
-  it('Jade converts one guaranteed Rare to Legendary 25% of the time', () => {
+  it('no tier converts a guaranteed Rare to Legendary any more (step 1.3 removed with the ladder)', () => {
     const c = ctx(4, allCards, null);
-    let converted = 0;
-    const n = 20000;
-    for (let i = 0; i < n; i += 1) {
-      const slots = planSlots(tierSpec('jade'), c);
-      if (slots.filter((s) => s.locked && s.rarity === 'rare').length === 1) converted += 1;
+    for (const tier of C.capsules.tierOrder) {
+      const want = C.capsules.tiers[tier].guaranteed.filter((r) => r === 'rare').length;
+      for (let i = 0; i < 500; i += 1) {
+        expect(planSlots(tierSpec(tier), c).filter((s) => s.locked && s.rarity === 'rare'), tier).toHaveLength(want);
+      }
     }
-    expect(passesChi2([converted, n - converted], [2500, 7500])).toBe(true);
   });
 });
 
@@ -124,13 +126,19 @@ describe('step 2: pity', () => {
 
 describe('steps 3-5: copies, cards, foils', () => {
   it('copies come from the tier table by rarity; cards are distinct and from the pool', () => {
-    for (const tier of ['clay', 'bronze', 'silver', 'jade', 'aeon'] as const) {
+    for (const tier of C.capsules.tierOrder) {
+      const def = C.capsules.tiers[tier];
       const c = ctx(10, [], null, ARENA1.dropAges);
       for (let i = 0; i < 200; i += 1) {
         const stacks = rollStacks(tierSpec(tier), c);
         expect(new Set(stacks.map((s) => s.card)).size).toBe(stacks.length);
+        // The 1st guaranteed Legendary holds the table's copies, the 2nd and 3rd `extraLegendaryCopies`.
+        const legs = stacks.filter((s) => s.rarity === 'legendary').map((s) => s.copies);
+        const g = legendariesOf(tier);
+        expect(legs.length, tier).toBeGreaterThanOrEqual(g);
+        legs.forEach((n, k) => expect(n, `${tier} Legendary ${k}`).toBe(k >= 1 && k < g ? def.extraLegendaryCopies : def.copies.legendary));
         for (const s of stacks) {
-          expect(s.copies).toBe(C.capsules.tiers[tier].copies[s.rarity]);
+          if (s.rarity !== 'legendary') expect(s.copies).toBe(def.copies[s.rarity]);
           expect(ARENA1.dropAges).toContain((C.units[s.card] ?? C.turrets[s.card])!.age);
           expect((C.units[s.card] ?? C.turrets[s.card])!.rarity).toBe(s.rarity);
         }
@@ -147,7 +155,7 @@ describe('steps 3-5: copies, cards, foils', () => {
     const c = ctx(11, [...owned, ...allCards.filter((id) => !rares.includes(id))], null);
     let unowned = 0;
     let total = 0;
-    const spec: RollSpec = { stacks: 1, guaranteed: ['rare'], copies: C.capsules.tiers.bronze.copies, rareToLegendaryBp: 0, randomLegendaries: true };
+    const spec: RollSpec = { stacks: 1, guaranteed: ['rare'], copies: C.capsules.tiers.bronze.copies, randomLegendaries: true };
     for (let i = 0; i < 20000; i += 1) {
       for (const s of rollStacks(spec, c)) {
         total += 1;
@@ -158,22 +166,63 @@ describe('steps 3-5: copies, cards, foils', () => {
     expect(passesChi2([unowned, total - unowned], [3 * nU, owned.length])).toBe(true);
   });
 
-  it('no duplicate Legendary until every Legendary in the pool is owned', () => {
+  it('no duplicate Legendary until every Legendary in the pool is owned; extra stacks then pick owned ones, never an Epic', () => {
     const legs = poolOf(C, ARENA8.dropAges).byRarity.legendary;
-    for (let owned = 0; owned <= legs.length; owned += 1) {
-      const have = [...allCards.filter((id) => !legs.includes(id)), ...legs.slice(0, owned)];
-      const c = ctx(20 + owned, have, null);
-      for (let i = 0; i < 100; i += 1) {
-        const leg = rollStacks(tierSpec('aeon'), c).filter((s) => s.rarity === 'legendary');
-        for (const s of leg) if (owned < legs.length) expect(have).not.toContain(s.card);
+    for (const tier of C.capsules.tierOrder.filter((t) => legendariesOf(t) > 0)) {
+      const g = legendariesOf(tier);
+      for (let owned = 0; owned <= legs.length; owned += 1) {
+        const have = [...allCards.filter((id) => !legs.includes(id)), ...legs.slice(0, owned)];
+        const c = ctx(20 + owned, have, null);
+        for (let i = 0; i < 100; i += 1) {
+          const leg = rollStacks(tierSpec(tier), c).filter((s) => s.rarity === 'legendary');
+          expect(leg.length, `${tier} with ${owned} owned`).toBeGreaterThanOrEqual(g);
+          expect(new Set(leg.map((s) => s.card)).size).toBe(leg.length);
+          // As many unowned ones as there are (up to the stacks), before any owned one
+          const unowned = legs.length - owned;
+          expect(leg.filter((s) => !have.includes(s.card)).length).toBe(Math.min(unowned, leg.length));
+        }
       }
     }
+  });
+
+  it('Legendary catch-up: with every Legendary owned, picks weigh 1 + copies still needed (A6.4 step 4)', () => {
+    const legs = poolOf(C, ARENA8.dropAges).byRarity.legendary;
+    const [far, ...rest] = legs;
+    const need = new Map<CardId, number>(legs.map((id) => [id, id === far ? 70 : 0]));
+    const spec: RollSpec = { stacks: 1, guaranteed: ['legendary'], copies: C.capsules.tiers.gold.copies, randomLegendaries: true };
+    const c = ctx(30, allCards, null, ARENA8.dropAges, need);
+    let hits = 0;
+    const n = 4000;
+    for (let i = 0; i < n; i += 1) if (rollStacks(spec, c)[0]!.card === far) hits += 1;
+    // far weighs 71, each other Legendary 1
+    expect(passesChi2([hits, n - hits], [71, rest.length])).toBe(true);
+    // Without the need map every owned Legendary weighs 1
+    const flat = ctx(31, allCards, null);
+    let flatHits = 0;
+    for (let i = 0; i < n; i += 1) if (rollStacks(spec, flat)[0]!.card === far) flatHits += 1;
+    expect(passesChi2([flatHits, n - flatHits], [1, rest.length])).toBe(true);
+  });
+
+  it('catch-up applies to the 2nd stack after the 1st took the last unowned Legendary', () => {
+    const legs = poolOf(C, ARENA8.dropAges).byRarity.legendary;
+    const [last, far, ...rest] = legs;
+    const have = allCards.filter((id) => id !== last);
+    const need = new Map<CardId, number>([...rest.map((id): [CardId, number] => [id, 0]), [far!, 500]]);
+    const c = ctx(32, have, null, ARENA8.dropAges, need);
+    let farSecond = 0;
+    const n = 400;
+    for (let i = 0; i < n; i += 1) {
+      const leg = rollStacks(tierSpec('platinum'), c).filter((s) => s.rarity === 'legendary');
+      expect(leg.map((s) => s.card)).toContain(last);
+      if (leg.some((s) => s.card === far)) farSecond += 1;
+    }
+    expect(farSecond / n).toBeGreaterThan(0.95);
   });
 
   it('a small pool falls back to a lower rarity instead of repeating a card', () => {
     // An Age Capsule of one age: at most 2 Epics and 1 Legendary exist.
     const c = ctx(12, [], { ...NO_PITY, legendaryN: 40 }, ['stone']);
-    const spec: RollSpec = { stacks: 4, guaranteed: ['epic', 'epic', 'epic'], copies: C.capsules.tiers.silver.copies, rareToLegendaryBp: 0, randomLegendaries: true };
+    const spec: RollSpec = { stacks: 4, guaranteed: ['epic', 'epic', 'epic'], copies: C.capsules.tiers.silver.copies, randomLegendaries: true };
     for (let i = 0; i < 100; i += 1) {
       const stacks = rollStacks(spec, c);
       expect(stacks).toHaveLength(4);

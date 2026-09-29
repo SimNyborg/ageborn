@@ -158,14 +158,32 @@ export const economy: EconomyRules = {
   ascendMs: 2500,
   evolveHealBp: 500,
   vanguardCount: 2,
-  // A2.9 Age Powers: 0 → 100% over 50 s; 50% carry cap across an evolve
-  powerChargeMs: 50000,
-  powerCarryCapBp: 5000,
-  // A18.3.2 Overcharge: in the final age every 1,650 XP adds +25% charge
+  // A2.9.3 Age Powers: each slot reloads on its own (PowerDef.reloadMs); 75% carry cap across an evolve
+  powerCarryCapBp: 7500,
+  // A18.3.2 Overcharge: in the final age every 1,650 XP adds +25% to the less-reloaded equipped slot
   overchargeXp: 1650,
   overchargeBp: 2500,
-  // A2.10 phases
-  overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
+  // A2.10 phases; A2.9.3: no power reload bonus in Overdrive and Siege (`powerBp` 10,000, a lever)
+  overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 10000 },
+  // A2.9.3-A2.9.6 power rules and data levers (lu, bp, ms)
+  power: {
+    // every slot starts 25% reloaded; an empty slot accrues at 40 s and carries at an evolve
+    startBp: 2500,
+    emptyReloadMs: 40000,
+    // Home powers touch only enemies with own-frame p ≤ 1,000 (mid-lane, inclusive)
+    homeLineP: 1000,
+    // Front reach: F (the frontRank-th frontmost trained ground unit) + 150, never below the 480 cover edge
+    frontReachLu: 150,
+    frontFloorP: 480,
+    frontRank: 1,
+    // a manual strike locks the eligible enemy nearest the aim within 80 lu; Epics take 50% from strikes
+    strikePickLu: 80,
+    strikeEpicBp: 5000,
+    // Legendaries take 50% of a power's stun, snare, slow and mark duration and pull distance
+    legendaryControlBp: 5000,
+    // optional shared lockout after a cast (lever; 0 = off)
+    lockMs: 0,
+  },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
   // A16.4 stall fix (A17 step 1): in Overdrive and Siege a unit killed within 120 lu of its own gate costs

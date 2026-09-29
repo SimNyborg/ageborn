@@ -251,7 +251,7 @@ describe('planCapsuleShow (DESIGN A10)', () => {
 
   it('flags a too-long step', () => {
     const plan = planCapsuleShow(bronze(), { catalog });
-    const broken = { ...plan, steps: plan.steps.map((s) => (s.kind === 'burst' ? { ...s, durationMs: 1500 } : s)) };
+    const broken = { ...plan, steps: plan.steps.map((s) => (s.kind === 'burst' ? { ...s, durationMs: 1900 } : s)) };
     expect(checkPlan(broken).some((m) => m.includes('burst'))).toBe(true);
   });
 

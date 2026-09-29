@@ -408,25 +408,37 @@ export class ScriptedPlayer implements BotController {
       this.evolveSeenTick = canEvolve ? obs.tick : -1;
       this.evolveSeenAge = canEvolve ? me.ageIndex : -1;
     }
-    const charged = me.powerPpm >= CHARGED_PPM;
+    // A2.9.12: proxies are slot-aware: the Home slot casts where "the power" did, the Field slot by the
+    // same trigger when equipped; a slot needs to be reloaded and affordable.
+    const castable = (['home', 'field'] as const).filter((slot) => {
+      const o = me.powers[slot];
+      return o !== null && o.ppm >= CHARGED_PPM && gold >= o.cost;
+    });
     let evolveNow = canEvolve && (st.evolve === 'asap' || me.xpBp >= BANK_XP_BP);
     if (evolveNow && st.safeEvolveMs !== undefined) {
       const unsafe = foes.some((u) => !u.air && u.p <= EVOLVE_SAFE_P);
       evolveNow = !unsafe || obs.tick - this.evolveSeenTick >= Math.trunc(st.safeEvolveMs / 50);
     }
-    if (charged) {
+    for (const slot of castable) {
+      const card = me.powers[slot]?.card ?? '';
       if (st.power === 'beforeEvolve' && me.ageIndex < this.maxAgeIndex) {
         if (evolveNow) {
-          out.push({ t: 'power', side });
-          evolveNow = false; // evolve on the next decision, after the cast
+          out.push({ t: 'power', side, slot });
+          gold -= me.powers[slot]?.cost ?? 0;
         }
       } else if (st.powerMinValue !== undefined) {
-        const zone = this.bestZone(foes, me.power);
-        if (zone.value >= st.powerMinValue) out.push({ t: 'power', side, p: zone.p });
+        const zone = this.bestZone(foes, card);
+        if (zone.value >= st.powerMinValue) {
+          out.push({ t: 'power', side, slot, p: zone.p });
+          gold -= me.powers[slot]?.cost ?? 0;
+        }
       } else if (st.power === 'full' || nearMid >= 3 || threat) {
-        out.push({ t: 'power', side });
+        out.push({ t: 'power', side, slot });
+        gold -= me.powers[slot]?.cost ?? 0;
       }
     }
+    // Evolve on the next decision, after a cast made for it.
+    if (st.power === 'beforeEvolve' && out.some((c) => c.t === 'power')) evolveNow = false;
     if (evolveNow) {
       out.push({ t: 'evolve', side });
       this.evolveIssuedTick = obs.tick;

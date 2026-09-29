@@ -24,14 +24,15 @@ export function slotKey(s: SlotRef): string {
 export function slotCard(l: Loadout, s: SlotRef): CardId | null {
   if (s.kind === 'unit') return l.units[s.index] ?? null;
   if (s.kind === 'turret') return l.turrets[s.index] ?? null;
-  return l.power || null;
+  // P1 compatibility (A2.9.13): the one power slot shows the Home slot until the Field slot ships (P2).
+  return l.powers?.home ?? null;
 }
 
 /** Pads a loadout to 6 unit (A18.9) and 2 turret slots (older or partial saves). */
 export function normalizeLoadout(l: Loadout): Loadout {
   const units = Array.from({ length: UNIT_SLOTS }, (_, i) => l.units[i] ?? null);
   const turrets = Array.from({ length: TURRET_SLOTS }, (_, i) => l.turrets[i] ?? null);
-  return { units, turrets, power: l.power };
+  return { units, turrets, powers: l.powers ?? { home: null, field: null } };
 }
 
 /** Which slot kind a card goes in. */
@@ -50,7 +51,8 @@ export function slotKindOf(content: Content, card: CardId): SlotRef['kind'] | nu
 export function assignCard(content: Content, loadout: Loadout, slot: SlotRef, card: CardId): Loadout {
   if (slotKindOf(content, card) !== slot.kind) return loadout;
   const l = normalizeLoadout(loadout);
-  if (slot.kind === 'power') return { ...l, power: card };
+  // A2.9.1: a power goes into its own slot (Home or Field).
+  if (slot.kind === 'power') return { ...l, powers: { ...l.powers, [content.powers[card]?.slot ?? 'home']: card } };
   const list = slot.kind === 'unit' ? [...l.units] : [...l.turrets];
   const from = list.indexOf(card);
   const displaced = list[slot.index] ?? null;
@@ -167,15 +169,16 @@ export function activePlan(save: SaveDoc, content: Content): { index: number; pl
   return { index, plan };
 }
 
-/** A plan with every slot empty and each age's default power. */
+/** A plan with every slot empty and each age's two starter powers (A2.9.8: found by `source`). */
 export function emptyPlan(content: Content, name: string): WarPlan {
   const loadouts = {} as Record<AgeId, Loadout>;
   for (const age of content.order.ages) {
-    const power = content.order.powers.find((id) => content.powers[id]?.age === age && content.powers[id]?.slot === 'default') ?? '';
+    const starter = (slot: 'home' | 'field'): CardId | null =>
+      content.order.powers.find((id) => content.powers[id]?.age === age && content.powers[id]?.slot === slot && content.powers[id]?.source === 'starter') ?? null;
     loadouts[age] = {
       units: Array.from({ length: UNIT_SLOTS }, () => null),
       turrets: Array.from({ length: TURRET_SLOTS }, () => null),
-      power,
+      powers: { home: starter('home'), field: starter('field') },
     };
   }
   return { name, loadouts };
@@ -232,7 +235,7 @@ export function slotOfCard(l: Loadout, card: CardId): SlotRef | null {
   if (u >= 0) return { kind: 'unit', index: u };
   const tIdx = n.turrets.indexOf(card);
   if (tIdx >= 0) return { kind: 'turret', index: tIdx };
-  return n.power === card ? { kind: 'power' } : null;
+  return n.powers.home === card || n.powers.field === card ? { kind: 'power' } : null;
 }
 
 /**

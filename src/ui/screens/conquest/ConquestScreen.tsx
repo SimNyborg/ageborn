@@ -14,6 +14,7 @@ import { Button } from '../../components/Button';
 import { AiBadge, Pill } from '../../components/Chips';
 import { formatClock, formatInt, tierNumeral } from '../../components/format';
 import { AmberIcon, CapsuleIcon, CheckIcon, DustIcon, LockIcon, StarIcon, SwordsIcon } from '../../components/icons';
+import { tierCrests } from '../../components/capsuleLook';
 import { ScreenFrame } from '../../components/Layout';
 import { Stars } from '../../components/Meters';
 import { Modal } from '../../components/Modal';
@@ -154,7 +155,7 @@ export function ConquestScreen(_p: { route: RouteOf<'conquest'> }) {
               data-testid={`cq-mile-${m.stars}`}
             >
               <span class="cq-mile__cap">
-                <CapsuleIcon tier={m.capsule} size={40} />
+                <CapsuleIcon tier={m.capsule} crests={tierCrests(content.capsules, m.capsule)} size={40} />
                 {m.claimed ? (
                   <span class="cq-mile__check">
                     <CheckIcon size={16} />

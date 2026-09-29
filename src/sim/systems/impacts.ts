@@ -17,6 +17,7 @@ import { centreDist, distFromGate, edgeDist, isAheadOrLevel, pOf, pointDist, xOf
 import type { UnitRules } from '../rules';
 import { BASE_TARGET, LANE, other, type Ctx, type Impact, type Knock, type UnitRt } from '../state';
 import { alive, findUnit, unitRules } from '../units';
+import { applyPowerStatus, castEligible } from './powers';
 import { canHit } from './targeting';
 
 export function impactSystem(ctx: Ctx): void {
@@ -57,6 +58,24 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
     }
     case 'blast': {
       // Exempt from the area rule: full damage to everything within the radius (centre distance).
+      const cast = imp.cast;
+      const pr = cast ? ctx.rules.powers[cast.power] : undefined;
+      if (cast && pr && pr.maxTargets > 0) {
+        // A power blast (A2.9.5): only the cast's eligible units (its `hitIds` plus the first free cap
+        // slots in cap order across the reach area), taken in cap order.
+        const elig = castEligible(ctx, cast, pr);
+        const hits: Cand[] = [];
+        for (const e of ctx.s.units) {
+          if (!elig.has(e.id) || !hittable(ctx, imp, e)) continue;
+          if (centreDist(imp.x, e.x) <= imp.radius) hits.push({ u: e, d: pOf(e.x, cast.side) });
+        }
+        hits.sort(byDist);
+        for (const h of hits) {
+          if (!cast.hitIds.includes(h.u.id)) cast.hitIds.push(h.u.id);
+          hitUnit(ctx, imp, h.u, true);
+        }
+        return;
+      }
       const hits: Cand[] = [];
       for (const e of ctx.s.units) {
         if (!hittable(ctx, imp, e)) continue;
@@ -156,6 +175,8 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
 function hitUnit(ctx: Ctx, imp: Impact, t: UnitRt, primary: boolean, withOnHit = true): void {
   const { dmg, modBp } = unitDamage(ctx, imp, t, primary);
   dealDamage(ctx, imp, t, dmg, modBp);
+  // A power's statuses land after its damage (fields, A2.9.7), on survivors only.
+  if (imp.powerStatuses && t.hp > 0) for (const st of imp.powerStatuses) applyPowerStatus(ctx, t, st);
   const a = imp.atk;
   if (withOnHit && a && a.onHit.length > 0 && t.hp > 0) {
     for (const st of a.onHit) applyStatus(ctx, t, st, imp.sourceId);

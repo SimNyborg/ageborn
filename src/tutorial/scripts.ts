@@ -162,6 +162,8 @@ export const MATCH1_TURRET_GRANT = 150;
  * on evolve) would only finish just before Gunpowder, so the script fills it.
  */
 export const MATCH1_POWER_TICK = sec(64);
+/** Gold the match 1 script grants with the Arrow Storm beat: its price, so the beat is free (A2.9.10). */
+export const MATCH1_POWER_GOLD = 100;
 
 /** "Kills earn gold" stays this long: long enough to read and to watch the coins land. */
 export const KILLS_EARN_GOLD_TICKS = sec(5);
@@ -174,7 +176,8 @@ export function match1TrainingScript(content: CompiledContent, groggUnits: reado
   const events: TrainingEvent[] = [
     { tick: MATCH1_PEBBLER_TICK, side: 0, unlockSlot: SLOT.ranged },
     { tick: MATCH1_TURRET_GRANT_TICK, side: 0, grantGold: MATCH1_TURRET_GRANT },
-    { tick: MATCH1_POWER_TICK, side: 0, setPowerPpm: 1_000_000 },
+    // A2.9.10 match 1: the Arrow Storm beat; the script grants its price and readies the Home slot at once.
+    { tick: MATCH1_POWER_TICK, side: 0, grantGold: MATCH1_POWER_GOLD, setPowerPpm: { slot: 'home', ppm: 1_000_000 } },
     ...groggGrants(content, groggUnits),
   ];
   return events.sort((a, b) => a.tick - b.tick || a.side - b.side);
@@ -349,7 +352,7 @@ export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [
 
 /**
  * The starter loadout of an age (A3 starter kit): the Infantry, Ranged and Heavy commons in slots
- * 0-2 (the AA Rare arrives by script later), both Common turrets and the default power.
+ * 0-2 (the AA Rare arrives by script later), both Common turrets and the age's two starter powers (A2.9.8).
  */
 export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
   const units = Object.values(content.units).filter((u) => u.age === age && u.rarity === 'common' && !u.hidden);
@@ -357,11 +360,12 @@ export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
   const turrets = Object.values(content.turrets)
     .filter((t) => t.age === age && t.rarity === 'common')
     .map((t) => t.id);
-  const power = Object.values(content.powers).find((p) => p.age === age && p.slot === 'default')?.id ?? '';
+  const starter = (slot: 'home' | 'field'): CardId | null =>
+    Object.values(content.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
   return {
     units: [byGroup('infantry'), byGroup('ranged'), byGroup('heavy'), null, null],
     turrets: [turrets[0] ?? null, turrets[1] ?? null],
-    power,
+    powers: { home: starter('home'), field: starter('field') },
   };
 }
 

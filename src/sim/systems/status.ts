@@ -94,16 +94,24 @@ export function statusSystem(ctx: Ctx): void {
       } else if (aura.bp > u.auraGuardBp) u.auraGuardBp = aura.bp;
     }
   }
-  // Smoke Screen: the caster's units inside the cloud deal +20% damage (A5.7).
+  // Smoke Screen: up to 8 of the caster's units inside the cloud, frontmost first (re-picked every
+  // tick), deal +20% damage (A5.7, A2.9.5).
   for (const c of ctx.s.casts) {
     if (tick < c.telegraphEnd || tick > c.endTick) continue;
     const pr = ctx.rules.powers[c.power];
     if (!pr || pr.effect.kind !== 'cloud') continue;
     const fx = pr.effect;
+    const inside: UnitRt[] = [];
     for (let j = 0; j < units.length; j += 1) {
       const u = units[j] as UnitRt;
       if (u.side !== c.side || !alive(u)) continue;
-      if (centreDist(c.x, u.x) <= fx.halfWidth && fx.allyDamageBp > u.auraDamageBp) u.auraDamageBp = fx.allyDamageBp;
+      if (centreDist(c.x, u.x) <= fx.halfWidth) inside.push(u);
+    }
+    inside.sort((a, b) => pOf(b.x, c.side) - pOf(a.x, c.side) || a.id - b.id);
+    const n = inside.length < fx.allyMax ? inside.length : fx.allyMax;
+    for (let j = 0; j < n; j += 1) {
+      const u = inside[j] as UnitRt;
+      if (fx.allyDamageBp > u.auraDamageBp) u.auraDamageBp = fx.allyDamageBp;
     }
   }
 }

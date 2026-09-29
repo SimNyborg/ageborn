@@ -45,14 +45,18 @@ function flatFilter(color: number): ColorMatrixFilter {
   return f;
 }
 
-/** A small age glyph in a gold medallion (A10 step 6 "age glyph"). */
-export function ageGlyph(age: AgeId | null, size = 60): Container {
+/**
+ * A small age glyph in a medallion (A10 step 6 "age glyph"): gold for a Legendary walkout, or the
+ * given rim and face (the Aeon halo uses white-gold filigree on midnight).
+ */
+export function ageGlyph(age: AgeId | null, size = 60, medallion?: { rim: number; face: number }): Container {
   const root = new Container();
   const c = age ? AGE_COLORS[age] : { accent: ROOM.brass, light: ROOM.parchment, sky: 0x444444, ground: 0x333333 };
   const r = size / 2;
   const g = new Graphics();
-  g.circle(0, 0, r).fill(shade(RARITY_COLORS.legendary, -0.1)).stroke({ width: 4, color: shade(RARITY_COLORS.legendary, -0.6) });
-  g.circle(0, 0, r - 7).fill(shade(c.sky, -0.25));
+  const rim = medallion?.rim ?? shade(RARITY_COLORS.legendary, -0.1);
+  g.circle(0, 0, r).fill(rim).stroke({ width: 4, color: shade(rim, -0.6) });
+  g.circle(0, 0, r - 7).fill(medallion ? medallion.face : shade(c.sky, -0.25));
   const k = r / 30;
   const ink = c.light;
   switch (age) {
@@ -80,6 +84,26 @@ export function ageGlyph(age: AgeId | null, size = 60): Container {
       g.circle(0, 0, 4 * k).fill(ink);
       g.ellipse(0, 0, 15 * k, 6 * k).stroke({ width: 2.5 * k, color: ink });
       g.ellipse(0, 0, 6 * k, 15 * k).stroke({ width: 2.5 * k, color: c.accent });
+      break;
+    case 'bronze':
+      // A crested helmet.
+      g.moveTo(-11 * k, 12 * k).lineTo(-11 * k, -2 * k).quadraticCurveTo(-11 * k, -13 * k, 0, -13 * k).quadraticCurveTo(11 * k, -13 * k, 11 * k, -2 * k).lineTo(11 * k, 12 * k).lineTo(4 * k, 12 * k).lineTo(4 * k, 2 * k).lineTo(-4 * k, 2 * k).lineTo(-4 * k, 12 * k).closePath().fill(ink);
+      g.moveTo(-9 * k, -15 * k).quadraticCurveTo(0, -24 * k, 9 * k, -15 * k).stroke({ width: 3 * k, color: c.accent });
+      break;
+    case 'industrial':
+      // A gear.
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        g.circle(Math.cos(a) * 12 * k, Math.sin(a) * 12 * k, 3.4 * k).fill(ink);
+      }
+      g.circle(0, 0, 11 * k).fill(ink);
+      g.circle(0, 0, 4.5 * k).fill(c.accent);
+      break;
+    case 'cosmic':
+      // A ringed planet and a star.
+      g.circle(0, 2 * k, 8 * k).fill(ink);
+      g.ellipse(0, 2 * k, 16 * k, 4.5 * k).stroke({ width: 2.2 * k, color: c.accent });
+      g.circle(10 * k, -12 * k, 2.4 * k).fill(ink);
       break;
     default:
       g.circle(0, 0, 8 * k).fill(ink);

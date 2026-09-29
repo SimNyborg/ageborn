@@ -22,15 +22,22 @@ export const DRAG_THRESHOLD_PX = 12;
  * (Stampede starts at your front, Royal Decree and Nanite Surge affect all your units, Paratroopers
  * land beyond the enemy front; decisions WP2 "abilities and powers").
  */
+/** A strike's aim ghost width, lu: twice `economy.power.strikePickLu` (A2.9.7). */
+const STRIKE_GHOST_LU = 160;
+
 export function powerZoneLu(def: PowerDef | undefined): number | null {
   if (!def) return null;
   const e = def.effect;
   switch (e.kind) {
     case 'barrage':
     case 'sweep':
+    case 'field':
       return e.zone;
     case 'cloud':
       return e.width;
+    case 'strike':
+      // A strike locks the eligible enemy nearest the aim within 80 lu (A2.9.7): the ghost covers that.
+      return STRIKE_GHOST_LU;
     default:
       return null;
   }

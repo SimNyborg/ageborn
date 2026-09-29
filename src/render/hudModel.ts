@@ -6,8 +6,55 @@
  * (`xpBp` is XP as bp of the current threshold, can exceed 10,000 up to the 1.5× cap; in the final age
  * of the format it is measured against the Overcharge amount), power charge is ppm, times are ms.
  */
-import type { AgeId, CardId, CardState, Foil, HudCard, HudModel, HudResearch, MatchConfig, Observation, Side, SideState, SimState } from '@/contracts';
-import { incomeMilliPerSec, matchMods, nextIncomePick, researchCost, type MatchMods } from '@/core';
+import type {
+  AgeId,
+  CardId,
+  CardState,
+  CompiledContent,
+  Foil,
+  HudCard,
+  HudModel,
+  HudPowerSlot,
+  HudResearch,
+  MatchConfig,
+  Observation,
+  PowerSlot,
+  Side,
+  SideState,
+  SimState,
+} from '@/contracts';
+import { incomeMilliPerSec, matchMods, msToTicks, nextIncomePick, reloadTicksLeft, researchCost, slotIndex, type MatchMods } from '@/core';
+
+/**
+ * One power slot for the dock (A2.9.10): effective cost and reload from the observation, seconds left
+ * with the sim's own integer reload formula (core `reloadTicksLeft`).
+ */
+function hudPower(content: CompiledContent, state: Readonly<SimState>, side: Side, obsMe: Observation['me'], slot: PowerSlot): HudPowerSlot | null {
+  const o = obsMe.powers[slot];
+  const def = o ? content.powers[o.card] : undefined;
+  if (!o || !def) return null;
+  const i = slotIndex(slot);
+  const s = state.sides[side];
+  const ticks = reloadTicksLeft(o.ppm, s.powerRem[i] ?? 0, o.rateBp, msToTicks(def.reloadMs));
+  const fx = def.effect;
+  const zone = fx.kind === 'barrage' || fx.kind === 'sweep' || fx.kind === 'field' ? fx.zone : fx.kind === 'cloud' ? fx.width : fx.kind === 'stampede' ? fx.distance : 0;
+  const lock = s.powerLockoutUntil > state.tick ? s.powerLockoutUntil * 50 : 0;
+  return {
+    slot,
+    card: o.card,
+    ppm: o.ppm,
+    cost: o.cost,
+    affordable: Math.floor(obsMe.gold / 1000) >= o.cost,
+    secondsLeft: Math.ceil((ticks * 50) / 1000),
+    reloadMs: o.reloadMs,
+    reach: def.reach,
+    family: def.family,
+    maxTargets: fx.kind === 'buffAll' ? fx.maxTargets : (def.maxTargets ?? 0),
+    zone,
+    lockoutUntilMs: lock,
+    slotLocked: false,
+  };
+}
 
 /** HUD refresh rate (B6). */
 export const HUD_HZ = 15;
@@ -245,8 +292,10 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
       holdP: obsMe.holdP,
       stanceWaitMs: Math.max(0, (me.stanceReadyTick - state.tick) * 50),
       research: hudResearch(state, config, side, obsMe.research),
-      powerPpm: me.powerPpm,
-      power: loadout?.power ?? '',
+      // P1 compatibility (A2.9.13): the single power button shows the Home slot.
+      powerPpm: me.powerPpm[0],
+      power: loadout?.powers.home ?? '',
+      powers: { home: hudPower(content, state, side, obsMe, 'home'), field: hudPower(content, state, side, obsMe, 'field') },
       lastStand: me.lastStand,
       lastStandManual: config.training?.manualLastStand?.[side] ?? true,
       cards,
@@ -257,7 +306,8 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
       baseHpBp: hpBp(foe.baseHp, foe.baseMaxHp),
       ageIndex: foe.ageIndex,
       xpBp: xpBarBp(config, foe.ageIndex, foe.xp),
-      powerPpm: foe.powerPpm,
+      powerPpm: foe.powerPpm[0],
+      powers: { home: obs.foe.powers.home, field: obs.foe.powers.field },
       lastStandArmed: foe.lastStand === 'armed' || foe.lastStand === 'charging',
       scouted: [...obs.foe.scouted],
       research: hudResearch(state, config, foeSide, obs.foe.research),

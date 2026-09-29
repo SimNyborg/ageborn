@@ -1,9 +1,9 @@
 /**
  * A fresh profile (DESIGN A3 starter kit, A6.1-A6.3, A5.8, B8).
  *
- * - Owns every Common (3 units and 2 turrets per age) and each age's default Age Power, all at L1;
+ * - Owns every Common (3 units and 2 turrets per age) and both starter powers of each age (A2.9.8), all at L1;
  *   the starter War Plan as preset A (Arena 1's gate reward).
- * - 12 capsule charges, the first 10 capsules free, an empty Clay meter, a fresh 100-slot bag; the
+ * - 12 capsule charges, the first 10 capsules free, an empty Clay meter, a fresh 200-slot bag; the
  *   Daily Capsule unlocks after capsule 2 (A6.3).
  * - An auto-generated editable name ("Chief-4821"), a procedural avatar seed, the Tar Pit banner and
  *   the Recruit title; Codex Level 1; MMR 1,000; today's quests.
@@ -18,7 +18,7 @@ import { fnv1a32, seedSfc32 } from '@/core';
 import { zeroPity } from './capsules/pity';
 import { initialQuests } from './quests';
 import { SAVE_VERSION } from './rules';
-import { defaultPower, isCollectable, tables } from './tables';
+import { allStarterPowers, isCollectable, tables } from './tables';
 import { dayKeyOf, gameDay, type LocalTime } from './time';
 import { defaultLoadout } from './cosmetics';
 import { unlockTitles } from './titles';
@@ -73,7 +73,7 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
     trophies: { current: 0, best: 0, roadClaimed: [] },
     arenaIndex: 0,
     collection: starterCollection(t),
-    powersOwned: t.order.ages.map((age) => defaultPower(t, age)),
+    powersOwned: allStarterPowers(t),
     skins: { owned: [], equipped: {} },
     cosmetics: { owned: [d.banner], equipped: defaultLoadout(t) },
     warPlans: [starterPlan(t)],
@@ -87,6 +87,7 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
       dailyBank: 0,
       dailyNextAt: null,
       bag: [],
+      bagSize: 0,
       wardrobe: [],
     },
     pity: zeroPity(),

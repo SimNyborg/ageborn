@@ -173,12 +173,22 @@ function deriveUnit(u: UnitDef, economy: EconomyRules, battle: RawBattleRules): 
   return u;
 }
 
-/** Default powers before alternates, each in age order. */
+/** Power order (A2.9.11): by age; within an age starters first, then by slot (Home, Field), then source (Road, War Path by level). */
 function sortPowers(list: PowerDef[]): PowerDef[] {
   const age = (p: PowerDef): number => AGE_ORDER.indexOf(p.age);
+  const source = (p: PowerDef): number => (p.source === 'starter' ? 0 : p.source === 'road' ? 1 : 2);
+  const slot = (p: PowerDef): number => (p.slot === 'home' ? 0 : 1);
   return list
     .map((p, i) => ({ p, i }))
-    .sort((a, b) => age(a.p) - age(b.p) || (a.p.slot === b.p.slot ? 0 : a.p.slot === 'default' ? -1 : 1) || a.i - b.i)
+    .sort(
+      (a, b) =>
+        age(a.p) - age(b.p) ||
+        (a.p.source === 'starter' ? 0 : 1) - (b.p.source === 'starter' ? 0 : 1) ||
+        slot(a.p) - slot(b.p) ||
+        source(a.p) - source(b.p) ||
+        (a.p.warPathLevel ?? 0) - (b.p.warPathLevel ?? 0) ||
+        a.i - b.i,
+    )
     .map((x) => x.p);
 }
 
@@ -195,7 +205,6 @@ function assertDistinctCardIds(units: UnitDef[], turrets: TurretDef[], powers: P
 export function compileTicks(e: EconomyRules, battle: RawBattleRules): CompiledTicks {
   return {
     ascend: msToTicks(e.ascendMs),
-    powerCharge: msToTicks(e.powerChargeMs),
     turretBuild: msToTicks(e.turretBuildMs),
     turretSell: msToTicks(e.turretSellMs),
     stanceCooldown: msToTicks(e.stanceCooldownMs),

@@ -1,4 +1,5 @@
-// FROZEN FIXTURE (DESIGN C2/WP0 task 8): a copy of src/content/raw/economy.ts taken in Phase 0 (2026-09-27).
+// FROZEN FIXTURE (DESIGN C2/WP0 task 8): a copy of src/content/raw/economy.ts taken in Phase 0 (2026-09-27);
+// its power fields were re-baselined for SIM_VERSION 4.0.0 (2026-09-29, A2.9).
 // Golden replays compile this content, so balance tuning in src/content/raw never breaks them.
 // Never edit it. To re-baseline, copy src/content/raw again and re-record every golden replay.
 
@@ -114,14 +115,26 @@ export const economy: EconomyRules = {
   ascendMs: 2500,
   evolveHealBp: 500,
   vanguardCount: 2,
-  // A2.9 Age Powers: 0 → 100% over 50 s; 50% carry cap across an evolve
-  powerChargeMs: 50000,
-  powerCarryCapBp: 5000,
-  // A2.4 Overcharge: in the final age every 1,200 XP adds +25% charge
+  // A2.9.3 Age Powers (re-baselined for SIM_VERSION 4.0.0): per-slot reload; 75% carry cap across an evolve
+  powerCarryCapBp: 7500,
+  // A2.4 Overcharge: in the final age every 1,200 XP adds +25% to the less-reloaded equipped slot
   overchargeXp: 1200,
   overchargeBp: 2500,
-  // A2.10 phases
-  overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 12500 },
+  // A2.10 phases; no power reload bonus in Overdrive and Siege (A2.9.3)
+  overdrive: { baseGoldBp: 20000, xpBp: 20000, powerBp: 10000 },
+  // A2.9.3-A2.9.6 power rules and data levers (frozen copy, SIM_VERSION 4.0.0)
+  power: {
+    startBp: 2500,
+    emptyReloadMs: 40000,
+    homeLineP: 1000,
+    frontReachLu: 150,
+    frontFloorP: 480,
+    frontRank: 1,
+    strikePickLu: 80,
+    strikeEpicBp: 5000,
+    legendaryControlBp: 5000,
+    lockMs: 0,
+  },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time

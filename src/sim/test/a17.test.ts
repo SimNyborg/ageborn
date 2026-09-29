@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import type { CompiledContent, FormatId, SimEvent } from '@/contracts';
 import { content } from '@/content';
 import { createSim } from '../createSim';
-import { devPlaceTurret, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
+import { devPlaceTurret, devSetGold, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
 import { agesOf, L, matchConfig, ofKind, pLu, sideConfig, Stamper, stun } from './helpers';
 
 const real: CompiledContent = content;
@@ -45,9 +45,10 @@ function kill(sim: ReturnType<typeof lane>, id: number): void {
   u.lastHitSide = u.side === 0 ? 1 : 0;
 }
 
-function cast(sim: ReturnType<typeof lane>, p?: number): SimEvent[] {
+function cast(sim: ReturnType<typeof lane>, p?: number, slot: 'home' | 'field' = 'home'): SimEvent[] {
   devSetPower(sim, 0, 1000000);
-  return [...new Stamper(sim).step(p === undefined ? { t: 'power', side: 0 } : { t: 'power', side: 0, p })];
+  devSetGold(sim, 0, 1000);
+  return [...new Stamper(sim).step(p === undefined ? { t: 'power', side: 0, slot } : { t: 'power', side: 0, slot, p })];
 }
 
 describe('A17 content runs on the sim', () => {
@@ -252,20 +253,22 @@ describe('A17.15 first-time combinations of existing kinds', () => {
     const hits = ofKind(ev, 'hit').filter((h) => h.sourceKind === 'power');
     expect(hits.map((h) => h.targetId).sort()).toEqual([...ground].sort());
     expect(hits.some((h) => h.targetId === air)).toBe(false);
-    expect(hits.every((h) => h.damage === 13000)).toBe(true);
+    // A5.7: Tidal Wave now deals 150 (was 130)
+    expect(hits.every((h) => h.damage === 15000)).toBe(true);
   });
 
-  it('Warp Strike: a paradrop of a melee card; 3 summoned Star Legionnaires 150 lu beyond the enemy front', () => {
+  it('Warp Strike: a paradrop of a melee card; 4 summoned Star Legionnaires 150 lu beyond the enemy front', () => {
     const sim = lane({ age: 'cosmic', altPower: true });
     foes(sim, 'hover_tank', [700, 500], 5000);
-    const ev = cast(sim);
+    const ev = cast(sim, undefined, 'field');
     ev.push(...stepN(sim, 20));
     const drop = ofKind(ev, 'unitSpawned').filter((u) => u.card === 'star_legionnaire');
-    expect(drop).toHaveLength(3);
+    // A5.7: 4 (was 3), a Field drop
+    expect(drop).toHaveLength(4);
     expect(drop.every((u) => u.summoned && u.x === 650000)).toBe(true);
     expect(sim.state.sides[0].pop).toBe(0);
     const empty = lane({ age: 'cosmic', altPower: true });
-    expect(ofKind(cast(empty), 'powerTelegraph')[0]?.x).toBe(1000000);
+    expect(ofKind(cast(empty, undefined, 'field'), 'powerTelegraph')[0]?.x).toBe(1000000);
   });
 });
 

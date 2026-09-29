@@ -67,6 +67,13 @@ export interface UiServices {
   openWardrobe(id: string): void;
   /** Moves one banked Supply Capsule into the tray (A6.3). */
   claimDailyCapsule(): ActionResult;
+  /**
+   * Skill Aeons granted again to a save that had claimed them before the 2026-09-29 capsule ladder
+   * (`meta.legacySkillAeonCount`), for the one-time notice card. 0 for everyone else.
+   */
+  legacySkillAeons(): number;
+  /** Closes a one-time notice card for good (clears `flags['notice.<id>']`; B8 step 4). */
+  dismissNotice(id: 'capsuleLadder'): void;
 
   // ---- cards and plans -----------------------------------------------------------------------
   /** Upgrade (A6.6; `meta.upgrade`). */

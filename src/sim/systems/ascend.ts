@@ -1,7 +1,8 @@
 /**
  * B3 step 4, Ascension timers (DESIGN A2.4 Evolve). At the end of the 2.5 s Ascension (`ageUp`):
- * age +1, XP −= threshold, base HP keeps its percentage then heals 5% of the new max (A2.2), Age Power
- * charge becomes min(charge, 50%), queued items convert to the new loadout's card of the same role group
+ * age +1, XP −= threshold, base HP keeps its percentage then heals 5% of the new max (A2.2), each power
+ * slot's progress becomes min(progress, 75%) (A2.9.3; the fraction passes to the new age's power in that
+ * slot), queued items convert to the new loadout's card of the same role group
  * (keeping progress; nothing charged or refunded), and 2 Vanguard Common Infantry spawn free at p = 20.
  */
 import type { Side } from '@/contracts';
@@ -32,7 +33,12 @@ function ageUp(ctx: Ctx, side: Side): void {
   hp += Math.trunc((newMax * ctx.econ.evolveHealBp) / BP);
   s.baseMaxHp = newMax;
   s.baseHp = hp > newMax ? newMax : hp;
-  if (s.powerPpm > ctx.econ.powerCarryCap) s.powerPpm = ctx.econ.powerCarryCap;
+  for (let i = 0; i < 2; i += 1) {
+    if ((s.powerPpm[i] as number) > ctx.econ.powerCarryCap) {
+      s.powerPpm[i] = ctx.econ.powerCarryCap;
+      s.powerRem[i] = 0;
+    }
+  }
   emit(ctx, { e: 'ageUp', side, age });
   // Queue conversion (A2.4).
   const lo = loadoutOf(ctx, side);

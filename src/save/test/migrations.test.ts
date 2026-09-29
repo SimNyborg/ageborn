@@ -269,6 +269,7 @@ describe('v2 → v3: cosmetic collections (A18.9.4)', () => {
     expect(doc.rng.capsule).toEqual(old.rng.capsule);
     expect(doc.rng.cosmetic).toHaveLength(4);
     expect(doc.rng.cosmetic).not.toEqual(old.rng.capsule);
-    expect(doc.capsules).toEqual(old.capsules);
+    // v6 (the capsule ladder) only sorts the bag and records its size
+    expect(doc.capsules).toEqual({ ...old.capsules, bag: [...old.capsules.bag].sort((a, b) => a - b), bagSize: 100 });
   });
 });

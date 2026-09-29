@@ -19,6 +19,12 @@ import { BP } from './fixed';
 export type ModifierEffectLike =
   | { kind: 'passiveGold'; bp: number }
   | { kind: 'unitHp'; bp: number }
+  /**
+   * Age Powers (A2.9.2-A2.9.3, Power Hour): `reloadBp` is added to the reload rate (10,000 = twice as
+   * fast; rate bonuses add), `costBp` is a price discount (5,000 = −50%; cost modifiers multiply).
+   */
+  | { kind: 'powers'; reloadBp: number; costBp: number }
+  /** Before SIM_VERSION 4.0.0: the charge rate multiplier; read as a reload bonus of bp − 10,000. */
   | { kind: 'powerCharge'; bp: number }
   | { kind: 'xpThreshold'; bp: number }
   | { kind: 'unitCost'; groups: readonly RoleGroup[]; bp: number }
@@ -29,7 +35,10 @@ export interface MatchMods {
   /** Base passive gold (not Treasury income). */
   passiveGoldBp: number;
   unitHpBp: number;
-  powerChargeBp: number;
+  /** Added to every power slot's reload rate, bp (Power Hour +10,000; A2.9.3). */
+  powerReloadBp: number;
+  /** Power price discount, bp (Power Hour 5,000 = −50%; A2.9.2). */
+  powerCostBp: number;
   xpThresholdBp: number;
   /** Unit card cost per role group. */
   costBp: Readonly<Record<RoleGroup, number>>;
@@ -45,8 +54,8 @@ export const DAILY_MODIFIERS: Readonly<Record<string, ModifierEffectLike>> = {
   gold_rush: { kind: 'passiveGold', bp: 15000 },
   /** Unit HP ×0.7. */
   glass_armies: { kind: 'unitHp', bp: 7000 },
-  /** Age Power charge ×2. */
-  power_hour: { kind: 'powerCharge', bp: 20000 },
+  /** Power reload ×2 and power prices −50% (A2.9.2-A2.9.3). */
+  power_hour: { kind: 'powers', reloadBp: 10000, costBp: 5000 },
   /** XP thresholds ×0.7. */
   fast_forward: { kind: 'xpThreshold', bp: 7000 },
   /** Heavy and Legendary cost −30%. */
@@ -67,6 +76,8 @@ function asEffect(v: unknown): ModifierEffectLike | null {
     case 'powerCharge':
     case 'xpThreshold':
       return isNum(o.bp) ? { kind: o.kind, bp: o.bp } : null;
+    case 'powers':
+      return isNum(o.reloadBp) && isNum(o.costBp) ? { kind: 'powers', reloadBp: o.reloadBp, costBp: o.costBp } : null;
     case 'unitCost': {
       if (!isNum(o.bp) || !Array.isArray(o.groups)) return null;
       const groups = (o.groups as unknown[]).filter((g): g is RoleGroup => GROUPS.includes(g as RoleGroup));
@@ -93,7 +104,7 @@ export function modifierEffect(content: CompiledContent | undefined, id: string)
 function neutral(): MatchMods {
   const costBp = {} as Record<RoleGroup, number>;
   for (const g of GROUPS) costBp[g] = BP;
-  return { passiveGoldBp: BP, unitHpBp: BP, powerChargeBp: BP, xpThresholdBp: BP, costBp, siegeEarlierMs: 0 };
+  return { passiveGoldBp: BP, unitHpBp: BP, powerReloadBp: 0, powerCostBp: 0, xpThresholdBp: BP, costBp, siegeEarlierMs: 0 };
 }
 
 /** Combines the listed modifiers (in order; a later one of the same kind replaces an earlier one). */
@@ -110,8 +121,12 @@ export function matchMods(ids: readonly string[] | undefined, content?: Compiled
       case 'unitHp':
         m.unitHpBp = fx.bp;
         break;
+      case 'powers':
+        m.powerReloadBp = Math.trunc(fx.reloadBp);
+        m.powerCostBp = Math.trunc(fx.costBp);
+        break;
       case 'powerCharge':
-        m.powerChargeBp = fx.bp;
+        m.powerReloadBp = Math.trunc(fx.bp) - BP;
         break;
       case 'xpThreshold':
         m.xpThresholdBp = fx.bp;

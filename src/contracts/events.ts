@@ -5,7 +5,7 @@
  * clips, feel and sound; `sim/stats.ts` reduces them to `MatchStats` (DESIGN B3 Match stats).
  * Views must never need anything beyond events and read-only state to animate (DESIGN B5: the sim owns timing).
  */
-import type { AbilityDef, StatusKind } from './content';
+import type { AbilityDef, PowerSlot, StatusKind } from './content';
 import type { Command, StanceMode } from './commands';
 import type { AgeId, CardId, DmgType, EmoteId, Side, VisualId } from './ids';
 
@@ -65,18 +65,36 @@ type EventBody =
   | { e: 'researchCancelled'; side: Side; pick: string; refund: number }
   /** Ascension start and end (DESIGN A2.4). */
   | { e: 'ascendStart' | 'ageUp'; side: Side; age: AgeId }
-  | { e: 'powerReady'; side: Side }
-  /** 1.0 s telegraph visible to both sides (DESIGN A2.9). */
-  /** `x` and the zone width `zone` are in milli-lu, like every sim position (B3). */
-  | { e: 'powerTelegraph'; side: Side; power: CardId; castId: number; x: number; zone: number }
+  /** A slot with an equipped power finished reloading (A2.9.3). */
+  | { e: 'powerReady'; side: Side; slot: PowerSlot }
+  /**
+   * A cast was accepted and paid (A2.9.7); the telegraph, visible to both sides, lasts `telegraphMs`.
+   * `x` and the zone width `zone` are in milli-lu, like every sim position (B3); `cost` is the whole gold
+   * paid (the effective cost); `targetId` is a strike's locked unit, −1 otherwise.
+   */
+  | {
+      e: 'powerTelegraph';
+      side: Side;
+      slot: PowerSlot;
+      power: CardId;
+      castId: number;
+      x: number;
+      zone: number;
+      cost: number;
+      targetId: number;
+      telegraphMs: number;
+    }
   | { e: 'powerImpact'; side: Side; power: CardId; castId: number; x: number; index: number }
+  /** Suppress (A2.9.7): `side`'s mount starts no turret attack until `untilTick`. */
+  | { e: 'turretSilenced'; side: Side; mount: number; untilTick: number }
   /** Stance or Hold flag change (A18.4.2); `holdP` is the flag's own-side p in lu. */
   | { e: 'stanceChanged'; side: Side; stance: StanceMode; holdP: number }
   /** Last Stand lifecycle (DESIGN A2.11). */
   | { e: 'lastStandArmed' | 'lastStandCharge' | 'lastStandFire'; side: Side }
   | { e: 'phaseChanged'; phase: 'regulation' | 'overdrive' | 'siege' }
   | { e: 'emote'; side: Side; emote: EmoteId }
-  | { e: 'commandRejected'; side: Side; t: Command['t']; reason: string }
+  /** `slot` is set for rejected `power` commands (A2.9.7 deny reasons). */
+  | { e: 'commandRejected'; side: Side; t: Command['t']; reason: string; slot?: PowerSlot }
   | { e: 'matchEnded'; result: MatchOutcome };
 
 /** One simulation event, stamped with the tick it happened on. */

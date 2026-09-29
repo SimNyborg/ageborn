@@ -27,7 +27,7 @@ import type {
 } from '@/contracts';
 import { botProfile } from '@/ai';
 import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from '@/content';
-import { commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
+import { applyPowerMatchRule, commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
   GROGG_SCRIPT,
   MATCH1_SEED,
@@ -175,7 +175,7 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
   for (const age of Object.keys(plan).sort() as AgeId[]) {
     const lo = plan[age];
     if (!lo) continue;
-    out[age] = { units: lo.units.map((c) => ok(c, 'unit')), turrets: lo.turrets.map((c) => ok(c, 'turret')), power: lo.power };
+    out[age] = { units: lo.units.map((c) => ok(c, 'unit')), turrets: lo.turrets.map((c) => ok(c, 'turret')), powers: { ...lo.powers } };
   }
   return out;
 }
@@ -252,6 +252,10 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
   };
   const training = trainingFor(n);
   if (training) config.training = training;
+  // A2.9.1 the power match rule: bots only field powers the player could own; both sides play the same
+  // power slots (Home only until the Field slot is unlocked and the HUD dock ships, P2).
+  const ruled = applyPowerMatchRule(config, save, mode);
+  config.sides = ruled.sides;
   // A15.3: whenever the bot gets A6.8's new-player mistakes, the opponent says so (meta adds this
   // for the opponents it picks; Quick Battle and onboarding match 2 are built here).
   const disclosed =
@@ -326,7 +330,7 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
   const player = playerSide(save, content, labels.player);
   player.loadouts = match1Loadouts(content);
   const staged = stagedTraining(1);
-  const config: MatchConfig = {
+  const config0: MatchConfig = {
     seed: MATCH1_SEED,
     format: 'tutorial',
     content,
@@ -341,6 +345,8 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
       trays: { ...MATCH1_TRAYS },
     },
   };
+  // A2.9.1: the training match plays the Home slot only (the match rule).
+  const config = applyPowerMatchRule(config0, save, 'tutorial');
   return { mode: 'tutorial', matchNumber: 1, config, opponent, brain: { kind: 'grogg' }, script: scriptForMatch(1) };
 }
 

@@ -112,6 +112,13 @@ const VARIANTS: Variant[] = [
     prime: ceremony('wp.bronze.l10', 0),
   },
   { id: 'capsules', label: 'Capsules tab', route: () => [{ id: 'capsules' }] },
+  {
+    // The 2026-09-29 ladder notice for a veteran: one closable card, plus one skill Aeon granted again.
+    id: 'capsules-ladder',
+    label: 'Capsules tab: ladder notice',
+    route: () => [{ id: 'capsules' }],
+    save: (s) => ({ ...s, flags: { ...s.flags, 'notice.capsuleLadder': true, 'capsule.legacySkillAeon.road': true } }),
+  },
   { id: 'progress', label: 'Progress tab', route: () => [{ id: 'progress' }] },
   { id: 'modeSelect', label: 'Mode select', route: () => [{ id: 'home' }, { id: 'modeSelect' }] },
   vs('general'),

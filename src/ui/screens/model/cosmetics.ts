@@ -73,10 +73,25 @@ export function sourceHint(x: CosmeticItemDef): { key: string; params?: Record<s
       return { key: 'cosmetic.ui.source.codex', params: { n: s.level } };
     case 'warPath':
       return { key: 'cosmetic.ui.source.warPath' };
+    case 'capsuleTier':
+      // A6.4 step 8 (the Aeon Collection); `tier` is the tier id: the caller shows `capsuleTier.<id>.short`
+      return { key: 'cosmetic.ui.source.capsuleTier', params: { tier: s.tier } };
   }
 }
 
-/** The Dust price when the item can be crafted (drop-pool items), else null. */
+/**
+ * The Dust price when the item can be crafted, else null: drop-pool items by rarity, and a tier's
+ * own set (the Aeon Collection) at `capsules.exclusiveCraftDust` (A6.4, A18.9.4; `meta.cosmeticCraftPrice`).
+ */
 export function craftPrice(content: Content, x: CosmeticItemDef): number | null {
+  if (x.source.kind === 'capsuleTier') return content.capsules.exclusiveCraftDust;
   return x.source.kind === 'capsule' || x.source.kind === 'crate' ? content.cosmetics.collections.drops.craftDust[x.rarity] : null;
+}
+
+/**
+ * A tier-exclusive item can be crafted only once the save has opened a capsule of that tier
+ * (`flags['capsule.first.<tier>']`, A6.4). True while that is still ahead.
+ */
+export function craftLocked(save: SaveDoc, x: CosmeticItemDef): boolean {
+  return x.source.kind === 'capsuleTier' && save.flags[`capsule.first.${x.source.tier}`] !== true;
 }

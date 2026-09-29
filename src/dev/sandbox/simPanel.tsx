@@ -48,11 +48,11 @@ function defaultLoadout(c: CompiledContent, age: AgeId): Loadout {
   const pick = (group: string, rarity?: string): CardId | null =>
     units.find((u) => u.group === group && (!rarity || u.rarity === rarity))?.id ?? null;
   const turrets = Object.values(c.turrets).filter((t) => t.age === age && t.rarity === 'common');
-  const power = Object.values(c.powers).find((p) => p.age === age && p.slot === 'default');
+  const starter = (slot: 'home' | 'field') => Object.values(c.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
   return {
     units: [pick('infantry', 'common'), pick('ranged', 'common'), pick('heavy', 'common'), pick('antiArmor'), pick('support')],
     turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null],
-    power: power?.id ?? '',
+    powers: { home: starter('home'), field: starter('field') },
   };
 }
 
@@ -390,7 +390,7 @@ function SideBox(props: { sim: Sim; side: Side; issue: (c: Command) => void; ref
   return (
     <div style={{ ...box, flex: '1 1 420px', borderColor: color }} data-testid={`sim-side-${side}`}>
       <b style={{ color }}>Side {side}</b> · age {st.ageIndex} · gold {(st.gold / 1000).toFixed(1)} · XP {(st.xp / 1000).toFixed(1)} ({(o.me.xpBp / 100).toFixed(0)}%) · pop{' '}
-      {st.pop}/60 · base {(st.baseHp / 100).toFixed(0)}/{(st.baseMaxHp / 100).toFixed(0)} · power {(st.powerPpm / 10000).toFixed(0)}% · {st.stance} · last stand{' '}
+      {st.pop}/60 · base {(st.baseHp / 100).toFixed(0)}/{(st.baseMaxHp / 100).toFixed(0)} · power {(st.powerPpm[0] / 10000).toFixed(0)}%/{(st.powerPpm[1] / 10000).toFixed(0)}% · {st.stance} · last stand{' '}
       {st.lastStand} · treasury {st.treasury} · mounts {st.mountsOwned}
       <div style={{ marginTop: '4px' }}>
         queue: {st.queue.map((q) => `${q.card} ${Math.trunc((q.progress * 100) / q.total)}%${q.waiting ? ' FULL' : ''}`).join(', ') || 'empty'}
@@ -429,8 +429,11 @@ function SideBox(props: { sim: Sim; side: Side; issue: (c: Command) => void; ref
         <button style={btn} onClick={() => issue({ t: 'evolve', side })}>
           evolve
         </button>
-        <button style={btn} onClick={() => issue({ t: 'power', side })}>
-          power ({o.me.power})
+        <button style={btn} onClick={() => issue({ t: 'power', side, slot: 'home' })}>
+          home power ({o.me.powers.home?.card ?? '-'})
+        </button>
+        <button style={btn} onClick={() => issue({ t: 'power', side, slot: 'field' })}>
+          field power ({o.me.powers.field?.card ?? '-'})
         </button>
         <button style={btn} onClick={() => issue({ t: 'stance', side, mode: st.stance === 'charge' ? 'hold' : 'charge' })}>
           stance → {st.stance === 'charge' ? 'hold' : 'charge'}

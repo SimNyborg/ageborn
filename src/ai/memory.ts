@@ -30,7 +30,9 @@ export interface RememberedCard {
  * reaches it only with a full charge. Above 10,000, or at 10,000 with charge to spare, is proof enough.
  */
 export function evolveVisible(obs: Observation): boolean {
-  return obs.me.xpBp > BP || (obs.me.xpBp === BP && obs.me.powerPpm < PPM);
+  // A2.9.3 Overcharge converts XP while an equipped power slot is below 100%.
+  const room = [obs.me.powers.home, obs.me.powers.field].some((p) => p !== null && p.ppm < PPM);
+  return obs.me.xpBp > BP || (obs.me.xpBp === BP && room);
 }
 
 /** A Troops research pick (ids are `troops.<class>.<pick>`, A18.5.2). */

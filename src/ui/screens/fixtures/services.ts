@@ -80,7 +80,7 @@ export function createPreviewServices(o: {
         loadouts[age] = {
           units: Array.from({ length: 6 }, (_, i) => units[i] ?? null),
           turrets: Array.from({ length: 2 }, (_, i) => turrets[i] ?? null),
-          power: plan.loadouts[age]?.power ?? '',
+          powers: plan.loadouts[age]?.powers ?? { home: null, field: null },
         };
       }
       log('autoFill');
@@ -151,6 +151,18 @@ export function createPreviewServices(o: {
     openWardrobe(id) {
       log('openWardrobe', id);
       set((s) => ({ ...s, capsules: { ...s.capsules, wardrobe: s.capsules.wardrobe.filter((c) => c.id !== id) } }));
+    },
+    legacySkillAeons() {
+      // The preview has no meta: count the skill sources a legacy save was granted again (B8 step 3).
+      return Object.keys(save.value.flags).filter((k) => k.startsWith('capsule.legacySkillAeon.') && save.value.flags[k]).length;
+    },
+    dismissNotice(id) {
+      log('dismissNotice', id);
+      set((s) => {
+        const flags = { ...s.flags };
+        delete flags[`notice.${id}`];
+        return { ...s, flags };
+      });
     },
     claimDailyCapsule() {
       const s = save.value;

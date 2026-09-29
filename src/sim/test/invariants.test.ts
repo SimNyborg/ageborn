@@ -46,7 +46,11 @@ function chaos(side: Side, seed: number): (obs: Observation) => Command[] {
       case 7:
         return [{ t: 'evolve', side }];
       case 8:
-        return [randInt(rng, 2) ? { t: 'power', side } : { t: 'power', side, p: randInt(rng, 1400) - 100 }];
+        return [
+          randInt(rng, 2)
+            ? { t: 'power', side, slot: randInt(rng, 2) ? 'home' : 'field' }
+            : { t: 'power', side, slot: randInt(rng, 2) ? 'home' : 'field', p: randInt(rng, 2300) - 150 },
+        ];
       case 9:
         return [
           {
@@ -85,7 +89,7 @@ function checkInvariants(sim: Sim, lastPhase: { i: number }): void {
     const st = s.sides[side];
     if (st.gold < 0 || !Number.isSafeInteger(st.gold)) fail(`gold ${st.gold} side ${side}`);
     if (st.xp < 0 || st.xp > xpCapOf(ctx, side)) fail(`xp ${st.xp} side ${side}`);
-    if (st.powerPpm < 0 || st.powerPpm > 1000000) fail(`power ${st.powerPpm}`);
+    for (const v of st.powerPpm) if (v < 0 || v > 1000000) fail(`power ${v}`);
     if (st.baseHp < 0 || st.baseHp > st.baseMaxHp) fail(`base ${st.baseHp}/${st.baseMaxHp}`);
     if (st.pop > 60) fail(`pop ${st.pop}`);
     if (st.queue.length > 5) fail(`queue ${st.queue.length}`);

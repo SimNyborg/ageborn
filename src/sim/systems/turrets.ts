@@ -48,6 +48,8 @@ export function turretFireSystem(ctx: Ctx): void {
     for (let m = 0; m < s.turrets.length; m += 1) {
       const t = s.turrets[m];
       if (!t || t.state !== 'active' || ctx.tick < t.attack.nextAttackTick) continue;
+      // Suppress (A2.9.7): a silenced mount starts no attack until its silence ends.
+      if (ctx.tick < (s.mountSilencedUntil[m] ?? 0)) continue;
       const tr = turretRules(ctx, t);
       if (!tr) continue;
       fireTurret(ctx, side, m, t, tr);

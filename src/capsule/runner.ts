@@ -7,7 +7,7 @@
  * `ShowView` what to draw. It knows nothing about Pixi, so it is unit-tested with a recording view.
  */
 import type { AudioService } from '@/contracts';
-import type { Cue, ShowPlan, ShowStep, StepKind, StrikeStep } from './plan';
+import type { Cue, ShowPlan, ShowStep, StepKind, StrikeStep, SummitStrikeStep } from './plan';
 
 /**
  * What the stage implements. Called in order: enter → progress* → exit, once per step. A skipped
@@ -21,8 +21,8 @@ export interface ShowView {
   progress(step: ShowStep, tMs: number, dtMs: number): void;
   /** The step ends (or is cut short by a skip): settle into its end state. */
   exit(step: ShowStep): void;
-  /** Frames while a strike waits for its tap. */
-  waiting?(step: StrikeStep, idleMs: number, dtMs: number): void;
+  /** Frames while a strike (or a summit strike) waits for its tap. */
+  waiting?(step: StrikeStep | SummitStrikeStep, idleMs: number, dtMs: number): void;
 }
 
 export interface RunnerState {
@@ -51,7 +51,11 @@ export interface RunnerOptions {
 }
 
 /** Steps a tap speeds up ("Tap flips faster", A10 step 5). Strikes use taps as hammer blows instead. */
-const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'fan', 'signal', 'flip', 'duplicates', 'miniWalkout', 'walkout', 'crateOpen']);
+const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'firstTier', 'volley', 'fan', 'signal', 'flip', 'duplicates', 'miniWalkout', 'walkout', 'crateOpen']);
+/** Steps that wait for a tap (auto after their idle time): the hammer blows. */
+const TAPPED: ReadonlySet<StepKind> = new Set<StepKind>(['strike', 'summitStrike']);
+/** Steps where a tap queues the next hammer blow. */
+const QUEUES: ReadonlySet<StepKind> = new Set<StepKind>(['strike', 'summitRise', 'summitStrike']);
 /** Steps that are "visually" opened: after these the capsule is open. */
 const OPENING: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'volley', 'crateOpen']);
 
@@ -60,6 +64,8 @@ const CHARGE_PROMPT_AT = 0.6;
 /** Longest frame the runner integrates at once (a hidden tab must not jump the show). */
 export const MAX_FRAME_MS = 250;
 const WALKOUT_DUCK_DB = -6;
+/** The Platinum and Aeon stingers ring on past the pop. */
+const BURST_DUCK_TAIL_MS = 1800;
 
 export class ShowRunner {
   private i = -1;
@@ -132,7 +138,7 @@ export class ShowRunner {
     for (let guard = 0; guard < 32 && real > 0 && this.phase !== 'done'; guard++) {
       const s = this.step;
       if (!s) break;
-      if (this.phase === 'wait' && s.kind === 'strike') {
+      if (this.phase === 'wait' && (s.kind === 'strike' || s.kind === 'summitStrike')) {
         if (this.tapQueued || this.holding) {
           this.tapQueued = false;
           this.setPhase('run');
@@ -173,7 +179,7 @@ export class ShowRunner {
     if (this.phase === 'wait') {
       this.tapQueued = false;
       this.setPhase('run');
-    } else if (s.kind === 'strike' || (s.kind === 'charge' && this.t >= s.durationMs * CHARGE_PROMPT_AT)) {
+    } else if (QUEUES.has(s.kind) || (s.kind === 'charge' && this.t >= s.durationMs * CHARGE_PROMPT_AT)) {
       this.tapQueued = true;
     } else if (RUSHABLE.has(s.kind) && s.fastForward) {
       this.rush = true;
@@ -237,15 +243,17 @@ export class ShowRunner {
     this.view.enter(s, false);
     if (s.kind === 'summary') {
       this.phase = 'done';
-    } else if (s.kind === 'strike' && !this.tapQueued && !this.holding) {
+    } else if (TAPPED.has(s.kind) && !this.tapQueued && !this.holding) {
       this.phase = 'wait';
     } else {
-      if (s.kind === 'strike') this.tapQueued = false;
+      if (TAPPED.has(s.kind)) this.tapQueued = false;
       this.phase = 'run';
     }
     if ((s.kind === 'walkout' || s.kind === 'miniWalkout') && this.o.audio) {
       this.o.audio.music.duck(WALKOUT_DUCK_DB, s.durationMs);
     }
+    // Platinum and Aeon bursts duck the music under their stinger and its tail (A10 step 4).
+    if (s.kind === 'burst' && s.duckDb < 0 && this.o.audio) this.o.audio.music.duck(s.duckDb, s.durationMs + BURST_DUCK_TAIL_MS);
     // Cues at 0 ms play on entry, not a frame later.
     if (this.phase === 'run') this.fireCues(s);
   }

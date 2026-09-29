@@ -1,0 +1,979 @@
+{
+  "v": 6,
+  "createdAt": 1790000000000,
+  "profile": {
+    "name": "Chief-4821",
+    "avatar": {
+      "seed": 482113,
+      "parts": {
+        "head": 3,
+        "hair": 7,
+        "paint": 1
+      },
+      "portraitCard": "tuskback"
+    },
+    "banner": "frostfang",
+    "frame": "bark",
+    "title": "recruit"
+  },
+  "currencies": {
+    "amber": 1830,
+    "dust": 245
+  },
+  "trophies": {
+    "current": 412,
+    "best": 455,
+    "roadClaimed": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  },
+  "arenaIndex": 1,
+  "collection": {
+    "bonker": {
+      "level": 4,
+      "copies": 12,
+      "isNew": false,
+      "foil": "none"
+    },
+    "pebbler": {
+      "level": 3,
+      "copies": 4,
+      "isNew": false,
+      "foil": "bronze"
+    },
+    "tuskback": {
+      "level": 3,
+      "copies": 9,
+      "isNew": false,
+      "foil": "none"
+    },
+    "spear_hunter": {
+      "level": 2,
+      "copies": 1,
+      "isNew": true,
+      "foil": "none"
+    },
+    "sabertooth": {
+      "level": 1,
+      "copies": 0,
+      "isNew": true,
+      "foil": "holo"
+    },
+    "rock_tosser": {
+      "level": 3,
+      "copies": 2,
+      "isNew": false,
+      "foil": "none"
+    },
+    "angry_beehive": {
+      "level": 2,
+      "copies": 5,
+      "isNew": false,
+      "foil": "silver"
+    },
+    "footman": {
+      "level": 3,
+      "copies": 6,
+      "isNew": false,
+      "foil": "none"
+    },
+    "longbowman": {
+      "level": 3,
+      "copies": 3,
+      "isNew": false,
+      "foil": "none"
+    },
+    "destrier_knight": {
+      "level": 2,
+      "copies": 2,
+      "isNew": false,
+      "foil": "none"
+    },
+    "friar": {
+      "level": 1,
+      "copies": 1,
+      "isNew": false,
+      "foil": "none"
+    },
+    "crossbow_nest": {
+      "level": 2,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "pitch_cauldron": {
+      "level": 2,
+      "copies": 1,
+      "isNew": false,
+      "foil": "none"
+    },
+    "corsair": {
+      "level": 2,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "fusilier": {
+      "level": 2,
+      "copies": 3,
+      "isNew": false,
+      "foil": "none"
+    },
+    "cuirassier": {
+      "level": 1,
+      "copies": 1,
+      "isNew": false,
+      "foil": "none"
+    },
+    "swivel_gun": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "grapeshot_gun": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "trench_raider": {
+      "level": 1,
+      "copies": 2,
+      "isNew": false,
+      "foil": "none"
+    },
+    "rifleman": {
+      "level": 1,
+      "copies": 1,
+      "isNew": false,
+      "foil": "none"
+    },
+    "tankette": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "mg_nest": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "flak_gun": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "photon_knight": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "pulse_trooper": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "walker_mech": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "pulse_laser": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "arc_coil": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "hoplite": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "javelineer": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "war_chariot": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "archer_tower": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "sun_mirror": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "riveter": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "carbineer": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "steam_golem": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "gatling_gun": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "mortar_pit": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "star_legionnaire": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "ion_ranger": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "hover_tank": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "ion_turret": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "starburst_gun": {
+      "level": 1,
+      "copies": 0,
+      "isNew": false,
+      "foil": "none"
+    },
+    "phalangite": {
+      "level": 1,
+      "copies": 1,
+      "isNew": true,
+      "foil": "none"
+    }
+  },
+  "powersOwned": [
+    "stampede",
+    "arrow_storm",
+    "royal_decree",
+    "smoke_screen",
+    "paratroopers",
+    "orbital_lance",
+    "tidal_wave",
+    "iron_horse",
+    "starfall"
+  ],
+  "skins": {
+    "owned": [
+      "pumpkin_head",
+      "tin_can"
+    ],
+    "equipped": {
+      "bonker": "pumpkin_head"
+    }
+  },
+  "cosmetics": {
+    "owned": [
+      "tar_pit",
+      "frostfang",
+      "recruit",
+      "nationalFlag.dk",
+      "emote.clap",
+      "quote.charge",
+      "decoration.stone_idol",
+      "baseSkin.frost_cave"
+    ],
+    "equipped": {
+      "emotes": [
+        "laugh",
+        "salute",
+        "thumbsUp",
+        "gg",
+        "emote.clap"
+      ],
+      "quotes": [
+        "quote.glhf",
+        "quote.well_played",
+        "quote.charge"
+      ],
+      "baseFlag": "baseFlag.ember",
+      "nationalFlag": "nationalFlag.dk",
+      "baseSkins": {
+        "stone": "baseSkin.frost_cave"
+      },
+      "decorations": [
+        "decoration.fire_bowl",
+        "decoration.stone_idol",
+        null
+      ]
+    }
+  },
+  "warPlans": [
+    {
+      "name": "Plan A",
+      "loadouts": {
+        "stone": {
+          "units": [
+            "bonker",
+            "pebbler",
+            "tuskback",
+            "spear_hunter",
+            null,
+            null
+          ],
+          "turrets": [
+            "rock_tosser",
+            "angry_beehive"
+          ],
+          "power": "stampede"
+        },
+        "bronze": {
+          "units": [
+            "hoplite",
+            "javelineer",
+            "war_chariot",
+            "phalangite",
+            null,
+            null
+          ],
+          "turrets": [
+            "archer_tower",
+            "sun_mirror"
+          ],
+          "power": "tidal_wave"
+        },
+        "medieval": {
+          "units": [
+            "footman",
+            "longbowman",
+            "destrier_knight",
+            "friar",
+            null,
+            null
+          ],
+          "turrets": [
+            "crossbow_nest",
+            "pitch_cauldron"
+          ],
+          "power": "royal_decree"
+        },
+        "gunpowder": {
+          "units": [
+            "corsair",
+            "fusilier",
+            "cuirassier",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "swivel_gun",
+            "grapeshot_gun"
+          ],
+          "power": "smoke_screen"
+        },
+        "industrial": {
+          "units": [
+            "riveter",
+            "carbineer",
+            "steam_golem",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "gatling_gun",
+            "mortar_pit"
+          ],
+          "power": "iron_horse"
+        },
+        "modern": {
+          "units": [
+            "trench_raider",
+            "rifleman",
+            "tankette",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "mg_nest",
+            "flak_gun"
+          ],
+          "power": "paratroopers"
+        },
+        "future": {
+          "units": [
+            "photon_knight",
+            "pulse_trooper",
+            "walker_mech",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "pulse_laser",
+            "arc_coil"
+          ],
+          "power": "orbital_lance"
+        },
+        "cosmic": {
+          "units": [
+            "star_legionnaire",
+            "ion_ranger",
+            "hover_tank",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "ion_turret",
+            "starburst_gun"
+          ],
+          "power": "starfall"
+        }
+      }
+    },
+    {
+      "name": "Plan B",
+      "loadouts": {
+        "stone": {
+          "units": [
+            "bonker",
+            "pebbler",
+            "tuskback",
+            null,
+            "sabertooth",
+            null
+          ],
+          "turrets": [
+            "rock_tosser",
+            null
+          ],
+          "power": "stampede"
+        },
+        "bronze": {
+          "units": [
+            "hoplite",
+            "javelineer",
+            "war_chariot",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "archer_tower",
+            "sun_mirror"
+          ],
+          "power": "tidal_wave"
+        },
+        "medieval": {
+          "units": [
+            "footman",
+            "longbowman",
+            "destrier_knight",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "crossbow_nest",
+            null
+          ],
+          "power": "arrow_storm"
+        },
+        "gunpowder": {
+          "units": [
+            "corsair",
+            "fusilier",
+            "cuirassier",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "swivel_gun",
+            null
+          ],
+          "power": "smoke_screen"
+        },
+        "industrial": {
+          "units": [
+            "riveter",
+            "carbineer",
+            "steam_golem",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "gatling_gun",
+            "mortar_pit"
+          ],
+          "power": "iron_horse"
+        },
+        "modern": {
+          "units": [
+            "trench_raider",
+            "rifleman",
+            "tankette",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "mg_nest",
+            null
+          ],
+          "power": "paratroopers"
+        },
+        "future": {
+          "units": [
+            "photon_knight",
+            "pulse_trooper",
+            "walker_mech",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "pulse_laser",
+            null
+          ],
+          "power": "orbital_lance"
+        },
+        "cosmic": {
+          "units": [
+            "star_legionnaire",
+            "ion_ranger",
+            "hover_tank",
+            null,
+            null,
+            null
+          ],
+          "turrets": [
+            "ion_turret",
+            "starburst_gun"
+          ],
+          "power": "starfall"
+        }
+      }
+    }
+  ],
+  "activePlan": 1,
+  "capsules": {
+    "pending": [
+      {
+        "id": "cap-0007",
+        "kind": "win",
+        "tier": "silver",
+        "startTier": "clay",
+        "scriptIndex": null,
+        "age": null,
+        "contents": {
+          "stacks": [
+            {
+              "card": "bonker",
+              "rarity": "common",
+              "copies": 6,
+              "isNew": false,
+              "foil": "none",
+              "dust": 0
+            },
+            {
+              "card": "friar",
+              "rarity": "rare",
+              "copies": 2,
+              "isNew": false,
+              "foil": "bronze",
+              "dust": 0
+            },
+            {
+              "card": "grumpy_toad",
+              "rarity": "epic",
+              "copies": 1,
+              "isNew": true,
+              "foil": "none",
+              "dust": 0
+            }
+          ],
+          "amber": 190,
+          "dust": 0,
+          "skin": null,
+          "cosmetic": "nationalFlag.se"
+        },
+        "createdAt": 1790003600000
+      },
+      {
+        "id": "cap-0008",
+        "kind": "age",
+        "tier": "jade",
+        "startTier": "jade",
+        "scriptIndex": null,
+        "age": "medieval",
+        "contents": {
+          "stacks": [
+            {
+              "card": "trebuchet",
+              "rarity": "rare",
+              "copies": 3,
+              "isNew": true,
+              "foil": "silver",
+              "dust": 0
+            }
+          ],
+          "amber": 400,
+          "dust": 100,
+          "skin": null
+        },
+        "createdAt": 1790003700000
+      },
+      {
+        "id": "cap-0009",
+        "kind": "road",
+        "tier": "gold",
+        "startTier": "gold",
+        "scriptIndex": null,
+        "age": null,
+        "contents": {
+          "stacks": [
+            {
+              "card": "bonker",
+              "rarity": "common",
+              "copies": 26,
+              "isNew": false,
+              "foil": "none",
+              "dust": 0
+            },
+            {
+              "card": "friar",
+              "rarity": "rare",
+              "copies": 10,
+              "isNew": false,
+              "foil": "none",
+              "dust": 0
+            },
+            {
+              "card": "grumpy_toad",
+              "rarity": "epic",
+              "copies": 5,
+              "isNew": false,
+              "foil": "none",
+              "dust": 0
+            },
+            {
+              "card": "trebuchet",
+              "rarity": "rare",
+              "copies": 10,
+              "isNew": false,
+              "foil": "bronze",
+              "dust": 0
+            },
+            {
+              "card": "mammoth_matriarch",
+              "rarity": "legendary",
+              "copies": 2,
+              "isNew": true,
+              "foil": "none",
+              "dust": 0
+            }
+          ],
+          "amber": 2640,
+          "dust": 100,
+          "skin": null,
+          "cosmetic": "emote.heart"
+        },
+        "createdAt": 1790003900000
+      }
+    ],
+    "charges": 3,
+    "chargesUpdatedAt": 1790003000000,
+    "freeCapsulesLeft": 0,
+    "clayMeter": 2,
+    "dailyBank": 1,
+    "dailyNextAt": 1790056800000,
+    "bag": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      5,
+      6
+    ],
+    "bagSize": 200,
+    "wardrobe": [
+      {
+        "id": "crate-0001",
+        "source": "weekly",
+        "skin": "toy_soldier",
+        "rarity": "rare",
+        "duplicateDust": 0,
+        "createdAt": 1790003800000,
+        "cosmetic": "baseFlag.cogwheel"
+      }
+    ]
+  },
+  "pity": {
+    "sinceEpic": 4,
+    "sinceLegendary": 11,
+    "sinceNewCard": 1,
+    "opened": 11,
+    "wardrobeSinceEpic": 1,
+    "wardrobeSinceLegendary": 1
+  },
+  "rng": {
+    "capsule": [
+      2654435769,
+      1013904223,
+      0,
+      4294967295
+    ],
+    "cosmetic": [
+      2654435769,
+      3112515892,
+      3266489909,
+      3626702032
+    ]
+  },
+  "scriptStep": 5,
+  "quests": {
+    "daily": [
+      {
+        "id": "win_2",
+        "progress": 1,
+        "claimed": false
+      },
+      {
+        "id": "play_3",
+        "progress": 3,
+        "claimed": true
+      },
+      {
+        "id": "train_30",
+        "progress": 17,
+        "claimed": false
+      }
+    ],
+    "rerollUsed": true,
+    "dayKey": "2026-09-22",
+    "weekly": {
+      "id": "weekly_wins",
+      "progress": 4,
+      "claimed": false
+    },
+    "weekKey": "2026-W39"
+  },
+  "codexPoints": 340,
+  "codexLevel": 6,
+  "mmr": 1087,
+  "lossStreak": 1,
+  "matchesPlayed": 27,
+  "daily": {
+    "dayKey": "2026-09-22",
+    "bank": 1
+  },
+  "conquest": {
+    "stars": {
+      "kettle": [
+        true,
+        true,
+        false
+      ],
+      "moss": [
+        true,
+        false,
+        false
+      ]
+    },
+    "milestonesClaimed": []
+  },
+  "stats": {
+    "matches": 27,
+    "wins": 16,
+    "losses": 10,
+    "draws": 1,
+    "winsByTier": [
+      1,
+      6,
+      7,
+      2
+    ],
+    "lossesByTier": [
+      0,
+      2,
+      5,
+      3
+    ],
+    "trainedByCard": {
+      "bonker": 210,
+      "pebbler": 133,
+      "tuskback": 58,
+      "footman": 91
+    },
+    "fastestWinMs": 263500,
+    "futureReached": 4
+  },
+  "settings": {
+    "volume": {
+      "master": 0.8,
+      "music": 0.45,
+      "sfx": 1,
+      "ui": 0.6
+    },
+    "graphics": "lite",
+    "reduceMotion": true,
+    "shake": 0.5,
+    "hitstop": false,
+    "damageNumbers": "all",
+    "teamPreset": "blueYellow",
+    "locale": "en",
+    "defaultSpeed": 1.5,
+    "vibrate": false,
+    "mutedEmotes": true
+  },
+  "tutorial": {
+    "step": 4,
+    "hintsShown": {
+      "heavies_stop_bonkers": 2,
+      "save_for_turret": 1
+    }
+  },
+  "lastExportAt": 1790001000000,
+  "flags": {
+    "warPlanOpened": true,
+    "firstLegendarySeen": false,
+    "capsule.first.gold": true,
+    "notice.capsuleLadder": true
+  },
+  "warPath": {
+    "path": "normal",
+    "stars": {
+      "wp.stone.l01": 1,
+      "wp.stone.l02": 1,
+      "wp.stone.l03": 2,
+      "wp.stone.l04": 3
+    },
+    "crowns": {
+      "wp.stone.l01": 2,
+      "wp.stone.l02": 2,
+      "wp.stone.l03": 2,
+      "wp.stone.l04": 3
+    },
+    "relics": [],
+    "difficulty": "hard",
+    "lossStreak": 1,
+    "legacy": true
+  }
+}

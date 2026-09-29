@@ -8,31 +8,34 @@
  * `once`, and every `exit` settles its step's end state silently, so skips never replay effects.
  */
 import { Container, Graphics, Sprite } from 'pixi.js';
-import type { ArtProvider, CapsuleTier, I18n } from '@/contracts';
+import type { AgeId, ArtProvider, CapsuleTier, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { CARD_H, CardFan, portraitTexture, type CardView } from './cardFan';
-import { CapsuleDrum, Hammer, Pedestal, Pips } from './climb';
-import { clamp01, easeInQuad, easeOutBack, easeOutCubic, lerp, span } from './ease';
+import { CapsuleDrum, Hammer, Pedestal, Pips, drumState, type DrumState } from './climb';
+import { clamp01, easeInQuad, easeOutBack, easeOutCubic, hump, lerp, span } from './ease';
 import { Particles, Trauma, glowSprite } from './fx';
-import { AEON_RIM, RARITY_COLORS, ROOM, TIER_COLORS, mixColor, shade } from './palette';
+import { AEON_FILIGREE, HOLO_BANDS, RARITY_COLORS, ROOM, TIER_COLORS, TIER_RAMPS, mixColor, shade } from './palette';
 import { SHOW_TIMING } from './plan';
 import type {
   BurstStep,
+  FirstTierStep,
   FlipStep,
   MiniWalkoutStep,
   ShowPlan,
   ShowStep,
   StrikeStep,
+  SummitRiseStep,
+  SummitStrikeStep,
   VolleyStep,
   WalkoutStep,
 } from './plan';
 import { CrateView } from './crate';
 import type { ShowView } from './runner';
 import type { RevealCard } from './summaryModel';
-import { coneTexture, confettiTexture, dotTexture, glowTexture, raysTexture, roomTexture, shardTexture, starTexture, streakTexture } from './textures';
-import { tierIndex } from './tiers';
+import { coneTexture, confettiTexture, dotTexture, glowTexture, leafTexture, raysTexture, roomTexture, shaftsTexture, shardTexture, splinterTexture, starTexture, streakTexture } from './textures';
+import { crestCount, summitGemCount, tierIndex } from './tiers';
 import type { CapsuleCatalog, ProgressLookup, ShowSettings } from './types';
-import { Walkout } from './walkout';
+import { Walkout, ageGlyph } from './walkout';
 
 export const DESIGN_W = 1280;
 export const DESIGN_H = 720;
@@ -88,6 +91,47 @@ interface Ring {
 const HIT = { x: PED.x + 78, y: PED.y - 138 };
 /** Centre of the drum body. */
 const CORE = { x: PED.x, y: PED.y - 125 };
+/** The eight ages, for the Aeon glyph halo when the catalog has no age list. */
+const DEFAULT_AGES: readonly AgeId[] = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
+/** The Aeon glyph halo appears within this long, whatever the number of ages (A10 step 4). */
+const HALO_MS = 900;
+/** Top-tier staging (A10 step 4): camera push per staging level (none, Gold, Platinum, Aeon). */
+const STAGE_PUSH = [0, 0.02, 0.04, 0.08] as const;
+/** The room's dim per staging level: Platinum to 60%, Aeon to 35%. */
+const STAGE_DIM = [0, 0, 0.4, 0.65] as const;
+const AEON_TILT = (1.5 * Math.PI) / 180;
+const AEON_LIFT = 12;
+
+/** A drum changing tier: the new material wipes down while a crest stamps (A10 steps 3 and 3b). */
+interface Morph {
+  to: DrumState;
+  wipeMs: number;
+  t: number;
+  crest: boolean;
+  crestDelay: number;
+  crestMs: number;
+  crestHit: boolean;
+}
+
+interface FieldStar {
+  x: number;
+  y: number;
+  r: number;
+  d: number;
+  vx: number;
+  vy: number;
+  phase: number;
+  tint: number;
+}
+
+/**
+ * Staging level of a tier (A10 step 4): 0 as built (Clay to Jade), 1 for the first Legendary tier
+ * (Gold), then one more per summit gem (Platinum 2, Aeon 3). Read from the crest and summit counts,
+ * never from a tier name.
+ */
+export function stagingLevel(tier: CapsuleTier): number {
+  return crestCount(tier) === 0 ? 0 : 1 + summitGemCount(tier);
+}
 
 interface MiniDrum {
   drum: CapsuleDrum;
@@ -186,6 +230,40 @@ export class CapsuleStage implements ShowView {
   private pedSinkTarget = 0;
   private confettiOn = false;
   private confettiT = 0;
+  // Top-tier staging (A10 step 4).
+  private readonly lite: boolean;
+  private readonly godRays: Sprite;
+  private godRaysLevel = 0;
+  private readonly coldCone: Sprite;
+  private coldLevel = 0;
+  private readonly starfield = new Container();
+  private readonly starG = new Graphics();
+  private readonly nebula: Sprite[] = [];
+  private readonly fieldStars: FieldStar[] = [];
+  private starK = 0;
+  private starKTarget = 0;
+  private starSpread = 0;
+  private readonly glyphHalo = new Container();
+  private glyphs: { c: Container; x: number; y: number; at: number }[] = [];
+  private glyphBurstT = -1;
+  private readonly frostG = new Graphics();
+  private frostT = -1;
+  private camPush = 0;
+  private camPushTarget = 0;
+  private camTilt = 0;
+  private camTiltTarget = 0;
+  private drumLift = 0;
+  private drumLiftTarget = 0;
+  private morph: Morph | null = null;
+  private lastFlashAt = -1e9;
+  private heat = 0;
+  private heatTarget = 0;
+  private hammerRaise = 0;
+  private hammerRaiseTarget = 0;
+  /** Set while a summit strike drives the hammer itself. */
+  private hammerAngle: number | null = null;
+  private heatSparkT = 0;
+  private glintT = 0;
 
   constructor(
     readonly plan: ShowPlan,
@@ -193,8 +271,9 @@ export class CapsuleStage implements ShowView {
   ) {
     const rm = d.settings.reduceMotion;
     this.rng = mulberry32(d.seed);
+    this.lite = d.settings.lite === true;
     this.trauma = new Trauma(d.seed ^ 0x5eed, rm ? 0 : 1);
-    this.particles = new Particles(rm ? 300 : 700);
+    this.particles = new Particles(rm ? 300 : this.lite ? 350 : 700);
     this.motes = new Particles(80);
     this.tier = plan.startTier ?? 'clay';
 
@@ -219,11 +298,66 @@ export class CapsuleStage implements ShowView {
     this.halo = glowSprite(glowTexture(), TIER_COLORS[this.tier], 560, 0);
     this.halo.position.set(PED.x, PED.y - 130);
 
+    // Gold: faint sunlight shafts from above. Platinum: a cold top spotlight.
+    this.godRays = new Sprite(shaftsTexture());
+    this.godRays.anchor.set(0.5, 0);
+    this.godRays.position.set(PED.x, -60);
+    this.godRays.width = 980;
+    this.godRays.height = PED.y + 120;
+    this.godRays.blendMode = 'add';
+    this.godRays.tint = 0xfff1cf;
+    this.godRays.alpha = 0;
+    this.coldCone = new Sprite(coneTexture());
+    this.coldCone.anchor.set(0.5, 0);
+    this.coldCone.position.set(PED.x, -80);
+    this.coldCone.width = 620;
+    this.coldCone.height = PED.y + 150;
+    this.coldCone.blendMode = 'add';
+    this.coldCone.tint = 0xc8fff4;
+    this.coldCone.alpha = 0;
+    // Aeon: the starfield that spills out behind the drum, with an indigo nebula.
+    for (const [tint, w, h, dx, dy] of [
+      [TIER_RAMPS.aeon.mid, 1300, 760, -120, 20],
+      [TIER_RAMPS.aeon.key, 900, 560, 160, -40],
+      [TIER_RAMPS.aeon.highlight, 420, 420, 0, -10],
+    ] as const) {
+      const n = glowSprite(glowTexture(), tint, 100, 0);
+      n.width = w;
+      n.height = h;
+      n.position.set(CORE.x + dx, CORE.y + dy);
+      this.nebula.push(n);
+      this.starfield.addChild(n);
+    }
+    this.starfield.addChild(this.starG);
+    this.starG.blendMode = 'add';
+    this.starfield.visible = false;
+    {
+      const r = mulberry32(d.seed ^ 0x5a4f);
+      const count = this.lite ? 70 : 140;
+      const tints = [0xffffff, TIER_RAMPS.aeon.highlight, AEON_FILIGREE, 0xdcd6ff];
+      for (let i = 0; i < count; i++) {
+        const a = r.next() * Math.PI * 2;
+        const d = Math.sqrt(r.next());
+        this.fieldStars.push({
+          x: CORE.x + Math.cos(a) * d * 660,
+          y: CORE.y + Math.sin(a) * d * 380,
+          r: 0.8 + r.next() * r.next() * 2.8,
+          d,
+          vx: (r.next() - 0.5) * 10,
+          vy: -3 - r.next() * 8,
+          phase: r.next() * 6.28,
+          tint: tints[i % tints.length] ?? 0xffffff,
+        });
+      }
+    }
+    this.glyphHalo.position.set(CORE.x, CORE.y - 6);
+    this.frostG.blendMode = 'add';
+
     this.shadow.ellipse(0, 0, 100, 16).fill({ color: 0x000000, alpha: 0.45 });
     this.shadow.position.set(PED.x, PED.y + 4);
     this.shadow.alpha = 0;
 
-    this.drum = new CapsuleDrum(d.seed);
+    this.drum = new CapsuleDrum(d.seed, { lite: this.lite });
     this.drum.root.position.set(PED.x, PED.y);
     this.drum.root.visible = false;
     this.drum.setTier(this.tier);
@@ -242,7 +376,7 @@ export class CapsuleStage implements ShowView {
     this.crate.root.visible = false;
     this.pedGroup.visible = plan.mode !== 'openAll';
 
-    this.pedGroup.addChild(this.shadow, this.pedestal.root, this.pips.root, this.crate.root, this.drum.root);
+    this.pedGroup.addChild(this.shadow, this.pedestal.root, this.frostG, this.pips.root, this.crate.root, this.drum.root);
     const usesFan = plan.steps.some((s) => s.kind === 'fan' || (s.kind === 'flip' && plan.mode === 'wardrobe'));
     this.fan = usesFan ? new CardFan(plan.cards, this.cardDeps(), { x: PED.x, y: PED.y - 120 }) : null;
     // The crate's one skin card rises high above the open crate, larger than a fan card.
@@ -252,10 +386,14 @@ export class CapsuleStage implements ShowView {
     this.world.pivot.set(DESIGN_W / 2, DESIGN_H / 2);
     this.world.addChild(
       this.cone,
+      this.coldCone,
+      this.godRays,
+      this.starfield,
       this.motes.root,
       this.backRays,
       this.bigRays,
       this.halo,
+      this.glyphHalo,
       this.pedGroup,
       this.hammer.root,
       this.waves,
@@ -307,8 +445,24 @@ export class CapsuleStage implements ShowView {
       case 'strike':
         this.hammerTarget = 1;
         break;
+      case 'summitRise':
+        // The same beat as a burst build after strike 4 (A10 step 3b): the hammer stays, heats neutral
+        // white and rises; a clear gem grinds up out of the cap.
+        this.hammerTarget = 1;
+        this.hammerRaiseTarget = 1;
+        this.heatTarget = 1;
+        if (!instant) this.drum.beginGemRise(this.d.settings.reduceMotion);
+        break;
+      case 'summitStrike':
+        this.hammerTarget = 1;
+        this.hammerRaiseTarget = 1;
+        this.heatTarget = 1;
+        break;
       case 'burst':
         this.enterBurst(step, instant);
+        break;
+      case 'firstTier':
+        this.bigRaysLevel = Math.max(this.bigRaysLevel, 0.45);
         break;
       case 'volley':
         this.enterVolley(step, instant);
@@ -344,6 +498,10 @@ export class CapsuleStage implements ShowView {
         this.embersOn = false;
         this.dimTarget = 0;
         this.bgTintTarget = 0;
+        // The Aeon starfield stays behind the cards until the summary (A10 step 4).
+        this.starKTarget = 0;
+        this.coldLevel = 0;
+        this.godRaysLevel = 0;
         break;
     }
   }
@@ -367,8 +525,17 @@ export class CapsuleStage implements ShowView {
       case 'strike':
         this.strike(step, t);
         break;
+      case 'summitRise':
+        this.summitRise(step, t);
+        break;
+      case 'summitStrike':
+        this.summitStrike(step, t);
+        break;
       case 'burst':
         this.burst(step, t, dt);
+        break;
+      case 'firstTier':
+        this.firstTierFx(step, t);
         break;
       case 'volley':
         this.volley(step, t);
@@ -428,9 +595,23 @@ export class CapsuleStage implements ShowView {
       case 'strike':
         this.settleStrike(step);
         break;
+      case 'summitRise':
+        this.settleRise(step);
+        break;
+      case 'summitStrike':
+        this.settleSummit(step);
+        break;
+      case 'firstTier':
+        break;
       case 'burst':
         this.fire('burst-pop');
         this.fire('burst');
+        this.settleMorph();
+        this.drumLiftTarget = 0;
+        this.camPushTarget = 0;
+        this.camTiltTarget = 0;
+        this.heatTarget = 0;
+        this.hammerRaiseTarget = 0;
         this.drum.root.visible = false;
         this.hammerTarget = 0;
         this.swell = 0;
@@ -485,10 +666,16 @@ export class CapsuleStage implements ShowView {
     }
   }
 
-  waiting(step: StrikeStep, idleMs: number): void {
+  waiting(step: StrikeStep | SummitStrikeStep, idleMs: number): void {
+    this.hammerTarget = 1;
+    if (step.kind === 'summitStrike') {
+      // The hammer hangs high, white-hot and breathing, over the waiting gem.
+      this.hammerRaiseTarget = 1;
+      this.heatTarget = 0.75 + 0.25 * Math.sin(idleMs / 140);
+      return;
+    }
     // The next pip breathes and the hammer hovers, inviting the tap.
     this.pips.pip(step.index)?.scale.set(1 + 0.2 * Math.max(0, Math.sin(idleMs / 110)));
-    this.hammerTarget = 1;
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -564,10 +751,18 @@ export class CapsuleStage implements ShowView {
     }
   }
 
-  private setShownTier(tier: CapsuleTier): void {
+  /**
+   * The drum shows `tier` (A10): at once (`set`, also every skip and settle), or with the new
+   * material wiping down from the top while the tier's crest stamps (`morph`, a climb).
+   */
+  private setShownTier(tier: CapsuleTier, mode: 'set' | 'morph' = 'set', wipeMs = 200): void {
     const c = TIER_COLORS[tier];
     this.tier = tier;
-    this.drum.setTier(tier);
+    if (mode === 'morph') this.startMorph(drumState(tier), wipeMs);
+    else {
+      this.settleMorph();
+      this.drum.setTier(tier);
+    }
     this.pedestal.setColor(c);
     this.halo.tint = c;
     this.backRays.tint = c;
@@ -634,7 +829,7 @@ export class CapsuleStage implements ShowView {
 
   private climbImpact(s: StrikeStep): void {
     const c = TIER_COLORS[s.to];
-    this.setShownTier(s.to);
+    this.setShownTier(s.to, 'morph', 200);
     this.drumWhite = 1;
     this.drum.energy = 1.2;
     this.halo.alpha = 0.55 + 0.1 * tierIndex(s.to);
@@ -696,7 +891,7 @@ export class CapsuleStage implements ShowView {
     this.hammerT = -1;
     this.pips.set(s.index, s.climb ? s.to : 'miss');
     this.pips.pip(s.index)?.scale.set(1);
-    if (s.climb && this.tier !== s.to) this.setShownTier(s.to);
+    if (s.climb) this.setShownTier(s.to);
     const after = this.crackAfter(s.index + 1);
     this.strikesDone = s.index + 1;
     this.drum.setCracks(after.cracks);
@@ -704,9 +899,12 @@ export class CapsuleStage implements ShowView {
   }
 
   private enterBurst(s: BurstStep, instant: boolean): void {
-    if (this.tier !== s.tier || s.fixed) this.setShownTier(s.tier);
+    if (this.tier !== s.tier || s.fixed || this.morph) this.setShownTier(s.tier);
     this.bigRaysLevel = 0.4;
     this.hammerTarget = 0;
+    this.hammerRaiseTarget = 0;
+    this.heatTarget = 0;
+    this.hammerAngle = null;
     if (s.fixed) {
       // Fixed-tier capsules start here (A6.4): the drum is simply there, already cracked.
       this.drum.root.visible = true;
@@ -746,6 +944,7 @@ export class CapsuleStage implements ShowView {
       this.dimTarget = idx >= 3 ? 0.5 * u : idx === 2 ? 0.25 * u : 0;
       if (!rm) this.trauma.trauma = Math.max(this.trauma.trauma, (0.2 + 0.05 * idx) * u);
       this.suck(dt, u, TIER_COLORS[s.tier]);
+      this.stageBuild(s, t, u, dt);
       return;
     }
     if (this.fire('burst-pop')) {
@@ -796,6 +995,7 @@ export class CapsuleStage implements ShowView {
     const c = TIER_COLORS[s.tier];
     const idx = tierIndex(s.tier);
     const rm = this.d.settings.reduceMotion;
+    const level = stagingLevel(s.tier);
     this.flash(0.95, 0xffffff);
     this.trauma.add(0.55 + 0.08 * idx);
     this.addPunch(0.06 + 0.015 * idx);
@@ -811,7 +1011,8 @@ export class CapsuleStage implements ShowView {
     this.ring(CORE.x, CORE.y, 40, 620, c, 26, 620, 1);
     this.ring(CORE.x, CORE.y, 30, 460, 0xffffff, 10, 380, 0.9);
     this.ring(PED.x, PED.y, 80, 700, shade(c, 0.3), 14, 700, 0.8, 0.28);
-    if (s.tier === 'aeon') this.ring(CORE.x, CORE.y, 60, 760, AEON_RIM, 12, 820, 0.9);
+    // Legendary tiers: a second, slower ring in the crests' white-gold.
+    if (level >= 1) this.ring(CORE.x, CORE.y, 60, 760, AEON_FILIGREE, 12, 820, 0.9);
     // Radial light streaks.
     const n = rm ? 12 : 40 + 10 * idx;
     for (let i = 0; i < n; i++) {
@@ -832,10 +1033,413 @@ export class CapsuleStage implements ShowView {
         align: true,
       });
     }
-    // Embers keep drifting up through the card reveal (Silver and up); confetti for Jade and Aeon.
+    // Embers keep drifting up through the card reveal (Bronze and up); confetti for Jade; the
+    // Legendary tiers leave their own residue instead (A10 step 4).
     this.embersOn = idx >= 1;
-    if (idx >= 3) this.confettiBurst(CORE.x, CORE.y, rm ? 14 : 50 + 30 * (idx - 3));
+    if (idx >= 3 && level === 0) this.confettiBurst(CORE.x, CORE.y, rm ? 14 : 50);
+    this.stagePop(level);
     if (s.amber > 0) this.pourAmber(CORE.x, CORE.y, 16);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // Summit strikes (A10 step 3b) and the drum's morph
+  // ---------------------------------------------------------------------------------------------
+
+  /** Where the hammer head is now (design space). */
+  private hammerHead(): { x: number; y: number } {
+    const r = this.hammer.root.rotation;
+    const h = Hammer.HEAD.y;
+    return { x: this.hammer.root.x - h * Math.sin(r), y: this.hammer.root.y + h * Math.cos(r) };
+  }
+
+  /** A clear gem grinds up out of the cap's top face and settles, unlit, in the cap band. */
+  private summitRise(s: SummitRiseStep, t: number): void {
+    const u = t / s.durationMs;
+    this.drum.setOrnament(u);
+    const rm = this.d.settings.reduceMotion;
+    const top = { x: PED.x, y: PED.y - 236 };
+    if (this.fire(`rise-grit-${s.index}`)) {
+      // The stone grinds open: grit and a puff of dust from the top face, a soft white light.
+      this.dustRing(top.x, top.y + 4, rm ? 3 : 8);
+      this.chips(top.x, top.y + 2, ROOM.stoneLight, rm ? 2 : 6);
+      this.ring(top.x, top.y + 2, 10, 90, 0xffffff, 5, 360, 0.5, 0.35);
+      this.drum.energy = Math.max(this.drum.energy, 0.8);
+    }
+    if (!rm) this.drum.body.x = Math.sin(t * 0.21) * 1.6 * (1 - u);
+    if (u >= 0.92 && this.fire(`rise-land-${s.index}`)) {
+      this.squash(0.06);
+      const [gx, gy] = this.drum.gemPos(this.drum.state.gems.length, this.drum.state.gems.length + 1);
+      this.sparkBurst(PED.x + gx, PED.y + gy, 0xffffff, rm ? 3 : 8, 200);
+    }
+  }
+
+  private settleRise(s: SummitRiseStep): void {
+    this.fire(`rise-grit-${s.index}`);
+    this.fire(`rise-land-${s.index}`);
+    this.drum.body.x = 0;
+    const st = this.drum.state;
+    if (st.gems.length > s.index) return;
+    this.drum.setState({ ...st, gems: [...st.gems, null] });
+  }
+
+  /**
+   * The summit strike (900 ms): a slow descent (the last 200 ms at half speed), the impact and a
+   * 120 ms hold, a shockwave, then the new material wipes down while the gem ignites in the new
+   * tier's colour and one more crest stamps.
+   */
+  private summitStrike(s: SummitStrikeStep, t: number): void {
+    const T = SHOW_TIMING;
+    const impact = s.impactMs;
+    const rm = this.d.settings.reduceMotion;
+    const wind = HAMMER.rest + 0.62;
+    const fast = impact - 200;
+    if (t < impact) {
+      const p = t < fast ? 0.64 * easeInQuad(t / fast) : 0.64 + 0.36 * ((t - fast) / 200);
+      this.hammerAngle = lerp(wind, HAMMER.hit, p);
+      // The room holds its breath.
+      this.dimTarget = Math.max(this.dimTarget, 0.18 * span(t, 0, impact));
+    } else if (t < impact + T.summitHoldMs) {
+      this.hammerAngle = HAMMER.hit;
+    } else {
+      this.hammerAngle = lerp(HAMMER.hit, HAMMER.rest + 0.2, easeOutBack(span(t, impact + T.summitHoldMs, s.durationMs), 1.4));
+    }
+    if (t >= impact && this.fire(`summit-impact-${s.index}`)) {
+      // Impact: a white-hot hit and a held frame (colour comes after the hold).
+      this.hitstop = Math.max(this.hitstop, T.summitHoldMs);
+      this.drumWhite = 1;
+      this.heatTarget = 0;
+      this.heat = 0.6;
+      this.kickT = 0;
+      this.kickA = rm ? 0.02 : 0.09;
+      this.squash(0.3);
+      this.trauma.add(0.5);
+      this.addPunch(0.05);
+      this.flash(0.5, 0xffffff);
+      this.vibrate([40, 40, 90]);
+      this.drum.setLeak(1.6);
+      this.drum.energy = 1.6;
+      this.ring(HIT.x - 6, HIT.y, 10, 160, 0xffffff, 10, 300, 1);
+      for (let i = 0; i < (rm ? 6 : 26); i++) {
+        const a = -Math.PI * 0.15 + (this.rng.next() - 0.5) * 2.4;
+        const sp = 500 + this.rng.next() * 700;
+        this.particles.spawn({ tex: streakTexture(), x: HIT.x, y: HIT.y + (this.rng.next() - 0.5) * 30, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 160, life: 320 + this.rng.next() * 300, drag: 0.05, gravity: 1400, scale: [0.7 + this.rng.next() * 0.5, 0.1], alpha: [1, 0], tint: 0xffffff, add: true, align: true });
+      }
+    }
+    if (t >= impact + T.summitHoldMs && this.fire(`summit-wave-${s.index}`)) {
+      const c = TIER_COLORS[s.to];
+      // The shockwave, then the transmutation into the new material (the gem ignites, a crest stamps).
+      this.setShownTier(s.to, 'morph', T.summitTransmuteMs);
+      this.halo.alpha = 1;
+      this.flash(0.4, shade(c, 0.6));
+      this.ring(CORE.x, CORE.y, 50, 560, c, 22, 700, 1);
+      this.ring(CORE.x, CORE.y, 40, 380, 0xffffff, 8, 420, 0.9);
+      this.ring(PED.x, PED.y, 70, 560, shade(c, 0.3), 12, 700, 0.8, 0.28);
+      this.waveT = 0;
+      this.waveColor = c;
+      this.pips.root.alpha = 1;
+      const [gx, gy] = this.drum.gemPos(s.index, s.index + 1);
+      this.sparkBurst(PED.x + gx, PED.y + gy, c, rm ? 8 : 26, 360);
+      const n = rm ? 14 : this.lite ? 30 : 56;
+      for (let i = 0; i < n; i++) {
+        const a = this.rng.next() * Math.PI * 2;
+        const sp = 300 + this.rng.next() * 600;
+        this.particles.spawn({ tex: i % 3 === 0 ? starTexture() : dotTexture(), x: PED.x + Math.cos(a) * 40, y: PED.y - 130 + Math.sin(a) * 60, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 100, life: 500 + this.rng.next() * 500, drag: 0.06, gravity: 400, scale: [1 + this.rng.next() * 0.6, 0], alpha: [1, 0], tint: i % 4 === 0 ? 0xffffff : c, add: true });
+      }
+    }
+  }
+
+  private settleSummit(s: SummitStrikeStep): void {
+    this.fire(`summit-impact-${s.index}`);
+    this.fire(`summit-wave-${s.index}`);
+    this.hammerAngle = null;
+    this.drum.body.position.set(0, 0);
+    this.setShownTier(s.to);
+    // The next gem (if any) rises at once; otherwise the burst cools the hammer.
+    this.heatTarget = 0.4;
+  }
+
+  /** "Your first Aeon Capsule" (the banner is DOM text): the room glows a moment longer. */
+  private firstTierFx(s: FirstTierStep, t: number): void {
+    const c = TIER_COLORS[s.tier];
+    if (this.fire('first-tier')) {
+      this.ring(640, 300, 30, 420, shade(c, 0.4), 10, 700, 0.8);
+      this.sparkBurst(640, 300, AEON_FILIGREE, this.d.settings.reduceMotion ? 6 : 22, 380);
+    }
+    this.bigRaysLevel = 0.3 + 0.2 * hump(t / s.durationMs);
+  }
+
+  private startMorph(to: DrumState, wipeMs: number): void {
+    this.settleMorph();
+    const rm = this.d.settings.reduceMotion;
+    const crest = to.crests > this.drum.state.crests;
+    if (crest) this.drum.beginCrestStamp(rm);
+    this.drum.beginTransmute(to, { crests: !crest });
+    this.morph = { to, wipeMs, t: 0, crest, crestDelay: rm ? 0 : Math.round(wipeMs * 0.3), crestMs: rm ? 150 : 340, crestHit: false };
+  }
+
+  private updateMorph(dt: number): void {
+    const m = this.morph;
+    if (!m) return;
+    m.t += dt;
+    this.drum.setTransmute(m.t / m.wipeMs);
+    if (m.crest) {
+      const u = (m.t - m.crestDelay) / m.crestMs;
+      this.drum.setOrnament(u);
+      if (u >= 0.5 && !m.crestHit) {
+        // The crest lands: a white-gold glint and a small punch.
+        m.crestHit = true;
+        const [x, y] = this.drum.crestPos(m.to.crests - 1, m.to.crests);
+        this.ring(PED.x + x, PED.y + y, 6, 60, AEON_FILIGREE, 5, 280, 0.9);
+        this.sparkBurst(PED.x + x, PED.y + y, AEON_FILIGREE, this.d.settings.reduceMotion ? 3 : 10, 220);
+        this.addPunch(0.012);
+      }
+    }
+    if (m.t >= m.wipeMs && (!m.crest || m.t >= m.crestDelay + m.crestMs)) this.settleMorph();
+  }
+
+  private settleMorph(): void {
+    const m = this.morph;
+    if (!m) return;
+    this.morph = null;
+    this.drum.endTransmute();
+    this.drum.setState(m.to);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // Top-tier staging (A10 step 4: the room reacts only to the tier already shown)
+  // ---------------------------------------------------------------------------------------------
+
+  private stageBuild(s: BurstStep, t: number, u: number, dt: number): void {
+    const level = stagingLevel(s.tier);
+    if (level === 0) return;
+    const rm = this.d.settings.reduceMotion;
+    const e = easeOutCubic(u);
+    this.camPushTarget = rm ? 0 : (STAGE_PUSH[level] ?? 0) * e;
+    this.dimTarget = Math.max(this.dimTarget, (STAGE_DIM[level] ?? 0) * span(t, 0, 320));
+    if (level === 1) {
+      // Gold: faint sunlight falls from above.
+      this.godRaysLevel = 0.75 * e;
+    } else if (level === 2) {
+      // Platinum: a cold top spotlight, and prismatic glints travel once around the drum.
+      this.coldLevel = span(t, 0, 320);
+      this.glints(t, dt);
+    } else {
+      // Aeon: the drum lifts, the starfield spills out behind it, the age glyphs gather in a halo.
+      this.drumLiftTarget = AEON_LIFT;
+      this.starfield.visible = true;
+      this.starKTarget = 1;
+      this.starSpread = Math.max(this.starSpread, easeOutCubic(span(t, 0, s.buildMs * 0.85)));
+      this.camTiltTarget = rm ? 0 : AEON_TILT * e;
+      this.haloGlyphs(t);
+    }
+  }
+
+  private stagePop(level: number): void {
+    const rm = this.d.settings.reduceMotion;
+    const k = rm ? 0.35 : this.lite ? 0.5 : 1;
+    this.camPushTarget = 0;
+    this.camTiltTarget = 0;
+    this.drumLiftTarget = 0;
+    if (level === 1) {
+      // Gold: 16 sparks and champagne gold leaf fluttering down for 1.5 s.
+      this.sparkBurst(CORE.x, CORE.y, TIER_RAMPS.gold.highlight, 16, 620);
+      this.goldLeaf(Math.round(40 * k));
+      this.godRaysLevel = 0.5;
+    } else if (level === 2) {
+      // Platinum: ice-crystal splinters and a frost ring on the pedestal (3 s).
+      this.splinters(CORE.x, CORE.y, Math.round(36 * k));
+      this.frostT = 0;
+      this.coldLevel = 0.7;
+    } else if (level >= 3) {
+      // Aeon: star dust from a pooled batch (≤ 160 sprites, Lite 80); the glyphs fly out; the
+      // starfield stays behind the cards until the summary.
+      this.starDust(CORE.x, CORE.y, rm ? 60 : this.lite ? 80 : 160);
+      this.glyphBurstT = 0;
+      this.starKTarget = 0.85;
+      this.starSpread = 1;
+    }
+  }
+
+  /** Prismatic glints travel once around the drum's outline (Platinum, 800 ms). */
+  private glints(t: number, dt: number): void {
+    const u = span(t, 100, 900);
+    if (u <= 0 || u >= 1) return;
+    this.glintT += dt;
+    const every = this.lite ? 34 : 16;
+    while (this.glintT >= every) {
+      this.glintT -= every;
+      const a = -Math.PI / 2 - u * Math.PI * 2;
+      const cx = Math.cos(a);
+      const sy = Math.sin(a);
+      const x = CORE.x + Math.sign(cx) * Math.pow(Math.abs(cx), 0.45) * 104;
+      const y = CORE.y - 14 + Math.sign(sy) * Math.pow(Math.abs(sy), 0.45) * 138;
+      const tint = HOLO_BANDS[Math.floor(u * 20) % HOLO_BANDS.length] ?? 0xffffff;
+      this.particles.spawn({ tex: starTexture(), x, y, vx: 0, vy: 0, life: 220, scale: [1.3, 0.2], alpha: [1, 0], tint: 0xffffff, add: true });
+      this.particles.spawn({ tex: dotTexture(), x, y, vx: (this.rng.next() - 0.5) * 40, vy: (this.rng.next() - 0.5) * 40, life: 420, scale: [1.1, 0], alpha: [0.9, 0], tint, add: true });
+    }
+  }
+
+  private haloGlyphs(t: number): void {
+    if (this.glyphs.length === 0) {
+      const ages = this.d.catalog.ages ?? DEFAULT_AGES;
+      const n = Math.max(1, ages.length);
+      ages.forEach((age, i) => {
+        const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
+        const c = ageGlyph(age, 46, { rim: AEON_FILIGREE, face: TIER_RAMPS.aeon.shadow });
+        const x = Math.cos(a) * 236;
+        const y = Math.sin(a) * 196;
+        c.position.set(x, y);
+        c.scale.set(0);
+        this.glyphHalo.addChild(c);
+        // Staggered so the whole halo takes at most 900 ms (A10 step 4).
+        this.glyphs.push({ c, x, y, at: (i * HALO_MS) / n });
+      });
+    }
+    const pop = 260;
+    for (const g of this.glyphs) {
+      const u = span(t, g.at, g.at + pop);
+      const sc = this.d.settings.reduceMotion ? (u > 0 ? 1 : 0) : easeOutBack(u, 2.2);
+      g.c.scale.set(sc);
+      g.c.alpha = this.d.settings.reduceMotion ? span(t, g.at, g.at + 150) : clamp01(u * 2);
+      if (u > 0 && u < 0.2 && this.fire(`glyph-${g.at}`)) this.sparkBurst(CORE.x + g.x, CORE.y - 6 + g.y, TIER_RAMPS.aeon.highlight, this.d.settings.reduceMotion ? 2 : 6, 160);
+    }
+  }
+
+  private goldLeaf(n: number): void {
+    const tints = [TIER_RAMPS.gold.highlight, TIER_RAMPS.gold.key, TIER_RAMPS.gold.mid, 0xfffbef];
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (this.rng.next() - 0.5) * 2.6;
+      const sp = 250 + this.rng.next() * 450;
+      this.particles.spawn({
+        tex: leafTexture(),
+        x: CORE.x + (this.rng.next() - 0.5) * 80,
+        y: CORE.y + (this.rng.next() - 0.5) * 80,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp,
+        life: 1500,
+        drag: 0.12,
+        gravity: 170,
+        scale: [0.9 + this.rng.next() * 0.8, 0.8],
+        alpha: [1, 0.4],
+        rot: this.rng.next() * 6,
+        vr: (this.rng.next() - 0.5) * 7,
+        tint: tints[i % tints.length] ?? 0xffffff,
+        flutter: true,
+      });
+    }
+  }
+
+  private splinters(x: number, y: number, n: number): void {
+    const tints = [TIER_RAMPS.platinum.highlight, TIER_RAMPS.platinum.key, 0xffffff, TIER_RAMPS.platinum.mid];
+    for (let i = 0; i < n; i++) {
+      const a = this.rng.next() * Math.PI * 2;
+      const sp = 520 + this.rng.next() * 760;
+      this.particles.spawn({ tex: splinterTexture(), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 120, life: 650 + this.rng.next() * 400, drag: 0.12, gravity: 520, scale: [0.8 + this.rng.next() * 0.9, 0.5], alpha: [1, 0], tint: tints[i % tints.length] ?? 0xffffff, align: true });
+      if (i % 3 === 0) this.particles.spawn({ tex: starTexture(), x: x + Math.cos(a) * 60, y: y + Math.sin(a) * 60, vx: Math.cos(a) * sp * 0.4, vy: Math.sin(a) * sp * 0.4, life: 500, drag: 0.2, scale: [1.2, 0], alpha: [1, 0], tint: 0xe8fffb, add: true });
+    }
+  }
+
+  private starDust(x: number, y: number, n: number): void {
+    const tints = [0xffffff, TIER_RAMPS.aeon.highlight, TIER_RAMPS.aeon.key, AEON_FILIGREE];
+    for (let i = 0; i < n; i++) {
+      const a = this.rng.next() * Math.PI * 2;
+      const sp = 60 + this.rng.next() * this.rng.next() * 620;
+      this.particles.spawn({
+        tex: i % 4 === 0 ? starTexture() : dotTexture(),
+        x: x + Math.cos(a) * 20,
+        y: y + Math.sin(a) * 20,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp * 0.8 - 30,
+        life: 1600 + this.rng.next() * 1000,
+        drag: 0.35,
+        gravity: -12,
+        scale: i % 4 === 0 ? [0.9 + this.rng.next() * 0.6, 0] : [0.5 + this.rng.next() * 0.6, 0.1],
+        alpha: [1, 0],
+        tint: tints[i % tints.length] ?? 0xffffff,
+        add: true,
+      });
+    }
+  }
+
+  /** Staging layers that run on their own clocks (god rays, spotlight, starfield, halo, frost). */
+  private updateStaging(dt: number): void {
+    const ease = (cur: number, want: number, ms: number) => cur + (want - cur) * Math.min(1, dt / ms);
+    const sink = 1 - 0.6 * this.pedSink;
+    this.godRays.alpha = ease(this.godRays.alpha, this.godRaysLevel * (1 - 0.8 * this.summaryDim), 180);
+    if (this.godRays.alpha > 0.01 && !this.lite) this.godRays.x = PED.x + Math.sin(this.time / 1400) * 18;
+    this.coldCone.alpha = ease(this.coldCone.alpha, 0.85 * this.coldLevel * sink, 160);
+    // The glyph halo: gathers during the build, flies out at the pop.
+    if (this.glyphBurstT >= 0) {
+      this.glyphBurstT += dt;
+      const u = clamp01(this.glyphBurstT / 650);
+      for (const g of this.glyphs) {
+        const k = 1 + 0.9 * easeOutCubic(u);
+        g.c.position.set(g.x * k, g.y * k);
+        g.c.alpha = 1 - u;
+        g.c.rotation = (this.d.settings.reduceMotion ? 0 : 0.6) * u * Math.sign(g.x || 1);
+      }
+      if (u >= 1) {
+        this.glyphBurstT = -1;
+        this.glyphHalo.visible = false;
+      }
+    }
+    // The starfield: spills out from behind the drum and stays until the summary.
+    const fanDim = this.fan && this.pedSink > 0.5 ? 0.75 : 1;
+    this.starK = ease(this.starK, this.starKTarget * fanDim, this.starKTarget > this.starK ? 200 : 500);
+    this.drawStarfield(dt);
+    this.drawFrost(dt);
+  }
+
+  private drawStarfield(dt: number): void {
+    const g = this.starG;
+    g.clear();
+    const k = this.starK;
+    this.starfield.visible = k > 0.01;
+    if (!this.starfield.visible) return;
+    const still = this.lite;
+    for (const n of this.nebula) n.alpha = 0.42 * k;
+    const spread = this.starSpread;
+    for (const st of this.fieldStars) {
+      if (st.d > spread) continue;
+      if (!still) {
+        st.x += (st.vx * dt) / 1000;
+        st.y += (st.vy * dt) / 1000;
+        if (st.y < -20) st.y += 760;
+      }
+      const edge = clamp01((spread - st.d) / 0.12);
+      const tw = still ? 0.85 : 0.55 + 0.45 * Math.sin(this.time / 380 + st.phase);
+      const a = k * edge * tw;
+      g.circle(st.x, st.y, st.r).fill({ color: st.tint, alpha: a });
+      if (st.r > 2.4) g.circle(st.x, st.y, st.r * 3.2).fill({ color: TIER_RAMPS.aeon.key, alpha: 0.22 * a });
+    }
+  }
+
+  /** The Platinum frost ring on the pedestal: rimes over, glitters, melts after 3 s. */
+  private drawFrost(dt: number): void {
+    const g = this.frostG;
+    g.clear();
+    if (this.frostT < 0) return;
+    this.frostT += dt;
+    const t = this.frostT;
+    if (t >= 3000) {
+      this.frostT = -1;
+      return;
+    }
+    const a = span(t, 0, 180) * (1 - span(t, 2200, 3000));
+    const r = TIER_RAMPS.platinum;
+    const grow = easeOutCubic(span(t, 0, 420));
+    g.ellipse(0, 1, 136 * grow, 19 * grow).stroke({ width: 7, color: r.key, alpha: 0.5 * a });
+    g.ellipse(0, 1, 136 * grow, 19 * grow).stroke({ width: 2, color: r.highlight, alpha: 0.95 * a });
+    g.ellipse(0, 1, 108 * grow, 14 * grow).stroke({ width: 1.5, color: r.highlight, alpha: 0.5 * a });
+    for (let i = 0; i < 18; i++) {
+      const th = (i / 18) * Math.PI * 2 + 0.2;
+      const x = Math.cos(th) * 136 * grow;
+      const y = 1 + Math.sin(th) * 19 * grow;
+      const len = (i % 3 === 0 ? 11 : 6) * grow;
+      const tw = this.lite ? 1 : 0.6 + 0.4 * Math.sin(this.time / 160 + i * 1.7);
+      g.poly([x, y - len, x + 2.5, y, x, y + len * 0.4, x - 2.5, y]).fill({ color: 0xffffff, alpha: a * tw });
+    }
+    g.position.set(PED.x, PED.y);
   }
 
   private enterVolley(s: VolleyStep, instant: boolean): void {
@@ -881,6 +1485,28 @@ export class CapsuleStage implements ShowView {
       if (m.burst) m.drum.setWhite(Math.max(0, 1 - (t - m.at) / 200));
     }
     this.bigRaysLevel = 0.3 * span(t, 0, s.durationMs);
+    // A Platinum or Aeon in the batch: its stinger and a 600 ms flare end the volley (A10 Rules).
+    const top = s.flare;
+    if (top && t >= s.flareAtMs && this.fire('volley-flare')) {
+      const c = TIER_COLORS[top];
+      const level = stagingLevel(top);
+      this.flash(0.55, shade(c, 0.55));
+      this.trauma.add(0.35);
+      this.addPunch(0.05);
+      this.bigRays.tint = c;
+      this.bigRays.scale.set(0.4);
+      this.bigRaysLevel = 0.8;
+      this.ring(640, 400, 40, 700, c, 22, 600, 1);
+      this.ring(640, 400, 30, 480, 0xffffff, 8, 420, 0.9);
+      if (level >= 3) {
+        this.starSpread = 1;
+        this.starKTarget = 0.8;
+        this.starDust(640, 400, this.lite ? 40 : 80);
+      } else {
+        this.splinters(640, 400, this.lite ? 12 : 24);
+      }
+    }
+    if (top && t >= s.flareAtMs) this.bigRaysLevel = lerp(0.8, 0.35, span(t, s.flareAtMs, s.flareAtMs + SHOW_TIMING.volleyFlareMs));
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -1155,7 +1781,13 @@ export class CapsuleStage implements ShowView {
   }
 
   private flash(alpha: number, color: number): void {
-    const a = this.d.settings.reduceMotion ? alpha * 0.4 : alpha;
+    let a = alpha;
+    if (this.d.settings.reduceMotion) {
+      // Reduce motion (A10, A12): at most 3 flashes a second, each at most 20%.
+      if (this.time - this.lastFlashAt < 334) return;
+      this.lastFlashAt = this.time;
+      a = Math.min(0.2, alpha * 0.4);
+    }
     if (a >= this.flashAlpha) this.flashColor = color;
     this.flashAlpha = Math.max(this.flashAlpha, a);
   }
@@ -1430,6 +2062,8 @@ export class CapsuleStage implements ShowView {
     this.fan?.tick(frozen ? 0 : dt);
     this.updateFlyers(fx);
     this.updateRings(fx);
+    this.updateMorph(frozen ? 0 : dt);
+    this.updateStaging(dt);
 
     // Room mood: dim and rarity tint.
     this.dimA += (this.dimTarget - this.dimA) * Math.min(1, dt / 180);
@@ -1444,9 +2078,12 @@ export class CapsuleStage implements ShowView {
     const sh = frozen ? this.lastShake : this.trauma.update(dt);
     this.lastShake = sh;
     this.punch *= Math.exp(-dt / 110);
-    this.world.scale.set(this.scale * (1 + this.punch));
+    // The top-tier camera push and tilt ease in through the build and back out after the pop.
+    this.camPush += (this.camPushTarget - this.camPush) * Math.min(1, dt / 240);
+    this.camTilt += (this.camTiltTarget - this.camTilt) * Math.min(1, dt / 240);
+    this.world.scale.set(this.scale * (1 + this.punch + this.camPush));
     this.world.position.set(this.w / 2 + sh.x * this.scale, this.h / 2 + sh.y * this.scale);
-    this.world.rotation = sh.rot;
+    this.world.rotation = sh.rot + this.camTilt;
   }
 
   private lastShake = { x: 0, y: 0, rot: 0 };
@@ -1503,11 +2140,17 @@ export class CapsuleStage implements ShowView {
         this.drum.root.rotation = 0;
       }
     }
-    if (this.pedKick > 0) {
+    const lifting = this.drumLift > 0.05 || this.drumLiftTarget > 0;
+    this.drumLift += (this.drumLiftTarget - this.drumLift) * Math.min(1, dt / 260);
+    if (this.pedKick > 0 || lifting) {
       this.pedKick = Math.max(0, this.pedKick - dt / 380);
       const pk = 9 * this.pedKick * Math.cos((1 - this.pedKick) * 12);
       this.pedestal.root.y = PED.y + pk;
-      this.drum.root.y = PED.y + pk;
+      // The Aeon drum rises off the pedestal (A10 step 4) and hovers.
+      const hover = this.drumLift > 0.5 && !this.d.settings.reduceMotion ? Math.sin(this.time / 210) * 1.5 : 0;
+      this.drum.root.y = PED.y + pk - this.drumLift + hover;
+      this.shadow.scale.set(1 - this.drumLift / 60);
+      this.shadow.alpha = 1 - this.drumLift / 30;
     }
     if (this.crateSquash > 0) {
       this.crateSquash = Math.max(0, this.crateSquash - dt / 400);
@@ -1517,18 +2160,31 @@ export class CapsuleStage implements ShowView {
     this.drumWhite = Math.max(0, this.drumWhite - dt / 220);
     this.drum.setWhite(this.drumWhite);
 
-    // Hammer: fades in, hovers, swings on strikes.
+    // Hammer: fades in, hovers, swings on strikes; before a summit strike it rises and heats white.
     this.hammerShown += (this.hammerTarget - this.hammerShown) * Math.min(1, dt / 90);
     this.hammer.root.alpha = this.hammerShown;
     this.hammer.root.x = HAMMER.x + 40 * (1 - this.hammerShown);
-    if (this.hammerT >= 0) {
+    this.hammerRaise += (this.hammerRaiseTarget - this.hammerRaise) * Math.min(1, dt / 140);
+    this.heat += (this.heatTarget - this.heat) * Math.min(1, dt / (this.heatTarget > this.heat ? 220 : 420));
+    this.hammer.setHeat(this.heat * (0.88 + 0.12 * Math.sin(this.time / 55)));
+    if (this.heat > 0.4 && this.hammerShown > 0.5) {
+      this.heatSparkT += dt;
+      while (this.heatSparkT > (this.lite ? 90 : 45)) {
+        this.heatSparkT -= this.lite ? 90 : 45;
+        const h = this.hammerHead();
+        this.particles.spawn({ tex: dotTexture(), x: h.x + (this.rng.next() - 0.5) * 90, y: h.y + (this.rng.next() - 0.5) * 50, vx: (this.rng.next() - 0.5) * 40, vy: -70 - this.rng.next() * 90, life: 520, scale: [0.6, 0], alpha: [0.9 * this.heat, 0], tint: 0xfff6e8, add: true });
+      }
+    }
+    if (this.hammerAngle !== null) {
+      this.hammer.root.rotation = this.hammerAngle;
+    } else if (this.hammerT >= 0) {
       const t = this.hammerT;
       this.hammer.root.rotation =
         t < HAMMER.impactMs
           ? lerp(HAMMER.rest + 0.12, HAMMER.hit, easeInQuad(t / HAMMER.impactMs))
           : lerp(HAMMER.hit, HAMMER.rest, easeOutBack(span(t, HAMMER.impactMs, 520), 1.8));
     } else {
-      this.hammer.root.rotation = HAMMER.rest + Math.sin(this.time / 240) * 0.05;
+      this.hammer.root.rotation = HAMMER.rest + 0.5 * this.hammerRaise + Math.sin(this.time / 240) * 0.05;
     }
 
     // Climb wave ring.

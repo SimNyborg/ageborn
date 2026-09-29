@@ -35,7 +35,9 @@ function climbTable(content: CompiledContent | undefined): Partial<Record<Capsul
 
 export function createCatalog(content?: CompiledContent): CapsuleCatalog {
   const climbs = climbTable(content);
+  const ages = content ? Object.values(content.ages).sort((a, b) => a.index - b.index).map((a) => a.id) : undefined;
   return {
+    ...(ages && ages.length > 0 ? { ages } : {}),
     card(id) {
       const unit = content?.units[id];
       if (unit) return { age: unit.age, visualId: unit.visualId, nameKey: unit.nameKey, view: 'unit', group: unit.group, cls: unitClass(unit), legendary: isLegendaryUnit(unit) };

@@ -5,8 +5,8 @@
  *
  * Positions are given as the side's own progress p in whole lu; gold and XP in whole units.
  */
-import type { CardId, Side, Sim, SimEvent, UnitState } from '@/contracts';
-import { BP, MILLI, PPM, assert } from '@/core';
+import type { CardId, PowerSlot, Side, Sim, SimEvent, UnitState } from '@/contracts';
+import { BP, MILLI, PPM, assert, slotIndex } from '@/core';
 import { SimImpl } from './createSim';
 import { xOf } from './geometry';
 import { refreshSideFx } from './research';
@@ -76,9 +76,14 @@ export function devSetXp(sim: Sim, side: Side, xp: number): void {
   impl(sim).ctx.s.sides[side].xp = Math.trunc(xp * MILLI);
 }
 
-/** Sets a side's Age Power charge in ppm. */
-export function devSetPower(sim: Sim, side: Side, ppm: number): void {
-  impl(sim).ctx.s.sides[side].powerPpm = Math.max(0, Math.min(PPM, Math.trunc(ppm)));
+/** Sets a side's power slot reload progress in ppm (both slots when `slot` is omitted; A2.9.3). */
+export function devSetPower(sim: Sim, side: Side, ppm: number, slot?: PowerSlot): void {
+  const s = impl(sim).ctx.s.sides[side];
+  const v = Math.max(0, Math.min(PPM, Math.trunc(ppm)));
+  for (const i of slot === undefined ? [0, 1] : [slotIndex(slot)]) {
+    s.powerPpm[i] = v;
+    s.powerRem[i] = 0;
+  }
 }
 
 /** Sets a side's base HP as bp of its max. */

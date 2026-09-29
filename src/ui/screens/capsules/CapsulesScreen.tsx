@@ -7,10 +7,15 @@
  * Wardrobe Crate with its name and source; tapping a tile opens that one. Under the shelf the banks,
  * each only after its first progress (2.6), each with its A15.3 cap line ("Holds up to N. When full,
  * it stops filling."). No timers. "Open all" (secondary) when 2 or more capsules wait.
+ *
+ * A Win, Supply or Clay meter capsule shows its start tier and kind name until it is opened; a
+ * fixed-tier capsule its tier, name and Legendary crests (the 2026-09-29 ladder, A10). The one-time
+ * "Two new capsule tiers" card sits at the top of the shelf column until closed.
  */
 import './capsules.css';
-import { capsuleTierNameKey } from '@/content/keys';
 import type { PendingCapsule, PendingCrate } from '@/contracts';
+import { pendingCrests, pendingNameKey, tierCrests, visibleTier } from '../../components/capsuleLook';
+import { LadderNotice } from '../../components/LadderNotice';
 import { useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { formatInt } from '../../components/format';
@@ -58,12 +63,16 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
   const ladder = featureOpen(s, content, 'ladder');
   const clay = Math.min(s.capsules.clayMeter, content.capsules.clayMeterPips);
 
-  const name = (x: ShelfItem): string =>
-    x.kind === 'crate' ? t('ui.capsules.crate') : x.c.scriptIndex !== null ? t('ui.capsules.starter') : t(capsuleTierNameKey(x.c.startTier));
+  const caps = content.capsules;
+  const name = (x: ShelfItem): string => (x.kind === 'crate' ? t('ui.capsules.crate') : t(pendingNameKey(caps, x.c)));
+  const shown = (x: ShelfItem): string => (x.kind === 'crate' ? 'crate' : visibleTier(caps, x.c));
   const source = (x: ShelfItem): string =>
     x.kind === 'crate' ? t(CRATE_FROM_KEY[x.c.source]) : x.c.scriptIndex !== null ? t('ui.capsules.starterSource') : t(FROM_KEY[x.c.kind]);
   const open = (x: ShelfItem) => (x.kind === 'crate' ? services.openWardrobe(x.c.id) : services.openCapsule(x.c.id));
-  const icon = (x: ShelfItem, size: number) => (x.kind === 'crate' ? <CrateIcon size={size} /> : <CapsuleIcon tier={x.c.startTier} size={size} />);
+  const icon = (x: ShelfItem, size: number) =>
+    x.kind === 'crate' ? <CrateIcon size={size} /> : <CapsuleIcon tier={visibleTier(caps, x.c)} crests={pendingCrests(caps, x.c)} size={size} />;
+  const notice = s.flags['notice.capsuleLadder'] === true;
+  const noticeTiers = caps.tierOrder.map((tier) => ({ tier, crests: tierCrests(caps, tier) })).filter((x) => x.crests > 0);
 
   const banks = [
     ladder
@@ -99,7 +108,7 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
             <>
               <div class="caps-stage__hero">
                 <span class="caps-stage__glow" aria-hidden="true" />
-                <span class={`caps-stage__drum caps-stage__drum--${best.kind === 'crate' ? 'crate' : best.c.startTier}`} key={best.c.id}>
+                <span class={`caps-stage__drum caps-stage__drum--${shown(best)}`} key={best.c.id}>
                   {icon(best, 128)}
                 </span>
                 <span class="caps-stage__name" data-clip-check="">
@@ -111,7 +120,7 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
                 <Button kind="secondary" size="m" icon={<InfoIcon size={20} />} testid="odds-open-stage" onClick={() => setInfo(true)}>
                   {t('ui.capsules.odds')}
                 </Button>
-                <Button kind="primary" size="l" pulse testid="open-one" icon={best.kind === 'crate' ? <CrateIcon size={24} /> : <CapsuleIcon tier={best.c.startTier} size={26} />} onClick={() => open(best)}>
+                <Button kind="primary" size="l" pulse testid="open-one" icon={best.kind === 'crate' ? <CrateIcon size={24} /> : <CapsuleIcon tier={visibleTier(caps, best.c)} size={26} />} onClick={() => open(best)}>
                   {t('ui.capsules.open')}
                 </Button>
               </div>
@@ -135,6 +144,9 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
         </section>
 
         <div class="caps-side">
+          {notice ? (
+            <LadderNotice tiers={noticeTiers} legacy={services.legacySkillAeons()} onClose={() => services.dismissNotice('capsuleLadder')} />
+          ) : null}
           {items.length > 1 ? (
             <section class="caps-shelf" aria-label={t('ui.capsules.shelf', { n: items.length })}>
               <header class="caps-shelf__head">
@@ -150,7 +162,7 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
                   <li key={x.c.id} style={{ '--i': Math.min(i, 10) }}>
                     <button
                       type="button"
-                      class={`caps-tile${i === 0 ? ' is-best' : ''}${x.kind === 'crate' ? ' caps-tile--crate' : ` caps-tile--${x.c.startTier}`}`}
+                      class={`caps-tile${i === 0 ? ' is-best' : ''} caps-tile--${shown(x)}`}
                       data-testid={x.kind === 'crate' ? `crate-${x.c.id}` : `drum-${x.c.id}`}
                       aria-label={t('ui.home.openOne', { name: name(x) })}
                       onClick={() => open(x)}

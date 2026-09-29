@@ -54,8 +54,17 @@
       "auto": {
         "stampede": "Charges from your front line",
         "paradrop": "Lands behind the enemy front",
-        "buffAll": "Boosts all your troops"
-      }
+        "buffAll": "Boosts all your troops",
+        "suppress": "Jams their turrets",
+        "strike": "Locks the nearest enemy"
+      },
+      "hits": "Hits {n} of {m}",
+      "cost": "−{n}",
+      "home": "Your half",
+      "front": "Near your army",
+      "onlyHome": "Only in your half",
+      "onlyFront": "Only near your army",
+      "noTarget": "No target"
     },
     "lastStand": "Last Stand",
     "mount": {
@@ -108,7 +117,8 @@
     "armyLabel": "Your units on the field",
     "ready": "Ready",
     "key": {
-      "space": "Space"
+      "space": "Space",
+      "x": "X"
     },
     "newUnits": "New units!",
     "council": {
@@ -166,7 +176,12 @@
       "evolving": "Evolving…",
       "power": "Charging: {pct}%",
       "stanceWait": "Ready in {s}s",
-      "wait": "Not yet"
+      "wait": "Not yet",
+      "powerGold": "Need {n} gold",
+      "powerReload": "Ready in {s} s",
+      "powerNoTarget": "No target there",
+      "powerOutOfReach": "Get closer to their turrets",
+      "powerLockout": "Wait {s} s"
     },
     "inField": "In field"
   }

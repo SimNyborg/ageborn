@@ -37,8 +37,9 @@ export interface RevealCard {
   /** Dust this stack converted into (max level cards, duplicate skins). */
   dust: number;
   /**
-   * The first time this Legendary is revealed (listed in `firstLegendaryReveal`, or NEW): the full
-   * walkout plays and cannot be skipped (A10 step 6).
+   * The full, unskippable walkout (A10 step 6): the first time this Legendary is revealed (listed in
+   * `firstLegendaryReveal`, or NEW), and only for the first such Legendary of one opening (a single
+   * show or one Open all batch). Every other Legendary walkout is 3 s and skippable.
    */
   firstLegendary: boolean;
   /** Indexes of the capsules this card came from. */
@@ -89,7 +90,7 @@ export function revealCards(reveals: readonly CapsuleReveal[], catalog: CapsuleC
     for (const st of rev.capsule.contents.stacks) {
       const key = `c:${st.card}`;
       // A NEW Legendary is by definition revealed for the first time, even if the meta's
-      // `firstLegendaryReveal` list missed it: the full walkout never turns into a skippable one.
+      // `firstLegendaryReveal` list missed it. (Only the first of them keeps the full walkout; below.)
       const first = st.rarity === 'legendary' && (firstLegendary.has(st.card) || st.isNew);
       const had = byKey.get(key);
       if (had) {
@@ -149,6 +150,13 @@ export function revealCards(reveals: readonly CapsuleReveal[], catalog: CapsuleC
   });
   const sorted = order.slice().sort(cmpReveal);
   sorted.forEach((c, i) => (c.slot = i));
+  // At most one full walkout per opening (A10 Rules): the first first-time Legendary in reveal order.
+  let full = false;
+  for (const c of sorted) {
+    if (!c.firstLegendary) continue;
+    if (full) c.firstLegendary = false;
+    full = true;
+  }
   return sorted;
 }
 

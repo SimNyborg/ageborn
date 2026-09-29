@@ -1,20 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import type { CapsuleTier } from '@/contracts';
-import { climbCount, isBackLoaded, resolveStrikes, strikePattern, TIER_ORDER, tierIndex } from '../tiers';
+import { climbCount, isBackLoaded, resolveStrikes, strikePattern, strikeSplit, SUMMIT_ABOVE, TIER_ORDER, tierIndex } from '../tiers';
 import { reveal, stack } from './fixtures';
 
 describe('tiers (DESIGN A10 step 3)', () => {
   it('orders tiers Clay → Aeon', () => {
-    expect(TIER_ORDER).toEqual(['clay', 'bronze', 'silver', 'jade', 'aeon']);
+    expect(TIER_ORDER).toEqual(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
     expect(tierIndex('clay')).toBe(0);
-    expect(tierIndex('aeon')).toBe(4);
+    expect(tierIndex('gold')).toBe(4);
+    expect(tierIndex('aeon')).toBe(6);
   });
 
-  it('counts climbs as the tier index above the start tier', () => {
+  it('counts climbs as the tier index above the start tier (main plus summit strikes)', () => {
     expect(climbCount('clay', 'clay')).toBe(0);
-    expect(climbCount('clay', 'aeon')).toBe(4);
+    expect(climbCount('clay', 'gold')).toBe(4);
+    expect(climbCount('clay', 'aeon')).toBe(6);
     expect(climbCount('bronze', 'jade')).toBe(2);
     expect(climbCount('silver', 'bronze')).toBe(0);
+    expect(strikeSplit('clay', 'aeon')).toEqual({ main: 4, summit: 2 });
+    expect(strikeSplit('bronze', 'platinum')).toEqual({ main: 3, summit: 1 });
+    expect(strikeSplit('platinum', 'platinum')).toEqual({ main: 0, summit: 0 });
   });
 
   it('back-loads the climbs: 4 − k misses, then k climbs', () => {
@@ -41,7 +46,11 @@ describe('tiers (DESIGN A10 step 3)', () => {
         expect(isBackLoaded(r.strikes)).toBe(true);
         expect(r.climbs).toBe(tierIndex(tier) - tierIndex(start));
         expect(r.startShown).toBe(start);
-        expect(r.tiersAfter[3]).toBe(tier);
+        // The main strikes end at the rolled tier or at Gold; summit strikes climb the rest, one each.
+        const top = tierIndex(SUMMIT_ABOVE);
+        expect(r.tiersAfter[3]).toBe(TIER_ORDER[Math.min(tierIndex(tier), Math.max(top, tierIndex(start)))]);
+        expect(r.summitTiers).toEqual(TIER_ORDER.slice(Math.max(top, tierIndex(start)) + 1, tierIndex(tier) + 1));
+        expect([...r.tiersAfter, ...r.summitTiers].at(-1)).toBe(tier);
         // Each climb raises the shown tier by exactly one step.
         let prev: CapsuleTier = start;
         r.strikes.forEach((climb, i) => {

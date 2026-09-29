@@ -68,7 +68,7 @@ const SCENARIOS: Scenario[] = [
           script: [
             { tick: 400, side: 0, unlockSlot: 1 },
             { tick: 800, side: 0, grantGold: 150 },
-            { tick: 1600, side: 0, setPowerPpm: 1000000 },
+            { tick: 1600, side: 0, setPowerPpm: { slot: 'home', ppm: 1000000 } },
           ],
         },
       }),

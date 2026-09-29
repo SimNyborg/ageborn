@@ -2,23 +2,33 @@
  * Simulation state, configuration and replay contracts (DESIGN B15 `sim.ts`, B3, A2.7).
  *
  * Integer state (DESIGN B3): positions in milli-lu (lane = 1,200,000), HP/shields/damage in centi-units,
- * gold and XP in milli-units, power charge in parts per million, multipliers in bp.
+ * gold and XP in milli-units, power reload progress in parts per million, multipliers in bp.
  * The sim is pure and deterministic: seeded sfc32 RNG in `SimState.rng`, no floats in stat math,
  * no `Math.random`, `Date` or DOM (DESIGN B2, B3). Implemented by WP2 in `src/sim`.
  */
 import type { StanceMode, TimedCommand } from './commands';
-import type { CompiledContent, StatusKind } from './content';
+import type { CompiledContent, PowerSlot, StatusKind } from './content';
 import type { MatchOutcome, SimEvent } from './events';
 import type { AgeId, CardId, FormatId, RoleGroup, Side, SideLook, SkinId, VisualId } from './ids';
 import type { Observation } from './observation';
 
-/** One age loadout of a War Plan: 6 unit slots, 2 turret slots, 1 power (DESIGN A3, A18.9). */
+/** One age loadout of a War Plan: 6 unit slots, 2 turret slots, 2 typed power slots (DESIGN A3, A18.9, A2.9.1). */
 export interface Loadout {
   /** Length 6 (A18.9 six troops; 5 before SIM_VERSION 3.0.0, a shorter array plays as empty slots). */
   units: (CardId | null)[];
   /** Length 2. */
   turrets: (CardId | null)[];
-  power: CardId;
+  /**
+   * The Home and Field power slots (A2.9.1; `power: CardId` before SIM_VERSION 4.0.0). An empty slot is
+   * legal and its cast is rejected (`noPower`); a meta-locked slot arrives empty (the match rule).
+   */
+  powers: LoadoutPowers;
+}
+
+/** A loadout's two power slots (DESIGN A2.9.1). */
+export interface LoadoutPowers {
+  home: CardId | null;
+  field: CardId | null;
 }
 
 /** One side of a match. Bots are labeled AI on every surface (DESIGN A7.1). */
@@ -65,7 +75,8 @@ export interface TrainingEvent {
   side: Side;
   grantGold?: number;
   unlockSlot?: number;
-  setPowerPpm?: number;
+  /** Sets one power slot's reload progress (ppm); 1,000,000 makes it ready (A8 tutorial beat). */
+  setPowerPpm?: { slot: PowerSlot; ppm: number };
 }
 
 /** Everything needed to start a deterministic match (DESIGN B3, B11 BattleSession). */
@@ -177,12 +188,16 @@ export interface ProjectileState {
 export interface PowerCastState {
   castId: number;
   side: Side;
+  /** The slot it was cast from (A2.9.1). */
+  slot: PowerSlot;
   power: CardId;
   startTick: number;
   x: number;
   zone: number;
   nextIndex: number;
   levelBp: number;
+  /** A strike's locked unit id, −1 otherwise (A2.9.7). */
+  targetId: number;
 }
 
 export interface SideState {
@@ -199,7 +214,16 @@ export interface SideState {
   treasury: number;
   mountsOwned: number;
   turrets: (TurretState | null)[];
-  powerPpm: number;
+  /**
+   * Reload progress per power slot in ppm, [Home, Field] (A2.9.3); 1,000,000 = reloaded. Empty slots
+   * accrue too. `powerRem` carries the integer remainder so every reload is exact.
+   */
+  powerPpm: [number, number];
+  powerRem: [number, number];
+  /** The optional shared lockout (`economy.power.lockMs`): no cast before this tick (A2.9.3). */
+  powerLockoutUntil: number;
+  /** Per mount (own mounts, the extra boss mount included): no turret attack starts before this tick (Suppress, A2.9.7). */
+  mountSilencedUntil: number[];
   stance: StanceMode;
   stanceReadyTick: number;
   /** The Hold flag, own-side p in milli-lu (A18.4.2), and when it may move again. */

@@ -44,7 +44,13 @@
     "aria": {
       "stage": "Capsule opening. Tap to strike, hold to fast-forward.",
       "crateStage": "Wardrobe Crate opening. Hold to fast-forward.",
-      "skip": "Skip to the results"
+      "skip": "Skip to the results",
+      "summitStrike": "Summit strike. Tap to strike."
+    },
+    "firstTier": {
+      "gold": "Your first Gold Capsule",
+      "platinum": "Your first Platinum Capsule",
+      "aeon": "Your first Aeon Capsule"
     },
     "honesty": "The result was decided when you earned this capsule. Tapping only reveals it.",
     "kind": {

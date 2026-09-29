@@ -4,7 +4,7 @@
  * Human and bot commands go through the same queue and are all recorded in the replay (DESIGN B3).
  * Invalid commands are ignored by the sim and emit `commandRejected` (DESIGN B3 step 1).
  */
-import type { ResearchClass, ResearchTrack } from './content';
+import type { PowerSlot, ResearchClass, ResearchTrack } from './content';
 import type { EmoteId, Side } from './ids';
 
 /** A tray slot: 6 unit cards per loadout from A18 phase 2 (DESIGN A18.9; was 5). */
@@ -36,8 +36,13 @@ export type Command =
   | { t: 'researchCancel'; side: Side }
   /** Evolve to the next age when XP ≥ threshold (DESIGN A2.4). */
   | { t: 'evolve'; side: Side }
-  /** Own-side progress in lu; omitted = auto-aim (DESIGN A2.9 Casting). */
-  | { t: 'power'; side: Side; p?: number }
+  /**
+   * Cast the power in `slot` (DESIGN A2.9.7). `p` is the own-side aim in lu, truncated to milli-lu and
+   * clamped into the power's reach band; omitted = auto-aim. Powers without aim ignore `p`. The cost is
+   * paid on acceptance. Rejections, in order: `badCommand`, `noPower`, `powerReloading`,
+   * `powerLockout`, `powerOutOfReach`, `powerNoTarget`, `noGold`.
+   */
+  | { t: 'power'; side: Side; slot: PowerSlot; p?: number }
   /**
    * Stance and Hold flag (DESIGN A18.4.2): a mode change is accepted once per 3 s, a flag move once per
    * 1 s. `holdP` (own-side p in lu) moves the Hold flag; the sim clamps it to [320, 800] and snaps it to

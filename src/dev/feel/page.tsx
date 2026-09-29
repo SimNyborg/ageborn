@@ -103,7 +103,7 @@ function trigger(api: StageApi, kind: string): void {
   const mine = pick(0) ?? pick(null);
   const ages = ageOrder(api.source.sim.config);
   const nextAge = (side: Side): AgeId => ages[Math.min(ages.length - 1, st.sides[side].ageIndex + 1)] ?? 'medieval';
-  const powerOf = (side: Side): string => api.source.sim.config.sides[side].loadouts[ages[st.sides[side].ageIndex] ?? 'stone']?.power ?? '';
+  const powerOf = (side: Side): string => api.source.sim.config.sides[side].loadouts[ages[st.sides[side].ageIndex] ?? 'stone']?.powers.home ?? '';
   const hit = (heavy: boolean, modBp: number, dmg: number): SimEvent[] =>
     foe
       ? [
@@ -178,7 +178,7 @@ function trigger(api: StageApi, kind: string): void {
       const fx = api.source.sim.config.content.powers[power]?.effect;
       const zone = fx === undefined ? 400 : 'zone' in fx ? fx.zone : fx.kind === 'cloud' ? fx.width : fx.kind === 'stampede' ? fx.distance : 0;
       // Sim units: x and zone in milli-lu (B3).
-      api.inject([{ tick, e: 'powerTelegraph', side: 0, power, castId: 999, x, zone: zone * 1000 }]);
+      api.inject([{ tick, e: 'powerTelegraph', side: 0, slot: 'home', power, castId: 999, x, zone: zone * 1000, cost: 0, targetId: -1, telegraphMs: 1000 }]);
       const spread = fx?.kind === 'barrage' || fx?.kind === 'sweep';
       const impacts = fx?.kind === 'barrage' ? fx.count : fx?.kind === 'stampede' ? fx.runners : fx?.kind === 'sweep' ? Math.round(fx.durationMs / 50) : 1;
       const spanMs = spread ? fx.durationMs : fx?.kind === 'stampede' ? fx.spacingMs * impacts : 0;

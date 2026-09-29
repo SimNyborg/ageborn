@@ -6,17 +6,66 @@
  */
 import type { AgeId, CapsuleTier, Foil, Rarity } from '@/contracts';
 
-/** Capsule tier colours (A10 table). */
+/**
+ * Capsule tier key colours (A10 table). Tier colours are fills, glows and gems, never text, and
+ * none of them is a rarity colour: the Gold, Platinum and Aeon keys (and their drum ramps below)
+ * are at least ΔE2000 12 from every rarity, team and button colour (`test/palette.test.ts`).
+ */
 export const TIER_COLORS: Readonly<Record<CapsuleTier, number>> = {
   clay: 0x9c6b4a,
   bronze: 0xc27c3a,
   silver: 0xc9d1dc,
   jade: 0x2fbf71,
-  aeon: 0x8b5cf6,
+  // The 2026-09-29 ladder: champagne Gold, ice Platinum, electric-indigo Aeon.
+  gold: 0xefe0b0,
+  platinum: 0xc4f2ea,
+  aeon: 0x5d3dff,
 };
 
-/** Every Aeon capsule carries a gold rim (A10: "Violet with a gold rim"). */
-export const AEON_RIM = 0xf2c14e;
+/** A drum material ramp: highlight, key, mid-tone and shadow (A10 table). */
+export interface TierRamp {
+  highlight: number;
+  key: number;
+  mid: number;
+  shadow: number;
+}
+
+/**
+ * The drum body ramps. Gold, Platinum and Aeon use the reference ramps of DESIGN A10 exactly (no
+ * saturated "burnished" gold anywhere on a drum); the four older tiers are shaded from their keys.
+ * Aeon's shadow is the midnight body of the time crystal.
+ */
+export const TIER_RAMPS: Readonly<Record<CapsuleTier, TierRamp>> = {
+  clay: { highlight: 0xc49272, key: 0x9c6b4a, mid: 0x86593c, shadow: 0x5a3a26 },
+  bronze: { highlight: 0xe7a86a, key: 0xc27c3a, mid: 0xa4642a, shadow: 0x6a3f1a },
+  silver: { highlight: 0xf4f7fb, key: 0xc9d1dc, mid: 0xa9b3c1, shadow: 0x6f7888 },
+  jade: { highlight: 0x8ae8b4, key: 0x2fbf71, mid: 0x21985a, shadow: 0x13603a },
+  gold: { highlight: 0xfff6dc, key: 0xefe0b0, mid: 0xcdb887, shadow: 0x8a7a5a },
+  platinum: { highlight: 0xf2fffc, key: 0xc4f2ea, mid: 0xa6d4cd, shadow: 0x7e9e99 },
+  aeon: { highlight: 0xb8aaff, key: 0x5d3dff, mid: 0x3a2a9e, shadow: 0x241c4a },
+};
+
+/**
+ * What fills a drum's carved ring grooves: dark shade by default, verdigris for Bronze, lapis enamel
+ * for Gold (A10 materials).
+ */
+export const GROOVE_COLORS: Readonly<Partial<Record<CapsuleTier, number>>> = {
+  bronze: 0x4f8f7f,
+  gold: 0x2b4c9b,
+};
+
+/**
+ * The Legendary crest (A10): the Legendary star gem on a dark enamel shield with a white-gold rim.
+ * The star has 10.2:1 on its shield (1.36:1 straight on the brass, so it is never drawn without
+ * the shield), and the shield has 7.5:1 on the brass band.
+ */
+export const CREST = { star: 0xf5b82e, shield: 0x1d1405, rim: 0xf4ecd8 } as const;
+
+/** The Aeon crystal's white-gold filigree and its starfield. */
+export const AEON_FILIGREE = 0xf4ecd8;
+
+/** A summit gem that has risen but not yet been struck: clear, colourless crystal (never the next tier's colour). */
+export const SUMMIT_GEM_UNLIT = 0xdfe3ea;
 
 /** Rarity colours, UI only (A10 Rules). */
 export const RARITY_COLORS: Readonly<Record<Rarity, number>> = {

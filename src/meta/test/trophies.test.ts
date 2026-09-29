@@ -84,7 +84,8 @@ describe('Trophy Road (A6.3)', () => {
     let s = at(scripted(), 3400);
     s = claim(s, 3400);
     expect(s.skins.owned).toContain('crystal_spire');
-    expect(s.capsules.pending.some((p) => p.kind === 'road' && p.tier === 'aeon' && p.startTier === 'aeon')).toBe(true);
+    // The 2026-09-29 ladder: Gate 8 gives a Platinum Capsule
+    expect(s.capsules.pending.some((p) => p.kind === 'road' && p.tier === 'platinum' && p.startTier === 'platinum')).toBe(true);
     s = claim(s, 1000);
     expect(s.capsules.wardrobe.at(-1)?.source).toBe('road');
     const before = s.currencies.dust;

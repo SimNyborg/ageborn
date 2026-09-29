@@ -95,7 +95,7 @@ export class AdaptiveHints {
     }
     this.deaths = this.deaths.filter((d) => tick - d.tick <= ADAPTIVE.windowTicks);
     const me = i.state.sides[i.side];
-    this.powerFullSince = me.powerPpm >= PPM_FULL ? (this.powerFullSince ?? tick) : null;
+    this.powerFullSince = me.powerPpm[0] >= PPM_FULL ? (this.powerFullSince ?? tick) : null;
     this.evolveReadySince = evolveReady(i) ? (this.evolveReadySince ?? tick) : null;
     this.outdatedSince = this.moderniseAffordable(i) ? (this.outdatedSince ?? tick) : null;
   }

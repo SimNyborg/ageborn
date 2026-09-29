@@ -21,7 +21,7 @@
  * match (A7.2), so later emote lines are dropped.
  */
 import type { BotProfile, CardId, Command, CompiledContent, EmoteId, Observation, Side } from '@/contracts';
-import { PPM, msToTicks } from '@/core';
+import { msToTicks } from '@/core';
 import { toCommand, type BotAction } from './actions';
 import { cardBook, type CardBook } from './book';
 import { botSeed, type AiBotController } from './controller';
@@ -234,7 +234,7 @@ export class ScriptedController implements AiBotController {
         return { kind: 'build', mount, slot, card: sa.card, cost: def.cost };
       }
       case 'power':
-        return v.powerReady && v.obs.me.powerPpm >= PPM ? { kind: 'power', p: null } : null;
+        return v.powerReady && v.powerSlot !== null ? { kind: 'power', p: null, slot: v.powerSlot } : null;
       case 'emote':
         return now >= this.ledger.lastEmoteTick + e.emoteCooldownTicks + 1 ? { kind: 'emote', emote: sa.emote } : null;
     }

@@ -6,6 +6,7 @@
  */
 import type { AgeId, CapsuleTier, Rarity, Role, RoleGroup } from '@/contracts';
 import type { ComponentChildren } from 'preact';
+import './capsuleLadder.css';
 
 export interface IconProps {
   size?: number;
@@ -29,7 +30,10 @@ export const TIER_COLOR: Record<CapsuleTier, string> = {
   bronze: '#C27C3A',
   silver: '#C9D1DC',
   jade: '#2FBF71',
-  aeon: '#8B5CF6',
+  // The 2026-09-29 ladder (A10, ui-plan 3.2): champagne Gold, ice Platinum, electric-indigo Aeon
+  gold: '#EFE0B0',
+  platinum: '#C4F2EA',
+  aeon: '#5D3DFF',
 };
 
 /** A11 age accents and large-area colours, for UI tints. */
@@ -722,30 +726,200 @@ export function AgeGlyph(p: IconProps & { age: AgeId }) {
 // Capsules, crates, rarity gems
 // ---------------------------------------------------------------------------------------------
 
-/** The capsule drum of A10 (carved stone and brass, 5 age rings) in its tier colour. */
-export function CapsuleIcon(p: IconProps & { tier: CapsuleTier }) {
-  const c = TIER_COLOR[p.tier];
-  const gid = `cap-${p.tier}`;
+/**
+ * The ladder the drum icon draws, lowest first. It mirrors `content.capsules.tierOrder` (the UI draws
+ * without the content tables; a test keeps the two equal, as `src/capsule/tiers.ts` does).
+ */
+export const TIER_LADDER: readonly CapsuleTier[] = ['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon'];
+/**
+ * The drum carves 5 rings (A10): tiers up to `capsules.summitAbove` light rings 1 to index + 1, and
+ * each tier above it adds one summit gem in the cap band. A test keeps `DRUM_RINGS - 1` equal to the
+ * index of `summitAbove`.
+ */
+export const DRUM_RINGS = 5;
+
+/** Tier material ramps (highlight, key, mid-tone, shadow); DESIGN A10 and the 2026-09-29 ladder spec. */
+const TIER_RAMP: Record<CapsuleTier, readonly [string, string, string, string]> = {
+  clay: ['#CFA283', '#9C6B4A', '#7E5238', '#553423'],
+  bronze: ['#EDB57A', '#C27C3A', '#9C5F27', '#6A3E19'],
+  silver: ['#F5F8FB', '#C9D1DC', '#A3ADBB', '#6C7584'],
+  jade: ['#96EDBB', '#2FBF71', '#22955A', '#155F39'],
+  gold: ['#FFF6DC', '#EFE0B0', '#CDB887', '#8A7A5A'],
+  platinum: ['#F2FFFC', '#C4F2EA', '#A6D4CD', '#7E9E99'],
+  aeon: ['#B8AAFF', '#5D3DFF', '#3A2A9E', '#241C4A'],
+};
+/** What fills a drum's ring grooves: lapis enamel on Gold, dark carving elsewhere. */
+const GROOVE: Partial<Record<CapsuleTier, string>> = { gold: '#2B4C9B' };
+/** Surface finish: brushed streaks on platinum, a drifting starfield in the Aeon time crystal. */
+const FINISH: Partial<Record<CapsuleTier, 'brushed' | 'stars'>> = { platinum: 'brushed', aeon: 'stars' };
+/** Every tier icon's outer contour (WCAG 1.4.11: the Aeon fill alone is under 3:1 on the surfaces). */
+const PARCHMENT = '#F4ECD8';
+/** The Legendary crest: the Legendary star on a dark enamel shield (the one rarity colour on a capsule). */
+const CREST_SHIELD = '#1D1405';
+
+// The drum's geometry in its 40 × 40 view: a cylinder (rx 13, ry 3.8) with the cap's top face at
+// y 8, the stone cap band 8-11.5 (summit gems), the brass band 11.5-16 (crests) and the body 16-32
+// (5 carved rings).
+const RX = 13;
+const RY = 3.8;
+const SILHOUETTE = `M7 8V32A${RX} ${RY} 0 0 0 33 32V8A${RX} ${RY} 0 0 0 7 8Z`;
+const band = (y1: number, y2: number) => `M7 ${y1}V${y2}A${RX} ${RY} 0 0 0 33 ${y2}V${y1}A${RX} ${RY} 0 0 1 7 ${y1}Z`;
+/** The front arc's drop below the band line at x (0 at the rim, RY at the centre). */
+const arcDrop = (x: number) => RY * Math.sqrt(Math.max(0, 1 - ((x - 20) / RX) ** 2));
+const RING_Y = [30.6, 27.3, 24, 20.7, 17.4];
+const star = (cx: number, cy: number, r: number) =>
+  Array.from({ length: 10 }, (_, i) => {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5;
+    const rr = i % 2 === 0 ? r : r * 0.45;
+    return `${i === 0 ? 'M' : 'L'}${(cx + rr * Math.cos(a)).toFixed(2)} ${(cy + rr * Math.sin(a)).toFixed(2)}`;
+  }).join('') + 'Z';
+const spread = (n: number, gap: number) => Array.from({ length: n }, (_, i) => 20 + (i - (n - 1) / 2) * gap);
+
+/**
+ * The capsule drum of A10 in its tier's material (ui-plan 3.5; the 2026-09-29 ladder).
+ *
+ * From 32 px: carved stone and brass with 5 rings; the rings up to the tier are lit, each in its own
+ * tier's colour (bottom-up: clay, bronze, silver, jade, gold); tiers above the summit add 1-2 summit
+ * gems in the cap band; `crests` stamps that many Legendary crests on the brass band. Below 32 px: a
+ * flat silhouette in the tier colour with a "★n" crest badge beside it. Nothing is drawn for a ring,
+ * gem or crest that is not earned beyond the carved drum itself, and every size carries a 1.5 px
+ * parchment outline.
+ *
+ * `crests`: set it only for a fixed-tier capsule or one already opened (from its guarantees; see
+ * `capsuleLook.ts`). An unopened climbing capsule shows its start tier and never gets crests.
+ */
+export function CapsuleIcon(p: IconProps & { tier: CapsuleTier; crests?: number }) {
+  const size = p.size ?? 24;
+  const k = 40 / size; // view units per CSS pixel
+  const ink = Math.min(3, Math.max(1.5, size / 16)) * k;
+  const rim = ink + 3 * k; // the parchment band shows 1.5 px outside the dark outline
+  const ramp = TIER_RAMP[p.tier];
+  const idx = Math.max(0, TIER_LADDER.indexOf(p.tier));
+  const crests = Math.max(0, Math.min(3, p.crests ?? 0));
+  const gid = `cap-body-${p.tier}`;
+  const body = (
+    <linearGradient id={gid} x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color={ramp[3]} />
+      <stop offset=".18" stop-color={ramp[2]} />
+      <stop offset=".38" stop-color={ramp[1]} />
+      <stop offset=".47" stop-color={ramp[0]} />
+      <stop offset=".58" stop-color={ramp[1]} />
+      <stop offset=".84" stop-color={ramp[2]} />
+      <stop offset="1" stop-color={ramp[3]} />
+    </linearGradient>
+  );
+
+  if (size < 32) {
+    const svg = (
+      <Svg {...p} view="0 0 40 40">
+        <defs>{body}</defs>
+        <path d={SILHOUETTE} fill="none" stroke={PARCHMENT} stroke-opacity=".6" stroke-width={rim} stroke-linejoin="round" />
+        <path d={SILHOUETTE} fill={`url(#${gid})`} stroke={OUTLINE} stroke-width={ink} stroke-linejoin="round" />
+        <ellipse cx="20" cy="8" rx={RX} ry={RY} fill={ramp[0]} stroke={OUTLINE} stroke-width={ink * 0.7} />
+      </Svg>
+    );
+    if (crests === 0) return svg;
+    return (
+      <span class="ui-capicon">
+        {svg}
+        <span class="ui-capicon__crest" aria-hidden="true">
+          ★{crests}
+        </span>
+      </span>
+    );
+  }
+
+  const lit = Math.min(idx, DRUM_RINGS - 1) + 1;
+  const summit = Math.max(0, idx - (DRUM_RINGS - 1));
+  const groove = GROOVE[p.tier] ?? OUTLINE;
+  const line = ink * 0.55;
   return (
     <Svg {...p} view="0 0 40 40">
       <defs>
-        <linearGradient id={gid} x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stop-color={c} stop-opacity=".75" />
-          <stop offset=".35" stop-color="#fff" stop-opacity=".55" />
-          <stop offset=".5" stop-color={c} />
-          <stop offset="1" stop-color={c} stop-opacity=".6" />
+        {body}
+        <linearGradient id="cap-brass" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#6b5018" />
+          <stop offset=".4" stop-color="#d9b560" />
+          <stop offset=".5" stop-color="#f3dc95" />
+          <stop offset=".62" stop-color="#c49a3e" />
+          <stop offset="1" stop-color="#5e4614" />
+        </linearGradient>
+        <linearGradient id="cap-stone" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#4a4640" />
+          <stop offset=".45" stop-color="#9d968a" />
+          <stop offset="1" stop-color="#3f3b35" />
         </linearGradient>
       </defs>
-      <ellipse cx="20" cy="33" rx="13" ry="3.5" fill="#000" opacity=".25" />
-      <path d="M7 11v17c0 3 6 5 13 5s13-2 13-5V11z" fill={c} stroke={OUTLINE} stroke-width="2" />
-      <path d="M7 11v17c0 3 6 5 13 5s13-2 13-5V11z" fill={`url(#${gid})`} opacity=".7" />
-      {[15, 19, 23, 27].map((y) => (
-        <path key={y} d={`M7 ${y}c0 2.6 6 4.4 13 4.4s13-1.8 13-4.4`} fill="none" stroke="#c9a227" stroke-width="1.6" />
-      ))}
-      <ellipse cx="20" cy="11" rx="13" ry="4.4" fill="#e8d9a8" stroke={OUTLINE} stroke-width="2" />
-      <ellipse cx="20" cy="11" rx="7" ry="2.2" fill={c} stroke={OUTLINE} stroke-width="1.4" />
-      <path d="M11 16v8" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55" />
-      {p.tier === 'aeon' ? <ellipse cx="20" cy="11" rx="13" ry="4.4" fill="none" stroke="#f5d060" stroke-width="1.4" /> : null}
+      <ellipse cx="20" cy="36.2" rx="14.5" ry="2.6" fill="#000" opacity=".28" />
+      <path d={SILHOUETTE} fill="none" stroke={PARCHMENT} stroke-opacity=".6" stroke-width={rim} stroke-linejoin="round" />
+      <path d={SILHOUETTE} fill={`url(#${gid})`} stroke={OUTLINE} stroke-width={ink} stroke-linejoin="round" />
+      {/* Material: a drifting starfield on the time crystal, brushed streaks on platinum. */}
+      {FINISH[p.tier] === 'stars'
+        ? [
+            [11.5, 22],
+            [15, 29.5],
+            [26.5, 20.5],
+            [29, 27.5],
+            [22.5, 33],
+            [18, 24.5],
+          ].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i % 2 ? 0.55 : 0.8} fill="#fff" opacity=".85" />)
+        : null}
+      {FINISH[p.tier] === 'brushed' ? (
+        <path d="M10.5 30.5 15 18.5M24 33.5 29.5 19.5" stroke="#fff" stroke-width=".9" stroke-linecap="round" opacity=".55" />
+      ) : null}
+      {/* Rings, bottom-up: lit ones glow in their own tier's colour, the rest are carved grooves. */}
+      {RING_Y.map((y, i) => {
+        const d = `M7.6 ${y}A${RX} ${RY} 0 0 0 32.4 ${y}`;
+        const cut = (
+          <>
+            <path d={d} fill="none" stroke={groove} stroke-width=".9" opacity=".5" />
+            <path d={`M7.8 ${y + 0.75}A${RX} ${RY} 0 0 0 32.2 ${y + 0.75}`} fill="none" stroke="#fff" stroke-width=".45" opacity=".22" />
+          </>
+        );
+        if (i >= lit) return <g key={i}>{cut}</g>;
+        const c = TIER_RAMP[TIER_LADDER[i] ?? p.tier][1];
+        return (
+          <g key={i}>
+            {cut}
+            <path d={d} fill="none" stroke={groove} stroke-width="1.7" opacity=".55" />
+            <path d={d} fill="none" stroke={c} stroke-width=".95" />
+            <circle cx="20" cy={y + RY} r="1.35" fill={c} stroke={OUTLINE} stroke-width=".55" />
+            <circle cx="19.6" cy={y + RY - 0.45} r=".42" fill="#fff" opacity=".85" />
+          </g>
+        );
+      })}
+      <path d="M10.5 18.5v10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".35" />
+      {/* The brass band (crests) and the stone cap band (summit gems). */}
+      <path d={band(11.5, 16)} fill="url(#cap-brass)" stroke={OUTLINE} stroke-width={line} />
+      <path d={band(8, 11.5)} fill="url(#cap-stone)" stroke={OUTLINE} stroke-width={line} />
+      <ellipse cx="20" cy="8" rx={RX} ry={RY} fill="#b9b2a3" stroke={OUTLINE} stroke-width={ink * 0.8} />
+      <ellipse cx="20" cy="8" rx="7.5" ry="2" fill={ramp[1]} stroke={OUTLINE} stroke-width={line} />
+      <ellipse cx="18" cy="7.6" rx="3" ry=".6" fill="#fff" opacity=".45" />
+      {spread(summit, 7).map((x, g) => {
+        const y = 9.75 + arcDrop(x);
+        const c = TIER_RAMP[TIER_LADDER[DRUM_RINGS + g] ?? p.tier][1];
+        return (
+          <g key={`s${g}`}>
+            <path d={`M${x} ${y - 2.1}L${x + 2.1} ${y}L${x} ${y + 2.1}L${x - 2.1} ${y}Z`} fill={c} stroke={OUTLINE} stroke-width={line} stroke-linejoin="round" />
+            <path d={`M${x - 0.9} ${y - 0.2}L${x} ${y - 1.2}`} stroke="#fff" stroke-width=".6" stroke-linecap="round" />
+          </g>
+        );
+      })}
+      {spread(crests, 6.6).map((x, c) => {
+        const y = 13.6 + arcDrop(x);
+        return (
+          <g key={`c${c}`}>
+            <path
+              d={`M${x - 2.2} ${y - 2.1}h4.4v2.2q0 1.9-2.2 2.8q-2.2-.9-2.2-2.8z`}
+              fill={CREST_SHIELD}
+              stroke={PARCHMENT}
+              stroke-width={Math.max(0.45, line * 0.7)}
+              stroke-linejoin="round"
+            />
+            <path d={star(x, y - 0.3, 1.55)} fill={RARITY_COLOR.legendary} />
+          </g>
+        );
+      })}
     </Svg>
   );
 }

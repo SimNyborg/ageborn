@@ -608,7 +608,8 @@
         "feat": "A hidden feat",
         "arena": "Reach Arena {n}",
         "codex": "Codex Level {n}",
-        "warPath": "War Path (coming later)"
+        "warPath": "War Path (coming later)",
+        "capsuleTier": "From {tier} Capsules. Craftable after your first."
       },
       "reason": {
         "notOwned": "You do not own that yet.",
@@ -616,7 +617,8 @@
         "dust": "Not enough Dust.",
         "notEnoughDust": "Not enough Dust.",
         "owned": "Already yours.",
-        "notCraftable": "This one is earned, not crafted."
+        "notCraftable": "This one is earned, not crafted.",
+        "locked": "Craftable after your first Aeon Capsule."
       },
       "collectionsTitle": "Cosmetic collections",
       "inWheel": "In wheel",

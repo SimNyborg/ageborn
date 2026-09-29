@@ -3,16 +3,21 @@
  *
  * 1. Build the stack rarity list: guaranteed rarities first; the remaining stacks roll Common 72%,
  *    Rare 22%, Epic 5%, Legendary 1% (in an arena without random Legendaries only this 1% moves to
- *    Common); Jade converts one guaranteed Rare stack to Legendary 25% of the time.
+ *    Common). (Step 1.3, Jade's Rare-to-Legendary conversion, was removed with the 2026-09-29 ladder.)
  * 2. Apply pity in this order: Legendary pity, Epic pity, new-card protection (A6.5). Each upgrades
  *    the lowest-rarity non-guaranteed stack (ties: the last stack). A stack a pity rule upgraded is
  *    then kept (treated as guaranteed), so a later rule never undoes an earlier one.
- * 3. Copies per stack come from the tier table by the stack's rarity.
+ * 3. Copies per stack come from the tier table by the stack's rarity; the 2nd and later guaranteed
+ *    Legendary stacks hold `extraLegendaryCopies` (Platinum and Aeon: 1).
  * 4. Pick distinct cards per stack from the drop pool of that rarity: unowned cards weigh ×3; no
- *    duplicate Legendary until every Legendary in the pool is owned; a stack set by new-card
- *    protection picks only unowned cards. A stack whose rarity has no card left to pick (a small
- *    pool, such as one age) falls back to the next lower rarity.
- * 5. Each stack rolls a foil.
+ *    duplicate Legendary until every Legendary in the pool is owned, counting cards already picked in
+ *    this capsule as owned (so a 2nd or 3rd Legendary stack picks an owned Legendary rather than fall
+ *    back to Epic); a stack set by new-card protection picks only unowned cards. Legendary catch-up:
+ *    once every Legendary of the pool is owned, promised or picked in this capsule, each candidate
+ *    weighs 1 + the copies it still needs to reach the level cap (rarity odds never change). A stack
+ *    whose rarity has no card left to pick (a small pool, such as one age) falls back to the next
+ *    lower rarity.
+ * 5. Each stack rolls a foil (purely rolled; no tier sets a floor).
  * 6. Max-level copies convert to Dust when the capsule is revealed (`open.ts`), not here.
  *
  * "Owned" while rolling means owned or already inside another unopened capsule, so an unopened
@@ -31,8 +36,8 @@ export interface RollSpec {
   stacks: number;
   guaranteed: readonly Rarity[];
   copies: Readonly<Record<Rarity, number>>;
-  /** Jade: chance that one guaranteed Rare stack becomes Legendary. */
-  rareToLegendaryBp: number;
+  /** Copies of the 2nd and later guaranteed Legendary stacks (default `copies.legendary`; A6.4 step 3). */
+  extraLegendaryCopies?: number;
   /** False in arenas without random Legendaries (A6.4 step 1.2). */
   randomLegendaries: boolean;
 }
@@ -51,6 +56,11 @@ export interface RollContext {
    * protection it stands for) out of the capsule that promised it.
    */
   reserved?: ReadonlySet<CardId>;
+  /**
+   * Legendary catch-up (A6.4 step 4, `capsules.legendaryCatchUp`): the copies each card still needs
+   * to reach the level cap after its unopened capsules ({@link copiesStillNeeded}). Absent: no catch-up.
+   */
+  need?: ReadonlyMap<CardId, number>;
 }
 
 interface Slot {
@@ -59,6 +69,8 @@ interface Slot {
   locked: boolean;
   /** Set by new-card protection: picks only unowned cards. */
   newOnly: boolean;
+  /** The 2nd or later guaranteed Legendary stack: holds `extraLegendaryCopies`. */
+  extraLegendary: boolean;
 }
 
 /** One random stack rarity (A6.4 step 1.2). */
@@ -99,11 +111,13 @@ function unownedIn(cards: readonly CardId[], owned: ReadonlySet<CardId>): boolea
 /** Steps 1 and 2: the stack rarities with pity applied. */
 export function planSlots(spec: RollSpec, ctx: RollContext): Slot[] {
   const { t, rng, pool, owned, pity } = ctx;
-  const slots: Slot[] = spec.guaranteed.map((rarity) => ({ rarity, locked: true, newOnly: false }));
-  while (slots.length < spec.stacks) slots.push({ rarity: rollStackRarity(t, rng, spec.randomLegendaries), locked: false, newOnly: false });
-  if (spec.rareToLegendaryBp > 0 && chanceBp(rng, spec.rareToLegendaryBp)) {
-    const rare = slots.find((s) => s.locked && s.rarity === 'rare');
-    if (rare) rare.rarity = 'legendary';
+  let legendaries = 0;
+  const slots: Slot[] = spec.guaranteed.map((rarity) => {
+    if (rarity === 'legendary') legendaries += 1;
+    return { rarity, locked: true, newOnly: false, extraLegendary: rarity === 'legendary' && legendaries >= 2 };
+  });
+  while (slots.length < spec.stacks) {
+    slots.push({ rarity: rollStackRarity(t, rng, spec.randomLegendaries), locked: false, newOnly: false, extraLegendary: false });
   }
   if (!pity) return slots;
 
@@ -142,26 +156,31 @@ export function planSlots(spec: RollSpec, ctx: RollContext): Slot[] {
  * Returns null only when the pool has no card left at all.
  */
 export function pickCard(
-  ctx: Pick<RollContext, 't' | 'rng' | 'pool' | 'owned' | 'reserved'>,
+  ctx: Pick<RollContext, 't' | 'rng' | 'pool' | 'owned' | 'reserved' | 'need'>,
   rarity: Rarity,
   newOnly: boolean,
   used: ReadonlySet<CardId>,
 ): { card: CardId; rarity: Rarity } | null {
-  const { t, rng, pool, owned, reserved } = ctx;
+  const { t, rng, pool, owned, reserved, need } = ctx;
   const weight = t.capsules.unownedWeight;
   for (const onlyNew of newOnly ? [true, false] : [false]) {
     for (let r = RARITY_INDEX[rarity]; r >= 0; r -= 1) {
       const rr = RARITY_ORDER[r] as Rarity;
       let cands = pool.byRarity[rr].filter((c) => !used.has(c));
-      // No duplicate Legendary until every Legendary in the pool is owned (a second Legendary stack
-      // with no unowned one left falls back to Epic).
-      if (onlyNew || (rr === 'legendary' && unownedIn(pool.byRarity.legendary, owned))) cands = cands.filter((c) => !owned.has(c));
+      // No duplicate Legendary until every Legendary in the pool is owned; cards already picked in
+      // this capsule count as owned, so a 2nd or 3rd Legendary stack with no unowned one left picks
+      // an owned Legendary (it never falls back to Epic while the pool has one not in this capsule).
+      const unownedLegendary = rr === 'legendary' && pool.byRarity.legendary.some((c) => !owned.has(c) && !used.has(c));
+      if (onlyNew || unownedLegendary) cands = cands.filter((c) => !owned.has(c));
       if (cands.length === 0) continue;
       // Leave another capsule's NEW card alone while this rarity has any other card (the rarity odds
       // never change, only which card of the rarity).
       const free = reserved && reserved.size > 0 ? cands.filter((c) => !reserved.has(c)) : cands;
       if (free.length > 0) cands = free;
-      const i = pickWeighted(rng, cands.map((c) => (owned.has(c) ? 1 : weight)));
+      // Legendary catch-up (A6.4 step 4): every Legendary is owned, promised or in this capsule, so
+      // each weighs 1 + the copies it still needs to reach the cap.
+      const catchUp = rr === 'legendary' && !onlyNew && !unownedLegendary && need !== undefined && t.capsules.legendaryCatchUp;
+      const i = pickWeighted(rng, cands.map((c) => (catchUp ? 1 + (need.get(c) ?? 0) : owned.has(c) ? 1 : weight)));
       const card = cands[i];
       if (card !== undefined) return { card, rarity: rr };
     }
@@ -190,12 +209,14 @@ export function rollStacks(spec: RollSpec, ctx: RollContext): CapsuleStack[] {
     picked[i] = got;
   }
   const stacks: CapsuleStack[] = [];
-  for (const got of picked) {
+  for (let i = 0; i < picked.length; i += 1) {
+    const got = picked[i];
     if (!got) continue;
+    const extra = (slots[i] as Slot).extraLegendary && got.rarity === 'legendary';
     stacks.push({
       card: got.card,
       rarity: got.rarity,
-      copies: spec.copies[got.rarity],
+      copies: extra ? (spec.extraLegendaryCopies ?? spec.copies.legendary) : spec.copies[got.rarity],
       isNew: !ctx.owned.has(got.card),
       foil: rollFoil(ctx.rng, ctx.t.rarities),
       dust: 0,

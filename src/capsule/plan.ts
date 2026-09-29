@@ -20,7 +20,7 @@ import {
   type RevealCard,
   type SummaryModel,
 } from './summaryModel';
-import { isBackLoaded, resolveStrikes, STRIKES, tierIndex } from './tiers';
+import { isBackLoaded, isSummitTier, resolveStrikes, STRIKES, summitGemCount, tierIndex } from './tiers';
 import type { CapsuleCatalog, CardProgress, ProgressLookup } from './types';
 
 /** Step durations (A10 table). All in ms. */
@@ -34,12 +34,26 @@ export const SHOW_TIMING = {
   strikeImpactMs: 90,
   /** A strike fires by itself after this much idle time (A10 step 3). */
   strikeIdleMs: 1500,
+  /** A summit gem grinds up out of the cap and settles, unlit (A10 step 3b). */
+  summitRiseMs: 400,
+  /** A summit strike: the slow descent lands here, a 120 ms hold, then the transmutation (300 ms). */
+  summitStrikeMs: 900,
+  summitImpactMs: 380,
+  summitHoldMs: 120,
+  summitTransmuteMs: 300,
+  /** "Your first Gold Capsule" after the pop (A10 step 4b), skippable. */
+  firstTierMs: 1000,
+  /** Music ducks this much through a Platinum or Aeon burst (A10 step 4). */
+  summitDuckDb: -6,
+  /** A batch holding a summit tier ends its volley with that tier's stinger and a flare. */
+  volleyFlareMs: 600,
   /**
    * The burst builds before it pops: the drum swells, rattles and pours light from its cracks, and the
    * build grows with the tier already shown (honest: the climb has revealed it). Then a short
    * freeze and the explosion (`burstPopMs`).
    */
-  burstBuildMs: { clay: 200, bronze: 260, silver: 360, jade: 560, aeon: 820 } as Readonly<Record<CapsuleTier, number>>,
+  // The 2026-09-29 ladder (A10 step 4): Gold keeps the old Aeon build; Platinum and Aeon build longer.
+  burstBuildMs: { clay: 200, bronze: 260, silver: 360, jade: 560, gold: 820, platinum: 1000, aeon: 1200 } as Readonly<Record<CapsuleTier, number>>,
   burstPopMs: 360,
   /** Freeze frame at the pop (the drum held white) before it explodes. */
   burstHoldMs: 70,
@@ -71,8 +85,11 @@ export const SHOW_LIMITS = {
   charge: 1500,
   strike: 600,
   strikeIdle: 1500,
-  /** Build (up to 820 ms for Aeon) plus the pop. */
-  burst: 1200,
+  summitRise: 400,
+  summitStrike: 900,
+  firstTier: 1000,
+  /** Build (up to 1,200 ms for Aeon, A10 step 4 since the 2026-09-29 ladder) plus the pop. */
+  burst: 1600,
   fan: 1000,
   signal: 800,
   flip: 800,
@@ -154,8 +171,44 @@ export type StrikeStep = StepBase & {
   /** Waits for a tap, at most this long (A10 step 3: auto after 1.5 s idle). */
   maxWaitMs: number;
 };
-export type BurstStep = StepBase & { kind: 'burst'; tier: CapsuleTier; fixed: boolean; amber: number; /** The pop happens this far in. */ buildMs: number };
-export type VolleyStep = StepBase & { kind: 'volley'; tiers: CapsuleTier[]; amber: number };
+/**
+ * A summit gem rises out of the cap (A10 step 3b). Only planned when the strike after it climbs; the
+ * gem rises clear and colourless, so nothing here shows the tier its strike will reach.
+ */
+export type SummitRiseStep = StepBase & { kind: 'summitRise'; /** 0 = the first summit gem. */ index: number };
+/** A summit strike: always a climb, into the next tier above Gold (A10 step 3b). */
+export type SummitStrikeStep = StepBase & {
+  kind: 'summitStrike';
+  index: number;
+  from: CapsuleTier;
+  to: CapsuleTier;
+  /** Waits for a tap, at most this long (auto after 1.5 s idle). */
+  maxWaitMs: number;
+  /** The hammer lands this far in (a slow descent), then holds and transmutes the drum. */
+  impactMs: number;
+};
+export type BurstStep = StepBase & {
+  kind: 'burst';
+  tier: CapsuleTier;
+  fixed: boolean;
+  amber: number;
+  /** The pop happens this far in. */
+  buildMs: number;
+  /** Music duck in dB through the burst (Platinum and Aeon); 0 = none. */
+  duckDb: number;
+};
+/** The first capsule of a Legendary tier a save opens (A10 step 4b). */
+export type FirstTierStep = StepBase & { kind: 'firstTier'; tier: CapsuleTier };
+export type VolleyStep = StepBase & {
+  kind: 'volley';
+  tiers: CapsuleTier[];
+  amber: number;
+  /** The highest summit tier in the batch: its stinger and a 600 ms flare end the volley. */
+  flare: CapsuleTier | null;
+  flareAtMs: number;
+  /** One combined "first" banner for the highest first-of-tier capsule in the batch. */
+  firstTier: CapsuleTier | null;
+};
 export type FanStep = StepBase & { kind: 'fan'; cards: RevealCard[] };
 export type SignalStep = StepBase & { kind: 'signal'; card: RevealCard };
 export type FlipStep = StepBase & {
@@ -178,7 +231,10 @@ export type ShowStep =
   | ArrivalStep
   | ChargeStep
   | StrikeStep
+  | SummitRiseStep
+  | SummitStrikeStep
   | BurstStep
+  | FirstTierStep
   | VolleyStep
   | FanStep
   | SignalStep
@@ -357,6 +413,16 @@ function summaryStep(): SummaryStep {
   return step<SummaryStep>({ kind: 'summary', id: 'summary', durationMs: Infinity, fastForward: false });
 }
 
+/**
+ * The tier stinger at the pop: Clay to Gold replay the final climb note (cap_climb_1 = Bronze ...
+ * 4 = Gold); each summit tier has its own stinger over `cap_burst` (`cap_burst_<tier>`, A13).
+ */
+export function stingerFor(tier: CapsuleTier): SoundId | null {
+  if (isSummitTier(tier)) return `cap_burst_${tier}`;
+  const idx = tierIndex(tier);
+  return idx > 0 ? `cap_climb_${idx}` : null;
+}
+
 function burstCues(tier: CapsuleTier, buildMs: number): Cue[] {
   const idx = tierIndex(tier);
   const cues: Cue[] = [
@@ -367,8 +433,8 @@ function burstCues(tier: CapsuleTier, buildMs: number): Cue[] {
     { atMs: buildMs, sound: 'cap_burst' },
     { atMs: buildMs + SHOW_TIMING.burstHoldMs, sound: idx >= 3 ? 'explosion_l' : 'explosion_m', volumeDb: idx >= 3 ? -4 : -9 },
   ];
-  // The tier stinger reuses the climb note of the final tier (A13 has no separate stinger ids).
-  if (idx > 0) cues.push({ atMs: buildMs + 60, sound: `cap_climb_${idx}`, volumeDb: -3 });
+  const sting = stingerFor(tier);
+  if (sting) cues.push({ atMs: buildMs + 60, sound: sting, volumeDb: isSummitTier(tier) ? -1 : -3 });
   return cues;
 }
 
@@ -414,7 +480,7 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
           from,
           to,
           maxWaitMs: T.strikeIdleMs,
-          // Each climb is a step higher: the note of the tier reached (cap_climb_1 = Bronze ... 4 = Aeon).
+          // Each climb is a step higher: the note of the tier reached (cap_climb_1 = Bronze ... 4 = Gold).
           // A non-climb is never a penalty sound; its clunk rises with each strike, so every tap builds.
           cues: [
             climb ? { atMs: T.strikeImpactMs, sound: `cap_climb_${tierIndex(to)}` } : { atMs: T.strikeImpactMs, sound: 'cap_clunk', pitchBp: 10000 + i * 900 },
@@ -424,6 +490,35 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
       );
       from = to;
     }
+    // Summit strikes (A10 step 3b): only when the rolled tier is above Gold, each one a climb. The
+    // step after strike 4 starts at the same moment for every tier (this rise, or the burst build).
+    strikes.summitTiers.forEach((to, k) => {
+      steps.push(
+        step<SummitRiseStep>({
+          kind: 'summitRise',
+          id: `summitRise-${k}`,
+          durationMs: T.summitRiseMs,
+          index: k,
+          cues: [{ atMs: 0, sound: 'cap_summit_rise' }],
+        }),
+        step<SummitStrikeStep>({
+          kind: 'summitStrike',
+          id: `summitStrike-${k}`,
+          durationMs: T.summitStrikeMs,
+          index: k,
+          from,
+          to,
+          maxWaitMs: T.strikeIdleMs,
+          impactMs: T.summitImpactMs,
+          cues: [
+            { atMs: T.summitImpactMs, sound: `cap_climb_${tierIndex(to)}` },
+            { atMs: T.summitImpactMs, sound: 'upgrade_slam', volumeDb: -6 },
+            { atMs: T.summitImpactMs, sound: 'hit_heavy', volumeDb: -8, pitchBp: 7200 },
+          ],
+        }),
+      );
+      from = to;
+    });
   } else if (!o.catalog.hasClimb(cap.kind) && cap.startTier !== cap.tier) {
     issues.push(`fixed-tier ${cap.kind} capsule has start tier ${cap.startTier} and tier ${cap.tier}; showing ${cap.tier}`);
   }
@@ -437,9 +532,13 @@ export function planCapsuleShow(reveal: CapsuleReveal, o: PlanOptions): ShowPlan
       fixed: !climbs,
       amber: cap.contents.amber,
       buildMs,
+      duckDb: isSummitTier(cap.tier) ? T.summitDuckDb : 0,
       cues: burstCues(cap.tier, buildMs),
     }),
   );
+  if (reveal.firstOfTier) {
+    steps.push(step<FirstTierStep>({ kind: 'firstTier', id: 'firstTier', durationMs: T.firstTierMs, tier: cap.tier }));
+  }
   const cards = revealCards([reveal], o.catalog);
   const intro = cap.scriptIndex === INTRO_SCRIPT_CAPSULE;
   if (cards.length > 0) steps.push(fanStep(cards));
@@ -466,8 +565,17 @@ export function planOpenAll(reveals: readonly CapsuleReveal[], o: PlanOptions): 
   shown.forEach((c, i) => (c.slot = i));
   const tiers = reveals.map((r) => r.capsule.tier);
   const amber = reveals.reduce((s, r) => s + r.capsule.contents.amber, 0);
-  const per = Math.min(T.volleyPerCapsuleMs, (T.volleyMaxMs - 300) / Math.max(1, reveals.length));
-  const volleyMs = Math.max(T.volleyMinMs, Math.min(T.volleyMaxMs, Math.round(300 + per * reveals.length)));
+  const highest = (list: CapsuleTier[]): CapsuleTier | null => list.reduce<CapsuleTier | null>((a, b) => (a === null || tierIndex(b) > tierIndex(a) ? b : a), null);
+  // A Platinum or Aeon in the batch ends the volley with its stinger and a 600 ms flare (A10 Rules).
+  const flare = highest(tiers.filter(isSummitTier));
+  const firstTier = highest(reveals.filter((r) => r.firstOfTier).map((r) => r.capsule.tier));
+  const tail = flare || firstTier ? T.volleyFlareMs + 100 : 300;
+  const per = Math.min(T.volleyPerCapsuleMs, (T.volleyMaxMs - tail) / Math.max(1, reveals.length));
+  const flareAtMs = Math.round(per * reveals.length);
+  const volleyMs = Math.max(T.volleyMinMs, Math.min(T.volleyMaxMs, Math.round(tail + per * reveals.length)));
+  const cues: Cue[] = tiers.map((_, i) => ({ atMs: Math.round(i * per), sound: 'cap_burst', pitchBp: Math.min(12000, 9000 + i * 250), volumeDb: -2 }));
+  const sting = flare ? stingerFor(flare) : null;
+  if (sting) cues.push({ atMs: flareAtMs, sound: sting, volumeDb: -1 });
   const steps: ShowStep[] = [
     step<VolleyStep>({
       kind: 'volley',
@@ -475,7 +583,10 @@ export function planOpenAll(reveals: readonly CapsuleReveal[], o: PlanOptions): 
       durationMs: volleyMs,
       tiers,
       amber,
-      cues: tiers.map((_, i) => ({ atMs: Math.round(i * per), sound: 'cap_burst', pitchBp: Math.min(12000, 9000 + i * 250), volumeDb: -2 })),
+      flare,
+      flareAtMs,
+      firstTier,
+      cues,
     }),
   ];
   if (shown.length > 0) steps.push(fanStep(shown));
@@ -546,7 +657,13 @@ export function checkPlan(plan: ShowPlan): string[] {
     if (v > max) out.push(`${s.id}: ${what} ${v} ms exceeds ${max} ms`);
   };
   const strikes: boolean[] = [];
+  let unskippable = 0;
+  let lastShown: CapsuleTier | null = plan.startTier;
+  let summitRises = 0;
+  let summitStrikes = 0;
+  let burstTier: CapsuleTier | null = null;
   for (const s of plan.steps) {
+    if (!s.skippable) unskippable++;
     if (!s.skippable && s.durationMs > L.unskippable) out.push(`${s.id}: ${s.durationMs} ms without a skip`);
     if (s.kind !== 'summary' && !Number.isFinite(s.durationMs)) out.push(`${s.id}: endless step`);
     for (const c of s.cues) if (c.atMs < 0 || c.atMs > s.durationMs) out.push(`${s.id}: cue ${c.sound} at ${c.atMs} ms is outside the step`);
@@ -561,13 +678,39 @@ export function checkPlan(plan: ShowPlan): string[] {
         over(s, 'strike', s.durationMs, L.strike);
         over(s, 'idle wait', s.maxWaitMs, L.strikeIdle);
         strikes.push(s.climb);
+        if (s.climb) lastShown = s.to;
+        if (summitRises > 0) out.push(`${s.id}: a main strike after a summit strike`);
+        break;
+      case 'summitRise':
+        over(s, 'summit rise', s.durationMs, L.summitRise);
+        if (strikes.length - summitStrikes !== STRIKES) out.push(`${s.id}: a summit gem rises before the 4 main strikes are done`);
+        if (summitRises !== summitStrikes) out.push(`${s.id}: a summit gem rises before the last one was struck`);
+        summitRises++;
+        break;
+      case 'summitStrike':
+        over(s, 'summit strike', s.durationMs, L.summitStrike);
+        over(s, 'idle wait', s.maxWaitMs, L.strikeIdle);
+        summitStrikes++;
+        if (summitStrikes !== summitRises) out.push(`${s.id}: a summit strike without its rising gem`);
+        if (!isSummitTier(s.to) || tierIndex(s.to) !== tierIndex(s.from) + 1) out.push(`${s.id}: a summit strike must climb one tier above Gold (${s.from} → ${s.to})`);
+        lastShown = s.to;
+        strikes.push(true);
+        break;
+      case 'firstTier':
+        over(s, 'first-of-tier', s.durationMs, L.firstTier);
+        if (!s.skippable) out.push(`${s.id}: the first-of-tier step must be skippable`);
         break;
       case 'burst':
         over(s, 'burst', s.durationMs, L.burst);
+        burstTier = s.tier;
+        if (!s.fixed && lastShown !== s.tier) out.push(`${s.id}: the climb shows ${String(lastShown)} but the capsule is ${s.tier}`);
+        if (!s.fixed && summitStrikes !== summitGemCount(s.tier)) out.push(`${s.id}: ${summitStrikes} summit strikes for a ${s.tier} capsule`);
+        if (s.fixed && summitStrikes > 0) out.push(`${s.id}: a fixed-tier capsule has no summit strikes`);
         if (s.buildMs < 0 || s.buildMs >= s.durationMs) out.push(`${s.id}: the pop at ${s.buildMs} ms is outside the step`);
         break;
       case 'volley':
         over(s, 'volley', s.durationMs, L.volley);
+        if ((s.flare || s.firstTier) && s.flareAtMs + SHOW_TIMING.volleyFlareMs > s.durationMs) out.push(`${s.id}: the flare runs past the volley`);
         break;
       case 'fan':
         over(s, 'fan', s.durationMs, L.fan);
@@ -608,6 +751,8 @@ export function checkPlan(plan: ShowPlan): string[] {
     }
   }
   if (!isBackLoaded(strikes)) out.push(`strikes [${strikes.join(',')}]: a climb is followed by a non-climb`);
+  if (unskippable > 1) out.push(`${unskippable} steps cannot be skipped (at most one full walkout per opening)`);
+  if (plan.finalTier !== null && burstTier !== null && burstTier !== plan.finalTier) out.push(`the burst shows ${burstTier}, the capsule is ${plan.finalTier}`);
   if (plan.steps[plan.steps.length - 1]?.kind !== 'summary') out.push('the plan does not end in the summary');
   return out;
 }

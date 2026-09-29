@@ -5,17 +5,26 @@
  * does) on fresh saves in the last arena (full drop pool, random Legendaries on), with the onboarding
  * script already done, and checks what players are told:
  *
- * - **Bag totals**: every 100 Win Capsules hold exactly 30 Clay, 40 Bronze, 20 Silver, 7 Jade, 3 Aeon.
- * - **Chi-square at p > 0.01**: Daily Capsule tiers, the stack rarity roll (72/22/5/1, on stacks that no
- *   guarantee or pity could touch), foils per stack, and the Aeon skin chance.
- * - **Guarantees and pity boundaries**: the tier's stack count and guaranteed rarities; an Epic stack at
- *   least every 10 capsules; a Legendary by capsule 40; an unowned card at least every 5 capsules while
- *   the pool has unowned cards.
+ * - **Bag totals**: every full bag (the sum of `capsules.bag`: 200) of Win Capsules holds exactly the
+ *   published counts (60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum, 1 Aeon).
+ * - **Chi-square at p > 0.01**: Supply Capsule tiers (every tier with odds above 0), the stack rarity
+ *   roll (72/22/5/1, on stacks that no guarantee or pity could touch), foils on every stack (purely
+ *   rolled, no floors), and the skin chance of every tier with 0 < `skinChanceBp` < 100% (Gold 30%).
+ * - **Zero violations**: the tier's stack count and guaranteed rarities; `guaranteed` Legendaries as
+ *   that many different cards, the extra ones holding `extraLegendaryCopies`; a skin in every sure-skin
+ *   tier, never below `skinMinRarity`; capsule skins never move the Wardrobe pity counters; the honest
+ *   climb (4 back-loaded main strikes up to `summitAbove`, one summit strike per tier above it, the
+ *   climbs summing to the rolled tier).
+ * - **Pity boundaries**: an Epic stack at least every 10 capsules; a Legendary by capsule 40; an unowned
+ *   card at least every 5 capsules while the pool has unowned cards.
+ *
+ * Every check is keyed on the content data, never on a tier id. The full run (10^6 openings) is the
+ * release gate: the Supply Aeon is only 15 bp.
  *
  * The analysis (`DropsTally`) is pure and fed one opened capsule at a time, so it runs in constant memory
  * for 10^6 openings. Without `src/meta` (WP7) the tool writes a skipped report and exits 0.
  */
-import type { CapsuleReveal, CapsuleTier, CardId, Clock, CompiledContent, Foil, Meta, PendingCapsule, Rarity, SaveDoc } from '../src/contracts';
+import type { CapsuleReveal, CapsuleTier, CardId, Clock, CompiledContent, Foil, Meta, PendingCapsule, Rarity, SaveDoc, SkinRarity } from '../src/contracts';
 import { asContent, content as gameContent, type Content } from '../src/content';
 import { loadMeta } from './lib/modules';
 import { chiSquare, type ChiSquare } from './lib/stats';
@@ -29,11 +38,17 @@ export interface OpenedCapsule {
   kind: PendingCapsule['kind'];
   tier: CapsuleTier;
   scripted: boolean;
-  stacks: { rarity: Rarity; foil: Foil; isNew: boolean; card: CardId }[];
+  stacks: { rarity: Rarity; foil: Foil; isNew: boolean; card: CardId; copies?: number }[];
   skin: boolean;
+  /** The capsule skin's rarity, when known. */
+  skinRarity?: SkinRarity | null;
   pityBefore: SaveDoc['pity'];
+  /** The counters after opening (for the Wardrobe pity check), when known. */
+  pityAfter?: SaveDoc['pity'];
   /** Unowned cards in the drop pool before this capsule. */
   unownedBefore: number;
+  /** The climb as revealed (A10), when known. */
+  climb?: { startTier: CapsuleTier; climbs: number; strikeClimbs: boolean[] };
 }
 
 interface StreamState {
@@ -46,6 +61,34 @@ interface StreamState {
 
 const RARITIES: readonly Rarity[] = ['common', 'rare', 'epic', 'legendary'];
 const FOILS: readonly Foil[] = ['holo', 'silver', 'bronze', 'none'];
+const SKIN_RARITIES: readonly SkinRarity[] = ['rare', 'epic', 'legendary'];
+/** Main strikes per climbing capsule (A10 step 3). */
+const MAIN_STRIKES = 4;
+
+/** The size of a full Win Capsule bag: the sum of the content's bag counts (A6.4). */
+export function contentBagSize(c: Content): number {
+  return c.capsules.tierOrder.reduce((n, t) => n + c.capsules.bag[t], 0);
+}
+
+/** Why a revealed climb breaks the honest-climb rules (A10), or null. */
+export function climbIssue(c: Content, tier: CapsuleTier, climb: { startTier: CapsuleTier; climbs: number; strikeClimbs: boolean[] }): string | null {
+  const order = c.capsules.tierOrder;
+  const s = order.indexOf(climb.startTier);
+  const f = order.indexOf(tier);
+  const top = order.indexOf(c.capsules.summitAbove);
+  if (s < 0 || f < s) return `start ${climb.startTier} above ${tier}`;
+  const main = Math.max(0, Math.min(MAIN_STRIKES, Math.min(f, top) - s));
+  const summit = Math.max(0, f - Math.max(top, s));
+  const k = climb.strikeClimbs.filter(Boolean).length;
+  const first = climb.strikeClimbs.indexOf(true);
+  if (climb.strikeClimbs.length !== MAIN_STRIKES) return `${climb.strikeClimbs.length} main strikes`;
+  if (first >= 0 && climb.strikeClimbs.slice(first).some((x) => !x)) return 'a climb followed by a non-climb';
+  if (k !== main) return `${k} main climbs, the tiers give ${main}`;
+  if (climb.climbs - k !== summit) return `${climb.climbs - k} summit strikes, the tiers give ${summit}`;
+  if (summit > 0 && f <= top) return 'a summit strike at or below the summit tier';
+  if (climb.climbs !== f - s) return `climbs ${climb.climbs} do not reach the rolled tier`;
+  return null;
+}
 
 export interface DropsSummary {
   openings: number;
@@ -54,9 +97,21 @@ export interface DropsSummary {
   foils: ChiSquare | null;
   rarity: ChiSquare | null;
   rarityByTier: Partial<Record<CapsuleTier, number[]>>;
-  aeonSkin: ChiSquare | null;
+  /** Skin chance per tier with 0 < `skinChanceBp` < 100%. */
+  skinChance: Partial<Record<CapsuleTier, ChiSquare>>;
   stackCountViolations: number;
   guaranteeViolations: number;
+  /** Too few Legendary stacks, a repeated card, or wrong extra-stack copies. */
+  legendaryViolations: number;
+  /** Platinum and Aeon (sure skin): no skin, or one below `skinMinRarity`. */
+  sureSkinViolations: number;
+  /** A capsule that moved the Wardrobe pity counters. */
+  wardrobePityViolations: number;
+  /** A revealed climb that breaks the honest-climb rules (A10). */
+  climbViolations: number;
+  firstClimbIssue: string | null;
+  /** Openings per tier (not scripted). */
+  tierCounts: Partial<Record<CapsuleTier, number>>;
   maxWithoutEpic: number;
   maxWithoutLegendary: number;
   maxWithoutNew: number;
@@ -75,10 +130,16 @@ export class DropsTally {
   private readonly daily = new Map<CapsuleTier, number>();
   private readonly foil = new Map<Foil, number>();
   private readonly rolled = new Map<CapsuleTier, number[]>();
-  private aeon = 0;
-  private aeonSkins = 0;
+  /** Per tier with a partial skin chance: [capsules, skins]. */
+  private readonly skins = new Map<CapsuleTier, [number, number]>();
+  private readonly tierCounts = new Map<CapsuleTier, number>();
   private stackViolations = 0;
   private guaranteeViolations = 0;
+  private legendaryViolations = 0;
+  private sureSkinViolations = 0;
+  private wardrobePityViolations = 0;
+  private climbViolations = 0;
+  private firstClimbIssue: string | null = null;
   private maxNoEpic = 0;
   private maxNoLegendary = 0;
   private maxNoNew = 0;
@@ -108,20 +169,50 @@ export class DropsTally {
     const rarities = o.stacks.map((s) => s.rarity);
     const counts = (rs: readonly Rarity[]): number[] => RARITIES.map((r) => rs.filter((x) => x === r).length);
 
+    // Foils are purely rolled on every stack (no tier sets a floor).
     for (const s of o.stacks) this.foil.set(s.foil, (this.foil.get(s.foil) ?? 0) + 1);
     if (o.kind === 'daily' && !o.scripted) this.daily.set(o.tier, (this.daily.get(o.tier) ?? 0) + 1);
-    if (o.tier === 'aeon' && !o.scripted) {
-      this.aeon += 1;
-      if (o.skin) this.aeonSkins += 1;
+    if (!o.scripted) this.tierCounts.set(o.tier, (this.tierCounts.get(o.tier) ?? 0) + 1);
+    const fixedContents = o.kind === 'age' || o.kind === 'ageUnlock';
+    if (!o.scripted && !fixedContents) {
+      // Skins (A6.4 step 7): a chi-square for partial chances, zero misses for sure ones.
+      if (tierDef.skinChanceBp > 0 && tierDef.skinChanceBp < 10_000) {
+        const acc = this.skins.get(o.tier) ?? [0, 0];
+        acc[0] += 1;
+        if (o.skin) acc[1] += 1;
+        this.skins.set(o.tier, acc);
+      }
+      if (tierDef.skinChanceBp >= 10_000) {
+        const low = o.skinRarity !== undefined && o.skinRarity !== null && SKIN_RARITIES.indexOf(o.skinRarity) < SKIN_RARITIES.indexOf(tierDef.skinMinRarity);
+        if (!o.skin || low) this.sureSkinViolations += 1;
+      }
+      // Legendary guarantees (A6.4 steps 3-4): that many different cards, the extra ones with 1 copy.
+      const want = tierDef.guaranteed.filter((r) => r === 'legendary').length;
+      const legs = o.stacks.filter((x) => x.rarity === 'legendary');
+      const distinct = new Set(o.stacks.map((x) => x.card)).size === o.stacks.length;
+      const extraOk = want < 2 || legs.every((x) => x.copies === undefined) || legs.filter((x) => x.copies === tierDef.extraLegendaryCopies).length >= want - 1;
+      if (legs.length < want || !distinct || !extraOk) this.legendaryViolations += 1;
+    }
+    // Capsule skins never read or advance the Wardrobe pity counters.
+    if (o.pityAfter && (o.pityAfter.wardrobeSinceEpic !== o.pityBefore.wardrobeSinceEpic || o.pityAfter.wardrobeSinceLegendary !== o.pityBefore.wardrobeSinceLegendary)) {
+      this.wardrobePityViolations += 1;
+    }
+    // The honest climb (A10): back-loaded main strikes, summit strikes only above the summit tier.
+    if (o.climb) {
+      const issue = climbIssue(this.c, o.tier, o.climb);
+      if (issue) {
+        this.climbViolations += 1;
+        this.firstClimbIssue ??= `${o.climb.startTier} → ${o.tier}: ${issue}`;
+      }
     }
 
-    // Bag: groups of 100 bag-drawn Win Capsules.
+    // Bag: groups of a full bag (the content bag size) of bag-drawn Win Capsules.
     if (o.kind === 'win' && !o.scripted) {
       this.winCount += 1;
       this.winCopies += extra.copies;
       this.winAmber += extra.amber;
       st.bagGroup.push(o.tier);
-      if (st.bagGroup.length === 100) {
+      if (st.bagGroup.length === contentBagSize(this.c)) {
         this.bagGroups += 1;
         const bad = caps.tierOrder.filter((t) => st.bagGroup.filter((x) => x === t).length !== caps.bag[t]);
         if (bad.length > 0) {
@@ -132,8 +223,8 @@ export class DropsTally {
       }
     }
 
-    // Stack count and guarantees (the Jade Rare may have become a Legendary).
-    if (o.kind !== 'age' && o.kind !== 'ageUnlock' && !o.scripted) {
+    // Stack count and guarantees (a tier with a Rare-to-Legendary chance may show a Legendary instead).
+    if (!fixedContents && !o.scripted) {
       if (o.stacks.length !== tierDef.stacks) this.stackViolations += 1;
       const left = [...rarities];
       let ok = true;
@@ -147,11 +238,11 @@ export class DropsTally {
         left.splice(i, 1);
       }
       if (!ok) this.guaranteeViolations += 1;
-      // Rolled stacks no pity could touch (A6.5 thresholds, with a margin); Jade excluded (its conversion
-      // cannot be told apart from a rolled Legendary).
+      // Rolled stacks no pity could touch (A6.5 thresholds, with a margin); a tier with a Rare-to-Legendary
+      // chance is left out (its conversion cannot be told apart from a rolled Legendary).
       const p = o.pityBefore;
       const pityFree = p.sinceEpic <= 7 && p.sinceLegendary <= 23 && (o.unownedBefore === 0 || p.sinceNewCard <= 2);
-      if (ok && pityFree && o.tier !== 'jade') {
+      if (ok && pityFree && tierDef.rareToLegendaryBp === 0) {
         const acc = this.rolled.get(o.tier) ?? [0, 0, 0, 0];
         counts(left).forEach((n, i) => {
           acc[i] = (acc[i] ?? 0) + n;
@@ -182,17 +273,28 @@ export class DropsTally {
     const rolled = [0, 0, 0, 0];
     for (const acc of this.rolled.values()) acc.forEach((n, i) => (rolled[i] = (rolled[i] ?? 0) + n));
     const rolledN = rolled.reduce((a, b) => a + b, 0);
-    const skinBp = caps.tiers.aeon.skinChanceBp;
+    const supply = tiers.filter((t) => caps.dailyOddsBp[t] > 0);
+    const skinChance: Partial<Record<CapsuleTier, ChiSquare>> = {};
+    for (const [tier, [n, yes]] of this.skins) {
+      const bp = caps.tiers[tier].skinChanceBp;
+      if (n > 0) skinChance[tier] = chiSquare([yes, n - yes], [bp, 10_000 - bp]);
+    }
     return {
       openings: this.openings,
       bag: { groups: this.bagGroups, badGroups: this.badGroups, firstBad: this.firstBad },
-      daily: dailyN > 0 ? chiSquare(tiers.map((t) => this.daily.get(t) ?? 0), tiers.map((t) => caps.dailyOddsBp[t])) : null,
+      daily: dailyN > 0 ? chiSquare(supply.map((t) => this.daily.get(t) ?? 0), supply.map((t) => caps.dailyOddsBp[t])) : null,
       foils: foilN > 0 ? chiSquare(FOILS.map((f) => this.foil.get(f) ?? 0), foilProbs) : null,
       rarity: rolledN > 0 ? chiSquare(rolled, RARITIES.map((r) => caps.stackRollBp[r])) : null,
       rarityByTier: Object.fromEntries(this.rolled.entries()),
-      aeonSkin: this.aeon > 0 ? chiSquare([this.aeonSkins, this.aeon - this.aeonSkins], [skinBp, 10_000 - skinBp]) : null,
+      skinChance,
       stackCountViolations: this.stackViolations,
       guaranteeViolations: this.guaranteeViolations,
+      legendaryViolations: this.legendaryViolations,
+      sureSkinViolations: this.sureSkinViolations,
+      wardrobePityViolations: this.wardrobePityViolations,
+      climbViolations: this.climbViolations,
+      firstClimbIssue: this.firstClimbIssue,
+      tierCounts: Object.fromEntries(this.tierCounts.entries()),
       maxWithoutEpic: this.maxNoEpic,
       maxWithoutLegendary: this.maxNoLegendary,
       maxWithoutNew: this.maxNoNew,
@@ -215,24 +317,32 @@ function chiCheck(id: string, metric: string, x: ChiSquare | null): Check {
 
 /** The checks for a drops summary (pity limits from content). */
 export function dropsChecks(s: DropsSummary, content: CompiledContent): Check[] {
-  const pity = asContent(content).capsules.pity;
+  const c = asContent(content);
+  const pity = c.capsules.pity;
+  const size = contentBagSize(c);
   const zero = (id: string, metric: string, n: number, target: string): Check => ({ id, metric, target, value: String(n), verdict: n === 0 ? 'pass' : 'fail' });
   const atMost = (id: string, metric: string, n: number, max: number, target: string): Check => ({ id, metric, target, value: String(n), verdict: n <= max ? 'pass' : 'fail' });
   return [
     {
       id: 'drops.bag',
-      metric: 'Win Capsule bag: every 100 hold the published totals',
+      metric: `Win Capsule bag: every ${size} hold the published totals`,
       target: 'all groups exact',
       value: `${s.bag.groups - s.bag.badGroups}/${s.bag.groups} groups exact`,
       verdict: s.bag.groups > 0 && s.bag.badGroups === 0 ? 'pass' : s.bag.groups === 0 ? 'skipped' : 'fail',
       ...(s.bag.firstBad ? { note: s.bag.firstBad } : {}),
     },
-    chiCheck('drops.daily', 'Daily Capsule tier odds', s.daily),
+    chiCheck('drops.daily', 'Supply Capsule tier odds', s.daily),
     chiCheck('drops.rarity', 'Stack rarity roll (no guarantee or pity)', s.rarity),
-    chiCheck('drops.foils', 'Foil odds per stack', s.foils),
-    chiCheck('drops.aeonSkin', 'Aeon skin chance', s.aeonSkin),
+    chiCheck('drops.foils', 'Foil odds per stack (no floors)', s.foils),
+    ...c.capsules.tierOrder
+      .filter((t) => c.capsules.tiers[t].skinChanceBp > 0 && c.capsules.tiers[t].skinChanceBp < 10_000)
+      .map((t) => chiCheck(`drops.skin.${t}`, `${t} skin chance`, s.skinChance[t] ?? null)),
     zero('drops.stackCount', 'Capsules with the wrong stack count', s.stackCountViolations, '0'),
     zero('drops.guarantees', 'Capsules missing a guaranteed rarity', s.guaranteeViolations, '0'),
+    zero('drops.legendaries', 'Legendary capsules with too few, repeated or wrongly sized Legendary stacks', s.legendaryViolations, '0'),
+    zero('drops.sureSkin', 'Sure-skin capsules without a skin or below the rarity floor', s.sureSkinViolations, '0'),
+    zero('drops.wardrobePity', 'Capsules that moved the Wardrobe pity counters', s.wardrobePityViolations, '0'),
+    { ...zero('drops.climb', 'Reveals that break the honest climb (A10)', s.climbViolations, '0'), ...(s.firstClimbIssue ? { note: s.firstClimbIssue } : {}) },
     atMost('drops.epicPity', 'Longest run without an Epic stack', s.maxWithoutEpic, pity.epicEvery - 1, `≤ ${pity.epicEvery - 1} capsules`),
     atMost('drops.legendaryPity', 'Longest run without a Legendary', s.maxWithoutLegendary, pity.legendaryGuaranteeAt - 1, `≤ ${pity.legendaryGuaranteeAt - 1} capsules`),
     atMost('drops.newCard', 'Longest run without an unowned card (while any remain)', s.maxWithoutNew, pity.newCardEvery - 1, `≤ ${pity.newCardEvery - 1} capsules`),
@@ -300,10 +410,13 @@ export function openCapsules(meta: Meta, content: CompiledContent, o: DropsOptio
           kind: cap.kind,
           tier: cap.tier,
           scripted: cap.scriptIndex !== null,
-          stacks: cap.contents.stacks.map((s) => ({ rarity: s.rarity, foil: s.foil, isNew: s.isNew, card: s.card })),
+          stacks: cap.contents.stacks.map((s) => ({ rarity: s.rarity, foil: s.foil, isNew: s.isNew, card: s.card, copies: s.copies })),
           skin: cap.contents.skin !== null,
+          skinRarity: cap.contents.skin ? (c.skins[cap.contents.skin]?.rarity ?? null) : null,
           pityBefore: opened.reveal.pityBefore,
+          pityAfter: opened.reveal.pityAfter,
           unownedBefore,
+          climb: { startTier: cap.startTier, climbs: opened.reveal.climbs, strikeClimbs: opened.reveal.strikeClimbs },
         },
         { copies: cap.contents.stacks.reduce((a, s) => a + s.copies, 0), amber: cap.contents.amber },
       );
@@ -330,7 +443,7 @@ export async function runDrops(o: DropsOptions, content: CompiledContent = gameC
   try {
     const s = openCapsules(meta, content, o, onProgress).summary();
     return rep.finish(dropsChecks(s, content), { meta: 'src/meta', summary: s }, [
-      `A6.9 reference: 9.1 copies and 227 Amber per bag capsule before pity; measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Win Capsule.`,
+      `A6.9 reference (the 2026-09-29 ladder): 16.05 copies and 411.3 Amber per bag capsule before pity; measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Win Capsule.`,
     ]);
   } catch (e) {
     return rep.finish([{ id: 'drops.run', metric: 'Capsule openings through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', summary: null });
@@ -340,15 +453,19 @@ export async function runDrops(o: DropsOptions, content: CompiledContent = gameC
 export function dropsSections(r: Report<DropsData>): string[] {
   const s = r.data.summary;
   if (!s) return [];
+  const c = asContent(gameContent);
   const row = (name: string, x: ChiSquare | null): (string | number)[] => [name, x ? x.observed.join(' / ') : '-', x ? x.expected.map((e) => e.toFixed(0)).join(' / ') : '-', x ? x.p.toFixed(4) : '-'];
+  const supply = c.capsules.tierOrder.filter((t) => c.capsules.dailyOddsBp[t] > 0);
+  const skins = (Object.keys(s.skinChance) as CapsuleTier[]).map((t) => row(`${t} skin (yes/no)`, s.skinChance[t] ?? null));
+  const counts = c.capsules.tierOrder.map((t) => `${t} ${s.tierCounts[t] ?? 0}`).join(', ');
   return [
     '## Distributions',
     '',
     markdownTable(
       ['Test', 'Observed', 'Expected', 'p'],
-      [row('Daily tiers (clay/bronze/silver/jade/aeon)', s.daily), row('Stack rarity (common/rare/epic/legendary)', s.rarity), row('Foils (holo/silver/bronze/none)', s.foils), row('Aeon skin (yes/no)', s.aeonSkin)],
+      [row(`Supply tiers (${supply.join('/')})`, s.daily), row('Stack rarity (common/rare/epic/legendary)', s.rarity), row('Foils (holo/silver/bronze/none)', s.foils), ...skins],
     ),
     '',
-    `${s.openings} openings; ${s.bag.groups} full bags checked.`,
+    `${s.openings} openings; ${s.bag.groups} full bags checked. Openings by tier: ${counts}.`,
   ];
 }

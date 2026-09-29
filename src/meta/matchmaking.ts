@@ -133,7 +133,7 @@ export function allowedPlan(t: Content, plan: Plan | null, ages: readonly AgeId[
       u[epic >= 0 ? epic : u.length - 1] = legendary;
     }
     const tu = fill(src.turrets.map((id) => (id !== null && allowed(id) ? id : null)), turrets.filter(allowed));
-    out[age] = { units: u, turrets: tu, power: src.power };
+    out[age] = { units: u, turrets: tu, powers: { ...src.powers } };
   }
   return out;
 }

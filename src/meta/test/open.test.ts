@@ -64,10 +64,10 @@ describe('openCapsule', () => {
     expect(o.save.currencies.dust).toBe(s.currencies.dust + 100 + 70);
   });
 
-  it('each tier pays its table Amber and bonus Dust (Jade +100); every Aeon holds a Legendary (A6.4, A10)', () => {
+  it('each tier pays its table Amber and bonus Dust; Gold, Platinum and Aeon hold 1, 2 and 3 Legendaries (A6.4, A10)', () => {
     for (const arena of [0, 7]) {
       let s = scripted(21 + arena, arena);
-      for (const tier of ['clay', 'bronze', 'silver', 'jade', 'aeon'] as const) {
+      for (const tier of C.capsules.tierOrder) {
         const def = C.capsules.tiers[tier];
         for (let i = 0; i < 40; i += 1) {
           const g = M.grantCapsule(s, 'road', C, clock(), { tier });
@@ -75,7 +75,8 @@ describe('openCapsule', () => {
           expect(cap.contents.amber).toBe(def.amber);
           expect(cap.contents.dust).toBe(def.bonusDust);
           expect(cap.contents.stacks).toHaveLength(def.stacks);
-          if (tier === 'aeon') expect(cap.contents.stacks.some((x) => x.rarity === 'legendary')).toBe(true);
+          const legendaries = def.guaranteed.filter((r) => r === 'legendary').length;
+          expect(cap.contents.stacks.filter((x) => x.rarity === 'legendary').length, tier).toBeGreaterThanOrEqual(legendaries);
           const o = M.openCapsule(g, cap.id);
           const stackDust = o.reveal.capsule.contents.stacks.reduce((n, x) => n + x.dust, 0);
           expect(o.save.currencies.amber).toBe(g.currencies.amber + def.amber);
@@ -117,8 +118,11 @@ describe('openCapsule', () => {
       const g = M.grantCapsule(s, i % 3 === 0 ? 'daily' : 'win', C, clock());
       const cap = lastPending(g);
       const o = M.openCapsule(g, cap.id);
-      const k = ['clay', 'bronze', 'silver', 'jade', 'aeon'].indexOf(cap.tier) - ['clay', 'bronze', 'silver', 'jade', 'aeon'].indexOf(cap.startTier);
+      const order = C.capsules.tierOrder;
+      const k = order.indexOf(cap.tier) - order.indexOf(cap.startTier);
       expect(o.reveal.climbs).toBe(k);
+      const main = Math.min(k, Math.max(0, order.indexOf(C.capsules.summitAbove) - order.indexOf(cap.startTier)));
+      expect(o.reveal.strikeClimbs.filter(Boolean)).toHaveLength(main);
       const firstClimb = o.reveal.strikeClimbs.indexOf(true);
       if (firstClimb >= 0) expect(o.reveal.strikeClimbs.slice(firstClimb).every(Boolean)).toBe(true);
       if (cap.kind === 'daily') expect(cap.startTier).toBe('bronze');

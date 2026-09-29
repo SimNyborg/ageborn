@@ -2,7 +2,7 @@
  * The pieces of the Home screen (A9 #2). Each piece reads only the UI environment and the pure view
  * models, so a later illustrated village Home can reuse them as building pop-ups.
  */
-import { arenaNameKey, capsuleKindNameKey, capsuleTierNameKey, questNameKey } from '@/content/keys';
+import { arenaNameKey, capsuleKindNameKey, questNameKey } from '@/content/keys';
 import type { QuestReward } from '@/content/types';
 import type { OpponentSpec } from '@/contracts';
 import type { ComponentChildren } from 'preact';
@@ -31,6 +31,7 @@ import {
   SwordsIcon,
   TrophyIcon,
 } from '../../components/icons';
+import { pendingCrests, pendingNameKey, visibleTier } from '../../components/capsuleLook';
 import { Panel } from '../../components/Layout';
 import { ClayMeter, ProgressBar } from '../../components/Meters';
 import { Modal } from '../../components/Modal';
@@ -321,7 +322,7 @@ export function CapsuleTray(p: { sheet?: boolean } = {}) {
   const best = pending[0];
   return (
     <Panel
-      {...(p.sheet ? {} : { title: t('ui.home.capsules'), icon: <CapsuleIcon tier={best?.tier ?? 'bronze'} size={26} /> })}
+      {...(p.sheet ? {} : { title: t('ui.home.capsules'), icon: <CapsuleIcon tier={best ? visibleTier(content.capsules, best) : 'bronze'} size={26} /> })}
       class={`home-tray${p.sheet ? ' home-tray--sheet' : ''}`}
       testid="capsule-tray"
       labelledBy="home-tray-title"
@@ -333,12 +334,12 @@ export function CapsuleTray(p: { sheet?: boolean } = {}) {
           <button
             key={c.id}
             type="button"
-            class={`home-drum home-drum--${c.tier}${i === 0 ? ' is-best' : ''}`}
+            class={`home-drum home-drum--${visibleTier(content.capsules, c)}${i === 0 ? ' is-best' : ''}`}
             onClick={() => services.openCapsule(c.id)}
-            aria-label={t('ui.home.openOne', { name: t(capsuleTierNameKey(c.tier)) })}
+            aria-label={t('ui.home.openOne', { name: t(pendingNameKey(content.capsules, c)) })}
             data-testid={`drum-${c.id}`}
           >
-            <CapsuleIcon tier={c.tier} size={i === 0 ? 64 : 46} />
+            <CapsuleIcon tier={visibleTier(content.capsules, c)} crests={pendingCrests(content.capsules, c)} size={i === 0 ? 64 : 46} />
           </button>
         ))}
         {pending.length > 4 ? <span class="home-tray__more">{t('ui.home.more', { n: pending.length - 4 })}</span> : null}

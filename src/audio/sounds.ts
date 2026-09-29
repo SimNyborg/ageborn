@@ -16,7 +16,7 @@
  * timed or pitched by the caller, see below) use `pitchVarBp: 0`.
  */
 import type { AgeId, SoundId } from '@/contracts';
-import { at, mixVariants, note, variants, type Zz, type ZzfxNote } from './soundKit';
+import { at, hz, mixVariants, note, variants, type Zz, type ZzfxNote } from './soundKit';
 import type { ZzfxParams } from './vendor/zzfx';
 
 export type { ZzfxNote } from './soundKit';
@@ -209,6 +209,44 @@ function climb(step: 1 | 2 | 3 | 4): SoundDef {
       if (step >= 2) out.push(note(10, name, { vol: 0.14, attack: 0.002, release: 0.4 + 0.1 * step, shape: 'sin' }, 7));
       if (step >= 3) out.push(note(10, name, { vol: 0.12, attack: 0.002, release: 0.6, shape: 'sin' }, 12));
       if (step === 4) out.push(at(60, { vol: 0.14, freq: 2400, attack: 0.03, sustain: 0.2, release: 0.3, shape: 'tri', slide: 4, tremolo: 0.5, repeat: 0.025 }));
+      return out;
+    }),
+    MUSICAL,
+  );
+}
+
+/**
+ * The summit tiers (A10 step 3b, A13): Platinum climbs one more step up the arpeggio with a glass-bell
+ * partial (inharmonic ×2.76); Aeon is richer and lower, not shriller: a choir pad of detuned saws
+ * (lowpass 2.4 kHz) and a clock tick at +60 ms.
+ */
+function summitClimb(step: 5 | 6): SoundDef {
+  return mix(
+    'capsule',
+    mixVariants(3, (v) => {
+      const out = [
+        noiseBurst(0, { vol: 0.55, freq: 200 * (1 + 0.1 * v), release: 0.16, lowpass: 1400 }),
+        thump(0, step === 5 ? 120 : 80, 0.55, 0.3),
+      ];
+      if (step === 5) {
+        out.push(
+          note(10, 'E6', { vol: 0.4, attack: 0.002, release: 1.3, shape: 'tri' }),
+          note(10, 'E6', { vol: 0.14, attack: 0.002, release: 1.1, shape: 'sin' }, 7),
+          at(10, { vol: 0.13, freq: hz('E6') * 2.76, attack: 0.001, release: 0.9, shape: 'sin' }),
+          note(10, 'C5', { vol: 0.14, attack: 0.002, release: 1.0, shape: 'sin' }),
+        );
+      } else {
+        const pad: Zz = { attack: 0.06, sustain: 0.5, release: 0.9, shape: 'saw', lowpass: 2400 };
+        out.push(
+          note(10, 'C5', { vol: 0.34, attack: 0.002, release: 1.4, shape: 'tri' }),
+          note(10, 'C4', { ...pad, vol: 0.14 }),
+          at(10, { ...pad, vol: 0.12, freq: hz('C4') * 1.006 }),
+          note(10, 'G4', { ...pad, vol: 0.11 }),
+          note(10, 'E5', { ...pad, vol: 0.09 }),
+          at(10, { vol: 0.5, freq: 65, attack: 0.004, release: 0.9, slide: -0.2 }),
+          at(60, { vol: 0.3, freq: 2600, attack: 0.001, release: 0.03, shape: 'square', lowpass: 7000 }),
+        );
+      }
       return out;
     }),
     MUSICAL,
@@ -695,6 +733,14 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   cap_climb_2: climb(2),
   cap_climb_3: climb(3),
   cap_climb_4: climb(4),
+  cap_climb_5: summitClimb(5),
+  cap_climb_6: summitClimb(6),
+  // A summit gem rising out of the capsule's cap: a stone grind under a rising glass chime (400 ms).
+  cap_summit_rise: mix('capsule', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.35, freq: 90 * (1 + 0.05 * v), attack: 0.03, sustain: 0.22, release: 0.1, tremolo: 0.6, repeat: 0.03, lowpass: 900 }),
+    at(0, { vol: 0.22, freq: 1400, attack: 0.05, sustain: 0.2, release: 0.12, shape: 'tri', slide: 6, tremolo: 0.4, repeat: 0.04 }),
+    at(300, { vol: 0.18, freq: hz('G6'), attack: 0.002, release: 0.35, shape: 'sin' }),
+  ]), { ...TIMED, maxVoices: 2 }),
   // A neutral knock, never a penalty sound (A10).
   cap_clunk: mix('capsule', mixVariants(3, (v) => [
     at(0, { vol: 0.45, freq: 160 * (1 + 0.06 * v), attack: 0.001, release: 0.14, shape: 'tri', slide: -1.5 }),
@@ -707,6 +753,37 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     note(30, 'E6', { vol: 0.15, attack: 0.005, release: 0.9, shape: 'tri' }),
     note(30, 'G6', { vol: 0.15, attack: 0.005, release: 0.9, shape: 'tri' }),
   ]), { ...MUSICAL, maxVoices: 2 }),
+  // Platinum stinger: a struck glass-bell chord with a long tail, over cap_burst (no casino colour).
+  cap_burst_platinum: mix('capsule', mixVariants(3, (_v, k) => {
+    const bell = (ms: number, name: string, vol: number): ZzfxNote[] => [
+      note(ms, name, { vol, attack: 0.001, release: 2.2, shape: 'sin' }),
+      at(ms, { vol: vol * 0.45, freq: hz(name) * 2.76, attack: 0.001, release: 1.2, shape: 'sin' }),
+      at(ms, { vol: vol * 0.25, freq: hz(name) * 5.4, attack: 0.001, release: 0.6, shape: 'sin' }),
+    ];
+    return [
+      ...bell(0, 'C5', 0.26),
+      ...bell(20, 'E5', 0.22),
+      ...bell(40, 'G5', 0.22),
+      ...bell(60, ['E6', 'C6', 'G6'][k] as string, 0.2),
+      at(0, { vol: 0.14, freq: 3200, attack: 0.3, sustain: 0.6, release: 0.9, shape: 'tri', tremolo: 0.5, repeat: 0.04 }),
+    ];
+  }), { ...MUSICAL, maxVoices: 1 }),
+  // Aeon stinger: a deep bell, a choir chord and a clock chime, with a 2 s star-glitter tail.
+  cap_burst_aeon: mix('capsule', mixVariants(3, (_v, k) => {
+    const pad: Zz = { attack: 0.25, sustain: 1.1, release: 1.2, shape: 'saw', lowpass: 2400 };
+    return [
+      note(0, 'C3', { vol: 0.5, attack: 0.001, release: 2.6, shape: 'sin' }),
+      at(0, { vol: 0.18, freq: hz('C3') * 2.76, attack: 0.001, release: 1.6, shape: 'sin' }),
+      at(0, { vol: 0.12, freq: hz('C3') * 5.4, attack: 0.001, release: 0.9, shape: 'sin' }),
+      note(0, 'C4', { ...pad, vol: 0.12 }),
+      at(0, { ...pad, vol: 0.1, freq: hz('C4') * 1.006 }),
+      note(0, 'G4', { ...pad, vol: 0.1 }),
+      note(0, 'E5', { ...pad, vol: 0.08 }),
+      note(0, ['C5', 'G5', 'E4'][k] as string, { ...pad, vol: 0.08 }),
+      ...[300, 450, 600].map((ms, i) => note(ms, ['G6', 'E6', 'C6'][i] as string, { vol: 0.14, attack: 0.001, release: 0.5, shape: 'tri' })),
+      at(500, { vol: 0.1, freq: 4200, attack: 0.4, sustain: 0.8, release: 1.0, shape: 'tri', slide: -1, tremolo: 0.6, repeat: 0.03 }),
+    ];
+  }), { ...MUSICAL, maxVoices: 1 }),
   card_flip: fx('capsule', variants(4, (v) => ({ vol: 0.3, freq: 2600 * (1 + 0.1 * v), attack: 0.004, release: 0.05, shape: 'noise', slide: -4, highpass: 3600 }))),
   foil_shine: fx('capsule', variants(3, (v) => ({ vol: 0.35, freq: 2200 * (1 + 0.04 * v), attack: 0.05, sustain: 0.2, release: 0.25, shape: 'tri', slide: 5, tremolo: 0.5, repeat: 0.02 }))),
   rarity_common: mix('capsule', mixVariants(3, (_v, k) => [

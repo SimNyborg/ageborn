@@ -45,6 +45,15 @@ export function rollSkinRarity(t: Content, rng: Sfc32State, draw: { epicN: numbe
   return rolled;
 }
 
+/**
+ * A capsule skin's rarity (A6.4 step 7): Wardrobe odds limited to `min` and up, renormalised
+ * (Platinum from Rare: 78 / 18 / 4%; Aeon from Epic: 82 / 18%). Never reads Wardrobe pity.
+ */
+export function rollSkinRarityFrom(t: Content, rng: Sfc32State, min: SkinRarity): SkinRarity {
+  const weights = SKIN_RARITIES.map((r) => (SKIN_RARITY_INDEX[r] >= SKIN_RARITY_INDEX[min] ? t.rarities.skins[r].crateOddsBp : 0));
+  return SKIN_RARITIES[pickWeighted(rng, weights)] ?? min;
+}
+
 /** A crate-pool skin of `rarity`: unowned first; a duplicate only when all of that rarity are owned. */
 export function rollSkinOfRarity(t: Content, rng: Sfc32State, rarity: SkinRarity, owned: ReadonlySet<SkinId>): { skin: SkinId; rarity: SkinRarity } | null {
   for (let r = SKIN_RARITY_INDEX[rarity]; r >= 0; r -= 1) {

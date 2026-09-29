@@ -3,7 +3,7 @@
  * as `unknown`; `src/content/types.ts` gives them their shape) and small lookups shared by the rule
  * modules: card definitions, ownership, the arena and its drop pool.
  */
-import type { AgeId, CapsuleTier, CardId, CompiledContent, Rarity, SaveDoc, TurretDef, UnitDef } from '@/contracts';
+import type { AgeId, CapsuleTier, CardId, CompiledContent, LoadoutPowers, PowerSlot, Rarity, SaveDoc, TurretDef, UnitDef } from '@/contracts';
 import { asContent, type ArenaDef, type Content } from '@/content';
 
 /** The typed content (throws on content without meta tables, such as the contract fakes). */
@@ -14,8 +14,28 @@ export function tables(c: CompiledContent): Content {
 export const RARITY_ORDER: readonly Rarity[] = ['common', 'rare', 'epic', 'legendary'];
 export const RARITY_INDEX: Readonly<Record<Rarity, number>> = { common: 0, rare: 1, epic: 2, legendary: 3 };
 
-export const TIER_ORDER: readonly CapsuleTier[] = ['clay', 'bronze', 'silver', 'jade', 'aeon'];
-export const TIER_INDEX: Readonly<Record<CapsuleTier, number>> = { clay: 0, bronze: 1, silver: 2, jade: 3, aeon: 4 };
+/** The capsule ladder, lowest first (content `capsules.tierOrder`, A6.4); a tier's index is its place. */
+export function tierOrder(t: Pick<Content, 'capsules'>): readonly CapsuleTier[] {
+  return t.capsules.tierOrder;
+}
+
+/** A tier's place on the ladder (0 = the lowest); -1 for a tier the content does not list. */
+export function tierIndex(t: Pick<Content, 'capsules'>, tier: CapsuleTier): number {
+  return t.capsules.tierOrder.indexOf(tier);
+}
+
+/** The top of the ladder (Aeon). */
+export function topTier(t: Pick<Content, 'capsules'>): CapsuleTier {
+  const order = t.capsules.tierOrder;
+  const top = order[order.length - 1];
+  if (!top) throw new Error('meta: the content has no capsule tiers');
+  return top;
+}
+
+/** How many Legendary stacks a tier guarantees (Gold 1, Platinum 2, Aeon 3; the crests, A6.4). */
+export function guaranteedLegendaries(t: Pick<Content, 'capsules'>, tier: CapsuleTier): number {
+  return t.capsules.tiers[tier].guaranteed.filter((r) => r === 'legendary').length;
+}
 
 /** A collectable card: a unit or a turret (powers are owned separately, `SaveDoc.powersOwned`). */
 export type CardDef = UnitDef | TurretDef;
@@ -93,11 +113,21 @@ export function ageCards(t: Content, age: AgeId): { units: CardId[]; turrets: Ca
   };
 }
 
-/** The age's default Age Power (A3 starter kit). */
-export function defaultPower(t: Content, age: AgeId): CardId {
-  const id = t.order.powers.find((p) => t.powers[p]?.age === age && t.powers[p]?.slot === 'default');
-  if (!id) throw new Error(`meta: no default power for ${age}`);
+/** The age's starter power of a slot (A2.9.8: found by `source: 'starter'` and `slot`). */
+export function starterPower(t: Content, age: AgeId, slot: PowerSlot): CardId {
+  const id = t.order.powers.find((p) => t.powers[p]?.age === age && t.powers[p]?.slot === slot && t.powers[p]?.source === 'starter');
+  if (!id) throw new Error(`meta: no ${slot} starter power for ${age}`);
   return id;
+}
+
+/** Both starter powers of an age (A2.9.8 starter kit). */
+export function starterPowers(t: Content, age: AgeId): LoadoutPowers {
+  return { home: starterPower(t, age, 'home'), field: starterPower(t, age, 'field') };
+}
+
+/** Every starter power, in content order (A2.9.8: owned from the first launch). */
+export function allStarterPowers(t: Content): CardId[] {
+  return t.order.powers.filter((p) => t.powers[p]?.source === 'starter');
 }
 
 /**

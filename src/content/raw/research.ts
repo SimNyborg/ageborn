@@ -85,7 +85,7 @@ const economy: ResearchPickDef[] = [
 
 /** Command (A18.5.5): rank I in v1; Survey Corps, Master Gunners, Reserve Charge and Last Stand Drill in v1.1. */
 const command: ResearchPickDef[] = [
-  pick('command', null, 1, 0, 'signal_fires', 'power', [{ kind: 'powerCharge', bp: 1500 }]),
+  pick('command', null, 1, 0, 'signal_fires', 'power', [{ kind: 'powerReload', bp: 1500 }]),
   pick('command', null, 1, 1, 'war_horns', 'push', [{ kind: 'warHorns', chargeSpeedBp: 800, holdDamageBp: 1000, flagMaxP: 480, nearLu: 60 }]),
 ];
 

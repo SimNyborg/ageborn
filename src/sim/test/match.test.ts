@@ -184,7 +184,8 @@ describe('observation (A7.1)', () => {
     expect(o.me.gold).toBe(sim.state.sides[0].gold);
     expect(o.me.tray.slice(0, 5)).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman']);
     expect(o.me.turretCards).toEqual(['rock_tosser', 'angry_beehive']);
-    expect(o.me.power).toBe('stampede');
+    expect(o.me.powers.home?.card).toBe('rockslide');
+    expect(o.me.powers.field?.card).toBe('stampede');
     expect(Object.keys(o.foe)).not.toContain('gold');
     expect(Object.keys(o.foe)).not.toContain('queue');
     expect(o.foe.turrets[0]).toEqual({ card: 'angry_beehive', age: 'stone' });

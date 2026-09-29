@@ -5,7 +5,7 @@
  * locked ones say how they are earned and, for drop-pool items, offer Dust crafting. Nothing here can
  * be bought (A6.2).
  */
-import { ageNameKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey } from '@/content/keys';
+import { ageNameKey, capsuleTierShortKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey } from '@/content/keys';
 import type { CosmeticCollection, CosmeticItemDef } from '@/content/types';
 import type { AgeId, BaseEmoteId, CosmeticLoadout } from '@/contracts';
 import type { ComponentChildren } from 'preact';
@@ -16,7 +16,7 @@ import { CheckIcon, DustIcon, LockIcon, RARITY_COLOR } from '../../components/ic
 import { AgePicker } from '../../components/Tabs';
 import { EmoteGlyph } from '../../hud/icons';
 import { useUi } from '../context';
-import { craftPrice, equippedOf, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceHint } from '../model/cosmetics';
+import { craftLocked, craftPrice, equippedOf, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceHint } from '../model/cosmetics';
 import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
 
@@ -92,7 +92,10 @@ export function ItemTile(p: {
   const key = itemKey(p.item);
   const have = owns(save.value, content, key);
   const price = craftPrice(content, p.item);
-  const hint = sourceHint(p.item);
+  const locked = craftLocked(save.value, p.item);
+  const src = sourceHint(p.item);
+  // A tier's own set names its tier ("From Aeon Capsules. Craftable after your first.").
+  const hint = p.item.source.kind === 'capsuleTier' ? { key: src.key, params: { tier: t(capsuleTierShortKey(p.item.source.tier)) } } : src;
   const rarity = p.item.rarity;
   return (
     <div
@@ -140,7 +143,8 @@ export function ItemTile(p: {
               size="sm"
               kind="secondary"
               testid={`craft-${key}`}
-              disabled={save.value.currencies.dust < price}
+              disabled={locked || save.value.currencies.dust < price}
+              {...(locked ? { reason: t('cosmetic.ui.reason.locked') } : {})}
               onClick={() => act(services.craftCosmetic(key), t('cosmetic.ui.crafted'))}
             >
               <DustIcon size={16} /> {price}

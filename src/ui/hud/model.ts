@@ -144,11 +144,14 @@ export function evolveIntent(m: HudModel, side: Side, config?: Readonly<MatchCon
   return deny('evolve', { key: 'hud.deny.xp', params: { n: Math.max(1, xp.need - xp.xp) } });
 }
 
-/** Tap = auto-aim (no p); a drag passes the placed p (A2.9). */
+/** Tap = auto-aim (no p); a drag passes the placed p (A2.9). P1: the one button casts the Home slot (A2.9.13). */
 export function powerIntent(m: HudModel, side: Side, p?: number): HudIntent {
   if (m.phase === 'ended') return deny('power');
   if (m.me.powerPpm < PPM_FULL) return deny('power', { key: 'hud.deny.power', params: { pct: Math.floor(powerFraction(m.me.powerPpm) * 100) } });
-  return cmd(p === undefined ? { t: 'power', side } : { t: 'power', side, p }, 'power');
+  // A2.9.2: a cast costs gold, paid on acceptance.
+  const home = m.me.powers?.home;
+  if (home && !home.affordable) return deny('power', { key: 'hud.deny.powerGold', params: { n: Math.max(1, home.cost - m.me.gold) } });
+  return cmd(p === undefined ? { t: 'power', side, slot: 'home' } : { t: 'power', side, slot: 'home', p }, 'power');
 }
 
 /**
