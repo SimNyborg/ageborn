@@ -22,14 +22,14 @@ describe('contentHash (B4, B3 replays)', () => {
   it('matches the snapshot (update only when battle content changes on purpose)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
-    expect(content.hash).toBe('67c9912c');
+    expect(content.hash).toBe('e7cfa294');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
     // The fixture never changes, so this value stays fixed even after a balance change updates the
     // snapshot above. It changes only if the hash algorithm or the hashed slice changes, which
     // invalidates every golden replay.
-    const FIXTURE_HASH = '786da415';
+    const FIXTURE_HASH = '1908c748';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
     expect(fixture.hash).toBe(FIXTURE_HASH);
   });
@@ -105,9 +105,16 @@ describe('compiled bundle (B4)', () => {
     expect(content.order.hiddenUnits).toEqual(['training_dummy']);
     expect(content.order.turrets).toHaveLength(32);
     expect(content.order.ages).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
+    // A2.9.11: by age; starters first (Home, Field), then Home and Field by source (Road, War Path by level)
     expect(content.order.powers).toEqual([
-      'stampede', 'meteor_shower', 'tidal_wave', 'aegis', 'arrow_storm', 'royal_decree', 'smoke_screen', 'broadside',
-      'iron_horse', 'zeppelin_raid', 'paratroopers', 'carpet_bomber', 'orbital_lance', 'nanite_surge', 'starfall', 'warp_strike',
+      'rockslide', 'stampede', 'meteor_shower', 'sticky_tar', 'hunt_cry', 'hunters_spear',
+      'tidal_wave', 'chariot_rush', 'zeus_bolts', 'medusa_gaze', 'aegis', 'apollo_arrow',
+      'arrow_storm', 'knights_charge', 'caltrops', 'boiling_oil', 'royal_decree', 'undermine',
+      'volley_fire', 'smoke_screen', 'broadside', 'boarding_nets', 'horse_artillery', 'sharpshooter',
+      'gun_line', 'iron_horse', 'zeppelin_raid', 'barbed_wire', 'railway_gun', 'field_hospital',
+      'strafing_run', 'paratroopers', 'carpet_bomber', 'aa_screen', 'tank_rush', 'sniper_team',
+      'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nanite_surge', 'emp_blackout',
+      'starfall', 'comet_run', 'singularity', 'solar_flare', 'warp_strike', 'ion_cannon',
     ]);
     expect(content.order.formats).toEqual(['tutorial', 'short', 'standard', 'full']);
   });
@@ -152,7 +159,6 @@ describe('ticks (B3: max(1, round(ms / 50)))', () => {
   it('precompiles every global duration', () => {
     expect(content.ticks).toEqual({
       ascend: 50,
-      powerCharge: 1000,
       turretBuild: 20,
       turretSell: 20,
       stanceCooldown: 60,
