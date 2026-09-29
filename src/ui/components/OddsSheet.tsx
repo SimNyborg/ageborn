@@ -53,8 +53,13 @@ function tierExtras(r: TierContentsRow, m: OddsModel, t: Translate, locale: stri
   }
   if (r.rareToLegendaryBp > 0) out.push(t('ui.odds.rareToLegendary', { p: formatBp(r.rareToLegendaryBp, locale) }));
   if (r.bonusDust > 0) out.push(t('ui.odds.bonusDust', { n: formatInt(r.bonusDust, locale) }));
-  if (r.skinChanceBp >= 10000) out.push(t('ui.odds.skinSure', { rarity: t(rarityNameKey(r.skinMinRarity)) }));
-  else if (r.skinChanceBp > 0) out.push(t('ui.odds.skinChance', { p: formatBp(r.skinChanceBp, locale) }));
+  // The exact skin rarity split the roll uses (A6.4 step 7, A15.3): "Epic 81.82% and Legendary 18.18%".
+  const split = listFormat(
+    r.skinRarityBp.map((x) => t('ui.odds.skinRarity', { rarity: t(rarityNameKey(x.rarity)), p: formatBp(x.bp, locale) })),
+    locale,
+  );
+  if (r.skinChanceBp >= 10000) out.push(t('ui.odds.skinSure', { rarity: t(rarityNameKey(r.skinMinRarity)), split }));
+  else if (r.skinChanceBp > 0) out.push(t('ui.odds.skinChance', { p: formatBp(r.skinChanceBp, locale), split }));
   const set = r.exclusiveItems ? m.exclusive.find((x) => x.tier === r.tier) : undefined;
   if (set) out.push(t('ui.odds.aeonSet', { owned: set.owned, total: set.total, dust: formatInt(set.completeDust, locale) }));
   return out;
@@ -155,7 +160,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
                   <tr key={r.tier}>
                     <th scope="row">
                       <span class="ui-odds__tiername">
-                        <CapsuleIcon tier={r.tier} size={20} />
+                        <CapsuleIcon tier={r.tier} size={20} crests={r.crests} />
                         {t(capsuleTierShortKey(r.tier))}
                       </span>
                     </th>
@@ -193,7 +198,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
             ) : null}
             {hasSummit ? (
               <li>
-                <CapsuleIcon tier={m.tiers[m.tiers.length - 1]!.tier} size={18} />
+                <CapsuleIcon tier={m.tiers[m.tiers.length - 1]!.tier} size={18} crests={m.tiers[m.tiers.length - 1]!.crests} />
                 <span>{t('ui.odds.summitRule')}</span>
               </li>
             ) : null}
@@ -205,7 +210,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
             ) : null}
             {m.exclusive.map((x) => (
               <li key={x.tier}>
-                <CapsuleIcon tier={x.tier} size={18} />
+                <CapsuleIcon tier={x.tier} size={18} crests={m.tiers.find((r) => r.tier === x.tier)?.crests ?? 0} />
                 <span>{t('ui.odds.aeonSetRule', { dust: formatInt(x.craftDust, locale) })}</span>
               </li>
             ))}
@@ -259,14 +264,18 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
               <div class="ui-odds__chips">
                 {m.cosmetics.capsuleChanceBp.map((c) => (
                   <span key={c.tier} class="ui-odds__chip" style={{ '--c': TIER_COLOR[c.tier] }}>
-                    <CapsuleIcon tier={c.tier} size={18} />
+                    <CapsuleIcon tier={c.tier} size={18} crests={m.tiers.find((x) => x.tier === c.tier)?.crests ?? 0} />
                     {t(capsuleTierShortKey(c.tier))} <b>{formatBp(c.bp, locale)}</b>
                   </span>
                 ))}
               </div>
+              <p class="ui-odds__note" data-testid="odds-cosmetics-rarity-lead">
+                {t('cosmetic.odds.capsuleRarityLine')}
+              </p>
               <div class="ui-odds__chips">
                 {m.cosmetics.capsuleRarityBp.map((r) => (
                   <span key={r.rarity} class="ui-odds__chip" style={{ '--c': RARITY_COLOR[r.rarity] }}>
+                    <RarityGem rarity={r.rarity} size={16} />
                     {t(rarityNameKey(r.rarity))} <b>{formatBp(r.bp, locale)}</b> {t('cosmetic.odds.items', { n: r.items })}
                   </span>
                 ))}
@@ -276,6 +285,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
                 <CrateIcon size={22} />
                 {m.cosmetics.crateRarityBp.map((r) => (
                   <span key={r.rarity} class="ui-odds__chip" style={{ '--c': RARITY_COLOR[r.rarity] }}>
+                    <RarityGem rarity={r.rarity} size={16} />
                     {t(rarityNameKey(r.rarity))} <b>{formatBp(r.bp, locale)}</b> {t('cosmetic.odds.items', { n: r.items })}
                   </span>
                 ))}

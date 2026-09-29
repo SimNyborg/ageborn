@@ -39,6 +39,11 @@ export interface TierContentsRow {
   skinChanceBp: number;
   /** The lowest skin rarity this tier's skin can be (Wardrobe odds from there up). */
   skinMinRarity: SkinRarity;
+  /**
+   * The exact rarity split of this tier's skin (A6.4 step 7): the Wardrobe odds limited to
+   * `skinMinRarity` and up, renormalised, as the roll uses them. Empty when the tier holds no skin.
+   */
+  skinRarityBp: { rarity: SkinRarity; bp: number }[];
   rareToLegendaryBp: number;
   /** Guaranteed Legendary stacks: the tier's Legendary crests (Gold 1, Platinum 2, Aeon 3). */
   crests: number;
@@ -116,6 +121,26 @@ export function legendaryPityBp(capsules: CapsuleTables, n: number): number {
   return Math.min(10000, (n - p.legendaryFreeUntil) * p.legendaryStepBp);
 }
 
+/**
+ * A capsule skin's rarity odds in bp (A6.4 step 7, the weights meta `rollSkinRarityFrom` uses): the
+ * Wardrobe odds from `min` up, renormalised to 10,000 by largest remainder, so the shown shares add up
+ * to 100% (Aeon from Epic: 1800 : 400 → 81.82% / 18.18%).
+ */
+export function skinRarityOddsBp(rarities: Rarities, min: SkinRarity): { rarity: SkinRarity; bp: number }[] {
+  const from = rarities.skinOrder.indexOf(min);
+  const rows = rarities.skinOrder.filter((_, i) => i >= from).map((rarity) => ({ rarity, w: rarities.skins[rarity].crateOddsBp }));
+  const total = rows.reduce((n, r) => n + r.w, 0);
+  if (total <= 0) return [];
+  const exact = rows.map((r) => ({ rarity: r.rarity, bp: Math.floor((r.w * 10000) / total), rem: (r.w * 10000) % total }));
+  let short = 10000 - exact.reduce((n, r) => n + r.bp, 0);
+  for (const r of [...exact].sort((a, b) => b.rem - a.rem)) {
+    if (short <= 0) break;
+    r.bp += 1;
+    short -= 1;
+  }
+  return exact.filter((r) => r.bp > 0).map(({ rarity, bp }) => ({ rarity, bp }));
+}
+
 function guaranteeIn(every: number, since: number): number {
   return Math.max(1, every - since);
 }
@@ -188,6 +213,7 @@ export function oddsModel(
         bonusDust: d.bonusDust,
         skinChanceBp: d.skinChanceBp,
         skinMinRarity: d.skinMinRarity,
+        skinRarityBp: d.skinChanceBp > 0 ? skinRarityOddsBp(rarities, d.skinMinRarity) : [],
         rareToLegendaryBp: d.rareToLegendaryBp,
         crests: tierCrests(capsules, tier),
         extraLegendaryCopies: d.extraLegendaryCopies,

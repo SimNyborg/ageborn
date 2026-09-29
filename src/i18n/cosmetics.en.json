@@ -618,7 +618,8 @@
         "notEnoughDust": "Not enough Dust.",
         "owned": "Already yours.",
         "notCraftable": "This one is earned, not crafted.",
-        "locked": "Craftable after your first Aeon Capsule."
+        "locked": "Craftable after your first Aeon Capsule.",
+        "pending": "This one is already waiting for you in an unopened capsule or crate."
       },
       "collectionsTitle": "Cosmetic collections",
       "inWheel": "In wheel",
@@ -632,6 +633,7 @@
     "odds": {
       "title": "Cosmetic collections",
       "capsuleLine": "Chance that a Time Capsule holds one collection item (emote, quote, flag or decoration):",
+      "capsuleRarityLine": "Which item it is, by rarity:",
       "crateLine": "Every Wardrobe Crate also holds one collection item:",
       "items": "({n} items)",
       "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust."

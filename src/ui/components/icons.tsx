@@ -745,7 +745,7 @@ const TIER_RAMP: Record<CapsuleTier, readonly [string, string, string, string]> 
   bronze: ['#EDB57A', '#C27C3A', '#9C5F27', '#6A3E19'],
   silver: ['#F5F8FB', '#C9D1DC', '#A3ADBB', '#6C7584'],
   jade: ['#96EDBB', '#2FBF71', '#22955A', '#155F39'],
-  gold: ['#FFF6DC', '#EFE0B0', '#CDB887', '#8A7A5A'],
+  gold: ['#FFF6DC', '#EFE0B0', '#BCA45A', '#6B5A2A'],
   platinum: ['#F2FFFC', '#C4F2EA', '#A6D4CD', '#7E9E99'],
   aeon: ['#B8AAFF', '#5D3DFF', '#3A2A9E', '#241C4A'],
 };

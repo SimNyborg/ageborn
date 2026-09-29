@@ -30,6 +30,7 @@ const REWORK_POWER_SOUND_IDS = [
   'pw_knights', 'pw_caltrops', 'pw_undermine', 'pw_oil', 'pw_volley', 'pw_nets', 'pw_sharpshooter', 'pw_horse_art',
   'pw_gunline', 'pw_wire', 'pw_flak', 'pw_hospital', 'pw_strafe', 'pw_emp', 'pw_sniper', 'pw_tanks',
   'pw_drones', 'pw_stasis', 'pw_pdg', 'pw_railgun', 'pw_comet', 'pw_flare', 'pw_ion', 'pw_singularity',
+  'power_cast', 'power_lock', 'turret_jammed',
 ];
 
 /** Sound ids added by A17 (docs/design-lane-ages.md, A17.12). */

@@ -650,6 +650,25 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     note(70, ['B6', 'G#6', 'E7'][k] as string, { vol: 0.25, attack: 0.003, release: 0.45, shape: 'tri' }),
   ]), MUSICAL),
   power_telegraph: fx('battle', variants(3, (v) => ({ vol: 0.4, freq: 300 * (1 + 0.03 * v), attack: 0.05, sustain: 0.75, release: 0.2, shape: 'saw', slide: 0.3, tremolo: 0.5, repeat: 0.25, lowpass: 3200 })), TIMED),
+  // The power rework's shared cues (A2.9.10, A5.7): the cast committed (MR-70b, a rising whoosh into a
+  // coin clink), a strike's lock (its telegraph) and a silenced mount (Suppress). In `match`, which
+  // loads at boot, because the boot pre-render groups are at their budget.
+  power_cast: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 900 * (1 + 0.04 * v), attack: 0.12, release: 0.08, slide: 3, lowpass: 7000 }),
+    at(20, { vol: 0.2, freq: 330 * (1 + 0.04 * v), attack: 0.04, sustain: 0.08, release: 0.06, shape: 'tri', slide: 2.5 }),
+    coin(200, 2093 * (1 + 0.02 * v), 0.3),
+  ]), { maxVoices: 2 }),
+  power_lock: mix('match', mixVariants(3, (_v, k) => [
+    at(0, { vol: 0.25, freq: 2400, attack: 0.001, release: 0.03, shape: 'square', lowpass: 5000 }),
+    at(90, { vol: 0.25, freq: 2400, attack: 0.001, release: 0.03, shape: 'square', lowpass: 5000 }),
+    note(200, ['E6', 'E6', 'F#6'][k] as string, { vol: 0.25, attack: 0.003, release: 0.3, shape: 'tri' }),
+    note(270, ['B6', 'A6', 'B6'][k] as string, { vol: 0.2, attack: 0.003, release: 0.35, shape: 'tri' }),
+  ]), { ...MUSICAL, maxVoices: 2 }),
+  turret_jammed: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.35, freq: 500, decay: 0.03, sustainVol: 0.2, release: 0.12, lowpass: 5000 }),
+    at(30, { vol: 0.2, freq: 900 * (1 + 0.05 * v), attack: 0.01, sustain: 0.1, release: 0.3, shape: 'saw', slide: -3, lowpass: 2400 }),
+    noiseBurst(40, { vol: 0.15, freq: 3000, sustain: 0.3, release: 0.15, tremolo: 0.7, repeat: 0.03, highpass: 2000 }),
+  ]), { maxVoices: 2 }),
   pw_stampede: mix('stone', mixVariants(3, (v) => [
     noiseBurst(0, { vol: 0.6, freq: 90 * (1 + 0.06 * v), attack: 0.05, sustain: 1.4, release: 0.5, tremolo: 0.5, repeat: 0.085, lowpass: 1200 }),
     at(100, { vol: 0.35, freq: 95, attack: 0.08, sustain: 0.4, release: 0.4, shape: 'saw', slide: -0.15, lowpass: 1400 }),

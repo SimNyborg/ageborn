@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CapsuleTier, Foil, Rarity, SaveDoc } from '../../src/contracts';
 import { asContent, content } from '../../src/content';
 import { seedSfc32, shuffle } from '../../src/core/rng';
-import { climbIssue, contentBagSize, dropsChecks, dropsDefaults, DropsTally, runDrops, type OpenedCapsule } from '../drops';
+import { chiAlpha, climbIssue, contentBagSize, dropsChecks, dropsDefaults, DropsTally, P_MIN, runDrops, skinRarityWeights, type OpenedCapsule } from '../drops';
 import { loadMeta } from '../lib/modules';
 
 const c = asContent(content);
@@ -127,6 +127,48 @@ describe('DropsTally (A6.4, A6.5)', () => {
     expect(s.wardrobePityViolations).toBe(1);
     const verdicts = Object.fromEntries(dropsChecks(s, content).map((x) => [x.id, x.verdict]));
     expect(verdicts).toMatchObject({ 'drops.sureSkin': 'fail', 'drops.wardrobePity': 'fail' });
+  });
+
+  it('tests the skin rarity split of every skin tier against the renormalised Wardrobe odds (A6.4 step 7)', () => {
+    const skinTiers = c.capsules.tierOrder.filter((t) => c.capsules.tiers[t].skinChanceBp > 0);
+    expect(skinTiers.length).toBeGreaterThan(0);
+    const rarities = ['rare', 'epic', 'legendary'] as const;
+    // Exactly at the published split: passes. Aeon from Epic is 1800 : 400 (81.82% / 18.18%).
+    const good = new DropsTally(content);
+    for (const tier of skinTiers) {
+      const w = skinRarityWeights(c, c.capsules.tiers[tier].skinMinRarity);
+      w.forEach((x, i) => {
+        for (let n = 0; n < x / 20; n += 1) good.add({ ...capsule(tier), skin: true, skinRarity: rarities[i] });
+      });
+    }
+    const gs = good.summary();
+    for (const tier of skinTiers) expect(gs.skinRarity[tier]?.p, tier).toBeGreaterThan(0.99);
+    const top = skinTiers.find((t) => c.capsules.tiers[t].skinMinRarity === 'epic');
+    if (top) expect(skinRarityWeights(c, 'epic')).toEqual([0, 1800, 400]);
+    const goodVerdicts = dropsChecks(gs, content).filter((x) => x.id.startsWith('drops.skinRarity.'));
+    expect(goodVerdicts.map((x) => x.verdict)).toEqual(skinTiers.map(() => 'pass'));
+    // A wrong split (every skin Epic) fails for each tier.
+    const bad = new DropsTally(content);
+    for (const tier of skinTiers) for (let n = 0; n < 200; n += 1) bad.add({ ...capsule(tier), skin: true, skinRarity: 'epic' });
+    const bv = Object.fromEntries(dropsChecks(bad.summary(), content).map((x) => [x.id, x.verdict]));
+    for (const tier of skinTiers) expect(bv[`drops.skinRarity.${tier}`], tier).toBe('fail');
+  });
+
+  it('shares the 0.01 false-alarm budget across the chi-square checks of a run (Bonferroni)', () => {
+    const checks = dropsChecks(new DropsTally(content).summary(), content);
+    const chi = checks.filter((x) => x.target.startsWith('chi-square'));
+    expect(chi.length).toBeGreaterThan(3);
+    const alpha = chiAlpha(chi.length);
+    expect(alpha).toBeCloseTo(P_MIN / chi.length, 12);
+    for (const x of chi) expect(x.target).toContain(`${P_MIN} / ${chi.length} checks`);
+    // A p between alpha and 0.01 (seed 1's full-run Supply draw, p = 0.0074) passes; below alpha fails.
+    const t = new DropsTally(content);
+    const odds = c.capsules.dailyOddsBp;
+    for (const tier of c.capsules.tierOrder) for (let i = 0; i < odds[tier] / 10; i += 1) t.add(capsule(tier, { kind: 'daily' }));
+    const s = t.summary();
+    const at = (p: number) => dropsChecks({ ...s, daily: s.daily ? { ...s.daily, p } : null }, content).find((x) => x.id === 'drops.daily')?.verdict;
+    expect(at(0.0074)).toBe('pass');
+    expect(at(alpha / 2)).toBe('fail');
   });
 
   it('checks the honest climb for every start and final pair (A10)', () => {

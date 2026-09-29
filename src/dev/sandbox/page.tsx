@@ -19,7 +19,7 @@ import type { FormatId } from '@/contracts';
 import { DEFAULT_VIEW_SETTINGS, type ViewSettings } from '@/render';
 import { useEffect, useState } from 'preact/hooks';
 import type { CardId, PowerSlot, Side } from '@/contracts';
-import { devClearLane, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
+import { devClearLane, devPlaceTurret, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
 import { SimPanel } from './simPanel';
 import { BattleStage, type ArtKind, type OpponentKind, type StageApi, type StageOptions, type StageStats } from './viewBattle';
 import { HudStates } from './viewHudStates';
@@ -175,6 +175,8 @@ function BattleTab(p: { bare?: boolean }) {
           power: (side: Side, ppm: number, slot?: PowerSlot) => devSetPower(sim, side, ppm, slot),
           spawn: (side: Side, card: CardId, p: number) => devSpawn(sim, side, card, { p }).id,
           clear: () => devClearLane(sim),
+          /** Places an active turret on a mount (power effect checks: Suppress needs enemy turrets). */
+          turret: (side: Side, mount: number, card: CardId) => devPlaceTurret(sim, side, mount, card),
           /** Puts powers in a side's current loadout (every age), for trying a power in the sandbox. */
           powers: (side: Side, home: CardId | null, field: CardId | null) => {
             for (const lo of Object.values(sim.config.sides[side].loadouts)) if (lo) (lo as { powers: { home: CardId | null; field: CardId | null } }).powers = { home, field };

@@ -1683,3 +1683,8 @@ def alert_base(v, rng):
     bell2 = mixdown(gm_note(GM["tubular"], mn("C5"), 0.35, 116, 0.8), at(0, chime(hz("C5"), 0.5, 0.16), 0.5))
     tom = mixdown(perc(TOM_L, 112 if v == 0 else 104, KIT_ORCH, pitch=0.9 * p, length=0.35), at(0, thump(130, 70, 0.15, 0.02, 0.05, 2.0), 0.4))
     return mixdown(bell1, at(0.16, bell2), at(0, tom, 0.5), at(0.16, tom, 0.65))
+
+
+# The power rework (DESIGN A2.9, A5.7): the 32 new powers and the shared power cues live in their own
+# module, which registers into REGISTRY with the helpers above.
+import sounds_powers  # noqa: E402,F401

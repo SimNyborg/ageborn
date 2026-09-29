@@ -31,16 +31,21 @@ export interface TierRamp {
 }
 
 /**
- * The drum body ramps. Gold, Platinum and Aeon use the reference ramps of DESIGN A10 exactly (no
- * saturated "burnished" gold anywhere on a drum); the four older tiers are shaded from their keys.
- * Aeon's shadow is the midnight body of the time crystal.
+ * The drum body ramps. Gold, Platinum and Aeon use the reference ramps of DESIGN A10 exactly; the
+ * four older tiers are shaded from their keys. Aeon's shadow is the midnight body of the time crystal.
+ *
+ * Gold reads as polished metal by its contrast, not by a saturated key: a champagne key and
+ * specular highlight over a deep old-gold mid-tone (#BCA45A) and a dark bronze-olive shadow
+ * (#6B5A2A). The key and mid-tone stay at least ΔE2000 12 from Legendary and every button gold, and
+ * the mid-tone at least 12 from the UI parchment (the review round of 2026-09-29: the pale
+ * #CDB887 / #8A7A5A ramp read as ivory or bone at phone size).
  */
 export const TIER_RAMPS: Readonly<Record<CapsuleTier, TierRamp>> = {
   clay: { highlight: 0xc49272, key: 0x9c6b4a, mid: 0x86593c, shadow: 0x5a3a26 },
   bronze: { highlight: 0xe7a86a, key: 0xc27c3a, mid: 0xa4642a, shadow: 0x6a3f1a },
   silver: { highlight: 0xf4f7fb, key: 0xc9d1dc, mid: 0xa9b3c1, shadow: 0x6f7888 },
   jade: { highlight: 0x8ae8b4, key: 0x2fbf71, mid: 0x21985a, shadow: 0x13603a },
-  gold: { highlight: 0xfff6dc, key: 0xefe0b0, mid: 0xcdb887, shadow: 0x8a7a5a },
+  gold: { highlight: 0xfff6dc, key: 0xefe0b0, mid: 0xbca45a, shadow: 0x6b5a2a },
   platinum: { highlight: 0xf2fffc, key: 0xc4f2ea, mid: 0xa6d4cd, shadow: 0x7e9e99 },
   aeon: { highlight: 0xb8aaff, key: 0x5d3dff, mid: 0x3a2a9e, shadow: 0x241c4a },
 };
@@ -115,6 +120,17 @@ export const ROOM = {
   newStamp: 0xff6a3d,
   ready: 0x4ade80,
 } as const;
+
+/**
+ * A lit ring gem (A10): the face is the tier's own key colour, with a lighter and a darker cel facet
+ * and a dark rim from the tier's shadow, so each ring reads in its own colour on every drum (no white
+ * core or white stroke that would wash the light tiers out).
+ */
+export function ringGemColors(tier: CapsuleTier): { face: number; light: number; dark: number; rim: number } {
+  const key = TIER_COLORS[tier];
+  const r = TIER_RAMPS[tier];
+  return { face: key, light: mixColor(key, r.highlight, 0.55), dark: mixColor(key, r.shadow, 0.6), rim: shade(r.shadow, -0.45) };
+}
 
 /** Colour as a CSS hex string, for DOM styles. */
 export function cssHex(color: number): string {

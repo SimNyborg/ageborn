@@ -220,7 +220,7 @@
       "stackCount": "{n} {rarity}",
       "rareToLegendary": "{p} chance one Rare stack becomes Legendary.",
       "bonusDust": "+{n} Dust.",
-      "skinChance": "{p} chance of a skin.",
+      "skinChance": "{p} chance of a skin: {split}.",
       "stackTitle": "Other stacks roll",
       "noRandomLegendaries": "In this arena the 1% Legendary roll becomes Common. Pity still gives Legendaries.",
       "unownedWeight": "Cards you don't own yet are three times as likely.",
@@ -231,10 +231,11 @@
       "bagLegacy": "Your current bag was filled before Gold and Platinum arrived, so it finishes with its old mix. Each Aeon left in it is the new Aeon.",
       "crestRule": "Each Legendary crest on a capsule stands for one Legendary inside.",
       "extraLegendary": "Second and third Legendary: {n} copy each.",
-      "skinSure": "A skin, {rarity} or better.",
+      "skinSure": "A skin, {rarity} or better: {split}.",
+      "skinRarity": "{rarity} {p}",
       "aeonSet": "An Aeon Collection item you don't have yet ({owned}/{total}). Once you have all {total}: a collection item and +{dust} Dust.",
       "aeonSetRule": "Aeon Collection items come from Aeon Capsules. After your first Aeon Capsule you can also craft them for {dust} Dust each. They can't be bought or traded, and they never leave the game.",
-      "catchUp": "Once you own every Legendary here, Legendary stacks favour the ones you are furthest from maxing.",
+      "catchUp": "Once every Legendary here is yours, waiting in an unopened capsule or already in this capsule, Legendary stacks favour the ones you are furthest from maxing.",
       "summitRule": "Platinum and Aeon get summit strikes after the four strikes. A summit strike appears only when the capsule really is Platinum or Aeon.",
       "extraLegendarySecond": "Second Legendary: {n} copy."
     },
@@ -749,8 +750,8 @@
       "capsuleLadder": {
         "title": "Two new capsule tiers",
         "body": "Gold and Platinum join the ladder above Jade, and Aeon now holds 3 Legendaries. Jade no longer turns a Rare into a Legendary. Unopened Aeon Capsules keep what they hold, get 100 Dust more and are now called Gold. The Aeons left in your current bag stay Aeon.",
-        "legacy": "You had already earned {n} of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so {n} new Aeon Capsules are on your shelf.",
-        "legacyOne": "You had already earned one of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so a new Aeon Capsule is on your shelf."
+        "legacy": "You had already earned {n} of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so {n} new Aeon Capsules were added to your shelf.",
+        "legacyOne": "You had already earned one of the skill Aeons (Trophy Road 4,000, Conquest 27 stars, the War Path finale), so a new Aeon Capsule was added to your shelf."
       }
     },
     "power": {

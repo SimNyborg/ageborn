@@ -46,12 +46,14 @@ export interface CapsuleHostProps {
   doneLabel?: string;
 }
 
-function showSettings(s: SaveDoc): Partial<ShowSettings> {
+/** The show's settings from the save; `lite` is the Lite graphics preset (A10 step 4: half the particles, static starfield and sheen). */
+export function showSettings(s: SaveDoc): Partial<ShowSettings> {
   return {
     reduceMotion: s.settings.reduceMotion,
     vibrate: s.settings.vibrate,
     teamPreset: s.settings.teamPreset,
     quickReveal: s.settings.quickReveal === true,
+    lite: s.settings.graphics === 'lite',
   };
 }
 

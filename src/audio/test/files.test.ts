@@ -120,7 +120,9 @@ describe('generated audio assets', () => {
       const age = c.slice('music.'.length);
       expect(MUSIC_FILES[c]!.bytes + (MUSIC_FILES[`layer.intensity.${age}`]?.bytes ?? 0), c).toBeLessThan(700 * 1024);
     }
-    expect(sfxBytes).toBeLessThan(1.5 * 1024 * 1024);
+    // Effect sheets load per group, lazily after boot; the power rework (A5.7) added 35 sounds (one
+    // variant each, two for the starters), about 330 KB.
+    expect(sfxBytes).toBeLessThan(2 * 1024 * 1024);
   });
 
   it('has an AAC copy of every file, a sync time for every sheet, and stingers in every age key', () => {

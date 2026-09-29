@@ -898,6 +898,7 @@ Built on the P1 rules and content (`SIM_VERSION` 4.0.0, save v7), per A2.9.10 an
 - 2026-09-29 (long-press, then drag): a long-press opens the tip, but moving past the drag threshold afterwards still picks the power up; only a release without moving keeps the tip and casts nothing.
 - 2026-09-29 (string namespaces): the HUD strings live under `hud.power.*` and the Army and card detail strings under `ui.power.*` (each file's test allows only its own namespace), instead of the shared `power.*` keys the spec sketched. The Army's keys are whole literals in `src/ui/screens/model/powerText.ts` so the strings check can see them.
 - 2026-09-29 (power tiles): powers carry their rarity on tiles (Common, Rare, Epic), the gold cost in the cost chip, the reach glyph where units show their class, and "⟳ 40 s" where units show their level (`CardTileData.power`).
+- 2026-09-29 (one hint at a time): the Home button's "Drag onto the battlefield!" hint never shows while the Field power is being aimed, and picking up either power dismisses it; an out-of-reach ghost puts "Only in your half" just under its cross at the top of the hatched area, so the dragged token at the finger does not cover it.
 
 ## Power rework: AI v1 (WP3, 2026-09-29)
 

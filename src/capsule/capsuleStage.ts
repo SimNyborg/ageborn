@@ -11,7 +11,7 @@ import { Container, Graphics, Sprite } from 'pixi.js';
 import type { AgeId, ArtProvider, CapsuleTier, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { CARD_H, CardFan, portraitTexture, type CardView } from './cardFan';
-import { CapsuleDrum, Hammer, Pedestal, Pips, drumState, type DrumState } from './climb';
+import { CapsuleDrum, Hammer, Pedestal, Pips, drumState, ornamentScaleFor, type DrumState } from './climb';
 import { clamp01, easeInQuad, easeOutBack, easeOutCubic, hump, lerp, span } from './ease';
 import { Particles, Trauma, glowSprite } from './fx';
 import { AEON_FILIGREE, HOLO_BANDS, RARITY_COLORS, ROOM, TIER_COLORS, TIER_RAMPS, mixColor, shade } from './palette';
@@ -418,6 +418,8 @@ export class CapsuleStage implements ShowView {
     this.h = Math.max(1, h);
     this.scale = Math.min(this.w / DESIGN_W, this.h / DESIGN_H);
     this.world.scale.set(this.scale);
+    // Crests and summit gems stay legible on a phone stage (a crest shield of at least 15 CSS px).
+    this.drum.setOrnamentScale(ornamentScaleFor(this.scale));
     this.world.position.set(this.w / 2, this.h / 2);
     this.bg.width = this.w;
     this.bg.height = this.h;
@@ -833,7 +835,7 @@ export class CapsuleStage implements ShowView {
   private climbImpact(s: StrikeStep): void {
     const c = TIER_COLORS[s.to];
     this.setShownTier(s.to, 'morph', 200);
-    this.drumWhite = 1;
+    this.whiteOut(1);
     this.drum.energy = 1.2;
     this.halo.alpha = 0.55 + 0.1 * tierIndex(s.to);
     this.pips.set(s.index, s.to);
@@ -939,7 +941,8 @@ export class CapsuleStage implements ShowView {
       this.drum.body.x = Math.sin(t * 0.13) * (2 + 12 * u * u) * k;
       this.drum.body.rotation = Math.sin(t * 0.097) * 0.045 * u * u * k;
       this.swell = 0.1 * u * u;
-      this.drumWhite = Math.max(this.drumWhite, 0.55 * u * u * u);
+      // The build's white glow is a ramp, not a flash; reduce motion keeps it at 20% or less (A10).
+      this.drumWhite = Math.max(this.drumWhite, Math.min(rm ? 0.2 : 1, 0.55 * u * u * u));
       // Staged tiers hold their light in at first, so the new material shows under its staging.
       this.drum.setLeak(stagingLevel(s.tier) > 0 ? 0.35 + 1.65 * u * u : 1 + u);
       this.drum.energy = 1 + u;
@@ -953,7 +956,7 @@ export class CapsuleStage implements ShowView {
     }
     if (this.fire('burst-pop')) {
       // Freeze frame: everything holds still for a beat with the drum white-hot.
-      this.drumWhite = 1;
+      this.whiteOut(1);
       this.swell = 0.16;
       this.drum.body.position.set(0, 0);
       this.drum.body.rotation = 0;
@@ -1004,7 +1007,7 @@ export class CapsuleStage implements ShowView {
     this.trauma.add(0.55 + 0.08 * idx);
     this.addPunch(0.06 + 0.015 * idx);
     this.vibrate(idx >= 3 ? [50, 30, 80] : 40);
-    this.drumWhite = 1;
+    this.whiteOut(1);
     this.swell = 0;
     this.dimTarget = 0;
     this.drum.shatter();
@@ -1111,7 +1114,7 @@ export class CapsuleStage implements ShowView {
     if (t >= impact && this.fire(`summit-impact-${s.index}`)) {
       // Impact: a white-hot hit and a held frame (colour comes after the hold).
       this.hitstop = Math.max(this.hitstop, T.summitHoldMs);
-      this.drumWhite = 0.85;
+      this.whiteOut(0.85);
       this.heatTarget = 0;
       this.heat = 0.6;
       this.kickT = 0;
@@ -1178,7 +1181,9 @@ export class CapsuleStage implements ShowView {
     const crest = to.crests > this.drum.state.crests;
     if (crest) this.drum.beginCrestStamp(rm);
     this.drum.beginTransmute(to, { crests: !crest });
-    this.morph = { to, wipeMs, t: 0, crest, crestDelay: rm ? 0 : Math.round(wipeMs * 0.3), crestMs: rm ? 150 : 340, crestHit: false };
+    // The crest stamps once the strike's white-out has faded (220 ms), so the stamp is seen, not
+    // hidden under the flash; reduce motion fades it in at once (its white-out is at most 20%).
+    this.morph = { to, wipeMs, t: 0, crest, crestDelay: rm ? 0 : Math.max(Math.round(wipeMs * 0.3), 220), crestMs: rm ? 150 : 340, crestHit: false };
   }
 
   private updateMorph(dt: number): void {
@@ -1787,13 +1792,34 @@ export class CapsuleStage implements ShowView {
   private flash(alpha: number, color: number): void {
     let a = alpha;
     if (this.d.settings.reduceMotion) {
-      // Reduce motion (A10, A12): at most 3 flashes a second, each at most 20%.
-      if (this.time - this.lastFlashAt < 334) return;
-      this.lastFlashAt = this.time;
+      // Reduce motion (A10, A12): at most 3 flashes a second, each at most 20%. A screen flash and a
+      // drum white-out in the same frame are one flash.
+      if (!this.reduceMotionFlash()) return;
       a = Math.min(0.2, alpha * 0.4);
     }
     if (a >= this.flashAlpha) this.flashColor = color;
     this.flashAlpha = Math.max(this.flashAlpha, a);
+  }
+
+  /** Reduce motion's flash budget: true when a flash may start now (at most one every 334 ms). */
+  private reduceMotionFlash(): boolean {
+    if (this.time === this.lastFlashAt) return true;
+    if (this.time - this.lastFlashAt < 334) return false;
+    this.lastFlashAt = this.time;
+    return true;
+  }
+
+  /**
+   * The drum's white-out (its white silhouette, fading over 220 ms) is a flash too: reduce motion caps
+   * it at 20% and counts it against the same 3-a-second budget as `flash` (A10, A12).
+   */
+  private whiteOut(alpha: number): void {
+    let a = alpha;
+    if (this.d.settings.reduceMotion) {
+      if (!this.reduceMotionFlash()) return;
+      a = Math.min(0.2, alpha);
+    }
+    this.drumWhite = Math.max(this.drumWhite, a);
   }
 
   private vibrate(pattern: number | number[]): void {

@@ -13,8 +13,10 @@ import { formatClock, formatInt } from '@/ui/components/format';
 import { AmberIcon, CapsuleIcon, CheckIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, StarIcon, SwordsIcon, TrophyIcon } from '@/ui/components/icons';
 import { UiKitContext, type UiKit } from '@/ui/components/kit';
 import { asContent } from '@/content';
+import type { CapsuleTables } from '@/content/types';
+import { pendingCrests, visibleTier } from '@/ui/components/capsuleLook';
 import { isMetaRules } from '../uiServices';
-import type { RewardStep } from '@/contracts';
+import type { CapsuleTier, PendingCapsule, RewardStep } from '@/contracts';
 import type { ResultState } from '../controller';
 import { RewardStager } from '../flow';
 import { displayName } from '../names';
@@ -65,15 +67,27 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
   }
 }
 
+/**
+ * How an earned capsule may be drawn on the Result (A10; capsule-tiers spec 2): its visible tier and
+ * crests, so a climbing capsule (Win, Supply, meter, the scripted Starter Capsules) shows its start
+ * tier only and never a tier that is neither the visible nor the rolled one. Without the typed tables
+ * (fake content) it falls back to the start tier, which is always visible.
+ */
+export function rewardCapsuleLook(caps: CapsuleTables | null, cap: PendingCapsule | undefined): { tier: CapsuleTier; crests: number } | null {
+  if (!cap) return null;
+  if (!caps) return { tier: cap.startTier, crests: 0 };
+  return { tier: visibleTier(caps, cap), crests: pendingCrests(caps, cap) };
+}
+
 /** The shared UI icons, so the onboarding rewards look like every other Result (4.9). */
-function RewardIcon(p: { kind: RewardIconKind }) {
+function RewardIcon(p: { kind: RewardIconKind; capsule?: { tier: CapsuleTier; crests: number } | null }) {
   switch (p.kind) {
     case 'amber':
       return <AmberIcon size={30} />;
     case 'dust':
       return <DustIcon size={30} />;
     case 'capsule':
-      return <CapsuleIcon tier="bronze" size={36} />;
+      return <CapsuleIcon tier={p.capsule?.tier ?? 'clay'} size={36} crests={p.capsule?.crests ?? 0} />;
     case 'crate':
       return <CrateIcon size={32} />;
     case 'trophy':
@@ -107,6 +121,18 @@ export function ResultScreen(p: { result: ResultState }) {
   const { input, rewards, setup, replay } = p.result;
   // A15.3: scripted capsules 1-5 are "Starter Capsules" with set contents.
   const starterIds = useMemo(() => new Set((c.save.peek()?.capsules.pending ?? []).filter((x) => x.scriptIndex !== null).map((x) => x.id)), [rewards]);
+  // Each earned capsule as the player may see it before opening (its visible tier, never the rolled one).
+  const capsuleLooks = useMemo(() => {
+    const caps = isMetaRules(ui.services.meta) ? asContent(ui.services.content).capsules : null;
+    const pending = c.save.peek()?.capsules.pending ?? [];
+    const out = new Map<string, { tier: CapsuleTier; crests: number }>();
+    for (const r of rewards) {
+      if (r.kind !== 'capsule') continue;
+      const look = rewardCapsuleLook(caps, pending.find((x) => x.id === r.capsuleId));
+      if (look) out.set(r.capsuleId, look);
+    }
+    return out;
+  }, [rewards]);
   // Only steps with a chip are staged, so hidden steps never hold up "Tap to skip".
   const shown = useMemo(
     () =>
@@ -153,14 +179,22 @@ export function ResultScreen(p: { result: ResultState }) {
   const run: Partial<Record<ResultActionId, () => void>> = onboarding
     ? { openCapsule: () => c.next(), continue: () => (next ? c.next() : c.home()), tryAgain: () => c.retry() }
     : { next: () => c.playAgain(), home: () => c.home(), replay: () => c.watchReplay(replay) };
-  const bar = resultBar(actions, run, ui.t, stager.done, {
-    openCapsule: 'next',
-    continue: 'next',
-    tryAgain: 'retry',
-    next: 'play-again',
-    home: 'home',
-    replay: 'watch-replay',
-  });
+  const firstCapsule = rewards.find((r): r is Extract<RewardStep, { kind: 'capsule' }> => r.kind === 'capsule');
+  const bar = resultBar(
+    actions,
+    run,
+    ui.t,
+    stager.done,
+    {
+      openCapsule: 'next',
+      continue: 'next',
+      tryAgain: 'retry',
+      next: 'play-again',
+      home: 'home',
+      replay: 'watch-replay',
+    },
+    (firstCapsule && capsuleLooks.get(firstCapsule.capsuleId)?.tier) ?? 'clay',
+  );
   // 4.9: the same level badge as every War Path Result (levels 1 and 2 are the onboarding matches).
   const pathLevel = input.warPath?.level ?? (rewards.find((r) => r.kind === 'pathStar') as { level?: string } | undefined)?.level ?? null;
   const typed = isMetaRules(ui.services.meta) ? asContent(ui.services.content) : null;
@@ -218,7 +252,7 @@ export function ResultScreen(p: { result: ResultState }) {
                 {shown.slice(0, revealed).map(({ r, chip }, i) => (
                   <li class={`result-reward result-reward--${chip.icon === 'amber' || chip.icon === 'dust' ? 'good' : 'gold'}`} key={i} data-testid="result-reward" data-kind={r.kind}>
                     <span class="result-reward__icon">
-                      <RewardIcon kind={chip.icon} />
+                      <RewardIcon kind={chip.icon} capsule={r.kind === 'capsule' ? capsuleLooks.get(r.capsuleId) : null} />
                     </span>
                     <span class="result-reward__main">
                       <span class="result-reward__label">{chip.text}</span>

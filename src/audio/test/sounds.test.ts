@@ -61,6 +61,7 @@ const A13: Record<string, string[]> = {
     'pw_oil', 'pw_knights', 'pw_undermine', 'pw_volley', 'pw_nets', 'pw_horse_art', 'pw_sharpshooter', 'pw_gunline',
     'pw_wire', 'pw_railgun', 'pw_hospital', 'pw_strafe', 'pw_flak', 'pw_tanks', 'pw_sniper', 'pw_pdg', 'pw_stasis',
     'pw_drones', 'pw_emp', 'pw_singularity', 'pw_flare', 'pw_comet', 'pw_ion',
+    'power_cast', 'power_lock', 'turret_jammed',
   ],
 };
 const A13_IDS = Object.values(A13).flat();
@@ -75,7 +76,7 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    expect(A13_IDS).toHaveLength(176);
+    expect(A13_IDS).toHaveLength(179);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

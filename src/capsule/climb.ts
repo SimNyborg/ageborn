@@ -15,7 +15,7 @@ import { ColorMatrixFilter, Container, FillGradient, Graphics, GraphicsContext }
 import type { CapsuleTier } from '@/contracts';
 import { mulberry32 } from '@/core';
 import { clamp01, easeOutBack, easeOutBounce, easeOutCubic, lerp, span } from './ease';
-import { AEON_FILIGREE, CREST, GROOVE_COLORS, HOLO_BANDS, ROOM, SUMMIT_GEM_UNLIT, TIER_COLORS, TIER_RAMPS, mixColor, shade, type TierRamp } from './palette';
+import { AEON_FILIGREE, CREST, GROOVE_COLORS, HOLO_BANDS, ROOM, SUMMIT_GEM_UNLIT, TIER_COLORS, TIER_RAMPS, mixColor, ringGemColors, shade, type TierRamp } from './palette';
 import { crestCount, summitGemCount, SUMMIT_ABOVE, tierAt, tierIndex } from './tiers';
 
 export const DRUM = { halfW: 90, height: 262 } as const;
@@ -34,6 +34,26 @@ const CREST_GAP = 24;
 const GEM_GAP = 36;
 /** Summit gems sit a little proud of the cap band so they read at phone size. */
 const GEM_SCALE = 1.1;
+/** A crest shield's height in drum units (drawCrest at scale 1). */
+const CREST_H = 19.5;
+/** The smallest a crest shield may be on screen (CSS px), so the per-Legendary cue reads on a phone. */
+const MIN_CREST_PX = 15;
+const MAX_ORNAMENT_SCALE = 1.5;
+
+/**
+ * How much larger crests and summit gems draw on a small stage: enough for a crest shield of at least
+ * `MIN_CREST_PX` on screen (a phone stage scales the drum to about half size), never smaller than as
+ * designed, at most 1.5x.
+ */
+export function ornamentScaleFor(stageScale: number): number {
+  if (!(stageScale > 0)) return 1;
+  return Math.max(1, Math.min(MAX_ORNAMENT_SCALE, MIN_CREST_PX / (CREST_H * stageScale)));
+}
+
+/** Crest and summit gem placement at ornament scale `k` (larger ones spread out and sit a little apart). */
+function ornamentLayout(k: number): { crestY: number; crestGap: number; crestScale: number; gemY: number; gemGap: number; gemScale: number } {
+  return { crestY: CREST_Y + (k - 1) * 4, crestGap: CREST_GAP * k, crestScale: k, gemY: GEM_Y - (k - 1) * 8, gemGap: GEM_GAP * k, gemScale: GEM_SCALE * k };
+}
 
 /** What a drum shows: its material, the crests stamped and the summit gems that have risen. */
 export interface DrumState {
@@ -194,7 +214,8 @@ function drawMaterial(g: GraphicsContext, tier: CapsuleTier): void {
         }
       }
       // Polished metal reads by its contrast: a soft dark reflection down the middle, then a crisp
-      // specular pair on the lit side (champagne tones only; no saturated gold anywhere).
+      // specular pair on the lit side over the champagne key, and the deep old-gold mid-tone and
+      // dark shadow across the right half (no Legendary or button gold anywhere).
       for (let k = 0; k < 4; k++) g.rect(-14 + k * 3, BODY.top + 2, 22 - k * 6, BODY.bottom - BODY.top - 2).fill({ color: r.shadow, alpha: 0.09 });
       g.rect(-60, BODY.top + 6, 9, BODY.bottom - BODY.top - 8).fill({ color: 0xffffff, alpha: 0.5 });
       g.rect(-45, BODY.top + 6, 3, BODY.bottom - BODY.top - 8).fill({ color: 0xffffff, alpha: 0.4 });
@@ -308,6 +329,8 @@ export interface DrawOptions {
   crests?: boolean;
   /** Leave the summit gems out (a gem is rising in the overlay). */
   gems?: boolean;
+  /** Crest and summit gem scale (`ornamentScaleFor` the stage); 1 as designed. */
+  ornament?: number;
 }
 
 export function drawDrum(g: GraphicsContext, state: DrumState, o: DrawOptions = {}): void {
@@ -339,15 +362,18 @@ export function drawDrum(g: GraphicsContext, state: DrumState, o: DrawOptions = 
     g.moveTo(-hw + 3, y).quadraticCurveTo(0, y + 10, hw - 3, y).stroke({ width: 4, color: groove, alpha: 0.95 });
     g.moveTo(-hw + 3, y + 3).quadraticCurveTo(0, y + 13, hw - 3, y + 3).stroke({ width: 1.6, color: ramp.highlight, alpha: tier === 'aeon' ? 0.35 : 0.5 });
     const gy = y + 5;
-    const gc = TIER_COLORS[tierAt(i)];
     // A dark bezel under every gem, so its own colour reads on the light materials too (Silver to Platinum).
     g.poly([0, gy - 12.5, 10, gy, 0, gy + 12.5, -10, gy]).fill({ color: bodyLine, alpha: 0.85 });
-    g.poly([0, gy - 9, 7, gy, 0, gy + 9, -7, gy]).fill(on ? shade(gc, 0.15) : shade(stone, -0.35)).stroke({ width: 2.5, color: on ? 0xffffff : stoneLine, alpha: on ? 0.9 : 1 });
     if (on) {
-      // Cel facets: a lit upper-right face, a shaded lower-left face and a small white glint.
-      g.poly([0, gy - 9, 7, gy, 0, gy]).fill({ color: shade(gc, 0.35), alpha: 0.85 });
-      g.poly([0, gy, -7, gy, 0, gy + 9]).fill({ color: shade(gc, -0.3), alpha: 0.7 });
-      g.poly([0, gy - 6, 2.4, gy - 3, 0, gy - 1.2, -2.4, gy - 3]).fill({ color: 0xffffff, alpha: 0.9 });
+      // The gem face is its tier's own key colour (A10: the drum reads brown, bronze, silver, green,
+      // champagne bottom-up); a dark rim, cel facets and one small glint, so no white washes it out.
+      const gem = ringGemColors(tierAt(i));
+      g.poly([0, gy - 9, 7, gy, 0, gy + 9, -7, gy]).fill(gem.face).stroke({ width: 1.6, color: gem.rim });
+      g.poly([0, gy - 7.6, 5.6, gy, 0, gy]).fill({ color: gem.light, alpha: 0.75 });
+      g.poly([0, gy, -5.6, gy, 0, gy + 7.6]).fill({ color: gem.dark, alpha: 0.75 });
+      g.poly([-1.6, gy - 4.6, 0, gy - 6.4, 1.2, gy - 4.6, 0, gy - 3.2]).fill({ color: 0xffffff, alpha: 0.85 });
+    } else {
+      g.poly([0, gy - 9, 7, gy, 0, gy + 9, -7, gy]).fill(shade(stone, -0.35)).stroke({ width: 2.5, color: stoneLine });
     }
   });
   // Cel highlight: one shape per part (A11).
@@ -356,12 +382,13 @@ export function drawDrum(g: GraphicsContext, state: DrumState, o: DrawOptions = 
   // Upper brass band, wide enough for three crests on every drum (nothing moves when one stamps).
   band(g, CREST_BAND.top, CREST_BAND.bottom, hw + 3).fill(cylinder(metal)).stroke({ width: 3, color: metalLine });
   g.moveTo(-hw, CREST_BAND.top + 4).quadraticCurveTo(0, CREST_BAND.top + 13, hw, CREST_BAND.top + 4).stroke({ width: 1.5, color: ROOM.brassLight, alpha: 0.55 });
-  if (o.crests !== false) for (let i = 0; i < state.crests; i++) drawCrest(g, slotX(i, state.crests, CREST_GAP), CREST_Y);
+  const L = ornamentLayout(o.ornament ?? 1);
+  if (o.crests !== false) for (let i = 0; i < state.crests; i++) drawCrest(g, slotX(i, state.crests, L.crestGap), L.crestY, L.crestScale);
   // Stone cap band: plain stone; summit gems only once they have risen.
   band(g, CAP.top, CAP.bottom, hw + 7, 8).fill(cylinder(stone)).stroke({ width: 4, color: stoneLine });
   g.ellipse(0, CAP.top, hw + 7, 15).fill(shade(stone, 0.2)).stroke({ width: 4, color: stoneLine });
   g.ellipse(0, CAP.top + 1, hw - 12, 9).fill(shade(stone, -0.18));
-  if (o.gems !== false) state.gems.forEach((gt, i) => drawSummitGem(g, slotX(i, state.gems.length, GEM_GAP), GEM_Y, gt, GEM_SCALE));
+  if (o.gems !== false) state.gems.forEach((gt, i) => drawSummitGem(g, slotX(i, state.gems.length, L.gemGap), L.gemY, gt, L.gemScale));
   // Brass knob.
   g.ellipse(0, CAP.top - 4, 30, 9).fill(cylinder(metal)).stroke({ width: 3, color: metalLine });
   g.circle(0, CAP.top - 15, 11).fill(metal).stroke({ width: 3, color: metalLine });
@@ -460,6 +487,8 @@ export class CapsuleDrum {
   private crackAmount = 0;
   private time = 0;
   private readonly lite: boolean;
+  /** Crest and summit gem scale for the current stage size (`ornamentScaleFor`). */
+  private ornScale = 1;
   /** Extra glow pumped in by strikes and the charge. */
   energy = 0;
 
@@ -514,6 +543,17 @@ export class CapsuleDrum {
     this.setState(drumState(tier));
   }
 
+  /** Crests and summit gems draw larger on a small stage (see `ornamentScaleFor`). */
+  setOrnamentScale(k: number): void {
+    const next = Math.max(1, Math.min(MAX_ORNAMENT_SCALE, k));
+    if (Math.abs(next - this.ornScale) < 0.001) return;
+    this.ornScale = next;
+    this.redraw();
+    this.drawOrnaments();
+    this.drawRingGlow();
+    if (this.nextState) drawDrum(this.nextCtx, this.nextState, { ornament: this.ornScale, crests: !(this.anim && this.anim.kind === 'crest') });
+  }
+
   setState(s: DrumState): void {
     this.stateNow = { tier: s.tier, crests: s.crests, gems: s.gems.slice() };
     this.anim = null;
@@ -525,7 +565,7 @@ export class CapsuleDrum {
 
   private redraw(): void {
     const a = this.anim;
-    drawDrum(this.ctx, this.stateNow, { crests: !(a && a.kind === 'crest'), gems: !(a && a.kind === 'gem') });
+    drawDrum(this.ctx, this.stateNow, { crests: !(a && a.kind === 'crest'), gems: !(a && a.kind === 'gem'), ornament: this.ornScale });
   }
 
   // --- Transmutation: the next material wipes down from the top (A10 steps 3 and 3d) -------------
@@ -533,7 +573,7 @@ export class CapsuleDrum {
   /** Starts a top-down wipe into `to`; the drum keeps its current state underneath until it ends. */
   beginTransmute(to: DrumState, o: DrawOptions = {}): void {
     this.nextState = { tier: to.tier, crests: to.crests, gems: to.gems.slice() };
-    drawDrum(this.nextCtx, this.nextState, o);
+    drawDrum(this.nextCtx, this.nextState, { ornament: this.ornScale, ...o });
     this.nextArt.visible = true;
     this.setTransmute(0);
   }
@@ -610,12 +650,14 @@ export class CapsuleDrum {
 
   /** Where summit gem `i` of `n` sits (drum coordinates), for sparks and flashes. */
   gemPos(i: number, n: number): [number, number] {
-    return [slotX(i, n, GEM_GAP), GEM_Y];
+    const L = ornamentLayout(this.ornScale);
+    return [slotX(i, n, L.gemGap), L.gemY];
   }
 
   /** Where crest `i` of `n` sits (drum coordinates). */
   crestPos(i: number, n: number): [number, number] {
-    return [slotX(i, n, CREST_GAP), CREST_Y];
+    const L = ornamentLayout(this.ornScale);
+    return [slotX(i, n, L.crestGap), L.crestY];
   }
 
   private drawOrnaments(): void {
@@ -625,38 +667,39 @@ export class CapsuleDrum {
     if (!a) return;
     const s = this.stateNow;
     const u = a.u;
+    const L = ornamentLayout(this.ornScale);
     if (a.kind === 'gem') {
       const n = s.gems.length + 1;
       const slide = a.fade ? 1 : easeOutCubic(span(u, 0.2, 0.75));
-      s.gems.forEach((gt, i) => drawSummitGem(g, lerp(slotX(i, n - 1, GEM_GAP), slotX(i, n, GEM_GAP), slide), GEM_Y, gt, GEM_SCALE));
-      const x = slotX(n - 1, n, GEM_GAP);
+      s.gems.forEach((gt, i) => drawSummitGem(g, lerp(slotX(i, n - 1, L.gemGap), slotX(i, n, L.gemGap), slide), L.gemY, gt, L.gemScale));
+      const x = slotX(n - 1, n, L.gemGap);
       if (a.fade) {
-        drawSummitGem(g, x, GEM_Y, null, GEM_SCALE, u);
+        drawSummitGem(g, x, L.gemY, null, L.gemScale, u);
         return;
       }
       // Out of the top face, up in an arc, a turn, and down into the band with a little bounce.
       const up = easeOutCubic(span(u, 0, 0.45));
       const down = easeOutBounce(span(u, 0.5, 1));
       const peak = CAP.top - 44;
-      const y = u < 0.5 ? lerp(CAP.top - 2, peak, up) : lerp(peak, GEM_Y, down);
-      const scale = GEM_SCALE * (u < 0.5 ? lerp(0.5, 1.3, up) : lerp(1.3, 1, down));
+      const y = u < 0.5 ? lerp(CAP.top - 2, peak, up) : lerp(peak, L.gemY, down);
+      const scale = L.gemScale * (u < 0.5 ? lerp(0.5, 1.3, up) : lerp(1.3, 1, down));
       g.ellipse(x, CAP.top, 18 * (1 - span(u, 0.4, 0.6)), 5 * (1 - span(u, 0.4, 0.6))).fill({ color: 0xffffff, alpha: 0.35 * (1 - span(u, 0.3, 0.6)) });
       drawSummitGem(g, x, y, null, scale, span(u, 0, 0.15));
       return;
     }
     const n = s.crests + 1;
     const slide = a.fade ? 1 : easeOutCubic(span(u, 0, 0.5));
-    for (let i = 0; i < s.crests; i++) drawCrest(g, lerp(slotX(i, n - 1, CREST_GAP), slotX(i, n, CREST_GAP), slide), CREST_Y);
-    const x = slotX(n - 1, n, CREST_GAP);
+    for (let i = 0; i < s.crests; i++) drawCrest(g, lerp(slotX(i, n - 1, L.crestGap), slotX(i, n, L.crestGap), slide), L.crestY, L.crestScale);
+    const x = slotX(n - 1, n, L.crestGap);
     if (a.fade) {
-      drawCrest(g, x, CREST_Y, 1, u);
+      drawCrest(g, x, L.crestY, L.crestScale, u);
       return;
     }
     // The crest slams on from above (scale and fall), then a white glint crosses it.
     const e = span(u, 0, 0.55);
-    drawCrest(g, x, CREST_Y - 16 * (1 - easeOutCubic(e)), lerp(2.3, 1, easeOutBack(e, 1.6)), clamp01(e * 3));
+    drawCrest(g, x, L.crestY - 16 * (1 - easeOutCubic(e)), L.crestScale * lerp(2.3, 1, easeOutBack(e, 1.6)), clamp01(e * 3));
     const glint = span(u, 0.55, 1);
-    if (glint > 0 && glint < 1) g.circle(x, CREST_Y, 6 + 12 * glint).fill({ color: 0xffffff, alpha: 0.55 * (1 - glint) });
+    if (glint > 0 && glint < 1) g.circle(x, L.crestY, (6 + 12 * glint) * L.crestScale).fill({ color: 0xffffff, alpha: 0.55 * (1 - glint) });
   }
 
   /** 0..1: how far the cracks have spread (the charge). */
@@ -747,20 +790,40 @@ export class CapsuleDrum {
     // Additive light washes out to white on a light body, so light materials get a softer halo and
     // the gems keep their own colours (the ladder reads bottom-up on every drum).
     const soft = 1 - 0.7 * lightness(TIER_RAMPS[this.tier].key);
+    // The ring light runs along the groove on both sides of the gem and haloes it from outside the
+    // bezel, never over the gem face, so each gem keeps its own tier colour (A10).
+    const arc = (y: number, from: number, to: number): void => {
+      const steps = 8;
+      for (let k = 0; k <= steps; k++) {
+        const x = lerp(from, to, k / steps);
+        const u = x / DRUM.halfW;
+        const yy = y + 5 * (1 - u * u);
+        if (k === 0) g.moveTo(x, yy);
+        else g.lineTo(x, yy);
+      }
+    };
+    const gap = 14;
     RING_Y.forEach((y, i) => {
       if (i >= lit) return;
       const own = TIER_COLORS[tierAt(i)];
-      g.moveTo(-DRUM.halfW + 6, y).quadraticCurveTo(0, y + 10, DRUM.halfW - 6, y).stroke({ width: 10, color: c, alpha: 0.22 * soft });
-      g.moveTo(-DRUM.halfW + 6, y).quadraticCurveTo(0, y + 10, DRUM.halfW - 6, y).stroke({ width: 2.5, color: shade(c, 0.6), alpha: 0.7 * soft });
-      g.circle(0, y + 5, 16).fill({ color: own, alpha: 0.18 + 0.22 * soft });
-      g.circle(0, y + 5, 9).fill({ color: shade(own, 0.5), alpha: 0.35 * soft });
+      for (const [from, to] of [
+        [-DRUM.halfW + 6, -gap],
+        [gap, DRUM.halfW - 6],
+      ] as const) {
+        arc(y, from, to);
+        g.stroke({ width: 10, color: c, alpha: 0.22 * soft, cap: 'round' });
+        arc(y, from, to);
+        g.stroke({ width: 2.5, color: shade(c, 0.6), alpha: 0.7 * soft, cap: 'round' });
+      }
+      g.circle(0, y + 5, 15.5).stroke({ width: 5, color: own, alpha: 0.28 + 0.3 * soft });
     });
+    const L = ornamentLayout(this.ornScale);
     this.stateNow.gems.forEach((gt, i, a) => {
       if (!gt) return;
-      const x = slotX(i, a.length, GEM_GAP);
+      const x = slotX(i, a.length, L.gemGap);
       const own = TIER_COLORS[gt];
-      g.circle(x, GEM_Y, 17).fill({ color: own, alpha: 0.06 + 0.3 * (1 - lightness(own)) });
-      g.circle(x, GEM_Y, 11).fill({ color: own, alpha: 0.08 + 0.12 * (1 - lightness(own)) });
+      g.circle(x, L.gemY, 17 * this.ornScale).fill({ color: own, alpha: 0.06 + 0.3 * (1 - lightness(own)) });
+      g.circle(x, L.gemY, 11 * this.ornScale).fill({ color: own, alpha: 0.08 + 0.12 * (1 - lightness(own)) });
     });
   }
 

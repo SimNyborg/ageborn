@@ -339,7 +339,12 @@ export function cosmeticCraftPrice(t: Content, x: CosmeticItemDef): number | nul
 
 /**
  * Crafts a drop-pool item with Dust (A15.11-style fallback), or a tier-exclusive item once the save has
- * opened a capsule of that tier (A6.4). Reasons: unknownItem, notCraftable, locked, owned, notEnoughDust.
+ * opened a capsule of that tier (A6.4). Reasons: unknownItem, notCraftable, locked, owned, pending,
+ * notEnoughDust.
+ *
+ * `pending`: an unopened capsule or crate already holds the item. Its pre-rolled promise ("an item you
+ * don't have yet", A6.4 steps 7-8) must stay true, so crafting it now would turn that item into a
+ * duplicate refund; the player gets it by opening what they already earned.
  */
 export function craftCosmetic(s: SaveDoc, t: Content, key: string): Result<SaveDoc> {
   const x = cosmeticItem(t, key);
@@ -348,6 +353,7 @@ export function craftCosmetic(s: SaveDoc, t: Content, key: string): Result<SaveD
   if (price === null) return fail('notCraftable');
   if (x.source.kind === 'capsuleTier' && s.flags[firstOfTierFlag(x.source.tier)] !== true) return fail('locked');
   if (ownsCosmetic(s, t, key)) return fail('owned');
+  if (cosmeticsForRoll(s).has(key)) return fail('pending');
   if (s.currencies.dust < price) return fail('notEnoughDust');
   return {
     ok: true,

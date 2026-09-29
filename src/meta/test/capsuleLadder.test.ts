@@ -118,6 +118,22 @@ describe('the Aeon Collection (A6.4 step 8)', () => {
     ]);
     expect(exclusiveSets(r.value, C)).toEqual([]);
   });
+
+  it('refuses to craft an item an unopened capsule already holds, so its "you don\'t have yet" promise stays true', () => {
+    const base: SaveDoc = { ...scripted(54, 7), currencies: { amber: 0, dust: 9000 } };
+    const opened: SaveDoc = { ...base, flags: { ...base.flags, [firstOfTierFlag(topTier)]: true } };
+    const g = grantCapsuleAt(opened, 'road', T, T0, { tier: topTier });
+    const held = g.capsule.contents.cosmetic;
+    expect(held).toBeTruthy();
+    expect(craftCosmetic(g.save, T, held!)).toEqual({ ok: false, reason: 'pending' });
+    // Once that capsule is opened the item is owned; nothing turned into a duplicate refund.
+    const o = openCapsuleWith(g.save, g.capsule.id, T);
+    expect(o.save.cosmetics.owned).toContain(held);
+    expect(craftCosmetic(o.save, T, held!)).toEqual({ ok: false, reason: 'owned' });
+    // Every other set item can still be crafted.
+    const other = T.cosmetics.collections.items.find((x) => x.source.kind === 'capsuleTier' && `${x.collection}.${x.id}` !== held)!;
+    expect(craftCosmetic(g.save, T, `${other.collection}.${other.id}`).ok).toBe(true);
+  });
 });
 
 describe('strikes and the first of a tier (A10)', () => {
@@ -245,6 +261,25 @@ describe('legacy skill Aeons (B8, the v6 migration)', () => {
     expect(legacySkillAeonCount(all, C)).toBe(want);
     const kinds = grantLegacySkillAeons(all, C, T0).capsules.pending.slice(s.capsules.pending.length).map((p) => p.kind);
     expect(kinds).toEqual(['road', 'conquest', ...(finale ? ['warPath'] : [])]);
+  });
+
+  it('sets the ladder notice when it grants, even when the War Path finale was the only trigger', () => {
+    const finale = C.warPath.order.find((id) => C.warPath.levels[id]?.reward.capsule === topTier);
+    if (!finale) return;
+    const base = scripted(97, 7);
+    // The migration could not see this source (the save package reads no content), so it set no notice.
+    const s: SaveDoc = {
+      ...base,
+      warPath: { ...base.warPath, stars: { ...base.warPath.stars, [finale]: 1 } },
+      flags: { ...base.flags, [LEGACY_SKILL_AEON_FLAG]: true },
+    };
+    expect(s.flags['notice.capsuleLadder']).toBeUndefined();
+    const g = grantLegacySkillAeons(s, C, T0);
+    expect(g.capsules.pending.slice(s.capsules.pending.length).map((p) => p.kind)).toEqual(['warPath']);
+    expect(g.flags['notice.capsuleLadder']).toBe(true);
+    // Nothing granted: no notice.
+    const none = grantLegacySkillAeons({ ...base, flags: { ...base.flags, [LEGACY_SKILL_AEON_FLAG]: true } }, C, T0);
+    expect(none.flags['notice.capsuleLadder']).toBeUndefined();
   });
 
   it('does nothing without the flag', () => {

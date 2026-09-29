@@ -50,9 +50,15 @@ export function legacySkillAeonCount(s: SaveDoc, t: Content): number {
   return [...new Set(sources)].filter((kind) => s.flags[legacyGrantedFlag(kind)] === true).reduce((n, kind) => n + sources.filter((k) => k === kind).length, 0);
 }
 
+/** The one-time Capsules tab card about the ladder (set by the ladder migration, cleared when closed). */
+export const CAPSULE_LADDER_NOTICE_FLAG = 'notice.capsuleLadder';
+
 /**
  * Grants the legacy skill Aeons once while the flag is set, then deletes the flag. Returns the same
- * object when the flag is not set.
+ * object when the flag is not set. When it grants at least one Aeon it also sets the ladder notice, so
+ * every granted Aeon is explained, even for a save whose only trigger was a source the migration could
+ * not see (the War Path finale: the save package may not read content, so it cannot tell which level
+ * is the finale).
  */
 export function grantLegacySkillAeons(s: SaveDoc, t: Content, now: number): SaveDoc {
   if (s.flags[LEGACY_SKILL_AEON_FLAG] !== true) return s;
@@ -64,6 +70,7 @@ export function grantLegacySkillAeons(s: SaveDoc, t: Content, now: number): Save
     flags[legacyGrantedFlag(kind)] = true;
   }
   const next = { ...save.flags, ...flags };
+  if (Object.keys(flags).length > 0) next[CAPSULE_LADDER_NOTICE_FLAG] = true;
   delete next[LEGACY_SKILL_AEON_FLAG];
   return { ...save, flags: next };
 }

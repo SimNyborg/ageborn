@@ -7,9 +7,15 @@
  *
  * - **Bag totals**: every full bag (the sum of `capsules.bag`: 200) of Win Capsules holds exactly the
  *   published counts (60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum, 1 Aeon).
- * - **Chi-square at p > 0.01**: Supply Capsule tiers (every tier with odds above 0), the stack rarity
- *   roll (72/22/5/1, on stacks that no guarantee or pity could touch), foils on every stack (purely
- *   rolled, no floors), and the skin chance of every tier with 0 < `skinChanceBp` < 100% (Gold 30%).
+ * - **Chi-square, family-wise p > 0.01 (Bonferroni)**: Supply Capsule tiers (every tier with odds
+ *   above 0), the stack rarity roll (72/22/5/1, on stacks that no guarantee or pity could touch), foils
+ *   on every stack (purely rolled, no floors), the skin chance of every tier with 0 < `skinChanceBp` <
+ *   100% (Gold 30%), and the skin rarity split of every tier that can hold a skin (the Wardrobe odds
+ *   from `skinMinRarity` up, renormalised: Gold and Platinum 78/18/4, Aeon 81.82/18.18).
+ *   Gate policy (C4.5): the k chi-square checks of one run share the 0.01 false-alarm budget, so each
+ *   passes at p > 0.01 / k. A correct build then fails a run by chance at most 1% of the time, not
+ *   about k% as with 0.01 per check; a real bias still fails (a 1-point shift in a 15 bp tier gives
+ *   p < 1e-6 in the full run).
  * - **Zero violations**: the tier's stack count and guaranteed rarities; `guaranteed` Legendaries as
  *   that many different cards, the extra ones holding `extraLegendaryCopies`; a skin in every sure-skin
  *   tier, never below `skinMinRarity`; capsule skins never move the Wardrobe pity counters; the honest
@@ -30,8 +36,16 @@ import { loadMeta } from './lib/modules';
 import { chiSquare, type ChiSquare } from './lib/stats';
 import { fmtNum, markdownTable, skippedCheck, startReport, type Check, type Report } from './report';
 
-/** DESIGN C4.5: published odds pass the chi-square test at p > 0.01. */
+/**
+ * DESIGN C4.5: published odds pass the chi-square test at p > 0.01. This is the family-wise level of
+ * one run: with k chi-square checks, each passes at p > P_MIN / k (Bonferroni, `chiAlpha`).
+ */
 export const P_MIN = 0.01;
+
+/** The per-check chi-square level for a run with `k` chi-square checks (Bonferroni). */
+export function chiAlpha(k: number): number {
+  return P_MIN / Math.max(1, k);
+}
 
 export interface OpenedCapsule {
   stream: number;
@@ -99,6 +113,8 @@ export interface DropsSummary {
   rarityByTier: Partial<Record<CapsuleTier, number[]>>;
   /** Skin chance per tier with 0 < `skinChanceBp` < 100%. */
   skinChance: Partial<Record<CapsuleTier, ChiSquare>>;
+  /** Skin rarity (rare/epic/legendary) per tier that can hold a skin, against its renormalised Wardrobe odds. */
+  skinRarity: Partial<Record<CapsuleTier, ChiSquare>>;
   stackCountViolations: number;
   guaranteeViolations: number;
   /** Too few Legendary stacks, a repeated card, or wrong extra-stack copies. */
@@ -132,6 +148,8 @@ export class DropsTally {
   private readonly rolled = new Map<CapsuleTier, number[]>();
   /** Per tier with a partial skin chance: [capsules, skins]. */
   private readonly skins = new Map<CapsuleTier, [number, number]>();
+  /** Per tier that can hold a skin: skins seen per rarity (rare, epic, legendary). */
+  private readonly skinRarities = new Map<CapsuleTier, number[]>();
   private readonly tierCounts = new Map<CapsuleTier, number>();
   private stackViolations = 0;
   private guaranteeViolations = 0;
@@ -185,6 +203,13 @@ export class DropsTally {
       if (tierDef.skinChanceBp >= 10_000) {
         const low = o.skinRarity !== undefined && o.skinRarity !== null && SKIN_RARITIES.indexOf(o.skinRarity) < SKIN_RARITIES.indexOf(tierDef.skinMinRarity);
         if (!o.skin || low) this.sureSkinViolations += 1;
+      }
+      // The skin's rarity split (A6.4 step 7), for every tier that can hold a skin.
+      if (tierDef.skinChanceBp > 0 && o.skin && o.skinRarity) {
+        const acc = this.skinRarities.get(o.tier) ?? SKIN_RARITIES.map(() => 0);
+        const i = SKIN_RARITIES.indexOf(o.skinRarity);
+        if (i >= 0) acc[i] = (acc[i] ?? 0) + 1;
+        this.skinRarities.set(o.tier, acc);
       }
       // Legendary guarantees (A6.4 steps 3-4): that many different cards, the extra ones with 1 copy.
       const want = tierDef.guaranteed.filter((r) => r === 'legendary').length;
@@ -279,6 +304,10 @@ export class DropsTally {
       const bp = caps.tiers[tier].skinChanceBp;
       if (n > 0) skinChance[tier] = chiSquare([yes, n - yes], [bp, 10_000 - bp]);
     }
+    const skinRarity: Partial<Record<CapsuleTier, ChiSquare>> = {};
+    for (const [tier, acc] of this.skinRarities) {
+      if (acc.reduce((a, b) => a + b, 0) > 0) skinRarity[tier] = chiSquare(acc, skinRarityWeights(this.c, caps.tiers[tier].skinMinRarity));
+    }
     return {
       openings: this.openings,
       bag: { groups: this.bagGroups, badGroups: this.badGroups, firstBad: this.firstBad },
@@ -287,6 +316,7 @@ export class DropsTally {
       rarity: rolledN > 0 ? chiSquare(rolled, RARITIES.map((r) => caps.stackRollBp[r])) : null,
       rarityByTier: Object.fromEntries(this.rolled.entries()),
       skinChance,
+      skinRarity,
       stackCountViolations: this.stackViolations,
       guaranteeViolations: this.guaranteeViolations,
       legendaryViolations: this.legendaryViolations,
@@ -304,15 +334,30 @@ export class DropsTally {
   }
 }
 
-function chiCheck(id: string, metric: string, x: ChiSquare | null): Check {
-  if (!x) return skippedCheck(id, metric, `chi-square p > ${P_MIN}`, 'no samples');
+/**
+ * The weights a capsule skin's rarity is rolled with (A6.4 step 7, meta `rollSkinRarityFrom`): the
+ * Wardrobe odds from `min` up, 0 below it.
+ */
+export function skinRarityWeights(c: Content, min: SkinRarity): number[] {
+  const from = SKIN_RARITIES.indexOf(min);
+  return SKIN_RARITIES.map((r, i) => (i >= from ? c.rarities.skins[r].crateOddsBp : 0));
+}
+
+function chiCheck(id: string, metric: string, x: ChiSquare | null, k: number): Check {
+  const alpha = chiAlpha(k);
+  const target = `chi-square p > ${fmtAlpha(alpha)} (${P_MIN} / ${k} checks, Bonferroni)`;
+  if (!x) return skippedCheck(id, metric, target, 'no samples');
   return {
     id,
     metric,
-    target: `chi-square p > ${P_MIN}`,
+    target,
     value: `p = ${x.p.toFixed(4)} (χ² ${x.stat.toFixed(2)}, df ${x.df}, n ${x.n})`,
-    verdict: x.p > P_MIN ? 'pass' : 'fail',
+    verdict: x.p > alpha ? 'pass' : 'fail',
   };
+}
+
+function fmtAlpha(a: number): string {
+  return Number(a.toPrecision(2)).toString();
 }
 
 /** The checks for a drops summary (pity limits from content). */
@@ -322,6 +367,19 @@ export function dropsChecks(s: DropsSummary, content: CompiledContent): Check[] 
   const size = contentBagSize(c);
   const zero = (id: string, metric: string, n: number, target: string): Check => ({ id, metric, target, value: String(n), verdict: n === 0 ? 'pass' : 'fail' });
   const atMost = (id: string, metric: string, n: number, max: number, target: string): Check => ({ id, metric, target, value: String(n), verdict: n <= max ? 'pass' : 'fail' });
+  const tiers = c.capsules.tierOrder;
+  // Every chi-square check of this run, so the gate can share its false-alarm budget (Bonferroni).
+  const chis: [string, string, ChiSquare | null][] = [
+    ['drops.daily', 'Supply Capsule tier odds', s.daily],
+    ['drops.rarity', 'Stack rarity roll (no guarantee or pity)', s.rarity],
+    ['drops.foils', 'Foil odds per stack (no floors)', s.foils],
+    ...tiers
+      .filter((t) => c.capsules.tiers[t].skinChanceBp > 0 && c.capsules.tiers[t].skinChanceBp < 10_000)
+      .map((t): [string, string, ChiSquare | null] => [`drops.skin.${t}`, `${t} skin chance`, s.skinChance[t] ?? null]),
+    ...tiers
+      .filter((t) => c.capsules.tiers[t].skinChanceBp > 0)
+      .map((t): [string, string, ChiSquare | null] => [`drops.skinRarity.${t}`, `${t} skin rarity (Wardrobe odds from ${c.capsules.tiers[t].skinMinRarity} up)`, s.skinRarity?.[t] ?? null]),
+  ];
   return [
     {
       id: 'drops.bag',
@@ -331,12 +389,7 @@ export function dropsChecks(s: DropsSummary, content: CompiledContent): Check[] 
       verdict: s.bag.groups > 0 && s.bag.badGroups === 0 ? 'pass' : s.bag.groups === 0 ? 'skipped' : 'fail',
       ...(s.bag.firstBad ? { note: s.bag.firstBad } : {}),
     },
-    chiCheck('drops.daily', 'Supply Capsule tier odds', s.daily),
-    chiCheck('drops.rarity', 'Stack rarity roll (no guarantee or pity)', s.rarity),
-    chiCheck('drops.foils', 'Foil odds per stack (no floors)', s.foils),
-    ...c.capsules.tierOrder
-      .filter((t) => c.capsules.tiers[t].skinChanceBp > 0 && c.capsules.tiers[t].skinChanceBp < 10_000)
-      .map((t) => chiCheck(`drops.skin.${t}`, `${t} skin chance`, s.skinChance[t] ?? null)),
+    ...chis.map(([id, metric, x]) => chiCheck(id, metric, x, chis.length)),
     zero('drops.stackCount', 'Capsules with the wrong stack count', s.stackCountViolations, '0'),
     zero('drops.guarantees', 'Capsules missing a guaranteed rarity', s.guaranteeViolations, '0'),
     zero('drops.legendaries', 'Legendary capsules with too few, repeated or wrongly sized Legendary stacks', s.legendaryViolations, '0'),
@@ -436,7 +489,7 @@ export async function runDrops(o: DropsOptions, content: CompiledContent = gameC
   const rep = startReport<DropsData>('drops', 'Ageborn capsule drop statistics (DESIGN A6.4, A6.5, C4.5)', { ...o, contentHash: content.hash });
   const { meta, reason } = await loadMeta();
   if (!meta) {
-    return rep.finish([skippedCheck('drops.all', 'Capsule drop statistics', `chi-square p > ${P_MIN}, bag and pity`, `skipped: ${reason ?? 'no meta'}`)], { meta: 'unavailable', summary: null }, [
+    return rep.finish([skippedCheck('drops.all', 'Capsule drop statistics', `chi-square family-wise p > ${P_MIN}, bag and pity`, `skipped: ${reason ?? 'no meta'}`)], { meta: 'unavailable', summary: null }, [
       `Skipped until the meta rules exist: ${reason ?? 'unknown reason'}.`,
     ]);
   }
@@ -457,13 +510,16 @@ export function dropsSections(r: Report<DropsData>): string[] {
   const row = (name: string, x: ChiSquare | null): (string | number)[] => [name, x ? x.observed.join(' / ') : '-', x ? x.expected.map((e) => e.toFixed(0)).join(' / ') : '-', x ? x.p.toFixed(4) : '-'];
   const supply = c.capsules.tierOrder.filter((t) => c.capsules.dailyOddsBp[t] > 0);
   const skins = (Object.keys(s.skinChance) as CapsuleTier[]).map((t) => row(`${t} skin (yes/no)`, s.skinChance[t] ?? null));
+  const skinRarities = c.capsules.tierOrder
+    .filter((t) => s.skinRarity?.[t])
+    .map((t) => row(`${t} skin rarity (rare/epic/legendary)`, s.skinRarity[t] ?? null));
   const counts = c.capsules.tierOrder.map((t) => `${t} ${s.tierCounts[t] ?? 0}`).join(', ');
   return [
     '## Distributions',
     '',
     markdownTable(
       ['Test', 'Observed', 'Expected', 'p'],
-      [row(`Supply tiers (${supply.join('/')})`, s.daily), row('Stack rarity (common/rare/epic/legendary)', s.rarity), row('Foils (holo/silver/bronze/none)', s.foils), ...skins],
+      [row(`Supply tiers (${supply.join('/')})`, s.daily), row('Stack rarity (common/rare/epic/legendary)', s.rarity), row('Foils (holo/silver/bronze/none)', s.foils), ...skins, ...skinRarities],
     ),
     '',
     `${s.openings} openings; ${s.bag.groups} full bags checked. Openings by tier: ${counts}.`,

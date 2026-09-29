@@ -117,7 +117,16 @@ const VARIANTS: Variant[] = [
     id: 'capsules-ladder',
     label: 'Capsules tab: ladder notice',
     route: () => [{ id: 'capsules' }],
-    save: (s) => ({ ...s, flags: { ...s.flags, 'notice.capsuleLadder': true, 'capsule.legacySkillAeon.road': true } }),
+    // The granted skill Aeon sits on the shelf (a fixed-tier road Aeon), as the real grant leaves it.
+    save: (s) => {
+      const like = s.capsules.pending[0];
+      const aeon = like ? [{ ...like, id: 'fixture-legacy-aeon', kind: 'road' as const, tier: 'aeon' as const, startTier: 'aeon' as const, scriptIndex: null }] : [];
+      return {
+        ...s,
+        capsules: { ...s.capsules, pending: [...aeon, ...s.capsules.pending] },
+        flags: { ...s.flags, 'notice.capsuleLadder': true, 'capsule.legacySkillAeon.road': true },
+      };
+    },
   },
   { id: 'progress', label: 'Progress tab', route: () => [{ id: 'progress' }] },
   { id: 'modeSelect', label: 'Mode select', route: () => [{ id: 'home' }, { id: 'modeSelect' }] },
