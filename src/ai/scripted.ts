@@ -31,6 +31,7 @@ import { Ledger } from './ledger';
 import { BotMemory } from './memory';
 import { personalityFor, type Personality } from './personalities';
 import { tierParams, type TierParams } from './tiers';
+import { powerOption, type PowerContext } from './scoring';
 import { buildView, type View } from './view';
 
 export type ScriptAction = { kind: 'train'; card: CardId } | { kind: 'turret'; card: CardId } | { kind: 'power' } | { kind: 'emote'; emote: EmoteId };
@@ -234,9 +235,24 @@ export class ScriptedController implements AiBotController {
         return { kind: 'build', mount, slot, card: sa.card, cost: def.cost };
       }
       case 'power': {
-        // Scripted casts auto-aim the first ready slot; its price is booked so no gold is spent twice.
-        const ready = v.powerReady && v.powerSlot !== null ? v.powerSlots.find((x) => x.slot === v.powerSlot) : undefined;
-        return ready ? { kind: 'power', p: null, slot: ready.slot, cost: ready.cost } : null;
+        // Scripted casts auto-aim the first ready slot (Home first) that has something to act on, so an
+        // auto-aim never meets `powerNoTarget` or `powerOutOfReach` (A2.9.4); its price is booked so no
+        // gold is spent twice.
+        if (!v.powerReady) return null;
+        const ctx: PowerContext = {
+          reach: e.powerReach,
+          turretCover: e.turretCover,
+          legendaryPowerDamageBp: e.legendaryPowerDamageBp,
+          strikeEpicBp: e.strikeEpicBp,
+          strikeK: 1,
+          rng: null,
+        };
+        for (const sv of v.powerSlots) {
+          if (!sv.reloaded || !sv.affordable) continue;
+          if (powerOption(v, sv.slot, sv.info, ctx).value <= 0) continue;
+          return { kind: 'power', p: null, slot: sv.slot, cost: sv.cost };
+        }
+        return null;
       }
       case 'emote':
         return now >= this.ledger.lastEmoteTick + e.emoteCooldownTicks + 1 ? { kind: 'emote', emote: sa.emote } : null;

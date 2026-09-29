@@ -10,7 +10,7 @@ import { BotMatch, GROGG_SCRIPT, ScriptedController, UtilityController, createBo
 import { cardBook } from '../book';
 import { BotMemory, evolveVisible } from '../memory';
 import { parseOpenings } from '../openings';
-import { balanced, content, matchConfig, observation, sideConfig } from './helpers';
+import { balanced, content, matchConfig, observation, sideConfig, unit } from './helpers';
 
 const book = cardBook(content);
 
@@ -58,6 +58,17 @@ describe('Old Grogg, the scripted tutorial brain (A7.4, A8)', () => {
     // Nobody fights back: the first three Dummies live on, so every later send is dropped.
     expect(m.botCommands.length).toBe(3);
     expect(most).toBe(3);
+  });
+
+  it('casts a scripted power only when it has something to act on (never powerNoTarget)', () => {
+    const bot = new ScriptedController({ ...balanced(0), generalId: 'grogg', openings: ['every 500 power'] }, 1, 1, content);
+    const seen = { card: 'meteor_shower', ppm: 1000000, cost: 100, reloadMs: 40000, rateBp: 10000 };
+    const powers = { home: seen, field: null };
+    // Nothing on the lane: the due cast waits.
+    expect(bot.onTick(observation({ tick: 100, gold: 500 * 1000, powers, units: [] })).filter((c) => c.t === 'power')).toEqual([]);
+    // An enemy in the bot's half: it casts the Home slot on auto-aim.
+    const cmds = bot.onTick(observation({ tick: 140, gold: 500 * 1000, powers, units: [unit(0, 'bonker', 500)] }));
+    expect(cmds.filter((c) => c.t === 'power')).toEqual([{ t: 'power', side: 1, slot: 'home' }]);
   });
 
   it('parses the script language', () => {

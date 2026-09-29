@@ -187,6 +187,20 @@ describe('power (A2.9.9)', () => {
     expect(t.action?.kind).toBe('power');
   });
 
+  it('tier X casts on any value while its own base is below 25%; lower tiers keep their bar', () => {
+    // Five full-HP Bonkers: ROI 7,000, far below X's 18,000.
+    const units = crowd(5, 20000);
+    expect(castsAt(10, obs(units))).toBe(false);
+    expect(castsAt(10, obs(units, { baseHpBp: 2000 }))).toBe(true);
+    expect(castsAt(7, obs(units, { baseHpBp: 2000 }))).toBe(false);
+  });
+
+  it('never offers a cast with nothing to act on, whatever the override', () => {
+    // No enemy on the lane: auto-aim would meet powerNoTarget (A2.9.4), so no tier casts, not even X at 20%.
+    expect(castsAt(0, obs([], { baseHpBp: 2000 }))).toBe(false);
+    expect(castsAt(10, obs([], { baseHpBp: 2000 }))).toBe(false);
+  });
+
   it('bait discipline (VII+): no Home cast on covered targets worth < 200 unless the base was just hit', () => {
     // Three dying Bonkers (150 card value): ROI 19,500 clears VII's bar, but it is a bait.
     expect(castsAt(5, obs(crowd(3)))).toBe(true);

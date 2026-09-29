@@ -235,8 +235,8 @@ function PowerSlotButton(p: {
   const held = useRef(false);
   const edgeWas = useRef(false);
   // Latest values for handlers that outlive a render.
-  const live = useRef({ c, castable, v, def });
-  live.current = { c, castable, v, def };
+  const live = useRef({ c, castable, v, def, otherAiming: false });
+  live.current = { c, castable, v, def, otherAiming: p.active !== null && p.active !== slot };
   // Count the times it became castable, so the burst replays each time.
   const readySeq = useRef({ castable, n: 0 });
   if (castable && !readySeq.current.castable) readySeq.current.n += 1;
@@ -412,9 +412,12 @@ function PowerSlotButton(p: {
     if (!castable && stRef.current.s !== 'idle' && stRef.current.s !== 'pressed') dispatch({ e: 'cancel' });
   }, [castable]);
 
-  // Another slot started aiming: this one puts its power back.
+  // Another slot started aiming: this one puts its power back, and its drag hint goes (the player has
+  // just shown they know how to drag).
   useEffect(() => {
-    if (p.active !== null && p.active !== slot && aimActive(stRef.current)) dispatch({ e: 'cancel' });
+    if (p.active === null || p.active === slot) return;
+    setHint(false);
+    if (aimActive(stRef.current)) dispatch({ e: 'cancel' });
   }, [p.active]);
 
   // Escape cancels a drag or aiming mode (and never reaches the screen underneath).
@@ -458,7 +461,8 @@ function PowerSlotButton(p: {
         clearInterval(poll);
         return;
       }
-      if (tutorialOnPower(btn.current)) return;
+      // Not while the tutorial points here or the other slot is being aimed.
+      if (tutorialOnPower(btn.current) || live.current.otherAiming) return;
       clearInterval(poll);
       rememberHint();
       setHint(true);
@@ -660,7 +664,7 @@ function PowerSlotButton(p: {
       </button>
       <PowerTip c={c} def={def} slot={slot} cost={cost} />
       <ReasonTip c={c} target={powerTarget(slot)} align="right" />
-      {hint && castable && st.s === 'idle' ? (
+      {hint && castable && st.s === 'idle' && !live.current.otherAiming ? (
         <>
           <div class="hud-power-hint" data-testid="hud-power-hint" role="status">
             <span class="hud-power-hint-text">{t('hud.powerAim.hint')}</span>

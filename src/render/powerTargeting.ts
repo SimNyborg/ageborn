@@ -527,7 +527,9 @@ export class ZoneOverlay {
       const w = t.width / Math.max(0.0001, t.scale.x);
       const plateW = (w + 22) * px;
       const plateH = 26 * px;
-      const cy = -CURTAIN_LU * 0.5;
+      // Just under the cross at the top of the hatched area, so it reads with the cross and the
+      // dragged token (at the finger, usually near the ground) does not cover it.
+      const cy = -CURTAIN_LU + plateH / 2 + 6 * px;
       const lx = this.inView(gh.x, plateW, px);
       this.g.roundRect(lx - plateW / 2, cy - plateH / 2, plateW, plateH, 13 * px).fill({ color: 0x8e1f1a, alpha: 0.95 });
       this.g.roundRect(lx - plateW / 2, cy - plateH / 2, plateW, plateH, 13 * px).stroke({ color: 0xffb3a8, width: 1.5 * px, alpha: 1 });
