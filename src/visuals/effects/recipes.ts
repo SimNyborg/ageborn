@@ -13,6 +13,8 @@
  * are screen or UI cues and exempt (`exemptColorRule`, docs/decisions.md WP4).
  */
 
+import { powerFxRecipes } from './powerRecipes';
+
 export type Range = readonly [number, number];
 export type SizeKey = 'radius' | 'zone' | 'width' | 'height' | 'length' | 'scale';
 
@@ -43,6 +45,8 @@ export interface ParticleSpec {
   attract?: number;
   /** Stream particles spawn at the first moving sprite (dust behind the aurochs). */
   followMove?: boolean;
+  /** Burst when the effect's duration ends (a charge's dust as it stops) instead of at the start. */
+  atEnd?: boolean;
   blendAdd?: boolean;
 }
 
@@ -87,6 +91,8 @@ export interface FallSpec {
   fallMs: number;
   /** Sub-effect played where each object lands. */
   impact?: string;
+  /** Draw size of the falling object (default 1). */
+  scale?: number;
 }
 
 export interface ChainSpec {
@@ -104,8 +110,13 @@ export interface FxRecipe {
   particles?: readonly ParticleSpec[];
   fall?: FallSpec;
   chain?: ChainSpec;
-  /** Honours o.durationMs (status loops). */
+  /** Honours o.durationMs (status loops, sweeps and fields the sim times). */
   loops?: boolean;
+  /**
+   * `run`: the duration is the charge's run, o.distance / o.speed (lu, lu/s), so a runner arrives when
+   * the sim's does (the sim owns the timing, B5).
+   */
+  timedBy?: 'run';
   /** Drawn in screen space, sized by o.width x o.height. */
   screen?: boolean;
   exemptColorRule?: boolean;
@@ -714,6 +725,9 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     sprites: [{ sprite: 'fx.p.vignette', life: 0, loop: 1100, screenFit: true, keys: [{ t: 0, a: 0.35 }, { t: 0.5, a: 0.6 }, { t: 1, a: 0.35 }], tint: 0xc0392b }],
     particles: [{ sprite: 'fx.p.chunk', rate: 6, life: [900, 1400], box: [50, 1], sizeWith: 'width', speed: [10, 40], angle: [80, 100], gravity: 300, scale: [0.8, 0.8], alpha: [1, 0.2], spin: [-200, 200] }],
   },
+
+  // The power rework (A2.9, A5.7): the new powers' effects, telegraph decorations and shared cues.
+  ...powerFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
 ];
 
 export const FX_RECIPE_BY_ID: ReadonlyMap<string, FxRecipe> = new Map(FX_RECIPES.map((r) => [r.id, r]));

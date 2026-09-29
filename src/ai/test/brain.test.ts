@@ -273,6 +273,11 @@ describe('power (A2.9.9)', () => {
     };
     const { brain } = brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } });
     const mem = new BotMemory(book);
+    // No enemy turret, so the gate passes: with 450 in hand the bank still comes first (nothing is
+    // trained), while tier V, which does not bait, trains.
+    const open: Partial<Observation['foe']> = { powers: foe.powers! };
+    expect(kinds(decide(brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 450 * MILLI, foe: open })))).not.toContain('train');
+    expect(kinds(decide(brainFor({ tier: 5, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 450 * MILLI, foe: open })))).toContain('train');
     const o1 = observation({ tick: 900, gold: 600 * MILLI, foe });
     const t1 = decide(brain, o1, { memory: mem });
     // The bait is the cheapest tray unit (the Bonker, 50), and nothing else is bought.

@@ -6,6 +6,8 @@
  * accent, and energy effects use mint, magenta and lilac rather than cyan or orange.
  */
 import { part } from '../parts/registry';
+// The power rework's props and energies (registered alongside these parts).
+import './powerSprites';
 import { arcBand, blob, circle, ellipse, join, limb, ngon, poly, rect, rotate, rrect, star, wedge } from '../svg';
 
 /** Effect zone colours (resolved through this palette for every effect and projectile). */

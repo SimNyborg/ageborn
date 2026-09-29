@@ -211,8 +211,6 @@ const BAIT_RELEASE_TICKS = 12 * TICKS_PER_SECOND;
 const BAIT_COOLDOWN_TICKS = 30 * TICKS_PER_SECOND;
 /** A bait train outranks every other candidate but Last Stand. */
 const BAIT_TRAIN_SCORE = 16000;
-/** TEMP experiment switches (removed before hand-off). */
-export const POWER_TUNE = { ring: true, reserve: true, bait: true, hotHomeBarBp: 0, hotFieldBarBp: 0, roiScaleBp: 10000, noHome: false, noField: false, discipline: true, barOverride: 0, bars: {} as Record<string, number>, baitBank: false };
 /** X: any zone value when the own base is below 25%. */
 const LOW_BASE_BP = 2500;
 /** Tempest casts into the burst right after the foe evolves. */
@@ -350,8 +348,11 @@ export class Brain {
   private idleUntil = 0;
   /** `waveCommit`: the peak army value of the wave now charging, or null while none is. */
   private wavePeak: number | null = null;
-  /** Bait, then wave (A2.9.9): when the bait started and the gold (milli) spent on it; null when not baiting. */
-  private bait: { start: number; spent: number } | null = null;
+  /**
+   * Bait, then wave (A2.9.9): when the bait started, the observation tick it was decided on (an enemy
+   * telegraph seen after it is the cast the bait drew) and the gold (milli) spent on it; null when not baiting.
+   */
+  private bait: { start: number; seenAt: number; spent: number } | null = null;
   private baitCooldownUntil = 0;
   private readonly opening: OpeningPlan;
   private openingIndex = 0;
@@ -401,7 +402,7 @@ export class Brain {
     const foeHomeInfo = foeHome?.card ? book.powerInfo[foeHome.card] : undefined;
     const foeHomeArea = foeHomeInfo !== undefined && (foeHomeInfo.def.family === 'bombard' || foeHomeInfo.def.family === 'sweep');
     const foeHomeReady = foeHomeArea && (foeHome?.ppm ?? 0) >= PPM;
-    if (POWER_TUNE.ring && t.readsRings && foeHomeReady && !hot) gateBp = mulBp(gateBp, RING_GATE_BP);
+    if (t.readsRings && foeHomeReady && !hot) gateBp = mulBp(gateBp, RING_GATE_BP);
     // An army at the pop cap cannot grow by banking, so it goes.
     const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
     // A18.6 (Normal and up): an army 1.5× the enemy's that can soak its turrets goes, whatever the gate.
@@ -429,21 +430,23 @@ export class Brain {
     // Bait, then wave (A2.9.9, VII+; Tempest from V): with a wave's gold banked and the enemy's Home
     // bombard or sweep ready, send ≤ 150 gold of the cheapest units first, train nothing else, and release
     // the bank when the enemy casts (their telegraph) or after 12 s.
-    const baitOn = POWER_TUNE.bait && (t.bait || t.tier >= P.baitFromTier);
+    const baitOn = t.bait || t.tier >= P.baitFromTier;
     if (this.bait) {
       const b = this.bait;
-      if (mem.foeCastTick.home >= b.start || v.now - b.start >= BAIT_RELEASE_TICKS || urgent || foeOnMyHalf || siege) {
+      if (mem.foeCastTick.home > b.seenAt || v.now - b.start >= BAIT_RELEASE_TICKS || urgent || foeOnMyHalf || siege) {
         this.bait = null;
         this.baitCooldownUntil = v.now + BAIT_COOLDOWN_TICKS;
         wave = true;
         this.spending = true;
       }
     } else if (baitOn && v.now >= this.baitCooldownUntil && foeHomeReady && (pushOk || wave) && v.gold >= BAIT_BANK && !foeOnMyHalf && !urgent && !siege && !allIn) {
-      this.bait = { start: v.now, spent: 0 };
+      this.bait = { start: v.now, seenAt: obs.tick, spent: 0 };
     }
-    // TEMP experiment: bank up to the bait's 500 while the enemy Home area power is ready.
+    // The bank comes first (A2.9.9: a 40 s Home reload is shorter than banking a wave, so the bait only
+    // works with the gold already saved): while the enemy's Home area power is ready, a wave the gate
+    // would send waits until 500 is banked (measured: tier VII vs V Standard Bell 41% → 31%, same wins).
     let baitHold = false;
-    if (POWER_TUNE.baitBank && baitOn && !this.bait && foeHomeReady && (pushOk || wave) && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
+    if (baitOn && !this.bait && v.now >= this.baitCooldownUntil && foeHomeReady && (pushOk || wave) && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
       wave = false;
       baitHold = true;
     }
@@ -507,7 +510,7 @@ export class Brain {
     // A2.9.9 gold ledger (V+): the Home power's cost joins the float target while its slot is ≥ 75%
     // reloaded and an enemy army worth 300+ is on the lane.
     const home = v.powerSlots.find((x) => x.slot === 'home');
-    const reserve = POWER_TUNE.reserve && t.homeReserve && home && home.info.harmful && home.ppm >= RESERVE_PPM && v.foeArmy >= RESERVE_FOE_ARMY ? home.cost : 0;
+    const reserve = t.homeReserve && home && home.info.harmful && home.ppm >= RESERVE_PPM && v.foeArmy >= RESERVE_FOE_ARMY ? home.cost : 0;
     const floatTarget = Math.trunc((t.goldFloat * MILLI * BP) / mono) + reserve;
     if (v.gold >= Math.max(floatTarget, this.goal?.amount ?? 0) || wave) this.spending = true;
     else if (v.gold < cheapest) this.spending = false;
@@ -1132,18 +1135,15 @@ export class Brain {
     let onFew: BotAction | null = null;
     for (const sv of v.powerSlots) {
       if (!sv.reloaded || !sv.affordable || (sv.slot === 'field' && !t.fieldSlot)) continue;
-      if ((sv.slot === 'home' && POWER_TUNE.noHome) || (sv.slot === 'field' && POWER_TUNE.noField)) continue;
       const opt = powerOption(v, sv.slot, sv.info, ctx);
       if (opt.value <= 0) continue;
-      const tb = POWER_TUNE.bars[String(Math.round(t.tier))];
-      let bar = mulBp(tb !== undefined ? tb : POWER_TUNE.barOverride > 0 ? POWER_TUNE.barOverride : t.powerRoiBp, POWER_TUNE.roiScaleBp) + shift;
-      if (v.phase === 'overdrive' || v.phase === 'siege') bar += sv.slot === 'home' ? POWER_TUNE.hotHomeBarBp : POWER_TUNE.hotFieldBarBp;
+      let bar = t.powerRoiBp + shift;
       const goal = this.goal;
       if (goal && v.gold - sv.cost < goal.amount && !hurt) bar += GOAL_BAR_BP;
       if (sv.slot === 'home' && foeBanking) bar += COUNTER_TIMING_BP;
       if (foeEvolved) bar = Math.trunc(bar / 2);
       const roi = Math.trunc((opt.value * BP) / Math.max(1, sv.cost));
-      const discipline = POWER_TUNE.discipline && t.baitDiscipline && sv.slot === 'home' && sv.info.harmful && opt.covered < BAIT_DISCIPLINE_VALUE && !hurt;
+      const discipline = t.baitDiscipline && sv.slot === 'home' && sv.info.harmful && opt.covered < BAIT_DISCIPLINE_VALUE && !hurt;
       const override = (hurt && opt.value >= POWER_MIN_VALUE) || (t.powerAnyWhenLowBase && v.baseHpBp < LOW_BASE_BP);
       if (!discipline && (roi >= bar || override)) {
         const net = opt.value - sv.cost;

@@ -199,7 +199,7 @@ export class EventMapper {
   private crumble: [number, number] = [0, 0];
   private evolves: [number, number] = [0, 0];
   /** Centre and width (lu) of recent casts, from their telegraphs (line barrages and sweeps play from the centre). */
-  private readonly casts = new Map<number, { x: number; zone: number }>();
+  private readonly casts = new Map<number, { x: number; zone: number; targetId: number }>();
   /** Sources whose area ring already played in the current `map` call (one ring per impact, not per victim). */
   private areaShown = new Set<string>();
 
@@ -579,7 +579,7 @@ export class EventMapper {
         // `zone` is milli-lu like every sim position (B3; WP2 emits `zone: 500_000` for 500 lu).
         const x = ev.x / MILLI_LU;
         const zone = ev.zone / MILLI_LU;
-        this.casts.set(ev.castId, { x, zone });
+        this.casts.set(ev.castId, { x, zone, targetId: ev.targetId });
         if (this.casts.size > 16) this.casts.delete(this.casts.keys().next().value as number);
         out.push({
           a: 'telegraph',
@@ -593,25 +593,31 @@ export class EventMapper {
           ...(ev.targetId >= 0 ? { targetId: ev.targetId } : {}),
         });
         this.rule('power.telegraph', { at: { k: 'world', x, y: 0 } }, out);
+        const tdef = this.content.powers[ev.power];
+        if (tdef) this.powerTelegraphFx(ev, tdef, x, zone, out);
         return;
       }
       case 'powerImpact': {
         const x = ev.x / MILLI_LU;
         const def = this.content.powers[ev.power];
         if (ev.index === 0) {
-          this.rule('power.impact', { at: { k: 'world', x, y: 0 }, subs: { powerSound: def?.sfx ?? 'power_telegraph' } }, out);
+          // Feel scaled by family (A2.9.10): a Home bombard lands harder than a strike or a buff.
+          const family = def ? `power.impact.${def.family}` : '';
+          this.rule(this.has(family) ? family : 'power.impact', { at: { k: 'world', x, y: 0 }, subs: { powerSound: def?.sfx ?? 'power_telegraph' } }, out);
           out.push({ a: 'intensity', amount: tun.intensity.power });
-        } else if (def?.effect.kind !== 'sweep') {
-          // Later barrage impacts and aurochs add a little shake; the Lance's per-tick sweep does not.
+        } else if (def?.effect.kind !== 'sweep' && def?.effect.kind !== 'field') {
+          // Later barrage impacts and aurochs add a little shake; the Lance's per-tick sweep and a
+          // field's pulses do not.
           this.rule('power.impact.more', { at: { k: 'world', x, y: 0 } }, out);
         }
-        if (def) this.powerPreset(ev, def, x, out);
+        if (def) this.powerPreset(ev, def, x, unit, out);
         return;
       }
       case 'turretSilenced':
         // Suppress (A2.9.7): a jam mark over the mount while it is silenced (the polished
         // `fx.turret_jammed` effect is the visuals package's P3 work).
         out.push({ a: 'jam', side: ev.side, mount: ev.mount, ms: Math.max(0, (ev.untilTick - ev.tick) * 50) });
+        this.rule('power.jammed', { at: { k: 'mount', side: ev.side, mount: ev.mount }, opts: { durationMs: Math.max(0, (ev.untilTick - ev.tick) * 50) } }, out);
         return;
       case 'stanceChanged':
         if (ev.side === this.mySide) this.rule('stance', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
@@ -677,7 +683,7 @@ export class EventMapper {
    * Per-power preset (A12 "Power lands"): the effect comes from the feel config, the sizes from the
    * power's data, so a retuned zone or radius needs no config change.
    */
-  private powerPreset(ev: Extract<SimEvent, { e: 'powerImpact' }>, def: PowerDef, x: number, out: ViewAction[]): void {
+  private powerPreset(ev: Extract<SimEvent, { e: 'powerImpact' }>, def: PowerDef, x: number, unit: (id: number) => UnitInfo | undefined, out: ViewAction[]): void {
     const e = def.effect;
     const side = ev.side;
     const dir = dirOf(side);
@@ -710,17 +716,38 @@ export class EventMapper {
       }
       // Rework kinds (A2.9.7): placeholder presets until the visuals package draws the P3 effects.
       case 'field':
-        first = { at: { k: 'world', x: centre, y: 0 }, opts: { side, width: e.zone, durationMs: e.durationMs } };
+        first = { at: { k: 'world', x: centre, y: 0 }, opts: { side, dir, zone: e.zone, width: e.zone, durationMs: e.durationMs } };
         break;
-      case 'strike':
-        each = { at: { k: 'world', x, y: 0 }, opts: { side, dir, radius: 20 } };
+      case 'strike': {
+        // Each shot lands on the locked unit's body (air units included); a fizzle lands on the ground.
+        const tid = cast?.targetId ?? -1;
+        const onTarget = tid >= 0 && unit(tid) !== undefined;
+        each = { at: onTarget ? { k: 'unit', id: tid, part: 'hit' } : { k: 'world', x, y: 0 }, opts: { side, dir, radius: 20 } };
         break;
+      }
       case 'suppress':
-        first = { at: { k: 'world', x, y: 0 }, opts: { side, durationMs: e.durationMs } };
+        // Suppress acts on the enemy's mounts: its burst plays at their gate.
+        first = { at: { k: 'base', side: side === 0 ? 1 : 0, part: 'front' }, opts: { side, dir, durationMs: e.durationMs } };
         break;
     }
     if (first && ev.index === 0) this.rule(pick('.first'), first, out);
     if (each) this.rule(pick(''), each, out);
+  }
+
+  /**
+   * A power's telegraph decoration (A12 anticipation: a shadow before a bombard, a rumble before a
+   * sweep or a charge, a glint and a lock before a strike, motes gathering before a field) and the cue
+   * at the caster's base. Card rules win over their kind's; each lasts exactly the telegraph.
+   */
+  private powerTelegraphFx(ev: Extract<SimEvent, { e: 'powerTelegraph' }>, def: PowerDef, x: number, zone: number, out: ViewAction[]): void {
+    const ms = ev.telegraphMs > 0 ? ev.telegraphMs : this.feel.tuning.telegraphMs;
+    const key = [`power.tele.${def.id}`, `power.tele.${def.effect.kind}`].find((k) => this.has(k));
+    if (key) {
+      const onTarget = def.effect.kind === 'strike' && ev.targetId >= 0;
+      const opts = { side: ev.side, dir: dirOf(ev.side), zone, durationMs: ms };
+      this.rule(key, { at: onTarget ? { k: 'unit', id: ev.targetId, part: 'hit' } : { k: 'world', x, y: 0 }, ...(onTarget ? { follow: true } : {}), opts }, out);
+    }
+    if (this.has('power.cue')) this.rule('power.cue', { at: { k: 'base', side: ev.side, part: 'top' }, opts: { side: ev.side } }, out);
   }
 
   /** Size and timing options for an ability's effect (the art sizes rings by `radius`). */

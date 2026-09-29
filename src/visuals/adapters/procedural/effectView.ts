@@ -172,12 +172,20 @@ export class ProceduralEffectView implements EffectView {
       return;
     }
     this.dur = r.loops && this.o['durationMs'] !== undefined ? this.o['durationMs'] : r.durationMs;
+    const distance = this.o['distance'];
+    const speed = this.o['speed'];
+    // A charge's runner lasts exactly the sim's run (B5: the sim owns timing).
+    if (r.timedBy === 'run' && distance !== undefined && speed !== undefined && speed > 0) this.dur = Math.round((distance * 1000) / speed);
     for (const spec of r.sprites ?? []) this.addSprite(spec);
-    for (const spec of r.particles ?? []) this.emitters.push({ spec, acc: 0, burstAt: spec.delay ? this.range(spec.delay) : 0, burstDone: !spec.count });
+    for (const spec of r.particles ?? []) {
+      const burstAt = spec.atEnd ? Math.max(0, this.dur - 40) : spec.delay ? this.range(spec.delay) : 0;
+      this.emitters.push({ spec, acc: 0, burstAt, burstDone: !spec.count });
+    }
     if (r.fall) {
       const f = r.fall;
       for (let i = 0; i < f.count; i++) {
         const s = fxSprite(this.opt.baker, f.sprite);
+        if (f.scale !== undefined) s.scale.set(f.scale);
         const tx = (this.rng.next() - 0.5) * 2 * f.spreadX;
         this.layer.addChild(s);
         this.falling.push({ s, fx: f.fromX * this.dir + tx, fy: f.fromY, tx, landed: false });
