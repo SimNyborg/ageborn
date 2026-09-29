@@ -165,7 +165,7 @@ function expectedDamage(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerC
 }
 
 /** TEMP experiment knob (removed before hand-off). */
-export const POWER_EXP = { chipEngagedPerMille: 400, engagedOnly: false };
+export const POWER_EXP = { chipEngagedPerMille: Number((globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.AI_CHIP ?? 400), engagedOnly: false };
 
 /** A2.9.9 damage value of one target, milli-gold: kill-weighted, ×1.25 near the own gate. */
 export function targetValue(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerContext, v0?: View): number {

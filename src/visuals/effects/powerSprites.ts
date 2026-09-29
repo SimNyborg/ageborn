@@ -196,14 +196,14 @@ part('fx.p.muzzleFlash', [
 part('fx.p.net', [
   {
     d: join(
-      ...[-40, -28, -16, -4, 8, 20, 32].map((x) => limb(x - 8, 0, 0.7, x + 14, -22, 0.7)),
-      ...[-32, -20, -8, 4, 16, 28, 40].map((x) => limb(x + 8, 0, 0.7, x - 14, -22, 0.7)),
-      limb(-44, 0, 0.9, -20, -22, 0.9),
-      limb(20, -22, 0.9, 44, 0, 0.9),
-      limb(-20, -22, 0.9, 20, -22, 0.9),
+      ...[-40, -28, -16, -4, 8, 20, 32].map((x) => limb(x - 8, 0, 1.1, x + 14, -22, 1.1)),
+      ...[-32, -20, -8, 4, 16, 28, 40].map((x) => limb(x + 8, 0, 1.1, x - 14, -22, 1.1)),
+      limb(-44, 0, 1.4, -20, -22, 1.4),
+      limb(20, -22, 1.4, 44, 0, 1.4),
+      limb(-20, -22, 1.4, 20, -22, 1.4),
     ),
-    zone: '#B5A58A',
-    line: 0.5,
+    zone: '#A8966F',
+    line: 0.7,
     shade: false,
     light: false,
   },
@@ -222,8 +222,9 @@ part('fx.p.clod', [{ d: blob([-3, 0, -2, -2.6, 1.6, -3, 3.4, -0.4, 2, 2.4, -2, 2
 
 /** Barbed Wire: one coil of barbed wire on the ground, 24 lu wide. */
 part('fx.p.wireCoil', [
-  { d: join(...[-8, -2, 4].map((x) => arcBand(x, -8, 6.6, 7.6, 0, 360))), zone: '#8D9398', line: 0, shade: false, light: false },
-  { d: join(...[-14, -9, -4, 1, 6, 11].map((x) => rotate(rect(x - 0.4, -17, 0.8, 3), 30))), zone: '#4A4F55', line: 0, shade: false, light: false },
+  { d: join(...[-8, -2, 4].map((x) => arcBand(x, -8, 6.2, 7.9, 0, 360))), zone: '#6E7378', line: 0.4, shade: false, light: false },
+  { d: join(...[-14, -9, -4, 1, 6, 11].map((x) => rotate(rect(x - 0.5, -17, 1, 3.4), 30))), zone: '#3E4247', line: 0, shade: false, light: false },
+  { d: join(...[-6, 0, 6].map((x) => arcBand(x, -8.6, 6.6, 7.2, 200, 300))), zone: '#C9CED2', line: 0, shade: false, light: false },
 ]);
 /** A wooden picket for the wire. */
 part('fx.p.picket', [

@@ -263,6 +263,57 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       particles: [{ sprite: 'fx.p.xp', rate: 22, life: [400, 600], box: [55, 6], sizeWith: 'zone', attract: 5, speed: [0, 10], scale: [0.9, 0.3], alpha: [0, 1], tint: 0xf4ecd8 }],
     },
 
+    {
+      // A rally is called (buffs, 0.5 s): each unit about to be buffed draws a ring of light in.
+      id: 'fx.tele_rally',
+      durationMs: 500,
+      loops: true,
+      sprites: [
+        { sprite: 'fx.p.ring', life: 0, tint: 'team', keys: [{ t: 0, y: 10, sx: 3.2, sy: 1, a: 0 }, { t: 0.4, y: 6, sx: 2.2, sy: 0.7, a: 0.7 }, { t: 1, y: 2, sx: 1.2, sy: 0.4, a: 0.9 }] },
+        { sprite: 'fx.p.glow', life: 0, blendAdd: true, tint: 0xfff0d6, keys: [{ t: 0, sx: 0.6, sy: 0.6, a: 0 }, { t: 1, sx: 1.8, sy: 1.8, a: 0.4 }] },
+      ],
+      particles: [{ sprite: 'fx.p.xp', rate: 20, life: [250, 400], box: [22, 20], attract: 5, speed: [0, 10], scale: [0.9, 0.3], alpha: [0, 1], tint: 0xfff0d6 }],
+    },
+    {
+      // Undermine's telegraph (1.5 s) at the enemy wall: the sappers' fuse fizzes underground, the
+      // ground twitches and dust leaks from the cracks. Anchored at the base front (ground at y 44).
+      id: 'fx.tele_sap',
+      durationMs: 1500,
+      loops: true,
+      sprites: [{ sprite: 'fx.p.petrify', life: 0, keys: [{ t: 0, x: -30, y: 46, sx: 0.1, sy: 1, a: 0 }, { t: 0.6, x: -30, y: 46, sx: 0.8, sy: 1.3, a: 0.7 }, { t: 1, x: -30, y: 46, sx: 1.3, sy: 1.6, a: 0.9 }], tint: 0x6e6254 }],
+      particles: [
+        { sprite: 'fx.p.dust', rate: 14, life: [400, 700], box: [60, 2], speed: [20, 60], angle: [-120, -60], gravity: -10, scale: [0.6, 1.6], alpha: [0.8, 0], tint: 0xcfc4b0 },
+        { sprite: 'fx.p.rock', rate: 10, life: [250, 400], box: [60, 2], speed: [50, 110], angle: [-110, -70], gravity: 900, scale: [0.8, 0.6], alpha: [1, 0.5], spin: [-400, 400], tint: 0x8a7e70 },
+        { sprite: 'fx.p.sparkHot', rate: 8, life: [120, 220], box: [40, 2], speed: [40, 120], angle: [-150, -30], gravity: 300, scale: [0.9, 0.3], alpha: [1, 0], align: true },
+      ],
+    },
+    {
+      // EMP Blackout's telegraph (1.5 s) at the enemy wall: charge builds, crawling arcs and a
+      // tightening ring of mint light before the pulse.
+      id: 'fx.tele_charge',
+      durationMs: 1500,
+      loops: true,
+      sprites: [
+        { sprite: 'fx.p.ring', life: 0, loop: 500, tint: 0x3af0b4, keys: [{ t: 0, y: -40, sx: 9, sy: 7, a: 0 }, { t: 0.5, y: -40, sx: 5, sy: 4, a: 0.5 }, { t: 1, y: -40, sx: 1.4, sy: 1.1, a: 0 }] },
+        { sprite: 'fx.p.glow', life: 0, blendAdd: true, tint: 0xd8fff0, keys: [{ t: 0, y: -40, sx: 1, sy: 1, a: 0 }, { t: 1, y: -40, sx: 4, sy: 4, a: 0.5 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.bolt', rate: 16, life: [80, 160], box: [60, 50], speed: [40, 120], angle: [-180, 180], scale: [1.1, 0.5], alpha: [1, 0], align: true, tint: 0xd8fff0 },
+        { sprite: 'fx.p.nanite', rate: 20, life: [400, 600], box: [70, 60], attract: 6, speed: [0, 10], scale: [1, 0.3], alpha: [0, 1], tint: 0x3af0b4 },
+      ],
+    },
+    {
+      // AA Screen's telegraph (0.5 s): the anti-aircraft guns open up: tracers climb into the sky over
+      // the zone before the shells burst.
+      id: 'fx.tele_flak',
+      durationMs: 500,
+      loops: true,
+      particles: [
+        { sprite: 'fx.p.spark', rate: 40, life: [200, 320], box: [40, 1], sizeWith: 'zone', speed: [520, 700], angle: [-100, -80], scale: [1.6, 1], alpha: [1, 0.3], align: true },
+        { sprite: 'fx.p.smoke', rate: 6, life: [400, 700], box: [40, 1], sizeWith: 'zone', speed: [10, 30], angle: [-110, -70], gravity: -30, scale: [0.4, 1.1], alpha: [0.5, 0], tint: 0x9a9690 },
+      ],
+    },
+
     // -----------------------------------------------------------------------------------------
     // Stone
 
@@ -408,10 +459,10 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       timedBy: 'run',
       sprites: [runner('fx.p.chariot', 170, 5, 3, 1.6), pennantOn(170, 5, -23, -74, 1)],
       particles: [
-        { ...dust(10, 1.4), tint: 0xd8ccb4 },
-        { sprite: 'fx.p.dust', rate: 36, life: [360, 640], speed: [10, 50], angle: [-175, -120], spread: 8, scale: [0.7, 1.6], alpha: [0.8, 0], followMove: true, tint: 0xd8ccb4 },
+        { ...dust(6, 1.6), tint: 0xd8ccb4 },
+        { sprite: 'fx.p.dust', rate: 24, life: [360, 640], speed: [10, 50], angle: [-175, -120], spread: 8, scale: [0.7, 1.6], alpha: [0.8, 0], followMove: true, tint: 0xd8ccb4 },
         { sprite: 'fx.p.rock', rate: 12, life: [260, 420], speed: [80, 160], angle: [-160, -110], spread: 8, gravity: 800, scale: [0.8, 0.6], alpha: [1, 0.5], spin: [-500, 500], followMove: true, tint: 0x8a7e70 },
-        { ...dust(8, 1.3), atEnd: true, followMove: true, tint: 0xd8ccb4 },
+        { ...dust(5, 1.5), atEnd: true, followMove: true, tint: 0xd8ccb4 },
       ],
     },
     {
@@ -471,10 +522,10 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       timedBy: 'run',
       sprites: [runner('fx.p.knight', 200, 6, 3, 1.45), pennantOn(200, 6, 43, -63, 0.75)],
       particles: [
-        { ...dust(10, 1.4), tint: 0xd8ccb4 },
-        { sprite: 'fx.p.dust', rate: 34, life: [360, 640], speed: [10, 50], angle: [-175, -120], spread: 8, scale: [0.7, 1.6], alpha: [0.8, 0], followMove: true, tint: 0xd8ccb4 },
+        { ...dust(6, 1.6), tint: 0xd8ccb4 },
+        { sprite: 'fx.p.dust', rate: 24, life: [360, 640], speed: [10, 50], angle: [-175, -120], spread: 8, scale: [0.7, 1.6], alpha: [0.8, 0], followMove: true, tint: 0xd8ccb4 },
         { sprite: 'fx.p.clod', rate: 14, life: [260, 420], speed: [80, 170], angle: [-165, -110], spread: 8, gravity: 800, scale: [1, 0.8], alpha: [1, 0.5], spin: [-500, 500], followMove: true },
-        { ...dust(8, 1.3), atEnd: true, followMove: true, tint: 0xd8ccb4 },
+        { ...dust(5, 1.5), atEnd: true, followMove: true, tint: 0xd8ccb4 },
       ],
     },
     {
@@ -536,7 +587,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       loops: true,
       sprites: [
         { sprite: 'fx.p.shadow', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.6, a: 0 }, { t: 0.04, sx: 1, a: 0.3 }, { t: 0.95, a: 0.3 }, { t: 1, a: 0 }] },
-        { sprite: 'fx.p.net', life: 0, sizeWith: 'zone', keys: [{ t: 0, y: -130, sx: 0.55, sy: 1.3, a: 0 }, { t: 0.025, y: -70, sx: 0.85, sy: 1.1, a: 1 }, { t: 0.05, y: 0, sx: 1.08, sy: 0.75, a: 1 }, { t: 0.065, y: -3, sx: 1.02, sy: 1.1 }, { t: 0.09, y: 0, sx: 0.84, sy: 1.18 }, { t: 0.12, y: 0, sx: 0.9, sy: 1 }, { t: 0.94, y: 0, sx: 0.9, sy: 1, a: 1 }, { t: 1, y: 2, sx: 0.88, sy: 0.8, a: 0 }] },
+        { sprite: 'fx.p.net', life: 0, sizeWith: 'zone', keys: [{ t: 0, y: -150, sx: 0.55, sy: 3, a: 0 }, { t: 0.025, y: -80, sx: 0.85, sy: 2.6, a: 1 }, { t: 0.05, y: 0, sx: 1.08, sy: 1.8, a: 1 }, { t: 0.065, y: -3, sx: 1.02, sy: 2.6 }, { t: 0.09, y: 0, sx: 0.84, sy: 2.8 }, { t: 0.12, y: 0, sx: 0.9, sy: 2.4 }, { t: 0.94, y: 0, sx: 0.9, sy: 2.4, a: 1 }, { t: 1, y: 2, sx: 0.88, sy: 1.8, a: 0 }] },
         { sprite: 'fx.p.grapnel', life: 0, moveBy: 'zone', keys: [{ t: 0, x: -90, y: -90, r: 30, sx: 1.6, sy: 1.6, a: 1 }, { t: 0.05, x: -46, y: -2, r: 20, sx: 1.6, sy: 1.6 }, { t: 0.09, x: -40, y: -2, r: 10 }, { t: 0.94, x: -40, y: -2, a: 1 }, { t: 1, x: -40, y: -2, a: 0 }] },
         { sprite: 'fx.p.grapnel', life: 0, delay: 60, moveBy: 'zone', keys: [{ t: 0, x: -70, y: -120, r: 50, sx: 1.6, sy: 1.6, a: 1 }, { t: 0.05, x: 48, y: -2, r: 10, sx: 1.6, sy: 1.6 }, { t: 0.09, x: 40, y: -2, r: 4 }, { t: 0.94, x: 40, y: -2, a: 1 }, { t: 1, x: 40, y: -2, a: 0 }] },
       ],
@@ -594,19 +645,19 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 6000,
       loops: true,
       sprites: [
-        ...[-46, 0, 46].map((x, i) => dropIn('fx.p.picket', x, i * 70, { scale: 1.8, from: 30 })),
+        ...[-46, 0, 46].map((x, i) => dropIn('fx.p.picket', x, i * 70, { scale: 2.6, from: 30 })),
         ...[-36, -18, 0, 18, 36].map((x, i): SpriteSpec => ({
           sprite: 'fx.p.wireCoil',
           life: 0,
           delay: 40 + i * 50,
           moveBy: 'zone',
           keys: [
-            { t: 0, x, y: 0, sx: 0.2, sy: 1.6, a: 0 },
-            { t: 0.012, x, y: 0, sx: 2.3, sy: 1.1, a: 1 },
-            { t: 0.024, x, y: 0, sx: 1.6, sy: 1.8 },
-            { t: 0.036, x, y: 0, sx: 1.9, sy: 1.6 },
-            { t: 0.95, x, y: 0, sx: 1.9, sy: 1.6, a: 1 },
-            { t: 1, x, y: 2, sx: 1.9, sy: 1, a: 0 },
+            { t: 0, x, y: 0, sx: 0.3, sy: 2.4, a: 0 },
+            { t: 0.012, x, y: 0, sx: 3.4, sy: 1.7, a: 1 },
+            { t: 0.024, x, y: 0, sx: 2.5, sy: 2.8 },
+            { t: 0.036, x, y: 0, sx: 2.9, sy: 2.5 },
+            { t: 0.95, x, y: 0, sx: 2.9, sy: 2.5, a: 1 },
+            { t: 1, x, y: 2, sx: 2.9, sy: 1.5, a: 0 },
           ],
         })),
       ],
@@ -624,18 +675,18 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { sprite: 'fx.p.pillar', life: 1300, delay: 90, keys: [{ t: 0, sx: 1.4, sy: 0.05, a: 0.9 }, { t: 0.12, sx: 2.6, sy: 0.9, a: 0.85 }, { t: 0.5, sx: 3.2, sy: 1.05, a: 0.5 }, { t: 1, sx: 3.8, sy: 1.1, a: 0 }], tint: 0xa89c88 },
         { ...ring(7, 600, 0xf4ecd8, 0.3), delay: 90 },
       ],
-      particles: [clods(16, [200, 420], [90, 110]), { ...smoke(6, 2, [1200, 1800]), delay: [300, 500], tint: 0x9c968e }],
+      particles: [clods(12, [200, 420], [90, 110]), { ...smoke(6, 2, [1200, 1800]), delay: [300, 500], tint: 0x9c968e }],
     },
     {
       // Field Hospital (Field mend): a bandage wraps each patched soldier and green crosses rise.
       id: 'fx.field_hospital',
       durationMs: 1300,
       sprites: [
-        bloom(2.2, 700, 0xd8fff0, 0.45),
-        { sprite: 'fx.p.bandage', life: 900, keys: [{ t: 0, x: -14, y: 6, r: -20, sx: 0.4, sy: 0.4, a: 0 }, { t: 0.15, x: -12, y: 0, r: 10, sx: 1.4, sy: 1.4, a: 1 }, { t: 0.4, x: 10, y: -8, r: 40, sx: 1.2, sy: 1.2 }, { t: 0.65, x: -8, y: -16, r: 70, sx: 1.1, sy: 1.1, a: 1 }, { t: 1, x: 4, y: -28, r: 100, sx: 0.8, sy: 0.8, a: 0 }] },
-        { sprite: 'fx.p.plus', life: 900, delay: 120, keys: [{ t: 0, y: -26, sx: 0.4, sy: 0.4, a: 0 }, { t: 0.2, y: -36, sx: 1.4, sy: 1.4, a: 1 }, { t: 0.3, sx: 1.1, sy: 1.1 }, { t: 1, y: -60, sx: 1, sy: 1, a: 0 }] },
+        bloom(3, 700, 0xd8fff0, 0.5),
+        { sprite: 'fx.p.bandage', life: 900, keys: [{ t: 0, x: -18, y: 6, r: -20, sx: 0.6, sy: 0.6, a: 0 }, { t: 0.15, x: -16, y: 0, r: 10, sx: 2, sy: 2, a: 1 }, { t: 0.4, x: 13, y: -10, r: 40, sx: 1.8, sy: 1.8 }, { t: 0.65, x: -10, y: -20, r: 70, sx: 1.6, sy: 1.6, a: 1 }, { t: 1, x: 5, y: -34, r: 100, sx: 1.1, sy: 1.1, a: 0 }] },
+        { sprite: 'fx.p.plus', life: 1000, delay: 120, keys: [{ t: 0, y: -30, sx: 0.6, sy: 0.6, a: 0 }, { t: 0.18, y: -44, sx: 2.6, sy: 2.6, a: 1 }, { t: 0.3, y: -46, sx: 2.1, sy: 2.1 }, { t: 1, y: -74, sx: 1.8, sy: 1.8, a: 0 }] },
       ],
-      particles: [{ sprite: 'fx.p.plus', count: 4, life: [600, 900], box: [12, 10], speed: [20, 40], angle: [-100, -80], delay: [150, 400], scale: [0.7, 0.4], alpha: [1, 0] }],
+      particles: [{ sprite: 'fx.p.plus', count: 4, life: [600, 900], box: [14, 12], speed: [20, 40], angle: [-100, -80], delay: [150, 400], scale: [1.2, 0.6], alpha: [1, 0] }],
     },
 
     // -----------------------------------------------------------------------------------------
@@ -698,7 +749,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       ],
       particles: [
         { sprite: 'fx.p.smoke', count: 7, life: [700, 1100], box: [8, 4], speed: [30, 80], angle: [-40, 20], gravity: -20, drag: 1.4, scale: [1.2, 2.8], alpha: [0.75, 0], tint: 0xdcd8d2 },
-        { sprite: 'fx.p.dust', rate: 30, life: [400, 700], speed: [10, 40], angle: [-175, -120], spread: 10, scale: [0.8, 1.8], alpha: [0.8, 0], followMove: true, tint: 0xc9bfae },
+        { sprite: 'fx.p.dust', rate: 22, life: [400, 700], speed: [10, 40], angle: [-175, -120], spread: 10, scale: [0.8, 1.8], alpha: [0.8, 0], followMove: true, tint: 0xc9bfae },
         { sprite: 'fx.p.smoke', rate: 10, life: [600, 1000], speed: [10, 30], angle: [-150, -110], spread: 6, gravity: -30, scale: [0.4, 1.1], alpha: [0.55, 0], followMove: true, tint: 0x8e8984 },
         { sprite: 'fx.p.clod', rate: 12, life: [260, 420], speed: [60, 140], angle: [-170, -120], spread: 10, gravity: 800, scale: [0.9, 0.7], alpha: [1, 0.5], spin: [-400, 400], followMove: true },
         { ...dust(8, 1.4), atEnd: true, followMove: true, tint: 0xc9bfae },
@@ -727,9 +778,9 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 700,
       sprites: [scorch(1, 500), bloom(1.8, 240, 0xd8fff0, 0.7), flash(1.1, 0xffffff, 50), ring(2.4, 260, 0x3af0b4, 0.35)],
       particles: [
-        { sprite: 'fx.p.nanite', count: 6, life: [220, 380], speed: [100, 220], angle: [-170, -10], spread: 3, gravity: 200, scale: [1, 0.3], alpha: [1, 0], tint: 0xd8fff0 },
-        { sprite: 'fx.p.spark', count: 4, life: [140, 240], speed: [120, 220], angle: [-160, -20], gravity: 300, scale: [0.9, 0.3], alpha: [1, 0], align: true, tint: 0xfbd6ec },
-        { ...dust(3, 0.7), tint: 0xc9c2d4 },
+        { sprite: 'fx.p.nanite', count: 4, life: [220, 380], speed: [100, 220], angle: [-170, -10], spread: 3, gravity: 200, scale: [1, 0.3], alpha: [1, 0], tint: 0xd8fff0 },
+        { sprite: 'fx.p.spark', count: 3, life: [140, 240], speed: [120, 220], angle: [-160, -20], gravity: 300, scale: [0.9, 0.3], alpha: [1, 0], align: true, tint: 0xfbd6ec },
+        { ...dust(2, 0.8), tint: 0xc9c2d4 },
       ],
     },
     { id: 'fx.point_defense', durationMs: 900, fall: { sprite: 'fx.p.microMissile', count: 1, fromX: -70, fromY: -280, spreadX: 4, fallMs: 110, impact: 'fx.plasma_pop' } },
@@ -839,10 +890,10 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { ...flash(2, 0xe7dcff, 90), keys: [{ t: 0, y: -16, sx: 1, sy: 1, a: 1 }, { t: 1, y: -16, sx: 2.4, sy: 2.4, a: 0 }] },
       ],
       particles: [
-        { sprite: 'fx.p.shard', rate: 36, life: [300, 560], speed: [40, 120], angle: [-170, -100], box: [4, 4], followMove: true, gravity: 300, scale: [1.3, 0.5], alpha: [1, 0], spin: [-500, 500] },
-        { sprite: 'fx.p.xp', rate: 30, life: [300, 500], speed: [10, 40], angle: [-180, 180], box: [6, 4], followMove: true, scale: [1, 0.2], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true },
-        { sprite: 'fx.p.dust', rate: 18, life: [300, 500], speed: [10, 40], angle: [-160, -110], box: [4, 1], followMove: true, scale: [0.5, 1.2], alpha: [0.6, 0], tint: 0xc9c2d4 },
-        { sprite: 'fx.p.shard', count: 10, atEnd: true, followMove: true, life: [400, 700], speed: [80, 180], angle: [-170, -10], gravity: 400, scale: [1.4, 0.6], alpha: [1, 0], spin: [-500, 500] },
+        { sprite: 'fx.p.shard', rate: 22, life: [300, 560], speed: [40, 120], angle: [-170, -100], box: [4, 4], followMove: true, gravity: 300, scale: [1.3, 0.5], alpha: [1, 0], spin: [-500, 500] },
+        { sprite: 'fx.p.xp', rate: 18, life: [300, 500], speed: [10, 40], angle: [-180, 180], box: [6, 4], followMove: true, scale: [1, 0.2], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true },
+        { sprite: 'fx.p.dust', rate: 12, life: [300, 500], speed: [10, 40], angle: [-160, -110], box: [4, 1], followMove: true, scale: [0.5, 1.2], alpha: [0.6, 0], tint: 0xc9c2d4 },
+        { sprite: 'fx.p.shard', count: 7, atEnd: true, followMove: true, life: [400, 700], speed: [80, 180], angle: [-170, -10], gravity: 400, scale: [1.4, 0.6], alpha: [1, 0], spin: [-500, 500] },
       ],
     },
     {

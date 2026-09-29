@@ -775,9 +775,14 @@ export class EventMapper {
     const ms = ev.telegraphMs > 0 ? ev.telegraphMs : this.feel.tuning.telegraphMs;
     const key = [`power.tele.${def.id}`, `power.tele.${def.effect.kind}`].find((k) => this.has(k));
     if (key) {
-      const onTarget = def.effect.kind === 'strike' && ev.targetId >= 0;
+      const e = def.effect;
+      const onTarget = e.kind === 'strike' && ev.targetId >= 0;
       const opts = { side: ev.side, dir: dirOf(ev.side), zone, durationMs: ms };
-      this.rule(key, { at: onTarget ? { k: 'unit', id: ev.targetId, part: 'hit' } : { k: 'world', x, y: 0 }, ...(onTarget ? { follow: true } : {}), opts }, out);
+      // Where the anticipation plays: on a strike's locked unit, at the enemy wall for Suppress, on the
+      // units a buff will reach, else over the zone.
+      const at: Anchor = onTarget ? { k: 'unit', id: ev.targetId, part: 'hit' } : e.kind === 'suppress' ? { k: 'base', side: ev.side === 0 ? 1 : 0, part: 'front' } : { k: 'world', x, y: 0 };
+      const units = e.kind === 'buffAll' ? { side: ev.side, ...(e.maxTargets > 0 ? { maxUnits: e.maxTargets } : {}) } : {};
+      this.rule(key, { at, ...(onTarget ? { follow: true } : {}), opts, ...units }, out);
     }
     if (this.has('power.cue')) this.rule('power.cue', { at: { k: 'base', side: ev.side, part: 'top' }, opts: { side: ev.side } }, out);
   }
