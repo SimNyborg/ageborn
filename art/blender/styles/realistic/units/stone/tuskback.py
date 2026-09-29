@@ -29,12 +29,12 @@ FEET = (100, 9)
 YAW = -12.0
 ANCHORS = {"head": (0, 100), "hitCenter": (0, 42)}
 
-FORE = [(22, 58), (25, 37), (25.5, 16), (26.5, 5.5), (29, 0.9)]
-HIND = [(-27, 56), (-20, 37), (-29.5, 20), (-27.5, 6), (-25, 0.9)]
-Q = Quad(FORE, HIND, (0, 50), 7.5,
-         neck=((28, 58), (38, 55)), head=((38, 55), (58, 34)), tail=((-39, 58), (-44, 51), (-46, 44)),
-         jaw=((44, 42), (56, 34)), prefix="b_")
-TRACKERS = {"tuskTip": ("b_head", (56.0, -5.0, 50.0))}
+FORE = [(24, 58), (26, 35), (27, 15), (28, 5.5), (30.5, 0.9)]
+HIND = [(-28, 54), (-21, 35), (-30.5, 19), (-28.5, 6), (-26, 0.9)]
+Q = Quad(FORE, HIND, (0, 50), 6.5,
+         neck=((30, 58), (40, 54)), head=((40, 54), (66, 30)), tail=((-39, 58), (-44, 51), (-46, 44)),
+         jaw=((48, 40), (62, 32)), prefix="b_")
+TRACKERS = {"tuskTip": ("b_head", (65.3, -6.2, 46.4))}
 EXTRA_BONES = {"pole": ((-8, 0, 68), (-8, 0, 100), "b_body"),
                "flag": ((-8.5, 0, 99), (-24, 0, 95), "pole")}
 
@@ -47,9 +47,9 @@ ATK_T = [0, 170, 340, 548, 570, 750, 840, 1020, 1120]
 
 
 def build():
-    bristle = M.fur("#2e2824", "#1e1a18", name="bristle", bump=1.4)
-    coat = M.fur("#4a3e36", "#352d28", name="boarcoat", bump=0.8)
-    snout = C.mat("snout", "#8a6c62", rough=0.5, noise=0.12, nscale=1.0, bump=0.3)
+    bristle = M.fur("#4a4038", "#2c2622", name="bristle", bump=1.6, noise=0.3, nscale=3.0)
+    coat = M.fur("#5c4f44", "#4a3f36", name="boarcoat", bump=0.9, noise=0.22, nscale=4.0)
+    snout = C.mat("snout", "#7d635a", rough=0.5, noise=0.12, nscale=1.0, bump=0.3)
     ivory = M.ivory()
     hoof = M.hoof()
     stone = M.stone("#8a8074", "#6a6258", name="plate")
@@ -65,42 +65,43 @@ def build():
     rig = C.Rig("boar_rig", bones, yaw_deg=YAW)
     p = Q.p
     body = C.blobs("boar_body", [
-        ((18, 0, 51), (17, 14, 18)),          # shoulders
-        ((14, 0, 64), (14, 11.5, 9)),         # hump
-        ((0, 0, 50), (24, 13.5, 15)),         # barrel
-        ((-24, 0, 50), (14, 12.5, 14)),       # hindquarters
-        ((0, 0, 39), (22, 12, 7)),            # belly
-        ((31, 0, 51), (10, 11, 13)),          # neck
-        ((-21, 0, 38), (9, 12, 9)),           # hams
-        ((22, 0, 36), (7, 12.5, 8)),          # elbows
+        ((18, 0, 52), (16, 12, 17)),          # withers / shoulders
+        ((15, 0, 63), (14, 10, 9)),           # crest
+        ((0, 0, 50), (24, 11.5, 14)),         # barrel
+        ((-24, 0, 49), (12.5, 11, 12.5)),     # rump
+        ((0, 0, 40), (20, 10, 6)),            # belly
+        ((32, 0, 51), (10, 10, 12)),          # neck
+        ((-22, 0, 38), (8, 10, 8)),           # hams
+        ((23, 0, 37), (6, 11, 7)),            # elbows
     ], coat, res=0.9)
-    C.displace(body, 0.9, 0.35)
+    C.displace(body, 0.8, 0.4)
     rig.skin(body, [p + "body", p + "pelvis", p + "neck", p + "foreS_F", p + "foreS_B", p + "hindT_F", p + "hindT_B"],
              soft=4.0, bias={p + "foreS_F": 4.0, p + "foreS_B": 4.0, p + "hindT_F": 4.0, p + "hindT_B": 4.0, p + "neck": 1.5})
-    mane = C.blobs("mane", [((34 - 9 * i, 0, 60 + 2.2 * i - 0.2 * i * i), (5.5, 3.2, 4.2)) for i in range(6)],
-                   bristle, res=0.5)
-    C.displace(mane, 2.2, 1.0)
+    # a bristly crest from the nape down the spine
+    mane = C.blobs("mane", [((40 - 7 * i, 0, 60.5 + 2.4 * i - 0.28 * i * i), (3.2, 2.0, 5.0 - 0.3 * i), (0, 0.5, 0))
+                            for i in range(8)], bristle, res=0.45)
+    C.displace(mane, 2.4, 1.4)
     rig.skin(mane, [p + "neck", p + "body"], soft=4)
     head = C.blobs("boar_head", [
-        ((42, 0, 51), (9.5, 8.6, 9.5)),       # skull / jowls
-        ((48, 0, 44), (7.2, 6.4, 6.4), (0, 0.6, 0)),
-        ((53.5, 0, 39), (5.6, 5.0, 4.8), (0, 0.6, 0)),   # snout
-        ((38, -6.6, 61), (2.4, 1.2, 4.2), (0.3, -0.3, 0)),   # ears
-        ((38, 6.6, 61), (2.4, 1.2, 4.2), (-0.3, -0.3, 0)),
+        ((43, 0, 50), (11, 9, 10.5)),                     # skull / jowls
+        ((52, 0, 42.5), (8.5, 7.0, 7.0), (0, 0.6, 0)),
+        ((60, 0, 36), (6.0, 5.2, 4.8), (0, 0.55, 0)),     # snout
+        ((65, 0, 32.5), (3.4, 4.4, 3.6), (0, 0.5, 0)),
+        ((39, -7.0, 61), (2.6, 1.2, 4.6), (0.3, -0.3, 0)),    # ears
+        ((39, 7.0, 61), (2.6, 1.2, 4.6), (-0.3, -0.3, 0)),
     ], coat, res=0.55)
-    C.displace(head, 0.6, 0.5)
+    C.displace(head, 0.5, 0.6)
     rig.rigid(head, p + "head")
-    rig.rigid(C.cyl("disc", 4.6, 4.4, 1.6, snout, seg=24, loc=(57.0, 0, 35.2), rot=(0, math.radians(128), 0),
+    rig.rigid(C.cyl("disc", 4.4, 4.2, 1.6, snout, seg=24, loc=(67.6, 0, 30.4), rot=(0, math.radians(125), 0),
                     scale=(0.85, 1.0, 1.0)), p + "head")
     for y in (-1.7, 1.7):
-        rig.rigid(C.sphere("nostril", 0.7, M.dark(), loc=(58.2, y, 34.6), scale=(0.6, 1, 1)), p + "head")
+        rig.rigid(C.sphere("nostril", 0.7, M.dark(), loc=(68.7, y, 29.8), scale=(0.6, 1, 1)), p + "head")
     for y in (-5.6, 5.6):
-        rig.rigid(C.sphere("eye", 0.9, eye, loc=(46.4, y, 50.2), scale=(0.6, 0.5, 0.6)), p + "head")
-        s = 1 if y > 0 else -1
-        tusk = C.tube("tusk", [(52.5, y * 0.72, 38.0), (55.8, y * 0.95, 39.6), (57.5, y * 1.08, 44.0), (56.5, y * 1.1, 49.5),
-                               (54.2, y * 1.05, 52.0)], [1.45, 1.3, 1.05, 0.65, 0.12], ivory, seg=10)
+        rig.rigid(C.sphere("eye", 0.9, eye, loc=(50.5, y * 1.1, 48.2), scale=(0.6, 0.5, 0.6)), p + "head")
+        tusk = C.tube("tusk", [(60.5, y * 0.72, 33.4), (64.0, y * 0.95, 35.4), (66.4, y * 1.08, 40.4), (65.3, y * 1.12, 46.4),
+                               (62.4, y * 1.08, 49.4)], [1.6, 1.45, 1.15, 0.7, 0.14], ivory, seg=10)
         rig.rigid(tusk, p + "head")
-    jaw = C.blobs("jaw", [((49, 0, 38.5), (6.6, 5.2, 2.6), (0, 0.5, 0))], coat, res=0.45)
+    jaw = C.blobs("jaw", [((54, 0, 34.5), (8.0, 5.0, 2.6), (0, 0.55, 0))], coat, res=0.45)
     rig.rigid(jaw, p + "jaw")
     tail = C.tube("tail", [(-39, 0, 57), (-43, 0, 52), (-45.5, 0, 46)], [1.1, 0.8, 0.6], coat, seg=8)
     rig.skin(tail, [p + "tail", p + "tail2"], soft=2)
@@ -109,37 +110,37 @@ def build():
     rig.rigid(tuft, p + "tail2")
 
     for sd, y in Q.Y.items():
-        fore = C.blobs("fore_" + sd, [((24.0, y, 30.0), (5.6, 4.6, 9.0)), ((25.2, y, 17.0), (3.8, 3.6, 5.2)),
-                                      ((25.8, y, 8.5), (2.9, 2.8, 4.0))], coat, res=0.5)
+        fore = C.blobs("fore_" + sd, [((25.0, y, 30.0), (5.0, 4.2, 8.5)), ((26.5, y, 17.0), (3.2, 3.0, 5.2)),
+                                      ((27.5, y, 8.5), (2.4, 2.3, 4.0))], coat, res=0.45)
         rig.skin(fore, Q.leg_bones("fore", sd), soft=1.4, bias={p + "foreS_" + sd: 2.5})
-        hind = C.blobs("hind_" + sd, [((-22.0, y, 34.0), (7.0, 5.0, 10.5)), ((-26.5, y, 20.5), (4.2, 3.8, 6.0)),
-                                      ((-27.8, y, 10.0), (3.0, 2.9, 5.0))], coat, res=0.5)
+        hind = C.blobs("hind_" + sd, [((-23.0, y, 34.0), (6.4, 4.6, 10.0)), ((-28.0, y, 20.0), (3.6, 3.2, 6.0)),
+                                      ((-29.0, y, 10.0), (2.5, 2.4, 5.0))], coat, res=0.45)
         rig.skin(hind, Q.leg_bones("hind", sd), soft=1.4, bias={p + "hindT_" + sd: 2.5})
-        for nm, bone, x in (("fh", p + "foreP_" + sd, 28.2), ("hh", p + "hindP_" + sd, -25.0)):
-            h = C.lathe(nm, [(0.0, 0.0), (2.9, 0.0), (2.5, 2.8), (1.9, 3.6), (0.0, 3.6)], hoof, seg=16,
+        for nm, bone, x in (("fh", p + "foreP_" + sd, 30.0), ("hh", p + "hindP_" + sd, -26.0)):
+            h = C.lathe(nm, [(0.0, 0.0), (2.6, 0.0), (2.2, 2.8), (1.7, 3.6), (0.0, 3.6)], hoof, seg=16,
                         loc=(x, y, 0.0), scale=(1.25, 0.95, 1.0))
             rig.rigid(h, bone)
 
     # team war blanket over the back, three lashed stone plates, girth ropes
-    blanket = C.blobs("blanket", [((0, 0, 63.5), (24, 14.8, 4.0)), ((-6, 0, 62), (18, 15, 4)),
-                                  ((0, -13.6, 52), (21, 2.2, 10)), ((0, 13.6, 52), (21, 2.2, 10))], hide, res=0.6)
+    blanket = C.blobs("blanket", [((0, 0, 63.0), (24, 12.6, 4.0)), ((-6, 0, 61.5), (18, 12.8, 4)),
+                                  ((0, -11.8, 52), (21, 2.0, 10)), ((0, 11.8, 52), (21, 2.0, 10))], hide, res=0.6)
     C.displace(blanket, 0.6, 0.7)
     C.team(blanket)
     rig.skin(blanket, [p + "body", p + "pelvis"], soft=6)
     for i, x in enumerate((12, -2, -16)):
-        pl = C.blobs(f"plate{i}", [((x, 0, 68.5 - 0.8 * abs(x) / 8), (6.4, 9.5, 2.2))], stone, res=0.5)
+        pl = C.blobs(f"plate{i}", [((x, 0, 67.8 - 0.8 * abs(x) / 8), (6.4, 8.6, 2.2))], stone, res=0.5)
         C.displace(pl, 1.0, 0.45)
         rig.skin(pl, [p + "body", p + "pelvis"], soft=6)
     for x in (6, -9):
-        g = C.blobs("girth", [((x, 0, 50), (1.1, 15.3, 17.5))], rope, res=0.5)
+        g = C.blobs("girth", [((x, 0, 50), (1.1, 13.2, 16.8))], rope, res=0.5)
         rig.skin(g, [p + "body", p + "pelvis"], soft=6)
 
     # the pennant pole and a team pennant
-    pole = C.tube("pole", [(-8, 0, 66), (-8, 0, 101)], [0.9, 0.8], wood, seg=8)
+    pole = C.tube("pole", [(-8, 0, 66), (-8, 0, 102)], [1.1, 0.9], wood, seg=8)
     rig.rigid(pole, "pole")
-    rig.rigid(C.sphere("finial", 1.4, leather, loc=(-8, 0, 101.8)), "pole")
-    fl = C.tube("pennant", [(-8.6, 0, 97.0), (-14, 0, 96.2), (-19.5, 0, 95.2), (-25, 0, 94.0)],
-                [4.0, 3.4, 2.4, 0.6], flagm, seg=10, flat=0.22)
+    rig.rigid(C.sphere("finial", 1.6, leather, loc=(-8, 0, 102.6)), "pole")
+    fl = C.tube("pennant", [(-8.6, 0, 96.5), (-15, 0, 95.6), (-22, 0, 94.2), (-30, 0, 92.4)],
+                [5.6, 4.8, 3.4, 0.8], flagm, seg=10, flat=0.2)
     C.team(fl)
     rig.rigid(fl, "flag")
     return dict(rig=rig)
@@ -230,18 +231,19 @@ def hit(t):
 
 
 def die(t):
+    """The front legs buckle, the boar pitches onto its chest and sprawls, the pennant snaps back."""
     base = stand()
-    buck = dict(stand(), root=(-2.0, -10.0), pitch=-10, neck=-8, head=-6, jaw=-26, tail=24, roll=-6,
+    buck = dict(stand(), root=(-2.0, -10.0), pitch=-10, neck=-8, head=-6, jaw=-26, tail=24, roll=-4,
                 bones={"pole": 8, "flag": (14, 10)})
     buck.update(_legs(2, 0, zf=10.0, paf=70, pah=20))
-    fall = dict(buck, root=(-4.0, -24.0), pitch=-4, roll=-50, head=-10, bones={"pole": 10, "flag": (20, 10)})
-    limp = {"fore_F": (Q.HOME["fore"] + 10, 16.0, Q.LAST["fore"] + 30, 10), "fore_B": (Q.HOME["fore"] + 6, 19.0, Q.LAST["fore"] + 40, 10),
-            "hind_F": (Q.HOME["hind"] - 8, 16.0, Q.LAST["hind"] - 30, -8), "hind_B": (Q.HOME["hind"] - 4, 19.0, Q.LAST["hind"] - 20, -8)}
-    fall.update(limp)
-    down = dict(fall, root=(-5.0, -35.5), pitch=0, roll=-84, neck=-6, head=-10, jaw=-16, tail=-10,
-                bones={"pole": 16, "flag": (30, 6)})
-    bounce = dict(down, root=(-5.2, -33.8), roll=-80, head=-6)
-    rest = dict(down, root=(-5.4, -35.8), roll=-86, head=-12, jaw=-12, bones={"pole": 18, "flag": (40, 0)})
+    sprawl = {"fore_F": (Q.HOME["fore"] + 16, 3.0, Q.LAST["fore"] - 70, -16), "fore_B": (Q.HOME["fore"] + 11, 3.0, Q.LAST["fore"] - 60, -12),
+              "hind_F": (Q.HOME["hind"] - 18, 3.0, Q.LAST["hind"] + 70, 16), "hind_B": (Q.HOME["hind"] - 13, 3.0, Q.LAST["hind"] + 60, 12)}
+    fall = dict(buck, root=(-4.0, -22.0), pitch=-6, roll=-10, head=-10, bones={"pole": 14, "flag": (24, 10)})
+    fall.update(sprawl)
+    down = dict(fall, root=(-5.0, -33.0), pitch=-3, roll=-16, neck=-12, head=-10, jaw=-16, tail=-10,
+                bones={"pole": 22, "flag": (34, 6)})
+    bounce = dict(down, root=(-5.2, -31.0), roll=-14, head=-6, bones={"pole": 10, "flag": (20, -6)})
+    rest = dict(down, root=(-5.4, -33.4), roll=-17, head=-12, jaw=-12, bones={"pole": 24, "flag": (40, 0)})
     return B.keyed([(0, base), (60, buck), (210, fall), (350, down), (420, bounce), (520, rest), (990, rest)], t)
 
 
@@ -256,7 +258,7 @@ def clips():
         atk.fx[i] = {"s": s, "origin": (30, 0), "spread": 10, "n": 9, "size": 5.0, "seed": 3}
     die_c = G.Clip("die", MO.HEAVY_DIE_MS, sequence=MO.HEAVY_DIE_SEQ, extra={
         "fx": [{"id": "fx.dust_poof", "atMs": 880, "offsetLu": [-4, 10], "scale": 1.2}], "hideUnitAtMs": 990})
-    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-4, 0), spread=48, size=15.0, seed=11)
+    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-4, 0), spread=40, size=11.0, seed=11)
     return [
         G.Clip("idle", IDLE_MS, loop=True),
         G.Clip("walk", WALK_MS, loop=True),

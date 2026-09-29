@@ -27,8 +27,8 @@ KIND = "unit"
 HEIGHT_LU = 196
 PX1 = 1.025
 SCALE1 = 1.25
-CANVAS = (330, 214)
-FEET = (176, 12)
+CANVAS = (356, 214)
+FEET = (182, 12)
 YAW = -12.0
 ANCHORS = {"head": (0, 190), "hitCenter": (0, 90)}
 
@@ -40,7 +40,7 @@ Q = Quad(FORE, HIND, (0, 100), 19.0,
 TRUNK = [(97, 104), (104, 82), (106, 58), (102, 36), (96, 22)]
 RB = B.Biped(H=34.0, bulk=0.95)
 RB.root = "rider"
-SEAT = (8.0, -6.0, 150.0)
+SEAT = (8.0, -6.0, 155.0)
 RB.offset = (SEAT[0], SEAT[1], SEAT[2] - B.PELV * RB.H)
 RK = RB.k
 FIST = (0.35 * RK + RB.offset[0], -RB.sw + RB.offset[1], 31.0 * RK + RB.offset[2])
@@ -79,10 +79,10 @@ def build():
     rig = C.Rig("mammoth_rig", bones, yaw_deg=YAW)
     p = Q.p
     body = C.blobs("m_body", [
-        ((36, 0, 100), (34, 29, 36)),         # shoulders / chest
-        ((30, 0, 130), (26, 22, 14)),         # hump
-        ((0, 0, 100), (50, 30, 31)),          # barrel
-        ((-50, 0, 100), (30, 27, 29)),        # rump
+        ((36, 0, 102), (33, 28, 36)),         # shoulders / chest
+        ((28, 0, 134), (26, 21, 14)),         # hump (the high point of the back)
+        ((-4, 0, 100), (46, 28, 29)),         # barrel, sloping back
+        ((-52, 0, 94), (27, 25, 25)),         # rump (low)
         ((0, 0, 76), (46, 26, 12)),           # belly
         ((60, 0, 112), (18, 21, 24)),         # neck
         ((42, 0, 72), (14, 26, 16)),          # upper forelegs
@@ -93,12 +93,14 @@ def build():
              soft=8.0, bias={p + "foreS_F": 8.0, p + "foreS_B": 8.0, p + "hindT_F": 8.0, p + "hindT_B": 8.0, p + "neck": 3.0})
     # the shaggy fringe hanging from the flanks and belly
     fr = []
-    for i in range(13):
-        x = -68 + 11.5 * i
-        for y in (-27.5, 27.5):
-            fr.append(((x, y, 72 - 4 * (i % 2)), (6.0, 3.2, 15.0)))
-    fringe = C.blobs("fringe", fr, wool_lt, res=1.5)
-    C.displace(fringe, 3.0, 0.3)
+    for i in range(15):
+        x = -70 + 10.5 * i
+        z = 78 + 0.10 * x - 3 * (i % 2)
+        for y in (-25.5, 25.5):
+            fr.append(((x, y, z), (5.2, 3.6, 17.0)))
+        fr.append(((x, 0, z + 2), (5.0, 20.0, 12.0)))
+    fringe = C.blobs("fringe", fr, wool, res=1.5)
+    C.displace(fringe, 2.6, 0.35)
     rig.skin(fringe, [p + "body", p + "pelvis"], soft=10)
     head = C.blobs("m_head", [
         ((79, 0, 140), (15, 14, 15)),          # dome
@@ -162,11 +164,13 @@ def build():
     for z in (148, 159):
         for yy in (-18, 18):
             hw.append(C.tube("rail", [(-31, yy, z), (23, yy, z)], [1.3, 1.3], wood, seg=8))
-    rim = C.box("rim", 56, 38, 3.2, paint, bevel=1.0, loc=(-4, 0, 160))
-    C.team(rim)
-    hw.append(rim)
-    side = C.box("sides", 52, 34, 12, M.rawhide("#8a7458", name="howdahhide"), bevel=1.2, loc=(-4, 0, 152))
-    hw.append(side)
+    for (sx, sy, lx, ly) in ((56, 3.2, -4, -18), (56, 3.2, -4, 18), (3.2, 38, -31, 0), (3.2, 38, 23, 0)):
+        rim = C.box("rim", sx, sy, 3.4, paint, bevel=0.8, loc=(lx, ly, 160))
+        C.team(rim)
+        hw.append(rim)
+    hh = M.rawhide("#8a7458", name="howdahhide")
+    for (sx, sy, lx, ly) in ((52, 1.2, -4, -17.4), (52, 1.2, -4, 17.4), (1.2, 34, -30.4, 0), (1.2, 34, 22.4, 0)):
+        hw.append(C.box("side", sx, sy, 13, hh, bevel=0.4, loc=(lx, ly, 152)))
     for o in hw:
         rig.rigid(o, p + "body")
     for x in (-18, 10):
@@ -194,7 +198,7 @@ def build():
     C.displace(rock, 0.3, 0.8)
     rig.rigid(rock, "hand_F")
     # back rider: a simple seated figure holding the rim
-    b0 = (-18.0, 4.0, 150.0)
+    b0 = (-18.0, 4.0, 153.0)
     bk = [C.blobs("b_torso", [((b0[0], b0[1], b0[2] + 5), (3.8, 5.0, 6.2)), ((b0[0] + 0.5, b0[1], b0[2] + 12.5), (2.2, 2.2, 2.6))],
                   rskin, res=0.25)]
     bt = C.blobs("b_tunic", [((b0[0], b0[1], b0[2] + 5.5), (4.2, 5.4, 6.0))], hide, res=0.25)
@@ -333,7 +337,7 @@ _ATK = _atk_keys()
 def hit(t):
     base = stand()
     k = dict(base, root=(-5.0, -2.0), pitch=3, neck=6, head=8, tail=20)
-    k["bones"] = dict(_trunk(16, 20, 24, 26), pole=6, banner=(10, 8))
+    k["bones"] = dict(_trunk(10, 12, 12, 10), pole=6, banner=(10, 8))
     k2 = dict(k, root=(-4.0, -2.5), neck=0, head=2)
     k2["bones"] = dict(_trunk(4, 6, 8, 10), pole=-3, banner=(-6, -4))
     return B.keyed([(0, base), (55, k), (140, k2), (310, base)], t)

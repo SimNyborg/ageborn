@@ -230,6 +230,6 @@ def clips():
     atk = cl[2]
     # a puff of dust off the drum hide on the strike
     for i, s in ((4, 0.05), (5, 0.35)):
-        atk.fx[i] = {"s": s, "origin": (13, 36), "spread": 5, "n": 7, "size": 3.4, "seed": 9,
+        atk.fx[i] = {"s": s, "origin": (9, 19), "spread": 5, "n": 7, "size": 3.4, "seed": 9,
                      "color": (0.80, 0.76, 0.68)}
     return cl

@@ -381,13 +381,23 @@ describe('Result (rewards staged, each skippable)', () => {
     expect(m.q('[data-testid="result-next"]')).not.toBeNull();
   });
 
-  it('opens the earned capsule, replays, and starts the next battle of the same mode', () => {
+  it('replays and starts the next battle of the same mode', () => {
     m = mount({ routes: route() });
-    m.click('[data-testid="result-open"]');
-    expect(calls('openCapsule')[0]!.args).toEqual(['cap-mid-1']);
+    // A ladder win with a capsule: Open capsule is the primary, Next battle one tap away (4.9).
+    expect(m.q('[data-testid="result-open"]')!.getAttribute('data-primary')).toBe('');
+    expect(m.q('[data-testid="result-next"]')!.getAttribute('data-primary')).toBeNull();
     m.click('[data-testid="result-replay"]');
     expect(calls('watchReplay')[0]!.args).toEqual([0]);
     m.click('[data-testid="result-next"]');
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
+    expect(m.router.stack.value.map((e) => e.route.id)).toEqual(['home', 'vs']);
+  });
+
+  it('opens the earned capsule, and after it the Result continues its path instead of coming back (2.5)', () => {
+    m = mount({ routes: route() });
+    m.click('[data-testid="result-open"]');
+    expect(calls('openCapsule')[0]!.args).toEqual(['cap-mid-1']);
+    // The capsule is opened; the Result goes on to the next battle of the same mode.
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
     expect(m.router.stack.value.map((e) => e.route.id)).toEqual(['home', 'vs']);
   });

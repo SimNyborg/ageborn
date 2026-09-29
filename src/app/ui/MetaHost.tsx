@@ -7,7 +7,7 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
-import { bindHistory } from '@/ui/history';
+import { bindHistory, LEAVE_AGAIN_KEY } from '@/ui/history';
 import { handleBack, ScreenHost, visibleEntries, type ScreenSlots, type UiEnv } from '@/ui/screens';
 import type { MetaUi } from '../metaUi';
 import { BattleScreen } from './BattleScreen';
@@ -52,7 +52,7 @@ export function MetaHost(p: MetaHostProps) {
         }
         return handleBack(env);
       },
-      onLeaveWarning: () => p.meta.toasts.show(ui.t('ui.nav.leaveAgain')),
+      onLeaveWarning: () => p.meta.toasts.show(ui.t(LEAVE_AGAIN_KEY)),
     });
   }, [env]);
   const slots: ScreenSlots = useMemo(

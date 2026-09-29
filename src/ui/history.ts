@@ -57,6 +57,8 @@ export interface HistoryBindingOptions {
 }
 
 const TRAP = { agebornTrap: true };
+/** The toast text key for the first back at the root (2.2). */
+export const LEAVE_AGAIN_KEY = 'ui.nav.leaveAgain';
 export const LEAVE_WINDOW_MS = 2000;
 
 /** Binds the back trap; returns the unbind. */

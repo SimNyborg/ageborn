@@ -21,13 +21,14 @@ def hair(color="#3b312b", name="hair"):
     return C.mat(name, color, rough=0.75, noise=0.25, nscale=1.4, bump=0.9, sheen=0.3)
 
 
-def fur(color="#76624f", dark="#4f4236", name="fur", bump=1.0):
-    return C.mat(name, color, rough=0.95, noise=0.32, nscale=1.1, bump=bump, ramp2=dark, sheen=0.6)
+def fur(color="#76624f", dark="#4f4236", name="fur", bump=1.0, noise=0.32, nscale=1.1):
+    return C.mat(name, color, rough=0.95, noise=noise, nscale=nscale, bump=bump, ramp2=dark, sheen=0.6)
 
 
-def coat(color="#8a6e52", dark="#6a5440", name="coat"):
-    """Short animal coat (cat, boar hide): finer than `fur`."""
-    return C.mat(name, color, rough=0.8, noise=0.18, nscale=0.9, bump=0.45, ramp2=dark, sheen=0.5)
+def coat(color="#8a6e52", dark="#6a5440", name="coat", noise=0.1, nscale=2.2):
+    """Short animal coat (cat, boar hide): fine grain, subtle variation (large animals read
+    blotchy with coarse noise)."""
+    return C.mat(name, color, rough=0.8, noise=noise, nscale=nscale, bump=0.45, ramp2=dark, sheen=0.5)
 
 
 def leather(color="#5a4a3e", name="leather"):

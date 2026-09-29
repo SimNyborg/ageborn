@@ -46,9 +46,9 @@ SMEAR_COLOR = "#cbbca4"
 
 def build():
     s = S_
-    coat = M.coat("#9a7c5c", "#7a6048", name="coat")
-    belly = M.coat("#c4ae90", "#a8937a", name="belly")
-    dark = M.coat("#4c3e32", "#3a3028", name="stripe")
+    coat = M.coat("#9c7e5e", "#8e7254", name="coat")
+    belly = M.coat("#c4ae90", "#b8a286", name="belly")
+    dark = M.coat("#6a5644", "#5e4c3c", name="stripe")
     ivory = M.ivory()
     nose = C.mat("nose", "#2c2522", rough=0.4, noise=0.1, bump=0.1)
     gum = C.mat("gum", "#5a3a36", rough=0.5, noise=0.1, bump=0.1)
@@ -83,8 +83,8 @@ def build():
                                     (S(x, 6.8, 41), A(1.2, 2.6, 5.5), (0, 0.3, 0))], dark, res=0.35)
         rig.skin(st, [p + "body", p + "pelvis"], soft=3 * s)
     head = C.blobs("cat_head", [
-        (S(31.5, 0, 50.5), A(6.2, 5.4, 5.0)),       # cranium
-        (S(29.5, 0, 47), A(5.8, 6.2, 4.8)),         # cheeks / jowls
+        (S(31.5, 0, 50.5), A(6.8, 5.9, 5.5)),       # cranium
+        (S(29.5, 0, 47), A(6.4, 6.8, 5.4)),         # cheeks / jowls
         (S(37.5, 0, 48), A(4.8, 3.9, 3.4)),         # muzzle
         (S(41.3, 0, 48.5), A(1.6, 2.2, 1.6)),       # nose pad
         (S(34.5, 0, 52.2), A(3.5, 3.6, 1.6)),       # brow
@@ -112,17 +112,17 @@ def build():
     for sd, y in Q.Y.items():
         yy = y / s
         fore = C.blobs("fore_" + sd, [
-            (S(17.5, yy, 24.0), A(4.6, 3.9, 7.5)),
-            (S(18.3, yy, 14.0), A(3.3, 3.2, 4.8)),
-            (S(19.2, yy, 6.5), A(2.5, 2.6, 3.0)),
-            (S(21.2, yy, 2.4), A(3.9, 3.2, 2.3)),
+            (S(17.5, yy, 24.0), A(5.4, 4.4, 8.0)),
+            (S(18.3, yy, 14.0), A(4.1, 3.8, 5.4)),
+            (S(19.2, yy, 6.5), A(3.2, 3.2, 3.4)),
+            (S(21.4, yy, 2.5), A(4.3, 3.5, 2.5)),
         ], coat if sd == "F" else coat, res=0.4)
         rig.skin(fore, Q.leg_bones("fore", sd), soft=1.2 * s, bias={p + "foreS_" + sd: 2.0 * s})
         hind = C.blobs("hind_" + sd, [
             (S(-15.5, yy, 30.5), A(5.8, 4.2, 8.5), (0, 0.4, 0)),
-            (S(-18.5, yy, 20.0), A(3.4, 3.0, 5.6), (0, -0.6, 0)),
-            (S(-22.5, yy, 9.5), A(2.1, 2.2, 5.5)),
-            (S(-20.0, yy, 2.2), A(3.7, 3.0, 2.2)),
+            (S(-18.5, yy, 20.0), A(4.0, 3.4, 6.0), (0, -0.6, 0)),
+            (S(-22.5, yy, 9.5), A(2.7, 2.7, 5.6)),
+            (S(-20.0, yy, 2.3), A(4.0, 3.2, 2.4)),
         ], coat, res=0.4)
         rig.skin(hind, Q.leg_bones("hind", sd), soft=1.2 * s, bias={p + "hindT_" + sd: 2.0 * s})
         for i in range(3):
@@ -225,19 +225,17 @@ def hit(t):
 
 
 def die(t):
+    """Legs give way: the cat drops onto its chest, sprawls and the head hits the ground."""
     base = stand()
-    buck = dict(stand(), root=(-3.0, -8.0), pitch=6, neck=10, head=16, jaw=-30, tail=20, roll=-8)
-    buck.update({k: (v[0], v[1], v[2] + 30, 0) for k, v in Q.stand(1.8).items()})
-    fall = dict(buck, root=(-6.0, -20.0), pitch=2, roll=-50, neck=0, head=-4, jaw=-20)
-    down = dict(buck, root=(-7.0, -28.5), pitch=0, roll=-84, neck=-10, head=-14, jaw=-16, tail=-10)
-    limp = {"fore_F": (Q.HOME["fore"] + 8, 12.0, Q.LAST["fore"] + 30, 10),
-            "fore_B": (Q.HOME["fore"] + 4, 15.0, Q.LAST["fore"] + 40, 10),
-            "hind_F": (Q.HOME["hind"] - 6, 12.0, Q.LAST["hind"] - 30, -8),
-            "hind_B": (Q.HOME["hind"] - 2, 15.0, Q.LAST["hind"] - 20, -8)}
-    fall.update(limp)
-    down.update(limp)
-    bounce = dict(down, root=(-7.2, -27.0), roll=-80, head=-8)
-    rest = dict(down, root=(-7.4, -28.8), roll=-86, head=-16, jaw=-12)
+    buck = dict(stand(), root=(-3.0, -9.0), pitch=8, hip=-4, neck=12, head=18, jaw=-30, tail=24, roll=-4)
+    buck.update({k: (v[0], v[1], v[2] + 35, 0) for k, v in Q.stand(1.8).items()})
+    sprawl = {"fore_F": (Q.HOME["fore"] + 16, 3.0, Q.LAST["fore"] - 70, -20), "fore_B": (Q.HOME["fore"] + 11, 3.0, Q.LAST["fore"] - 60, -16),
+              "hind_F": (Q.HOME["hind"] - 18, 3.0, Q.LAST["hind"] + 70, 20), "hind_B": (Q.HOME["hind"] - 13, 3.0, Q.LAST["hind"] + 60, 16)}
+    fall = dict(buck, root=(-5.0, -20.0), pitch=2, roll=-12, neck=0, head=-2, jaw=-24, tail=10)
+    fall.update(sprawl)
+    down = dict(fall, root=(-6.0, -29.0), pitch=-4, roll=-20, neck=-20, head=-12, jaw=-14, tail=-6)
+    bounce = dict(down, root=(-6.0, -27.5), neck=-14, head=-6)
+    rest = dict(down, root=(-6.2, -29.4), neck=-22, head=-14, jaw=-10, tail=-10)
     return B.keyed([(0, base), (50, buck), (140, fall), (238, down), (290, bounce), (360, rest), (695, rest)], t)
 
 
