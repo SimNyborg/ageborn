@@ -82,10 +82,10 @@ describe('the engaged player model (A6.7, A6.9)', () => {
     const rng = seedSfc32('stats');
     const short = syntheticStats(content, 'short', true, rng, null);
     const full = syntheticStats(content, 'full', false, rng, 'bonker');
-    // A17.8: Short War evolves 3 times (Gunpowder at ~2:25), Full War 7 times (Cosmic at ~6:30); A17.2 medians
-    expect(short).toMatchObject({ evolves: 3, reachedFinalAgeAtMs: 145_000, durationMs: 285_000 });
-    expect(full).toMatchObject({ evolves: 7, reachedFinalAgeAtMs: 390_000, durationMs: 510_000, usedLastStand: true, mvpCard: 'bonker' });
-    // A third of the matches skip the Treasury, so "Win without buying Treasury" can be done.
+    // A18.3.4: Short War evolves twice (its third age at ~2:55), Full War 6 times (Future at ~10:49); A18 medians
+    expect(short).toMatchObject({ evolves: 2, reachedFinalAgeAtMs: 175_000, durationMs: 420_000 });
+    expect(full).toMatchObject({ evolves: 6, reachedFinalAgeAtMs: 649_000, durationMs: 900_000, usedLastStand: true, mvpCard: 'bonker' });
+    // A third of the matches skip Economy research, so "Win without Economy research" can be done.
     const skipped = Array.from({ length: 300 }, () => syntheticStats(content, 'full', true, rng, null)).filter((s) => !s.usedTreasury).length;
     expect(skipped).toBeGreaterThan(70);
     expect(skipped).toBeLessThan(130);

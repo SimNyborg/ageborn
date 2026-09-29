@@ -43,7 +43,7 @@ export const quests: QuestTables = {
     // Reach your format's final age before 2:30 (Short), 5:45 (Standard) or 10:00 (Full): about 15% ahead
     // of the A18 pace (Balanced mirror: 2:56 / 6:38 / 11:30)
     quest('fast_final_age', 'fastFinalAge', 1, [amber(150)], {
-      beforeMsByFormat: { short: 150000, standard: 345000, full: 600000 },
+      beforeMsByFormat: { short: 180000, standard: 405000, full: 690000 },
     }),
     quest('turret_kills_20', 'turretKills', 20, [amber(150)]),
     // A18.5.4: a win without any Economy research (the Treasury before)

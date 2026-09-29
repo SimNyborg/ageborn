@@ -271,7 +271,7 @@ describe('Quests and Codex (A6.7)', () => {
     expect(byId.play_3?.skirmishCounts).toBe(true);
     expect(byId.train_30?.skirmishCounts).toBe(true);
     expect(quests.daily.filter((q) => q.skirmishCounts).map((q) => q.id)).toEqual(['play_3', 'train_30']);
-    expect(byId.fast_final_age?.beforeMsByFormat).toEqual({ short: 150000, standard: 345000, full: 600000 });
+    expect(byId.fast_final_age?.beforeMsByFormat).toEqual({ short: 180000, standard: 405000, full: 690000 });
     expect(byId.win_with_legendary).toMatchObject({ requiresLegendary: true, rewards: [{ kind: 'dust', amount: 100 }] });
     expect(byId.win_after_last_stand).toMatchObject({ fromMatch: 5, rewards: [{ kind: 'amber', amount: 200 }] });
     expect(byId.daily_challenge_win?.rewards).toEqual([{ kind: 'ageCapsule' }]);

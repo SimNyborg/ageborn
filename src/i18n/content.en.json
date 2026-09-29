@@ -285,7 +285,7 @@
     "play_3": { "name": "Play {n} battles" },
     "train_30": { "name": "Train {n} units" },
     "evolve_6": { "name": "Evolve {n} times" },
-    "fast_final_age": { "name": "Reach your format's final age before 2:30 (Short), 5:45 (Standard) or 10:00 (Full)" },
+    "fast_final_age": { "name": "Reach your format's final age before 3:00 (Short), 6:45 (Standard) or 11:30 (Full)" },
     "turret_kills_20": { "name": "Kill {n} units with turrets" },
     "win_no_treasury": { "name": "Win without Economy research" },
     "power_hits_5": { "name": "Hit 5+ enemies with one Age Power" },

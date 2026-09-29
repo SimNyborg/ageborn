@@ -241,8 +241,8 @@ export function economyChecks(m: EconomyMeasures): Check[] {
 // ---------------------------------------------------------------------------------------------
 // The player model (drives Meta).
 
-/** A18.3.4 expected evolve times (s): ~1:10, 2:50, 4:35, 6:25, 8:20, 10:20 (by position in the window). */
-const EVOLVE_AT_SEC = [70, 170, 275, 385, 500, 620] as const;
+/** Evolve times by position in the window (s), the A18 Balanced mirror medians: 1:13, 2:55, 4:41, 6:34, 8:47, 10:49. */
+const EVOLVE_AT_SEC = [73, 175, 281, 394, 527, 649] as const;
 /** Typical match length per format (s): the A18.3.4 medians (Short 7:00, Standard 10:30, Full 15:00). */
 const MATCH_SEC: Record<FormatId, number> = { tutorial: 180, short: 420, standard: 630, full: 900 };
 
