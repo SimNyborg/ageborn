@@ -53,7 +53,7 @@ const DMG = v.picklist(['blunt', 'slash', 'pierce', 'bullet', 'laser', 'blast'])
 const SIZE = v.picklist(['small', 'medium', 'large', 'huge']);
 const STATUS = v.picklist(['stun', 'slow', 'mark', 'shield', 'regen', 'damageBuff', 'speedBuff', 'attackSpeedBuff']);
 const PRIORITY = v.picklist(['front', 'armored', 'backline', 'air', 'densest']);
-const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock']);
+const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock', 'warPath']);
 const EMOTE = v.picklist(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']);
 const GENERAL = v.picklist(['grogg', 'pip', 'kettle', 'moss', 'ledger', 'boomsworth', 'twins', 'rook', 'tempest', 'warden', 'echo']);
 const DIFFICULTY = v.picklist(['easy', 'normal', 'hard', 'expert', 'legendary']);
@@ -353,7 +353,7 @@ const CapsulesSchema = v.strictObject({
   supply: v.strictObject({ matchesPerCapsule: pos, allowanceMax: pos }),
   resetHour: v.pipe(int, v.minValue(0), v.maxValue(23)),
   kinds: byKeys(
-    ['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock'],
+    ['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock', 'warPath'],
     v.strictObject({ kind: CAPSULE_KIND, climbFrom: v.nullable(TIER), countsForPity: v.boolean(), nameKey: key }),
   ),
   ageCapsule: v.strictObject({ stacks: pos, copiesTier: TIER, guaranteed: v.array(RARITY) }),
@@ -691,6 +691,49 @@ const BattleSchema = v.strictObject({
   }),
 });
 
+/** The War Path (A18.7, ui-plan 6.4). */
+const WP_DIFFICULTY = v.picklist(['easy', 'normal', 'hard', 'expert', 'legendary']);
+const StarGoalSchema = v.variant('kind', [
+  v.strictObject({ kind: v.literal('baseAbove'), bp }),
+  v.strictObject({ kind: v.literal('winBefore'), ms: pos }),
+  v.strictObject({ kind: v.literal('noLastStand') }),
+  v.strictObject({ kind: v.literal('noEconomy') }),
+  v.strictObject({ kind: v.literal('powerHits'), n: pos }),
+]);
+const WarPathSchema = v.strictObject({
+  regions: v.array(v.strictObject({ age: AGE, baseTier: nonNeg, levels: v.array(v.string()) })),
+  levels: v.record(
+    v.pipe(v.string(), v.regex(/^wp\.[a-z]+\.(l\d\d|s\d)$/)),
+    v.strictObject({
+      id: v.string(),
+      region: AGE,
+      index: pos,
+      role: v.picklist(['intro', 'practice', 'mix', 'feature', 'lieutenant', 'relief', 'ramp', 'puzzle', 'spike', 'boss']),
+      format: FORMAT_KEY,
+      general: id,
+      tierOffset: int,
+      botLevel: pos,
+      modifiers: v.array(id),
+      goal2: StarGoalSchema,
+      teaches: v.nullable(v.string()),
+      reward: v.strictObject({ amber: nonNeg, capsule: v.nullable(TIER), card: v.nullable(id) }),
+      boss: v.nullable(v.strictObject({ baseHpBp: bp, extraTurret: id })),
+      onboarding: v.nullable(v.picklist([1, 2])),
+    }),
+  ),
+  order: v.array(v.string()),
+  difficulty: v.strictObject({
+    order: v.array(WP_DIFFICULTY),
+    tierOffset: v.strictObject({ easy: int, normal: int, hard: int, expert: int, legendary: int }),
+    legendaryTier: nonNeg,
+    default: WP_DIFFICULTY,
+  }),
+  threeStarFrom: WP_DIFFICULTY,
+  tryEasyAfter: pos,
+  unlocks: v.strictObject({ army: pos, capsules: pos, modes: pos, customize: pos, progress: pos, ladder: pos, daily: pos }),
+  goalsFromLevel: pos,
+});
+
 /** The whole compiled bundle. */
 export const ContentSchema = v.strictObject({
   hash: v.pipe(v.string(), v.regex(/^[0-9a-f]{8}$/)),
@@ -712,6 +755,7 @@ export const ContentSchema = v.strictObject({
   dailyModifiers: DailyModifiersSchema,
   cosmetics: CosmeticsSchema,
   feats: FeatsSchema,
+  warPath: WarPathSchema,
   counters: v.record(id, v.record(id, v.pipe(v.number(), v.minValue(0), v.maxValue(1)))),
   ticks: TicksSchema,
   int: IntegerTablesSchema,

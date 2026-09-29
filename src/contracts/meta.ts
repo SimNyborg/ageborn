@@ -7,7 +7,7 @@
 import type { MatchOutcome } from './events';
 import type { CompiledContent } from './content';
 import type { AgeId, CapsuleTier, CardId, FormatId, Result, Side } from './ids';
-import type { CapsuleReveal, PendingCapsule, SaveDoc, WardrobeReveal } from './save';
+import type { CapsuleReveal, PendingCapsule, SaveDoc, WardrobeReveal, WarPathDifficulty } from './save';
 import type { SideConfig } from './sim';
 
 /** Injected wall clock, epoch ms (DESIGN B2, B9). */
@@ -53,14 +53,22 @@ export interface OpponentSpec {
   standardLevels?: boolean;
 }
 
+/** A War Path level being played (DESIGN A18.7, ui-plan 6.4): its id and the chosen difficulty. */
+export interface WarPathMatch {
+  level: string;
+  difficulty: WarPathDifficulty;
+}
+
 export interface MatchResultInput {
-  mode: 'ladder' | 'conquest' | 'skirmish' | 'daily' | 'tutorial';
+  mode: 'ladder' | 'conquest' | 'skirmish' | 'daily' | 'tutorial' | 'warPath';
   outcome: MatchOutcome;
   mySide: Side;
   opponent: OpponentSpec;
   stats: MatchStats;
   /** Hidden feats found in this match by the feat tracker (A15.10). */
   feats?: string[];
+  /** The War Path level of a `warPath` match (A18.7). */
+  warPath?: WarPathMatch;
 }
 
 /** One step of the result screen reward sequence (DESIGN A6.3, A9). */
@@ -75,6 +83,10 @@ export type RewardStep =
   | { kind: 'codex'; points: number; levelUp: boolean }
   | { kind: 'quest'; questId: string; progress: number; done: boolean }
   | { kind: 'star'; generalId: string; star: 1 | 2 | 3 }
+  /** A new War Path star on a level (A18.7.4). */
+  | { kind: 'pathStar'; level: string; star: 1 | 2 | 3 }
+  /** A card granted by a War Path first clear (A18.7.8): a new card, or copies of an owned one. */
+  | { kind: 'card'; card: CardId; copies: number }
   | { kind: 'arena'; arenaIndex: number }
   | { kind: 'title'; title: string }
   | { kind: 'feat'; featId: string };
@@ -135,6 +147,8 @@ export interface Meta {
       skirmish?: SkirmishOptions;
       /** Daily Challenge difficulty (A15.7); default: the one nearest the player's skill tier. */
       daily?: { difficulty: 'recruit' | 'veteran' | 'warlord' };
+      /** The War Path level and difficulty (A18.7). */
+      warPath?: WarPathMatch;
     },
   ): OpponentSpec;
   /** Charges, Supply allowance, quests and the Daily bank at 04:00; never resets the War Chest (A15.5). */

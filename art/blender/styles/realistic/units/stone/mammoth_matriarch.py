@@ -27,7 +27,7 @@ KIND = "unit"
 HEIGHT_LU = 196
 PX1 = 1.025
 SCALE1 = 1.25
-CANVAS = (356, 214)
+CANVAS = (356, 232)
 FEET = (182, 12)
 YAW = -12.0
 ANCHORS = {"head": (0, 190), "hitCenter": (0, 90)}
@@ -92,15 +92,18 @@ def build():
     rig.skin(body, [p + "body", p + "pelvis", p + "neck", p + "foreS_F", p + "foreS_B", p + "hindT_F", p + "hindT_B"],
              soft=8.0, bias={p + "foreS_F": 8.0, p + "foreS_B": 8.0, p + "hindT_F": 8.0, p + "hindT_B": 8.0, p + "neck": 3.0})
     # the shaggy fringe hanging from the flanks and belly
+    import random
+    rnd = random.Random(8)
     fr = []
-    for i in range(15):
-        x = -70 + 10.5 * i
-        z = 78 + 0.10 * x - 3 * (i % 2)
-        for y in (-25.5, 25.5):
-            fr.append(((x, y, z), (5.2, 3.6, 17.0)))
-        fr.append(((x, 0, z + 2), (5.0, 20.0, 12.0)))
-    fringe = C.blobs("fringe", fr, wool, res=1.5)
-    C.displace(fringe, 2.6, 0.35)
+    for i in range(30):
+        x = -72 + 5.2 * i + rnd.uniform(-1.5, 1.5)
+        for y in (-25.0, 25.0):
+            ln = rnd.uniform(11, 20)
+            fr.append(((x, y + rnd.uniform(-1.5, 1.5), 84 + 0.08 * x - ln * 0.55), (rnd.uniform(2.6, 3.8), 3.0, ln)))
+        if i % 2 == 0:
+            fr.append(((x, 0, 80 + 0.08 * x), (5.0, 20.0, 12.0)))
+    fringe = C.blobs("fringe", fr, wool, res=1.3)
+    C.displace(fringe, 1.8, 0.6)
     rig.skin(fringe, [p + "body", p + "pelvis"], soft=10)
     head = C.blobs("m_head", [
         ((79, 0, 140), (15, 14, 15)),          # dome
@@ -114,8 +117,9 @@ def build():
     for y in (-13.0, 13.0):
         rig.rigid(C.sphere("eye", 1.6, eye, loc=(92, y, 121), scale=(0.6, 0.5, 0.6)), p + "head")
         s = 1 if y > 0 else -1
-        tusk = C.tube("tusk", [(95, y * 0.7, 104), (101, y * 0.95, 92), (112, y * 1.15, 83), (125, y * 1.0, 86),
-                               (132, y * 0.65, 98), (131, y * 0.3, 112)], [4.4, 4.2, 3.7, 3.0, 2.2, 0.8], ivory, seg=14)
+        tp, tr = C.smooth_path([(95, y * 0.7, 104), (101, y * 0.95, 92), (112, y * 1.15, 83), (125, y * 1.0, 86),
+                                (132, y * 0.65, 98), (131, y * 0.3, 112)], [4.4, 4.2, 3.7, 3.0, 2.2, 0.8])
+        tusk = C.tube("tusk", tp, tr, ivory, seg=14)
         rig.rigid(tusk, p + "head")
     trunk = C.tube("trunk", [(TRUNK[i][0], 0, TRUNK[i][1]) for i in range(5)] + [(93, 0, 18)],
                    [8.0, 6.4, 5.0, 3.8, 3.0, 2.6], skin, seg=16)
@@ -344,20 +348,21 @@ def hit(t):
 
 
 def die(t):
+    """She sinks onto her knees, then her chest; the head and trunk drop, the banner snaps back."""
     base = stand()
-    kneel = dict(stand(), root=(-2.0, -30.0), pitch=-10, neck=-6, head=-8, tail=16, roll=-4)
-    kneel.update(_legs(6, zf=26.0, paf=90, pah=20))
+    kneel = dict(stand(), root=(-2.0, -26.0), pitch=-10, neck=-6, head=-8, tail=16, roll=-3)
+    kneel.update(_legs(6, zf=22.0, paf=90, pah=20))
     kneel["bones"] = dict(_trunk(20, 20, 24, 30), pole=6, banner=(10, 6))
-    fall = dict(kneel, root=(-6.0, -50.0), pitch=-4, roll=-40, head=-10)
+    sprawl = {"fore_F": (Q.HOME["fore"] + 28, 6.0, Q.LAST["fore"] - 80, -14), "fore_B": (Q.HOME["fore"] + 22, 6.0, Q.LAST["fore"] - 70, -10),
+              "hind_F": (Q.HOME["hind"] - 26, 6.0, Q.LAST["hind"] + 80, 14), "hind_B": (Q.HOME["hind"] - 20, 6.0, Q.LAST["hind"] + 70, 10)}
+    fall = dict(kneel, root=(-4.0, -46.0), pitch=-6, roll=-8, head=-10)
+    fall.update(sprawl)
     fall["bones"] = dict(_trunk(10, 10, 10, 10), pole=12, banner=(20, 4))
-    limp = {"fore_F": (Q.HOME["fore"] + 16, 40.0, Q.LAST["fore"] + 30, 10), "fore_B": (Q.HOME["fore"] + 10, 44.0, Q.LAST["fore"] + 40, 10),
-            "hind_F": (Q.HOME["hind"] - 12, 40.0, Q.LAST["hind"] - 30, -8), "hind_B": (Q.HOME["hind"] - 6, 44.0, Q.LAST["hind"] - 20, -8)}
-    fall.update(limp)
-    down = dict(fall, root=(-8.0, -72.0), pitch=0, roll=-82, neck=-8, head=-10)
-    down["bones"] = dict(_trunk(-10, -20, -30, -30), pole=20, banner=(30, 0))
-    bounce = dict(down, root=(-8.2, -69.0), roll=-78)
-    rest = dict(down, root=(-8.4, -72.5), roll=-84, head=-14)
-    rest["bones"] = dict(_trunk(-14, -26, -34, -30), pole=24, banner=(40, 0))
+    down = dict(fall, root=(-6.0, -62.0), pitch=-3, roll=-12, neck=-10, head=-14)
+    down["bones"] = dict(_trunk(30, 30, 20, 10), pole=18, banner=(30, 0))
+    bounce = dict(down, root=(-6.2, -59.0), roll=-11)
+    rest = dict(down, root=(-6.4, -62.5), roll=-12, head=-16)
+    rest["bones"] = dict(_trunk(34, 34, 24, 12), pole=22, banner=(40, 0))
     return B.keyed([(0, base), (60, kneel), (210, fall), (350, down), (420, bounce), (520, rest), (990, rest)], t)
 
 
@@ -374,7 +379,7 @@ def clips():
         atk.fx[i] = {"s": s, "origin": (52, 0), "spread": 34, "n": 16, "size": 13.0, "seed": 4}
     die_c = G.Clip("die", MO.HEAVY_DIE_MS, sequence=MO.HEAVY_DIE_SEQ, extra={
         "fx": [{"id": "fx.dust_poof", "atMs": 880, "offsetLu": [-8, 20], "scale": 2.0}], "hideUnitAtMs": 990})
-    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-8, 0), spread=90, size=26.0, seed=12)
+    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-8, 0), spread=62, size=18.0, seed=12)
     return [
         G.Clip("idle", MO.HEAVY_IDLE_MS, loop=True),
         G.Clip("walk", [170] * 8, loop=True),

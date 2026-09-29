@@ -423,6 +423,22 @@ def tube(name, pts, radii, material, seg=14, sharp=None, caps=True, flat=1.0):
     return from_bm(name, bm, material, sharp_deg=sharp)
 
 
+def smooth_path(pts, radii, n=4):
+    """Catmull-Rom resample of a polyline (and its radii) with `n` points per segment."""
+    P = [Vector(p) for p in pts]
+    out, rad = [], []
+    for i in range(len(P) - 1):
+        p0, p1, p2, p3 = P[max(i - 1, 0)], P[i], P[i + 1], P[min(i + 2, len(P) - 1)]
+        for k in range(n):
+            t = k / n
+            out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t
+                              + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
+            rad.append(radii[i] + (radii[i + 1] - radii[i]) * t)
+    out.append(P[-1])
+    rad.append(radii[-1])
+    return [tuple(v) for v in out], rad
+
+
 _MB_RES = 0.55
 
 

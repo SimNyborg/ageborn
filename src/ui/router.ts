@@ -18,7 +18,7 @@
  * UI context. Pure apart from its signals, so it is unit-tested in Node.
  */
 import { computed, signal, type ReadonlySignal } from '@preact/signals';
-import type { AgeId, CardId, FormatId, MatchResultInput, OpponentSpec, RewardStep, SkirmishOptions } from '@/contracts';
+import type { AgeId, CardId, FormatId, MatchResultInput, OpponentSpec, RewardStep, SkirmishOptions, WarPathDifficulty } from '@/contracts';
 
 /**
  * How a match is started (A9 Mode select, A9.1 Daily, A6.10 Conquest, A8 onboarding). The onboarding
@@ -29,7 +29,9 @@ export type MatchRequest =
   | { mode: 'conquest'; general: string }
   | { mode: 'skirmish'; options: SkirmishOptions; speed: 1 | 1.5 | 2 }
   | { mode: 'daily'; difficulty?: DailyDifficulty }
-  | { mode: 'tutorial'; match: 1 | 2 };
+  | { mode: 'tutorial'; match: 1 | 2 }
+  /** A War Path level (A18.7) on the chosen difficulty. */
+  | { mode: 'warPath'; level: string; difficulty: WarPathDifficulty };
 
 export type MatchMode = MatchResultInput['mode'];
 

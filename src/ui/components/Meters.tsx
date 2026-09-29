@@ -66,7 +66,8 @@ export function CopiesBar(p: { copies: number; needed: number | null; ready: boo
           <ArrowUpIcon size={14} />
         </span>
       ) : null}
-      <span class="ui-copies__text">{t('ui.card.copiesOf', { n: formatInt(p.copies, locale), need: formatInt(p.needed, locale) })}</span>
+      {/* A full bar never reads over-full ("11/10"): it caps at "10/10", green with the ready arrow (UA-18, ui-plan 4.6). */}
+      <span class="ui-copies__text">{t('ui.card.copiesOf', { n: formatInt(Math.min(p.copies, p.needed), locale), need: formatInt(p.needed, locale) })}</span>
     </div>
   );
 }

@@ -40,7 +40,7 @@ const RARITY = v.picklist(['common', 'rare', 'epic', 'legendary']);
 const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
 const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
-const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock']);
+const CAPSULE_KIND = v.picklist(['win', 'daily', 'road', 'meter', 'age', 'codex', 'conquest', 'ageUnlock', 'warPath']);
 const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon', 'welcome']);
 
 // ---------------------------------------------------------------------------------------------
@@ -227,6 +227,16 @@ export const SaveDocSchema = v.pipe(
     matchesPlayed: count,
     daily: v.object({ dayKey: v.string(), bank: count }),
     conquest: v.object({ stars: v.record(v.string(), flag3), milestonesClaimed: v.array(int) }),
+    // A18.7.10 (save v5)
+    warPath: v.object({
+      path: v.picklist(['normal', 'veteran', 'legend']),
+      stars: v.record(v.string(), v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(3))),
+      crowns: v.record(v.string(), v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(5))),
+      relics: v.array(v.string()),
+      difficulty: v.picklist(['easy', 'normal', 'hard', 'expert', 'legendary']),
+      lossStreak: count,
+      legacy: v.boolean(),
+    }),
     stats: v.object({
       matches: count,
       wins: count,

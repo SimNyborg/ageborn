@@ -12,10 +12,11 @@
  * Use `meta` (bound to the game content) or `createMeta(content)`. The `Meta` contract methods that
  * take no content (`openCapsule`, `openWardrobe`, `tickTimers`) use the bound content.
  */
-import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, PendingCrate, Result, RewardStep, SaveDoc, SideLook, SkinId } from '@/contracts';
+import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, PendingCrate, Result, RewardStep, SaveDoc, SideLook, SkinId, WarPathDifficulty } from '@/contracts';
 import { content as gameContent, type Content, type ModifierId } from '@/content';
 import { grantCapsuleAt, grantCrateAt, openCapsuleWith, openCrate } from './capsules';
 import { conquestBoard, type ConquestEntry } from './conquest';
+import { setWarPathDifficulty, warPathNodes, type WarPathNode } from './warPath';
 import {
   botLook,
   collectionProgress,
@@ -73,6 +74,10 @@ export interface MetaRules extends Meta {
   dailyModifier(c: CompiledContent, clock: Clock): ModifierId;
   /** The Conquest board with stars and open Generals (A6.10). */
   conquestBoard(s: SaveDoc, c: CompiledContent): ConquestEntry[];
+  /** The War Path map: every level with its state, stars and crown (A18.7). */
+  warPathNodes(s: SaveDoc, c: CompiledContent): WarPathNode[];
+  /** Remembers the War Path difficulty (A18.7, default Normal). */
+  setWarPathDifficulty(s: SaveDoc, d: WarPathDifficulty): SaveDoc;
   /** Stores a War Plan preset (0-2). */
   setWarPlan(s: SaveDoc, index: number, plan: WarPlan): Result<SaveDoc>;
   setActivePlan(s: SaveDoc, index: number): Result<SaveDoc>;
@@ -129,6 +134,8 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     grantWardrobe: (s, source, c, clock) => grantCrateAt(s, source, tables(c), clock.now()).save,
     dailyModifier: (c, clock) => dailyModifierAt(tables(c), localNow(clock)),
     conquestBoard: (s, c) => conquestBoard(s, tables(c)),
+    warPathNodes: (s, c) => warPathNodes(s, tables(c)),
+    setWarPathDifficulty: (s, d) => setWarPathDifficulty(s, d),
     setWarPlan: (s, index, plan) => setWarPlan(s, index, plan),
     setActivePlan: (s, index) => setActivePlan(s, index),
     equipSkin: (s, target, skin, c) => equipSkin(s, target, skin, tables(c)),
@@ -152,6 +159,8 @@ export const meta: MetaRules = createMeta();
 export type { LocalClock };
 export type { WarPlan, PlanIssueCode } from './advisor';
 export type { ConquestEntry } from './conquest';
+export type { WarPathNode, WarPathNodeState } from './warPath';
+export { BOSS_DISCLOSURE_KEY } from './matchmaking';
 export type { CosmeticEquip, CosmeticPool, PoolOdds } from './cosmetics';
 export { COSMETIC_COLLECTIONS, cosmeticItem, cosmeticKey, ownsCosmetic } from './cosmetics';
 export type { OpponentOptions } from './matchmaking';

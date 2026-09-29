@@ -28,9 +28,18 @@ export type DenyTarget =
   | 'council'
   | 'flag';
 
+/**
+ * Why a press was denied, as an i18n key and its params (ui-plan 4.7, MR-03, MR-67): the label pops
+ * next to the control ("Need 40 gold", "Army full", "Legendary in field", "Queue full").
+ */
+export interface DenyReason {
+  key: string;
+  params?: Record<string, string | number>;
+}
+
 export type HudIntent =
   | { k: 'command'; cmd: Command; target: DenyTarget }
-  | { k: 'deny'; target: DenyTarget }
+  | { k: 'deny'; target: DenyTarget; reason?: DenyReason }
   | { k: 'pause' }
   | { k: 'speed' }
   /** Opens or closes the War Council sheet (G, the Council button); `line` opens a line's picks. */
@@ -44,8 +53,20 @@ const PPM_FULL = 1_000_000;
 
 /** Pointer travel (CSS px) that turns a press on the power button into a drag (A2.9: tap = auto-aim, drag = place). */
 export const POWER_DRAG_PX = 12;
-/** A press this long on a card cancels its last queued instance (A2.12). */
+/**
+ * A press this long on a tray card opens its tip and never trains (ui-plan 4.7 "train on release",
+ * U10: a long-press never spends). The tip offers "Cancel one" when the card has a queue (A2.12's
+ * cancel keeps its right-click and Backspace).
+ */
 export const LONG_PRESS_MS = 450;
+/** The long-press ring (MR-07) starts this long after the press, so a quick tap never shows it. */
+export const PRESS_RING_DELAY_MS = 150;
+/** A card press that travels further than this (CSS px) is not a tap and never trains (ui-plan 4.7). */
+export const TAP_SLOP_PX = 8;
+/** After your evolve the Evolve button stays dark this long, even with full XP (UA-07, MR-80). */
+export const EVOLVE_REARM_MS = 2000;
+/** How long a deny reason label holds next to its control (MR-03: 220 in, 1.5 s hold, 160 out). */
+export const REASON_MS = 1880;
 /** How long the denied-press feedback shows (red flash; the 2-frame shake runs inside it, A9.2). */
 export const DENY_MS = 280;
 /** Emote bubbles and evolve banners stay this long. */
@@ -64,8 +85,13 @@ function cmd(c: Command, target: DenyTarget): HudIntent {
   return { k: 'command', cmd: c, target };
 }
 
-function deny(target: DenyTarget): HudIntent {
-  return { k: 'deny', target };
+function deny(target: DenyTarget, reason?: DenyReason): HudIntent {
+  return reason ? { k: 'deny', target, reason } : { k: 'deny', target };
+}
+
+/** Items waiting in (or running at the head of) the training queue: the sum of the cards' queues. */
+export function queueLength(m: HudModel): number {
+  return m.me.cards.reduce((n, c) => n + (c.card ? c.queued : 0), 0);
 }
 
 /**
@@ -73,10 +99,16 @@ function deny(target: DenyTarget): HudIntent {
  * room (A2.7); queueing another is still legal, so the command goes to the sim, which rejects it
  * (and the card flashes) only when gold or the queue runs out.
  */
-export function trainIntent(m: HudModel, slot: number, side: Side): HudIntent {
+export function trainIntent(m: HudModel, slot: number, side: Side, queueMax?: number): HudIntent {
   const c = m.me.cards[slot];
   if (!c || c.state === 'empty' || !c.card) return NONE;
-  if (c.state !== 'ready' && c.state !== 'armyFull') return deny(cardTarget(slot));
+  const target = cardTarget(slot);
+  // The sim's order (A2.7): the queue, the Legendary limit, then the gold.
+  if (queueMax !== undefined && queueLength(m) >= queueMax) return deny(target, { key: 'hud.deny.queueFull' });
+  if (c.state === 'legendaryInField') return deny(target, { key: 'hud.deny.legendary' });
+  if (c.state !== 'ready' && c.state !== 'armyFull') {
+    return m.me.gold < c.cost ? deny(target, { key: 'hud.deny.gold', params: { n: c.cost - m.me.gold } }) : deny(target);
+  }
   return cmd({ t: 'train', side, slot: slot as Slot }, cardTarget(slot));
 }
 
@@ -100,14 +132,61 @@ export function goldIntent(m: HudModel): HudIntent {
   return { k: 'council', line: 'economy' };
 }
 
-export function evolveIntent(m: HudModel, side: Side): HudIntent {
-  return m.me.evolveReady ? cmd({ t: 'evolve', side }, 'evolve') : deny('evolve');
+/**
+ * Evolve (A2.4). `config` lets a denied press say how much XP is missing; `rearming` is the 2 s after
+ * your own evolve when the button stays dark (UA-07), so a double tap never evolves twice.
+ */
+export function evolveIntent(m: HudModel, side: Side, config?: Readonly<MatchConfig>, rearming = false): HudIntent {
+  if (m.me.evolveReady && !rearming && !m.me.ascending) return cmd({ t: 'evolve', side }, 'evolve');
+  if (m.me.ascending || rearming) return deny('evolve', { key: 'hud.deny.evolving' });
+  const xp = config ? xpProgress(m, config) : null;
+  if (!xp) return deny('evolve', config ? { key: 'hud.finalAge' } : undefined);
+  return deny('evolve', { key: 'hud.deny.xp', params: { n: Math.max(1, xp.need - xp.xp) } });
 }
 
 /** Tap = auto-aim (no p); a drag passes the placed p (A2.9). */
 export function powerIntent(m: HudModel, side: Side, p?: number): HudIntent {
-  if (m.me.powerPpm < PPM_FULL || m.phase === 'ended') return deny('power');
+  if (m.phase === 'ended') return deny('power');
+  if (m.me.powerPpm < PPM_FULL) return deny('power', { key: 'hud.deny.power', params: { pct: Math.floor(powerFraction(m.me.powerPpm) * 100) } });
   return cmd(p === undefined ? { t: 'power', side } : { t: 'power', side, p }, 'power');
+}
+
+/**
+ * The one attention pulse (U11, ui-plan 4.7): a tutorial target, then Evolve, then the Age Power,
+ * then a new turret mount. The others rest in a steady "ready" glow.
+ */
+export type HudPulse = 'tutorial' | 'evolve' | 'power' | 'mount' | null;
+
+export function hudPulse(s: { tutorial: boolean; evolve: boolean; power: boolean; mount: boolean }): HudPulse {
+  if (s.tutorial) return 'tutorial';
+  if (s.evolve) return 'evolve';
+  if (s.power) return 'power';
+  if (s.mount) return 'mount';
+  return null;
+}
+
+/**
+ * The deny label for a command the sim rejected (the view's `denied` event carries the sim's
+ * reason), or null when the HUD has nothing useful to add to the flash.
+ */
+export function simDenyReason(reason: string, m: HudModel, slot?: number): DenyReason | null {
+  switch (reason) {
+    case 'queueFull':
+      return { key: 'hud.deny.queueFull' };
+    case 'legendaryLimit':
+      return { key: 'hud.deny.legendary' };
+    case 'noGold': {
+      const c = slot === undefined ? undefined : m.me.cards[slot];
+      return c && c.cost > m.me.gold ? { key: 'hud.deny.gold', params: { n: c.cost - m.me.gold } } : { key: 'hud.deny.noGold' };
+    }
+    case 'stanceCooldown':
+    case 'flagCooldown':
+      return { key: 'hud.deny.wait' };
+    case 'ascending':
+      return { key: 'hud.deny.evolving' };
+    default:
+      return null;
+  }
 }
 
 /** The three stances in control order (A18.4.2). */
@@ -120,7 +199,8 @@ export const STANCES: readonly StanceMode[] = ['charge', 'hold', 'fallback'];
 export function stanceSetIntent(m: HudModel, side: Side, mode: StanceMode): HudIntent {
   if (!m.me.stanceVisible || m.phase === 'ended') return NONE;
   if (mode === m.me.stance) return NONE;
-  if ((m.me.stanceWaitMs ?? 0) > 0) return deny('stance');
+  const wait = m.me.stanceWaitMs ?? 0;
+  if (wait > 0) return deny('stance', { key: 'hud.deny.stanceWait', params: { s: Math.max(1, Math.ceil(wait / 1000)) } });
   return cmd({ t: 'stance', side, mode }, 'stance');
 }
 
@@ -288,10 +368,10 @@ export function quickTurretIntent(m: HudModel, config: Readonly<MatchConfig>, si
  * Keyboard controls (A2.12, A18.4.2, A18.5.7). `key` is `KeyboardEvent.key`. P pauses (never Esc);
  * Escape closes the Council; G opens and closes it; S and Shift+S set the stance; T is free.
  */
-export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side, shift = false): HudIntent {
+export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side, shift = false, rearming = false): HudIntent {
   if (m.phase === 'ended') return NONE;
   const k = key.length === 1 ? key.toLowerCase() : key;
-  if (k >= '1' && k <= '6') return trainIntent(m, Number(k) - 1, side);
+  if (k >= '1' && k <= '6') return trainIntent(m, Number(k) - 1, side, config.content.economy.queueMax);
   switch (k) {
     case 'Backspace':
       return cancelIntent(m, side);
@@ -306,7 +386,7 @@ export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig
     case 'Escape':
       return { k: 'close' };
     case 'e':
-      return evolveIntent(m, side);
+      return evolveIntent(m, side, config, rearming);
     case ' ':
       return powerIntent(m, side);
     case 's':

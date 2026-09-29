@@ -1,5 +1,9 @@
 # Pre-rendered 3D sprite pipeline (art spike, v2)
 
+> **Realistic restyle (owner decision A18.9.5):** the shipping look is now the realistic pipeline in
+> [`styles/realistic/`](styles/realistic/README.md) (the Stone Age is restyled there: units, turrets, base
+> and backdrop). It keeps this pipeline's sheet contract exactly; use it for every age you restyle.
+
 This folder is a feasibility spike: it builds Ageborn units as simple 3D models in Blender
 from Python code (no manual modelling, no downloaded assets), renders them with a
 cel-shaded look to 2D sprite sheets, and packs PixiJS spritesheet atlases that the

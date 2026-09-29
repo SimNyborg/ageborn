@@ -198,7 +198,8 @@
     "age": { "name": "Age Capsule" },
     "codex": { "name": "Codex Capsule" },
     "conquest": { "name": "Conquest Capsule" },
-    "ageUnlock": { "name": "Age Unlock Capsule" }
+    "ageUnlock": { "name": "Age Unlock Capsule" },
+    "warPath": { "name": "War Path Capsule" }
   },
   "arena": {
     "tar_pits": { "name": "Tar Pits" },

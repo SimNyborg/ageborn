@@ -141,10 +141,11 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       return;
     }
     const s = controller.save.peek();
-    const setup = matchSetupFor(s, opponent, req.mode, services.content, {
+    const built = matchSetupFor(s, opponent, req.mode, services.content, {
       opponentLabel: displayName(opponent.displayName, services.i18n),
       standardLevels: opponent.standardLevels === true || (req.mode === 'skirmish' && req.options.standardLevels),
     });
+    const setup = req.mode === 'warPath' ? { ...built, warPath: { level: req.level, difficulty: req.difficulty } } : built;
     // The request is known before the route changes, so the route effect already sees the match
     // as one of the meta screens'.
     pending = req;

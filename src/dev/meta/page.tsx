@@ -68,6 +68,10 @@ function stepText(r: RewardStep): string {
       return `title ${r.title}`;
     case 'feat':
       return `feat ${r.featId}`;
+    case 'pathStar':
+      return `War Path star ${r.star} on ${r.level}`;
+    case 'card':
+      return `card ${r.card}${r.copies ? ` +${r.copies}` : ' (new)'}`;
   }
 }
 

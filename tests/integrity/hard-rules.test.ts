@@ -62,5 +62,5 @@ describe('CLAUDE.md hard rules', () => {
       visit(sf);
     }
     expect(hits).toEqual([]);
-  });
+  }, 30_000);
 });

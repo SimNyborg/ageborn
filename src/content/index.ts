@@ -22,6 +22,7 @@ import { rarities } from './rarities';
 import { raw } from './raw';
 import { skinList } from './skins';
 import { trophyRoad } from './trophyRoad';
+import { warPath } from './raw/warPath';
 import type { Content, MetaTables } from './types';
 
 export type * from './types';
@@ -43,6 +44,7 @@ export const metaTables: MetaTables = {
   dailyModifiers,
   cosmetics,
   feats,
+  warPath,
 };
 
 /** The counter-matrix file as loaded (DESIGN B4). */

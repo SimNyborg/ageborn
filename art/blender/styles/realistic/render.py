@@ -11,6 +11,7 @@ Run from the repository root with the bpy venv (Python 3.11, bpy 5.0.1, Cycles C
   $PY $R unit base:stone [--install]                               # a base (bases/<age>.py)
   $PY $R refinish bonker [--install]                               # sheets/GIFs from rendered frames
   $PY $R age stone [--only bonker,base:stone] [--parallel 2] [--install]
+  $PY $R install bonker,turret:rock_tosser                         # copy finished sheets into public/art
   $PY $R contact stone                                             # age contact sheet from the sheets
 
 `age` runs every visual of the age (units/<age>/*.py, turrets/<age>.py, bases/<age>.py) in
@@ -71,8 +72,13 @@ def age_ids(age):
     return ids
 
 
-def post_install(age):
+def post_install(age, out):
+    """Regenerates the unit manifest summary and the card portraits after installing an age."""
     subprocess.run(["node", os.path.join(REPO, "art", "blender", "gen_unit_manifest.mjs")], check=False)
+    slugs = [os.path.basename(p)[:-3] for p in sorted(glob.glob(os.path.join(HERE, "units", age, "*.py")))
+             if not p.endswith("_study.py")]
+    subprocess.run([sys.executable, os.path.join(REPO, "art", "blender", "gen_portraits.py"), out, ",".join(slugs)],
+                   check=False)
 
 
 def main():
@@ -109,6 +115,16 @@ def main():
         G.write_outputs(u, r, a.out, previews=not a.no_previews)
         if a.install:
             G.install(u, a.out)
+    elif a.cmd == "backdrop":
+        import importlib
+        sys.path.insert(0, os.path.join(HERE, "backdrops"))
+        bd = _load(os.path.join(HERE, "backdrops", a.target + ".py"), "backdrop_" + a.target)
+        bd.run(os.path.join(a.out, "backdrop"), samples=max(a.samples, 16), install=a.install, repo=REPO)
+    elif a.cmd == "install":
+        for vid in a.target.split(","):
+            G.install(find(vid), a.out)
+    elif a.cmd == "post":
+        post_install(a.target, a.out)
     elif a.cmd == "refinish":
         u = find(a.target)
         r = G.load_run(u, a.out)
@@ -140,10 +156,10 @@ def main():
             time.sleep(2)
         print(f"age {a.target}: {len(ids)} visuals in {time.time() - t0:.0f}s")
         if a.install:
-            post_install(a.target)
+            post_install(a.target, a.out)
     elif a.cmd == "contact":
-        import present
-        present.age_contact(a.target, a.out)
+        from lib import review
+        review.age_contact(a.target, a.out, REPO)
     else:
         raise SystemExit(f"unknown command {a.cmd}")
 

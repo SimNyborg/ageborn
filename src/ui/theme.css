@@ -986,8 +986,19 @@
   }
 }
 /* MR-05, the one pulse: the glow layer breathes, the face scales 1 <-> 1.03, a sheen sweeps. */
-.ui-btn[data-pulse] {
-  animation: ui-breathe var(--ui-dur-breathe) ease-in-out infinite;
+/* The breathe runs on the face through the `scale` property, so the hit box stays still (taps and
+   tests never chase a moving target) and the press transform still composes on top. */
+.ui-btn[data-pulse] .ui-btn__face {
+  animation: ui-breathe-face var(--ui-dur-breathe) ease-in-out infinite;
+}
+@keyframes ui-breathe-face {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: var(--ui-breathe-scale);
+  }
 }
 .ui-btn[data-pulse]::before {
   content: '';
@@ -1011,7 +1022,7 @@
   animation: ui-shine var(--ui-dur-sheen) var(--ui-ease-standard) infinite;
   pointer-events: none;
 }
-.ui-root[data-reduce-motion='true'] .ui-btn[data-pulse],
+.ui-root[data-reduce-motion='true'] .ui-btn[data-pulse] .ui-btn__face,
 .ui-root[data-reduce-motion='true'] .ui-btn[data-pulse]::before,
 .ui-root[data-reduce-motion='true'] .ui-btn[data-pulse] .ui-btn__face::after {
   animation: none !important;
@@ -2577,13 +2588,16 @@ button.ui-chip {
   top: -10px;
   z-index: 4;
 }
+/* Names wrap between words to two lines and may use 8 px beyond the tile on each side; never an
+   ellipsis and never a break inside a word (UA-24). */
 .ui-card__name {
   display: block;
-  margin-top: 8px;
+  margin: 8px -8px 0;
   font-size: 12px;
   font-weight: 800;
   line-height: 1.15;
-  overflow-wrap: anywhere;
+  letter-spacing: -0.01em;
+  overflow-wrap: normal;
   hyphens: auto;
   display: -webkit-box;
   -webkit-line-clamp: 2;

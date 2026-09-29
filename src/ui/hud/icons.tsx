@@ -55,6 +55,17 @@ export function SpeedIcon(p: P) {
   );
 }
 
+/** Scouted: an eye (what you have seen of their army). */
+export function EyeIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M2 12c2.6-4.4 6-6.6 10-6.6s7.4 2.2 10 6.6c-2.6 4.4-6 6.6-10 6.6S4.6 16.4 2 12z" fill="#f4efe4" stroke={OUT} stroke-width="1.6" stroke-linejoin="round" />
+      <circle cx="12" cy="12" r="4" fill="#46536a" stroke={OUT} stroke-width="1.4" />
+      <circle cx="10.6" cy="10.6" r="1.3" fill="#fff" />
+    </Svg>
+  );
+}
+
 export function RobotIcon(p: P) {
   return (
     <Svg {...p}>

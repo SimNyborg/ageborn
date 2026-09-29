@@ -28,6 +28,7 @@ const MODE_KEYS = {
   conquest: 'ui.vs.mode.conquest',
   skirmish: 'ui.vs.mode.skirmish',
   daily: 'ui.vs.mode.daily',
+  warPath: 'ui.vs.mode.warPath',
 } as const;
 
 export function VsScreen(p: { route: RouteOf<'vs'> }) {

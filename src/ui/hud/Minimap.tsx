@@ -373,7 +373,7 @@ export function Minimap(p: { c: HudCtx }) {
       >
         <HouseIcon size={c.compact ? 18 : 21} />
         {hammer ? (
-          <span class="hud-mm-hammer" data-testid="hud-mm-hammer">
+          <span class={`hud-mm-hammer${c.pulse === 'mount' ? ' is-pulse' : ''}`} data-testid="hud-mm-hammer" {...(c.pulse === 'mount' ? { 'data-pulse': '' } : {})}>
             <HammerIcon size={c.compact ? 11 : 13} />
           </span>
         ) : null}

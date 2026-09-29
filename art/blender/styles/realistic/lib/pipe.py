@@ -48,6 +48,7 @@ def _mode(mode, ctx):
         sc.view_settings.exposure = ctx.get("exposure", 0.15)
         if ground:
             ground.hide_render = False
+            ground.is_holdout = False
     else:
         if "mask_mat" not in ctx:
             ctx["mask_mat"] = C.mask_material()
@@ -60,7 +61,10 @@ def _mode(mode, ctx):
         sc.view_settings.look = "None"
         sc.view_settings.exposure = 0.0
         if ground:
-            ground.hide_render = True
+            # the ground stays as a holdout: parts below it (a snout digging in, a body lying on
+            # the ground) are cut from the silhouette exactly as the shadow catcher cuts the beauty
+            ground.hide_render = False
+            ground.is_holdout = True
 
 
 def _pose_at(unit, ctx, clip, t, blur):

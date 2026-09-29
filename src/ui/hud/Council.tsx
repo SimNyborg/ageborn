@@ -129,9 +129,17 @@ export function CouncilButton(p: { c: HudCtx; v: CouncilView; open: boolean; onT
             <CouncilBadge glyph="anvil" color={{ main: '#6a58a8', dark: '#2e2450' }} size={c.compact ? 30 : 36} class="hud-cbtn-badge" />
           )}
         </span>
-        {cur ? <span class="hud-cbtn-time">{c.t('hud.council.seconds', { s: secondsLeft(cur.leftMs) })}</span> : null}
+        {cur ? (
+          <span class="hud-cbtn-time" data-tag>
+            {c.t('hud.council.seconds', { s: secondsLeft(cur.leftMs) })}
+          </span>
+        ) : null}
         {!cur && v.anyReady ? <i class="hud-cbtn-dot" data-testid="hud-council-dot" /> : null}
-        {v.discount ? <span class="hud-cbtn-sale">{c.t('hud.council.saleShort', { pct: v.discountBp / 100 })}</span> : null}
+        {v.discount ? (
+          <span class="hud-cbtn-sale" data-tag>
+            {c.t('hud.council.saleShort', { pct: v.discountBp / 100 })}
+          </span>
+        ) : null}
         {p.burst > 0 ? (
           <span key={p.burst} class="hud-cbtn-burst" aria-hidden="true">
             {Array.from({ length: 10 }, (_, i) => (
@@ -141,7 +149,9 @@ export function CouncilButton(p: { c: HudCtx; v: CouncilView; open: boolean; onT
         ) : null}
         {c.keys ? <kbd class="hud-key">G</kbd> : null}
       </button>
-      <span class="hud-cbtn-label">{c.t('hud.council.buttonShort')}</span>
+      <span class="hud-cbtn-label" data-tag>
+        {c.t('hud.council.buttonShort')}
+      </span>
     </div>
   );
 }

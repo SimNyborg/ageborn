@@ -137,16 +137,14 @@
 }
 .ui-card__classname {
   display: block;
-  margin-top: 1px;
+  margin: 1px -8px 0;
   color: color-mix(in srgb, var(--cls, #fff) 55%, #fff);
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   line-height: 1.1;
   text-transform: uppercase;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .ui-card--sm .ui-card__classname {
   font-size: 11px;

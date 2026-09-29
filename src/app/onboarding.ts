@@ -33,7 +33,8 @@ export function bootRoute(save: SaveDoc | null): 'tutorial' | 'home' {
  * next (it starts from Home's Battle button).
  */
 export function homeStep(step: OnboardingStep | string): boolean {
-  return step === 'home' || step === 'match2';
+  // ui-plan 2.3, 6.4: the War Path map is Home from the very first launch; its Play starts match 1.
+  return step === 'home' || step === 'match2' || step === 'match1';
 }
 
 /** The save with the onboarding moved past `done` (never backwards). */

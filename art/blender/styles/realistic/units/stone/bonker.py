@@ -248,11 +248,14 @@ def clips():
         "fx": [{"id": "fx.dust_poof", "atMs": 595, "offsetLu": [-22, 8], "scale": 0.7}],
         "hideUnitAtMs": 695})
     die_c.fx = _dust(236, [(i, t) for i, t in enumerate(die_c.times)])
+    atk = G.Clip("attack", [65, 70, 120, 35, 140, 80, 80, 90], impact=4, smear=3,
+                 times=[0, 65, 135, 268, 290, 430, 510, 590], blur={3: 24})
+    for i, s in ((4, 0.04), (5, 0.3), (6, 0.55)):      # the club hits the ground: a puff of dust
+        atk.fx[i] = {"s": s, "origin": (48, 0), "spread": 7, "n": 9, "size": 4.2, "seed": 13}
     return [
         G.Clip("idle", [115] * 8, loop=True),
         G.Clip("walk", [62, 63, 62, 63, 62, 63, 62, 63], loop=True),
-        G.Clip("attack", [65, 70, 120, 35, 140, 80, 80, 90], impact=4, smear=3,
-               times=[0, 65, 135, 268, 290, 430, 510, 590], blur={3: 24}),
+        atk,
         G.Clip("hit", [45, 75, 60, 60, 70], times=[0, 50, 125, 185, 245]),
         die_c,
     ]

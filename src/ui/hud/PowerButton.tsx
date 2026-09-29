@@ -20,7 +20,9 @@
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
+import { haptic as hapticTier } from '../components/haptics';
 import { BoltIcon } from './icons';
+import { ReasonTip } from './Reason';
 import { POWER_DRAG_PX, powerFraction, powerIntent } from './model';
 import { AIM_IDLE, NO_AIM, aimActive, ghostOf, stepPowerAim, type AimTarget, type PowerAimEffect, type PowerAimEvent, type PowerAimState } from './powerAim';
 import { usePortrait } from './usePortrait';
@@ -114,16 +116,6 @@ function rememberHint(): void {
   }
 }
 
-/** A light tap of the phone's motor on a drop (ignored where unsupported). */
-function haptic(ms: number): void {
-  try {
-    const nav = globalThis.navigator as (Navigator & { vibrate?: (p: number) => boolean }) | undefined;
-    nav?.vibrate?.(ms);
-  } catch {
-    // Some browsers throw without a user gesture.
-  }
-}
-
 /** A pointing hand (the hint's drag demo). The fingertip is at (22, 3) of the 48 px box. */
 function Hand() {
   return (
@@ -154,11 +146,13 @@ interface Pos {
   y: number;
 }
 
-export function PowerButton(p: { c: HudCtx }) {
+export function PowerButton(p: { c: HudCtx; pulse?: boolean }) {
   const { c } = p;
   const { m, t } = c;
   const charge = powerFraction(m.me.powerPpm);
   const ready = charge >= 1 && m.phase !== 'ended';
+  // The one attention pulse (U11): the power breathes only when nothing ranks above it.
+  const pulse = ready && p.pulse === true;
   const def = c.config.content.powers[m.me.power];
   const url = usePortrait(c.portrait, m.me.power || null, 'none', 72);
   const btn = useRef<HTMLButtonElement>(null);
@@ -218,7 +212,7 @@ export function PowerButton(p: { c: HudCtx }) {
         setHint(false);
         rememberHint();
         cc.audio?.play('ui_click');
-        haptic(8);
+        hapticTier('tick');
         return;
       case 'aim': {
         setHint(false);
@@ -230,11 +224,13 @@ export function PowerButton(p: { c: HudCtx }) {
       case 'fire': {
         // `p` was resolved at the release point against the current camera, so a drag that edge-scrolled
         // under a still finger lands where the ghost is.
-        cc.act(powerIntent(cc.m, cc.side, e.p));
+        const i = powerIntent(cc.m, cc.side, e.p);
+        cc.act(i);
+        if (i.k === 'deny') hapticTier('deny');
         if (isReady) {
           rememberHint();
           cc.audio?.play('ui_confirm');
-          haptic(18);
+          hapticTier('thump');
         }
         return;
       }
@@ -327,9 +323,10 @@ export function PowerButton(p: { c: HudCtx }) {
     <div class={cls('hud-power-wrap', ready && 'is-ready', dragging && 'is-dragging', aiming && 'is-aiming')}>
       <button
         ref={btn}
-        class={cls('hud-power', ready && 'is-ready', (aiming || dragging) && 'is-aiming', dragging && 'is-lifted', c.denied('power') && 'is-denied')}
+        class={cls('hud-power', ready && 'is-ready', pulse && 'is-pulse', (aiming || dragging) && 'is-aiming', dragging && 'is-lifted', c.denied('power') && 'is-denied')}
         data-testid="hud-power"
         data-ready={ready}
+        {...(pulse ? { 'data-pulse': '' } : {})}
         data-aim={st.s}
         aria-pressed={aiming}
         aria-label={def ? (aiming ? t('hud.powerAim.aimingLabel', { name: t(def.nameKey) }) : t('hud.powerLabel', { name: t(def.nameKey), pct: Math.floor(charge * 100) })) : t('hud.power')}
@@ -363,7 +360,15 @@ export function PowerButton(p: { c: HudCtx }) {
         <i class="hud-power-ring" />
         <span class="hud-power-core">{icon(c.compact ? 30 : 38)}</span>
         {ready ? <i key={readySeq.current.n} class="hud-power-burst" /> : null}
-        {ready && !aiming ? <span class="hud-power-ready">{t('hud.ready')}</span> : null}
+        {ready && !aiming ? (
+          <span key={readySeq.current.n} class="hud-power-ready" data-tag>
+            {t('hud.ready')}
+          </span>
+        ) : !ready && def ? (
+          <span class="hud-power-name" data-tag>
+            {t(def.nameKey)}
+          </span>
+        ) : null}
         {ready && !aiming && !dragging ? (
           <i class="hud-power-grab" data-testid="hud-power-grab">
             <GrabArrow />
@@ -372,7 +377,7 @@ export function PowerButton(p: { c: HudCtx }) {
         {aiming ? <i class="hud-power-x" aria-hidden="true" /> : null}
         {c.keys ? <kbd class="hud-key">{t('hud.key.space')}</kbd> : null}
       </button>
-      {def ? <span class="hud-power-name">{t(def.nameKey)}</span> : null}
+      <ReasonTip c={c} target="power" align="right" />
       {hint && ready && st.s === 'idle' ? (
         <>
           <div class="hud-power-hint" data-testid="hud-power-hint" role="status">

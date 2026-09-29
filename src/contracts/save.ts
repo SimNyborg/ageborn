@@ -98,7 +98,7 @@ export interface CapsuleContents {
 /** An unopened Time Capsule, rolled at grant time (DESIGN A6.4, B8). */
 export interface PendingCapsule {
   id: string;
-  kind: 'win' | 'daily' | 'road' | 'meter' | 'age' | 'codex' | 'conquest' | 'ageUnlock';
+  kind: 'win' | 'daily' | 'road' | 'meter' | 'age' | 'codex' | 'conquest' | 'ageUnlock' | 'warPath';
   tier: CapsuleTier;
   /** The tier shown before the climb animation (DESIGN A10). */
   startTier: CapsuleTier;
@@ -158,6 +158,27 @@ export interface CosmeticLoadout {
   decorations: (CosmeticKey | null)[];
 }
 
+/** A single-player difficulty (A18.6): Easy, Normal, Hard, Expert, Legendary. */
+export type WarPathDifficulty = 'easy' | 'normal' | 'hard' | 'expert' | 'legendary';
+
+/** War Path progress (DESIGN A18.7.10, ui-plan 6.4; save v5). */
+export interface WarPathProgress {
+  /** The path being played; the Veteran and Legend Paths are v1.1 (A18.7.8). */
+  path: 'normal' | 'veteran' | 'legend';
+  /** Best stars per level id (`wp.<age>.l01`), 1-3; a level without an entry is not beaten. */
+  stars: Record<string, number>;
+  /** Highest difficulty beaten per level: 1 Easy ... 5 Legendary (A18.7.4). */
+  crowns: Record<string, number>;
+  /** War Relics (v1.1). */
+  relics: string[];
+  /** The difficulty War Path levels are played on (default Normal, remembered). */
+  difficulty: WarPathDifficulty;
+  /** Losses in a row on War Path levels ("Try Easy" after 3, A18.7.4). */
+  lossStreak: number;
+  /** A save from before the War Path: every Home feature stays open (A15.1, nothing is taken back). */
+  legacy: boolean;
+}
+
 /** The whole persisted profile (DESIGN B8, A6). No real-money fields, ever (CLAUDE.md, A6.2). */
 export interface SaveDoc {
   v: number;
@@ -215,6 +236,8 @@ export interface SaveDoc {
   /** Daily Challenge reward bank (A15.7): +1 at each 04:00, up to 7; a new save starts with 1. */
   daily: { dayKey: string; bank: number };
   conquest: { stars: Record<string, [boolean, boolean, boolean]>; milestonesClaimed: number[] };
+  /** War Path progress (A18.7; save v5). */
+  warPath: WarPathProgress;
   stats: ProfileStats;
   settings: Settings;
   tutorial: { step: number; hintsShown: Record<string, number> };

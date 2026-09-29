@@ -112,6 +112,11 @@ export function createPreviewServices(o: {
         return req.match === 1
           ? fixtureOpponent(content, 'grogg')
           : { ...fixtureOpponent(content, 'general'), generalId: 'pip', tier: 0, level: 1, format: 'short' };
+      if (req.mode === 'warPath') {
+        const l = content.warPath.levels[req.level];
+        const g = l ? content.generals.list[l.general] : undefined;
+        return { ...fixtureOpponent(content, 'general'), generalId: l?.general ?? 'pip', displayName: g?.nameKey ?? 'general.pip.name', format: l?.format ?? 'w1.stone', modifiers: [...(l?.modifiers ?? [])] };
+      }
       return { ...fixtureOpponent(content, o.opponent ?? 'general'), format: req.format };
     },
     beginBattle(req, opponent) {

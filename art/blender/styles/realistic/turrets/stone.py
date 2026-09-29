@@ -7,6 +7,7 @@ on its head. Build: dropped in from above, it lands in a burst of dust and settl
 head tips off backwards, the footing sags, dust.
 """
 import math
+import random
 from types import SimpleNamespace
 
 from lib import biped as B
@@ -60,7 +61,7 @@ def turret(slug, name, height, pivot, bones, build, idle, fire, muzzle, aim=(0, 
                  "head": (pivot, (pivot[0], pivot[1], pivot[2] + 4), "root")}
     all_bones.update(bones)
     clips_ = W.turret_clips(
-        dust_build={i: {"s": s, "origin": (0, 0), "spread": 18, "size": 7.0, "seed": 21} for i, s in ((1, 0.05), (2, 0.35), (3, 0.7))},
+        dust_build={i: {"s": s, "origin": (0, 0), "spread": 18, "size": 7.0, "seed": 21} for i, s in ((1, 0.05), (2, 0.4), (3, 0.92))},
         dust_destroyed={i: {"s": s, "origin": (-6, 0), "spread": 20, "size": 8.0, "seed": 23} for i, s in ((0, 0.05), (1, 0.3), (2, 0.65))},
         fire_fx=fire_fx)
 
@@ -86,7 +87,7 @@ def turret(slug, name, height, pivot, bones, build, idle, fire, muzzle, aim=(0, 
     def _pose(ctx, clip, t):
         rig = ctx["rig"]
         rig.rest()
-        W.turret_visibility(ctx, clip)
+        W.show_groups(ctx, lambda g: True)
         if clip in ("mount", "idle", "build"):
             tab = idle(ctx, t if clip == "idle" else 0.0)
         elif clip == "fire":
@@ -94,16 +95,17 @@ def turret(slug, name, height, pivot, bones, build, idle, fire, muzzle, aim=(0, 
         else:
             tab = idle(ctx, 0.0)
         _set(rig, tab)
+        W.turret_visibility(ctx, clip)
         if clip == "build":
             # dropped in: in the air, lands (dust), rebounds 2 lu, settles
             z = B.keyed([(0, {"z": 26.0, "r": 4.0}), (140, {"z": 0.0, "r": 0.0}), (220, {"z": 2.0, "r": -1.0}),
                          (310, {"z": 0.0, "r": 0.0}), (430, {"z": 0.0, "r": 0.0})], t)
             rig.set("root", r=math.radians(z["r"]), loc=(0, 0, z["z"]))
         elif clip == "destroyed":
-            k = B.keyed([(0, {"hr": 14.0, "hx": -1.0, "hz": 1.0, "rr": 3.0, "rz": -0.5}),
-                         (80, {"hr": 38.0, "hx": -5.0, "hz": -4.0, "rr": 6.0, "rz": -1.5}),
-                         (180, {"hr": 70.0, "hx": -10.0, "hz": -14.0, "rr": 9.0, "rz": -2.5}),
-                         (340, {"hr": 72.0, "hx": -10.5, "hz": -15.0, "rr": 9.0, "rz": -2.6})], t)
+            k = B.keyed([(0, {"hr": 10.0, "hx": -1.0, "hz": 1.0, "rr": 3.0, "rz": -0.5}),
+                         (80, {"hr": 24.0, "hx": -5.0, "hz": 0.0, "rr": 5.0, "rz": -1.5}),
+                         (180, {"hr": 40.0, "hx": -10.0, "hz": -3.0, "rr": 7.0, "rz": -2.0}),
+                         (340, {"hr": 42.0, "hx": -10.5, "hz": -3.5, "rr": 7.0, "rz": -2.1})], t)
             rig.set("root", r=math.radians(k["rr"]), loc=(0, 0, k["rz"]))
             rig.set("head", r=math.radians(k["hr"]), loc=(k["hx"], 0, k["hz"]))
 
@@ -167,7 +169,7 @@ def beehive_build(rig, m, ctx):
     mo = C.blobs("moss", [((4, -6, 14), (5, 2, 4)), ((-5, -5, 28), (3, 2, 4))], m["moss"], res=0.4)
     C.displace(mo, 0.6, 1.0)
     rig.rigid(W.grp(mo, "mount"), "root")
-    pennant(rig, m, -10, 6, 10, h=34)
+    pennant(rig, m, -16, 9, 4, h=40)
     # the skep: coiled straw rings, a team-painted band, an entrance hole; hangs on a cord
     straw = M.straw("#b39a6a", name="skep")
     prof = [(0, 0), (8.5, 0.6), (11.5, 4.0), (12.2, 9.0), (11.2, 14.5), (8.6, 19.0), (4.6, 22.0), (0, 23.0)]
@@ -183,12 +185,12 @@ def beehive_build(rig, m, ctx):
     rig.rigid(W.grp(C.sphere("hole", 2.4, M.dark(), loc=(20, -8.4, 27.5), scale=(0.9, 0.5, 0.7)), "head"), "head")
     rig.rigid(W.grp(C.tube("cord", [(14, 0, 46.5), (14, 0, 55.5)], [0.5, 0.5], m["rope"], seg=6), "head"), "head")
     # bees: small dark-banded bodies with pale wings
-    bee_mat = C.mat("bee", "#6a5530", rough=0.5, noise=0.2, nscale=3, bump=0.2)
+    bee_mat = C.mat("bee", "#3a2e1c", rough=0.4, noise=0.2, nscale=3, bump=0.2)
     wing = C.mat("wing", "#d8d6cc", rough=0.3, noise=0.05, bump=0)
     ctx["bees"] = []
     for i in range(9):
         bn = f"bee{i}"
-        o = C.blobs(bn, [((0, 0, 0), (1.1, 0.8, 0.8))], bee_mat, res=0.2)
+        o = C.blobs(bn, [((0, 0, 0), (1.4, 1.0, 1.0))], bee_mat, res=0.2)
         w = C.blobs(bn + "w", [((0, 0, 0.9), (0.9, 0.3, 0.6))], wing, res=0.15)
         for q in (o, w):
             q["bee"] = i
@@ -274,35 +276,49 @@ def toad_build(rig, m, ctx):
     C.displace(mo, 0.6, 1.0)
     rig.rigid(W.grp(mo, "mount"), "root")
     pennant(rig, m, -13, 6, 13, h=32)
-    skin = C.mat("toadskin", "#6f6a4a", rough=0.55, noise=0.3, nscale=1.6, bump=1.4, ramp2="#57513a", coat=0.3)
+    skin = C.mat("toadskin", "#6f6a4a", rough=0.55, noise=0.22, nscale=1.2, bump=1.6, ramp2="#595236", coat=0.3)
     belly = C.mat("toadbelly", "#b3a888", rough=0.6, noise=0.15, nscale=2.0, bump=0.5)
-    wart = C.mat("wart", "#8a7a52", rough=0.5, noise=0.2, nscale=3, bump=0.6)
-    eyem = C.mat("toadeye", "#a8883a", rough=0.08, noise=0.1, nscale=2, bump=0, coat=1.0)
-    body = C.blobs("toad", [((0, 0, 26), (17, 14, 11)), ((8, 0, 24), (11, 12, 8.5)), ((-8, 0, 25), (10, 13, 9)),
-                            ((9, -9, 18), (4.5, 3.5, 5)), ((9, 9, 18), (4.5, 3.5, 5)),        # front legs
-                            ((-8, -13, 20), (8, 4, 6)), ((-8, 13, 20), (8, 4, 6)),            # folded hind legs
-                            ((12, -8.5, 15.5), (4, 3, 1.4)), ((12, 8.5, 15.5), (4, 3, 1.4))], skin, res=0.6)
-    C.displace(body, 0.8, 0.9)
+    wart = C.mat("wart", "#86754c", rough=0.5, noise=0.2, nscale=3, bump=0.6)
+    eyem = C.mat("toadeye", "#b8902e", rough=0.05, noise=0.1, nscale=2, bump=0, coat=1.0)
+    # a squat toad: broad flat head in front, a raised back, forelegs planted, hind legs folded
+    body = C.blobs("toad", [((-4, 0, 26), (15, 13.5, 10.5)),              # back
+                            ((10, 0, 25), (11, 12.5, 7.5)),               # broad head
+                            ((18, 0, 22.5), (4.5, 9.0, 4.2)),             # snout
+                            ((-9, 0, 32), (7, 8, 4)),                     # hump
+                            ((12, -9.5, 17), (2.8, 2.6, 5.5), (0.2, 0, 0)), ((12, 9.5, 17), (2.8, 2.6, 5.5), (-0.2, 0, 0)),
+                            ((15, -10.5, 14.8), (3.6, 3.0, 1.2)), ((15, 10.5, 14.8), (3.6, 3.0, 1.2)),       # front feet
+                            ((-8, -14, 19), (9, 3.6, 5.5)), ((-8, 14, 19), (9, 3.6, 5.5)),                    # folded thighs
+                            ((0, -14, 15.2), (7, 4, 1.4)), ((0, 14, 15.2), (7, 4, 1.4))], skin, res=0.55)   # hind feet
+    C.displace(body, 0.35, 2.2)
     rig.rigid(W.grp(body, "head"), "head")
-    th = C.blobs("throat", [((11, 0, 19.5), (8, 9, 4.2))], belly, res=0.5)
+    th = C.blobs("throat", [((12, 0, 19.2), (7.5, 9.5, 3.8))], belly, res=0.5)
     rig.rigid(W.grp(th, "head"), "head")
-    for i, (x, y, z) in enumerate([(-6, -12.5, 30), (2, -13, 31), (-12, -10, 26), (6, -12, 26), (-2, -13.5, 24), (-10, -6, 34),
-                                   (0, -8, 35), (8, -9, 31)]):
-        rig.rigid(W.grp(C.sphere(f"wart{i}", 1.2, wart, loc=(x, y, z), scale=(1, 0.6, 0.8)), "head"), "head")
-    for y in (-6.5, 6.5):
-        rig.rigid(W.grp(C.blobs("eyebump", [((10, y, 33.5), (4.2, 3.8, 3.4))], skin, res=0.35), "head"), "head")
-        rig.rigid(W.grp(C.sphere("eye", 2.4, eyem, loc=(12.2, y * 1.12, 34.2), scale=(0.8, 0.7, 0.8)), "head"), "head")
-        rig.rigid(W.grp(C.sphere("pupil", 1.2, M.dark(), loc=(14.0, y * 1.2, 34.3), scale=(0.35, 0.4, 0.25)), "head"), "head")
-        rig.rigid(W.grp(C.blobs("brow", [((11, y * 1.05, 36.6), (3.8, 2.4, 0.9), (0, 0.25, 0))], skin, res=0.3), "head"), "head")
-    band = C.blobs("bandana", [((-5, 0, 30), (9.5, 14.4, 2.4), (0, -0.25, 0))], m["cloth"], res=0.5)
+    rnd = random.Random(3)
+    for i in range(16):
+        a = rnd.uniform(-2.4, 2.4)
+        x = rnd.uniform(-16, 8)
+        rig.rigid(W.grp(C.sphere(f"wart{i}", rnd.uniform(0.9, 1.5), wart, loc=(x, 12.0 * math.sin(a) * 1.05, 26 + 9.5 * math.cos(a) * 0.95),
+                                 scale=(1, 0.8, 0.7)), "head"), "head")
+    for y in (-6.0, 6.0):
+        rig.rigid(W.grp(C.blobs("eyebump", [((13, y, 31.5), (4.4, 3.8, 3.6))], skin, res=0.35), "head"), "head")
+        rig.rigid(W.grp(C.sphere("eye", 2.7, eyem, loc=(14.8, y * 1.1, 33.2), scale=(0.9, 0.8, 0.85)), "head"), "head")
+        rig.rigid(W.grp(C.sphere("pupil", 1.4, M.dark(), loc=(17.0, y * 1.16, 33.4), scale=(0.25, 0.6, 0.3)), "head"), "head")
+        rig.rigid(W.grp(C.blobs("brow", [((13.5, y * 1.05, 35.8), (4.0, 2.4, 0.9), (0, 0.3, 0))], skin, res=0.3), "head"), "head")
+        rig.rigid(W.grp(C.blobs("gland", [((4, y * 1.5, 30), (4.5, 2.2, 1.8))], wart, res=0.3), "head"), "head")
+    mouth = C.tube("mouth", [(6, -11.2, 22.4), (14, -9.8, 21.4), (21.6, -3, 21.0), (22.2, 0, 21.0), (21.6, 3, 21.0),
+                             (14, 9.8, 21.4), (6, 11.2, 22.4)], [0.5] * 7, M.dark("#2a2018", name="lip"), seg=6)
+    rig.rigid(W.grp(mouth, "head"), "head")
+    # a team war blanket strapped on the back
+    band = C.blobs("blanket", [((-6, 0, 34.0), (10.5, 12.0, 3.2), (0, 0.15, 0)), ((-6, -11.5, 28), (9, 2.0, 5)),
+                               ((-6, 11.5, 28), (9, 2.0, 5))], m["cloth"], res=0.5)
+    C.displace(band, 0.4, 1.2)
     C.team(band)
     rig.rigid(W.grp(band, "head"), "head")
-    knot = C.blobs("knot", [((-15, 0, 31), (2.2, 3, 2)), ((-19, 0, 29), (4, 1.2, 1.8), (0, 0.4, 0))], m["cloth"], res=0.3)
-    C.team(knot)
-    rig.rigid(W.grp(knot, "head"), "head")
-    jaw = C.blobs("jaw", [((9, 0, 21.2), (10.5, 12, 2.6))], skin, res=0.5)
+    strap = C.blobs("strap", [((2, 0, 27), (1.2, 13.8, 10.5))], m["leather"], res=0.4)
+    rig.rigid(W.grp(strap, "head"), "head")
+    jaw = C.blobs("jaw", [((12, 0, 20.4), (9.5, 11.0, 2.4))], belly, res=0.5)
     rig.rigid(W.grp(jaw, "head"), "jaw")
-    maw = C.blobs("maw", [((12, 0, 22.8), (7, 9, 1.6))], C.mat("maw", "#5a3a34", rough=0.4, noise=0.1, bump=0.1), res=0.4)
+    maw = C.blobs("maw", [((14, 0, 21.6), (7, 8.5, 1.4))], C.mat("maw", "#6a3a36", rough=0.4, noise=0.1, bump=0.1), res=0.4)
     rig.rigid(W.grp(maw, "head"), "jaw")
 
 
@@ -325,6 +341,6 @@ TURRETS = [
     turret("log_roller", "Log Roller", 72.0, (0, 0, 0), {"log": ((-8, 0, 42), (-8, 0, 46), "head"),
                                                           "lever": ((3, -12, 30), (7, -12, 47), "head")},
            log_roller_build, log_roller_idle, log_roller_fire, ("head", (18, 0, 12)), fire_kind="release", hit_z=24.0),
-    turret("grumpy_toad", "Grumpy Toad", 68.0, (0, 0, 14), {"jaw": ((-4, 0, 21), (12, 0, 21), "head")},
-           toad_build, toad_idle, toad_fire, ("jaw", (16, -2, 22)), aim=(-18, 18), fire_kind="tongue", hit_z=22.0),
+    turret("grumpy_toad", "Grumpy Toad", 68.0, (0, 0, 14), {"jaw": ((2, 0, 21), (20, 0, 21), "head")},
+           toad_build, toad_idle, toad_fire, ("jaw", (21, -2, 21.5)), aim=(-18, 18), fire_kind="tongue", hit_z=22.0),
 ]

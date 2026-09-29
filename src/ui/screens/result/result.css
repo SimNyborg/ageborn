@@ -325,7 +325,11 @@
 
 @container ui-root (max-height: 480px) {
   .result__mvp .ui-card--md {
-    --card-w: 72px;
+    --card-w: 76px;
+  }
+  /* The class badge stays on the card; the class word would push the tile out of a 340 px phone. */
+  .result__mvp .ui-card__classname {
+    display: none;
   }
   .result__recapBody {
     gap: 10px;

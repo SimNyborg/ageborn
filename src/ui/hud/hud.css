@@ -1,45 +1,129 @@
 /*
- * Battle HUD styles (DESIGN A9.2, A11). Chunky cartoon style: dark ink outlines, flat fills, one
- * highlight, team colours from --hud-me / --hud-foe (set per colourblind preset by Hud.tsx).
+ * Battle HUD styles (DESIGN A9.2; docs/ui-plan.md 3, 4.7, 5.5 MR-64 to MR-80). The HUD follows the
+ * same tokens as every screen (`src/ui/theme.css`): neutral slate panels with one top highlight, gold =
+ * go (Evolve, the power, READY), green = spend or progress (research), red = denied only. Team colours
+ * come from --hud-me / --hud-foe (set per colourblind preset by Hud.tsx) and live only on team objects
+ * (HP bars, base medallions, the minimap).
  *
- * The HUD root is a size container over the canvas box: the top bar is 12% of its height, the tray
- * 24%, and nothing persistent sits in the 64% lane band between them. Sizes in the top bar follow the
- * container height (cqh); the tray uses the A9.2 pixel targets (88 px cards, 72 px when narrow).
+ * The HUD root is a size container over the canvas box. Status along the top, actions along the bottom,
+ * nothing persistent over the lane band between them (A9.2). Sizes come from the 4.7 budget:
+ *
+ * | | top band | tray | cards | left cluster | stance | power |
+ * |---|---|---|---|---|---|---|
+ * | desktop (height >= 500) | 56 | 128 | 88 x 116 | 132 | 64 | 112 |
+ * | phone (height < 500) | 44 | 94 | 62 x 84 | 100 | 56 | 88 |
+ * | phone, width >= 900 | 44 | 104 | 72 x 96 | 100 | 56 | 88 |
+ * | phone, width < 820 | 44 | 94 | 56 x 76 | 92 | 56 | 80 |
+ *
+ * Motion uses the tokens (5.2): presses on `pointerdown` (--ui-dur-press, --ui-press-scale), small
+ * things keep their overshoot (--ui-ease-back), and nothing loops except the one attention pulse
+ * (`is-pulse`, --ui-dur-breathe) and world status (the low-HP vignette). Reduce motion swaps movement
+ * for fades (end of file; the token values already become 1 / 0 there).
  */
 
 .hud {
-  --hud-ink: #1b1330;
-  --hud-panel: rgba(28, 21, 50, 0.84);
-  --hud-panel-edge: #4a3c7a;
-  --hud-text: #f6eedb;
-  --hud-dim: #b9aecb;
-  --hud-gold: #ffd447;
-  --hud-gold-deep: #c9901c;
-  --hud-deny: #ff4a4a;
-  --hud-xp: #9be7ff;
+  --hud-ink: #0b0e14;
+  --hud-panel: rgba(20, 25, 34, 0.88);
+  --hud-panel-hi: rgba(37, 44, 57, 0.94);
+  --hud-edge: rgba(255, 255, 255, 0.1);
+  --hud-text: var(--ui-text, #f4efe4);
+  --hud-dim: var(--ui-text-2, #c3bcae);
+  --hud-gold: #ffd466;
+  --hud-gold-face: var(--ui-primary, #f2b52c);
+  --hud-gold-deep: var(--ui-primary-lip, #b7801a);
+  --hud-green: var(--ui-progress, #3cc46b);
+  --hud-deny: var(--ui-destructive, #c9392f);
+  --hud-bad: var(--ui-bad, #ff7a6b);
+  --hud-xp: #8fd8ff;
   --hud-ghost: #fff1cf;
-  --hud-card: 88px;
-  --hud-power: 88px;
+  --hud-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.25);
+  --hud-face: linear-gradient(180deg, var(--ui-surface-3, #313a4b), var(--ui-surface-2, #252c39));
+
+  /* The 4.7 budget, desktop first. */
+  --hud-top-h: 56px;
+  --hud-tray-h: 128px;
+  --hud-card-w: 88px;
+  --hud-card-h: 116px;
+  --hud-card-gap: 8px;
+  --hud-cluster-w: 132px;
+  --hud-cluster-gap: 8px;
+  --hud-gold-h: 56px;
+  --hud-round: 60px;
+  --hud-stance: 64px;
+  --hud-power: 112px;
+  --hud-btn: 40px;
+  --hud-btn-hit: 48px;
+  --hud-me-w: 300px;
+  --hud-foe-w: 300px;
+  --hud-hp-h: 18px;
+  --hud-xp-h: 12px;
+  --hud-medal: 44px;
+  --hud-gap: 10px;
+  --hud-edge-pad: 12px;
+
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
   container-type: size;
   container-name: hud;
-  font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
-  font-size: clamp(10px, 1.9cqh, 15px);
+  font-family: var(--ui-font-text, system-ui, sans-serif);
+  font-size: 13px;
   font-weight: 700;
   color: var(--hud-text);
-  line-height: 1.15;
+  line-height: 1.2;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 
-.hud.is-compact {
-  --hud-card: 72px;
-  --hud-power: 70px;
+/* Phones (height < 500, A17.7 and ui-plan 4.7). */
+@container hud (max-height: 499px) {
+  .hud > * {
+    --hud-top-h: 44px;
+    --hud-tray-h: 94px;
+    --hud-card-w: 62px;
+    --hud-card-h: 84px;
+    --hud-card-gap: 6px;
+    --hud-cluster-w: 100px;
+    --hud-cluster-gap: 2px;
+    --hud-gold-h: 44px;
+    --hud-round: 48px;
+    --hud-stance: 56px;
+    --hud-power: 88px;
+    --hud-btn: 36px;
+    --hud-btn-hit: 44px;
+    --hud-me-w: 190px;
+    --hud-foe-w: 200px;
+    --hud-hp-h: 14px;
+    --hud-xp-h: 10px;
+    --hud-medal: 32px;
+    --hud-gap: 8px;
+    --hud-edge-pad: 8px;
+  }
+}
+
+@container hud (max-height: 499px) and (min-width: 900px) {
+  .hud > * {
+    --hud-tray-h: 104px;
+    --hud-card-w: 72px;
+    --hud-card-h: 96px;
+  }
+}
+
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud > * {
+    --hud-card-w: 56px;
+    --hud-card-h: 76px;
+    --hud-card-gap: 5px;
+    --hud-cluster-w: 92px;
+    --hud-round: 44px;
+    --hud-power: 80px;
+    --hud-me-w: 176px;
+    --hud-foe-w: 184px;
+    --hud-gap: 6px;
+  }
 }
 
 .hud button {
@@ -73,53 +157,117 @@
   left: 4px;
   min-width: 17px;
   padding: 0 4px;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 5px;
-  background: rgba(20, 14, 36, 0.82);
-  color: #efe8ff;
+  background: rgba(8, 10, 14, 0.85);
+  color: var(--hud-text);
   font: 800 11px/15px ui-monospace, Menlo, Consolas, monospace;
-  animation: hud-pop 200ms ease-out;
   text-align: center;
   pointer-events: none;
+  animation: hud-pop var(--ui-dur-micro) var(--ui-ease-back);
 }
 
-/* ---------------------------------------------------------------- denied press (A9.2) */
+/* ---------------------------------------------------------------- denied press (MR-03) */
 
+/* A red flash on the face (120 ms) and a ±4 px shake (the shake runs from the components). */
 .hud .is-denied {
-  animation:
-    hud-deny-flash 280ms ease-out,
-    hud-deny-shake 66ms steps(2, jump-none) 1;
+  animation: hud-deny-flash 280ms var(--ui-ease-out);
 }
 
 @keyframes hud-deny-flash {
   0%,
-  35% {
+  43% {
     box-shadow:
       0 0 0 3px var(--hud-deny),
-      0 0 18px 4px rgba(255, 60, 60, 0.75);
-    background-color: rgba(190, 30, 40, 0.9);
+      0 0 16px 3px rgba(229, 103, 92, 0.7);
   }
 }
 
-@keyframes hud-deny-shake {
+/* The reason label next to a denied control: 220 in, a 1.5 s hold, 160 out (MR-03, MR-67). */
+.hud-reason {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 7;
+  padding: 3px 9px;
+  border-radius: var(--ui-r-pill, 999px);
+  background: var(--hud-deny);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 16px;
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1.5px rgba(8, 10, 14, 0.9),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+  translate: -50% 0;
+  pointer-events: none;
+  animation: hud-reason 1880ms linear forwards;
+}
+
+.hud-reason.is-left {
+  left: 0;
+  translate: 0 0;
+}
+
+.hud-reason.is-right {
+  left: auto;
+  right: 0;
+  translate: 0 0;
+}
+
+.hud-reason::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  border: 5px solid transparent;
+  border-top-color: var(--hud-deny);
+  translate: -50% 0;
+}
+
+.hud-reason.is-left::after {
+  left: 22px;
+}
+
+.hud-reason.is-right::after {
+  left: auto;
+  right: 22px;
+  translate: 50% 0;
+}
+
+@keyframes hud-reason {
   0% {
-    translate: -3px 0;
+    opacity: 0;
+    transform: translateY(6px) scale(0.7);
+    animation-timing-function: var(--ui-ease-back);
+  }
+  11.7% {
+    opacity: 1;
+    transform: none;
+  }
+  91.5% {
+    opacity: 1;
+    transform: none;
+    animation-timing-function: var(--ui-ease-exit);
   }
   100% {
-    translate: 3px 0;
+    opacity: 0;
+    transform: translateY(-4px);
   }
 }
 
-/* ---------------------------------------------------------------- low HP vignette */
+/* ---------------------------------------------------------------- low HP vignette (world status) */
 
 .hud-vignette {
   position: absolute;
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(214, 24, 34, 0.26) 74%, rgba(190, 10, 22, 0.62) 100%);
+  background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(214, 24, 34, 0.22) 74%, rgba(190, 10, 22, 0.5) 100%);
 }
 
+/* A soft pulse every 1.2 s: world status, not an attention pulse (U11), under 3 flashes per second. */
 .hud-vignette.is-on {
   animation: hud-vignette 1.2s ease-in-out infinite;
 }
@@ -127,27 +275,27 @@
 @keyframes hud-vignette {
   0%,
   100% {
-    opacity: 0.15;
+    opacity: 0.2;
   }
   45% {
-    opacity: 0.95;
+    opacity: 0.85;
   }
 }
 
-/* ---------------------------------------------------------------- top bar (12%) */
+/* ---------------------------------------------------------------- top band */
 
 .hud-top {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 12%;
+  height: var(--hud-top-h);
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.2cqw;
-  padding: 0.9cqh max(1cqw, env(safe-area-inset-right)) 0 max(1cqw, env(safe-area-inset-left));
+  align-items: center;
+  gap: var(--hud-gap);
+  padding: 0 max(var(--hud-edge-pad), env(safe-area-inset-right)) 0 max(var(--hud-edge-pad), env(safe-area-inset-left));
   box-sizing: border-box;
+  background: linear-gradient(180deg, rgba(8, 10, 14, 0.55), rgba(8, 10, 14, 0));
   z-index: 2;
 }
 
@@ -155,26 +303,28 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.8cqh;
-  height: 10.2cqh;
-  padding: 0 1.2cqh;
+  gap: 6px;
+  height: calc(var(--hud-top-h) - 4px);
+  padding: 0 8px 0 4px;
   box-sizing: border-box;
-  border: 2px solid var(--hud-ink);
-  border-radius: 1.6cqh;
-  background: linear-gradient(180deg, rgba(58, 45, 98, 0.9), var(--hud-panel));
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.12),
-    0 3px 0 rgba(0, 0, 0, 0.35);
+    var(--ui-highlight),
+    var(--hud-shadow);
   pointer-events: auto;
 }
 
-.hud-side {
-  width: min(31cqw, 360px);
+.hud-me {
+  flex: none;
+  width: var(--hud-me-w);
 }
 
-.hud-me {
-  width: min(34cqw, 400px);
-  padding-right: 0.6cqh;
+.hud-foe {
+  flex: none;
+  width: var(--hud-foe-w);
+  padding: 0 4px 0 8px;
 }
 
 .hud-bars {
@@ -183,51 +333,59 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.55cqh;
+  justify-content: center;
+  gap: 3px;
+}
+
+.hud-foe .hud-bars {
+  gap: 2px;
 }
 
 .hud-name {
   display: flex;
   align-items: center;
-  gap: 0.6em;
+  gap: 5px;
   min-width: 0;
-  font-size: 0.92em;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 0 var(--hud-ink);
+  height: 14px;
+  font-size: 12px;
+  line-height: 14px;
 }
 
 .hud-name-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--hud-dim);
 }
 
 .hud-name-foe {
   justify-content: flex-end;
 }
 
+/* The AI label (A7.1): a light chip with the robot, never hidden. */
 .hud-ai-chip {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 3px;
-  padding: 0 6px 0 3px;
-  border: 1.5px solid var(--hud-ink);
-  border-radius: 999px;
+  gap: 2px;
+  height: 14px;
+  padding: 0 5px 0 3px;
+  border-radius: var(--ui-r-pill, 999px);
   background: #dfe6f5;
   color: var(--hud-ink);
-  font-size: 0.9em;
+  font-size: 11px;
   font-weight: 900;
-  text-shadow: none;
+  line-height: 14px;
+  letter-spacing: 0.02em;
 }
 
 /* Base HP: fill over a ghost that drains 300 ms after the fill (A11 ghost segment). */
 .hud-hp {
   position: relative;
-  height: max(9px, 2.5cqh);
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #2a2140;
+  height: var(--hud-hp-h);
+  border-radius: 5px;
+  background: rgba(8, 10, 14, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
@@ -244,8 +402,8 @@
 }
 
 .hud-hp-fill {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--team) 62%, #fff) 0 32%, var(--team) 32% 78%, color-mix(in srgb, var(--team) 72%, #000) 78%);
-  transition: width 120ms ease-out;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--team) 58%, #fff) 0 30%, var(--team) 30% 76%, color-mix(in srgb, var(--team) 70%, #000) 76%);
+  transition: width var(--ui-dur-micro) var(--ui-ease-out);
 }
 
 .hud-hp-foe > i {
@@ -257,18 +415,12 @@
   --team: var(--hud-me);
 }
 
-.hud-hp.is-low .hud-hp-fill {
-  animation: hud-hp-low 1.2s ease-in-out infinite;
-}
-
-@keyframes hud-hp-low {
-  50% {
-    filter: brightness(1.5) saturate(1.3);
-  }
-}
-
 .hud-hp-foe {
   --team: var(--hud-foe);
+}
+
+.hud-hp.is-low .hud-hp-fill {
+  background: linear-gradient(180deg, #ff9d8f 0 30%, #e0402f 30% 76%, #9e2419 76%);
 }
 
 .hud-hp-text {
@@ -277,9 +429,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: max(9px, 1.75cqh);
+  font-size: 12px;
   font-weight: 900;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
   text-shadow:
     0 1px 0 var(--hud-ink),
     0 -1px 0 var(--hud-ink),
@@ -290,44 +443,36 @@
 .hud-xp-row {
   display: flex;
   align-items: center;
-  gap: 0.6cqh;
+  gap: 5px;
 }
 
 .hud-xp {
   position: relative;
   flex: 1;
-  height: max(6px, 1.5cqh);
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #221a36;
+  height: var(--hud-xp-h);
+  border-radius: 4px;
+  background: rgba(8, 10, 14, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
-/* The opponent's XP bar sits directly in the bars column. */
-.hud-bars > .hud-xp {
+.hud-foe .hud-xp {
   flex: none;
+  height: 5px;
 }
 
-.hud-xp.has-text {
-  height: max(13px, 2.7cqh);
-}
-
-.hud-xp-text {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: max(9px, 1.55cqh);
-  font-weight: 900;
-  letter-spacing: 0.03em;
+.hud-xp-label {
+  flex: none;
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  text-shadow:
-    0 1px 0 var(--hud-ink),
-    0 -1px 0 var(--hud-ink),
-    1px 0 0 var(--hud-ink),
-    -1px 0 0 var(--hud-ink);
+}
+
+.hud-xp-label.is-ready {
+  color: var(--hud-gold);
 }
 
 .hud-xp-fill {
@@ -336,171 +481,38 @@
   bottom: 0;
   left: 0;
   max-width: 100%;
-  background: linear-gradient(90deg, #6ec9ff, var(--hud-xp));
+  background: linear-gradient(90deg, #5bb8ef, var(--hud-xp));
   transition: width 200ms linear;
 }
 
 .hud-xp-foe .hud-xp-fill {
   left: auto;
   right: 0;
-  background: linear-gradient(270deg, #6ec9ff, var(--hud-xp));
+  background: linear-gradient(270deg, #5bb8ef, var(--hud-xp));
 }
 
 .hud-xp.is-ready .hud-xp-fill {
   background: linear-gradient(90deg, #ffe27a, var(--hud-gold));
 }
 
-/* The round Evolve button at the end of your XP bar (audit #4): 56 px, 48 px on phones. It glows
-   steadily when ready and never flashes (A2.4); a slow bob and the gold fill make it the obvious
-   thing to press. Before that its ring fills with your XP. */
-.hud-evolve {
-  --evo: 56px;
-  position: relative;
-  flex: none;
-  align-self: center;
-  width: var(--evo);
-  height: var(--evo);
-  margin-top: 1.6cqh;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: none;
-  color: #cbc2dd;
-}
-
-.hud.is-compact .hud-evolve {
-  --evo: 48px;
-}
-
-.hud-evolve-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(#8fd8ff calc(var(--xp, 0) * 1turn), rgba(20, 14, 36, 0.9) 0);
-  box-shadow: 0 0 0 2.5px var(--hud-ink), 0 3px 0 2px rgba(0, 0, 0, 0.35);
-}
-
-.hud-evolve-disc {
-  position: absolute;
-  inset: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2.5px solid var(--hud-ink);
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 30%, #7a6ca6, #3d3163 70%);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18);
-  transition: background 200ms ease-out;
-}
-
-.hud-evolve-disc svg {
-  filter: grayscale(0.85) brightness(0.8);
-  opacity: 0.8;
-  transition: filter 200ms ease-out, opacity 200ms ease-out;
-}
-
-.hud-evolve-label {
-  position: absolute;
-  left: 50%;
-  top: calc(100% - 7px);
-  translate: -50% 0;
-  padding: 1px 7px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #4b416a;
-  color: #e4dcf5;
-  font-size: max(10px, 1.6cqh);
-  font-weight: 900;
-  line-height: 1.2;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-}
-
-.hud-evolve .hud-key {
-  top: -4px;
-  left: auto;
-  right: -8px;
-}
-
-/* The bob moves the button's parts, not its box, so the hit area stays put. */
-.hud-evolve.is-ready > .hud-evolve-ring,
-.hud-evolve.is-ready > .hud-evolve-disc,
-.hud-evolve.is-ready > .hud-evolve-label {
-  animation: hud-evolve-bob 1.8s ease-in-out infinite;
-}
-
-.hud-evolve.is-ready .hud-evolve-ring {
-  background: conic-gradient(#fff1a8, var(--hud-gold), #fff1a8, var(--hud-gold-deep), #fff1a8);
-  box-shadow:
-    0 0 0 2.5px var(--hud-ink),
-    0 0 0 5px rgba(255, 230, 140, 0.55),
-    0 0 22px 6px rgba(255, 212, 71, 0.8),
-    0 3px 0 2px rgba(0, 0, 0, 0.35);
-}
-
-.hud-evolve.is-ready .hud-evolve-disc {
-  background: radial-gradient(circle at 38% 30%, #fffbe0, #ffe27a 45%, #e6a91f 100%);
-}
-
-.hud-evolve.is-ready .hud-evolve-disc svg {
-  filter: none;
-  opacity: 1;
-}
-
-.hud-evolve.is-ready .hud-evolve-label {
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
-  color: var(--hud-ink);
-  font-size: max(11px, 1.9cqh);
-}
-
-.hud-evolve.is-ready:active {
-  scale: 0.92;
-}
-
-.hud-evolve.is-ascending .hud-evolve-ring {
-  background: conic-gradient(#fffbe8, #ffe9a0, #fffbe8);
-  animation: hud-spin 1.2s linear infinite;
-}
-
-@keyframes hud-evolve-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
-@keyframes hud-spin {
-  to {
-    rotate: 1turn;
-  }
-}
-
-
-/* Age medallion; the opponent's carries its power charge ring (A9.2). */
+/* Age medallion; the opponent's sits inside its power charge ring (A9.2). */
 .hud-medal {
   position: relative;
   flex: none;
-  width: 7.6cqh;
-  height: 7.6cqh;
-  min-width: 30px;
-  min-height: 30px;
+  width: var(--hud-medal);
+  height: var(--hud-medal);
   border-radius: 50%;
 }
 
 .hud-medal-core {
   position: absolute;
-  inset: 12%;
+  inset: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff8e6, #d9cdb2 60%, #a8977a);
+  background: radial-gradient(circle at 35% 30%, #fbf6ea, #d8ccb4 60%, #a8977a);
+  box-shadow: 0 0 0 2px var(--hud-ink);
 }
 
 .hud-medal-core svg {
@@ -508,72 +520,126 @@
   height: 72%;
 }
 
-.hud-medal-tag {
-  position: absolute;
-  left: 50%;
-  bottom: -5px;
-  translate: -50% 0;
-  padding: 0 6px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: var(--hud-me);
-  color: #fff;
-  font-size: max(9px, 1.45cqh);
-  font-weight: 900;
-  line-height: 1.25;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-  text-shadow: 0 1px 0 var(--hud-ink);
-}
-
 .hud-medal-me .hud-medal-core {
-  box-shadow: 0 0 0 3px var(--hud-me);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 0 0 4px var(--hud-me);
+  inset: 4px;
 }
 
 .hud-medal-foe .hud-medal-core {
-  box-shadow: 0 0 0 3px var(--hud-foe);
+  inset: 5px;
 }
 
 .hud-medal-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(var(--hud-gold) calc(var(--charge, 0) * 1turn), rgba(20, 14, 36, 0.8) 0);
-  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%);
-  mask: radial-gradient(circle, transparent 60%, #000 61%);
+  background: conic-gradient(var(--hud-foe) calc(var(--charge, 0) * 1turn), rgba(8, 10, 14, 0.85) 0);
+  -webkit-mask: radial-gradient(circle, transparent 62%, #000 63%);
+  mask: radial-gradient(circle, transparent 62%, #000 63%);
 }
 
 .hud-medal.is-charged .hud-medal-ring {
-  box-shadow: 0 0 12px 2px rgba(255, 212, 71, 0.8);
+  background: var(--hud-foe);
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--hud-foe) 70%, transparent);
 }
 
 .hud-horn {
   position: absolute;
-  right: -6px;
-  bottom: -6px;
+  right: -5px;
+  bottom: -5px;
   display: flex;
   padding: 2px;
-  border: 2px solid var(--hud-ink);
   border-radius: 50%;
   background: #ff7a3a;
-  box-shadow: 0 0 10px 2px rgba(255, 110, 40, 0.8);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 0 10px 2px rgba(255, 110, 40, 0.7);
 }
 
-/* Centre: clock with the phase timeline, and the front-line strip under it. */
+/* Centre: the clock with the phase timeline, and the emote button beside it. */
 .hud-center {
+  position: relative;
   display: flex;
-  flex: none;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hud-clock {
+  position: relative;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7cqh;
+  justify-content: center;
+  min-width: 56px;
+  height: calc(var(--hud-top-h) - 4px);
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel);
+  box-shadow:
+    var(--ui-highlight),
+    var(--hud-shadow);
+  pointer-events: auto;
+}
+
+.hud-clock-text {
+  font-family: var(--ui-font-display, system-ui);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.hud-timeline {
+  position: relative;
+  width: 100%;
+  min-width: 44px;
+  height: 4px;
+  margin-top: 3px;
+  border-radius: 99px;
+  background: rgba(8, 10, 14, 0.85);
+}
+
+.hud-timeline-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 99px;
+  background: var(--hud-dim);
+}
+
+.hud-mark {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--hud-ink);
+}
+
+.hud-mark-overdrive {
+  background: var(--hud-gold);
+}
+
+.hud-mark-siege {
+  background: #ff5a4a;
 }
 
 .hud-next-phase {
-  margin-top: 0.35cqh;
-  font-size: max(9px, 1.5cqh);
-  font-weight: 800;
+  margin-top: 3px;
   color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -585,15 +651,56 @@
   color: #ff9d8f;
 }
 
-/* Front-line strip: your colour from the left, theirs from the right, a spark where they meet. */
-.hud-front {
-  position: relative;
-  width: clamp(120px, 22cqw, 240px);
-  height: max(9px, 1.7cqh);
-  border: 2px solid var(--hud-ink);
+.hud-phase-tag {
+  margin-top: 3px;
+  padding: 0 6px;
   border-radius: 99px;
-  background: repeating-linear-gradient(90deg, #3a2f5c 0 6px, #2e2450 6px 12px);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hud-clock.phase-overdrive {
+  box-shadow:
+    var(--hud-shadow),
+    0 0 0 1.5px var(--hud-gold-face),
+    0 0 14px rgba(242, 181, 44, 0.5);
+}
+
+.hud-clock.phase-overdrive .hud-phase-tag {
+  background: var(--hud-gold-face);
+  color: var(--ui-ink, #1d1405);
+}
+
+.hud-clock.phase-siege {
+  box-shadow:
+    var(--hud-shadow),
+    0 0 0 1.5px #e0402f,
+    0 0 14px rgba(255, 70, 60, 0.5);
+}
+
+.hud-clock.phase-siege .hud-phase-tag {
+  background: #e0402f;
+}
+
+.hud-clock.phase-ended .hud-phase-tag {
+  background: var(--ui-surface-3, #313a4b);
+}
+
+/* Front-line strip (only without a minimap: tests and the state gallery). */
+.hud-front {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  width: clamp(120px, 22cqw, 240px);
+  height: 10px;
+  translate: -50% 0;
+  border-radius: 99px;
+  background: rgba(8, 10, 14, 0.8);
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
   overflow: hidden;
 }
 
@@ -601,17 +708,19 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  transition: width 400ms ease-out, left 400ms ease-out;
+  transition:
+    width 400ms var(--ui-ease-out),
+    left 400ms var(--ui-ease-out);
 }
 
 .hud-front-me {
   left: 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--hud-me) 55%, #fff) 0 35%, var(--hud-me) 35%);
+  background: var(--hud-me);
 }
 
 .hud-front-foe {
   right: 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--hud-foe) 55%, #fff) 0 35%, var(--hud-foe) 35%);
+  background: var(--hud-foe);
 }
 
 .hud-front-clash {
@@ -621,145 +730,74 @@
   box-shadow: 0 0 8px 2px rgba(255, 240, 180, 0.9);
 }
 
-.hud-clock {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 13cqh;
-  padding: 0.4cqh 1.4cqh 0.8cqh;
-  border: 2px solid var(--hud-ink);
-  border-radius: 0 0 1.6cqh 1.6cqh;
-  border-top: none;
-  background: linear-gradient(180deg, rgba(58, 45, 98, 0.92), var(--hud-panel));
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
-  pointer-events: auto;
-}
-
-.hud-clock-text {
-  font-size: max(15px, 3.9cqh);
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  text-shadow: 0 2px 0 var(--hud-ink);
-}
-
-.hud-timeline {
-  position: relative;
-  width: 100%;
-  height: 5px;
-  margin-top: 0.3cqh;
-  border: 1.5px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #2a2140;
-}
-
-.hud-timeline-fill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  border-radius: 99px;
-  background: #d8cff0;
-}
-
-.hud-mark {
-  position: absolute;
-  top: -4px;
-  bottom: -4px;
-  width: 3px;
-  margin-left: -1.5px;
-  border-radius: 2px;
-  border: 1px solid var(--hud-ink);
-}
-
-.hud-mark-overdrive {
-  background: var(--hud-gold);
-}
-
-.hud-mark-siege {
-  background: #ff5a4a;
-}
-
-.hud-phase-tag {
-  position: absolute;
-  top: 100%;
-  margin-top: 3px;
-  padding: 1px 8px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  font-size: 0.85em;
-  font-weight: 900;
-  text-transform: uppercase;
-  white-space: nowrap;
-  letter-spacing: 0.05em;
-}
-
-.hud-clock.phase-overdrive {
-  border-color: var(--hud-gold-deep);
-  box-shadow:
-    0 3px 0 rgba(0, 0, 0, 0.35),
-    0 0 14px rgba(255, 212, 71, 0.55);
-}
-
-.hud-clock.phase-overdrive .hud-phase-tag {
-  background: var(--hud-gold);
-  color: var(--hud-ink);
-}
-
-.hud-clock.phase-siege {
-  border-color: #8a1d1d;
-  box-shadow:
-    0 3px 0 rgba(0, 0, 0, 0.35),
-    0 0 14px rgba(255, 70, 60, 0.6);
-}
-
-.hud-clock.phase-siege .hud-phase-tag {
-  background: #e0402f;
-}
-
-.hud-clock.phase-ended .hud-phase-tag {
-  background: #4b416a;
-}
-
+/* Round and chip buttons in the band: a 36 px face inside a 44 px hit area (40 / 48 on desktop). */
 .hud-round {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  width: max(34px, 6.4cqh);
-  height: max(34px, 6.4cqh);
+  width: var(--hud-btn-hit);
+  height: var(--hud-btn-hit);
   padding: 0;
-  border: 2px solid var(--hud-ink);
+  border: none;
+  background: none;
+  color: var(--hud-text);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.hud-round::before {
+  content: '';
+  position: absolute;
+  inset: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2);
+  z-index: -1;
   border-radius: 50%;
-  background: linear-gradient(180deg, #6a5b9a, #3d3163);
-  color: #f6eedb;
+  background: var(--hud-face);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.2),
-    0 3px 0 rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    filter var(--ui-dur-release) var(--ui-ease-out);
 }
 
-.hud-round--small {
-  width: max(30px, 5.4cqh);
-  height: max(30px, 5.4cqh);
+.hud-round:hover::before {
+  filter: brightness(1.15);
 }
 
-.hud-round:active {
-  translate: 0 1px;
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+.hud-round:active::before {
+  transform: scale(var(--ui-press-scale));
+  filter: brightness(0.9);
+  transition-duration: var(--ui-dur-press);
 }
 
-.hud-speed {
-  width: auto;
-  min-width: max(34px, 6.4cqh);
-  padding: 0 0.6em;
-  border-radius: 99px;
-  font-size: 0.95em;
+.hud-round > * {
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-round:active > * {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-speed::before {
+  border-radius: var(--ui-r-pill, 999px);
+}
+
+.hud-speed[data-speed='1.5']::before,
+.hud-speed[data-speed='2']::before {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1.5px var(--hud-gold-face),
+    0 2px 0 rgba(0, 0, 0, 0.45);
 }
 
 .hud-emote {
   position: relative;
-  align-self: center;
+  flex: none;
   pointer-events: auto;
 }
 
@@ -770,15 +808,16 @@
 .hud-emote-picker {
   position: absolute;
   top: calc(100% + 6px);
-  right: 0;
+  left: 50%;
+  translate: -50% 0;
   display: grid;
   grid-template-columns: repeat(3, auto);
   gap: 4px;
   padding: 6px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 12px;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
   background: var(--hud-panel);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--ui-e3);
   z-index: 5;
 }
 
@@ -795,67 +834,99 @@
   border-color: var(--hud-gold);
 }
 
-.hud-right {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8cqh;
-}
-
 .hud-controls {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.6cqh;
-}
-
-.hud-buttons {
-  display: flex;
-  gap: 0.6cqh;
+  flex: none;
+  align-items: center;
+  gap: 4px;
   pointer-events: auto;
 }
 
-.hud-chip {
-  padding: 2px 10px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #3d3163;
-  font-size: 0.9em;
-  white-space: nowrap;
-}
-
+/* Scouted (n): a 72 x 44 chip that drops down its list and collapses after 3 s (MR-76). */
 .hud-scouted {
   position: relative;
   pointer-events: auto;
 }
 
+.hud-chip {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: var(--hud-btn-hit);
+  min-width: var(--hud-btn-hit);
+  padding: 0 8px;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+
+.hud-chip::before {
+  content: '';
+  position: absolute;
+  inset: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2) 0;
+  z-index: -1;
+  border-radius: var(--ui-r-pill, 999px);
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-chip:active::before {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-scouted-text {
+  font-size: 12px;
+}
+
+.hud-scouted-n {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 9px;
+  background: rgba(8, 10, 14, 0.7);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}
+
 /* The only element that may briefly cover the lane band, and only on request (A9.2). */
 .hud-dropdown {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 4px);
   right: 0;
-  min-width: 190px;
+  min-width: 200px;
   max-height: 44cqh;
   overflow: auto;
-  padding: 8px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
   background: var(--hud-panel);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--ui-e3);
   z-index: 5;
-  animation: hud-drop 160ms ease-out;
+  transform-origin: 80% 0;
+  animation: hud-drop var(--ui-dur-small) var(--ui-ease-enter);
 }
 
 @keyframes hud-drop {
   from {
     opacity: 0;
-    translate: 0 -6px;
+    transform: translateY(-8px) scale(0.96);
   }
 }
 
 .hud-dropdown-title {
   margin-bottom: 6px;
   color: var(--hud-dim);
-  font-size: 0.85em;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -875,6 +946,7 @@
   align-items: center;
   gap: 8px;
   padding: 3px 0;
+  font-size: 13px;
 }
 
 .hud-scouted-pic {
@@ -882,9 +954,14 @@
   height: 30px;
   flex: none;
   overflow: hidden;
-  border: 2px solid var(--hud-ink);
   border-radius: 7px;
-  background: #2a2140;
+  background: var(--ui-surface-1, #1a1f29);
+  box-shadow: 0 0 0 1px var(--hud-edge);
+}
+
+.hud-scouted-class {
+  display: inline-flex;
+  margin-left: auto;
 }
 
 /* Emote bubbles and evolve banners. */
@@ -892,48 +969,44 @@
   position: absolute;
   top: calc(100% + 6px);
   padding: 4px;
-  border: 2px solid var(--hud-ink);
   border-radius: 14px;
-  background: #fff8e6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  animation: hud-pop 220ms var(--ui-ease-back, ease-out);
+  background: #fbf6ea;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: hud-pop var(--ui-dur-small) var(--ui-ease-back);
   pointer-events: none;
   z-index: 4;
 }
 
 .hud-bubble-me {
-  left: 8cqh;
+  left: 40px;
 }
 
 .hud-bubble-foe {
-  right: 8cqh;
+  right: 40px;
 }
 
 .hud-banner {
   position: absolute;
-  top: calc(100% + 0.6cqh);
+  top: calc(100% + 4px);
   padding: 2px 10px;
-  border: 2px solid var(--hud-ink);
   border-radius: 6px;
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold));
-  color: var(--hud-ink);
-  font-size: 0.9em;
+  background: linear-gradient(180deg, #ffe7b8, #ff9d4d);
+  color: var(--ui-ink, #1d1405);
+  font-size: 12px;
   font-weight: 900;
   white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  animation: hud-banner 2.6s ease-out forwards;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+  animation: hud-banner 2.6s var(--ui-ease-out) forwards;
   pointer-events: none;
   z-index: 3;
 }
 
-.hud-banner-me {
-  left: 0;
-}
-
 .hud-banner-foe {
   right: 0;
-  background: linear-gradient(180deg, #ffd9b0, #ff9d4d);
 }
 
 @keyframes hud-pop {
@@ -958,26 +1031,22 @@
   }
 }
 
-/* ---------------------------------------------------------------- bottom tray (24%) */
+/* ---------------------------------------------------------------- bottom tray */
 
 .hud-tray {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 24%;
+  height: calc(var(--hud-tray-h) + env(safe-area-inset-bottom));
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 max(12px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(12px, env(safe-area-inset-left));
+  gap: var(--hud-gap);
+  padding: 0 max(var(--hud-edge-pad), env(safe-area-inset-right)) env(safe-area-inset-bottom) max(var(--hud-edge-pad), env(safe-area-inset-left));
   box-sizing: border-box;
-  background: linear-gradient(0deg, rgba(16, 11, 30, 0.9), rgba(16, 11, 30, 0.62) 70%, rgba(16, 11, 30, 0));
+  /* A scrim under the controls; the ground line sits 12 px above it (the camera, 3.1). */
+  background: linear-gradient(0deg, rgba(8, 10, 14, 0.9), rgba(8, 10, 14, 0.74) 72%, rgba(8, 10, 14, 0));
   z-index: 2;
-}
-
-.hud.is-compact .hud-tray {
-  gap: 6px;
 }
 
 .hud.is-ended .hud-tray {
@@ -989,93 +1058,139 @@
   pointer-events: none;
 }
 
-/* Gold counter: tap opens the War Council on the Economy track (A18.5.4). */
-.hud-gold {
-  position: relative;
+/* Left cluster: gold and army, then Council and Evolve side by side (4.7). */
+.hud-cluster {
   display: flex;
   flex: none;
   flex-direction: column;
+  gap: var(--hud-cluster-gap);
+  width: var(--hud-cluster-w);
+}
+
+.hud-cluster-row {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+}
+
+@container hud (max-height: 499px) {
+  /* 44 (the gold's hit box, a 38 px face) + 48 (Council, Evolve) - 2 overlap = 90 in the 94 tray. */
+  .hud-cluster-row {
+    margin-top: -4px;
+  }
+
+  .hud-cbtn-sale {
+    display: none;
+  }
+}
+
+.hud-cluster-gap {
+  width: var(--hud-round);
+  height: var(--hud-round);
+}
+
+/* Gold counter: gold and income on one line, the army counter under it; a tap opens Economy research.
+   The face is drawn inside the 44 px hit box, so the cluster fits the tray (4.7). */
+.hud-gold {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
-  gap: 2px;
-  width: 118px;
-  height: min(calc(var(--hud-card) * 1.12), 21cqh);
-  padding: 4px 6px;
+  gap: 1px;
+  width: 100%;
+  height: var(--hud-gold-h);
+  padding: 0 8px;
   box-sizing: border-box;
-  border: 3px solid var(--hud-ink);
-  border-radius: 14px;
-  background: linear-gradient(180deg, #5c4a8a, #2e2450);
+  border: none;
+  background: none;
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-gold::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.18),
-    0 4px 0 rgba(0, 0, 0, 0.4);
-  transition: translate 90ms ease-out;
+    var(--ui-highlight),
+    var(--hud-shadow);
+}
+
+@container hud (max-height: 499px) {
+  .hud-gold::before {
+    inset: 3px 0;
+    border-radius: 10px;
+  }
 }
 
 .hud-gold:active {
-  translate: 0 2px;
-}
-
-.hud.is-compact .hud-gold {
-  width: 94px;
-}
-
-/* Phones: six cards, the Council button and the stance control share 844 px (A18.9, A18.5.7). */
-@container hud (max-height: 499px) {
-  .hud.is-compact .hud-gold {
-    width: 80px;
-  }
-
-  .hud.is-compact .hud-cards.hud-cards {
-    gap: 4px;
-  }
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
 }
 
 .hud-gold-main {
   display: flex;
   align-items: center;
   gap: 4px;
+  transform-origin: 20% 50%;
 }
 
 .hud-gold-value {
   color: var(--hud-gold);
-  font-size: 2.1em;
+  font-family: var(--ui-font-display, system-ui);
+  font-size: 18px;
   font-weight: 900;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  text-shadow:
-    0 2px 0 var(--hud-ink),
-    0 0 12px rgba(255, 212, 71, 0.35);
-}
-
-.hud.is-compact .hud-gold-value {
-  font-size: 1.7em;
+  text-shadow: 0 1px 0 var(--hud-ink);
 }
 
 .hud-gold-rate {
-  color: #fff3c4;
-  font-size: 0.85em;
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
 }
 
-/* Coins landing pop the counter up to 1.15 (audit #25). */
+.hud-army-count {
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+
+.hud-army-count.is-full {
+  color: var(--hud-bad);
+}
+
+/* Coins landing pop the counter up (MR-79). */
 .hud-gold.is-bump .hud-gold-main {
-  animation: hud-bump 320ms var(--ui-ease-back, ease-out);
+  animation: hud-bump var(--ui-dur-small) var(--ui-ease-back);
 }
 
 @keyframes hud-bump {
-  35% {
-    scale: 1.15;
-    filter: brightness(1.35);
+  40% {
+    transform: scale(var(--ui-bump));
+    filter: brightness(1.3);
   }
 }
 
-/* Floating numbers: "-50" up from the gold, "Need 23" over a card. */
+/* Floating numbers: "-50" up from the gold. */
 .hud-float {
   position: absolute;
   left: 50%;
-  top: 8%;
+  top: 0;
   translate: -50% 0;
   z-index: 3;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   white-space: nowrap;
   pointer-events: none;
@@ -1084,67 +1199,59 @@
     0 -1px 0 var(--hud-ink),
     1px 0 0 var(--hud-ink),
     -1px 0 0 var(--hud-ink);
-  animation: hud-float 900ms var(--ui-ease-out, ease-out) forwards;
+  animation: hud-float 900ms var(--ui-ease-out) forwards;
 }
 
 .hud-float-spend {
   color: #ffe38a;
 }
 
-.hud-float-need {
-  top: 30%;
-  padding: 1px 7px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #d8333a;
-  color: #fff;
-  font-size: 13px;
-  text-shadow: none;
-}
-
 @keyframes hud-float {
   0% {
     opacity: 0;
-    transform: translateY(6px) scale(0.7);
+    transform: translateY(4px) scale(0.7);
   }
   15% {
     opacity: 1;
-    transform: translateY(-4px) scale(1.12);
+    transform: translateY(-6px) scale(1.12);
   }
   70% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translateY(-34px) scale(1);
+    transform: translateY(-30px) scale(1);
   }
 }
 
-/* Unit cards. */
+/* The six unit cards, centred between the left cluster and the stance. */
+.hud-cards-area {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+}
+
 .hud-cards {
   display: flex;
   flex: none;
-  gap: 8px;
+  gap: var(--hud-card-gap);
 }
 
-.hud.is-compact .hud-cards {
-  gap: 5px;
-}
-
-/* After an evolve (and at the start) the cards deal in with a flip, one after another. */
+/* After an evolve (and at the start) the cards flip in one by one (MR-80: 180 each, 40 stagger). */
 .hud-card-flip {
   perspective: 500px;
-  animation: hud-flip 520ms var(--ui-ease-back, ease-out) backwards;
-  animation-delay: calc(var(--i, 0) * 90ms);
+  animation: hud-flip var(--ui-dur-small) var(--ui-ease-back) backwards;
+  animation-delay: calc(var(--i, 0) * var(--ui-dur-stagger));
 }
 
 @keyframes hud-flip {
   0% {
-    transform: rotateY(90deg) scale(0.9);
+    transform: rotateY(90deg) scale(0.92);
     opacity: 0.2;
   }
   60% {
-    transform: rotateY(-10deg) scale(1.04);
+    transform: rotateY(-8deg) scale(1.03);
     opacity: 1;
   }
 }
@@ -1157,205 +1264,298 @@
   position: relative;
   display: block;
   flex: none;
-  width: var(--hud-card);
-  height: min(calc(var(--hud-card) * 1.14), 21cqh);
+  width: var(--hud-card-w);
+  height: var(--hud-card-h);
   padding: 0;
   overflow: hidden;
   box-sizing: border-box;
-  border: 3px solid var(--hud-ink);
-  border-radius: 12px;
-  background: linear-gradient(180deg, #7a68b0, #3a2e62);
+  border: 2px solid #0f131b;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #3a4558, #1d2330);
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
-    0 4px 0 rgba(0, 0, 0, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 3px 0 rgba(0, 0, 0, 0.5);
+  touch-action: none;
   transition:
-    translate 90ms ease-out,
-    box-shadow 120ms ease-out,
-    filter 120ms ease-out;
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    box-shadow var(--ui-dur-micro) var(--ui-ease-out),
+    filter var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+/* MR-01 on pointerdown: the card dips at once. */
+.hud-card.is-pressed {
+  transform: scale(var(--ui-press-scale)) translateY(1px);
+  filter: brightness(0.92);
+  transition-duration: var(--ui-dur-press);
 }
 
 .hud-card-art {
   position: absolute;
-  inset: 0 0 18px;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.28), transparent 70%);
+  background: radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.22), transparent 70%);
+  transition: filter var(--ui-dur-micro) var(--ui-ease-out);
 }
 
-/* Training: a bright fill rising from the bottom over the portrait; the portrait stays in colour. */
-.hud-card-fill {
+.hud-card-art img {
+  object-position: 50% 30%;
+}
+
+/* Cost, top-left. */
+.hud-card-cost {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  height: 18px;
+  padding: 0 4px 0 2px;
+  border-radius: 9px;
+  background: rgba(8, 10, 14, 0.84);
+  color: var(--hud-gold);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 18px;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+/* Class icon, top-right (A18.9.1). */
+.hud-card-class {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 2;
+  display: inline-flex;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
+}
+
+/* The name at the bottom, up to two lines between words, never an ellipsis (U6). A word wider than
+   the card is condensed horizontally (--fit, set by Tray.tsx): the box is laid out 1 / fit wide and
+   scaled back, so the wrap happens at the condensed width. */
+.hud-card-name {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  width: calc(100% / var(--fit, 1));
+  max-height: 36px;
+  padding: 12px 2px 3px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transform: scaleX(var(--fit, 1));
+  transform-origin: 0 100%;
+  color: #fbf6ea;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 12px;
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.8),
+    0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.hud-card-name > span {
+  display: inline-block;
+}
+
+/* The scrim under the name (full card width, not condensed). */
+.hud-card-art::after {
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 18px;
-  height: calc((100% - 18px) * var(--fill, 0));
-  opacity: 0;
-  pointer-events: none;
-  background: linear-gradient(0deg, rgba(255, 236, 160, 0.5), rgba(255, 236, 160, 0.18));
-  border-top: 2px solid rgba(255, 250, 220, 0.95);
-  box-shadow: 0 -4px 10px rgba(255, 240, 180, 0.45);
-  transition: height 120ms linear;
+  bottom: 0;
+  height: 42%;
+  background: linear-gradient(180deg, rgba(8, 10, 14, 0), rgba(8, 10, 14, 0.8) 55%, rgba(8, 10, 14, 0.94));
 }
 
-.hud-card.is-training .hud-card-fill {
+@container hud (max-height: 499px) {
+  .hud-card-name {
+    font-size: 11px;
+    line-height: 11px;
+    max-height: 32px;
+  }
+}
+
+/* Training: a clock wipe over the card, bright where it is done (MR-65, MR-66). */
+.hud-card-train {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background: conic-gradient(rgba(255, 240, 190, 0.3) calc(var(--fill, 0) * 1turn), rgba(8, 10, 14, 0.5) 0);
+  transition: opacity var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+.hud-card.is-training .hud-card-train {
   opacity: 1;
 }
 
-/* Not affordable yet: grey, with a fill rising toward affordable. */
+/* Not affordable yet: grey, with a gold fill rising toward affordable. */
 .hud-card-afford {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 18px;
-  height: calc((100% - 18px) * var(--afford, 0));
+  bottom: 0;
+  z-index: 1;
+  height: calc(100% * var(--afford, 0));
   pointer-events: none;
-  background: linear-gradient(0deg, rgba(255, 212, 71, 0.32), rgba(255, 212, 71, 0.1));
-  border-top: 2px solid rgba(255, 212, 71, 0.7);
-  transition: height 300ms ease-out;
+  background: linear-gradient(0deg, rgba(242, 181, 44, 0.3), rgba(242, 181, 44, 0.08));
+  border-top: 2px solid rgba(255, 212, 102, 0.7);
+  transition: height 300ms var(--ui-ease-out);
 }
 
 .hud-card-wait {
   position: absolute;
   left: 50%;
   top: 44%;
+  z-index: 3;
   translate: -50% -50%;
-  padding: 1px 7px;
-  border: 2px solid var(--hud-ink);
+  padding: 0 6px;
   border-radius: 99px;
-  background: rgba(20, 14, 36, 0.85);
+  background: rgba(8, 10, 14, 0.86);
   color: #fff;
-  font-size: 13px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-}
-
-/* With a queue badge in the top corner, the wait pill moves down so the two never overlap. */
-.hud-card-wait.is-shifted {
-  top: 64%;
-}
-
-.hud-card-name {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  height: 17px;
-  padding: 0 3px;
-  background: linear-gradient(180deg, rgba(20, 14, 36, 0.85), rgba(20, 14, 36, 0.55));
-  color: #fff8e6;
   font-size: 12px;
   font-weight: 900;
-  line-height: 17px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.hud.is-compact .hud-card-name {
-  font-size: 10.5px;
-}
-
-/* The key badge sits under the name strip (queue badge on the right), so it never hides the name. */
-.hud-card .hud-key {
-  top: 20px;
-  left: 3px;
-}
-
-.hud-card-name-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.hud-card-role {
-  display: inline-flex;
-  flex: none;
-}
-
-.hud-card-cost {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  background: var(--hud-ink);
-  color: var(--hud-gold);
-  font-size: 13px;
-  font-weight: 900;
+  line-height: 18px;
   font-variant-numeric: tabular-nums;
 }
 
-/* Queue count: a 22 px gold badge that pops on every change. */
+/* Queue count: a gold badge on the right edge that flips on every change (MR-65). */
 .hud-card-queue {
   position: absolute;
-  top: 19px;
-  right: 3px;
+  top: 24px;
+  right: 2px;
+  z-index: 3;
   min-width: 22px;
   height: 22px;
   padding: 0 5px;
   box-sizing: border-box;
-  border: 2px solid var(--hud-ink);
   border-radius: 99px;
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
-  color: var(--hud-ink);
+  background: linear-gradient(180deg, #ffe7a3, var(--hud-gold-face) 60%, var(--hud-gold-deep));
+  color: var(--ui-ink, #1d1405);
   font-size: 13px;
   font-weight: 900;
-  line-height: 18px;
+  line-height: 22px;
   text-align: center;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
-  animation: hud-pop 220ms var(--ui-ease-back, ease-out);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.4);
+  animation: hud-flipin var(--ui-dur-small) var(--ui-ease-back);
+}
+
+@keyframes hud-flipin {
+  from {
+    transform: rotateX(90deg) scale(0.6);
+    opacity: 0.3;
+  }
 }
 
 .hud-card-tag {
   position: absolute;
   left: 0;
   right: 0;
-  top: 40%;
-  padding: 2px 3px;
-  background: #d8333a;
+  top: 36%;
+  z-index: 3;
+  padding: 2px 2px;
+  background: rgba(201, 57, 47, 0.94);
   color: #fff;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 900;
-  line-height: 1.05;
-  text-transform: uppercase;
-  box-shadow: 0 2px 0 var(--hud-ink);
-}
-
-.hud.is-compact .hud-card-tag {
-  padding: 2px 1px;
-  font-size: 8px;
-  letter-spacing: -0.01em;
+  line-height: 13px;
+  text-align: center;
 }
 
 .hud-card-tag.is-legendary {
   background: linear-gradient(180deg, #ffe07a, #e0a51e);
-  color: var(--hud-ink);
+  color: var(--ui-ink, #1d1405);
 }
 
-/* Affordable glow. */
+/* Deploy flash: a white bloom on the card as the train goes in (MR-65). */
+.hud-card-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: 8px;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 250, 225, 0.85), rgba(255, 236, 160, 0.35) 60%, rgba(255, 236, 160, 0));
+  pointer-events: none;
+  animation: hud-card-flash var(--ui-dur-small) var(--ui-ease-out) forwards;
+}
+
+@keyframes hud-card-flash {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* The long-press ring (MR-07): starts after 150 ms, full at 450 ms (the tip opens then). */
+.hud-card-hold {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  translate: -50% -50%;
+  rotate: -90deg;
+  pointer-events: none;
+  opacity: 0;
+  animation: hud-hold-in 1ms linear var(--ui-dur-micro) forwards;
+}
+
+.hud-card-hold circle {
+  fill: rgba(8, 10, 14, 0.45);
+  stroke: #fff4c2;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: hud-hold-fill var(--ui-dur-medium) linear var(--ui-dur-micro) forwards;
+}
+
+@keyframes hud-hold-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hud-hold-fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* MR-64: an affordable card glows (the ramp is the transition) and rests; it never keeps moving. */
 .hud-card.state-ready {
+  border-color: #6b5316;
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.2),
-    0 0 0 2px rgba(255, 223, 120, 0.9),
-    0 0 14px 2px rgba(255, 212, 71, 0.55),
-    0 4px 0 rgba(0, 0, 0, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 2px rgba(255, 212, 102, 0.9),
+    0 0 12px 1px rgba(242, 181, 44, 0.5),
+    0 3px 0 rgba(0, 0, 0, 0.5);
 }
 
-.hud-card.state-ready:hover {
-  translate: 0 -4px;
+@media (hover: hover) and (pointer: fine) {
+  .hud-card.state-ready:hover:not(.is-pressed) {
+    transform: translateY(-3px);
+  }
 }
 
 .hud-card.state-unaffordable .hud-card-art,
 .hud-card.state-armyFull .hud-card-art,
 .hud-card.state-legendaryInField .hud-card-art {
-  filter: grayscale(0.8) brightness(0.62);
+  filter: grayscale(0.85) brightness(0.6);
 }
 
 /* A card that is only waiting in the queue keeps its colour. */
@@ -1364,7 +1564,21 @@
 }
 
 .hud-card.state-unaffordable .hud-card-cost {
-  color: #ff8a7e;
+  color: var(--hud-bad);
+}
+
+.hud-card.state-unaffordable .hud-card-class,
+.hud-card.state-armyFull .hud-card-class,
+.hud-card.state-legendaryInField .hud-card-class {
+  filter: grayscale(0.35) brightness(0.9);
+}
+
+/* An empty loadout slot: a quiet socket (no input). */
+.hud-card.is-empty {
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(8, 10, 14, 0.22);
+  box-shadow: none;
+  pointer-events: none;
 }
 
 /* The one padlock slot for a card the match unlocks later. */
@@ -1372,9 +1586,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-style: dashed;
-  border-color: rgba(185, 174, 203, 0.55);
-  background: rgba(20, 14, 36, 0.55);
+  border: 2px dashed rgba(195, 188, 174, 0.5);
+  background: rgba(8, 10, 14, 0.5);
   box-shadow: none;
 }
 
@@ -1383,9 +1596,9 @@
   width: 22px;
   height: 17px;
   margin-top: 10px;
-  border: 2.5px solid #b9aecb;
+  border: 2.5px solid var(--hud-dim);
   border-radius: 4px;
-  background: #4b416a;
+  background: var(--ui-surface-3, #313a4b);
 }
 
 .hud-card-lock::before {
@@ -1396,174 +1609,9 @@
   width: 12px;
   height: 11px;
   translate: -50% 1px;
-  border: 2.5px solid #b9aecb;
+  border: 2.5px solid var(--hud-dim);
   border-bottom: none;
   border-radius: 8px 8px 0 0;
-}
-
-/* The "i" corner (touch) and the info card (hover on desktop, the "i" on touch). */
-.hud .hud-card-i {
-  position: absolute;
-  top: -12px;
-  right: -10px;
-  z-index: 2;
-  display: none;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 2px solid var(--hud-ink);
-  border-radius: 50%;
-  background: #dfe6f5;
-  color: var(--hud-ink);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
-}
-
-.hud .hud-card-i svg {
-  display: block;
-  margin: auto;
-}
-
-@media (hover: none), (pointer: coarse) {
-  .hud .hud-card-i {
-    display: block;
-  }
-}
-
-.hud-card-info-wrap {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 12px);
-  z-index: 6;
-  translate: -50% 6px;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition:
-    opacity 140ms ease-out,
-    translate 180ms var(--ui-ease-back, ease-out),
-    visibility 0s linear 140ms;
-}
-
-.hud-card-info-wrap.is-open {
-  translate: -50% 0;
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity 140ms ease-out,
-    translate 180ms var(--ui-ease-back, ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .hud-card-slot:not(.is-quiet):hover .hud-card-info-wrap {
-    translate: -50% 0;
-    opacity: 1;
-    visibility: visible;
-    transition:
-      opacity 140ms ease-out 450ms,
-      translate 180ms var(--ui-ease-back, ease-out) 450ms;
-  }
-}
-
-.hud-card-info {
-  width: 228px;
-  padding: 8px 10px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 12px;
-  background: linear-gradient(180deg, #3f3470, #231b40);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.hud-card-info-name {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 15px;
-  font-weight: 900;
-}
-
-.hud-card-info-role {
-  color: var(--hud-gold);
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.hud-card-info-desc {
-  margin: 4px 0;
-  color: #e9e1f7;
-}
-
-.hud-card-info-stats {
-  display: flex;
-  gap: 10px;
-  color: var(--hud-dim);
-}
-
-.hud-card-info-legendary {
-  margin-left: 6px;
-  color: #ffc23a;
-}
-
-/* Strong vs / Weak vs as class icons (owner feedback 2026-09-28). */
-.hud-card-info-vs {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-  margin-top: 5px;
-}
-
-.hud-card-info-vs-label {
-  min-width: 58px;
-  font-size: 10.5px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.hud-card-info-vs.is-good .hud-card-info-vs-label {
-  color: #9ff0b0;
-}
-
-.hud-card-info-vs.is-bad .hud-card-info-vs-label {
-  color: #ff9b91;
-}
-
-.hud-card-info-vs-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 1px 6px 1px 1px;
-  border-radius: 99px;
-  background: rgba(10, 6, 24, 0.45);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-/* The class badge on a tray card: bottom-left, above the cost strip. */
-.hud-card-class {
-  position: absolute;
-  left: 3px;
-  bottom: 20px;
-  z-index: 2;
-  display: inline-flex;
-  pointer-events: none;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
-}
-
-.hud-card.state-unaffordable .hud-card-class,
-.hud-card.state-armyFull .hud-card-class,
-.hud-card.state-legendaryInField .hud-card-class {
-  filter: grayscale(0.35) brightness(0.9);
-}
-
-.hud-scouted-class {
-  display: inline-flex;
-  margin-left: auto;
 }
 
 /* Foil frames (A5.1). */
@@ -1578,55 +1626,491 @@
 .hud-card.foil-holo {
   border-color: transparent;
   background:
-    linear-gradient(180deg, #7a68b0, #3a2e62) padding-box,
+    linear-gradient(180deg, #3a4558, #1d2330) padding-box,
     conic-gradient(#ff7ad9, #7af0ff, #b3ff7a, #ffe07a, #ff7ad9) border-box;
 }
 
-/* Army counter and stance. */
-.hud-army {
+/* The card tip: hover on desktop (after 350 ms), a long-press on touch (pinned until a tap elsewhere). */
+.hud-card-info-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  z-index: 6;
+  translate: -50% 6px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  scale: 0.9;
+  transition:
+    opacity var(--ui-dur-small-out) var(--ui-ease-exit),
+    translate var(--ui-dur-small-out) var(--ui-ease-exit),
+    scale var(--ui-dur-small-out) var(--ui-ease-exit),
+    visibility 0s linear var(--ui-dur-small-out);
+}
+
+.hud-card-info-wrap.is-open {
+  translate: -50% 0;
+  scale: 1;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity var(--ui-dur-micro) var(--ui-ease-out),
+    translate var(--ui-dur-micro) var(--ui-ease-back),
+    scale var(--ui-dur-micro) var(--ui-ease-back);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hud-card-slot:not(.is-quiet):hover .hud-card-info-wrap {
+    translate: -50% 0;
+    scale: 1;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--ui-dur-micro) var(--ui-ease-out) var(--ui-dur-tip-hover),
+      translate var(--ui-dur-micro) var(--ui-ease-back) var(--ui-dur-tip-hover),
+      scale var(--ui-dur-micro) var(--ui-ease-back) var(--ui-dur-tip-hover);
+  }
+}
+
+.hud-card-info {
+  width: 232px;
+  padding: 10px 12px;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: linear-gradient(180deg, var(--ui-surface-2, #252c39), var(--ui-surface-1, #1a1f29));
+  box-shadow: var(--ui-e3);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.hud-card-info-name {
   display: flex;
-  flex: none;
-  flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 6px;
-  min-width: 70px;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.hud-card-info-role {
+  color: var(--hud-gold);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hud-card-info-desc {
+  margin: 4px 0;
+  color: var(--hud-text);
+}
+
+.hud-card-info-stats {
+  display: flex;
+  gap: 10px;
+  color: var(--hud-dim);
+}
+
+.hud-card-info-legendary {
+  margin-left: 6px;
+  color: var(--ui-legendary, #f5b82e);
+}
+
+/* Strong vs / Weak vs as class icons (owner feedback 2026-09-28). */
+.hud-card-info-vs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.hud-card-info-vs-label {
+  min-width: 64px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.hud-card-info-vs.is-good .hud-card-info-vs-label {
+  color: var(--ui-good, #5fd08a);
+}
+
+.hud-card-info-vs.is-bad .hud-card-info-vs-label {
+  color: var(--hud-bad);
+}
+
+.hud-card-info-vs-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px 1px 1px;
+  border-radius: 99px;
+  background: rgba(8, 10, 14, 0.45);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* "Cancel one": the touch alternative to right-click (A2.12). */
+.hud-card-info-cancel {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  border: none;
+  border-radius: var(--ui-r-sm, 8px);
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(8, 10, 14, 0.9);
+  font-size: 14px;
+  font-weight: 800;
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-card-info-cancel:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+/* ---------------------------------------------------------------- Evolve (left cluster) */
+
+/* Round, with the XP ring (UA-05). Ready: gold and a steady glow; it breathes only as the one pulse
+   (U11); it never flashes (A2.4). The bob moves the button's parts, not its box. */
+.hud-evolve-wrap {
+  position: relative;
+  flex: none;
+}
+
+.hud-evolve {
+  position: relative;
+  display: block;
+  width: var(--hud-round);
+  height: var(--hud-round);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--hud-dim);
+}
+
+.hud-evolve-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--hud-xp) calc(var(--xp, 0) * 1turn), rgba(8, 10, 14, 0.9) 0);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 1px rgba(0, 0, 0, 0.4);
+  transition:
+    box-shadow var(--ui-dur-medium) var(--ui-ease-out),
+    transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-evolve-disc {
+  position: absolute;
+  inset: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 28%, #58647a, #262d3b 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1.5px var(--hud-ink);
+  transition:
+    background var(--ui-dur-medium) var(--ui-ease-out),
+    transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-evolve-disc svg {
+  filter: grayscale(0.85) brightness(0.8);
+  opacity: 0.75;
+  transition:
+    filter var(--ui-dur-medium) var(--ui-ease-out),
+    opacity var(--ui-dur-medium) var(--ui-ease-out);
+}
+
+.hud-evolve-label {
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  translate: -50% 0;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--ui-surface-3, #313a4b);
+  color: var(--hud-text);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+}
+
+.hud-evolve .hud-key {
+  top: -4px;
+  left: auto;
+  right: -6px;
+}
+
+.hud-evolve:active .hud-evolve-disc,
+.hud-evolve:active .hud-evolve-ring {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+/* MR-68: ready lights up in 300 ms and rests in a steady glow. */
+.hud-evolve.is-ready .hud-evolve-ring {
+  background: conic-gradient(#fff1a8, var(--hud-gold), #fff1a8, var(--hud-gold-deep), #fff1a8);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 0 0 4px rgba(255, 212, 102, 0.35),
+    0 0 18px 4px rgba(242, 181, 44, 0.65),
+    0 2px 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.hud-evolve.is-ready .hud-evolve-disc {
+  background: radial-gradient(circle at 38% 28%, #fffbe0, #ffe27a 45%, #e6a91f 100%);
+}
+
+.hud-evolve.is-ready .hud-evolve-disc svg {
+  filter: none;
+  opacity: 1;
+}
+
+.hud-evolve.is-ready .hud-evolve-label {
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold-face));
+  color: var(--ui-ink, #1d1405);
+}
+
+/* The one pulse: a slow breathe of the parts (MR-05), never a flash. */
+.hud-evolve.is-pulse > .hud-evolve-ring,
+.hud-evolve.is-pulse > .hud-evolve-disc {
+  animation: hud-breathe var(--ui-dur-breathe) ease-in-out infinite;
+}
+
+.hud-evolve.is-ascending .hud-evolve-ring {
+  background: conic-gradient(#fffbe8, #ffe9a0, #fffbe8);
+  animation: hud-spin 1.2s linear infinite;
+}
+
+@keyframes hud-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--ui-breathe-scale)) translateY(-2px);
+  }
+}
+
+@keyframes hud-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+/* ---------------------------------------------------------------- stance (one button, a flyout) */
+
+.hud-stance-slot {
+  position: relative;
+  flex: none;
+  width: var(--hud-stance);
+  height: var(--hud-stance);
+}
+
+.hud-stance {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  padding: 0 0 2px;
+  overflow: hidden;
+  border: 1px solid var(--hud-edge);
+  border-radius: 14px;
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 3px 0 rgba(0, 0, 0, 0.5);
+  touch-action: none;
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    box-shadow var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+.hud-stance:active,
+.hud-stance.is-open {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-stance.is-open {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 2px var(--hud-gold),
+    0 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.hud-stance-icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+}
+
+.hud-stance-label {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 13px;
+  white-space: nowrap;
+}
+
+/* The 3 s wait as a sweep that empties. */
+.hud-stance-wait {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: conic-gradient(rgba(8, 10, 14, 0.62) calc(var(--wait, 0) * 1turn), transparent 0);
+  transition: opacity var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+.hud-stance.is-waiting .hud-stance-wait {
+  opacity: 1;
+}
+
+.hud-stance .hud-key {
+  top: 2px;
+  left: 2px;
+}
+
+/* The flyout: three options stacked upward (48 px each), fanning up with a 30 ms stagger (MR-71). */
+.hud-stance-fly {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 6;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  width: 188px;
   pointer-events: auto;
 }
 
-.hud-army-count {
-  display: inline-flex;
+.hud-stance-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 10px 0 6px;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel-hi);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 6px 14px rgba(0, 0, 0, 0.45);
+  text-align: left;
+  transform-origin: 80% 100%;
+  animation: hud-fly-in var(--ui-dur-micro) var(--ui-ease-back) backwards;
+  animation-delay: calc(var(--i, 0) * 30ms);
+  transition:
+    transform var(--ui-dur-press) var(--ui-ease-out),
+    background var(--ui-dur-press) var(--ui-ease-out),
+    box-shadow var(--ui-dur-press) var(--ui-ease-out);
+}
+
+.hud-stance-opt:hover,
+.hud-stance-opt.is-hover {
+  background: var(--ui-surface-3, #313a4b);
+  transform: translateX(-4px) scale(1.03);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 2px var(--hud-gold),
+    0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+.hud-stance-opt.is-on {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 2px var(--hud-green),
+    0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+.hud-stance-opt-icon {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #2e2450;
-  font-size: 0.95em;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(8, 10, 14, 0.5);
+}
+
+.hud-stance-opt-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hud-stance-opt-text b {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 16px;
+}
+
+.hud-stance-opt-text small {
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
 }
 
-.hud-army-count.is-full {
-  background: #8a2430;
+.hud-stance-fly.is-closing .hud-stance-opt {
+  animation: hud-fly-out 120ms var(--ui-ease-exit) forwards;
 }
 
-/* Age Power: charge ring and name; tap = auto-aim, drag = place. Full: burst, bob and "READY". */
+@keyframes hud-fly-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.85);
+  }
+}
+
+@keyframes hud-fly-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+}
+
+/* ---------------------------------------------------------------- Age Power */
+
+.hud-power-col {
+  position: relative;
+  display: flex;
+  flex: none;
+  justify-content: center;
+  width: var(--hud-power);
+}
+
 .hud-power-wrap {
   position: relative;
   display: flex;
   flex: none;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-}
-
-.hud-power.is-ready > .hud-power-ring,
-.hud-power.is-ready > .hud-power-core,
-.hud-power.is-ready > .hud-power-ready {
-  animation:
-    hud-pop 260ms var(--ui-ease-back, ease-out),
-    hud-evolve-bob 1.6s ease-in-out infinite;
 }
 
 .hud-power {
@@ -1634,8 +2118,6 @@
   flex: none;
   width: var(--hud-power);
   height: var(--hud-power);
-  max-width: 18cqh;
-  max-height: 18cqh;
   padding: 0;
   border: none;
   border-radius: 50%;
@@ -1643,54 +2125,76 @@
   touch-action: none;
 }
 
-.hud-power-name {
-  max-width: 110px;
-  padding: 0 7px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #2e2450;
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1.35;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.hud-power-wrap.is-ready .hud-power-name {
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
-  color: var(--hud-ink);
-}
-
 .hud-power-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: conic-gradient(var(--hud-gold) calc(var(--charge, 0) * 1turn), rgba(20, 14, 36, 0.85) 0);
-  box-shadow: 0 0 0 3px var(--hud-ink);
+  background: conic-gradient(var(--hud-gold) calc(var(--charge, 0) * 1turn), rgba(8, 10, 14, 0.88) 0);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 3px 0 1px rgba(0, 0, 0, 0.45);
+  transition: box-shadow var(--ui-dur-medium) var(--ui-ease-out);
 }
 
 .hud-power-core {
   position: absolute;
-  inset: 9%;
+  inset: 8%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 3px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, #7d6bb8, #3a2e62 70%);
-  filter: grayscale(0.6) brightness(0.8);
+  background: radial-gradient(circle at 40% 30%, #56647c, #1e2531 72%);
+  box-shadow: 0 0 0 2px var(--hud-ink);
+  filter: grayscale(0.65) brightness(0.72);
+  transition: filter var(--ui-dur-medium) var(--ui-ease-out);
 }
 
 .hud-power.is-ready .hud-power-core {
   filter: none;
 }
 
+/* MR-69: the ring closes with a bright sweep, the button lifts 4 px and rests in a steady glow. */
 .hud-power.is-ready .hud-power-ring {
   box-shadow:
-    0 0 0 3px var(--hud-ink),
-    0 0 20px 5px rgba(255, 212, 71, 0.8);
+    0 0 0 2px var(--hud-ink),
+    0 0 0 5px rgba(255, 212, 102, 0.35),
+    0 0 20px 5px rgba(242, 181, 44, 0.7),
+    0 3px 0 1px rgba(0, 0, 0, 0.45);
+}
+
+/* The name (charging) or READY (ready) sits inside the ring, never clipped (UA-14). */
+.hud-power-name,
+.hud-power-ready {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  z-index: 2;
+  max-width: 86%;
+  padding: 0 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+  translate: -50% 0;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 15px;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+}
+
+.hud-power-name {
+  background: var(--ui-surface-3, #313a4b);
+  color: var(--hud-text);
+}
+
+.hud-power-ready {
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold-face));
+  color: var(--ui-ink, #1d1405);
+  text-transform: uppercase;
+  animation: hud-pop var(--ui-dur-medium) var(--ui-ease-back);
 }
 
 .hud-power-burst {
@@ -1699,7 +2203,7 @@
   border-radius: 50%;
   border: 5px solid #fff4c2;
   pointer-events: none;
-  animation: hud-burst 700ms ease-out forwards;
+  animation: hud-burst 700ms var(--ui-ease-out) forwards;
 }
 
 @keyframes hud-burst {
@@ -1708,75 +2212,68 @@
     opacity: 1;
   }
   100% {
-    scale: 1.7;
+    scale: 1.6;
     opacity: 0;
     border-width: 1px;
   }
-}
-
-.hud-power-ready {
-  position: absolute;
-  left: 50%;
-  top: -9px;
-  translate: -50% 0;
-  padding: 0 7px;
-  border: 2px solid var(--hud-ink);
-  border-radius: 99px;
-  background: #3fcf6e;
-  color: var(--hud-ink);
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1.35;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
 /* Ready = grabbable: lifted off the tray with a deeper shadow and a small drag arrow. */
 .hud-power.is-ready {
   cursor: grab;
   translate: 0 -4px;
-  filter: drop-shadow(0 7px 5px rgba(8, 4, 20, 0.55));
+  filter: drop-shadow(0 7px 5px rgba(0, 0, 0, 0.5));
   transition:
-    translate 220ms var(--ui-ease-back, ease-out),
-    filter 220ms ease-out,
-    scale 160ms ease-out;
+    translate var(--ui-dur-small) var(--ui-ease-back),
+    filter var(--ui-dur-small) var(--ui-ease-out),
+    scale var(--ui-dur-micro) var(--ui-ease-out);
 }
 
 .hud-power.is-ready:active {
   cursor: grabbing;
 }
 
+/* The one pulse: the power breathes (MR-05) only when nothing ranks above it (U11). */
+.hud-power.is-pulse > .hud-power-ring,
+.hud-power.is-pulse > .hud-power-core {
+  animation: hud-breathe var(--ui-dur-breathe) ease-in-out infinite;
+}
+
 @media (hover: hover) {
   .hud-power.is-ready:hover:not(.is-aiming) {
     translate: 0 -7px;
     scale: 1.04;
-    filter: drop-shadow(0 10px 7px rgba(8, 4, 20, 0.5));
+    filter: drop-shadow(0 10px 7px rgba(0, 0, 0, 0.45));
   }
 }
 
 .hud-power-grab {
   position: absolute;
-  right: -5px;
-  top: 4px;
+  right: -2px;
+  top: 2px;
+  z-index: 2;
   width: 26px;
   height: 26px;
   box-sizing: border-box;
   padding: 3px;
-  border: 2px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffffff, #fff1a8 55%, var(--hud-gold) 100%);
-  box-shadow: 0 2px 0 rgba(8, 4, 20, 0.5);
+  background: radial-gradient(circle at 35% 30%, #ffffff, #fff1a8 55%, var(--hud-gold-face) 100%);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.5);
   pointer-events: none;
+  animation: hud-pop var(--ui-dur-medium) var(--ui-ease-back) 120ms backwards;
+}
+
+.hud-power.is-pulse .hud-power-grab {
   animation:
-    hud-pop 300ms 120ms var(--ui-ease-back, ease-out) backwards,
+    hud-pop var(--ui-dur-medium) var(--ui-ease-back) 120ms backwards,
     hud-power-nudge 1.4s 450ms ease-in-out infinite;
 }
 
 .hud.is-compact .hud-power-grab {
   width: 22px;
   height: 22px;
-  right: -6px;
 }
 
 @keyframes hud-power-nudge {
@@ -1806,44 +2303,33 @@
   filter: grayscale(1) brightness(0.7);
 }
 
-/* Tap-to-aim: the button is pressed in, its ring pulses, and a cross says "tap again to cancel". */
+/* Tap-to-aim: the button is pressed in, its ring glows, and a cross says "tap again to cancel". */
 .hud-power-wrap.is-aiming .hud-power:not(.is-lifted) {
   translate: 0 1px;
   filter: drop-shadow(0 0 10px rgba(255, 244, 194, 0.9));
 }
 
 .hud-power-wrap.is-aiming .hud-power:not(.is-lifted) > .hud-power-ring {
-  animation: hud-power-aimring 900ms ease-in-out infinite;
-}
-
-@keyframes hud-power-aimring {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 3px var(--hud-ink),
-      0 0 0 5px rgba(255, 255, 255, 0.9),
-      0 0 14px 6px rgba(255, 212, 71, 0.7);
-  }
-  50% {
-    box-shadow:
-      0 0 0 3px var(--hud-ink),
-      0 0 0 8px rgba(255, 255, 255, 0.45),
-      0 0 24px 10px rgba(255, 212, 71, 0.9);
-  }
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 0 0 6px rgba(255, 255, 255, 0.75),
+    0 0 20px 8px rgba(242, 181, 44, 0.8);
 }
 
 .hud-power-x {
   position: absolute;
-  right: -4px;
-  top: -2px;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--hud-ink);
+  right: -2px;
+  top: 0;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: #f6eedb;
-  box-shadow: 0 2px 0 rgba(8, 4, 20, 0.5);
+  background: #fbf6ea;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.5);
   pointer-events: none;
-  animation: hud-pop 220ms var(--ui-ease-back, ease-out);
+  animation: hud-pop var(--ui-dur-small) var(--ui-ease-back);
 }
 
 .hud-power-x::before,
@@ -1867,23 +2353,32 @@
 /* "Tap the battlefield to fire" over the button while aiming. */
 .hud-power-chip {
   position: absolute;
-  right: -6px;
+  right: -4px;
   bottom: calc(100% + 12px);
-  padding: 5px 10px;
-  border: 2px solid var(--hud-ink);
+  padding: 6px 10px;
   border-radius: 10px;
-  background: linear-gradient(180deg, #fffaf0, #f3e6c4);
-  color: var(--hud-ink);
-  font-size: 12px;
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
+  font-size: 13px;
   font-weight: 900;
   white-space: nowrap;
-  box-shadow: 0 3px 0 rgba(8, 4, 20, 0.55);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 4px 10px rgba(0, 0, 0, 0.45);
   pointer-events: none;
   transform-origin: 85% 100%;
-  animation: hud-power-bubble-in 260ms var(--ui-ease-back, ease-out);
+  animation: hud-power-bubble-in var(--ui-dur-small) var(--ui-ease-back);
 }
 
-/* Aiming mode: the field takes the taps (under the top bar and tray, above the canvas). */
+.hud-power-chip-sub {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* Aiming mode: the field takes the taps (under the top band and tray, above the canvas). */
 .hud-power-catch {
   position: absolute;
   inset: 0;
@@ -1891,17 +2386,17 @@
   pointer-events: auto;
   cursor: crosshair;
   touch-action: none;
-  background: radial-gradient(ellipse at 50% 55%, rgba(255, 244, 194, 0) 55%, rgba(16, 11, 30, 0.22) 100%);
-  animation: hud-power-fade 200ms ease-out;
+  background: radial-gradient(ellipse at 50% 55%, rgba(255, 244, 194, 0) 55%, rgba(8, 10, 14, 0.22) 100%);
+  animation: hud-fade var(--ui-dur-medium-out) var(--ui-ease-out);
 }
 
-@keyframes hud-power-fade {
+@keyframes hud-fade {
   from {
     opacity: 0;
   }
 }
 
-/* The power in hand: a token that follows the pointer, lifted above the finger. */
+/* The power in hand: a token that follows the pointer, lifted above the finger (MR-70). */
 .hud-power-token {
   position: absolute;
   z-index: 6;
@@ -1921,19 +2416,19 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 3px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, #7d6bb8, #3a2e62 70%);
+  background: radial-gradient(circle at 40% 30%, #56647c, #1e2531 72%);
   box-shadow:
-    0 0 0 3px var(--hud-gold),
-    0 0 18px 6px rgba(255, 212, 71, 0.75),
-    0 14px 12px rgba(8, 4, 20, 0.45);
+    0 0 0 2px var(--hud-ink),
+    0 0 0 4px var(--hud-gold),
+    0 0 18px 6px rgba(242, 181, 44, 0.7),
+    0 14px 12px rgba(0, 0, 0, 0.45);
   animation:
-    hud-power-grabbed 240ms var(--ui-ease-back, ease-out),
+    hud-power-grabbed var(--ui-dur-small) var(--ui-ease-back),
     hud-power-sway 1.1s 240ms ease-in-out infinite;
   transition:
-    box-shadow 160ms ease-out,
-    filter 160ms ease-out;
+    box-shadow var(--ui-dur-micro) var(--ui-ease-out),
+    filter var(--ui-dur-micro) var(--ui-ease-out);
 }
 
 .hud-power-token-core > img {
@@ -1957,9 +2452,10 @@
 .hud-power-token.is-cancel .hud-power-token-core {
   filter: grayscale(0.8) brightness(0.8);
   box-shadow:
-    0 0 0 3px #e0525a,
+    0 0 0 2px var(--hud-ink),
+    0 0 0 4px #e0525a,
     0 0 16px 4px rgba(224, 82, 90, 0.6),
-    0 10px 10px rgba(8, 4, 20, 0.45);
+    0 10px 10px rgba(0, 0, 0, 0.45);
 }
 
 .hud-power-token.is-cancel::after {
@@ -1971,30 +2467,23 @@
   left: 0;
   top: -122px;
   translate: -50% 0;
-  padding: 3px 9px;
-  border: 2px solid var(--hud-ink);
+  padding: 4px 10px;
   border-radius: 99px;
-  background: #e0525a;
+  background: var(--hud-deny);
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
   white-space: nowrap;
-  box-shadow: 0 2px 0 rgba(8, 4, 20, 0.55);
-  animation: hud-pop 200ms var(--ui-ease-back, ease-out);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 3px 8px rgba(0, 0, 0, 0.45);
+  animation: hud-pop var(--ui-dur-micro) var(--ui-ease-back);
 }
 
 /* A power that picks its own spot says where it will act (the ghost may be away from the finger). */
 .hud-power-token-label.is-info {
-  background: linear-gradient(180deg, #fffaf0, #f3e6c4);
-  color: var(--hud-ink);
-}
-
-.hud-power-chip-sub {
-  display: block;
-  margin-top: 1px;
-  font-size: 11px;
-  font-weight: 700;
-  opacity: 0.8;
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
 }
 
 @keyframes hud-power-grabbed {
@@ -2021,7 +2510,7 @@
 /* The first-time hint: a speech bubble and a hand that drags the power up onto the field. */
 .hud-power-hint {
   position: absolute;
-  right: -8px;
+  right: -4px;
   bottom: calc(100% + 16px);
   z-index: 4;
   pointer-events: none;
@@ -2030,35 +2519,36 @@
 .hud-power-hint-text {
   position: relative;
   display: block;
-  padding: 7px 12px;
-  border: 2.5px solid var(--hud-ink);
+  padding: 8px 12px;
   border-radius: 12px;
-  background: linear-gradient(180deg, #fffaf0, #f7e7b6);
-  color: var(--hud-ink);
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
   font-size: 14px;
   font-weight: 900;
   white-space: nowrap;
-  box-shadow: 0 4px 0 rgba(8, 4, 20, 0.55);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 6px 14px rgba(0, 0, 0, 0.45);
   transform-origin: 88% 100%;
-  animation: hud-power-bubble-in 380ms var(--ui-ease-back, ease-out) backwards;
+  animation: hud-power-bubble-in 380ms var(--ui-ease-back) backwards;
 }
 
 .hud-power-hint-text::after {
   content: '';
   position: absolute;
   right: 36px;
-  bottom: -9px;
+  bottom: -8px;
   width: 14px;
   height: 14px;
-  border-right: 2.5px solid var(--hud-ink);
-  border-bottom: 2.5px solid var(--hud-ink);
-  background: #f7e7b6;
+  border-right: 2px solid var(--hud-ink);
+  border-bottom: 2px solid var(--hud-ink);
+  background: #fbf6ea;
   rotate: 45deg;
 }
 
 .hud.is-compact .hud-power-hint-text {
-  font-size: 12px;
-  padding: 5px 10px;
+  font-size: 13px;
+  padding: 6px 10px;
 }
 
 @keyframes hud-power-bubble-in {
@@ -2078,13 +2568,13 @@
 .hud-power-hand {
   position: absolute;
   left: calc(50% - 22px);
-  top: calc(min(var(--hud-power), 18cqh) / 2 - 3px);
+  top: calc(var(--hud-power) / 2 - 3px);
   z-index: 4;
   pointer-events: none;
   width: 48px;
   height: 48px;
-  filter: drop-shadow(0 4px 3px rgba(8, 4, 20, 0.5));
-  animation: hud-power-hand 2.2s 400ms var(--ui-ease-standard, ease-out) 3 backwards;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.5));
+  animation: hud-power-hand 2.2s 400ms var(--ui-ease-standard) 3 backwards;
 }
 
 .hud-power-hand > svg {
@@ -2103,13 +2593,13 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, #7d6bb8, #3a2e62 70%);
+  background: radial-gradient(circle at 40% 30%, #56647c, #1e2531 72%);
   box-shadow:
-    0 0 0 2px var(--hud-gold),
-    0 0 12px 4px rgba(255, 212, 71, 0.7);
-  animation: hud-power-hand-ghost 2.2s 400ms var(--ui-ease-standard, ease-out) 3 backwards;
+    0 0 0 2px var(--hud-ink),
+    0 0 0 4px var(--hud-gold),
+    0 0 12px 4px rgba(242, 181, 44, 0.7);
+  animation: hud-power-hand-ghost 2.2s 400ms var(--ui-ease-standard) 3 backwards;
 }
 
 .hud-power-hand-ghost > img {
@@ -2178,56 +2668,90 @@
   left: 0;
 }
 
-/* Last Stand, only while armed (A2.11). */
+/* Last Stand (A2.11): 56 px round, floating above the power only while armed. */
 .hud-laststand {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 3;
   display: flex;
-  flex: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  width: 76px;
-  height: min(calc(var(--hud-card) * 1.12), 21cqh);
-  border: 3px solid var(--hud-ink);
-  border-radius: 14px;
-  background: linear-gradient(180deg, #ff9a4a, #c2401e);
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  padding: 0 0 6px;
+  border: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #ffb27a, #d4501f 70%);
   color: #fff;
-  font-size: 0.8em;
-  font-weight: 900;
-  text-transform: uppercase;
-  text-shadow: 0 1px 0 var(--hud-ink);
   box-shadow:
-    0 0 14px 3px rgba(255, 110, 40, 0.7),
-    0 4px 0 rgba(0, 0, 0, 0.45);
-  animation: hud-pop 220ms ease-out;
+    0 0 0 2px var(--hud-ink),
+    0 0 16px 4px rgba(255, 110, 40, 0.6),
+    0 3px 0 1px rgba(0, 0, 0, 0.45);
+  animation: hud-pop var(--ui-dur-small) var(--ui-ease-back);
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-laststand:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-laststand-label {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  translate: -50% 0;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 14px;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
 }
 
 .hud-laststand.is-charging {
-  background: linear-gradient(180deg, #fff1a8, #ff9a4a);
-  color: var(--hud-ink);
-  text-shadow: none;
+  background: radial-gradient(circle at 40% 30%, #fff1a8, #ff9a4a 70%);
+  color: var(--ui-ink, #1d1405);
 }
 
-.hud.is-compact .hud-laststand {
-  width: 62px;
+@container hud (max-height: 499px) {
+  .hud-laststand {
+    width: 52px;
+    height: 52px;
+    margin-left: -26px;
+  }
 }
 
-/* ---------------------------------------------------------------- mount popover */
+/* ---------------------------------------------------------------- mount popover (MR-75) */
 
 .hud-pop {
   position: absolute;
-  min-width: 180px;
-  max-width: 240px;
-  padding: 8px;
+  min-width: 200px;
+  max-width: 250px;
+  padding: 10px;
   translate: 18px -50%;
-  border: 2px solid var(--hud-ink);
-  border-radius: 12px;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
   background: var(--hud-panel);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 0 0 100vmax rgba(8, 10, 14, 0.18),
+    var(--ui-e3);
   pointer-events: auto;
   z-index: 6;
-  animation: hud-pop 150ms ease-out;
+  animation: hud-pop-in var(--ui-dur-micro) var(--ui-ease-back);
+}
+
+@keyframes hud-pop-in {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
 }
 
 .hud-pop.to-left {
@@ -2236,14 +2760,15 @@
 
 .hud-pop-title {
   margin-bottom: 6px;
-  font-size: 1.05em;
+  font-size: 14px;
+  font-weight: 900;
 }
 
 .hud-pop-sub,
 .hud-pop-note {
   margin: 4px 0;
   color: var(--hud-dim);
-  font-size: 0.85em;
+  font-size: 12px;
 }
 
 .hud-pop-option,
@@ -2253,13 +2778,24 @@
   gap: 8px;
   width: 100%;
   min-height: 48px;
-  margin-top: 4px;
-  padding: 4px 8px;
+  margin-top: 6px;
+  padding: 4px 10px 4px 6px;
   box-sizing: border-box;
-  border: 2px solid var(--hud-ink);
+  border: none;
   border-radius: 10px;
-  background: linear-gradient(180deg, #54447f, #2e2450);
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(8, 10, 14, 0.9);
+  font-size: 14px;
   text-align: left;
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-pop-option:active,
+.hud-pop-sell:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
 }
 
 .hud-pop-option.is-poor {
@@ -2267,7 +2803,7 @@
 }
 
 .hud-pop-option.is-poor .hud-pop-cost {
-  color: #ff7a6e;
+  color: var(--hud-bad);
 }
 
 .hud-pop-pic {
@@ -2275,13 +2811,14 @@
   height: 36px;
   flex: none;
   overflow: hidden;
-  border: 2px solid var(--hud-ink);
   border-radius: 8px;
-  background: #2a2140;
+  background: var(--ui-surface-1, #1a1f29);
+  box-shadow: 0 0 0 1px var(--hud-edge);
 }
 
 .hud-pop-name {
   flex: 1;
+  font-size: 14px;
 }
 
 .hud-pop-cost {
@@ -2289,15 +2826,17 @@
   align-items: center;
   gap: 2px;
   color: var(--hud-gold);
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .hud-pop-sell {
   justify-content: center;
-  background: linear-gradient(180deg, #7a3a4a, #4a1e2c);
+  background: linear-gradient(180deg, #5c3036, #3a1d22);
 }
 
 .hud-pop-sell.is-confirm {
-  background: linear-gradient(180deg, #ff6a5a, #b0282a);
+  background: linear-gradient(180deg, var(--ui-destructive-light, #e5675c), var(--hud-deny));
 }
 
 /* ---------------------------------------------------------------- moments */
@@ -2312,15 +2851,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   translate: -50% 0;
   pointer-events: none;
   text-align: center;
   white-space: nowrap;
-  animation: hud-moment 2400ms var(--ui-ease-back, ease-out) forwards;
+  animation: hud-moment 2400ms var(--ui-ease-out) forwards;
 }
 
 .hud-moment-title {
+  font-family: var(--ui-font-display, system-ui);
   font-size: clamp(30px, 8cqh, 56px);
   font-weight: 900;
   line-height: 1;
@@ -2329,8 +2869,8 @@
   -webkit-text-stroke: 5px var(--hud-ink);
   paint-order: stroke fill;
   text-shadow:
-    0 5px 0 var(--hud-ink),
-    0 0 26px rgba(255, 212, 71, 0.75);
+    0 4px 0 var(--hud-ink),
+    0 0 26px rgba(242, 181, 44, 0.65);
 }
 
 .hud-moment-evolve .hud-moment-title {
@@ -2340,13 +2880,14 @@
 
 .hud-moment-sub {
   padding: 2px 12px;
-  border: 2px solid var(--hud-ink);
   border-radius: 99px;
-  background: var(--hud-gold);
-  color: var(--hud-ink);
+  background: var(--hud-gold-face);
+  color: var(--ui-ink, #1d1405);
   font-size: clamp(13px, 2.6cqh, 20px);
   font-weight: 900;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 3px 0 rgba(0, 0, 0, 0.4);
 }
 
 .hud-moment-phase .hud-moment-title {
@@ -2360,16 +2901,18 @@
 
 .hud-moment-blocked .hud-moment-title {
   padding: 8px 16px;
-  border: 3px solid var(--hud-ink);
   border-radius: 16px;
-  background: #fffaf0;
-  color: var(--hud-ink);
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
+  font-family: var(--ui-font-text, system-ui);
   font-size: clamp(15px, 2.9cqh, 22px);
   -webkit-text-stroke: 0;
   text-shadow: none;
   white-space: normal;
   max-width: 70cqw;
-  box-shadow: 0 5px 0 var(--hud-ink), 0 10px 24px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 10px 24px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes hud-moment {
@@ -2396,34 +2939,6 @@
   }
 }
 
-/* ---------------------------------------------------------------- narrow and short screens */
-
-/* Short screens drop your own name row; the opponent's AI chip and label always stay (A7.1). */
-@container hud (max-height: 460px) {
-  .hud-me .hud-name {
-    display: none;
-  }
-
-  .hud-name-foe {
-    font-size: 0.8em;
-  }
-
-  .hud-foe .hud-bars {
-    gap: 0.3cqh;
-  }
-}
-
-@container hud (max-width: 899px) {
-  .hud-side {
-    width: min(30cqw, 280px);
-  }
-
-  .hud-scouted-chip {
-    padding: 1px 6px;
-    font-size: 0.8em;
-  }
-}
-
 @keyframes hud-moment-calm {
   0%,
   100% {
@@ -2435,48 +2950,34 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hud-vignette.is-on {
-    animation: none;
-    opacity: 0.6;
-  }
-
-  .hud-power.is-ready > *,
-  .hud-power-grab,
-  .hud-power-token-core,
-  .hud-power-wrap.is-aiming .hud-power > .hud-power-ring,
-  .hud-evolve.is-ready > *,
-  .hud-card-flip,
-  .hud-power-burst,
-  .hud-hp.is-low .hud-hp-fill {
-    animation: none;
-  }
-
-  .hud-moment {
-    animation: hud-moment-calm 2400ms linear forwards;
-  }
-
-  .hud .is-denied {
-    animation: hud-deny-flash 280ms ease-out;
-  }
-}
-
 /* ---------------------------------------------------------------- minimap strip (A17.5) */
 
-/* The strip hangs under the centre of the top bar, where the front-line strip was; the base and
-   front buttons sit at its ends. Everything but the strip and buttons lets presses through. */
+/* The strip hangs under the centre of the top band (a 24 px row on phones, 4.7); the base and front
+   buttons sit at its ends. Everything but the strip and buttons lets presses through. */
 .hud-minimap {
-  --mm-h: 22px;
-  --mm-btn: 36px;
+  --mm-h: 28px;
+  --mm-btn: 40px;
+  --mm-hit: 48px;
   position: absolute;
   left: 50%;
-  top: calc(100% + 10px);
+  top: 100%;
   translate: -50% 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  margin-top: 2px;
   pointer-events: none;
   z-index: 3;
+}
+
+@container hud (max-height: 499px) {
+  /* The strip's 44 px row starts under the band's panels, so the strip itself spans about y 47-69. */
+  .hud-minimap {
+    --mm-h: 22px;
+    --mm-btn: 34px;
+    --mm-hit: 44px;
+    margin-top: -8px;
+  }
 }
 
 .hud-mm-strip {
@@ -2485,28 +2986,27 @@
   width: clamp(280px, 40cqw, 560px);
   height: var(--mm-h);
   box-sizing: border-box;
-  border: 2px solid var(--hud-ink);
   border-radius: 99px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 45%),
-    repeating-linear-gradient(90deg, rgba(58, 47, 92, 0.9) 0 8px, rgba(46, 36, 80, 0.9) 8px 16px);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 45%),
+    repeating-linear-gradient(90deg, rgba(37, 44, 57, 0.92) 0 8px, rgba(26, 31, 41, 0.92) 8px 16px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 3px 0 rgba(0, 0, 0, 0.35),
-    0 4px 14px rgba(0, 0, 0, 0.25);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1.5px var(--hud-ink),
+    0 3px 10px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
   cursor: pointer;
   touch-action: none;
 }
 
-/* An invisible hit area at least 32 px tall (A17.5). */
+/* The hit area is 44 px tall (10 px above and below, 4.7); only presses that start here scrub. */
 .hud-mm-strip::before {
   content: '';
   position: absolute;
   left: -2px;
   right: -2px;
   top: 50%;
-  height: max(34px, 100%);
+  height: max(var(--mm-hit), 100%);
   translate: 0 -50%;
 }
 
@@ -2528,12 +3028,12 @@
   height: calc(var(--mm-h) + 8px);
   translate: -50% -50%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, var(--team) calc(var(--hp, 1) * 1turn), rgba(20, 14, 36, 0.92) 0);
+  background: conic-gradient(from 0deg, var(--team) calc(var(--hp, 1) * 1turn), rgba(8, 10, 14, 0.92) 0);
   box-shadow:
-    0 0 0 2px var(--hud-ink),
-    0 2px 0 2px rgba(0, 0, 0, 0.3);
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 1px rgba(0, 0, 0, 0.3);
   pointer-events: none;
-  transition: background 240ms ease-out;
+  transition: background 240ms var(--ui-ease-out);
 }
 
 .hud-mm-base-l {
@@ -2555,9 +3055,9 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  border: 1.5px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff8e6, #d9cdb2 60%, #a8977a);
+  background: radial-gradient(circle at 35% 30%, #fbf6ea, #d8ccb4 60%, #a8977a);
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
 }
 
 .hud-mm-base-core svg {
@@ -2566,11 +3066,11 @@
 }
 
 .hud-mm-base.is-hit {
-  animation: hud-mm-hit 1s ease-out;
+  animation: hud-mm-hit 1s var(--ui-ease-out);
 }
 
 .hud-mm-base.is-evolve {
-  animation: hud-mm-evolve 1.2s ease-out;
+  animation: hud-mm-evolve 1.2s var(--ui-ease-out);
 }
 
 @keyframes hud-mm-hit {
@@ -2579,8 +3079,8 @@
   72% {
     scale: 1.18;
     box-shadow:
-      0 0 0 2px var(--hud-ink),
-      0 0 12px 5px rgba(255, 64, 48, 0.95);
+      0 0 0 1.5px var(--hud-ink),
+      0 0 12px 5px rgba(255, 64, 48, 0.9);
     filter: brightness(1.25);
   }
   18%,
@@ -2588,8 +3088,8 @@
   100% {
     scale: 1;
     box-shadow:
-      0 0 0 2px var(--hud-ink),
-      0 2px 0 2px rgba(0, 0, 0, 0.3);
+      0 0 0 1.5px var(--hud-ink),
+      0 2px 0 1px rgba(0, 0, 0, 0.3);
     filter: none;
   }
 }
@@ -2601,108 +3101,118 @@
   20% {
     scale: 1.35;
     box-shadow:
-      0 0 0 2px var(--hud-ink),
-      0 0 16px 7px rgba(255, 222, 110, 0.95);
+      0 0 0 1.5px var(--hud-ink),
+      0 0 16px 7px rgba(255, 222, 110, 0.9);
   }
   100% {
     scale: 1;
   }
 }
 
+/* Base and front buttons: a round face inside a 44 px hit area (48 on desktop). */
 .hud-mm-btn {
   position: relative;
+  isolation: isolate;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--mm-btn);
-  height: var(--mm-btn);
+  width: var(--mm-hit);
+  height: var(--mm-hit);
   padding: 0;
-  border: 2px solid var(--hud-ink);
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 28%, #8a7bbf, #4a3d78 62%, #33295a);
+  border: none;
+  background: none;
   color: var(--hud-me);
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.22),
-    0 3px 0 rgba(0, 0, 0, 0.38);
-  transition:
-    filter 140ms ease-out,
-    box-shadow 240ms ease-out,
-    translate 90ms ease-out;
 }
 
-.hud-mm-btn:hover {
+.hud-mm-btn::before {
+  content: '';
+  position: absolute;
+  inset: calc((var(--mm-hit) - var(--mm-btn)) / 2);
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    filter var(--ui-dur-release) var(--ui-ease-out),
+    box-shadow var(--ui-dur-medium) var(--ui-ease-out);
+}
+
+.hud-mm-btn:hover::before {
   filter: brightness(1.14);
 }
 
-.hud-mm-btn:active {
-  translate: 0 2px;
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+.hud-mm-btn:active::before {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
 }
 
 .hud-mm-btn svg {
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
 }
 
-/* While the camera is Manual the front button wears a soft "Follow" outline (A17.4). */
-.hud-mm-front.is-manual {
-  animation: hud-mm-follow 1.8s ease-in-out infinite;
-}
-
-@keyframes hud-mm-follow {
-  0%,
-  100% {
-    box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, 0.22),
-      0 3px 0 rgba(0, 0, 0, 0.38),
-      0 0 0 3px rgba(255, 238, 170, 0.55);
-  }
-  50% {
-    box-shadow:
-      inset 0 2px 0 rgba(255, 255, 255, 0.22),
-      0 3px 0 rgba(0, 0, 0, 0.38),
-      0 0 0 4px rgba(255, 238, 170, 0.95),
-      0 0 14px 4px rgba(255, 222, 120, 0.55);
-  }
+/* While the camera is Manual the front button wears a steady gold "Follow" outline (A17.4; not a
+   second pulse, U11). */
+.hud-mm-front.is-manual::before {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 2px rgba(255, 212, 102, 0.9),
+    0 0 12px 3px rgba(242, 181, 44, 0.45);
 }
 
 .hud-mm-follow {
   position: absolute;
-  top: calc(100% + 2px);
+  top: calc(100% - 4px);
   left: 50%;
   translate: -50% 0;
   padding: 0 6px;
-  border: 2px solid var(--hud-ink);
   border-radius: 99px;
-  background: linear-gradient(180deg, #fff1a8, var(--hud-gold) 60%, var(--hud-gold-deep));
-  color: var(--hud-ink);
-  font-size: 10px;
+  background: linear-gradient(180deg, #fff1a8, var(--hud-gold-face));
+  color: var(--ui-ink, #1d1405);
+  font-size: 11px;
   font-weight: 900;
-  line-height: 1.3;
+  line-height: 14px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
   pointer-events: none;
-  animation: hud-pop 220ms var(--ui-ease-back, ease-out);
+  animation: hud-pop var(--ui-dur-small) var(--ui-ease-back);
 }
 
+@container hud (max-height: 499px) {
+  .hud-mm-follow {
+    display: none;
+  }
+}
+
+/* The hammer: an owned mount is empty and a turret is affordable; it swings only as the one pulse. */
 .hud-mm-hammer {
   position: absolute;
-  top: -6px;
-  right: -7px;
+  top: 2px;
+  right: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 17px;
   height: 17px;
-  border: 2px solid var(--hud-ink);
   border-radius: 50%;
-  background: radial-gradient(circle at 38% 30%, #fff3b8, var(--hud-gold) 60%, var(--hud-gold-deep));
-  box-shadow: 0 0 8px 2px rgba(255, 212, 71, 0.7);
-  animation:
-    hud-pop 240ms var(--ui-ease-back, ease-out),
-    hud-mm-hammer 1.6s ease-in-out 240ms infinite;
+  background: radial-gradient(circle at 38% 30%, #fff3b8, var(--hud-gold-face) 60%, var(--hud-gold-deep));
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 0 8px 2px rgba(242, 181, 44, 0.6);
+  animation: hud-pop var(--ui-dur-small) var(--ui-ease-back);
   pointer-events: none;
+}
+
+.hud-mm-hammer.is-pulse {
+  animation:
+    hud-pop var(--ui-dur-small) var(--ui-ease-back),
+    hud-mm-hammer 1.6s ease-in-out 240ms infinite;
 }
 
 @keyframes hud-mm-hammer {
@@ -2721,9 +3231,9 @@
 
 .hud-minimap .hud-key {
   top: auto;
-  bottom: -6px;
+  bottom: 0;
   left: auto;
-  right: -6px;
+  right: 0;
 }
 
 /* ---------------------------------------------------------------- off-screen badges (A17.5) */
@@ -2745,8 +3255,8 @@
   border-radius: 50%;
   background: none;
   pointer-events: auto;
-  transition: top 220ms var(--ui-ease-back, ease-out);
-  animation: hud-badge-in 300ms var(--ui-ease-back, ease-out);
+  transition: top var(--ui-dur-small) var(--ui-ease-back);
+  animation: hud-badge-in var(--ui-dur-medium) var(--ui-ease-back);
 }
 
 .hud-badge.is-foe {
@@ -2776,7 +3286,7 @@
   border-radius: 50%;
   background: var(--team);
   box-shadow:
-    0 0 0 2px var(--hud-ink),
+    0 0 0 1.5px var(--hud-ink),
     0 3px 0 2px rgba(0, 0, 0, 0.35),
     0 0 14px 3px color-mix(in srgb, var(--team) 60%, transparent);
 }
@@ -2794,9 +3304,9 @@
   justify-content: center;
   overflow: hidden;
   box-sizing: border-box;
-  border: 2.5px solid var(--hud-ink);
   border-radius: 50%;
   background: radial-gradient(circle at 38% 30%, #fffaf0, #e3d7bf 60%, #b6a585);
+  box-shadow: 0 0 0 2px var(--hud-ink);
 }
 
 .hud-badge-core img {
@@ -2805,6 +3315,7 @@
   object-fit: cover;
 }
 
+/* "Your base is under attack": an alarm glow, transient (the badge leaves with the danger). */
 .hud-badge-base .hud-badge-ring {
   --team: #e2342a;
   animation: hud-badge-alarm 0.9s ease-in-out infinite;
@@ -2817,16 +3328,15 @@
 @keyframes hud-badge-alarm {
   50% {
     box-shadow:
-      0 0 0 2px var(--hud-ink),
+      0 0 0 1.5px var(--hud-ink),
       0 3px 0 2px rgba(0, 0, 0, 0.35),
-      0 0 22px 9px rgba(255, 60, 44, 0.85);
-    scale: 1.08;
+      0 0 22px 9px rgba(255, 60, 44, 0.8);
   }
 }
 
 .hud-badge-legendary .hud-badge-ring {
   box-shadow:
-    0 0 0 2px var(--hud-ink),
+    0 0 0 1.5px var(--hud-ink),
     0 0 0 4px #fff,
     0 3px 0 4px rgba(0, 0, 0, 0.35),
     0 0 18px 5px rgba(255, 255, 255, 0.7);
@@ -2842,199 +3352,65 @@
 
 .hud-badge-right .hud-badge-chevron {
   right: -13px;
-  animation: hud-badge-nudge-r 0.9s ease-in-out infinite;
 }
 
 .hud-badge-left .hud-badge-chevron {
   left: -13px;
   scale: -1 1;
-  animation: hud-badge-nudge-l 0.9s ease-in-out infinite;
-}
-
-@keyframes hud-badge-nudge-r {
-  50% {
-    translate: 3px -50%;
-  }
-}
-
-@keyframes hud-badge-nudge-l {
-  50% {
-    translate: -3px -50%;
-  }
 }
 
 .hud-badge:active {
   scale: 0.92;
 }
 
-/* ---------------------------------------------------------------- phones (A17.7) */
+/* ---------------------------------------------------------------- narrow phones */
 
-/* Phones (height < 500): a slimmer top bar (10%, at least 36 px), a 68% lane band and a 22% tray, so
-   units stay big; the minimap row is 16 px with 32 px buttons. */
-@container hud (max-height: 499px) {
-  .hud-top {
-    height: max(36px, 10%);
-  }
-
-  .hud-tray {
-    height: 22%;
-  }
-
-  .hud-minimap {
-    --mm-h: 16px;
-    --mm-btn: 32px;
-    top: calc(100% + 6px);
-    gap: 5px;
-  }
-
-  /* A slimmer top row: 30 px panels, a compact clock and a 40 px Evolve button. */
-  .hud-panel {
-    height: 30px;
-    padding: 0 6px;
-    gap: 5px;
-    border-radius: 9px;
-  }
-
-  .hud-me {
-    width: min(26cqw, 300px);
-    padding-right: 2px;
-  }
-
-  .hud-side {
-    width: min(26cqw, 300px);
-  }
-
-  .hud-medal {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    min-height: 24px;
-  }
-
-  .hud-medal-tag {
-    bottom: -6px;
-    padding: 0 4px;
-    font-size: 8px;
-  }
-
-  .hud-bars {
-    gap: 2px;
-  }
-
-  .hud-hp {
-    height: 11px;
-    border-width: 1.5px;
-  }
-
-  .hud-hp-text {
-    font-size: 8.5px;
-  }
-
-  .hud-xp {
-    height: 6px;
-    border-width: 1.5px;
-  }
-
-  .hud-xp.has-text {
-    height: 11px;
-  }
-
-  .hud-xp-text {
-    font-size: 8px;
-  }
-
-  .hud-name {
-    font-size: 9px;
-    line-height: 1;
-  }
-
-  .hud-foe.hud-panel {
-    height: 34px;
-  }
-
-  .hud-foe .hud-hp {
-    height: 10px;
-  }
-
-  .hud-foe .hud-bars > .hud-xp {
-    height: 5px;
-  }
-
-  .hud-ai-chip {
-    padding: 0 4px 0 2px;
-    border-width: 1px;
-  }
-
-  .hud.is-compact .hud-evolve,
-  .hud-evolve {
-    --evo: 40px;
-    margin-top: 10px;
-  }
-
-  .hud-evolve-disc {
-    inset: 4px;
-  }
-
-  .hud-evolve-label {
-    top: calc(100% - 8px);
-    padding: 0 5px;
-    font-size: 9px;
-  }
-
-  .hud-evolve.is-ready .hud-evolve-label {
-    font-size: 10px;
-  }
-
-  .hud-clock {
-    min-width: 72px;
-    padding: 1px 10px 3px;
-    border-radius: 0 0 10px 10px;
-  }
-
-  .hud-clock-text {
-    font-size: 17px;
-    line-height: 1.05;
-  }
-
-  .hud-timeline {
-    height: 4px;
-    margin-top: 1px;
-  }
-
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud-scouted-text,
   .hud-next-phase {
-    margin-top: 1px;
-    font-size: 8.5px;
-  }
-
-  .hud-round {
-    width: 30px;
-    height: 30px;
-  }
-
-  .hud-speed {
-    min-width: 30px;
-  }
-
-  .hud-mm-base {
-    width: calc(var(--mm-h) + 7px);
-    height: calc(var(--mm-h) + 7px);
-  }
-
-  .hud-mm-follow {
     display: none;
   }
 
-  .hud-badge {
-    width: 40px;
-    height: 40px;
+  .hud-chip {
+    padding: 0 4px;
   }
 }
 
+@container hud (max-height: 499px) and (max-width: 719px) {
+  .hud-mm-strip {
+    width: 36cqw;
+  }
+}
+
+/* ---------------------------------------------------------------- reduce motion (U14) */
+
 @media (prefers-reduced-motion: reduce) {
-  .hud-mm-front.is-manual,
+  .hud-vignette.is-on {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .hud-power.is-pulse > *,
+  .hud-power-grab,
+  .hud-power-token-core,
+  .hud-evolve.is-pulse > *,
+  .hud-card-flip,
+  .hud-power-burst,
   .hud-mm-hammer,
   .hud-badge-base .hud-badge-ring,
-  .hud-badge-chevron {
+  .hud-card-queue {
     animation: none;
+  }
+
+  .hud-moment {
+    animation: hud-moment-calm 2400ms linear forwards;
+  }
+
+  .hud-reason {
+    animation-name: hud-moment-calm;
+  }
+
+  .hud-stance-opt {
+    animation-name: hud-fade;
   }
 }

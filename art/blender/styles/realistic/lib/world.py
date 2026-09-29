@@ -59,13 +59,21 @@ def turret_clips(dust_build=None, dust_destroyed=None, fire_fx=None):
     return [G.Clip("mount", [1000]), idle, fire, build, dest]
 
 
+def hide_groups(fn):
+    """Hides tagged objects whose group fails fn (never un-hides: pose code may hide parts)."""
+    for o in bpy.context.scene.objects:
+        g = o.get("grp")
+        if g is not None and not fn(g):
+            o.hide_render = True
+
+
 def turret_visibility(ctx, clip):
     if clip == "mount":
-        show_groups(ctx, lambda g: g == "mount")
+        hide_groups(lambda g: g == "mount")
     elif clip in ("idle", "fire"):
-        show_groups(ctx, lambda g: g != "mount" and g != "fx" or (g == "fx" and clip == "fire"))
+        hide_groups(lambda g: g != "mount" and g != "fx" or (g == "fx" and clip == "fire"))
     else:
-        show_groups(ctx, lambda g: g != "fx")
+        hide_groups(lambda g: g != "fx")
 
 
 def base_clips(flags=("flagA", "flagB")):

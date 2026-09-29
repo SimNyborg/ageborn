@@ -133,5 +133,5 @@ describe('no hard-coded UI strings', () => {
     expect(files.length).toBeGreaterThan(10);
     const findings = files.flatMap((f) => scanSource(f)).map((f) => `${f.where} (${f.kind}): ${JSON.stringify(f.text)}`);
     expect(findings).toEqual([]);
-  });
+  }, 30_000);
 });

@@ -23,6 +23,7 @@ import type {
   SaveDoc,
   SideConfig,
   SideLook,
+  WarPathMatch,
 } from '@/contracts';
 import { botProfile } from '@/ai';
 import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from '@/content';
@@ -53,6 +54,8 @@ export interface MatchSetup {
   brain: OpponentBrain;
   /** Scripted onboarding beats for this match, if any. */
   script: MatchScript | null;
+  /** The War Path level of a `warPath` match (A18.7); the result carries it to meta. */
+  warPath?: WarPathMatch;
 }
 
 /** Names the setup puts on the sides (from the caller's i18n; the setup itself has no strings). */
@@ -185,7 +188,7 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
 export function newPlayerBonusBp(content: CompiledContent, save: SaveDoc | null, mode: MatchMode = 'ladder'): number {
   const ladder = tables(content).arenas?.ladder;
   const played = save?.matchesPlayed ?? 0;
-  if (mode === 'skirmish') return 0;
+  if (mode === 'skirmish' || mode === 'warPath') return 0;
   return ladder && played < ladder.newPlayer.matches ? ladder.newPlayer.mistakeBonusBp : 0;
 }
 

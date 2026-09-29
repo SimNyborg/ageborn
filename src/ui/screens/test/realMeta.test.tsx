@@ -50,6 +50,8 @@ function metaQueries(save: () => SaveDoc): Partial<UiServices> {
         return meta.pickOpponent(s, 'daily', content, clock);
       case 'tutorial':
         return meta.pickOpponent(req.match === 1 ? s : { ...s, matchesPlayed: 1 }, 'tutorial', content, clock);
+      case 'warPath':
+        return meta.pickOpponent(s, 'warPath', content, clock, { warPath: { level: req.level, difficulty: req.difficulty } });
     }
   };
   return {

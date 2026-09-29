@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const UNITS = path.join(ROOT, 'public', 'art', 'units');
 const OUT = path.join(ROOT, 'src', 'visuals', 'unitSheets.gen.ts');
-const AGES = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 const r1 = (v) => Math.round(v * 10) / 10;
 const pt = (v) => [r1(v[0]), r1(v[1])];

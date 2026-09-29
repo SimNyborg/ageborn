@@ -27,7 +27,7 @@
     "queued": "{n} queued",
     "armyFull": "Army full",
     "legendaryInField": "Legendary in field",
-    "army": "{pop}/{cap}",
+    "army": "Army {pop}/{cap}",
     "stanceLabel": "Stance: {stance}",
     "stance": {
       "charge": "Charge",
@@ -154,6 +154,23 @@
       "complete": "Research complete",
       "foeResearching": "Their research: {name}, {s} s left",
       "foeTitle": "Their research"
+    },
+    "scoutedShort": "Scouted",
+    "foePower": "{age}. Their power: {pct}%",
+    "stanceButton": "Stance: {stance}. Press and slide up to change",
+    "tip": {
+      "cancelOne": "Cancel one ({n} queued)"
+    },
+    "deny": {
+      "gold": "Need {n} gold",
+      "noGold": "Not enough gold",
+      "queueFull": "Queue full",
+      "legendary": "Legendary in field",
+      "xp": "Need {n} more XP",
+      "evolving": "Evolving…",
+      "power": "Charging: {pct}%",
+      "stanceWait": "Ready in {s}s",
+      "wait": "Not yet"
     }
   }
 }

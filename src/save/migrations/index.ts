@@ -18,11 +18,12 @@ import { v1 } from './v1';
 import { v2 } from './v2';
 import { v3 } from './v3';
 import { v4 } from './v4';
+import { v5 } from './v5';
 
 export type { SaveVersion } from './types';
 
 /** Every save version, oldest first. The last one is the version this build writes. */
-export const SAVE_VERSIONS: readonly SaveVersion[] = [v1, v2, v3, v4];
+export const SAVE_VERSIONS: readonly SaveVersion[] = [v1, v2, v3, v4, v5];
 
 /** The version this build writes and the schema validates. */
 export const SAVE_VERSION: number = SAVE_VERSIONS[SAVE_VERSIONS.length - 1]?.v ?? 1;

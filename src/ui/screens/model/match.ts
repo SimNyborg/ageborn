@@ -24,6 +24,8 @@ export function requestFormat(req: MatchRequest, content: Content): FormatId | n
       return content.generals.conquest.format;
     case 'tutorial':
       return null;
+    case 'warPath':
+      return content.warPath.levels[req.level]?.format ?? null;
   }
 }
 

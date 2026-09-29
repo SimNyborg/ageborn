@@ -65,6 +65,8 @@ export function opponentOptions(req: MatchRequest): Parameters<MetaRules['pickOp
       return { skirmish: req.options, format: req.options.format };
     case 'daily':
       return req.difficulty ? { daily: { difficulty: req.difficulty } } : {};
+    case 'warPath':
+      return { warPath: { level: req.level, difficulty: req.difficulty } };
     default:
       return {};
   }

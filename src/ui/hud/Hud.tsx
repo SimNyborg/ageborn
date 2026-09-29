@@ -38,24 +38,34 @@ import {
   BUBBLE_MS,
   BlockedWatch,
   DENY_MS,
+  EVOLVE_REARM_MS,
+  REASON_MS,
   phaseBanner,
   buyMountIntent,
   denyTargetFor,
+  hudPulse,
   hudTeamColors,
   keyIntent,
   lowHp,
   nextSpeed,
+  powerFraction,
   sellIntent,
+  simDenyReason,
+  type DenyReason,
   type DenyTarget,
   type HudIntent,
 } from './model';
+import { hammerBadge } from './Minimap';
+import { haptic } from '../components/haptics';
 import { TopBar, type Banner, type Bubble } from './TopBar';
 import { Tray } from './Tray';
 import type { PortraitFn } from './usePortrait';
 import './hud.css';
 
-/** Screens at least this wide use the 88 px cards; narrower ones 72 px (A9.2). */
+/** Screens at least this wide (and not phone-short) use the desktop HUD sizes (ui-plan 4.7). */
 export const WIDE_HUD_PX = 900;
+/** Screens shorter than this are phones (A17.7): the 44 px top band and the 94 px tray. */
+export const PHONE_HUD_PX = 500;
 /** How long the gold counter bumps after coins fly in. */
 const GOLD_BUMP_MS = 320;
 
@@ -212,6 +222,19 @@ export function Hud(props: HudProps) {
     setTimeout(() => setDenies((d) => (d[target] === id ? { ...d, [target]: undefined } : d)), DENY_MS);
   }, []);
   const lastTarget = useRef<Partial<Record<Command['t'], DenyTarget>>>({});
+  // Why the last denied press on each target was denied (MR-03), shown next to it for 1.5 s.
+  const [reasons, setReasons] = useState<Partial<Record<DenyTarget, { id: number; text: string }>>>({});
+  const say = useCallback((target: DenyTarget, reason: DenyReason) => {
+    const id = ++denySeq.current;
+    const tr = live.current.props.t ?? i18nT;
+    setReasons((r) => ({ ...r, [target]: { id, text: tr(reason.key, reason.params) } }));
+    setTimeout(() => setReasons((r) => (r[target]?.id === id ? { ...r, [target]: undefined } : r)), REASON_MS);
+  }, []);
+  // UA-07: after your evolve the Evolve button stays dark for 2 s, so a double tap never evolves twice.
+  const [rearming, setRearming] = useState(false);
+  const rearmRef = useRef(false);
+  rearmRef.current = rearming;
+  const rearmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [bubbles, addBubble] = useTimedList<Bubble>(BUBBLE_MS);
   const [banners, addBanner] = useTimedList<Banner>(BANNER_MS);
@@ -290,7 +313,9 @@ export function Hud(props: HudProps) {
         case 'deny':
           if (p.readOnly) return;
           flash(i.target);
+          if (i.reason) say(i.target, i.reason);
           p.audio?.play('ui_deny');
+          haptic('deny');
           return;
         case 'command':
           if (p.readOnly || cur.phase === 'ended') return;
@@ -299,7 +324,7 @@ export function Hud(props: HudProps) {
           return;
       }
     },
-    [flash, closeCouncil, openCouncil],
+    [flash, say, closeCouncil, openCouncil],
   );
 
   // View events.
@@ -316,7 +341,12 @@ export function Hud(props: HudProps) {
           return;
         case 'denied': {
           const target = lastTarget.current[ev.command] ?? denyTargetFor(ev.command);
-          if (target) flash(target);
+          if (!target) return;
+          flash(target);
+          const slot = /^card(\d)$/.exec(target);
+          const why = simDenyReason(ev.reason, cur, slot ? Number(slot[1]) : undefined);
+          if (why) say(target, why);
+          haptic('deny');
           return;
         }
         case 'emote':
@@ -328,6 +358,9 @@ export function Hud(props: HudProps) {
           if (ev.side === me) {
             const tr = p.t ?? i18nT;
             showMoment({ kind: 'evolve', title: tr('hud.ageReached', { age: tr(`age.${ev.age}.name`) }), sub: tr('hud.newUnits') });
+            setRearming(true);
+            if (rearmTimer.current) clearTimeout(rearmTimer.current);
+            rearmTimer.current = setTimeout(() => setRearming(false), EVOLVE_REARM_MS);
           }
           return;
         case 'baseHit':
@@ -347,7 +380,7 @@ export function Hud(props: HudProps) {
           return;
       }
     });
-  }, [view, act, flash, addBubble, addBanner, showMoment]);
+  }, [view, act, flash, say, addBubble, addBanner, showMoment]);
 
   // Keyboard (A2.12).
   useEffect(() => {
@@ -357,7 +390,7 @@ export function Hud(props: HudProps) {
       // A keyboard-focused button keeps its native Space / Enter.
       if ((e.key === ' ' || e.key === 'Enter') && e.target instanceof HTMLButtonElement) return;
       const { m: cur, props: p, side: me } = live.current;
-      const i = keyIntent(e.key, cur, p.config, me, e.shiftKey);
+      const i = keyIntent(e.key, cur, p.config, me, e.shiftKey, rearmRef.current);
       if (i.k === 'none') return;
       // Escape belongs to the screen underneath unless the Council is open.
       if (i.k === 'close' && !councilRef.current.open) return;
@@ -372,19 +405,35 @@ export function Hud(props: HudProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [keyboard, act]);
 
-  // Width (card size) and the screen points coins and XP sparkles fly to.
+  // Size class, the screen points coins and XP sparkles fly to, and the HUD's insets: the camera keeps
+  // the ground line and the units' HP pips inside the band between the top band (with the minimap)
+  // and the tray (ui-plan 3.1 world framing).
+  const topEl = useRef<HTMLElement | null>(null);
+  const trayEl = useRef<HTMLElement | null>(null);
   useEffect(() => {
     const el = root.current;
     if (!el) return undefined;
     const measure = (): void => {
-      setWide(el.clientWidth >= WIDE_HUD_PX);
+      setWide(el.clientWidth >= WIDE_HUD_PX && el.clientHeight >= PHONE_HUD_PX);
       view?.setHudAnchors({ gold: center(goldEl.current, el), xp: center(xpEl.current, el) });
+      if (view?.setHudInsets) {
+        const o = el.getBoundingClientRect();
+        const mm = el.querySelector<HTMLElement>('.hud-mm-strip');
+        const topBottom = Math.max(topEl.current ? topEl.current.getBoundingClientRect().bottom : o.top, mm ? mm.getBoundingClientRect().bottom : o.top) - o.top;
+        const trayTop = trayEl.current ? trayEl.current.getBoundingClientRect().top - o.top : o.height;
+        if (topBottom > 0 && trayTop > topBottom) view.setHudInsets({ top: Math.round(topBottom), bottom: Math.round(o.height - trayTop) });
+      }
     };
     measure();
-    if (typeof ResizeObserver === 'undefined') return undefined;
+    // The minimap mounts a frame after the view is attached.
+    const late = setTimeout(measure, 250);
+    if (typeof ResizeObserver === 'undefined') return () => clearTimeout(late);
     const ro = new ResizeObserver(measure);
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => {
+      clearTimeout(late);
+      ro.disconnect();
+    };
   }, [view, compact]);
 
   useEffect(() => {
@@ -415,6 +464,7 @@ export function Hud(props: HudProps) {
     () => () => {
       if (doneTimer.current) clearTimeout(doneTimer.current);
       if (closeTimer.current) clearTimeout(closeTimer.current);
+      if (rearmTimer.current) clearTimeout(rearmTimer.current);
     },
     [],
   );
@@ -462,6 +512,19 @@ export function Hud(props: HudProps) {
     // `front` is read fresh with every model (15 Hz).
   }, [m, readOnly, t, showMoment, props.callouts]);
 
+  // The one attention pulse (U11, ui-plan 4.7): a tutorial target first (the app marks the battle layer
+  // with `data-tut`), then Evolve, then the Age Power, then a new turret mount.
+  const tutorial = !!root.current?.closest<HTMLElement>('[data-tut]')?.dataset['tut'];
+  const pulseBase = { m, config, side };
+  const pulse = readOnly
+    ? null
+    : hudPulse({
+        tutorial,
+        evolve: m.me.evolveReady && !rearming && !m.me.ascending && m.phase !== 'ended',
+        power: powerFraction(m.me.powerPpm) >= 1 && m.phase !== 'ended',
+        mount: hammerBadge(pulseBase),
+      });
+
   const ctx: HudCtx = {
     m,
     config,
@@ -469,6 +532,8 @@ export function Hud(props: HudProps) {
     t,
     act,
     denied: (target) => denies[target] !== undefined,
+    reason: (target) => reasons[target] ?? null,
+    pulse,
     portrait: props.portrait,
     view,
     audio,
@@ -516,6 +581,9 @@ export function Hud(props: HudProps) {
       <div class={`hud-vignette${lowHp(m) ? ' is-on' : ''}`} data-testid="hud-vignette" data-on={lowHp(m)} />
       <TopBar
         c={ctx}
+        topRef={(el) => {
+          topEl.current = el;
+        }}
         bubbles={bubbles}
         banners={banners}
         xpRef={(el) => {
@@ -536,6 +604,11 @@ export function Hud(props: HudProps) {
       ) : null}
       <Tray
         c={ctx}
+        trayRef={(el) => {
+          trayEl.current = el;
+        }}
+        evolveRearming={rearming}
+        pulse={pulse}
         goldRef={(el) => {
           goldEl.current = el;
         }}

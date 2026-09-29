@@ -1,7 +1,7 @@
 /** Shared props of the HUD pieces. */
 import type { AudioService, EmoteId, HudModel, MatchConfig, Side } from '@/contracts';
 import type { HudViewBridge } from './bridge';
-import type { DenyTarget, HudIntent } from './model';
+import type { DenyTarget, HudIntent, HudPulse } from './model';
 import type { PortraitFn } from './usePortrait';
 
 export type Translate = (key: string, params?: Record<string, string | number>) => string;
@@ -21,11 +21,15 @@ export interface HudCtx {
   act: (i: HudIntent) => void;
   /** True while `target` shows the denied-press feedback. */
   denied: (target: DenyTarget) => boolean;
+  /** The reason label of the last denied press on `target` while it shows (MR-03), else null. */
+  reason: (target: DenyTarget) => { id: number; text: string } | null;
   portrait: PortraitFn | undefined;
   view: HudViewBridge | undefined;
   audio: Pick<AudioService, 'play'> | undefined;
-  /** Narrow screens (< 900 px) use 72 px cards (A9.2). */
+  /** Phones and narrow screens (< 900 px wide or < 500 px high): the smaller icon sizes. */
   compact: boolean;
+  /** The one attention pulse on the HUD right now (U11); the others rest in a steady glow. */
+  pulse?: HudPulse;
   /** The equipped emote and quote wheel (A18.9.4); the six starter emotes when absent. */
   wheel?: EmoteWheel;
   /** A read-only HUD (replay viewer, dev state gallery) shows everything and accepts no input. */

@@ -100,6 +100,7 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
     matchesPlayed: 0,
     daily: { dayKey: dayKeyOf(gameDay(lt, t.dailyModifiers.challenge.resetHour)), bank: 1 },
     conquest: { stars: {}, milestonesClaimed: [] },
+    warPath: { path: 'normal', stars: {}, crowns: {}, relics: [], difficulty: 'normal', lossStreak: 0, legacy: false },
     stats: {
       matches: 0,
       wins: 0,

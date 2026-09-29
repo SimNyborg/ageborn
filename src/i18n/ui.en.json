@@ -283,7 +283,8 @@
         "ladder": "Ladder",
         "conquest": "Conquest",
         "skirmish": "Skirmish",
-        "daily": "Daily Challenge"
+        "daily": "Daily Challenge",
+        "warPath": "War Path"
       }
     },
     "pause": {

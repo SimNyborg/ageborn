@@ -24,7 +24,7 @@
  * A Commander's `generalId` is `commander:<personality General>:<favourite card>`; the app builds its
  * bot profile from it with {@link commanderInfo}.
  */
-import type { AgeId, CardId, FormatId, Loadout, MatchResultInput, OpponentSpec, Rarity, SaveDoc, SideConfig, SkirmishOptions } from '@/contracts';
+import type { AgeId, CardId, FormatId, Loadout, MatchResultInput, OpponentSpec, Rarity, SaveDoc, SideConfig, SkirmishOptions, WarPathMatch } from '@/contracts';
 import { commanderName, type ArenaDef, type Content, type DailyDifficulty, type GeneralDef, type GeneralId } from '@/content';
 import { chanceBp, fnv1a32, pick, pickWeighted, seedSfc32, type Sfc32State } from '@/core';
 import { formatAges } from './formats';
@@ -34,12 +34,14 @@ import { ladderTier } from './mmr';
 import { COMMANDER_ID_PREFIX, FIRST_LADDER_GENERAL, GENERAL_SHARE_BP, META_FLAGS, TUTORIAL_MATCH2 } from './rules';
 import { ageCards, arenaOf, RARITY_INDEX } from './tables';
 import type { LocalTime } from './time';
+import { levelDef, levelTier, nextLevelId, warPathOf } from './warPath';
 
 export interface OpponentOptions {
   format?: FormatId;
   conquestGeneral?: string;
   skirmish?: SkirmishOptions;
   daily?: { difficulty: DailyDifficulty };
+  warPath?: WarPathMatch;
 }
 
 type Plan = Partial<Record<AgeId, Loadout>>;
@@ -73,7 +75,7 @@ export function newPlayerMistakeBonusBp(s: SaveDoc, t: Content): number {
  * Quick Battle, where the player picks the difficulty.
  */
 export function newPlayerMistakesApply(s: SaveDoc, mode: MatchResultInput['mode'], t: Content): boolean {
-  return mode !== 'skirmish' && newPlayerMistakeBonusBp(s, t) > 0;
+  return mode !== 'skirmish' && mode !== 'warPath' && newPlayerMistakeBonusBp(s, t) > 0;
 }
 
 /** The player's Legendary per age in the active plan (for the A6.8 Legendary allowance). */
@@ -421,5 +423,38 @@ function pickOpponentRaw(s: SaveDoc, mode: MatchResultInput['mode'], t: Content,
       return skirmishOpponent(s, t, o.skirmish ?? { generalId: 'echo', tier: 0, format: 'short', standardLevels: false });
     case 'tutorial':
       return tutorialOpponent(s, t);
+    case 'warPath':
+      return warPathOpponent(s, t, o.warPath ?? { level: nextLevelId(s, t), difficulty: warPathOf(s).difficulty });
   }
+}
+
+/** The boss base disclosure on VS (A18.7.6). */
+export const BOSS_DISCLOSURE_KEY = 'warPath.disclosure.boss';
+
+/**
+ * A War Path level (A18.7): the level's General at the level's tier for the difficulty (A18.6.2),
+ * with its personal War Plan over the level's window, its cards at the level's bot level, the
+ * disclosed modifiers, and for a boss the +HP base and extra turret (`sideMods`, disclosed).
+ */
+function warPathOpponent(s: SaveDoc, t: Content, m: WarPathMatch): OpponentSpec {
+  const level = levelDef(t, m.level) ?? levelDef(t, nextLevelId(s, t));
+  if (!level) throw new Error('meta: the content has no War Path');
+  const g = generalDef(t, level.general) ?? generalDef(t, 'pip');
+  if (!g) throw new Error('meta: the content has no Generals');
+  const format = level.format;
+  const bot = clampLevel(t, level.botLevel);
+  const legendary = Object.fromEntries(Object.keys(t.units).filter((u) => t.units[u]?.rarity === 'legendary').map((u) => [u, g.legendaryLevel ?? bot]));
+  const opp = side(g.nameKey, fullPlan(t, g.warPlan, formatAges(t, format)), levelsFor(t, bot, legendary));
+  if (level.boss) opp.sideMods = { baseHpBp: level.boss.baseHpBp, extraTurret: level.boss.extraTurret };
+  return spec({
+    generalId: g.id,
+    displayName: g.nameKey,
+    tier: levelTier(t, level, m.difficulty),
+    level: bot,
+    format,
+    side: opp,
+    seed: seedOf(s, `warPath:${level.id}:${m.difficulty}`),
+    modifiers: [...level.modifiers],
+    disclosures: [...(level.boss ? [BOSS_DISCLOSURE_KEY] : []), ...g.disclosureKeys],
+  });
 }

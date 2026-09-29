@@ -24,6 +24,7 @@ import { arenaOf } from './tables';
 import { questDef } from './quests';
 import { addClayPip, payForWinCapsule } from './charges';
 import { applyConquest } from './conquest';
+import { applyWarPath, onboardingLevelId } from './warPath';
 import { dailyWin } from './daily';
 import { updateMmr } from './mmr';
 import { addQuestProgress, matchProgress } from './quests';
@@ -64,7 +65,7 @@ function bump(list: readonly number[], index: number): number[] {
  */
 function raisesPeak(s: SaveDoc, t: Content, r: MatchResultInput): boolean {
   if (r.mode === 'daily') return true;
-  if (r.mode !== 'ladder' && r.mode !== 'conquest') return false;
+  if (r.mode !== 'ladder' && r.mode !== 'conquest' && r.mode !== 'warPath') return false;
   const avg = planAverageLevelCenti(s, t, r.opponent.format);
   return avg === null || avg <= (r.opponent.level + 1) * 100;
 }
@@ -169,9 +170,17 @@ export function applyMatchResultAt(
     case 'ladder':
       save = ladder(save, t, r, result, now, steps, arenas);
       break;
-    case 'tutorial':
+    case 'tutorial': {
       save = tutorial(save, t, result, now, steps);
+      // The onboarding matches are War Path Stone L1 and L2 (A18.7.10): their stars count on the map.
+      const level = onboardingLevelId(t, r.opponent.generalId === 'grogg' ? 1 : 2);
+      if (level && result === 'win') {
+        const w = applyWarPath(save, t, { level, difficulty: 'normal' }, result, r.stats, now);
+        save = w.save;
+        steps.push(...w.steps);
+      }
       break;
+    }
     case 'skirmish':
       if (win) save = addAmber(save, t.arenas.ladder.skirmishWinAmber, steps);
       break;
@@ -189,6 +198,13 @@ export function applyMatchResultAt(
       steps.push(...c.steps);
       break;
     }
+    case 'warPath': {
+      if (!r.warPath) break;
+      const w = applyWarPath(save, t, r.warPath, result, r.stats, now);
+      save = w.save;
+      steps.push(...w.steps);
+      break;
+    }
   }
 
   save = recordStats(save, t, r, result);
@@ -199,7 +215,7 @@ export function applyMatchResultAt(
     steps.push(...f.steps);
   }
   const counting = isCountingWin(
-    { mode: r.mode, win, opponentTier: r.opponent.tier, earnedStar: steps.some((x) => x.kind === 'star'), mmr: s.mmr },
+    { mode: r.mode, win, opponentTier: r.opponent.tier, earnedStar: steps.some((x) => x.kind === 'star' || x.kind === 'pathStar'), mmr: s.mmr },
     t,
   );
   if (counting) {

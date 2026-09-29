@@ -26,11 +26,11 @@
   flex: none;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
 }
 
+/* Round, in the tray's left cluster (ui-plan 4.7): 48 px on phones, 60 on desktops. */
 .hud-cbtn {
-  --cb: 60px;
+  --cb: var(--hud-round, 60px);
   position: relative;
   flex: none;
   width: var(--cb);
@@ -41,43 +41,46 @@
   background: none;
 }
 
-.hud.is-compact .hud-cbtn {
-  --cb: 50px;
-}
-
 /* The ring: dark track, green progress while researching. */
 .hud-cbtn-ring {
   position: absolute;
   inset: 0;
-  border: 3px solid var(--hud-ink);
   border-radius: 50%;
-  background:
-    conic-gradient(var(--cn-green) calc(var(--prog, 0) * 360deg), rgba(255, 255, 255, 0.1) 0) border-box;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
-  transition: background 90ms linear;
+  background: conic-gradient(var(--cn-green) calc(var(--prog, 0) * 360deg), rgba(8, 10, 14, 0.88) 0);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 1px rgba(0, 0, 0, 0.4);
+  transition:
+    background 90ms linear,
+    transform var(--ui-dur-release) var(--ui-ease-back);
 }
 
 .hud-cbtn-core {
   position: absolute;
-  inset: 7px;
+  inset: 4px;
   display: grid;
   place-items: center;
-  border: 2px solid var(--hud-ink);
+  padding-bottom: 8px;
+  box-sizing: border-box;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 30%, #5c4a9a, #2a2048 75%);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  background: radial-gradient(circle at 38% 28%, #58647a, #262d3b 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1.5px var(--hud-ink);
   transition:
-    translate 90ms ease-out,
-    filter 120ms ease-out;
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    filter var(--ui-dur-release) var(--ui-ease-out);
 }
 
-.hud-cbtn:active .hud-cbtn-core {
-  translate: 0 2px;
+.hud-cbtn:active .hud-cbtn-core,
+.hud-cbtn:active .hud-cbtn-ring {
+  transform: scale(var(--ui-press-scale));
   filter: brightness(0.92);
+  transition-duration: var(--ui-dur-press);
 }
 
 .hud-cbtn.is-open .hud-cbtn-core {
-  background: radial-gradient(circle at 50% 30%, #7a66c4, #3a2c6a 75%);
+  background: radial-gradient(circle at 38% 28%, #6c7a93, #313a4b 72%);
 }
 
 .hud-cbtn-badge {
@@ -114,18 +117,19 @@
 .hud-cbtn-time {
   position: absolute;
   left: 50%;
-  bottom: -7px;
+  bottom: 1px;
+  z-index: 1;
   translate: -50% 0;
-  padding: 0 6px;
-  border: 2px solid var(--hud-ink);
+  padding: 0 5px;
   border-radius: 99px;
   background: var(--cn-green-deep);
   color: #effff4;
   font-size: 11px;
   font-weight: 900;
-  line-height: 15px;
+  line-height: 14px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
 }
 
 .hud-cbtn-sale {
@@ -144,15 +148,21 @@
   animation: hud-pop 260ms var(--ui-ease-back, ease-out);
 }
 
+/* The label sits on the button's lower rim (the cluster has no room below it, 4.7). */
 .hud-cbtn-label {
-  padding: 0 7px;
-  border: 2px solid var(--hud-ink);
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  translate: -50% 0;
+  padding: 0 5px;
   border-radius: 99px;
-  background: #2e2450;
+  background: var(--ui-surface-3, #313a4b);
   font-size: 11px;
   font-weight: 900;
-  line-height: 1.35;
+  line-height: 14px;
   white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
 }
 
 .hud-cbtn.is-busy + .hud-cbtn-label {
@@ -1107,138 +1117,6 @@ button.hud-track:active {
   position: relative;
 }
 
-/* ---------------------------------------------------------------- stance control */
-
-.hud-stances {
-  --seg: 58px;
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, var(--seg));
-  height: 52px;
-  padding: 0;
-  border: 3px solid var(--hud-ink);
-  border-radius: 14px;
-  background: linear-gradient(180deg, #2a2150, #1c1538);
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.1),
-    0 4px 0 rgba(0, 0, 0, 0.45);
-  pointer-events: auto;
-}
-
-.hud-stances-thumb {
-  position: absolute;
-  top: 2px;
-  bottom: 2px;
-  left: 2px;
-  width: calc(var(--seg) - 4px);
-  border: 2px solid var(--hud-ink);
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--st-hi), var(--st-lo));
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
-  translate: calc(var(--idx, 0) * var(--seg)) 0;
-  transition:
-    translate 240ms var(--ui-ease-back, ease-out),
-    background 200ms ease-out;
-}
-
-.hud-stances.is-charge {
-  --st-hi: #ff9a6a;
-  --st-lo: #c9452a;
-}
-
-.hud-stances.is-hold {
-  --st-hi: #7fe0d0;
-  --st-lo: #1f8a7c;
-}
-
-.hud-stances.is-fallback {
-  --st-hi: #b9a8ff;
-  --st-lo: #5b47c0;
-}
-
-.hud-stance-seg {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: #b9aecb;
-  z-index: 1;
-  transition:
-    color 150ms ease-out,
-    scale 120ms ease-out;
-}
-
-.hud-stance-seg:active {
-  scale: 0.92;
-}
-
-.hud-stance-seg.is-on {
-  color: #fff;
-}
-
-.hud-stance-seg .hud-stance-glyph {
-  filter: drop-shadow(0 1px 0 rgba(27, 19, 48, 0.6));
-}
-
-.hud-stance-name {
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1.1;
-  white-space: nowrap;
-  text-shadow: 0 1px 0 var(--hud-ink);
-}
-
-/* The 3 s wait: a bar that runs down along the bottom. */
-.hud-stances-wait {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 3px;
-  height: 3px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.75);
-  transform-origin: left;
-  transform: scaleX(var(--wait, 0));
-  transition: transform 70ms linear;
-  z-index: 2;
-}
-
-.hud-stances.is-waiting .hud-stance-seg:not(.is-on) {
-  color: #7d7496;
-}
-
-.hud-stances.is-denied {
-  animation: hud-deny-shake 280ms ease-out;
-  border-color: var(--hud-deny);
-}
-
-@keyframes hud-deny-shake {
-  25% {
-    translate: -5px 0;
-  }
-  50% {
-    translate: 5px 0;
-  }
-  75% {
-    translate: -3px 0;
-  }
-}
-
-.hud-stances .hud-key {
-  top: -9px;
-  left: -8px;
-  z-index: 3;
-}
-
-.hud.is-compact .hud-stances {
-  --seg: 46px;
-}
-
 /* ---------------------------------------------------------------- Hold flag grip */
 
 .hud-flag {
@@ -1345,30 +1223,6 @@ button.hud-track:active {
 /* ---------------------------------------------------------------- phones (A17.7) */
 
 @container hud (max-height: 499px) {
-  .hud-cbtn-label {
-    padding: 0 5px;
-    font-size: 10px;
-    line-height: 1.3;
-  }
-
-  .hud-cbtn-wrap {
-    gap: 2px;
-  }
-
-  .hud .hud-stances,
-  .hud.is-compact .hud-stances {
-    --seg: 40px;
-    height: 48px;
-  }
-
-  .hud.is-compact .hud-cbtn {
-    --cb: 46px;
-  }
-
-  .hud-stance-name {
-    display: none;
-  }
-
   /* The sheet: header as a left column so the sheet stays low (the lane band keeps its units). */
   .hud-council {
     flex-direction: row;
@@ -1580,7 +1434,6 @@ button.hud-track:active {
     display: none;
   }
 
-  .hud-stances-thumb,
   .hud-pick {
     transition: none;
   }

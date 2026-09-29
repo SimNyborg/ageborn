@@ -33,8 +33,10 @@ FORE = [(24, 58), (26, 35), (27, 15), (28, 5.5), (30.5, 0.9)]
 HIND = [(-28, 54), (-21, 35), (-30.5, 19), (-28.5, 6), (-26, 0.9)]
 Q = Quad(FORE, HIND, (0, 50), 6.5,
          neck=((30, 58), (40, 54)), head=((40, 54), (66, 30)), tail=((-39, 58), (-44, 51), (-46, 44)),
-         jaw=((48, 40), (62, 32)), prefix="b_")
-TRACKERS = {"tuskTip": ("b_head", (65.3, -6.2, 46.4))}
+         jaw=((51, 35.8), (69.2, 25.4)), prefix="b_")
+HEAD_PIV = (38.0, 54.0)
+HEAD_S = 1.3
+TRACKERS = {"tuskTip": ("b_head", (38.0 + 27.3 * 1.3, -6.2 * 1.3, 54.0 - 7.6 * 1.3))}
 EXTRA_BONES = {"pole": ((-8, 0, 68), (-8, 0, 100), "b_body"),
                "flag": ((-8.5, 0, 99), (-24, 0, 95), "pole")}
 
@@ -47,7 +49,7 @@ ATK_T = [0, 170, 340, 548, 570, 750, 840, 1020, 1120]
 
 
 def build():
-    bristle = M.fur("#4a4038", "#2c2622", name="bristle", bump=1.6, noise=0.3, nscale=3.0)
+    bristle = M.fur("#6a6056", "#3a322c", name="bristle", bump=1.6, noise=0.3, nscale=3.0)
     coat = M.fur("#5c4f44", "#4a3f36", name="boarcoat", bump=0.9, noise=0.22, nscale=4.0)
     snout = C.mat("snout", "#7d635a", rough=0.5, noise=0.12, nscale=1.0, bump=0.3)
     ivory = M.ivory()
@@ -67,8 +69,8 @@ def build():
     body = C.blobs("boar_body", [
         ((18, 0, 52), (16, 12, 17)),          # withers / shoulders
         ((15, 0, 63), (14, 10, 9)),           # crest
-        ((0, 0, 50), (24, 11.5, 14)),         # barrel
-        ((-24, 0, 49), (12.5, 11, 12.5)),     # rump
+        ((0, 0, 49), (21, 11, 13.5)),         # barrel
+        ((-22, 0, 48), (11.5, 10.5, 12)),     # rump
         ((0, 0, 40), (20, 10, 6)),            # belly
         ((32, 0, 51), (10, 10, 12)),          # neck
         ((-22, 0, 38), (8, 10, 8)),           # hams
@@ -78,7 +80,7 @@ def build():
     rig.skin(body, [p + "body", p + "pelvis", p + "neck", p + "foreS_F", p + "foreS_B", p + "hindT_F", p + "hindT_B"],
              soft=4.0, bias={p + "foreS_F": 4.0, p + "foreS_B": 4.0, p + "hindT_F": 4.0, p + "hindT_B": 4.0, p + "neck": 1.5})
     # a bristly crest from the nape down the spine
-    mane = C.blobs("mane", [((40 - 7 * i, 0, 60.5 + 2.4 * i - 0.28 * i * i), (3.2, 2.0, 5.0 - 0.3 * i), (0, 0.5, 0))
+    mane = C.blobs("mane", [((40 - 7 * i, 0, 63.5 + 2.4 * i - 0.28 * i * i), (3.4, 2.4, 6.4 - 0.4 * i), (0, 0.5, 0))
                             for i in range(8)], bristle, res=0.45)
     C.displace(mane, 2.4, 1.4)
     rig.skin(mane, [p + "neck", p + "body"], soft=4)
@@ -103,6 +105,12 @@ def build():
         rig.rigid(tusk, p + "head")
     jaw = C.blobs("jaw", [((54, 0, 34.5), (8.0, 5.0, 2.6), (0, 0.55, 0))], coat, res=0.45)
     rig.rigid(jaw, p + "jaw")
+    # the head reads big and long, like a real boar's: scale every head part about the nape
+    import bpy
+    for o in bpy.context.scene.objects:
+        if o.type == "MESH" and o.parent is not None and any(vg.name in (p + "head", p + "jaw") for vg in o.vertex_groups):
+            C.xform(o, loc=(-HEAD_PIV[0], 0, -HEAD_PIV[1]))
+            C.xform(o, loc=(HEAD_PIV[0], 0, HEAD_PIV[1]), scale=(HEAD_S, HEAD_S, HEAD_S))
     tail = C.tube("tail", [(-39, 0, 57), (-43, 0, 52), (-45.5, 0, 46)], [1.1, 0.8, 0.6], coat, seg=8)
     rig.skin(tail, [p + "tail", p + "tail2"], soft=2)
     tuft = C.blobs("tuft", [((-46.5, 0, 43), (1.4, 1.2, 2.6))], bristle, res=0.3)
@@ -139,8 +147,8 @@ def build():
     pole = C.tube("pole", [(-8, 0, 66), (-8, 0, 102)], [1.1, 0.9], wood, seg=8)
     rig.rigid(pole, "pole")
     rig.rigid(C.sphere("finial", 1.6, leather, loc=(-8, 0, 102.6)), "pole")
-    fl = C.tube("pennant", [(-8.6, 0, 96.5), (-15, 0, 95.6), (-22, 0, 94.2), (-30, 0, 92.4)],
-                [5.6, 4.8, 3.4, 0.8], flagm, seg=10, flat=0.2)
+    fl = C.tube("pennant", [(-8.6, 0, 95.5), (-16, 0, 94.6), (-24, 0, 93.2), (-33, 0, 91.4)],
+                [7.0, 6.2, 4.6, 1.0], flagm, seg=10, flat=0.2)
     C.team(fl)
     rig.rigid(fl, "flag")
     return dict(rig=rig)
@@ -206,10 +214,10 @@ def _atk_keys():
     dig = dict(dip, root=(-5.0, -7.5), pitch=-10, neck=-22, head=-18, jaw=-10, tail=28, bones={"pole": 6, "flag": (12, 10)})
     dig.update(_legs(-3, -2, paf=24, pah=10))
     dig2 = dict(dig, root=(-5.4, -7.9), head=-20)
-    toss = dict(stand(), root=(6.0, 2.0), pitch=12, hip=-4, neck=20, head=26, jaw=-24, tail=-6,
+    toss = dict(stand(), root=(6.0, 2.0), pitch=12, hip=-4, neck=20, head=26, jaw=-12, tail=-6,
                 bones={"pole": -8, "flag": (-10, -8)})
     toss.update(_legs(6, -3, paf=-10, pah=-14))
-    top = dict(toss, root=(8.0, 3.6), pitch=15, neck=26, head=34, jaw=-30, bones={"pole": -12, "flag": (-16, -10)})
+    top = dict(toss, root=(8.0, 3.6), pitch=15, neck=26, head=34, jaw=-14, bones={"pole": -12, "flag": (-16, -10)})
     top.update({"fore_F": (Q.HOME["fore"] + 8, 6.0, Q.LAST["fore"] - 40, 6), "fore_B": (Q.HOME["fore"] + 5, 2.0,
                                                                                      Q.LAST["fore"] - 20, 3)})
     held = dict(top, root=(8.2, 3.8), head=36, bones={"pole": -8, "flag": (-12, -6)})
@@ -258,7 +266,7 @@ def clips():
         atk.fx[i] = {"s": s, "origin": (30, 0), "spread": 10, "n": 9, "size": 5.0, "seed": 3}
     die_c = G.Clip("die", MO.HEAVY_DIE_MS, sequence=MO.HEAVY_DIE_SEQ, extra={
         "fx": [{"id": "fx.dust_poof", "atMs": 880, "offsetLu": [-4, 10], "scale": 1.2}], "hideUnitAtMs": 990})
-    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-4, 0), spread=40, size=11.0, seed=11)
+    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-4, 0), spread=36, size=8.5, seed=11)
     return [
         G.Clip("idle", IDLE_MS, loop=True),
         G.Clip("walk", WALK_MS, loop=True),

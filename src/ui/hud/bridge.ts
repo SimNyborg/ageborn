@@ -98,6 +98,12 @@ export interface HudViewBridge {
   frontLine?(): { mine: number | null; theirs: number | null } | null;
   /** Screen points (relative to the canvas) that coins and XP sparkles fly to. */
   setHudAnchors(a: { gold?: Pt | null; xp?: Pt | null }): void;
+  /**
+   * The HUD chrome's insets in CSS px (ui-plan 3.1 world framing): `top` is the bottom of the top band
+   * and minimap, `bottom` the height from the tray's top edge to the screen bottom. The camera keeps
+   * the ground line 12 px above the tray and the tallest unit's HP pips under the top inset.
+   */
+  setHudInsets?(insets: { top: number; bottom: number }): void;
   /** The minimap strip and edge badges (A17.5); optional so plain test bridges need not implement it. */
   minimap?(): HudMinimap | null;
   /** Camera commands: the base and front buttons, minimap taps and drags, badge taps (A17.4). */

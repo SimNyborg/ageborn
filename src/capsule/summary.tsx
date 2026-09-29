@@ -49,7 +49,7 @@ export function summaryButtons(o: { pending: number; openNext: boolean; openAll:
   return { primary, secondary };
 }
 
-/** Copies text that never over-fills: "8/10", or null when the bar is full (show "Upgrade ready"). */
+/** Copies text that never over-fills: "8/10", or null when the bar is full (it then caps at "10/10" and "Upgrade ready" shows). */
 export function copiesText(after: number, need: number): string | null {
   return after >= need ? null : `${after}/${need}`;
 }
@@ -123,15 +123,14 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
       {pr && pr.need !== null ? (
         <div class={`${css.bar} ${item.upgradeReady || pr.after >= pr.need ? css.barReady : ''}`}>
           <div class={css.barFill} style={{ width: `${Math.min(100, Math.round((pr.after / Math.max(1, pr.need)) * 100))}%` }} />
-          <div class={css.barText}>
-            {copiesText(pr.after, pr.need) === null ? t('capsule.upgradeReady') : t('capsule.copiesOf', { have: pr.after, need: pr.need })}
-          </div>
+          <div class={css.barText}>{t('capsule.copiesOf', { have: Math.min(pr.after, pr.need), need: pr.need })}</div>
         </div>
       ) : pr && pr.need === null ? (
         <div class={css.bar}>
           <div class={css.barText}>{t('capsule.max')}</div>
         </div>
       ) : null}
+      {item.upgradeReady || (pr && pr.need !== null && copiesText(pr.after, pr.need) === null) ? <span class={css.ready}>{t('capsule.upgradeReady')}</span> : null}
       {canEquip && equipped ? (
         <span class={css.equippedPill} data-testid="capsule-equipped">
           {t('capsule.summary.equipped')}

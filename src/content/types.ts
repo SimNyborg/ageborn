@@ -854,6 +854,8 @@ export interface Content extends CompiledContent {
   dailyModifiers: DailyModifierTables;
   cosmetics: Cosmetics;
   feats: FeatTables;
+  /** The War Path campaign (A18.7). */
+  warPath: WarPathTables;
   int: IntegerTables;
   order: ContentOrder;
   /** A2.1-A2.11 and A5.1 battle numbers that `EconomyRules` has no field for (from `raw/economy.ts`). */
@@ -863,5 +865,92 @@ export interface Content extends CompiledContent {
 /** The meta tables compiled next to the battle tables (the typed `unknown` slots of the contract). */
 export type MetaTables = Pick<
   Content,
-  'rarities' | 'capsules' | 'arenas' | 'trophyRoad' | 'generals' | 'names' | 'quests' | 'dailyModifiers' | 'cosmetics' | 'feats'
+  'rarities' | 'capsules' | 'arenas' | 'trophyRoad' | 'generals' | 'names' | 'quests' | 'dailyModifiers' | 'cosmetics' | 'feats' | 'warPath'
 >;
+
+// ---------------------------------------------------------------------------------------------
+// War Path (DESIGN A18.7, ui-plan 6.4)
+// ---------------------------------------------------------------------------------------------
+
+/** A level's role in its region's sawtooth (A18.7.2). */
+export type WarPathRole = 'intro' | 'practice' | 'mix' | 'feature' | 'lieutenant' | 'relief' | 'ramp' | 'puzzle' | 'spike' | 'boss';
+
+/**
+ * The disclosed ★★ goal of a level (A18.7.4), read from the match stats. ★★★ is the same goal on
+ * Hard or harder.
+ */
+export type StarGoal =
+  /** Win with your base above `bp` of its HP. */
+  | { kind: 'baseAbove'; bp: number }
+  /** Win before `ms` on the match clock. */
+  | { kind: 'winBefore'; ms: number }
+  /** Win without the Last Stand. */
+  | { kind: 'noLastStand' }
+  /** Win without Economy research. */
+  | { kind: 'noEconomy' }
+  /** Hit at least `n` enemies with one Age Power. */
+  | { kind: 'powerHits'; n: number };
+
+/** What a first clear pays (A18.7.8). */
+export interface WarPathReward {
+  amber: number;
+  /** A fixed capsule of this tier (bosses). */
+  capsule: CapsuleTier | null;
+  /** A named card (level 3: a Rare of the region's age; the boss: an Epic). */
+  card: CardId | null;
+}
+
+export interface WarPathLevel {
+  /** `wp.<age>.l01` ... `l10`, stable forever (A18.7.1). */
+  id: string;
+  region: AgeId;
+  /** 1-10 in the region. */
+  index: number;
+  role: WarPathRole;
+  /** The age window and its clocks (a content `FormatId`). */
+  format: FormatId;
+  /** Labelled AI (A7.1). */
+  general: GeneralId;
+  /** Added to the region's base tier and the difficulty offset (A18.6.2), clamped to [0, 10]. */
+  tierOffset: number;
+  /** The opponent's card level (A6.8). */
+  botLevel: number;
+  /** Disclosed symmetric modifiers (A18.7.7). */
+  modifiers: ModifierId[];
+  goal2: StarGoal;
+  /** What the level teaches (a `warPath.teach.<id>` tip), if anything (A18.7.5). */
+  teaches: string | null;
+  reward: WarPathReward;
+  /** Boss base: +HP and one extra fixed turret, disclosed (A18.7.6). */
+  boss: { baseHpBp: number; extraTurret: CardId } | null;
+  /** The onboarding match this level is while onboarding runs (Stone L1 and L2, A8). */
+  onboarding: 1 | 2 | null;
+}
+
+export interface WarPathRegion {
+  age: AgeId;
+  /** The Normal base tier of the region (A18.6.2). */
+  baseTier: number;
+  /** Level ids in order. */
+  levels: string[];
+}
+
+export interface WarPathTables {
+  regions: WarPathRegion[];
+  levels: Record<string, WarPathLevel>;
+  /** Every level id in map order. */
+  order: string[];
+  /** A18.6.2: the tier offset of each difficulty; Legendary always plays at `legendaryTier`. */
+  difficulty: { order: Difficulty[]; tierOffset: Record<Difficulty, number>; legendaryTier: number; default: Difficulty };
+  /** ★★★ needs this difficulty or harder (A18.7.4). */
+  threeStarFrom: Difficulty;
+  /** "Try Easy" after this many losses in a row (A18.7.4). */
+  tryEasyAfter: number;
+  /** Home features and the War Path levels whose first clear opens them (ui-plan 2.6). */
+  unlocks: Record<WarPathUnlock, number>;
+  /** The difficulty control and the ★★/★★★ goals show from this level on, or once a level is beaten (2.6). */
+  goalsFromLevel: number;
+}
+
+/** Home features that open one at a time along the War Path (ui-plan 2.6). */
+export type WarPathUnlock = 'army' | 'capsules' | 'modes' | 'customize' | 'progress' | 'ladder' | 'daily';

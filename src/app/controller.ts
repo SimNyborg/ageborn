@@ -402,8 +402,10 @@ export class AppController {
     return battle;
   }
 
-  private async onMatchEnd(battle: BattleHandle, input: MatchResultInput, replay: ReplayDoc): Promise<void> {
+  private async onMatchEnd(battle: BattleHandle, ended: MatchResultInput, replay: ReplayDoc): Promise<void> {
     const setup = battle.setup;
+    // A War Path match tells meta which level and difficulty it was (A18.7).
+    const input: MatchResultInput = setup.warPath ? { ...ended, warPath: setup.warPath } : ended;
     const hints = battle.director.hintsShown();
     let out: Awaited<ReturnType<typeof finishMatch>> = { save: null, rewards: [], onboarding: null };
     try {

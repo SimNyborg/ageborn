@@ -48,6 +48,7 @@ export function isCountingWin(f: CountingFacts, t: Content): boolean {
     case 'daily':
       return true;
     case 'conquest':
+    case 'warPath':
       return f.earnedStar || f.opponentTier >= skillTier(f.mmr, t) - 2;
     default:
       return false;

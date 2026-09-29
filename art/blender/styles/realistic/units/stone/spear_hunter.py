@@ -118,24 +118,27 @@ def build():
         br = C.blobs("bracer_" + s, [(S(0.2, y, 36.4), (2.0, 2.0, 2.2))], leather)
         rig.skin(br, ["forearm_" + s, "hand_" + s], soft=1.5 * k)
 
-    # the spear, along +X from the near fist
-    fx, fy, fz = FIST
-    parts = [C.tube("shaft", [(fx - BACK, fy, fz), (fx + FRONT * 0.5, fy, fz + 0.2 * k), (fx + FRONT, fy, fz)],
-                    [0.95 * k, 1.05 * k, 0.9 * k], wood, seg=10)]
-    head = C.blobs("spearhead", [((fx + FRONT + 3.6 * k, fy, fz), (4.8 * k, 0.7 * k, 1.9 * k))], flint, res=0.3)
-    C.xform(head, loc=(0, 0, 0))
-    parts.append(head)
-    tip = C.tube("tip", [(fx + FRONT + 5 * k, fy, fz), (fx + FRONT + 9.2 * k, fy, fz)], [1.4 * k, 0.1 * k], flint,
-                 seg=6, flat=0.4)
-    parts.append(tip)
-    lash = C.tube("lash", [(fx + FRONT - 2.2 * k, fy, fz), (fx + FRONT + 0.8 * k, fy, fz)], [1.35 * k] * 2, sinew, seg=10)
-    parts.append(lash)
-    butt = C.tube("buttwrap", [(fx - 3 * k, fy, fz), (fx + 3.5 * k, fy, fz)], [1.25 * k] * 2, leather, seg=10)
-    parts.append(butt)
-    for o in parts:
+    # the spear, along +X from the near fist; a second copy lies on the ground once he falls
+    def spear(tag):
+        fx, fy, fz = FIST
+        parts = [C.tube(tag + "shaft", [(fx - BACK, fy, fz), (fx + FRONT * 0.5, fy, fz + 0.2 * k), (fx + FRONT, fy, fz)],
+                        [0.95 * k, 1.05 * k, 0.9 * k], wood, seg=10),
+                 C.blobs(tag + "head", [((fx + FRONT + 3.6 * k, fy, fz), (4.8 * k, 0.7 * k, 1.9 * k))], flint, res=0.3),
+                 C.tube(tag + "tip", [(fx + FRONT + 5 * k, fy, fz), (fx + FRONT + 9.2 * k, fy, fz)], [1.4 * k, 0.1 * k], flint,
+                        seg=6, flat=0.4),
+                 C.tube(tag + "lash", [(fx + FRONT - 2.2 * k, fy, fz), (fx + FRONT + 0.8 * k, fy, fz)], [1.35 * k] * 2, sinew, seg=10),
+                 C.tube(tag + "butt", [(fx - 3 * k, fy, fz), (fx + 3.5 * k, fy, fz)], [1.25 * k] * 2, leather, seg=10)]
+        return parts
+    held = spear("held_")
+    for o in held:
         o["weapon"] = 1
         rig.rigid(o, "hand_F")
-    return dict(rig=rig)
+    dropped = spear("drop_")
+    for o in dropped:
+        C.xform(o, loc=(-FIST[0] - 6 * k, -FIST[1] - 9 * k, -FIST[2] + 1.0 * k), rot=(0, 0, math.radians(8)))
+        o.parent = rig.obj            # static on the ground (not carried by the falling root)
+        o.hide_render = True
+    return dict(rig=rig, held=held, dropped=dropped)
 
 
 # ------------------------------------------------------------------------------------ poses
@@ -197,12 +200,17 @@ def _die(t):
     base["pel"] = (0.0, B.PELV * H + base.pop("root")[1])
     for kk in ("handF", "handB"):
         base.pop(kk)
-    base["armF"] = (20, 40, 60)
-    base["armB"] = (-10, 40, 6, -4)
+    base["armF"] = (24, 60, 50)
+    base["armB"] = (8, 60, 10, -4)
     return MO.fall_back(base, t, H, G0)
 
 
 def pose(ctx, clip, t):
+    drop = clip == "die" and t >= 100
+    for o in ctx["held"]:
+        o.hide_render = drop
+    for o in ctx["dropped"]:
+        o.hide_render = not drop
     if clip == "idle":
         P = idle(t)
     elif clip == "walk":

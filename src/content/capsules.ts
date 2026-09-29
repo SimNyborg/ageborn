@@ -80,6 +80,8 @@ export const capsules: CapsuleTables = {
     codex: { kind: 'codex', climbFrom: null, countsForPity: true, nameKey: 'capsuleKind.codex.name' },
     conquest: { kind: 'conquest', climbFrom: null, countsForPity: true, nameKey: 'capsuleKind.conquest.name' },
     ageUnlock: { kind: 'ageUnlock', climbFrom: null, countsForPity: false, nameKey: 'capsuleKind.ageUnlock.name' },
+    // A18.7.8: a boss's fixed capsule, shown on its node
+    warPath: { kind: 'warPath', climbFrom: null, countsForPity: true, nameKey: 'capsuleKind.warPath.name' },
   },
   ageCapsule: { stacks: 4, copiesTier: 'silver', guaranteed: ['epic'] },
   codexCapsuleTier: 'silver',
