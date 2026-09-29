@@ -107,13 +107,15 @@ export const fixtureStats: MatchStats = {
   mvpCard: 'pikeman',
 };
 
-export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule';
+export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss';
 
 export function fixtureResult(content: Content, which: ResultFixture): ResultInfo {
   const opp = fixtureOpponent(content, which === 'conquest' ? 'warden' : 'general');
-  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' ? 0 : which === 'loss' ? 1 : null;
+  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' ? 0 : which === 'loss' || which === 'warPathLoss' ? 1 : null;
+  const path = which === 'warPath' ? 'wp.bronze.l03' : which === 'warPathLoss' ? 'wp.bronze.l07' : null;
   const input: MatchResultInput = {
-    mode: which === 'conquest' ? 'conquest' : 'ladder',
+    mode: which === 'conquest' ? 'conquest' : path ? 'warPath' : 'ladder',
+    ...(path ? { warPath: { level: path, difficulty: 'normal' as const } } : {}),
     outcome: {
       winner,
       reason: which === 'draw' ? 'finalBell' : 'baseDestroyed',
@@ -122,7 +124,7 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
     },
     mySide: 0,
     opponent: opp,
-    stats: which === 'loss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
+    stats: which === 'warPath' ? { ...fixtureStats, usedLastStand: true } : which === 'loss' || which === 'warPathLoss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
   };
   let rewards: RewardStep[];
   switch (which) {
@@ -159,6 +161,17 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
         { kind: 'clayPip', meter: 1 },
       ];
       break;
+    case 'warPath':
+      rewards = [
+        { kind: 'pathStar', level: 'wp.bronze.l03', star: 1 },
+        { kind: 'amber', amount: 40 },
+        { kind: 'card', card: 'standard_bearer', copies: 0 },
+        { kind: 'quest', questId: 'win_2', progress: 2, done: true },
+      ];
+      break;
+    case 'warPathLoss':
+      rewards = [{ kind: 'quest', questId: 'play_3', progress: 2, done: false }];
+      break;
     case 'conquest':
       rewards = [
         { kind: 'star', generalId: 'warden', star: 1 },
@@ -175,7 +188,7 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
     input,
     rewards,
     replayIndex: 0,
-    request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : { mode: 'ladder', format: 'standard' },
+    request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : path ? { mode: 'warPath', level: path, difficulty: 'normal' } : { mode: 'ladder', format: 'standard' },
   };
 }
 

@@ -522,3 +522,82 @@
   align-items: center;
   gap: 4px;
 }
+
+/* ---- War Path level badge (ui-plan 4.9, 2.7: "a star stamps onto the level badge") ---- */
+.result-level {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s3);
+  margin: var(--ui-s1) 0 var(--ui-s2);
+  padding: var(--ui-s2) var(--ui-s3);
+  border: 1px solid rgba(255, 227, 154, 0.35);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(180deg, rgba(37, 44, 57, 0.92), rgba(26, 31, 41, 0.92));
+  box-shadow: var(--ui-e2);
+  animation: ui-rise var(--ui-dur-medium) var(--ui-ease-enter) 250ms both;
+}
+.result-level__disc {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #fff4d0 0, #d9a441 46%, #7a4f14 100%);
+  box-shadow: 0 0 0 3px #1b140d, 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 3px 3px rgba(255, 255, 255, 0.45);
+  color: #2a1a06;
+  font: 800 var(--ui-fs-title) / 1 var(--ui-font-display);
+}
+.result-level__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.result-level__name {
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+}
+.result-level__stars {
+  display: flex;
+  gap: 2px;
+}
+.result-level__star {
+  display: flex;
+  filter: drop-shadow(0 1px 0 #0b0d12);
+}
+.result-level__star.is-new {
+  animation: result-star-stamp 220ms var(--ui-ease-back) both;
+}
+@keyframes result-star-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.8) rotate(-12deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.result-level__goal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+.result-level__goal.is-met {
+  color: var(--ui-good);
+}
+@container ui-root (max-height: 480px) {
+  .result-level {
+    padding: 6px var(--ui-s2);
+  }
+  .result-level__disc {
+    width: 40px;
+    height: 40px;
+  }
+}

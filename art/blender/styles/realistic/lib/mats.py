@@ -113,6 +113,14 @@ def glow(color="#ffb060", strength=6.0, name="glow"):
     return C.emit_mat(name, color, strength)
 
 
+def hem_axes(axes, grow):
+    """Semi-axes for a hem / trim blob under a thin draped blob (blanket, pelt, caparison): the two
+    long axes grow by `grow` so the trim peeks out along the edge, the thin axis shrinks so the trim
+    stays hidden under the team surface everywhere else."""
+    thin = min(range(3), key=lambda k: axes[k])
+    return tuple(a - min(0.6, a * 0.3) if k == thin else a + grow for k, a in enumerate(axes))
+
+
 # ---- team surfaces (grey; tinted in the game)
 def team_hide(name="team_hide"):
     """Dyed hide / leather: the Stone Age team read."""

@@ -15,15 +15,18 @@
  *   350 ms half-life, capped at 900 lu/s × game speed. Manual yields at once and follow resumes after
  *   5 s without camera input (never while a pointer is down, a popover is open or a power is dragged),
  *   easing back over 600 ms. With the "Auto camera" setting off it never resumes by itself.
- * - **Pushes** (A12 moments): push in on a world point, hold, ease out. The own-evolve push only runs
- *   when the base is in view (the view checks); a destroyed base locks the camera: a 500 ms pan to it,
- *   then the push. Pushes never show past the world's ends.
+ * - **Pushes** (A12 moments): push in on a world point, hold, ease out. A destroyed base locks the
+ *   camera: a 500 ms pan to it, then the push. Pushes never show past the world's ends.
+ * - **Moments** (MR-80, ui-plan 5.1 "never block"): your evolve frames your base from anywhere: a
+ *   500 ms pan and the push, at most 3 s of focus, then the camera returns (follow picks the fight
+ *   up again, or a Manual camera eases back to where it was). It is skipped while the player works
+ *   the camera (a drag, or Manual input in the last 2 s). Any camera input ends it at once.
  * - **Reduce motion:** no momentum, no rubber band, 150 ms eases and a 200 ms spring half-life.
  *
  * Zoom keeps the ground line where it is, so units grow upward and stay in the lane band.
  */
 import type { Pt } from '@/contracts';
-import { WORLD_LEFT_LU, WORLD_RIGHT_LU, WORLD_WIDTH_LU, screenLayout, type ScreenLayout } from './layout';
+import { WORLD_LEFT_LU, WORLD_RIGHT_LU, WORLD_WIDTH_LU, screenLayout, type HudInsets, type ScreenLayout } from './layout';
 
 /** Camera numbers (A17.4). Times in ms, speeds in lu/s, distances in CSS px unless named lu. */
 export const CAMERA = {
@@ -56,6 +59,10 @@ export const CAMERA = {
   rubberBackMs: 200,
   /** A destroyed base: the pan to it before the push. */
   momentPanMs: 500,
+  /** A moment is skipped when the player moved the camera this recently (MR-80). */
+  momentQuietMs: 2000,
+  /** A moment holds the camera at most this long (MR-80: "≤ 3 s of camera focus"). */
+  momentMaxMs: 3000,
   reduceMotionEaseMs: 150,
   reduceMotionHalfLifeMs: 200,
 } as const;
@@ -186,9 +193,22 @@ export class Camera {
     this.setZoom(this.zoom);
   }
 
+  /** The HUD's insets (ui-plan 3.1 world framing), or null before the HUD has measured itself. */
+  private insets: HudInsets | null = null;
+
   resize(width: number, height: number): void {
-    this.layout = screenLayout(width, height);
+    this.layout = screenLayout(width, height, this.insets);
     this.setZoom(this.zoom);
+  }
+
+  /** The HUD chrome's insets: the lane band becomes the space between them (see `screenLayout`). */
+  setInsets(insets: HudInsets | null): void {
+    const a = this.insets;
+    if (a === insets || (a && insets && a.top === insets.top && a.bottom === insets.bottom)) return;
+    this.insets = insets;
+    const x = this.centerX;
+    this.resize(this.layout.width, this.layout.height);
+    this.centerX = this.clampX(x);
   }
 
   /** Every device can pinch or Ctrl + wheel zoom within [0.8, 1.25] (A17.4). */
@@ -275,6 +295,8 @@ export class Camera {
   }
 
   hold(key: CameraHold, on: boolean): void {
+    // A power drag, a minimap press or a lane press ends a moment at once (MR-80).
+    if (on && key !== 'popover' && key !== 'tutorial') this.endMoment();
     if (on) this.holds.add(key);
     else this.holds.delete(key);
   }
@@ -288,12 +310,51 @@ export class Camera {
   // ------------------------------------------------------------------------------------------
 
   private manual(): void {
+    this.endMoment();
     this.mode = 'manual';
     this.idleMs = 0;
     this.engaged = false;
     this.vel = 0;
     this.manualSeq++;
     if (this.ease && this.ease.kind !== 'jump') this.ease = null;
+  }
+
+  // ------------------------------------------------------------------------------------------
+  // Moments (MR-80)
+  // ------------------------------------------------------------------------------------------
+
+  /** A moment in progress: the framed centre, its time, and where a Manual camera returns to. */
+  private moment: { x: number; t: number; ms: number; back: number | null } | null = null;
+
+  /** True while a moment frames something (tests, the view). */
+  get inMoment(): boolean {
+    return this.moment !== null;
+  }
+
+  /**
+   * Frames world x for a moment (your evolve, MR-80): pans there (500 ms) and pushes in, for at most
+   * 3 s, then returns. Returns false (nothing happens) when the player is working the camera: a drag,
+   * or Manual input in the last 2 s; the caller shows the minimap flash instead.
+   */
+  frameMoment(x: number, push: CameraPush): boolean {
+    if (this.locked || this.dragging) return false;
+    if (this.mode === 'manual' && this.idleMs < CAMERA.momentQuietMs) return false;
+    const cx = this.clampX(x);
+    const ms = Math.min(CAMERA.momentMaxMs, push.inMs + push.holdMs);
+    this.moment = { x: cx, t: 0, ms, back: this.mode === 'manual' ? this.centerX : null };
+    this.fling = 0;
+    this.vel = 0;
+    if (Math.abs(cx - this.centerX) > 1) this.startEase(cx, CAMERA.momentPanMs, this.mode, 'jump');
+    this.pushTo({ ...push, holdMs: Math.max(0, ms - push.inMs) });
+    return true;
+  }
+
+  /** Ends a moment now (any camera input): the push is dropped and the camera is the player's. */
+  private endMoment(): void {
+    if (!this.moment) return;
+    this.moment = null;
+    this.push = null;
+    if (this.ease?.kind === 'jump' && !this.locked) this.ease = null;
   }
 
   /** A drag starts (after the 10 px threshold). */
@@ -402,6 +463,7 @@ export class Camera {
   /** Turns follow back on, easing into it (A17.4: 600 ms, or the 350 ms jump for a button). */
   resumeFollow(fromButton = false): void {
     if (this.locked) return;
+    if (fromButton) this.endMoment();
     this.fling = 0;
     this.engaged = false;
     this.vel = 0;
@@ -489,6 +551,15 @@ export class Camera {
       const p = this.push;
       if (p.outMs > 0 && this.pushMs >= p.inMs + p.holdMs + p.outMs) this.push = null;
     }
+    if (this.moment) {
+      const mo = this.moment;
+      mo.t += dtRaw;
+      if (mo.t >= mo.ms) {
+        // The moment is over: follow picks the fight up again (its spring), a Manual camera eases back.
+        this.moment = null;
+        if (mo.back !== null && !this.locked) this.startEase(this.clampX(mo.back), CAMERA.momentPanMs, 'manual', 'jump');
+      }
+    }
     if (this.ease) {
       const e = this.ease;
       e.t += dtRaw;
@@ -541,7 +612,8 @@ export class Camera {
   }
 
   private updateFollow(dt: number, gameSpeed: number): void {
-    const target = this.followTarget();
+    // A moment holds the framing on its point; follow resumes when it ends.
+    const target = this.moment ? this.moment.x : this.followTarget();
     const V = this.viewLu;
     const err = target - this.centerX;
     if (!this.engaged && Math.abs(err) > CAMERA.deadZone * V) this.engaged = true;
@@ -585,7 +657,8 @@ export class Camera {
     const lo = L.width - WORLD_RIGHT_LU * scale;
     const hi = -WORLD_LEFT_LU * scale;
     if (lo <= hi) x = Math.min(hi, Math.max(lo, x));
-    return { scale, x, y: qy - p.y * scale };
+    // The push never lowers the ground line under the tray (unit feet stay above HUD chrome, 3.1).
+    return { scale, x, y: Math.min(qy - p.y * scale, L.groundY) };
   }
 
   private baseTransform(): CameraTransform {

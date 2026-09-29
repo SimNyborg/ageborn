@@ -57,8 +57,8 @@ ATK_T = [0, 170, 340, 548, 570, 750, 840, 1020, 1120]
 
 
 def build():
-    wool = M.fur("#5d4331", "#3f2e23", name="wool", bump=1.4)
-    wool_lt = M.fur("#7a5c44", "#5a4232", name="wool_lt", bump=1.2)
+    wool = M.fur("#5d4331", "#4a3527", name="wool", bump=1.4, noise=0.22, nscale=0.45)
+    wool_lt = M.fur("#7a5c44", "#5a4232", name="wool_lt", bump=1.2, noise=0.22, nscale=0.45)
     skin = C.mat("mskin", "#4a3a32", rough=0.8, noise=0.2, nscale=0.4, bump=0.8)
     ivory = M.ivory("#e0d3b6")
     nail = M.bone("#c9bda3", name="nail")
@@ -88,7 +88,7 @@ def build():
         ((42, 0, 72), (14, 26, 16)),          # upper forelegs
         ((-44, 0, 76), (18, 25, 18)),         # thighs
     ], wool, res=1.8)
-    C.displace(body, 2.6, 0.18)
+    C.displace(body, 2.4, 2.4)
     rig.skin(body, [p + "body", p + "pelvis", p + "neck", p + "foreS_F", p + "foreS_B", p + "hindT_F", p + "hindT_B"],
              soft=8.0, bias={p + "foreS_F": 8.0, p + "foreS_B": 8.0, p + "hindT_F": 8.0, p + "hindT_B": 8.0, p + "neck": 3.0})
     # the shaggy fringe hanging from the flanks and belly
@@ -103,7 +103,7 @@ def build():
         if i % 2 == 0:
             fr.append(((x, 0, 80 + 0.08 * x), (5.0, 20.0, 12.0)))
     fringe = C.blobs("fringe", fr, wool, res=1.3)
-    C.displace(fringe, 1.8, 0.6)
+    C.displace(fringe, 1.6, 1.8)
     rig.skin(fringe, [p + "body", p + "pelvis"], soft=10)
     head = C.blobs("m_head", [
         ((79, 0, 140), (15, 14, 15)),          # dome
@@ -112,7 +112,7 @@ def build():
         ((67, -16, 126), (5, 3, 9), (0.2, -0.3, 0)),    # ears
         ((67, 16, 126), (5, 3, 9), (-0.2, -0.3, 0)),
     ], wool, res=1.3)
-    C.displace(head, 2.0, 0.22)
+    C.displace(head, 1.8, 2.2)
     rig.rigid(head, p + "head")
     for y in (-13.0, 13.0):
         rig.rigid(C.sphere("eye", 1.6, eye, loc=(92, y, 121), scale=(0.6, 0.5, 0.6)), p + "head")
@@ -126,7 +126,7 @@ def build():
     C.displace(trunk, 0.8, 0.5)
     rig.skin(trunk, [p + "head", "trunk1", "trunk2", "trunk3", "trunk4"], soft=3.0, bias={p + "head": 3.0})
     thair = C.blobs("trunkhair", [((98, 0, 100), (8, 7, 9)), ((102, 0, 88), (6, 6, 8))], wool, res=1.0)
-    C.displace(thair, 1.5, 0.4)
+    C.displace(thair, 1.4, 1.6)
     rig.skin(thair, [p + "head", "trunk1"], soft=4)
     tail = C.tube("tail", [(-78, 0, 113), (-85, 0, 102), (-89, 0, 90)], [3.0, 2.2, 1.6], wool, seg=8)
     rig.skin(tail, [p + "tail", p + "tail2"], soft=3)
@@ -137,11 +137,11 @@ def build():
     for sd, y in Q.Y.items():
         fore = C.blobs("fore_" + sd, [((44, y, 58), (13, 11, 22)), ((45.5, y, 30), (11.5, 10, 14)),
                                       ((47, y, 12), (11, 10.5, 10))], wool, res=1.1)
-        C.displace(fore, 2.0, 0.3)
+        C.displace(fore, 1.8, 2.0)
         rig.skin(fore, Q.leg_bones("fore", sd), soft=3, bias={p + "foreS_" + sd: 5})
         hind = C.blobs("hind_" + sd, [((-44, y, 60), (14, 11.5, 22)), ((-49, y, 32), (11, 10, 14)),
                                       ((-48, y, 12), (10.5, 10, 10))], wool, res=1.1)
-        C.displace(hind, 2.0, 0.3)
+        C.displace(hind, 1.8, 2.0)
         rig.skin(hind, Q.leg_bones("hind", sd), soft=3, bias={p + "hindT_" + sd: 5})
         for nm, bone_, x in (("ff", p + "foreP_" + sd, 48.5), ("hf", p + "hindP_" + sd, -46.5)):
             pad = C.lathe(nm, [(0, 0), (10.5, 0), (10.8, 3.5), (9.5, 6), (0, 6)], skin, seg=24, loc=(x, y, 0))
@@ -387,3 +387,5 @@ def clips():
         G.Clip("hit", MO.HIT_MS, times=MO.HIT_TIMES),
         die_c,
     ]
+SHARPEN1 = 0.0
+SHEET_FACTOR = 0.82    # the huge Legendary ships at 0.84 / 1.68 px/lu (its sheets would double the age budget)

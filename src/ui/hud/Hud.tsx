@@ -546,6 +546,10 @@ export function Hud(props: HudProps) {
   };
 
   const colors = useMemo(() => hudTeamColors(props.teamPreset ?? 'default', side), [props.teamPreset, side]);
+  // Reduce motion (U14): the app root carries the Settings switch; the HUD mirrors it onto its own root
+  // so its CSS and the motion helpers (`reducedMotion(el)`) see it.
+  const rmHost = root.current?.parentElement?.closest('[data-reduce-motion]') ?? null;
+  const reduceMotion = rmHost !== null && rmHost.getAttribute('data-reduce-motion') !== 'false';
 
   // The War Council (A18.5.7). The first match (no clock) keeps it off the tray; the gold tap still opens it.
   const cv = m.me.research ? councilView(m, config, side) : null;
@@ -573,6 +577,7 @@ export function Hud(props: HudProps) {
       class={`hud${compact ? ' is-compact' : ''}${m.phase === 'ended' ? ' is-ended' : ''}${m.paused ? ' is-paused' : ''}${readOnly ? ' is-readonly' : ''}`}
       data-testid="hud"
       data-phase={m.phase}
+      data-reduce-motion={reduceMotion ? 'true' : 'false'}
       style={style}
       // Mouse presses must not move focus onto HUD buttons, or Space would press the focused button
       // instead of casting the power (keyboard focus through Tab still works).

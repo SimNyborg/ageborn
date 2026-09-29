@@ -19,6 +19,7 @@
  */
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useFitLabel } from './fit';
 import type { HudCtx } from './context';
 import { haptic as hapticTier } from '../components/haptics';
 import { BoltIcon } from './icons';
@@ -156,6 +157,10 @@ export function PowerButton(p: { c: HudCtx; pulse?: boolean }) {
   const def = c.config.content.powers[m.me.power];
   const url = usePortrait(c.portrait, m.me.power || null, 'none', 72);
   const btn = useRef<HTMLButtonElement>(null);
+  const nameEl = useRef<HTMLSpanElement>(null);
+  // The name tag inside the ring: a long name is condensed to fit (UA-14: never clipped).
+  const nameText = def ? t(def.nameKey) : '';
+  useFitLabel(nameEl, () => (btn.current ? btn.current.clientWidth * 0.84 - 10 : 0), [nameText, ready, c.compact]);
   const [st, setSt] = useState<PowerAimState>(AIM_IDLE);
   const stRef = useRef<PowerAimState>(st);
   /** The token that follows the pointer while dragging (HUD-local px). */
@@ -359,14 +364,14 @@ export function PowerButton(p: { c: HudCtx; pulse?: boolean }) {
       >
         <i class="hud-power-ring" />
         <span class="hud-power-core">{icon(c.compact ? 30 : 38)}</span>
-        {ready ? <i key={readySeq.current.n} class="hud-power-burst" /> : null}
+        {ready ? <i key={`b${readySeq.current.n}`} class="hud-power-burst" /> : null}
         {ready && !aiming ? (
-          <span key={readySeq.current.n} class="hud-power-ready" data-tag>
+          <span key={`r${readySeq.current.n}`} class="hud-power-ready" data-tag>
             {t('hud.ready')}
           </span>
         ) : !ready && def ? (
           <span class="hud-power-name" data-tag>
-            {t(def.nameKey)}
+            <span ref={nameEl}>{t(def.nameKey)}</span>
           </span>
         ) : null}
         {ready && !aiming && !dragging ? (

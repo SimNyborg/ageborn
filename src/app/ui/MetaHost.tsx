@@ -8,7 +8,7 @@ import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { bindHistory, LEAVE_AGAIN_KEY } from '@/ui/history';
-import { handleBack, ScreenHost, visibleEntries, type ScreenSlots, type UiEnv } from '@/ui/screens';
+import { handleBack, ScreenHost, shellTabs, TAB_ROOTS, visibleEntries, type ScreenSlots, type ShellConfig, type UiEnv } from '@/ui/screens';
 import type { MetaUi } from '../metaUi';
 import { BattleScreen } from './BattleScreen';
 import { useApp } from './context';
@@ -18,7 +18,21 @@ import './meta.css';
  * UI sound ids the plan adds (ui-plan 5.4) that WP6 has not made yet, played as their nearest
  * existing sound meanwhile (docs/requests/wp6-ui-sounds.md).
  */
-const UI_SOUND_FALLBACK: Readonly<Record<string, string>> = { ui_sheet: 'ui_toggle', ui_pop: 'ui_toggle', ui_whoosh: 'ui_tab', ui_stamp: 'ui_confirm', card_lift: 'ui_toggle', card_place: 'ui_confirm' };
+const UI_SOUND_FALLBACK: Readonly<Record<string, string>> = {
+  ui_sheet: 'ui_toggle',
+  ui_pop: 'ui_toggle',
+  ui_whoosh: 'ui_tab',
+  ui_stamp: 'ui_confirm',
+  card_lift: 'ui_toggle',
+  card_place: 'ui_confirm',
+  // The War Path map (ui-plan 5.4; docs/requests/wp6-warpath-sounds.md)
+  star_stamp: 'ui_confirm',
+  path_draw: 'ui_tab',
+  node_drop: 'ui_toggle',
+  region_open: 'level_up',
+  ui_unlock: 'level_up',
+  reward_fly: 'ui_tab',
+};
 
 export interface MetaHostProps {
   meta: MetaUi;
@@ -72,11 +86,14 @@ export function MetaHost(p: MetaHostProps) {
     [ui, p.slots],
   );
   const { base } = visibleEntries(p.meta.router.stack.value);
+  // The five tabs (ui-plan 2.2): locks, the next unlock and the ready badges follow the save.
+  const save = p.meta.save.value;
+  const shell: ShellConfig = useMemo(() => ({ tabs: shellTabs(save, env.content), roots: TAB_ROOTS }), [save, env.content]);
   const route = ui.controller.route.value;
   const behind = route.id === 'result' && !!route.result.battle;
   return (
     <div class="ab-meta" data-testid="meta-ui" data-base={base.route.id} {...(behind ? { 'data-behind': '' } : {})}>
-      <ScreenHost env={env} slots={slots} />
+      <ScreenHost env={env} slots={slots} shell={shell} />
     </div>
   );
 }

@@ -3,15 +3,15 @@ import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
 import { afterOnboardingMatch, bootRoute, completeStep, homeStep, onboardingStep, unlocks } from '../onboarding';
 
 describe('first-session flow (A8, A9)', () => {
-  it('a first launch goes straight into the tutorial; after capsule 1 the start screen is Home (B11 boot step 6)', () => {
-    expect(bootRoute(null)).toBe('tutorial');
+  it('a first launch opens the War Path map (ui-plan 6.4); the capsule steps keep the onboarding screens (B11 boot step 6)', () => {
+    expect(bootRoute(null)).toBe('home');
     expect(onboardingStep(null)).toBe('match1');
     expect(bootRoute(fakeSaveDoc({ tutorial: { step: 1, hintsShown: {} } }))).toBe('tutorial');
     // Owner feedback 2026-09-28: match 2 starts from Home.
     expect(bootRoute(fakeSaveDoc({ tutorial: { step: 2, hintsShown: {} } }))).toBe('home');
     expect(bootRoute(fakeSaveDoc({ tutorial: { step: 3, hintsShown: {} } }))).toBe('tutorial');
     expect(bootRoute(fakeSaveDoc({ tutorial: { step: 4, hintsShown: {} } }))).toBe('home');
-    expect(['match1', 'capsule1', 'match2', 'capsule2', 'home'].map(homeStep)).toEqual([false, false, true, false, true]);
+    expect(['match1', 'capsule1', 'match2', 'capsule2', 'home'].map(homeStep)).toEqual([true, false, true, false, true]);
   });
 
   it('walks match 1 → capsule 1 → match 2 → capsule 2 → Home and never goes back', () => {

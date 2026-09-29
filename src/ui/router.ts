@@ -122,6 +122,10 @@ export interface RouteParams {
   conquest: NoParams;
   /** Customize (owner feedback 2026-09-28): troop and base skins, banner, frame, title, emotes. */
   customize: { tab?: CustomizeTab };
+  /** The Capsules tab (ui-plan 4.6, S8). */
+  capsules: NoParams;
+  /** The Progress tab (ui-plan 4.1b, S13). */
+  progress: NoParams;
 }
 
 export type ScreenId = keyof RouteParams;
@@ -159,6 +163,9 @@ export const SCREENS: Readonly<Record<ScreenId, ScreenInfo>> = {
   conquest: { a9: 17, owner: 'WP9', overlay: false },
   /** Not in the A9 table (owner feedback 2026-09-28); numbered after it. */
   customize: { a9: 19, owner: 'WP9', overlay: false },
+  /** ui-plan 2.4 S8 and S13, numbered after the A9 table. */
+  capsules: { a9: 20, owner: 'WP9', overlay: false },
+  progress: { a9: 21, owner: 'WP9', overlay: false },
 };
 
 /** Screen ids rendered by this package (WP9). */
@@ -214,6 +221,11 @@ export interface Router {
   jump(route: Route, tab?: TabId | null): void;
   /** Leaves the tab shell for a flow (VS, battle, Result): clears the kept tab stacks. */
   leaveTabs(): void;
+  /**
+   * Marks the current stack as `tab`'s without changing it (Home after a flow reset it to the map,
+   * or on first launch), so the screen on top is not re-mounted.
+   */
+  adoptTab(tab: TabId): void;
 }
 
 /** Deep stacks are trimmed from the bottom (keeping the root) so they cannot grow without end. */
@@ -318,6 +330,11 @@ export function createRouter(initial: Route = { id: 'home' }): Router {
     leaveTabs() {
       kept.clear();
       tab.value = null;
+    },
+    adoptTab(next) {
+      if (tab.value === next) return;
+      kept.delete(next);
+      tab.value = next;
     },
   };
 }

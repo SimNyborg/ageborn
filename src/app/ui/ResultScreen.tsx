@@ -42,6 +42,10 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
       return null;
     case 'star':
       return { icon: 'star', text: t('app.reward.star', { star: r.star }) };
+    case 'pathStar':
+      return { icon: 'star', text: t('app.reward.pathStar', { star: r.star }) };
+    case 'card':
+      return { icon: 'plain', text: t('app.reward.card', { name: t(`card.${r.card}.name`) }) };
     case 'arena':
       return { icon: 'trophy', text: t('app.reward.arena') };
     case 'title':

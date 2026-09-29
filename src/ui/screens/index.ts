@@ -5,7 +5,8 @@
 export { handleBack, ScreenHost, SCREEN_COMPONENTS, onEscape, type ScreenHostProps, type ScreenSlots, type ShellConfig } from './ScreenHost';
 export type { UiEnv } from './context';
 export type { ActionResult, CosmeticEquipPatch, ProfileLookPatch, UiServices, WarPlan } from './services';
-export { HomeScreen } from './home/HomeScreen';
+export { HomeScreen, primeWarPathSeen } from './home/HomeScreen';
+export { shellTabs, TAB_ROOTS } from './warPath/shell';
 export {
   createRouter,
   SCREENS,

@@ -22,14 +22,17 @@ test.describe('boot', () => {
     expect(problems.failed).toEqual([]);
   });
 
-  test('a fresh profile sees the title with one Play button and an AI-labeled opponent (A8, A7.1)', async ({ page }) => {
+  test('a fresh profile opens the War Path map with one Play button; VS labels the opponent AI (ui-plan 6.4, A7.1)', async ({ page }) => {
     await page.goto('./');
-    await expect(page.getByTestId('title')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('play')).toBeVisible();
-    await expect(page.getByTestId('title-ai-chip')).toHaveText(/\bAI\b/);
-    // A8 0:00: no menu before the first win (no format picker, no Quick Battle).
-    await expect(page.getByTestId('quick-battle')).toHaveCount(0);
-    await expect(page.getByTestId('format-short')).toHaveCount(0);
+    await expect(page.getByTestId('wp-node-wp.stone.l01')).toHaveAttribute('data-state', 'current');
+    // ui-plan 2.6: the first launch shows only the map, level 1, Play and the gear.
+    await expect(page.getByTestId('tabbar')).toHaveCount(0);
+    await expect(page.getByTestId('home-modes')).toHaveCount(0);
+    await expect(page.locator('[data-primary]')).toHaveCount(1);
+    await page.getByTestId('play').click();
+    await expect(page.getByTestId('vs-foe').getByTestId('ai-badge')).toBeVisible({ timeout: 10_000 });
   });
 
   test('the Quick Battle dev route starts a Short War vs an AI-labeled General (C3 Checkpoint A)', async ({ page }) => {
@@ -48,7 +51,8 @@ test.describe('boot', () => {
     await expect(page.getByTestId('pause')).toHaveCount(0);
     await page.getByTestId('hud-pause').click();
     await page.getByTestId('quit').click();
-    await expect(page.getByTestId('title')).toBeVisible();
+    // A fresh profile's start screen is the War Path map (ui-plan 6.4).
+    await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     expect(problems.errors).toEqual([]);
   });
 

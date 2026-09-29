@@ -83,6 +83,8 @@
       "codex": "+{points} Codex points",
       "quest": "Quest progress {progress}",
       "star": "Conquest star {star}",
+      "pathStar": "War Path star {star}",
+      "card": "New card: {name}",
       "arena": "New arena!",
       "title": "New title: {title}"
     },

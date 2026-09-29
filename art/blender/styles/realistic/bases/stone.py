@@ -105,7 +105,7 @@ def build():
         rig.rigid(W.grp(o, g), bone)
         return o
 
-    def crag(name, sx, sy, depth, size, g, mat=stone, seed=0, sub=4, flat_top=None):
+    def crag(name, sx, sy, depth, size, g, mat=stone, seed=0, sub=4, flat_top=None, rigged=True):
         """A weathered boulder: a displaced icosphere with angular facets (clouds + voronoi)."""
         import bmesh
         bm = bmesh.new()
@@ -129,17 +129,40 @@ def build():
             for v in o.data.vertices:
                 if v.co.z > flat_top:
                     v.co.z = flat_top + (v.co.z - flat_top) * 0.08
-        rig.rigid(W.grp(o, g), "body")
+        if rigged:
+            rig.rigid(W.grp(o, g), "body")
         return o
 
     import bpy
     # the crag: a wide foot, a pillar at the back, a body leaning toward the lane, an overhang, the summit
-    crag("foot", -104, 42, 44, (92, 58, 46), "crag", seed=1)
-    crag("foot2", -40, 22, 10, (40, 30, 26), "crag", mat=stone_dk, seed=2)
-    crag("pillar", -162, 140, 60, (36, 44, 124), "crag", mat=stone_dk, seed=3)
-    crag("body", -92, 128, 36, (64, 48, 44), "crag", seed=4)
-    crag("upper", -76, 196, 32, (48, 40, 36), "crag", mat=stone_dk, seed=5)
-    crag("overhang", -34, 176, 12, (34, 28, 16), "crag", seed=6)
+    # AD pass: the main masses are fused into ONE crag (voxel remesh), then re-weathered with strata,
+    # facets and cracks, so the hold reads as a single rock outcrop instead of stacked boulders
+    parts = [crag("foot", -104, 42, 44, (92, 58, 46), "crag", seed=1, rigged=False),
+             crag("foot2", -40, 22, 10, (40, 30, 26), "crag", seed=2, rigged=False),
+             crag("pillar", -162, 140, 60, (40, 46, 130), "crag", seed=3, rigged=False),
+             crag("body", -96, 124, 36, (70, 50, 56), "crag", seed=4, rigged=False),
+             crag("upper", -80, 192, 34, (52, 42, 44), "crag", seed=5, rigged=False),
+             crag("neck", -118, 88, 44, (60, 44, 44), "crag", seed=10, rigged=False),
+             crag("overhang", -38, 172, 14, (36, 28, 18), "crag", seed=6, rigged=False)]
+    for o in parts:
+        C.apply_mods(o)
+    fused = C.join("crag_main", parts)
+    rm = fused.modifiers.new("rm", "REMESH")
+    rm.mode, rm.voxel_size, rm.use_smooth_shade = "VOXEL", 2.4, True
+    C.apply_mods(fused)
+    fused.data.materials.clear()
+    fused.data.materials.append(stone)
+    for nm, kind, sc, st in (("f_big", "CLOUDS", 26.0, 7.0), ("f_facet", "VORONOI", 11.0, 3.2), ("f_fine", "CLOUDS", 4.0, 1.1)):
+        tx = bpy.data.textures.new(nm, kind)
+        tx.noise_scale = sc
+        if kind == "VORONOI":
+            tx.distance_metric = "DISTANCE"
+        dm = fused.modifiers.new(nm, "DISPLACE")
+        dm.texture, dm.strength, dm.texture_coords = tx, st, "GLOBAL"
+    C.apply_mods(fused)
+    fused.data.shade_smooth()
+    fused.data.set_sharp_from_angle(angle=math.radians(38))
+    rig.rigid(W.grp(fused, "crag"), "body")
     crag("summit", -88, 250, 34, (34, 28, 30), "summit-2", seed=7)
     crag("summit2", -120, 236, 44, (26, 24, 26), "summit-2", mat=stone_dk, seed=8)
     crag("summit_broken", -92, 232, 34, (30, 26, 14), "summit+3", seed=9)
@@ -207,22 +230,60 @@ def build():
         rig.rigid(W.grp(C.blobs("flamecore", [((tx, ty - 1.5, 40.5), (1.6, 1.2, 3.2))], fire_core, res=0.4), "crag"), "body")
         ctx["torches"].append((tx, ty, 42))
 
-    # the team hide stretched on a frame on the rock face, lashed at the corners, an ochre handprint
+    # the team hide: a whole dyed animal pelt (legs, neck, tail lobes, ragged edge) stretched on a
+    # lashed branch frame on the rock face, with painted ochre clan stripes (AD pass: it used to be a
+    # flat square sign with a dot)
+    import bmesh
     hc = P(-112, 150, -16)
-    hd = C.box("teamhide", 40, 1.6, 44, hide, bevel=0.6, loc=hc, rot=(0, math.radians(4), 0))
+    HW, HH = 23.0, 25.0
+
+    def pelt_in(u, v):
+        rnd_e = 0.035 * math.sin(u * 23.0 + v * 7.0) + 0.03 * math.sin(v * 31.0 - u * 5.0)
+        f = (u / 0.58) ** 2 + (v / 0.74) ** 2 - 1.0
+        for (cu, cv, r) in ((-0.66, 0.52, 0.2), (0.66, 0.52, 0.2), (-0.62, -0.6, 0.22), (0.62, -0.6, 0.22),
+                            (0.0, 0.86, 0.2), (0.0, -0.9, 0.12)):
+            f = min(f, ((u - cu) ** 2 + (v - cv) ** 2) / r ** 2 - 1.0)
+        for (a, b, r) in (((-0.66, 0.52), (-0.3, 0.3), 0.14), ((0.66, 0.52), (0.3, 0.3), 0.14),
+                          ((-0.62, -0.6), (-0.3, -0.35), 0.15), ((0.62, -0.6), (0.3, -0.35), 0.15)):
+            ab = (b[0] - a[0], b[1] - a[1])
+            t = max(0.0, min(1.0, ((u - a[0]) * ab[0] + (v - a[1]) * ab[1]) / (ab[0] ** 2 + ab[1] ** 2)))
+            d2 = (u - a[0] - t * ab[0]) ** 2 + (v - a[1] - t * ab[1]) ** 2
+            f = min(f, d2 / r ** 2 - 1.0)
+        return f + rnd_e < 0.0
+
+    bm = bmesh.new()
+    bmesh.ops.create_grid(bm, x_segments=48, y_segments=52, size=1.0)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not pelt_in(v.co.x, v.co.y)], context="VERTS")
+    for v in bm.verts:
+        u, w = v.co.x, v.co.y
+        sag = -1.4 * (1.0 - min(1.0, u * u / 0.5 + w * w / 0.7))       # the hide bellies out between the lashings
+        v.co = (hc[0] + u * HW, hc[1] + sag, hc[2] + w * HH)
+    hd = C.from_bm("teamhide", bm, hide)
+    so = hd.modifiers.new("so", "SOLIDIFY")
+    so.thickness = 0.9
     sm = hd.modifiers.new("sub", "SUBSURF")
-    sm.levels = sm.render_levels = 2
-    C.displace(hd, 1.2, 3.0)
+    sm.levels = sm.render_levels = 1
+    C.displace(hd, 0.8, 2.0)
     C.team(hd)
     rig.rigid(W.grp(hd, "crag"), "body")
-    for dx, dz in ((-21, 23), (21, 23), (-21, -23), (21, -23)):
-        rig.rigid(W.grp(C.tube("lashing", [(hc[0] + dx, hc[1] - 1, hc[2] + dz), (hc[0] + dx * 1.3, hc[1] + 6, hc[2] + dz * 1.25)],
-                               [0.8, 0.8], rope, seg=6), "crag"), "body")
-    for dz in (24, -24):
-        rig.rigid(W.grp(C.tube("frame", [(hc[0] - 24, hc[1] - 1.5, hc[2] + dz), (hc[0] + 24, hc[1] - 1.5, hc[2] + dz)],
-                               [1.3, 1.3], wood, seg=8), "crag"), "body")
-    rig.rigid(W.grp(C.sphere("handprint", 5, M.ochre("#6a4a36"), loc=(hc[0] + 2, hc[1] - 1.4, hc[2] + 2), scale=(1.1, 0.2, 1.3)),
-                    "crag"), "body")
+    # branch frame (overlapping ends lashed), leg tips lashed to the frame
+    FX, FZ = HW * 1.06, HH * 1.0
+    for a, b in (((-FX - 4, FZ), (FX + 4, FZ + 1.5)), ((-FX - 3, -FZ), (FX + 4, -FZ - 1.0)),
+                 ((-FX, FZ + 4), (-FX - 1.0, -FZ - 4)), ((FX, FZ + 5), (FX + 1.2, -FZ - 3))):
+        br = C.tube("frame", [(hc[0] + a[0], hc[1] + 1.2, hc[2] + a[1]), (hc[0] + b[0], hc[1] + 1.2, hc[2] + b[1])],
+                    [1.5, 1.2], bark, seg=8)
+        rig.rigid(W.grp(br, "crag"), "body")
+    for (u, w), (fx_, fz_) in (((-0.8, 0.62), (-FX, FZ * 0.8)), ((0.8, 0.62), (FX, FZ * 0.8)), ((-0.78, -0.74), (-FX, -FZ * 0.9)),
+                               ((0.78, -0.74), (FX, -FZ * 0.9)), ((0.0, 0.98), (0.0, FZ)), ((0.0, -0.98), (0.0, -FZ))):
+        rig.rigid(W.grp(C.tube("lashing", [(hc[0] + u * HW, hc[1] - 0.6, hc[2] + w * HH), (hc[0] + fx_, hc[1] + 0.6, hc[2] + fz_)],
+                               [0.55, 0.55], rope, seg=6), "crag"), "body")
+    ochre_m = M.ochre("#5e3a2a", name="clanpaint")
+    for k, du in enumerate((-6.0, 0.0, 6.0)):
+        st = C.tube("clanstripe", [(hc[0] + du + 1.2, hc[1] - 2.3, hc[2] + 10 - abs(du) * 0.4),
+                                   (hc[0] + du, hc[1] - 2.8, hc[2] - 2),
+                                   (hc[0] + du - 1.0, hc[1] - 2.3, hc[2] - 12 + abs(du) * 0.4)],
+                    [1.5, 1.8, 0.9], ochre_m, seg=8, flat=0.25)
+        rig.rigid(W.grp(st, "crag"), "body")
 
     # crumble details
     for i, pts in enumerate(([(-60, 140), (-50, 125), (-56, 110), (-44, 96)], [(-130, 190), (-118, 176), (-124, 160)],

@@ -1,0 +1,9 @@
+/* The Capsules tab (ui-plan 4.6), interim layout around the Home tray. */
+.caps-tab {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--ui-s2) 0 var(--ui-s4);
+}
+.caps-tab .home-tray {
+  width: 100%;
+}

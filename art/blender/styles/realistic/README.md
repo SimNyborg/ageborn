@@ -26,6 +26,8 @@ $PY $R unit base:stone --out $OUT [--install]                   # the base (base
 $PY $R refinish bonker --out $OUT [--install]                   # sheets/GIFs again from rendered frames
 $PY $R age stone --out $OUT --parallel 2 --install              # a whole age (+ manifest summary, portraits)
 $PY $R backdrop stone --out $OUT [--install]                    # far/mid backdrop layers
+$PY $R ground tar_pits --out $OUT [--install]                   # an arena ground (backdrops/<arena>.py)
+$PY $R install bonker,turret:rock_tosser --out $OUT             # copy finished sheets into public/art
 $PY $R post stone --out $OUT                                    # regenerate unit manifest + card portraits
 $PY $R contact stone --out $OUT                                 # contact sheet from the installed sheets
 ```
@@ -36,8 +38,10 @@ $PY $R contact stone --out $OUT                                 # contact sheet 
 `art/blender/gen_portraits.py` (card stills from the first idle frame). Check with
 `npx vitest run src/visuals` and a battle screenshot.
 
-Timing on this container (4 shared CPUs, 2 threads per process, 14 samples): 7-10 s per unit
-frame when the machine is idle, 30-50 s when other jobs load it; an infantry unit has 39 frames.
+Timing on this container (4 shared CPUs, 2 threads per process, 14 samples): 5-10 s per unit
+frame when the machine is idle, 30-50 s when other jobs load it; an infantry unit has 39 frames
+(3-8 min), a turret 17 (1.5 min), the Mammoth 36 big frames (9 min). The whole Stone Age (8 units,
+4 turrets, base, backdrop, ground) is about 1 hour of rendering on 2 processes.
 
 ## Files
 
@@ -67,7 +71,7 @@ units/<age>/<slug>.py  one unit each (the stone age: bonker, pebbler, spear_hunt
                        training_dummy, sabertooth, tuskback, mammoth_matriarch)
 turrets/<age>.py       the age's four turrets (TURRETS)
 bases/<age>.py         the age's base (MODULE)
-backdrops/<age>.py     the age's far and mid backdrop layers
+backdrops/<age>.py     the age's far and mid backdrop layers; backdrops/<arena>.py an arena ground
 units/medieval/destrier_knight.py, units/future/pulse_trooper.py, units/stone/bonker_study.py
                        the original style study (study clip timing, `pipe.Clip`); convert them to
                        the game contract like units/stone/bonker.py before shipping them
@@ -95,8 +99,11 @@ units/medieval/destrier_knight.py, units/future/pulse_trooper.py, units/stone/bo
   added in 2D, so units read against any backdrop.
 - **Faces.** Heads are about 1/7.5 of the height; keep the chin slightly down (`head` a few
   degrees negative) or the profile reads as looking up.
-- **Size.** Pixels under 6% alpha are dropped before packing (`game.ALPHA_FLOOR`), which keeps the
-  256-colour sheets at the size of the old cartoon sheets.
+- **Size.** Pixels under 6% alpha are dropped before packing (`game.ALPHA_FLOOR`, about -25% PNG
+  size). Measured on the Stone Age: infantry sheets are 20-40% smaller than the old cartoon ones;
+  fur-heavy Legendaries are larger, so a unit may ship below the nominal density with
+  `SHEET_FACTOR` (the Mammoth uses 0.82: 0.84 / 1.68 px/lu; `meta.pxPerLu` records it, so the game
+  sizes it correctly). Age totals: unit sheets 2.86 MB hd + 1.11 MB 1x (old 2.78 + 1.09).
 
 ## Motion rules (docs/ui-plan.md 5.8)
 

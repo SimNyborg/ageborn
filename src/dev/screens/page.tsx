@@ -23,6 +23,9 @@ import {
 import { FIXTURE_NOW, FIXTURE_STATES, fixtureSave, type FixtureState } from '@/ui/screens/fixtures/saves';
 import { createPreviewServices } from '@/ui/screens/fixtures/services';
 import { ScreenHost } from '@/ui/screens/ScreenHost';
+import { primeWarPathSeen } from '@/ui/screens/home/HomeScreen';
+import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
+import type { SaveDoc } from '@/contracts';
 import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
 import { createArtProvider } from '@/visuals';
 import { cosmeticImageUrl } from '@/visuals/cosmetics/art';
@@ -36,6 +39,32 @@ interface Variant {
   label: string;
   route: () => Route[];
   opponent?: OpponentFixture;
+  /** Changes the fixture save (War Path first launch, ceremonies). */
+  save?: (s: SaveDoc) => SaveDoc;
+  /** Runs before the screens mount (primes the War Path ceremony). */
+  prime?: (s: SaveDoc) => void;
+}
+
+/** A save on its very first launch (War Path level 1 next, nothing earned yet; ui-plan 2.6). */
+function firstLaunch(s: SaveDoc): SaveDoc {
+  return {
+    ...s,
+    currencies: { amber: 0, dust: 0 },
+    matchesPlayed: 0,
+    tutorial: { step: 0, hintsShown: {} },
+    warPath: { ...s.warPath, stars: {}, crowns: {}, legacy: false },
+    flags: {},
+  };
+}
+
+/** The level just beaten is shown as not yet celebrated, so Home plays MR-41 (and MR-42 for a boss). */
+function ceremony(level: string, before: number) {
+  return (s: SaveDoc) => {
+    const stars = { ...s.warPath.stars };
+    if (before > 0) stars[level] = before;
+    else delete stars[level];
+    primeWarPathSeen(stars);
+  };
 }
 
 const vs = (o: OpponentFixture): Variant => ({
@@ -64,6 +93,24 @@ const card = (id: string): Variant => ({
 
 const VARIANTS: Variant[] = [
   { id: 'home', label: 'Home', route: () => [{ id: 'home' }] },
+  { id: 'home-first', label: 'Home: first launch', route: () => [{ id: 'home' }], save: firstLaunch },
+  {
+    id: 'home-unlock',
+    label: 'Home: Army unlock (after L1)',
+    route: () => [{ id: 'home' }],
+    save: (s) => ({ ...firstLaunch(s), currencies: { amber: 60, dust: 0 }, matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} }, warPath: { ...s.warPath, stars: { 'wp.stone.l01': 2 }, crowns: { 'wp.stone.l01': 2 }, legacy: false } }),
+    prime: () => primeWarPathSeen({}),
+  },
+  { id: 'home-cleared', label: 'Home: level cleared (MR-41)', route: () => [{ id: 'home' }], prime: ceremony('wp.bronze.l06', 0) },
+  {
+    id: 'home-boss',
+    label: 'Home: boss beaten (MR-42)',
+    route: () => [{ id: 'home' }],
+    save: (s) => ({ ...s, warPath: { ...s.warPath, stars: Object.fromEntries(content.warPath.order.slice(0, 20).map((id) => [id, 2])) } }),
+    prime: ceremony('wp.bronze.l10', 0),
+  },
+  { id: 'capsules', label: 'Capsules tab', route: () => [{ id: 'capsules' }] },
+  { id: 'progress', label: 'Progress tab', route: () => [{ id: 'progress' }] },
   { id: 'modeSelect', label: 'Mode select', route: () => [{ id: 'home' }, { id: 'modeSelect' }] },
   vs('general'),
   vs('commander'),
@@ -81,6 +128,8 @@ const VARIANTS: Variant[] = [
   result('draw'),
   result('conquest'),
   result('noCapsule'),
+  result('warPath'),
+  result('warPathLoss'),
   { id: 'warPlan', label: 'War Plan', route: () => [{ id: 'home' }, { id: 'warPlan' }] },
   { id: 'collection', label: 'Collection', route: () => [{ id: 'home' }, { id: 'collection' }] },
   { id: 'collection-skins', label: 'Collection: skins', route: () => [{ id: 'home' }, { id: 'collection', tab: 'skins' }] },
@@ -137,7 +186,11 @@ export default function ScreensPage() {
 
   const v = VARIANTS.find((x) => x.id === variant) ?? VARIANTS[0]!;
   const env = useMemo(() => {
-    const save = signal(fixtureSave(content, state));
+    const base = fixtureSave(content, state);
+    const initial = v.save ? v.save(base) : base;
+    primeWarPathSeen(null);
+    v.prime?.(initial);
+    const save = signal(initial);
     const router = createRouter({ id: 'home' });
     const services = createPreviewServices({ save, content, router, opponent: v.opponent });
     applyRoutes(router, v.route());
@@ -196,6 +249,7 @@ export default function ScreensPage() {
         <CosmeticArtContext.Provider value={cosmeticImageUrl}>
           <ScreenHost
             env={env}
+            shell={{ tabs: shellTabs(env.save.value, content), roots: TAB_ROOTS }}
           slots={{
             battle: () => (
               <div

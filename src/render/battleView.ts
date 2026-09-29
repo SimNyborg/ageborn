@@ -402,6 +402,16 @@ export class BattleView {
     if (a.xp !== undefined) this.hudAnchors.xp = a.xp;
   }
 
+  /**
+   * The HUD chrome's insets in CSS px (docs/ui-plan.md 3.1 world framing): the camera fits the lane
+   * between the top band (with the minimap) and the tray, so unit feet and HP pips never sit under it.
+   */
+  setHudInsets(insets: { top: number; bottom: number } | null): void {
+    const wasHome = !this.started && this.camera.following;
+    this.camera.setInsets(insets);
+    if (wasHome) this.camera.setHome(this.mySide);
+  }
+
   /** Attaches canvas pointer input (mount taps, pinch zoom, double-tap reset). Returns a detach. */
   attachInput(el: HTMLElement): () => void {
     this.input?.destroy();
@@ -442,6 +452,18 @@ export class BattleView {
     const f = frontLines(this.frontInputs());
     const toP = (x: number | null): number | null => (x === null ? null : Math.max(0, Math.min(1, xToP(x, this.mySide) / LANE_LU)));
     return this.mySide === 0 ? { mine: toP(f.left), theirs: toP(f.right) } : { mine: toP(f.right), theirs: toP(f.left) };
+  }
+
+  /**
+   * True when your front is in a fight within 300 lu of the camera centre (MR-80): the evolve moment
+   * then leaves the camera alone.
+   */
+  private frontBusy(): boolean {
+    const f = frontLines(this.frontInputs());
+    const mine = this.mySide === 0 ? f.left : f.right;
+    const theirs = this.mySide === 0 ? f.right : f.left;
+    if (mine === null || theirs === null) return false;
+    return Math.abs(mine - theirs) <= 160 && Math.abs(mine - this.camera.centerX) <= 300;
   }
 
   /** True while the camera takes input: the battle has started (the title backdrop stays put). */
@@ -1268,14 +1290,18 @@ export class BattleView {
           if (!this.settings.reduceMotion) this.camera.pushTo({ x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
           return;
         }
-        // Your evolve pushes in only when your base is in view; otherwise the banner and a minimap base
-        // flash replace it (A17.4). Reduce motion: no pushes.
-        if (a.at.k === 'base' && !this.camera.inView(at.x, -40)) {
-          this.evolveFlashAt[a.at.side] = this.nowMs;
+        // Your evolve frames your base from anywhere (MR-80): a pan and a push, at most 3 s, ended by any
+        // camera input. The player keeps the camera when they are working it (a drag or Manual input
+        // in the last 2 s) or their front is fighting near the camera centre: then the minimap base
+        // flashes gold and the banner still drops. Reduce motion: no pan and no push, the flash only.
+        const push = { x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs };
+        if (a.at.k === 'base') {
+          const framed = !this.settings.reduceMotion && !this.frontBusy() && this.camera.frameMoment(at.x, push);
+          if (!framed || !this.camera.inView(at.x, -40)) this.evolveFlashAt[a.at.side] = this.nowMs;
           return;
         }
         if (this.settings.reduceMotion) return;
-        this.camera.pushTo({ x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
+        this.camera.pushTo(push);
         return;
       }
       case 'duck':

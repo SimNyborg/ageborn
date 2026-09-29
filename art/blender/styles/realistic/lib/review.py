@@ -99,8 +99,8 @@ def age_contact(age, out, repo):
                     im, anc = m, am
                 else:
                     im, anc = sh.composite(clip, _pick(sh, clip, w), tint)
-                im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
-                tur.append((im, (anc[0] * 2, anc[1] * 2), f"{sh.meta['name']} {clip}"))
+                im = im.resize((im.width * 3, im.height * 3), Image.LANCZOS)
+                tur.append((im, (anc[0] * 3, anc[1] * 3), f"{sh.meta['name']} {clip}"))
     bpath = os.path.join(repo, "public", "art", "bases", age + ".json")
     base = []
     if os.path.exists(bpath):
@@ -118,7 +118,16 @@ def age_contact(age, out, repo):
             im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
             base.append((im, (anc[0] * 2, anc[1] * 2), f"crumble {i}" + (" + treasury 3" if i == 3 else "")))
 
+    def hcrop(tiles, pad=12):
+        out = []
+        for im, a, lab in tiles:
+            bb = im.getbbox() or (0, 0, im.width, im.height)
+            x0, x1 = max(0, bb[0] - pad), min(im.width, bb[2] + pad)
+            out.append((im.crop((x0, 0, x1, im.height)), (a[0] - x0, a[1]), lab))
+        return out
+
     def strip(tiles, pad=10):
+        tiles = hcrop(tiles)
         above = max(int(a[1]) for _, a, _ in tiles) + 26
         below = max(int(im.height - a[1]) for im, a, _ in tiles) + 8
         widths = [im.width for im, _, _ in tiles]
@@ -137,7 +146,7 @@ def age_contact(age, out, repo):
     for name, tiles in rows:
         blocks.append((name, strip(tiles)))
     if tur:
-        blocks.append(("Turrets (1x sheets shown at 2x): built, firing, destroyed", strip(tur)))
+        blocks.append(("Turrets (1x sheets shown at 3x): built, firing, destroyed", strip(tur)))
     if base:
         blocks.append(("Base (1x sheet shown at 2x): crumble stages, flags, Treasury", strip(base)))
     W = max(b.width for _, b in blocks if b is not None) + 40

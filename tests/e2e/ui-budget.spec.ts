@@ -45,8 +45,42 @@ const PAGES: PageSpec[] = [
   { name: 'card-pikeman', hash: 'screens/card-pikeman/mid/{vp}', strict: true, primary: true },
   { name: 'card-bonker', hash: 'screens/card-bonker/mid/{vp}', strict: true, primary: false },
   { name: 'pause-late', hash: 'screens/pause-late/mid/{vp}', strict: true, primary: true },
-  // Backlog (UI-2 to UI-4): reported, not failed.
-  { name: 'home', hash: 'screens/home/mid/{vp}', strict: false, primary: true, home: true },
+  // UI-2: Home is the War Path map (ui-plan 2.3, 4.1), with its panels and the two new tabs.
+  { name: 'home', hash: 'screens/home/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-new', hash: 'screens/home/new/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-maxed', hash: 'screens/home/maxed/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-first', hash: 'screens/home-first/mid/{vp}', strict: true, primary: true, home: true },
+  {
+    name: 'level-preview',
+    hash: 'screens/home/mid/{vp}',
+    strict: true,
+    primary: true,
+    prepare: async (page) => {
+      await page.click('[data-testid="level-plate"]');
+    },
+  },
+  {
+    name: 'level-locked',
+    hash: 'screens/home/mid/{vp}',
+    strict: true,
+    primary: false,
+    prepare: async (page) => {
+      await page.click('[data-testid="wp-node-wp.bronze.l09"]');
+    },
+  },
+  {
+    name: 'modes',
+    hash: 'screens/home/mid/{vp}',
+    strict: true,
+    primary: true,
+    prepare: async (page) => {
+      await page.click('[data-testid="home-modes"]');
+    },
+  },
+  { name: 'capsules', hash: 'screens/capsules/mid/{vp}', strict: true, primary: false },
+  { name: 'progress', hash: 'screens/progress/mid/{vp}', strict: true, primary: false },
+  { name: 'result-warPath', hash: 'screens/result-warPath/mid/{vp}', strict: true, primary: true },
+  // Backlog (UI-3, UI-4): reported, not failed.
   { name: 'modeSelect', hash: 'screens/modeSelect/mid/{vp}', strict: false, primary: false },
   { name: 'warPlan', hash: 'screens/warPlan/mid/{vp}', strict: false, primary: false },
   { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: false, primary: false },

@@ -140,34 +140,53 @@ describe('atlas unit view', () => {
     expect(atlasWalkDurationMs(500, undefined, 800)).toBe(500);
   });
 
-  it('hides the body at the hand-off time and spawns the death puffs', () => {
+  it('lets the body lie after its fall, then sink with dust; an earlier hand-off still hides it (MR-105)', () => {
     const tex = (n: number): Texture[] => Array.from({ length: n }, () => new Texture());
-    const data: AtlasData = {
-      luPerUnit: 1,
-      animations: { idle: tex(2), walk: tex(8), attack: tex(4), die: tex(3), die_team: tex(3) },
-      clips: {
-        idle: { durationsMs: [500, 500], loop: true },
-        walk: { durationsMs: Array(8).fill(62.5) as number[], loop: true, naturalSpeedLuPerS: 60 },
-        attack: { durationsMs: [100, 100, 100, 100], impactAt: 0.5 },
-        die: { durationsMs: [83, 83, 83], hideUnitAtMs: 249, fx: [{ id: 'fx.dust_poof', atMs: 166, offsetLu: [0, 26], scale: 0.5 }, { id: 'fx.ko_stars', atMs: 249, offsetLu: [0, 40], loops: 2 }] },
-      },
+    const make = (hideUnitAtMs: number) => {
+      const data: AtlasData = {
+        luPerUnit: 1,
+        animations: { idle: tex(2), walk: tex(8), attack: tex(4), die: tex(3), die_team: tex(3) },
+        clips: {
+          idle: { durationsMs: [500, 500], loop: true },
+          walk: { durationsMs: Array(8).fill(62.5) as number[], loop: true, naturalSpeedLuPerS: 60 },
+          attack: { durationsMs: [100, 100, 100, 100], impactAt: 0.5 },
+          die: { durationsMs: [83, 83, 83], hideUnitAtMs, fx: [{ id: 'fx.dust_poof', atMs: 166, offsetLu: [0, 26], scale: 0.5 }, { id: 'fx.ko_stars', atMs: 249, offsetLu: [0, 40], loops: 2 }] },
+        },
+      };
+      const def = MANIFEST['unit.bonker'];
+      if (!def) throw new Error('no bonker');
+      const art = createArtProvider({ warn: () => {} });
+      art.atlas.register(def.source, data);
+      const v = art.createUnit({ visualId: 'unit.bonker', side: 1, teamPreset: 'default' });
+      expect(v.root.label).toBe(def.source);
+      return v;
     };
-    const def = MANIFEST['unit.bonker'];
-    if (!def) throw new Error('no bonker');
-    const art = createArtProvider({ warn: () => {} });
-    art.atlas.register(def.source, data);
-    const v = art.createUnit({ visualId: 'unit.bonker', side: 1, teamPreset: 'default' });
-    expect(v.root.label).toBe(def.source);
+    // The sheet hides at the end of its fall: the body stays, lies, then sinks with a dust puff.
+    const v = make(249);
     v.play('walk', { loop: true, durationMs: Math.round((500 * 80) / 45) });
     v.update(100);
     v.play('die');
-    const body = v.root.children[1];
+    const body = v.root.children[1] as { visible: boolean; y: number };
     const overlay = v.root.children[2];
     v.update(200);
-    expect(body?.visible).toBe(true);
+    expect(body.visible).toBe(true);
     expect(overlay?.children.length).toBeGreaterThan(0);
     v.update(100);
-    expect(body?.visible).toBe(false);
+    expect(body.visible).toBe(true);
+    v.update(500);
+    expect(body.y).toBe(0);
+    v.update(100);
+    // lying done: the sink dust is out
+    expect(overlay?.children.length ?? 0).toBeGreaterThan(0);
+    v.update(250);
+    expect(body.visible).toBe(true);
+    expect(body.y).toBeGreaterThan(1);
     v.destroy();
+    // A body that bursts earlier than its clip's end still hides at the hand-off.
+    const w = make(166);
+    w.play('die');
+    w.update(200);
+    expect((w.root.children[1] as { visible: boolean }).visible).toBe(false);
+    w.destroy();
   });
 });

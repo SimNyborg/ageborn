@@ -200,6 +200,11 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       }
       if (changed) d.commit({ ...s, flags });
     },
+    setWarPathDifficulty(dif) {
+      const s = d.save.peek();
+      const next = meta.setWarPathDifficulty(s, dif);
+      if (next !== s) d.commit(next);
+    },
     equipSkin(target, skin) {
       apply(meta.equipSkin(d.save.peek(), target, skin, content));
     },

@@ -158,7 +158,13 @@ async function start(root: HTMLElement): Promise<void> {
   const quick = q.get('quick');
   if (quick !== null) controller.quickBattle((QUICK_FORMATS as readonly string[]).includes(quick) ? (quick as FormatId) : 'short');
   else controller.showTitle();
-  if (flags.autopilot && controller.route.peek().id === 'title') controller.play();
+  if (flags.autopilot && controller.route.peek().id === 'title') {
+    // The first launch opens the War Path map (ui-plan 6.4): the autopilot starts the due onboarding
+    // match itself, as the map's Play would.
+    const r = controller.route.peek();
+    if (r.id === 'title' && r.battle) controller.play();
+    else controller.startOnboardingMatch();
+  }
   if (q.get('dev') === '1') {
     (window as Window & { __agebornDev?: unknown }).__agebornDev = {
       controller,

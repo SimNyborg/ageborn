@@ -82,7 +82,11 @@ export async function pastOnboarding(page: Page): Promise<void> {
       .__agebornDev.controller;
     const s = c.save.peek();
     // The "Your army, your plan" prompt (A8, after match 3) has been seen.
-    c.setSave({ ...s, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed), flags: { ...s.flags, 'tutorial.warPlanPrompt': true } }, { immediate: true });
+    type WarPath = { stars: Record<string, number>; legacy: boolean };
+    const wp = (s as unknown as { warPath: WarPath }).warPath;
+    // A profile from before the War Path (save v5 migration): every Home feature open (ui-plan 2.6).
+    const warPath = { ...wp, legacy: true, stars: { ...wp.stars, 'wp.stone.l01': 1, 'wp.stone.l02': 1 } };
+    c.setSave({ ...s, warPath, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed), flags: { ...s.flags, 'tutorial.warPlanPrompt': true } }, { immediate: true });
     c.showTitle();
   });
 }

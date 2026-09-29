@@ -19,6 +19,7 @@ import { TabBar, type NavTab } from '../components/Nav';
 import { createToastStore, ToastHost, type ToastStore } from '../components/Toasts';
 import { runBackHandler } from '../history';
 import { TABS, visibleEntries, type Route, type RouteOf, type ScreenId, type TabId } from '../router';
+import { CapsulesScreen } from './capsules/CapsulesScreen';
 import { CardDetailScreen } from './cardDetail/CardDetailScreen';
 import { CollectionScreen } from './collection/CollectionScreen';
 import { ConquestScreen } from './conquest/ConquestScreen';
@@ -27,6 +28,7 @@ import { UiEnvContext, type UiEnv } from './context';
 import { HomeScreen } from './home/HomeScreen';
 import { ModeSelectScreen } from './modeSelect/ModeSelectScreen';
 import { PauseScreen } from './pause/PauseScreen';
+import { ProgressScreen } from './progress/ProgressScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import { ResultScreen } from './result/ResultScreen';
 import { SettingsScreen } from './settings/SettingsScreen';
@@ -51,6 +53,8 @@ export const SCREEN_COMPONENTS: { [K in ScreenId]?: ScreenComponent<K> } = {
   settings: SettingsScreen,
   conquest: ConquestScreen,
   customize: CustomizeScreen,
+  capsules: CapsulesScreen,
+  progress: ProgressScreen,
 };
 
 export type ScreenSlots = { [K in ScreenId]?: (route: RouteOf<K>) => ComponentChildren };
@@ -220,15 +224,19 @@ export function ScreenHost(p: ScreenHostProps) {
             data-tab={tab ?? undefined}
           >
             <div class="ui-layer" key={base.key} data-layer="base">
-              {shellOn && p.shell && tab ? (
-                <div class="ui-shell" data-testid="shell">
-                  <div class="ui-shell__content" data-dir={dir.current ?? undefined}>
+              {p.shell ? (
+                // The shell's frame stays mounted in sub-screens and flows (only its bar hides), so a
+                // screen is never re-mounted when the tab bar comes or goes.
+                <div class={`ui-shell${shellOn ? '' : ' ui-shell--bare'}`} data-testid={shellOn ? 'shell' : undefined} data-shell-tab={shellOn ? (tab ?? undefined) : undefined}>
+                  <div class="ui-shell__content" data-dir={shellOn ? (dir.current ?? undefined) : undefined}>
                     {renderRoute(base.route, p.slots)}
                   </div>
-                  <div class="ui-shell__bar">
-                    <TabBar tabs={p.shell.tabs} active={tab} onSelect={(id) => env.router.switchTab(id, p.shell!.roots[id])} />
-                    {p.shell.bar ? p.shell.bar(tab) : null}
-                  </div>
+                  {shellOn && tab && !p.shell.tabs.every((x) => x.hidden) ? (
+                    <div class="ui-shell__bar">
+                      <TabBar tabs={p.shell.tabs} active={tab} onSelect={(id) => env.router.switchTab(id, p.shell!.roots[id])} />
+                      {p.shell.bar ? p.shell.bar(tab) : null}
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 renderRoute(base.route, p.slots)

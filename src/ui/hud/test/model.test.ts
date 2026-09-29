@@ -22,7 +22,10 @@ import {
   nextSpeed,
   powerFraction,
   powerIntent,
+  queueLength,
   quickTurretIntent,
+  hudPulse,
+  simDenyReason,
   sellIntent,
   snapFlagP,
   stanceIntent,
@@ -31,6 +34,7 @@ import {
   type HudIntent,
 } from '../model';
 import { sampleHudModel } from '../samples';
+import { i18n } from '@/i18n';
 
 const config = fakeMatchConfig();
 
@@ -59,10 +63,41 @@ describe('HUD presses (A2.12, A9.2)', () => {
     const m = model();
     expect(cmdOf(trainIntent(m, 0, 0))).toEqual({ t: 'train', side: 0, slot: 0 });
     for (const state of ['unaffordable', 'legendaryInField'] as const) {
-      expect(trainIntent(withCard(m, 1, { state }), 1, 0)).toEqual({ k: 'deny', target: 'card1' });
+      const i = trainIntent(withCard(m, 1, { state }), 1, 0);
+      expect(i.k).toBe('deny');
+      expect(i.k === 'deny' && i.target).toBe('card1');
     }
     expect(trainIntent(m, 4, 0)).toEqual({ k: 'none' });
     expect(cmdOf(trainIntent(m, 2, 1))).toEqual({ t: 'train', side: 1, slot: 2 });
+  });
+
+  it('says why a train is denied, in the sim order: queue, Legendary limit, gold (MR-67)', () => {
+    const m = model({ me: { gold: 10 } });
+    const poor = withCard(m, 1, { state: 'unaffordable', cost: 50 });
+    expect(trainIntent(poor, 1, 0)).toEqual({ k: 'deny', target: 'card1', reason: { key: 'hud.deny.gold', params: { n: 40 } } });
+    expect(trainIntent(withCard(m, 1, { state: 'legendaryInField' }), 1, 0)).toEqual({ k: 'deny', target: 'card1', reason: { key: 'hud.deny.legendary' } });
+    const full = withCard(withCard(m, 0, { queued: 3 }), 1, { queued: 2 });
+    expect(trainIntent(full, 1, 0, 5)).toEqual({ k: 'deny', target: 'card1', reason: { key: 'hud.deny.queueFull' } });
+    expect(queueLength(full)).toBe(5);
+    expect(i18n.t('hud.deny.gold', { n: 40 })).toBe('Need 40 gold');
+  });
+
+  it('maps the sim\'s rejection reasons to deny labels', () => {
+    const m = withCard(model({ me: { gold: 20 } }), 2, { cost: 75 });
+    expect(simDenyReason('queueFull', m)).toEqual({ key: 'hud.deny.queueFull' });
+    expect(simDenyReason('legendaryLimit', m)).toEqual({ key: 'hud.deny.legendary' });
+    expect(simDenyReason('noGold', m, 2)).toEqual({ key: 'hud.deny.gold', params: { n: 55 } });
+    expect(simDenyReason('noGold', m)).toEqual({ key: 'hud.deny.noGold' });
+    expect(simDenyReason('stanceCooldown', m)).toEqual({ key: 'hud.deny.wait' });
+    expect(simDenyReason('badCommand', m)).toBeNull();
+  });
+
+  it('pulses one thing at a time: a tutorial target, then Evolve, then the power, then a mount (U11)', () => {
+    expect(hudPulse({ tutorial: true, evolve: true, power: true, mount: true })).toBe('tutorial');
+    expect(hudPulse({ tutorial: false, evolve: true, power: true, mount: true })).toBe('evolve');
+    expect(hudPulse({ tutorial: false, evolve: false, power: true, mount: true })).toBe('power');
+    expect(hudPulse({ tutorial: false, evolve: false, power: false, mount: true })).toBe('mount');
+    expect(hudPulse({ tutorial: false, evolve: false, power: false, mount: false })).toBeNull();
   });
 
   it('an ARMY FULL card can still be queued: only the waiting instance lacks room (A2.7, C5 #10)', () => {
@@ -87,16 +122,19 @@ describe('HUD presses (A2.12, A9.2)', () => {
     expect(goldIntent({ ...plain, me })).toEqual({ k: 'none' });
   });
 
-  it('evolves only when ready', () => {
+  it('evolves only when ready, never in the 2 s after your evolve (UA-07), and says what is missing', () => {
     expect(cmdOf(evolveIntent(model({ me: { evolveReady: true } }), 0))).toEqual({ t: 'evolve', side: 0 });
     expect(evolveIntent(model(), 0)).toEqual({ k: 'deny', target: 'evolve' });
+    expect(evolveIntent(model({ me: { evolveReady: true } }), 0, config, true)).toEqual({ k: 'deny', target: 'evolve', reason: { key: 'hud.deny.evolving' } });
+    const i = evolveIntent(model({ me: { xpBp: 5000, ageIndex: 0 } }), 0, config);
+    expect(i.k === 'deny' && i.reason?.key).toMatch(/^hud\.(deny\.xp|finalAge)$/);
   });
 
   it('casts the power: tap = auto-aim, drag = the placed p; denied until charged or after the end', () => {
     const full = model({ me: { powerPpm: 1_000_000 } });
     expect(cmdOf(powerIntent(full, 0))).toEqual({ t: 'power', side: 0 });
     expect(cmdOf(powerIntent(full, 0, 640))).toEqual({ t: 'power', side: 0, p: 640 });
-    expect(powerIntent(model({ me: { powerPpm: 999_999 } }), 0)).toEqual({ k: 'deny', target: 'power' });
+    expect(powerIntent(model({ me: { powerPpm: 999_999 } }), 0)).toEqual({ k: 'deny', target: 'power', reason: { key: 'hud.deny.power', params: { pct: 99 } } });
     expect(powerIntent(model({ me: { powerPpm: 1_000_000 }, phase: 'ended' }), 0)).toEqual({ k: 'deny', target: 'power' });
     expect(powerFraction(500_000)).toBe(0.5);
     expect(powerFraction(2_000_000)).toBe(1);
@@ -113,7 +151,7 @@ describe('HUD presses (A2.12, A9.2)', () => {
   it('a stance segment sends its mode; the current one does nothing; the 3 s wait denies (A18.4.2)', () => {
     expect(cmdOf(stanceSetIntent(model(), 0, 'fallback'))).toEqual({ t: 'stance', side: 0, mode: 'fallback' });
     expect(stanceSetIntent(model(), 0, 'charge')).toEqual({ k: 'none' });
-    expect(stanceSetIntent(model({ me: { stanceWaitMs: 1200 } }), 0, 'hold')).toEqual({ k: 'deny', target: 'stance' });
+    expect(stanceSetIntent(model({ me: { stanceWaitMs: 1200 } }), 0, 'hold')).toEqual({ k: 'deny', target: 'stance', reason: { key: 'hud.deny.stanceWait', params: { s: 2 } } });
     expect(stanceSetIntent(model({ phase: 'ended' }), 0, 'hold')).toEqual({ k: 'none' });
   });
 

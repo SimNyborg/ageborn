@@ -250,7 +250,7 @@ def finish_frames(unit, run):
     feet = run["feet_px"]
     for c, i in jobs:
         L = pipe.load_layers(tmp, c, i)
-        tm, bs, ob, du = pipe.build_layers(L, lref, clips[c].fx.get(i), feet)
+        tm, bs, ob, du = pipe.build_layers(L, lref, clips[c].fx.get(i), feet, gamma=getattr(unit, "TEAM_GAMMA", None))
         sp = os.path.join(tmp, f"smear_{c}_{i:02d}.png")
         if os.path.exists(sp) and clips[c].blur.get(i):
             sa = np.asarray(Image.open(sp), float) / 255.0
@@ -259,7 +259,7 @@ def finish_frames(unit, run):
             sm = np.dstack([col[None, None, :] * sa[..., None], sa])
             bs = pipe.over(bs, sm)
         for s in (1, 2):
-            frames[(c, i, s)] = pipe.finish(tm, bs, ob, s, full=C.RENDER_MULT, sharpen=0.25 if s == 1 else 0.0,
+            frames[(c, i, s)] = pipe.finish(tm, bs, ob, s, full=C.RENDER_MULT, sharpen=getattr(unit, "SHARPEN1", 0.25) if s == 1 else 0.0,
                                             dust=du)
     return frames, lref
 
@@ -308,12 +308,19 @@ def write_outputs(unit, run, out, previews=True):
     width_lu = round((xs.max() - xs.min() + 1) / unit.PX1, 1) if len(xs) else 0.0
     for s, tag in (((2, ".hd"), (1, "")) if kind == "unit" else ((1, ""),)):
         items = []
+        k = getattr(unit, "SHEET_FACTOR", 1.0)       # huge units may ship below the nominal density
         for c, i in run["jobs"]:
             tm, bs, _ = frames[(c, i, s)]
-            anc = (fx * s / C.RENDER_MULT, fy * s / C.RENDER_MULT)
-            items.append((f"{fname}_{c}_{i:02d}", _clean(pipe.to_img(bs)), anc))
-            items.append((f"{fname}_{c}_{i:02d}_team", _clean(pipe.to_img(tm)), anc))
+            anc = (fx * s / C.RENDER_MULT * k, fy * s / C.RENDER_MULT * k)
+            bi, ti = pipe.to_img(bs), pipe.to_img(tm)
+            if k != 1.0:
+                size = (max(1, round(bi.width * k)), max(1, round(bi.height * k)))
+                bi, ti = _resize_premul(bi, size), _resize_premul(ti, size)
+            items.append((f"{fname}_{c}_{i:02d}", _clean(bi), anc))
+            items.append((f"{fname}_{c}_{i:02d}_team", _clean(ti, levels=TEAM_LEVELS), anc))
         sheet, meta = pipe.pack(items, max_w=2048 if s == 2 else 1024)
+        if sheet.height > 4096 or sheet.height > 2 * sheet.width:
+            sheet, meta = pipe.pack(items, max_w=4096 if s == 2 else 2048)   # big units: keep it squarish
         img = f"{fname}{tag}.png"
         n8 = pipe.save_png8(sheet, os.path.join(out, img))
         anims = {}
@@ -332,10 +339,10 @@ def write_outputs(unit, run, out, previews=True):
                     cm["strideLu"] = round(stride, 1)
                     cm["naturalSpeedLuPerS"] = round(stride / (clip.total / 1000.0), 1)
             clipmeta[clip.name] = cm
-        px = unit.PX1 * s
+        px = unit.PX1 * s * k
         ab = {"visualId": getattr(unit, "VISUAL_ID", f"{kind}.{unit.SLUG}"), "name": unit.NAME,
               "heightLu": unit.HEIGHT_LU, "widthLu": width_lu, "pxPerLu": round(px, 4),
-              "feetPx": [round(fx * s / C.RENDER_MULT, 1), round(fy * s / C.RENDER_MULT, 1)],
+              "feetPx": [round(fx * s / C.RENDER_MULT * k, 1), round(fy * s / C.RENDER_MULT * k, 1)],
               "anchorsLu": {k: list(v) for k, v in unit.ANCHORS.items()}, "facing": "right",
               "note": "anchorsLu are screen-plane lu from the feet (x right, y up)", "style": "realistic"}
         ab.update(getattr(unit, "EXTRA_META", {}))
@@ -373,14 +380,29 @@ def write_outputs(unit, run, out, previews=True):
     return stats, frames
 
 
+def _resize_premul(im, size):
+    a = np.asarray(im, np.float32) / 255.0
+    a[..., :3] *= a[..., 3:4]
+    ch = [np.asarray(Image.fromarray(a[..., c]).resize(size, Image.LANCZOS)) for c in range(4)]
+    out = np.clip(np.stack(ch, -1), 0, 1)
+    al = out[..., 3:4]
+    out[..., :3] = np.where(al > 1e-4, out[..., :3] / np.maximum(al, 1e-4), 0)
+    return Image.fromarray((np.clip(out, 0, 1) * 255 + 0.5).astype(np.uint8), "RGBA")
+
+
 ALPHA_FLOOR = 16
+TEAM_LEVELS = 40
 
 
-def _clean(im):
+def _clean(im, levels=None):
     """Drops near-transparent pixels (shadow and dust tails below 6% alpha): they cost about a
-    quarter of a sheet's PNG size and are invisible in the game."""
+    quarter of a sheet's PNG size and are invisible in the game. `levels` posterizes the grey
+    team layer (the tint hides the steps; the sheet compresses much better)."""
     a = np.asarray(im).copy()
     a[a[..., 3] < ALPHA_FLOOR] = 0
+    if levels:
+        q = 255.0 / (levels - 1)
+        a[..., :3] = (np.round(a[..., :3] / q) * q).clip(0, 255).astype(np.uint8)
     return Image.fromarray(a, "RGBA")
 
 

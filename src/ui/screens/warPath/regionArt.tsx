@@ -47,7 +47,7 @@ export const REGION_THEMES: Readonly<Record<AgeId, RegionTheme>> = {
   },
   bronze: {
     skyTop: '#27456e', skyBottom: '#e8c07e', sun: '#fff0b8', far1: '#7c8fa0', far2: '#5b6f80',
-    groundTop: '#9a8a4e', groundBottom: '#4b4424', patchLight: '#b7a760', patchDark: '#6d6334',
+    groundTop: '#a99b56', groundBottom: '#565024', patchLight: '#c6b86c', patchDark: '#7a7038',
     body: '#56683a', lit: '#8fa25a', accent: '#e9e1cc', road: '#d8c79a', roadEdge: '#6f5d38',
   },
   medieval: {
@@ -311,6 +311,25 @@ export function RegionFar(p: { age: AgeId; w: number; h: number; horizon: number
       <rect width={p.w} height={p.h} fill={`url(#${id}-sky)`} />
       {dark || p.age === 'modern' ? <Stars w={p.w} hz={hz} rng={rng} n={dark ? Math.round(p.w / 14) : Math.round(p.w / 40)} /> : null}
       <circle cx={p.w * 0.62} cy={hz - 10} r={p.h * 0.55} fill={`url(#${id}-sun)`} />
+      {dark ? (
+        <ellipse cx={p.w * 0.3} cy={hz * 0.45} rx={p.w * 0.25} ry={hz * 0.35} fill={t.accent} opacity=".07" />
+      ) : (
+        Array.from({ length: Math.max(2, Math.round(p.w / 380)) }, (_, i) => {
+          const cx = rng.next() * p.w;
+          const cy = hz * (0.25 + rng.next() * 0.45);
+          const k = 0.6 + rng.next() * 0.8;
+          return (
+            <g key={`c${i}`} class="wp-cloud" style={{ animationDuration: `${50 + i * 17}s`, animationDelay: `${-i * 13}s` }}>
+              <g transform={`translate(${cx.toFixed(0)} ${cy.toFixed(0)}) scale(${k.toFixed(2)})`} opacity=".55">
+                <ellipse cx="0" cy="0" rx="46" ry="11" fill="#fff" opacity=".5" />
+                <ellipse cx="-14" cy="-6" rx="22" ry="11" fill="#fff" opacity=".55" />
+                <ellipse cx="12" cy="-8" rx="18" ry="10" fill="#fff" opacity=".6" />
+                <ellipse cx="0" cy="3" rx="40" ry="6" fill={t.skyBottom} opacity=".5" />
+              </g>
+            </g>
+          );
+        })
+      )}
       <path d={p.age === 'stone' || p.age === 'cosmic' ? peaks(rng, p.w, hz, p.h * 0.2, 90, p.h) : ridge(rng, p.w, hz, p.h * 0.14, 120, p.h)} fill={t.far1} opacity=".8" />
       {Skyline({ age: p.age, w: p.w, h: p.h, hz: hz + 4, t, rng })}
       <path d={ridge(rng, p.w, hz + 10, p.h * 0.07, 80, p.h)} fill={t.far2} />
@@ -554,7 +573,16 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
     const x = rng.next() * p.w;
     const y = hz + 20 + rng.next() * (p.h - hz - 20);
     const rx = 40 + rng.next() * 90;
-    patches.push(<ellipse key={i} cx={x.toFixed(0)} cy={y.toFixed(0)} rx={rx.toFixed(0)} ry={(rx * 0.22).toFixed(0)} fill={i % 2 ? t.patchLight : t.patchDark} opacity=".45" />);
+    patches.push(<ellipse key={i} cx={x.toFixed(0)} cy={y.toFixed(0)} rx={rx.toFixed(0)} ry={(rx * 0.22).toFixed(0)} fill={i % 2 ? t.patchLight : t.patchDark} opacity=".28" />);
+  }
+  // Tufts and pebbles give the ground a texture that reads at phone size.
+  const tufts: string[] = [];
+  const nTufts = Math.round(p.w / 14);
+  for (let i = 0; i < nTufts; i++) {
+    const x = rng.next() * p.w;
+    const y = hz + 16 + rng.next() * (p.h - hz - 16);
+    const k = 0.6 + ((y - hz) / Math.max(1, p.h - hz)) * 0.9;
+    tufts.push(`M${(x - 3 * k).toFixed(1)} ${y.toFixed(1)} l${(1 * k).toFixed(1)} ${(-5 * k).toFixed(1)} M${x.toFixed(1)} ${y.toFixed(1)} l0 ${(-7 * k).toFixed(1)} M${(x + 3 * k).toFixed(1)} ${y.toFixed(1)} l${(-1 * k).toFixed(1)} ${(-5 * k).toFixed(1)}`);
   }
   const props: { x: number; y: number; s: number; f: Prop; v: number }[] = [];
   const list = PROPS[p.age];
@@ -584,6 +612,7 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
       </defs>
       <path d={`M0 ${hz + 14} Q${p.w * 0.25} ${hz + 4} ${p.w * 0.5} ${hz + 12} T${p.w} ${hz + 10} V${p.h} H0 Z`} fill={`url(#${id}-g)`} />
       {patches}
+      <path d={tufts.join(' ')} stroke={t.patchLight} stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".55" />
       <rect y={hz} width={p.w} height="40" fill={`url(#${id}-haze)`} />
       {props.map((q, i) => (
         <g key={i} transform={`translate(${q.x.toFixed(1)} ${q.y.toFixed(1)}) scale(${q.s.toFixed(2)})`}>

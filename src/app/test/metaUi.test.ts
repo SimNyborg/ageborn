@@ -242,11 +242,12 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
   });
 
   it('Settings opens from the onboarding title and Back returns to it (A15.6, B8 import)', async () => {
-    const { services, meta, save } = await setup((s) => ({ ...s, tutorial: { ...s.tutorial, step: 0 }, matchesPlayed: 0 }));
+    // The title shows during the onboarding capsule steps (the map is Home from match 1 on, ui-plan 6.4).
+    const { services, meta, save } = await setup((s) => ({ ...s, tutorial: { ...s.tutorial, step: 1 }, matchesPlayed: 1 }));
     const c = new AppController(services, { save, autopilot: true, delay: async () => undefined, homeScreen: true });
     const ui = createMetaUi({ controller: c, services, meta });
     c.showTitle();
-    expect(c.step.value).toBe('match1');
+    expect(c.step.value).toBe('capsule1');
     expect(ui.owns(c.route.value, c.step.value)).toBe(false);
     ui.openSettings();
     expect(ui.owns(c.route.value, c.step.value)).toBe(true);

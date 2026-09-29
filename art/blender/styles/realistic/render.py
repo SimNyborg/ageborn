@@ -11,6 +11,8 @@ Run from the repository root with the bpy venv (Python 3.11, bpy 5.0.1, Cycles C
   $PY $R unit base:stone [--install]                               # a base (bases/<age>.py)
   $PY $R refinish bonker [--install]                               # sheets/GIFs from rendered frames
   $PY $R age stone [--only bonker,base:stone] [--parallel 2] [--install]
+  $PY $R backdrop stone [--install]                               # far/mid backdrop layers of an age
+  $PY $R ground tar_pits [--install]                              # an arena ground (backdrops/<arena>.py)
   $PY $R install bonker,turret:rock_tosser                         # copy finished sheets into public/art
   $PY $R contact stone                                             # age contact sheet from the sheets
 
@@ -123,6 +125,9 @@ def main():
     elif a.cmd == "install":
         for vid in a.target.split(","):
             G.install(find(vid), a.out)
+    elif a.cmd == "ground":
+        gd = _load(os.path.join(HERE, "backdrops", a.target + ".py"), "ground_" + a.target)
+        gd.run(os.path.join(a.out, "backdrop"), samples=max(a.samples, 16), install=a.install, repo=REPO)
     elif a.cmd == "post":
         post_install(a.target, a.out)
     elif a.cmd == "refinish":

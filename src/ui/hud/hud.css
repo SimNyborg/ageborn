@@ -1449,6 +1449,11 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* With a queue badge on the right, the wait pill moves down so the two never overlap. */
+.hud-card-wait.is-shifted {
+  top: 60%;
+}
+
 /* Queue count: a gold badge on the right edge that flips on every change (MR-65). */
 .hud-card-queue {
   position: absolute;
@@ -2022,7 +2027,8 @@
   display: flex;
   flex-direction: column-reverse;
   gap: 6px;
-  width: 188px;
+  width: max-content;
+  min-width: 188px;
   pointer-events: auto;
 }
 
@@ -2190,19 +2196,23 @@
   left: 50%;
   bottom: 7%;
   z-index: 2;
-  max-width: 86%;
-  padding: 0 6px;
+  padding: 0 5px;
   box-sizing: border-box;
-  overflow: hidden;
   translate: -50% 0;
   border-radius: 99px;
   font-size: 11px;
   font-weight: 900;
   line-height: 15px;
-  letter-spacing: 0.03em;
-  text-overflow: ellipsis;
   white-space: nowrap;
   box-shadow: 0 0 0 1.5px var(--hud-ink);
+}
+
+/* A label wider than its space is condensed to fit, never cut (fit.ts sets --fit and --fit-m). */
+.hud-power-name > span,
+.hud-fit {
+  display: inline-block;
+  transform: scaleX(var(--fit, 1));
+  margin: 0 var(--fit-m, 0px);
 }
 
 .hud-power-name {
@@ -2759,8 +2769,10 @@
   border: 1px solid var(--hud-edge);
   border-radius: var(--ui-r-md, 12px);
   background: var(--hud-panel);
+  /* A dark scrim edge so it reads over the lane (UA-26). */
   box-shadow:
-    0 0 0 100vmax rgba(8, 10, 14, 0.18),
+    0 0 0 2px rgba(8, 10, 14, 0.85),
+    0 0 24px 6px rgba(8, 10, 14, 0.45),
     var(--ui-e3);
   pointer-events: auto;
   z-index: 6;
@@ -3403,6 +3415,52 @@
 }
 
 /* ---------------------------------------------------------------- reduce motion (U14) */
+
+/* The Settings switch (Hud.tsx mirrors the app root's `data-reduce-motion` onto the HUD) and the OS
+   preference: movement becomes fades and glows; feedback, pre-signals and counters stay. */
+.hud[data-reduce-motion='true'] {
+  --ui-dur-press: 0ms;
+  --ui-dur-release: 0ms;
+  --ui-dur-small: 150ms;
+  --ui-dur-medium: 150ms;
+  --ui-dur-large: 150ms;
+  --ui-press-scale: 1;
+  --ui-release-scale: 1;
+  --ui-lift: 1;
+  --ui-lift-drag: 1;
+  --ui-bump: 1;
+  --ui-pop: 1;
+  --ui-axis: 0px;
+  --ui-breathe-scale: 1;
+  --ui-drag-tilt: 0deg;
+}
+
+.hud[data-reduce-motion='true'] .hud-vignette.is-on {
+  animation: none;
+  opacity: 0.6;
+}
+
+.hud[data-reduce-motion='true'] :is(.hud-power.is-pulse > *, .hud-power-grab, .hud-power-token-core, .hud-evolve.is-pulse > *, .hud-card-flip, .hud-power-burst, .hud-mm-hammer, .hud-badge-base .hud-badge-ring, .hud-card-queue) {
+  animation: none;
+}
+
+.hud[data-reduce-motion='true'] .hud-moment {
+  animation: hud-moment-calm 2400ms linear forwards;
+}
+
+.hud[data-reduce-motion='true'] .hud-reason {
+  animation-name: hud-moment-calm;
+}
+
+.hud[data-reduce-motion='true'] .hud-stance-opt {
+  animation-name: hud-fade;
+}
+
+/* The card tip fades in place. */
+.hud[data-reduce-motion='true'] .hud-card-info-wrap {
+  translate: -50% 0;
+  scale: 1;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .hud-vignette.is-on {

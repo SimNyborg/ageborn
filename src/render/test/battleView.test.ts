@@ -145,7 +145,10 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     expect(pebbler?.clip).toBe('die');
     s.view.render(0, 16);
     expect(pebbler?.destroyed).toBe(false);
+    // MR-105: the body falls, lies and fades (the death linger, 1.7 s), then goes.
     for (let i = 0; i < 90; i++) s.view.render(0, 16);
+    expect(pebbler?.destroyed).toBe(false);
+    for (let i = 0; i < 30; i++) s.view.render(0, 16);
     expect(pebbler?.destroyed).toBe(true);
   });
 

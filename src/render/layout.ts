@@ -52,6 +52,21 @@ export const DESKTOP_VIEW_LU = 1400;
 /** The ground line sits this far down the lane band. */
 export const GROUND_IN_BAND = 0.8;
 
+/**
+ * World framing under the HUD (docs/ui-plan.md 3.1, 4.7): the world height (lu) above the ground line
+ * that must stay clear of the top band and minimap: the tallest Legendary (220 lu, A11) plus its HP
+ * pips.
+ */
+export const TALLEST_LU = 240;
+/** The ground line sits at least this far (CSS px) above the tray's top edge. */
+export const GROUND_ABOVE_TRAY_PX = 12;
+
+/** The HUD chrome's insets in CSS px: the top band with the minimap, and the tray (with the safe area). */
+export interface HudInsets {
+  top: number;
+  bottom: number;
+}
+
 export type DeviceClass = 'phone' | 'tablet' | 'desktop';
 
 /** The A17.7 device class of a landscape screen of `width` × `height` CSS px. */
@@ -77,8 +92,14 @@ export interface ScreenLayout {
   viewLu: number;
 }
 
-/** Computes the landscape layout for a screen of `width` × `height` CSS px (A17.7). */
-export function screenLayout(width: number, height: number): ScreenLayout {
+/**
+ * Computes the landscape layout for a screen of `width` × `height` CSS px (A17.7). With the HUD's
+ * `insets` (ui-plan 3.1 world framing) the lane band becomes the space between the HUD chrome: the
+ * ground line sits at most 12 px above the tray (phones use that space: the ground moves down to it),
+ * and the scale shrinks when needed so the tallest unit and its HP pips stay under the top band; unit
+ * feet and pips never sit under HUD chrome. At 844 × 340 that zooms out rather than cropping units.
+ */
+export function screenLayout(width: number, height: number, insets?: HudInsets | null): ScreenLayout {
   const w = Math.max(1, width);
   const h = Math.max(1, height);
   const device = deviceClass(w, h);
@@ -96,7 +117,7 @@ export function screenLayout(width: number, height: number): ScreenLayout {
   }
   const bandY = topBarH;
   const trayY = bandY + bandH;
-  return {
+  const base: ScreenLayout = {
     width: w,
     height: h,
     device,
@@ -109,6 +130,21 @@ export function screenLayout(width: number, height: number): ScreenLayout {
     scale,
     viewLu: w / scale,
   };
+  return insets ? framed(base, insets) : base;
+}
+
+/** The layout fitted between the HUD's insets (see `screenLayout`). */
+function framed(L: ScreenLayout, insets: HudInsets): ScreenLayout {
+  const top = Math.max(0, Math.min(L.height, insets.top));
+  const trayY = Math.max(top + 1, L.height - Math.max(0, insets.bottom));
+  const floor = trayY - GROUND_ABOVE_TRAY_PX;
+  // Phones move the ground down to the tray (more room for units); larger screens keep their framing
+  // unless the tray would cover the ground.
+  const wanted = L.device === 'phone' ? Math.max(L.groundY, top + TALLEST_LU * L.scale) : L.groundY;
+  const groundY = Math.max(top + 1, Math.min(floor, wanted));
+  const scale = Math.max(0.01, Math.min(L.scale, (groundY - top) / TALLEST_LU));
+  const bandH = trayY - top;
+  return { ...L, topBarH: top, bandY: top, bandH, trayY, trayH: L.height - trayY, groundY, scale, viewLu: L.width / scale };
 }
 
 /** World x of a base's centre: 70 lu behind its gate. */

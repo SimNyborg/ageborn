@@ -43,13 +43,16 @@ export function earnedCapsule(rewards: readonly RewardStep[]): string | null {
 
 /** The one progress bar of step 3: whichever is closest to done (A9 #7, A15.13). */
 export interface ResultProgress {
-  kind: 'road' | 'warChest' | 'conquest';
+  /** `warPath`: the level's region stars (ui-plan 4.9 "stars earned on the level badge"). */
+  kind: 'road' | 'warChest' | 'conquest' | 'warPath';
   value: number;
   max: number;
   /** Trophies of the next Trophy Road node (road only). */
   next?: number;
   /** The War Chest filled in this match and was granted at once (A15.5): the bar shows full. */
   done?: boolean;
+  /** The region of a `warPath` bar. */
+  region?: string;
 }
 
 export type ResultStage =
@@ -68,7 +71,7 @@ export interface ResultPlan {
   summary: RewardStep[];
 }
 
-const MAIN_ORDER: readonly RewardStep['kind'][] = ['capsule', 'clayPip', 'star', 'arena'];
+const MAIN_ORDER: readonly RewardStep['kind'][] = ['capsule', 'card', 'clayPip', 'star', 'arena'];
 
 /** The progress bar closest to done, among the Trophy Road, the War Chest and a Conquest milestone. */
 export function closestProgress(save: SaveDoc, content: Content): ResultProgress | null {
@@ -100,10 +103,12 @@ export function closestProgress(save: SaveDoc, content: Content): ResultProgress
  * with trophies, (2) the main reward, (3) one progress bar, plus one step per found feat. The rest
  * (Amber, Dust, Codex points, quest progress, titles) goes into the summary row.
  */
-export function resultPlan(rewards: readonly RewardStep[], save: SaveDoc, content: Content, o: { mode: MatchResultInput['mode'] }): ResultPlan {
+export function resultPlan(rewards: readonly RewardStep[], save: SaveDoc, content: Content, o: { mode: MatchResultInput['mode']; level?: string | null }): ResultPlan {
   const list = stagedRewards(rewards);
   const stages: ResultStage[] = [];
   const used = new Set<RewardStep>();
+  // War Path stars stamp onto the level badge in the banner, not into the lists (4.9).
+  for (const r of list) if (r.kind === 'pathStar') used.add(r);
   const trophies = list.find((r): r is Extract<RewardStep, { kind: 'trophies' }> => r.kind === 'trophies');
   if (trophies) {
     stages.push({ kind: 'trophies', step: trophies });
@@ -122,7 +127,12 @@ export function resultPlan(rewards: readonly RewardStep[], save: SaveDoc, conten
     // A15.5: a War Chest granted by this match is the progress step (its bar full), so the payoff
     // shows even though the saved bar has already restarted at 0.
     const chest = Math.max(1, content.quests.weekly.target);
-    const p = list.some((r) => r.kind === 'crate') ? { kind: 'warChest' as const, value: chest, max: chest, done: true } : closestProgress(save, content);
+    const region = o.level ? content.warPath.regions.find((r) => r.levels.includes(o.level!)) : undefined;
+    const p = list.some((r) => r.kind === 'crate')
+      ? { kind: 'warChest' as const, value: chest, max: chest, done: true }
+      : region && o.mode === 'warPath'
+        ? { kind: 'warPath' as const, value: region.levels.reduce((n, id) => n + (save.warPath?.stars[id] ?? 0), 0), max: region.levels.length * 3, region: region.age }
+        : closestProgress(save, content);
     if (p) stages.push({ kind: 'progress', progress: p });
   }
   for (const r of list) {
@@ -166,7 +176,7 @@ export function dailyResultLine(o: {
 }
 
 /** The Result's actions (ui-plan 4.9, U2). */
-export type ResultActionId = 'continue' | 'openCapsule' | 'tryAgain' | 'next' | 'home' | 'copy' | 'replay';
+export type ResultActionId = 'continue' | 'openCapsule' | 'tryAgain' | 'tryEasy' | 'next' | 'home' | 'copy' | 'replay';
 
 export interface ResultActions {
   /** The one primary, gold, bottom-right (the same spot as Home's Play). */
@@ -203,6 +213,8 @@ export function resultActions(o: {
   onboarding?: boolean;
   /** Onboarding: a retry is offered (A8). */
   canRetry?: boolean;
+  /** War Path: 3 losses in a row offer "Try Easy" (A18.7.4). */
+  tryEasy?: boolean;
 }): ResultActions {
   if (o.onboarding) {
     if (o.capsule) return { primary: 'openCapsule', secondary: o.canRetry ? ['tryAgain'] : [], tertiary: [] };
@@ -215,7 +227,7 @@ export function resultActions(o: {
   if (o.daily) return { primary: 'home', secondary: ['copy'], tertiary };
   if (o.stop) return { primary: 'home', secondary: path ? (won ? ['continue'] : ['tryAgain']) : ['next'], tertiary };
   if (path) {
-    if (!won) return { primary: 'tryAgain', secondary: ['home'], tertiary };
+    if (!won) return { primary: 'tryAgain', secondary: o.tryEasy ? ['home', 'tryEasy'] : ['home'], tertiary };
     return o.capsule ? { primary: 'openCapsule', secondary: ['continue'], tertiary } : { primary: 'continue', secondary: [], tertiary };
   }
   return o.capsule ? { primary: 'openCapsule', secondary: ['next', 'home'], tertiary } : { primary: 'next', secondary: ['home'], tertiary };

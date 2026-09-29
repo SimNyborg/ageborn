@@ -94,6 +94,23 @@ function capsule(
  * New player: Home has just appeared after the A8 onboarding (matches 1-2, capsules 1-2 opened,
  * the forced Bonker upgrade done). War Plan and Skirmish are still locked (A3).
  */
+/** War Path progress with the first `beaten` levels beaten (A18.7); `stars(i)` per level. */
+function warPathFixture(content: Content, beaten: number, stars: (i: number) => number, legacy = false): Pick<SaveDoc, 'warPath' | 'flags'> {
+  const out: SaveDoc['warPath'] = { path: 'normal', stars: {}, crowns: {}, relics: [], difficulty: 'normal', lossStreak: 0, legacy };
+  content.warPath.order.slice(0, beaten).forEach((id, i) => {
+    out.stars[id] = stars(i);
+    out.crowns[id] = stars(i) === 3 ? 3 : 2;
+  });
+  // The unlock ceremonies of what is already open have played (ui-plan 2.6).
+  const flags: Record<string, boolean> = {};
+  for (const [f, lv] of Object.entries(content.warPath.unlocks)) if (legacy || beaten >= lv) flags[`ui-unlock.${f}`] = true;
+  if (beaten > 0 || legacy) {
+    flags['ui-seen.amber'] = true;
+    flags['ui-seen.dust'] = true;
+  }
+  return { warPath: out, flags };
+}
+
 export function newPlayerSave(content: Content): SaveDoc {
   const collection: SaveDoc['collection'] = {};
   for (const age of content.order.ages) {
@@ -161,6 +178,8 @@ export function newPlayerSave(content: Content): SaveDoc {
     },
     tutorial: { step: 12, hintsShown: {} },
     lastExportAt: null,
+    // War Path Stone L1 and L2 beaten (the onboarding matches); L3 is next.
+    ...warPathFixture(content, 2, (i) => (i === 0 ? 2 : 1)),
   });
 }
 
@@ -330,6 +349,8 @@ export function midGameSave(content: Content): SaveDoc {
     },
     tutorial: { step: 99, hintsShown: {} },
     lastExportAt: FIXTURE_NOW - 9 * DAY,
+    // The Stone region and Bronze L1-L6 beaten, mixed stars; Bronze L7 is next.
+    ...warPathFixture(content, 16, (i) => [3, 2, 3, 1, 2, 3, 2, 2, 1, 3, 2, 3, 1, 2, 3, 2][i] ?? 1),
   });
 }
 
@@ -416,6 +437,7 @@ export function maxedSave(content: Content): SaveDoc {
     },
     tutorial: { step: 99, hintsShown: {} },
     lastExportAt: FIXTURE_NOW - 2 * DAY,
+    ...warPathFixture(content, content.warPath.order.length, () => 3, true),
   });
 }
 

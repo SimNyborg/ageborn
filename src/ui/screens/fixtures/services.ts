@@ -258,6 +258,10 @@ export function createPreviewServices(o: {
         return { ...s, flags };
       });
     },
+    setWarPathDifficulty(dif) {
+      log('setWarPathDifficulty', dif);
+      set((s) => ({ ...s, warPath: { ...s.warPath, difficulty: dif } }));
+    },
     equipSkin(target, skin) {
       set((s) => {
         const equipped = { ...s.skins.equipped };

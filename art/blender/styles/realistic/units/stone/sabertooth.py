@@ -46,9 +46,12 @@ SMEAR_COLOR = "#cbbca4"
 
 def build():
     s = S_
-    coat = M.coat("#9c7e5e", "#8e7254", name="coat")
-    belly = M.coat("#c4ae90", "#b8a286", name="belly")
-    dark = M.coat("#6a5644", "#5e4c3c", name="stripe")
+    # AD pass: a darker tawny coat with real countershading (pale throat, chest and belly) and dark
+    # markings, so the cat reads as a big predator and not a plush toy
+    coat = M.coat("#846a52", "#6c5642", name="coat", noise=0.14, nscale=2.6)
+    coat_far = M.coat("#6a5644", "#584636", name="coat_far", noise=0.14, nscale=2.6)   # far legs sit in shadow
+    belly = M.coat("#bba68c", "#a8927a", name="belly")
+    dark = M.coat("#4e3e32", "#40342a", name="stripe")
     ivory = M.ivory()
     nose = C.mat("nose", "#2c2522", rough=0.4, noise=0.1, bump=0.1)
     gum = C.mat("gum", "#5a3a36", rough=0.5, noise=0.1, bump=0.1)
@@ -77,19 +80,27 @@ def build():
     rig.skin(body, [p + "body", p + "pelvis", p + "neck", p + "foreS_F", p + "foreS_B", p + "hindT_F", p + "hindT_B"],
              soft=3.0 * s, bias={p + "foreS_F": 3.0 * s, p + "foreS_B": 3.0 * s, p + "hindT_F": 3.0 * s,
                                   p + "hindT_B": 3.0 * s, p + "neck": 1.0 * s})
-    # faint darker stripes over the back and flanks
-    for i, x in enumerate((-18, -11, -4, 3, 10)):
-        st = C.blobs(f"stripe{i}", [(S(x, -6.8, 41), A(1.2, 2.6, 5.5), (0, 0.3, 0)),
-                                    (S(x, 6.8, 41), A(1.2, 2.6, 5.5), (0, 0.3, 0))], dark, res=0.35)
+    # countershading: a pale throat, chest and belly just proud of the coat
+    under = C.blobs("underside", [
+        (S(21.5, 0, 41.5), A(6.2, 6.0, 5.8), (0, -0.7, 0)),     # throat
+        (S(15.5, 0, 33.5), A(8.0, 8.0, 5.6)),                   # chest
+        (S(1, 0, 30.4), A(14.2, 7.0, 3.6)),                     # belly
+    ], belly, res=0.5)
+    rig.skin(under, [p + "body", p + "neck", p + "pelvis"], soft=3.0 * s, bias={p + "neck": 1.0 * s})
+    # dark stripes on the flanks below the pelt, the shoulder and the thigh (visible at game size)
+    for i, (x, z, h) in enumerate(((-21, 38, 5.0), (-16.5, 36.5, 5.5), (-11.5, 35.5, 5.0), (8.5, 36, 4.8), (13, 38, 5.2))):
+        st = C.blobs(f"stripe{i}", [(S(x, -8.6, z), A(1.0, 1.6, h), (0, 0.25, 0)),
+                                    (S(x, 8.6, z), A(1.0, 1.6, h), (0, 0.25, 0))], dark, res=0.3)
         rig.skin(st, [p + "body", p + "pelvis"], soft=3 * s)
     head = C.blobs("cat_head", [
         (S(31.5, 0, 50.5), A(6.8, 5.9, 5.5)),       # cranium
         (S(29.5, 0, 47), A(6.4, 6.8, 5.4)),         # cheeks / jowls
-        (S(37.5, 0, 48), A(4.8, 3.9, 3.4)),         # muzzle
+        (S(37.8, 0, 47.8), A(5.2, 3.8, 3.5)),       # muzzle (long, deep)
+        (S(33.5, 0, 45.4), A(5.6, 5.4, 3.6)),       # heavy lower jowls
         (S(41.3, 0, 48.5), A(1.6, 2.2, 1.6)),       # nose pad
         (S(34.5, 0, 52.2), A(3.5, 3.6, 1.6)),       # brow
-        (S(27.8, -3.8, 55.4), A(1.5, 0.9, 1.9)),    # ears
-        (S(27.8, 3.8, 55.4), A(1.5, 0.9, 1.9)),
+        (S(27.0, -3.9, 54.6), A(1.2, 0.6, 1.3), (0, -0.5, 0)),    # small, swept-back ears
+        (S(27.0, 3.9, 54.6), A(1.2, 0.6, 1.3), (0, -0.5, 0)),
     ], coat, res=0.45)
     rig.rigid(head, p + "head")
     muzzle = C.blobs("muzzle_pale", [(S(38.4, 0, 46.8), A(3.8, 3.7, 2.2)), (S(34, 0, 44.6), A(4.2, 4.6, 1.8))], belly, res=0.35)
@@ -105,8 +116,9 @@ def build():
     rig.rigid(jaw, p + "jaw")
     mouth = C.blobs("mouth", [(S(35.5, 0, 44.2), A(4.2, 2.6, 1.0))], gum, res=0.3)
     rig.rigid(mouth, p + "jaw")
-    tail = C.blobs("tail", [(S(-27.5, 0, 44), A(2.8, 2.6, 3.0)), (S(-31, 0, 39.5), A(2.4, 2.2, 3.4)),
-                            (S(-33.2, 0, 35), A(1.9, 1.8, 2.4))], coat, res=0.35)
+    tail = C.blobs("tail", [(S(-26.5, 0, 44), A(2.8, 2.6, 3.0)), (S(-29.8, 0, 40.5), A(2.2, 2.0, 3.0)),
+                            (S(-31.4, 0, 37.0), A(1.6, 1.5, 1.8))], coat, res=0.35)
+    rig.skin(C.blobs("tailtip", [(S(-31.6, 0, 36.2), A(1.5, 1.4, 1.6))], dark, res=0.3), [p + "tail2"], soft=2 * s)
     rig.skin(tail, [p + "tail", p + "tail2"], soft=2 * s)
 
     for sd, y in Q.Y.items():
@@ -114,26 +126,38 @@ def build():
         fore = C.blobs("fore_" + sd, [
             (S(17.5, yy, 24.0), A(5.4, 4.4, 8.0)),
             (S(18.3, yy, 14.0), A(4.1, 3.8, 5.4)),
-            (S(19.2, yy, 6.5), A(3.2, 3.2, 3.4)),
+            (S(19.2, yy, 6.5), A(2.9, 2.9, 3.4)),
             (S(21.4, yy, 2.5), A(4.3, 3.5, 2.5)),
-        ], coat if sd == "F" else coat, res=0.4)
+        ], coat if sd == "F" else coat_far, res=0.4)
         rig.skin(fore, Q.leg_bones("fore", sd), soft=1.2 * s, bias={p + "foreS_" + sd: 2.0 * s})
         hind = C.blobs("hind_" + sd, [
             (S(-15.5, yy, 30.5), A(5.8, 4.2, 8.5), (0, 0.4, 0)),
             (S(-18.5, yy, 20.0), A(4.0, 3.4, 6.0), (0, -0.6, 0)),
-            (S(-22.5, yy, 9.5), A(2.7, 2.7, 5.6)),
-            (S(-20.0, yy, 2.3), A(4.0, 3.2, 2.4)),
-        ], coat, res=0.4)
+            (S(-22.5, yy, 9.5), A(2.4, 2.4, 5.6)),
+            (S(-20.0, yy, 2.3), A(3.8, 3.0, 2.3)),
+        ], coat if sd == "F" else coat_far, res=0.4)
         rig.skin(hind, Q.leg_bones("hind", sd), soft=1.2 * s, bias={p + "hindT_" + sd: 2.0 * s})
         for i in range(3):
             rig.rigid(C.sphere("claw", 0.5 * s, claw, loc=S(24.3, yy + (i - 1) * 1.3, 1.2), scale=(1.4, 0.7, 0.7)),
                       p + "foreP_" + sd)
 
     # team war pelt strapped over the back (ragged edges), strap under the belly; bone-tooth collar
-    pelt = C.blobs("pelt", [(S(2, 0, 47.5), A(17, 10.6, 3.4)), (S(-6, 0, 46.8), A(12, 10.8, 3.2)),
-                            (S(4, -9.4, 40), A(12, 1.8, 6.4)), (S(4, 9.4, 40), A(12, 1.8, 6.4)),
-                            (S(-8, -9.2, 41), A(8, 1.8, 5.0)), (S(-8, 9.2, 41), A(8, 1.8, 5.0))], hide, res=0.5)
-    C.displace(pelt, 0.5 * s, 0.8)
+    PELT = [(S(2, 0, 47.3), A(16, 10.2, 2.4)), (S(-6, 0, 46.6), A(11.5, 10.4, 2.3)),
+            (S(4, -9.3, 40.5), A(11.5, 1.3, 6.2)), (S(4, 9.3, 40.5), A(11.5, 1.3, 6.2)),
+            (S(-8, -9.1, 41.2), A(7.5, 1.3, 4.8)), (S(-8, 9.1, 41.2), A(7.5, 1.3, 4.8))]
+    pelt = C.blobs("pelt", PELT, hide, res=0.45)
+    C.displace(pelt, 0.45 * s, 0.9)
+    # a dark leather hem just proud of the pelt edge, and a row of rawhide fringe tassels
+    hem = C.blobs("pelt_hem", [(c, M.hem_axes(a, 0.9 * s)) for c, a in PELT], leather, res=0.45)
+    rig.skin(hem, [p + "body", p + "pelvis"], soft=4 * s)
+    fringe_m = M.rawhide("#6e5a46", name="fringe")
+    for sd in (-1, 1):
+        for k in range(9):
+            x = -13 + 3.3 * k
+            z0 = 34.6 if -11 < x < 17 else 36.0
+            fr = C.tube("fringe", [S(x, sd * 10.0, z0 + 0.8), S(x - 0.4, sd * 10.2, z0 - 2.6)], [0.42 * s, 0.26 * s],
+                        fringe_m, seg=5)
+            rig.skin(fr, [p + "body", p + "pelvis"], soft=4 * s)
     C.team(pelt)
     rig.skin(pelt, [p + "body", p + "pelvis"], soft=4 * s)
     strap = C.blobs("girth", [(S(6, 0, 38.5), A(1.6, 10.2, 11.2))], leather, res=0.45)

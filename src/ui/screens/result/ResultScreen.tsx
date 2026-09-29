@@ -9,7 +9,8 @@
 import './result.css';
 import { arenaNameKey, capsuleKindNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { QuestDef } from '@/content/types';
-import type { RewardStep } from '@/contracts';
+import type { MatchStats, RewardStep } from '@/contracts';
+import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
@@ -62,6 +63,48 @@ import { RoadRewardView } from '../shared/RoadReward';
 import { useMatchStarter } from '../shared/MatchStarter';
 
 const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 'ui.result.draw' } as const;
+
+/**
+ * The War Path level badge on the Result (4.9, 2.7 "a star stamps onto the level badge"): the level's
+ * number and name, its three sockets with the best stars, the new ones stamping in one by one
+ * (MR-41 timing, 200 ms apart), and the ★★ goal with whether this match met it.
+ */
+function LevelBadge(p: { level: string; rewards: readonly RewardStep[]; stats: MatchStats; won: boolean; difficulty: string }) {
+  const { t, content, save } = useUi();
+  const kit = useKit();
+  const level = content.warPath.levels[p.level];
+  const fresh = p.rewards.filter((r): r is Extract<RewardStep, { kind: 'pathStar' }> => r.kind === 'pathStar').map((r) => r.star);
+  const best = save.peek().warPath?.stars[p.level] ?? 0;
+  const first = fresh.length ? Math.min(...fresh) : best + 1;
+  useEffect(() => {
+    if (!fresh.length) return;
+    const ids = fresh.map((_, i) => setTimeout(() => kit.sound?.('star_stamp'), 700 + i * 200));
+    return () => ids.forEach(clearTimeout);
+  }, []);
+  if (!level) return null;
+  const goal = goalText(level.goal2);
+  const met = p.won && goalMet(level.goal2, p.stats);
+  return (
+    <div class="result-level" data-testid="result-level" data-stars={best}>
+      <span class="result-level__disc" aria-hidden="true">
+        {level.index}
+      </span>
+      <span class="result-level__main">
+        <span class="result-level__name">{t(levelNameKey(level.id))}</span>
+        <span class="result-level__stars" aria-label={t('warPath.ui.stars', { n: best, max: 3 })}>
+          {[1, 2, 3].map((k) => (
+            <i key={k} class={`result-level__star${k <= best ? ' is-on' : ''}${k >= first && fresh.includes(k as 1 | 2 | 3) ? ' is-new' : ''}`} style={{ animationDelay: `${600 + (k - first) * 200}ms` }}>
+              <StarIcon size={26} filled={k <= best} />
+            </i>
+          ))}
+        </span>
+        <span class={`result-level__goal${met ? ' is-met' : ''}`}>
+          {met ? <CheckIcon size={16} /> : null} {t(goal.key, goal.params)}
+        </span>
+      </span>
+    </div>
+  );
+}
 
 /**
  * Results whose capsule was opened from the Result. When the capsule summary closes, the Result
@@ -253,6 +296,24 @@ function Reward(p: { r: RewardStep; animate: boolean }) {
           <span class="result-reward__sub">{t(titleNameKey(r.title))}</span>
         </RewardRow>
       );
+    case 'pathStar':
+      return (
+        <RewardRow testid={`reward-pathstar-${r.star}`} icon={<StarIcon size={34} />} label={t('warPath.ui.starGot', { n: r.star })} value={<CheckIcon size={26} />} tone="good" />
+      );
+    case 'card': {
+      // A18.7.8: a named card from a War Path first clear (MR-44).
+      const tile = cardTile(save.value, content, r.card, t);
+      const def = content.units[r.card] ?? content.turrets[r.card];
+      const name = def ? t(def.nameKey) : r.card;
+      return (
+        <RewardRow
+          testid="reward-card"
+          icon={tile ? <CardTile card={tile} size="xs" /> : <StarIcon size={34} />}
+          label={r.copies > 0 ? t('warPath.ui.cardCopy', { name }) : t('warPath.ui.cardNew', { name })}
+          tone="good"
+        />
+      );
+    }
   }
 }
 
@@ -292,6 +353,14 @@ function ProgressStage(p: { progress: ResultProgress }) {
           : t('ui.result.progress.warChest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) })
         : t('ui.result.progress.conquest', { n: formatInt(g.value, locale), max: formatInt(g.max, locale) });
   const icon = g.kind === 'road' ? <RoadIcon size={32} /> : g.kind === 'warChest' ? <CrateIcon size={34} /> : <StarIcon size={32} />;
+  if (g.kind === 'warPath') {
+    const wl = t('warPath.ui.progressStars', { region: t(`warPath.region.${g.region ?? 'stone'}`), n: formatInt(g.value, locale), max: formatInt(g.max, locale) });
+    return (
+      <RewardRow testid="reward-progress-warPath" icon={icon} label={wl} tone="gold">
+        <ProgressBar value={g.value} max={g.max} tone="gold" label={wl} />
+      </RewardRow>
+    );
+  }
   return (
     <RewardRow testid={`reward-progress-${g.kind}`} icon={icon} label={label} tone={g.done ? 'good' : 'gold'}>
       <ProgressBar value={g.value} max={g.max} tone={g.done ? 'green' : 'gold'} label={label} />
@@ -402,6 +471,12 @@ function SummaryChip(p: { r: RewardStep }) {
           <StarIcon size={16} /> {r.star}
         </span>
       );
+    case 'card':
+      return (
+        <span class="result-sum__chip is-done" data-testid="sum-card">
+          <StarIcon size={16} /> {t('warPath.ui.newCard')}
+        </span>
+      );
     default:
       return null;
   }
@@ -502,7 +577,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const info = p.route.info;
   const kind = resultKind(info.input);
   // The plan is fixed when the screen opens (the save moves on while it is up).
-  const plan = useMemo(() => resultPlan(info.rewards, save.peek(), content, { mode: info.input.mode }), [info, content, save]);
+  const pathLevel = info.input.warPath?.level ?? (info.rewards.find((r) => r.kind === 'pathStar') as { level?: string } | undefined)?.level ?? null;
+  const plan = useMemo(() => resultPlan(info.rewards, save.peek(), content, { mode: info.input.mode, level: pathLevel }), [info, content, save]);
   const stages = plan.stages;
   const reduce = save.value.settings.reduceMotion;
   const [shown, setShown] = useState(reduce ? stages.length : 0);
@@ -599,6 +675,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     daily: !!info.daily,
     stop: homePrimary,
     replay: info.replayIndex !== null,
+    tryEasy: info.input.mode === 'warPath' && (save.value.warPath?.lossStreak ?? 0) >= content.warPath.tryEasyAfter && info.input.warPath?.difficulty !== 'easy',
   });
   const run: Record<ResultActionId, () => void> = {
     continue: () => {
@@ -611,6 +688,12 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       services.openCapsule(capsule);
     },
     tryAgain: nextBattle,
+    tryEasy: () => {
+      const req = info.request;
+      services.setWarPathDifficulty('easy');
+      if (req && req.mode === 'warPath') starter.start({ ...req, difficulty: 'easy' }, { resetToHome: true });
+      else nextBattle();
+    },
     next: nextBattle,
     home: () => router.reset({ id: 'home' }),
     copy: copyDaily,
@@ -623,6 +706,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     <ResultLayout
       kind={kind}
       title={t(BANNER_KEYS[kind])}
+      badge={pathLevel ? <LevelBadge level={pathLevel} rewards={info.rewards} stats={stats} won={kind === 'win'} difficulty={info.input.warPath?.difficulty ?? 'normal'} /> : null}
       vs={
         <>
           {t('ui.result.vs', { name: opponentName(opp, content, t) })} <AiBadge size="sm" />
@@ -704,6 +788,7 @@ export const RESULT_ACTION_TESTID: Readonly<Record<ResultActionId, string>> = {
   continue: 'result-continue',
   openCapsule: 'result-open',
   tryAgain: 'result-again',
+  tryEasy: 'result-try-easy',
   next: 'result-next',
   home: 'result-home',
   copy: 'result-copy',
@@ -714,6 +799,7 @@ const RESULT_ACTION_KEY: Readonly<Record<ResultActionId, string>> = {
   continue: 'ui.result.continue',
   openCapsule: 'ui.result.openCapsule',
   tryAgain: 'ui.result.tryAgain',
+  tryEasy: 'warPath.ui.tryEasy',
   next: 'ui.result.next',
   home: 'ui.result.home',
   copy: 'ui.result.copy',
@@ -727,6 +813,7 @@ function actionIcon(id: ResultActionId, size: number): ComponentChildren {
     case 'openCapsule':
       return <CapsuleIcon tier="silver" size={size + 2} />;
     case 'tryAgain':
+    case 'tryEasy':
     case 'next':
       return <SwordsIcon size={size} />;
     case 'home':
@@ -791,6 +878,8 @@ export function ResultLayout(p: {
   actions: ActionBarProps;
   children?: ComponentChildren;
   onTap?: () => void;
+  /** The War Path level badge whose stars stamp in (4.9, MR-94). */
+  badge?: ComponentChildren;
 }) {
   const BannerIcon = p.kind === 'win' ? CrownIcon : p.kind === 'loss' ? ShieldBrokenIcon : ScalesIcon;
   return (
@@ -815,6 +904,7 @@ export function ResultLayout(p: {
             </h1>
             {p.vs ? <p class="result__vs">{p.vs}</p> : null}
           </header>
+          {p.badge}
           {p.recap}
         </div>
         <div class="result__right">{p.rewards}</div>

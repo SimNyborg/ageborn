@@ -74,7 +74,7 @@ describe('AtlasTurretView motion', () => {
 });
 
 describe('AtlasTurretView upgrades', () => {
-  it('drops in with a landing squash and grows a Modernise out of light, then idles', () => {
+  it('drops in with a light landing settle and grows a Modernise out of light, then idles', () => {
     const v = new AtlasTurretView({ def, sheet: turretSheet, decor: baker(), side: 0, teamColor: 0x2f7df6, seed: 1 });
     v.play('build');
     let minSy = 1;
@@ -82,10 +82,9 @@ describe('AtlasTurretView upgrades', () => {
       v.update(16);
       minSy = Math.min(minSy, (v.root.children[1] as { scale: { y: number } }).scale.y);
     }
-    // the fixture's build clip has landing frames that squash on their own, so the code adds only a
-    // light squash on top (a full one flattened real turrets into a pancake)
-    expect(minSy).toBeLessThan(0.97);
-    expect(minSy).toBeGreaterThan(0.85);
+    // props settle with at most 3% on a landing (ui-plan 5.8 realistic weight), but they do settle
+    expect(minSy).toBeLessThan(0.995);
+    expect(minSy).toBeGreaterThanOrEqual(0.969);
     expect(v.debug.action).toBeNull();
     const old = new AtlasTurretView({ def, sheet: turretSheet, decor: baker(), side: 0, teamColor: 0x2f7df6, seed: 2 });
     old.play('modernise');

@@ -81,6 +81,61 @@ export interface AtlasJson {
 }
 
 const UNIT_CLIPS: readonly ClipName[] = ['spawn', 'idle', 'walk', 'attack', 'hit', 'stun', 'die', 'victory', 'ability'];
+
+/**
+ * Realistic weight for the rendered (atlas) units (docs/ui-plan.md 5.8, MR-100, MR-103, MR-105):
+ * bodies are rigid, so weight shows through timing and a few lu of offset, never a scale squash.
+ * Mass classes: light (infantry, ranged, support), medium (anti-armor, taller than 90 lu), heavy
+ * (the Heavy class, or taller than 150 lu).
+ */
+export type UnitMass = 'light' | 'medium' | 'heavy';
+export const UNIT_WEIGHT: Readonly<
+  Record<UnitMass, { spawnMs: number; dropLu: number; settleLu: number; flinchLu: number; flinchMs: number }>
+> = {
+  // MR-100: drop the last lu into the stance and settle (heavier: longer, lower).
+  // MR-103: light units flinch back 4-6 px, medium 2-3 px, heavy 1 px; back over 120-200 ms.
+  light: { spawnMs: 200, dropLu: 10, settleLu: 0.8, flinchLu: 5, flinchMs: 140 },
+  medium: { spawnMs: 240, dropLu: 12, settleLu: 1.4, flinchLu: 2.5, flinchMs: 170 },
+  heavy: { spawnMs: 300, dropLu: 14, settleLu: 2.4, flinchLu: 1, flinchMs: 200 },
+};
+/** Dust over the realistic art: the shared dust sprite multiplied toward the ground's tone. */
+const REAL_DUST_TINT = 0xb8ad9c;
+/** MR-105: after the fall the body lies this long, then sinks and fades. */
+export const DEATH_LIE_MS = 600;
+export const DEATH_FADE_MS = 300;
+const DEATH_SINK_LU = 3;
+
+/** The mass class of a unit from its role and height. */
+export function unitMass(group: RoleGroup | null, heightLu: number): UnitMass {
+  if (group === 'heavy' || heightLu > 150) return 'heavy';
+  if (group === 'antiArmor' || heightLu > 90) return 'medium';
+  return 'light';
+}
+
+/** MR-100 spawn arrival: y offset (lu, + is down) and alpha at `t` ms. */
+export function spawnArrival(mass: UnitMass, t: number): { y: number; alpha: number } {
+  const w = UNIT_WEIGHT[mass];
+  const u = Math.max(0, Math.min(1, t / w.spawnMs));
+  const alpha = Math.min(1, u / 0.3);
+  if (u < 0.5) {
+    // the last few lu of a drop, accelerating (gravity)
+    const f = u / 0.5;
+    return { y: -w.dropLu * (1 - f * f), alpha };
+  }
+  // the landing: knees take the weight, one small settle below the stance, then back (no squash)
+  const g = (u - 0.5) / 0.5;
+  return { y: w.settleLu * Math.sin(g * Math.PI) * (1 - 0.35 * g), alpha };
+}
+
+/** MR-103 hit reaction: the flinch offset (lu, backwards) at `t` ms: out fast, back with one overshoot. */
+export function flinchOffset(mass: UnitMass, t: number): number {
+  const w = UNIT_WEIGHT[mass];
+  const u = t / w.flinchMs;
+  if (u <= 0 || u >= 1) return 0;
+  if (u < 0.2) return w.flinchLu * Math.sin((u / 0.2) * (Math.PI / 2));
+  if (u < 0.75) return w.flinchLu * (1 - 1.15 * (1 - Math.cos(((u - 0.2) / 0.55) * Math.PI)) / 2);
+  return -0.15 * w.flinchLu * (1 - (u - 0.75) / 0.25);
+}
 const FALLBACK: Readonly<Record<string, readonly string[]>> = {
   spawn: ['spawn', 'idle'],
   idle: ['idle'],
@@ -451,12 +506,15 @@ class AtlasUnitView implements UnitView {
   private requested = 'idle';
   private hop = 0;
   private clockMs = 0;
-  /** Spawn pop time (A11: scale 0 → 1.15 → 1 over 180 ms, ease-out-back), -1 when done. */
+  /** Spawn arrival time (MR-100: a short drop and settle, no scale), -1 when done. */
   private spawnT = -1;
+  /** Hit flinch time (MR-103), -1 when done. */
+  private flinchT = -1;
   private dead = false;
   /** Death hand-off (sheet `die.fx`): effects still to spawn, and when the body hides. */
   private deathFx: { id: string; atMs: number; offsetLu?: readonly [number, number]; scale?: number; loops?: number }[] = [];
   private hideAtMs = -1;
+  private sinkDust = false;
   private destroyed = false;
 
   constructor(
@@ -592,42 +650,65 @@ class AtlasUnitView implements UnitView {
     this.flashMs = ms;
     this.flashDur = Math.max(1, ms);
     this.flashSprite.tint = color;
+    // A victim flash is a hit: the body flinches back by its mass (MR-103), never squashes.
+    if (!this.dead) this.flinchT = 0;
+  }
+
+  private mass(): UnitMass {
+    return unitMass(this.glyphGroup, this.def.heightLu);
   }
 
   update(dtMs: number): void {
     if (this.destroyed) return;
     this.clockMs += dtMs;
     let animDt = dtMs;
+    // Offsets are code motion on a rigid body (5.8): x = hitstop jitter + flinch, y = spawn, hop, sink.
+    let ox = 0;
+    let oy = this.body.y;
     if (this.frozenMs > 0) {
       const used = Math.min(this.frozenMs, animDt);
       this.frozenMs -= used;
       animDt -= used;
       // local hitstop jitter (A12: 1-2 px)
-      this.body.x = (this.rng.next() - 0.5) * 2.4;
-    } else if (this.body.x !== 0) this.body.x = 0;
+      ox = (this.rng.next() - 0.5) * 2.4;
+    }
     if (animDt > 0 && !this.frozenPose) {
       if (this.base) this.base.t += animDt;
       if (this.action) {
         this.action.t += animDt;
         if (!this.action.hold && !this.action.loop && this.action.t >= this.action.durationMs) this.action = null;
       }
-      // spawn pop and the victory hop are code motion, so every sheet gets them
+      oy = 0;
+      // the spawn arrival and the victory hop are code motion, so every sheet gets them
       if (this.spawnT >= 0) {
         this.spawnT += animDt;
-        const u = Math.min(1, this.spawnT / CLIP_TIMING.spawnMs);
-        const k = u < 0.62 ? 0.05 + (1.1 * u) / 0.62 : 1.15 - (0.15 * (u - 0.62)) / 0.38;
-        this.body.scale.set(this.sheet.luPerUnit * this.facing * k, this.sheet.luPerUnit * (u < 0.62 ? k : 1 + (k - 1) * 0.6));
-        if (u >= 1) {
+        const a = spawnArrival(this.mass(), this.spawnT);
+        oy += a.y;
+        this.body.alpha = (this.def.filters?.alpha ?? 1) * a.alpha;
+        if (this.spawnT >= UNIT_WEIGHT[this.mass()].spawnMs) {
           this.spawnT = -1;
-          this.body.scale.set(this.sheet.luPerUnit * this.facing, this.sheet.luPerUnit);
+          this.body.alpha = this.def.filters?.alpha ?? 1;
         }
+      }
+      if (this.flinchT >= 0) {
+        this.flinchT += animDt;
+        if (this.flinchT >= UNIT_WEIGHT[this.mass()].flinchMs) this.flinchT = -1;
       }
       if (this.requested === 'victory' && !this.action) {
         this.hop += animDt;
-        this.body.y = -Math.abs(Math.sin((this.hop / 700) * Math.PI)) * 8;
-      } else if (this.body.y !== 0) this.body.y = 0;
-      if (this.dead && this.action) this.deathHandoff(this.action.t);
+        oy -= Math.abs(Math.sin((this.hop / 700) * Math.PI)) * 8;
+      }
+      if (this.dead && this.action) {
+        this.deathHandoff(this.action.t);
+        // MR-105: the body lies, then sinks a little as the render fades it out.
+        const sinkT = this.action.t - this.action.durationMs - DEATH_LIE_MS;
+        if (sinkT > 0) oy += DEATH_SINK_LU * Math.min(1, sinkT / DEATH_FADE_MS);
+      }
     }
+    // the flinch pushes the body back, away from what it faces
+    if (this.flinchT >= 0) ox -= this.facing * flinchOffset(this.mass(), this.flinchT);
+    this.body.x = ox;
+    this.body.y = oy;
     if (this.flashMs > 0) {
       // full for 60%, then fades (same curve as the procedural tier)
       this.flashMs = Math.max(0, this.flashMs - dtMs);
@@ -657,41 +738,47 @@ class AtlasUnitView implements UnitView {
       const x = (fx.offsetLu?.[0] ?? 0) * this.facing;
       const y = -(fx.offsetLu?.[1] ?? this.def.heightLu * 0.4);
       const k = (fx.scale ?? 1) * Math.max(1, this.def.heightLu / 68);
-      if (fx.id === 'fx.ko_stars') this.koStars(x, y, k, fx.loops ?? 1);
-      else this.dustPoof(x, y, k);
+      // KO stars read as cartoon over the realistic art (MR-105, UI-5b): a dust puff instead.
+      this.dustPoof(x, y, fx.id === 'fx.ko_stars' ? k * 0.8 : k);
     }
-    if (this.hideAtMs >= 0 && t >= this.hideAtMs && this.body.visible) {
+    // A sheet's hide at the end of its fall is not honoured: the body lies for DEATH_LIE_MS and then
+    // sinks and fades (MR-105, realistic weight); an earlier hide (a body that bursts) still is.
+    const dur = this.action?.durationMs ?? 0;
+    if (this.hideAtMs >= 0 && this.hideAtMs < dur - 1 && t >= this.hideAtMs && this.body.visible) {
       this.body.visible = false;
       this.ground.alpha = 0.5;
+    }
+    if (!this.sinkDust && t >= dur + DEATH_LIE_MS && this.body.visible) {
+      this.sinkDust = true;
+      this.ground.alpha = 0.5;
+      this.dustPoof(0, -2, 0.5 * Math.max(1, this.def.heightLu / 68));
     }
   }
 
   private dustPoof(x: number, y: number, k: number): void {
     for (let i = 0; i < 9; i++) {
       const s = partSprite(this.decor, 'fx.p.dust', UI_ZONES);
+      // Ground-toned, half-transparent dust reads as dust over the realistic art, not a cartoon cloud.
+      s.tint = REAL_DUST_TINT;
       const a = (i / 9) * Math.PI * 2 + this.rng.next() * 0.5;
       s.position.set(x + Math.cos(a) * 6 * k, y + Math.sin(a) * 4 * k);
-      this.puffs.add(s, { vx: Math.cos(a) * (26 + this.rng.next() * 30) * k, vy: Math.sin(a) * (14 + this.rng.next() * 16) * k - 10, life: 420 + this.rng.next() * 220, s0: 0.7 * k, s1: 1.5 * k, a0: 0.9, g: 20 });
+      this.puffs.add(s, { vx: Math.cos(a) * (26 + this.rng.next() * 30) * k, vy: Math.sin(a) * (14 + this.rng.next() * 16) * k - 10, life: 420 + this.rng.next() * 220, s0: 0.7 * k, s1: 1.35 * k, a0: 0.6, g: 20 });
     }
   }
 
-  private koStars(x: number, y: number, k: number, loops: number): void {
-    for (let i = 0; i < 3; i++) {
-      const s = partSprite(this.decor, 'fx.p.star', UI_ZONES);
-      s.position.set(x, y);
-      const a = -Math.PI / 2 + (i - 1) * 0.7;
-      this.puffs.add(s, { vx: Math.cos(a) * 34 * k, vy: Math.sin(a) * 40 * k, life: 360 + 180 * loops, s0: 1 * k, s1: 0.6 * k, a0: 1, spin: (this.rng.next() - 0.5) * 8, g: 30 });
-    }
-  }
 
   private spawnDust(): void {
+    // MR-100: a dust ring at the feet as the body takes its weight (ground-toned, 5.8).
+    const k = UNIT_WEIGHT[this.mass()].settleLu / UNIT_WEIGHT.light.settleLu;
     for (let i = 0; i < 5; i++) {
       const s = partSprite(this.decor, 'fx.p.dust', UI_ZONES);
+      s.tint = REAL_DUST_TINT;
       const dir = i < 2 ? -1 : 1;
       s.position.set((this.rng.next() - 0.5) * 16, -2);
-      this.puffs.add(s, { vx: dir * (30 + this.rng.next() * 50), vy: -20 - this.rng.next() * 30, life: 380 + this.rng.next() * 160, s0: 0.5, s1: 1.2, a0: 0.8 });
+      this.puffs.add(s, { vx: dir * (30 + this.rng.next() * 50), vy: -12 - this.rng.next() * 18, life: 380 + this.rng.next() * 160, s0: 0.5, s1: Math.min(2, 1.1 * Math.sqrt(k)), a0: 0.55 });
     }
   }
+
 
   private showStars(on: boolean): void {
     if (on && !this.stars) {
@@ -739,9 +826,9 @@ class AtlasUnitView implements UnitView {
     setFrame(this.teamSprite, tr.team?.[i] ?? Texture.EMPTY);
   }
 
-  /** True once the die clip has played out. */
+  /** True once the die clip has played out and the body has lain and faded (MR-105). */
   get finished(): boolean {
-    return this.dead && this.action !== null && this.action.t >= this.action.durationMs + 300;
+    return this.dead && this.action !== null && this.action.t >= this.action.durationMs + DEATH_LIE_MS + DEATH_FADE_MS;
   }
 
   setTeamColor(color: number): void {

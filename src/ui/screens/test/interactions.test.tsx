@@ -12,6 +12,8 @@ import { VS_MS } from '../vs/VsScreen';
 import { REWARD_STEP_MS } from '../model/result';
 import { input, keydown, text, type FakeElement } from './dom';
 import { flush, mount, type Mounted } from './harness';
+import { act } from 'preact/test-utils';
+import { primeWarPathSeen } from '../home/HomeScreen';
 
 let m: Mounted | null = null;
 afterEach(() => {
@@ -24,9 +26,9 @@ const calls = (name: string) => m!.log.calls.filter((c) => c.name === name);
 const i18nText = (key: string) => i18n.t(key);
 
 describe('keyboard navigation', () => {
-  it('focuses the Battle button on Home and the title elsewhere', () => {
+  it('focuses Play on Home and the title elsewhere', () => {
     m = mount({ state: 'mid' });
-    expect(m.document.activeElement?.getAttribute('data-testid')).toBe('battle-button');
+    expect(m.document.activeElement?.getAttribute('data-testid')).toBe('play');
     flush(() => m!.router.go({ id: 'collection' }));
     expect(m.document.activeElement?.localName).toBe('h1');
   });
@@ -77,7 +79,7 @@ describe('keyboard navigation', () => {
   });
 
   it('a modal traps Tab, closes on Escape without leaving the screen, and restores focus', () => {
-    m = mount({ state: 'mid' });
+    m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
     const info = m.q('[data-testid="odds-open"]')!;
     flush(() => info.focus());
     m.click('[data-testid="odds-open"]');
@@ -91,7 +93,7 @@ describe('keyboard navigation', () => {
     expect(m.document.activeElement).toBe(close);
     flush(() => keydown(close, 'Escape'));
     expect(m.q('[data-testid="odds-modal"]')).toBeNull();
-    expect(m.router.current.value.id).toBe('home');
+    expect(m.router.current.value.id).toBe('capsules');
     expect(m.document.activeElement).toBe(info);
   });
 
@@ -103,48 +105,149 @@ describe('keyboard navigation', () => {
   });
 });
 
-describe('Home', () => {
-  it('opens the best capsule, opens all, claims the daily capsule', () => {
+/** A save on its very first launch: War Path level 1 next, nothing earned (ui-plan 2.6). */
+function firstLaunch() {
+  const n = newPlayerSave(content);
+  return { ...n, currencies: { amber: 0, dust: 0 }, matchesPlayed: 0, tutorial: { step: 0, hintsShown: {} }, warPath: { ...n.warPath, stars: {}, crowns: {} }, flags: {} };
+}
+
+describe('Home: the War Path map (ui-plan 2.3, 4.1, 6.4)', () => {
+  beforeEach(() => primeWarPathSeen(null));
+
+  it('Play is the one primary and starts the next level through VS, in one tap (U2)', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true });
+    expect(m.qa('[data-primary]')).toHaveLength(1);
+    expect(text(m.q('[data-testid="play"]')!)).toBe('Play level 7');
+    expect(text(m.q('[data-testid="home-level-label"]')!)).toBe('Bronze Age: Hellas · Level 7 of 10');
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'warPath', level: 'wp.bronze.l07', difficulty: 'normal' });
+    expect(m.router.current.value.id).toBe('vs');
+  });
+
+  it('first launch shows only the map, level 1, Play and the gear; Play starts the training match', () => {
+    vi.useFakeTimers();
+    m = mount({ save: firstLaunch(), shell: true });
+    expect(m.q('[data-testid="tabbar"]')).toBeNull();
+    expect(m.q('[data-testid="home-amber"]')).toBeNull();
+    expect(m.q('[data-testid="home-modes"]')).toBeNull();
+    expect(m.q('[data-testid="home-profile"]')).toBeNull();
+    expect(m.q('[data-testid="nav-settings"]')).not.toBeNull();
+    expect(text(m.q('[data-testid="wp-start"]')!)).toBe('Your War Path starts here.');
+    expect(m.q('[data-testid="wp-node-wp.stone.l01"]')!.getAttribute('data-state')).toBe('current');
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'tutorial', match: 1 });
+  });
+
+  it('while match 2 is next, Play starts the onboarding match vs Pip (level 2)', () => {
+    vi.useFakeTimers();
+    const n = newPlayerSave(content);
+    m = mount({ save: { ...n, matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} }, warPath: { ...n.warPath, stars: { 'wp.stone.l01': 1 } } } });
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'tutorial', match: 2 });
+  });
+
+  it('a node opens the Level preview; a locked node says what to beat and has no primary', () => {
     m = mount({ state: 'mid' });
+    m.click('[data-testid="wp-node-wp.bronze.l09"]');
+    expect(m.q('[data-testid="level-sheet"]')).not.toBeNull();
+    expect(text(m.q('[data-testid="level-locked"]')!)).toContain('Beat level 8 first');
+    expect(m.q('[data-testid="level-play"]')).toBeNull();
+    m.unmount();
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="level-plate"]');
+    expect(text(m.q('[data-testid="level-play"]')!)).toBe('Play level 7');
+    expect(text(m.q('[data-testid="level-preview"]')!)).toContain('AI');
+  });
+
+  it('a boss node discloses its base, and a beaten level offers Replay and the difficulty', () => {
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="wp-node-wp.bronze.l10"]');
+    expect(text(m.q('[data-testid="level-boss"]')!)).toContain('+50% HP');
+    m.unmount();
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="wp-node-wp.bronze.l03"]');
+    expect(text(m.q('[data-testid="level-play"]')!)).toBe('Replay level 3');
+    const hard = m.qa('[data-testid="level-difficulty"] [role="radio"]').find((el) => text(el) === 'Hard')!;
+    act(() => hard.click());
+    expect(calls('setWarPathDifficulty')[0]!.args).toEqual(['hard']);
+    expect(m.save.value.warPath.difficulty).toBe('hard');
+  });
+
+  it('Modes opens the panel; its Play starts Quick Battle at the picked difficulty', () => {
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="home-modes"]');
+    expect(m.q('[data-testid="modes-sheet"]')).not.toBeNull();
+    m.click('[data-testid="modes-play"]');
+    const req = calls('prepareMatch')[0]!.args[0] as { mode: string; options: { format: string } };
+    expect(req.mode).toBe('skirmish');
+    expect(req.options.format).toBe('short');
+    expect(m.router.current.value.id).toBe('vs');
+  });
+
+  it('tabs: locked tabs say when they open, open ones switch, at most 2 ready badges (2.2, 2.6)', () => {
+    m = mount({ state: 'new', shell: true });
+    expect(m.q('[data-testid="tab-progress"]')!.getAttribute('aria-disabled')).toBe('true');
+    m.click('[data-testid="tab-progress"]');
+    expect(m.router.current.value.id).toBe('home');
+    m.click('[data-testid="tab-capsules"]');
+    expect(m.router.current.value.id).toBe('capsules');
+    expect(m.router.tab.value).toBe('capsules');
+    flush(() => keydown(m!.document.body, 'Escape'));
+    expect(m.router.current.value.id).toBe('home');
+    m.unmount();
+    m = mount({ state: 'maxed', shell: true });
+    expect(m.qa('[data-badge="ready"]').length).toBeLessThanOrEqual(2);
+  });
+
+  it('the level-complete ceremony plays once after a clear and Play finishes it at once (MR-41)', () => {
+    vi.useFakeTimers();
+    const mid = midGameSave(content);
+    const before = { ...mid.warPath.stars };
+    delete before['wp.bronze.l06'];
+    primeWarPathSeen(before);
+    m = mount({ save: mid });
+    expect(m.q('.wp-home.is-ceremony')).not.toBeNull();
+    // The next node waits locked until it drops in.
+    expect(m.q('[data-testid="wp-node-wp.bronze.l07"]')!.getAttribute('data-state')).toBe('locked');
+    m.click('[data-testid="play"]');
+    expect(m.q('.wp-home.is-ceremony')).toBeNull();
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toMatchObject({ mode: 'warPath', level: 'wp.bronze.l07' });
+    m.unmount();
+    m = mount({ save: mid });
+    expect(m.q('.wp-home.is-ceremony')).toBeNull();
+  });
+
+  it('a feature that just opened plays its unlock pointer once (MR-40)', () => {
+    const n = firstLaunch();
+    m = mount({ save: { ...n, matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} }, warPath: { ...n.warPath, stars: { 'wp.stone.l01': 1 } } }, shell: true });
+    expect(m.q('[data-testid="unlock-army"]')).not.toBeNull();
+    expect(m.save.value.flags['ui-unlock.army']).toBe(true);
+    expect(text(m.q('[data-testid="unlock-army"]')!).split(/\s+/).length).toBeLessThanOrEqual(9);
+  });
+
+  it('Amber and Dust info panels say they cannot be bought (A15.3)', () => {
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="home-amber"]');
+    expect(text(m.q('[data-testid="currency-info-amber"]')!)).toContain("Amber can't be bought. It has no money value.");
+  });
+});
+
+describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
+  it('opens the best capsule and opens all', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
     m.click('[data-testid="open-one"]');
     expect(calls('openCapsule')[0]!.args).toEqual(['cap-mid-5']);
     m.click('[data-testid="open-all"]');
     expect(calls('openAllCapsules')).toHaveLength(1);
   });
 
-  it('locked nav items explain themselves instead of opening', () => {
-    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 0 } });
-    m.click('[data-testid="nav-warPlan"]');
-    expect(m.router.current.value.id).toBe('home');
-    expect(text(m.q('[data-testid="toasts"]')!)).toBe('Unlocks after the training match');
-    m.click('[data-testid="nav-collection"]');
-    expect(m.router.current.value.id).toBe('collection');
-  });
-
-  it('shows every entry after the training match, with one first-time pointer at a time (owner feedback 2026-09-28)', () => {
-    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 1, flags: {} } });
-    for (const id of ['warPlan', 'collection', 'capsules', 'customize', 'trophyRoad', 'conquest']) expect(m.q(`[data-testid="nav-${id}"]`)).not.toBeNull();
-    expect(m.qa('[data-testid^="pointer-"]').map((el) => el.getAttribute('data-testid'))).toEqual(['pointer-warPlan']);
-    expect(text(m.q('[data-testid="pointer-warPlan"]')!).split(/\s+/).length).toBeLessThanOrEqual(8);
-    m.click('[data-testid="nav-warPlan"]');
-    expect(m.router.current.value.id).toBe('warPlan');
-    expect(m.save.value.flags['ui-pointer.warPlan']).toBe(true);
-    flush(() => m!.router.back());
-    expect(m.qa('[data-testid^="pointer-"]').map((el) => el.getAttribute('data-testid'))).toEqual(['pointer-collection']);
-    m.click('[data-testid="nav-customize"]');
-    expect(m.router.current.value.id).toBe('customize');
-  });
-
-  it('while match 2 is next, Battle suggests Pip and starts the onboarding match (owner feedback 2026-09-28)', () => {
-    m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} } } });
-    expect(text(m.q('[data-testid="battle-suggested"]')!)).toContain('Pip');
-    m.click('[data-testid="battle-button"]');
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'tutorial', match: 2 });
-    expect(m.router.current.value.id).toBe('vs');
-  });
-
   it('claims a finished quest and rerolls another', () => {
-    m = mount({ state: 'mid' });
+    m = mount({ state: 'mid', routes: [{ id: 'progress' }] });
     m.click('[data-testid="quest-claim-0"]');
     expect(m.save.value.quests.daily[0]!.claimed).toBe(true);
     m.click('[data-testid="quest-reroll-1"]');
@@ -152,27 +255,16 @@ describe('Home', () => {
     expect(m.q('[data-testid="quest-reroll-1"]')).toBeNull();
   });
 
-  it('Battle leads to mode select, then VS with the opponent the app picked', () => {
-    m = mount({ state: 'mid' });
-    m.click('[data-testid="battle-button"]');
-    expect(m.router.current.value.id).toBe('modeSelect');
-    m.click('[data-testid="ladder-start"]');
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'full' });
-    expect(m.router.current.value.id).toBe('vs');
-  });
-});
-
-describe('Home details', () => {
   it('the Trophy Road bar shows the next reward (A9 #2)', () => {
-    m = mount({ state: 'mid' });
+    m = mount({ state: 'mid', routes: [{ id: 'progress' }] });
     // Mid-game best is 1,080: the next node is 1,100, which pays 100 Dust (A6.3 road table).
     expect(content.trophyRoad.nodes.find((n) => n.trophies === 1100)!.rewards).toEqual([{ kind: 'dust', amount: 100 }]);
     expect(text(m.q('[data-testid="home-road"]')!)).toContain('Next reward at 1,100');
     expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100');
   });
 
-  it('charges show "n/max" with no timer on Home (A15.13)', () => {
-    m = mount({ state: 'mid' });
+  it('charges show "n/max" with no timer (A15.13)', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
     const row = text(m.q('[data-testid="charges"]')!);
     expect(row).toMatch(/Charges \d+\/\d+/);
     expect(row).not.toContain('+1 in');
@@ -180,17 +272,17 @@ describe('Home details', () => {
 
   it('shows the Supply line only while an allowance is banked (A15.4)', () => {
     const n = newPlayerSave(content);
-    m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, matchesPlayed: 4, capsules: { ...n.capsules, dailyBank: 2 } } });
+    m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, matchesPlayed: 4, capsules: { ...n.capsules, dailyBank: 2 } }, routes: [{ id: 'capsules' }] });
     expect(text(m.q('[data-testid="supply"]')!)).toContain('Supply Capsule: 2 more matches');
     m.unmount();
-    m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, capsules: { ...n.capsules, dailyBank: 0 } } });
+    m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, capsules: { ...n.capsules, dailyBank: 0 } }, routes: [{ id: 'capsules' }] });
     expect(m.q('[data-testid="supply"]')).toBeNull();
   });
 
   it('shows the War Chest bar where the weekly quest was, and only 3 active quests (A15.5, A15.13)', () => {
     const mid = midGameSave(content);
     const extra = [...mid.quests.daily, ...mid.quests.daily].map((q) => ({ ...q, claimed: false }));
-    m = mount({ save: { ...mid, quests: { ...mid.quests, daily: extra, weekly: { ...mid.quests.weekly, progress: 13 } } } });
+    m = mount({ save: { ...mid, quests: { ...mid.quests, daily: extra, weekly: { ...mid.quests.weekly, progress: 13 } } }, routes: [{ id: 'progress' }] });
     expect(text(m.q('[data-testid="war-chest"]')!)).toContain(`War Chest 13/${content.quests.weekly.target}`);
     expect(m.qa('[data-testid^="quest-"][data-testid$="0"], [data-testid="quest-1"], [data-testid="quest-2"]').length).toBeGreaterThan(0);
     expect(m.q('[data-testid="quest-3"]')).toBeNull();
@@ -198,17 +290,11 @@ describe('Home details', () => {
   });
 
   it('the capsule info panel states each bank cap and that nothing earned is taken away (A15.3)', () => {
-    m = mount({ state: 'mid' });
+    m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
     m.click('[data-testid="odds-open"]');
     const info = text(m.q('[data-testid="capsule-info"]')!);
     expect(info).toContain('When full, it stops filling.');
     expect(text(m.q('[data-testid="odds-modal"]')!)).toContain('Nothing you have earned is ever taken away.');
-  });
-
-  it('Amber and Dust info panels say they cannot be bought (A15.3)', () => {
-    m = mount({ state: 'mid' });
-    m.click('.home-chipBtn');
-    expect(text(m.q('[data-testid="currency-info-amber"]')!)).toContain("Amber can't be bought. It has no money value.");
   });
 });
 

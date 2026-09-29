@@ -13,13 +13,20 @@ async function veteranHome(page: Page): Promise<void> {
     type C = { save: { value: Record<string, unknown> & { tutorial: object; trophies: object; flags: object } }; setSave(s: unknown, o?: unknown): void; showTitle(): void };
     const c = (window as unknown as { __agebornDev: { controller: C } }).__agebornDev.controller;
     const s = c.save.value;
+    const warPath = { ...(s['warPath'] as object), legacy: true };
     c.setSave(
-      { ...s, matchesPlayed: 30, arenaIndex: 2, tutorial: { ...s.tutorial, step: 4 }, trophies: { ...s.trophies, current: 450, best: 450 }, flags: { ...s.flags, 'tutorial.warPlanPrompt': true } },
+      { ...s, warPath, matchesPlayed: 30, arenaIndex: 2, tutorial: { ...s.tutorial, step: 4 }, trophies: { ...s.trophies, current: 450, best: 450 }, flags: { ...s.flags, 'tutorial.warPlanPrompt': true } },
       { immediate: true },
     );
     c.showTitle();
   });
-  await expect(page.getByTestId('battle-button')).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByTestId('play')).toBeVisible({ timeout: 20_000 });
+}
+
+/** Home's Modes panel, then "All options" for the full Mode select (ui-plan 4.1). */
+async function modeSelect(page: Page): Promise<void> {
+  await page.getByTestId('home-modes').click();
+  await page.getByTestId('modes-all').click();
 }
 
 test.describe('modes and replays', () => {
@@ -27,7 +34,7 @@ test.describe('modes and replays', () => {
     test.setTimeout(180_000);
     const problems = watchPage(page);
     await veteranHome(page);
-    await page.getByTestId('battle-button').click();
+    await modeSelect(page);
     // Arena 3: the format picker offers every ladder format (A6.3).
     const picker = page.getByTestId('ladder-format');
     await expect(picker.getByRole('radio')).toHaveCount(3);
@@ -57,13 +64,13 @@ test.describe('modes and replays', () => {
     await expect.poll(() => page.getByTestId('replay-time').textContent(), { timeout: 15_000 }).not.toBe(t0);
     await page.keyboard.press('Shift');
     await page.getByTestId('replay-back').click({ force: true });
-    await expect(page.getByTestId('battle-button')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('play')).toBeVisible({ timeout: 15_000 });
     expect(problems.errors).toEqual([]);
   });
 
   test('the Conquest board lists AI Generals', async ({ page }) => {
     await veteranHome(page);
-    await page.getByTestId('battle-button').click();
+    await modeSelect(page);
     await page.getByTestId('conquest-open').click();
     await expect(page.getByTestId('cq-board')).toBeVisible();
     await expect(page.getByTestId('cq-gen-pip')).toBeVisible();

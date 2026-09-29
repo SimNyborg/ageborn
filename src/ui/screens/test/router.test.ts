@@ -65,6 +65,7 @@ describe('router (DESIGN B11: signal-based, screen ids)', () => {
   it('knows which A9 screens this package renders', () => {
     expect([...WP9_SCREENS].sort()).toEqual(
       [
+        'capsules',
         'cardDetail',
         'collection',
         'conquest',
@@ -73,6 +74,7 @@ describe('router (DESIGN B11: signal-based, screen ids)', () => {
         'modeSelect',
         'pause',
         'profile',
+        'progress',
         'result',
         'settings',
         'trophyRoad',
@@ -80,7 +82,7 @@ describe('router (DESIGN B11: signal-based, screen ids)', () => {
         'warPlan',
       ].sort(),
     );
-    // A9 numbers 2-4, 6-7, 9-13, 15 and 17 (C2/WP9 tasks), plus Customize (owner feedback 2026-09-28).
-    expect(WP9_SCREENS.map((id) => SCREENS[id].a9).sort((a, b) => a - b)).toEqual([2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 15, 17, 19]);
+    // A9 numbers 2-4, 6-7, 9-13, 15 and 17 (C2/WP9 tasks), plus Customize (owner feedback 2026-09-28) and the Capsules and Progress tabs (ui-plan 2.4).
+    expect(WP9_SCREENS.map((id) => SCREENS[id].a9).sort((a, b) => a - b)).toEqual([2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 15, 17, 19, 20, 21]);
   });
 });

@@ -30,6 +30,7 @@ import {
 } from './council';
 import { CouncilBadge, PickBadge, TRACK_COLOR, TRACK_GLYPH } from './councilIcons';
 import { CoinIcon } from './icons';
+import { useFitLabel } from './fit';
 import './council.css';
 
 function cls(...parts: (string | false | null | undefined)[]): string {
@@ -88,6 +89,8 @@ export function CouncilButton(p: { c: HudCtx; v: CouncilView; open: boolean; onT
   const { c, v } = p;
   const cur = v.current;
   const self = useRef<HTMLButtonElement | null>(null);
+  const labelEl = useRef<HTMLSpanElement>(null);
+  useFitLabel(labelEl, () => (self.current ? self.current.clientWidth : 0), [c.compact, c.t('hud.council.buttonShort')]);
   // Completion: a springy pop (the sparks are CSS, keyed by `burst`).
   const lastBurst = useRef(p.burst);
   useEffect(() => {
@@ -150,7 +153,9 @@ export function CouncilButton(p: { c: HudCtx; v: CouncilView; open: boolean; onT
         {c.keys ? <kbd class="hud-key">G</kbd> : null}
       </button>
       <span class="hud-cbtn-label" data-tag>
-        {c.t('hud.council.buttonShort')}
+        <span ref={labelEl} class="hud-fit">
+          {c.t('hud.council.buttonShort')}
+        </span>
       </span>
     </div>
   );

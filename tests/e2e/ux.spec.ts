@@ -20,9 +20,10 @@ test.describe('usability: input reaches the battlefield', () => {
   test('a real click on your mount opens the turret menu; the lane is the canvas', async ({ page }) => {
     const problems = watchPage(page);
     await page.goto('./?dev=1&game=1');
-    await expect(page.getByTestId('title')).toBeVisible({ timeout: 20_000 });
+    // The War Path map is Home from the first launch; its Play starts match 1 through VS (ui-plan 6.4).
+    await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await page.getByTestId('play').click();
-    await expect(page.getByTestId('battle')).toBeVisible();
+    await expect(page.getByTestId('battle')).toBeVisible({ timeout: 20_000 });
 
     // Nothing full-screen above the canvas may swallow taps on the lane (audit #1).
     const top = await page.evaluate(() => {
@@ -45,6 +46,7 @@ test.describe('usability: input reaches the battlefield', () => {
   test('the first prompt shows a hand on the Bonker card and waits for the tap', async ({ page }) => {
     await page.goto('./?dev=1&game=1');
     await page.getByTestId('play').click();
+    await expect(page.getByTestId('battle')).toBeVisible({ timeout: 20_000 });
     const bubble = page.getByTestId('tutorial-bubble');
     await expect(bubble).toHaveAttribute('data-prompt', 'm1.sendBonker');
     await expect(page.getByTestId('tutorial-hand')).toBeVisible();

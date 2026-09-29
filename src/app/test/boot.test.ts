@@ -14,12 +14,13 @@ async function services(o: Partial<Services> = {}): Promise<Services> {
 }
 
 describe('boot (DESIGN B11)', () => {
-  it('runs the six steps in order and routes a first launch to the tutorial', async () => {
+  it('runs the six steps in order and routes a first launch to the War Path map', async () => {
     const s = await services();
     const idle: (() => void)[] = [];
     const b = await boot({ search: '', services: s, idle: (t) => idle.push(t) });
     expect(b.steps).toEqual(['save', 'settings', 'platform', 'pixi', 'art', 'audio', 'route']);
-    expect(b.route).toBe('tutorial');
+    // ui-plan 6.4: the War Path map is Home from the very first launch.
+    expect(b.route).toBe('home');
     expect(b.save).toBeNull();
     expect((s.platform as NonePlatform).initialized).toBe(true);
     expect((s.platform as NonePlatform).loaded).toBe(true);
@@ -29,7 +30,7 @@ describe('boot (DESIGN B11)', () => {
     idle.forEach((t) => t());
     await Promise.resolve();
     expect([...art.preloaded]).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
-    expect(s.eventLog.entries().at(-1)).toMatchObject({ kind: 'boot', id: 'tutorial' });
+    expect(s.eventLog.entries().at(-1)).toMatchObject({ kind: 'boot', id: 'home' });
   });
 
   it('applies the saved settings and routes a finished onboarding Home', async () => {

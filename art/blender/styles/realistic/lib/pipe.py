@@ -130,8 +130,15 @@ def load_layers(tmp, clip, i):
     return dict(rgb=rgb, lum=lum, t=ta, ab=ab, obj=np.maximum(O, 0))
 
 
-def build_layers(L, lref, dust=None, feet_px=None):
-    g = np.clip(L["lum"] / lref, 0, 1.0)
+# Team layer tone curve. The grey team layer is multiplied by the team colour at runtime, so its
+# tonal range IS the dyed surface's shading. A linear lum/lref mapping left dyed cloth and hides at
+# 0.7-0.97 grey: the tint read as flat plastic paint. A gamma deepens the dye and restores the folds,
+# AO and bump that the beauty pass rendered (art director review, docs: STYLE_GUIDE "Team colour").
+TEAM_GAMMA = 2.0
+
+
+def build_layers(L, lref, dust=None, feet_px=None, gamma=None):
+    g = np.clip(L["lum"] / lref, 0, 1.0) ** (TEAM_GAMMA if gamma is None else gamma)
     team = np.dstack([g * L["t"]] * 3 + [L["t"]])
     base = np.dstack([L["rgb"] * L["ab"][..., None], L["ab"]])
     d = None

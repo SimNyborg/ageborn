@@ -241,7 +241,10 @@
       "feats": "Feats",
       "record": "Record",
       "warPathStars": "War Path stars",
-      "open": "Open"
+      "open": "Open",
+      "captionAmber": "Amber: upgrades your cards",
+      "captionDust": "Dust: crafts the cards you want",
+      "progressStars": "{region} stars {n}/{max}"
     }
   }
 }

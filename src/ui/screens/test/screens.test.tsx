@@ -40,6 +40,8 @@ const result = (r: ResultFixture): Case => ({
 
 export const CASES: Case[] = [
   { name: 'home', screen: 'home', routes: () => [{ id: 'home' }] },
+  { name: 'capsules', screen: 'capsules', routes: () => [{ id: 'capsules' }] },
+  { name: 'progress', screen: 'progress', routes: () => [{ id: 'progress' }] },
   { name: 'modeSelect', screen: 'modeSelect', routes: () => [{ id: 'home' }, { id: 'modeSelect' }] },
   vs('general'),
   vs('commander'),
@@ -106,7 +108,7 @@ afterEach(() => {
 });
 
 describe('every WP9 screen renders in every fixture state', () => {
-  it('covers all 13 WP9 screens', () => {
+  it('covers all 15 WP9 screens', () => {
     const covered = new Set(CASES.map((c) => c.screen));
     expect([...covered].sort()).toEqual(Object.keys(SCREEN_COMPONENTS).sort());
   });
@@ -202,9 +204,11 @@ describe('AI labeling on every surface (A7.1)', () => {
     for (const r of rows) expect(r.querySelector('[data-testid="ai-badge"]')).not.toBeNull();
   });
 
-  it('Home opponent preview and the Conquest board carry the AI badge', () => {
+  it('the level plate, the Level preview and the Conquest board carry the AI badge', () => {
     m = mount({ state: 'mid' });
-    expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).not.toBeNull();
+    expect(m.q('[data-testid="level-plate"] [data-testid="ai-badge"]')).not.toBeNull();
+    m.click('[data-testid="level-plate"]');
+    expect(m.q('[data-testid="level-preview"] [data-testid="ai-badge"]')).not.toBeNull();
     m.unmount();
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'conquest' }] });
     for (const g of m.qa('[data-testid^="cq-gen-"]')) expect(g.querySelector('[data-testid="ai-badge"]')).not.toBeNull();

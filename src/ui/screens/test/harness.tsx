@@ -13,7 +13,8 @@ import type { Translate } from '../../components/kit';
 import { createRouter, type Route } from '../../router';
 import { FIXTURE_NOW, fixtureSave, type FixtureState } from '../fixtures/saves';
 import { createPreviewServices, type PreviewLog } from '../fixtures/services';
-import { ScreenHost } from '../ScreenHost';
+import { ScreenHost, type ScreenSlots } from '../ScreenHost';
+import { shellTabs, TAB_ROOTS } from '../warPath/shell';
 import type { UiServices } from '../services';
 import { installDom, text, type FakeDocument, type FakeElement } from './dom';
 
@@ -60,8 +61,13 @@ export function saveFor(state: HarnessState): SaveDoc {
   return state === 'raw' ? fakeSaveDoc() : fixtureSave(content, state);
 }
 
+/** The ScreenHost with the tab shell of the save (ui-plan 2.2), as the app mounts it. */
+function ShellHost(p: { env: Parameters<typeof ScreenHost>[0]['env']; slots: ScreenSlots }) {
+  return <ScreenHost env={p.env} slots={p.slots} shell={{ tabs: shellTabs(p.env.save.value, content), roots: TAB_ROOTS }} />;
+}
+
 export function mount(
-  o: { state?: HarnessState; routes?: Route[]; t?: Translate; save?: SaveDoc; patch?: Partial<UiServices>; now?: () => number } = {},
+  o: { state?: HarnessState; routes?: Route[]; t?: Translate; save?: SaveDoc; patch?: Partial<UiServices>; now?: () => number; shell?: boolean } = {},
 ): Mounted {
   const { document, container } = installDom();
   const save = signal<SaveDoc>(o.save ?? saveFor(o.state ?? 'mid'));
@@ -73,7 +79,7 @@ export function mount(
   const env = { save, content, t: o.t ?? EN, locale: 'en', now: o.now ?? (() => FIXTURE_NOW), router, services, portrait: null };
   const slots = { battle: (): ComponentChildren => <div data-testid="battle-slot" /> };
   act(() => {
-    render(<ScreenHost env={env} slots={slots} />, container as unknown as HTMLElement);
+    render(o.shell ? <ShellHost env={env} slots={slots} /> : <ScreenHost env={env} slots={slots} />, container as unknown as HTMLElement);
   });
   const q = (sel: string) => container.querySelector(sel);
   return {

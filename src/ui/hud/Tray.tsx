@@ -55,6 +55,7 @@ import {
   type HudPulse,
 } from './model';
 import { PowerButton } from './PowerButton';
+import { useFitLabel } from './fit';
 import { ReasonTip } from './Reason';
 import { StanceControl } from './Stance';
 import { usePortrait } from './usePortrait';
@@ -353,18 +354,18 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
           <ClassIcon id={klass} size={c.compact ? 16 : 22} title={t(CLASS_NAME_KEY[klass])} />
         </span>
         {waitS !== null && waitS > 0 ? (
-          <span class="hud-card-wait" data-testid={`hud-card-${card.slot}-wait`}>
+          <span class={cls('hud-card-wait', card.queued > 0 && 'is-shifted')} data-testid={`hud-card-${card.slot}-wait`}>
             {t('hud.wait', { s: waitS })}
           </span>
         ) : null}
         {card.queued > 0 ? (
-          <span key={card.queued} class="hud-card-queue" data-testid={`hud-card-${card.slot}-queued`} aria-label={t('hud.queued', { n: card.queued })}>
+          <span key={`q${card.queued}`} class="hud-card-queue" data-testid={`hud-card-${card.slot}-queued`} aria-label={t('hud.queued', { n: card.queued })}>
             {card.queued}
           </span>
         ) : null}
         {card.state === 'armyFull' ? <span class="hud-card-tag">{t('hud.armyFull')}</span> : null}
         {card.state === 'legendaryInField' ? <span class="hud-card-tag is-legendary">{t('hud.legendaryInField')}</span> : null}
-        {flash > 0 ? <i key={flash} class="hud-card-flash" aria-hidden="true" /> : null}
+        {flash > 0 ? <i key={`f${flash}`} class="hud-card-flash" aria-hidden="true" /> : null}
         {pressed ? (
           <svg class="hud-card-hold" viewBox="0 0 40 40" aria-hidden="true">
             <circle cx="20" cy="20" r="17" pathLength="100" />
@@ -426,10 +427,16 @@ function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; rearming: bool
   const { m, t } = c;
   const ready = m.me.evolveReady && !p.rearming && !m.me.ascending;
   const label = m.me.ascending ? t('hud.evolving') : ready ? t('hud.evolveReady') : t('hud.evolve');
+  // The visible tag stays short ("Evolve" / "Evolve!"); the spinning ring says it is evolving.
+  const tag = ready ? t('hud.evolveReady') : t('hud.evolve');
   const xp = p.rearming ? 0 : Math.max(0, Math.min(1, m.me.xpBp / 10000));
+  const tagEl = useRef<HTMLSpanElement>(null);
+  const btnEl = useRef<HTMLButtonElement>(null);
+  useFitLabel(tagEl, () => (btnEl.current ? btnEl.current.clientWidth : 0), [tag, c.compact]);
   return (
     <div class="hud-evolve-wrap">
       <button
+        ref={btnEl}
         class={cls('hud-evolve', ready && 'is-ready', p.pulse && ready && 'is-pulse', m.me.ascending && 'is-ascending', c.denied('evolve') && 'is-denied')}
         data-testid="hud-evolve"
         data-ready={ready}
@@ -448,7 +455,9 @@ function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; rearming: bool
         <i class="hud-evolve-ring" />
         <span class="hud-evolve-disc">{p.nextAge ? <AgeGlyph age={p.nextAge} size={c.compact ? 24 : 30} /> : null}</span>
         <span class="hud-evolve-label" data-tag>
-          {label}
+          <span ref={tagEl} class="hud-fit">
+            {tag}
+          </span>
         </span>
         {c.keys ? <kbd class="hud-key">E</kbd> : null}
       </button>

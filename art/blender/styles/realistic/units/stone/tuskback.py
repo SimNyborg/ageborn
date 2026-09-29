@@ -111,8 +111,10 @@ def build():
         if o.type == "MESH" and o.parent is not None and any(vg.name in (p + "head", p + "jaw") for vg in o.vertex_groups):
             C.xform(o, loc=(-HEAD_PIV[0], 0, -HEAD_PIV[1]))
             C.xform(o, loc=(HEAD_PIV[0], 0, HEAD_PIV[1]), scale=(HEAD_S, HEAD_S, HEAD_S))
-    tail = C.tube("tail", [(-39, 0, 57), (-43, 0, 52), (-45.5, 0, 46)], [1.1, 0.8, 0.6], coat, seg=8)
-    rig.skin(tail, [p + "tail", p + "tail2"], soft=2)
+    # the tail grows out of the rump (AD fix: it used to start 5 lu behind the body and read detached)
+    tail = C.tube("tail", [(-31, 0, 57.5), (-36, 0, 57.8), (-40.5, 0, 55.5), (-43.5, 0, 51), (-45.5, 0, 46)],
+                  [2.0, 1.4, 1.1, 0.8, 0.6], coat, seg=8)
+    rig.skin(tail, [p + "pelvis", p + "tail", p + "tail2"], soft=1.5, bias={p + "pelvis": 3.0})
     tuft = C.blobs("tuft", [((-46.5, 0, 43), (1.4, 1.2, 2.6))], bristle, res=0.3)
     C.displace(tuft, 0.6, 1.0)
     rig.rigid(tuft, p + "tail2")
@@ -130,11 +132,22 @@ def build():
             rig.rigid(h, bone)
 
     # team war blanket over the back, three lashed stone plates, girth ropes
-    blanket = C.blobs("blanket", [((0, 0, 63.0), (24, 12.6, 4.0)), ((-6, 0, 61.5), (18, 12.8, 4)),
-                                  ((0, -11.8, 52), (21, 2.0, 10)), ((0, 11.8, 52), (21, 2.0, 10))], hide, res=0.6)
-    C.displace(blanket, 0.6, 0.7)
+    BL = [((0, 0, 62.6), (24, 12.4, 3.0)), ((-6, 0, 61.2), (18, 12.6, 3.0)),
+          ((0, -11.9, 52), (21, 1.5, 10)), ((0, 11.9, 52), (21, 1.5, 10))]
+    blanket = C.blobs("blanket", BL, hide, res=0.55)
+    C.displace(blanket, 0.6, 0.9)
     C.team(blanket)
     rig.skin(blanket, [p + "body", p + "pelvis"], soft=6)
+    # AD pass: a dark leather hem proud of the blanket edge and a rawhide fringe, so the team blanket
+    # reads as a crafted, heavy object instead of a flat painted patch
+    hem = C.blobs("blanket_hem", [(c, M.hem_axes(a, 1.2)) for c, a in BL], leather, res=0.55)
+    rig.skin(hem, [p + "body", p + "pelvis"], soft=6)
+    fringe_m = M.rawhide("#6e5a46", name="fringe")
+    for sd in (-1, 1):
+        for k in range(11):
+            x = -18 + 3.6 * k
+            fr = C.tube("fringe", [(x, sd * 12.9, 42.0), (x - 0.5, sd * 13.1, 37.6)], [0.55, 0.32], fringe_m, seg=5)
+            rig.skin(fr, [p + "body", p + "pelvis"], soft=6)
     for i, x in enumerate((12, -2, -16)):
         pl = C.blobs(f"plate{i}", [((x, 0, 67.8 - 0.8 * abs(x) / 8), (6.4, 8.6, 2.2))], stone, res=0.5)
         C.displace(pl, 1.0, 0.45)

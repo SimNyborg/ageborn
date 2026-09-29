@@ -88,7 +88,7 @@ export function ProfileChip() {
 }
 
 /** The Amber and Dust info panels (A15.3): what it is for, and that it can't be bought. */
-function CurrencyInfo(p: { kind: 'amber' | 'dust'; onClose: () => void }) {
+export function CurrencyInfo(p: { kind: 'amber' | 'dust'; onClose: () => void }) {
   const { t } = useUi();
   const amber = p.kind === 'amber';
   return (
@@ -267,7 +267,7 @@ export function WarChestBar() {
 }
 
 /** The capsule info panel (A15.3): each bank's rule and cap, then the odds. No countdowns. */
-function CapsuleInfo(p: { onClose: () => void }) {
+export function CapsuleInfo(p: { onClose: () => void }) {
   const { save, content, t, locale } = useUi();
   const s = save.value;
   const r = bankRules(content);

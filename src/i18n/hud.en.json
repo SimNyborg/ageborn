@@ -1,6 +1,5 @@
 {
   "hud": {
-    "you": "You",
     "ai": "AI",
     "baseHp": "Base health",
     "xp": "Experience",
@@ -28,7 +27,6 @@
     "armyFull": "Army full",
     "legendaryInField": "Legendary in field",
     "army": "Army {pop}/{cap}",
-    "stanceLabel": "Stance: {stance}",
     "stance": {
       "charge": "Charge",
       "hold": "Hold",
@@ -99,10 +97,8 @@
     },
     "blocked": "Blocked at their gate: Evolve or use power.",
     "ageReached": "{age}!",
-    "need": "Need {n}",
     "wait": "{s}s",
     "info": {
-      "label": "About {name}",
       "hp": "Health {n}",
       "cost": "Cost {n}",
       "strongVs": "Strong vs",

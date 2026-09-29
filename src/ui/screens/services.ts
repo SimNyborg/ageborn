@@ -6,7 +6,7 @@
  *
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
-import type { AgeId, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId } from '@/contracts';
+import type { AgeId, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId, WarPathDifficulty } from '@/contracts';
 import type { MatchRequest } from '../router';
 
 export type WarPlan = SaveDoc['warPlans'][number];
@@ -95,6 +95,10 @@ export interface UiServices {
   equipCosmetic(e: CosmeticEquipPatch): ActionResult;
   /** Crafts a Time Capsule or Wardrobe Crate collection item with Dust (`meta.craftCosmetic`). */
   craftCosmetic(key: string): ActionResult;
+
+  // ---- War Path --------------------------------------------------------------------------------
+  /** Remembers the War Path difficulty (A18.7, default Normal; `meta.setWarPathDifficulty`). */
+  setWarPathDifficulty(d: WarPathDifficulty): void;
 
   // ---- progression ---------------------------------------------------------------------------
   /** Trophy Road (A6.3; `meta.claimRoadNode`). */

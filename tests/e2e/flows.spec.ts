@@ -138,11 +138,15 @@ test.describe('B13 flows', () => {
     const problems = watchPage(page);
     await pastOnboarding(page);
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByTestId('battle-button')).toBeVisible();
-    // A15.13: charges as "n/max" with no timer, the War Chest bar, at most 3 quests.
+    await expect(page.getByTestId('play')).toBeVisible();
+    // A15.13: charges as "n/max" with no timer (Capsules tab), the War Chest bar and at most 3 quests
+    // (Progress tab; ui-plan 2.2).
+    await page.getByTestId('tab-capsules').click();
     await expect(page.getByTestId('charges')).toContainText(/\d+\/\d+/);
+    await page.getByTestId('tab-progress').click();
     await expect(page.getByTestId('war-chest')).toContainText('War Chest');
     await expect(page.getByTestId('quest-3')).toHaveCount(0);
+    await page.getByTestId('tab-warPath').click();
     // A reload keeps the profile past onboarding: Home again, no tutorial battle.
     await page.goto('./');
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
@@ -168,7 +172,9 @@ test.describe('B13 flows', () => {
     test.setTimeout(180_000);
     await pastOnboarding(page);
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
-    await page.getByTestId('battle-button').click();
+    // Home's Modes panel, then "All options" for the full Mode select (ui-plan 4.1).
+    await page.getByTestId('home-modes').click();
+    await page.getByTestId('modes-all').click();
     // The Skirmish card (`mode-skirmish`) opens its setup dialog, which starts the match. Skirmish
     // unlocks after the onboarding matches (A8), so the profile must be past them when this is wired.
     await page.getByTestId('mode-skirmish').getByTestId('skirmish-open').click();

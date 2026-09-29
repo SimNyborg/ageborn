@@ -6,7 +6,7 @@
  * turret. Code motion on top of the frames: the 1 s build drop-in (a stretched fall over a growing
  * shadow, a landing squash that springs back, a white impact flash, dust, sparks and three bolts
  * set one after another),
- * a 120 ms recoil squash plus a two-frame head kick-back with a one-frame muzzle flash at the
+ * a 120 ms recoil shudder (3%, ui-plan 5.8) plus a two-frame head kick-back with a one-frame muzzle flash at the
  * sheet's per-frame muzzle anchor, an idle breathing bob and a slow head scan every few seconds
  * while nothing is being aimed at (so turrets never sit frozen next to lively units), the sell sink
  * with a poof, and the pulsing Modernise arrow. Modernise morphs: the old turret glows white,
@@ -267,7 +267,8 @@ export class AtlasTurretView implements TurretView {
           // a sheet whose build clip has landing frames already squashes (a 3D-rendered squash of
           // ~25%); stacking the full code squash on it flattened the turret into a pancake
           const s = springSettle(i / LAND_MS, 2, 4.5);
-          const k = (this.o.sheet.animations['build']?.length ?? 0) > 1 ? 0.05 : 0.28;
+          // Props and buildings settle with at most 3% on a landing (ui-plan 5.8, realistic weight).
+          const k = 0.03;
           sx = 1 + k - k * s;
           sy = 1 - k + k * s;
         }
@@ -296,9 +297,10 @@ export class AtlasTurretView implements TurretView {
     for (const p of [this.mount, this.head, this.whole]) p.flash.alpha = Math.min(1, this.flashA);
     if (this.recoilMs > 0) {
       this.recoilMs = Math.max(0, this.recoilMs - dtMs);
+      // MR-107: the barrel kick carries the recoil; the body only shudders (at most 3%, 5.8).
       const s = Math.sin((this.recoilMs / 120) * Math.PI);
-      sx *= 1 + 0.06 * s;
-      sy *= 1 - 0.06 * s;
+      sx *= 1 + 0.03 * s;
+      sy *= 1 - 0.03 * s;
     }
     this.body.position.set(0, oy);
     this.body.scale.set(this.facing * sx, sy);

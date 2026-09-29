@@ -249,7 +249,7 @@ describe('event mapper: turrets, bases, powers', () => {
 });
 
 describe('event mapper: evolve sequence (A11, A12, A13)', () => {
-  it('own evolve: riser at Ascension; at age up global 100 ms, trauma 0.4, white 120 ms, pillar, fanfare, key change, cheer, morph, wipe', () => {
+  it('own evolve: riser at Ascension; at age up global 100 ms, trauma 0.4, warm 35% flash 120 ms, pillar, fanfare, key change, cheer, morph, wipe', () => {
     const m = mapper();
     const start = m.map([ev('ascendStart', { side: 0, age: 'medieval' })], (id) => UNITS[id]);
     expect(pick(start, 'sound').map((s) => s.id)).toEqual(['evolve_riser']);
@@ -257,7 +257,9 @@ describe('event mapper: evolve sequence (A11, A12, A13)', () => {
     const up = m.map([ev('ageUp', { side: 0, age: 'medieval' })], (id) => UNITS[id]);
     expect(pick(up, 'freeze')).toEqual([{ a: 'freeze', ms: 100, exempt: false }]);
     expect(pick(up, 'trauma')).toMatchObject([{ amount: 0.4 }]);
-    expect(pick(up, 'screenFlash')[0]).toMatchObject({ ms: 120, color: 0xffffff });
+    // MR-80 / ui-plan 2.9 #9: a soft tinted flash, warm white at 35% at most, 120 ms.
+    expect(pick(up, 'screenFlash')[0]).toMatchObject({ ms: 120, color: 0xfff1d6 });
+    expect((pick(up, 'screenFlash')[0] as { alpha: number }).alpha).toBeLessThanOrEqual(0.35);
     expect(pick(up, 'sound').map((s) => s.id)).toEqual(['evolve_fanfare_medieval']);
     expect(pick(up, 'cheer')).toEqual([{ a: 'cheer', side: 0 }]);
     // quality-audio-evolve: the music ducks 8 dB under the riser for the whole Ascension and the new
