@@ -47,8 +47,8 @@ describe('quest progress from MatchStats (A6.7)', () => {
     expect(matchProgress(def('aa_heavy_kills_5'), facts({ stats: stats({ heavyKillsByAA: 2 }) }))).toBe(2);
     expect(matchProgress(def('win_with_legendary'), facts({ legendaryInPlan: true }))).toBe(1);
     expect(matchProgress(def('win_with_legendary'), facts({ legendaryInPlan: false }))).toBe(0);
-    expect(matchProgress(def('fast_base_kill'), facts({ stats: stats({ durationMs: 359_000 }) }))).toBe(1);
-    expect(matchProgress(def('fast_base_kill'), facts({ stats: stats({ durationMs: 359_000 }), outcome: { winner: 0, reason: 'finalBell', tick: 1, baseHpBp: [1, 0] } }))).toBe(0);
+    expect(matchProgress(def('fast_base_kill'), facts({ stats: stats({ durationMs: 449_000 }) }))).toBe(1);
+    expect(matchProgress(def('fast_base_kill'), facts({ stats: stats({ durationMs: 449_000 }), outcome: { winner: 0, reason: 'finalBell', tick: 1, baseHpBp: [1, 0] } }))).toBe(0);
     expect(matchProgress(def('win_after_last_stand'), facts({ stats: stats({ usedLastStand: true }) }))).toBe(1);
     expect(matchProgress(def('upgrade_2'), facts())).toBe(0);
     expect(matchProgress(def('daily_challenge_win'), facts({ mode: 'daily' }))).toBe(1);

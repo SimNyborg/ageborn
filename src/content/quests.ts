@@ -52,7 +52,8 @@ export const quests: QuestTables = {
     quest('base_damage_15000', 'baseDamage', 15000, [amber(100)]),
     quest('aa_heavy_kills_5', 'heavyKillsByAA', 5, [amber(150)]),
     quest('win_with_legendary', 'winsWithLegendary', 1, [{ kind: 'dust', amount: 100 }], { requiresLegendary: true }),
-    quest('fast_base_kill', 'fastBaseKill', 1, [amber(200)], { beforeMs: 360000 }),
+    // A18 pacing: Short War medians moved from ~4:45 to ~7:00, so 6:00 became 7:30
+    quest('fast_base_kill', 'fastBaseKill', 1, [amber(200)], { beforeMs: 450000 }),
     quest('win_after_last_stand', 'winsAfterLastStand', 1, [amber(200)], { fromMatch: 5 }),
     quest('upgrade_2', 'upgrades', 2, [amber(100)], { weight: 1 }),
     quest('daily_challenge_win', 'dailyChallengeWins', 1, [{ kind: 'ageCapsule' }]),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { devGrantResearch, devSetGold, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
+import { devGrantResearch, devSetPower, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
 import { arena, L, ofKind, Stamper, stun } from './helpers';
 
 describe('gold and XP (A2.3, A2.4)', () => {

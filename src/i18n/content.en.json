@@ -292,7 +292,7 @@
     "base_damage_15000": { "name": "Deal {n} damage to enemy bases" },
     "aa_heavy_kills_5": { "name": "Kill {n} Heavies with Anti-armor units" },
     "win_with_legendary": { "name": "Win with a Legendary in your War Plan" },
-    "fast_base_kill": { "name": "Destroy a base before 6:00" },
+    "fast_base_kill": { "name": "Destroy a base before 7:30" },
     "win_after_last_stand": { "name": "Win after using Last Stand" },
     "upgrade_2": { "name": "Upgrade {n} cards" },
     "daily_challenge_win": { "name": "Win a Daily Challenge" },

@@ -103,7 +103,7 @@ describe('modes with the real meta rules (WP7)', () => {
       const setup = setupForMode(services, veteran, req);
       const battle = createBattle(services, setup, { save: veteran, autopilot: true, hints: false });
       battle.session.start();
-      battle.session.fastForward(20 * 60 * 12);
+      battle.session.fastForward(20 * 60 * 18); // past the A18.3.4 Full War Final Bell (17:30)
       const r = battle.session.result;
       expect(r, 'match ended').not.toBeNull();
       const out = await finishMatch(services, veteran, setup, r!.input, r!.replay);
@@ -130,7 +130,7 @@ describe('each mode plays to the end and records its result (C2/WP11 DoD)', () =
       const setup = setupForMode(services, save, req);
       const battle = createBattle(services, setup, { save, autopilot: true, hints: false });
       battle.session.start();
-      battle.session.fastForward(20 * 60 * 12);
+      battle.session.fastForward(20 * 60 * 18); // past the A18.3.4 Full War Final Bell (17:30)
       const r = battle.session.result;
       expect(r, 'match ended').not.toBeNull();
       expect(r!.input.mode).toBe(req.mode);
