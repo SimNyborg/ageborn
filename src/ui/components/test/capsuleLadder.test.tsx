@@ -15,7 +15,7 @@ import { CapsuleIcon, DRUM_RINGS, TIER_COLOR, TIER_LADDER } from '../icons';
 import { UiKitContext, defaultKit } from '../kit';
 import { LadderNotice } from '../LadderNotice';
 import { OddsSheet } from '../OddsSheet';
-import { oddsModel } from '../oddsModel';
+import { oddsModel, skinRarityOddsBp } from '../oddsModel';
 
 const caps = content.capsules;
 
@@ -137,6 +137,27 @@ describe('the odds sheet for the longer ladder', () => {
     expect(m.notice).toBe(false);
   });
 
+  it('gives each skin tier the exact rarity split the roll uses (Wardrobe weights from skinMinRarity up)', () => {
+    const m = oddsModel(content.capsules, content.rarities, midGameSave(content), true);
+    const skins = content.rarities.skinOrder;
+    for (const r of m.tiers) {
+      const d = content.capsules.tiers[r.tier];
+      if (d.skinChanceBp === 0) {
+        expect(r.skinRarityBp, r.tier).toEqual([]);
+        continue;
+      }
+      const from = skins.indexOf(d.skinMinRarity);
+      const w = skins.filter((_, i) => i >= from).map((x) => content.rarities.skins[x].crateOddsBp);
+      const total = w.reduce((a, b) => a + b, 0);
+      expect(r.skinRarityBp.reduce((a, x) => a + x.bp, 0), r.tier).toBe(10000);
+      r.skinRarityBp.forEach((x, i) => expect(Math.abs(x.bp - (w[i]! * 10000) / total), `${r.tier} ${x.rarity}`).toBeLessThan(1));
+    }
+    expect(skinRarityOddsBp(content.rarities, 'epic')).toEqual([
+      { rarity: 'epic', bp: 8182 },
+      { rarity: 'legendary', bp: 1818 },
+    ]);
+  });
+
   it('says so while a bag from before the ladder finishes (bagSize 100)', () => {
     const s = midGameSave(content);
     const legacy = { ...s, capsules: { ...s.capsules, bag: [0, 1, 1, 2, 6], bagSize: 100 } };
@@ -157,16 +178,18 @@ describe('the odds sheet for the longer ladder', () => {
     const plat = text(el.querySelector('[data-testid="odds-extras-platinum"]')!);
     expect(plat).toContain('at least 2 Legendary');
     expect(plat).toContain('Second Legendary: 1 copy.');
-    expect(plat).toContain('A skin, Rare or better.');
+    expect(plat).toContain('A skin, Rare or better: Rare 78%, Epic 18%, and Legendary 4%.');
     const aeon = text(el.querySelector('[data-testid="odds-extras-aeon"]')!);
     expect(aeon).toContain('Second and third Legendary: 1 copy each.');
-    expect(aeon).toContain('A skin, Epic or better.');
-    expect(text(el.querySelector('[data-testid="odds-extras-gold"]')!)).toContain('30% chance of a skin.');
+    // The exact split the roll uses (A6.4 step 7, A15.3): the Wardrobe weights from Epic up, 1800 : 400.
+    expect(aeon).toContain('A skin, Epic or better: Epic 81.82% and Legendary 18.18%.');
+    expect(text(el.querySelector('[data-testid="odds-extras-gold"]')!)).toContain('30% chance of a skin: Rare 78%, Epic 18%, and Legendary 4%.');
     expect(text(el.querySelector('[data-testid="odds-extras-jade"]')!)).not.toContain('Legendary');
     const rules = text(el.querySelector('[data-testid="odds-ladder-rules"]')!);
     expect(rules).toContain('Each Legendary crest');
     expect(rules).toContain('summit strikes');
     expect(rules).toContain('furthest from maxing');
+    expect(rules).toContain('waiting in an unopened capsule or already in this capsule');
     expect(text(el.querySelector('[data-testid="odds-supply-aeon"]')!)).toContain('0.15%');
     // Tier colours are fills only (ui-plan 3.2): no text is painted in a tier colour.
     const painted = el.querySelectorAll('[style]').filter((x) => /(^|;)\s*color:/i.test(x.getAttribute('style') ?? ''));
@@ -183,9 +206,9 @@ describe('the odds sheet for the longer ladder', () => {
     act(() => (el.querySelector('[data-testid="capsule-ladder-notice-close"]') as FakeElement).click());
     expect(closed).toBe(1);
     el = show(<LadderNotice tiers={tiers} legacy={2} />);
-    expect(text(el.querySelector('[data-testid="capsule-ladder-legacy"]')!)).toContain('so 2 new Aeon Capsules are on your shelf');
+    expect(text(el.querySelector('[data-testid="capsule-ladder-legacy"]')!)).toContain('so 2 new Aeon Capsules were added to your shelf');
     el = show(<LadderNotice tiers={tiers} legacy={1} />);
-    expect(text(el.querySelector('[data-testid="capsule-ladder-legacy"]')!)).toContain('so a new Aeon Capsule is on your shelf');
+    expect(text(el.querySelector('[data-testid="capsule-ladder-legacy"]')!)).toContain('so a new Aeon Capsule was added to your shelf');
     expect(el.querySelector('[data-testid="capsule-ladder-notice-close"]')).toBeNull();
   });
 });

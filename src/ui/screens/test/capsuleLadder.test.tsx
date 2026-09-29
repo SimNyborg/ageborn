@@ -102,7 +102,7 @@ describe('the one-time "Two new capsule tiers" card (B8 step 4)', () => {
     const s = midGameSave(content);
     const flags = { ...s.flags, 'notice.capsuleLadder': true, 'capsule.legacySkillAeon.road': true };
     m = mount({ save: { ...s, flags }, routes: [{ id: 'capsules' }], patch: { legacySkillAeons: () => 1 } });
-    expect(text(m.q('[data-testid="capsule-ladder-legacy"]')!)).toContain('a new Aeon Capsule is on your shelf');
+    expect(text(m.q('[data-testid="capsule-ladder-legacy"]')!)).toContain('a new Aeon Capsule was added to your shelf');
   });
 
   it('is not shown without the flag', () => {

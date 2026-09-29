@@ -280,10 +280,10 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       id: 'fx.tele_sap',
       durationMs: 1500,
       loops: true,
-      sprites: [{ sprite: 'fx.p.petrify', life: 0, keys: [{ t: 0, x: -30, y: 46, sx: 0.1, sy: 1, a: 0 }, { t: 0.6, x: -30, y: 46, sx: 0.8, sy: 1.3, a: 0.7 }, { t: 1, x: -30, y: 46, sx: 1.3, sy: 1.6, a: 0.9 }], tint: 0x6e6254 }],
+      sprites: [{ sprite: 'fx.p.petrify', life: 0, keys: [{ t: 0, x: -24, y: 46, sx: 0.1, sy: 1.6, a: 0 }, { t: 0.6, x: -24, y: 46, sx: 1.2, sy: 2.4, a: 0.8 }, { t: 1, x: -24, y: 46, sx: 2, sy: 3, a: 1 }], tint: 0x4a3f35 }],
       particles: [
-        { sprite: 'fx.p.dust', rate: 14, life: [400, 700], box: [60, 2], speed: [20, 60], angle: [-120, -60], gravity: -10, scale: [0.6, 1.6], alpha: [0.8, 0], tint: 0xcfc4b0 },
-        { sprite: 'fx.p.rock', rate: 10, life: [250, 400], box: [60, 2], speed: [50, 110], angle: [-110, -70], gravity: 900, scale: [0.8, 0.6], alpha: [1, 0.5], spin: [-400, 400], tint: 0x8a7e70 },
+        { sprite: 'fx.p.dust', rate: 16, life: [400, 700], box: [60, 2], speed: [20, 60], angle: [-120, -60], gravity: -10, scale: [1, 2.4], alpha: [0.85, 0], tint: 0x9a8a74 },
+        { sprite: 'fx.p.rock', rate: 12, life: [250, 400], box: [60, 2], speed: [60, 130], angle: [-110, -70], gravity: 900, scale: [1.3, 1], alpha: [1, 0.5], spin: [-400, 400], tint: 0x6e665c },
         { sprite: 'fx.p.sparkHot', rate: 8, life: [120, 220], box: [40, 2], speed: [40, 120], angle: [-150, -30], gravity: 300, scale: [0.9, 0.3], alpha: [1, 0], align: true },
       ],
     },
@@ -529,20 +529,34 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       ],
     },
     {
-      // Undermine (Field Suppress), at the enemy's gate: the sappers fire their tunnel; the ground heaves.
+      // Undermine (Field Suppress), at the enemy's gate: the sappers fire their tunnel under the wall. A
+      // dark geyser of earth and broken props bursts up along the wall foot, then rains back down.
       // Anchored at the base front (44 lu above the ground), so ground-level parts sit at y 44.
       id: 'fx.undermine',
-      durationMs: 1600,
+      durationMs: 1800,
       sprites: [
-        { sprite: 'fx.p.petrify', life: 1500, keys: [{ t: 0, x: -30, y: 46, sx: 0.2, sy: 1.4, a: 0 }, { t: 0.08, x: -30, y: 46, sx: 1.4, sy: 2, a: 0.9 }, { t: 0.8, a: 0.8 }, { t: 1, x: -30, y: 46, sx: 1.4, sy: 2, a: 0 }], tint: 0x8a7a64 },
-        { ...bloom(3, 360, 0xfff0d8, 0.5), keys: [{ t: 0, y: 40, sx: 1, sy: 0.6, a: 0.6 }, { t: 1, y: 30, sx: 3.6, sy: 2, a: 0 }] },
-        { ...ring(5, 500, 0xf4ecd8, 0.3), keys: [{ t: 0, y: 44, sx: 1, sy: 0.3, a: 0.9 }, { t: 1, y: 44, sx: 5, sy: 1.5, a: 0 }] },
+        { sprite: 'fx.p.petrify', life: 1700, keys: [{ t: 0, x: -24, y: 46, sx: 0.3, sy: 2, a: 0 }, { t: 0.05, x: -24, y: 46, sx: 2.2, sy: 3.4, a: 1 }, { t: 0.8, a: 0.9 }, { t: 1, x: -24, y: 46, sx: 2.2, sy: 3.4, a: 0 }], tint: 0x4a3f35 },
+        { ...flash(2.2, 0xfff0d8, 80), keys: [{ t: 0, x: -24, y: 40, sx: 0.8, sy: 0.5, a: 0.9 }, { t: 1, x: -24, y: 36, sx: 2.4, sy: 1.2, a: 0 }] },
+        { sprite: 'fx.p.pillar', life: 700, keys: [{ t: 0, x: -24, y: 46, sx: 1.2, sy: 0.05, a: 0.95 }, { t: 0.18, x: -24, y: 46, sx: 2.6, sy: 0.9, a: 0.9 }, { t: 0.5, x: -24, y: 46, sx: 3.2, sy: 1.05, a: 0.55 }, { t: 1, x: -24, y: 46, sx: 3.8, sy: 1.1, a: 0 }], tint: 0x6e5a48 },
+        ...[-60, -36, -12, 12].map((x, i): SpriteSpec => ({
+          sprite: 'fx.p.smokeLobe',
+          life: 1300,
+          delay: 30 + i * 60,
+          tint: i % 2 === 0 ? 0x6e5a48 : 0x8a7a64,
+          keys: [
+            { t: 0, x, y: 44, sx: 0.8, sy: 0.6, a: 1 },
+            { t: 0.15, x: x + 2, y: 14, sx: 3.2, sy: 2.8, a: 0.95 },
+            { t: 0.5, x: x + 4, y: -12, sx: 4.2, sy: 3.8, a: 0.7 },
+            { t: 1, x: x + 6, y: -30, sx: 4.8, sy: 4.4, a: 0 },
+          ],
+        })),
+        { ...ring(6, 520, 0xd8ccb4, 0.4), keys: [{ t: 0, x: -24, y: 46, sx: 1, sy: 0.3, a: 0.9 }, { t: 1, x: -24, y: 46, sx: 6, sy: 1.6, a: 0 }] },
       ],
       particles: [
-        { sprite: 'fx.p.dust', count: 18, life: [700, 1200], box: [70, 2], speed: [60, 180], angle: [-115, -65], gravity: 60, drag: 1.4, scale: [1.2, 2.8], alpha: [0.9, 0], delay: [0, 500], tint: 0xcfc4b0 },
-        { sprite: 'fx.p.rock', count: 10, life: [600, 900], box: [60, 2], speed: [160, 320], angle: [-120, -60], gravity: 900, scale: [1.6, 1.4], alpha: [1, 0.4], spin: [-600, 600], delay: [0, 400], tint: 0x8a7e70 },
-        { sprite: 'fx.p.timber', count: 4, life: [700, 1000], box: [50, 2], speed: [180, 300], angle: [-125, -55], gravity: 900, scale: [1.4, 1.3], alpha: [1, 0.5], spin: [-700, 700], delay: [40, 300] },
-        { sprite: 'fx.p.smoke', count: 6, life: [1000, 1500], box: [60, 2], speed: [20, 50], angle: [-110, -70], gravity: -30, scale: [1, 2.4], alpha: [0.6, 0], delay: [200, 600], tint: 0xb9ad98 },
+        { ...clods(14, [220, 420]), box: [50, 2], tint: 0x6e5a48 },
+        { sprite: 'fx.p.rock', count: 10, life: [700, 1000], box: [50, 2], speed: [220, 400], angle: [-118, -62], gravity: 900, scale: [2, 1.6], alpha: [1, 0.4], spin: [-600, 600], delay: [0, 200], tint: 0x6e665c },
+        { sprite: 'fx.p.timber', count: 5, life: [800, 1100], box: [40, 2], speed: [240, 380], angle: [-125, -55], gravity: 900, scale: [1.8, 1.6], alpha: [1, 0.5], spin: [-700, 700], delay: [40, 200] },
+        { sprite: 'fx.p.dust', count: 10, life: [900, 1400], box: [60, 2], speed: [30, 90], angle: [-150, -30], gravity: 30, drag: 1.4, scale: [1.8, 3.6], alpha: [0.85, 0], delay: [200, 600], tint: 0x9a8a74 },
       ],
     },
 
@@ -761,12 +775,12 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 700,
       sprites: [
         { sprite: 'fx.p.beam', life: 80, keys: [{ t: 0, x: -420, y: -24, r: 3.3, sx: 42, sy: 0.35, a: 1 }, { t: 1, x: -420, y: -24, r: 3.3, sx: 42, sy: 0.1, a: 0 }], tint: 0xffffff },
-        bloom(1.2, 180, 0xfff6e2, 0.6),
-        flash(1.1, 0xffffff, 50),
-        ring(2, 240, 0xffffff, 0.9),
+        bloom(2.2, 220, 0xfff6e2, 0.7),
+        flash(1.8, 0xffffff, 50),
+        ring(3, 280, 0xffffff, 0.9),
         { sprite: 'fx.p.glint', life: 220, keys: [{ t: 0, sx: 0.5, sy: 0.5, a: 1 }, { t: 0.3, sx: 1.4, sy: 1.4, a: 1, r: 45 }, { t: 1, sx: 0.2, sy: 0.2, a: 0, r: 90 }] },
       ],
-      particles: [sparks(6, [160, 300], 'fx.p.spark', [-30, 30]), { ...dust(3, 0.6), delay: [0, 40] }],
+      particles: [sparks(8, [180, 340], 'fx.p.spark', [-30, 30]), { ...dust(5, 1.1), delay: [0, 40] }, { ...smoke(2, 0.9, [400, 700]), tint: 0xdcd8d2 }],
     },
 
     // -----------------------------------------------------------------------------------------
@@ -776,14 +790,14 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       // A small plasma pop (Point Defense and Drone Swarm blasts): mint core, magenta sparks.
       id: 'fx.plasma_pop',
       durationMs: 700,
-      sprites: [scorch(1, 500), bloom(1.8, 240, 0xd8fff0, 0.7), flash(1.1, 0xffffff, 50), ring(2.4, 260, 0x3af0b4, 0.35)],
+      sprites: [scorch(1.3, 500), bloom(2.4, 260, 0xd8fff0, 0.75), flash(1.5, 0xffffff, 50), ring(3.2, 280, 0x3af0b4, 0.35)],
       particles: [
         { sprite: 'fx.p.nanite', count: 4, life: [220, 380], speed: [100, 220], angle: [-170, -10], spread: 3, gravity: 200, scale: [1, 0.3], alpha: [1, 0], tint: 0xd8fff0 },
         { sprite: 'fx.p.spark', count: 3, life: [140, 240], speed: [120, 220], angle: [-160, -20], gravity: 300, scale: [0.9, 0.3], alpha: [1, 0], align: true, tint: 0xfbd6ec },
         { ...dust(2, 0.8), tint: 0xc9c2d4 },
       ],
     },
-    { id: 'fx.point_defense', durationMs: 900, fall: { sprite: 'fx.p.microMissile', count: 1, fromX: -70, fromY: -280, spreadX: 4, fallMs: 110, impact: 'fx.plasma_pop' } },
+    { id: 'fx.point_defense', durationMs: 900, fall: { sprite: 'fx.p.microMissile', count: 1, fromX: -70, fromY: -280, spreadX: 4, fallMs: 110, impact: 'fx.plasma_pop', scale: 2.4 } },
     {
       // Stasis Field (Home stun): a hex-cell dome snaps shut over the zone, hums, then shatters.
       id: 'fx.stasis_dome',
@@ -791,7 +805,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       sprites: [
         { sprite: 'fx.p.groundDisc', life: 2000, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.05, sx: 1.05, sy: 0.16, a: 0.4 }, { t: 0.9, sx: 1, sy: 0.15, a: 0.35 }, { t: 1, a: 0 }], tint: 0x3af0b4 },
         { sprite: 'fx.p.hexDome', life: 2000, sizeWith: 'width', keys: [{ t: 0, sx: 0.1, sy: 0.05, a: 0 }, { t: 0.04, sx: 1.1, sy: 1.12, a: 1 }, { t: 0.07, sx: 0.97, sy: 0.96 }, { t: 0.1, sx: 1, sy: 1 }, { t: 0.86, sx: 1, sy: 1, a: 1 }, { t: 0.9, sx: 1.04, sy: 1.03, a: 0.9 }, { t: 0.93, sx: 1.08, sy: 1.06, a: 0.2 }, { t: 1, sx: 1.1, sy: 1.08, a: 0 }] },
-        { sprite: 'fx.p.hexDome', life: 0, loop: 700, sizeWith: 'width', blendAdd: true, keys: [{ t: 0, sx: 1, sy: 1, a: 0.08 }, { t: 0.5, sx: 1.01, sy: 1.01, a: 0.22 }, { t: 1, sx: 1, sy: 1, a: 0.08 }] },
+        { sprite: 'fx.p.hexDome', life: 0, loop: 700, sizeWith: 'width', blendAdd: true, keys: [{ t: 0, sx: 1, sy: 1, a: 0.05 }, { t: 0.5, sx: 1.01, sy: 1.01, a: 0.14 }, { t: 1, sx: 1, sy: 1, a: 0.05 }] },
         { ...flash(2.4, 0xd8fff0, 80), keys: [{ t: 0, y: -20, sx: 1, sy: 1, a: 0.9 }, { t: 1, y: -20, sx: 3, sy: 3, a: 0 }] },
       ],
       particles: [
@@ -811,9 +825,9 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
           loop: 360 + i * 40,
           moveBy: 'zone',
           keys: [
-            { t: 0, x, y: -140 - (i % 3) * 16, sx: 1.8, sy: 1.8, r: -4 },
-            { t: 0.5, x: x + 2, y: -146 - (i % 3) * 16, sx: 1.8, sy: 1.8, r: 4 },
-            { t: 1, x, y: -140 - (i % 3) * 16, sx: 1.8, sy: 1.8, r: -4 },
+            { t: 0, x, y: -140 - (i % 3) * 16, sx: 2.4, sy: 2.4, r: -4 },
+            { t: 0.5, x: x + 2, y: -146 - (i % 3) * 16, sx: 2.4, sy: 2.4, r: 4 },
+            { t: 1, x, y: -140 - (i % 3) * 16, sx: 2.4, sy: 2.4, r: -4 },
           ],
         })),
       ],
@@ -822,7 +836,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { sprite: 'fx.p.nanite', rate: 8, life: [300, 500], box: [44, 10], sizeWith: 'zone', speed: [10, 30], angle: [60, 120], scale: [0.7, 0.2], alpha: [0.8, 0], tint: 0x3af0b4 },
       ],
     },
-    { id: 'fx.drone_swarm', durationMs: 900, fall: { sprite: 'fx.p.drone', count: 1, fromX: -40, fromY: -150, spreadX: 4, fallMs: 120, impact: 'fx.plasma_pop' } },
+    { id: 'fx.drone_swarm', durationMs: 900, fall: { sprite: 'fx.p.drone', count: 1, fromX: -40, fromY: -150, spreadX: 4, fallMs: 120, impact: 'fx.plasma_pop', scale: 1.8 } },
     {
       // EMP Blackout (Field Suppress), at the enemy's gate: a pulse dome bursts and the lights go out.
       id: 'fx.emp_blackout',
@@ -851,10 +865,10 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       loops: true,
       sprites: [
         { sprite: 'fx.p.shadow', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, a: 0 }, { t: 0.05, sx: 0.8, a: 0.5 }, { t: 0.93, sx: 0.8, a: 0.5 }, { t: 1, sx: 0.3, a: 0 }] },
-        { sprite: 'fx.p.ring', life: 0, loop: 600, sizeWith: 'zone', tint: 0xc9b8f0, keys: [{ t: 0, y: -44, sx: 0.36, sy: 0.14, a: 0 }, { t: 0.3, y: -44, sx: 0.26, sy: 0.1, a: 0.7 }, { t: 1, y: -44, sx: 0.04, sy: 0.02, a: 0 }] },
-        { sprite: 'fx.p.accretion', life: 0, loop: 900, keys: [{ t: 0, y: -44, sx: 2.3, sy: 0.62, a: 0.95 }, { t: 0.5, y: -44, sx: 2.2, sy: 0.7, a: 1 }, { t: 1, y: -44, sx: 2.3, sy: 0.62, a: 0.95 }] },
-        { sprite: 'fx.p.voidCore', life: 0, keys: [{ t: 0, y: -44, sx: 0.1, sy: 0.1, a: 0 }, { t: 0.03, y: -44, sx: 2.6, sy: 2.6, a: 1 }, { t: 0.05, y: -44, sx: 2, sy: 2 }, { t: 0.93, y: -44, sx: 2.1, sy: 2.1, a: 1 }, { t: 0.97, y: -44, sx: 2.8, sy: 2.8, a: 1 }, { t: 1, y: -44, sx: 0.1, sy: 0.1, a: 0 }] },
-        { sprite: 'fx.p.glow', life: 0, loop: 900, blendAdd: true, keys: [{ t: 0, y: -44, sx: 3.4, sy: 3.4, a: 0.25 }, { t: 0.5, y: -44, sx: 3.8, sy: 3.8, a: 0.4 }, { t: 1, y: -44, sx: 3.4, sy: 3.4, a: 0.25 }], tint: 0xc9b8f0 },
+        { sprite: 'fx.p.ring', life: 0, loop: 600, sizeWith: 'zone', tint: 0xc9b8f0, keys: [{ t: 0, y: -52, sx: 0.5, sy: 0.2, a: 0 }, { t: 0.3, y: -52, sx: 0.36, sy: 0.15, a: 0.8 }, { t: 1, y: -52, sx: 0.05, sy: 0.03, a: 0 }] },
+        { sprite: 'fx.p.accretion', life: 0, loop: 900, keys: [{ t: 0, y: -52, sx: 3.6, sy: 1, a: 0.95 }, { t: 0.5, y: -52, sx: 3.45, sy: 1.12, a: 1 }, { t: 1, y: -52, sx: 3.6, sy: 1, a: 0.95 }] },
+        { sprite: 'fx.p.voidCore', life: 0, keys: [{ t: 0, y: -52, sx: 0.1, sy: 0.1, a: 0 }, { t: 0.03, y: -52, sx: 4.2, sy: 4.2, a: 1 }, { t: 0.05, y: -52, sx: 3.3, sy: 3.3 }, { t: 0.93, y: -52, sx: 3.4, sy: 3.4, a: 1 }, { t: 0.97, y: -52, sx: 4.4, sy: 4.4, a: 1 }, { t: 1, y: -52, sx: 0.1, sy: 0.1, a: 0 }] },
+        { sprite: 'fx.p.glow', life: 0, loop: 900, blendAdd: true, keys: [{ t: 0, y: -52, sx: 5.4, sy: 5.4, a: 0.25 }, { t: 0.5, y: -52, sx: 6, sy: 6, a: 0.4 }, { t: 1, y: -52, sx: 5.4, sy: 5.4, a: 0.25 }], tint: 0xc9b8f0 },
       ],
       particles: [
         { sprite: 'fx.p.nanite', rate: 30, life: [500, 800], box: [55, 30], sizeWith: 'zone', attract: 6, speed: [20, 60], angle: [-180, 180], scale: [1.2, 0.3], alpha: [0.3, 1], tint: 0xe7dcff },
@@ -902,11 +916,11 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       durationMs: 1100,
       sprites: [
         scorch(1.8, 900),
-        { sprite: 'fx.p.pillar', life: 420, keys: [{ t: 0, sx: 0.4, sy: 2.4, a: 1 }, { t: 0.15, sx: 2.6, sy: 2.4, a: 0.9 }, { t: 1, sx: 0.2, sy: 2.4, a: 0 }], tint: 0x3fe0b0, blendAdd: true },
+        { sprite: 'fx.p.pillar', life: 420, keys: [{ t: 0, sx: 0.6, sy: 2.4, a: 1 }, { t: 0.15, sx: 3.6, sy: 2.4, a: 0.9 }, { t: 1, sx: 0.2, sy: 2.4, a: 0 }], tint: 0x3fe0b0, blendAdd: true },
         { sprite: 'fx.p.pillar', life: 360, keys: [{ t: 0, sx: 0.2, sy: 2.4, a: 1 }, { t: 0.15, sx: 1, sy: 2.4, a: 1 }, { t: 1, sx: 0.1, sy: 2.4, a: 0 }], tint: 0xffffff },
-        bloom(3.2, 420, 0xd8fff0, 0.8),
-        flash(2, 0xffffff, 70),
-        ring(4.4, 420, 0x3fe0b0, 0.35),
+        bloom(4.4, 460, 0xd8fff0, 0.8),
+        flash(2.8, 0xffffff, 70),
+        ring(6, 460, 0x3fe0b0, 0.35),
         { ...ring(6, 520, 0xffffff, 0.3), delay: 60 },
       ],
       particles: [

@@ -477,10 +477,12 @@ describe('event mapper: effect presets and sizes on the real content', () => {
 
   it('drops one parachute per trooper and puts buffs on the caster\'s 8 frontmost units (A2.9.6)', () => {
     expect(fxOf(runReal(cast('paratroopers', 0, 0)))).toMatchObject([{ effectId: 'fx.parachute', count: 3 }]);
+    // The 0.5 s telegraph draws a ring of light into the same units, then the buff glows on them.
     expect(pick(runReal(cast('royal_decree', 0, 0)), 'fxUnits')).toEqual([
+      { a: 'fxUnits', effectId: 'fx.tele_rally', side: 0, priority: 3, opts: { side: 0, dir: 1, zone: 0, durationMs: 500 }, max: 8 },
       { a: 'fxUnits', effectId: 'fx.decree_glow', side: 0, priority: 3, opts: { side: 0, durationMs: 8000 }, max: 8 },
     ]);
-    expect(pick(runReal(cast('nanite_surge', 1, 0)), 'fxUnits')).toMatchObject([{ effectId: 'fx.nanite_swarm', side: 1, opts: { durationMs: 6000 } }]);
+    expect(pick(runReal(cast('nanite_surge', 1, 0)), 'fxUnits').filter((f) => f.effectId !== 'fx.tele_rally')).toMatchObject([{ effectId: 'fx.nanite_swarm', side: 1, opts: { durationMs: 6000 } }]);
   });
 
   it('power rework cues (A2.9.10): a strike telegraphs with its lock alone; a field hits once, then rolls its pulses into one number; a silenced mount plays its power\'s jam', () => {

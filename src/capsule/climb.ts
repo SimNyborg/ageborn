@@ -58,7 +58,10 @@ export function ornamentScaleFor(stageScale: number): number {
 
 /** Crest and summit gem placement at ornament scale `k` (larger ones spread out and sit a little apart). */
 function ornamentLayout(k: number): { crestY: number; crestGap: number; crestScale: number; gemY: number; gemGap: number; gemScale: number } {
-  return { crestY: CREST_Y + (k - 1) * 4, crestGap: CREST_GAP * k, crestScale: k, gemY: GEM_Y - (k - 1) * 8, gemGap: GEM_GAP * k, gemScale: GEM_SCALE * k };
+  // Summit gems already sit proud (GEM_SCALE) and share the top with the crests, so they grow less and
+  // rise onto the cap's top face, clear of the larger crests below them.
+  const kg = 1 + (k - 1) * 0.6;
+  return { crestY: CREST_Y + (k - 1) * 4, crestGap: CREST_GAP * k, crestScale: k, gemY: GEM_Y - (k - 1) * 16, gemGap: GEM_GAP * kg, gemScale: GEM_SCALE * kg };
 }
 
 /** What a drum shows: its material, the crests stamped and the summit gems that have risen. */

@@ -164,14 +164,9 @@ function expectedDamage(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerC
   return d;
 }
 
-/** TEMP experiment knob (removed before hand-off). */
-export const POWER_EXP = { chipEngagedPerMille: Number((globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.AI_CHIP ?? 400), engagedOnly: false };
-
 /** A2.9.9 damage value of one target, milli-gold: kill-weighted, ×1.25 near the own gate. */
-export function targetValue(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerContext, v0?: View): number {
-  const dmg = expectedDamage(u, info, levelBp, c);
-  let v = damageValue(u.value, dmg, u.hpTotal);
-  if (v0 && dmg < u.hpTotal && POWER_EXP.chipEngagedPerMille !== 400 && engaged(u, v0, c.turretCover)) v = Math.trunc((POWER_EXP.chipEngagedPerMille * u.value * dmg) / u.hpTotal);
+export function targetValue(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerContext): number {
+  const v = damageValue(u.value, expectedDamage(u, info, levelBp, c), u.hpTotal);
   return u.p <= c.turretCover ? mulBp(v, NEAR_GATE_BP) : v;
 }
 
@@ -222,7 +217,7 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       const elig = eligibleIds(inArea, info.cap > 0 ? info.cap : inArea.length, []);
       const cands = inArea.filter((u) => elig.has(u.id));
       // Per-target value: kill-weighted damage, or for controls the A2.9.9 weight on engaged targets.
-      const worth = cands.map((u) => (info.control ? (engaged(u, v, c.turretCover) ? Math.trunc((u.value * MILLI * info.aiValueBp) / BP) : 0) : targetValue(u, info, lvl, c, v)));
+      const worth = cands.map((u) => (info.control ? (engaged(u, v, c.turretCover) ? Math.trunc((u.value * MILLI * info.aiValueBp) / BP) : 0) : targetValue(u, info, lvl, c)));
       let best = none;
       for (let p = band[0]; p <= band[1]; p += r.scanStep) {
         let value = 0;
@@ -249,7 +244,7 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       let count = 0;
       for (const u of inRun) {
         if (!elig.has(u.id)) continue;
-        value += targetValue(u, info, lvl, c, v);
+        value += targetValue(u, info, lvl, c);
         covered += u.value;
         count += 1;
       }

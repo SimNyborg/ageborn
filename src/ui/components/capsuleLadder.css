@@ -56,12 +56,16 @@
 }
 .ui-odds__rules li {
   display: grid;
-  grid-template-columns: 20px 1fr;
+  /* Wide enough for an 18 px drum with its "★n" crest badge; every rule's text starts at one line. */
+  grid-template-columns: 52px 1fr;
   gap: 8px;
   align-items: start;
   font-size: 13px;
   font-weight: 700;
   color: var(--ui-text-2);
+}
+.ui-odds__rules li > :first-child {
+  justify-self: center;
 }
 .ui-odds__extras li.is-legendary {
   padding: 6px 8px;
