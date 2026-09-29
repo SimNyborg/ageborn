@@ -1,256 +1,198 @@
-"""Destrier Knight: Medieval heavy cavalry, realistic-miniature style.
+"""Destrier Knight: Medieval Age heavy cavalry (lance charge), realistic style. heightLu 118.
 
-A knight in polished plate with a team surcoat, great helm with a team plume, team kite
-shield and a couched lance with a team pennon, on a dark bay destrier under a team
-caparison with a steel chanfron.
+A late 14th-century knight on a bay destrier. The horse: a heavy, deep-chested bay with black
+points (mane, tail, lower legs), a steel chanfron, a leather bridle and reins, and a team-dyed wool
+caparison over the body to below the belly with a dark wool hem and a fringe, a high war saddle
+with iron stirrups. The knight: a full plate harness (pauldrons, couters, vambraces, gauntlets,
+cuisses, poleyns, greaves, sabatons) under a team jupon, a visored bascinet (hounskull) with a
+mail aventail and a team plume, a team heater shield with a pale cross on the near arm and an ash
+lance with a steel vamplate and a team swallow-tailed pennon in the far hand.
+Idle: the horse breathes, shifts its head and swishes its tail; the knight sits tall. Walk: a
+rocking canter (body pitch, rider absorbing it). Attack: the horse gathers and half-rears as the
+knight draws the lance back (held), then lunges forward as the lance drives in level (smear), a
+held impact, recovery. Hit: the horse flinches and throws its head, the rider rocks back. Die: the
+horse buckles onto its knees and chest; the knight is thrown off behind it; dust.
 """
 import math
 
+from mathutils import Matrix
+
 from lib import biped as B
 from lib import core as C
+from lib import game as G
 from lib import horse as Hs
-from lib import pipe as P
-from lib import props
+from lib import mats as M
+from lib import medieval as MD
+from lib import motion as MO
 
 SLUG = "destrier_knight"
-HR = 66.0                      # rider height
-CANVAS = (206, 134)
-FEET = (96, 8)
-YAW = -14.0
+NAME = "Destrier Knight"
+AGE = "medieval"
+KIND = "unit"
+HEIGHT_LU = 118
+PX1 = 1.23
+SCALE1 = 1.5
+CANVAS = (248, 150)
+FEET = (112, 10)
+YAW = -12.0
+ANCHORS = {"head": (0, 112), "hitCenter": (0, 50)}
 
+HR = 62.0
 BODY = B.Biped(H=HR, bulk=1.05)
 BODY.root = "rider"
-BODY.offset = (-3.0, 0.0, 62.0 - B.PELV * HR)
-FIST = (0.36, -2.4)
-SHIELD_FORE = 100.0            # forearm angle the shield is modelled for
+BODY.offset = (-3.0, 0.0, 61.5 - B.PELV * HR)
+K = BODY.k
+FIST_B = (0.35 * K + BODY.offset[0], BODY.sw, 31.0 * K + BODY.offset[2])
+LANCE_F = 64.0 * K
+LANCE_B = 16.0 * K
+TRACKERS = {"lanceTip": ("hand_B", (FIST_B[0] + LANCE_F + 6.0 * K, FIST_B[1], FIST_B[2]))}
+SHIELD_FORE = 100.0
+EXTRA = {"plume": ((BODY.offset[0] - 0.5 * K, 0, BODY.offset[2] + 70.0 * K), (BODY.offset[0] - 7.0 * K, 0, BODY.offset[2] + 68.0 * K), "head"),
+         "pennon": ((FIST_B[0] + LANCE_F - 4.0 * K, FIST_B[1], FIST_B[2]), (FIST_B[0] + LANCE_F - 20.0 * K, FIST_B[1], FIST_B[2]), "hand_B")}
+
+STRIDE = 26.0
+DUTY = 0.42
+WALK = {"strideLu": STRIDE / DUTY * math.cos(math.radians(YAW))}
+ATK_T = [0, 170, 340, 548, 570, 750, 840, 1020, 1120]
+SMEAR_COLOR = "#c4bfb4"
+SMEAR_ALPHA = 0.5
+SMEAR_N = 26
 
 
 def build():
-    k = BODY.k
-    steel = C.mat("steel", "#8b9098", rough=0.36, metal=1.0, noise=0.1, nscale=0.9, bump=0.08)
-    dsteel = C.mat("dsteel", "#5d636b", rough=0.35, metal=1.0, noise=0.12, nscale=0.9, bump=0.1)
-    gold = C.mat("gold", "#b89a55", rough=0.3, metal=1.0, noise=0.08, nscale=1.0, bump=0.05)
-    leather = C.mat("leather", "#4f3e33", rough=0.55, noise=0.14, nscale=0.9, bump=0.3)
-    coat = C.mat("coat", "#4a3a31", rough=0.5, noise=0.1, nscale=0.35, bump=0.2, sheen=0.5, ramp2="#3c2f28")
-    mane = C.mat("mane", "#1d1a19", rough=0.6, noise=0.25, nscale=1.4, bump=0.8, sheen=0.4)
-    sock = C.mat("sock", "#2a2522", rough=0.6, noise=0.12, nscale=1.0, bump=0.3)
-    hoof = C.mat("hoof", "#2b2826", rough=0.4, noise=0.1, nscale=1.0, bump=0.1)
-    cloth = C.mat("team_cloth", "#999999", rough=0.85, noise=0.1, nscale=0.8, bump=0.35, team=True, sheen=0.6)
-    paint = C.mat("team_paint", "#999999", rough=0.4, noise=0.06, nscale=0.5, bump=0.06, team=True, coat=0.3)
-    wood = C.mat("lwood", "#7a6a58", rough=0.6, noise=0.14, nscale=0.6, bump=0.3, stripes=2.0)
-    dark = C.mat("slit", "#0e0d0d", rough=0.8, noise=0.0, bump=0)
-    eye = C.mat("heye", "#141110", rough=0.2, noise=0.0, bump=0)
+    k = K
+    coat = C.mat("coat", "#5a3e2e", rough=0.55, noise=0.08, nscale=0.5, bump=0.15, sheen=0.2, ramp2="#4a3226")
+    points = C.mat("points", "#211c1a", rough=0.6, noise=0.1, nscale=1.0, bump=0.2)
+    mane = M.hair("#1a1614", name="mane")
+    hoof = M.hoof()
+    st = MD.steel()
+    dst = MD.dark_steel()
+    mail = MD.mail()
+    brass = MD.brass()
+    leather = M.leather("#3e3028")
+    team = MD.team_wool()
+    paint = MD.team_paint()
+    hem = MD.wool("#2e2622", name="hem")
+    fringe_m = MD.wool("#3a302a", name="fringe")
+    cream = MD.linen("#cfc3a6", name="charge")
+    wood = M.wood("#9a8468", "#7e6a52", stripes=0.6, name="lance")
+    slit = M.dark("#0e0d0d", name="slit")
+    eye = M.eye("heye")
 
     bones = Hs.bones()
-    bones.update(BODY.bones(root_parent="h_body"))
+    bones.update(BODY.bones(extra=EXTRA, root_parent="h_body"))
     rig = C.Rig("knight_rig", bones, yaw_deg=YAW)
 
-    # ---------------- horse
-    Hs.body(rig, coat, sock, hoof, mane)
-    # hack: eyes use the dark eye material
-    cap = C.blobs("caparison", [
-        ((0, 0, 47.2), (20.2, 9.7, 11.1)),
-        ((15.5, 0, 46.8), (8.9, 9.5, 11.6)),
-        ((22.3, 0, 44.5), (5.5, 7.9, 8.6)),
-        ((17.5, 0, 42.0), (5.6, 9.4, 6.6)),
-        ((-15.5, 0, 48.8), (11.4, 10.2, 12.2)),
-        ((-18.5, 0, 54.8), (8.0, 9.0, 6.2)),
-        ((10, 0, 55.8), (8.4, 6.3, 6.0)),
-        ((1, 0, 38.0), (20.5, 9.9, 3.6)),
-        ((-15, 0, 37.5), (11.8, 10.5, 4.0)),
-        ((16, 0, 37.5), (9.0, 9.9, 4.0)),
-    ], cloth, res=0.6)
-    C.displace(cap, 0.45, 2.2)
+    # ---------------- the horse
+    Hs.body(rig, coat, points, hoof, mane)
+    # the caparison: a thin team cloth over the barrel and quarters, hanging below the belly
+    cap_els = [
+        ((0, 0, 48.2), (20.4, 9.7, 10.8)),
+        ((14.5, 0, 47.4), (8.6, 9.5, 11.2)),
+        ((-15.2, 0, 49.4), (11.2, 10.2, 11.6)),
+        ((-18.0, 0, 55.2), (7.8, 8.9, 5.8)),
+        ((9.5, 0, 56.0), (8.0, 6.5, 5.6)),
+        ((0.5, 0, 36.2), (20.0, 10.0, 5.0)),
+        ((-14.5, 0, 36.6), (11.6, 10.5, 5.4)),
+        ((14.5, 0, 37.0), (8.4, 10.0, 5.0)),
+    ]
+    cap = C.blobs("caparison", cap_els, team, res=0.6)
+    C.displace(cap, 0.7, 2.0)
     C.team(cap)
-    rig.skin(cap, ["h_body", "h_pelvis", "h_foreS_F", "h_foreS_B", "h_hindT_F", "h_hindT_B"], soft=4.0,
-             bias={"h_foreS_F": 5.0, "h_foreS_B": 5.0, "h_hindT_F": 5.0, "h_hindT_B": 5.0})
-    trim = C.blobs("cap_trim", [((1, 0, 34.9), (20.9, 10.1, 0.8)), ((-15, 0, 34.3), (12.1, 10.7, 0.8)),
-                                ((16, 0, 34.3), (9.2, 10.1, 0.8))], gold, res=0.5)
-    rig.skin(trim, ["h_body", "h_pelvis"], soft=4.0)
-    saddle = C.blobs("saddle", [((-2.5, 0, 59.2), (8.0, 6.2, 2.0)), ((-9.5, 0, 61.2), (1.8, 5.2, 3.2)),
-                                ((4.5, 0, 61.0), (1.8, 4.2, 2.8))], leather, res=0.45)
+    cap_bones = ["h_body", "h_pelvis", "h_foreS_F", "h_foreS_B", "h_hindT_F", "h_hindT_B"]
+    cap_bias = {"h_foreS_F": 5.0, "h_foreS_B": 5.0, "h_hindT_F": 5.0, "h_hindT_B": 5.0}
+    rig.skin(cap, cap_bones, soft=4.0, bias=cap_bias)
+    # the hem: the lower wrap copied DOWN 2.4 lu and pulled in, so only a dark band shows at the edge
+    hm = C.blobs("cap_hem", [((0.5, 0, 33.8), (20.6, 9.2, 5.0)), ((-14.5, 0, 34.2), (12.2, 9.7, 5.4)),
+                             ((14.5, 0, 34.6), (9.0, 9.2, 5.0))], hem, res=0.6)
+    rig.skin(hm, cap_bones, soft=4.0, bias=cap_bias)
+    for sd in (-1, 1):
+        for i in range(17):
+            x = -25.0 + 3.1 * i
+            fr = C.tube("fringe", [(x, sd * 10.0, 30.4), (x - 0.3, sd * 10.2, 27.2)], [0.45, 0.3], fringe_m, seg=5)
+            rig.skin(fr, cap_bones, soft=4.0, bias=cap_bias)
+    # the war saddle and stirrup leathers
+    saddle = C.blobs("saddle", [((-2.5, 0, 59.4), (8.2, 6.8, 2.0)), ((-10.0, 0, 62.4), (1.8, 5.6, 4.0)),
+                                ((5.0, 0, 62.0), (2.0, 5.0, 3.6))], leather, res=0.45)
     rig.skin(saddle, ["h_body", "h_pelvis"], soft=3.0)
-    chan = C.blobs("chanfron", [((36.9, 0, 64.8), (2.2, 3.35, 6.4), (0, -0.62, 0)),
-                                ((33.8, 0, 70.4), (3.2, 3.9, 2.4))], steel, res=0.4)
+    # chanfron, bridle, reins
+    chan = C.blobs("chanfron", [((36.9, 0, 64.8), (2.3, 3.45, 6.5), (0, -0.62, 0)), ((33.6, 0, 70.4), (3.2, 4.0, 2.4))],
+                   st, res=0.35)
     rig.rigid(chan, "h_head")
-    crin = C.blobs("crinet", [((20 + 10 * u, 0, 58.8 + 13.5 * u), (3.2, 4.2, 2.6), (0, 0.6, 0))
-                              for u in (0.1, 0.45, 0.8)], dsteel, res=0.5)
-    rig.skin(crin, ["h_body", "h_neck"], soft=2.0)
-    rein = C.tube("rein", [(39.5, -2.6, 60.0), (30, -3.6, 62), (18, -5.0, 64.5), (9.5, -5.2, 66.0)],
-                  [0.35] * 4, leather, seg=6)
+    rig.rigid(C.sphere("chanfron_spike", 0.9, brass, loc=(35.4, -2.9, 68.6)), "h_head")
+    for a, b in (((33.0, 0, 71.5), (39.8, 0, 58.2)), ((32.2, 0, 70.8), (35.4, 0, 60.4))):
+        for sd in (-1, 1):
+            rig.rigid(C.tube("bridle", [(a[0], sd * 3.4, a[2]), (b[0], sd * 3.2, b[2])], [0.3, 0.3], leather, seg=5), "h_head")
+    rein = C.tube("rein", [(39.5, -2.8, 59.6), (30, -4.0, 62), (18, -5.4, 63.5), (6.5, -5.4, 62.8)], [0.32] * 4, leather, seg=6)
     rig.skin(rein, ["h_head", "h_neck", "h_body"], soft=3.0)
+    for sd in (-1, 1):
+        sl = C.tube("stirrup_leather", [(-1.0, sd * 7.2, 59.0), (-0.6, sd * 9.8, 44.0)], [0.35, 0.35], leather, seg=5, flat=0.5)
+        rig.rigid(sl, "h_body")
 
-    # ---------------- rider: plate armour body
-    BODY.body(rig, steel, parts=("torso", "arms", "legs"))
-    S = lambda x, y, z: (x * k + BODY.offset[0], y * k, z * k + BODY.offset[2])
-    sw = BODY.sw / k
-    # great helm
-    helm = C.lathe("helm", [(0.0, 57.6 * k), (4.0 * k, 57.6 * k), (4.6 * k, 59.0 * k), (4.8 * k, 64.0 * k),
-                            (4.5 * k, 67.4 * k), (3.6 * k, 68.6 * k), (0.0, 69.0 * k)], steel, seg=24,
-                   scale=(1.12, 0.95, 1.0))
-    C.xform(helm, loc=(BODY.offset[0] + 0.8 * k, 0, BODY.offset[2]))
-    rig.rigid(helm, "head")
-    slit = C.box("slit", 1.2 * k, 8.4 * k, 0.7 * k, dark, bevel=0.15 * k, loc=S(5.2, 0, 64.2))
-    rig.rigid(slit, "head")
-    cross = C.box("helmcross", 0.9 * k, 1.2 * k, 7.0 * k, gold, bevel=0.2 * k, loc=S(5.8, 0, 61.4))
-    rig.rigid(cross, "head")
-    plume = C.blobs("plume", [(S(-0.5 - 2.2 * u, 0, 70.4 + 2.2 * math.sin(u * 2.4)),
-                               (3.0 - 0.9 * u, 1.9 - 0.5 * u, 2.2 - 0.4 * u)) for u in (0, 0.35, 0.7, 1.0, 1.35)],
-                    cloth, res=0.4)
-    C.displace(plume, 0.6, 0.5)
-    C.team(plume)
-    rig.rigid(plume, "head")
-    # surcoat: tabard over the torso, skirt over the thighs
-    sur = C.blobs("surcoat", [
-        (S(0.3, 0, 41.2), (4.4, 6.1, 6.0)),
-        (S(-0.2, 0, 47.8), (5.1, 7.1, 6.8)),
-        (S(2.0, 0, 50.0), (3.2, 6.6, 3.0)),
-        (S(-2.0, 0, 49.0), (3.2, 6.7, 5.6)),
-    ], cloth, res=0.45)
-    C.team(sur)
-    rig.skin(sur, ["hips", "spine", "chest"], soft=2.0 * k)
-    skirt = C.blobs("skirt", [(S(0, 0, 36.2), (5.4, 7.0, 3.0)), (S(3.0, -3.8, 30.5), (6.0, 3.2, 3.2)),
-                              (S(3.0, 3.8, 30.5), (6.0, 3.2, 3.2))], cloth, res=0.45)
-    C.displace(skirt, 0.5, 0.8)
-    C.team(skirt)
-    rig.skin(skirt, ["hips", "thigh_F", "thigh_B"], soft=2.5 * k)
-    belt = C.blobs("kbelt", [(S(-0.1, 0, 38.2), (5.0, 6.7, 0.9))], leather, res=0.4)
-    rig.skin(belt, ["hips", "spine"], soft=2 * k)
-    for s, y in (("F", -sw), ("B", sw)):
-        sg = -1 if s == "F" else 1
-        pa = C.blobs("pauldron_" + s, [(S(0, y + sg * 0.5, 54.8), (3.7, 3.5, 3.0)),
-                                       (S(0, y + sg * 0.8, 52.4), (3.3, 3.1, 1.7))], steel, res=0.4)
-        rig.skin(pa, ["upperarm_" + s], soft=2 * k)
-        cou = C.blobs("couter_" + s, [(S(-0.6, y, 43.4), (2.2, 2.3, 2.2))], dsteel, res=0.35)
-        rig.skin(cou, ["upperarm_" + s, "forearm_" + s], soft=1 * k)
-        hy = sg * BODY.hw / k
-        pol = C.blobs("poleyn_" + s, [(S(1.4, hy, 19.4), (2.3, 2.6, 2.3))], dsteel, res=0.35)
-        rig.skin(pol, ["thigh_" + s, "shin_" + s], soft=1 * k)
-        sab = C.blobs("sabaton_" + s, [(S(0.2, hy, 4.0), (2.2, 2.2, 2.6)), (S(3.4, hy, 1.6), (4.7, 2.2, 1.6))],
-                      dsteel, res=0.4)
-        rig.skin(sab, ["shin_" + s, "foot_" + s], soft=1.0 * k, bias={"shin_" + s: 1.0 * k})
+    # ---------------- the knight
+    ox, oy, oz = BODY.offset
+    MD.dressed_body(rig, BODY, M.skin("#a88468", name="rskin"), mail, mail, torso_mat=mail, glove=dst)
+    MD.plate_harness(rig, BODY, st, dst, leather)
+    MD.tabard(rig, BODY, team, hem_mat=hem, length=31.0, bulk=1.16, slit=True)
+    MD.belt(rig, BODY, leather, z=37.2, bulk=1.2, buckle=brass)
+    MD.coif(rig, BODY, mail, open_face=False)
+    MD.great_bascinet(rig, BODY, st, slit)
+    # a team plume on the crown, a follow-through bone
+    Sx = MD.S(k, BODY.offset)
+    pl = C.blobs("plume", [(Sx(-0.5 - 2.3 * u, 0, 71.0 + 1.6 * math.sin(u * 2.2)), (2.6 - 0.7 * u, 1.6 - 0.35 * u, 1.9 - 0.4 * u))
+                           for u in (0, 0.35, 0.7, 1.05, 1.4, 1.8)], team, res=0.3)
+    C.displace(pl, 0.45, 0.6)
+    C.team(pl)
+    rig.skin(pl, ["head", "plume"], soft=2.0, bias={"head": 2.0})
+    # stirrups on the feet
+    for s in ("F", "B"):
+        hy = (-1 if s == "F" else 1) * BODY.hw
+        rig.rigid(C.lathe("stirrup", [(1.5 * k, -0.4 * k), (1.9 * k, 0.0), (1.5 * k, 0.4 * k)], dst, seg=12,
+                          loc=(ox + 3.0 * k, hy, oz + 1.4 * k), rot=(math.pi / 2, 0, 0)), "foot_" + s)
 
-    # kite shield on the near forearm, modelled for a forearm at SHIELD_FORE degrees
-    elbow = (BODY.offset[0], BODY.offset[2] + B.ELBOW * HR)
-    sh_parts = kite_shield(k, paint, steel, gold)
-    for o in sh_parts:
-        C.xform(o, loc=(elbow[0] + 8.0 * k, -BODY.sw - 3.2 * k, elbow[1] - 1.0 * k))
-        # rotate about the elbow by -SHIELD_FORE (CCW) so the posed forearm brings it upright
-        o.data.transform(__import__("mathutils").Matrix.Translation((elbow[0], 0, elbow[1]))
-                         @ __import__("mathutils").Matrix.Rotation(math.radians(SHIELD_FORE), 4, "Y")
-                         @ __import__("mathutils").Matrix.Translation((-elbow[0], 0, -elbow[1])))
+    # the heater shield on the near forearm, facing the camera
+    parts = MD.heater_shield(k, paint, dst, charge_mat=cream, height=24.0, width=17.0, charge="cross")
+    MD.mount_on_forearm(parts, BODY, "F", SHIELD_FORE, (7.2 * k, 3.4 * k, 0.4 * k), yaw_deg=24.0, roll_deg=-8.0)
+    for o in parts:
         rig.rigid(o, "forearm_F")
 
-    # lance in the far fist, along +X
-    fist = (FIST[0] * k + BODY.offset[0], BODY.sw, (B.WRIST * 68 + FIST[1]) * k + BODY.offset[2])
-    lp = []
-    lp.append(C.lathe("lance", [(0.0, -14 * k), (1.3 * k, -14 * k), (1.35 * k, -4 * k), (1.1 * k, 0),
-                                (1.25 * k, 4 * k), (0.85 * k, 40 * k), (0.55 * k, 68 * k), (0.0, 69 * k)],
-                      wood, seg=12, rot=(0, math.pi / 2, 0)))
-    lp.append(C.lathe("vamplate", [(1.0 * k, 3.0 * k), (4.2 * k, 6.5 * k), (3.8 * k, 7.2 * k), (1.0 * k, 5.5 * k)],
-                      steel, seg=20, rot=(0, math.pi / 2, 0)))
-    lp.append(C.lathe("ltip", [(0.7 * k, 67 * k), (0.9 * k, 68 * k), (0.0, 74 * k)], steel, seg=10,
-                      rot=(0, math.pi / 2, 0)))
-    # swallow-tailed pennon hanging behind the tip
-    pen = pennon(k, cloth)
-    C.team(pen)
-    lp.append(pen)
+    # the lance in the far fist, along +X; a team swallow-tailed pennon behind the tip
+    fx, fy, fz = FIST_B
+    lp = [C.lathe("lance", [(0.0, -LANCE_B), (1.1 * k, -LANCE_B), (1.2 * k, -4 * k), (0.95 * k, 0), (1.1 * k, 4 * k),
+                            (0.8 * k, LANCE_F * 0.6), (0.55 * k, LANCE_F), (0.0, LANCE_F + 0.5 * k)], wood, seg=12, rot=(0, math.pi / 2, 0)),
+          C.lathe("vamplate", [(1.0 * k, 3.0 * k), (4.0 * k, 6.8 * k), (3.6 * k, 7.4 * k), (1.0 * k, 5.6 * k)], st, seg=20,
+                  rot=(0, math.pi / 2, 0)),
+          C.lathe("lancehead", [(0.62 * k, LANCE_F - 1.0 * k), (0.85 * k, LANCE_F), (0.0, LANCE_F + 6.0 * k)], st, seg=10,
+                  rot=(0, math.pi / 2, 0))]
     for o in lp:
-        C.xform(o, loc=fist)
+        C.xform(o, loc=(fx, fy, fz))
+        o["weapon"] = 1
         rig.rigid(o, "hand_B")
+    pts = [(-16.0 * k * u, 0.5 * k * math.sin(4 * u), 0.0) for u in (0.0, 0.25, 0.5, 0.75, 1.0)]
+    pen = C.tube("pennon", pts, [3.6 * k, 3.4 * k, 3.0 * k, 2.4 * k, 1.6 * k], team, seg=12, flat=0.1)
+    # the swallow tail: notch the free end
+    for v in pen.data.vertices:
+        if v.co.x < -12.0 * k and abs(v.co.y) < 1.4 * k:
+            v.co.x += 3.0 * k * (1 - abs(v.co.y) / (1.4 * k))
+    C.xform(pen, rot=(math.pi / 2, 0, 0))
+    C.xform(pen, loc=(fx + LANCE_F - 4.5 * k, fy, fz - 3.2 * k))
+    C.team(pen)
+    rig.skin(pen, ["hand_B", "pennon"], soft=2.5 * k, bias={"hand_B": 4.0 * k})
     return dict(rig=rig)
-
-
-def kite_shield(k, face_mat, rim_mat, boss_mat):
-    """Curved kite shield, point down, facing -Y, centred at the origin."""
-    import bmesh
-    Hh, W = 26.0 * k, 8.2 * k
-    rows, cols = 18, 10
-
-    def half_w(v):   # v: 0 top .. 1 point
-        if v < 0.12:
-            return W * (0.86 + 0.14 * math.sin(v / 0.12 * math.pi / 2))
-        return W * (1 - ((v - 0.12) / 0.88) ** 1.25)
-
-    def pt(u, v, off):
-        x = u * half_w(v)
-        z = Hh * 0.42 - v * Hh + (0.9 * k * (1 - u * u) if v < 0.02 else 0)
-        y = 2.6 * k * (x / W) ** 2 + off - 0.9 * k * math.sin(math.pi * min(v, 1))
-        return (x, y, z)
-
-    bm = bmesh.new()
-    grid = {}
-    for side, off in ((0, 0.0), (1, 0.9 * k)):
-        for j in range(rows + 1):
-            v = j / rows
-            for i in range(cols + 1):
-                u = -1 + 2 * i / cols
-                grid[(side, i, j)] = bm.verts.new(pt(u, v, off))
-    for side in (0, 1):
-        for j in range(rows):
-            for i in range(cols):
-                q = [grid[(side, i, j)], grid[(side, i + 1, j)], grid[(side, i + 1, j + 1)], grid[(side, i, j + 1)]]
-                bm.faces.new(q if side else list(reversed(q)))
-    ring = [(i, 0) for i in range(cols + 1)] + [(cols, j) for j in range(1, rows + 1)] + \
-           [(i, rows) for i in range(cols - 1, -1, -1)] + [(0, j) for j in range(rows - 1, 0, -1)]
-    for a, b in zip(ring, ring[1:] + ring[:1]):
-        try:
-            bm.faces.new([grid[(0, *a)], grid[(0, *b)], grid[(1, *b)], grid[(1, *a)]])
-        except ValueError:
-            pass
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    face = C.from_bm("shield", bm, face_mat, sharp_deg=60)
-    C.team(face)
-    # steel rim along the outline
-    pts = []
-    for j in range(rows + 1):
-        pts.append(pt(1, j / rows, -0.2 * k))
-    for j in range(rows, -1, -1):
-        pts.append(pt(-1, j / rows, -0.2 * k))
-    pts += [pt(u, 0, -0.2 * k) for u in (-0.5, 0.0, 0.5, 1.0)]
-    rim = C.tube("shield_rim", pts, [0.55 * k] * len(pts), rim_mat, seg=6, caps=False)
-    boss = C.sphere("boss", 1.6 * k, boss_mat, loc=(0, -1.3 * k, Hh * 0.05), scale=(1, 0.5, 1))
-    return [face, rim, boss]
-
-
-def pennon(k, mat):
-    import bmesh
-    bm = bmesh.new()
-    L, Hh = 14 * k, 6 * k
-    n, m = 10, 4
-    vs = {}
-    for i in range(n + 1):
-        for j in range(m + 1):
-            u, v = i / n, j / m
-            tail = 0.35 * Hh * (1 - abs(2 * v - 1)) * u      # swallow-tail notch
-            x = 60 * k - u * L + (tail if u > 0.6 else 0)
-            z = -v * Hh * (1 - 0.35 * u) - 0.8 * k
-            y = 1.2 * k * math.sin(u * 5.0 + v)
-            vs[(i, j)] = bm.verts.new((x, y, z))
-    for i in range(n):
-        for j in range(m):
-            bm.faces.new([vs[(i, j)], vs[(i + 1, j)], vs[(i + 1, j + 1)], vs[(i, j + 1)]])
-    o = C.from_bm("pennon", bm, mat)
-    sol = o.modifiers.new("thick", "SOLIDIFY")
-    sol.thickness = 0.4 * k
-    return o
 
 
 # ------------------------------------------------------------------------------ poses
 def rider_base(lean=0.0, b=0.0):
     return dict(root=(0.0, 0.0), hips=-4 + lean * 0.5, spine=4 + lean + 0.8 * b, chest=2 + lean * 0.5 - 0.5 * b,
-                neck=-4 - lean, head=-2 - lean * 0.5,
-                footF=(5.0, 7.5, 18.0), footB=(5.0, 7.5, 18.0))
+                neck=-4 - lean, head=-2 - lean * 0.5, footF=(4.5, 7.8, 16.0), footB=(4.5, 7.8, 16.0))
 
 
 def rider_apply(rig, R):
     BODY.apply(rig, R, rest=False)
-    # splay the thighs around the horse (abduct about the forward axis)
     for s, sg in (("F", -1), ("B", 1)):
         pb = rig.obj.pose.bones["thigh_" + s]
         e = pb.rotation_euler
-        pb.rotation_euler = (e[0], e[1], math.radians(30 * sg))
+        pb.rotation_euler = (e[0], e[1], math.radians(26 * sg))
 
 
 def horse_to_rider(HP, pw):
@@ -262,83 +204,81 @@ def horse_to_rider(HP, pw):
     return (v[0] + Hs.PIVOT[0] - BODY.offset[0], v[1] + Hs.PIVOT[1] - BODY.offset[2])
 
 
-def pose(ctx, clip, t):
-    rig = ctx["rig"]
-    rig.rest()
-    if clip == "idle":
-        a = 2 * math.pi * t / 8.0
-        HP = Hs.stand()
-        HP.update(h_root=(0, 0.3 * math.sin(a)), h_pitch=0.6 * math.sin(a), h_neck=-4 + 4 * math.sin(a - 0.7),
-                  h_head=6 + 3 * math.sin(a - 1.4), h_tail=6 * math.sin(a * 2 + 0.3), h_tail2=8 * math.sin(a * 2 - 0.5))
-        R = rider_base(0, math.sin(a))
-        R.update(absF=(28, SHIELD_FORE, 60), absB=(8, 70 + 2 * math.sin(a), 74 + 2 * math.sin(a - 0.5), 6))
-    elif clip == "walk":
-        HP, R = gallop(t / 10.0)
-    elif clip == "attack":
-        HP, R = attack(t)
-    elif clip == "hit":
-        HP, R = hit(t)
-    else:
-        HP, R = die(t)
-    Hs.apply(rig, HP)
-    rider_apply(rig, R)
+ARM_F = (26, SHIELD_FORE, 60)
 
 
-def gallop(ph):
+def idle(t):
+    a = 2 * math.pi * t / 900.0
+    HP = Hs.stand()
+    HP.update(h_root=(0, 0.35 * math.sin(a)), h_pitch=0.5 * math.sin(a), h_neck=-4 + 4 * math.sin(a - 0.7),
+              h_head=6 + 4 * math.sin(a - 1.4), h_tail=5 * math.sin(a + 0.3), h_tail2=8 * math.sin(a - 0.5))
+    R = rider_base(0, math.sin(a))
+    R.update(absF=(ARM_F[0], ARM_F[1] + 1.5 * math.sin(a - 0.6), ARM_F[2]),
+             absB=(8, 64 + 2 * math.sin(a), 66 + 2 * math.sin(a - 0.5), 6),
+             bones={"plume": (4 * math.sin(a - 1.2), 6 * math.sin(a - 0.8)), "pennon": (5 * math.sin(a - 1.6), 14 * math.sin(a - 1.0))})
+    return HP, R
+
+
+def canter(t):
+    ph = (t / 800.0) % 1.0
     HP = {}
     phases = {"hind_B": 0.0, "hind_F": 0.1, "fore_B": 0.32, "fore_F": 0.42}
     for leg, off in phases.items():
         kind = leg.split("_")[0]
-        HP[leg] = Hs.gallop_leg(ph - off, kind, stride=34.0, lift=16.0 if kind == "fore" else 12.0) + (0.0,)
-    # body: rocking horse motion, highest in the gathered suspension
+        HP[leg] = Hs.gallop_leg(ph - off, kind, stride=STRIDE, lift=13.0 if kind == "fore" else 10.0, duty=DUTY) + (0.0,)
     rock = math.sin(2 * math.pi * (ph - 0.3))
-    HP["h_root"] = (0.0, -1.2 + 2.6 * math.sin(2 * math.pi * (ph - 0.55)))
-    HP["h_pitch"] = 5.0 * rock
-    HP["h_neck"] = -8 - 9 * rock
+    HP["h_root"] = (0.0, -1.0 + 2.2 * math.sin(2 * math.pi * (ph - 0.55)))
+    HP["h_pitch"] = 4.5 * rock
+    HP["h_neck"] = -8 - 8 * rock
     HP["h_head"] = 8 + 6 * math.sin(2 * math.pi * (ph - 0.1))
     HP["h_tail"] = 20 + 8 * math.sin(2 * math.pi * (ph + 0.2))
     HP["h_tail2"] = 12 + 10 * math.sin(2 * math.pi * (ph + 0.05))
     R = rider_base(lean=6)
-    # the rider's seat absorbs the motion: counter-rotate the torso a little
     R["hips"] -= 2.5 * rock
     R["spine"] += 2.0 * rock
     R["root"] = (0.0, -0.8 * math.sin(2 * math.pi * (ph - 0.62)))
-    R.update(absF=(30, SHIELD_FORE, 60), absB=(14, 88, 16 + 3 * rock, 6))
+    R.update(absF=(ARM_F[0] + 2, ARM_F[1], ARM_F[2]), absB=(14, 84, 14 + 3 * rock, 6),
+             bones={"plume": (-10 - 6 * rock, 8 * math.sin(2 * math.pi * ph)), "pennon": (-6 - 6 * rock, 16 * math.sin(2 * math.pi * ph - 1.0))})
     return HP, R
 
 
 def attack(t):
     std = Hs.stand()
     ready_h = dict(std, h_neck=-4, h_head=6, h_tail=6)
-    ready_r = dict(rider_base(3), absF=(28, SHIELD_FORE, 60), absB=(10, 80, 30, 6))
-    rear_h = dict(h_root=(-5.0, 7.0), h_pitch=24, h_hip=-9, h_neck=-14, h_head=18, h_tail=26, h_tail2=18,
-                  fore_F=(26.0, 30.0, -70.0, 28.0), fore_B=(22.0, 24.0, -60.0, 20.0),
+    ready_r = dict(rider_base(3), absF=ARM_F, absB=(10, 80, 26, 6), bones={"plume": 0, "pennon": 0})
+    gather_h = dict(std, h_root=(-3.0, 1.5), h_pitch=8, h_hip=-4, h_neck=-10, h_head=14, h_tail=16, h_tail2=10,
+                    fore_F=(24.0, 8.0, -20.0, 10.0))
+    gather_r = dict(rider_base(-2), absF=(28, SHIELD_FORE, 60), absB=(-6, 58, 24, 8), bones={"plume": (8, 0), "pennon": (10, 0)})
+    rear_h = dict(h_root=(-5.0, 7.0), h_pitch=22, h_hip=-9, h_neck=-14, h_head=18, h_tail=26, h_tail2=18,
+                  fore_F=(26.0, 28.0, -70.0, 28.0), fore_B=(22.0, 22.0, -60.0, 20.0),
                   hind_F=(-13.0, 0.6, Hs.PASTERN_H, 0.0), hind_B=(-15.0, 0.6, Hs.PASTERN_H, 0.0))
-    rear_r = dict(rider_base(10), absF=(30, SHIELD_FORE, 60), absB=(-20, 50, 26, 8))
+    rear_r = dict(rider_base(10), absF=(30, SHIELD_FORE, 60), absB=(-22, 48, 26, 8), bones={"plume": (16, 0), "pennon": (18, 4)})
+    rear2_h = dict(rear_h, h_pitch=24, h_root=(-5.4, 7.8))
+    rear2_r = dict(rear_r, absB=(-26, 44, 28, 8))
     lunge_h = dict(h_root=(8.0, -3.5), h_pitch=-7, h_hip=2, h_neck=6, h_head=-4, h_tail=14, h_tail2=10,
                    fore_F=(38.0, 0.6, Hs.PASTERN_F + 10, 0.0), fore_B=(33.0, 0.6, Hs.PASTERN_F + 6, 0.0),
                    hind_F=(-14.0, 0.6, Hs.PASTERN_H + 18, 0.0), hind_B=(-20.0, 1.6, Hs.PASTERN_H - 30, 0.0))
-    lunge_r = dict(rider_base(16), absF=(34, SHIELD_FORE, 60), absB=(66, 88, -4, 6))
+    lunge_r = dict(rider_base(16), absF=(34, SHIELD_FORE, 60), absB=(66, 88, -4, 6), bones={"plume": (-18, 0), "pennon": (-20, -6)})
     hold_h = dict(lunge_h, h_root=(9.0, -4.2), h_pitch=-8)
-    hold_r = dict(lunge_r, spine=4 + 18, absB=(72, 90, -3, 6))
+    hold_r = dict(lunge_r, spine=4 + 18, absB=(72, 90, -3, 6), bones={"plume": (-10, 4), "pennon": (-8, 10)})
     rec_h = dict(ready_h, h_root=(4.0, -1.0), h_pitch=-2,
                  fore_F=(28.0, 0.6, Hs.PASTERN_F, 0.0), fore_B=(25.0, 0.6, Hs.PASTERN_F, 0.0))
-    rec_r = dict(rider_base(6), absF=(28, SHIELD_FORE, 60), absB=(30, 86, 10, 6))
-    kh = [(0, ready_h), (1.5, rear_h), (3.0, dict(rear_h, h_pitch=27, h_root=(-5.5, 8.5))), (3.6, rear_h),
-          (4.6, lunge_h), (5.2, hold_h), (6.4, hold_h), (8.5, rec_h), (13, ready_h)]
-    kr = [(0, ready_r), (1.5, rear_r), (3.0, dict(rear_r, absB=(-26, 44, 30, 8))), (3.6, rear_r),
-          (4.6, lunge_r), (5.2, hold_r), (6.4, hold_r), (8.5, rec_r), (13, ready_r)]
+    rec_r = dict(rider_base(6), absF=ARM_F, absB=(30, 86, 10, 6), bones={"plume": (6, 0), "pennon": (4, 0)})
+    kh = [(0, ready_h), (170, gather_h), (340, rear_h), (525, rear2_h), (570, lunge_h), (620, hold_h), (840, hold_h),
+          (1020, rec_h), (1230, ready_h)]
+    kr = [(0, ready_r), (170, gather_r), (340, rear_r), (525, rear2_r), (570, lunge_r), (620, hold_r), (840, hold_r),
+          (1020, rec_r), (1230, ready_r)]
     return B.keyed(kh, t), B.keyed(kr, t)
 
 
 def hit(t):
     std = dict(Hs.stand(), h_neck=-4, h_head=6)
-    flinch = dict(std, h_root=(-4.0, 1.2), h_pitch=6, h_neck=-14, h_head=20, h_tail=20,
-                  fore_F=(22.0, 3.0, -10.0, 6.0))
-    r0 = dict(rider_base(3), absF=(28, SHIELD_FORE, 60), absB=(10, 80, 30, 6))
-    r1 = dict(rider_base(-10), neck=10, head=16, absF=(20, SHIELD_FORE - 10, 60), absB=(-10, 60, 50, 6))
-    kh = [(0, std), (1, flinch), (2.2, dict(flinch, h_root=(-3.0, 0.8), h_head=10)), (4, std)]
-    kr = [(0, r0), (1, r1), (2.2, dict(r1, head=6)), (4, r0)]
+    flinch = dict(std, h_root=(-4.0, 1.2), h_pitch=6, h_neck=-14, h_head=20, h_tail=20, fore_F=(22.0, 3.0, -10.0, 6.0))
+    r0 = dict(rider_base(3), absF=ARM_F, absB=(10, 80, 26, 6), bones={"plume": 0, "pennon": 0})
+    r1 = dict(rider_base(-10), neck=10, head=16, absF=(20, SHIELD_FORE - 10, 60), absB=(-10, 60, 44, 6),
+              bones={"plume": (18, 6), "pennon": (16, 8)})
+    kh = [(0, std), (55, flinch), (140, dict(flinch, h_root=(-3.0, 0.8), h_head=10)), (310, std)]
+    kr = [(0, r0), (55, r1), (140, dict(r1, head=6, bones={"plume": (-6, 0), "pennon": (-6, 0)})), (310, r0)]
     return B.keyed(kh, t), B.keyed(kr, t)
 
 
@@ -353,44 +293,48 @@ def die(t):
                 hind_F=(-6.0, 0.6, -60.0, 20.0), hind_B=(-8.0, 0.6, -64.0, 20.0))
     bounce = dict(down, h_root=(2.0, -25.5), h_pitch=-1, h_neck=8, h_head=20)
     rest = dict(down, h_root=(2.0, -27.4), h_neck=24, h_head=38)
-    kh = [(0, std), (1, k1), (2.6, kneel), (4.0, down), (4.8, bounce), (6.0, rest), (11, rest)]
+    kh = [(0, std), (60, k1), (210, kneel), (350, down), (420, bounce), (500, rest), (990, rest)]
     HP = B.keyed(kh, t)
-    # rider: jolts, pitches back and falls off behind the horse onto the ground
     pz = B.PELV * HR
-    seat = (0.0, pz)
-    r0 = dict(rider_base(3), absF=(28, SHIELD_FORE, 60), absB=(10, 80, 30, 6))
-    r0["pel"] = seat
-    r1 = dict(r0, pel=(-1.0, pz + 1.0), spine=-8, neck=10, head=16, absB=(-20, 50, 60, 6))
+    r0 = dict(rider_base(3), absF=ARM_F, absB=(10, 80, 26, 6), bones={"plume": 0, "pennon": 0})
+    r0["pel"] = (0.0, pz)
+    r1 = dict(r0, pel=(-1.0, pz + 1.0), spine=-8, neck=10, head=16, absB=(-20, 50, 60, 6), bones={"plume": (20, 0), "pennon": (20, 0)})
     world = lambda p: horse_to_rider(HP, p)
     r2 = dict(r1, root_r=38, pel=world((-22.0, 50.0)), spine=-4, absB=(120, 140, 120, 10), absF=(120, 150, 60))
-    r3 = dict(r2, root_r=78, pel=world((-40.0, 16.0)), footF=world((-12.0, 26.0)) + (40.0,),
-              footB=world((-14.0, 24.0)) + (40.0,))
-    r4 = dict(r3, root_r=88, pel=world((-44.0, 5.0)), footF=world((-24.0, 12.0)) + (60.0,),
-              footB=world((-26.0, 8.0)) + (60.0,), absB=(200, 230, 160, 10), absF=(200, 230, 60))
+    r3 = dict(r2, root_r=78, pel=world((-40.0, 16.0)), footF=world((-12.0, 26.0)) + (40.0,), footB=world((-14.0, 24.0)) + (40.0,))
+    r4 = dict(r3, root_r=88, pel=world((-44.0, 5.0)), footF=world((-24.0, 12.0)) + (60.0,), footB=world((-26.0, 8.0)) + (60.0,),
+              absB=(200, 230, 160, 10), absF=(200, 230, 60), bones={"plume": (40, 0), "pennon": (10, 0)})
     r5 = dict(r4, root_r=84, pel=world((-44.5, 6.8)), head=-12)
     r6 = dict(r4, pel=world((-45.0, 5.0)), footF=world((-22.0, 4.0)) + (70.0,), footB=world((-24.0, 3.0)) + (70.0,))
     for r in (r1, r2):
         r.pop("footF", None), r.pop("footB", None)
-    kr = [(0, r0), (1, r1), (2.4, r2), (3.4, r3), (4.2, r4), (5.0, r5), (6.2, r6), (11, r6)]
+    kr = [(0, r0), (60, r1), (200, r2), (290, r3), (350, r4), (420, r5), (500, r6), (990, r6)]
     R = B.keyed(kr, t)
-    if t < 2.4:
+    if t < 200:
         R["footF"] = rider_base()["footF"]
         R["footB"] = rider_base()["footB"]
     return HP, R
 
 
-DIE_FX = {5: {'s': 0.027, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 6: {'s': 0.133, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 7: {'s': 0.213, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 8: {'s': 0.293, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 9: {'s': 0.493, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 10: {'s': 0.693, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}, 11: {'s': 0.96, 'origin': (-8, 0), 'spread': 36, 'size': 13.0}}
+def pose(ctx, clip, t):
+    rig = ctx["rig"]
+    rig.rest()
+    HP, R = {"idle": idle, "walk": canter, "attack": attack, "hit": hit, "die": die}[clip](t)
+    Hs.apply(rig, HP)
+    rider_apply(rig, R)
 
 
 def clips():
+    atk = G.Clip("attack", MO.HEAVY_ATTACK_MS, sequence=MO.HEAVY_ATTACK_SEQ, impact=4, smear=3, times=ATK_T, blur={3: 30})
+    for i, s in ((4, 0.04), (5, 0.3), (6, 0.55)):
+        atk.fx[i] = {"s": s, "origin": (34, 0), "spread": 14, "n": 10, "size": 6.0, "seed": 7}
+    die_c = G.Clip("die", MO.HEAVY_DIE_MS, sequence=MO.HEAVY_DIE_SEQ, extra={
+        "fx": [{"id": "fx.dust_poof", "atMs": 880, "offsetLu": [-10, 10], "scale": 1.3}], "hideUnitAtMs": 990})
+    die_c.fx = MO.dust_frames(die_c, 340, span=560, origin=(-10, 0), spread=36, size=9.0, seed=9)
     return [
-        P.Clip("idle", range(8), [160] * 8),
-        P.Clip("walk", range(10), [60] * 10),
-        P.Clip("attack", [0, 0.8, 1.5, 2.3, 3.0, 3.6, 4.2, 4.6, 5.2, 6.4, 7.5, 8.5, 10.5, 13],
-               [70, 70, 80, 90, 120, 60, 40, 40, 110, 90, 80, 80, 90, 100], loop=False,
-               blur={6: 0.22, 7: 0.18}, impact=8),
-        P.Clip("hit", [0, 0.8, 1.6, 2.6, 3.6], [60, 80, 80, 90, 90], loop=False),
-        P.Clip("die", [0, 1, 1.8, 2.6, 3.4, 4.0, 4.8, 5.4, 6.0, 7.5, 9, 11],
-               [80, 80, 80, 80, 80, 80, 90, 100, 110, 120, 140, 220], loop=False,
-               blur={2: 0.2, 3: 0.2}, fx=DIE_FX),
+        G.Clip("idle", MO.HEAVY_IDLE_MS, loop=True),
+        G.Clip("walk", [100] * 8, loop=True),
+        atk,
+        G.Clip("hit", MO.HIT_MS, times=MO.HIT_TIMES),
+        die_c,
     ]

@@ -116,7 +116,7 @@ def build():
 def stance(breath=0.0):
     return dict(root=(0.0, -1.4), hips=0, spine=-2, chest=-2 - 0.8 * breath, neck=1, head=-6 - 0.5 * breath,
                 footF=(10.5, G0, 0.0), footB=(-10.0, G0, 0.0),
-                handF=((-3.0, 56.5 + 0.4 * breath), 10), absB=(62, 78, 80, -4), bones={"tails": 0})
+                handF=((6.0, 45.0 + 0.4 * breath), 32), absB=(62, 78, 80, -4), bones={"tails": 0})
 
 
 def idle(t):
@@ -127,7 +127,7 @@ def idle(t):
     P["root_dy"] = 1.2 * math.sin(a + 0.8)
     P["hips"] += 1.0 * math.sin(a + 0.8)
     P["head"] += 2.0 * math.sin(a + 0.3)
-    P["handF"] = ((-3.0 + 0.8 * math.sin(a - 0.6), 56.5 + 0.6 * b), 10 + 3 * math.sin(a - 1.0))
+    P["handF"] = ((6.0 + 0.6 * math.sin(a - 0.6), 45.0 + 0.5 * b), 32 + 3 * math.sin(a - 1.0))
     P["absB"] = (62 + 3 * math.sin(a - 0.4), 78 + 3 * math.sin(a - 0.8), 80, -4)
     P["bones"] = {"tails": 6 * math.sin(a - 1.4)}
     return P
@@ -135,7 +135,7 @@ def idle(t):
 
 def walk(t):
     P, ph, s1, c2 = MO.walk_legs(t, STRIDE, 4.4, STANCE, G0, lean=5.0)
-    P["handF"] = ((-2.0 - 1.5 * s1, 55.5 - 1.0 * c2), 8 + 3 * s1)
+    P["handF"] = ((7.0 - 1.5 * s1, 44.0 - 1.0 * c2), 30 + 3 * s1)
     P["armB"] = MO.arm_swing(s1, "B", amp=20)
     P["bones"] = {"tails": -10 - 5 * c2}
     return P
@@ -165,7 +165,7 @@ _ATK = _atk_keys()
 
 
 def hit(t):
-    return MO.knock_hit(stance(), t, dict(handF=((-6.0, 50.0), 40), absB=(30, 70, 70, -4), bones={"tails": 16}))
+    return MO.knock_hit(stance(), t, dict(handF=((2.0, 47.0), 48), absB=(30, 70, 70, -4), bones={"tails": 16}))
 
 
 def die(t):

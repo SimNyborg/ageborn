@@ -480,3 +480,30 @@ def arming_sword(k, st, grip, brass_m, length=31.0):
 def poleaxe_head(k, st, x0):
     """Not used yet: a place for later polearms."""
     return []
+
+
+def skin_fn(rig, o, fn):
+    """Skin a mesh with explicit weights: fn(vertex co tuple) -> {bone: weight}."""
+    groups = {}
+    for v in o.data.vertices:
+        for bn, w in fn(tuple(v.co)).items():
+            if w <= 0:
+                continue
+            if bn not in groups:
+                groups[bn] = o.vertex_groups.new(name=bn)
+            groups[bn].add([v.index], float(w), "REPLACE")
+    rig._prep(o)
+    return o
+
+
+def arm_fist(BODY, P, side, fist_local):
+    """Side-plane position of a fist for pose P with abs arm angles P['abs<side>'] = (upper, fore,
+    hand[, abduct]). `fist_local` = (dx, dz) of the fist from the wrist in the rest pose (hand down)."""
+    f = BODY.fk(dict(P))
+    s = f["shoulder"]
+    a = P["abs" + side]
+    ua, fa, ha = (math.radians(x) for x in a[:3])
+    e = (s[0] + BODY.L_upper * math.sin(ua), s[1] - BODY.L_upper * math.cos(ua))
+    w = (e[0] + BODY.L_fore * math.sin(fa), e[1] - BODY.L_fore * math.cos(fa))
+    d = C.rot2(fist_local, ha)
+    return (w[0] + d[0], w[1] + d[1]), ha

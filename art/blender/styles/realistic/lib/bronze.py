@@ -246,10 +246,10 @@ def full_hair(rig, k, m, color="#2a211c", bone="head", band=None):
     """Thick curly hair (no helmet): a cap of curls over the cranium, fuller at the back."""
     S = lambda x, y, z: (x * k, y * k, z * k)
     hm = M.hair(color, name="curls")
-    o = C.blobs("hair", [(S(-0.3, 0, 65.6), (4.85, 4.3, 3.7)), (S(-2.6, 0, 62.8), (3.2, 4.1, 4.0)),
-                         (S(1.8, 0, 67.2), (2.9, 3.6, 1.8)), (S(-1.0, -3.4, 63.4), (2.0, 1.3, 2.6)),
-                         (S(-1.0, 3.4, 63.4), (2.0, 1.3, 2.6))], hm, res=0.35)
-    C.displace(o, 0.8 * k, 0.55)
+    o = C.blobs("hair", [(S(-0.3, 0, 65.4), (4.65, 4.15, 3.5)), (S(-2.5, 0, 62.8), (3.0, 3.95, 3.7)),
+                         (S(1.7, 0, 66.9), (2.8, 3.5, 1.7)), (S(-1.0, -3.3, 63.4), (1.9, 1.2, 2.4)),
+                         (S(-1.0, 3.3, 63.4), (1.9, 1.2, 2.4))], hm, res=0.35)
+    C.displace(o, 0.55 * k, 0.6)
     rig.rigid(o, bone)
     out = [o]
     if band is not None:

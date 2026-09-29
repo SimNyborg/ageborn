@@ -97,8 +97,6 @@ def build():
     MD.boots(rig, BODY, leather)
     MD.face(rig, BODY, hair, eye, beard=None, moustache=True, hair="short")
     MD.sallet(rig, BODY, st)
-    rig.rigid(C.lathe("sallet_rim", [(5.25 * k, 60.9 * k), (5.45 * k, 61.3 * k), (5.2 * k, 61.7 * k)], dst, seg=28,
-                      scale=(1.0, 0.92, 1.0), loc=(0.1 * k, 0, 0)), "head")
 
     # the pike, along +X from the near fist; a copy lies on the ground once he falls
     def pike(tag, pennon=True):
