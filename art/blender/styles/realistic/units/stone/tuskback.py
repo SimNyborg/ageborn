@@ -140,7 +140,8 @@ def build():
     rig.skin(blanket, [p + "body", p + "pelvis"], soft=6)
     # AD pass: a dark leather hem proud of the blanket edge and a rawhide fringe, so the team blanket
     # reads as a crafted, heavy object instead of a flat painted patch
-    hem = C.blobs("blanket_hem", [(c, M.hem_axes(a, 1.2)) for c, a in BL], leather, res=0.55)
+    hem = C.blobs("blanket_hem", [(c, M.hem_axes(a, 1.2, along=(0,) if i < 2 else (0, 2))) for i, (c, a) in enumerate(BL)],
+                  leather, res=0.55)
     rig.skin(hem, [p + "body", p + "pelvis"], soft=6)
     fringe_m = M.rawhide("#6e5a46", name="fringe")
     for sd in (-1, 1):
@@ -257,14 +258,18 @@ def die(t):
     buck = dict(stand(), root=(-2.0, -10.0), pitch=-10, neck=-8, head=-6, jaw=-26, tail=24, roll=-4,
                 bones={"pole": 8, "flag": (14, 10)})
     buck.update(_legs(2, 0, zf=10.0, paf=70, pah=20))
-    sprawl = {"fore_F": (Q.HOME["fore"] + 16, 3.0, Q.LAST["fore"] - 70, -16), "fore_B": (Q.HOME["fore"] + 11, 3.0, Q.LAST["fore"] - 60, -12),
+    # fore legs fold under the chest (AD fix: stretched forward, the near hoof poked out through the
+    # ground holdout in front of the head as a detached speck)
+    sprawl = {"fore_F": (Q.HOME["fore"] + 5, 3.0, Q.LAST["fore"] - 70, -16), "fore_B": (Q.HOME["fore"] + 3, 3.0, Q.LAST["fore"] - 60, -12),
               "hind_F": (Q.HOME["hind"] - 18, 3.0, Q.LAST["hind"] + 70, 16), "hind_B": (Q.HOME["hind"] - 13, 3.0, Q.LAST["hind"] + 60, 12)}
     fall = dict(buck, root=(-4.0, -22.0), pitch=-6, roll=-10, head=-10, bones={"pole": 14, "flag": (24, 10)})
     fall.update(sprawl)
-    down = dict(fall, root=(-5.0, -33.0), pitch=-3, roll=-16, neck=-12, head=-10, jaw=-16, tail=-10,
+    # the head comes to rest ON the ground, tusks showing (AD fix: with the neck bent down it sank
+    # through the ground holdout and only the tusk tips poked out in front as detached specks)
+    down = dict(fall, root=(-5.0, -33.0), pitch=-3, roll=-16, neck=4, head=8, jaw=-16, tail=-10,
                 bones={"pole": 22, "flag": (34, 6)})
-    bounce = dict(down, root=(-5.2, -31.0), roll=-14, head=-6, bones={"pole": 10, "flag": (20, -6)})
-    rest = dict(down, root=(-5.4, -33.4), roll=-17, head=-12, jaw=-12, bones={"pole": 24, "flag": (40, 0)})
+    bounce = dict(down, root=(-5.2, -31.0), roll=-14, head=12, bones={"pole": 10, "flag": (20, -6)})
+    rest = dict(down, root=(-5.4, -33.4), roll=-17, neck=3, head=7, jaw=-12, bones={"pole": 24, "flag": (40, 0)})
     return B.keyed([(0, base), (60, buck), (210, fall), (350, down), (420, bounce), (520, rest), (990, rest)], t)
 
 

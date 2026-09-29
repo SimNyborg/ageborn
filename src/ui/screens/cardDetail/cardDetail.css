@@ -1,113 +1,317 @@
-/* Card detail (A9 #11). */
+/* Card detail (S11, docs/ui-plan.md 4.4): the stage as the one hero on the left, the facts on the
+   right, the action bar fixed at the bottom. Phone: stage column 300 wide, full content height. */
 
+.ui-screen--cardDetail .ui-screen__body {
+  overflow: hidden;
+  padding: var(--ui-s2) var(--ui-margin);
+}
+/* Long names wrap to two lines in the header instead of an ellipsis (UA-24). */
+.ui-screen--cardDetail .ui-screen__title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  text-overflow: clip;
+  line-height: 1;
+}
+.ui-screen--cardDetail .ui-screen__titles {
+  align-items: center;
+}
+@container ui-root (max-height: 480px) {
+  .ui-screen--cardDetail .ui-screen__title {
+    font-size: var(--ui-fs-title-s);
+    max-width: 200px;
+  }
+}
+.cd-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-s2);
+}
+.cd-sub__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 var(--ui-s2);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-surface-2);
+  color: var(--ui-text);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  white-space: nowrap;
+}
 .cd {
   display: grid;
-  grid-template-columns: minmax(240px, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(12px, 2vw, 26px);
-  min-height: 100%;
+  grid-template-columns: minmax(360px, 42%) minmax(0, 1fr);
+  gap: var(--ui-s5);
+  height: 100%;
+  min-height: 0;
+}
+@container ui-root (max-height: 480px) {
+  .cd {
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: var(--ui-s3);
+  }
 }
 .cd-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.cd-stage {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  min-height: clamp(210px, 46vh, 330px);
+  min-height: 0;
+}
+
+/* ---- The stage: a lane in the card's age ---------------------------------------------------- */
+
+.cd-stage {
+  --card-w: 128px;
+  --pad: var(--ui-s3);
+  position: relative;
+  height: 100%;
+  min-height: 0;
   border: 1px solid rgba(107, 120, 144, 0.4);
   border-radius: var(--ui-r-lg);
-  background:
-    radial-gradient(ellipse at 50% 20%, color-mix(in srgb, var(--frame) 30%, transparent), transparent 60%),
-    linear-gradient(180deg, #232a36, #11151b);
-  box-shadow: var(--ui-e1), inset 0 0 40px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--ui-e1);
   overflow: hidden;
+  isolation: isolate;
   cursor: default;
 }
-.cd-stage__spot {
+@container ui-root (max-height: 480px) {
+  .cd-stage {
+    --card-w: 96px;
+    --pad: var(--ui-s2);
+  }
+}
+.cd-stage::after {
+  /* The one key light from the top-left (3.7) and a soft vignette. */
+  content: '';
   position: absolute;
-  left: 50%;
-  top: -30%;
-  width: 70%;
-  height: 130%;
-  transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
-  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255, 236, 200, 0.14), transparent 45%), radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+.cd-stage__sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(90% 60% at 70% 18%, color-mix(in srgb, var(--age-main) 40%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--age-light) 30%, #10141b) 0%, color-mix(in srgb, var(--age-main) 26%, #11151c) 58%, #0d1015 100%);
+}
+.cd-stage__hills {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 26%;
+  height: 26%;
+  background:
+    radial-gradient(60% 100% at 20% 100%, color-mix(in srgb, var(--age-accent) 35%, #0e1116) 0 60%, transparent 61%),
+    radial-gradient(55% 90% at 78% 100%, color-mix(in srgb, var(--age-accent) 25%, #0c0f14) 0 60%, transparent 61%);
+  opacity: 0.85;
+}
+.cd-stage__ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30%;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--age-main) 45%, #1a1712) 0%, color-mix(in srgb, var(--age-main) 18%, #0c0d10) 100%);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--age-light) 30%, rgba(255, 255, 255, 0.25));
+}
+/* Life: a few motes drift across the lane (5.5 "life"; static under reduce motion). */
+.cd-stage__dust {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 60%, rgba(255, 244, 214, 0.35) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 35% 40%, rgba(255, 244, 214, 0.25) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 62% 66%, rgba(255, 244, 214, 0.3) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 84% 34%, rgba(255, 244, 214, 0.2) 0 1px, transparent 1.5px);
+  animation: cd-dust calc(var(--ui-dur-sheen) * 4) linear infinite;
   pointer-events: none;
 }
-.cd-stage__floor {
+@keyframes cd-dust {
+  from {
+    transform: translate(-4%, 0);
+  }
+  to {
+    transform: translate(4%, -3%);
+  }
+}
+
+/* The unit in motion (B-rank 19): idle, a wind-up and a strike on a 3 s loop. Realistic bodies do
+   not squash (5.8): weight comes from lean, timing and a small step. */
+.cd-stage__actor {
   position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: 8%;
-  height: 12%;
+  right: 4%;
+  bottom: 18%;
+  width: min(66%, 320px);
+  aspect-ratio: 1;
+  z-index: 1;
+}
+.cd-stage__shadow {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 2%;
+  height: 10%;
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55), transparent 70%);
 }
-.cd-stage__card {
-  position: relative;
-  z-index: 1;
-  width: clamp(140px, 30vh, 210px);
-  animation: cd-idle 2.4s ease-in-out infinite;
-  transform-origin: 50% 100%;
-}
-@keyframes cd-idle {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-1deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(1deg);
-  }
-}
-.cd-stage__frame {
-  display: block;
-  padding: 6px;
-  border: 4px solid var(--ui-ink);
-  border-radius: 20px;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--frame) 55%, #fff), var(--frame) 40%, color-mix(in srgb, var(--frame) 55%, #000));
-  box-shadow: 0 6px 0 var(--ui-ink), 0 0 30px color-mix(in srgb, var(--frame) 50%, transparent);
-}
-.cd-stage__frame .ui-art {
-  border-radius: 13px;
-}
-.cd-stage__level {
-  position: absolute;
-  left: 50%;
-  bottom: -14px;
-  transform: translateX(-50%);
-  padding: 2px 14px;
-  border: 3px solid var(--ui-ink);
-  border-radius: 12px;
-  background: linear-gradient(180deg, #5b8cff, #2f5fd0);
-  font-size: 18px;
-  font-weight: 900;
-  white-space: nowrap;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 4px var(--ui-ink);
-  box-shadow: 0 3px 0 var(--ui-ink);
-}
-.cd-stage__lock {
+.cd-stage__figure {
   position: absolute;
   inset: 0;
   display: grid;
+  place-items: end center;
+  transform-origin: 50% 96%;
+  animation: cd-strike calc(var(--ui-dur-medium) * 10) var(--ui-ease-standard) infinite;
+}
+.cd-stage__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+.cd-stage__figure.is-silhouette img,
+.cd-stage__figure.is-silhouette svg {
+  filter: brightness(0) opacity(0.55);
+}
+@keyframes cd-strike {
+  0%,
+  38% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(0, -1.2%) rotate(-0.6deg);
+  }
+  48% {
+    transform: translate(-3%, 0.5%) rotate(-3deg);
+  }
+  56% {
+    transform: translate(6%, 0) rotate(3.5deg);
+  }
+  64% {
+    transform: translate(4%, 0) rotate(1.5deg);
+  }
+  82%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+.cd-stage--turret .cd-stage__figure {
+  animation-name: cd-recoil;
+}
+@keyframes cd-recoil {
+  0%,
+  46%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-4%, 0.5%);
+  }
+  62% {
+    transform: translate(0.6%, 0);
+  }
+}
+.cd-stage--power .cd-stage__figure {
+  animation-name: cd-hover;
   place-items: center;
 }
-/* MR-38b: the confirm state. The card lifts and starts to charge; the green deltas brighten. */
+.cd-stage--power .cd-stage__figure img {
+  width: 76%;
+  height: 76%;
+  object-position: 50% 50%;
+}
+@keyframes cd-hover {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3%);
+  }
+}
+
+/* The lg card over the stage's bottom-left corner, with the level and copies beside it. */
 .cd-stage__card {
+  position: absolute;
+  left: var(--pad);
+  bottom: calc(var(--pad) + 4px);
+  z-index: 3;
   transition: transform var(--ui-dur-small) var(--ui-ease-back);
 }
+.cd-stage__card .ui-card {
+  --card-w: var(--cd-card-w, 128px);
+}
+@container ui-root (max-height: 480px) {
+  .cd-stage__card .ui-card {
+    --cd-card-w: 96px;
+  }
+}
+.cd-stage__lock {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  color: var(--ui-text);
+}
+.cd-stage__meta {
+  position: absolute;
+  left: calc(var(--pad) * 2 + var(--card-w));
+  right: var(--pad);
+  bottom: calc(var(--pad) + 4px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ui-s1);
+}
+.cd-stage__level {
+  display: inline-block;
+  color: var(--ui-text);
+  font-size: var(--ui-fs-headline);
+  line-height: var(--ui-lh-headline);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  transform-origin: 20% 60%;
+}
+.cd-copies {
+  width: 100%;
+  max-width: 220px;
+}
+.cd-copies__label {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.cd-copies .ui-copies {
+  height: 20px;
+  margin: 0;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  background: rgba(15, 18, 24, 0.85);
+}
+.cd-copies .ui-copies__text {
+  font-size: var(--ui-fs-caption);
+  line-height: 18px;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* ---- MR-38b: the confirm state. The card lifts and starts to charge; the green deltas brighten. */
 .cd-stage.is-armed .cd-stage__card {
-  animation: none;
   transform: translateY(-6px) scale(calc(1 + (var(--ui-lift) - 1) * 0.66));
 }
-.cd-stage.is-armed .cd-stage__frame {
+.cd-stage.is-armed .cd-stage__card .ui-card__frame {
   box-shadow:
-    0 6px 0 var(--ui-ink),
-    0 0 26px 6px color-mix(in srgb, var(--ui-progress-light) 55%, transparent);
+    0 0 0 2px var(--ui-progress-light),
+    0 0 24px 6px color-mix(in srgb, var(--ui-progress-light) 55%, transparent);
   transition: box-shadow var(--ui-dur-small) var(--ui-ease-out);
 }
 .cd.is-armed .cd-next {
@@ -117,15 +321,18 @@
     color var(--ui-dur-micro) var(--ui-ease-out),
     text-shadow var(--ui-dur-micro) var(--ui-ease-out);
 }
+.cd.is-armed .cd-stat.has-delta {
+  border-color: rgba(95, 208, 138, 0.55);
+}
 /* MR-39 charge (300 ms): the card trembles while the glow builds. */
 .cd-stage.is-charge .cd-stage__card {
-  animation: cd-tremble 125ms linear infinite;
+  animation: cd-tremble calc(var(--ui-dur-micro) - 25ms) linear infinite;
 }
-.cd-stage.is-charge .cd-stage__frame {
+.cd-stage.is-charge .cd-stage__card .ui-card__frame {
   box-shadow:
-    0 6px 0 var(--ui-ink),
+    0 0 0 2px var(--ui-progress-light),
     0 0 40px 12px color-mix(in srgb, var(--ui-progress-light) 70%, transparent);
-  transition: box-shadow 300ms var(--ui-ease-out);
+  transition: box-shadow var(--ui-dur-medium) var(--ui-ease-out);
 }
 @keyframes cd-tremble {
   0%,
@@ -141,21 +348,39 @@
 }
 /* MR-39 impact: a burst and a shine; the card lands with a squash; the level flips. */
 .cd-stage.is-impact .cd-stage__card {
-  animation: cd-slam 520ms var(--ui-ease-back) both;
+  animation: cd-slam calc(var(--ui-dur-large) + var(--ui-dur-hold-medium)) var(--ui-ease-back) both;
+}
+.cd-stage.is-impact .cd-stage__card .ui-card__frame::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 250, 225, 0.85) 48%, transparent 64%) no-repeat;
+  background-size: 60% 100%;
+  animation: cd-shine var(--ui-dur-medium) var(--ui-ease-out) both;
+  pointer-events: none;
+}
+@keyframes cd-shine {
+  from {
+    transform: translateX(-80%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0.2;
+  }
 }
 .cd-stage.is-impact .cd-stage__level {
-  animation: cd-level-flip var(--ui-dur-small) var(--ui-ease-back) 120ms both;
-  background: linear-gradient(180deg, #8ceaa8, #2fb35a);
-  color: var(--ui-ink);
-  -webkit-text-stroke: 0;
+  color: var(--ui-good);
+  animation: cd-level-flip var(--ui-dur-small) var(--ui-ease-back) var(--ui-dur-hold-medium) both;
 }
 @keyframes cd-level-flip {
   from {
-    transform: translateX(-50%) scale(calc(1 + (var(--ui-pop) - 1) * 2.6));
+    transform: scale(calc(1 + (var(--ui-pop) - 1) * 2.6));
     opacity: 0;
   }
   to {
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
     opacity: 1;
   }
 }
@@ -175,37 +400,37 @@
 }
 .cd-stage__burst {
   position: absolute;
-  left: 50%;
-  top: 45%;
-  z-index: 0;
-  width: 150%;
+  left: calc(var(--pad) + var(--card-w) / 2);
+  bottom: calc(var(--pad) + var(--card-w) * 2 / 3);
+  z-index: 2;
+  width: calc(var(--card-w) * 3.2);
   aspect-ratio: 1;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 50%);
   background:
     repeating-conic-gradient(from 0deg, rgba(255, 240, 190, 0.35) 0deg 8deg, transparent 8deg 22deg),
     radial-gradient(circle, rgba(255, 244, 200, 0.85) 0%, rgba(140, 234, 168, 0.35) 25%, transparent 55%);
-  animation: cd-burst 900ms var(--ui-ease-out) both;
+  animation: cd-burst calc(var(--ui-dur-large) * 2.25) var(--ui-ease-out) both;
   pointer-events: none;
 }
 @keyframes cd-burst {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+    transform: translate(-50%, 50%) scale(0.3) rotate(0deg);
   }
   15% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1) rotate(25deg);
+    transform: translate(-50%, 50%) scale(1) rotate(25deg);
   }
 }
 .cd-stage__levelup {
   position: absolute;
   left: 50%;
-  top: 10%;
-  z-index: 4;
+  top: 8%;
+  z-index: 5;
   transform: translateX(-50%);
   font-family: var(--ui-font-display);
   font-size: var(--ui-fs-headline);
@@ -218,7 +443,7 @@
   paint-order: stroke fill;
   -webkit-text-stroke: 2px var(--ui-bg);
   text-shadow: 0 2px 10px rgba(242, 181, 44, 0.8);
-  animation: cd-levelup 1100ms var(--ui-ease-back) both;
+  animation: cd-levelup calc(var(--ui-dur-large) * 2.75) var(--ui-ease-back) both;
   pointer-events: none;
 }
 @keyframes cd-levelup {
@@ -241,67 +466,13 @@
     transform: translateX(-50%) translateY(calc(var(--ui-axis) * -0.5));
   }
 }
-/* Follow-through: the stat rows tick one by one with a green "+N" chip that rises and fades. */
-.cd-stats tr.is-tick td:first-of-type {
-  animation: ui-bump var(--ui-dur-small) var(--ui-ease-back) both;
-  animation-delay: calc(240ms + var(--i) * 60ms);
-  color: var(--ui-good);
-}
-.cd-gain {
-  display: inline-block;
-  margin-left: 6px;
-  color: var(--ui-good);
-  font-size: 12px;
-  animation: cd-gain 900ms var(--ui-ease-out) both;
-  animation-delay: calc(240ms + var(--i) * 60ms);
-}
-@keyframes cd-gain {
-  0% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(calc(var(--ui-axis) * -0.6));
-  }
-}
-.cd-copies {
-  width: min(100%, 320px);
-}
-.cd-copies .ui-copies {
-  height: 22px;
-}
-.cd-action {
-  display: inline-flex;
-}
-.cd-action .ui-btn__sub {
-  display: block;
-  margin-top: 1px;
-  font-size: 12px;
-  line-height: 14px;
-  font-weight: 700;
-  opacity: 0.82;
-  letter-spacing: 0;
-}
-.cd-action .is-armed .ui-btn__text > span {
-  animation: cd-label-in var(--ui-dur-micro) var(--ui-ease-standard);
-}
-@keyframes cd-label-in {
-  from {
-    opacity: 0;
-    transform: translateY(calc(var(--ui-axis) * 0.4));
-  }
-}
 .cd-stage__hammer {
   position: absolute;
-  right: 18%;
-  top: 6%;
-  z-index: 2;
+  left: calc(var(--pad) + var(--card-w) * 0.7);
+  bottom: calc(var(--pad) + var(--card-w) * 1.05);
+  z-index: 4;
   transform-origin: 20% 90%;
-  animation: cd-hammer 700ms var(--ui-ease-out) both;
+  animation: cd-hammer calc(var(--ui-dur-large) * 1.75) var(--ui-ease-out) both;
   filter: drop-shadow(0 6px 0 rgba(0, 0, 0, 0.4));
 }
 @keyframes cd-hammer {
@@ -322,16 +493,192 @@
     opacity: 0;
   }
 }
-.cd-chips,
+
+/* ---- Right column --------------------------------------------------------------------------- */
+
+.cd-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s3);
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--ui-s1) var(--ui-s4) 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.cd-right > * {
+  flex: none;
+}
+.cd-counters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+}
+.cd-crow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 2px var(--ui-s3);
+  padding: var(--ui-s2) var(--ui-s3);
+  border: 1px solid rgba(107, 120, 144, 0.3);
+  border-left-width: 3px;
+  border-radius: var(--ui-r-md);
+  background: var(--ui-surface-1);
+}
+.cd-crow--good {
+  border-left-color: var(--ui-good);
+}
+.cd-crow--bad {
+  border-left-color: var(--ui-bad);
+}
+.cd-crow__label {
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.cd-crow--good .cd-crow__label {
+  color: var(--ui-good);
+}
+.cd-crow--good .cd-crow__label::before {
+  content: '\25B2\00A0';
+}
+.cd-crow--bad .cd-crow__label {
+  color: var(--ui-bad);
+}
+.cd-crow--bad .cd-crow__label::before {
+  content: '\25BC\00A0';
+}
+.cd-crow__icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-s1) var(--ui-s3);
+}
+.cd-crow__cls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--ui-fs-label);
+  font-weight: 800;
+}
+.cd-crow__note {
+  grid-column: 1 / -1;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+  font-weight: 600;
+}
+.cd-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ui-s1) var(--ui-s2);
+}
+@container ui-root (min-height: 481px) {
+  .cd-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.cd-stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  min-height: 32px;
+  padding: 6px var(--ui-s3);
+  border: 1px solid transparent;
+  border-radius: var(--ui-r-sm);
+  background: var(--ui-surface-2);
+  transition: border-color var(--ui-dur-micro) var(--ui-ease-out);
+}
+.cd-stat__label {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cd-stat__value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--ui-text);
+  font-size: var(--ui-fs-label);
+  font-weight: 800;
+  white-space: nowrap;
+}
+.cd-next {
+  color: var(--ui-good);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+}
+/* Follow-through: the stat cells tick one by one with a green "+N" chip that rises and fades. */
+.cd-stat.is-tick .cd-stat__value {
+  animation: ui-bump var(--ui-dur-small) var(--ui-ease-back) both;
+  animation-delay: calc(var(--ui-dur-small) + var(--i) * var(--ui-dur-hold));
+  color: var(--ui-good);
+}
+.cd-stat.is-tick .cd-next {
+  visibility: hidden;
+}
+.cd-gain {
+  display: inline-block;
+  color: var(--ui-good);
+  font-size: var(--ui-fs-caption);
+  animation: cd-gain calc(var(--ui-dur-medium) * 3) var(--ui-ease-out) both;
+  animation-delay: calc(var(--ui-dur-small) + var(--i) * var(--ui-dur-hold));
+}
+@keyframes cd-gain {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--ui-axis) * -0.6));
+  }
+}
 .cd-tags {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 6px;
 }
-.cd-tags {
-  justify-content: flex-start;
-  margin: 10px 0;
+.cd-desc {
+  margin: 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-body);
+  line-height: var(--ui-lh-body);
+  font-weight: 500;
+  user-select: text;
+}
+.cd-label {
+  display: block;
+  margin: 0 0 var(--ui-s1);
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cd-label--good {
+  color: var(--ui-good);
+}
+.cd-label--bad {
+  color: var(--ui-bad);
+}
+.cd-counters-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ui-s3);
+}
+.cd-counter__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-s2);
+  padding-top: 4px;
 }
 .cd-foils {
   display: flex;
@@ -339,154 +686,89 @@
   flex-wrap: wrap;
   gap: 6px;
 }
-.cd-label {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ui-muted);
-}
-.cd-label--good {
-  color: var(--ui-green-hi);
-}
-.cd-label--bad {
-  color: var(--ui-red-hi);
+.cd-foils .cd-label {
+  margin: 0 var(--ui-s1) 0 0;
 }
 .cd-foil {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 8px;
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--ui-dim);
+  height: 24px;
+  padding: 0 var(--ui-s2);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: var(--ui-r-pill);
+  color: var(--ui-text-3);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
 }
 .cd-foil.is-on {
   border-style: solid;
-  color: #fff;
+  color: var(--ui-text);
 }
 .cd-foil--bronze.is-on {
   border-color: #e0975a;
-  background: rgba(224, 151, 90, 0.2);
+  background: rgba(224, 151, 90, 0.18);
 }
 .cd-foil--silver.is-on {
   border-color: #eef3fb;
-  background: rgba(238, 243, 251, 0.14);
+  background: rgba(238, 243, 251, 0.12);
 }
 .cd-foil--holo.is-on {
   border-color: #ff9bf0;
-  background: linear-gradient(90deg, rgba(255, 90, 200, 0.25), rgba(90, 200, 255, 0.25), rgba(120, 255, 160, 0.25));
+  background: linear-gradient(90deg, rgba(255, 90, 200, 0.22), rgba(90, 200, 255, 0.22), rgba(120, 255, 160, 0.22));
 }
-.cd-desc {
-  max-width: 460px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: rgba(10, 8, 26, 0.45);
+
+/* ---- Action bar ----------------------------------------------------------------------------- */
+
+.cd-action {
+  display: inline-flex;
+}
+.cd-action .ui-btn__sub {
+  display: block;
+  margin-top: 1px;
+  font-size: var(--ui-fs-caption);
+  line-height: 14px;
   font-weight: 700;
-  font-size: 14px;
-  line-height: 1.4;
-  user-select: text;
+  opacity: 0.82;
+  letter-spacing: 0;
 }
-.cd-right {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.cd-action .is-armed .ui-btn__text > span {
+  animation: cd-label-in var(--ui-dur-micro) var(--ui-ease-standard);
 }
-.cd-stats {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 4px;
+@keyframes cd-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--ui-axis) * 0.4));
+  }
 }
-.cd-stats th,
-.cd-stats td {
-  padding: 5px 10px;
-  background: rgba(10, 8, 26, 0.45);
-  font-size: 15px;
-}
-.cd-stats th {
-  text-align: left;
+.cd-inarmy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 var(--ui-s3);
+  border-radius: var(--ui-r-pill);
+  background: rgba(95, 208, 138, 0.14);
+  color: var(--ui-good);
+  font-size: var(--ui-fs-label);
   font-weight: 800;
-  color: var(--ui-muted);
-  border-radius: 10px 0 0 10px;
-}
-.cd-stats td {
-  font-weight: 900;
-  text-align: right;
-}
-.cd-stats td:last-child {
-  border-radius: 0 10px 10px 0;
-  width: 70px;
-}
-.cd-next {
-  color: var(--ui-green-hi);
-}
-.cd-counters {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.cd-counter__cards {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
+  white-space: nowrap;
 }
 .cd-owned {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin: 0;
   font-weight: 700;
   font-size: var(--ui-fs-caption);
   line-height: var(--ui-lh-caption);
   color: var(--ui-text-2);
 }
 .cd-max {
+  margin: 0;
   font-family: var(--ui-font-display);
   font-size: var(--ui-fs-title);
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ui-primary-light);
-}
-.cd-skins {
-  margin-top: 12px;
-}
-@container ui-root (max-height: 480px) {
-  .cd-stage {
-    min-height: 200px;
-  }
-  .cd-stats th,
-  .cd-stats td {
-    padding: 3px 8px;
-    font-size: 13px;
-  }
-}
-
-/* Card class (owner feedback 2026-09-28): a big badge on the stage and class counter rows. */
-.cd-stage__class {
-  position: absolute;
-  left: 14px;
-  top: 12px;
-  z-index: 3;
-  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.3));
-  animation: cd-class-pop 420ms var(--ui-ease-back) both 120ms;
-}
-@keyframes cd-class-pop {
-  from {
-    transform: scale(0.3) rotate(-25deg);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-.cd-counter-classes {
-  grid-column: 1 / -1;
-  padding: 8px 10px;
-  border: 2px solid var(--ui-ink);
-  border-radius: 12px;
-  background: rgba(20, 16, 44, 0.45);
 }

@@ -191,10 +191,16 @@ test.describe('Battle HUD (ui-plan 4.7)', () => {
     await battle(page);
     const m = (await hudModel(page))!;
     const costly = m.me.cards.filter((c) => c.card).sort((a, b) => b.cost - a.cost)[0]!;
-    // Spend down until the dearest card is out of reach.
-    for (let i = 0; i < 8 && ((await hudModel(page))?.me.gold ?? 0) >= costly.cost; i++) await page.getByTestId(`hud-card-${costly.slot}`).click();
-    await page.getByTestId(`hud-card-${costly.slot}`).click();
-    await expect(page.getByTestId(`hud-reason-card${costly.slot}`)).toContainText(/Need \d+ gold|Queue full/);
+    // Keep pressing the dearest card: it trains until the gold (or the queue) runs out, then the press
+    // is denied and says why next to the card.
+    const reason = page.getByTestId(`hud-reason-card${costly.slot}`);
+    let text: string | null = null;
+    for (let i = 0; i < 14 && text === null; i++) {
+      await page.getByTestId(`hud-card-${costly.slot}`).click();
+      // Read it at once: the label holds 1.5 s, and a loaded machine is slow to poll.
+      text = await reason.textContent({ timeout: 300 }).catch(() => null);
+    }
+    expect(text).toMatch(/Need \d+ gold|Queue full/);
   });
 
   test('the stance flyout: press, slide to Hold, release', async ({ page }) => {

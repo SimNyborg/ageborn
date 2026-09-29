@@ -46,7 +46,11 @@ export function SkinOptions(p: { card: CardId; compact?: boolean }) {
               ) : null}
             </span>
             <span class="skins__name">{id ? t(skinNameKey(id)) : t('ui.skins.default')}</span>
-            {skin ? <span class="skins__rarity">{t(rarityNameKey(skin.rarity))}</span> : null}
+            {skin ? (
+              <span class="skins__rarity" data-tag="">
+                {t(rarityNameKey(skin.rarity))}
+              </span>
+            ) : null}
             {skin && !p.compact ? <span class="skins__look">{t(skinLookKey(skin.id))}</span> : null}
             {on ? (
               <span class="skins__equipped">

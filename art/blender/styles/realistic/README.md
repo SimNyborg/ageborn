@@ -79,6 +79,9 @@ units/medieval/destrier_knight.py, units/future/pulse_trooper.py, units/stone/bo
 
 ## The look (keep it consistent across ages)
 
+The art director's rulebook for every age (proportions, materials, palettes, light, outline,
+animation timing, review checklist) is `STYLE_GUIDE.md` next to this README.
+
 - **Scale.** 1 Blender unit = 1 lu. Characters face +X, up is +Z, +Y is away from the camera. The
   orthographic camera is tilted down 12 degrees (`core.ELEV_DEG`); bipeds are yawed -24 degrees,
   quadrupeds, turrets and bases -12 degrees. Frames render at 2x the 1x sheet density
@@ -95,6 +98,10 @@ units/medieval/destrier_knight.py, units/future/pulse_trooper.py, units/stone/bo
   grey layer that the game tints (`<frame>_team`, drawn under `<frame>` whose team areas are
   holes). Put team colour on large parts: vests, kilts, cloaks, sashes, pelts, caparisons,
   blankets, banners, pennants. Aim for 15-30% of the silhouette (stats: `teamCoverageMin`).
+  The grey layer is `(lum / lref) ** pipe.TEAM_GAMMA` (2.0; a unit may set `TEAM_GAMMA`), so the
+  dye keeps its folds and shading instead of reading as flat plastic paint. Give every team drape
+  a crafted edge: a dark leather hem just proud of its free edges (`mats.hem_axes`) and, where it
+  suits, fringe or beads; keep drapes thin, never a puffy pillow.
 - **Outline.** A thin dark line (0.85 px at 1x, 1.35 px at 2x) around the whole silhouette,
   added in 2D, so units read against any backdrop.
 - **Faces.** Heads are about 1/7.5 of the height; keep the chin slightly down (`head` a few

@@ -109,7 +109,8 @@ export interface RouteParams {
   /** 10. */
   collection: { tab?: 'cards' | 'skins' | 'feats' };
   /** 11. */
-  cardDetail: { card: CardId };
+  /** `upgrade`: open with the upgrade already in its confirm state (Army "Upgrade", ui-plan 4.2). */
+  cardDetail: { card: CardId; upgrade?: boolean };
   /** 12. */
   trophyRoad: NoParams;
   /** 13. */

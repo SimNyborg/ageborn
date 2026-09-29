@@ -25,10 +25,11 @@ def fur(color="#76624f", dark="#4f4236", name="fur", bump=1.0, noise=0.32, nscal
     return C.mat(name, color, rough=0.95, noise=noise, nscale=nscale, bump=bump, ramp2=dark, sheen=0.6)
 
 
-def coat(color="#8a6e52", dark="#6a5440", name="coat", noise=0.1, nscale=2.2):
+def coat(color="#8a6e52", dark="#6a5440", name="coat", noise=0.1, nscale=2.2, bump=0.45, sheen=0.5):
     """Short animal coat (cat, boar hide): fine grain, subtle variation (large animals read
-    blotchy with coarse noise)."""
-    return C.mat(name, color, rough=0.8, noise=noise, nscale=nscale, bump=0.45, ramp2=dark, sheen=0.5)
+    blotchy with coarse noise). A sleek coat (big cats, horses) wants bump ~0.15 and sheen ~0.2:
+    a high bump and sheen read as velvet / plush toy."""
+    return C.mat(name, color, rough=0.8, noise=noise, nscale=nscale, bump=bump, ramp2=dark, sheen=sheen)
 
 
 def leather(color="#5a4a3e", name="leather"):
@@ -113,12 +114,14 @@ def glow(color="#ffb060", strength=6.0, name="glow"):
     return C.emit_mat(name, color, strength)
 
 
-def hem_axes(axes, grow):
-    """Semi-axes for a hem / trim blob under a thin draped blob (blanket, pelt, caparison): the two
-    long axes grow by `grow` so the trim peeks out along the edge, the thin axis shrinks so the trim
-    stays hidden under the team surface everywhere else."""
+def hem_axes(axes, grow, along=(0, 1, 2)):
+    """Semi-axes for a hem / trim blob under a thin draped blob (blanket, pelt, caparison): the long
+    axes listed in `along` grow by `grow` so the trim peeks out along the free edges, the thin axis
+    shrinks so the trim stays hidden under the team surface everywhere else. Leave out an axis where
+    the element meets another element of the drape (a back panel meeting the side panels: grow only
+    along x), or the trim pokes out as a band across the middle of the drape."""
     thin = min(range(3), key=lambda k: axes[k])
-    return tuple(a - min(0.6, a * 0.3) if k == thin else a + grow for k, a in enumerate(axes))
+    return tuple(a - min(0.6, a * 0.3) if k == thin else (a + grow if k in along else a) for k, a in enumerate(axes))
 
 
 # ---- team surfaces (grey; tinted in the game)

@@ -111,49 +111,6 @@
   content: '\25BC\00A0';
 }
 
-/* Card tiles: the class badge sits on the bottom-left corner of the frame. */
-.ui-card__class {
-  position: absolute;
-  left: -7px;
-  bottom: -7px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: flex-end;
-  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
-  transition: transform 160ms var(--ui-ease-back);
-}
-.ui-card.is-button:hover .ui-card__class {
-  transform: scale(1.12) rotate(-6deg);
-}
-.ui-card__class .ui-card__crown {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  translate: -50% -72%;
-  border-width: 1.5px;
-}
-.ui-card.is-locked .ui-card__class {
-  filter: grayscale(0.4) brightness(0.85);
-}
-.ui-card__classname {
-  display: block;
-  margin: 1px -8px 0;
-  color: color-mix(in srgb, var(--cls, #fff) 55%, #fff);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  line-height: 1.1;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.ui-card--sm .ui-card__classname {
-  font-size: 11px;
-  letter-spacing: 0;
-}
-.ui-card--lg .ui-card__classname {
-  font-size: 13px;
-}
-
 /* The hover / long-press tip. */
 .ui-card-tip {
   position: fixed;

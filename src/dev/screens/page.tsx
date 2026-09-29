@@ -11,7 +11,7 @@
  */
 import { content } from '@/content';
 import { i18n } from '@/i18n';
-import { createRouter, type Route, type Router } from '@/ui/router';
+import { createRouter, type Route, type Router, type TabId } from '@/ui/router';
 import {
   fixtureOpponent,
   fixturePause,
@@ -43,6 +43,8 @@ interface Variant {
   save?: (s: SaveDoc) => SaveDoc;
   /** Runs before the screens mount (primes the War Path ceremony). */
   prime?: (s: SaveDoc) => void;
+  /** Opens the routes inside this tab of the shell (the tab bar shows). */
+  tab?: TabId;
 }
 
 /** A save on its very first launch (War Path level 1 next, nothing earned yet; ui-plan 2.6). */
@@ -131,6 +133,21 @@ const VARIANTS: Variant[] = [
   result('warPath'),
   result('warPathLoss'),
   { id: 'warPlan', label: 'War Plan', route: () => [{ id: 'home' }, { id: 'warPlan' }] },
+  { id: 'army', label: 'Army tab', tab: 'army', route: () => [{ id: 'warPlan' }] },
+  { id: 'army-bronze', label: 'Army tab: Bronze', tab: 'army', route: () => [{ id: 'warPlan', age: 'bronze' }] },
+  {
+    id: 'army-warn',
+    label: 'Army tab: advice and a gap',
+    tab: 'army',
+    route: () => [{ id: 'warPlan', age: 'stone' }],
+    save: (s) => {
+      const plan = s.warPlans[s.activePlan]!;
+      const stone = plan.loadouts.stone;
+      const next = { ...plan, loadouts: { ...plan.loadouts, stone: { ...stone, units: stone.units.map((u, i) => (i >= 3 ? null : u)), turrets: [stone.turrets[0] ?? null, null] } } };
+      return { ...s, warPlans: s.warPlans.map((p, i) => (i === s.activePlan ? next : p)) };
+    },
+  },
+  { id: 'army-first', label: 'Army tab: new player', tab: 'army', route: () => [{ id: 'warPlan' }], save: (s) => ({ ...s, flags: { ...s.flags, 'ui-seen.army': false } }) },
   { id: 'collection', label: 'Collection', route: () => [{ id: 'home' }, { id: 'collection' }] },
   { id: 'collection-skins', label: 'Collection: skins', route: () => [{ id: 'home' }, { id: 'collection', tab: 'skins' }] },
   card('bonker'),
@@ -157,7 +174,8 @@ function parseHash(): { variant: string; state: FixtureState; viewport: string }
   return { variant: parts[1] || 'home', state, viewport: parts[3] || 'fill' };
 }
 
-function applyRoutes(router: Router, routes: Route[]) {
+function applyRoutes(router: Router, routes: Route[], tab?: TabId) {
+  if (tab) router.switchTab(tab, routes[0]!);
   router.reset(routes[0]!);
   for (const r of routes.slice(1)) router.go(r);
 }
@@ -193,7 +211,7 @@ export default function ScreensPage() {
     const save = signal(initial);
     const router = createRouter({ id: 'home' });
     const services = createPreviewServices({ save, content, router, opponent: v.opponent });
-    applyRoutes(router, v.route());
+    applyRoutes(router, v.route(), v.tab);
     return {
       save,
       content,

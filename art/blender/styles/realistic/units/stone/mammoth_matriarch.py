@@ -157,6 +157,20 @@ def build():
     C.displace(cap, 1.2, 0.4)
     C.team(cap)
     rig.skin(cap, [p + "body", p + "pelvis"], soft=12)
+    # AD pass: a dark leather hem proud of the caparison's free edges and a rawhide fringe, so the team
+    # cloth reads as a heavy crafted caparison instead of a painted blob
+    # the hem is the caparison shape shifted DOWN 2.5 lu and pulled in 1.5 lu at the sides, so it shows
+    # only as a band under the lower edge and never pokes through the displaced cloth
+    hem = C.blobs("cap_hem", [((1, 0, 129.5), (47.5, 30.0, 8)), ((-6, 0, 115.5), (45.5, 31.0, 16)),
+                              ((12, 0, 101.5), (27.5, 30.5, 10))], M.leather("#3e3128", name="caphem"), res=1.4)
+    rig.skin(hem, [p + "body", p + "pelvis"], soft=12)
+    fringe_m = M.rawhide("#6e5a46", name="fringe")
+    for sd in (-1, 1):
+        for k in range(15):
+            x = -46 + 6.2 * k
+            z0 = 100.5 if x < 20 else 100.5 - (x - 20) * 0.05
+            fr = C.tube("fringe", [(x, sd * 33.2, z0 + 1.5), (x - 0.6, sd * 33.6, z0 - 5.5)], [0.9, 0.5], fringe_m, seg=5)
+            rig.skin(fr, [p + "body", p + "pelvis"], soft=12)
     for i in range(12):
         x = -44 + 8 * i
         rig.rigid(C.sphere("bead", 1.6, bone, seg=8, ring=6, loc=(x, -32.8, 101 + 3 * math.sin(i))), p + "body")
@@ -379,7 +393,7 @@ def clips():
         atk.fx[i] = {"s": s, "origin": (52, 0), "spread": 34, "n": 16, "size": 13.0, "seed": 4}
     die_c = G.Clip("die", MO.HEAVY_DIE_MS, sequence=MO.HEAVY_DIE_SEQ, extra={
         "fx": [{"id": "fx.dust_poof", "atMs": 880, "offsetLu": [-8, 20], "scale": 2.0}], "hideUnitAtMs": 990})
-    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-8, 0), spread=62, size=18.0, seed=12)
+    die_c.fx = MO.dust_frames(die_c, 345, span=640, origin=(-8, 0), spread=48, size=17.0, seed=12)
     return [
         G.Clip("idle", MO.HEAVY_IDLE_MS, loop=True),
         G.Clip("walk", [170] * 8, loop=True),

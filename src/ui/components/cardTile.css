@@ -1,0 +1,414 @@
+/* The one card tile (docs/ui-plan.md 3.6 "Card tile", 3.7): a thin brushed-metal frame in the
+   rarity colour with a bevel lit from the top-left, the art filling the card, cost top-left, class
+   top-right, the level along the bottom and the rarity gem on the bottom edge. Sizes are the plan's:
+   xs 48 x 64, sm 62 x 84, md 72 x 96, lg 96 x 128 on compact screens; 56, 72, 96, 128 wide on
+   regular screens (always 3 : 4). */
+
+.ui-card {
+  --frame: var(--ui-common);
+  --card-w: 72px;
+  --card-r: calc(var(--card-w) * 0.13);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: none;
+  width: var(--card-w);
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: center;
+  color: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--ui-dur-micro) var(--ui-ease-back),
+    opacity var(--ui-dur-micro) var(--ui-ease-out);
+}
+.ui-card--xs {
+  --card-w: 56px;
+}
+.ui-card--sm {
+  --card-w: 72px;
+}
+.ui-card--md {
+  --card-w: 96px;
+}
+.ui-card--lg {
+  --card-w: 128px;
+}
+@container ui-root (max-height: 480px) {
+  .ui-card--xs {
+    --card-w: 48px;
+  }
+  .ui-card--sm {
+    --card-w: 62px;
+  }
+  .ui-card--md {
+    --card-w: 72px;
+  }
+  .ui-card--lg {
+    --card-w: 96px;
+  }
+  /* 62 px tiles: cost and class share the top edge. */
+  .ui-card--sm .ui-card__cost {
+    gap: 1px;
+    padding: 0 4px 0 1px;
+  }
+  .ui-card--sm .ui-card__class .ui-class-icon {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+.ui-card.is-button {
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .ui-card.is-button:hover {
+    transform: translateY(-2px);
+  }
+}
+.ui-card.is-button:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.ui-card__frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--card-r);
+  /* Brushed metal in the rarity colour: bright top-left edge, darker middle band, lit bottom. */
+  background: linear-gradient(
+    var(--ui-light-angle),
+    color-mix(in srgb, var(--frame) 45%, #fff) 0%,
+    var(--frame) 20%,
+    color-mix(in srgb, var(--frame) 55%, #000) 52%,
+    var(--frame) 80%,
+    color-mix(in srgb, var(--frame) 70%, #fff) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 1px 0 rgba(0, 0, 0, 0.7),
+    0 5px 10px rgba(0, 0, 0, 0.45);
+  transition:
+    transform var(--ui-dur-micro) var(--ui-ease-back),
+    box-shadow var(--ui-dur-micro) var(--ui-ease-out);
+}
+.ui-card__frame > .ui-art {
+  position: absolute;
+  inset: 2px;
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
+  border-radius: calc(var(--card-r) - 2px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+.ui-card__frame > .ui-art .ui-art__img {
+  object-position: 50% 32%;
+}
+.ui-card--power .ui-card__frame {
+  --frame: #c9a15a;
+}
+.ui-card--epic .ui-card__frame {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 1px 0 rgba(0, 0, 0, 0.7),
+    0 5px 10px rgba(0, 0, 0, 0.45),
+    0 0 10px rgba(168, 85, 247, 0.3);
+}
+.ui-card--legendary .ui-card__frame {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 1px 0 rgba(0, 0, 0, 0.7),
+    0 5px 10px rgba(0, 0, 0, 0.45),
+    0 0 14px rgba(245, 184, 46, 0.35);
+}
+.ui-card.is-locked .ui-card__frame {
+  --frame: #59606e;
+}
+/* Readability plate for the level along the bottom of the art. */
+.ui-card__shade {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  height: 40%;
+  border-radius: 0 0 calc(var(--card-r) - 2px) calc(var(--card-r) - 2px);
+  background: linear-gradient(180deg, transparent, rgba(6, 8, 12, 0.85));
+  pointer-events: none;
+}
+.ui-card__level {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--card-w) * 0.1);
+  transform: translateX(-50%);
+  z-index: 1;
+  color: var(--ui-text);
+  font-size: var(--ui-fs-caption);
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+.ui-card--lg .ui-card__level {
+  font-size: var(--ui-fs-label);
+}
+.ui-card__cost {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 17px;
+  padding: 0 5px 0 2px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(8, 10, 14, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(242, 181, 44, 0.35);
+  color: #ffe7a3;
+  font-size: var(--ui-fs-caption);
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.ui-card--xs .ui-card__cost {
+  display: none;
+}
+.ui-card__gem {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  transform: translate(-50%, 50%);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+}
+.ui-card__lock {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  color: var(--ui-text-2);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+}
+.ui-card__ready {
+  position: absolute;
+  right: 2px;
+  bottom: calc(var(--card-w) * 0.06);
+  z-index: 3;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+.ui-card__new {
+  position: absolute;
+  left: 50%;
+  top: -7px;
+  z-index: 4;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 5px;
+  background: var(--ui-destructive);
+  color: #fff;
+  font-size: var(--ui-fs-tag);
+  line-height: 16px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.ui-card__corner {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  z-index: 5;
+}
+/* The class icon always sits on the top-right corner (ui-plan 3.5). */
+.ui-card__class {
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  z-index: 3;
+  display: inline-flex;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+}
+.ui-card__class .ui-card__crown {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  translate: -50% -72%;
+  border-width: 1.5px;
+}
+.ui-card.is-locked .ui-card__class {
+  filter: grayscale(0.4) brightness(0.85);
+}
+/* Equipped (U4): a green check on the bottom-left corner (clear of the cost) and a green line
+   under the tile. */
+.ui-card__equipped {
+  position: absolute;
+  left: -5px;
+  bottom: -5px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ui-progress, #3cc46b);
+  box-shadow:
+    0 0 0 2px var(--ui-bg),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.ui-card.is-equipped::after {
+  content: '';
+  display: block;
+  height: 3px;
+  margin: 5px 22% 0;
+  border-radius: 2px;
+  background: var(--ui-good);
+}
+.ui-card__name {
+  display: -webkit-box;
+  margin: 10px -10px 0;
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  overflow-wrap: normal;
+  hyphens: auto;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ui-card--lg .ui-card__name {
+  font-size: var(--ui-fs-label);
+}
+.ui-card.is-locked .ui-card__name {
+  color: var(--ui-text-3);
+}
+.ui-card__classname {
+  display: block;
+  margin: 1px -8px 0;
+  color: color-mix(in srgb, var(--cls, #fff) 55%, #fff);
+  font-size: var(--ui-fs-tag);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Copies under the tile (Army grid): 16 tall with the numbers inside at 12 px (3.6 progress bars). */
+.ui-card .ui-copies {
+  height: 16px;
+  margin-top: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  border-radius: 8px;
+  background: var(--ui-surface-2);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.ui-card .ui-copies__fill {
+  background: linear-gradient(180deg, #8aa6cf, #52668a);
+}
+.ui-card .ui-copies.is-ready .ui-copies__fill {
+  background: linear-gradient(180deg, #8ceaa8, #2f9f55);
+}
+.ui-card .ui-copies__text {
+  font-size: var(--ui-fs-caption);
+  line-height: 14px;
+  font-weight: 800;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+.ui-card .ui-copies__arrow {
+  top: -1px;
+}
+.ui-card .ui-copies__arrow svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Selected (MR-30): lifted 1.06 to e5 with a light ring. */
+.ui-card.is-selected {
+  z-index: 3;
+  transform: translateY(-4px) scale(var(--ui-lift));
+}
+.ui-card.is-selected .ui-card__frame {
+  box-shadow:
+    0 0 0 2px var(--ui-text),
+    0 0 0 5px rgba(244, 239, 228, 0.18),
+    var(--ui-e5);
+}
+
+/* Legendary: a static sheen with one light pass when the card first appears (4.2 "Delight"). */
+.ui-card__sheen {
+  position: absolute;
+  inset: 2px;
+  border-radius: calc(var(--card-r) - 2px);
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(255, 244, 214, 0.18), transparent 38%);
+}
+.ui-card__sheen::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: -70%;
+  width: 55%;
+  background: linear-gradient(105deg, transparent, rgba(255, 240, 200, 0.55), transparent);
+  transform: translateX(0);
+  animation: ui-card-sheen calc(var(--ui-dur-large) * 2) var(--ui-ease-standard) var(--ui-dur-medium) 1 both;
+}
+@keyframes ui-card-sheen {
+  to {
+    transform: translateX(420%);
+  }
+}
+/* NEW cards wobble once (4.2 "Delight"): +-3 degrees, 300 ms, back. */
+.ui-card.is-new .ui-card__frame {
+  animation: ui-card-wobble var(--ui-dur-medium) var(--ui-ease-back) var(--ui-dur-small) 1 both;
+}
+@keyframes ui-card-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(calc(var(--ui-drag-tilt, 4deg) * -0.75));
+  }
+  70% {
+    transform: rotate(calc(var(--ui-drag-tilt, 4deg) * 0.75));
+  }
+}
+
+/* Drag states (drag.ts): the origin stays as a 40% ghost; the clone follows the finger. */
+.ui-card.is-drag-origin,
+.is-drag-origin > .ui-card {
+  opacity: 0.4;
+}
+.ui-drag-ghost {
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.55));
+}
+.ui-drag-ghost .ui-card__frame {
+  box-shadow:
+    0 0 0 2px var(--ui-text),
+    var(--ui-e5);
+}
+.ui-flight {
+  will-change: transform;
+}
+.ui-spark {
+  position: absolute;
+  z-index: 90;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 6px currentColor;
+}

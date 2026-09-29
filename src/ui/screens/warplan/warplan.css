@@ -1,383 +1,914 @@
-/* War Plan builder (A9 #9). */
+/* Army (S9, docs/ui-plan.md 4.2): the loadout on the left, the cards on the right.
+   Compact (phones): 4 x 2 sm slots (62 x 84) plus the power beside them; the grid is 6+ columns of
+   sm tiles. Regular: md slots (96 x 128) with names, six troops in one row when there is room. */
 
-.ui-screen--warPlan .ui-screen__body {
-  padding-top: 10px;
+.army-screen {
+  --slot-w: 96px;
+  --cell-w: 88px;
+  --slot-gap: 12px;
 }
-.wp {
+@container ui-root (min-height: 700px) and (min-width: 1180px) {
+  .army-screen {
+    --slot-w: 112px;
+    --cell-w: 96px;
+  }
+}
+@container ui-root (max-height: 480px) {
+  .army-screen {
+    --slot-w: 62px;
+    --cell-w: 62px;
+    --slot-gap: 6px;
+  }
+  /* The lit Army tab says where we are; the header's room goes to the ages. */
+  .army-screen .ui-screen__titles {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+}
+.army-screen .ui-screen__titles {
+  flex: none;
+}
+.army-screen .ui-screen__right {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.army-screen .ui-screen__body {
+  overflow: hidden;
+  padding: var(--ui-s2) var(--ui-margin) var(--ui-s2);
+}
+
+/* ---- Header: Undo, presets, ages, average level, Auto-fill, Who beats whom ------------------ */
+
+.army-head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  flex: 1;
+  min-width: 0;
+}
+.army-undo .ui-btn.is-live {
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
+}
+@container ui-root (max-height: 480px) {
+  .army-undo .ui-btn__text,
+  .army-auto .ui-btn__icon {
+    display: none;
+  }
+  .army-undo .ui-btn {
+    --minw: 44px;
+  }
+  .army-undo .ui-btn__face {
+    padding: 0 var(--ui-s2);
+  }
+}
+.army-preset-btn .ui-btn__face {
+  min-width: 36px;
+  gap: 6px;
+}
+.army-preset-btn .ui-btn__text {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.army-agechip {
+  width: 28px;
+  height: 28px;
+}
+.army-caret {
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top-color: currentColor;
+  margin-top: 5px;
+}
+.army-ages {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  margin: -2px 0;
+  gap: var(--ui-s1);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+.army-ages::-webkit-scrollbar {
+  display: none;
+}
+.army-ages .ui-tabs {
+  overflow: visible;
+  flex: none;
+}
+.army-ages .ui-tab {
+  min-height: 44px;
+  padding: 0 var(--ui-s3) 0 var(--ui-s2);
+  gap: 6px;
+  border-radius: var(--ui-r-md);
+  scroll-snap-align: center;
+}
+.army-ages .ui-tab__icon {
+  width: 24px;
+  justify-content: center;
+}
+.army-ages .ui-tab__badge {
+  position: static;
+  display: flex;
+}
+@container ui-root (max-height: 480px) {
+  /* Only the selected age shows its name on phones (Tabs `compact`); the others keep icon and mark. */
+  .army-ages .ui-tab:not(.is-on) {
+    padding: 0 var(--ui-s2);
+    min-width: 52px;
+  }
+}
+/* Status marks (3.6 "Age tabs"): green check = full and valid, amber ! = advice, red ! = not playable. */
+.army-age__mark {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr);
-  gap: clamp(10px, 1.6vw, 20px);
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ui-ink);
+}
+.army-age__mark.is-ok {
+  background: var(--ui-good);
+}
+.army-age__mark.is-warn {
+  background: var(--ui-warn);
+}
+.army-age__mark.is-warn::before,
+.army-age__mark.is-error::before,
+.army-issue__mark::before {
+  content: '!';
+}
+.army-age__mark.is-error {
+  background: var(--ui-bad);
+}
+.army-more {
+  flex: none;
+  white-space: nowrap;
+}
+.army-avg {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 36px;
+  padding: 0 var(--ui-s3);
+  border: 1px solid rgba(107, 120, 144, 0.45);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-surface-2);
+  color: var(--ui-text);
+  font-size: var(--ui-fs-label);
+  font-weight: 800;
+  white-space: nowrap;
+}
+.army-auto {
+  flex: none;
+}
+
+/* ---- Body: two columns ---------------------------------------------------------------------- */
+
+.army {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--ui-s4);
   height: 100%;
   min-height: 0;
 }
-.wp-left {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 0;
-  overflow: auto;
-  padding: 2px 4px 8px;
-}
-.wp-left > * {
-  flex-shrink: 0;
-}
-.wp-presets {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.wp-presets .ui-tabs {
-  flex: 0 1 auto;
-}
-.wp-inuse {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 10px;
-  background: rgba(60, 196, 107, 0.18);
-  color: var(--ui-green-hi);
-  font-weight: 900;
-  font-size: 13px;
-}
-
-.wp-board {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px 14px 18px;
-  border: 3px solid var(--ui-ink);
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 229, 138, 0.12), transparent 60%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 40px),
-    linear-gradient(180deg, #4a3a2a, #33271c 60%, #271d15);
-  box-shadow: var(--ui-shadow-drop), inset 0 3px 0 rgba(255, 255, 255, 0.1), inset 0 -4px 0 rgba(0, 0, 0, 0.3);
-}
-.wp-row {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: clamp(8px, 1.4vw, 16px);
-}
-/* A18.5.2 research compatibility: the War Council Troops lines this age's units can use. */
-.wp-lines {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin: -6px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.wp-line {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.28);
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08);
-  transition:
-    opacity 180ms ease-out,
-    transform 180ms var(--ui-ease-back);
-}
-.wp-line.is-on {
-  background: rgba(255, 229, 138, 0.16);
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 229, 138, 0.55),
-    0 0 10px rgba(255, 229, 138, 0.22);
-  transform: scale(1.04);
-}
-.wp-line.is-off {
-  opacity: 0.42;
-  filter: grayscale(0.85);
-}
-.wp-line.is-off::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  top: 50%;
-  height: 3px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.85);
-  transform: rotate(-45deg);
-}
-@media (prefers-reduced-motion: reduce) {
-  .wp-line {
-    transition: none;
+@container ui-root (max-height: 480px) {
+  .army {
+    gap: var(--ui-s3);
   }
 }
-.wp-divider {
-  width: 3px;
-  align-self: stretch;
-  margin: 0 6px;
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.35);
-}
-.wp-slot {
-  position: relative;
+
+/* ---- Left: the loadout ---------------------------------------------------------------------- */
+
+.army-deck {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: var(--card-w, 96px);
+  gap: var(--ui-s2);
+  min-height: 0;
+  overflow: visible;
 }
-.wp-slot--empty {
-  --card-w: 96px;
-  justify-content: center;
-  aspect-ratio: 0.82;
-  height: auto;
-  padding: 0;
-  border: 3px dashed rgba(255, 229, 138, 0.45);
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.25);
-  color: rgba(255, 229, 138, 0.8);
-  cursor: pointer;
-  transition: background 150ms, transform 120ms var(--ui-ease-out), border-color 150ms;
-}
-.wp-slot--empty:hover {
-  background: rgba(255, 229, 138, 0.08);
-  transform: translateY(-2px);
-}
-.wp-slot--empty.is-selected {
-  border-style: solid;
-  border-color: #fff;
-  background: rgba(59, 140, 255, 0.25);
-  box-shadow: 0 0 0 5px rgba(59, 140, 255, 0.4);
-}
-.wp-slot__plus {
-  font-size: 40px;
-  font-weight: 900;
-  line-height: 1;
-}
-.wp-slot__label {
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.wp-slot.is-filled .ui-card {
-  /* `backwards`, not `both`: a transform kept after the pop would make each card a stacking context,
-     and the next card would then cover this card's remove button's enlarged hit area. */
-  animation: ui-pop 280ms var(--ui-ease-back) backwards;
-}
-.wp-remove {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 2px solid var(--ui-ink);
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 30%, var(--ui-red-hi), var(--ui-red));
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 0 var(--ui-ink);
-}
-.wp-remove::before {
-  content: '';
-  position: absolute;
-  inset: -9px;
-}
-.wp-skinbtn {
-  position: relative;
-  min-height: 36px;
-  padding: 0 10px;
-  border: 2px solid var(--ui-ink);
-  border-radius: 10px;
-  background: linear-gradient(180deg, #b48cff, #7442e6);
-  color: #fff;
-  font-weight: 900;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-.wp-skinbtn::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-}
-.wp-foot {
+.army-strip {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 14px;
+  gap: var(--ui-s2);
+  min-height: 32px;
+  max-width: calc(4 * var(--slot-w) + 5 * var(--slot-gap) + var(--slot-w) + 6px);
 }
-.wp-avg {
-  padding: 4px 12px;
-  border: 2px solid rgba(0, 0, 0, 0.35);
-  border-radius: 12px;
-  background: rgba(10, 8, 26, 0.5);
-  font-weight: 800;
-  font-size: 13px;
-}
-.wp-foot .ui-btn {
-  margin-left: auto;
-}
-.wp-note {
-  color: var(--ui-muted);
-  font-weight: 700;
-  font-size: 13px;
-}
-.wp-advisor {
-  list-style: none;
+.army-lines {
+  display: flex;
+  gap: 4px;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.wp-issue {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 13px;
-  animation: ui-enter 240ms var(--ui-ease-out) both;
-}
-.wp-issue::before {
-  content: '!';
-  display: grid;
-  place-items: center;
+  list-style: none;
   flex: none;
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--ui-ink);
-  border-radius: 50%;
-  font-weight: 900;
-  color: var(--ui-ink);
 }
-.wp-issue--warning {
-  background: rgba(255, 197, 61, 0.14);
-  color: var(--ui-gold-hi);
-}
-.wp-issue--warning::before {
-  background: var(--ui-gold);
-}
-.wp-issue--error {
-  background: rgba(239, 90, 74, 0.16);
-  color: var(--ui-red-hi);
-}
-.wp-issue--error::before {
-  background: var(--ui-red);
-}
-
-.wp-right {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  border: 3px solid var(--ui-ink);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(58, 53, 111, 0.92), rgba(31, 27, 62, 0.95));
-  box-shadow: var(--ui-shadow-drop);
-  overflow: hidden;
-}
-.wp-right__head {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 3px solid var(--ui-ink);
-  background: linear-gradient(180deg, #554ca0, var(--ui-panel-head));
-}
-.wp-right__title {
-  font-size: 15px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 4px var(--ui-ink);
-}
-.wp-right__head .ui-tab {
-  min-height: 48px;
-  padding: 0 12px;
-  font-size: 13px;
-}
-.wp-hint {
-  padding: 6px 12px 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ui-muted);
-}
-.wp-grid {
-  --card-w: 76px;
-  padding-top: 18px;
-  flex: 1;
-  overflow: auto;
-  align-content: start;
-}
-.wp-cand {
-  position: relative;
-}
-.wp-cand.is-used .ui-card__frame {
-  filter: saturate(0.6) brightness(0.85);
-}
-.wp-used {
+.army-line {
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
-  border: 2px solid var(--ui-ink);
   border-radius: 50%;
-  background: var(--ui-green);
-  color: #fff;
+  transition: opacity var(--ui-dur-micro) var(--ui-ease-out);
+}
+.army-line.is-on {
+  box-shadow: 0 0 0 1px rgba(95, 208, 138, 0.7);
+  background: rgba(95, 208, 138, 0.12);
+}
+.army-line.is-off {
+  position: relative;
+  opacity: 0.4;
+  filter: grayscale(0.9);
+}
+.army-line.is-off::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 50%;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--ui-text);
+  transform: rotate(-45deg);
+}
+.army-hint {
+  margin: 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  line-height: 1.2;
+  font-weight: 700;
+  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
+}
+.army-advice {
+  display: flex;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.army-issue {
+  display: flex;
+  min-width: 0;
+}
+.army-issue__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin: -6px 0;
+  padding: 2px var(--ui-s2) 2px 4px;
+  border: 1px solid rgba(245, 165, 36, 0.45);
+  border-radius: var(--ui-r-sm);
+  background: rgba(245, 165, 36, 0.1);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: var(--ui-fs-caption);
+  line-height: 1.15;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
+}
+.army-issue--error .army-issue__btn {
+  border-color: rgba(255, 122, 107, 0.55);
+  background: rgba(255, 122, 107, 0.1);
+}
+.army-issue__btn::before {
+  content: '';
+  position: absolute;
+}
+.army-issue__mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ui-warn);
+  color: var(--ui-ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+.army-issue--error .army-issue__mark {
+  background: var(--ui-bad);
+}
+.army-issue__more {
+  flex: none;
+  padding: 0 6px;
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-surface-3);
+  font-weight: 800;
 }
 
-/* Six troop slots (A18.9) on narrower desktops and tablets. */
-@media (max-width: 1240px) {
-  .wp-row--units {
-    gap: 6px;
+.army-slots {
+  display: grid;
+  grid-template-columns: repeat(4, var(--slot-w)) 1px var(--slot-w);
+  grid-template-areas:
+    'u0 u1 u2 u3 div p'
+    'u4 u5 t0 t1 div p';
+  column-gap: var(--slot-gap);
+  row-gap: calc(var(--slot-gap) + 8px);
+  align-content: start;
+  padding: 4px 4px 4px;
+  perspective: 600px;
+}
+.army-slots::before {
+  content: '';
+  grid-area: div;
+  width: 1px;
+  margin: 6px 0;
+  background: rgba(107, 120, 144, 0.4);
+}
+.army-slot--unit-0 {
+  grid-area: u0;
+}
+.army-slot--unit-1 {
+  grid-area: u1;
+}
+.army-slot--unit-2 {
+  grid-area: u2;
+}
+.army-slot--unit-3 {
+  grid-area: u3;
+}
+.army-slot--unit-4 {
+  grid-area: u4;
+}
+.army-slot--unit-5 {
+  grid-area: u5;
+}
+.army-slot--turret-0 {
+  grid-area: t0;
+}
+.army-slot--turret-1 {
+  grid-area: t1;
+}
+.army-slot--power {
+  grid-area: p;
+  align-self: center;
+}
+/* Regular screens: six troops in one row when the deck has the room, else three and three. */
+@container ui-root (min-height: 481px) {
+  .army-slots {
+    grid-template-columns: repeat(3, var(--slot-w)) 1px var(--slot-w);
+    grid-template-areas:
+      'u0 u1 u2 div p'
+      'u3 u4 u5 div .'
+      't0 t1 . div .';
   }
-  .wp-row--units .wp-slot,
-  .wp-row--units .wp-slot--empty,
-  .wp-row--units .ui-card--md {
-    --card-w: 80px;
+  .army-slot--power {
+    align-self: start;
+  }
+}
+@container ui-root (min-height: 481px) and (min-width: 1180px) {
+  .army-slots {
+    grid-template-columns: repeat(6, var(--slot-w));
+    grid-template-areas:
+      'u0 u1 u2 u3 u4 u5'
+      't0 t1 div p . .';
+  }
+  .army-slots::before {
+    justify-self: center;
   }
 }
 
-@media (max-height: 480px), (max-width: 900px) {
-  .wp {
-    grid-template-columns: minmax(0, 1.3fr) minmax(220px, 1fr);
+.army-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--slot-w);
+  touch-action: none;
+}
+.army-slots.is-fresh > .army-slot {
+  animation: army-flip-in var(--ui-dur-small) var(--ui-ease-out) calc(var(--i, 0) * var(--ui-dur-stagger) * 0.75) both;
+}
+.army-slot .ui-card {
+  --card-w: var(--slot-w);
+}
+.army-slot.is-selected {
+  z-index: 30;
+}
+@keyframes army-flip-in {
+  from {
+    opacity: 0;
+    transform: rotateY(calc((var(--ui-lift) - 1) * 1500deg));
   }
-  .wp-board {
-    gap: 10px;
-    padding: 10px 8px 12px;
+}
+/* The dashed empty slot with "+" and its kind (3.6 "Slots"). */
+.army-slot__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: var(--slot-w);
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: 2px dashed var(--ui-edge);
+  border-radius: calc(var(--slot-w) * 0.13);
+  background: rgba(8, 10, 14, 0.35);
+  color: var(--ui-text-2);
+  cursor: pointer;
+  transition:
+    background-color var(--ui-dur-micro) var(--ui-ease-out),
+    transform var(--ui-dur-micro) var(--ui-ease-back),
+    border-color var(--ui-dur-micro) var(--ui-ease-out);
+}
+@media (hover: hover) {
+  .army-slot__empty:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--ui-text-2);
   }
-  .wp-slot,
-  .wp-slot--empty,
-  .wp-board .ui-card--md {
-    --card-w: 70px;
+}
+.army-slot__empty:active {
+  transform: scale(var(--ui-press-scale));
+}
+.army-slot.is-selected .army-slot__empty {
+  border-style: solid;
+  border-color: var(--ui-text);
+  background: rgba(244, 239, 228, 0.08);
+  transform: translateY(-3px) scale(var(--ui-lift));
+}
+.army-slot__plus {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+.army-slot__label {
+  font-size: var(--ui-fs-tag);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* Valid drop targets light up green (U5) with a soft inner glow; the one under the finger grows. */
+.army-slot::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  top: -4px;
+  height: calc(var(--slot-w) * 4 / 3 + 8px);
+  border: 2px solid transparent;
+  border-radius: calc(var(--slot-w) * 0.13 + 4px);
+  pointer-events: none;
+  transition:
+    border-color var(--ui-dur-micro) var(--ui-ease-out),
+    opacity var(--ui-dur-micro) var(--ui-ease-out);
+}
+.army-slot.is-drop-valid::before {
+  border-color: var(--ui-good);
+  box-shadow:
+    0 0 14px rgba(95, 208, 138, 0.45),
+    inset 0 0 12px rgba(95, 208, 138, 0.3);
+}
+.army.has-sel .army-slot.is-drop-valid {
+  animation: army-wiggle var(--ui-dur-small) var(--ui-ease-standard);
+}
+.army-slot.is-drop-over {
+  transform: scale(1.04);
+  transition: transform var(--ui-dur-micro) var(--ui-ease-back);
+}
+.army-slot.is-drop-bad::before {
+  border-color: var(--ui-bad);
+}
+.army-slot.is-denied {
+  animation: ui-deny var(--ui-dur-small) var(--ui-ease-standard);
+}
+.army-slot.is-denied::before {
+  border-color: var(--ui-bad);
+  animation: ui-fade-out var(--ui-dur-large) var(--ui-ease-out) var(--ui-dur-medium) both;
+}
+@keyframes army-wiggle {
+  30% {
+    transform: rotate(calc(var(--ui-drag-tilt) * -0.5));
   }
-  .wp-slot__plus {
-    font-size: 28px;
+  70% {
+    transform: rotate(calc(var(--ui-drag-tilt) * 0.5));
   }
-  .wp-skinbtn {
-    display: none;
+}
+/* MR-32: the card lands with a squash (0.94, 1.03, 1) after its flight; the rim flashes. */
+.army-slot[data-land] .ui-card {
+  animation: army-land var(--ui-dur-micro) var(--ui-ease-back) var(--land-delay, 0ms) both;
+}
+.army-slot[data-land] .ui-card__frame::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 2px var(--frame),
+    0 0 16px var(--frame);
+  opacity: 0;
+  pointer-events: none;
+  animation: army-rim var(--ui-dur-medium) var(--ui-ease-out) var(--land-delay, 0ms) both;
+}
+@keyframes army-land {
+  0% {
+    opacity: 0;
+    transform: scale(calc(2 - var(--ui-bump) + 0.09));
   }
-  /* Six troop slots (A18.9) as two rows of three on a phone held sideways. */
-  .wp-row--units {
-    display: grid;
-    grid-template-columns: repeat(3, var(--card-w, 70px));
-    justify-content: center;
-    gap: 8px 12px;
+  1% {
+    opacity: 1;
   }
-  .wp-row--units .wp-slot,
-  .wp-row--units .wp-slot--empty,
-  .wp-row--units .ui-card--md {
-    --card-w: 70px;
+  55% {
+    transform: scale(calc(1 + (var(--ui-bump) - 1) * 0.2));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes army-rim {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
   }
 }
 
-/* Advisor warnings about a missing class show that class's icon instead of the "!" dot. */
-.wp-issue.has-class::before {
+/* The small action bar over a selected card or slot (MR-30: pops above it, 150, back). */
+.army-bar {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: max-content;
+  max-width: 280px;
+  padding: 6px var(--ui-s2) var(--ui-s2);
+  border: 1px solid rgba(107, 120, 144, 0.55);
+  border-radius: var(--ui-r-md);
+  background: linear-gradient(180deg, #2b3342, var(--ui-surface-1));
+  box-shadow: var(--ui-e3, 0 12px 28px rgba(0, 0, 0, 0.5));
+  animation: army-bar-in var(--ui-dur-micro) var(--ui-ease-back) both;
+}
+.army-bar--above {
+  bottom: calc(100% + 10px);
+}
+.army-bar--below {
+  top: calc(var(--slot-w) * 4 / 3 + 14px);
+}
+.army-cell .army-bar--below {
+  top: calc(var(--cell-w) * 4 / 3 + 34px);
+}
+.army-bar--center {
+  left: 50%;
+  translate: -50% 0;
+}
+.army-bar--start {
+  left: -6px;
+}
+.army-bar--end {
+  right: -6px;
+}
+.army-bar::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--ui-surface-1);
+  border: 1px solid rgba(107, 120, 144, 0.55);
+  rotate: 45deg;
+}
+.army-bar--above::after {
+  bottom: -6px;
+  border-top: 0;
+  border-left: 0;
+}
+.army-bar--below::after {
+  top: -6px;
+  border-bottom: 0;
+  border-right: 0;
+  background: #2b3342;
+}
+.army-bar--center::after {
+  left: calc(50% - 5px);
+}
+.army-bar--start::after {
+  left: calc(var(--slot-w) / 2);
+}
+.army-bar--end::after {
+  right: calc(var(--slot-w) / 2);
+}
+@keyframes army-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--ui-axis-tabs) * 0.4)) scale(calc(2 - var(--ui-pop) + 0.05));
+  }
+}
+.army-bar--below {
+  transform-origin: 50% 0;
+}
+.army-bar--above {
+  transform-origin: 50% 100%;
+}
+.army-bar__title {
+  max-width: 260px;
+  color: var(--ui-text);
+  font-size: var(--ui-fs-caption);
+  line-height: 16px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-align: left;
+}
+.army-bar__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+}
+.army-bar__note {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.army-bar__on {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 var(--ui-s2);
+  border-radius: var(--ui-r-pill);
+  background: rgba(95, 208, 138, 0.14);
+  color: var(--ui-good);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Desktop only: the counter legend inline under the slots (4.2 "Desktop"). */
+.army-legend-inline {
   display: none;
 }
-.wp-issue__class {
+@container ui-root (min-height: 800px) and (min-width: 1180px) {
+  .army-legend-inline {
+    display: block;
+    margin-top: var(--ui-s2);
+    max-width: calc(6 * var(--slot-w) + 5 * var(--slot-gap));
+  }
+}
+
+/* The dragged card shows the card only (drag.ts clones the whole cell). */
+.ui-drag-ghost .ui-card__name,
+.ui-drag-ghost .ui-card__classname,
+.ui-drag-ghost .ui-copies,
+.ui-drag-ghost .army-cell__age,
+.ui-drag-ghost .army-bar,
+.ui-drag-ghost .ui-card.is-equipped::after,
+.ui-flight .army-bar {
+  display: none;
+}
+
+/* ---- Right: the cards ----------------------------------------------------------------------- */
+
+.army-cards {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid rgba(107, 120, 144, 0.3);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(var(--ui-light-angle), rgba(32, 38, 51, 0.85), rgba(21, 25, 33, 0.9));
+  box-shadow: var(--ui-e1);
+  overflow: hidden;
+}
+.army-cards__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  padding: 4px var(--ui-s2);
+  border-bottom: 1px solid rgba(107, 120, 144, 0.25);
+  background: rgba(15, 18, 24, 0.5);
+}
+.army-cards__head .ui-seg {
   flex: none;
+  flex-wrap: nowrap;
+}
+.army-cards__head .ui-seg__opt {
+  white-space: nowrap;
+}
+.army-cards__head .ui-btn.is-on .ui-btn__face {
+  box-shadow: inset 0 0 0 2px var(--ui-primary);
+}
+.army-chips {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.army-chips::-webkit-scrollbar {
+  display: none;
+}
+.army-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-text);
+  font: inherit;
+  cursor: pointer;
+}
+.army-chip__face {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 var(--ui-s2);
+  border: 1px solid var(--ui-edge);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-surface-3);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  white-space: nowrap;
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
+  transition: transform var(--ui-dur-micro) var(--ui-ease-back);
+}
+.army-chip:active .army-chip__face {
+  transform: scale(var(--ui-press-scale));
+}
+.army-chip.is-slot .army-chip__face {
+  border-color: var(--ui-good);
+  background: rgba(95, 208, 138, 0.14);
+}
+
+.army-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--cell-w));
+  gap: var(--ui-s4) var(--ui-s4);
+  align-content: start;
+  justify-content: start;
+  flex: 1;
+  min-height: 0;
+  padding: var(--ui-s3) var(--ui-s3) var(--ui-s4);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
+}
+@container ui-root (max-height: 480px) {
+  .army-grid {
+    gap: var(--ui-s3) var(--ui-s2);
+    padding: var(--ui-s3) var(--ui-s2) var(--ui-s4);
+  }
+  .army-grid .ui-card__name,
+  .army-grid .ui-card__classname,
+  .army-slot .ui-card__name,
+  .army-slot .ui-card__classname {
+    display: none;
+  }
+}
+.army-grid.is-drop-valid {
+  box-shadow: inset 0 0 0 2px rgba(95, 208, 138, 0.5);
+}
+.army-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--cell-w);
+  touch-action: pan-y;
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) calc(var(--i, 0) * var(--ui-dur-stagger) * 0.5) both;
+}
+.army-cell .ui-card {
+  --card-w: var(--cell-w);
+}
+.army-cell .ui-card__name,
+.army-cell .ui-card__classname,
+.army-slot .ui-card__name,
+.army-slot .ui-card__classname {
+  margin-inline: -6px;
+}
+.army-cell.is-selected {
+  z-index: 20;
+}
+.army-cell.is-other .ui-card__frame {
+  filter: saturate(0.8);
+}
+.army-cell__age {
+  margin-top: 3px;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-tag);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.army-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ui-s2);
+  padding: var(--ui-s5) var(--ui-s3);
+  color: var(--ui-text-2);
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ---- Sheets: filter, advice, presets ------------------------------------------------------- */
+
+.army-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+}
+.army-filter__label {
+  margin: var(--ui-s2) 0 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.army-filter__classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-s2);
+}
+.army-fchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 var(--ui-s3) 0 var(--ui-s2);
+  border: 1px solid var(--ui-edge);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-surface-2);
+  color: var(--ui-text-2);
+  font: inherit;
+  font-size: var(--ui-fs-label);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--ui-dur-micro) var(--ui-ease-out),
+    transform var(--ui-dur-micro) var(--ui-ease-back);
+}
+.army-fchip:active {
+  transform: scale(var(--ui-press-scale));
+}
+.army-fchip.is-on {
+  border-color: var(--ui-text);
+  background: var(--ui-surface-3);
+  color: var(--ui-text);
+  box-shadow: inset 0 -3px 0 var(--ui-primary);
+}
+.army-filter__row {
+  margin-top: var(--ui-s2);
+}
+.army-advice-list,
+.army-presets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+  margin: 0 0 var(--ui-s4);
+  padding: 0;
+  list-style: none;
+}
+.army-advice-list .army-issue {
+  align-items: center;
+  gap: var(--ui-s2);
+  font-weight: 700;
+}
+.army-preset {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s3);
+  min-height: 56px;
+  padding: 0 var(--ui-s3);
+  border: 1px solid rgba(107, 120, 144, 0.35);
+  border-radius: var(--ui-r-md);
+  background: var(--ui-surface-2);
+}
+.army-preset.is-on {
+  border-color: var(--ui-good);
+}
+.army-preset__name {
+  flex: 1;
+  font-size: var(--ui-fs-label);
+  font-weight: 800;
 }

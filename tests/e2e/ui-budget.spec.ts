@@ -82,7 +82,31 @@ const PAGES: PageSpec[] = [
   { name: 'result-warPath', hash: 'screens/result-warPath/mid/{vp}', strict: true, primary: true },
   // Backlog (UI-3, UI-4): reported, not failed.
   { name: 'modeSelect', hash: 'screens/modeSelect/mid/{vp}', strict: false, primary: false },
-  { name: 'warPlan', hash: 'screens/warPlan/mid/{vp}', strict: false, primary: false },
+  { name: 'warPlan', hash: 'screens/warPlan/mid/{vp}', strict: true, primary: false },
+  { name: 'army', hash: 'screens/army/mid/{vp}', strict: true, primary: false },
+  { name: 'army-new', hash: 'screens/army-first/new/{vp}', strict: true, primary: false },
+  { name: 'army-maxed', hash: 'screens/army/maxed/{vp}', strict: true, primary: false },
+  {
+    name: 'army-selected',
+    hash: 'screens/army-warn/mid/{vp}',
+    strict: true,
+    primary: false,
+    prepare: async (page) => {
+      await page.click('[data-testid="cand-mammoth_matriarch"]');
+    },
+  },
+  {
+    name: 'army-slot',
+    hash: 'screens/army-warn/mid/{vp}',
+    strict: true,
+    primary: false,
+    prepare: async (page) => {
+      await page.click('[data-testid="slot-unit-0"] .ui-card');
+    },
+  },
+  { name: 'card-mammoth', hash: 'screens/card-mammoth_matriarch/mid/{vp}', strict: true, primary: false },
+  { name: 'card-power', hash: 'screens/card-meteor_shower/mid/{vp}', strict: true, primary: false },
+  { name: 'card-locked', hash: 'screens/card-friar/new/{vp}', strict: true, primary: false },
   { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: false, primary: false },
   { name: 'customize', hash: 'screens/customize-troops/mid/{vp}', strict: false, primary: false },
   { name: 'settings', hash: 'screens/settings/mid/{vp}', strict: false, primary: false },

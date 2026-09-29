@@ -364,7 +364,12 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
           </span>
         ) : null}
         {card.state === 'armyFull' ? <span class="hud-card-tag">{t('hud.armyFull')}</span> : null}
-        {card.state === 'legendaryInField' ? <span class="hud-card-tag is-legendary">{t('hud.legendaryInField')}</span> : null}
+        {card.state === 'legendaryInField' ? (
+          // The short form fits the card; a press says it in full ("Legendary in field", MR-67).
+          <span class="hud-card-tag is-legendary" title={t('hud.legendaryInField')}>
+            {t('hud.inField')}
+          </span>
+        ) : null}
         {flash > 0 ? <i key={`f${flash}`} class="hud-card-flash" aria-hidden="true" /> : null}
         {pressed ? (
           <svg class="hud-card-hold" viewBox="0 0 40 40" aria-hidden="true">

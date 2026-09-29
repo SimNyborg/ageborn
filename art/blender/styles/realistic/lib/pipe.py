@@ -381,23 +381,31 @@ def dust2d(h, w, feet_px, pxlu, s, origin=(0.0, 0.0), spread=24.0, n=14, size=7.
     dens = np.zeros((h, w))
     shade = np.zeros((h, w))
     grow = 1 - (1 - min(1.0, s / 0.3)) ** 3
+    # a finer noise field breaks up every puff's edge, so the cloud billows instead of reading as a
+    # row of round bubbles
+    edge = 1.0 + 0.4 * (fbm(h, w, 3 * pxlu, seed + 23, octaves=3) - 0.5)
     for i in range(n):
-        bx = rng.uniform(-1, 1) * spread
+        u = rng.uniform(-1, 1)
+        bx = u * spread
         bz = rng.uniform(0.0, 0.5) * size
         dx = rng.uniform(-1, 1)
-        r = rng.uniform(0.6, 1.1) * size * (0.4 + 0.9 * grow + 0.35 * s)
+        # puffs thin out toward the edges of the cloud (AD fix: small dark puffs at the far edge read
+        # as detached dirt clods)
+        r = rng.uniform(0.6, 1.1) * size * (0.4 + 0.9 * grow + 0.35 * s) * (1.0 - 0.35 * abs(u))
         cx = feet_px[0] + (origin[0] + bx * (1 + 0.6 * grow) + dx * 6 * s) * pxlu
         cz = feet_px[1] - (origin[1] + bz + r * 0.55 + 7 * s * rng.uniform(0.4, 1.0)) * pxlu
         rp = r * pxlu
-        d = np.sqrt((xx - cx) ** 2 + ((yy - cz) * 1.15) ** 2) / rp
+        d = np.sqrt((xx - cx) ** 2 + ((yy - cz) * 1.15) ** 2) / rp * edge
         blob = np.clip(1 - d, 0, 1) ** 1.3
         dens = np.maximum(dens, blob) + blob * 0.35
         # top-lit: brighter on the upper side of each puff
         shade += blob * np.clip(0.55 + 0.6 * (cz - yy) / rp, 0.2, 1.2)
     nz = fbm(h, w, 6 * pxlu, seed + 11)
     thin = 0.12 + 0.75 * max(0.0, (s - 0.35) / 0.65) ** 1.2      # breaks up as it settles
-    a = np.clip((dens * (0.6 + 0.9 * nz) - thin) * 2.0, 0, 0.92)
-    lum = np.clip(shade / np.maximum(dens, 1e-3), 0.4, 1.2) * (0.85 + 0.3 * nz)
+    # AD fix: softer, more translucent dust with a narrow value range; the old 0.4-1.2 range and a
+    # 0.92 alpha read as dark camouflage blotches over the fallen body
+    a = np.clip((dens * (0.6 + 0.9 * nz) - thin) * 2.1, 0, 0.85)
+    lum = np.clip(shade / np.maximum(dens, 1e-3), 0.72, 1.12) * (0.93 + 0.14 * nz)
     rgb = np.array(color)[None, None, :] * lum[..., None]
     return np.dstack([rgb * a[..., None], a])
 

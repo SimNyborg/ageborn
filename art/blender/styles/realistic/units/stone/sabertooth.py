@@ -48,10 +48,10 @@ def build():
     s = S_
     # AD pass: a darker tawny coat with real countershading (pale throat, chest and belly) and dark
     # markings, so the cat reads as a big predator and not a plush toy
-    coat = M.coat("#846a52", "#6c5642", name="coat", noise=0.14, nscale=2.6)
-    coat_far = M.coat("#6a5644", "#584636", name="coat_far", noise=0.14, nscale=2.6)   # far legs sit in shadow
-    belly = M.coat("#bba68c", "#a8927a", name="belly")
-    dark = M.coat("#4e3e32", "#40342a", name="stripe")
+    coat = M.coat("#80694e", "#6a5640", name="coat", noise=0.08, nscale=5.0, bump=0.15, sheen=0.2)
+    coat_far = M.coat("#66543f", "#564633", name="coat_far", noise=0.08, nscale=5.0, bump=0.15, sheen=0.2)   # far legs sit in shadow
+    belly = M.coat("#bcab8e", "#a8987c", name="belly", noise=0.06, nscale=5.0, bump=0.15, sheen=0.2)
+    dark = M.coat("#4e3e32", "#40342a", name="stripe", bump=0.15, sheen=0.2)
     ivory = M.ivory()
     nose = C.mat("nose", "#2c2522", rough=0.4, noise=0.1, bump=0.1)
     gum = C.mat("gum", "#5a3a36", rough=0.5, noise=0.1, bump=0.1)
@@ -93,7 +93,7 @@ def build():
                                     (S(x, 8.6, z), A(1.0, 1.6, h), (0, 0.25, 0))], dark, res=0.3)
         rig.skin(st, [p + "body", p + "pelvis"], soft=3 * s)
     head = C.blobs("cat_head", [
-        (S(31.5, 0, 50.5), A(6.8, 5.9, 5.5)),       # cranium
+        (S(31.5, 0, 50.2), A(7.2, 5.6, 4.9)),       # cranium (low and long, not round)
         (S(29.5, 0, 47), A(6.4, 6.8, 5.4)),         # cheeks / jowls
         (S(37.8, 0, 47.8), A(5.2, 3.8, 3.5)),       # muzzle (long, deep)
         (S(33.5, 0, 45.4), A(5.6, 5.4, 3.6)),       # heavy lower jowls
@@ -147,17 +147,10 @@ def build():
             (S(-8, -9.1, 41.2), A(7.5, 1.3, 4.8)), (S(-8, 9.1, 41.2), A(7.5, 1.3, 4.8))]
     pelt = C.blobs("pelt", PELT, hide, res=0.45)
     C.displace(pelt, 0.45 * s, 0.9)
-    # a dark leather hem just proud of the pelt edge, and a row of rawhide fringe tassels
-    hem = C.blobs("pelt_hem", [(c, M.hem_axes(a, 0.9 * s)) for c, a in PELT], leather, res=0.45)
+    # a dark leather hem just proud of the pelt edge (no fringe: on the cat it read as ribs)
+    hem = C.blobs("pelt_hem", [(c, M.hem_axes(a, 0.9 * s, along=(0,) if i < 2 else (0, 2))) for i, (c, a) in enumerate(PELT)],
+                  leather, res=0.45)
     rig.skin(hem, [p + "body", p + "pelvis"], soft=4 * s)
-    fringe_m = M.rawhide("#6e5a46", name="fringe")
-    for sd in (-1, 1):
-        for k in range(9):
-            x = -13 + 3.3 * k
-            z0 = 34.6 if -11 < x < 17 else 36.0
-            fr = C.tube("fringe", [S(x, sd * 10.0, z0 + 0.8), S(x - 0.4, sd * 10.2, z0 - 2.6)], [0.42 * s, 0.26 * s],
-                        fringe_m, seg=5)
-            rig.skin(fr, [p + "body", p + "pelvis"], soft=4 * s)
     C.team(pelt)
     rig.skin(pelt, [p + "body", p + "pelvis"], soft=4 * s)
     strap = C.blobs("girth", [(S(6, 0, 38.5), A(1.6, 10.2, 11.2))], leather, res=0.45)
@@ -271,7 +264,7 @@ def pose(ctx, clip, t):
 def clips():
     die_c = G.Clip("die", MO.DIE_MS, extra={
         "fx": [{"id": "fx.dust_poof", "atMs": 595, "offsetLu": [-6, 8], "scale": 0.9}], "hideUnitAtMs": 695})
-    die_c.fx = MO.dust_frames(die_c, 236, origin=(-4, 0), spread=34, size=11.0, seed=7)
+    die_c.fx = MO.dust_frames(die_c, 236, origin=(-4, 0), spread=28, size=9.0, seed=7)
     return [
         G.Clip("idle", MO.IDLE_MS, loop=True),
         G.Clip("walk", [72] * 8, loop=True),

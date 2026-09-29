@@ -1,10 +1,16 @@
 /**
- * Card tiles (A9 War Plan and Collection, A6.6 copies and levels, A5.8 foils):
- * - a rarity frame (A10 rarity colours, UI only) around the card art;
- * - the art: the injected portrait (DESIGN B5) or a stylised age plate with the role glyph;
- * - a foil sheen for Bronze, Silver and Holo foils;
- * - level badge, gold cost, NEW stamp, the copies bar and an "upgrade ready" arrow;
- * - unowned cards show as dark silhouettes with a lock (A9 #10).
+ * The one card tile (docs/ui-plan.md 3.6 "Card tile", U4, U5): one anatomy at every size.
+ * - A thin brushed-metal frame in the rarity colour (A10, only on cards) with the rarity gem at the
+ *   bottom centre, so rarity reads by shape too (circle, rhombus, hexagon, star; A3).
+ * - The art fills the card: the injected portrait (DESIGN B5) or a stylised age plate with the role
+ *   glyph; a foil sheen for Bronze, Silver and Holo foils (A5.8).
+ * - Cost top-left (coin and number), class icon top-right (A18.9.1), the level along the bottom
+ *   ("Lv 4"), the name under the art (sm and up unless a screen hides it) and the class word.
+ * - States: not owned (silhouette and padlock), equipped (a check badge on the bottom-left corner
+ *   and a green underline), NEW (a tag; the frame wobbles once), upgrade ready (the green arrow; with
+ *   `showCopies` the copies bar turns full and green), selected (lifted, e5), Legendary (a static
+ *   sheen with one light pass when it appears).
+ * - Hover (desktop, 350 ms) or long-press (touch, 450 ms) opens the tip with class and counters.
  */
 import { rarityNameKey } from '@/content/keys';
 import type { AgeId, CardId, Foil, Rarity, SkinId } from '@/contracts';
@@ -12,7 +18,8 @@ import type { CardClass, UnitClass } from '@/core/cardClass';
 import type { ComponentChildren } from 'preact';
 import { CardTip, CardTipBody, ClassIcon, CLASS_NAME_KEY, useCardTip } from './ClassIcon';
 import { formatInt } from './format';
-import { AGE_COLOR, ArrowUpIcon, CoinIcon, LockIcon, RARITY_COLOR, RoleGlyph, type GlyphKind } from './icons';
+import './cardTile.css';
+import { AGE_COLOR, ArrowUpIcon, CheckIcon, CoinIcon, LockIcon, RARITY_COLOR, RarityGem, RoleGlyph, type GlyphKind } from './icons';
 import { useKit, usePortrait } from './kit';
 import { CopiesBar } from './Meters';
 
@@ -46,8 +53,9 @@ export interface CardTileData {
 
 export type CardTileSize = 'xs' | 'sm' | 'md' | 'lg';
 
-const ART_PX: Record<CardTileSize, number> = { xs: 56, sm: 72, md: 96, lg: 160 };
-const CLASS_PX: Record<CardTileSize, number> = { xs: 18, sm: 22, md: 26, lg: 34 };
+const ART_PX: Record<CardTileSize, number> = { xs: 64, sm: 84, md: 112, lg: 160 };
+const CLASS_PX: Record<CardTileSize, number> = { xs: 16, sm: 20, md: 24, lg: 30 };
+const GEM_PX: Record<CardTileSize, number> = { xs: 12, sm: 16, md: 16, lg: 22 };
 
 export function CardArt(p: {
   card: CardId;
@@ -99,6 +107,10 @@ export function CardTile(p: {
   grid?: boolean;
   /** Hover (desktop) / long-press (touch) tip with the class and counters. Default on for units. */
   tip?: boolean;
+  /** In the player's army (ui-plan 3.6): a check badge and a green underline. */
+  equipped?: boolean;
+  /** The name under the art; default on from sm up (xs never). */
+  showName?: boolean;
 }) {
   const { t, locale } = useKit();
   const c = p.card;
@@ -115,6 +127,8 @@ export function CardTile(p: {
     c.upgradeReady ? 'is-ready' : '',
     c.foil !== 'none' ? `has-foil has-foil--${c.foil}` : '',
     p.onClick ? 'is-button' : '',
+    p.equipped ? 'is-equipped' : '',
+    c.isNew && c.owned ? 'is-new' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -127,29 +141,41 @@ export function CardTile(p: {
       c.cls ? t(CLASS_NAME_KEY[c.cls]) : null,
       c.rarity ? t(rarityNameKey(c.rarity)) : null,
       c.upgradeReady ? t('ui.card.upgradeReady') : null,
+      p.equipped ? t('ui.card.inArmy') : null,
     ]
       .filter(Boolean)
       .join(', ');
+  const named = size !== 'xs' && p.showName !== false;
   const body = (
     <>
       <span class="ui-card__frame" style={{ '--frame': frame }}>
         <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} />
+        <i class="ui-card__shade" aria-hidden="true" />
         {c.owned && size !== 'xs' && !p.hideLevel && c.kind !== 'power' ? <span class="ui-card__level">{levelText}</span> : null}
         {p.showCost && c.cost !== null ? (
           <span class="ui-card__cost">
-            <CoinIcon size={size === 'xs' ? 12 : 15} />
+            <CoinIcon size={size === 'xs' ? 11 : 13} />
             {formatInt(c.cost, locale)}
           </span>
         ) : null}
-        {c.isNew && c.owned ? <span class="ui-card__new">{t('ui.card.new')}</span> : null}
+        {c.rarity ? (
+          <span class="ui-card__gem" aria-hidden="true">
+            <RarityGem rarity={c.rarity} size={GEM_PX[size]} />
+          </span>
+        ) : null}
+        {c.isNew && c.owned ? (
+          <span class="ui-card__new" data-tag="">
+            {t('ui.card.new')}
+          </span>
+        ) : null}
         {!c.owned ? (
           <span class="ui-card__lock">
-            <LockIcon size={size === 'lg' ? 30 : size === 'xs' ? 16 : 20} />
+            <LockIcon size={size === 'lg' ? 30 : size === 'xs' ? 16 : 22} />
           </span>
         ) : null}
         {c.upgradeReady && !p.showCopies ? (
           <span class="ui-card__ready" aria-hidden="true">
-            <ArrowUpIcon size={20} />
+            <ArrowUpIcon size={size === 'xs' ? 14 : 18} />
           </span>
         ) : null}
         {p.corner ? <span class="ui-card__corner">{p.corner}</span> : null}
@@ -159,9 +185,19 @@ export function CardTile(p: {
             {c.legendary ? <ClassIcon id="legendary" size={Math.round(CLASS_PX[size] * 0.8)} class="ui-card__crown" /> : null}
           </span>
         ) : null}
+        {p.equipped ? (
+          <span class="ui-card__equipped" aria-hidden="true">
+            <CheckIcon size={size === 'xs' ? 12 : 14} />
+          </span>
+        ) : null}
+        {c.rarity === 'legendary' ? <i class="ui-card__sheen" aria-hidden="true" /> : null}
       </span>
-      {size !== 'xs' ? <span class="ui-card__name" data-clip-check="">{c.name}</span> : null}
-      {c.cls && size !== 'xs' ? (
+      {named ? (
+        <span class="ui-card__name" data-clip-check="">
+          {c.name}
+        </span>
+      ) : null}
+      {c.cls && named ? (
         <span class="ui-card__classname" data-tag="" style={{ '--cls': `var(--cls-${c.cls})` }}>
           {t(CLASS_NAME_KEY[c.cls])}
         </span>
@@ -177,7 +213,7 @@ export function CardTile(p: {
     ) : null;
   if (!p.onClick) {
     return (
-      <div class={cls} data-testid={p.testid} role="img" aria-label={aria} {...tip.handlers}>
+      <div class={cls} data-testid={p.testid} data-card={c.id} role="img" aria-label={aria} {...tip.handlers}>
         {body}
         {tipView}
       </div>
@@ -189,6 +225,7 @@ export function CardTile(p: {
       type="button"
       class={cls}
       data-testid={p.testid}
+      data-card={c.id}
       data-grid-item={p.grid ? '' : undefined}
       aria-label={aria}
       aria-pressed={p.selected === undefined ? undefined : p.selected}

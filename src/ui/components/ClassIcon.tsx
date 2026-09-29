@@ -377,6 +377,15 @@ export function CardTipBody(p: {
   );
 }
 
+/**
+ * The one plain sentence of the counter legend for "a beats b" (card detail, ui-plan 4.4), or null
+ * when the legend has no such row.
+ */
+export function counterNoteKey(a: ClassGlyphId, b: ClassGlyphId): string | null {
+  const row = COUNTER_LEGEND.find((r) => r.a === a && r.b === b);
+  return row ? (NOTE_KEY[row.note] ?? null) : null;
+}
+
 /** Translates a class for aria text. */
 export function className(t: Translate, c: ClassGlyphId): string {
   return t(CLASS_NAME_KEY[c]);

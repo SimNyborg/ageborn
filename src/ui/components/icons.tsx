@@ -640,6 +640,42 @@ export function AgeGlyph(p: IconProps & { age: AgeId }) {
           <circle cx="14.6" cy="6.6" r="1" fill="#c9b8a3" />
         </Svg>
       );
+    case 'bronze':
+      // A crested bronze helmet (Hellas).
+      return (
+        <Svg {...p}>
+          <path d="M6 13.5c0-4.6 2.7-7.5 6-7.5s6 2.9 6 7.5v6.5h-3.2v-4.2H9.2V20H6z" fill="#c68a3c" {...O} />
+          <path d="M9.2 15.8V12h5.6v3.8" fill="#3a2a1c" {...O} stroke-width="1.2" />
+          <path d="M5.5 6.5C8 2.8 16 2.8 18.5 6.5" fill="none" stroke={OUTLINE} stroke-width="4" stroke-linecap="round" />
+          <path d="M5.5 6.5C8 2.8 16 2.8 18.5 6.5" fill="none" stroke="#b0302a" stroke-width="2.2" stroke-linecap="round" />
+          <path d="M8 10c.6-1.6 1.8-2.6 3.2-3" stroke="#f3cf8a" stroke-width="1.3" stroke-linecap="round" fill="none" />
+        </Svg>
+      );
+    case 'industrial':
+      // A factory gear with a smokestack.
+      return (
+        <Svg {...p}>
+          <path d="M15 3h3v8h-3z" fill="#5d4a3e" {...O} />
+          <path
+            d="M12 7.2l1.4.3.6-1.3 1.6.9-.5 1.3 1 1 1.3-.5.9 1.6-1.3.6.3 1.4-.3 1.4 1.3.6-.9 1.6-1.3-.5-1 1 .5 1.3-1.6.9-.6-1.3-1.4.3-1.4-.3-.6 1.3-1.6-.9.5-1.3-1-1-1.3.5-.9-1.6 1.3-.6-.3-1.4.3-1.4-1.3-.6.9-1.6 1.3.5 1-1-.5-1.3 1.6-.9.6 1.3z"
+            fill="#8a8f98"
+            {...O}
+            stroke-width="1.2"
+          />
+          <circle cx="12" cy="14.2" r="2.4" fill="#3a3f45" {...O} stroke-width="1.2" />
+        </Svg>
+      );
+    case 'cosmic':
+      // A ringed planet and a star.
+      return (
+        <Svg {...p}>
+          <circle cx="11" cy="13" r="6" fill="#7a55d8" {...O} />
+          <ellipse cx="11" cy="13" rx="10" ry="3" fill="none" stroke={OUTLINE} stroke-width="3" transform="rotate(-18 11 13)" />
+          <ellipse cx="11" cy="13" rx="10" ry="3" fill="none" stroke="#ffd466" stroke-width="1.4" transform="rotate(-18 11 13)" />
+          <path d="M19 2.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" fill="#fff4c4" {...O} stroke-width="0.9" />
+          <path d="M8.4 10.4a3.4 3.4 0 0 1 2.4-1.4" stroke="#d9c8ff" stroke-width="1.2" stroke-linecap="round" fill="none" />
+        </Svg>
+      );
     case 'medieval':
       return (
         <Svg {...p}>
@@ -728,13 +764,70 @@ export function CrateIcon(p: IconProps) {
   );
 }
 
+/**
+ * Rarity gems (ui-plan 3.5): the shape carries the rarity without colour (A3): Common a circle, Rare
+ * a rhombus, Epic a hexagon, Legendary a five-point star, each in its A10 colour.
+ */
 export function RarityGem(p: IconProps & { rarity: Rarity }) {
   const c = RARITY_COLOR[p.rarity];
   return (
     <Svg {...p}>
-      <path d="M12 3 20 10 12 21 4 10z" fill={c} {...O} />
-      <path d="M4 10h16M9 10l3-7 3 7-3 11z" fill="none" stroke={OUTLINE} stroke-width="1" opacity=".55" />
-      <path d="M7.4 9.2 10 5.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
+      {p.rarity === 'common' ? (
+        <>
+          <circle cx="12" cy="12" r="7.6" fill={c} {...O} />
+          <path d="M8.6 9.6a4.2 4.2 0 0 1 3-2.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none" />
+        </>
+      ) : p.rarity === 'rare' ? (
+        <>
+          <path d="M12 2.8 20.2 12 12 21.2 3.8 12z" fill={c} {...O} />
+          <path d="M3.8 12h16.4M12 2.8v18.4" stroke={OUTLINE} stroke-width="0.9" opacity=".45" />
+          <path d="M7.2 11 11 6.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
+        </>
+      ) : p.rarity === 'epic' ? (
+        <>
+          <path d="M12 2.6 20.2 7.3v9.4L12 21.4l-8.2-4.7V7.3z" fill={c} {...O} />
+          <path d="M12 7.2 16.1 9.6v4.8L12 16.8l-4.1-2.4V9.6z" fill="none" stroke={OUTLINE} stroke-width="0.9" opacity=".5" />
+          <path d="M6.2 8.8 11 6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
+        </>
+      ) : (
+        <>
+          <path d="M12 2.4 14.8 8.6l6.7.7-5 4.5 1.4 6.6L12 17l-5.9 3.4 1.4-6.6-5-4.5 6.7-.7z" fill={c} {...O} />
+          <path d="M9.6 8.9 12 4.8" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
+        </>
+      )}
+    </Svg>
+  );
+}
+
+/** Undo (a curved arrow back), for the Army header (ui-plan 4.2). */
+export function UndoIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M8.5 9H15a5 5 0 0 1 0 10h-4" fill="none" stroke={OUTLINE} stroke-width="4.2" stroke-linecap="round" />
+      <path d="M8.5 9H15a5 5 0 0 1 0 10h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M9.5 3.8 3.8 9l5.7 5.2z" fill="currentColor" {...O} />
+    </Svg>
+  );
+}
+
+/** Filter (a funnel), for grids with filters and sort (ui-plan 3.5 "System"). */
+export function FilterIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M3.5 4.5h17l-6.6 7.8v6.4l-3.8 2v-8.4z" fill="currentColor" {...O} />
+      <path d="M6.5 6.5h6" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".7" />
+    </Svg>
+  );
+}
+
+/** Who beats whom: three class discs on a ring of arrows (the counter legend, ui-plan 4.2). */
+export function CountersIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M13.8 5.6 17.6 12M16 16.9H8M6.4 12l3.8-6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      <circle cx="12" cy="4.6" r="3" fill="#E69F00" {...O} />
+      <circle cx="18.6" cy="16.8" r="3" fill="#0072B2" {...O} />
+      <circle cx="5.4" cy="16.8" r="3" fill="#D55E00" {...O} />
     </Svg>
   );
 }

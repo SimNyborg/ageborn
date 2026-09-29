@@ -63,7 +63,9 @@ describe('keyboard navigation', () => {
     expect(m.q('[data-testid="age-tab-bronze"]')!.getAttribute('aria-selected')).toBe('true');
     expect(m.document.activeElement).toBe(m.q('[data-testid="age-tab-bronze"]'));
     flush(() => keydown(m!.q('[data-testid="age-tab-bronze"]')!, 'End'));
-    expect(m.q('[data-testid="age-tab-cosmic"]')!.getAttribute('aria-selected')).toBe('true');
+    // Army shows the reached ages only (ui-plan 4.2): the mid save's longest format ends at Future.
+    expect(m.q('[data-testid="age-tab-future"]')!.getAttribute('aria-selected')).toBe('true');
+    expect(m.q('[data-testid="age-tab-cosmic"]')).toBeNull();
     // Roving tab index: only the selected tab is in the Tab order.
     expect(m.qa('[role="tab"][tabindex="0"]').filter((el) => el.closest('[data-testid="age-picker"]'))).toHaveLength(1);
   });
@@ -119,7 +121,7 @@ describe('Home: the War Path map (ui-plan 2.3, 4.1, 6.4)', () => {
     m = mount({ state: 'mid', shell: true });
     expect(m.qa('[data-primary]')).toHaveLength(1);
     expect(text(m.q('[data-testid="play"]')!)).toBe('Play level 7');
-    expect(text(m.q('[data-testid="home-level-label"]')!)).toBe('Bronze Age: Hellas · Level 7 of 10');
+    expect(text(m.q('.wp-top__long')!)).toBe('Bronze Age: Hellas · Level 7 of 10');
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'warPath', level: 'wp.bronze.l07', difficulty: 'normal' });
@@ -554,36 +556,77 @@ describe('Pause', () => {
   });
 });
 
-describe('War Plan builder (A3)', () => {
-  it('picks a slot, then a card, and saves the plan', () => {
-    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPlan' }] });
+describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
+  const stone = () => m!.save.value.warPlans[m!.save.value.activePlan]!.loadouts.stone;
+  const army = (): Mounted => mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+
+  it('equips with a card and Use (2 taps); a filled slot is removed from its own bar', () => {
+    m = army();
+    expect(stone().units[4]).toBe('drum_shaman');
+    m.click('[data-testid="slot-unit-4"] .ui-card');
+    expect(m.q('[data-testid="slot-actions"]')).not.toBeNull();
     m.click('[data-testid="remove-unit-4"]');
-    expect(m.save.value.warPlans[0]!.loadouts.stone.units[4]).toBeNull();
-    m.click('[data-testid="slot-unit-4"]');
-    m.click('[data-testid="cand-sabertooth"]');
-    expect(m.save.value.warPlans[0]!.loadouts.stone.units[4]).toBe('sabertooth');
-    // Picking a card already in the plan moves it (no duplicates).
+    expect(stone().units[4]).toBeNull();
+    // Tap a card: it lifts and its bar offers Use and Info; Use takes the first empty slot.
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    expect(m.q('[data-testid="card-actions"]')).not.toBeNull();
+    expect(m.q('[data-testid="card-info"]')).not.toBeNull();
+    m.click('[data-testid="card-use"]');
+    expect(stone().units[4]).toBe('mammoth_matriarch');
+    expect(m.q('[data-testid="card-actions"]')).toBeNull();
+    // Equipped state is visible on the grid card (U4).
+    expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-equipped');
+  });
+
+  it('tap-tap both ways: a selected card goes into the tapped slot, a selected slot takes the tapped card', () => {
+    m = army();
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    // The slots it fits light up green (U5).
+    expect(m.q('[data-drop="unit-0"]')!.getAttribute('class')).toContain('is-drop-valid');
+    expect(m.q('[data-drop="turret-0"]')!.getAttribute('class')).not.toContain('is-drop-valid');
     m.click('[data-testid="slot-unit-0"] .ui-card');
-    m.click('[data-testid="cand-sabertooth"]');
-    const units = m.save.value.warPlans[0]!.loadouts.stone.units;
-    expect(units[0]).toBe('sabertooth');
-    expect(units.filter((u) => u === 'sabertooth')).toHaveLength(1);
+    expect(stone().units[0]).toBe('mammoth_matriarch');
+    // Select a slot first: the grid narrows to what fits, and the tapped card goes in.
+    m.click('[data-testid="slot-turret-1"] .ui-card');
+    expect(m.q('[data-testid="chip-slot"]')).not.toBeNull();
+    expect(m.q('[data-testid="cand-bonker"]')).toBeNull();
+    m.click('[data-testid="cand-log_roller"]');
+    expect(stone().turrets[1]).toBe('log_roller');
+    // Picking a card that is already in the army moves it: never a duplicate.
+    m.click('[data-testid="slot-unit-5"] .ui-card');
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    expect(stone().units[5]).toBe('mammoth_matriarch');
+    expect(stone().units.filter((u) => u === 'mammoth_matriarch')).toHaveLength(1);
   });
 
-  it('editing preset C first stores B too, since presets are added in order (meta.setWarPlan)', () => {
-    const n = { ...newPlayerSave(content), matchesPlayed: 3 };
-    m = mount({ save: n, routes: [{ id: 'home' }, { id: 'warPlan', plan: 2 }] });
-    expect(m.save.value.warPlans).toHaveLength(1);
+  it('the header Undo reverses every change of this visit, one at a time', () => {
+    m = army();
+    const before = stone();
+    expect(m.q('[data-testid="army-undo"]')!.getAttribute('aria-disabled')).toBe('true');
+    m.click('[data-testid="slot-unit-0"] .ui-card');
     m.click('[data-testid="remove-unit-0"]');
-    expect(calls('setWarPlan:rejected')).toHaveLength(0);
-    expect(m.save.value.warPlans.map((p) => p.name)).toEqual(['A', 'B', 'C']);
-    expect(m.save.value.warPlans[2]!.loadouts.stone.units[0]).toBeNull();
-    expect(m.save.value.warPlans[1]!.loadouts.stone.units[0]).toBe('bonker');
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    m.click('[data-testid="card-use"]');
+    expect(stone().units[0]).toBe('mammoth_matriarch');
+    m.click('[data-testid="army-undo"]');
+    expect(stone().units[0]).toBeNull();
+    m.click('[data-testid="army-undo"]');
+    expect(stone()).toEqual(before);
+    expect(m.q('[data-testid="army-undo"]')!.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('unowned cards cannot be picked', () => {
-    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'warPlan' }] });
-    expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.hasAttribute('disabled')).toBe(true);
+  it('a card that cannot be used here says why instead of failing (4.2)', () => {
+    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    expect(m.q('[data-testid="card-use"]')).toBeNull();
+    expect(text(m.q('[data-testid="card-actions"]')!)).toContain('Not found yet');
+    m.unmount();
+    m = army();
+    flush(() => (m!.qa('[data-testid="army-view"] [role="radio"]')[1] as FakeElement).click());
+    m.click('[data-testid="cand-hoplite"]');
+    m.click('[data-testid="card-use"]');
+    expect(text(m.q('[data-testid="card-use-reason"]')!)).toBe('Bronze card: switch to Bronze');
+    expect(stone().units).not.toContain('hoplite');
   });
 
   it('shows advisor warnings for the selected age and marks ages with issues', () => {
@@ -596,21 +639,37 @@ describe('War Plan builder (A3)', () => {
     expect(m.q('[data-testid="issue-noAntiArmor"]')).not.toBeNull();
     expect(text(m.q('[data-testid="issue-noAntiArmor"]')!)).toBe('Modern Age has no anti-armor.');
     expect(m.q('[data-testid="age-tab-modern"] .ui-warndot')).not.toBeNull();
+    expect(m.q('[data-testid="age-tab-stone"] .ui-warndot')).toBeNull();
+    m.click('[data-testid="issue-onlyThreeUnits"] button');
+    expect(m.q('[data-testid="army-advice-sheet"]')).not.toBeNull();
   });
 
-  it('auto-fills, switches presets and makes a preset the active plan', () => {
-    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPlan' }] });
+  it('auto-fills with one short line, and switches the army in use from the presets panel', () => {
+    m = army();
     m.click('[data-testid="auto-fill"]');
     expect(calls('autoFill')).toHaveLength(1);
     expect(m.save.value.warPlans[0]!.name).toBe('Rush');
+    expect(m.qa('[data-testid="toast"]')).toHaveLength(1);
+    m.click('[data-testid="army-presets"]');
     m.click('[data-testid="preset-1"]');
-    m.click('[data-testid="use-plan"]');
     expect(m.save.value.activePlan).toBe(1);
     expect(m.q('[data-testid="plan-in-use"]')).not.toBeNull();
   });
 
-  it('renames a preset', () => {
-    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPlan' }] });
+  it('presets are added in order: choosing C first stores B too (meta.setWarPlan)', () => {
+    const save = { ...midGameSave(content) };
+    save.warPlans = [save.warPlans[0]!];
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    m.click('[data-testid="army-presets"]');
+    m.click('[data-testid="preset-2"]');
+    expect(calls('setWarPlan:rejected')).toHaveLength(0);
+    expect(m.save.value.warPlans.map((p) => p.name)).toEqual(['Rush', 'B', 'C']);
+    expect(m.save.value.activePlan).toBe(2);
+  });
+
+  it('renames the army in use', () => {
+    m = army();
+    m.click('[data-testid="army-presets"]');
     m.click('[data-testid="rename"]');
     const field = m.q('[data-testid="rename-plan"] input')!;
     flush(() => input(field, 'Blitz'));
@@ -618,12 +677,39 @@ describe('War Plan builder (A3)', () => {
     expect(m.save.value.warPlans[0]!.name).toBe('Blitz');
   });
 
-  it('opens the skin picker for a card with skins and equips one', () => {
-    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPlan' }] });
-    m.click('[data-testid="skins-bonker"]');
-    expect(m.q('[data-testid="skin-picker"]')).not.toBeNull();
-    m.click('[data-testid="equip-default"]');
-    expect(m.save.value.skins.equipped['bonker']).toBeUndefined();
+  it('Info opens Card detail; Upgrade opens it with the upgrade already armed', () => {
+    m = army();
+    m.click('[data-testid="cand-sabertooth"]');
+    m.click('[data-testid="card-upgrade"]');
+    expect(m.router.current.value).toEqual({ id: 'cardDetail', card: 'sabertooth', upgrade: true });
+    expect(text(m.q('[data-testid="card-upgrade-btn"]')!)).toContain('Confirm');
+    flush(() => m!.router.back());
+    m.click('[data-testid="cand-bonker"]');
+    m.click('[data-testid="card-info"]');
+    expect(m.router.current.value).toEqual({ id: 'cardDetail', card: 'bonker' });
+  });
+
+  it('filters by class (7 classes plus Turret and Power) and shows the album with completion', () => {
+    m = army();
+    const all = m.qa('[data-testid="wp-cards"] [data-army-cell]').length;
+    m.click('[data-testid="army-filter"]');
+    expect(m.qa('[data-testid="army-filter-sheet"] .army-fchip')).toHaveLength(9);
+    m.click('[data-testid="filter-turret"]');
+    const turrets = m.qa('[data-testid="wp-cards"] [data-army-cell]').length;
+    expect(turrets).toBeGreaterThan(0);
+    expect(turrets).toBeLessThan(all);
+    expect(text(m.q('[data-testid="army-filter"]')!)).toContain('1');
+    flush(() => (m!.qa('[data-testid="army-view"] [role="radio"]')[1] as FakeElement).click());
+    expect(m.qa('[data-testid="wp-cards"] [data-army-cell]').length).toBe(content.order.turrets.length);
+    expect(text(m.q('[data-testid="army-view"]')!)).toMatch(/All cards \d+\/\d+/);
+  });
+
+  it('shows only reached ages and says how the rest unlock', () => {
+    const save = newPlayerSave(content);
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan' }] });
+    const tabs = m.qa('[data-testid="age-picker"] [role="tab"]');
+    expect(tabs.length).toBeLessThan(content.order.ages.length);
+    expect(m.q('[data-testid="army-more-ages"]')).not.toBeNull();
   });
 });
 

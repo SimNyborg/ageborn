@@ -167,6 +167,7 @@
       "power": "Charging: {pct}%",
       "stanceWait": "Ready in {s}s",
       "wait": "Not yet"
-    }
+    },
+    "inField": "In field"
   }
 }

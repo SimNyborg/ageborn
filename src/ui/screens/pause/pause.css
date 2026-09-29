@@ -73,6 +73,6 @@
 .pause__cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 10px;
+  gap: 16px 20px;
   padding-top: var(--ui-s2);
 }

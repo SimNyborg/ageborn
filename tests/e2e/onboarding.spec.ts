@@ -65,12 +65,15 @@ test.describe('first session (A8)', () => {
     await expect(page.getByTestId('tab-capsules')).toHaveAttribute('aria-disabled', 'true');
     await expect(page.getByTestId('unlock-army')).toBeVisible({ timeout: 10_000 });
 
-    // Army (the War Plan for now): take a card out of the Stone Age loadout and put it back.
+    // Army (ui-plan 4.2): take a card out of the Stone Age loadout (tap it, Remove) and put it back
+    // (tap it in the grid, Use).
     await page.getByTestId('tab-army').click();
     await expect(page.getByTestId('wp-board')).toContainText('Spear Hunt');
+    await page.locator('[data-testid="slot-unit-3"] .ui-card').click();
     await page.getByTestId('remove-unit-3').click();
     await expect(page.getByTestId('wp-board')).not.toContainText('Spear Hunt');
     await page.getByTestId('cand-spear_hunter').click();
+    await page.getByTestId('card-use').click();
     await expect(page.getByTestId('wp-board')).toContainText('Spear Hunt');
     await page.getByTestId('tab-warPath').click();
 
@@ -96,7 +99,8 @@ test.describe('first session (A8)', () => {
     await expect(page.getByTestId('play')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('play')).toHaveText(/level 3/i);
     await page.getByTestId('tab-capsules').click();
-    await page.getByTestId('capsules-tab').locator('[data-testid^=crate-]').first().click();
+    // The drums idle-bob (life), so the click does not wait for a still frame.
+    await page.getByTestId('capsules-tab').locator('[data-testid^=crate-]').first().click({ force: true });
     await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
     await expect
       .poll(

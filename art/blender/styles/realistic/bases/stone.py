@@ -235,7 +235,7 @@ def build():
     # flat square sign with a dot)
     import bmesh
     hc = P(-112, 150, -16)
-    HW, HH = 23.0, 25.0
+    HW, HH = 31.0, 34.0          # a big read: the hide is the base's main team surface
 
     def pelt_in(u, v):
         rnd_e = 0.035 * math.sin(u * 23.0 + v * 7.0) + 0.03 * math.sin(v * 31.0 - u * 5.0)
