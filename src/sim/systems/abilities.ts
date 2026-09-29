@@ -115,7 +115,9 @@ function roar(ctx: Ctx, u: UnitRt, r: UnitRules, ab: NonNullable<UnitRules['roar
   u.timers[ab.slot] = ctx.tick + ab.every;
   emit(ctx, { e: 'abilityUsed', id: u.id, ability: 'periodicShieldAura', x: u.x });
   allies.sort((p, q) => p.d - q.d || p.u.id - q.u.id);
-  const amount = Math.trunc((ab.shield * 100 * lvl(ctx, u)) / BP);
+  let amount = Math.trunc((ab.shield * 100 * lvl(ctx, u)) / BP);
+  // Field Care (A18.5.2): heals and shields of a Support spawned after it +20%.
+  if (u.fx && u.fx.healBp !== 0) amount = Math.trunc((amount * (BP + u.fx.healBp)) / BP);
   const st: StatusRules = { kind: 'shield', magnitudeBp: 0, ticks: ab.ticks, amount, frozen: false };
   for (let i = 0; i < allies.length && i < ab.maxTargets; i += 1) applyStatus(ctx, (allies[i] as { u: UnitRt }).u, st, u.id, amount);
 }

@@ -32,7 +32,8 @@ jobs:
         name: Bundle size gate
         run: npm run size --if-present
 
-  # DESIGN B13 / C4.1: the e2e specs against the production build, in Chromium and WebKit
+  # DESIGN B13 / C4.1: the e2e specs against the production build, in Chromium and WebKit (and the
+  # golden-replay determinism spec in Firefox too: Online M1, A18.10)
   # (docs/requests/wp12-ci.md; the balance jobs follow in Phase 3).
   e2e:
     needs: check
@@ -43,7 +44,8 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
+      # Firefox runs only the cross-engine determinism spec (Online M1, DESIGN A18.10).
+      - run: npx playwright install --with-deps chromium webkit firefox
       - run: npm run test:e2e
       - if: failure()
         uses: actions/upload-artifact@v4

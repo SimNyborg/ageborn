@@ -63,7 +63,9 @@ export function trayCard(i: TickInput, slot: number): CardId | null {
 /** Unit cards of the player's current loadout (non-empty slots). */
 export function loadoutUnits(i: TickInput): CardId[] {
   const out: CardId[] = [];
-  for (let slot = 0; slot < 5; slot += 1) {
+  // A18.9: six tray slots.
+  const n = i.config.sides[i.side].loadouts[ageIdOf(i) ?? 'stone']?.units.length ?? 0;
+  for (let slot = 0; slot < n; slot += 1) {
     const c = trayCard(i, slot);
     if (c) out.push(c);
   }

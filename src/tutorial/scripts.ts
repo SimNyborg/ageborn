@@ -240,8 +240,10 @@ export const MATCH2: MatchScript = {
   beats: [
     // A17.6: the long lane scrolls. The first real battle shows how to look around once the armies are out.
     { id: 'm2.scroll', textKey: 'tutorial.m2.scroll', target: 'minimap', trigger: { k: 'atTick', tick: sec(20) }, done: { k: 'shownFor', ticks: sec(5) } },
-    // "Stone teaches Treasury" (A8).
-    { id: 'm2.treasury', textKey: 'tutorial.m2.treasury', target: 'gold', trigger: { k: 'treasuryAffordable', afterTick: sec(15) }, done: { k: 'event', e: 'treasuryUp' }, timeoutTicks: sec(12) },
+    // "Stone teaches Treasury" (A8), now the War Council's Economy track (A18.5.4): a tap on the gold opens
+    // the Council on Economy and Granary starts on a second tap, so the beat ends when research starts
+    // (it completes 10 s later) and allows time for the three taps.
+    { id: 'm2.treasury', textKey: 'tutorial.m2.treasury', target: 'gold', trigger: { k: 'treasuryAffordable', afterTick: sec(15) }, done: { k: 'event', e: 'researchStarted' }, timeoutTicks: sec(20) },
     // "Medieval teaches the second mount" (A8).
     { id: 'm2.secondMount', textKey: 'tutorial.m2.secondMount', target: 'mountBuy', trigger: { k: 'mountAffordable', minAgeIndex: 1 }, done: { k: 'event', e: 'mountBought' }, timeoutTicks: sec(12) },
     // The manual Last Stand button arrives in match 2 (was match 5), shown when it is first armed.

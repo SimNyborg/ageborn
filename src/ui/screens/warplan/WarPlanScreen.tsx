@@ -1,7 +1,8 @@
 /**
- * War Plan builder (A9 #9, A3): presets A/B/C (renamable), 5 age tabs, 5 unit + 2 turret + 1 power
- * slots per age, the collection filtered to that age, average levels (loadout and War Plan over the
- * next format's ages), auto-fill, advisor warnings (never blockers) and a skin picker per card.
+ * War Plan builder (A9 #9, A3): presets A/B/C (renamable), age tabs, 6 unit + 2 turret + 1 power
+ * slots per age with the War Council lines each age can use (A18.5.2), the collection filtered to that
+ * age, average levels (loadout and War Plan over the next format's ages), auto-fill, advisor warnings
+ * (never blockers) and a skin picker per card.
  *
  * Edits keep a loadout legal by construction (same age, owned, no duplicates; slots may be empty)
  * and are saved at once through `setWarPlan`. Validation and advice come from meta via services.
@@ -13,7 +14,7 @@ import type { ClassGlyphId } from '@/core/cardClass';
 import { useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
-import { ClassIcon, CounterLegend } from '../../components/ClassIcon';
+import { CLASS_NAME_KEY, ClassIcon, CounterLegend } from '../../components/ClassIcon';
 import { CurrencyChip } from '../../components/Chips';
 import { formatDec } from '../../components/format';
 import { BoltIcon, CheckIcon, CloseIcon, PencilIcon, RefreshIcon, TowerIcon, SwordsIcon } from '../../components/icons';
@@ -37,6 +38,7 @@ import {
   normalizeLoadout,
   planAvgLevel,
   PRESETS,
+  researchLines,
   slotCard,
   slotKey,
   slotKindOf,
@@ -274,6 +276,17 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           />
           <div class="wp-board" role="tabpanel" id="wp-age-panel" aria-labelledby={`wp-age-tab-${age}`} data-testid="wp-board">
             <div class="wp-row wp-row--units">{loadout.units.map((_, i) => slotView({ kind: 'unit', index: i }))}</div>
+            {/* A18.5.2 research compatibility: which War Council Troops lines this loadout can use. */}
+            <ul class="wp-lines" aria-label={t('ui.warplan.councilLines')} title={t('ui.warplan.councilLines')} data-testid="wp-council-lines">
+              {researchLines(content, loadout).map((l) => {
+                const label = t(l.has ? 'ui.warplan.councilLineHas' : 'ui.warplan.councilLineNone', { cls: t(CLASS_NAME_KEY[l.cls]) });
+                return (
+                  <li key={l.cls} class={`wp-line${l.has ? ' is-on' : ' is-off'}`} title={label} aria-label={label} data-testid={`wp-line-${l.cls}`}>
+                    <ClassIcon id={l.cls} size={20} />
+                  </li>
+                );
+              })}
+            </ul>
             <div class="wp-row wp-row--support">
               {loadout.turrets.map((_, i) => slotView({ kind: 'turret', index: i }))}
               <span class="wp-divider" aria-hidden="true" />

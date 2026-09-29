@@ -10,6 +10,7 @@ import { content as live } from '@/content';
 import { createSim } from '../createSim';
 import { capSum, unitDamageBonusBp } from '../damage';
 import { devGrantResearch, devPlaceTurret, devSetBaseBp, devSetGold, devSetXp, devSpawn, simCtx, stepN, unitById } from '../debug';
+import { emptyUnitFx } from '../researchRules';
 import { turretRange } from '../systems/targeting';
 import { arena, fixture, L, matchConfig, ofKind, pLu, sideConfig, Stamper, stun } from './helpers';
 
@@ -236,6 +237,29 @@ describe('Troops picks and the A18.2 stacking caps', () => {
     expect(hitOn(true, 'tuskback')).toBe(big - 500);
     const small = hitOn(false, 'bonker');
     expect(hitOn(true, 'bonker')).toBe(Math.max(small - 500, Math.trunc((small * 6500) / 10000)));
+  });
+
+  it('Field Care: heals and shields +20% (A18.5.2), also on a shield aura', () => {
+    const shieldOf = (care: boolean): number => {
+      const sim = arena();
+      const foe = devSpawn(sim, 1, 'tuskback', { p: L - 200 });
+      stun(sim, foe.id, 2000);
+      const fu = unitById(sim, foe.id);
+      if (fu) fu.hp = fu.maxHp = 100000000;
+      const ursa = devSpawn(sim, 0, 'ursa_paladin', { p: 140 });
+      // The fixture's shield aura sits on a Heavy; give it the Support pick's effect directly.
+      const u = unitById(sim, ursa.id)!;
+      if (care) u.fx = { ...emptyUnitFx(), healBp: 2000 };
+      const ally = devSpawn(sim, 0, 'bonker', { p: 100 });
+      stun(sim, ally.id, 2000);
+      for (let i = 0; i < 300; i += 1) {
+        if (ofKind(sim.step([]), 'abilityUsed').some((a) => a.ability === 'periodicShieldAura')) break;
+      }
+      return unitById(sim, ally.id)!.shield;
+    };
+    const plain = shieldOf(false);
+    expect(plain).toBeGreaterThan(0);
+    expect(shieldOf(true)).toBe(Math.trunc((plain * 12000) / 10000));
   });
 
   it('Plating: −15% damage taken from Infantry only', () => {

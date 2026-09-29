@@ -23,6 +23,7 @@ import {
   nextFormat,
   normalizeLoadout,
   planAvgLevel,
+  researchLines,
 } from '../model/plan';
 import { historyRows, profileView } from '../model/profile';
 import { chargesView, conquestView, dailyCapsuleView, questViews, roadNodes, roadProgress, trayCapsules, unlocks, warChestView } from '../model/progress';
@@ -96,15 +97,18 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
 });
 
 describe('War Plan edits (A3)', () => {
-  const base: Loadout = { units: ['bonker', 'pebbler', 'tuskback', null, null], turrets: ['rock_tosser', null], power: 'stampede' };
+  const base: Loadout = { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: ['rock_tosser', null], power: 'stampede' };
 
   it('puts a card in a slot and never duplicates it', () => {
     const moved = assignCard(content, base, { kind: 'unit', index: 0 }, 'pebbler');
-    expect(moved.units).toEqual(['pebbler', 'bonker', 'tuskback', null, null]);
+    expect(moved.units).toEqual(['pebbler', 'bonker', 'tuskback', null, null, null]);
     const added = assignCard(content, base, { kind: 'unit', index: 3 }, 'spear_hunter');
-    expect(added.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null]);
+    expect(added.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null]);
     const intoEmpty = assignCard(content, base, { kind: 'unit', index: 4 }, 'bonker');
-    expect(intoEmpty.units).toEqual([null, 'pebbler', 'tuskback', null, 'bonker']);
+    expect(intoEmpty.units).toEqual([null, 'pebbler', 'tuskback', null, 'bonker', null]);
+    // A18.9: the sixth troop slot is editable and kept.
+    expect(assignCard(content, base, { kind: 'unit', index: 5 }, 'spear_hunter').units[5]).toBe('spear_hunter');
+    expect(normalizeLoadout({ ...base, units: ['bonker', null, null, null, null, 'pebbler'] }).units).toHaveLength(6);
   });
 
   it('rejects a card of the wrong kind and handles turrets and the power', () => {
@@ -114,11 +118,23 @@ describe('War Plan edits (A3)', () => {
   });
 
   it('clears slots and finds the first empty one', () => {
-    expect(clearSlot(base, { kind: 'unit', index: 1 }).units).toEqual(['bonker', null, 'tuskback', null, null]);
+    expect(clearSlot(base, { kind: 'unit', index: 1 }).units).toEqual(['bonker', null, 'tuskback', null, null, null]);
     expect(clearSlot(base, { kind: 'power' }).power).toBe('stampede');
     expect(firstEmptySlot(content, base, 'spear_hunter')).toEqual({ kind: 'unit', index: 3 });
     expect(firstEmptySlot(content, base, 'angry_beehive')).toEqual({ kind: 'turret', index: 1 });
     expect(firstEmptySlot(content, normalizeLoadout({ units: [], turrets: [], power: 'x' }), 'bonker')).toEqual({ kind: 'unit', index: 0 });
+  });
+
+  it('marks the War Council Troops lines a loadout can use (A18.5.2 research compatibility)', () => {
+    const l = normalizeLoadout({ units: ['bonker', 'pebbler', null, null, null, null], turrets: [], power: 'stampede' });
+    const on = researchLines(content, l)
+      .filter((x) => x.has)
+      .map((x) => x.cls);
+    expect(on).toEqual(['infantry', 'ranged']);
+    expect(researchLines(content, l).map((x) => x.cls)).toEqual(['infantry', 'ranged', 'heavy', 'antiArmor', 'support']);
+    // Epics and Legendaries count in their base role's class.
+    expect(researchLines(content, normalizeLoadout({ units: ['mammoth_matriarch'], turrets: [], power: 'x' })).find((x) => x.has)?.cls).toBe('heavy');
+    expect(researchLines(content, normalizeLoadout({ units: ['sabertooth'], turrets: [], power: 'x' })).find((x) => x.has)?.cls).toBe('infantry');
   });
 
   it('averages levels over the loadout and over the format ages', () => {

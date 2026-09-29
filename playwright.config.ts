@@ -28,6 +28,11 @@ export default defineConfig({
     },
     // WebKit runs in CI (B13, C4.3: determinism across engines) and locally with PW_WEBKIT=1.
     ...(process.env['CI'] !== undefined || process.env['PW_WEBKIT'] === '1' ? [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }] : []),
+    // Online M1 (DESIGN A18.10): the golden replays also re-simulate in Firefox (SpiderMonkey), so the
+    // sim is proven identical on all three engines. Only the determinism spec; locally with PW_FIREFOX=1.
+    ...(process.env['CI'] !== undefined || process.env['PW_FIREFOX'] === '1'
+      ? [{ name: 'firefox', testMatch: '**/determinism.spec.ts', use: { ...devices['Desktop Firefox'] } }]
+      : []),
   ],
   webServer: {
     command: `npm run build && npx vite preview --port ${port} --strictPort`,

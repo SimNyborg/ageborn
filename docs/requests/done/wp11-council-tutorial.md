@@ -1,6 +1,6 @@
 # WP5 → WP11: match 2's income beat with the War Council
 
-**From:** WP5 HUD (A18 phase 3, War Council sheet, 2026-09-29). **To:** WP11 (tutorial and onboarding). **Status:** open.
+**From:** WP5 HUD (A18 phase 3, War Council sheet, 2026-09-29). **To:** WP11 (tutorial and onboarding). **Status:** done (A18 review, 2026-09-29): the beat ends on `researchStarted` with a 20 s timeout and says "Tap your gold, then Granary twice"; the bubble stays on the gold (moving it to the Granary card needs a new prompt target, left for the UI rebuild).
 
 The gold counter no longer buys income on one tap. A18.5.7 makes the War Council a bottom sheet and A15 U14 makes every spend take two taps, so a tap on the gold counter now **opens the War Council on the Economy track** (Granary or Forage), and a pick starts with a second tap on the same card ("Tap again to research"). The round Council button sits right of the gold counter (`data-testid="hud-council"`); it is hidden in match 1 (the `training.noClock` match), but the gold tap still opens the sheet there.
 

@@ -3,7 +3,7 @@
  *
  * The schema checks shape and types exactly (a type-parity test pins `InferOutput` to the contract's
  * `SaveDoc`), plus the invariants other code relies on: finite numbers, integer counts that are never
- * negative, 5 unit and 2 turret slots per loadout, a War Plan for every age, an `activePlan` that
+ * negative, 6 unit (A18.9) and 2 turret slots per loadout, a War Plan for every age, an `activePlan` that
  * points into `warPlans`, and a uint32 capsule RNG state.
  *
  * It deliberately does not check ids against the content (cards and skins come and go between

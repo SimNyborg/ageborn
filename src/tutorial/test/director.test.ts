@@ -187,7 +187,8 @@ describe('TutorialDirector: other scripts and hints', () => {
     d.update(h.input());
     expect(d.prompt).toMatchObject({ id: 'm2.treasury', target: 'gold' });
     h.advance();
-    d.update(h.input([{ e: 'treasuryUp', side: 0, level: 1 }]));
+    // A18.5.4: the beat ends when the Economy research starts, not when it completes 10 s later.
+    d.update(h.input([{ e: 'researchStarted', side: 0, pick: 'economy.granary', cost: 150, endTick: h.state.tick + 200 }]));
     expect(d.prompt).toBeNull();
   });
 

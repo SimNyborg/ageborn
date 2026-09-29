@@ -4,14 +4,14 @@
  * Validation and advisor warnings are meta's job (`UiServices.validatePlan`).
  */
 import type { Content } from '@/content/types';
-import type { AgeId, CardId, FormatId, Loadout, SaveDoc } from '@/contracts';
+import type { AgeId, CardId, FormatId, Loadout, ResearchClass, SaveDoc } from '@/contracts';
 import type { WarPlan } from '../services';
 import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
 
 export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power' };
 
-export const UNIT_SLOTS = 5;
+export const UNIT_SLOTS = 6;
 export const TURRET_SLOTS = 2;
 /** A3: three renamable presets. */
 export const PRESETS = 3;
@@ -26,7 +26,7 @@ export function slotCard(l: Loadout, s: SlotRef): CardId | null {
   return l.power || null;
 }
 
-/** Pads a loadout to 5 unit and 2 turret slots (older or partial saves). */
+/** Pads a loadout to 6 unit (A18.9) and 2 turret slots (older or partial saves). */
 export function normalizeLoadout(l: Loadout): Loadout {
   const units = Array.from({ length: UNIT_SLOTS }, (_, i) => l.units[i] ?? null);
   const turrets = Array.from({ length: TURRET_SLOTS }, (_, i) => l.turrets[i] ?? null);
@@ -84,6 +84,24 @@ export function firstEmptySlot(content: Content, loadout: Loadout, card: CardId)
 
 export function loadoutCards(l: Loadout): CardId[] {
   return [...l.units, ...l.turrets].filter((c): c is CardId => c !== null);
+}
+
+/** The War Council's Troops lines in display order (DESIGN A18.5.2). */
+export const RESEARCH_LINES: readonly ResearchClass[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support'];
+
+/**
+ * Research compatibility of a loadout (DESIGN A18.5.2): for each Troops line, whether the loadout
+ * holds a unit that line's research helps (Epics and Legendaries count in their base role's class),
+ * so the builder can show that a Heavy line is wasted in an age with no Heavy.
+ */
+export function researchLines(content: Content, l: Loadout): { cls: ResearchClass; has: boolean }[] {
+  const held = new Set<ResearchClass>();
+  for (const id of l.units) {
+    const u = id ? content.units[id] : undefined;
+    const cls = u ? content.research?.classOfRole[u.role] : undefined;
+    if (cls) held.add(cls);
+  }
+  return RESEARCH_LINES.map((cls) => ({ cls, has: held.has(cls) }));
 }
 
 /** Average level of a loadout's units and turrets (powers have no level), or null when empty. */

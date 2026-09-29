@@ -37,7 +37,7 @@ function defaultPower(content: Content, age: AgeId): CardId {
 
 function loadout(units: (CardId | null)[], turrets: (CardId | null)[], power: CardId): Loadout {
   return {
-    units: Array.from({ length: 5 }, (_, i) => units[i] ?? null),
+    units: Array.from({ length: 6 }, (_, i) => units[i] ?? null),
     turrets: Array.from({ length: 2 }, (_, i) => turrets[i] ?? null),
     power,
   };
@@ -53,7 +53,7 @@ function planFrom(
   const loadouts = {} as Record<AgeId, Loadout>;
   for (const age of content.order.ages) {
     const a = byAge(content, age);
-    const units = pick(a.units.filter((id) => collection[id])).slice(0, 5);
+    const units = pick(a.units.filter((id) => collection[id])).slice(0, 6);
     const turrets = a.turrets.filter((id) => collection[id]).slice(0, 2);
     loadouts[age] = loadout(units, turrets, defaultPower(content, age));
   }

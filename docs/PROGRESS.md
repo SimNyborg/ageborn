@@ -2,6 +2,43 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-29: A18 phases 0-3: longer matches, War Council, three stances (cloud session, not yet published)
+
+**What works**
+
+- Longer ages and matches (DESIGN A18.3): the first evolve comes at about 1:14 and every later age lasts about 1:40-1:55. Formats are age windows: Short War is Stone to Medieval (Final Bell 8:30), Standard War is Stone to Industrial (12:30) and Full War is Stone to Future (17:30). Mode select shows what each format plays. `SIM_VERSION` 3.0.0; old replays keep their result but no longer play.
+- The War Council replaces the Treasury (A18.5): a round button right of the gold (key G) opens a sheet with four tracks: Troops per class, Defences, Economy and Command. There are 28 picks, one research at a time, and each pick is a choice of 1 of 2. Research is public (the enemy's ring and their finished picks show in the top bar). The side that is behind pays 20% less. Troop research only helps units trained after it finishes.
+- Three stances (A18.4): Charge, Hold at a flag you can drag (or move with arrow buttons) from 320 to 800, and Fall back. There is a 3 s wait between changes. Keys: S and Shift+S.
+- Six troop slots in battle and in the War Plan. The War Plan shows which Council troop lines each age can use.
+- The AI researches, holds, moves its flag and falls back by tier. From Normal it punishes a thin army.
+- Checks: typecheck, lint, 3,615 unit tests (190 files), build and size (527 KB initial) pass. The golden replays re-simulate identically in Chromium. CI now also checks them in Firefox (Online M1).
+
+**Measured** (tier V Balanced mirror, 200 matches per format; exploit proxies vs tier VII, 100 per format)
+
+| | Short | Standard | Full | Target |
+|---|---|---|---|---|
+| Median length | 8:30 | 11:37 | 14:50 | 7:00 / 10:30 / 15:00 |
+| In the 80% band | 97.5% | 82% | 22% | ≥ 80% |
+| Final Bell | 52% | 38.5% | 20.5% | ≤ 10 / 8 / 5% |
+| Research share of gold | 14.9% | 16.1% | 16.8% | 15-25% |
+| "A few soldiers, then evolve" wins vs Normal / Hard | 2.5% / 0% | 8% / 0% | 5% / 1% | ≤ 10% / ≤ 2% |
+| No research wins vs a researching player | 20% | 13% | 10% | ≤ 30% |
+| Mono Heavy spam | 44% | 44% | 42% | ≤ 35% |
+
+- In the browser, a scripted player that spends all its gold, evolves at once and uses the Council beat Normal in a Standard War (6:10) and lost to Normal in a Short War. It lost to Hard in 4:03 without damaging the AI base.
+
+**Still open**
+
+- Too many matches end at the Final Bell, above all when two equal AIs meet. Stronger Siege damage, weaker Siege turrets and a harsher falling gate barely changed it, and faster decay only turns the Bell into a decay loss. By the A2.14 release rule this goes to the owner check: if the owner also sees standoffs, the Supply Cache (A18.3.5) comes next.
+- Full War lengths split in two: about a third end early (4-8 min) and a quarter at the Bell. Mono Heavy spam wins too often (44%). The turtle proxies win far too rarely (the safe side).
+- Not built yet: the start-era picker in Quick Battle and Skirmish, the "Suggested" research hint on Easy, the workshop icon over the base (waits for badge art, `docs/requests/wp4-council-badges.md`) and the AI's own flag placement in the HUD (phase 4).
+
+**What the owner should try** (once published)
+
+1. Play a Short War and a Standard War on Normal, then on Hard. Are the matches long enough, and does Hard feel clearly harder?
+2. In a battle, press the Council button next to your gold (or G), pick a research, and watch the ring count down. Try both picks of a pair in different matches.
+3. Press Hold, drag the flag forward, then try Fall back when their army is bigger. Tell us if matches get stuck with both sides waiting (that decides whether we add the Supply Cache).
+
 ## 2026-09-28 night: owner feedback batch 1 (published 7d0452b)
 
 - Home is the hub right after the training match: big Battle button and entries for War Plan, Collection, Capsules, Customize (new), Trophy Road and Conquest; War Plan, Customize, Skirmish and Quick Battle unlock after match 1; a Wardrobe Crate is granted for the first win.
