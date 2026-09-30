@@ -249,3 +249,15 @@ Newest entry first. Each session appends what it finished, what is next, and any
 - Wrote `CLAUDE.md`, `docs/BUILD_PLAN.md` and the saved workflows in `.claude/workflows/`.
 
 **Next:** Phase 0 (`ageborn-phase0-foundation`), then Phase 1, then Phase 2a so the owner can play a battle. The build is meant to run in a Claude Code cloud session (the owner has promotional cloud credit that expires 2026-11-05).
+
+## 2026-09-30 night: published b1f59be
+
+Published to main after typecheck, lint, 4,121 unit tests, build, 166 e2e tests and a production boot check (no console errors, phone and desktop):
+
+- UI rebuild (docs/ui-plan.md UI-0 to UI-4): design system and motion tokens, War Path Home with an 80-level campaign, six-card battle HUD, Army deck builder, review fixes.
+- Capsule tiers v2: Clay, Bronze, Silver, Jade, Gold, Platinum, Aeon; 200-slot Win bag (Aeon exactly 1 in 200); summit strikes; migration of old Aeons to Gold.
+- Power rework (A2.9): gold cost and reload, Home and Field slots, target caps, 48 powers, AI, HUD, effects. Open: some balance gates are not met yet (tier VII vs V 57-58% vs 60% target, power share of kills, bait edge, turtle Bell rate).
+- Timed hammer strike in the capsule show (Perfect ±60 ms, Good ±140 ms, cosmetic only).
+- Realistic Stone Age art (units, turrets, base, backdrop).
+
+Next: heavy counter class, free capsule every 5 h (Field Cache), stationary Fort class, realistic restyle of the other 7 ages.
