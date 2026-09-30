@@ -59,6 +59,8 @@ interface ShowScreenBase extends SummaryActions {
   onState?: (s: RunnerState) => void;
   /** Dev and tests: every graded tap on a hammer blow (feel only). */
   onHit?: (hit: StrikeHit) => void;
+  /** Dev and tests: the show's runner once it starts (null when it stops), e.g. to tap on a beat. */
+  onRunner?: (runner: ShowRunner | null) => void;
 }
 
 export interface CapsuleScreenProps extends ShowScreenBase {
@@ -179,17 +181,18 @@ interface Controls {
   runner: ShowRunner | null;
   /** The odds panel is open: the show holds still behind it. */
   paused: boolean;
-  /** When the runner last advanced (the ticker's frame time, `performance.now` base). */
+  /** When the runner last advanced (`performance.now`) and by how much (real ms). */
   frameAt: number;
+  frameMs: number;
 }
 
 function ShowScreen(p: ShowScreenProps) {
   const i18n = p.i18n ?? appI18n;
   const t = (k: string, o?: Record<string, string | number>) => i18n.t(k, o);
   const [state, setState] = useState<RunnerState | null>(null);
-  const ctl = useRef<Controls>({ runner: null, paused: false, frameAt: 0 });
-  const cbs = useRef({ onCue: p.onCue, onState: p.onState, onHit: p.onHit });
-  cbs.current = { onCue: p.onCue, onState: p.onState, onHit: p.onHit };
+  const ctl = useRef<Controls>({ runner: null, paused: false, frameAt: 0, frameMs: 16 });
+  const cbs = useRef({ onCue: p.onCue, onState: p.onState, onHit: p.onHit, onRunner: p.onRunner });
+  cbs.current = { onCue: p.onCue, onState: p.onState, onHit: p.onHit, onRunner: p.onRunner };
   const settings: ShowSettings = { ...DEFAULT_SHOW_SETTINGS, ...p.settings };
   const settingsKey = `${settings.reduceMotion}|${settings.vibrate}|${settings.teamPreset}|${settings.quickReveal}|${settings.lite === true}`;
 
@@ -218,12 +221,14 @@ function ShowScreen(p: ShowScreenProps) {
       },
     });
     ctl.current.runner = runner;
+    cbs.current.onRunner?.(runner);
     if (p.audio && p.playMusic !== false) p.audio.music.setCue('music.capsule', { fadeMs: 600 });
     runner.start();
     const tick = (tk: Ticker) => {
       if (ctl.current.paused) return;
       runner.update(tk.deltaMS);
-      ctl.current.frameAt = tk.lastTime;
+      ctl.current.frameAt = performance.now();
+      ctl.current.frameMs = tk.deltaMS;
       stage.update(Math.min(250, tk.deltaMS) * runner.timeScale);
     };
     app.ticker.add(tick);
@@ -231,6 +236,7 @@ function ShowScreen(p: ShowScreenProps) {
       app.ticker.remove(tick);
       app.renderer.off('resize', onResize);
       ctl.current.runner = null;
+      cbs.current.onRunner?.(null);
       stage.root.removeFromParent();
       stage.destroy();
     };
@@ -245,9 +251,11 @@ function ShowScreen(p: ShowScreenProps) {
     const h = hold.current;
     if (h.timer) clearTimeout(h.timer);
     h.held = false;
-    // How long after the last frame the finger landed (a tap between frames is judged where it was).
+    // How long after the last frame the finger landed (a tap between frames is judged where it was),
+    // at most one frame: the next frame advances the show by the rest.
+    const c = ctl.current;
     const now = at !== undefined && at > 0 ? at : performance.now();
-    ctl.current.runner?.tap(Math.max(0, now - ctl.current.frameAt));
+    c.runner?.tap(Math.max(0, Math.min(now - c.frameAt, c.frameMs)));
     h.timer = setTimeout(() => {
       h.held = true;
       ctl.current.runner?.setHold(true);

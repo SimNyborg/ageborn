@@ -6,7 +6,9 @@
  * reveal and the Wardrobe Crate card flip for each skin rarity. Shows the plan checks (time limits, back-loaded climb),
  * the live step and a sound log. URL: `?dev=1#capsuleBench/<caseId>`; add `&art=fake` to the query
  * for the fake art provider, `&bare=1` for the stage alone (screenshots at phone size), `&rm=1` for
- * Reduce motion and `&lite=1` for the Lite graphics preset. `#capsuleBench/drums` shows every tier's
+ * Reduce motion and `&lite=1` for the Lite graphics preset. `&autotap=perfect|good|early` taps every
+ * hammer blow at that timing (A10 step 3) so the graded hits can be watched and captured; the log
+ * lists every graded tap. `#capsuleBench/drums` shows every tier's
  * drum at rest side by side (materials, lit rings, crests, summit gems). Dev pages are exempt from the
  * i18n rule.
  */
@@ -25,7 +27,10 @@ import {
   nominalDurationMs,
   planOpenAll,
   planWardrobeShow,
+  STRIKE_WINDOW,
   type Cue,
+  type ShowRunner,
+  type StrikeHit,
   type RunnerState,
   type ShowPlan,
   type ShowStep,
@@ -40,6 +45,10 @@ import { bodySamplePoints, gemSamplePoints, mountDrumGallery } from './drumGalle
 
 /** The drum gallery's pseudo case id. */
 const DRUMS = 'drums';
+
+/** Auto-tap: where each hammer blow is tapped, in ms from the latency-corrected hit (A10 step 3). */
+const AUTO_TAP = { off: null, perfect: 0, good: 100, early: -200 } as const;
+type AutoTap = keyof typeof AUTO_TAP;
 
 export const title = 'Capsule bench';
 
@@ -95,6 +104,8 @@ export default function CapsuleBench() {
   const bare = query.get('bare') === '1';
   const [reduceMotion, setReduceMotion] = useState(query.get('rm') === '1');
   const [lite, setLite] = useState(query.get('lite') === '1');
+  const [autoTap, setAutoTap] = useState<AutoTap>(((q) => (q && q in AUTO_TAP ? (q as AutoTap) : 'off'))(query.get('autotap')));
+  const runnerRef = useRef<ShowRunner | null>(null);
   const [state, setState] = useState<RunnerState | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const host = useRef<HTMLDivElement>(null);
@@ -164,6 +175,12 @@ export default function CapsuleBench() {
             a.renderer.render(a.stage);
             return a.canvas.toDataURL('image/png');
           },
+          /** The current step and its time (for tapping on a beat from a script). */
+          step(): { id: string; kind: string; t: number; impactMs: number | null } | null {
+            const r = runnerRef.current;
+            const s = r?.step;
+            return r && s ? { id: s.id, kind: s.kind, t: r.stepTimeMs, impactMs: s.kind === 'strike' || s.kind === 'summitStrike' ? s.impactMs : null } : null;
+          },
         };
         setApp(a);
       });
@@ -181,6 +198,26 @@ export default function CapsuleBench() {
   useEffect(() => {
     if (app) app.ticker.speed = speed;
   }, [app, speed]);
+
+  // Auto-tap: after the show's own frame, tap each hammer blow once when its time comes.
+  useEffect(() => {
+    const off = AUTO_TAP[autoTap];
+    if (!app || off === null) return;
+    let done = '';
+    const tick = () => {
+      const r = runnerRef.current;
+      const s = r?.step;
+      if (!r || !s || (s.kind !== 'strike' && s.kind !== 'summitStrike') || done === s.id) return;
+      if (r.stepTimeMs >= s.impactMs + STRIKE_WINDOW.latencyMs + off) {
+        done = s.id;
+        r.tap();
+      }
+    };
+    app.ticker.add(tick);
+    return () => {
+      app.ticker.remove(tick);
+    };
+  }, [app, autoTap, runKey]);
 
   // The drum gallery: every tier at rest, for comparing the materials (and the bench colour check).
   useEffect(() => {
@@ -208,6 +245,7 @@ export default function CapsuleBench() {
   };
   const note = (s: string) => setLog((l) => [...l.slice(-199), `${((performance.now() - t0.current) / 1000).toFixed(2)}s ${s}`]);
   const onCue = (c: Cue, s: ShowStep) => note(`♪ ${c.sound}${c.pitchBp ? ` @${(c.pitchBp / 10000).toFixed(2)}` : ''} (${s.id})`);
+  const onHit = (h: StrikeHit) => note(`★ ${h.grade.toUpperCase()} ${h.offsetMs > 0 ? '+' : ''}${h.offsetMs} ms${h.combo > 1 ? ` ×${h.combo}` : ''}${h.afterImpact ? ' (after the hit)' : ''} (${h.stepId})`);
 
   const groups = [...new Set(BENCH_CASES.map((c) => c.group))];
   const strikes = plan?.steps.flatMap((s) => (s.kind === 'strike' ? [s.climb ? 'C' : '·'] : [])) ?? [];
@@ -218,6 +256,10 @@ export default function CapsuleBench() {
     settings: { reduceMotion, lite, vibrate: false, teamPreset: 'default' as const, quickReveal: bench?.quickReveal === true },
     playMusic: false,
     onCue,
+    onHit,
+    onRunner: (r: ShowRunner | null) => {
+      runnerRef.current = r;
+    },
     onState: (s: RunnerState) => {
       setState(s);
       note(`→ ${s.kind} [${s.phase}]${s.holding ? ' ▶▶' : ''}`);
@@ -269,6 +311,14 @@ export default function CapsuleBench() {
             ⟲ Replay
           </button>
         </div>
+        <div style={S.row}>
+          Auto-tap
+          {(Object.keys(AUTO_TAP) as AutoTap[]).map((k) => (
+            <button key={k} style={{ ...S.small, ...(autoTap === k ? S.on : {}) }} onClick={() => (setAutoTap(k), replay())} data-testid={`bench-autotap-${k}`}>
+              {k}
+            </button>
+          ))}
+        </div>
         <div style={S.group}>Materials</div>
         <button style={{ ...S.btn, ...(gallery ? S.sel : {}) }} onClick={() => choose(DRUMS)} data-testid="bench-case-drums">
           Every tier's drum at rest
@@ -301,7 +351,7 @@ export default function CapsuleBench() {
             <div key={i}>{l}</div>
           ))}
         </div>
-        <p style={{ opacity: 0.7 }}>Tap the stage to strike or hurry, hold to fast-forward, Esc to skip.</p>
+        <p style={{ opacity: 0.7 }}>Tap as the hammer lands (Perfect ±{STRIKE_WINDOW.perfectMs} ms, Good ±{STRIKE_WINDOW.goodMs} ms), tap to hurry a card, hold to fast-forward, Esc to skip.</p>
         <a style={{ color: '#9fc3ff' }} href="?dev=1">
           All dev pages
         </a>

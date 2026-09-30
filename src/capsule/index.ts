@@ -36,7 +36,8 @@ export {
   type WardrobePlanOptions,
 } from './plan';
 export { CREST, RARITY_COLORS, TIER_COLORS, TIER_RAMPS } from './palette';
-export { ShowRunner, type RunnerOptions, type RunnerState, type ShowView } from './runner';
+export { ShowRunner, type RunnerOptions, type RunnerState, type ShowView, type StrikeHit, type TimedStrike } from './runner';
+export { comboPitchBp, gradeOffset, judgeTap, nextCombo, STRIKE_WINDOW, strikeOffsetMs, windowCloseMs, type StrikeGrade, type StrikeJudgement, type StrikeWindow } from './strikeTiming';
 export {
   buildSummary,
   pityLines,

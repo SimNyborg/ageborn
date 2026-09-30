@@ -35,7 +35,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 1810701;
+export const SFX_BYTES = 1843383;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -50,7 +50,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   modern: { src: "audio/sfx/modern.15a36d82.ogg", bytes: 117015, seconds: 23.036, alt: "audio/sfx/modern.79a11798.m4a", sync: 0.02031 },
   future: { src: "audio/sfx/future.d7b936aa.ogg", bytes: 143891, seconds: 28.266, alt: "audio/sfx/future.543d9bee.m4a", sync: 0.02031 },
   cosmic: { src: "audio/sfx/cosmic.439751f8.ogg", bytes: 151155, seconds: 29.71, alt: "audio/sfx/cosmic.45e4ac31.m4a", sync: 0.02031 },
-  capsule: { src: "audio/sfx/capsule.fca2ee66.ogg", bytes: 247625, seconds: 48.968, alt: "audio/sfx/capsule.a942a98d.m4a", sync: 0.02031 },
+  capsule: { src: "audio/sfx/capsule.d5b3e7ce.ogg", bytes: 280307, seconds: 55.415, alt: "audio/sfx/capsule.c403f743.m4a", sync: 0.02031 },
 };
 
 export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
@@ -217,22 +217,25 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   cap_climb_5: { sheet: "capsule", variants: [[14.15504, 1.91383], [16.11887, 1.87854]] },
   cap_climb_6: { sheet: "capsule", variants: [[18.04742, 2.35681], [20.45423, 2.39827]] },
   cap_summit_rise: { sheet: "capsule", variants: [[22.9025, 0.75], [23.7025, 0.75]] },
-  cap_clunk: { sheet: "capsule", variants: [[24.5025, 0.2], [24.7525, 0.2], [25.0025, 0.2]] },
-  cap_burst: { sheet: "capsule", variants: [[25.2525, 1.58475]] },
-  cap_burst_platinum: { sheet: "capsule", variants: [[26.88725, 3.0]] },
-  cap_burst_aeon: { sheet: "capsule", variants: [[29.93725, 3.54981]] },
-  card_flip: { sheet: "capsule", variants: [[33.53706, 0.06848], [33.65554, 0.06858], [33.77412, 0.06856]] },
-  foil_shine: { sheet: "capsule", variants: [[33.89269, 0.5245], [34.46719, 0.52704]] },
-  rarity_common: { sheet: "capsule", variants: [[35.04423, 1.3]] },
-  rarity_rare: { sheet: "capsule", variants: [[36.39423, 1.758]] },
-  rarity_epic: { sheet: "capsule", variants: [[38.20223, 1.6]] },
-  rarity_legendary: { sheet: "capsule", variants: [[39.85223, 2.6]] },
-  walkout_bass: { sheet: "capsule", variants: [[42.50223, 1.6]] },
-  copy_tick: { sheet: "capsule", variants: [[44.15223, 0.03], [44.23223, 0.03], [44.31223, 0.03]] },
-  upgrade_ready: { sheet: "capsule", variants: [[44.39223, 0.7]] },
-  upgrade_slam: { sheet: "capsule", variants: [[45.14223, 0.93835], [46.13058, 0.92756]] },
-  level_up: { sheet: "capsule", variants: [[47.10815, 1.6]] },
-  reel_tick: { sheet: "capsule", variants: [[48.75815, 0.02], [48.82815, 0.02], [48.89815, 0.02]] },
+  cap_strike_tick: { sheet: "capsule", variants: [[24.5025, 0.09], [24.6425, 0.09], [24.7825, 0.09]] },
+  cap_strike_perfect: { sheet: "capsule", variants: [[24.9225, 1.13865], [26.11115, 1.13454], [27.29569, 1.15129]] },
+  cap_strike_good: { sheet: "capsule", variants: [[28.49698, 0.73225], [29.27923, 0.80535], [30.13458, 0.76444]] },
+  cap_clunk: { sheet: "capsule", variants: [[30.94902, 0.2], [31.19902, 0.2], [31.44902, 0.2]] },
+  cap_burst: { sheet: "capsule", variants: [[31.69902, 1.58475]] },
+  cap_burst_platinum: { sheet: "capsule", variants: [[33.33377, 3.0]] },
+  cap_burst_aeon: { sheet: "capsule", variants: [[36.38377, 3.54981]] },
+  card_flip: { sheet: "capsule", variants: [[39.98358, 0.06848], [40.10206, 0.06858], [40.22065, 0.06856]] },
+  foil_shine: { sheet: "capsule", variants: [[40.33921, 0.5245], [40.91371, 0.52704]] },
+  rarity_common: { sheet: "capsule", variants: [[41.49075, 1.3]] },
+  rarity_rare: { sheet: "capsule", variants: [[42.84075, 1.758]] },
+  rarity_epic: { sheet: "capsule", variants: [[44.64875, 1.6]] },
+  rarity_legendary: { sheet: "capsule", variants: [[46.29875, 2.6]] },
+  walkout_bass: { sheet: "capsule", variants: [[48.94875, 1.6]] },
+  copy_tick: { sheet: "capsule", variants: [[50.59875, 0.03], [50.67875, 0.03], [50.75875, 0.03]] },
+  upgrade_ready: { sheet: "capsule", variants: [[50.83875, 0.7]] },
+  upgrade_slam: { sheet: "capsule", variants: [[51.58875, 0.93835], [52.5771, 0.92756]] },
+  level_up: { sheet: "capsule", variants: [[53.55467, 1.6]] },
+  reel_tick: { sheet: "capsule", variants: [[55.20467, 0.02], [55.27467, 0.02], [55.34467, 0.02]] },
 };
 
 export const MUSIC_FILES: Readonly<Record<string, MusicFile>> = {

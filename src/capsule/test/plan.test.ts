@@ -28,6 +28,8 @@ const A13_SOUNDS = new Set([
   'step_heavy', 'hit_heavy', 'evolve_riser', 'explosion_m', 'explosion_l', 'flare_pop', 'xp_tick', 'upgrade_slam',
   // The 2026-09-29 ladder: summit climbs, the summit gem and the Platinum and Aeon stingers.
   'cap_climb_5', 'cap_climb_6', 'cap_summit_rise', 'cap_burst_platinum', 'cap_burst_aeon',
+  // The hammer's count-in (A10 step 3; the graded Perfect and Good layers are played by the runner).
+  'cap_strike_tick',
 ]);
 
 function kinds(steps: ShowStep[]): string[] {
@@ -76,9 +78,10 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     const strikes = plan.steps.filter((s): s is StrikeStep => s.kind === 'strike');
     expect(strikes.map((s) => s.climb)).toEqual([false, false, true, true]);
     // cap_climb_N is the note of the tier reached: Silver = 2, Jade = 3.
-    expect(strikes.map((s) => s.cues[0]?.sound)).toEqual(['cap_clunk', 'cap_clunk', 'cap_climb_2', 'cap_climb_3']);
+    expect(strikes.map((s) => s.cues.find((c) => c.atMs === s.impactMs)?.sound)).toEqual(['cap_clunk', 'cap_clunk', 'cap_climb_2', 'cap_climb_3']);
     expect(strikes.map((s) => s.to)).toEqual(['bronze', 'bronze', 'silver', 'jade']);
-    expect(strikes.every((s) => s.maxWaitMs === SHOW_TIMING.strikeIdleMs)).toBe(true);
+    // Every strike lands on the fourth beat of its bar, taps or not (A10 step 3).
+    expect(strikes.every((s) => s.impactMs === SHOW_TIMING.strikeImpactMs && s.durationMs === SHOW_TIMING.strikeMs)).toBe(true);
   });
 
   it('starts fixed-tier capsules at the burst (A6.4 Trophy Road)', () => {
@@ -261,10 +264,10 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     expect(checkPlan(broken).some((m) => m.includes('burst'))).toBe(true);
   });
 
-  it('a Bronze capsule plays in a few seconds when the player taps at once', () => {
+  it('a Bronze capsule with three cards plays in about 10 s, taps or not (strikes land on their beat)', () => {
     const ms = nominalDurationMs(planCapsuleShow(bronze(), { catalog }));
     expect(ms).toBeGreaterThan(4000);
-    expect(ms).toBeLessThan(10000);
+    expect(ms).toBeLessThan(11000);
   });
 });
 
@@ -365,29 +368,29 @@ describe('summit strikes and the Legendary tiers (A10 step 3b, 2026-09-29 ladder
     expect(upToStrike4(planCapsuleShow(legendaryCapsule('aeon', { startTier: 'bronze' }), { catalog }))).toEqual(sup);
   });
 
-  it('times the summit steps per A10: 400 ms rise with its grind, 900 ms strike landing at 380 ms with the slam at -6 dB', () => {
+  it('times the summit steps per A10: 400 ms rise with its grind, 1,020 ms strike landing on the fourth beat (600 ms) with the slam at -6 dB', () => {
     const p = planCapsuleShow(legendaryCapsule('aeon'), { catalog });
     const rise = p.steps.find((s) => s.kind === 'summitRise');
     expect(rise?.durationMs).toBe(400);
     expect(rise?.cues).toEqual([{ atMs: 0, sound: 'cap_summit_rise' }]);
     const strikes = p.steps.filter((s) => s.kind === 'summitStrike');
-    expect(strikes.map((s) => s.durationMs)).toEqual([900, 900]);
+    expect(strikes.map((s) => s.durationMs)).toEqual([1020, 1020]);
     for (const [i, s] of strikes.entries()) {
       if (s.kind !== 'summitStrike') continue;
-      expect(s.maxWaitMs).toBe(SHOW_TIMING.strikeIdleMs);
+      expect(s.impactMs).toBe(600);
       expect(s.cues).toContainEqual({ atMs: s.impactMs, sound: `cap_climb_${5 + i}` });
       expect(s.cues).toContainEqual({ atMs: s.impactMs, sound: 'upgrade_slam', volumeDb: -6 });
-      // Nothing sounds before the hammer lands.
-      expect(Math.min(...s.cues.map((c) => c.atMs))).toBe(s.impactMs);
+      // Only the neutral count-in sounds before the hammer lands (never a hint of the tier).
+      expect(s.cues.filter((c) => c.atMs < s.impactMs).every((c) => c.sound === 'cap_strike_tick')).toBe(true);
     }
   });
 
-  it('reaches the pop of the longest climb (an Aeon from Clay, prompt taps) in about 8.6 s', () => {
+  it('reaches the pop of the longest climb (an Aeon from Clay, on the beat, taps or not) in about 9.6 s', () => {
     const p = planCapsuleShow(legendaryCapsule('aeon'), { catalog });
     const burst = p.steps.findIndex((s) => s.kind === 'burst');
     const b = p.steps[burst];
     const toPop = p.steps.slice(0, burst).reduce((a, s) => a + s.durationMs, 0) + (b?.kind === 'burst' ? b.buildMs + SHOW_TIMING.burstPopMs : 0);
-    expect(toPop).toBe(8560);
+    expect(toPop).toBe(9600);
     expect(longestUnskippableMs(p)).toBeLessThanOrEqual(SHOW_LIMITS.unskippable);
   });
 

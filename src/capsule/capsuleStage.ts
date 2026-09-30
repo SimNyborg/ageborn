@@ -11,7 +11,7 @@ import { Container, Graphics, Sprite } from 'pixi.js';
 import type { AgeId, ArtProvider, CapsuleTier, I18n } from '@/contracts';
 import { mulberry32, type CosmeticRng } from '@/core';
 import { CARD_H, CardFan, portraitTexture, type CardView } from './cardFan';
-import { BLOW, HAMMER, blowAngle, cockOf, type BlowPose } from './blow';
+import { BLOW, HAMMER, blowPose, type BlowPose } from './blow';
 import { CapsuleDrum, Hammer, Pedestal, Pips, drumState, ornamentScaleFor, type DrumState } from './climb';
 import { clamp01, easeInQuad, easeOutBack, easeOutCubic, hump, lerp, span } from './ease';
 import { Particles, Trauma, glowSprite, label } from './fx';
@@ -94,12 +94,12 @@ const HIT = { x: PED.x + 78, y: PED.y - 138 };
  * tier colour, so it cannot hint at a climb.
  */
 const CUE_RING = { r0: 150, r1: 30, color: 0xfff1cf, bead: 0xffd98a } as const;
-/** Where "Perfect!" pops (above and right of the hit, clear of the drum's top). */
-const POP = { x: HIT.x + 84, y: HIT.y - 104 } as const;
+/** Where "Perfect!" pops: above the drum's right shoulder, clear of the hammer's raised head. */
+const POP = { x: HIT.x + 36, y: HIT.y - 176 } as const;
 /** The graded hit's layers (A10 step 3): hit-stop, flash, punch, sparks, haptics. Feel only. */
 const GRADE_FX = {
-  perfect: { hitstop: 110, flash: 0.5, punch: 0.05, trauma: 0.22, sparks: 30, stars: 14, shards: 8, energy: 2, leak: 0.55, vibrate: [30, 20, 45] as number[] },
-  good: { hitstop: 60, flash: 0.22, punch: 0.022, trauma: 0.08, sparks: 12, stars: 5, shards: 3, energy: 0.9, leak: 0.25, vibrate: [18] as number[] },
+  perfect: { hitstop: 110, flash: 0.3, punch: 0.05, trauma: 0.22, sparks: 30, stars: 14, shards: 8, energy: 2, leak: 0.55, vibrate: [30, 20, 45] as number[] },
+  good: { hitstop: 60, flash: 0.14, punch: 0.022, trauma: 0.08, sparks: 12, stars: 5, shards: 3, energy: 0.9, leak: 0.25, vibrate: [18] as number[] },
 } as const;
 
 /** A timed blow in progress (the hammer's pose is a pure function of its time, `blow.ts`). */
@@ -404,7 +404,7 @@ export class CapsuleStage implements ShowView {
     this.glint = glowSprite(starTexture(), 0xffffff, 90, 0);
     this.impactStar = glowSprite(starTexture(), 0xffffff, 260, 0);
     this.impactStar.position.set(HIT.x - 6, HIT.y);
-    this.impactGlow = glowSprite(glowTexture(), 0xffffff, 420, 0);
+    this.impactGlow = glowSprite(glowTexture(), 0xffffff, 200, 0);
     this.impactGlow.position.set(HIT.x - 20, HIT.y);
 
     this.shadow.ellipse(0, 0, 100, 16).fill({ color: 0x000000, alpha: 0.45 });
@@ -748,8 +748,9 @@ export class CapsuleStage implements ShowView {
       b.pinMs = Math.max(b.pinMs, pin);
       return;
     }
-    // A tap just after the hit: the hammer stays down through the flourish that starts now.
-    b.pinMs = Math.min(BLOW.pinMs.max, Math.max(b.pinMs, Math.round(b.t - b.impactMs) + GRADE_FX[hit.grade].hitstop));
+    // A tap just after the hit: a hammer still on the drum stays down through the flourish that
+    // starts now (one already bouncing back is never pulled down again).
+    if (b.t < b.impactMs + b.pinMs) b.pinMs = Math.min(BLOW.pinMs.max, Math.max(b.pinMs, Math.round(b.t - b.impactMs) + GRADE_FX[hit.grade].hitstop));
     this.gradeFx(step, hit);
   }
 
@@ -837,7 +838,7 @@ export class CapsuleStage implements ShowView {
       kind: s.kind,
       impactMs: s.impactMs,
       durationMs: s.durationMs,
-      from: this.hammer.root.rotation,
+      from: { a: this.hammer.root.rotation, lift: HAMMER.y - this.hammer.root.y },
       pinMs: s.kind === 'summitStrike' ? SHOW_TIMING.summitHoldMs : s.climb ? BLOW.pinMs.climb : BLOW.pinMs.none,
       last: next?.kind !== 'strike',
       holdMs: SHOW_TIMING.summitHoldMs,
@@ -886,7 +887,7 @@ export class CapsuleStage implements ShowView {
     const combo = perfect ? hit.combo : 0;
     this.hitstop = Math.max(this.hitstop, G.hitstop);
     // Reduce motion: no shake and no flash; the pop, the light in the cracks and the sound stay.
-    if (!rm) this.flash(G.flash + 0.03 * Math.min(4, combo), shade(c, 0.55));
+    if (!rm) this.flash(G.flash + 0.02 * Math.min(3, combo), mixColor(0xffffff, c, 0.3));
     this.addPunch(G.punch + 0.006 * Math.min(4, combo));
     this.trauma.add(G.trauma);
     this.vibrate(G.vibrate);
@@ -942,12 +943,14 @@ export class CapsuleStage implements ShowView {
         tint: shade(s.kind === 'summitStrike' ? TIER_COLORS[s.from] : c, -0.15),
       });
     }
-    // The combo flourish: a ring of stars thrown out evenly, one more per Perfect in the run.
+    // The combo flourish: a ring of stars thrown out evenly (more for a longer run), released as the
+    // hit-stop lets go.
     if (combo >= 2) {
       const n = Math.min(12, 3 * combo) * (rm ? 0.5 : 1);
       for (let i = 0; i < n; i++) {
         const a = (i / n) * Math.PI * 2 + this.rng.next() * 0.2;
-        this.particles.spawn({ tex: starTexture(), x: HIT.x - 6, y: HIT.y, vx: Math.cos(a) * 340, vy: Math.sin(a) * 340, life: 520, drag: 0.02, gravity: 0, scale: [1.1, 0], alpha: [1, 0], rot: a, vr: 6, tint: i % 2 ? 0xffffff : 0xffe7a8, add: true });
+        const r0 = 40;
+        this.particles.spawn({ tex: starTexture(), x: HIT.x - 6 + Math.cos(a) * r0, y: HIT.y + Math.sin(a) * r0, vx: Math.cos(a) * 360, vy: Math.sin(a) * 360, life: 520, drag: 0.02, gravity: 0, scale: [1, 0], alpha: [1, 0], rot: a, vr: 6, tint: i % 2 ? 0xffffff : 0xffe7a8, add: true, delay: 40 });
       }
       if (combo >= 4 && !rm) this.raysKick = 1;
     }
@@ -969,8 +972,8 @@ export class CapsuleStage implements ShowView {
     }
     c.addChild(main);
     if (combo >= 2) {
-      const x = label(t('capsule.strike.combo', { n: combo }), 30, 0xffe7a8, { outline: 5, outlineColor: 0x7a3e0e });
-      x.position.set(0, 40);
+      const x = label(t('capsule.strike.combo', { n: combo }), 36, 0xffe7a8, { outline: 6, outlineColor: 0x7a3e0e });
+      x.position.set(0, 44);
       c.addChild(x);
     }
     c.position.set(POP.x, POP.y);
@@ -1133,7 +1136,9 @@ export class CapsuleStage implements ShowView {
   private endBlow(id: string): void {
     const b = this.blow;
     if (!b || b.id !== id) return;
-    this.hammer.root.rotation = blowAngle(b, b.durationMs);
+    const end = blowPose(b, b.durationMs);
+    this.hammer.root.rotation = end.a;
+    this.hammer.root.y = HAMMER.y - end.lift;
     this.blow = null;
   }
 
@@ -2306,7 +2311,9 @@ export class CapsuleStage implements ShowView {
     this.hitstop = Math.max(0, this.hitstop - dt * (this.d.settings.reduceMotion ? 2 : 1));
     const slow = this.slowmo > 0 ? 0.3 : 1;
     this.slowmo = Math.max(0, this.slowmo - dt);
-    const fx = frozen ? 0 : dt * slow;
+    // Effects creep at 12% through a hit-stop instead of stopping dead, so a burst born on the frozen
+    // frame reads as a burst (not a white clump) while the world holds.
+    const fx = frozen ? dt * 0.12 : dt * slow;
     this.particles.update(fx);
     this.motes.update(dt);
     this.drum.update(fx);
@@ -2315,6 +2322,11 @@ export class CapsuleStage implements ShowView {
     this.embers(fx);
     this.updateMotes(dt);
     this.updateDrumAndHammer(frozen ? 0 : dt);
+    // The drum's white-out fades on real time: a hit-stop holds the pose, not the white, so a
+    // climb's new colour shows through as soon as it would without a graded tap.
+    this.drumWhite = Math.max(0, this.drumWhite - dt / 220);
+    this.drum.setWhite(this.drumWhite);
+    this.updateGrade(dt);
     this.updateRays(dt);
     this.updatePedestal(dt);
     this.updateCards(dt);
@@ -2416,8 +2428,6 @@ export class CapsuleStage implements ShowView {
       const c = 0.22 * this.crateSquash * Math.cos((1 - this.crateSquash) * 14);
       this.crate.box.scale.set(1 + c * 0.7, 1 - c);
     }
-    this.drumWhite = Math.max(0, this.drumWhite - dt / 220);
-    this.drum.setWhite(this.drumWhite);
 
     // Hammer: fades in, hovers, swings on strikes; before a summit strike it rises and heats white.
     this.hammerShown += (this.hammerTarget - this.hammerShown) * Math.min(1, dt / 90);
@@ -2460,12 +2470,13 @@ export class CapsuleStage implements ShowView {
     const h = this.hammer.root;
     this.smearG.clear();
     if (b) {
-      const a = blowAngle(b, b.t);
+      const pose = blowPose(b, b.t);
+      const a = pose.a;
       h.rotation = a;
-      // The grip rises as the hammer cocks back and dips into the hit.
+      // The hand lifts the hammer with the count-in, drives it down and dips into the hit.
       const since = b.t - b.impactMs;
       const dip = since >= 0 && since < 200 ? 7 * (1 - since / 200) : 0;
-      h.y = HAMMER.y - 16 * cockOf(a) + dip;
+      h.y = HAMMER.y - pose.lift + dip;
       // Stretch along the swing, squash on the drum, a wobble back (none with Reduce motion).
       const down0 = b.impactMs - BLOW.downMs;
       let st = 0;
@@ -2476,7 +2487,7 @@ export class CapsuleStage implements ShowView {
       h.scale.set(1 - st * 0.6, 1 + st);
       // The smear: a pale band swept behind the head through the swing and just after.
       if (!rm && b.t >= down0 && since < 50) {
-        const a0 = blowAngle(b, Math.max(down0, b.t - 55));
+        const a0 = blowPose(b, Math.max(down0, b.t - 55)).a;
         const a1 = Math.min(a, a0);
         const th0 = a1 - Math.PI / 2;
         const th1 = a0 - Math.PI / 2;
@@ -2504,10 +2515,11 @@ export class CapsuleStage implements ShowView {
         this.glint.rotation = rm ? 0 : gu * 1.6;
       } else this.glint.alpha = 0;
     } else {
-      // Between blows the hammer hovers (and rises before a summit gem), easing in from its last pose.
-      const idle = HAMMER.rest + 0.5 * this.hammerRaise + Math.sin(this.time / 240) * 0.05;
+      // Between blows the hammer hovers (and is held up high over a rising summit gem), easing in
+      // from its last pose.
+      const idle = HAMMER.rest - 0.2 * this.hammerRaise + Math.sin(this.time / 240) * 0.05;
       h.rotation += (idle - h.rotation) * Math.min(1, dt / 90);
-      h.y += (HAMMER.y - h.y) * Math.min(1, dt / 90);
+      h.y += (HAMMER.y - 60 * this.hammerRaise - h.y) * Math.min(1, dt / 90);
       h.scale.set(1);
       this.glint.alpha = 0;
     }
@@ -2518,10 +2530,17 @@ export class CapsuleStage implements ShowView {
       this.pips.pip(i)?.scale.set(rm ? 1 : 1 + v);
       this.pipPop[i] = v * Math.exp(-dt / 120);
     }
-    // The graded hit's star and glow at the hit point.
+  }
+
+  /**
+   * The graded hit's star and glow, and the "Perfect!" pop. They run on real time through the
+   * hit-stop: the world freezes, the star flares at once and holds, the pop springs up.
+   */
+  private updateGrade(dt: number): void {
+    const rm = this.d.settings.reduceMotion;
     if (this.impactT >= 0) {
       this.impactT += dt;
-      const dur = this.impactBig ? 300 : 220;
+      const dur = this.impactBig ? 320 : 230;
       const u = this.impactT / dur;
       if (u >= 1) {
         this.impactT = -1;
@@ -2529,11 +2548,14 @@ export class CapsuleStage implements ShowView {
         this.impactGlow.alpha = 0;
       } else {
         const k = this.impactBig ? 1 : 0.62;
-        this.impactStar.alpha = rm ? 0 : 1 - u;
-        this.impactStar.scale.set(k * (0.2 + 0.9 * easeOutCubic(Math.min(1, u * 2.4))));
-        this.impactStar.rotation = 0.5 * u;
-        this.impactGlow.alpha = (rm ? 0.3 : 0.85) * (1 - u) * k;
-        this.impactGlow.scale.set(k * (0.8 + 0.4 * u));
+        // Full size within 40 ms, then it holds bright and fades over the rest.
+        const grow = easeOutCubic(Math.min(1, this.impactT / 40));
+        const fade = 1 - span(u, 0.35, 1);
+        this.impactStar.alpha = rm ? 0 : fade;
+        this.impactStar.scale.set(k * (0.35 + 0.75 * grow + 0.15 * u));
+        this.impactStar.rotation = 0.4 * u;
+        this.impactGlow.alpha = (rm ? 0.3 : 0.5) * fade * k;
+        this.impactGlow.scale.set(k * (0.7 + 0.5 * grow));
       }
     }
     this.updatePops(dt);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FakeAudio } from '@/contracts/fakes/audio';
-import { planCapsuleShow, planOpenAll, planWardrobeShow, type ShowPlan, type ShowStep } from '../plan';
-import { ShowRunner, type RunnerState, type ShowView } from '../runner';
+import { nominalDurationMs, planCapsuleShow, planOpenAll, planWardrobeShow, SHOW_TIMING, type ShowPlan, type ShowStep } from '../plan';
+import { ShowRunner, type RunnerState, type ShowView, type StrikeHit, type TimedStrike } from '../runner';
 import { crate, reveal, stack, testCatalog } from './fixtures';
 
 const catalog = testCatalog();
@@ -10,7 +10,7 @@ class RecordingView implements ShowView {
   readonly log: string[] = [];
   readonly entered: { id: string; instant: boolean }[] = [];
   readonly lastT = new Map<string, number>();
-  waits = 0;
+  readonly hits: StrikeHit[] = [];
   enter(step: ShowStep, instant: boolean): void {
     this.entered.push({ id: step.id, instant });
     this.log.push(`enter ${step.id}${instant ? ' (instant)' : ''}`);
@@ -21,8 +21,8 @@ class RecordingView implements ShowView {
   exit(step: ShowStep): void {
     this.log.push(`exit ${step.id}`);
   }
-  waiting(): void {
-    this.waits++;
+  strikeHit(_step: TimedStrike, hit: StrikeHit): void {
+    this.hits.push(hit);
   }
 }
 
@@ -56,68 +56,68 @@ const silver = () =>
   );
 
 describe('ShowRunner (DESIGN A10 Input)', () => {
-  it('plays the whole show on its own: strikes auto-fire after 1.5 s idle', () => {
+  it('plays the whole show on its own: every strike lands on its beat without a tap', () => {
     const { view, audio, runner } = setup(silver());
     const ms = run(runner);
     expect(runner.done).toBe(true);
     expect(runner.state.kind).toBe('summary');
-    expect(view.waits).toBeGreaterThan(0);
-    // Four strikes, each idles 1.5 s: the untouched show takes at least 4 × 1.5 s longer.
-    expect(ms).toBeGreaterThan(4 * 1500);
-    // Each strike lands with a thump under its clunk or climb note; the burst builds on a riser.
-    const capsuleSounds = audio.played().filter((id) => id.startsWith('cap_') || id === 'evolve_riser');
+    // Four strikes of 800 ms each, no waiting: the untouched show is the plan's nominal length.
+    expect(ms).toBeGreaterThanOrEqual(nominalDurationMs(runner.plan) - 16);
+    expect(ms).toBeLessThanOrEqual(nominalDurationMs(runner.plan) + 48);
+    // Each strike counts in with three rising ticks, then lands with its clunk or climb note.
+    const capsuleSounds = audio.played().filter((id) => (id.startsWith('cap_') && id !== 'cap_strike_tick') || id === 'evolve_riser');
     expect(capsuleSounds.slice(0, 8)).toEqual(['cap_thud', 'cap_riser', 'cap_clunk', 'cap_clunk', 'cap_climb_1', 'cap_climb_2', 'evolve_riser', 'cap_burst']);
-    expect(audio.played()).toContain('cap_climb_2');
+    expect(audio.played().filter((id) => id === 'cap_strike_tick')).toHaveLength(12);
+    // No tap, no graded layer.
+    expect(audio.played()).not.toContain('cap_strike_perfect');
+    expect(view.hits).toEqual([]);
     expect(audio.played()).toContain('rarity_epic');
     // Every step entered once, in order, none instantly.
     expect(view.entered.map((e) => e.id)).toEqual(runner.plan.steps.map((s) => s.id));
     expect(view.entered.every((e) => !e.instant)).toBe(true);
   });
 
-  it('shows "Tap!" while a strike waits and fires the strike on tap', () => {
-    const { runner, states } = setup(silver());
-    run(runner, 5000, () => undefined);
-    // After arrival + charge (2 s) the first strike waits.
-    const waiting = states.find((s) => s.kind === 'strike' && s.phase === 'wait');
-    expect(waiting?.prompt).toBe('tap');
-    const r2 = setup(silver()).runner;
-    let t = 0;
-    while (r2.state.phase !== 'wait') {
-      r2.update(16);
-      t += 16;
-    }
-    expect(t).toBeGreaterThanOrEqual(2000);
-    r2.tap();
-    expect(r2.state.phase).toBe('run');
-    r2.update(100);
-    expect(r2.state.index).toBe(2);
-  });
-
-  it('shows "Tap!" late in the charge and a tap there queues the first strike', () => {
+  it('shows the tap prompt late in the charge and through the strikes until the first tap', () => {
     const { runner } = setup(silver());
     while (runner.state.kind !== 'charge') runner.update(16);
     expect(runner.state.prompt).toBeNull();
-    runner.tap();
     while (runner.state.prompt !== 'tap') runner.update(16);
     expect(runner.state.kind).toBe('charge');
+    // A tap in the charge neither hurries it nor starts the strikes early.
+    const idx = runner.state.index;
+    const t = runner.stepTimeMs;
     runner.tap();
+    runner.update(16);
+    expect(runner.state.index).toBe(idx);
+    expect(runner.stepTimeMs).toBeCloseTo(t + 16, 5);
     while (runner.state.kind === 'charge') runner.update(16);
     expect(runner.state.kind).toBe('strike');
-    expect(runner.state.phase).toBe('run');
+    expect(runner.state.prompt).toBe('tap');
+    runner.tap();
+    expect(runner.state.prompt).toBeNull();
   });
 
-  it('tapping quickly strikes back to back without waiting', () => {
-    const { runner } = setup(silver());
-    while (runner.state.phase !== 'wait') runner.update(16);
-    let ms = 0;
-    while (runner.state.kind === 'strike' || runner.state.kind === 'charge') {
-      runner.tap();
-      runner.update(16);
-      ms += 16;
+  it('keeps the beat when the player mashes: strikes never hurry or wait', () => {
+    const plain = setup(silver());
+    while (plain.runner.state.kind !== 'strike') plain.runner.update(16);
+    let quiet = 0;
+    while (plain.runner.state.kind === 'strike') {
+      plain.runner.update(16);
+      quiet += 16;
     }
-    expect(runner.state.kind).toBe('burst');
-    // 4 strikes of 0.6 s with no idle time.
-    expect(ms).toBeLessThanOrEqual(4 * 600 + 64);
+    const masher = setup(silver());
+    while (masher.runner.state.kind !== 'strike') masher.runner.update(16);
+    let mashed = 0;
+    while (masher.runner.state.kind === 'strike') {
+      masher.runner.tap();
+      masher.runner.update(16);
+      mashed += 16;
+    }
+    expect(mashed).toBe(quiet);
+    expect(Math.abs(quiet - 4 * SHOW_TIMING.strikeMs)).toBeLessThanOrEqual(16);
+    // Mashing uses up each strike's one judged tap early: no Perfects to farm.
+    expect(masher.view.hits.every((h) => h.grade === 'miss')).toBe(true);
+    expect(masher.view.hits).toHaveLength(4);
   });
 
   it('fast-forwards at 3× while held, and taps hurry a flip', () => {
