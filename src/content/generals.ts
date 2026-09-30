@@ -75,15 +75,21 @@ function general(g: GeneralInput): GeneralDef {
   };
 }
 
+/**
+ * Pip, the onboarding General (A8 match 2, tiers 0-II): leans on Heavies and fields no Anti-heavy
+ * card, so a new player's own Heavies are not hard-countered while match 2 teaches the answer to his
+ * ("Heavies! Send Spear Hunters."). With the Anti-heavy numbers (owner feedback 2026-09-29) the
+ * onboarding autopilot beat a Pip that had them 84% of 80 seeds (90% before); without them 94%.
+ */
 const PIP: Plan = {
-  stone: lo(['pebbler', 'bonker', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'stampede'),
-  bronze: lo(['javelineer', 'hoplite', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'sun_mirror'], 'tidal_wave'),
-  medieval: lo(['longbowman', 'footman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'pitch_cauldron'], 'arrow_storm'),
-  gunpowder: lo(['fusilier', 'corsair', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'grapeshot_gun'], 'smoke_screen'),
-  industrial: lo(['carbineer', 'riveter', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
-  modern: lo(['rifleman', 'trench_raider', 'tankette', 'bazooka_trooper', 'radio_operator'], ['mg_nest', 'flak_gun'], 'paratroopers'),
-  future: lo(['pulse_trooper', 'photon_knight', 'walker_mech', 'rail_gunner', 'repair_drone'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
-  cosmic: lo(['ion_ranger', 'star_legionnaire', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'starburst_gun'], 'starfall'),
+  stone: lo(['pebbler', 'bonker', 'tuskback', null, 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'stampede'),
+  bronze: lo(['javelineer', 'hoplite', 'war_chariot', null, 'standard_bearer'], ['archer_tower', 'sun_mirror'], 'tidal_wave'),
+  medieval: lo(['longbowman', 'footman', 'destrier_knight', null, 'friar'], ['crossbow_nest', 'pitch_cauldron'], 'arrow_storm'),
+  gunpowder: lo(['fusilier', 'corsair', 'cuirassier', null, 'field_surgeon'], ['swivel_gun', 'grapeshot_gun'], 'smoke_screen'),
+  industrial: lo(['carbineer', 'riveter', 'steam_golem', null, 'flare_spotter'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
+  modern: lo(['rifleman', 'trench_raider', 'tankette', null, 'radio_operator'], ['mg_nest', 'flak_gun'], 'paratroopers'),
+  future: lo(['pulse_trooper', 'photon_knight', 'walker_mech', null, 'repair_drone'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
+  cosmic: lo(['ion_ranger', 'star_legionnaire', 'hover_tank', null, 'starwarden'], ['ion_turret', 'starburst_gun'], 'starfall'),
 };
 
 const KETTLE: Plan = {

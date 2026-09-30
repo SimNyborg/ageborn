@@ -58,6 +58,14 @@ function targetRect(root: HTMLElement, target: PromptTarget | null, view: Battle
     if (!el) return null;
     const r = el.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) return null;
+    // A card's "Beats Heavy" chip (A9.2) sits above it: the bubble goes above the chip, never over it.
+    const chip = root.querySelector<HTMLElement>(`[data-testid="${id}-counter"]`)?.getBoundingClientRect();
+    if (chip && chip.width > 0) {
+      const top = Math.min(r.top, chip.top);
+      const left = Math.min(r.left, chip.left);
+      const right = Math.max(r.right, chip.right);
+      return { x: left - box.left, y: top - box.top, w: right - left, h: r.bottom - top };
+    }
     return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
   }
   const mount = target === 'mount0' ? 0 : target === 'mount1' ? 1 : target === 'mountBuy' ? mountsOwned : -1;
@@ -149,7 +157,7 @@ export function TutorialBubble(p: {
   root: HTMLElement | null;
   view: BattleView | undefined;
   mountsOwned: number;
-  t: (key: string) => string;
+  t: (key: string, vars?: Record<string, string | number>) => string;
   onDismiss: () => void;
 }) {
   const [rect, setRect] = useState<Rect | null>(null);
@@ -229,7 +237,9 @@ export function TutorialBubble(p: {
         }}
         onClick={prompt.kind === 'hint' ? p.onDismiss : undefined}
       >
-        {p.t(prompt.textKey)}
+        {prompt.varKeys
+          ? p.t(prompt.textKey, Object.fromEntries(Object.entries(prompt.varKeys).map(([k, key]) => [k, p.t(key)])))
+          : p.t(prompt.textKey)}
       </div>
       {tapHand && rect ? (
         <div

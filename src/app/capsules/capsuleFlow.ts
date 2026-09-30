@@ -98,9 +98,11 @@ export function progressRecord(before: SaveDoc, after: SaveDoc, reveals: readonl
 }
 
 /**
- * Opens capsules in the order given (oldest first for "Open all"). Unknown ids are skipped. The
- * first scripted capsule's NEW cards are equipped at once (A8 / C5 #5: "Spear Hunter NEW,
- * auto-equipped").
+ * Opens capsules in the order given (oldest first for "Open all"). Unknown ids are skipped. Nothing
+ * is equipped by itself: the first scripted capsule used to equip its NEW Spear Hunter (C5 #5), but
+ * every age's Anti-heavy card is in the starter plan since owner feedback 2026-09-29, and capsule 1
+ * now brings Support Rares, which the summary offers with "Equip now" (auto-equipped, a second
+ * card to spread gold over made the onboarding autopilot lose match 2 to Pip in 2 of 4 seeds).
  */
 export function openCapsules(
   meta: ShowMeta,
@@ -116,9 +118,6 @@ export function openCapsules(
     const o = meta.openCapsule(s, id);
     s = o.save;
     reveals.push(o.reveal);
-    if (o.reveal.capsule.scriptIndex === 1) {
-      for (const st of o.reveal.capsule.contents.stacks) if (st.isNew) s = meta.equipNow(s, st.card, content);
-    }
   }
   if (reveals.length === 0) return null;
   return {

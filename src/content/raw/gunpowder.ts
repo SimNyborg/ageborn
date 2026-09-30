@@ -59,7 +59,7 @@ export const gunpowder: RawAgeTables = {
     {
       // 50 splash r35 / 1.8 s. Lob over allies; armored ×1.5, mech ×1.5, light ×0.5; priority armored
       id: 'grenadier', kind: 'unit', age: 'gunpowder', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 230, speed: 68, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 253, speed: 68, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -68,7 +68,7 @@ export const gunpowder: RawAgeTables = {
           dmgType: 'blast', sfx: 'shot_lob', splashRadius: 35, mods: damageMods.grenadier, priority: 'armored',
         },
       ],
-      abilities: [],
+      abilities: [{ kind: 'brace' }],
       visualId: 'unit.grenadier', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.grenadier.name', descKey: 'card.grenadier.desc', strongVs: [], weakVs: [],
     },

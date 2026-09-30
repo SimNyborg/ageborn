@@ -5,6 +5,7 @@
       "killsEarnGold": "Kills earn gold",
       "pebbler": "Tap to send a Pebbler",
       "buildTurret": "Build a Rock Tosser",
+      "spearHunter": "Spear Hunters beat Heavies",
       "evolve": "Evolve!",
       "arrowStorm": "Drag the arrows onto them",
       "stance": "Hold guards your base. Charge attacks!",
@@ -18,7 +19,7 @@
     },
     "hint": {
       "turretShredsMelee": "Their turret shreds melee. Try Pebblers.",
-      "heaviesStopInfantry": "Heavies stop Bonkers. Try a Spear Hunter.",
+      "heaviesStopInfantry": "Heavies! Send {card}.",
       "powerReady": "Your power is ready.",
       "evolveFirst": "Evolve before they do.",
       "buyMount": "Buy another turret mount.",
@@ -107,7 +108,8 @@
     "drawLine": "Even after {time}",
     "newSlot": "New slot · {cost}",
     "tip": {
-      "trickle": "Tip: units sent one by one fall one by one. Bank gold, then send a wave."
+      "trickle": "Tip: units sent one by one fall one by one. Bank gold, then send a wave.",
+      "heavyGap": "Add {card} to {age}: it beats Heavies."
     },
     "upgrade": {
       "level": "Lv {level}",

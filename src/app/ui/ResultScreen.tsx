@@ -16,16 +16,22 @@ import { asContent } from '@/content';
 import type { CapsuleTables } from '@/content/types';
 import { pendingCrests, visibleTier } from '@/ui/components/capsuleLook';
 import { isMetaRules } from '../uiServices';
-import type { CapsuleTier, PendingCapsule, RewardStep } from '@/contracts';
+import type { AgeId, CapsuleTier, PendingCapsule, RewardStep } from '@/contracts';
 import type { ResultState } from '../controller';
 import { RewardStager } from '../flow';
 import { displayName } from '../names';
-import { lossTipKey } from '../trickle';
+import { lossTip } from '../trickle';
 import { useApp } from './context';
 import { UI_SOUND_FALLBACK } from './MetaHost';
-import { titleNameKey } from '@/content';
+import { ageNameKey, titleNameKey } from '@/content';
 
 type T = (k: string, p?: Record<string, string | number>) => string;
+
+/** A loss tip's text; the Anti-heavy tip names the card and the age (A9.2). */
+export function tipLine(t: T, tip: { key: string; card?: string; age?: string }, content: { units: Record<string, { nameKey: string } | undefined> }): string {
+  const card = tip.card ? content.units[tip.card]?.nameKey : undefined;
+  return t(tip.key, { card: card ? t(card) : '', age: tip.age ? t(ageNameKey(tip.age as AgeId)) : '' });
+}
 
 /** The chip of one reward step: an icon kind and its text (names through i18n, never raw ids). */
 export type RewardIconKind = 'amber' | 'dust' | 'capsule' | 'crate' | 'trophy' | 'title' | 'star' | 'feat' | 'plain';
@@ -164,8 +170,9 @@ export function ResultScreen(p: { result: ResultState }) {
   const retry = onboarding && c.canRetry(p.result);
   const next = onboarding && step !== 'match1';
   const name = displayName(input.opponent.displayName, ui.services.i18n);
-  // A16.6: one loss tip when the trickle detector fired.
-  const tip = lossTipKey({ won, draw, trickled: p.result.battle?.trickle.fired ?? false });
+  // A9.2 / A16.6: one loss tip: the missing Anti-heavy card, else the wave tip when the trickle detector fired.
+  const lt = lossTip({ won, draw, trickled: p.result.battle?.trickle.fired ?? false, heavyGap: p.result.battle?.heavyGap.gap ?? null });
+  const tipText = lt ? tipLine(ui.t, lt, setup.config.content) : null;
   const line = resultLine(ui.t, won, draw, input.outcome.reason, name, clock(input.stats.durationMs));
   // One main action (gold). During onboarding that is Next (a capsule waits) or Retry; nothing
   // competes with it (A8, A9 #7). Outside onboarding: Play again, Watch replay and Home, all labeled.
@@ -238,9 +245,9 @@ export function ResultScreen(p: { result: ResultState }) {
                   </li>
                 ))}
               </ul>
-              {tip ? (
+              {tipText ? (
                 <p class="result-sum__tip" data-testid="result-tip">
-                  {ui.t(tip)}
+                  {tipText}
                 </p>
               ) : null}
             </section>

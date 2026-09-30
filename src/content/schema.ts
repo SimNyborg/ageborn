@@ -917,7 +917,7 @@ function checkCollection(issues: Issues, c: Content): void {
     issues.check(us.length === 7, `ages.${age}`, '7 units per age (A5)');
     issues.check(us.filter((u) => u.rarity === 'common').length === 3, `ages.${age}`, '3 Common units per age (A3)');
     issues.check(groups('infantry') === 1 && groups('ranged') === 1 && groups('heavy') === 1, `ages.${age}`, 'one Infantry, Ranged and Heavy Common');
-    issues.check(groups('antiArmor') === 1 && groups('support') === 1, `ages.${age}`, 'an Anti-armor Rare and a Support Rare (A3)');
+    issues.check(groups('antiArmor') === 1 && groups('support') === 1, `ages.${age}`, 'an Anti-heavy (Anti-armor) Rare and a Support Rare (A3)');
     issues.check(groups('epic') === 1 && groups('legendary') === 1, `ages.${age}`, 'one Epic and one Legendary unit');
     const ts = turrets.filter((t) => t?.age === age);
     issues.check(ts.length === 4, `ages.${age}`, '4 turrets per age (A5)');
@@ -1187,17 +1187,20 @@ function checkMeta(issues: Issues, c: Content): void {
     for (const x of s.cards) {
       const card = c.units[x] ?? c.turrets[x];
       issues.check(card !== undefined, p, `unknown card "${x}"`);
-      // A6.5 reveals scripted cards as NEW, so none may be in the starter kit (every Common, A3).
+      // A6.5 reveals scripted cards as NEW, so none may be in the starter kit (every Common and each
+      // age's Anti-heavy Rare, A3).
       issues.check(card === undefined || card.rarity !== 'common', p, `"${x}" is a starter Common, so it cannot be NEW`);
+      issues.check(card === undefined || c.units[x]?.group !== 'antiArmor', p, `"${x}" is a starter Anti-heavy card, so it cannot be NEW`);
     }
   });
-  // A3: each age's Anti-armor Rare arrives by script or by an Age Unlock Capsule at an arena gate.
+  // A3: each age's Support Rare arrives by script or by an Age Unlock Capsule at an arena gate (the
+  // Anti-heavy Rares are in the starter kit since owner feedback 2026-09-29).
   const unlockAges = new Set(c.arenas.list.flatMap((a) => a.gateRewards.flatMap((r) => (r.kind === 'ageUnlock' ? r.ages : []))));
   const scripted = new Set(cap.script.flatMap((s) => s.cards));
   for (const age of AGE_ORDER) {
-    const aa = c.order.units.map((x) => c.units[x]).find((u) => u?.age === age && u.group === 'antiArmor');
-    if (!aa) continue;
-    issues.check(scripted.has(aa.id) || unlockAges.has(age), `capsules.script`, `"${aa.id}" (the ${age} Anti-armor Rare) never arrives (A3)`);
+    const support = c.order.units.map((x) => c.units[x]).find((u) => u?.age === age && u.group === 'support' && u.rarity === 'rare');
+    if (!support) continue;
+    issues.check(scripted.has(support.id) || unlockAges.has(age), `capsules.script`, `"${support.id}" (the ${age} Support Rare) never arrives (A3)`);
   }
   // Arenas (A6.3)
   const list = c.arenas.list;

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Observation } from '@/contracts';
 import { LANE_MLU, MILLI as MLU, seedSfc32 } from '@/core';
 import { cardBook } from '../book';
-import { Brain, monoFactorBp, type DecisionTrace } from '../brain';
+import { Brain, heavyDominant, monoFactorBp, type DecisionTrace } from '../brain';
 import { Ledger } from '../ledger';
 import { BotMemory } from '../memory';
 import { BALANCED_WEIGHTS, personalityFor, weightsBp, type Weights } from '../personalities';
@@ -645,12 +645,27 @@ describe('answers to spam (A16.3)', () => {
     const still = decide(brain, observation({ tick: 5100, gold: 90 * MILLI, units: heavies(700) }));
     expect(still.goal?.kind).toBe('counter');
     for (const c of still.candidates) if (c.action.kind === 'train') expect(c.action.cost).toBeLessThanOrEqual(90 * MILLI);
-    // 8 s later (160 ticks) the goal is gone (a fresh one may be set only by a new decision to save).
+    // A mixed army (Heavies below half its value) at 280 lu: the goal lapses and the bot trains.
+    const mixed = [...heavies(700), ...[0, 1, 2, 3, 4, 5, 6].map((i) => unit(0, 'bonker', 280 + i * 10))];
     const { brain: b2 } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
     decide(b2, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(700) }));
-    const close = decide(b2, observation({ tick: 5020, gold: 90 * MILLI, units: heavies(280) }));
+    const close = decide(b2, observation({ tick: 5020, gold: 90 * MILLI, units: mixed }));
     expect(close.goal).toBeNull();
     expect(close.action?.kind).toBe('train');
+  });
+
+  it('A7.2 "Answer Heavy with Anti-heavy": Heavies at the gate keep the bot banking and never draw a trickle', () => {
+    // Two Tuskbacks camp 280 lu from the gate: the bot banks (for a first turret on its free mount,
+    // then for the counter) instead of sending the one Bonker it can afford into them.
+    const { brain } = brainFor({ tier: 10, tierOverride: { treasuryMax: 0, goldFloat: 0 } });
+    decide(brain, observation({ tick: 5000, gold: 90 * MILLI, units: heavies(700) }));
+    const camp = decide(brain, observation({ tick: 5020, gold: 90 * MILLI, units: heavies(280) }));
+    expect(camp.goal).not.toBeNull();
+    expect(['turret', 'counter']).toContain(camp.goal?.kind);
+    expect(camp.candidates.filter((c) => c.action.kind === 'train' && c.action.card === 'bonker')).toEqual([]);
+    // The trigger: Heavies are at least half the visible value and the army is worth 300 or more.
+    expect(heavyDominant(heavies(280).map((u) => ({ value: 150, def: content.units[u.card] })))).toBe(true);
+    expect(heavyDominant([{ value: 150, def: content.units['tuskback'] }])).toBe(false);
   });
 
   it('rule 1: no counter goal once the counter is affordable', () => {
@@ -789,8 +804,12 @@ describe('War Council use (A18.5.8)', () => {
   it('counter scoring (tier V and up) answers what it sees: Heavies call for an anti-Heavy pick', () => {
     const heavy = Array.from({ length: 6 }, (_, i) => unit(0, 'tuskback', 1200 + i * 20));
     const { brain } = brainFor({ tier: 8, tierOverride: { ...RESEARCH_ON, researchFromTicks: 0 } });
-    const p = research(decide(brain, observation({ tick: 700, gold: 400 * MILLI, units: heavy })));
-    expect(p?.aiHint).toBe('vsHeavy');
+    const tr = decide(brain, observation({ tick: 700, gold: 400 * MILLI, units: heavy }));
+    // The planned item (bought now, or right after the Anti-heavy card it trains first, A7.2).
+    const planned = tr.goal?.kind === 'research' ? content.research.picks.find((q) => q.id === (tr.goal as { pick: string }).pick) : research(tr);
+    expect(planned?.aiHint).toBe('vsHeavy');
+    // With an Anti-heavy card in the tray, the plan is its own Troops line (A7.2 "Answer Heavy").
+    expect(planned?.group).toBe('antiArmor');
   });
 
   it('Mama Moss researches Defences first; Kettle never takes Forage', () => {

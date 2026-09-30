@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TutorialDirector, type DirectorLogEntry } from '../director';
-import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, sec } from '../scripts';
+import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_SPEAR_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, sec } from '../scripts';
 import { Harness, config, type Ev } from './helpers';
 
 function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } {
@@ -13,7 +13,7 @@ function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } 
 const kill = (): Ev => ({ e: 'died', id: 900, side: 1, card: 'training_dummy', killerId: 1, killerCard: 'bonker', killerKind: 'unit', killerSide: 0, bountyGold: 30000, bountyXp: 50000, x: 600_000 });
 
 describe('TutorialDirector: match 1 beats in A8 order', () => {
-  it('walks Bonker → kill → Pebbler → Rock Tosser → Evolve → Arrow Storm → stance → Future', () => {
+  it('walks Bonker → kill → Pebbler → Rock Tosser → Spear Hunter → Evolve → Arrow Storm → stance → Future', () => {
     const { h, d, log } = match1();
     h.advance();
     d.update(h.input());
@@ -43,6 +43,13 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     expect(d.prompt).toMatchObject({ id: 'm1.buildTurret', target: 'mount0' });
     h.advance();
     d.update(h.input([{ e: 'turretBuildStart', side: 0, mount: 0, card: 'rock_tosser' }]));
+
+    // ~0:39: the Spear Hunter (unlocked at 0:37 as the Tuskback walks on) follows at once (the Anti-heavy beat).
+    expect(MATCH1_SPEAR_TICK).toBeLessThan(MATCH1_TURRET_GRANT_TICK);
+    expect(d.prompt).toMatchObject({ id: 'm1.spearHunter', textKey: 'tutorial.m1.spearHunter', target: 'card3' });
+    h.advance();
+    h.state.sides[0].queue.push({ card: 'spear_hunter', group: 'antiArmor', progress: 0, total: 50, waiting: false });
+    d.update(h.input());
     expect(d.prompt).toBeNull();
 
     h.advance();
@@ -135,7 +142,7 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     h.state.sides[0].ageIndex = 1;
     h.state.tick = MATCH1_PEBBLER_TICK;
     d.update(h.input([{ e: 'ageUp', side: 0, age: 'medieval' }]));
-    expect(log.filter((e) => e.kind === 'beatSkipped').map((e) => e.id).sort()).toEqual(['m1.buildTurret', 'm1.evolve', 'm1.pebbler']);
+    expect(log.filter((e) => e.kind === 'beatSkipped').map((e) => e.id).sort()).toEqual(['m1.buildTurret', 'm1.evolve', 'm1.pebbler', 'm1.spearHunter']);
   });
 });
 

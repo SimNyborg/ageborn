@@ -2,37 +2,49 @@
 damage, fast (0.8 s); Blink: warps past the blocker to a ranged or support unit (the game draws
 fx.blink). ~70 lu.
 
-Look (A17.12, Cosmic palette): a lean, hunched assassin. A pointed violet hood over a dark mask
-with two mint eyes, a big team cloak that trails from the shoulders and flares on the walk
-(follow-through); its near half is thrown open toward the camera so the starry lining reads
-(void with star-white and mint star specks), a void bodysuit with violet shin guards and a team sash. Both hands hold short curved
-mint warp blades held low and reversed, the brightest shapes on the unit. The stance is a low
-forward crouch. The attack is a lunging cross-slash: crouch and draw both blades back, a held
-coil, a mint smear, a held impact with both blades crossed forward and a spark burst. The death
-blinks out: struck, folded in, then squeezed thin and shrunk into a violet star flash (no fall,
-no dust poof).
+Look (A17.12, Cosmic palette): a lean, hunched assassin. A pointed violet hood (its tip follows
+through) over a dark mask with two slanted mint robot eyes that act (narrow and angry on the
+pounce, > < when hit, X as he blinks out), a big team cloak that trails from the shoulders and
+flares on the walk; its near half is thrown open toward the camera so the starry lining reads
+(void with star-white and mint star specks). A void bodysuit with violet shin guards, a team sash
+with a pale Cosmic star, a belt pouch. Both hands hold short curved mint warp blades, reversed.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    low crouch, twirls the near blade, a shimmer frame (he flickers), a blink
+  walk    sneak: low, long strides, the cloak and hood tip flaring behind
+  attack  BLINK X-SLASH: sinks into a deep crouch, squeezes thin and blinks out in a violet star,
+          reappears a stride forward in the air with both blades crossed high behind his head
+          (the held extreme; the star fades where he was), slashes both blades down across each
+          other (two mint smears) and lands low with the blades crossed in an X (impact lines),
+          then skips back into his crouch
+  hit     light: the head snaps back, the cloak whips, eyes > <
+  die     blink-out (kept): struck, folded in, squeezed thin and shrunk into a violet star flash
+          (no fall, no dust poof)
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import kit_cosmic as KC
+from ageborn_art import kit_future as KF
+from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge, pick
 from ageborn_art.geometry import Geo
 
 SLUG = "warp_stalker"
 NAME = "Warp Stalker"
 HEIGHT_LU = 70
-CANVAS = (300, 256)
-FEET = (132, 222)
+CANVAS = (320, 272)
+FEET = (132, 232)
 ANCHORS = {"head": (6, 66), "hitCenter": (2, 32)}
+NO_RETIME = True
 
 HR = (0.0, K.ARM_Y["r"], K.HAND_Z)
 HL = (0.0, K.ARM_Y["l"], K.HAND_Z)
-BLADE = 20.0
+BLADE = 22.0
 TIP_R = (HR[0] + 3.0, HR[1] - 1.0, HR[2] + 5.0 + BLADE)
-
-SMEAR = {"joint": "blade_r", "inner": (HR[0] + 1.0, HR[1] - 1.0, HR[2] + 5.0 + BLADE * 0.3),
-         "outer": TIP_R, "color": K.MINT, "taper": 0.4, "start": 0.3}
+MID_R = (HR[0] + 0.8, HR[1] - 1.0, HR[2] + 5.0 + BLADE * 0.45)
+TIP_L = (HL[0] + 3.0, HL[1] - 1.0, HL[2] + 5.0 + BLADE)
+MID_L = (HL[0] + 0.8, HL[1] - 1.0, HL[2] + 5.0 + BLADE * 0.45)
 
 
 def _blade(rig, joint, h, y_off, bright=True):
@@ -97,35 +109,36 @@ def build(rig):
     g = Geo().blob((0, 0, 28), (8.4, 8.4, 11.0), p=2.4, taper=(0.9, 1.05))
     g.blob((0, 0, 17.5), (7.6, 8.2, 4.0), p=2.6)
     rig.part("torso", g, K.VOID)
-    g = Geo().blob((1.4, 0, 29.0), (8.7, 8.9, 2.8), p=2.6, rot=(0, 34, 0))
+    g = Geo().blob((1.4, 0, 29.0), (8.8, 9.0, 3.9), p=2.6, rot=(0, 34, 0))
     rig.part("torso", g, team=True, outline=0.6)
     g = Geo().blob((0.4, 0, 21.8), (8.9, 8.9, 2.0), p=3.4)
     rig.part("torso", g, K.VIOLET, finish="gloss")
+    g = Geo().blob((-4.0, -8.8, 20.0), (2.4, 1.8, 2.6), p=3.2)
+    rig.part("torso", g, K.VOID_LT, outline=0.6)                          # a belt pouch
+    g = Geo().star((5.2, -7.8, 29.6), 2.6, 1.1, 1.0, points=5, rot=(0, -30, 0))
+    rig.part("torso", g, KC.STAR_PALE, outline=0.5, outline_hex=K.STAR_TRIM)
     g = Geo().blob((8.8, -2.0, 21.8), (1.3, 2.0, 1.3), p=2.4)
     rig.part("torso", g, glow=K.MINT, outline=1.0, outline_hex=K.VOID)
 
     # hood: pointed, violet, over a dark mask with two mint eyes; mask lower half
     g = Geo().blob((1.5, 0, 49.5), (11.8, 11.0, 12.0), p=2.4)
-    g.capsule((-3.0, 0, 54.0), (-15.0, 0, 60.0), 8.4, 1.6, segs=18, rings=4)
     g.clip((8.8, 0, 48.0), (1, 0, 0.2))
     rig.part("head", g, K.VIOLET, outline_hex=K.VIOLET_DK)
+    rig.secondary("hood_tip", "head", (-5.0, 0, 55.0), (-15.0, 0, 60.0), max_deg=18, gain=1.3)
+    g = Geo().capsule((-3.0, 0, 54.0), (-15.0, 0, 60.0), 8.4, 1.6, segs=18, rings=4)
+    g.clip((8.8, 0, 48.0), (1, 0, 0.2))
+    rig.part("hood_tip", g, K.VIOLET, outline_hex=K.VIOLET_DK)
     g = Geo().blob((3.8, 0, 48.5), (9.8, 8.8, 9.4), p=2.4)
     rig.part("head", g, K.VISOR, finish="gloss", outline_hex=K.VOID)
     g = Geo().blob((7.0, 0, 43.6), (7.2, 8.6, 3.6), p=2.4)
     rig.part("head", g, K.VOID_LT, finish="gloss")
-    rig.joint("eyes", "head", (13.4, 0, 49.5))
-    g = Geo()
-    for y, k in ((-4.0, 1.0), (2.6, 0.85)):
-        g.blob((13.3, y, 49.6), (0.9, 2.0 * k, 1.3 * k), p=2.2, rot=(10, 0, 0))
-    rig.part("eyes", g, glow=K.MINT, outline=0)
-    rig.joint("eyes_x", "head", (13.4, 0, 49.5), hidden=True)
-    g = Geo()
-    for y in (-4.0, 2.6):
-        g.capsule((13.6, y - 1.6, 51.2), (13.6, y + 1.6, 48.0), 0.7)
-        g.capsule((13.6, y - 1.6, 48.0), (13.6, y + 1.6, 51.2), 0.7)
-    rig.part("eyes_x", g, glow=K.MINT, outline=0)
+    mask = Geo().blob((3.8, 0, 48.5), (10.1, 9.1, 9.7), p=2.4)
+    mask.clip((6.0, 0, 0), (-1, 0, 0)).clip((0, 0, 53.4), (0, 0, 1)).clip((0, 0, 45.6), (0, 0, -1))
+    KF.visor_face(rig, "head", [mask], (12.6, 49.6), eye_dx=(0.0, 3.6), eye_rx=1.9, eye_rz=2.2, color=K.MINT,
+                  core=K.MINT_CORE, tilt=-12.0)
+    rig.part("head", mask, K.VISOR, finish="gloss", outline=0.4, outline_hex=K.VOID)
     # team hood rim
-    g = Geo().lathe([(8.6, -1.2), (10.4, -1.0), (10.6, 0.8), (8.6, 1.0)], (9.4, 0, 48.6), (10.4, 0, 48.9),
+    g = Geo().lathe([(8.0, -1.4), (10.8, -1.2), (11.2, 1.0), (8.0, 1.2)], (9.4, 0, 48.6), (10.4, 0, 48.9),
                     segs=22, squash=(1.2, 0.95))
     rig.part("head", g, team=True, outline=0.6)
 
@@ -155,64 +168,126 @@ def build(rig):
     rig.part("blink_core", g, glow=K.VIOLET_CORE, outline=0)
 
 
-# -- poses ---------------------------------------------------------------------------------
+# -- poses -----------------------------------------------------------------------------------
 def blades(ra, rf, rw, la, lf, lw):
     return merge(K.arm("r", ra, rf, rw, 90.0), K.arm("l", la, lf, lw, 90.0))
 
 
+def blades_at(hr, wr, hl, wl):
+    """Hands at torso-space targets, blades pointing wr / wl (torso degrees)."""
+    a, f = K.ik2(K.SH, hr)
+    b, g = K.ik2(K.SH, hl)
+    return blades(a, f, wr, b, g, wl)
+
+
 CROUCH = {"hips": {"z": -2.0}, "torso": {"r": -14}, "head": {"r": 10, "x": 1.0},
           "thigh_r": {"r": 18}, "shin_r": {"r": -26}, "thigh_l": {"r": -2}, "shin_l": {"r": -22}}
-STANCE = merge(blades(-55, -10, 20, -40, 5, 40), CROUCH)
+ARMS = blades(-55, -10, 20, -40, 5, 40)
+STANCE = merge(ARMS, CROUCH)
+
+
+def _squeeze(sx, sz):
+    """Body squeezed thin (sx) and tall (sz) about the belly."""
+    off = M.about((0, 0, 28), sx=sx, sy=sx, sz=sz)
+    return {"body": dict(off, sx=sx, sy=sx, sz=sz)}
 
 
 def _idle(f):
-    c, lag = K.idle_wave(f)
-    return merge(STANCE, K.idle_body(f, bob=1.0, sq=0.035, lean=2.0), {
-        "arm_r": {"r": 3.0 * lag}, "hand_r": {"r": -4.0 * lag},
-        "arm_l": {"r": -2.5 * lag},
-    })
-
-
-def _walk(f):
-    # a stalking prowl: long low strides
-    pose, p, bl = K.walk_legs(f, stride=34, lift=62, bob=2.8, lean=-4)
-    return merge(STANCE, pose, {
-        "arm_r": {"r": -9 * math.cos(p)}, "hand_r": {"r": 5 * bl},
-        "arm_l": {"r": 9 * math.cos(p)},
-    })
-
-
-def _attack(f):
-    # 0-1 crouch and draw both blades back, 2 held coil, 3 smear, 4 held impact (lunge,
-    # blades crossed forward, sparks), 5-7 recovery
-    pose = merge(blades(pick(f, [-40, 10, 45, 20, -15, -25, -40, -52]), pick(f, [30, 90, 115, 40, 0, -5, -8, -10]),
-                        pick(f, [60, 120, 150, 40, -10, -2, 8, 18]),
-                        pick(f, [-60, -80, -90, -20, 10, -5, -25, -38]), pick(f, [-20, -50, -70, 10, 20, 15, 10, 6]),
-                        pick(f, [20, -20, -40, 30, 60, 55, 48, 42])), {
-        "body": dict(squash(pick(f, [-0.06, -0.1, 0.05, 0.06, -0.14, -0.07, -0.02, 0])),
-                     x=pick(f, [-1, -3, -4, 4, 10, 8, 4, 1])),
-        "hips": {"z": pick(f, [-1, -2, 0.5, 0, -2.5, -1.8, -0.6, 0])},
-        "torso": {"r": pick(f, [2, 8, 12, -8, -18, -14, -7, -2])},
-        "head": {"r": pick(f, [0, 3, 5, -3, -6, -4, -2, 0])},
-        "thigh_r": {"r": pick(f, [0, -6, -8, 14, 28, 22, 10, 2])},
-        "shin_r": {"r": pick(f, [0, 0, 0, -8, -16, -12, -4, 0])},
-        "thigh_l": {"r": pick(f, [0, 6, 8, -10, -20, -14, -6, 0])},
-        "sparks": {"show": f == 4},
-    })
+    def extra(ctx):
+        return {"arm_r": {"r": 3.0 * ctx["lag"]}, "arm_l": {"r": -2.5 * ctx["lag"]}}
+    pose = M.idle_v2(f, STANCE, frames=6, bob=1.0, chest=0.035, extra=extra, blink=5,
+                     face_blink=KF.glyph("g_blink"))
+    # twirls the near blade in his fingers (a full turn over frames 1-4)
+    pose["hand_r"] = dict(pose.get("hand_r", {}), r=pose.get("hand_r", {}).get("r", 0.0) + [0, 80, 170, 260, 340, 360][f])
     if f == 3:
-        pose.setdefault("blade_r", {})["sz"] = 1.25
-    if f in (3, 4):
-        K.squint(pose, 0.5)
+        # the flicker: squeezed a little thin for a frame
+        pose = merge(pose, _squeeze(0.9, 1.06))
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(STANCE, K.hit_body(f), {"arm_r": {"r": 16 * a}, "arm_l": {"r": 14 * a}})
+def _walk(f):
+    def extra(ctx):
+        lag = ctx["lag_p"]
+        return {"arm_r": {"r": -9 * math.cos(lag)}, "hand_r": {"r": 5 * math.cos(lag)},
+                "arm_l": {"r": 9 * math.cos(lag)}}
+    base = merge(ARMS, {"hips": {"z": -3.0}, "head": {"r": 8, "x": 1.0}})
+    return M.walk_v2(f, base, HEIGHT_LU, thigh=40.0, knee=66.0, lift_lu=7.0, bob_pct=0.05, lean=-16.0,
+                     arms=(), twist=6.0, extra=extra)
 
 
-# death: a blink-out, not a fall. 0 struck (recoil, X eyes), 1 folds in, 2-4 warps away: squeezed
-# thin and shrinking into a violet flash, 5 a last spark as the flash closes (7 steps, 0.5 s)
+# -- attack: blink X-slash (680 ms, impact at 290 ms) -------------------------------------------------
+#       read  dip   blink HOLD  smear lead  IMPACT over  recoil settle settle
+BX = [0.0, -1.0, -1.0, 9.0, 11.0, 12.0, 13.0, 13.0, 9.0, 4.0, 1.0]
+BZ = [-0.5, -3.0, 0.0, 9.0, 5.0, 2.0, -2.5, -2.0, 3.5, 0.0, 0.0]
+BQ = [-0.04, -0.12, 0.0, 0.08, 0.06, 0.0, -0.16, -0.10, 0.06, -0.04, 0.0]
+TR = [-16, -22, -10, 4, -14, -22, -30, -30, -18, -16, -14]
+HD = [10, 14, 6, 2, 8, 12, 16, 14, 10, 10, 10]
+THR = [20, 34, 10, 40, 30, 30, 44, 42, 20, 20, 18]
+SHR = [-30, -50, -10, -70, -40, -34, -44, -40, -20, -26, -26]
+THL = [-2, 18, 0, 30, 10, -6, -16, -14, 10, 0, -2]
+SHL = [-24, -48, -8, -70, -40, -24, -20, -18, -30, -22, -22]
+# hand targets (torso x, z) and blade directions in WORLD degrees
+HRT = [(6.0, 25.0), (2.0, 23.0), (1.0, 28.0), (-3.0, 46.0), (9.0, 40.0), (13.0, 34.0), (13.0, 27.0),
+       (13.5, 26.0), (10.0, 28.0), None, None]
+HLT = [(4.0, 26.0), (0.0, 24.0), (0.0, 28.0), (-6.0, 44.0), (7.0, 44.0), (12.0, 39.0), (13.5, 33.0),
+       (14.0, 32.0), (9.0, 30.0), None, None]
+WR = [30.0, 10.0, 60.0, 150.0, 70.0, 10.0, -40.0, -46.0, -10.0, None, None]
+WL = [60.0, 40.0, 80.0, 110.0, 40.0, 10.0, 34.0, 38.0, 40.0, None, None]
+SQUEEZE = [None, None, (0.42, 1.5), None, None, None, None, None, None, None, None]
+EYES = ["g_angry", "g_squint", "g_squint", "g_angry", "g_angry", "g_angry", "g_angry", "g_angry", "eyes",
+        "eyes", "eyes"]
+
+
+def _attack_pose(f):
+    if HRT[f] is not None:
+        arms = blades_at(HRT[f], WR[f] - TR[f], HLT[f], WL[f] - TR[f])
+    else:
+        arms = ARMS
+    pose = merge(arms, {
+        "hips": {"z": -2.0}, "torso": {"r": TR[f]}, "head": {"r": HD[f], "x": 1.0},
+        "thigh_r": {"r": THR[f]}, "shin_r": {"r": SHR[f]},
+        "thigh_l": {"r": THL[f]}, "shin_l": {"r": SHL[f]},
+    }, M.body_about((0, 0, 28), x=BX[f], z=BZ[f], q=BQ[f]))
+    if SQUEEZE[f]:
+        sx, sz = SQUEEZE[f]
+        pose = merge(pose, _squeeze(sx, sz))
+    if f == 2:
+        pose["blink"] = {"show": True, "s": 0.55}
+    if f == 3:
+        pose["blink"] = {"show": True, "s": 0.3, "x": -9.0}
+    return merge(pose, KF.glyph(EYES[f]))
+
+
+def _attack_clip():
+    arc_r = {"kind": "arc", "joint": "blade_r", "inner": MID_R, "outer": TIP_R, "color": K.MINT, "white": 0.35,
+             "taper": 0.3, "lines": 2, "from": 3}
+    arc_l = {"kind": "arc", "joint": "blade_l", "inner": MID_L, "outer": TIP_L, "color": K.MINT, "white": 0.45,
+             "taper": 0.3, "lines": 1, "from": 3}
+    ov = {
+        1: [{"kind": "dust", "ground": (-4.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 6, "spread": 0.8,
+             "color": "#DCD6E8"}],
+        4: [dict(arc_l, t0=0.0, t1=1.0), dict(arc_r, t0=0.0, t1=1.0)],
+        5: [dict(arc_l, t0=0.3, t1=1.0), dict(arc_r, t0=0.3, t1=1.0)],
+        6: [{"kind": "burst", "joint": "blade_r", "point": MID_R, "r0_lu": 6.0, "r1_lu": 12.0, "n": 6,
+             "a0": -80.0, "arc": 160.0, "color": K.MINT_CORE},
+            {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 4, "spread": 0.9,
+             "color": "#DCD6E8"}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov)
+
+
+def _hit(k):
+    def recoil(a):
+        up = max(a, 0)
+        return {"arm_r": {"r": 16 * a}, "arm_l": {"r": 14 * a}, "head": {"r": 14 * a}, "torso": {"r": 12 * a},
+                "thigh_r": {"r": 16 * up}, "shin_r": {"r": -20 * up}}
+    return M.hit_light(k, STANCE, recoil, face_hurt=KF.glyph("g_hurt"),
+                       face_back=KF.glyph("g_angry") if k == 2 else None)
+
+
+# death: a blink-out, not a fall. 0 struck (recoil), 1 folds in, 2-4 warps away: squeezed thin and
+# shrinking into a violet flash, 5 a last spark as the flash closes (7 steps, 0.48 s, as shipped)
 DIE_SEQ = [0, 1, 2, 3, 4, 5, 5]
 DIE_MS = [60, 70, 60, 60, 60, 80, 90]
 
@@ -229,19 +304,20 @@ def _die(f):
         "blink": {"show": f >= 2, "s": pick(f, [1, 1, 0.7, 1.05, 1.3, 0.7])},
         "blink_core": {"show": f in (2, 3, 4), "s": pick(f, [1, 1, 0.8, 1.0, 1.1, 1])},
     })
-    if f in (0, 1):
-        K.ko(pose)
-    return pose
+    return merge(pose, KF.glyph("g_hurt" if f == 0 else "eyes_x"))
 
 
 DIE_EXTRA = {"fx": [], "blinkOut": True, "hideUnitAtMs": sum(DIE_MS)}
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 6, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=DIE_EXTRA),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(f) for f in range(6)], DIE_MS, sequence=DIE_SEQ, extra=DIE_EXTRA),
     ]
+    M.check_contract([c for c in cl if c.name != "die"])    # the blink-out keeps its own 480 ms
+    assert cl[-1].total_ms() == 480
+    return cl

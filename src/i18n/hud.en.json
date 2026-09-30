@@ -25,6 +25,8 @@
     "cardLabel": "Train {name} for {cost} gold",
     "queued": "{n} queued",
     "armyFull": "Army full",
+    "beatsHeavy": "Beats Heavy",
+    "beatsHeavyLabel": "{name} beats their Heavies",
     "legendaryInField": "Legendary in field",
     "army": "Army {pop}/{cap}",
     "stance": {

@@ -224,15 +224,22 @@ describe('strings that spell out table numbers', () => {
     expect(d('mammoth_matriarch')).toMatch(word(ability('mammoth_matriarch', 'riders').count));
     expect(d('rail_gunner')).toMatch(word(unit('rail_gunner').attacks[0]?.pierce?.count ?? 0));
     for (const id of ['friar', 'field_surgeon', 'repair_drone']) expect(d(id)).toMatch(word(ability(id, 'heal').targets));
-    // "double damage": first-hit charges ×2 and the Anti-armor mods ×2
+    // "double damage": first-hit charges ×2; the Anti-heavy mods vs armored: "triple" ×3.0, "×2.5", "double" ×2.0
     for (const id of ['tuskback', 'destrier_knight', 'cuirassier']) {
       expect(ability(id, 'firstHitBonus').multBp, id).toBe(20000);
       expect(d(id)).toContain('double damage');
     }
-    for (const id of ['spear_hunter', 'pikeman', 'bazooka_trooper', 'rail_gunner']) {
-      expect(unit(id).attacks[0]?.mods?.[0]?.bp, id).toBe(20000);
-      expect(d(id)).toContain('double damage');
+    const armoredBp = (id: string) => unit(id).attacks[0]?.mods?.find((m) => m.vs === 'armored')?.bp;
+    for (const id of ['spear_hunter', 'phalangite', 'pikeman', 'bazooka_trooper', 'graviton_halberdier']) {
+      expect(armoredBp(id), id).toBe(30000);
+      expect(d(id)).toContain('triple damage');
     }
+    for (const id of ['grenadier', 'harpoon_gunner']) {
+      expect(armoredBp(id), id).toBe(25000);
+      expect(d(id)).toContain('×2.5');
+    }
+    expect(armoredBp('rail_gunner')).toBe(20000);
+    expect(d('rail_gunner')).toContain('double damage');
     const turret = (id: string) => {
       const t = c.turrets[id];
       if (!t) throw new Error(id);

@@ -5,7 +5,7 @@
  */
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, DamageMod, Foil, PowerDef, Rarity, SaveDoc, SkinDef, TurretDef, UnitDef } from '@/contracts';
-import { counterClasses as classCounters, isLegendaryUnit, unitClass, type CardClass, type UnitClass } from '@/core/cardClass';
+import { counterClasses as classCounters, isLegendaryUnit, takesCounterFloor, unitClass, type CardClass, type UnitClass } from '@/core/cardClass';
 import type { CardTileData } from '../../components/CardTile';
 import { roleGlyph, type GlyphKind } from '../../components/icons';
 import { reachGlyph, reloadSeconds } from '../../components/powerInfo';
@@ -34,10 +34,10 @@ export function cardClassOf(def: AnyCardDef): CardClass {
   return def.kind === 'unit' ? unitClass(def) : def.kind;
 }
 
-/** The classes a unit beats and loses to, from the compiled counter lists (B4). */
+/** The classes a unit beats and loses to, from the compiled counter lists (B4), with the triangle as a floor (A18.9.1). */
 export function counterClasses(content: Content, def: AnyCardDef): { strong: UnitClass[]; weak: UnitClass[] } {
   if (def.kind !== 'unit') return { strong: [], weak: [] };
-  return classCounters(def.strongVs, def.weakVs, content.units, unitClass(def));
+  return classCounters(def.strongVs, def.weakVs, content.units, unitClass(def), takesCounterFloor(def));
 }
 
 export function isOwned(save: SaveDoc, id: CardId, content: Content): boolean {

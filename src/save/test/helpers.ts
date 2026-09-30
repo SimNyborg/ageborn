@@ -4,7 +4,7 @@ import { FixedClock } from '@/contracts/fakes/clock';
 import { LocalSaveStore, type LocalSaveStoreOptions, type Timers } from '../store.localStorage';
 import { MemoryStorage } from '../storage';
 import v1Json from './fixtures/v1.json';
-import v8Json from './fixtures/v8.json';
+import v9Json from './fixtures/v9.json';
 import capsuleLadderPreJson from './fixtures/capsule-ladder-pre.json';
 
 /** A fresh deep copy of the frozen v1 fixture (five ages; migrate it before validating). */
@@ -12,9 +12,9 @@ export function v1Fixture(): SaveDoc {
   return JSON.parse(JSON.stringify(v1Json)) as SaveDoc;
 }
 
-/** A fresh deep copy of the frozen fixture of the version this build writes (v8: the backdrop skins, A18.9.4). */
+/** A fresh deep copy of the frozen fixture of the version this build writes (v9: the Anti-heavy starter kit, A3). */
 export function currentFixture(): SaveDoc {
-  return JSON.parse(JSON.stringify(v8Json)) as SaveDoc;
+  return JSON.parse(JSON.stringify(v9Json)) as SaveDoc;
 }
 
 /**

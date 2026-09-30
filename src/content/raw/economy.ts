@@ -2,7 +2,7 @@
  * Economy and battle numbers (DESIGN A2.1-A2.11, A5.1), in table units: gold, XP, lu, lu/s, ms,
  * bp for percentages. Data only. The WP1 compiler converts to milli-gold, ticks and so on (B3, B4).
  */
-import type { EconomyRules, FormatDef } from '@/contracts/content';
+import type { DamageMod, EconomyRules, FormatDef } from '@/contracts/content';
 import type { AgeId, FormatId, FormatKind } from '@/contracts/ids';
 import type { RawAgeScale, RawBattleRules, RawDamageMods } from './types';
 
@@ -100,26 +100,54 @@ export const formats: Record<FormatId, FormatDef> = {
   ...windowFormats(AGE_LIST),
 };
 
-/** DESIGN A2.6 role-default damage mods, in order. Multipliers in bp (10,000 = ×1.0). */
+/**
+ * DESIGN A2.6 role-default damage mods, in order. Multipliers in bp (10,000 = ×1.0).
+ * Anti-heavy (the Anti-armor role, owner feedback 2026-09-29): a first `legendary` entry keeps every
+ * Legendary matchup at the pre-change multiplier, so only Heavies and other armored or mech units
+ * feel the raise.
+ */
 export const damageMods: RawDamageMods = {
   blunt: [{ vs: 'armored', bp: 7000 }],
   meleeAntiArmor: [
-    { vs: 'armored', bp: 20000 },
-    { vs: 'mech', bp: 20000 },
+    { vs: 'legendary', bp: 20000 },
+    { vs: 'armored', bp: 30000 },
+    { vs: 'mech', bp: 30000 },
     { vs: 'light', bp: 7500 },
   ],
   rangedAntiArmor: [
-    { vs: 'armored', bp: 20000 },
-    { vs: 'mech', bp: 20000 },
+    { vs: 'legendary', bp: 20000 },
+    { vs: 'armored', bp: 30000 },
+    { vs: 'mech', bp: 30000 },
     { vs: 'light', bp: 5000 },
   ],
   grenadier: [
-    { vs: 'armored', bp: 15000 },
-    { vs: 'mech', bp: 15000 },
+    { vs: 'legendary', bp: 15000 },
+    { vs: 'armored', bp: 25000 },
+    { vs: 'mech', bp: 25000 },
     { vs: 'light', bp: 5000 },
   ],
   flak: [{ vs: 'air', bp: 20000 }],
   congreve: [{ vs: 'air', bp: 15000 }],
+};
+
+/**
+ * Per-card Anti-heavy mods outside the role defaults (A2.6; owner feedback 2026-09-29). Kept apart
+ * from {@link damageMods} so the frozen raw fixture keeps its shape.
+ */
+export const antiHeavyMods: Readonly<Record<'harpoon' | 'rail', DamageMod[]>> = {
+  /** Harpoon Gunner: legendary ×2.0, armored ×2.5, mech ×2.5, light ×0.5. */
+  harpoon: [
+    { vs: 'legendary', bp: 20000 },
+    { vs: 'armored', bp: 25000 },
+    { vs: 'mech', bp: 25000 },
+    { vs: 'light', bp: 5000 },
+  ],
+  /** Rail Gunner (pierces 2): armored ×2.0, mech ×2.0, light ×0.5 (unchanged). */
+  rail: [
+    { vs: 'armored', bp: 20000 },
+    { vs: 'mech', bp: 20000 },
+    { vs: 'light', bp: 5000 },
+  ],
 };
 
 /** DESIGN A2.3-A2.11 economy and rule constants (the contract's `EconomyRules`). */

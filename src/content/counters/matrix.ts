@@ -20,17 +20,35 @@ import { DUEL_ENGINE_VERSION, DUEL_RULES, duelCounts, runDuel, type DuelContent 
 export const COUNTER_LIST_SIZE = 3;
 
 /**
+ * Engine id stored in `counters.json` when the duels ran on the real sim (`src/sim/duel.ts`,
+ * DESIGN B4, build phase H2). The compact engine in `./duel.ts` ({@link DUEL_ENGINE_VERSION}) stays
+ * for the dev pages; the generated file uses the sim, so the bots' `f_counter` and every
+ * Strong vs / Weak vs line agree with the game.
+ */
+export const SIM_DUEL_ENGINE = 100 + DUEL_ENGINE_VERSION;
+
+/** One duel of `countA` × `a` against `countB` × `b`, sides as given (the sim harness or the compact engine). */
+export type DuelFn = (a: CardId, b: CardId, countA: number, countB: number) => { hpLeftBp: [number, number]; ticks: number };
+
+/**
  * Hash of every input the duels read: engine version, duel rules, every unit (duellists and the
  * summons they may spawn) without presentation fields, the economy and the battle rules.
  * A different hash means the file is stale (B4: CI fails).
  */
-export function counterInputHash(allUnits: readonly UnitDef[], economy: EconomyRules, battle: RawBattleRules): string {
+export function counterInputHash(
+  allUnits: readonly UnitDef[],
+  economy: EconomyRules,
+  battle: RawBattleRules,
+  /** The sim version when the duels ran on the sim (the hash cannot see sim code, so its version stands in). */
+  simVersion?: string,
+): string {
   return hashCanonical({
-    engine: DUEL_ENGINE_VERSION,
+    engine: simVersion === undefined ? DUEL_ENGINE_VERSION : SIM_DUEL_ENGINE,
     rules: DUEL_RULES,
     units: allUnits.map((u) => stripPresentation(u)),
     economy,
     battle,
+    ...(simVersion === undefined ? {} : { sim: simVersion }),
   });
 }
 
@@ -41,14 +59,15 @@ export function duelUnitTable(all: readonly UnitDef[]): Record<CardId, UnitDef> 
   return out;
 }
 
-/** Duels one unordered pair both ways and averages (see module doc). */
-export function duelPair(c: DuelContent, a: CardId, b: CardId): DuelRecord {
+/** Duels one unordered pair both ways and averages (see module doc). `duel` defaults to the compact engine. */
+export function duelPair(c: DuelContent, a: CardId, b: CardId, duel?: DuelFn): DuelRecord {
   const ua = c.units[a];
   const ub = c.units[b];
   if (!ua || !ub) throw new Error(`counters: unknown unit "${ua ? b : a}"`);
   const [countA, countB] = duelCounts(ua.cost, ub.cost);
-  const first = runDuel(c, a, b, countA, countB);
-  const second = runDuel(c, b, a, countB, countA);
+  const run: DuelFn = duel ?? ((x, y, nx, ny) => runDuel(c, x, y, nx, ny));
+  const first = run(a, b, countA, countB);
+  const second = run(b, a, countB, countA);
   return {
     a,
     b,
@@ -75,8 +94,15 @@ export interface CounterBuildInput {
   battle: RawBattleRules;
 }
 
-/** Runs every duel and builds the counter file. Deterministic; takes a few seconds. */
-export function buildCounterFile(input: CounterBuildInput, onProgress?: (done: number, total: number) => void): CounterFile {
+/**
+ * Runs every duel and builds the counter file. Deterministic; takes a few seconds. With `sim` the
+ * duels run on the given sim harness and the file records the sim version (B4, build phase H2).
+ */
+export function buildCounterFile(
+  input: CounterBuildInput,
+  onProgress?: (done: number, total: number) => void,
+  sim?: { duel: DuelFn; version: string },
+): CounterFile {
   const c: DuelContent = { units: duelUnitTable(input.allUnits), economy: input.economy, battle: input.battle };
   const ids = input.units.map((u) => u.id);
   const matrixBp: Record<CardId, Record<CardId, number>> = {};
@@ -87,7 +113,7 @@ export function buildCounterFile(input: CounterBuildInput, onProgress?: (done: n
     for (let j = i + 1; j < ids.length; j += 1) {
       const a = ids[i] as CardId;
       const b = ids[j] as CardId;
-      const m = matrixBpOf(duelPair(c, a, b));
+      const m = matrixBpOf(duelPair(c, a, b, sim?.duel));
       (matrixBp[a] as Record<CardId, number>)[b] = m.ab;
       (matrixBp[b] as Record<CardId, number>)[a] = m.ba;
       done += 1;
@@ -96,8 +122,8 @@ export function buildCounterFile(input: CounterBuildInput, onProgress?: (done: n
   }
   return {
     format: 1,
-    engine: DUEL_ENGINE_VERSION,
-    inputHash: counterInputHash(input.allUnits, input.economy, input.battle),
+    engine: sim ? SIM_DUEL_ENGINE : DUEL_ENGINE_VERSION,
+    inputHash: counterInputHash(input.allUnits, input.economy, input.battle, sim?.version),
     units: ids,
     matrixBp,
   };

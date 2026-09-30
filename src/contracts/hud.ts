@@ -18,6 +18,11 @@ export interface HudCard {
   trainFillBp: number;
   state: CardState;
   foil: Foil;
+  /**
+   * The in-battle counter hint (A9.2, owner feedback 2026-09-29): an Anti-heavy card while the enemy
+   * fields Heavies shows a "Beats Heavy" chip. Absent in older models.
+   */
+  beatsHeavy?: boolean;
 }
 
 /**
@@ -131,6 +136,8 @@ export interface HudModel {
     research?: HudResearch;
     /** Their stance (public on the lane). */
     stance?: StanceMode;
+    /** They field Heavies (A9.2 counter hint: 2+ Heavies on the lane or 40%+ of their value there). */
+    heavyThreat?: boolean;
   };
   mounts: { index: number; owned: boolean; card: CardId | null; outdated: boolean; state: TurretState['state'] | 'empty' }[];
   /** Speed and pause are allowed in every v1 mode (DESIGN A2.12). */

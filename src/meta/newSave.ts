@@ -1,7 +1,8 @@
 /**
  * A fresh profile (DESIGN A3 starter kit, A6.1-A6.3, A5.8, B8).
  *
- * - Owns every Common (3 units and 2 turrets per age) and both starter powers of each age (A2.9.8), all at L1;
+ * - Owns every Common (3 units and 2 turrets per age), each age's Anti-heavy Rare (owner feedback
+ *   2026-09-29) and both starter powers of each age (A2.9.8), all at L1;
  *   the starter War Plan as preset A (Arena 1's gate reward).
  * - 12 capsule charges, the first 10 capsules free, an empty Clay meter, a fresh 200-slot bag; the
  *   Daily Capsule unlocks after capsule 2 (A6.3).
@@ -18,7 +19,7 @@ import { fnv1a32, seedSfc32 } from '@/core';
 import { zeroPity } from './capsules/pity';
 import { initialQuests } from './quests';
 import { SAVE_VERSION } from './rules';
-import { allStarterPowers, isCollectable, tables } from './tables';
+import { allStarterPowers, isStarterCard, tables } from './tables';
 import { dayKeyOf, gameDay, type LocalTime } from './time';
 import { defaultLoadout } from './cosmetics';
 import { unlockTitles } from './titles';
@@ -43,12 +44,11 @@ export function defaultSettings(): Settings {
   };
 }
 
-/** Every collectable Common unit and turret: the starter collection (A3). */
+/** Every collectable Common unit and turret and each age's Anti-heavy Rare: the starter collection (A3). */
 export function starterCollection(t: Content): SaveDoc['collection'] {
   const out: SaveDoc['collection'] = {};
   for (const id of [...t.order.units, ...t.order.turrets]) {
-    const def = t.units[id] ?? t.turrets[id];
-    if (def?.rarity === 'common' && isCollectable(t, id)) out[id] = { level: 1, copies: 0, isNew: false, foil: 'none' };
+    if (isStarterCard(t, id)) out[id] = { level: 1, copies: 0, isNew: false, foil: 'none' };
   }
   return out;
 }

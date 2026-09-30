@@ -1,24 +1,31 @@
 /**
  * Counter-matrix generator (DESIGN B4 Counter matrix): runs equal-gold 1v1 duels of every
  * collectable unit pair at L1 on a flat lane and writes `src/content/generated/counters.json`.
+ * The duels run on the real sim (`src/sim/duel.ts`, build phase H2), so the bots' counter scores and
+ * every Strong vs / Weak vs line match the game.
  *
  *   npx tsx tools/counters.ts           regenerate the file
  *   npx tsx tools/counters.ts --check   exit 1 when the file is stale (inputs changed)
  *   npx tsx tools/counters.ts --report  print the matrix summary (strongest and weakest matchups)
  *
  * The file is stale when the hash of the duel inputs (units, economy, battle rules, duel engine
- * version) differs from the one stored in it; `src/content/test/counters.test.ts` fails in CI then.
+ * and `SIM_VERSION`) differs from the one stored in it; `src/content/test/counters.test.ts` fails in CI then.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { buildCounterFile, counterInputHash, parseCounterFile } from '../src/content/counters/matrix';
+import { content } from '../src/content';
+import { buildCounterFile, counterInputHash, parseCounterFile, type DuelFn } from '../src/content/counters/matrix';
 import { raw } from '../src/content/raw';
+import { runDuel } from '../src/sim/duel';
+import { SIM_VERSION } from '../src/sim/replay';
 
 const FILE = path.resolve(import.meta.dirname, '..', 'src', 'content', 'generated', 'counters.json');
 
 const allUnits = raw.ages.flatMap((t) => t.units);
 const units = allUnits.filter((u) => !u.hidden);
-const expectedHash = counterInputHash(allUnits, raw.economy, raw.battle);
+const expectedHash = counterInputHash(allUnits, raw.economy, raw.battle, SIM_VERSION);
+/** The sim's duel harness on the compiled content (the sim never reads the counter file itself). */
+const simDuel: DuelFn = (a, b, na, nb) => runDuel(content, a, b, na, nb);
 
 function readCurrent(): ReturnType<typeof parseCounterFile> | null {
   try {
@@ -82,7 +89,7 @@ if (args.has('--check')) {
       lastPct = pct;
       process.stdout.write(`\rcounters: ${pct}%`);
     }
-  });
+  }, { duel: simDuel, version: SIM_VERSION });
   writeFileSync(FILE, serialize(file));
   const pairs = (file.units.length * (file.units.length - 1)) / 2;
   console.log(`\ncounters: wrote ${path.relative(process.cwd(), FILE)} (${pairs} pairs in ${Date.now() - started} ms)`);

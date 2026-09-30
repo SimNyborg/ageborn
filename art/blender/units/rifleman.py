@@ -1,151 +1,295 @@
 """Rifleman: Modern Age ranged (DESIGN A5.5). Bullet (proj.bullet), 260 lu, ~68 lu.
 
-Look (A11, Modern palette): a round steel helmet with a team band, khaki netting and a
-chin strap; a team tunic with breast pockets and team sleeves; khaki webbing; olive
-trousers, khaki puttees; an olive backpack with a khaki bedroll on top (a hump that sets
-his silhouette apart from the Trench Raider). He carries a long bolt-action rifle with a
-wooden stock and a sling, angled up across his chest. The attack shoulders the rifle,
-aims (held, squint), fires level with a flash and a puff, kicks back, then works the bolt
-(the near hand pulls it back and a brass casing flips out) and settles. The projectile
-(proj.bullet) spawns at the exported per-frame `muzzle` anchor on the fire frame.
+Look (A11, Modern palette): a round steel helmet under a team helmet cover with khaki netting and a chin strap;
+a team tunic with team sleeves (cream rank chevrons on the near sleeve) and khaki webbing (a belt
+with three ammo pouches and a canteen); olive trousers, khaki puttees; a team pack with a khaki
+bedroll on top (a hump that sets his silhouette apart from the Trench Raider). He carries a long
+bolt-action rifle with a wooden stock, a leather sling and a short bayonet.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    rifle at port arms, he glances down at the bolt and back up (the helmet slides), blink
+  walk    march: a high knee and a stiff straight leg, the rifle bobbing a frame late
+  attack  LEAN-OUT AIM AND BOLT CYCLE: he snaps the rifle to his shoulder and leans into it, cheek
+          on the stock, one eye squeezed (the held extreme), fires (one flash, impact lines, a
+          puff), the kick rocks him back, then the near hand works the bolt (up, back: a brass
+          casing flips out, home, down) and he brings the rifle back to port arms. The bullet
+          leaves the per-frame `muzzle` anchor on the fire frame.
+  hit     light: the head snaps back, the helmet lifts, eyes squeezed, overshoot forward
+  die     D2 topple: the rifle flies out of his hands, he teeters, stiffens and falls forward like a
+          plank, arms out; the helmet rolls off
 """
-from ageborn_art import fx
-from ageborn_art import rigs_modern as M
-from ageborn_art.anim import Clip, merge, pick, squash
+import math
+
+from ageborn_art import face as F
+from ageborn_art import kit_industrial as KI
+from ageborn_art import kit_medieval as K
+from ageborn_art import kit_modern as KM
+from ageborn_art import moves as M
+from ageborn_art import rigs_modern as R
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "rifleman"
 NAME = "Rifleman"
 HEIGHT_LU = 68
-CANVAS = (300, 212)
-FEET = (104, 192)
+CANVAS = (320, 262)
+FEET = (116, 214)
 ANCHORS = {"head": (2, 67), "hitCenter": (0, 32), "muzzle": (60, 36)}
+NO_RETIME = True
 
 G0 = (4.0, -15.0, 27.0)     # rifle grip at rest (character space)
-FORE = 12.0                 # far hand: this far along the rifle from the grip
-LENGTH = 46.0
-MUZZLE = (G0[0] + LENGTH + 1.0, G0[1], G0[2] + 1.8)
-BRASS = "#C8A560"
+FORE = 13.0                 # far hand: this far along the rifle from the grip
+LENGTH = 48.0
+HELM_C = (1.0, 0.0, 57.4)
+BRASS = "#C8B27A"
+MUZ = []
+
+
+def _rifle(rig, joint, grip, length, bayonet=0.0, k=1.0):
+    """rigs_modern.rifle without its fixed bolt (the bolt is its own joint here)."""
+    gx, gy, gz = grip
+    g = Geo()
+    g.blob((gx - 8.0 * k, gy, gz - 2.2 * k), (8.0 * k, 2.2 * k, 3.6 * k), p=2.8, rot=(0, 16, 0),
+           taper=(1.0, 0.75))
+    g.capsule((gx - 1.0, gy, gz), (gx + length * 0.70, gy, gz + 0.6), 2.0 * k, 1.6 * k)
+    rig.part(joint, g, R.WOOD)
+    g = Geo()   # grain strokes on the stock
+    g.capsule((gx - 12.0, gy - 2.1, gz - 1.6), (gx - 5.0, gy - 2.1, gz - 0.6), 0.35)
+    g.capsule((gx + 8.0, gy - 1.9, gz + 0.1), (gx + 16.0, gy - 1.9, gz + 0.3), 0.35)
+    rig.part(joint, g, "#6A5240", outline=0, highlight=False)
+    g = Geo().capsule((gx + 2.0, gy, gz + 1.8 * k), (gx + length, gy, gz + 1.8 * k), 1.3 * k, 1.15 * k)
+    g.blob((gx + 3.5, gy, gz + 2.6 * k), (5.0 * k, 1.8 * k, 1.8 * k), p=3.0)
+    g.blob((gx + length - 1.2, gy, gz + 3.4 * k), (0.9, 0.8, 1.2), p=2.4)
+    for x in (gx + 12.0, gx + length * 0.62):        # barrel bands
+        g.lathe([(2.3, -0.7), (2.4, 0), (2.3, 0.7)], (x, gy, gz + 0.8), (x + 1, gy, gz + 0.8), segs=12)
+    rig.part(joint, g, R.GUNMETAL, finish="metal", outline=0.9)
+    g = Geo()
+    pts = [(gx - 10.0 * k, gz - 2.5 * k), (gx + 4.0, gz - 6.0 * k), (gx + 18.0, gz - 5.2 * k),
+           (gx + length * 0.55, gz - 1.0)]
+    for (ax, az), (bx, bz) in zip(pts, pts[1:]):
+        g.capsule((ax, gy - 1.6, az), (bx, gy - 1.6, bz), 0.8 * k, segs=8, rings=2)
+    rig.part(joint, g, R.LEATHER, outline=0.5)
+    if bayonet > 0:
+        g = Geo().lathe([(0.9, 0), (0.8, bayonet * 0.4), (0.5, bayonet * 0.85), (0, bayonet)],
+                        (gx + length - 1.0, gy + 0.6, gz + 0.2), (gx + length + bayonet, gy + 0.6, gz + 0.2),
+                        segs=8, squash=(1.0, 0.6))
+        rig.part(joint, g, R.STEEL, finish="metal", outline=0.7)
+    return (gx + length + 1.0, gy, gz + 1.8 * k)
 
 
 def build(rig):
-    M.skeleton(rig)
-    M.legs(rig, trousers="#767B5A")   # v3: trousers 15% lighter than the khaki kit
-    # backpack with a bedroll (behind the torso; drawn before the tunic)
-    g = Geo().blob((-12.0, 0, 29.0), (5.6, 9.4, 9.4), p=3.2)
+    R.skeleton(rig)
+    R.legs(rig, trousers="#767B5A")
+    # team pack with a khaki bedroll and a leather strap (behind the torso; drawn before the tunic)
+    g = Geo().blob((-12.0, 0, 29.0), (5.8, 9.6, 9.6), p=3.2)
     rig.part("torso", g, team=True)
-    g = Geo().blob((-15.4, -3.0, 26.0), (2.6, 4.2, 4.0), p=3.2)   # side pocket
-    rig.part("torso", g, M.OLIVE, outline=0.6)
-    g = Geo().capsule((-12.5, -9.8, 41.0), (-12.5, 9.8, 41.0), 4.2)
-    rig.part("torso", g, M.KHAKI)
-    g = Geo().lathe([(4.4, 0), (4.5, 1.4), (4.4, 2.2)], (-12.5, -4.0, 41.0), (-12.5, -1.0, 41.0), segs=14)
-    rig.part("torso", g, M.LEATHER, outline=0.5)
-    M.tunic(rig)
-    g = Geo().capsule((2.0, -10.4, 37.0), (-8.0, -9.0, 22.0), 1.5)   # pack strap
-    rig.part("torso", g, M.KHAKI, outline=0.6)
+    g = Geo().blob((-16.0, -3.0, 25.4), (2.8, 4.4, 4.2), p=3.2)   # side pocket
+    rig.part("torso", g, R.KHAKI, outline=0.6)
+    g = Geo().capsule((-12.5, -10.2, 41.0), (-12.5, 10.2, 41.0), 4.4)
+    rig.part("torso", g, R.KHAKI)
+    g = Geo()
+    for yy in (-5.0, 4.0):
+        g.lathe([(4.6, 0), (4.7, 1.4), (4.6, 2.2)], (-12.5, yy, 41.0), (-12.5, yy + 2.6, 41.0), segs=14)
+    rig.part("torso", g, R.LEATHER, outline=0.5)
+    R.tunic(rig)
+    KM.pouches(rig, "torso", [(9.4, -6.6, 19.4), (5.2, -10.2, 19.2), (0.2, -11.4, 19.2)], size=(2.3, 1.7, 2.8))
+    KM.canteen(rig, "torso", (-8.0, -9.6, 16.4), r=3.1)
+    g = Geo().capsule((2.0, -10.6, 37.0), (-8.0, -9.4, 22.0), 1.5)   # pack strap
+    rig.part("torso", g, R.KHAKI, outline=0.6)
 
-    M.head_ball(rig)
-    M.face(rig, brow=M.HAIR, brow_angry=False)
+    KI.head_face(rig, brow=R.HAIR, brow_angry=False, mouth_dz=-9.0, mouth_w=5.4)
+    g = Geo().blob((-6.0, 0, 46.0), (5.6, 9.8, 6.0), p=2.2)
+    rig.part("head", g, R.HAIR, finish="hair")
     g = Geo().blob((-2.0, -11.2, 49.0), (2.6, 1.6, 3.4), p=2.2)   # ear
-    rig.part("head", g, M.SKIN)
-    M.helmet_round(rig, c=(1.0, 0, 57.4))   # v3: brim raised off the eyes
+    rig.part("head", g, R.SKIN)
+    rig.joint("hat", "head", HELM_C)
+    KM.round_helmet(rig, "hat", c=HELM_C, team_cover=True)
+    KI.loose(rig, "hat_loose", HELM_C, lambda j: KM.round_helmet(rig, j, c=HELM_C, strap=False, team_cover=True))
 
     for s in ("r", "l"):
-        M.arm_parts(rig, s, fist=4.3)
-    M.shoulders(rig)
+        R.arm_parts(rig, s, fist=4.3)
+        y = R.ARM_Y[s]
+        g = Geo().blob((2.4, y - 1.4 * (1 if s == "r" else -1), R.HAND_Z + 0.6), (1.6, 1.5, 2.2), p=2.2)
+        rig.part(f"hand_{s}", g, R.SKIN)                     # thumb
+    R.shoulders(rig)
+    sleeve = Geo().capsule((0, R.ARM_Y["r"], R.SHOULDER_Z), (0, R.ARM_Y["r"], R.ELBOW_Z), 4.4, 4.1)
+    sface = F.Face(rig, "arm_r", [sleeve])
+    g = KM.chevron(sface, Geo(), (0.6, 32.6), s=0.95, n=2, w=1.7, gap=2.9)
+    rig.part("arm_r", g, KM.CREAM, highlight=False, outline=0)
 
     rig.joint("gun", "torso", G0)
-    muzzle = M.rifle(rig, "gun", G0, length=LENGTH)
+    muzzle = _rifle(rig, "gun", G0, length=LENGTH, bayonet=7.0)
+    # the bolt handle on its own joint (it lifts and slides back in the reload)
+    rig.joint("bolt", "gun", (G0[0] + 2.5, G0[1] - 1.6, G0[2] + 3.4))
+    g = Geo().capsule((G0[0] + 2.5, G0[1] - 1.6, G0[2] + 3.4), (G0[0] + 2.0, G0[1] - 4.8, G0[2] + 2.4), 0.9)
+    g.sphere((G0[0] + 2.0, G0[1] - 5.0, G0[2] + 2.3), 1.5, cuts=3)
+    rig.part("bolt", g, R.GUNMETAL, finish="metal", outline=0.5)
     g = Geo().blob((G0[0] + FORE, G0[1] + 2.4, G0[2] - 0.4), (3.6, 3.0, 3.4), p=2.4)
-    rig.part("gun", g, M.SKIN)
+    rig.part("gun", g, R.SKIN)
     rig.track("muzzle", "gun", muzzle)
+    KI.loose(rig, "gun_loose", G0, lambda j: _rifle(rig, j, G0, length=LENGTH, bayonet=7.0))
     rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
-    M.muzzle_flash(rig, "gun", muzzle, size=1.7)
+    R.muzzle_flash(rig, "gun", muzzle, size=1.8)
     rig.joint("smoke", "gun", muzzle, hidden=True)
     g = Geo()
-    for dx, dz, r in ((6.0, 1.0, 3.6), (10.0, 3.0, 3.0), (3.0, 4.0, 2.6)):
+    for dx, dz, r in ((6.0, 1.0, 3.8), (10.5, 3.0, 3.1), (3.0, 4.4, 2.8), (8.0, 6.2, 2.4)):
         g.sphere((muzzle[0] + dx, muzzle[1] - 2, muzzle[2] + dz), r, cuts=4)
-    rig.part("smoke", g, M.SMOKE, finish="dust", outline=0.8)
-    # ejected casing, flipping up out of the bolt
-    rig.joint("casing", "gun", (G0[0] + 2, G0[1], G0[2] + 9), hidden=True)
-    g = Geo().capsule((G0[0] + 0.5, G0[1] - 2, G0[2] + 9.5), (G0[0] + 3.5, G0[1] - 2, G0[2] + 11.0), 1.0)
+    rig.part("smoke", g, R.SMOKE, finish="dust", outline=0.8)
+    # the ejected casing (root level so it arcs free of the rifle)
+    rig.joint("casing", "root", (G0[0] + 2, G0[1] - 3, G0[2] + 9), hidden=True)
+    g = Geo().capsule((G0[0] + 0.5, G0[1] - 3.5, G0[2] + 9.0), (G0[0] + 4.0, G0[1] - 3.5, G0[2] + 10.6), 1.2)
     rig.part("casing", g, BRASS, finish="metal", outline=0.5)
+    MUZ.append(muzzle)
 
 
-# -- poses ---------------------------------------------------------------------------------
-PORT = (6.0, 25.5, 32.0)   # grip x, z, rifle angle: carried up across the chest
+# -- poses ------------------------------------------------------------------------------------------
+PORT = (5.0, 26.0, 36.0)   # grip x, z, rifle angle (torso space): carried up across the chest
 
 
 def hold(gx, gz, deg):
-    return M.hold2("gun", G0, FORE, gx, gz, deg)
+    return R.hold2("gun", G0, FORE, gx, gz, deg)
+
+
+STANCE = merge(hold(*PORT), {"torso": {"r": -2.0}})
 
 
 def _idle(f):
-    c, lag = M.idle_wave(f)
-    return merge(M.idle_body(f), hold(PORT[0], PORT[1] + 0.5 * lag, PORT[2] + 2.0 * lag))
+    look = [0.0, 0.4, 1.0, 1.0, 0.4, 0.0][f]
+
+    def extra(ctx):
+        return merge(hold(PORT[0], PORT[1] + 0.5 * ctx["lag"], PORT[2] + 2.0 * ctx["lag"] - 3.0 * look),
+                     {"head": {"r": -9.0 * look}, "hat": {"x": 0.6 * look, "z": -0.6 * look, "r": -3 * look},
+                      "pupils": {"z": -0.8 * look}, "bolt": {"rx": 30.0 * max(0.0, look - 0.5)}})
+    base = {"torso": {"r": -2.0}}
+    return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
 def _walk(f):
-    pose, p, bl = M.walk_legs(f, lean=-7.0)
-    return merge(pose, hold(PORT[0], PORT[1] + 0.8 * bl, PORT[2] - 3.0 * bl))
+    def extra(ctx):
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        p = ctx["p"]
+        # march: the leg in front stays straight (stiff knee), the swing leg lifts high
+        return merge(hold(PORT[0], PORT[1] + 0.9 * lag, PORT[2] - 3.5 * lag),
+                     {"hat": {"r": -1.2 * lag},
+                      "shin_r": {"r": 30 * max(0.0, -math.sin(p))},
+                      "shin_l": {"r": 30 * max(0.0, math.sin(p))}})
+    base = {"torso": {"r": -2.0}}
+    return M.walk_v2(f, base, HEIGHT_LU, thigh=36.0, knee=70.0, lift_lu=7.5, bob_pct=0.065, lean=-5.0,
+                     arms=(), twist=5.0, extra=extra)
 
 
-ATTACK_MS = [83, 83, 125, 83, 83, 83, 83, 125]
+# 10 unique frames in 748 ms; fire on frame 3 at 291 ms (impactAt 0.389, as shipped)
+ATTACK_MS = [40, 60, 191, 60, 70, 60, 70, 60, 67, 70]
 ATTACK_IMPACT = 3
+#     raise shoulder HOLD FIRE kick boltUp boltBack boltHome lower settle
+LEAN = [-2, -10, -13, -13, -3, -6, -6, -6, -3, -2]
+GX = [5.0, 6.0, 6.5, 6.5, 3.5, 5.0, 5.0, 5.0, 5.0, 5.0]
+GZ = [30.0, 33.5, 33.5, 33.5, 35.0, 32.5, 32.5, 32.5, 29.0, 26.5]
+WDEG = [14.0, 1.0, 0.0, 0.0, 14.0, 6.0, 6.0, 4.0, 22.0, 34.0]   # rifle angle in WORLD degrees
+BX = [0.0, 1.0, 2.0, 2.0, -2.5, -1.0, -1.0, -0.5, 0.0, 0.0]
+BQ = [0.0, -0.03, -0.05, 0.03, -0.10, -0.02, -0.02, 0.0, 0.0, 0.0]
+BOLT = [None, None, None, None, None, (0, 0, 70), (-3.8, 0, 70), (0, 0, 70), None, None]
+CAS = [None, None, None, None, None, None, (-4, 5, 70), (-10, 12, 200), (-15, 6, 320), None]
 
 
-def _attack(f):
-    # 0 raise, 1 shoulder, 2 aim (held, squint), 3 FIRE (flash), 4 kick (up, squash),
-    # 5 bolt back (casing), 6 bolt home, 7 settle back to the carry
-    gx = pick(f, [5.5, 5.0, 5.0, 5.0, 2.5, 3.0, 3.5, 5.5])
-    gz = pick(f, [29.0, 32.0, 32.5, 32.5, 34.0, 31.0, 31.5, 28.0])
-    deg = pick(f, [16.0, 3.0, 0.0, 0.0, 14.0, -6.0, -2.0, 24.0])
-    pose = merge(hold(gx, gz, deg), {
-        "body": dict(squash(pick(f, [0, -0.03, -0.05, 0.03, -0.1, -0.04, -0.02, 0])),
-                     x=pick(f, [0, 0.5, 1.0, 0.0, -3.0, -1.5, -1.0, -0.5])),
-        "torso": {"r": pick(f, [-2, -3, -4, -4, 5, 0, -1, 0])},
-        "head": {"r": pick(f, [-2, -6, -9, -8, 4, -3, -3, 0]),
-                 "x": pick(f, [0, 0.8, 1.2, 1.2, 0, 0.6, 0.6, 0])},
-        "thigh_r": {"r": pick(f, [4, 10, 12, 12, 8, 8, 6, 2])},
-        "shin_r": {"r": pick(f, [0, -4, -6, -6, -4, -4, -2, 0])},
-        "thigh_l": {"r": pick(f, [-4, -10, -12, -14, -14, -12, -10, -4])},
+def _attack_pose(f):
+    t = LEAN[f]
+    pose = merge(hold(GX[f], GZ[f], WDEG[f] - t), {
+        "torso": {"r": t},
+        "head": {"r": [-2, -4, -6, -6, 6, 0, 0, 0, 0, 0][f] - 0.3 * t, "x": 1.4 if f in (1, 2, 3) else 0.0,
+                 "z": -1.2 if f in (1, 2, 3) else 0.0},
+        "hat": {"r": [0, 0, 0, 0, 7, 2, 0, 0, 0, 0][f], "z": [0, 0, 0, 0, 1.0, 0.3, 0, 0, 0, 0][f]},
+        "thigh_r": {"r": [4, 14, 18, 18, 12, 10, 10, 8, 4, 2][f]},
+        "shin_r": {"r": [0, -8, -12, -12, -8, -4, -4, -2, 0, 0][f]},
+        "thigh_l": {"r": [-4, -14, -18, -20, -18, -14, -14, -10, -6, -3][f]},
+        "shin_l": {"r": [0, -2, -4, -4, -4, -2, -2, 0, 0, 0][f]},
         "flash": {"show": f == 3},
-        "smoke": {"show": f in (4, 5), "s": pick(f, [1, 1, 1, 1, 0.9, 1.25, 1, 1]),
-                  "x": pick(f, [0, 0, 0, 0, 0, 3, 0, 0]), "z": pick(f, [0, 0, 0, 0, 0, 2, 0, 0])},
-        "casing": {"show": f in (5, 6), "x": pick(f, [0, 0, 0, 0, 0, -2, -6, 0]),
-                   "z": pick(f, [0, 0, 0, 0, 0, 3, 7, 0]), "r": pick(f, [0, 0, 0, 0, 0, 60, 160, 0])},
-    })
-    if f in (5, 6):   # the near hand works the bolt: pulled back to the bolt knob
-        import math
+        "smoke": {"show": f in (4, 5), "s": [1, 1, 1, 1, 1.0, 1.3, 1, 1, 1, 1][f],
+                  "x": [0, 0, 0, 0, 0, 3, 0, 0, 0, 0][f], "z": [0, 0, 0, 0, 0, 2.5, 0, 0, 0, 0][f]},
+    }, M.body_about((0, 0, 22), x=BX[f], q=BQ[f]))
+    if BOLT[f] is not None:   # the near hand leaves the wrist of the stock and works the bolt
+        bx, bz, brx = BOLT[f]
+        pose["bolt"] = {"x": bx, "z": bz, "rx": brx}
+        deg = WDEG[f] - t
         rad = math.radians(deg)
-        bx = gx + 2.0 * math.cos(rad) - (3.5 if f == 5 else 0.5)
-        bz = gz + 2.0 * math.sin(rad) + 3.0
-        a, fo = M.ik2(M.SH, (bx, bz))
-        pose.update(M.arm("r", a, fo))
-    if f in (2, 3):
-        M.squint(pose)
+        kx = GX[f] + (2.0 + bx) * math.cos(rad) - 3.4 * math.sin(rad)
+        kz = GZ[f] + (2.0 + bx) * math.sin(rad) + 4.0 * math.cos(rad)
+        a, fo = R.ik2(R.SH, (kx - 1.0, kz))
+        pose.update(R.arm("r", a, fo))
+    if CAS[f] is not None:
+        x, z, r = CAS[f]
+        pose["casing"] = {"show": True, "x": x, "z": z, "r": r}
+    if f in (1, 2, 3):
+        pose = merge(pose, F.expr("squeeze"), {"brow": {"z": -1.0}})
+    if f == 4:
+        pose = merge(pose, F.expr("grit"))
     return pose
 
 
-def _hit(f):
-    return merge(hold(PORT[0], PORT[1], PORT[2] + [14, 8, 3][f]), M.hit_body(f))
+def _attack_clip():
+    muz = MUZ[0] if MUZ else (G0[0] + LENGTH + 1.0, G0[1], G0[2] + 1.8)
+    ov = {3: [{"kind": "burst", "joint": "gun", "point": muz, "r0_lu": 8.0, "r1_lu": 13.0, "n": 5, "a0": -60.0,
+               "arc": 120.0}]}
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
 
 
-def _die(f):
-    pose = merge(hold(PORT[0], PORT[1], PORT[2] + pick(f, [34, 24, 24])), fx.die_pose(f),
-                 M.die_limbs(f))
-    if f in (0, 1):
-        M.ko(pose)
-    if f == 0:
-        M.yell(pose)
+def _hit(k):
+    def recoil(a):
+        return merge(hold(PORT[0], PORT[1], PORT[2] + 16 * a) if a > 0 else {},
+                     {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
+                      "thigh_r": {"r": 22 * max(a, 0)}, "shin_r": {"r": -26 * max(a, 0)},
+                      "hat": {"z": 3.5 * max(a, 0), "r": 12 * a}, "brow": {"z": 1.6 * max(a, 0)}})
+    base = {"torso": {"r": -2.0}} if M.HIT_AMT[k] > 0 else STANCE
+    return M.hit_light(k, base, recoil, face_hurt=F.expr("squeeze", "grit"),
+                       face_back=F.expr("grit") if k == 2 else None)
+
+
+# D2: the rifle flies out of his hands backwards on the hit and lands flat behind him; the helmet
+# leaves on the slam (step 5) and rolls forward along the ground
+GUN_PATH = [(-2, 8, 40), (-6, 22, 140), (-12, 28, 250), (-18, 20, 350), (-22, 4, 440), (-22, -14, 510),
+            (-20, -25, 540), (-20, -25, 540), (-20, -25, 540), (-20, -25, 540)]
+HELM_ROLL = [None, None, None, None, None, (54, -44, -40), (63, -50, -130), (70, -55, -190),
+             (72, -55, -200), (72, -55, -200)]
+#          struck  teeter stiff  tip   tip   SLAM  bounce lie   lie   lie
+ARM_R_A = [60, 90, -95, -98, -60, 80, 85, 84, 84, 84]
+ARM_R_F = [110, 120, -92, -95, -40, 88, 90, 88, 88, 88]
+ARM_L_A = [80, 110, -92, -95, -50, 95, 100, 98, 98, 98]
+ARM_L_F = [130, 140, -90, -92, -30, 100, 104, 102, 102, 102]
+
+
+def _die(k):
+    stiff = [0.2, 0.6, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0][k]
+    base = {j: v for j, v in STANCE.items() if not j.startswith(("arm_", "fore_", "hand_", "gun"))}
+    pose = merge(base, K.die_d2(k, toe_x=7.0, heel_x=-4.0, lie_lift=6.0), {
+        "torso": {"r": 4 * stiff}, "head": {"r": [8, 10, 0, 0, 0, -8, -4, -6, -6, -6][k]},
+        "thigh_r": {"r": -2 * stiff}, "thigh_l": {"r": 2 * stiff},
+    }, R.arm("r", ARM_R_A[k], ARM_R_F[k]), R.arm("l", ARM_L_A[k], ARM_L_F[k]))
+    x, z, r = GUN_PATH[k]
+    pose["gun"] = {"hide": True}
+    pose["gun_loose"] = {"show": True, "x": x, "z": z, "r": r}
+    hp = HELM_ROLL[k]
+    if hp is not None:
+        x, z, r = hp
+        pose["hat"] = {"hide": True}
+        pose["hat_loose"] = {"show": True, "x": x, "z": z, "r": r}
+    elif k >= 1:
+        pose["hat"] = {"r": 6 * stiff, "z": 1.2 * stiff}
+    if k < 2:
+        pose = merge(pose, F.expr("squeeze", "o"))
+    elif k < 5:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.8}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl, attack_ms=748, attack_impact_at=0.389)

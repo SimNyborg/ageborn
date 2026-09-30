@@ -27,7 +27,7 @@ import { displayName } from './names';
 import { homeStep } from './onboarding';
 import type { Services } from './services';
 import { StoppingCues } from './stopping';
-import { lossTipKey } from './trickle';
+import { lossTip } from './trickle';
 import { createUiServices } from './uiServices';
 
 export interface MetaUi {
@@ -267,8 +267,8 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
           rewards: r.result.rewards,
           replayIndex: kept ? 0 : null,
           request,
-          // A16.6: the wave tip after a loss where the trickle detector fired.
-          tipKey: r.result.battle ? lossTipKey({ won: input.outcome.winner === input.mySide, draw: input.outcome.winner === null, trickled: r.result.battle.trickle.fired }) : null,
+          // A9.2 / A16.6: the missing Anti-heavy card, else the wave tip after a loss where the trickle detector fired.
+          ...resultTip(r.result.battle ? lossTip({ won: input.outcome.winner === input.mySide, draw: input.outcome.winner === null, trickled: r.result.battle.trickle.fired, heavyGap: r.result.battle.heavyGap.gap }) : null),
           card,
           endedHour,
           daily:
@@ -354,4 +354,10 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       stopProblems();
     },
   };
+}
+
+/** The Result route's tip fields: the i18n key and, for the Anti-heavy tip, the card and age ids to name. */
+function resultTip(tip: { key: string; card?: string; age?: string } | null): { tipKey: string | null; tipCard?: string; tipAge?: string } {
+  if (!tip) return { tipKey: null };
+  return { tipKey: tip.key, ...(tip.card ? { tipCard: tip.card } : {}), ...(tip.age ? { tipAge: tip.age } : {}) };
 }

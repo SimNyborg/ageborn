@@ -7,7 +7,7 @@
  * The age's P, base HP and threshold live in `economy.ts` (`ageScale`, A17.8).
  */
 import type { PowerDef } from '@/contracts/content';
-import { damageMods } from './economy';
+import { antiHeavyMods, damageMods } from './economy';
 import type { RawAgeTables } from './types';
 
 export const industrial: RawAgeTables = {
@@ -69,10 +69,10 @@ export const industrial: RawAgeTables = {
         {
           damage: 55, intervalMs: 1200, windupPct: 50, range: 210, hitsGround: true, hitsAir: true,
           projectile: { speed: 900, visualId: 'proj.harpoon' },
-          dmgType: 'pierce', sfx: 'shot_harpoon', mods: damageMods.rangedAntiArmor, priority: 'armored',
+          dmgType: 'pierce', sfx: 'shot_harpoon', mods: antiHeavyMods.harpoon, priority: 'armored',
         },
       ],
-      abilities: [{ kind: 'firstHitBonus', multBp: 10000, knockback: -25, idleResetMs: 2000 }],
+      abilities: [{ kind: 'firstHitBonus', multBp: 10000, knockback: -25, idleResetMs: 2000 }, { kind: 'brace' }],
       visualId: 'unit.harpoon_gunner', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.harpoon_gunner.name', descKey: 'card.harpoon_gunner.desc', strongVs: [], weakVs: [],
     },

@@ -17,27 +17,27 @@ function openNext(s: SaveDoc) {
 }
 
 describe('onboarding script (A6.5)', () => {
-  it('capsule 1 is a Bronze climb with Spear Hunter NEW and a Bonker stack; it uses no charge', () => {
+  it('capsule 1 is a Bronze climb with Drum Shaman NEW and a Bonker stack; it uses no charge', () => {
     const s0 = fresh();
     const m1 = play(s0, 'tutorial', 'win');
     expect(m1.opponent.generalId).toBe('grogg');
     const cap = lastPending(m1.save);
     expect(cap).toMatchObject({ kind: 'win', tier: 'bronze', startTier: 'clay', scriptIndex: 1 });
     expect(cap.contents.stacks).toHaveLength(C.capsules.tiers.bronze.stacks);
-    expect(cap.contents.stacks.map((x) => x.card)).toEqual(expect.arrayContaining(['spear_hunter', 'bonker']));
+    expect(cap.contents.stacks.map((x) => x.card)).toEqual(expect.arrayContaining(['drum_shaman', 'bonker']));
     expect(m1.save.capsules.charges).toBe(s0.capsules.charges);
     expect(m1.save.capsules.freeCapsulesLeft).toBe(s0.capsules.freeCapsulesLeft - 1);
     expect(m1.save.capsules.bag).toEqual([]);
     const o = openLast(m1.save);
     expect(o.reveal.climbs).toBe(1);
     expect(o.reveal.strikeClimbs).toEqual([false, false, false, true]);
-    const spear = o.reveal.capsule.contents.stacks.find((x) => x.card === 'spear_hunter');
-    expect(spear?.isNew).toBe(true);
-    expect(o.save.collection['spear_hunter']?.level).toBe(1);
-    // A17.13: capsule 1 also brings the Phalangite NEW.
-    expect(o.reveal.capsule.contents.stacks.find((x) => x.card === 'phalangite')?.isNew).toBe(true);
-    // Every other stack is an owned Common: the script decides every NEW card.
-    for (const st of o.reveal.capsule.contents.stacks) if (st.card !== 'spear_hunter' && st.card !== 'phalangite') expect(st.isNew).toBe(false);
+    const shaman = o.reveal.capsule.contents.stacks.find((x) => x.card === 'drum_shaman');
+    expect(shaman?.isNew).toBe(true);
+    expect(o.save.collection['drum_shaman']?.level).toBe(1);
+    // Capsule 1 also brings the Standard Bearer NEW (the Anti-heavy Rares are in the starter kit, A3).
+    expect(o.reveal.capsule.contents.stacks.find((x) => x.card === 'standard_bearer')?.isNew).toBe(true);
+    // Every other stack is an owned card: the script decides every NEW card.
+    for (const st of o.reveal.capsule.contents.stacks) if (st.card !== 'drum_shaman' && st.card !== 'standard_bearer') expect(st.isNew).toBe(false);
   });
 
   it('capsules 2-5 follow the table, then the bag takes over', () => {
@@ -49,9 +49,9 @@ describe('onboarding script (A6.5)', () => {
       s = o.save;
     }
     const [c1, c2, c3, c4, c5, c6] = reveals;
-    expect(c1?.capsule.contents.stacks.some((x) => x.card === 'spear_hunter' && x.isNew)).toBe(true);
+    expect(c1?.capsule.contents.stacks.some((x) => x.card === 'drum_shaman' && x.isNew)).toBe(true);
     expect(c2?.capsule.tier).toBe('silver');
-    expect(c2?.capsule.contents.stacks.filter((x) => x.isNew).map((x) => x.card).sort()).toEqual(['grenadier', 'pikeman']);
+    expect(c2?.capsule.contents.stacks.filter((x) => x.isNew).map((x) => x.card).sort()).toEqual(['field_surgeon', 'friar']);
     // Capsule 3 is the first Supply Capsule, granted right after capsule 2 (A15.4); the script
     // overrides its tier: still the scripted Bronze.
     expect(c3?.capsule).toMatchObject({ kind: 'daily', tier: 'bronze', startTier: 'bronze', scriptIndex: 3 });
@@ -103,8 +103,9 @@ describe('onboarding script (A6.5)', () => {
     expect(g.scriptStep).toBe(0);
     const cap = lastPending(g);
     expect(cap.scriptIndex).toBeNull();
-    expect(cap.contents.stacks.map((x) => x.card).sort()).toEqual(['bazooka_trooper', 'rifleman', 'tankette', 'trench_raider']);
-    expect(cap.contents.stacks.find((x) => x.card === 'bazooka_trooper')?.copies).toBe(1);
+    // The age's Support Rare and its 3 Commons (the Anti-heavy Rare is in the starter kit, A3).
+    expect(cap.contents.stacks.map((x) => x.card).sort()).toEqual(['radio_operator', 'rifleman', 'tankette', 'trench_raider']);
+    expect(cap.contents.stacks.find((x) => x.card === 'radio_operator')?.copies).toBe(1);
     for (const st of cap.contents.stacks) if (rarityOf(st.card) === 'common') expect(st.copies).toBe(4);
     const o = M.openCapsule(g, cap.id);
     expect(o.reveal.pityAfter).toEqual(o.reveal.pityBefore);

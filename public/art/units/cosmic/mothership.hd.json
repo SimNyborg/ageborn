@@ -2,7 +2,7 @@
  "frames": {
   "mothership_idle_00": {
    "frame": {
-    "x": 1207,
+    "x": 1498,
     "y": 2,
     "w": 295,
     "h": 357
@@ -26,8 +26,8 @@
   },
   "mothership_idle_00_team": {
    "frame": {
-    "x": 2,
-    "y": 2353,
+    "x": 909,
+    "y": 2380,
     "w": 289,
     "h": 285
    },
@@ -50,7 +50,7 @@
   },
   "mothership_idle_01": {
    "frame": {
-    "x": 905,
+    "x": 904,
     "y": 2,
     "w": 298,
     "h": 358
@@ -74,8 +74,8 @@
   },
   "mothership_idle_01_team": {
    "frame": {
-    "x": 1756,
-    "y": 2061,
+    "x": 2,
+    "y": 2380,
     "w": 286,
     "h": 286
    },
@@ -98,7 +98,7 @@
   },
   "mothership_idle_02": {
    "frame": {
-    "x": 1506,
+    "x": 1797,
     "y": 2,
     "w": 291,
     "h": 357
@@ -122,8 +122,8 @@
   },
   "mothership_idle_02_team": {
    "frame": {
-    "x": 586,
-    "y": 2353,
+    "x": 1493,
+    "y": 2380,
     "w": 288,
     "h": 284
    },
@@ -146,8 +146,8 @@
   },
   "mothership_idle_03": {
    "frame": {
-    "x": 2083,
-    "y": 371,
+    "x": 298,
+    "y": 737,
     "w": 294,
     "h": 354
    },
@@ -170,8 +170,8 @@
   },
   "mothership_idle_03_team": {
    "frame": {
-    "x": 878,
-    "y": 2353,
+    "x": 1785,
+    "y": 2380,
     "w": 287,
     "h": 284
    },
@@ -194,8 +194,8 @@
   },
   "mothership_idle_04": {
    "frame": {
-    "x": 904,
-    "y": 730,
+    "x": 1493,
+    "y": 737,
     "w": 291,
     "h": 352
    },
@@ -218,8 +218,8 @@
   },
   "mothership_idle_04_team": {
    "frame": {
-    "x": 1462,
-    "y": 2061,
+    "x": 2048,
+    "y": 2086,
     "w": 290,
     "h": 286
    },
@@ -242,8 +242,8 @@
   },
   "mothership_idle_05": {
    "frame": {
-    "x": 2,
-    "y": 730,
+    "x": 596,
+    "y": 737,
     "w": 294,
     "h": 354
    },
@@ -266,8 +266,8 @@
   },
   "mothership_idle_05_team": {
    "frame": {
-    "x": 295,
-    "y": 2353,
+    "x": 1202,
+    "y": 2380,
     "w": 287,
     "h": 285
    },
@@ -290,8 +290,8 @@
   },
   "mothership_walk_00": {
    "frame": {
-    "x": 2,
-    "y": 371,
+    "x": 2092,
+    "y": 2,
     "w": 294,
     "h": 355
    },
@@ -314,8 +314,8 @@
   },
   "mothership_walk_00_team": {
    "frame": {
-    "x": 593,
-    "y": 1766,
+    "x": 1821,
+    "y": 1780,
     "w": 287,
     "h": 291
    },
@@ -338,8 +338,8 @@
   },
   "mothership_walk_01": {
    "frame": {
-    "x": 1491,
-    "y": 371,
+    "x": 2087,
+    "y": 378,
     "w": 292,
     "h": 355
    },
@@ -362,8 +362,8 @@
   },
   "mothership_walk_01_team": {
    "frame": {
-    "x": 300,
-    "y": 1766,
+    "x": 1528,
+    "y": 1780,
     "w": 289,
     "h": 291
    },
@@ -386,8 +386,8 @@
   },
   "mothership_walk_02": {
    "frame": {
-    "x": 300,
-    "y": 371,
+    "x": 2,
+    "y": 378,
     "w": 294,
     "h": 355
    },
@@ -410,8 +410,8 @@
   },
   "mothership_walk_02_team": {
    "frame": {
-    "x": 884,
-    "y": 1766,
+    "x": 2112,
+    "y": 1780,
     "w": 286,
     "h": 291
    },
@@ -434,8 +434,8 @@
   },
   "mothership_walk_03": {
    "frame": {
-    "x": 598,
-    "y": 371,
+    "x": 300,
+    "y": 378,
     "w": 294,
     "h": 355
    },
@@ -458,8 +458,8 @@
   },
   "mothership_walk_03_team": {
    "frame": {
-    "x": 1470,
-    "y": 1766,
+    "x": 2,
+    "y": 2086,
     "w": 286,
     "h": 290
    },
@@ -482,8 +482,8 @@
   },
   "mothership_walk_04": {
    "frame": {
-    "x": 896,
-    "y": 371,
+    "x": 598,
+    "y": 378,
     "w": 294,
     "h": 355
    },
@@ -506,8 +506,8 @@
   },
   "mothership_walk_04_team": {
    "frame": {
-    "x": 1760,
-    "y": 1766,
+    "x": 292,
+    "y": 2086,
     "w": 291,
     "h": 289
    },
@@ -530,8 +530,8 @@
   },
   "mothership_walk_05": {
    "frame": {
-    "x": 1787,
-    "y": 371,
+    "x": 2,
+    "y": 737,
     "w": 292,
     "h": 355
    },
@@ -554,8 +554,8 @@
   },
   "mothership_walk_05_team": {
    "frame": {
-    "x": 2,
-    "y": 2061,
+    "x": 1172,
+    "y": 2086,
     "w": 289,
     "h": 288
    },
@@ -578,8 +578,8 @@
   },
   "mothership_walk_06": {
    "frame": {
-    "x": 1194,
-    "y": 371,
+    "x": 1790,
+    "y": 378,
     "w": 293,
     "h": 355
    },
@@ -602,8 +602,8 @@
   },
   "mothership_walk_06_team": {
    "frame": {
-    "x": 1172,
-    "y": 2061,
+    "x": 1465,
+    "y": 2086,
     "w": 286,
     "h": 288
    },
@@ -626,8 +626,8 @@
   },
   "mothership_walk_07": {
    "frame": {
-    "x": 300,
-    "y": 730,
+    "x": 894,
+    "y": 737,
     "w": 294,
     "h": 354
    },
@@ -650,8 +650,8 @@
   },
   "mothership_walk_07_team": {
    "frame": {
-    "x": 2055,
-    "y": 1766,
+    "x": 587,
+    "y": 2086,
     "w": 286,
     "h": 289
    },
@@ -674,18 +674,18 @@
   },
   "mothership_attack_00": {
    "frame": {
-    "x": 2101,
-    "y": 2,
-    "w": 295,
-    "h": 355
+    "x": 1192,
+    "y": 737,
+    "w": 297,
+    "h": 352
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 166,
-    "w": 295,
-    "h": 355
+    "y": 170,
+    "w": 297,
+    "h": 352
    },
    "sourceSize": {
     "w": 628,
@@ -698,17 +698,17 @@
   },
   "mothership_attack_00_team": {
    "frame": {
-    "x": 295,
-    "y": 2061,
-    "w": 289,
+    "x": 877,
+    "y": 2086,
+    "w": 291,
     "h": 288
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 201,
-    "y": 180,
-    "w": 289,
+    "y": 183,
+    "w": 291,
     "h": 288
    },
    "sourceSize": {
@@ -722,18 +722,18 @@
   },
   "mothership_attack_01": {
    "frame": {
-    "x": 598,
-    "y": 730,
-    "w": 302,
-    "h": 352
+    "x": 2092,
+    "y": 737,
+    "w": 304,
+    "h": 349
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 196,
-    "y": 170,
-    "w": 302,
-    "h": 352
+    "y": 173,
+    "w": 304,
+    "h": 349
    },
    "sourceSize": {
     "w": 628,
@@ -746,18 +746,18 @@
   },
   "mothership_attack_01_team": {
    "frame": {
-    "x": 588,
-    "y": 2061,
-    "w": 288,
-    "h": 288
+    "x": 1755,
+    "y": 2086,
+    "w": 289,
+    "h": 287
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 183,
-    "w": 288,
-    "h": 288
+    "y": 185,
+    "w": 289,
+    "h": 287
    },
    "sourceSize": {
     "w": 628,
@@ -770,18 +770,18 @@
   },
   "mothership_attack_02": {
    "frame": {
-    "x": 1500,
-    "y": 730,
-    "w": 302,
-    "h": 349
+    "x": 299,
+    "y": 1096,
+    "w": 306,
+    "h": 345
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 173,
-    "w": 302,
-    "h": 349
+    "x": 195,
+    "y": 177,
+    "w": 306,
+    "h": 345
    },
    "sourceSize": {
     "w": 628,
@@ -794,18 +794,18 @@
   },
   "mothership_attack_02_team": {
    "frame": {
-    "x": 1174,
-    "y": 1766,
-    "w": 292,
-    "h": 290
+    "x": 1230,
+    "y": 1780,
+    "w": 294,
+    "h": 291
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 203,
+    "x": 202,
     "y": 189,
-    "w": 292,
-    "h": 290
+    "w": 294,
+    "h": 291
    },
    "sourceSize": {
     "w": 628,
@@ -818,18 +818,18 @@
   },
   "mothership_attack_03": {
    "frame": {
-    "x": 2109,
-    "y": 730,
-    "w": 296,
-    "h": 349
+    "x": 900,
+    "y": 1096,
+    "w": 301,
+    "h": 342
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 200,
-    "y": 173,
-    "w": 296,
-    "h": 349
+    "x": 198,
+    "y": 183,
+    "w": 301,
+    "h": 342
    },
    "sourceSize": {
     "w": 628,
@@ -842,18 +842,18 @@
   },
   "mothership_attack_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1766,
-    "w": 294,
-    "h": 291
+    "x": 2076,
+    "y": 2380,
+    "w": 301,
+    "h": 277
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 202,
-    "y": 189,
-    "w": 294,
-    "h": 291
+    "x": 200,
+    "y": 200,
+    "w": 301,
+    "h": 277
    },
    "sourceSize": {
     "w": 628,
@@ -868,16 +868,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 315,
-    "h": 365
+    "w": 312,
+    "h": 372
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 156,
-    "w": 315,
-    "h": 365
+    "y": 151,
+    "w": 312,
+    "h": 372
    },
    "sourceSize": {
     "w": 628,
@@ -890,18 +890,18 @@
   },
   "mothership_attack_04_team": {
    "frame": {
-    "x": 325,
-    "y": 1441,
-    "w": 283,
-    "h": 316
+    "x": 583,
+    "y": 1449,
+    "w": 274,
+    "h": 324
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
-    "y": 171,
-    "w": 283,
-    "h": 316
+    "x": 205,
+    "y": 163,
+    "w": 274,
+    "h": 324
    },
    "sourceSize": {
     "w": 628,
@@ -914,18 +914,18 @@
   },
   "mothership_attack_05": {
    "frame": {
-    "x": 299,
-    "y": 1088,
+    "x": 1788,
+    "y": 737,
     "w": 300,
-    "h": 348
+    "h": 350
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
-    "y": 166,
+    "x": 187,
+    "y": 165,
     "w": 300,
-    "h": 348
+    "h": 350
    },
    "sourceSize": {
     "w": 628,
@@ -938,18 +938,18 @@
   },
   "mothership_attack_05_team": {
    "frame": {
-    "x": 612,
-    "y": 1441,
-    "w": 290,
-    "h": 314
+    "x": 861,
+    "y": 1449,
+    "w": 291,
+    "h": 317
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
-    "y": 182,
-    "w": 290,
-    "h": 314
+    "x": 191,
+    "y": 180,
+    "w": 291,
+    "h": 317
    },
    "sourceSize": {
     "w": 628,
@@ -962,18 +962,18 @@
   },
   "mothership_attack_06": {
    "frame": {
-    "x": 613,
+    "x": 318,
     "y": 2,
-    "w": 288,
-    "h": 363
+    "w": 290,
+    "h": 362
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 194,
+    "x": 196,
     "y": 161,
-    "w": 288,
-    "h": 363
+    "w": 290,
+    "h": 362
    },
    "sourceSize": {
     "w": 628,
@@ -986,18 +986,18 @@
   },
   "mothership_attack_06_team": {
    "frame": {
-    "x": 2069,
-    "y": 1088,
-    "w": 287,
-    "h": 328
+    "x": 2,
+    "y": 1449,
+    "w": 285,
+    "h": 327
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 179,
-    "w": 287,
-    "h": 328
+    "x": 198,
+    "y": 178,
+    "w": 285,
+    "h": 327
    },
    "sourceSize": {
     "w": 628,
@@ -1010,18 +1010,18 @@
   },
   "mothership_attack_07": {
    "frame": {
-    "x": 321,
+    "x": 1206,
     "y": 2,
     "w": 288,
-    "h": 364
+    "h": 358
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
-    "y": 166,
+    "x": 200,
+    "y": 165,
     "w": 288,
-    "h": 364
+    "h": 358
    },
    "sourceSize": {
     "w": 628,
@@ -1034,18 +1034,66 @@
   },
   "mothership_attack_07_team": {
    "frame": {
-    "x": 1777,
-    "y": 1088,
+    "x": 291,
+    "y": 1449,
     "w": 288,
-    "h": 330
+    "h": 324
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
-    "y": 183,
+    "x": 200,
+    "y": 182,
     "w": 288,
-    "h": 330
+    "h": 324
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_08": {
+   "frame": {
+    "x": 896,
+    "y": 378,
+    "w": 294,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 166,
+    "w": 294,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 628,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_08_team": {
+   "frame": {
+    "x": 614,
+    "y": 2380,
+    "w": 291,
+    "h": 285
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 183,
+    "w": 291,
+    "h": 285
    },
    "sourceSize": {
     "w": 628,
@@ -1058,18 +1106,18 @@
   },
   "mothership_hit_00": {
    "frame": {
-    "x": 1179,
-    "y": 1088,
-    "w": 311,
-    "h": 335
+    "x": 1205,
+    "y": 1096,
+    "w": 301,
+    "h": 337
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 186,
-    "y": 186,
-    "w": 311,
-    "h": 335
+    "x": 190,
+    "y": 183,
+    "w": 301,
+    "h": 337
    },
    "sourceSize": {
     "w": 628,
@@ -1082,17 +1130,17 @@
   },
   "mothership_hit_00_team": {
    "frame": {
-    "x": 2100,
-    "y": 2353,
-    "w": 302,
+    "x": 634,
+    "y": 2670,
+    "w": 296,
     "h": 272
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 190,
-    "y": 201,
-    "w": 302,
+    "y": 202,
+    "w": 296,
     "h": 272
    },
    "sourceSize": {
@@ -1106,18 +1154,18 @@
   },
   "mothership_hit_01": {
    "frame": {
-    "x": 2,
-    "y": 1441,
-    "w": 319,
-    "h": 321
+    "x": 2078,
+    "y": 1096,
+    "w": 290,
+    "h": 334
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
-    "y": 199,
-    "w": 319,
-    "h": 321
+    "x": 193,
+    "y": 189,
+    "w": 290,
+    "h": 334
    },
    "sourceSize": {
     "w": 628,
@@ -1130,18 +1178,18 @@
   },
   "mothership_hit_01_team": {
    "frame": {
-    "x": 322,
-    "y": 2642,
-    "w": 314,
-    "h": 260
+    "x": 2,
+    "y": 2670,
+    "w": 289,
+    "h": 276
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
-    "y": 217,
-    "w": 314,
-    "h": 260
+    "x": 189,
+    "y": 209,
+    "w": 289,
+    "h": 276
    },
    "sourceSize": {
     "w": 628,
@@ -1154,18 +1202,18 @@
   },
   "mothership_hit_02": {
    "frame": {
-    "x": 1199,
-    "y": 730,
-    "w": 297,
-    "h": 350
+    "x": 612,
+    "y": 2,
+    "w": 288,
+    "h": 361
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
-    "y": 170,
-    "w": 297,
-    "h": 350
+    "x": 199,
+    "y": 165,
+    "w": 288,
+    "h": 361
    },
    "sourceSize": {
     "w": 628,
@@ -1178,18 +1226,18 @@
   },
   "mothership_hit_02_team": {
    "frame": {
-    "x": 1169,
-    "y": 2353,
-    "w": 292,
-    "h": 279
+    "x": 1737,
+    "y": 1449,
+    "w": 283,
+    "h": 306
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
-    "y": 189,
-    "w": 292,
-    "h": 279
+    "x": 201,
+    "y": 168,
+    "w": 283,
+    "h": 306
    },
    "sourceSize": {
     "w": 628,
@@ -1202,18 +1250,18 @@
   },
   "mothership_hit_03": {
    "frame": {
-    "x": 1806,
-    "y": 730,
-    "w": 299,
-    "h": 349
+    "x": 1194,
+    "y": 378,
+    "w": 294,
+    "h": 355
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 193,
-    "y": 172,
-    "w": 299,
-    "h": 349
+    "x": 197,
+    "y": 165,
+    "w": 294,
+    "h": 355
    },
    "sourceSize": {
     "w": 628,
@@ -1226,18 +1274,18 @@
   },
   "mothership_hit_03_team": {
    "frame": {
-    "x": 1465,
-    "y": 2353,
-    "w": 292,
-    "h": 279
+    "x": 936,
+    "y": 1780,
+    "w": 290,
+    "h": 293
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
-    "y": 189,
-    "w": 292,
-    "h": 279
+    "x": 197,
+    "y": 173,
+    "w": 290,
+    "h": 293
    },
    "sourceSize": {
     "w": 628,
@@ -1250,17 +1298,17 @@
   },
   "mothership_hit_04": {
    "frame": {
-    "x": 1801,
-    "y": 2,
-    "w": 296,
+    "x": 1492,
+    "y": 378,
+    "w": 294,
     "h": 355
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 167,
-    "w": 296,
+    "x": 199,
+    "y": 166,
+    "w": 294,
     "h": 355
    },
    "sourceSize": {
@@ -1274,18 +1322,18 @@
   },
   "mothership_hit_04_team": {
    "frame": {
-    "x": 880,
-    "y": 2061,
-    "w": 288,
-    "h": 288
+    "x": 325,
+    "y": 1780,
+    "w": 289,
+    "h": 297
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 201,
-    "y": 180,
-    "w": 288,
-    "h": 288
+    "y": 171,
+    "w": 289,
+    "h": 297
    },
    "sourceSize": {
     "w": 628,
@@ -1299,7 +1347,7 @@
   "mothership_die_00": {
    "frame": {
     "x": 2,
-    "y": 1088,
+    "y": 1096,
     "w": 293,
     "h": 349
    },
@@ -1322,8 +1370,8 @@
   },
   "mothership_die_00_team": {
    "frame": {
-    "x": 1487,
-    "y": 1441,
+    "x": 2024,
+    "y": 1449,
     "w": 288,
     "h": 304
    },
@@ -1346,8 +1394,8 @@
   },
   "mothership_die_01": {
    "frame": {
-    "x": 894,
-    "y": 1088,
+    "x": 1510,
+    "y": 1096,
     "w": 281,
     "h": 337
    },
@@ -1370,8 +1418,8 @@
   },
   "mothership_die_01_team": {
    "frame": {
-    "x": 1195,
-    "y": 1441,
+    "x": 1445,
+    "y": 1449,
     "w": 288,
     "h": 310
    },
@@ -1394,8 +1442,8 @@
   },
   "mothership_die_02": {
    "frame": {
-    "x": 1494,
-    "y": 1088,
+    "x": 1795,
+    "y": 1096,
     "w": 279,
     "h": 335
    },
@@ -1418,8 +1466,8 @@
   },
   "mothership_die_02_team": {
    "frame": {
-    "x": 906,
-    "y": 1441,
+    "x": 1156,
+    "y": 1449,
     "w": 285,
     "h": 312
    },
@@ -1442,8 +1490,8 @@
   },
   "mothership_die_03": {
    "frame": {
-    "x": 603,
-    "y": 1088,
+    "x": 609,
+    "y": 1096,
     "w": 287,
     "h": 344
    },
@@ -1466,8 +1514,8 @@
   },
   "mothership_die_03_team": {
    "frame": {
-    "x": 2102,
-    "y": 1441,
+    "x": 618,
+    "y": 1780,
     "w": 314,
     "h": 296
    },
@@ -1490,8 +1538,8 @@
   },
   "mothership_die_04": {
    "frame": {
-    "x": 1779,
-    "y": 1441,
+    "x": 2,
+    "y": 1780,
     "w": 319,
     "h": 302
    },
@@ -1514,8 +1562,8 @@
   },
   "mothership_die_04_team": {
    "frame": {
-    "x": 1761,
-    "y": 2353,
+    "x": 295,
+    "y": 2670,
     "w": 335,
     "h": 274
    },
@@ -1538,8 +1586,8 @@
   },
   "mothership_die_05": {
    "frame": {
-    "x": 2046,
-    "y": 2061,
+    "x": 292,
+    "y": 2380,
     "w": 318,
     "h": 285
    },
@@ -1562,8 +1610,8 @@
   },
   "mothership_die_05_team": {
    "frame": {
-    "x": 640,
-    "y": 2642,
+    "x": 1254,
+    "y": 2670,
     "w": 333,
     "h": 259
    },
@@ -1586,8 +1634,8 @@
   },
   "mothership_die_06": {
    "frame": {
-    "x": 2,
-    "y": 2642,
+    "x": 934,
+    "y": 2670,
     "w": 316,
     "h": 269
    },
@@ -1610,8 +1658,8 @@
   },
   "mothership_die_06_team": {
    "frame": {
-    "x": 1274,
-    "y": 2642,
+    "x": 1888,
+    "y": 2670,
     "w": 332,
     "h": 242
    },
@@ -1634,8 +1682,8 @@
   },
   "mothership_die_07": {
    "frame": {
-    "x": 977,
-    "y": 2642,
+    "x": 1591,
+    "y": 2670,
     "w": 293,
     "h": 250
    },
@@ -1658,8 +1706,8 @@
   },
   "mothership_die_07_team": {
    "frame": {
-    "x": 1610,
-    "y": 2642,
+    "x": 2224,
+    "y": 2670,
     "w": 308,
     "h": 225
    },
@@ -1726,7 +1774,8 @@
    "mothership_attack_04",
    "mothership_attack_05",
    "mothership_attack_06",
-   "mothership_attack_07"
+   "mothership_attack_07",
+   "mothership_attack_08"
   ],
   "attack_team": [
    "mothership_attack_00_team",
@@ -1736,7 +1785,8 @@
    "mothership_attack_04_team",
    "mothership_attack_05_team",
    "mothership_attack_06_team",
-   "mothership_attack_07_team"
+   "mothership_attack_07_team",
+   "mothership_attack_08_team"
   ],
   "hit": [
    "mothership_hit_00",
@@ -1788,7 +1838,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 2560,
-   "h": 2916
+   "h": 2948
   },
   "scale": "2.5",
   "ageborn": {
@@ -1931,7 +1981,7 @@
      "naturalSpeedLuPerS": 39.5
     },
     "attack": {
-     "frames": 8,
+     "frames": 9,
      "loop": false,
      "sequence": [
       0,
@@ -1941,27 +1991,25 @@
       4,
       5,
       6,
-      7
+      7,
+      8
      ],
      "durationsMs": [
-      83,
+      60,
+      80,
       100,
+      168,
       100,
-      125,
-      83,
-      100,
-      125,
-      125
+      90,
+      80,
+      80,
+      83
      ],
      "durationMs": 841,
      "impactFrame": 4,
      "impactAt": 0.4851,
      "anchorsLu": {
       "muzzle": [
-       [
-        42.6,
-        23.5
-       ],
        [
         43.2,
         21.9
@@ -1971,24 +2019,32 @@
         21.2
        ],
        [
-        43.9,
-        21.2
+        44.1,
+        20.5
        ],
        [
-        40.7,
-        27.0
-       ],
-       [
-        38.1,
-        30.2
+        45.2,
+        19.9
        ],
        [
         39.9,
-        26.6
+        26.7
        ],
        [
-        42.6,
-        24.6
+        40.7,
+        31.0
+       ],
+       [
+        40.9,
+        27.4
+       ],
+       [
+        42.3,
+        25.4
+       ],
+       [
+        43.1,
+        24.5
        ]
       ]
      }
@@ -2015,22 +2071,22 @@
       "muzzle": [
        [
         44.5,
-        25.5
+        30.7
        ],
        [
-        45.1,
-        26.8
+        43.0,
+        32.7
        ],
        [
-        42.0,
-        28.7
+        39.1,
+        19.2
        ],
        [
-        43.1,
-        26.6
+        43.4,
+        27.7
        ],
        [
-        43.1,
+        43.3,
         24.9
        ]
       ]

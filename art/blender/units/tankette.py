@@ -1,29 +1,45 @@
 """Tankette: Modern Age heavy (DESIGN A5.5). Shell (proj.shell), 90 lu, armored mech. ~88 lu.
 
-Look (A11 vehicle rig, Modern palette): a stubby, chunky little tank. An olive hull with a
-sloped glacis and big team-painted side skirts over the upper run of a rubber track
-(scrolling steel grousers, spinning road wheels, sprocket and idler), a round olive turret
-with team cheeks and a short fat gun with a gunmetal muzzle brake, a commander in a
-leather tank cap with goggles popping out of the hatch, a rear exhaust and a radio antenna
-with a team pennant (the heavies' pennant cue, A11). The walk scrolls the track exactly with
-the ground and bounces the hull; the attack ducks the commander, fires with a big flash
-(the barrel slides back, the hull rocks back on its springs), the smoke rolls out and the
-hull settles. The shell spawns at the per-frame `muzzle` anchor.
+Look (A11 vehicle rig, Modern palette): a stubby, chunky little tank. An olive hull with a sloped
+glacis, rivet rows and panel lines, big team-painted side skirts (a cream chevron, rivets) over the
+upper run of a rubber track (scrolling steel grousers, spinning road wheels, sprocket and idler,
+mud caked on the belt), a shovel and a pick strapped to the fender, dark and pale hazard stripes
+on the rear plate, a spare road wheel on the back, headlights, a rear exhaust. A round olive turret
+with team cheeks and a short fat gun with a gunmetal muzzle brake and a signal band. The
+commander (leather tank cap, goggles, big eyes and the face kit, a team jacket and a waving arm)
+rides in the open hatch under a lid that clanks; a radio antenna carries a team pennant (the
+heavies' pennant cue, A11).
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    the engine shivers the hull, exhaust puffs, the commander pops up, looks round and blinks
+  walk    roll: the track scrolls exactly with the ground, the hull bobs on its suspension, the
+          commander bounces a frame late, the antenna whips
+  attack  RECOIL HOP: the commander ducks and the lid clanks shut, the hull squats nose-down and
+          holds (the held extreme), BOOM (one big flash, impact lines): the barrel slams back and
+          the whole tankette HOPS back off its tracks, lands with a squash and dust, bounces, the
+          lid flies open and the commander pops up waving and cheering. The shell leaves the
+          per-frame `muzzle` anchor on the fire frame.
+  hit     vehicle: a suspension bounce, the commander ducks with his eyes squeezed, the pennant whips
+  die     D7 wreck and bail: struck, the tankette hops, lands tilted on a snapped track with the
+          turret knocked askew and black smoke; the commander leaps out of the hatch and runs
 """
 import math
 
-from ageborn_art import fx
-from ageborn_art import rigs_modern as M
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art import face as F
+from ageborn_art import kit_modern as KM
+from ageborn_art import moves as M
+from ageborn_art import rigs_modern as R
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "tankette"
 NAME = "Tankette"
 HEIGHT_LU = 96
 YAW_DEG = -10.0
-CANVAS = (392, 290)
-FEET = (170, 268)
+CANVAS = (420, 330)
+FEET = (190, 300)
 ANCHORS = {"head": (0, 86), "hitCenter": (0, 34)}
+NO_RETIME = True
 
 TR_R = 10.5                  # track end radius
 TX0, TX1 = -30.0, 30.0       # track end centres
@@ -34,9 +50,10 @@ STEP_LU = 50.0 * 0.0625      # sim speed 50 lu/s, 62.5 ms per walk step
 WHEELS = (-30.0, -15.0, 0.0, 15.0, 30.0)
 TURRET = (-4.0, 0.0, 40.0)
 BARREL_Z = 48.0
-MUZZLE = (47.0, -1.0, BARREL_Z)
+MUZZLE = (48.0, -1.0, BARREL_Z)
+SCALE = 1.15                 # the whole vehicle, so the Heavy reads big next to 68 lu infantry
+CMDR = (-6.0, 0.0, 54.5)     # commander's waist in the hatch (character space)
 _W = {}
-SCALE = 1.15               # the whole vehicle, so the Heavy reads big next to 68 lu infantry
 
 
 def build(rig):
@@ -45,189 +62,314 @@ def build(rig):
     rig.joint("hull", "body", (0, 0, 16.0))
     # far track (static belt, mostly hidden)
     g = Geo().blob((0, 14.0, TR_R), (TX1 + TR_R, 4.0, TR_R), p=3.2)
-    rig.part("hull", g, M.RUBBER, finish="gloss")
+    rig.part("hull", g, R.RUBBER, finish="gloss")
 
     # hull: rounded box with a sloped glacis and a rear deck
-    g = Geo().blob((-1.0, 0, 26.0), (37.0, 15.5, 10.5), p=3.4, taper=(1.0, 0.94), shift=(0.05, 0))
-    g.blob((30.0, 0, 26.0), (10.0, 15.0, 8.6), p=2.6, rot=(0, 28, 0))
-    rig.part("hull", g, M.OLIVE)
-    g = Geo()   # hatch / vision slit / headlight
-    g.blob((33.0, -11.0, 31.0), (3.0, 2.6, 2.4), p=2.6)
-    rig.part("hull", g, M.GLASS, finish="gloss", outline=0.8)
+    hull = Geo().blob((-1.0, 0, 26.0), (37.0, 15.5, 10.5), p=3.4, taper=(1.0, 0.94), shift=(0.05, 0))
+    hull.blob((30.0, 0, 26.0), (10.0, 15.0, 8.6), p=2.6, rot=(0, 28, 0))
+    hface = F.Face(rig, "hull", [hull])
+    rig.part("hull", hull, R.OLIVE)
+    g = Geo()   # panel line along the glacis, rivets along the deck edge
+    hface.stroke(g, hface.hit(22.0, 33.0), [(-4.0, 1.4), (8.0, -3.6)], 0.8, 0.4)
+    rig.part("hull", g, "#4E5238", highlight=False, outline=0)
+    g = Geo()
+    for x in range(-32, 22, 6):
+        g.sphere((x, -14.6, 34.6), 0.8, cuts=2)
+    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0)
+    g = Geo()   # headlights (cream glass, gunmetal hoods) and a vision slit
+    for y in (-11.0, 9.0):
+        g.blob((36.0, y, 32.0), (2.2, 2.6, 2.4), p=2.4)
+    rig.part("hull", g, "#FFF3C8", finish="gloss", outline=0.8, outline_hex=R.GUNMETAL)
     g = Geo().blob((24.0, -5.0, 36.4), (6.0, 4.0, 1.2), p=3.2)
-    rig.part("hull", g, M.GUNMETAL, finish="metal", outline=0.6)
-    g = Geo()   # rear exhaust pipe
-    g.capsule((-36.0, -9.0, 30.0), (-42.0, -9.0, 30.0), 2.2)
-    rig.part("hull", g, M.GUNMETAL, finish="metal", outline=0.7)
-    # team side skirt with rivets
-    g = Geo().blob((0.0, TY - 3.2, 22.0), (38.0, 1.8, 6.4), p=3.6)
-    rig.part("hull", g, team=True)
+    rig.part("hull", g, R.GUNMETAL, finish="metal", outline=0.6)
+    g = Geo()   # rear exhaust pipe and a spare road wheel on the back
+    g.capsule((-36.0, -9.0, 30.0), (-42.0, -9.0, 30.0), 2.3)
+    rig.part("hull", g, R.GUNMETAL, finish="metal", outline=0.7)
+    g = Geo().lathe([(0, -1.6), (5.4, -1.6), (5.4, 1.6), (0, 1.6)], (-38.5, 0.0, 26.0), (-40.0, 0.0, 26.0), segs=18)
+    rig.part("hull", g, R.RUBBER, finish="gloss", outline=0.6)
+    g = Geo().lathe([(0, -0.8), (3.0, -0.8), (3.0, 0.8), (0, 0.8)], (-40.0, 0.0, 26.0), (-41.4, 0.0, 26.0), segs=14)
+    rig.part("hull", g, R.OLIVE_LT, finish="gloss", outline=0.4)
+    # team side skirt with rivets, a cream chevron and hazard stripes at the rear
+    skirt = Geo().blob((0.0, TY - 3.2, 22.0), (38.0, 1.8, 6.6), p=3.6)
+    sface = F.Face(rig, "hull", [skirt])
+    rig.part("hull", skirt, team=True)
+    g = KM.chevron(sface, Geo(), (5.0, 22.4), s=1.0, n=2, w=1.8, gap=2.8)
+    rig.part("hull", g, KM.CREAM, highlight=False, outline=0)
+    g = KM.stripes(sface, Geo(), (-29.0, 22.0), 12.0, 8.4, n=4, slant=0.6)
+    rig.part("hull", g, KM.STRIPE_DK, highlight=False, outline=0)
     g = Geo()
     for x in range(-32, 36, 8):
-        g.sphere((x, TY - 5.2, 25.4), 0.9, cuts=2)
-    rig.part("hull", g, M.OLIVE_LT, finish="metal", outline=0)
+        g.sphere((x, TY - 5.2, 25.6), 0.9, cuts=2)
+    rig.part("hull", g, R.OLIVE_LT, finish="metal", outline=0)
+    # tools strapped on the fender: a shovel and a pick handle with leather straps
+    g = Geo().capsule((-22.0, TY - 2.0, 30.2), (4.0, TY - 2.0, 30.2), 0.9)
+    g.capsule((8.0, TY - 2.0, 31.2), (22.0, TY - 2.0, 31.2), 0.9)
+    rig.part("hull", g, R.WOOD, outline=0.4)
+    g = Geo().blob((7.0, TY - 2.2, 30.2), (3.2, 0.8, 2.2), p=2.4)
+    g.blob((-24.0, TY - 2.2, 30.4), (1.0, 0.8, 3.2), p=2.4)
+    rig.part("hull", g, R.STEEL, finish="metal", outline=0.4)
+    g = Geo()
+    for x in (-14.0, 15.0):
+        g.blob((x, TY - 2.4, 30.8), (0.9, 0.9, 1.8), p=3.0)
+    rig.part("hull", g, R.LEATHER, outline=0)
 
-    # near track: belt, wheels, grousers (phase copies)
+    # near track: belt, wheels, grousers (phase copies), mud on the lower run
     rig.joint("track", "body", (0, TY, 0))
-    names, _ = M.tread(rig, "tn", "track", TX0, TX1, TR_R, TY, TW, PITCH, WHEELS, 4.6)
+    names, _ = R.tread(rig, "tn", "track", TX0, TX1, TR_R, TY, TW, PITCH, WHEELS, 4.6)
     _W["n"] = names
+    g = Geo()
+    for x, r in ((-18.0, 2.6), (6.0, 2.2), (22.0, 2.4)):
+        g.blob((x, TY - 3.4, 3.0), (r * 1.6, 0.8, r), p=2.2)
+    rig.part("track", g, KM.MUD, outline=0)
 
     # turret
     rig.joint("turret", "hull", TURRET)
     tx, ty, tz = TURRET
     g = Geo().blob((tx, 0, tz + 7.0), (17.0, 14.0, 10.0), p=2.4, taper=(1.0, 0.78))
     g.clip((tx, 0, tz - 0.5), (0, 0, -1))
-    rig.part("turret", g, M.OLIVE, finish="gloss")
-    g = Geo().blob((tx + 2.0, -11.8, tz + 5.6), (11.5, 2.4, 5.4), p=2.6)
-    rig.part("turret", g, team=True)
+    rig.part("turret", g, R.OLIVE, finish="gloss")
+    cheek = Geo().blob((tx + 2.0, -11.8, tz + 5.6), (11.5, 2.4, 5.4), p=2.6)
+    cface = F.Face(rig, "turret", [cheek])
+    rig.part("turret", cheek, team=True)
+    g = KM.chevron(cface, Geo(), (tx + 1.0, tz + 5.4), s=0.8, n=1, w=1.9)
+    rig.part("turret", g, KM.CREAM, highlight=False, outline=0)
     g = Geo().blob((tx - 2.0, 0, tz + 16.2), (7.4, 7.4, 1.5), p=2.6)   # hatch ring
-    rig.part("turret", g, M.GUNMETAL, finish="metal", outline=0.6)
-    g = Geo().blob((tx - 10.0, 3.0, tz + 20.5), (1.2, 6.8, 5.6), p=2.6, rot=(0, -20, 0))  # open lid
-    rig.part("turret", g, M.OLIVE_LT)
+    rig.part("turret", g, R.GUNMETAL, finish="metal", outline=0.6)
+    # the hatch lid on its own joint (hinged at the back of the ring)
+    rig.joint("lid", "turret", (tx - 9.0, 0, tz + 17.0))
+    g = Geo().blob((tx - 10.4, 0.5, tz + 23.0), (1.3, 7.0, 6.0), p=2.6)
+    rig.part("lid", g, R.OLIVE_LT)
+    g = Geo().capsule((tx - 11.6, -3.0, tz + 23.0), (tx - 11.6, 3.0, tz + 23.0), 0.7)
+    rig.part("lid", g, R.GUNMETAL, finish="metal", outline=0.3)
     # the gun: mantlet, barrel on its own joint for the recoil slide
-    g = Geo().blob((tx + 14.5, -1.0, BARREL_Z), (4.6, 5.4, 5.0), p=2.6)
-    rig.part("turret", g, M.OLIVE_LT)
+    g = Geo().blob((tx + 14.5, -1.0, BARREL_Z), (4.8, 5.6, 5.2), p=2.6)
+    rig.part("turret", g, R.OLIVE_LT)
     rig.joint("barrel", "turret", (tx + 15.0, -1.0, BARREL_Z))
-    g = Geo().capsule((tx + 15.0, -1.0, BARREL_Z), (MUZZLE[0] - 4.0, -1.0, BARREL_Z), 2.6, 2.3)
-    rig.part("barrel", g, M.GUNMETAL, finish="metal")
-    g = Geo().lathe([(3.4, 0), (4.0, 1.0), (4.0, 5.0), (3.2, 6.2), (1.6, 6.4)],
-                    (MUZZLE[0] - 6.0, -1.0, BARREL_Z), (MUZZLE[0] + 1.0, -1.0, BARREL_Z), segs=18)
-    rig.part("barrel", g, M.GUNMETAL, finish="metal")
-    g = Geo().lathe([(3.1, -0.8), (3.3, 0), (3.1, 0.8)], (MUZZLE[0] - 9.5, -1.0, BARREL_Z),
-                    (MUZZLE[0] - 8.5, -1.0, BARREL_Z), segs=16)
-    rig.part("barrel", g, M.SIGNAL, outline=0.4)
+    g = Geo().capsule((tx + 15.0, -1.0, BARREL_Z), (MUZZLE[0] - 4.0, -1.0, BARREL_Z), 2.8, 2.5)
+    rig.part("barrel", g, R.GUNMETAL, finish="metal")
+    g = Geo().lathe([(3.6, 0), (4.3, 1.0), (4.3, 5.4), (3.4, 6.6), (1.7, 6.8)],
+                    (MUZZLE[0] - 6.5, -1.0, BARREL_Z), (MUZZLE[0] + 1.0, -1.0, BARREL_Z), segs=18)
+    rig.part("barrel", g, R.GUNMETAL, finish="metal")
+    g = Geo().lathe([(3.3, -0.9), (3.5, 0), (3.3, 0.9)], (MUZZLE[0] - 10.0, -1.0, BARREL_Z),
+                    (MUZZLE[0] - 9.0, -1.0, BARREL_Z), segs=16)
+    rig.part("barrel", g, R.SIGNAL, outline=0.4)
+    g = Geo().lathe([(0, -0.2), (1.8, -0.2), (1.8, 0.4), (0, 0.4)], (MUZZLE[0] + 1.1, -1.0, BARREL_Z),
+                    (MUZZLE[0] + 2.0, -1.0, BARREL_Z), segs=12)
+    rig.part("barrel", g, "#1E1C1C", outline=0)
     rig.track("muzzle", "barrel", MUZZLE)
-    M.muzzle_flash(rig, "barrel", (MUZZLE[0] + 1, -1.0, BARREL_Z), size=2.4)
+    R.muzzle_flash(rig, "barrel", (MUZZLE[0] + 1, -1.0, BARREL_Z), size=2.6)
 
-    # commander in the hatch (scaled a little up: a big friendly head reads at 56 px)
-    rig.joint("cmdr", "turret", (tx - 2.0, 0, tz + 14.5))
-    cx, cz = tx - 2.0, tz + 14.5
-    g = Geo().blob((cx, 0, cz + 3.0), (6.4, 6.6, 5.0), p=2.4)   # shoulders
+    # commander in the hatch: a team jacket, a waving arm, a round head with the face kit, a
+    # leather tank cap with ear flaps and goggles; legs (hidden) for the bail-out
+    cx, cy, cz = CMDR
+    rig.joint("cmdr", "turret", CMDR, scale=1.2)
+    g = Geo().blob((cx, 0, cz + 3.4), (6.6, 6.8, 5.4), p=2.4)   # shoulders
     rig.part("cmdr", g, team=True)
-    g = Geo().blob((cx + 1.0, 0, cz + 12.5), (7.6, 7.2, 7.4), p=2.3)
-    g.blob((cx + 8.6, -0.5, cz + 11.2), (2.4, 2.1, 2.2), p=2.0)   # nose
-    rig.part("cmdr", g, M.SKIN)
-    g = Geo().blob((cx - 0.4, 0, cz + 16.0), (8.4, 8.0, 5.8), p=2.3)   # leather cap
-    g.clip((cx, 0, cz + 12.8), (0, 0, -1))
-    g.blob((cx - 1.0, -7.4, cz + 12.0), (3.0, 1.4, 4.0), p=2.3).blob((cx - 1.0, 7.4, cz + 12.0), (3.0, 1.4, 4.0), p=2.3)
-    rig.part("cmdr", g, M.LEATHER)
+    g = Geo().lathe([(4.2, 0), (4.6, 1.4), (4.0, 2.4)], (cx + 0.6, 0, cz + 7.6), (cx + 0.6, 0, cz + 9.6), segs=14)
+    rig.part("cmdr", g, R.KHAKI, outline=0.4)                   # collar
+    hc = (cx + 1.0, 0.0, cz + 13.0)
+    KM.crew_head(rig, "c_head", "cmdr", hc, k=1.0, brow=R.HAIR)
+    g = Geo().blob((hc[0] - 0.6, 0, hc[2] + 3.4), (8.4, 8.0, 5.8), p=2.3)   # leather cap
+    g.clip((hc[0], 0, hc[2] + 0.6), (0, 0, -1))
+    g.blob((hc[0] - 1.8, -7.4, hc[2] - 0.6), (3.0, 1.4, 4.2), p=2.3)
+    g.blob((hc[0] - 1.8, 7.4, hc[2] - 0.6), (3.0, 1.4, 4.2), p=2.3)
+    g.blob((hc[0] - 0.6, 0, hc[2] + 7.2), (4.8, 1.2, 1.6), p=2.4)          # padded ridge
+    rig.part("c_head", g, R.LEATHER)
     g = Geo()   # goggles on the cap
     for y in (-3.4, 3.0):
-        g.lathe([(0, 0), (2.2, 0.2), (2.3, 1.6), (0, 1.8)], (cx + 6.6, y, cz + 17.0), (cx + 8.4, y, cz + 17.6), segs=12)
-    rig.part("cmdr", g, M.GUNMETAL, finish="metal", outline=0.5)
+        g.lathe([(0, 0), (2.3, 0.2), (2.4, 1.6), (0, 1.8)], (hc[0] + 5.6, y, hc[2] + 5.0), (hc[0] + 7.4, y, hc[2] + 5.8),
+                segs=12)
+    rig.part("c_head", g, R.GUNMETAL, finish="metal", outline=0.5)
     g = Geo()
     for y in (-3.4, 3.0):
-        g.blob((cx + 8.3, y, cz + 17.5), (0.6, 1.6, 1.6), p=2.2)
-    rig.part("cmdr", g, M.GLASS, finish="gloss", outline=0)
-    rig.joint("c_eyes", "cmdr", (cx + 6.8, 0, cz + 13.0))
-    g = Geo()
-    for y in (-3.2, 3.0):
-        g.blob((cx + 6.4, y, cz + 13.0), (2.2, 2.2, 2.8))
-    rig.part("c_eyes", g, M.EYE, highlight=False, outline=0.6)
-    g = Geo()
-    for y in (-3.2, 3.0):
-        g.blob((cx + 8.2, y - 0.3, cz + 12.8), (0.9, 1.3, 1.4))
-    rig.part("c_eyes", g, M.PUPIL, outline=0)
-    rig.joint("c_squint", "cmdr", (cx + 6.8, 0, cz + 13.0), hidden=True)
-    g = Geo()
-    for y in (-3.2, 3.0):
-        g.capsule((cx + 8.0, y - 1.8, cz + 12.8), (cx + 8.0, y + 1.8, cz + 13.2), 0.7)
-    rig.part("c_squint", g, M.PUPIL, outline=0)
-    g = Geo().blob((cx + 8.0, -0.6, cz + 8.4), (1.0, 2.8, 0.9), p=2.4)
-    rig.part("cmdr", g, M.MOUTH, outline=0, highlight=False)
+        g.blob((hc[0] + 7.3, y, hc[2] + 5.7), (0.6, 1.7, 1.7), p=2.2)
+    rig.part("c_head", g, R.GLASS, finish="gloss", outline=0)
+    # the waving arm (near side): joint at the shoulder, modelled pointing up
+    rig.joint("c_arm", "cmdr", (cx + 1.0, -6.4, cz + 5.6))
+    g = Geo().capsule((cx + 1.0, -6.4, cz + 5.6), (cx + 1.6, -7.0, cz + 13.0), 2.1, 1.9)
+    rig.part("c_arm", g, team=True, outline=0.5)
+    g = Geo().blob((cx + 1.8, -7.2, cz + 14.8), (2.6, 2.0, 2.6), p=2.3)
+    rig.part("c_arm", g, R.LEATHER, outline=0.5)                         # glove
+    # the bail-out: a standalone copy of the commander with legs (root level, hidden)
+    KM.crew_runner(rig, "bail", "root", (0.0, -18.0, 0.0), k=1.25)
 
     # antenna with a team pennant at the back of the turret
-    M.pennant(rig, "turret", (tx - 12.0, 6.0, tz + 12.0), 40.0, length=16.0, w=8.5)
+    R.pennant(rig, "turret", (tx - 12.0, 6.0, tz + 12.0), 40.0, length=17.0, w=9.0)
 
-    # exhaust puff and gun smoke (left in place: parented to the root)
-    M.smoke_puff(rig, "hull", (-46.0, -9.0, 32.0), size=0.7, name="exhaust", color=M.SMOKE_DK)
+    # exhaust puff, gun smoke (left in place: parented to the root), wreck smoke and a snapped track
+    R.smoke_puff(rig, "hull", (-46.0, -9.0, 32.0), size=0.75, name="exhaust", color=R.SMOKE_DK)
     rig.joint("smoke", "root", (MUZZLE[0] + 12, -12, BARREL_Z + 16), hidden=True)
     g = Geo()
-    for dx, dz, r in ((0, 0, 7.0), (8, 3, 5.6), (-5, 6, 5.0), (4, 9, 4.6), (13, -2, 4.2), (-9, -1, 4.0)):
+    for dx, dz, r in ((0, 0, 7.4), (8, 3, 6.0), (-5, 6, 5.2), (4, 9, 4.8), (13, -2, 4.4), (-9, -1, 4.2)):
         g.sphere((MUZZLE[0] + 12 + dx, -12, BARREL_Z + 16 + dz), r, cuts=4)
-    rig.part("smoke", g, M.SMOKE, finish="dust", outline=0.8)
+    rig.part("smoke", g, R.SMOKE, finish="dust", outline=0.8)
+    R.smoke_puff(rig, "hull", (-6.0, -4.0, 62.0), size=1.4, name="wreck", color="#6E6A66")
+    rig.joint("snap", "track", (TX0 - 6.0, TY, 2.0), hidden=True)
+    g = Geo()
+    for k in range(4):
+        g.capsule((TX0 - 6.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), (TX0 - 10.0 - 4.0 * k, TY - 0.5, 1.6 + 0.4 * k), 1.8)
+    rig.part("snap", g, R.RUBBER, finish="gloss", outline=0.5)
     rig.track("_foot", "odo", (0, 0, 0))
 
 
-# -- poses ---------------------------------------------------------------------------------
+# -- poses ------------------------------------------------------------------------------------------
 def _tracks(step, moving=True):
-    return M.tread_pose("tn", _W["n"], step, STEP_LU if moving else 0.0, PITCH)
+    return R.tread_pose("tn", _W["n"], step, STEP_LU if moving else 0.0, PITCH)
+
+
+def c_arm(r):
+    """The commander's near arm, r degrees from pointing up (positive = back)."""
+    return {"c_arm": {"r": r}}
+
+
+REST_ARM = 150.0      # arm down at his side (hidden in the hatch)
 
 
 def _idle(f):
-    c, lag = M.idle_wave(f)
-    # engine idle: a quick shiver of the hull, the commander breathes and looks around
-    return merge(_tracks(0, False), {
-        "hull": dict(squash(0.012 * c), z=0.5 * c),
-        "cmdr": {"z": 0.6 * lag, "r": 2.0 * lag},
-        "turret": {"r": 0.6 * lag},
-        "exhaust": {"show": f in (1, 3), "s": pick(f, [1, 0.8, 1, 1.1]), "z": pick(f, [0, 0, 0, 3])},
+    # 0-1 down in the hatch, 2-4 pops up and looks round (blink on 4), 5 settles
+    up = [0.0, 0.3, 1.0, 1.0, 0.8, 0.3][f]
+    t = f / 6 * 2 * math.pi
+    pose = merge(_tracks(0, False), c_arm(REST_ARM - 20 * up), {
+        "hull": dict(squash(0.012 * math.cos(2 * t)), z=0.45 * math.cos(2 * t)),
+        "cmdr": {"z": -6.0 + 6.0 * up, "r": [0, 0, 4, -3, -4, 0][f]},
+        "c_head": {"rz": [0, 0, 8, -10, -6, 0][f], "r": [0, 0, 4, -3, 2, 0][f]},
+        "turret": {"r": 0.5 * math.sin(t)},
+        "exhaust": {"show": f in (1, 4), "s": [1, 0.8, 1, 1, 0.9, 1][f], "z": [0, 0, 0, 0, 2, 0][f]},
     })
+    if f == 4:
+        pose = merge(pose, F.expr("blink"))
+    return pose
 
 
 def _walk(f):
     p = 2 * math.pi * f / 8
     bump = -abs(math.sin(p))
-    return merge(_tracks(f), {
+    return merge(_tracks(f), c_arm(REST_ARM - 10), {
         "odo": {"x": 2.0 * STEP_LU * SCALE * math.cos(p)},   # ground speed of the scaled track
-        "hull": dict(squash(0.02 * math.cos(2 * p)), z=1.4 * bump + 0.7, r=0.9 * math.sin(p)),
-        "cmdr": {"r": -2.5 * math.sin(p - 0.8), "z": 0.5 * math.cos(2 * p)},
+        "hull": dict(squash(0.025 * math.cos(2 * p)), z=1.6 * bump + 0.8, r=1.0 * math.sin(p)),
+        "cmdr": {"r": -3.0 * math.sin(p - 0.8), "z": 0.7 * math.cos(2 * p - 0.8)},
+        "c_head": {"r": 2.0 * math.sin(p - 1.2)},
         "exhaust": {"show": f % 4 == 1, "s": 0.9, "x": -2.0},
     })
 
 
-ATTACK_MS = [83, 83, 125, 83, 125, 83, 83, 125]
+# 10 unique frames in 790 ms; fire on frame 3 at 291 ms (impactAt 0.3684, as shipped)
+ATTACK_MS = [40, 60, 191, 60, 80, 70, 70, 70, 75, 74]
 ATTACK_IMPACT = 3
+#       duck squat HOLD  BOOM  hop   land  bounce wave  roll  settle
+BX = [0.0, 0.5, 1.0, -2.5, -8.0, -10.0, -9.0, -6.0, -3.0, -1.0]
+BZ = [0.0, -0.5, -1.0, 2.5, 7.0, 0.0, 2.2, 0.0, 0.0, 0.0]
+BQ = [0.0, -0.04, -0.07, 0.05, 0.06, -0.12, 0.04, -0.03, 0.01, 0.0]
+HR = [0.0, -1.5, -2.5, 4.0, 7.0, 1.0, 3.0, -1.0, 0.5, 0.0]      # hull pitch (nose up = +)
+TUR = [1.0, 2.0, 2.0, 4.0, 3.0, 0.0, 1.0, 0.5, 0.0, 0.0]
+BAR = [0.0, 0.0, 0.0, -7.5, -6.0, -2.5, -0.5, 0.0, 0.0, 0.0]
+CZ = [-4.0, -10.0, -14.0, -14.0, -14.0, -12.0, 0.5, 2.0, 1.0, 0.0]   # the commander ducks, then pops up
+LID = [-30.0, -80.0, -95.0, -95.0, -90.0, -70.0, 20.0, 10.0, 4.0, 0.0]
+ARM = [160.0, 170.0, 170.0, 170.0, 170.0, 170.0, 20.0, -25.0, 15.0, 90.0]
 
 
-def _attack(f):
-    # 0 turret settles, barrel lifts; 1 brace (hull squats forward), 2 held (commander ducks,
-    # squints); 3 FIRE: flash, barrel slides back, hull rocks back; 4 held recoil, smoke;
-    # 5 barrel returns, smoke rolls; 6 hull rocks forward; 7 settle, commander pops up
-    pose = merge(_tracks(0, False), {
-        "body": dict(squash(pick(f, [0, -0.03, -0.05, 0.05, -0.08, -0.03, 0.02, 0])),
-                     x=pick(f, [0, 0.5, 1.0, -2.0, -4.0, -3.0, -1.0, 0])),
-        "hull": {"r": pick(f, [0, -1.0, -1.5, 3.0, 4.0, 2.0, -1.2, 0])},
-        "turret": {"r": pick(f, [1.0, 2.0, 2.0, 3.5, 3.0, 1.5, 0.5, 0])},
-        "barrel": {"x": pick(f, [0, 0, 0, -7.0, -6.0, -2.5, 0, 0]),
-                   "r": pick(f, [2, 3, 3, 4, 5, 3, 1, 0]),
-                   "sz": pick(f, [1, 1, 1, 1.15, 1.05, 1, 1, 1])},
-        "cmdr": {"z": pick(f, [0, -2, -5, -6, -5, -3, 0, 0.5]), "r": pick(f, [0, -4, -6, 10, 8, 4, 0, 0])},
+def _attack_pose(f):
+    pose = merge(_tracks(0, False), c_arm(ARM[f]), {
+        "body": dict(squash(BQ[f]), x=BX[f], z=BZ[f]),
+        "hull": {"r": HR[f]},
+        "turret": {"r": TUR[f]},
+        "barrel": {"x": BAR[f], "r": [2, 3, 3, 4, 5, 2, 1, 0, 0, 0][f],
+                   "sz": [1, 1, 1, 1.15, 1.05, 1, 1, 1, 1, 1][f]},
+        "cmdr": {"z": CZ[f], "r": [0, -4, -6, 8, 6, 4, -4, 3, 0, 0][f]},
+        "lid": {"r": LID[f]},
         "flash": {"show": f == 3},
-        "smoke": {"show": f in (4, 5, 6), "s": pick(f, [1, 1, 1, 1, 0.8, 1.1, 1.3, 1]),
-                  "x": pick(f, [0, 0, 0, 0, -6, 0, 4, 0]), "z": pick(f, [0, 0, 0, 0, -8, 0, 5, 0])},
+        "smoke": {"show": f in (4, 5, 6), "s": [1, 1, 1, 1, 0.8, 1.1, 1.3, 1, 1, 1][f],
+                  "x": [0, 0, 0, 0, -6, 0, 4, 0, 0, 0][f], "z": [0, 0, 0, 0, -8, 0, 5, 0, 0, 0][f]},
+        "exhaust": {"show": f in (4, 5)},
     })
-    if f in (2, 3, 4):
-        pose.update({"c_eyes": {"hide": True}, "c_squint": {"show": True}})
+    # the wheels spin back as the hull skids back on landing
+    for name, wr in _W["n"]:
+        pose.setdefault(name, {})["r"] = pose.get(name, {}).get("r", 0.0) + \
+            math.degrees([0, 0, 0, 0, 0, 3.0, 5.0, 5.0, 4.0, 3.0][f] / wr)
+    if f in (1, 2, 3, 4):
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    elif f in (6, 7):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 1.2}})
+    elif f == 8:
+        pose = merge(pose, F.expr("o"))
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    pose = merge(_tracks(0, False), {"body": dict(squash(-0.06 * a), x=-4.0 * a), "hull": {"r": 4.0 * a},
-                                     "cmdr": {"r": 14 * a, "z": -1.5 * a}, "turret": {"r": 2 * a}})
-    pose.update({"c_eyes": {"hide": True}, "c_squint": {"show": True}})
+def _attack_clip():
+    ov = {
+        3: [{"kind": "burst", "joint": "barrel", "point": (MUZZLE[0] + 4.0, -1.0, BARREL_Z), "r0_lu": 10.0,
+             "r1_lu": 17.0, "n": 6, "a0": -70.0, "arc": 140.0}],
+        5: [{"kind": "dust", "ground": (-28.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 61, "spread": 1.1,
+             "dir": -1.0},
+            {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 62, "spread": 1.0,
+             "dir": 1.0}],
+        6: [{"kind": "burst", "joint": "c_arm", "point": (CMDR[0] + 1.8, -7.2, CMDR[2] + 15.0), "r0_lu": 4.0,
+             "r1_lu": 7.0, "n": 4, "a0": 30.0, "arc": 120.0}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+def _hit(k):
+    a = M.HIT_AMT[k]
+    pose = merge(_tracks(0, False), c_arm(REST_ARM), {
+        "body": dict(squash([-0.08, -0.05, 0.03, -0.02, 0.0][k]), x=-4.0 * max(a, 0) + 1.2 * min(a, 0)),
+        "hull": {"r": 4.0 * a},
+        "cmdr": {"z": -5.0 * max(a, 0), "r": 12 * a},
+        "turret": {"r": 2 * a},
+        "lid": {"r": [-20, -40, -10, 6, 0][k]},
+    })
+    if k <= 1:
+        pose = merge(pose, F.expr("squeeze", "grit"))
     return pose
 
 
-def _die(f):
-    body = [{"x": -4.0, "z": 3.0, "r": 8.0, "sz": 1.06, "sx": 0.96, "sy": 0.96},
-            {"x": -6.0, "z": 0.0, "r": 4.0, "sz": 0.74, "sx": 1.1, "sy": 1.1},
-            {"x": -6.0, "z": 0.0, "r": 2.0, "s": 0.85, "sz": 0.55, "sx": 1.15, "sy": 1.15}][f]
-    return merge(_tracks(0, False), {"body": body}, {
-        "turret": {"z": pick(f, [10, 14, 8]), "r": pick(f, [18, 30, 20]), "x": pick(f, [-2, -5, -6])},
-        "cmdr": {"z": pick(f, [8, 6, 0]), "r": pick(f, [20, -10, -10])},
-        "barrel": {"r": pick(f, [-10, -24, -30])},
-        "c_eyes": {"hide": True}, "c_squint": {"show": True},
-        "smoke": {"show": f in (0, 1), "s": pick(f, [0.8, 1.1, 1]), "x": -52.0, "z": -24.0},
+#        struck  hop   land  tilt  smoke  poof...
+D_BX = [-3.0, -6.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0]
+D_BZ = [2.0, 7.0, 0.0, 1.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+D_HR = [6.0, 9.0, -6.0, -8.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0]
+D_Q = [0.06, 0.04, -0.12, 0.04, -0.04, 0.0, 0.0, 0.0, -0.02, -0.04]
+# the bail-out figure (root space, feet on the ground): leaps from the hatch, lands behind, runs
+B_PATH = [None, None, None, (-8, 58, 20), (-26, 66, 40), (-46, 36, 25), (-62, 0, 0), (-68, 0, 4),
+          (-74, 1.5, 0), (-80, 0, 4)]
+B_RUN = [0, 0, 0, 0.9, 1.0, 0.6, -0.6, 0.8, -0.8, 0.8]
+B_ARM = [0, 0, 0, 10, -10, 30, 120, 40, 130, 40]
+
+
+def _die(k):
+    pose = merge(_tracks(0, False), {
+        "body": dict(squash(D_Q[k]), x=D_BX[k], z=D_BZ[k]),
+        "hull": {"r": D_HR[k]},
+        "turret": {"r": [4, 14, 22, 20, 20, 20, 20, 20, 20, 20][k], "x": [0, -1, -3, -3, -3, -3, -3, -3, -3, -3][k],
+                   "z": [1, 4, 2, 2, 2, 2, 2, 2, 2, 2][k]},
+        "barrel": {"r": [-4, -10, -22, -24, -24, -24, -24, -24, -24, -24][k]},
+        "lid": {"r": [-10, 20, 60, 70, 70, 70, 70, 70, 70, 70][k]},
+        "wreck": {"show": k >= 2, "s": [1, 1, 0.8, 1.0, 1.2, 1.35, 1.45, 1.5, 1.55, 1.6][k],
+                  "z": [0, 0, 0, 2, 5, 8, 11, 13, 15, 16][k]},
+        "snap": {"show": k >= 2},
+        "exhaust": {"show": k in (0, 1), "s": 1.3},
     })
+    bp = B_PATH[k]
+    if bp is None:
+        pose["cmdr"] = {"z": [0, 3, 7][k], "r": [0, -6, 6][k]}
+        pose = merge(pose, c_arm([150, 60, 20][k]))
+    else:
+        x, z, r = bp
+        pose["cmdr"] = {"hide": True}
+        pose = merge(pose, {"bail": {"show": True, "x": x, "z": z, "r": r, "rz": 180.0 if k >= 5 else 0.0}},
+                     KM.run_pose("bail", B_RUN[k], B_ARM[k]))
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", "o"))
+    elif k < 3:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 1.6}})
+    return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684)

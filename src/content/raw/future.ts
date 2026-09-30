@@ -4,7 +4,7 @@
  * Table units: HP and damage whole, ms, lu, lu/s, gold, bp. Data only. `strongVs`/`weakVs` are
  * filled by the WP1 counter matrix (B4).
  */
-import { damageMods } from './economy';
+import { antiHeavyMods, damageMods } from './economy';
 import type { RawAgeTables } from './types';
 
 export const future: RawAgeTables = {
@@ -59,17 +59,17 @@ export const future: RawAgeTables = {
     {
       // Instant rail; pierces 2 targets total within 150 lu; ranged AA mods; priority armored
       id: 'rail_gunner', kind: 'unit', age: 'future', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 400, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 440, speed: 65, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
           damage: 86, intervalMs: 1200, windupPct: 50, range: 240, hitsGround: true, hitsAir: true,
           projectile: { instant: true, effectId: 'fx.beam_rail' },
           dmgType: 'laser', sfx: 'shot_rail', pierce: { count: 2, length: 150 },
-          mods: damageMods.rangedAntiArmor, priority: 'armored',
+          mods: antiHeavyMods.rail, priority: 'armored',
         },
       ],
-      abilities: [],
+      abilities: [{ kind: 'brace' }],
       visualId: 'unit.rail_gunner', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.rail_gunner.name', descKey: 'card.rail_gunner.desc', strongVs: [], weakVs: [],
     },

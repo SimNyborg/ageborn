@@ -61,7 +61,7 @@ describe('capsule bench cases (WP10 DoD)', () => {
     if (quick) expect(planFor(quick).steps[0]?.kind).toBe('burst');
   });
 
-  it('plays the onboarding script beats: capsule 1 climbs to Bronze with a short Spear Hunter walkout, capsule 5 the full Matriarch walkout (A8)', () => {
+  it('plays the onboarding script beats: capsule 1 climbs to Bronze with a short Drum Shaman walkout, capsule 5 the full Matriarch walkout (A8)', () => {
     const byId = (id: string) => {
       const c = BENCH_CASES.find((x) => x.id === id);
       if (!c) throw new Error(`no bench case ${id}`);
@@ -70,8 +70,8 @@ describe('capsule bench cases (WP10 DoD)', () => {
     const one = byId('script-1');
     expect(one.finalTier).toBe('bronze');
     expect(one.steps.filter((s) => s.kind === 'strike' && s.climb)).toHaveLength(1);
-    // A17.13: capsule 1 brings the Spear Hunter and the Phalangite
-    expect(one.steps.flatMap((s) => (s.kind === 'miniWalkout' ? [s.card.card] : []))).toEqual(['spear_hunter', 'phalangite']);
+    // Capsule 1 brings the Drum Shaman and the Standard Bearer (the Anti-heavy Rares are starter cards, A3)
+    expect(one.steps.flatMap((s) => (s.kind === 'miniWalkout' ? [s.card.card] : []))).toEqual(['drum_shaman', 'standard_bearer']);
     const five = byId('script-5');
     expect(five.steps.some((s) => s.kind === 'walkout' && s.first && s.card.card === 'mammoth_matriarch')).toBe(true);
   });

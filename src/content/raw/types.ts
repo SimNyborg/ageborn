@@ -24,11 +24,11 @@ export type RawAgeScale = Pick<AgeDef, 'id' | 'index' | 'pBp' | 'baseHp' | 'xpTo
 export interface RawDamageMods {
   /** Infantry melee ("Blunt"): armored ×0.70. */
   blunt: DamageMod[];
-  /** Melee Anti-armor (Spear Hunter, Pikeman): armored ×2.0, mech ×2.0, light ×0.75. */
+  /** Melee Anti-heavy (Spear Hunter, Phalangite, Pikeman, Graviton Halberdier): legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.75. */
   meleeAntiArmor: DamageMod[];
-  /** Ranged Anti-armor (Bazooka Trooper, Rail Gunner): armored ×2.0, mech ×2.0, light ×0.5. */
+  /** Ranged Anti-heavy (Bazooka Trooper): legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.5. */
   rangedAntiArmor: DamageMod[];
-  /** Grenadier: armored ×1.5, mech ×1.5, light ×0.5. */
+  /** Grenadier: legendary ×1.5, armored ×2.5, mech ×2.5, light ×0.5. */
   grenadier: DamageMod[];
   /** Flak Gun: air ×2.0. */
   flak: DamageMod[];

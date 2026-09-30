@@ -1,27 +1,32 @@
 /**
  * The counter matrix (DESIGN B4; C2/WP1 DoD: "The counter matrix is up to date").
  *
- * Staleness is checked by hash, so CI stays fast: the file stores the hash of every duel input and
- * must match the current tables. A sample of pairs is also re-duelled to prove the file really is
- * the engine's output. Regenerate with `npx tsx tools/counters.ts`.
+ * Staleness is checked by hash, so CI stays fast: the file stores the hash of every duel input (and
+ * the sim version, since the duels run on the real sim, build phase H2) and must match the current
+ * tables. A sample of pairs is also re-duelled on the sim to prove the file really is its output.
+ * Regenerate with `npx tsx tools/counters.ts`.
  */
 import { describe, expect, it } from 'vitest';
 import type { UnitDef } from '@/contracts/content';
 import { BP } from '@/core/fixed';
-import { DUEL_ENGINE_VERSION, DUEL_RULES, duelCounts, runDuel, type DuelContent } from '../counters/duel';
-import { counterInputHash, duelPair, duelUnitTable, matrixBpOf, strongWeak } from '../counters/matrix';
+import { DUEL_RULES, duelCounts, runDuel, type DuelContent } from '../counters/duel';
+import { counterInputHash, duelPair, duelUnitTable, matrixBpOf, SIM_DUEL_ENGINE, strongWeak, type DuelFn } from '../counters/matrix';
 import { content, counterFile } from '../index';
 import { raw } from '../raw';
+// Tests may cross layers (eslint): the counter file is the sim's own duel output.
+import { runDuel as simDuel } from '@/sim/duel';
+import { SIM_VERSION } from '@/sim/replay';
 
 const allUnits = raw.ages.flatMap((t) => t.units);
 const duelContent: DuelContent = { units: duelUnitTable(allUnits), economy: raw.economy, battle: raw.battle };
 const M = (a: string, b: string): number => counterFile.matrixBp[a]?.[b] ?? Number.NaN;
+const onSim: DuelFn = (a, b, na, nb) => simDuel(content, a, b, na, nb);
 
 describe('generated/counters.json', () => {
   it('is up to date with the unit tables, economy, battle rules and duel engine', () => {
-    const expected = counterInputHash(allUnits, raw.economy, raw.battle);
+    const expected = counterInputHash(allUnits, raw.economy, raw.battle, SIM_VERSION);
     expect(counterFile.inputHash, 'counters.json is stale: run `npx tsx tools/counters.ts`').toBe(expected);
-    expect(counterFile.engine).toBe(DUEL_ENGINE_VERSION);
+    expect(counterFile.engine).toBe(SIM_DUEL_ENGINE);
     expect(counterFile.units).toEqual(content.order.units);
   });
 
@@ -35,7 +40,7 @@ describe('generated/counters.json', () => {
     }
   });
 
-  it('matches a fresh run of the engine for a sample of pairs', () => {
+  it('matches a fresh run of the sim duel harness for a sample of pairs', () => {
     const sample: [string, string][] = [
       ['bonker', 'tuskback'],
       ['spear_hunter', 'tuskback'],
@@ -47,7 +52,7 @@ describe('generated/counters.json', () => {
       ['chrono_titan', 'rail_gunner'],
     ];
     for (const [a, b] of sample) {
-      const d = duelPair(duelContent, a, b);
+      const d = duelPair(duelContent, a, b, onSim);
       const m = matrixBpOf(d);
       expect(m.ab, `${a} vs ${b}`).toBe(M(a, b));
     }
@@ -63,10 +68,25 @@ describe('what the matrix says (A2.6 counter triangle)', () => {
     expect(M('pikeman', 'destrier_knight')).toBeGreaterThan(BP / 2);
   });
 
+  it('every age\'s Anti-heavy card clearly beats its own Heavy, and its Infantry beats the Anti-heavy card', () => {
+    for (const age of content.order.ages) {
+      const units = content.order.units.map((id) => content.units[id]!).filter((u) => u.age === age);
+      const heavy = units.find((u) => u.group === 'heavy' && u.rarity === 'common');
+      const aa = units.find((u) => u.group === 'antiArmor');
+      const inf = units.find((u) => u.group === 'infantry' && u.rarity === 'common');
+      if (!heavy || !aa || !inf) continue;
+      expect(M(aa.id, heavy.id), `${aa.id} vs ${heavy.id}`).toBeGreaterThanOrEqual(6500);
+      expect(M(heavy.id, inf.id), `${heavy.id} vs ${inf.id}`).toBeGreaterThan(BP / 2);
+      expect(M(inf.id, aa.id), `${inf.id} vs ${aa.id}`).toBeGreaterThan(BP / 2);
+    }
+  });
+
   it('air punishes melee-only armies', () => {
+    // On the sim the bomber flies on to the gate and never trades with melee, so it only never loses;
+    // the gunship stays and wins.
     for (const melee of ['bonker', 'tuskback', 'footman', 'corsair', 'trench_raider', 'walker_mech']) {
-      expect(M('gyrocopter', melee), melee).toBe(BP);
-      expect(M('balloon_admiral', melee), melee).toBe(BP);
+      expect(M('gyrocopter', melee), melee).toBeGreaterThan(BP / 2);
+      expect(M('balloon_admiral', melee), melee).toBeGreaterThanOrEqual(BP / 2);
     }
   });
 

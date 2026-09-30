@@ -168,6 +168,11 @@ const VARIANTS: Variant[] = [
   pause('tutorial'),
   result('win'),
   result('loss'),
+  {
+    id: 'result-heavyGap',
+    label: 'Result: loss with the Anti-heavy tip (A9.2)',
+    route: () => [{ id: 'home' }, { id: 'result', info: { ...fixtureResult(content, 'loss'), tipKey: 'app.tip.heavyGap', tipCard: 'pikeman', tipAge: 'medieval' } }],
+  },
   result('draw'),
   result('conquest'),
   result('noCapsule'),
@@ -201,6 +206,9 @@ const VARIANTS: Variant[] = [
   { id: 'collection-skins', label: 'Collection: skins', route: () => [{ id: 'home' }, { id: 'collection', tab: 'skins' }] },
   card('bonker'),
   card('pikeman'),
+  // Anti-heavy (owner feedback 2026-09-29): the counter pair, Strong vs Heavy / Weak vs Anti-heavy.
+  card('spear_hunter'),
+  card('tuskback'),
   card('friar'),
   card('mammoth_matriarch'),
   card('chrono_titan'),

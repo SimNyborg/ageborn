@@ -69,6 +69,9 @@ export interface ResultInfo {
   daily?: { dateKey: string; modifier: string; difficulty: DailyDifficulty } | null;
   /** One result or loss tip (A15.12, A16.6) as an i18n key, shown in the summary row. */
   tipKey?: string | null;
+  /** The card and age the tip names ("Add {card} to {age}: it beats Heavies.", A9.2), as ids. */
+  tipCard?: string;
+  tipAge?: string;
 }
 
 /**

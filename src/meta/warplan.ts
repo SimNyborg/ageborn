@@ -3,10 +3,11 @@
  * and 2 typed power slots, Home and Field (A2.9.1), all from that age, all owned, no duplicates; three
  * presets.
  *
- * - Starter plan: each age's 3 common units (Infantry, Ranged, Heavy) and 2 common turrets, plus its
- *   two starter powers. The starter kit always meets the minimum to play.
+ * - Starter plan: each age's 3 common units (Infantry, Ranged, Heavy) and its Anti-heavy Rare in
+ *   slot 4 (owner feedback 2026-09-29), 2 common turrets, plus its two starter powers. The starter
+ *   kit always meets the minimum to play.
  * - Auto-fill: the highest-level card per slot, keeping at least one Heavy or Legendary, one Ranged
- *   and one Anti-armor unit per age, plus an air-hitter from Gunpowder on (a turret that hits air
+ *   and one Anti-heavy (Anti-armor role) unit per age, plus an air-hitter from Gunpowder on (a turret that hits air
  *   counts). Ties keep the content order. Units sit in content order.
  * - Equip now (after a capsule): a new card fills an empty slot, else the same-role slot, else the
  *   lowest-level slot (ties: the last slot).
@@ -15,7 +16,7 @@ import type { AgeId, CardId, FormatId, Loadout, Result, SaveDoc, SkinId } from '
 import type { Content } from '@/content';
 import { hitsAir, TURRET_SLOTS, UNIT_SLOTS, type WarPlan } from './advisor';
 import { FIRST_PLAN_NAME } from './rules';
-import { ageCards, isOwned, starterPower, starterPowers } from './tables';
+import { ageCards, antiHeavyCard, isOwned, starterPower, starterPowers } from './tables';
 
 /** Number of War Plan presets (A3). */
 export const PLAN_PRESETS = 3;
@@ -24,11 +25,13 @@ function slots(ids: readonly CardId[], n: number): (CardId | null)[] {
   return Array.from({ length: n }, (_, i) => ids[i] ?? null);
 }
 
-/** The starter loadout of an age (A3 starter kit). */
+/** The starter loadout of an age (A3 starter kit): the 3 common units, then the Anti-heavy Rare. */
 export function starterLoadout(t: Content, age: AgeId): Loadout {
   const { units, turrets } = ageCards(t, age);
   const common = (id: CardId): boolean => (t.units[id] ?? t.turrets[id])?.rarity === 'common';
-  return { units: slots(units.filter(common), UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), powers: starterPowers(t, age) };
+  const aa = antiHeavyCard(t, age);
+  const troops = [...units.filter(common), ...(aa ? [aa] : [])];
+  return { units: slots(troops, UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), powers: starterPowers(t, age) };
 }
 
 /** The starter War Plan (A3; Arena 1's gate reward, given at the start). */

@@ -607,9 +607,12 @@ export function RoleGlyph(p: IconProps & { kind: GlyphKind; color?: string }) {
     case 'antiArmor':
       return (
         <Svg {...p}>
-          <path d="M3.5 20.5 17 7" stroke={OUTLINE} stroke-width="3.2" stroke-linecap="round" />
-          <path d="M3.5 20.5 17 7" stroke="#a8703f" stroke-width="1.4" stroke-linecap="round" />
-          <path d="M21.2 2.8 19.6 10l-2.2-1.6-1.8-1.8L14 4.4z" fill={c} {...O} />
+          {/* Anti-heavy: the Heavy shield split by a spear (owner feedback 2026-09-29). */}
+          <path d="M10.6 3.2 4.2 5.5v6.1c0 4.7 2.9 8 6.4 9.6z" fill={c} {...O} transform="rotate(-9 10.6 21.2)" />
+          <path d="M13.4 3.2l6.4 2.3v6.1c0 4.7-2.9 8-6.4 9.6z" fill={c} {...O} transform="rotate(9 13.4 21.2)" />
+          <path d="M12 1.5v14.2" stroke={OUTLINE} stroke-width="3.2" stroke-linecap="round" />
+          <path d="M12 1.5v14.2" stroke="#a8703f" stroke-width="1.4" stroke-linecap="round" />
+          <path d="M12 22.8l-2.7-7.4h5.4z" fill="#ffcf3a" {...O} />
         </Svg>
       );
     case 'support':

@@ -61,7 +61,7 @@ export const bronze: RawAgeTables = {
     {
       // Reach 65; melee AA mods; priority armored
       id: 'phalangite', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 232, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 255, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -69,7 +69,7 @@ export const bronze: RawAgeTables = {
           dmgType: 'pierce', sfx: 'swing_whoosh', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
-      abilities: [],
+      abilities: [{ kind: 'brace' }],
       visualId: 'unit.phalangite', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.phalangite.name', descKey: 'card.phalangite.desc', strongVs: [], weakVs: [],
     },

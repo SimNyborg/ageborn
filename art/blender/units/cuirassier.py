@@ -34,7 +34,7 @@ SLUG = "cuirassier"
 NAME = "Cuirassier"
 HEIGHT_LU = 120
 YAW_DEG = -10.0
-CANVAS = (480, 336)
+CANVAS = (480, 356)
 FEET = (232, 312)
 ANCHORS = {"head": (0, 116), "hitCenter": (0, 50)}
 NO_RETIME = True
@@ -86,6 +86,13 @@ def build(rig):
     g = Geo().blob((-2, 0, 54.5), (11.5, 9.5, 3.6), p=2.6)   # saddle
     g.blob((-11.5, 0, 57.0), (2.6, 8.5, 4.0), p=2.4)
     rig.part("horse", g, B.WOOD)
+    # a team portmanteau (saddle roll) behind the cantle, cream end caps
+    g = Geo().capsule((-15.0, -9.0, 57.5), (-15.0, 9.0, 57.5), 3.6)
+    rig.part("horse", g, team=True)
+    g = Geo()
+    for y in (-9.6, 9.6):
+        g.blob((-15.0, y, 57.5), (3.8, 1.2, 3.8), p=2.4)
+    rig.part("horse", g, B.CREAM, outline=0.5)
     g = Geo().blob((11.0, -10.4, 50.0), (3.8, 3.2, 5.6), p=2.6, rot=(0, -22, 0))   # pistol holster
     rig.part("horse", g, B.BLACK, finish="gloss")
     g = Geo().blob((12.6, -11.4, 55.0), (2.4, 2.0, 1.8), p=2.4, rot=(0, -22, 0))
@@ -186,7 +193,7 @@ def build(rig):
     g = Geo()
     for x, z, r in ((3.0, 103.0, 3.4), (-2.0, 104.0, 4.4), (-7.5, 103.0, 4.8), (-13.0, 100.0, 4.6),
                     (-17.5, 96.0, 4.0), (-21.0, 91.5, 3.2)):
-        g.blob((x, 0, z), (r * 1.15, r * 0.85, r), p=2.1)
+        g.blob((x * 1.1, 0, 100.0 + (z - 100.0) * 1.25), (r * 1.4, r * 1.0, r * 1.25), p=2.1)
     rig.part("crest", g, team=True)
 
     # far arm: reins
@@ -205,9 +212,11 @@ def build(rig):
     g = Geo().capsule((3, -12, 68), (8.5, -13, 66), 3.8, 3.6)
     g.blob((6.8, -12.6, 66.8), (3.6, 5.0, 5.0), p=2.4)
     rig.part("kfore_r", g, B.CREAM)
-    for y in (-10.5, 10.5):   # steel epaulettes
-        g = Geo().blob((-0.5, y * 1.02, 78.5), (6.6, 5.6, 4.6), p=2.4)
-        rig.part("ktorso" if y > 0 else "karm_r", g, STEEL, finish="metal")
+    for y in (-10.5, 10.5):   # team epaulettes with a cream fringe
+        g = Geo().blob((-0.5, y * 1.02, 78.5), (6.8, 5.8, 4.6), p=2.4)
+        rig.part("ktorso" if y > 0 else "karm_r", g, team=True)
+        g = Geo().blob((-0.5, y * 1.06, 75.0), (6.4, 5.2, 1.4), p=2.6)
+        rig.part("ktorso" if y > 0 else "karm_r", g, B.CREAM, outline=0.5)
     g = Geo().blob((SX + 0.6, SY, SZ), (3.8, 3.6, 3.8), p=2.3)    # fist
     rig.part("sabre", g, B.CREAM)
     back = [(SX - 1.2, SZ + 4.0), (SX - 0.8, SZ + 18), (SX + 0.8, SZ + 30), (SX + 3.8, SZ + 40),

@@ -8,7 +8,11 @@ a mint engine glow, and a violet boarding ramp with mint edge lights leads down 
 doorway to the gate. Side fins, and hovering disc platforms on struts for the turret mounts
 (common.BASE_MOUNTS). Team colour: the hull bands, the doorway, the fin tips and the flags.
 Crumble: cracked panels and a lost fin (75%), a broken landing leg and rubble (50%), the nose cone
-knocked askew and the top flag gone (25%). Treasury, the star forge: energy cells (1), a forge
+knocked askew and the top flag gone (25%). Cartoon kit v2 (2026-09-30): crumble stages that read at
+a glance (see `_damage`: a chunk bitten out of the upper team band with sparking wires; then a
+violet plasma fire in the gap, scorch marks, the bridge windows and viewports gone dark and the nose
+knocked askew; then a breach at the foot with a hanging cable and a second fire, the nose snapped to a
+burning stump and the nose cone lying in the rubble). Treasury, the star forge: energy cells (1), a forge
 anvil with a glowing crystal (2), a forge ring around a star core (3).
 """
 import math
@@ -44,6 +48,103 @@ def on_hull(a_deg, z, out=0.6):
     a = math.radians(a_deg)
     r = radius_at(z) + out
     return (SP[0] + r * math.cos(a), SP[1] + r * math.sin(a) * 0.8, z)
+
+
+PLASMA_OUT = "#7A38B8"
+PLASMA = "#B77BFF"
+PLASMA_CORE = "#F4EAFF"
+HOLE = "#120C1E"
+
+
+def front(z, dx=0.0, push=1.2):
+    """A point on the hull's camera-facing surface at height z (x offset dx from the axis)."""
+    r = radius_at(z)
+    return (SP[0] + dx, SP[1] - 0.8 * math.sqrt(max(1.0, r * r - dx * dx)) - push, z)
+
+
+def _jagged(cx, cz, rx, rz, n=11, seed=0, amp=0.28):
+    pts = []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        f = 1.0 + amp * (1 if (k + seed) % 2 else -1) * (0.6 + 0.4 * math.sin(k * 2.3 + seed))
+        pts.append((cx + rx * f * math.cos(a), cz + rz * f * math.sin(a)))
+    return pts
+
+
+def plasma(rig, joint, spots):
+    """Void-plasma fire: violet teardrop tongues with a pale core (outside the team hue bands)."""
+    o, g, c = Geo(), Geo(), Geo()
+    for x, y, z, k in spots:
+        for dx, lean, r, h in ((0.0, 0.25, 6.0, 19.0), (-5.5, -0.35, 4.0, 12.0), (5.5, 0.45, 3.8, 10.0)):
+            cx, cz = x + dx * k, z + h * 0.42 * k
+            o.blob((cx, y + 2, cz), (r * 1.3 * k, r * 0.9 * k, h * 0.62 * k), p=2.0, taper=(1.0, 0.08),
+                   shift=(lean * 1.2, 0.0))
+            g.blob((cx, y, cz - 0.6 * k), (r * k, r * 0.7 * k, h * 0.5 * k), p=2.0, taper=(1.0, 0.1),
+                   shift=(lean, 0.0))
+            c.blob((cx, y - 2.5, cz - 2.4 * k), (r * 0.5 * k, r * 0.4 * k, h * 0.28 * k), p=2.0,
+                   taper=(1.0, 0.2), shift=(lean * 0.6, 0.0))
+    rig.part(joint, o, glow=PLASMA_OUT, outline=0)
+    rig.part(joint, g, glow=PLASMA, outline=0)
+    rig.part(joint, c, glow=PLASMA_CORE, outline=0)
+
+
+def _damage(rig):
+    """Crumble parts per stage (each stage reads at a glance)."""
+    for j in ("notch", "sparks1", "fire1", "scorch", "darkwin", "breach", "fire2", "stump", "cable", "tipfallen"):
+        rig.joint(j, "body", (0, 0, 0), hidden=True)
+    # 1: a chunk bitten out of the upper team band, sparking wires
+    x, y, z = front(Z0 + 146, -7.0, push=1.0)
+    g = Geo().slab(_jagged(x, z, 19.0, 20.0, seed=1), y, 2.2)
+    rig.part("notch", g, HULL_LT, outline=0.6)
+    g = Geo().slab(_jagged(x + 0.5, z - 0.5, 13.5, 15.0, seed=2), y - 1.4, 1.0)
+    rig.part("notch", g, HOLE, outline=0, highlight=False)
+    g = Geo()
+    g.capsule((x - 2.0, y - 2.4, z + 3.0), (x + 4.0, y - 3.4, z - 6.0), 0.9)
+    g.capsule((x + 2.0, y - 2.4, z + 1.0), (x - 3.0, y - 3.6, z - 8.0), 0.9)
+    rig.part("notch", g, K.STAR_TRIM, finish="metal", outline=0.4)
+    g = Geo().star((x + 5.4, y - 4.0, z - 9.0), 7.0, 2.4, 1.0, points=5)
+    rig.part("sparks1", g, glow=K.MINT_CORE, outline=0.6, outline_hex=K.MINT)
+    # 2: plasma fire out of the gap, soot, the bridge windows and viewports dark
+    plasma(rig, "fire1", [(x, y - 3.0, z - 8.0, 1.5)])
+    g = Geo()
+    g.slab(_jagged(x + 2.0, z + 17.0, 8.0, 9.0, seed=3, amp=0.35), y + 0.4, 0.8)
+    xx, yy, zz = front(Z0 + 70, 14.0, push=0.8)
+    g.slab(_jagged(xx, zz + 8.0, 9.0, 7.0, seed=4, amp=0.3), yy, 0.8)
+    rig.part("scorch", g, "#2C2440", outline=0, highlight=False)
+    g = Geo()
+    zc = Z0 + 177
+    for a_deg in range(-140, -30, 14):
+        g.blob(on_hull(a_deg, zc, 1.5), (3.2, 3.2, 2.8), p=3.0, rot=(0, 0, a_deg + 90))
+    for zc, arc in ((Z0 + 144, range(-146, -30, 19)),):
+        for a_deg in arc:
+            g.blob(on_hull(a_deg, zc, 3.4), (2.7, 2.7, 2.7), p=2.4, rot=(0, 0, a_deg + 90))
+    rig.part("darkwin", g, "#2A2140", outline=0, highlight=False)
+    # 3: a breach at the foot with a cable hanging out and fire, the nose snapped to a burning stump
+    bx, by, bz = front(Z0 + 52, 18.0, push=1.0)
+    g = Geo().slab(_jagged(bx, bz, 17.0, 19.0, seed=5, amp=0.3), by, 2.4)
+    rig.part("breach", g, HULL_LT, outline=0.6)
+    g = Geo().slab(_jagged(bx, bz - 1.0, 12.0, 14.0, seed=6, amp=0.3), by - 1.4, 1.0)
+    rig.part("breach", g, HOLE, outline=0, highlight=False)
+    g = Geo()
+    g.capsule((bx - 4.0, by - 3.0, bz + 6.0), (bx + 6.0, by - 7.0, bz - 10.0), 1.6)
+    g.capsule((bx + 6.0, by - 7.0, bz - 10.0), (bx + 10.0, by - 8.0, bz - 22.0), 1.4)
+    rig.part("cable", g, SEAM, outline=0.5)
+    g = Geo().star((bx + 10.0, by - 9.5, bz - 23.0), 4.0, 1.5, 1.0, points=5)
+    rig.part("cable", g, glow=K.MINT_CORE, outline=0.6, outline_hex=K.MINT)
+    plasma(rig, "fire2", [(bx - 4.0, by - 4.0, bz - 12.0, 1.5)])
+    zt = Z0 + 206.0
+    rt = radius_at(zt) + 0.5
+    pts = []
+    for k in range(9):
+        a = math.radians(-160 + 140 * k / 8)
+        pts.append((SP[0] + rt * math.cos(a), zt + (6.0 if k % 2 else -3.0)))
+    g = Geo().slab([(SP[0] - rt, zt - 8.0)] + pts + [(SP[0] + rt, zt - 8.0)], SP[1] - rt * 0.8 + 3.0, 3.0)
+    rig.part("stump", g, ARMOR_LT, outline=0.6)
+    plasma(rig, "stump", [(SP[0] + 2.0, SP[1] - rt * 0.8 - 1.0, zt - 2.0, 1.5)])
+    g = Geo().lathe([(0, 0), (22, 0), (18, 22), (9, 46), (0, 60)], (-20.0, -60.0, 12.0), (-78.0, -64.0, 20.0), segs=20)
+    rig.part("tipfallen", g, ARMOR_LT, finish="gloss", outline_hex=K.STAR_TRIM)
+    g = Geo().sphere((-80.0, -64.0, 20.5), 5.0, cuts=3)
+    rig.part("tipfallen", g, "#6B6A80", finish="gloss", outline=0.6)
 
 
 def build(rig, M):
@@ -210,6 +311,8 @@ def build(rig, M):
     rubble(rig, "rubble2", [(-98, -58), (-70, -60)], ARMOR, seed=13)
     rubble(rig, "rubble3", [(-150, -60), (-120, -62), (16, -56)], HULL_LT, seed=23, size=1.2)
 
+    _damage(rig)
+
     flag(rig, "root", "flagA", (SP[0] - 26, SP[1] + 6, Z0 + 266), length=30, height=16, pole=Z0 + 190,
          pole_color=K.STAR_TRIM, finial=K.MINT)
     flag(rig, "root", "flagB", (-156, 34, 140), length=24, height=14, pole=14, pole_color=K.STAR_TRIM, finial=K.MINT)
@@ -243,12 +346,16 @@ def build(rig, M):
 def crumble(stage):
     pose = {}
     if stage >= 1:
-        pose.update({"crack1": {"show": True}, "fin": {"hide": True}, "rubble1": {"show": True}})
+        pose.update({"crack1": {"show": True}, "fin": {"hide": True}, "rubble1": {"show": True},
+                     "notch": {"show": True}, "sparks1": {"show": True}})
     if stage >= 2:
         pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "leg": {"hide": True},
-                     "legbroken": {"show": True}})
+                     "legbroken": {"show": True}, "fire1": {"show": True}, "scorch": {"show": True},
+                     "darkwin": {"show": True}, "sparks1": {"hide": True}, "tip": {"r": 12.0, "x": -4.0, "z": -6.0}})
     if stage >= 3:
-        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "tip": {"r": 16.0, "x": -6.0, "z": -10.0}})
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "tip": {"hide": True},
+                     "breach": {"show": True}, "cable": {"show": True}, "fire2": {"show": True},
+                     "stump": {"show": True}, "tipfallen": {"show": True}})
     return pose
 
 

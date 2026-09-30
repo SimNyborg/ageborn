@@ -9,8 +9,9 @@
  *   (`dailyOddsBp`); takes one banked allowance if any.
  * - `meter`: Clay. `codex`: Silver (fixed). `road` and `conquest`: the tier the node or milestone names.
  * - `age`: Silver-sized (4 stacks, Silver copies and Amber), all cards from one age, ≥ 1 Epic stack.
- * - `ageUnlock`: fixed contents: the age's Anti-armor Rare plus 4 copies of each of its 3 common
- *   units (A6.3); no foils, no pity, no script.
+ * - `ageUnlock`: fixed contents: the age's Support Rare plus 4 copies of each of its 3 common
+ *   units (A6.3; the Anti-heavy Rare it held before is in the starter kit since owner feedback
+ *   2026-09-29); no foils, no pity, no script.
  *
  * The climb starts at the kind's `climbFrom` (never above the rolled tier); fixed kinds start at
  * their tier (A10). The first five counted capsules follow the onboarding script (`script.ts`).
@@ -127,10 +128,10 @@ function spec(tier: CapsuleTierDef, randomLegendaries: boolean): RollSpec {
   };
 }
 
-/** Age Unlock contents: the age's Anti-armor Rare and its 3 common units (A6.3). */
+/** Age Unlock contents: the age's Support Rare and its 3 common units (A6.3, A3). */
 function ageUnlockStacks(t: Content, age: AgeId, owned: ReadonlySet<CardId>): CapsuleStack[] {
   const { units } = ageCards(t, age);
-  const aa = units.find((id) => t.units[id]?.group === 'antiArmor' && t.units[id]?.rarity === 'rare');
+  const rare = units.find((id) => t.units[id]?.group === 'support' && t.units[id]?.rarity === 'rare');
   const commons = units.filter((id) => t.units[id]?.rarity === 'common');
   const au = t.capsules.ageUnlock;
   const stack = (card: CardId, copies: number): CapsuleStack => ({
@@ -141,7 +142,7 @@ function ageUnlockStacks(t: Content, age: AgeId, owned: ReadonlySet<CardId>): Ca
     foil: 'none',
     dust: 0,
   });
-  return [...commons.map((c) => stack(c, au.commonCopies)), ...(aa ? [stack(aa, au.rareCopies)] : [])];
+  return [...commons.map((c) => stack(c, au.commonCopies)), ...(rare ? [stack(rare, au.rareCopies)] : [])];
 }
 
 /** Grants one capsule at time `now`, rolled immediately. */

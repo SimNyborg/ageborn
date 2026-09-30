@@ -50,7 +50,7 @@ FEATHER = "#F4EEDC"
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)   # near hand: cutlass
 HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand: grapnel
-BL = 38.0                            # blade length from the hand
+BL = 35.0                            # blade length from the hand
 HAT_C = (1.0, 0.0, 59.6)             # tricorne pivot (it pops off in the death)
 
 
@@ -199,9 +199,9 @@ def build(rig):
                     (fx_ + 0.5, fy + 1.0, fz - 6.0), (fx_ + 0.5, fy + 3.0, fz - 6.0), segs=16)
     rig.part("hand_l", g, ROPE, finish="hair")
     # the coin he flips in the idle (a brass disc facing the camera)
-    rig.joint("coin", "hand_l", (fx_ + 4.0, fy - 15.0, fz + 3.0), hidden=True)
-    g = Geo().lathe([(0, -0.5), (3.0, -0.5), (3.0, 0.5), (0, 0.5)], (fx_ + 4.0, fy - 15.0, fz + 3.0),
-                    (fx_ + 4.0, fy - 16.0, fz + 3.0), segs=16)
+    rig.joint("coin", "hand_l", (fx_ + 14.0, fy - 26.0, fz + 6.0), hidden=True)
+    g = Geo().lathe([(0, -0.5), (3.0, -0.5), (3.0, 0.5), (0, 0.5)], (fx_ + 14.0, fy - 26.0, fz + 6.0),
+                    (fx_ + 14.0, fy - 27.0, fz + 6.0), segs=16)
     rig.part("coin", g, "#E2C25A", finish="metal", outline=0.6)
 
     rig.track("bladeTip", "hand_r", (hx + 8.2, hy, hz + 4 + BL - 1.5))
@@ -221,18 +221,22 @@ STANCE = merge(blade_arm(-48, 8, 62), hook_arm(-62, -12, 76), {"torso": {"r": -3
 
 
 def _idle(f):
-    # breathing and a weight shift; he flips a coin off the hook hand (1-4) and catches it,
-    # the cutlass taps on the beat (4); blink on 5
-    coin_z = [0.0, 5.0, 12.0, 11.0, 3.0, 0.0][f]
-    tap = [0.0, 0.0, 0.2, 0.5, 1.0, 0.2][f]
-    look = [0.0, 0.5, 1.0, 1.0, 0.4, 0.0][f]
+    # 4 poses played 0-1-2-3-2-1 (atlas budget): breathing and a weight shift; he flips a coin
+    # off the hook hand (1-3, it spins at the top) and catches it; the cutlass taps on 3
+    coin_z = [0.0, 9.0, 17.0, 20.0][f]
+    tap = [0.0, 0.2, 0.5, 1.0][f]
+    look = [0.0, 0.6, 1.0, 1.0][f]
+    k = [0, 1, 2, 3][f]
 
     def extra(ctx):
         return {"arm_l": {"r": 8 * look}, "fore_l": {"r": 10 * look},
-                "coin": {"show": 0 < f < 5, "z": coin_z, "x": 1.0 * look, "sx": [1, 0.3, 1, 0.3, 1, 1][f]},
+                "coin": {"show": f > 0, "z": coin_z, "x": 1.0 * look, "sx": [1, 0.35, 1, 0.35][f]},
                 "head": {"r": 6 * look}, "pupils": {"z": 0.8 * look},
                 "arm_r": {"r": 3 * ctx["lag"] + 6 * tap}, "hand_r": {"r": -4 * ctx["lag"] - 14 * tap}}
-    return M.idle_v2(f, STANCE, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
+    pose = M.idle_v2(k, STANCE, frames=6, extra=extra)
+    if f == 3:
+        pose = merge(pose, F.expr("blink"))
+    return pose
 
 
 def _walk(f):
@@ -294,7 +298,7 @@ SLASH = {"kind": "arc", "joint": "hand_r", "inner": BLADE_IN, "outer": BLADE_TIP
 def _attack_clip():
     ov = {
         4: [dict(SLASH, **{"from": 3})],
-        5: [dict(SLASH, **{"from": 3})],
+        5: [dict(SLASH, **{"from": 3, "t0": 0.35})],
         6: [dict(SLASH, **{"from": 5, "t0": 0.0, "t1": 1.0, "lines": 2}),
             {"kind": "burst", "joint": "hand_r", "point": BLADE_TIP, "r0_lu": 6.0, "r1_lu": 12.0,
              "n": 5, "a0": -70.0, "arc": 140.0},
@@ -302,8 +306,9 @@ def _attack_clip():
         1: [{"kind": "streak", "joint": "hand_l", "point": (HL[0] + 1.0, HL[1], HL[2] + 15.0),
              "color": "#9CA3AD", "width_lu": 4.0, "white": 0.3, "from": 0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+    # frame 10 (settle) is close to frame 0: reuse it (atlas budget)
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov, sequence=list(range(10)) + [0])
 
 
 def _hit(k):
@@ -348,11 +353,12 @@ def _die(k):
 
 def clips():
     cl = [
-        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("idle", [_idle(f) for f in range(4)], [153, 154, 153, 153, 154, 153], loop=True,
+               sequence=[0, 1, 2, 3, 2, 1]),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _attack_clip(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
-        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
-               sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 4, 5, 6, 9)], M.DIE_MS,
+               sequence=[0, 1, 2, 2, 3, 4, 5, 5, 6, 6], extra=M.die_meta(HEIGHT_LU)),
     ]
     return M.check_contract(cl)

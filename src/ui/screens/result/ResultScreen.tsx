@@ -7,9 +7,9 @@
  * Try again, Next battle, Open capsule or Home; the next battle is always at most one tap away.
  */
 import './result.css';
-import { arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
+import { ageNameKey, arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
-import type { CapsuleTier, MatchStats, RewardStep } from '@/contracts';
+import type { AgeId, CapsuleTier, MatchStats, RewardStep } from '@/contracts';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -503,8 +503,11 @@ function SummaryChip(p: { r: RewardStep }) {
 }
 
 /** Everything that is not a staged step, in one row that expands on tap (A15.13). */
-function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null }) {
-  const { t } = useUi();
+function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null; tipCard?: string; tipAge?: string }) {
+  const { t, content } = useUi();
+  // The Anti-heavy tip names a card and an age (A9.2); other tips have no variables.
+  const cardKey = p.tipCard ? content.units[p.tipCard]?.nameKey : undefined;
+  const tipVars = { card: cardKey ? t(cardKey) : '', age: p.tipAge ? t(ageNameKey(p.tipAge as AgeId)) : '' };
   const [open, setOpen] = useState(false);
   if (p.steps.length === 0 && !p.tipKey) return null;
   // Several titles at once read as one chip ("3 new titles"); the open list names each.
@@ -542,7 +545,7 @@ function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null }) {
           ))}
           {p.tipKey ? (
             <li class="result-sum__tip" data-testid="result-tip">
-              <InfoIcon size={20} /> {t(p.tipKey)}
+              <InfoIcon size={20} /> {t(p.tipKey, tipVars)}
             </li>
           ) : null}
         </ul>
@@ -789,7 +792,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
               <Stage key={i} stage={st} animate={!reduce} />
             ))}
           </ul>
-          {done ? <SummaryRow steps={plan.summary} tipKey={info.tipKey ?? null} /> : null}
+          {done ? <SummaryRow steps={plan.summary} tipKey={info.tipKey ?? null} tipCard={info.tipCard} tipAge={info.tipAge} /> : null}
           {done && night ? (
             <p class="result__night" data-testid="result-night">
               {t('ui.result.night')}

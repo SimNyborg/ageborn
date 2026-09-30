@@ -138,8 +138,9 @@ describe('Time Capsules (A6.4)', () => {
     expect(capsules.clayMeterPips).toBe(3);
     expect(capsules.daily).toEqual({ firstAfterCapsule: 2, bankMax: 3 });
     expect(capsules.script.map((s) => [s.tier, s.cards])).toEqual([
-      ['bronze', ['spear_hunter', 'phalangite']],
-      ['silver', ['pikeman', 'grenadier']],
+      // The Anti-heavy Rares are in the starter kit (owner feedback 2026-09-29): the Support Rares come instead.
+      ['bronze', ['drum_shaman', 'standard_bearer']],
+      ['silver', ['friar', 'field_surgeon']],
       ['bronze', ['log_roller']],
       ['silver', []],
       ['gold', ['mammoth_matriarch']],

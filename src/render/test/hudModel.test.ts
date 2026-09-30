@@ -19,11 +19,40 @@ function withLegendary(): MatchConfig {
   return { ...fakeMatchConfig(), content, sides: [me, fakeSideConfig({ isBot: true, label: 'AI Grogg' })] };
 }
 
+/** Fake content with an Anti-heavy card in the Stone tray (slot 3). */
+function withAntiHeavy(): MatchConfig {
+  const base = fakeContent.units['bonker'] as UnitDef;
+  const content: CompiledContent = {
+    ...fakeContent,
+    units: { ...fakeContent.units, spearman: { ...base, id: 'spearman', group: 'antiArmor', role: 'antiArmor', rarity: 'rare', cost: 100 } },
+  };
+  const me = fakeSideConfig();
+  const stone = me.loadouts.stone;
+  if (stone) me.loadouts.stone = { ...stone, units: ['bonker', 'pebbler', 'tuskback', 'spearman', null] };
+  return { ...fakeMatchConfig(), content, sides: [me, fakeSideConfig({ isBot: true, label: 'AI Grogg' })] };
+}
+
 function q(card: string, o: Partial<QueueItem> = {}): QueueItem {
   return { card, group: 'infantry', progress: 0, total: 30, waiting: false, ...o };
 }
 
 describe('HUD model (A9.2)', () => {
+  it('the counter hint: an Anti-heavy card beats Heavy while the enemy fields Heavies (owner feedback 2026-09-29)', () => {
+    const sim = new FakeSim({ config: withAntiHeavy() });
+    const foe = (card: string, id: number) => ({ id, side: 1, card, level: 1, x: 1_500_000, prevX: 1_500_000, hp: 100_000, maxHp: 100_000, shield: 0, innateShield: 0, mode: 'walk', attacks: [], statuses: [], air: false, summoned: false, timers: [], lastDamageTick: 0 }) as never;
+    sim.state.units = [foe('bonker', 900)];
+    let m = buildHudModel(sim, EXTRAS);
+    expect(m.foe.heavyThreat).toBe(false);
+    expect(m.me.cards.some((c) => c.beatsHeavy)).toBe(false);
+    sim.state.units = [foe('tuskback', 901), foe('tuskback', 902), foe('bonker', 903)];
+    m = buildHudModel(sim, EXTRAS);
+    expect(m.foe.heavyThreat).toBe(true);
+    expect(m.me.cards.filter((c) => c.beatsHeavy).map((c) => c.card)).toEqual(['spearman']);
+    // Own Heavies never trigger it.
+    sim.state.units = [{ ...(foe('tuskback', 904) as object), side: 0 } as never, { ...(foe('tuskback', 905) as object), side: 0 } as never];
+    expect(buildHudModel(sim, EXTRAS).foe.heavyThreat).toBe(false);
+  });
+
   it('reports gold, income (Economy research, A18.5.4), base HP, clock and phase marks', () => {
     const sim = new FakeSim();
     sim.state.tick = 600;

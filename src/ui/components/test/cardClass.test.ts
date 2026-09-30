@@ -9,6 +9,8 @@ import {
   COUNTER_LEGEND,
   UNIT_CLASSES,
   counterClasses,
+  heavyThreat,
+  takesCounterFloor,
   unitClass,
   type ClassGlyphId,
 } from '@/core/cardClass';
@@ -85,6 +87,47 @@ describe('card classes', () => {
       expect(strong.filter((c) => beats(c, self)), u.id).toEqual([]);
       expect(weak.filter((c) => beats(self, c)), u.id).toEqual([]);
     }
+  });
+
+  it('the triangle is a floor (A18.9.1): every Anti-heavy card is Strong vs Heavy, every Heavy card Weak vs Anti-heavy', () => {
+    for (const u of units) {
+      if (!takesCounterFloor(u)) continue;
+      const self = unitClass(u);
+      const { strong, weak } = counterClasses(u.strongVs, u.weakVs, content.units, self, true);
+      if (self === 'antiArmor') {
+        expect(strong[0], u.id).toBe('heavy');
+        expect(weak, u.id).toContain('infantry');
+      }
+      if (self === 'heavy') {
+        expect(strong[0], u.id).toBe('infantry');
+        expect(weak[0], u.id).toBe('antiArmor');
+      }
+      if (self === 'infantry') {
+        expect(strong[0], u.id).toBe('antiArmor');
+        expect(weak[0], u.id).toBe('heavy');
+      }
+      expect(strong.filter((c) => weak.includes(c)), u.id).toEqual([]);
+    }
+    // Epics and Legendaries keep their measured lists (the Anti-heavy multiplier skips Legendaries).
+    expect(takesCounterFloor(content.units['mammoth_matriarch']!)).toBe(false);
+    expect(takesCounterFloor(content.units['sabertooth']!)).toBe(false);
+  });
+
+  it('labels the Anti-armor role "Anti-heavy" (owner feedback 2026-09-29)', () => {
+    expect(i18n.t(CLASS_NAME_KEY.antiArmor)).toBe('Anti-heavy');
+  });
+
+  it('the Heavy counter hint (A9.2): 2+ Heavies, or Heavies at 40%+ of the value on the lane', () => {
+    const h = { group: 'heavy' as const, value: 150 };
+    const i = { group: 'infantry' as const, value: 50 };
+    expect(heavyThreat([])).toBe(false);
+    expect(heavyThreat([i, i, i])).toBe(false);
+    expect(heavyThreat([h])).toBe(true);
+    expect(heavyThreat([h, h, ...Array.from({ length: 12 }, () => i)])).toBe(true);
+    // One Heavy among 5 Infantry is 150 of 400 = 37.5%: below the bar.
+    expect(heavyThreat([h, i, i, i, i, i])).toBe(false);
+    // A Legendary heavy is group `legendary`, so it does not count.
+    expect(heavyThreat([{ group: 'legendary', value: 350 }])).toBe(false);
   });
 
   it('has a label, a colour and a glyph for every class', () => {

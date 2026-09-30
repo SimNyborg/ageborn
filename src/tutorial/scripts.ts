@@ -106,8 +106,8 @@ export interface MatchScript {
 // Match 1: Tutorial format vs Old Grogg (A8 0:00-3:00)
 // ---------------------------------------------------------------------------------------------
 
-/** Tray slots of the starter loadout: infantry, ranged, heavy, AA (by script), support. */
-export const SLOT = { infantry: 0, ranged: 1, heavy: 2 } as const;
+/** Tray slots of the starter loadout: infantry, ranged, heavy, Anti-heavy (A3), support. */
+export const SLOT = { infantry: 0, ranged: 1, heavy: 2, antiHeavy: 3 } as const;
 
 /** The seed of match 1: fixed, so every new player gets the retimed match. */
 export const MATCH1_SEED = 1;
@@ -158,6 +158,13 @@ export const MATCH1_PEBBLER_TICK = sec(24);
 export const MATCH1_TURRET_GRANT_TICK = sec(38);
 export const MATCH1_TURRET_GRANT = 150;
 /**
+ * The Anti-heavy beat (A8, owner feedback 2026-09-29): as Grogg's Tuskback walks on (~0:37), the
+ * Spear Hunter card slides in with its "Beats Heavy" chip; its prompt follows the Rock Tosser beat
+ * (~0:39, while the Tuskback still stands; a quick player's Bonkers kill it by ~0:43). The player pays
+ * for it: with the 100 gold A8 drafted, the stronger army toppled Grogg before the Future beat.
+ */
+export const MATCH1_SPEAR_TICK = sec(37);
+/**
  * Arrow Storm is charged at 1:04 [1:20], about 9 s into Medieval. The natural charge (50 s, halved
  * on evolve) would only finish just before Gunpowder, so the script fills it.
  */
@@ -176,6 +183,8 @@ export function match1TrainingScript(content: CompiledContent, groggUnits: reado
   const events: TrainingEvent[] = [
     { tick: MATCH1_PEBBLER_TICK, side: 0, unlockSlot: SLOT.ranged },
     { tick: MATCH1_TURRET_GRANT_TICK, side: 0, grantGold: MATCH1_TURRET_GRANT },
+    // A8 ~0:37: the Spear Hunter slides in (the Anti-heavy beat).
+    { tick: MATCH1_SPEAR_TICK, side: 0, unlockSlot: SLOT.antiHeavy },
     // A2.9.10 match 1: the Arrow Storm beat; the script grants its price and readies the Home slot at once.
     { tick: MATCH1_POWER_TICK, side: 0, grantGold: MATCH1_POWER_GOLD, setPowerPpm: { slot: 'home', ppm: 1_000_000 } },
     ...groggGrants(content, groggUnits),
@@ -201,6 +210,8 @@ export const MATCH1: MatchScript = {
     // An action prompt: it asks for the Pebbler and stays until one is trained (or Stone is over).
     { id: 'm1.pebbler', textKey: 'tutorial.m1.pebbler', target: 'card1', trigger: { k: 'atTick', tick: MATCH1_PEBBLER_TICK }, done: { k: 'trained', slot: SLOT.ranged }, timeoutTicks: sec(30), onlyInAge: 0 },
     { id: 'm1.buildTurret', textKey: 'tutorial.m1.buildTurret', target: 'mount0', trigger: { k: 'atTick', tick: MATCH1_TURRET_GRANT_TICK }, done: { k: 'event', e: 'turretBuildStart' }, timeoutTicks: sec(30), onlyInAge: 0 },
+    // ~0:39: "Spear Hunters beat Heavies" (the Anti-heavy class, A2.6): trains the card that beats the Tuskback.
+    { id: 'm1.spearHunter', textKey: 'tutorial.m1.spearHunter', target: 'card3', trigger: { k: 'atTick', tick: MATCH1_SPEAR_TICK }, done: { k: 'trained', slot: SLOT.antiHeavy }, timeoutTicks: sec(15), onlyInAge: 0 },
     { id: 'm1.evolve', textKey: 'tutorial.m1.evolve', target: 'evolve', trigger: { k: 'evolveReady' }, done: { k: 'event', e: 'ascendStart' }, timeoutTicks: sec(30), onlyInAge: 0, jumpQueue: true },
     // ~0:55: the Ascension show speaks for itself.
     { id: 'm1.ascension', textKey: null, target: null, trigger: { k: 'ageUp', age: 'medieval' }, done: { k: 'shownFor', ticks: 1 } },
@@ -224,10 +235,10 @@ export const MATCH1_TIMING = {
   evolveReady: 1038, // 0:51.9 [0:50]
   medieval: 1101, // 0:55.1 [0:55]
   arrowStormReady: 1280, // 1:04.0 [1:20]
-  gunpowder: 1851, // 1:32.6 [1:30]
+  gunpowder: 1881, // 1:34.1 [1:30]
   modern: 2301, // 1:55.1 [2:00]
-  future: 2901, // 2:25.1 [2:35]
-  groggFalls: 2945, // 2:27.3 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0)
+  future: 2961, // 2:28.1 [2:35]; the Spear Hunter beat (owner feedback 2026-09-29) moved it 3 s
+  groggFalls: 3007, // 2:30.4 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0); the Spear Hunter beat
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */
@@ -304,6 +315,8 @@ export interface AdaptiveHintDef {
   id: AdaptiveHintId;
   textKey: string;
   target: PromptTarget | null;
+  /** Text variables whose values are i18n keys, translated before they fill `textKey` ("{card}"). */
+  varKeys?: Record<string, string>;
 }
 
 export const ADAPTIVE = {
@@ -329,13 +342,12 @@ export const ADAPTIVE = {
   outdatedTicks: sec(15),
   /** Own losses inside the window for the Hold hint, while outnumbered. */
   holdDeaths: 4,
-  /** "Heavies stop Bonkers. Try a Spear Hunter.": the card names in the text are data. */
-  heavyVictims: ['bonker'] as CardId[],
-  heavyAnswer: 'spear_hunter' as CardId,
 } as const;
 
 export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [
   { id: 'turretShredsMelee', textKey: 'tutorial.hint.turretShredsMelee', target: 'card1' },
+  // A9.2 counter hint (owner feedback 2026-09-29): "Heavies! Send {card}." while the enemy fields
+  // Heavies and the tray holds an Anti-heavy card; it points at that card (target set when it fires).
   { id: 'heaviesStopInfantry', textKey: 'tutorial.hint.heaviesStopInfantry', target: null },
   { id: 'powerReady', textKey: 'tutorial.hint.powerReady', target: 'power' },
   { id: 'evolveFirst', textKey: 'tutorial.hint.evolveFirst', target: 'evolve' },
@@ -352,18 +364,20 @@ export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [
 
 /**
  * The starter loadout of an age (A3 starter kit): the Infantry, Ranged and Heavy commons in slots
- * 0-2 (the AA Rare arrives by script later), both Common turrets and the age's two starter powers (A2.9.8).
+ * 0-2 and the age's Anti-heavy Rare in slot 3 (owner feedback 2026-09-29), both Common turrets and
+ * the age's two starter powers (A2.9.8).
  */
 export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
   const units = Object.values(content.units).filter((u) => u.age === age && u.rarity === 'common' && !u.hidden);
   const byGroup = (g: string): CardId | null => units.find((u) => u.group === g)?.id ?? null;
+  const antiHeavy = Object.values(content.units).find((u) => u.age === age && u.group === 'antiArmor' && u.rarity === 'rare' && !u.hidden)?.id ?? null;
   const turrets = Object.values(content.turrets)
     .filter((t) => t.age === age && t.rarity === 'common')
     .map((t) => t.id);
   const starter = (slot: 'home' | 'field'): CardId | null =>
     Object.values(content.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
   return {
-    units: [byGroup('infantry'), byGroup('ranged'), byGroup('heavy'), null, null],
+    units: [byGroup('infantry'), byGroup('ranged'), byGroup('heavy'), antiHeavy, null],
     turrets: [turrets[0] ?? null, turrets[1] ?? null],
     powers: { home: starter('home'), field: starter('field') },
   };

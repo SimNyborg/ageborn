@@ -24,6 +24,8 @@ export interface TutorialPrompt {
   kind: 'beat' | 'hint';
   /** Tick the prompt appeared. */
   sinceTick: number;
+  /** Text variables whose values are i18n keys (translate them, then fill `textKey`). */
+  varKeys?: Record<string, string>;
 }
 
 export type DirectorLogKind = 'beatShown' | 'beatDone' | 'beatTimeout' | 'beatSkipped' | 'hintShown';
@@ -168,7 +170,7 @@ export class TutorialDirector {
     if (hint) {
       this.hintUntil = tick + ADAPTIVE.showTicks;
       this.record('hintShown', hint.id, tick);
-      this.setPrompt({ id: `hint.${hint.id}`, textKey: hint.textKey, target: hint.target, hand: null, kind: 'hint', sinceTick: tick });
+      this.setPrompt({ id: `hint.${hint.id}`, textKey: hint.textKey, target: hint.target, hand: null, kind: 'hint', sinceTick: tick, ...(hint.varKeys ? { varKeys: hint.varKeys } : {}) });
     }
   }
 

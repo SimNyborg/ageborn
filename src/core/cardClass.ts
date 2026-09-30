@@ -2,12 +2,13 @@
  * Card classes (owner feedback 2026-09-28 "card class and counters visible", DESIGN A2.6).
  *
  * Every unit shows one player-facing class, derived from its role and tags so content stays the
- * single source of truth: Infantry, Ranged, Heavy, Anti-armor, Siege, Support or Air. Legendary is
+ * single source of truth: Infantry, Ranged, Heavy, Anti-heavy (id `antiArmor`, owner feedback
+ * 2026-09-29: the player-facing name says what it beats), Siege, Support or Air. Legendary is
  * a marker on top of the class (a Legendary Heavy is still Heavy); turrets and powers have their
  * own kinds. The glyphs are plain SVG path data (no DOM) so the UI and the capsule show draw the
  * very same shapes. Shapes differ per class, so the icons never rely on colour alone.
  */
-import type { CardId, UnitDef } from '@/contracts';
+import type { CardId, RoleGroup, UnitDef } from '@/contracts';
 
 export type UnitClass = 'infantry' | 'ranged' | 'heavy' | 'antiArmor' | 'siege' | 'support' | 'air';
 export type CardClass = UnitClass | 'turret' | 'power';
@@ -51,6 +52,29 @@ export function unitClass(u: Pick<UnitDef, 'role' | 'tags'>): UnitClass {
   }
 }
 
+/**
+ * The in-battle counter hint (A9.2, owner feedback 2026-09-29): the enemy fields Heavies when it has
+ * at least `minCount` Heavy-group units on the lane, or Heavies make up `shareBp` or more of the value
+ * of its units on the lane. Legendary heavies are group `legendary` and do not count (the Anti-heavy
+ * multiplier does not apply to them).
+ */
+export const HEAVY_THREAT = { minCount: 2, shareBp: 4000 } as const;
+
+/** True when the enemy's units on the lane trigger the Heavy counter hint ({@link HEAVY_THREAT}). */
+export function heavyThreat(foes: readonly { group: RoleGroup; value: number }[]): boolean {
+  let n = 0;
+  let heavy = 0;
+  let all = 0;
+  for (const u of foes) {
+    all += u.value;
+    if (u.group === 'heavy') {
+      n += 1;
+      heavy += u.value;
+    }
+  }
+  return n >= HEAVY_THREAT.minCount || (heavy > 0 && heavy * 10000 >= all * HEAVY_THREAT.shareBp);
+}
+
 /** True for Legendary units (shown as a crown marker next to the class). */
 export function isLegendaryUnit(u: Pick<UnitDef, 'rarity' | 'tags'>): boolean {
   return u.rarity === 'legendary' || u.tags.includes('legendary');
@@ -76,12 +100,19 @@ export function classesOf(
  * With `self` (the unit's own class) the lists are cleaned for players: the own class is dropped (a
  * mirror match only says which card is bigger), and so is any entry that contradicts the War Plan
  * legend (`COUNTER_LEGEND`), so a card never tells a new player the opposite of the legend.
+ *
+ * With `floor` as well (Common and Rare cards; A18.9.1 "the legend is a floor", owner feedback
+ * 2026-09-29) the counter triangle rows are always listed, first: every Anti-heavy card reads
+ * "Strong vs Heavy", every Heavy card "Weak vs Anti-heavy" and "Strong vs Infantry", every Infantry
+ * card "Strong vs Anti-heavy" and "Weak vs Heavy". Epics and Legendaries keep their measured lists
+ * (the Anti-heavy multiplier does not apply to Legendaries).
  */
 export function counterClasses(
   strongVs: readonly CardId[],
   weakVs: readonly CardId[],
   units: Readonly<Record<CardId, Pick<UnitDef, 'role' | 'tags'> | undefined>>,
   self?: UnitClass,
+  floor = false,
 ): { strong: UnitClass[]; weak: UnitClass[] } {
   const score = new Map<UnitClass, number>();
   const add = (ids: readonly CardId[], d: number) => {
@@ -97,10 +128,22 @@ export function counterClasses(
   const beats = (a: CardClass, b: CardClass) => COUNTER_LEGEND.some((l) => l.a === a && l.b === b);
   const keep = (c: UnitClass, strong: boolean) =>
     self === undefined || (c !== self && !(strong ? beats(c, self) : beats(self, c)));
+  const strong = UNIT_CLASSES.filter((c) => s.has(c) && (!w.has(c) || (score.get(c) ?? 0) > 0) && keep(c, true));
+  const weak = UNIT_CLASSES.filter((c) => w.has(c) && (!s.has(c) || (score.get(c) ?? 0) < 0) && keep(c, false));
+  if (self === undefined || !floor) return { strong, weak };
+  // The counter triangle: the first three legend rows (the pairs the War Plan draws as a triangle).
+  const tri = COUNTER_LEGEND.slice(0, 3);
+  const strongFloor = tri.filter((r) => r.a === self).map((r) => r.b as UnitClass);
+  const weakFloor = tri.filter((r) => r.b === self).map((r) => r.a as UnitClass);
   return {
-    strong: UNIT_CLASSES.filter((c) => s.has(c) && (!w.has(c) || (score.get(c) ?? 0) > 0) && keep(c, true)),
-    weak: UNIT_CLASSES.filter((c) => w.has(c) && (!s.has(c) || (score.get(c) ?? 0) < 0) && keep(c, false)),
+    strong: [...strongFloor, ...strong.filter((c) => !strongFloor.includes(c) && !weakFloor.includes(c))],
+    weak: [...weakFloor, ...weak.filter((c) => !weakFloor.includes(c) && !strongFloor.includes(c))],
   };
+}
+
+/** Whether a unit's Strong vs / Weak vs rows carry the triangle floor (Common and Rare cards). */
+export function takesCounterFloor(u: Pick<UnitDef, 'rarity' | 'tags'>): boolean {
+  return (u.rarity === 'common' || u.rarity === 'rare') && !isLegendaryUnit(u);
 }
 
 /**
@@ -181,16 +224,24 @@ export const CLASS_GLYPH: Readonly<Record<ClassGlyphId, readonly GlyphPart[]>> =
     },
     { d: 'M12 5.6v13.2M7.2 10.4h9.6', stroke: 17 },
   ],
-  // A spear driving down through a cracked armor plate.
+  // Anti-heavy: the Heavy class's kite shield split in two by a spear driven down through it, so the
+  // two icons read as a pair (A18.9.1, owner feedback 2026-09-29).
   antiArmor: [
     {
-      d: 'M2.8 14.2h7.4l1.1 1.6-1.1 1.6h-7.4zM13.8 14.2h7.4v3.2h-7.4l-1.1-1.6z',
+      d: 'M10.5 3.2 3.8 5.6v6.1c0 4.7 2.9 8.1 6.7 9.8z',
       fill: 'glyph',
-      stroke: 13,
+      stroke: 14,
+      transform: 'rotate(-9 10.5 21.5)',
     },
-    { d: 'M12 2.5v10', stroke: 32 },
-    { d: 'M12 2.5v10', stroke: 13, strokeGlyph: true },
-    { d: 'M12 21.6 8.6 12.4h6.8z', fill: 'glyph', stroke: 14 },
+    {
+      d: 'M13.5 3.2l6.7 2.4v6.1c0 4.7-2.9 8.1-6.7 9.8z',
+      fill: 'glyph',
+      stroke: 14,
+      transform: 'rotate(9 13.5 21.5)',
+    },
+    { d: 'M12 1.4v14.4', stroke: 34 },
+    { d: 'M12 1.4v14.4', stroke: 14, strokeGlyph: true },
+    { d: 'M12 22.8 9.2 15.2h5.6z', fill: 'glyph', stroke: 14 },
   ],
   // A lit bomb (cannonball with fuse and spark).
   siege: [

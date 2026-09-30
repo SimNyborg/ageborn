@@ -60,7 +60,7 @@ export const modern: RawAgeTables = {
     {
       // Rocket; ranged AA mods; priority armored
       id: 'bazooka_trooper', kind: 'unit', age: 'modern', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 300, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 330, speed: 65, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -69,7 +69,7 @@ export const modern: RawAgeTables = {
           dmgType: 'blast', sfx: 'shot_rocket', mods: damageMods.rangedAntiArmor, priority: 'armored',
         },
       ],
-      abilities: [],
+      abilities: [{ kind: 'brace' }],
       visualId: 'unit.bazooka_trooper', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.bazooka_trooper.name', descKey: 'card.bazooka_trooper.desc', strongVs: [], weakVs: [],
     },

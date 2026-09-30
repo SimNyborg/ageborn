@@ -9,15 +9,26 @@ visor and a tall team crest, charcoal joints, and a slowly turning gear halo on 
 magenta ticks (it reads "time" at a glance and makes the silhouette unique). Legs are
 humanoid (knees forward) with heavy boots that plant without sliding. In the near hand a
 colossal chrono-blade: a charcoal spine with a white edge, a magenta energy edge line and a
-gear-shaped guard. The walk is a slow, heavy stride (1.2 s); the attack is a huge overhead
-cleave: a long held wind-up, a white-magenta smear, a held impact with a crouch and burst,
-and a heavy recovery. The death buckles the knees and pitches forward before the hand-off.
+gear-shaped guard. The visor's mint eyes act (angry on the wind-up, slits on the sweep, > < when
+hit, spirals and X when it dies); mint light seams run down the thighs.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    the clock ticks, the halo turns, the hull breathes, a blink
+  walk    a slow heavy clank (1.4 s), the torso jolts on each plant, a vent puff per step
+  attack  CLOCK-HAND SWEEP: dips, winds the blade back to nine o'clock behind it (the held
+          extreme), then sweeps it 180 degrees over the top like a clock hand, with a double magenta
+          smear, the clock hands and halo spinning, and cleaves level through the
+          front with a lunge (impact lines, dust, a time ring off the dial)
+  hit     mech: a hard jolt, sparks on the chest, a vent puff
+  die     D6 fall-apart: the clock hands spin wild, the halo drops off behind, the knees buckle
+          onto the ground and it topples forward with a smoke puff, spiral then X eyes
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import kit_future as KF
+from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "chrono_titan"
@@ -27,6 +38,7 @@ YAW_DEG = -16.0
 CANVAS = (600, 580)
 FEET = (238, 552)
 ANCHORS = {"head": (8, 186), "hitCenter": (0, 110)}
+NO_RETIME = True
 
 HIP_Z = 60.0
 THIGH, SHIN = 32.0, 36.0
@@ -43,8 +55,6 @@ HAND = {s: (0.0, ARM_Y[s], SHOULDER_Z - UPPER - LOWER) for s in ("r", "l")}
 BLADE = 84.0
 GUARD = 10.0
 TIP = (HAND["r"][0], HAND["r"][1] - 2.0, HAND["r"][2] + GUARD + BLADE)
-SMEAR = {"joint": "blade", "inner": (TIP[0], TIP[1], TIP[2] - BLADE * 0.55), "outer": TIP,
-         "color": F.MAGENTA, "taper": 0.35, "start": 0.3, "behind": 8.0}
 HALO = (-30.0, 12.0, 140.0)
 DIAL = (29.0, -9.0, 112.0)
 
@@ -175,16 +185,15 @@ def build(rig):
     g = Geo().blob((6.0, 0, 154.0), (14.8, 13.8, 14.8), p=2.6)
     g.clip((12.0, 0, 0), (-1, 0, 0)).clip((0, 0, 158.0), (0, 0, 1)).clip((0, 0, 150.0), (0, 0, -1))
     rig.part("head", g, F.VISOR_DARK, finish="gloss", outline_hex=F.SUIT)
-    rig.joint("eyes", "head", (20.6, 0, 154.0))
-    g = Geo().blob((6.0, 0, 154.0), (15.4, 14.4, 15.4), p=2.6)
-    g.clip((14.0, 0, 0), (-1, 0, 0)).clip((0, 0, 155.6), (0, 0, 1)).clip((0, 0, 152.6), (0, 0, -1))
-    rig.part("eyes", g, glow=F.MINT, outline=0)
-    rig.joint("eyes_x", "head", (20.6, 0, 154.0), hidden=True)
-    g = Geo()
-    for y in (-6.0, 3.0):
-        g.capsule((21.4, y - 2.4, 156.4), (21.4, y + 2.4, 151.6), 1.1)
-        g.capsule((21.4, y - 2.4, 151.6), (21.4, y + 2.4, 156.4), 1.1)
-    rig.part("eyes_x", g, glow=F.MINT, outline=0)
+    band = Geo().blob((6.0, 0, 154.0), (15.1, 14.1, 15.1), p=2.6)
+    band.clip((12.0, 0, 0), (-1, 0, 0)).clip((0, 0, 158.4), (0, 0, 1)).clip((0, 0, 149.6), (0, 0, -1))
+    KF.visor_face(rig, "head", [band], (15.6, 154.2), eye_dx=(0.0, 5.0), eye_rx=2.2, eye_rz=3.2, yaw_deg=YAW_DEG)
+    # mint light seams on the thighs and a rivet row on the chest band
+    for s_ in ("r", "l"):
+        y = LEG_Y[s_]
+        KF.strip(rig, f"thigh_{s_}", [(9.6, y - 3.0 * (1 if s_ == "r" else -1), HIP_Z - 4.0),
+                                      (10.4, y - 3.0 * (1 if s_ == "r" else -1), HIP_Z - 20.0)], r=1.1)
+    KF.rivets(rig, "torso", [(x_, -26.6 + 0.12 * abs(x_), 95.6) for x_ in (-16.0, -8.0, 0.0, 8.0)], r=1.3)
 
     _arm(rig, "r")
 
@@ -196,7 +205,7 @@ def build(rig):
     b0 = z + GUARD
     g = Geo().lathe([(0, -2.2), (8.0, -2.0), (9.4, 0), (8.0, 2.0), (0, 2.2)], (x, y - 1.0, b0 - 2.0),
                     (x, y - 2.0, b0 - 2.0), segs=12)                             # gear guard
-    rig.part("blade", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+    rig.part("blade", g, team=True)
     g = Geo().sphere((x, y - 3.0, b0 - 2.0), 3.0, cuts=3)
     rig.part("blade", g, glow=F.MINT, outline=0)
     g = Geo().blob((x - 1.0, y - 1.0, b0 + BLADE / 2), (4.4, 2.6, BLADE / 2), p=2.6, taper=(1.0, 0.5))
@@ -211,6 +220,8 @@ def build(rig):
     F.sparks(rig, "blade", (x + 4.0, y - 4.0, b0 + BLADE * 0.85), color=F.MAGENTA, core=F.WHITE,
              size=3.0, name="sparks", rays=8, seed=4)
     F.puff(rig, "torso", (-30.0, -6.0, 132.0), size=2.4, name="vent", spread=1.2)
+    F.sparks(rig, "torso", (26.0, -20.0, 118.0), color=F.MINT, size=2.2, name="hit_spark", rays=6, seed=6)
+    F.puff(rig, "root", (0.0, -20.0, 40.0), size=3.2, name="smoke", color="#B9BEC6", spread=1.6)
 
 
 def _arm(rig, s):
@@ -234,7 +245,7 @@ def _arm(rig, s):
     rig.part(f"hand_{s}", g, F.SUIT, finish="gloss")
 
 
-# -- poses ---------------------------------------------------------------------------------
+# -- poses -----------------------------------------------------------------------------------
 def legs(foot_r, foot_l, hips=(0.0, 0.0)):
     pose = {}
     for s, (fx_, lift) in (("r", foot_r), ("l", foot_l)):
@@ -244,30 +255,34 @@ def legs(foot_r, foot_l, hips=(0.0, 0.0)):
     return pose
 
 
-def stand(bob=0.0, dx=0.0):
-    return legs((STANCE_X["r"], 0.0), (STANCE_X["l"], 0.0), (dx, LIFT + bob))
+def stand(bob=0.0, dx=0.0, spread=0.0):
+    return legs((STANCE_X["r"] + spread, 0.0), (STANCE_X["l"] - spread, 0.0), (dx, LIFT + bob))
 
 
 def arms(ra, rf, rw, la=-70.0, lf=-40.0):
-    """Blade arm (upper, fore, blade directions) and the free far arm."""
+    """Blade arm (upper, fore, blade directions) and the free far arm (torso space)."""
     return merge(F.arm("r", ra, rf, rw, 90.0), F.arm("l", la, lf))
 
 
-def clock(step):
+def clock(step, fast=0.0):
     """Clock hands at a playback-independent step (the minute hand ticks 30 degrees)."""
-    return {"hand_min": {"rx": -30.0 * step}, "hand_hour": {"rx": -60.0 - 2.5 * step}}
+    return {"hand_min": {"rx": -30.0 * step - fast}, "hand_hour": {"rx": -60.0 - 2.5 * step - fast / 12}}
 
 
 REST = arms(-80, -35, 55, -75, -30)
 
 
 def _idle(f):
-    c, lag = F.idle_wave(f)
-    return merge(stand(1.6 * c), REST, clock(f), {
+    c = math.cos(2 * math.pi * f / 6)
+    lag = math.cos(2 * math.pi * (f - 1) / 6)
+    pose = merge(stand(1.6 * c), REST, clock(f), {
         "torso": {"r": 1.0 * c}, "head": {"r": -1.5 * lag},
         "arm_r": {"r": 2.0 * lag}, "hand_r": {"r": -2.5 * lag}, "arm_l": {"r": 2.0 * lag},
-        "halo": {"rx": 0.0, "r": 7.5 * f},
+        "halo": {"rx": 0.0, "r": 5.0 * f},
     })
+    if f == 4:
+        pose = merge(pose, KF.glyph("g_blink"))
+    return pose
 
 
 WALK_MS = [175] * 8      # 1.4 s heavy stride
@@ -275,77 +290,124 @@ STRIDE = 24.5            # natural speed 2 x 24.5 / 1.4 s = 35 lu/s (sim speed 3
 
 
 def _walk(f):
-    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 17.0)
-    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 17.0, phase=0.5)
-    bob = [-4.0, -1.5, 2.0, 0.0, -4.0, -1.5, 2.0, 0.0][f]
-    lag = [0.0, -4.0, -1.5, 2.0, 0.0, -4.0, -1.5, 2.0][f]
+    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 18.0)
+    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 18.0, phase=0.5)
+    bob = [-5.0, -2.0, 2.2, 0.4, -5.0, -2.0, 2.2, 0.4][f]
+    lag = [0.4, -5.0, -2.0, 2.2, 0.4, -5.0, -2.0, 2.2][f]
+    jolt = [1.0, 0.3, 0, 0, 1.0, 0.3, 0, 0][f]
     p = 2 * math.pi * f / 8
     return merge(legs((STANCE_X["r"] + xr, lr), (STANCE_X["l"] + xl, ll), (0.0, LIFT + bob)), REST,
                  clock(f), {
-        "torso": dict(r=-4.0 + 1.5 * math.cos(2 * p), rz=5.0 * math.sin(p), rx=2.0 * math.sin(p)),
+        "torso": dict(r=-4.0 + 1.5 * math.cos(2 * p) - 1.2 * jolt, rz=5.0 * math.sin(p), rx=2.0 * math.sin(p)),
         "head": {"r": 1.0 - 0.4 * lag},
         "arm_r": {"r": -5 * math.cos(p) + 0.8 * lag}, "hand_r": {"r": 1.2 * lag},
-        "arm_l": {"r": 8 * math.cos(p)},
-        "halo": {"r": 7.5 * f},
+        "arm_l": {"r": 10 * math.cos(p)}, "fore_l": {"r": 6 * max(0.0, math.cos(p))},
+        "halo": {"r": 5.0 * f},
+        "vent": {"show": f in (1, 5), "s": 0.55, "z": 2.0},
     })
 
 
-ATTACK_MS = [100, 100, 200, 50, 167, 100, 100, 100]
+# -- attack: clock-hand sweep (heavy timing: impact on pose 6 at 570 of 1230 ms) -------------------
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 0]
+#      shift  dip   coil  HOLD  12oc  2oc  SWEEP shock follow recover
+RA = [-82, 245, 210, 182, 92, 42, 6, 4, -24, -62]
+RF = [-38, 235, 200, 184, 94, 40, 4, 0, -26, -45]
+RW = [55, 215, 195, 182, 96, 40, 10, 2, -24, 24]
+LA = [-75, -55, -30, -10, -40, -70, -95, -95, -88, -78]
+LF = [-30, -20, 0, 15, -30, -60, -70, -72, -60, -35]
+TR = [2.0, 6.0, 9.0, 11.0, 2.0, -6.0, -14.0, -15.0, -11.0, -4.0]
+TZ = [0, 6.0, 12.0, 18.0, 6.0, -2.0, -4.0, -5.0, -4.0, -1.0]
+BOB = [0.0, -4.0, -3.0, -2.0, 1.5, -1.0, -9.0, -8.0, -5.0, -1.5]
+DX = [-1.0, -3.0, -4.5, -6.0, -2.0, 2.0, 7.0, 7.0, 5.0, 1.0]
+SPREAD = [0, 2.0, 3.0, 4.0, 4.0, 4.0, 7.0, 7.0, 5.0, 2.0]
+EYES = ["eyes", "g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "g_angry", "eyes", "eyes"]
 
 
-def _attack(f):
-    # 0-1 raise and coil (squash), 2 held extreme (blade high behind), 3 smear,
-    # 4 held impact: blade down in front, crouch, burst; 5-7 heavy recovery
-    ra = pick(f, [-20, 50, 85, 40, -25, -30, -45, -65])
-    rf = pick(f, [30, 100, 125, 30, -20, -22, -26, -30])
-    rw = pick(f, [85, 120, 135, 55, -22, -18, 10, 40])
-    pose = merge(stand(pick(f, [0, -3, -1, 0, -8, -6, -3, -1]), pick(f, [-1, -3, -4, 2, 6, 5, 3, 1])),
-                 arms(ra, rf, rw, pick(f, [-70, -50, -30, -80, -100, -95, -85, -78]),
-                      pick(f, [-30, -10, 10, -40, -60, -55, -45, -35])),
-                 clock(f), {
-        "torso": dict(squash(pick(f, [-0.02, -0.06, 0.05, 0.03, -0.08, -0.05, -0.02, 0])),
-                      r=pick(f, [3, 8, 12, -6, -16, -13, -7, -2])),
-        "head": {"r": pick(f, [1, 3, 4, -2, -5, -4, -2, 0])},
-        "sparks": {"show": f == 4},
-        "vent": {"show": f in (5, 6), "s": pick(f, [1, 1, 1, 1, 1, 0.8, 1.2, 1]),
-                 "z": pick(f, [0, 0, 0, 0, 0, 0, 4, 0])},
-        "halo": {"r": pick(f, [0, 8, 16, 40, 60, 66, 70, 72])},
+def _attack_pose(f):
+    pose = merge(stand(BOB[f], DX[f], SPREAD[f]), arms(RA[f], RF[f], RW[f], LA[f], LF[f]),
+                 clock(f, fast=[0, 0, 0, 0, 90, 180, 300, 330, 350, 360][f]), {
+        "torso": {"r": TR[f], "rz": TZ[f]},
+        "head": {"r": -0.4 * TR[f], "rz": -0.6 * TZ[f]},
+        "sparks": {"show": f == 6},
+        "vent": {"show": f in (7, 8), "s": 1.3 if f == 8 else 1.0, "z": 5.0 if f == 8 else 0.0},
+        "halo": {"r": [0, 4, 10, 16, 60, 110, 150, 160, 166, 170][f]},
     })
-    if f == 3:
-        pose.setdefault("blade", {})["sz"] = 1.2
-    return pose
+    if f in (4, 5):
+        pose["blade"] = dict(pose.get("blade", {}), sz=1.12)
+    return merge(pose, KF.glyph(EYES[f]))
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(stand(-2.0 * a, -3.0 * a), REST, clock(0), {
-        "torso": dict(squash(-0.05 * a), r=8 * a), "head": {"r": 8 * a},
+def _attack_clip():
+    x, y, z = HAND["r"]
+    swing = {"kind": "arc", "joint": "blade", "inner": (x + 4.0, y - 2.0, z + GUARD + BLADE * 0.45), "outer": TIP,
+             "color": F.MAGENTA, "white": 0.55, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+    inner = dict(swing, inner=(x + 2.0, y - 2.0, z + GUARD + 6.0), outer=(x + 4.0, y - 2.0, z + GUARD + BLADE * 0.4),
+                 white=0.6, lines=0)
+    ov = {
+        4: [dict(swing, **{"from": 3}), dict(inner, **{"from": 3})],
+        5: [dict(swing, **{"from": 4}), dict(inner, **{"from": 4})],
+        # impact: no swing smear here (painted over the frame it hid the level blade behind a
+        # magenta wedge at game size); the blade, the tip burst and the dust carry the hit
+        6: [{"kind": "burst", "joint": "blade", "point": TIP, "r0_lu": 10.0, "r1_lu": 22.0, "n": 7,
+             "a0": -80.0, "arc": 160.0, "color": F.MAGENTA_CORE},
+            {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 10.0, "puffs": 4, "seed": 41, "spread": 1.2,
+             "color": "#DDE3E8"},
+            {"kind": "dust", "ground": (-22.0, 0.0), "size_lu": 8.0, "puffs": 3, "seed": 42, "spread": 1.0,
+             "color": "#DDE3E8", "dir": -1.0}],
+        7: [{"kind": "rings", "joint": "torso", "point": DIAL, "radii_lu": (22.0, 32.0), "a0": -60.0, "a1": 60.0,
+             "color": F.MAGENTA_CORE}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS, impact=6,
+                  sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    a = M.HIT_AMT[k]
+    pose = merge(stand(-2.0 * max(a, 0)), REST, clock(0, fast=-20 * a), KF.hit_mech(k, (0, 0, 100), scale=1.4), {
+        "torso": {"r": 7 * a}, "head": {"r": 8 * a},
         "arm_r": {"r": 10 * a}, "arm_l": {"r": 14 * a},
+        "hit_spark": {"show": k <= 1},
+        "vent": {"show": k in (2, 3), "s": 0.8},
     })
+    return merge(pose, KF.glyph("g_hurt" if k <= 1 else ("g_angry" if k == 2 else "eyes")))
 
 
-def _die(f):
-    # knees buckle, the body pitches, then the hand-off squash
-    pose = merge(legs((STANCE_X["r"] + pick(f, [4, 8, 8]), 0.0), (STANCE_X["l"], 0.0),
-                      (pick(f, [-3, -5, -5]), LIFT + pick(f, [-6, -22, -28]))),
-                 arms(-40, -10, 20, -20, 10), clock(3), {
-        "body": {"r": pick(f, [8, 5, 3]), "sz": pick(f, [1.02, 0.84, 0.66]),
-                 "sx": pick(f, [0.98, 1.1, 1.2])},
-        "torso": {"r": pick(f, [14, 20, 20])},
-        "head": {"r": pick(f, [12, -6, -6])},
-        "sparks": {"show": f == 0},
+# D6 fall-apart: 8 unique poses in the 12 heavy steps (moves.DIE_SEQ_HEAVY). It sputters (the clock
+# hands spin wild), the halo drops off behind, the knees buckle onto the ground, then it topples
+# forward onto its blade arm with a smoke puff.
+D_BOB = [-2.0, -8.0, -18.0, -30.0, -38.0, -44.0, -42.0, -45.0]
+D_DX = [-3.0, -4.0, -2.0, 1.0, 4.0, 8.0, 8.0, 8.0]
+D_TR = [10.0, 4.0, -6.0, -16.0, -30.0, -48.0, -44.0, -50.0]
+HALO_PATH = [(0, 0, 0), (0, 0, 20), (-6, -10, 60), (-14, -40, 100), (-22, -80, 140), (-26, -92, 160),
+             (-27, -90, 162), (-27, -93, 164)]
+
+
+def _die(k):
+    feet = legs((STANCE_X["r"] + [0, 4, 8, 14, 18, 20, 20, 20][k], 0.0), (STANCE_X["l"] - [0, 2, 4, 6, 8, 8, 8, 8][k], 0.0),
+                (D_DX[k], LIFT + D_BOB[k]))
+    hx, hz, hr = HALO_PATH[k]
+    pose = merge(feet, arms(-60 + [10, 20, 30, 40, 50, 60, 58, 60][k], -30 + [10, 20, 30, 40, 50, 60, 58, 60][k],
+                            40 + [0, 0, -5, -5, 10, 30, 28, 30][k],
+                            -40 + [20, 30, 40, 60, 70, 80, 78, 80][k], -10 + [0, 10, 20, 30, 40, 50, 50, 50][k]),
+                 clock(3, fast=[0, 150, 400, 700, 760, 770, 770, 770][k]), {
+        "torso": {"r": D_TR[k]}, "head": {"r": [8, -6, 10, 14, 18, 20, 18, 20][k]},
+        "halo": {"x": hx, "z": hz, "r": hr},
+        "sparks": {"show": k in (0, 2)},
+        "hit_spark": {"show": k in (0, 3)},
+        "vent": {"show": k in (1, 2), "s": 1.0},
+        "smoke": {"show": k in (5, 6, 7), "s": [1, 1, 1, 1, 1, 0.8, 1.1, 1.25][k], "z": [0, 0, 0, 0, 0, 0, 4, 8][k]},
     })
-    if f in (0, 1):
-        pose.update({"eyes": {"hide": True}, "eyes_x": {"show": True}})
-    return pose
+    g = ["g_wide", "g_hurt", "g_spiral", "g_spiral", "eyes_x", "eyes_x", "eyes_x", "eyes_x"][k]
+    return merge(pose, KF.glyph(g))
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [M.IDLE_MS_HEAVY] * 6, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
+               extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
+    return M.check_contract(cl, heavy=True)

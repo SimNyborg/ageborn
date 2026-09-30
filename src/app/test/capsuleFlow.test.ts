@@ -1,7 +1,7 @@
 /**
  * The app's capsule flow (A6.4, A10, B8, C5 #29): results are saved before the show starts, a reload
  * mid-animation replays the same result, Open all opens every waiting capsule, Wardrobe Crates open
- * with their pity, and the onboarding's first capsule equips its NEW card.
+ * with their pity, and the onboarding's first capsule changes no loadout (the Anti-heavy card is a starter card).
  */
 import { describe, expect, it } from 'vitest';
 import type { SaveDoc } from '@/contracts';
@@ -92,14 +92,16 @@ describe('capsule flow (app)', () => {
     }
   });
 
-  it('the first scripted capsule equips its NEW card (A8, C5 #5)', () => {
+  it('the Spear Hunter is in the plan from the start; the first scripted capsule changes no loadout (A3, A8)', () => {
     const before = M.grantCapsule(M.newSave(content, clock, 7), 'win', content, clock);
     const cap = before.capsules.pending[0]!;
     expect(cap.scriptIndex).toBe(1);
+    const planOf = (s: typeof before) => s.warPlans[s.activePlan]!;
+    expect(planOf(before).loadouts.stone.units).toContain('spear_hunter');
     const o = openCapsules(M, before, [cap.id], content, 'capsule1');
-    const plan = o!.save.warPlans[o!.save.activePlan]!;
-    const inPlan = Object.values(plan.loadouts).some((l) => l.units.includes('spear_hunter'));
-    expect(inPlan).toBe(true);
+    expect(planOf(o!.save)).toEqual(planOf(before));
+    // Its NEW Support Rares are in the collection, for "Equip now" on the summary.
+    expect(o!.save.collection['drum_shaman']?.level).toBe(1);
     expect(o!.record.kind === 'capsules' && o!.record.onboarding).toBe('capsule1');
   });
 

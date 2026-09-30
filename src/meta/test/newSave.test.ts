@@ -8,10 +8,13 @@ import { SAVE_VERSION } from '../rules';
 import { C, M, TestClock, T0, fresh } from './helpers';
 
 describe('newSave', () => {
-  it('owns every Common at L1 and each default power; nothing else', () => {
+  it('owns every Common and each age\'s Anti-heavy Rare at L1 and each default power; nothing else', () => {
     const s = fresh();
     const commons = [...C.order.units, ...C.order.turrets].filter((id) => (C.units[id] ?? C.turrets[id])?.rarity === 'common');
-    expect(Object.keys(s.collection).sort()).toEqual([...commons].sort());
+    // Owner feedback 2026-09-29: the Anti-heavy Rare of every age is in the starter kit (A3).
+    const antiHeavy = C.order.units.filter((id) => C.units[id]?.group === 'antiArmor' && C.units[id]?.rarity === 'rare');
+    expect(antiHeavy).toEqual(['spear_hunter', 'phalangite', 'pikeman', 'grenadier', 'harpoon_gunner', 'bazooka_trooper', 'rail_gunner', 'graviton_halberdier']);
+    expect(Object.keys(s.collection).sort()).toEqual([...commons, ...antiHeavy].sort());
     expect(commons).toHaveLength(40);
     for (const e of Object.values(s.collection)) expect(e).toEqual({ level: 1, copies: 0, isNew: false, foil: 'none' });
     // Both starters of every age (A2.9.8): Home then Field per age, in age order.
@@ -31,20 +34,21 @@ describe('newSave', () => {
     expect(s.trophies).toEqual({ current: 0, best: 0, roadClaimed: [] });
   });
 
-  it('the starter War Plan: 3 common units and 2 common turrets per age, playable in every format', () => {
+  it('the starter War Plan: 3 common units, the Anti-heavy Rare in slot 4 and 2 common turrets per age, playable in every format', () => {
     const s = fresh();
     expect(s.warPlans).toHaveLength(1);
     expect(s.activePlan).toBe(0);
     const plan = s.warPlans[0]!;
     for (const age of C.order.ages as AgeId[]) {
       const l = plan.loadouts[age];
-      expect(l.units.filter(Boolean)).toHaveLength(3);
-      expect(l.units.slice(3)).toEqual([null, null, null]);
+      expect(l.units.filter(Boolean)).toHaveLength(4);
+      expect(C.units[l.units[3]!]).toMatchObject({ group: 'antiArmor', rarity: 'rare', age });
+      expect(l.units.slice(4)).toEqual([null, null]);
       expect(l.turrets.filter(Boolean)).toHaveLength(2);
       expect(C.powers[l.powers.home!]).toMatchObject({ slot: 'home', source: 'starter', age });
       expect(C.powers[l.powers.field!]).toMatchObject({ slot: 'field', source: 'starter', age });
     }
-    expect(plan.loadouts.stone.units.slice(0, 3)).toEqual(['bonker', 'pebbler', 'tuskback']);
+    expect(plan.loadouts.stone.units.slice(0, 4)).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter']);
   });
 
   it('an editable auto name, the Tar Pit banner and the Recruit title (A6.1, A5.8)', () => {

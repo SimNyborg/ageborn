@@ -91,7 +91,9 @@ export type SavingGoal =
   /** A War Council item the bot is saving for (A18.5.8). */
   | { kind: 'research'; amount: number; pick: string }
   | { kind: 'legendary'; amount: number; card: CardId }
-  | { kind: 'counter'; amount: number; card: CardId };
+  | { kind: 'counter'; amount: number; card: CardId }
+  /** A7.2 "Answer Heavy with Anti-heavy": a first turret against Heavies camped near the gate. */
+  | { kind: 'turret'; amount: number; card: CardId };
 
 /** Why the chosen action was chosen. */
 export type ChoiceReason = 'opening' | 'best' | 'mistake' | 'wait';
@@ -280,6 +282,21 @@ const COUNTER_GOAL_TICKS = 8 * TICKS_PER_SECOND;
 /** ... or when an enemy unit comes within 300 lu of the own gate. */
 const COUNTER_GOAL_LAPSE = 300 * MILLI;
 /**
+ * A7.2 "Answer Heavy with Anti-heavy" (owner feedback 2026-09-29, build phase H5; tiers III+): the rule
+ * holds while Heavy-group units are at least half the visible enemy army's value and that army is
+ * worth at least this much (gold).
+ */
+const HEAVY_ANSWER_MIN_VALUE = 300;
+/** While it holds, a card whose counter score is below 0.40 is not trained ... */
+const HEAVY_ANSWER_SKIP_BELOW_BP = 4000;
+/** ... as long as a tray card scores 0.65 or more against that army. */
+const HEAVY_ANSWER_HAVE_BP = 6500;
+/**
+ * (c) Heavies within this distance of the gate are camping it: with no turret up, the bot banks for
+ * one on a free mount first, since units trained one at a time die at the gate (the mono Heavy trace).
+ */
+const HEAVY_CAMP_LU = 600 * MILLI;
+/**
  * A16.3 rule 3 (answer one-type armies): the counter weight is multiplied by
  * 1 + 2.5 × max(0, s − 0.4), capped at 2, where s is the largest role-group share of the visible enemy
  * army value. The diversity term and the gold float target shrink by the same factor.
@@ -335,6 +352,20 @@ export function monoFactorBp(foes: readonly { value: number; def?: { group: Role
   for (const x of by.values()) top = Math.max(top, x);
   const shareBp = Math.trunc((top * BP) / total);
   return Math.min(MONO_MAX_BP, BP + Math.trunc((MONO_SLOPE * Math.max(0, shareBp - MONO_FROM_BP)) / 10));
+}
+
+/**
+ * A7.2 "Answer Heavy with Anti-heavy": the visible enemy army is mostly Heavy (Heavy-group value ≥ 50%)
+ * and worth at least {@link HEAVY_ANSWER_MIN_VALUE}.
+ */
+export function heavyDominant(foes: readonly { value: number; def?: { group: RoleGroup } | undefined }[]): boolean {
+  let all = 0;
+  let heavy = 0;
+  for (const u of foes) {
+    all += u.value;
+    if (u.def?.group === 'heavy') heavy += u.value;
+  }
+  return all >= HEAVY_ANSWER_MIN_VALUE && heavy * 2 >= all;
 }
 
 /** When income research is worth buying on a quiet lane (see TREASURY_BEFORE_TICKS). */
@@ -486,11 +517,22 @@ export class Brain {
     const legendaryCard = v.tray.find((s) => s.card.legendary)?.card ?? null;
     const mono = monoFactorBp(v.foes);
     // A16.3 rule 1: a counter goal lives 8 s, or until an enemy unit reaches 300 lu of the own gate.
+    // A7.2 "Answer Heavy with Anti-heavy" (a): against a Heavy-dominant army the goal does not lapse
+    // when enemies near the gate (the 8 s limit still applies), so the bot banks for the answer
+    // instead of trickling cheap units into the Heavies.
+    const heavyAnswer = t.counterDepth > 0 && heavyDominant(v.foes);
     const cg = this.counterGoal;
-    if (cg && (v.now >= cg.until || allIn || v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE) || !v.tray.some((s) => s.card.id === cg.card))) this.counterGoal = null;
+    if (cg && (v.now >= cg.until || allIn || (!heavyAnswer && v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE)) || !v.tray.some((s) => s.card.id === cg.card))) this.counterGoal = null;
     if (this.counterGoal && v.gold >= this.counterGoal.amount) this.counterGoal = null;
     this.goal = null;
-    if (this.counterGoal) this.goal = { kind: 'counter', amount: this.counterGoal.amount, card: this.counterGoal.card };
+    // A7.2 "Answer Heavy with Anti-heavy" (c): Heavies camp near the gate and no turret is up: bank for
+    // the first turret on a free mount (it shoots every Heavy at the gate; units trickle into them).
+    const campTurret =
+      heavyAnswer && !allIn && v.turretsBuilt === 0 && v.foes.some((u) => !u.air && u.def?.group === 'heavy' && u.p <= HEAVY_CAMP_LU)
+        ? this.chooseTurretAt(v, Number.MAX_SAFE_INTEGER)
+        : null;
+    if (campTurret) this.goal = { kind: 'turret', amount: campTurret.cost, card: campTurret.card };
+    else if (this.counterGoal) this.goal = { kind: 'counter', amount: this.counterGoal.amount, card: this.counterGoal.card };
     else if (!urgent && !allIn) {
       // Treasury pays back in 133-367 s (A2.3), so a bot banks for it while the lane near its gate is
       // quiet in the first 3:00, up to its tier's Treasury max, and whenever the push gate says bank.
@@ -547,7 +589,7 @@ export class Brain {
     let trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp, mono });
     // A16.3 rule 1: the best counter is out of reach but clearly better than anything affordable: save
     // for it (the goal replaces a Treasury or Legendary goal, and the trains are scored again under it).
-    if (!this.counterGoal && !allIn && trains.counterGoal && !v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE)) {
+    if (!this.counterGoal && !allIn && trains.counterGoal && (heavyAnswer || !v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE))) {
       const c = trains.counterGoal;
       this.counterGoal = { card: c.card, amount: c.cost, until: v.now + COUNTER_GOAL_TICKS };
       this.goal = { kind: 'counter', amount: c.cost, card: c.card };
@@ -570,7 +612,7 @@ export class Brain {
     // Turrets.
     const turret = this.chooseTurret(v);
     if (turret && v.turretsBuilt < t.maxTurrets) {
-      add(turret, mulBp(W.turret, mulBp(pressure, fSpare(v.gold, turret.cost))) + Math.max(wantTurret, mulBp(baseWant, fSpare(v.gold, turret.cost))));
+      add(turret, mulBp(W.turret, mulBp(pressure, fSpare(v.gold, turret.cost))) + Math.max(wantTurret, mulBp(baseWant, fSpare(v.gold, turret.cost))) + goalBonus('turret'));
     }
     const filled = v.turrets.every((x, m) => m >= v.mountsOwned || x !== null);
     if (filled && v.mountsOwned < mountCap) {
@@ -846,9 +888,14 @@ export class Brain {
     const defencesOk = v.turretsBuilt > 0 || (P.researchBiasBp.defences ?? 0) > 0;
     // Ambush pays only while Holding: not for a bot that never holds.
     const holds = (t.hold || P.holdAnyTier) && !this.opening.noStance;
+    // A7.2 "Answer Heavy with Anti-heavy" (d): against a Heavy-dominant army, while the tray holds an
+    // Anti-heavy card whose Troops line can start, the other Troops lines wait (the gold goes to the answer).
+    const aaLine =
+      t.counterDepth > 0 && heavyDominant(v.foes) && classes.has('antiArmor') && startableFor(content, v).some((p) => p.group === 'antiArmor');
     const picks = startableFor(content, v).filter(
       (p) =>
         (p.group === null || classes.has(p.group)) &&
+        (!aaLine || p.group === null || p.group === 'antiArmor') &&
         !(p.track === 'economy' && pickIncomeMilliPerSec(p) > 0) &&
         P.researchBiasBp[p.id] !== -BP &&
         (p.track !== 'defences' || defencesOk) &&
@@ -1011,6 +1058,11 @@ export class Brain {
     let bestAll: { card: CardId; cost: number; fc: number } | null = null;
     let bestAffordable = 0;
     const counts = t.counterDepth > 0 && ctx.now.length > 0;
+    // A7.2 "Answer Heavy with Anti-heavy" (b): against a Heavy-dominant army, skip cards that score
+    // below 0.40 while one at 0.65 or more is in the tray.
+    let bestTray = 0;
+    const heavyAnswer = counts && heavyDominant(v.foes);
+    if (heavyAnswer) for (const sl of v.tray) bestTray = Math.max(bestTray, fCounter(ctx, sl.card.id));
     for (const slot of v.tray) {
       const c = slot.card;
       if (c.legendary && v.legendaryInField) continue;
@@ -1020,6 +1072,7 @@ export class Brain {
         if (!bestAll || fc > bestAll.fc) bestAll = { card: c.id, cost: c.cost, fc };
         if (v.gold >= c.cost) bestAffordable = Math.max(bestAffordable, fc);
       }
+      if (heavyAnswer && bestTray >= HEAVY_ANSWER_HAVE_BP && fc < HEAVY_ANSWER_SKIP_BELOW_BP) continue;
       if (v.gold < c.cost || v.queue.length >= e.queueMax) continue;
       const goal = this.goal;
       const saving = goal !== null && !((goal.kind === 'legendary' || goal.kind === 'counter') && goal.card === c.id) && v.gold - c.cost < goal.amount;
@@ -1069,10 +1122,15 @@ export class Brain {
    * is free or nothing is affordable.
    */
   chooseTurret(v: View): Extract<BotAction, { kind: 'build' }> | null {
+    return this.chooseTurretAt(v, v.gold);
+  }
+
+  /** {@link chooseTurret} within `gold` (a saving goal passes an unlimited budget). */
+  chooseTurretAt(v: View, gold: number): Extract<BotAction, { kind: 'build' }> | null {
     if (v.ageUncertain) return null;
     const mount = v.turrets.findIndex((x, m) => m < v.mountsOwned && x === null && !v.mountBusy[m]);
     if (mount < 0) return null;
-    const pick = this.bestTurretCard(v, v.gold);
+    const pick = this.bestTurretCard(v, gold);
     return pick ? { kind: 'build', mount, slot: pick.slot, card: pick.card, cost: pick.cost } : null;
   }
 

@@ -6,7 +6,7 @@
  * | Hint | Failure pattern |
  * |---|---|
  * | Their turret shreds melee. Try Pebblers. | 3 of your melee units killed by turrets within 20 s |
- * | Heavies stop Bonkers. Try a Spear Hunter. | 3 Bonkers killed by Heavies within 20 s while a Spear Hunter is in your loadout |
+ * | Heavies! Send {card}. | The enemy fields Heavies (2+ on the lane or 40%+ of their value, A9.2) while your tray holds an Anti-heavy card |
  * | Your power is ready. | Power full for 15 s with 3+ enemies on your half |
  * | Evolve before they do. | Evolve available and unused for 10 s |
  * | Buy another turret mount. | Every owned mount built, the next one affordable, your base hit in the last 10 s |
@@ -16,9 +16,10 @@
  * The modernise hint points at the old turret's mount (mount 0 or 1), so the player sees which one
  * is meant; while Evolve is ready it stays quiet, because evolving first is the better move.
  */
-import type { CardId, SimEvent } from '@/contracts';
-import { ADAPTIVE, ADAPTIVE_HINTS, type AdaptiveHintDef, type AdaptiveHintId } from './scripts';
-import { LANE_MILLI, PPM_FULL, evolveReady, goldOf, loadoutUnits, other, pOf, type TickInput } from './view';
+import type { CardId, RoleGroup, SimEvent } from '@/contracts';
+import { heavyThreat } from '@/core/cardClass';
+import { ADAPTIVE, ADAPTIVE_HINTS, type AdaptiveHintDef, type AdaptiveHintId, type PromptTarget } from './scripts';
+import { LANE_MILLI, PPM_FULL, evolveReady, goldOf, loadoutUnits, other, pOf, trayCard, type TickInput } from './view';
 
 interface Death {
   tick: number;
@@ -79,6 +80,12 @@ export class AdaptiveHints {
       this.lastHintTick = i.state.tick;
       this.resetPattern(def.id);
       if (def.id === 'modernise') return { ...def, target: this.outdatedMountTarget(i) };
+      if (def.id === 'heaviesStopInfantry') {
+        const slot = antiHeavySlot(i);
+        const card = slot === null ? null : trayCard(i, slot);
+        const nameKey = card ? i.config.content.units[card]?.nameKey : undefined;
+        return { ...def, target: slot !== null && slot <= 4 ? (`card${slot}` as PromptTarget) : null, ...(nameKey ? { varKeys: { card: nameKey } } : {}) };
+      }
       return def;
     }
     return null;
@@ -102,7 +109,7 @@ export class AdaptiveHints {
 
   private resetPattern(id: AdaptiveHintId): void {
     const tick = this.lastHintTick;
-    if (id === 'turretShredsMelee' || id === 'heaviesStopInfantry' || id === 'hold') this.deaths = [];
+    if (id === 'turretShredsMelee' || id === 'hold') this.deaths = [];
     if (id === 'powerReady') this.powerFullSince = tick;
     if (id === 'evolveFirst') this.evolveReadySince = tick;
     if (id === 'modernise') this.outdatedSince = tick;
@@ -119,11 +126,14 @@ export class AdaptiveHints {
         return hasRanged && n >= ADAPTIVE.deaths;
       }
       case 'heaviesStopInfantry': {
-        if (!loadoutUnits(i).includes(ADAPTIVE.heavyAnswer)) return false;
-        const n = this.deaths.filter(
-          (d) => ADAPTIVE.heavyVictims.includes(d.card) && d.killerCard !== null && units[d.killerCard]?.group === 'heavy',
-        ).length;
-        return n >= ADAPTIVE.deaths;
+        if (antiHeavySlot(i) === null) return false;
+        const foe = other(i.side);
+        const foes: { group: RoleGroup; value: number }[] = [];
+        for (const u of i.state.units) {
+          const d = u.side === foe && u.hp > 0 ? units[u.card] : undefined;
+          if (d) foes.push({ group: d.group, value: d.cost });
+        }
+        return heavyThreat(foes);
       }
       case 'powerReady': {
         if (this.powerFullSince === null || tick - this.powerFullSince < ADAPTIVE.powerIdleTicks) return false;
@@ -194,4 +204,21 @@ function currentAgeIndex(i: TickInput): number {
   const content = i.config.content;
   const age = content.formats[i.config.format]?.ages[me.ageIndex];
   return age ? content.ages[age].index : me.ageIndex;
+}
+
+/**
+ * The tray slot of the player's Anti-heavy card in the current age (the Anti-armor role group), or
+ * null. A slot a scripted tray keeps locked (match 1) does not count.
+ */
+function antiHeavySlot(i: TickInput): number | null {
+  const age = i.config.content.formats[i.config.format]?.ages[i.state.sides[i.side].ageIndex];
+  const units = i.config.sides[i.side].loadouts[age ?? 'stone']?.units ?? [];
+  const tray = age ? i.config.training?.trays?.[age] : undefined;
+  for (let slot = 0; slot < units.length; slot += 1) {
+    const c = units[slot];
+    if (!c || i.config.content.units[c]?.group !== 'antiArmor') continue;
+    if (tray && !tray.includes(slot)) continue;
+    return slot;
+  }
+  return null;
 }

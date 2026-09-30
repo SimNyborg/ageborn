@@ -59,7 +59,7 @@ export const medieval: RawAgeTables = {
     {
       // Reach; melee AA mods; priority armored; Brace (immune to knockback and to first-hit bonuses)
       id: 'pikeman', kind: 'unit', age: 'medieval', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 270, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 297, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {

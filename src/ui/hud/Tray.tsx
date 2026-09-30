@@ -34,7 +34,7 @@ import { Fragment } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { MOTION_DUR, MOTION_TRANSFORM } from '@/core/motion';
 import type { HudCtx } from './context';
-import { counterClasses, isLegendaryUnit, unitClass } from '@/core/cardClass';
+import { counterClasses, isLegendaryUnit, takesCounterFloor, unitClass } from '@/core/cardClass';
 import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
 import { animate, ease, reducedMotion, scaleOf } from '../components/motion';
 import { haptic } from '../components/haptics';
@@ -140,7 +140,7 @@ function CardInfo(p: { c: HudCtx; def: UnitDef; queued: number; pinned: boolean;
   const { c, def } = p;
   const units = c.config.content.units;
   const klass = unitClass(def);
-  const { strong, weak } = counterClasses(def.strongVs, def.weakVs, units, klass);
+  const { strong, weak } = counterClasses(def.strongVs, def.weakVs, units, klass, takesCounterFloor(def));
   const row = (key: 'hud.info.strongVs' | 'hud.info.weakVs', list: typeof strong, tone: string) =>
     list.length > 0 ? (
       <div class={cls('hud-card-info-vs', tone)} data-testid={tone === 'is-good' ? 'hud-info-strong' : 'hud-info-weak'}>
@@ -292,10 +292,12 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
           card.trainFillBp > 0 && 'is-training',
           pressed && 'is-pressed',
           c.denied(cardTarget(card.slot)) && 'is-denied',
+          card.beatsHeavy && 'is-counter',
         )}
         data-testid={`hud-card-${card.slot}`}
         data-state={card.state}
-        aria-label={t('hud.cardLabel', { name, cost: card.cost })}
+        data-counter={card.beatsHeavy ? 'heavy' : undefined}
+        aria-label={card.beatsHeavy ? `${t('hud.cardLabel', { name, cost: card.cost })}. ${t('hud.beatsHeavyLabel', { name })}` : t('hud.cardLabel', { name, cost: card.cost })}
         disabled={c.readOnly}
         style={{ '--fill': fill, '--afford': afford }}
         onPointerDown={(e) => {
@@ -380,6 +382,15 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
         ) : null}
         {c.keys ? <kbd class="hud-key">{card.slot + 1}</kbd> : null}
       </button>
+      {card.beatsHeavy ? (
+        // A9.2 counter hint (owner feedback 2026-09-29): the enemy fields Heavies and this card beats
+        // them. A tab above the card with the Anti-heavy glyph; it pops in once and the card lifts once
+        // (MR-69: a lift and a glow, never a flash).
+        <span class="hud-card-counter" data-testid={`hud-card-${card.slot}-counter`} aria-hidden="true">
+          <ClassIcon id="antiArmor" size={c.compact ? 12 : 15} />
+          <span class="hud-card-counter-text">{t('hud.beatsHeavy')}</span>
+        </span>
+      ) : null}
       <ReasonTip c={c} target={cardTarget(card.slot)} />
       {p.floats
         .filter((f) => f.slot === card.slot)

@@ -12,6 +12,7 @@ import { createGroggBrain, createTutorialAutopilot, MATCH1_TURRET_GRANT_TICK, Tu
 import { createFallbackBot } from './fallbackBot';
 import type { MatchSetup } from './matchSetup';
 import type { Services } from './services';
+import { HeavyGapDetector } from './heavyGap';
 import { TrickleDetector } from './trickle';
 import { BattleSessionImpl, type BattleSpeed, type FrameScheduler, type SessionBot, type SessionView, type VisibilitySource } from './session';
 
@@ -38,6 +39,8 @@ export interface BattleHandle {
   readonly countdown: Signal<number>;
   /** A16.6: the player's "trickle" pattern; after a loss where it fired, the Result shows the wave tip. */
   readonly trickle: TrickleDetector;
+  /** A9.2: the enemy fielded Heavies while the player's age had no Anti-heavy card (a loss tip names it). */
+  readonly heavyGap: HeavyGapDetector;
   dispose(): void;
 }
 
@@ -128,8 +131,10 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     foils,
   });
   const trickle = new TrickleDetector(content, 0);
+  const heavyGap = new HeavyGapDetector(setup.config, 0);
   session.onTick((events, s) => {
     director.update({ state: s.state, config: s.config, events, side: 0 });
+    heavyGap.update(s.state);
     if (trickle.update(events, s.state)) {
       log.record('trickle', `match${setup.matchNumber}`, { tick: s.state.tick });
       // A16.6: onboarding matches show "Save gold, then send them together." (adaptive hints only).
@@ -151,6 +156,7 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     prompt,
     countdown: signal(-1),
     trickle,
+    heavyGap,
     dispose() {
       unsubscribePrompt();
       session.dispose();

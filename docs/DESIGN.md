@@ -233,18 +233,27 @@ Ages are data. New ages need only content, visuals and audio entries plus one `A
 
 **Tags:** `light`, `armored`, `bio`, `mech`, `ground`, `air`, `legendary`, `support`, `ranged`, `melee`.
 
-**Roles:** Infantry, Ranged, Heavy, Anti-armor (AA), Support, plus Epic and Legendary specialists. Each card also has a **role group** (Infantry, Ranged, Heavy, Anti-armor, Support, Epic, Legendary) used by pop, queue conversion and bot scoring.
+**Roles:** Infantry, Ranged, Heavy, Anti-armor (AA; shown to players as **Anti-heavy**, below), Support, plus Epic and Legendary specialists. Each card also has a **role group** (Infantry, Ranged, Heavy, Anti-armor, Support, Epic, Legendary) used by pop, queue conversion and bot scoring.
 
 **Classes (A18.9).** Every card shows its class with an icon and a label (A18.9.1). Research lines (A18.5.2) are bought per class; Epics and Legendaries count in their base role's class. Three classes join later: **Air** as a full class with its own counters and research line (phase 8; air units already exist), **Underground** tunnelers (A16.15, phase 8) and the stationary **Fort** card type (A16.14, phase 6).
+
+**Anti-heavy (owner feedback 2026-09-29: "Heavy is very strong; we need a class that counters it"; decided, build phases H1-H5 in `docs/decisions.md`).** The Anti-armor role keeps its ids (`antiArmor`) but its player-facing class is **Anti-heavy**, drawn as the Heavy class's kite shield split by a spear, so the two icons read as a pair. Measured before (tree `9f427999`): a single Anti-armor lost to a single Heavy in every age (1v1 M 7-28), groups won only narrowly (6v4 M 41-80, Modern 41), no card or hint named Heavy as its prey, the bots' counter table rated the pair a coin flip in six ages, mono Anti-armor lost to mono Heavy in 100% of matches, and mono Heavy beat the tier VII bot 73%. It needed no new category, only numbers, a name, availability and an AI rule:
+
+- **Brace for the whole class:** every Anti-heavy card is immune to knockback and first-hit bonuses (so a Heavy's charge does not apply to it).
+- **Numbers** (A5 tables): armored and mech ×3.0 for the melee cards and the Bazooka Trooper, ×2.5 for the Grenadier and the Harpoon Gunner, ×2.0 kept for the Rail Gunner (it pierces); a first `legendary` entry keeps every Legendary matchup at today's multiplier (×2.0; Grenadier ×1.5); HP +10% except the Harpoon Gunner.
+- **Available from the start:** every age's Anti-heavy Rare is in the starter kit and the starter loadouts (A3).
+- **Told everywhere:** "Strong vs Heavy" on every Anti-heavy card and "Weak vs Anti-heavy" on every Heavy card (A18.9.1), the counter table regenerated on the real sim (B4), a battle hint when the enemy fields Heavies (A9.2), and the bots answer Heavy with it (A7.2).
 
 Each attack carries an ordered `mods` list. The **first** mod whose tag the target has applies; otherwise the multiplier is ×1.0. Role defaults:
 
 | Attacker role / attack | Mods (in order) |
 |---|---|
 | Infantry melee ("blunt") | armored ×0.70 |
-| Melee Anti-armor (Spear Hunter, Pikeman) | armored ×2.0, mech ×2.0, light ×0.75 |
-| Ranged Anti-armor (Bazooka Trooper, Rail Gunner) | armored ×2.0, mech ×2.0, light ×0.5 |
-| Grenadier | armored ×1.5, mech ×1.5, light ×0.5 |
+| Melee Anti-heavy (Spear Hunter, Phalangite, Pikeman, Graviton Halberdier) | legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.75 (was armored ×2.0, mech ×2.0, light ×0.75) |
+| Ranged Anti-heavy: Bazooka Trooper | legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.5 |
+| Ranged Anti-heavy: Harpoon Gunner | legendary ×2.0, armored ×2.5, mech ×2.5, light ×0.5 |
+| Ranged Anti-heavy: Rail Gunner | armored ×2.0, mech ×2.0, light ×0.5 (unchanged; pierces 2) |
+| Grenadier | legendary ×1.5, armored ×2.5, mech ×2.5, light ×0.5 (was armored ×1.5, mech ×1.5) |
 | Everything else | none (×1.0) |
 | Flak Gun | air ×2.0 |
 | Congreve Rack | air ×1.5 |
@@ -253,15 +262,15 @@ Each attack carries an ordered `mods` list. The **first** mod whose tag the targ
 
 **Area attacks.** Splash, cleave, chain, pierce, line, gate zone and follow-behind attacks deal 100% to the primary target and 50% to every other target, and hit at most 4 targets in total unless the card says otherwise. Target counts always include the primary. Reach for cleave, pierce and follow-behind is measured from the primary target's centre, away from the attacker; chain hops are measured from the previous target. For splash aimed at a point, the primary is the enemy whose centre is nearest the impact. Last Stand and death explosions are exempt. Age Powers are exempt from the 4-target rule but, with the power rework, obey their own cap: one cast affects at most its `maxTargets` enemy units (1-6), and only the enemies nearest the caster's gate in its reach area are eligible (the screen, A2.9.5).
 
-**Counter triangle:**
+**Counter triangle** (targets measured on the real sim at L7, equal gold, M = 50 + (HP left by the first side − HP left by the second) / 2; 50 is even):
 
-- Heavy beats Infantry (armor).
-- Anti-armor beats Heavy.
-- Infantry beats Anti-armor (cheap, and takes reduced damage).
-- Ranged supports everything but dies fast once reached.
+- Heavy beats Infantry (armor): M ≥ 65 in every age (measured 66-84, unchanged by the Anti-heavy numbers).
+- Anti-heavy beats Heavy: M 65-85 in every age at 6 v 4 and 3 v 2 (measured 72-84 and 68-83, and 89 for the splash Grenadier against a clump of four; before 41-80 and 36-78), ≥ 60 when swapped in for the Heavies of an Infantry mix (59-78), and one Anti-heavy (100 gold) trades about evenly with one Heavy (150 gold) in the melee ages (M 49-52; the ranged cards 25-42: glass, they win in groups).
+- Infantry beats Anti-heavy (cheap, and takes reduced damage): M ≥ 65 (measured 73-84).
+- Ranged supports everything but dies fast once reached. **Long range** Ranged units (A5.1) outrange the other Ranged units and fire slow arcs; air, Rare arc turrets and anything that reaches them beat them.
 - Splash punishes clumps. Air punishes melee-only armies.
 
-Every card detail screen shows "Strong vs" and "Weak vs", derived from the counter matrix (B4).
+Every card detail screen shows "Strong vs" and "Weak vs", derived from the counter matrix (B4), with the class legend as a floor (A18.9.1).
 
 ### A2.7 Combat rules (simulation level)
 
@@ -469,10 +478,11 @@ Positions are the caster's own-side p, integers. One pure helper, `src/core/powe
 | `front`, no aim | Charges start at F (p 200 without one) and run their distance. Suppress is legal only while F ≥ L − `turretRangeCap` − `frontReachLu` = 1,370 | the run | charges, Suppress | "From your front" |
 | `anywhere` | [150, 1,850] | one picked target | strikes (aimed, one target); drops (no aim: 150 lu beyond the enemy's frontmost ground unit, as before) | "Anywhere", "Drop" |
 | `army` | no aim; your own units | your 8 frontmost units | buffs | "Your army" |
+| `lane` (owner feedback 2026-09-30; decided, not built: build phase H7) | no aim | the whole lane: the `maxTargets` hittable enemies nearest your gate anywhere (the screen, A2.9.5), so it always hits the enemy's front and never reaches past it to a staged army | lane volleys and signals (A5.7) | "Whole lane" |
 
 - **The reach area is a hard mask:** an effect never touches an enemy outside it, whatever the blast radius, jitter or sweep width (without it, Home effects reached 29-60 lu past mid-lane at the band's edge). The HUD draws a blast radius clipped at the line. The mask is checked at every hit, not only when the cast picks its targets: a unit in `hitIds` that has been pushed or has walked out of the area (past the home line) is not hit again (fix pass 2026-09-30, `SIM_VERSION` 4.1.0; `inCastArea()` in `sim/systems/powers.ts`; a charge checks body overlap).
 - **Aim is clamped, never rejected for its position**; the HUD never sends an illegal drop. **Auto-aim** (no `p`; Space and X, bots): centres over the band in 10 lu steps, score = the capped value (the card cost of the eligible enemies inside the zone, A2.9.5), best score, ties to the lower p. **A damage or control power whose best score is 0 is rejected with `powerNoTarget` before payment** ("No target there"); manual drops still pay. A strike auto-aims by the strike ranking (A2.9.6) over the whole lane.
-- **Schema rule:** area damage (a barrage with `maxTargets` ≥ 2, a sweep, a charge, a field with `damagePerPulse` > 0) is `home` or `front`; `anywhere` is only for `strike` and `paradrop`; a Home zone is at most 850 lu.
+- **Schema rule:** area damage (a barrage with `maxTargets` ≥ 2, a sweep, a charge, a field with `damagePerPulse` > 0) is `home` or `front`, or `lane` under the lane budget; `anywhere` is only for `strike` and `paradrop`; a Home zone is at most 850 lu. **Lane budget:** a one-pulse `field` with zone = L, `maxTargets` ≤ 8, per unit ≤ 30% of the age's L1 Infantry HP and ≤ 10% of its Heavy, statuses at most a 30% snare for 3 s or a mark for 6 s, cost ≤ 75. So one cast deals at most 8 × 25-30% of an Infantry (a Home sweep deals 5 × 80-100%), never kills a full-HP unit, and a massed army loses a quarter of the HP of its first eight units and nothing else: the wait-and-wipe fix holds. `core/powerReach.ts`: `reachBand('lane')` is null (no aim, the centre is L / 2) and `reachAreaMax('lane')` is L. The new `PowerReach` value is a contract change: **`SIM_VERSION` 4.1.0 → 4.2.0**, the golden replays re-verified and re-recorded deliberately (none holds a lane power, so results and commands stay), plus a golden `12-lane-and-long-range.json` with a lane cast and Long range arcs.
 
 #### A2.9.5 Target cap and the screen
 
@@ -522,8 +532,8 @@ Positions are the caster's own-side p, integers. One pure helper, `src/core/powe
 #### A2.9.10 HUD, targeting, Army and teaching
 
 - **Power dock** (A9.2 tray item 4): two round buttons, Home left, Field right; 64 px each and 6 px apart on phones, 96 px on desktop. Width at 844 × 390 (750 usable, keeping ≥ 16 px slack): until forts ship the reserved Fort space goes to the dock, 100 + 8 + 402 + 6 + 56 + 8 + 134 = 714; below 820 px, 644 of 686. With forts (A18 phase 6): at 844, cards 58 × 78 with 4 px gaps, Fort 58, stance 56 and two 58 px buttons, 100 + 8 + 368 + 6 + 58 + 6 + 56 + 6 + 122 = 730; below 820 px, cards 52 × 70, Fort 52, stance 48 and two 52 px buttons, 657 of 686 (`docs/ui-plan.md` 4.7 owns the numbers). Last Stand floats above the Home button while armed.
-- **Button:** icon; a 5 px reload arc; the seconds left in the centre while reloading (icon at 40%); a cost chip top-left with the effective cost, red with a filling gold underline while unaffordable; a reach glyph bottom-right (house, flag, crosshair, banner, parachute). Castable (reloaded and affordable): MR-69 sweep, lift, glow; it breathes only if it holds the one pulse (tutorial, Evolve, the first castable slot with Home before Field, a mount). A lockout (the lever, `lockoutUntil`) dims the icon with a thin lock arc. A locked Field slot (`slotLocked`) is not drawn and leaves an empty gap. Denied presses say why (MR-03): "Ready in 12 s", "Need 40 gold", "No target there", "Get closer to their turrets". **Keys:** Space = Home, X = Field (auto-aim; no target is denied before payment); Enter on a focused button. Long-press or hover: name, family, reach, cost, reload, "Hits up to 5" ("Your 8 frontmost units" for buffs), the per-unit line.
-- **Targeting** (extends A18.9.2): on pick-up the legal band is washed in team colour at 18% with a 2 px edge, chevrons and a label ("Your half", "Near your army"; the Front edge follows your front live; the minimap shows the same tint). The eligible enemies (the first N nearest your gate in the reach area) carry number pips 1..N wherever the zone is; those the zone covers get the highlight ring, other enemies in the zone a faint "not hit" outline; the token reads "Hits 4 of 5 · −100" (covered of eligible); a blast radius is drawn clipped at the Home line; a strike shows a lock ring on the unit nearest the aim ("No target" when none). Past the band the ghost sticks to the edge for up to 120 lu of overshoot (a 1.04 → 1 bump and a tick haptic on first contact); beyond that it turns red and hatched ("Only in your half") and a release puts the power back with nothing paid. Charges, drops, buffs and Suppress keep drop-anywhere casting with a ghost of where they act.
+- **Button:** icon; a 5 px reload arc; the seconds left in the centre while reloading (icon at 40%); a cost chip top-left with the effective cost, red with a filling gold underline while unaffordable; a reach glyph bottom-right (house, flag, crosshair, banner, parachute; a double arrow for `lane`). Castable (reloaded and affordable): MR-69 sweep, lift, glow; it breathes only if it holds the one pulse (tutorial, Evolve, the first castable slot with Home before Field, a mount). A lockout (the lever, `lockoutUntil`) dims the icon with a thin lock arc. A locked Field slot (`slotLocked`) is not drawn and leaves an empty gap. Denied presses say why (MR-03): "Ready in 12 s", "Need 40 gold", "No target there", "Get closer to their turrets". **Keys:** Space = Home, X = Field (auto-aim; no target is denied before payment); Enter on a focused button. Long-press or hover: name, family, reach, cost, reload, "Hits up to 5" ("Your 8 frontmost units" for buffs), the per-unit line.
+- **Targeting** (extends A18.9.2): on pick-up the legal band is washed in team colour at 18% with a 2 px edge, chevrons and a label ("Your half", "Near your army"; the Front edge follows your front live; the minimap shows the same tint). The eligible enemies (the first N nearest your gate in the reach area) carry number pips 1..N wherever the zone is; those the zone covers get the highlight ring, other enemies in the zone a faint "not hit" outline; the token reads "Hits 4 of 5 · −100" (covered of eligible); a blast radius is drawn clipped at the Home line; a strike shows a lock ring on the unit nearest the aim ("No target" when none). Past the band the ghost sticks to the edge for up to 120 lu of overshoot (a 1.04 → 1 bump and a tick haptic on first contact); beyond that it turns red and hatched ("Only in your half") and a release puts the power back with nothing paid. Charges, drops, buffs and Suppress keep drop-anywhere casting with a ghost of where they act; a lane power (reach `lane`, glyph a double arrow) lights the whole lane at 18%, numbers its eligible enemies 1..N and drops anywhere.
 - **Opponent:** two 22 px mini-rings inside the enemy block, between the age icon and the bars (the bars shrink 140 → 112): "?" until scouted, a steady orange rim when ready, never a pulse; drained on a cast; long-press for name, cost, reach, seconds. The top band is 734 of 750 at 844 px with the A18.5.7 research icon, 654 of 686 below 820 px. The off-screen "power incoming" badge (A17.5) counts down the power's own `telegraphMs`.
 - **Feel by family** (A12, inside the 150 ms per 3 s freeze budget): Home bombard and sweep 120 ms global hitstop, trauma +0.5, a 30% one-frame flash, 6 dB duck; charges and front barrages 60 ms, +0.3, 3 dB; strikes victim-local 70 ms, +0.15; fields and Flak +0.1, stuns freeze locally; buffs a shimmer along the 8 buffed units; drops a landing thud; Suppress sparks and a jammed icon. **MR-70b** (cast committed): the ghost contracts to 0.9, the gold counter floats "−100" and counts down, the ring drains, the icon dips, `power_cast` plays (replaces `ui_confirm` for powers). **MR-69** per slot: `power_ready` plays when a slot first becomes castable (reloaded and affordable) after its last cast, at most once per 3 s across both slots.
 - **Army** (A18.9.3): each age shows a Home and a Field power slot (watermarks; the Field slot padlocked with "War Path Stone 5 or 150 trophies" until unlocked). Default layout at 844 × 340: a 5 × 2 slot grid (four troops and Home; two troops, two turrets and Field), the Fort in the side column, the card grid at 5 columns (`docs/ui-plan.md` 4.2 owns the numbers). Power tile: icon, name, rarity frame, cost chip top-left, reach glyph top-right, "⟳ 40 s" at the bottom; a power dropped on the wrong slot bounces back with "Home powers go in the Home slot". Filters: the Power chip opens Home / Field. Card detail: a lane diagram with the reach band and the zone to scale, cost, reload, "Hits up to N", the per-unit line, ground/air, the source. Advisor: "Empty power slot", the air check counts powers, "No Home power in Cosmic". Auto-fill: the two starters.
@@ -712,6 +722,8 @@ All card tests use both sides at tier V with the Balanced brain and every card a
 | Save-and-counter mirror; Save-and-counter vs turtle | Bell share reported |
 | Rules sanity: counter-picker vs each mono spam | ≥ 80% |
 | Rules sanity: triangle, mono vs mono (Heavy > Infantry, AA > Heavy, Infantry > AA) | Each ≥ 70% |
+| Anti-heavy duels (static, real sim, L7, equal gold; owner feedback 2026-09-29) | Anti-heavy vs Heavy M 65-85 in every age at 6 v 4 and 3 v 2; ≥ 60 swapped into an Infantry mix; 1 v 1 ≥ 40 in the melee ages; Heavy vs Infantry and Infantry vs Anti-heavy ≥ 65. Measured with the A2.6 numbers: 72-89, 68-83, 59-78, 49-52, 66-84, 73-84 (before: 41-80, 36-78, 46-74, 19-28, 66-84, 72-85) |
+| Anti-heavy package guard | Mono Heavy vs tier VII ≤ 35% in Short and Standard (as built: **14.0 / 26.5%**; 73.5 / 73.0% before); the Standard War mirror Bell not above today's (tier V 23.0%, tier VII 40.0%; as built **35.5 and 53.0%**, open; Short 47.0 → 45.0 and 57.0 → 50.0%; 200 matches each). Measured Standard levers on the built package (tier V / VII): Gunpowder and Industrial back to ×2.0 with Brace and no HP 31.0 / 52.0% (and mono Heavy 36.5%), the Harpoon Gunner alone at ×2.0 34.0 / 46.0%, Siege base damage ×3 33.0 / 49.0%, ×4 31.0 / 45.5%: none closes it, so the Gunpowder and Industrial lines stay and the Standard grind goes to the owner with the Supply Cache (A18.3.5) as the next step |
 | Rules sanity: skill gradient (Save-and-counter vs Balanced script; Balanced script vs cheapest spam) | Each ≥ 80% |
 | Has-an-answer (static, `counters.json`) | A same-age card scores ≥ 55% at equal gold against every non-Legendary card; Legendaries reported, including the three A17 Legendaries (A17.11) |
 | Has-a-starter-answer (static) | Reported |
@@ -731,14 +743,8 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
 - **Minimum to play:** 3 units and 1 turret per age used by the format. The starter kit always satisfies it. A match uses only the loadouts of its age window (A18.3.4); auto-fill fills a missing loadout from starter Commons, so a plan is never unplayable.
 - **Tray.** In battle all unit cards of the current age are always available; there is no hand cycling. On evolve the cards flip over (300 ms) to the next loadout.
 - **Scouted list.** Each opponent card joins a "Scouted" list the first time the opponent plays it. It opens from a chip in the top bar and in the pause menu. Nobody sees the full enemy plan in advance.
-- **Starter kit.** From the first launch the player owns every Common (3 units and 2 turrets per age) and each age's default Age Power, all at L1 (with the power rework: each age's two starter powers, one Home and one Field, A5.7). Each age's Anti-armor Rare arrives by script (A17.13):
-  - Spear Hunter and Phalangite: capsule 1
-  - Pikeman and Grenadier: capsule 2
-  - Harpoon Gunner and Bazooka Trooper: Age Unlock Capsules at Arena 2
-  - Rail Gunner and Graviton Halberdier: Age Unlock Capsules at Arena 3
-
-  Until an AA Rare arrives, that loadout plays with 3 units. Skirmish shows a note on that age.
-- **Chase cards** (from capsules): per age, the Support Rare, the Rare turret, the Epic unit, the Epic turret and the Legendary unit. Alternate Age Powers come from Trophy Road nodes at 100-500 trophies (A6.3). With the power rework, 24 more powers come from War Path first clears (each region's L5, L7 and L9), with a Trophy Road fallback on nodes 550-1,950; powers are never in capsules, have no copies and no levels (A2.9.8, A5.7).
+- **Starter kit.** From the first launch the player owns every Common (3 units and 2 turrets per age), **every age's Anti-heavy Rare** (owner feedback 2026-09-29, build phase H3) and each age's default Age Power, all at L1 (with the power rework: each age's two starter powers, one Home and one Field, A5.7). The starter loadout of each age holds its 3 Common units and its Anti-heavy card (slot 4). The Anti-heavy cards stay Rare (copies and upgrades as before). Before this change they arrived by script (A17.13: Spear Hunter and Phalangite in capsule 1, equipped for you; Pikeman and Grenadier in capsule 2, **not** equipped; Harpoon Gunner and Bazooka Trooper at the Arena 2 gate; Rail Gunner and Graviton Halberdier at Arena 3), so a new player's Medieval played Short War with no answer to Heavies while every bot plan held one. The scripted capsules now bring the Support Rares (capsule 1 Drum Shaman and Standard Bearer, capsule 2 Friar and Field Surgeon) and each Age Unlock Capsule holds its age's Support Rare ×1 and its 3 Common units ×4. **Save migration** (additive, idempotent, with fixtures): grant each missing Anti-heavy Rare at L1 and put it into an empty unit slot of its age in every War Plan, never replacing a card; a save that already owns one keeps its level and copies.
+- **Chase cards** (from capsules): per age, the Support Rare (also scripted, above), the Long range Rare (A5.1), the Rare turret, the Epic unit, the Epic turret and the Legendary unit. Alternate Age Powers come from Trophy Road nodes at 100-500 trophies (A6.3). With the power rework, 24 more powers come from War Path first clears (each region's L5, L7 and L9), with a Trophy Road fallback on nodes 550-1,950; powers are never in capsules, have no copies and no levels (A2.9.8, A5.7).
 - **Presets and helpers:**
   - 3 War Plan presets, each renamable. From v1.1 up to 5, and the player picks one after the battlefield is revealed on the VS screen (A16.9). New presets start empty.
   - Auto-fill picks the highest-level card per slot while keeping at least one Heavy or Legendary, one Ranged and one AA per age, plus an air-hitter from Gunpowder on.
@@ -747,7 +753,7 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
   - **Research compatibility (A18.5.2).** The builder shows, per age loadout, which classes it holds, so a player sees that a Troops research line is wasted in an age with no card of that class.
   - After a capsule, the summary offers "Equip now" for a new card: it fills an empty slot, else the same-role slot, else the lowest-level slot.
 - **Deck advisor.** Warnings, never blockers:
-  - "Stone has no anti-armor"
+  - "Stone has no anti-heavy" (the class name, A2.6)
   - "Modern cannot hit air" (no air-hitting unit or turret)
   - "Medieval has only 3 units"
   - "No splash anywhere: swarms will hurt"
@@ -770,13 +776,29 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
 | Infantry | 50 | 1.5 s | 2 | 160 | 20 / 1.0 s | 20 | 16 | 70 | small |
 | Ranged | 75 | 2.0 s | 3 | 95 | 18 / 1.4 s | 12.9 | 200 | 65 | small |
 | Heavy | 150 | 4.0 s | 6 | 560 | 42 / 1.5 s | 28 | 16 | 55 | large |
-| Anti-armor (melee reach) | 100 | 2.5 s | 4 | 200 | 26 / 1.2 s | 21.7 | 60 | 70 | medium |
-| Anti-armor (ranged) | 100 | 2.5 s | 4 | ~120 | per card | per card | 150-240 | 65 | medium |
+| Anti-heavy (melee reach; Anti-armor role) | 100 | 2.5 s | 4 | 220 (was 200) | 26 / 1.2 s, ×3.0 vs armored and mech | 21.7 (65 vs Heavy) | 60 | 70 | medium |
+| Anti-heavy (ranged) | 100 | 2.5 s | 4 | ~130 (was ~120) | per card, ×2.5-3.0 vs armored and mech | per card | 150-240 | 65 | medium |
+| **Long range** (Ranged class, Rare; owner feedback 2026-09-30, build phase H6) | 75 | 2.0 s | 3 | 85 | 34 splash r35 / 2.6 s, arc | 13.1 (+50% to up to 3 more) | the age's Ranged Common + 120 (320-390), min 90 | 60 | small |
 | Support | 110 | 3.0 s | 4 | 130 | heal 30/s or aura | - | 150 | 65 | small |
 | Epic | 200 | 4.0 s | 8 | varies | varies | - | - | - | varies |
 | Legendary | 350 | 7.0 s | 14 | ~3× Heavy | ~1.5-2× Heavy DPS plus a trait | - | - | - | huge |
 
-**Collection:** 56 units + 32 turrets = 88 cards (40 Common, 24 Rare, 16 Epic, 8 Legendary) over 8 ages since A17 (A17.13; was 55), plus 16 Age Powers (starter and Trophy Road, not capsules), 12 skins and 3 foil variants per card. Schema checks per age: 7 units, 4 turrets, 2 powers. With the power rework (A5.7): **48 Age Powers** (16 Common, 16 Rare, 16 Epic; starters, Trophy Road and War Path, never capsules) and 6 powers per age in the schema (3 Home, 3 Field). The tables A5.2-A5.6 hold the five original ages; Bronze, Industrial and Cosmic are in A17.9-A17.11. Each A18 age adds the same per-age set plus 1 fort card once forts exist (A18.8.3). The tutorial-only Training Dummy is hidden and not collectable.
+**Collection:** 56 units + 32 turrets = 88 cards (40 Common, 24 Rare, 16 Epic, 8 Legendary) over 8 ages since A17 (A17.13; was 55); with the Long range Rares (build phase H6) 64 units and 96 cards (32 Rare), 8 units per age in the schema, album numbers appended after the last (A18.9.3); plus 16 Age Powers (starter and Trophy Road, not capsules), 12 skins and 3 foil variants per card. Schema checks per age: 7 units, 4 turrets, 2 powers. With the power rework (A5.7): **48 Age Powers** (16 Common, 16 Rare, 16 Epic; starters, Trophy Road and War Path, never capsules) and 6 powers per age in the schema (3 Home, 3 Field). The tables A5.2-A5.6 hold the five original ages; Bronze, Industrial and Cosmic are in A17.9-A17.11. Each A18 age adds the same per-age set plus 1 fort card once forts exist (A18.8.3). The tutorial-only Training Dummy is hidden and not collectable.
+
+**Anti-heavy class traits** (A2.6): every card has Brace (immune to knockback and first-hit bonuses); its mods start with `legendary` at the old multiplier, so Legendary matchups do not change.
+
+**Long range** (owner feedback 2026-09-30: "krigere i skyde-klassen som kan skyde en del længere men f.eks. angriber langsommere, f.eks. longbow mænd der skyder i en parabel"; decided, not built; build phase H6). Ranged class with a "Long range" trait (the Ranged badge plus an arc glyph); role and group `ranged`, so pop, research lines and queue conversion treat it as Ranged (conversion prefers the new loadout's card with the same trait, else the group's first card; prices are flat within the group). One Rare per age from capsules. Ground only (arcs never hit air), `vsBaseDamage` 50%, priority front. The projectile is an **arc** at 300 lu/s (1.1-1.3 s in the air at range) with splash aimed at the target's position at fire time (A2.7), so a walking unit steps out of the 35 lu circle and a fighting one does not; the renderer draws the parabola and a **landing marker** at `projectileFired.toX` that closes over `travelTicks` (view only; no sim change). Range stays ≤ 390, at least 90 lu inside every Rare arc turret (480) and within 20-40 lu of the single-target Common turrets. Counters: air, Rare arc turrets, anything that reaches it (min range 90, 85×P HP: a breakthrough, a Field charge running 450-600 lu, a drop, a strike) and Ranged units that walk inside 90 lu; divers only if their leap search reaches the back line (option: Sabertooth pounce search 150 → 350, Warp Stalker 200 → 400, each gated by its per-card ±3 row). Measured on a prototype (A2.14 per-card rows, 200 matches, replacing the age's Ranged Common): Yeoman Archer −1.8 [−8.0, 4.5], Atlatl Thrower −8.5 [−15.2, −1.8]; the gate is the ±3 row, levers in order interval, splash radius, damage; new proxies `mono_longrange` (≤ 35%) and `longrange_turtle` (the turtle band).
+
+| Age | Card (id) | HP | Damage (splash r35 / 2.6 s) | Range (min 90) | Look |
+|---|---|---|---|---|---|
+| Stone | Atlatl Thrower (`atlatl_thrower`) | 85 | 34 | 320 | a spear-thrower hurling long darts high |
+| Bronze | Cretan Archer (`cretan_archer`) | 99 | 39 | 330 | a tall recurve bow aimed skyward |
+| Medieval | Yeoman Archer (`yeoman_archer`) | 115 | 46 | 350 | the owner's longbowmen: a great longbow, volleys in a high arc |
+| Gunpowder | Coehorn Crew (`coehorn_crew`) | 155 | 62 | 360 | a two-man hand mortar |
+| Industrial | Trench Mortar (`trench_mortar`) | 180 | 72 | 370 | a stovepipe mortar and a loader |
+| Modern | Mortar Team (`mortar_team`) | 209 | 84 | 380 | a light mortar on a bipod |
+| Future | Arc Lobber (`arc_lobber`) | 282 | 113 | 380 | a plasma lobber with a glowing shell |
+| Cosmic | Star Mortar (`star_mortar`) | 381 | 152 | 390 | a gravity mortar that lobs a small star |
 
 **Default projectile speeds (lu/s):** rock 500, arrow 650, musket 1,500, bullet 1,500, shell 1,200, rocket 900, arc/lob 450, plasma bolt 1,800. Lasers and rails are instant.
 
@@ -789,7 +811,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | bonker | Bonker | C | Infantry | 50 | 160 | 20 / 1.0 s | 16 | 70 | S | G | light bio melee | Blunt |
 | pebbler | Pebbler | C | Ranged | 75 | 95 | 18 / 1.4 s | 200 | 65 | S | G+A | light bio ranged | Rock. Ricochet: the rock bounces to 1 more enemy within 40 lu (chain, 2 targets total) |
 | tuskback | Tuskback | C | Heavy | 150 | 560 | 42 / 1.5 s | 16 | 55 | L | G | armored bio melee | Gore: first hit of each engagement ×2 and 30 lu knockback |
-| spear_hunter | Spear Hunter | R | Anti-armor | 100 | 200 | 26 / 1.2 s | 60 | 70 | M | G | light bio melee | Reach; melee AA mods; priority armored |
+| spear_hunter | Spear Hunter | R | Anti-heavy | 100 | 220 (was 200) | 26 / 1.2 s | 60 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace (new); starter kit |
 | drum_shaman | Drum Shaman | R | Support | 110 | 130 | 8 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Aura: allies within 160 lu get +20% attack speed; followSupport |
 | sabertooth | Sabertooth | E | Skirmisher | 200 | 380 | 34 / 0.8 s | 12 | 100 | M | G | light bio melee | Pounce (10 s cooldown): when blocked by an enemy ground unit, leaps (0.5 s, untargetable by melee) to the nearest enemy ranged or support unit within 150 lu beyond the blocker, landing at the target's centre − (wT + wS)/2 on the near side; first bite ×2. No target: no leap and no cooldown |
 | mammoth_matriarch | Mammoth Matriarch | L | Siege heavy | 350 | 1,700 | 55 splash r40 / 2.0 s | 20 | 40 | H | G | armored bio melee legendary | Two riders each shoot 12 / 1.4 s at range 200 (G+A); on death the riders jump off as 2 Pebblers (summoned) |
@@ -808,7 +830,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | footman | Footman | C | Infantry | 50 | 216 | 27 / 1.0 s | 16 | 70 | S | G | light bio melee | Blunt. Shield Wall: takes 25% less damage from attacks with range ≥ 100 (not powers) |
 | longbowman | Longbowman | C | Ranged | 75 | 128 | 24 / 1.4 s | 230 | 65 | S | G+A | light bio ranged | Arrow |
 | destrier_knight | Destrier Knight | C | Heavy | 150 | 756 | 57 / 1.5 s | 16 | 60 | L | G | armored bio melee | Lance charge: first hit ×2 and 30 lu knockback |
-| pikeman | Pikeman | R | Anti-armor | 100 | 270 | 35 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee AA mods; priority armored; Brace (immune to knockback and to first-hit bonuses) |
+| pikeman | Pikeman | R | Anti-heavy | 100 | 297 (was 270) | 35 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace (immune to knockback and to first-hit bonuses); starter kit |
 | friar | Friar | R | Support | 110 | 175 | 11 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Heals 40 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport |
 | battering_ram | Battering Ram | E | Siege | 200 | 900 | 160 vs base / 2.0 s (10 vs units) | 12 | 45 | L | G | armored mech melee | siegeOnly: targets the base; attacks units only while blocked |
 | ursa_paladin | Ursa Paladin | L | Siege heavy | 350 | 2,300 | 70 / 1.4 s, cleave | 20 | 55 | H | G | armored bio melee legendary | Cleave: 2 targets total, the second within 40 lu behind the primary. Roar every 15 s while it has a target: the nearest 8 allies within 200 lu get a 60 HP shield for 6 s |
@@ -827,7 +849,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | corsair | Corsair | C | Infantry | 50 | 291 | 36 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Boarding Hook: first hit of each engagement pulls the target 20 lu toward the Corsair |
 | fusilier | Fusilier | C | Ranged | 75 | 173 | 47 / 2.0 s | 240 | 65 | S | G+A | light bio ranged | Musket |
 | cuirassier | Cuirassier | C | Heavy | 150 | 1,019 | 76 / 1.5 s | 16 | 60 | L | G | armored bio melee | Charge: first hit ×2 and 30 lu knockback |
-| grenadier | Grenadier | R | Anti-armor | 100 | 230 | 50 splash r35 / 1.8 s | 150 | 68 | M | G | light bio ranged | Lob over allies; armored ×1.5, mech ×1.5, light ×0.5; priority armored |
+| grenadier | Grenadier | R | Anti-heavy | 100 | 253 (was 230) | 50 splash r35 / 1.8 s | 150 | 68 | M | G | light bio ranged | Lob over allies; legendary ×1.5, armored ×2.5, mech ×2.5 (were ×1.5), light ×0.5; priority armored; Brace (new); starter kit |
 | field_surgeon | Field Surgeon | R | Support | 110 | 237 | 15 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Heals 55 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport |
 | bronze_cannon | Bronze Cannon | E | Artillery | 200 | 500 | 110 splash r50 / 3.5 s | 280 (min 80) | 45 | L | G | light mech ranged | Arc |
 | balloon_admiral | Balloon Admiral | L | Air bomber | 350 | 1,500 | 110 splash r50 / 1.6 s | bombs below (±40 lu) | 45 | H | G | air legendary | Bomber; bombs the base at the enemy gate (110 per bomb); on death crashes for 250 splash r70 on ground enemies |
@@ -846,7 +868,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | trench_raider | Trench Raider | C | Infantry | 50 | 394 | 49 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt |
 | rifleman | Rifleman | C | Ranged | 75 | 234 | 32 / 1.0 s | 260 | 65 | S | G+A | light bio ranged | Bullet. Suppressing Fire: hits slow the target's move speed 15% for 1.0 s |
 | tankette | Tankette | C | Heavy | 150 | 1,378 | 104 / 1.5 s | 90 | 50 | L | G | armored mech ranged | Shell |
-| bazooka_trooper | Bazooka Trooper | R | Anti-armor | 100 | 300 | 64 / 1.2 s | 200 | 65 | M | G+A | light bio ranged | Rocket; ranged AA mods; priority armored |
+| bazooka_trooper | Bazooka Trooper | R | Anti-heavy | 100 | 330 (was 300) | 64 / 1.2 s | 200 | 65 | M | G+A | light bio ranged | Rocket; ranged Anti-heavy mods, armored ×3.0; priority armored; Brace (new); starter kit |
 | radio_operator | Radio Operator | R | Support | 110 | 320 | 20 / 1.2 s (G+A) | 200 | 65 | S | G+A | light bio support ranged | Every 8 s calls a shell on the nearest enemy ground unit within 400 lu: lands after 1.0 s, 120 splash r50 (area rule). One call-in per side per 3 s. followSupport |
 | gyrocopter | Gyrocopter | E | Air gunship | 200 | 740 | 20 / 0.3 s | 150 | 80 | M | G+A | air mech | Obeys stance |
 | behemoth_tank | Behemoth Tank | L | Siege heavy | 350 | 4,100 | Main gun 170 splash r40 / 2.5 s at range 240 (G) plus MG 20 / 0.4 s at range 150 (G+A, priority air) | 240 | 35 | H | G / G+A | armored mech legendary | Two independent attacks; only the main gun stops movement |
@@ -865,7 +887,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | photon_knight | Photon Knight | C | Infantry | 50 | 470 (+90 shield) | 66 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt; innate shield 90, regenerates 30/s after 3 s without damage |
 | pulse_trooper | Pulse Trooper | C | Ranged | 75 | 315 | 43 / 1.0 s | 260 | 65 | S | G+A | light bio ranged | Plasma bolt |
 | walker_mech | Walker Mech | C | Heavy | 150 | 1,860 | 140 / 1.5 s | 60 | 50 | L | G | armored mech melee | Reach |
-| rail_gunner | Rail Gunner | R | Anti-armor | 100 | 400 | 86 / 1.2 s | 240 | 65 | M | G+A | light bio ranged | Instant rail; pierces 2 targets total within 150 lu; ranged AA mods; priority armored |
+| rail_gunner | Rail Gunner | R | Anti-heavy | 100 | 440 (was 400) | 86 / 1.2 s | 240 | 65 | M | G+A | light bio ranged | Instant rail; pierces 2 targets total within 150 lu; ranged mods, armored ×2.0 (unchanged); priority armored; Brace (new); starter kit |
 | repair_drone | Repair Drone | R | Support | 110 | 430 | none | 160 | 70 | S | none | air mech support | Heals 100 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport |
 | emp_saboteur | EMP Saboteur | E | Anti-mech | 200 | 700 | 50 / 1.0 s | 12 | 85 | M | G | light bio melee | EMP every 8 s when an enemy is within 120 lu: strips temporary and innate shields from all enemies within 120 lu (restarting their regen delay) and stuns mech enemies within 120 lu, air included, for 1.5 s |
 | chrono_titan | Chrono Titan | L | Siege heavy | 350 | 5,600 | 230 / 1.6 s, cleave | 60 | 35 | H | G | armored mech melee legendary | Cleave: 3 targets total within 60 lu. Time Stop when an enemy first comes within 200 lu and every 15 s after: enemies within 200 lu (air included) are frozen 1.5 s (Legendaries 0.75 s) |
@@ -900,6 +922,8 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | Rally, Ward, Mend | Field · army | `buffAll` | 125 (Nanite Surge 150) | 45 s (Nanite Surge 50 s) | 0.5 s | 8 own units |
 | Cloud | Field · front | `cloud` | 100 | 40 s | 1.0 s | ally bonus: 8 own units |
 | Drop | Field · anywhere (no aim) | `paradrop` | 150 | 60 s | 1.0 s | - |
+| **Lane volley** (owner feedback 2026-09-30; build phase H7) | Field · lane (no aim) | `field`, one pulse, zone L | 50 | 25 s | 1.0 s | 8 |
+| **Lane signal** (same) | Field · lane (no aim) | `field`, one pulse, zone L, a light status | 50 | 25 s | 1.0 s | 8 |
 
 A good cast returns about 1.3-2.0× its cost in enemy value; the prototypes put the Home sweet spot at 75-100 gold (the Bell rose again at 60).
 
@@ -993,9 +1017,22 @@ Values are final at the age's P and L1 loadouts (A5.1), × the loadout multiplie
 | `warp_strike` | Warp Strike ✎ | Field · drop | R | Road 500 | 150 · 60 s · 1.0 s | - | paradrop: **4** Star Legionnaires (was 3) at your level, 150 lu beyond the enemy's frontmost ground unit; summoned | 200 card value | `fx.warp_portal` · `pw_warp` |
 | `ion_cannon` | **Ion Cannon** | Field · strike | E | WP L7 (Road 1,850) | 75 · **25 s** (was 30) · 1.5 s | 1 | strike: 1 shot, 1,500, ground and air | 60% of the Heavy; the Warp Stalker takes 750 | `fx.ion_cannon` · `pw_ion` |
 
-- **Totals:** 48 powers (16 built, 32 new), 24 Home and 24 Field; 16 Common (the starters), 16 Rare (the 8 Road powers and the 8 War Path L5 powers), 16 Epic (the War Path L7 and L9 powers). No Legendary powers. Rarity is a sidegrade (A3): every power follows its family's budget; rarity marks the source and the specialisation.
+**Whole-lane powers** (owner feedback 2026-09-30: "specials, som kan angribe på hele banen, men som ikke skader så meget"; decided, not built; build phase H7). One per age, Field slot, reach `lane` (A2.9.4): no aim; the cast touches the 8 hittable enemies nearest your gate anywhere on the lane (the screen), ground and air, for a quarter of an Infantry, and one arrow, shell or bolt falls on each of them (what you see is what is hit). A volley deals 25% of the age's L1 Infantry HP per unit (≈ 7% of its Heavy); a signal 10% plus a light status. Rare; source: that region's War Path L3 first clear, Trophy Road fallback on the next free item nodes after 1,950 (WP7). Static: per unit ≤ 30% of I and ≤ 10% of H, value per gold median 0.5-1.2 (below the 1.2-2.0 of the damaging families, so a lane power never replaces an area power), the A2.9.12 ±3 row against its slot's starter. Measured on a prototype (the same effect as `anywhere` with a 4,000 lu one-pulse field; 200 matches, replacing the Field starter): Longbow Volley +1.0 [−5.5, 7.5], Pebble Hail −11.5 [−17.9, −5.1] against Stampede; value per gold 0.66-0.77 and 271-367 casts per 200 matches (an earlier draft at 75 gold and 20% of I was ignored by the bots: 0.07-0.32).
+
+| Age | Slug | Name | Family | Per unit | FX · sound (planned, A14.4) |
+|---|---|---|---|---|---|
+| Stone | `pebble_hail` | **Pebble Hail** | volley | 40 | `fx.pebble_hail` · `pw_hail` |
+| Bronze | `sandstorm` | **Sandstorm** | signal | 19 and snare 30% for 3 s | `fx.sandstorm` · `pw_sandstorm` |
+| Medieval | `longbow_volley` | **Longbow Volley** | volley | 54 | `fx.longbow_volley` · `pw_longbow` |
+| Gunpowder | `rocket_volley` | **Rocket Volley** | volley | 73 | `fx.rocket_volley` · `pw_rockets` |
+| Industrial | `shrapnel_shells` | **Shrapnel Shells** | volley | 83 | `fx.shrapnel` · `pw_shrapnel` |
+| Modern | `creeping_barrage` | **Creeping Barrage** | volley | 99 | `fx.creeping_barrage` · `pw_barrage` |
+| Future | `target_painter` | **Target Painter** | signal | 56 and mark +20% for 6 s | `fx.target_paint` · `pw_painter` |
+| Cosmic | `meteor_drizzle` | **Meteor Drizzle** | volley | 175 | `fx.meteor_drizzle` · `pw_drizzle` |
+
+- **Totals:** 48 powers (16 built, 32 new), 24 Home and 24 Field (56 and 32 Field with the 8 lane powers); 16 Common (the starters), 16 Rare (the 8 Road powers and the 8 War Path L5 powers), 16 Epic (the War Path L7 and L9 powers). No Legendary powers. Rarity is a sidegrade (A3): every power follows its family's budget; rarity marks the source and the specialisation.
 - **Coverage:** every age has a Home area damage starter and a Field starter; Suppress exists in Medieval and Future (War Path Epics) as a situational turret tool, not a Bell mitigation (Bell gates run with starters only); every age with air units has powers that hit air.
-- **Schema checks per age:** 6 powers, 3 Home and 3 Field, 1 starter per slot (by `source`), 1 Road, 3 War Path; the family template above; the reach, cap and screen rules of A2.9.4-A2.9.5; the static family targets of A2.9.6.
+- **Schema checks per age:** 6 powers, 3 Home and 3 Field (7 and 4 Field with the lane power, build phase H7), 1 starter per slot (by `source`), 1 Road, 3 War Path (4 with the lane power); the family template above; the reach, cap and screen rules of A2.9.4-A2.9.5; the static family targets of A2.9.6.
 - **Bench** (not in the 48): Barricade (a summoned wall; waits for the fort entity, A18 phase 6), Tremor (surfaces burrowed units; waits for the Underground class, phase 8), Minefield, Star Shells, a Trojan Horse drop. New ages (A18.8) ship 6 powers each by the same template.
 - Research can widen aimed zones (Survey Corps; a Home power still touches only enemies in your half) or raise power damage and heals (Master Gunners), both v1.1 (A18.5.5).
 
@@ -1384,6 +1421,7 @@ Terms:
 - **Save for a counter.** `trainCandidates` scores every tray card, affordable or not; an unaffordable card can only set a goal, never be trained. When the best counter score over the whole tray, ignoring gold, beats the best affordable card by at least 0.15, the bot sets a saving goal for that card's cost (the Legendary saving-goal code). The goal lapses after 8 s, or when an enemy unit comes within 300 lu of the bot's gate.
 - **Answer one-type armies, smoothly.** Let s be the largest role-group share of visible enemy army value. The counter weight is multiplied by 1 + 2.5 × max(0, s − 0.4), capped at 2 (×1 at 40%, ×1.5 at 60%, ×2 at 80%). The diversity term and the gold float target shrink by the same factor.
 - **No Legendary saving goal while the push gate fails.**
+- **Answer Heavy with Anti-heavy (owner feedback 2026-09-29; build phase H5, built; tiers III+).** While Heavy-group units are at least half the value of the visible enemy army and that army is worth ≥ 300: (a) a counter-saving goal does not lapse when enemies come within 300 lu of the gate (it still lapses after 8 s), and may be set while they are there; (b) the bot does not train a card whose counter score against that army is below 0.40 while a card at 0.65 or more is in its tray, so it banks for Anti-heavy cards instead of trickling Infantry into Heavies; (c) with Heavies camped within 600 lu of the gate and no turret up, it banks for a first turret on a free mount (ahead of Treasury, Legendary and research goals; a counter goal for an out-of-reach Anti-heavy card may still join it) (the build trace showed Heavies parked at the gate killing every unit on spawn while the bot never built a turret in the first two minutes); (d) while its tray holds an Anti-heavy card whose Troops line can start, it researches only that line or non-Troops picks (it had bought Heavy Weapons at 0:30 against mono Heavy). Measured as built (tier VII vs mono Heavy, 100 per format, with the A2.6 numbers and the real-sim counter table): mono Heavy wins **14.0% Short and 26.5% Standard** (73.5 and 73.0% before; 47% with the numbers alone; 32 / 41% with (a) and (b) only); the bot's Anti-heavy share of unit gold 41% → 77-78%, Infantry 46% → 10-12%. On today's numbers (a) and (b) alone made things worse (the bot won 8%), so the rule ships with the numbers.
 - The bot does not build turrets toward its tier maximum: the turret share of kills is reported only (A16.5).
 
 **Push gate (anti-turtle).** Defence value D = enemy army value within 500 lu of their gate + 300 per enemy turret (enemy units in their gate zone count only after the 30 s opening, A17 retune). The bot Charges past mid-lane only when myArmy ≥ 1.3 × D. Otherwise it banks: it sets a Treasury saving goal (if below its cap; a research goal from A18.5), prefers units with range ≥ 250, and holds at the line if its tier allows Hold. From Overdrive onward the gate uses 1.0 × D, and in Siege the bot always Charges. Lane constants are lane-relative (offsets from the own gate, `L − x` for enemy-side rules, A17.13).
@@ -1468,14 +1506,15 @@ On-screen text is at most 8 words. No menu, name prompt or account screen appear
 | ~0:17 | First kill; "+30" flies to the gold counter | "Kills earn gold" |
 | 0:20 | Pebbler card slides in (script `unlockSlot`) | "Pebblers shoot over friends" |
 | 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Tosser" |
+| ~0:37 / ~0:39 (Anti-heavy, build phase H3, built) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip (script `unlockSlot`); right after the Rock Tosser beat (~0:39, the Tuskback still standing) the hand points at the card. No gold grant: with the 100 gold drafted here the stronger army toppled Grogg before the Future beat (retimed: Gunpowder 1:34, Future 2:28, Grogg falls 2:30) | "Spear Hunters beat Heavies" |
 | ~0:50 | Tutorial XP (built: 680) fills; Evolve glows steadily on the XP bar | "Evolve!" |
 | ~0:55 | Full Ascension show; 2 Vanguard Footmen march out; tray flips to Footman and Longbowman; Grogg stays in the Stone Age for comedy | none |
 | ~1:20 | Arrow Storm ready; an animated hand drags it onto enemies | "Drag the arrows onto them" |
 | ~1:30 / ~2:00 / ~2:35 | Gunpowder, Modern and Future, each with the full evolve show and that age's Infantry and Ranged commons in the tray | Future: "From clubs to lasers!" |
 | ~3:00 (built: ~2:30 on the long lane) | Grogg's base falls: slow motion, coins, staged rewards. Winning also grants one Wardrobe Crate (built) | none |
-| ~3:10 | Capsule 1: guided taps, scripted climb to Bronze, Spear Hunter NEW (short walkout); auto-equipped | "Tap to crack it" |
-| ~3:50 | Match 2: Short War vs Pip Quickstep (AI, tier 0), starter plan. Stone teaches Treasury; Medieval teaches the second mount. Pip opens Ranged then Infantry, then leans on Tuskbacks | "Tap your gold for Treasury"; "Buy a second turret mount"; "Heavies stop Bonkers. Try Spear Hunter." (adaptive) |
-| ~9:00 | Win (a loss still gives rewards plus a retry). Capsule 2: Pikeman and Grenadier NEW. One forced upgrade: Bonker to L2 (hammer slam) | "+5% HP and damage" |
+| ~3:10 | Capsule 1: guided taps, scripted climb to Bronze, Drum Shaman NEW (short walkout; was the Spear Hunter, now in the starter kit, A3); not auto-equipped (the summary offers Equip now; auto-equipped, the extra Support card made the onboarding autopilot lose match 2 to Pip in 2 of 4 seeds) | "Tap to crack it" |
+| ~3:50 | Match 2: Short War vs Pip Quickstep (AI, tier 0), starter plan. Stone teaches Treasury; Medieval teaches the second mount. Pip opens Ranged then Infantry, then leans on Tuskbacks; Pip's plan holds no Anti-heavy card (owner feedback 2026-09-29: with the Anti-heavy numbers a Pip with them cut the onboarding autopilot's match 2 wins from 90% to 84% of 80 seeds; without them 94%) | "Tap your gold for Treasury"; "Buy a second turret mount"; "Heavies! Send Spear Hunters." (adaptive; per age the age's Anti-heavy card) |
+| ~9:00 | Win (a loss still gives rewards plus a retry). Capsule 2: Friar and Field Surgeon NEW (were Pikeman and Grenadier, now in the starter kit). One forced upgrade: Bonker to L2 (hammer slam) | "+5% HP and damage" |
 | ~10:00 | Home appears: editable auto name, Trophy Road reveal, first Supply Capsule (granted right after capsule 2, no matches needed; A15.4); the Battle button pulses once | none |
 | ~10:15 | Match 3: Ladder, Short War vs Captain Kettle (tier I) | none |
 | After match 3 (built: after match 1) | War Plan, Customize, Quick Battle and Skirmish unlock, with a prompt to review the Stone loadout | "Your army, your plan" |
@@ -1490,7 +1529,7 @@ On-screen text is at most 8 words. No menu, name prompt or account screen appear
 **Adaptive hints** fire at most once per 30 s, only on failure patterns, and at most 3 times each:
 
 - "Their turret shreds melee. Try Pebblers."
-- "Heavies stop Bonkers. Try a Spear Hunter."
+- "Heavies! Send {Anti-heavy card}." (was "Heavies stop Bonkers. Try a Spear Hunter."; every age, from match 2; the in-battle counter hint, A9.2)
 - "Your power is ready."
 - "Evolve before they do."
 - "Buy another turret mount."
@@ -1568,7 +1607,7 @@ Full rules: A15.7 (Daily Challenge 2.0).
   - Tapping the Scouted chip opens a drop-down list that collapses after 3 s. It is the only element that may briefly cover the lane band, and only on request.
 - **Bottom tray (24% of height), left to right:**
   1. Gold counter with income per second and the next Treasury cost; tapping it buys Treasury. From A18.5: the round War Council button right of the gold counter (a ring while research runs, a dot when something is affordable) opens a bottom sheet over the tray, never the lane, with four track cards; the game keeps running.
-  2. 5 unit cards (6 from A18 phase 2): 88 px targets on screens ≥ 900 px wide, 72 px below. Each shows cost, queue count, radial training fill, affordable glow, foil frame, class icon (A18.9.1), and the "ARMY FULL" / "LEGENDARY IN FIELD" states.
+  2. 5 unit cards (6 from A18 phase 2): 88 px targets on screens ≥ 900 px wide, 72 px below. Each shows cost, queue count, radial training fill, affordable glow, foil frame, class icon (A18.9.1), and the "ARMY FULL" / "LEGENDARY IN FIELD" states. **Counter hint (Anti-heavy, build phase H1):** while the enemy has 2+ Heavy-group units on the lane, or Heavies are 40%+ of the visible enemy value, each Anti-heavy card in the tray shows a "Beats Heavy" chip with the shield-and-spear glyph and lifts once (MR-69: a lift and a glow, never a flash); the adaptive hint "Heavies! Send {card}." follows the A8 limits (once per 30 s, 3 times per match). With no Anti-heavy card in the age, the Result tip reads "Add {card} to {age}: it beats Heavies." and the War Plan advisor repeats it. Reviewed with Playwright at 844 × 390 and 1280 × 720.
   3. Army counter ("Army 44/60") and stance flag (from match 1; from A18.4 a three-segment Charge / Hold / Fall back control, 48 px tall on phones, and a small flag over the own front).
   4. Large round Age Power button (charge ring); dragged onto the lane (A18.9.2). Power rework (A2.9.10): a dock of two round buttons, Home and Field (64 px on phones, 96 px on desktop), each with a reload ring and seconds, a cost chip and a reach glyph; until forts ship the dock uses the reserved Fort space.
   5. Last Stand button (only when armed, from match 2).
@@ -1944,6 +1983,7 @@ These id families join A14.1, A13 and A14.3 when their A18 phase is built, so th
 - **War Path:** region maps per age, node, star and crown art, portraits and VS art for the new Generals; level ids `wp.<ageId>.l01` to `l10` and `wp.<ageId>.s1`, `s2` are content ids, stable forever.
 - **Cosmetics:** `cosmetic.<collection>.<id>` for quotes, base flags, national flags, base skins and base decorations (A18.9.4).
 - **New ages (A18.8):** for `nile`, `rome`, `norse`, `shogun` and `renaissance`: the base, backdrop, age icon, music cue, evolve fanfare and card ids, as A17.12 set the pattern.
+- **Anti-heavy, Long range and lane powers (owner feedback 2026-09-29 and 2026-09-30):** the Anti-heavy class glyph replaces the Anti-armor one under `icon.role.antiArmor` (id unchanged); `unit.<slug>` with idle, walk, attack, hit and death clips, portraits and card art for the 8 Long range cards (A5.1) and their arc projectiles `proj.dart_arc`, `proj.arrow_arc`, `proj.mortar_shell`, `proj.plasma_lob`, `proj.star_lob`, plus the shared `fx.arc_landing_marker` (a ground ring that closes over the flight time); sounds `shot_arc_bow`, `shot_mortar`, `shell_whistle`; `power.<slug>` and the effect and sound ids of the 8 lane powers (A5.7) and `icon.reach.lane`. Cartoon style (A18.9.5), reviewed with Playwright at 844 × 390 and 1280 × 720.
 - **Power rework (A2.9, A5.7):** `power.<slug>` for the 32 new powers and their `pw_*` sounds joined A14.1 and A13 with the P1 content (placeholder medallions and ZzFX); their effect ids (A5.7) and the shared `fx.field_zone`, `fx.target_lock`, `fx.turret_jammed` and `fx.power_cast_cue` joined A14.1 with P3/P4, and the sounds `power_cast`, `power_lock` and `turret_jammed` joined A13; still planned: `fx.reach_band` and `fx.target_pip` (drawn by the render overlay today).
 
 ## A15. Engagement and long-term progression
@@ -4447,7 +4487,7 @@ Theme: antiquity (hoplites, chariots, bolt-throwers, myths in bronze). Values ar
 | hoplite | Hoplite | C | Infantry | 50 | 186 | 23 / 1.0 s | 16 | 70 | S | G | light bio melee | Blunt. Shield Bash: the first hit of each engagement knocks the target back 15 lu (no damage bonus) |
 | javelineer | Javelineer | C | Ranged | 75 | 110 | 20 / 1.4 s | 210 | 65 | S | G+A | light bio ranged | Javelin; pierces 2 targets total within 50 lu |
 | war_chariot | War Chariot | C | Heavy | 150 | 630 | 49 / 1.5 s | 16 | 65 | L | G | armored bio melee | Scythe Charge: first hit ×2 and 30 lu knockback. The fastest Common Heavy, with 3% less HP |
-| phalangite | Phalangite | R | Anti-armor | 100 | 232 | 30 / 1.2 s | 65 | 70 | M | G | light bio melee | Reach; melee AA mods; priority armored |
+| phalangite | Phalangite | R | Anti-heavy | 100 | 255 (was 232) | 30 / 1.2 s | 65 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace (new); starter kit |
 | standard_bearer | Standard Bearer | R | Support | 110 | 151 | 9 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Aura: allies within 160 lu deal +15% damage; followSupport |
 | scorpion | Scorpion | E | Artillery | 200 | 330 | 64 / 3.0 s | 290 (min 60) | 45 | L | G | light mech ranged | Bolt pierces 3 targets total within 150 lu |
 | bronze_colossus | Bronze Colossus | L | Siege heavy | 350 | 2,050 | 64 splash r45 / 2.0 s | 20 | 40 | H | G | armored mech melee legendary | Stomp: every enemy hit is slowed 20% for 1.5 s. Molten Heart: on death bursts for 160 splash r70 on ground enemies |
@@ -4468,7 +4508,7 @@ Theme: steam, rivets, rail and the first electric light, roughly 1850-1915. No g
 | riveter | Riveter | C | Infantry | 50 | 330 | 42 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Big Wrench: the first hit of each engagement deals ×1.5 |
 | carbineer | Carbineer | C | Ranged | 75 | 201 | 33 / 1.2 s | 250 | 65 | S | G+A | light bio ranged | Bullet |
 | steam_golem | Steam Golem | C | Heavy | 150 | 1,187 | 89 / 1.5 s | 16 | 55 | L | G | armored mech melee | Piston Punch: first hit ×2 and 30 lu knockback |
-| harpoon_gunner | Harpoon Gunner | R | Anti-armor | 100 | 260 | 55 / 1.2 s | 210 | 65 | M | G+A | light bio ranged | Harpoon; ranged AA mods; priority armored. Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner |
+| harpoon_gunner | Harpoon Gunner | R | Anti-heavy | 100 | 260 | 55 / 1.2 s | 210 | 65 | M | G+A | light bio ranged | Harpoon; ranged mods with armored ×2.5 (was 2.0); priority armored; Brace (new); starter kit. Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner |
 | flare_spotter | Flare Spotter | R | Support | 110 | 276 | 17 / 1.2 s | 200 | 65 | S | G+A | light bio support ranged | Priority armored. Every hit marks the target (+20% damage taken from all sources) for 3 s; followSupport |
 | sapper | Sapper | E | Siege | 200 | 560 | 240 vs base / 2.0 s (12 vs units) | 12 | 85 | M | G | light bio melee | siegeOnly. Short Fuse: on death the charge goes off for 180 splash r60 on ground enemies (never the base) |
 | land_dreadnought | Land Dreadnought | L | Siege heavy | 350 | 3,600 | 130 splash r40 / 2.2 s | 160 | 35 | H | G | armored mech ranged legendary | Two sponson gunners (riders) each shoot 10 / 0.5 s at range 160 (G+A); on death the crew bails out as 2 Carbineers (summoned) |
@@ -4489,7 +4529,7 @@ Theme: space opera beyond the Future (star legions, warp, motherships). Raw file
 | star_legionnaire | Star Legionnaire | C | Infantry | 50 | 700 | 90 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt. Deflector: takes 20% less damage from attacks with range ≥ 100 (not powers) |
 | ion_ranger | Ion Ranger | C | Ranged | 75 | 426 | 54 / 1.0 s | 270 | 65 | S | G+A | light bio ranged | Ion bolt; arcs to 1 more enemy within 50 lu (chain, 2 targets total) |
 | hover_tank | Hover Tank | C | Heavy | 150 | 2,509 | 188 / 1.5 s | 90 | 55 | L | G | armored mech ranged | Plasma cannon. Hovers, but is a ground unit (blocks and is blocked) |
-| graviton_halberdier | Graviton Halberdier | R | Anti-armor | 100 | 896 | 116 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee AA mods; priority armored; Brace |
+| graviton_halberdier | Graviton Halberdier | R | Anti-heavy | 100 | 985 (was 896) | 116 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace; starter kit |
 | starwarden | Starwarden | R | Support | 110 | 582 | 36 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Shield Beacon every 8 s while it has a target: the nearest 4 allies within 180 lu get a 200 shield for 5 s; followSupport |
 | warp_stalker | Warp Stalker | E | Skirmisher | 200 | 1,600 | 140 / 0.8 s | 12 | 100 | M | G | light bio melee | Blink (10 s cooldown): when blocked, warps (0.4 s, untargetable by melee) to the nearest enemy ranged or support unit within 200 lu beyond the blocker; first strike ×2 (the pounce rule) |
 | mothership | Mothership | L | Air gunship | 350 | 3,700 | 80 / 0.6 s | 180 | 40 | H | G+A | air mech legendary | Obeys stance. Drone Strike every 6 s: the nearest enemy ground unit within 400 lu gets a strike after 1.0 s for 300 splash r50 (one call-in per side per 3 s). On death crashes for 350 splash r80 on ground enemies |
@@ -5313,7 +5353,7 @@ Per age, as A17 set the standard: 7 units (3 Common, 2 Rare, 1 Epic, 1 Legendary
 
 #### A18.9.1 Card class and counters on every card (owner direction, in flight)
 
-Every unit card (battle tray, War Plan, Collection, card detail, capsule reveal) shows its class with a role icon and a label: Infantry, Ranged, Heavy, Anti-armor, Siege, Support, Air, Legendary, and Underground and Fort once those classes ship. The class comes from the existing roles and tags (A2.6). The card detail and a long-press or hover tooltip show "Strong vs" and "Weak vs" from the compiled counter lists (B4); the War Plan builder shows a small counter triangle legend. Colours are colourblind-safe and never carry meaning alone.
+Every unit card (battle tray, War Plan, Collection, card detail, capsule reveal) shows its class with a role icon and a label: Infantry, Ranged (with a "Long range" trait and arc glyph for the Long range cards, A5.1), Heavy, **Anti-heavy** (was "Anti-armor"; owner feedback 2026-09-29, the ids stay `antiArmor`; its glyph is the Heavy class's kite shield split by a spear), Siege, Support, Air, Legendary, and Underground and Fort once those classes ship. The class comes from the existing roles and tags (A2.6). The card detail and a long-press or hover tooltip show "Strong vs" and "Weak vs" from the compiled counter lists (B4); the War Plan builder shows a small counter triangle legend. **The legend is a floor:** a class row never omits a legend pair, so every Anti-heavy card lists Heavy first under "Strong vs" and every Heavy card lists Anti-heavy under "Weak vs" (before, no Anti-armor card named its own age's Heavy). Colours are colourblind-safe and never carry meaning alone.
 
 #### A18.9.2 Age Power targeting (owner direction, in flight)
 
@@ -5709,7 +5749,7 @@ Meta gets time only through an injected `Clock`.
   - every attack has explicit `hitsGround` and `hitsAir`
   - every `visualId`, `effectId` and `soundId` exists in the manifests (these checks live in `tests/integrity`, WP12)
 - **Compilation.** `compile.ts` converts ms to ticks, speeds to milli-lu per tick, HP and damage to centi-units and percentages to bp, derives bounty values and pop, and computes `contentHash` (FNV-1a over canonical JSON). The result is a frozen `CompiledContent` object.
-- **Counter matrix.** `npm run content:counters` runs equal-gold 1v1 duels of every unit pair at L1 on a flat lane and writes `src/content/generated/counters.json`: M[a][b] = clamp(0.5 + (hpLeft_a − hpLeft_b) / 2, 0, 1), with hpLeft as a fraction of starting HP. `strongVs` and `weakVs` are the top and bottom 3 opponents of the same or adjacent age. CI fails if the file is stale.
+- **Counter matrix.** `npm run content:counters` runs equal-gold 1v1 duels of every unit pair at L1 on a flat lane and writes `src/content/generated/counters.json`: M[a][b] = clamp(0.5 + (hpLeft_a − hpLeft_b) / 2, 0, 1), with hpLeft as a fraction of starting HP. `strongVs` and `weakVs` are the top and bottom 3 opponents of the same or adjacent age. CI fails if the file is stale. **The duels run on the sim itself** (`src/sim/duel.ts`; build phase H2, the open WP1 Phase 3 item, owner feedback 2026-09-29): the compact duel engine rated each age's Anti-armor against its own Heavy at 38-78 (a coin flip in six ages) where the sim gave 41-89, so the bots' `f_counter` and every Strong vs line disagreed with the game. The switch alone cut the tier V mirror Final Bell from 47.0 to 21.5% in Short War and the medians by about a minute (bots counter-pick with true numbers). The file's input hash includes `SIM_VERSION` (the hash cannot see sim code, so its version stands in; engine id 102 = the sim harness), the counters test re-duels a sample of pairs on the sim, and `npx tsx tools/counters.ts` regenerates it in about 15 s. On the sim, air bombers never trade with melee (they fly on to the gate), so they read as even against melee instead of 100%; the gunships still win.
 - **Spreadsheets.** `tools/csv.ts` exports the unit, turret and power tables to CSV and imports them back, so balance can be tuned in a spreadsheet.
 - **Strings.** Cards reference `nameKey` and `descKey` in `src/i18n/content.en.json`. Danish files with the same keys arrive in v1.1; the loader falls back to EN.
 

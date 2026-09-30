@@ -356,29 +356,33 @@ def _hit(k):
     return pose
 
 
-# D8 spiral down: 8 unique poses in the 12 heavy steps (moves.DIE_SEQ_HEAVY)
-D_R = [8, 16, 26, 34, 40, 44, 46, 46]          # tips over (+ = leans back, the crown trails)
-D_Z = [2, -2, -6, -12, -18, -16, -20, -20]      # sinks
-D_X = [-2, -5, -8, -10, -12, -13, -13, -13]
-D_ESZ = [0.94, 0.8, 0.66, 0.54, 0.46, 0.44, 0.42, 0.4]   # the envelope deflates
-D_ESX = [1.04, 1.12, 1.18, 1.22, 1.26, 1.27, 1.28, 1.28]
-D_RZ = [0, 40, 110, 180, 250, 300, 330, 360]   # spins
+# D8 spiral down: 8 unique poses in the 12 heavy steps (moves.DIE_SEQ_HEAVY). The envelope
+# tears, deflates and flops over to one side while the balloon wobbles and sinks; the gondola
+# hits the ground with a crash bounce (no full spin: the crown would face the camera)
+D_R = [10, -12, 16, -10, 8, 3, 5, 5]            # wobble (+ = leans back)
+D_Z = [2, -3, -7, -12, -18, -14, -18, -18]      # sinks, crash bounce
+D_X = [-2, -4, -6, -8, -9, -9, -9, -9]
+D_Q = [0.0, 0.0, 0.0, 0.0, -0.12, 0.05, -0.06, -0.08]
+D_ESZ = [0.9, 0.78, 0.64, 0.5, 0.36, 0.4, 0.34, 0.32]   # the envelope deflates
+D_ESX = [1.05, 1.12, 1.2, 1.28, 1.36, 1.32, 1.38, 1.38]
+D_ER = [6, 14, 20, 26, 32, 30, 32, 32]
+D_EZ = [-2, -8, -14, -22, -30, -28, -32, -32]
 D_S = [1, 1, 1, 1, 1, 1, 0.97, 0.92]
 
 
 def _die(k):
-    body = M.about(UC, r=D_R[k], rz=D_RZ[k] * 0.25, s=D_S[k])
+    body = M.about(UC, r=D_R[k], s=D_S[k])
     pose = merge(STANCE, {
-        "unit": {"x": body["x"] + D_X[k], "y": body["y"], "z": body["z"] + D_Z[k], "r": D_R[k],
-                 "rz": D_RZ[k] * 0.25, "s": D_S[k]},
-        "envelope": dict(sz=D_ESZ[k], sx=D_ESX[k], sy=D_ESX[k], r=[6, 12, 18, 22, 24, 24, 24, 24][k],
-                         z=[-2, -6, -10, -14, -16, -16, -16, -16][k]),
+        "unit": dict(squash(D_Q[k]), x=body["x"] + D_X[k], y=body["y"], z=body["z"] + D_Z[k],
+                     r=D_R[k], s=D_S[k]),
+        "envelope": dict(sz=D_ESZ[k], sx=D_ESX[k], sy=D_ESX[k], r=D_ER[k], z=D_EZ[k]),
         "tear": {"show": True},
-        "gondola": {"r": [10, 16, -8, 12, -6, 4, 0, 0][k], "z": [0, 0, 0, 0, -1.5, 1.0, 0, 0][k]},
+        "gondola": {"r": [10, 16, -8, 12, -6, 4, 0, 0][k]},
         "torso": {"r": [20, 12, 8, 10, 6, 8, 8, 8][k]}, "head": {"r": [16, -6, 8, -4, 6, 0, 0, 0][k]},
         "arm_r": {"r": [90, 120, 60, 110, 70, 60, 60, 60][k]},
         "pennant": {"r": [10, 30, -20, 40, -10, 20, 20, 20][k]},
         "door_a": {"r": -60}, "door_b": {"r": 60},
+        "bag0": {"r": [20, -20, 16, -12, 30, 10, 20, 20][k]}, "bag1": {"r": [-16, 20, -14, 10, 30, 10, 20, 20][k]},
     })
     if k == 0:
         pose = merge(pose, F.expr("squeeze", "yell"))

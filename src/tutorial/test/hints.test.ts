@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { AdaptiveHints } from '../hints';
 import { ADAPTIVE, sec } from '../scripts';
+import { content } from '@/content';
 import { Harness, config } from './helpers';
 
 /** Runs `n` quiet ticks and returns the ids of hints fired. */
@@ -37,16 +38,26 @@ describe('Adaptive hints (DESIGN A8)', () => {
     expect(hints.update(h.input(pebblers))).toBeNull();
   });
 
-  it('"Heavies stop Bonkers": 3 Bonkers killed by Heavies, only with a Spear Hunter in the plan', () => {
+  it('"Heavies! Send {card}.": the enemy fields Heavies while the tray holds an Anti-heavy card (A9.2)', () => {
+    // Bonkers only: no Heavy, no hint.
     const h = new Harness();
-    const byTusk = () => h.died('bonker', 'unit', 'tuskback');
+    for (const x of [1_500_000, 1_520_000]) h.addUnit(1, 'bonker', x);
     h.advance();
-    expect(new AdaptiveHints().update(h.input([byTusk(), byTusk(), byTusk()]))?.id).toBe('heaviesStopInfantry');
+    expect(new AdaptiveHints().update(h.input())).toBeNull();
+    // A Tuskback among them is 60% of their value: the hint points at the Spear Hunter and names it.
+    h.addUnit(1, 'tuskback', 1_540_000);
+    h.advance();
+    const hint = new AdaptiveHints().update(h.input());
+    expect(hint).toMatchObject({ id: 'heaviesStopInfantry', textKey: 'tutorial.hint.heaviesStopInfantry', target: 'card3' });
+    expect(hint?.varKeys).toEqual({ card: content.units['spear_hunter']!.nameKey });
+    // Without an Anti-heavy card in the tray it stays quiet (the Result tip names the card instead).
     const cfg = config();
     cfg.sides[0].loadouts.stone = { ...cfg.sides[0].loadouts.stone!, units: ['bonker', 'pebbler', 'tuskback', null, null] };
     const h2 = new Harness(cfg);
+    h2.addUnit(1, 'tuskback', 1_500_000);
+    h2.addUnit(1, 'tuskback', 1_540_000);
     h2.advance();
-    expect(new AdaptiveHints().update(h2.input([byTusk(), byTusk(), byTusk()]))).toBeNull();
+    expect(new AdaptiveHints().update(h2.input())).toBeNull();
   });
 
   it('"Your power is ready": full for 15 s with 3 enemies on your half', () => {

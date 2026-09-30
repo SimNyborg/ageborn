@@ -63,7 +63,7 @@ export const cosmic: RawAgeTables = {
     {
       // Reach 70; melee AA mods; priority armored; Brace (immune to knockback and to first-hit bonuses)
       id: 'graviton_halberdier', kind: 'unit', age: 'cosmic', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 896, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 985, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {

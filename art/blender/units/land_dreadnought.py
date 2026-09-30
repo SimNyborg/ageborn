@@ -256,7 +256,7 @@ def build(rig):
     rig.part("track", g, I.STRIPE_DK, highlight=False, outline=0)
     g = Geo().lathe([(4.2, -1.8), (6.6, -2.6), (8.0, 0), (6.6, 2.6), (4.2, 1.8)], (58.0, TY - 5.4, 76.0),
                     (58.0, TY - 6.4, 76.0), segs=24)
-    rig.part("track", g, I.CREAM, outline=0.6)
+    rig.part("track", g, team=True, outline=0.6)             # a team-painted lifebuoy
     g = Geo()
     for a in (45, 135, 225, 315):
         t = math.radians(a)
@@ -413,7 +413,7 @@ def _attack(f):
         "g1_eyes": {"sz": 0.35 if f in (2, 3, 4) else 1.0},
         "g0_arms": {"show": f == 8}, "g1_arms": {"show": f == 8},
         "flash": {"show": f == 3},
-        "smoke": {"show": f in (4, 5, 6, 7), "s": [1, 1, 1, 1, 0.75, 1.05, 1.3, 1.5, 1, 1][f],
+        "smoke": {"show": f in (4, 5, 6, 7), "s": [1, 1, 1, 1, 0.75, 1.0, 1.1, 1.2, 1, 1][f],
                   "x": [0, 0, 0, 0, -10, 0, 7, 14, 0, 0][f], "z": [0, 0, 0, 0, -12, 0, 7, 13, 0, 0][f]},
         "exhaust": {"show": f in (4, 5, 6), "s": [1, 1, 1, 1, 1.2, 1.5, 1.7, 1, 1, 1][f],
                     "z": [0, 0, 0, 0, 0, 5, 10, 0, 0, 0][f]},

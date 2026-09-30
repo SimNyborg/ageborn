@@ -157,7 +157,7 @@ def build(rig):
     rig.part("tube", g, I.CREAM_DK, outline=0.4)
     rig.track("muzzle", "tube", MUZZLE)
     rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
-    I.muzzle_flash(rig, "tube", (T1 + 3, TY, TZ), size=1.7)
+    I.muzzle_flash(rig, "tube", (T1 + 3, TY, TZ), size=1.4)
     rig.joint("smoke", "root", (T1 + 14, -20, TZ + 4), hidden=True)
     g = Geo()
     for dx, dz, r in ((0, 0, 5.2), (6, 3, 4.2), (-4, 6, 4.0), (3, 8, 3.4), (10, -1, 3.2)):
@@ -245,7 +245,7 @@ def _attack_pose(f):
         "flash": {"show": f == 3},
         "harpoon": {"hide": f in (3, 4, 5, 6, 7)},
         "cable": {"show": f in (3, 4), "sx": [1, 1, 1, 1.0, 1.35, 1, 1, 1, 1, 1][f]},
-        "smoke": {"show": f in (3, 4, 5), "s": [1, 1, 1, 0.7, 1.0, 1.25, 1, 1, 1, 1][f],
+        "smoke": {"show": f in (4, 5), "s": [1, 1, 1, 0.7, 1.0, 1.25, 1, 1, 1, 1][f],
                   "x": [0, 0, 0, 0, 3, 7, 0, 0, 0, 0][f], "z": [0, 0, 0, 0, 1, 5, 0, 0, 0, 0][f]},
         "apron": {"r": [0, 0, 0, 0, 8, 0, 0, 0, 0, 0][f]},
     }, M.body_about((0, 0, 22), x=BX[f], q=BQ[f]))

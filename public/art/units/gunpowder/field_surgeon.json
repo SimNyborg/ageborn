@@ -2,1874 +2,1874 @@
  "frames": {
   "field_surgeon_idle_00": {
    "frame": {
-    "x": 353,
-    "y": 207,
-    "w": 53,
-    "h": 93
+    "x": 179,
+    "y": 217,
+    "w": 52,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 90,
-    "w": 53,
-    "h": 93
+    "x": 88,
+    "y": 92,
+    "w": 52,
+    "h": 94
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_00_team": {
    "frame": {
-    "x": 330,
-    "y": 559,
-    "w": 42,
-    "h": 70
+    "x": 191,
+    "y": 493,
+    "w": 43,
+    "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 102,
-    "w": 42,
-    "h": 70
+    "x": 92,
+    "y": 104,
+    "w": 43,
+    "h": 74
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_01": {
    "frame": {
-    "x": 435,
-    "y": 106,
-    "w": 52,
+    "x": 2,
+    "y": 217,
+    "w": 55,
     "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 88,
-    "w": 52,
+    "x": 89,
+    "y": 91,
+    "w": 55,
     "h": 95
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_01_team": {
    "frame": {
-    "x": 49,
-    "y": 559,
-    "w": 41,
-    "h": 72
+    "x": 2,
+    "y": 493,
+    "w": 44,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 100,
-    "w": 41,
-    "h": 72
+    "x": 93,
+    "y": 103,
+    "w": 44,
+    "h": 75
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_02": {
    "frame": {
-    "x": 502,
-    "y": 2,
+    "x": 303,
+    "y": 115,
     "w": 52,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 85,
+    "x": 89,
+    "y": 88,
     "w": 52,
     "h": 97
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_02_team": {
    "frame": {
-    "x": 142,
-    "y": 481,
-    "w": 39,
-    "h": 74
+    "x": 363,
+    "y": 410,
+    "w": 42,
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 97,
-    "w": 39,
-    "h": 74
+    "x": 93,
+    "y": 100,
+    "w": 42,
+    "h": 77
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_03": {
    "frame": {
-    "x": 111,
+    "x": 574,
     "y": 2,
-    "w": 53,
+    "w": 51,
     "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 82,
-    "w": 53,
+    "x": 89,
+    "y": 86,
+    "w": 51,
     "h": 99
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_03_team": {
    "frame": {
-    "x": 243,
-    "y": 400,
-    "w": 42,
-    "h": 76
+    "x": 94,
+    "y": 410,
+    "w": 41,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 94,
-    "w": 42,
-    "h": 76
+    "x": 93,
+    "y": 98,
+    "w": 41,
+    "h": 78
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_04": {
    "frame": {
     "x": 2,
-    "y": 2,
+    "y": 115,
     "w": 53,
-    "h": 100
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 82,
-    "y": 80,
+    "x": 88,
+    "y": 87,
     "w": 53,
-    "h": 100
+    "h": 98
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_04_team": {
    "frame": {
-    "x": 90,
-    "y": 400,
+    "x": 2,
+    "y": 410,
     "w": 41,
-    "h": 77
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 92,
+    "x": 93,
+    "y": 98,
     "w": 41,
-    "h": 77
+    "h": 79
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_05": {
    "frame": {
-    "x": 168,
-    "y": 2,
+    "x": 530,
+    "y": 115,
     "w": 53,
-    "h": 99
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 82,
+    "x": 87,
+    "y": 90,
     "w": 53,
-    "h": 99
+    "h": 96
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_idle_05_team": {
    "frame": {
-    "x": 289,
-    "y": 400,
+    "x": 145,
+    "y": 493,
     "w": 42,
-    "h": 76
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 94,
+    "x": 92,
+    "y": 102,
     "w": 42,
-    "h": 76
+    "h": 75
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_idle_06": {
-   "frame": {
-    "x": 558,
-    "y": 2,
-    "w": 52,
-    "h": 97
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 81,
-    "y": 85,
-    "w": 52,
-    "h": 97
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_idle_06_team": {
-   "frame": {
-    "x": 185,
-    "y": 481,
-    "w": 39,
-    "h": 74
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 84,
-    "y": 97,
-    "w": 39,
-    "h": 74
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_idle_07": {
-   "frame": {
-    "x": 491,
-    "y": 106,
-    "w": 52,
-    "h": 95
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 81,
-    "y": 88,
-    "w": 52,
-    "h": 95
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_idle_07_team": {
-   "frame": {
-    "x": 94,
-    "y": 559,
-    "w": 41,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 83,
-    "y": 100,
-    "w": 41,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_00": {
    "frame": {
-    "x": 483,
-    "y": 207,
-    "w": 52,
-    "h": 92
+    "x": 121,
+    "y": 217,
+    "w": 54,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
+    "x": 91,
     "y": 91,
-    "w": 52,
-    "h": 92
+    "w": 54,
+    "h": 94
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_00_team": {
    "frame": {
-    "x": 533,
-    "y": 400,
-    "w": 45,
+    "x": 285,
+    "y": 493,
+    "w": 42,
     "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 102,
-    "w": 45,
+    "x": 93,
+    "y": 104,
+    "w": 42,
     "h": 74
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_01": {
    "frame": {
-    "x": 2,
-    "y": 207,
-    "w": 51,
-    "h": 94
+    "x": 73,
+    "y": 316,
+    "w": 57,
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
-    "y": 87,
-    "w": 51,
-    "h": 94
+    "x": 90,
+    "y": 97,
+    "w": 57,
+    "h": 90
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_01_team": {
    "frame": {
-    "x": 196,
-    "y": 400,
-    "w": 43,
-    "h": 76
+    "x": 580,
+    "y": 493,
+    "w": 45,
+    "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 98,
-    "w": 43,
-    "h": 76
+    "x": 92,
+    "y": 109,
+    "w": 45,
+    "h": 71
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 106,
-    "w": 49,
-    "h": 97
+    "x": 471,
+    "y": 115,
+    "w": 55,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 83,
-    "w": 49,
-    "h": 97
+    "x": 91,
+    "y": 89,
+    "w": 55,
+    "h": 96
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_02_team": {
    "frame": {
-    "x": 97,
-    "y": 481,
-    "w": 41,
-    "h": 74
+    "x": 50,
+    "y": 493,
+    "w": 44,
+    "h": 75
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 95,
-    "w": 41,
-    "h": 74
+    "x": 92,
+    "y": 101,
+    "w": 44,
+    "h": 75
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_03": {
    "frame": {
-    "x": 443,
+    "x": 243,
     "y": 2,
-    "w": 55,
-    "h": 97
+    "w": 53,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
-    "y": 87,
-    "w": 55,
-    "h": 97
+    "x": 92,
+    "y": 84,
+    "w": 53,
+    "h": 100
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_03_team": {
    "frame": {
-    "x": 228,
-    "y": 481,
-    "w": 42,
-    "h": 73
+    "x": 319,
+    "y": 410,
+    "w": 40,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 99,
-    "w": 42,
-    "h": 73
+    "x": 94,
+    "y": 96,
+    "w": 40,
+    "h": 78
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_04": {
    "frame": {
-    "x": 371,
-    "y": 106,
-    "w": 60,
-    "h": 95
+    "x": 181,
+    "y": 115,
+    "w": 61,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
+    "x": 91,
     "y": 91,
-    "w": 60,
-    "h": 95
+    "w": 61,
+    "h": 97
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_04_team": {
    "frame": {
-    "x": 574,
-    "y": 481,
-    "w": 44,
-    "h": 72
+    "x": 50,
+    "y": 572,
+    "w": 39,
+    "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 102,
-    "w": 44,
-    "h": 72
+    "x": 93,
+    "y": 104,
+    "w": 39,
+    "h": 71
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_05": {
    "frame": {
-    "x": 225,
-    "y": 2,
-    "w": 56,
-    "h": 98
+    "x": 484,
+    "y": 217,
+    "w": 65,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
-    "y": 87,
-    "w": 56,
-    "h": 98
+    "x": 90,
+    "y": 97,
+    "w": 65,
+    "h": 91
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_05_team": {
    "frame": {
-    "x": 274,
-    "y": 481,
-    "w": 42,
-    "h": 73
+    "x": 347,
+    "y": 572,
+    "w": 45,
+    "h": 68
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 99,
-    "w": 42,
-    "h": 73
+    "x": 92,
+    "y": 110,
+    "w": 45,
+    "h": 68
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_06": {
    "frame": {
-    "x": 59,
-    "y": 2,
-    "w": 48,
-    "h": 100
+    "x": 61,
+    "y": 217,
+    "w": 56,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 83,
-    "w": 48,
-    "h": 100
+    "x": 91,
+    "y": 89,
+    "w": 56,
+    "h": 94
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_06_team": {
    "frame": {
-    "x": 582,
-    "y": 400,
-    "w": 44,
+    "x": 238,
+    "y": 493,
+    "w": 43,
     "h": 74
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 95,
-    "w": 44,
+    "x": 92,
+    "y": 102,
+    "w": 43,
     "h": 74
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_walk_07": {
    "frame": {
-    "x": 547,
-    "y": 106,
-    "w": 50,
-    "h": 95
+    "x": 359,
+    "y": 115,
+    "w": 52,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 84,
+    "w": 52,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_walk_07_team": {
+   "frame": {
+    "x": 139,
+    "y": 410,
+    "w": 41,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 96,
+    "w": 41,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_00": {
+   "frame": {
+    "x": 114,
+    "y": 115,
+    "w": 63,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 89,
+    "w": 63,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_00_team": {
+   "frame": {
+    "x": 454,
+    "y": 410,
+    "w": 43,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 101,
+    "w": 43,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_01": {
+   "frame": {
+    "x": 383,
+    "y": 2,
+    "w": 66,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 87,
+    "w": 66,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_01_team": {
+   "frame": {
+    "x": 184,
+    "y": 410,
+    "w": 41,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 100,
+    "w": 41,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_02": {
+   "frame": {
+    "x": 518,
+    "y": 2,
+    "w": 52,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 87,
+    "w": 52,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_02_team": {
+   "frame": {
+    "x": 229,
+    "y": 410,
+    "w": 41,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 100,
+    "w": 41,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_03": {
+   "frame": {
+    "x": 214,
+    "y": 316,
+    "w": 67,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 98,
+    "w": 67,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_03_team": {
+   "frame": {
+    "x": 143,
+    "y": 572,
+    "w": 48,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 110,
+    "w": 48,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 316,
+    "w": 67,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 97,
+    "w": 67,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_04_team": {
+   "frame": {
+    "x": 195,
+    "y": 572,
+    "w": 47,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 110,
+    "w": 47,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_05": {
+   "frame": {
+    "x": 300,
+    "y": 2,
+    "w": 79,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 90,
+    "w": 79,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_05_team": {
+   "frame": {
+    "x": 47,
+    "y": 410,
+    "w": 43,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 103,
+    "w": 43,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_06": {
+   "frame": {
+    "x": 134,
+    "y": 316,
+    "w": 76,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 95,
+    "w": 76,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_06_team": {
+   "frame": {
+    "x": 93,
+    "y": 572,
+    "w": 46,
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 87,
-    "w": 50,
-    "h": 95
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_walk_07_team": {
-   "frame": {
-    "x": 485,
-    "y": 400,
-    "w": 44,
-    "h": 75
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 84,
-    "y": 99,
-    "w": 44,
-    "h": 75
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_00": {
-   "frame": {
-    "x": 151,
     "y": 106,
-    "w": 68,
-    "h": 96
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 82,
-    "y": 85,
-    "w": 68,
-    "h": 96
+    "w": 46,
+    "h": 70
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_attack_00_team": {
+  "field_surgeon_attack_07": {
    "frame": {
-    "x": 436,
-    "y": 400,
-    "w": 45,
-    "h": 75
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 84,
-    "y": 97,
-    "w": 45,
-    "h": 75
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_01": {
-   "frame": {
-    "x": 148,
-    "y": 207,
-    "w": 69,
-    "h": 93
+    "x": 59,
+    "y": 115,
+    "w": 51,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
     "y": 88,
-    "w": 69,
-    "h": 93
+    "w": 51,
+    "h": 98
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_01_team": {
-   "frame": {
-    "x": 472,
-    "y": 481,
-    "w": 48,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 84,
-    "y": 100,
-    "w": 48,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_02": {
-   "frame": {
-    "x": 410,
-    "y": 207,
-    "w": 69,
-    "h": 92
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 87,
-    "y": 89,
-    "w": 69,
-    "h": 92
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_02_team": {
-   "frame": {
-    "x": 276,
-    "y": 559,
-    "w": 50,
-    "h": 70
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 84,
-    "y": 102,
-    "w": 50,
-    "h": 70
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_03": {
-   "frame": {
-    "x": 285,
-    "y": 2,
-    "w": 78,
-    "h": 97
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 87,
-    "y": 84,
-    "w": 78,
-    "h": 97
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_03_team": {
-   "frame": {
-    "x": 335,
-    "y": 400,
-    "w": 47,
-    "h": 75
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 84,
-    "y": 96,
-    "w": 47,
-    "h": 75
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_04": {
-   "frame": {
-    "x": 82,
-    "y": 305,
-    "w": 77,
-    "h": 90
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 64,
-    "y": 91,
-    "w": 77,
-    "h": 90
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_04_team": {
-   "frame": {
-    "x": 376,
-    "y": 559,
-    "w": 46,
-    "h": 69
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 75,
-    "y": 102,
-    "w": 46,
-    "h": 69
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_05": {
-   "frame": {
-    "x": 57,
-    "y": 207,
-    "w": 87,
-    "h": 93
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 72,
-    "y": 88,
-    "w": 87,
-    "h": 93
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_05_team": {
-   "frame": {
-    "x": 524,
-    "y": 481,
-    "w": 46,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 79,
-    "y": 99,
-    "w": 46,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_06": {
-   "frame": {
-    "x": 55,
-    "y": 106,
-    "w": 92,
-    "h": 96
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 77,
-    "y": 85,
-    "w": 92,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_06_team": {
-   "frame": {
-    "x": 386,
-    "y": 400,
-    "w": 46,
-    "h": 75
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 83,
-    "y": 96,
-    "w": 46,
-    "h": 75
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_attack_07": {
-   "frame": {
-    "x": 223,
-    "y": 106,
-    "w": 65,
-    "h": 96
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 82,
-    "y": 85,
-    "w": 65,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_attack_07_team": {
    "frame": {
-    "x": 50,
-    "y": 481,
+    "x": 274,
+    "y": 410,
+    "w": 41,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 99,
+    "w": 41,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 50,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 77,
+    "w": 50,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_08_team": {
+   "frame": {
+    "x": 547,
+    "y": 410,
+    "w": 41,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 101,
+    "w": 41,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_09": {
+   "frame": {
+    "x": 587,
+    "y": 115,
+    "w": 51,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 89,
+    "w": 51,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_09_team": {
+   "frame": {
+    "x": 98,
+    "y": 493,
     "w": 43,
-    "h": 74
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 102,
+    "w": 43,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_10": {
+   "frame": {
+    "x": 246,
+    "y": 115,
+    "w": 53,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 89,
+    "w": 53,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_attack_10_team": {
+   "frame": {
+    "x": 592,
+    "y": 410,
+    "w": 39,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 101,
+    "w": 39,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_00": {
+   "frame": {
+    "x": 409,
+    "y": 217,
+    "w": 71,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 95,
+    "w": 71,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_00_team": {
+   "frame": {
+    "x": 448,
+    "y": 493,
+    "w": 44,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 106,
+    "w": 44,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_01": {
+   "frame": {
+    "x": 56,
+    "y": 2,
+    "w": 68,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 81,
+    "w": 68,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_01_team": {
+   "frame": {
+    "x": 464,
+    "y": 316,
+    "w": 41,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 94,
+    "w": 41,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_02": {
+   "frame": {
+    "x": 183,
+    "y": 2,
+    "w": 56,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 85,
+    "w": 56,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_02_team": {
+   "frame": {
+    "x": 585,
+    "y": 316,
+    "w": 43,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 97,
+    "w": 43,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_03": {
+   "frame": {
+    "x": 235,
+    "y": 217,
+    "w": 52,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 92,
+    "w": 52,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_03_team": {
+   "frame": {
+    "x": 331,
+    "y": 493,
+    "w": 43,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 104,
+    "w": 43,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_04": {
+   "frame": {
+    "x": 415,
+    "y": 115,
+    "w": 52,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 89,
+    "w": 52,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_hit_04_team": {
+   "frame": {
+    "x": 501,
+    "y": 410,
+    "w": 42,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 101,
+    "w": 42,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_00": {
+   "frame": {
+    "x": 285,
+    "y": 316,
+    "w": 58,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 95,
+    "w": 58,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_00_team": {
+   "frame": {
+    "x": 246,
+    "y": 572,
+    "w": 47,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 106,
+    "w": 47,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_01": {
+   "frame": {
+    "x": 128,
+    "y": 2,
+    "w": 51,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 97,
-    "w": 43,
-    "h": 74
+    "y": 79,
+    "w": 51,
+    "h": 103
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_hit_00": {
+  "field_surgeon_die_01_team": {
    "frame": {
-    "x": 163,
-    "y": 305,
-    "w": 73,
-    "h": 86
+    "x": 553,
+    "y": 217,
+    "w": 49,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 67,
-    "y": 96,
-    "w": 73,
-    "h": 86
+    "x": 84,
+    "y": 86,
+    "w": 49,
+    "h": 91
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_hit_00_team": {
+  "field_surgeon_die_02": {
    "frame": {
-    "x": 426,
-    "y": 559,
-    "w": 47,
-    "h": 68
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 79,
-    "y": 107,
-    "w": 47,
-    "h": 68
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_hit_01": {
-   "frame": {
-    "x": 323,
-    "y": 305,
-    "w": 88,
-    "h": 82
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 55,
-    "y": 100,
-    "w": 88,
-    "h": 82
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_hit_01_team": {
-   "frame": {
-    "x": 2,
-    "y": 635,
-    "w": 47,
-    "h": 64
+    "x": 453,
+    "y": 2,
+    "w": 61,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 74,
-    "y": 111,
-    "w": 47,
-    "h": 64
+    "y": 83,
+    "w": 61,
+    "h": 99
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_hit_02": {
+  "field_surgeon_die_02_team": {
+   "frame": {
+    "x": 418,
+    "y": 316,
+    "w": 42,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 93,
+    "w": 42,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_03": {
+   "frame": {
+    "x": 291,
+    "y": 217,
+    "w": 50,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 92,
+    "w": 50,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_03_team": {
    "frame": {
     "x": 2,
-    "y": 305,
-    "w": 76,
-    "h": 91
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 63,
-    "y": 91,
-    "w": 76,
-    "h": 91
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_hit_02_team": {
-   "frame": {
-    "x": 139,
-    "y": 559,
+    "y": 572,
     "w": 44,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 77,
-    "y": 103,
+    "x": 82,
+    "y": 104,
     "w": 44,
     "h": 71
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_hit_03": {
+  "field_surgeon_die_04": {
    "frame": {
-    "x": 221,
-    "y": 207,
-    "w": 68,
+    "x": 496,
+    "y": 493,
+    "w": 80,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 116,
+    "w": 80,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_04_team": {
+   "frame": {
+    "x": 448,
+    "y": 572,
+    "w": 53,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 129,
+    "w": 53,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_05": {
+   "frame": {
+    "x": 345,
+    "y": 217,
+    "w": 60,
     "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 71,
-    "y": 89,
-    "w": 68,
+    "y": 104,
+    "w": 60,
     "h": 93
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_hit_03_team": {
+  "field_surgeon_die_05_team": {
    "frame": {
-    "x": 2,
-    "y": 481,
-    "w": 44,
-    "h": 74
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 81,
-    "y": 100,
-    "w": 44,
-    "h": 74
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_hit_04": {
-   "frame": {
-    "x": 293,
-    "y": 207,
-    "w": 56,
-    "h": 93
+    "x": 409,
+    "y": 410,
+    "w": 41,
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 79,
-    "y": 89,
-    "w": 56,
-    "h": 93
+    "y": 118,
+    "w": 41,
+    "h": 77
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_hit_04_team": {
+  "field_surgeon_die_06": {
    "frame": {
-    "x": 2,
-    "y": 559,
-    "w": 43,
-    "h": 72
+    "x": 509,
+    "y": 316,
+    "w": 72,
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 100,
-    "w": 43,
-    "h": 72
+    "x": 65,
+    "y": 111,
+    "w": 72,
+    "h": 80
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_die_00": {
+  "field_surgeon_die_06_team": {
    "frame": {
-    "x": 415,
-    "y": 305,
-    "w": 81,
-    "h": 82
+    "x": 396,
+    "y": 572,
+    "w": 48,
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 51,
-    "y": 97,
-    "w": 81,
-    "h": 82
+    "x": 78,
+    "y": 125,
+    "w": 48,
+    "h": 66
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
-  "field_surgeon_die_00_team": {
+  "field_surgeon_die_07": {
    "frame": {
-    "x": 477,
-    "y": 559,
-    "w": 55,
-    "h": 67
+    "x": 347,
+    "y": 316,
+    "w": 67,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 109,
+    "w": 67,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_07_team": {
+   "frame": {
+    "x": 297,
+    "y": 572,
+    "w": 46,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 123,
+    "w": 46,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 233,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.48498,
+    "y": 0.86341
+   }
+  },
+  "field_surgeon_die_08": {
+   "frame": {
+    "x": 378,
+    "y": 493,
+    "w": 66,
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 68,
-    "y": 109,
-    "w": 55,
-    "h": 67
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_01": {
-   "frame": {
-    "x": 367,
-    "y": 2,
-    "w": 72,
-    "h": 97
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 44,
-    "y": 74,
-    "w": 72,
-    "h": 97
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_01_team": {
-   "frame": {
-    "x": 500,
-    "y": 305,
-    "w": 55,
-    "h": 81
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 58,
-    "y": 87,
-    "w": 55,
-    "h": 81
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_02": {
-   "frame": {
-    "x": 539,
-    "y": 207,
-    "w": 78,
-    "h": 91
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 35,
-    "y": 76,
-    "w": 78,
-    "h": 91
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_02_team": {
-   "frame": {
-    "x": 135,
-    "y": 400,
-    "w": 57,
-    "h": 76
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 50,
-    "y": 89,
-    "w": 57,
-    "h": 76
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_03": {
-   "frame": {
-    "x": 240,
-    "y": 305,
-    "w": 79,
-    "h": 85
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 31,
-    "y": 87,
-    "w": 79,
-    "h": 85
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_03_team": {
-   "frame": {
-    "x": 411,
-    "y": 481,
-    "w": 57,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 47,
-    "y": 99,
-    "w": 57,
+    "y": 115,
+    "w": 66,
     "h": 72
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_04": {
-   "frame": {
-    "x": 187,
-    "y": 559,
-    "w": 85,
-    "h": 70
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 38,
-    "y": 110,
-    "w": 85,
-    "h": 70
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_04_team": {
-   "frame": {
-    "x": 199,
-    "y": 635,
-    "w": 54,
-    "h": 59
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 57,
-    "y": 122,
-    "w": 54,
-    "h": 59
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_05": {
-   "frame": {
-    "x": 292,
-    "y": 106,
-    "w": 75,
-    "h": 95
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 37,
-    "y": 82,
-    "w": 75,
-    "h": 95
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_05_team": {
-   "frame": {
-    "x": 559,
-    "y": 305,
-    "w": 50,
-    "h": 80
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 55,
-    "y": 94,
-    "w": 50,
-    "h": 80
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_06": {
-   "frame": {
-    "x": 2,
-    "y": 400,
-    "w": 84,
-    "h": 77
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 44,
-    "y": 103,
-    "w": 84,
-    "h": 77
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_06_team": {
-   "frame": {
-    "x": 536,
-    "y": 559,
-    "w": 52,
-    "h": 64
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 59,
-    "y": 114,
-    "w": 52,
-    "h": 64
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_07": {
-   "frame": {
-    "x": 320,
-    "y": 481,
-    "w": 87,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 47,
-    "y": 108,
-    "w": 87,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_07_team": {
-   "frame": {
-    "x": 53,
-    "y": 635,
-    "w": 54,
-    "h": 60
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 60,
-    "y": 119,
-    "w": 54,
-    "h": 60
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_08": {
-   "frame": {
-    "x": 111,
-    "y": 635,
-    "w": 84,
-    "h": 59
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 55,
-    "y": 121,
-    "w": 84,
-    "h": 59
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   },
   "field_surgeon_die_08_team": {
    "frame": {
-    "x": 341,
-    "y": 635,
-    "w": 51,
-    "h": 47
+    "x": 505,
+    "y": 572,
+    "w": 44,
+    "h": 57
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 64,
-    "y": 131,
-    "w": 51,
-    "h": 47
+    "x": 79,
+    "y": 127,
+    "w": 44,
+    "h": 57
    },
    "sourceSize": {
-    "w": 219,
-    "h": 198
+    "w": 233,
+    "h": 205
    },
    "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_09": {
-   "frame": {
-    "x": 257,
-    "y": 635,
-    "w": 80,
-    "h": 47
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 60,
-    "y": 133,
-    "w": 80,
-    "h": 47
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
-   }
-  },
-  "field_surgeon_die_09_team": {
-   "frame": {
-    "x": 396,
-    "y": 635,
-    "w": 50,
-    "h": 37
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 66,
-    "y": 141,
-    "w": 50,
-    "h": 37
-   },
-   "sourceSize": {
-    "w": 219,
-    "h": 198
-   },
-   "anchor": {
-    "x": 0.47945,
-    "y": 0.87374
+    "x": 0.48498,
+    "y": 0.86341
    }
   }
  },
@@ -1880,9 +1880,7 @@
    "field_surgeon_idle_02",
    "field_surgeon_idle_03",
    "field_surgeon_idle_04",
-   "field_surgeon_idle_05",
-   "field_surgeon_idle_06",
-   "field_surgeon_idle_07"
+   "field_surgeon_idle_05"
   ],
   "idle_team": [
    "field_surgeon_idle_00_team",
@@ -1890,9 +1888,7 @@
    "field_surgeon_idle_02_team",
    "field_surgeon_idle_03_team",
    "field_surgeon_idle_04_team",
-   "field_surgeon_idle_05_team",
-   "field_surgeon_idle_06_team",
-   "field_surgeon_idle_07_team"
+   "field_surgeon_idle_05_team"
   ],
   "walk": [
    "field_surgeon_walk_00",
@@ -1922,7 +1918,10 @@
    "field_surgeon_attack_04",
    "field_surgeon_attack_05",
    "field_surgeon_attack_06",
-   "field_surgeon_attack_07"
+   "field_surgeon_attack_07",
+   "field_surgeon_attack_08",
+   "field_surgeon_attack_09",
+   "field_surgeon_attack_10"
   ],
   "attack_team": [
    "field_surgeon_attack_00_team",
@@ -1932,7 +1931,10 @@
    "field_surgeon_attack_04_team",
    "field_surgeon_attack_05_team",
    "field_surgeon_attack_06_team",
-   "field_surgeon_attack_07_team"
+   "field_surgeon_attack_07_team",
+   "field_surgeon_attack_08_team",
+   "field_surgeon_attack_09_team",
+   "field_surgeon_attack_10_team"
   ],
   "hit": [
    "field_surgeon_hit_00",
@@ -1957,8 +1959,8 @@
    "field_surgeon_die_05",
    "field_surgeon_die_06",
    "field_surgeon_die_07",
-   "field_surgeon_die_08",
-   "field_surgeon_die_09"
+   "field_surgeon_die_07",
+   "field_surgeon_die_08"
   ],
   "die_team": [
    "field_surgeon_die_00_team",
@@ -1969,8 +1971,8 @@
    "field_surgeon_die_05_team",
    "field_surgeon_die_06_team",
    "field_surgeon_die_07_team",
-   "field_surgeon_die_08_team",
-   "field_surgeon_die_09_team"
+   "field_surgeon_die_07_team",
+   "field_surgeon_die_08_team"
   ]
  },
  "meta": {
@@ -1980,18 +1982,18 @@
   "format": "RGBA8888",
   "size": {
    "w": 640,
-   "h": 704
+   "h": 648
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.field_surgeon",
    "name": "Field Surgeon",
    "heightLu": 72,
-   "widthLu": 36.2,
+   "widthLu": 36.6,
    "pxPerLu": 1.23,
    "feetPx": [
-    105.0,
-    173.0
+    113.0,
+    177.0
    ],
    "anchorsLu": {
     "head": [
@@ -2011,7 +2013,7 @@
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
    "clips": {
     "idle": {
-     "frames": 8,
+     "frames": 6,
      "loop": true,
      "sequence": [
       0,
@@ -2019,54 +2021,42 @@
       2,
       3,
       4,
-      5,
-      6,
-      7
+      5
      ],
      "durationsMs": [
-      115,
-      115,
-      115,
-      115,
-      115,
-      115,
-      115,
-      115
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
      ],
      "durationMs": 920,
      "anchorsLu": {
       "muzzle": [
        [
-        16.9,
-        9.8
+        11.6,
+        0.9
        ],
        [
-        16.7,
-        10.5
+        12.8,
+        1.5
        ],
        [
-        17.0,
-        11.8
+        11.2,
+        1.6
        ],
        [
-        17.6,
-        13.4
+        8.4,
+        1.5
        ],
        [
-        18.6,
-        15.0
+        7.2,
+        1.1
        ],
        [
-        17.6,
-        13.4
-       ],
-       [
-        17.0,
-        11.8
-       ],
-       [
-        16.7,
-        10.5
+        8.8,
+        0.7
        ]
       ]
      }
@@ -2098,44 +2088,44 @@
      "anchorsLu": {
       "muzzle": [
        [
-        12.4,
-        6.9
+        -1.5,
+        -1.2
        ],
        [
-        13.0,
-        9.2
+        -8.5,
+        -1.6
        ],
        [
-        16.3,
-        12.4
+        -4.5,
+        0.6
        ],
        [
-        22.2,
-        13.8
+        9.4,
+        2.4
        ],
        [
-        25.2,
-        13.3
+        26.4,
+        11.3
        ],
        [
-        23.3,
-        12.9
+        29.1,
+        12.2
        ],
        [
-        18.1,
-        11.4
+        22.1,
+        7.6
        ],
        [
-        14.4,
-        8.6
+        7.3,
+        2.0
        ]
       ]
      },
-     "strideLu": 31.0,
-     "naturalSpeedLuPerS": 62.0
+     "strideLu": 32.4,
+     "naturalSpeedLuPerS": 64.8
     },
     "attack": {
-     "frames": 8,
+     "frames": 11,
      "loop": false,
      "sequence": [
       0,
@@ -2145,54 +2135,72 @@
       4,
       5,
       6,
-      7
+      7,
+      8,
+      9,
+      10
      ],
      "durationsMs": [
-      83,
-      83,
-      167,
-      83,
-      83,
-      83,
-      125,
-      125
+      40,
+      45,
+      45,
+      140,
+      63,
+      80,
+      70,
+      70,
+      110,
+      90,
+      79
      ],
      "durationMs": 832,
-     "impactFrame": 3,
+     "impactFrame": 5,
      "impactAt": 0.4002,
      "anchorsLu": {
       "muzzle": [
        [
-        31.4,
-        35.6
+        27.2,
+        18.2
        ],
        [
-        35.0,
-        35.3
+        1.6,
+        45.7
        ],
        [
-        36.4,
-        34.5
+        18.7,
+        13.7
        ],
        [
-        33.0,
+        32.6,
+        18.5
+       ],
+       [
+        32.3,
+        18.6
+       ],
+       [
+        28.0,
+        21.3
+       ],
+       [
+        19.0,
         37.2
        ],
        [
-        17.6,
-        52.5
+        2.5,
+        52.9
        ],
        [
-        26.2,
-        47.3
+        3.1,
+        56.3
        ],
        [
-        30.8,
-        42.8
+        2.2,
+        55.6
        ],
        [
-        28.7,
-        21.9
+        17.2,
+        4.7
        ]
       ]
      }
@@ -2218,30 +2226,30 @@
      "anchorsLu": {
       "muzzle": [
        [
-        22.6,
-        15.6
+        16.4,
+        6.4
        ],
        [
-        25.0,
-        21.2
+        14.5,
+        12.3
        ],
        [
-        22.5,
-        20.3
+        13.0,
+        5.0
        ],
        [
-        21.5,
-        16.6
+        7.1,
+        -0.2
        ],
        [
-        18.3,
-        11.7
+        10.3,
+        1.4
        ]
       ]
      }
     },
     "die": {
-     "frames": 10,
+     "frames": 9,
      "loop": false,
      "sequence": [
       0,
@@ -2252,8 +2260,8 @@
       5,
       6,
       7,
-      8,
-      9
+      7,
+      8
      ],
      "durationsMs": [
       45,
@@ -2276,7 +2284,7 @@
         0,
         25.9
        ],
-       "scale": 0.452
+       "scale": 0.458
       },
       {
        "id": "fx.ko_stars",
@@ -2286,51 +2294,47 @@
         39.6
        ],
        "loops": 2,
-       "scale": 0.673
+       "scale": 0.676
       }
      ],
      "hideUnitAtMs": 695,
      "anchorsLu": {
       "muzzle": [
        [
-        16.9,
-        48.4
+        11.3,
+        5.1
        ],
        [
-        2.0,
-        62.2
+        9.4,
+        7.9
        ],
        [
-        -1.9,
-        61.5
+        -25.7,
+        15.1
        ],
        [
-        -3.3,
-        54.6
+        3.8,
+        4.6
        ],
        [
-        9.3,
-        42.2
+        9.4,
+        31.2
        ],
        [
-        0.7,
-        49.3
+        9.9,
+        30.1
        ],
        [
-        13.5,
-        39.8
+        8.3,
+        31.9
        ],
        [
-        18.5,
-        36.7
+        8.4,
+        31.6
        ],
        [
-        22.7,
-        29.0
-       ],
-       [
-        23.4,
-        21.7
+        7.9,
+        29.9
        ]
       ]
      }

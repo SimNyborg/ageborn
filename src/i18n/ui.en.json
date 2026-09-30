@@ -273,7 +273,7 @@
         "standardLevels": "Standard levels",
         "standardLevelsHint": "Every card on both sides at Lv {n}",
         "reward": "{n} Amber per win",
-        "threeUnits": "{age} plays with 3 units until you get its Anti-armor card."
+        "threeUnits": "{age} plays with 3 units until you get its Anti-heavy card."
       },
       "daily": {
         "title": "Daily Challenge",
@@ -484,7 +484,7 @@
       "tooFewUnits": "{age} needs at least 3 units.",
       "noTurret": "{age} needs a turret.",
       "onlyThreeUnits": "{age} has only 3 units.",
-      "noAntiArmor": "{age} has no anti-armor.",
+      "noAntiArmor": "{age} has no anti-heavy.",
       "noAir": "{age} cannot hit air.",
       "noSplash": "No splash anywhere: swarms will hurt.",
       "badShape": "{age} loadout is damaged. Use Auto-fill to repair it.",
@@ -691,7 +691,7 @@
       "infantry": "Infantry",
       "ranged": "Ranged",
       "heavy": "Heavy",
-      "antiArmor": "Anti-armor",
+      "antiArmor": "Anti-heavy",
       "siege": "Siege",
       "support": "Support",
       "air": "Air",
@@ -839,7 +839,7 @@
         "tooFewUnits": "Needs 3 troops",
         "noTurret": "No turret",
         "onlyThreeUnits": "Only 3 troops",
-        "noAntiArmor": "No anti-armor",
+        "noAntiArmor": "No anti-heavy",
         "noAir": "Can't hit air",
         "noSplash": "No splash",
         "badShape": "Needs repair",

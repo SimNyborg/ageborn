@@ -792,8 +792,8 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(m.q('[data-testid="issue-onlyThreeUnits"]')).not.toBeNull();
     expect(m.q('[data-testid="issue-noAntiArmor"]')).not.toBeNull();
     // The band's chip is short (the age is the selected tab); the full sentence is its label (review 3).
-    expect(text(m.q('[data-testid="issue-noAntiArmor"]')!)).toBe('No anti-armor');
-    expect(m.q('[data-testid="issue-noAntiArmor"] button')!.getAttribute('aria-label')).toBe('Modern Age has no anti-armor.');
+    expect(text(m.q('[data-testid="issue-noAntiArmor"]')!)).toBe('No anti-heavy');
+    expect(m.q('[data-testid="issue-noAntiArmor"] button')!.getAttribute('aria-label')).toBe('Modern Age has no anti-heavy.');
     // The In battle mark agrees with the age tab: "!" while the advisor flags something.
     expect(m.q('[data-testid="army-band-mark"]')!.getAttribute('data-mark')).toBe('warn');
     expect(m.q('[data-testid="age-tab-modern"] .ui-warndot')).not.toBeNull();

@@ -60,11 +60,12 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'tuskback', age: 'stone', rarity: 'common', role: 'heavy', cost: 150, hp: 560, damage: 42, intervalMs: 1500,
     range: 16, speed: 55, size: 'large', hits: 'G', tags: ['armored', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'blunt',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 }) },
-  { id: 'spear_hunter', age: 'stone', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 200, damage: 26, intervalMs: 1200,
+  { id: 'spear_hunter', age: 'stone', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 220, damage: 26, intervalMs: 1200,
     range: 60, speed: 70, size: 'medium', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'pierce',
     extra: (u) => {
-      expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }]);
+      expect(u.attacks[0]?.mods).toEqual([{ vs: 'legendary', bp: 20000 }, { vs: 'armored', bp: 30000 }, { vs: 'mech', bp: 30000 }, { vs: 'light', bp: 7500 }]);
       expect(u.attacks[0]?.priority).toBe('armored');
+      expect(u.abilities).toContainEqual({ kind: 'brace' });
     } },
   { id: 'mammoth_matriarch', age: 'stone', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 1700, damage: 55, intervalMs: 2000,
     range: 20, speed: 40, size: 'huge', hits: 'G', tags: ['armored', 'bio', 'melee', 'legendary'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'blast',
@@ -79,7 +80,7 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'footman', age: 'medieval', rarity: 'common', role: 'infantry', cost: 50, hp: 216, damage: 27, intervalMs: 1000,
     range: 16, speed: 70, size: 'small', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'slash',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'resist', minSourceRange: 100, bp: 2500 }) },
-  { id: 'pikeman', age: 'medieval', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 270, damage: 35, intervalMs: 1200,
+  { id: 'pikeman', age: 'medieval', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 297, damage: 35, intervalMs: 1200,
     range: 70, speed: 70, size: 'medium', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'pierce',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'brace' }) },
   { id: 'friar', age: 'medieval', rarity: 'rare', role: 'support', cost: 110, hp: 175, damage: 11, intervalMs: 1200,
@@ -105,11 +106,11 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'corsair', age: 'gunpowder', rarity: 'common', role: 'infantry', cost: 50, hp: 291, damage: 36, intervalMs: 1000,
     range: 16, speed: 72, size: 'small', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'slash',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: -20, idleResetMs: 2000 }) },
-  { id: 'grenadier', age: 'gunpowder', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 230, damage: 50, intervalMs: 1800,
+  { id: 'grenadier', age: 'gunpowder', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 253, damage: 50, intervalMs: 1800,
     range: 150, speed: 68, size: 'medium', hits: 'G', tags: ['light', 'bio', 'ranged'], fx: 'proj.lob', sfx: 'shot_lob', dmgType: 'blast',
     extra: (u) => {
       expect(u.attacks[0]?.splashRadius).toBe(35);
-      expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 15000 }, { vs: 'mech', bp: 15000 }, { vs: 'light', bp: 5000 }]);
+      expect(u.attacks[0]?.mods).toEqual([{ vs: 'legendary', bp: 15000 }, { vs: 'armored', bp: 25000 }, { vs: 'mech', bp: 25000 }, { vs: 'light', bp: 5000 }]);
     } },
   { id: 'bronze_cannon', age: 'gunpowder', rarity: 'epic', role: 'artillery', cost: 200, hp: 500, damage: 110, intervalMs: 3500,
     range: 280, speed: 45, size: 'large', hits: 'G', tags: ['light', 'mech', 'ranged'], fx: 'proj.cannonball', sfx: 'shot_cannon', dmgType: 'blast',
@@ -145,7 +146,7 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'photon_knight', age: 'future', rarity: 'common', role: 'infantry', cost: 50, hp: 470, damage: 66, intervalMs: 1000,
     range: 16, speed: 75, size: 'small', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'laser',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'innateShield', amount: 90, regenPerSec: 30, delayMs: 3000 }) },
-  { id: 'rail_gunner', age: 'future', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 400, damage: 86, intervalMs: 1200,
+  { id: 'rail_gunner', age: 'future', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 440, damage: 86, intervalMs: 1200,
     range: 240, speed: 65, size: 'medium', hits: 'G+A', tags: ['light', 'bio', 'ranged'], fx: 'fx.beam_rail', sfx: 'shot_rail', dmgType: 'laser',
     extra: (u) => {
       expect(u.attacks[0]?.pierce).toEqual({ count: 2, length: 150 });
@@ -263,12 +264,33 @@ function expectedGroup(rarity: Rarity, role: Role): RoleGroup {
 /** Power numbers the live content has since retuned (fix pass 2026-09-30); the frozen fixture keeps these. */
 const FIXTURE_POWER_EFFECT: Record<string, Record<string, number>> = { arrow_storm: { damage: 50 } };
 
+/**
+ * Anti-heavy numbers the live content has since retuned (owner feedback 2026-09-29: HP +10%, armored
+ * and mech ×3.0 / ×2.5, a first `legendary` mod, Brace for the class); the frozen fixture keeps these.
+ */
+const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'>> = {
+  spear_hunter: {
+    hp: 200,
+    extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }]),
+  },
+  pikeman: { hp: 270, extra: (u) => expect(u.abilities).toContainEqual({ kind: 'brace' }) },
+  grenadier: {
+    hp: 230,
+    extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 15000 }, { vs: 'mech', bp: 15000 }, { vs: 'light', bp: 5000 }]),
+  },
+  rail_gunner: {
+    hp: 400,
+    extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 5000 }]),
+  },
+};
+
 describe.each([
   ['src/content/raw', raw],
   ['tests/fixtures/content', fixture],
 ])('%s', (_name, c) => {
   describe('A5 unit sample', () => {
-    it.each(UNIT_ROWS.map((r) => [r.id, r] as const))('%s matches its A5 row and A14.2 mapping', (_id, r) => {
+    it.each(UNIT_ROWS.map((r) => [r.id, r] as const))('%s matches its A5 row and A14.2 mapping', (_id, row) => {
+      const r = _name === 'tests/fixtures/content' && FIXTURE_UNIT[row.id] ? { ...row, ...FIXTURE_UNIT[row.id] } : row;
       const u = unitById(c, r.id);
       const group = expectedGroup(r.rarity, r.role);
       expect(u).toMatchObject({

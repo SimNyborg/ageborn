@@ -211,23 +211,27 @@ describe('semantic checks', () => {
     // A starter Common cannot be revealed as NEW.
     c.capsules.script[0]?.cards.push('bonker');
     expect(messages(c)).toContain('capsules.script.0: "bonker" is a starter Common, so it cannot be NEW');
-    // Without the script, the Spear Hunter would never arrive.
+    // An Anti-heavy card is in the starter kit (owner feedback 2026-09-29), so it cannot be NEW either.
+    const g = copy();
+    g.capsules.script[0]?.cards.splice(0, 1, 'spear_hunter');
+    expect(messages(g)).toContain('capsules.script.0: "spear_hunter" is a starter Anti-heavy card, so it cannot be NEW');
+    // Without the script, the Drum Shaman would never arrive.
     const d = copy();
     const first = d.capsules.script[0];
     if (!first) throw new Error('script capsule 1');
     first.cards = [];
-    expect(messages(d)).toContain('capsules.script: "spear_hunter" (the stone Anti-armor Rare) never arrives (A3)');
-    // Nor would the Harpoon Gunner without Arena 2's Age Unlock Capsules (A17.13).
+    expect(messages(d)).toContain('capsules.script: "drum_shaman" (the stone Support Rare) never arrives (A3)');
+    // Nor would the Flare Spotter without Arena 2's Age Unlock Capsules (A17.13).
     const e = copy();
     const a2 = e.arenas.list[1];
     if (!a2) throw new Error('arena 2');
     a2.gateRewards = a2.gateRewards.filter((r) => r.kind !== 'ageUnlock');
-    expect(messages(e)).toContain('capsules.script: "harpoon_gunner" (the industrial Anti-armor Rare) never arrives (A3)');
+    expect(messages(e)).toContain('capsules.script: "flare_spotter" (the industrial Support Rare) never arrives (A3)');
     // A Bronze capsule has 3 stacks.
     const f = copy();
     const bronze = f.capsules.script[0];
     if (!bronze) throw new Error('script capsule 1');
-    bronze.cards = ['spear_hunter', 'pikeman', 'grenadier', 'log_roller'];
+    bronze.cards = ['drum_shaman', 'standard_bearer', 'friar', 'log_roller'];
     expect(messages(f)).toContain('capsules.script.0: more scripted cards than stacks');
   });
 

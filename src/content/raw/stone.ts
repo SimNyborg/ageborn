@@ -58,7 +58,7 @@ export const stone: RawAgeTables = {
     {
       // Reach; melee AA mods; priority armored
       id: 'spear_hunter', kind: 'unit', age: 'stone', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 200, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 220, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -66,7 +66,7 @@ export const stone: RawAgeTables = {
           dmgType: 'pierce', sfx: 'swing_whoosh', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
-      abilities: [],
+      abilities: [{ kind: 'brace' }],
       visualId: 'unit.spear_hunter', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.spear_hunter.name', descKey: 'card.spear_hunter.desc', strongVs: [], weakVs: [],
     },

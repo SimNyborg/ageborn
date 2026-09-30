@@ -71,12 +71,16 @@ def build(rig, M):
     # -- the chimney (behind everything) ------------------------------------------------------
     cx, cy = CHIM
     rig.joint("chimtop", "body", (cx, cy, CHIM_TOP - 8))
+    rig.joint("chimupper", "body", (cx, cy, CHIM_TOP - 70))
     g = Geo()
-    cyl(g, (cx, cy, hall_h - 10), (cx, cy, CHIM_TOP - 40), 15.0, 11.5, bevel=1.0, segs=24)
+    cyl(g, (cx, cy, hall_h - 10), (cx, cy, CHIM_TOP - 70), 15.0, 12.6, bevel=1.0, segs=24)
     rig.part("body", g, BRICK)
+    g = Geo()
+    cyl(g, (cx, cy, CHIM_TOP - 70), (cx, cy, CHIM_TOP - 40), 12.6, 11.5, bevel=0.2, segs=24)
+    rig.part("chimupper", g, BRICK)
     g = Geo()
     cyl(g, (cx, cy, CHIM_TOP - 40), (cx, cy, CHIM_TOP - 6), 11.5, 10.2, bevel=0.6, segs=24)
-    rig.part("body", g, BRICK)
+    rig.part("chimupper", g, BRICK)
     g = Geo()
     cyl(g, (cx, cy, CHIM_TOP - 8), (cx, cy, CHIM_TOP), 12.8, 12.2, bevel=1.0, segs=24)
     rig.part("chimtop", g, BRICK_LT)
@@ -115,18 +119,19 @@ def build(rig, M):
     # a roof lantern along the ridge: a raised slate-capped monitor whose windows glow with the
     # furnace light inside (it breaks the flat roofline)
     lx0, lx1 = hx - hl + 16, hx + hl - 44
+    rig.joint("lantern", "body", (lx1, hy + 4, hall_h + 10.0))    # it caves in at the last stage
     g = Geo()
     box(g, ((lx0 + lx1) / 2, hy + 4, hall_h + 17.0), ((lx1 - lx0) / 2, 10.0, 7.0), p=6)
-    rig.part("body", g, BRICK_LT)
+    rig.part("lantern", g, BRICK_LT)
     g = Geo()
     box(g, ((lx0 + lx1) / 2, hy + 4, hall_h + 26.0), ((lx1 - lx0) / 2 + 3, 13.0, 3.0), p=5, taper=(1.0, 0.8))
-    rig.part("body", g, SLATE_LT)
+    rig.part("lantern", g, SLATE_LT)
     g, gf = Geo(), Geo()
     for x in range(int(lx0 + 6), int(lx1 - 3), 11):
         box(g, (x, hy - 6.4, hall_h + 17.0), (3.6, 0.6, 4.6), p=4, cuts=2)
         box(gf, (x, hy - 6.2, hall_h + 17.0), (4.6, 0.5, 5.6), p=4, cuts=2)
-    rig.part("body", gf, IRON_DK, outline=0, highlight=False)
-    rig.part("body", g, glow=FURNACE, outline=0)
+    rig.part("lantern", gf, IRON_DK, outline=0, highlight=False)
+    rig.part("lantern", g, glow=FURNACE, outline=0)
     g = Geo()   # the team sign band under the cornice
     g.slab([(hx - hl + 6, hall_h - 7), (hx + hl - 26, hall_h - 7), (hx + hl - 26, hall_h - 21),
             (hx - hl + 6, hall_h - 21)], hy - hd - 1.0, 1.4)
@@ -302,6 +307,7 @@ def build(rig, M):
     rubble(rig, "rubble1", [(-150, -44), (-128, -50)], BRICK_DK, seed=4)
     rubble(rig, "rubble2", [(-96, -50), (-66, -54)], BRICK_DK, seed=14)
     rubble(rig, "rubble3", [(-156, -58), (-120, -60), (-40, -60)], BRICK_DKR, seed=24, size=1.2)
+    _damage(rig, hx, hy, hl, hd, hall_h, tx, ty, th, tower_h)
 
     # -- flags ---------------------------------------------------------------------------------
     flag(rig, "root", "flagA", (x3 + 14, y3 + 34, top + 50), length=30, height=17, pole=top, pole_color=IRON_DK,
@@ -364,16 +370,106 @@ def build(rig, M):
     rig.part("treasury3", g, GOLD, finish="metal", outline=0.3)
 
 
+FIRE = "#FFC47A"
+FIRE_CORE = "#FFF0CC"
+FIRE_OUT = "#EE9A5C"
+SOOT = "#5E5854"
+
+
+def flames(rig, joint, spots):
+    """Cartoon fire: teardrop tongues that lean and curl (outer, body, hot core), not cones."""
+    o, g, c = Geo(), Geo(), Geo()
+    for x, y, z, k in spots:
+        for dx, lean, r, h in ((0.0, 0.25, 6.6, 20.0), (-6.0, -0.35, 4.4, 13.0), (6.0, 0.45, 4.0, 11.0),
+                               (2.5, -0.2, 3.0, 8.0)):
+            cx, cz = x + dx * k, z + h * 0.42 * k
+            o.blob((cx, y + 2, cz), (r * 1.3 * k, r * 0.9 * k, h * 0.62 * k), p=2.0, taper=(1.0, 0.08),
+                   shift=(lean * 1.2, 0.0))
+            g.blob((cx, y, cz - 0.6 * k), (r * k, r * 0.7 * k, h * 0.5 * k), p=2.0, taper=(1.0, 0.1),
+                   shift=(lean, 0.0))
+            c.blob((cx, y - 2.5, cz - 2.4 * k), (r * 0.5 * k, r * 0.4 * k, h * 0.28 * k), p=2.0,
+                   taper=(1.0, 0.2), shift=(lean * 0.6, 0.0))
+    rig.part(joint, o, glow=FIRE_OUT, outline=0)
+    rig.part(joint, g, glow=FIRE, outline=0)
+    rig.part(joint, c, glow=FIRE_CORE, outline=0)
+
+
+def _jagged(cx, cz, rx, rz, n=11, seed=0, amp=0.28):
+    pts = []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        f = 1.0 + amp * (1 if (k + seed) % 2 else -1) * (0.6 + 0.4 * math.sin(k * 2.3 + seed))
+        pts.append((cx + rx * f * math.cos(a), cz + rz * f * math.sin(a)))
+    return pts
+
+
+def _damage(rig, hx, hy, hl, hd, hall_h, tx, ty, th, tower_h):
+    """Crumble parts per stage (DESIGN A11 bases, art plan: each stage reads at a glance).
+    1: a chunk bitten out of the cornice corner and a steam leak; 2: fire in the hall, sooty
+    scorch marks, the windows gone dark; 3: a breach in the wall with a hanging girder, a second
+    fire at the tower, the roof lantern caved in and the chimney snapped."""
+    fy = hy - hd - 2.2
+    for j in ("notch", "leak", "fire1", "scorch", "darkwin", "breach", "fire2", "stump", "girder"):
+        rig.joint(j, "body", (0, 0, 0), hidden=True)
+    # 1: the bitten cornice corner (a jagged dark gap with broken brick edges) and a burst pipe
+    g = Geo().slab(_jagged(hx - hl + 12, hall_h - 3.0, 12.0, 7.0, seed=1), fy - 0.6, 2.0)
+    rig.part("notch", g, BRICK_DKR, outline=0.5)
+    g = Geo().slab(_jagged(hx - hl + 12, hall_h - 2.0, 8.0, 4.4, seed=2), fy - 1.4, 1.0)
+    rig.part("notch", g, COAL, outline=0, highlight=False)
+    g = Geo()
+    for dx, dz, r in ((0, 0, 3.6), (4, 3, 3.0), (-3, 5, 2.8), (2, 8, 2.4)):
+        g.sphere((tx - th - 4 + dx, ty - th - 6, 96 + dz), r, cuts=3)
+    rig.part("leak", g, "#F2F0EA", finish="dust", outline=0.6)
+    # 2: dark windows, soot above them and flames licking out of two windows and the lantern
+    g = Geo()
+    for x in (-150.0, -126.0, -78.0):
+        g.slab(_jagged(x, 60.0, 6.8, 15.0, seed=int(-x) % 5, amp=0.08), fy + 0.2, 1.0)
+    rig.part("darkwin", g, "#2E2826", outline=0, highlight=False)
+    g = Geo()
+    for x in (-150.0, -78.0):
+        g.slab(_jagged(x + 2, 88.0, 9.0, 8.0, seed=3, amp=0.35), fy + 0.1, 0.8)
+    g.slab(_jagged(tx - 2, ty - th + 2, 7.0, 6.0, seed=4, amp=0.3), fy, 0.8)
+    rig.part("scorch", g, SOOT, outline=0, highlight=False)
+    flames(rig, "fire1", [(-150.0, fy - 3.0, 64.0, 0.9), (-78.0, fy - 3.0, 64.0, 0.8),
+                          (hx - 20, hy - 8.0, hall_h + 26.0, 1.0)])
+    # 3: a breach in the hall wall (dark hole, broken brick edge, a girder hanging out), a fire at
+    # the foot of the tower and the chimney snapped off to a jagged stump
+    g = Geo().slab(_jagged(-112.0, 30.0, 17.0, 20.0, seed=5, amp=0.3), fy - 0.5, 2.2)
+    rig.part("breach", g, BRICK_DKR, outline=0.6)
+    g = Geo().slab(_jagged(-112.0, 29.0, 12.0, 15.0, seed=6, amp=0.3), fy - 1.4, 1.0)
+    rig.part("breach", g, "#1E1A1A", outline=0, highlight=False)
+    g = Geo()
+    g.capsule((-120.0, fy - 3.0, 44.0), (-96.0, fy - 8.0, 26.0), 2.2)
+    g.capsule((-120.0, fy - 3.0, 38.0), (-100.0, fy - 7.0, 22.0), 1.4)
+    rig.part("girder", g, IRON_DK, finish="metal", outline=0.5)
+    flames(rig, "fire2", [(tx + 6, ty - th - 4.0, 50.0, 1.1), (-112.0, fy - 4.0, 22.0, 0.9)])
+    cx, cy = CHIM
+    g = Geo()
+    zt = CHIM_TOP - 70.0
+    pts = []
+    for k in range(9):
+        a = math.radians(-160 + 140 * k / 8)
+        pts.append((cx + 12.4 * math.cos(a), zt + (6.0 if k % 2 else -2.0)))
+    g.slab([(cx - 12.6, zt - 10.0)] + pts + [(cx + 12.6, zt - 10.0)], cy - 11.5, 3.0)
+    rig.part("stump", g, BRICK_DK, outline=0.5)
+    flames(rig, "stump", [(cx, cy - 13.0, zt + 2.0, 0.8)])
+
+
 def crumble(stage):
     pose = {}
     if stage >= 1:
-        pose.update({"crack1": {"show": True}, "rubble1": {"show": True}, "brokenwin": {"show": True}})
+        pose.update({"crack1": {"show": True}, "rubble1": {"show": True}, "brokenwin": {"show": True},
+                     "notch": {"show": True}, "leak": {"show": True}})
     if stage >= 2:
         pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "band": {"hide": True},
-                     "hook": {"hide": True}})
+                     "hook": {"hide": True}, "fire1": {"show": True}, "scorch": {"show": True},
+                     "darkwin": {"show": True}, "boom": {"r": -5.0, "z": -1.0}})
     if stage >= 3:
         pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "chimtop": {"hide": True},
-                     "boom": {"r": -14.0, "z": -3.0}, "hands": {"r": 70.0}})
+                     "boom": {"r": -18.0, "z": -5.0}, "hands": {"r": 70.0}, "breach": {"show": True},
+                     "girder": {"show": True}, "fire2": {"show": True}, "leak": {"hide": True},
+                     "lantern": {"r": -14.0, "z": -9.0, "x": 4.0}, "stump": {"show": True},
+                     "chimupper": {"hide": True}})
     return pose
 
 

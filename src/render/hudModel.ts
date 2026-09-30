@@ -19,10 +19,12 @@ import type {
   MatchConfig,
   Observation,
   PowerSlot,
+  RoleGroup,
   Side,
   SideState,
   SimState,
 } from '@/contracts';
+import { heavyThreat } from '@/core/cardClass';
 import { incomeMilliPerSec, matchMods, msToTicks, nextIncomePick, reloadTicksLeft, researchCost, slotIndex, type MatchMods } from '@/core';
 
 /**
@@ -261,12 +263,21 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
   const incomePick = nextIncomePick(content, obsMe.research);
   const siegeMs = fmt?.siegeMs ?? null;
   const foils = extras.foils ?? {};
+  // A9.2 counter hint: the enemy's units on the lane, by role group and card value.
+  const foeUnits: { group: RoleGroup; value: number }[] = [];
+  for (const u of state.units) {
+    const d = u.side === foeSide && u.hp > 0 ? content.units[u.card] : undefined;
+    if (d) foeUnits.push({ group: d.group, value: d.cost });
+  }
+  const threat = heavyThreat(foeUnits);
   const cards: HudCard[] = [];
   // Six troops per battle (A18.9).
   for (let slot = 0; slot < 6; slot++) {
     const card = loadout?.units[slot] ?? null;
     const unlocked = tray ? tray.unlocked(side, myAge, slot) : true;
-    cards.push(cardFor(state, config, side, slot, card, unlocked, foils));
+    const hc = cardFor(state, config, side, slot, card, unlocked, foils);
+    if (threat && hc.card && content.units[hc.card]?.group === 'antiArmor') hc.beatsHeavy = true;
+    cards.push(hc);
   }
   const retreatAfter = fmt?.retreatAfterMs ?? null;
   return {
@@ -312,6 +323,7 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
       scouted: [...obs.foe.scouted],
       research: hudResearch(state, config, foeSide, obs.foe.research),
       stance: obs.foe.stance,
+      heavyThreat: threat,
     },
     mounts: [0, 1, 2, 3].map((index) => {
       const t = me.turrets[index] ?? null;

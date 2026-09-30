@@ -25,8 +25,13 @@ describe('validatePlan and the advisor (A3)', () => {
       for (const i of issues) expect(C.formats[f]!.ages).toContain(i.age);
     }
     const short = codes(plan, s);
-    expect(short).toContain('stone:warning:onlyThreeUnits');
-    expect(short).toContain('stone:warning:noAntiArmor');
+    // The starter kit holds each age's Anti-heavy Rare (owner feedback 2026-09-29): four units, no anti-heavy warning.
+    expect(short).not.toContain('stone:warning:onlyThreeUnits');
+    expect(short.filter((x) => x.endsWith(':noAntiArmor'))).toEqual([]);
+    // Without it the advisor says so ("Stone has no anti-heavy").
+    const bare = withLoadout(plan, 'stone', { units: ['bonker', 'pebbler', 'tuskback', null, null] });
+    expect(codes(bare, s)).toContain('stone:warning:onlyThreeUnits');
+    expect(codes(bare, s)).toContain('stone:warning:noAntiArmor');
     expect(short.some((x) => x.startsWith('modern'))).toBe(false);
     for (const i of M.validatePlan(plan, s, C, 'full')) expect(i.messageKey).toBe(`ui.advisor.${i.code}`);
   });
@@ -50,7 +55,7 @@ describe('validatePlan and the advisor (A3)', () => {
     expect(codes(withLoadout(base, 'future', { turrets: [null, null] }), s, 'short')).toEqual(codes(base, s, 'short'));
   });
 
-  it('warnings: no anti-armor, cannot hit air (from Gunpowder), only 3 units, no splash anywhere', () => {
+  it('warnings: no anti-heavy, cannot hit air (from Gunpowder), only 3 units, no splash anywhere', () => {
     const s = ownsAll(fresh());
     let plan = starterPlan(C);
     plan = withLoadout(plan, 'modern', { units: ['trench_raider', 'tankette', 'emp_saboteur', null, null], turrets: ['howitzer', null] });
@@ -58,7 +63,8 @@ describe('validatePlan and the advisor (A3)', () => {
     expect(all).toContain('modern:warning:noAir');
     expect(all).not.toContain('stone:warning:noAir');
     expect(all).not.toContain('medieval:warning:noAir');
-    expect(all).toContain('medieval:warning:onlyThreeUnits');
+    expect(all).not.toContain('medieval:warning:onlyThreeUnits');
+    expect(codes(withLoadout(plan, 'medieval', { units: ['footman', 'longbowman', 'destrier_knight', null, null] }), s, 'full')).toContain('medieval:warning:onlyThreeUnits');
     let noSplash = starterPlan(C);
     noSplash = withLoadout(noSplash, 'stone', { units: ['bonker', 'tuskback', 'spear_hunter', null, null], turrets: ['rock_tosser', null] });
     // The Javelineer's pierce counts as area damage, so Bronze leaves it out too (Short War has 4 ages, A17.8).

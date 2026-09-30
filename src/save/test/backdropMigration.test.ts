@@ -6,7 +6,7 @@ import type { SaveDoc } from '@/contracts';
 import { migrate, SAVE_VERSION } from '../migrations';
 import { v8 } from '../migrations/v8';
 import { validateSaveDoc } from '../schema';
-import { SAVE_FIXTURES } from './helpers';
+import { currentFixture, SAVE_FIXTURES } from './helpers';
 
 describe('v7 → v8: the battle backdrop skin', () => {
   it('adds the classic sky (null) and changes nothing else', () => {
@@ -31,7 +31,7 @@ describe('v7 → v8: the battle backdrop skin', () => {
   });
 
   it('the schema requires the field from v8 on', () => {
-    const doc = JSON.parse(JSON.stringify(SAVE_FIXTURES[8])) as SaveDoc;
+    const doc = currentFixture();
     expect(validateSaveDoc(doc).ok).toBe(true);
     delete (doc.cosmetics.equipped as Partial<SaveDoc['cosmetics']['equipped']>).backdrop;
     expect(validateSaveDoc(doc).ok).toBe(false);

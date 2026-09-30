@@ -73,3 +73,19 @@ export class TrickleDetector {
 export function lossTipKey(o: { won: boolean; draw: boolean; trickled: boolean }): string | null {
   return !o.won && !o.draw && o.trickled ? TRICKLE_TIP_KEY : null;
 }
+
+/**
+ * The one loss tip of a finished match (A15.12): "Add {card} to {age}: it beats Heavies." when the
+ * enemy fielded Heavies while the player's age had no Anti-heavy card (A9.2), else the wave tip when
+ * the trickle detector fired (A16.6). `card` and `age` are ids; the screen names them.
+ */
+export function lossTip(o: {
+  won: boolean;
+  draw: boolean;
+  trickled: boolean;
+  heavyGap?: { card: string; age: string } | null;
+}): { key: string; card?: string; age?: string } | null {
+  if (o.won || o.draw) return null;
+  if (o.heavyGap) return { key: 'app.tip.heavyGap', card: o.heavyGap.card, age: o.heavyGap.age };
+  return o.trickled ? { key: TRICKLE_TIP_KEY } : null;
+}

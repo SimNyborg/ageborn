@@ -25,7 +25,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['bonker', 'Bonker', 'C', 'infantry', 50, 160, 20, 10, 16, 70, 'S', 'G', 'light bio melee'],
     ['pebbler', 'Pebbler', 'C', 'ranged', 75, 95, 18, 14, 200, 65, 'S', 'GA', 'light bio ranged'],
     ['tuskback', 'Tuskback', 'C', 'heavy', 150, 560, 42, 15, 16, 55, 'L', 'G', 'armored bio melee'],
-    ['spear_hunter', 'Spear Hunter', 'R', 'antiArmor', 100, 200, 26, 12, 60, 70, 'M', 'G', 'light bio melee'],
+    ['spear_hunter', 'Spear Hunter', 'R', 'antiArmor', 100, 220, 26, 12, 60, 70, 'M', 'G', 'light bio melee'],
     ['drum_shaman', 'Drum Shaman', 'R', 'support', 110, 130, 8, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['sabertooth', 'Sabertooth', 'E', 'skirmisher', 200, 380, 34, 8, 12, 100, 'M', 'G', 'light bio melee'],
     ['mammoth_matriarch', 'Mammoth Matriarch', 'L', 'siegeHeavy', 350, 1700, 55, 20, 20, 40, 'H', 'G', 'armored bio melee legendary'],
@@ -35,7 +35,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['hoplite', 'Hoplite', 'C', 'infantry', 50, 186, 23, 10, 16, 70, 'S', 'G', 'light bio melee'],
     ['javelineer', 'Javelineer', 'C', 'ranged', 75, 110, 20, 14, 210, 65, 'S', 'GA', 'light bio ranged'],
     ['war_chariot', 'War Chariot', 'C', 'heavy', 150, 630, 49, 15, 16, 65, 'L', 'G', 'armored bio melee'],
-    ['phalangite', 'Phalangite', 'R', 'antiArmor', 100, 232, 30, 12, 65, 70, 'M', 'G', 'light bio melee'],
+    ['phalangite', 'Phalangite', 'R', 'antiArmor', 100, 255, 30, 12, 65, 70, 'M', 'G', 'light bio melee'],
     ['standard_bearer', 'Standard Bearer', 'R', 'support', 110, 151, 9, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['scorpion', 'Scorpion', 'E', 'artillery', 200, 330, 64, 30, 290, 45, 'L', 'G', 'light mech ranged'],
     ['bronze_colossus', 'Bronze Colossus', 'L', 'siegeHeavy', 350, 2050, 64, 20, 20, 40, 'H', 'G', 'armored mech melee legendary'],
@@ -45,7 +45,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['footman', 'Footman', 'C', 'infantry', 50, 216, 27, 10, 16, 70, 'S', 'G', 'light bio melee'],
     ['longbowman', 'Longbowman', 'C', 'ranged', 75, 128, 24, 14, 230, 65, 'S', 'GA', 'light bio ranged'],
     ['destrier_knight', 'Destrier Knight', 'C', 'heavy', 150, 756, 57, 15, 16, 60, 'L', 'G', 'armored bio melee'],
-    ['pikeman', 'Pikeman', 'R', 'antiArmor', 100, 270, 35, 12, 70, 70, 'M', 'G', 'light bio melee'],
+    ['pikeman', 'Pikeman', 'R', 'antiArmor', 100, 297, 35, 12, 70, 70, 'M', 'G', 'light bio melee'],
     ['friar', 'Friar', 'R', 'support', 110, 175, 11, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['battering_ram', 'Battering Ram', 'E', 'siege', 200, 900, 10, 20, 12, 45, 'L', 'G', 'armored mech melee'],
     ['ursa_paladin', 'Ursa Paladin', 'L', 'siegeHeavy', 350, 2300, 70, 14, 20, 55, 'H', 'G', 'armored bio melee legendary'],
@@ -55,7 +55,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['corsair', 'Corsair', 'C', 'infantry', 50, 291, 36, 10, 16, 72, 'S', 'G', 'light bio melee'],
     ['fusilier', 'Fusilier', 'C', 'ranged', 75, 173, 47, 20, 240, 65, 'S', 'GA', 'light bio ranged'],
     ['cuirassier', 'Cuirassier', 'C', 'heavy', 150, 1019, 76, 15, 16, 60, 'L', 'G', 'armored bio melee'],
-    ['grenadier', 'Grenadier', 'R', 'antiArmor', 100, 230, 50, 18, 150, 68, 'M', 'G', 'light bio ranged'],
+    ['grenadier', 'Grenadier', 'R', 'antiArmor', 100, 253, 50, 18, 150, 68, 'M', 'G', 'light bio ranged'],
     ['field_surgeon', 'Field Surgeon', 'R', 'support', 110, 237, 15, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['bronze_cannon', 'Bronze Cannon', 'E', 'artillery', 200, 500, 110, 35, 280, 45, 'L', 'G', 'light mech ranged'],
     ['balloon_admiral', 'Balloon Admiral', 'L', 'airBomber', 350, 1500, 110, 16, 40, 45, 'H', 'G', 'air legendary'],
@@ -75,7 +75,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['trench_raider', 'Trench Raider', 'C', 'infantry', 50, 394, 49, 10, 16, 75, 'S', 'G', 'light bio melee'],
     ['rifleman', 'Rifleman', 'C', 'ranged', 75, 234, 32, 10, 260, 65, 'S', 'GA', 'light bio ranged'],
     ['tankette', 'Tankette', 'C', 'heavy', 150, 1378, 104, 15, 90, 50, 'L', 'G', 'armored mech ranged'],
-    ['bazooka_trooper', 'Bazooka Trooper', 'R', 'antiArmor', 100, 300, 64, 12, 200, 65, 'M', 'GA', 'light bio ranged'],
+    ['bazooka_trooper', 'Bazooka Trooper', 'R', 'antiArmor', 100, 330, 64, 12, 200, 65, 'M', 'GA', 'light bio ranged'],
     ['radio_operator', 'Radio Operator', 'R', 'support', 110, 320, 20, 12, 200, 65, 'S', 'GA', 'light bio support ranged'],
     ['gyrocopter', 'Gyrocopter', 'E', 'airGunship', 200, 740, 20, 3, 150, 80, 'M', 'GA', 'air mech'],
     ['behemoth_tank', 'Behemoth Tank', 'L', 'siegeHeavy', 350, 4100, 170, 25, 240, 35, 'H', 'G', 'armored mech legendary'],
@@ -85,7 +85,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['photon_knight', 'Photon Knight', 'C', 'infantry', 50, 470, 66, 10, 16, 75, 'S', 'G', 'light bio melee'],
     ['pulse_trooper', 'Pulse Trooper', 'C', 'ranged', 75, 315, 43, 10, 260, 65, 'S', 'GA', 'light bio ranged'],
     ['walker_mech', 'Walker Mech', 'C', 'heavy', 150, 1860, 140, 15, 60, 50, 'L', 'G', 'armored mech melee'],
-    ['rail_gunner', 'Rail Gunner', 'R', 'antiArmor', 100, 400, 86, 12, 240, 65, 'M', 'GA', 'light bio ranged'],
+    ['rail_gunner', 'Rail Gunner', 'R', 'antiArmor', 100, 440, 86, 12, 240, 65, 'M', 'GA', 'light bio ranged'],
     ['repair_drone', 'Repair Drone', 'R', 'support', 110, 430, 0, 0, 160, 70, 'S', '-', 'air mech support'],
     ['emp_saboteur', 'EMP Saboteur', 'E', 'antiMech', 200, 700, 50, 10, 12, 85, 'M', 'G', 'light bio melee'],
     ['chrono_titan', 'Chrono Titan', 'L', 'siegeHeavy', 350, 5600, 230, 16, 60, 35, 'H', 'G', 'armored mech melee legendary'],
@@ -95,7 +95,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['star_legionnaire', 'Star Legionnaire', 'C', 'infantry', 50, 700, 90, 10, 16, 75, 'S', 'G', 'light bio melee'],
     ['ion_ranger', 'Ion Ranger', 'C', 'ranged', 75, 426, 54, 10, 270, 65, 'S', 'GA', 'light bio ranged'],
     ['hover_tank', 'Hover Tank', 'C', 'heavy', 150, 2509, 188, 15, 90, 55, 'L', 'G', 'armored mech ranged'],
-    ['graviton_halberdier', 'Graviton Halberdier', 'R', 'antiArmor', 100, 896, 116, 12, 70, 70, 'M', 'G', 'light bio melee'],
+    ['graviton_halberdier', 'Graviton Halberdier', 'R', 'antiArmor', 100, 985, 116, 12, 70, 70, 'M', 'G', 'light bio melee'],
     ['starwarden', 'Starwarden', 'R', 'support', 110, 582, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['warp_stalker', 'Warp Stalker', 'E', 'skirmisher', 200, 1600, 140, 8, 12, 100, 'M', 'G', 'light bio melee'],
     ['mothership', 'Mothership', 'L', 'airGunship', 350, 3700, 80, 6, 180, 40, 'H', 'GA', 'air mech legendary'],
@@ -301,7 +301,7 @@ describe('A5 unit tables', () => {
     expect(ab('hoplite')).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: 15, idleResetMs: 2000 });
     expect(content.units.javelineer?.attacks[0]?.pierce).toEqual({ count: 2, length: 50 });
     expect(ab('war_chariot')).toContainEqual({ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 });
-    expect(content.units.phalangite?.attacks[0]).toMatchObject({ priority: 'armored', mods: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }] });
+    expect(content.units.phalangite?.attacks[0]).toMatchObject({ priority: 'armored', mods: [{ vs: 'legendary', bp: 20000 }, { vs: 'armored', bp: 30000 }, { vs: 'mech', bp: 30000 }, { vs: 'light', bp: 7500 }] });
     expect(ab('standard_bearer')).toContainEqual({ kind: 'aura', radius: 160, status: { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 0 } });
     expect(content.units.scorpion?.attacks[0]).toMatchObject({ minRange: 60, pierce: { count: 3, length: 150 } });
     expect(content.units.bronze_colossus?.attacks[0]).toMatchObject({ splashRadius: 45, onHit: [{ kind: 'slow', magnitudeBp: 2000, durationMs: 1500 }] });
@@ -316,6 +316,8 @@ describe('A5 unit tables', () => {
     expect(ab('star_legionnaire')).toContainEqual({ kind: 'resist', minSourceRange: 100, bp: 2000 });
     expect(content.units.ion_ranger?.attacks[0]?.chain).toEqual({ count: 2, hop: 50 });
     expect(ab('graviton_halberdier')).toContainEqual({ kind: 'brace' });
+    // Anti-heavy (owner feedback 2026-09-29): Brace for the whole class, so a Heavy's charge never applies.
+    for (const id of ['spear_hunter', 'phalangite', 'pikeman', 'grenadier', 'harpoon_gunner', 'bazooka_trooper', 'rail_gunner', 'graviton_halberdier']) expect(ab(id), id).toContainEqual({ kind: 'brace' });
     expect(ab('starwarden')).toContainEqual({ kind: 'periodicShieldAura', everyMs: 8000, radius: 180, maxTargets: 4, shield: 200, durationMs: 5000 });
     expect(ab('warp_stalker')).toContainEqual({ kind: 'pounce', searchRange: 200, cooldownMs: 10000, leapMs: 400, firstBiteBp: 20000 });
     expect(ab('mothership')).toEqual([
@@ -487,9 +489,12 @@ function fxOf(a: AttackDef): string {
 /** A2.6 role-default mods, in order (bp). */
 const MODS = {
   blunt: [{ vs: 'armored', bp: 7000 }],
-  meleeAA: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }],
-  rangedAA: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 5000 }],
-  grenadier: [{ vs: 'armored', bp: 15000 }, { vs: 'mech', bp: 15000 }, { vs: 'light', bp: 5000 }],
+  // Anti-heavy (owner feedback 2026-09-29): a first `legendary` entry keeps Legendary matchups as before.
+  meleeAA: [{ vs: 'legendary', bp: 20000 }, { vs: 'armored', bp: 30000 }, { vs: 'mech', bp: 30000 }, { vs: 'light', bp: 7500 }],
+  rangedAA: [{ vs: 'legendary', bp: 20000 }, { vs: 'armored', bp: 30000 }, { vs: 'mech', bp: 30000 }, { vs: 'light', bp: 5000 }],
+  harpoon: [{ vs: 'legendary', bp: 20000 }, { vs: 'armored', bp: 25000 }, { vs: 'mech', bp: 25000 }, { vs: 'light', bp: 5000 }],
+  rail: [{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 5000 }],
+  grenadier: [{ vs: 'legendary', bp: 15000 }, { vs: 'armored', bp: 25000 }, { vs: 'mech', bp: 25000 }, { vs: 'light', bp: 5000 }],
   flak: [{ vs: 'air', bp: 20000 }],
   congreve: [{ vs: 'air', bp: 15000 }],
 } as const;
@@ -501,7 +506,7 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   training_dummy: MODS.blunt,
   hoplite: MODS.blunt, riveter: MODS.blunt, star_legionnaire: MODS.blunt,
   spear_hunter: MODS.meleeAA, pikeman: MODS.meleeAA, phalangite: MODS.meleeAA, graviton_halberdier: MODS.meleeAA,
-  bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rangedAA, harpoon_gunner: MODS.rangedAA,
+  bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rail, harpoon_gunner: MODS.harpoon,
   grenadier: MODS.grenadier,
   flak_gun: MODS.flak,
   congreve_rack: MODS.congreve,

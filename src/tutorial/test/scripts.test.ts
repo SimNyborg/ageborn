@@ -75,8 +75,8 @@ describe('match 1 script (A8)', () => {
     expect(GROGG_SCRIPT.sends.every((s) => s.slot === 0 || s.slot === 1)).toBe(true);
   });
 
-  it('uses the starter commons: Infantry, Ranged, Heavy, both Common turrets, the default power', () => {
-    expect(starterLoadout(content, 'stone')).toEqual({ units: ['bonker', 'pebbler', 'tuskback', null, null], turrets: ['rock_tosser', 'angry_beehive'], powers: { home: 'rockslide', field: 'stampede' } });
+  it('uses the starter kit: Infantry, Ranged, Heavy, the Anti-heavy Rare, both Common turrets, the default powers', () => {
+    expect(starterLoadout(content, 'stone')).toEqual({ units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', null], turrets: ['rock_tosser', 'angry_beehive'], powers: { home: 'rockslide', field: 'stampede' } });
     expect(starterLoadout(content, 'medieval').units.slice(0, 2)).toEqual(['footman', 'longbowman']);
     expect(Object.keys(match1Loadouts(content))).toEqual(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
   });

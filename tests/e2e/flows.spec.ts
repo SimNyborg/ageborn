@@ -110,8 +110,8 @@ test.describe('B13 flows', () => {
         { timeout: 60_000, intervals: [300] },
       )
       .toBe(true);
-    // Capsule 1 reveals Spear Hunter NEW (A8, C5 #5).
-    await expect(page.locator('[data-testid=capsule-summary-item][data-card=spear_hunter]')).toBeVisible();
+    // Capsule 1 reveals Drum Shaman NEW (A8, C5 #5; the Spear Hunter is in the starter kit since 2026-09-29).
+    await expect(page.locator('[data-testid=capsule-summary-item][data-card=drum_shaman]')).toBeVisible();
     await page.getByTestId('capsule-done').click();
     await expect(page.getByTestId('capsule-screen')).toHaveCount(0);
     expect(await page.evaluate(() => localStorage.getItem('ageborn.capsuleShow'))).toBeNull();

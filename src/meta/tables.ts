@@ -113,6 +113,21 @@ export function ageCards(t: Content, age: AgeId): { units: CardId[]; turrets: Ca
   };
 }
 
+/**
+ * The age's Anti-heavy card (the Anti-armor role group's Rare): part of the starter kit and the
+ * starter loadout since owner feedback 2026-09-29 (A3, build phase H3). Null for an age without one.
+ */
+export function antiHeavyCard(t: Content, age: AgeId): CardId | null {
+  return ageCards(t, age).units.find((id) => t.units[id]?.group === 'antiArmor' && t.units[id]?.rarity === 'rare') ?? null;
+}
+
+/** A card of the starter kit (A3): every collectable Common unit and turret and each age's Anti-heavy Rare. */
+export function isStarterCard(t: Content, id: CardId): boolean {
+  const def = t.units[id] ?? t.turrets[id];
+  if (!def || !isCollectable(t, id)) return false;
+  return def.rarity === 'common' || antiHeavyCard(t, def.age) === id;
+}
+
 /** The age's starter power of a slot (A2.9.8: found by `source: 'starter'` and `slot`). */
 export function starterPower(t: Content, age: AgeId, slot: PowerSlot): CardId {
   const id = t.order.powers.find((p) => t.powers[p]?.age === age && t.powers[p]?.slot === slot && t.powers[p]?.source === 'starter');

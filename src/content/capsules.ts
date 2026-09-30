@@ -126,9 +126,10 @@ export const capsules: CapsuleTables = {
   ageUnlock: { rareCopies: 1, commonCopies: 4 },
   // A6.5 onboarding script
   script: [
-    // A17.13: capsule 1 brings both early Anti-armor Rares (Stone and Bronze)
-    { capsule: 1, tier: 'bronze', cards: ['spear_hunter', 'phalangite'], randomUnownedEpic: false, fullWalkout: false },
-    { capsule: 2, tier: 'silver', cards: ['pikeman', 'grenadier'], randomUnownedEpic: false, fullWalkout: false },
+    // The Anti-heavy Rares are in the starter kit (owner feedback 2026-09-29, A3), so the scripted
+    // capsules bring the early Support Rares instead: Stone and Bronze, then Medieval and Gunpowder.
+    { capsule: 1, tier: 'bronze', cards: ['drum_shaman', 'standard_bearer'], randomUnownedEpic: false, fullWalkout: false },
+    { capsule: 2, tier: 'silver', cards: ['friar', 'field_surgeon'], randomUnownedEpic: false, fullWalkout: false },
     { capsule: 3, tier: 'bronze', cards: ['log_roller'], randomUnownedEpic: false, fullWalkout: false },
     { capsule: 4, tier: 'silver', cards: [], randomUnownedEpic: true, fullWalkout: false },
     { capsule: 5, tier: 'gold', cards: ['mammoth_matriarch'], randomUnownedEpic: false, fullWalkout: true },
