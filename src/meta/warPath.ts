@@ -103,12 +103,19 @@ export function starTotal(s: SaveDoc, t: Content): { stars: number; max: number 
   return { stars, max: t.warPath.order.length * 3 };
 }
 
-/** ui-plan 2.6: a Home feature opens with the first clear of its level (always open for a legacy save). */
+/**
+ * ui-plan 2.6 (owner decision 2026-09-30): a Home feature opens with its number of wins in any mode
+ * (the beaten War Path levels when they run ahead); the Ladder opens when the onboarding ends, since
+ * Home is the 1v1 hub from then on. Always open for a legacy save.
+ */
 export function featureUnlocked(s: SaveDoc, t: Content, f: WarPathUnlock): boolean {
-  return warPathOf(s).legacy || beatenCount(s) >= t.warPath.unlocks[f];
+  if (warPathOf(s).legacy) return true;
+  const wins = Math.max(beatenCount(s), s.stats?.wins ?? 0);
+  if (f === 'ladder') return s.tutorial.step >= 4 || wins >= t.warPath.unlocks.ladder;
+  return wins >= t.warPath.unlocks[f];
 }
 
-/** The War Path level whose first clear opens a feature (the "Lv 3" under a locked tab). */
+/** The number of wins that opens a feature (the "5 wins" under a locked tab). */
 export function unlockLevel(t: Content, f: WarPathUnlock): number {
   return t.warPath.unlocks[f];
 }

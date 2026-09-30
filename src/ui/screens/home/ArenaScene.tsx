@@ -1,6 +1,7 @@
 /**
  * The living backdrop behind Home: the player's arena (A6.3) as layered, slowly drifting
- * silhouettes with a landmark, ambient motes and a warm glow behind the Battle button. Code-drawn
+ * silhouettes with a landmark, clouds crossing the sky, a flock of birds now and then, ambient motes
+ * and a warm glow behind the diorama. Code-drawn
  * SVG in the A11 palette logic (desaturated, low-contrast backdrops) so it never competes with the
  * UI. Deterministic per arena (cosmetic RNG), purely decorative.
  */
@@ -188,6 +189,16 @@ export function ArenaScene(p: { arena: ArenaId }) {
       size: `${(2 + rng.next() * 3).toFixed(1)}px`,
     }));
   }, [seed]);
+  const clouds = useMemo(() => {
+    const rng = mulberry32(seed + 11);
+    return Array.from({ length: 4 }, (_, i) => ({
+      top: `${(6 + rng.next() * 30).toFixed(1)}%`,
+      w: `${(14 + rng.next() * 14).toFixed(1)}%`,
+      dur: `${(70 + rng.next() * 50).toFixed(0)}s`,
+      delay: `${(-(i * 30) - rng.next() * 20).toFixed(0)}s`,
+      o: (0.35 + rng.next() * 0.35).toFixed(2),
+    }));
+  }, [seed]);
   const gid = `home-sky-${p.arena}`;
   return (
     <div class="home-scene" aria-hidden="true">
@@ -202,6 +213,26 @@ export function ArenaScene(p: { arena: ArenaId }) {
         <circle cx="800" cy="520" r="260" fill={pal.glow} opacity=".16" />
         <circle cx="800" cy="520" r="140" fill={pal.glow} opacity=".14" />
       </svg>
+      <div class="home-scene__clouds">
+        {clouds.map((c, i) => (
+          <svg key={i} class="home-scene__cloud" viewBox="0 0 200 60" style={{ top: c.top, width: c.w, animationDuration: c.dur, animationDelay: c.delay, opacity: c.o }}>
+            <ellipse cx="100" cy="40" rx="92" ry="16" fill="#fff" opacity=".45" />
+            <ellipse cx="72" cy="30" rx="40" ry="20" fill="#fff" opacity=".55" />
+            <ellipse cx="118" cy="24" rx="34" ry="20" fill="#fff" opacity=".6" />
+            <ellipse cx="100" cy="46" rx="80" ry="8" fill={pal.skyBottom} opacity=".5" />
+          </svg>
+        ))}
+      </div>
+      <div class="home-scene__birds">
+        {[0, 1].map((k) => (
+          <span key={k} class={`home-scene__flock home-scene__flock--${k}`}>
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+        ))}
+      </div>
       <svg class="home-scene__layer home-scene__layer--far" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
         <path d={paths.far} fill={pal.far} opacity=".75" />
         <Landmark arena={p.arena} color={pal.mid} glow={pal.glow} />

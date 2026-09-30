@@ -258,7 +258,8 @@ export const warPath: WarPathTables = {
   difficulty: { order: DIFFICULTIES, tierOffset: { easy: -2, normal: 0, hard: 1, expert: 2, legendary: 0 }, legendaryTier: 10, default: 'normal' },
   threeStarFrom: 'hard',
   tryEasyAfter: 3,
-  // ui-plan 2.6: one new Home thing per level
-  unlocks: { army: 1, capsules: 2, modes: 3, customize: 4, progress: 5, ladder: 6, daily: 7 },
+  // ui-plan 2.6 (owner decision 2026-09-30): wins in any mode open one new Home thing each; the
+  // Ladder opens with the end of the onboarding (its two matches), since Home is the 1v1 hub
+  unlocks: { army: 1, capsules: 2, modes: 3, customize: 4, progress: 5, ladder: 2, daily: 6 },
   goalsFromLevel: 5,
 };

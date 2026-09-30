@@ -21,14 +21,14 @@
 }
 
 /* The shell's tab bar floats over the map on Home, so the map runs behind it (2.3). */
-.ui-shell[data-shell-tab='warPath'] > .ui-shell__bar {
+.ui-shell[data-shell-tab='battle'] > .ui-shell__bar {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 20;
 }
-.ui-shell[data-shell-tab='warPath'] > .ui-shell__content {
+.ui-shell[data-shell-tab='battle'] > .ui-shell__content {
   position: absolute;
   inset: 0;
 }
@@ -1484,4 +1484,38 @@
     padding: 0 var(--ui-s3);
     letter-spacing: 0.01em;
   }
+}
+
+/* ---- the War Path sub-screen's top bar (owner decision 2026-09-30): Back, title, star total ---- */
+.wp-top__left {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  min-width: 0;
+}
+.wp-top__title {
+  margin: 0;
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+.wp-starTotal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 0 var(--ui-s3) 0 var(--ui-s2);
+  border: 1px solid rgba(255, 210, 58, 0.45);
+  border-radius: var(--ui-r-pill);
+  background: var(--ui-scrim);
+  color: #ffd23a;
+  font: 800 var(--ui-fs-label) / 1 var(--ui-font-text);
+}
+.wp-starTotal small {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
 }

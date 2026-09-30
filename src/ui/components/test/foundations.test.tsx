@@ -152,7 +152,7 @@ describe('TabBar and the ready-badge rule (2.2, 2.3)', () => {
         tabs={[
           { id: 'army', badge: 1 },
           { id: 'capsules', badge: 2 },
-          { id: 'warPath' },
+          { id: 'battle' },
           { id: 'progress', lockedUntil: 5, showLevel: true },
           { id: 'customize', lockedUntil: 4 },
         ]}
@@ -160,7 +160,7 @@ describe('TabBar and the ready-badge rule (2.2, 2.3)', () => {
       kit,
     );
     const tab = (id: string) => d.container.querySelector(`[data-testid="tab-${id}"]`)!;
-    expect(tab('warPath').getAttribute('aria-current')).toBe('page');
+    expect(tab('battle').getAttribute('aria-current')).toBe('page');
     expect(text(tab('army'))).toContain('Army');
     expect(text(tab('progress'))).toContain('Lv 5');
     act(() => tab('army').click());
@@ -174,7 +174,7 @@ describe('TabBar and the ready-badge rule (2.2, 2.3)', () => {
 describe('router tabs, stacks and cross-tab jumps (2.2, U7)', () => {
   it('keeps one stack per tab and returns to where the player left it', () => {
     const r = createRouter({ id: 'home' });
-    r.switchTab('warPath', { id: 'home' });
+    r.switchTab('battle', { id: 'home' });
     r.switchTab('army', { id: 'warPlan' });
     r.go({ id: 'cardDetail', card: 'bonker' });
     expect(r.current.value.id).toBe('cardDetail');
@@ -189,24 +189,24 @@ describe('router tabs, stacks and cross-tab jumps (2.2, U7)', () => {
 
   it('back on a tab root goes to Home; Home is the root', () => {
     const r = createRouter({ id: 'home' });
-    r.switchTab('warPath', { id: 'home' });
+    r.switchTab('battle', { id: 'home' });
     r.switchTab('progress', { id: 'trophyRoad' });
     expect(r.canGoBack.value).toBe(true);
     expect(r.back()).toBe(true);
-    expect(r.tab.value).toBe('warPath');
+    expect(r.tab.value).toBe('battle');
     expect(r.current.value.id).toBe('home');
     expect(r.back()).toBe(false);
   });
 
   it('a cross-tab jump returns to its origin in the state it was left', () => {
     const r = createRouter({ id: 'home' });
-    r.switchTab('warPath', { id: 'home' });
+    r.switchTab('battle', { id: 'home' });
     r.go({ id: 'result', info: {} as never });
     r.jump({ id: 'cardDetail', card: 'bonker' }, 'army');
     expect(r.tab.value).toBe('army');
     expect(r.current.value.id).toBe('cardDetail');
     expect(r.back()).toBe(true);
-    expect(r.tab.value).toBe('warPath');
+    expect(r.tab.value).toBe('battle');
     expect(r.stack.value.map((e) => e.route.id)).toEqual(['home', 'result']);
   });
 

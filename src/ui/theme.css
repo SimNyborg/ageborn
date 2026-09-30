@@ -2242,7 +2242,7 @@ button.ui-chip {
   --g1: #ffd98a;
   --g2: #b8864a;
 }
-.ui-tabbar__tab.is-on.ui-tabbar__tab--warPath {
+.ui-tabbar__tab.is-on.ui-tabbar__tab--battle {
   --g1: #f2b52c;
   --g2: #c9a86a;
 }
@@ -2290,15 +2290,15 @@ button.ui-chip {
 .ui-tabbar__tab.is-on .ui-tabbar__label {
   font-weight: 800;
 }
-/* War Path, the centre: raised 6 px, a gold rim when active. */
-.ui-tabbar__tab--warPath {
+/* Battle (Home), the centre: raised 6 px, a gold rim when active. */
+.ui-tabbar__tab--battle {
   margin-top: -6px;
 }
-.ui-tabbar__tab--warPath .ui-tabbar__icon {
+.ui-tabbar__tab--battle .ui-tabbar__icon {
   width: 40px;
   height: 36px;
 }
-.ui-tabbar__tab--warPath.is-on .ui-tabbar__icon::before {
+.ui-tabbar__tab--battle.is-on .ui-tabbar__icon::before {
   content: '';
   position: absolute;
   inset: -3px -6px;

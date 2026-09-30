@@ -1,0 +1,952 @@
+/*
+ * The Battle hub (Home, S2; owner decision 2026-09-30, ui-plan 2.3, 5.5 MR-12/15/40/50-53).
+ *
+ * px budget at 844 x 390 (compact; margins 16): top bar 44; left column 216 (Campaign card 152, slots
+ * 48); right column 256 (match plate about 124, Battle 176 x 64 in the bottom row); the stage takes
+ * the space between, above the tab bar (56). At 1280 x 720: left 296, right 340, the stage about
+ * 540 wide. Tokens only; ambient loops are slow and still under reduce motion.
+ */
+
+.hub {
+  --hub-left-w: 296px;
+  --hub-right-w: 340px;
+  --hub-gap: var(--ui-s4);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0b0e14;
+  isolation: isolate;
+}
+@container ui-root (max-height: 480px) {
+  .hub {
+    --hub-left-w: 216px;
+    --hub-right-w: 256px;
+    --hub-gap: var(--ui-s3);
+  }
+}
+@container ui-root (max-height: 480px) and (max-width: 819px) {
+  .hub {
+    --hub-left-w: 200px;
+    --hub-right-w: 248px;
+  }
+}
+.hub .home-scene {
+  z-index: 0;
+}
+.hub-top {
+  z-index: 12;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Stage: the diorama and, under it, the arena's name and the trophy bar                           */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hub-stage {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--ui-header-h) + var(--ui-safe-t));
+  bottom: calc(var(--ui-tabbar-h) + var(--ui-safe-b) + var(--ui-s2));
+  left: calc(var(--ui-margin) + var(--ui-safe-l) + var(--hub-left-w) + var(--hub-gap));
+  right: calc(var(--ui-margin) + var(--ui-safe-r) + var(--hub-right-w) + var(--hub-gap));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ui-s2);
+  pointer-events: none;
+}
+/* Before the left column exists (the first battles) the stage takes the left side too. */
+.hub.is-first .hub-stage,
+.hub:not(:has(.hub-left)) .hub-stage {
+  left: calc(var(--ui-margin) + var(--ui-safe-l));
+}
+.hub.is-first .hub-stage {
+  bottom: calc(var(--ui-safe-b) + var(--ui-s3));
+}
+.hub-stage > * {
+  pointer-events: auto;
+}
+.hub-stage__caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: min(100%, 360px);
+  animation: hub-rise var(--ui-dur-large) var(--ui-ease-enter) 120ms both;
+}
+.hub-stage__start {
+  margin: 0;
+  padding: var(--ui-s2) var(--ui-s4);
+  border-radius: var(--ui-r-lg);
+  background: var(--ui-scrim);
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 1px 2px #000;
+  animation: hub-rise var(--ui-dur-large) var(--ui-ease-enter) 300ms both;
+}
+@keyframes hub-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* ---- the diorama ---- */
+.hd {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  container-type: size;
+  pointer-events: none;
+}
+.hd__float {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(100cqw, 100cqh * 600 / 340);
+  aspect-ratio: 600 / 340;
+  transform: translate(-50%, -50%);
+  animation: hd-in 700ms var(--ui-ease-enter) both;
+}
+@keyframes hd-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 24px)) scale(0.94);
+  }
+}
+.hd__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+  animation: hd-float 5200ms ease-in-out infinite;
+}
+@keyframes hd-float {
+  50% {
+    transform: translateY(-1.6%);
+  }
+}
+.hd__base {
+  position: absolute;
+  bottom: 33%;
+  width: 24%;
+  aspect-ratio: 1;
+  animation: hd-float 5200ms ease-in-out infinite;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.45));
+}
+.hd__base .cos-base,
+.hd__base .cos-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hd__base img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+}
+.hd__base--me {
+  left: 7%;
+}
+.hd__base--foe {
+  right: 7%;
+  transform: scaleX(-1);
+}
+/* The launch (MR-15): the island leans in and the clash flares, then VS. */
+.hd.is-launching .hd__float {
+  transform: translate(-50%, -50%) scale(1.08);
+  transition: transform var(--ui-dur-medium) var(--ui-ease-anticipate);
+}
+.hd.is-launching .hd-clash {
+  animation: hd-clash-flare var(--ui-dur-medium) var(--ui-ease-out) both;
+}
+@keyframes hd-clash-flare {
+  to {
+    transform: translate(300px, 206px) scale(2.2);
+    opacity: 0;
+  }
+}
+.hd-clash {
+  transform-box: view-box;
+  animation: hd-clash 2600ms ease-in-out infinite;
+}
+@keyframes hd-clash {
+  0%,
+  100% {
+    transform: translate(300px, 206px) scale(1);
+  }
+  50% {
+    transform: translate(300px, 200px) scale(1.08);
+  }
+}
+.hd__spark {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffe39a;
+  box-shadow: 0 0 6px 2px rgba(255, 207, 90, 0.7);
+  opacity: 0;
+  animation: hd-spark 2600ms var(--ui-ease-out) infinite;
+}
+.hd__spark--2 {
+  --sx: -26px;
+  animation-delay: 900ms;
+}
+.hd__spark--3 {
+  --sx: 22px;
+  animation-delay: 1700ms;
+}
+@keyframes hd-spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx, 8px), -38px) scale(1.2);
+  }
+}
+.hd-smoke__puff {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wp-puff 4200ms linear infinite;
+}
+.hd-banner {
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  animation: wp-flag 1300ms ease-in-out infinite;
+}
+.hd-flag {
+  transform-box: fill-box;
+  transform-origin: 0 50%;
+  animation: wp-flag 1100ms ease-in-out infinite;
+}
+.hd-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: hd-sway 4200ms ease-in-out infinite alternate;
+}
+@keyframes hd-sway {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
+.hd-shimmer {
+  animation: hd-shimmer 2400ms ease-in-out infinite alternate;
+}
+@keyframes hd-shimmer {
+  from {
+    transform: translateX(-4px);
+    opacity: 0.35;
+  }
+  to {
+    transform: translateX(4px);
+    opacity: 0.85;
+  }
+}
+.hd-ship {
+  animation: hd-ship 3600ms ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+@keyframes hd-ship {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+  50% {
+    transform: rotate(1.5deg) translateY(-2px);
+  }
+}
+.hd-glow {
+  animation: hd-glow 1800ms ease-in-out infinite alternate;
+}
+@keyframes hd-glow {
+  from {
+    opacity: 0.55;
+  }
+}
+.hd-bubble {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hd-bubble 2200ms ease-out infinite;
+}
+.hd-bubble--2 {
+  animation-delay: 1100ms;
+}
+@keyframes hd-bubble {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+.hd-snow circle {
+  animation: hd-snow 5200ms linear infinite;
+}
+@keyframes hd-snow {
+  from {
+    transform: translate(0, -30px);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  to {
+    transform: translate(-18px, 150px);
+    opacity: 0;
+  }
+}
+.hd-neon {
+  animation: hd-neon 3000ms steps(1, jump-none) infinite;
+}
+.hd-neon--1 {
+  animation-delay: -1100ms;
+}
+.hd-neon--2 {
+  animation-delay: -2300ms;
+}
+@keyframes hd-neon {
+  0%,
+  88% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.35;
+  }
+  94% {
+    opacity: 1;
+  }
+}
+.hd-blink {
+  animation: wp-twinkle 1600ms steps(2, jump-none) infinite;
+}
+.hd-twinkle {
+  animation: wp-twinkle 2800ms ease-in-out infinite;
+}
+.hd-orbit {
+  transform-box: view-box;
+  transform-origin: 300px 104px;
+  animation: wp-spin 24s linear infinite;
+}
+.hd-rift {
+  transform-box: view-box;
+  transform-origin: 300px 110px;
+  animation: wp-spin 14s linear infinite;
+}
+.hd-windows rect:nth-child(3n) {
+  animation: wp-twinkle 3400ms ease-in-out infinite;
+}
+
+/* ---- the arena's name and the trophy bar ---- */
+.hub-arena {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  max-width: 100%;
+  padding: 3px var(--ui-s4) 3px var(--ui-s2);
+  border-radius: var(--ui-r-pill);
+  background: linear-gradient(90deg, rgba(6, 8, 12, 0.2), rgba(6, 8, 12, 0.78) 18%, rgba(6, 8, 12, 0.78) 82%, rgba(6, 8, 12, 0.2));
+  color: var(--ui-text);
+  white-space: nowrap;
+}
+.hub-arena__num {
+  padding: 1px 8px;
+  border-radius: var(--ui-r-pill);
+  background: linear-gradient(180deg, var(--ui-primary-light), var(--ui-primary));
+  color: var(--ui-ink);
+  font: 800 var(--ui-fs-tag) / var(--ui-lh-tag) var(--ui-font-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hub-arena__name {
+  min-width: 0;
+  overflow: hidden;
+  font: 700 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px #000;
+}
+.hub-road {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  width: 100%;
+  min-height: 48px;
+  padding: 4px var(--ui-s3) 4px 6px;
+  border: 1px solid rgba(255, 212, 102, 0.45);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(180deg, rgba(37, 44, 57, 0.94), rgba(20, 24, 32, 0.96));
+  box-shadow: var(--ui-e2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--ui-text);
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--ui-dur-press) var(--ui-ease-standard);
+}
+.hub-road:active {
+  transform: scale(var(--ui-press-scale));
+}
+.hub-road__cup {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #5a4a22, #241c0c);
+  box-shadow: 0 0 0 2px rgba(255, 212, 102, 0.6);
+  color: var(--ui-primary-light);
+}
+.hub-road__main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+.hub-road__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ui-s2);
+  white-space: nowrap;
+}
+.hub-road__now {
+  color: var(--ui-primary-light);
+  font: 800 var(--ui-fs-title-s) / 1 var(--ui-font-display);
+}
+.hub-road__label {
+  overflow: hidden;
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+.hub-road__bar {
+  position: relative;
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--ui-r-pill);
+  background: #0c0f15;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+.hub-road__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--ui-primary-light), var(--ui-primary) 60%, var(--ui-primary-lip));
+  transform-origin: 0 50%;
+  animation: hub-fill var(--ui-dur-count-l) var(--ui-ease-out) 250ms both;
+}
+@keyframes hub-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+.hub-road__shine {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: hub-sheen var(--ui-dur-sheen) ease-in-out 1s infinite;
+}
+@keyframes hub-sheen {
+  0% {
+    transform: translateX(-120%);
+  }
+  40%,
+  100% {
+    transform: translateX(420%);
+  }
+}
+.hub-road__reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.hub-road__reward .road-rw b {
+  display: none;
+}
+.hub-road__badge {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Left column: the Campaign card and the capsule slots                                           */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hub-left {
+  position: absolute;
+  z-index: 6;
+  left: calc(var(--ui-margin) + var(--ui-safe-l));
+  top: calc(var(--ui-header-h) + var(--ui-safe-t) + 4px);
+  bottom: calc(var(--ui-tabbar-h) + var(--ui-safe-b) + var(--ui-s2));
+  width: var(--hub-left-w);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--ui-s3);
+  pointer-events: none;
+}
+.hub-left > * {
+  pointer-events: auto;
+}
+.hub-camp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(107, 120, 144, 0.7);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(180deg, rgba(37, 44, 57, 0.96), rgba(22, 26, 35, 0.98));
+  box-shadow: var(--ui-e3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--ui-text);
+  text-align: left;
+  cursor: pointer;
+  animation: hub-in-left var(--ui-dur-large) var(--ui-ease-enter) both;
+  transition: transform var(--ui-dur-press) var(--ui-ease-standard);
+}
+.hub-camp:active {
+  transform: scale(var(--ui-press-scale));
+}
+@media (hover: hover) {
+  .hub-camp:hover .hub-camp__art :is(.wp-art) {
+    transform: scale(1.05);
+  }
+}
+@keyframes hub-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--ui-axis) * -1));
+  }
+}
+.hub-camp__art {
+  position: relative;
+  display: block;
+  height: 72px;
+  overflow: hidden;
+  border-bottom: 2px solid rgba(15, 18, 24, 0.9);
+}
+.hub-camp__art .wp-art {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110%;
+  height: auto;
+  transform: translate(-50%, -54%);
+  transition: transform var(--ui-dur-large) var(--ui-ease-standard);
+}
+.hub-camp__art .wp-art {
+  transform: translate(-50%, -54%);
+}
+.hub-camp__road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 64%;
+}
+.hub-camp__node {
+  position: absolute;
+  left: 44%;
+  bottom: 18%;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #fff, #ffd466 46%, #c7861c);
+  box-shadow:
+    0 0 0 2px #1b140d,
+    0 0 0 4px #ffe39a,
+    0 0 14px 4px rgba(255, 207, 90, 0.55);
+  color: #2a1a06;
+  font: 800 var(--ui-fs-label) / 1 var(--ui-font-display);
+  animation: hub-node 1600ms ease-in-out infinite;
+}
+@keyframes hub-node {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.hub-camp__flag {
+  position: absolute;
+  left: calc(44% - 16px);
+  bottom: 30%;
+  width: 3px;
+  height: 30px;
+  background: #3b2a1e;
+}
+.hub-camp__flag::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 14px;
+  height: 10px;
+  background: var(--ui-team-me);
+  clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+  transform-origin: 0 50%;
+  animation: wp-flag 1100ms ease-in-out infinite;
+}
+.hub-camp__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px var(--ui-s3) 8px;
+}
+.hub-camp__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+}
+.hub-camp__title {
+  font: 700 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hub-camp__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #ffd23a;
+  font: 700 var(--ui-fs-caption) / 1 var(--ui-font-text);
+}
+.hub-camp__stars small {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-tag);
+}
+.hub-camp__sub {
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+.hub-camp__level {
+  overflow: hidden;
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+  white-space: nowrap;
+  text-overflow: clip;
+}
+.hub-camp__reward {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(6, 8, 12, 0.78);
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-tag) / var(--ui-lh-tag) var(--ui-font-text);
+}
+
+.hub-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ui-s2);
+  animation: hub-in-left var(--ui-dur-large) var(--ui-ease-enter) 80ms both;
+}
+.hub-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 48px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid rgba(107, 120, 144, 0.45);
+  border-radius: var(--ui-r-md);
+  background: radial-gradient(ellipse at 50% 80%, rgba(0, 0, 0, 0.55), rgba(13, 16, 22, 0.82));
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--ui-text);
+}
+.hub-slot.is-full,
+.hub-slot.is-more {
+  cursor: pointer;
+  border-color: rgba(255, 212, 102, 0.55);
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 212, 102, 0.22), rgba(13, 16, 22, 0.86) 70%);
+  transition: transform var(--ui-dur-press) var(--ui-ease-standard);
+}
+.hub-slot.is-full:active,
+.hub-slot.is-more:active {
+  transform: scale(0.92);
+}
+.hub-slot__drum {
+  display: grid;
+  place-items: center;
+  animation:
+    hub-drum-in var(--ui-dur-medium) var(--ui-ease-back) calc(var(--i, 0) * var(--ui-dur-stagger) + 200ms) both,
+    hub-drum-bob 2400ms ease-in-out calc(var(--i, 0) * -600ms) infinite;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5));
+}
+@keyframes hub-drum-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.6);
+  }
+}
+@keyframes hub-drum-bob {
+  50% {
+    transform: translateY(-2px) rotate(-2deg);
+  }
+}
+.hub-slot.is-empty {
+  opacity: 0.55;
+  border-style: dashed;
+}
+.hub-slot.is-empty svg {
+  opacity: 0.18;
+  filter: grayscale(1);
+}
+.hub-slot.is-more b {
+  color: var(--ui-primary-light);
+  font: 800 var(--ui-fs-label) / 1 var(--ui-font-display);
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Right: the match plate over Battle                                                             */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hub-dock {
+  z-index: 25;
+}
+.hub-plate {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: var(--hub-right-w);
+  padding: 8px var(--ui-s3) 8px 8px;
+  border: 1px solid rgba(107, 120, 144, 0.7);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(180deg, rgba(37, 44, 57, 0.95), rgba(22, 26, 35, 0.97));
+  box-shadow: var(--ui-e3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--ui-text);
+  animation: wp-plate-in var(--ui-dur-medium) var(--ui-ease-enter) both;
+  transition:
+    opacity var(--ui-dur-medium) var(--ui-ease-standard),
+    transform var(--ui-dur-medium) var(--ui-ease-standard);
+}
+.hub-plate.is-away {
+  opacity: 0;
+  transform: translateX(24px);
+  pointer-events: none;
+}
+.hub-plate__who {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  min-height: 48px;
+}
+.hub-plate__portrait {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+.hub-plate__portrait .ui-general {
+  border-radius: var(--ui-r-sm);
+  overflow: hidden;
+  box-shadow: 0 0 0 2px var(--ui-team-foe), 0 0 0 4px rgba(15, 18, 24, 0.9);
+}
+.hub-plate__ai {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  transform: translateX(-50%) scale(0.86);
+}
+.hub-plate__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.hub-plate__over {
+  color: var(--ui-text-2);
+  font: 700 var(--ui-fs-tag) / var(--ui-lh-tag) var(--ui-font-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hub-plate__name {
+  overflow: hidden;
+  font: 700 var(--ui-fs-title-s) / var(--ui-lh-title-s) var(--ui-font-display);
+  white-space: nowrap;
+}
+.hub-plate__tier {
+  flex: none;
+}
+.hub-plate__format .ui-seg {
+  display: flex;
+  width: 100%;
+}
+.hub-plate__format .ui-seg__opt {
+  flex: 1;
+  padding: 0 4px;
+}
+.hub-plate__desc {
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.hub-plate .ui-seg__opt {
+  min-height: 44px;
+}
+.ui-btn.hub-battle .ui-btn__face {
+  font-size: calc(var(--ui-btn-xl-fs) + 4px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* MR-15: Battle dips and the stage leans in, then VS. */
+.hub.is-launching .hub-battle .ui-btn__face {
+  transform: scale(0.94);
+}
+.hub.is-launching .home-scene {
+  transform: scale(1.04);
+  opacity: 0.7;
+  transition:
+    transform var(--ui-dur-medium) var(--ui-ease-standard),
+    opacity var(--ui-dur-medium) var(--ui-ease-standard);
+}
+
+/* ---- reduce motion: ambient loops still; entrances become fades (U14) ---- */
+.ui-root[data-reduce-motion='true'] .hub :is(.hd__art, .hd__base, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
+  animation: none !important;
+}
+.ui-root[data-reduce-motion='true'] .hub :is(.hd__float, .hub-camp, .hub-slots, .hub-stage__caption, .hub-plate) {
+  animation-name: ui-fade-in !important;
+  animation-duration: var(--ui-dur-reduced) !important;
+}
+@keyframes ui-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+.ui-root[data-reduce-motion='true'] .hd__spark {
+  display: none;
+}
+
+/* MR-40 beside a tall target (the Campaign card): the line sits to its right, centred on it. */
+.wp-unlock__line.is-beside {
+  transform: translateY(-50%);
+  animation-name: hub-line-in-side;
+}
+@keyframes hub-line-in-side {
+  from {
+    opacity: 0;
+    transform: translate(calc(var(--ui-axis) * -0.5), -50%);
+  }
+}
+
+/* ---- the arena sky's life: clouds and an occasional flock (5.5 life) ---- */
+.home-scene__clouds,
+.home-scene__birds {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.home-scene__cloud {
+  position: absolute;
+  left: 0;
+  height: auto;
+  animation: hub-cloud linear infinite;
+}
+@keyframes hub-cloud {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(calc(100cqw + 120%));
+  }
+}
+.home-scene__flock {
+  position: absolute;
+  left: 0;
+  top: 18%;
+  width: 60px;
+  height: 24px;
+  animation: hub-flock 26s linear infinite;
+}
+.home-scene__flock--1 {
+  top: 30%;
+  animation-duration: 34s;
+  animation-delay: -17s;
+}
+@keyframes hub-flock {
+  0% {
+    transform: translate(-80px, 0);
+  }
+  60% {
+    transform: translate(calc(100cqw + 80px), -40px);
+  }
+  100% {
+    transform: translate(calc(100cqw + 80px), -40px);
+  }
+}
+.home-scene__flock i {
+  position: absolute;
+  width: 12px;
+  height: 5px;
+  border-top: 2px solid rgba(20, 16, 24, 0.75);
+  border-radius: 50% 50% 0 0;
+  animation: hub-wing 520ms ease-in-out infinite alternate;
+}
+.home-scene__flock i:nth-child(1) {
+  left: 0;
+  top: 8px;
+}
+.home-scene__flock i:nth-child(2) {
+  left: 16px;
+  top: 2px;
+  animation-delay: -160ms;
+}
+.home-scene__flock i:nth-child(3) {
+  left: 30px;
+  top: 10px;
+  animation-delay: -300ms;
+}
+.home-scene__flock i:nth-child(4) {
+  left: 44px;
+  top: 4px;
+  animation-delay: -80ms;
+}
+@keyframes hub-wing {
+  to {
+    transform: scaleY(-0.6) translateY(2px);
+  }
+}
+.ui-root[data-reduce-motion='true'] .hub :is(.home-scene__cloud, .home-scene__flock, .home-scene__flock i) {
+  animation: none !important;
+}
+.ui-root[data-reduce-motion='true'] .hub .home-scene__flock {
+  display: none;
+}

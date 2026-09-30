@@ -215,7 +215,7 @@
       "conquestDesc": "Beat all nine Generals.",
       "conquestOpen": "Open board",
       "moreOptions": "All options",
-      "modeLocked": "Unlocks at War Path level {n}",
+      "modeLocked": "Unlocks at {n} wins",
       "playMode": "Play",
       "unlock": {
         "army": "Army: pick your troops",
@@ -223,10 +223,11 @@
         "modes": "Modes: more ways to play",
         "customize": "Customize: make it yours",
         "progress": "Progress: goals and rewards",
-        "ladder": "Ladder: climb for trophies",
+        "ladder": "Ladder: win trophies, climb arenas",
         "daily": "Daily Challenge: new every day",
         "open": "Open",
-        "new": "Unlocked!"
+        "new": "Unlocked!",
+        "campaign": "Campaign: play offline, earn cards"
       },
       "tryEasy": "Try Easy",
       "resultStars": "Level stars",

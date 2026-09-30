@@ -135,9 +135,10 @@
       "army": "Army",
       "warPath": "War Path",
       "progress": "Progress",
-      "lockedLv": "Lv {n}",
-      "unlocksAt": "Unlocks at War Path level {n}",
-      "leaveAgain": "Press back again to leave"
+      "lockedLv": "{n} wins",
+      "unlocksAt": "Unlocks at {n} wins",
+      "leaveAgain": "Press back again to leave",
+      "battle": "Battle"
     },
     "pointer": {
       "warPlan": "New! Choose your troops for each age",
@@ -842,6 +843,21 @@
         "field": "Field powers go in the Field slot"
       },
       "filterSlots": "Power slot"
+    },
+    "hub": {
+      "campaign": "Campaign",
+      "campaignSub": "Play offline, earn cards",
+      "campaignNext": "Next: {n}. {name}",
+      "campaignDone": "Every level beaten",
+      "training": "Training match",
+      "start": "Win your first battle",
+      "startNext": "One more training battle",
+      "format": {
+        "short": "Short",
+        "standard": "Standard",
+        "full": "Full"
+      },
+      "roadNext": "Next at {n}"
     }
   }
 }

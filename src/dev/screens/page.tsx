@@ -23,7 +23,7 @@ import {
 import { FIXTURE_NOW, FIXTURE_STATES, fixtureSave, type FixtureState } from '@/ui/screens/fixtures/saves';
 import { createPreviewServices } from '@/ui/screens/fixtures/services';
 import { ScreenHost } from '@/ui/screens/ScreenHost';
-import { primeWarPathSeen } from '@/ui/screens/home/HomeScreen';
+import { primeWarPathSeen } from '@/ui/screens/warPath/WarPathScreen';
 import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
 import type { SaveDoc } from '@/contracts';
 import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
@@ -103,11 +103,26 @@ const VARIANTS: Variant[] = [
     save: (s) => ({ ...firstLaunch(s), currencies: { amber: 60, dust: 0 }, matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} }, warPath: { ...s.warPath, stars: { 'wp.stone.l01': 2 }, crowns: { 'wp.stone.l01': 2 }, legacy: false } }),
     prime: () => primeWarPathSeen({}),
   },
-  { id: 'home-cleared', label: 'Home: level cleared (MR-41)', route: () => [{ id: 'home' }], prime: ceremony('wp.bronze.l06', 0) },
+  {
+    id: 'home-campaign',
+    label: 'Home: Campaign unlock (after onboarding)',
+    route: () => [{ id: 'home' }],
+    save: (s) => ({
+      ...firstLaunch(s),
+      currencies: { amber: 60, dust: 0 },
+      matchesPlayed: 2,
+      tutorial: { step: 4, hintsShown: {} },
+      stats: { ...s.stats, wins: 2 },
+      warPath: { ...s.warPath, stars: { 'wp.stone.l01': 2, 'wp.stone.l02': 1 }, crowns: {}, legacy: false },
+      flags: { 'ui-unlock.army': true, 'ui-unlock.ladder': true, 'ui-unlock.capsules': true },
+    }),
+  },
+  { id: 'warPath', label: 'War Path map', route: () => [{ id: 'home' }, { id: 'warPath' }] },
+  { id: 'home-cleared', label: 'War Path: level cleared (MR-41)', route: () => [{ id: 'home' }, { id: 'warPath' }], prime: ceremony('wp.bronze.l06', 0) },
   {
     id: 'home-boss',
-    label: 'Home: boss beaten (MR-42)',
-    route: () => [{ id: 'home' }],
+    label: 'War Path: boss beaten (MR-42)',
+    route: () => [{ id: 'home' }, { id: 'warPath' }],
     save: (s) => ({ ...s, warPath: { ...s.warPath, stars: Object.fromEntries(content.warPath.order.slice(0, 20).map((id) => [id, 2])) } }),
     prime: ceremony('wp.bronze.l10', 0),
   },

@@ -1,7 +1,7 @@
 /**
  * War Path view models (DESIGN A18.7, ui-plan 2.3, 2.6, 4.1): the map's nodes and their states, the
- * current level, the Home features that open along the path, a level's AI tier on a difficulty and
- * its goal lines. Pure over (save, content); the same rules as `meta/warPath.ts` (the UI may not
+ * current level, the Home features that open with wins, a level's AI tier on a difficulty and its
+ * goal lines. Pure over (save, content); the same rules as `meta/warPath.ts` (the UI may not
  * import meta, DESIGN B2), held equal by `test/warPathModel.test.ts`.
  */
 import type { AgeId, MatchStats, SaveDoc, WarPathDifficulty } from '@/contracts';
@@ -88,9 +88,35 @@ export function beatenCount(save: SaveDoc): number {
   return Object.values(progressOf(save).stars).filter((n) => n > 0).length;
 }
 
-/** ui-plan 2.6: a Home feature opens with the first clear of its level; a legacy save keeps all. */
-export function featureOpen(save: SaveDoc, content: Content, f: WarPathUnlock): boolean {
-  return progressOf(save).legacy || beatenCount(save) >= content.warPath.unlocks[f];
+/**
+ * The wins that open Home features (owner decision 2026-09-30): wins in any mode count (Ladder, the
+ * War Path, Quick Battle, the Daily), so the War Path is no longer required to open tabs. A save whose
+ * War Path stars run ahead of its win count (older fixtures) counts its beaten levels instead.
+ */
+export function unlockWins(save: SaveDoc): number {
+  return Math.max(beatenCount(save), save.stats?.wins ?? 0);
+}
+
+/** The first-session matches are done (A8): Home's Battle starts the Ladder from now on. */
+export function onboardingDone(save: SaveDoc): boolean {
+  return save.tutorial.step >= 4;
+}
+
+/**
+ * What Home opens along the way (ui-plan 2.6): the content's features plus the Campaign card, a UI
+ * element that joins Home when the onboarding ends (owner decision 2026-09-30).
+ */
+export type HomeUnlock = WarPathUnlock | 'campaign';
+
+/**
+ * ui-plan 2.6: a Home feature opens with its number of wins; the Ladder and the Campaign card open
+ * when the onboarding ends (Home becomes the 1v1 hub then). A legacy save keeps everything open.
+ */
+export function featureOpen(save: SaveDoc, content: Content, f: HomeUnlock): boolean {
+  if (progressOf(save).legacy) return true;
+  if (f === 'campaign') return onboardingDone(save);
+  if (f === 'ladder') return onboardingDone(save) || unlockWins(save) >= content.warPath.unlocks.ladder;
+  return unlockWins(save) >= content.warPath.unlocks[f];
 }
 
 /**
@@ -101,22 +127,26 @@ export function upgradesTaught(save: SaveDoc): boolean {
   return !!save.flags['tutorial.firstUpgrade'] || progressOf(save).legacy || beatenCount(save) >= 3;
 }
 
-/** The tab each feature opens (Modes, Ladder and Daily live inside Home's Modes panel). */
-export const TAB_FEATURE: Readonly<Record<Exclude<TabId, 'warPath'>, WarPathUnlock>> = {
+/** The tab each feature opens (Modes, Ladder and Daily live on Home). */
+export const TAB_FEATURE: Readonly<Record<Exclude<TabId, 'battle'>, WarPathUnlock>> = {
   army: 'army',
   capsules: 'capsules',
   progress: 'progress',
   customize: 'customize',
 };
 
-/** The order in which Home features open (one per level, 2.6). */
-export const UNLOCK_ORDER: readonly WarPathUnlock[] = ['army', 'capsules', 'modes', 'customize', 'progress', 'ladder', 'daily'];
+/**
+ * The order in which Home features open (one per return to Home, 2.6). The Ladder (the hub's arena
+ * and trophies) and the Campaign card arrive with the end of the onboarding, after Army and before
+ * Modes.
+ */
+export const UNLOCK_ORDER: readonly HomeUnlock[] = ['army', 'ladder', 'capsules', 'campaign', 'modes', 'customize', 'progress', 'daily'];
 
 /** The flag that records a feature's unlock ceremony as shown (`SaveDoc.flags['ui-unlock.<id>']`). */
-export const unlockFlag = (f: WarPathUnlock): string => `ui-unlock.${f}`;
+export const unlockFlag = (f: HomeUnlock): string => `ui-unlock.${f}`;
 
 /** The first feature that is open but whose unlock ceremony has not played yet (MR-40), or null. */
-export function pendingUnlock(save: SaveDoc, content: Content): WarPathUnlock | null {
+export function pendingUnlock(save: SaveDoc, content: Content): HomeUnlock | null {
   if (progressOf(save).legacy) return null;
   return UNLOCK_ORDER.find((f) => featureOpen(save, content, f) && !save.flags[unlockFlag(f)]) ?? null;
 }

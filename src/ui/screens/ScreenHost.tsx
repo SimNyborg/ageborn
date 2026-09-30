@@ -34,11 +34,12 @@ import { ResultScreen } from './result/ResultScreen';
 import { SettingsScreen } from './settings/SettingsScreen';
 import { TrophyRoadScreen } from './trophyRoad/TrophyRoadScreen';
 import { VsScreen } from './vs/VsScreen';
+import { WarPathScreen } from './warPath/WarPathScreen';
 import { WarPlanScreen } from './warplan/WarPlanScreen';
 
 type ScreenComponent<K extends ScreenId> = ComponentType<{ route: RouteOf<K> }>;
 
-/** The screens this package renders (A9 numbers 2-4, 6-7, 9-13, 15 and 17). */
+/** The screens this package renders (A9 numbers 2-4, 6-7, 9-13, 15 and 17, plus 19-22). */
 export const SCREEN_COMPONENTS: { [K in ScreenId]?: ScreenComponent<K> } = {
   home: HomeScreen,
   modeSelect: ModeSelectScreen,
@@ -55,6 +56,7 @@ export const SCREEN_COMPONENTS: { [K in ScreenId]?: ScreenComponent<K> } = {
   customize: CustomizeScreen,
   capsules: CapsulesScreen,
   progress: ProgressScreen,
+  warPath: WarPathScreen,
 };
 
 export type ScreenSlots = { [K in ScreenId]?: (route: RouteOf<K>) => ComponentChildren };

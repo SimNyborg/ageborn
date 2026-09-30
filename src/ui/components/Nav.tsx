@@ -1,13 +1,13 @@
 /**
  * The navigation shell's bottom bar (docs/ui-plan.md 2.2, 2.3 "Bottom nav", 3.6 tabs; MR-10, MR-25).
  *
- * Five labelled tabs, one per verb: Army, Capsules, **War Path** (Home, centre, raised 6 px with a
- * gold rim when active), Progress, Customize. 88 x 56 per tab on compact phones (80 below 820 px
+ * Five labelled tabs, one per verb: Army, Capsules, **Battle** (Home, the 1v1 hub, centre, raised 6 px
+ * with a gold rim when active), Progress, Customize. 88 x 56 per tab on compact phones (80 below 820 px
  * wide), 120 x 72 on regular screens; icon 28 over a 12 px label. The active tab sits on a lit plate
  * that slides under it (220, standard) and its icon pops (1.15 -> 1). Ready badges (at most 2 on
  * Home, by the priority in 2.2) and NEW dots come from the caller. A locked tab is greyed; the next
- * one to unlock shows "Lv 5" under its label and a tap shows "Unlocks at War Path level 5" above it
- * (U8). Keys 1-5 switch tabs on desktop (the shell binds them).
+ * one to unlock shows "5 wins" on its icon and a tap shows "Unlocks at 5 wins" above it (U8; wins in
+ * any mode count, owner decision 2026-09-30). Keys 1-5 switch tabs on desktop (the shell binds them).
  */
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -22,7 +22,7 @@ export interface NavTab {
    * (an upgrade can be made now; a count would read as a backlog, U11), 'dot' for a NEW dot, or null.
    */
   badge?: number | 'ready' | 'dot' | null;
-  /** Locked until this War Path level; `showLevel` marks the next one to unlock ("Lv 5"). */
+  /** Locked until this many wins (any mode); `showLevel` marks the next one to unlock ("5 wins"). */
   lockedUntil?: number | null;
   showLevel?: boolean;
   /** Not shown at all yet (first launch shows no tabs, 2.6). */
@@ -32,7 +32,7 @@ export interface NavTab {
 export const NAV_LABEL_KEY: Readonly<Record<TabId, string>> = {
   army: 'ui.nav.army',
   capsules: 'ui.nav.capsules',
-  warPath: 'ui.nav.warPath',
+  battle: 'ui.nav.battle',
   progress: 'ui.nav.progress',
   customize: 'ui.nav.customize',
 };
@@ -174,14 +174,15 @@ export function NavIcon(p: { id: TabId; size?: number }): ComponentChildren {
           <circle cx="21" cy="20.5" r="1.3" fill="var(--g1)" />
         </svg>
       );
-    case 'warPath':
-      // A banner on a winding road.
+    case 'battle':
+      // Two crossed swords over a round shield: "fight".
       return (
         <svg {...common}>
-          <path d="M4 28c4-6 14-3 14-10 0-4-5-5-5-8" fill="none" stroke="#0f1218" stroke-width="5.2" stroke-linecap="round" />
-          <path d="M4 28c4-6 14-3 14-10 0-4-5-5-5-8" fill="none" stroke="var(--g2)" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 3" />
-          <path d="M20 4v14" {...edge} fill="none" stroke-width="2.2" />
-          <path d="M20.5 4.5h8l-2.4 3.3 2.4 3.3h-8z" fill="var(--g1)" {...edge} />
+          <circle cx="16" cy="17" r="8.5" fill="var(--g2)" {...edge} />
+          <path d="M5 5l15.5 15.5M27 5L11.5 20.5" fill="none" stroke="#0f1218" stroke-width="5" stroke-linecap="round" />
+          <path d="M5 5l15.5 15.5M27 5L11.5 20.5" fill="none" stroke="var(--g1)" stroke-width="2.6" stroke-linecap="round" />
+          <path d="M18 23l6 6M14 23l-6 6M20.5 20.5l3-3M11.5 20.5l-3-3" fill="none" stroke="#0f1218" stroke-width="3.2" stroke-linecap="round" />
+          <path d="M18 23l6 6M14 23l-6 6" fill="none" stroke="var(--g2)" stroke-width="1.4" stroke-linecap="round" />
         </svg>
       );
     case 'progress':

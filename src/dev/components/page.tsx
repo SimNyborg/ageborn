@@ -50,7 +50,7 @@ export default function ComponentsPage() {
   const toasts = useMemo(() => createToastStore(), []);
   const [seg, setSeg] = useState<'short' | 'standard' | 'full'>('standard');
   const [tab, setTab] = useState<'goals' | 'road' | 'feats'>('goals');
-  const [nav, setNav] = useState<TabId>('warPath');
+  const [nav, setNav] = useState<TabId>('battle');
   const [on, setOn] = useState(true);
   const [sheet, setSheet] = useState(false);
   const [modal, setModal] = useState(false);
@@ -61,7 +61,7 @@ export default function ComponentsPage() {
   const tabs: NavTab[] = [
     { id: 'army', badge: 1 },
     { id: 'capsules', badge: 2 },
-    { id: 'warPath' },
+    { id: 'battle' },
     { id: 'progress', lockedUntil: 5, showLevel: true },
     { id: 'customize', lockedUntil: 8 },
   ];

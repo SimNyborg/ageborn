@@ -1,11 +1,11 @@
 /**
  * The navigation shell's tabs for a save (ui-plan 2.2, 2.3 "Bottom nav", 2.6): which tabs show, which
- * are locked until which War Path level, the next one to unlock ("Lv 5"), the ready badges (at most
- * 2 on Home, Capsules > Army > Progress, never Customize) and each tab's root route.
+ * are locked until how many wins, the next one to unlock ("5 wins"), the ready badges (at most 2 on
+ * Home, Capsules > Army > Progress, never Customize) and each tab's root route.
  *
- * First launch shows no tabs at all; after War Path level 1 all five show, Army open and the rest
- * locked; each opens with its level (Capsules 2, Customize 4, Progress 5). A save from before the War
- * Path keeps everything open.
+ * First launch shows no tabs at all; after the first win all five show, Army open and the rest
+ * locked; each opens with its number of wins in any mode (Capsules 2, Customize 4, Progress 5; owner
+ * decision 2026-09-30). A save from before the War Path keeps everything open.
  */
 import type { Content } from '@/content/types';
 import type { SaveDoc } from '@/contracts';
@@ -14,11 +14,11 @@ import type { Route, TabId } from '../../router';
 import { questViews, roadProgress } from '../model/progress';
 import { featureOpen, TAB_FEATURE, upgradesTaught } from '../model/warPath';
 
-/** Each tab's root screen (interim until UI-4 and UI-6: Army is the War Plan, 6.4). */
+/** Each tab's root screen (Army is the War Plan, 6.4; Battle is Home, the 1v1 hub). */
 export const TAB_ROOTS: Readonly<Record<TabId, Route>> = {
   army: { id: 'warPlan' },
   capsules: { id: 'capsules' },
-  warPath: { id: 'home' },
+  battle: { id: 'home' },
   progress: { id: 'progress' },
   customize: { id: 'customize' },
 };
@@ -62,7 +62,7 @@ export function claimsReady(save: SaveDoc, content: Content): number {
 
 export function shellTabs(save: SaveDoc, content: Content): NavTab[] {
   const any = featureOpen(save, content, 'army');
-  const lockLevel = (tab: Exclude<TabId, 'warPath'>): number | null => (featureOpen(save, content, TAB_FEATURE[tab]) ? null : content.warPath.unlocks[TAB_FEATURE[tab]]);
+  const lockLevel = (tab: Exclude<TabId, 'battle'>): number | null => (featureOpen(save, content, TAB_FEATURE[tab]) ? null : content.warPath.unlocks[TAB_FEATURE[tab]]);
   const locks: Partial<Record<TabId, number | null>> = {
     army: lockLevel('army'),
     capsules: lockLevel('capsules'),
@@ -76,7 +76,7 @@ export function shellTabs(save: SaveDoc, content: Content): NavTab[] {
     army: locks.army === null && upgradeAffordable(save, content) ? 'ready' : null,
     progress: locks.progress === null ? claimsReady(save, content) : null,
   });
-  return (['army', 'capsules', 'warPath', 'progress', 'customize'] as const).map((id) => {
+  return (['army', 'capsules', 'battle', 'progress', 'customize'] as const).map((id) => {
     const lockedUntil = locks[id] ?? null;
     return {
       id,

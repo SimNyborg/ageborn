@@ -10,6 +10,7 @@ import { FIELD_SLOT_IN_BATTLE } from '@/core/powerReach';
 import type { WarPlan } from '../services';
 import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
+import { featureOpen } from './warPath';
 
 /** A loadout slot: six troops, two turrets and the two typed power slots, Home and Field (A2.9.1). */
 export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power'; slot: PowerSlot };
@@ -326,14 +327,13 @@ export function reachedAges(save: SaveDoc, content: Content): AgeId[] {
   const wp = save.warPath;
   if (!wp || wp.legacy) return [...ages];
   const reached = new Set<AgeId>([ages[0]!]);
-  const beaten = Object.values(wp.stars).filter((n) => n > 0).length;
   const cur = content.warPath.order.find((id) => !(wp.stars[id] ?? 0));
   const region = cur ? content.warPath.levels[cur]?.region : ages[ages.length - 1];
   const upTo = region ? ages.indexOf(region) : 0;
   ages.forEach((a, i) => {
     if (i <= upTo) reached.add(a);
   });
-  if (beaten >= content.warPath.unlocks.ladder) {
+  if (featureOpen(save, content, 'ladder')) {
     for (const f of arenaOf(save, content).ladderFormats) for (const a of formatAges(content, f)) reached.add(a);
   }
   return ages.filter((a) => reached.has(a));

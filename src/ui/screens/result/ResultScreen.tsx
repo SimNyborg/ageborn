@@ -648,6 +648,16 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     starter.start(req, { resetToHome: true });
   }
 
+  /**
+   * "Continue" returns to where the match came from: the Conquest board, or the War Path map (a
+   * sub-screen of Home since the owner decision of 2026-09-30), where the level-complete ceremony plays.
+   */
+  function continueOn() {
+    router.reset({ id: 'home' });
+    if (info.input.mode === 'conquest') router.go({ id: 'conquest' });
+    else if (info.input.mode === 'warPath') router.go({ id: 'warPath' });
+  }
+
   function copyDaily() {
     const d = info.daily;
     if (!d) return;
@@ -692,10 +702,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     if (!after) return;
     OPENED_HERE.delete(info);
     if (after === 'next' || after === 'tryAgain') nextBattle();
-    else if (after === 'continue') {
-      router.reset({ id: 'home' });
-      if (info.input.mode === 'conquest') router.go({ id: 'conquest' });
-    } else router.reset({ id: 'home' });
+    else if (after === 'continue') continueOn();
+    else router.reset({ id: 'home' });
   }, [after]);
 
   const actions = resultActions({
@@ -708,10 +716,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     tryEasy: info.input.mode === 'warPath' && (save.value.warPath?.lossStreak ?? 0) >= content.warPath.tryEasyAfter && info.input.warPath?.difficulty !== 'easy',
   });
   const run: Record<ResultActionId, () => void> = {
-    continue: () => {
-      router.reset({ id: 'home' });
-      if (info.input.mode === 'conquest') router.go({ id: 'conquest' });
-    },
+    continue: continueOn,
     openCapsule: () => {
       if (!capsule) return;
       OPENED_HERE.add(info);

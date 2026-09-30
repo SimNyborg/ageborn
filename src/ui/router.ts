@@ -10,7 +10,7 @@
  *
  * - **Tabs** (docs/ui-plan.md 2.2): five destinations, one per verb (Army, Capsules, War Path,
  *   Progress, Customize). The router keeps one stack per tab, so returning to a tab shows where the
- *   player left it; `back()` on a tab root other than War Path goes to War Path (Home). A
+ *   player left it; `back()` on a tab root other than Battle goes to Battle (Home). A
  *   **cross-tab jump** (`jump`) remembers where it came from, and Back returns there in the state it
  *   was left; tapping a tab instead clears the origin.
  *
@@ -123,6 +123,11 @@ export interface RouteParams {
   conquest: NoParams;
   /** Customize (owner feedback 2026-09-28): troop and base skins, banner, frame, title, emotes. */
   customize: { tab?: CustomizeTab };
+  /**
+   * The War Path campaign map (owner decision 2026-09-30): a sub-screen of the Battle tab, reached
+   * from Home's Campaign card. It plays offline against AI and earns cards and currency.
+   */
+  warPath: NoParams;
   /** The Capsules tab (ui-plan 4.6, S8). */
   capsules: NoParams;
   /** The Progress tab (ui-plan 4.1b, S13). */
@@ -167,6 +172,8 @@ export const SCREENS: Readonly<Record<ScreenId, ScreenInfo>> = {
   /** ui-plan 2.4 S8 and S13, numbered after the A9 table. */
   capsules: { a9: 20, owner: 'WP9', overlay: false },
   progress: { a9: 21, owner: 'WP9', overlay: false },
+  /** Owner decision 2026-09-30: the campaign map left Home for its own sub-screen (S2c). */
+  warPath: { a9: 22, owner: 'WP9', overlay: false },
 };
 
 /** Screen ids rendered by this package (WP9). */
@@ -181,11 +188,14 @@ export interface RouteEntry {
   readonly origin?: JumpOrigin;
 }
 
-/** The five bottom tabs, left to right (ui-plan 2.2). War Path is Home, in the centre. */
-export type TabId = 'army' | 'capsules' | 'warPath' | 'progress' | 'customize';
-export const TABS: readonly TabId[] = ['army', 'capsules', 'warPath', 'progress', 'customize'];
+/**
+ * The five bottom tabs, left to right (ui-plan 2.2). Battle is Home, in the centre: the 1v1 hub
+ * (owner decision 2026-09-30); the War Path campaign is a sub-screen below it.
+ */
+export type TabId = 'army' | 'capsules' | 'battle' | 'progress' | 'customize';
+export const TABS: readonly TabId[] = ['army', 'capsules', 'battle', 'progress', 'customize'];
 /** The Home tab. */
-export const HOME_TAB: TabId = 'warPath';
+export const HOME_TAB: TabId = 'battle';
 
 /** Where a cross-tab jump came from: the tab and its whole stack, restored by Back. */
 export interface JumpOrigin {

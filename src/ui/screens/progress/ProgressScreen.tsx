@@ -46,7 +46,11 @@ export function ProgressScreen(_p: { route: RouteOf<'progress'> }) {
             icon={<StarIcon size={26} />}
             title={t('warPath.ui.warPathStars')}
             value={`${formatInt(stars, locale)}/${formatInt(max, locale)}`}
-            onClick={() => router.switchTab('warPath', { id: 'home' })}
+            onClick={() => {
+              // The campaign map sits below Home on the Battle tab (owner decision 2026-09-30).
+              router.switchTab('battle', { id: 'home' });
+              if (router.current.peek().id !== 'warPath') router.go({ id: 'warPath' });
+            }}
           />
           {featureOpen(s, content, 'ladder') ? <RoadBar /> : null}
           <Row testid="progress-feats" icon={<TrophyIcon size={26} />} title={t('warPath.ui.feats')} onClick={() => router.go({ id: 'collection', tab: 'feats' })} />
