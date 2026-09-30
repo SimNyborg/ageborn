@@ -197,6 +197,8 @@ DUST = "#E6D8BE"
 def _dust(d, rig, pb, spec, lu):
     if "joint" in spec:
         cx, cy = _point(rig, pb, spec["joint"], spec["point"])
+        if spec.get("ground_snap"):
+            cy = _feet_px(rig)[1]
     else:
         fx, fy = _feet_px(rig)
         gx, gz = spec["ground"]

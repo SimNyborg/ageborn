@@ -22,6 +22,8 @@ export interface WorldOptions {
   treasury: number;
   horn: boolean;
   parade: boolean;
+  /** Each half's backdrop skin (`backdrop.<id>`, A18.9.4). */
+  skins?: { left: string | null; right: string | null };
 }
 
 /** Imperative handles for the section's buttons. */
@@ -41,7 +43,7 @@ export function buildWorld(ctx: StageContext, o: WorldOptions, controls: { curre
   world.position.set(-WORLD.worldLeftLu * k, height * 0.8);
   root.addChild(world);
   const ages: Record<Side, AgeId> = { 0: o.left, 1: o.right };
-  const backdrop: BackdropView = art.createBackdrop({ left: o.left, right: o.right, arena: o.arena });
+  const backdrop: BackdropView = art.createBackdrop({ left: o.left, right: o.right, arena: o.arena, ...(o.skins ? { skins: o.skins } : {}) });
   backdrop.setSeam(o.seam);
   world.addChild(backdrop.root);
   const bases: Record<Side, BaseView> = {

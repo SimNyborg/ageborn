@@ -138,9 +138,12 @@ describe('slots and changes', () => {
 });
 
 describe('reached ages and presets (2.6, U8)', () => {
-  it('a new player has reached only the first age; presets wait for the first boss', () => {
+  it('a new player has reached the ages of the Ladder format they fight in; presets wait for the first boss', () => {
     const fresh = newPlayerSave(content);
-    expect(reachedAges(fresh, content)).toEqual(['stone']);
+    // Owner decision 2026-09-30: after the onboarding Home's Battle is the Ladder, so its format's
+    // ages (Short War) are reached at once; during the onboarding only the first age is.
+    expect(reachedAges(fresh, content)).toEqual(content.formats['short']!.ages);
+    expect(reachedAges({ ...fresh, stats: { ...fresh.stats, wins: 1 }, tutorial: { ...fresh.tutorial, step: 2 }, warPath: { ...fresh.warPath, stars: { 'wp.stone.l01': 1 } } }, content)).toEqual(['stone']);
     expect(presetsOpen(fresh, content)).toBe(false);
   });
 

@@ -13,8 +13,17 @@ import { shellTabs } from '../warPath/shell';
 
 const DIFFS: WarPathDifficulty[] = ['easy', 'normal', 'hard', 'expert', 'legendary'];
 
+/**
+ * A save with the first `n` War Path levels beaten and `n` wins; the onboarding (its two matches) is
+ * done from 2 wins on.
+ */
 function withBeaten(s: SaveDoc, n: number): SaveDoc {
-  return { ...s, warPath: { ...s.warPath, legacy: false, stars: Object.fromEntries(content.warPath.order.slice(0, n).map((id) => [id, 1])) } };
+  return {
+    ...s,
+    stats: { ...s.stats, wins: n },
+    tutorial: { ...s.tutorial, step: n >= 2 ? 4 : n === 1 ? 2 : 0 },
+    warPath: { ...s.warPath, legacy: false, stars: Object.fromEntries(content.warPath.order.slice(0, n).map((id) => [id, 1])) },
+  };
 }
 
 describe('War Path view model = meta rules', () => {
@@ -34,13 +43,32 @@ describe('War Path view model = meta rules', () => {
     }
   });
 
-  it('features open with their level, in the unlock order (ui-plan 2.6)', () => {
+  it('features open with their wins, in the unlock order (ui-plan 2.6, owner decision 2026-09-30)', () => {
     const s = newPlayerSave(content);
     for (let n = 0; n <= 8; n++) {
       const x = withBeaten(s, n);
-      for (const f of UNLOCK_ORDER) expect(featureOpen(x, content, f)).toBe(featureUnlocked(x, content, f));
+      for (const f of UNLOCK_ORDER) if (f !== 'campaign') expect(featureOpen(x, content, f)).toBe(featureUnlocked(x, content, f));
     }
-    expect(UNLOCK_ORDER.map((f) => content.warPath.unlocks[f])).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(UNLOCK_ORDER).toEqual(['army', 'ladder', 'capsules', 'campaign', 'modes', 'customize', 'progress', 'daily']);
+    expect(content.warPath.unlocks).toEqual({ army: 1, capsules: 2, modes: 3, customize: 4, progress: 5, ladder: 2, daily: 6 });
+  });
+
+  it('wins in any mode open features; the Ladder and the Campaign card open when the onboarding ends', () => {
+    const s = withBeaten(newPlayerSave(content), 0);
+    // Ladder wins, no War Path level beyond the onboarding: the tabs still open (the path is optional).
+    const ladder = { ...withBeaten(s, 2), stats: { ...s.stats, wins: 5 } };
+    expect(featureOpen(ladder, content, 'progress')).toBe(true);
+    expect(featureUnlocked(ladder, content, 'progress')).toBe(true);
+    expect(featureOpen(ladder, content, 'daily')).toBe(false);
+    // Match 2 lost: one win, but the onboarding is over, so Home is the Ladder hub.
+    const lost = { ...withBeaten(s, 1), tutorial: { ...s.tutorial, step: 4 } };
+    expect(featureOpen(lost, content, 'ladder')).toBe(true);
+    expect(featureUnlocked(lost, content, 'ladder')).toBe(true);
+    expect(featureOpen(lost, content, 'campaign')).toBe(true);
+    expect(featureOpen(lost, content, 'capsules')).toBe(false);
+    // While the onboarding runs, neither is open.
+    expect(featureOpen(withBeaten(s, 1), content, 'ladder')).toBe(false);
+    expect(featureOpen(withBeaten(s, 1), content, 'campaign')).toBe(false);
   });
 
   it('regions sum their stars; Play targets the current level, or the onboarding match while due', () => {
@@ -62,7 +90,7 @@ describe('the shell tabs (ui-plan 2.2, 2.6)', () => {
     expect(one.find((t) => t.id === 'army')!.lockedUntil).toBeNull();
     expect(one.find((t) => t.id === 'capsules')).toMatchObject({ lockedUntil: 2, showLevel: true });
     expect(one.find((t) => t.id === 'customize')).toMatchObject({ lockedUntil: 4, showLevel: false });
-    expect(one.find((t) => t.id === 'warPath')!.lockedUntil).toBeNull();
+    expect(one.find((t) => t.id === 'battle')!.lockedUntil).toBeNull();
   });
 
   it('never more than 2 ready badges, and never on Customize', () => {

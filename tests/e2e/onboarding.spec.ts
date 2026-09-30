@@ -1,10 +1,11 @@
 /**
- * The first session end to end (DESIGN A8, A9 flow, C5 items 1-6; B13 steps 2, 3 and 5; ui-plan 2.7):
- * a fresh profile plays War Path level 1, the training match vs Old Grogg (autopilot), sees a
- * "Starter Capsule" on the Result, opens capsule 1, lands on the War Path map (level 1 beaten, Army
- * unlocked; edits the War Plan), plays level 2 vs Pip from Home's Play, opens capsule 2, does the one
- * forced upgrade (Bonker to L2, "+5% HP and damage"), and back on the map opens the Wardrobe Crate on
- * the newly opened Capsules tab.
+ * The first session end to end (DESIGN A8, A9 flow, C5 items 1-6; B13 steps 2, 3 and 5; ui-plan 2.7;
+ * owner decision 2026-09-30): a fresh profile lands on the Battle hub, whose Battle starts the
+ * training match vs Old Grogg (autopilot; War Path Stone L1), sees a "Starter Capsule" on the Result,
+ * opens capsule 1, is back on the hub (Army unlocked; edits the War Plan), plays match 2 vs Pip from
+ * Battle (Stone L2), opens capsule 2, does the one forced upgrade (Bonker to L2, "+5% HP and damage"),
+ * and back on the hub (now the Ladder, with the Campaign card) opens the Wardrobe Crate on the newly
+ * opened Capsules tab.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, requireFlow, watchPage } from './helpers';
@@ -42,7 +43,7 @@ async function openCapsule(page: Page): Promise<void> {
 }
 
 test.describe('first session (A8)', () => {
-  test('level 1 → capsule 1 → the map (Army) → level 2 → capsule 2 → forced upgrade → the map (Capsules, crate)', async ({ page }) => {
+  test('Battle → match 1 → capsule 1 → the hub (Army) → match 2 → capsule 2 → forced upgrade → the Ladder hub (Capsules, crate, Campaign)', async ({ page }) => {
     requireFlow('home');
     test.setTimeout(420_000);
     const problems = watchPage(page);
@@ -56,11 +57,12 @@ test.describe('first session (A8)', () => {
     await page.getByTestId('next').click();
     await openCapsule(page);
 
-    // ui-plan 2.7 ~3:40: after match 1 and capsule 1 the War Path map is Home. Level 1 is beaten,
-    // the tabs rise with Army open (its unlock pointer), and Play offers level 2 vs Pip.
+    // ui-plan 2.7 ~3:40: after match 1 and capsule 1 the Battle hub is Home. The tabs rise with Army
+    // open (its unlock pointer), and Battle offers match 2 vs Pip (labelled AI).
     await expect(page.getByTestId('play')).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByTestId('play')).toHaveText(/level 2/i);
-    await expect(page.getByTestId('wp-node-wp.stone.l01')).toHaveAttribute('data-state', 'beaten');
+    await expect(page.getByTestId('play')).toHaveText(/battle/i);
+    await expect(page.getByTestId('home-opponent')).toContainText('Pip');
+    await expect(page.getByTestId('home-opponent').getByTestId('ai-badge')).toBeVisible();
     await expect(page.getByTestId('tab-army')).not.toHaveAttribute('aria-disabled', 'true');
     await expect(page.getByTestId('tab-capsules')).toHaveAttribute('aria-disabled', 'true');
     await expect(page.getByTestId('unlock-army')).toBeVisible({ timeout: 10_000 });
@@ -75,9 +77,9 @@ test.describe('first session (A8)', () => {
     await page.getByTestId('cand-spear_hunter').click();
     await page.getByTestId('card-use').click();
     await expect(page.getByTestId('wp-board')).toContainText('Spear Hunt');
-    await page.getByTestId('tab-warPath').click();
+    await page.getByTestId('tab-battle').click();
 
-    // Match 2 vs Pip starts from Home's Play (VS first).
+    // Match 2 vs Pip starts from Home's Battle (VS first).
     await page.getByTestId('play').click();
     await expect(page.locator('[data-screen="vs"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('vs-foe')).toContainText('Pip');
@@ -95,9 +97,11 @@ test.describe('first session (A8)', () => {
     await page.getByTestId('first-upgrade-continue').click();
     await expect(page.getByTestId('first-upgrade')).toHaveCount(0);
 
-    // Home: level 2 beaten opens the Capsules tab, where the training match's Wardrobe Crate waits.
+    // Home: the onboarding is over, so the hub is the Ladder now (trophies, the Campaign card), and
+    // the second win opens the Capsules tab, where the training match's Wardrobe Crate waits.
     await expect(page.getByTestId('play')).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByTestId('play')).toHaveText(/level 3/i);
+    await expect(page.getByTestId('home-trophies')).toBeVisible();
+    await expect(page.getByTestId('home-campaign')).toBeVisible();
     await page.getByTestId('tab-capsules').click();
     // The drums idle-bob (life), so the click does not wait for a still frame.
     await page.getByTestId('capsules-tab').locator('[data-testid^=crate-]').first().click({ force: true });
@@ -116,10 +120,15 @@ test.describe('first session (A8)', () => {
     await page.getByTestId('capsule-done').click();
     await expect(page.getByTestId('capsule-screen')).toHaveCount(0);
 
-    // A reload stays on Home (the step, the stars and the upgrade are saved).
+    // A reload stays on Home (the step, the stars and the upgrade are saved); the two onboarding
+    // matches show as beaten War Path levels on the campaign map.
     await page.reload();
     await expect(page.getByTestId('play')).toBeVisible({ timeout: 20_000 });
+    await page.getByTestId('home-campaign').click();
     await expect(page.getByTestId('wp-node-wp.stone.l02')).toHaveAttribute('data-state', 'beaten');
+    await expect(page.getByTestId('wp-play')).toHaveText(/level 3/i);
+    await page.getByTestId('back').click();
+    await expect(page.locator('[data-screen="home"]')).toBeVisible();
     await expect(page.getByTestId('first-upgrade')).toHaveCount(0);
     expect(problems.errors).toEqual([]);
   });

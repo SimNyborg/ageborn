@@ -37,6 +37,11 @@
       "hold": "Hold the line at your flag",
       "fallback": "Pull back to your base"
     },
+    "stanceShort": {
+      "fallback": "Back",
+      "hold": "Hold",
+      "charge": "Charge"
+    },
     "flag": {
       "label": "Hold flag: drag along the lane to move it, tap for arrows",
       "hint": "Drag the flag",

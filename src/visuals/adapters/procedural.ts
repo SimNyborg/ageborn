@@ -190,7 +190,16 @@ export class ProceduralAdapter implements VisualAdapter {
   }
 
   createBackdrop(r: BackdropRequest): BackdropView {
-    return new ProceduralBackdropView({ left: r.left.age, right: r.right.age, arena: r.arena, textures: this.backdrops, baker: this.baker, quality: this.o.quality, seed: r.seed });
+    return new ProceduralBackdropView({
+      left: r.left.age,
+      right: r.right.age,
+      arena: r.arena,
+      textures: this.backdrops,
+      baker: this.baker,
+      quality: this.o.quality,
+      seed: r.seed,
+      skins: { left: r.left.skin ?? null, right: r.right.skin ?? null },
+    });
   }
 
   private sideColor = (side: number): number => teamColor(side === 1 ? 1 : (0 as Side), this.o.teamPreset());

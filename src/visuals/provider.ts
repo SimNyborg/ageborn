@@ -6,7 +6,7 @@
  * `?art=placeholder|procedural|atlas` forces a tier for comparison (`artOverrideFromUrl`).
  */
 import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView, TurretView, UnitView, VisualDef } from '@/contracts/art';
-import type { AgeId, CardId, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
+import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets } from './adapters/atlas';
 import type { BakeStats } from './bake';
@@ -230,14 +230,26 @@ export class VisualsArtProvider implements ArtProvider {
     return new BaseDressing({ ...o, team: teamColor(o.side, o.teamPreset), seed: this.nextSeed++ });
   }
 
-  createBackdrop(o: { left: AgeId; right: AgeId; arena: string }): BackdropView {
+  /**
+   * The split-age backdrop. A half's backdrop skin (`skins.left` / `skins.right`, `backdrop.<id>`,
+   * A18.9.4) resolves through the manifest like a unit skin (`backdrop.<age>@<id>`); an unknown skin
+   * warns once and draws that half's classic sky.
+   */
+  createBackdrop(o: { left: AgeId; right: AgeId; arena: string; skins?: { left?: CosmeticKey | null; right?: CosmeticKey | null } }): BackdropView {
     const L = this.resolve(`backdrop.${o.left}`);
     const R = this.resolve(`backdrop.${o.right}`);
     const groundKey = `ground.${arenaId(o.arena)}`;
     const G = this.resolve(groundKey);
+    const skinOf = (age: AgeId, key: CosmeticKey | null | undefined): { skin?: string } => {
+      const id = key?.startsWith('backdrop.') ? key.slice(9) : null;
+      if (!id) return {};
+      if (this.manifest[skinnedVisualId(`backdrop.${age}`, id)]) return { skin: `backdrop.${id}` };
+      this.once(`skin:backdrop@${id}`, `[visuals] no backdrop skin "${id}", drawing the classic sky`);
+      return {};
+    };
     const req = {
-      left: { age: o.left, def: L?.def ?? this.missing(`backdrop.${o.left}`) },
-      right: { age: o.right, def: R?.def ?? this.missing(`backdrop.${o.right}`) },
+      left: { age: o.left, def: L?.def ?? this.missing(`backdrop.${o.left}`), ...skinOf(o.left, o.skins?.left) },
+      right: { age: o.right, def: R?.def ?? this.missing(`backdrop.${o.right}`), ...skinOf(o.right, o.skins?.right) },
       ground: { key: groundKey, def: G?.def ?? this.missing(groundKey) },
       arena: o.arena,
       seed: this.nextSeed++,

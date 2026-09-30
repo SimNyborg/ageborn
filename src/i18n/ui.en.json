@@ -133,7 +133,6 @@
       "customize": "Customize",
       "capsules": "Capsules",
       "army": "Army",
-      "warPath": "War Path",
       "progress": "Progress",
       "lockedLv": "{n} wins",
       "unlocksAt": "Unlocks at {n} wins",
@@ -857,7 +856,8 @@
         "standard": "Standard",
         "full": "Full"
       },
-      "roadNext": "Next at {n}"
+      "roadNext": "Next at {n}",
+      "opponent": "Opponent"
     }
   }
 }

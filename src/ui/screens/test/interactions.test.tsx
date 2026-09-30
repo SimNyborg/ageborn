@@ -13,7 +13,8 @@ import { REWARD_STEP_MS } from '../model/result';
 import { input, keydown, text, type FakeElement } from './dom';
 import { flush, mount, type Mounted } from './harness';
 import { act } from 'preact/test-utils';
-import { primeWarPathSeen } from '../home/HomeScreen';
+import { primeWarPathSeen } from '../warPath/WarPathScreen';
+import { nodeKind } from '../model/warPath';
 
 let m: Mounted | null = null;
 afterEach(() => {
@@ -107,82 +108,108 @@ describe('keyboard navigation', () => {
   });
 });
 
-/** A save on its very first launch: War Path level 1 next, nothing earned (ui-plan 2.6). */
+/** A save on its very first launch: the training match next, nothing earned (ui-plan 2.6). */
 function firstLaunch() {
   const n = newPlayerSave(content);
-  return { ...n, currencies: { amber: 0, dust: 0 }, matchesPlayed: 0, tutorial: { step: 0, hintsShown: {} }, warPath: { ...n.warPath, stars: {}, crowns: {} }, flags: {} };
+  return {
+    ...n,
+    currencies: { amber: 0, dust: 0 },
+    matchesPlayed: 0,
+    stats: { ...n.stats, wins: 0, losses: 0, matches: 0 },
+    tutorial: { step: 0, hintsShown: {} },
+    warPath: { ...n.warPath, stars: {}, crowns: {} },
+    flags: {},
+  };
 }
 
-describe('Home: the War Path map (ui-plan 2.3, 4.1, 6.4)', () => {
+/** Right after match 1 (one win; match 2 vs Pip is next). */
+function afterMatch1() {
+  const n = firstLaunch();
+  return { ...n, matchesPlayed: 1, stats: { ...n.stats, wins: 1, matches: 1 }, tutorial: { step: 2, hintsShown: {} }, warPath: { ...n.warPath, stars: { 'wp.stone.l01': 1 } } };
+}
+
+describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => {
   beforeEach(() => primeWarPathSeen(null));
 
-  it('Play is the one primary and starts the next level through VS, in one tap (U2)', () => {
+  it('Battle is the one primary and starts a Ladder match through VS, in one tap (U2)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid', shell: true });
     expect(m.qa('[data-primary]')).toHaveLength(1);
-    expect(text(m.q('[data-testid="play"]')!)).toBe('Play level 7');
-    expect(text(m.q('.wp-top__long')!)).toBe('Bronze Age: Hellas · Level 7 of 10');
+    expect(text(m.q('[data-testid="play"]')!)).toBe('Battle');
+    expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).not.toBeNull();
+    expect(m.q('[data-testid="home-trophies"]')).not.toBeNull();
+    expect(m.q('[data-testid="home-campaign"]')).not.toBeNull();
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'warPath', level: 'wp.bronze.l07', difficulty: 'normal' });
+    const req = calls('prepareMatch')[0]!.args[0] as { mode: string; format: string };
+    expect(req.mode).toBe('ladder');
     expect(m.router.current.value.id).toBe('vs');
   });
 
-  it('first launch shows only the map, level 1, Play and the gear; Play starts the training match', () => {
+  it('the format picker sets the format Battle plays and remembers it', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true });
+    const opts = m.qa('[data-testid="home-format"] [role="radio"]');
+    expect(opts.length).toBeGreaterThan(1);
+    const std = opts.find((el) => text(el) === 'Standard')!;
+    act(() => std.click());
+    expect(m.save.value.flags['ui-ladderFormat.standard']).toBe(true);
+    expect(text(m.q('[data-testid="home-format-desc"]')!)).toContain('Standard War');
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
+  });
+
+  it('first launch shows only the arena, Battle and the gear; Battle starts the training match vs an AI', () => {
     vi.useFakeTimers();
     m = mount({ save: firstLaunch(), shell: true });
     expect(m.q('[data-testid="tabbar"]')).toBeNull();
     expect(m.q('[data-testid="home-amber"]')).toBeNull();
     expect(m.q('[data-testid="home-modes"]')).toBeNull();
     expect(m.q('[data-testid="home-profile"]')).toBeNull();
+    expect(m.q('[data-testid="home-campaign"]')).toBeNull();
+    expect(m.q('[data-testid="home-trophies"]')).toBeNull();
     expect(m.q('[data-testid="nav-settings"]')).not.toBeNull();
-    expect(text(m.q('[data-testid="wp-start"]')!)).toBe('Your War Path starts here.');
-    expect(m.q('[data-testid="wp-node-wp.stone.l01"]')!.getAttribute('data-state')).toBe('current');
+    expect(text(m.q('[data-testid="wp-start"]')!)).toBe('Win your first battle');
+    expect(text(m.q('[data-testid="home-opponent"]')!)).toContain('Old Grogg');
+    expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).not.toBeNull();
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'tutorial', match: 1 });
   });
 
-  it('while match 2 is next, Play starts the onboarding match vs Pip (level 2)', () => {
+  it('while match 2 is next, Battle starts the onboarding match vs Pip', () => {
     vi.useFakeTimers();
-    const n = newPlayerSave(content);
-    m = mount({ save: { ...n, matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} }, warPath: { ...n.warPath, stars: { 'wp.stone.l01': 1 } } } });
+    m = mount({ save: afterMatch1() });
+    expect(text(m.q('[data-testid="home-opponent"]')!)).toContain('Pip');
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'tutorial', match: 2 });
   });
 
-  it('a node opens the Level preview; a locked node says what to beat and has no primary', () => {
-    m = mount({ state: 'mid' });
-    m.click('[data-testid="wp-node-wp.bronze.l09"]');
-    expect(m.q('[data-testid="level-sheet"]')).not.toBeNull();
-    expect(text(m.q('[data-testid="level-locked"]')!)).toContain('Beat level 8 first');
-    expect(m.q('[data-testid="level-play"]')).toBeNull();
-    m.unmount();
-    m = mount({ state: 'mid' });
-    m.click('[data-testid="level-plate"]');
-    expect(text(m.q('[data-testid="level-play"]')!)).toBe('Play level 7');
-    expect(text(m.q('[data-testid="level-preview"]')!)).toContain('AI');
+  it('the Campaign card opens the War Path map; Back returns Home', () => {
+    m = mount({ state: 'mid', shell: true });
+    expect(text(m.q('[data-testid="home-campaign"]')!)).toContain('Campaign');
+    m.click('[data-testid="home-campaign"]');
+    expect(m.router.current.value.id).toBe('warPath');
+    expect(m.q('[data-testid="tabbar"]')).toBeNull();
+    m.click('[data-testid="back"]');
+    expect(m.router.current.value.id).toBe('home');
   });
 
-  it('a boss node discloses its base, and a beaten level offers Replay and the difficulty', () => {
-    m = mount({ state: 'mid' });
-    m.click('[data-testid="wp-node-wp.bronze.l10"]');
-    expect(text(m.q('[data-testid="level-boss"]')!)).toContain('+50% HP');
-    m.unmount();
-    m = mount({ state: 'mid' });
-    m.click('[data-testid="wp-node-wp.bronze.l03"]');
-    expect(text(m.q('[data-testid="level-play"]')!)).toBe('Replay level 3');
-    const hard = m.qa('[data-testid="level-difficulty"] [role="radio"]').find((el) => text(el) === 'Hard')!;
-    act(() => hard.click());
-    expect(calls('setWarPathDifficulty')[0]!.args).toEqual(['hard']);
-    expect(m.save.value.warPath.difficulty).toBe('hard');
+  it('a capsule slot opens its capsule in one tap', () => {
+    m = mount({ state: 'mid', shell: true });
+    const slot = m.q('[data-testid="capsule-tray"] [data-testid^="drum-"]')!;
+    expect(slot).not.toBeNull();
+    act(() => slot.click());
+    expect(calls('openCapsule')).toHaveLength(1);
   });
 
   it('Modes opens the panel; its Play starts Quick Battle at the picked difficulty', () => {
     m = mount({ state: 'mid' });
     m.click('[data-testid="home-modes"]');
     expect(m.q('[data-testid="modes-sheet"]')).not.toBeNull();
+    expect(m.q('[data-testid="mode-ladder"]')).toBeNull();
     m.click('[data-testid="modes-play"]');
     const req = calls('prepareMatch')[0]!.args[0] as { mode: string; options: { format: string } };
     expect(req.mode).toBe('skirmish');
@@ -205,37 +232,103 @@ describe('Home: the War Path map (ui-plan 2.3, 4.1, 6.4)', () => {
     expect(m.qa('[data-badge="ready"]').length).toBeLessThanOrEqual(2);
   });
 
-  it('the level-complete ceremony plays once after a clear and Play finishes it at once (MR-41)', () => {
-    vi.useFakeTimers();
-    const mid = midGameSave(content);
-    const before = { ...mid.warPath.stars };
-    delete before['wp.bronze.l06'];
-    primeWarPathSeen(before);
-    m = mount({ save: mid });
-    expect(m.q('.wp-home.is-ceremony')).not.toBeNull();
-    // The next node waits locked until it drops in.
-    expect(m.q('[data-testid="wp-node-wp.bronze.l07"]')!.getAttribute('data-state')).toBe('locked');
-    m.click('[data-testid="play"]');
-    expect(m.q('.wp-home.is-ceremony')).toBeNull();
-    flush(() => vi.advanceTimersByTime(300));
-    expect(calls('prepareMatch')[0]!.args[0]).toMatchObject({ mode: 'warPath', level: 'wp.bronze.l07' });
-    m.unmount();
-    m = mount({ save: mid });
-    expect(m.q('.wp-home.is-ceremony')).toBeNull();
-  });
-
   it('a feature that just opened plays its unlock pointer once (MR-40)', () => {
-    const n = firstLaunch();
-    m = mount({ save: { ...n, matchesPlayed: 1, tutorial: { step: 2, hintsShown: {} }, warPath: { ...n.warPath, stars: { 'wp.stone.l01': 1 } } }, shell: true });
+    m = mount({ save: afterMatch1(), shell: true });
     expect(m.q('[data-testid="unlock-army"]')).not.toBeNull();
     expect(m.save.value.flags['ui-unlock.army']).toBe(true);
     expect(text(m.q('[data-testid="unlock-army"]')!).split(/\s+/).length).toBeLessThanOrEqual(9);
+  });
+
+  it('when the onboarding ends, the Ladder opens, then the Campaign card, one per visit (U8)', () => {
+    const n = afterMatch1();
+    const done = { ...n, matchesPlayed: 2, stats: { ...n.stats, wins: 2, matches: 2 }, tutorial: { step: 4, hintsShown: {} }, flags: { 'ui-unlock.army': true } };
+    m = mount({ save: done, shell: true });
+    expect(m.q('[data-testid="unlock-ladder"]')).not.toBeNull();
+    expect(m.q('[data-testid="unlock-campaign"]')).toBeNull();
+    m.unmount();
+    m = mount({ save: { ...done, flags: { ...done.flags, 'ui-unlock.ladder': true, 'ui-unlock.capsules': true } }, shell: true });
+    expect(m.q('[data-testid="unlock-campaign"]')).not.toBeNull();
+    expect(text(m.q('[data-testid="unlock-campaign"]')!)).toContain('Campaign: play offline, earn cards');
   });
 
   it('Amber and Dust info panels say they cannot be bought (A15.3)', () => {
     m = mount({ state: 'mid' });
     m.click('[data-testid="home-amber"]');
     expect(text(m.q('[data-testid="currency-info-amber"]')!)).toContain("Amber can't be bought. It has no money value.");
+  });
+});
+
+describe('the War Path map (S2c, ui-plan 4.1, 6.4)', () => {
+  beforeEach(() => primeWarPathSeen(null));
+  const wp = () => [{ id: 'home' as const }, { id: 'warPath' as const }];
+
+  it('Play is the one primary and starts the next level through VS, in one tap (U2)', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', routes: wp() });
+    expect(m.qa('[data-primary]')).toHaveLength(1);
+    expect(text(m.q('[data-testid="wp-play"]')!)).toBe('Play level 7');
+    expect(text(m.q('.wp-top__long')!)).toBe('Bronze Age: Hellas · Level 7 of 10');
+    m.click('[data-testid="wp-play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'warPath', level: 'wp.bronze.l07', difficulty: 'normal' });
+    expect(m.router.current.value.id).toBe('vs');
+  });
+
+  it('nodes come in kinds: battle, elite, treasure, story and boss', () => {
+    m = mount({ state: 'new', routes: wp() });
+    const kind = (id: string) => m!.q(`[data-testid="wp-node-${id}"]`)!.getAttribute('data-kind');
+    expect(kind('wp.stone.l03')).toBe('treasure');
+    expect(kind('wp.stone.l04')).toBe('story');
+    expect(kind('wp.stone.l05')).toBe('elite');
+    // Nodes far off screen are not drawn; the model names their kinds.
+    expect(nodeKind(content.warPath.levels['wp.stone.l10']!)).toBe('boss');
+    expect(nodeKind(content.warPath.levels['wp.bronze.l02']!)).toBe('battle');
+  });
+
+  it('a node opens the Level preview; a locked node says what to beat and has no primary', () => {
+    m = mount({ state: 'mid', routes: wp() });
+    m.click('[data-testid="wp-node-wp.bronze.l09"]');
+    expect(m.q('[data-testid="level-sheet"]')).not.toBeNull();
+    expect(text(m.q('[data-testid="level-locked"]')!)).toContain('Beat level 8 first');
+    expect(m.q('[data-testid="level-play"]')).toBeNull();
+    m.unmount();
+    m = mount({ state: 'mid', routes: wp() });
+    m.click('[data-testid="level-plate"]');
+    expect(text(m.q('[data-testid="level-play"]')!)).toBe('Play level 7');
+    expect(text(m.q('[data-testid="level-preview"]')!)).toContain('AI');
+  });
+
+  it('a boss node discloses its base, and a beaten level offers Replay and the difficulty', () => {
+    m = mount({ state: 'mid', routes: wp() });
+    m.click('[data-testid="wp-node-wp.bronze.l10"]');
+    expect(text(m.q('[data-testid="level-boss"]')!)).toContain('+50% HP');
+    m.unmount();
+    m = mount({ state: 'mid', routes: wp() });
+    m.click('[data-testid="wp-node-wp.bronze.l03"]');
+    expect(text(m.q('[data-testid="level-play"]')!)).toBe('Replay level 3');
+    const hard = m.qa('[data-testid="level-difficulty"] [role="radio"]').find((el) => text(el) === 'Hard')!;
+    act(() => hard.click());
+    expect(calls('setWarPathDifficulty')[0]!.args).toEqual(['hard']);
+    expect(m.save.value.warPath.difficulty).toBe('hard');
+  });
+
+  it('the level-complete ceremony plays once after a clear and Play finishes it at once (MR-41)', () => {
+    vi.useFakeTimers();
+    const mid = midGameSave(content);
+    const before = { ...mid.warPath.stars };
+    delete before['wp.bronze.l06'];
+    primeWarPathSeen(before);
+    m = mount({ save: mid, routes: wp() });
+    expect(m.q('.wp-home.is-ceremony')).not.toBeNull();
+    // The next node waits locked until it drops in.
+    expect(m.q('[data-testid="wp-node-wp.bronze.l07"]')!.getAttribute('data-state')).toBe('locked');
+    m.click('[data-testid="wp-play"]');
+    expect(m.q('.wp-home.is-ceremony')).toBeNull();
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toMatchObject({ mode: 'warPath', level: 'wp.bronze.l07' });
+    m.unmount();
+    m = mount({ save: mid, routes: wp() });
+    expect(m.q('.wp-home.is-ceremony')).toBeNull();
   });
 });
 

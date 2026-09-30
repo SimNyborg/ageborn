@@ -45,14 +45,17 @@ const PAGES: PageSpec[] = [
   { name: 'card-pikeman', hash: 'screens/card-pikeman/mid/{vp}', strict: true, primary: true },
   { name: 'card-bonker', hash: 'screens/card-bonker/mid/{vp}', strict: true, primary: false },
   { name: 'pause-late', hash: 'screens/pause-late/mid/{vp}', strict: true, primary: true },
-  // UI-2: Home is the War Path map (ui-plan 2.3, 4.1), with its panels and the two new tabs.
+  // Home is the Battle hub (owner decision 2026-09-30, ui-plan 2.3); the War Path map is its sub-screen.
   { name: 'home', hash: 'screens/home/mid/{vp}', strict: true, primary: true, home: true },
   { name: 'home-new', hash: 'screens/home/new/{vp}', strict: true, primary: true, home: true },
   { name: 'home-maxed', hash: 'screens/home/maxed/{vp}', strict: true, primary: true, home: true },
   { name: 'home-first', hash: 'screens/home-first/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-campaign', hash: 'screens/home-campaign/new/{vp}', strict: true, primary: true, home: true },
+  { name: 'warPath', hash: 'screens/warPath/mid/{vp}', strict: true, primary: true },
+  { name: 'warPath-new', hash: 'screens/warPath/new/{vp}', strict: true, primary: true },
   {
     name: 'level-preview',
-    hash: 'screens/home/mid/{vp}',
+    hash: 'screens/warPath/mid/{vp}',
     strict: true,
     primary: true,
     prepare: async (page) => {
@@ -61,7 +64,7 @@ const PAGES: PageSpec[] = [
   },
   {
     name: 'level-locked',
-    hash: 'screens/home/mid/{vp}',
+    hash: 'screens/warPath/mid/{vp}',
     strict: true,
     primary: false,
     prepare: async (page) => {

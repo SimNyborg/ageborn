@@ -22,12 +22,12 @@ test.describe('boot', () => {
     expect(problems.failed).toEqual([]);
   });
 
-  test('a fresh profile opens the War Path map with one Play button; VS labels the opponent AI (ui-plan 6.4, A7.1)', async ({ page }) => {
+  test('a fresh profile opens the Battle hub with one Battle button; the opponent is labelled AI (owner decision 2026-09-30, A7.1)', async ({ page }) => {
     await page.goto('./');
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('play')).toBeVisible();
-    await expect(page.getByTestId('wp-node-wp.stone.l01')).toHaveAttribute('data-state', 'current');
-    // ui-plan 2.6: the first launch shows only the map, level 1, Play and the gear.
+    await expect(page.getByTestId('home-opponent').getByTestId('ai-badge')).toBeVisible();
+    // ui-plan 2.6: the first launch shows only the arena, Battle and the gear.
     await expect(page.getByTestId('tabbar')).toHaveCount(0);
     await expect(page.getByTestId('home-modes')).toHaveCount(0);
     await expect(page.locator('[data-primary]')).toHaveCount(1);

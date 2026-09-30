@@ -27,8 +27,9 @@ export interface BaseRequest extends ViewRequest {
 }
 
 export interface BackdropRequest {
-  left: { age: AgeId; def: VisualDef };
-  right: { age: AgeId; def: VisualDef };
+  /** `skin`: the half's backdrop skin id when its manifest entry (`backdrop.<age>@<id>`) resolved. */
+  left: { age: AgeId; def: VisualDef; skin?: string };
+  right: { age: AgeId; def: VisualDef; skin?: string };
   ground: { key: string; def: VisualDef };
   arena: string;
   seed: number;

@@ -310,7 +310,13 @@ export class BattleView {
     this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
     const st = this.sim.state;
-    this.backdrop = o.art.createBackdrop({ left: this.ageOf(0), right: this.ageOf(1), arena: o.arena ?? 'tar_pits' });
+    // A18.9.4: each half wears its side's backdrop skin (bots keep the classic sky; the sim never sees it)
+    this.backdrop = o.art.createBackdrop({
+      left: this.ageOf(0),
+      right: this.ageOf(1),
+      arena: o.arena ?? 'tar_pits',
+      skins: { left: this.config.sides[0].look?.backdrop ?? null, right: this.config.sides[1].look?.backdrop ?? null },
+    });
     this.backdrop.setSeam(this.seam);
     this.layers.backdrop.addChild(this.backdrop.root);
     this.layers.ground.addChild(this.shadows);
@@ -1348,7 +1354,9 @@ export class BattleView {
     if (!PRESETS[preset].legendaryAuras) {
       for (const e of this.units.values()) this.dropAura(e);
     }
-    // base and turret upgrade moments follow Reduce motion and Lite (duck-typed `setMotion`)
+    // base and turret upgrade moments follow Reduce motion and Lite (duck-typed `setMotion`), and so
+    // does the backdrop skin weather (no lightning with Reduce motion)
+    if (this.backdrop) withMotion(this.backdrop, this.viewMotion());
     for (const b of this.bases ?? []) {
       withMotion(b.view, this.viewMotion());
       if (b.dressing) withMotion(b.dressing, this.viewMotion());

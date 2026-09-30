@@ -79,10 +79,11 @@ describe('router (DESIGN B11: signal-based, screen ids)', () => {
         'settings',
         'trophyRoad',
         'vs',
+        'warPath',
         'warPlan',
       ].sort(),
     );
-    // A9 numbers 2-4, 6-7, 9-13, 15 and 17 (C2/WP9 tasks), plus Customize (owner feedback 2026-09-28) and the Capsules and Progress tabs (ui-plan 2.4).
-    expect(WP9_SCREENS.map((id) => SCREENS[id].a9).sort((a, b) => a - b)).toEqual([2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 15, 17, 19, 20, 21]);
+    // A9 numbers 2-4, 6-7, 9-13, 15 and 17 (C2/WP9 tasks), plus Customize (owner feedback 2026-09-28), the Capsules and Progress tabs (ui-plan 2.4) and the War Path sub-screen (owner decision 2026-09-30).
+    expect(WP9_SCREENS.map((id) => SCREENS[id].a9).sort((a, b) => a - b)).toEqual([2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 15, 17, 19, 20, 21, 22]);
   });
 });

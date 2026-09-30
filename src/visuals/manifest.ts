@@ -9,6 +9,7 @@
 import type { ClipRef, TeamSpec, VisualDef } from '@/contracts/art';
 import { AGES } from './ages';
 import { ARENAS } from './backdrops/ground';
+import { BACKDROP_THEMES } from './backdrops/themes';
 import { turretClipSet, unitClipSet } from './clips';
 import { FX_RECIPES } from './effects/recipes';
 import { getPart } from './parts/registry';
@@ -100,6 +101,8 @@ export function buildProceduralManifest(): Record<string, VisualDef> {
     const b = BASE_PUPPETS[a];
     if (b) m[b.id] = baseDef(b);
     m[`backdrop.${a}`] = spriteDef(`backdrop.${a}`, -WORLD.skyTopLu);
+    // Backdrop skins (A18.9.4): one entry per age and theme, like unit skins (`unit.<slug>@<skin>`)
+    for (const id of Object.keys(BACKDROP_THEMES)) m[`backdrop.${a}@${id}`] = spriteDef(`backdrop.${a}@${id}`, -WORLD.skyTopLu);
   }
   for (const a of ARENAS) m[`ground.${a}`] = spriteDef(`ground.${a}`, WORLD.groundBottomLu);
   for (const p of PROJECTILE_SPRITES) m[p.id] = spriteDef(p.id, p.heightLu, { kind: 'zones', zones: ['team'] });

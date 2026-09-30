@@ -20,7 +20,7 @@ test.describe('usability: input reaches the battlefield', () => {
   test('a real click on your mount opens the turret menu; the lane is the canvas', async ({ page }) => {
     const problems = watchPage(page);
     await page.goto('./?dev=1&game=1');
-    // The War Path map is Home from the first launch; its Play starts match 1 through VS (ui-plan 6.4).
+    // The Battle hub is Home from the first launch; its Battle starts match 1 through VS (owner decision 2026-09-30).
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await page.getByTestId('play').click();
     await expect(page.getByTestId('battle')).toBeVisible({ timeout: 20_000 });

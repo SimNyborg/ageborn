@@ -16,6 +16,7 @@ grit, yell2, mouth_o, tongue. The unit's own default mouth joint (`mouth`) and p
 """
 import math
 
+import bpy  # noqa: F401 (bpy provides mathutils)
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 

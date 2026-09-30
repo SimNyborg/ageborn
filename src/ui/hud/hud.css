@@ -3975,3 +3975,66 @@
     animation-name: hud-fade;
   }
 }
+
+/* ---------------------------------------------- stance: three direct buttons (owner 2026-09-30) */
+
+.hud-stance-slot.hud-stance-seg {
+  display: flex;
+  gap: 3px;
+  width: auto;
+  height: var(--hud-stance);
+  padding: 3px;
+  border: 1px solid var(--hud-edge);
+  border-radius: 14px;
+  background: rgba(8, 10, 14, 0.55);
+}
+
+.hud-stance-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 54px;
+  height: 100%;
+  padding: 0 0 2px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: var(--hud-face);
+  opacity: 0.72;
+  touch-action: none;
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    opacity var(--ui-dur-micro) var(--ui-ease-out),
+    box-shadow var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+.hud-stance-btn:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-stance-btn.is-on {
+  opacity: 1;
+  border-color: var(--hud-gold);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px var(--hud-gold);
+}
+
+.hud-stance-btn .hud-stance-label {
+  font-size: 12px;
+  line-height: 13px;
+}
+
+.hud-stance-seg.is-waiting .hud-stance-wait {
+  opacity: 1;
+}
+
+@container hud (max-height: 499px) {
+  .hud-stance-btn {
+    width: 50px;
+  }
+}

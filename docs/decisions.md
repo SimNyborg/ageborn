@@ -986,3 +986,7 @@ A review of the built ladder (economy, honesty, visual and bug lenses) confirmed
 ## Owner direction 2026-09-30: natural attacks and movement
 
 Every figure gets the attack and movement a viewer expects from its body and weapon. The Mammoth Matriarch gores with its tusks, and the riders in its howdah throw light projectiles (the existing small rider attack, visual only). Recorded as an addendum to the cartoon upgrade plan.
+
+## Owner request 2026-09-30: stance as three buttons
+
+The stance control is three direct buttons, left to right Fall back ("Back"), Hold and Charge, instead of one button with a flyout. The current stance is lit; the 3 s change cooldown and its "Ready in" reason are unchanged; keys S and Shift+S are unchanged. HUD budget e2e passes at 844x390, 844x340, 800x360 and 1280x720.

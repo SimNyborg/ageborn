@@ -10,7 +10,7 @@
  * - train on release: a click trains within a second (the card is stable for Playwright), a press held
  *   past 450 ms never trains and opens the card's tip instead (U10);
  * - a denied press says why next to the card (MR-03, MR-67);
- * - the stance flyout: press, slide to an option and release chooses it.
+ * - the stance buttons: one tap chooses a stance.
  */
 import { expect as baseExpect, test, type Page } from '@playwright/test';
 import { fastForward, requireFlow, watchPage } from './helpers';
@@ -203,21 +203,15 @@ test.describe('Battle HUD (ui-plan 4.7)', () => {
     expect(text).toMatch(/Need \d+ gold|Queue full/);
   });
 
-  test('the stance flyout: press, slide to Hold, release', async ({ page }) => {
+  test('the stance buttons: one tap on Hold chooses it (owner 2026-09-30)', async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 844, height: 390 });
     await battle(page);
     const stance = page.getByTestId('hud-stance');
     await expect(stance).toHaveAttribute('data-stance', 'charge');
-    const b = (await stance.boundingBox())!;
-    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
-    await page.mouse.down();
-    const hold = page.getByTestId('hud-stance-hold');
-    await expect(hold).toBeVisible();
-    const o = (await hold.boundingBox())!;
-    await page.mouse.move(o.x + o.width / 2, o.y + o.height / 2, { steps: 5 });
-    await page.mouse.up();
+    const order = await stance.locator('.hud-stance-btn').evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')));
+    expect(order).toEqual(['hud-stance-fallback', 'hud-stance-hold', 'hud-stance-charge']);
+    await page.getByTestId('hud-stance-hold').click();
     await expect(stance).toHaveAttribute('data-stance', 'hold');
-    await expect(page.getByTestId('hud-stance-flyout')).toHaveCount(0);
   });
 });

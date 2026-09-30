@@ -27,6 +27,7 @@ import { PixiStage } from './stage';
 import { get, num, ui, useParams, writeParams } from './state';
 import { buildGrid } from './units';
 import { buildWorld, type WorldControls } from './world';
+import { BACKDROP_THEMES } from '@/visuals/backdrops/themes';
 
 export const title = 'Art gallery';
 
@@ -128,6 +129,9 @@ export default function Gallery() {
     const treasury = num(params, 'treasury', 0);
     const horn = get(params, 'horn', '0') === '1';
     const parade = get(params, 'parade', '0') === '1';
+    // A18.9.4 backdrop skins for each half (`bdl=winterfall`, `bdr=...`)
+    const bdl = get(params, 'bdl', 'classic');
+    const bdr = get(params, 'bdr', 'classic');
     const c = (): WorldControls | null => worldControls.current;
     body = (
       <>
@@ -143,6 +147,8 @@ export default function Gallery() {
           <Select label="treasury" value={String(treasury)} options={['0', '1', '2', '3']} onChange={set('treasury')} />
           <Select label="horn" value={horn ? '1' : '0'} options={['0', '1']} onChange={set('horn')} />
           <Select label="parade" value={parade ? '1' : '0'} options={['0', '1']} onChange={set('parade')} />
+          <Select label="skin L" value={bdl} options={['classic', ...Object.keys(BACKDROP_THEMES)]} onChange={set('bdl')} />
+          <Select label="skin R" value={bdr} options={['classic', ...Object.keys(BACKDROP_THEMES)]} onChange={set('bdr')} />
           <button onClick={() => c()?.hit(0)}>hit L</button>
           <button onClick={() => c()?.hit(1)}>hit R</button>
           <button onClick={() => c()?.morph(0)}>evolve L</button>
@@ -161,8 +167,14 @@ export default function Gallery() {
           freezeAtMs={freeze}
           speed={speed}
           background={0x2a2840}
-          deps={[section, left, right, arena, seam, crumble, treasury, horn, parade]}
-          build={(ctx) => buildWorld(ctx, { left, right, arena, preset, seam, crumble, treasury, horn, parade }, worldControls)}
+          deps={[section, left, right, arena, seam, crumble, treasury, horn, parade, bdl, bdr]}
+          build={(ctx) =>
+            buildWorld(
+              ctx,
+              { left, right, arena, preset, seam, crumble, treasury, horn, parade, skins: { left: bdl === 'classic' ? null : `backdrop.${bdl}`, right: bdr === 'classic' ? null : `backdrop.${bdr}` } },
+              worldControls,
+            )
+          }
         />
       </>
     );

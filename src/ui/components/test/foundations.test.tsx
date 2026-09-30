@@ -147,7 +147,7 @@ describe('TabBar and the ready-badge rule (2.2, 2.3)', () => {
     const picked: string[] = [];
     const d = show(
       <TabBar
-        active="warPath"
+        active="battle"
         onSelect={(id) => picked.push(id)}
         tabs={[
           { id: 'army', badge: 1 },
@@ -162,12 +162,12 @@ describe('TabBar and the ready-badge rule (2.2, 2.3)', () => {
     const tab = (id: string) => d.container.querySelector(`[data-testid="tab-${id}"]`)!;
     expect(tab('battle').getAttribute('aria-current')).toBe('page');
     expect(text(tab('army'))).toContain('Army');
-    expect(text(tab('progress'))).toContain('Lv 5');
+    expect(text(tab('progress'))).toContain('5 wins');
     act(() => tab('army').click());
     expect(picked).toEqual(['army']);
     act(() => tab('progress').click());
     expect(picked).toEqual(['army']);
-    expect(text(tab('progress'))).toContain('Unlocks at War Path level 5');
+    expect(text(tab('progress'))).toContain('Unlocks at 5 wins');
   });
 });
 

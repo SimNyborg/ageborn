@@ -14,6 +14,12 @@
  *   until they arrive (and in headless tests, or if a file fails) the code-painted layers are drawn,
  *   so the pre-rendered art is a pure upgrade of the same frames.
  *
+ * Backdrop skins (A18.9.4 "Backdrops"): each half can wear a theme (`skins.left` / `skins.right`,
+ * `backdrop.<id>`). A themed layer is the age's own layer texture re-graded once at bake time
+ * (`backdrops/themes.ts`: palette, sky, props along the rims), so pieces carry an age and a skin, and a
+ * seam between two looks cross-fades exactly like one between two ages. The theme's weather is a
+ * separate particle layer over the mid-ground and under the lane (`backdropWeather.ts`).
+ *
  * Cross-fades are built from thin vertical strips cut from each layer texture (dynamic texture
  * frames) with stepped alpha. Everything comes from a few textures, so the whole backdrop batches
  * into a handful of draw calls with no masks, filters or custom shaders (works on WebGL and WebGPU).
@@ -36,8 +42,10 @@ import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid,
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { CLOUD_TINT, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
+import { backdropId, BACKDROP_THEMES, themeLayer, themeSky } from '../../backdrops/themes';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
+import { BackdropWeatherLayer } from './backdropWeather';
 import { fxSprite } from './effectView';
 
 type LayerKind = 'sky' | 'far' | 'mid';
@@ -184,7 +192,47 @@ export class BackdropTextures {
     return new Texture({ source });
   }
 
-  layer(kind: LayerKind, age: AgeId): Painted {
+  /** The layer texture of an age, re-graded by a backdrop skin when one is given (A18.9.4). */
+  layer(kind: LayerKind, age: AgeId, skin?: string | null): Painted {
+    const base = this.baseLayer(kind, age);
+    const id = backdropId(skin);
+    return id ? this.themed(kind, age, id, base) : base;
+  }
+
+  /**
+   * A themed copy of a layer texture, cached per layer, age, theme and base texture (a pre-rendered
+   * image that arrives later gets its own themed copy). The sky is re-painted at twice its base
+   * resolution so stars, moons and aurora stay crisp.
+   */
+  private themed(kind: LayerKind, age: AgeId, id: string, base: Painted): Painted {
+    const th = BACKDROP_THEMES[id];
+    if (!th || !this.canBake || base.tex === Texture.EMPTY) return base;
+    const src = base.tex.source;
+    const key = `${kind}.${age}@${id}#${src.uid}`;
+    const hit = this.cache.get(key);
+    if (hit) return hit;
+    const t0 = performance.now();
+    const up = kind === 'sky' ? 2 : 1;
+    const res = src.resolution * up;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(src.pixelWidth * up));
+    canvas.height = Math.max(1, Math.round(src.pixelHeight * up));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return base;
+    const resource = src.resource as CanvasImageSource | undefined;
+    if (resource) ctx.drawImage(resource, 0, 0, canvas.width, canvas.height);
+    const f = { ...FRAMES[kind], pxPerLu: res };
+    if (kind === 'sky') themeSky(ctx, id, age, th, f);
+    else themeLayer(canvas, ctx, id, kind, age, th, f);
+    const source = new CanvasSource({ resource: canvas, resolution: 1 });
+    source.resolution = res;
+    const p = { tex: new Texture({ source }), ambient: base.ambient };
+    this.cache.set(key, p);
+    this.bakeMs += performance.now() - t0;
+    return p;
+  }
+
+  private baseLayer(kind: LayerKind, age: AgeId): Painted {
     if (kind !== 'sky') {
       const img = this.images.get(`${kind}.${age}`);
       if (img) return img;
@@ -249,6 +297,8 @@ export const GROUND_IMAGE_PX_PER_LU = 1.3;
 /** A horizontal slice [x0, x1] of a layer texture with a constant alpha. */
 export interface Piece {
   age: AgeId;
+  /** The backdrop skin of this piece's half (`backdrop.<id>`); absent is the age's classic look. */
+  skin?: string;
   x0: number;
   x1: number;
   alpha: number;
@@ -261,26 +311,39 @@ export interface Piece {
 
 interface Region {
   age: AgeId;
+  skin?: string;
   x0: number;
   x1: number;
 }
 
-/** Splits the lane into age regions: [left, seam], [seam, right], plus an optional wipe front. */
-export function ageRegions(o: { left: AgeId; right: AgeId; seam: number; wipe: { side: Side; age: AgeId; front: number } | null }): Region[] {
+/**
+ * Splits the lane into age regions: [left, seam], [seam, right], plus an optional wipe front. A side's
+ * backdrop skin (`skins`) goes with every region of its half, through a wipe too (the theme stays
+ * when the age changes).
+ */
+export function ageRegions(o: {
+  left: AgeId;
+  right: AgeId;
+  seam: number;
+  wipe: { side: Side; age: AgeId; front: number } | null;
+  skins?: { left?: string | null; right?: string | null };
+}): Region[] {
   const L = WORLD.worldLeftLu - 100;
   const R = WORLD.worldRightLu + 100;
+  const sl = o.skins?.left ? { skin: o.skins.left } : {};
+  const sr = o.skins?.right ? { skin: o.skins.right } : {};
   const regions: Region[] = [
-    { age: o.left, x0: L, x1: o.seam },
-    { age: o.right, x0: o.seam, x1: R },
+    { age: o.left, ...sl, x0: L, x1: o.seam },
+    { age: o.right, ...sr, x0: o.seam, x1: R },
   ];
   const w = o.wipe;
   if (w) {
     if (w.side === 0) {
       const fx = Math.min(o.seam, L + w.front);
-      regions.splice(0, 1, { age: w.age, x0: L, x1: fx }, { age: o.left, x0: fx, x1: o.seam });
+      regions.splice(0, 1, { age: w.age, ...sl, x0: L, x1: fx }, { age: o.left, ...sl, x0: fx, x1: o.seam });
     } else {
       const fx = Math.max(o.seam, R - w.front);
-      regions.splice(1, 1, { age: o.right, x0: o.seam, x1: fx }, { age: w.age, x0: fx, x1: R });
+      regions.splice(1, 1, { age: o.right, ...sr, x0: o.seam, x1: fx }, { age: w.age, ...sr, x0: fx, x1: R });
     }
   }
   return regions.filter((r) => r.x1 - r.x0 > 0.5);
@@ -300,7 +363,7 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
   regions.forEach((r, i) => {
     const wl = i > 0 ? (widths[i - 1] ?? 0) / 2 : 0;
     const wr = i < widths.length ? (widths[i] ?? 0) / 2 : 0;
-    if (r.x1 - wr > r.x0 + wl) pieces.push({ age: r.age, x0: r.x0 + wl, x1: r.x1 - wr, alpha: 1 });
+    if (r.x1 - wr > r.x0 + wl) pieces.push({ age: r.age, ...(r.skin ? { skin: r.skin } : {}), x0: r.x0 + wl, x1: r.x1 - wr, alpha: 1 });
   });
   for (let i = 0; i < widths.length; i++) {
     const a = regions[i];
@@ -314,11 +377,13 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
       const x1 = c - w / 2 + ((k + 1) * w) / n;
       const t = (k + 0.5) / n;
       const s = t * t * (3 - 2 * t);
-      if (a.age === b.age) {
-        pieces.push({ age: a.age, x0, x1, alpha: 1 });
+      const sa = a.skin ? { skin: a.skin } : {};
+      const sb = b.skin ? { skin: b.skin } : {};
+      if (a.age === b.age && a.skin === b.skin) {
+        pieces.push({ age: a.age, ...sa, x0, x1, alpha: 1 });
       } else {
-        pieces.push({ age: a.age, x0, x1, alpha: 1 - s, under: true });
-        pieces.push({ age: b.age, x0, x1, alpha: s });
+        pieces.push({ age: a.age, ...sa, x0, x1, alpha: 1 - s, under: true });
+        pieces.push({ age: b.age, ...sb, x0, x1, alpha: s });
       }
     }
   }
@@ -358,7 +423,7 @@ class StripLayer {
     this.container.scale.set(at.stretch, at.scaleY);
     let used = 0;
     for (const p of pieces) {
-      const src = this.textures.layer(this.kind, p.age).tex;
+      const src = this.textures.layer(this.kind, p.age, p.skin).tex;
       if (src === Texture.EMPTY) continue;
       const slot = this.slot(used++);
       const x0 = Math.max(f.x0, (p.x0 - at.offset) / at.stretch);
@@ -464,6 +529,8 @@ export interface BackdropViewOptions {
   baker: PartBaker;
   quality: 'high' | 'lite';
   seed: number;
+  /** Each half's backdrop skin (`backdrop.<id>`, A18.9.4); left = side 0. */
+  skins?: { left?: string | null; right?: string | null };
 }
 
 export class ProceduralBackdropView implements BackdropView {
@@ -494,13 +561,19 @@ export class ProceduralBackdropView implements BackdropView {
   /** World height (lu) the camera shows above the ground line. */
   private viewAbove = 1000;
   private placements: Partial<Record<LayerKind, LayerPlacement>> = {};
+  /** Each half's backdrop skin key, when it has a known theme. */
+  private readonly skins: { left?: string; right?: string };
+  private readonly weather: BackdropWeatherLayer;
 
   constructor(private readonly o: BackdropViewOptions) {
     this.left = o.left;
     this.right = o.right;
+    const l = backdropId(o.skins?.left);
+    const r = backdropId(o.skins?.right);
+    this.skins = { ...(l ? { left: `backdrop.${l}` } : {}), ...(r ? { right: `backdrop.${r}` } : {}) };
     this.arena = arenaId(o.arena);
     this.rng = mulberry32(o.seed);
-    this.root.label = `backdrop.${o.left}|${o.right}|ground.${this.arena}`;
+    this.root.label = `backdrop.${o.left}${l ? `@${l}` : ''}|${o.right}${r ? `@${r}` : ''}|ground.${this.arena}`;
     // Lite keeps the mid layer since A17: with a scrolling camera it is the layer that shows the
     // parallax depth (A17.7); only its ambient life is dropped.
     this.layers = LAYERS.map((k) => new StripLayer(k, o.textures));
@@ -521,6 +594,11 @@ export class ProceduralBackdropView implements BackdropView {
     }
     this.root.addChild(this.ambientLayers.mid);
     this.root.addChild(this.haze.container);
+    // backdrop skin weather: over the mid-ground and the seam haze, under the ground and the lane
+    this.weather = new BackdropWeatherLayer(o.baker, o.quality, this.rng);
+    this.weather.setTheme(0, l ? (BACKDROP_THEMES[l] ?? null) : null);
+    this.weather.setTheme(1, r ? (BACKDROP_THEMES[r] ?? null) : null);
+    this.root.addChild(this.weather.root);
     this.groundSprite = new Sprite(Texture.EMPTY);
     this.groundSprite.position.set(GROUND_FRAME.x0, GROUND_FRAME.yTop);
     this.groundMirror = new Sprite(Texture.EMPTY);
@@ -583,8 +661,13 @@ export class ProceduralBackdropView implements BackdropView {
   }
 
   /** Current seam position (lu) and ages, for tests and the gallery. */
-  get state(): { seam: number; target: number; left: AgeId; right: AgeId; wiping: boolean } {
-    return { seam: this.seam, target: this.seamTarget, left: this.left, right: this.right, wiping: this.wipeState !== null };
+  get state(): { seam: number; target: number; left: AgeId; right: AgeId; wiping: boolean; skins: { left?: string; right?: string }; weather: number } {
+    return { seam: this.seam, target: this.seamTarget, left: this.left, right: this.right, wiping: this.wipeState !== null, skins: { ...this.skins }, weather: this.weather.count };
+  }
+
+  /** Reduce motion and Lite (duck-typed like the base views): quieter weather, no lightning. */
+  setMotion(o: { reduce: boolean; lite: boolean }): void {
+    this.weather.setMotion(o);
   }
 
   update(dtMs: number): void {
@@ -609,6 +692,9 @@ export class ProceduralBackdropView implements BackdropView {
     }
     if (this.dirty) this.layout();
     this.stepAmbient(dtMs);
+    const vl = this.viewLeft ?? WORLD.worldLeftLu;
+    const vw = this.viewLeft === null ? WORLD.worldWidthLu : this.viewWidth;
+    this.weather.update(dtMs, { left: vl, width: vw, above: this.viewLeft === null ? 520 : this.viewAbove, seam: this.seam });
   }
 
   private finishWipe(): void {
@@ -626,7 +712,7 @@ export class ProceduralBackdropView implements BackdropView {
     const w = this.wipeState;
     const half = w ? (w.side === 0 ? this.seam - (WORLD.worldLeftLu - 100) : WORLD.worldRightLu + 100 - this.seam) : 0;
     const eased = w ? 1 - Math.pow(1 - Math.min(1, w.t / w.ms), 2) : 0;
-    const regions = ageRegions({ left: this.left, right: this.right, seam: this.seam, wipe: w ? { side: w.side, age: w.age, front: half * eased } : null });
+    const regions = ageRegions({ left: this.left, right: this.right, seam: this.seam, wipe: w ? { side: w.side, age: w.age, front: half * eased } : null, skins: this.skins });
     const pieces = composePieces(regions, this.seam);
     for (const kind of LAYERS) this.placements[kind] = this.placement(kind);
     for (const l of this.layers) l.layout(pieces, this.placements[l.kind]);
@@ -685,9 +771,14 @@ export class ProceduralBackdropView implements BackdropView {
       const mx = 2 * (GROUND_FRAME.x0 + GROUND_FRAME.width) - spec.x;
       if (mx <= WORLD.worldRightLu + 120) this.addAmbient({ ...spec, x: mx }, null);
     }
-    // cloud tint follows the side ages
+    // cloud tint follows the side ages (and a side's backdrop skin)
+    const lt = this.skins.left ? BACKDROP_THEMES[this.skins.left.slice(9)] : undefined;
+    const rt = this.skins.right ? BACKDROP_THEMES[this.skins.right.slice(9)] : undefined;
     this.clouds.children.forEach((c, i) => {
-      if (c instanceof Sprite) c.tint = CLOUD_TINT[c.x < this.seam ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right];
+      if (!(c instanceof Sprite)) return;
+      const leftSide = c.x < this.seam;
+      const theme = leftSide ? lt : rt;
+      c.tint = theme ? theme.cloudTint : (CLOUD_TINT[leftSide ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right]);
     });
   }
 
@@ -787,6 +878,7 @@ export class ProceduralBackdropView implements BackdropView {
     this.destroyed = true;
     for (const m of this.motes) m.s.destroy();
     this.motes = [];
+    this.weather.destroy();
     for (const l of this.layers) l.destroy();
     this.root.destroy({ children: true });
   }

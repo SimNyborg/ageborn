@@ -146,7 +146,11 @@ test.describe('B13 flows', () => {
     await page.getByTestId('tab-progress').click();
     await expect(page.getByTestId('war-chest')).toContainText('War Chest');
     await expect(page.getByTestId('quest-3')).toHaveCount(0);
-    await page.getByTestId('tab-warPath').click();
+    await page.getByTestId('tab-battle').click();
+    // Home is the Battle hub; the War Path campaign is one tap away on its card (owner decision 2026-09-30).
+    await page.getByTestId('home-campaign').click();
+    await expect(page.locator('[data-screen="warPath"]')).toBeVisible();
+    await page.getByTestId('back').click();
     // A reload keeps the profile past onboarding: Home again, no tutorial battle.
     await page.goto('./');
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });

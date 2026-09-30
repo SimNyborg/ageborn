@@ -24,6 +24,7 @@ Face channels (`face.py`) are merged by the unit on the frames it wants.
 """
 import math
 
+import bpy  # noqa: F401 (bpy provides mathutils)
 from mathutils import Euler, Matrix, Vector
 
 from .anim import Clip, merge, squash
@@ -64,9 +65,9 @@ def die_meta(height_lu, heavy=False):
 
 
 def clip(name, poses, durations, loop=False, impact=None, smear=None, sequence=None, extra=None,
-         smears=None):
+         overlays=None):
     """A Clip from a list of poses (dicts) or a pose function with len(durations) frames.
-    `smears` = {unique frame: smear2 spec} marks the frames that get a 2D smear (smear2.py)."""
+    `overlays` = {unique frame: [smear2 spec, ...]}: 2D smears and accents (smear2.py)."""
     if callable(poses):
         n = (max(sequence) + 1) if sequence else len(durations)
         fn = poses
@@ -76,8 +77,8 @@ def clip(name, poses, durations, loop=False, impact=None, smear=None, sequence=N
         fn = lambda f: table[f]
     c = Clip(name, n, fn, loop=loop, impact=impact, smear=smear, sequence=sequence,
              durations=durations, extra=extra)
-    if smears:
-        c.smears2 = dict(smears)
+    if overlays:
+        c.overlays2 = {k: list(v) for k, v in overlays.items()}
     return c
 
 

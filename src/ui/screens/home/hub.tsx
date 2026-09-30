@@ -15,7 +15,7 @@
  * - `CapsuleSlots`: four capsule slots, each opens its capsule with one tap (charges never block).
  * - `UnlockPointer`: MR-40, a feature that just opened.
  */
-import { arenaNameKey } from '@/content/keys';
+import { arenaNameKey, formatDescKey } from '@/content/keys';
 import type { FormatId, OpponentSpec } from '@/contracts';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
@@ -28,6 +28,7 @@ import { pendingCrests, pendingNameKey, visibleTier } from '../../components/cap
 import { useKit } from '../../components/kit';
 import { useUi } from '../context';
 import { opponentName } from '../model/opponent';
+import { formatName } from '../model/plan';
 import { arenaOf, roadProgress, trayCapsules } from '../model/progress';
 import { currentLevelId, featureOpen, levelNameKey, mapRegions, playLevelId, progressOf, regionNameKey, type HomeUnlock } from '../model/warPath';
 import { RoadRewardView } from '../shared/RoadReward';
@@ -173,6 +174,9 @@ export function TrophyBar() {
 // The match plate (who Battle fights, and the format)
 // ---------------------------------------------------------------------------------------------
 
+/** Short labels for the format picker (whole literals, so the strings check sees them). */
+const FORMAT_SHORT: Readonly<Record<string, string>> = { short: 'ui.hub.format.short', standard: 'ui.hub.format.standard', full: 'ui.hub.format.full' };
+
 export function MatchPlate(p: {
   opponent: OpponentSpec | null;
   /** The onboarding match Battle starts while it is due (A8), else null. */
@@ -200,7 +204,7 @@ export function MatchPlate(p: {
         </span>
         <span class="hub-plate__text">
           <span class="hub-plate__over">
-            {p.training ? t('ui.hub.training') : t('ui.home.nextOpponent')}
+            {p.training ? t('ui.hub.training') : t('ui.hub.opponent')}
             {o ? (
               <span class="hub-plate__tier" data-testid="home-opponent-tier">
                 {t('ui.vs.tier', { tier: tierNumeral(o.tier) })}
@@ -218,7 +222,7 @@ export function MatchPlate(p: {
             label={t('ui.mode.format')}
             value={p.format}
             onChange={p.onFormat}
-            options={p.formats.map((f) => ({ value: f, label: t(`ui.hub.format.${f}`) }))}
+            options={p.formats.map((f) => ({ value: f, label: FORMAT_SHORT[f] ? t(FORMAT_SHORT[f]) : formatName(content, t, f) }))}
             testid="home-format"
             size="sm"
           />
@@ -226,7 +230,7 @@ export function MatchPlate(p: {
       ) : null}
       {!p.training ? (
         <span class="hub-plate__desc" data-testid="home-format-desc">
-          {t(`format.${p.format}.name`)} · {t(`format.${p.format}.desc`)}
+          {formatName(content, t, p.format)} · {t(formatDescKey(p.format))}
         </span>
       ) : null}
     </div>
