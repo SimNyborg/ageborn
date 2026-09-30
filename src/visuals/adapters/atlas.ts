@@ -98,8 +98,6 @@ export const UNIT_WEIGHT: Readonly<
   medium: { spawnMs: 240, dropLu: 12, settleLu: 1.4, flinchLu: 2.5, flinchMs: 170 },
   heavy: { spawnMs: 300, dropLu: 14, settleLu: 2.4, flinchLu: 1, flinchMs: 200 },
 };
-/** Dust over the realistic art: the shared dust sprite multiplied toward the ground's tone. */
-const REAL_DUST_TINT = 0xb8ad9c;
 /** MR-105: after the fall the body lies this long, then sinks and fades. */
 export const DEATH_LIE_MS = 600;
 export const DEATH_FADE_MS = 300;
@@ -738,8 +736,9 @@ class AtlasUnitView implements UnitView {
       const x = (fx.offsetLu?.[0] ?? 0) * this.facing;
       const y = -(fx.offsetLu?.[1] ?? this.def.heightLu * 0.4);
       const k = (fx.scale ?? 1) * Math.max(1, this.def.heightLu / 68);
-      // KO stars read as cartoon over the realistic art (MR-105, UI-5b): a dust puff instead.
-      this.dustPoof(x, y, fx.id === 'fx.ko_stars' ? k * 0.8 : k);
+      // Owner decision 2026-09-30: the cartoon style is back, so KO stars pop again.
+      if (fx.id === 'fx.ko_stars') this.koStars(x, y, k, fx.loops ?? 1);
+      else this.dustPoof(x, y, k);
     }
     // A sheet's hide at the end of its fall is not honoured: the body lies for DEATH_LIE_MS and then
     // sinks and fades (MR-105, realistic weight); an earlier hide (a body that bursts) still is.
@@ -758,8 +757,6 @@ class AtlasUnitView implements UnitView {
   private dustPoof(x: number, y: number, k: number): void {
     for (let i = 0; i < 9; i++) {
       const s = partSprite(this.decor, 'fx.p.dust', UI_ZONES);
-      // Ground-toned, half-transparent dust reads as dust over the realistic art, not a cartoon cloud.
-      s.tint = REAL_DUST_TINT;
       const a = (i / 9) * Math.PI * 2 + this.rng.next() * 0.5;
       s.position.set(x + Math.cos(a) * 6 * k, y + Math.sin(a) * 4 * k);
       this.puffs.add(s, { vx: Math.cos(a) * (26 + this.rng.next() * 30) * k, vy: Math.sin(a) * (14 + this.rng.next() * 16) * k - 10, life: 420 + this.rng.next() * 220, s0: 0.7 * k, s1: 1.35 * k, a0: 0.6, g: 20 });
@@ -767,12 +764,20 @@ class AtlasUnitView implements UnitView {
   }
 
 
+  private koStars(x: number, y: number, k: number, loops: number): void {
+    for (let i = 0; i < 3; i++) {
+      const s = partSprite(this.decor, 'fx.p.star', UI_ZONES);
+      s.position.set(x, y);
+      const a = -Math.PI / 2 + (i - 1) * 0.7;
+      this.puffs.add(s, { vx: Math.cos(a) * 34 * k, vy: Math.sin(a) * 40 * k, life: 360 + 180 * loops, s0: 1 * k, s1: 0.6 * k, a0: 1, spin: (this.rng.next() - 0.5) * 8, g: 30 });
+    }
+  }
+
   private spawnDust(): void {
     // MR-100: a dust ring at the feet as the body takes its weight (ground-toned, 5.8).
     const k = UNIT_WEIGHT[this.mass()].settleLu / UNIT_WEIGHT.light.settleLu;
     for (let i = 0; i < 5; i++) {
       const s = partSprite(this.decor, 'fx.p.dust', UI_ZONES);
-      s.tint = REAL_DUST_TINT;
       const dir = i < 2 ? -1 : 1;
       s.position.set((this.rng.next() - 0.5) * 16, -2);
       this.puffs.add(s, { vx: dir * (30 + this.rng.next() * 50), vy: -12 - this.rng.next() * 18, life: 380 + this.rng.next() * 160, s0: 0.5, s1: Math.min(2, 1.1 * Math.sqrt(k)), a0: 0.55 });

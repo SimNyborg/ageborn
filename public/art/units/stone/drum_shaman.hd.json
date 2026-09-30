@@ -1,1 +1,2343 @@
-{"frames":{"drum_shaman_idle_00":{"frame":{"x":541,"y":0,"w":104,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":210,"y":89,"w":104,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_00_team":{"frame":{"x":507,"y":361,"w":96,"h":150},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":211,"y":100,"w":96,"h":150},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_01":{"frame":{"x":1452,"y":0,"w":99,"h":164},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":212,"y":89,"w":99,"h":164},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_01_team":{"frame":{"x":605,"y":361,"w":88,"h":149},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":214,"y":100,"w":88,"h":149},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_02":{"frame":{"x":0,"y":196,"w":96,"h":163},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":89,"w":96,"h":163},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_02_team":{"frame":{"x":277,"y":361,"w":86,"h":153},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":216,"y":96,"w":86,"h":153},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_03":{"frame":{"x":1553,"y":0,"w":96,"h":164},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":216,"y":89,"w":96,"h":164},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_03_team":{"frame":{"x":1720,"y":196,"w":88,"h":154},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":217,"y":95,"w":88,"h":154},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_04":{"frame":{"x":1651,"y":0,"w":99,"h":164},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":213,"y":90,"w":99,"h":164},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_04_team":{"frame":{"x":1280,"y":196,"w":92,"h":155},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":216,"y":95,"w":92,"h":155},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_05":{"frame":{"x":647,"y":0,"w":100,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":211,"y":90,"w":100,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_05_team":{"frame":{"x":698,"y":196,"w":84,"h":158},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":213,"y":95,"w":84,"h":158},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_06":{"frame":{"x":749,"y":0,"w":103,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":209,"y":90,"w":103,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_06_team":{"frame":{"x":995,"y":196,"w":98,"h":157},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":210,"y":96,"w":98,"h":157},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_07":{"frame":{"x":854,"y":0,"w":106,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":208,"y":90,"w":106,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_idle_07_team":{"frame":{"x":1095,"y":196,"w":97,"h":157},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":210,"y":96,"w":97,"h":157},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_00":{"frame":{"x":394,"y":196,"w":98,"h":161},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":220,"y":92,"w":98,"h":161},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_00_team":{"frame":{"x":1547,"y":361,"w":94,"h":141},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":221,"y":107,"w":94,"h":141},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_01":{"frame":{"x":494,"y":196,"w":93,"h":161},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":221,"y":92,"w":93,"h":161},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_01_team":{"frame":{"x":1459,"y":361,"w":86,"h":143},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":223,"y":107,"w":86,"h":143},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_02":{"frame":{"x":98,"y":196,"w":91,"h":163},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":221,"y":89,"w":91,"h":163},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_02_team":{"frame":{"x":769,"y":361,"w":81,"h":148},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":223,"y":102,"w":81,"h":148},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_03":{"frame":{"x":191,"y":196,"w":94,"h":163},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":220,"y":89,"w":94,"h":163},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_03_team":{"frame":{"x":1374,"y":196,"w":85,"h":155},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":222,"y":95,"w":85,"h":155},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_04":{"frame":{"x":784,"y":196,"w":100,"h":158},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":217,"y":93,"w":100,"h":158},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_04_team":{"frame":{"x":1643,"y":361,"w":90,"h":141},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":219,"y":107,"w":90,"h":141},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_05":{"frame":{"x":886,"y":196,"w":107,"h":158},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":93,"w":107,"h":158},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_05_team":{"frame":{"x":1735,"y":361,"w":98,"h":141},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":217,"y":107,"w":98,"h":141},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_06":{"frame":{"x":589,"y":196,"w":107,"h":161},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":216,"y":89,"w":107,"h":161},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_06_team":{"frame":{"x":1461,"y":196,"w":102,"h":155},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":217,"y":92,"w":102,"h":155},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_07":{"frame":{"x":287,"y":196,"w":105,"h":163},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":218,"y":89,"w":105,"h":163},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_walk_07_team":{"frame":{"x":1201,"y":361,"w":100,"h":144},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":219,"y":102,"w":100,"h":144},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_00":{"frame":{"x":962,"y":0,"w":101,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":212,"y":89,"w":101,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_00_team":{"frame":{"x":1810,"y":196,"w":91,"h":154},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":214,"y":96,"w":91,"h":154},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_01":{"frame":{"x":212,"y":0,"w":81,"h":184},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":213,"y":69,"w":81,"h":184},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_01_team":{"frame":{"x":374,"y":0,"w":74,"h":177},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":73,"w":74,"h":177},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_02":{"frame":{"x":0,"y":0,"w":84,"h":194},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":207,"y":59,"w":84,"h":194},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_02_team":{"frame":{"x":295,"y":0,"w":77,"h":184},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":210,"y":63,"w":77,"h":184},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_03":{"frame":{"x":86,"y":0,"w":124,"h":194},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":201,"y":60,"w":124,"h":194},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_03_team":{"frame":{"x":1015,"y":361,"w":104,"h":147},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":103,"w":104,"h":147},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_04":{"frame":{"x":1565,"y":196,"w":80,"h":155},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":218,"y":99,"w":80,"h":155},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_04_team":{"frame":{"x":1303,"y":361,"w":76,"h":144},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":219,"y":106,"w":76,"h":144},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_05":{"frame":{"x":1903,"y":196,"w":80,"h":154},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":218,"y":100,"w":80,"h":154},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_05_team":{"frame":{"x":1381,"y":361,"w":76,"h":144},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":219,"y":106,"w":76,"h":144},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_06":{"frame":{"x":1194,"y":196,"w":84,"h":157},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":97,"w":84,"h":157},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_06_team":{"frame":{"x":1121,"y":361,"w":78,"h":145},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":216,"y":105,"w":78,"h":145},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_07":{"frame":{"x":1065,"y":0,"w":102,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":213,"y":89,"w":102,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_attack_07_team":{"frame":{"x":0,"y":361,"w":95,"h":154},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":96,"w":95,"h":154},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_00":{"frame":{"x":1169,"y":0,"w":101,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":212,"y":89,"w":101,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_00_team":{"frame":{"x":97,"y":361,"w":91,"h":154},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":214,"y":96,"w":91,"h":154},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_01":{"frame":{"x":1752,"y":0,"w":74,"h":164},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":203,"y":89,"w":74,"h":164},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_01_team":{"frame":{"x":1647,"y":196,"w":71,"h":155},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":204,"y":94,"w":71,"h":155},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_02":{"frame":{"x":1828,"y":0,"w":74,"h":164},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":204,"y":90,"w":74,"h":164},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_02_team":{"frame":{"x":365,"y":361,"w":70,"h":152},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":204,"y":98,"w":70,"h":152},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_03":{"frame":{"x":1904,"y":0,"w":76,"h":164},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":206,"y":90,"w":76,"h":164},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_03_team":{"frame":{"x":437,"y":361,"w":68,"h":151},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":207,"y":99,"w":68,"h":151},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_04":{"frame":{"x":1272,"y":0,"w":92,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":210,"y":89,"w":92,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_hit_04_team":{"frame":{"x":190,"y":361,"w":85,"h":154},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":210,"y":96,"w":85,"h":154},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_00":{"frame":{"x":450,"y":0,"w":89,"h":167},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":215,"y":87,"w":89,"h":167},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_00_team":{"frame":{"x":695,"y":361,"w":72,"h":149},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":216,"y":101,"w":72,"h":149},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_01":{"frame":{"x":1366,"y":0,"w":84,"h":165},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":204,"y":88,"w":84,"h":165},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_01_team":{"frame":{"x":852,"y":361,"w":77,"h":148},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":205,"y":99,"w":77,"h":148},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_02":{"frame":{"x":931,"y":361,"w":82,"h":148},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":198,"y":105,"w":82,"h":148},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_02_team":{"frame":{"x":1835,"y":361,"w":76,"h":134},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":199,"y":116,"w":76,"h":134},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_03":{"frame":{"x":1913,"y":361,"w":110,"h":125},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":162,"y":132,"w":110,"h":125},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_03_team":{"frame":{"x":0,"y":517,"w":104,"h":113},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":166,"y":136,"w":104,"h":113},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_04":{"frame":{"x":308,"y":517,"w":188,"h":71},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":70,"y":184,"w":188,"h":71},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_04_team":{"frame":{"x":1526,"y":517,"w":182,"h":63},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":74,"y":187,"w":182,"h":63},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_05":{"frame":{"x":106,"y":517,"w":200,"h":78},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":73,"y":175,"w":200,"h":78},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_05_team":{"frame":{"x":498,"y":517,"w":177,"h":67},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":77,"y":183,"w":177,"h":67},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_06":{"frame":{"x":677,"y":517,"w":211,"h":67},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":68,"y":187,"w":211,"h":67},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_06_team":{"frame":{"x":1710,"y":517,"w":168,"h":61},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":92,"y":189,"w":168,"h":61},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_07":{"frame":{"x":890,"y":517,"w":211,"h":65},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":67,"y":190,"w":211,"h":65},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_07_team":{"frame":{"x":190,"y":632,"w":188,"h":55},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":73,"y":195,"w":188,"h":55},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_08":{"frame":{"x":1103,"y":517,"w":210,"h":65},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":67,"y":190,"w":210,"h":65},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_08_team":{"frame":{"x":380,"y":632,"w":188,"h":55},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":73,"y":195,"w":188,"h":55},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_09":{"frame":{"x":1315,"y":517,"w":209,"h":65},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":67,"y":190,"w":209,"h":65},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}},"drum_shaman_die_09_team":{"frame":{"x":0,"y":632,"w":188,"h":56},"rotated":false,"trimmed":true,"spriteSourceSize":{"x":73,"y":194,"w":188,"h":56},"sourceSize":{"w":414,"h":270},"anchor":{"x":0.5942028985507246,"y":0.918}}},"animations":{"idle":["drum_shaman_idle_00","drum_shaman_idle_01","drum_shaman_idle_02","drum_shaman_idle_03","drum_shaman_idle_04","drum_shaman_idle_05","drum_shaman_idle_06","drum_shaman_idle_07"],"idle_team":["drum_shaman_idle_00_team","drum_shaman_idle_01_team","drum_shaman_idle_02_team","drum_shaman_idle_03_team","drum_shaman_idle_04_team","drum_shaman_idle_05_team","drum_shaman_idle_06_team","drum_shaman_idle_07_team"],"walk":["drum_shaman_walk_00","drum_shaman_walk_01","drum_shaman_walk_02","drum_shaman_walk_03","drum_shaman_walk_04","drum_shaman_walk_05","drum_shaman_walk_06","drum_shaman_walk_07"],"walk_team":["drum_shaman_walk_00_team","drum_shaman_walk_01_team","drum_shaman_walk_02_team","drum_shaman_walk_03_team","drum_shaman_walk_04_team","drum_shaman_walk_05_team","drum_shaman_walk_06_team","drum_shaman_walk_07_team"],"attack":["drum_shaman_attack_00","drum_shaman_attack_01","drum_shaman_attack_02","drum_shaman_attack_03","drum_shaman_attack_04","drum_shaman_attack_05","drum_shaman_attack_06","drum_shaman_attack_07"],"attack_team":["drum_shaman_attack_00_team","drum_shaman_attack_01_team","drum_shaman_attack_02_team","drum_shaman_attack_03_team","drum_shaman_attack_04_team","drum_shaman_attack_05_team","drum_shaman_attack_06_team","drum_shaman_attack_07_team"],"hit":["drum_shaman_hit_00","drum_shaman_hit_01","drum_shaman_hit_02","drum_shaman_hit_03","drum_shaman_hit_04"],"hit_team":["drum_shaman_hit_00_team","drum_shaman_hit_01_team","drum_shaman_hit_02_team","drum_shaman_hit_03_team","drum_shaman_hit_04_team"],"die":["drum_shaman_die_00","drum_shaman_die_01","drum_shaman_die_02","drum_shaman_die_03","drum_shaman_die_04","drum_shaman_die_05","drum_shaman_die_06","drum_shaman_die_07","drum_shaman_die_08","drum_shaman_die_09"],"die_team":["drum_shaman_die_00_team","drum_shaman_die_01_team","drum_shaman_die_02_team","drum_shaman_die_03_team","drum_shaman_die_04_team","drum_shaman_die_05_team","drum_shaman_die_06_team","drum_shaman_die_07_team","drum_shaman_die_08_team","drum_shaman_die_09_team"]},"meta":{"app":"ageborn art/blender/styles/realistic","version":"3","image":"drum_shaman.hd.png","format":"RGBA8888","size":{"w":2025,"h":688},"scale":"3","ageborn":{"visualId":"unit.drum_shaman","name":"Drum Shaman","heightLu":66,"widthLu":39.8,"pxPerLu":2.46,"feetPx":[246.0,247.9],"anchorsLu":{"head":[0,64],"hitCenter":[0,30]},"facing":"right","note":"anchorsLu are screen-plane lu from the feet (x right, y up)","style":"realistic","team":{"mode":"tint-underlay","frameSuffix":"_team","howTo":"draw <frame>_team tinted with the team colour, then <frame> on top"},"clips":{"idle":{"frames":8,"loop":true,"sequence":[0,1,2,3,4,5,6,7],"durationsMs":[115,115,115,115,115,115,115,115],"durationMs":920,"anchorsLu":{"muzzle":[[8.2,29.7],[9.0,30.0],[9.3,30.1],[9.0,29.9],[8.3,29.5],[7.5,29.2],[7.2,29.1],[7.5,29.3]]}},"walk":{"frames":8,"loop":true,"sequence":[0,1,2,3,4,5,6,7],"durationsMs":[62,63,62,63,62,63,62,63],"durationMs":500,"anchorsLu":{"muzzle":[[10.0,28.4],[10.0,28.4],[9.8,29.5],[9.4,29.3],[9.1,28.0],[9.1,28.0],[9.4,29.3],[9.8,29.4]]},"strideLu":27.1,"naturalSpeedLuPerS":54.2},"attack":{"frames":8,"loop":false,"sequence":[0,1,2,3,4,5,6,7],"durationsMs":[65,70,120,35,140,80,80,90],"durationMs":680,"impactFrame":4,"impactAt":0.4265,"smearFrame":3,"anchorsLu":{"muzzle":[[8.3,29.6],[7.5,30.5],[6.5,32.2],[8.9,28.0],[9.9,25.9],[10.0,25.8],[9.5,27.0],[8.3,29.6]]}},"hit":{"frames":5,"loop":false,"sequence":[0,1,2,3,4],"durationsMs":[45,75,60,60,70],"durationMs":310,"anchorsLu":{"muzzle":[[8.3,29.6],[2.8,31.7],[2.8,31.3],[4.5,30.7],[6.6,30.1]]}},"die":{"frames":10,"loop":false,"sequence":[0,1,2,3,4,5,6,7,8,9],"durationsMs":[45,60,70,60,50,60,70,90,90,100],"durationMs":695,"fx":[{"id":"fx.dust_poof","atMs":595,"offsetLu":[-20,8],"scale":0.62}],"hideUnitAtMs":695,"anchorsLu":{"muzzle":[[7.7,31.5],[4.7,30.3],[1.8,23.5],[-7.6,19.1],[-19.0,17.4],[-18.8,19.0],[-19.9,17.3],[-20.2,16.8],[-20.2,16.8],[-20.2,16.9]]}}}}}}
+{
+ "frames": {
+  "drum_shaman_idle_00": {
+   "frame": {
+    "x": 624,
+    "y": 240,
+    "w": 120,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 127,
+    "w": 120,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_00_team": {
+   "frame": {
+    "x": 1457,
+    "y": 638,
+    "w": 108,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 221,
+    "w": 108,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_01": {
+   "frame": {
+    "x": 133,
+    "y": 240,
+    "w": 117,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 123,
+    "w": 117,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_01_team": {
+   "frame": {
+    "x": 1569,
+    "y": 638,
+    "w": 106,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 219,
+    "w": 106,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_02": {
+   "frame": {
+    "x": 1472,
+    "y": 2,
+    "w": 115,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 117,
+    "w": 115,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_02_team": {
+   "frame": {
+    "x": 1024,
+    "y": 638,
+    "w": 105,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 214,
+    "w": 105,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_03": {
+   "frame": {
+    "x": 734,
+    "y": 2,
+    "w": 115,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 112,
+    "w": 115,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_03_team": {
+   "frame": {
+    "x": 366,
+    "y": 638,
+    "w": 103,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 210,
+    "w": 103,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_04": {
+   "frame": {
+    "x": 366,
+    "y": 2,
+    "w": 115,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 108,
+    "w": 115,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_04_team": {
+   "frame": {
+    "x": 110,
+    "y": 638,
+    "w": 103,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 207,
+    "w": 103,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_05": {
+   "frame": {
+    "x": 853,
+    "y": 2,
+    "w": 115,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 112,
+    "w": 115,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_05_team": {
+   "frame": {
+    "x": 473,
+    "y": 638,
+    "w": 103,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 210,
+    "w": 103,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_06": {
+   "frame": {
+    "x": 1591,
+    "y": 2,
+    "w": 115,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 117,
+    "w": 115,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_06_team": {
+   "frame": {
+    "x": 1133,
+    "y": 638,
+    "w": 105,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 214,
+    "w": 105,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_07": {
+   "frame": {
+    "x": 254,
+    "y": 240,
+    "w": 117,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 123,
+    "w": 117,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_idle_07_team": {
+   "frame": {
+    "x": 1679,
+    "y": 638,
+    "w": 106,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 219,
+    "w": 106,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_00": {
+   "frame": {
+    "x": 748,
+    "y": 240,
+    "w": 118,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 126,
+    "w": 118,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_00_team": {
+   "frame": {
+    "x": 113,
+    "y": 746,
+    "w": 106,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 221,
+    "w": 106,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_01": {
+   "frame": {
+    "x": 375,
+    "y": 240,
+    "w": 117,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 120,
+    "w": 117,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_01_team": {
+   "frame": {
+    "x": 1242,
+    "y": 638,
+    "w": 103,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 215,
+    "w": 103,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_02": {
+   "frame": {
+    "x": 972,
+    "y": 2,
+    "w": 115,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 113,
+    "w": 115,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_02_team": {
+   "frame": {
+    "x": 1468,
+    "y": 455,
+    "w": 104,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 209,
+    "w": 104,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_03": {
+   "frame": {
+    "x": 1091,
+    "y": 2,
+    "w": 119,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 119,
+    "w": 119,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_03_team": {
+   "frame": {
+    "x": 1682,
+    "y": 455,
+    "w": 107,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 215,
+    "w": 107,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_04": {
+   "frame": {
+    "x": 1829,
+    "y": 2,
+    "w": 125,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 126,
+    "w": 125,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_04_team": {
+   "frame": {
+    "x": 693,
+    "y": 638,
+    "w": 107,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 221,
+    "w": 107,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_05": {
+   "frame": {
+    "x": 485,
+    "y": 2,
+    "w": 121,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 119,
+    "w": 121,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 638,
+    "w": 104,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 216,
+    "w": 104,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_06": {
+   "frame": {
+    "x": 247,
+    "y": 2,
+    "w": 115,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 112,
+    "w": 115,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_06_team": {
+   "frame": {
+    "x": 1576,
+    "y": 455,
+    "w": 102,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 211,
+    "w": 102,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_07": {
+   "frame": {
+    "x": 1710,
+    "y": 2,
+    "w": 115,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 119,
+    "w": 115,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_walk_07_team": {
+   "frame": {
+    "x": 1793,
+    "y": 455,
+    "w": 105,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 215,
+    "w": 105,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_00": {
+   "frame": {
+    "x": 610,
+    "y": 2,
+    "w": 120,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 113,
+    "w": 120,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_00_team": {
+   "frame": {
+    "x": 1349,
+    "y": 638,
+    "w": 104,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 212,
+    "w": 104,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_01": {
+   "frame": {
+    "x": 127,
+    "y": 2,
+    "w": 116,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 102,
+    "w": 116,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_01_team": {
+   "frame": {
+    "x": 223,
+    "y": 746,
+    "w": 100,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 208,
+    "w": 100,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 121,
+    "h": 234
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 94,
+    "w": 121,
+    "h": 234
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_02_team": {
+   "frame": {
+    "x": 443,
+    "y": 746,
+    "w": 97,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 206,
+    "w": 97,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_03": {
+   "frame": {
+    "x": 1214,
+    "y": 2,
+    "w": 130,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 117,
+    "w": 130,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_03_team": {
+   "frame": {
+    "x": 1902,
+    "y": 455,
+    "w": 105,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 214,
+    "w": 105,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_04": {
+   "frame": {
+    "x": 1700,
+    "y": 240,
+    "w": 133,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 147,
+    "w": 133,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_04_team": {
+   "frame": {
+    "x": 544,
+    "y": 746,
+    "w": 110,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 231,
+    "w": 110,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_05": {
+   "frame": {
+    "x": 870,
+    "y": 240,
+    "w": 164,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 131,
+    "w": 164,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_05_team": {
+   "frame": {
+    "x": 580,
+    "y": 638,
+    "w": 109,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 222,
+    "w": 109,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_06": {
+   "frame": {
+    "x": 2,
+    "y": 240,
+    "w": 127,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 122,
+    "w": 127,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_06_team": {
+   "frame": {
+    "x": 804,
+    "y": 638,
+    "w": 106,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 217,
+    "w": 106,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_07": {
+   "frame": {
+    "x": 1348,
+    "y": 2,
+    "w": 120,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 117,
+    "w": 120,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_attack_07_team": {
+   "frame": {
+    "x": 914,
+    "y": 638,
+    "w": 106,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 214,
+    "w": 106,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_00": {
+   "frame": {
+    "x": 1837,
+    "y": 240,
+    "w": 153,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 146,
+    "w": 153,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_00_team": {
+   "frame": {
+    "x": 1272,
+    "y": 746,
+    "w": 114,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 230,
+    "w": 114,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_01": {
+   "frame": {
+    "x": 380,
+    "y": 455,
+    "w": 182,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 163,
+    "w": 182,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_01_team": {
+   "frame": {
+    "x": 1640,
+    "y": 746,
+    "w": 122,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 233,
+    "w": 122,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_02": {
+   "frame": {
+    "x": 1537,
+    "y": 240,
+    "w": 159,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 143,
+    "w": 159,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_02_team": {
+   "frame": {
+    "x": 1390,
+    "y": 746,
+    "w": 114,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 225,
+    "w": 114,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_03": {
+   "frame": {
+    "x": 1038,
+    "y": 240,
+    "w": 142,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 132,
+    "w": 142,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_03_team": {
+   "frame": {
+    "x": 776,
+    "y": 746,
+    "w": 113,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 223,
+    "w": 113,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_04": {
+   "frame": {
+    "x": 496,
+    "y": 240,
+    "w": 124,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 125,
+    "w": 124,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_hit_04_team": {
+   "frame": {
+    "x": 1904,
+    "y": 638,
+    "w": 108,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 220,
+    "w": 108,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_00": {
+   "frame": {
+    "x": 566,
+    "y": 455,
+    "w": 199,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 167,
+    "w": 199,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_00_team": {
+   "frame": {
+    "x": 1020,
+    "y": 746,
+    "w": 121,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 228,
+    "w": 121,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_01": {
+   "frame": {
+    "x": 1355,
+    "y": 240,
+    "w": 178,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 38,
+    "y": 122,
+    "w": 178,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 746,
+    "w": 107,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 198,
+    "w": 107,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 455,
+    "w": 185,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 21,
+    "y": 126,
+    "w": 185,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_02_team": {
+   "frame": {
+    "x": 327,
+    "y": 746,
+    "w": 112,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 197,
+    "w": 112,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_03": {
+   "frame": {
+    "x": 191,
+    "y": 455,
+    "w": 185,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 14,
+    "y": 144,
+    "w": 185,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_03_team": {
+   "frame": {
+    "x": 658,
+    "y": 746,
+    "w": 114,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 212,
+    "w": 114,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_04": {
+   "frame": {
+    "x": 1119,
+    "y": 455,
+    "w": 183,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 35,
+    "y": 190,
+    "w": 183,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_04_team": {
+   "frame": {
+    "x": 893,
+    "y": 746,
+    "w": 123,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 241,
+    "w": 123,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_05": {
+   "frame": {
+    "x": 1184,
+    "y": 240,
+    "w": 167,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 127,
+    "w": 167,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_05_team": {
+   "frame": {
+    "x": 1789,
+    "y": 638,
+    "w": 111,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 212,
+    "w": 111,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_06": {
+   "frame": {
+    "x": 769,
+    "y": 455,
+    "w": 172,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 168,
+    "w": 172,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_06_team": {
+   "frame": {
+    "x": 1145,
+    "y": 746,
+    "w": 123,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 235,
+    "w": 123,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_07": {
+   "frame": {
+    "x": 945,
+    "y": 455,
+    "w": 170,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 178,
+    "w": 170,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_07_team": {
+   "frame": {
+    "x": 1508,
+    "y": 746,
+    "w": 128,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 241,
+    "w": 128,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_08": {
+   "frame": {
+    "x": 1306,
+    "y": 455,
+    "w": 158,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 204,
+    "w": 158,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_08_team": {
+   "frame": {
+    "x": 1766,
+    "y": 746,
+    "w": 129,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 255,
+    "w": 129,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_09": {
+   "frame": {
+    "x": 217,
+    "y": 638,
+    "w": 145,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 227,
+    "w": 145,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  },
+  "drum_shaman_die_09_team": {
+   "frame": {
+    "x": 1899,
+    "y": 746,
+    "w": 122,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 268,
+    "w": 122,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 384,
+    "h": 354
+   },
+   "anchor": {
+    "x": 0.46875,
+    "y": 0.89266
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "drum_shaman_idle_00",
+   "drum_shaman_idle_01",
+   "drum_shaman_idle_02",
+   "drum_shaman_idle_03",
+   "drum_shaman_idle_04",
+   "drum_shaman_idle_05",
+   "drum_shaman_idle_06",
+   "drum_shaman_idle_07"
+  ],
+  "idle_team": [
+   "drum_shaman_idle_00_team",
+   "drum_shaman_idle_01_team",
+   "drum_shaman_idle_02_team",
+   "drum_shaman_idle_03_team",
+   "drum_shaman_idle_04_team",
+   "drum_shaman_idle_05_team",
+   "drum_shaman_idle_06_team",
+   "drum_shaman_idle_07_team"
+  ],
+  "walk": [
+   "drum_shaman_walk_00",
+   "drum_shaman_walk_01",
+   "drum_shaman_walk_02",
+   "drum_shaman_walk_03",
+   "drum_shaman_walk_04",
+   "drum_shaman_walk_05",
+   "drum_shaman_walk_06",
+   "drum_shaman_walk_07"
+  ],
+  "walk_team": [
+   "drum_shaman_walk_00_team",
+   "drum_shaman_walk_01_team",
+   "drum_shaman_walk_02_team",
+   "drum_shaman_walk_03_team",
+   "drum_shaman_walk_04_team",
+   "drum_shaman_walk_05_team",
+   "drum_shaman_walk_06_team",
+   "drum_shaman_walk_07_team"
+  ],
+  "attack": [
+   "drum_shaman_attack_00",
+   "drum_shaman_attack_01",
+   "drum_shaman_attack_02",
+   "drum_shaman_attack_03",
+   "drum_shaman_attack_04",
+   "drum_shaman_attack_05",
+   "drum_shaman_attack_06",
+   "drum_shaman_attack_07"
+  ],
+  "attack_team": [
+   "drum_shaman_attack_00_team",
+   "drum_shaman_attack_01_team",
+   "drum_shaman_attack_02_team",
+   "drum_shaman_attack_03_team",
+   "drum_shaman_attack_04_team",
+   "drum_shaman_attack_05_team",
+   "drum_shaman_attack_06_team",
+   "drum_shaman_attack_07_team"
+  ],
+  "hit": [
+   "drum_shaman_hit_00",
+   "drum_shaman_hit_01",
+   "drum_shaman_hit_02",
+   "drum_shaman_hit_03",
+   "drum_shaman_hit_04"
+  ],
+  "hit_team": [
+   "drum_shaman_hit_00_team",
+   "drum_shaman_hit_01_team",
+   "drum_shaman_hit_02_team",
+   "drum_shaman_hit_03_team",
+   "drum_shaman_hit_04_team"
+  ],
+  "die": [
+   "drum_shaman_die_00",
+   "drum_shaman_die_01",
+   "drum_shaman_die_02",
+   "drum_shaman_die_03",
+   "drum_shaman_die_04",
+   "drum_shaman_die_05",
+   "drum_shaman_die_06",
+   "drum_shaman_die_07",
+   "drum_shaman_die_08",
+   "drum_shaman_die_09"
+  ],
+  "die_team": [
+   "drum_shaman_die_00_team",
+   "drum_shaman_die_01_team",
+   "drum_shaman_die_02_team",
+   "drum_shaman_die_03_team",
+   "drum_shaman_die_04_team",
+   "drum_shaman_die_05_team",
+   "drum_shaman_die_06_team",
+   "drum_shaman_die_07_team",
+   "drum_shaman_die_08_team",
+   "drum_shaman_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "drum_shaman.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 848
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.drum_shaman",
+   "name": "Drum Shaman",
+   "heightLu": 66,
+   "widthLu": 43.9,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    180,
+    316
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     64
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.9,
+        16.7
+       ],
+       [
+        15.8,
+        17.8
+       ],
+       [
+        15.7,
+        19.4
+       ],
+       [
+        15.5,
+        21.1
+       ],
+       [
+        15.4,
+        22.3
+       ],
+       [
+        15.5,
+        21.1
+       ],
+       [
+        15.7,
+        19.4
+       ],
+       [
+        15.8,
+        17.8
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.9,
+        16.5
+       ],
+       [
+        16.3,
+        18.4
+       ],
+       [
+        16.6,
+        20.0
+       ],
+       [
+        16.9,
+        18.0
+       ],
+       [
+        16.8,
+        15.9
+       ],
+       [
+        16.0,
+        16.8
+       ],
+       [
+        15.4,
+        18.3
+       ],
+       [
+        15.5,
+        17.3
+       ]
+      ]
+     },
+     "strideLu": 29.4,
+     "naturalSpeedLuPerS": 58.8
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      65,
+      70,
+      120,
+      35,
+      140,
+      80,
+      80,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactAt": 0.4265,
+     "smearFrame": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        14.8,
+        21.5
+       ],
+       [
+        13.4,
+        25.1
+       ],
+       [
+        12.3,
+        27.9
+       ],
+       [
+        16.1,
+        18.3
+       ],
+       [
+        18.0,
+        9.8
+       ],
+       [
+        17.9,
+        16.4
+       ],
+       [
+        16.2,
+        18.0
+       ],
+       [
+        15.7,
+        19.4
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        13.9,
+        17.8
+       ],
+       [
+        11.7,
+        18.6
+       ],
+       [
+        11.8,
+        20.6
+       ],
+       [
+        13.7,
+        19.9
+       ],
+       [
+        15.4,
+        18.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 0.549
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 0.741
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        13.5,
+        22.0
+       ],
+       [
+        2.0,
+        34.4
+       ],
+       [
+        -3.0,
+        37.1
+       ],
+       [
+        -6.1,
+        33.0
+       ],
+       [
+        0.4,
+        23.1
+       ],
+       [
+        -4.7,
+        29.6
+       ],
+       [
+        2.9,
+        21.7
+       ],
+       [
+        5.9,
+        19.4
+       ],
+       [
+        8.6,
+        14.3
+       ],
+       [
+        9.2,
+        9.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
