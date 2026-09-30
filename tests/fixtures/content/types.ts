@@ -11,6 +11,7 @@
  */
 import type { AgeDef, DamageMod, EconomyRules, FormatDef, PowerDef, ResearchRules, TurretDef, UnitDef } from '@/contracts/content';
 import type { AgeId, FormatId, RoleGroup } from '@/contracts/ids';
+import type { FortSpec } from '@/core/forts';
 
 /** One age's unit and turret tables, in DESIGN table order (A5.2-A5.6). */
 export interface RawAgeTables {
@@ -19,6 +20,8 @@ export interface RawAgeTables {
   units: readonly UnitDef[];
   /** The 4 turrets: two Commons, the Rare, the Epic. */
   turrets: readonly TurretDef[];
+  /** SIM_VERSION 5.0.0 contract bump: the frozen fort tables (A16.14.4), Stone, Medieval and Gunpowder only. */
+  forts?: readonly FortSpec[];
 }
 
 /** The numeric part of an age (DESIGN A2.2 P and base HP, A2.4 thresholds). WP1 adds visual and music ids. */

@@ -1,6 +1,8 @@
 /** Pure, deterministic helpers shared by every layer (DESIGN B2, B3). */
 export * from './assert';
 export * from './fixed';
+export * from './fortPads';
+export * from './forts';
 export * from './hash';
 export * from './ids';
 export * from './modifiers';

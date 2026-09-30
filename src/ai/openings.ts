@@ -13,6 +13,8 @@
  * | `favorite:<card>` | not a step: a procedural Commander's favourite card (A7.4), trained a little more often |
  * | `rule:noStance` | not a step: the match locks this side's stance (training matches), so the bot never toggles it |
  * | `rule:autoLastStand` | not a step: Last Stand is automatic-only for this side, so the bot never fires it |
+ * | `rule:noFort` | not a step: the bot never places a fort (the headless tools' placebo row, A16.14.9) |
+ * | `rule:fortForce:safe` / `rule:fortForce:any` | not a step: the headless tools' forced-placement rows (A16.14.9): the bot re-places its Fort card on every recharge, paid from its ledger, on the most forward safe pad (else the most rearward legal one) or on the most forward legal pad |
  *
  * Unknown steps are ignored. After the steps are resolved, one pair of neighbouring steps after the
  * first may swap (seeded), so two matches against the same General do not open identically.
@@ -35,6 +37,9 @@ export interface OpeningPlan {
   /** Match rules the session disclosed (training matches, DESIGN A8, A2.11). */
   noStance: boolean;
   autoLastStand: boolean;
+  /** Tools only (A16.14.9): never place a fort, or force one on every recharge. */
+  noFort: boolean;
+  fortForce: 'safe' | 'any' | null;
 }
 
 /** Limits the tier puts on opening steps (A7.3 Treasury max and Max turrets). */
@@ -63,7 +68,17 @@ export function parseOpenings(tokens: readonly string[], rng: Sfc32State): Openi
   let favorite: CardId | null = null;
   let noStance = false;
   let autoLastStand = false;
+  let noFort = false;
+  let fortForce: 'safe' | 'any' | null = null;
   for (const token of tokens) {
+    if (token === 'rule:noFort') {
+      noFort = true;
+      continue;
+    }
+    if (token === 'rule:fortForce:safe' || token === 'rule:fortForce:any') {
+      fortForce = token === 'rule:fortForce:safe' ? 'safe' : 'any';
+      continue;
+    }
     if (token.startsWith('favorite:')) {
       favorite = token.slice('favorite:'.length).trim() || null;
       continue;
@@ -87,7 +102,7 @@ export function parseOpenings(tokens: readonly string[], rng: Sfc32State): Openi
     steps[i] = steps[i + 1] as OpeningStep;
     steps[i + 1] = a;
   }
-  return { steps, favorite, noStance, autoLastStand };
+  return { steps, favorite, noStance, autoLastStand, noFort, fortForce };
 }
 
 /**

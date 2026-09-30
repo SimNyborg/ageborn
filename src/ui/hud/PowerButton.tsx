@@ -257,8 +257,8 @@ function PowerSlotButton(p: {
   slot: PowerSlot;
   v: PowerSlotView;
   pulse: boolean;
-  /** The slot being aimed now (only one at a time): another slot's aim cancels this one. */
-  active: PowerSlot | null;
+  /** The slot being aimed now (only one at a time; 'fort' for the Fort button): another aim cancels this one. */
+  active: PowerSlot | 'fort' | null;
   onActive: (slot: PowerSlot | null) => void;
   onSpend?: (amount: number) => void;
 }) {
@@ -788,9 +788,25 @@ function PowerSlotButton(p: {
  * The dock: Home and Field side by side (A2.9.10). Only one slot aims at a time. Plays the ready chime
  * when a slot first becomes castable after its cast (at most once per 3 s across both slots).
  */
-export function PowerDock(p: { c: HudCtx; pulse: boolean; onSpend?: (amount: number) => void }) {
+export function PowerDock(p: {
+  c: HudCtx;
+  pulse: boolean;
+  onSpend?: (amount: number) => void;
+  /** The Fort button has a fort in hand (A16.14.7): a power being aimed goes back. */
+  fortAiming?: boolean;
+  /** A power is picked up or aimed (true) or put back (false): the Fort button puts its fort back. */
+  onPowerAim?: (on: boolean) => void;
+}) {
   const { c } = p;
-  const [active, setActive] = useState<PowerSlot | null>(null);
+  // The slot being aimed; 'fort' while the Fort button has a fort in hand (only one thing aims at a time).
+  const [active, setActive] = useState<PowerSlot | 'fort' | null>(null);
+  useEffect(() => {
+    if (p.fortAiming) setActive('fort');
+    else setActive((a) => (a === 'fort' ? null : a));
+  }, [p.fortAiming]);
+  useEffect(() => {
+    p.onPowerAim?.(active === 'home' || active === 'field');
+  }, [active]);
   const home = powerSlotView(c.m, 'home');
   const field = powerSlotView(c.m, 'field');
   const pulseSlot: PowerSlot | null = !p.pulse ? null : home.state === 'castable' ? 'home' : field.state === 'castable' ? 'field' : null;

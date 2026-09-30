@@ -6,7 +6,8 @@
  * either side fails. When balance tuning changes a number, update DESIGN and the row here.
  */
 import { describe, expect, it } from 'vitest';
-import type { AttackDef, PowerFamily, PowerSlot, PowerSource, UnitDef } from '@/contracts/content';
+import type { AttackDef, DamageMod, PowerFamily, PowerSlot, PowerSource, UnitDef } from '@/contracts/content';
+import { carriesStructureMod } from '@/core/forts';
 import type { AgeId, Rarity, Role, Tag } from '@/contracts/ids';
 import strings from '@/i18n/content.en.json';
 import { content } from '../index';
@@ -541,10 +542,19 @@ describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () =>
       }
       const [first, ...rest] = attacks;
       if (!first) return;
-      expect(first.mods ?? [], id).toEqual(MODS_BY_CARD[id] ?? []);
+      // A16.14.2: the compiler puts the ×2 structure mod (vs forts) at the front of every attack of a
+      // Heavy, Legendary, siege or artillery card; the A2.6 mods follow it unchanged.
+      const structure = content.units[id] !== undefined && carriesStructureMod(content.units[id]);
+      const own = (a: AttackDef): DamageMod[] => (a.mods ?? []).filter((m) => m.vs !== 'structure');
+      for (const a of attacks) {
+        const lead = (a.mods ?? [])[0];
+        if (structure) expect(lead, id).toEqual({ vs: 'structure', bp: content.economy.fort?.structureBp });
+        else expect((a.mods ?? []).some((m) => m.vs === 'structure'), id).toBe(false);
+      }
+      expect(own(first), id).toEqual(MODS_BY_CARD[id] ?? []);
       expect(first.priority ?? 'front', id).toBe(PRIORITY_BY_CARD[id] ?? 'front');
-      // Secondary attacks (the Behemoth MG, the Matriarch's riders) carry no mods.
-      for (const a of rest) expect(a.mods ?? [], id).toEqual([]);
+      // Secondary attacks (the Behemoth MG, the Matriarch's riders) carry no mods of their own.
+      for (const a of rest) expect(own(a), id).toEqual([]);
     });
   }
 

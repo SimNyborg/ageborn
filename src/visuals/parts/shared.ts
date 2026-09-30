@@ -188,9 +188,11 @@ const GLYPHS: Record<RoleGroup, string> = {
   support: join(rrect(-1.7, -5.6, 3.4, 11.2, 0.8), rrect(-5.6, -1.7, 11.2, 3.4, 0.8)),
   epic: star(0, 0.4, 5, 2.6, 6.2),
   legendary: poly([-6, 4.4, -6, -3.4, -3, -0.4, 0, -5.4, 3, -0.4, 6, -3.4, 6, 4.4]),
+  // A16.14.8 icon.role.fort: a crenellated wall (placeholder until F3 draws the fort icons)
+  fort: poly([-6, 5, -6, -3, -4, -3, -4, -5, -1, -5, -1, -3, 1, -3, 1, -5, 4, -5, 4, -3, 6, -3, 6, 5]),
 };
 
-export const ROLE_GROUPS: readonly RoleGroup[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'];
+export const ROLE_GROUPS: readonly RoleGroup[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary', 'fort'];
 
 for (const g of ROLE_GROUPS) {
   part(`icon.role.${g}`, [

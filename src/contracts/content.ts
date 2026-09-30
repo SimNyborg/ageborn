@@ -582,6 +582,9 @@ export interface PowerEconomyRules {
   lockMs: number;
 }
 
+/** Roles with a Troops class (every role but the fort twins, A16.14.5). */
+export type ResearchRole = Exclude<Role, 'fort'>;
+
 /** The four War Council tracks (DESIGN A18.5). */
 export type ResearchTrack = 'troops' | 'defences' | 'economy' | 'command';
 
@@ -675,8 +678,11 @@ export interface ResearchRules {
    * row not longer than them.
    */
   unlockAt: Record<string, number[]>;
-  /** The Troops class of each card role (Epics and Legendaries count in their base role's class). */
-  classOfRole: Record<Role, ResearchClass>;
+  /**
+   * The Troops class of each card role (Epics and Legendaries count in their base role's class). Fort twins
+   * (`fort`) have no class: no research of any track touches forts or towers (A16.14.5).
+   */
+  classOfRole: Record<ResearchRole, ResearchClass>;
 }
 
 /** A skin (DESIGN A5.8). Target is a card or a base (`base.<age>`); visual lives in the manifest (B5). */

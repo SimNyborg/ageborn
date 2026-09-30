@@ -11,7 +11,8 @@
 import type { CardId, RoleGroup, UnitDef } from '@/contracts';
 
 export type UnitClass = 'infantry' | 'ranged' | 'heavy' | 'antiArmor' | 'siege' | 'support' | 'air';
-export type CardClass = UnitClass | 'turret' | 'power';
+/** `fort` is the stationary Fort class (DESIGN A16.14): walls, towers, camps and traps. */
+export type CardClass = UnitClass | 'turret' | 'power' | 'fort';
 /** Everything a class icon can show: a class, or the Legendary marker. */
 export type ClassGlyphId = CardClass | 'legendary';
 
@@ -49,6 +50,10 @@ export function unitClass(u: Pick<UnitDef, 'role' | 'tags'>): UnitClass {
     case 'airBomber':
     case 'airGunship':
       return 'air';
+    case 'fort':
+      // A fort's hidden twin (A16.14.8) is never in a tray or a counter list (UnitClass has no Fort);
+      // screens show a fort through its `FortDef` with the `fort` card class and glyph.
+      return 'siege';
   }
 }
 
@@ -178,6 +183,7 @@ export const CLASS_COLOR: Readonly<Record<ClassGlyphId, { main: string; dark: st
   legendary: { main: '#FFC23A', dark: '#9A6A00' },
   turret: { main: '#A08A70', dark: '#5E4C38' },
   power: { main: '#B16CF0', dark: '#5E2E8C' },
+  fort: { main: '#B0643F', dark: '#5E2E17' },
 };
 
 /** One SVG element of a glyph on a 24 × 24 view box. `fill: 'glyph'` uses the light glyph colour. */
@@ -308,4 +314,21 @@ export const CLASS_GLYPH: Readonly<Record<ClassGlyphId, readonly GlyphPart[]>> =
       stroke: 14,
     },
   ],
+  // A crenellated wall (A16.14 Fort class): wide and low with four merlons and mortar lines, so it never
+  // reads as the Turret's tall tower.
+  fort: [
+    {
+      d: 'M2.4 20.4V7.6h3v2.8h2.4V7.6h3v2.8h2.4V7.6h3v2.8h2.4V7.6h3v12.8z',
+      fill: 'glyph',
+      stroke: 14,
+    },
+    { d: 'M2.8 15.2h18.4M8.4 10.6v4.6M15.6 10.6v4.6M12 15.2v5', stroke: 12 },
+  ],
 };
+
+/**
+ * The Fort row of the counter legend (DESIGN A16.14.7 "Heavy beats Fort"): Heavies, siege and
+ * Legendaries deal ×2 to forts. Kept apart from {@link COUNTER_LEGEND} (whose rows feed the unit
+ * counter lists) and shown only where forts are in play.
+ */
+export const FORT_LEGEND_ROW: { a: CardClass; b: CardClass; note: string } = { a: 'heavy', b: 'fort', note: 'breach' };

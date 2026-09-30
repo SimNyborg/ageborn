@@ -33,10 +33,10 @@ import {
 } from '../index';
 
 const ROLES: Role[] = [
-  'infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'skirmisher', 'siege', 'artillery', 'airBomber', 'airGunship', 'antiMech', 'siegeHeavy',
+  'infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'skirmisher', 'siege', 'artillery', 'airBomber', 'airGunship', 'antiMech', 'siegeHeavy', 'fort',
 ];
-const GROUPS: RoleGroup[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'];
-const TAGS: Tag[] = ['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee'];
+const GROUPS: RoleGroup[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary', 'fort'];
+const TAGS: Tag[] = ['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee', 'structure'];
 
 /** Every string key the content references. */
 function referencedKeys(): string[] {
@@ -45,6 +45,8 @@ function referencedKeys(): string[] {
   for (const u of Object.values(c.units)) keys.push(u.nameKey, u.descKey);
   for (const t of Object.values(c.turrets)) keys.push(t.nameKey, t.descKey);
   for (const p of Object.values(c.powers)) keys.push(p.nameKey, p.descKey);
+  // A16.14 forts (traps have no twin unit)
+  for (const f of Object.values(c.forts)) keys.push(f.nameKey, f.descKey);
   for (const s of Object.values(c.skins)) keys.push(s.nameKey, skinLookKey(s.id));
   for (const a of c.order.ages) keys.push(ageNameKey(a), ageMechanicKey(a));
   // A18.8.2 presentation themes: Hellas, Muskets, Great War

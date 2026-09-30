@@ -707,6 +707,7 @@
       "legendary": "Legendary",
       "turret": "Turret",
       "power": "Age Power",
+      "fort": "Fort",
       "legend": {
         "title": "Who beats whom",
         "beats": "{a} beats {b}",
@@ -715,7 +716,8 @@
         "swarm": "Cheap and many.",
         "melee": "Melee cannot reach the sky.",
         "shootDown": "Shots bring fliers down.",
-        "splash": "Outranges and smashes defenses."
+        "splash": "Outranges and smashes defenses.",
+        "breach": "Heavies break walls ×2."
       }
     },
     "notice": {

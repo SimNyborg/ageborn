@@ -13,10 +13,11 @@
  * - Hover (desktop, 350 ms) or long-press (touch, 450 ms) opens the tip with class and counters.
  */
 import { rarityNameKey } from '@/content/keys';
-import type { AgeId, CardId, Foil, PowerSlot, Rarity, SkinId } from '@/contracts';
+import type { AgeId, CardId, Foil, FortKind, PowerSlot, Rarity, SkinId } from '@/contracts';
 import type { CardClass, UnitClass } from '@/core/cardClass';
 import type { ComponentChildren } from 'preact';
 import { CardTip, CardTipBody, ClassIcon, CLASS_NAME_KEY, useCardTip } from './ClassIcon';
+import { FORT_KIND_KEY, FORT_PORTRAITS, FortArt, FortKindBadge } from './FortGlyphs';
 import { formatInt } from './format';
 import './cardTile.css';
 import { AGE_COLOR, ArrowUpIcon, CheckIcon, CoinIcon, LockIcon, RARITY_COLOR, RarityGem, RoleGlyph, type GlyphKind } from './icons';
@@ -27,7 +28,7 @@ import type { ReachGlyph } from './powerInfo';
 
 export interface CardTileData {
   id: CardId;
-  kind: 'unit' | 'turret' | 'power';
+  kind: 'unit' | 'turret' | 'power' | 'fort';
   name: string;
   age: AgeId;
   /** Powers have no rarity; they use the power frame. */
@@ -56,9 +57,24 @@ export interface CardTileData {
    * their class, and the reload shown at the bottom ("⟳ 40 s").
    */
   power?: { slot: PowerSlot; reach: ReachGlyph; reloadS: number };
+  /**
+   * A Fort card (A16.14.7): its kind glyph shows top-right where units show their class, the kind's
+   * name under the card, the pop it takes at the bottom, and the art is the kind's illustration.
+   */
+  fort?: { kind: FortKind; pop: number; pads: 'home' | 'any' };
 }
 
 export type CardTileSize = 'xs' | 'sm' | 'md' | 'lg';
+
+/** A small soldier head: the pop a Fort card takes. */
+function PopMark() {
+  return (
+    <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+      <circle cx="6" cy="4" r="2.6" fill="currentColor" />
+      <path d="M1.6 11.4c.4-3 2.2-4.4 4.4-4.4s4 1.4 4.4 4.4z" fill="currentColor" />
+    </svg>
+  );
+}
 
 const ART_PX: Record<CardTileSize, number> = { xs: 64, sm: 84, md: 112, lg: 160 };
 const CLASS_PX: Record<CardTileSize, number> = { xs: 16, sm: 20, md: 24, lg: 30 };
@@ -73,10 +89,13 @@ export function CardArt(p: {
   skin?: SkinId | null;
   silhouette?: boolean;
   class?: string;
+  /** A Fort card: its kind's illustration until F3's fort portraits ship (`FORT_PORTRAITS`). */
+  fortKind?: FortKind;
 }) {
   // Silhouettes (unowned cards) use a plate-free portrait darkened by CSS; without a provider the
   // role glyph stands in (docs/requests/wp4-portrait-plate-contract.md).
-  const url = usePortrait(p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette });
+  const fortArt = p.fortKind !== undefined && !FORT_PORTRAITS;
+  const url = usePortrait(fortArt ? '' : p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette });
   const age = AGE_COLOR[p.age];
   return (
     <span
@@ -86,6 +105,10 @@ export function CardArt(p: {
     >
       {url ? (
         <img class="ui-art__img" src={url} alt="" draggable={false} />
+      ) : fortArt ? (
+        <span class="ui-art__fallback ui-art__fort">
+          <FortArt kind={p.fortKind!} age={p.age} size={Math.round(p.size * 0.9)} silhouette={p.silhouette} />
+        </span>
       ) : (
         <span class="ui-art__fallback">
           <RoleGlyph kind={p.glyph} size={Math.round(p.size * 0.56)} color={p.silhouette ? '#1b1330' : age.light} />
@@ -156,9 +179,15 @@ export function CardTile(p: {
   const body = (
     <>
       <span class="ui-card__frame" style={{ '--frame': frame }}>
-        <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} />
+        <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} {...(c.fort ? { fortKind: c.fort.kind } : {})} />
         <i class="ui-card__shade" aria-hidden="true" />
-        {c.owned && size !== 'xs' && !p.hideLevel && c.kind !== 'power' ? <span class="ui-card__level">{levelText}</span> : null}
+        {c.owned && size !== 'xs' && !p.hideLevel && c.kind !== 'power' && c.kind !== 'fort' ? <span class="ui-card__level">{levelText}</span> : null}
+        {c.fort && size !== 'xs' ? (
+          <span class="ui-card__pop" data-tag="" aria-hidden="true">
+            <PopMark />
+            {c.fort.pop}
+          </span>
+        ) : null}
         {p.showCost && c.cost !== null ? (
           <span class="ui-card__cost">
             <CoinIcon size={size === 'xs' ? 11 : 13} />
@@ -186,7 +215,11 @@ export function CardTile(p: {
           </span>
         ) : null}
         {p.corner ? <span class="ui-card__corner">{p.corner}</span> : null}
-        {c.power ? (
+        {c.fort ? (
+          <span class="ui-card__class ui-card__fortkind" data-testid={p.testid ? `${p.testid}-class` : undefined} data-class="fort" data-kind={c.fort.kind}>
+            <FortKindBadge kind={c.fort.kind} size={CLASS_PX[size]} />
+          </span>
+        ) : c.power ? (
           <span class="ui-card__class ui-card__reach" data-testid={p.testid ? `${p.testid}-class` : undefined} data-class="power" data-reach={c.power.reach}>
             <ReachGlyphIcon kind={c.power.reach} size={CLASS_PX[size] - 4} />
           </span>
@@ -214,7 +247,11 @@ export function CardTile(p: {
           {c.name}
         </span>
       ) : null}
-      {c.cls && named ? (
+      {c.fort && named ? (
+        <span class="ui-card__classname" data-tag="" style={{ '--cls': 'var(--cls-fort)' }}>
+          {t(FORT_KIND_KEY[c.fort.kind])}
+        </span>
+      ) : c.cls && named ? (
         <span class="ui-card__classname" data-tag="" style={{ '--cls': `var(--cls-${c.cls})` }}>
           {t(CLASS_NAME_KEY[c.cls])}
         </span>

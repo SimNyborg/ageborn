@@ -107,7 +107,8 @@ export function cancelWindups(u: UnitRt): void {
  * the pool to the max of current and new. `amount` is the shield pool or regen total in centi.
  */
 export function applyStatus(ctx: Ctx, u: UnitRt, st: StatusRules, sourceId: number, amount = 0): void {
-  if (u.hp <= 0 || st.ticks <= 0) return;
+  // A16.14.2: forts ignore every status (stuns, slows, marks, shields, heals, auras).
+  if (u.hp <= 0 || st.ticks <= 0 || u.fort) return;
   const until = ctx.tick + st.ticks;
   let cur = null;
   for (const s of u.statuses) if (s.kind === st.kind) cur = s;
@@ -127,7 +128,8 @@ export function applyStatus(ctx: Ctx, u: UnitRt, st: StatusRules, sourceId: numb
 
 /** Heals a unit (Legendaries receive 50%, never above max HP). Returns the HP restored. */
 export function healUnit(ctx: Ctx, u: UnitRt, amount: number): number {
-  if (u.hp <= 0 || amount <= 0) return 0;
+  // Nothing heals a fort (A16.14.2; the Hardlight regen is its own trait, `forts.ts`).
+  if (u.hp <= 0 || amount <= 0 || u.fort) return 0;
   const r = ctx.rules.unitList[u.ci] as UnitRules;
   let a = r.legendary ? Math.trunc((amount * ctx.econ.healLegendaryBp) / BP) : amount;
   if (u.hp + a > u.maxHp) a = u.maxHp - u.hp;
@@ -143,6 +145,7 @@ export function healUnit(ctx: Ctx, u: UnitRt, amount: number): number {
  */
 export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boolean): { dmg: number; modBp: number } {
   const tr = ctx.rules.unitList[target.ci] as UnitRules;
+  if (target.fort) return fortDamage(ctx, imp, primary);
   let v = imp.dmg;
   // 1. first-hit bonus belongs to the base hit of the primary; Brace ignores it (A2.7).
   if (primary && imp.bonusBp !== BP && !tr.brace) v = Math.trunc((v * imp.bonusBp) / BP);
@@ -162,7 +165,10 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
     if (fx.resistBp > 0 && !imp.power && imp.srcRange >= fx.resistMin) red += fx.resistBp;
     if (fx.takenFrom >= 0 && imp.srcCls === fx.takenFrom) red += fx.takenBp;
   }
-  red += target.auraGuardBp;
+  // Guard auras never stack: the strongest applies. The Sandbag Bunker's cover counts only against
+  // attacks with range ≥ 100 (A16.14.3), never powers.
+  const cover = target.auraCoverBp > 0 && !imp.power && ctx.econ.fort !== null && imp.srcRange >= ctx.econ.fort.rangedMin ? target.auraCoverBp : 0;
+  red += target.auraGuardBp > cover ? target.auraGuardBp : cover;
   if (red > caps.takenBp) red = caps.takenBp;
   if (red > 0) v = Math.trunc((v * (BP - red)) / BP);
   // 5. attacker damage buff (already capped at fire time), plus research against the target's tags (Hunters)
@@ -182,6 +188,39 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
     const floor = Math.trunc((v * (BP - caps.takenBp)) / (red < BP ? BP - red : 1));
     v = v - target.mail > floor ? v - target.mail : floor;
   }
+  if (v < 100) v = 100;
+  return { dmg: v, modBp };
+}
+
+/**
+ * The A2.7 pipeline with a fort as the target (A16.14.2 section 2.5): base × level (siege-only units use
+ * their vs-base damage); the type mod is the attack's `structure` mod if it has one (for ability impacts:
+ * the source card's), else ×0.5 when the compiled base range is ≥ 100, else ×1 (outside the −35% floor:
+ * it is a type mod, not a resist); the area secondary; no resists, auras or marks; attacker damage
+ * buffs; ×2 in Siege. Powers and Last Stand never get here. Minimum 1 HP.
+ */
+function fortDamage(ctx: Ctx, imp: Impact, primary: boolean): { dmg: number; modBp: number } {
+  const f = ctx.econ.fort;
+  const src = ctx.rules.units[imp.sourceCard];
+  let v = imp.dmg;
+  // 1. base × level: siege-only units (Battering Ram, Sapper) hit forts with their vs-base damage, no ×2.
+  const siegeOnly = src?.siegeOnly === true && imp.sourceKind === 'unit';
+  if (siegeOnly) v = imp.vsBase;
+  else if (primary && imp.bonusBp !== BP) v = Math.trunc((v * imp.bonusBp) / BP);
+  // 2. type mod
+  let modBp = BP;
+  if (!siegeOnly) {
+    const structure = imp.atk ? imp.atk.mods.find((m) => m.vs === 'structure')?.bp : src && src.structureBp > 0 ? src.structureBp : undefined;
+    if (structure !== undefined) modBp = structure;
+    else if (f && imp.srcRange >= f.rangedMin) modBp = f.rangedTakenBp;
+  }
+  if (modBp !== BP) v = Math.trunc((v * modBp) / BP);
+  // 3. area secondary (death explosions are exempt, as for units)
+  if (!primary && imp.area !== 'blast') v = Math.trunc((v * ctx.econ.areaSecondaryBp) / BP);
+  // 5. attacker damage buffs
+  if (imp.dmgBuffBp !== 0) v = Math.trunc((v * (BP + imp.dmgBuffBp)) / BP);
+  // 7. Siege: forts crumble (×2 damage taken)
+  if (f && ctx.s.phase === 'siege' && f.siegeTakenBp !== BP) v = Math.trunc((v * f.siegeTakenBp) / BP);
   if (v < 100) v = 100;
   return { dmg: v, modBp };
 }
@@ -211,6 +250,11 @@ export function dealDamage(ctx: Ctx, imp: Impact, target: UnitRt, dmg: number, m
   target.lastHitKind = imp.sourceKind;
   target.lastHitSide = imp.side;
   target.lastHitCast = imp.castId;
+  if (target.fort && imp.side !== target.side) {
+    // A16.14.2 decay credit: the last enemy hit (a fort that decays within 3 s counts as destroyed by it).
+    target.fort.lastEnemyHitTick = ctx.tick;
+    target.fort.lastEnemyHitBy = imp.sourceId;
+  }
   emit(ctx, {
     e: 'hit',
     targetId: target.id,
@@ -296,5 +340,7 @@ export function makeImpact(side: Side, sourceId: number, sourceCard: string): Im
     vsTags: 0,
     vsBp: 0,
     srcCls: -1,
+    forts: false,
+    trapStatuses: null,
   };
 }

@@ -98,7 +98,8 @@ describe('what the matrix says (A2.6 counter triangle)', () => {
 
 describe('duel setup', () => {
   it('gives both sides (nearly) the same gold within the budget', () => {
-    const costs = [...new Set(Object.values(content.units).map((u) => u.cost))];
+    // Duels are between collectable units (fort twins and cost-0 levies never duel, A16.14).
+    const costs = [...new Set(Object.values(content.units).filter((u) => !u.hidden).map((u) => u.cost))];
     for (const a of costs) {
       for (const b of costs) {
         const [na, nb] = duelCounts(a, b);

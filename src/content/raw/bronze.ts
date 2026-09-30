@@ -7,6 +7,7 @@
  */
 import type { PowerDef } from '@/contracts/content';
 import { damageMods } from './economy';
+import { camp, slow, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const bronze: RawAgeTables = {
@@ -169,6 +170,13 @@ export const bronze: RawAgeTables = {
       },
       visualId: 'turret.gorgon_bust', nameKey: 'card.gorgon_bust.name', descKey: 'card.gorgon_bust.desc',
     },
+  ],
+  // A16.14.4 Forts (Bronze, P 1.16): War Path L4 camp, L6 trap, L8 tower; Road fort set at 2,200
+  forts: [
+    wall('bronze', 'cyclopean_wall'),
+    tower('bronze', 'pyrgos_tower', { warPath: 8, road: 2200 }),
+    camp('bronze', 'muster_tents', 'citizen_levy', { warPath: 4, road: 2200 }),
+    trap('bronze', 'hidden_stakes', { warPath: 6, road: 2200 }, { charges: 3, damage: 46, statuses: [slow(4000, 2000)] }),
   ],
 };
 

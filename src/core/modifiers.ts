@@ -46,6 +46,7 @@ export interface MatchMods {
   siegeEarlierMs: number;
 }
 
+/** Unit groups a `unitCost` modifier may name. Forts (`fort`) ignore every unit modifier (A16.14.2). */
 const GROUPS: readonly RoleGroup[] = ['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'];
 
 /** A9.1 table (ids as in `src/content/dailyModifiers.ts`), for content without a modifier table. */
@@ -104,6 +105,7 @@ export function modifierEffect(content: CompiledContent | undefined, id: string)
 function neutral(): MatchMods {
   const costBp = {} as Record<RoleGroup, number>;
   for (const g of GROUPS) costBp[g] = BP;
+  costBp.fort = BP;
   return { passiveGoldBp: BP, unitHpBp: BP, powerReloadBp: 0, powerCostBp: 0, xpThresholdBp: BP, costBp, siegeEarlierMs: 0 };
 }
 

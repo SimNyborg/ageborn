@@ -53,7 +53,8 @@ describe('unit sprite sheets in the manifest', () => {
     }
   });
 
-  it.each(Object.values(content.units).map((u) => [u.id, u] as const))('%s draws from its own age sheet, with the puppet as fallback', (_id, u) => {
+  // Fort twins and levies draw from placeholder puppets until their art ships (A16.14.8, F3).
+  it.each(Object.values(content.units).filter((u) => !u.fort && !u.levy).map((u) => [u.id, u] as const))('%s draws from its own age sheet, with the puppet as fallback', (_id, u) => {
     const def = MANIFEST[u.visualId];
     expect(def?.kind).toBe('atlas');
     if (!def) return;

@@ -176,6 +176,11 @@ export interface HudViewBridge {
   powerAimStart?(slot?: PowerSlot): number | null;
   /** Your mount's screen point (view-local CSS px), for keeping the popover on it while scrolling. */
   mountScreenPoint?(mount: number): Pt | null;
+  /**
+   * The ground point of your own-side p (lu) in view-local CSS px and the world scale (px per lu): fort
+   * pads, the placement ghost and the lane tags sit there (A16.14.7).
+   */
+  laneScreen?(p: number): { x: number; y: number; scale: number } | null;
   /** Mutes (or unmutes) the opponent's emotes and quotes for this match: no bubble, no sound (A18.9.4). */
   muteEmotes?(on: boolean): void;
   /** True while the opponent's emotes are muted (the Settings default or the per-match mute). */

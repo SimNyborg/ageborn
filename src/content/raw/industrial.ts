@@ -8,6 +8,7 @@
  */
 import type { PowerDef } from '@/contracts/content';
 import { antiHeavyMods, damageMods } from './economy';
+import { camp, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const industrial: RawAgeTables = {
@@ -181,6 +182,13 @@ export const industrial: RawAgeTables = {
       },
       visualId: 'turret.tesla_tower', nameKey: 'card.tesla_tower.name', descKey: 'card.tesla_tower.desc',
     },
+  ],
+  // A16.14.4 Forts (Industrial, P 2.12): War Path L4 camp, L6 trap, L8 tower; Road fort set at 2,700
+  forts: [
+    wall('industrial', 'trench_parapet'),
+    tower('industrial', 'sniper_nest', { warPath: 8, road: 2700 }),
+    camp('industrial', 'recruiting_depot', 'volunteer', { warPath: 4, road: 2700 }),
+    trap('industrial', 'tripwire_charge', { warPath: 6, road: 2700 }, { charges: 2, damage: 120, radius: 40 }),
   ],
 };
 

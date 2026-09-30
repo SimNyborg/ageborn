@@ -27,9 +27,13 @@ export function impactSystem(ctx: Ctx): void {
   applyKnocks(ctx);
 }
 
-/** Can this impact hit that unit (enemy, alive, air/ground, leaping units dodge melee)? */
+/**
+ * Can this impact hit that unit (enemy, alive, air/ground, leaping units dodge melee)? Forts only by
+ * impacts that may touch them (A16.14.2: unit attacks, death explosions, called strikes).
+ */
 function hittable(ctx: Ctx, imp: Impact, e: UnitRt): boolean {
   if (e.side === imp.side || !alive(e)) return false;
+  if (e.fort && !imp.forts) return false;
   if (imp.atk) return canHit(imp.atk, e);
   return e.air ? imp.hitsAir : imp.hitsGround;
 }
@@ -116,7 +120,8 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
       const away = t.x > imp.srcX ? 1 : t.x < imp.srcX ? -1 : imp.side === 0 ? 1 : -1;
       const behind: Cand[] = [];
       for (const e of ctx.s.units) {
-        if (e === t || !hittable(ctx, imp, e)) continue;
+        // A fort can be a primary target, never a secondary hop (A16.14.2).
+        if (e === t || e.fort || !hittable(ctx, imp, e)) continue;
         if (away > 0 ? e.x < t.x : e.x > t.x) continue;
         const d = pointDist(t.x, e.x, unitRules(ctx, e).half);
         if (d <= reach) behind.push({ u: e, d });
@@ -139,7 +144,7 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
         let next: UnitRt | null = null;
         let nd = 0;
         for (const e of ctx.s.units) {
-          if (hit.includes(e) || !hittable(ctx, imp, e)) continue;
+          if (hit.includes(e) || e.fort || !hittable(ctx, imp, e)) continue;
           const d = edgeDist(prev.x, pr.half, e.x, unitRules(ctx, e).half);
           if (d > hop) continue;
           if (!next || d < nd || (d === nd && e.id < next.id)) {
@@ -176,13 +181,16 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
 function hitUnit(ctx: Ctx, imp: Impact, t: UnitRt, primary: boolean, withOnHit = true): void {
   const { dmg, modBp } = unitDamage(ctx, imp, t, primary);
   dealDamage(ctx, imp, t, dmg, modBp);
-  // A power's statuses land after its damage (fields, A2.9.7), on survivors only.
+  // A power's statuses land after its damage (fields, A2.9.7), on survivors only; a trap's likewise (A16.14.3).
   if (imp.powerStatuses && t.hp > 0) for (const st of imp.powerStatuses) applyPowerStatus(ctx, t, st);
+  if (imp.trapStatuses && t.hp > 0) for (const st of imp.trapStatuses) applyStatus(ctx, t, st, imp.sourceId);
   const a = imp.atk;
   if (withOnHit && a && a.onHit.length > 0 && t.hp > 0) {
     for (const st of a.onHit) applyStatus(ctx, t, st, imp.sourceId);
   }
   const tr = unitRules(ctx, t);
+  // Forts ignore knockback, pulls and drags (A16.14.2).
+  if (t.fort) return;
   if (primary && imp.bonusKb !== 0 && !tr.brace) ctx.knocks.push({ id: t.id, dp: -imp.bonusKb, drag: false });
   if (imp.kb !== 0 && !t.air) ctx.knocks.push({ id: t.id, dp: -imp.kb, drag: false });
   if (primary && a && a.drag > 0) ctx.knocks.push({ id: t.id, dp: a.drag, drag: true });
@@ -196,7 +204,7 @@ function pullToCentre(ctx: Ctx, imp: Impact): void {
   const a = imp.atk;
   if (!a) return;
   for (const e of ctx.s.units) {
-    if (e.side === imp.side || !alive(e) || e.air) continue;
+    if (e.side === imp.side || !alive(e) || e.air || e.fort) continue;
     if (centreDist(imp.x, e.x) > a.pullRadius) continue;
     for (const st of a.onHit) applyStatus(ctx, e, st, imp.sourceId);
     const dx = Math.trunc(((imp.x - e.x) * a.pullFracBp) / BP);
@@ -215,7 +223,7 @@ function applyKnocks(ctx: Ctx): void {
 
 function applyKnock(ctx: Ctx, k: Knock): void {
   const u = findUnit(ctx, k.id);
-  if (!u || !alive(u) || isLeaping(u)) return;
+  if (!u || !alive(u) || isLeaping(u) || u.fort) return;
   const r = unitRules(ctx, u);
   // p −= knockback × (100 − resist) / 100: Brace and air 100%, large and huge 50% (A2.7).
   let dp = Math.trunc((k.dp * (BP - r.kbResistBp)) / BP);

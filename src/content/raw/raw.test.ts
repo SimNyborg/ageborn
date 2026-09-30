@@ -26,6 +26,8 @@ const GROUP: Record<RoleGroup, { cost: number; trainMs: number; pop: number }> =
   support: { cost: 110, trainMs: 3000, pop: 4 },
   epic: { cost: 200, trainMs: 4000, pop: 8 },
   legendary: { cost: 350, trainMs: 7000, pop: 14 },
+  // A16.14: the hidden fort twins (built by the compiler, never in a raw unit table)
+  fort: { cost: 125, trainMs: 0, pop: 6 },
 };
 
 /** A5.1 default projectile speeds (lu/s) by projectile visual. Arc projectiles fly at 450. */
@@ -426,7 +428,7 @@ describe.each([
 
     it('unit sounds follow the A14.2 defaults; exactly one of ground and air', () => {
       const spawn: Record<RoleGroup, string> = { infantry: 'spawn_pop', ranged: 'spawn_pop', antiArmor: 'spawn_pop',
-        support: 'spawn_pop', heavy: 'spawn_heavy', epic: 'spawn_heavy', legendary: 'spawn_legendary' };
+        support: 'spawn_pop', heavy: 'spawn_heavy', epic: 'spawn_heavy', legendary: 'spawn_legendary', fort: 'turret_build' };
       for (const u of allUnits(c)) {
         expect(u.sfx, u.id).toEqual({ spawn: spawn[u.group], die: u.tags.includes('mech') ? 'die_mech' : 'die_bio' });
         expect(Number(u.tags.includes('ground')) + Number(u.tags.includes('air')), u.id).toBe(1);

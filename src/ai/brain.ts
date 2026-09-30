@@ -16,6 +16,7 @@
  * | Power | 1.0 per slot (A2.9.9) when value × 10,000 ÷ effective cost ≥ the tier's ROI bar + (patience − 50) × 40, or own base took damage in the last 3 s and value ≥ 100; the best value − cost wins; aim error on area powers, best-k pick on strikes |
  * | Stance | Hold when the tier allows it, myArmy < 0.7 × foeArmy and ≥ 2 turrets are built (A17.13: or the foe army is one type), or when the push gate fails; Fall back (V+, before Overdrive) when myArmy < 0.5 × foeArmy and the enemy is past mid-lane, within 200 lu of the turret cover; otherwise Charge. The Hold flag (III+, A18.4.2) goes where the turrets cover when defending, or forward where the army gathers for a wave |
  * | Last Stand | When armed and ≥ 4 enemies are within 450 lu |
+ * | Fort (A16.14.7) | forts.ts: walls, towers and traps against a wave in the bot's half (not in front of Heavies), camps while Charging; inside the gold ledger, safe pads only |
  *
  * Plus the push gate, the attack clock, saving goals, the gold float target (A7.3), openings and the
  * personality rules (personalities.ts). The brain is deterministic given (view, memory, RNG, profile,
@@ -46,14 +47,17 @@ import {
 import type { BotAction } from './actions';
 import { matchClock, type CardBook, type MatchClock } from './book';
 import {
+  COUNTER_RADIUS,
   counterTargets,
   fCounter,
   PREDICT_FROM_XP_BP,
   sampleOfAge,
+  sampleOfForts,
   sampleOfMemory,
   sampleOfUnits,
   type CounterContext,
 } from './counters';
+import { fortDefence, fortGoal, planFort, type FortPlanInput } from './forts';
 import { isTroops, type BotMemory } from './memory';
 import { pickMistake, type MistakeKind, type MistakeOptions } from './mistakes';
 import { parseOpenings, resolveStep, type OpeningPlan } from './openings';
@@ -93,7 +97,9 @@ export type SavingGoal =
   | { kind: 'legendary'; amount: number; card: CardId }
   | { kind: 'counter'; amount: number; card: CardId }
   /** A7.2 "Answer Heavy with Anti-heavy": a first turret against Heavies camped near the gate. */
-  | { kind: 'turret'; amount: number; card: CardId };
+  | { kind: 'turret'; amount: number; card: CardId }
+  /** A16.14.7: a wall, tower or trap for the wave about to cross mid-lane (price + gold float). */
+  | { kind: 'fort'; amount: number };
 
 /** Why the chosen action was chosen. */
 export type ChoiceReason = 'opening' | 'best' | 'mistake' | 'wait';
@@ -400,6 +406,8 @@ export class Brain {
    */
   private bait: { start: number; seenAt: number; spent: number } | null = null;
   private baitCooldownUntil = 0;
+  /** The age a camp was last placed in (A16.14.7: once per age stay), or null. */
+  private campAge: number | null = null;
   private readonly opening: OpeningPlan;
   private openingIndex = 0;
 
@@ -433,7 +441,9 @@ export class Brain {
     // stand there on their way out, and on the 2,000 lu lane holding back for them delayed the first clash
     // to ~0:38 (A17.14 wants 0:11-0:16). Turrets always count.
     const gateUnits = v.now >= OPENING_TICKS ? foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) : 0;
-    const defence = gateUnits + TURRET_DEFENCE * foeTurrets;
+    // A16.14.7: enemy walls and towers near their gate add 2 × their price, camps and traps 1 × (forts
+    // are never in `v.foes`, so `gateUnits` never counts them twice).
+    const defence = gateUnits + TURRET_DEFENCE * foeTurrets + fortDefence(v.foeForts, v.foeTraps);
     // Attack clock (A7.2): after 60 s without a ground unit past mid-lane, train scores rise 10% per 5 s,
     // and the push gate relaxes by 0.1 per 5 s down to parity, so two banking bots cannot stall a match.
     const quiet = v.now - mem.pastMidTick;
@@ -466,7 +476,8 @@ export class Brain {
       if (this.wavePeak !== null) this.wavePeak = Math.max(this.wavePeak, v.myArmy);
       pushOk = siege || this.wavePeak !== null;
     }
-    const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane);
+    // A16.14.7: enemy levies always march, so they never count as the enemy on the bot's half.
+    const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane && !u.levy);
     const allIn = P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP));
     // Push gate (A7.2 anti-turtle): the bot charges past mid-lane only with myArmy ≥ gate × D. When the
     // gate fails it banks instead of feeding units into the turrets one by one: a Treasury saving goal
@@ -537,7 +548,23 @@ export class Brain {
     }
     this.campReach = campReach < Number.MAX_SAFE_INTEGER ? campReach : null;
     const campTurret = this.campReach !== null ? this.chooseTurretAt(v, Number.MAX_SAFE_INTEGER) : null;
+    // A16.14.7: the fort is planned inside the gold ledger, after the camp turret and counter goals.
+    const fortIn: FortPlanInput | null = this.opening.noFort
+      ? null
+      : {
+          book,
+          tier: t,
+          persona: P,
+          banking,
+          goal: null,
+          urgent,
+          afterOpening: v.now >= OPENING_TICKS,
+          campAge: this.campAge,
+          force: this.opening.fortForce,
+        };
+    const fortSave = fortIn && !allIn ? fortGoal(v, fortIn) : null;
     if (campTurret) this.goal = { kind: 'turret', amount: campTurret.cost, card: campTurret.card };
+    else if (fortSave?.why === 'defend') this.goal = { kind: 'fort', amount: fortSave.amount };
     else if (this.counterGoal) this.goal = { kind: 'counter', amount: this.counterGoal.amount, card: this.counterGoal.card };
     else if (!urgent && !allIn) {
       // Treasury pays back in 133-367 s (A2.3), so a bot banks for it while the lane near its gate is
@@ -548,6 +575,8 @@ export class Brain {
       const research = this.researchDue(v, clock) ? this.plannedResearch(v, mem, rng) : null;
       if (nextTreasury !== null && v.treasury < treasuryMax && (rushing || ((gateFailed || (quietGate && paysBack)) && v.now < incomeWindow.before) || (quietGate && this.passiveTreasury(v, mem, nextTreasury, incomePerSec)))) {
         this.goal = { kind: 'treasury', amount: nextTreasury };
+      } else if (fortSave?.why === 'camp') {
+        this.goal = { kind: 'fort', amount: fortSave.amount };
       } else if (legendaryCard && !v.legendaryInField && W.legendary >= LEGENDARY_GOAL_BP && !gateFailed) {
         // A16.3 rule 4: no Legendary saving goal while the push gate fails.
         this.goal = { kind: 'legendary', amount: legendaryCard.cost, card: legendaryCard.id };
@@ -598,7 +627,9 @@ export class Brain {
     let trains = this.trainCandidates(v, mem, { banking: gateFailed, allIn, clockBp, mono });
     // A16.3 rule 1: the best counter is out of reach but clearly better than anything affordable: save
     // for it (the goal replaces a Treasury or Legendary goal, and the trains are scored again under it).
-    if (!this.counterGoal && !allIn && trains.counterGoal && (heavyAnswer || !v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE))) {
+    // A defensive fort goal (A16.14.7) is not replaced by a counter goal: the wall is for the wave now coming.
+    const fortDefendGoal = fortSave?.why === 'defend' && this.goal?.kind === 'fort';
+    if (!this.counterGoal && !allIn && !fortDefendGoal && trains.counterGoal && (heavyAnswer || !v.foes.some((u) => u.p <= COUNTER_GOAL_LAPSE))) {
       const c = trains.counterGoal;
       this.counterGoal = { card: c.card, amount: c.cost, until: v.now + COUNTER_GOAL_TICKS };
       this.goal = { kind: 'counter', amount: c.cost, card: c.card };
@@ -697,6 +728,11 @@ export class Brain {
       if (Math.abs(spot * MILLI - v.holdP) >= FLAG_MIN_MOVE) add({ kind: 'flag', holdP: spot }, SCORE.flag);
     }
 
+    // Forts (A16.14.7, forts.ts): inside the gold ledger, safe pads only, never in front of Heavies.
+    const fort = fortIn ? planFort(v, { ...fortIn, goal: this.goal && this.goal.kind !== 'fort' ? this.goal.amount : null }) : null;
+    if (fort?.action) add(fort.action, fort.score + goalBonus('fort'));
+    if (fort?.inFrontOfHeavies) opts.fortInFrontOfHeavies = fort.inFrontOfHeavies;
+
     // Last Stand. It fires on its own at 10%; if the base may reach that before the command runs, the
     // command would find it already charging, so the bot leaves it to the automatic trigger.
     const lsMargin = 2 * mem.worstBaseLoss(t.snapshotDelayTicks + 2) + LAST_STAND_MARGIN_BP;
@@ -710,7 +746,7 @@ export class Brain {
       for (let i = cand.length - 1; i >= 0; i -= 1) {
         const c = cand[i] as Scored;
         const k = c.action.kind;
-        if (k === 'build' || k === 'mount' || k === 'modernise' || k === 'research' || (k === 'train' && c.score !== BAIT_TRAIN_SCORE)) cand.splice(i, 1);
+        if (k === 'build' || k === 'mount' || k === 'modernise' || k === 'research' || k === 'fort' || (k === 'train' && c.score !== BAIT_TRAIN_SCORE)) cand.splice(i, 1);
       }
     }
     cand.sort((a, b) => b.score - a.score);
@@ -768,6 +804,7 @@ export class Brain {
     if (chanceBp(rng, Math.min(MAX_MISTAKE_BP, t.mistakeBp + this.cfg.mistakeBonusBp))) {
       const m = pickMistake(rng, opts);
       if (m.kind === 'floatGold') this.idleUntil = v.now + FLOAT_IDLE_TICKS;
+      this.noteFort(v, m.action);
       trace.mistake = m.kind;
       trace.action = m.action;
       trace.reason = 'mistake';
@@ -787,6 +824,7 @@ export class Brain {
       if (i >= 0) action = (ts[i] as Scored).action;
     }
     if (action.kind === 'stance') this.stanceTick = v.now;
+    this.noteFort(v, action);
     if (this.bait && action.kind === 'train') this.bait.spent += action.cost;
     if (action.kind === 'research') {
       this.researchTick = v.now;
@@ -795,6 +833,11 @@ export class Brain {
     trace.action = action;
     trace.reason = 'best';
     return trace;
+  }
+
+  /** Remembers the age of a camp placement (A16.14.7: once per age stay). */
+  private noteFort(v: View, a: BotAction | null): void {
+    if (a?.kind === 'fort' && this.cfg.book.forts[a.card]?.kind === 'camp') this.campAge = v.ageIndex;
   }
 
   /**
@@ -891,7 +934,7 @@ export class Brain {
     const classes = new Set<string>();
     for (const s of v.tray) {
       const role = content.units[s.card.id]?.role;
-      if (role) classes.add(content.research.classOfRole[role]);
+      if (role && role !== 'fort') classes.add(content.research.classOfRole[role]);
     }
     // Defences improve turrets: worth it with a turret up, or for a General who plans them (Moss).
     const defencesOk = v.turretsBuilt > 0 || (P.researchBiasBp.defences ?? 0) > 0;
@@ -989,7 +1032,8 @@ export class Brain {
     let total = 0;
     const add = (card: string, x: number): void => {
       const role = content.units[card]?.role;
-      if (!role || x <= 0) return;
+      // Forts have no War Council class (A16.14.5) and are never army (A16.14.7).
+      if (!role || role === 'fort' || x <= 0) return;
       const c = content.research.classOfRole[role];
       value.set(c, (value.get(c) ?? 0) + x);
       total += x;
@@ -1014,7 +1058,7 @@ export class Brain {
     const seen = new Set<string>();
     const add = (card: string, x: number): void => {
       const role = content.units[card]?.role;
-      if (!role) return;
+      if (!role || role === 'fort') return;
       const c = content.research.classOfRole[role];
       value.set(c, (value.get(c) ?? 0) + x);
       seen.add(card);
@@ -1116,6 +1160,17 @@ export class Brain {
     const targets = counterTargets(v.foes, v.myFront, t.counterDepth);
     let now = sampleOfUnits(targets);
     if (now.length === 0 && t.remembersComposition) now = sampleOfMemory(mem.remembered(), book);
+    // A16.14.7 answering forts: enemy forts within 500 lu of the bot's front join at 2 × their price with
+    // the structure row; Rook answers every fort on the lane and a scouted Fort card before it is built.
+    const P = this.cfg.persona;
+    if (t.counterDepth > 0 && (v.foeForts.length > 0 || P.fortAnswer)) {
+      const front = v.myFront;
+      const forts = v.foeForts.filter((f) => P.fortAnswer || (front !== null && Math.abs(f.p - front) <= COUNTER_RADIUS));
+      const ring = v.foeFortRing?.card;
+      const ringDef = ring ? book.forts[ring] : undefined;
+      const scouted = P.fortAnswer && forts.length === 0 && ringDef && ringDef.kind !== 'trap' ? [{ card: ringDef.id, value: ringDef.value }] : [];
+      now = [...now, ...sampleOfForts([...forts, ...scouted])];
+    }
     let next = null;
     const foe = v.obs.foe;
     if (t.predictsNextAge && foe.xpBp >= PREDICT_FROM_XP_BP) {

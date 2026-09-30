@@ -2,7 +2,7 @@
  * Bot actions: what the brain can choose (DESIGN A7.2 action table), and their commands (B15).
  * Costs are milli-gold. Power aim `p` is own-side progress in whole lu, as the `power` command wants.
  */
-import type { CardId, Command, EmoteId, PowerSlot, ResearchPickDef, Side, StanceMode, TraySlot } from '@/contracts';
+import type { CardId, Command, EmoteId, FortPad, PowerSlot, ResearchPickDef, Side, StanceMode, TraySlot } from '@/contracts';
 import { researchCommand } from '@/core';
 
 export type BotAction =
@@ -22,6 +22,8 @@ export type BotAction =
   | { kind: 'stance'; stance: StanceMode; holdP?: number }
   /** Moves the Hold flag while Holding (A18.4.2: at most once per 1 s, no stance cooldown). */
   | { kind: 'flag'; holdP: number }
+  /** Place the loadout's Fort card on own pad `pad` (A16.14.2, 0-4); `cost` is its price in milli-gold. */
+  | { kind: 'fort'; pad: number; card: CardId; cost: number }
   | { kind: 'lastStand' }
   | { kind: 'emote'; emote: EmoteId };
 
@@ -49,6 +51,8 @@ export function toCommand(a: BotAction, side: Side): Command {
       return a.holdP === undefined ? { t: 'stance', side, mode: a.stance } : { t: 'stance', side, mode: a.stance, holdP: a.holdP };
     case 'flag':
       return { t: 'stance', side, mode: 'hold', holdP: a.holdP };
+    case 'fort':
+      return { t: 'fort', side, pad: a.pad as FortPad };
     case 'lastStand':
       return { t: 'lastStand', side };
     case 'emote':
@@ -64,6 +68,7 @@ export function actionCost(a: BotAction): number {
     case 'mount':
     case 'modernise':
     case 'research':
+    case 'fort':
       return a.cost;
     case 'power':
       return a.cost ?? 0;
@@ -94,6 +99,8 @@ export function describeAction(a: BotAction | null): string {
       return a.holdP === undefined ? `stance ${a.stance}` : `stance ${a.stance} flag ${a.holdP}`;
     case 'flag':
       return `flag ${a.holdP}`;
+    case 'fort':
+      return `fort ${a.card} on pad ${a.pad + 1}`;
     case 'lastStand':
       return 'last stand';
     case 'emote':

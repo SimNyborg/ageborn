@@ -8,9 +8,9 @@
 import { pick, type Sfc32State } from '@/core';
 import type { BotAction } from './actions';
 
-export type MistakeKind = 'overCommit' | 'evolveBeforePush' | 'powerOnFew' | 'leaveMountEmpty' | 'floatGold' | 'forgetAntiAir';
+export type MistakeKind = 'overCommit' | 'evolveBeforePush' | 'powerOnFew' | 'leaveMountEmpty' | 'floatGold' | 'forgetAntiAir' | 'fortInFrontOfHeavies';
 
-export const MISTAKE_KINDS: readonly MistakeKind[] = ['overCommit', 'evolveBeforePush', 'powerOnFew', 'leaveMountEmpty', 'floatGold', 'forgetAntiAir'];
+export const MISTAKE_KINDS: readonly MistakeKind[] = ['overCommit', 'evolveBeforePush', 'powerOnFew', 'leaveMountEmpty', 'floatGold', 'forgetAntiAir', 'fortInFrontOfHeavies'];
 
 /** The alternative action each mistake would take in this decision, or undefined when it cannot happen. */
 export interface MistakeOptions {
@@ -24,6 +24,8 @@ export interface MistakeOptions {
   leaveMountEmpty?: BotAction | null;
   /** Train the best unit that cannot hit the enemy air units. */
   forgetAntiAir?: BotAction;
+  /** Place a wall (or tower, or trap) in front of a wave of Heavies, which break it ×2 (A16.14.7). */
+  fortInFrontOfHeavies?: BotAction;
 }
 
 export interface Mistake {

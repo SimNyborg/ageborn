@@ -4,6 +4,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { camp, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const gunpowder: RawAgeTables = {
@@ -170,5 +171,12 @@ export const gunpowder: RawAgeTables = {
       },
       visualId: 'turret.chainshot_cannon', nameKey: 'card.chainshot_cannon.name', descKey: 'card.chainshot_cannon.desc',
     },
+  ],
+  // A16.14.4 Forts (Gunpowder, P 1.82): War Path L4 camp, L6 trap, L8 tower; Road fort set at 2,500
+  forts: [
+    wall('gunpowder', 'gabion_wall'),
+    tower('gunpowder', 'musket_redoubt', { warPath: 8, road: 2500 }),
+    camp('gunpowder', 'militia_muster', 'militiaman', { warPath: 4, road: 2500 }),
+    trap('gunpowder', 'powder_keg', { warPath: 6, road: 2500 }, { charges: 1, damage: 330, radius: 60 }),
   ],
 };

@@ -4,6 +4,7 @@
  * - Own timers a player keeps in their head: when Evolve became available, when the base last took
  *   damage, when a ground unit last passed mid-lane (the A7.2 attack clock).
  * - The enemy composition seen recently (A7.3 "Remembers composition") and when the foe last evolved.
+ *   Forts and levies are never remembered and never move the clocks (A16.14.7).
  * - The foe gold estimate (estimate.ts).
  */
 import type { CardId, Observation, PowerSlot } from '@/contracts';
@@ -116,6 +117,9 @@ export class BotMemory {
     const counts = new Map<CardId, number>();
     for (const u of obs.units) {
       if (u.hp <= 0) continue;
+      // A16.14.3/A16.14.7: forts and levies never feed the attack clock, the quiet-lane test or the
+      // composition memory, so a camp cannot stall a bot and enemy levies cannot switch off its research.
+      if (u.fort || this.book.units[u.card]?.levy) continue;
       if (u.side === obs.side) {
         if (!u.air && u.p > mid) this.pastMidTick = obs.tick;
       } else {

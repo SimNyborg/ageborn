@@ -85,7 +85,7 @@ export function powerFront(ctx: Ctx, side: Side): number | null {
   const own: FrontCandidate[] = [];
   for (const u of ctx.s.units) {
     if (u.side !== side || !alive(u)) continue;
-    own.push({ id: u.id, p: pOf(u.x, side), air: u.air, summoned: u.summoned, leaping: u.leapEnd > 0 });
+    own.push({ id: u.id, p: pOf(u.x, side), air: u.air, summoned: u.summoned, leaping: u.leapEnd > 0, structure: u.fort !== undefined });
   }
   return frontP(own, ctx.rules.econ.power.reach.frontRank);
 }
@@ -113,9 +113,9 @@ export function slotReloadTicks(ctx: Ctx, side: Side, slot: PowerSlot): number {
   return pr ? pr.reloadTicks : ctx.econ.power.emptyReloadTicks;
 }
 
-/** Can this power touch that enemy (alive, air or ground as the effect says)? Forts and burrow come later. */
+/** Can this power touch that enemy (alive, air or ground as the effect says)? Never a fort (A16.14.2); burrow comes later. */
 function hittableBy(e: UnitRt, side: Side, hitsAir: boolean, hitsGround: boolean): boolean {
-  if (e.side === side || !alive(e)) return false;
+  if (e.side === side || !alive(e) || e.fort) return false;
   return e.air ? hitsAir : hitsGround;
 }
 
@@ -151,7 +151,8 @@ function areaCandidates(ctx: Ctx, c: CastRt, pr: PowerRules): { u: UnitRt; cand:
       const half = unitRules(ctx, e).half;
       if (p + half < c.areaMin || p - half > c.areaMax) continue;
     } else if (p < c.areaMin || p > c.areaMax) continue;
-    out.push({ u: e, cand: { id: e.id, p } });
+    // Levies rank last in every cap (A16.14.3, A2.9.5 amended): they never take a slot while another unit qualifies.
+    out.push({ u: e, cand: unitRules(ctx, e).levy ? { id: e.id, p, capRank: 1 } : { id: e.id, p } });
   }
   return out;
 }
@@ -424,6 +425,12 @@ export function powerSystem(ctx: Ctx): void {
   casts.length = w;
 }
 
+/** A unit in cap order (A2.9.5): own-frame p of the caster; levies rank last (`capRank` 1, A16.14.3). */
+function capCand(ctx: Ctx, e: UnitRt, side: Side): CapCandidate {
+  const p = pOf(e.x, side);
+  return unitRules(ctx, e).levy ? { id: e.id, p, capRank: 1 } : { id: e.id, p };
+}
+
 /** Adds a unit to the cast's `hitIds` once. */
 function markHit(c: CastRt, id: number): void {
   if (!c.hitIds.includes(id)) c.hitIds.push(id);
@@ -464,7 +471,7 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       for (const e of ctx.s.units) {
         if (!elig.has(e.id) || c.hitIds.includes(e.id) || !hittableBy(e, c.side, fx.hitsAir, true) || !inCastArea(ctx, c, pr, e)) continue;
         if (pointDist(beamX, e.x, unitRules(ctx, e).half) > fx.halfWidth) continue;
-        touched.push({ u: e, cand: { id: e.id, p: pOf(e.x, c.side) } });
+        touched.push({ u: e, cand: capCand(ctx, e, c.side) });
       }
       touched.sort((a, b) => capCompare(a.cand, b.cand));
       for (const { u } of touched) {
@@ -492,11 +499,11 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
         const hits = c.runnerHits[r] as number[];
         const touched: { u: UnitRt; cand: CapCandidate }[] = [];
         for (const e of ctx.s.units) {
-          if (!elig.has(e.id) || e.side === c.side || !alive(e) || e.air || hits.includes(e.id) || !inCastArea(ctx, c, pr, e)) continue;
+          if (!elig.has(e.id) || e.side === c.side || !alive(e) || e.air || e.fort || hits.includes(e.id) || !inCastArea(ctx, c, pr, e)) continue;
           const ep = pOf(e.x, c.side);
           const half = unitRules(ctx, e).half;
           if (ep + half < startP + lo || ep - half > startP + hi) continue;
-          touched.push({ u: e, cand: { id: e.id, p: ep } });
+          touched.push({ u: e, cand: capCand(ctx, e, c.side) });
         }
         touched.sort((a, b) => capCompare(a.cand, b.cand));
         for (const { u: e } of touched) {
@@ -530,7 +537,7 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       for (const e of ctx.s.units) {
         if (!elig.has(e.id) || !hittableBy(e, c.side, fx.hitsAir, true) || !inCastArea(ctx, c, pr, e)) continue;
         if (centreDist(c.x, e.x) > fx.halfZone) continue;
-        touched.push({ u: e, cand: { id: e.id, p: pOf(e.x, c.side) } });
+        touched.push({ u: e, cand: capCand(ctx, e, c.side) });
       }
       touched.sort((a, b) => capCompare(a.cand, b.cand));
       for (const { u } of touched) {
@@ -589,6 +596,12 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
         if ((fs.mountSilencedUntil[m] ?? 0) < until) fs.mountSilencedUntil[m] = until;
         emit(ctx, { e: 'turretSilenced', side: foe, mount: m, untilTick: fs.mountSilencedUntil[m] as number });
       }
+      // Suppress silences the enemy's field towers too (A16.14.3), scaffolds included.
+      for (const u of ctx.s.units) {
+        if (u.side !== foe || !u.fort || u.fort.kind !== 'tower' || !alive(u)) continue;
+        if (u.fort.silencedUntilTick < until) u.fort.silencedUntilTick = until;
+        emit(ctx, { e: 'towerSilenced', side: foe, id: u.id, untilTick: u.fort.silencedUntilTick });
+      }
       return;
     }
     case 'cloud': {
@@ -599,9 +612,11 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       if (c.applied) return;
       c.applied = true;
       emit(ctx, { e: 'powerImpact', side: c.side, power: c.power, castId: c.castId, x: c.x, index: 0 });
-      // The caster's frontmost units (highest own-frame p, ties the lower id), air and summons included (A2.9.5).
-      const own = ctx.s.units.filter((u) => u.side === c.side && alive(u));
-      own.sort((a, b) => pOf(b.x, c.side) - pOf(a.x, c.side) || a.id - b.id);
+      // The caster's frontmost units (highest own-frame p, ties the lower id), air and summons included, never
+      // forts, levies last (A2.9.5, A16.14.3).
+      const own = ctx.s.units.filter((u) => u.side === c.side && alive(u) && !u.fort);
+      const rank = (u: UnitRt): number => (unitRules(ctx, u).levy ? 1 : 0);
+      own.sort((a, b) => rank(a) - rank(b) || pOf(b.x, c.side) - pOf(a.x, c.side) || a.id - b.id);
       const n = own.length < fx.maxTargets ? own.length : fx.maxTargets;
       for (let i = 0; i < n; i += 1) {
         const u = own[i] as UnitRt;

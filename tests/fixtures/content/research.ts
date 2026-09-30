@@ -13,8 +13,7 @@
  * Units: gold, ms, lu and bp, like the other raw tables. Every pick's effect applies to own units of
  * its class spawned after it completes (A18.2 rule 2); turret, economy and command picks apply at once.
  */
-import type { ResearchClass, ResearchEffect, ResearchPickDef, ResearchRules, ResearchTrack, ResearchAiHint } from '@/contracts/content';
-import type { Role } from '@/contracts/ids';
+import type { ResearchClass, ResearchEffect, ResearchPickDef, ResearchRole, ResearchRules, ResearchTrack, ResearchAiHint } from '@/contracts/content';
 
 function pick(
   track: ResearchTrack,
@@ -96,7 +95,7 @@ const command: ResearchPickDef[] = [
  * Until the Air and Siege lines exist, skirmishers count as Infantry, artillery and air units as Ranged,
  * the battering ram and siege heavies as Heavy, and anti-mech units as Anti-armor (docs/decisions.md).
  */
-const classOfRole: Record<Role, ResearchClass> = {
+const classOfRole: Record<ResearchRole, ResearchClass> = {
   infantry: 'infantry',
   skirmisher: 'infantry',
   ranged: 'ranged',

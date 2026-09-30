@@ -171,7 +171,7 @@ export const fakeEconomy: EconomyRules = {
   bountyGoldBp: 6000, bountyXpBp: 10000, powerKillGoldBp: 3000, powerKillXpBp: 0,
   ownLossXpBp: 4000, underdogBp: 5000, baseDamageXpPerPct: 12, xpCapBp: 15000,
   popCap: 60,
-  popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14 },
+  popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14, fort: 6 },
   queueMax: 5, legendaryLimit: 1, sellRefundBp: 5000, turretRangeCap: 480, turretRangeHardCapLu: 560, turretBuildMs: 1000, turretSellMs: 1000,
   ascendMs: 2500, evolveHealBp: 500, vanguardCount: 2,
   powerCarryCapBp: 7500, overchargeXp: 1200, overchargeBp: 2500,
@@ -230,6 +230,8 @@ export const fakeContent: CompiledContent = deepFreeze({
   units,
   turrets,
   powers,
+  // No forts in the fakes (no `economy.fort`): every `fort` command is rejected (`noFort`).
+  forts: {},
   research: fakeResearch,
   skins: {
     pumpkin_head: {

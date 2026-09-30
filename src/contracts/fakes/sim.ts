@@ -92,6 +92,7 @@ function sideState(): SideState {
     lastStand: 'locked',
     retreated: false,
     callStrikeReadyTick: 0,
+    fortReadyTick: 0,
   };
 }
 
@@ -123,6 +124,7 @@ export class FakeSim implements Sim {
       units: [],
       projectiles: [],
       casts: [],
+      traps: [],
       rng: [1, 2, 3, 4],
       nextId: 1,
       outcome: null,

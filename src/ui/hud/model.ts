@@ -6,7 +6,7 @@
  * A press the HUD can already tell is invalid becomes a `deny` intent (red flash, 2-frame shake,
  * `ui_deny`, A9.2) instead of a command; everything else is sent and the sim has the final word.
  */
-import type { AgeId, CardId, Command, HudModel, HudPowerSlot, MatchConfig, PowerSlot, Side, StanceMode, TeamPreset } from '@/contracts';
+import type { AgeId, CardId, Command, HudFort, HudFortPad, HudModel, HudPowerSlot, MatchConfig, PowerSlot, Side, StanceMode, TeamPreset } from '@/contracts';
 import { matchMods } from '@/core';
 
 /** Elements that can show the denied-press feedback. */
@@ -27,7 +27,8 @@ export type DenyTarget =
   | 'army'
   | 'emote'
   | 'council'
-  | 'flag';
+  | 'flag'
+  | 'fort';
 
 /**
  * Why a press was denied, as an i18n key and its params (ui-plan 4.7, MR-03, MR-67): the label pops
@@ -273,7 +274,8 @@ export function hudPulse(s: { tutorial: boolean; evolve: boolean; power: boolean
  * The deny label for a command the sim rejected (the view's `denied` event carries the sim's
  * reason), or null when the HUD has nothing useful to add to the flash.
  */
-export function simDenyReason(reason: string, m: HudModel, slot?: number, power?: PowerSlot): DenyReason | null {
+export function simDenyReason(reason: string, m: HudModel, slot?: number, power?: PowerSlot, fort = false): DenyReason | null {
+  if (fort) return fortReasonOf(reason, m);
   if (power) {
     const v = powerSlotView(m, power);
     switch (reason) {
@@ -491,7 +493,8 @@ export function quickTurretIntent(m: HudModel, config: Readonly<MatchConfig>, si
 /**
  * Keyboard controls (A2.12, A18.4.2, A18.5.7). `key` is `KeyboardEvent.key`. P pauses (never Esc);
  * Escape closes the Council; G opens and closes it; S and Shift+S set the stance; Space casts the Home
- * power and X the Field power, both auto-aimed (A2.9.10); T is free.
+ * power and X the Field power, both auto-aimed (A2.9.10); D places the fort on the most forward safe
+ * pad (A16.14.7); T is free.
  */
 export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side, shift = false, rearming = false): HudIntent {
   if (m.phase === 'ended') return NONE;
@@ -518,6 +521,8 @@ export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig
       return powerIntent(m, side, undefined, 'field');
     case 's':
       return stanceIntent(m, side, shift);
+    case 'd':
+      return fortIntent(m, side);
     case 'l':
       return lastStandIntent(m, side);
     case 'p':
@@ -556,7 +561,200 @@ export function denyTargetFor(t: Command['t']): DenyTarget | null {
       return 'lastStand';
     case 'emote':
       return 'emote';
+    case 'fort':
+      return 'fort';
     case 'retreat':
+      return null;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// The Fort button (DESIGN A16.14.7, F2): one slot per age, dragged onto a pad like a power. Pure rules;
+// `FortButton.tsx` wires the pointer and `FortLane.tsx` draws the pads.
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * How the Fort button looks: recharging (ring filling, seconds shown), gold short (ring closed, cost chip
+ * red), the alive cap ("2/2"), one camp at a time, the army full, Siege ("forts crumble"), or ready.
+ */
+export type FortSlotState = 'siege' | 'recharging' | 'cap' | 'campCap' | 'pop' | 'poor' | 'ready';
+
+export interface FortSlotView {
+  f: HudFort;
+  state: FortSlotState;
+  /** Recharge progress 0..1 (1 = ready). */
+  frac: number;
+  /** Whole seconds until recharged (0 when ready). */
+  secondsLeft: number;
+  /** Gold still missing (0 when affordable). */
+  need: number;
+  /** Pads this card may use (walls, towers, traps: Home only; camps: any), by index. */
+  usable: number[];
+  /** Usable pads that are legal now. */
+  legal: number[];
+}
+
+/** Pads a fort of `kind` may use (A16.14.2 rule 1): walls, towers and traps Home pads only. */
+export function fortUsablePads(f: HudFort): number[] {
+  const pads = f.pads ?? [];
+  const any = f.kind === 'camp';
+  return pads.flatMap((pad, i) => (any || pad.kind === 'home' ? [i] : []));
+}
+
+/** The Fort slot's view, or null when the loadout has no Fort card this age (or the slot is locked). */
+export function fortSlotView(m: HudModel): FortSlotView | null {
+  const f = m.fort;
+  if (!f || f.slotLocked) return null;
+  const recharge = Math.max(1, f.rechargeMs ?? 25_000);
+  const left = f.leftMs ?? f.secondsLeft * 1000;
+  const frac = left <= 0 ? 1 : Math.max(0, Math.min(0.999, 1 - left / recharge));
+  const secondsLeft = left <= 0 ? 0 : Math.max(1, f.secondsLeft);
+  const need = f.affordable ? 0 : Math.max(1, f.cost - m.me.gold);
+  const usable = fortUsablePads(f);
+  const legal = usable.filter((i) => f.pads?.[i]?.legal === true);
+  const pop = f.pop ?? 6;
+  // The sim's order (A16.14.2): Siege, recharge, the caps, then (after the pad) the army and the gold.
+  const state: FortSlotState = f.siege
+    ? 'siege'
+    : secondsLeft > 0
+      ? 'recharging'
+      : f.cap
+        ? 'cap'
+        : f.kind === 'camp' && f.campAlive
+          ? 'campCap'
+          : m.me.pop + pop > m.me.popCap
+            ? 'pop'
+            : !f.affordable
+              ? 'poor'
+              : 'ready';
+  return { f, state, frac, secondsLeft, need, usable, legal };
+}
+
+/** Why the Fort button cannot start a placement now (MR-03), or null when it can. */
+export function fortStateReason(v: FortSlotView): DenyReason | null {
+  switch (v.state) {
+    case 'siege':
+      return { key: 'hud.deny.fortSiege' };
+    case 'recharging':
+      return { key: 'hud.deny.fortRecharge', params: { s: v.secondsLeft } };
+    case 'cap':
+      return { key: 'hud.deny.fortMax', params: { n: v.f.max ?? 2 } };
+    case 'campCap':
+      return { key: 'hud.deny.fortCampMax' };
+    case 'pop':
+      return { key: 'hud.deny.fortPop' };
+    case 'poor':
+      return { key: 'hud.deny.fortGold', params: { n: v.need } };
+    case 'ready':
+      return v.legal.length === 0 ? { key: 'hud.deny.fortNoPad' } : null;
+  }
+}
+
+/** The short label of an illegal pad (A16.14.7: "Enemy near", "Army first", "Taken", "Camps only"). */
+export function fortPadReasonKey(reason: string | null): string | null {
+  switch (reason) {
+    case null:
+      return null;
+    case 'fortPadEnemy':
+      return 'hud.deny.fortEnemyNear';
+    case 'fortPadField':
+      return 'hud.deny.fortArmyFirst';
+    case 'fortPadTaken':
+      return 'hud.deny.fortTaken';
+    case 'fortPadKind':
+      return 'hud.deny.fortPadKind';
+    default:
+      return 'hud.deny.fortNoPad';
+  }
+}
+
+/**
+ * How a pad reads while a fort is aimed (A16.14.7): legal and safe (a green ring), legal but the enemy
+ * can reach it before the scaffold completes (amber, "Builds under fire"), or illegal (grey, the reason).
+ */
+export type FortPadLook = 'safe' | 'underFire' | 'blocked';
+
+export function fortPadLook(pad: HudFortPad): FortPadLook {
+  return !pad.legal ? 'blocked' : pad.safe ? 'safe' : 'underFire';
+}
+
+/**
+ * Key D and the AI's pad (A16.14.7, core `mostForwardSafePad`): the most forward safe pad the card may
+ * use, else the most rearward legal one; null when no pad is legal.
+ */
+export function fortKeyPad(f: HudFort): number | null {
+  const pads = f.pads ?? [];
+  const usable = fortUsablePads(f);
+  let best: number | null = null;
+  for (const i of usable) if (pads[i]!.legal && pads[i]!.safe && (best === null || pads[i]!.p > pads[best]!.p)) best = i;
+  if (best !== null) return best;
+  for (const i of usable) if (pads[i]!.legal && (best === null || pads[i]!.p < pads[best]!.p)) best = i;
+  return best;
+}
+
+/**
+ * The legal pad nearest own-side `p` (lu) within `maxLu` (the drag snap: 24 px on screen), or null.
+ * Ties go to the rearward pad.
+ */
+export function fortSnapPad(f: HudFort, p: number, maxLu: number = Infinity): number | null {
+  const pads = f.pads ?? [];
+  let best: number | null = null;
+  let bestD = Infinity;
+  for (const i of fortUsablePads(f)) {
+    const pad = pads[i]!;
+    if (!pad.legal) continue;
+    const d = Math.abs(pad.p - p);
+    if (d <= maxLu && d < bestD) {
+      best = i;
+      bestD = d;
+    }
+  }
+  return best;
+}
+
+/**
+ * A fort placement (a drop or a tap on `pad`; Key D without a pad picks {@link fortKeyPad}). What the HUD
+ * can already see is denied with its reason (MR-03); the sim has the final word on the rest.
+ */
+export function fortIntent(m: HudModel, side: Side, pad?: number): HudIntent {
+  if (m.phase === 'ended') return NONE;
+  const v = fortSlotView(m);
+  if (!v) return m.fort === undefined ? NONE : deny('fort', { key: 'hud.deny.fortEmpty' });
+  const why = fortStateReason(v);
+  if (why) return deny('fort', why);
+  const at = pad ?? fortKeyPad(v.f);
+  if (at === null) return deny('fort', { key: 'hud.deny.fortNoPad' });
+  const target = v.f.pads?.[at];
+  if (!target) return deny('fort', { key: 'hud.deny.fortNoPad' });
+  if (!v.usable.includes(at)) return deny('fort', { key: 'hud.deny.fortPadKind' });
+  if (!target.legal) return deny('fort', { key: fortPadReasonKey(target.reason) ?? 'hud.deny.fortNoPad' });
+  return cmd({ t: 'fort', side, pad: at as 0 | 1 | 2 | 3 | 4 }, 'fort');
+}
+
+/** The deny label for a `fort` command the sim rejected (its reason codes, A16.14.2). */
+export function fortReasonOf(reason: string, m: HudModel): DenyReason | null {
+  const v = fortSlotView(m);
+  switch (reason) {
+    case 'noFort':
+      return { key: 'hud.deny.fortEmpty' };
+    case 'fortSiege':
+      return { key: 'hud.deny.fortSiege' };
+    case 'fortRecharge':
+      return { key: 'hud.deny.fortRecharge', params: { s: Math.max(1, v?.secondsLeft ?? 1) } };
+    case 'fortMax':
+      return { key: 'hud.deny.fortMax', params: { n: m.fort?.max ?? 2 } };
+    case 'fortCampMax':
+      return { key: 'hud.deny.fortCampMax' };
+    case 'fortPadKind':
+    case 'fortPadTaken':
+    case 'fortPadEnemy':
+    case 'fortPadField':
+      return { key: fortPadReasonKey(reason)! };
+    case 'popFull':
+      return { key: 'hud.deny.fortPop' };
+    case 'noGold':
+      return { key: 'hud.deny.fortGold', params: { n: Math.max(1, v?.need ?? 1) } };
+    default:
       return null;
   }
 }

@@ -38,9 +38,10 @@ import { oddsModel } from '../../components/oddsModel';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardGlyph, cardRarity, cardTile, hitsOf, isOwned, modsOf, turretStats, unitStats, upgradeState, type StatRow } from '../model/cards';
-import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, fieldSlotLockKeys, fieldSlotOpen, normalizeLoadout, slotOfCard } from '../model/plan';
+import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, fieldSlotLockKeys, fieldSlotOpen, fortSlotOpen, normalizeLoadout, slotOfCard } from '../model/plan';
 import { powerSourceText } from '../model/powerText';
 import { PowerFacts } from './PowerFacts';
+import { FortFacts, fortSourceText } from './FortFacts';
 import { arenaOf } from '../model/progress';
 import { reasonKey } from '../model/reasons';
 import { SkinOptions } from '../shared/SkinPicker';
@@ -135,7 +136,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   const up = upgradeState(s, content, id);
   const level = tile.level;
   const rows = def.kind === 'unit' ? unitStats(content, def, level) : def.kind === 'turret' ? turretStats(content, def, level) : [];
-  const prevRows = cer && def.kind !== 'power' ? (def.kind === 'unit' ? unitStats(content, def, cer.from) : turretStats(content, def, cer.from)) : null;
+  const prevRows = cer && def.kind === 'unit' ? unitStats(content, def, cer.from) : cer && def.kind === 'turret' ? turretStats(content, def, cer.from) : null;
   const hits = hitsOf(def);
   const mods = modsOf(def);
   const foilRank = content.rarities.foils[tile.foil].rank;
@@ -143,8 +144,8 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   const { index: planIndex, plan } = activePlan(s, content);
   const loadout = normalizeLoadout(plan.loadouts[def.age] ?? { units: [], turrets: [], powers: { home: null, field: null } });
   const inArmy = slotOfCard(loadout, id) !== null;
-  // A Field power waits for its slot (A2.9.1): no Use until the slot opens.
-  const slotLocked = def.kind === 'power' && def.slot === 'field' && !fieldSlotOpen(s);
+  // A Field power waits for its slot (A2.9.1), a fort for the Fort slot (A16.14.6): no Use until it opens.
+  const slotLocked = (def.kind === 'power' && def.slot === 'field' && !fieldSlotOpen(s)) || (def.kind === 'fort' && !fortSlotOpen(s));
 
   function valueText(r: StatRow, v: number | string): string {
     if (typeof v === 'string') return v;
@@ -229,7 +230,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   let primary: preact.ComponentChildren = null;
   const secondary: preact.ComponentChildren[] = [];
   let tertiary: preact.ComponentChildren = null;
-  if (def.kind !== 'power') {
+  if (def.kind !== 'power' && def.kind !== 'fort') {
     tertiary = (
       <Button kind="tertiary" size="s" testid="card-odds" onClick={() => setOdds(true)}>
         {t('ui.card.showOdds')}
@@ -244,6 +245,17 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
     ) : (
       <p class="cd-owned" data-testid="power-source-bar">
         <RoadIcon size={22} /> {def.source === 'road' && def.road !== undefined ? t('ui.card.powerFromRoad', { n: formatInt(def.road, locale) }) : powerSourceText(def, t)}
+      </p>
+    );
+  } else if (def.kind === 'fort') {
+    // Forts have no copies, levels or Dust (A16.14.6): only where they come from, or the slot's lock.
+    tertiary = owned ? (
+      <p class="cd-owned" data-testid="fort-owned">
+        <CheckIcon size={20} /> {slotLocked ? t('army.fortSlot.locked') : t('ui.fort.owned')}
+      </p>
+    ) : (
+      <p class="cd-owned" data-testid="fort-source-bar">
+        <RoadIcon size={22} /> {fortSourceText(def, t, locale)}
       </p>
     );
   } else if (!owned) {
@@ -401,6 +413,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
             tile={tile}
             kind={def.kind}
             glyph={cardGlyph(def)}
+            {...(def.kind === 'fort' ? { fortKind: def.fortKind } : {})}
             owned={owned}
             copies={owned && up && !up.maxed ? { copies: up.copies, needed: up.cost?.copies ?? null, ready: up.copiesReady } : null}
             ceremony={cer ? { phase: cer.phase, n: cer.n } : null}
@@ -411,6 +424,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
 
         <div class="cd-right" data-scroll="">
           {def.kind === 'power' ? <PowerFacts def={def} content={content} t={t} locale={locale} /> : null}
+          {def.kind === 'fort' ? <FortFacts def={def} content={content} t={t} locale={locale} strong={tile.strong ?? []} weak={tile.weak ?? []} /> : null}
           {def.kind === 'unit' && ((tile.strong?.length ?? 0) > 0 || (tile.weak?.length ?? 0) > 0) ? (
             <section class="cd-counters" data-testid="counter-classes">
               {tile.strong?.length ? (
@@ -506,7 +520,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
 
           <p class="cd-desc">{t(def.descKey)}</p>
 
-          {def.kind !== 'power' && content.order.skins.some((k) => content.skins[k]!.target === id) ? (
+          {def.kind !== 'power' && def.kind !== 'fort' && content.order.skins.some((k) => content.skins[k]!.target === id) ? (
             <div class="cd-skins">
               <h3 class="cd-label">{t('ui.card.skins')}</h3>
               <SkinOptions card={id} compact />
@@ -557,7 +571,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
             </div>
           ) : null}
 
-          {def.kind !== 'power' ? (
+          {def.kind !== 'power' && def.kind !== 'fort' ? (
             <div class="cd-foils" data-testid="card-foils">
               <span class="cd-label">{t('ui.card.foils')}</span>
               {FOILS.map((f) => {

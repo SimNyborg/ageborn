@@ -22,14 +22,17 @@ describe('contentHash (B4, B3 replays)', () => {
   it('matches the snapshot (update only when battle content changes on purpose)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
-    expect(content.hash).toBe('af593517');
+    // A16.14 (SIM_VERSION 5.0.0): forts, their twins and levies, `economy.fort`, the structure mods and
+    // Engineers' scaffold effect joined the hashed slice.
+    expect(content.hash).toBe('8e9bcafb');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
     // The fixture never changes, so this value stays fixed even after a balance change updates the
     // snapshot above. It changes only if the hash algorithm or the hashed slice changes, which
     // invalidates every golden replay.
-    const FIXTURE_HASH = '1908c748';
+    // Re-baselined deliberately with the SIM_VERSION 5.0.0 golden re-record (the fixture gained forts).
+    const FIXTURE_HASH = '91261668';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
     expect(fixture.hash).toBe(FIXTURE_HASH);
   });

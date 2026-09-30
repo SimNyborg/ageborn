@@ -10,8 +10,7 @@
  * Units: gold, ms, lu and bp, like the other raw tables. Every pick's effect applies to own units of
  * its class spawned after it completes (A18.2 rule 2); turret, economy and command picks apply at once.
  */
-import type { ResearchClass, ResearchEffect, ResearchPickDef, ResearchRules, ResearchTrack, ResearchAiHint } from '@/contracts/content';
-import type { Role } from '@/contracts/ids';
+import type { ResearchClass, ResearchEffect, ResearchPickDef, ResearchRole, ResearchRules, ResearchTrack, ResearchAiHint } from '@/contracts/content';
 
 function pick(
   track: ResearchTrack,
@@ -71,7 +70,11 @@ const troops: ResearchPickDef[] = [
 const defences: ResearchPickDef[] = [
   pick('defences', null, 1, 0, 'watchtowers', 'defend', [{ kind: 'turret', stat: 'range', value: 40 }]),
   pick('defences', null, 1, 1, 'quick_loaders', 'defend', [{ kind: 'turret', stat: 'attackSpeed', value: 1500 }]),
-  pick('defences', null, 2, 0, 'engineers', 'quiet', [{ kind: 'modernise', priceBp: 5000, buildMs: 500 }]),
+  // Engineers is also the wall pick (A16.14.5): fort scaffolds complete in 3 s instead of 5 s
+  pick('defences', null, 2, 0, 'engineers', 'quiet', [
+    { kind: 'modernise', priceBp: 5000, buildMs: 500 },
+    { kind: 'fortScaffold', ms: 3000 },
+  ]),
   pick('defences', null, 2, 1, 'arsenal', 'defend', [{ kind: 'turret', stat: 'damage', value: 1200 }]),
 ];
 
@@ -94,7 +97,7 @@ const command: ResearchPickDef[] = [
  * Until the Air and Siege lines exist, skirmishers count as Infantry, artillery and air units as Ranged,
  * the battering ram and siege heavies as Heavy, and anti-mech units as Anti-armor (docs/decisions.md).
  */
-const classOfRole: Record<Role, ResearchClass> = {
+const classOfRole: Record<ResearchRole, ResearchClass> = {
   infantry: 'infantry',
   skirmisher: 'infantry',
   ranged: 'ranged',

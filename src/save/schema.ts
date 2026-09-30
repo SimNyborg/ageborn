@@ -55,6 +55,8 @@ export const LoadoutSchema = v.object({
   units: v.pipe(v.array(v.nullable(id)), v.length(6)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
   powers: v.object({ home: v.nullable(id), field: v.nullable(id) }),
+  // The Fort slot (A16.14.1, save v11): a Fort card or null
+  fort: v.optional(v.nullable(id)),
 });
 
 export const WarPlanSchema = v.object({
@@ -190,6 +192,8 @@ export const SaveDocSchema = v.pipe(
       v.object({ level: count, copies: count, isNew: v.boolean(), foil: FOIL }),
     ),
     powersOwned: v.array(id),
+    // Fort cards owned (A16.14.6, save v11)
+    fortsOwned: v.array(id),
     skins: v.object({ owned: v.array(id), equipped: v.record(v.string(), id) }),
     cosmetics: v.object({ owned: v.array(v.string()), equipped: CosmeticLoadoutSchema }),
     warPlans: v.pipe(v.array(WarPlanSchema), v.minLength(1)),

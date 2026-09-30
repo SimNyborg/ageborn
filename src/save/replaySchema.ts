@@ -39,6 +39,8 @@ const ReplayLoadoutSchema = v.object({
   turrets: v.pipe(v.array(v.nullable(v.string())), v.length(2)),
   // Two typed power slots from SIM_VERSION 4.0.0 (A2.9.1)
   powers: v.object({ home: v.nullable(v.string()), field: v.nullable(v.string()) }),
+  // The Fort slot from SIM_VERSION 5.0.0 (A16.14.1); absent in older replays
+  fort: v.optional(v.nullable(v.string())),
 });
 
 /** A loadout of a replay recorded before SIM_VERSION 4.0.0: one power (kept for its result card, D8). */
@@ -123,6 +125,8 @@ export const TimedCommandSchema = v.variant('t', [
   cmd({ t: v.literal('power'), side: SIDE, slot: POWER_SLOT, p: v.optional(num) }),
   // A18.4.2 three stances and the Hold flag
   cmd({ t: v.literal('stance'), side: SIDE, mode: v.picklist(['charge', 'hold', 'fallback']), holdP: v.optional(num) }),
+  // A16.14.2: place the loadout's Fort card on pad 0-4 (SIM_VERSION 5.0.0)
+  cmd({ t: v.literal('fort'), side: SIDE, pad: v.picklist([0, 1, 2, 3, 4]) }),
   cmd({ t: v.literal('lastStand'), side: SIDE }),
   // A starter emote, a collected emote (`emote.<id>`) or a fixed quote (`quote.<id>`, A18.9.4)
   cmd({ t: v.literal('emote'), side: SIDE, emote: v.custom<EmoteId>((x) => typeof x === 'string' && EMOTE_RE.test(x), 'unknown emote') }),

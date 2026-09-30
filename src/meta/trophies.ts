@@ -18,6 +18,7 @@ import { rewardFormat } from './formats';
 import { META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER } from './rules';
 import { arenaOf } from './tables';
 import { addCosmetics, unlockTitles } from './titles';
+import { checkFortUnlock, grantRoadFort } from './forts';
 
 export type LadderResult = 'win' | 'loss' | 'draw';
 
@@ -62,6 +63,8 @@ export function applyTrophies(s: SaveDoc, t: Content, delta: number): { save: Sa
   let save: SaveDoc = { ...s, trophies: { ...s.trophies, current, best }, arenaIndex: reached };
   // A2.9.1: 150 trophies (the Gate 2 node) unlock the Field power slot, if War Path Stone L5 has not.
   if (best >= POWER_FIELD_TROPHIES && !save.flags[META_FLAGS.powerField]) save = { ...save, flags: { ...save.flags, [META_FLAGS.powerField]: true } };
+  // A16.14.6: 400 trophies (Arena 3) open the Fort slot, if War Path Bronze L4 has not.
+  save = checkFortUnlock(save, t).save;
   if (arenas.length > 0) save = unlockTitles(save, t).save;
   return { save, arenas };
 }
@@ -114,6 +117,9 @@ function payRoad(s: SaveDoc, r: RoadReward, t: Content, now: number): SaveDoc {
       const arena = t.arenas.list.find((a) => a.index === r.arena);
       return (arena?.gateRewards ?? []).reduce((acc, g) => payGate(acc, g, t, now), s);
     }
+    case 'fort':
+      // A16.14.6: a fort-set item; a fort the save already owns (from the War Path) pays 60 Amber instead.
+      return grantRoadFort(s, r.card);
   }
 }
 

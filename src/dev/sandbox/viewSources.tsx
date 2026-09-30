@@ -56,7 +56,10 @@ export function showcaseLoadout(c: CompiledContent, age: AgeId): Loadout {
   ];
   const turrets = Object.values(c.turrets).filter((t) => t.age === age);
   const starter = (slot: 'home' | 'field') => Object.values(c.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
-  return { units: chosen, turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null], powers: { home: starter('home'), field: starter('field') } };
+  // The Fort slot (A16.14.7): the age's wall, or `&fort=tower|camp|trap` for another kind.
+  const kind = typeof location === 'undefined' ? 'wall' : (new URLSearchParams(location.search).get('fort') ?? 'wall');
+  const fort = Object.values(c.forts ?? {}).find((f) => f.age === age && f.fortKind === kind)?.id ?? null;
+  return { units: chosen, turrets: [turrets[0]?.id ?? null, turrets[1]?.id ?? null], powers: { home: starter('home'), field: starter('field') }, fort };
 }
 
 function sideConfig(c: CompiledContent, label: string, isBot: boolean, level: number): SideConfig {

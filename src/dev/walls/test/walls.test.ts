@@ -25,7 +25,9 @@ describe('wall prototype (A16.14)', () => {
     expect(w?.hidden).toBe(true);
     expect(w?.attacks[0]).toMatchObject({ damage: 0, hitsGround: false, hitsAir: false });
     expect(withWalls(content, { hpScale: 2 }).units[WALL_CARD]?.hp).toBe((content.units.tuskback?.hp ?? 0) * 2);
-    expect(content.units[WALL_CARD]).toBeUndefined();
+    // The real Palisade is now a fort twin (A16.14); the prototype replaces it with its own copy.
+    expect(content.units[WALL_CARD]?.fort?.kind).toBe('wall');
+    expect(withWalls(content).units[WALL_CARD]?.fort).toBeUndefined();
   });
 
   it('own melee walks through its own wall', () => {

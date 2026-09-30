@@ -21,13 +21,17 @@
  *    - A train pops the card (MR-65) with a short flash and floats "-50" from the gold; a denied press
  *      flashes red, shakes and says why above the card (MR-03, MR-67).
  * 3. **Stance** (`Stance.tsx`): one 56 px button with a flyout (A18.4 as changed by ui-plan 2.9 #5).
- * 4. **The power dock** (`PowerButton.tsx`, A2.9.10): Home and Field, 64 px each on phones (96 on
+ * 4. **The Fort button** (`FortButton.tsx`, A16.14.7): in the placement dock with the powers, because
+ *    all three are dragged onto the lane; the stance stands between it and the unit cards, so the
+ *    train-on-release row keeps one meaning. Only when the loadout has a Fort card.
+ * 5. **The power dock** (`PowerButton.tsx`, A2.9.10): Home and Field, 64 px each on phones (96 on
  *    desktops), 6 px apart; drag onto the field (A18.9.2). Last Stand floats above the Home button only
  *    while armed (A2.11).
  *
  * Width check at 844 (A2.9.10): cluster 100 + 8 + cards 402 + 8 + stance 56 + 8 + dock 134 = 716 within
- * 750 (the reserved Fort space goes to the dock until forts ship); below 820 px 92 + 6 + 361 + 6 + 56 +
- * 6 + 117 = 644 within 686.
+ * 750; below 820 px 92 + 6 + 361 + 6 + 56 + 6 + 117 = 644 within 686. With the Fort button (`has-fort`,
+ * A16.14.7): 100 + 6 + cards 58 × 6 + 4 × 5 = 368 + 6 + stance 56 + 6 + Fort 58 + 6 + dock 58 × 2 + 6 =
+ * 122 = 728 within 750; below 820 px cards 52 × 70, stance 48, Fort 52, powers 52: 657 within 686.
  */
 import type { AgeId, HudCard, UnitDef } from '@/contracts';
 import { Fragment } from 'preact';
@@ -49,6 +53,7 @@ import {
   cancelIntent,
   cardTarget,
   evolveIntent,
+  fortSlotView,
   goldIntent,
   lastStandIntent,
   lastStandVisible,
@@ -56,6 +61,7 @@ import {
   trainIntent,
   type HudPulse,
 } from './model';
+import { FortButton } from './FortButton';
 import { PowerDock } from './PowerButton';
 import { useFitLabel } from './fit';
 import { ReasonTip } from './Reason';
@@ -574,8 +580,12 @@ export function Tray(p: {
   // match shows all six loadout slots, empty ones as quiet sockets.
   const scripted = c.config.training?.script !== undefined;
   const cards = scripted ? c.m.me.cards.filter((card) => card.state !== 'empty' && card.card) : c.m.me.cards;
+  // The Fort button joins the placement dock (A16.14.7); with it the tray uses the tighter 4.7 sizes.
+  const hasFort = fortSlotView(c.m) !== null;
+  const [fortAiming, setFortAiming] = useState(false);
+  const [powerAiming, setPowerAiming] = useState(false);
   return (
-    <div class="hud-tray" data-testid="hud-tray" ref={p.trayRef}>
+    <div class={`hud-tray${hasFort ? ' has-fort' : ''}`} data-testid="hud-tray" ref={p.trayRef}>
       <div class="hud-cluster">
         <GoldCounter c={c} goldRef={p.goldRef} bump={p.goldBump} floats={floats} />
         <div class="hud-cluster-row">
@@ -599,9 +609,20 @@ export function Tray(p: {
         </div>
       </div>
       <StanceControl c={c} />
+      {hasFort ? (
+        <div class="hud-fort-col">
+          <FortButton c={c} powerAiming={powerAiming} onAiming={setFortAiming} onSpend={(n) => addFloat({ text: `-${n}`, kind: 'spend', slot: -1 })} />
+        </div>
+      ) : null}
       <div class="hud-power-col">
         <LastStandButton c={c} />
-        <PowerDock c={c} pulse={p.pulse === 'power'} onSpend={(n) => addFloat({ text: `-${n}`, kind: 'spend', slot: -1 })} />
+        <PowerDock
+          c={c}
+          pulse={p.pulse === 'power'}
+          onSpend={(n) => addFloat({ text: `-${n}`, kind: 'spend', slot: -1 })}
+          fortAiming={fortAiming}
+          onPowerAim={setPowerAiming}
+        />
       </div>
     </div>
   );

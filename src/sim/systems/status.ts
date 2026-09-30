@@ -14,6 +14,7 @@ import { healUnit } from '../damage';
 import type { UnitRules } from '../rules';
 import type { Ctx, UnitRt } from '../state';
 import { alive, unitRules } from '../units';
+import { fortStatusSystem } from './forts';
 
 export function statusSystem(ctx: Ctx): void {
   const tick = ctx.tick;
@@ -65,7 +66,8 @@ export function statusSystem(ctx: Ctx): void {
     const aura = r.aura;
     for (let j = 0; j < units.length; j += 1) {
       const u = units[j] as UnitRt;
-      if (u === src || u.side !== src.side || !alive(u)) continue;
+      // Forts ignore every aura (A16.14.2).
+      if (u === src || u.side !== src.side || !alive(u) || u.fort) continue;
       const ur = ctx.rules.unitList[u.ci] as UnitRules;
       if (edgeDist(src.x, r.half, u.x, ur.half) > aura.radius) continue;
       if (aura.status.kind === 'attackSpeedBuff' && aura.status.magnitudeBp > u.auraAttackSpeedBp) {
@@ -85,7 +87,7 @@ export function statusSystem(ctx: Ctx): void {
     const srcP = pOf(src.x, src.side);
     for (let j = 0; j < units.length; j += 1) {
       const u = units[j] as UnitRt;
-      if (u === src || u.side !== src.side || !alive(u)) continue;
+      if (u === src || u.side !== src.side || !alive(u) || u.fort) continue;
       if (aura.behindOnly && pOf(u.x, u.side) > srcP) continue;
       const ur = ctx.rules.unitList[u.ci] as UnitRules;
       if (edgeDist(src.x, r.half, u.x, ur.half) > aura.radius) continue;
@@ -104,14 +106,18 @@ export function statusSystem(ctx: Ctx): void {
     const inside: UnitRt[] = [];
     for (let j = 0; j < units.length; j += 1) {
       const u = units[j] as UnitRt;
-      if (u.side !== c.side || !alive(u)) continue;
+      if (u.side !== c.side || !alive(u) || u.fort) continue;
       if (centreDist(c.x, u.x) <= fx.halfWidth) inside.push(u);
     }
-    inside.sort((a, b) => pOf(b.x, c.side) - pOf(a.x, c.side) || a.id - b.id);
+    // Frontmost first; levies rank last in every cap (A16.14.3, `capRank`).
+    const rank = (u: UnitRt): number => (unitRules(ctx, u).levy ? 1 : 0);
+    inside.sort((a, b) => rank(a) - rank(b) || pOf(b.x, c.side) - pOf(a.x, c.side) || a.id - b.id);
     const n = inside.length < fx.allyMax ? inside.length : fx.allyMax;
     for (let j = 0; j < n; j += 1) {
       const u = inside[j] as UnitRt;
       if (fx.allyDamageBp > u.auraDamageBp) u.auraDamageBp = fx.allyDamageBp;
     }
   }
+  // Forts: the Hardlight regen and the Sandbag cover (A16.14.3).
+  fortStatusSystem(ctx);
 }

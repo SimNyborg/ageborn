@@ -6,7 +6,7 @@
  *   UPDATE_GOLDEN=1 npx vitest run src/sim/test/golden.test.ts
  */
 import { describe, expect, it } from 'vitest';
-import type { MatchConfig, ReplayDoc } from '@/contracts';
+import type { AgeId, Command, MatchConfig, Observation, ReplayDoc, Side, SideConfig, SimEvent } from '@/contracts';
 import { buildReplay, verifyReplay } from '../replay';
 import { STRATEGIES, fixture, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
 
@@ -20,6 +20,35 @@ interface Scenario {
   name: string;
   cfg: () => MatchConfig;
   players: [Strategy, Strategy];
+  /** Both players also place their Fort card on every recharge (SIM_VERSION 5.0.0, A16.14). */
+  forts?: boolean;
+}
+
+/** A side config with a Fort card per age (A16.14.1). */
+function withForts(s: SideConfig, fort: Partial<Record<AgeId, string>>): SideConfig {
+  const loadouts = { ...s.loadouts };
+  for (const age of Object.keys(loadouts) as AgeId[]) {
+    const l = loadouts[age];
+    if (l) loadouts[age] = { ...l, fort: fort[age] ?? null };
+  }
+  return { ...s, loadouts };
+}
+
+/**
+ * A scripted player that also places its Fort card whenever the slot is ready and affordable: on the
+ * first legal pad of a fixed preference (the middle Home pad, then the others, then the Field pads).
+ */
+function fortPlayer(side: Side, seed: number, strat: Strategy): (obs: Observation) => Command[] {
+  const base = scriptedPlayer(fixture, side, seed, strat);
+  const order = [2, 1, 3, 0, 4] as const;
+  return (obs) => {
+    const out = base(obs);
+    const f = obs.me.fort;
+    if (!f || f.readyTicks > 0 || obs.me.gold < f.cost * 1000) return out;
+    const pad = order.find((i) => f.pads[i]?.legal);
+    // The fort goes first, so it is paid before the strategy's own spending.
+    return pad === undefined ? out : [{ t: 'fort', side, pad }, ...out];
+  };
 }
 
 const S = STRATEGIES as Record<'balanced' | 'rush' | 'turtle' | 'greedy' | 'heavy', Strategy>;
@@ -116,12 +145,32 @@ const SCENARIOS: Scenario[] = [
       }),
     players: [S.heavy, S.balanced],
   },
+  {
+    // SIM_VERSION 5.0.0 (A16.14): all four fort kinds, placed on every recharge by both sides, through a
+    // Short War to the Final Bell with Sudden Siege: scaffolds, blocking and contact, forts destroyed for
+    // a bounty, camps and levies (none in Siege), traps armed, fired and expired, towers, decay and the
+    // Siege switch.
+    name: '12-forts',
+    cfg: () =>
+      matchConfig({
+        seed: 1212,
+        format: 'short',
+        modifiers: ['sudden_siege', 'gold_rush', 'fast_forward'],
+        sides: [
+          withForts(side(fixture, { level: 3 }), { stone: 'war_camp', medieval: 'wolf_pits', gunpowder: 'musket_redoubt' }),
+          withForts(bot({ level: 3 }), { stone: 'palisade', medieval: 'longbow_tower', gunpowder: 'militia_muster' }),
+        ],
+      }),
+    players: [S.greedy, S.balanced],
+    forts: true,
+  },
 ];
 
 function record(sc: Scenario): ReplayDoc {
   const cfg = sc.cfg();
   const seed = cfg.seed;
-  const { sim } = runMatch(cfg, [scriptedPlayer(fixture, 0, seed, sc.players[0]), scriptedPlayer(fixture, 1, seed + 1, sc.players[1])], {
+  const make = sc.forts ? fortPlayer : (s: Side, sd: number, st: Strategy) => scriptedPlayer(fixture, s, sd, st);
+  const { sim } = runMatch(cfg, [make(0, seed, sc.players[0]), make(1, seed + 1, sc.players[1])], {
     maxTicks: 30000,
   });
   if (!sim.state.outcome) throw new Error(`golden scenario ${sc.name} did not end`);
@@ -150,9 +199,25 @@ async function writeGolden(): Promise<void> {
 if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
-  it('has all 11 recorded files', () => {
-    expect(SCENARIOS).toHaveLength(11);
+  it('has all 12 recorded files', () => {
+    expect(SCENARIOS).toHaveLength(12);
     for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
+  });
+
+  it('12-forts covers the fort rules (A16.14 golden, spec 13)', () => {
+    const sc = SCENARIOS.find((x) => x.name === '12-forts');
+    if (!sc) throw new Error('no fort scenario');
+    const cfg = sc.cfg();
+    const { events } = runMatch(cfg, [fortPlayer(0, cfg.seed, sc.players[0]), fortPlayer(1, cfg.seed + 1, sc.players[1])], { maxTicks: 30000, keepEvents: true });
+    const kinds = new Set(events.map((e) => e.e));
+    for (const k of ['fortPlaced', 'fortBuilt', 'trapArmed', 'trapTriggered', 'trapExpired', 'fortDecayed'] as const) expect(kinds.has(k), k).toBe(true);
+    const siege = events.find((e) => e.e === 'phaseChanged' && e.phase === 'siege')?.tick ?? Infinity;
+    const fortIds = new Set(events.filter((e): e is SimEvent & { e: 'fortPlaced' } => e.e === 'fortPlaced').map((e) => e.id));
+    // Forts destroyed by the enemy (with a bounty), levies sent, and none sent in Siege.
+    expect(events.some((e) => e.e === 'died' && fortIds.has(e.id) && e.bountyGold > 0)).toBe(true);
+    const levies = events.filter((e) => e.e === 'unitSpawned' && e.from !== undefined);
+    expect(levies.length).toBeGreaterThan(0);
+    expect(levies.filter((e) => e.tick > siege)).toEqual([]);
   });
 
   for (const sc of SCENARIOS) {

@@ -15,6 +15,7 @@ import { FX_RECIPES } from './effects/recipes';
 import { getPart } from './parts/registry';
 import { BASE_PUPPETS, ICON_SPRITES, PROJECTILE_SPRITES, TURRET_PUPPETS, UNIT_PUPPETS } from './library';
 import { isTeamZone } from './palette';
+import { FORT_PUPPETS, LEVY_PUPPETS } from './forts';
 import { SKIN_PUPPETS } from './skins';
 import { CLIP_TIMING, WORLD } from './style';
 import { WORLD_OVERRIDES } from './manifest.world';
@@ -97,6 +98,9 @@ export function buildProceduralManifest(): Record<string, VisualDef> {
   for (const p of UNIT_PUPPETS) m[p.id] = unitDef(p);
   for (const p of SKIN_PUPPETS) m[p.id] = p.kind === 'base' ? baseDef(p) : unitDef(p);
   for (const p of TURRET_PUPPETS) m[p.id] = turretDef(p);
+  // A16.14.8: fort and levy placeholders (F3 replaces them with the fort rigs and levy puppets)
+  for (const p of FORT_PUPPETS) m[p.id] = turretDef(p);
+  for (const p of LEVY_PUPPETS) m[p.id] = unitDef(p);
   for (const a of AGES) {
     const b = BASE_PUPPETS[a];
     if (b) m[b.id] = baseDef(b);

@@ -6,7 +6,7 @@
 import type { CapsuleTier, CardId } from '@/contracts';
 
 /** The `SaveDoc.v` that `newSave` writes (WP8 migrates from this version on). */
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 
 /**
  * Share of ladder and Daily Challenge opponents that are named AI Generals; the rest are procedural
@@ -54,7 +54,21 @@ export const META_FLAGS = {
    * the v7 save migration sets it for every save that has played. Same key as `save/migrations/v7.ts`.
    */
   powerField: 'power.field',
+  /**
+   * The Fort slot is unlocked (A16.14.6): the first of War Path Bronze L4 cleared or 400 trophies; the v11
+   * save migration sets it for saves past either. Same key as `save/migrations/v11.ts`.
+   */
+  fortSlot: 'fort.slot',
 } as const;
+
+/** Best trophies that unlock the Fort slot (A16.14.6: 400, Arena 3). */
+export const FORT_SLOT_TROPHIES = 400;
+
+/** The War Path level whose first clear unlocks the Fort slot (A16.14.6: Bronze L4, which teaches forts). */
+export const FORT_UNLOCK_LEVEL = 'wp.bronze.l04';
+
+/** Amber paid instead of a fort the save already owns from the other source (A16.14.6, the power rule). */
+export const FORT_OWNED_AMBER = 60;
 
 /** Best trophies that unlock the Field power slot (A2.9.1: the Gate 2 node). */
 export const POWER_FIELD_TROPHIES = 150;

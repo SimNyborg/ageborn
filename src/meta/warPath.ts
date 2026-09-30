@@ -19,6 +19,7 @@
 import type { CardId, MatchStats, RewardStep, SaveDoc, WarPathDifficulty, WarPathMatch } from '@/contracts';
 import type { Content, Difficulty, StarGoal, WarPathLevel, WarPathRegion, WarPathUnlock } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
+import { grantWarPathFort } from './forts';
 
 /** A node's state on the map. */
 export type WarPathNodeState = 'beaten' | 'current' | 'locked';
@@ -216,6 +217,11 @@ export function applyWarPath(
       save = g.save;
       steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
     }
+    // A16.14.6: a region's L4, L6 and L8 grant its Camp, Trap and Tower (once the Fort slot is open; the
+    // first clear of Bronze L4 opens it and grants the walls and the Stone set).
+    const f = grantWarPathFort(save, t, level.region, level.index);
+    save = f.save;
+    steps.push(...f.steps);
   }
   return { save, steps };
 }

@@ -14,11 +14,15 @@ export function unitRules(ctx: Ctx, u: UnitRt): UnitRules {
   return ctx.rules.unitList[u.ci] as UnitRules;
 }
 
-/** Spawns a unit at world x. Summoned units (riders, Paratroopers, Vanguard) use no pop and pay no bounty. */
-export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: number, summoned: boolean): UnitRt {
+/**
+ * Spawns a unit at world x. Summoned units (riders, Paratroopers, Vanguard, levies) use no pop and pay no
+ * bounty. `o.lvlBp` overrides the level multiplier (a levy uses its camp's loadout multiplier, A16.14.3);
+ * `o.from` is the camp that sent it (`unitSpawned.from`).
+ */
+export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: number, summoned: boolean, o: { lvlBp?: number; from?: number } = {}): UnitRt {
   const r = ctx.rules.units[card];
   assert(r !== undefined, `unknown unit card ${card}`);
-  const lvl = levelBp(ctx.econ, level);
+  const lvl = o.lvlBp ?? levelBp(ctx.econ, level);
   // Research that completed before this spawn and the side's modifiers (A18.2 rule 2, A18.11).
   const at = unitFxAtSpawn(ctx, side, r);
   const fx = at.fx;
@@ -79,12 +83,102 @@ export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: 
     mail: at.mail,
     lastEngagedTick: NEVER,
     auraGuardBp: 0,
+    auraCoverBp: 0,
+    decayed: false,
   };
   ctx.s.nextId += 1;
   ctx.s.units.push(u);
   if (!summoned) ctx.s.sides[side].pop += r.pop;
-  emit(ctx, { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned, level: u.level });
+  emit(ctx, o.from === undefined ? { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned, level: u.level } : { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned, level: u.level, from: o.from });
   return u;
+}
+
+/**
+ * Spawns a fort's twin (a wall, tower or camp, A16.14.2) as a scaffold at world x: max HP × the placing
+ * loadout's multiplier (no card level, no unit or side modifier, no research), placed at
+ * `scaffoldHpBp` of it; its pop is reserved now. `doneTick` is when the scaffold completes.
+ */
+export function spawnFort(ctx: Ctx, side: Side, card: CardId, pad: number, x: number, multBp: number, doneTick: number): UnitRt {
+  const r = ctx.rules.units[card];
+  const f = r?.fort;
+  const fe = ctx.econ.fort;
+  assert(r !== undefined && f !== null && f !== undefined && fe !== null, `not a fort twin: ${card}`);
+  const maxHp = scaleCenti(r.hp, multBp);
+  const hp = Math.max(1, Math.trunc((maxHp * fe.scaffoldHpBp) / BP));
+  const kind = f.kind === 'trap' ? 'wall' : f.kind;
+  const u: UnitRt = {
+    id: ctx.s.nextId,
+    side,
+    card,
+    level: 1,
+    x,
+    prevX: x,
+    hp,
+    maxHp,
+    shield: 0,
+    innateShield: 0,
+    mode: 'hold',
+    attacks: r.attacks.map(() => ({ targetId: NO_TARGET, impactTick: 0, nextAttackTick: 0, lastAttackTick: NEVER, retargetTick: 0, firstHit: false, bite: false })),
+    statuses: [],
+    air: false,
+    summoned: false,
+    timers: [],
+    lastDamageTick: NEVER,
+    ci: r.idx,
+    dmg: r.attacks.map((a) => scaleCenti(a.damage, multBp)),
+    vsBase: r.attacks.map(() => 0),
+    innateMax: 0,
+    innateRegen: 0,
+    healPool: 0,
+    lastHitId: NO_TARGET,
+    lastHitCard: '',
+    lastHitKind: null,
+    lastHitSide: side,
+    lastHitCast: null,
+    auraAttackSpeedBp: 0,
+    auraDamageBp: 0,
+    leapFrom: 0,
+    leapTo: 0,
+    leapStart: 0,
+    leapEnd: 0,
+    moved: 0,
+    cls: -1,
+    picks: [],
+    fx: null,
+    mail: 0,
+    lastEngagedTick: NEVER,
+    auraGuardBp: 0,
+    auraCoverBp: 0,
+    decayed: false,
+    fort: {
+      pad,
+      kind,
+      doneTick,
+      done: false,
+      decayFromTick: 0,
+      campNextTick: 0,
+      levyIds: [],
+      multBp,
+      silencedUntilTick: 0,
+      lastEnemyHitTick: NEVER,
+      lastEnemyHitBy: NO_TARGET,
+    },
+  };
+  ctx.s.nextId += 1;
+  ctx.s.units.push(u);
+  ctx.s.sides[side].pop += r.pop;
+  emit(ctx, { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned: false, level: u.level });
+  return u;
+}
+
+/** A wall, tower or camp (a fort's twin, A16.14.8). */
+export function isFort(u: UnitRt): boolean {
+  return u.fort !== undefined;
+}
+
+/** A fort whose scaffold has completed: it blocks, fires and spawns (A16.14.2). */
+export function fortDone(u: UnitRt): boolean {
+  return u.fort !== undefined && u.fort.done;
 }
 
 /** Binary search by id (units are sorted by id). */

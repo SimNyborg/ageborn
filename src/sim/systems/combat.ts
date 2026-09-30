@@ -16,15 +16,23 @@ import { xOf } from '../geometry';
 import type { AttackRules, UnitRules } from '../rules';
 import { BASE_TARGET, other, type AttackRt, type Ctx, type UnitRt } from '../state';
 import { alive, findUnit, unitRules } from '../units';
+import { pickContacts, towerFire } from './forts';
 import { fireProjectile } from './projectiles';
 import { targetInRange, targetValidForImpact, updateTarget } from './targeting';
 
 export function combatSystem(ctx: Ctx): void {
+  // A16.14.2: the fort contact set is re-picked every tick before any attack starts.
+  pickContacts(ctx);
   const units = ctx.s.units;
   for (let i = 0; i < units.length; i += 1) {
     const u = units[i] as UnitRt;
     if (!alive(u) || isLeaping(u)) continue;
     const r = unitRules(ctx, u);
+    if (u.fort) {
+      // Walls and camps never attack; a field tower fires like a stationary archer (A16.14.3).
+      if (u.fort.kind === 'tower') towerFire(ctx, u, r);
+      continue;
+    }
     const stunned = isStunned(u);
     let engaged = false;
     for (let ai = 0; ai < r.attacks.length; ai += 1) {
@@ -105,6 +113,7 @@ function resolveWindup(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackR
     imp.srcX = u.x;
     imp.srcRange = a.range;
     imp.srcCls = u.cls;
+    imp.forts = true;
     if (u.fx) {
       imp.vsTags = u.fx.vsTags;
       imp.vsBp = u.fx.vsBp;

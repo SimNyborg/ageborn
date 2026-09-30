@@ -7,13 +7,14 @@ import type { Content } from '@/content/types';
 import type { AgeId, CardId, FormatId, Loadout, PlanIssue, PowerSlot, Rarity, ResearchClass, SaveDoc } from '@/contracts';
 import { unitClass, type CardClass } from '@/core/cardClass';
 import { FIELD_SLOT_IN_BATTLE } from '@/core/powerReach';
+import { FORT_SLOT_IN_BATTLE } from '@/core/fortPads';
 import type { WarPlan } from '../services';
 import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
 import { featureOpen, unlockWins } from './warPath';
 
-/** A loadout slot: six troops, two turrets and the two typed power slots, Home and Field (A2.9.1). */
-export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power'; slot: PowerSlot };
+/** A loadout slot: six troops, two turrets, the two typed power slots, Home and Field (A2.9.1), and the Fort slot (A16.14.7). */
+export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power'; slot: PowerSlot } | { kind: 'fort' };
 
 /**
  * The save flag that unlocks the Field power slot (A2.9.1: the first clear of War Path Stone L5 or 150
@@ -35,18 +36,44 @@ export function fieldSlotLockKeys(save: SaveDoc, inBattle: boolean = FIELD_SLOT_
   return !inBattle && save.flags[FIELD_SLOT_FLAG] === true ? { line: 'ui.power.fieldSoon', short: 'ui.power.fieldSoonShort' } : { line: 'ui.power.lockedField', short: 'ui.power.lockedFieldShort' };
 }
 
+/**
+ * The save flag that unlocks the Fort slot (A16.14.6: the first clear of War Path Bronze L4 or 400
+ * trophies; meta sets it, `META_FLAGS.fortSlot`).
+ */
+export const FORT_SLOT_FLAG = 'fort.slot';
+
+/** A preview switch for the dev screen gallery and tests: shows the Fort slot before battles play it. */
+let fortPreview = false;
+export function setFortSlotPreview(on: boolean): void {
+  fortPreview = on;
+}
+
+/**
+ * Whether the Army shows the Fort group at all: once battles play the Fort slot (`FORT_SLOT_IN_BATTLE`,
+ * F2). Until then nothing about forts is drawn, so the Army never offers a card no battle uses.
+ */
+export function fortSlotShown(inBattle: boolean = FORT_SLOT_IN_BATTLE): boolean {
+  return inBattle || fortPreview;
+}
+
+/** The Fort slot is shown and open for this save (else it shows a padlock and how it opens). */
+export function fortSlotOpen(save: SaveDoc, inBattle: boolean = FORT_SLOT_IN_BATTLE): boolean {
+  return fortSlotShown(inBattle) && save.flags[FORT_SLOT_FLAG] === true;
+}
+
 export const UNIT_SLOTS = 6;
 export const TURRET_SLOTS = 2;
 /** A3: three renamable presets. */
 export const PRESETS = 3;
 
 export function slotKey(s: SlotRef): string {
-  return s.kind === 'power' ? `power-${s.slot}` : `${s.kind}-${s.index}`;
+  return s.kind === 'power' ? `power-${s.slot}` : s.kind === 'fort' ? 'fort' : `${s.kind}-${s.index}`;
 }
 
 export function slotCard(l: Loadout, s: SlotRef): CardId | null {
   if (s.kind === 'unit') return l.units[s.index] ?? null;
   if (s.kind === 'turret') return l.turrets[s.index] ?? null;
+  if (s.kind === 'fort') return l.fort ?? null;
   return l.powers?.[s.slot] ?? null;
 }
 
@@ -55,15 +82,16 @@ export function powerSlotOf(content: Content, card: CardId): PowerSlot | null {
   return content.powers[card]?.slot ?? null;
 }
 
-/** Pads a loadout to 6 unit (A18.9) and 2 turret slots (older or partial saves). */
+/** Pads a loadout to 6 unit (A18.9) and 2 turret slots (older or partial saves); keeps the Fort slot. */
 export function normalizeLoadout(l: Loadout): Loadout {
   const units = Array.from({ length: UNIT_SLOTS }, (_, i) => l.units[i] ?? null);
   const turrets = Array.from({ length: TURRET_SLOTS }, (_, i) => l.turrets[i] ?? null);
-  return { units, turrets, powers: l.powers ?? { home: null, field: null } };
+  return { units, turrets, powers: l.powers ?? { home: null, field: null }, fort: l.fort ?? null };
 }
 
-/** Which slot kind a card goes in. */
+/** Which slot kind a card goes in. A fort shares its id with its hidden twin unit, so forts come first. */
 export function slotKindOf(content: Content, card: CardId): SlotRef['kind'] | null {
+  if (content.forts?.[card]) return 'fort';
   if (content.units[card]) return 'unit';
   if (content.turrets[card]) return 'turret';
   if (content.powers[card]) return 'power';
@@ -80,6 +108,7 @@ export function assignCard(content: Content, loadout: Loadout, slot: SlotRef, ca
   const l = normalizeLoadout(loadout);
   // A2.9.1: a power goes only into its own slot (Home or Field); the two never swap.
   if (slot.kind === 'power') return powerSlotOf(content, card) === slot.slot ? { ...l, powers: { ...l.powers, [slot.slot]: card } } : loadout;
+  if (slot.kind === 'fort') return { ...l, fort: card };
   const list = slot.kind === 'unit' ? [...l.units] : [...l.turrets];
   const from = list.indexOf(card);
   const displaced = list[slot.index] ?? null;
@@ -93,6 +122,7 @@ export function clearSlot(loadout: Loadout, slot: SlotRef): Loadout {
   const l = normalizeLoadout(loadout);
   if (slot.kind === 'unit') return { ...l, units: l.units.map((c, i) => (i === slot.index ? null : c)) };
   if (slot.kind === 'turret') return { ...l, turrets: l.turrets.map((c, i) => (i === slot.index ? null : c)) };
+  if (slot.kind === 'fort') return { ...l, fort: null };
   return { ...l, powers: { ...l.powers, [slot.slot]: null } };
 }
 
@@ -112,6 +142,7 @@ export function firstEmptySlot(content: Content, loadout: Loadout, card: CardId)
     const slot = powerSlotOf(content, card);
     return slot && l.powers[slot] === null ? { kind: 'power', slot } : null;
   }
+  if (kind === 'fort') return (l.fort ?? null) === null ? { kind: 'fort' } : null;
   return null;
 }
 
@@ -131,7 +162,7 @@ export function researchLines(content: Content, l: Loadout): { cls: ResearchClas
   const held = new Set<ResearchClass>();
   for (const id of l.units) {
     const u = id ? content.units[id] : undefined;
-    const cls = u ? content.research?.classOfRole[u.role] : undefined;
+    const cls = u && u.role !== 'fort' ? content.research?.classOfRole[u.role] : undefined;
     if (cls) held.add(cls);
   }
   return RESEARCH_LINES.map((cls) => ({ cls, has: held.has(cls) }));
@@ -230,7 +261,7 @@ export const AGE_SHORT_KEY: Readonly<Record<AgeId, string>> = {
   cosmic: 'ui.army.ageShort.cosmic',
 };
 
-/** Every slot of a loadout in reading order: six troops, two turrets, the Home and Field powers. */
+/** Every slot of a loadout in reading order: six troops, two turrets, the Home and Field powers, the Fort. */
 export const ALL_SLOTS: readonly SlotRef[] = [
   ...Array.from({ length: UNIT_SLOTS }, (_, index) => ({
     kind: 'unit' as const,
@@ -242,16 +273,17 @@ export const ALL_SLOTS: readonly SlotRef[] = [
   })),
   { kind: 'power', slot: 'home' },
   { kind: 'power', slot: 'field' },
+  { kind: 'fort' },
 ];
 
-/** The slot a key names ("unit-3", "turret-0", "power-home"), or null. */
+/** The slot a key names ("unit-3", "turret-0", "power-home", "fort"), or null. */
 export function slotFromKey(key: string): SlotRef | null {
   return ALL_SLOTS.find((s) => slotKey(s) === key) ?? null;
 }
 
 /** The age a card belongs to. */
 export function cardAge(content: Content, card: CardId): AgeId | null {
-  return (content.units[card] ?? content.turrets[card] ?? content.powers[card])?.age ?? null;
+  return (content.forts?.[card] ?? content.units[card] ?? content.turrets[card] ?? content.powers[card])?.age ?? null;
 }
 
 /**
@@ -260,6 +292,7 @@ export function cardAge(content: Content, card: CardId): AgeId | null {
  */
 export function fitsSlot(save: SaveDoc, content: Content, age: AgeId, slot: SlotRef, card: CardId): boolean {
   if (slotKindOf(content, card) !== slot.kind || cardAge(content, card) !== age || !isOwned(save, card, content)) return false;
+  if (slot.kind === 'fort') return fortSlotOpen(save);
   if (slot.kind !== 'power') return true;
   return powerSlotOf(content, card) === slot.slot && (slot.slot === 'home' || fieldSlotOpen(save));
 }
@@ -273,6 +306,7 @@ export function slotOfCard(l: Loadout, card: CardId): SlotRef | null {
   if (tIdx >= 0) return { kind: 'turret', index: tIdx };
   if (n.powers.home === card) return { kind: 'power', slot: 'home' };
   if (n.powers.field === card) return { kind: 'power', slot: 'field' };
+  if (n.fort === card) return { kind: 'fort' };
   return null;
 }
 
@@ -290,6 +324,8 @@ export function equipSlot(save: SaveDoc, content: Content, l: Loadout, card: Car
     if (!slot || (slot === 'field' && !fieldSlotOpen(save))) return null;
     return { kind: 'power', slot };
   }
+  // The one Fort slot (A16.14.7): a fort fills it or swaps with the one there.
+  if (kind === 'fort') return fortSlotOpen(save) ? { kind: 'fort' } : null;
   const already = slotOfCard(l, card);
   if (already) return already;
   const empty = firstEmptySlot(content, l, card);
@@ -459,7 +495,9 @@ export function candidates(save: SaveDoc, content: Content, age: AgeId, kind: Sl
       ? content.order.units.filter((id) => content.units[id]?.age === age)
       : kind === 'turret'
         ? content.order.turrets.filter((id) => content.turrets[id]?.age === age)
-        : content.order.powers.filter((id) => content.powers[id]?.age === age && (!powerSlot || content.powers[id]?.slot === powerSlot));
+        : kind === 'fort'
+          ? (content.order.forts ?? []).filter((id) => content.forts?.[id]?.age === age)
+          : content.order.powers.filter((id) => content.powers[id]?.age === age && (!powerSlot || content.powers[id]?.slot === powerSlot));
   const owned = ids.filter((id) => isOwned(save, id, content));
   const unowned = ids.filter((id) => !isOwned(save, id, content));
   return [...owned, ...unowned];

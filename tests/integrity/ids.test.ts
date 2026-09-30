@@ -168,7 +168,8 @@ describe('card and skin ids', () => {
   });
 
   it('follow the A14.1 visual id conventions', () => {
-    for (const u of Object.values(content.units)) expect(u.visualId).toBe(`unit.${u.id}`);
+    // A16.14.8: a fort's hidden twin draws as `fort.<id>`; levies are units.
+    for (const u of Object.values(content.units)) expect(u.visualId).toBe(u.fort ? `fort.${u.id}` : `unit.${u.id}`);
     for (const t of Object.values(content.turrets)) expect(t.visualId).toBe(`turret.${t.id}`);
     for (const p of Object.values(content.powers)) expect(p.visualId).toBe(`power.${p.id}`);
     for (const a of Object.values(content.ages)) {

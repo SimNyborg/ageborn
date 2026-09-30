@@ -4,6 +4,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { camp, slow, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const stone: RawAgeTables = {
@@ -193,5 +194,12 @@ export const stone: RawAgeTables = {
       },
       visualId: 'turret.grumpy_toad', nameKey: 'card.grumpy_toad.name', descKey: 'card.grumpy_toad.desc',
     },
+  ],
+  // A16.14.4 Forts (Stone, P 1.00): the Stone Camp, Trap and Tower come with the Fort slot unlock
+  forts: [
+    wall('stone', 'palisade'),
+    tower('stone', 'sling_perch', { unlock: true }),
+    camp('stone', 'war_camp', 'cave_youth', { unlock: true }),
+    trap('stone', 'spike_pit', { unlock: true }, { charges: 3, damage: 40, statuses: [slow(4000, 2000)] }),
   ],
 };

@@ -21,6 +21,10 @@
  *   to ground and air units (not to knockback, pulls, leaps, projectiles or power runners).
  * Air: ignore blocking; gunships stop for targets and obey stance; the bomber never stops, ignores Hold
  * and stops only at the enemy gate.
+ * Forts (A16.14.2): walls, towers and camps never move. A completed fort blocks enemy ground units like a
+ * parked unit (a scaffold does not); own units walk through their own forts, which are outside every
+ * formation (front rank, spacing, followSupport, the open gate test, the siege crowd). Levies always
+ * march: they Charge whatever the stance (A16.14.3).
  */
 import { BP } from '@/core';
 import { capSum, isLeaping, isStunned, statusBp } from '../damage';
@@ -42,12 +46,18 @@ interface Mover {
 export function movementSystem(ctx: Ctx): void {
   const units = ctx.s.units;
   const ground: [Mover[], Mover[]] = [[], []];
+  const forts: [Mover[], Mover[]] = [[], []];
   const air: Mover[] = [];
   const all: Mover[] = [];
   for (let i = 0; i < units.length; i += 1) {
     const u = units[i] as UnitRt;
     if (!alive(u)) continue;
     const r = unitRules(ctx, u);
+    if (u.fort) {
+      // Completed forts block the enemy; scaffolds do not. Forts never move.
+      if (u.fort.done) forts[u.side].push({ u, r, p: pOf(u.x, u.side), want: 0, newP: pOf(u.x, u.side), engaged: false });
+      continue;
+    }
     if (isLeaping(u)) {
       stepLeap(ctx, u, r);
       continue;
@@ -61,7 +71,11 @@ export function movementSystem(ctx: Ctx): void {
   ground[1].sort(frontFirst);
   for (const m of all) computeWant(ctx, m, ground[m.u.side]);
   const open = openGates(ctx, ground);
-  for (const side of [0, 1] as const) resolveGround(ctx, ground[side], ground[side === 0 ? 1 : 0], open[side === 0 ? 1 : 0]);
+  for (const side of [0, 1] as const) {
+    const foe = side === 0 ? 1 : 0;
+    const blockers = forts[foe].length > 0 ? [...ground[foe], ...forts[foe]] : ground[foe];
+    resolveGround(ctx, ground[side], blockers, open[foe]);
+  }
   for (const m of air) m.newP = m.p + m.want;
   for (const m of all) {
     const pMax = LANE - m.r.half;
@@ -104,7 +118,7 @@ function speedOf(ctx: Ctx, m: Mover): number {
   let v = m.r.speed;
   const fx = m.u.fx;
   let fixed = fx ? fx.speedBp : 0;
-  if (fx?.horns && !m.u.air && ctx.s.sides[m.u.side].stance === 'charge') fixed += fx.horns.chargeSpeedBp;
+  if (fx?.horns && !m.u.air && (m.r.levy || ctx.s.sides[m.u.side].stance === 'charge')) fixed += fx.horns.chargeSpeedBp;
   const bonus = capSum(fixed, statusBp(m.u, 'speedBuff'), ctx.econ.caps.speedBp);
   if (bonus !== 0) v = Math.trunc((v * (BP + bonus)) / BP);
   // Slows and snares (A2.9.6): the stronger applies, after the A18.2 caps.
@@ -137,7 +151,8 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
   }
   let want = speed;
   const side = ctx.s.sides[u.side];
-  if (side.stance !== 'charge') {
+  // Levies always march (A16.14.3): they ignore Hold, Fall back and the Hold flag.
+  if (side.stance !== 'charge' && !r.levy) {
     // A18.4.2: Hold at the side's flag (walk back at 70% speed); Fall back to p = 200 at full speed.
     const hold = side.stance === 'hold';
     const line = hold ? side.holdP : e.fallbackP;

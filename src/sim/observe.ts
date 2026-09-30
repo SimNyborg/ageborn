@@ -6,11 +6,12 @@
  * the Scouted list, and its own gold, queue and tray. Never the opponent's gold, queue or War Plan.
  * Units: positions `p` in milli-lu from the observer's gate; gold in milli-gold (B3 units).
  */
-import type { Observation, PowerSlot, ResearchView, Side } from '@/contracts';
-import { MILLI, effectiveReloadMs, slotIndex } from '@/core';
-import { pOf } from './geometry';
+import type { ObservedFort, ObservedFortPad, ObservedTrap, Observation, PowerSlot, ResearchView, Side } from '@/contracts';
+import { MILLI, effectiveReloadMs, padKind, slotIndex, towerRangeOnPad } from '@/core';
+import { pOf, xOf } from './geometry';
 import { ranksOpen, researchProgressBp } from './research';
-import { baseHpBp, loadoutOf, other, slotPower, xpBp, type Ctx, type SideRt } from './state';
+import { baseHpBp, loadoutOf, other, slotFort, slotPower, xpBp, type Ctx, type SideRt } from './state';
+import { fortCounts, fortPadReason, fortPadSafe, padContext } from './systems/forts';
 import { powerCost, powerRateBp } from './systems/powers';
 
 /** My power slot (A2.9.3): the effective cost and reload the sim applies. */
@@ -62,6 +63,40 @@ function turretsOf(s: SideRt): Observation['me']['turrets'] {
   return s.turrets.map((t) => (t ? { card: t.card, age: t.age } : null));
 }
 
+/** My Fort slot (A16.14.2): the card, price, recharge, what is alive and every pad as the rules see it now. */
+function myFort(ctx: Ctx, side: Side): ObservedFort | null {
+  const f = ctx.econ.fort;
+  const card = slotFort(ctx, side);
+  const fr = card ? ctx.rules.forts[card] : undefined;
+  if (!f || !card || !fr) return null;
+  const counts = fortCounts(ctx, side);
+  const pc = padContext(ctx, side, fr, counts.taken);
+  const pads: ObservedFortPad[] = f.pads.pads.map((p, i) => {
+    const reason = fortPadReason(ctx, i, pc);
+    const atk = fr.def.attack;
+    return {
+      p: Math.trunc(p / MILLI),
+      kind: padKind(f.pads, i),
+      legal: reason === null,
+      safe: reason === null && fortPadSafe(ctx, side, i, pc),
+      reason,
+      towerRange: atk ? Math.trunc(towerRangeOnPad(atk.range * MILLI, p, fr.half, f.pads.towerReachMax) / MILLI) : 0,
+    };
+  });
+  const s = ctx.s.sides[side];
+  const left = s.fortReadyTick - ctx.tick;
+  return { card, cost: fr.cost, readyTicks: left > 0 ? left : 0, alive: counts.alive, campAlive: counts.campAlive, pads };
+}
+
+/** The opponent's fort ring (A16.14.7): public; the card only once they have placed it (scouted). */
+function foeFort(ctx: Ctx, side: Side): Observation['foe']['fort'] {
+  const card = slotFort(ctx, side);
+  if (!card || !ctx.econ.fort) return null;
+  const s = ctx.s.sides[side];
+  const left = s.fortReadyTick - ctx.tick;
+  return { card: s.played.includes(card) ? card : null, readyTicks: left > 0 ? left : 0 };
+}
+
 export function observe(ctx: Ctx, side: Side): Observation {
   const s = ctx.s;
   const me = s.sides[side];
@@ -92,6 +127,7 @@ export function observe(ctx: Ctx, side: Side): Observation {
       lastStand: me.lastStand,
       tray: trayOf(lo?.units, tray),
       turretCards: lo ? [...lo.turrets] : [null, null],
+      fort: myFort(ctx, side),
     },
     foe: {
       ageIndex: foe.ageIndex,
@@ -105,6 +141,7 @@ export function observe(ctx: Ctx, side: Side): Observation {
       treasury: foe.treasury,
       lastStand: foe.lastStand,
       scouted: [...foe.played],
+      fort: foeFort(ctx, foeSide),
     },
     telegraphs: s.casts
       .filter((c) => s.tick < c.telegraphEnd)
@@ -120,6 +157,11 @@ export function observe(ctx: Ctx, side: Side): Observation {
       shield: u.shield + u.innateShield,
       air: u.air,
       summoned: u.summoned,
+      ...(u.fort ? { fort: u.fort.kind, scaffold: !u.fort.done } : {}),
     })),
+    // Traps are always visible to both sides (A16.14.3).
+    traps: s.traps.map(
+      (t): ObservedTrap => ({ id: t.id, side: t.side, card: t.card, p: pOf(xOf(t.p, t.side), side), armed: s.tick >= t.armTick, charges: t.charges }),
+    ),
   };
 }

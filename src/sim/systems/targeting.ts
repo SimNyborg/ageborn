@@ -11,6 +11,10 @@
  * within 30 lu (self-defence). Turrets measure from their own gate and pick afresh for every shot.
  */
 import type { Side, TargetPriority } from '@/contracts';
+// Forts (A16.14.2 targeting): an attack with compiled range < 100 treats forts like units (candidates
+// together by class and distance, then the base); an attack with range ≥ 100 takes units first, then the
+// base, then forts, so a fort never shields the base from fire. The contact rule lets up to 5 blocked
+// attackers hit a fort with attack 0 as if in range. Turrets never target forts; towers use `forts.ts`.
 import { isLeaping, rangeBonus } from '../damage';
 import { centreDist, distFromGate, distToEnemyGate, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import { DENSE_SCAN_STEP, TAG, type AttackRules, type UnitRules } from '../rules';
@@ -50,9 +54,17 @@ interface Pick {
   id: number;
   cls: number;
   dist: number;
+  /** The target is a fort (A16.14). */
+  fort?: boolean;
 }
 
-/** Best unit candidate for a unit's attack (or null). */
+/** Which enemies a candidate scan considers: units only, units and forts together, or forts only (A16.14.2). */
+const NO_FORTS = 0;
+const WITH_FORTS = 1;
+const ONLY_FORTS = 2;
+type FortMode = typeof NO_FORTS | typeof WITH_FORTS | typeof ONLY_FORTS;
+
+/** Best unit (or fort) candidate for a unit's attack (or null). A blocking candidate must be a unit or a completed fort. */
 function bestUnitCandidate(
   ctx: Ctx,
   u: UnitRt,
@@ -61,23 +73,55 @@ function bestUnitCandidate(
   maxDist: number,
   onlyBlocking: boolean,
   prio: TargetPriority = a.priority,
+  forts: FortMode = NO_FORTS,
 ): Pick | null {
   let best: Pick | null = null;
   const reach = maxDist + r.half + MAX_HALF;
   const foes = unitsBetween(ctx, other(u.side), u.x - reach, u.x + reach, ctx.scratch);
   for (let i = 0; i < foes.length; i += 1) {
     const e = foes[i] as UnitRt;
+    const isFort = e.fort !== undefined;
+    if (isFort ? forts === NO_FORTS : forts === ONLY_FORTS) continue;
     if (!canHit(a, e)) continue;
     const er = unitRules(ctx, e);
     const d = edgeDist(u.x, r.half, e.x, er.half);
     if (d > maxDist || d < a.minRange) continue;
-    if (onlyBlocking && (e.air || !isAheadOrLevel(u.side, u.x, e.x))) continue;
+    if (onlyBlocking && (e.air || !isAheadOrLevel(u.side, u.x, e.x) || (isFort && !e.fort?.done))) continue;
     const cls = priorityClass(prio, er);
     if (!best || cls < best.cls || (cls === best.cls && (d < best.dist || (d === best.dist && e.id < best.id)))) {
-      best = { id: e.id, cls, dist: d };
+      best = { id: e.id, cls, dist: d, fort: isFort };
     }
   }
   return best;
+}
+
+/** "Range ≥ 100" (A16.14.2): the attack's compiled base range (the card value), never research or auras. */
+function longRange(ctx: Ctx, a: AttackRules): boolean {
+  const f = ctx.econ.fort;
+  return f !== null && a.range >= f.rangedMin;
+}
+
+/** The fort this unit's attack 0 may hit as if in range (the contact rule), or NO_TARGET. */
+function contactFort(ctx: Ctx, u: UnitRt, ai: number): number {
+  if (ai !== 0) return NO_TARGET;
+  return ctx.contact.get(u.id) ?? NO_TARGET;
+}
+
+/**
+ * A fresh pick for a unit's attack (A2.7 with A16.14.2): the best unit (range < 100: units and forts
+ * together), else the base when in range, else (range ≥ 100) the best fort in range, else the contact
+ * fort; NO_TARGET when nothing qualifies.
+ */
+function freshPick(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, ai: number, range: number): number {
+  const long = longRange(ctx, a);
+  const best = bestUnitCandidate(ctx, u, r, a, range, false, a.priority, long ? NO_FORTS : WITH_FORTS);
+  if (best) return best.id;
+  if (baseInRange(ctx, u, r, a, 0)) return BASE_TARGET;
+  if (long) {
+    const fort = bestUnitCandidate(ctx, u, r, a, range, false, a.priority, ONLY_FORTS);
+    if (fort) return fort.id;
+  }
+  return contactFort(ctx, u, ai);
 }
 
 /** Can this unit attack hit the enemy base from where it stands? */
@@ -87,8 +131,8 @@ export function baseInRange(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, e
   return d <= rangeOf(ctx, u, a) + extra && d >= a.minRange;
 }
 
-/** Distance and class of the current target, or null when it is no longer valid (range + leash). */
-function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, targetId: number): Pick | null {
+/** Distance and class of the current target, or null when it is no longer valid (range + leash, or the contact rule). */
+function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, targetId: number, ai = -1): Pick | null {
   const leash = ctx.econ.leash;
   if (targetId === BASE_TARGET) {
     return baseInRange(ctx, u, r, a, leash) ? { id: BASE_TARGET, cls: BASE_CLASS, dist: distToEnemyGate(u.side, u.x, r.half) } : null;
@@ -98,22 +142,27 @@ function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, target
   if (!e || !alive(e) || e.side === u.side || !canHit(a, e)) return null;
   const er = unitRules(ctx, e);
   const d = edgeDist(u.x, r.half, e.x, er.half);
-  if (d > rangeOf(ctx, u, a) + leash || d < a.minRange) return null;
-  return { id: e.id, cls: priorityClass(a.priority, er), dist: d };
+  const contact = e.fort !== undefined && contactFort(ctx, u, ai) === e.id;
+  if (!contact && (d > rangeOf(ctx, u, a) + leash || d < a.minRange)) return null;
+  return { id: e.id, cls: priorityClass(a.priority, er), dist: d, fort: e.fort !== undefined };
 }
 
-/** Bomber (A2.7 Air units): ground enemies within ±window of its x, else the base at the gate. */
+/** Bomber (A2.7 Air units): ground enemies within ±window of its x (units, then forts; A16.14.2), else the base at the gate. */
 function bomberTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, window: number): number {
   let bestId = NO_TARGET;
   let bestD = 0;
+  let bestFort = true;
   const foes = a.hitsGround ? unitsBetween(ctx, other(u.side), u.x - window, u.x + window, ctx.scratch) : [];
   for (let i = 0; i < foes.length; i += 1) {
     const e = foes[i] as UnitRt;
     if (e.air) continue;
+    const isFort = e.fort !== undefined;
     const d = centreDist(u.x, e.x);
-    if (bestId === NO_TARGET || d < bestD || (d === bestD && e.id < bestId)) {
+    const better = bestId === NO_TARGET || (bestFort && !isFort) || (bestFort === isFort && (d < bestD || (d === bestD && e.id < bestId)));
+    if (better) {
       bestId = e.id;
       bestD = d;
+      bestFort = isFort;
     }
   }
   if (bestId !== NO_TARGET) return bestId;
@@ -135,22 +184,22 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
     st.targetId = bomberTarget(ctx, u, r, a, r.bomber.window);
     return;
   }
-  // Siege-only (Battering Ram): the base when in range; units only while they block it (A5.3).
+  // Siege-only (Battering Ram): the base when in range; units (and completed forts) only while they block it (A5.3, A16.14.2).
   if (r.siegeOnly) {
     if (baseInRange(ctx, u, r, a, 0)) {
       st.targetId = BASE_TARGET;
       return;
     }
-    const cur = currentTarget(ctx, u, r, a, st.targetId);
-    if (cur && cur.id !== BASE_TARGET && cur.dist <= range) return;
-    const blocker = bestUnitCandidate(ctx, u, r, a, range, true);
-    st.targetId = blocker ? blocker.id : NO_TARGET;
+    const cur = currentTarget(ctx, u, r, a, st.targetId, ai);
+    if (cur && cur.id !== BASE_TARGET && (cur.dist <= range || (cur.fort && contactFort(ctx, u, ai) === cur.id))) return;
+    const blocker = bestUnitCandidate(ctx, u, r, a, range, true, a.priority, WITH_FORTS);
+    st.targetId = blocker ? blocker.id : contactFort(ctx, u, ai);
     return;
   }
-  // Self-defence (A2.7): a ranged unit switches at once to an enemy within 30 lu.
+  // Self-defence (A2.7): a ranged unit switches at once to an enemy unit (never a fort) within 30 lu.
   if (r.ranged) {
-    const cur = st.targetId > 0 ? currentTarget(ctx, u, r, a, st.targetId) : null;
-    if (!cur || cur.dist > ctx.econ.selfDefense) {
+    const cur = st.targetId > 0 ? currentTarget(ctx, u, r, a, st.targetId, ai) : null;
+    if (!cur || cur.fort || cur.dist > ctx.econ.selfDefense) {
       const near = bestUnitCandidate(ctx, u, r, a, Math.min(range, ctx.econ.selfDefense), false, 'front');
       if (near && near.id !== st.targetId) {
         st.targetId = near.id;
@@ -159,27 +208,26 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
       }
     }
   }
-  const cur = currentTarget(ctx, u, r, a, st.targetId);
-  if (cur && cur.id === BASE_TARGET) {
+  const cur = currentTarget(ctx, u, r, a, st.targetId, ai);
+  if (cur && (cur.id === BASE_TARGET || (cur.fort && longRange(ctx, a)))) {
     // The base is a candidate only while no unit candidate exists (A2.7), so it is never sticky: a
-    // unit hitting the base turns to an enemy unit as soon as one is in range.
-    const best = bestUnitCandidate(ctx, u, r, a, range, false);
-    if (best) {
-      st.targetId = best.id;
+    // unit hitting the base turns to an enemy unit as soon as one is in range. For range ≥ 100 a fort
+    // target yields to any unit and to the base the same way (A16.14.2).
+    const id = freshPick(ctx, u, r, a, ai, range);
+    if (id !== NO_TARGET && id !== cur.id) {
+      st.targetId = id;
       st.retargetTick = tick + retarget;
     }
     return;
   }
   if (!cur) {
-    const best = bestUnitCandidate(ctx, u, r, a, range, false);
-    if (best) st.targetId = best.id;
-    else st.targetId = baseInRange(ctx, u, r, a, 0) ? BASE_TARGET : NO_TARGET;
+    st.targetId = freshPick(ctx, u, r, a, ai, range);
     st.retargetTick = tick + retarget;
     return;
   }
   if (tick >= st.retargetTick) {
     st.retargetTick = tick + retarget;
-    const best = bestUnitCandidate(ctx, u, r, a, range, false);
+    const best = bestUnitCandidate(ctx, u, r, a, range, false, a.priority, longRange(ctx, a) ? NO_FORTS : WITH_FORTS);
     if (best && best.id !== cur.id && (best.cls < cur.cls || best.dist + ctx.econ.retargetCloser <= cur.dist)) {
       st.targetId = best.id;
     }
@@ -195,6 +243,7 @@ export function targetInRange(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): bo
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
   if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window;
+  if (e.fort && contactFort(ctx, u, ai) === e.id) return true;
   const d = edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half);
   return d <= rangeOf(ctx, u, a) && d >= a.minRange;
 }
@@ -208,6 +257,7 @@ export function targetValidForImpact(ctx: Ctx, u: UnitRt, r: UnitRules, ai: numb
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
   if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window + ctx.econ.leash;
+  if (e.fort && contactFort(ctx, u, ai) === e.id) return true;
   return edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= rangeOf(ctx, u, a) + ctx.econ.leash;
 }
 
@@ -221,7 +271,8 @@ export interface TurretPick {
 }
 
 function turretCandidate(a: AttackRules, range: number, side: Side, e: UnitRt, er: UnitRules): number {
-  if (e.side === side || !alive(e) || !canHit(a, e)) return -1;
+  // Turrets never target forts (A16.14.2).
+  if (e.side === side || !alive(e) || e.fort || !canHit(a, e)) return -1;
   const d = distFromGate(side, e.x, er.half);
   if (d > range || d < a.minRange) return -1;
   return d;
@@ -306,7 +357,7 @@ export function densestP(
     const x = xOf(p, side);
     let score = 0;
     for (const e of ctx.s.units) {
-      if (e.side === side || !alive(e) || (e.air ? !hitsAir : !hitsGround)) continue;
+      if (e.side === side || !alive(e) || e.fort || (e.air ? !hitsAir : !hitsGround)) continue;
       if (centreDist(x, e.x) <= window) score += unitRules(ctx, e).cost;
     }
     if (score > bestScore) {
@@ -339,7 +390,7 @@ function densestTurretTarget(ctx: Ctx, side: Side, a: AttackRules, range: number
   let bestId = NO_TARGET;
   let bestD = 0;
   for (const e of ctx.s.units) {
-    if (e.side === side || !alive(e) || !canHit(a, e)) continue;
+    if (e.side === side || !alive(e) || e.fort || !canHit(a, e)) continue;
     const d = centreDist(x, e.x);
     if (d > a.radius) continue;
     if (bestId === NO_TARGET || d < bestD || (d === bestD && e.id < bestId)) {

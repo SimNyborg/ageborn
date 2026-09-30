@@ -304,7 +304,9 @@ export type RoadReward =
   | { kind: 'capsule'; tier: CapsuleTier }
   | { kind: 'wardrobe' }
   /** The arena gate rewards of `ArenaDef.gateRewards` for that arena index. */
-  | { kind: 'gate'; arena: number };
+  | { kind: 'gate'; arena: number }
+  /** A Fort card of a region's fort set (A16.14.6): the fallback of its War Path level; 60 Amber when owned. */
+  | { kind: 'fort'; card: CardId };
 
 export interface RoadNode {
   /** 0-based position on the road. */
@@ -872,6 +874,10 @@ export interface ContentOrder {
   hiddenUnits: CardId[];
   turrets: CardId[];
   powers: CardId[];
+  /** Fort cards in table order (A16.14.4: per age Wall, Tower, Camp, Trap). */
+  forts: CardId[];
+  /** The hidden units forts bring (A16.14.8): levies, then the fort twins. Never collectable. */
+  fortUnits: CardId[];
   skins: SkinId[];
 }
 

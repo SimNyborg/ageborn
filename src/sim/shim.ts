@@ -18,17 +18,19 @@ import type {
   EconomyRules,
   FormatDef,
   FormatId,
+  FortDef,
   PowerDef,
   ResearchRules,
   TurretDef,
   UnitDef,
 } from '@/contracts';
-import { hashCanonical, msToTicks } from '@/core';
+import { addStructureMods, compileForts, fortEconomyOf, hashCanonical, msToTicks, type FortSpec } from '@/core';
 import type { BattleRulesLike } from './rules';
 
 /** The subset of `RawContent` (src/content/raw/types.ts) the shim needs. */
 export interface RawContentLike {
-  ages: readonly { age: AgeId; units: readonly UnitDef[]; turrets: readonly TurretDef[] }[];
+  /** `forts` (A16.14.4): the raw fort tables; absent in raw copies that predate forts. */
+  ages: readonly { age: AgeId; units: readonly UnitDef[]; turrets: readonly TurretDef[]; forts?: readonly FortSpec[] }[];
   powers: readonly PowerDef[];
   economy: EconomyRules;
   ageScale: Readonly<Partial<Record<AgeId, Pick<AgeDef, 'id' | 'index' | 'pBp' | 'baseHp' | 'xpToNext'>>>>;
@@ -66,9 +68,19 @@ const NO_RESEARCH: ResearchRules = {
 export function compileForSim(raw: RawContentLike): CompiledContent {
   const units: Record<CardId, UnitDef> = {};
   const turrets: Record<CardId, TurretDef> = {};
-  for (const age of raw.ages) {
-    for (const u of age.units) units[u.id] = u;
-    for (const t of age.turrets) turrets[t.id] = t;
+  const forts: Record<CardId, FortDef> = {};
+  // A16.14: the same fort compilation as WP1's compiler (`core/forts.ts`): structure mods, twins, levies.
+  const fortRules = fortEconomyOf(raw.economy);
+  const tableUnits = raw.ages.flatMap((a) => a.units);
+  const withMods = fortRules ? addStructureMods(tableUnits, fortRules.structureBp) : tableUnits;
+  for (const u of withMods) units[u.id] = u;
+  for (const age of raw.ages) for (const t of age.turrets) turrets[t.id] = t;
+  const specs = raw.ages.flatMap((a) => a.forts ?? []);
+  if (fortRules && specs.length > 0) {
+    const built = compileForts(specs, withMods, fortRules);
+    for (const l of built.levies) units[l.id] = l;
+    for (const t of built.twins) units[t.id] = t;
+    for (const f of built.forts) forts[f.id] = f;
   }
   const powers: Record<CardId, PowerDef> = {};
   for (const p of raw.powers) powers[p.id] = p;
@@ -101,6 +113,7 @@ export function compileForSim(raw: RawContentLike): CompiledContent {
     units,
     turrets,
     powers,
+    forts,
     skins: {},
     research: raw.research ?? NO_RESEARCH,
     rarities: null,

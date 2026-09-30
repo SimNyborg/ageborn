@@ -12,9 +12,11 @@ import { SimImpl } from './createSim';
  * Bumped whenever a sim change alters the outcome of recorded commands (golden replays re-recorded).
  * 4.0.0: two typed power slots with cost, reload, reach and the cap (A2.9). 4.1.0: the reach area masks
  * every hit, also of a unit already in the cast's `hitIds` (A2.9.4), and the state hash covers every
- * field of a cast (charge hit counts and runner hits, reload timing, level).
+ * field of a cast (charge hit counts and runner hits, reload timing, level). 5.0.0: the Fort class
+ * (A16.14): the `fort` command, walls, towers and camps as hidden twin units, levies, traps, the
+ * structure mod, fort targeting, contact, decay and bounty; levies rank last in power caps.
  */
-export const SIM_VERSION = '4.1.0';
+export const SIM_VERSION = '5.0.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

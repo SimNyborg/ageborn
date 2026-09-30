@@ -65,6 +65,8 @@ describe('MatchStats reducer (B3)', () => {
       ownBaseHpBpAtEnd: 8000,
       durationMs: 5000,
       mvpCard: 'spear_hunter',
+      // A16.14: no forts in this stream
+      forts: { placed: 0, gold: 0, destroyed: 0, decayed: 0, bountyPaid: 0, levies: 0, levyDamage: 0 },
     });
     const foe = computeMatchStats(stream, cfg, 1);
     expect(foe).toMatchObject({ trained: 3, kills: 1, usedLastStand: true, ownBaseHpBpAtEnd: 0, mvpCard: null, powerMaxHits: 0, powerGoldSpent: 0, powerCasts: [0, 0] });

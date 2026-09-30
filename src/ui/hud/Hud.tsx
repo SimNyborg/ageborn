@@ -24,12 +24,14 @@
  */
 import type { AudioService, Command, HudModel, MatchConfig, Side, TeamPreset } from '@/contracts';
 import { t as i18nT } from '@/i18n';
-import { Signal, type ReadonlySignal } from '@preact/signals';
+import { Signal, signal, type ReadonlySignal } from '@preact/signals';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { HudViewBridge, HudViewEvent } from './bridge';
 import { CouncilSheet, DoneCard, FlyBadge, type CouncilDone, type CouncilFly } from './Council';
 import { councilView, researchIntent, type CouncilPick } from './council';
 import { FlagGrip } from './HoldFlag';
+import type { FortAim, FortCommit } from './fortAim';
+import { FortLane } from './FortLane';
 import type { EmoteWheel, HudCtx, Translate } from './context';
 import { EdgeBadges } from './Minimap';
 import { MountPopover, type MountPopoverState } from './MountPopover';
@@ -261,6 +263,10 @@ export function Hud(props: HudProps) {
   const [done, setDone] = useState<CouncilDone | null>(null);
   const doneTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [burst, setBurst] = useState(0);
+  // The fort in hand and the last placement (A16.14.7): signals, so a drag re-renders only the Fort
+  // button and the lane overlay.
+  const fortAim = useMemo(() => signal<FortAim | null>(null), []);
+  const fortCommit = useMemo(() => signal<FortCommit | null>(null), []);
   const [stamp, setStamp] = useState(0);
   const [spend, setSpend] = useState<{ id: number; amount: number } | null>(null);
   const momentSeq = useRef(0);
@@ -347,7 +353,7 @@ export function Hud(props: HudProps) {
           if (!target) return;
           flash(target);
           const slot = /^card(\d)$/.exec(target);
-          const why = simDenyReason(ev.reason, cur, slot ? Number(slot[1]) : undefined, powerSlotOf(target) ?? undefined);
+          const why = simDenyReason(ev.reason, cur, slot ? Number(slot[1]) : undefined, powerSlotOf(target) ?? undefined, target === 'fort');
           if (why) say(target, why);
           haptic('deny');
           return;
@@ -528,6 +534,7 @@ export function Hud(props: HudProps) {
         mount: hammerBadge(pulseBase),
       });
 
+  const colors = useMemo(() => hudTeamColors(props.teamPreset ?? 'default', side), [props.teamPreset, side]);
   const ctx: HudCtx = {
     m,
     config,
@@ -546,9 +553,11 @@ export function Hud(props: HudProps) {
     keys: keys && !readOnly,
     // One thing at a time: the power hint waits while the War Council sheet is open.
     hints: props.callouts !== false && !readOnly && !council.open,
+    fortAim,
+    fortCommit,
+    colors,
   };
 
-  const colors = useMemo(() => hudTeamColors(props.teamPreset ?? 'default', side), [props.teamPreset, side]);
   // Reduce motion (U14): the app root carries the Settings switch; the HUD mirrors it onto its own root
   // so its CSS and the motion helpers (`reducedMotion(el)`) see it.
   const rmHost = root.current?.parentElement?.closest('[data-reduce-motion]') ?? null;
@@ -660,6 +669,7 @@ export function Hud(props: HudProps) {
         />
       ))}
       {done && councilOn ? <DoneCard c={ctx} done={done} onSkip={() => setDone(null)} /> : null}
+      <FortLane c={ctx} />
       <FlagGrip c={ctx} />
       {popover && !readOnly ? <MountPopover c={ctx} at={popover} onClose={closePopover} /> : null}
       <EdgeBadges c={ctx} />

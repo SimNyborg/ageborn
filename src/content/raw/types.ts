@@ -7,6 +7,7 @@
  */
 import type { AgeDef, DamageMod, EconomyRules, FormatDef, PowerDef, ResearchRules, TurretDef, UnitDef } from '@/contracts/content';
 import type { AgeId, FormatId, RoleGroup } from '@/contracts/ids';
+import type { FortSpec } from '@/core/forts';
 
 /** One age's unit and turret tables, in DESIGN table order (A5.2-A5.6). */
 export interface RawAgeTables {
@@ -15,7 +16,14 @@ export interface RawAgeTables {
   units: readonly UnitDef[];
   /** The 4 turrets: two Commons, the Rare, the Epic. */
   turrets: readonly TurretDef[];
+  /**
+   * The 4 Fort cards (A16.14.4): Wall, Tower, Camp, Trap. HP and a tower's attack are derived from the
+   * age baselines by the compiler (`core/forts.ts`). Optional so raw copies that predate forts still compile.
+   */
+  forts?: readonly FortSpec[];
 }
+
+export type { FortSpec } from '@/core/forts';
 
 /** The numeric part of an age (DESIGN A2.2 P and base HP, A2.4 thresholds). WP1 adds visual and music ids. */
 export type RawAgeScale = Pick<AgeDef, 'id' | 'index' | 'pBp' | 'baseHp' | 'xpToNext'>;
@@ -51,7 +59,7 @@ export interface RawBattleRules {
   midLane: number;
   /** Default attack windup in percent of the interval (A2.7). */
   windupPct: { melee: number; ranged: number; turret: number };
-  /** Train time per role group, ms (A2.7). Every unit's `trainMs` equals its group's value. */
+  /** Train time per role group, ms (A2.7). Every unit's `trainMs` equals its group's value (0 for the fort twins). */
   trainMsByGroup: Record<RoleGroup, number>;
   /** Knockback resist for Brace units and air units, bp (A2.7). Size-based resist is in `EconomyRules`. */
   braceKnockbackResistBp: number;

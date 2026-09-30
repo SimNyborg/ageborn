@@ -170,6 +170,8 @@ function expectedDamage(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerC
 
 /** A2.9.9 damage value of one target, milli-gold: kill-weighted, ×1.25 near the own gate. */
 export function targetValue(u: SeenUnit, info: PowerInfo, levelBp: number, c: PowerContext): number {
+  // A levy costs 0: it has no power value (A16.14.3; its AI value is for threat estimates only).
+  if (u.levy) return 0;
   const v = damageValue(u.value, expectedDamage(u, info, levelBp, c), u.hpTotal);
   return u.p <= c.turretCover ? mulBp(v, NEAR_GATE_BP) : v;
 }
@@ -221,7 +223,7 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       const elig = eligibleIds(inArea, info.cap > 0 ? info.cap : inArea.length, []);
       const cands = inArea.filter((u) => elig.has(u.id));
       // Per-target value: kill-weighted damage, or for controls the A2.9.9 weight on engaged targets.
-      const worth = cands.map((u) => (info.control ? (engaged(u, v, c.turretCover) ? Math.trunc((u.value * MILLI * info.aiValueBp) / BP) : 0) : targetValue(u, info, lvl, c)));
+      const worth = cands.map((u) => (info.control ? (engaged(u, v, c.turretCover) && !u.levy ? Math.trunc((u.value * MILLI * info.aiValueBp) / BP) : 0) : targetValue(u, info, lvl, c)));
       let best = none;
       for (let p = band[0]; p <= band[1]; p += r.scanStep) {
         let value = 0;
@@ -294,13 +296,16 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       // Legal only while F ≥ 1,370 (A2.9.4): the bot also wants its second front unit there, with room
       // for a knockback, so the loss or push-back of one runner during the observation delay cannot turn
       // the cast into `powerOutOfReach`.
-      const turrets = v.obs.foe.turrets.filter((x) => x !== null).length;
+      // A16.14.7: Suppress silences built enemy field towers too (strikes cannot hit them), so they count.
+      const towers = v.foeForts.filter((f) => f.kind === 'tower' && !f.scaffold);
+      const turrets = v.obs.foe.turrets.filter((x) => x !== null).length + towers.length;
       const f2 = v.powerFront2 === null ? null : v.powerFront2 - SUPPRESS_SLACK;
       // Nor while the enemy's Last Stand charges: it clears the gate (and the front with it) in a moment.
       if (v.obs.foe.lastStand === 'charging') return none;
       if (!suppressLegal(v.powerFront, r) || !suppressLegal(f2, r) || turrets < SUPPRESS_MIN_TURRETS) return none;
       let army = 0;
       for (const u of v.mine) if (u.p >= r.lane - SUPPRESS_REACH) army += u.value;
+      for (const t of towers) army += t.value;
       return { ...none, value: Math.trunc((army * MILLI * SUPPRESS_BP) / BP) };
     }
     case 'buffAll': {

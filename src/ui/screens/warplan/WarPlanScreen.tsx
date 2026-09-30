@@ -37,6 +37,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { CardArt, CardTile } from '../../components/CardTile';
 import { CLASS_NAME_KEY, ClassIcon, CounterLegend } from '../../components/ClassIcon';
+import { FortKindGlyph } from '../../components/FortGlyphs';
 import { beginDrag, cancelDrag, flyCard, snapshot, sparks, type FlightSource } from '../../components/drag';
 import { formatDec } from '../../components/format';
 import { haptic } from '../../components/haptics';
@@ -68,6 +69,8 @@ import {
   fieldSlotLockKeys,
   fieldSlotOpen,
   fitsSlot,
+  fortSlotOpen,
+  fortSlotShown,
   loadoutAvgLevel,
   normalizeLoadout,
   powerSlotOf,
@@ -122,6 +125,7 @@ const SLOT_LABEL: Record<SlotRef['kind'], string> = {
   unit: 'ui.army.slot.unit',
   turret: 'ui.army.slot.turret',
   power: 'ui.army.slot.power',
+  fort: 'ui.army.slot.fort',
 };
 
 /** A slot's name: "Troop", "Turret", "Home power", "Field power". */
@@ -137,11 +141,15 @@ const STATUS_KEY: Record<AgeStatus, string> = {
   error: 'ui.army.status.error',
 };
 
-/** The In battle band's three groups, left to right (owner request 2026-09-30). */
+/**
+ * The In battle band's groups, left to right (owner request 2026-09-30), and the Fort group after the
+ * powers once battles play the Fort slot (A16.14.7).
+ */
 const BAND_GROUPS: readonly { id: SlotRef['kind']; key: string; slots: readonly SlotRef[] }[] = [
   { id: 'unit', key: 'ui.armyAge.troops', slots: ALL_SLOTS.filter((x) => x.kind === 'unit') },
   { id: 'turret', key: 'ui.armyAge.turrets', slots: ALL_SLOTS.filter((x) => x.kind === 'turret') },
   { id: 'power', key: 'ui.armyAge.powers', slots: ALL_SLOTS.filter((x) => x.kind === 'power') },
+  { id: 'fort', key: 'ui.armyAge.fort', slots: ALL_SLOTS.filter((x) => x.kind === 'fort') },
 ];
 
 type Selection = { type: 'card'; id: CardId } | { type: 'slot'; key: string } | null;
@@ -359,9 +367,14 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const avg = loadoutAvgLevel(s, content, loadout);
   const fieldOpen = fieldSlotOpen(s);
   const fieldLock = fieldSlotLockKeys(s);
-  // A locked Field slot is empty in battle (A2.9.1), so a power a migrated save keeps there is not "in army".
+  // The Fort slot (A16.14.7): drawn once battles play it; a padlock until War Path Bronze 4 or 400 trophies.
+  const fortShown = fortSlotShown();
+  const fortOpen = fortSlotOpen(s);
+  const bandGroups = BAND_GROUPS.filter((g) => g.id !== 'fort' || fortShown);
+  // A locked Field (or Fort) slot is empty in battle (A2.9.1, A16.14.6), so a card a migrated save keeps
+  // there is not "in army".
   const inArmy = new Set(
-    ALL_SLOTS.filter((x) => x.kind !== 'power' || x.slot === 'home' || fieldOpen)
+    ALL_SLOTS.filter((x) => (x.kind === 'fort' ? fortOpen : x.kind !== 'power' || x.slot === 'home' || fieldOpen))
       .map((x) => slotCard(loadout, x))
       .filter((c): c is CardId => !!c),
   );
@@ -565,9 +578,18 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     setDeny((d) => ({ key, n: (d?.n ?? 0) + 1 }));
     ui.sound?.('ui_deny');
     haptic('deny');
-    // A power on the other power slot bounces back and says where it goes (A2.9.10).
+    // A power on the other power slot bounces back and says where it goes (A2.9.10); a fort anywhere
+    // but the Fort slot says so too (A16.14.7), and the locked Fort slot says how it opens.
     const target = slotFromKey(key);
     const own = card ? powerSlotOf(content, card) : null;
+    if (target?.kind === 'fort' && !fortOpen) {
+      toasts.show(t('army.fortSlot.locked'), { tone: 'bad', anchor: slotEl(key) });
+      return;
+    }
+    if (card && content.forts?.[card] && target?.kind !== 'fort') {
+      toasts.show(t('army.fortSlot.wrong'), { tone: 'bad', anchor: slotEl(key) });
+      return;
+    }
     if (target?.kind !== 'power') return;
     if (target.slot === 'field' && !fieldOpen) toasts.show(t(fieldLock.line), { tone: 'bad', anchor: slotEl(key) });
     else if (own && own !== target.slot) toasts.show(t(POWER_WRONG_SLOT_KEY[own]), { tone: 'bad', anchor: slotEl(key) });
@@ -652,8 +674,8 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       denySlot(key, selCard);
       return;
     }
-    if (slot.kind === 'power' && slot.slot === 'field' && !fieldOpen) {
-      // The locked Field slot says how it opens (U8), nothing to select yet.
+    if ((slot.kind === 'power' && slot.slot === 'field' && !fieldOpen) || (slot.kind === 'fort' && !fortOpen)) {
+      // A locked Field or Fort slot says how it opens (U8), nothing to select yet.
       denySlot(key);
       return;
     }
@@ -795,6 +817,31 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
         </div>
       );
     }
+    if (slot.kind === 'fort' && !fortOpen) {
+      // The Fort slot before its unlock (A16.14.6): a padlock and how it opens; a tap says it again.
+      return (
+        <div {...common} class={`${cls} is-locked`}>
+          <button
+            type="button"
+            class="army-slot__empty army-slot__locked"
+            onClick={() => tapSlot(slot, slotEl(key))}
+            aria-label={`${t('ui.army.slot.fort')}: ${t('army.fortSlot.locked')}`}
+            data-testid={`slot-${key}`}
+          >
+            <span class="army-slot__watermark" aria-hidden="true">
+              <FortKindGlyph kind="wall" size={40} />
+            </span>
+            <LockIcon size={20} />
+            <span class="army-slot__label" data-tag="">
+              {t('ui.army.slot.fort')}
+            </span>
+            <span class="army-slot__more" data-tag="">
+              {t('ui.army.fortLockedShort')}
+            </span>
+          </button>
+        </div>
+      );
+    }
     if (tile) {
       return (
         <div {...common} class={cls} data-testid={`slot-${key}`} onPointerDown={(e) => dragFromSlot(e as unknown as PointerEvent, slot)}>
@@ -836,6 +883,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           {slot.kind === 'power' ? (
             <span class="army-slot__watermark" aria-hidden="true">
               <SlotGlyph slot={slot.slot} size={40} />
+            </span>
+          ) : slot.kind === 'fort' ? (
+            <span class="army-slot__watermark" aria-hidden="true">
+              <FortKindGlyph kind="wall" size={40} />
             </span>
           ) : null}
           <span class="army-slot__plus" aria-hidden="true">
@@ -883,13 +934,14 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     const up = upgradeState(s, content, id);
     const here = inAge(id);
     const equipped = here && inArmy.has(id);
-    // A Field power waits for its slot to open (A2.9.1).
-    const locked = def.kind === 'power' && def.slot === 'field' && !fieldOpen;
-    const otherAge = !here ? t('ui.army.otherAge', { age: t(AGE_SHORT[def.age]) }) : locked ? t(fieldLock.line) : null;
+    // A Field power waits for its slot to open (A2.9.1), a fort for the Fort slot (A16.14.6).
+    const fortLocked = def.kind === 'fort' && !fortOpen;
+    const locked = (def.kind === 'power' && def.slot === 'field' && !fieldOpen) || fortLocked;
+    const otherAge = !here ? t('ui.army.otherAge', { age: t(AGE_SHORT[def.age]) }) : fortLocked ? t('army.fortSlot.locked') : locked ? t(fieldLock.line) : null;
     return (
       <div class={barClass()} role="group" data-army-keep="" data-testid="card-actions">
         <span class="army-bar__title" data-clip-check="">
-          {tile.owned && def.kind !== 'power' ? `${tile.name} · ${t('ui.card.level', { n: tile.level })}` : tile.name}
+          {tile.owned && def.kind !== 'power' && def.kind !== 'fort' ? `${tile.name} · ${t('ui.card.level', { n: tile.level })}` : tile.name}
         </span>
         <span class="army-bar__row">
           {!tile.owned ? (
@@ -978,11 +1030,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     pool.owned >= pool.total ? t('ui.armyAge.lockedNone', { max: pool.total, age: t(AGE_SHORT[age]) }) : t('ui.armyAge.lockedOwned', { n: pool.owned, max: pool.total, age: t(AGE_SHORT[age]) });
   /** How many slots of a group hold a card (a locked Field slot counts as not open). */
   const filled = (g: (typeof BAND_GROUPS)[number]) => g.slots.filter((x) => inArmy.has(slotCard(loadout, x) ?? '')).length;
-  const groupMax = (g: (typeof BAND_GROUPS)[number]) => (g.id === 'unit' ? UNIT_SLOTS : g.id === 'turret' ? TURRET_SLOTS : fieldOpen ? 2 : 1);
+  const groupMax = (g: (typeof BAND_GROUPS)[number]) => (g.id === 'unit' ? UNIT_SLOTS : g.id === 'turret' ? TURRET_SLOTS : g.id === 'fort' ? (fortOpen ? 1 : 0) : fieldOpen ? 2 : 1);
   const ageName = t(ageNameKey(age));
   let slotIndex = 0;
   const ageSt = status(age);
-  const full = BAND_GROUPS.every((g) => filled(g) >= groupMax(g));
+  const full = bandGroups.every((g) => filled(g) >= groupMax(g));
   const bandMark: 'ok' | 'open' | AgeStatus = ageSt !== 'ok' ? ageSt : full ? 'ok' : 'open';
 
   const header = (
@@ -1104,7 +1156,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
         {/* 1. In battle: the loadout of this age, always in view (owner request 2026-09-30, U4) */}
         <section class="army-battle" data-army-col="" aria-labelledby="army-deck-title" data-testid="army-battle">
           <div class={`army-slots${fresh ? ' is-fresh' : ''}`} key={age} data-testid="wp-board">
-            {BAND_GROUPS.map((g, gi) => (
+            {bandGroups.map((g, gi) => (
               <div key={g.id} class={`army-bandgroup army-bandgroup--${g.id}`} role="group" aria-label={t(g.key, { n: filled(g), max: groupMax(g) })}>
                 <span class="army-bandgroup__label">
                   {gi === 0 ? (
@@ -1295,7 +1347,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
 
       {sheet === 'legend' ? (
         <Sheet title={t('ui.army.counters')} onClose={() => setSheet(null)} testid="army-legend-sheet" icon={<CountersIcon size={24} />}>
-          <CounterLegend />
+          <CounterLegend forts={fortShown} />
         </Sheet>
       ) : null}
       {sheet === 'advice' ? (

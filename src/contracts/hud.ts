@@ -3,7 +3,7 @@
  * rendered by the Preact DOM overlay in `ui/hud` (DESIGN B6 HUD).
  */
 import type { StanceMode } from './commands';
-import type { PowerFamily, PowerReach, PowerSlot, ResearchTrack } from './content';
+import type { FortKind, PowerFamily, PowerReach, PowerSlot, ResearchTrack } from './content';
 import type { CardId, Foil } from './ids';
 import type { SideState, SimState, TurretState } from './sim';
 
@@ -92,6 +92,59 @@ export interface HudFort {
   siege: boolean;
   /** The enemy's recharge ring (public): card once scouted, seconds left; null when they have no Fort card. */
   foeRing: { card: CardId | null; secondsLeft: number } | null;
+  /** The card's kind (F2 HUD; absent in older models). */
+  kind?: FortKind;
+  /** Pop the fort uses while alive (6; a Trap 3). */
+  pop?: number;
+  /** Own forts alive (scaffolds and traps count) and the cap (2). */
+  alive?: number;
+  max?: number;
+  /** An own Camp is alive (one at a time). */
+  campAlive?: boolean;
+  /** The slot's recharge, ms (the ring's full length; the first ready time is shorter). */
+  rechargeMs?: number;
+  /** Ticks' worth of recharge left, ms (0 when ready), for a smooth ring. */
+  leftMs?: number;
+  /** Every pad as the placement rules see it now (`Observation.me.fort.pads`). */
+  pads?: HudFortPad[];
+  /** Scaffold time of my forts now, ms (Engineers shortens it). */
+  scaffoldMs?: number;
+}
+
+/** One of my fort pads (A16.14.2): own-frame p in lu, legality now and why not, and a tower's range there. */
+export interface HudFortPad {
+  p: number;
+  kind: 'home' | 'field';
+  legal: boolean;
+  /** Legal, and every enemy needs longer than the scaffold to get there (Key D and the AI pick these). */
+  safe: boolean;
+  /** The deny code of an illegal pad (`fortPadKind`, `fortPadTaken`, `fortPadEnemy`, `fortPadField`), else null. */
+  reason: string | null;
+  /** A tower's range from this pad, lu (0 for other kinds). */
+  towerRange: number;
+}
+
+/**
+ * A fort or trap on the lane as the HUD tags it (A16.14.7 "On the lane"): both sides, `p` from this HUD's
+ * gate in lu. Forts are also drawn by the battle view; the HUD adds the readable tag (kind, scaffold
+ * progress, crumbling, silenced) and draws traps' charge pips.
+ */
+export interface HudLaneFort {
+  id: number;
+  mine: boolean;
+  card: CardId;
+  kind: FortKind;
+  p: number;
+  /** HP left, bp of max (traps: 10,000). */
+  hpBp: number;
+  /** Scaffold (or a trap's arming) progress, bp; 10,000 once built or armed. */
+  buildBp: number;
+  /** Losing HP to decay now (after 60 s, or at once in Siege). */
+  decaying: boolean;
+  /** A tower silenced by Suppress. */
+  silenced: boolean;
+  /** Traps: charges left. */
+  charges?: number;
 }
 
 export interface HudModel {
@@ -160,6 +213,8 @@ export interface HudModel {
   mounts: { index: number; owned: boolean; card: CardId | null; outdated: boolean; state: TurretState['state'] | 'empty' }[];
   /** My Fort slot (A16.14.7); absent in older models and while the slot is off (F2 turns it on). */
   fort?: HudFort | null;
+  /** Forts and traps of both sides on the lane (A16.14.7); absent in older models. */
+  laneForts?: HudLaneFort[];
   /** Speed and pause are allowed in every v1 mode (DESIGN A2.12). */
   speed: 1 | 1.5 | 2;
   paused: boolean;

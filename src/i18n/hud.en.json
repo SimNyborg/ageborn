@@ -159,7 +159,8 @@
     "armyLabel": "Your units on the field",
     "key": {
       "space": "Space",
-      "x": "X"
+      "x": "X",
+      "d": "D"
     },
     "newUnits": "New units!",
     "council": {
@@ -229,8 +230,49 @@
       "powerLockout": "Wait {s} s",
       "powerNoTarget": "No target there",
       "powerOutOfReach": "Get closer to their turrets",
-      "powerEmpty": "No power in this slot"
+      "powerEmpty": "No power in this slot",
+      "fortRecharge": "Ready in {s} s",
+      "fortGold": "Need {n} gold",
+      "fortPop": "Army full",
+      "fortMax": "{n} forts up",
+      "fortCampMax": "One camp at a time",
+      "fortNoPad": "No clear pad",
+      "fortEnemyNear": "Enemy near",
+      "fortArmyFirst": "Army first",
+      "fortTaken": "Taken",
+      "fortSiege": "Siege: forts crumble",
+      "fortPadKind": "Camps only",
+      "fortEmpty": "No fort in this age's plan"
     },
-    "inField": "In field"
+    "inField": "In field",
+    "fort": {
+      "label": "Fort",
+      "buttonLabel": "{name}, {kind}: {state}",
+      "stateReady": "ready to place",
+      "cap": "{n}/{max}",
+      "dragPad": "Drag onto a glowing pad",
+      "tapPad": "Tap a glowing pad",
+      "fieldToo": "Camps may use Field pads too",
+      "underFire": "Builds under fire",
+      "cancel": "Release to cancel",
+      "siege": "Forts crumble",
+      "building": "Building {pct}%",
+      "crumbling": "Crumbling",
+      "silenced": "Silenced",
+      "charges": "{n} charges",
+      "laneMine": "Your {name}",
+      "laneFoe": "Their {name}",
+      "pads": {
+        "home": "On Home pads",
+        "any": "On Home and Field pads"
+      },
+      "foe": {
+        "label": "Their fort: {name}, {state}",
+        "unknown": "Their fort: {state}",
+        "ready": "ready",
+        "secs": "ready in {s} s",
+        "unseen": "Not seen yet"
+      }
+    }
   }
 }

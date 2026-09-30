@@ -74,6 +74,8 @@ export function newSaveAt(c: CompiledContent, lt: LocalTime, seed: number): Save
     arenaIndex: 0,
     collection: starterCollection(t),
     powersOwned: allStarterPowers(t),
+    // A16.14.6: no forts until the Fort slot opens (War Path Bronze L4 or 400 trophies)
+    fortsOwned: [],
     skins: { owned: [], equipped: {} },
     cosmetics: { owned: [d.banner], equipped: defaultLoadout(t) },
     warPlans: [starterPlan(t)],

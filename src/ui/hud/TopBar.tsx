@@ -16,7 +16,8 @@
  *
  * Every hit on a base kicks that side's block (flash and shake), so it is clear who is winning.
  */
-import { unitClass } from '@/core/cardClass';
+import { unitClass, type ClassGlyphId } from '@/core/cardClass';
+import { FortKindBadge, FortKindGlyph } from '../components/FortGlyphs';
 import { ClassIcon, CLASS_NAME_KEY } from '../components/ClassIcon';
 import type { AgeId, CardId, EmoteId, HudFoePowerSlot, PowerSlot } from '@/contracts';
 import { SlotGlyph } from '../components/PowerGlyphs';
@@ -106,18 +107,82 @@ function Medallion(p: { age: AgeId; team: 'me' | 'foe'; ring?: number; horn?: bo
 }
 
 function ScoutedItem(p: { c: HudCtx; card: CardId }) {
-  const url = usePortrait(p.c.portrait, p.card, 'none', 40);
-  const def = p.c.config.content.units[p.card] ?? p.c.config.content.turrets[p.card] ?? p.c.config.content.powers[p.card];
+  // A fort shares its id with its hidden twin unit (A16.14.8): read the fort first.
+  const fort = p.c.config.content.forts?.[p.card];
+  const url = usePortrait(p.c.portrait, fort ? null : p.card, 'none', 40);
+  const def = fort ?? p.c.config.content.units[p.card] ?? p.c.config.content.turrets[p.card] ?? p.c.config.content.powers[p.card];
+  const cls: ClassGlyphId | null = !def ? null : def.kind === 'unit' ? unitClass(def) : def.kind;
   return (
     <li class="hud-scouted-item">
-      <span class="hud-scouted-pic">{url ? <img src={url} alt="" /> : null}</span>
+      <span class="hud-scouted-pic">{fort ? <FortKindBadge kind={fort.fortKind} size={26} /> : url ? <img src={url} alt="" /> : null}</span>
       <span>{def ? p.c.t(def.nameKey) : p.card}</span>
-      {def ? (
-        <span class="hud-scouted-class" data-class={def.kind === 'unit' ? unitClass(def) : def.kind}>
-          <ClassIcon id={def.kind === 'unit' ? unitClass(def) : def.kind} size={20} title={p.c.t(CLASS_NAME_KEY[def.kind === 'unit' ? unitClass(def) : def.kind])} />
+      {cls ? (
+        <span class="hud-scouted-class" data-class={cls}>
+          <ClassIcon id={cls} size={20} title={p.c.t(CLASS_NAME_KEY[cls])} />
         </span>
       ) : null}
     </li>
+  );
+}
+
+/**
+ * Their fort recharge (A16.14.7: public, like their power rings): once their fort is scouted, a small
+ * fort glyph with its recharge ring sits on the Scouted chip's corner (the band's width does not
+ * change); a steady orange rim when ready, never a pulse. A long-press or hover shows the card and the
+ * seconds left.
+ */
+function FoeFortRing(p: { c: HudCtx }) {
+  const { c } = p;
+  const ring = c.m.fort?.foeRing ?? null;
+  const def = ring?.card ? c.config.content.forts?.[ring.card] : undefined;
+  const [tip, setTip] = useState(false);
+  useEffect(() => {
+    if (!tip) return undefined;
+    const id = setTimeout(() => setTip(false), 2600);
+    return () => clearTimeout(id);
+  }, [tip]);
+  if (!ring || !def) return null;
+  const total = Math.max(1, Math.round((c.m.fort?.rechargeMs ?? 25_000) / 1000));
+  const frac = ring.secondsLeft <= 0 ? 1 : Math.max(0, Math.min(1, 1 - ring.secondsLeft / total));
+  const ready = ring.secondsLeft <= 0;
+  const state = ready ? c.t('hud.fort.foe.ready') : c.t('hud.fort.foe.secs', { s: ring.secondsLeft });
+  const label = c.t('hud.fort.foe.label', { name: c.t(def.nameKey), state });
+  let press: ReturnType<typeof setTimeout> | null = null;
+  return (
+    <span
+      class={`hud-foe-fort${ready ? ' is-ready' : ''}`}
+      data-testid="hud-foe-fort"
+      data-ready={ready}
+      role="img"
+      aria-label={label}
+      title={label}
+      onPointerDown={() => {
+        press = setTimeout(() => setTip(true), 450);
+      }}
+      onPointerUp={() => {
+        if (press) clearTimeout(press);
+      }}
+      onPointerLeave={() => {
+        if (press) clearTimeout(press);
+      }}
+    >
+      <svg class="hud-foe-ring-arc" viewBox="0 0 32 32" aria-hidden="true">
+        <circle class="hud-foe-ring-track" cx="16" cy="16" r="13.5" pathLength="100" />
+        <circle class="hud-foe-ring-fill" cx="16" cy="16" r="13.5" pathLength="100" style={{ strokeDashoffset: Math.max(0, Math.min(100, 100 - frac * 100)) }} />
+      </svg>
+      <span class="hud-foe-fort-core">
+        <FortKindGlyph kind={def.fortKind} size={12} />
+      </span>
+      {tip ? (
+        <span class="hud-foe-ring-tip" role="tooltip" data-testid="hud-foe-fort-tip">
+          <b>{c.t(def.nameKey)}</b>
+          <span>
+            <CoinIcon size={12} /> {def.cost}
+          </span>
+          <span>{state}</span>
+        </span>
+      ) : null}
+    </span>
   );
 }
 
@@ -148,6 +213,7 @@ function Scouted(p: { c: HudCtx }) {
         <span class="hud-scouted-text">{c.t('hud.scoutedShort')}</span>
         <b class="hud-scouted-n">{list.length}</b>
       </button>
+      <FoeFortRing c={c} />
       {open ? (
         <div class="hud-dropdown" data-testid="hud-scouted-list">
           <div class="hud-dropdown-title">{c.t('hud.scoutedTitle')}</div>

@@ -13,6 +13,8 @@ import type {
   CompiledContent,
   Foil,
   HudCard,
+  HudFort,
+  HudLaneFort,
   HudModel,
   HudPowerSlot,
   HudResearch,
@@ -25,7 +27,7 @@ import type {
   SimState,
 } from '@/contracts';
 import { heavyThreat } from '@/core/cardClass';
-import { incomeMilliPerSec, matchMods, msToTicks, nextIncomePick, reloadTicksLeft, researchCost, slotIndex, type MatchMods } from '@/core';
+import { fortEconomyOf, incomeMilliPerSec, LANE_MLU, matchMods, msToTicks, nextIncomePick, reloadTicksLeft, researchCost, slotIndex, type MatchMods } from '@/core';
 
 /**
  * One power slot for the dock (A2.9.10): effective cost and reload from the observation, seconds left
@@ -56,6 +58,102 @@ function hudPower(content: CompiledContent, state: Readonly<SimState>, side: Sid
     lockoutUntilMs: lock,
     slotLocked: false,
   };
+}
+
+/** A side's fort scaffold time now, ms: Engineers (a `fortScaffold` research effect) or the economy's (A16.14.5). */
+function scaffoldMsOf(content: CompiledContent, owned: readonly string[], base: number): number {
+  let best = base;
+  for (const id of owned) {
+    const pick = content.research.picks.find((x) => x.id === id);
+    for (const fx of pick?.effects ?? []) if (fx.kind === 'fortScaffold' && fx.ms > 0 && fx.ms < best) best = fx.ms;
+  }
+  return best;
+}
+
+/**
+ * My Fort button (A16.14.7, F2): the slot's card, price, recharge, caps and every pad as the rules see
+ * it now, from the observation; the enemy's public ring. Null without a Fort card (a locked slot arrives
+ * empty, A16.14.6).
+ */
+function hudFort(state: Readonly<SimState>, content: CompiledContent, obs: Observation): HudFort | null {
+  const f = fortEconomyOf(content.economy);
+  const o = obs.me.fort;
+  const def = o ? content.forts?.[o.card] : undefined;
+  if (!f || !o || !def) return null;
+  const foe = obs.foe.fort;
+  return {
+    card: o.card,
+    cost: o.cost,
+    affordable: Math.floor(obs.me.gold / 1000) >= o.cost,
+    secondsLeft: Math.ceil((o.readyTicks * 50) / 1000),
+    cap: o.alive >= f.maxAlive,
+    slotLocked: false,
+    siege: state.phase === 'siege',
+    foeRing: foe ? { card: foe.card, secondsLeft: Math.ceil((foe.readyTicks * 50) / 1000) } : null,
+    kind: def.fortKind,
+    pop: def.pop,
+    alive: o.alive,
+    max: f.maxAlive,
+    campAlive: o.campAlive,
+    rechargeMs: f.rechargeMs,
+    leftMs: o.readyTicks * 50,
+    pads: o.pads.map((pad) => ({ ...pad })),
+    scaffoldMs: scaffoldMsOf(content, obs.me.research.owned, f.scaffoldMs),
+  };
+}
+
+/**
+ * Forts and traps of both sides for the HUD's lane tags (A16.14.7 "On the lane"), `p` from `side`'s gate
+ * in lu: scaffold (or arming) progress, decay, a silenced tower, a trap's charges.
+ */
+function laneFortsOf(state: Readonly<SimState>, config: Readonly<MatchConfig>, side: Side, obs: Observation): HudLaneFort[] {
+  const content = config.content;
+  const f = fortEconomyOf(content.economy);
+  if (!f) return [];
+  const tick = state.tick;
+  // Research is public (A18.5.1), so both sides' scaffold times come from this side's observation.
+  const mine = msToTicks(scaffoldMsOf(content, obs.me.research.owned, f.scaffoldMs));
+  const theirs = msToTicks(scaffoldMsOf(content, obs.foe.research.owned, f.scaffoldMs));
+  const scaffold: [number, number] = side === 0 ? [mine, theirs] : [theirs, mine];
+  const pOf = (x: number): number => Math.round((side === 0 ? x : LANE_MLU - x) / 1000);
+  const out: HudLaneFort[] = [];
+  for (const u of state.units) {
+    const fs = u.fort;
+    if (!fs || u.hp <= 0 || u.mode === 'dying') continue;
+    const total = scaffold[u.side];
+    const left = fs.doneTick - tick;
+    const buildBp = fs.done || total <= 0 ? 10000 : Math.max(0, Math.min(9999, Math.floor(((total - Math.max(0, left)) * 10000) / total)));
+    out.push({
+      id: u.id,
+      mine: u.side === side,
+      card: u.card,
+      kind: fs.kind,
+      p: pOf(u.x),
+      hpBp: u.maxHp > 0 ? Math.max(0, Math.floor((u.hp * 10000) / u.maxHp)) : 0,
+      buildBp,
+      decaying: fs.done && (state.phase === 'siege' || tick > fs.decayFromTick),
+      silenced: fs.silencedUntilTick > tick,
+    });
+  }
+  for (const tr of state.traps ?? []) {
+    const def = content.forts?.[tr.card]?.trap;
+    const arm = def ? msToTicks(def.armMs) : 0;
+    const left = tr.armTick - tick;
+    out.push({
+      id: tr.id,
+      mine: tr.side === side,
+      card: tr.card,
+      kind: 'trap',
+      // A trap's p is its owner's own-frame p (milli-lu).
+      p: pOf(tr.side === 0 ? tr.p : LANE_MLU - tr.p),
+      hpBp: 10000,
+      buildBp: left <= 0 || arm <= 0 ? 10000 : Math.max(0, Math.min(9999, Math.floor(((arm - left) * 10000) / arm))),
+      decaying: false,
+      silenced: false,
+      charges: tr.charges,
+    });
+  }
+  return out;
 }
 
 /** HUD refresh rate (B6). */
@@ -336,6 +434,8 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
         state: t ? t.state : 'empty',
       };
     }),
+    fort: hudFort(state, content, obs),
+    laneForts: laneFortsOf(state, config, side, obs),
     speed: extras.speed,
     paused: extras.paused,
     canRetreat: !noClock && retreatAfter !== null && clockMs >= retreatAfter && state.phase !== 'ended',

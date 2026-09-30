@@ -94,7 +94,7 @@ export function trayClasses(config: Readonly<MatchConfig>, side: Side, ageIndex:
   const out = new Set<ResearchClass>();
   for (const card of lo?.units ?? []) {
     const def = card ? config.content.units[card] : undefined;
-    if (def) out.add(config.content.research.classOfRole[def.role]);
+    if (def && def.role !== 'fort') out.add(config.content.research.classOfRole[def.role]);
   }
   return out;
 }

@@ -31,6 +31,7 @@ export const CLASS_NAME_KEY: Readonly<Record<ClassGlyphId, string>> = {
   legendary: 'ui.class.legendary',
   turret: 'ui.class.turret',
   power: 'ui.class.power',
+  fort: 'ui.class.fort',
 };
 
 const NOTE_KEY: Readonly<Record<string, string>> = {
@@ -40,6 +41,7 @@ const NOTE_KEY: Readonly<Record<string, string>> = {
   melee: 'ui.class.legend.melee',
   shootDown: 'ui.class.legend.shootDown',
   splash: 'ui.class.legend.splash',
+  breach: 'ui.class.legend.breach',
 };
 
 const GLYPH_FILL = '#FFF8E8';

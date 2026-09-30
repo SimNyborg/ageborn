@@ -43,6 +43,8 @@ export interface FireOpts {
   vsTags?: number;
   vsBp?: number;
   srcCls?: number;
+  /** A field tower's shot (A16.14.3): ×0.5 in Siege like a turret, never touches forts. */
+  tower?: boolean;
 }
 
 /** Travel time in ticks for a distance (mlu) at a speed (lu/s): ceil(d × 20 / (speed × 1,000)), min 1. */
@@ -103,6 +105,7 @@ export function fireProjectile(ctx: Ctx, o: FireOpts): ProjectileRt {
     vsTags: o.vsTags ?? 0,
     vsBp: o.vsBp ?? 0,
     srcCls: o.srcCls ?? -1,
+    tower: o.tower === true,
   };
   ctx.s.nextId += 1;
   ctx.s.projectiles.push(p);
@@ -159,7 +162,9 @@ function collectProjectileImpact(ctx: Ctx, p: ProjectileRt): void {
   imp.vsTags = p.vsTags;
   imp.vsBp = p.vsBp;
   imp.srcCls = p.srcCls;
-  imp.turret = p.owner === 'turret';
+  imp.turret = p.owner === 'turret' || p.tower;
+  // Unit shots and called strikes may touch forts; turret and field-tower shots never (A16.14.2).
+  imp.forts = p.owner === 'unit' && !p.tower;
   imp.srcX = p.fromX;
   imp.x = p.toX;
   if (p.kind === 'strike') {

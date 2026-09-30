@@ -1,6 +1,8 @@
 /** Shared props of the HUD pieces. */
 import type { AudioService, EmoteId, HudModel, MatchConfig, Side } from '@/contracts';
+import type { Signal } from '@preact/signals';
 import type { HudViewBridge } from './bridge';
+import type { FortAim, FortCommit } from './fortAim';
 import type { DenyTarget, HudIntent, HudPulse } from './model';
 import type { PortraitFn } from './usePortrait';
 
@@ -41,4 +43,10 @@ export interface HudCtx {
    * whose scripted beats own the on-screen text (A8). Default true.
    */
   hints?: boolean;
+  /** The fort in hand (A16.14.7): the Fort button writes it, the lane overlay draws pads and the ghost. */
+  fortAim?: Signal<FortAim | null>;
+  /** The last placement sent (the ghost contracts and the dust rises on its pad). */
+  fortCommit?: Signal<FortCommit | null>;
+  /** Team colours of this HUD (the colourblind preset applied): banners on fort art and lane tags. */
+  colors?: { me: string; foe: string };
 }

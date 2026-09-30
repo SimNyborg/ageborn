@@ -9,6 +9,7 @@
  *
  * Tiers are numbers 0-10 (I = 1, X = 10). Fractional tiers are accepted and resolved to 1/100 tier.
  */
+import type { FortKind } from '@/contracts';
 import { BP, clamp, msToTicks } from '@/core';
 
 /** "all" in the counter depth column. */
@@ -100,6 +101,13 @@ export interface TierParams {
    * enemy's, even if the push gate would bank, so "a few soldiers, then evolve" loses.
    */
   punishThin: boolean;
+  /**
+   * The fort kinds the tier places (A16.14.7): none at 0-I, walls and traps at II-IV, every kind at V-X.
+   * A General's preferred kinds join a non-empty list (personalities.ts).
+   */
+  fortKinds: readonly FortKind[];
+  /** VII-X place no fort while banking for a wave: the gold goes to the wave (A16.14.7). */
+  fortNoBank: boolean;
 }
 
 interface Row {
@@ -144,6 +152,12 @@ const FIELD_SLOT_FROM = 3;
 const POWER_READ_FROM = 5;
 const BAIT_FROM = 7;
 const COUNTER_TIMING_FROM = 10;
+/** A16.14.7 fort columns: walls and traps from II, every kind from V, no fort while banking from VII. */
+const FORT_FROM = 2;
+const FORT_ALL_FROM = 5;
+const FORT_NO_BANK_FROM = 7;
+const FORT_BASIC: readonly FortKind[] = ['wall', 'trap'];
+const FORT_ALL: readonly FortKind[] = ['wall', 'tower', 'camp', 'trap'];
 /** "No bot reacts faster than 300 ms" (A7.3). */
 const MIN_REACTION_MS = 300;
 
@@ -215,6 +229,8 @@ export function tierParams(tier: number): TierParams {
     movesFlag: t >= FLAG_FROM * 100,
     fallback: t >= HOLD_FROM * 100,
     punishThin: t >= PUNISH_THIN_FROM * 100,
+    fortKinds: t >= FORT_ALL_FROM * 100 ? FORT_ALL : t >= FORT_FROM * 100 ? FORT_BASIC : [],
+    fortNoBank: t >= FORT_NO_BANK_FROM * 100,
   };
 }
 

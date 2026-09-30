@@ -10,7 +10,8 @@
  * `onSkip` (U13: anything over 1 s can be skipped).
  */
 import './cardDetail.css';
-import type { CardId } from '@/contracts';
+import type { CardId, FortKind } from '@/contracts';
+import { FORT_PORTRAITS, FortArt } from '../../components/FortGlyphs';
 import type { Ref } from 'preact';
 import { CardTile, type CardTileData } from '../../components/CardTile';
 import { AGE_COLOR, HammerIcon, LockIcon, RoleGlyph } from '../../components/icons';
@@ -18,20 +19,32 @@ import { useKit, usePortrait } from '../../components/kit';
 import { CopiesBar } from '../../components/Meters';
 import type { cardGlyph } from '../model/cards';
 
-/** The unit on the stage: the plate-free portrait (DESIGN B5), or the role glyph without art. */
-function StageArt(p: { card: CardId; glyph: ReturnType<typeof cardGlyph>; skin: string | null; silhouette: boolean }) {
-  const url = usePortrait(p.card, { skin: p.skin, size: 320, plate: false });
+/**
+ * The unit on the stage: the plate-free portrait (DESIGN B5), or the role glyph without art. A fort
+ * stands on its pad as its kind's illustration until F3's fort portraits ship (`FORT_PORTRAITS`).
+ */
+function StageArt(p: { card: CardId; glyph: ReturnType<typeof cardGlyph>; skin: string | null; silhouette: boolean; fortKind?: FortKind; age: CardStageProps['tile']['age'] }) {
+  const fortArt = p.fortKind !== undefined && !FORT_PORTRAITS;
+  const url = usePortrait(fortArt ? null : p.card, { skin: p.skin, size: 320, plate: false });
   return (
-    <span class={`cd-stage__figure${p.silhouette ? ' is-silhouette' : ''}`} aria-hidden="true">
-      {url ? <img src={url} alt="" draggable={false} /> : <RoleGlyph kind={p.glyph} size={120} color="#e8e1d2" />}
+    <span class={`cd-stage__figure${p.silhouette ? ' is-silhouette' : ''}${fortArt ? ' is-fort' : ''}`} aria-hidden="true">
+      {url ? (
+        <img src={url} alt="" draggable={false} />
+      ) : fortArt ? (
+        <FortArt kind={p.fortKind!} age={p.age} size={170} />
+      ) : (
+        <RoleGlyph kind={p.glyph} size={120} color="#e8e1d2" />
+      )}
     </span>
   );
 }
 
 export interface CardStageProps {
   tile: CardTileData;
-  kind: 'unit' | 'turret' | 'power';
+  kind: 'unit' | 'turret' | 'power' | 'fort';
   glyph: ReturnType<typeof cardGlyph>;
+  /** A Fort card's kind (A16.14.7): the stage shows the fort on its pad. */
+  fortKind?: FortKind;
   owned: boolean;
   /** The copies row beside the card; null hides it (maxed, powers, unowned). */
   copies: { copies: number; needed: number | null; ready: boolean } | null;
@@ -50,7 +63,7 @@ export function CardStage(p: CardStageProps) {
   const tile = p.tile;
   const age = AGE_COLOR[tile.age];
   const cer = p.ceremony;
-  const showLevel = p.owned && p.kind !== 'power';
+  const showLevel = p.owned && p.kind !== 'power' && p.kind !== 'fort';
   return (
     <div
       ref={p.stageRef}
@@ -70,7 +83,7 @@ export function CardStage(p: CardStageProps) {
       <i class="cd-stage__dust" aria-hidden="true" />
       <div class="cd-stage__actor">
         <i class="cd-stage__shadow" aria-hidden="true" />
-        <StageArt card={tile.id} glyph={p.glyph} skin={tile.skin} silhouette={!p.owned} />
+        <StageArt card={tile.id} glyph={p.glyph} skin={tile.skin} silhouette={!p.owned} age={tile.age} {...(p.fortKind ? { fortKind: p.fortKind } : {})} />
       </div>
       <div class="cd-stage__card">
         <CardTile card={{ ...tile, isNew: false }} size="lg" showCost showName={false} tip={false} />

@@ -173,15 +173,20 @@ export function clampToBand(p: number, band: readonly [number, number]): number 
   return p < band[0] ? band[0] : p > band[1] ? band[1] : p;
 }
 
-/** A hittable enemy for the cap order (A2.9.5): `p` in the caster's own frame. */
+/**
+ * A hittable enemy (or an own unit, for buffs) in cap order (A2.9.5): `p` in the caster's own frame.
+ * `capRank` ranks whole groups: 0 (default) for every unit, 1 for levies (A16.14.3), so a levy never takes
+ * a cap slot while another eligible unit does not have one.
+ */
 export interface CapCandidate {
   id: number;
   p: number;
+  capRank?: number;
 }
 
-/** Cap order (A2.9.5): lowest own-frame p first (nearest the caster's gate), ties to the lower id. */
+/** Cap order (A2.9.5): `capRank` first, then the lowest own-frame p (nearest the caster's gate), ties to the lower id. */
 export function capCompare(a: CapCandidate, b: CapCandidate): number {
-  return a.p - b.p || a.id - b.id;
+  return (a.capRank ?? 0) - (b.capRank ?? 0) || a.p - b.p || a.id - b.id;
 }
 
 /**

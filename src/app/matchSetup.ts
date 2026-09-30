@@ -27,7 +27,7 @@ import type {
 } from '@/contracts';
 import { botProfile } from '@/ai';
 import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from '@/content';
-import { applyPowerMatchRule, commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
+import { applyFortMatchRule, applyPowerMatchRule, commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
   GROGG_SCRIPT,
   MATCH1_GROGG_LEVELS,
@@ -256,7 +256,8 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
   // A2.9.1 the power match rule: bots only field powers the player could own; both sides play the same
   // power slots (Home only until the Field slot is unlocked and the HUD dock ships, P2).
   const ruled = applyPowerMatchRule(config, save, mode);
-  config.sides = ruled.sides;
+  // A16.14.6 the fort match rule: both sides play the same Fort slot (none until F2 turns it on).
+  config.sides = applyFortMatchRule(ruled, save, mode).sides;
   // A15.3: whenever the bot gets A6.8's new-player mistakes, the opponent says so (meta adds this
   // for the opponents it picks; Quick Battle and onboarding match 2 are built here).
   const disclosed =
@@ -347,7 +348,7 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
     },
   };
   // A2.9.1: the training match plays the Home slot only (the match rule).
-  const config = applyPowerMatchRule(config0, save, 'tutorial');
+  const config = applyFortMatchRule(applyPowerMatchRule(config0, save, 'tutorial'), save, 'tutorial');
   return { mode: 'tutorial', matchNumber: 1, config, opponent, brain: { kind: 'grogg' }, script: scriptForMatch(1) };
 }
 

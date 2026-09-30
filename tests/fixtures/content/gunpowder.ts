@@ -8,6 +8,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { gunpowderForts } from './forts';
 import type { RawAgeTables } from './types';
 
 export const gunpowder: RawAgeTables = {
@@ -175,4 +176,6 @@ export const gunpowder: RawAgeTables = {
       visualId: 'turret.chainshot_cannon', nameKey: 'card.chainshot_cannon.name', descKey: 'card.chainshot_cannon.desc',
     },
   ],
+  // SIM_VERSION 5.0.0 contract bump: the frozen fort tables (A16.14.4)
+  forts: gunpowderForts,
 };

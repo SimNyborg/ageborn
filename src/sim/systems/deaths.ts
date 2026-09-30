@@ -10,10 +10,10 @@
  *   the killer's Evolve is available.
  * - The owner gets 50% of the cost in XP. Summoned units pay nothing either way.
  */
-import { BP } from '@/core';
+import { BP, MILLI } from '@/core';
 import { damageBase, makeImpact } from '../damage';
 import { emit } from '../events';
-import { levelBp, scaleCenti } from '../rules';
+import { levelBp, scaleCenti, type UnitRules } from '../rules';
 import { ageIdxOf, canEvolve, cardLevel, unitCost, type Ctx, type UnitRt } from '../state';
 import { pOf } from '../geometry';
 import { spawnUnit, unitRules } from '../units';
@@ -49,6 +49,10 @@ export function deathSystem(ctx: Ctx): void {
 
 function processDeath(ctx: Ctx, u: UnitRt): void {
   const r = unitRules(ctx, u);
+  if (u.fort) {
+    fortDeath(ctx, u, r);
+    return;
+  }
   const side = ctx.s.sides[u.side];
   u.mode = 'dying';
   u.hp = 0;
@@ -111,8 +115,57 @@ function processDeath(ctx: Ctx, u: UnitRt): void {
     imp.hitsAir = false;
     imp.x = u.x;
     imp.srcX = u.x;
+    // Death explosions hit forts in their radius with the exploding unit's mods (A16.14.2).
+    imp.forts = true;
     resolveImpact(ctx, imp);
   }
+}
+
+/**
+ * A fort (or a scaffold) falls (A16.14.2, section 2.7): pop freed; the enemy that destroyed it gets 50% of
+ * its cost in gold and 70% in XP (Bounty Hunters and Forage apply; +50% for the underdog when the fort's
+ * age is above the killer's), the owner no loss XP. A decayed fort (`fortDecayed`) pays only when an enemy
+ * hit it in the last 3 s. No death explosion, no falling gate; its camp's levies stay.
+ */
+function fortDeath(ctx: Ctx, u: UnitRt, r: UnitRules): void {
+  const side = ctx.s.sides[u.side];
+  const fr = r.fort;
+  const f = ctx.econ.fort;
+  u.mode = 'dying';
+  u.hp = 0;
+  side.pop -= r.pop;
+  const kind = u.lastHitKind;
+  const killerSide = u.lastHitSide;
+  const credited = kind !== null && kind !== 'decay' && killerSide !== u.side;
+  let gold = 0;
+  let xp = 0;
+  if (credited && fr && f) {
+    const cost = fr.cost * MILLI;
+    const kfx = ctx.s.sides[killerSide].fx;
+    gold = Math.trunc((cost * (f.bountyGoldBp + kfx.bountyAddBp)) / BP);
+    if (kfx.forageBp > 0 && pOf(u.x, killerSide) <= ctx.econ.midLane) gold = Math.trunc((gold * (BP + kfx.forageBp)) / BP);
+    xp = Math.trunc((cost * f.bountyXpBp) / BP);
+    if (fr.ageIdx > ageIdxOf(ctx, killerSide) && !canEvolve(ctx, killerSide)) {
+      gold = Math.trunc((gold * (BP + ctx.econ.underdogBp)) / BP);
+      xp = Math.trunc((xp * (BP + ctx.econ.underdogBp)) / BP);
+    }
+  }
+  if (u.decayed) emit(ctx, credited ? { e: 'fortDecayed', id: u.id, creditedTo: killerSide } : { e: 'fortDecayed', id: u.id });
+  emit(ctx, {
+    e: 'died',
+    id: u.id,
+    side: u.side,
+    card: u.card,
+    killerId: credited ? u.lastHitId : null,
+    killerCard: credited ? u.lastHitCard : null,
+    killerKind: credited ? kind : u.decayed ? 'decay' : kind,
+    killerSide: credited ? killerSide : null,
+    bountyGold: gold,
+    bountyXp: xp,
+    x: u.x,
+  });
+  if (gold > 0) addGold(ctx, killerSide, gold, 'bounty', u.x);
+  if (xp > 0) addXp(ctx, killerSide, xp, 'kill');
 }
 
 /**

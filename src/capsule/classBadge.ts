@@ -21,6 +21,7 @@ export const CLASS_KEY: Readonly<Record<ClassGlyphId, string>> = {
   legendary: 'ui.class.legendary',
   turret: 'ui.class.turret',
   power: 'ui.class.power',
+  fort: 'ui.class.fort',
 };
 
 function hex(c: string): number {

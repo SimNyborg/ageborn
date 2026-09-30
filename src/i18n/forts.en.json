@@ -1,0 +1,83 @@
+{
+  "class": {
+    "fort": "Fort"
+  },
+  "fort": {
+    "kind": {
+      "wall": "Wall",
+      "tower": "Tower",
+      "camp": "Camp",
+      "trap": "Trap"
+    },
+    "pad": {
+      "home": "Home pad",
+      "field": "Field pad"
+    },
+    "trait": {
+      "structure": "Structure: stands still on a pad",
+      "decay": "Crumbles after 60 s",
+      "siege": "Siege: forts crumble",
+      "heavyX2": "Heavies break it ×2",
+      "rangedHalf": "Ranged attacks deal half",
+      "levyMarch": "Levies always march",
+      "trapVisible": "Always visible to both sides",
+      "cover": "Cover −20% ranged",
+      "regen": "Regenerates",
+      "silenced": "Suppress silences it",
+      "powerImmune": "Never hit by powers"
+    },
+    "stat": {
+      "hp": "HP",
+      "pop": "Army",
+      "charges": "Charges",
+      "levyEvery": "A levy every {s} s",
+      "levyMax": "Up to {n} levies",
+      "range": "Range",
+      "reach": "Reach"
+    },
+    "source": {
+      "warPath": "War Path {region} {level}",
+      "road": "Road {n}",
+      "unlock": "Comes with the Fort slot"
+    }
+  },
+  "army": {
+    "fortSlot": {
+      "empty": "+ Fort",
+      "locked": "War Path Bronze 4 or 400 trophies",
+      "wrong": "Forts go in the Fort slot",
+      "group": "Fort"
+    }
+  },
+  "advisor": {
+    "levyInfantry": "Levies are Infantry: the Infantry line helps them"
+  },
+  "legend": {
+    "heavyBeatsFort": "Heavy beats Fort"
+  },
+  "unlock": {
+    "forts": {
+      "title": "Forts!",
+      "body": "Build on the lane."
+    }
+  },
+  "tutorial": {
+    "fort": {
+      "drag": "Drag a wall onto a glowing pad",
+      "pads": "Pads glow where a fort may stand",
+      "heavy": "Heavies break walls ×2",
+      "decay": "Forts crumble after a minute",
+      "hint": "Drag a wall onto a glowing pad"
+    }
+  },
+  "result": {
+    "tip": {
+      "fortHeavy": "Heavies break walls ×2",
+      "fortFeed": "Your walls paid them {n} gold: place them when a wave comes"
+    }
+  },
+  "road": {
+    "fortSet": "{age} forts",
+    "ownedAmber": "Owned: {n} Amber"
+  }
+}

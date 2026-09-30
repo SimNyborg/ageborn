@@ -4,6 +4,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { camp, slow, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const medieval: RawAgeTables = {
@@ -166,5 +167,12 @@ export const medieval: RawAgeTables = {
       },
       visualId: 'turret.honk_ballista', nameKey: 'card.honk_ballista.name', descKey: 'card.honk_ballista.desc',
     },
+  ],
+  // A16.14.4 Forts (Medieval, P 1.35): War Path L4 camp, L6 trap, L8 tower; Road fort set at 2,300
+  forts: [
+    wall('medieval', 'shield_barricade'),
+    tower('medieval', 'longbow_tower', { warPath: 8, road: 2300 }),
+    camp('medieval', 'levy_camp', 'peasant_levy', { warPath: 4, road: 2300 }),
+    trap('medieval', 'wolf_pits', { warPath: 6, road: 2300 }, { charges: 3, damage: 54, statuses: [slow(5000, 3000)] }),
   ],
 };

@@ -7,6 +7,7 @@
  */
 import type { PowerDef } from '@/contracts/content';
 import { damageMods } from './economy';
+import { camp, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const cosmic: RawAgeTables = {
@@ -174,6 +175,13 @@ export const cosmic: RawAgeTables = {
       },
       visualId: 'turret.tachyon_lance', nameKey: 'card.tachyon_lance.name', descKey: 'card.tachyon_lance.desc',
     },
+  ],
+  // A16.14.4 Forts (Cosmic, P 4.48): War Path L4 camp, L6 trap, L8 tower; Road fort set at 3,200
+  forts: [
+    wall('cosmic', 'void_rampart'),
+    tower('cosmic', 'ion_spire', { warPath: 8, road: 3200 }),
+    camp('cosmic', 'warp_barracks', 'star_recruit', { warPath: 4, road: 3200 }),
+    trap('cosmic', 'void_mine', { warPath: 6, road: 3200 }, { charges: 2, damage: 290, radius: 50 }),
   ],
 };
 

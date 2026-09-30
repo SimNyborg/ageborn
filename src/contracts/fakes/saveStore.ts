@@ -94,10 +94,11 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
   }
   const loadouts = {} as Record<AgeId, SaveDoc['warPlans'][number]['loadouts'][AgeId]>;
   for (const age of Object.keys(fakeContent.ages) as AgeId[]) {
-    loadouts[age] = clone(age === 'stone' ? fakeLoadouts.stone : fakeLoadouts.medieval);
+    // v11: every saved loadout carries its Fort slot (empty until the slot opens, A16.14.6).
+    loadouts[age] = { ...clone(age === 'stone' ? fakeLoadouts.stone : fakeLoadouts.medieval), fort: null };
   }
   const doc: SaveDoc = {
-    v: 10,
+    v: 11,
     createdAt: FAKE_EPOCH_MS,
     profile: { name: 'Player', avatar: { seed: 1, parts: {} }, banner: 'default', frame: 'default', title: '' },
     currencies: { amber: 0, dust: 0 },
@@ -105,6 +106,7 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
     arenaIndex: 0,
     collection,
     powersOwned: Object.keys(fakeContent.powers),
+    fortsOwned: [],
     skins: { owned: [], equipped: {} },
     cosmetics: {
       owned: [],

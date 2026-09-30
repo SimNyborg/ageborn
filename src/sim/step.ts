@@ -13,6 +13,7 @@ import { clockSystem } from './systems/clock';
 import { combatSystem } from './systems/combat';
 import { deathSystem } from './systems/deaths';
 import { economySystem } from './systems/economy';
+import { fortDecaySystem, fortSpawnSystem, trapSystem } from './systems/forts';
 import { impactSystem } from './systems/impacts';
 import { lastStandSystem } from './systems/laststand';
 import { movementSystem } from './systems/movement';
@@ -43,16 +44,19 @@ export function stepTick(ctx: Ctx, cmds: readonly TimedCommand[]): SimEvent[] {
   ascendSystem(ctx); //                       4. Ascension (queue conversion, Vanguard), turret timers,
   turretTimerSystem(ctx); //                     War Council research completion (A18.5.1)
   researchSystem(ctx);
-  trainingSystem(ctx); //                     5. training and spawns
+  trainingSystem(ctx); //                     5. training and spawns; fort scaffolds complete, camps send
+  fortSpawnSystem(ctx); //                       levies, traps arm and expire (A16.14.2)
   statusSystem(ctx); //                       6. statuses, regen, innate shields, auras
   buildSpatial(ctx); //                          (index for the range queries of steps 7-9)
   abilitySystem(ctx); //                      7. heals, Roar, EMP, Time Stop, pounce, called strikes
   combatSystem(ctx); //                       8. unit attack state machines (collect)
-  turretFireSystem(ctx); //                   9. turrets, mount order, side 0 then 1 (collect)
+  turretFireSystem(ctx); //                   9. turrets, mount order, side 0 then 1 (collect); then trap
+  trapSystem(ctx); //                            charges (A16.14.3, collect)
   projectileSystem(ctx); //                  10. projectiles advance; arrivals add impacts
   powerSystem(ctx); //                       11. power casts: telegraphs, due impacts
   lastStandSystem(ctx); //                   12. Last Stand arming, charge, blast
-  impactSystem(ctx); //                      13. impact resolution, then knockback and pulls
+  impactSystem(ctx); //                      13. impact resolution, then knockback and pulls; then fort
+  fortDecaySystem(ctx); //                       decay (A16.14.2)
   deathSystem(ctx); //                       14. deaths, bounties, on-death effects, compaction
   movementSystem(ctx); //                    15. movement
   winSystem(ctx); //                         16. win check

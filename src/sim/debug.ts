@@ -11,7 +11,7 @@ import { SimImpl } from './createSim';
 import { xOf } from './geometry';
 import { refreshSideFx } from './research';
 import { NEVER, NO_TARGET, cardLevel, type Ctx, type UnitRt } from './state';
-import { spawnUnit } from './units';
+import { spawnFort, spawnUnit } from './units';
 
 function impl(sim: Sim): SimImpl {
   assert(sim instanceof SimImpl, 'dev helpers need a sim created by createSim');
@@ -66,6 +66,38 @@ export function devPlaceTurret(sim: Sim, side: Side, mount: number, card: CardId
   };
 }
 
+/**
+ * Places a fort of any card on either side (A16.14), outside the command rules: on pad `pad` (default 0)
+ * or at own-side progress `p` (lu). `done` completes the scaffold at once (full HP, decay clock started).
+ * A trap card lays a trap (armed at once with `done`). Returns the fort's (or trap's) id.
+ */
+export function devPlaceFort(sim: Sim, side: Side, card: CardId, o: { pad?: number; p?: number; done?: boolean; multBp?: number } = {}): number {
+  const ctx = impl(sim).ctx;
+  const f = ctx.econ.fort;
+  const fr = ctx.rules.forts[card];
+  assert(f !== null && fr !== undefined, `unknown fort card ${card}`);
+  const pad = o.pad ?? 0;
+  const p = o.p !== undefined ? Math.trunc(o.p * MILLI) : (f.pads.pads[pad] as number);
+  const multBp = o.multBp ?? BP;
+  const tick = ctx.s.tick;
+  if (fr.trap) {
+    const id = ctx.s.nextId;
+    ctx.s.nextId += 1;
+    const armTick = o.done ? tick : tick + fr.trap.armTicks;
+    ctx.s.traps.push({ id, side, card, pad, p, armTick, untilTick: armTick + fr.trap.lifeTicks, charges: fr.trap.charges, nextTick: armTick, multBp });
+    ctx.s.sides[side].pop += fr.pop;
+    return id;
+  }
+  const u = spawnFort(ctx, side, card, pad, xOf(p, side), multBp, o.done ? tick : tick + f.pads.scaffoldTicks);
+  if (o.done && u.fort) {
+    u.fort.done = true;
+    u.hp = u.maxHp;
+    u.fort.decayFromTick = tick + f.decayStartTicks;
+    if (fr.camp) u.fort.campNextTick = tick + fr.camp.firstTicks;
+  }
+  return u.id;
+}
+
 /** Sets a side's gold (whole). */
 export function devSetGold(sim: Sim, side: Side, gold: number): void {
   impl(sim).ctx.s.sides[side].gold = Math.trunc(gold * MILLI);
@@ -107,6 +139,7 @@ export function devClearLane(sim: Sim): void {
   ctx.s.units.length = 0;
   ctx.s.projectiles.length = 0;
   ctx.s.casts.length = 0;
+  ctx.s.traps.length = 0;
   for (const s of ctx.s.sides) s.pop = 0;
 }
 

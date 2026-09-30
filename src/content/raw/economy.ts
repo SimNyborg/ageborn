@@ -175,7 +175,8 @@ export const economy: EconomyRules = {
   xpCapBp: 15000,
   // A2.7 Population and training
   popCap: 60,
-  popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14 },
+  // `fort`: the hidden fort twins (walls, towers, camps use 6; a trap's 3 is on its card, A16.14.2)
+  popByGroup: { infantry: 2, ranged: 3, antiArmor: 4, support: 4, heavy: 6, epic: 8, legendary: 14, fort: 6 },
   queueMax: 5,
   legendaryLimit: 1,
   // A2.3 / A2.8 Turrets
@@ -214,6 +215,47 @@ export const economy: EconomyRules = {
     legendaryControlBp: 5000,
     // optional shared lockout after a cast (lever; 0 = off)
     lockMs: 0,
+  },
+  // A16.14 Forts (spec section 13): 5 pads (3 Home inside turret cover, 2 Field), at most 2 alive and 1 camp,
+  // 25 s shared recharge (first at 0:20), 5 s scaffold at 50% HP, decay 1%/s from 60 s after completion and
+  // 2%/s from the start of Siege, ×2 in Siege, ×0.5 from other attacks with range ≥ 100, ×2 structure mod
+  // (Heavy, Legendary, siege, artillery), bounty at the unit rates, tower reach never past own-frame p 560,
+  // a 5-attacker contact cap; kind stats from the age baselines (walls 1.0 H, towers 0.5 H with 1.5 R,
+  // camps 0.6 H, levies 0.4 I with 16% of the Infantry cost as AI value)
+  fort: {
+    pads: [160, 230, 300, 640, 820],
+    homePads: 3,
+    padClearLu: 120,
+    fieldBehindLu: 100,
+    fieldFrontRank: 2,
+    maxAlive: 2,
+    maxCamps: 1,
+    maxTowers: 2,
+    rechargeMs: 25000,
+    firstReadyMs: 20000,
+    scaffoldMs: 5000,
+    scaffoldHpBp: 5000,
+    safeMarginMs: 1000,
+    decayStartMs: 60000,
+    decayBpPerSec: 100,
+    siegeDecayBp: 20000,
+    decayCreditMs: 3000,
+    siegeTakenBp: 20000,
+    rangedTakenBp: 5000,
+    rangedMinLu: 100,
+    structureBp: 20000,
+    bountyGoldBp: 5000,
+    bountyXpBp: 7000,
+    towerReachMaxP: 560,
+    contactLu: 60,
+    contactMax: 5,
+    wallHpBp: 10000,
+    towerHpBp: 5000,
+    campHpBp: 6000,
+    towerDamageBp: 15000,
+    levyHpBp: 4000,
+    levyDamageBp: 4000,
+    levyAiValueBp: 1600,
   },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
@@ -279,6 +321,8 @@ export const battle: RawBattleRules = {
     heavy: 4000,
     epic: 4000,
     legendary: 7000,
+    // the hidden fort twins are placed, never trained (A16.14.8)
+    fort: 0,
   },
   braceKnockbackResistBp: 10000,
   airKnockbackResistBp: 10000,

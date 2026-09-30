@@ -599,6 +599,15 @@ export class BattleView {
     return p ? this.camera.worldToScreen(p.x, p.y) : null;
   }
 
+  /**
+   * The ground point of your own-side p (lu) in view-local CSS px, and the scale (px per lu): the HUD
+   * draws fort pads, the placement ghost and lane tags there (A16.14.7).
+   */
+  laneScreen(p: number): { x: number; y: number; scale: number } {
+    const pt = this.camera.worldToScreen(pToX(p, this.mySide), 0);
+    return { x: pt.x, y: pt.y, scale: this.camera.scale };
+  }
+
   /** The slot the HUD aims now (A2.9.10: the dock has a Home and a Field button). */
   private aimSlot: PowerSlot = 'home';
   /** The preview's labels and reason, kept for the edge-scroll re-preview. */

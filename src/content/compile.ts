@@ -24,6 +24,7 @@ import type {
   CompiledContent,
   CompiledTicks,
   EconomyRules,
+  FortDef,
   PowerDef,
   SkinDef,
   TurretDef,
@@ -31,6 +32,8 @@ import type {
 } from '@/contracts/content';
 import type { AgeId, CardId } from '@/contracts/ids';
 import { BP, CENTI, MILLI, TICK_MS, msToTicks, mulDiv, roundDiv } from '@/core/fixed';
+import { fortEconomyOf } from '@/core/fortPads';
+import { addStructureMods, compileForts } from '@/core/forts';
 import { hashCanonical } from '@/core/hash';
 import { AGE_ORDER, agesIn, buildAges } from './ages';
 import { strongWeak } from './counters/matrix';
@@ -63,7 +66,15 @@ export function compileContent(input: CompileInput): Content {
   const ages = buildAges(raw.ageScale);
   const ageIds = agesIn(raw.ageScale);
 
-  const allUnits: UnitDef[] = raw.ages.flatMap((t) => t.units.map((u) => deriveUnit(cloneData(u), economy, battle)));
+  const derived: UnitDef[] = raw.ages.flatMap((t) => t.units.map((u) => deriveUnit(cloneData(u), economy, battle)));
+  // A16.14: forts compile into FortDefs plus hidden twin units (walls, towers, camps) and levies; the
+  // ×2 structure mod goes at the front of every Heavy, Legendary, siege and artillery attack.
+  const fortRules = fortEconomyOf(economy);
+  const tableUnits = fortRules ? addStructureMods(derived, fortRules.structureBp) : derived;
+  const fortSpecs = raw.ages.flatMap((t) => (t.forts ?? []).map((f) => cloneData(f)));
+  const built = fortRules && fortSpecs.length > 0 ? compileForts(fortSpecs, tableUnits, fortRules) : { forts: [], twins: [], levies: [] };
+  const fortList: FortDef[] = built.forts;
+  const allUnits: UnitDef[] = [...tableUnits, ...built.levies, ...built.twins];
   const collectable = allUnits.filter((u) => !u.hidden);
   const ageIndex = Object.fromEntries(ageIds.map((a) => [a, ages[a].index])) as Record<AgeId, number>;
   for (const u of collectable) {
@@ -78,21 +89,25 @@ export function compileContent(input: CompileInput): Content {
   const units = byId(allUnits, 'unit');
   const turrets = byId(turretList, 'turret');
   const powers = byId(powerList, 'power');
+  const forts = byId(fortList, 'fort');
   const skins = byId(skinList, 'skin');
-  assertDistinctCardIds(allUnits, turretList, powerList);
+  assertDistinctCardIds(allUnits, turretList, powerList, fortList);
 
   const formats = cloneData(raw.formats);
   const research = cloneData(raw.research ?? EMPTY_RESEARCH);
   const ticks = compileTicks(economy, battle);
   const counters = countersFromFile(input.counters, collectable);
-  const int = compileIntegers(allUnits, turretList, ages, economy, battle);
+  // Fort twins are placed, never trained: they have no integer train or move row.
+  const int = compileIntegers(allUnits.filter((u) => !u.fort), turretList, ages, economy, battle);
   const order: ContentOrder = {
     ages: ageIds,
     formats: [...FORMAT_ORDER],
     units: collectable.map((u) => u.id),
-    hiddenUnits: allUnits.filter((u) => u.hidden).map((u) => u.id),
+    hiddenUnits: allUnits.filter((u) => u.hidden && !u.fort && !u.levy).map((u) => u.id),
     turrets: turretList.map((t) => t.id),
     powers: powerList.map((p) => p.id),
+    forts: fortList.map((f) => f.id),
+    fortUnits: [...built.levies, ...built.twins].map((u) => u.id),
     skins: skinList.map((s) => s.id),
   };
   const metaCopy = cloneData(meta);
@@ -104,6 +119,7 @@ export function compileContent(input: CompileInput): Content {
     units,
     turrets,
     powers,
+    forts,
     skins,
     research,
     ...metaCopy,
@@ -129,6 +145,7 @@ export function hashedSlice(c: Omit<CompiledContent, 'hash'> & Pick<Content, 'ba
     units: c.units,
     turrets: c.turrets,
     powers: c.powers,
+    forts: c.forts,
     research: c.research,
     modifiers: c.dailyModifiers.list,
     ticks: c.ticks,
@@ -192,14 +209,20 @@ function sortPowers(list: PowerDef[]): PowerDef[] {
     .map((x) => x.p);
 }
 
-/** Unit, turret and power ids share one namespace (`CardId`). */
-function assertDistinctCardIds(units: UnitDef[], turrets: TurretDef[], powers: PowerDef[]): void {
+/**
+ * Unit, turret, power and fort ids share one namespace (`CardId`). A fort and its hidden twin unit are
+ * one card (A16.14.8): the twin's id must be its fort's, and no other card may use it.
+ */
+function assertDistinctCardIds(units: UnitDef[], turrets: TurretDef[], powers: PowerDef[], forts: FortDef[]): void {
   const seen = new Set<string>();
-  for (const id of [...units.map((u) => u.id), ...turrets.map((t) => t.id), ...powers.map((p) => p.id)]) {
+  const fortIds = new Set(forts.map((f) => f.id));
+  for (const id of [...units.filter((u) => !u.fort).map((u) => u.id), ...turrets.map((t) => t.id), ...powers.map((p) => p.id), ...forts.map((f) => f.id)]) {
     if (seen.has(id)) throw new Error(`Card id "${id}" is used by more than one card`);
     seen.add(id);
   }
+  for (const u of units) if (u.fort && !fortIds.has(u.id)) throw new Error(`Fort twin "${u.id}" has no fort card`);
 }
+
 
 /** Durations precompiled to ticks: max(1, round(ms / 50)) (B3). */
 export function compileTicks(e: EconomyRules, battle: RawBattleRules): CompiledTicks {

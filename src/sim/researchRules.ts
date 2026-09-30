@@ -4,7 +4,7 @@
  * object by `rules.ts`. `content.research` is read with a shape check, so content that predates the
  * War Council (the contract fakes) simply has no picks and every `research` command is rejected.
  */
-import type { AgeId, CardId, CompiledContent, ResearchClass, ResearchPickDef, ResearchRules, ResearchTrack, Role, Tag } from '@/contracts';
+import type { AgeId, CardId, CompiledContent, ResearchClass, ResearchPickDef, ResearchRole, ResearchRules, ResearchTrack, Role, Tag } from '@/contracts';
 import { BP, MILLI, TICKS_PER_SECOND, msToTicks } from '@/core';
 import type { UnitRules } from './rules';
 
@@ -52,6 +52,8 @@ export interface SideFx {
   powerReloadBp: number;
   /** Power price discount, bp (Quartermasters, v1.1; A2.9.2). */
   powerCostBp: number;
+  /** Fort scaffold time in ticks (Engineers, A16.14.5); 0 = the economy's scaffold time. */
+  fortScaffoldTicks: number;
 }
 
 export interface PickRules {
@@ -95,6 +97,7 @@ const TAG_BITS: Readonly<Record<Tag, number>> = {
   support: 128,
   ranged: 256,
   melee: 512,
+  structure: 1024,
 };
 
 export function emptyUnitFx(): UnitFx {
@@ -132,6 +135,7 @@ export function emptySideFx(): SideFx {
     forageBp: 0,
     powerReloadBp: 0,
     powerCostBp: 0,
+    fortScaffoldTicks: 0,
   };
 }
 
@@ -202,6 +206,9 @@ function compilePick(def: ResearchPickDef, idx: number, clsIndex: (c: ResearchCl
       case 'powerCost':
         sd().powerCostBp += fx.bp;
         break;
+      case 'fortScaffold':
+        sd().fortScaffoldTicks = msToTicks(fx.ms);
+        break;
     }
   }
   return { idx, id: def.id, track: def.track, cls: def.group ? clsIndex(def.group) : -1, rank: def.rank, pick: def.pick, def, unit, side };
@@ -214,7 +221,7 @@ function tableOf(content: CompiledContent): ResearchRules | null {
   return r as ResearchRules;
 }
 
-const ROLES: readonly Role[] = [
+const ROLES: readonly ResearchRole[] = [
   'infantry',
   'ranged',
   'heavy',
@@ -230,7 +237,7 @@ const ROLES: readonly Role[] = [
 ];
 
 /** Fallback class of each role when the content has no War Council table. */
-const DEFAULT_CLASS: Readonly<Record<Role, ResearchClass>> = {
+const DEFAULT_CLASS: Readonly<Record<ResearchRole, ResearchClass>> = {
   infantry: 'infantry',
   skirmisher: 'infantry',
   ranged: 'ranged',
@@ -254,6 +261,8 @@ export function researchRules(
   const clsIndex = (c: ResearchClass): number => CLASSES.indexOf(c);
   const classOfRole = {} as Record<Role, number>;
   for (const role of ROLES) classOfRole[role] = clsIndex(t?.classOfRole[role] ?? DEFAULT_CLASS[role]);
+  // A16.14.5: no research of any track touches forts or towers.
+  classOfRole.fort = -1;
   const infantryDamage: Partial<Record<AgeId, number>> = {};
   for (const age of Object.keys(vanguard).sort() as AgeId[]) {
     const id = vanguard[age];
@@ -343,4 +352,5 @@ export function addSideFx(into: SideFx, fx: SideFx): void {
   into.forageBp += fx.forageBp;
   into.powerReloadBp += fx.powerReloadBp;
   into.powerCostBp += fx.powerCostBp;
+  if (fx.fortScaffoldTicks > 0 && (into.fortScaffoldTicks === 0 || fx.fortScaffoldTicks < into.fortScaffoldTicks)) into.fortScaffoldTicks = fx.fortScaffoldTicks;
 }

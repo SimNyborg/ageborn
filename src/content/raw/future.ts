@@ -5,6 +5,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { antiHeavyMods, damageMods } from './economy';
+import { camp, slow, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const future: RawAgeTables = {
@@ -165,5 +166,13 @@ export const future: RawAgeTables = {
       },
       visualId: 'turret.gravity_well', nameKey: 'card.gravity_well.name', descKey: 'card.gravity_well.desc',
     },
+  ],
+  // A16.14.4 Forts (Future, P 3.32): War Path L4 camp, L6 trap, L8 tower; Road fort set at 3,100. The
+  // Hardlight Barrier regenerates 1% of max HP per second after 3 s without damage, until its decay starts
+  forts: [
+    wall('future', 'hardlight_barrier', { regen: { bpPerSec: 100, delayMs: 3000 } }),
+    tower('future', 'sentry_pylon', { warPath: 8, road: 3100 }),
+    camp('future', 'clone_bay', 'clone_cadet', { warPath: 4, road: 3100 }),
+    trap('future', 'grav_mire', { warPath: 6, road: 3100 }, { charges: 1, damage: 110, radius: 60, statuses: [slow(6000, 3000)] }),
   ],
 };

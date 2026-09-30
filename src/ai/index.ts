@@ -17,6 +17,7 @@ export type { TierParams } from './tiers';
 export { BotMatch, runHeadless } from './harness';
 export type { BotSeat, HeadlessResult } from './harness';
 export { describeAction } from './actions';
+export { botFortCard, fortKindsFor } from './forts';
 export type { BotAction } from './actions';
 export type { DecisionTrace, SavingGoal, Scored } from './brain';
 export type { MistakeKind } from './mistakes';

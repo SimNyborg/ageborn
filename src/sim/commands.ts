@@ -8,7 +8,9 @@
  * `finalAge`, `ascending`, `notEnoughXp`, the power reasons (`noPower`, `powerReloading`, `powerLockout`,
  * `powerOutOfReach`, `powerNoTarget`, `noGold`; A2.9.7), `stanceLocked`, `sameStance`,
  * `stanceCooldown`, `flagCooldown`, `lastStandAuto`, `lastStandNotArmed`, `emoteCooldown`, `retreatLocked`,
- * and the War Council reasons in `research.ts` (A18.5.1).
+ * the War Council reasons in `research.ts` (A18.5.1), and the fort reasons (A16.14.2, `systems/forts.ts`):
+ * `noFort`, `fortSiege`, `fortRecharge`, `fortMax`, `fortCampMax`, `fortPadKind`, `fortPadTaken`,
+ * `fortPadEnemy`, `fortPadField`, `popFull`, `noGold`.
  */
 import type { Command, Side, TimedCommand, TrainingEvent } from '@/contracts';
 import { BP, MILLI, PPM, isPowerSlot, slotIndex } from '@/core';
@@ -30,6 +32,7 @@ import {
 import { cancelResearch, startResearch } from './research';
 import { addPower } from './systems/economy';
 import { startLastStand } from './systems/laststand';
+import { placeFort } from './systems/forts';
 import { castPower } from './systems/powers';
 import { legendaryCount, markPlayed } from './systems/training';
 
@@ -227,6 +230,8 @@ export function applyCommand(ctx: Ctx, c: Command): string | null {
       emit(ctx, { e: 'stanceChanged', side, stance: s.stance, holdP: Math.trunc(s.holdP / MILLI) });
       return null;
     }
+    case 'fort':
+      return placeFort(ctx, side, c.pad);
     case 'lastStand': {
       if (!ctx.manualLastStand[side]) return 'lastStandAuto';
       if (s.lastStand !== 'armed') return 'lastStandNotArmed';

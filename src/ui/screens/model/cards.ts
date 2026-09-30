@@ -4,19 +4,20 @@
  * multiplier = 10,000 + levelStepBp × (level − 1) bp).
  */
 import type { Content } from '@/content/types';
-import type { AgeId, CardId, DamageMod, Foil, PowerDef, Rarity, SaveDoc, SkinDef, TurretDef, UnitDef } from '@/contracts';
+import type { AgeId, CardId, DamageMod, Foil, FortDef, PowerDef, Rarity, SaveDoc, SkinDef, TurretDef, UnitDef } from '@/contracts';
 import { counterClasses as classCounters, isLegendaryUnit, takesCounterFloor, unitClass, type CardClass, type UnitClass } from '@/core/cardClass';
 import type { CardTileData } from '../../components/CardTile';
 import { roleGlyph, type GlyphKind } from '../../components/icons';
 import { reachGlyph, reloadSeconds } from '../../components/powerInfo';
 import type { Translate } from '../../components/kit';
 
-export type CardKind = 'unit' | 'turret' | 'power';
+export type CardKind = 'unit' | 'turret' | 'power' | 'fort';
 
-export type AnyCardDef = UnitDef | TurretDef | PowerDef;
+export type AnyCardDef = UnitDef | TurretDef | PowerDef | FortDef;
 
+/** A card's definition. A fort shares its id with its hidden twin unit (A16.14.8), so forts come first. */
 export function cardDef(content: Content, id: CardId): AnyCardDef | null {
-  return content.units[id] ?? content.turrets[id] ?? content.powers[id] ?? null;
+  return content.forts?.[id] ?? content.units[id] ?? content.turrets[id] ?? content.powers[id] ?? null;
 }
 
 /** A card's rarity; powers are Common, Rare or Epic (A5.7: rarity marks the source, a sidegrade). */
@@ -36,11 +37,15 @@ export function cardClassOf(def: AnyCardDef): CardClass {
 
 /** The classes a unit beats and loses to, from the compiled counter lists (B4), with the triangle as a floor (A18.9.1). */
 export function counterClasses(content: Content, def: AnyCardDef): { strong: UnitClass[]; weak: UnitClass[] } {
+  // A fort's Strong vs / Weak vs are its kind rows per age (A16.14.1), with no triangle floor.
+  if (def.kind === 'fort') return classCounters(def.strongVs, def.weakVs, content.units);
   if (def.kind !== 'unit') return { strong: [], weak: [] };
   return classCounters(def.strongVs, def.weakVs, content.units, unitClass(def), takesCounterFloor(def));
 }
 
 export function isOwned(save: SaveDoc, id: CardId, content: Content): boolean {
+  // Forts have no copies or levels: owned or not (A16.14.6, `fortsOwned`).
+  if (content.forts?.[id]) return (save.fortsOwned ?? []).includes(id);
   if (content.powers[id]) return save.powersOwned.includes(id);
   const e = save.collection[id];
   return !!e && e.level >= 1;
@@ -87,7 +92,7 @@ export interface UpgradeState {
 export function upgradeState(save: SaveDoc, content: Content, id: CardId): UpgradeState | null {
   const def = cardDef(content, id);
   const entry = save.collection[id];
-  if (!def || def.kind === 'power' || !entry) return null;
+  if (!def || def.kind === 'power' || def.kind === 'fort' || !entry) return null;
   const cost = upgradeCost(content, def.rarity, entry.level);
   const copiesReady = cost !== null && entry.copies >= cost.copies;
   return {
@@ -111,7 +116,9 @@ export function cardTile(save: SaveDoc, content: Content, id: CardId, t: Transla
   const entry = save.collection[id];
   const level = owned ? levelOf(save, id) : 1;
   const rarity = cardRarity(def);
-  const cost = def.kind !== 'power' && rarity ? upgradeCost(content, rarity, level) : null;
+  // Powers and forts have no copies or levels (A2.9, A16.14.6).
+  const levelled = def.kind !== 'power' && def.kind !== 'fort';
+  const cost = levelled && rarity ? upgradeCost(content, rarity, level) : null;
   const copies = entry?.copies ?? 0;
   return {
     id,
@@ -123,7 +130,7 @@ export function cardTile(save: SaveDoc, content: Content, id: CardId, t: Transla
     owned,
     level,
     copies,
-    needed: def.kind === 'power' ? null : cost ? cost.copies : null,
+    needed: !levelled ? null : cost ? cost.copies : null,
     upgradeReady: owned && cost !== null && copies >= cost.copies,
     foil: (entry?.foil ?? 'none') as Foil,
     isNew: entry?.isNew ?? false,
@@ -131,17 +138,19 @@ export function cardTile(save: SaveDoc, content: Content, id: CardId, t: Transla
     cost: def.kind === 'power' ? (def.cost ?? null) : def.cost,
     cls: cardClassOf(def),
     ...(def.kind === 'power' && def.slot ? { power: { slot: def.slot, reach: reachGlyph(def), reloadS: reloadSeconds(def) } } : {}),
+    ...(def.kind === 'fort' ? { fort: { kind: def.fortKind, pop: def.pop, pads: def.pads } } : {}),
     legendary: def.kind === 'unit' && isLegendaryUnit(def),
     ...counterClasses(content, def),
   };
 }
 
 /** Collectable cards of one age in display order: units, then turrets, then powers. */
-export function cardsOfAge(content: Content, age: AgeId): { units: CardId[]; turrets: CardId[]; powers: CardId[] } {
+export function cardsOfAge(content: Content, age: AgeId): { units: CardId[]; turrets: CardId[]; powers: CardId[]; forts: CardId[] } {
   return {
     units: content.order.units.filter((id) => content.units[id]?.age === age),
     turrets: content.order.turrets.filter((id) => content.turrets[id]?.age === age),
     powers: content.order.powers.filter((id) => content.powers[id]?.age === age),
+    forts: (content.order.forts ?? []).filter((id) => content.forts?.[id]?.age === age),
   };
 }
 
@@ -226,6 +235,8 @@ export function hitsOf(def: AnyCardDef): { ground: boolean; air: boolean } | nul
     return a ? { ground: a.hitsGround, air: a.hitsAir } : null;
   }
   if (def.kind === 'turret') return { ground: def.attack.hitsGround, air: def.attack.hitsAir };
+  // A field tower shoots like its age's Ranged Common (A16.14.3).
+  if (def.kind === 'fort' && def.attack) return { ground: def.attack.hitsGround, air: def.attack.hitsAir };
   return null;
 }
 

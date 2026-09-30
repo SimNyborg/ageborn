@@ -17,6 +17,7 @@ import type {
   DmgType,
   EconomyRules,
   FormatId,
+  FortDef,
   PowerDef,
   PowerFamily,
   PowerReach,
@@ -28,7 +29,21 @@ import type {
   TurretDef,
   UnitDef,
 } from '@/contracts';
-import { BP, MILLI, PPM, TICKS_PER_SECOND, assert, fieldPulses, msToTicks, powerEconomyOf, powerReachRules, type PowerReachRules } from '@/core';
+import {
+  BP,
+  MILLI,
+  PPM,
+  TICKS_PER_SECOND,
+  assert,
+  fieldPulses,
+  fortEconomyOf,
+  fortPadRules,
+  msToTicks,
+  powerEconomyOf,
+  powerReachRules,
+  type FortPadRules,
+  type PowerReachRules,
+} from '@/core';
 import { researchRules, type ResearchSimRules } from './researchRules';
 
 /** Tag bit flags (DESIGN A2.6). */
@@ -43,6 +58,7 @@ export const TAG: Readonly<Record<Tag, number>> = {
   support: 128,
   ranged: 256,
   melee: 512,
+  structure: 1024,
 };
 
 /**
@@ -245,6 +261,71 @@ export interface UnitRules {
   siegeOnly: boolean;
   bomber: { window: number } | null;
   follow: { behind: number; soloMax: number } | null;
+  /** A wall, tower or camp twin (A16.14.8): its fort rules; null for every other unit. */
+  fort: FortRules | null;
+  /** A camp's levy (A16.14.3): always marches, ranks last in power caps. */
+  levy: boolean;
+  /**
+   * The ×2 structure mod this unit's attacks carry against forts (bp, 0 = none; A16.14.2): Heavy,
+   * Legendary, siege and artillery units. Also used for its ability impacts (death explosions, strikes).
+   */
+  structureBp: number;
+}
+
+/** A fort card in runtime units (DESIGN A16.14): distances in mlu, times in ticks, HP and damage whole. */
+export interface FortRules {
+  id: CardId;
+  def: FortDef;
+  age: AgeId;
+  ageIdx: number;
+  kind: FortDef['fortKind'];
+  /** Whole gold. */
+  cost: number;
+  pop: number;
+  /** Max HP at L1, whole (0 for traps). */
+  hp: number;
+  /** Body half-width, mlu (0 for traps). */
+  half: number;
+  pads: 'home' | 'any';
+  /** A camp's levy card and timing. */
+  camp: { spawn: CardId; everyTicks: number; firstTicks: number; maxAlive: number } | null;
+  trap: {
+    charges: number;
+    trigger: number;
+    betweenTicks: number;
+    armTicks: number;
+    lifeTicks: number;
+    damage: number;
+    radius: number;
+    maxTargets: number;
+    statuses: StatusRules[];
+  } | null;
+  /** Sandbag Bunker: own ground units within `behind` behind it take `bp` less from attacks with range ≥ 100. */
+  cover: { behind: number; bp: number } | null;
+  /** Hardlight Barrier: regen bp of max HP per 20 ticks after `delayTicks` without damage. */
+  regen: { bpPerStep: number; delayTicks: number } | null;
+}
+
+/** The fort rules of a match (DESIGN A16.14.2, spec 13) in runtime units; null for content without forts. */
+export interface FortSimRules {
+  /** Pads and placement rules in mlu (core `fortPads`). */
+  pads: FortPadRules;
+  rechargeTicks: number;
+  firstReadyTicks: number;
+  scaffoldHpBp: number;
+  decayStartTicks: number;
+  /** Decay per 20-tick step, bp of max HP; Siege multiplies it by `siegeDecayBp`. */
+  decayBpPerStep: number;
+  siegeDecayBp: number;
+  creditTicks: number;
+  siegeTakenBp: number;
+  rangedTakenBp: number;
+  /** "Range ≥ 100": the compiled base range of the attack, mlu. */
+  rangedMin: number;
+  bountyGoldBp: number;
+  bountyXpBp: number;
+  contact: number;
+  contactMax: number;
 }
 
 export interface TurretRules {
@@ -414,6 +495,8 @@ export interface EconRules {
   gateFall: { dist: number; hpBp: number };
   /** The open gate (A16.4 stall fix): mlu from the own gate that must hold no own ground unit (0 = off). */
   openGate: number;
+  /** Forts (A16.14); null when the content has no `economy.fort`. */
+  fort: FortSimRules | null;
 }
 
 export interface SimRules {
@@ -437,6 +520,8 @@ export interface SimRules {
   emotes: ReadonlySet<string>;
   /** The War Council (A18.5), see `research.ts`. */
   research: ResearchSimRules;
+  /** Fort cards (A16.14), traps included; empty for content without forts. */
+  forts: Readonly<Record<CardId, FortRules>>;
 }
 
 /** The six starter emotes (B15 `BaseEmoteId`). */
@@ -613,6 +698,9 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     siegeOnly: false,
     bomber: null,
     follow: null,
+    fort: null,
+    levy: def.levy === true,
+    structureBp: 0,
   };
   def.abilities.forEach((ab: AbilityDef, slot) => {
     switch (ab.kind) {
@@ -709,8 +797,72 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
         break;
     }
   });
-  for (const a of r.attacks) if (a.range > r.maxRange) r.maxRange = a.range;
+  for (const a of r.attacks) {
+    if (a.range > r.maxRange) r.maxRange = a.range;
+    for (const m of a.mods) if (m.vs === 'structure' && m.bp > r.structureBp) r.structureBp = m.bp;
+  }
   return r;
+}
+
+/** A fort card in runtime units. */
+function fortRules(def: FortDef, content: CompiledContent): FortRules {
+  const e = content.economy;
+  const width = def.size ? mlu(e.sizes[def.size]) : 0;
+  const t = def.trap;
+  return {
+    id: def.id,
+    def,
+    age: def.age,
+    ageIdx: content.ages[def.age].index,
+    kind: def.fortKind,
+    cost: def.cost,
+    pop: def.pop,
+    hp: def.hp,
+    half: Math.trunc(width / 2),
+    pads: def.pads,
+    camp: def.camp
+      ? { spawn: def.camp.spawn, everyTicks: msToTicks(def.camp.everyMs), firstTicks: msToTicks(def.camp.firstMs), maxAlive: def.camp.maxAlive }
+      : null,
+    trap: t
+      ? {
+          charges: t.charges,
+          trigger: mlu(t.triggerLu),
+          betweenTicks: msToTicks(t.betweenMs),
+          armTicks: msToTicks(t.armMs),
+          lifeTicks: msToTicks(t.lifeMs),
+          damage: t.damage,
+          radius: mlu(t.radius),
+          maxTargets: t.maxTargets,
+          statuses: t.statuses.map(statusRules),
+        }
+      : null,
+    cover: def.cover ? { behind: mlu(def.cover.behindLu), bp: def.cover.rangedTakenBp } : null,
+    regen: def.regen ? { bpPerStep: def.regen.bpPerSec, delayTicks: msToTicks(def.regen.delayMs) } : null,
+  };
+}
+
+/** The fort rules of the content (A16.14.2) in runtime units, or null without `economy.fort`. */
+function fortSimRules(content: CompiledContent): FortSimRules | null {
+  const f = fortEconomyOf(content.economy);
+  const pads = fortPadRules(content.economy, MILLI);
+  if (!f || !pads) return null;
+  return {
+    pads,
+    rechargeTicks: msToTicks(f.rechargeMs),
+    firstReadyTicks: f.firstReadyMs > 0 ? msToTicks(f.firstReadyMs) : 0,
+    scaffoldHpBp: f.scaffoldHpBp,
+    decayStartTicks: msToTicks(f.decayStartMs),
+    decayBpPerStep: f.decayBpPerSec,
+    siegeDecayBp: f.siegeDecayBp,
+    creditTicks: msToTicks(f.decayCreditMs),
+    siegeTakenBp: f.siegeTakenBp,
+    rangedTakenBp: f.rangedTakenBp,
+    rangedMin: mlu(f.rangedMinLu),
+    bountyGoldBp: f.bountyGoldBp,
+    bountyXpBp: f.bountyXpBp,
+    contact: mlu(f.contactLu),
+    contactMax: f.contactMax,
+  };
 }
 
 function powerDmgType(kind: PowerDef['effect']['kind']): DmgType {
@@ -940,6 +1092,7 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     // Off for content that predates it (the frozen golden fixture), so old replays keep their hashes.
     gateFall: { dist: mlu(nonNegOr(e.gateFall?.lu, 0)), hpBp: nonNegOr(e.gateFall?.hpBp, 0) },
     openGate: mlu(nonNegOr(e.openGateLu, 0)),
+    fort: fortSimRules(content),
   };
 }
 
@@ -994,6 +1147,17 @@ function compileRules(content: CompiledContent): SimRules {
     turrets[id] = r;
     turretList.push(r);
   }
+  // A16.14: fort cards (traps included) and the rules of their hidden twins.
+  const forts: Record<CardId, FortRules> = {};
+  const fortDefs = (content as { forts?: Record<CardId, FortDef> }).forts ?? {};
+  for (const id of sortedKeys(fortDefs)) {
+    const def = fortDefs[id];
+    if (!def) continue;
+    const twin = units[id] ?? null;
+    const fr = fortRules(def, content);
+    forts[id] = fr;
+    if (twin && twin.def.fort) twin.fort = fr;
+  }
   const powers: Record<CardId, PowerRules> = {};
   let pi = 0;
   for (const id of sortedKeys(content.powers)) {
@@ -1032,6 +1196,7 @@ function compileRules(content: CompiledContent): SimRules {
     vanguard,
     emotes: emoteIds(content),
     research: researchRules(content, unitList, vanguard),
+    forts,
   };
 }
 

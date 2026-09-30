@@ -1,0 +1,34 @@
+/* Fort kind badges and card art (DESIGN A16.14.8 `icon.fort.*`). The badge is the Fort class's brick
+   colour on a dark disc, so a kind glyph reads the same on the tray, the Army and the lane tags. */
+
+.ui-fort-badge {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  border: 2px solid #1b1330;
+  border-radius: 7px;
+  background:
+    radial-gradient(ellipse 45% 26% at 50% 16%, rgba(255, 255, 255, 0.42), transparent 100%),
+    linear-gradient(170deg, #cf8a5f 0%, var(--cls-fort, #b0643f) 50%, #5e2e17 100%);
+  box-shadow:
+    0 2px 0 #1b1330,
+    inset 0 -2px 0 rgba(0, 0, 0, 0.22);
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.ui-fort-badge .ui-fort-glyph {
+  filter: drop-shadow(0 1px 0 rgba(27, 19, 48, 0.55));
+}
+
+.ui-fort-art {
+  display: block;
+  overflow: visible;
+}
+
+/* Not owned yet: the dark silhouette of the card grid. */
+.ui-fort-art.is-silhouette {
+  filter: brightness(0) opacity(0.55);
+}

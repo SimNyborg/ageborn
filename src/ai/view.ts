@@ -3,9 +3,9 @@
  * commands (ledger.ts), with the derived quantities the A7.2 scoring terms use. Positions are own-side
  * progress p in milli-lu (the observation's frame); money is milli-gold; card values are whole gold.
  */
-import type { AgeId, BotProfile, CardId, Observation, PowerDef, PowerSlot, ResearchView, Side, StanceMode } from '@/contracts';
+import type { AgeId, BotProfile, CardId, FortKind, ObservedFortPad, Observation, PowerDef, PowerSlot, ResearchView, Side, StanceMode } from '@/contracts';
 import { BP, MILLI, PPM, frontP } from '@/core';
-import type { CardBook, PowerInfo, UnitCard } from './book';
+import type { CardBook, FortCard, PowerInfo, UnitCard } from './book';
 import type { Ledger } from './ledger';
 import { evolveVisible } from './memory';
 
@@ -22,9 +22,59 @@ export interface SeenUnit {
   hpTotal: number;
   maxHp: number;
   air: boolean;
-  /** Summoned (drops, Vanguard, riders): never the power front F (A2.9.4). */
+  /** Summoned (drops, Vanguard, riders, levies): never the power front F (A2.9.4). */
   summoned: boolean;
   level: number;
+  /** A camp's Levy (A16.14.3): valued at its AI value, never in the attack clock or the counter scoring. */
+  levy: boolean;
+  /** Power cap order group (A2.9.5, core `capCompare`): 1 for levies (always last), else 0. */
+  capRank: number;
+}
+
+/**
+ * A wall, tower or camp on the lane (A16.14): listed apart from units, never army, never a power target.
+ * `p` is the bot's frame in milli-lu, like units.
+ */
+export interface SeenFort {
+  id: number;
+  card: CardId;
+  kind: Exclude<FortKind, 'trap'>;
+  def: FortCard | undefined;
+  /** Card value in whole gold (its price). */
+  value: number;
+  p: number;
+  hp: number;
+  maxHp: number;
+  /** Still a scaffold: it does not block, fire or spawn yet. */
+  scaffold: boolean;
+}
+
+/** A trap (always visible to both sides, A16.14.3), `p` in the bot's frame (milli-lu). */
+export interface SeenTrap {
+  id: number;
+  card: CardId;
+  value: number;
+  p: number;
+  armed: boolean;
+  charges: number;
+}
+
+/**
+ * The bot's Fort slot as it can use it now (A16.14.2), after its own pending commands: the card, its
+ * price (milli), whether the slot will be recharged when a command issued now runs, what is alive and
+ * the pads as the rules saw them (a pad a pending placement uses reads as taken).
+ */
+export interface FortSlotView {
+  card: CardId;
+  def: FortCard;
+  cost: number;
+  ready: boolean;
+  /** Ticks until the slot is ready for a command issued now (0 = ready). */
+  readyIn: number;
+  alive: number;
+  towers: number;
+  campAlive: boolean;
+  pads: ObservedFortPad[];
 }
 
 /**
@@ -104,11 +154,79 @@ export interface View {
   myFront: number | null;
   /** p (bot frame) of the foe ground unit nearest the bot's gate, or null. */
   foeFront: number | null;
+  /** Forts on the lane, listed apart from units (A16.14.7): never army, never power targets. */
+  myForts: SeenFort[];
+  foeForts: SeenFort[];
+  /** Traps of each side (always visible, A16.14.3). */
+  myTraps: SeenTrap[];
+  foeTraps: SeenTrap[];
+  /** The Fort slot, or null when the loadout has none (a locked slot arrives empty) or the age is uncertain. */
+  fort: FortSlotView | null;
+  /** The opponent's public fort ring (A16.14.7): the card once scouted, ticks until ready; null without a slot. */
+  foeFortRing: { card: CardId | null; readyTicks: number } | null;
 }
 
 function seen(book: CardBook, u: Observation['units'][number]): SeenUnit {
   const def = book.units[u.card];
-  return { id: u.id, card: u.card, def, value: def?.value ?? 0, p: u.p, hp: u.hp, hpTotal: u.hp + u.shield, maxHp: u.maxHp, air: u.air, summoned: u.summoned, level: u.level };
+  const levy = def?.levy === true;
+  return {
+    id: u.id,
+    card: u.card,
+    def,
+    value: def?.value ?? 0,
+    p: u.p,
+    hp: u.hp,
+    hpTotal: u.hp + u.shield,
+    maxHp: u.maxHp,
+    air: u.air,
+    summoned: u.summoned,
+    level: u.level,
+    levy,
+    capRank: levy ? 1 : 0,
+  };
+}
+
+function seenFort(book: CardBook, u: Observation['units'][number], kind: Exclude<FortKind, 'trap'>): SeenFort {
+  const def = book.forts[u.card];
+  return { id: u.id, card: u.card, kind, def, value: def?.value ?? 0, p: u.p, hp: u.hp, maxHp: u.maxHp, scaffold: u.scaffold === true };
+}
+
+/** A unit a player would call a "trained" soldier: not summoned, not a fort (A16.14.7 camp rule). */
+export function trained(u: SeenUnit): boolean {
+  return !u.summoned && !u.levy;
+}
+
+/**
+ * The Fort slot after pending commands (A16.14.2). Ready when the recharge ends by the time a command
+ * issued at `now` runs (the observation is `now − obs.tick` old; commands run a tick later).
+ */
+function fortSlot(obs: Observation, now: number, book: CardBook, ledger: Ledger, ageUncertain: boolean): FortSlotView | null {
+  const f = obs.me.fort;
+  const def = f ? book.forts[f.card] : undefined;
+  if (!f || !def || ageUncertain) return null;
+  let alive = f.alive;
+  let towers = 0;
+  for (const u of obs.units) if (u.side === obs.side && u.hp > 0 && u.fort === 'tower') towers += 1;
+  let campAlive = f.campAlive;
+  let pendingPlace = false;
+  const pads = f.pads.map((p) => ({ ...p }));
+  for (const p of ledger.pending()) {
+    const a = p.action;
+    if (a.kind !== 'fort') continue;
+    pendingPlace = true;
+    alive += 1;
+    const k = book.forts[a.card]?.kind;
+    if (k === 'tower') towers += 1;
+    if (k === 'camp') campAlive = true;
+    const pad = pads[a.pad];
+    if (pad) {
+      pad.legal = false;
+      pad.safe = false;
+      pad.reason = 'fortPadTaken';
+    }
+  }
+  const readyIn = pendingPlace ? book.econ.fortRechargeTicks : Math.max(0, f.readyTicks - (now + 1 - obs.tick));
+  return { card: f.card, def, cost: f.cost * MILLI, ready: readyIn === 0, readyIn, alive, towers, campAlive, pads };
 }
 
 /** Level multiplier in bp (A5.1): 10,000 + step × (L − 1), L in 1..max. */
@@ -154,8 +272,15 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
   let myFront: number | null = null;
   let foeFront: number | null = null;
   let legendaryInField = false;
+  const myForts: SeenFort[] = [];
+  const foeForts: SeenFort[] = [];
   for (const u of obs.units) {
     if (u.hp <= 0) continue;
+    // A16.14.7: forts are listed apart from units, so they are never army, fronts or power targets.
+    if (u.fort) {
+      (u.side === obs.side ? myForts : foeForts).push(seenFort(book, u, u.fort));
+      continue;
+    }
     const s = seen(book, u);
     if (u.side === obs.side) {
       mine.push(s);
@@ -207,7 +332,14 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     lvlSum += levelMultBp(book, u.level);
     lvlN += 1;
   }
-  const own = obs.units.filter((u) => u.side === obs.side && u.hp > 0).map((u) => ({ id: u.id, p: u.p, air: u.air, summoned: u.summoned }));
+  const own = obs.units.filter((u) => u.side === obs.side && u.hp > 0).map((u) => ({ id: u.id, p: u.p, air: u.air, summoned: u.summoned, structure: u.fort !== undefined }));
+  const myTraps: SeenTrap[] = [];
+  const foeTraps: SeenTrap[] = [];
+  for (const t of obs.traps ?? []) {
+    const tr: SeenTrap = { id: t.id, card: t.card, value: book.forts[t.card]?.value ?? 0, p: t.p, armed: t.armed, charges: t.charges };
+    (t.side === obs.side ? myTraps : foeTraps).push(tr);
+  }
+  const ring = obs.foe.fort;
   return {
     now,
     side: obs.side,
@@ -248,6 +380,12 @@ export function buildView(obs: Observation, now: number, book: CardBook, ledger:
     foeArmy,
     myFront,
     foeFront,
+    myForts,
+    foeForts,
+    myTraps,
+    foeTraps,
+    fort: fortSlot(obs, now, book, ledger, ageUncertain),
+    foeFortRing: ring ? { card: ring.card, readyTicks: ring.readyTicks } : null,
   };
 }
 

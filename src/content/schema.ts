@@ -45,11 +45,11 @@ const FORMAT_KEY = v.pipe(v.string(), v.regex(/^[a-z][a-z0-9]*(\.[a-z]+)?$/, 'fo
 const FORMAT_KIND = v.picklist(['tutorial', 'short', 'standard', 'full', 'window']);
 const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
-const TAG = v.picklist(['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee']);
+const TAG = v.picklist(['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee', 'structure']);
 const ROLE = v.picklist([
-  'infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'skirmisher', 'siege', 'artillery', 'airBomber', 'airGunship', 'antiMech', 'siegeHeavy',
+  'infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'skirmisher', 'siege', 'artillery', 'airBomber', 'airGunship', 'antiMech', 'siegeHeavy', 'fort',
 ]);
-const GROUP = v.picklist(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary']);
+const GROUP = v.picklist(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary', 'fort']);
 const DMG = v.picklist(['blunt', 'slash', 'pierce', 'bullet', 'laser', 'blast']);
 const SIZE = v.picklist(['small', 'medium', 'large', 'huge']);
 const STATUS = v.picklist(['stun', 'slow', 'snare', 'mark', 'shield', 'regen', 'damageBuff', 'speedBuff', 'attackSpeedBuff']);
@@ -66,7 +66,7 @@ const perRarity = <T extends v.GenericSchema>(s: T) => byKeys(['common', 'rare',
 const perTier = <T extends v.GenericSchema>(s: T) => byKeys(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon'], s);
 const perSize = <T extends v.GenericSchema>(s: T) => byKeys(['small', 'medium', 'large', 'huge'], s);
 const perGroup = <T extends v.GenericSchema>(s: T) =>
-  byKeys(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'], s);
+  byKeys(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary', 'fort'], s);
 const perAge = <T extends v.GenericSchema>(s: T) => byKeys(AGE_ORDER, s);
 
 // ---------------------------------------------------------------------------------------------
@@ -146,11 +146,12 @@ export const UnitSchema = v.strictObject({
   rarity: RARITY,
   role: ROLE,
   group: GROUP,
-  cost: pos,
-  trainMs: pos,
+  // A16.14: levies cost 0; fort twins have no train time and speed 0 (semantic checks keep every other card positive)
+  cost: nonNeg,
+  trainMs: nonNeg,
   pop: pos,
   hp: pos,
-  speed: pos,
+  speed: nonNeg,
   size: SIZE,
   tags: v.array(TAG),
   attacks: v.array(AttackSchema),
@@ -162,6 +163,42 @@ export const UnitSchema = v.strictObject({
   strongVs: v.array(id),
   weakVs: v.array(id),
   hidden: v.optional(v.boolean()),
+  fort: v.optional(v.strictObject({ kind: v.picklist(['wall', 'tower', 'camp']) })),
+  levy: v.optional(v.boolean()),
+  aiValue: v.optional(nonNeg),
+});
+
+/** A Fort card (A16.14.8). */
+export const FortSchema = v.strictObject({
+  id,
+  kind: v.literal('fort'),
+  age: AGE,
+  rarity: v.picklist(['common', 'rare', 'epic']),
+  fortKind: v.picklist(['wall', 'tower', 'camp', 'trap']),
+  source: v.picklist(['starter', 'unlock', 'warPath']),
+  road: v.optional(pos),
+  warPathLevel: v.optional(pos),
+  cost: pos,
+  pop: pos,
+  hp: nonNeg,
+  size: v.nullable(v.picklist(['medium', 'large'])),
+  pads: v.picklist(['home', 'any']),
+  attack: v.optional(AttackSchema),
+  camp: v.optional(v.strictObject({ spawn: id, everyMs: pos, firstMs: pos, maxAlive: pos })),
+  trap: v.optional(
+    v.strictObject({
+      charges: pos, triggerLu: pos, betweenMs: pos, armMs: pos, lifeMs: pos, damage: pos, radius: nonNeg, maxTargets: pos,
+      statuses: v.array(StatusApplyS),
+    }),
+  ),
+  cover: v.optional(v.strictObject({ behindLu: pos, rangedTakenBp: bp })),
+  regen: v.optional(v.strictObject({ bpPerSec: pos, delayMs: nonNeg })),
+  visualId: visual,
+  sfx: v.strictObject({ place: sound, complete: sound, die: sound }),
+  nameKey: key,
+  descKey: key,
+  strongVs: v.array(id),
+  weakVs: v.array(id),
 });
 
 export const TurretSchema = v.strictObject({
@@ -260,6 +297,16 @@ const EconomySchema = v.strictObject({
     strikePickLu: pos, strikeEpicBp: bp, legendaryControlBp: bp, lockMs: nonNeg,
   }),
   siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp, moveSpeedBp: pos, gateCrowdLu: nonNeg }),
+  fort: v.optional(
+    v.strictObject({
+      pads: v.array(pos), homePads: pos, padClearLu: nonNeg, fieldBehindLu: nonNeg, fieldFrontRank: pos,
+      maxAlive: pos, maxCamps: pos, maxTowers: pos, rechargeMs: pos, firstReadyMs: nonNeg, scaffoldMs: pos, scaffoldHpBp: bp,
+      safeMarginMs: nonNeg, decayStartMs: nonNeg, decayBpPerSec: bp, siegeDecayBp: bp, decayCreditMs: nonNeg,
+      siegeTakenBp: bp, rangedTakenBp: bp, rangedMinLu: nonNeg, structureBp: bp, bountyGoldBp: bp, bountyXpBp: bp,
+      towerReachMaxP: pos, contactLu: nonNeg, contactMax: pos, wallHpBp: bp, towerHpBp: bp, campHpBp: bp, towerDamageBp: bp,
+      levyHpBp: bp, levyDamageBp: bp, levyAiValueBp: bp,
+    }),
+  ),
   marchSpeedBp: pos, frontWidth: pos,
   gateFall: v.optional(v.strictObject({ lu: nonNeg, hpBp: bp })),
   openGateLu: v.optional(nonNeg),
@@ -289,6 +336,7 @@ const ResearchEffectSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('aura'), radius: pos, stat: v.picklist(['attackSpeed', 'guard']), bp: pos, behindOnly: v.optional(v.boolean()) }),
   v.strictObject({ kind: v.literal('turret'), stat: v.picklist(['range', 'attackSpeed', 'damage']), value: pos }),
   v.strictObject({ kind: v.literal('modernise'), priceBp: bp, buildMs: pos }),
+  v.strictObject({ kind: v.literal('fortScaffold'), ms: pos }),
   v.strictObject({ kind: v.literal('income'), milliGoldPerSec: pos }),
   v.strictObject({ kind: v.literal('bounty'), addBp: nonNeg, bonusBp: nonNeg, ownHalfOnly: v.boolean() }),
   v.strictObject({ kind: v.literal('powerReload'), bp: pos }),
@@ -447,6 +495,7 @@ const RoadRewardSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('capsule'), tier: TIER }),
   v.strictObject({ kind: v.literal('wardrobe') }),
   v.strictObject({ kind: v.literal('gate'), arena: pos }),
+  v.strictObject({ kind: v.literal('fort'), card: id }),
 ]);
 
 const TrophyRoadSchema = v.strictObject({
@@ -701,7 +750,7 @@ const IntegerTablesSchema = v.strictObject({
   units: v.record(
     id,
     v.strictObject({
-      hp: pos, speed: pos, width: pos, trainTicks: pos, pop: pos, cost: pos,
+      hp: pos, speed: pos, width: pos, trainTicks: pos, pop: pos, cost: nonNeg,
       bounty: v.strictObject({ gold: nonNeg, xp: nonNeg, lossXp: nonNeg, powerGold: nonNeg }),
       attacks: v.array(IntAttackSchema),
     }),
@@ -714,7 +763,8 @@ const IntegerTablesSchema = v.strictObject({
 const BattleSchema = v.strictObject({
   laneLength: pos, baseDepth: pos, cameraMargin: nonNeg, midLane: pos,
   windupPct: v.strictObject({ melee: pct, ranged: pct, turret: pct }),
-  trainMsByGroup: perGroup(pos),
+  // `fort` 0: the fort twins are placed, never trained (A16.14.8)
+  trainMsByGroup: perGroup(nonNeg),
   braceKnockbackResistBp: bp, airKnockbackResistBp: bp, markDamageBp: bp, healPulseMs: pos, moderniseCreditBp: bp,
   finalAgeXpCap: pos, siegeDecayStepMs: pos, stampedeFallbackP: pos,
   projectileSpeed: v.strictObject({
@@ -774,6 +824,7 @@ export const ContentSchema = v.strictObject({
   units: v.record(id, UnitSchema),
   turrets: v.record(id, TurretSchema),
   powers: v.record(id, PowerSchema),
+  forts: v.record(id, FortSchema),
   skins: v.record(id, SkinSchema),
   research: ResearchSchema,
   rarities: RaritiesSchema,
@@ -792,7 +843,7 @@ export const ContentSchema = v.strictObject({
   int: IntegerTablesSchema,
   order: v.strictObject({
     ages: v.array(AGE), formats: v.array(FORMAT), units: v.array(id), hiddenUnits: v.array(id), turrets: v.array(id),
-    powers: v.array(id), skins: v.array(id),
+    powers: v.array(id), forts: v.array(id), fortUnits: v.array(id), skins: v.array(id),
   }),
   battle: BattleSchema,
 });
@@ -839,6 +890,95 @@ function checkAttack(issues: Issues, path: string, a: AttackDef, c: Content): vo
   void c;
 }
 
+/** The long-range Common turret of an age (the 150-gold Common, A16.14.1) and its range, lu. */
+function longCommonRange(c: Content, age: AgeId): number {
+  let best = 0;
+  for (const t of Object.values(c.turrets)) if (t.age === age && t.rarity === 'common' && t.cost === 150 && t.attack.range > best) best = t.attack.range;
+  return best;
+}
+
+/**
+ * Fort cards (A16.14.1-A16.14.4, A16.14.8): one Wall, Tower, Camp and Trap per age with the wall as the
+ * starter, costs and pop by kind, the twin and levy cards they need, the trap budget, the tower reach
+ * clamp and the cover invariant (the blocked front stands inside every age's long-range Common turret).
+ */
+function checkForts(issues: Issues, c: Content): void {
+  recordIds(issues, 'forts', c.forts);
+  const f = c.economy.fort;
+  const list = Object.values(c.forts);
+  if (!f) {
+    issues.check(list.length === 0, 'forts', 'fort cards need economy.fort (A16.14)');
+    return;
+  }
+  issues.check(f.homePads >= 1 && f.homePads <= f.pads.length, 'economy.fort.homePads', 'Home pads are the first pads');
+  issues.check(f.pads.every((p, i) => i === 0 || p > (f.pads[i - 1] as number)), 'economy.fort.pads', 'pads in increasing p');
+  const lastHome = f.pads[f.homePads - 1] ?? 0;
+  const halfLarge = Math.trunc(c.economy.sizes.large / 2);
+  const halfSmall = Math.trunc(c.economy.sizes.small / 2);
+  const halfMedium = Math.trunc(c.economy.sizes.medium / 2);
+  issues.check(f.towerReachMaxP === c.economy.turretRangeHardCapLu, 'economy.fort.towerReachMaxP', 'tower reach stops at the turret hard cap (A16.14.1)');
+  const costOf: Record<string, number> = { wall: 125, trap: 75, camp: 150, tower: 150 };
+  for (const x of list) {
+    const p = `forts.${x.id}`;
+    issues.check(x.age in c.ages, p, `unknown age "${x.age}"`);
+    issues.check(x.visualId === `fort.${x.id}`, p, 'visualId must be fort.<slug> (A16.14.8)');
+    issues.check(x.nameKey === `card.${x.id}.name` && x.descKey === `card.${x.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
+    issues.check(x.cost === costOf[x.fortKind] || (x.fortKind === 'wall' && x.cover !== undefined && x.cost === 175), p, 'fort costs by kind: Wall 125 (Bunker 175), Trap 75, Camp 150, Tower 150 (A16.14.1)');
+    issues.check(x.pop === (x.fortKind === 'trap' ? 3 : 6), p, 'fort pop: 6, a Trap 3 (A16.14.1)');
+    issues.check(x.size === (x.fortKind === 'tower' ? 'medium' : x.fortKind === 'trap' ? null : 'large'), p, 'towers medium, walls and camps large, traps no body');
+    issues.check(x.pads === (x.fortKind === 'camp' ? 'any' : 'home'), p, 'only camps may use Field pads (A16.14.1)');
+    issues.check(x.rarity === (x.fortKind === 'wall' ? 'common' : x.fortKind === 'tower' ? 'epic' : 'rare'), p, 'Walls Common, Camps and Traps Rare, Towers Epic');
+    if (x.fortKind === 'wall') issues.check(x.source === 'starter' && x.warPathLevel === undefined, p, 'walls are starter cards (A16.14.6)');
+    else if (x.age === 'stone') issues.check(x.source === 'unlock', p, 'the Stone Camp, Trap and Tower come with the unlock (A16.14.6)');
+    else {
+      const lvl = x.fortKind === 'camp' ? 4 : x.fortKind === 'trap' ? 6 : 8;
+      issues.check(x.source === 'warPath' && x.warPathLevel === lvl && x.road !== undefined && x.road >= 2200 && x.road <= 3200, p, 'Camp L4, Trap L6, Tower L8 with a Road fort set 2,200-3,200 (A16.14.6)');
+    }
+    const twin = c.units[x.id];
+    if (x.fortKind === 'trap') {
+      issues.check(twin === undefined, p, 'traps have no twin unit (they live in SimState.traps)');
+      const t = x.trap;
+      issues.check(t !== undefined && x.hp === 0, p, 'a trap has trap data and no HP');
+      if (t) {
+        const inf = Object.values(c.units).find((u) => u.age === x.age && u.group === 'infantry' && u.rarity === 'common' && !u.hidden);
+        const total = t.charges * t.damage;
+        const control = t.statuses.length > 0;
+        const i = inf?.hp ?? 0;
+        // A16.14.3 trap budget: 0.6-1.2 × the age's L1 Infantry HP over all charges (a control trap may go below)
+        issues.check(total * BP <= i * 12000 && (control || total * BP >= i * 6000), p, `trap budget: ${total} vs Infantry HP ${i}`);
+        issues.check(t.radius <= 60, p, 'trap splash radius ≤ 60 (A16.14.3)');
+        issues.check(t.maxTargets <= c.economy.areaMaxTargets, p, 'traps use the A2.6 area rule');
+        for (const st of t.statuses) issues.check(st.kind === 'slow' && st.magnitudeBp <= 6000 && st.durationMs <= 3000, p, 'traps only slow, ≤ 60% for ≤ 3 s (A16.14.3)');
+      }
+    } else {
+      issues.check(twin !== undefined && twin.fort?.kind === x.fortKind && twin.hp === x.hp && twin.cost === x.cost && twin.pop === x.pop, p, 'walls, towers and camps have a matching hidden twin unit (A16.14.8)');
+      issues.check(x.hp > 0, p, 'a fort has HP');
+    }
+    if (x.fortKind === 'tower') {
+      const a = x.attack;
+      issues.check(a !== undefined && a.hitsGround && (a.windupPct ?? 0) === 0 && !a.splashRadius && !a.chain && !a.pierce && !a.cleave, p, 'a tower has one single-target attack with 0% windup (A16.14.3)');
+      if (a) {
+        for (let i = 0; i < f.homePads; i += 1) {
+          const pad = f.pads[i] as number;
+          const range = Math.min(a.range, f.towerReachMaxP - pad - halfMedium);
+          issues.check(pad + halfMedium + range <= f.towerReachMaxP, p, 'tower reach never passes own-frame p 560 (A16.14.1)');
+        }
+      }
+    } else issues.check(x.attack === undefined, p, 'only towers attack');
+    if (x.fortKind === 'camp') {
+      const levy = x.camp ? c.units[x.camp.spawn] : undefined;
+      issues.check(levy !== undefined && levy.levy === true && levy.age === x.age && levy.group === 'infantry', p, 'a camp sends a levy of its age (A16.14.3)');
+    } else issues.check(x.camp === undefined, p, 'only camps spawn');
+  }
+  for (const age of AGE_ORDER) {
+    const kinds = list.filter((x) => x.age === age).map((x) => x.fortKind).sort();
+    if (list.length > 0) issues.check(kinds.join() === 'camp,tower,trap,wall', `forts.${age}`, 'one Wall, Tower, Camp and Trap per age (A16.14.4)');
+    // A16.14.1 cover invariant: a large fort on the last Home pad stops a small attacker inside the long-range Common turret's reach.
+    const long = longCommonRange(c, age);
+    if (long > 0) issues.check(lastHome + halfLarge + halfSmall <= long, `forts.${age}`, `the blocked front (${lastHome + halfLarge + halfSmall}) stands inside the long-range Common turret (${long}) (A16.14.1)`);
+  }
+}
+
 function checkCards(issues: Issues, c: Content): void {
   recordIds(issues, 'units', c.units);
   recordIds(issues, 'turrets', c.turrets);
@@ -852,7 +992,16 @@ function checkCards(issues: Issues, c: Content): void {
     issues.check(u.pop === c.economy.popByGroup[u.group], p, 'pop must follow the role group (A2.7)');
     issues.check(u.trainMs === c.battle.trainMsByGroup[u.group], p, 'train time must follow the role group (A2.7)');
     issues.check(u.tags.includes('air') !== u.tags.includes('ground'), p, 'a unit is exactly one of ground or air');
-    issues.check(u.visualId === `unit.${u.id}`, p, 'visualId must be unit.<slug> (A14.1)');
+    // A16.14.8: a fort's hidden twin shares its fort's visual (`fort.<slug>`)
+    issues.check(u.visualId === (u.fort ? `fort.${u.id}` : `unit.${u.id}`), p, 'visualId must be unit.<slug> (fort twins: fort.<slug>) (A14.1)');
+    if (u.fort) {
+      issues.check(u.hidden === true && u.role === 'fort' && u.group === 'fort' && u.speed === 0, p, 'a fort twin is hidden, role and group fort, speed 0 (A16.14.8)');
+      issues.check(c.forts[u.id] !== undefined && c.forts[u.id]?.fortKind === u.fort.kind, p, 'a fort twin has the id and kind of its fort card (A16.14.8)');
+    } else {
+      issues.check(u.role !== 'fort' && u.group !== 'fort', p, 'only fort twins use the fort role and group');
+      issues.check(u.speed > 0 && u.trainMs > 0, p, 'units move and train (A2.7)');
+      issues.check(u.levy === true ? u.cost === 0 && u.hidden === true && (u.aiValue ?? 0) > 0 : u.cost > 0, p, 'cards cost gold; a levy costs 0 and carries an AI value (A16.14.3)');
+    }
     issues.check(u.nameKey === `card.${u.id}.name` && u.descKey === `card.${u.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
     issues.check(new Set(u.tags).size === u.tags.length, p, 'duplicate tag');
     issues.check((u.rarity === 'legendary') === u.tags.includes('legendary'), p, 'the legendary tag marks exactly the Legendary cards');
@@ -1368,6 +1517,7 @@ export function validateContent(c: Content): ContentIssue[] {
   }
   const issues = new Issues();
   checkCards(issues, c);
+  checkForts(issues, c);
   checkCollection(issues, c);
   checkAgesAndFormats(issues, c);
   checkGenerals(issues, c);

@@ -31,7 +31,7 @@ export function hashState(s: SimStateRt): number {
     }
     h.int(mask).int(r.cur).int(r.endTick).int(r.paid).int(side.markHp);
     h.int(side.baseHp).int(side.baseMaxHp).str(side.lastStand).bool(side.retreated).int(side.callStrikeReadyTick);
-    h.int(side.emoteReadyTick).int(side.lastStandFireTick).int(side.played.length);
+    h.int(side.emoteReadyTick).int(side.lastStandFireTick).int(side.played.length).int(side.fortReadyTick);
     h.int(side.queue.length);
     for (const q of side.queue) h.str(q.card).int(q.progress).int(q.total).bool(q.waiting).int(q.paid);
     for (const t of side.turrets) {
@@ -55,9 +55,18 @@ export function hashState(s: SimStateRt): number {
     }
     for (const st of u.statuses) h.str(st.kind).int(st.magnitudeBp).int(st.untilTick).int(st.amount);
     for (const t of u.timers) h.int(t);
+    const f = u.fort;
+    if (f) {
+      // A16.14: every fort field can change a later tick.
+      h.int(f.pad).str(f.kind).int(f.doneTick).bool(f.done).int(f.decayFromTick).int(f.campNextTick).int(f.multBp);
+      h.int(f.silencedUntilTick).int(f.lastEnemyHitTick).int(f.lastEnemyHitBy).bool(u.decayed).int(f.levyIds.length);
+      for (const id of f.levyIds) h.int(id);
+    }
   }
+  h.int(s.traps.length);
+  for (const t of s.traps) h.int(t.id).int(t.side).str(t.card).int(t.pad).int(t.p).int(t.armTick).int(t.untilTick).int(t.charges).int(t.nextTick).int(t.multBp);
   h.int(s.projectiles.length);
-  for (const p of s.projectiles) h.int(p.pid).int(p.x).int(p.toX).int(p.impactTick).int(p.targetId).bool(p.miss);
+  for (const p of s.projectiles) h.int(p.pid).int(p.x).int(p.toX).int(p.impactTick).int(p.targetId).bool(p.miss).bool(p.tower);
   h.int(s.casts.length);
   for (const c of s.casts) {
     h.int(c.castId).int(c.side).str(c.slot).str(c.power).int(c.startTick).int(c.x).int(c.zone).int(c.nextIndex).int(c.levelBp).int(c.targetId);

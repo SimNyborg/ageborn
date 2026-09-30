@@ -181,8 +181,23 @@ export { DAILY_DIFFICULTIES, dailyDrawAt, dailyDrawOn, dailyInfoAt, dailyModifie
 export { createFeatTracker, featFlag, featHintFlag, featList, grantFeats, showFeatHint, type FeatTracker, type FeatTrackerConfig } from './feats';
 export { activeQuests } from './quests';
 export { ladderWinFor } from './trophies';
-export { FIELD_SLOT_IN_BATTLE, META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER, SAVE_VERSION } from './rules';
+export { FIELD_SLOT_IN_BATTLE, FORT_OWNED_AMBER, FORT_SLOT_TROPHIES, FORT_UNLOCK_LEVEL, META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER, SAVE_VERSION } from './rules';
 export { applyPowerMatchRule, botMayUsePower, botPowers, fieldSlotLive, fieldSlotUnlocked, grantWarPathPower, warPathPowerOf } from './powers';
+export {
+  applyFortMatchRule,
+  botForts,
+  botMayUseFort,
+  checkFortUnlock,
+  fortSlotLive,
+  fortSlotUnlocked,
+  grantRoadFort,
+  grantWarPathFort,
+  roadFortsOf,
+  unlockFortSlot,
+  unlockSet,
+  wallOf,
+  warPathFortOf,
+} from './forts';
 export { allStarterPowers, starterPower, starterPowers } from './tables';
 export { dayKeyOf, gameDay, nextResetAt, weekKeyOf } from './time';
 export { countsForSupply, supplyMatchesLeft, supplyRules, type SupplyRules } from './supply';

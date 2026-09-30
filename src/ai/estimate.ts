@@ -12,7 +12,10 @@
  * - summons (Vanguard after an ageUp, Paratroopers after a paradrop telegraph, riders after their
  *   mount falls) cost nothing and pay no bounty, on either side (A2.3 "Summoned units");
  * - spending: research at list price, turrets (modernising gets 50% of the old price back), the mounts a
- *   turret implies, units that appear on the lane; a sold turret refunds 50%.
+ *   turret implies, units that appear on the lane; a sold turret refunds 50%;
+ * - forts (A16.14): a fort or trap that appears was paid at its price; levies are free and pay nothing
+ *   when they fall; a bot's own fort that falls with enemies at it pays the foe 50% of its price (a
+ *   fort that crumbles alone pays nothing, and the owner never gets loss gold).
  *
  * The estimate over-counts gold sitting in the foe's (invisible) training queue; that is the honest
  * price of not seeing it. Daily modifiers are not observable and are not modelled.
@@ -31,6 +34,10 @@ const RIDERS_WINDOW_TICKS = TICKS_PER_SECOND;
 const POWER_KILL_WINDOW_TICKS = 4 * TICKS_PER_SECOND;
 /** Own units lost this long after the foe's Last Stand started charging count as Last Stand kills. */
 const LAST_STAND_WINDOW_TICKS = 2 * TICKS_PER_SECOND;
+/** An own fort with an enemy ground unit this close was being attacked: its fall pays the foe (A16.14.2). */
+const FORT_CONTEST_MLU = 150 * MILLI;
+/** A destroyed fort pays 50% of its price (A16.14.2 `bountyGoldBp`, the content default). */
+const FORT_BOUNTY_BP = 5000;
 
 /** Units a side will get for free soon: a card, or any card of a role group. */
 interface Expected {
@@ -68,7 +75,9 @@ export class FoeGoldEstimator {
   private readonly seen = new Set<number>();
   /** Own summoned units: they pay the foe no bounty. */
   private readonly mySummons = new Set<number>();
-  private alive = new Map<number, { card: CardId; mine: boolean }>();
+  private alive = new Map<number, { card: CardId; mine: boolean; contested: boolean }>();
+  /** Foe traps already paid for. */
+  private readonly foeTraps = new Set<number>();
   private readonly summons: [SummonWatch, SummonWatch] = [new SummonWatch(), new SummonWatch()];
   private readonly telegraphs = new Set<string>();
   /** Foe research items seen starting (research is public, A18.5.1). */
@@ -153,9 +162,22 @@ export class FoeGoldEstimator {
       }
     });
 
+    // Traps are always visible (A16.14.3): a new foe trap was paid at its price.
+    for (const t of obs.traps ?? []) {
+      if (t.side === me || this.foeTraps.has(t.id)) continue;
+      this.foeTraps.add(t.id);
+      this.spend(b.forts[t.card]?.cost ?? 0);
+    }
+
     // Losses first, so riders that fall off a dead mount this step are expected before they appear.
-    const nowAlive = new Map<number, { card: CardId; mine: boolean }>();
-    for (const u of obs.units) if (u.hp > 0) nowAlive.set(u.id, { card: u.card, mine: u.side === me });
+    const nowAlive = new Map<number, { card: CardId; mine: boolean; contested: boolean }>();
+    for (const u of obs.units) {
+      if (u.hp <= 0) continue;
+      const mine = u.side === me;
+      // An own fort with an enemy ground unit at it is under attack; one crumbling alone pays nothing.
+      const contested = mine && u.fort !== undefined && obs.units.some((e) => e.side !== me && e.hp > 0 && !e.air && e.fort === undefined && Math.abs(e.p - u.p) <= FORT_CONTEST_MLU);
+      nowAlive.set(u.id, { card: u.card, mine, contested });
+    }
     for (const [id, u] of this.alive) {
       if (nowAlive.has(id)) continue;
       const card = b.units[u.card];
@@ -164,6 +186,10 @@ export class FoeGoldEstimator {
         this.summons[u.mine ? me : foe].expect({ card: card.riders.card, group: null, left: card.riders.count, until: obs.tick + RIDERS_WINDOW_TICKS });
       }
       if (!u.mine || this.mySummons.delete(id)) continue;
+      if (card.fort) {
+        if (u.contested) this.earn(Math.trunc((card.cost * FORT_BOUNTY_BP) / BP));
+        continue;
+      }
       this.earn(this.bounty(card, obs));
     }
     this.alive = nowAlive;
@@ -174,7 +200,8 @@ export class FoeGoldEstimator {
       this.seen.add(u.id);
       const card = b.units[u.card];
       if (!card) continue;
-      const free = this.summons[u.side].take(card, obs.tick);
+      // Levies are free summons (A16.14.3): no gold spent, no bounty when they fall.
+      const free = card.levy || this.summons[u.side].take(card, obs.tick);
       if (u.side === me) {
         if (free) this.mySummons.add(u.id);
       } else if (!free) {

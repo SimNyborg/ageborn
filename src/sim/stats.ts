@@ -11,6 +11,8 @@
  * - `baseDamage`: whole HP dealt to the enemy base by attacks (Siege decay excluded).
  * - `heavyKillsByAA`: enemy Heavy-group units killed by this side's Anti-armor units.
  * - `mvpCard`: this side's unit or turret card with the most damage dealt (ties: more kills, then id).
+ * - `forts` (A16.14): forts placed and the whole gold paid for them; own forts destroyed and decayed; the
+ *   bounty gold they paid the enemy; levies spawned; whole damage dealt by this side's levies.
  */
 import type { AgeId, CardId, CompiledContent, FormatId, MatchStats, Side, SimEvent } from '@/contracts';
 import { TICK_MS } from '@/core';
@@ -35,6 +37,9 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
   const castHits = new Map<number, Set<number>>();
   const damageByCard = new Map<CardId, number>();
   const killsByCard = new Map<CardId, number>();
+  const levies = new Set<number>();
+  const ft = { placed: 0, gold: 0, destroyed: 0, decayed: 0, bountyPaid: 0, levies: 0, levyDamage: 0 };
+  const isFortCard = (card: CardId): boolean => (cfg.content.forts ?? {})[card] !== undefined;
   const st = {
     trained: 0,
     kills: 0,
@@ -59,7 +64,20 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
     switch (ev.e) {
       case 'unitSpawned':
         unitSide.set(ev.id, ev.side);
-        if (ev.side === side && !ev.summoned) st.trained += 1;
+        if (ev.side === side && !ev.summoned && !isFortCard(ev.card)) st.trained += 1;
+        if (ev.side === side && ev.from !== undefined) {
+          levies.add(ev.id);
+          ft.levies += 1;
+        }
+        break;
+      case 'fortPlaced':
+        if (ev.side === side) {
+          ft.placed += 1;
+          ft.gold += ev.cost;
+        }
+        break;
+      case 'fortDecayed':
+        if (unitSide.get(ev.id) === side) ft.decayed += 1;
         break;
       case 'powerTelegraph':
         castSide.set(ev.castId, ev.side);
@@ -83,10 +101,15 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
           }
         } else if (ev.sourceKind === 'unit' || ev.sourceKind === 'turret' || ev.sourceKind === 'ability') {
           damageByCard.set(ev.sourceCard, (damageByCard.get(ev.sourceCard) ?? 0) + ev.damage);
+          if (levies.has(ev.sourceId)) ft.levyDamage += ev.damage;
         }
         break;
       }
       case 'died':
+        if (ev.side === side && isFortCard(ev.card)) {
+          if (ev.killerKind !== 'decay' && ev.killerSide !== null) ft.destroyed += 1;
+          ft.bountyPaid += ev.bountyGold;
+        }
         if (ev.side === side || ev.killerSide !== side) break;
         st.kills += 1;
         if (ev.killerKind === 'turret') st.turretKills += 1;
@@ -156,6 +179,7 @@ export function createStatsTracker(cfg: StatsConfig, side: Side): StatsTracker {
         ownBaseHpBpAtEnd: st.ownBaseHpBpAtEnd,
         durationMs: (st.endTick ?? st.lastTick) * TICK_MS,
         mvpCard: mvp,
+        forts: { ...ft, bountyPaid: Math.trunc(ft.bountyPaid / 1000), levyDamage: Math.trunc(ft.levyDamage / 100) },
       };
     },
   };

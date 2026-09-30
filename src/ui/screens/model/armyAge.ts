@@ -6,7 +6,7 @@
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, PowerSlot, SaveDoc } from '@/contracts';
 import { cardsOfAge, isOwned } from './cards';
-import type { SlotRef } from './plan';
+import { fortSlotShown, type SlotRef } from './plan';
 
 export interface AgeSections {
   /** Owned cards of the age that are not in its army, troops then turrets then powers. */
@@ -31,9 +31,10 @@ export function ageSections(
   onlyPower?: PowerSlot | null,
 ): AgeSections {
   const c = cardsOfAge(content, age);
-  const all = [...c.units, ...c.turrets, ...c.powers];
+  // Fort cards join after the powers once battles play the Fort slot (A16.14.7).
+  const all = [...c.units, ...c.turrets, ...c.powers, ...(fortSlotShown() ? c.forts : [])];
   const fits = (id: CardId): boolean => {
-    const kind = content.units[id] ? 'unit' : content.turrets[id] ? 'turret' : 'power';
+    const kind = content.forts?.[id] ? 'fort' : content.units[id] ? 'unit' : content.turrets[id] ? 'turret' : 'power';
     if (only && kind !== only) return false;
     if (onlyPower && kind === 'power' && content.powers[id]?.slot !== onlyPower) return false;
     return true;
@@ -65,6 +66,13 @@ export function capsuleArenaFor(save: SaveDoc, content: Content, age: AgeId): nu
  * Dust crafting is in Card detail), powers from their War Path level or Trophy Road node (A2.9.8).
  */
 export function cardSourceShort(save: SaveDoc, content: Content, id: CardId): { key: string; params?: Record<string, string | number> } {
+  // Forts never come from capsules (A16.14.6): the Fort slot's unlock, a War Path level or a Road fort set.
+  const f = content.forts?.[id];
+  if (f) {
+    if (f.source === 'warPath' && f.warPathLevel !== undefined) return { key: 'ui.armyAge.src.warPath', params: { level: f.warPathLevel } };
+    if (f.road !== undefined) return { key: 'ui.armyAge.src.road', params: { n: f.road } };
+    return { key: 'ui.armyAge.src.fortSlot' };
+  }
   const p = content.powers[id];
   if (!p) {
     const age = content.units[id]?.age ?? content.turrets[id]?.age;

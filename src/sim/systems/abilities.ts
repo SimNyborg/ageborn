@@ -49,7 +49,8 @@ function healPulse(ctx: Ctx): void {
     const picks: number[] = [];
     for (let j = 0; j < units.length; j += 1) {
       const t = units[j] as UnitRt;
-      if (t === h || t.side !== h.side || !alive(t) || t.hp >= t.maxHp) continue;
+      // Nothing heals a fort (A16.14.2).
+      if (t === h || t.side !== h.side || !alive(t) || t.fort || t.hp >= t.maxHp) continue;
       const tr = ctx.rules.unitList[t.ci] as UnitRules;
       if (edgeDist(h.x, hr.half, t.x, tr.half) > hr.heal.radius) continue;
       picks.push(j);
@@ -85,11 +86,11 @@ function ready(ctx: Ctx, u: UnitRt, slot: number): boolean {
   return ctx.tick >= (u.timers[slot] ?? 0);
 }
 
-/** Enemies (optionally ground only) within `radius` edge distance of u. */
+/** Enemies (optionally ground only) within `radius` edge distance of u; never forts (they ignore EMP and Time Stop, A16.14.2). */
 function enemiesWithin(ctx: Ctx, u: UnitRt, r: UnitRules, radius: number, groundOnly: boolean): UnitRt[] {
   const out: UnitRt[] = [];
   for (const e of ctx.s.units) {
-    if (e.side === u.side || !alive(e) || (groundOnly && e.air)) continue;
+    if (e.side === u.side || !alive(e) || e.fort || (groundOnly && e.air)) continue;
     if (edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= radius) out.push(e);
   }
   return out;
@@ -97,7 +98,7 @@ function enemiesWithin(ctx: Ctx, u: UnitRt, r: UnitRules, radius: number, ground
 
 function anyEnemyWithin(ctx: Ctx, u: UnitRt, r: UnitRules, radius: number): boolean {
   for (const e of ctx.s.units) {
-    if (e.side === u.side || !alive(e)) continue;
+    if (e.side === u.side || !alive(e) || e.fort) continue;
     if (edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= radius) return true;
   }
   return false;
@@ -108,7 +109,7 @@ function roar(ctx: Ctx, u: UnitRt, r: UnitRules, ab: NonNullable<UnitRules['roar
   if (!ready(ctx, u, ab.slot) || !targetInRange(ctx, u, r, 0)) return;
   const allies: { u: UnitRt; d: number }[] = [];
   for (const t of ctx.s.units) {
-    if (t === u || t.side !== u.side || !alive(t)) continue;
+    if (t === u || t.side !== u.side || !alive(t) || t.fort) continue;
     const d = edgeDist(u.x, r.half, t.x, unitRules(ctx, t).half);
     if (d <= ab.radius) allies.push({ u: t, d });
   }
@@ -134,13 +135,15 @@ function callStrike(ctx: Ctx, u: UnitRt, r: UnitRules, ab: NonNullable<UnitRules
   if (!ready(ctx, u, ab.slot)) return;
   const side = ctx.s.sides[u.side];
   if (ctx.tick < side.callStrikeReadyTick) return;
+  // Units first; a fort only when no enemy unit is eligible (A16.14.2).
   let best: UnitRt | null = null;
   let bestD = 0;
   for (const e of ctx.s.units) {
     if (e.side === u.side || !alive(e) || e.air) continue;
     const d = edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half);
     if (d > ab.search) continue;
-    if (!best || d < bestD || (d === bestD && e.id < best.id)) {
+    const better = !best || (best.fort !== undefined && e.fort === undefined) || ((best.fort !== undefined) === (e.fort !== undefined) && (d < bestD || (d === bestD && e.id < best.id)));
+    if (better) {
       best = e;
       bestD = d;
     }

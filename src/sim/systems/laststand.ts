@@ -49,7 +49,8 @@ function fire(ctx: Ctx, side: Side): void {
   const perP = Math.trunc((ls.damagePerP * 100 * pBp) / BP);
   const dmg = Math.trunc((perP * loadoutLevelBp(ctx, side)) / BP);
   for (const e of ctx.s.units) {
-    if (e.side === side || !alive(e)) continue;
+    // Last Stand never touches forts (A16.14.2).
+    if (e.side === side || !alive(e) || e.fort) continue;
     if (distFromGate(side, e.x, unitRules(ctx, e).half) > ls.radius) continue;
     const imp = makeImpact(side, LAST_STAND_SOURCE_ID, LAST_STAND_CARD);
     imp.sourceKind = 'lastStand';

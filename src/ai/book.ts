@@ -5,8 +5,8 @@
  *
  * Money is in milli-gold and distances in milli-lu, the units of `Observation` (DESIGN B3).
  */
-import type { AgeId, CardId, CompiledContent, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
-import { BP, MILLI, fieldPulses, msToTicks, powerEconomyOf, powerReachRules, type PowerReachRules } from '@/core';
+import type { AgeId, CardId, CompiledContent, FortKind, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
+import { BP, MILLI, fieldPulses, fortEconomyOf, fortPadRules, msToTicks, powerEconomyOf, powerReachRules, type FortPadRules, type PowerReachRules } from '@/core';
 
 export interface UnitCard {
   id: CardId;
@@ -31,6 +31,38 @@ export interface UnitCard {
   hidden: boolean;
   /** Riders summoned when the unit dies (A5 `riders`), or null. */
   riders: { card: CardId; count: number } | null;
+  /** A camp's Levy (A16.14.3): cost 0, counted at its AI value (8) in threat estimates only. */
+  levy: boolean;
+  /** A fort's hidden twin (A16.14.8): wall, tower or camp; null for real units. */
+  fort: Exclude<FortKind, 'trap'> | null;
+  /**
+   * Breaks forts (A16.14.2): its attacks carry the ×2 structure mod (Heavy, Legendary, siege, artillery)
+   * or it is a siege-only unit (Ram, Sapper: full base damage against forts).
+   */
+  breaker: boolean;
+  /**
+   * The structure row (A16.14.7 "answering forts", in place of `aiHint.vsStructure`): how well this card
+   * answers a fort, bp on the counter scale (5,000 = even). Breakers 10,000 (×2); air 7,500 against walls,
+   * camps and traps (it flies over them); other attacks with range ≥ 100 2,500 (×0.5); melee 5,000.
+   */
+  vsStructureBp: number;
+  /** The same row against a tower, which shoots air: air counts by its range like any other unit. */
+  vsTowerBp: number;
+}
+
+/** A Fort card as a bot knows it (A16.14.4; card detail numbers). */
+export interface FortCard {
+  id: CardId;
+  age: AgeId;
+  ageIndex: number;
+  kind: FortKind;
+  /** Card value in whole gold (its price). */
+  value: number;
+  /** Price, milli-gold. */
+  cost: number;
+  pop: number;
+  pads: 'home' | 'any';
+  size: 'medium' | 'large' | null;
 }
 
 export interface TurretCard {
@@ -88,6 +120,8 @@ export interface CardBook {
    * converts the observation's window position into this order.
    */
   ageOrder: readonly AgeId[];
+  /** Fort cards (DESIGN A16.14): walls, towers, camps and traps. */
+  forts: Readonly<Record<CardId, FortCard>>;
   /** Non-hidden unit cards per age index (for predicting the next enemy age). */
   unitsByAge: readonly (readonly UnitCard[])[];
   /** Counter matrix M[a][b] in bp (B4); missing rows read 5,000. */
@@ -135,12 +169,36 @@ export interface CardBook {
     /** Turret range cap from the own gate (A2.8), milli-lu: where the turret cover ends. */
     turretCover: number;
     emoteCooldownTicks: number;
+    /** Fort pad rules in milli-lu (core `fortPads`), or null for content without forts. */
+    fort: FortPadRules | null;
+    /** The fort slot recharge, ticks (A16.14.2). */
+    fortRechargeTicks: number;
   };
 }
 
 function firstRange(u: UnitDef): number {
   const a = u.attacks[0];
   return a ? a.range * MILLI : 0;
+}
+
+/** Structure row values, bp on the counter scale (5,000 = even): ×2, air over a wall, ×1, ×0.5. */
+const STRUCTURE_BREAKER_BP = 10000;
+const STRUCTURE_AIR_BP = 7500;
+const STRUCTURE_EVEN_BP = 5000;
+const STRUCTURE_RANGED_BP = 2500;
+
+/** Does the unit break forts (A16.14.2)? The ×2 structure mod, or siege-only (base damage vs forts). */
+function isBreaker(u: UnitDef): boolean {
+  if (u.abilities.some((a) => a.kind === 'siegeOnly')) return true;
+  return u.attacks.some((a) => (a.mods ?? []).some((m) => m.vs === 'structure'));
+}
+
+/** The structure row of a unit card (A16.14.7), against walls/camps (`tower` false) or towers. */
+function structureRow(u: UnitDef, rangedMinLu: number, tower: boolean): number {
+  if (u.fort || u.levy || u.attacks.length === 0) return STRUCTURE_EVEN_BP;
+  if (isBreaker(u)) return STRUCTURE_BREAKER_BP;
+  if (!tower && u.tags.includes('air')) return STRUCTURE_AIR_BP;
+  return (u.attacks[0]?.range ?? 0) >= rangedMinLu ? STRUCTURE_RANGED_BP : STRUCTURE_EVEN_BP;
 }
 
 function turretStrength(t: TurretDef): number {
@@ -227,6 +285,8 @@ export function cardBook(content: CompiledContent): CardBook {
   const ageOrder = (Object.keys(content.ages) as AgeId[]).sort((a, b) => content.ages[a].index - content.ages[b].index);
   const ageIndex = (age: AgeId): number => ageOrder.indexOf(age);
 
+  const fortEcon = fortEconomyOf(e);
+  const rangedMinLu = fortEcon?.rangedMinLu ?? 100;
   const units: Record<CardId, UnitCard> = {};
   for (const id of Object.keys(content.units).sort()) {
     const u = content.units[id];
@@ -239,8 +299,9 @@ export function cardBook(content: CompiledContent): CardBook {
       group: u.group,
       legendary: u.group === 'legendary' || u.rarity === 'legendary',
       epic: u.rarity === 'epic',
-      value: u.cost,
-      cost: u.cost * MILLI,
+      // A16.14.3: a levy costs 0 but counts at its AI value (8) in threat estimates.
+      value: u.levy ? (u.aiValue ?? 0) : u.cost,
+      cost: (u.levy ? (u.aiValue ?? 0) : u.cost) * MILLI,
       pop: e.popByGroup[u.group] ?? 0,
       range: firstRange(u),
       speed: Math.max(0, Math.trunc((u.speed * e.marchSpeedBp) / BP)),
@@ -248,7 +309,18 @@ export function cardBook(content: CompiledContent): CardBook {
       air: u.tags.includes('air'),
       hidden: u.hidden === true,
       riders: riders?.kind === 'riders' ? { card: riders.onDeathSpawn, count: riders.count } : null,
+      levy: u.levy === true,
+      fort: u.fort?.kind ?? null,
+      breaker: !u.fort && isBreaker(u),
+      vsStructureBp: structureRow(u, rangedMinLu, false),
+      vsTowerBp: structureRow(u, rangedMinLu, true),
     };
+  }
+  const forts: Record<CardId, FortCard> = {};
+  for (const id of Object.keys(content.forts ?? {}).sort()) {
+    const f = content.forts[id];
+    if (!f) continue;
+    forts[id] = { id, age: f.age, ageIndex: ageIndex(f.age), kind: f.fortKind, value: f.cost, cost: f.cost * MILLI, pop: f.pop, pads: f.pads, size: f.size };
   }
   const turrets: Record<CardId, TurretCard> = {};
   for (const id of Object.keys(content.turrets).sort()) {
@@ -291,6 +363,7 @@ export function cardBook(content: CompiledContent): CardBook {
     content,
     units,
     turrets,
+    forts,
     powers: content.powers,
     powerInfo: infos,
     ageOrder,
@@ -329,6 +402,8 @@ export function cardBook(content: CompiledContent): CardBook {
       flagMoveTicks: msToTicks(e.holdFlag.moveCooldownMs),
       turretCover: e.turretRangeCap * MILLI,
       emoteCooldownTicks: msToTicks(e.emoteCooldownMs),
+      fort: fortPadRules(e, MILLI),
+      fortRechargeTicks: fortEcon ? msToTicks(fortEcon.rechargeMs) : 0,
     },
   };
   books.set(content, book);

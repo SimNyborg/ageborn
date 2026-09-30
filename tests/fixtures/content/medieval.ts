@@ -8,6 +8,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { medievalForts } from './forts';
 import type { RawAgeTables } from './types';
 
 export const medieval: RawAgeTables = {
@@ -171,4 +172,6 @@ export const medieval: RawAgeTables = {
       visualId: 'turret.honk_ballista', nameKey: 'card.honk_ballista.name', descKey: 'card.honk_ballista.desc',
     },
   ],
+  // SIM_VERSION 5.0.0 contract bump: the frozen fort tables (A16.14.4)
+  forts: medievalForts,
 };

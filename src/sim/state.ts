@@ -25,6 +25,7 @@ import type {
   SimEvent,
   SimState,
   TrainingEvent,
+  TrapState,
   TurretState,
   UnitState,
 } from '@/contracts';
@@ -96,6 +97,10 @@ export interface UnitRt extends UnitState {
   lastEngagedTick: number;
   /** Research aura (Bulwark, Rally) recomputed every tick: less damage taken, bp. */
   auraGuardBp: number;
+  /** Sandbag Bunker cover (A16.14.3) recomputed every tick: less damage from attacks with range ≥ 100, bp. */
+  auraCoverBp: number;
+  /** A fort removed by decay (A16.14.2): `died` pays nobody unless an enemy hit it in the last 3 s. */
+  decayed: boolean;
 }
 
 export interface QueueItemRt extends QueueItem {
@@ -133,6 +138,8 @@ export interface ProjectileRt extends ProjectileState {
   vsBp: number;
   /** Troops class index of the source unit (−1 for turrets and powers): Plating, Skirmish (A18.5.2). */
   srcCls: number;
+  /** A field tower's shot (A16.14.3): ×0.5 in Siege like a turret, never hits a fort. */
+  tower: boolean;
 }
 
 export interface CastRt extends PowerCastState {
@@ -185,6 +192,7 @@ export interface SimStateRt extends SimState {
   units: UnitRt[];
   projectiles: ProjectileRt[];
   casts: CastRt[];
+  traps: TrapState[];
 }
 
 /** One impact collected during a tick and applied in step 13 (A2.7 Impact resolution). */
@@ -232,6 +240,13 @@ export interface Impact {
   vsBp: number;
   /** Troops class index of the source unit (−1 for turrets, powers and Last Stand). */
   srcCls: number;
+  /**
+   * May touch forts (A16.14.2): unit attacks, death explosions and called strikes; never powers, Last
+   * Stand, turrets, field towers or traps.
+   */
+  forts: boolean;
+  /** Statuses a trap applies to each unit it damages, after the damage (A16.14.3). */
+  trapStatuses: readonly StatusRules[] | null;
 }
 
 /** A queued displacement, applied after all damage in step 13 (A2.7 Knockback and pulls). */
@@ -275,6 +290,11 @@ export interface Ctx {
   /** Per-tick spatial index (built at step 7) and a scratch list for range queries. */
   spatial: SpatialIndex;
   scratch: UnitRt[];
+  /**
+   * The fort contact rule (A16.14.2), re-picked every tick at step 8: attacker id → the fort its attack 0
+   * may hit as if in range. Derived state (never hashed).
+   */
+  contact: Map<number, number>;
 }
 
 /** Creates the context and the tick-0 state for a match. */
@@ -331,6 +351,8 @@ export function createCtx(cfg: MatchConfig): Ctx {
       fx: emptySideFx(),
       markHp: -1,
       markMount: -1,
+      // A16.14.2: the Fort slot is first ready at 0:20
+      fortReadyTick: econ.fort ? econ.fort.firstReadyTicks : 0,
     };
     return s;
   }) as [SideRt, SideRt];
@@ -368,6 +390,7 @@ export function createCtx(cfg: MatchConfig): Ctx {
     units: [],
     projectiles: [],
     casts: [],
+    traps: [],
     rng: seedSfc32(cfg.seed),
     nextId: 1,
     outcome: null,
@@ -398,6 +421,7 @@ export function createCtx(cfg: MatchConfig): Ctx {
     scriptCursor: 0,
     spatial: createSpatial(),
     scratch: [],
+    contact: new Map<number, number>(),
   };
 }
 
@@ -475,6 +499,12 @@ export function slotPower(ctx: Ctx, side: Side, slot: PowerSlot): CardId | null 
   const lo = loadoutOf(ctx, side);
   const id = lo?.powers?.[slot] ?? null;
   return id !== null && ctx.rules.powers[id] ? id : null;
+}
+
+/** The Fort card of the side's current loadout, or null (A16.14.1). Unknown ids read as empty. */
+export function slotFort(ctx: Ctx, side: Side): CardId | null {
+  const id = loadoutOf(ctx, side)?.fort ?? null;
+  return id !== null && ctx.rules.forts[id] ? id : null;
 }
 
 export function cardLevel(ctx: Ctx, side: Side, card: CardId): number {

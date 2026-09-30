@@ -15,7 +15,7 @@ import { AGE_PALETTES, BACKDROP_PALETTES, darken, lighten, teamColor } from '../
 import { WORLD } from '../style';
 import type { BackdropRequest, BaseRequest, EffectRequest, PortraitRequest, ViewRequest, VisualAdapter } from './types';
 
-const WIDTH: Record<RoleGroup, number> = { infantry: 22, ranged: 20, heavy: 40, antiArmor: 26, support: 20, epic: 30, legendary: 64 };
+const WIDTH: Record<RoleGroup, number> = { infantry: 22, ranged: 20, heavy: 40, antiArmor: 26, support: 20, epic: 30, legendary: 64, fort: 48 };
 
 function roleFromHeight(h: number): RoleGroup {
   if (h >= 160) return 'legendary';

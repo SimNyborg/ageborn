@@ -93,6 +93,14 @@ export function validatePlan(plan: WarPlan, s: SaveDoc, t: Content, format: Form
       if (seen.has(id)) bad.add('duplicate');
       seen.add(id);
     }
+    // A16.14.1: the Fort slot is empty (it is optional: no warning) or holds an owned Fort card of this age.
+    const fort = l.fort ?? null;
+    if (fort !== null) {
+      const f = t.forts?.[fort];
+      if (!f) bad.add('unknownCard');
+      else if (f.age !== age) bad.add('wrongAge');
+      else if (!(s.fortsOwned ?? []).includes(fort)) bad.add('notOwned');
+    }
     for (const code of bad) out.push(issue(age, 'error', code));
     if (units.length < MIN_UNITS) out.push(issue(age, 'error', 'tooFewUnits'));
     if (turrets.length < MIN_TURRETS) out.push(issue(age, 'error', 'noTurret'));

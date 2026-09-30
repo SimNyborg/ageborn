@@ -4,6 +4,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { FORT_COST, camp, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const modern: RawAgeTables = {
@@ -174,5 +175,13 @@ export const modern: RawAgeTables = {
       },
       visualId: 'turret.searchlight_sniper', nameKey: 'card.searchlight_sniper.name', descKey: 'card.searchlight_sniper.desc',
     },
+  ],
+  // A16.14.4 Forts (Modern, P 2.46): War Path L4 camp, L6 trap, L8 tower; Road fort set at 2,900. The
+  // Sandbag Bunker (175 gold) covers own ground units within 60 lu behind it: −20% from attacks with range ≥ 100
+  forts: [
+    wall('modern', 'sandbag_bunker', { cost: FORT_COST.bunker, cover: { behindLu: 60, rangedTakenBp: 2000 } }),
+    tower('modern', 'pillbox', { warPath: 8, road: 2900 }),
+    camp('modern', 'forward_base', 'conscript', { warPath: 4, road: 2900 }),
+    trap('modern', 'minefield', { warPath: 6, road: 2900 }, { charges: 3, damage: 130, radius: 40 }),
   ],
 };

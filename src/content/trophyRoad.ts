@@ -13,6 +13,12 @@ const dust = (amount: number): RoadReward => ({ kind: 'dust', amount });
 const power = (card: CardId): RoadReward => ({ kind: 'power', card });
 const capsule = (tier: CapsuleTier): RoadReward => ({ kind: 'capsule', tier });
 const gate = (arena: number): RoadReward => ({ kind: 'gate', arena });
+/** A region's fort set (A16.14.6): its Camp, Trap and Tower, the Trophy Road fallback of War Path L4, L6 and L8. */
+const forts = (camp: CardId, trap: CardId, tower: CardId): RoadReward[] => [
+  { kind: 'fort', card: camp },
+  { kind: 'fort', card: trap },
+  { kind: 'fort', card: tower },
+];
 const wardrobe: RoadReward = { kind: 'wardrobe' };
 
 /** DESIGN A6.3 road tables, one row per line: [trophies, rewards]. */
@@ -64,20 +70,21 @@ const ROWS: readonly [number, RoadReward[]][] = [
   [1900, [gate(6)]],
   [1950, [dust(400), power('solar_flare')]],
   [2000, [wardrobe]],
-  // Base 2,000, +100 steps
+  // Base 2,000, +100 steps. A16.14.6: one fort set per region (its Camp, Trap and Tower) on plain nodes
+  // from 2,200 to 3,200, the fallback of War Path L4, L6 and L8 (whichever comes first grants, the other pays 60 Amber)
   [2100, [amber(520)]],
-  [2200, [capsule('jade')]],
-  [2300, [dust(400)]],
+  [2200, [capsule('jade'), ...forts('muster_tents', 'hidden_stakes', 'pyrgos_tower')]],
+  [2300, [dust(400), ...forts('levy_camp', 'wolf_pits', 'longbow_tower')]],
   [2400, [amber(580)]],
-  [2500, [capsule('jade')]],
+  [2500, [capsule('jade'), ...forts('militia_muster', 'powder_keg', 'musket_redoubt')]],
   [2600, [gate(7)]],
-  [2700, [amber(640)]],
+  [2700, [amber(640), ...forts('recruiting_depot', 'tripwire_charge', 'sniper_nest')]],
   [2800, [dust(400)]],
-  [2900, [capsule('jade')]],
+  [2900, [capsule('jade'), ...forts('forward_base', 'minefield', 'pillbox')]],
   [3000, [wardrobe]],
   // Base 3,000
-  [3100, [amber(720)]],
-  [3200, [dust(400)]],
+  [3100, [amber(720), ...forts('clone_bay', 'grav_mire', 'sentry_pylon')]],
+  [3200, [dust(400), ...forts('warp_barracks', 'void_mine', 'ion_spire')]],
   [3300, [capsule('jade')]],
   [3400, [gate(8)]],
   [3500, [amber(800)]],

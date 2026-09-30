@@ -7,7 +7,7 @@
  * not import `src/content` (DESIGN B2), so it reads the General table through the contract's untyped
  * `CompiledContent.generals` slot with a runtime shape check, and falls back to the Balanced brain.
  */
-import type { BotProfile, CardId, CompiledContent, RoleGroup } from '@/contracts';
+import type { BotProfile, CardId, CompiledContent, FortKind, RoleGroup } from '@/contracts';
 import { BP } from '@/core';
 
 export type PersonalityId =
@@ -63,6 +63,17 @@ export interface Personality {
   scripted: boolean;
   /** The default opening build (DESIGN A7.2 Openings), in the `openings.ts` step language. */
   opening: readonly string[];
+  /**
+   * Fort style (A16.14.7). `fortPrefer`: the General's preferred kinds, first choice first; they join the
+   * tier's kind list (never below tier II) and lead the bot's Fort card pick (`botFortCard`), within the
+   * source filter (the wall when the filter forbids them). `fortNever`: kinds the General never places.
+   */
+  fortPrefer: readonly FortKind[];
+  fortNever: readonly FortKind[];
+  /** Mama Moss: keeps 2 walls or traps up whenever legal and an enemy army is on the lane. */
+  fortEager: boolean;
+  /** Rook: answers every scouted enemy fort with Heavies, siege and artillery (the structure row, lane-wide). */
+  fortAnswer: boolean;
 }
 
 /** A7.2: "The bot Charges past mid-lane only when myArmy ≥ 1.3 × D". */
@@ -87,6 +98,10 @@ const BASE: Personality = {
   neverEvolves: false,
   scripted: false,
   opening: ['train:infantry', 'train:ranged', 'train:infantry|train:ranged'],
+  fortPrefer: [],
+  fortNever: [],
+  fortEager: false,
+  fortAnswer: false,
 };
 
 /** Personality rules by id. Content supplies the weights, counter weight and signature cards. */
@@ -105,9 +120,21 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     // A18.5.8: Infantry Rush, never Forage
     researchBiasBp: { 'troops.infantry': 6000, 'troops.infantry.rush': 6000, 'economy.forage': -BP },
     opening: ['train:infantry', 'train:infantry', 'train:infantry|train:ranged', 'train:infantry'],
+    // A16.14.7: camps.
+    fortPrefer: ['camp'],
   },
   // Mama Moss: "Early turrets, Hold, pushes in Overdrive".
-  turtle: { ...BASE, id: 'turtle', pushGateBp: 20000, holdAnyTier: true, researchBiasBp: { defences: 15000 }, opening: ['turret', 'train:ranged', 'train:infantry', 'mount|train:ranged'] },
+  // A16.14.7: walls and traps first, 2 alive whenever legal.
+  turtle: {
+    ...BASE,
+    id: 'turtle',
+    pushGateBp: 20000,
+    holdAnyTier: true,
+    researchBiasBp: { defences: 15000 },
+    opening: ['turret', 'train:ranged', 'train:infantry', 'mount|train:ranged'],
+    fortPrefer: ['wall', 'trap'],
+    fortEager: true,
+  },
   // Baroness Ledger: "Treasury 3 by 2:30, evolves first, weak before 1:00".
   greedy: {
     ...BASE,
@@ -119,14 +146,25 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     // A18.5.8: Economy first (Guildhall is Economy III, v1.1: joins the bias with its pick)
     researchBiasBp: { economy: 8000 },
     opening: ['train:infantry', 'treasury', 'train:ranged', 'treasury|train:infantry'],
+    // A16.14.7: never towers (price).
+    fortNever: ['tower'],
   },
   // Sgt. Boomsworth: "Trebuchet, Bronze Cannon, Howitzer, Grenadier".
-  artillery: { ...BASE, id: 'artillery', signatureBiasBp: 2500, researchBiasBp: { command: 6000, 'troops.ranged': 6000 }, opening: ['train:infantry', 'train:ranged', 'turret', 'train:ranged|train:infantry'] },
+  // A16.14.7: towers.
+  artillery: {
+    ...BASE,
+    id: 'artillery',
+    signatureBiasBp: 2500,
+    researchBiasBp: { command: 6000, 'troops.ranged': 6000 },
+    opening: ['train:infantry', 'train:ranged', 'turret', 'train:ranged|train:infantry'],
+    fortPrefer: ['tower'],
+  },
   // Ada & Ivo: balanced counters.
   counters: { ...BASE, id: 'counters', opening: ['train:infantry', 'train:ranged', 'train:antiArmor|train:heavy'] },
   // Rook: "Counter weight ×1.5, switches within seconds" (the weight comes from content).
   // A18.5.8: "counters your scouted classes".
-  counterPicker: { ...BASE, id: 'counterPicker', researchScouted: true, opening: ['train:ranged', 'train:infantry', 'train:infantry|train:antiArmor'] },
+  // A16.14.7: answers scouted forts with Heavies, siege and artillery.
+  counterPicker: { ...BASE, id: 'counterPicker', researchScouted: true, opening: ['train:ranged', 'train:infantry', 'train:infantry|train:antiArmor'], fortAnswer: true },
   // Madame Tempest: "Banks powers for evolve moments and clumps".
   powerTiming: {
     ...BASE,
@@ -139,7 +177,8 @@ const RULES: Record<PersonalityId, Omit<Personality, 'counterWeightBp' | 'signat
     opening: ['train:infantry', 'train:ranged', 'train:ranged|train:infantry', 'turret'],
   },
   // The Warden: all-round boss with Legendaries.
-  boss: { ...BASE, id: 'boss', opening: ['train:infantry', 'train:ranged', 'train:heavy', 'turret|treasury'] },
+  // A16.14.7: the Warden uses any kind.
+  boss: { ...BASE, id: 'boss', opening: ['train:infantry', 'train:ranged', 'train:heavy', 'turret|treasury'], fortPrefer: ['tower', 'wall', 'camp', 'trap'] },
   // Echo of You: "Plays your own active War Plan with the Balanced brain".
   mirror: { ...BASE, id: 'mirror' },
 };

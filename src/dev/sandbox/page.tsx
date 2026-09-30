@@ -19,7 +19,7 @@ import type { FormatId } from '@/contracts';
 import { DEFAULT_VIEW_SETTINGS, type ViewSettings } from '@/render';
 import { useEffect, useState } from 'preact/hooks';
 import type { CardId, PowerSlot, Side } from '@/contracts';
-import { devClearLane, devPlaceTurret, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
+import { devClearLane, devPlaceFort, devPlaceTurret, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
 import { SimPanel } from './simPanel';
 import { BattleStage, type ArtKind, type OpponentKind, type StageApi, type StageOptions, type StageStats } from './viewBattle';
 import { HudStates } from './viewHudStates';
@@ -182,6 +182,8 @@ function BattleTab(p: { bare?: boolean }) {
             for (const lo of Object.values(sim.config.sides[side].loadouts)) if (lo) (lo as { powers: { home: CardId | null; field: CardId | null } }).powers = { home, field };
           },
           pause: (on: boolean) => setPaused(on),
+          /** Places a fort (or trap) for a side on a pad (A16.14), for the Fort HUD checks. */
+          fort: (side: Side, card: CardId, o: { pad?: number; done?: boolean } = {}) => devPlaceFort(sim, side, card, o),
         }
       : null;
   }, [api]);

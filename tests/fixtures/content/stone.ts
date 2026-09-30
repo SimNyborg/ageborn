@@ -8,6 +8,7 @@
  * filled by the WP1 counter matrix (B4).
  */
 import { damageMods } from './economy';
+import { stoneForts } from './forts';
 import type { RawAgeTables } from './types';
 
 export const stone: RawAgeTables = {
@@ -198,4 +199,6 @@ export const stone: RawAgeTables = {
       visualId: 'turret.grumpy_toad', nameKey: 'card.grumpy_toad.name', descKey: 'card.grumpy_toad.desc',
     },
   ],
+  // SIM_VERSION 5.0.0 contract bump: the frozen fort tables (A16.14.4)
+  forts: stoneForts,
 };

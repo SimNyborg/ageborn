@@ -1,0 +1,1479 @@
+/*
+ * The Fort button and the fort layer over the lane (DESIGN A16.14.7; ui-plan 4.7). Same tokens as the
+ * rest of the HUD (`hud.css`): gold = go, green = a valid drop, amber = caution, red = denied only; team
+ * colours only on team objects (banners, the pad band, lane tags).
+ *
+ * Tray budget with the Fort button (`.hud-tray.has-fort`), measured with Playwright (the stance is the
+ * three direct buttons of 2026-09-30):
+ *
+ * | | cluster | cards | stance | Fort | dock | total / room |
+ * |---|---|---|---|---|---|---|
+ * | phone 844 | 100 | 6 × 56 + 5 × 4 = 356 | 3 × 46 + 14 = 152 | 56 | 2 × 56 + 6 = 118 | 806 + 4 × 6 = 806 / 828 |
+ * | phone < 820 (800) | 92 | 6 × 52 + 5 × 4 = 332 | 3 × 44 + 14 = 146 | 52 | 2 × 52 + 6 = 110 | 756 / 784 |
+ * | phone ≥ 900 (932) | 100 | 6 × 64 + 5 × 4 = 404 | 164 | 60 | 2 × 60 + 6 = 126 | 818 / 916 |
+ * | desktop 1280 | 132 | 6 × 88 + 5 × 8 = 568 | 176 | 96 | 2 × 96 + 8 = 200 | 1212 / 1256 |
+ */
+
+/* ------------------------------------------------------------------------ tray sizes with a fort */
+
+.hud-fort-col {
+  --hud-fort: 96px;
+  position: relative;
+  display: flex;
+  flex: none;
+  justify-content: center;
+}
+
+@container hud (max-height: 499px) {
+  .hud-tray.has-fort {
+    gap: 6px;
+    --hud-card-w: 56px;
+    --hud-card-h: 76px;
+    --hud-card-gap: 4px;
+  }
+
+  .hud-tray.has-fort .hud-power-col {
+    --hud-pw: 56px;
+    --hud-pw-gap: 6px;
+  }
+
+  .hud-tray.has-fort .hud-stance-btn {
+    width: 46px;
+  }
+
+  .hud-fort-col {
+    --hud-fort: 56px;
+  }
+}
+
+@container hud (max-height: 499px) and (min-width: 900px) {
+  .hud-tray.has-fort {
+    --hud-card-w: 64px;
+    --hud-card-h: 86px;
+  }
+
+  .hud-tray.has-fort .hud-power-col {
+    --hud-pw: 60px;
+  }
+
+  .hud-tray.has-fort .hud-stance-btn {
+    width: 50px;
+  }
+
+  .hud-fort-col {
+    --hud-fort: 60px;
+  }
+}
+
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud-tray.has-fort {
+    --hud-card-w: 52px;
+    --hud-card-h: 70px;
+  }
+
+  .hud-tray.has-fort .hud-power-col {
+    --hud-pw: 52px;
+    --hud-pw-gap: 6px;
+  }
+
+  .hud-tray.has-fort .hud-stance-btn {
+    width: 44px;
+  }
+
+  .hud-fort-col {
+    --hud-fort: 52px;
+  }
+}
+
+/* ------------------------------------------------------------------------------- the Fort button */
+
+.hud-fort-slot {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  width: var(--hud-fort);
+  animation: hud-fort-arrive var(--ui-dur-small) var(--ui-ease-back) backwards;
+}
+
+/* MR-25: the button pops in the first time it appears. */
+@keyframes hud-fort-arrive {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(8px);
+  }
+}
+
+.hud-fort {
+  position: relative;
+  flex: none;
+  width: var(--hud-fort);
+  height: var(--hud-fort);
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  background: none;
+  color: var(--hud-text);
+  touch-action: none;
+  transition:
+    translate var(--ui-dur-small) var(--ui-ease-back),
+    filter var(--ui-dur-small) var(--ui-ease-out),
+    scale var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+/* MR-01: presses dip at once. */
+.hud-fort:active {
+  scale: var(--ui-press-scale);
+  transition-duration: var(--ui-dur-press);
+}
+
+/* The stone frame: a dark outline, dressed stone blocks with a top-left light, a bevel. Never a rarity
+   frame, so the button never reads as a unit card. */
+.hud-fort-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 42%),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(40, 32, 22, 0.55) 9px 10.5px),
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(40, 32, 22, 0.35) 14px 15.5px),
+    linear-gradient(180deg, #a59a86 0%, #7f7563 55%, #5a5244 100%);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35),
+    0 4px 0 rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* The art window inside the frame: a dusk sky over the fort. */
+.hud-fort-art {
+  position: absolute;
+  inset: 5px 5px 7px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 11px;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 100%, rgba(255, 214, 140, 0.35), transparent 70%),
+    linear-gradient(180deg, #2f4057 0%, #4d5f73 55%, #6f6a5a 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(8, 10, 14, 0.85),
+    inset 0 3px 6px rgba(0, 0, 0, 0.35);
+  transition:
+    filter var(--ui-dur-medium) var(--ui-ease-out),
+    opacity var(--ui-dur-medium) var(--ui-ease-out);
+}
+
+.hud-fort-art .ui-fort-art {
+  width: 86%;
+  height: auto;
+  margin-bottom: -4%;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+  transition: transform var(--ui-dur-small) var(--ui-ease-back);
+}
+
+.hud-fort-ring {
+  position: absolute;
+  inset: -3px;
+  z-index: 2;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hud-fort-ring rect {
+  fill: none;
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.hud-fort-ring-track {
+  stroke: rgba(8, 10, 14, 0.9);
+  stroke-width: 6 !important;
+}
+
+.hud-fort-ring-fill {
+  stroke: #d6e6ff;
+  stroke-dasharray: 100 100;
+  /* The model arrives at 15 Hz: a linear glide between samples keeps the fill smooth. */
+  transition:
+    stroke-dashoffset 90ms linear,
+    stroke var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-fort.state-ready .hud-fort-ring-fill {
+  stroke: var(--hud-gold);
+}
+
+.hud-fort.state-poor .hud-fort-ring-fill {
+  stroke: #b8923a;
+  opacity: 0.75;
+}
+
+.hud-fort.state-cap .hud-fort-ring-fill,
+.hud-fort.state-campCap .hud-fort-ring-fill,
+.hud-fort.state-pop .hud-fort-ring-fill,
+.hud-fort.state-siege .hud-fort-ring-fill {
+  stroke: #8d97a8;
+}
+
+/* MR-70b: a placement drains the ring with a bright tail. */
+.hud-fort-ring-drain {
+  stroke: #fff6cf;
+  stroke-width: 6 !important;
+  stroke-dasharray: 100 100;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 3px #ffd466);
+  animation: hud-fort-drain 260ms var(--ui-ease-out) forwards;
+}
+
+@keyframes hud-fort-drain {
+  100% {
+    stroke-dashoffset: 100;
+    opacity: 0.15;
+  }
+}
+
+/* Recharging: the art at 45% under the seconds left. Short of gold: dimmed, not greyed. */
+.hud-fort.state-recharging .hud-fort-art,
+.hud-fort.state-siege .hud-fort-art {
+  opacity: 0.45;
+  filter: grayscale(0.75);
+}
+
+.hud-fort.state-poor .hud-fort-art {
+  filter: saturate(0.55) brightness(0.72);
+}
+
+.hud-fort.state-cap .hud-fort-art,
+.hud-fort.state-campCap .hud-fort-art,
+.hud-fort.state-pop .hud-fort-art {
+  filter: saturate(0.45) brightness(0.7);
+}
+
+.hud-fort-secs {
+  position: absolute;
+  inset: 0 0 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 0 2px var(--hud-ink),
+    0 2px 0 var(--hud-ink),
+    0 0 8px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+/* The cost chip, the unit card's grammar: a coin and the price; red with a gold fill while short. */
+.hud-fort-cost {
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+  padding: 0 6px 0 3px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #2c3446, #151a24);
+  color: #fff4c8;
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.hud-fort-cost.is-poor {
+  background: linear-gradient(180deg, #b8372c, #7c1d17);
+  color: #fff;
+}
+
+.hud-fort-cost-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: calc(var(--afford, 0) * 100%);
+  height: 3px;
+  background: var(--hud-gold);
+  transition: width var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-fort-kind {
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  z-index: 4;
+  line-height: 0;
+  pointer-events: none;
+}
+
+/* The pop the fort takes, bottom-left, on the frame. */
+.hud-fort-pop {
+  position: absolute;
+  left: 3px;
+  bottom: 3px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  height: 16px;
+  padding: 0 4px 0 3px;
+  border-radius: 8px;
+  background: rgba(8, 10, 14, 0.82);
+  color: var(--hud-dim);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* How many forts stand, bottom-right: one pip per fort up to the cap. */
+.hud-fort-pips {
+  position: absolute;
+  right: 4px;
+  bottom: 5px;
+  z-index: 4;
+  display: flex;
+  gap: 3px;
+  padding: 2px 3px;
+  border-radius: 6px;
+  background: rgba(8, 10, 14, 0.82);
+  pointer-events: none;
+}
+
+.hud-fort-pips > i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hud-fort-pips > i.is-on {
+  background: var(--hud-me);
+  box-shadow: 0 0 0 1px #fff;
+}
+
+/* The cap ("2/2"): a red plate across the art, like "Army full" on a card. */
+.hud-fort-cap {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  z-index: 4;
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: var(--hud-deny);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  translate: -50% 0;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+  pointer-events: none;
+}
+
+/* The pad plinth on the bottom edge: this button places something on the lane. */
+.hud-fort-plinth {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  z-index: 3;
+  width: 34%;
+  height: 9px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #d8d0bf, #8a8171);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.hud-fort.state-ready .hud-fort-plinth {
+  background: linear-gradient(180deg, #fff2c4, var(--hud-gold) 55%, var(--hud-gold-deep));
+}
+
+/* Siege: "Forts crumble" across the art. */
+.hud-fort-siege {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 38%;
+  z-index: 4;
+  padding: 1px 2px;
+  border-radius: 6px;
+  background: rgba(120, 30, 24, 0.92);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 13px;
+  text-align: center;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+  pointer-events: none;
+}
+
+.hud-fort .hud-key {
+  top: auto;
+  bottom: 22px;
+  left: -4px;
+  z-index: 5;
+}
+
+/* Ready (MR-69): lifted 4 px, a steady gold glow, the frame catches the light; a bright sweep once. */
+.hud-fort.is-ready {
+  cursor: grab;
+  translate: 0 -4px;
+  filter: drop-shadow(0 0 10px rgba(242, 181, 44, 0.6)) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.5));
+}
+
+.hud-fort.is-ready .hud-fort-frame {
+  background:
+    linear-gradient(135deg, rgba(255, 246, 210, 0.5), transparent 45%),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(70, 50, 20, 0.5) 9px 10.5px),
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(70, 50, 20, 0.3) 14px 15.5px),
+    linear-gradient(180deg, #e3cf9a 0%, #b89a5a 55%, #7a6230 100%);
+}
+
+.hud-fort.is-ready .hud-fort-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.75) 48%, transparent 62%);
+  background-size: 260% 100%;
+  opacity: 0;
+  animation: hud-fort-sweep 700ms var(--ui-ease-out) 1;
+}
+
+@keyframes hud-fort-sweep {
+  0% {
+    opacity: 1;
+    background-position: 120% 0;
+  }
+  100% {
+    opacity: 0;
+    background-position: -40% 0;
+  }
+}
+
+@media (hover: hover) {
+  .hud-fort.is-ready:hover:not(.is-aiming) {
+    translate: 0 -7px;
+    scale: 1.04;
+  }
+}
+
+/* Tap-to-aim: pressed in, the ring glows, and a cross says "tap again to cancel". */
+.hud-fort.is-aiming:not(.is-lifted) {
+  translate: 0 1px;
+  filter: drop-shadow(0 0 12px rgba(255, 244, 194, 0.85));
+}
+
+.hud-fort.is-aiming:not(.is-lifted)::after {
+  content: '';
+  position: absolute;
+  inset: 30%;
+  z-index: 5;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 44%, #fff 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, #fff 44% 56%, transparent 56%),
+    rgba(8, 10, 14, 0.72);
+  box-shadow: 0 0 0 2px var(--hud-ink);
+  animation: hud-pop var(--ui-dur-micro) var(--ui-ease-back);
+}
+
+/* Dragging: the fort has left its socket (the token carries it). */
+.hud-fort.is-lifted {
+  cursor: grabbing;
+  translate: 0 0;
+  scale: 0.9;
+  filter: none;
+}
+
+.hud-fort.is-lifted .hud-fort-art {
+  opacity: 0.35;
+  filter: grayscale(1) brightness(0.7);
+}
+
+/* MR-70b: the placed fort dips into the socket and springs back. */
+.hud-fort.is-placed .hud-fort-art .ui-fort-art {
+  animation: hud-fort-dip 420ms var(--ui-ease-back);
+}
+
+@keyframes hud-fort-dip {
+  30% {
+    transform: translateY(18%) scale(0.86);
+  }
+  70% {
+    transform: translateY(-4%) scale(1.04);
+  }
+}
+
+/* The one-time hint (A16.14.6): the button breathes once, bigger than the rest glow. */
+.hud-fort.is-hint {
+  animation: hud-fort-breathe 1100ms var(--ui-ease-inout, ease-in-out) 2;
+}
+
+@keyframes hud-fort-breathe {
+  50% {
+    scale: 1.08;
+    filter: drop-shadow(0 0 16px rgba(255, 212, 102, 0.95));
+  }
+}
+
+.hud-fort.is-denied .hud-fort-frame {
+  box-shadow:
+    0 0 0 2px var(--hud-deny),
+    0 0 12px 2px rgba(201, 57, 47, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+@container hud (max-height: 499px) {
+  .hud-fort {
+    border-radius: 13px;
+  }
+
+  .hud-fort-frame {
+    border-radius: 13px;
+  }
+
+  .hud-fort-art {
+    inset: 4px 4px 6px;
+    border-radius: 9px;
+  }
+
+  .hud-fort-cost {
+    height: 18px;
+    padding: 0 5px 0 2px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .hud-fort-secs {
+    font-size: 17px;
+    inset: 0 0 6px;
+  }
+
+  .hud-fort-pop {
+    left: 2px;
+    bottom: 2px;
+    height: 14px;
+    font-size: 11px;
+    line-height: 14px;
+  }
+
+  .hud-fort-pips {
+    right: 3px;
+    bottom: 4px;
+  }
+
+  .hud-fort-siege {
+    font-size: 11px;
+    line-height: 12px;
+    top: 34%;
+  }
+}
+
+/* The tip (long-press or hover): name, kind and pads, price, pop, the key numbers, the traits. */
+.hud-fort-tip {
+  position: absolute;
+  right: -6px;
+  bottom: calc(100% + 14px);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 200px;
+  max-width: 260px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel-hi);
+  color: var(--hud-text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  box-shadow:
+    0 0 0 2px rgba(8, 10, 14, 0.85),
+    var(--ui-e3);
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 6px;
+  pointer-events: none;
+  transition:
+    opacity var(--ui-dur-micro) var(--ui-ease-out),
+    translate var(--ui-dur-micro) var(--ui-ease-out),
+    visibility 0s linear var(--ui-dur-micro);
+}
+
+.hud-fort.is-tip + .hud-fort-tip {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition-delay: 0s;
+}
+
+@media (hover: hover) {
+  .hud-fort:hover:not(.is-aiming):not(.is-lifted) + .hud-fort-tip {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+    transition-delay: var(--ui-dur-tip-hover, 350ms);
+  }
+}
+
+.hud-fort-tip-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.hud-fort-tip-line {
+  color: var(--hud-dim);
+}
+
+.hud-fort-tip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+}
+
+.hud-fort-tip-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #fff4c8;
+}
+
+.hud-fort-tip-traits {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--hud-dim);
+}
+
+.hud-fort-tip-traits li::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 6px 1px 0;
+  border-radius: 50%;
+  background: var(--cls-fort, #b0643f);
+  box-shadow: 0 0 0 1px var(--hud-ink);
+}
+
+/* The aiming chip and the one-time hint, above the button. */
+.hud-fort-chip {
+  position: absolute;
+  right: -8px;
+  bottom: calc(100% + 12px);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 4px 10px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  transform-origin: 85% 100%;
+  animation: hud-power-bubble-in var(--ui-dur-small) var(--ui-ease-back);
+}
+
+.hud-fort-chip::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--hud-fort) / 2 + 2px);
+  top: 100%;
+  border: 6px solid transparent;
+  border-top-color: #fbf6ea;
+}
+
+.hud-fort-chip.is-hint {
+  background: var(--hud-gold);
+}
+
+.hud-fort-chip.is-hint::after {
+  border-top-color: var(--hud-gold);
+}
+
+.hud-fort-chip-sub {
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.75;
+}
+
+/* Tap-to-aim catches taps on the lane and the minimap (pads light up under it). */
+.hud-fort-catch {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
+  cursor: crosshair;
+  touch-action: none;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255, 244, 194, 0) 55%, rgba(8, 10, 14, 0.2) 100%);
+  animation: hud-fade var(--ui-dur-medium-out) var(--ui-ease-out);
+}
+
+/* The dragged fort: its card above the finger and a label with the price. */
+.hud-fort-token {
+  position: absolute;
+  z-index: 6;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.hud-fort-token-core {
+  position: absolute;
+  left: -30px;
+  top: -86px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #2f4057 0%, #4d5f73 55%, #6f6a5a 100%);
+  box-shadow:
+    0 0 0 2px var(--hud-ink),
+    0 0 0 4px #b9ae98,
+    0 0 0 6px var(--hud-ink),
+    var(--ui-e5, 0 24px 40px rgba(0, 0, 0, 0.55));
+  rotate: -4deg;
+  animation: hud-pop var(--ui-dur-micro) var(--ui-ease-back);
+  transition:
+    opacity var(--ui-dur-micro) var(--ui-ease-out),
+    scale var(--ui-dur-micro) var(--ui-ease-back),
+    translate var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+/* Snapped to a pad: the ghost on the lane is the fort now; the card gets out of the way. */
+.hud-fort-token.is-snapped .hud-fort-token-core {
+  opacity: 0;
+  scale: 0.5;
+  translate: 0 24px;
+}
+
+.hud-fort-token.is-snapped .hud-fort-token-label {
+  top: -64px;
+}
+
+.hud-fort-token.is-cancel .hud-fort-token-core {
+  opacity: 0.6;
+  filter: grayscale(0.8);
+}
+
+.hud-fort-token-label {
+  position: absolute;
+  left: 0;
+  top: -114px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: var(--hud-deny);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+  translate: -50% 0;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+}
+
+.hud-fort-token-label.is-info {
+  background: #fbf6ea;
+  color: var(--ui-ink, #1d1405);
+}
+
+.hud-fort-token-warn {
+  margin: -2px -7px -2px 0;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: #f5a524;
+  color: var(--ui-ink, #1d1405);
+}
+
+.hud-fort-token-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------------ the lane layer (pads) */
+
+.hud-fort-lane {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Every lane element is anchored at its ground point (JS sets the translate); children offset from it. */
+.hud-fort-lane > * {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+/* The band under the usable pads: your colour at 18%; a Camp's Field pads hatched until the army is past. */
+.hud-fband {
+  height: 0;
+}
+
+.hud-fband::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -7px;
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hud-me) 34%, transparent), color-mix(in srgb, var(--hud-me) 16%, transparent));
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in srgb, var(--hud-me) 60%, transparent),
+    0 0 12px color-mix(in srgb, var(--hud-me) 30%, transparent);
+  animation: hud-fade var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-fband.is-hatched::before {
+  background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--hud-me) 22%, transparent) 0 6px, transparent 6px 12px);
+}
+
+/* One pad: a stone plinth on the ground with a ring; its label floats above. */
+.hud-fpad {
+  width: 0;
+  height: 0;
+  --pw: max(40px, calc(56px * var(--s, 1)));
+  --pc: #5fd08a;
+}
+
+.hud-fpad.is-underFire {
+  --pc: #f5a524;
+}
+
+.hud-fpad.is-blocked {
+  --pc: #8a93a3;
+}
+
+.hud-fpad-glow {
+  position: absolute;
+  left: calc(var(--pw) / -2 - 10px);
+  top: -32px;
+  width: calc(var(--pw) + 20px);
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 72%, color-mix(in srgb, var(--pc) 55%, transparent), transparent 70%);
+  opacity: 0.75;
+}
+
+.hud-fpad.is-blocked .hud-fpad-glow {
+  opacity: 0;
+}
+
+.hud-fpad-plinth {
+  position: absolute;
+  left: calc(var(--pw) / -2);
+  top: -6px;
+  width: var(--pw);
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e2dccd, #9d9483 60%, #6d6557);
+  box-shadow:
+    0 0 0 1.5px rgba(8, 10, 14, 0.85),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.hud-fpad-ring {
+  position: absolute;
+  left: calc(var(--pw) / -2 - 6px);
+  top: -11px;
+  width: calc(var(--pw) + 12px);
+  height: 22px;
+  box-sizing: border-box;
+  border: 3px solid var(--pc);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1.5px rgba(8, 10, 14, 0.75),
+    0 0 10px 1px color-mix(in srgb, var(--pc) 70%, transparent);
+  animation: hud-fpad-in var(--ui-dur-small) var(--ui-ease-back) backwards;
+}
+
+.hud-fpad.is-blocked .hud-fpad-ring {
+  border-style: dashed;
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.75);
+}
+
+@keyframes hud-fpad-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/* The snapped pad: a brighter, thicker ring and a 1.04 → 1 bump. */
+.hud-fpad.is-snap .hud-fpad-ring {
+  border-width: 4px;
+  border-color: #fff;
+  box-shadow:
+    0 0 0 2px var(--pc),
+    0 0 0 3.5px rgba(8, 10, 14, 0.75),
+    0 0 18px 4px color-mix(in srgb, var(--pc) 85%, transparent);
+  animation: hud-fpad-snap var(--ui-dur-small) var(--ui-ease-back);
+}
+
+@keyframes hud-fpad-snap {
+  40% {
+    transform: scale(1.12);
+  }
+}
+
+/* The one-time hint: the pads breathe (three times, then rest). */
+.hud-fpad.is-hint .hud-fpad-ring {
+  animation: hud-fpad-breathe 1300ms ease-in-out 3;
+}
+
+@keyframes hud-fpad-breathe {
+  50% {
+    transform: scale(1.14);
+    box-shadow:
+      0 0 0 1.5px rgba(8, 10, 14, 0.75),
+      0 0 18px 4px color-mix(in srgb, var(--pc) 90%, transparent);
+  }
+}
+
+.hud-fpad-x {
+  position: absolute;
+  left: -9px;
+  top: -30px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 42%, #fff 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, #fff 42% 58%, transparent 58%),
+    #6b7384;
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.9);
+}
+
+.hud-fpad-label {
+  position: absolute;
+  left: 0;
+  top: -38px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(20, 25, 34, 0.92);
+  color: #f4efe4;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 15px;
+  white-space: nowrap;
+  translate: -50% -100%;
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.9);
+  animation: hud-fade var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-fpad.is-underFire .hud-fpad-label {
+  background: #f5a524;
+  color: var(--ui-ink, #1d1405);
+}
+
+.hud-fpad.is-blocked .hud-fpad-label {
+  top: -34px;
+}
+
+/* Neighbouring pads are 60-70 px apart on a phone: every other label sits one row higher. */
+.hud-fpad.is-alt .hud-fpad-label {
+  top: -60px;
+}
+
+.hud-fpad.is-alt.is-blocked .hud-fpad-label {
+  top: -56px;
+}
+
+.hud-fpad.is-alt .hud-fpad-label::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 2px;
+  height: 8px;
+  background: rgba(8, 10, 14, 0.7);
+  translate: -50% 0;
+}
+
+/* A tower's reach from the snapped pad: a band on the ground to its far edge (never past p 560). */
+.hud-freach {
+  height: 0;
+}
+
+.hud-freach::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -3px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--hud-me) 70%, transparent), color-mix(in srgb, var(--hud-me) 25%, transparent));
+  box-shadow: 0 0 0 1px rgba(8, 10, 14, 0.6);
+}
+
+.hud-freach::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: -9px;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.8);
+}
+
+.hud-freach.is-rtl::before {
+  background: linear-gradient(270deg, color-mix(in srgb, var(--hud-me) 70%, transparent), color-mix(in srgb, var(--hud-me) 25%, transparent));
+}
+
+.hud-freach.is-rtl::after {
+  right: auto;
+  left: -3px;
+}
+
+.hud-freach-label {
+  position: absolute;
+  right: 0;
+  top: -30px;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: rgba(20, 25, 34, 0.9);
+  color: #f4efe4;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 14px;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.9);
+}
+
+.hud-freach.is-rtl .hud-freach-label {
+  right: auto;
+  left: 0;
+}
+
+/* The ghost of the fort, to scale, standing on the snapped pad. */
+.hud-fghost {
+  width: 0;
+  height: 0;
+  --gw: calc(var(--w, 48) * var(--s, 1) * 1px);
+}
+
+.hud-fghost-foot {
+  position: absolute;
+  left: calc(var(--gw) / -2);
+  top: -4px;
+  width: var(--gw);
+  height: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--hud-me) 60%, transparent);
+  box-shadow:
+    0 0 0 1.5px #fff,
+    0 0 12px color-mix(in srgb, var(--hud-me) 80%, transparent);
+}
+
+.hud-fghost-art {
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  opacity: 0.82;
+  translate: -50% 0;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+  animation: hud-fghost-in var(--ui-dur-small) var(--ui-ease-back);
+}
+
+.hud-fghost-art .ui-fort-art {
+  width: calc(var(--gw) * 1.45);
+  height: auto;
+}
+
+.hud-fghost.is-tower .hud-fghost-art .ui-fort-art {
+  width: calc(var(--gw) * 2.4);
+}
+
+.hud-fghost.is-trap .hud-fghost-art .ui-fort-art {
+  width: calc(var(--gw) * 1.1);
+}
+
+.hud-fghost.is-underfire .hud-fghost-art {
+  filter: drop-shadow(0 0 6px rgba(245, 165, 36, 0.9));
+}
+
+@keyframes hud-fghost-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(1.04);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translateY(1px) scale(1.04);
+  }
+}
+
+/* A placement (MR-70b): the ghost contracts into the pad, a dust ring rises, three puffs follow through. */
+.hud-fburst {
+  width: 0;
+  height: 0;
+  --gw: calc(var(--w, 48) * var(--s, 1) * 1px);
+}
+
+.hud-fburst-ghost {
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+  animation: hud-fburst-ghost 360ms var(--ui-ease-in, cubic-bezier(0.55, 0, 1, 0.45)) forwards;
+}
+
+.hud-fburst-ghost .ui-fort-art {
+  width: calc(var(--gw) * 1.45);
+  height: auto;
+}
+
+.hud-fburst.is-tower .hud-fburst-ghost .ui-fort-art {
+  width: calc(var(--gw) * 2.4);
+}
+
+@keyframes hud-fburst-ghost {
+  0% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.35, 0.1);
+  }
+}
+
+.hud-fburst-ring {
+  position: absolute;
+  left: calc(var(--gw) / -2);
+  top: -8px;
+  width: var(--gw);
+  height: 16px;
+  box-sizing: border-box;
+  border: 3px solid rgba(236, 220, 186, 0.95);
+  border-radius: 50%;
+  animation: hud-fburst-ring 560ms var(--ui-ease-out) forwards;
+}
+
+@keyframes hud-fburst-ring {
+  0% {
+    opacity: 1;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1, 1.6);
+  }
+}
+
+.hud-fburst-dust {
+  position: absolute;
+  left: -9px;
+  top: -14px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f1e4c6, #b8a27a 70%);
+  opacity: 0;
+  animation: hud-fburst-dust 700ms var(--ui-ease-out) 120ms forwards;
+}
+
+.hud-fburst-dust.is-a {
+  --dx: -34px;
+  --dy: -18px;
+}
+
+.hud-fburst-dust.is-b {
+  --dx: 0px;
+  --dy: -30px;
+  animation-delay: 160ms;
+}
+
+.hud-fburst-dust.is-c {
+  --dx: 34px;
+  --dy: -16px;
+  animation-delay: 140ms;
+}
+
+@keyframes hud-fburst-dust {
+  0% {
+    opacity: 0.9;
+    transform: translate(0, 0) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1.6);
+  }
+}
+
+/* ------------------------------------------------------------------ lane tags: forts of both sides */
+
+/* The tag sits on the fort's plinth: a small plate in the side's colour with the kind glyph. */
+.hud-ltag {
+  width: 0;
+  height: 0;
+  --tc: var(--hud-me);
+}
+
+.hud-ltag.is-foe {
+  --tc: var(--hud-foe);
+}
+
+.hud-ltag-plate {
+  position: absolute;
+  left: -11px;
+  top: -8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 18px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 80%, #fff), var(--tc) 55%, color-mix(in srgb, var(--tc) 70%, #000));
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* The scaffold's progress: a ring round the plate that fills over 5 s (striped while it builds). */
+.hud-ltag-scaffold {
+  position: absolute;
+  left: -16px;
+  top: -13px;
+  width: 32px;
+  height: 28px;
+  border-radius: 9px;
+  background:
+    conic-gradient(from -90deg, #fff4c2 calc(var(--b, 0) * 360deg), rgba(8, 10, 14, 0.7) 0),
+    rgba(8, 10, 14, 0.7);
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+  -webkit-mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.hud-ltag.is-building .hud-ltag-plate {
+  background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--tc) 85%, #fff) 0 4px, color-mix(in srgb, var(--tc) 55%, #000) 4px 8px);
+}
+
+/* Crumbling: a crack and a slow dim pulse on the plate (never faster than the U14 limit). */
+.hud-ltag-crack {
+  position: absolute;
+  left: 7px;
+  top: -16px;
+  width: 12px;
+  height: 12px;
+  background: #1b1330;
+  clip-path: polygon(40% 0, 62% 0, 50% 38%, 78% 44%, 38% 100%, 50% 58%, 22% 52%);
+}
+
+.hud-ltag.is-decaying .hud-ltag-plate {
+  animation: hud-ltag-decay 1600ms ease-in-out infinite;
+}
+
+@keyframes hud-ltag-decay {
+  50% {
+    filter: brightness(0.7) saturate(0.6);
+  }
+}
+
+/* A tower silenced by Suppress: the jammed mark. */
+.hud-ltag-jam {
+  position: absolute;
+  left: -20px;
+  top: -18px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 43%, #fff 43% 57%, transparent 57%),
+    #c9392f;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+}
+
+/* A trap: always visible to both sides, a hazard patch on the ground with its charge pips. */
+.hud-ltrap {
+  width: 0;
+  height: 0;
+  --tc: var(--hud-me);
+  --tw: max(34px, calc(var(--w, 60) * var(--s, 1) * 1px));
+}
+
+.hud-ltrap.is-foe {
+  --tc: var(--hud-foe);
+}
+
+.hud-ltrap-patch {
+  position: absolute;
+  left: calc(var(--tw) / -2);
+  top: -5px;
+  width: var(--tw);
+  height: 10px;
+  border-radius: 50%;
+  background: repeating-linear-gradient(-50deg, rgba(242, 194, 48, 0.55) 0 5px, rgba(20, 16, 10, 0.6) 5px 10px);
+  box-shadow:
+    0 0 0 2px var(--tc),
+    0 0 0 3.5px rgba(8, 10, 14, 0.8);
+}
+
+.hud-ltrap.is-arming .hud-ltrap-patch {
+  animation: hud-ltrap-arm 700ms ease-in-out infinite;
+}
+
+@keyframes hud-ltrap-arm {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.hud-ltrap-pips {
+  position: absolute;
+  left: 0;
+  top: -26px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 5px 1px 3px;
+  border-radius: 99px;
+  background: rgba(20, 25, 34, 0.88);
+  box-shadow: 0 0 0 1.5px var(--tc);
+  translate: -50% 0;
+}
+
+.hud-ltrap-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f2c230;
+  box-shadow: 0 0 0 1px var(--hud-ink);
+}
+
+/* Reduce motion (U14): fades only, no bumps, breathing or dust flights. */
+.hud[data-reduce-motion='true'] .hud-fort-slot,
+.hud[data-reduce-motion='true'] .hud-fort.is-hint,
+.hud[data-reduce-motion='true'] .hud-fort.is-placed .ui-fort-art,
+.hud[data-reduce-motion='true'] .hud-fort.is-ready .hud-fort-frame::after,
+.hud[data-reduce-motion='true'] .hud-fpad-ring,
+.hud[data-reduce-motion='true'] .hud-fghost-art,
+.hud[data-reduce-motion='true'] .hud-fburst-ring,
+.hud[data-reduce-motion='true'] .hud-fburst-dust,
+.hud[data-reduce-motion='true'] .hud-ltag.is-decaying .hud-ltag-plate,
+.hud[data-reduce-motion='true'] .hud-ltrap.is-arming .hud-ltrap-patch,
+.hud[data-reduce-motion='true'] .hud-fort-token-core {
+  animation: none;
+}
+
+.hud[data-reduce-motion='true'] .hud-fburst-ghost {
+  animation: hud-fade 360ms linear reverse forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-fort-slot,
+  .hud-fort.is-hint,
+  .hud-fpad-ring,
+  .hud-fghost-art,
+  .hud-fburst-ring,
+  .hud-fburst-dust,
+  .hud-ltag.is-decaying .hud-ltag-plate,
+  .hud-ltrap.is-arming .hud-ltrap-patch {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------- their fort ring on the Scouted chip (public) */
+
+.hud-foe-fort {
+  position: absolute;
+  left: -7px;
+  bottom: -5px;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  pointer-events: auto;
+  animation: hud-pop var(--ui-dur-small) var(--ui-ease-back);
+}
+
+.hud-foe-fort .hud-foe-ring-arc {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  rotate: -90deg;
+  overflow: visible;
+}
+
+.hud-foe-fort-core {
+  position: absolute;
+  inset: 3px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #cf8a5f, var(--cls-fort, #b0643f) 55%, #5e2e17);
+  box-shadow: inset 0 0 0 1px rgba(8, 10, 14, 0.6);
+}
+
+/* Ready: a steady orange rim (enemy events never pulse). */
+.hud-foe-fort.is-ready .hud-foe-ring-fill {
+  stroke: #ff8a3d;
+}
+
+.hud-foe-fort.is-ready {
+  box-shadow: 0 0 8px 1px rgba(255, 138, 61, 0.65);
+}
+
+.hud-foe-fort .hud-foe-ring-tip {
+  right: auto;
+  left: 0;
+}

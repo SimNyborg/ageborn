@@ -11,6 +11,7 @@ import { PROJECTILE_RECIPES } from './effects/recipes';
 import { ICON_ZONES } from './parts/icons';
 import { TRIM_COLORS } from './palette';
 import { AGES } from './ages';
+import { FORT_PUPPETS, LEVY_PUPPETS } from './forts';
 import { AGE_PUPPETS } from './puppets';
 import type { BasePuppet } from './rigs/base';
 import type { TurretPuppet } from './rigs/turret';
@@ -102,7 +103,7 @@ export const POWER_IDS = [
 
 export const ICON_SPRITES: readonly PuppetDef[] = [
   ...POWER_IDS.map((p) => spritePuppet(`power.${p}`, `power.${p}`, UI, 40)),
-  ...(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary'] as const).map((g) => spritePuppet(`icon.role.${g}`, `icon.role.${g}`, UI, 18)),
+  ...(['infantry', 'ranged', 'heavy', 'antiArmor', 'support', 'epic', 'legendary', 'fort'] as const).map((g) => spritePuppet(`icon.role.${g}`, `icon.role.${g}`, UI, 18)),
   ...AGES.map((a) => spritePuppet(`icon.age.${a}`, `icon.age.${a}`, UI, 40)),
   spritePuppet('icon.horn', 'icon.horn', UI, 20),
   // A17.5 camera UI
@@ -116,6 +117,9 @@ export const ICON_SPRITES: readonly PuppetDef[] = [
 const ALL: PuppetDef[] = [
   ...UNIT_PUPPETS,
   ...TURRET_PUPPETS,
+  // A16.14.8 placeholders until F3 draws the fort rigs and levy puppets
+  ...FORT_PUPPETS,
+  ...LEVY_PUPPETS,
   ...(Object.values(BASE_PUPPETS) as PuppetDef[]),
   ...SKIN_PUPPETS,
   ...PROJECTILE_SPRITES,

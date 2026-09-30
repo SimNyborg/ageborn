@@ -649,6 +649,16 @@ export class EventMapper {
           this.rule(key, { at: { k: 'mount', side: ev.side, mount: ev.mount }, opts: { side: ev.side, durationMs: Math.max(0, (ev.untilTick - ev.tick) * 50) } }, out);
         }
         return;
+      case 'fortPlaced':
+      case 'fortBuilt':
+      case 'fortDecayed':
+      case 'trapArmed':
+      case 'trapTriggered':
+      case 'trapExpired':
+      case 'towerSilenced':
+        // Forts (A16.14): the placing thud, build pop, crumble, trap snap and jam feel arrive with the
+        // fort art in F3 (A16.14.8); the fort itself is drawn through its twin unit's view until then.
+        return;
       case 'stanceChanged':
         if (ev.side === this.mySide) this.rule('stance', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
         return;

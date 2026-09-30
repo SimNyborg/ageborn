@@ -45,7 +45,10 @@ describe('A14.1 coverage', () => {
     for (const s of Object.values(content.skins)) if (!MANIFEST[s.visualId]) missing.push(s.visualId);
     expect(missing).toEqual([]);
     // A17.13: 56 units (plus the hidden Training Dummy) and 32 turrets
-    expect(Object.values(content.units).length).toBe(57);
+    expect(Object.values(content.units).filter((u) => !u.fort && !u.levy).length).toBe(57);
+    // A16.14.8: 24 hidden fort twins (walls, towers, camps) and 8 levies
+    expect(Object.values(content.units).filter((u) => u.fort).length).toBe(24);
+    expect(Object.values(content.units).filter((u) => u.levy).length).toBe(8);
     expect(Object.values(content.turrets).length).toBe(32);
     expect(Object.values(content.skins).length).toBe(12);
   });

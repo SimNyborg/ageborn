@@ -78,6 +78,14 @@ function roundRect(g: CanvasRenderingContext2D, x: number, y: number, w: number,
   g.closePath();
 }
 
+/** What the strip shows of forts (A16.14.7): own-side p in lu from this HUD's gate. */
+export interface MinimapForts {
+  pads: { p: number; legal: boolean }[];
+  /** A fort is in hand: legal pads green, the rest grey. */
+  lit: boolean;
+  items: { p: number; mine: boolean; trap: boolean }[];
+}
+
 /** Draws one frame of the strip (A17.5 content, back to front). `t` is a clock in ms for pulses. */
 export function drawMinimap(
   g: CanvasRenderingContext2D,
@@ -89,6 +97,8 @@ export function drawMinimap(
   big: boolean,
   /** Your Hold flag (A18.4.2), own-side p in lu, or null when not holding. */
   flagP: number | null = null,
+  /** Your fort pads and both sides' forts (A16.14.7), or null without forts. */
+  forts: MinimapForts | null = null,
 ): void {
   g.clearRect(0, 0, w, h);
   const X = (x: number): number => minimapX(x, m, w);
@@ -218,6 +228,26 @@ export function drawMinimap(
     }
   }
 
+  // Forts (A16.14.7): your pads as ticks along the bottom (lit green or grey while a fort is in hand) and
+  // every fort or trap as a small square in its side's colour.
+  if (forts) {
+    const at = (p: number): number => X(m.mySide === 0 ? p : m.lane - p);
+    for (const pad of forts.pads) {
+      const x = at(pad.p);
+      g.fillStyle = forts.lit ? (pad.legal ? '#5fd08a' : 'rgba(138, 147, 163, 0.9)') : 'rgba(255, 248, 232, 0.55)';
+      g.fillRect(x - 1, h - (forts.lit ? 7 : 5), 2, forts.lit ? 7 : 5);
+    }
+    for (const f of forts.items) {
+      const x = at(f.p);
+      const d = f.trap ? 3 : 5;
+      g.fillStyle = f.mine ? colors.me : colors.foe;
+      g.strokeStyle = 'rgba(20, 12, 36, 0.95)';
+      g.lineWidth = 1;
+      g.fillRect(x - d / 2, groundY - d / 2, d, d);
+      g.strokeRect(x - d / 2, groundY - d / 2, d, d);
+    }
+  }
+
   // The Hold flag: a small pennant on a pole in your colour (A18.4.2).
   if (flagP !== null) {
     const fx = X(m.mySide === 0 ? flagP : m.lane - flagP);
@@ -322,6 +352,19 @@ export function Minimap(p: { c: HudCtx }) {
   // The Hold flag for the strip, read by the draw loop.
   const flag = useRef<number | null>(null);
   flag.current = c.m.me.stance === 'hold' && c.m.me.holdP !== undefined && c.m.phase !== 'ended' ? c.m.me.holdP : null;
+  // Fort pads and forts for the strip (A16.14.7), read by the draw loop.
+  const forts = useRef<MinimapForts | null>(null);
+  const fortAim = c.fortAim?.value ?? null;
+  const fort = c.m.fort;
+  const lane = c.m.laneForts ?? [];
+  forts.current =
+    fort || lane.length
+      ? {
+          pads: (fort?.pads ?? []).filter((pad) => pad.kind === 'home' || fort?.kind === 'camp').map((pad) => ({ p: pad.p, legal: pad.legal })),
+          lit: fortAim !== null,
+          items: lane.map((f) => ({ p: f.p, mine: f.mine, trap: f.kind === 'trap' })),
+        }
+      : null;
 
   useEffect(() => {
     if (!view?.minimap) return undefined;
@@ -348,7 +391,7 @@ export function Minimap(p: { c: HudCtx }) {
       const g = el.getContext('2d');
       if (g) {
         g.setTransform(dpr, 0, 0, dpr, 0, 0);
-        drawMinimap(g, m, w, h, { me: cssVar(el, '--hud-me', '#3b82f6'), foe: cssVar(el, '--hud-foe', '#f97316') }, now, h >= 20, flag.current);
+        drawMinimap(g, m, w, h, { me: cssVar(el, '--hud-me', '#3b82f6'), foe: cssVar(el, '--hud-foe', '#f97316') }, now, h >= 20, flag.current, forts.current);
       }
       const next = stripUi(m);
       if (!sameUi(uiRef.current, next)) {
@@ -424,6 +467,12 @@ export function Minimap(p: { c: HudCtx }) {
           view.cameraHold?.('minimap', false);
           if (pr.scrub) return;
           const x = worldAt(e.clientX);
+          // Aiming a fort (A16.14.7): a tap takes the legal pad nearest that point (the ticks are too close
+          // to hit one by one on a phone). The Fort button listens on the HUD root.
+          if (x !== null && c.fortAim?.peek()?.mode === 'tap') {
+            (e.currentTarget as HTMLElement).dispatchEvent(new CustomEvent('hud-fort-map', { bubbles: true, detail: { x } }));
+            return;
+          }
           if (x !== null) {
             c.audio?.play('ui_click');
             view.cameraCommand?.({ t: 'center', x });

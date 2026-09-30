@@ -16,6 +16,7 @@ import type { AgeId, CardId, FormatId, Loadout, Result, SaveDoc, SkinId } from '
 import type { Content } from '@/content';
 import { hitsAir, TURRET_SLOTS, UNIT_SLOTS, type WarPlan } from './advisor';
 import { FIRST_PLAN_NAME } from './rules';
+import { fortSlotUnlocked, wallOf } from './forts';
 import { ageCards, antiHeavyCard, isOwned, starterPower, starterPowers } from './tables';
 
 /** Number of War Plan presets (A3). */
@@ -31,7 +32,8 @@ export function starterLoadout(t: Content, age: AgeId): Loadout {
   const common = (id: CardId): boolean => (t.units[id] ?? t.turrets[id])?.rarity === 'common';
   const aa = antiHeavyCard(t, age);
   const troops = [...units.filter(common), ...(aa ? [aa] : [])];
-  return { units: slots(troops, UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), powers: starterPowers(t, age) };
+  // The Fort slot starts empty; its unlock fills it with the age's wall (A16.14.6).
+  return { units: slots(troops, UNIT_SLOTS), turrets: slots(turrets.filter(common), TURRET_SLOTS), powers: starterPowers(t, age), fort: null };
 }
 
 /** The starter War Plan (A3; Arena 1's gate reward, given at the start). */
@@ -83,10 +85,15 @@ export function autoFillLoadout(s: SaveDoc, t: Content, age: AgeId, current?: Lo
     const ok = cur !== null && t.powers[cur]?.age === age && t.powers[cur]?.slot === slot && s.powersOwned.includes(cur);
     return ok ? cur : starterPower(t, age, slot);
   };
+  // The Fort slot (A16.14.7): keep an owned fort of this age, else the age's wall once the slot is open.
+  const curFort = current?.fort ?? null;
+  const keepFort = curFort !== null && t.forts?.[curFort]?.age === age && (s.fortsOwned ?? []).includes(curFort);
+  const fort = keepFort ? curFort : fortSlotUnlocked(s) ? wallOf(t, age) : null;
   return {
     units: slots(ordered, UNIT_SLOTS),
     turrets: slots(turrets.filter((id) => pickedTurrets.includes(id)), TURRET_SLOTS),
     powers: { home: keep('home'), field: keep('field') },
+    fort,
   };
 }
 

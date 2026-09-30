@@ -9,6 +9,10 @@
  * enemy cards seen recently stand in. A tier that predicts the next enemy age blends in the Commons of
  * the foe's next age once the foe is close to evolving.
  *
+ * Enemy forts (A16.14.7 "answering forts") join the sample at 2 × their price with the structure row
+ * of the card book (Heavy, siege, artillery and Legendary ×2; other range ≥ 100 ×0.5; air flies over
+ * walls and camps), because the equal-gold counter matrix cannot value them. Levies never enter it.
+ *
  * Every value is in bp (10,000 = 1).
  */
 import type { CardId } from '@/contracts';
@@ -24,10 +28,23 @@ export const PREDICT_FROM_XP_BP = 8500;
 /** Weight of the predicted next age in the blended counter term, bp. */
 export const PREDICT_BLEND_BP = 3000;
 
-/** A value-weighted enemy sample: card and weight (V × copies). */
+/** A value-weighted enemy sample: card and weight (V × copies). A fort card reads the structure row. */
 export interface CounterSample {
   card: CardId;
   weight: number;
+}
+
+/** A fort counts as an enemy worth 2 × its price in the counter term (A16.14.7). */
+export const FORT_COUNTER_WEIGHT = 2;
+
+/** M[c][e] in bp, or the structure row when `e` is a fort card (A16.14.7). */
+function counterCell(book: CardBook, card: CardId, target: CardId): number {
+  const fort = book.forts[target];
+  if (fort) {
+    const u = book.units[card];
+    return u ? (fort.kind === 'tower' ? u.vsTowerBp : u.vsStructureBp) : BP / 2;
+  }
+  return counterBp(book, card, target);
 }
 
 /**
@@ -37,8 +54,10 @@ export interface CounterSample {
  */
 export function counterTargets(foes: readonly SeenUnit[], myFront: number | null, depth: number): SeenUnit[] {
   const front = myFront ?? 0;
-  let near = foes.filter((u) => (u.p > front ? u.p - front : front - u.p) <= COUNTER_RADIUS);
-  if (near.length === 0) near = [...foes];
+  // Levies are never counter targets (A16.14.3): a free 8-gold summon says nothing about the enemy's plan.
+  const real = foes.filter((u) => !u.levy);
+  let near = real.filter((u) => (u.p > front ? u.p - front : front - u.p) <= COUNTER_RADIUS);
+  if (near.length === 0) near = [...real];
   near.sort((a, b) => a.p - b.p || a.id - b.id);
   return depth > 0 ? near.slice(0, depth) : near;
 }
@@ -49,7 +68,7 @@ export function counterScore(book: CardBook, card: CardId, sample: readonly Coun
   let den = 0;
   for (const s of sample) {
     if (s.weight <= 0) continue;
-    num += counterBp(book, card, s.card) * s.weight;
+    num += counterCell(book, card, s.card) * s.weight;
     den += s.weight;
   }
   return den > 0 ? Math.trunc(num / den) : BP / 2;
@@ -57,6 +76,11 @@ export function counterScore(book: CardBook, card: CardId, sample: readonly Coun
 
 export function sampleOfUnits(units: readonly SeenUnit[]): CounterSample[] {
   return units.map((u) => ({ card: u.card, weight: Math.max(1, u.value) }));
+}
+
+/** Enemy forts as counter samples: 2 × price each (A16.14.7). */
+export function sampleOfForts(forts: readonly { card: CardId; value: number }[]): CounterSample[] {
+  return forts.map((f) => ({ card: f.card, weight: Math.max(1, f.value * FORT_COUNTER_WEIGHT) }));
 }
 
 export function sampleOfMemory(mem: readonly RememberedCard[], book: CardBook): CounterSample[] {
