@@ -57,6 +57,8 @@ export interface SideLook {
   baseSkins?: Partial<Record<AgeId, CosmeticKey>>;
   /** One per decoration anchor, in anchor order; null leaves the anchor empty. */
   decorations?: (CosmeticKey | null)[];
+  /** The backdrop skin of this side's half of the battlefield (`backdrop.<id>`); null or absent is classic. */
+  backdrop?: CosmeticKey | null;
 }
 
 /**

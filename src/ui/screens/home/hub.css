@@ -19,15 +19,15 @@
 }
 @container ui-root (max-height: 480px) {
   .hub {
-    --hub-left-w: 216px;
-    --hub-right-w: 256px;
-    --hub-gap: var(--ui-s3);
+    --hub-left-w: 204px;
+    --hub-right-w: 244px;
+    --hub-gap: var(--ui-s2);
   }
 }
 @container ui-root (max-height: 480px) and (max-width: 819px) {
   .hub {
-    --hub-left-w: 200px;
-    --hub-right-w: 248px;
+    --hub-left-w: 196px;
+    --hub-right-w: 236px;
   }
 }
 .hub .home-scene {
@@ -104,16 +104,16 @@
 .hd__float {
   position: absolute;
   left: 50%;
-  top: 50%;
+  bottom: 0;
   width: min(100cqw, 100cqh * 600 / 340);
   aspect-ratio: 600 / 340;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   animation: hd-in 700ms var(--ui-ease-enter) both;
 }
 @keyframes hd-in {
   from {
     opacity: 0;
-    transform: translate(-50%, calc(-50% + 24px)) scale(0.94);
+    transform: translate(-50%, 24px) scale(0.94);
   }
 }
 .hd__art {
@@ -160,7 +160,7 @@
 }
 /* The launch (MR-15): the island leans in and the clash flares, then VS. */
 .hd.is-launching .hd__float {
-  transform: translate(-50%, -50%) scale(1.08);
+  transform: translateX(-50%) scale(1.08);
   transition: transform var(--ui-dur-medium) var(--ui-ease-anticipate);
 }
 .hd.is-launching .hd-clash {
@@ -801,7 +801,14 @@
   white-space: nowrap;
 }
 .hub-plate__tier {
-  flex: none;
+  white-space: nowrap;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(150, 110, 230, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(170, 140, 240, 0.6);
+  color: #d9c8ff;
+  letter-spacing: 0.02em;
 }
 .hub-plate__format .ui-seg {
   display: flex;

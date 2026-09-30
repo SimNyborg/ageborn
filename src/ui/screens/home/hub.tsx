@@ -20,7 +20,7 @@ import type { FormatId, OpponentSpec } from '@/contracts';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
-import { AiBadge, CurrencyChip, Pill } from '../../components/Chips';
+import { AiBadge, CurrencyChip } from '../../components/Chips';
 import { Segmented } from '../../components/Controls';
 import { formatInt, tierNumeral } from '../../components/format';
 import { AmberIcon, CapsuleIcon, CardsIcon, CrateIcon, GearIcon, StarIcon, TrophyIcon } from '../../components/icons';
@@ -199,16 +199,18 @@ export function MatchPlate(p: {
           </span>
         </span>
         <span class="hub-plate__text">
-          <span class="hub-plate__over">{p.training ? t('ui.hub.training') : t('ui.home.nextOpponent')}</span>
+          <span class="hub-plate__over">
+            {p.training ? t('ui.hub.training') : t('ui.home.nextOpponent')}
+            {o ? (
+              <span class="hub-plate__tier" data-testid="home-opponent-tier">
+                {t('ui.vs.tier', { tier: tierNumeral(o.tier) })}
+              </span>
+            ) : null}
+          </span>
           <span class="hub-plate__name" data-clip-check="">
             {name}
           </span>
         </span>
-        {o ? (
-          <span class="hub-plate__tier">
-            <Pill tone="violet">{t('ui.vs.tier', { tier: tierNumeral(o.tier) })}</Pill>
-          </span>
-        ) : null}
       </div>
       {!p.training && p.formats.length > 1 ? (
         <div class="hub-plate__format">

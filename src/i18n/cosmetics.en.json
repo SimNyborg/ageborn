@@ -6,7 +6,8 @@
       "baseFlag": "Base flags",
       "nationalFlag": "National flags",
       "baseSkin": "Base skins",
-      "decoration": "Decorations"
+      "decoration": "Decorations",
+      "backdrop": "Backdrops"
     },
     "emote": {
       "bonk": {
@@ -549,13 +550,46 @@
         "name": "Crystal Flower"
       }
     },
+    "backdrop": {
+      "golden_dusk": {
+        "name": "Golden Dusk"
+      },
+      "harvest": {
+        "name": "Harvest Moon"
+      },
+      "winterfall": {
+        "name": "Winterfall"
+      },
+      "blossom": {
+        "name": "Blossom Spring"
+      },
+      "starry_night": {
+        "name": "Starry Night"
+      },
+      "lantern_festival": {
+        "name": "Lantern Festival"
+      },
+      "thunderstorm": {
+        "name": "Thunderstorm"
+      },
+      "ember_sky": {
+        "name": "Ember Sky"
+      },
+      "northern_lights": {
+        "name": "Northern Lights"
+      },
+      "eclipse": {
+        "name": "Eclipse"
+      }
+    },
     "ui": {
       "found": "{n}/{max} found",
       "foundAll": "{n}/{max} found across all collections",
       "tab": {
         "flags": "Flags",
         "decorations": "Decorations",
-        "quotes": "Quotes"
+        "quotes": "Quotes",
+        "backdrops": "Backdrops"
       },
       "equipped": "Equipped",
       "equippedName": "{name} equipped",
@@ -586,7 +620,8 @@
         "baseFlag": "Base flag",
         "nationalFlag": "National flag",
         "baseSkin": "Base skin",
-        "decoration": "Decoration"
+        "decoration": "Decoration",
+        "backdrop": "Backdrop"
       },
       "wheel": "Battle wheel",
       "wheelHint": "Tap an emote to add or remove it. {n} of {max} slots used.",
@@ -624,7 +659,11 @@
       "collectionsTitle": "Cosmetic collections",
       "inWheel": "In wheel",
       "add": "Add",
-      "alsoFound": "Also found: {name} ({collection})"
+      "alsoFound": "Also found: {name} ({collection})",
+      "backdrop": "Battle backdrop",
+      "backdropHint": "Your half of the battlefield wears it in every age. The enemy half keeps its own sky.",
+      "backdropClassic": "Classic skies",
+      "backdropPreview": "Your half · {age}"
     },
     "hud": {
       "mute": "Mute opponent",

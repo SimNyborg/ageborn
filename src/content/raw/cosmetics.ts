@@ -1,6 +1,6 @@
 /**
  * The cosmetic collections (DESIGN A18.9.4, owner direction 2026-09-28): emotes, quotes, base flags,
- * national flags, base skins and base decorations. Data only: id, collection, rarity, source and the
+ * national flags, base skins, base decorations and battle backdrops (2026-09-30). Data only: id, collection, rarity, source and the
  * art id (`cosmetic.<collection>.<id>`, A14.4) that the visuals draw.
  *
  * - All earned (A6.2: nothing is sold): starters, the Time Capsule and Wardrobe Crate drop pools
@@ -183,4 +183,18 @@ export const collectionItems: CosmeticItemDef[] = [
   { id: 'potted_cactus', collection: 'decoration', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.decoration.potted_cactus', nameKey: 'cosmetic.decoration.potted_cactus.name', kind: 'plant' },
   { id: 'bonsai', collection: 'decoration', rarity: 'rare', source: { kind: 'feat', feat: 'humble_beginnings' }, art: 'cosmetic.decoration.bonsai', nameKey: 'cosmetic.decoration.bonsai.name', kind: 'plant' },
   { id: 'crystal_flower', collection: 'decoration', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.decoration.crystal_flower', nameKey: 'cosmetic.decoration.crystal_flower.name', kind: 'plant' },
+  // Backdrops (owner request 2026-09-30): battle background skins. Each one restyles your half's sky,
+  // silhouettes, light and weather in every age (the age's own landmarks stay, so the age still reads);
+  // the enemy half keeps its own look and the A11 seam blends the two. None at the start: the classic
+  // sky of each age is the default.
+  { id: 'golden_dusk', collection: 'backdrop', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.backdrop.golden_dusk', nameKey: 'cosmetic.backdrop.golden_dusk.name' },
+  { id: 'harvest', collection: 'backdrop', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.backdrop.harvest', nameKey: 'cosmetic.backdrop.harvest.name' },
+  { id: 'winterfall', collection: 'backdrop', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.backdrop.winterfall', nameKey: 'cosmetic.backdrop.winterfall.name' },
+  { id: 'blossom', collection: 'backdrop', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.backdrop.blossom', nameKey: 'cosmetic.backdrop.blossom.name' },
+  { id: 'starry_night', collection: 'backdrop', rarity: 'rare', source: { kind: 'crate' }, art: 'cosmetic.backdrop.starry_night', nameKey: 'cosmetic.backdrop.starry_night.name' },
+  { id: 'lantern_festival', collection: 'backdrop', rarity: 'epic', source: { kind: 'capsule' }, art: 'cosmetic.backdrop.lantern_festival', nameKey: 'cosmetic.backdrop.lantern_festival.name' },
+  { id: 'thunderstorm', collection: 'backdrop', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.backdrop.thunderstorm', nameKey: 'cosmetic.backdrop.thunderstorm.name' },
+  { id: 'ember_sky', collection: 'backdrop', rarity: 'epic', source: { kind: 'road', trophies: 2100 }, art: 'cosmetic.backdrop.ember_sky', nameKey: 'cosmetic.backdrop.ember_sky.name' },
+  { id: 'northern_lights', collection: 'backdrop', rarity: 'legendary', source: { kind: 'crate' }, art: 'cosmetic.backdrop.northern_lights', nameKey: 'cosmetic.backdrop.northern_lights.name' },
+  { id: 'eclipse', collection: 'backdrop', rarity: 'legendary', source: { kind: 'road', trophies: 3500 }, art: 'cosmetic.backdrop.eclipse', nameKey: 'cosmetic.backdrop.eclipse.name' },
 ];

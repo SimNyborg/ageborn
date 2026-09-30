@@ -7,7 +7,7 @@
  *
  * Pixi types are referenced as type-only `import()` types, so this module has no runtime imports (B2).
  */
-import type { AgeId, CardId, EffectId, Foil, Pt, RoleGroup, Side, SideLook, SkinId, TeamPreset, VisualId } from './ids';
+import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Pt, RoleGroup, Side, SideLook, SkinId, TeamPreset, VisualId } from './ids';
 
 export type ClipName = 'spawn' | 'idle' | 'walk' | 'attack' | 'hit' | 'stun' | 'die' | 'victory' | 'ability';
 
@@ -139,7 +139,11 @@ export interface ArtProvider {
   createUnit(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): UnitView;
   createTurret(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): TurretView;
   createBase(o: { age: AgeId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): BaseView;
-  createBackdrop(o: { left: AgeId; right: AgeId; arena: string }): BackdropView;
+  /**
+   * `skins`: each half's backdrop skin (`backdrop.<id>`, A18.9.4), left = side 0; absent or null
+   * draws that half's classic sky. Optional: providers that do not know skins ignore it.
+   */
+  createBackdrop(o: { left: AgeId; right: AgeId; arena: string; skins?: { left?: CosmeticKey | null; right?: CosmeticKey | null } }): BackdropView;
   createProjectile(visualId: VisualId, side: Side): EffectView;
   createEffect(effectId: EffectId, o?: Record<string, number>): EffectView;
   /** Base flag, national flag, decorations and skin restyle of one side (A18.9.4); optional. */

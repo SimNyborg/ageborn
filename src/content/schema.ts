@@ -635,7 +635,7 @@ const FeatsSchema = v.strictObject({
   ),
 });
 
-const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration']);
+const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop']);
 const CosmeticSourceSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('start') }),
   v.strictObject({ kind: v.literal('capsule') }),
@@ -679,6 +679,7 @@ const CollectionsSchema = v.strictObject({
     baseFlag: v.nullable(cosmeticKey),
     nationalFlag: v.nullable(cosmeticKey),
     decorations: v.array(v.nullable(cosmeticKey)),
+    backdrop: v.nullable(cosmeticKey),
   }),
 });
 

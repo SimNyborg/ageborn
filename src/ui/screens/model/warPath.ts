@@ -10,8 +10,25 @@ import type { TabId } from '../../router';
 
 export type NodeState = 'beaten' | 'current' | 'locked';
 
+/**
+ * What a node looks like on the map (owner decision 2026-09-30: varied node types): a **boss** banner
+ * with the General's portrait, an **elite** shield (the Hard-marked Lieutenant, puzzle and spike
+ * levels), a **treasure** chest (a level whose first clear gives a named card), a **story** scroll (a
+ * level that teaches something, A18.7.5) or a plain **battle** disc.
+ */
+export type NodeKind = 'boss' | 'elite' | 'treasure' | 'story' | 'battle';
+
+export function nodeKind(level: WarPathLevel): NodeKind {
+  if (level.role === 'boss') return 'boss';
+  if (hardMarked(level)) return 'elite';
+  if (level.reward.card) return 'treasure';
+  if (level.teaches) return 'story';
+  return 'battle';
+}
+
 export interface MapNode {
   level: WarPathLevel;
+  kind: NodeKind;
   state: NodeState;
   stars: number;
   crown: number;
@@ -54,8 +71,10 @@ export function mapNodes(save: SaveDoc, content: Content): MapNode[] {
   const curIndex = cur ? content.warPath.order.indexOf(cur) : content.warPath.order.length;
   return content.warPath.order.map((id, i) => {
     const stars = p.stars[id] ?? 0;
+    const level = content.warPath.levels[id]!;
     return {
-      level: content.warPath.levels[id]!,
+      level,
+      kind: nodeKind(level),
       state: stars > 0 ? 'beaten' : id === cur ? 'current' : 'locked',
       stars,
       crown: p.crowns[id] ?? 0,

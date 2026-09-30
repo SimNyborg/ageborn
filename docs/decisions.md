@@ -982,3 +982,7 @@ A review of the built ladder (economy, honesty, visual and bug lenses) confirmed
 - **Art:** the owner prefers the earlier cartoon style over the realistic restyle. The realistic Stone Age sheets are reverted to the cartoon sheets (public/art and unitSheets.gen.ts from 304040b), KO stars and cartoon dust return. The realistic Blender pipeline stays in art/blender/styles/realistic/ but is parked. New direction: keep the cartoon style and raise its quality: better animation (anticipation, squash and stretch, follow-through), more detail per figure, and distinct attack styles per unit.
 - **Home:** the new Home layout is liked, but the War Path looks too simple and uninteresting. The 1v1 battle (the future online 2-player mode, ladder today) must be the first and primary thing on Home; the War Path against bots becomes a secondary, offline way to play and earn cards and currency, and its map needs a much richer look.
 - The realistic restyle workflow is cancelled.
+
+## Owner direction 2026-09-30: natural attacks and movement
+
+Every figure gets the attack and movement a viewer expects from its body and weapon. The Mammoth Matriarch gores with its tusks, and the riders in its howdah throw light projectiles (the existing small rider attack, visual only). Recorded as an addendum to the cartoon upgrade plan.

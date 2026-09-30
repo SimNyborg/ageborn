@@ -16,6 +16,7 @@
 import type { AgeId } from '@/contracts';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
+import { Hills, SetPieces, Water } from './regionScenery';
 
 export interface RegionTheme {
   skyTop: string;
@@ -179,10 +180,12 @@ function Skyline(p: { age: AgeId; w: number; h: number; hz: number; t: RegionThe
           <g key={key} transform={`translate(${x} ${hz}) scale(${s})`}>
             <path d="M-110 0 L-80 -26 L-30 -20 L0 -34 L30 -20 L80 -26 L110 0 Z" fill="#6b6a62" />
             <path d="M-80 -26 L-30 -20 L0 -34" stroke="#9b998c" stroke-width="3" fill="none" />
-            <g transform="translate(150 -2)" class="wp-bob">
-              <path d="M-40 0 h80 l-12 14 h-56 z" fill="#4a3526" />
-              <path d="M-14 0 v-70 M16 0 v-56" stroke="#3b2a1e" stroke-width="3" />
-              <path d="M-12 -66 q22 12 0 26 z M-12 -38 q26 10 0 30 z M18 -52 q18 10 0 22 z M18 -28 q20 8 0 22 z" fill={t.accent} />
+            <g transform="translate(150 -2)">
+              <g class="wp-bob">
+                <path d="M-40 0 h80 l-12 14 h-56 z" fill="#4a3526" />
+                <path d="M-14 0 v-70 M16 0 v-56" stroke="#3b2a1e" stroke-width="3" />
+                <path d="M-12 -66 q22 12 0 26 z M-12 -38 q26 10 0 30 z M18 -52 q18 10 0 22 z M18 -28 q20 8 0 22 z" fill={t.accent} />
+              </g>
             </g>
           </g>,
         );
@@ -584,7 +587,13 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
     const k = 0.6 + ((y - hz) / Math.max(1, p.h - hz)) * 0.9;
     tufts.push(`M${(x - 3 * k).toFixed(1)} ${y.toFixed(1)} l${(1 * k).toFixed(1)} ${(-5 * k).toFixed(1)} M${x.toFixed(1)} ${y.toFixed(1)} l0 ${(-7 * k).toFixed(1)} M${(x + 3 * k).toFixed(1)} ${y.toFixed(1)} l${(-1 * k).toFixed(1)} ${(-5 * k).toFixed(1)}`);
   }
-  const props: { x: number; y: number; s: number; f: Prop; v: number }[] = [];
+  // Owner decision 2026-09-30: hills, water and two set pieces per region make the map richer.
+  const hillRng = mulberry32(fnv1a32(`hills:${p.age}`));
+  const water = Water({ age: p.age, w: p.w, h: p.h, hz, roadY: p.roadY, clear: p.clear, t, rng });
+  const pieces = SetPieces({ age: p.age, w: p.w, h: p.h, hz, roadY: p.roadY, clear: p.clear, t, bottomLimit: Math.min(water.blocked.y0 - 6, p.h - p.bottomClear - 10) });
+  const blocked = (x: number, y: number) =>
+    (x > water.blocked.x0 && x < water.blocked.x1 && y > water.blocked.y0) || pieces.blocked.some((b) => x > b.x0 && x < b.x1 && y > b.y0 && y < b.y1);
+  const props: { x: number; y: number; s: number; f: Prop | null; v: number; art?: ComponentChildren }[] = [];
   const list = PROPS[p.age];
   const step = 46;
   for (let x = 12; x < p.w - 12; x += step * (0.6 + rng.next() * 0.9)) {
@@ -593,10 +602,13 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
     const top = hz + 24;
     const bottom = p.h - p.bottomClear;
     const y = above ? ry - p.clear - rng.next() * Math.max(10, ry - p.clear - top) : ry + p.clear + 16 + rng.next() * Math.max(10, bottom - ry - p.clear);
-    if (y < top || y > bottom + 40) continue;
+    const f = list[Math.floor(rng.next() * list.length)]!;
+    const v = rng.next();
+    if (y < top || y > bottom + 40 || blocked(x, y)) continue;
     const depth = (y - hz) / Math.max(1, p.h - hz);
-    props.push({ x, y, s: 0.55 + depth * 0.75, f: list[Math.floor(rng.next() * list.length)]!, v: rng.next() });
+    props.push({ x, y, s: 0.55 + depth * 0.75, f, v });
   }
+  for (const it of pieces.items) props.push({ x: it.x, y: it.y, s: it.s, f: null, v: 0, art: it.art });
   props.sort((a, b) => a.y - b.y);
   return (
     <svg class="wp-art" width={p.w} height={p.h} viewBox={`0 0 ${p.w} ${p.h}`} aria-hidden="true">
@@ -611,12 +623,14 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
         </linearGradient>
       </defs>
       <path d={`M0 ${hz + 14} Q${p.w * 0.25} ${hz + 4} ${p.w * 0.5} ${hz + 12} T${p.w} ${hz + 10} V${p.h} H0 Z`} fill={`url(#${id}-g)`} />
+      {Hills({ w: p.w, hz, t, rng: hillRng })}
       {patches}
+      {water.art}
       <path d={tufts.join(' ')} stroke={t.patchLight} stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".55" />
       <rect y={hz} width={p.w} height="40" fill={`url(#${id}-haze)`} />
       {props.map((q, i) => (
         <g key={i} transform={`translate(${q.x.toFixed(1)} ${q.y.toFixed(1)}) scale(${q.s.toFixed(2)})`}>
-          {q.f(t, q.v)}
+          {q.f ? q.f(t, q.v) : q.art}
         </g>
       ))}
     </svg>

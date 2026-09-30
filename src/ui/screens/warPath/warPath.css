@@ -1519,3 +1519,188 @@
   color: var(--ui-text-2);
   font-size: var(--ui-fs-caption);
 }
+
+/* ---- scenery life (owner decision 2026-09-30: a richer map); all still under reduce motion ---- */
+.wp-shimmer path {
+  animation: wp-shimmer 2600ms ease-in-out infinite alternate;
+}
+@keyframes wp-shimmer {
+  from {
+    transform: translateX(-5px);
+    opacity: 0.25;
+  }
+  to {
+    transform: translateX(5px);
+    opacity: 0.85;
+  }
+}
+.wp-surf {
+  animation: wp-surf 3200ms ease-in-out infinite;
+}
+@keyframes wp-surf {
+  50% {
+    transform: translateY(3px);
+    opacity: 0.25;
+  }
+}
+.wp-boat {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: wp-boat 3400ms ease-in-out infinite;
+}
+@keyframes wp-boat {
+  0%,
+  100% {
+    transform: rotate(-3deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-2px);
+  }
+}
+.wp-flow path {
+  animation: wp-flow 2400ms linear infinite;
+}
+@keyframes wp-flow {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+.wp-reed {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: hd-sway 3000ms ease-in-out infinite alternate;
+}
+.wp-fire {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: wp-fire 380ms ease-in-out infinite alternate;
+}
+@keyframes wp-fire {
+  from {
+    transform: scale(0.92, 1.06) skewX(-3deg);
+  }
+  to {
+    transform: scale(1.06, 0.92) skewX(3deg);
+  }
+}
+.wp-ember {
+  animation: wp-ember 1600ms linear infinite;
+}
+.wp-ember--2 {
+  animation-delay: -800ms;
+}
+@keyframes wp-ember {
+  from {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(6px, -26px);
+    opacity: 0;
+  }
+}
+.wp-cannonPuff {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wp-cannon 4200ms ease-out infinite;
+}
+@keyframes wp-cannon {
+  0%,
+  70% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  74% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-10px, -12px) scale(1.8);
+    opacity: 0;
+  }
+}
+.wp-train {
+  animation: wp-train 7s ease-in-out infinite alternate;
+}
+@keyframes wp-train {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(52px);
+  }
+}
+.wp-radar {
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  animation: wp-radar 3200ms ease-in-out infinite;
+}
+@keyframes wp-radar {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(-1);
+  }
+}
+.wp-heli {
+  animation: wp-heli 4800ms ease-in-out infinite;
+}
+@keyframes wp-heli {
+  0%,
+  30%,
+  100% {
+    transform: translateY(0);
+  }
+  55%,
+  75% {
+    transform: translateY(-16px);
+  }
+}
+.wp-rotor {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wp-rotor 180ms linear infinite alternate;
+}
+@keyframes wp-rotor {
+  to {
+    transform: scaleX(0.25);
+  }
+}
+.wp-hover {
+  animation: wp-hover 3800ms ease-in-out infinite;
+}
+@keyframes wp-hover {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.wp-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wp-pulse-glow 1800ms ease-in-out infinite;
+}
+@keyframes wp-pulse-glow {
+  50% {
+    transform: scale(1.3);
+    opacity: 0.6;
+  }
+}
+.wp-swirl {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wp-spin 9s linear infinite;
+}
+.ui-root[data-reduce-motion='true'] .wp-map :is(.wp-shimmer path, .wp-surf, .wp-boat, .wp-flow path, .wp-reed, .wp-fire, .wp-ember, .wp-cannonPuff, .wp-train, .wp-radar, .wp-heli, .wp-rotor, .wp-hover, .wp-pulse, .wp-swirl) {
+  animation: none !important;
+}

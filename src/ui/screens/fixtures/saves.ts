@@ -105,6 +105,8 @@ function warPathFixture(content: Content, beaten: number, stars: (i: number) => 
   // The unlock ceremonies of what is already open have played (ui-plan 2.6).
   const flags: Record<string, boolean> = {};
   for (const [f, lv] of Object.entries(content.warPath.unlocks)) if (legacy || beaten >= lv) flags[`ui-unlock.${f}`] = true;
+  // The Campaign card joins Home with the end of the onboarding (owner decision 2026-09-30).
+  if (legacy || beaten >= 2) flags['ui-unlock.campaign'] = true;
   if (beaten > 0 || legacy) {
     flags['ui-seen.amber'] = true;
     flags['ui-seen.dust'] = true;

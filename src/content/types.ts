@@ -668,8 +668,12 @@ export interface EmoteDef {
   nameKey: string;
 }
 
-/** The cosmetic collections (DESIGN A18.9.4). An item's key is `<collection>.<id>`. */
-export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration';
+/**
+ * The cosmetic collections (DESIGN A18.9.4). An item's key is `<collection>.<id>`. `backdrop` is the
+ * battle background skin (A18.9.4 "Backdrop skins", owner request 2026-09-30): a themed restyle of your
+ * half's sky and parallax layers in every age.
+ */
+export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration' | 'backdrop';
 
 /**
  * Where a collection item comes from (A18.9.4: all earned, nothing sold). `capsule` and `crate` items
@@ -743,6 +747,8 @@ export interface CosmeticCollections {
     baseFlag: string | null;
     nationalFlag: string | null;
     decorations: (string | null)[];
+    /** The battle backdrop skin; null is each age's own classic sky. */
+    backdrop: string | null;
   };
 }
 
@@ -753,7 +759,7 @@ export interface Cosmetics {
   emotes: EmoteDef[];
   /** A new profile's look (A5.8: Tar Pit banner and Recruit title at the start; no frame until Codex 5). */
   defaults: { banner: string; frame: string; title: string };
-  /** Emotes, quotes, base and national flags, base skins and decorations (A18.9.4). */
+  /** Emotes, quotes, base and national flags, base skins, decorations and backdrops (A18.9.4). */
   collections: CosmeticCollections;
 }
 

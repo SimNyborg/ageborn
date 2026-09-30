@@ -169,6 +169,11 @@ export interface CosmeticLoadout {
   baseSkins: Partial<Record<AgeId, CosmeticKey>>;
   /** One per base decoration anchor (3 anchors); null leaves it empty. */
   decorations: (CosmeticKey | null)[];
+  /**
+   * The battle backdrop skin (`backdrop.<id>`, save v8): restyles your half of the battlefield in
+   * every age; null keeps each age's classic sky.
+   */
+  backdrop: CosmeticKey | null;
 }
 
 /** A single-player difficulty (A18.6): Easy, Normal, Hard, Expert, Legendary. */

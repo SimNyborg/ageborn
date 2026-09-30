@@ -1,8 +1,8 @@
 /**
  * Profile cosmetics (DESIGN A5.8 "Other cosmetics", A6.1): 8 banners, 8 frames, 13 titles, 6 emotes,
- * and the cosmetic collections (A18.9.4): emotes, quotes, base and national flags, base skins and
- * decorations (items in `raw/cosmetics.ts`). There is no text chat anywhere (A5.8, A7.1): quotes are
- * fixed lines. Cosmetics never change stats.
+ * and the cosmetic collections (A18.9.4): emotes, quotes, base and national flags, base skins,
+ * decorations and battle backdrops (items in `raw/cosmetics.ts`). There is no text chat anywhere
+ * (A5.8, A7.1): quotes are fixed lines. Cosmetics never change stats.
  */
 import { collectionItems } from './raw/cosmetics';
 import type { Cosmetics } from './types';
@@ -88,6 +88,8 @@ export const cosmetics: Cosmetics = {
       // Never inferred from location: no national flag until the player picks one
       nationalFlag: null,
       decorations: ['decoration.fire_bowl', null, 'decoration.fern'],
+      // Each age's own classic sky until the player picks a backdrop skin
+      backdrop: null,
     },
   },
 };
