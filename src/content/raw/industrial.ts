@@ -63,7 +63,7 @@ export const industrial: RawAgeTables = {
       // Harpoon; ranged AA mods; priority armored.
       // Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner (no damage bonus)
       id: 'harpoon_gunner', kind: 'unit', age: 'industrial', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 260, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 286, speed: 65, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {

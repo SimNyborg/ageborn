@@ -502,14 +502,36 @@ function SummaryChip(p: { r: RewardStep }) {
   }
 }
 
-/** Everything that is not a staged step, in one row that expands on tap (A15.13). */
-function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null; tipCard?: string; tipAge?: string }) {
-  const { t, content } = useUi();
-  // The Anti-heavy tip names a card and an age (A9.2); other tips have no variables.
+/**
+ * The loss tip (A9.2), always in view at the top of the Rewards column (review 2026-09-30: inside the
+ * collapsed "Also earned" row nobody saw it). The Anti-heavy tip names a card and an age and offers
+ * that age's Army tab, where the card can be added; the wave tip has no variables and no button.
+ */
+function ResultTip(p: { tipKey: string; tipCard?: string; tipAge?: string }) {
+  const { t, content, router } = useUi();
   const cardKey = p.tipCard ? content.units[p.tipCard]?.nameKey : undefined;
-  const tipVars = { card: cardKey ? t(cardKey) : '', age: p.tipAge ? t(ageNameKey(p.tipAge as AgeId)) : '' };
+  const age = p.tipAge as AgeId | undefined;
+  const tipVars = { card: cardKey ? t(cardKey) : '', age: age ? t(ageNameKey(age)) : '' };
+  return (
+    <div class="result-tip" data-testid="result-tip" onClick={(e) => e.stopPropagation()}>
+      <span class="result-tip__icon" aria-hidden="true">
+        <InfoIcon size={20} />
+      </span>
+      <span class="result-tip__text">{t(p.tipKey, tipVars)}</span>
+      {age && p.tipCard ? (
+        <Button kind="secondary" size="m" icon={<SwordsIcon size={18} />} testid="result-tip-army" onClick={() => router.jump({ id: 'warPlan', age }, 'army')}>
+          {t('ui.result.tipArmy')}
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+/** Everything that is not a staged step, in one row that expands on tap (A15.13). */
+function SummaryRow(p: { steps: RewardStep[] }) {
+  const { t } = useUi();
   const [open, setOpen] = useState(false);
-  if (p.steps.length === 0 && !p.tipKey) return null;
+  if (p.steps.length === 0) return null;
   // Several titles at once read as one chip ("3 new titles"); the open list names each.
   const titles = p.steps.filter((r) => r.kind === 'title').length;
   const chips = titles > 1 ? p.steps.filter((r) => r.kind !== 'title') : p.steps;
@@ -543,11 +565,6 @@ function SummaryRow(p: { steps: RewardStep[]; tipKey: string | null; tipCard?: s
           {p.steps.map((r, i) => (
             <Reward key={i} r={r} animate={false} />
           ))}
-          {p.tipKey ? (
-            <li class="result-sum__tip" data-testid="result-tip">
-              <InfoIcon size={20} /> {t(p.tipKey, tipVars)}
-            </li>
-          ) : null}
         </ul>
       ) : null}
     </div>
@@ -784,6 +801,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           aria-live="polite"
           onClick={skipOne}
         >
+          {info.tipKey ? <ResultTip tipKey={info.tipKey} tipCard={info.tipCard} tipAge={info.tipAge} /> : null}
           <h2 class="result__h" id="result-rewards-title">
             {t('ui.result.rewards')}
           </h2>
@@ -792,7 +810,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
               <Stage key={i} stage={st} animate={!reduce} />
             ))}
           </ul>
-          {done ? <SummaryRow steps={plan.summary} tipKey={info.tipKey ?? null} tipCard={info.tipCard} tipAge={info.tipAge} /> : null}
+          {done ? <SummaryRow steps={plan.summary} /> : null}
           {done && night ? (
             <p class="result__night" data-testid="result-night">
               {t('ui.result.night')}

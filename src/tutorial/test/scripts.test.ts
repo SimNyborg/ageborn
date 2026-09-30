@@ -22,6 +22,7 @@ import {
   scriptForMatch,
   stagedTraining,
   starterLoadout,
+  sec,
 } from '../scripts';
 
 const words = (s: string): number => s.trim().split(/\s+/).length;
@@ -70,8 +71,9 @@ describe('match 1 script (A8)', () => {
     });
   });
 
-  it('sends exactly one Tuskback and otherwise Training Dummies', () => {
-    expect(GROGG_SCRIPT.sends.filter((s) => s.slot === 1)).toHaveLength(1);
+  it('sends two Tuskbacks (the second meets the Spear Hunter) and otherwise Training Dummies', () => {
+    expect(GROGG_SCRIPT.sends.filter((s) => s.slot === 1).map((s) => s.tick)).toEqual([sec(33), sec(55)]);
+    expect(GROGG_SCRIPT.sends.map((s) => s.tick)).toEqual([...GROGG_SCRIPT.sends.map((s) => s.tick)].sort((a, b) => a - b));
     expect(GROGG_SCRIPT.sends.every((s) => s.slot === 0 || s.slot === 1)).toBe(true);
   });
 

@@ -4,7 +4,7 @@
  *   npx tsx tools/sim-cli.ts balance   [--mode smoke|full] [--matches N] [--mirror N] [--cards a,b] [--formats short,standard,full]
  *                                      [--tier 5] [--level 7] [--seed 1] [--workers N]
  *                                      [--no-mirror] [--no-scenarios] [--no-gate] [--patch file.json]
- *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,standard] [--tier 7] [--workers N] [--no-a18] [--no-power-rows] [--no-gate] [--patch file.json]
+ *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,standard] [--tier 7] [--workers N] [--no-a18] [--no-power-rows] [--no-lane] [--lane-matches N] [--no-gate] [--patch file.json]
  *   npx tsx tools/sim-cli.ts strength  [--mode smoke|full] [--matches N] [--pairs N] [--tiers 2,4,6,8,10] [--proxies a,b]
  *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--no-gate]
@@ -52,6 +52,8 @@ Commands:
                   --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,standard
                   --tier 7 --level 7 --seed 1 --no-a18 (skip the A18.12 duel and difficulty rows)
                   --no-power-rows (skip the A2.9.12 no_power, bait and gate sniper rows)
+                  --no-lane (skip the per-age lane gate: mono Heavy vs tier VII and mono Anti-heavy vs
+                  mono Heavy in every one-age window), --lane-matches N (per row and age; 40 smoke, 80 full)
   strength        AI tiers vs human-like scripted strategies, and adjacent tiers head to head
                   --mode smoke|full --matches N (per cell) --pairs N (per tier pair, 0 = none)
                   --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
@@ -76,7 +78,7 @@ const COMMON_FLAGS = ['out', 'gate', 'workers'];
 /** The flags of each command; anything else is a typo and must not silently start a default run. */
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   balance: ['mode', 'matches', 'mirror', 'cards', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
-  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'patch'],
+  exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'lane', 'lane-matches', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   economy: ['days', 'seed', 'seeds'],
   drops: ['mode', 'openings', 'streams', 'seed'],
@@ -213,6 +215,8 @@ export async function main(argv: readonly string[]): Promise<number> {
         seed: int(a, 'seed', d.seed),
         a18Rows: bool(a, 'a18', true),
         powerRows: bool(a, 'power-rows', true),
+        laneRows: bool(a, 'lane', true),
+        laneMatches: int(a, 'lane-matches', d.laneMatches ?? 40),
         workers,
         onProgress: progressPrinter('exploits'),
       }, patchedGameContent());

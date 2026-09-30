@@ -410,7 +410,8 @@
       "outcomeLost": "Lost",
       "outcomeDraw": "Draw",
       "continue": "Continue",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "tipArmy": "Open Army"
     },
     "warplan": {
       "rename": "Rename plan",

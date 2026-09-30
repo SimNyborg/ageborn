@@ -53,6 +53,26 @@ describe('v8 → v9: the Anti-heavy Rares join the starter kit', () => {
     expect(out.warPlans[0]!.loadouts['stone']!.units).toEqual(['bonker', 'pebbler', 'tuskback', 'drum_shaman', 'sabertooth', 'mammoth_matriarch']);
   });
 
+  it('an unopened onboarding capsule 1 or 2 brings the new scripted Support Rares, NEW', () => {
+    const old = fixture(8) as unknown as SaveDoc;
+    const stack = (card: string) => ({ card, rarity: 'rare' as const, copies: 1, isNew: true, foil: 'none' as const, dust: 0 });
+    const cap = (id: string, scriptIndex: number, cards: string[]) => ({
+      id, kind: 'win' as const, tier: 'bronze' as const, startTier: 'clay' as const, scriptIndex, age: null,
+      contents: { stacks: [...cards.map(stack), { card: 'bonker', rarity: 'common' as const, copies: 6, isNew: false, foil: 'none' as const, dust: 0 }], amber: 10, dust: 0, skin: null },
+      createdAt: 0,
+    });
+    old.capsules.pending = [cap('cap-a', 1, ['spear_hunter', 'phalangite']), cap('cap-b', 2, ['pikeman', 'grenadier']), cap('cap-c', 3, ['pikeman'])];
+    for (const c of ['drum_shaman', 'standard_bearer', 'friar', 'field_surgeon']) delete old.collection[c];
+    const doc = v9.up!(JSON.parse(JSON.stringify(old))) as SaveDoc;
+    const cards = (i: number) => doc.capsules.pending[i]!.contents.stacks.map((s) => [s.card, s.isNew]);
+    expect(cards(0)).toEqual([['drum_shaman', true], ['standard_bearer', true], ['bonker', false]]);
+    expect(cards(1)).toEqual([['friar', true], ['field_surgeon', true], ['bonker', false]]);
+    // Only the onboarding capsules 1 and 2 change.
+    expect(cards(2)).toEqual([['pikeman', true], ['bonker', false]]);
+    expect(validateSaveDoc(doc).ok).toBe(true);
+    expect(v9.up!(JSON.parse(JSON.stringify(doc)))).toEqual(doc);
+  });
+
   it('is idempotent: a re-run changes nothing', () => {
     const once = v9.up!(fixture(8)) as SaveDoc;
     const twice = v9.up!(JSON.parse(JSON.stringify(once))) as SaveDoc;

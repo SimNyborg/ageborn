@@ -76,3 +76,19 @@ export function loadoutUnits(i: TickInput): CardId[] {
 export function eventOfSide(e: SimEvent, side: Side): boolean {
   return 'side' in e && e.side === side;
 }
+
+/**
+ * True when an enemy Heavy-group unit is alive on the lane within `viewLu` of the player's front (the
+ * foremost own unit, else the own gate): the follow camera frames the front (A17.4), so it is on screen.
+ */
+export function foeHeavyInView(i: TickInput, viewLu: number): boolean {
+  const units = i.config.content.units;
+  let front = 0;
+  for (const u of i.state.units) if (u.side === i.side && u.hp > 0) front = Math.max(front, pOf(u.x, i.side));
+  const reach = viewLu * MILLI;
+  for (const u of i.state.units) {
+    if (u.side === i.side || u.hp <= 0 || u.summoned || units[u.card]?.group !== 'heavy') continue;
+    if (Math.abs(pOf(u.x, i.side) - front) <= reach) return true;
+  }
+  return false;
+}

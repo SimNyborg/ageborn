@@ -230,14 +230,12 @@ describe('strings that spell out table numbers', () => {
       expect(d(id)).toContain('double damage');
     }
     const armoredBp = (id: string) => unit(id).attacks[0]?.mods?.find((m) => m.vs === 'armored')?.bp;
-    for (const id of ['spear_hunter', 'phalangite', 'pikeman', 'bazooka_trooper', 'graviton_halberdier']) {
+    for (const id of ['spear_hunter', 'phalangite', 'pikeman', 'harpoon_gunner', 'bazooka_trooper', 'graviton_halberdier']) {
       expect(armoredBp(id), id).toBe(30000);
-      expect(d(id)).toContain('triple damage');
+      expect(d(id).toLowerCase()).toContain('triple damage');
     }
-    for (const id of ['grenadier', 'harpoon_gunner']) {
-      expect(armoredBp(id), id).toBe(25000);
-      expect(d(id)).toContain('×2.5');
-    }
+    expect(armoredBp('grenadier')).toBe(25000);
+    expect(d('grenadier')).toContain('×2.5');
     expect(armoredBp('rail_gunner')).toBe(20000);
     expect(d('rail_gunner')).toContain('double damage');
     const turret = (id: string) => {

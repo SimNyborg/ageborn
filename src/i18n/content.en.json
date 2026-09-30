@@ -48,7 +48,7 @@
     "riveter": { "name": "Riveter", "desc": "Tough infantry with an oversized wrench. Big Wrench: the first hit of each fight deals 50% more damage. Blunt against armor." },
     "carbineer": { "name": "Carbineer", "desc": "Quick carbine fire at long range. Hits ground and air." },
     "steam_golem": { "name": "Steam Golem", "desc": "Armored steam machine. Piston Punch: the first hit of each fight deals double damage and knocks the target back." },
-    "harpoon_gunner": { "name": "Harpoon Gunner", "desc": "Anti-heavy. ×2.5 damage to armored and mech targets, which it aims at first. Reel In: the first hit of each fight pulls the target closer. Brace: immune to knockback and charge bonuses. Hits ground and air." },
+    "harpoon_gunner": { "name": "Harpoon Gunner", "desc": "Anti-heavy. Triple damage to armored and mech targets, which it aims at first. Reel In: the first hit of each fight pulls the target closer. Brace: immune to knockback and charge bonuses. Hits ground and air." },
     "flare_spotter": { "name": "Flare Spotter", "desc": "Support. Flares mark armored targets first: marked enemies take 20% more damage from everything. Stays behind the front line." },
     "sapper": { "name": "Sapper", "desc": "Siege runner that heads straight for the enemy base and hits it hard. Fights units only when blocked. Its charge goes off when it dies, hurting nearby ground enemies." },
     "land_dreadnought": { "name": "Land Dreadnought", "desc": "Legendary landship. Its cannon deals splash damage while two sponson gunners shoot ground and air. When it falls, the crew bails out as two Carbineers." },

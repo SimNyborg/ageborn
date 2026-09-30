@@ -2,6 +2,14 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-09-30: Heavy counter review fixes (cloud session, not yet published)
+
+- Heavy spam is now countered in every age, checked per age (new gate in `sim:exploits`): mono Heavy beats the tier VII bot at most 6.3% in any one-age window (Industrial was 87.5%), and mono Anti-heavy beats mono Heavy in every age (Modern was 0%). Harpoon Gunner ×3.0 and HP 286, Bazooka Trooper HP 363, Grenadier damage 55; the bot's anti-camp turret now reaches Heavies at its gate and it saves for it.
+- Match 1: the Spear Hunter comes with its 100 gold, the prompt waits until the Tuskback is on screen and ends when the Spear Hunter walks on; a second (level-10) Tuskback meets it at Grogg's gate.
+- The loss tip "Add {card} to {age}: it beats Heavies." is visible on the Result screen with an Open Army button.
+- Checks: typecheck, lint, 4,183 unit tests (215 files, 1 skipped), build, 186 e2e tests pass. Exploit smoke has no new failure.
+- Open for the owner: the Standard War Final Bell is still high (tier V 41.5%, VII 58%); bots that bank for Heavies still win more mirrors. Details in `docs/decisions.md` ("Heavy counter review fixes").
+
 ## 2026-09-29: A18 phases 0-3: longer matches, War Council, three stances (cloud session, not yet published)
 
 **What works**

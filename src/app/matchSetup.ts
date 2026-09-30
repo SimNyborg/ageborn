@@ -30,6 +30,7 @@ import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from
 import { applyPowerMatchRule, commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
   GROGG_SCRIPT,
+  MATCH1_GROGG_LEVELS,
   MATCH1_SEED,
   MATCH1_TRAYS,
   match1Loadouts,
@@ -321,7 +322,7 @@ export function tutorialMatch1(save: SaveDoc | null, content: CompiledContent, g
     tier: 0,
     level: 1,
     format: 'tutorial',
-    side: { label: groggName, isBot: true, loadouts: groggPlan, levels: uniformLevels(content, 1), skins: {} },
+    side: { label: groggName, isBot: true, loadouts: groggPlan, levels: { ...uniformLevels(content, 1), ...MATCH1_GROGG_LEVELS }, skins: {} },
     modifiers: [],
     seed: MATCH1_SEED,
     warmUp: false,

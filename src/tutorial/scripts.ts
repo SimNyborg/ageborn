@@ -47,7 +47,12 @@ export type BeatTrigger =
   | { k: 'treasuryAffordable'; afterTick: number }
   /** A second mount is affordable and every owned mount is built on. */
   | { k: 'mountAffordable'; minAgeIndex: number }
-  | { k: 'lastStandArmed' };
+  | { k: 'lastStandArmed' }
+  /**
+   * An enemy Heavy-group unit is alive on the lane within `viewLu` of the player's front (the follow
+   * camera frames the front, A17.4), so the prompt shows while the Heavy is on screen.
+   */
+  | { k: 'foeHeavy'; viewLu: number };
 
 /** What ends a shown beat. */
 export type BeatDone =
@@ -55,6 +60,8 @@ export type BeatDone =
   | { k: 'event'; e: SimEvent['e'] }
   /** The player trained the card in this tray slot. */
   | { k: 'trained'; slot: number }
+  /** A unit of the card in this tray slot spawned on the lane (queued is not enough). */
+  | { k: 'spawned'; slot: number }
   /** Shown for a fixed time. */
   | { k: 'shownFor'; ticks: number };
 
@@ -119,8 +126,8 @@ const TUSKBACK = 1 as const;
 /**
  * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (610 / 580 /
  * 390 / 900 XP since the A18.3.2 XP sources; 680 / 690 / 520 / 700 before) and Grogg's base at 90% (content, `docs/requests/wp1-tutorial-pacing.md`) the match
- * follows the A8 draft: Medieval at ~0:55, Gunpowder ~1:33, Modern ~1:55, Future ~2:25 and Grogg
- * falls at ~2:30 (A17's longer lane with faster walking and the three-wide front end it about 30 s
+ * follows the A8 draft: Medieval at ~0:57, Gunpowder ~1:27, Modern ~1:46, Future ~2:19 and Grogg
+ * falls at ~2:25 (A17's longer lane with faster walking and the three-wide front end it about 35 s
  * before A8's 3:00). Grogg sends three dummies before his Tuskback,
  * so the four Stone lessons (Bonker, first kill, Pebbler, Rock Tosser) come before the first evolve.
  */
@@ -132,8 +139,13 @@ function groggSends(): GroggSend[] {
     { tick: sec(22), slot: DUMMY },
     // The Tuskback trains for 4 s and walks on at ~0:37 [0:40].
     { tick: sec(33), slot: TUSKBACK },
+    // A second Tuskback walks on at ~0:59, as the player's Spear Hunter (trained at ~0:40) reaches
+    // Grogg's gate: the first one fights the Bonkers camped there and falls before any Spear Hunter
+    // can walk the lane, so this one is the Heavy the Spear Hunter is seen to beat (review 2026-09-30).
+    { tick: sec(55), slot: TUSKBACK },
   ];
   for (let t = sec(42); t <= sec(600); t += sec(8)) sends.push({ tick: t, slot: DUMMY });
+  sends.sort((a, b) => a.tick - b.tick);
   return sends;
 }
 
@@ -159,11 +171,22 @@ export const MATCH1_TURRET_GRANT_TICK = sec(38);
 export const MATCH1_TURRET_GRANT = 150;
 /**
  * The Anti-heavy beat (A8, owner feedback 2026-09-29): as Grogg's Tuskback walks on (~0:37), the
- * Spear Hunter card slides in with its "Beats Heavy" chip; its prompt follows the Rock Tosser beat
- * (~0:39, while the Tuskback still stands; a quick player's Bonkers kill it by ~0:43). The player pays
- * for it: with the 100 gold A8 drafted, the stronger army toppled Grogg before the Future beat.
+ * Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, so the
+ * prompt (after the Rock Tosser beat, while the Tuskback is in view) can always be followed at once.
+ * Review 2026-09-30: without the gold the prompt showed with 7 gold and timed out before the card was
+ * affordable, and the Tuskback died before the queued Spear Hunter walked on.
  */
 export const MATCH1_SPEAR_TICK = sec(37);
+/** The Spear Hunter's price, granted with its unlock. */
+export const MATCH1_SPEAR_GOLD = 100;
+/** How close to the player's front Grogg's Heavy must be for the prompt (the follow camera's frame). */
+export const MATCH1_HEAVY_VIEW_LU = 500;
+/**
+ * Grogg's card levels in match 1 (the rest stay at level 1): his one Tuskback is a level-10 veteran
+ * (+45% HP and damage, A5.1), so it holds against the Bonkers camping at his gate until the player's
+ * Spear Hunter walks up to it, and the extra 100 gold does not topple Grogg before the Future beat.
+ */
+export const MATCH1_GROGG_LEVELS: Readonly<Record<CardId, number>> = { tuskback: 10 };
 /**
  * Arrow Storm is charged at 1:04 [1:20], about 9 s into Medieval. The natural charge (50 s, halved
  * on evolve) would only finish just before Gunpowder, so the script fills it.
@@ -183,8 +206,8 @@ export function match1TrainingScript(content: CompiledContent, groggUnits: reado
   const events: TrainingEvent[] = [
     { tick: MATCH1_PEBBLER_TICK, side: 0, unlockSlot: SLOT.ranged },
     { tick: MATCH1_TURRET_GRANT_TICK, side: 0, grantGold: MATCH1_TURRET_GRANT },
-    // A8 ~0:37: the Spear Hunter slides in (the Anti-heavy beat).
-    { tick: MATCH1_SPEAR_TICK, side: 0, unlockSlot: SLOT.antiHeavy },
+    // A8 ~0:37: the Spear Hunter slides in (the Anti-heavy beat), with its price.
+    { tick: MATCH1_SPEAR_TICK, side: 0, unlockSlot: SLOT.antiHeavy, grantGold: MATCH1_SPEAR_GOLD },
     // A2.9.10 match 1: the Arrow Storm beat; the script grants its price and readies the Home slot at once.
     { tick: MATCH1_POWER_TICK, side: 0, grantGold: MATCH1_POWER_GOLD, setPowerPpm: { slot: 'home', ppm: 1_000_000 } },
     ...groggGrants(content, groggUnits),
@@ -210,8 +233,9 @@ export const MATCH1: MatchScript = {
     // An action prompt: it asks for the Pebbler and stays until one is trained (or Stone is over).
     { id: 'm1.pebbler', textKey: 'tutorial.m1.pebbler', target: 'card1', trigger: { k: 'atTick', tick: MATCH1_PEBBLER_TICK }, done: { k: 'trained', slot: SLOT.ranged }, timeoutTicks: sec(30), onlyInAge: 0 },
     { id: 'm1.buildTurret', textKey: 'tutorial.m1.buildTurret', target: 'mount0', trigger: { k: 'atTick', tick: MATCH1_TURRET_GRANT_TICK }, done: { k: 'event', e: 'turretBuildStart' }, timeoutTicks: sec(30), onlyInAge: 0 },
-    // ~0:39: "Spear Hunters beat Heavies" (the Anti-heavy class, A2.6): trains the card that beats the Tuskback.
-    { id: 'm1.spearHunter', textKey: 'tutorial.m1.spearHunter', target: 'card3', trigger: { k: 'atTick', tick: MATCH1_SPEAR_TICK }, done: { k: 'trained', slot: SLOT.antiHeavy }, timeoutTicks: sec(15), onlyInAge: 0 },
+    // ~0:39: "Spear Hunters beat Heavies" (the Anti-heavy class, A2.6): shows while Grogg's Tuskback is
+    // in view and ends when the Spear Hunter walks on (not when it is queued).
+    { id: 'm1.spearHunter', textKey: 'tutorial.m1.spearHunter', target: 'card3', trigger: { k: 'foeHeavy', viewLu: MATCH1_HEAVY_VIEW_LU }, done: { k: 'spawned', slot: SLOT.antiHeavy }, timeoutTicks: sec(20), onlyInAge: 0 },
     { id: 'm1.evolve', textKey: 'tutorial.m1.evolve', target: 'evolve', trigger: { k: 'evolveReady' }, done: { k: 'event', e: 'ascendStart' }, timeoutTicks: sec(30), onlyInAge: 0, jumpQueue: true },
     // ~0:55: the Ascension show speaks for itself.
     { id: 'm1.ascension', textKey: null, target: null, trigger: { k: 'ageUp', age: 'medieval' }, done: { k: 'shownFor', ticks: 1 } },
@@ -232,13 +256,13 @@ export const MATCH1: MatchScript = {
  */
 export const MATCH1_TIMING = {
   firstKill: 366, // 0:18.3 [0:17]
-  evolveReady: 1038, // 0:51.9 [0:50]
-  medieval: 1101, // 0:55.1 [0:55]
+  evolveReady: 1048, // 0:52.4 [0:50]
+  medieval: 1131, // 0:56.6 [0:55]
   arrowStormReady: 1280, // 1:04.0 [1:20]
-  gunpowder: 1881, // 1:34.1 [1:30]
-  modern: 2301, // 1:55.1 [2:00]
-  future: 2961, // 2:28.1 [2:35]; the Spear Hunter beat (owner feedback 2026-09-29) moved it 3 s
-  groggFalls: 3007, // 2:30.4 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0); the Spear Hunter beat
+  gunpowder: 1731, // 1:26.6 [1:30]; the Spear Hunter's 100 gold (review 2026-09-30) speeds the middle ages
+  modern: 2121, // 1:46.1 [2:00]
+  future: 2781, // 2:19.1 [2:35]; the Spear Hunter beat (owner feedback 2026-09-29, review 2026-09-30)
+  groggFalls: 2902, // 2:25.1 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0); the Spear Hunter beat; his level-10 Tuskbacks keep it 6 s after Future
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */

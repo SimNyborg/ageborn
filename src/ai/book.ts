@@ -40,6 +40,8 @@ export interface TurretCard {
   /** Cost in milli-gold. */
   cost: number;
   hitsAir: boolean;
+  /** Minimum range from the own gate in milli-lu (0 = none): mortars cannot hit units camping the gate. */
+  minRange: number;
   /** Rough strength for choosing between the two loadout turrets: damage per second, area weighted. */
   strength: number;
 }
@@ -258,6 +260,7 @@ export function cardBook(content: CompiledContent): CardBook {
       ageIndex: ageIndex(t.age),
       cost: t.cost * MILLI,
       hitsAir: t.attack.hitsAir,
+      minRange: (t.attack.minRange ?? 0) * MILLI,
       strength: turretStrength(t),
     };
   }

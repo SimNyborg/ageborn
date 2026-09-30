@@ -63,7 +63,7 @@ export const gunpowder: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 50, intervalMs: 1800, windupPct: 50, range: 150, hitsGround: true, hitsAir: false,
+          damage: 55, intervalMs: 1800, windupPct: 50, range: 150, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.lob' },
           dmgType: 'blast', sfx: 'shot_lob', splashRadius: 35, mods: damageMods.grenadier, priority: 'armored',
         },

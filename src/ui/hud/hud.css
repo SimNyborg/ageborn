@@ -1499,13 +1499,18 @@
 
 /* A9.2 counter hint (owner feedback 2026-09-29): an Anti-heavy card while the enemy fields Heavies.
    The card wears a warm ring and lifts once; a tab above it says why. Motion is a lift and a glow,
-   never a flash (MR-69); reduced motion keeps the ring and the tab without the movement. */
-.hud-card.is-counter {
-  border-color: #ffb45e;
+   never a flash (MR-69); reduced motion keeps the ring and the tab without the movement. The ring is
+   two-tone (a light inner line inside a deep orange band) so it never reads as the gold "affordable"
+   border at phone size (review 2026-09-30). The `.state-ready` selector keeps it on an affordable card
+   (the affordable glow further down used to override it). */
+.hud-card.is-counter,
+.hud-card.is-counter.state-ready {
+  border-color: #fff1dc;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 0 0 2px rgba(213, 94, 0, 0.9),
-    0 0 14px rgba(255, 150, 60, 0.55),
+    0 0 0 3px #d55e00,
+    0 0 0 4.5px rgba(15, 19, 27, 0.9),
+    0 0 16px 2px rgba(255, 120, 40, 0.7),
     0 3px 0 rgba(0, 0, 0, 0.5);
   animation: hud-counter-lift 620ms var(--ui-ease-back) 1;
 }

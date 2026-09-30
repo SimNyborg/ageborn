@@ -13,7 +13,7 @@ import type { Side } from '@/contracts';
 import { nextIncomePick, researchCost } from '@/core';
 import { AdaptiveHints, type AdaptiveHintsOptions } from './hints';
 import { ADAPTIVE, type AdaptiveHintId, type Beat, type MatchScript, type PromptTarget } from './scripts';
-import { PPM_FULL, evolveReady, eventOfSide, goldOf, trayCard, type TickInput } from './view';
+import { PPM_FULL, evolveReady, eventOfSide, foeHeavyInView, goldOf, trayCard, type TickInput } from './view';
 
 export interface TutorialPrompt {
   /** Beat id (`m1.sendBonker`) or adaptive hint id (`hint.powerReady`). */
@@ -72,6 +72,8 @@ export class TutorialDirector {
   /** Last tick each event kind of the player's side was seen, and each card was trained. */
   private readonly lastEvent = new Map<string, number>();
   private readonly lastTrained = new Map<string, number>();
+  /** Last tick each card of the player's side walked on (spawned, not summoned). */
+  private readonly lastSpawned = new Map<string, number>();
 
   constructor(
     script: MatchScript | null,
@@ -127,7 +129,10 @@ export class TutorialDirector {
       if (!eventOfSide(e, this.side)) continue;
       this.lastEvent.set(e.e, tick);
       if (e.e === 'ageUp') this.agesReached.add(e.age);
-      if (e.e === 'unitSpawned' && !e.summoned) this.lastTrained.set(e.card, tick);
+      if (e.e === 'unitSpawned' && !e.summoned) {
+        this.lastTrained.set(e.card, tick);
+        this.lastSpawned.set(e.card, tick);
+      }
     }
     for (const q of i.state.sides[this.side].queue) this.lastTrained.set(q.card, tick);
     const age = i.state.sides[this.side].ageIndex;
@@ -241,6 +246,8 @@ export class TutorialDirector {
       }
       case 'lastStandArmed':
         return me.lastStand === 'armed';
+      case 'foeHeavy':
+        return foeHeavyInView(i, t.viewLu);
       default:
         return false;
     }
@@ -254,6 +261,10 @@ export class TutorialDirector {
       case 'trained': {
         const card = trayCard(i, d.slot);
         return card !== null && (this.lastTrained.get(card) ?? -1) >= r.triggeredAt;
+      }
+      case 'spawned': {
+        const card = trayCard(i, d.slot);
+        return card !== null && (this.lastSpawned.get(card) ?? -1) >= r.triggeredAt;
       }
       case 'shownFor':
         return i.state.tick - r.shownAt >= d.ticks;

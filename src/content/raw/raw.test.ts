@@ -106,7 +106,7 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'corsair', age: 'gunpowder', rarity: 'common', role: 'infantry', cost: 50, hp: 291, damage: 36, intervalMs: 1000,
     range: 16, speed: 72, size: 'small', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'slash',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: -20, idleResetMs: 2000 }) },
-  { id: 'grenadier', age: 'gunpowder', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 253, damage: 50, intervalMs: 1800,
+  { id: 'grenadier', age: 'gunpowder', rarity: 'rare', role: 'antiArmor', cost: 100, hp: 253, damage: 55, intervalMs: 1800,
     range: 150, speed: 68, size: 'medium', hits: 'G', tags: ['light', 'bio', 'ranged'], fx: 'proj.lob', sfx: 'shot_lob', dmgType: 'blast',
     extra: (u) => {
       expect(u.attacks[0]?.splashRadius).toBe(35);
@@ -268,7 +268,7 @@ const FIXTURE_POWER_EFFECT: Record<string, Record<string, number>> = { arrow_sto
  * Anti-heavy numbers the live content has since retuned (owner feedback 2026-09-29: HP +10%, armored
  * and mech ×3.0 / ×2.5, a first `legendary` mod, Brace for the class); the frozen fixture keeps these.
  */
-const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'>> = {
+const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'> & Partial<Pick<UnitRow, 'damage'>>> = {
   spear_hunter: {
     hp: 200,
     extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }]),
@@ -276,6 +276,7 @@ const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'>> = {
   pikeman: { hp: 270, extra: (u) => expect(u.abilities).toContainEqual({ kind: 'brace' }) },
   grenadier: {
     hp: 230,
+    damage: 50,
     extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 15000 }, { vs: 'mech', bp: 15000 }, { vs: 'light', bp: 5000 }]),
   },
   rail_gunner: {

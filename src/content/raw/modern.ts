@@ -60,7 +60,7 @@ export const modern: RawAgeTables = {
     {
       // Rocket; ranged AA mods; priority armored
       id: 'bazooka_trooper', kind: 'unit', age: 'modern', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 330, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 363, speed: 65, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {

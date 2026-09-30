@@ -135,11 +135,14 @@ export const damageMods: RawDamageMods = {
  * from {@link damageMods} so the frozen raw fixture keeps its shape.
  */
 export const antiHeavyMods: Readonly<Record<'harpoon' | 'rail', DamageMod[]>> = {
-  /** Harpoon Gunner: legendary ×2.0, armored ×2.5, mech ×2.5, light ×0.5. */
+  /**
+   * Harpoon Gunner: legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.5 (×2.5 left Industrial as the
+   * one age where mono Heavy still beat the tier VII bot, 87.5% in `w1.industrial`; review 2026-09-30).
+   */
   harpoon: [
     { vs: 'legendary', bp: 20000 },
-    { vs: 'armored', bp: 25000 },
-    { vs: 'mech', bp: 25000 },
+    { vs: 'armored', bp: 30000 },
+    { vs: 'mech', bp: 30000 },
     { vs: 'light', bp: 5000 },
   ],
   /** Rail Gunner (pierces 2): armored ×2.0, mech ×2.0, light ×0.5 (unchanged). */

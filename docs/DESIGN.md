@@ -63,7 +63,7 @@ Also changed from the backbone:
 
 - **Melee ranges shortened.** Melee is 12-20 lu so fighters visibly touch; reach is 55-70 lu. Range is always measured edge to edge.
 - **Simpler repo.** A single npm package with folder layering replaces the pnpm multi-package workspace. Agents hit fewer tooling failures, and lint still enforces the layering.
-- **Starter kit changed.** It holds every common plus each age's Anti-armor Rare (granted by script and Age Unlock Capsules). A new player therefore always has a full counter triangle.
+- **Starter kit changed.** It holds every common plus each age's Anti-armor (Anti-heavy) Rare from the first launch, in slot 4 of every starter loadout (build phase H3, 2026-09-30; A5.1, A6.5). A new player therefore always has a full counter triangle.
 
 ### 0.3 Review round
 
@@ -240,7 +240,7 @@ Ages are data. New ages need only content, visuals and audio entries plus one `A
 **Anti-heavy (owner feedback 2026-09-29: "Heavy is very strong; we need a class that counters it"; decided, build phases H1-H5 in `docs/decisions.md`).** The Anti-armor role keeps its ids (`antiArmor`) but its player-facing class is **Anti-heavy**, drawn as the Heavy class's kite shield split by a spear, so the two icons read as a pair. Measured before (tree `9f427999`): a single Anti-armor lost to a single Heavy in every age (1v1 M 7-28), groups won only narrowly (6v4 M 41-80, Modern 41), no card or hint named Heavy as its prey, the bots' counter table rated the pair a coin flip in six ages, mono Anti-armor lost to mono Heavy in 100% of matches, and mono Heavy beat the tier VII bot 73%. It needed no new category, only numbers, a name, availability and an AI rule:
 
 - **Brace for the whole class:** every Anti-heavy card is immune to knockback and first-hit bonuses (so a Heavy's charge does not apply to it).
-- **Numbers** (A5 tables): armored and mech ×3.0 for the melee cards and the Bazooka Trooper, ×2.5 for the Grenadier and the Harpoon Gunner, ×2.0 kept for the Rail Gunner (it pierces); a first `legendary` entry keeps every Legendary matchup at today's multiplier (×2.0; Grenadier ×1.5); HP +10% except the Harpoon Gunner.
+- **Numbers** (A5 tables): armored and mech ×3.0 for the melee cards, the Bazooka Trooper and the Harpoon Gunner, ×2.5 for the Grenadier, ×2.0 kept for the Rail Gunner (it pierces); a first `legendary` entry keeps every armored or mech Legendary at today's multiplier (×2.0; Grenadier ×1.5). The one exception: the Balloon Admiral (air, no armor) took ×1.0 from ranged Anti-heavy attacks and now takes ×2.0 from the Harpoon Gunner and the Bazooka Trooper (later-age cards only; on the sim at equal gold they score 52.7 and 60.2 against it; its own age's answers are unchanged). HP +10% for every Anti-heavy card (the Harpoon Gunner and the Bazooka Trooper after the review of 2026-09-30, Bazooka Trooper 330 → 363), Grenadier damage 50 → 55. The review found the aggregate rows hid two ages: in the one-age windows mono Heavy still beat tier VII 87.5% in Industrial and mono Anti-heavy lost 100% in Modern; the per-age lane gate (B12 `sim:exploits`, A2.14) now holds every age.
 - **Available from the start:** every age's Anti-heavy Rare is in the starter kit and the starter loadouts (A3).
 - **Told everywhere:** "Strong vs Heavy" on every Anti-heavy card and "Weak vs Anti-heavy" on every Heavy card (A18.9.1), the counter table regenerated on the real sim (B4), a battle hint when the enemy fields Heavies (A9.2), and the bots answer Heavy with it (A7.2).
 
@@ -251,7 +251,7 @@ Each attack carries an ordered `mods` list. The **first** mod whose tag the targ
 | Infantry melee ("blunt") | armored ×0.70 |
 | Melee Anti-heavy (Spear Hunter, Phalangite, Pikeman, Graviton Halberdier) | legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.75 (was armored ×2.0, mech ×2.0, light ×0.75) |
 | Ranged Anti-heavy: Bazooka Trooper | legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.5 |
-| Ranged Anti-heavy: Harpoon Gunner | legendary ×2.0, armored ×2.5, mech ×2.5, light ×0.5 |
+| Ranged Anti-heavy: Harpoon Gunner | legendary ×2.0, armored ×3.0, mech ×3.0, light ×0.5 (armored and mech were ×2.5 until the review of 2026-09-30) |
 | Ranged Anti-heavy: Rail Gunner | armored ×2.0, mech ×2.0, light ×0.5 (unchanged; pierces 2) |
 | Grenadier | legendary ×1.5, armored ×2.5, mech ×2.5, light ×0.5 (was armored ×1.5, mech ×1.5) |
 | Everything else | none (×1.0) |
@@ -723,7 +723,8 @@ All card tests use both sides at tier V with the Balanced brain and every card a
 | Rules sanity: counter-picker vs each mono spam | ≥ 80% |
 | Rules sanity: triangle, mono vs mono (Heavy > Infantry, AA > Heavy, Infantry > AA) | Each ≥ 70% |
 | Anti-heavy duels (static, real sim, L7, equal gold; owner feedback 2026-09-29) | Anti-heavy vs Heavy M 65-85 in every age at 6 v 4 and 3 v 2; ≥ 60 swapped into an Infantry mix; 1 v 1 ≥ 40 in the melee ages; Heavy vs Infantry and Infantry vs Anti-heavy ≥ 65. Measured with the A2.6 numbers: 72-89, 68-83, 59-78, 49-52, 66-84, 73-84 (before: 41-80, 36-78, 46-74, 19-28, 66-84, 72-85) |
-| Anti-heavy package guard | Mono Heavy vs tier VII ≤ 35% in Short and Standard (as built: **14.0 / 26.5%**; 73.5 / 73.0% before); the Standard War mirror Bell not above today's (tier V 23.0%, tier VII 40.0%; as built **35.5 and 53.0%**, open; Short 47.0 → 45.0 and 57.0 → 50.0%; 200 matches each). Measured Standard levers on the built package (tier V / VII): Gunpowder and Industrial back to ×2.0 with Brace and no HP 31.0 / 52.0% (and mono Heavy 36.5%), the Harpoon Gunner alone at ×2.0 34.0 / 46.0%, Siege base damage ×3 33.0 / 49.0%, ×4 31.0 / 45.5%: none closes it, so the Gunpowder and Industrial lines stay and the Standard grind goes to the owner with the Supply Cache (A18.3.5) as the next step |
+| Anti-heavy per-age lane gate (review 2026-09-30) | In every one-age window `w1.<age>`: mono Heavy vs tier VII ≤ 35% and mono Anti-heavy vs mono Heavy ≥ 70% (40 matches per row and age in the smoke run). Measured: mono Heavy 0 / 0 / 0 / 2.5 / 5.0 / 0 / 6.3 / 0% (Stone to Cosmic; Industrial was 87.5%), mono Anti-heavy 100% in every age except Gunpowder 75% (Modern was 0%) |
+| Anti-heavy package guard | Mono Heavy vs tier VII ≤ 35% in Short and Standard (as built: **14.0 / 26.5%**, after the review fixes **0 / 0%**; 73.5 / 73.0% before); the Standard War mirror Bell not above today's (tier V 23.0%, tier VII 40.0%; as built **35.5 and 53.0%**, open; after the review fixes of 2026-09-30 **41.5 and 58.0%** (tier X 51.5%; ±7 points at 200 matches), still open: the fixed Industrial counter did not bring it down, and restoring the old Harpoon Gunner numbers alone gave 36.5% at tier V while mono Heavy won 72.5% in Industrial again; Short 47.0 → 45.0 and 57.0 → 50.0%; 200 matches each). Measured Standard levers on the built package (tier V / VII): Gunpowder and Industrial back to ×2.0 with Brace and no HP 31.0 / 52.0% (and mono Heavy 36.5%), the Harpoon Gunner alone at ×2.0 34.0 / 46.0%, Siege base damage ×3 33.0 / 49.0%, ×4 31.0 / 45.5%: none closes it, so the Gunpowder and Industrial lines stay and the Standard grind goes to the owner with the Supply Cache (A18.3.5) as the next step |
 | Rules sanity: skill gradient (Save-and-counter vs Balanced script; Balanced script vs cheapest spam) | Each ≥ 80% |
 | Has-an-answer (static, `counters.json`) | A same-age card scores ≥ 55% at equal gold against every non-Legendary card; Legendaries reported, including the three A17 Legendaries (A17.11) |
 | Has-a-starter-answer (static) | Reported |
@@ -849,7 +850,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | corsair | Corsair | C | Infantry | 50 | 291 | 36 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Boarding Hook: first hit of each engagement pulls the target 20 lu toward the Corsair |
 | fusilier | Fusilier | C | Ranged | 75 | 173 | 47 / 2.0 s | 240 | 65 | S | G+A | light bio ranged | Musket |
 | cuirassier | Cuirassier | C | Heavy | 150 | 1,019 | 76 / 1.5 s | 16 | 60 | L | G | armored bio melee | Charge: first hit ×2 and 30 lu knockback |
-| grenadier | Grenadier | R | Anti-heavy | 100 | 253 (was 230) | 50 splash r35 / 1.8 s | 150 | 68 | M | G | light bio ranged | Lob over allies; legendary ×1.5, armored ×2.5, mech ×2.5 (were ×1.5), light ×0.5; priority armored; Brace (new); starter kit |
+| grenadier | Grenadier | R | Anti-heavy | 100 | 253 (was 230) | 55 splash r35 / 1.8 s (was 50) | 150 | 68 | M | G | light bio ranged | Lob over allies; legendary ×1.5, armored ×2.5, mech ×2.5 (were ×1.5), light ×0.5; priority armored; Brace (new); starter kit |
 | field_surgeon | Field Surgeon | R | Support | 110 | 237 | 15 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Heals 55 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport |
 | bronze_cannon | Bronze Cannon | E | Artillery | 200 | 500 | 110 splash r50 / 3.5 s | 280 (min 80) | 45 | L | G | light mech ranged | Arc |
 | balloon_admiral | Balloon Admiral | L | Air bomber | 350 | 1,500 | 110 splash r50 / 1.6 s | bombs below (±40 lu) | 45 | H | G | air legendary | Bomber; bombs the base at the enemy gate (110 per bomb); on death crashes for 250 splash r70 on ground enemies |
@@ -868,7 +869,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | trench_raider | Trench Raider | C | Infantry | 50 | 394 | 49 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt |
 | rifleman | Rifleman | C | Ranged | 75 | 234 | 32 / 1.0 s | 260 | 65 | S | G+A | light bio ranged | Bullet. Suppressing Fire: hits slow the target's move speed 15% for 1.0 s |
 | tankette | Tankette | C | Heavy | 150 | 1,378 | 104 / 1.5 s | 90 | 50 | L | G | armored mech ranged | Shell |
-| bazooka_trooper | Bazooka Trooper | R | Anti-heavy | 100 | 330 (was 300) | 64 / 1.2 s | 200 | 65 | M | G+A | light bio ranged | Rocket; ranged Anti-heavy mods, armored ×3.0; priority armored; Brace (new); starter kit |
+| bazooka_trooper | Bazooka Trooper | R | Anti-heavy | 100 | 363 (was 300, then 330) | 64 / 1.2 s | 200 | 65 | M | G+A | light bio ranged | Rocket; ranged Anti-heavy mods, armored ×3.0; priority armored; Brace (new); starter kit |
 | radio_operator | Radio Operator | R | Support | 110 | 320 | 20 / 1.2 s (G+A) | 200 | 65 | S | G+A | light bio support ranged | Every 8 s calls a shell on the nearest enemy ground unit within 400 lu: lands after 1.0 s, 120 splash r50 (area rule). One call-in per side per 3 s. followSupport |
 | gyrocopter | Gyrocopter | E | Air gunship | 200 | 740 | 20 / 0.3 s | 150 | 80 | M | G+A | air mech | Obeys stance |
 | behemoth_tank | Behemoth Tank | L | Siege heavy | 350 | 4,100 | Main gun 170 splash r40 / 2.5 s at range 240 (G) plus MG 20 / 0.4 s at range 150 (G+A, priority air) | 240 | 35 | H | G / G+A | armored mech legendary | Two independent attacks; only the main gun stops movement |
@@ -1158,7 +1159,7 @@ Ladder results:
 | 8 | Chrono Rift | 3,400 | All | All | VIII-X | 8 | Rift banner, Platinum Capsule (was Aeon until 2026-09-29), Crystal Spire skin; The Warden joins the ladder |
 
 - An arena changes the ground and weather layer. Skyline layers still follow each player's age.
-- **Age Unlock Capsule:** that age's AA Rare, plus 4 copies of each of that age's 3 common units.
+- **Age Unlock Capsule:** that age's Support Rare (the Anti-heavy Rare is in the starter kit since build phase H3), plus 4 copies of each of that age's 3 common units.
 
 **Trophy Road.** 60 nodes: every 50 trophies from 50 to 2,000, then every 100 from 2,100 to 4,000. Node trophies = row base + column offset. "Gate N" gives the arena gate rewards above. "A" = Amber, "D" = Dust.
 
@@ -1249,8 +1250,8 @@ Pity and script indices count every opened capsule except Age Unlock Capsules. W
 
 | Capsule | Tier | Guaranteed contents |
 |---|---|---|
-| 1 | Bronze | Spear Hunter NEW, Phalangite NEW (A17.13) |
-| 2 | Silver | Pikeman NEW, Grenadier NEW |
+| 1 | Bronze | Drum Shaman NEW, Standard Bearer NEW (not auto-equipped; were Spear Hunter and Phalangite until build phase H3, which moved every Anti-heavy Rare into the starter kit) |
+| 2 | Silver | Friar NEW, Field Surgeon NEW (were Pikeman and Grenadier) |
 | 3 | Bronze | Log Roller NEW |
 | 4 | Silver | First Epic (random, unowned, from the pool) |
 | 5 | Gold (was Aeon until 2026-09-29; same contents plus 100 Dust) | Mammoth Matriarch, full walkout (~35-40 minutes into a new save). The climb from Clay still uses all 4 strikes. The first Platinum and Aeon are always earned, never scripted |
@@ -1421,7 +1422,7 @@ Terms:
 - **Save for a counter.** `trainCandidates` scores every tray card, affordable or not; an unaffordable card can only set a goal, never be trained. When the best counter score over the whole tray, ignoring gold, beats the best affordable card by at least 0.15, the bot sets a saving goal for that card's cost (the Legendary saving-goal code). The goal lapses after 8 s, or when an enemy unit comes within 300 lu of the bot's gate.
 - **Answer one-type armies, smoothly.** Let s be the largest role-group share of visible enemy army value. The counter weight is multiplied by 1 + 2.5 × max(0, s − 0.4), capped at 2 (×1 at 40%, ×1.5 at 60%, ×2 at 80%). The diversity term and the gold float target shrink by the same factor.
 - **No Legendary saving goal while the push gate fails.**
-- **Answer Heavy with Anti-heavy (owner feedback 2026-09-29; build phase H5, built; tiers III+).** While Heavy-group units are at least half the value of the visible enemy army and that army is worth ≥ 300: (a) a counter-saving goal does not lapse when enemies come within 300 lu of the gate (it still lapses after 8 s), and may be set while they are there; (b) the bot does not train a card whose counter score against that army is below 0.40 while a card at 0.65 or more is in its tray, so it banks for Anti-heavy cards instead of trickling Infantry into Heavies; (c) with Heavies camped within 600 lu of the gate and no turret up, it banks for a first turret on a free mount (ahead of Treasury, Legendary and research goals; a counter goal for an out-of-reach Anti-heavy card may still join it) (the build trace showed Heavies parked at the gate killing every unit on spawn while the bot never built a turret in the first two minutes); (d) while its tray holds an Anti-heavy card whose Troops line can start, it researches only that line or non-Troops picks (it had bought Heavy Weapons at 0:30 against mono Heavy). Measured as built (tier VII vs mono Heavy, 100 per format, with the A2.6 numbers and the real-sim counter table): mono Heavy wins **14.0% Short and 26.5% Standard** (73.5 and 73.0% before; 47% with the numbers alone; 32 / 41% with (a) and (b) only); the bot's Anti-heavy share of unit gold 41% → 77-78%, Infantry 46% → 10-12%. On today's numbers (a) and (b) alone made things worse (the bot won 8%), so the rule ships with the numbers.
+- **Answer Heavy with Anti-heavy (owner feedback 2026-09-29; build phase H5, built; tiers III+).** While Heavy-group units are at least half the value of the visible enemy army and that army is worth ≥ 300: (a) a counter-saving goal does not lapse when enemies come within 300 lu of the gate (it still lapses after 8 s), and may be set while they are there; (b) the bot does not train a card whose counter score against that army is below 0.40 while a card at 0.65 or more is in its tray, so it banks for Anti-heavy cards instead of trickling Infantry into Heavies; (c) with Heavies camped within 600 lu of the gate and no turret up, it banks for a first turret on a free mount (ahead of Treasury, Legendary and research goals; a counter goal for an out-of-reach Anti-heavy card may still join it) (the build trace showed Heavies parked at the gate killing every unit on spawn while the bot never built a turret in the first two minutes); (d) while its tray holds an Anti-heavy card whose Troops line can start, it researches only that line or non-Troops picks (it had bought Heavy Weapons at 0:30 against mono Heavy). Review 2026-09-30: the (c) turret must reach the campers (a turret whose minimum range lies beyond the nearest camping Heavy is chosen only when nothing else fits; the goal had picked the Industrial Mortar Pit, min 60 lu, against Steam Golems 24 lu out), and while the bot banks for it the trains wait even under pressure (units trained one at a time spawned into the campers and died, so the goal was never reached). With this, mono Heavy wins 0% against tier VII in Short and Standard (smoke, 200 each) and ≤ 6.3% in every one-age window. Measured as built (tier VII vs mono Heavy, 100 per format, with the A2.6 numbers and the real-sim counter table): mono Heavy wins **14.0% Short and 26.5% Standard** (73.5 and 73.0% before; 47% with the numbers alone; 32 / 41% with (a) and (b) only); the bot's Anti-heavy share of unit gold 41% → 77-78%, Infantry 46% → 10-12%. On today's numbers (a) and (b) alone made things worse (the bot won 8%), so the rule ships with the numbers.
 - The bot does not build turrets toward its tier maximum: the turret share of kills is reported only (A16.5).
 
 **Push gate (anti-turtle).** Defence value D = enemy army value within 500 lu of their gate + 300 per enemy turret (enemy units in their gate zone count only after the 30 s opening, A17 retune). The bot Charges past mid-lane only when myArmy ≥ 1.3 × D. Otherwise it banks: it sets a Treasury saving goal (if below its cap; a research goal from A18.5), prefers units with range ≥ 250, and holds at the line if its tier allows Hold. From Overdrive onward the gate uses 1.0 × D, and in Siege the bot always Charges. Lane constants are lane-relative (offsets from the own gate, `L − x` for enemy-side rules, A17.13).
@@ -1506,7 +1507,7 @@ On-screen text is at most 8 words. No menu, name prompt or account screen appear
 | ~0:17 | First kill; "+30" flies to the gold counter | "Kills earn gold" |
 | 0:20 | Pebbler card slides in (script `unlockSlot`) | "Pebblers shoot over friends" |
 | 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Tosser" |
-| ~0:37 / ~0:39 (Anti-heavy, build phase H3, built) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip (script `unlockSlot`); right after the Rock Tosser beat (~0:39, the Tuskback still standing) the hand points at the card. No gold grant: with the 100 gold drafted here the stronger army toppled Grogg before the Future beat (retimed: Gunpowder 1:34, Future 2:28, Grogg falls 2:30) | "Spear Hunters beat Heavies" |
+| ~0:37 / ~0:39 (Anti-heavy, build phase H3, reworked after review 2026-09-30) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, 100 gold (`unlockSlot` + `grantGold`). After the Rock Tosser beat the hand points at the card while the Tuskback is within 500 lu of the player's front (on screen with the follow camera; trigger `foeHeavy`), and the beat ends when the Spear Hunter walks on, not when it is queued (done `spawned`, 20 s timeout). Grogg's Tuskbacks are level 10 (+45%, `MATCH1_GROGG_LEVELS`): the first fights the Bonkers camped at his gate until ~0:51; a second walks on at ~0:59 as the Spear Hunter reaches the gate, and the Spear Hunter kills it (~1:07). Retimed: Medieval 0:57, Gunpowder 1:27, Modern 1:46, Future 2:19, Grogg falls 2:25 | "Spear Hunters beat Heavies" |
 | ~0:50 | Tutorial XP (built: 680) fills; Evolve glows steadily on the XP bar | "Evolve!" |
 | ~0:55 | Full Ascension show; 2 Vanguard Footmen march out; tray flips to Footman and Longbowman; Grogg stays in the Stone Age for comedy | none |
 | ~1:20 | Arrow Storm ready; an animated hand drags it onto enemies | "Drag the arrows onto them" |
@@ -4508,7 +4509,7 @@ Theme: steam, rivets, rail and the first electric light, roughly 1850-1915. No g
 | riveter | Riveter | C | Infantry | 50 | 330 | 42 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Big Wrench: the first hit of each engagement deals ×1.5 |
 | carbineer | Carbineer | C | Ranged | 75 | 201 | 33 / 1.2 s | 250 | 65 | S | G+A | light bio ranged | Bullet |
 | steam_golem | Steam Golem | C | Heavy | 150 | 1,187 | 89 / 1.5 s | 16 | 55 | L | G | armored mech melee | Piston Punch: first hit ×2 and 30 lu knockback |
-| harpoon_gunner | Harpoon Gunner | R | Anti-heavy | 100 | 260 | 55 / 1.2 s | 210 | 65 | M | G+A | light bio ranged | Harpoon; ranged mods with armored ×2.5 (was 2.0); priority armored; Brace (new); starter kit. Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner |
+| harpoon_gunner | Harpoon Gunner | R | Anti-heavy | 100 | 286 (was 260) | 55 / 1.2 s | 210 | 65 | M | G+A | light bio ranged | Harpoon; ranged Anti-heavy mods, armored ×3.0 (was 2.0, then 2.5 until the review of 2026-09-30); priority armored; Brace (new); starter kit. Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner |
 | flare_spotter | Flare Spotter | R | Support | 110 | 276 | 17 / 1.2 s | 200 | 65 | S | G+A | light bio support ranged | Priority armored. Every hit marks the target (+20% damage taken from all sources) for 3 s; followSupport |
 | sapper | Sapper | E | Siege | 200 | 560 | 240 vs base / 2.0 s (12 vs units) | 12 | 85 | M | G | light bio melee | siegeOnly. Short Fuse: on death the charge goes off for 180 splash r60 on ground enemies (never the base) |
 | land_dreadnought | Land Dreadnought | L | Siege heavy | 350 | 3,600 | 130 splash r40 / 2.2 s | 160 | 35 | H | G | armored mech ranged legendary | Two sponson gunners (riders) each shoot 10 / 0.5 s at range 160 (G+A); on death the crew bails out as 2 Carbineers (summoned) |
@@ -4686,7 +4687,7 @@ Spawn and death sounds follow the A14.2 defaults.
 
 - A War Plan is **eight** Age Loadouts, one per age. The minimum to play stays 3 units and 1 turret per age used by the format.
 - The starter kit holds every Common of all 8 ages (3 units and 2 turrets each) and each age's default power, all at L1.
-- AA Rares by script: Spear Hunter and Phalangite in capsule 1; Pikeman and Grenadier in capsule 2; Harpoon Gunner and Bazooka Trooper in the Age Unlock Capsules at Arena 2; Rail Gunner and Graviton Halberdier in new Age Unlock Capsules at Arena 3.
+- AA Rares: in the starter kit and slot 4 of every starter loadout since build phase H3 (2026-09-30; A5.1). Before that they came by script (Spear Hunter and Phalangite in capsule 1; Pikeman and Grenadier in capsule 2; Harpoon Gunner and Bazooka Trooper in the Age Unlock Capsules at Arena 2; Rail Gunner and Graviton Halberdier at Arena 3); the scripted capsules and Age Unlock Capsules now bring the Support Rares.
 - The builder shows age tabs (one loadout visible at a time on phones) and the plan average over the ages the next format uses. Auto-fill, presets, "Equip now" and the deck advisor are unchanged.
 - Save migration (WP8): every stored War Plan gains Bronze, Industrial and Cosmic loadouts filled with that age's starter Commons, both Common turrets and the default power; the collection gains the 15 new starter Commons at L1 and the 3 default powers. Nothing owned is lost (A15.1).
 
@@ -4700,7 +4701,7 @@ Spawn and death sounds follow the A14.2 defaults.
 | 2 Frostfang Pass | Short, Standard | Ages 1-4 | Stone to Modern (6 ages) | Age Unlock Capsules: Industrial and Modern (was Modern and Future) |
 | 3 Kingsmoat and up | All | All | All 8 ages | Gate 3 adds Age Unlock Capsules for Future and Cosmic |
 
-- Onboarding script: capsule 1 (Bronze tier) guarantees Spear Hunter NEW and Phalangite NEW; capsules 2-5 unchanged.
+- Onboarding script: capsule 1 (Bronze tier) guarantees Drum Shaman NEW and Standard Bearer NEW (Spear Hunter and Phalangite before build phase H3); capsules 2-5 as in A6.5.
 - Age Capsules pick from 8 ages in the grant dialog. Roll algorithm, pity and odds unchanged.
 - **Pacing.** The pool grows 60% (55 → 88 cards), so each card gets ~37% fewer copies per day. The owner chose to keep today's time to max a card (A17.18 question 5). The economy sim needed more than the ×1.4 first estimated: capsules carry about **×1.75** copies and Amber (built). Tiers (Common / Rare / Epic / Legendary copies, then Amber): Clay 4 / 1 / 1 / 1 and 105, Bronze 5 / 2 / 2 / 1 and 210, Silver 10 / 5 / 2 / 1 and 530, Jade 24 / 10 / 5 / 2 and 1,400, Aeon 26 / 10 / 5 / 2 and 2,640 (this row is the tier called Gold since 2026-09-29; the current ladder is A6.4). Median days to max a card by rarity: 119 / 108 / 68 / 109 (before A17: 114 / 114 / 71 / 109). Bag average 15.7 copies and 398.7 Amber. Upgrade costs are unchanged.
 
@@ -6746,8 +6747,8 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 2. Tutorial beats from A8 appear in order, text ≤ 8 words, each hint at most once; match 1 reaches the Future age and Grogg stays in Stone.
 3. The first evolve shows the full sequence: freeze, flash, pillar, base morph, backdrop wipe from the base, banner, music key lift, allied cheer hop, 2 Vanguard units.
 4. Arrow Storm drag shows the zone and telegraph, then hits.
-5. Capsule 1 climbs to Bronze and reveals Spear Hunter NEW, auto-equipped.
-6. Capsule 2 gives Pikeman and Grenadier; the forced Bonker upgrade plays the slam.
+5. Capsule 1 climbs to Bronze and reveals Drum Shaman NEW and Standard Bearer NEW (not auto-equipped; the summary offers Equip now). The Spear Hunter is already in the Stone loadout from the start, and match 1 taught it at the Tuskback beat.
+6. Capsule 2 gives Friar and Field Surgeon; the forced Bonker upgrade plays the slam.
 7. The stance flag is there from match 1 and the Last Stand button from match 2 (built 2026-09-28); after match 1 the player lands on Home, and War Plan, Customize, Quick Battle and Skirmish are open; capsule 5 plays the Matriarch walkout.
 
 **Battle rules**

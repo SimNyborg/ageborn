@@ -380,6 +380,8 @@ export class Brain {
   spending = true;
   /** A16.3 rule 1: the counter the bot is saving for, and when that goal lapses. */
   private counterGoal: { card: CardId; amount: number; until: number } | null = null;
+  /** A7.2 (c): the nearest camping Heavy's distance from the gate (milli-lu) while the camp turret goal holds. */
+  private campReach: number | null = null;
   /** When the brain last chose a stance change. */
   private stanceTick = -1000000;
   /** When the brain last started a research item (A18.5.8 research gap). */
@@ -527,10 +529,14 @@ export class Brain {
     this.goal = null;
     // A7.2 "Answer Heavy with Anti-heavy" (c): Heavies camp near the gate and no turret is up: bank for
     // the first turret on a free mount (it shoots every Heavy at the gate; units trickle into them).
-    const campTurret =
-      heavyAnswer && !allIn && v.turretsBuilt === 0 && v.foes.some((u) => !u.air && u.def?.group === 'heavy' && u.p <= HEAVY_CAMP_LU)
-        ? this.chooseTurretAt(v, Number.MAX_SAFE_INTEGER)
-        : null;
+    // The turret must reach the campers: a mortar's minimum range misses Heavies at the gate (the
+    // Industrial trace: the goal picked the Mortar Pit, min 60 lu, while Steam Golems stood 24 lu out).
+    let campReach = Number.MAX_SAFE_INTEGER;
+    if (heavyAnswer && !allIn && v.turretsBuilt === 0) {
+      for (const u of v.foes) if (!u.air && u.def?.group === 'heavy' && u.p <= HEAVY_CAMP_LU) campReach = Math.min(campReach, u.p);
+    }
+    this.campReach = campReach < Number.MAX_SAFE_INTEGER ? campReach : null;
+    const campTurret = this.campReach !== null ? this.chooseTurretAt(v, Number.MAX_SAFE_INTEGER) : null;
     if (campTurret) this.goal = { kind: 'turret', amount: campTurret.cost, card: campTurret.card };
     else if (this.counterGoal) this.goal = { kind: 'counter', amount: this.counterGoal.amount, card: this.counterGoal.card };
     else if (!urgent && !allIn) {
@@ -577,7 +583,10 @@ export class Brain {
     const floatTarget = Math.trunc((t.goldFloat * MILLI * BP) / mono) + reserve;
     if (v.gold >= Math.max(floatTarget, this.goal?.amount ?? 0) || wave) this.spending = true;
     else if (v.gold < cheapest) this.spending = false;
-    const mayTrain = !banking && !baiting && !baitHold && v.now >= this.idleUntil && (this.spending || urgent || allIn);
+    // A7.2 (c): while banking for the camp turret, the trains wait even under pressure (a unit trained
+    // alone spawns into the campers and dies; `urgent` would otherwise spend the goal away).
+    const campBank = campTurret !== null && v.gold < campTurret.cost;
+    const mayTrain = !banking && !baiting && !baitHold && !campBank && v.now >= this.idleUntil && (this.spending || urgent || allIn);
 
     const cand: Scored[] = [];
     const add = (action: BotAction, score: number): void => {
@@ -1130,12 +1139,15 @@ export class Brain {
     if (v.ageUncertain) return null;
     const mount = v.turrets.findIndex((x, m) => m < v.mountsOwned && x === null && !v.mountBusy[m]);
     if (mount < 0) return null;
-    const pick = this.bestTurretCard(v, gold);
+    const pick = this.bestTurretCard(v, gold, 0, this.campReach ?? Number.MAX_SAFE_INTEGER);
     return pick ? { kind: 'build', mount, slot: pick.slot, card: pick.card, cost: pick.cost } : null;
   }
 
-  /** The loadout turret to build within `gold` (after a modernise `credit`), or null. */
-  private bestTurretCard(v: View, gold: number, credit = 0): { slot: number; card: CardId; cost: number } | null {
+  /**
+   * The loadout turret to build within `gold` (after a modernise `credit`), or null. With `reach` (milli-lu
+   * from the gate), a turret whose minimum range is beyond it is skipped while another can hit there.
+   */
+  private bestTurretCard(v: View, gold: number, credit = 0, reach = Number.MAX_SAFE_INTEGER): { slot: number; card: CardId; cost: number } | null {
     const { book, persona: P } = this.cfg;
     const foeAir = v.foes.some((u) => u.air);
     let best: { slot: number; card: CardId; cost: number; value: number } | null = null;
@@ -1145,6 +1157,8 @@ export class Brain {
       const cost = Math.max(0, def.cost - credit);
       if (gold < cost) return;
       let value = def.strength;
+      // Out of reach of the campers: last resort only (any turret beats none).
+      if ((def.minRange ?? 0) > reach) value = Math.trunc(value / 1000);
       if (foeAir && def.hitsAir) value = mulBp(value, BP + AIR_TURRET_BONUS_BP);
       if (P.signatureCards.includes(id)) value = mulBp(value, BP + P.signatureBiasBp * 4);
       if (!best || value > best.value) best = { slot, card: id, cost, value };

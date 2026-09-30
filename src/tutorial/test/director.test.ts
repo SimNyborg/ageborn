@@ -12,6 +12,27 @@ function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } 
 
 const kill = (): Ev => ({ e: 'died', id: 900, side: 1, card: 'training_dummy', killerId: 1, killerCard: 'bonker', killerKind: 'unit', killerSide: 0, bountyGold: 30000, bountyXp: 50000, x: 600_000 });
 
+describe('TutorialDirector: the Spear Hunter beat waits for the Heavy', () => {
+  it('does not show while the Tuskback is out of view (over 500 lu from the front) or dead', () => {
+    const h = new Harness(config({ format: 'tutorial' }));
+    const spear = MATCH1.beats.find((b) => b.id === 'm1.spearHunter')!;
+    const d = new TutorialDirector({ id: 'match1', sequential: true, beats: [spear] }, { adaptive: false });
+    h.state.tick = MATCH1_TURRET_GRANT_TICK + 20;
+    h.addUnit(0, 'bonker', 300_000);
+    const tusk = h.addUnit(1, 'tuskback', 1_980_000);
+    d.update(h.input());
+    expect(d.prompt).toBeNull();
+    tusk.hp = 0;
+    tusk.x = 600_000;
+    d.update(h.input());
+    expect(d.prompt).toBeNull();
+    tusk.hp = 10000;
+    h.advance();
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m1.spearHunter');
+  });
+});
+
 describe('TutorialDirector: match 1 beats in A8 order', () => {
   it('walks Bonker → kill → Pebbler → Rock Tosser → Spear Hunter → Evolve → Arrow Storm → stance → Future', () => {
     const { h, d, log } = match1();
@@ -44,13 +65,26 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     h.advance();
     d.update(h.input([{ e: 'turretBuildStart', side: 0, mount: 0, card: 'rock_tosser' }]));
 
-    // ~0:39: the Spear Hunter (unlocked at 0:37 as the Tuskback walks on) follows at once (the Anti-heavy beat).
+    // ~0:39: the Spear Hunter (unlocked at 0:37 as the Tuskback walks on) shows only while Grogg's
+    // Heavy is in view of the player's front, and ends when the Spear Hunter walks on (review 2026-09-30).
     expect(MATCH1_SPEAR_TICK).toBeLessThan(MATCH1_TURRET_GRANT_TICK);
+    expect(d.prompt).toBeNull();
+    h.addUnit(0, 'bonker', 1_500_000);
+    const tusk = h.addUnit(1, 'tuskback', 1_980_000);
+    h.advance();
+    d.update(h.input());
+    // 480 lu from the front: in view
     expect(d.prompt).toMatchObject({ id: 'm1.spearHunter', textKey: 'tutorial.m1.spearHunter', target: 'card3' });
     h.advance();
     h.state.sides[0].queue.push({ card: 'spear_hunter', group: 'antiArmor', progress: 0, total: 50, waiting: false });
     d.update(h.input());
+    // queued is not enough
+    expect(d.prompt?.id).toBe('m1.spearHunter');
+    h.advance(50);
+    h.state.sides[0].queue.length = 0;
+    d.update(h.input([{ e: 'unitSpawned', id: 6, side: 0, card: 'spear_hunter', x: 20_000, summoned: false, level: 1 }]));
     expect(d.prompt).toBeNull();
+    h.state.units.splice(h.state.units.indexOf(tusk), 1);
 
     h.advance();
     h.state.sides[0].xp = 1_000_000;

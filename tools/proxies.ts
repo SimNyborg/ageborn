@@ -15,7 +15,8 @@
  * 9. `random_spam`: a uniformly random affordable tray unit, no turrets, no research, evolves at once,
  *    power on auto-aim when full (A16.5).
  * 10. `mono_heavy`, `mono_ranged`, `mono_antiair`: the mono family at m = 100% (A16.5): only that role
- *    group while the tray has one, otherwise random; no turrets, no research.
+ *    group while the tray has one, otherwise random; no turrets, no research. `mono_antiheavy` is the
+ *    same with the Anti-heavy card (the exploits' per-age lane gate).
  *
  * Human-like strategies for the AI strength matrix (`strength.ts`, owner feedback 2026-09-28):
  *
@@ -82,6 +83,7 @@ export type ProxyId =
   | 'mono_heavy'
   | 'mono_ranged'
   | 'mono_antiair'
+  | 'mono_antiheavy'
   | 'few_then_evolve'
   | 'rush'
   | 'save_counter'
@@ -111,8 +113,8 @@ export type ProxyId =
  */
 export type PowerHabit = 'hoard' | 'spam' | 'never' | 'homeWave' | 'drop' | 'runner' | 'sniper';
 
-/** Mono family groups (A16.5): Heavy, anti-air and Ranged. */
-export type MonoGroup = 'heavy' | 'antiAir' | 'ranged';
+/** Mono family groups (A16.5): Heavy, anti-air and Ranged; Anti-heavy for the per-age lane gate (A2.6). */
+export type MonoGroup = 'heavy' | 'antiAir' | 'ranged' | 'antiArmor';
 
 export interface Strategy {
   id: ProxyId;
@@ -299,6 +301,8 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
   mono_heavy: { ...BALANCED, id: 'mono_heavy', title: 'Mono Heavy spam', train: 'mono', mono: 'heavy', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   mono_ranged: { ...BALANCED, id: 'mono_ranged', title: 'Mono Ranged spam', train: 'mono', mono: 'ranged', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   mono_antiair: { ...BALANCED, id: 'mono_antiair', title: 'Mono anti-air spam', train: 'mono', mono: 'antiAir', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
+  // The per-age lane gate (exploits `lane.*`): only the Anti-heavy card, set up like `mono_heavy`.
+  mono_antiheavy: { ...BALANCED, id: 'mono_antiheavy', title: 'Mono Anti-heavy', train: 'mono', mono: 'antiArmor', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   few_then_evolve: { ...BALANCED, id: 'few_then_evolve', title: 'A few soldiers, then evolve', income: 0, research: [], turrets: 1, maxAlive: 4 },
   rush: { ...BALANCED, id: 'rush', title: 'All-out melee rush', train: 'melee', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   save_counter: {
@@ -405,6 +409,7 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
 export function inMonoGroup(u: UnitDef, g: MonoGroup): boolean {
   if (g === 'antiAir') return u.attacks.some((a) => a.hitsAir) && !u.tags.includes('air');
   if (g === 'heavy') return u.group === 'heavy';
+  if (g === 'antiArmor') return u.group === 'antiArmor';
   return u.group === 'ranged';
 }
 
@@ -435,7 +440,7 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
 ];
 
 /** Every other proxy the tools know (run with `--proxies`). */
-export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'few_then_evolve', 'rush', 'save_counter', 'no_research', 'no_power', 'plain_wave', 'bait_wave', 'gate_sniper'];
+export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'mono_antiheavy', 'few_then_evolve', 'rush', 'save_counter', 'no_research', 'no_power', 'plain_wave', 'bait_wave', 'gate_sniper'];
 
 /** Enemy ground units this close to the own gate make an evolve unsafe (A7.2). */
 const EVOLVE_SAFE_P = 300_000;
