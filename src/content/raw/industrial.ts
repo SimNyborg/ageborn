@@ -189,7 +189,7 @@ export const industrialPowers: readonly PowerDef[] = [
   {
     // Starter. A gun line sweeps a 400 lu zone over 1.5 s: 280 once, ground only. Per unit 280: 85% / 24%
     id: 'gun_line', kind: 'power', age: 'industrial', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: { kind: 'sweep', zone: 400, durationMs: 1500, damage: 280, width: 40, hitsAir: false },
     visualId: 'power.gun_line', sfx: 'pw_gunline', nameKey: 'card.gun_line.name', descKey: 'card.gun_line.desc',
   },
@@ -197,7 +197,7 @@ export const industrialPowers: readonly PowerDef[] = [
     // Road 350. 10 bombs along a 480 lu line over 2.0 s (no jitter); each 150, splash r45; ground only
     // (centre ≤ 760). Per unit ~281: 85% / 24%
     id: 'zeppelin_raid', kind: 'power', age: 'industrial', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 350, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'road', road: 350, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 10, durationMs: 2000, zone: 480, damage: 150, radius: 45,
       jitter: 0, hitsAir: false, pattern: 'line',
@@ -208,7 +208,7 @@ export const industrialPowers: readonly PowerDef[] = [
     // War Path Industrial L5 (Road 1,250). Barbed wire over 350 lu for 6 s (12 pulses), ground only; each
     // pulse 10 damage and snare 40% for 1.0 s. 120: 36% of I; 14.4 disabled unit-seconds at the cap
     id: 'barbed_wire', kind: 'power', age: 'industrial', slot: 'home', reach: 'home', family: 'snare', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 1250, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 2500,
+    source: 'warPath', warPathLevel: 5, road: 1250, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
       kind: 'field', zone: 350, durationMs: 6000, hitsAir: false, damagePerPulse: 10,
       statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
@@ -237,7 +237,7 @@ export const industrialPowers: readonly PowerDef[] = [
   {
     // War Path Industrial L9 (Road 1,400). Your 8 frontmost units regenerate 35% of max HP over 4 s
     id: 'field_hospital', kind: 'power', age: 'industrial', slot: 'field', reach: 'army', family: 'mend', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1400, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 3500,
+    source: 'warPath', warPathLevel: 9, road: 1400, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
     effect: { kind: 'buffAll', maxTargets: 8, statuses: [{ kind: 'regen', magnitudeBp: 3500, durationMs: 4000 }] },
     visualId: 'power.field_hospital', sfx: 'pw_hospital', nameKey: 'card.field_hospital.name', descKey: 'card.field_hospital.desc',
   },

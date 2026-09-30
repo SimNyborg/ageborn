@@ -183,7 +183,7 @@ export const cosmicPowers: readonly PowerDef[] = [
     // Starter. 6 star shards over 2.0 s across a 450 lu zone (even, ±20 lu); each 380, splash r60; hits
     // air. Per unit ~608: 87% / 24% (Star Legionnaire / Hover Tank)
     id: 'starfall', kind: 'power', age: 'cosmic', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 6, durationMs: 2000, zone: 450, damage: 380, radius: 60,
       jitter: 20, hitsAir: true, pattern: 'even',
@@ -195,7 +195,7 @@ export const cosmicPowers: readonly PowerDef[] = [
     // pulse pulls 60% of the way to the centre; each pulse 30 damage and snare 40% for 1.0 s.
     // 240: 34% of I; 9.6 disabled unit-seconds (12.8 per 100 gold)
     id: 'singularity', kind: 'power', age: 'cosmic', slot: 'home', reach: 'home', family: 'pull', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 1800, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 3000,
+    source: 'warPath', warPathLevel: 5, road: 1800, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 5000,
     effect: {
       kind: 'field', zone: 350, durationMs: 4000, hitsAir: false, damagePerPulse: 30, pullBp: 6000,
       statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
@@ -203,11 +203,11 @@ export const cosmicPowers: readonly PowerDef[] = [
     visualId: 'power.singularity', sfx: 'pw_singularity', nameKey: 'card.singularity.name', descKey: 'card.singularity.desc',
   },
   {
-    // War Path Cosmic L9 (Road 1,950). A flare sweeps a 450 lu zone over 1.5 s: 600 once, ground and air.
-    // Per unit 600: 86% / 24%
+    // War Path Cosmic L9 (Road 1,950). A flare sweeps a 450 lu zone over 1.5 s: 560 once, ground and air,
+    // cap 4 (like Starfall). Per unit 560: 80% / 22%
     id: 'solar_flare', kind: 'power', age: 'cosmic', slot: 'home', reach: 'home', family: 'sweep', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1950, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
-    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 600, width: 40, hitsAir: true },
+    source: 'warPath', warPathLevel: 9, road: 1950, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 560, width: 40, hitsAir: true },
     visualId: 'power.solar_flare', sfx: 'pw_flare', nameKey: 'card.solar_flare.name', descKey: 'card.solar_flare.desc',
   },
   {
@@ -230,9 +230,10 @@ export const cosmicPowers: readonly PowerDef[] = [
     visualId: 'power.warp_strike', sfx: 'pw_warp', nameKey: 'card.warp_strike.name', descKey: 'card.warp_strike.desc',
   },
   {
-    // War Path Cosmic L7 (Road 1,850). One shot, 1,500, ground and air: 60% of H; the Warp Stalker takes 750
+    // War Path Cosmic L7 (Road 1,850). One shot, 1,500, ground and air: 60% of H; the Warp Stalker takes 750.
+    // Reloads in 25 s (a strike next to Comet Run lost 10-15 points at 30 s)
     id: 'ion_cannon', kind: 'power', age: 'cosmic', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
-    source: 'warPath', warPathLevel: 7, road: 1850, cost: 75, reloadMs: 30000, telegraphMs: 1500, maxTargets: 1,
+    source: 'warPath', warPathLevel: 7, road: 1850, cost: 75, reloadMs: 25000, telegraphMs: 1500, maxTargets: 1,
     effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 1500, hitsAir: true },
     visualId: 'power.ion_cannon', sfx: 'pw_ion', nameKey: 'card.ion_cannon.name', descKey: 'card.ion_cannon.desc',
   },

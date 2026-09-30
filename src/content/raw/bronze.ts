@@ -175,18 +175,18 @@ export const bronze: RawAgeTables = {
 /** A5.7 Bronze Age Powers (values at P 1.16 and L1 loadouts; I 186, H 630; Epic Scorpion 330). */
 export const bronzePowers: readonly PowerDef[] = [
   {
-    // Starter. A wave sweeps a 450 lu zone over 2.0 s: 150 once per ground enemy touched (±20 lu).
-    // Per unit 150: 81% / 24% (Hoplite / War Chariot)
+    // Starter. A wave sweeps a 450 lu zone over 2.0 s: 170 once per ground enemy touched (±20 lu), cap 5.
+    // Per unit 170: 91% / 27% (Hoplite / War Chariot)
     id: 'tidal_wave', kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
-    effect: { kind: 'sweep', zone: 450, durationMs: 2000, damage: 150, width: 40, hitsAir: false },
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    effect: { kind: 'sweep', zone: 450, durationMs: 2000, damage: 170, width: 40, hitsAir: false },
     visualId: 'power.tidal_wave', sfx: 'pw_wave', nameKey: 'card.tidal_wave.name', descKey: 'card.tidal_wave.desc',
   },
   {
     // War Path Bronze L5 (Road 700). 6 bolts over 1.5 s across 400 lu (even, ±20 lu); each 120, splash
     // r45; ground only. Per unit ~162: 87% / 26%
     id: 'zeus_bolts', kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 700, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'warPath', warPathLevel: 5, road: 700, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 6, durationMs: 1500, zone: 400, damage: 120, radius: 45,
       jitter: 20, hitsAir: false, pattern: 'even',
@@ -221,7 +221,7 @@ export const bronzePowers: readonly PowerDef[] = [
   {
     // Road 200. Your 8 frontmost units: an 80 shield and +15% damage for 6 s
     id: 'aegis', kind: 'power', age: 'bronze', slot: 'field', reach: 'army', family: 'ward', rarity: 'rare',
-    source: 'road', road: 200, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 3000,
+    source: 'road', road: 200, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
     effect: {
       kind: 'buffAll', maxTargets: 8,
       statuses: [

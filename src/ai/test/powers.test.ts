@@ -43,7 +43,7 @@ describe('power facts (book, A2.9.6 coverage estimates)', () => {
   it('estimates the damage per touched unit by family', () => {
     const per = (id: string) => book.powerInfo[id]?.perUnit;
     // Sweep: once. Barrage: count × 2 × radius ÷ zone hits. Charge: min(runners, hits) × damage.
-    expect(per('rockslide')).toBe(130);
+    expect(per('rockslide')).toBe(150);
     expect(per('meteor_shower')).toBe(140); // 14 × 80 / 400 = 2.8 hits × 50
     expect(per('stampede')).toBe(150); // 5 runners, max 3 hits × 50
     expect(per('aa_screen')).toBe(720); // 3 bursts cover the whole 160 lu zone: 3 × 240
@@ -92,13 +92,13 @@ describe('powerOption (A2.9.9)', () => {
   });
 
   it('the screen: only the first maxTargets enemies nearest the gate are eligible, wherever the zone is', () => {
-    // Five Bonkers at full HP in front, a nearly dead Tuskback behind them: Meteor Shower (cap 5) cannot
+    // Five Bonkers at full HP in front, a nearly dead Tuskback behind them: Meteor Shower (cap 4) cannot
     // reach past the screen, so the Tuskback is worth nothing to it.
     const screen = [300, 310, 320, 330, 340].map((p) => unit(0, 'bonker', p, { hp: 90000 }));
     const heavy = unit(0, 'tuskback', 800, { hp: 100 });
     const withScreen = option('meteor_shower', [...screen, heavy]);
     expect(withScreen.p).toBeLessThanOrEqual(600 * MILLI);
-    expect(withScreen.count).toBe(5);
+    expect(withScreen.count).toBe(4);
     // Without the screen the Tuskback is the prize.
     const alone = option('meteor_shower', [heavy]);
     expect(alone.value).toBe(150 * 1300);
@@ -135,21 +135,28 @@ describe('powerOption (A2.9.9)', () => {
   });
 
   it('controls value engaged targets by aiValueBp; far from the own units they are worth nothing', () => {
-    // Sticky Tar (snare, 2,500 bp): Tuskbacks next to an own unit.
+    // Sticky Tar (a snare, its content `aiValueBp`): Tuskbacks next to an own unit.
+    const w = book.powerInfo.sticky_tar?.aiValueBp ?? 0;
+    expect(w).toBeGreaterThan(0);
     const engagedFoes = [unit(0, 'tuskback', 600), unit(0, 'tuskback', 620)];
     const near = option('sticky_tar', [unit(1, 'bonker', 560), ...engagedFoes]);
-    expect(near.value).toBe(2 * Math.trunc((150 * MILLI * 2500) / BP));
+    expect(near.value).toBe(2 * Math.trunc((150 * MILLI * w) / BP));
     const alone = option('sticky_tar', [unit(1, 'bonker', 100), unit(0, 'tuskback', 700)]);
     expect(alone.value).toBe(0);
   });
 
-  it('buffs count the 8 frontmost own units that are engaged', () => {
+  it('buffs count the 8 frontmost own units of the wave in the fight', () => {
+    const w = book.powerInfo.hunt_cry?.aiValueBp ?? 0;
     const mine = Array.from({ length: 10 }, (_, i) => unit(1, 'bonker', 900 - i * 20));
     const o = option('hunt_cry', [...mine, unit(0, 'bonker', 950)]);
-    // 8 frontmost at 900-760; all within 300 lu of the enemy at 950 → 8 × 50 × 0.25.
+    // 8 frontmost at 900-760; all within 300 lu of the enemy at 950 → 8 × 50 × the weight.
     expect(o.count).toBe(8);
-    expect(o.value).toBe(8 * Math.trunc((50 * MILLI * 2500) / BP));
+    expect(o.value).toBe(8 * Math.trunc((50 * MILLI * w) / BP));
+    // Nobody in contact: nothing to buff.
     expect(option('hunt_cry', [...mine, unit(0, 'bonker', 1400)]).value).toBe(0);
+    // One unit in contact far ahead: the rest of the wave counts only within 600 lu behind it.
+    const strung = [unit(1, 'bonker', 900), unit(1, 'bonker', 400), unit(1, 'bonker', 200)];
+    expect(option('hunt_cry', [...strung, unit(0, 'bonker', 950)]).count).toBe(2);
   });
 
   it('drops are worth 1.2 × their card value with a soft target behind the enemy front, else 0.6', () => {

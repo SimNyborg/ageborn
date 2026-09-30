@@ -38,7 +38,7 @@ import { oddsModel } from '../../components/oddsModel';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardDef, cardGlyph, cardRarity, cardTile, hitsOf, isOwned, modsOf, turretStats, unitStats, upgradeState, type StatRow } from '../model/cards';
-import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, fieldSlotOpen, normalizeLoadout, slotOfCard } from '../model/plan';
+import { activePlan, AGE_SHORT_KEY, assignCard, equipSlot, fieldSlotLockKeys, fieldSlotOpen, normalizeLoadout, slotOfCard } from '../model/plan';
 import { powerSourceText } from '../model/powerText';
 import { PowerFacts } from './PowerFacts';
 import { arenaOf } from '../model/progress';
@@ -239,7 +239,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
   if (def.kind === 'power') {
     tertiary = owned ? (
       <p class="cd-owned">
-        <CheckIcon size={20} /> {slotLocked ? t('ui.power.lockedField') : t('ui.card.powerOwned')}
+        <CheckIcon size={20} /> {slotLocked ? t(fieldSlotLockKeys(s).line) : t('ui.card.powerOwned')}
       </p>
     ) : (
       <p class="cd-owned" data-testid="power-source-bar">

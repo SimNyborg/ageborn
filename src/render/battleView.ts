@@ -56,7 +56,7 @@ import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
 import { MOUNT_TAP_LU, MOUNT_TAP_PX, MountMarkers, hitTestMount, mountTapKind, textLabelFactory } from './mounts';
-import { previewBand, previewFront, previewTargets, powerTakesAim, powerZoneWidth, reachRulesLu, resolveAim, type PreviewTargets, type PreviewUnit } from './powerPreview';
+import { EDGE_STICK_LU, previewBand, previewFront, previewTargets, powerTakesAim, powerZoneWidth, reachRulesLu, resolveAim, type PreviewTargets, type PreviewUnit } from './powerPreview';
 import { ZoneOverlay, clampPowerP, ghostStyle, powerZoneLu, type GhostTarget } from './powerTargeting';
 import { AutoPresetMonitor, PRESETS, particleCap, presetDpr, type GraphicsPreset } from './presets';
 import { SEAM_START_LU, cameraFronts, followFocus, frontLines, frontMidpoint, framingCenter, spectatorFocus, stepSeam } from './seam';
@@ -183,6 +183,8 @@ const TURRET_COVER_LU = 480;
 const POWER_MOMENT_MAX_MS = 3500;
 /** Tap-to-aim brings the ghost's centre at least this far inside the view (lu). */
 const AIM_REVEAL_MARGIN_LU = 120;
+/** A power drag's edge scroll stops once the view shows this far past the reach band's magnetic edge. */
+const DRAG_SCROLL_MARGIN_LU = 60;
 const LAST_STAND_MOMENT_MS = 1500;
 /** Off-screen badges (A17.5). */
 const BADGE_BASE_HIT_MS = 2000;
@@ -506,7 +508,30 @@ export class BattleView {
    */
   cameraHold(key: CameraHold, on: boolean): void {
     this.camera.hold(key, on);
-    if (key === 'powerDrag' && !on) this.powerDrag = null;
+    if (key === 'powerDrag' && !on) {
+      this.restoreDragView();
+      this.powerDrag = null;
+    }
+  }
+
+  /**
+   * Where the camera was when a power was picked up (drag or tap-to-aim). A cast keeps the view where
+   * the aim took it; a cancelled aim goes back there, so an edge-scroll that ended in nothing never
+   * leaves the camera away from a base under attack (A2.9.10, A17.6).
+   */
+  private dragFrom: { x: number; follow: boolean } | null = null;
+
+  private noteDragStart(): void {
+    if (this.powerDrag || this.dragFrom) return;
+    this.dragFrom = { x: this.camera.centerX, follow: this.camera.following };
+  }
+
+  private restoreDragView(): void {
+    const from = this.dragFrom;
+    this.dragFrom = null;
+    if (!from || !this.cameraActive() || Math.abs(this.camera.centerX - from.x) < 2) return;
+    if (from.follow) this.camera.resumeFollow(true);
+    else this.camera.jumpTo(from.x);
   }
 
   /** Brings your base into view for something that needs it (a tutorial beat, A17.6); stays Manual. */
@@ -628,6 +653,7 @@ export class BattleView {
    */
   laneP(clientX: number, clientY: number): number | null {
     const p = this.lanePAt(clientX, clientY);
+    this.noteDragStart();
     // A drag near the band's edge scrolls the camera (A17.6); remember the pointer for that.
     this.powerDrag = { clientX, clientY, p, valid: this.powerDrag?.valid ?? true, raw: false };
     this.camera.hold('powerDrag', true);
@@ -640,6 +666,7 @@ export class BattleView {
    */
   laneRawP(clientX: number, clientY: number): number | null {
     const p = this.laneRawAt(clientX, clientY);
+    this.noteDragStart();
     this.powerDrag = { clientX, clientY, p, valid: this.powerDrag?.valid ?? true, raw: true };
     this.camera.hold('powerDrag', true);
     return p;
@@ -668,6 +695,7 @@ export class BattleView {
       // The power picks its own spot (a charge, a drop, a buff, Suppress): the ghost shows it.
       const z = this.ghostZone(0);
       const p = z ? clampPowerP(xToP(z.x, this.mySide), legacy) : Math.round((legacy[0] + legacy[1]) / 2);
+      this.noteDragStart();
       this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true, raw: false };
       this.camera.hold('powerDrag', true);
       if (z) this.revealAim(z.x);
@@ -686,6 +714,7 @@ export class BattleView {
     }
     const at = foe !== null ? foe + width * 0.35 : mine !== null ? mine + width * 0.5 : (band[0] + band[1]) / 2;
     const p = clampPowerP(at, band);
+    this.noteDragStart();
     this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true, raw: false };
     this.camera.hold('powerDrag', true);
     this.revealAim(pToX(p, this.mySide));
@@ -798,6 +827,8 @@ export class BattleView {
   powerCommit(): void {
     this.zones.commit();
     this.ghostTargets = null;
+    // A cast keeps the view where the aim took it.
+    this.dragFrom = null;
   }
 
   /**
@@ -894,6 +925,7 @@ export class BattleView {
             return u && !u.dying ? [{ x: u.x, y: u.y, size: u.sizeLu, n: i + 1, covered: pt.covered.has(id) }] : [];
           })
         : [],
+      this.mountPoints(this.mySide),
     );
     this.zones.setNotHit(pt.notHit.flatMap((id) => this.targetAt(id)));
     this.zones.setLock(pt.lock === null ? null : (this.targetAt(pt.lock)[0] ?? null));
@@ -1071,6 +1103,7 @@ export class BattleView {
       const sy = d.clientY - r.top;
       const L = this.camera.layout;
       if (sy >= L.bandY && sy <= L.bandY + L.bandH) speed = edgeSpeed(sx, L.width, CAMERA.dragEdgePx, 150, CAMERA.edgeMaxLuPerSec);
+      if (speed !== 0) speed = this.clampDragScroll(speed);
     }
     if (speed !== 0) {
       this.camera.setEdge(speed);
@@ -1095,6 +1128,27 @@ export class BattleView {
       this.camera.setEdge(0);
       this.dragEdgeOn = false;
     }
+  }
+
+  /**
+   * A power in hand never edge-scrolls the view past its reach band's far edge plus the magnetic
+   * overshoot (A2.9.10): nothing beyond it can be cast, and scrolling on toward the enemy base turned the
+   * ghost invalid and took the view away from home. Scrolling back toward your own gate is always free;
+   * powers without an aim (a drop may land anywhere) and strikes (the whole lane) are not limited.
+   */
+  private clampDragScroll(speed: number): number {
+    const def = this.myPower();
+    if (!def || !powerTakesAim(def)) return speed;
+    const rules = this.reachRules();
+    const band = previewBand(def, previewFront(this.previewUnits(), rules), rules);
+    if (!band) return speed;
+    const toEnemy = this.mySide === 0 ? speed > 0 : speed < 0;
+    if (!toEnemy) return speed;
+    const farX = pToX(Math.min(LANE_LU, band[1] + EDGE_STICK_LU + DRAG_SCROLL_MARGIN_LU), this.mySide);
+    const view = this.camera.viewRange();
+    const edge = this.mySide === 0 ? view.right : view.left;
+    const past = this.mySide === 0 ? edge >= farX : edge <= farX;
+    return past ? 0 : speed;
   }
 
   /** Hides display objects more than 150 lu outside the view; their state still updates (A17.7). */

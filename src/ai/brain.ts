@@ -203,8 +203,12 @@ const RESERVE_PPM = 750000;
 const RESERVE_FOE_ARMY = 300;
 /** Ring reading (V+): the push gate × 1.2 while a scouted enemy Home damage power is ready. */
 const RING_GATE_BP = 12000;
-/** Bait, then wave (A2.9.9): needs this much banked (milli), sends at most 150 gold of bait, releases after 12 s. */
-const BAIT_BANK = 500 * MILLI;
+/**
+ * Bait, then wave (A2.9.9): needs this much banked (milli), sends at most 150 gold of bait, releases after 12 s.
+ * Calibrated 500 → 300 (fix pass 2026-09-30): a tier VII bot held 500 in 1 of 5,290 decisions, so the
+ * bait fired in 1 of 12 matches; with 300 it fires in every match (28 baits in 12, 5 drew the cast).
+ */
+const BAIT_BANK = 300 * MILLI;
 const BAIT_SPEND = 150 * MILLI;
 const BAIT_RELEASE_TICKS = 12 * TICKS_PER_SECOND;
 /** No new bait for this long after a release (one bait per enemy reload). */
@@ -234,6 +238,13 @@ const CLOCK_STEP_BP = 1000;
 const CLOCK_MAX_BP = 30000;
 /** Pop within this much of the cap counts as full for the push gate. */
 const POP_FULL_MARGIN = 6;
+/**
+ * A2.7: pop follows cost in 25-gold steps, so a bank of G gold buys about G ÷ 25 pop. A bank that already
+ * buys the rest of the pop cap is the biggest wave the bot can ever field, so it stops banking and goes
+ * (the power rework, A2.9: with no free power to thin a turtle's pop-capped defence, a bot banked for an
+ * unreachable wave against 4 turrets until the Final Bell).
+ */
+const GOLD_PER_POP = 25;
 /** Kettle's all-in starts at 80% of the XP threshold and adds this to train scores. */
 const ALL_IN_XP_BP = 8000;
 const ALL_IN_BONUS = 3000;
@@ -348,6 +359,8 @@ export class Brain {
   private idleUntil = 0;
   /** `waveCommit`: the peak army value of the wave now charging, or null while none is. */
   private wavePeak: number | null = null;
+  /** The wave now charging started at the pop cap: it ends only on losing half its peak, not on D. */
+  private waveCapped = false;
   /**
    * Bait, then wave (A2.9.9): when the bait started, the observation tick it was decided on (an enemy
    * telegraph seen after it is the cast the bait drew) and the gold (milli) spent on it; null when not baiting.
@@ -411,8 +424,12 @@ export class Brain {
     if (t.waveCommit) {
       // Waves, not trickles (owner feedback 2026-09-28): a wave that passed the gate keeps going until it
       // has lost half its peak value or is worth less than D; a new wave needs a 15% margin over the gate.
-      if (this.wavePeak !== null && (v.myArmy < mulBp(this.wavePeak, WAVE_END_BP) || v.myArmy < defence)) this.wavePeak = null;
-      if (this.wavePeak === null && (siege || popFull || thin || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) this.wavePeak = v.myArmy;
+      // A wave from the pop cap cannot be topped up by waiting, so it is not called off on D alone.
+      if (this.wavePeak !== null && (v.myArmy < mulBp(this.wavePeak, WAVE_END_BP) || (!this.waveCapped && v.myArmy < defence))) this.wavePeak = null;
+      if (this.wavePeak === null && (siege || popFull || thin || v.myArmy * BP >= mulBp(gateBp, WAVE_MARGIN_BP) * defence)) {
+        this.wavePeak = v.myArmy;
+        this.waveCapped = popFull && !siege;
+      }
       if (this.wavePeak !== null) this.wavePeak = Math.max(this.wavePeak, v.myArmy);
       pushOk = siege || this.wavePeak !== null;
     }
@@ -424,13 +441,17 @@ export class Brain {
     // training until its gold can lift the army over the gate in one wave, which it then spends at once.
     const gateFailed = !pushOk && !foeOnMyHalf && !allIn;
     const waveGold = mulBp(t.waveCommit ? mulBp(gateBp, WAVE_MARGIN_BP) : gateBp, defence) - v.myArmy;
-    const banking = gateFailed && v.gold < waveGold * MILLI;
+    const capGold = Math.max(0, e.popCap - POP_FULL_MARGIN - v.popCommitted) * GOLD_PER_POP;
+    const banking = gateFailed && v.gold < Math.min(waveGold, capGold) * MILLI;
     let wave = gateFailed && !banking;
 
     // Bait, then wave (A2.9.9, VII+; Tempest from V): with a wave's gold banked and the enemy's Home
     // bombard or sweep ready, send ≤ 150 gold of the cheapest units first, train nothing else, and release
     // the bank when the enemy casts (their telegraph) or after 12 s.
     const baitOn = t.bait || t.tier >= P.baitFromTier;
+    // The bait also goes into a full ring whose card is not scouted yet (in a new age the enemy's power
+    // is unknown until its first cast; waiting for the scout left the bait unused in 11 of 12 matches).
+    const foeHomeLoaded = foeHomeReady || (foeHome !== null && foeHome.card === null && foeHome.ppm >= PPM);
     if (this.bait) {
       const b = this.bait;
       if (mem.foeCastTick.home > b.seenAt || v.now - b.start >= BAIT_RELEASE_TICKS || urgent || foeOnMyHalf || siege) {
@@ -439,14 +460,14 @@ export class Brain {
         wave = true;
         this.spending = true;
       }
-    } else if (baitOn && v.now >= this.baitCooldownUntil && foeHomeReady && (pushOk || wave) && v.gold >= BAIT_BANK && !foeOnMyHalf && !urgent && !siege && !allIn) {
+    } else if (baitOn && v.now >= this.baitCooldownUntil && foeHomeLoaded && (pushOk || wave) && v.gold >= BAIT_BANK && !foeOnMyHalf && !urgent && !siege && !allIn) {
       this.bait = { start: v.now, seenAt: obs.tick, spent: 0 };
     }
     // The bank comes first (A2.9.9: a 40 s Home reload is shorter than banking a wave, so the bait only
     // works with the gold already saved): while the enemy's Home area power is ready, a wave the gate
     // would send waits until 500 is banked (measured: tier VII vs V Standard Bell 41% → 31%, same wins).
     let baitHold = false;
-    if (baitOn && !this.bait && v.now >= this.baitCooldownUntil && foeHomeReady && (pushOk || wave) && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
+    if (baitOn && !this.bait && v.now >= this.baitCooldownUntil && foeHomeLoaded && (pushOk || wave) && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
       wave = false;
       baitHold = true;
     }
@@ -1114,10 +1135,11 @@ export class Brain {
    * 25%). Bait discipline (VII+) skips Home casts on covered value < 200. Of several castable slots, the
    * best value − cost. `onFew` is the A7.2 mistake: a Home cast on 1-2 covered targets below the bar.
    */
-  private powerChoice(v: View, mem: BotMemory, rng: Sfc32State, hurt: boolean): { cast: BotAction | null; onFew: BotAction | null } {
-    const { book, tier: t, persona: P, weights: W } = this.cfg;
+  /** The shared inputs of `powerOption` (A2.9.9). */
+  private powerCtx(rng: Sfc32State | null): PowerContext {
+    const { book, tier: t } = this.cfg;
     const e = book.econ;
-    const ctx: PowerContext = {
+    return {
       reach: e.powerReach,
       turretCover: e.turretCover,
       legendaryPowerDamageBp: e.legendaryPowerDamageBp,
@@ -1125,7 +1147,17 @@ export class Brain {
       strikeK: t.strikeK,
       rng,
     };
-    const shift = Math.trunc(((W.patience - BP) * PATIENCE_SHIFT_NUM) / PATIENCE_SHIFT_DEN) + P.powerBarBp;
+  }
+
+  /** The tier's ROI bar plus the personality shift (A2.9.9), bp. */
+  private powerBar(): number {
+    const { tier: t, persona: P, weights: W } = this.cfg;
+    return t.powerRoiBp + Math.trunc(((W.patience - BP) * PATIENCE_SHIFT_NUM) / PATIENCE_SHIFT_DEN) + P.powerBarBp;
+  }
+
+  private powerChoice(v: View, mem: BotMemory, rng: Sfc32State, hurt: boolean): { cast: BotAction | null; onFew: BotAction | null } {
+    const { tier: t, persona: P } = this.cfg;
+    const ctx = this.powerCtx(rng);
     // Counter-timing (X): the enemy is banking (its army on the lane is under 300 while the gold estimate
     // says it holds 300+), so the Home power waits for the wave that gold becomes (A7.1 estimate).
     const foeBanking = t.counterTiming && v.foeArmy < FOE_BANKING_ARMY && mem.estimator.gold >= FOE_BANKING_ARMY * MILLI;
@@ -1137,7 +1169,7 @@ export class Brain {
       if (!sv.reloaded || !sv.affordable || (sv.slot === 'field' && !t.fieldSlot)) continue;
       const opt = powerOption(v, sv.slot, sv.info, ctx);
       if (opt.value <= 0) continue;
-      let bar = t.powerRoiBp + shift;
+      let bar = this.powerBar();
       const goal = this.goal;
       if (goal && v.gold - sv.cost < goal.amount && !hurt) bar += GOAL_BAR_BP;
       if (sv.slot === 'home' && foeBanking) bar += COUNTER_TIMING_BP;

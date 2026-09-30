@@ -18,18 +18,18 @@ import type { PowerDef } from '@/contracts/content';
 export const powers: readonly PowerDef[] = [
   // ---- Stone (P 1.00; I 160, H 560; Epic Sabertooth 380) ----
   {
-    // Starter. A rockslide sweeps a 450 lu zone over 1.5 s: 130 once per ground enemy touched (±20 lu).
-    // Per unit 130: 81% / 23%
+    // Starter. A rockslide sweeps a 450 lu zone over 1.5 s: 150 once per ground enemy touched (±20 lu),
+    // cap 5. Per unit 150: 94% / 27% (fix pass 2026-09-30: 130 killed nothing in 43% of casts)
     id: 'rockslide', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
-    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 130, width: 40, hitsAir: false },
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 150, width: 40, hitsAir: false },
     visualId: 'power.rockslide', sfx: 'pw_rockslide', nameKey: 'card.rockslide.name', descKey: 'card.rockslide.desc',
   },
   {
     // Road 100. 14 meteors over 3.0 s across a 400 lu zone (even, ±20 lu jitter); each 50, splash r40;
     // ground only. Per unit ~140: 88% / 25%
     id: 'meteor_shower', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 100, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'road', road: 100, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40,
       jitter: 20, hitsAir: false, pattern: 'even',
@@ -40,7 +40,7 @@ export const powers: readonly PowerDef[] = [
     // War Path Stone L5 (Road 550). A 300 lu tar pool for 6 s (12 pulses), ground only; each pulse 5
     // damage and snare 40% for 1.0 s. 60: 38% of I; 14.4 disabled unit-seconds at the cap
     id: 'sticky_tar', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'snare', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 550, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 2500,
+    source: 'warPath', warPathLevel: 5, road: 550, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
       kind: 'field', zone: 300, durationMs: 6000, hitsAir: false, damagePerPulse: 5,
       statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
@@ -62,7 +62,7 @@ export const powers: readonly PowerDef[] = [
   {
     // War Path Stone L7 (Road 600). Your 8 frontmost units: +20% move speed and +15% attack speed for 6 s
     id: 'hunt_cry', kind: 'power', age: 'stone', slot: 'field', reach: 'army', family: 'rally', rarity: 'epic',
-    source: 'warPath', warPathLevel: 7, road: 600, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 2500,
+    source: 'warPath', warPathLevel: 7, road: 600, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
     effect: {
       kind: 'buffAll', maxTargets: 8,
       statuses: [
@@ -83,12 +83,12 @@ export const powers: readonly PowerDef[] = [
 
   // ---- Medieval (P 1.35; I 216, H 756; Epic Battering Ram 900) ----
   {
-    // Starter. 40 arrows over 2.5 s across 450 lu (even, ±20 lu); each 50, splash r20; hits air.
-    // Per unit ~178: 82% / 24%
+    // Starter. 40 arrows over 2.5 s across 450 lu (even, ±20 lu); each 55, splash r20; hits air; cap 4.
+    // Per unit ~196: 91% / 26%
     id: 'arrow_storm', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
-      kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 50, radius: 20,
+      kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 55, radius: 20,
       jitter: 20, hitsAir: true, pattern: 'even',
     },
     visualId: 'power.arrow_storm', sfx: 'pw_arrows', nameKey: 'card.arrow_storm.name', descKey: 'card.arrow_storm.desc',
@@ -97,7 +97,7 @@ export const powers: readonly PowerDef[] = [
     // War Path Medieval L5 (Road 900). A 300 lu caltrop field for 8 s (16 pulses), ground only; each
     // pulse 5 damage and snare 35% for 1.0 s. 80: 37% of I; 16.8 disabled unit-seconds at the cap
     id: 'caltrops', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'snare', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 900, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 2500,
+    source: 'warPath', warPathLevel: 5, road: 900, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
       kind: 'field', zone: 300, durationMs: 8000, hitsAir: false, damagePerPulse: 5,
       statuses: [{ kind: 'snare', magnitudeBp: 3500, durationMs: 1000 }],
@@ -106,9 +106,9 @@ export const powers: readonly PowerDef[] = [
   },
   {
     // War Path Medieval L9 (Road 1,050). Boiling oil sweeps a 250 lu zone over 1.0 s: 200 once, ground
-    // only, cap 4. Per unit 200: 93% / 26%
+    // only, cap 3. Per unit 200: 93% / 26%
     id: 'boiling_oil', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'sweep', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1050, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    source: 'warPath', warPathLevel: 9, road: 1050, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
     effect: { kind: 'sweep', zone: 250, durationMs: 1000, damage: 200, width: 40, hitsAir: false },
     visualId: 'power.boiling_oil', sfx: 'pw_oil', nameKey: 'card.boiling_oil.name', descKey: 'card.boiling_oil.desc',
   },
@@ -126,7 +126,7 @@ export const powers: readonly PowerDef[] = [
   {
     // Road 250. Your 8 frontmost units: +30% damage and +20% move speed for 8 s
     id: 'royal_decree', kind: 'power', age: 'medieval', slot: 'field', reach: 'army', family: 'rally', rarity: 'rare',
-    source: 'road', road: 250, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 3500,
+    source: 'road', road: 250, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
     effect: {
       kind: 'buffAll', maxTargets: 8,
       statuses: [
@@ -149,7 +149,7 @@ export const powers: readonly PowerDef[] = [
   {
     // Starter. A volley sweeps a 400 lu zone over 1.0 s: 240 once, ground and air. Per unit 240: 82% / 24%
     id: 'volley_fire', kind: 'power', age: 'gunpowder', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: { kind: 'sweep', zone: 400, durationMs: 1000, damage: 240, width: 40, hitsAir: true },
     visualId: 'power.volley_fire', sfx: 'pw_volley', nameKey: 'card.volley_fire.name', descKey: 'card.volley_fire.desc',
   },
@@ -157,7 +157,7 @@ export const powers: readonly PowerDef[] = [
     // Road 300. 10 cannonballs over 3.0 s across 450 lu (even, ±20 lu); each 120, splash r45; ground only.
     // Per unit ~240: 82% / 24%
     id: 'broadside', kind: 'power', age: 'gunpowder', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 300, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'road', road: 300, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 10, durationMs: 3000, zone: 450, damage: 120, radius: 45,
       jitter: 20, hitsAir: false, pattern: 'even',
@@ -169,7 +169,7 @@ export const powers: readonly PowerDef[] = [
     // first pulse pulls 40% of the way to the centre; each pulse 12 damage and snare 40% for 1.0 s.
     // 96: 33% of I; 9.6 disabled unit-seconds (12.8 per 100 gold); clumps them for splash
     id: 'boarding_nets', kind: 'power', age: 'gunpowder', slot: 'home', reach: 'home', family: 'pull', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 1100, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 3000,
+    source: 'warPath', warPathLevel: 5, road: 1100, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 5000,
     effect: {
       kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 12, pullBp: 4000,
       statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
@@ -206,17 +206,17 @@ export const powers: readonly PowerDef[] = [
 
   // ---- Modern (P 2.46; I 394, H 1,378; Epic Gyrocopter 740, air) ----
   {
-    // Starter. A strafing run sweeps a 450 lu zone over 1.5 s: 330 once, ground only. Per unit 330: 84% / 24%
+    // Starter. A strafing run sweeps a 450 lu zone over 1.5 s: 360 once, ground only, cap 5. Per unit 360: 91% / 26%
     id: 'strafing_run', kind: 'power', age: 'modern', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
-    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 330, width: 40, hitsAir: false },
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 360, width: 40, hitsAir: false },
     visualId: 'power.strafing_run', sfx: 'pw_strafe', nameKey: 'card.strafing_run.name', descKey: 'card.strafing_run.desc',
   },
   {
     // Road 400. 12 bombs along a 500 lu line over 1.5 s (no jitter); each 150, splash r50; ground only
     // (centre ≤ 750). Per unit ~360: 91% / 26%
     id: 'carpet_bomber', kind: 'power', age: 'modern', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 400, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'road', road: 400, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50,
       jitter: 0, hitsAir: false, pattern: 'line',
@@ -254,9 +254,10 @@ export const powers: readonly PowerDef[] = [
     visualId: 'power.tank_rush', sfx: 'pw_tanks', nameKey: 'card.tank_rush.name', descKey: 'card.tank_rush.desc',
   },
   {
-    // War Path Modern L9 (Road 1,600). One shot, 830, ground and air: 60% of H; the Gyrocopter takes 415
+    // War Path Modern L9 (Road 1,600). One shot, 830, ground and air: 60% of H; the Gyrocopter takes 415.
+    // Reloads in 25 s
     id: 'sniper_team', kind: 'power', age: 'modern', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1600, cost: 75, reloadMs: 30000, telegraphMs: 1500, maxTargets: 1,
+    source: 'warPath', warPathLevel: 9, road: 1600, cost: 75, reloadMs: 25000, telegraphMs: 1500, maxTargets: 1,
     effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 830, hitsAir: true },
     visualId: 'power.sniper_team', sfx: 'pw_sniper', nameKey: 'card.sniper_team.name', descKey: 'card.sniper_team.desc',
   },
@@ -265,26 +266,26 @@ export const powers: readonly PowerDef[] = [
   {
     // Starter. A beam sweeps a 500 lu zone over 2.0 s: 450 once, ground and air. Per unit 450: 80% / 24%
     id: 'orbital_lance', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: { kind: 'sweep', zone: 500, durationMs: 2000, damage: 450, width: 40, hitsAir: true },
     visualId: 'power.orbital_lance', sfx: 'pw_lance', nameKey: 'card.orbital_lance.name', descKey: 'card.orbital_lance.desc',
   },
   {
-    // War Path Future L5 (Road 1,650). 20 micro-missiles over 2.0 s across 400 lu (even, ±20 lu); each 115,
-    // splash r40; ground and air. Per unit ~460: 82% / 25%
+    // War Path Future L5 (Road 1,650). 20 micro-missiles over 2.0 s across 400 lu (even, ±20 lu); each 125,
+    // splash r40; ground and air; cap 4. Per unit ~500: 89% / 27%
     id: 'point_defense', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 1650, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'warPath', warPathLevel: 5, road: 1650, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
-      kind: 'barrage', count: 20, durationMs: 2000, zone: 400, damage: 115, radius: 40,
+      kind: 'barrage', count: 20, durationMs: 2000, zone: 400, damage: 125, radius: 40,
       jitter: 20, hitsAir: true, pattern: 'even',
     },
     visualId: 'power.point_defense', sfx: 'pw_pdg', nameKey: 'card.point_defense.name', descKey: 'card.point_defense.desc',
   },
   {
     // War Path Future L9 (Road 1,750). A 250 lu stasis dome, one pulse, ground and air: stun 2.0 s
-    // (frozen look). 10 disabled unit-seconds at the cap (13.3 per 100 gold)
+    // (frozen look), cap 6. 12 disabled unit-seconds at the cap (16 per 100 gold)
     id: 'stasis_field', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'stun', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1750, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 5, aiValueBp: 4000,
+    source: 'warPath', warPathLevel: 9, road: 1750, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 5000,
     effect: {
       kind: 'field', zone: 250, durationMs: 0, hitsAir: true,
       statuses: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 2000, frozen: true }],
@@ -306,7 +307,7 @@ export const powers: readonly PowerDef[] = [
     // Road 450. Your 8 frontmost units: regen 40% of max HP over 4 s and a 150 shield for 6 s. Regen
     // `magnitudeBp` is the share of max HP healed over the duration; the shield pool is `amount`
     id: 'nanite_surge', kind: 'power', age: 'future', slot: 'field', reach: 'army', family: 'mend', rarity: 'rare',
-    source: 'road', road: 450, cost: 150, reloadMs: 50000, telegraphMs: 500, maxTargets: 8, aiValueBp: 4000,
+    source: 'road', road: 450, cost: 150, reloadMs: 50000, telegraphMs: 500, maxTargets: 8, aiValueBp: 8000,
     effect: {
       kind: 'buffAll', maxTargets: 8,
       statuses: [

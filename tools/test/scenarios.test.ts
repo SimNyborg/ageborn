@@ -26,7 +26,7 @@ describe('power damage per unit (A2.9)', () => {
     const per = (id: string): number => powerCoverage(content, content.powers[id] as never)?.perUnit ?? Number.NaN;
     expect(per('stampede')).toBe(150);
     expect(per('meteor_shower')).toBe(140);
-    expect(per('arrow_storm')).toBeCloseTo(177.8, 1);
+    expect(per('arrow_storm')).toBeCloseTo(195.6, 1);
     expect(per('broadside')).toBe(240);
     expect(per('carpet_bomber')).toBe(360);
     expect(per('orbital_lance')).toBe(450);

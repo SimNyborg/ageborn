@@ -98,6 +98,51 @@ export interface GhostPip {
   covered: boolean;
 }
 
+/**
+ * Where the number pips go (world x and y), in the order given. A pip sits over its unit's head; pips
+ * of units that stand closer than one pip apart (a clump at your gate, the usual Home cast) fan out in a
+ * level row centred on the clump, `step` apart, so every number stays readable. Pure, for tests.
+ */
+export function layoutPips(pips: readonly { x: number; headY: number }[], step: number): { x: number; y: number }[] {
+  const order = pips.map((_, i) => i).sort((a, b) => (pips[a] as { x: number }).x - (pips[b] as { x: number }).x || a - b);
+  // Groups of indices (into `order`), merged until no two groups overlap.
+  let groups: number[][] = [];
+  for (const i of order) {
+    const last = groups[groups.length - 1];
+    const prev = last ? (pips[last[last.length - 1] as number] as { x: number }).x : Number.NEGATIVE_INFINITY;
+    if (last && (pips[i] as { x: number }).x - prev < step) last.push(i);
+    else groups.push([i]);
+  }
+  const spans = (g: number[]): { lo: number; hi: number; centre: number } => {
+    const centre = g.reduce((a, i) => a + (pips[i] as { x: number }).x, 0) / g.length;
+    const half = ((g.length - 1) * step) / 2;
+    return { lo: centre - half, hi: centre + half, centre };
+  };
+  for (let guard = 0; guard < pips.length; guard += 1) {
+    let merged = false;
+    const next: number[][] = [];
+    for (const g of groups) {
+      const last = next[next.length - 1];
+      if (last && spans(last).hi + step > spans(g).lo) {
+        last.push(...g);
+        merged = true;
+      } else next.push(g);
+    }
+    groups = next;
+    if (!merged) break;
+  }
+  const out: { x: number; y: number }[] = pips.map((p) => ({ x: p.x, y: p.headY }));
+  for (const g of groups) {
+    if (g.length < 2) continue;
+    const { lo } = spans(g);
+    const y = Math.min(...g.map((i) => (pips[i] as { headY: number }).headY));
+    g.forEach((i, j) => {
+      out[i] = { x: lo + j * step, y };
+    });
+  }
+  return out;
+}
+
 /** A unit the dragged power would hit: world x, depth y and its size (lu). */
 export interface GhostTarget {
   x: number;
@@ -162,6 +207,8 @@ const COMMIT_FADE_MS = 140;
 const EDGE_BUMP_MS = 80;
 /** Pip radius in CSS px. */
 const PIP_PX = 10;
+/** The mount tap button's radius on screen (`MOUNT_TAP_PX`): pips keep clear of it. */
+const PIP_AVOID_PX = 26;
 
 /** Draws active telegraphs, the reach band, the drag ghost, its pips and lock (one Graphics each layer). */
 export class ZoneOverlay {
@@ -227,9 +274,13 @@ export class ZoneOverlay {
   }
 
   /** Number pips over the eligible enemies (A2.9.10 step 2); only drawn while the ghost is valid. */
-  setPips(p: readonly GhostPip[]): void {
+  setPips(p: readonly GhostPip[], avoid: readonly { x: number; y: number }[] = []): void {
     this.pips = p.slice();
+    this.pipAvoid = avoid.slice();
   }
+
+  /** World points the pips keep clear of (your turret mounts' tap buttons at the gate). */
+  private pipAvoid: { x: number; y: number }[] = [];
 
   /** Enemies in the zone the cap or the mask leave untouched: a faint "not hit" outline. */
   setNotHit(t: readonly GhostTarget[]): void {
@@ -467,11 +518,33 @@ export class ZoneOverlay {
       g.ellipse(u.x, u.y, r, r * 0.38).stroke({ color: 0xffffff, width: 1.5 * px, alpha: 0.4 });
     }
     let used = 0;
-    for (const p of this.pips) {
-      const hy = p.y - Math.max(40, p.size * 1.35) - 32 * px;
-      const r = PIP_PX * px;
-      g.circle(p.x, hy, r + 2 * px).fill({ color: 0x1b1330, alpha: 0.85 });
-      g.circle(p.x, hy, r).fill({ color: p.covered ? GHOST_TARGET : 0xf4efe4, alpha: p.covered ? 1 : 0.82 });
+    const r = PIP_PX * px;
+    // Clumped units fan their pips out in a row (never a pile), each tied to its unit by a thin leader.
+    const spots = layoutPips(
+      this.pips.map((p) => ({ x: p.x, headY: p.y - Math.max(40, p.size * 1.35) - 32 * px })),
+      2 * r + 5 * px,
+    );
+    // A row that would cover a mount's tap button rises above it (the row stays level).
+    const clear = (PIP_AVOID_PX + PIP_PX + 4) * px;
+    const lift = new Map<number, number>();
+    for (const at of spots) {
+      for (const m of this.pipAvoid) {
+        if (Math.abs(at.x - m.x) < clear && Math.abs(at.y - m.y) < clear) lift.set(at.y, Math.min(lift.get(at.y) ?? at.y, m.y - clear));
+      }
+    }
+    if (lift.size > 0) for (const at of spots) at.y = lift.get(at.y) ?? at.y;
+    this.pips.forEach((p, i) => {
+      const at = spots[i] as { x: number; y: number };
+      if (Math.abs(at.x - p.x) > r) {
+        const top = p.y - Math.max(40, p.size * 1.35);
+        g.moveTo(at.x, at.y + r).lineTo(p.x, top).stroke({ color: 0xf4efe4, width: 1.5 * px, alpha: 0.55 });
+      }
+    });
+    for (let i = 0; i < this.pips.length; i += 1) {
+      const p = this.pips[i] as GhostPip;
+      const { x: pxX, y: hy } = spots[i] as { x: number; y: number };
+      g.circle(pxX, hy, r + 2 * px).fill({ color: 0x1b1330, alpha: 0.85 });
+      g.circle(pxX, hy, r).fill({ color: p.covered ? GHOST_TARGET : 0xf4efe4, alpha: p.covered ? 1 : 0.82 });
       let t = this.pipTexts[used] ?? null;
       if (!t) {
         t = this.text(13);
@@ -484,7 +557,7 @@ export class ZoneOverlay {
       t.text = String(p.n);
       t.style.stroke = { color: p.covered ? 0xffe9a0 : 0xf4efe4, width: 0 };
       t.style.fill = 0x1b1330;
-      t.position.set(p.x, hy + 0.5 * px);
+      t.position.set(pxX, hy + 0.5 * px);
       t.scale.set(px);
       t.visible = true;
       used += 1;

@@ -144,12 +144,12 @@ describe('Age Power proxies (A2.9.12)', () => {
   it('the covered value reads the reach area, the cap and the screen (the save_counter trigger)', () => {
     const p = createProxy('save_counter', content, 0, 1, 'full');
     const unit = (id: number, p: number) => ({ id, side: 1 as const, card: 'bonker', level: 1, p: p * 1000, hp: 100, maxHp: 100, shield: 0, air: false, summoned: false });
-    // Eight Bonkers in the Home half and a rich clump past mid-lane: Meteor Shower (cap 5) covers five.
+    // Eight Bonkers in the Home half and a rich clump past mid-lane: Meteor Shower (cap 4) covers four.
     const units = [...[440, 460, 480, 500, 520, 540, 560, 580].map((x, i) => unit(10 + i, x)), ...[1300, 1310, 1320, 1330].map((x, i) => unit(30 + i, x))];
     const z = p.coveredZone({ side: 0, units } as never, 'meteor_shower');
     const cost = content.units.bonker?.cost ?? 0;
-    expect(z.value).toBe(5 * cost);
-    expect(z.count).toBe(5);
+    expect(z.value).toBe(4 * cost);
+    expect(z.count).toBe(4);
     // the aim stays inside the Home band (centre ≤ 1,000 − zone / 2)
     expect(z.p).not.toBeNull();
     expect(z.p as number).toBeLessThanOrEqual(1000 - (content.powers.meteor_shower?.effect as { zone: number }).zone / 2);

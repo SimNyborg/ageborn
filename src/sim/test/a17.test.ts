@@ -253,8 +253,8 @@ describe('A17.15 first-time combinations of existing kinds', () => {
     const hits = ofKind(ev, 'hit').filter((h) => h.sourceKind === 'power');
     expect(hits.map((h) => h.targetId).sort()).toEqual([...ground].sort());
     expect(hits.some((h) => h.targetId === air)).toBe(false);
-    // A5.7: Tidal Wave now deals 150 (was 130)
-    expect(hits.every((h) => h.damage === 15000)).toBe(true);
+    // A5.7: Tidal Wave now deals 170 (was 130; 150 before the fix pass)
+    expect(hits.every((h) => h.damage === 17000)).toBe(true);
   });
 
   it('Warp Strike: a paradrop of a melee card; 4 summoned Star Legionnaires 150 lu beyond the enemy front', () => {

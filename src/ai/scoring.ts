@@ -138,6 +138,8 @@ const STAMPEDE_FALLBACK = 200 * MILLI;
 const NEAR_GATE_BP = 12500;
 /** Controls and buffs count units within 300 lu of the other side (A2.9.9 "engaged"). */
 const ENGAGED = 300 * MILLI;
+/** A buff also counts own units this far behind an engaged one: the rest of the wave. */
+const BUFF_WAVE = 600 * MILLI;
 /**
  * A drop is worth 1.2 × its card value with an enemy ranged or support unit this close behind the enemy
  * front, else 0.6. P1 calibration: the A2.9.9 starting weights (0.8 / 0.4) put the best drop at ROI
@@ -151,6 +153,8 @@ const DROP_POOR_BP = 6000;
 const SUPPRESS_MIN_TURRETS = 2;
 const SUPPRESS_REACH = 600 * MILLI;
 const SUPPRESS_BP = 5000;
+/** Suppress: the second front unit stands this far past the line (a knockback during the delay). */
+const SUPPRESS_SLACK = 80 * MILLI;
 /** The cloud counts 150 gold per enemy turret whose range covers it. */
 const CLOUD_TURRET_VALUE = 150;
 /** Units with at least this range count as ranged for the cloud and the drop (A2.9.9; melee reach ≤ 60 lu). */
@@ -287,21 +291,31 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
       return { ...none, p: u.p, targetId: u.id, value, covered: u.value, count: 1 };
     }
     case 'suppress': {
-      // Legal only while F ≥ 1,370 (A2.9.4): the bot also wants its second front unit there, so the loss
-      // of one runner during the observation delay cannot turn the cast into `powerOutOfReach`.
+      // Legal only while F ≥ 1,370 (A2.9.4): the bot also wants its second front unit there, with room
+      // for a knockback, so the loss or push-back of one runner during the observation delay cannot turn
+      // the cast into `powerOutOfReach`.
       const turrets = v.obs.foe.turrets.filter((x) => x !== null).length;
-      if (!suppressLegal(v.powerFront, r) || !suppressLegal(v.powerFront2, r) || turrets < SUPPRESS_MIN_TURRETS) return none;
+      const f2 = v.powerFront2 === null ? null : v.powerFront2 - SUPPRESS_SLACK;
+      // Nor while the enemy's Last Stand charges: it clears the gate (and the front with it) in a moment.
+      if (v.obs.foe.lastStand === 'charging') return none;
+      if (!suppressLegal(v.powerFront, r) || !suppressLegal(f2, r) || turrets < SUPPRESS_MIN_TURRETS) return none;
       let army = 0;
       for (const u of v.mine) if (u.p >= r.lane - SUPPRESS_REACH) army += u.value;
       return { ...none, value: Math.trunc((army * MILLI * SUPPRESS_BP) / BP) };
     }
     case 'buffAll': {
-      // The 8 frontmost own units (ties to the lower id) that are within 300 lu of an enemy.
+      // The 8 frontmost own units (ties to the lower id) of the wave in the fight: within 300 lu of an
+      // enemy, or within 600 lu behind one that is (the wave walking into the fight lasts the 6-8 s the buff
+      // does). Counting only units in contact left a buff below every bar (tier V cast Hunt Cry, Aegis and
+      // Field Hospital 0 times in 200 matches: a buff was affordable mostly while 1-2 units touched).
       const front = [...v.mine].sort((a, b) => b.p - a.p || a.id - b.id).slice(0, fx.maxTargets);
+      const near = (a: number, b: number): boolean => (a > b ? a - b : b - a) <= ENGAGED;
+      const inContact = front.filter((m) => v.foes.some((u) => near(u.p, m.p)));
+      if (inContact.length === 0) return none;
       let value = 0;
       let count = 0;
       for (const m of front) {
-        if (!v.foes.some((u) => (u.p > m.p ? u.p - m.p : m.p - u.p) <= ENGAGED)) continue;
+        if (!inContact.includes(m) && !inContact.some((c) => (c.p > m.p ? c.p - m.p : m.p - c.p) <= BUFF_WAVE)) continue;
         value += Math.trunc((m.value * MILLI * info.aiValueBp) / BP);
         count += 1;
       }

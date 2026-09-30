@@ -6,7 +6,7 @@ import { Container } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import { BattleView } from '../battleView';
 import type { LabelFactory } from '../feel/numbers';
-import { ZoneOverlay, ghostStyle, inZone } from '../powerTargeting';
+import { ZoneOverlay, ghostStyle, inZone, layoutPips } from '../powerTargeting';
 
 const labels: LabelFactory = () => {
   const root = new Container();
@@ -155,5 +155,33 @@ describe('ZoneOverlay reach and pips', () => {
     expect(z.outOfReach).toBe(true);
     z.hidePreview();
     expect(z.bandShown).toBeNull();
+  });
+});
+
+describe('number pips (A2.9.10 step 2)', () => {
+  it('fan out in a level row when units clump, never a pile, and keep their order', () => {
+    const step = 25;
+    const spots = layoutPips(
+      [
+        { x: 100, headY: -80 },
+        { x: 104, headY: -90 },
+        { x: 108, headY: -85 },
+        { x: 400, headY: -70 },
+      ],
+      step,
+    );
+    // the three clumped pips sit one step apart, centred on the clump, at the highest head
+    const row = spots.slice(0, 3);
+    for (let i = 1; i < row.length; i += 1) expect((row[i] as { x: number }).x - (row[i - 1] as { x: number }).x).toBeCloseTo(step, 6);
+    expect(row.reduce((a, p) => a + p.x, 0) / 3).toBeCloseTo(104, 6);
+    expect(new Set(row.map((p) => p.y))).toEqual(new Set([-90]));
+    // a lone unit keeps its pip over its head
+    expect(spots[3]).toEqual({ x: 400, y: -70 });
+  });
+
+  it('merges neighbouring rows that would overlap', () => {
+    const spots = layoutPips([0, 10, 30, 40].map((x) => ({ x, headY: -50 })), 25);
+    const xs = spots.map((p) => p.x).sort((a, b) => a - b);
+    for (let i = 1; i < xs.length; i += 1) expect((xs[i] as number) - (xs[i - 1] as number)).toBeGreaterThanOrEqual(25 - 1e-9);
   });
 });

@@ -55,12 +55,8 @@ export const POWER_FIELD_TROPHIES = 150;
  */
 export const POWER_OWNED_AMBER = 60;
 
-/**
- * Whether battles send each side's Field power (A2.9.13). P1 keeps it off (one power button, the Home
- * slot) so `main` stays playable until the HUD dock ships in P2; P2 turns it on and the match rule then
- * follows the Field slot flag (and the Daily always plays both slots).
- */
-export const FIELD_SLOT_IN_BATTLE = false;
+/** Whether battles send each side's Field power (A2.9.13); the one switch lives in `core`. */
+export { FIELD_SLOT_IN_BATTLE } from '@/core/powerReach';
 
 /** Prefix of a procedural AI Commander's `OpponentSpec.generalId` (`commander:<personality>:<favourite>`). */
 export const COMMANDER_ID_PREFIX = 'commander';

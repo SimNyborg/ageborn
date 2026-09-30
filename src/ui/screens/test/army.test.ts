@@ -18,6 +18,8 @@ import {
   armyCards,
   changedSlots,
   equipSlot,
+  fieldSlotLockKeys,
+  fieldSlotOpen,
   fitsSlot,
   normalizeLoadout,
   presetsOpen,
@@ -269,5 +271,29 @@ describe('Card detail (ui-plan 4.4)', () => {
     });
     m.click('[data-testid="card-odds"]');
     expect(m.q('[data-testid="card-odds-sheet"]')).not.toBeNull();
+  });
+});
+
+describe('the Field power slot on the Army screen (A2.9.1, A2.9.13)', () => {
+  it('stays locked until battles play it, even for a save that earned it, and says why', () => {
+    const earned = { ...mid, flags: { ...mid.flags, 'power.field': true } };
+    const fresh = { ...mid, flags: { ...mid.flags, 'power.field': false } };
+    // P1: no battle sends a Field power, so the Army never shows one as equipped
+    expect(fieldSlotOpen(earned)).toBe(false);
+    expect(fieldSlotLockKeys(earned)).toEqual({ line: 'ui.power.fieldSoon', short: 'ui.power.fieldSoonShort' });
+    expect(fieldSlotLockKeys(fresh)).toEqual({ line: 'ui.power.lockedField', short: 'ui.power.lockedFieldShort' });
+    // P2 turns battles on: the flag opens it
+    expect(fieldSlotOpen(earned, true)).toBe(true);
+    expect(fieldSlotOpen(fresh, true)).toBe(false);
+  });
+
+  it('a Field power kept in the locked slot is not listed "In army"', () => {
+    const save = { ...mid, flags: { ...mid.flags, 'power.field': true } };
+    const m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    const field = m.save.value.warPlans[m.save.value.activePlan]?.loadouts.stone?.powers.field ?? null;
+    expect(field).not.toBeNull();
+    // the grid card of the kept Field power is not marked equipped, and the slot says why it is shut
+    expect(m.q(`[data-testid="cand-${field}"]`)?.getAttribute('class') ?? '').not.toContain('is-equipped');
+    expect(text(m.q('[data-testid="slot-power-field"]')!)).toContain('Coming soon');
   });
 });

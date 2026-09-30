@@ -157,8 +157,8 @@ describe('power (A2.9.9)', () => {
   });
 
   it('easy tiers waste casts on chip damage; better tiers wait for kills', () => {
-    // Five full-HP Bonkers: 5 × 0.4 × 50 × 140 / 200 = 70 gold → ROI 7,000.
-    const units = crowd(5, 20000);
+    // Five Bonkers at 180 HP, Meteor Shower caps at 4: 4 × 0.4 × 50 × 140 / 180 = 62 gold → ROI 6,222.
+    const units = crowd(5, 18000);
     expect(castsAt(0, obs(units))).toBe(true); // bar 6,000
     expect(castsAt(1, obs(units))).toBe(false); // bar 8,000
     expect(castsAt(5, obs(units))).toBe(false);
@@ -287,11 +287,11 @@ describe('power (A2.9.9)', () => {
     };
     const { brain } = brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } });
     const mem = new BotMemory(book);
-    // No enemy turret, so the gate passes: with 450 in hand the bank still comes first (nothing is
-    // trained), while tier V, which does not bait, trains.
+    // No enemy turret, so the gate passes: with 250 in hand (the bait bank is 300) the bank still comes
+    // first (nothing is trained), while tier V, which does not bait, trains.
     const open: Partial<Observation['foe']> = { powers: foe.powers! };
-    expect(kinds(decide(brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 450 * MILLI, foe: open })))).not.toContain('train');
-    expect(kinds(decide(brainFor({ tier: 5, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 450 * MILLI, foe: open })))).toContain('train');
+    expect(kinds(decide(brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 250 * MILLI, foe: open })))).not.toContain('train');
+    expect(kinds(decide(brainFor({ tier: 5, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 250 * MILLI, foe: open })))).toContain('train');
     const o1 = observation({ tick: 900, gold: 600 * MILLI, foe });
     const t1 = decide(brain, o1, { memory: mem });
     // The bait is the cheapest tray unit (the Bonker, 50), and nothing else is bought.
@@ -306,6 +306,12 @@ describe('power (A2.9.9)', () => {
     const cast = observation({ tick: 980, gold: 450 * MILLI, foe: { ...foe, powers: { home: { card: 'rockslide', ppm: 0 }, field: { card: null, ppm: 0 } } }, telegraphs: [{ side: 0, slot: 'home', power: 'rockslide', p: 1500000, zone: 450000, impactTick: 1000, targetId: -1 }] });
     const t2 = decide(brain, cast, { memory: mem });
     expect(kinds(t2).filter((k) => k === 'train').length).toBeGreaterThan(1);
+  });
+
+  it('bait, then wave also goes into a full ring whose card is not scouted yet', () => {
+    const foe: Partial<Observation['foe']> = { powers: { home: { card: null, ppm: 1000000 }, field: { card: null, ppm: 0 } } };
+    const t = decide(brainFor({ tier: 7, tierOverride: { treasuryMax: 0 } }).brain, observation({ tick: 900, gold: 600 * MILLI, foe }));
+    expect(t.action).toMatchObject({ kind: 'train', card: 'bonker' });
   });
 
   it('counter-timing (X): the Home bar rises by 3,000 while the enemy banks', () => {

@@ -22,7 +22,7 @@ describe('contentHash (B4, B3 replays)', () => {
   it('matches the snapshot (update only when battle content changes on purpose)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
-    expect(content.hash).toBe('e7cfa294');
+    expect(content.hash).toBe('9f427999');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

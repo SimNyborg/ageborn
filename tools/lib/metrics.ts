@@ -13,7 +13,8 @@ import type { AgeId, CardId, CompiledContent, FormatId, KillerKind, MatchOutcome
 export type KillKind = KillerKind | 'other';
 
 /**
- * One cast (A2.9.12): [power, slot (0 Home, 1 Field), enemy card value it killed, the enemy's on-lane army
+ * One cast (A2.9.12): [power, slot (0 Home, 1 Field), enemy card value it killed (for a buff: killed by
+ * the units it buffed while the buff lasted, the A2.9.12 buff value), the enemy's on-lane army
  * value when it was cast, the card value of the enemies it touched, how many it touched, cost paid].
  * Card values are whole gold and leave summons out.
  */
@@ -142,6 +143,9 @@ export class MatchTally {
   private readonly armyValue: [number, number] = [0, 0];
   /** The cast whose power hit a unit last (a power kill is credited to it). */
   private readonly lastCastOn = new Map<number, number>();
+  /** A buff that landed this tick (its `powerImpact`), and the units it buffed until when (A2.9.12). */
+  private buffLanding: { castId: number; side: Side; tick: number } | null = null;
+  private readonly buffed = new Map<number, { castId: number; until: number }>();
   /** The open age stay per side: [age index, start tick, casts, Field casts]. */
   private readonly stay: [[number, number, number, number], [number, number, number, number]] = [
     [0, 0, 0, 0],
@@ -209,6 +213,13 @@ export class MatchTally {
           }
         }
         this.lastCastOn.delete(e.id);
+        // A kill by a buffed unit while its buff lasts counts for the buff's cast.
+        if (e.killerId !== null && e.killerSide !== null && e.killerSide !== e.side) {
+          const b = this.buffed.get(e.killerId);
+          const c = b && e.tick <= b.until ? this.castInfo.get(b.castId) : undefined;
+          if (c) c.rec[2] += value;
+        }
+        this.buffed.delete(e.id);
         if (this.trainedIds.delete(e.id)) {
           this.alive[e.side] = Math.max(0, this.alive[e.side] - 1);
           this.armyValue[e.side] = Math.max(0, this.armyValue[e.side] - value);
@@ -291,6 +302,20 @@ export class MatchTally {
         const st = this.stay[e.side];
         st[2] += 1;
         if (slot === 1) st[3] += 1;
+        break;
+      }
+      case 'powerImpact': {
+        const fam = this.content.powers[e.power]?.effect.kind;
+        if (fam === 'buffAll') this.buffLanding = { castId: e.castId, side: e.side, tick: e.tick };
+        break;
+      }
+      case 'statusApplied': {
+        const b = this.buffLanding;
+        if (b && b.tick === e.tick && this.unitSide.get(e.id) === b.side) {
+          const until = e.tick + Math.ceil(e.ms / 50);
+          const prev = this.buffed.get(e.id);
+          if (!prev || prev.castId !== b.castId || prev.until < until) this.buffed.set(e.id, { castId: b.castId, until });
+        }
         break;
       }
       case 'treasuryUp':

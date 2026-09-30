@@ -835,6 +835,8 @@
       },
       "lockedField": "War Path Stone 5 or 150 trophies",
       "lockedFieldShort": "Opens at Stone 5",
+      "fieldSoon": "Field powers join battles in a coming update",
+      "fieldSoonShort": "Coming soon",
       "wrongSlot": {
         "home": "Home powers go in the Home slot",
         "field": "Field powers go in the Field slot"

@@ -181,7 +181,7 @@ export { createFeatTracker, featFlag, featHintFlag, featList, grantFeats, showFe
 export { activeQuests } from './quests';
 export { ladderWinFor } from './trophies';
 export { FIELD_SLOT_IN_BATTLE, META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER, SAVE_VERSION } from './rules';
-export { applyPowerMatchRule, botMayUsePower, botPowers, fieldSlotLive, fieldSlotUnlocked } from './powers';
+export { applyPowerMatchRule, botMayUsePower, botPowers, fieldSlotLive, fieldSlotUnlocked, grantWarPathPower, warPathPowerOf } from './powers';
 export { allStarterPowers, starterPower, starterPowers } from './tables';
 export { dayKeyOf, gameDay, nextResetAt, weekKeyOf } from './time';
 export { countsForSupply, supplyMatchesLeft, supplyRules, type SupplyRules } from './supply';

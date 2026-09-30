@@ -212,7 +212,7 @@ const POWER_ROWS: Pick<PowerDef, 'id' | 'age' | 'slot' | 'reach' | 'family' | 'r
     effect: { kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40, jitter: 20, hitsAir: false, pattern: 'even' } },
   { id: 'arrow_storm', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_arrows',
-    effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 50, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' } },
+    effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 55, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' } },
   { id: 'smoke_screen', age: 'gunpowder', slot: 'field', reach: 'front', family: 'cloud', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_smoke',
     effect: { kind: 'cloud', width: 350, durationMs: 6000, enemyMissBp: 5000, allyDamageBp: 2000 } },
@@ -260,6 +260,9 @@ function expectedGroup(rarity: Rarity, role: Role): RoleGroup {
   return role as RoleGroup;
 }
 
+/** Power numbers the live content has since retuned (fix pass 2026-09-30); the frozen fixture keeps these. */
+const FIXTURE_POWER_EFFECT: Record<string, Record<string, number>> = { arrow_storm: { damage: 50 } };
+
 describe.each([
   ['src/content/raw', raw],
   ['tests/fixtures/content', fixture],
@@ -303,8 +306,10 @@ describe.each([
   describe('A5.7 power sample', () => {
     it.each(POWER_ROWS.map((r) => [r.id, r] as const))('%s matches its A5.7 row', (_id, r) => {
       const p = c.powers.find((x) => x.id === r.id);
-      expect(p).toMatchObject({ ...r, kind: 'power', visualId: `power.${r.id}`, nameKey: `card.${r.id}.name`, descKey: `card.${r.id}.desc` });
-      expect(p?.effect).toEqual(r.effect);
+      // The frozen fixture keeps the numbers the golden replays were recorded with.
+      const want = _name === 'tests/fixtures/content' && FIXTURE_POWER_EFFECT[r.id] ? { ...r, effect: { ...r.effect, ...FIXTURE_POWER_EFFECT[r.id] } as PowerDef['effect'] } : r;
+      expect(p).toMatchObject({ ...want, kind: 'power', visualId: `power.${r.id}`, nameKey: `card.${r.id}.name`, descKey: `card.${r.id}.desc` });
+      expect(p?.effect).toEqual(want.effect);
     });
     it('royal_decree and nanite_surge buff the 8 frontmost own units', () => {
       expect(c.powers.find((p) => p.id === 'royal_decree')?.effect).toEqual({ kind: 'buffAll', maxTargets: 8, statuses: [

@@ -31,7 +31,7 @@
  */
 import type { PowerDef, PowerSlot } from '@/contracts';
 import { createPortal } from 'preact/compat';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState, type MutableRef } from 'preact/hooks';
 import { haptic as hapticTier } from '../components/haptics';
 import { ReachGlyphIcon, SlotGlyph } from '../components/PowerGlyphs';
 import { perUnitShare, powerCap, reachGlyph, reachLabel, reloadSeconds } from '../components/powerInfo';
@@ -177,12 +177,54 @@ interface Pos {
 }
 
 /** The dock's tip (long-press or hover): name, slot, family and reach, cost and reload, the cap, the per-unit line. */
+/** Keeps an element this far inside the HUD root's left and right edges (tips and the drag token's label). */
+const EDGE_KEEP_PX = 8;
+
+/**
+ * The horizontal shift (px) that keeps `el` inside the HUD root with an 8 px margin, given the shift it
+ * already has; 0 when it fits (a phone-width dock put the Home tip 42 px off-screen).
+ */
+function keepInside(el: HTMLElement | null, current: number): number {
+  const root = el?.closest('.hud') as HTMLElement | null;
+  if (!el || !root) return 0;
+  const r = el.getBoundingClientRect();
+  const b = root.getBoundingClientRect();
+  if (r.width === 0) return current;
+  const left = r.left - current;
+  const right = r.right - current;
+  let dx = 0;
+  if (right > b.right - EDGE_KEEP_PX) dx = b.right - EDGE_KEEP_PX - right;
+  if (left + dx < b.left + EDGE_KEEP_PX) dx = b.left + EDGE_KEEP_PX - left;
+  return Math.round(dx);
+}
+
+/** Applies `keepInside` as the CSS variable `name` whenever `deps` change and on resize. */
+function useKeepInside(ref: MutableRef<HTMLElement | null>, name: string, deps: readonly unknown[]): void {
+  const shift = useRef(0);
+  useLayoutEffect(() => {
+    const apply = (): void => {
+      const el = ref.current;
+      if (!el) return;
+      const dx = keepInside(el, shift.current);
+      if (dx === shift.current) return;
+      shift.current = dx;
+      el.style.setProperty(name, `${dx}px`);
+    };
+    apply();
+    if (typeof window === 'undefined') return undefined;
+    window.addEventListener('resize', apply);
+    return () => window.removeEventListener('resize', apply);
+  }, deps);
+}
+
 function PowerTip(p: { c: HudCtx; def: PowerDef; slot: PowerSlot; cost: number }) {
   const { c, def } = p;
   const cap = powerCap(def);
   const share = perUnitShare(c.config.content, def);
+  const tipRef = useRef<HTMLDivElement>(null);
+  useKeepInside(tipRef, '--tip-dx', [def.id, p.cost, c.compact]);
   return (
-    <div class="hud-pw-tip" role="tooltip" data-testid={`hud-power-tip-${p.slot}`}>
+    <div ref={tipRef} class="hud-pw-tip" role="tooltip" data-testid={`hud-power-tip-${p.slot}`}>
       <div class="hud-pw-tip-name">
         <SlotGlyph slot={p.slot} size={18} />
         <span>{c.t(def.nameKey)}</span>
@@ -229,6 +271,9 @@ function PowerSlotButton(p: {
   const [st, setSt] = useState<PowerAimState>(AIM_IDLE);
   const stRef = useRef<PowerAimState>(st);
   const [pos, setPos] = useState<Pos | null>(null);
+  // The token's label stays on screen near the edges (it centres on the finger otherwise).
+  const labelRef = useRef<HTMLSpanElement>(null);
+  useKeepInside(labelRef, '--label-dx', [pos?.x, st.s]);
   const [hint, setHint] = useState(false);
   const [tip, setTip] = useState(false);
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -721,7 +766,7 @@ function PowerSlotButton(p: {
             >
               <span class="hud-power-token-core">{icon(26)}</span>
               {tokenLine || (!overHud && !outOfReach) ? (
-                <span class={cls('hud-power-token-label', !overHud && !outOfReach && 'is-info')} data-testid="hud-power-token-label">
+                <span ref={labelRef} class={cls('hud-power-token-label', !overHud && !outOfReach && 'is-info')} data-testid="hud-power-token-label">
                   {tokenLine ? <span>{tokenLine}</span> : null}
                   {!overHud && !outOfReach ? (
                     <span class="hud-power-token-cost">

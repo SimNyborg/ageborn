@@ -75,6 +75,7 @@ import {
   clearSlot,
   emptyPlan,
   equipSlot,
+  fieldSlotLockKeys,
   fieldSlotOpen,
   fitsSlot,
   loadoutAvgLevel,
@@ -331,11 +332,17 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const issues: PlanIssue[] = services.validatePlan(plan, formatFor(s, content)).filter((i) => seasoned || i.severity === 'error');
   const ageIssues = issues.filter((i) => i.age === age).sort((a, b) => (a.severity === b.severity ? 0 : a.severity === 'error' ? -1 : 1));
   const avg = loadoutAvgLevel(s, content, loadout);
-  const inArmy = new Set(ALL_SLOTS.map((x) => slotCard(loadout, x)).filter((c): c is CardId => !!c));
+  const fieldOpen = fieldSlotOpen(s);
+  const fieldLock = fieldSlotLockKeys(s);
+  // A locked Field slot is empty in battle (A2.9.1), so a power a migrated save keeps there is not "in army".
+  const inArmy = new Set(
+    ALL_SLOTS.filter((x) => x.kind !== 'power' || x.slot === 'home' || fieldOpen)
+      .map((x) => slotCard(loadout, x))
+      .filter((c): c is CardId => !!c),
+  );
   const selSlot = sel?.type === 'slot' ? slotFromKey(sel.key) : null;
   const selCard = sel?.type === 'card' ? sel.id : null;
   const cards = armyCards(s, content, age, filter, selSlot ? selSlot.kind : null, selSlot?.kind === 'power' ? selSlot.slot : null);
-  const fieldOpen = fieldSlotOpen(s);
   const album = albumProgress(s, content);
   const firstVisit = s.flags['ui-seen.army'] !== true;
 
@@ -520,7 +527,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     const target = slotFromKey(key);
     const own = card ? powerSlotOf(content, card) : null;
     if (target?.kind !== 'power') return;
-    if (target.slot === 'field' && !fieldOpen) toasts.show(t('ui.power.lockedField'), { tone: 'bad', anchor: slotEl(key) });
+    if (target.slot === 'field' && !fieldOpen) toasts.show(t(fieldLock.line), { tone: 'bad', anchor: slotEl(key) });
     else if (own && own !== target.slot) toasts.show(t(POWER_WRONG_SLOT_KEY[own]), { tone: 'bad', anchor: slotEl(key) });
   }
   function undoLast() {
@@ -729,7 +736,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             type="button"
             class="army-slot__empty army-slot__locked"
             onClick={() => tapSlot(slot, slotEl(key))}
-            aria-label={`${t(POWER_SLOT_LONG_KEY.field)}: ${t('ui.power.lockedField')}`}
+            aria-label={`${t(POWER_SLOT_LONG_KEY.field)}: ${t(fieldLock.line)}`}
             data-testid={`slot-${key}`}
           >
             <span class="army-slot__watermark" aria-hidden="true">
@@ -740,7 +747,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
               {t(POWER_SLOT_KEY.field)}
             </span>
             <span class="army-slot__more" data-tag="">
-              {t('ui.power.lockedFieldShort')}
+              {t(fieldLock.short)}
             </span>
           </button>
         </div>
@@ -836,7 +843,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     const equipped = here && inArmy.has(id);
     // A Field power waits for its slot to open (A2.9.1).
     const locked = def.kind === 'power' && def.slot === 'field' && !fieldOpen;
-    const otherAge = !here ? t('ui.army.otherAge', { age: t(AGE_SHORT[def.age]) }) : locked ? t('ui.power.lockedField') : null;
+    const otherAge = !here ? t('ui.army.otherAge', { age: t(AGE_SHORT[def.age]) }) : locked ? t(fieldLock.line) : null;
     return (
       <div class={barClass()} role="group" data-army-keep="" data-testid="card-actions">
         <span class="army-bar__title" data-clip-check="">
@@ -1136,9 +1143,18 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                   })}
                 >
                   <span class="army-chip__face">
-                    {t('ui.army.onlyKind', {
-                      slot: t(slotLabelKey(selSlot)),
-                    })}
+                    {selSlot.kind === 'power' ? (
+                      // A power slot's chip is its glyph and short name ("Field"): "Field power cards" ran
+                      // off the panel on a phone and hid the clear control.
+                      <>
+                        <SlotGlyph slot={selSlot.slot} size={16} />
+                        {t(POWER_SLOT_KEY[selSlot.slot])}
+                      </>
+                    ) : (
+                      t('ui.army.onlyKind', {
+                        slot: t(slotLabelKey(selSlot)),
+                      })
+                    )}
                     <CloseIcon size={14} />
                   </span>
                 </button>

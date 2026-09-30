@@ -2588,9 +2588,11 @@
     visibility 0s linear var(--ui-dur-micro);
 }
 
-.hud-pw-slot.is-home .hud-pw-tip {
-  right: auto;
-  left: -6px;
+/* Both tips open leftward from their button: the dock sits at the tray's right edge, so a Home tip that
+   opened rightward ran 42 px off a phone screen. The component also clamps it inside the HUD
+   (`--tip-dx`, 8 px margin). */
+.hud-pw-tip {
+  transform: translateX(var(--tip-dx, 0px));
 }
 
 .hud-pw.is-tip + .hud-pw-tip {
@@ -2978,7 +2980,8 @@
   position: absolute;
   left: 0;
   top: -122px;
-  translate: -50% 0;
+  /* Centred on the finger, shifted back inside the HUD near its edges (`--label-dx`, PowerButton). */
+  translate: calc(-50% + var(--label-dx, 0px)) 0;
   padding: 4px 10px;
   border-radius: 99px;
   background: var(--hud-deny);

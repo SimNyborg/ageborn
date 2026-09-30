@@ -6,6 +6,7 @@
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, FormatId, Loadout, PlanIssue, PowerSlot, Rarity, ResearchClass, SaveDoc } from '@/contracts';
 import { unitClass, type CardClass } from '@/core/cardClass';
+import { FIELD_SLOT_IN_BATTLE } from '@/core/powerReach';
 import type { WarPlan } from '../services';
 import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
@@ -19,9 +20,18 @@ export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index:
  */
 export const FIELD_SLOT_FLAG = 'power.field';
 
-/** The Field slot is open for this save (else the Army shows it with a padlock and its unlock line). */
-export function fieldSlotOpen(save: SaveDoc): boolean {
-  return save.flags[FIELD_SLOT_FLAG] === true;
+/**
+ * The Field slot is open for this save and battles play it (else the Army shows it with a padlock and
+ * its line). Until the HUD dock ships (`FIELD_SLOT_IN_BATTLE`, P2) it stays locked even for a save that
+ * earned it, so the Army never shows an equipped power that no battle uses.
+ */
+export function fieldSlotOpen(save: SaveDoc, inBattle: boolean = FIELD_SLOT_IN_BATTLE): boolean {
+  return inBattle && save.flags[FIELD_SLOT_FLAG] === true;
+}
+
+/** Why the Field slot is locked: the unlock line, or "coming soon" once earned but not yet in battles. */
+export function fieldSlotLockKeys(save: SaveDoc, inBattle: boolean = FIELD_SLOT_IN_BATTLE): { line: string; short: string } {
+  return !inBattle && save.flags[FIELD_SLOT_FLAG] === true ? { line: 'ui.power.fieldSoon', short: 'ui.power.fieldSoonShort' } : { line: 'ui.power.lockedField', short: 'ui.power.lockedFieldShort' };
 }
 
 export const UNIT_SLOTS = 6;
