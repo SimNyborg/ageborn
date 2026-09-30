@@ -74,6 +74,7 @@ export const SideConfigSchema = v.object({
       nationalFlag: v.optional(v.nullable(v.string())),
       baseSkins: v.optional(partialPerAge(v.string())),
       decorations: v.optional(v.array(v.nullable(v.string()))),
+      backdrop: v.optional(v.nullable(v.string())),
     }),
   ),
 });

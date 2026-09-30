@@ -169,6 +169,9 @@ def render_clips(rig, clips, frame_dir, feet_px, smear_spec=None, team=True, log
                 tr[name].append(_screen_lu(e.matrix_world.translation, feet_px))
             base = os.path.join(frame_dir, f"{clip.name}_{i:02d}.png")
             frames.append(render_frame(rig, poses[i], base, team, smear))
+            # smear v2 and attacker accents (smear2.py), painted over the finished frame later
+            from . import smear2
+            smear2.paint_frame(rig, clip, poses, i, base.replace(".png", "_smear2.png"))
         out[clip.name] = frames
         if rig.trackers:
             tracks[clip.name] = tr

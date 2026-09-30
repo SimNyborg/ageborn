@@ -289,6 +289,7 @@ export function midGameSave(content: Content): SaveDoc {
         'emote.clap', 'emote.heart', 'emote.bonk', 'emote.robo_dance',
         'quote.charge', 'quote.plot_twist', 'quote.respect', 'quote.one_more_wave',
         'baseSkin.frost_cave', 'baseSkin.rose_keep',
+        'backdrop.golden_dusk', 'backdrop.winterfall', 'backdrop.thunderstorm',
         'decoration.stone_idol', 'decoration.lion_statue', 'decoration.iron_brazier', 'decoration.olive_tree', 'decoration.golden_cup',
       ],
       equipped: {
@@ -298,6 +299,7 @@ export function midGameSave(content: Content): SaveDoc {
         nationalFlag: 'nationalFlag.dk',
         baseSkins: { stone: 'baseSkin.frost_cave', medieval: 'baseSkin.rose_keep' },
         decorations: ['decoration.lion_statue', 'decoration.iron_brazier', 'decoration.olive_tree'],
+        backdrop: null,
       },
     },
     warPlans: [rush, turtle, air],
@@ -398,6 +400,7 @@ export function maxedSave(content: Content): SaveDoc {
         nationalFlag: 'nationalFlag.gb_eng',
         baseSkins: { future: 'baseSkin.midnight_neon', cosmic: 'baseSkin.nebula_ark' },
         decorations: ['decoration.star_trophy', 'decoration.plasma_brazier', 'decoration.astro_statue'],
+        backdrop: 'backdrop.northern_lights',
       },
     },
     warPlans: [plan, planFrom(content, collection, 'Classic'), planFrom(content, collection, 'Air')],

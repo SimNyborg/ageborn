@@ -1,6 +1,6 @@
 /**
  * The cosmetic collections (DESIGN A18.9.4, owner direction 2026-09-28): emotes, quotes, base flags,
- * national flags, base skins and base decorations.
+ * national flags, base skins, base decorations and battle backdrops (owner request 2026-09-30).
  *
  * - Keys: an item's key is `<collection>.<id>` (`nationalFlag.dk`); owned keys live in
  *   `SaveDoc.cosmetics.owned` next to banner and title ids, the chosen items in `cosmetics.equipped`.
@@ -13,7 +13,8 @@
  * - Drops: a rolled rarity, then an unowned item of that pool and rarity; a duplicate only when all
  *   of them are owned, and a duplicate turns into Dust when it is opened.
  * - Equipping: only owned items, each in its own slot; base skins only on their age; the national
- *   flag is only ever the player's own pick (never inferred from location).
+ *   flag is only ever the player's own pick (never inferred from location); one backdrop restyles the
+ *   player's half of the battlefield in every age (null = each age's classic sky).
  *
  * Pure and deterministic (B2).
  */
@@ -21,7 +22,7 @@ import type { AgeId, BaseEmoteId, CapsuleTier, CosmeticLoadout, PendingCapsule, 
 import type { Content, CosmeticCollection, CosmeticItemDef } from '@/content';
 import { cloneSfc32, pickWeighted, randInt, seedSfc32, type Sfc32State } from '@/core';
 
-export const COSMETIC_COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration'];
+export const COSMETIC_COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'];
 const RARITIES: readonly Rarity[] = ['common', 'rare', 'epic', 'legendary'];
 
 export const cosmeticKey = (x: Pick<CosmeticItemDef, 'collection' | 'id'>): string => `${x.collection}.${x.id}`;
@@ -58,12 +59,15 @@ export function ownsCosmetic(s: SaveDoc, t: Content, key: string): boolean {
 /** A new profile's equipped items (content defaults). */
 export function defaultLoadout(t: Content): CosmeticLoadout {
   const d = t.cosmetics.collections.defaults;
-  return { emotes: [...d.emotes], quotes: [...d.quotes], baseFlag: d.baseFlag, nationalFlag: d.nationalFlag, baseSkins: {}, decorations: [...d.decorations] };
+  return { emotes: [...d.emotes], quotes: [...d.quotes], baseFlag: d.baseFlag, nationalFlag: d.nationalFlag, baseSkins: {}, decorations: [...d.decorations], backdrop: d.backdrop ?? null };
 }
 
 /** The save's equipped items, falling back to the defaults for a save without them. */
 export function equippedOf(s: SaveDoc, t: Content): CosmeticLoadout {
-  return (s.cosmetics as Partial<SaveDoc['cosmetics']>).equipped ?? defaultLoadout(t);
+  const eq = (s.cosmetics as Partial<SaveDoc['cosmetics']>).equipped;
+  if (!eq) return defaultLoadout(t);
+  // a look from before save v8 (an in-memory doc) has no backdrop: the classic skies
+  return eq.backdrop === undefined ? { ...eq, backdrop: null } : eq;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -76,6 +80,7 @@ export type CosmeticEquip =
   | { slot: 'nationalFlag'; key: string | null }
   | { slot: 'baseSkin'; age: AgeId; key: string | null }
   | { slot: 'decoration'; anchor: number; key: string | null }
+  | { slot: 'backdrop'; key: string | null }
   | { slot: 'emotes'; keys: string[] }
   | { slot: 'quotes'; keys: string[] };
 
@@ -98,7 +103,8 @@ export function equipCosmetic(s: SaveDoc, t: Content, e: CosmeticEquip): Result<
   let next: CosmeticLoadout;
   switch (e.slot) {
     case 'baseFlag':
-    case 'nationalFlag': {
+    case 'nationalFlag':
+    case 'backdrop': {
       const bad = check(e.key, e.slot);
       if (bad) return fail(bad);
       next = { ...cur, [e.slot]: e.key };
@@ -156,13 +162,14 @@ export function sideLook(s: SaveDoc, t: Content): SideLook {
   const own = (k: string | null): string | null => (k !== null && ownsCosmetic(s, t, k) ? k : null);
   const baseSkins: Partial<Record<AgeId, string>> = {};
   for (const [age, k] of Object.entries(e.baseSkins) as [AgeId, string][]) if (own(k)) baseSkins[age] = k;
-  return { baseFlag: own(e.baseFlag), nationalFlag: own(e.nationalFlag), baseSkins, decorations: e.decorations.map(own) };
+  return { baseFlag: own(e.baseFlag), nationalFlag: own(e.nationalFlag), baseSkins, decorations: e.decorations.map(own), backdrop: own(e.backdrop) };
 }
 
 /**
  * An AI opponent's look, seeded by its name: a base flag and decorations from the whole collection
  * (the look is cosmetic and bots are labeled AI everywhere, A7.1). Bots never fly a national flag,
- * so no country is ever implied for an AI.
+ * so no country is ever implied for an AI, and keep their age's classic sky, so the player's own
+ * backdrop marks the player's half.
  */
 export function botLook(t: Content, seed: string): SideLook {
   const rng = seedSfc32(`look:${seed}`);
@@ -175,7 +182,7 @@ export function botLook(t: Content, seed: string): SideLook {
   for (const x of collectionItems(t, 'baseSkin')) if (x.age && baseSkins[x.age] === undefined && randInt(rng, 2) === 0) baseSkins[x.age] = cosmeticKey(x);
   const anchors = t.cosmetics.collections.decorationAnchors;
   const decorations = Array.from({ length: anchors }, () => (randInt(rng, 3) === 0 ? null : pick('decoration')));
-  return { baseFlag: pick('baseFlag'), nationalFlag: null, baseSkins, decorations };
+  return { baseFlag: pick('baseFlag'), nationalFlag: null, baseSkins, decorations, backdrop: null };
 }
 
 // ---------------------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ export interface ProfileLookPatch {
  * owned items equip; the national flag is only ever the player's own pick.
  */
 export type CosmeticEquipPatch =
-  | { slot: 'baseFlag' | 'nationalFlag'; key: string | null }
+  | { slot: 'baseFlag' | 'nationalFlag' | 'backdrop'; key: string | null }
   | { slot: 'baseSkin'; age: AgeId; key: string | null }
   | { slot: 'decoration'; anchor: number; key: string | null }
   | { slot: 'emotes' | 'quotes'; keys: string[] };

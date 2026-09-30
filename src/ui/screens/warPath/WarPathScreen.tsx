@@ -17,6 +17,7 @@
  * Feature unlocks (MR-40) play on Home, where the features live.
  */
 import '../home/home.css';
+import '../home/hub.css';
 import './warPath.css';
 import type { WarPathDifficulty } from '@/contracts';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';

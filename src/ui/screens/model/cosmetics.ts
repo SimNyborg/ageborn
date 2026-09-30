@@ -6,7 +6,7 @@
 import type { Content, CosmeticCollection, CosmeticItemDef } from '@/content/types';
 import type { CosmeticLoadout, SaveDoc } from '@/contracts';
 
-export const COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration'];
+export const COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'];
 
 export const itemKey = (x: Pick<CosmeticItemDef, 'collection' | 'id'>): string => `${x.collection}.${x.id}`;
 
@@ -31,9 +31,9 @@ export function owns(save: SaveDoc, content: Content, key: string): boolean {
 /** The save's equipped items (the content defaults for a save without them). */
 export function equippedOf(save: SaveDoc, content: Content): CosmeticLoadout {
   const e = (save.cosmetics as Partial<SaveDoc['cosmetics']>).equipped;
-  if (e) return e;
+  if (e) return e.backdrop === undefined ? { ...e, backdrop: null } : e;
   const d = content.cosmetics.collections.defaults;
-  return { emotes: [...d.emotes], quotes: [...d.quotes], baseFlag: d.baseFlag, nationalFlag: d.nationalFlag, baseSkins: {}, decorations: [...d.decorations] };
+  return { emotes: [...d.emotes], quotes: [...d.quotes], baseFlag: d.baseFlag, nationalFlag: d.nationalFlag, baseSkins: {}, decorations: [...d.decorations], backdrop: d.backdrop ?? null };
 }
 
 /** "12/40 found": owned (starters included) and total per collection. */

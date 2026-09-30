@@ -136,7 +136,7 @@ export function Water(p: { age: AgeId; w: number; h: number; hz: number; roadY: 
     };
   }
   // A lake below the road, with reeds (or crystals) on its shore.
-  const x = p.w * (0.14 + p.rng.next() * 0.16);
+  const x = p.w * (0.8 + p.rng.next() * 0.08);
   const ry = p.roadY(x);
   const y = Math.min(p.h - 34, ry + p.clear + 56);
   const rx = 90 + p.rng.next() * 40;
@@ -469,7 +469,7 @@ const PIECES: Readonly<Record<AgeId, readonly [Piece, Piece]>> = {
 };
 
 /** Where a region's two set pieces stand (fractions of its width), and their rough half-size. */
-const PIECE_AT: readonly number[] = [0.58, 0.86];
+const PIECE_AT: readonly number[] = [0.24, 0.66];
 const PIECE_HALF = 70;
 
 /**
@@ -490,7 +490,8 @@ export function SetPieces(p: { age: AgeId; w: number; h: number; hz: number; roa
     // Below the road where it fits; otherwise tucked just under the horizon, above the road.
     const y = room > 10 ? Math.min(p.bottomLimit, below + Math.min(40, room)) : Math.max(p.hz + 60, ry - p.clear - 10);
     const depth = (y - p.hz) / Math.max(1, p.h - p.hz);
-    const s = Math.max(0.7, Math.min(1.35, 0.7 + depth * 0.8));
+    // Smaller on short screens, so a set piece never crowds the nodes on a phone.
+    const s = Math.max(0.5, Math.min(1.25, (0.6 + depth * 0.6) * Math.min(1, p.h / 560)));
     items.push({ x, y, s, art: piece(p.t) });
     blocked.push({ x0: x - PIECE_HALF * s, x1: x + PIECE_HALF * s, y0: y - 100 * s, y1: y + 20 });
   });

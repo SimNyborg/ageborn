@@ -288,7 +288,7 @@ export function createPreviewServices(o: {
       set((s) => {
         const eq = { ...s.cosmetics.equipped };
         if (e.slot === 'emotes' || e.slot === 'quotes') eq[e.slot] = [...e.keys];
-        else if (e.slot === 'baseFlag' || e.slot === 'nationalFlag') eq[e.slot] = e.key;
+        else if (e.slot === 'baseFlag' || e.slot === 'nationalFlag' || e.slot === 'backdrop') eq[e.slot] = e.key;
         else if (e.slot === 'baseSkin') {
           const baseSkins = { ...eq.baseSkins };
           if (e.key) baseSkins[e.age] = e.key;

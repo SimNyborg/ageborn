@@ -20,8 +20,9 @@ import { GeneralPortrait } from '../../components/Avatar';
 import { CrownIcon, LockIcon, StarIcon } from '../../components/icons';
 import { useKit } from '../../components/kit';
 import { useUi } from '../context';
-import { hardMarked, levelNameKey, regionNameKey, type MapNode, type MapRegion } from '../model/warPath';
+import { levelNameKey, regionNameKey, type MapNode, type MapRegion } from '../model/warPath';
 import { REGION_THEMES, RegionFar, RegionGround } from './regionArt';
+import { BossLair, Chest, EliteCrest, Foreground, Lantern, Scroll, UnlockBurst } from './mapDeco';
 
 /** The map's geometry at a size. */
 export interface MapLayout {
@@ -168,7 +169,8 @@ export function WarPathMap(p: Props) {
     const el = root.current;
     if (!el) return;
     const measure = () => {
-      const r = el.getBoundingClientRect();
+      // Layout size, not the painted box: a screen's enter transform must not shrink the map.
+      const r = { width: el.clientWidth || el.getBoundingClientRect().width, height: el.clientHeight || el.getBoundingClientRect().height };
       if (r.width > 0 && r.height > 0) setSize((s) => (s && s.w === Math.round(r.width) && s.h === Math.round(r.height) ? s : { w: Math.round(r.width), h: Math.round(r.height) }));
       // Nothing measured yet (hidden, or a DOM without layout): lay out for the reference phone.
       else setSize((s) => s ?? { w: 844, h: 390 });
@@ -361,6 +363,7 @@ export function WarPathMap(p: Props) {
           <div class="wp-world" style={{ width: `${layout.worldW}px`, transform: `translate3d(${(-scroll).toFixed(1)}px,0,0)` }}>
             <GroundLayer layout={layout} regions={p.regions} scroll={scroll} />
             <Road layout={layout} nodes={p.nodes} regions={p.regions} show={show} />
+            <RoadDeco layout={layout} nodes={p.nodes} scroll={scroll} />
             <Gates layout={layout} regions={p.regions} show={show} />
             {p.nodes.map((n) => {
               const pt = layout.pts[n.i]!;
@@ -368,6 +371,18 @@ export function WarPathMap(p: Props) {
               return <Node key={n.level.id} n={n} layout={layout} show={show} onTap={p.onNode} />;
             })}
             {layout.pts[show.bearer ?? p.current] ? <Bearer at={layout.pts[show.bearer ?? p.current]!} size={layout.node} /> : null}
+          </div>
+          <ForegroundLayer layout={layout} regions={p.regions} scroll={scroll} />
+          <div class="wp-flocks" aria-hidden="true">
+            {[0, 1].map((k) => (
+              <span key={k} class={`wp-flock wp-flock--${k}`}>
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
+            ))}
           </div>
           <div class="wp-map__shade" aria-hidden="true" />
           {birds.map((b) => (
@@ -573,8 +588,8 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
   const n = p.n;
   const L = p.layout;
   const pt = L.pts[n.i]!;
-  const boss = n.level.role === 'boss';
-  const hard = hardMarked(n.level) && !boss;
+  const boss = n.kind === 'boss';
+  const hard = n.kind === 'elite';
   const hidden = p.show.hideOpen === n.level.id;
   const state = hidden ? 'locked' : n.state;
   const stars = p.show.stars?.[n.level.id] ?? n.stars;
@@ -587,7 +602,8 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
   return (
     <button
       type="button"
-      class={`wp-node wp-node--${state}${boss ? ' wp-node--boss' : ''}${hard ? ' wp-node--hard' : ''}${mist ? ' is-mist' : ''}${p.show.drop === n.level.id ? ' is-dropping' : ''}`}
+      class={`wp-node wp-node--${state} wp-node--k-${n.kind}${boss ? ' wp-node--boss' : ''}${hard ? ' wp-node--hard' : ''}${mist ? ' is-mist' : ''}${p.show.drop === n.level.id ? ' is-dropping' : ''}`}
+      data-kind={n.kind}
       style={{ left: `${pt.x - size / 2}px`, top: `${pt.y - size / 2}px`, width: `${size}px`, height: `${size}px`, '--wp-accent': REGION_THEMES[n.level.region].accent }}
       data-testid={`wp-node-${n.level.id}`}
       data-state={state}
@@ -598,13 +614,24 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
         p.onTap(n, e.currentTarget as HTMLElement);
       }}
     >
+      {boss ? <BossLair size={size} lit={state !== 'locked'} /> : null}
+      {hard ? <EliteCrest size={size} /> : null}
       {state === 'current' ? (
         <>
           <i class="wp-node__plinth" aria-hidden="true" />
           <i class="wp-node__ring" aria-hidden="true" />
           <i class="wp-node__ring wp-node__ring--2" aria-hidden="true" />
+          <i class={`wp-node__marker${hard || boss ? ' is-high' : ''}`} aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+              <path d="M4 7h16l-8 11z" fill="#ffd466" stroke="#1b140d" stroke-width="2" stroke-linejoin="round" />
+              <path d="M7 8.5h9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7" />
+            </svg>
+          </i>
         </>
       ) : null}
+      {n.kind === 'treasure' ? <Chest open={state === 'beaten'} /> : null}
+      {n.kind === 'story' && state !== 'beaten' ? <Scroll /> : null}
+      {p.show.drop === n.level.id ? <UnlockBurst /> : null}
       <span class="wp-node__face">
         {boss ? (
           <span class="wp-node__portrait">
@@ -662,5 +689,54 @@ function Bearer(p: { at: { x: number; y: number }; size: number }) {
         </g>
       </svg>
     </div>
+  );
+}
+
+/** Parallax factor of the foreground layer (faster than the road: it is nearer). */
+const NEAR = 1.3;
+
+/**
+ * The near layer (owner decision 2026-09-30): dark silhouettes of the region's plants and rocks along
+ * the bottom edge, moving faster than the road, so the map reads in depth. Never over the road band.
+ */
+function ForegroundLayer(p: { layout: MapLayout; regions: readonly MapRegion[]; scroll: number }) {
+  const L = p.layout;
+  return (
+    <div class="wp-near" style={{ transform: `translate3d(${(-p.scroll * NEAR).toFixed(1)}px,0,0)` }} aria-hidden="true">
+      {p.regions.map((r, i) => {
+        const span = L.spans[i]!;
+        const left = Math.floor(span.start * NEAR);
+        const w = Math.ceil((span.end - span.start) * NEAR);
+        const screenL = left - p.scroll * NEAR;
+        if (screenL > L.w + 60 || screenL + w < -60) return null;
+        return (
+          <div key={r.age} class="wp-near__band" style={{ left: `${left}px`, width: `${w}px` }}>
+            <Foreground age={r.age} w={w} h={Math.max(40, Math.min(90, L.h - L.yMax - L.node * 0.8))} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Lanterns along the road, one between each pair of nodes: lit on the way walked, dark ahead. */
+function RoadDeco(p: { layout: MapLayout; nodes: readonly MapNode[]; scroll: number }) {
+  const L = p.layout;
+  const lastBeaten = p.nodes.reduce((m, n) => (n.state === 'beaten' ? n.i : m), -1);
+  return (
+    <svg class="wp-deco" width={L.worldW} height={L.h} aria-hidden="true">
+      {p.nodes.slice(0, -1).map((n) => {
+        const a = L.pts[n.i]!;
+        const b = L.pts[n.i + 1]!;
+        if (b.x - p.scroll < -80 || a.x - p.scroll > L.w + 80) return null;
+        if (p.nodes[n.i + 1]!.level.region !== n.level.region) return null;
+        const mx = (a.x + b.x) / 2;
+        const my = (a.y + b.y) / 2;
+        // Beside the road, on the side away from the slope's inside.
+        const up = n.i % 2 === 0;
+        const y = up ? my - L.node * 0.42 : my + L.node * 0.5;
+        return <Lantern key={n.level.id} x={mx} y={y} age={n.level.region} lit={n.i <= lastBeaten} s={L.node / 56} />;
+      })}
+    </svg>
   );
 }

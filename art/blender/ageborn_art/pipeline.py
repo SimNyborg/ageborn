@@ -57,6 +57,9 @@ def _outline_frames(raw, final_dir, spec):
             fb = os.path.join(final_dir, os.path.basename(bp))
             ft = os.path.join(final_dir, os.path.basename(tp)) if tp else None
             b, t = finish_frame(bp, tp, sp, spec)
+            s2 = bp.replace(".png", "_smear2.png")  # smear v2 / accents (smear2.py) go on top
+            if os.path.exists(s2):
+                b = sheet.over(sheet.load(s2), b)
             sheet.save(b, fb)
             if t is not None:
                 sheet.save(t, ft)
