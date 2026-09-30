@@ -26,7 +26,10 @@ spawns the 2 Carbineers; `crewOutAtMs` marks the climb-out).
 """
 import math
 
+from ageborn_art import face as F
 from ageborn_art import fx
+from ageborn_art import kit_industrial as KI
+from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as G
 from ageborn_art import rigs_industrial as I
 from ageborn_art.anim import Clip, merge, pick, squash
@@ -39,6 +42,7 @@ YAW_DEG = -10.0
 CANVAS = (640, 470)
 FEET = (262, 440)
 ANCHORS = {"head": (0, 150), "hitCenter": (0, 60)}
+NO_RETIME = True
 EXTRA_META = {"riders": [
     {"id": "rider0", "anchor": "rider0Muzzle", "projectile": "proj.bullet"},
     {"id": "rider1", "anchor": "rider1Muzzle", "projectile": "proj.bullet"},
@@ -242,6 +246,32 @@ def build(rig):
         g.sphere((x, TY - 3.6, 72.0), 1.1, cuts=2)
         g.sphere((x + 5, TY - 3.6, 22.0), 1.1, cuts=2)
     rig.part("track", g, I.IRON_LT, finish="metal", outline=0)
+    # warning stripes on the jutting nose, a lifebuoy and a strapped shovel on the side frame,
+    # soot streaks under the exhaust
+    nose = Geo().slab([(78.0, 60.0), (98.0, 50.0), (86.0, 32.0), (74.0, 44.0)], TY - 3.2, 0.8)
+    nface = F.Face(rig, "track", [nose], yaw_deg=YAW_DEG)
+    rig.part("track", nose, I.CREAM, outline=0.5)
+    g = KI.stripes(nface, Geo(), KI.K.scr(nface, (86.0, TY - 3.8, 46.0)), 22.0, 26.0, n=4, band=1.0,
+                   slant=0.5)
+    rig.part("track", g, I.STRIPE_DK, highlight=False, outline=0)
+    g = Geo().lathe([(4.2, -1.8), (6.6, -2.6), (8.0, 0), (6.6, 2.6), (4.2, 1.8)], (58.0, TY - 5.4, 76.0),
+                    (58.0, TY - 6.4, 76.0), segs=24)
+    rig.part("track", g, team=True, outline=0.6)             # a team-painted lifebuoy
+    g = Geo()
+    for a in (45, 135, 225, 315):
+        t = math.radians(a)
+        g.blob((58.0 + 6.4 * math.cos(t), TY - 7.2, 76.0 + 6.4 * math.sin(t)), (1.6, 1.2, 1.6), p=2.4,
+               rot=(0, -a, 0))
+    rig.part("track", g, I.BRICK_LT, outline=0.3)
+    g = Geo().capsule((-74.0, TY - 5.0, 66.0), (-44.0, TY - 5.0, 76.0), 1.2)
+    rig.part("track", g, I.WOOD_LT, outline=0.5)
+    g = Geo().blob((-40.0, TY - 5.2, 77.4), (4.4, 1.0, 3.2), p=2.6, rot=(0, -18, 0))
+    rig.part("track", g, I.IRON_LT, finish="metal", outline=0.5)
+    g = Geo()
+    for dx in (-28.0, -18.0):
+        g.capsule((dx, TY - 3.8, 84.0), (dx + 3.0, TY - 3.8, 76.0), 0.9)
+    rig.part("track", g, "#4A4648", outline=0, highlight=False)
+    I.fuse_spark(rig, "track", (40.0, TY - 8.0, 56.0), size=3.0, name="hitspark", seed=3, hidden=True)
     g = Geo().blob((80.0, TY - 3.0, 70.0), (3.6, 2.0, 2.4), p=2.6)   # vision slit
     rig.part("track", g, I.COAL, outline=0, highlight=False)
     _T["n"] = I.poly_tread(rig, "tn", "track", RHOMB, RADII, TY, TW, PITCH, thick=4.2)
@@ -333,52 +363,92 @@ def _riders(t, fire0=False, fire1=False):
 
 
 def _idle(f):
-    c, lag = I.idle_wave(f)
-    return merge(_tracks(0, False), _riders(f * math.pi / 2), {
-        "hull": dict(squash(0.01 * c), z=0.6 * c),
-        "exhaust": {"show": f in (1, 3), "s": pick(f, [1, 0.8, 1, 1.15]), "z": pick(f, [0, 0, 0, 4])},
+    # 6 poses in 900 ms: the engine idles (the hull shivers on its springs), the exhaust puffs twice,
+    # the sponson gunner pops up to look around (2-3) and the barbette gunner scans the other way
+    c = math.cos(2 * math.pi * f / 6)
+    pop = [0.0, 0.3, 1.0, 1.0, 0.3, 0.0][f]
+    return merge(_tracks(0, False), _riders(f * math.pi / 3), {
+        "hull": dict(squash(0.008 * c), z=0.7 * c + [0, 0.3, -0.3, 0.3, -0.3, 0][f]),
+        "g0": {"z": 5.0 * pop, "r": -6 * pop},
+        "g1": {"rz": [0, 10, 20, 10, -10, -5][f]},
+        "g1_eyes": {"x": [0, 0.5, 1.0, 0.5, -0.5, 0][f]},
+        "exhaust": {"show": f in (1, 2, 4), "s": [1, 0.8, 1.15, 1, 0.8, 1][f], "z": [0, 0, 5, 0, 0, 0][f]},
     })
 
 
 def _walk(f):
+    # roll: the belts scroll, the hull heaves and pitches over the ground, the crew bounces a beat
+    # late, the tail wheel wobbles and the exhaust puffs twice a cycle
     p = 2 * math.pi * f / 8
     return merge(_tracks(f), _riders(p), {
         "odo": {"x": 2.0 * STEP_LU * math.cos(p)},
-        "hull": dict(squash(0.012 * math.cos(2 * p)), z=0.9 * math.cos(2 * p) + 0.2, r=0.7 * math.sin(p)),
-        "tail": {"r": -1.5 * math.sin(p)},
-        "exhaust": {"show": f % 4 == 1, "x": -4.0},
+        "hull": dict(squash(0.012 * math.cos(2 * p)), z=1.2 * math.cos(2 * p) + 0.2, r=0.9 * math.sin(p)),
+        "g0": {"z": 1.6 * math.cos(2 * p - 1.2)}, "g1": {"z": 1.6 * math.cos(2 * p - 1.6)},
+        "tail": {"r": -2.0 * math.sin(p)},
+        "exhaust": {"show": f % 4 in (1, 2), "x": [0, -4, -9, 0][f % 4], "s": [1, 0.9, 1.25, 1][f % 4],
+                    "z": [0, 0, 4, 0][f % 4]},
     })
 
 
-ATTACK_MS = [100, 100, 150, 83, 150, 100, 100, 150]
+# attack: 10 unique frames in 933 ms; the shell leaves on frame 3 at 350 ms (impactAt 0.3751, as shipped)
+ATTACK_MS = [80, 90, 180, 60, 90, 90, 80, 80, 90, 93]
 ATTACK_IMPACT = 3
+#       dip  lift HOLD FIRE rock  fwd  back smoke cheer settle
+A_X = [0.5, 1.0, 1.5, -4.0, -8.0, -4.5, -2.0, -1.0, -0.5, 0.0]
+A_R = [-0.8, -0.2, 0.6, 2.8, 4.2, -1.8, 1.4, -0.6, 0.3, 0.0]
+A_Q = [-0.02, -0.03, -0.05, 0.05, -0.07, 0.03, -0.02, 0.0, 0.0, 0.0]
+A_BX = [0, 0, 0, -11.0, -9.0, -5.0, -2.0, 0, 0, 0]
+A_BR = [1.0, 3.0, 4.0, 5.0, 5.5, 3.5, 2.0, 1.0, 0.5, 0.0]
+A_REC = [0, 0, 0, 3.0, 7.0, 8.0, 7.0, 6.0, 5.0, 4.5]
 
 
 def _attack(f):
     pose = merge(_tracks(0, False), _riders(f * 0.8), {
-        "body": dict(squash(pick(f, [0, -0.02, -0.04, 0.05, -0.07, -0.03, 0.02, 0])),
-                     x=pick(f, [0, 0.5, 1.0, -3.0, -6.0, -4.0, -1.0, 0])),
-        "hull": {"r": pick(f, [0, -0.6, -1.0, 2.4, 3.4, 1.8, -1.0, 0])},
-        "barrel": {"x": pick(f, [0, 0, 0, -10.0, -8.0, -4.0, 0, 0]),
-                   "r": pick(f, [1.0, 2.0, 2.0, 3.0, 3.5, 2.0, 1.0, 0])},
-        "g0": {"r": pick(f, [0, 0, 0, 10, 8, 4, 0, 0])}, "g1": {"r": pick(f, [0, 0, 0, 12, 9, 4, 0, 0])},
+        "body": dict(squash(A_Q[f]), x=A_X[f]),
+        "hull": {"r": A_R[f]},
+        "barrel": {"x": A_BX[f], "r": A_BR[f]},
+        "g0": {"r": [0, 0, -4, 12, 10, 4, 0, 0, -6, 0][f], "z": [0, 0, -2, -3, -2, 0, 0, 2, 6, 1][f]},
+        "g1": {"r": [0, 0, -4, 14, 11, 4, 0, 0, -6, 0][f], "z": [0, 0, -2, -3, -2, 0, 0, 2, 6, 1][f]},
+        "g0_eyes": {"sz": 0.35 if f in (2, 3, 4) else 1.0},
+        "g1_eyes": {"sz": 0.35 if f in (2, 3, 4) else 1.0},
+        "g0_arms": {"show": f == 8}, "g1_arms": {"show": f == 8},
         "flash": {"show": f == 3},
-        "smoke": {"show": f in (4, 5, 6), "s": pick(f, [1, 1, 1, 1, 0.75, 1.05, 1.3, 1]),
-                  "x": pick(f, [0, 0, 0, 0, -10, 0, 6, 0]), "z": pick(f, [0, 0, 0, 0, -12, 0, 7, 0])},
-        "exhaust": {"show": f in (4, 5), "s": pick(f, [1, 1, 1, 1, 1.2, 1.4, 1, 1])},
+        "smoke": {"show": f in (4, 5, 6, 7), "s": [1, 1, 1, 1, 0.75, 1.0, 1.1, 1.2, 1, 1][f],
+                  "x": [0, 0, 0, 0, -10, 0, 7, 14, 0, 0][f], "z": [0, 0, 0, 0, -12, 0, 7, 13, 0, 0][f]},
+        "exhaust": {"show": f in (4, 5, 6), "s": [1, 1, 1, 1, 1.2, 1.5, 1.7, 1, 1, 1][f],
+                    "z": [0, 0, 0, 0, 0, 5, 10, 0, 0, 0][f]},
     })
-    rec = pick(f, [0, 0, 0, 3.0, 6.0, 6.0, 5.0, 4.0])
+    rec = A_REC[f]
     for name, r in _T["road"] + _T["wheels"]:
         pose.setdefault(name, {})["r"] = pose.get(name, {}).get("r", 0.0) + math.degrees(rec / r)
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
+def _attack_clip():
+    ov = {
+        3: [{"kind": "burst", "joint": "barrel", "point": MUZZLE, "r0_lu": 22.0, "r1_lu": 36.0, "n": 8,
+             "a0": -80.0, "arc": 160.0},
+            {"kind": "dust", "ground": (-60.0, 0.0), "size_lu": 12.0, "puffs": 4, "seed": 71, "spread": 1.2,
+             "dir": -1.0}],
+        4: [{"kind": "dust", "ground": (-70.0, 0.0), "size_lu": 14.0, "puffs": 5, "seed": 72, "spread": 1.5,
+             "dir": -1.0},
+            {"kind": "dust", "ground": (70.0, 0.0), "size_lu": 10.0, "puffs": 4, "seed": 73, "spread": 1.2}],
+    }
+    return M.clip("attack", [_attack(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+def _hit(k):
+    # vehicle: a suspension bounce, the crew ducks into the hatches, a spark on the side plate,
+    # the pennant and the tail wheel whip
+    a = M.HIT_AMT[k]
+    duck = [0.8, 1.0, 0.6, 0.1, 0.0][k]
     return merge(_tracks(0, False), _riders(0.0), {
-        "body": dict(squash(-0.05 * a), x=-4.0 * a), "hull": {"r": 3.0 * a},
-        "g0": {"r": 14 * a, "z": -1.5 * a}, "g1": {"r": 14 * a, "z": -1.5 * a},
+        "body": dict(squash(-0.05 * a), x=-4.0 * a, z=[0, 1.5, 0.5, -0.5, 0][k]), "hull": {"r": 3.0 * a},
+        "g0": {"r": 10 * a, "z": -7.0 * duck}, "g1": {"r": 10 * a, "z": -7.0 * duck},
+        "g0_eyes": {"sz": 0.35 if k < 2 else 1.0}, "g1_eyes": {"sz": 0.35 if k < 2 else 1.0},
         "mg0": {"r": 10 * a}, "mg1": {"r": 10 * a},
+        "hitspark": {"show": k < 2, "s": [1.2, 0.8, 1, 1, 1][k]},
+        "tail": {"r": 5 * a},
     })
 
 
@@ -434,10 +504,15 @@ def _die_extra():
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
         Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
+    by = {c.name: c for c in cl}
+    assert [by[n].total_ms() for n in ("idle", "walk", "hit", "die")] == [900, 800, 310, 1100]
+    m = by["attack"].meta()
+    assert m["durationMs"] == 933 and m["impactAt"] == 0.3751, m
+    return cl

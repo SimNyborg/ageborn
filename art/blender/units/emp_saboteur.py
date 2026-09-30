@@ -8,13 +8,17 @@ streams back, a charcoal stealth suit with a team chest harness and shoulder, an
 back a tall EMP generator ring (white with a magenta core and fins) that flares when he
 strikes. In the near hand an oversized shock baton with mint coils and a white tip. The run
 is a forward-leaning sprint; the attack is a coiled lunge-jab with a mint smear and an
-electric spark burst on the held impact while the back ring flashes.
+electric spark burst on the held impact while the back ring flashes; the shock kicks back
+through him (his hair spikes out of the hood). Death: D3 dizzy sit with spiral goggles.
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import face as FC
+from ageborn_art import kit_future as KF
+from ageborn_art import kit_medieval as K
+from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "emp_saboteur"
@@ -23,12 +27,11 @@ HEIGHT_LU = 70
 CANVAS = (340, 262)
 FEET = (130, 222)
 ANCHORS = {"head": (6, 64), "hitCenter": (2, 30)}
+NO_RETIME = True
 
 HR = (0.0, F.ARM_Y["r"], F.HAND_Z)
 BATON = 30.0
 TIP = (HR[0], HR[1] - 1.0, HR[2] + 4.0 + BATON)
-SMEAR = {"joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 4.0 + BATON * 0.45),
-         "outer": TIP, "color": F.MINT, "taper": 0.4, "start": 0.35}
 RING = (-19.0, 6.0, 47.0)
 
 
@@ -53,8 +56,12 @@ def build(rig):
         g.blob((rx + 14.8 * ca, ry, rz + 14.8 * sa), (2.6, 2.0, 2.6), p=2.6)
     rig.part("ring", g, team=True, outline=0.7)
     rig.joint("ring_flash", "ring", RING, hidden=True)
-    g = Geo().lathe([(13.5, -0.5), (17.0, 0), (13.5, 0.5), (12.6, 0)], (rx, ry - 2.5, rz), (rx, ry - 3.5, rz), segs=30)
-    rig.part("ring_flash", g, glow=F.MAGENTA_CORE, outline=1.2, outline_hex=F.MAGENTA)
+    g = Geo()
+    for i in range(16):
+        a0, a1 = 2 * math.pi * i / 16, 2 * math.pi * (i + 0.7) / 16
+        g.capsule((rx + 15.5 * math.cos(a0), ry - 3.0, rz + 15.5 * math.sin(a0)),
+                  (rx + 15.5 * math.cos(a1), ry - 3.0, rz + 15.5 * math.sin(a1)), 1.3, segs=8, rings=2)
+    rig.part("ring_flash", g, glow=F.MAGENTA_CORE, outline=1.0, outline_hex=F.MAGENTA)
     g = Geo().capsule((-8.0, 2.0, 32.0), (rx + 2.0, ry, rz - 6.0), 2.2)
     rig.part("torso", g, F.GUNMETAL, outline=0.6)
 
@@ -91,17 +98,21 @@ def build(rig):
     rig.secondary("hood_tip", "head", (-8.0, 0, 57.0), (-18.0, 0, 60.0), max_deg=16, gain=1.1)
     g = Geo().lathe([(6.0, 0), (4.6, 4.0), (2.4, 8.0), (0, 11.0)], (-7.0, 0, 56.0), (-18.0, 0, 60.5), segs=16)
     rig.part("hood_tip", g, team=True)
-    g = Geo().blob((11.8, -0.4, 48.8), (2.8, 8.8, 2.9), p=3.6)
-    rig.part("head", g, F.VISOR_DARK, finish="gloss", outline_hex=F.SUIT)
-    rig.joint("eyes", "head", (13.8, 0, 48.8))
-    g = Geo().blob((14.0, -1.4, 48.8), (0.9, 6.4, 1.3), p=3.2)
-    rig.part("eyes", g, glow=F.MAGENTA, outline=0)
-    rig.joint("eyes_x", "head", (13.8, 0, 48.8), hidden=True)
+    goggle = Geo().blob((11.6, -0.4, 49.0), (3.2, 9.0, 3.6), p=3.6)
+    KF.visor_face(rig, "head", [goggle], (12.0, 49.2), eye_dx=(0.0, 2.9), eye_rx=1.5, eye_rz=2.2,
+                  color=F.MAGENTA, core=F.MAGENTA_CORE)
+    rig.part("head", goggle, F.VISOR_DARK, finish="gloss", outline_hex=F.SUIT)
+    # a spiky hair tuft that pokes out of the hood when he zaps himself
+    rig.joint("tuft", "head", (6.0, 0, 57.0), hidden=True)
     g = Geo()
-    for y in (-4.6, 1.8):
-        g.capsule((14.4, y - 1.7, 50.5), (14.4, y + 1.7, 47.1), 0.8)
-        g.capsule((14.4, y - 1.7, 47.1), (14.4, y + 1.7, 50.5), 0.8)
-    rig.part("eyes_x", g, glow=F.MAGENTA, outline=0)
+    for dx, a_ in ((-2.0, 20), (1.5, 0), (5.0, -22), (-5.5, 40)):
+        ca, sa = math.cos(math.radians(90 + a_)), math.sin(math.radians(90 + a_))
+        g.lathe([(1.8, 0), (1.1, 3.5), (0, 7.0)], (6.0 + dx, -3.0, 56.0), (6.0 + dx + 7 * ca, -3.0, 56.0 + 7 * sa), segs=8)
+    rig.part("tuft", g, "#E8E2D0", finish="hair", outline=0.8)
+    chest = Geo().blob((1.5, 0, 31.5), (8.8, 9.6, 6.4), p=3.0, taper=(0.9, 1.0))
+    cf = FC.Face(rig, "torso", [chest])
+    g = KF.hexmark(cf, Geo(), K.scr(cf, (5.0, -8.6, 30.5)), s=0.8, w=1.3)
+    rig.part("torso", g, KF.HEX_PALE, highlight=False, outline=0)
 
     F.arm_parts(rig, "r", glove=F.SUIT_LT, r0=3.9, r1=3.5, fist=4.1)
     g = Geo().blob((0.4, -12.9, 37.4), (6.4, 5.4, 5.0), p=2.6)
@@ -137,9 +148,9 @@ def build(rig):
     F.sparks(rig, "baton", (tx, ty - 1.0, tz + 2.0), size=1.4, name="sparks", rays=8, seed=2)
 
 
-# -- poses ---------------------------------------------------------------------------------
+# -- poses -----------------------------------------------------------------------------------
 def grip(sa, sf, sw, fa=-50.0, ff=-5.0):
-    """Baton arm (upper, fore, baton directions) and the free far arm."""
+    """Baton arm (upper, fore, baton directions) and the free far arm (torso space)."""
     return merge(F.arm("r", sa, sf, sw, 90.0), F.arm("l", fa, ff))
 
 
@@ -151,76 +162,120 @@ STANCE = merge(grip(-70, -15, 38, -40, 10), {
 
 
 def _idle(f):
-    c, lag = F.idle_wave(f)
-    pose = merge(STANCE, F.idle_body(f, bob=1.0, sq=0.035, lean=1.2), {
-        "arm_r": {"r": 3 * lag}, "hand_r": {"r": -4 * lag},
-        "arm_l": {"r": -3 * lag}, "ring": {"r": 0.0},
-    })
-    pose["crackle"] = {"show": f in (1, 3), "r": 40 * f}
+    # rubs the baton with the far hand (a crackle on the stroke), weight shift, a blink
+    rub = [0.0, 0.6, 1.0, 0.7, 0.2, 0.0][f]
+
+    def extra(ctx):
+        return {"arm_r": {"r": 3 * ctx["lag"]}, "hand_r": {"r": -4 * ctx["lag"]}}
+    pose = M.idle_v2(f, STANCE, frames=6, bob=1.0, chest=0.035, extra=extra, blink=5,
+                     face_blink=KF.glyph("g_blink"))
+    if rub > 0:
+        # the far hand slides along the baton shaft
+        a, fo = F.ik2(F.SH, (13.0 + 5.0 * rub, 29.0 + 5.0 * rub))
+        pose.update(F.arm("l", a, fo))
+    if f in (2, 3):
+        pose["crackle"] = {"show": True, "r": 40 * f}
     return pose
 
 
 def _walk(f):
-    # a sprint: longer stride, higher knee lift, a deeper lean, arms pumping
-    pose, p, bl = F.walk_legs(f, stride=38, lift=76, bob=3.0, lean=-16, sway=7)
-    return merge(grip(-70, -15, 38, -40, 10), pose, {
-        "head": {"r": 12},
-        "arm_r": {"r": -18 * math.cos(p)}, "fore_r": {"r": 8 * math.sin(p)},
-        "hand_r": {"r": 6 * bl},
-        "arm_l": {"r": 26 * math.cos(p)}, "fore_l": {"r": 18 * max(0.0, math.cos(p))},
+    # sneak: low, long strides, a tip-toe up frame, the baton held low and ready
+    def extra(ctx):
+        p, lag = ctx["p"], ctx["lag_p"]
+        return {"arm_r": {"r": -8 * math.cos(lag)}, "hand_r": {"r": 5 * math.cos(lag)},
+                "arm_l": {"r": 24 * math.cos(lag)}, "fore_l": {"r": 16 * max(0.0, math.cos(lag))},
+                "head": {"r": 6.0}}
+    base = merge(grip(-70, -15, 38, -40, 10), {"hips": {"z": -3.0}})
+    return M.walk_v2(f, base, HEIGHT_LU, thigh=40.0, knee=70.0, lift_lu=6.5, bob_pct=0.05, lean=-16.0,
+                     arms=(), twist=7.0, extra=extra)
+
+
+# -- attack: crouch-sneak zap jab (small melee timing) -------------------------------------------
+#        read  crouch cock  HOLD  smear lead  IMPACT zap  recoil settle settle
+SA = [-70, -85, -110, -125, -40, -10, 0, 2, -30, -55, -68]
+SF = [-15, -35, -40, -45, -5, 2, 4, 6, -8, -12, -15]
+W_WORLD = [26, 8, 0, -2, 2, 2, 4, 6, 10, 18, 24]   # baton direction in world degrees
+FA = [-40, -20, 10, 30, -40, -60, -70, -50, -45, -42, -40]
+FF = [10, 30, 45, 60, 0, -20, -25, -10, 0, 6, 10]
+BX = [0, -1.5, -3.5, -5.0, 2.0, 6.0, 10.0, 8.0, 6.0, 3.0, 1.0]
+BZ = [0, -2.0, -2.6, -3.2, -2.0, -2.2, -3.0, 0.8, -1.0, -1.4, -1.6]
+BQ = [0, -0.08, -0.04, -0.10, 0.10, 0.08, -0.12, 0.10, -0.04, 0.0, 0.0]
+TR = [-12, -14, -8, -6, -20, -26, -32, -10, -18, -14, -12]
+HD = [8, 10, 6, 4, 12, 14, 16, 0, 10, 8, 8]
+THR = [18, 20, 8, 2, 30, 38, 46, 34, 30, 22, 18]
+SHR = [-26, -34, -36, -38, -30, -30, -30, -20, -26, -26, -26]
+THL = [-8, -2, 6, 12, -14, -24, -32, -20, -16, -10, -8]
+SHL = [-18, -26, -30, -34, -12, -8, -6, -10, -14, -16, -18]
+EYES = ["eyes", "g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "g_spiral", "g_hurt",
+        "eyes", "eyes"]
+
+
+def _attack_pose(f):
+    pose = merge(grip(SA[f], SF[f], W_WORLD[f] - TR[f], FA[f], FF[f]), {
+        "torso": {"r": TR[f]}, "head": {"r": HD[f]},
+        "thigh_r": {"r": THR[f]}, "shin_r": {"r": SHR[f]},
+        "thigh_l": {"r": THL[f]}, "shin_l": {"r": SHL[f]},
+        "sparks": {"show": f == 6},
+        "crackle": {"show": f in (2, 3, 7), "r": 50 * f, "s": 1.3 if f == 3 else 1.0},
+        "ring_flash": {"show": f in (3, 6, 7), "s": [1, 1, 1, 0.85, 1, 1, 1.0, 1.25, 1, 1, 1][f]},
+        "tuft": {"show": f in (7, 8), "s": 1.15 if f == 7 else 0.9},
+        "hood_tip": {"r": -20.0 if f == 7 else 0.0},
+    }, M.body_about((0, 0, 24), x=BX[f], z=BZ[f], q=BQ[f]))
+    if f in (4, 5):
+        pose.setdefault("baton", {})["sz"] = 1.2
+    return merge(pose, KF.glyph(EYES[f]))
+
+
+def _attack_clip():
+    streak = {"kind": "streak", "joint": "baton", "point": TIP, "color": F.MINT, "width_lu": 6.0, "white": 0.35}
+    ov = {
+        4: [dict(streak, **{"from": 3, "t1": 0.95})],
+        5: [dict(streak, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [dict(streak, **{"from": 4, "t0": 0.3, "t1": 0.9, "width_lu": 5.0}),
+            {"kind": "burst", "joint": "baton", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 7,
+             "a0": -80.0, "arc": 160.0, "color": F.MINT_CORE},
+            {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 31, "spread": 0.9,
+             "color": "#DDE3E8"}],
+        7: [{"kind": "rings", "joint": "head", "point": (4.0, 0.0, 52.0), "radii_lu": (12.0, 17.0),
+             "a0": 30.0, "a1": 150.0, "color": F.MINT_CORE}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov)
+
+
+def _hit(k):
+    def recoil(a):
+        up = max(a, 0)
+        return {"arm_r": {"r": 16 * a}, "hand_r": {"r": 12 * a}, "arm_l": {"r": 26 * a},
+                "head": {"r": 14 * a}, "torso": {"r": 12 * a},
+                "thigh_r": {"r": -10 * up}, "shin_r": {"r": 10 * up}, "hood_tip": {"r": -12 * a}}
+    return M.hit_light(k, STANCE, recoil, face_hurt=KF.glyph("g_hurt"),
+                       face_back=KF.glyph("g_angry") if k == 2 else None)
+
+
+def _die(k):
+    # D3 dizzy sit: spins in place, sits down hard, legs out, the baton drops into his lap
+    t = [0, 0, 0.1, 0.3, 1.0, 0.95, 1.0, 1.0, 1.0, 1.0][k]
+    pose = merge(STANCE, {k2: {c: -v for c, v in ch.items() if not isinstance(v, bool)}
+                          for k2, ch in STANCE.items() if k2 in ("hips", "torso", "head", "thigh_r", "shin_r",
+                                                                  "thigh_l", "shin_l")},
+                 M.die_d3(k, center_z=26.0, height=HEIGHT_LU), K.d3_sit(k, amount=t), {"torso": {"r": -16 * t}}, {
+        "hand_r": {"r": -60 * t}, "crackle": {"show": k in (1, 3), "r": 70 * k},
+        "head": {"r": 10 * t},
+        "tuft": {"show": k in (0, 1, 2)},
     })
-
-
-def _attack(f):
-    # 0-1 coil back (squash), 2 held extreme (baton drawn back high), 3 smear,
-    # 4 held impact: lunge-jab, sparks, the back ring flashes; 5-7 recovery
-    sa = pick(f, [-40, 10, 40, 0, -20, -25, -45, -62])
-    sf = pick(f, [20, 70, 100, 20, -8, -10, -12, -14])
-    sw = pick(f, [80, 120, 140, 40, 10, 12, 22, 32])
-    pose = merge(grip(sa, sf, sw, pick(f, [-40, -55, -70, -30, 10, 0, -20, -35]),
-                      pick(f, [10, -5, -20, 20, 30, 25, 15, 10])), {
-        "body": dict(squash(pick(f, [-0.05, -0.10, 0.06, 0.05, -0.14, -0.08, -0.03, 0.0])),
-                     x=pick(f, [-1, -3, -4, 3, 9, 8, 4, 1])),
-        "hips": {"z": pick(f, [-2, -3.2, -2.2, -1.6, -3.2, -2.8, -2.0, -1.6])},
-        "torso": {"r": pick(f, [-8, -2, 6, -18, -28, -24, -16, -12])},
-        "head": {"r": pick(f, [8, 6, 4, 10, 14, 12, 9, 8])},
-        "thigh_r": {"r": pick(f, [18, 10, 6, 30, 40, 36, 26, 18])},
-        "shin_r": {"r": pick(f, [-26, -30, -30, -30, -34, -32, -28, -26])},
-        "thigh_l": {"r": pick(f, [-8, 0, 4, -18, -30, -26, -16, -8])},
-        "shin_l": {"r": pick(f, [-18, -24, -28, -14, -8, -10, -14, -18])},
-        "sparks": {"show": f == 4},
-        "crackle": {"show": f in (1, 2, 5), "r": 50 * f},
-        "ring_flash": {"show": f in (4, 5), "s": pick(f, [1, 1, 1, 1, 1.0, 1.25, 1, 1])},
-    })
-    if f == 3:
-        pose.setdefault("baton", {})["sz"] = 1.25
-    if f in (3, 4):
-        F.squint(pose, 0.55)
-    return pose
-
-
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(STANCE, F.hit_body(f), {"arm_r": {"r": 16 * a}, "hand_r": {"r": 12 * a},
-                                         "arm_l": {"r": 26 * a}})
-
-
-def _die(f):
-    pose = merge(STANCE, fx.die_pose(f), F.die_limbs(f), {
-        "arm_r": {"r": pick(f, [50, 60, 60])}, "hand_r": {"r": pick(f, [50, 30, 30])},
-        "arm_l": {"r": pick(f, [110, 80, 80])},
-    })
-    if f in (0, 1):
-        F.ko(pose)
-    return pose
+    g = ["g_hurt", "g_wide", "g_spiral", "g_spiral", "g_spiral", "g_spiral", "g_spiral", "g_spiral",
+         "g_spiral", "g_spiral"][k]
+    return merge(pose, KF.glyph(g))
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl)

@@ -11,18 +11,27 @@ the hull hangs the tractor ring (a mint glow ring on struts around a void emitte
 the front of the belly sits the beam emitter. Origin (the feet anchor) is the lowest point; the
 battle view lifts air units to flight altitude.
 
+Cartoon kit v2 (art director plan 2026-09-30): the bridge dome is violet glass with the pilot seen
+through it (a dark silhouette with mint robot eyes that act: angry on the charge, wide on the
+shot, > < when hit, spirals and X in the crash); the drone bay door carries violet chevrons.
+
 Clips: idle hovers (a +-3.6 lu bob, the running lights chase: every third light is bright and the
-ring turns, the tractor ring pulses), walk is the flight loop (nose-down pitch, lights chasing
-faster), attack charges a mint glow at the belly emitter that grows over three frames while the
-drone bay door swings open, fires (violet flare and a short beam stub; the game draws
-fx.beam_void from the per-frame `muzzle` anchor), the hull kicks back and a drone drops out of
-the bay and flies off; hit rocks the saucer; die is a crash: a 28 degree roll and a nose-down
-pitch, the spire snaps off, the running lights go dark quarter by quarter, a mint and white
+ring turns, the tractor ring pulses, the pilot blinks), walk is the flight loop (nose-down pitch,
+lights chasing faster), attack BEAM AND DRONE DROP: the nose dips and the drone bay swings open, the
+belly emitter charges over three frames with rings (the held extreme, the hull squashed), fires (a
+violet flare and a short beam stub with impact lines; the game draws fx.beam_void from the per-frame
+`muzzle` anchor), the hull kicks back and a drone drops out of the bay and flies off forward; hit
+is the flyer tilt and 4 lu drop with a wobble back up; die is a crash: a 28 degree roll and a
+nose-down pitch, the spire snaps off, the running lights go dark quarter by quarter, a mint and white
 break-up flash, smoke, and it falls low (the sim does the crash splash).
 """
 import math
 
+from ageborn_art import face as FC
 from ageborn_art import fx
+from ageborn_art import kit_cosmic as KC
+from ageborn_art import kit_future as KF
+from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
@@ -34,6 +43,7 @@ YAW_DEG = -10.0
 CANVAS = (440, 480)
 FEET = (214, 370)        # room below the feet: the crash ends low
 ANCHORS = {"head": (-8, 170), "hitCenter": (0, 70), "muzzle": (44, 22)}
+NO_RETIME = True
 SCALE = 1.2              # the whole ship: a Legendary towers over the heavies
 
 R = 54.0                  # saucer radius
@@ -136,16 +146,27 @@ def build(rig):
                                                 (0, DZ + 35.5))],
                     segs=32, squash=(1.0, 1.0))
     rig.part("hull", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
-    # bridge dome with a star-white frame
-    g = Geo().blob((5.0, 0, DZ + 36.0), (13.0, 11.0, 10.4), p=2.2)
-    g.clip((0, 0, DZ + 34.0), (0, 0, -1))
-    rig.part("hull", g, glow="#9B63D9", outline=1.0, outline_hex=K.VIOLET_DK)
-    g = Geo().blob((8.6, -5.4, DZ + 41.0), (3.6, 2.4, 2.6), p=2.2)
+    # bridge dome: dark violet glass in a star-white frame, a glossy glint, and the pilot seen
+    # through it (a pale silhouette with mint robot eyes that act)
+    dome = Geo().blob((5.0, 0, DZ + 36.0), (15.5, 13.0, 12.6), p=2.2)
+    dome.clip((0, 0, DZ + 34.0), (0, 0, -1))
+    pf = FC.Face(rig, "hull", [dome])
+    g = Geo()
+    c = pf.hit(6.4, DZ + 40.6) + pf.view * 0.2
+    pf.decal(g, c, FC.ellipse(0.0, 0.6, 4.6, 5.0, 18), 0.3)                       # helmeted head
+    pf.decal(g, c, [(-8.4, -8.4), (-7.0, -4.2), (-3.2, -3.0), (3.4, -3.0), (6.6, -4.4), (8.0, -8.4)], 0.3)  # shoulders
+    rig.part("hull", g, "#261B40", highlight=False, outline=0)
+    KF.visor_face(rig, "hull", [dome], (8.6, DZ + 41.2), eye_dx=(0.0, -3.0), eye_rx=1.5, eye_rz=1.9,
+                  color=K.MINT, core=K.MINT_CORE)
+    rig.part("hull", dome, "#8667CC", finish="gloss", outline=1.0, outline_hex=K.VIOLET_DK)
+    g = Geo().blob((4.0, -8.6, DZ + 44.5), (3.6, 2.2, 2.0), p=2.2)
     rig.part("hull", g, glow=K.VIOLET_CORE, outline=0)
     g = Geo()
-    for a in (-60, 0, 60):
+    for a in (-140, 140, 180):
         c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
-        g.capsule((5 + 13.2 * c * 0.98, 11.2 * s, DZ + 34.0), (5 + 5 * c, 4.4 * s, DZ + 46.2), 1.0, 0.8, segs=8)
+        g.capsule((5 + 15.4 * c * 0.98, 13.0 * s, DZ + 34.0), (5 + 6 * c, 5.0 * s, DZ + 47.6), 1.0, 0.8, segs=8)
+    g.lathe([(15.0, -0.8), (16.4, -0.6), (16.4, 0.8), (15.0, 1.0)], (5.0, 0, DZ + 34.2), (5.0, 0, DZ + 35.2), segs=36,
+            squash=(1.0, 13.4 / 16.0))
     rig.part("hull", g, K.STAR, finish="gloss", outline=0.6, outline_hex=K.STAR_TRIM)
     # spire with antenna rings and the team pennant (the Legendary's team cue) near the top
     sx, sy = -8.0, 4.0
@@ -184,6 +205,10 @@ def build(rig):
     rig.joint("bay_door", "hull", (bx, by - 0.4, bz - 2.4))
     g = Geo().blob((bx, by - 1.0, bz), (6.2, 1.2, 3.2), p=3.4)
     rig.part("bay_door", g, K.STAR_TRIM, finish="gloss", outline=0.6, outline_hex=K.VOID)
+    g = Geo()
+    for dx in (-3.6, 0.0, 3.6):
+        g.blob((bx + dx, by - 2.2, bz), (1.0, 0.4, 2.2), p=2.4, rot=(0, 20, 0))
+    rig.part("bay_door", g, K.VIOLET, finish="gloss", outline=0)
     rig.joint("drone", "hull", (bx, by - 4.0, bz), hidden=True, scale=1.6)
     g = Geo().blob((bx, by - 4.0, bz), (6.4, 5.0, 2.2), p=2.4)
     rig.part("drone", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
@@ -225,13 +250,16 @@ def _lights(k):
 
 def _idle(f):
     # a +-3.6 lu hover bob; the light ring chases a quarter turn per loop (the bright lights move
-    # one bright-to-bright step)
+    # one bright-to-bright step); the pilot blinks once
     ph = 2 * math.pi * f / IDLE_N
-    return merge(_lights(90.0 * f / IDLE_N), {
+    pose = merge(_lights(90.0 * f / IDLE_N), {
         "body": {"z": 3.6 * math.sin(ph)},
         "hull": {"r": 1.0 * math.sin(ph - 0.9)},
         "tractor": dict(squash(0.05 * math.sin(ph + 1.0)), s=1.0 + 0.05 * math.sin(ph)),
     })
+    if f == 4:
+        pose = merge(pose, KF.glyph("g_blink"))
+    return pose
 
 
 WALK_MS = 100
@@ -248,34 +276,56 @@ def _walk(f):
     })
 
 
-ATTACK_MS = [83, 100, 100, 125, 83, 100, 125, 125]
+# -- attack: beam and drone drop (841 ms, impact at 408 ms = 0.4851, as shipped) --------------------
+ATTACK_MS = [60, 80, 100, 168, 100, 90, 80, 80, 83]
 ATTACK_IMPACT = 4
+#        dip   charge charge HOLD  FIRE  kick  drone drone settle
+BODY_Z = [-1.0, -1.5, -2.0, -2.5, 1.5, 3.0, 1.5, 0.5, 0.0]
+BODY_X = [0.5, 1.0, 1.0, 1.5, -2.0, -4.5, -2.5, -1.0, 0.0]
+HULL_R = [-3.0, -3.5, -4.0, -4.5, 1.5, 3.5, 1.5, 0.0, -0.5]
+HULL_Q = [-0.01, -0.02, -0.03, -0.05, 0.05, -0.02, 0.01, 0.0, 0.0]
+CHG = [0.0, 0.45, 0.85, 1.35, 0, 0, 0, 0, 0]
+GLOW = [0.0, 0.0, 0.7, 1.2, 0, 0, 0, 0, 0]
+DOOR = [15, 40, 65, 85, 90, 90, 60, 25, 5]
+DRONE = [None, None, None, (0, 0, -1, 0), (6, -4, -8, -10), (14, -6, -13, -16), (26, -8, -14, -8),
+         (42, -8, -12, 0), None]
+EYES = ["g_angry", "g_angry", "g_squint", "g_squint", "g_wide", "g_hurt", "eyes", "g_happy", "eyes"]
 
 
-def _attack(f):
-    # 0 dip the nose and open the drone bay, 1-3 the belly emitter charges (a mint glow grows over
-    # three frames) while the bay door swings down, 4 fire: violet flare and beam stub (the game
-    # draws fx.beam_void from `muzzle`) and the drone drops out, 5-7 kick back, the drone flies
-    # off forward and down, the door closes
-    return merge(_lights(pick(f, [0, 8, 16, 24, 32, 40, 48, 56])), {
-        "body": {"z": pick(f, [0, -1.0, -1.5, -1.5, 1.5, 2.5, 1.0, 0]),
-                 "x": pick(f, [0, 0.5, 1.0, 1.0, -2.0, -4.0, -2.0, -0.5])},
-        "hull": dict(squash(pick(f, [0, -0.01, -0.02, -0.02, 0.03, -0.02, 0.01, 0])),
-                     r=pick(f, [-2.0, -3.0, -3.5, -3.5, 1.5, 3.0, 1.0, -0.5])),
-        "charge": {"show": f in (1, 2, 3), "s": pick(f, [0, 0.45, 0.85, 1.3, 0, 0, 0, 0])},
-        "charge_glow": {"show": f in (2, 3), "s": pick(f, [0, 0, 0.7, 1.15, 0, 0, 0, 0])},
+def _attack_pose(f):
+    pose = merge(_lights(8.0 * f), {
+        "body": {"z": BODY_Z[f], "x": BODY_X[f]},
+        "hull": dict(squash(HULL_Q[f]), r=HULL_R[f]),
+        "charge": {"show": CHG[f] > 0, "s": max(CHG[f], 0.01)},
+        "charge_glow": {"show": GLOW[f] > 0, "s": max(GLOW[f], 0.01)},
         "flash": {"show": f == 4},
-        "bay_door": {"rx": pick(f, [0, 30, 60, 80, 85, 85, 50, 10])},
-        "drone": {"show": f in (3, 4, 5, 6, 7),
-                  "x": pick(f, [0, 0, 0, 0, 6, 18, 32, 46]), "y": pick(f, [0, 0, 0, -2, -4, -6, -8, -8]),
-                  "z": pick(f, [0, 0, 0, -3, -8, -12, -14, -14]), "r": pick(f, [0, 0, 0, 0, -10, -16, -8, 0])},
+        "bay_door": {"rx": DOOR[f]},
     })
+    if DRONE[f] is not None:
+        x, y, z, r = DRONE[f]
+        pose["drone"] = {"show": True, "x": x, "y": y, "z": z, "r": r}
+    return merge(pose, KF.glyph(EYES[f]))
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return {"body": {"x": -4.0 * a, "z": -1.5 * a}, "hull": dict(squash(-0.04 * a), r=6.0 * a),
-            "tractor": {"r": 10 * a}, "sparks": {"show": f == 0, "s": 0.7}}
+def _attack_clip():
+    ex, ey, ez = EMIT
+    ov = {
+        2: [{"kind": "rings", "joint": "hull", "point": (ex + 3.0, ey, ez - 3.0), "radii_lu": (8.0,), "a0": -180.0,
+             "a1": 180.0, "color": K.MINT_CORE}],
+        3: [{"kind": "rings", "joint": "hull", "point": (ex + 3.0, ey, ez - 3.0), "radii_lu": (9.5, 14.0),
+             "a0": -180.0, "a1": 180.0, "color": K.MINT_CORE}],
+        4: [{"kind": "burst", "joint": "hull", "point": (ex + 6.0, ey, ez - 5.0), "r0_lu": 10.0, "r1_lu": 18.0,
+             "n": 7, "a0": -110.0, "arc": 150.0, "color": K.VIOLET_CORE}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+def _hit(k):
+    pose = merge(KC.hit_flyer(k, (0, 0, DZ), scale=1.0), {
+        "hull": dict(squash([-0.04, -0.03, 0.02, 0.0, 0.0][k]), r=[4.0, 6.0, -2.0, 1.0, 0.0][k]),
+        "tractor": {"r": [8, 12, -6, 2, 0][k]}, "sparks": {"show": k == 0, "s": 0.7},
+    })
+    return merge(pose, KF.glyph("g_hurt" if k <= 1 else ("g_angry" if k == 2 else "eyes")))
 
 
 # death: a crash, 8 unique poses in 12 steps (about 1.1 s). 0 struck (sparks), 1 it rolls and
@@ -304,7 +354,7 @@ def _die(f):
     for k in range(4):   # the light quarters go dark one after another
         if f >= 1 + k:
             pose[f"lights_{k}"] = {"hide": True}
-    return pose
+    return merge(pose, KF.glyph(["g_hurt", "g_wide", "g_wide", "g_spiral", "eyes_x", "eyes_x", "eyes_x", "eyes_x"][f]))
 
 
 def _die_extra():
@@ -319,9 +369,9 @@ def _die_extra():
 
 def clips():
     return [
-        Clip("idle", IDLE_N, _idle, loop=True, durations=150),
-        Clip("walk", WALK_N, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
+        M.clip("idle", [_idle(f) for f in range(IDLE_N)], [150] * IDLE_N, loop=True),
+        M.clip("walk", [_walk(f) for f in range(WALK_N)], [WALK_MS] * WALK_N, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(f) for f in range(8)], DIE_MS, sequence=DIE_SEQ, extra=_die_extra()),
     ]

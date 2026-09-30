@@ -13,9 +13,11 @@ back, slams it into the target with a smear and a spark burst (held impact), and
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import face as F
+from ageborn_art import kit_industrial as KI
+from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "sapper"
@@ -24,14 +26,13 @@ HEIGHT_LU = 70
 CANVAS = (300, 262)
 FEET = (132, 238)
 ANCHORS = {"head": (6, 64), "hitCenter": (0, 30)}
+NO_RETIME = True
 
 HR = (0.4, I.ARM_Y["r"] - 1.4, I.HAND_Z - 0.4)
 STICK = 13.0
 PAPER = "#C9B9A0"
 FUSE_TIP = (-22.0, 2.0, 60.0)
-SMEAR = {"joint": "charge", "inner": (HR[0], HR[1], HR[2] + 4.0), "outer": (HR[0], HR[1], HR[2] + STICK + 2.0),
-         "color": PAPER, "taper": 0.5, "start": 0.3}
-
+BOOM = (30.0, -18.0, 32.0)
 
 def build(rig):
     I.skeleton(rig)
@@ -61,8 +62,13 @@ def build(rig):
     g.blob((-17.0, -2.0, 36.2), (3.0, 2.0, 2.6), p=2.4)
     rig.part("scarf", g, I.CREAM, outline=0.6)
 
-    I.head_ball(rig)
-    I.face(rig, brow=I.HAIR, brow_angry=True, grin=True)
+    face = KI.head_face(rig, brow=I.HAIR, brow_angry=True, mouth_dz=-8.6, mouth_shape="smile")
+    # soot on the face after the blast (shown in the death)
+    rig.joint("soot", "head", (12.0, 0, 48.0), hidden=True)
+    g = Geo()
+    for (x, z, rx, rz) in ((11.0, 46.0, 5.0, 3.6), (7.0, 51.0, 3.4, 2.6), (12.5, 41.0, 3.0, 2.0)):
+        face.decal(g, face.hit(x, z) - face.view * 0.2, F.ellipse(0, 0, rx, rz, 12), 0.3)
+    rig.part("soot", g, KI.SOOT, highlight=False, outline=0)
     I.ear(rig)
     # padded leather helmet with ear flaps, a brass lamp and goggles pushed up
     g = Geo().blob((0.8, 0, 57.4), (12.4, 12.0, 8.6), p=2.3)
@@ -102,6 +108,15 @@ def build(rig):
     I.fuse_spark(rig, "charge", (x + 4.0, y - 3.0, z + STICK + 2.0), size=2.2, name="burst", seed=5,
                  hidden=True)
     rig.track("chargeTip", "charge", (x, y, z + STICK + 2.0))
+    # the match in the far hand (struck on the helmet) and the blast at the target (root level)
+    hl = (0.4, I.ARM_Y["l"], I.HAND_Z - 0.4)
+    rig.joint("match", "hand_l", hl, hidden=True)
+    g = Geo().capsule((hl[0] + 1.0, hl[1] - 5.0, hl[2] + 1.0), (hl[0] + 5.0, hl[1] - 5.0, hl[2] + 4.0), 0.5)
+    rig.part("match", g, I.WOOD_LT, outline=0.3)
+    g = Geo().blob((hl[0] + 6.0, hl[1] - 5.4, hl[2] + 5.4), (1.6, 1.2, 2.4), p=2.0, rot=(0, -20, 0))
+    rig.part("match", g, glow=I.FIRE, outline=0)
+    I.fuse_spark(rig, "root", BOOM, size=3.4, name="boom", seed=6, hidden=True)
+    I.smoke_puff(rig, "root", (BOOM[0] + 2.0, BOOM[1], BOOM[2] + 4.0), size=1.5, name="boomsmoke")
     rig.track("fuse", "torso", FUSE_TIP)
     rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
 
@@ -112,75 +127,145 @@ def grip(a, f, w, la=-80.0, lf=-60.0):
 
 def fizz(k):
     """The fuse sparkles flicker: a different size and turn per frame."""
-    s = [1.0, 0.75, 1.15, 0.85, 1.05, 0.7, 1.2, 0.9][k % 8]
+    s = [1.0, 0.75, 1.15, 0.85, 1.05, 0.7, 1.2, 0.9, 1.1, 0.8, 1.0][k % 11]
     return {"spark": {"s": s, "r": 23.0 * k}, "spark2": {"s": 1.9 - s, "r": -31.0 * k}}
 
 
 CROUCH = {"hips": {"z": -2.5}, "torso": {"r": -16.0}, "head": {"r": 10.0},
           "thigh_r": {"r": 8.0}, "shin_r": {"r": -10.0}, "thigh_l": {"r": -4.0}, "shin_l": {"r": -12.0}}
 IDLE = (-66.0, -6.0, 64.0)
+STANCE = merge(CROUCH, grip(*IDLE, -60, -30))
 
 
 def _idle(f):
-    c, lag = I.idle_wave(f)
-    a, fo, w = IDLE
-    return merge(I.idle_body(f, bob=1.1), CROUCH, grip(a + 2 * lag, fo + 3 * lag, w + 4 * lag, -60 + 3 * c, -30),
-                 fizz(f), {"scarf": {"r": 3.0 * lag}})
+    # juggles the charge: a little toss (1-3, it spins in the air) and a catch with a dip (4)
+    toss = [0.0, 0.5, 1.0, 0.6, -0.4, 0.0][f]
+
+    def extra(ctx):
+        a, fo, w = IDLE
+        return merge(grip(a + 10 * max(toss, 0), fo + 20 * max(toss, 0), w, -60 + 3 * ctx["c"], -30),
+                     {"charge": {"z": 7.0 * max(toss, 0), "x": 1.5 * max(toss, 0), "r": [0, 60, 150, 250, 360, 360][f]},
+                      "hips": {"z": 1.2 * min(toss, 0)}, "head": {"r": -6 * max(toss, 0)},
+                      "pupils": {"z": 0.8 * max(toss, 0)}, "scarf": {"r": 3 * ctx["lag"]}}, fizz(f))
+    base = {k: v for k, v in CROUCH.items()}
+    return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
 
 
 def _walk(f):
-    pose, p, bl = I.walk_legs(f, stride=36.0, lift=70.0, bob=3.0, lean=-26.0, sway=8.0)
-    sw = math.cos(p)
-    return merge(pose, {"hips": {"z": -2.0}, "head": {"r": 12.0}},
-                 grip(-50 + 26 * sw, 0 + 16 * sw, 60 + 16 * sw, -50 - 40 * sw, -10 - 30 * sw), fizz(f))
+    # a low scurry: long strides, forward lean, the charge tucked, the scarf streaming
+    def extra(ctx):
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        sw = math.cos(ctx["lag_p"])
+        return merge(grip(-50 + 22 * sw, 0 + 14 * sw, 60 + 12 * sw, -50 - 36 * sw, -10 - 26 * sw),
+                     {"head": {"r": 14.0}, "scarf": {"r": 4 * lag}}, fizz(ctx["f"]))
+    return M.walk_v2(f, {"hips": {"z": -2.0}}, HEIGHT_LU, thigh=40.0, knee=72.0, lift_lu=7.5, bob_pct=0.07,
+                     lean=-24.0, arms=(), twist=8.0, extra=extra)
 
 
-def _attack(f):
-    # 0-1 wind the charge back, 2 held extreme (charge high behind, yell), 3 smear (slam),
-    # 4 held impact (charge jammed against the target, spark burst, squash), 5-7 recover
-    a = pick(f, [0, 30, 60, 10, -20, -26, -26, -22])
-    fo = pick(f, [60, 100, 130, 30, -12, -4, 20, 36])
-    w = pick(f, [110, 150, 170, 40, -10, 10, 40, 58])
-    la = pick(f, [-60, -80, -100, -40, -20, -30, -45, -58])
-    lf = pick(f, [-30, -50, -70, -20, 0, -10, -20, -30])
-    pose = merge(CROUCH, grip(a, fo, w, la, lf), fizz(f), {
-        "body": dict(squash(pick(f, [0.03, 0.06, 0.08, 0.02, -0.14, -0.08, -0.03, 0.0])),
-                     x=pick(f, [-1, -2.5, -3.5, 2.0, 5.0, 4.0, 2.0, 0.5])),
-        "torso": {"r": pick(f, [4, 10, 14, -10, -18, -14, -8, -4])},
-        "head": {"r": pick(f, [0, 2, 4, -2, -6, -4, -2, 0])},
-        "thigh_r": {"r": pick(f, [2, 4, 6, 18, 26, 22, 14, 6])},
-        "shin_r": {"r": pick(f, [0, 0, -4, -10, -16, -12, -6, 0])},
-        "burst": {"show": f == 4, "s": 1.0},
-        "scarf": {"r": pick(f, [0, 0, 0, 0, 0, 0, 0, 0])},
-    })
-    if f == 3:
-        pose["charge"] = {"sz": 1.12}
-    if f in (2, 3, 4):
-        I.yell(pose)
+# 11 unique frames, moves.SMALL_MELEE_MS (impact on 6 at 290 of 680 ms)
+#        read match light HOLD smear smear IMP  duck duck peek reload
+A_A = [-66, -62, -56, 100, 30, -8, -16, 0, 0, -40, -78]
+A_F = [-6, -2, 10, 152, 16, -12, -6, 0, 0, -20, -40]
+A_W = [64, 66, 70, 158, 20, -12, -6, 0, 0, 30, 60]
+A_LA = [-60, 40, 0, -18, -40, -80, -100, 0, 0, -50, -60]
+A_LF = [-30, 90, 30, 0, -40, -90, -110, 0, 0, -30, -30]
+A_T = [-16, -12, -14, 4, -18, -26, -30, -34, -34, -22, -16]
+A_HZ = [-2.5, -2.0, -2.5, -1.0, -2.0, -3.0, -3.5, -7.0, -7.5, -4.0, -2.5]
+A_X = [0.0, 0.0, 0.0, -3.0, 2.0, 5.0, 7.0, 1.0, 0.5, 0.0, 0.0]
+A_Q = [0.0, 0.0, -0.03, 0.08, 0.06, 0.02, -0.12, -0.14, -0.12, 0.02, 0.0]
+A_HEAD = [10, 14, 16, 2, 4, 6, 6, 14, 16, 12, 10]
+EARS = {"r": (-2.0, 50.0), "l": (-2.0, 50.0)}
+
+
+def _attack_pose(f):
+    if f in (7, 8):   # hands clamped over his ears
+        a, fo = I.ik2(I.SH, EARS["r"])
+        la, lf = I.ik2(I.SH, EARS["l"])
+        arms = merge(I.arm("r", a, fo, w=150.0, w_rest=90.0), I.arm("l", la, lf))
+    else:
+        arms = grip(A_A[f], A_F[f], A_W[f], A_LA[f], A_LF[f])
+    pose = merge(arms, fizz(f), {
+        "hips": {"z": A_HZ[f]},
+        "torso": {"r": A_T[f]},
+        "head": {"r": A_HEAD[f]},
+        "thigh_r": {"r": [8, 8, 10, 4, 20, 28, 32, 26, 26, 16, 8][f]},
+        "shin_r": {"r": [-10, -10, -12, -6, -20, -18, -16, -30, -30, -18, -10][f]},
+        "thigh_l": {"r": [-4, -4, -6, -12, -22, -28, -30, -8, -8, -6, -4][f]},
+        "shin_l": {"r": [-12, -12, -14, -8, -8, -6, -4, -30, -30, -16, -12][f]},
+        "match": {"show": f in (1, 2)},
+        "charge": {"hide": f in (6, 7, 8, 9)},
+        "boom": {"show": f in (6, 7), "s": [1, 1, 1, 1, 1, 1, 1.0, 0.7, 1, 1, 1][f]},
+        "boomsmoke": {"show": f in (7, 8, 9), "s": [1, 1, 1, 1, 1, 1, 1, 1.0, 1.3, 1.5, 1][f],
+                      "z": [0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 0][f]},
+        "spark2": {"s": [1, 1, 1.6, 1.8, 1.5, 1.2, 1, 1, 1, 1, 1][f]},
+        "scarf": {"r": [0, 0, 0, -8, 10, 14, 12, 4, 0, 0, 0][f]},
+    }, M.body_about((0, 0, 22), x=A_X[f], q=A_Q[f]))
+    if f in (4, 5):
+        pose["charge"] = dict(pose.get("charge", {}), sz=1.15)
+    if f in (1, 2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    elif f in (4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    elif f in (7, 8):
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    elif f == 9:
+        pose = merge(pose, F.expr("o"))
     return pose
 
 
-def _hit(f):
-    a, fo, w = IDLE
-    k = [1.0, 0.55, 0.2][f]
-    return merge(CROUCH, grip(a + 16 * k, fo + 18 * k, w + 8 * k, -40 + 20 * k, -10 + 20 * k), I.hit_body(f), fizz(f))
+def _attack_clip():
+    slam = {"kind": "arc", "joint": "charge", "inner": (HR[0], HR[1], HR[2] + 3.0),
+            "outer": (HR[0], HR[1], HR[2] + STICK + 3.0), "color": PAPER, "white": 0.3, "taper": 0.15,
+            "lines": 3}
+    ov = {
+        1: [{"kind": "burst", "joint": "head", "point": (6.0, 0.0, 58.0), "r0_lu": 3.0, "r1_lu": 7.0, "n": 5,
+             "a0": 20.0, "arc": 140.0}],
+        4: [dict(slam, **{"from": 3, "t0": 0.0, "t1": 0.95})],
+        5: [dict(slam, **{"from": 3, "t0": 0.3, "t1": 1.0})],
+        6: [{"kind": "burst", "joint": "root", "point": BOOM, "r0_lu": 12.0, "r1_lu": 22.0, "n": 9,
+             "a0": 0.0, "arc": 360.0},
+            {"kind": "dust", "ground": (28.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 61, "spread": 1.2}],
+        7: [{"kind": "dust", "ground": (30.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 62, "spread": 1.5}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
 
 
-def _die(f):
-    pose = merge(grip(pick(f, [40, 10, -20]), pick(f, [80, 40, 0]), pick(f, [160, 130, 110]),
-                      pick(f, [40, 10, -20]), pick(f, [80, 30, 0])),
-                 fx.die_pose(f), I.die_limbs(f), fizz(f), {"burst": {"show": f == 0}})
-    if f in (0, 1):
-        I.ko(pose)
-        I.yell(pose)
+def _hit(k):
+    def recoil(a):
+        return merge({"head": {"r": 16 * a}, "torso": {"r": 12 * a},
+                      "thigh_r": {"r": 22 * max(a, 0)}, "shin_r": {"r": -26 * max(a, 0)},
+                      "arm_r": {"r": 16 * a}, "arm_l": {"r": 30 * a}, "brow": {"z": 1.6 * max(a, 0)}}, fizz(k))
+    return M.hit_light(k, STANCE, recoil, face_hurt=F.expr("squeeze", "grit"),
+                       face_back=F.expr("grit") if k == 2 else None)
+
+
+def _die(k):
+    # D1 fling and spin with a sooty face (the game adds the Short Fuse blast)
+    flail = [0.3, 1.0, 1.0, 0.8, 0.2, 0.5, 0.1, 0.0, 0.0, 0.0][k]
+    pose = merge(grip(-40 + 60 * flail, 0 + 40 * flail, 100 + 40 * flail, -40 + 80 * flail, 20 * flail),
+                 M.die_d1(k, center_z=26.0, lie_z=11.0, height=HEIGHT_LU), fizz(k), {
+        "torso": {"r": 10 * flail - 6}, "head": {"r": 14 * flail - 6},
+        "thigh_r": {"r": 40 * flail + 20}, "shin_r": {"r": -30 * flail},
+        "thigh_l": {"r": -20 * flail + 10}, "shin_l": {"r": -20 * flail},
+        "soot": {"show": k >= 1},
+    })
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif k < 4:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 2.0}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl)

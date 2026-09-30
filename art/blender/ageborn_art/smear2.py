@@ -17,7 +17,9 @@ outline: it vanished at game size. v2 paints bold cartoon shapes *over* the fini
 
 A clip opts in with `clip.overlays2 = {unique frame: [spec, ...]}` (see moves.clip). Specs
 name joints and points in the rig's rest character space; paths are sampled by posing the
-rig between the previous playback frame's pose (or `from`) and this frame's pose.
+rig between the previous playback frame's pose (or `from`) and this frame's pose. `pose_from` (a
+pose dict) overrides the start pose, e.g. the smear frame's own pose with only the body yaw turned
+back, for a clean spin ring instead of a blend of two different arm poses.
 Render: `paint_frame()` writes `<clip>_<nn>_smear2.png`; the pipeline lays it over the
 outlined base frame (the team layer sits under the base, so the smear covers it too).
 """
@@ -283,6 +285,8 @@ def paint_frame(rig, clip, poses, idx, out_path):
             step = seq.index(idx)
             prev = seq[step - 1] if step > 0 else idx
         pa, pb = poses[prev], poses[idx]
+        if "pose_from" in spec:   # an explicit start pose (a clean spin ring, not a frame blend)
+            pa = spec["pose_from"]
         kind = spec["kind"]
         if kind == "arc":
             _arc(d, rig, pa, pb, spec, lu)

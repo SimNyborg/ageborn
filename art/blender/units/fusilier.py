@@ -265,7 +265,7 @@ def _attack_pose(f):
         "head": {"r": HEAD[f], "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0, 0, 0, 0, 0][f]},
         "pan": {"show": f == 4},
         "flash": {"show": f == 5},
-        "smoke": {"show": f in (6, 7, 8), "s": [1, 1, 1, 1, 1, 1, 0.75, 1.1, 1.35, 1, 1, 1][f],
+        "smoke": {"show": f in (6, 7, 8), "s": [1, 1, 1, 1, 1, 1, 0.95, 1.1, 1.35, 1, 1, 1][f],
                   "x": [0, 0, 0, 0, 0, 0, -4, 2, 8, 0, 0, 0][f], "z": [0, 0, 0, 0, 0, 0, 0, 3, 8, 0, 0, 0][f]},
     }, M.body_about((0, 0, 20), x=B_X[f], q=B_Q[f]))
     if f in RELOAD:
@@ -289,8 +289,11 @@ def _attack_clip():
         6: [{"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 31, "spread": 0.8,
              "dir": -1.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(12)], ATTACK_MS, impact=ATTACK_IMPACT,
-                  overlays=ov)
+    # 11 unique poses (atlas budget): the kick pose is held while the cloud billows (no frame 7)
+    keep = [f for f in range(12) if f != 7]
+    ov = {keep.index(k): v for k, v in ov.items() if k in keep}
+    return M.clip("attack", [_attack_pose(f) for f in keep], ATTACK_MS, impact=keep.index(ATTACK_IMPACT),
+                  overlays=ov, sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10])
 
 
 STANCE = hold(*PORT)
@@ -341,7 +344,7 @@ def clips():
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _attack_clip(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
-        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
-               sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 9)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
     return M.check_contract(cl, attack_ms=790, attack_impact_at=0.4734)
