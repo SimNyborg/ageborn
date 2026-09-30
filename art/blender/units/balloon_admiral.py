@@ -1,34 +1,46 @@
 """Balloon Admiral: Gunpowder Age Legendary air bomber (DESIGN A5.4), flyer rig (A11).
 Bombs (proj.bomb) dropped below, ~200 lu. Rendered at 1-1.25x (Legendary size budget).
 
-Look (A11, Gunpowder palette): a big hot-air balloon whose envelope has team gores
-alternating with cream gores, a brass crown ring with a streaming team pennant, cream
-rigging down to a wicker gondola with a dark-wood rim, a rack of black bombs along its side
-and sandbags that swing. In the gondola stands the Admiral: a white-whiskered old salt in a
-team coat with brass epaulettes and a huge black bicorne worn athwart (brass edge, team
-cockade), peering through a brass telescope. Origin (the feet anchor) is the gondola's
-lowest point; the battle view lifts air units to flight altitude.
+Look (A11, Gunpowder palette): a big hot-air balloon whose envelope has team gores alternating
+with cream gores, a cream trim band round its belly and a stitched cream patch, a brass crown
+ring with a streaming team pennant, cream rigging down to a wicker gondola (woven bands, a
+dark-wood rim, a team rail band with a cream anchor), a rack of black bombs along its side,
+sandbags that swing, and a bomb bay with two hinged doors under the floor. In the gondola
+stands the Admiral: a white-whiskered old salt in a team coat with brass epaulettes and a huge
+black bicorne worn athwart (brass edge, team cockade), with a brass telescope. Origin (the feet
+anchor) is the gondola's lowest point; the battle view lifts air units to flight altitude.
 
-Clips: idle hovers (the envelope breathes one pose behind the gondola), walk is the flight
-loop (lean into the wind, bob, pennant and sandbags trailing), attack points the telescope
-down, lowers a bomb out of the floor hatch (held, fuse sparking), releases it on the impact
-frame (proj.bomb spawns at the exported per-frame `muzzle` anchor) and the lightened balloon
-lurches up; hit rocks the gondola; die rips the envelope, which sags and collapses.
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
+  idle    hovers; the envelope breathes a beat behind the gondola, the pennant flutters, the
+          sandbags sway, the admiral scans with the telescope and blinks
+  walk    flight: leans into the wind, bobs, the gondola swings a beat behind
+  attack  SPOT, SALUTE AND BOMB-BAY DROP: the admiral spots the target through the telescope,
+          snaps a salute with it, the bay doors swing open and the bomb hangs in the hatch with
+          its fuse sparking (the held extreme), then it drops (the bomb leaves `muzzle` on the
+          release frame), the lightened balloon lurches up (the envelope stretches), squashes
+          back and bobs while the sandbags swing and the doors flap shut
+  hit     flyer: tilts and drops, the admiral grabs the rail and squeezes his eyes, a wobble
+  die     D8 spiral down: the envelope tears, sags and deflates while the balloon tips over
+          and sinks spinning, the admiral hangs on with X eyes; a crash bounce at the end
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import face as F
+from ageborn_art import kit_gunpowder as G
+from ageborn_art import kit_medieval as K
+from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "balloon_admiral"
 NAME = "Balloon Admiral"
 HEIGHT_LU = 200
 YAW_DEG = -10.0
-CANVAS = (300, 424)
-FEET = (158, 380)
+CANVAS = (320, 440)
+FEET = (168, 390)
 ANCHORS = {"head": (0, 200), "hitCenter": (0, 110), "muzzle": (0, -8)}
+NO_RETIME = True
 
 WICKER = "#B89E7E"
 WICKER_DK = "#8F785C"
@@ -45,11 +57,10 @@ HATCH = (2.0, 0.0, -1.0)  # the bomb hangs here below the gondola floor
 
 def _envelope_profile():
     # (radius, z) from the neck up: a pear, widest at ENV_C, rounded crown
-    prof = [(0.0, NECK_Z - 1.0), (7.0, NECK_Z), (9.0, NECK_Z + 6), (18.0, NECK_Z + 16),
+    return [(0.0, NECK_Z - 1.0), (7.0, NECK_Z), (9.0, NECK_Z + 6), (18.0, NECK_Z + 16),
             (30.0, NECK_Z + 28), (39.0, ENV_C - 10), (43.0, ENV_C), (44.0, ENV_C + 12),
             (42.0, ENV_C + 26), (37.0, ENV_C + 40), (28.0, ENV_C + 53), (16.0, ENV_C + 61),
             (0.0, ENV_C + 64)]
-    return prof
 
 
 def build(rig):
@@ -57,10 +68,11 @@ def build(rig):
     rig.joint("gondola", "unit", (0, 0, 10))
     rig.joint("envelope", "unit", (0, 0, NECK_Z))
 
-    # -- envelope: team body with cream gores, brass crown and a team pennant ------------------
+    # -- envelope: team body with cream gores, a cream belly band, a patch, brass crown --------
     prof = _envelope_profile()
-    g = Geo().lathe(prof, segs=36)
-    rig.part("envelope", g, team=True)
+    env = Geo().lathe(prof, segs=36)
+    ef = F.Face(rig, "envelope", [env])
+    rig.part("envelope", env, team=True)
     n = 12
     for i in range(0, n, 2):
         t1, t2 = 2 * math.pi * i / n + 0.26, 2 * math.pi * (i + 1) / n + 0.26
@@ -68,6 +80,23 @@ def build(rig):
         g.clip((0, 0, 0), (math.sin(t1), -math.cos(t1), 0))
         g.clip((0, 0, 0), (-math.sin(t2), math.cos(t2), 0))
         rig.part("envelope", g, B.CREAM, outline=0.8)
+    g = Geo().lathe([(43.4, -2.4), (44.6, 0), (43.4, 2.4), (42.0, 2.4), (42.0, -2.4)], (0, 0, ENV_C + 2),
+                    (0, 0, ENV_C + 3), segs=36)
+    rig.part("envelope", g, B.CREAM, outline=0.6)                    # belly band
+    g = Geo()
+    for a in range(0, 360, 30):                                      # brass grommets on the band
+        r = math.radians(a)
+        g.sphere((44.8 * math.cos(r), 44.8 * math.sin(r), ENV_C + 2), 1.1, cuts=2)
+    rig.part("envelope", g, B.BRASS, finish="metal", outline=0)
+    # a stitched patch on the near side, high up
+    g = Geo()
+    c = ef.hit(*K.scr(ef, (-14.0, -36.0, ENV_C + 30)))
+    ef.decal(g, c, [(-5.0, 4.4), (5.2, 4.8), (4.8, -4.6), (-5.4, -4.2)], 0.5)
+    rig.part("envelope", g, "#D9CBA8", highlight=False, outline=0)
+    g = Geo()
+    for u, v in ((-4.2, 3.6), (4.4, 4.0), (4.0, -3.8), (-4.6, -3.4)):
+        ef.stroke(g, c - ef.view * 0.3, [(u * 0.8, v * 1.1), (u * 1.1, v * 0.8)], 0.8, 0.3)
+    rig.part("envelope", g, B.WOOD, highlight=False, outline=0)
     g = Geo().lathe([(9.5, -1.4), (10.2, 0), (9.5, 1.4), (8.0, 1.4), (8.0, -1.4)], (0, 0, NECK_Z + 5),
                     (0, 0, NECK_Z + 6), segs=24)                       # neck band
     g.lathe([(0, -1.0), (15.5, -1.0), (16.5, 0.6), (15.0, 2.2), (0, 2.2)], (0, 0, ENV_C + 61.2),
@@ -77,51 +106,73 @@ def build(rig):
     g.sphere((0, 0, ENV_C + 79), 1.8, cuts=3)
     rig.part("envelope", g, B.BRASS, finish="metal", outline=0.7)
     pz = ENV_C + 76.5
-    rig.secondary("pennant", "envelope", (0, 0, pz), (-20, 0, pz - 3), max_deg=14, gain=1.3, rot_gain=0.4)
-    pts = [(0.0, 0.0), (-22.0, -1.2), (-16.5, -4.8), (-22.0, -8.8), (0.0, -9.8)]
+    rig.secondary("pennant", "envelope", (0, 0, pz), (-20, 0, pz - 3), max_deg=16, gain=1.4, rot_gain=0.4)
+    pts = [(0.0, 0.0), (-24.0, -1.2), (-18.0, -5.0), (-24.0, -9.4), (0.0, -10.4)]
     g = Geo().slab([(x, pz + z) for x, z in pts], 0.0, 1.2)
     rig.part("pennant", g, team=True, outline=0.8)
 
+    # the tear in the envelope on death (a dark hole with ragged edges)
+    rig.joint("tear", "envelope", (30.0, -30.0, ENV_C + 20), hidden=True)
+    g = Geo().blob((26.0, -34.0, ENV_C + 22), (7.0, 3.0, 9.0), p=2.2, rot=(0, 0, -40))
+    g.blob((29.0, -32.0, ENV_C + 30), (3.0, 3.0, 4.0), p=2.0)
+    rig.part("tear", g, B.WOOD, outline=0.6)
+
     # -- rigging: cream ropes from the neck band to the gondola rim ----------------------------
     g = Geo()
-    for x, y in ((15.0, -9.0), (-15.0, -9.0), (15.0, 9.0), (-15.0, 9.0)):
-        g.capsule((x, y, GON_TOP + 10), (x * 0.52, y * 0.8, NECK_Z + 5), 0.7)
+    for x, y in ((15.0, -9.0), (-15.0, -9.0), (15.0, 9.0), (-15.0, 9.0), (0.0, -12.0)):
+        g.capsule((x, y, GON_TOP + 10), (x * 0.52, y * 0.8, NECK_Z + 5), 0.75)
     rig.part("gondola", g, ROPE, outline=0.5)
 
-    # -- gondola: wicker tub with a dark rim, woven bands, a bomb rack and sandbags ------------
-    g = Geo().blob((0, 0, 21.0), (19.0, 12.0, 11.0), p=3.4, taper=(0.86, 1.0))
-    rig.part("gondola", g, WICKER, finish="hair")
+    # -- gondola: wicker tub, woven bands, a dark rim, a team rail band with an anchor --------
+    tub = Geo().blob((0, 0, 21.0), (19.0, 12.0, 11.0), p=3.4, taper=(0.86, 1.0))
+    tf = F.Face(rig, "gondola", [tub])
+    rig.part("gondola", tub, WICKER, finish="hair")
     g = Geo()
-    for z in (15.5, 21.5, 27.0):
-        g.blob((0, 0, z), (19.2 * (0.9 + 0.1 * (z - 10) / 22), 12.2, 0.9), p=3.4)
+    for z in (14.0, 19.0, 24.0, 28.5):
+        g.blob((0, 0, z), (19.2 * (0.9 + 0.1 * (z - 10) / 22), 12.2, 0.8), p=3.4)
     rig.part("gondola", g, WICKER_DK, outline=0)
+    g = Geo()                                                        # weave: vertical stakes
+    for x in range(-14, 16, 5):
+        c2 = tf.hit(*K.scr(tf, (x, -12.0, 21.0)))
+        tf.stroke(g, c2, [(0.0, -8.0), (0.0, 7.0)], 0.9, 0.3)
+    rig.part("gondola", g, WICKER_DK, highlight=False, outline=0)
     g = Geo().blob((0, 0, 32.0), (20.4, 13.2, 1.8), p=3.6)
     rig.part("gondola", g, B.WOOD)
-    g = Geo().blob((0, 0, 32.4), (8.6, 13.4, 1.9), p=3.6)             # team rail band at the front
-    g.clip((-8.0, 0, 0), (-1, 0, 0))
-    rig.part("gondola", g, team=True, outline=0.6)
+    band = Geo().blob((0, 0, 29.4), (19.8, 12.8, 2.6), p=3.6)
+    band.clip((-12.0, 0, 0), (-1, 0, 0))
+    bf = F.Face(rig, "gondola", [band])
+    rig.part("gondola", band, team=True, outline=0.6)
+    g = G.anchor(bf, Geo(), K.scr(bf, (4.0, -12.8, 29.4)), s=0.55, w=1.4)
+    rig.part("gondola", g, B.CREAM, highlight=False, outline=0)
     g = Geo()
     for x in (-10.5, -3.5, 3.5, 10.5):                               # bomb rack on the near side
-        g.sphere((x, -13.8, 20.5), 3.2, cuts=4)
+        g.sphere((x, -13.8, 19.5), 3.2, cuts=4)
     rig.part("gondola", g, BOMB, finish="gloss")
     g = Geo()
     for x in (-10.5, -3.5, 3.5, 10.5):
-        g.capsule((x + 1.4, -15.8, 23.0), (x + 2.4, -16.2, 25.0), 0.5)
+        g.capsule((x + 1.4, -15.8, 22.0), (x + 2.4, -16.2, 24.0), 0.5)
     rig.part("gondola", g, B.TAN, outline=0)
-    for i, (x, y) in enumerate(((-17.5, -8.0), (17.5, -8.0))):
+    for i, (x, y) in enumerate(((-18.5, -8.0), (18.5, -8.0), (-12.0, -11.0))):
         j = f"bag{i}"
-        rig.secondary(j, "gondola", (x, y, 31.0), (x, y, 17.0), max_deg=18, gain=1.2)
+        rig.secondary(j, "gondola", (x, y, 31.0), (x, y, 17.0), max_deg=20, gain=1.3)
         g = Geo().capsule((x, y, 31.0), (x, y, 20.0), 0.5)
         rig.part(j, g, ROPE, outline=0.4)
-        g = Geo().blob((x, y, 17.5), (3.2, 3.2, 4.0), p=2.2, taper=(1.0, 0.7))
+        g = Geo().blob((x, y, 17.5), (3.4, 3.2, 4.2), p=2.2, taper=(1.0, 0.7))
         rig.part(j, g, SAND)
+        g = Geo().blob((x, y - 0.4, 20.4), (1.8, 2.8, 0.8), p=2.2)
+        rig.part(j, g, ROPE, outline=0.3)
+    # the bomb bay: two hinged doors under the floor
+    for name, x0, sgn in (("door_a", -7.0, 1), ("door_b", 11.0, -1)):
+        rig.joint(name, "gondola", (x0, 0, 10.4))
+        g = Geo().blob((x0 + sgn * 4.4, 0, 10.2), (4.6, 8.6, 1.0), p=3.0)
+        rig.part(name, g, B.WOOD, outline=0.6)
 
     # -- the admiral, 1.15x, standing in the gondola --------------------------------------------
     rig.joint("crew", "gondola", (2.0, 0, 8.0), scale=1.15)
     rig.joint("body", "crew", (2.0, 0, 8.0))
     rig.joint("torso", "body", (2.0, 0, 24.0))
     rig.joint("head", "torso", (3.0, 0, 46.0))
-    ox, oz = 2.0, 8.0   # admiral space: the biped layout from B shifted to the crew origin
+    ox, oz = 2.0, 8.0
 
     def P(x, y, z):
         return (ox + x, y, oz + z)
@@ -137,23 +188,21 @@ def build(rig):
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob(P(1.2, 0, 37.2), (6.8, 7.2, 2.4), p=2.4)
     rig.part("torso", g, B.CREAM)
-    g = Geo().blob(P(2, 0, 48.5), (11.6, 11.0, 11.4), p=2.3)
-    g.blob(P(6, 0, 43.0), (8.6, 9.4, 6.2), p=2.2)
-    g.blob(P(13.8, -0.6, 47.4), (3.8, 3.2, 3.6), p=2.0)
-    rig.part("head", g, B.SKIN)
-    for y in (-4.4, 4.2):
-        g = Geo().blob(P(11.0, y, 49.8), (3.2, 3.0, 3.6))
-        rig.part("head", g, B.EYE, highlight=False)
-        g = Geo().blob(P(13.6, y - 0.4, 49.4), (1.2, 1.8, 1.8))
-        rig.part("head", g, B.PUPIL, outline=0)
+    head = Geo().blob(P(2, 0, 48.5), (11.6, 11.0, 11.4), p=2.3)
+    head.blob(P(6, 0, 43.0), (8.6, 9.4, 6.2), p=2.2)
+    head.blob(P(13.8, -0.6, 46.6), (3.8, 3.2, 3.6), p=2.0)
+    hair = Geo().blob(P(4.5, -10.2, 44.5), (4.6, 2.4, 6.0), p=2.2)       # whiskers
+    hair.blob(P(-5.8, 0, 47.0), (5.6, 10.2, 6.4), p=2.2)
+    cx, cz = P(12.0, 0, 49.6)[0], P(12.0, 0, 49.6)[2]
+    K.face2(rig, [head, hair], B.SKIN, cx=cx, cz=cz, eye_dy=(-4.6, 4.4), eye_r=(3.6, 3.4, 4.2),
+            brow=HAIR, mouth_dz=-8.4, mouth_x=cx + 0.8, eye_at=(cx + 1.8, cz + 0.2), mark_r=3.9)
+    rig.part("head", head, B.SKIN)
+    rig.part("head", hair, HAIR, finish="hair")
     g = Geo().blob(P(13.4, -4.0, 43.8), (3.0, 5.0, 2.2), p=2.2, rot=(24, 0, 0))    # walrus moustache
     g.blob(P(13.4, 3.0, 43.8), (3.0, 5.0, 2.2), p=2.2, rot=(-24, 0, 0))
-    g.blob(P(4.5, -10.2, 44.5), (4.6, 2.4, 6.0), p=2.2)                            # whiskers
-    g.blob(P(-5.8, 0, 47.0), (5.6, 10.2, 6.4), p=2.2)
-    g.capsule(P(10.0, -7.8, 55.0), P(13.0, -1.0, 53.4), 1.8).capsule(P(13.0, -1.0, 53.4), P(10.0, 6.0, 55.0), 1.8)
     rig.part("head", g, HAIR, finish="hair")
     B.bicorne(rig, joint="head", c=P(0.5, 0, 57.5), scale=1.2)
-    # epaulettes and arms: the near arm holds the telescope, the far hand grips the rail
+    # epaulettes and the near arm with the telescope
     rig.joint("arm_r", "torso", P(0, -12.5, 36))
     rig.joint("fore_r", "arm_r", P(0, -12.5, 28))
     rig.joint("hand_r", "fore_r", P(0, -12.5, 21))
@@ -167,29 +216,32 @@ def build(rig):
     for y in (-12.8, 12.0):
         g = Geo().blob(P(0, y, 38.0), (6.6, 5.4, 3.6), p=2.4)
         rig.part("torso" if y > 0 else "arm_r", g, B.BRASS, finish="metal", outline=0.8)
-    # telescope, modelled pointing up out of the fist (three brass draws)
+        g = Geo()
+        for dx in (-4.0, -1.5, 1.0, 3.5):
+            g.capsule(P(dx, y * 1.04, 35.4), P(dx, y * 1.04, 32.4), 0.6)
+        rig.part("torso" if y > 0 else "arm_r", g, B.BRASS, finish="metal", outline=0)   # fringe
     hx, hy, hz = P(0.4, -13.6, 21.0)
-    g = Geo().lathe([(0, -3.0), (2.3, -3.0), (2.3, 6.0), (1.9, 6.2), (1.9, 12.0), (1.5, 12.2),
-                     (1.5, 17.0), (2.0, 17.4), (2.0, 19.0), (0, 19.0)], (hx, hy, hz), segs=14)
+    g = Geo().lathe([(0, -3.0), (2.4, -3.0), (2.4, 6.0), (2.0, 6.2), (2.0, 12.0), (1.6, 12.2),
+                     (1.6, 17.0), (2.1, 17.4), (2.1, 19.0), (0, 19.0)], (hx, hy, hz), segs=14)
     rig.part("hand_r", g, B.BRASS, finish="metal", outline_hex=B.WOOD)
-    g = Geo().lathe([(0, -0.8), (2.5, -0.8), (2.5, 3.0), (0, 3.0)], (hx, hy, hz - 1.0), segs=14)
+    g = Geo().lathe([(0, -0.8), (2.6, -0.8), (2.6, 3.0), (0, 3.0)], (hx, hy, hz - 1.0), segs=14)
     rig.part("hand_r", g, B.BLACK, outline=0.6)
+    g = Geo().blob((hx - 0.6, hy - 2.2, hz + 18.4), (0.9, 0.6, 1.4), p=2.2)
+    rig.part("hand_r", g, glow="#FFFFFF", outline=0)                   # lens glint
 
-    # the bomb that drops through the floor hatch in the attack
+    # the bomb that drops through the hatch in the attack
     rig.joint("bomb", "gondola", HATCH, hidden=True)
     bx, by, bz = HATCH
-    g = Geo().sphere((bx, by - 2, bz - 4.0), 5.2, cuts=5)
+    g = Geo().sphere((bx, by - 2, bz - 4.0), 5.6, cuts=5)
     rig.part("bomb", g, BOMB, finish="gloss", outline_hex="#50535A")
+    g = Geo().blob((bx - 2.0, by - 6.4, bz - 2.0), (1.4, 0.6, 1.2), p=2.2)
+    rig.part("bomb", g, "#F4F4F0", highlight=False, outline=0)
     g = Geo().capsule((bx + 2.0, by - 2, bz), (bx + 3.2, by - 2, bz + 2.6), 0.7)
     rig.part("bomb", g, B.TAN, outline=0)
-    g = Geo().star((bx + 3.4, by - 4, bz + 3.0), 2.8, 1.1, 1.0, points=5)
-    rig.part("bomb", g, glow=B.FIRE, outline=0)
+    rig.joint("fuse", "bomb", (bx + 3.4, by - 4, bz + 3.0))
+    g = Geo().star((bx + 3.4, by - 4, bz + 3.0), 3.2, 1.2, 1.0, points=6)
+    rig.part("fuse", g, glow=B.FIRE, outline=0)
     rig.track("muzzle", "bomb", (bx, by, bz - 4.0))
-
-    # the tear in the envelope on death (a dark hole and a puff of escaping air)
-    rig.joint("tear", "envelope", (30.0, -30.0, ENV_C + 20), hidden=True)
-    g = Geo().blob((26.0, -34.0, ENV_C + 22), (7.0, 3.0, 9.0), p=2.2, rot=(0, 0, -40))
-    rig.part("tear", g, B.WOOD, outline=0.6)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -200,92 +252,151 @@ def scope(a, f, w):
 
 
 STANCE = merge(scope(-20, 40, 5), {"torso": {"r": -2}})
+UC = (0.0, 0.0, 110.0)      # the balloon's centre (tilts and spins pivot here)
 
 
 def _idle(f):
-    c, lag = [-1.0, -0.45, 0.45, 1.0][f], [-1.0, -1.0, -0.45, 0.45][f]
-    return merge(STANCE, {
+    n = M.IDLE_FRAMES_HEAVY
+    c = math.cos(2 * math.pi * f / n)
+    lag = math.cos(2 * math.pi * (f - 1) / n)
+    scan = [0.0, 0.3, 1.0, 1.0, 0.3, 0.0][f]
+    pose = merge({"torso": {"r": -2}}, scope(-20 + 10 * scan, 40 + 8 * scan, 5 + 10 * scan), {
         "unit": {"z": 2.0 * c},
         "envelope": dict(squash(0.025 * lag), z=-0.8 * lag, r=0.6 * lag),
         "gondola": {"r": 1.2 * c},
         "torso": {"r": 1.2 * lag},
-        "head": {"r": -2.0 * lag},
-        "arm_r": {"r": 2.0 * lag},
+        "head": {"r": -2.0 * lag + 3 * scan},
+        "pennant": {"r": [0, 6, 10, 4, -4, -2][f]},
     })
+    if f == 5:
+        pose = merge(pose, F.expr("blink"))
+    return pose
 
 
 WALK_MS = 100
 
 
 def _walk(f):
-    # flight: lean into the wind, a slow double bob, the gondola swings a beat behind
     p = 2 * math.pi * f / 8
     pl = p - 2 * math.pi / 8
     return merge(STANCE, {
-        "unit": {"z": 2.2 * math.sin(p), "r": -3.0},
-        "envelope": dict(squash(0.02 * math.sin(pl)), r=1.5 * math.cos(p)),
-        "gondola": {"r": 3.0 * math.sin(pl)},
+        "unit": {"z": 2.4 * math.sin(p), "r": -3.0},
+        "envelope": dict(squash(0.025 * math.sin(pl)), r=1.8 * math.cos(p)),
+        "gondola": {"r": 3.2 * math.sin(pl)},
         "torso": {"r": -3.0 + 1.5 * math.sin(pl)},
         "head": {"r": 1.5 * math.cos(pl)},
         "arm_r": {"r": 3.0 * math.sin(pl)},
+        "pennant": {"r": 5 * math.sin(2 * p)},
     })
 
 
-ATTACK_MS = [83, 83, 167, 83, 83, 83, 125, 125]
-ATTACK_IMPACT = 3
+# attack: 832 ms, the drop (impact) at 333 ms (impactAt 0.4002, as shipped); 10 unique frames
+#            spot salute doors HOLD sink | DROP lurch squash bob settle
+ATTACK_MS = [40, 50, 60, 140, 43, 80, 90, 110, 110, 109]
+ATTACK_IMPACT = 5
+SC = [(-40, -40, -55), (-30, -30, -60), (40, 120, 95), (-40, -30, -60), (-40, -34, -62),
+      (10, 60, 75), (20, 80, 90), (5, 60, 45), (-10, 45, 20), (-20, 40, 5)]
+U_Z = [0, -0.5, -1.0, -1.5, -2.2, 3.5, 6.0, 4.0, 1.5, 0.0]
+E_Q = [0, 0, -0.01, -0.02, -0.04, 0.07, -0.06, 0.03, -0.01, 0.0]
+G_R = [2, 3, 4, 5, 6, -5, -7, -3, 1, 0]
+T_R = [-10, -8, 0, -14, -14, 6, 10, 4, 0, -2]
+H_R = [-8, -10, 2, -12, -12, 8, 12, 4, 0, 0]
+DOORS = [0, 0, 40, 72, 76, 80, 55, 25, 8, 0]
+BOMB_Z = [0, 0, 0, -3.0, -5.5, 0, 0, 0, 0, 0]
 
 
-def _attack(f):
-    # 0 the admiral points the telescope down at the target, 1 the bomb lowers out of the
-    # hatch, 2 held (fuse sparks), 3 release: the bomb is gone, the balloon lurches up
-    # (stretch), 4 bounce (squash), 5-7 settle
-    pose = merge(scope(pick(f, [-40, -30, -25, 10, 20, 5, -10, -20]),
-                       pick(f, [-40, -30, -25, 60, 80, 60, 45, 40]),
-                       pick(f, [-55, -60, -60, 75, 90, 45, 20, 5])), {
-        "unit": {"z": pick(f, [0, -1.0, -1.5, 3.0, 5.0, 3.0, 1.0, 0])},
-        "envelope": dict(squash(pick(f, [0, -0.02, -0.03, 0.05, -0.04, 0.02, -0.01, 0])),
-                         z=pick(f, [0, 0, 0, 1.5, -1.0, 0.5, 0, 0])),
-        "gondola": {"r": pick(f, [2, 4, 5, -4, -6, -3, 1, 0]),
-                    "z": pick(f, [0, 0, 0, -1.5, 0.8, 0, 0, 0])},
-        "torso": {"r": pick(f, [-10, -12, -14, 6, 10, 4, 0, -2])},
-        "head": {"r": pick(f, [-8, -10, -12, 8, 12, 4, 0, 0])},
-        "bomb": {"show": f in (1, 2), "z": pick(f, [0, 0, -3.0, 0, 0, 0, 0, 0])},
+def _attack_pose(f):
+    a, fo, w = SC[f]
+    pose = merge({"torso": {"r": -2}}, scope(a, fo, w), {
+        "unit": {"z": U_Z[f]},
+        "envelope": dict(squash(E_Q[f]), z=[0, 0, 0, 0, 0, 1.5, -1.0, 0.6, 0, 0][f]),
+        "gondola": {"r": G_R[f], "z": [0, 0, 0, 0, 0, -1.5, 0.8, 0, 0, 0][f]},
+        "torso": {"r": T_R[f]},
+        "head": {"r": H_R[f]},
+        "door_a": {"r": -DOORS[f]}, "door_b": {"r": DOORS[f]},
+        "bomb": {"show": f in (3, 4), "z": BOMB_Z[f]},
+        "fuse": {"s": [1, 1, 1, 1.3, 1.0, 1, 1, 1, 1, 1][f], "r": 30 * f},
+        "bag0": {"r": [0, 0, 0, 0, 0, 14, -10, 6, -3, 0][f]},
+        "bag1": {"r": [0, 0, 0, 0, 0, 14, -10, 6, -3, 0][f]},
     })
+    if f in (0, 1):
+        pose = merge(pose, F.expr("blink" if f == 0 else "o"))
+    elif f == 2:
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.6}})
+    elif f in (3, 4):
+        pose = merge(pose, F.expr("grit"))
+    elif f in (5, 6):
+        pose = merge(pose, F.expr("yell"))
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(STANCE, {
-        "unit": {"x": -4.0 * a},
-        "gondola": {"r": 8 * a},
-        "envelope": dict(squash(-0.05 * a), r=4 * a),
-        "torso": {"r": 12 * a}, "head": {"r": 10 * a}, "arm_r": {"r": 20 * a},
+def _attack_clip():
+    ov = {
+        5: [{"kind": "rings", "joint": "gondola", "point": (HATCH[0], 0.0, HATCH[2] - 2.0),
+             "radii_lu": (8.0, 13.0), "a0": 200.0, "a1": 340.0, "color": "#FFF4D6"}],
+        6: [{"kind": "burst", "joint": "envelope", "point": (0.0, 0.0, ENV_C + 66.0), "r0_lu": 8.0,
+             "r1_lu": 15.0, "n": 5, "a0": 40.0, "arc": 100.0, "color": "#FFF4D6"}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov)
+
+
+def _hit(k):
+    a = M.HIT_AMT[k]
+    ab = M.about(UC, r=6 * a)
+    pose = merge(STANCE, {
+        "unit": {"x": ab["x"] - 3.0 * a, "y": ab["y"], "z": ab["z"] - 4.0 * max(a, 0), "r": 6 * a},
+        "gondola": {"r": 9 * a},
+        "envelope": dict(squash(-0.05 * a), r=3 * a),
+        "torso": {"r": 12 * a}, "head": {"r": 10 * a}, "arm_r": {"r": 18 * a},
+        "bag0": {"r": 16 * a}, "bag1": {"r": 16 * a},
     })
+    if k <= 1:
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    return pose
 
 
-def _die(f):
-    # the envelope tears and sags; the whole balloon tips over and drops (the sim does the
-    # crash splash); smaller spin than a biped so the tall shape stays in frame
-    d = fx.die_pose(f)["body"]
-    return merge(STANCE, {
-        "unit": {"x": d["x"], "z": pick(f, [4.0, -2.0, -4.0]), "r": d["r"] * 0.35,
-                 "s": d.get("s", 1.0)},
-        "envelope": dict(sz=pick(f, [0.9, 0.62, 0.4]), sx=pick(f, [1.06, 1.18, 1.22]),
-                         sy=pick(f, [1.06, 1.18, 1.22]), r=pick(f, [8, 16, 22]),
-                         z=pick(f, [-2, -8, -14])),
+# D8 spiral down: 8 unique poses in the 12 heavy steps (moves.DIE_SEQ_HEAVY)
+D_R = [8, 16, 26, 34, 40, 44, 46, 46]          # tips over (+ = leans back, the crown trails)
+D_Z = [2, -2, -6, -12, -18, -16, -20, -20]      # sinks
+D_X = [-2, -5, -8, -10, -12, -13, -13, -13]
+D_ESZ = [0.94, 0.8, 0.66, 0.54, 0.46, 0.44, 0.42, 0.4]   # the envelope deflates
+D_ESX = [1.04, 1.12, 1.18, 1.22, 1.26, 1.27, 1.28, 1.28]
+D_RZ = [0, 40, 110, 180, 250, 300, 330, 360]   # spins
+D_S = [1, 1, 1, 1, 1, 1, 0.97, 0.92]
+
+
+def _die(k):
+    body = M.about(UC, r=D_R[k], rz=D_RZ[k] * 0.25, s=D_S[k])
+    pose = merge(STANCE, {
+        "unit": {"x": body["x"] + D_X[k], "y": body["y"], "z": body["z"] + D_Z[k], "r": D_R[k],
+                 "rz": D_RZ[k] * 0.25, "s": D_S[k]},
+        "envelope": dict(sz=D_ESZ[k], sx=D_ESX[k], sy=D_ESX[k], r=[6, 12, 18, 22, 24, 24, 24, 24][k],
+                         z=[-2, -6, -10, -14, -16, -16, -16, -16][k]),
         "tear": {"show": True},
-        "gondola": {"r": pick(f, [10, 16, 20])},
-        "torso": {"r": pick(f, [20, 12, 8])}, "head": {"r": pick(f, [16, -6, -6])},
-        "arm_r": {"r": pick(f, [90, 60, 60])},
+        "gondola": {"r": [10, 16, -8, 12, -6, 4, 0, 0][k], "z": [0, 0, 0, 0, -1.5, 1.0, 0, 0][k]},
+        "torso": {"r": [20, 12, 8, 10, 6, 8, 8, 8][k]}, "head": {"r": [16, -6, 8, -4, 6, 0, 0, 0][k]},
+        "arm_r": {"r": [90, 120, 60, 110, 70, 60, 60, 60][k]},
+        "pennant": {"r": [10, 30, -20, 40, -10, 20, 20, 20][k]},
+        "door_a": {"r": -60}, "door_b": {"r": 60},
     })
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif k < 4:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 2.0}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
+    return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
+               [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], [WALK_MS] * 8, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
+               extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
+    return M.check_contract(cl, heavy=True, attack_ms=832, attack_impact_at=0.4002)

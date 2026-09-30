@@ -237,9 +237,10 @@ def sabre_at(pose, deg):
     return pose
 
 
-STANCE = {"karm_l": {"r": 22}, "kfore_l": {"r": 20}, "karm_r": {"r": 40}, "kfore_r": {"r": 55},
+KR0, KF0 = 22.0, 46.0     # near arm at rest: the sabre sloped back against the shoulder
+STANCE = {"karm_l": {"r": 22}, "kfore_l": {"r": 20}, "karm_r": {"r": KR0}, "kfore_r": {"r": KF0},
           "neck": {"r": -9}, "hhead": {"r": 7}}
-IDLE_SABRE = 72.0
+IDLE_SABRE = 98.0
 HX = (0.0, 0.0, 40.0)
 HOOF_B = (-19.0, 0.0, 0.0)
 H_BLINK = {"hlid": {"show": True}, "hpupil": {"hide": True}}
@@ -306,9 +307,9 @@ NECK = [2, -2, 6, 10, -6, -10, 6, 10, 4, 0]
 HHEAD = [0, 4, -4, -6, 4, 6, -8, -10, -2, 0]
 KT = [2, 6, 12, 16, 2, -12, -24, -20, -6, 0]         # rider lean (+ = back)
 RZ = [0, 1.0, 2.5, 3.5, 2.0, 0.5, -1.5, -1.0, 0.0, 0.0]   # rises in the stirrups
-KARM_R = [50, 90, 130, 150, 130, 90, 30, 10, 30, 40]
-KFORE_R = [55, 65, 72, 75, 40, 10, 0, 10, 35, 55]
-SAB = [80, 110, 150, 170, 110, 40, -35, -62, 10, IDLE_SABRE]
+KARM_R = [40, 90, 135, 160, 130, 90, 30, 10, 30, 26]
+KFORE_R = [50, 65, 80, 95, 40, 10, 0, 10, 35, 48]
+SAB = [100, 120, 140, 150, 110, 40, -35, -62, 20, IDLE_SABRE - 6]
 A_TAIL = [0, 4, 8, 10, -12, -16, -8, 6, 4, 0]
 
 
@@ -323,7 +324,7 @@ def _attack_pose(f):
         "neck": {"r": NECK[f]}, "hhead": {"r": HHEAD[f]},
         "rider": {"z": RZ[f]},
         "ktorso": {"r": KT[f]}, "khead": {"r": -0.5 * KT[f]},
-        "karm_r": {"r": KARM_R[f] - 40}, "kfore_r": {"r": KFORE_R[f] - 55},
+        "karm_r": {"r": KARM_R[f] - KR0}, "kfore_r": {"r": KFORE_R[f] - KF0},
         "tail": {"r": A_TAIL[f]},
     })
     if f in (2, 3):
