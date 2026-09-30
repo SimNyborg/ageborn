@@ -909,6 +909,38 @@ button.cos-mock__deco.is-picked {
   top: 12px;
   right: 12px;
 }
+/* A locked backdrop keeps its colours (a little dimmed) with the padlock: the sky is what tells one
+   theme from another (review 6). */
+.cos-tile--backdrop.is-locked .cos-tile__art {
+  filter: saturate(0.85) brightness(0.82);
+  opacity: 1;
+}
+/* The one tried on in the preview: a gold ring and a "Trying on" tag (feedback on every tap). */
+.cos-tile.is-trying {
+  box-shadow:
+    0 0 0 3px var(--ui-gold, #ffd447),
+    0 0 16px rgba(255, 212, 71, 0.55),
+    0 4px 0 var(--ui-ink),
+    inset 0 5px 0 var(--rar);
+  transform: translateY(-2px);
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
+}
+.cos-tile__trying {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  padding: 1px 8px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 99px;
+  background: var(--ui-gold, #ffd447);
+  color: var(--ui-ink);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
+}
 @media (prefers-reduced-motion: reduce) {
   .cos-bdmock__stage,
   .cos-bdmock__name {

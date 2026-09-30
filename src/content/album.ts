@@ -1,0 +1,159 @@
+/**
+ * The Card Album's numbers (owner request 2026-09-30, "a long scroll like a Pokedex"; ui-plan 4.3):
+ * every troop, turret and power card has a fixed album number, No. = its place in this list. The
+ * numbers are part of the collection's identity and never change: a card added later is appended at
+ * the end (it gets the next free number and is still shown under its own age), and a retired card
+ * keeps its entry (the album skips ids content no longer has), so no number is ever reused. A content
+ * test checks that every card has exactly one number.
+ */
+import type { CardId } from '@/contracts';
+
+export const ALBUM: readonly CardId[] = [
+  // stone
+  'bonker', // 1
+  'pebbler', // 2
+  'tuskback', // 3
+  'spear_hunter', // 4
+  'drum_shaman', // 5
+  'sabertooth', // 6
+  'mammoth_matriarch', // 7
+  'rock_tosser', // 8
+  'angry_beehive', // 9
+  'log_roller', // 10
+  'grumpy_toad', // 11
+  'rockslide', // 12
+  'stampede', // 13
+  'meteor_shower', // 14
+  'sticky_tar', // 15
+  'hunt_cry', // 16
+  'hunters_spear', // 17
+  // bronze
+  'hoplite', // 18
+  'javelineer', // 19
+  'war_chariot', // 20
+  'phalangite', // 21
+  'standard_bearer', // 22
+  'scorpion', // 23
+  'bronze_colossus', // 24
+  'archer_tower', // 25
+  'sun_mirror', // 26
+  'onager', // 27
+  'gorgon_bust', // 28
+  'tidal_wave', // 29
+  'chariot_rush', // 30
+  'zeus_bolts', // 31
+  'medusa_gaze', // 32
+  'aegis', // 33
+  'apollo_arrow', // 34
+  // medieval
+  'footman', // 35
+  'longbowman', // 36
+  'destrier_knight', // 37
+  'pikeman', // 38
+  'friar', // 39
+  'battering_ram', // 40
+  'ursa_paladin', // 41
+  'crossbow_nest', // 42
+  'pitch_cauldron', // 43
+  'trebuchet', // 44
+  'honk_ballista', // 45
+  'arrow_storm', // 46
+  'knights_charge', // 47
+  'caltrops', // 48
+  'boiling_oil', // 49
+  'royal_decree', // 50
+  'undermine', // 51
+  // gunpowder
+  'corsair', // 52
+  'fusilier', // 53
+  'cuirassier', // 54
+  'grenadier', // 55
+  'field_surgeon', // 56
+  'bronze_cannon', // 57
+  'balloon_admiral', // 58
+  'swivel_gun', // 59
+  'grapeshot_gun', // 60
+  'congreve_rack', // 61
+  'chainshot_cannon', // 62
+  'volley_fire', // 63
+  'smoke_screen', // 64
+  'broadside', // 65
+  'boarding_nets', // 66
+  'horse_artillery', // 67
+  'sharpshooter', // 68
+  // industrial
+  'riveter', // 69
+  'carbineer', // 70
+  'steam_golem', // 71
+  'harpoon_gunner', // 72
+  'flare_spotter', // 73
+  'sapper', // 74
+  'land_dreadnought', // 75
+  'gatling_gun', // 76
+  'mortar_pit', // 77
+  'boiler_mortar', // 78
+  'tesla_tower', // 79
+  'gun_line', // 80
+  'iron_horse', // 81
+  'zeppelin_raid', // 82
+  'barbed_wire', // 83
+  'railway_gun', // 84
+  'field_hospital', // 85
+  // modern
+  'trench_raider', // 86
+  'rifleman', // 87
+  'tankette', // 88
+  'bazooka_trooper', // 89
+  'radio_operator', // 90
+  'gyrocopter', // 91
+  'behemoth_tank', // 92
+  'mg_nest', // 93
+  'flak_gun', // 94
+  'howitzer', // 95
+  'searchlight_sniper', // 96
+  'strafing_run', // 97
+  'paratroopers', // 98
+  'carpet_bomber', // 99
+  'aa_screen', // 100
+  'tank_rush', // 101
+  'sniper_team', // 102
+  // future
+  'photon_knight', // 103
+  'pulse_trooper', // 104
+  'walker_mech', // 105
+  'rail_gunner', // 106
+  'repair_drone', // 107
+  'emp_saboteur', // 108
+  'chrono_titan', // 109
+  'pulse_laser', // 110
+  'arc_coil', // 111
+  'plasma_mortar', // 112
+  'gravity_well', // 113
+  'orbital_lance', // 114
+  'drone_swarm', // 115
+  'point_defense', // 116
+  'stasis_field', // 117
+  'nanite_surge', // 118
+  'emp_blackout', // 119
+  // cosmic
+  'star_legionnaire', // 120
+  'ion_ranger', // 121
+  'hover_tank', // 122
+  'graviton_halberdier', // 123
+  'starwarden', // 124
+  'warp_stalker', // 125
+  'mothership', // 126
+  'ion_turret', // 127
+  'starburst_gun', // 128
+  'starfall_battery', // 129
+  'tachyon_lance', // 130
+  'starfall', // 131
+  'comet_run', // 132
+  'singularity', // 133
+  'solar_flare', // 134
+  'warp_strike', // 135
+  'ion_cannon', // 136
+];
+
+/** Album number of every card (1-based), from {@link ALBUM}. */
+export const ALBUM_NO: Readonly<Record<CardId, number>> = Object.freeze(Object.fromEntries(ALBUM.map((id, i) => [id, i + 1])));

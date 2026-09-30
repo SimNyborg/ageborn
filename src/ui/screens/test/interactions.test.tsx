@@ -791,7 +791,11 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan', age: 'modern' }] });
     expect(m.q('[data-testid="issue-onlyThreeUnits"]')).not.toBeNull();
     expect(m.q('[data-testid="issue-noAntiArmor"]')).not.toBeNull();
-    expect(text(m.q('[data-testid="issue-noAntiArmor"]')!)).toBe('Modern Age has no anti-armor.');
+    // The band's chip is short (the age is the selected tab); the full sentence is its label (review 3).
+    expect(text(m.q('[data-testid="issue-noAntiArmor"]')!)).toBe('No anti-armor');
+    expect(m.q('[data-testid="issue-noAntiArmor"] button')!.getAttribute('aria-label')).toBe('Modern Age has no anti-armor.');
+    // The In battle mark agrees with the age tab: "!" while the advisor flags something.
+    expect(m.q('[data-testid="army-band-mark"]')!.getAttribute('data-mark')).toBe('warn');
     expect(m.q('[data-testid="age-tab-modern"] .ui-warndot')).not.toBeNull();
     expect(m.q('[data-testid="age-tab-stone"] .ui-warndot')).toBeNull();
     m.click('[data-testid="issue-onlyThreeUnits"] button');
@@ -850,11 +854,25 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(m.router.current.value).toEqual({ id: 'cardDetail', card: first });
   });
 
-  it('opens the Card Album with its completion count', () => {
+  it('opens the Card Album at the age from the header (with its count) and from Locked (review 2)', () => {
     m = army();
-    expect(text(m.q('[data-testid="army-album"]')!)).toMatch(/Card Album \d+\/\d+/);
+    const head = m.q('[data-testid="army-album-head"]')!;
+    expect(text(head)).toMatch(/^\d+\/\d+$/);
+    expect(head.getAttribute('aria-label')).toMatch(/Card Album \d+\/\d+/);
+    m.click('[data-testid="army-album-head"]');
+    expect(m.router.current.value).toEqual({ id: 'collection', tab: 'cards', age: 'stone' });
+    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
     m.click('[data-testid="army-album"]');
-    expect(m.router.current.value).toEqual({ id: 'collection' });
+    expect(m.router.current.value).toEqual({ id: 'collection', tab: 'cards', age: 'stone', own: 'missing' });
+  });
+
+  it('marks In battle with a check only when every slot is filled and nothing is flagged (review 3)', () => {
+    m = army();
+    const full = stone().units.every((u) => !!u) && stone().turrets.every((u) => !!u);
+    expect(m.q('[data-testid="army-band-mark"]')!.getAttribute('data-mark')).toBe(full ? 'ok' : 'open');
+    m.click('[data-testid="slot-unit-0"] .ui-card');
+    m.click('[data-testid="remove-unit-0"]');
+    expect(m.q('[data-testid="army-band-mark"]')!.getAttribute('data-mark')).not.toBe('ok');
   });
 
   it('shows only reached ages and says how the rest unlock', () => {
@@ -888,6 +906,20 @@ describe('Collection and card detail', () => {
     m.click('[data-testid="dex-filter-clear"]');
     m.click('[data-testid="dex-class-turret"]');
     expect(cards()).toBe(content.order.turrets.length);
+  });
+
+  it('the Progress tab has a Card Album row with the found count (review 2)', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'progress' }] });
+    expect(text(m.q('[data-testid="progress-album"]')!)).toMatch(/Card Album\s*\d+\/136/);
+    m.click('[data-testid="progress-album"]');
+    expect(m.router.current.value).toEqual({ id: 'collection', tab: 'cards' });
+  });
+
+  it('the Card Album opens at an age, on Missing, when Army asks (review 2)', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'collection', tab: 'cards', age: 'bronze', own: 'missing' }] });
+    const missing = m.qa('[data-testid="dex"] .dex-tile.is-missing').length;
+    expect(m.qa('[data-testid="dex"] .dex-tile').length).toBe(missing);
+    expect(m.q('[data-testid="dex-chip-bronze"]')!.getAttribute('aria-current')).toBe('true');
   });
 
   it('the Card Album shows each age with its completion and a jump chip', () => {

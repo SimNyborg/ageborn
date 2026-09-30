@@ -8,12 +8,17 @@
  *   until it opens), each group with its count ("Troops 5/6"), the War Council lines it can use
  *   (A18.5.2) and the advisor's first warning (A3; never a blocker). A power fits only its own slot.
  * - **Available** (scrolls under the band): the cards of this age you own that are not in battle;
- *   tap one and Use, tap-tap, or drag it onto a slot to swap it in.
+ *   tap one and Use, tap-tap, or drag it onto a slot to swap it in. Its head sticks while it scrolls.
  * - **Locked**: the cards of this age not found yet, as greyed silhouettes with where they come from,
- *   and "You own 12 of 15 Stone cards"; the Card Album (every age, `collection`) is one tap away.
+ *   and "You own 12 of 15 Stone cards". Its head is always in view (pinned to the pool's bottom until
+ *   the grid scrolls up); on phones it starts as one slim row of small silhouettes that opens the grid
+ *   on a tap. Its Album button opens the Card Album at this age on Missing.
  * - **Header:** Undo (every change of this visit, one at a time), the reached ages with a status mark
- *   each (and "More ages" locked), the average level, Auto-fill and "Who beats whom". Presets A/B/C
+ *   each (and "More ages" locked; tabs that do not fit fade under an arrow), the average level,
+ *   Auto-fill, the Card Album with its count (opens at this age) and "Who beats whom". Presets A/B/C
  *   join after the first boss; the army you look at is the army you play.
+ * - The band's mark: a check only when every slot is filled and nothing is flagged, "!" with the age
+ *   tab, crossed swords while slots are open; the advisor's first warning is a short amber chip.
  *
  * Gestures (one meaning each, nothing waits for a double tap): tap a card to select it (it lifts, the
  * slots it fits glow green and a small bar offers Use, Info and Upgrade); tap a glowing slot to place
@@ -30,12 +35,12 @@ import { SlotGlyph } from '../../components/PowerGlyphs';
 import { MOTION_DUR } from '@/core/motion';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
-import { CardTile } from '../../components/CardTile';
+import { CardArt, CardTile } from '../../components/CardTile';
 import { CLASS_NAME_KEY, ClassIcon, CounterLegend } from '../../components/ClassIcon';
 import { beginDrag, cancelDrag, flyCard, snapshot, sparks, type FlightSource } from '../../components/drag';
 import { formatDec } from '../../components/format';
 import { haptic } from '../../components/haptics';
-import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, PencilIcon, RARITY_COLOR, RefreshIcon, UndoIcon } from '../../components/icons';
+import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, PencilIcon, RARITY_COLOR, RefreshIcon, SwordsIcon, UndoIcon } from '../../components/icons';
 import { onGridKeyDown } from '../../components/keys';
 import { ScreenFrame } from '../../components/Layout';
 import { Modal, Sheet } from '../../components/Modal';
@@ -92,6 +97,25 @@ const ISSUE_CLASS: Readonly<Record<string, ClassGlyphId>> = {
   tooFewUnits: 'infantry',
   onlyThreeUnits: 'infantry',
   badPower: 'power',
+};
+
+/**
+ * The advisor's first warning as a short chip in the In battle band (review 3: one line, the age is
+ * the selected tab); the full sentence stays in the chip's label and the advice sheet.
+ */
+const ISSUE_SHORT: Readonly<Record<string, string>> = {
+  tooFewUnits: 'ui.armyAge.issue.tooFewUnits',
+  noTurret: 'ui.armyAge.issue.noTurret',
+  onlyThreeUnits: 'ui.armyAge.issue.onlyThreeUnits',
+  noAntiArmor: 'ui.armyAge.issue.noAntiArmor',
+  noAir: 'ui.armyAge.issue.noAir',
+  noSplash: 'ui.armyAge.issue.noSplash',
+  badShape: 'ui.armyAge.issue.badShape',
+  unknownCard: 'ui.armyAge.issue.unknownCard',
+  wrongAge: 'ui.armyAge.issue.wrongAge',
+  notOwned: 'ui.armyAge.issue.notOwned',
+  duplicate: 'ui.armyAge.issue.duplicate',
+  badPower: 'ui.armyAge.issue.badPower',
 };
 
 const SLOT_LABEL: Record<SlotRef['kind'], string> = {
@@ -218,6 +242,32 @@ function useCompact(ref: { current: HTMLElement | null }): boolean {
   return compact;
 }
 
+/**
+ * Whether a horizontal strip has more to scroll to at its start and its end (review 10: the age tabs
+ * that do not fit fade and show an arrow at that edge). Kept current on scroll and resize.
+ */
+function useScrollEdges(ref: { current: HTMLElement | null }): { start: boolean; end: boolean } {
+  const [edges, setEdges] = useState({ start: false, end: false });
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || typeof el.addEventListener !== 'function') return;
+    const check = () => {
+      const start = el.scrollLeft > 2;
+      const end = el.scrollLeft + el.clientWidth < el.scrollWidth - 2;
+      setEdges((e) => (e.start === start && e.end === end ? e : { start, end }));
+    };
+    check();
+    el.addEventListener('scroll', check, { passive: true });
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
+    ro?.observe(el);
+    return () => {
+      el.removeEventListener('scroll', check);
+      ro?.disconnect();
+    };
+  }, []);
+  return edges;
+}
+
 /** Room a selection's action bar needs next to its card (title, one 44 px row, gap and arrow). */
 const BAR_ROOM = 96;
 
@@ -272,6 +322,9 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const [place, setPlace] = useState<Place>({ v: 'above', h: 'center' });
   const [sheet, setSheet] = useState<'legend' | 'advice' | 'presets' | null>(null);
   const [renaming, setRenaming] = useState(false);
+  // Phones: Locked starts as one compact row (count, small silhouettes, the Album) pinned under the
+  // pool, so it is visible without scrolling; a tap opens the full grid (review 1).
+  const [lockedOpen, setLockedOpen] = useState(false);
   const [undo, setUndo] = useState<{ preset: number; plan: WarPlan }[]>([]);
   const [land, setLand] = useState<{ key: string; delay: number; n: number }[]>([]);
   const [deny, setDeny] = useState<{ key: string; n: number } | null>(null);
@@ -323,6 +376,21 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     setAgeState(a);
     setSel(null);
     setFresh(true);
+    setLockedOpen(false);
+  }
+  /** Opens (or closes) the Locked grid on phones; opening scrolls the pool to it. */
+  function toggleLocked() {
+    const open = !lockedOpen;
+    setLockedOpen(open);
+    haptic('tick');
+    if (!open || typeof requestAnimationFrame !== 'function') return;
+    requestAnimationFrame(() => {
+      const pool = gridRef.current;
+      const head = pool?.querySelector?.('[data-testid="army-locked-head"]') as HTMLElement | null;
+      if (!pool || !head || typeof pool.scrollTo !== 'function') return;
+      const top = head.getBoundingClientRect().top - pool.getBoundingClientRect().top + pool.scrollTop;
+      pool.scrollTo({ top, behavior: reducedMotion(pool) ? 'auto' : 'smooth' });
+    });
   }
   function select(next: Selection, el?: HTMLElement | null, row0 = false) {
     setSel(next);
@@ -366,6 +434,13 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   // The selected age sits centred in its strip (3.6 "Age tabs").
   const agesRef = useRef<HTMLDivElement>(null);
   const compact = useCompact(agesRef);
+  const edges = useScrollEdges(agesRef);
+  /** The strip's edge arrows page it by most of its width (a mouse has no swipe). */
+  function scrollAges(dir: 1 | -1) {
+    const box = agesRef.current;
+    if (!box || typeof box.scrollBy !== 'function') return;
+    box.scrollBy({ left: dir * box.clientWidth * 0.7, behavior: reducedMotion(box) ? 'auto' : 'smooth' });
+  }
   useLayoutEffect(() => {
     const box = agesRef.current;
     const on = box?.querySelector?.('.ui-tab.is-on') as HTMLElement | null;
@@ -898,11 +973,17 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       <i class={`army-age__mark ui-warndot is-${st}`} aria-hidden="true" />
     );
   const locked = content.order.ages.filter((a) => !ages.includes(a));
+  const peek = compact && !lockedOpen && pool.locked.length > 0;
+  const ownedLine =
+    pool.owned >= pool.total ? t('ui.armyAge.lockedNone', { max: pool.total, age: t(AGE_SHORT[age]) }) : t('ui.armyAge.lockedOwned', { n: pool.owned, max: pool.total, age: t(AGE_SHORT[age]) });
   /** How many slots of a group hold a card (a locked Field slot counts as not open). */
   const filled = (g: (typeof BAND_GROUPS)[number]) => g.slots.filter((x) => inArmy.has(slotCard(loadout, x) ?? '')).length;
   const groupMax = (g: (typeof BAND_GROUPS)[number]) => (g.id === 'unit' ? UNIT_SLOTS : g.id === 'turret' ? TURRET_SLOTS : fieldOpen ? 2 : 1);
   const ageName = t(ageNameKey(age));
   let slotIndex = 0;
+  const ageSt = status(age);
+  const full = BAND_GROUPS.every((g) => filled(g) >= groupMax(g));
+  const bandMark: 'ok' | 'open' | AgeStatus = ageSt !== 'ok' ? ageSt : full ? 'ok' : 'open';
 
   const header = (
     <div class="army-head" data-army-keep="">
@@ -935,46 +1016,54 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           <i class="army-caret" aria-hidden="true" />
         </Button>
       ) : null}
-      <div class="army-ages" data-testid="army-ages" ref={agesRef}>
-        <Tabs
-          label={t('ui.age.picker')}
-          variant="age"
-          compact={compact}
-          value={age}
-          onChange={setAge}
-          testid="age-picker"
-          idPrefix="wp-age"
-          items={ages.map((a) => {
-            const st = status(a);
-            return {
-              value: a,
-              label: t(AGE_SHORT[a]),
-              icon: (
-                <span class="ui-agechip army-agechip" style={{ '--age': AGE_COLOR[a].accent }}>
-                  <AgeGlyph age={a} size={20} />
-                </span>
-              ),
-              badge: (
-                <span title={t(STATUS_KEY[st])} aria-label={t(STATUS_KEY[st])} role="img">
-                  {statusMark(st)}
-                </span>
-              ),
-              testid: `age-tab-${a}`,
-            };
-          })}
-        />
-        {locked.length ? (
-          <Button
-            kind="tertiary"
-            size="s"
-            icon={<LockIcon size={16} />}
-            disabled
-            reason={t('ui.army.moreAgesReason')}
-            testid="army-more-ages"
-            class="army-more"
-          >
-            {t('ui.army.moreAges')}
-          </Button>
+      <div class="army-ages-wrap">
+        <div class={`army-ages${edges.start ? ' has-more-start' : ''}${edges.end ? ' has-more-end' : ''}`} data-testid="army-ages" ref={agesRef}>
+          <Tabs
+            label={t('ui.age.picker')}
+            variant="age"
+            compact={compact}
+            value={age}
+            onChange={setAge}
+            testid="age-picker"
+            idPrefix="wp-age"
+            items={ages.map((a) => {
+              const st = status(a);
+              return {
+                value: a,
+                label: t(AGE_SHORT[a]),
+                icon: (
+                  <span class="ui-agechip army-agechip" style={{ '--age': AGE_COLOR[a].accent }}>
+                    <AgeGlyph age={a} size={20} />
+                  </span>
+                ),
+                badge: (
+                  <span title={t(STATUS_KEY[st])} aria-label={t(STATUS_KEY[st])} role="img">
+                    {statusMark(st)}
+                  </span>
+                ),
+                testid: `age-tab-${a}`,
+              };
+            })}
+          />
+          {locked.length ? (
+            <Button
+              kind="tertiary"
+              size="s"
+              icon={<LockIcon size={16} />}
+              disabled
+              reason={t('ui.army.moreAgesReason')}
+              testid="army-more-ages"
+              class="army-more"
+            >
+              {t('ui.army.moreAges')}
+            </Button>
+          ) : null}
+        </div>
+        {edges.start ? (
+          <button type="button" tabIndex={-1} aria-hidden="true" class="army-ages__more army-ages__more--start" onClick={() => scrollAges(-1)} />
+        ) : null}
+        {edges.end ? (
+          <button type="button" tabIndex={-1} aria-hidden="true" class="army-ages__more army-ages__more--end" onClick={() => scrollAges(1)} />
         ) : null}
       </div>
       {seasoned ? (
@@ -993,6 +1082,18 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           </Button>
         </span>
       ) : null}
+      {/* The Card Album, one tap from every age (review 2): opens at this age. */}
+      <Button
+        kind="secondary"
+        size="s"
+        icon={<CardsIcon size={18} />}
+        testid="army-album-head"
+        class="army-albumbtn"
+        label={t('ui.armyAge.album', { n: album.owned, max: album.total })}
+        onClick={() => router.go({ id: 'collection', tab: 'cards', age })}
+      >
+        <span class="ui-num">{t('ui.dex.ageCount', { n: album.owned, max: album.total })}</span>
+      </Button>
       <IconButton icon={<CountersIcon size={24} />} label={t('ui.army.counters')} onClick={() => setSheet('legend')} testid="army-legend" />
     </div>
   );
@@ -1008,8 +1109,10 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                 <span class="army-bandgroup__label">
                   {gi === 0 ? (
                     <h2 id="army-deck-title" class="army-sec-title">
-                      <span class="army-sec-title__icon" aria-hidden="true">
-                        <CheckIcon size={12} />
+                      {/* A check only when every slot is filled and nothing is flagged; "!" when the
+                          age tab shows one; else neutral crossed swords (review 3). */}
+                      <span class={`army-sec-title__icon is-${bandMark}`} aria-hidden="true" data-testid="army-band-mark" data-mark={bandMark}>
+                        {bandMark === 'ok' ? <CheckIcon size={12} /> : bandMark === 'open' ? <SwordsIcon size={13} /> : null}
                       </span>
                       {t('ui.armyAge.battle')}
                       <span class="ui-sr"> · {t('ui.army.deckTitle', { age: ageName })}</span>
@@ -1049,14 +1152,18 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                 <ul class="army-advice" data-testid="advisor" aria-live="polite">
                   {ageIssues.map((i, k) => {
                     const icon = ISSUE_CLASS[i.code];
+                    const long = planIssueText(i, t);
+                    const short = ISSUE_SHORT[i.code];
                     return (
                       <li key={i.code} class={`army-issue army-issue--${i.severity}${k > 0 ? ' ui-sr' : ''}`} data-testid={`issue-${i.code}`}>
-                        <button type="button" class="army-issue__btn" onClick={() => setSheet('advice')} data-army-keep="">
+                        <button type="button" class="army-issue__btn" onClick={() => setSheet('advice')} data-army-keep="" aria-label={long} title={long}>
                           <span class="army-issue__mark" aria-hidden="true" />
                           {icon ? <ClassIcon id={icon} size={18} /> : null}
-                          <span class="army-issue__text">{planIssueText(i, t)}</span>
+                          <span class="army-issue__text" aria-hidden="true">
+                            {short ? t(short) : long}
+                          </span>
                           {k === 0 && ageIssues.length > 1 ? (
-                            <span class="army-issue__more">
+                            <span class="army-issue__more" aria-hidden="true">
                               {t('ui.army.adviceMore', {
                                 n: ageIssues.length - 1,
                               })}
@@ -1120,20 +1227,68 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
               </p>
             )}
           </div>
-          <div class="army-sec army-sec--locked" data-testid="army-group-locked">
-            <h3 class="army-sec-head army-sec-head--locked">
-              <span class="army-sec-title">
-                <LockIcon size={14} />
-                {t('ui.armyAge.locked', { n: pool.locked.length })}
-              </span>
-              <small class="army-sec-sub" data-testid="army-owned-count">
-                {pool.owned >= pool.total ? t('ui.armyAge.lockedNone', { max: pool.total, age: t(AGE_SHORT[age]) }) : t('ui.armyAge.lockedOwned', { n: pool.owned, max: pool.total, age: t(AGE_SHORT[age]) })}
-              </small>
-              <Button kind="secondary" size="s" icon={<CardsIcon size={18} />} testid="army-album" class="army-album" onClick={() => router.go({ id: 'collection' })}>
-                {t('ui.armyAge.album', { n: album.owned, max: album.total })}
+          {/* Locked: its head sticks to the pool's bottom while the grid is below the fold and to its
+              top while the grid scrolls under it, so it is always in view (review 1). On phones the
+              grid waits behind a compact row of silhouettes until tapped. */}
+          <div class={`army-sec army-sec--locked${peek ? ' is-peek' : ''}`} data-testid="army-group-locked">
+            <div class={`army-sec-head army-sec-head--locked${pool.locked.length ? '' : ' is-done'}`} data-testid="army-locked-head">
+              {peek || (compact && pool.locked.length) ? (
+                <button
+                  type="button"
+                  class="army-peek"
+                  aria-expanded={!peek}
+                  onClick={toggleLocked}
+                  data-army-keep=""
+                  data-testid="army-locked-toggle"
+                  aria-label={`${t('ui.armyAge.locked', { n: pool.locked.length })}. ${ownedLine}`}
+                >
+                  <span class="army-peek__titles">
+                    <span class="army-sec-title">
+                      <LockIcon size={14} />
+                      {t('ui.armyAge.locked', { n: pool.locked.length })}
+                    </span>
+                    <small class="army-sec-sub" data-testid="army-owned-count">
+                      {ownedLine}
+                    </small>
+                  </span>
+                  {peek ? (
+                    <span class="army-peek__cards" aria-hidden="true">
+                      {pool.locked.map((id) => {
+                        const tile = cardTile(s, content, id, t)!;
+                        return (
+                          <span key={id} class="army-peek__card" style={{ '--frame': tile.rarity ? RARITY_COLOR[tile.rarity] : '#f2c14e' }}>
+                            <CardArt card={id} age={tile.age} glyph={tile.glyph} size={44} silhouette />
+                          </span>
+                        );
+                      })}
+                    </span>
+                  ) : null}
+                  <i class={`army-peek__chev${peek ? '' : ' is-open'}`} aria-hidden="true" />
+                </button>
+              ) : (
+                <>
+                  <span class="army-sec-title">
+                    <LockIcon size={14} />
+                    {t('ui.armyAge.locked', { n: pool.locked.length })}
+                  </span>
+                  <small class="army-sec-sub" data-testid="army-owned-count">
+                    {ownedLine}
+                  </small>
+                </>
+              )}
+              <Button
+                kind="secondary"
+                size="s"
+                icon={<CardsIcon size={18} />}
+                testid="army-album"
+                class="army-album"
+                label={t('ui.armyAge.albumMissing', { age: t(AGE_SHORT[age]) })}
+                onClick={() => router.go({ id: 'collection', tab: 'cards', age, ...(pool.locked.length ? { own: 'missing' as const } : {}) })}
+              >
+                {t('ui.armyAge.albumShort')}
               </Button>
-            </h3>
-            {pool.locked.length ? <div class="army-grid army-grid--locked">{pool.locked.map((id) => cell(id, n++, true))}</div> : null}
+            </div>
+            {pool.locked.length && !peek ? <div class="army-grid army-grid--locked">{pool.locked.map((id) => cell(id, n++, true))}</div> : null}
           </div>
         </section>
       </div>

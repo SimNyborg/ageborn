@@ -2,17 +2,18 @@
  * The Progress tab (S13, ui-plan 4.1b): every long-term goal in one home. Interim for UI-2: Goals
  * (the quests with their Claim and the War Chest) on the left, and on the right the other long-term
  * records as rows that open their screens: War Path stars, Trophy Road (from Ladder, War Path level
- * 6), Feats and the Record (Profile). The top tabs of 4.1b follow with UI-5.
+ * 6), the Card Album, Feats and the Record (Profile). The top tabs of 4.1b follow with UI-5.
  */
 import '../home/home.css';
 import './progress.css';
 import type { ComponentChildren } from 'preact';
 import { ScreenFrame } from '../../components/Layout';
-import { ProfileIcon, RoadIcon, StarIcon, TrophyIcon } from '../../components/icons';
+import { CardsIcon, ProfileIcon, RoadIcon, StarIcon, TrophyIcon } from '../../components/icons';
 import { formatInt } from '../../components/format';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { QuestsPanel, RoadBar } from '../home/parts';
+import { albumProgress } from '../model/plan';
 import { featureOpen, mapRegions } from '../model/warPath';
 
 function Row(p: { icon: ComponentChildren; title: string; value?: string; onClick: () => void; testid: string }) {
@@ -34,6 +35,7 @@ export function ProgressScreen(_p: { route: RouteOf<'progress'> }) {
   const regions = mapRegions(s, content);
   const stars = regions.reduce((n, r) => n + r.stars, 0);
   const max = regions.reduce((n, r) => n + r.max, 0);
+  const album = albumProgress(s, content);
   return (
     <ScreenFrame id="progress" title={t('warPath.ui.progressTitle')} onBack={() => router.back()}>
       <div class="prog" data-testid="progress-tab">
@@ -53,6 +55,13 @@ export function ProgressScreen(_p: { route: RouteOf<'progress'> }) {
             }}
           />
           {featureOpen(s, content, 'ladder') ? <RoadBar /> : null}
+          <Row
+            testid="progress-album"
+            icon={<CardsIcon size={26} />}
+            title={t('ui.dex.title')}
+            value={`${formatInt(album.owned, locale)}/${formatInt(album.total, locale)}`}
+            onClick={() => router.go({ id: 'collection', tab: 'cards' })}
+          />
           <Row testid="progress-feats" icon={<TrophyIcon size={26} />} title={t('warPath.ui.feats')} onClick={() => router.go({ id: 'collection', tab: 'feats' })} />
           <Row testid="progress-record" icon={<ProfileIcon size={26} />} title={t('warPath.ui.record')} onClick={() => router.go({ id: 'profile' })} />
           {featureOpen(s, content, 'ladder') ? null : (

@@ -90,6 +90,15 @@ def _horse(rig):
     rig.part("horse", g, team=True, outline=0.8)
     g = Geo().blob((HX - 1, 0, 40.2), (14.0, 12.0, 1.1), p=3.2)        # verdigris trim on the cloth
     rig.part("horse", g, B.VERD, outline=0.5)
+    # a team caparison panel hanging on the near flank, with a verdigris hem and bronze studs
+    g = Geo().slab([(HX - 12, 45.0), (HX + 10, 45.0), (HX + 12, 36.0), (HX + 6, 33.0), (HX - 1, 35.5),
+                    (HX - 8, 33.0), (HX - 14, 36.0)], -11.2, 1.4)
+    rig.part("horse", g, team=True, outline=0.8)
+    g = Geo()
+    for (x0, z0), (x1, z1) in (((HX + 12, 36.0), (HX + 6, 33.0)), ((HX + 6, 33.0), (HX - 1, 35.5)),
+                               ((HX - 1, 35.5), (HX - 8, 33.0)), ((HX - 8, 33.0), (HX - 14, 36.0))):
+        g.capsule((x0, -12.2, z0), (x1, -12.2, z1), 0.9)
+    rig.part("horse", g, B.VERD, outline=0.4)
     g = Geo().capsule((HX + 3, -10.8, 49.0), (HX + 3, -11.4, 33.0), 1.0)     # girth strap
     rig.part("horse", g, B.LEATHER_DK, outline=0.4)
     # neck, head (1.2x), mane, team breast collar

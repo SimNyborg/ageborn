@@ -88,6 +88,8 @@ export function ItemTile(p: {
   pickLabel?: string;
   /** Called on every tap, owned or not: try the item on in the preview (ui-plan 4.5, MR-60). */
   onPreview?: () => void;
+  /** Shown in the preview right now without being equipped (a locked item tried on): a gold ring. */
+  trying?: boolean;
 }) {
   const { save, content, t, services } = useUi();
   const act = useAct();
@@ -101,14 +103,14 @@ export function ItemTile(p: {
   const rarity = p.item.rarity;
   return (
     <div
-      class={`cos-tile cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}${p.onPreview ? ' is-previewable' : ''}`}
+      class={`cos-tile cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}${p.onPreview ? ' is-previewable' : ''}${p.trying ? ' is-trying' : ''}`}
       style={{ '--rar': RARITY_COLOR[rarity] }}
       data-testid={`item-${key}`}
     >
       <button
         type="button"
         class="cos-tile__hit"
-        aria-pressed={p.on}
+        aria-pressed={p.on || !!p.trying}
         aria-disabled={have || p.onPreview ? undefined : 'true'}
         aria-label={`${t(p.item.nameKey)}. ${have ? (p.on ? t('cosmetic.ui.equipped') : (p.pickLabel ?? t('cosmetic.ui.equip'))) : `${p.onPreview ? `${t('cosmetic.ui.tryOn')}. ` : ''}${t(hint.key, hint.params)}`}`}
         onClick={() => {
@@ -130,6 +132,11 @@ export function ItemTile(p: {
         {!have ? (
           <span class="cos-tile__lock" aria-hidden="true">
             <LockIcon size={18} />
+          </span>
+        ) : null}
+        {p.trying ? (
+          <span class="cos-tile__trying" data-tag="" data-testid={`trying-${key}`}>
+            {t('cosmetic.ui.tryingOn')}
           </span>
         ) : null}
       </button>
@@ -350,7 +357,7 @@ export function BackdropsPanel() {
           }}
         >
           <span class="cos-tile__art">
-            <BackdropLook skin={null} age={age} animate={false} />
+            <BackdropLook skin={null} age={age} animate={false} thumb />
           </span>
           <span class="cos-tile__name">{t('cosmetic.ui.backdropClassic')}</span>
           {cur === null ? (
@@ -365,10 +372,11 @@ export function BackdropsPanel() {
             item={x}
             on={cur === itemKey(x)}
             onPreview={() => setTryOn(owns(save.value, content, itemKey(x)) ? undefined : itemKey(x))}
+            trying={trying && shown === itemKey(x)}
             onPick={() => {
               if (cur !== itemKey(x)) withUndo({ slot: 'backdrop', key: itemKey(x) }, { slot: 'backdrop', key: cur }, t(x.nameKey));
             }}
-            art={<BackdropLook skin={itemKey(x)} age={age} animate={false} />}
+            art={<BackdropLook skin={itemKey(x)} age={age} animate={false} thumb />}
           />
         ))}
       </div>

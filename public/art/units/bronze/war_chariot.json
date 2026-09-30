@@ -2,18 +2,18 @@
  "frames": {
   "war_chariot_idle_00": {
    "frame": {
-    "x": 391,
-    "y": 2,
-    "w": 178,
-    "h": 151
+    "x": 941,
+    "y": 166,
+    "w": 180,
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 158,
     "y": 86,
-    "w": 178,
-    "h": 151
+    "w": 180,
+    "h": 149
    },
    "sourceSize": {
     "w": 402,
@@ -26,17 +26,17 @@
   },
   "war_chariot_idle_00_team": {
    "frame": {
-    "x": 163,
-    "y": 599,
-    "w": 156,
+    "x": 485,
+    "y": 611,
+    "w": 158,
     "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
+    "x": 153,
     "y": 92,
-    "w": 156,
+    "w": 158,
     "h": 121
    },
    "sourceSize": {
@@ -50,18 +50,18 @@
   },
   "war_chariot_idle_01": {
    "frame": {
-    "x": 573,
-    "y": 2,
-    "w": 178,
-    "h": 151
+    "x": 1125,
+    "y": 166,
+    "w": 180,
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 158,
     "y": 86,
-    "w": 178,
-    "h": 151
+    "w": 180,
+    "h": 149
    },
    "sourceSize": {
     "w": 402,
@@ -74,17 +74,17 @@
   },
   "war_chariot_idle_01_team": {
    "frame": {
-    "x": 323,
-    "y": 599,
-    "w": 156,
+    "x": 647,
+    "y": 611,
+    "w": 158,
     "h": 121
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
+    "x": 153,
     "y": 92,
-    "w": 156,
+    "w": 158,
     "h": 121
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "war_chariot_idle_02": {
    "frame": {
-    "x": 937,
-    "y": 2,
-    "w": 180,
-    "h": 150
+    "x": 1857,
+    "y": 166,
+    "w": 177,
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
+    "x": 160,
     "y": 86,
-    "w": 180,
-    "h": 150
+    "w": 177,
+    "h": 149
    },
    "sourceSize": {
     "w": 402,
@@ -122,18 +122,18 @@
   },
   "war_chariot_idle_02_team": {
    "frame": {
-    "x": 1870,
-    "y": 462,
-    "w": 157,
-    "h": 121
+    "x": 2,
+    "y": 611,
+    "w": 156,
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 153,
-    "y": 92,
-    "w": 157,
-    "h": 121
+    "x": 154,
+    "y": 91,
+    "w": 156,
+    "h": 122
    },
    "sourceSize": {
     "w": 402,
@@ -146,18 +146,18 @@
   },
   "war_chariot_idle_03": {
    "frame": {
-    "x": 1672,
+    "x": 1128,
     "y": 2,
-    "w": 180,
-    "h": 149
+    "w": 178,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
+    "x": 159,
     "y": 86,
-    "w": 180,
-    "h": 149
+    "w": 178,
+    "h": 152
    },
    "sourceSize": {
     "w": 402,
@@ -170,104 +170,8 @@
   },
   "war_chariot_idle_03_team": {
    "frame": {
-    "x": 1708,
-    "y": 462,
-    "w": 158,
-    "h": 121
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 153,
-    "y": 92,
-    "w": 158,
-    "h": 121
-   },
-   "sourceSize": {
-    "w": 402,
-    "h": 252
-   },
-   "anchor": {
-    "x": 0.58955,
-    "y": 0.89286
-   }
-  },
-  "war_chariot_idle_04": {
-   "frame": {
-    "x": 1121,
-    "y": 2,
-    "w": 180,
-    "h": 150
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 158,
-    "y": 86,
-    "w": 180,
-    "h": 150
-   },
-   "sourceSize": {
-    "w": 402,
-    "h": 252
-   },
-   "anchor": {
-    "x": 0.58955,
-    "y": 0.89286
-   }
-  },
-  "war_chariot_idle_04_team": {
-   "frame": {
-    "x": 2,
-    "y": 599,
-    "w": 157,
-    "h": 121
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 153,
-    "y": 92,
-    "w": 157,
-    "h": 121
-   },
-   "sourceSize": {
-    "w": 402,
-    "h": 252
-   },
-   "anchor": {
-    "x": 0.58955,
-    "y": 0.89286
-   }
-  },
-  "war_chariot_idle_05": {
-   "frame": {
-    "x": 755,
-    "y": 2,
-    "w": 178,
-    "h": 151
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 159,
-    "y": 86,
-    "w": 178,
-    "h": 151
-   },
-   "sourceSize": {
-    "w": 402,
-    "h": 252
-   },
-   "anchor": {
-    "x": 0.58955,
-    "y": 0.89286
-   }
-  },
-  "war_chariot_idle_05_team": {
-   "frame": {
-    "x": 483,
-    "y": 599,
+    "x": 970,
+    "y": 611,
     "w": 156,
     "h": 121
    },
@@ -288,12 +192,108 @@
     "y": 0.89286
    }
   },
+  "war_chariot_idle_04": {
+   "frame": {
+    "x": 185,
+    "y": 166,
+    "w": 177,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 86,
+    "w": 177,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 402,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.58955,
+    "y": 0.89286
+   }
+  },
+  "war_chariot_idle_04_team": {
+   "frame": {
+    "x": 162,
+    "y": 611,
+    "w": 156,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 91,
+    "w": 156,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 402,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.58955,
+    "y": 0.89286
+   }
+  },
+  "war_chariot_idle_05": {
+   "frame": {
+    "x": 366,
+    "y": 166,
+    "w": 180,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 86,
+    "w": 180,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 402,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.58955,
+    "y": 0.89286
+   }
+  },
+  "war_chariot_idle_05_team": {
+   "frame": {
+    "x": 809,
+    "y": 611,
+    "w": 157,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 92,
+    "w": 157,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 402,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.58955,
+    "y": 0.89286
+   }
+  },
   "war_chariot_walk_00": {
    "frame": {
-    "x": 920,
-    "y": 160,
+    "x": 187,
+    "y": 321,
     "w": 180,
-    "h": 147
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
@@ -301,7 +301,7 @@
     "x": 159,
     "y": 86,
     "w": 180,
-    "h": 147
+    "h": 148
    },
    "sourceSize": {
     "w": 402,
@@ -314,8 +314,8 @@
   },
   "war_chariot_walk_00_team": {
    "frame": {
-    "x": 1545,
-    "y": 462,
+    "x": 322,
+    "y": 611,
     "w": 159,
     "h": 121
    },
@@ -338,17 +338,17 @@
   },
   "war_chariot_walk_01": {
    "frame": {
-    "x": 1856,
-    "y": 2,
-    "w": 180,
+    "x": 1309,
+    "y": 166,
+    "w": 179,
     "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 160,
     "y": 87,
-    "w": 180,
+    "w": 179,
     "h": 149
    },
    "sourceSize": {
@@ -362,8 +362,8 @@
   },
   "war_chariot_walk_01_team": {
    "frame": {
-    "x": 1037,
-    "y": 462,
+    "x": 1042,
+    "y": 473,
     "w": 157,
     "h": 128
    },
@@ -386,18 +386,18 @@
   },
   "war_chariot_walk_02": {
    "frame": {
-    "x": 738,
-    "y": 160,
-    "w": 178,
-    "h": 148
+    "x": 381,
+    "y": 2,
+    "w": 177,
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 160,
     "y": 87,
-    "w": 178,
-    "h": 148
+    "w": 177,
+    "h": 157
    },
    "sourceSize": {
     "w": 402,
@@ -410,8 +410,8 @@
   },
   "war_chariot_walk_02_team": {
    "frame": {
-    "x": 2,
-    "y": 462,
+    "x": 409,
+    "y": 473,
     "w": 157,
     "h": 133
    },
@@ -434,18 +434,18 @@
   },
   "war_chariot_walk_03": {
    "frame": {
-    "x": 185,
-    "y": 160,
-    "w": 178,
-    "h": 149
+    "x": 562,
+    "y": 2,
+    "w": 177,
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 160,
     "y": 87,
-    "w": 178,
-    "h": 149
+    "w": 177,
+    "h": 157
    },
    "sourceSize": {
     "w": 402,
@@ -458,8 +458,8 @@
   },
   "war_chariot_walk_03_team": {
    "frame": {
-    "x": 327,
-    "y": 462,
+    "x": 570,
+    "y": 473,
     "w": 158,
     "h": 132
    },
@@ -482,17 +482,17 @@
   },
   "war_chariot_walk_04": {
    "frame": {
-    "x": 2,
-    "y": 160,
-    "w": 179,
+    "x": 1675,
+    "y": 166,
+    "w": 178,
     "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 160,
     "y": 86,
-    "w": 179,
+    "w": 178,
     "h": 149
    },
    "sourceSize": {
@@ -506,8 +506,8 @@
   },
   "war_chariot_walk_04_team": {
    "frame": {
-    "x": 1198,
-    "y": 462,
+    "x": 1203,
+    "y": 473,
     "w": 159,
     "h": 126
    },
@@ -530,8 +530,8 @@
   },
   "war_chariot_walk_05": {
    "frame": {
-    "x": 1104,
-    "y": 160,
+    "x": 748,
+    "y": 321,
     "w": 180,
     "h": 147
    },
@@ -554,8 +554,8 @@
   },
   "war_chariot_walk_05_team": {
    "frame": {
-    "x": 805,
-    "y": 599,
+    "x": 1626,
+    "y": 611,
     "w": 161,
     "h": 119
    },
@@ -578,10 +578,10 @@
   },
   "war_chariot_walk_06": {
    "frame": {
-    "x": 1288,
-    "y": 160,
+    "x": 561,
+    "y": 321,
     "w": 183,
-    "h": 146
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
@@ -589,7 +589,7 @@
     "x": 156,
     "y": 85,
     "w": 183,
-    "h": 146
+    "h": 147
    },
    "sourceSize": {
     "w": 402,
@@ -602,8 +602,8 @@
   },
   "war_chariot_walk_06_team": {
    "frame": {
-    "x": 1836,
-    "y": 599,
+    "x": 172,
+    "y": 737,
     "w": 164,
     "h": 117
    },
@@ -626,10 +626,10 @@
   },
   "war_chariot_walk_07": {
    "frame": {
-    "x": 1475,
-    "y": 160,
+    "x": 194,
+    "y": 2,
     "w": 183,
-    "h": 146
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
@@ -637,7 +637,7 @@
     "x": 156,
     "y": 85,
     "w": 183,
-    "h": 146
+    "h": 158
    },
    "sourceSize": {
     "w": 402,
@@ -650,8 +650,8 @@
   },
   "war_chariot_walk_07_team": {
    "frame": {
-    "x": 2,
-    "y": 724,
+    "x": 340,
+    "y": 737,
     "w": 162,
     "h": 116
    },
@@ -674,18 +674,18 @@
   },
   "war_chariot_attack_00": {
    "frame": {
-    "x": 819,
-    "y": 313,
-    "w": 183,
-    "h": 144
+    "x": 1155,
+    "y": 321,
+    "w": 181,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
-    "y": 91,
-    "w": 183,
-    "h": 144
+    "x": 156,
+    "y": 89,
+    "w": 181,
+    "h": 146
    },
    "sourceSize": {
     "w": 402,
@@ -698,18 +698,18 @@
   },
   "war_chariot_attack_00_team": {
    "frame": {
-    "x": 1501,
-    "y": 599,
-    "w": 162,
-    "h": 118
+    "x": 1130,
+    "y": 611,
+    "w": 160,
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 149,
-    "y": 96,
-    "w": 162,
-    "h": 118
+    "x": 150,
+    "y": 93,
+    "w": 160,
+    "h": 120
    },
    "sourceSize": {
     "w": 402,
@@ -722,18 +722,18 @@
   },
   "war_chariot_attack_01": {
    "frame": {
-    "x": 1615,
-    "y": 313,
-    "w": 198,
-    "h": 141
+    "x": 1546,
+    "y": 321,
+    "w": 182,
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 135,
-    "y": 93,
-    "w": 198,
-    "h": 141
+    "x": 153,
+    "y": 94,
+    "w": 182,
+    "h": 140
    },
    "sourceSize": {
     "w": 402,
@@ -746,18 +746,18 @@
   },
   "war_chariot_attack_01_team": {
    "frame": {
-    "x": 539,
-    "y": 724,
-    "w": 160,
-    "h": 115
+    "x": 868,
+    "y": 737,
+    "w": 161,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 98,
-    "w": 160,
-    "h": 115
+    "y": 100,
+    "w": 161,
+    "h": 113
    },
    "sourceSize": {
     "w": 402,
@@ -770,18 +770,18 @@
   },
   "war_chariot_attack_02": {
    "frame": {
-    "x": 201,
-    "y": 2,
-    "w": 186,
-    "h": 153
+    "x": 2,
+    "y": 166,
+    "w": 179,
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 134,
-    "y": 80,
-    "w": 186,
-    "h": 153
+    "x": 142,
+    "y": 82,
+    "w": 179,
+    "h": 151
    },
    "sourceSize": {
     "w": 402,
@@ -794,18 +794,18 @@
   },
   "war_chariot_attack_02_team": {
    "frame": {
-    "x": 887,
-    "y": 462,
-    "w": 146,
-    "h": 130
+    "x": 1688,
+    "y": 473,
+    "w": 148,
+    "h": 124
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 153,
-    "y": 81,
-    "w": 146,
-    "h": 130
+    "y": 87,
+    "w": 148,
+    "h": 124
    },
    "sourceSize": {
     "w": 402,
@@ -818,18 +818,18 @@
   },
   "war_chariot_attack_03": {
    "frame": {
-    "x": 2,
+    "x": 743,
     "y": 2,
-    "w": 195,
-    "h": 154
+    "w": 179,
+    "h": 155
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
-    "y": 82,
-    "w": 195,
-    "h": 154
+    "x": 136,
+    "y": 78,
+    "w": 179,
+    "h": 155
    },
    "sourceSize": {
     "w": 402,
@@ -842,18 +842,18 @@
   },
   "war_chariot_attack_03_team": {
    "frame": {
-    "x": 163,
-    "y": 462,
-    "w": 160,
-    "h": 132
+    "x": 732,
+    "y": 473,
+    "w": 146,
+    "h": 131
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 84,
-    "w": 160,
-    "h": 132
+    "x": 151,
+    "y": 79,
+    "w": 146,
+    "h": 131
    },
    "sourceSize": {
     "w": 402,
@@ -866,18 +866,18 @@
   },
   "war_chariot_attack_04": {
    "frame": {
-    "x": 1197,
-    "y": 313,
-    "w": 221,
-    "h": 142
+    "x": 926,
+    "y": 2,
+    "w": 198,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 148,
-    "y": 103,
-    "w": 221,
-    "h": 142
+    "x": 137,
+    "y": 82,
+    "w": 198,
+    "h": 152
    },
    "sourceSize": {
     "w": 402,
@@ -890,18 +890,18 @@
   },
   "war_chariot_attack_04_team": {
    "frame": {
-    "x": 168,
-    "y": 724,
-    "w": 195,
-    "h": 115
+    "x": 882,
+    "y": 473,
+    "w": 156,
+    "h": 130
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 153,
-    "y": 108,
-    "w": 195,
-    "h": 115
+    "x": 154,
+    "y": 88,
+    "w": 156,
+    "h": 130
    },
    "sourceSize": {
     "w": 402,
@@ -914,18 +914,18 @@
   },
   "war_chariot_attack_05": {
    "frame": {
-    "x": 378,
-    "y": 313,
-    "w": 219,
-    "h": 144
+    "x": 2,
+    "y": 2,
+    "w": 188,
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
-    "y": 100,
-    "w": 219,
-    "h": 144
+    "x": 160,
+    "y": 86,
+    "w": 188,
+    "h": 160
    },
    "sourceSize": {
     "w": 402,
@@ -938,18 +938,18 @@
   },
   "war_chariot_attack_05_team": {
    "frame": {
-    "x": 970,
-    "y": 599,
-    "w": 188,
-    "h": 118
+    "x": 2,
+    "y": 473,
+    "w": 170,
+    "h": 134
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
-    "y": 106,
-    "w": 188,
-    "h": 118
+    "x": 154,
+    "y": 91,
+    "w": 170,
+    "h": 134
    },
    "sourceSize": {
     "w": 402,
@@ -962,18 +962,18 @@
   },
   "war_chariot_attack_06": {
    "frame": {
-    "x": 601,
-    "y": 313,
-    "w": 214,
-    "h": 144
+    "x": 932,
+    "y": 321,
+    "w": 219,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 96,
-    "w": 214,
-    "h": 144
+    "x": 149,
+    "y": 101,
+    "w": 219,
+    "h": 146
    },
    "sourceSize": {
     "w": 402,
@@ -986,18 +986,18 @@
   },
   "war_chariot_attack_06_team": {
    "frame": {
-    "x": 1361,
-    "y": 462,
-    "w": 180,
-    "h": 123
+    "x": 1456,
+    "y": 737,
+    "w": 193,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 101,
-    "w": 180,
-    "h": 123
+    "x": 153,
+    "y": 107,
+    "w": 193,
+    "h": 107
    },
    "sourceSize": {
     "w": 402,
@@ -1010,18 +1010,18 @@
   },
   "war_chariot_attack_07": {
    "frame": {
-    "x": 367,
-    "y": 160,
-    "w": 182,
-    "h": 148
+    "x": 1667,
+    "y": 2,
+    "w": 216,
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
-    "y": 88,
-    "w": 182,
-    "h": 148
+    "x": 146,
+    "y": 95,
+    "w": 216,
+    "h": 151
    },
    "sourceSize": {
     "w": 402,
@@ -1034,18 +1034,18 @@
   },
   "war_chariot_attack_07_team": {
    "frame": {
-    "x": 722,
-    "y": 462,
-    "w": 161,
-    "h": 131
+    "x": 1033,
+    "y": 737,
+    "w": 180,
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
-    "y": 93,
-    "w": 161,
-    "h": 131
+    "x": 159,
+    "y": 101,
+    "w": 180,
+    "h": 110
    },
    "sourceSize": {
     "w": 402,
@@ -1058,18 +1058,18 @@
   },
   "war_chariot_attack_08": {
    "frame": {
-    "x": 1305,
-    "y": 2,
-    "w": 180,
-    "h": 150
+    "x": 732,
+    "y": 166,
+    "w": 205,
+    "h": 149
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
-    "y": 86,
-    "w": 180,
-    "h": 150
+    "x": 145,
+    "y": 89,
+    "w": 205,
+    "h": 149
    },
    "sourceSize": {
     "w": 402,
@@ -1082,18 +1082,66 @@
   },
   "war_chariot_attack_08_team": {
    "frame": {
-    "x": 1817,
-    "y": 313,
-    "w": 158,
-    "h": 134
+    "x": 2,
+    "y": 737,
+    "w": 166,
+    "h": 117
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 152,
-    "y": 90,
-    "w": 158,
-    "h": 134
+    "x": 158,
+    "y": 94,
+    "w": 166,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 402,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.58955,
+    "y": 0.89286
+   }
+  },
+  "war_chariot_attack_09": {
+   "frame": {
+    "x": 1492,
+    "y": 166,
+    "w": 179,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 87,
+    "w": 179,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 402,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.58955,
+    "y": 0.89286
+   }
+  },
+  "war_chariot_attack_09_team": {
+   "frame": {
+    "x": 1294,
+    "y": 611,
+    "w": 159,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 92,
+    "w": 159,
+    "h": 120
    },
    "sourceSize": {
     "w": 402,
@@ -1106,18 +1154,18 @@
   },
   "war_chariot_hit_00": {
    "frame": {
-    "x": 2,
-    "y": 313,
-    "w": 184,
-    "h": 145
+    "x": 1732,
+    "y": 321,
+    "w": 190,
+    "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 152,
-    "y": 91,
-    "w": 184,
-    "h": 145
+    "x": 148,
+    "y": 96,
+    "w": 190,
+    "h": 139
    },
    "sourceSize": {
     "w": 402,
@@ -1130,18 +1178,18 @@
   },
   "war_chariot_hit_00_team": {
    "frame": {
-    "x": 1667,
-    "y": 599,
-    "w": 165,
-    "h": 117
+    "x": 693,
+    "y": 737,
+    "w": 171,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 145,
-    "y": 96,
-    "w": 165,
-    "h": 117
+    "x": 141,
+    "y": 101,
+    "w": 171,
+    "h": 113
    },
    "sourceSize": {
     "w": 402,
@@ -1154,18 +1202,18 @@
   },
   "war_chariot_hit_01": {
    "frame": {
-    "x": 1422,
-    "y": 313,
-    "w": 189,
-    "h": 142
+    "x": 1490,
+    "y": 2,
+    "w": 173,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 145,
-    "y": 94,
-    "w": 189,
-    "h": 142
+    "x": 153,
+    "y": 83,
+    "w": 173,
+    "h": 152
    },
    "sourceSize": {
     "w": 402,
@@ -1178,18 +1226,18 @@
   },
   "war_chariot_hit_01_team": {
    "frame": {
-    "x": 890,
-    "y": 724,
-    "w": 171,
-    "h": 114
+    "x": 1366,
+    "y": 473,
+    "w": 157,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 139,
-    "y": 100,
-    "w": 171,
-    "h": 114
+    "x": 147,
+    "y": 89,
+    "w": 157,
+    "h": 125
    },
    "sourceSize": {
     "w": 402,
@@ -1202,18 +1250,18 @@
   },
   "war_chariot_hit_02": {
    "frame": {
-    "x": 1006,
-    "y": 313,
-    "w": 187,
-    "h": 143
+    "x": 371,
+    "y": 321,
+    "w": 186,
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 148,
-    "y": 92,
-    "w": 187,
-    "h": 143
+    "x": 151,
+    "y": 89,
+    "w": 186,
+    "h": 147
    },
    "sourceSize": {
     "w": 402,
@@ -1226,18 +1274,18 @@
   },
   "war_chariot_hit_02_team": {
    "frame": {
-    "x": 367,
-    "y": 724,
-    "w": 168,
-    "h": 115
+    "x": 1457,
+    "y": 611,
+    "w": 165,
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 142,
-    "y": 98,
-    "w": 168,
-    "h": 115
+    "x": 145,
+    "y": 93,
+    "w": 165,
+    "h": 119
    },
    "sourceSize": {
     "w": 402,
@@ -1250,18 +1298,18 @@
   },
   "war_chariot_hit_03": {
    "frame": {
-    "x": 190,
-    "y": 313,
-    "w": 184,
-    "h": 145
+    "x": 1310,
+    "y": 2,
+    "w": 176,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 153,
-    "y": 90,
-    "w": 184,
-    "h": 145
+    "x": 161,
+    "y": 84,
+    "w": 176,
+    "h": 152
    },
    "sourceSize": {
     "w": 402,
@@ -1274,18 +1322,18 @@
   },
   "war_chariot_hit_03_team": {
    "frame": {
-    "x": 1334,
-    "y": 599,
-    "w": 163,
-    "h": 118
+    "x": 1527,
+    "y": 473,
+    "w": 157,
+    "h": 125
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
-    "y": 95,
-    "w": 163,
-    "h": 118
+    "x": 155,
+    "y": 88,
+    "w": 157,
+    "h": 125
    },
    "sourceSize": {
     "w": 402,
@@ -1298,17 +1346,17 @@
   },
   "war_chariot_hit_04": {
    "frame": {
-    "x": 1489,
-    "y": 2,
-    "w": 179,
+    "x": 550,
+    "y": 166,
+    "w": 178,
     "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
-    "y": 87,
-    "w": 179,
+    "x": 160,
+    "y": 86,
+    "w": 178,
     "h": 150
    },
    "sourceSize": {
@@ -1322,18 +1370,18 @@
   },
   "war_chariot_hit_04_team": {
    "frame": {
-    "x": 643,
-    "y": 599,
-    "w": 158,
-    "h": 120
+    "x": 1840,
+    "y": 473,
+    "w": 159,
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 152,
-    "y": 93,
-    "w": 158,
-    "h": 120
+    "y": 91,
+    "w": 159,
+    "h": 122
    },
    "sourceSize": {
     "w": 402,
@@ -1346,8 +1394,8 @@
   },
   "war_chariot_die_00": {
    "frame": {
-    "x": 553,
-    "y": 160,
+    "x": 2,
+    "y": 321,
     "w": 181,
     "h": 148
    },
@@ -1370,8 +1418,8 @@
   },
   "war_chariot_die_00_team": {
    "frame": {
-    "x": 1162,
-    "y": 599,
+    "x": 1791,
+    "y": 611,
     "w": 168,
     "h": 118
    },
@@ -1394,8 +1442,8 @@
   },
   "war_chariot_die_01": {
    "frame": {
-    "x": 1662,
-    "y": 160,
+    "x": 1340,
+    "y": 321,
     "w": 202,
     "h": 145
    },
@@ -1418,8 +1466,8 @@
   },
   "war_chariot_die_01_team": {
    "frame": {
-    "x": 703,
-    "y": 724,
+    "x": 506,
+    "y": 737,
     "w": 183,
     "h": 114
    },
@@ -1442,10 +1490,10 @@
   },
   "war_chariot_die_02": {
    "frame": {
-    "x": 489,
-    "y": 462,
+    "x": 176,
+    "y": 473,
     "w": 229,
-    "h": 131
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
@@ -1453,7 +1501,7 @@
     "x": 104,
     "y": 105,
     "w": 229,
-    "h": 131
+    "h": 133
    },
    "sourceSize": {
     "w": 402,
@@ -1466,8 +1514,8 @@
   },
   "war_chariot_die_02_team": {
    "frame": {
-    "x": 1540,
-    "y": 724,
+    "x": 2,
+    "y": 858,
     "w": 212,
     "h": 100
    },
@@ -1490,8 +1538,8 @@
   },
   "war_chariot_die_03": {
    "frame": {
-    "x": 1065,
-    "y": 724,
+    "x": 1653,
+    "y": 737,
     "w": 232,
     "h": 106
    },
@@ -1514,8 +1562,8 @@
   },
   "war_chariot_die_03_team": {
    "frame": {
-    "x": 680,
-    "y": 844,
+    "x": 1132,
+    "y": 858,
     "w": 222,
     "h": 72
    },
@@ -1538,10 +1586,10 @@
   },
   "war_chariot_die_04": {
    "frame": {
-    "x": 1301,
-    "y": 724,
+    "x": 1217,
+    "y": 737,
     "w": 235,
-    "h": 103
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
@@ -1549,7 +1597,7 @@
     "x": 97,
     "y": 132,
     "w": 235,
-    "h": 103
+    "h": 109
    },
    "sourceSize": {
     "w": 402,
@@ -1562,8 +1610,8 @@
   },
   "war_chariot_die_04_team": {
    "frame": {
-    "x": 459,
-    "y": 844,
+    "x": 911,
+    "y": 858,
     "w": 217,
     "h": 80
    },
@@ -1586,10 +1634,10 @@
   },
   "war_chariot_die_05": {
    "frame": {
-    "x": 1756,
-    "y": 724,
+    "x": 218,
+    "y": 858,
     "w": 232,
-    "h": 90
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
@@ -1597,7 +1645,7 @@
     "x": 100,
     "y": 146,
     "w": 232,
-    "h": 90
+    "h": 98
    },
    "sourceSize": {
     "w": 402,
@@ -1610,8 +1658,8 @@
   },
   "war_chariot_die_05_team": {
    "frame": {
-    "x": 906,
-    "y": 844,
+    "x": 1358,
+    "y": 858,
     "w": 222,
     "h": 72
    },
@@ -1634,10 +1682,10 @@
   },
   "war_chariot_die_06": {
    "frame": {
-    "x": 2,
-    "y": 844,
+    "x": 454,
+    "y": 858,
     "w": 231,
-    "h": 87
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
@@ -1645,7 +1693,7 @@
     "x": 100,
     "y": 150,
     "w": 231,
-    "h": 87
+    "h": 94
    },
    "sourceSize": {
     "w": 402,
@@ -1658,8 +1706,8 @@
   },
   "war_chariot_die_06_team": {
    "frame": {
-    "x": 1132,
-    "y": 844,
+    "x": 1584,
+    "y": 858,
     "w": 226,
     "h": 69
    },
@@ -1682,10 +1730,10 @@
   },
   "war_chariot_die_07": {
    "frame": {
-    "x": 237,
-    "y": 844,
+    "x": 689,
+    "y": 858,
     "w": 218,
-    "h": 81
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
@@ -1693,7 +1741,7 @@
     "x": 107,
     "y": 155,
     "w": 218,
-    "h": 81
+    "h": 88
    },
    "sourceSize": {
     "w": 402,
@@ -1706,8 +1754,8 @@
   },
   "war_chariot_die_07_team": {
    "frame": {
-    "x": 1362,
-    "y": 844,
+    "x": 1814,
+    "y": 858,
     "w": 211,
     "h": 65
    },
@@ -1768,33 +1816,31 @@
   ],
   "attack": [
    "war_chariot_attack_00",
-   "war_chariot_attack_00",
-   "war_chariot_attack_01",
    "war_chariot_attack_01",
    "war_chariot_attack_02",
    "war_chariot_attack_03",
    "war_chariot_attack_04",
-   "war_chariot_attack_04",
    "war_chariot_attack_05",
    "war_chariot_attack_06",
-   "war_chariot_attack_06",
    "war_chariot_attack_07",
-   "war_chariot_attack_08"
+   "war_chariot_attack_08",
+   "war_chariot_attack_08",
+   "war_chariot_attack_09",
+   "war_chariot_attack_09"
   ],
   "attack_team": [
    "war_chariot_attack_00_team",
-   "war_chariot_attack_00_team",
-   "war_chariot_attack_01_team",
    "war_chariot_attack_01_team",
    "war_chariot_attack_02_team",
    "war_chariot_attack_03_team",
    "war_chariot_attack_04_team",
-   "war_chariot_attack_04_team",
    "war_chariot_attack_05_team",
    "war_chariot_attack_06_team",
-   "war_chariot_attack_06_team",
    "war_chariot_attack_07_team",
-   "war_chariot_attack_08_team"
+   "war_chariot_attack_08_team",
+   "war_chariot_attack_08_team",
+   "war_chariot_attack_09_team",
+   "war_chariot_attack_09_team"
   ],
   "hit": [
    "war_chariot_hit_00",
@@ -1846,14 +1892,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 2048,
-   "h": 936
+   "h": 960
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.war_chariot",
    "name": "War Chariot",
    "heightLu": 110,
-   "widthLu": 142.3,
+   "widthLu": 144.7,
    "pxPerLu": 1.23,
    "feetPx": [
     237.0,
@@ -1895,28 +1941,28 @@
      "anchorsLu": {
       "bladeTip": [
        [
-        2.6,
-        62.4
-       ],
-       [
-        2.1,
-        63.3
-       ],
-       [
-        1.4,
-        64.7
-       ],
-       [
         1.2,
         65.6
        ],
        [
-        1.4,
-        64.7
+        1.8,
+        64.9
+       ],
+       [
+        2.6,
+        63.3
+       ],
+       [
+        2.8,
+        62.4
        ],
        [
         2.1,
-        63.3
+        63.2
+       ],
+       [
+        1.4,
+        64.8
        ]
       ]
      }
@@ -1981,83 +2027,85 @@
        ]
       ]
      },
-     "strideLu": 79.2,
-     "naturalSpeedLuPerS": 99.0
+     "strideLu": 81.0,
+     "naturalSpeedLuPerS": 101.2
     },
     "attack": {
-     "frames": 9,
+     "frames": 10,
      "loop": false,
      "sequence": [
       0,
-      0,
-      1,
       1,
       2,
       3,
       4,
-      4,
       5,
       6,
-      6,
       7,
-      8
+      8,
+      8,
+      9,
+      9
      ],
      "durationsMs": [
+      70,
       90,
-      80,
-      80,
+      100,
+      200,
+      60,
+      50,
+      150,
       90,
-      190,
-      40,
-      90,
-      90,
-      90,
-      90,
-      90,
+      110,
+      100,
       100,
       110
      ],
      "durationMs": 1230,
-     "impactFrame": 4,
+     "impactFrame": 6,
      "impactAt": 0.4634,
-     "smearFrame": 3,
+     "smearFrame": 4,
      "anchorsLu": {
       "bladeTip": [
        [
-        -18.7,
-        79.6
+        -14.4,
+        79.4
        ],
        [
-        -77.6,
-        68.9
+        -51.7,
+        81.8
        ],
        [
-        -79.3,
-        60.8
+        -72.5,
+        77.0
        ],
        [
-        14.8,
-        71.4
+        -77.5,
+        70.0
        ],
        [
-        23.7,
-        21.2
+        -28.8,
+        98.0
        ],
        [
-        19.4,
-        21.8
+        25.5,
+        57.9
        ],
        [
-        15.8,
-        21.5
+        23.3,
+        20.9
        ],
        [
-        9.8,
-        56.4
+        15.3,
+        18.1
        ],
        [
-        2.0,
-        64.0
+        19.7,
+        41.6
+       ],
+       [
+        4.0,
+        66.0
        ]
       ]
      }
@@ -2083,24 +2131,24 @@
      "anchorsLu": {
       "bladeTip": [
        [
-        -9.0,
-        67.3
+        0.7,
+        56.8
        ],
        [
-        -21.6,
-        69.7
+        -0.1,
+        63.0
        ],
        [
-        -16.7,
-        73.4
+        1.2,
+        61.8
        ],
        [
-        -7.7,
-        69.4
+        4.4,
+        62.0
        ],
        [
-        0.6,
-        64.3
+        1.9,
+        63.9
        ]
       ]
      }
@@ -2145,7 +2193,7 @@
         0,
         39.6
        ],
-       "scale": 1.779
+       "scale": 1.809
       },
       {
        "id": "fx.ko_stars",
@@ -2155,7 +2203,7 @@
         60.5
        ],
        "loops": 2,
-       "scale": 1.334
+       "scale": 1.345
       }
      ],
      "hideUnitAtMs": 970,

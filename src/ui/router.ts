@@ -107,7 +107,11 @@ export interface RouteParams {
   /** 9. */
   warPlan: { age?: AgeId; plan?: number };
   /** 10. */
-  collection: { tab?: 'cards' | 'skins' | 'feats' };
+  /**
+   * `age`: the Card Album opens scrolled to that age (Army's age tab); `own`: which cards it shows
+   * first ('missing' from Army's Locked row).
+   */
+  collection: { tab?: 'cards' | 'skins' | 'feats'; age?: AgeId; own?: 'all' | 'owned' | 'missing' };
   /** 11. */
   /** `upgrade`: open with the upgrade already in its confirm state (Army "Upgrade", ui-plan 4.2). */
   cardDetail: { card: CardId; upgrade?: boolean };

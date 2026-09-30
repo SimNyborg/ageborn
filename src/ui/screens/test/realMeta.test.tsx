@@ -171,7 +171,8 @@ describe('War Plan advisor findings from meta (A3)', () => {
     const advisor = m.q('[data-testid="advisor"]')!;
     expect(advisor.querySelectorAll('li').length).toBeGreaterThanOrEqual(4);
     expect(rawKeyIn(advisor)).toBeNull();
-    expect(text(m.q('[data-testid="issue-duplicate"]')!)).toBe('Stone Age holds the same card twice.');
+    expect(text(m.q('[data-testid="issue-duplicate"]')!)).toBe('Same card twice');
+    expect(m.q('[data-testid="issue-duplicate"] button')!.getAttribute('aria-label')).toBe('Stone Age holds the same card twice.');
   });
 
   it('an unknown future finding still reads as text', () => {

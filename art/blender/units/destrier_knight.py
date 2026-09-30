@@ -259,7 +259,7 @@ def build(rig):
 
 
 # -- poses ---------------------------------------------------------------------------------
-LANCE_CHAIN = ("horse", "ktorso", "karm_l", "kfore_l")
+LANCE_CHAIN = ("body", "rider", "horse", "ktorso", "karm_l", "kfore_l")
 
 
 def lance_at(pose, deg):

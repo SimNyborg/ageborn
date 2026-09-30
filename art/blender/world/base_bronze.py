@@ -6,11 +6,14 @@ aged-bronze doors (verdigris panels, polished studs), bronze braziers with white
 tier corners, long team banners on the tier faces and a small columned shrine on the summit under a
 team roof. The turret mounts (common.BASE_MOUNTS) are real platforms: the gate pylon's roof, a
 cornice ledge on the second tier, a corbelled balcony thrust out from the third tier, and a slab on
-the summit terrace. Crumble: cracks, a toppled brazier and rubble (75%), a banner torn and a broken
-balcony rail (50%), the shrine roof knocked askew and the summit flag gone (25%).
+the summit terrace. Crumble (cartoon kit v2: each stage changes the read at a glance): 75% cracks, a toppled
+brazier, rubble and a blown-out hole in the lowest tier; 50% a burning breach in the second tier
+that tears the banner, the balcony rail sagging; 25% a big burning breach high on the third tier
+(its banner burnt away), the summit shrine toppled half off the top and the summit flag gone.
 Treasury: grain sacks and amphorae (1), a domed granary (2), a trade barge with a team sail (3).
 """
 import math
+import random
 
 from ageborn_art import rigs_bronze as P
 from ageborn_art.geometry import Geo
@@ -125,6 +128,49 @@ def brazier(rig, joint, x, y, z, name):
     rig.part(name, g, glow=FIRE_CORE, outline=0)
 
 
+HOLE = "#3A3129"
+HOLE_IN = "#54483A"
+
+
+def breach(rig, joint, x, y, z, w, h, seed=0):
+    """A blown-out hole in a tier face: a dark jagged opening with a lighter inner wall, broken
+    block ends sticking out of the rim and chips of the lit face knocked off around it."""
+    rnd = random.Random(seed)
+    n = 14
+    pts, inner = [], []
+    for i in range(n):
+        a = 2 * math.pi * i / n
+        k = 0.72 + 0.28 * rnd.random()
+        pts.append((x + math.cos(a) * w / 2 * k, z + math.sin(a) * h / 2 * k))
+        inner.append((x + math.cos(a) * w / 2 * k * 0.72, z + math.sin(a) * h / 2 * k * 0.66 - h * 0.08))
+    g = Geo().slab(pts, y - 2.4, 1.6)
+    rig.part(joint, g, HOLE_IN, outline=0.6, outline_hex=HOLE)
+    g = Geo().slab(inner, y - 3.4, 1.0)
+    rig.part(joint, g, HOLE, outline=0)
+    g = Geo()                                   # broken block ends jutting from the rim
+    for i in range(0, n, 3):
+        px_, pz_ = pts[i]
+        box(g, (px_, y - 3.0, pz_), (2.6 + 1.6 * rnd.random(), 1.8, 2.0 + 1.4 * rnd.random()), p=5, cuts=2)
+    rig.part(joint, g, SAND_LT, outline=0.5)
+
+
+def blaze(rig, joint, x, y, z, size, name):
+    """A hidden fire in a breach: three layered flame tongues (outer, mid, white-hot core)."""
+    rig.joint(name, joint, (x, y, z), hidden=True)
+    k = size
+    g = Geo()
+    for dx, hh, r in ((0.0, 16.0, 6.4), (-7.0, 11.0, 4.2), (7.0, 12.5, 4.6), (-3.2, 8.0, 3.4)):
+        g.blob((x + dx * k, y - 4.0, z + hh * k * 0.55), (r * k, 3.4 * k, hh * k * 0.62), p=2.0, taper=(1.0, 0.2))
+    rig.part(name, g, glow=FLAME, outline=0.8, outline_hex="#C9782E")
+    g = Geo()
+    for dx, hh, r in ((0.0, 11.0, 4.2), (-6.0, 7.0, 2.6), (6.0, 8.0, 2.8)):
+        g.blob((x + dx * k, y - 5.2, z + hh * k * 0.5), (r * k, 2.6 * k, hh * k * 0.55), p=2.0, taper=(1.0, 0.25))
+    rig.part(name, g, glow=FIRE, outline=0)
+    g = Geo().blob((x, y - 6.4, z + 4.0 * k), (2.6 * k, 2.0 * k, 4.0 * k), p=2.0, taper=(1.0, 0.3))
+    rig.part(name, g, glow=FIRE_CORE, outline=0)
+    return name
+
+
 def banner(rig, joint, x, y, z_top, h, w=16.0):
     g = Geo().slab([(x - w / 2, z_top), (x + w / 2, z_top), (x + w / 2, z_top - h + 8), (x, z_top - h),
                     (x - w / 2, z_top - h + 8)], y, 1.6)
@@ -138,8 +184,9 @@ def banner(rig, joint, x, y, z_top, h, w=16.0):
 
 
 def build(rig, M):
-    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3"):
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "breach1", "breach2", "breach3"):
         rig.joint(j, "body", (0, 0, 0), hidden=True)
+    rig.joint("bannerMid", "body", (CX - 30, TIERS[2][3] - 3, 182))
     rig.joint("shrine", "body", (CX - 10, 12, 256))
     rig.joint("balrail", "body", M[2])
     rig.joint("bannerLow", "body", (CX + 40, TIERS[1][3] - 3, 70))
@@ -151,7 +198,7 @@ def build(rig, M):
     # long team banners on the tier faces (one tears at crumble 2)
     banner(rig, "body", CX - 46, TIERS[1][3] - 3.0, 112, 44)
     banner(rig, "bannerLow", CX + 40, TIERS[1][3] - 3.0, 112, 44)
-    banner(rig, "body", CX - 30, TIERS[2][3] - 3.0, 182, 48, w=14)
+    banner(rig, "bannerMid", CX - 30, TIERS[2][3] - 3.0, 182, 48, w=14)
     banner(rig, "body", CX + 30, TIERS[2][3] - 3.0, 182, 48, w=14)
 
     # the summit shrine: a plinth, columns, a plum frieze and a team pitched roof
@@ -254,6 +301,13 @@ def build(rig, M):
     chipped_cracks(rig, "crack3", [[(CX + 20, TIERS[3][3] - 1.5, 246), (CX + 26, TIERS[3][3] - 1.5, 234),
                                     (CX + 20, TIERS[3][3] - 1.5, 222)],
                                    [(CX - 70, f, 50), (CX - 64, f, 38)]], CRACK, SAND_LT)
+    # breaches: a hole in the lowest tier (75%), a burning hole in the second (50%), a big burning
+    # hole high on the third (25%)
+    breach(rig, "breach1", CX - 56, TIERS[0][3], 28, 34, 28, seed=3)
+    breach(rig, "breach2", CX + 44, TIERS[1][3], 88, 38, 34, seed=7)
+    blaze(rig, "breach2", CX + 44, TIERS[1][3], 76, 1.4, "burn2")
+    breach(rig, "breach3", CX - 32, TIERS[2][3], 156, 46, 42, seed=11)
+    blaze(rig, "breach3", CX - 32, TIERS[2][3], 140, 1.8, "burn3")
     rubble(rig, "rubble1", [(-176, -52), (-150, -60)], SAND_DK, seed=5)
     rubble(rig, "rubble2", [(-120, -60), (10, -58), (-70, -64)], SAND_DK, seed=15)
     rubble(rig, "rubble3", [(-186, -66), (-150, -70), (-40, -68), (18, -66)], SAND_DK, seed=25, size=1.2)
@@ -312,14 +366,17 @@ def build(rig, M):
 def crumble(stage):
     pose = {}
     if stage >= 1:
-        pose.update({"crack1": {"show": True}, "rubble1": {"show": True}, "fire1": {"hide": True}})
+        pose.update({"crack1": {"show": True}, "rubble1": {"show": True}, "fire1": {"hide": True},
+                     "breach1": {"show": True}})
     if stage >= 2:
-        pose.update({"crack2": {"show": True}, "rubble2": {"show": True},
-                     "balrail": {"r": -16.0, "z": -3.0, "x": -1.0},
-                     "bannerLow": {"r": 8.0, "sz": 0.62, "z": 10.0}})
+        pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "breach2": {"show": True},
+                     "burn2": {"show": True},
+                     "balrail": {"r": -22.0, "z": -4.0, "x": -1.0},
+                     "bannerLow": {"r": 10.0, "sz": 0.5, "z": 14.0}})
     if stage >= 3:
         pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "fire3": {"hide": True},
-                     "shrine": {"r": 10.0, "x": -4.0, "z": -8.0}})
+                     "breach3": {"show": True}, "burn3": {"show": True}, "bannerMid": {"hide": True},
+                     "shrine": {"r": 22.0, "x": -10.0, "z": -16.0}})
     return pose
 
 

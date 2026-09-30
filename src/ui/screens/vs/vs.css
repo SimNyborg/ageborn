@@ -34,6 +34,45 @@
   margin-left: -12%;
   animation: vs-in-right 420ms var(--ui-ease-out) both;
 }
+/* Your backdrop skin fills your half under a wash of your team colour (review 11), so the half still
+   reads as yours and the card on it stays readable. */
+.vs__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.vs__backdrop .cos-bd {
+  background: transparent;
+}
+.vs__backdrop .cos-bd__img {
+  object-position: 30% 100%;
+  animation: vs-bd-in 520ms var(--ui-ease-out) both;
+}
+.vs__backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 40% 45%, color-mix(in srgb, var(--ui-team-me) 30%, transparent) 0%, transparent 50%),
+    linear-gradient(135deg, color-mix(in srgb, var(--ui-team-me) 62%, transparent), color-mix(in srgb, var(--ui-team-me) 28%, rgba(0, 0, 0, 0.35)));
+}
+.vs__half--me.has-backdrop > .vs__card {
+  position: relative;
+  z-index: 1;
+}
+@keyframes vs-bd-in {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vs__backdrop .cos-bd__img {
+    animation: none;
+  }
+}
 .vs__half::after {
   content: '';
   position: absolute;

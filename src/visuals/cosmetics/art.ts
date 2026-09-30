@@ -319,6 +319,10 @@ export interface CosmeticSvgOptions {
    * `layer: 'fx'` is its weather as an animated SVG to lay over it.
    */
   age?: AgeId;
+  /** Backdrops: the small still for a collection tile (the sky-heavy crop, painted small). */
+  thumb?: boolean;
+  /** Backdrops: only a still already painted, else null (the screens paint tiles one per frame). */
+  cached?: boolean;
 }
 
 /** SVG markup for a cosmetic key (`nationalFlag.dk`), or null when there is no art for it. */
@@ -358,8 +362,8 @@ const urlCache = new Map<string, string | null>();
 export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): string | null {
   // A backdrop's still is painted by the same painters the lane uses (cached per age and skin there)
   if (!o.layer && key.startsWith('backdrop.')) {
-    const still = backdropPreviewUrl(key === 'backdrop.classic' ? null : key, o.age ?? 'stone');
-    if (still) return still;
+    const still = backdropPreviewUrl(key === 'backdrop.classic' ? null : key, o.age ?? 'stone', { thumb: !!o.thumb, cachedOnly: !!o.cached });
+    if (still || o.cached) return still;
   }
   const ck = `${key}|${o.team ?? PREVIEW_TEAM}|${o.animate ?? true}|${o.layer ?? ''}`;
   let u = urlCache.get(ck);

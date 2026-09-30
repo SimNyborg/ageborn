@@ -45,12 +45,16 @@ function useSourceLine() {
   };
 }
 
-export function CardDex() {
+/**
+ * `age`: open scrolled to that age (Army's age tab); `own`: open with that Have / Missing choice
+ * (Army's Locked row opens on Missing).
+ */
+export function CardDex(p: { age?: AgeId | undefined; own?: DexOwn | undefined } = {}) {
   const { save, content, t, router } = useUi();
   const s = save.value;
-  const [f, setF] = useState<DexFilter>(DEX_FILTER);
+  const [f, setF] = useState<DexFilter>(() => ({ ...DEX_FILTER, own: p.own ?? 'all' }));
   const [sheet, setSheet] = useState(false);
-  const [inView, setInView] = useState<AgeId>(content.order.ages[0] ?? 'stone');
+  const [inView, setInView] = useState<AgeId>(p.age ?? content.order.ages[0] ?? 'stone');
   const root = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLDivElement>(null);
   const chips = useRef<HTMLDivElement>(null);
@@ -110,12 +114,27 @@ export function CardDex() {
     strip.scrollTo({ left: Math.max(0, x - (strip.clientWidth - on.offsetWidth) / 2), behavior: reducedMotion(strip) ? 'auto' : 'smooth' });
   }, [inView]);
 
-  function jump(age: AgeId) {
+  function jump(age: AgeId, instant = false) {
     const sec = root.current?.querySelector?.(`[data-dex-age="${age}"]`) as HTMLElement | null;
     if (!sec || typeof sec.scrollIntoView !== 'function') return;
-    sec.scrollIntoView({ block: 'start', behavior: reducedMotion(sec) ? 'auto' : 'smooth' });
+    sec.scrollIntoView({ block: 'start', behavior: instant || reducedMotion(sec) ? 'auto' : 'smooth' });
     setInView(age);
   }
+
+  // Opened for an age (from Army): start at that age's section. The ages above it render lazily
+  // (`content-visibility`), so the jump repeats for a few frames while their real heights arrive.
+  useLayoutEffect(() => {
+    const age = p.age;
+    if (!age || age === content.order.ages[0] || typeof requestAnimationFrame !== 'function') return;
+    let n = 0;
+    let raf = 0;
+    const go = () => {
+      jump(age, true);
+      if (++n < 4) raf = requestAnimationFrame(go);
+    };
+    go();
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const shownAges = dex.ages.filter((a) => a.entries.length > 0);
 
@@ -219,7 +238,7 @@ export function CardDex() {
               {a.entries.map((e, i) => {
                 const tile = cardTile(s, content, e.id, t)!;
                 return (
-                  <div key={e.id} class={`dex-tile${e.owned ? '' : ' is-missing'}`} style={{ '--i': Math.min(i, 10) }} data-testid={`dex-${e.id}`}>
+                  <div key={e.id} class={`dex-tile${e.owned ? '' : ' is-missing'}${tile.legendary ? ' has-crown' : ''}`} style={{ '--i': Math.min(i, 10) }} data-testid={`dex-${e.id}`}>
                     <span class="dex-tile__no" data-tag="">
                       {t('ui.dex.number', { n: String(e.no).padStart(3, '0') })}
                     </span>

@@ -8,6 +8,7 @@ Gorgon's gaze are white-hot and desaturated (A17.12).
 """
 import math
 
+from ageborn_art import face as F
 from ageborn_art import rigs_bronze as P
 from ageborn_art.geometry import Geo
 
@@ -85,48 +86,106 @@ def archer_build(rig):
         g.blob((-9.5 + i * 3.8, -11.0, 25.6), (1.2, 0.6, 1.1), p=2.2)
     rig.part("mount", g, SAND_LT, outline=0.4)
     pennant(rig, "mount", -12, 9, 27, h=18, length=13, width=8)
-    # head: the archer (tunic, helmet, bow), turning at the deck
-    g = Geo().blob((0, 0, 33.0), (5.4, 5.0, 6.0), p=2.4)
-    rig.part("head", g, team=True)
-    g = Geo().blob((0.6, 0, 42.0), (4.8, 4.6, 4.8), p=2.3)
-    g.blob((5.2, -0.3, 41.4), (1.4, 1.3, 1.4), p=2.0)
-    rig.part("head", g, P.SKIN)
-    g = Geo().blob((0.4, 0, 44.4), (5.2, 5.0, 3.6), p=2.4)
-    g.clip((0, 0, 43.4), (0, 0, -1))
-    rig.part("head", g, AGED, finish="metal")
-    g = Geo().blob((-3.0, 0, 48.2), (4.0, 1.4, 2.2), p=2.2)
-    rig.part("head", g, team=True, outline=0.4)
-    g = Geo().sphere((3.6, -3.2, 42.6), 0.9, cuts=2)
-    rig.part("head", g, P.PUPIL, outline=0)
-    g = Geo().capsule((1.0, -5.0, 36.0), (8.5, -5.0, 36.5), 1.4)      # bow arm
-    rig.part("head", g, P.SKIN, outline=0.5)
-    rig.joint("draw", "head", (0.0, -4.0, 36.5))
-    g = Geo().capsule((1.0, -4.0, 35.5), (-2.5, -4.0, 36.5), 1.4)
+    # head: the archer (drawn 1.3x so his face and bow read at game size), turning at the deck
+    rig.joint("archer", "head", (0, 0, 28), scale=ARCHER_S)
+    g = Geo().blob((0, 0, 33.0), (5.6, 5.2, 6.2), p=2.4)
+    rig.part("archer", g, team=True)
+    g = Geo().capsule((4.6, -3.0, 37.2), (-3.4, 3.8, 29.6), 0.9)               # quiver strap
+    rig.part("archer", g, P.LEATHER_DK, outline=0.3)
+    rig.joint("quiver", "archer", (-4.8, 2.0, 33.0))
+    g = Geo().capsule((-4.4, 2.6, 28.0), (-6.4, 2.6, 38.0), 2.0)
+    rig.part("quiver", g, P.LEATHER)
+    g = Geo()
+    for dy in (1.6, 3.6):
+        g.lathe([(0.2, 0), (1.3, 1.4), (0, 3.2)], (-6.6, dy, 37.6), (-7.3, dy, 40.8), segs=6)
+    rig.part("quiver", g, SAND_LT, outline=0.3)
+    ahead = Geo().blob((0.6, 0, 42.0), (5.0, 4.8, 5.0), p=2.3)
+    ahead.blob((5.6, -0.3, 41.2), (1.5, 1.4, 1.5), p=2.0)
+    face = F.Face(rig, "archer", [ahead])
+    rig.part("archer", ahead, P.SKIN)
+    g = Geo()
+    face.decal(g, face.hit(3.8, 42.6), F.ellipse(0, 0, 1.9, 2.3, 14), 0.3)
+    rig.part("archer", g, P.EYE, highlight=False, outline=0)
+    rig.joint("apupil", "archer", (4.2, -4.0, 42.4))
+    g = Geo()
+    face.decal(g, face.hit(3.8, 42.6) - face.view * 0.3, F.ellipse(0.6, -0.2, 1.0, 1.3, 10), 0.3)
+    rig.part("apupil", g, P.PUPIL, highlight=False, outline=0)
+    rig.joint("alid", "archer", (4.2, -4.0, 42.4), hidden=True)
+    g = Geo()
+    face.decal(g, face.hit(3.8, 42.6) - face.view * 0.5, F.ellipse(0, 0, 2.1, 2.5, 14), 0.3)
+    rig.part("alid", g, P.SKIN, highlight=False, outline=0)
+    rig.joint("abrow", "archer", (4.2, -4.0, 45.0))
+    g = Geo()
+    face.stroke(g, face.hit(3.6, 45.2) - face.view * 0.4, [(-1.8, 0.6), (1.6, -0.4)], 1.0, 0.3)
+    rig.part("abrow", g, P.HAIR, highlight=False, outline=0)
+    g = Geo()
+    face.stroke(g, face.hit(4.6, 39.0) - face.view * 0.3, [(-0.9, 0.2), (0.9, -0.1)], 0.8, 0.3)
+    rig.part("archer", g, P.MOUTH, highlight=False, outline=0)
+    g = Geo().blob((0.4, 0, 44.6), (5.4, 5.2, 3.8), p=2.4)
+    g.clip((0, 0, 43.6), (0, 0, -1))
+    rig.part("archer", g, BRONZE, finish=P.POLISH)
+    g = Geo().blob((0.4, 0, 43.8), (5.6, 5.4, 0.8), p=3.0)
+    rig.part("archer", g, VERD, outline=0.3)
+    rig.secondary("acrest", "archer", (1.0, 0, 48.0), (-6.0, 0, 48.6), max_deg=16, gain=1.2)
+    g = Geo().blob((-2.6, 0, 48.6), (4.2, 1.4, 2.4), p=2.2)
+    rig.part("acrest", g, team=True, outline=0.4)
+    g = Geo().capsule((1.0, -5.0, 36.0), (12.0, -5.0, 36.5), 1.5)     # bow arm
+    g.blob((12.1, -5.0, 36.4), (1.8, 1.6, 1.8), p=2.2)
+    rig.part("archer", g, P.SKIN, outline=0.5)
+    rig.joint("draw", "archer", (0.0, -4.0, 36.5))
+    g = Geo().capsule((1.0, -4.0, 35.5), (-2.5, -4.0, 36.5), 1.5)
+    g.blob((-2.8, -4.0, 36.5), (1.8, 1.6, 1.8), p=2.2)
     rig.part("draw", g, P.SKIN, outline=0.5)
     # recurve bow in the side plane, string, arrow
     g = Geo()
-    pts = [(8.0, 46.0), (10.0, 43.0), (9.2, 39.5), (10.2, 36.5), (9.2, 33.5), (10.0, 30.0), (8.0, 27.0)]
+    pts = [(10.5, 47.0), (13.5, 44.0), (12.7, 39.5), (13.7, 36.5), (12.7, 33.5), (13.5, 29.0), (10.5, 26.0)]
     for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
-        g.capsule((x0, -5.2, z0), (x1, -5.2, z1), 0.9)
-    rig.part("head", g, WOOD_DK, outline=0.5)
-    rig.joint("string", "head", (9.0, -5.2, 36.5))
-    g = Geo().capsule((8.0, -5.4, 46.0), (0.0, -5.4, 36.5), 0.3).capsule((0.0, -5.4, 36.5), (8.0, -5.4, 27.0), 0.3)
+        g.capsule((x0, -5.2, z0), (x1, -5.2, z1), 1.0)
+    rig.part("archer", g, WOOD_DK, outline=0.5)
+    g = Geo().capsule((12.8, -5.6, 38.0), (12.8, -5.6, 35.0), 1.3)        # grip wrap
+    rig.part("archer", g, P.LEATHER_DK, outline=0.3)
+    rig.joint("string", "archer", (12.5, -5.2, 36.5))
+    g = Geo().capsule((10.5, -5.4, 47.0), (0.0, -5.4, 36.5), 0.35).capsule((0.0, -5.4, 36.5), (10.5, -5.4, 26.0), 0.35)
     rig.part("string", g, LINEN, outline=0)
-    rig.joint("arrow", "head", (0.0, -5.0, 36.5))
-    g = Geo().capsule((-0.5, -5.0, 36.5), (15.5, -5.0, 36.5), 0.5)
-    g.lathe([(1.2, 0), (0.05, 3.0)], (15.5, -5.0, 36.5), (18.5, -5.0, 36.5), segs=8)
+    rig.joint("arrow", "archer", (0.0, -5.0, 36.5))
+    g = Geo().capsule((-0.5, -5.0, 36.5), (19.0, -5.0, 36.5), 0.55)
+    g.lathe([(1.4, 0), (0.05, 3.2)], (19.0, -5.0, 36.5), (22.2, -5.0, 36.5), segs=8)
+    g.slab([(-0.5, 36.5), (3.0, 36.5), (0.0, 38.4)], -5.0, 0.5).slab([(-0.5, 36.5), (3.0, 36.5), (0.0, 34.6)], -5.0, 0.5)
     rig.part("arrow", g, SAND_LT, outline=0.4)
 
 
+ARCHER_S = 1.3
+
+
 def archer_idle(f):
-    w = math.sin(f / 4 * 2 * math.pi)
-    return {"head": {"z": 0.4 * w, "r": 1.5 * w}}
+    # 6-frame loop: he peeks left and right over the parapet, bobs, blinks on 4
+    t = f / 6 * 2 * math.pi
+    out = {"head": {"z": 0.5 * math.sin(t), "r": 1.5 * math.sin(t)},
+           "archer": {"z": -1.2 * max(0.0, math.sin(t)), "r": 2.0 * math.sin(2 * t)},
+           "apupil": {"x": 0.5 * math.cos(t), "z": 0.2 * math.sin(2 * t)}}
+    if f == 4:
+        out["alid"] = {"show": True}
+        out["apupil"]["hide"] = True
+    return out
 
 
 def archer_fire(f):
-    return {"draw": {"x": [-3.0, 1.0, 0.5, -1.0, -2.0][f]}, "arrow": {"x": [-3.0, 14.0, 0, 0, 0][f], "hide": f in (1, 2),
-                                                                     "s": 0.5 if f == 3 else 1.0},
-            "string": {"sx": [0.7, 1.12, 1.04, 1.0, 1.0][f]}, "head": {"x": [0, -1.2, -0.6, -0.2, 0][f]}}
+    # 0 full draw (leans back, squints), 1 release (the string snaps, the arrow is away), 2 the
+    # bow arm kicks, 3 reaches into the quiver, 4 nocked again
+    out = {"draw": {"x": [-4.0, 1.2, 0.6, -2.0, -1.0][f], "z": [0, 0, 0, 4.0, 0.6][f]},
+           "arrow": {"x": [-4.0, 14.0, 0, -3.0, -0.6][f], "hide": f in (1, 2), "s": 0.6 if f == 3 else 1.0,
+                     "z": 4.0 if f == 3 else 0.0},
+           "string": {"sx": [0.62, 1.14, 1.04, 1.0, 1.0][f]},
+           "archer": {"r": [7, -5, -2, 3, 0][f], "sz": [0.94, 1.06, 1.0, 1.0, 1.0][f]},
+           "head": {"x": [0, -1.2, -0.6, -0.2, 0][f]},
+           "abrow": {"z": [-0.6, -0.4, 0, 0, 0][f]}}
+    if f == 0:
+        out["alid"] = {"show": True, "z": 1.0}
+    return out
+
+
+ARCHER_OVERLAYS = {"fire": {1: [{"kind": "streak", "joint": "arrow", "point": (21.5, -5.0, 36.5), "from": 0,
+                                 "color": SAND_LT, "width_lu": 3.2, "white": 0.3}]}}
 
 
 # -- Sun Mirror: a polished dish on a tripod that focuses sunlight -------------------------------------
@@ -181,12 +240,25 @@ def mirror_build(rig):
 
 
 def mirror_idle(f):
-    w = math.sin(f / 4 * 2 * math.pi)
-    return {"head": {"r": 1.5 * w}, "glint": {"s": 0.5 + 0.12 * w}}
+    # 6-frame loop: the dish rocks gently and a bright glint sweeps across its face
+    t = f / 6 * 2 * math.pi
+    return {"head": {"r": 1.5 * math.sin(t)},
+            "glint": {"s": 0.45 + 0.2 * max(0.0, math.sin(t)), "x": 2.4 * math.cos(t), "z": 3.0 * math.sin(t)}}
 
 
 def mirror_fire(f):
-    return {"glint": {"s": [1.1, 1.5, 1.2, 0.9, 0.6][f]}, "head": {"x": [0, -0.8, -0.4, 0, 0][f]}}
+    # 0 the dish tips back and the glint swells (anticipation), 1 the glare flares, 2-4 fade
+    return {"glint": {"s": [1.3, 1.6, 1.2, 0.9, 0.6][f]}, "head": {"x": [0, -0.8, -0.4, 0, 0][f], "r": [5, -3, -1, 0, 0][f]}}
+
+
+MIRROR_OVERLAYS = {"fire": {
+    0: [{"kind": "rings", "joint": "head", "point": (3.0 + 13.0 * 0.79, -11.0, 34.0), "radii_lu": (5.0, 8.0),
+         "a0": -50.0, "a1": 50.0, "color": BEAM}],
+    1: [{"kind": "burst", "joint": "head", "point": (3.0 + 13.0 * 0.79, -11.0, 34.0), "r0_lu": 9.0, "r1_lu": 17.0,
+         "n": 8, "a0": 0.0, "arc": 360.0, "color": BEAM}],
+    2: [{"kind": "burst", "joint": "head", "point": (3.0 + 13.0 * 0.79, -11.0, 34.0), "r0_lu": 12.0, "r1_lu": 16.0,
+         "n": 6, "a0": 15.0, "arc": 360.0, "color": BEAM}],
+}}
 
 
 # -- Onager: a torsion catapult with a throwing arm and sling ------------------------------------------
@@ -254,14 +326,38 @@ def onager_build(rig):
 
 
 def onager_idle(f):
-    return {"arm": {"r": 1.5 * math.sin(f / 4 * 2 * math.pi)}}
+    # 6-frame loop: the cocked arm creaks against the skein, the boulder rocks in the cup
+    t = f / 6 * 2 * math.pi
+    return {"arm": {"r": 2.0 * math.sin(t), "sz": 1.0 - 0.015 * math.cos(t)},
+            "stone": {"r": 10 * math.sin(2 * t), "z": 0.6 * max(0.0, -math.sin(t))}}
 
 
 def onager_fire(f):
-    return {"arm": {"r": [4, -70, -84, -60, -12][f]}, "stone": {"hide": f in (1, 2, 3)}}
+    # 0 wound down further (the arm bends, anticipation), 1 the whip (smear), 2 slams into the
+    # padded buffer (dust, shudder), 3 bounces back, 4 lowered and reloaded
+    return {"arm": {"r": [12, -70, -88, -58, -12][f], "sz": [0.94, 1.08, 1.0, 1.0, 1.0][f]},
+            "stone": {"hide": f in (1, 2, 3)},
+            "mount": {"z": [0, 0, -0.6, 0.2, 0][f]}}
+
+
+ONAGER_OVERLAYS = {"fire": {
+    1: [{"kind": "arc", "joint": "arm", "inner": (-6.0, 0, 12.6), "outer": (-21.0, 0, 16.0), "from": 0,
+         "color": ROPE, "white": 0.3, "taper": 0.2, "lines": 3}],
+    2: [{"kind": "burst", "joint": "mount", "point": (4.0, -10.0, 28.0), "r0_lu": 5.0, "r1_lu": 10.0, "n": 5,
+         "a0": 20.0, "arc": 140.0},
+        {"kind": "dust", "ground": (0.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 3, "spread": 1.2}],
+}}
 
 
 # -- Gorgon Bust: a stone head with snake hair on a column; the eyes blaze on the shot ------------------
+GFACE = -50.0      # the face is turned toward the camera by this much (about the head's axis)
+
+
+def _gp(x, y, z, cx=1.0, deg=GFACE):
+    c, s_ = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    return (cx + (x - cx) * c - y * s_, (x - cx) * s_ + y * c, z)
+
+
 def gorgon_build(rig):
     sand_plinth(rig, r=13, h=6)
     g = Geo()
@@ -278,59 +374,96 @@ def gorgon_build(rig):
     rig.part("mount", g, SAND_LT)
     g = Geo().slab([(-8.5, 21.5), (8.5, 21.5), (8.5, 10), (0, 5), (-8.5, 10)], -8.6, 1.2)   # team drape
     rig.part("mount", g, team=True, outline=0.5)
-    # head: a pale stone face, verdigris snakes, a team diadem; eyes and gaze flare on the shot
+    # head: a pale stone face turned three-quarters to the camera (so the face reads at game
+    # size), verdigris snakes, a team diadem; big blank eyes and a hiss flare on the shot
     g = Geo().blob((1.0, 0, 33.0), (9.2, 8.8, 9.6), p=2.3)
-    g.blob((8.8, -0.2, 32.4), (1.8, 1.6, 2.2), p=2.0)
+    g.blob((8.8, -0.2, 32.4), (1.9, 1.7, 2.3), p=2.0)
     g.blob((1.0, 0, 25.4), (6.0, 6.0, 3.2), p=2.4)                         # neck
-    rig.part("head", g, "#D8CFBC")
-    g = Geo().capsule((6.4, -5.6, 36.4), (8.6, -1.4, 35.0), 0.9).capsule((8.6, 1.2, 35.0), (6.6, 5.2, 36.4), 0.9)
-    g.blob((7.6, -0.2, 28.2), (1.0, 3.0, 0.7), p=2.2)
-    rig.part("head", g, "#8C8272", outline=0)
-    rig.joint("eyes", "head", (8.0, 0, 33.6))
+    rig.part("head", _turn(g, 1.0, 0, GFACE), "#D8CFBC")
+    g = Geo().capsule((7.0, -6.2, 37.2), (9.2, -1.2, 35.4), 1.2).capsule((9.2, 1.0, 35.4), (7.2, 5.8, 37.2), 1.2)
+    rig.part("head", _turn(g, 1.0, 0, GFACE), "#8C8272", outline=0)
+    rig.joint("gmouth", "head", _gp(8.4, 0, 28.4))
+    g = Geo().blob((8.2, -0.2, 28.2), (1.0, 3.2, 0.8), p=2.2)
+    rig.part("gmouth", _turn(g, 1.0, 0, GFACE), "#8C8272", outline=0)
+    rig.joint("eyes", "head", _gp(8.0, 0, 33.6))
     g = Geo()
-    for y in (-3.6, 3.0):
-        g.blob((7.8, y, 33.6), (1.2, 1.6, 1.4), p=2.2)
-    rig.part("eyes", g, "#5E574C", outline=0)
-    rig.joint("glow", "head", (8.0, 0, 33.6), hidden=True)
+    for y in (-3.8, 3.2):
+        g.blob((8.0, y, 33.4), (1.4, 2.2, 1.9), p=2.2)
+    rig.part("eyes", _turn(g, 1.0, 0, GFACE), "#4F6660", outline=0)
+    rig.joint("glow", "head", _gp(8.4, 0, 33.6), hidden=True)
     g = Geo()
-    for y in (-3.6, 3.0):
-        g.blob((8.4, y - 0.4, 33.6), (1.4, 2.0, 1.7), p=2.2)
-    rig.part("glow", g, glow=GAZE, outline=0.5, outline_hex=VERD_LT)
+    for y in (-3.8, 3.2):
+        g.blob((8.6, y - 0.4, 33.4), (1.6, 2.6, 2.2), p=2.2)
+    rig.part("glow", _turn(g, 1.0, 0, GFACE), glow=GAZE, outline=0.5, outline_hex=VERD_LT)
     g = Geo().blob((1.4, 0, 39.0), (9.6, 9.2, 2.4), p=2.8, rot=(0, -8, 0))  # diadem
     rig.part("head", g, team=True, outline=0.5)
-    g = Geo()
     snakes = [((-4, -6, 38), (-10, -9, 42), (-12, -10, 36)), ((-6, 0, 40), (-13, 0, 44), (-15, 1, 38)),
               ((-4, 6, 38), (-10, 9, 42), (-12, 10, 36)), ((0, -7, 41), (-2, -10, 47), (3, -11, 49)),
               ((0, 6, 41), (-2, 10, 47), (3, 11, 49)), ((-2, 0, 42), (-4, 0, 49), (1, 0, 52)),
               ((-6, -4, 34), (-11, -8, 30), (-9, -11, 26)), ((-6, 4, 34), (-11, 8, 30), (-9, 11, 26))]
-    for a, b, c in snakes:
-        g.capsule(a, b, 1.8, 1.5).capsule(b, c, 1.5, 1.2)
-        g.sphere(c, 1.8, cuts=2)
-    rig.part("head", g, VERD, finish="gloss")
-    g = Geo()
-    for a, b, c in snakes:
-        g.sphere((c[0] + 0.6, c[1] - 1.2, c[2] + 0.5), 0.45, cuts=1)
-    rig.part("head", g, P.PUPIL, outline=0)
-    flare(rig, "head", (10.5, -1.0, 33.6), size=0.9, color=GAZE)
+    # the near and top snakes are their own joints: they writhe in the idle and rear up on the shot
+    for i, (a, b, c) in enumerate(snakes):
+        jn = f"snake{i}" if i in (0, 3, 5, 6) else "head"
+        if jn != "head":
+            rig.joint(jn, "head", a)
+        g = Geo().capsule(a, b, 1.9, 1.6).capsule(b, c, 1.6, 1.3)
+        g.blob(c, (2.3, 1.8, 1.7), p=2.2)                                   # a wedge head
+        rig.part(jn, g, VERD, finish="gloss")
+        g = Geo().sphere((c[0] + 0.7, c[1] - 1.4, c[2] + 0.5), 0.55, cuts=1)
+        rig.part(jn, g, P.PUPIL, outline=0)
+        g = Geo().capsule((c[0] + 1.8, c[1] - 0.4, c[2] - 0.4), (c[0] + 3.4, c[1] - 0.4, c[2] - 1.0), 0.35)
+        rig.part(jn, g, "#B86A6A", outline=0)                                # forked tongue
+    # a stern mouth that opens in a hiss (fangs) on the shot
+    rig.joint("ghiss", "head", _gp(8.4, 0, 28.4), hidden=True)
+    g = Geo().blob((8.4, -0.2, 27.6), (1.6, 3.4, 2.0), p=2.2)
+    rig.part("ghiss", _turn(g, 1.0, 0, GFACE), "#4A3F36", outline=0)
+    g = Geo().lathe([(0.7, 0), (0, 1.6)], (9.2, -2.0, 29.0), (9.4, -2.0, 27.2), segs=6)
+    g.lathe([(0.7, 0), (0, 1.6)], (9.2, 1.4, 29.0), (9.4, 1.4, 27.2), segs=6)
+    rig.part("ghiss", _turn(g, 1.0, 0, GFACE), LINEN, outline=0)
+    flare(rig, "head", _gp(10.5, -1.0, 33.6), size=0.9, color=GAZE)
+
+
+SNAKES = (0, 3, 5, 6)
 
 
 def gorgon_idle(f):
-    w = math.sin(f / 4 * 2 * math.pi)
-    return {"head": {"r": 1.2 * w, "z": 0.3 * w}}
+    # 6-frame loop: the snake hair writhes (each snake on its own phase), the bust sways
+    t = f / 6 * 2 * math.pi
+    out = {"head": {"r": 1.2 * math.sin(t), "z": 0.3 * math.sin(t)}}
+    for k, i in enumerate(SNAKES):
+        out[f"snake{i}"] = {"r": 14 * math.sin(t + k * 1.7), "rx": 8 * math.cos(t + k * 1.3)}
+    return out
 
 
 def gorgon_fire(f):
-    return {"glow": {"show": f in (0, 1, 2), "s": [0.8, 1.3, 1.0, 1, 1][f]}, "head": {"x": [0.6, -0.8, -0.4, 0, 0][f],
-                                                                                   "r": [2, -2, -1, 0, 0][f]}}
+    # 0 the snakes rear back and the brow drops (anticipation), 1 the eyes blaze and she hisses
+    # (the gaze), 2-4 the glare fades, the snakes settle
+    out = {"glow": {"show": f in (0, 1, 2), "s": [0.8, 1.35, 1.0, 1, 1][f]},
+           "head": {"x": [0.6, -0.8, -0.4, 0, 0][f], "r": [3, -3, -1, 0, 0][f]},
+           "ghiss": {"show": f in (1, 2)}, "gmouth": {"hide": f in (1, 2)}}
+    for k, i in enumerate(SNAKES):
+        out[f"snake{i}"] = {"r": [18, -12, -6, 4, 0][f] * (1 if k % 2 == 0 else -1)}
+    return out
+
+
+GORGON_OVERLAYS = {"fire": {
+    0: [{"kind": "rings", "joint": "head", "point": _gp(9.5, -1.0, 33.6), "radii_lu": (4.0, 6.5),
+         "a0": -60.0, "a1": 60.0, "color": GAZE}],
+    1: [{"kind": "burst", "joint": "head", "point": _gp(10.5, -1.0, 33.6), "r0_lu": 5.0, "r1_lu": 11.0,
+         "n": 6, "a0": -70.0, "arc": 140.0, "color": GAZE}],
+}}
 
 
 TURRETS = [
-    turret_module("archer_tower", "Archer Tower", "bronze", 48, CANVAS, FEET, (0, 28), (18.5, -5.0, 36.5), archer_build,
-                  archer_idle, archer_fire, aim=(-40, 30), fire_kind="release"),
+    turret_module("archer_tower", "Archer Tower", "bronze", 48, CANVAS, FEET, (0, 28),
+                  (ARCHER_S * 22.2, ARCHER_S * -5.0, 28 + ARCHER_S * 8.5), archer_build,
+                  archer_idle, archer_fire, aim=(-40, 30), fire_kind="release", idle_frames=6,
+                  overlays=ARCHER_OVERLAYS),
     turret_module("sun_mirror", "Sun Mirror", "bronze", 48, CANVAS, FEET, (3, 34), (13.3, -9.0, 34.0), mirror_build,
-                  mirror_idle, mirror_fire, aim=(-45, 30), fire_kind="beam"),
+                  mirror_idle, mirror_fire, aim=(-45, 30), fire_kind="beam", idle_frames=6, overlays=MIRROR_OVERLAYS),
     turret_module("onager", "Onager", "bronze", 40, (280, 210), (130, 176), (8, 11), (-20, 0, 18.5), onager_build,
-                  onager_idle, onager_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="stone"),
-    turret_module("gorgon_bust", "Gorgon Bust", "bronze", 52, CANVAS, FEET, (1, 26), (10.5, -1.0, 33.6), gorgon_build,
-                  gorgon_idle, gorgon_fire, aim=(-35, 25), fire_kind="gaze"),
+                  onager_idle, onager_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="stone", idle_frames=6,
+                  overlays=ONAGER_OVERLAYS),
+    turret_module("gorgon_bust", "Gorgon Bust", "bronze", 52, CANVAS, FEET, (1, 26), _gp(10.5, -1.0, 33.6), gorgon_build,
+                  gorgon_idle, gorgon_fire, aim=(-35, 25), fire_kind="gaze", idle_frames=6, overlays=GORGON_OVERLAYS),
 ]

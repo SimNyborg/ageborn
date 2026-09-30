@@ -9,8 +9,8 @@
   --slot-gap: 8px;
 }
 @container ui-root (min-height: 700px) and (min-width: 1180px) {
+  /* Slots stay 88 so the advisor's chip keeps its room at the band's end (review 3). */
   .army-screen {
-    --slot-w: 96px;
     --cell-w: 92px;
   }
 }
@@ -128,10 +128,72 @@
     padding: 0 var(--ui-s2);
     min-width: 52px;
   }
-  /* Tabs that scroll out of the strip fade at its edges instead of being cut hard. */
-  .army-ages {
-    mask-image: linear-gradient(90deg, transparent 0, #000 var(--ui-s3), #000 calc(100% - var(--ui-s3)), transparent 100%);
-  }
+}
+/* Tabs that scroll out of the strip fade at that edge and a small arrow says there are more
+   (review 10); an edge with nothing beyond it stays sharp. */
+.army-ages-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.army-ages.has-more-end {
+  mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent 100%);
+}
+.army-ages.has-more-start {
+  mask-image: linear-gradient(90deg, transparent 0, #000 36px);
+}
+.army-ages.has-more-start.has-more-end {
+  mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 44px), transparent 100%);
+}
+.army-ages__more {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-text);
+  cursor: pointer;
+  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
+}
+/* the visible dot (24 px) inside the 44 px target */
+.army-ages__more::before {
+  content: '';
+  grid-area: 1 / 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ui-surface-3);
+  box-shadow: 0 0 0 1.5px rgba(8, 10, 14, 0.8);
+  transition: transform var(--ui-dur-micro) var(--ui-ease-back);
+}
+.army-ages__more:active::before {
+  transform: scale(var(--ui-press-scale));
+}
+.army-ages__more::after {
+  content: '';
+  grid-area: 1 / 1;
+  width: 7px;
+  height: 7px;
+  border-right: 2.5px solid currentColor;
+  border-bottom: 2.5px solid currentColor;
+  rotate: -45deg;
+  translate: -1px 0;
+}
+.army-ages__more--end {
+  right: -8px;
+}
+.army-ages__more--start {
+  left: -8px;
+}
+.army-ages__more--start::after {
+  rotate: 135deg;
+  translate: 1px 0;
 }
 /* Status marks (3.6 "Age tabs"): green check = full and valid, amber ! = advice, red ! = not playable. */
 .army-age__mark {
@@ -243,6 +305,27 @@
   border-radius: 50%;
   background: var(--ui-good);
   color: var(--ui-ink);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  transition: background-color var(--ui-dur-small) var(--ui-ease-out);
+}
+/* The In battle mark matches the age tab (review 3): a check only when every slot is filled and
+   nothing is flagged, amber or red "!" with the tab, neutral crossed swords while slots are open. */
+.army-sec-title__icon.is-open {
+  background: var(--ui-surface-3);
+  color: var(--ui-text-2);
+  box-shadow: inset 0 0 0 1px rgba(107, 120, 144, 0.55);
+}
+.army-sec-title__icon.is-warn {
+  background: var(--ui-warn);
+}
+.army-sec-title__icon.is-error {
+  background: var(--ui-bad);
+}
+.army-sec-title__icon.is-warn::before,
+.army-sec-title__icon.is-error::before {
+  content: '!';
 }
 .army-sec-sub {
   min-width: 0;
@@ -400,8 +483,8 @@
 .army-bandside {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: 6px;
   flex: 1 1 96px;
   min-width: 96px;
@@ -411,13 +494,39 @@
 .army-bandside .army-advice {
   margin: 0;
 }
+.army-bandside .army-hint {
+  margin-top: 26px;
+}
+/* The advisor's first warning: one amber chip on the band's header row (review 3); the full
+   sentence is its label, the advice sheet lists them all. "+1" rides on its corner. */
+.army-bandside .army-advice,
+.army-bandside .army-issue {
+  min-width: 0;
+}
 .army-bandside .army-issue__btn {
-  margin: 0;
-  align-items: flex-start;
-  padding: 6px var(--ui-s2) 6px 6px;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  margin: -4px 0 0;
+  padding: 4px var(--ui-s2) 4px 6px;
+  border-radius: var(--ui-r-pill);
 }
 .army-bandside .army-issue__text {
-  white-space: normal;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.army-bandside .army-issue__more {
+  position: absolute;
+  top: -7px;
+  right: -4px;
+  padding: 0 5px;
+  border: 1.5px solid var(--ui-ink);
+  font-size: var(--ui-fs-tag);
+  line-height: 14px;
 }
 .army-bandgroup__slots {
   display: flex;
@@ -738,12 +847,47 @@
   flex-direction: column;
   gap: var(--ui-s2);
 }
+/* The section heads stay in view (review 1): Available's sticks to the pool's top while its cards
+   scroll; Locked's is a direct child of the pool (its section is `display: contents`), so it can also
+   stick to the pool's bottom while its grid is still below the fold. Opaque, so cards pass under. */
+.army-pool {
+  /* its sticky heads stack inside it, so a slot's action bar from the band stays on top */
+  isolation: isolate;
+  --pool-pad-top: var(--ui-s2);
+  --pool-pad-x: var(--ui-s3);
+  --pool-pad-bottom: var(--ui-s4);
+  --pool-head-bg: #1d222c;
+}
+.army-pool .army-sec-head {
+  position: sticky;
+  top: calc(-1 * var(--pool-pad-top));
+  z-index: 3;
+  margin: calc(-1 * var(--pool-pad-top)) calc(-1 * var(--pool-pad-x)) 0;
+  padding: var(--pool-pad-top) var(--pool-pad-x) 4px;
+  background: var(--pool-head-bg);
+}
 .army-sec-head--free .army-sec-title {
   color: var(--ui-text);
 }
-.army-sec-head--locked {
-  padding-top: var(--ui-s2);
-  border-top: 1px solid rgba(107, 120, 144, 0.28);
+.army-sec--locked {
+  display: contents;
+}
+/* The pool is a flex column that scrolls: its parts keep their height instead of shrinking to fit. */
+.army-pool > *,
+.army-sec--locked > * {
+  flex: none;
+}
+.army-pool .army-sec-head--locked {
+  bottom: calc(-1 * var(--pool-pad-bottom));
+  margin: 0 calc(-1 * var(--pool-pad-x));
+  padding: 6px var(--pool-pad-x);
+  border-top: 1px solid rgba(107, 120, 144, 0.32);
+  box-shadow: 0 -8px 14px -10px rgba(0, 0, 0, 0.7);
+}
+/* Every card of the age found: the row just closes the list, it need not stay pinned. */
+.army-pool .army-sec-head--locked.is-done {
+  bottom: auto;
+  box-shadow: none;
 }
 .army-sec-head--locked .army-sec-title {
   color: var(--ui-text-2);
@@ -751,6 +895,86 @@
 .army-album {
   flex: none;
   margin-left: auto;
+}
+/* Phones: Locked as one compact row (review 1): its count and owned line, small silhouettes of what is
+   still to find, a chevron, and the Album. A tap opens the grid under it. */
+.army-peek {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s2);
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.army-peek__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 0 1 auto;
+  max-width: 240px;
+  min-width: 0;
+}
+.army-peek__cards {
+  display: flex;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+}
+.army-peek__card {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 40px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--frame) 55%, #2a303c);
+  border-radius: 7px;
+  background: #11151c;
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+.army-peek__card .ui-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.army-peek__card .ui-art__img {
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+.army-peek__chev {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin: 0 6px 0 2px;
+  border-right: 2.5px solid var(--ui-text-2);
+  border-bottom: 2.5px solid var(--ui-text-2);
+  rotate: 45deg;
+  translate: 0 -2px;
+  transition: rotate var(--ui-dur-small) var(--ui-ease-back);
+}
+.army-peek__chev.is-open {
+  rotate: -135deg;
+  translate: 0 3px;
+}
+@media (hover: hover) {
+  .army-peek:hover .army-peek__card {
+    border-color: color-mix(in srgb, var(--frame) 80%, #2a303c);
+  }
+}
+.army-peek:active .army-peek__cards {
+  transform: scale(var(--ui-press-scale));
+}
+.army-peek__cards {
+  transition: transform var(--ui-dur-micro) var(--ui-ease-back);
 }
 .army-chip {
   position: relative;
@@ -790,28 +1014,49 @@
 
 .army-grid {
   display: grid;
+  /* room for a Legendary's crown over the first row, under the sticky head */
+  padding-top: 6px;
   grid-template-columns: repeat(auto-fill, var(--cell-w));
   gap: var(--ui-s3) var(--ui-s4);
   align-content: start;
   justify-content: start;
 }
 @container ui-root (max-height: 480px) {
-  .army-grid {
-    gap: var(--ui-s2) var(--ui-s3);
-  }
   .army-pool {
+    --pool-pad-top: 4px;
+    --pool-pad-x: var(--ui-s2);
+    --pool-pad-bottom: var(--ui-s3);
     padding: 4px var(--ui-s2) var(--ui-s3);
     gap: var(--ui-s2);
+  }
+  /* The pinned Locked row stays slim on phones (40 px): the Available cards need the height. */
+  .army-pool .army-sec-head--locked {
+    padding: 0 var(--pool-pad-x);
+  }
+  .army-pool .army-sec-head--locked .army-album {
+    margin-block: -2px;
+  }
+  .army-peek {
+    min-height: 44px;
+  }
+  .army-peek__card {
+    width: 27px;
+    height: 36px;
+    border-radius: 6px;
   }
   .army-battle {
     padding: 4px var(--ui-s2) 6px;
   }
   /* The pool scrolls, so its cards keep their names on phones (U4: no remembering art); the band's
      one row has no room for them (the selection bar names the card). */
+  .army-grid {
+    gap: var(--ui-s2) 16px;
+  }
   .army-grid .army-cell .ui-card__name {
-    /* A long single word ("Legionnaire") gets the gap beside the card too, never an ellipsis. */
-    margin-left: -12px;
-    margin-right: -12px;
+    /* A long single word ("Legionnaire") gets half the gap beside the card too, never more: wider
+       names ran into their neighbours (review 9). Two lines when needed. */
+    margin-left: -8px;
+    margin-right: -8px;
     letter-spacing: -0.02em;
   }
   .army-grid .ui-card__classname,
@@ -834,8 +1079,20 @@
     gap: 4px;
   }
   .army-bandside .army-issue__btn {
-    padding: 4px 6px 4px 4px;
+    min-height: 32px;
+    margin-top: -2px;
+    padding: 3px 6px 3px 4px;
     line-height: 1.1;
+  }
+  .army-bandside .army-hint {
+    margin-top: 0;
+  }
+  /* Phones: the chip may take two short lines, never more. */
+  .army-bandside .army-issue__text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
   }
   .army-bandgroup__label {
     height: 18px;

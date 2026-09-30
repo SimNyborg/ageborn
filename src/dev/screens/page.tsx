@@ -155,6 +155,13 @@ const VARIANTS: Variant[] = [
   vs('grogg'),
   vs('daily'),
   vs('echo'),
+  {
+    // A18.9.4 backdrop skins: your equipped backdrop behind your half of VS (review 11)
+    ...vs('general'),
+    id: 'vs-backdrop',
+    label: 'VS: your backdrop (Winterfall)',
+    save: (s) => ({ ...s, cosmetics: { ...s.cosmetics, owned: [...new Set([...s.cosmetics.owned, 'backdrop.winterfall'])], equipped: { ...s.cosmetics.equipped, backdrop: 'backdrop.winterfall' } } }),
+  },
   pause('early'),
   pause('late'),
   pause('skirmish'),

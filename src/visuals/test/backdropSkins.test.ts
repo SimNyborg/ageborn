@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { AGES } from '../ages';
-import { ageRegions, composePieces } from '../adapters/procedural/backdropView';
+import { ageRegions, composePieces, themedSkyLift } from '../adapters/procedural/backdropView';
 import { BackdropWeatherLayer } from '../adapters/procedural/backdropWeather';
 import { BACKDROP_THEMES, backdropTheme } from '../backdrops/themes';
 import { backdropIconSvg, backdropWeatherSvg } from '../cosmetics/backdropPreview';
@@ -79,6 +79,17 @@ describe('backdrop skins in the lane', () => {
     }
     // the same age and no skins on either side: one solid run, no cross-fade
     expect(composePieces(ageRegions({ left: 'stone', right: 'stone', seam, wipe: null }), seam).some((p) => p.under)).toBe(false);
+  });
+
+  it('a themed sky slides down on a phone so its sun, moon or aurora sits under the HUD, never on desktop (review 4)', () => {
+    // a phone shows about 290 lu over the ground line: the features (painted about 250 lu up) move to about 58% of it
+    const phone = themedSkyLift(290);
+    expect(250 - phone).toBeGreaterThan(290 * 0.5);
+    expect(250 - phone).toBeLessThan(290 * 0.65);
+    // a desktop view shows plenty of sky: nothing moves
+    expect(themedSkyLift(520)).toBe(0);
+    // never so far that the top of the 780 lu tall sky could show
+    expect(themedSkyLift(40)).toBeLessThanOrEqual(120);
   });
 
   it('the provider resolves a skin through the manifest; an unknown one warns once and stays classic', () => {

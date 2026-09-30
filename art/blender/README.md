@@ -44,6 +44,13 @@ Units opt in with `NO_RETIME = True` and author their final clips with `ageborn_
 | `moves.py` | timing tables that keep every shipped `durationMs`, attack `impactAt` and die `fx` time (`SMALL_MELEE_MS`, `HEAVY_MELEE_MS`, `HIT_MS`, `DIE_MS[_HEAVY]`, `die_meta`), `clip()`, `check_contract()`, `body_about()` (spin and squash about the belly, not the feet), `walk_v2`, `idle_v2`, `hit_light`, `hit_beast`, death styles `die_d1` (fling and spin), `die_d3` (dizzy sit), `die_d4` (legs-up flop; `roll=-0.62` topples a heavy onto its side) |
 | `face.py` | expression decals laid on the head by camera ray casts: `eye_marks` (lids, squeeze, X, spiral) and `mouths` (grit, yell, O, KO tongue); `expr("yell", "squeeze")` in a pose shows them |
 | `smear2.py` | 2D smears and accents painted over the finished frame: `arc` (crescent or ring), `claw`, `streak`, `dust`, `burst`, `rings`; a clip opts in with `moves.clip(..., overlays={frame: [spec]})` |
+| `kit_medieval.py` | Medieval helpers (its own module, so the `rigs_medieval.py` API the Bronze rigs import stays unchanged): `face2` (eyes, pupils, brow and mouth joints plus the face kit in one call), `scr` (screen position of a 3D point, for decals), `paw` (the parchment bear-paw emblem), `hit_armoured` (a dip behind the shield, the helmet clanks down), `die_d2` (plank topple, face first or `back=True`), `d3_sit` (the dizzy-sit legs, torso and arms) |
+
+A level horizontal swing (Footman's cleave, the Ursa Paladin's hammer) keeps the arm level (`a = 0`)
+and turns it about the vertical axis with the arm joint's `rz` (180 back, 90 away, 0 forward);
+tilt the swing plane a little (arm `a` +20 on the wind-up) or the smear reads as a thin line, and aim
+the impact frame at a world yaw of about 0 (arm `rz` = minus the torso's `rz`), because a level
+weapon pointing toward the camera reads as pointing down.
 
 Review rules from the Stone pilot (apply to every age):
 

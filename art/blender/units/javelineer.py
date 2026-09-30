@@ -1,7 +1,7 @@
 """Javelineer: Bronze Age ranged (A17.9). Javelin that pierces 2 targets, ~68 lu.
 
 Look (A17.12): a light skirmisher in a short team tunic belted with leather, a sandstone
-cloak rolled over the far shoulder with a flapping tail, a team headband with a verdigris
+cloak rolled over the far shoulder with a flapping team tail, a team headband with a verdigris
 laurel sprig and trailing ties over curly hair, big eyes and an eager brow, bare arms and
 legs, laced sandals. A leather case of javelins sits on the back (the shafts and polished
 heads stick up over the shoulder), and the throwing arm is cocked by the ear with a javelin
@@ -66,7 +66,7 @@ def build(rig):
     # javelin case on the back (behind the body), shafts over the far shoulder
     rig.joint("case", "torso", (-9.0, 4.0, 30.0))
     g = Geo().capsule((-8.0, 6.0, 20.0), (-12.5, 6.0, 40.0), 4.4, 4.8)
-    rig.part("case", g, B.LEATHER)
+    rig.part("case", g, team=True)                                   # team-dyed leather case
     g = Geo().blob((-12.6, 6.0, 40.4), (5.1, 5.2, 1.5), p=2.6, rot=(0, 12, 0))
     g.blob((-10.2, 6.0, 30.0), (5.0, 5.2, 1.2), p=2.6, rot=(0, 12, 0))
     rig.part("case", g, B.LEATHER_DK, outline=0.6)
@@ -103,7 +103,7 @@ def build(rig):
     rig.secondary("cloak", "torso", (-6.0, 8.0, 37.0), (-15.0, 8.0, 22.0), max_deg=18, gain=1.3)
     g = Geo().slab([(-4.0, 39.0), (-9.0, 38.0), (-15.5, 26.0), (-12.0, 22.0), (-9.5, 25.5), (-6.0, 23.0),
                     (-3.0, 33.0)], 9.0, 2.0)
-    rig.part("cloak", g, B.SAND)
+    rig.part("cloak", g, team=True, outline=0.8)
     g = Geo().slab([(-15.8, 26.2), (-12.2, 21.8), (-11.0, 23.2), (-14.4, 27.4)], 8.8, 2.2)
     rig.part("cloak", g, B.VERD_DK, outline=0.5)
 

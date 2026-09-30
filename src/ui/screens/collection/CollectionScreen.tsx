@@ -162,7 +162,7 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
         />
         <div class="col-panel" role="tabpanel" id="col-panel" aria-labelledby={`col-tab-${tab}`}>
           {tab === 'cards' ? (
-            <CardDex />
+            <CardDex age={p.route.age} own={p.route.own} />
           ) : tab === 'skins' ? (
             <>
               {/* A18.9.4: completion of every cosmetic collection; Customize equips them */}

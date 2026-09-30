@@ -23,17 +23,24 @@ const CROP = { x0: -60, x1: 1080, y0: -520, y1: 36 };
 const K = 0.46;
 export const PREVIEW_W = Math.round((CROP.x1 - CROP.x0) * K);
 export const PREVIEW_H = Math.round((CROP.y1 - CROP.y0) * K);
+/**
+ * A collection tile's crop (review 6): the part of the half where a theme differs most (the sky with
+ * its sun, moon, eclipse or aurora over the hills), about 16:9, painted small.
+ */
+const THUMB = { x0: 170, x1: 1080, y0: -470, y1: 36, k: 0.3 };
 /** The mid-ground's multiply in the lane (backdropView `MID_LAYER_TINT`). */
 const MID_TINT = '#dcdad6';
 
-interface Layers {
-  sky: HTMLCanvasElement;
-  far: HTMLCanvasElement;
-  mid: HTMLCanvasElement;
-  ground: HTMLCanvasElement;
+type Kind = 'sky' | 'far' | 'mid' | 'ground';
+interface Layer {
+  c: HTMLCanvasElement;
+  f: LayerFrame;
 }
+type Layers = Record<Kind, Layer>;
 
 const baseCache = new Map<AgeId, Layers>();
+/** Themed layers of the last few age and theme pairs (a tile and the big preview share them). */
+const themedCache = new Map<string, Layers>();
 const urlCache = new Map<string, string | null>();
 
 function canvasFor(f: LayerFrame): { c: HTMLCanvasElement; x: CanvasRenderingContext2D } | null {
@@ -49,7 +56,20 @@ function frame(f: LayerFrame): LayerFrame {
   return { ...f, pxPerLu: K };
 }
 
-/** An age's classic layers at preview scale, painted once per age. */
+/**
+ * The part of a layer inside the preview's crop (x only: the full height keeps the painters' vertical
+ * gradients exactly as the lane has them). Theming only this part is what keeps a still cheap.
+ */
+function cropX(src: HTMLCanvasElement, f: LayerFrame): Layer {
+  const x0 = Math.max(f.x0, CROP.x0);
+  const x1 = Math.min(f.x0 + f.width, CROP.x1);
+  const out = canvasFor({ ...f, x0, width: x1 - x0 });
+  if (!out) return { c: src, f };
+  out.x.drawImage(src, -Math.round((x0 - f.x0) * K), 0);
+  return { c: out.c, f: { ...f, x0, width: x1 - x0 } };
+}
+
+/** An age's classic layers at preview scale, painted once per age (the whole frame, as the lane). */
 function baseLayers(age: AgeId): Layers | null {
   const hit = baseCache.get(age);
   if (hit) return hit;
@@ -64,7 +84,12 @@ function baseLayers(age: AgeId): Layers | null {
   paintMid(mid.x, age, frame(MID_FRAME));
   finishLayer(mid.c, mid.x, 'mid', age, frame(MID_FRAME));
   paintGround(ground.x, 'tar_pits', frame(GROUND_FRAME));
-  const out = { sky: sky.c, far: far.c, mid: mid.c, ground: ground.c };
+  const out: Layers = {
+    sky: cropX(sky.c, frame(SKY_FRAME)),
+    far: cropX(far.c, frame(FAR_FRAME)),
+    mid: cropX(mid.c, frame(MID_FRAME)),
+    ground: cropX(ground.c, frame(GROUND_FRAME)),
+  };
   baseCache.set(age, out);
   return out;
 }
@@ -79,50 +104,75 @@ function copyOf(src: HTMLCanvasElement): { c: HTMLCanvasElement; x: CanvasRender
   return { c, x };
 }
 
-/**
- * A still of your half of the lane in `age`, wearing the backdrop skin `key` (`backdrop.<id>`), or
- * the classic sky for null / `backdrop.classic`. A PNG data URL, cached per age and skin.
- */
-export function backdropPreviewUrl(key: string | null, age: AgeId): string | null {
-  if (typeof document === 'undefined') return null;
-  const id = backdropId(key);
-  const ck = `${age}|${id ?? 'classic'}`;
-  const cached = urlCache.get(ck);
-  if (cached !== undefined) return cached;
+/** The age's layers wearing a theme (the classic ones for null), with the lane's mid-ground tint. */
+function layersFor(age: AgeId, id: string | null): Layers | null {
   const base = baseLayers(age);
+  if (!base) return null;
+  const ck = `${age}|${id ?? 'classic'}`;
+  const hit = themedCache.get(ck);
+  if (hit) return hit;
   const th = id ? BACKDROP_THEMES[id] : undefined;
-  const out = canvasFor({ x0: CROP.x0, width: CROP.x1 - CROP.x0, yTop: CROP.y0, height: CROP.y1 - CROP.y0, pxPerLu: K });
-  if (!base || !out) return null;
-  const place = (c: HTMLCanvasElement, f: LayerFrame) => out.x.drawImage(c, Math.round((f.x0 - CROP.x0) * K), Math.round((f.yTop - CROP.y0) * K));
-  const layer = (c: HTMLCanvasElement, kind: 'sky' | 'far' | 'mid', f: LayerFrame): HTMLCanvasElement => {
-    if (!th || !id) return c;
-    const copy = copyOf(c);
-    if (!copy) return c;
-    if (kind === 'sky') themeSky(copy.x, id, age, th, frame(f));
-    else themeLayer(copy.c, copy.x, id, kind, age, th, frame(f));
-    return copy.c;
+  const layer = (kind: 'sky' | 'far' | 'mid'): Layer => {
+    const b = base[kind];
+    if (!th || !id) return b;
+    const copy = copyOf(b.c);
+    if (!copy) return b;
+    // the crop is narrower than the lane's sky: fewer stars, so they are as dense as in battle
+    if (kind === 'sky') themeSky(copy.x, id, age, { ...th, stars: Math.round((th.stars * b.f.width) / SKY_FRAME.width) }, b.f);
+    else themeLayer(copy.c, copy.x, id, kind, age, th, b.f);
+    return { c: copy.c, f: b.f };
   };
-  place(layer(base.sky, 'sky', SKY_FRAME), SKY_FRAME);
-  place(layer(base.far, 'far', FAR_FRAME), FAR_FRAME);
+  const midThemed = layer('mid');
   // the lane multiplies the mid-ground a little darker (readability of grey units, art review)
-  const themedMid = layer(base.mid, 'mid', MID_FRAME);
-  const mid = copyOf(themedMid);
+  const mid = copyOf(midThemed.c);
   if (mid) {
     mid.x.globalCompositeOperation = 'multiply';
     mid.x.fillStyle = MID_TINT;
     mid.x.fillRect(0, 0, mid.c.width, mid.c.height);
     mid.x.globalCompositeOperation = 'destination-in';
-    mid.x.drawImage(themedMid, 0, 0);
-    place(mid.c, MID_FRAME);
+    mid.x.drawImage(midThemed.c, 0, 0);
   }
-  place(base.ground, GROUND_FRAME);
+  const out: Layers = { sky: layer('sky'), far: layer('far'), mid: mid ? { c: mid.c, f: midThemed.f } : midThemed, ground: base.ground };
+  themedCache.set(ck, out);
+  // a few pairs only (an age's tiles are painted one after another, then the big preview)
+  while (themedCache.size > 4) themedCache.delete(themedCache.keys().next().value!);
+  return out;
+}
+
+/** Draws the layers into a crop of the lane at `k` px per lu. */
+function compose(l: Layers, crop: { x0: number; x1: number; y0: number; y1: number }, k: number): HTMLCanvasElement | null {
+  const out = canvasFor({ x0: crop.x0, width: crop.x1 - crop.x0, yTop: crop.y0, height: crop.y1 - crop.y0, pxPerLu: k });
+  if (!out) return null;
+  out.x.imageSmoothingQuality = 'high';
+  for (const kind of ['sky', 'far', 'mid', 'ground'] as const) {
+    const { c, f } = l[kind];
+    out.x.drawImage(c, (f.x0 - crop.x0) * k, (f.yTop - crop.y0) * k, f.width * k, f.height * k);
+  }
+  return out.c;
+}
+
+/**
+ * A still of your half of the lane in `age`, wearing the backdrop skin `key` (`backdrop.<id>`), or
+ * the classic sky for null / `backdrop.classic`. A PNG data URL, cached per age, skin and size.
+ * `thumb`: the small tile crop (review 6). `cachedOnly`: only a still already painted, else null
+ * (the screens paint tiles one per frame and ask first).
+ */
+export function backdropPreviewUrl(key: string | null, age: AgeId, o: { thumb?: boolean; cachedOnly?: boolean } = {}): string | null {
+  if (typeof document === 'undefined') return null;
+  const id = backdropId(key);
+  const ck = `${age}|${id ?? 'classic'}|${o.thumb ? 't' : 'p'}`;
+  const cached = urlCache.get(ck);
+  if (cached !== undefined || o.cachedOnly) return cached ?? null;
+  const layers = layersFor(age, id);
+  const out = layers ? (o.thumb ? compose(layers, THUMB, THUMB.k) : compose(layers, CROP, K)) : null;
+  if (!out) return null;
   let url: string | null;
   try {
-    url = out.c.toDataURL('image/png');
+    url = out.toDataURL('image/png');
   } catch {
     url = null;
   }
-  if (urlCache.size > 120) urlCache.clear();
+  if (urlCache.size > 240) urlCache.clear();
   urlCache.set(ck, url);
   return url;
 }

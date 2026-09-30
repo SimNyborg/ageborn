@@ -9,7 +9,7 @@ import { modifierDescKey, modifierNameKey } from '@/content/keys';
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { AiBadge, Pill } from '../../components/Chips';
-import { LookFlags } from '../../components/cosmeticArt';
+import { BackdropLook, LookFlags } from '../../components/cosmeticArt';
 import { formatDec, formatInt, tierNumeral } from '../../components/format';
 import { TrophyIcon } from '../../components/icons';
 import type { RouteOf } from '../../router';
@@ -65,6 +65,10 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   const mine = (k: string | null | undefined) => (k && owns(s, content, k) ? k : null);
   const foeLook = o.side.look;
   const tutorial = request.mode === 'tutorial';
+  // Your backdrop skin behind your half, in the age the battle opens with (review 11); the AI's half
+  // keeps its team colours, as its half of the lane keeps the classic sky.
+  const backdrop = eq ? mine(eq.backdrop) : null;
+  const firstAge = formatAges(content, o.format)[0] ?? 'stone';
 
   return (
     <section
@@ -82,7 +86,12 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
       <h1 id="vs-title" class="ui-sr">
         {t('ui.vs.title', { name })}
       </h1>
-      <div class="vs__half vs__half--me">
+      <div class={`vs__half vs__half--me${backdrop ? ' has-backdrop' : ''}`}>
+        {backdrop ? (
+          <span class="vs__backdrop" data-testid="vs-backdrop" data-skin={backdrop}>
+            <BackdropLook skin={backdrop} age={firstAge} animate={!s.settings.reduceMotion} />
+          </span>
+        ) : null}
         <div class="vs__card vs__card--me" data-testid="vs-me">
           <Avatar spec={s.profile.avatar} size={120} frameColor="var(--ui-team-me)" />
           <span class="vs__name">{s.profile.name}</span>

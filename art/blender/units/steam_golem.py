@@ -17,9 +17,10 @@ elbow valve), then retracts. Heavy melee timing (retime.HEAVY_MELEE).
 """
 import math
 
-from ageborn_art import fx, retime
+from ageborn_art import kit_industrial as KI
+from ageborn_art import moves as M
 from ageborn_art import rigs_industrial as I
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "steam_golem"
@@ -30,8 +31,7 @@ CANVAS = (360, 300)
 FEET = (132, 280)
 ANCHORS = {"head": (4, 106), "hitCenter": (0, 58)}
 
-# the heavy melee timing (5 wind-up, 3 held impact, 4 recovery frames) keys off this set
-retime.HEAVY_MELEE.add(SLUG)
+NO_RETIME = True
 
 HIP_Z = 36.0
 THIGH, SHIN = 17.0, 19.0
@@ -46,10 +46,6 @@ SH_L = (2.0, 25.0, 72.0)
 UP_L, FORE_L = 13.0, 15.0
 FIST = (SH_R[0], SH_R[1], SH_R[2] - UP_L - FORE_L - 10.0)
 CHIMNEY = (-16.0, 6.0, 80.0)
-
-SMEAR = {"joint": "ram", "inner": (FIST[0], FIST[1] - 2, FIST[2] + 5),
-         "outer": (FIST[0], FIST[1] - 2, FIST[2] - 9), "color": I.IRON_LT, "taper": 0.5,
-         "start": 0.3, "behind": 6.0}
 
 
 def build(rig):
@@ -141,12 +137,18 @@ def build(rig):
         g.capsule((c[0] - 2.2 * ux, c[1] - 2.2 * uy, c[2] + 2.2), (c[0] + 2.2 * ux, c[1] + 2.2 * uy, c[2] - 2.2), 0.9)
         g.capsule((c[0] - 2.2 * ux, c[1] - 2.2 * uy, c[2] - 2.2), (c[0] + 2.2 * ux, c[1] + 2.2 * uy, c[2] + 2.2), 0.9)
     rig.part("eyes_x", g, I.COAL, outline=0)
-    # pressure gauge on the chest
-    g = Geo().lathe([(0, 0), (3.2, 0), (3.4, 1.2), (0, 1.6)], (14.0, -17.4, hz + 14.0), (15.6, -19.0, hz + 14.6),
-                    segs=16)
-    rig.part("hull", g, I.BRASS, finish="metal", outline=0.6)
-    g = Geo().blob((15.8, -19.4, hz + 14.8), (0.5, 2.4, 2.4), p=2.2, rot=(0, 0, -45))
-    rig.part("hull", g, I.CREAM, outline=0.3)
+    # pressure gauge on the chest: its needle climbs on the wind-up and pins in the red
+    KI.gauge(rig, "hull", (14.0, -17.4, hz + 14.0), r=3.6, name="gauge", normal=(1.0, -1.0))
+    g = Geo().blob((15.4, -19.2, hz + 17.2), (0.6, 1.4, 0.9), p=2.4)          # the red zone mark
+    rig.part("hull", g, "#8A3A2A", outline=0, highlight=False)
+    # hidden accents: a rivet that pops out on a hit, a spark on the struck plate, knee steam
+    rig.joint("bolt", "hull", (18.0, -16.0, hz + 2.0), hidden=True)
+    g = Geo().blob((18.0, -18.0, hz + 2.0), (1.8, 1.4, 1.8), p=2.6)
+    g.capsule((18.0, -16.5, hz + 2.0), (18.0, -14.0, hz + 2.0), 0.8)
+    rig.part("bolt", g, I.BRASS_LT, finish="metal", outline=0.6)
+    I.fuse_spark(rig, "hull", (20.0, -22.0, hz + 6.0), size=2.2, name="hitspark", seed=4, hidden=True)
+    for s_ in ("r", "l"):
+        I.steam_puff(rig, f"shin_{s_}", (4.0, LEG_Y[s_] - 6.0, HIP_Z - THIGH), size=0.9, name=f"ksteam_{s_}")
     # the chimney on the back and the pennant pole behind it
     cx, cy, cz = CHIMNEY
     g = Geo()
@@ -256,14 +258,19 @@ def _stand(bob=0.0, dx=0.0):
 
 
 def _idle(f):
-    c, lag = I.idle_wave(f)
+    # 6 poses in 900 ms: the boiler breathes (a slow rise), the chimney puffs twice, the fire
+    # flickers, the gauge needle trembles and the pennant arm sways
+    c = math.cos(2 * math.pi * f / 6)
+    lag = math.cos(2 * math.pi * (f - 1) / 6)
     return merge(_stand(1.0 * c), REST_ARMS, {
-        "hull": {"r": 1.0 * c, "z": 0.4 * lag},
-        "head": {"r": -1.5 * lag},
+        "hull": {"r": 1.0 * c, "z": 0.5 * lag},
+        "head": {"r": -1.5 * lag, "z": 0.4 * max(0.0, -c)},
         "arm_r": {"r": 3.0 * lag}, "arm_l": {"r": 2.5 * lag},
-        "puff": {"show": f in (2, 3), "s": pick(f, [1, 1, 0.8, 1.1]), "z": pick(f, [0, 0, 0, 3])},
-        "puff2": {"show": f in (3, 0), "s": pick(f, [1.2, 1, 1, 0.9]), "z": pick(f, [4, 0, 0, 0])},
-        "fire": {"s": pick(f, [1.0, 0.9, 1.05, 0.95])},
+        "ram": {"z": 1.0 * max(0.0, c)},
+        "puff": {"show": f in (1, 2, 4), "s": [1, 0.75, 1.1, 1, 0.8, 1][f], "z": [0, 0, 4, 0, 0, 0][f]},
+        "puff2": {"show": f in (2, 3, 5), "s": [1, 1, 0.9, 1.2, 1, 1.1][f], "z": [0, 0, 0, 5, 0, 3][f]},
+        "fire": {"s": [1.0, 0.92, 1.06, 0.96, 1.04, 0.9][f]},
+        "gauge_needle": {"rx": [-10, -4, -12, -6, -9, -3][f]},
     })
 
 
@@ -272,75 +279,152 @@ STRIDE = 27.5          # 2 x 27.5 lu per 1 s cycle = 55 lu/s (sim speed 55)
 
 
 def _walk(f):
-    xr, lr, _ = I.walker_cycle(f, 8, STRIDE, 10.0)
-    xl, ll, _ = I.walker_cycle(f, 8, STRIDE, 10.0, phase=0.5)
-    bob = [-3.0, -1.0, 1.0, 0.0, -3.0, -1.0, 1.0, 0.0][f]
-    lag = [0.0, -3.0, -1.0, 1.0, 0.0, -3.0, -1.0, 1.0][f]
+    # clank: a hard contact (the hull jolts down, the knee vents steam), the hull pitching and
+    # yawing with each step, the ram swinging a beat late
+    xr, lr, _ = I.walker_cycle(f, 8, STRIDE, 11.0)
+    xl, ll, _ = I.walker_cycle(f, 8, STRIDE, 11.0, phase=0.5)
+    bob = [-3.6, -1.6, 1.2, 0.6, -3.6, -1.6, 1.2, 0.6][f]
+    lag = [0.6, -3.6, -1.6, 1.2, 0.6, -3.6, -1.6, 1.2][f]
     p = 2 * math.pi * f / 8
     return merge(legs((xr, lr), (xl, ll), (0.0, CROUCH + bob)), REST_ARMS, {
-        "hull": dict(r=-3.0 + 1.5 * math.cos(2 * p), rz=3.5 * math.sin(p), z=-0.3 * lag),
-        "head": {"r": 1.2 * lag},
-        "arm_r": {"r": -10 * math.cos(p) + 1.0 * lag}, "fore_r": {"r": 5 * math.cos(p)},
-        "arm_l": {"r": 10 * math.cos(p)},
-        "puff": {"show": f in (0, 1, 4, 5), "x": pick(f, [0, -3, 0, 0, 0, -3, 0, 0]),
-                 "s": pick(f, [0.8, 1.1, 1, 1, 0.8, 1.1, 1, 1])},
+        "hull": dict(r=-3.0 + 1.8 * math.cos(2 * p), rz=4.0 * math.sin(p), z=-0.35 * lag),
+        "head": {"r": 1.4 * lag, "z": -0.3 * lag},
+        "arm_r": {"r": -12 * math.cos(p - 0.8)}, "fore_r": {"r": 6 * math.cos(p - 0.8)},
+        "arm_l": {"r": 10 * math.cos(p - 0.8)},
+        "ram": {"z": 1.2 * max(0.0, -lag)},
+        "puff": {"show": f in (0, 1, 4, 5), "x": [0, -3, 0, 0, 0, -3, 0, 0][f],
+                 "s": [0.8, 1.1, 1, 1, 0.8, 1.1, 1, 1][f]},
         "puff2": {"show": f in (1, 5), "x": -5.0},
+        "ksteam_r": {"show": f == 0, "s": 0.8}, "ksteam_l": {"show": f == 4, "s": 0.8},
+        "gauge_needle": {"rx": -8.0 + 3.0 * math.sin(2 * p)},
     })
 
 
-def _attack(f):
-    # 0-1 cock the ram back and twist (the piston compresses), 2 held extreme (anticipation), 3 smear (piston fires out),
-    # 4 held impact: full reach, hull lunges, sparks and a steam burst; 5-7 retract
-    ra = pick(f, [-130, -165, -175, -40, 0, -2, -50, -95])
-    rf = pick(f, [-120, -160, -170, -20, 0, -4, -50, -80])
-    ram = pick(f, [-2, -5, -6, 14, 26, 22, 8, 0])       # compressed on the wind-up, fully out on impact
-    pose = merge(_stand(pick(f, [-1, -3, -2, 0, -4, -3, -1, 0]), pick(f, [-1, -3, -4, 2, 6, 5, 2, 0])),
-                 arms(ra, rf, pick(f, [-90, -80, -70, -110, -130, -125, -110, -100]),
-                      pick(f, [-50, -40, -30, -70, -90, -85, -70, -60]), ram), {
-        "hull": dict(squash(pick(f, [-0.03, -0.07, 0.04, 0.03, -0.08, -0.05, -0.02, 0.0])),
-                     r=pick(f, [4, 9, 12, -6, -12, -10, -5, -1]),
-                     rz=pick(f, [6, 12, 14, -4, -8, -6, -2, 0])),
-        "sparks": {"show": f == 4},
-        "steam": {"show": f in (4, 5, 6), "s": pick(f, [1, 1, 1, 1, 0.9, 1.2, 1.4, 1]),
-                  "z": pick(f, [0, 0, 0, 0, 0, 2, 4, 0])},
-        "puff": {"show": f in (2, 5, 6), "s": pick(f, [1, 1, 1.2, 1, 1, 1.3, 1.5, 1])},
-        "fire": {"s": pick(f, [1.0, 1.1, 1.2, 1.0, 0.9, 1.0, 1.0, 1.0])},
+def _walk_clip():
+    ov = {0: [{"kind": "dust", "ground": (17.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 41, "spread": 0.9}],
+          4: [{"kind": "dust", "ground": (17.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 42, "spread": 0.9}]}
+    return M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True, overlays=ov)
+
+
+# attack: 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6 at 570 ms)
+#        shift dip  coil HOLD smear smear IMP  shock follow recover
+RA = [-110, -130, -160, -178, -72, -20, 0, -3, -34, -82]
+RF = [-94, -118, -154, -172, -52, -12, 0, -3, -30, -72]
+RAM = [0, -2, -5, -7, 8, 18, 28, 25, 12, 3]
+HULL_R = [2, 5, 9, 12, -2, -8, -13, -11, -6, -2]
+HULL_RZ = [3, 7, 12, 16, 3, -4, -8, -7, -4, -1]
+HIP_X = [-1, -2, -3, -4, 2, 5, 7, 6.5, 4, 1]
+HZ_A = [0, -3, -2.5, -2, -1, -2, -4.5, -3.5, -1.5, -0.5]
+LA = [-92, -84, -74, -68, -104, -122, -134, -130, -114, -98]
+LF = [-56, -46, -36, -30, -70, -86, -96, -92, -76, -62]
+NEEDLE = [-8, -30, -60, -95, -80, -60, -20, -10, -8, -8]
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9]
+
+
+def _attack_pose(f):
+    pose = merge(_stand(HZ_A[f], HIP_X[f]), arms(RA[f], RF[f], LA[f], LF[f], RAM[f]), {
+        "hull": {"r": HULL_R[f], "rz": HULL_RZ[f]},
+        "head": {"r": [0, 2, 4, 5, -2, -4, -6, -5, -3, -1][f]},
+        "sparks": {"show": f == 6},
+        "steam": {"show": f in (3, 6, 7, 8), "s": [1, 1, 1, 0.55, 1, 1, 1.25, 1.55, 1.3, 1][f],
+                  "z": [0, 0, 0, 0, 0, 0, 0, 2, 5, 0][f]},
+        "puff": {"show": f in (2, 3, 7, 8), "s": [1, 1, 1.1, 1.25, 1, 1, 1, 1.4, 1.6, 1][f],
+                 "z": [0, 0, 0, 2, 0, 0, 0, 3, 6, 0][f]},
+        "puff2": {"show": f in (3, 8), "s": 1.2},
+        "fire": {"s": [1.0, 1.05, 1.12, 1.25, 1.15, 1.1, 1.0, 0.95, 1.0, 1.0][f]},
+        "eyes": {"s": [1, 1, 1.1, 1.3, 1.2, 1.2, 1.25, 1.1, 1, 1][f]},
+        "gauge_needle": {"rx": NEEDLE[f]},
+        "ksteam_r": {"show": f == 6, "s": 1.0}, "ksteam_l": {"show": f == 6, "s": 1.0},
     })
-    if f == 3:
-        pose.setdefault("ram", {})["sz"] = 1.3
+    if f in (4, 5):   # the piston rod stretches along the jab
+        pose["ram"]["sz"] = 1.12
+    if f == 6:        # the rubber knuckle pad and the rod squash on the hit
+        pose["ram"]["sz"] = 0.9
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(_stand(-2.0 * a, -3.0 * a), REST_ARMS, {
-        "hull": dict(squash(-0.06 * a), r=9 * a), "arm_r": {"r": 12 * a}, "arm_l": {"r": 10 * a},
-        "puff": {"show": f == 0},
+FIST_TIP = (FIST[0], FIST[1] - 2.0, FIST[2] - 12.0)
+
+
+def _attack_clip():
+    jab = {"kind": "streak", "joint": "ram", "point": FIST_TIP, "color": I.IRON_LT, "width_lu": 16.0,
+           "white": 0.35}
+    ov = {
+        4: [dict(jab, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+        5: [dict(jab, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 14.0})],
+        6: [dict(jab, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 11.0}),
+            {"kind": "burst", "joint": "ram", "point": FIST_TIP, "r0_lu": 12.0, "r1_lu": 21.0, "n": 7,
+             "a0": -80.0, "arc": 160.0},
+            {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 43, "spread": 1.0},
+            {"kind": "dust", "ground": (-16.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 44, "spread": 0.8,
+             "dir": -1.0}],
+        7: [{"kind": "dust", "ground": (28.0, 0.0), "size_lu": 7.5, "puffs": 4, "seed": 45, "spread": 1.3}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
+                  impact=M.HEAVY_MELEE_IMPACT, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    # mech: a hard jolt (no squash), a rivet pops out of the plate and back, a spark on the struck
+    # plate, the chimney coughs, the eye slits flicker
+    a = M.HIT_AMT[k]
+    return merge(_stand(-1.5 * max(a, 0), -3.5 * a), REST_ARMS, {
+        "hull": {"r": 8 * a, "rz": -4 * a}, "head": {"r": 6 * a, "z": 1.5 * max(a, 0)},
+        "arm_r": {"r": 14 * a}, "arm_l": {"r": 10 * a},
+        "bolt": {"show": k in (0, 1, 2), "x": [3.0, 7.0, 4.0, 0, 0][k], "y": [-2.0, -5.0, -3.0, 0, 0][k],
+                 "r": [40, 120, 200, 0, 0][k]},
+        "hitspark": {"show": k in (0, 1), "s": [1.2, 0.8, 1, 1, 1][k]},
+        "puff": {"show": k in (1, 2), "s": [1, 1.2, 1.4, 1, 1][k]},
+        "eyes": {"s": [0.55, 0.7, 1.0, 1.0, 1.0][k]},
+        "gauge_needle": {"rx": [-40, -70, -20, -10, -8][k]},
     })
 
 
-def _die(f):
-    pose = merge(legs((STANCE_X["r"] + pick(f, [6, 10, 10]), 0.0), (STANCE_X["l"] - 4, 0.0),
-                      (pick(f, [-4, -6, -6]), CROUCH + pick(f, [2, -8, -12]))),
-                 arms(-60, -10, -40, 10), {
-        "body": {"r": pick(f, [10, 6, 3]), "sz": pick(f, [1.04, 0.8, 0.6]),
-                 "sx": pick(f, [0.97, 1.15, 1.25])},
-        "hull": {"r": pick(f, [16, 22, 22])},
-        "sparks": {"show": f == 0},
-        "steam": {"show": f == 0, "s": 0.9},
-        "puff": {"show": True, "s": pick(f, [1.2, 1.5, 1.7])},
-        "fire": {"s": pick(f, [0.8, 0.5, 0.3])},
+# D6 mech fall-apart (8 unique poses in the 12 heavy death steps, moves.DIE_SEQ_HEAVY):
+# 0 sputter (steam from the joints), 1 the dome cap pops up, 2 the knees sag, 3 the ram arm drops
+# off, 4 the boiler slumps to the ground, 5 the cap lands, 6-7 settled, smoke rising, fire out
+DIE_HIPS = [0, -1, -6, -10, -18, -19, -19, -19]
+DIE_HULL_R = [4, -3, 6, 10, 14, 12, 12, 12]
+DIE_HEAD = [(0, 0, 0), (2, 14, 30), (4, 24, 80), (8, 26, 150), (12, 18, 210), (15, -2, 250),
+            (16, -8, 255), (16, -8, 255)]
+DIE_ARM = [None, None, None, (4, -6, 20), (8, -24, 60), (10, -30, 88), (10, -31, 90), (10, -31, 90)]
+
+
+def _die(k):
+    sag = [0, 0.1, 0.45, 0.7, 1.0, 1.0, 1.0, 1.0][k]
+    hz = DIE_HIPS[k]
+    pose = merge(legs((STANCE_X["r"] + 6 * sag, 0.0), (STANCE_X["l"] - 5 * sag, 0.0),
+                      ([2, -1, -3, -4, -5, -5, -5, -5][k], CROUCH + hz)),
+                 arms(-104 + 40 * sag, -86 + 50 * sag, -86 + 30 * sag, -60 + 40 * sag), {
+        "hull": {"r": DIE_HULL_R[k], "rz": [3, -3, 2, 0, 0, 0, 0, 0][k]},
+        "sparks": {"show": k == 0},
+        "steam": {"show": k in (0, 1, 2), "s": [1.1, 1.3, 1.0, 1, 1, 1, 1, 1][k]},
+        "ksteam_r": {"show": k in (0, 2, 4), "s": 1.1}, "ksteam_l": {"show": k in (1, 3), "s": 1.1},
+        "puff": {"show": True, "s": [1.2, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0][k],
+                 "z": [0, 2, 4, 6, 8, 10, 12, 14][k]},
+        "puff2": {"show": k >= 3, "s": [1, 1, 1, 1.2, 1.4, 1.6, 1.8, 2.0][k]},
+        "fire": {"s": [1.2, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.2][k]},
+        "gauge_needle": {"rx": [-95, 20, -60, 10, 0, 0, 0, 0][k]},
     })
-    if f in (0, 1):
+    hx, hzz, hr = DIE_HEAD[k]
+    pose["head"] = {"x": -hx, "z": hzz, "r": hr}
+    if DIE_ARM[k] is not None:
+        ax, az, ar = DIE_ARM[k]
+        pose["arm_r"] = merge({"arm_r": pose.get("arm_r", {})}, {"arm_r": {"x": ax, "z": az, "r": ar}})["arm_r"]
+    if k >= 1:
         pose.update({"eyes": {"hide": True}, "eyes_x": {"show": True}})
+    else:
+        pose["eyes"] = {"s": 0.6}
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
+        _walk_clip(),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
+               extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
+    return M.check_contract(cl, heavy=True)

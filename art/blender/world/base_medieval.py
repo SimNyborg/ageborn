@@ -5,8 +5,12 @@ tower in front under a team-painted cone. Both are built of bevelled stone cours
 block tones. The turret mounts (common.BASE_MOUNTS) are real platforms: a timber hoarding by the
 gate, a corbelled balcony on the keep's corner, a hoarding at the gate tower's top and a corbelled
 bartizan in a notch of the keep's parapet. Team colour: the roofs, a long banner on the keep and the
-pennants. Crumble: cracks and a lost merlon (75%), a broken hoarding rail, rubble and a darkened
-window (50%), the turret roof knocked askew and the top pennant gone (25%).
+pennants, with a parchment bear paw on the banner. Crumble (cartoon kit v2, clearly readable at a
+glance): 75% cracks, a lost keep merlon and two lost gate-tower merlons, rubble; 50% more cracks,
+the hoarding rail broken, a darkened window, the banner torn loose at one corner, the timber
+hoarding on fire with soot scorch marks; 25% a ragged breach in the keep wall, the turret roof
+and the gate-tower cone knocked askew, the roof burning, the banner hanging by one corner and the
+top pennant gone.
 Treasury: sacks of grain (1), a treasure chest (2), a cart of gold (3).
 """
 import math
@@ -29,6 +33,28 @@ PARCH = "#E8DFC8"
 WINE = "#8E2A4A"
 SACK = "#C8B48C"
 CRACK = "#44474C"
+FIRE = "#FFC47A"
+FIRE_CORE = "#FFF0CC"
+FIRE_OUT = "#EE9A5C"
+SOOT = "#66605A"
+
+
+def flames(rig, joint, spots):
+    """Cartoon fire: teardrop tongues that lean and curl (outer, body, hot core), not cones."""
+    o, g, c = Geo(), Geo(), Geo()
+    for x, y, z, k in spots:
+        for dx, lean, r, h in ((0.0, 0.25, 6.6, 20.0), (-6.0, -0.35, 4.4, 13.0), (6.0, 0.45, 4.0, 11.0),
+                               (2.5, -0.2, 3.0, 8.0)):
+            cx, cz = x + dx * k, z + h * 0.42 * k
+            o.blob((cx, y + 2, cz), (r * 1.3 * k, r * 0.9 * k, h * 0.62 * k), p=2.0, taper=(1.0, 0.08),
+                   shift=(lean * 1.2, 0.0))
+            g.blob((cx, y, cz - 0.6 * k), (r * k, r * 0.7 * k, h * 0.5 * k), p=2.0, taper=(1.0, 0.1),
+                   shift=(lean, 0.0))
+            c.blob((cx, y - 2.5, cz - 2.4 * k), (r * 0.5 * k, r * 0.4 * k, h * 0.28 * k), p=2.0,
+                   taper=(1.0, 0.2), shift=(lean * 0.6, 0.0))
+    rig.part(joint, o, glow=FIRE_OUT, outline=0)
+    rig.part(joint, g, glow=FIRE, outline=0)
+    rig.part(joint, c, glow=FIRE_CORE, outline=0)
 
 DEPTHS = [-40, -24, -40, -24]
 KX, KY, KW, KD, KH = -110.0, 22.0, 52.0, 46.0, 250.0   # keep centre, half width, half depth, height
@@ -85,10 +111,35 @@ def tower_blocks(rig, joint):
 
 
 def build(rig, M):
-    for j, pos in (("keepRoof", (KX - 38, KY + 26, KH)), ("merlon", (KX - 10, KY - KD, KH))):
+    for j, pos in (("keepRoof", (KX - 38, KY + 26, KH)), ("merlon", (KX - 10, KY - KD, KH)),
+                   ("tmerlon", (TX, TY, TH + 4)), ("cone", (TX - 2, TY + 6, TH + 6)),
+                   ("banner", (KX - 48, KY - KD - 3.0, 212))):
         rig.joint(j, "body", pos)
-    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "dark"):
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "dark", "fire1", "fire2",
+              "scorch", "breach", "tear"):
         rig.joint(j, "body", (0, 0, 0), hidden=True)
+    # damage: fires on the gate hoarding (50%) and on the keep's roofed turret (25%), soot
+    flames(rig, "fire1", [(M[0][0] - 10, M[0][1] - 14, M[0][2] - 4, 1.0), (M[0][0] + 12, M[0][1] - 12, M[0][2] - 6, 0.75),
+                          (M[2][0] + 4, M[2][1] - 16, M[2][2] - 2, 0.8)])
+    flames(rig, "fire2", [(KX - 38, KY + 8, KH + 36, 1.3), (KX - 20, KY - KD - 4, KH + 4, 0.9),
+                          (KX + 34, KY - KD - 4, 96, 0.8)])
+    g = Geo()
+    for x, z, rx, rz in ((KX + 30, 200, 14, 12), (TX + 2, 142, 10, 12), (KX - 6, 238, 18, 8), (M[0][0] - 2, M[0][2] - 12, 18, 7)):
+        g.blob((x, -40 if x > -60 else KY - KD - 3.4, z), (rx, 2.6, rz), p=2.2, taper=(1.0, 0.6))
+    rig.part("scorch", g, SOOT, outline=0, highlight=False)
+    # a ragged breach in the keep wall with broken timber inside (25%)
+    bx0, bz0 = KX + 14, 70
+    pts = [(bx0 - 16, bz0 - 12), (bx0 - 6, bz0 - 18), (bx0 + 8, bz0 - 14), (bx0 + 18, bz0 - 4), (bx0 + 14, bz0 + 10),
+           (bx0 + 4, bz0 + 18), (bx0 - 10, bz0 + 14), (bx0 - 18, bz0 + 2)]
+    g = Geo().slab(pts, KY - KD - 2.4, 1.2)
+    rig.part("breach", g, "#2A2622", outline=0, highlight=False)
+    g = Geo().capsule((bx0 - 12, KY - KD - 3.4, bz0 - 6), (bx0 + 10, KY - KD - 3.4, bz0 + 8), 1.6)
+    g.capsule((bx0 - 8, KY - KD - 3.4, bz0 + 10), (bx0 + 12, KY - KD - 3.4, bz0 - 4), 1.4)
+    rig.part("breach", g, WOOD_DK, outline=0.4)
+    g = Geo()
+    for x, z, r in ((bx0 - 18, bz0 - 12, 4.0), (bx0 + 16, bz0 - 12, 3.4), (bx0 + 18, bz0 + 8, 3.0), (bx0 - 16, bz0 + 12, 3.2)):
+        g.blob((x, KY - KD - 3.0, z), (r, 2.6, r * 0.8), p=2.6)
+    rig.part("breach", g, STONE_LT, outline=0.5)
 
     # the keep: core, plinth, string courses and a crenellated fighting top
     g = Geo()
@@ -126,12 +177,21 @@ def build(rig, M):
     window(rig, "win", KX + 30, KY - KD - 1.6, 186, 9, 16)
     # the long team banner on the keep wall
     bx = KX - 36
-    g = Geo().slab([(bx - 12, 212), (bx + 12, 212), (bx + 12, 124), (bx, 114), (bx - 12, 124)], KY - KD - 3.0, 1.6)
-    rig.part("body", g, team=True)
+    ban = Geo().slab([(bx - 12, 212), (bx + 12, 212), (bx + 12, 124), (bx, 114), (bx - 12, 124)], KY - KD - 3.0, 1.6)
+    from ageborn_art import face as F
+    from ageborn_art import kit_medieval as K
+    bf = F.Face(rig, "banner", [ban])
+    rig.part("banner", ban, team=True)
     g = Geo().capsule((bx - 14, KY - KD - 3.6, 213), (bx + 14, KY - KD - 3.6, 213), 1.4)
     rig.part("body", g, GOLD, finish="metal", outline=0.5)
-    g = Geo().blob((bx, KY - KD - 4.6, 170), (6, 0.8, 8), p=2.0)
-    rig.part("body", g, PARCH, outline=0.5)
+    g = Geo()
+    c = bf.hit(*K.scr(bf, (bx, KY - KD - 4.0, 132.0)))
+    bf.stroke(g, c, [(-11.0, 4.0), (0.0, -2.0), (11.0, 4.0)], 1.8, 0.4)   # a parchment chevron trim
+    rig.part("banner", g, PARCH, highlight=False, outline=0)
+    g = K.paw(bf, Geo(), K.scr(bf, (bx, KY - KD - 4.0, 176.0)), s=2.6)
+    rig.part("banner", g, PARCH, highlight=False, outline=0)
+    g = Geo().slab([(bx + 12, 180), (bx + 5, 168), (bx + 12, 158)], KY - KD - 4.4, 1.0)   # a rip (50%)
+    rig.part("tear", g, STONE_DK, outline=0, highlight=False)
 
     # round gate tower with its crenellated top and a team cone
     g = Geo()
@@ -142,14 +202,19 @@ def build(rig, M):
     cyl(g, (TX, TY, 0), (TX, TY, 12), TR + 3, TR + 1.5, bevel=1.0, segs=32)
     cyl(g, (TX, TY, TH - 8), (TX, TY, TH + 4), TR + 3, bevel=1.0, segs=32)
     rig.part("body", g, STONE_DKR)
-    g = Geo()
+    g, gm = Geo(), Geo()
     for i in range(10):
         a = math.pi * 2 * i / 10
-        box(g, (TX + (TR + 1.5) * math.cos(a), TY + (TR + 1.5) * math.sin(a), TH + 9), (4, 4, 5), p=5)
+        box(gm if i in (6, 7) else g, (TX + (TR + 1.5) * math.cos(a), TY + (TR + 1.5) * math.sin(a), TH + 9),
+            (4, 4, 5), p=5)
     rig.part("body", g, STONE_LT)
+    rig.part("tmerlon", gm, STONE_LT)
     g = Geo().lathe([(0, 0), (TR - 2, 0), (TR - 4, 3), (0.6, 52), (0, 54)], (TX - 2, TY + 6, TH + 6),
                     (TX - 2, TY + 6, TH + 60), segs=24)
-    rig.part("body", g, team=True)
+    rig.part("cone", g, team=True)
+    g = Geo().lathe([(TR - 1.6, -1.2), (TR - 1.0, 0), (TR - 1.6, 1.2)], (TX - 2, TY + 6, TH + 7.5),
+                    (TX - 2, TY + 6, TH + 8.5), segs=24)
+    rig.part("cone", g, GOLD, finish="metal", outline=0.5)
     window(rig, "body", TX + 2, TY - TR + 0.6, 130, 6, 13)
 
     # gate: an arched wooden door with iron bands on the tower foot
@@ -235,13 +300,18 @@ def build(rig, M):
 def crumble(stage):
     pose = {}
     if stage >= 1:
-        pose.update({"crack1": {"show": True}, "merlon": {"hide": True}, "rubble1": {"show": True}})
+        pose.update({"crack1": {"show": True}, "merlon": {"hide": True}, "rubble1": {"show": True},
+                     "tmerlon": {"hide": True}})
     if stage >= 2:
         pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "rail": {"r": -18.0, "z": -3.0},
-                     "dark": {"show": True}, "win": {"hide": True}})
+                     "dark": {"show": True}, "win": {"hide": True}, "fire1": {"show": True},
+                     "scorch": {"show": True}, "tear": {"show": True}, "banner": {"r": 5.0}})
     if stage >= 3:
-        pose.update({"crack3": {"show": True}, "rubble3": {"show": True},
-                     "keepRoof": {"r": 12.0, "x": -4.0, "z": -10.0}})
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "fire2": {"show": True},
+                     "breach": {"show": True},
+                     "keepRoof": {"r": 16.0, "x": -6.0, "z": -12.0},
+                     "cone": {"r": -14.0, "x": 4.0, "z": -6.0},
+                     "banner": {"r": 28.0, "x": 1.0, "z": -2.0}})
     return pose
 
 

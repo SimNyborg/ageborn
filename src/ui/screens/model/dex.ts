@@ -1,8 +1,10 @@
 /**
  * The Card Album (owner request 2026-09-30, "a long scroll like a Pokedex", ui-plan 4.3): every troop,
- * turret and power card, numbered once in age order (No. 1 is the first Stone troop), grouped by age
- * with each age's completion, and filtered by owned / missing, rarity and class. Pure.
+ * turret and power card with its fixed album number (`content/album.ts`: No. 1 is the first Stone
+ * troop; a card added later gets the next free number, so no number ever moves), grouped by age with
+ * each age's completion, and filtered by owned / missing, rarity and class. Pure.
  */
+import { ALBUM_NO } from '@/content/album';
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, Rarity, SaveDoc } from '@/contracts';
 import type { CardClass } from '@/core/cardClass';
@@ -42,12 +44,17 @@ export interface Dex {
   shown: number;
 }
 
-/** Every card in album order with its number: ages in order; troops, turrets, then powers. */
+/**
+ * Every card in album order with its fixed number: ages in order, and inside an age by number (a card
+ * without a number, which the content test forbids, goes last in its age).
+ */
 export function dexOrder(content: Content): { id: CardId; age: AgeId; no: number }[] {
   const out: { id: CardId; age: AgeId; no: number }[] = [];
+  let spare = Object.keys(ALBUM_NO).length;
   for (const age of content.order.ages) {
     const c = cardsOfAge(content, age);
-    for (const id of [...c.units, ...c.turrets, ...c.powers]) out.push({ id, age, no: out.length + 1 });
+    const inAge = [...c.units, ...c.turrets, ...c.powers].map((id) => ({ id, age, no: ALBUM_NO[id] ?? ++spare }));
+    out.push(...inAge.sort((a, b) => a.no - b.no));
   }
   return out;
 }

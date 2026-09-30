@@ -384,9 +384,9 @@ function paintAurora(ctx: Ctx2D, f: LayerFrame, rng: { next(): number }): void {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   const bands: [number, number, number, number][] = [
-    [0x5ae8b0, -300, 150, 0.2],
-    [0x48c8c8, -250, 110, 0.16],
-    [0xa888e8, -420, 110, 0.1],
+    [0x5ae8b0, -300, 150, 0.3],
+    [0x48c8c8, -250, 110, 0.24],
+    [0xa888e8, -420, 110, 0.12],
   ];
   for (const [color, baseY, height, alpha] of bands) {
     const phase = rng.next() * Math.PI * 2;
@@ -489,6 +489,35 @@ export function themeLayer(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, ki
   ctx.fillRect(0, 0, W, H);
   ctx.restore();
   if (th.rim !== 'none') paintRim(canvas, ctx, id, kind, age, th, k);
+  if (th.aurora && kind === 'far') paintAuroraGlow(ctx, id, age, W, f);
+}
+
+/**
+ * Aurora light on the far silhouettes (review 4): on a phone the far hills fill most of the little sky
+ * a battle shows, so the curtains also light the hilltops in soft mint waves, fading downhill. Only
+ * where the layer is opaque (source-atop), never over the sky.
+ */
+function paintAuroraGlow(ctx: Ctx2D, id: string, age: AgeId, W: number, f: LayerFrame): void {
+  const k = f.pxPerLu;
+  const rng = mulberry32(seedFor(id, 'glow', age));
+  const phase = rng.next() * Math.PI * 2;
+  const top = (-400 - f.yTop) * k;
+  const bottom = (-110 - f.yTop) * k;
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-atop';
+  const step = 2;
+  for (let x = 0; x < W; x += step) {
+    const u = x / W;
+    const s = 0.4 + 0.6 * Math.abs(Math.sin(u * 9 + phase) * Math.sin(u * 3.3 + phase * 0.7));
+    const g = ctx.createLinearGradient(0, top, 0, bottom);
+    g.addColorStop(0, toCss(0x7af2c4, 0.8 * s));
+    g.addColorStop(0.45, toCss(0x48c8c8, 0.34 * s));
+    g.addColorStop(1, toCss(0x48c8c8, 0));
+    ctx.fillStyle = g;
+    ctx.fillRect(x, top, step, bottom - top);
+  }
+  ctx.restore();
 }
 
 /**
@@ -545,6 +574,70 @@ function paintRim(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far'
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (th.rim === 'lights') ctx.globalCompositeOperation = 'lighter';
   ctx.drawImage(s.c, 0, 0);
+  ctx.restore();
+}
+
+/** How strongly the ground takes a theme's grade, next to the far hills (units walk on it: keep it light). */
+export const GROUND_GRADE_SCALE = 0.42;
+
+/**
+ * Re-grades the arena ground already on `canvas` for a theme (review 11: a themed sky over a daylight
+ * lane looked pasted on). A lighter grade than the hills, so units keep their contrast; snow themes
+ * frost the grass edge and lay a few soft drifts, blossom and autumn scatter a few petals or leaves.
+ * The lane shows it on the themed half only (backdropView, through the seam blend).
+ */
+export function themeGround(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, th: BackdropTheme, f: LayerFrame): void {
+  const W = canvas.width;
+  const H = canvas.height;
+  const k = f.pxPerLu;
+  const toY = (y: number) => (y - f.yTop) * k;
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-atop';
+  const amount = th.gradeMix * GROUND_GRADE_SCALE;
+  const gr = ctx.createLinearGradient(0, 0, 0, H);
+  gr.addColorStop(0, toCss(th.grade, amount * 1.15));
+  gr.addColorStop(1, toCss(mix(th.grade, th.skyBottom, 0.3), amount * 0.8));
+  ctx.fillStyle = gr;
+  ctx.fillRect(0, 0, W, H);
+  const rng = mulberry32(seedFor(id, 'ground', 'stone'));
+  if (th.rim === 'snow') {
+    // frost along the grass edge, fading into the lane
+    const fr = ctx.createLinearGradient(0, toY(-40), 0, toY(26));
+    fr.addColorStop(0, toCss(th.rimColor, 0.8));
+    fr.addColorStop(0.5, toCss(th.rimColor, 0.42));
+    fr.addColorStop(1, toCss(th.rimColor, 0));
+    ctx.fillStyle = fr;
+    ctx.fillRect(0, toY(-40), W, toY(26) - toY(-40));
+    // soft drifts on the lane, low and wide, never a hard white sheet
+    for (let i = 0; i < Math.round(W / (140 * k)); i++) {
+      const x = rng.next() * W;
+      const y = toY(20 + rng.next() * 190);
+      const rx = (40 + rng.next() * 90) * k;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, rx);
+      g.addColorStop(0, toCss(th.rimColor, 0.34));
+      g.addColorStop(1, toCss(th.rimColor, 0));
+      ctx.fillStyle = g;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(1, 0.28);
+      ctx.translate(-x, -y);
+      ctx.fillRect(x - rx, y - rx, rx * 2, rx * 2);
+      ctx.restore();
+    }
+  } else if (th.rim === 'blossom' || th.rim === 'autumn') {
+    const n = Math.round((W * (toY(240) - toY(-30))) / (900 * Math.max(1, k * k)));
+    for (let i = 0; i < n; i++) {
+      const x = rng.next() * W;
+      const y = toY(-30 + rng.next() * 270);
+      const r = Math.max(0.8, k * (1.4 + rng.next() * 1.6));
+      const c = th.rim === 'autumn' && rng.next() < 0.4 ? mix(th.rimColor, 0x6a3a1a, 0.35) : th.rimColor;
+      ctx.fillStyle = toCss(c, 0.75);
+      ctx.beginPath();
+      ctx.ellipse(x, y, r * 1.5, r, rng.next() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
   ctx.restore();
 }
 

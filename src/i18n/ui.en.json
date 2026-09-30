@@ -833,6 +833,22 @@
       "lockedOwned": "You own {n} of {max} {age} cards",
       "lockedNone": "All {max} {age} cards found!",
       "album": "Card Album {n}/{max}",
+      "albumShort": "Album",
+      "albumMissing": "{age} in the Card Album",
+      "issue": {
+        "tooFewUnits": "Needs 3 troops",
+        "noTurret": "No turret",
+        "onlyThreeUnits": "Only 3 troops",
+        "noAntiArmor": "No anti-armor",
+        "noAir": "Can't hit air",
+        "noSplash": "No splash",
+        "badShape": "Needs repair",
+        "unknownCard": "Unknown card",
+        "wrongAge": "Card of another age",
+        "notOwned": "Card not owned",
+        "duplicate": "Same card twice",
+        "badPower": "Needs a power"
+      },
       "src": {
         "capsule": "Time Capsules",
         "warPath": "War Path {level}",

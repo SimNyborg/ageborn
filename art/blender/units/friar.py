@@ -222,8 +222,7 @@ def _attack_clip():
     ov = {
         4: [dict(SWING, **{"from": 3})],
         5: [dict(SWING, **{"from": 3})],
-        6: [dict(SWING, **{"from": 5}),
-            {"kind": "burst", "joint": "sling", "point": POUCH, "r0_lu": 4.0, "r1_lu": 8.0, "n": 4,
+        6: [{"kind": "burst", "joint": "sling", "point": POUCH, "r0_lu": 4.0, "r1_lu": 8.0, "n": 4,
              "a0": 20.0, "arc": 100.0}],
         8: [{"kind": "dust", "ground": (4.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 41, "spread": 1.1}],
     }

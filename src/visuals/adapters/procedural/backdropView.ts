@@ -42,7 +42,7 @@ import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid,
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { CLOUD_TINT, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, themeLayer, themeSky } from '../../backdrops/themes';
+import { backdropId, BACKDROP_THEMES, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
 import { BackdropWeatherLayer } from './backdropWeather';
@@ -257,6 +257,36 @@ export class BackdropTextures {
     return this.get(`ground.${arena}`, GROUND_FRAME, (ctx, f) => paintGround(ctx, arena, f));
   }
 
+  /**
+   * The arena ground re-graded for a backdrop skin (review 11), cached per arena, theme and base
+   * texture like the themed layers. Null when there is nothing to bake (no DOM, unknown theme).
+   */
+  groundThemed(arena: ArenaId, skin: string): Painted | null {
+    const id = backdropId(skin);
+    const th = id ? BACKDROP_THEMES[id] : undefined;
+    const base = this.ground(arena);
+    if (!id || !th || !this.canBake || base.tex === Texture.EMPTY) return null;
+    const src = base.tex.source;
+    const key = `ground.${arena}@${id}#${src.uid}`;
+    const hit = this.cache.get(key);
+    if (hit) return hit;
+    const t0 = performance.now();
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(src.pixelWidth));
+    canvas.height = Math.max(1, Math.round(src.pixelHeight));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    const resource = src.resource as CanvasImageSource | undefined;
+    if (resource) ctx.drawImage(resource, 0, 0, canvas.width, canvas.height);
+    themeGround(canvas, ctx, id, th, { ...GROUND_FRAME, pxPerLu: src.resolution });
+    const source = new CanvasSource({ resource: canvas, resolution: 1 });
+    source.resolution = src.resolution;
+    const p = { tex: new Texture({ source }), ambient: [] };
+    this.cache.set(key, p);
+    this.bakeMs += performance.now() - t0;
+    return p;
+  }
+
   private get(key: string, frame: LayerFrame, paint: (ctx: CanvasRenderingContext2D, f: LayerFrame, canvas: HTMLCanvasElement) => AmbientSpec[]): Painted {
     const hit = this.cache.get(key);
     if (hit) return hit;
@@ -293,6 +323,18 @@ export class BackdropTextures {
 
 /** Px per lu of the pre-rendered ground images (backdrop.py FRAMES.ground). */
 export const GROUND_IMAGE_PX_PER_LU = 1.3;
+
+/**
+ * How far (lu) a themed sky moves down for a camera that shows `above` lu over the ground line
+ * (review 4). A theme's sun, moon, eclipse and aurora are painted about 250 lu up, which a desktop
+ * view shows well under the HUD; a phone shows only about 290 lu, and its top bars cover the upper
+ * third of that, so there the sky slides down until those features sit at about 58% of the visible
+ * height (80-150 px from the top of a 390 px screen). The sky texture reaches 780 lu up, far above any
+ * view, so the slide never shows its edge; the classic skies do not move.
+ */
+export function themedSkyLift(above: number): number {
+  return Math.max(0, Math.min(120, 250 - above * 0.58));
+}
 
 /** A horizontal slice [x0, x1] of a layer texture with a constant alpha. */
 export interface Piece {
@@ -416,8 +458,11 @@ class StripLayer {
     private readonly textures: BackdropTextures,
   ) {}
 
-  /** Lays the pieces (world x) out on this layer, placed at `at` (see `placeLayer`). */
-  layout(pieces: readonly Piece[], at: LayerPlacement = IDENTITY_PLACEMENT): void {
+  /**
+   * Lays the pieces (world x) out on this layer, placed at `at` (see `placeLayer`). `skinLift` moves a
+   * themed piece down by that many lu (the sky: see `themedSkyLift`).
+   */
+  layout(pieces: readonly Piece[], at: LayerPlacement = IDENTITY_PLACEMENT, skinLift = 0): void {
     const f = FRAMES[this.kind];
     this.container.x = at.offset;
     this.container.scale.set(at.stretch, at.scaleY);
@@ -445,7 +490,7 @@ class StripLayer {
       // The sky is opaque: its lower cross-fade piece stays solid (see `Piece.under`). Silhouette
       // layers are mostly transparent, so both halves fade.
       slot.s.alpha = this.kind === 'sky' && p.under ? 1 : p.alpha;
-      slot.s.position.set(x0, f.yTop);
+      slot.s.position.set(x0, f.yTop + (p.skin ? skinLift : 0));
       slot.s.width = x1 - x0;
       slot.s.height = f.height;
     }
@@ -460,6 +505,94 @@ class StripLayer {
    * A slot texture listens to its source's `resize`, and Pixi's `Sprite.destroy` leaves the sprite
    * on a dynamic texture's `update`, so without this every battle leaks its strips into the cache.
    */
+  destroy(): void {
+    for (const p of this.pool) p.t.destroy(false);
+    this.pool.length = 0;
+  }
+
+  private slot(i: number): { s: Sprite; t: Texture } {
+    let s = this.pool[i];
+    if (!s) {
+      const t = new Texture({ source: Texture.WHITE.source, frame: new Rectangle(0, 0, 1, 1), dynamic: true });
+      s = { s: new Sprite(t), t };
+      this.container.addChild(s.s);
+      this.pool.push(s);
+    }
+    return s;
+  }
+}
+
+/**
+ * A themed half's ground (review 11): the arena ground re-graded for the half's backdrop skin, laid
+ * over the classic ground on that half only and faded across the seam in thin strips, like the sky.
+ * The ground art spans [x0, x0 + W] and a mirrored copy [x0 + W, x0 + 2W] (A17.3); a strip reads the
+ * texture at the same place the classic sprite shows there.
+ */
+class GroundSkinLayer {
+  readonly container = new Container();
+  private readonly pool: { s: Sprite; t: Texture }[] = [];
+
+  layout(seam: number, tex: { left: Texture | null; right: Texture | null }): void {
+    const L = WORLD.worldLeftLu - 100;
+    const R = WORLD.worldRightLu + 100;
+    const b = WORLD.seamBlendLu;
+    const n = Math.max(1, Math.ceil(b / STRIP_LU));
+    const spans: { x0: number; x1: number; alpha: number; tex: Texture }[] = [];
+    const half = (t: Texture | null, side: 0 | 1) => {
+      if (!t) return;
+      if (side === 0) spans.push({ x0: L, x1: seam - b / 2, alpha: 1, tex: t });
+      else spans.push({ x0: seam + b / 2, x1: R, alpha: 1, tex: t });
+      for (let k = 0; k < n; k++) {
+        const x0 = seam - b / 2 + (k * b) / n;
+        const x1 = seam - b / 2 + ((k + 1) * b) / n;
+        const u = (k + 0.5) / n;
+        const sm = u * u * (3 - 2 * u);
+        spans.push({ x0, x1, alpha: side === 0 ? 1 - sm : sm, tex: t });
+      }
+    };
+    half(tex.left, 0);
+    half(tex.right, 1);
+    const f = GROUND_FRAME;
+    const mid = f.x0 + f.width;
+    let used = 0;
+    for (const sp of spans) {
+      // split at the mirror line
+      const parts: [number, number][] = sp.x1 <= mid || sp.x0 >= mid ? [[sp.x0, sp.x1]] : [
+        [sp.x0, mid],
+        [mid, sp.x1],
+      ];
+      for (const [a0, a1] of parts) {
+        const x0 = Math.max(a0, f.x0);
+        const x1 = Math.min(a1, f.x0 + 2 * f.width);
+        if (x1 - x0 < 0.01) continue;
+        const mirrored = x0 >= mid;
+        const tx0 = mirrored ? 2 * mid - x1 : x0;
+        const slot = this.slot(used++);
+        if (slot.t.source !== sp.tex.source) slot.t.source = sp.tex.source;
+        const fx = Math.max(0, tx0 - f.x0);
+        slot.t.frame.x = fx;
+        slot.t.frame.y = 0;
+        slot.t.frame.width = Math.max(0.01, Math.min(x1 - x0, sp.tex.source.width - fx));
+        slot.t.frame.height = sp.tex.source.height;
+        slot.t.update();
+        slot.s.texture = slot.t;
+        slot.s.visible = true;
+        slot.s.alpha = sp.alpha;
+        slot.s.scale.set(1);
+        slot.s.width = x1 - x0;
+        slot.s.height = f.height;
+        if (mirrored) {
+          slot.s.scale.x = -Math.abs(slot.s.scale.x);
+          slot.s.position.set(x1, f.yTop);
+        } else slot.s.position.set(x0, f.yTop);
+      }
+    }
+    for (let i = used; i < this.pool.length; i++) {
+      const s = this.pool[i];
+      if (s) s.s.visible = false;
+    }
+  }
+
   destroy(): void {
     for (const p of this.pool) p.t.destroy(false);
     this.pool.length = 0;
@@ -564,6 +697,7 @@ export class ProceduralBackdropView implements BackdropView {
   /** Each half's backdrop skin key, when it has a known theme. */
   private readonly skins: { left?: string; right?: string };
   private readonly weather: BackdropWeatherLayer;
+  private readonly groundSkin = new GroundSkinLayer();
 
   constructor(private readonly o: BackdropViewOptions) {
     this.left = o.left;
@@ -606,7 +740,7 @@ export class ProceduralBackdropView implements BackdropView {
     this.groundLayer.addChild(this.groundSprite, this.groundMirror);
     o.textures.prefetch([o.left, o.right], [this.arena]);
     this.syncGround();
-    this.root.addChild(this.groundLayer, this.ambientLayers.ground);
+    this.root.addChild(this.groundLayer, this.groundSkin.container, this.ambientLayers.ground);
     this.spawnClouds();
     this.rebuildAmbient();
     this.texVersion = o.textures.version;
@@ -715,7 +849,8 @@ export class ProceduralBackdropView implements BackdropView {
     const regions = ageRegions({ left: this.left, right: this.right, seam: this.seam, wipe: w ? { side: w.side, age: w.age, front: half * eased } : null, skins: this.skins });
     const pieces = composePieces(regions, this.seam);
     for (const kind of LAYERS) this.placements[kind] = this.placement(kind);
-    for (const l of this.layers) l.layout(pieces, this.placements[l.kind]);
+    const lift = this.viewLeft === null ? 0 : themedSkyLift(this.viewAbove);
+    for (const l of this.layers) l.layout(pieces, this.placements[l.kind], l.kind === 'sky' ? lift : 0);
     for (const kind of LAYERS) {
       const at = this.placements[kind] ?? IDENTITY_PLACEMENT;
       const c = this.ambientLayers[kind];
@@ -728,6 +863,10 @@ export class ProceduralBackdropView implements BackdropView {
     }
     // seam haze: a soft grey veil, 240 lu wide (A11: 30% desaturation)
     this.haze.layout(this.seam, this.left, this.right);
+    // a themed half's ground, faded across the seam (review 11)
+    const gl = this.skins.left ? this.o.textures.groundThemed(this.arena, this.skins.left) : null;
+    const gr = this.skins.right ? this.o.textures.groundThemed(this.arena, this.skins.right) : null;
+    this.groundSkin.layout(this.seam, { left: gl?.tex ?? null, right: gr?.tex ?? null });
     for (const a of this.ambient) {
       if (!a.age) continue;
       const at = a.spec.layer === 'ground' ? undefined : this.placements[a.spec.layer];
@@ -880,6 +1019,7 @@ export class ProceduralBackdropView implements BackdropView {
     this.motes = [];
     this.weather.destroy();
     for (const l of this.layers) l.destroy();
+    this.groundSkin.destroy();
     this.root.destroy({ children: true });
   }
 }
