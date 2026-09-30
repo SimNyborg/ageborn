@@ -2,18 +2,21 @@
  * The 365-day economy sim (DESIGN B12 `sim:economy`, A6.9 pacing check).
  *
  * An engaged player, modelled through the `Meta` contract exactly as the app drives it: every day the
- * timers tick (04:00 reset), the Daily Capsule is claimed, ladder matches are played at a 60% win rate
- * until 4 wins have used a capsule charge, Trophy Road nodes are claimed, every capsule and crate is
- * opened, and cards are upgraded (the active War Plan first, then the cheapest upgrade). Quests progress
- * from each match's `MatchStats`.
+ * timers tick (04:00 reset), 7 ladder matches are finished at a 60% win rate (each claims a ready
+ * Sundial Capsule, win or lose; the Sundial replaced capsule charges and the Supply Capsule on
+ * 2026-09-30, A6.3, A15.4; until then the player played until 4 wins had used a charge and claimed the
+ * Daily/Supply Capsule), Trophy Road nodes are claimed, every capsule and crate is opened, and cards are
+ * upgraded (the active War Plan first, then the cheapest upgrade). Quests progress from each match's
+ * `MatchStats`. A casual player (3 matches a day, over 730 days in a full-year run so every card
+ * finishes) is run too and reported, not gated.
  *
  * `EconomyRecorder` (pure) turns what happened into the A6.9 measures; `economyChecks` compares them with
  * the table within ±20% and checks that the copy and Amber finish dates are less than 30 days apart.
  * The gate uses the median of `seeds` runs (30 by default: one seed is too noisy for a ±20% band).
  * Without `src/meta` (WP7) the tool writes a skipped report and exits 0.
  *
- * The capsule rules (the 7-tier ladder, the 200-slot bag, the Supply odds, the Legendary catch-up) run
- * through the real meta code; nothing here copies them.
+ * The capsule rules (the Sundial, the 7-tier ladder, the 200-slot bag, the Supply odds, the Legendary
+ * catch-up) run through the real meta code; nothing here copies them.
  */
 import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchStats, Meta, PendingCapsule, Rarity, Result, SaveDoc, Side } from '../src/contracts';
 import { asContent, content as gameContent, type Content } from '../src/content';
@@ -34,15 +37,24 @@ export const ECONOMY_TARGETS = {
   // days) was below its band.
   copiesPerBagCapsule: 16.0,
   amberPerBagCapsule: 411,
-  winCapsulesPerDay: 4,
-  dailyCapsulesPerDay: 1,
-  clayCapsulesPerDay: 0.9,
+  // The Sundial (2026-09-30, A6.3): one every 5 h is 4.8 a day, all claimed by 7 matches; the 2-pip
+  // Clay meter fills from the ladder matches that bring none (the Supply Capsule retired).
+  sundialCapsulesPerDay: 4.8,
+  clayCapsulesPerDay: 1.1,
   copiesPerDay: 98,
   amberPerDay: 3030,
   commonMaxDays: 110,
   rareMaxDays: 101,
   epicMaxDays: 69,
   legendaryMaxDays: 112,
+  /** The casual player (3 matches a day) is reported, not gated: its matches per day. */
+  casualMatchesPerDay: 3,
+  /**
+   * Days a full-year run gives the casual player: 3 matches a day do not max every card within 365
+   * days (the per-rarity medians would read "not reached"), so it runs two years. Shorter smoke runs
+   * keep their own length.
+   */
+  casualDays: 730,
   // Design targets the model misses both before and after the ladder: Phase 3 tuning items (A6.9).
 
   allLegendariesDays: 14,
@@ -57,7 +69,8 @@ export const ECONOMY_TARGETS = {
 export interface EconomyModel {
   days: number;
   winRateBp: number;
-  chargedWinsPerDay: number;
+  /** Finished ladder matches a day (A6.9: 7; each claims a ready Sundial Capsule, A6.3). */
+  matchesPerDay: number;
   seed: number;
   /** Runs seeds `seed` .. `seed + seeds − 1` and gates on the median of each measure. */
   seeds: number;
@@ -66,7 +79,7 @@ export interface EconomyModel {
 }
 
 export function economyDefaults(): EconomyModel {
-  return { days: 365, winRateBp: 6000, chargedWinsPerDay: 4, seed: 1, seeds: 30, averageDays: [11, 120] };
+  return { days: 365, winRateBp: 6000, matchesPerDay: 7, seed: 1, seeds: 30, averageDays: [11, 120] };
 }
 
 /**
@@ -269,9 +282,10 @@ export function economyChecks(m: EconomyMeasures): Check[] {
   return [
     near('economy.copiesPerBag', 'Copies per bag capsule', m.copiesPerBagCapsule, T.copiesPerBagCapsule, 'copies'),
     near('economy.amberPerBag', 'Amber per bag capsule', m.amberPerBagCapsule, T.amberPerBagCapsule, 'Amber'),
-    near('economy.winPerDay', 'Win Capsules per day', m.perDay.win, T.winCapsulesPerDay, '/day'),
-    near('economy.dailyPerDay', 'Daily Capsules per day', m.perDay.daily, T.dailyCapsulesPerDay, '/day'),
+    near('economy.sundialPerDay', 'Sundial Capsules per day', m.perDay.win, T.sundialCapsulesPerDay, '/day'),
     near('economy.clayPerDay', 'Clay meter capsules per day', m.perDay.clay, T.clayCapsulesPerDay, '/day'),
+    // Retired 2026-09-30 (A15.4): a new save never has an allowance, so this reads 0.
+    infoCheck('economy.supplyPerDay', 'Supply Capsules per day (retired; old allowances only)', `${fmtNum(m.perDay.daily, 2)} /day`),
     near('economy.copiesPerDay', 'Daily income: copies', m.perDay.copies, T.copiesPerDay, 'copies/day'),
     near('economy.amberPerDay', 'Daily income: Amber', m.perDay.amber, T.amberPerDay, 'Amber/day'),
     near('economy.commonMax', 'Common to max (median card)', m.maxDay.common, T.commonMaxDays, 'days'),
@@ -442,13 +456,8 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
     const ticked = meta.tickTimers(save, clock);
     income(rec, day, save, ticked);
     save = ticked;
-    for (let guard = 0; guard < 5 && save.capsules.dailyBank > 0; guard += 1) {
-      const bank = save.capsules.dailyBank;
-      save = meta.grantCapsule(save, 'daily', content, clock);
-      if (save.capsules.dailyBank >= bank) break;
-    }
-    let chargedWins = 0;
-    for (let n = 0; n < 30 && chargedWins < m.chargedWinsPerDay; n += 1) {
+    // The Supply allowance is retired (A15.4): an old allowance would convert inside applyMatchResult.
+    for (let n = 0; n < m.matchesPerDay; n += 1) {
       now += 10 * 60_000;
       const opp = meta.pickOpponent(save, 'ladder', content, clock);
       const won = chanceBp(rng, m.winRateBp);
@@ -468,7 +477,6 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
       income(rec, day, save, r.save);
       save = r.save;
       rec.match(day, won);
-      if (won && r.rewards.some((x) => x.kind === 'capsule')) chargedWins += 1;
       save = openAll(meta, save, day, rec);
     }
     for (const node of c.trophyRoad.nodes) {
@@ -499,13 +507,15 @@ export interface EconomyData {
   meta: string;
   model: EconomyModel;
   measures: EconomyMeasures | null;
+  /** The casual player (3 matches a day), reported and not gated; null when it did not run. */
+  casual: EconomyMeasures | null;
 }
 
 export async function runEconomy(m: EconomyModel, content: CompiledContent = gameContent): Promise<Report<EconomyData>> {
   const rep = startReport<EconomyData>('economy', 'Ageborn 365-day economy sim (DESIGN A6.9)', { ...m, contentHash: content.hash });
   const { meta, reason } = await loadMeta();
   if (!meta) {
-    return rep.finish([skippedCheck('economy.all', 'A6.9 pacing check', 'within ±20%, finish gap < 30 days', `skipped: ${reason ?? 'no meta'}`)], { meta: 'unavailable', model: m, measures: null }, [
+    return rep.finish([skippedCheck('economy.all', 'A6.9 pacing check', 'within ±20%, finish gap < 30 days', `skipped: ${reason ?? 'no meta'}`)], { meta: 'unavailable', model: m, measures: null, casual: null }, [
       `Skipped until the meta rules exist: ${reason ?? 'unknown reason'}.`,
     ]);
   }
@@ -513,14 +523,22 @@ export async function runEconomy(m: EconomyModel, content: CompiledContent = gam
     const seeds = Math.max(1, m.seeds);
     const runs = Array.from({ length: seeds }, (_, i) => simulateEconomy(meta, content, { ...m, seed: m.seed + i }).measures(m.averageDays));
     const measures = medianMeasures(runs);
+    // The casual player (A15.4): 3 matches a day, reported beside the engaged player, not gated.
+    const casualModel = { ...m, matchesPerDay: ECONOMY_TARGETS.casualMatchesPerDay, days: m.days >= 365 ? Math.max(m.days, ECONOMY_TARGETS.casualDays) : m.days };
+    const casual = m.matchesPerDay === casualModel.matchesPerDay && m.days === casualModel.days ? measures : medianMeasures(Array.from({ length: seeds }, (_, i) => simulateEconomy(meta, content, { ...casualModel, seed: m.seed + i }).measures(m.averageDays)));
+    const casualCheck = infoCheck(
+      'economy.casual',
+      `Casual player (${casualModel.matchesPerDay} matches a day, ${casualModel.days} days): copies and Sundial Capsules a day; days to max Common / Rare / Epic / Legendary; collection maxed`,
+      `${fmtNum(casual.perDay.copies, 1)} copies/day, ${fmtNum(casual.perDay.win, 2)} Sundial/day; ${[casual.maxDay.common, casual.maxDay.rare, casual.maxDay.epic, casual.maxDay.legendary].map((x) => (x === null ? `>${casualModel.days}` : String(x))).join(' / ')} days; collection ${casual.collectionMaxedDay === null ? `>${casualModel.days}` : casual.collectionMaxedDay} days`,
+    );
     const notes = [
       `Median of ${seeds} seed${seeds === 1 ? '' : 's'} (${m.seed}-${m.seed + seeds - 1}).`,
       `Per-day averages use days ${m.averageDays[0]}-${m.averageDays[1]}. Amber income is every increase of the Amber balance (matches, quests, capsules, road, Codex Levels) plus what upgrades spent.`,
     ];
     if (!questApi(meta)) notes.push('src/meta exports no claimQuest: quests were never claimed, so quest rewards are missing from every figure.');
-    return rep.finish(economyChecks(measures), { meta: 'src/meta', model: m, measures }, notes);
+    return rep.finish([...economyChecks(measures), casualCheck], { meta: 'src/meta', model: m, measures, casual }, notes);
   } catch (e) {
-    return rep.finish([{ id: 'economy.run', metric: 'Player model through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', model: m, measures: null });
+    return rep.finish([{ id: 'economy.run', metric: 'Player model through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', model: m, measures: null, casual: null });
   }
 }
 
@@ -545,5 +563,21 @@ export function economySections(r: Report<EconomyData>): string[] {
         ['Collection maxed', d(m.collectionMaxedDay)],
       ],
     ),
+    ...(r.data.casual
+      ? [
+          '',
+          `## Casual player (${ECONOMY_TARGETS.casualMatchesPerDay} matches a day over ${r.data.casual.days} days; reported, not gated)`,
+          '',
+          markdownTable(
+            ['Measure', 'Value'],
+            [
+              ['Sundial Capsules per day', fmtNum(r.data.casual.perDay.win, 2)],
+              ['Copies per day', fmtNum(r.data.casual.perDay.copies, 1)],
+              ['Common / Rare / Epic / Legendary to max', [r.data.casual.maxDay.common, r.data.casual.maxDay.rare, r.data.casual.maxDay.epic, r.data.casual.maxDay.legendary].map(d).join(' / ')],
+              ['Collection maxed', d(r.data.casual.collectionMaxedDay)],
+            ],
+          ),
+        ]
+      : []),
   ];
 }

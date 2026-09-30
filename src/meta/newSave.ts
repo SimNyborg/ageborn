@@ -4,8 +4,8 @@
  * - Owns every Common (3 units and 2 turrets per age), each age's Anti-heavy Rare (owner feedback
  *   2026-09-29) and both starter powers of each age (A2.9.8), all at L1;
  *   the starter War Plan as preset A (Arena 1's gate reward).
- * - 12 capsule charges, the first 10 capsules free, an empty Clay meter, a fresh 200-slot bag; the
- *   Daily Capsule unlocks after capsule 2 (A6.3).
+ * - 12 ready Sundial capsules (A6.3), the first 10 capsules free, an empty Clay meter, a fresh 200-slot bag; the
+ *   Supply Capsule unlocks after capsule 2 (A6.3; retired 2026-09-30, only its one-time capsule stays).
  * - An auto-generated editable name ("Chief-4821"), a procedural avatar seed, the Tar Pit banner and
  *   the Recruit title; Codex Level 1; MMR 1,000; today's quests.
  * - All currencies at 0: nothing is sold, everything is earned (A6.2).

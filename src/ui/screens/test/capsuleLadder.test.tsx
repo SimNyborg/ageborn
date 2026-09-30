@@ -43,9 +43,9 @@ describe('unopened capsules show only what is already true', () => {
   it('the Capsules tab shows a Win Capsule by its start tier and kind name, with no crests', () => {
     m = mount({ save: hiddenAeonSave(), routes: [{ id: 'capsules' }] });
     const stage = m.q('[data-testid="caps-stage"]')!;
-    expect(text(stage)).toContain('Win Capsule');
+    expect(text(stage)).toContain('Sundial Capsule');
     expect(text(stage)).not.toContain('Aeon');
-    expect(stage.getAttribute('aria-label')).toBe('Win Capsule');
+    expect(stage.getAttribute('aria-label')).toBe('Sundial Capsule');
     expect(tierOf(stage)).toBe('clay');
     expect(stage.querySelectorAll('.ui-capicon__crestmark').length).toBe(0);
     expect(stage.querySelectorAll('.ui-capicon__summit').length).toBe(0);
@@ -61,7 +61,7 @@ describe('unopened capsules show only what is already true', () => {
     expect(tile('cap-max-2').querySelectorAll('.ui-capicon__crestmark').length).toBe(2);
     expect(text(tile('cap-max-3'))).toContain('Gold Capsule');
     // cap-max-10 is a Win Capsule that rolled Gold: shown as a Clay "Win Capsule", after the fixed ones.
-    expect(text(tile('cap-max-10'))).toContain('Win Capsule');
+    expect(text(tile('cap-max-10'))).toContain('Sundial Capsule');
     expect(tierOf(tile('cap-max-10'))).toBe('clay');
     expect(tile('cap-max-10').querySelectorAll('.ui-capicon__crestmark').length).toBe(0);
     const order = m.qa('[data-testid^="drum-cap-max-"]').map((x) => x.getAttribute('data-testid'));
@@ -77,7 +77,7 @@ describe('unopened capsules show only what is already true', () => {
     m.click('[data-testid="result-skip"]');
     flush();
     const row = m.q('[data-testid="reward-capsule"]')!;
-    expect(text(row)).toContain('Win Capsule');
+    expect(text(row)).toContain('Sundial Capsule');
     expect(text(row)).not.toContain('Aeon');
     expect(tierOf(row)).toBe('clay');
     // The Open capsule primary draws the same visible tier, never the rolled one.

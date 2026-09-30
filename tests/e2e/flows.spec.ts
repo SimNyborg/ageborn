@@ -139,10 +139,10 @@ test.describe('B13 flows', () => {
     await pastOnboarding(page);
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('play')).toBeVisible();
-    // A15.13: charges as "n/max" with no timer (Capsules tab), the War Chest bar and at most 3 quests
-    // (Progress tab; ui-plan 2.2).
+    // A6.3, A15.13: the Sundial card "n of 34 ready" with a clock time, never a countdown (Capsules
+    // tab), the War Chest bar and at most 3 quests (Progress tab; ui-plan 2.2).
     await page.getByTestId('tab-capsules').click();
-    await expect(page.getByTestId('charges')).toContainText(/\d+\/\d+/);
+    await expect(page.getByTestId('sundial-status')).toContainText(/\d+ of \d+ ready|None ready yet/);
     await page.getByTestId('tab-progress').click();
     await expect(page.getByTestId('war-chest')).toContainText('War Chest');
     await expect(page.getByTestId('quest-3')).toHaveCount(0);

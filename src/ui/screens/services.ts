@@ -77,7 +77,7 @@ export interface UiServices {
    */
   legacySkillAeons(): number;
   /** Closes a one-time notice card for good (clears `flags['notice.<id>']`; B8 step 4). */
-  dismissNotice(id: 'capsuleLadder'): void;
+  dismissNotice(id: 'capsuleLadder' | 'sundial'): void;
 
   // ---- cards and plans -----------------------------------------------------------------------
   /** Upgrade (A6.6; `meta.upgrade`). */

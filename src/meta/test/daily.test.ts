@@ -8,7 +8,7 @@ import { DAILY_DIFFICULTIES, dailyDrawOn, dailyModifierOn, defaultDailyDifficult
 import { META_FLAGS } from '../rules';
 import { supplyRules } from '../supply';
 import { daysFromCivil } from '../time';
-import { C, DAY, HOUR, M, TestClock, T0, fresh, lastPending, matchInput, play, scripted } from './helpers';
+import { C, C_SUPPLY, DAY, HOUR, M, M_SUPPLY, TestClock, T0, fresh, lastPending, matchInput, noSundial, play, scripted } from './helpers';
 
 function unlocked(s: SaveDoc): SaveDoc {
   return { ...s, capsules: { ...s.capsules, dailyBank: 1, dailyNextAt: null }, flags: { ...s.flags, [META_FLAGS.dailyUnlocked]: true } };
@@ -23,7 +23,16 @@ describe('Daily Capsule (A6.3)', () => {
     expect(M.claimDailyCapsule(s, C, c)).toEqual({ ok: false, reason: 'noDailyCapsule' });
   });
 
-  it('one per day at local 04:00, banking up to 7 (the Supply allowance, A15.4)', () => {
+  it('with the shipped content no allowance accrues (the Supply Capsule retired into the Sundial, 2026-09-30)', () => {
+    const c = new TestClock(Date.UTC(2026, 2, 2, 12), 2 * HOUR);
+    const s = M.tickTimers(unlocked(fresh()), c);
+    c.advance(10 * DAY);
+    expect(M.tickTimers(s, c).capsules.dailyBank).toBe(1);
+  });
+
+  it('while it accrued (before 2026-09-30): one per day at local 04:00, banking up to 7 (the Supply allowance, A15.4)', () => {
+    const M = M_SUPPLY;
+    const C = C_SUPPLY;
     const c = new TestClock(Date.UTC(2026, 2, 2, 12), 2 * HOUR); // 14:00 local
     let s = M.tickTimers(unlocked(fresh()), c);
     expect(s.capsules.dailyBank).toBe(1);
@@ -123,7 +132,7 @@ describe('Daily Challenge 2.0 (A9.1, A15.7)', () => {
 
   it('a win uses one banked reward and pays an Age Capsule; with none banked 20 Amber; no charges, trophies or MMR', () => {
     const c = new TestClock();
-    const s = scripted();
+    const s = noSundial(scripted());
     expect(s.daily.bank).toBe(1);
     const first = play(s, 'daily', 'win', c);
     expect(first.rewards[0]?.kind).toBe('capsule');
@@ -138,13 +147,15 @@ describe('Daily Challenge 2.0 (A9.1, A15.7)', () => {
     const nextDay = play(second.save, 'daily', 'win', c);
     expect(nextDay.rewards[0]?.kind).toBe('capsule');
     const loss = play(s, 'daily', 'loss', c);
-    expect(loss.rewards.some((x) => x.kind === 'amber' || x.kind === 'capsule')).toBe(false);
+    expect(loss.rewards.some((x) => x.kind === 'amber')).toBe(false);
+    // A day later the Sundial has readied capsules again, so the loss claims one; never an Age Capsule.
+    expect(loss.save.capsules.pending.filter((p) => p.kind === 'age')).toHaveLength(0);
     expect(loss.save.daily.bank).toBeGreaterThan(0);
   });
 
   it('the banked win\'s Age Capsule holds the age the player picked in the dialog (A6.4)', () => {
     const c = new TestClock();
-    const s = scripted();
+    const s = noSundial(scripted());
     const o = M.pickOpponent(s, 'daily', C, c);
     const win = matchInput('daily', 'win', o);
     expect(M.ageCapsuleDue(s, win, C, c)).toBe(true);
@@ -172,7 +183,10 @@ describe('walk-away rule (A15.4, A15.20)', () => {
     expect(after.quests.weekly.progress).toBe(13);
     expect(after.flags['feat.underdog']).toBe(true);
     expect(after.capsules.charges).toBe(C.capsules.charges.max);
-    expect(after.capsules.dailyBank).toBe(supplyRules(C).allowanceMax);
+    // The Supply allowance no longer grows (retired 2026-09-30, A15.4); the Sundial fills to 34 and stops.
+    expect(supplyRules(C).accrues).toBe(false);
+    expect(after.capsules.dailyBank).toBe(s.capsules.dailyBank);
+    expect(after.capsules.clayMeter).toBe(s.capsules.clayMeter);
     expect(after.daily.bank).toBe(C.dailyModifiers.challenge.bankMax);
     expect(after.quests.daily).toHaveLength(C.quests.queueMax);
     // Another 30 days add nothing more.

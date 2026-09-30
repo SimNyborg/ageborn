@@ -10,6 +10,18 @@ import type { LocalClock } from '../time';
 export const C: Content = content;
 export const M: MetaRules = createMeta(C);
 
+/**
+ * The content as it was before the Supply Capsule retired into the Sundial (2026-09-30, A15.4): the
+ * allowance still accrues. For the tests of the rules an old allowance keeps following.
+ */
+export const C_SUPPLY: Content = { ...content, capsules: { ...content.capsules, supply: { ...content.capsules.supply, accrues: true } } };
+export const M_SUPPLY: MetaRules = createMeta(C_SUPPLY);
+
+/** A save with an empty Sundial and no free capsules left, so a mode's own rewards show alone. */
+export function noSundial(s: SaveDoc): SaveDoc {
+  return { ...s, capsules: { ...s.capsules, charges: 0, freeCapsulesLeft: 0 } };
+}
+
 /** 2026-03-02 12:00 UTC, a Monday. */
 export const T0 = Date.UTC(2026, 2, 2, 12, 0, 0);
 export const HOUR = 3_600_000;

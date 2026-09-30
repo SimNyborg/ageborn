@@ -134,8 +134,11 @@ describe('Time Capsules (A6.4)', () => {
     });
     // Legendary pity reaches 70% at n = 39, then capsule 40 guarantees one (A6.5).
     expect((39 - capsules.pity.legendaryFreeUntil) * capsules.pity.legendaryStepBp).toBe(7000);
-    expect(capsules.charges).toEqual({ start: 12, max: 28, regenMs: 6 * 3600 * 1000, freeCapsules: 10 });
-    expect(capsules.clayMeterPips).toBe(3);
+    // The Sundial (2026-09-30, A6.3): one every 5 h, holds 34 (7 days), a new save starts with 12.
+    expect(capsules.charges).toEqual({ start: 12, max: 34, regenMs: 5 * 3600 * 1000, freeCapsules: 10 });
+    expect(capsules.charges.max * capsules.charges.regenMs).toBeGreaterThanOrEqual(7 * 24 * 3600 * 1000);
+    expect(capsules.clayMeterPips).toBe(2);
+    expect(capsules.supply).toEqual({ matchesPerCapsule: 3, allowanceMax: 7, accrues: false });
     expect(capsules.daily).toEqual({ firstAfterCapsule: 2, bankMax: 3 });
     expect(capsules.script.map((s) => [s.tier, s.cards])).toEqual([
       // The Anti-heavy Rares are in the starter kit (owner feedback 2026-09-29): the Support Rares come instead.

@@ -6,7 +6,7 @@ import type { SaveDoc } from '@/contracts';
 import { META_FLAGS } from '../rules';
 import { supplyMatchesLeft, supplyRules } from '../supply';
 import { isCountingWin, skillTier, warChestProgress, winsPerChest } from '../warChest';
-import { C, clock, DAY, fresh, grantOpen, M, matchInput, play, scripted } from './helpers';
+import { C, clock, DAY, fresh, grantOpen, M, M_SUPPLY, matchInput, play, scripted } from './helpers';
 
 function withAllowance(s: SaveDoc, n: number, matchesPlayed: number): SaveDoc {
   return { ...s, matchesPlayed, capsules: { ...s.capsules, dailyBank: n }, flags: { ...s.flags, [META_FLAGS.dailyUnlocked]: true } };
@@ -15,8 +15,8 @@ function withAllowance(s: SaveDoc, n: number, matchesPlayed: number): SaveDoc {
 const dailyCount = (s: SaveDoc) => s.capsules.pending.filter((p) => p.kind === 'daily').length;
 
 describe('Supply Capsule (A15.4)', () => {
-  it('uses the DESIGN numbers: every 3rd match, allowance up to 7', () => {
-    expect(supplyRules(C)).toEqual({ matchesPerCapsule: 3, allowanceMax: 7 });
+  it('uses the DESIGN numbers: every 3rd match, allowance up to 7; retired, so none accrues (2026-09-30)', () => {
+    expect(supplyRules(C)).toEqual({ matchesPerCapsule: 3, allowanceMax: 7, accrues: false });
   });
 
   it('the 3rd, 6th and 9th finished match each turn one banked allowance into a Supply Capsule', () => {
@@ -67,8 +67,19 @@ describe('Supply Capsule (A15.4)', () => {
     expect(supply.startTier).toBe('bronze');
   });
 
-  it('the allowance banks one a day up to 7 and stops there (walk-away rule)', () => {
+  it('retired: no allowance accrues any more, and an old one is kept until it converts (2026-09-30)', () => {
     const c = clock();
+    let s = withAllowance(scripted(7), 2, 0);
+    for (let d = 1; d <= 10; d += 1) {
+      c.advance(DAY);
+      s = M.tickTimers(s, c);
+      expect(s.capsules.dailyBank).toBe(2);
+    }
+  });
+
+  it('while it accrued (before 2026-09-30), the allowance banked one a day up to 7 and stopped there (walk-away rule)', () => {
+    const c = clock();
+    const M = M_SUPPLY;
     let s = withAllowance(scripted(7), 0, 0);
     s = M.tickTimers(s, c);
     const owned = JSON.stringify([s.collection, s.currencies, s.capsules.pending]);

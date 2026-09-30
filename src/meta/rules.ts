@@ -6,7 +6,7 @@
 import type { CapsuleTier, CardId } from '@/contracts';
 
 /** The `SaveDoc.v` that `newSave` writes (WP8 migrates from this version on). */
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 
 /**
  * Share of ladder and Daily Challenge opponents that are named AI Generals; the rest are procedural
@@ -36,8 +36,19 @@ export const FIRST_PLAN_NAME = 'A';
 export const META_FLAGS = {
   /** The first ladder match has been played (A8: match 3 is Captain Kettle). */
   ladderPlayed: 'meta.ladderPlayed',
-  /** The Daily Capsule has been unlocked (A6.3: right after capsule 2 is opened). */
+  /** The Supply Capsule has been unlocked (A6.3: right after capsule 2 is opened; retired 2026-09-30, A15.4). */
   dailyUnlocked: 'meta.dailyUnlocked',
+  /**
+   * The one-time "The Sundial" card in the Capsules tab (A6.3, 2026-09-30): set by the save v10
+   * migration for saves that have played, cleared when closed. Same key as `save/migrations/v10.ts`.
+   */
+  sundialNotice: 'notice.sundial',
+  /**
+   * The save was full under the old 28-charge cap (set by the save v10 migration): the first timer
+   * tick restarts the Sundial's period at that moment and clears it, so 28 stays 28 (not up to 34).
+   * Same key as `save/migrations/v10.ts`.
+   */
+  sundialRestart: 'sundial.restart',
   /**
    * The Field power slot is unlocked (A2.9.1): the first of War Path Stone L5 cleared or 150 trophies;
    * the v7 save migration sets it for every save that has played. Same key as `save/migrations/v7.ts`.

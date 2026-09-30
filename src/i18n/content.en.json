@@ -225,7 +225,7 @@
     "aeon": { "name": "Aeon Capsule", "short": "Aeon" }
   },
   "capsuleKind": {
-    "win": { "name": "Win Capsule" },
+    "win": { "name": "Sundial Capsule" },
     "daily": { "name": "Supply Capsule" },
     "road": { "name": "Trophy Road Capsule" },
     "meter": { "name": "Clay Meter Capsule" },

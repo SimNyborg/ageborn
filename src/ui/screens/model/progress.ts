@@ -107,27 +107,59 @@ export function unlocks(save: SaveDoc, content: Content): Unlocks {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Charges and the Supply Capsule (A6.3)
+// The Sundial and the Supply Capsule (A6.3, A15.4)
 // ---------------------------------------------------------------------------------------------
 
+/**
+ * The Sundial (A6.3; capsule charges until 2026-09-30): one capsule ready every 5 h, holding up to 34.
+ * The same integer rule as meta's `accrueCharges` (the UI may not import meta, B2); the Capsules tab
+ * shows `nextAt` as a local clock time, never as a countdown (A15.3 rule 4).
+ */
 export interface ChargesView {
+  /** Ready Sundial capsules at `now`. */
   charges: number;
   max: number;
-  /** Time to the next charge, or null when full. */
+  /** Time to the next capsule, or null when full (tests and the dev pages; never shown as a countdown). */
   nextInMs: number | null;
-  /** The first capsules of a save use no charge. */
+  /** The first capsules of a save need no Sundial. */
   free: number;
+  /** The Sundial is full: it has stopped filling. */
+  full: boolean;
+  /** When the next capsule is ready (epoch ms), or null when full. */
+  nextAt: number | null;
+  /** Hours per capsule (5). */
+  hours: number;
+  /** How far the current period has run, in basis points (0-10000; 10000 when full). */
+  periodBp: number;
 }
 
 export function chargesView(save: SaveDoc, content: Content, now: number): ChargesView {
   const c = content.capsules.charges;
-  const charges = Math.min(save.capsules.charges, c.max);
-  let nextInMs: number | null = null;
+  const period = Math.max(1, c.regenMs);
+  const stored = Math.max(0, save.capsules.charges);
+  let charges = Math.min(stored, c.max);
+  let start = save.capsules.chargesUpdatedAt;
   if (charges < c.max) {
-    const since = Math.max(0, now - save.capsules.chargesUpdatedAt);
-    nextInMs = c.regenMs - (since % c.regenMs);
+    // A clock moved backwards restarts the current period (A6.3).
+    if (now < start) start = now;
+    const n = Math.floor((now - start) / period);
+    if (n > 0) {
+      charges = Math.min(c.max, charges + n);
+      start += n * period;
+    }
   }
-  return { charges, max: c.max, nextInMs, free: Math.max(0, save.capsules.freeCapsulesLeft) };
+  const full = charges >= c.max;
+  const nextAt = full ? null : start + period;
+  return {
+    charges,
+    max: c.max,
+    nextInMs: nextAt === null ? null : Math.max(0, nextAt - now),
+    free: Math.max(0, save.capsules.freeCapsulesLeft),
+    full,
+    nextAt,
+    hours: Math.max(1, Math.round(period / 3_600_000)),
+    periodBp: full ? 10_000 : Math.max(0, Math.min(10_000, Math.floor(((now - start) * 10_000) / period))),
+  };
 }
 
 export interface DailyCapsuleView {
@@ -178,8 +210,9 @@ export function bankRules(content: Content): BankRules {
 }
 
 /**
- * The Supply Capsule line inside the capsule tray (A15.4, A9 #2): "Supply Capsule: 2 more matches"
- * while an allowance is banked. No timer (A15.13).
+ * The Supply Capsule line inside the capsule tray (A15.4, A9 #2): "Supply allowance left: 2 · 1 more
+ * match" while an allowance banked before 2026-09-30 is left (the Supply Capsule retired into the
+ * Sundial; no new allowance accrues). No timer (A15.13).
  */
 export interface SupplyView {
   unlocked: boolean;

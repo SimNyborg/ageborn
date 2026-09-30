@@ -176,10 +176,17 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
     expect(unlocks({ ...n, arenaIndex: 2 }, content).conquest).toBe(true);
   });
 
-  it('counts down to the next charge (+1 every 6 h, bank of 28, A15.4)', () => {
+  it('the Sundial: the next one as a time, +1 every 5 h, holds 34 (A6.3, A15.4)', () => {
     const mid = midGameSave(content);
-    expect(chargesView(mid, content, FIXTURE_NOW)).toEqual({ charges: 5, max: 28, nextInMs: 4 * HOUR, free: 0 });
-    expect(chargesView(newPlayerSave(content), content, FIXTURE_NOW)).toMatchObject({ charges: 12, nextInMs: 6 * HOUR, free: 8 });
+    expect(chargesView(mid, content, FIXTURE_NOW)).toEqual({
+      charges: 5, max: 34, nextInMs: 3 * HOUR, free: 0, full: false, nextAt: FIXTURE_NOW + 3 * HOUR, hours: 5, periodBp: 4000,
+    });
+    expect(chargesView(newPlayerSave(content), content, FIXTURE_NOW)).toMatchObject({ charges: 12, nextInMs: 5 * HOUR, free: 8 });
+    // Accrues like meta: 2 h later one more is ready; 30 days later it is full and stops.
+    expect(chargesView(mid, content, FIXTURE_NOW + 3 * HOUR)).toMatchObject({ charges: 6, nextAt: FIXTURE_NOW + 8 * HOUR, periodBp: 0 });
+    expect(chargesView(mid, content, FIXTURE_NOW + 30 * 24 * HOUR)).toMatchObject({ charges: 34, full: true, nextAt: null, periodBp: 10000 });
+    // A clock moved backwards restarts the period and removes nothing.
+    expect(chargesView(mid, content, FIXTURE_NOW - 24 * HOUR)).toMatchObject({ charges: 5, nextAt: FIXTURE_NOW - 19 * HOUR });
   });
 
   it('shows the Daily Capsule bank and timer', () => {

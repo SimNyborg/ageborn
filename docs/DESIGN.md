@@ -6,6 +6,10 @@ Changes since 1.3: 2026-09-29, owner request "more capsule tiers": the capsule l
 
 Changes since 1.3: 2026-09-29, owner request "powers cost gold, reload, more powers, own-half limits" (the power rework; decided, not built): every Age Power costs gold and reloads on its own; each age loadout has a Home slot (powers that touch only enemies in your own half) and a Field slot (near your army, precise strikes, buffs, drops, turret suppression); one cast affects at most 1-6 enemy units, and only the enemies nearest the caster's gate (the screen); buffs affect at most 8 own units; 48 powers instead of 16, from starters, the Trophy Road and the War Path, never capsules; the combined rules are measured in build phase P0 before any contract change (A2.9 and A5.7 rewritten; one-line follow-ups in A1, A2.1, A2.3, A2.4, A2.6, A2.7, A2.10-A2.14, A3, A5.1, A6.3, A7.1-A7.4, A9.1, A9.2, A13, A14.1, A16.10, A16.11, A16.14, A17.4-A17.6, A17.8, A17.11, A17.13, A17.14, A18.2, A18.3.1, A18.5.5, A18.7.5-A18.7.8, A18.9.2, A18.9.3, A18.12, A18.13, B3, B15 and C5; reasons in `docs/decisions.md`; requests in `docs/requests/powers-sources.md`, `docs/requests/powers-hud-army.md` and `docs/requests/powers-p1-compat.md`). Where A2.9 and an older mention of the power charge, the power ring or "one power per age" differ, A2.9 wins.
 
+Changes since 1.3: 2026-09-30, owner request "a free capsule every 5 hours" (2026-09-29): the Sundial readies a capsule every 5 hours, holds 34 (7 days), and any finished match but the tutorial or a Retreat claims one, win or lose; it replaces capsule charges and the Supply allowance, the Win Capsule is now called the Sundial Capsule (same bag), and the Clay meter needs 2 pips (A6.3, A15.4; follow-ups in A6.2, A6.4, A6.5, A6.9, A6.10, A9, A15.2, A15.3, A15.6, A15.7, A15.8, A15.13, A15.14, A15.18, A15.20, B8, C5; reasons and measurements in `docs/decisions.md`).
+
+Changes since 1.3: 2026-09-30, owner request "a class of fixed structures on the lane" (2026-09-29; decided, not built): the Fort class of A16.14 gets four kinds per age (walls, towers that shoot but stand still, camps that send free, very weak levies, traps; 32 cards), one Fort slot per age loadout, Home pads for every kind and Field pads for camps, Siege crumbles forts, never capsules; measured by emulation on the current build (A16.14.1-A16.14.9; follow-ups in A18.5.3, A18.7.5, A18.7.8, A18.9, A18.9.3, A18.11, A18.12, A18.13; reasons in `docs/decisions.md`).
+
 The document has four parts plus an appendix:
 
 - **Part A:** game design. It ends with A15 (engagement and long-term progression), A16 (strategic depth, variety and long-term play, with the ranked wishlist after v1 in A16.24), A17 (a longer lane and eight ages) and A18 (harder, longer, deeper). Where A18 and an older section differ, A18 wins; the older text is updated and points to it. A rule marked "A18" takes effect in the build with its A18.13 phase; until then the build follows the older rule, which is kept beside it.
@@ -1125,7 +1129,7 @@ Counts: 4 Rare, 4 Epic, 4 Legendary. The Wardrobe Crate pool holds the first 11.
 | Trophies | Ladder rank | Ladder wins |
 | Codex points | Codex Level | Upgrades |
 
-The **Clay meter** is not a currency: a 3-pip bar on Home that turns into a Clay capsule when full (A6.3).
+The **Clay meter** is not a currency: a 2-pip bar on Home (3 until 2026-09-30) that turns into a Clay capsule when full (A6.3).
 
 ### A6.3 Trophies, arenas and match rewards
 
@@ -1133,19 +1137,22 @@ Ladder results:
 
 | Result | Trophies | Amber | Other |
 |---|---|---|---|
-| Win | +30 (by format from Arena 3: A15.8) | 20, or 40 if no capsule charge (by format from Arena 3: A15.8) | Win Capsule if a charge is available; otherwise +1 Clay meter pip |
-| Loss | −20 (0 below 400; never below the current arena gate) | 15 | +1 Clay meter pip |
-| Draw | 0 | 15 | +1 Clay meter pip |
+| Win | +30 (by format from Arena 3: A15.8) | 20 with a Sundial Capsule, 40 without one (by format from Arena 3: A15.8) | A Sundial Capsule if the Sundial has one ready; otherwise +1 Clay meter pip |
+| Loss | −20 (0 below 400; never below the current arena gate) | 15 | A Sundial Capsule if one is ready; otherwise +1 Clay meter pip. A Retreat claims no capsule and adds no pip |
+| Draw | 0 | 15 | As a loss |
 
-- **Capsule charges.** A new save starts with 12. +1 charge every 6 h, continuously, banking up to 28 (7 days). A full bank stops filling and says so. The first 10 capsules of a save never use a charge. Only ladder wins use charges.
-- **Clay meter.** 3 pips make a Clay capsule without using a charge. There is no cap on how many it can produce.
-- **Supply Capsule** (replaces the Daily Capsule, A15.4). An allowance of +1 per day at local 04:00 banks up to 7. Every 3rd finished match (`matchesPlayed`: the 3rd, 6th, 9th …, any mode except the tutorial, a Retreat included) turns one banked allowance into a Supply Capsule; with no allowance banked, nothing happens. The first Supply Capsule is granted right after capsule 2 is opened, with no matches needed.
+- **The Sundial** (owner request 2026-09-29, "come back every 5 hours to open a free capsule"; built 2026-09-30 in the healthy form, A15.4; it replaces capsule charges and the Supply Capsule's allowance). The Sundial readies one capsule every 5 h (18,000,000 ms), continuously, and holds up to 34 (170 h, 7 days 2 hours: the smallest bank of 5 h steps that holds 7 days, A15.1 rule 3). A full Sundial stops filling and says so. A new save starts with 12 ready.
+  - **Claiming.** Each finished match in any mode except the tutorial claims one ready capsule, win or lose: a **Sundial Capsule** from the 200-slot bag (A6.4; kind `win`, called Win Capsule until 2026-09-30). One match claims at most one. A Retreat and a void match claim nothing, so every Sundial Capsule needs a played match, never a login. The first 10 capsules of a save need no Sundial (free capsules are used first).
+  - **Showing it.** The Capsules tab shows the dial, "3 of 34 ready" and the clock time of the next one ("Next one at 17:40"; never a running countdown). Home shows only the Sundial glyph, in colour while one is ready and grey when none is: no number, no glow, no time and no motion (A15.13); it opens the Capsules tab. The game never notifies (A15.1 red line 4).
+  - **Data.** Save fields `capsules.charges` (ready count) and `chargesUpdatedAt` (start of the current 5 h period); content `capsules.charges` { start 12, max 34, regenMs 18,000,000, freeCapsules 10 }.
+- **Clay meter.** Every Ladder match that brings no capsule because the Sundial is empty adds a pip. A Retreat adds none (every reward needs play, A15.4; with 2 pips a Retreat pip would pay a Clay capsule every two early Retreats). **2 pips** (3 until 2026-09-30; lowered to keep a 7-match day's income, A15.4) make a Clay capsule without using the Sundial. There is no cap on how many it can produce. A meter already at or above 2 pips when the change lands turns into a Clay capsule at the next timer tick.
+- **Supply Capsule** (replaced the Daily Capsule, A15.4; **retired 2026-09-30**, folded into the Sundial). No new allowance accrues. An allowance banked before the change still turns into a Supply Capsule on every 3rd finished match (`matchesPlayed`: the 3rd, 6th, 9th …, any mode except the tutorial, a Retreat included) until the bank is empty, and unopened Supply Capsules keep their contents. The one-time capsule granted right after capsule 2 is opened stays (it is scripted capsule 3, A6.5; the A8 beat is unchanged).
 - **War Chest** (replaces the weekly quest, A15.5). Every counting win adds 1; at 20 it grants a Wardrobe Crate and an Age Capsule at once and restarts at 0. It never resets and has no weekly gate.
-- **Void matches.** A match that never reaches its end (tab closed or reloaded, device off, crash) changes nothing: no trophies, MMR, rewards, charge use, quest or War Chest progress, loss streak or Clay pip. Retreat is a choice and still counts as a loss (A15.6).
+- **Void matches.** A match that never reaches its end (tab closed or reloaded, device off, crash) changes nothing: no trophies, MMR, rewards, Sundial claim, quest or War Chest progress, loss streak or Clay pip. Retreat is a choice and still counts as a loss (A15.6).
 - **Loss protection.** After 3 ladder losses in a row, the next opponent is one tier lower (minimum tier 0) and the VS screen says "Warm-up match". The same Result shows the tilt card (A15.6).
-- **Other modes.** Daily Challenge: A9.1 and A15.7. War Path (A18.7; replaces Conquest, A6.10): first-clear Amber, card unlocks and boss capsules. Quick Battle (a Short War Skirmish at a picked difficulty) and Skirmish: 5 Amber per win, no trophies, no capsules.
+- **Other modes.** Daily Challenge: A9.1 and A15.7. War Path (A18.7; replaces Conquest, A6.10): first-clear Amber, card unlocks and boss capsules. Quick Battle (a Short War Skirmish at a picked difficulty) and Skirmish: 5 Amber per win, no trophies. In every mode but the tutorial a finished match also claims a ready Sundial Capsule; only Ladder matches add Clay pips.
 - **Ladder window (A18.3.4).** Arenas 1-2 play windows that start at Stone. From Arena 3 the window is the **Era of the Week**, seeded weekly in `meta` from the date and shown on Mode select a week ahead.
-- **Clock.** All daily timers reset at local 04:00, capped by the banks. Every bank holds at least 7 days and nothing earned expires (A15.4). Clock tampering is accepted because no money is involved.
+- **Clock.** Daily timers reset at local 04:00, capped by the banks. The Sundial runs on epoch ms, independent of time zone and 04:00. Every bank holds at least 7 days and nothing earned expires (A15.4). Clock tampering is accepted because no money is involved: a clock moved backwards restarts the current period and never removes a ready capsule; moved forwards, it fills at most to the cap.
 
 | # | Arena | Trophies | Ladder formats | Drop pool | Bot tiers | Bot level | Gate rewards |
 |---|---|---|---|---|---|---|---|
@@ -1181,9 +1188,9 @@ Amber nodes pay 100 + 20 × (trophies / 100). Road capsules have a fixed tier an
 
 - **Pre-rolled.** The result is rolled the moment a capsule is granted and saved before any animation plays. The opening only reveals it.
 - **Tier ladder** (owner request 2026-09-29: more tiers, so the top capsules are truly rare and coveted). Seven tiers, lowest first: Clay, Bronze, Silver, Jade, **Gold**, **Platinum**, **Aeon** (index 0-6; ids `clay` … `aeon`). Gold, Platinum and Aeon are the Legendary capsules: they always hold 1, 2 and 3 Legendaries. Gold is the old Aeon with +100 Dust.
-- **Tier source.** Win Capsule tiers come from a 200-slot shuffle bag holding exactly 60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum and 1 Aeon, drawn without replacement and refilled when empty. Clay, Bronze and Silver keep their shares, and Jade or better stays exactly 10%. There is no tier pity: the bag is the guarantee (at most 399 Win Capsules between two bag Aeons, 200 on average). The odds screen builds its line from the bag data: "Exactly 1 Aeon, 2 Platinum and 4 Gold in every 200 Win Capsules." (The 100-slot bag of 30/40/20/7/3 applied until 2026-09-29.)
-- **Hidden until opened.** A capsule that climbs (Win, Supply, Clay meter) shows only its start tier and its kind name ("Win Capsule", "Supply Capsule", "Starter Capsule") until it is opened, everywhere (A9, A10); fixed-tier capsules show their tier. The odds panel says: "Win and Supply Capsules show their tier when you open them."
-- **Supply Capsule.** Rolls independently: Bronze 78%, Silver 15%, Jade 5%, Gold 1.5%, Platinum 0.35%, Aeon 0.15% (bp 7800 / 1500 / 500 / 150 / 35 / 15; the old 2% Aeon share, split).
+- **Tier source.** Sundial Capsule tiers (Win Capsule until 2026-09-30, A6.3) come from a 200-slot shuffle bag holding exactly 60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum and 1 Aeon, drawn without replacement and refilled when empty. Clay, Bronze and Silver keep their shares, and Jade or better stays exactly 10%. There is no tier pity: the bag is the guarantee (at most 399 Sundial Capsules between two bag Aeons, 200 on average). The odds screen builds its line from the bag data: "Exactly 1 Aeon, 2 Platinum and 4 Gold in every 200 Sundial Capsules." (The 100-slot bag of 30/40/20/7/3 applied until 2026-09-29.)
+- **Hidden until opened.** A capsule that climbs (Sundial, Supply, Clay meter) shows only its start tier and its kind name ("Sundial Capsule", "Supply Capsule", "Starter Capsule") until it is opened, everywhere (A9, A10); fixed-tier capsules show their tier. The odds panel says: "Sundial and Supply Capsules show their tier when you open them."
+- **Supply Capsule** (retired 2026-09-30; only allowances banked before then still make them, A6.3). Rolls independently: Bronze 78%, Silver 15%, Jade 5%, Gold 1.5%, Platinum 0.35%, Aeon 0.15% (bp 7800 / 1500 / 500 / 150 / 35 / 15; the old 2% Aeon share, split).
 - **The bag in progress at the update** finishes with its old mix, and each Aeon left in it is the new Aeon. The save keeps `capsules.bagSize` (100 for that bag, 200 after), so "N of 100 left" stays true, and the odds panel says "Your current bag was filled before Gold and Platinum arrived, so it finishes with its old mix. Each Aeon left in it is the new Aeon." Unopened Aeon Capsules keep their contents, get +100 Dust and are relabelled Gold, whose table they now match (save migration, B8).
 - **Honesty line** on the first capsule and every odds panel: "The result was decided when you earned this capsule. Tapping only reveals it." Scripted capsules show "Set contents" instead of bag odds (A15.3).
 - **Scripted capsules** (A6.5) bypass the bag.
@@ -1228,9 +1235,10 @@ Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsul
 
 | Type | Source | Contents |
 |---|---|---|
-| Supply Capsule | Every 3rd finished match turns one banked daily allowance into one (A6.3, A15.4) | Tier table above; climb starts at Bronze (summit strikes above Gold, A10) |
+| Sundial Capsule | Any finished match but the tutorial or a Retreat, while the Sundial has one ready (A6.3, A15.4) | The 200-slot bag; climb starts at Clay (A10). Kind `win` |
+| Supply Capsule (retired 2026-09-30) | Every 3rd finished match turns one allowance banked before 2026-09-30 into one (A6.3, A15.4) | Tier table above; climb starts at Bronze (summit strikes above Gold, A10) |
 | Trophy Road Capsule | Road nodes and gates | Fixed tier, no climb (reveal starts at step 4). Gate 7 Gold, Gate 8 Platinum, the 4,000 node Aeon |
-| Clay meter capsule | 3 meter pips | Clay tier, climb from Clay (no climbs) |
+| Clay meter capsule | 2 meter pips (3 until 2026-09-30) | Clay tier, climb from Clay (no climbs) |
 | Age Capsule | Quests, Daily Challenge, Conquest (War Path from A18.7), War Chest | Silver-sized (4 stacks, Silver copies), all from one age picked in a dialog (8 ages) when granted, ≥ 1 Epic stack |
 | Codex Capsule | Every 10th Codex Level from 5 | Silver tier, fixed |
 | Age Unlock Capsule | Arena 2 and Arena 3 gates (A17.13) | Fixed contents (A6.3) |
@@ -1244,9 +1252,9 @@ Pity and script indices count every opened capsule except Age Unlock Capsules. W
 - **Legendary pity:** let n be the capsule's count since the last Legendary, including this one. For n ≤ 25 there is no bonus. For 26 ≤ n ≤ 39, one stack upgrades to Legendary with probability (n − 25) × 5%. Capsule n = 40 guarantees one.
 - **New-card protection:** at least one unowned card every 5 capsules while unowned cards exist in the pool. If no stack's rarity has unowned cards, the lowest non-guaranteed stack upgrades to the lowest rarity that does.
 - **Wardrobe pity:** Epic or better at least every 5 crates; Legendary at least every 25.
-- **No tier pity.** The Win Capsule bag is the tier guarantee (exactly 1 Aeon, 2 Platinum and 4 Gold in every 200, A6.4), so no counter for tiers is added (A15.13 counter budget). The Legendary catch-up rule (A6.4 step 4) protects the unluckiest Legendary once all are owned.
+- **No tier pity.** The Sundial Capsule bag is the tier guarantee (exactly 1 Aeon, 2 Platinum and 4 Gold in every 200, A6.4), so no counter for tiers is added (A15.13 counter budget). The Legendary catch-up rule (A6.4 step 4) protects the unluckiest Legendary once all are owned.
 
-**Onboarding script (overrides the bag and uses no charges):**
+**Onboarding script (overrides the bag and uses no Sundial):**
 
 | Capsule | Tier | Guaranteed contents |
 |---|---|---|
@@ -1322,15 +1330,19 @@ In battle, a unit's level shows as a trim on its ground ring: bronze at L4-6, si
 - **Fairness is the only tuning target.** MMR and bot tuning may target win rate only, never session length, return rate or retention (A15.1 rule 10).
 - **Later PvP (designed now):** ranked sets every card to exactly L8, whatever its level (A16.7), and shows both trophies and a visible Glicko-2 rating (A16.21). The AI ladder and Conquest keep this section's level matching.
 
-### A6.9 Pacing check (engaged player: 4 charged ladder wins at 60%, Supply Capsule, 3 quests)
+### A6.9 Pacing check (engaged player: 7 finished ladder matches a day at 60% wins, the Sundial, 3 quests; until 2026-09-30: 4 charged ladder wins and the Supply Capsule)
 
 Rebased 2026-09-29 on the measured values (88 cards, A17; the capsule ladder, A6.4). "Measured" is the median of 100 seeds (1-100) of `tools/economy.ts` on the shipped code with the 2026-09-29 ladder (re-measured in the review fixes; the first figures came from a prototype that consumed the RNG differently). The time-to-max targets are today's measured medians, because the owner's rule is "keep today's time to max a card" (A17.18 question 5); the old 55-card values (9.1 copies, 227 Amber, ~48 copies a day) are retired.
+
+**The Sundial (2026-09-30, A6.3, A15.4).** Measured before the build with the `tools/economy.ts` player model and the real meta rules (the Sundial run as a harness around them; the unchanged model reproduces the shipped tool exactly), median of 100 seeds, blocks 1-100 and 101-200, for the same player before and after: 7 finished ladder matches a day at 60% wins. Before → after: Common to max 105.75 / 106.25 → 106 / 107 days (+0.5%), Rare 96.5 / 95.75 → 97.5 / 98.75 (+2.1%), Epic 63.75 / 65 → 63 / 62.5 (−2.5%), Legendary 107.25 / 110 → 106 / 104.25 (−3.2%); copies a day 100.4 → 97.4 (−3.0%), Amber a day 3,102 → 3,055 (−1.5%); whole collection 188.5 → 193 days (+2.4%), Amber done 139 → 140, focused plan at L7 77.75 → 77.5. The table's targets stay; `tools/economy.ts` changes its player from "play until 4 wins used a charge" to "play 7 finished ladder matches a day" (that old player never spent its 12 starting charges, which made the old baseline about 3 days slower on Epic and Legendary), and reports Sundial and Clay capsules per day instead of Win and Supply.
+
+**The Sundial as built (review fixes 2026-09-30).** Same player and seeds on the built code: Common 106 / 106.75 (+0.4%), Rare 99.5 / 99.5 (+3.5%), Epic 63.25 / 62.5 (−2.3%), Legendary 105 / 104.5 (−3.6%); copies a day −2.9%, Amber −1.5%; whole collection 188.5 → 195 days (+3.4%). **Deviation, accepted and logged:** Rare, Legendary and the collection sit 0.4-0.6 points past the brief's "about 3%". The cause is the rarity mix, not the income: bag capsules replace the Bronze-heavy Supply Capsule, so Rare slows while Epic and Legendary speed up, and any income lever (period, bank, Clay pips) moves all four the same way, fixing one side only by pushing the other past 3%. The casual player (3 matches a day; `sim:economy` now runs it over 730 days so every rarity finishes; 50 seeds): copies 55.3 → 57.3 a day (+3.6%), Common 204.75 → 200 (−2.3%), Rare 180 → 168.75 (−6.3%), Epic 129.5 → 114.25 (−11.8%), Legendary 211.75 → 185 (−12.6%), whole collection 357.5 → 369 days (+3.2%). That player gains on purpose: the Supply Capsule was theirs, and each of their matches now claims a bag capsule. All A6.9 ±20% gates pass as before.
 
 | Measure | Target (±20%) | Measured |
 |---|---|---|
 | Copies per bag capsule | 16.0 | 15.9 (16.05 expected before pity) |
 | Amber per bag capsule | 411 | 411 |
-| Capsules per day | 4 win + 1 Supply + ~0.9 Clay meter | as targeted |
+| Capsules per day | 4.8 Sundial + ~1.1 Clay meter (until 2026-09-30: 4 win + 1 Supply + ~0.9 Clay meter) | 4.8 and 1.1 (Sundial prototype) |
 | Daily income | ~98 copies and ~3,030 Amber | 97.6 and 3,036 |
 | Common to max (153 copies) | 110 days | 108.5 |
 | Rare to max (130 copies) | 101 days | 97.3 |
@@ -1366,7 +1378,7 @@ A 365-day economy sim (B12) MUST confirm these figures within ±20%, gating on t
   - Star 2, win with your base above 50% HP: 100 Dust.
   - Star 3, win before 5:45 (A17; was 6:00 in Full War): an Age Capsule.
 - **Milestones:** 9 stars give a Jade Capsule, 18 stars a Jade Capsule, 27 stars an Aeon Capsule and the title Conqueror.
-- Conquest matches use no charges, change no trophies and do not move MMR.
+- Conquest matches change no trophies and do not move MMR; like every finished match they claim a ready Sundial Capsule (A6.3).
 
 ## A7. Bot opponents: AI Generals
 
@@ -1557,7 +1569,7 @@ The flow above is built (2026-09-28). **Owner decision 2026-09-30:** Home is the
 | # | Screen | Contents |
 |---|---|---|
 | 1 | Boot | Logo ≤ 1 s, progress bar; Stone assets first, the rest streams in during the tutorial or the menu |
-| 2 | Home (the Battle hub, owner decision 2026-09-30) | The arena diorama in the centre (your base and the AI's across the lane, the arena's landmark; art through the ArtProvider) with the arena's name and the trophy bar to the next Trophy Road reward under it; the match plate over the big **Battle** button (the only primary, bottom-right): the next opponent's portrait with the AI badge and tier, and the ladder format picker from Arena 2; Battle starts a Ladder match in one tap (the onboarding matches while they are due); Modes beside it (Quick Battle, Daily, Skirmish, Conquest). Left: the Campaign card (the War Path: region art, next level, stars, "Solo battles vs AI, earn cards") and four capsule slots (one tap opens). Top: profile chip with trophies, Amber and Dust chips, gear. Quests, the War Chest and the Trophy Road screen live in Progress; charges, Supply and Clay in Capsules. No timers and no backlog counts on Home; nothing online is shown until it exists (A15.13) |
+| 2 | Home (the Battle hub, owner decision 2026-09-30) | The arena diorama in the centre (your base and the AI's across the lane, the arena's landmark; art through the ArtProvider) with the arena's name and the trophy bar to the next Trophy Road reward under it; the match plate over the big **Battle** button (the only primary, bottom-right): the next opponent's portrait with the AI badge and tier, and the ladder format picker from Arena 2; Battle starts a Ladder match in one tap (the onboarding matches while they are due); Modes beside it (Quick Battle, Daily, Skirmish, Conquest). Left: the Campaign card (the War Path: region art, next level, stars, "Solo battles vs AI, earn cards") and four capsule slots (one tap opens). Top: profile chip with trophies, the Sundial glyph (no number: in colour while a capsule is ready, A6.3, A15.13), Amber and Dust chips, gear. Quests, the War Chest and the Trophy Road screen live in Progress; charges, Supply and Clay in Capsules. No timers and no backlog counts on Home; nothing online is shown until it exists (A15.13) |
 | 3 | Mode select | Quick Battle (built; first card: a Short War Skirmish at a picked difficulty, Easy II to Legendary X, vs the first ladder General whose tier range holds it; 5 Amber per win); Ladder (format picker from Arena 2; it shows each format's reward, A15.8; the Era of the Week from Arena 3, A18.3.4); Conquest (from Arena 3; leaves with A18.7.10); Skirmish (from match 2: choose General or Echo, the difficulty picker, format, start era (A18.3.4), speed, "Standard levels" toggle; 5 Amber per win); Daily Challenge (difficulty picker Recruit / Veteran / Warlord, A9.1) |
 | 4 | VS | Your card vs the AI General card: AI badge, tier, levels ("Plan Lv 3.4 vs Lv 3"), format, personality line, modifiers, boss disclosures |
 | 5 | Battle HUD | See A9.2 |
@@ -1576,7 +1588,7 @@ The flow above is built (2026-09-28). **Owner decision 2026-09-30:** Home is the
 | 18 | War Path (A18.7; a sub-screen of Home since 2026-09-30) | A scrolling saga map with parallax (far skyline, ground, near silhouettes), one themed region per age with 10 levels (2 side nodes each later): hills, water (a lake, a shore with boats, a river), two landmark set pieces per region, props, lanterns along the road, clouds and birds, all animated and still under reduce motion. Node kinds: battle (disc), elite (Hard shield with crossed swords), treasure (a chest on the node; a named card), story (a scroll; the level teaches something) and boss (the General's portrait in its lair). Beaten nodes show stars and crowns; the current node has a marker, rings and the banner-bearer; a new node bursts free of its padlock and drops in (MR-41). Back top-left; the next level under a big Play button; the Level preview has the difficulty picker; boss nodes show their disclosures; "New region" marks on inserted ages |
 | 19 | Customize (built) | Tabs Troops, Bases, Banner & title, Emotes: skin tiles (equip, craft with Dust, crate only) and the profile look fields; nothing can be bought. A18.9.4 adds Quotes, Flags (base and national) and base decorations |
 
-**Unopened capsules on every screen (2026-09-29, A6.4, A10).** A capsule that climbs (Win, Supply, Clay meter) is shown by its start tier and its kind name until it is opened: in the Home tray, on the Capsules shelf and stage, on the Result (screen 7), in aria labels and in the odds panel. It never shows its rolled tier, tier name or Legendary crests, and shelves never sort by the rolled tier (they sort by the tier shown, then by when the capsule was earned). Fixed-tier capsules (Trophy Road, gates, War Path, Conquest, Codex, Age) show their tier, name and crests. The one-time "Two new capsule tiers" notice is a closable card in the Capsules tab, not a Home widget (A15.13).
+**Unopened capsules on every screen (2026-09-29, A6.4, A10).** A capsule that climbs (Sundial, Supply, Clay meter) is shown by its start tier and its kind name until it is opened: in the Home tray, on the Capsules shelf and stage, on the Result (screen 7), in aria labels and in the odds panel. It never shows its rolled tier, tier name or Legendary crests, and shelves never sort by the rolled tier (they sort by the tier shown, then by when the capsule was earned). Fixed-tier capsules (Trophy Road, gates, War Path, Conquest, Codex, Age) show their tier, name and crests. The one-time "Two new capsule tiers" notice is a closable card in the Capsules tab, not a Home widget (A15.13).
 
 ### A9.1 Daily Challenge
 
@@ -1596,7 +1608,7 @@ Full rules: A15.7 (Daily Challenge 2.0).
 | 5 | Heavy Metal | Heavy and Legendary cost −30% |
 | 6 | Sudden Siege | Siege starts 1:15 earlier |
 
-- **Reward:** a bank of Daily rewards gains +1 at each 04:00 and holds up to 7; a new save starts with 1. A win at any difficulty uses one banked reward and pays an Age Capsule. Other wins pay 20 Amber. Daily matches use no charges and change no trophies or MMR.
+- **Reward:** a bank of Daily rewards gains +1 at each 04:00 and holds up to 7; a new save starts with 1. A win at any difficulty uses one banked reward and pays an Age Capsule. Other wins pay 20 Amber. Daily matches change no trophies or MMR; like every finished match they claim a ready Sundial Capsule (A6.3).
 - **Copy result:** after a finished Daily, one button copies a plain-text line with no name, for example `Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Won in 5:42 · Base 63%`. Copying pays nothing. There is no streak counter.
 
 ### A9.2 Battle HUD (DOM overlay over the canvas)
@@ -2081,7 +2093,7 @@ Failing test 1 or 2 is a red line. Failing test 3, 4 or 5 makes a system grey at
 |---|---|---|---|---|---|
 | Seconds | Read the lane; tap a card, turret or power | Competence, flow, feedback (3.1, 3.2) | A2, A12. No meta prompt ever appears inside a battle | Inside the match | none |
 | Match (3-9 min) | Build, evolve 2-4 times, fire powers, push and defend | Anticipation and payoff, close outcomes, curiosity, peak-end (3.5, 3.14, 3.16) | A2, A10; feats (A15.10); result tips (A15.12) | Match clock, Final Bell | Base HP bars |
-| Session (15-40 min) | 3-6 matches, open capsules, upgrade | Bounded variable reward, goal gradient, autonomy (3.4, 3.7) | A6; wrap, tilt and break cards (A15.6) | Wrap card when charges run out or after 30 min; break card at 60 min | Capsule charges |
+| Session (15-40 min) | 3-6 matches, open capsules, upgrade | Bounded variable reward, goal gradient, autonomy (3.4, 3.7) | A6; wrap, tilt and break cards (A15.6) | Wrap card when the Sundial runs empty or after 30 min; break card at 60 min | The Sundial (capsule charges until 2026-09-30) |
 | Day | Daily Challenge; Supply Capsule; quests | Novelty, a small ritual with an end, fair comparison, sharing (3.15, 3.18, 3.12) | A15.7, A15.4 | "Daily done"; banks hold 7 days | Daily Challenge |
 | Every 20 wins (about a week when engaged) | Fill the War Chest | Goal gradient (3.7) | A15.5 | Chest granted; nothing resets | War Chest |
 | Months | Trophy Road, arenas, Conquest, collection, feats | Collection, mastery, curiosity (3.9, 3.3, 3.14) | A6.3, A6.10, A15.10 | Road at 4,000; 27 stars; full collection; 12 feats | Trophy Road |
@@ -2127,51 +2139,59 @@ Without a later build, v1's long tail is the Daily Challenge, the War Chest, the
    | Amber and Dust info panels | "Amber can't be bought. It has no money value." The same for Dust |
    | VS screen, first 20 matches of a save | Disclosure "Rookie AI: makes extra mistakes while you learn" (A6.8's +10 mistake points), through `OpponentSpec.disclosures` |
    | Help | "Your first 20 opponents make extra mistakes while you learn. After that, opponent difficulty adapts to your recent results." |
-   | Under each bank | "Holds up to N. When full, it stops filling." (charges 28, Supply 7, Daily rewards 7) |
+   | Under each bank | "Holds up to N. When full, it stops filling." (the Sundial 34, Daily rewards 7; the Supply 7 until 2026-09-30) |
+   | Sundial card (Capsules tab only) | "3 of 34 ready" and "Next one at 17:40" (the local clock time of the next capsule; never a running countdown); when full, "Full: it has stopped filling." Rule: "Every 5 hours the Sundial readies a capsule. Finish any battle to claim it, win or lose." |
    | Quest panel | "New quests arrive each day. Up to 21 can wait for you." |
    | Settings > About, For parents, Home help | "Nothing you have earned is ever taken away." |
    | Echo of You (Skirmish) | "AI · Echo of You: an AI playing your War Plan" |
 
 3. "Nothing expires" appears only where it is literally true: owned items, currencies, pending capsules and crates, War Chest progress and found feats.
-4. **Forbidden copy:** "Nothing is lost while you're away" and "Everything waits for you" (both false once a bank is full), "we missed you", "last chance", and any countdown to a reward.
+4. **Forbidden copy:** "Nothing is lost while you're away" and "Everything waits for you" (both false once a bank is full), "we missed you", "last chance", and any countdown to a reward. The Sundial's "Next one at 17:40" on the Capsules tab is a clock time, not a countdown: it does not tick, has no seconds and never appears on Home, the Result or in a notification.
 5. `docs/decisions.md` records engagement rule 10 (fairness is the only tuning target).
 
-### A15.4 Banks, the Supply Capsule and the walk-away rule (v1)
+### A15.4 Banks, the Sundial and the walk-away rule (v1)
 
 | | |
 |---|---|
-| Class | Grey: clock refill rates and random capsules for players who may be minors. Safeguards: every reward needs play; banks hold 7 days; the copy says when a bank is full; no countdown on Home; capsule odds, pity and crafting as A6.4-A6.6 |
+| Class | Grey: clock refill rates and random capsules for players who may be minors. Safeguards: every reward needs play (a finished match, never a login or a Retreat); banks hold 7 days; the copy says when a bank is full; no countdown anywhere and no timer on Home (the Capsules tab shows a clock time); no notifications; capsule odds, pity and crafting as A6.4-A6.6 |
 | Levers | Banked appointment (3.17) without pressure; goal gradient (3.7) |
-| Size, phase, owners | S · Phase 2b · WP1 (numbers), WP7 (rules), WP8 (schema limits), WP9 (tray, quest panel) |
-| From | PE 2.1, 2.4, 2.13, 1.1, 0.5; BS 2.9; law 4.4 (items D1-D4), P-2; psychology 9.3 |
+| Size, phase, owners | S · Phase 2b · WP1 (numbers), WP7 (rules), WP8 (schema limits), WP9 (tray, quest panel). The Sundial (2026-09-30): M · WP1, WP7, WP8 (v10), WP9, WP11, WP12; spec in `docs/decisions.md` |
+| From | PE 2.1, 2.4, 2.13, 1.1, 0.5; BS 2.9; law 4.4 (items D1-D4), P-2; psychology 9.3; owner request 2026-09-29 (the Sundial) |
 
-The old Daily Capsule was the only reward in the game that needed no play: a random reward for opening the app on a calendar day, which is both the "login bonus" and the "variable reward for minors" the KIDS Act proposal is reported to target. It becomes the Supply Capsule.
+The old Daily Capsule was the only reward in the game that needed no play: a random reward for opening the app on a calendar day, which is both the "login bonus" and the "variable reward for minors" the KIDS Act proposal is reported to target. It became the Supply Capsule. On 2026-09-29 the owner asked for "a free capsule every 5 hours" ("kom tilbage hver 5 time for at åbne en gratis kapsel"). Its healthy form is **the Sundial** (2026-09-30), which replaces both capsule charges and the Supply allowance: one clock, one bank, and every capsule it gives needs a finished match.
 
 | Bank | Before | Now |
 |---|---|---|
-| Capsule charges | +1 per 6 h, holds 12 | +1 per 6 h, holds **28** (7 days). A new save still starts with 12 |
-| Daily Capsule, now **Supply Capsule** | 1 per day for opening the game, holds 3 | Allowance +1 per day at 04:00, holds **7**. Every 3rd finished match turns one allowance into a Supply Capsule |
+| Capsule charges, now **the Sundial** | +1 charge per 6 h, holds 12, then 28 (7 days); a Ladder win used one for a Win Capsule | One capsule ready every **5 h**, holds **34** (7 days 2 hours). Any finished match but the tutorial or a Retreat claims one, win or lose: a Sundial Capsule from the bag (A6.4). A new save starts with 12 ready |
+| Daily Capsule, then **Supply Capsule** | 1 per day for opening the game, holds 3; then an allowance +1 per day, holds 7, and every 3rd finished match turned one into a Supply Capsule | **Retired**: no new allowance. One banked before 2026-09-30 still turns into a Supply Capsule on every 3rd finished match. The one-time capsule after capsule 2 stays (A8) |
+| Clay meter | 3 pips (losses, draws, wins without a charge) | **2 pips**, from every Ladder match that brings no capsule |
 | Daily quests | 3 a day, up to 6 unclaimed | 3 a day join a queue of up to **21**; the first 3 are active, the rest wait unseen |
 | Daily Challenge reward | The first win of the day only | A bank of Daily rewards, +1 a day, holds **7** (A15.7) |
 
 **Rules**
 
-- **Supply Capsule.**
+- **The Sundial** (A6.3 has the rule text and data).
+  - The clock: +1 ready capsule every 5 h (18,000,000 ms) from `chargesUpdatedAt`, continuous and integer; epoch time, so time zones, 04:00 and daylight saving never move it. Full at 34: it stops filling and says so; when a capsule is claimed from a full Sundial, the next one takes a full 5 h (as charges did).
+  - Claiming: when a finished match's result is applied, the Sundial is brought up to that moment, then one ready capsule becomes a pending Sundial Capsule, rolled at once (A6.4). A match that started before the capsule was ready but finished after claims it. One match claims at most one. Free capsules (the first 10 of a save) are used first.
+  - What counts: a finished match in any mode except the tutorial (Ladder, Daily Challenge, War Path, Quick Battle, Skirmish). A Retreat claims nothing and adds no Clay pip (it is still a loss for trophies, MMR and the 15 loss Amber), so opening a match and leaving at once never pays a capsule; a void match changes nothing (A6.3).
+  - Why 34 and not a small cap: a bank of 2 or 3 (the genre's free chest) fills in 10-15 hours and then stops, so it rewards coming back on a timer and quietly costs the player who does not. That is the appointment pressure A15.1 rule 3 and the walk-away test forbid (A15.22). 34 is the smallest whole number of 5-hour steps that holds 7 days (34 × 5 h = 170 h).
+  - Why it replaces charges instead of adding to them: a separate capsule every 5 h that one match can claim is 4.8 capsules a day for an engaged player, about a third of today's income even at Clay. Measured (the `tools/economy.ts` player, 100 seeds): a Clay-only extra capsule funded by retiring the Supply Capsule and slowing charges to 8 h left copies per day at −4%, but moved Rare to max +46%, Epic +36% and Common −11%, because Clay is nearly all Commons; added on top it made cards 7-33% faster (Common and Legendary about a third). Only a capsule from the same bag keeps the rarity mix, and at one per 5 h that is the charge budget itself.
+  - Why any match, not only a win: keeping charges for Ladder wins at 5 h and retiring the Supply Capsule is neutral for the engaged player but costs a player of 3 matches a day 28% of their copies (the Supply Capsule was theirs). Claiming by any finished match gives that player +3.6% copies (and faster Epics and Legendaries, A6.9) and makes the owner's "free capsule" literally one played match away. Wins keep their own rewards: trophies, more Amber (20, or 40 when no capsule was claimed), War Chest progress, quests and the peak rank.
+  - Showing it: the Capsules tab has the Sundial card (dial, "3 of 34 ready", "Next one at 17:40" as a local clock time, the weekday in the game's language; "Full: it has stopped filling." when full, with the cap line "Holds up to 34. When full, it stops filling." in the info panel). Home has only the Sundial glyph, in colour while a capsule is ready and grey when none is: no number, no time, no count of anything waiting, no glow and no motion loop (a "34/34" would read as a backlog and a pull cue). No notification of any kind (red line 4).
+- **Supply Capsule (retired 2026-09-30).**
   - Odds as A6.4: Bronze 78%, Silver 15%, Jade 5%, Gold 1.5%, Platinum 0.35%, Aeon 0.15% (until 2026-09-29 the old Daily Capsule's Bronze 78%, Silver 15%, Jade 5%, Aeon 2%); the climb starts at Bronze.
-  - A finished match is any match that reaches its end (a Retreat included), in any mode except the tutorial. Skirmish counts; the allowance already caps the reward at one capsule per banked day.
-  - The count uses `matchesPlayed`: the 3rd, 6th, 9th … finished match turns one banked allowance into a Supply Capsule. If no allowance is banked, nothing happens.
-  - The first Supply Capsule is granted right after capsule 2 is opened, with no matches needed, so the A8 beat at about 10:00 is unchanged.
-  - The capsule tray shows "Supply Capsule: 2 more matches" while an allowance is banked, and nothing when none is.
+  - No new allowance accrues (content `supply.accrues: false`). An allowance banked before the change keeps its promise: the 3rd, 6th, 9th … finished match (`matchesPlayed`, any mode but the tutorial, a Retreat included) turns one into a Supply Capsule until the bank is empty. The Capsules tab shows "Supply allowance left: 2 · next in 1 match" only while one is banked.
+  - The first capsule right after capsule 2 is opened stays (kind `daily`, scripted capsule 3), so the A8 beat at about 10:00 is unchanged.
 - **Quest queue.**
   - At 04:00, 3 new quests join the back of the queue, up to 21. Only the first 3 are active and progress.
   - A claimed quest leaves the queue and the next one becomes active. The free daily reroll replaces one active quest.
   - The quest panel never shows the queue length (A15.13).
 - **Quest weights.** Quests that pay only for activity (Play 3 battles, Train 30 units, Upgrade 2 cards) have weight 1. Skill and variety quests have weight 2 (psychology finding 14: informative goals beat bribes).
-- **Why 28 charges is safe.** The bank never decays, so there is no reason to empty it in one sitting. Using 28 charges takes 28 wins, about 47 matches. The wrap and break cards (A15.6) cover long sessions.
+- **Why 34 is safe.** The Sundial never decays, so there is no reason to empty it in one sitting. Claiming 34 takes 34 finished matches, several hours of play; the wrap and break cards (A15.6) cover long sessions.
 - **Walk-away rule (tested, A15.20).**
   - A save left alone for 30 days loses nothing it owns: currencies, cards, pending capsules and crates, War Chest progress and found feats are unchanged, and each bank sits at its cap.
-  - A player who plays the same matches once a week earns within about 15% of one who spreads them over 7 days. `sim:economy` reports this; it is a design target, not a player-facing promise.
-- **Economy.** No change for the engaged A6.9 profile, who empties every bank daily. Weekly players gain. The Phase 3 economy run includes it.
+  - A player who plays the same matches once a week earns within about 15% of one who spreads them over 7 days. `sim:economy` reports this; it is a design target, not a player-facing promise. With the Sundial a weekly player who returns to 34 ready capsules claims all of them over the week's matches.
+- **Economy** (measured on the built code 2026-09-30, details in A6.9 and `docs/decisions.md`). Same player before and after (7 finished ladder matches a day, 60% wins, 200 seeds): time to max Common +0.4%, Rare +3.5%, Epic −2.3%, Legendary −3.6%; copies a day −2.9%, Amber −1.5%; whole collection 188.5 → 195 days (+3.4%). That is slightly past the "about 3%" target on Rare, Legendary and the collection, and it is accepted: the shift is the rarity mix (bag capsules replace the Bronze-heavy Supply Capsule), so Rare and Legendary move in opposite directions and no income lever brings both closer. A player of 3 matches a day (730-day run, 50 seeds): copies +3.6%, Common −2.3%, Rare −6.3%, Epic −11.8%, Legendary −12.6% (faster), whole collection 357.5 → 369 days (+3.2%); the Sundial favours the casual player on purpose (the Supply Capsule was theirs). Weekly players earn within 1% of daily ones (28-day test). The bag, its odds and `tools/drops.ts` are unchanged (smoke run: 17 of 17 checks pass).
 
 ### A15.5 War Chest and counting wins (v1)
 
@@ -2218,7 +2238,7 @@ It replaces the weekly quest "Win 15 battles", whose Monday behaviour A6.7 never
 
 | Card | Trigger | Content | Buttons |
 |---|---|---|---|
-| Wrap | Once per session: the Result of the ladder win that used the last capsule charge, or the first Result after 30 min of active play with at least 3 finished matches | 1. Summary: "3 wins · 1 loss · Pikeman reached L6 · 2 new cards". 2. Best moment: the win with the lowest own base HP, or a feat found, with Watch. 3. Only when charges ran out: "Capsule charges used up. Wins still pay Amber and a Clay pip." 4. One forward line with no number or clock: "Next on your road: Kingsmoat banner." | Home (primary), Next battle |
+| Wrap | Once per session: the Result of the match that claimed the Sundial's last ready capsule, or the first Result after 30 min of active play with at least 3 finished matches | 1. Summary: "3 wins · 1 loss · Pikeman reached L6 · 2 new cards". 2. Best moment: the win with the lowest own base HP, or a feat found, with Watch. 3. Only when the Sundial ran empty: "The Sundial is empty. Ladder battles still pay Amber and a Clay pip." 4. One forward line with no number or clock: "Next on your road: Kingsmoat banner." | Home (primary), Next battle |
 | Tilt | Once per session: the Result of the 3rd ladder loss in a row (when the Warm-up rule fires, A6.3) | "Tough run. Watch the closest one, or call it here?" | Home (primary), Watch (the loss where the enemy base had the least HP left), Next battle (labelled "Warm-up match") |
 | Break | Break reminder on (the default): the first Result after each 60 min of active play | "You've played for an hour. A good moment for a break? Everything you've earned is saved." | Home (primary), Keep playing |
 
@@ -2266,7 +2286,7 @@ It replaces the weekly quest "Win 15 battles", whose Monday behaviour A6.7 never
 - **Rewards.**
   - The Daily bank gains +1 at each 04:00 and holds up to 7. A new save starts with 1.
   - A win at any difficulty uses one banked reward and pays an Age Capsule. Other wins pay 20 Amber.
-  - The Daily uses no charges and changes no trophies or MMR.
+  - The Daily changes no trophies or MMR. A finished Daily match claims a ready Sundial Capsule like any match (A6.3).
 - **Copy result.** After a finished Daily, one button copies a plain-text line:
   - a win: `Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Won in 5:42 · Base 63%`
   - a loss: `Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Lost at 6:10`
@@ -2288,7 +2308,7 @@ It replaces the weekly quest "Win 15 battles", whose Monday behaviour A6.7 never
 
 Today Short War pays about 55% more trophies per minute than Full War, which pushes players away from the only format with the Future Age.
 
-| Format | Win trophies | Win Amber (without a charge) | Loss |
+| Format | Win trophies | Win Amber (without a Sundial Capsule) | Loss |
 |---|---|---|---|
 | Short War | +26 | 20 (40) | −20 |
 | Standard War | +31 | 27 (54) | −20 |
@@ -2297,7 +2317,7 @@ Today Short War pays about 55% more trophies per minute than Full War, which pus
 These are the A17 values (built; re-derived from the A17.2 medians at a 60% win rate: 1.60 / 1.63 / 1.60 trophies per minute). The Amber in brackets doubles the win Amber as before. A18's longer formats (A18.3.4) re-derive the table from the A18.12 medians with the same ±5% rule.
 
 - The table applies from 400 trophies (Arena 3, where every format is open). Below 400, every format pays +30 and 20 (40) Amber, as A6.3 does today, so onboarding is not slowed.
-- Loss rules (0 below 400, never below the arena gate), MMR, capsules and charges are unchanged.
+- Loss rules (0 below 400, never below the arena gate), MMR, capsules and the Sundial are unchanged.
 - The Standard War row is set from the measured Standard median in Phase 3. The aim is trophies per minute within ±5% across formats at a 60% win rate. A2.14 gets no new gated target.
 - A2.10's sentence "Trophies and rewards are the same for every format" is replaced by a pointer to this table.
 
@@ -2403,9 +2423,9 @@ The reviews found that the proposal rejected the obvious dark patterns but rebui
   - A found feat adds its own step (there are 12 in all).
   - Everything else (Amber, Codex points, quest progress, Supply progress) sits in one summary row that expands on tap.
   - Tap to skip still works. This replaces the one-at-a-time list in A9 screen 7.
-- **Home:** the War Chest bar replaces the weekly quest line, and Supply progress lives inside the capsule tray. There is no other new widget in v1.
+- **Home:** the War Chest bar replaces the weekly quest line, and Supply progress lives inside the capsule tray. There is no other new widget in v1, with one exception the owner asked for (2026-09-30, a calm "ready" badge): the Sundial glyph in the top bar, in colour while a capsule is ready and grey when none is. It shows no number, count, time, glow or motion, and it opens the Capsules tab. (Home had no charges counter before it, so it is an addition, not a swap.)
 - **No backlog counts.** Counts of things ready to open ("Open (3)") are fine. Counts of things not yet done ("Unfinished maps (7)", "Dailies (5)", the quest queue) are not.
-- **No timers on Home.** Charges show "12/28". The rule "+1 every 6 hours" sits in the info panel.
+- **No timers on Home.** The Sundial glyph shows no number and no time. "12 of 34 ready", the rule "one every 5 hours" and the clock time of the next one sit in the Capsules tab only.
 - **No cross-feeds** in later phases: each new system pays into its own track plus Dust, never into several tracks at once.
 - Any later system that adds a Home widget or a Result step must remove one or pass the meter test (A15.1).
 
@@ -2423,7 +2443,7 @@ The reviews found that the proposal rejected the obvious dark patterns but rebui
 **Rules**
 
 - Heat unlocks per General after its 3 Conquest stars. Before a Heat match the player picks any set of conditions. **Heat** is the sum of their points.
-- Retries are free: no charges, trophies or MMR, as in Conquest.
+- Retries are free: no trophies or MMR, as in Conquest (a finished retry claims a ready Sundial Capsule like any match, A6.3).
 - No condition changes the sim: no `SideConfig` rule, `SIM_VERSION` or `contentHash` change. Each one sets the opponent spec or the plan, or is checked from `MatchStats` and the outcome when the match ends.
 
 | Condition | Points | How it works |
@@ -2656,7 +2676,7 @@ The reviews found that the proposal rejected the obvious dark patterns but rebui
 
 **Meaning changes with no type change** (JSDoc plus a decisions.md entry):
 
-- `capsules.charges`: bank maximum 28.
+- `capsules.charges`: bank maximum 28 (from 2026-09-30 the Sundial's ready capsules, maximum 34, A6.3).
 - `capsules.dailyBank`: the Supply allowance, maximum 7. `PendingCapsule.kind 'daily'` is shown as "Supply Capsule".
 - `QuestState.daily`: a queue of up to 21; the first 3 are active.
 - `QuestState.weekly`: War Chest progress, never reset; `weekKey` is unused.
@@ -2672,7 +2692,7 @@ The reviews found that the proposal rejected the obvious dark patterns but rebui
 
 - `arenas.ladder.win`: keyed by format, plus the 400-trophy rule (A15.8).
 - `dailyModifiers.challenge`: `bankMax` 7; `difficulties` recruit 2, veteran 5, warlord 8; `standardLevel` 7; the opponent pool (8 Generals).
-- Capsule and economy rules: `chargesMax` 28; `supply` with `matchesPerCapsule` 3 and `allowanceMax` 7, replacing the Daily Capsule's bank of 3.
+- Capsule and economy rules: `chargesMax` 28; `supply` with `matchesPerCapsule` 3 and `allowanceMax` 7, replacing the Daily Capsule's bank of 3. (2026-09-30: charges max 34 and `regenMs` 5 h as the Sundial, `supply.accrues` false, `clayMeterPips` 2; A6.3.)
 - `quests`: `queueMax` 21, a `weight` per quest, and `warChest` with `winsPerChest` 20, replacing `weekly_win_15`.
 - New `feats` table: 12 rows with predicate kind and parameters, reward, title and string keys; added to `MetaTables`.
 - Stretch: foil crafting prices, `amberToDustRatio` 10, result-tip thresholds.
@@ -2777,7 +2797,7 @@ The unfunded wishlist after v1 is one ranked list in A16.24. It keeps this secti
 
 **C5 additions** (Phase 3 bug bash). Items 24, 26 and 36 change to match A15.4 and A15.3.
 
-45. The first Supply Capsule appears after capsule 2; later ones need 3 finished matches each; the allowance banks 7. Charges bank 28. The quest panel shows 3 quests.
+45. The first Supply Capsule appears after capsule 2; from 2026-09-30 no new allowance accrues and an allowance already banked still needs 3 finished matches; the Sundial holds 34 (was: the allowance banks 7, charges bank 28). The quest panel shows 3 quests.
 46. The War Chest fills from counting wins only (never Skirmish), grants at 20 and never resets.
 47. The Daily offers three difficulties, shows the same opponent in two browsers set to the same date, pays from the bank, and Copy result copies the line with no name.
 48. The wrap, tilt and break cards appear as specified, never in battle, with Home as the primary button. The night line appears after 22:00.
@@ -2801,7 +2821,7 @@ The unfunded wishlist after v1 is one ranked list in A16.24. It keeps this secti
 **Compliance switches** (designed, not built). They are built only if a final law or a platform requires them:
 
 - `capsuleMode: 'disclosedCycle'`: the next 10 capsule tiers are shown in advance (law P-1).
-- Play-accrued banks: +1 charge per 2 finished matches instead of per 6 h, and +1 Daily reward per 3 finished matches instead of per day.
+- Play-accrued banks: +1 Sundial capsule per 2 finished matches instead of per 5 h, and +1 Daily reward per 3 finished matches instead of per day.
 
 ### A15.21 Review resolution
 
@@ -3450,17 +3470,17 @@ A15.17's rule stands: core modes are permanent. Every mode has a natural end (A1
 - Two lane bands at half height: landscape only, unreadable in portrait.
 - A 1-week internal prototype plus an owner playtest decides whether it lives on.
 
-### A16.14 Fortifications (prototype v1; card type v1.2 if the gate passes)
+### A16.14 Fortifications: the Fort class (walls, towers, camps, traps; A18.13 phase 6)
 
-**Rescheduled by A18.9 (owner direction: a stationary class, early).** The Fort card type ships as A18.13 phase 6, right after the War Path, with the rules below: each age loadout gains 1 Fort slot beside its 6 units, a fort is placed by dragging it onto a pad (the power drag), wall picks join the War Council's Defences track, and the wall-turtle gate (≤ 45%, ≤ 15% at the Bell) applies. The pads stay at p 240, 360 and 460, inside turret cover on the 2,000 lu lane. Forts are taught at Bronze L4 (Nile L4 once Nile exists).
+**Rescheduled by A18.9 (owner direction: a stationary class, early) and widened by the owner request of 2026-09-29 (walls, a camp that spawns free weak troops, towers that shoot but stand still).** The Fort card type ships as A18.13 phase 6, right after the War Path, with the rules in A16.14.1-A16.14.9 below: four kinds (Wall, Tower, Camp, Trap), 1 Fort slot in each age loadout beside its 6 units, placed by dragging onto a pad (the power drag), the wall pick is Engineers in the War Council's Defences track, and the turtle and mirror gates of A16.14.9 apply. Home pads move to p 160, 230 and 300 (revision 2, 2026-09-30): the old 360 and 460 stopped a wave at p 384-484, outside every Common turret's reach, so a wall there could not do its job; camps may also use two Field pads (640, 820). Forts are taught at Bronze L4 (Nile L4 once Nile exists). Status: decided, not built; an indicative emulation exists (A16.14.9) and F0 re-measures with the full rules before the go/no-go.
 
 | | |
 |---|---|
 | Class | Healthy |
 | Decisions | Gold and pop into a wall (defence) or into units (attack); which pad; when to commit, given the build time and the 25 s recharge. For the attacker: bring Heavies, siege units, tunnelers or air, wait for decay, or push in Fog |
-| Counterplay | A fort is a visible commitment: it scaffolds for 5 s before it blocks. Heavy, siege and Legendary attacks deal ×2 to it; every blocked attacker can hit it; it decays and takes ×2 in Siege; tunnelers pass under and air flies over |
-| AI | A `place` action: under pressure, the most forward free legal pad inside turret cover (Mama Moss places more). Walls **count** in the push-gate defence value D (each live wall adds 2 × its cost), and the bot answers them with siege, tunneler and air picks through `aiHint.vsStructure`, because the counter matrix (equal-gold duels on a flat lane) cannot value walls |
-| Size, phase, owners | Prototype S · v1 Phase 2a, dev page only · WP5, WP12 · `docs/requests/wp5-wall-sandbox.md`. Card type L+ · v1.2 · WP0, WP1, WP2, WP3, WP4, WP5, WP7, WP8, WP9, WP12 |
+| Counterplay | A fort is a visible commitment: it scaffolds for 5 s before it blocks, and can be hit meanwhile. Heavy, siege, artillery and Legendary attacks deal ×2 to it; up to 5 blocked attackers can hit it at once; ranged attacks prefer the base over it; it decays, takes ×2 in Siege and crumbles fast once Siege starts; tunnelers pass under and air flies over |
+| AI | A `fort { pad }` action (A16.14.7), planned in the bot's gold ledger: walls, towers and traps only against a real, non-Heavy wave in the bot's half, on a pad that completes before the enemy arrives; camps once per age while Charging. Forts **count** in the push-gate defence value D (a wall or tower adds 2 × its cost), never as army, and the bot answers them with Heavy, siege, artillery and Legendary picks through `aiHint.vsStructure`, because the counter matrix (equal-gold duels on a flat lane) cannot value forts. Bots use only fort cards a player at that point could own |
+| Size, phase, owners | Prototype S · v1 Phase 2a, dev page only (built as `?dev=1#walls`) · WP5, WP12 · `docs/requests/wp5-wall-sandbox.md`. Card type L+ · A18.13 phase 6 (F0-F5, A16.14.9) · WP0, WP1, WP2, WP3, WP4, WP5, WP6, WP7, WP8, WP9, WP11, WP12 |
 | From | DP-19; benchmarks idea 10; SV C2; BS 1, 5 |
 
 **Checkpoint A prototype** (no sim, contract, content or art change).
@@ -3479,39 +3499,131 @@ A15.17's rule stands: core modes are permanent. Every mode has a natural end (A1
 - fun but the worst case is > 55%: build the full rules sim-first in v1.2 and pass the wall-turtle gate before any fort art is made;
 - not fun: park forts, and re-confirm the underground layer's scope with the owner (A16.15).
 
-**Card type rules (v1.2).**
+Emulated 2026-09-30 (A16.14.9, indicative only): the worst case won 0-4% against tier VII in Short, Standard and Full War, but on the old pads, with rules missing and some Bell rows already over their gates. The owner decided early (A18.9); the burden of proof is carried by the F0 rows of A16.14.9 on the full rules, and the owner check after F3 asks "fun, or turtle-y?".
 
-- **Slot and unlock.** Arena 3. Each age loadout gains 1 Fort slot: 5 units, 2 turrets, 1 fort, 1 power.
-- **Pads.** 3 per side at p 240, 360 and 460, all inside turret cover (or free placement at p 200-460 if the owner preferred it). At most **2** forts alive per side, one per pad.
-- **Commitment.** A pad is legal only when no enemy ground unit is within 120 lu of it. A placed fort is a **scaffold for 5 s**: visible to both sides, hittable, not blocking, traps unarmed. Only then does it block. A wall cannot be dropped as a panic button in front of a wave.
-- **Pop.** A live fort (scaffold included) uses 6 pop, like a Heavy, so spare gold at 60/60 cannot flow into walls for free.
-- **Recharge.** 25 s after placing; first ready at 0:20; evolving does not reset it.
-- **Cost,** flat across ages like units: wall 125 gold, trap 75, bunker 175.
-- **Wall HP** = 1 × the age's Heavy Common HP at L1: Stone 560, Medieval 756, Gunpowder 1,019, Modern 1,378, Future 1,860. Levels scale as for cards.
-- **Contact rule.** Every enemy ground unit whose path the wall blocks, standing within 60 lu behind the blocked front unit, may start its first attack on the wall as if in range. Break time falls as the attack grows.
-- **Damage taken:** ×2 from Heavy, siege-tagged and Legendary attacks (a `mods` entry `vs: 'structure'`); ×0.5 from attacks with range ≥ 100, which pick a fort only when no unit candidate is in range; ×2 during Siege; Age Powers and Last Stand never hit forts.
-- **Decay.** From 60 s after placement, −1% of max HP per second, ×2 in Siege: about 160 s of life untouched, about 110 s in Siege.
-- **Blocking.** Enemy ground units stop at a wall; own units walk through their own forts; air ignores forts; burrowed units pass under.
-- **Bounty.** Destroying a fort pays 60% of its cost in gold and 100% in XP, like a unit. A decayed fort pays nothing.
-- **Forts never** queue, convert on evolve or modernise.
-- **Traps:** untargetable, non-blocking and always visible to both sides; they fire when an enemy ground unit's centre comes within 30 lu (1 s between charges); air and burrowed units never trigger them. **No trap stuns**, so a trap plus a power telegraph is never a guaranteed hit. (Power rework: a Home stun plus a Field power can combine; both are capped, priced and reloaded, and `economy.power.lockMs` is the lever, A2.9.6.)
-- **Keyboard:** D places on the most forward free legal pad. **HUD:** a Fort button with drag-to-pad (the power drag); on the phone, if the owner found the tray too tight (task 1), forts are placed by long-pressing a pad instead.
+**Card type rules (the Fort class; A18.13 phase 6; owner request 2026-09-29, `docs/decisions.md` "Owner request 2026-09-29: stationary class (walls, spawners, towers)").** "Der skal også være en klasse af "krigere" som er faste strukturer, som man kan stille på banen, f.eks. et palisadehegn, en militærbase der spawner gratis meget svage tropper hver x sekund, tårne der kan skyde men som står stille." The class has four kinds: **Wall**, **Tower** (a stationary shooter, never a mount), **Camp** (the spawner) and **Trap**. These rules replace the earlier v1.2 list; the prototype above and its gate stay as history.
 
-**Season 1 cards (10):**
+#### A16.14.1 Kinds, slot and pads
 
-| Age | Wall (Common) | Trap (Rare) |
-|---|---|---|
-| Stone | Palisade | Spike Pit: 3 charges, 40 damage and 40% slow for 2 s each |
-| Medieval | Shield Barricade | Caltrops: 3 charges, 40 damage and 50% slow for 3 s each (×P) |
-| Gunpowder | Gabion Wall | Powder Keg: 1 charge, 250 splash r60 (×P) |
-| Modern | Sandbag Bunker (175 gold): a wall; allies within 60 lu behind it take −20% damage from ranged attacks | Minefield: 3 charges, 150 splash r40 each (×P) |
-| Future | Hardlight Barrier: regenerates 1% per second after 3 s without damage, and still decays | Grav Snare: 1 charge, 60% slow for 3 s, r80 |
+| Kind | Rarity | Cost | Pop | Size | Pads | Role | Strong vs | Weak vs (the answer) |
+|---|---|---|---|---|---|---|---|---|
+| Wall | Common | 125 (Bunker 175) | 6 | large | Home | Stops a wave inside turret cover; buys time for turrets, the Home power and the next units | Infantry and Ranged waves (ranged deals ×0.5) | Heavy, Legendary, siege and artillery (×2), air, a drop landing behind it, waiting (decay) |
+| Tower | Epic | 150 | 6 | medium | Home | A stationary archer in front of the base: ground and air | Ranged units, runners, light air | Heavy (×2), an Infantry rush that reaches it, artillery that outranges it, Siege; in Medieval and Future also Suppress (silenced) |
+| Camp | Rare | 150 | 6 | large | Home or Field | Sends a free, very weak Levy every 8 s (2 alive at most) that always marches: pressure and a turret soak, never a defence | Turtles; armies without splash | Splash and cleave, Heavy (×2 on the camp), Siege (it stops) |
+| Trap | Rare | 75 | 3 | a 60 lu patch | Home | Untargetable, non-blocking, always visible; fires when an enemy ground unit steps on it | Ground waves on a known path | Air and burrowed units, a cheap unit sent first, waiting (it expires) |
 
-**Architecture (full):** forts are stationary units with the F2 traits `structure`, `allyPassable` and `noPowerDamage` (targeting, damage, deaths, hashing, events and views reused), plus scaffold, decay, pad legality and the contact rule; `Tag` + `structure`; `Loadout.structures?`; command `place { side, slot, pad }`; `EconomyRules.fort { pads, max, rechargeMs, firstReadyMs, scaffoldMs, decay }`; F2 for traps; F5 slot counts; a structure-aware counters generator; save loadout migration.
+- **Slot.** Each age loadout has **1 Fort slot** beside its 6 units, 2 turrets and 2 powers; the four kinds compete for it (a real deck choice per age; one tray button fits the HUD budget, A2.9.10). Empty is legal.
+- **Pads** (own-frame p, `economy.fort.pads`): **Home pads** 160, 230, 300 and **Field pads** 640, 820 (own half, beyond cover). A large fort on pad 300 stops attackers with their near edge at p 324, inside every age's 150-gold Common turret (340-380 lu); pad 160 (edge 184) is covered by every Common but the Pitch Cauldron (130). A static test asserts max Home pad + 24 + 12 ≤ each age's 150-gold Common range. Walls, towers and traps use Home pads only; a Camp may also use a Field pad while the own front at **rank 2** (`fieldFrontRank`; `frontP(own, 2)`, A2.9.4: the second frontmost own trained, ground, surfaced, non-structure unit, not mid-leap) stands at p ≥ pad + 100 (`fieldBehindLu`), so levies start near the fight and one runner cannot open a Field pad.
+- **Cover invariant (A2.8).** Turret and field-tower cover never reaches past own-frame p 560 (`towerReachMaxP` = `turretRangeHardCapLu`), so the gap between the two covers stays ≥ 880 lu. A tower's range is min(card range, 560 − pad − 16): on pads 160 and 230 every tower keeps its card range, on pad 300 at most 244. This is also why towers can never stand on Field pads (pad 640 would reach p 926); the emulated Field-tower rows (A16.14.9) pointed the same way but were confounded by placement volume.
+- **Legal pad** (checked on the accepting tick): the kind may use it; no own fort, scaffold or trap stands on it; no enemy ground unit (alive, not burrowed, levies included) has its centre within 120 lu (`padClearLu`); a Field pad also needs the rank-2 front as above.
+- **Safe pad** (the AI and Key D only; a player may drag onto any legal pad, and the HUD rings the unsafe ones amber, "Builds under fire"): a legal pad that every enemy ground unit needs at least scaffold time + 1 s to reach (edge distance × 20 ÷ current speed ≥ scaffold ticks + 20; standing units at card speed), and for a Home pad one inside own cover (the longest range among own built turrets − 24 − 12; with no turret only pad 160). `mostForwardSafePad` falls back to the most rearward legal pad.
+- **Placement** also needs: the slot recharged (**25 s** after each placement, first ready at **0:20**, evolve does not reset it); gold ≥ cost (paid on acceptance, never refunded); pop + the fort's pop ≤ 60 (scaffolds count); fewer than **2** own forts alive (scaffolds and traps count), one per pad; for a Camp, no own Camp alive; **not in Siege**; a Fort card in the loadout. Legal during Ascension with the old age's card until `ageUp`.
+- **Command** `{ t: 'fort'; side; pad: 0..4 }`. Validation order: `badCommand` → `noFort` (empty or meta-locked slot) → `fortSiege` → `fortRecharge` → `fortMax` → `fortCampMax` → `fortPadKind` → `fortPadTaken` → `fortPadEnemy` → `fortPadField` → `popFull` → `noGold` → accept: pay, reserve pop, spawn the scaffold (or the unarmed trap), restart the recharge. **`src/core/fortPads.ts`** (`padKind`, `padLegal`, `legalPads`, `safePads`, `mostForwardSafePad`, `towerRangeOnPad`, `fortDenyReason`; pure integer) serves the sim, the AI, the HUD and the tools, as `core/powerReach.ts` does for powers.
 
-**Art:** 10 static rigs with scaffold, build, hit, three crumble stages and collapse; armed and spent trap states; subtle pad markings. About 1 agent hour each (code-drawn). Sounds: build thunk, crumble, trap snap.
+#### A16.14.2 Shared rules
 
-**Gates:** wall-turtle proxy ≤ 45% with ≤ 15% of its matches at the Bell; the 4-turret turtle unchanged; each fort card within ±3 points and a Bell delta ≤ 5; has-a-starter-answer (the Heavy Common ×2 against structures qualifies).
+- **Scaffold.** A placed fort starts at 50% of its max HP (`scaffoldHpBp` 5,000) and completes after **5 s** (`scaffoldMs`; Engineers: 3 s). It is visible and hittable but does not block; a tower does not fire, a camp does not spawn. At completion it gains the other 50% (damage kept), blocks, and its decay clock starts. A scaffold destroyed early pays the normal bounty. Traps arm after 2 s and are untargetable from the start.
+- **Level.** Forts have no card level. HP and damage scale with the **loadout multiplier** of the age loadout the fort came from (the average of 10,000 + 500 × (L − 1) over its unit cards; the power rule, A2.9.6); levies use their camp's multiplier.
+- **Blocking.** Enemy ground units stop at a Wall, Tower or Camp. Own units walk through their own forts (the overtaking rule treats a fort as a parked ally with the longest range). Air ignores forts; burrowed units pass under (A16.15). Traps never block.
+- **Contact rule.** Every enemy ground unit whose path a fort blocks and that stands within 60 lu (`contactLu`) behind the blocked front unit may start its first attack on the fort as if in range.
+- **Targeting.** Melee and attacks with range < 100 treat a fort as a normal candidate; an attack with range ≥ 100 picks a fort only when no unit candidate is in range (forts sort after units in every priority class). Turrets never target forts; towers never target bases or forts. Forts are never F, never eligible for powers (targets, cap slots, auto-aim value, strike picks) and never picked by buffs; a drop still measures "150 lu beyond the enemy's frontmost ground unit" with forts included, so it can land behind a wall.
+- **Damage to a fort** (the A2.7 pipeline): step 2 uses the attack's `structure` mod (×2) if it has one, else ×0.5 when the attack's range ≥ 100 (`rangedTakenBp` 5,000; a type mod, so it sits outside the −35% floor), else ×1.0; forts carry only the tags `structure` and `ground` (Anti-heavy mods do not apply); forts ignore every status, aura, heal, shield, knockback and pull; step 7 adds **×2 in Siege** (`siegeTakenBp`). The compiler puts `{ vs: 'structure', bp: economy.fort.structureBp }` (20,000) first in every attack of Heavy-group, Legendary-group and siege-role (`siege`, `siegeHeavy`) units, riders included, so no card table changes. Units with `siegeOnly` (Battering Ram, Sapper) use their `vsBaseDamage` against forts with no further ×2. Age Powers and Last Stand never hit forts. Heavy Breaker (A18.5.2, v1.1) adds +25%.
+- **Decay.** From 60 s after completion, every 20 ticks −1% of max HP (`decayBpPerSec` 100), −2% in Siege: about 160 s of life untouched, 110 s in Siege. A fort that decays to 0 is removed (`fortDecayed`): no bounty, no XP, pop freed. Traps expire 120 s after arming or when spent.
+- **Siege: forts crumble.** No placing, decay ×2, damage taken ×2, camps stop spawning, towers deal ×0.5 (the turret rule). The HUD greys the Fort card with "Siege: forts crumble".
+- **Bounty.** A destroyed fort pays the killer the unit rates: 50% of its cost in gold and 70% in XP (underdog +50%, Forage and Bounty Hunters as for units). The owner gets **no loss XP**. Decayed forts, levies and traps pay nothing. **Measured:** a lower fort bounty (30% gold, 42% XP) raised the mirror Bell by 5 points and did not make forts more useful, so the unit rates stay.
+- Forts never queue, convert on evolve, modernise or sell; an older-age fort keeps its stats. The falling gate never applies to forts.
+
+#### A16.14.3 Kind rules
+
+- **Wall.** HP = 1 × the age's Heavy Common HP (A16.14.4). No attack. **Sandbag Bunker** (Modern, 175 gold): own ground units within 60 lu behind it take −20% damage from attacks with range ≥ 100 (a guard aura: the strongest applies, inside the −35% floor). **Hardlight Barrier** (Future): regenerates 1% of max HP per second after 3 s without damage, only until its decay starts.
+- **Tower** (a field tower, never a mount). HP = 50% of the age's Heavy Common HP. One attack: the age's Ranged Common attack with damage ×1.5 (truncated), the same interval, projectile and G/A flags, range = that card's range (hard cap `towerRangeCapLu` 270 for every modifier; turrets reach 220-480, 560 with research), single target, priority `front` from the tower, windup 0%. Distinct from turrets: pads not mounts, HP, pop and decay, never targets bases or forts, Watchtowers, Quick Loaders and Arsenal never apply, cannot be sold or modernised, and **Suppress** (A2.9.6) silences towers as well as mounts. ×0.5 in Siege.
+- **Camp and Levy.** Camp HP = 60% of the age's Heavy Common HP, no attack. A **Levy** is a hidden unit card per age (`UnitDef.hidden`, `levy: true`) cloned from the age's Infantry Common with 40% of its HP and damage (truncated, min 1), its speed, range, interval, size and tags, and no abilities. The first levy comes 2 s after completion, then one every **8 s** (`camp.everyMs`) while fewer than **2** of that camp's levies live (`camp.maxAlive`; the timer does not bank), at the camp's p. Levies are **summons**: no pop, no bounty, no loss XP, never F, never queued. They are Infantry for War Council research, take buffs and heals like any unit, **always march** (they ignore Hold, Fall back and the flag, so a camp can never be a free standing screen), and take a power cap slot only after every eligible trained unit (A2.9.5 cap order: trained units first). A camp stops spawning in Siege and when destroyed or decayed; live levies stay. A levy has 16% of an Infantry's HP × damage; a camp's whole life (≈ 20 levies) is worth about 3 Infantry if every levy fights.
+- **Trap.** Untargetable, non-blocking, always visible to both sides (a marked patch with charge pips), 3 pop, no HP. Fires when an enemy ground unit's centre comes within 30 lu, 1 s between charges, on that unit plus its area (A2.6 area rule). Air and burrowed units never trigger it and are never hit. **No trap stuns, snares, pulls or knocks back** (a trap plus a power telegraph is never a guaranteed hit). **Budget** (static check): summed primary damage over all charges 0.6-1.2 × the age's L1 Infantry HP; splash radius ≤ 60; slows ≤ 60% for ≤ 3 s (a control trap may go below the damage floor).
+
+#### A16.14.4 Roster (32 cards, 8 levies; L1)
+
+| Age | Wall (Common) | Tower (Epic) | Camp (Rare) → Levy | Trap (Rare) |
+|---|---|---|---|---|
+| Stone | Palisade (`palisade`) 560 | Sling Perch (`sling_perch`) 280 HP, 27 / 1.4 s, r200 | War Camp (`war_camp`) 336 → Cave Youth (`cave_youth`) 64 HP, 8 / 1.0 s | Spike Pit (`spike_pit`): 3 × (40 and 40% slow 2 s) |
+| Bronze | Cyclopean Wall (`cyclopean_wall`) 630 | Pyrgos Tower (`pyrgos_tower`) 315, 30 / 1.4 s, r210 | Muster Tents (`muster_tents`) 378 → Citizen Levy (`citizen_levy`) 74, 9 | Hidden Stakes (`hidden_stakes`): 3 × (46 and 40% slow 2 s) |
+| Medieval | Shield Barricade (`shield_barricade`) 756 | Longbow Tower (`longbow_tower`) 378, 36 / 1.4 s, r230 | Levy Camp (`levy_camp`) 453 → Peasant Levy (`peasant_levy`) 86, 10 | Wolf Pits (`wolf_pits`): 3 × (54 and 50% slow 3 s) |
+| Gunpowder | Gabion Wall (`gabion_wall`) 1,019 | Musket Redoubt (`musket_redoubt`) 509, 70 / 2.0 s, r240 | Militia Muster (`militia_muster`) 611 → Militiaman (`militiaman`) 116, 14 | Powder Keg (`powder_keg`): 1 × 330 splash r60 |
+| Industrial | Trench Parapet (`trench_parapet`) 1,187 | Sniper Nest (`sniper_nest`) 593, 49 / 1.2 s, r250 | Recruiting Depot (`recruiting_depot`) 712 → Volunteer (`volunteer`) 132, 16 | Tripwire Charge (`tripwire_charge`): 2 × 120 splash r40 |
+| Modern | Sandbag Bunker (`sandbag_bunker`, 175 g) 1,378 | Pillbox (`pillbox`) 689, 48 / 1.0 s, r260 | Forward Base (`forward_base`) 826 → Conscript (`conscript`) 157, 19 | Minefield (`minefield`): 3 × 130 splash r40 |
+| Future | Hardlight Barrier (`hardlight_barrier`) 1,860 | Sentry Pylon (`sentry_pylon`) 930, 64 / 1.0 s, r260 | Clone Bay (`clone_bay`) 1,116 → Clone Cadet (`clone_cadet`) 188, 26 | Grav Snare (`grav_snare`): 1 × (110 and 60% slow 3 s to up to 4 within r80) |
+| Cosmic | Void Rampart (`void_rampart`) 2,509 | Ion Spire (`ion_spire`) 1,254, 81 / 1.0 s, r270 | Warp Barracks (`warp_barracks`) 1,505 → Star Recruit (`star_recruit`) 280, 36 | Void Mine (`void_mine`): 2 × 290 splash r50 |
+
+Towers hit ground and air. Trap budget (primary damage ÷ I): 0.75, 0.74, 0.75, 1.13, 0.73, 0.99, control, 0.83. `caltrops` and `barbed_wire` are power ids since the power rework, so those trap names moved to Wolf Pits and Tripwire Charge. Collection: 32 Fort cards (8 Common, 16 Rare, 8 Epic) plus 8 hidden levies; the schema wants exactly one fort of each kind per age and the wall as `source: 'starter'`; album numbers continue after the last card (A18.9.3).
+
+#### A16.14.5 Interplay
+
+- **Stances (A18.4):** forts ignore stance; levies always march; Fall back leaves a Field-pad camp exposed.
+- **War Council:** the wall pick is **Engineers** (Defences rank II): scaffolds 5 → 3 s (A18.5.3). Mount research never applies to towers. Infantry lines apply to levies. Heavy Breaker (v1.1) +25% vs structures. No other fort research until the A16.14.9 gates hold in production.
+- **Powers (A2.9):** never hit forts; forts are never eligible, never F; Suppress silences towers; drops can land behind a wall; levies go last in the cap order; buffs never pick forts.
+- **Air:** flies over; air attacks hit forts (×0.5 at range ≥ 100, the bomber's drops ×1); towers shoot air.
+- **Siege units, Legendaries, Heavies:** ×2 (siege-only units use their base damage). The Heavy Common of every age is the starter answer. Anti-heavy deals ×1 (forts are not armored); the counter legend gains "Heavy beats Fort".
+- **Overdrive:** unchanged rules. **Siege:** forts crumble. **Evolve:** the Fort slot flips to the new age's card; the recharge carries; built forts keep their age.
+- **Underground (A16.15, later):** burrowed units pass under and never trigger traps. **Victory `target` (A18.7.3):** a War Path boss may pre-place one disclosed fort. **Last Stand and the falling gate** never touch forts.
+
+#### A16.14.6 Sources, unlock and save
+
+- **Starter:** the 8 walls, granted when the Fort slot unlocks. **War Path first clears** (A18.7.8; L3 is a unit, L5/L7/L9 powers, L10 the boss): each region's **L4** grants its Camp, **L6** its Trap, **L8** its Tower, shown on the node; clears before the unlock still grant them. **Trophy Road fallback:** the same 24 as extra items on nodes 2,100-4,000 in region order (2,100, 2,200, 2,300 and 2,400 carry two, the other 16 nodes one); whichever source comes first grants the card, the other pays 60 Amber.
+- **Never capsules; no copies, levels or Dust.** Adding 24-32 cards to the drop pools would stretch time-to-max for every card and move the A6.9 targets and the 2026-09-29 capsule ladder, so the capsule economy stays exactly as tested. Revisit only with an economy-sim run within ±5% of today's median days to max.
+- **Unlock:** the first clear of War Path Bronze L4 or 400 trophies (Arena 3), whichever first; one ceremony ("Forts! Build on the lane."). While locked, `meta` sends `fort: null` for both sides, bots included (`noFort`). The tutorial and War Path levels before Bronze L4 play without forts. The Daily Challenge always plays the Fort slot; a player whose slot is locked gets each age's wall for Daily matches only.
+- **Save** (the next `SaveDoc` version after the newest at build time; v11 today, after the Sundial's v10), additive and idempotent: every loadout gains `fort: null`; `fortsOwned`; `flags['fort.slot']` for saves with `wp.bronze.l04` cleared or best trophies ≥ 400, which also grants the 8 walls and fills each loadout's `fort` with its age's wall; the forts of every cleared L4/L6/L8 node and every claimed Road node ≥ 2,100 are granted (a double grant pays 60 Amber once). Fixtures: fresh, Stone-only War Path, Bronze L4 cleared, 450 trophies ladder-only, War Path to Medieval, road claimed to 2,500; each asserts no lost id, the slot rule, no double grant and idempotence.
+
+#### A16.14.7 Army, HUD and AI
+
+- **Army (A18.9.3, ui-plan 4.2):** the In battle band gains a **Fort 1/1** group with one slot after Powers (11 × 58 + 10 × 6 + 3 × 8 = 722 of 750 px at 844); the slot shows the kind glyph, cost and pop, a dashed "+ Fort" when empty, a padlock and "War Path Bronze 4 or 400 trophies" when locked; forts join Available and Locked with their source; a fort dropped on another slot bounces back ("Forts go in the Fort slot"). Card detail: a lane diagram with the five pads and the kind's legal pads lit, the numbers, "Crumbles after 60 s", "Heavies break it ×2", "Siege: forts crumble". Auto-fill picks the wall; no advisor warning for an empty Fort slot.
+- **HUD (A9.2, A2.9.10, ui-plan 4.7):** the Fort card sits between the six unit cards and the stance button (at 844: 730 of 750 px; below 820: 657 of 686); card face: art, kind glyph, cost chip, recharge arc and seconds, "2/2" at the cap. **Drag onto a pad** (the shared power drag, `src/ui/components/drag.ts`): on pick-up every own pad lights (legal: a green ring and a ghost of the fort to scale; illegal: grey with a reason, "Enemy near", "Army first", "Taken"); the ghost snaps to a legal pad within 24 px with a small bump and haptic tick; the camera edge-scrolls; release on a legal pad places (MR-70b: the gold floats "−150", the ring drains, the scaffold rises in dust); release elsewhere or over the HUD cancels at no cost. Tap starts aiming; a tap on a pad or its minimap tick places. **Key D:** the most forward legal pad. Denied presses say why: "Ready in 12 s", "Need 40 gold", "Army full", "2 forts up", "One camp at a time", "No clear pad", "Siege: forts crumble". Forts show HP bars (scaffolds striped), decay cracks, and traps their charge pips; an enemy fort joins Scouted on first placement; the enemy's fort recharge is not shown. Feel (A12, inside the freeze budget): placing thud and dust, completion squash-and-stretch and a flag unfurl, hits shake with material chips, crumble stages at 66% and 33%, collapse debris and trauma +0.2, trap snap with a 60 ms victim-local freeze, levy spawn puff and a small horn; Reduce motion fades. Reviewed with Playwright at 844 × 390 and 1280 × 720.
+- **AI (A7.2-A7.4):** action `fort { pad }` when the slot is ready, the pad legal and gold ≥ cost + the gold float. Wall, Tower and Trap: only when enemy ground value in the bot's half is ≥ 300, ≥ 1.2 × the bot's own army there, and less than half of it Heavy, siege or Legendary (a fort in front of Heavies feeds them): the most forward legal Home pad. Camp: once per age stay after the opening, while Charging with 2+ units out: the most forward legal pad, Field when legal. Push gate D: each live enemy wall or tower within 500 lu of their gate adds 2 × its cost, a camp or visible trap 1 ×. Answering forts: f_counter values a fort at 2 × its cost with a structure row (Heavy, siege, Legendary ×2; range ≥ 100 ×0.5) through `aiHint.vsStructure`. Tiers 0-I never place forts, II-IV walls and traps only, V-X every kind; VII-X place no fort while banking for a wave. Mistake list: "place a wall in front of Heavies". Generals: Mama Moss walls and traps, Captain Kettle camps, Sgt. Boomsworth towers, Rook answers forts with Heavies and siege, The Warden any. Bots see enemy forts as players do, never the recharge or gold, and stay labelled AI.
+
+#### A16.14.8 Art, sound, strings, contracts
+
+- **Art** (cartoon, A18.9.5; through the manifest, the sim owns timing): `fort.<slug>` for the 32 forts (static rigs with `scaffold`, `build`, `idle`, `hit`, `crumble1-3`, `collapse`, a `decay` crack overlay driven by HP; towers `attack`, windup-scaled; traps `armed`, `trigger`, `spent`); `unit.<levy slug>` for the 8 levies (the age's Infantry puppet at 0.85 scale in a plain levy outfit with a team sash); shared `fx.fort_pad`, `fx.fort_ghost`, `fx.fort_scaffold_dust`, `fx.fort_build_pop`, `fx.fort_debris_{wood,stone,metal,energy}`, `fx.trap_snap`, `fx.levy_spawn`; icons `icon.role.fort` (a crenellated wall) and `icon.fort.{wall,tower,camp,trap}`; tower projectiles reuse the age's Ranged Common projectile. Team colour on banners, sashes and trims (≥ 18% of a frame), idle life on every fort, anticipation before every tower shot, squash and stretch on build and collapse. About 1 agent hour per rig.
+- **Sounds (A13):** `fort_place`, `fort_build`, `fort_complete`, `fort_hit_{wood,stone,metal,energy}`, `fort_crumble`, `fort_collapse`, `fort_decay`, `trap_arm`, `trap_snap`, `trap_blast`, `camp_horn`, `levy_spawn`; towers use their Ranged Common's shot.
+- **Strings:** `card.<slug>.name|desc` (32 forts, 8 levies), `class.fort`, `fort.kind.*`, `fort.pad.{home,field}`, `fort.trait.*`, `fort.stat.*`, `hud.fort.*`, `hud.deny.fort{Recharge,Gold,Pop,Max,CampMax,NoPad,EnemyNear,ArmyFirst,Taken,Siege}`, `hud.key.d`, `army.fortSlot.*`, `legend.heavyBeatsFort`, `unlock.forts.*`, `tutorial.fort.*`, `result.tip.{fortHeavy,fortFeed}`, `fort.source.{warPath,road}`.
+- **Contracts (one WP0 bump):** `FortDef` in `CompiledContent.forts` (`kind: 'fort'`, `age`, `rarity`, `fortKind`, `source`, `cost`, `pop`, `hp`, `size`, `pads: 'home' | 'any'`, `attack?`, `camp?`, `trap?`, `cover?`, `regen?`, `visualId`, `sfx`, name and desc keys, `strongVs`, `weakVs`); levies as hidden `UnitDef`s with `levy: true`; `Tag` + `'structure'`; `EconomyRules.fort { pads, homePads 3, padClearLu 120, fieldBehindLu 100, maxAlive 2, maxCamps 1, rechargeMs 25000, firstReadyMs 20000, scaffoldMs 5000, scaffoldHpBp 5000, decayStartMs 60000, decayBpPerSec 100, siegeDecayBp 20000, siegeTakenBp 20000, rangedTakenBp 5000, rangedMinLu 100, structureBp 20000, bountyGoldBp 5000, bountyXpBp 7000, towerRangeCapLu 270, contactLu 60 }`; forts are `UnitState` entries with `fort?` state (card, pad, kind, completion tick, trap charges and timers, camp timer and levy ids, multiplier); `SideState.fortReadyTick`; `Loadout.fort?: CardId | null`; `Command.fort`; the reject codes above; events `fortPlaced`, `fortBuilt`, `fortDecayed`, `trapTriggered` (destruction uses `died`, levies `unitSpawned { summoned, from }`); `Observation.me.fort` (card, cost, ready ticks, alive, legal pads with reasons); `HudModel.fort` (+ `affordable`, `secondsLeft`, `cap`, `slotLocked`, `siege`); `MatchStats` fort counts, fort gold and bounty paid, levies and levy damage. All new state is hashed. **`SIM_VERSION` → 5.0.0** (the next major at build time): the golden replays are re-recorded once, deliberately, on frozen fixture content that gains `FortDef`, `economy.fort` and one fort of each kind; a new golden `13-forts.json` covers all four kinds, a destroyed scaffold, a decay removal, a trap charge, a levy stream stopping in Siege and a Heavy breaking a wall; `replay-verify` and the browser determinism e2e rerun; 4.x replays keep their result card and no longer play.
+
+#### A16.14.9 Measured, gates and levers
+
+**Measured (2026-09-30, `SIM_VERSION` 4.1.0, about 24,000 headless matches).** Forts were emulated on the current build: a patched content added per-age stationary hidden units with these formulas, the `structure` tag and the ×2 mod, and a per-tick driver placed them through the sim's dev helpers with pads, legality, the scaffold as a delayed spawn, pop, recharge, the caps, decay, no placing in Siege and camps with levies, paying from the placer's gold. Its gaps mostly favour the fort user (no contact rule, ranged cut ×0.65 under the −35% floor, ranged enemies target forts at unit priority, loss XP still paid, forts take ×1 in Siege, levies obey stance), so the turtle rows are worst cases; against it, enemy powers may touch forts and a bot did not plan its own forts. Tier VII Balanced at L7, 200 per row and format (Full 100):
+
+| Tier VII mirror, both sides use | Short: Bell, median | Standard | Full |
+|---|---|---|---|
+| No forts | 52.0%, 8:30 | 58.0%, 12:30 | 40%, 16:57 |
+| Walls | 41.0%, 8:13 | 48.0%, 12:26 | 28%, 16:05 |
+| Camps | 38.5%, 8:01 | 52.5%, 12:30 | 26%, 15:45 |
+| Towers on Home pads (the rule) | 43.0%, 8:15 | 49.0%, 12:25 | 44%, 17:19 |
+| Towers also on Field pads (rejected; the capped, smaller, Overdrive-banned, fast-decaying and enemy-half variants measured 54.5-70.0% Short and 68.0-82.5% Standard) | 56.5% | 78.0% | |
+
+| Vs tier VII (win %, Bell %) | Short | Standard | Full |
+|---|---|---|---|
+| `turret_turtle` | 0, 20.0 | 3.5, 33.0 | 3, 71 |
+| + walls on every recharge (`wall_turtle`) | 0, 4.0 | 0, 5.0 | 4, 17 |
+| + camps / + towers | 0, 9.5 / 0, 4.0 | 1.0, 8.5 / 1.0, 10.5 | 2, 20 / 2, 11 |
+| `home_turtle` | 0, 22.5 | 7.0, 42.0 | |
+| + walls / camps / towers | 0, 9.0 / 0, 20.0 / 0, 12.0 | 1.5, 11.5 / 4.0, 21.0 / 0.5, 13.0 | |
+
+No kind helps a turtle (each fallen wall paid the bot 62 gold and 87 XP); walls and camps cut the mirror Bell by 5-14 points and shorten matches; towers are neutral at home and a stall engine anywhere forward. A lower fort bounty (30% gold, 42% XP) raised the wall mirror Bell by 5 points with no gain, so forts keep the unit rates. The fort AI value row (tier VII with forts vs without: walls 35.5 / 26.5%, camps 43.0 / 34.5%, Home towers 38.0 / 35.0%, Short / Standard) is not a verdict on the kinds: the bolt-on driver spent the bot's gold behind its back and the bot counted its forts as army. F1's AI plans forts inside its gold ledger and the row is re-measured.
+
+**Gates** (proxies vs tier VII at L7 in Short, Standard and Full War, 400 per row at gates, 100 in smoke; mirrors 200 per format):
+
+| Row | Target |
+|---|---|
+| `wall_turtle`, `camp_turtle`, `tower_turtle` (4 turrets, Hold, the fort re-placed on the most forward legal Home pad on every recharge) | Wins ≤ 45%, ≤ 15% of matches at the Bell, ≤ +5 points over `turret_turtle` on the same seeds (measured 0-4% and 4-20%; Full War walls 17% at 100 matches, re-measured at 400 in F0) |
+| `home_turtle` + each kind | Turtle band ceiling 45%, Bell ≤ 50%, ≤ +5 points over `home_turtle` |
+| `fort_spam` (Balanced script, a fort on every recharge on any legal pad) | ≤ 45% |
+| Tier VII mirror with each kind | Bell not above the no-fort mirror (+2 points), median within ±30 s, per format |
+| Fort AI value (tier VII with forts vs without) | 50-62% once the AI plans forts in its ledger |
+| Per fort card vs its age's wall | 95% CI within ±3 points; Bell delta ≤ 5 |
+| Static | Trap budget; tower range ≤ 270; levies pay 0 gold and XP, ≤ 2 per camp, none in Siege; the Heavy Common carries ×2 in every age (has-a-starter-answer) |
+| Unchanged without forts | `turret_turtle`, `power_hoarder`, `home_turtle`, `tech_turtle`, `fallback_turtle` within ±3 points |
+| B3 | Full War ≤ 850 ms headless with forts |
+
+**Levers, data first.** If forts turtle or stall: `maxTowers` 1; decay start 60 → 45 s; recharge 25 → 30 s; tower HP 50 → 40%; wall HP 1.0 → 0.8 × H; camp interval 8 → 10 s or levy cap 2 → 1; `maxAlive` 2 → 1. If forts are too weak (once the AI plans them): scaffold 5 → 4 s; wall 125 → 100 gold; levy stats 40 → 50%; trap charges +1; camp interval 8 → 7 s. Never: towers on Field pads, a lower fort bounty, levies that obey Hold. Every lever is re-run against the turtle and mirror rows before it ships.
+
+**Build (A18.13 phase 6, split like the power rework):** F0 prototype gate (no shipped code: the emulation moved into `tools/` as `--patch` data plus a driver hook, the fort proxies and rows at smoke size; the owner hears the numbers) · F1 rules, contracts, the save step (v11 today), AI v1, `SIM_VERSION` 5.0.0 with `fort: null` sent until F2 · F2 HUD, Army, Bronze L4 teaching, the unlock; then `meta` sends forts · F3 art and sound (Playwright at 844 × 390 and 1280 × 720) · owner check · F4 War Path and Road sources · F5 tuning at 400 per row.
 
 ### A16.15 Underground layer (APPROVED; v1.2)
 
@@ -5038,7 +5150,7 @@ Each class has its own line, bought separately. Epics and Legendaries count in t
 
 - Range comes from rank I only, so it cannot be stacked twice inside the Council. Relics and modifiers may add more, up to the 560 lu hard cap; the gap between the two covers never falls below 880 lu.
 - Gate: the turtle and `tech_turtle` proxies stay in the turtle band (A2.14). If Watchtowers fails the pick-flip gate against Quick Loaders, Watchtowers becomes +30 lu.
-- When forts ship (A18.9), wall picks join this track.
+- When forts ship (A18.9, A16.14): the wall pick is **Engineers** (scaffolds 5 → 3 s). Watchtowers, Quick Loaders and Arsenal stay mount research and never apply to field towers. No other fort research in phase 6; a fort line waits until the A16.14.9 gates hold in production.
 
 #### A18.5.4 Track 3: Economy (replaces Treasury)
 
@@ -5197,7 +5309,7 @@ Roles 4, 8 and at least two other levels per region use a non-default objective 
 | Stone L10 | First boss: Pip Quickstep |
 | Bronze L1 | **Evolving** (first 2-age window) |
 | Bronze L3 | Troops rank II |
-| Bronze L4 | **Forts** (once the card type ships) |
+| Bronze L4 | **Forts** (once the card type ships): its first clear, or 400 trophies, unlocks the Fort slot with the 8 walls; the level teaches "drag a wall onto a pad" and "Heavies break walls" (A16.14.6) |
 | Bronze L6 | Command track |
 | Medieval L1 | Doctrines at evolve (when shipped) |
 | Medieval L4 | The Hold flag and Fall back |
@@ -5247,6 +5359,7 @@ Disclosed on the node and the VS screen, from the A16.8 kinds: Gold Rush (passiv
 | First clear | Amber (40; 60 on Hard-marked levels); boss: a fixed capsule shown on the node | v1 |
 | **Card unlocks** | Level 3 of each region grants a named Rare of the region's age, the boss grants a named Epic, on first clear; a copy of a card already owned counts as a normal duplicate (A6) | v1 |
 | **Power unlocks** (power rework) | The first clears of each region's L5, L7 and L9 grant that region's three War Path powers (A5.7); the Stone L5 first clear also unlocks the Field slot. A power already owned (from the Trophy Road fallback) pays 60 Amber instead. Exact edits: `docs/requests/powers-sources.md` | with the rework (P4) |
+| **Fort unlocks** (A16.14.6) | The first clears of each region's L4, L6 and L8 grant its Camp, Trap and Tower, shown on the node (walls are starters); the same 24 are a Trophy Road fallback on nodes 2,100-4,000, and whichever comes second pays 60 Amber. Never capsules | with forts (phase 6, F4) |
 | Star chests | Every 10 stars: Amber, Dust and one cosmetic from the collections | v1.1 |
 | **War Relics** | 3 per region, earned by ★★ on levels 3, 6 and 9. Each is a trade-off ("Nile Charm: +5% Economy income, −5% turret damage"), within the A18.2 caps. **Single player only**: War Path, Skirmish, Quick Battle. `meta` never puts relic `sideMods` into Ladder, Daily, ranked or PvP configs, and a test proves it | v1.1 |
 | Veteran and Legend Paths | After the Cosmic boss: the same map at +2 and +3 tier offset with one modifier or restriction per level; own stars | v1.1 |
@@ -5342,7 +5455,7 @@ Per age, as A17 set the standard: 7 units (3 Common, 2 Rare, 1 Epic, 1 Legendary
 | Owner wish | Rule | When |
 |---|---|---|
 | **Six troops per battle** | A loadout has 6 unit slots; the tray shows 6 cards. The `train` and `cancelTrain` slot type widens from `0..4` to `0..5` | Phase 2 contract bump |
-| **Stationary class (forts)** | The A16.14 card type rules (pads at p 240, 360, 460; at most 2 alive; 5 s scaffold; 6 pop; 25 s recharge; decay; ×2 from Heavy, siege and Legendary; bounty 60%). Each age loadout gains 1 Fort slot beside its 6 units. Placed by dragging onto a pad (the power drag). Wall picks join the Defences track. The wall-turtle gate (≤ 45%, ≤ 15% at the Bell) applies | Phase 6, right after the War Path (owner: early) |
+| **Stationary class (forts)** | The Fort class of A16.14 (owner request 2026-09-29: walls, a camp that spawns free weak troops, towers that shoot but stand still, plus traps). Four kinds per age (32 cards); 1 Fort slot per age loadout beside its 6 units; Home pads at p 240, 360, 460 (camps also Field pads 640, 820 behind your army); at most 2 alive and 1 camp; 5 s scaffold; 6 pop (traps 3); 25 s recharge; decay; Siege crumbles them; ×2 from Heavy, siege and Legendary; bounty at the unit rates (50% gold, 70% XP). Placed by dragging onto a pad (the power drag). The wall pick is Engineers in the Defences track. Gates: the turtle, mirror, value and per-card rows of A16.14.9 | Phase 6 (F0-F5), right after the War Path (owner: early) |
 | **Air as a full class** | Air units get their own class icon, counter row and Troops line (A18.5.2) | Phase 8 |
 | **Underground class** | A16.15 rules (tunnelers, detectors, 1 s surfacing telegraph); own Troops line | Phase 8, after forts |
 | **Class icons and counters, clear deck builder** | Owner directions of 2026-09-28; the builder also shows research compatibility (A18.5.2) | In flight / Phase 3 |
@@ -5362,9 +5475,9 @@ Dragging the power from its button onto the lane is the primary, taught interact
 
 #### A18.9.3 The deck builder (owner direction)
 
-The War Plan becomes a clear deck builder: age tabs with the 6 unit slots, 2 turret slots, 1 power (2 with the power rework: Home and Field, A2.9.10) and (later) 1 Fort slot of each age visible at once; drag or tap a card into a slot; the counter legend, the deck advisor (A3) and the research compatibility marks (A18.5.2) are visible without opening another screen. The layout and motion are specified in the UI plan (`docs/ui-plan.md`, A18.9.5).
+The War Plan becomes a clear deck builder: age tabs with the 6 unit slots, 2 turret slots, 1 power (2 with the power rework: Home and Field, A2.9.10) and (phase 6) 1 Fort slot of each age visible at once; drag or tap a card into a slot; the counter legend, the deck advisor (A3) and the research compatibility marks (A18.5.2) are visible without opening another screen. The layout and motion are specified in the UI plan (`docs/ui-plan.md`, A18.9.5).
 
-**Owner request 2026-09-30 (simpler per age).** For the selected age the builder shows three plain sections top to bottom: **In battle** (a fixed band with the loadout's slots in one row, grouped Troops, Turrets, Powers, each with its count, "Troops 5/6"), **Available** (the owned cards of that age that are not in battle; tap and Use, tap-tap or drag to swap one in) and **Locked** (the cards of that age not found yet, as greyed silhouettes with where they come from: Time Capsules, "from Arena N" when the current arena does not drop that age yet, a War Path level or a Trophy Road node for powers; with "You own 12 of 17 Stone cards"). The "All cards" view and the class, rarity and sort filters leave the builder: every age's cards live in the **Card Album** (A9 #10, the Collection route), a long scroll like a Pokedex grouped by age with a sticky age header and a completion bar per age, every card numbered (No. 001 is the first Stone troop; numbers never change with filters), owned cards in colour with level and copies, missing ones as a dark silhouette with a "?" and their source, filters Have / Missing, rarity and class, and a total ("110/136 found"). Army links to it from the Locked section.
+**Owner request 2026-09-30 (simpler per age).** For the selected age the builder shows three plain sections top to bottom: **In battle** (a fixed band with the loadout's slots in one row, grouped Troops, Turrets, Powers and, from phase 6, Fort, each with its count, "Troops 5/6"; the Fort group is one 58 px slot after Powers, 722 of 750 px at 844, A16.14.7), **Available** (the owned cards of that age that are not in battle; tap and Use, tap-tap or drag to swap one in) and **Locked** (the cards of that age not found yet, as greyed silhouettes with where they come from: Time Capsules, "from Arena N" when the current arena does not drop that age yet, a War Path level or a Trophy Road node for powers; with "You own 12 of 17 Stone cards"). The "All cards" view and the class, rarity and sort filters leave the builder: every age's cards live in the **Card Album** (A9 #10, the Collection route), a long scroll like a Pokedex grouped by age with a sticky age header and a completion bar per age, every card numbered (No. 001 is the first Stone troop; numbers never change with filters), owned cards in colour with level and copies, missing ones as a dark silhouette with a "?" and their source, filters Have / Missing, rarity and class, and a total ("110/136 found"). Army links to it from the Locked section.
 
 #### A18.9.4 Cosmetic collections (owner direction)
 
@@ -5454,6 +5567,8 @@ All sim-visible contract changes land in **one** WP0 bump and one `SIM_VERSION` 
 | Replays | Each tuning pass changes `contentHash`, and `replayPlayer` requires an exact match. Replays from an older build keep their result card and are labelled "Recorded on an older build"; they no longer play. Replays never promise to survive balance work | 2 | WP11 |
 | Tools | Proxies and gates (A18.12), time-in-age rows, `tools/warPath.ts`, the 850 ms budget, fewer Full War runs | 1-5 | WP12 |
 | CI | M1: golden replays on 3 browser engines | 3 | WP12 |
+| Contracts, sim (forts, A16.14.8) | `FortDef` and `CompiledContent.forts`, levies as hidden `UnitDef`s (`levy: true`), `Tag` + `structure`, `EconomyRules.fort`, `Loadout.fort?`, `Command.fort { side, pad }` and its reject codes, fort state on `UnitState`, `SideState.fortReadyTick`, events `fortPlaced`, `fortBuilt`, `fortDecayed`, `trapTriggered`, `Observation.me.fort`, `HudModel.fort`, `MatchStats` fort counts; `core/fortPads.ts`; one WP0 bump and `SIM_VERSION` 5.0.0 (the next major at build time) with a deliberate golden re-record and `13-forts.json` | 6 (F1) | WP0, WP2, WP12 |
+| Content, save (forts) | 32 forts and 8 levies per A16.14.4 as data, the compiler's structure mod and schema checks; the next save version at build time (v11 today, after the Sundial's v10): `Loadout.fort`, `fortsOwned`, `flags['fort.slot']`, grants by rule, with fixtures | 6 (F1, F4) | WP1, WP8, WP7 |
 
 ---
 
@@ -5481,6 +5596,8 @@ All sim-visible contract changes land in **one** WP0 bump and one `SIM_VERSION` 
 
 If `flag_ball` fails, the flag cap drops from 800 to 700.
 
+**Fort gates (A16.14.9)** join this table: `wall_turtle`, `camp_turtle` and `tower_turtle` ≤ 45% with ≤ 15% at the Bell and ≤ +5 points over `turret_turtle`; `home_turtle` with each kind in the turtle band ceiling; `fort_spam` ≤ 45%; the tier VII mirror with each kind not above the no-fort mirror's Bell (+2 points) and within ±30 s of its median; the fort AI value 50-62%; each fort card ±3 against its age's wall; the static trap, tower-range, levy and starter-answer checks. Measured on the emulation (2026-09-30): every fort turtle 0-4% with a 4-21% Bell (the no-fort turtles 20-71%), walls and camps cut the mirror Bell by 5-14 points, towers on Home pads are neutral and on Field pads raised the Standard War Bell from 58% to 78%.
+
 **Power rework gates (A2.9.12)** join this table (setups stated once in A2.9.12: proxies vs tier VII in Short, Standard and Full War; Bell comparisons at P0 and P1 on tier V mirrors, release on the tier VII rows): the P0 go/no-go, power share of gold and of kills, the per-cast army value share and largest cast, casts per age, the static family targets, and the `power_hoarder`, `bait_wave`, `plain_wave`, `power_spam`, `no_power`, `home_turtle`, `drop_spam`, `runner_reach` and `gate_sniper` proxies.
 
 ---
@@ -5498,7 +5615,7 @@ Each phase keeps `main` playable and reruns `balance`, `exploits` and `strength`
 | **4** | Hold flag and Fall back in the HUD and minimap; AI flag placement | M | render and HUD (WP5), AI (WP3) | 2 |
 | **Owner check** | Owner plays Short and Standard War on Normal and Hard | | | 0-4 |
 | **5** | **War Path v1** on the 8 ages: map screen, 80 levels and 16 side nodes as data, objectives, stars and crowns, card unlocks, first-clear rewards, the Generals as bosses with `sideMods` and the phase rule, Conquest migration in save v3, difficulty flags, `tools/warPath.ts` | L | meta (WP7), save (WP8), UI (WP9), content (WP1), AI (WP3), tools (WP12) | 3, Home in flight |
-| **6** | **Forts card type** (A16.14) with the Fort slot and wall picks in Defences; Supply Cache if the owner check showed standoffs | L | WP0, WP1, WP2, WP3, WP4, WP5, WP7, WP8, WP9, WP12 | 5, wall prototype verdict |
+| **6** | **The Fort class** (A16.14: walls, towers, camps and traps, 32 cards; owner request 2026-09-29) with the Fort slot and the Engineers wall pick, in the power rework's shape: **F0** prototype gate (no shipped code: the emulation into `tools/` with the fort proxies and rows at smoke size, owner told) · **F1** rules, contracts, the save step (v11 today), AI v1, `SIM_VERSION` 5.0.0, `fort: null` sent until F2 · **F2** HUD Fort card and pad drag, Army Fort group, Bronze L4 teaching and the unlock, then `meta` sends forts · **F3** art and sound, Playwright at 844 × 390 and 1280 × 720 · owner check · **F4** War Path and Trophy Road sources · **F5** tuning at 400 per row. Supply Cache if the owner check showed standoffs | L (F0 S, F1 L, F2 M, F3 L, F4 S, F5 M) | WP0, WP1, WP2, WP3, WP4, WP5, WP6, WP7, WP8, WP9, WP11, WP12 | 5, P2 (the HUD dock), F0 gate |
 | **7** | Council rank III, Command II-III, doctrines (A16.10), relics, star chests, Veteran and Legend Paths, boss rematches, match resume, capsule age weighting | M | WP1, WP2, WP3, WP7, WP8, WP9 | 3, 5 |
 | **8** | Air as a full class, then the Underground class (A16.15) | M each | WP0, WP1, WP2, WP3, WP4, WP5 | 6 |
 | **Art track** | Realistic restyle of the existing ages, Stone first, with measured hours per age | XL | art, visuals (WP4) | Parallel from now |
@@ -5853,10 +5970,11 @@ Global freezes set `freeze` for their duration, within the A12 cap.
   - Settings shows a gentle "Back up your progress" reminder when the last export is more than 5 days old.
   - Quota errors are caught and shown to the player.
 - **Capsule rolls** use a meta RNG stream stored in the save (`rng.capsule`, sfc32 state). The result is written before any animation.
-- **Local clocks** drive daily timers (reset 04:00), limited by the bank caps (charges 28, Supply allowance 7, Daily rewards 7, quest queue 21; A15.4).
+- **Local clocks** drive daily timers (reset 04:00), limited by the bank caps (Daily rewards 7, quest queue 21; A15.4). The Sundial (5 h, holds 34; A6.3) runs on epoch time.
 - **Settings defaults** (A15.6): `breakReminder` true, `quickReveal` false, `vibrate` false. The same defaults apply to every player; there is no separate minor-safe mode.
 - **Schema version.** Every A15.18 shape change lands before the Checkpoint C push, so SaveDoc stays at version 1 with no migration. After that push, every shape change needs a migration.
 - **Capsule ladder migration (2026-09-29, A6.4).** The next version after the newest one when it lands (re-read `src/save/migrations` first). `up`: (1) `capsules.bag` maps index 4 → 6, then sorts; `bagSize` = 100 if the bag is not empty, else 0; (2) pending capsules with tier `aeon` become `gold` (and `startTier` `aeon` → `gold`) with `contents.dust` + 100, nothing re-rolled; (3) sets `flags['capsule.legacySkillAeon']`, and meta's next `tickTimers` grants one new Aeon per skill source already claimed (Trophy Road 4,000, Conquest 27 stars, the War Path Cosmic boss) and deletes the flag; (4) sets `flags['notice.capsuleLadder']` when `pity.opened` > 5, a pending old Aeon was relabelled or a legacy Aeon is due. Tests: a named fixture outside the `fixtures/v*.json` glob (`capsule-ladder-pre.json`) plus the usual frozen `vN.json` (details: `docs/requests/capsule-tiers-wp8.md`).
+- **Sundial migration (2026-09-30, A6.3; save v10).** No shape change. `capsules.charges` becomes the ready Sundial capsules one-for-one and `capsules.dailyBank` the Supply allowance left (it never grows again). `up` sets `flags['notice.sundial']` for a save with `matchesPlayed` > 0, and `flags['sundial.restart']` for a save at or above the old cap of 28: the old rule never moved `chargesUpdatedAt` while full, so without it the first tick would count every 5 h since the bank filled and turn 28 into up to 34. Meta's next `tickTimers` sets `chargesUpdatedAt` to that moment and deletes the flag. A Clay meter already at 2 pips becomes its Clay capsule at the same tick (rolling needs the content).
 
 ## B9. Meta services (pure TS)
 
@@ -6429,7 +6547,7 @@ The code above is the frozen Phase 0 contract. At the start of Phase 2b the inte
 
 **Meaning changes with no type change** (JSDoc plus a `docs/decisions.md` entry):
 
-- `capsules.charges`: bank maximum 28.
+- `capsules.charges`: bank maximum 28 (from 2026-09-30 the Sundial's ready capsules, maximum 34, A6.3).
 - `capsules.dailyBank`: the Supply allowance, maximum 7. `PendingCapsule.kind 'daily'` is shown as "Supply Capsule".
 - `QuestState.daily`: a queue of up to 21; the first 3 are active.
 - `QuestState.weekly`: War Chest progress (0-19), never reset; `weekKey` is unused. `PendingCrate.source` stays `weekly`.
@@ -6772,8 +6890,8 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 
 **Meta**
 
-24. A new save starts with 12 charges; the first 10 capsules use none; charges refill at 1 per 6 h and bank to 28, and a full bank says it has stopped filling.
-25. A ladder win grants trophies, Amber and a capsule while charges are available, and 40 Amber plus a Clay pip when none are; losses give 15 Amber and a pip; 3 pips give a Clay capsule.
+24. A new save starts with 12 ready Sundial capsules; the first 10 capsules use none; the Sundial readies 1 every 5 h and holds 34, a full Sundial says it has stopped filling, any finished match but the tutorial or a Retreat claims one, and Home shows no time (2026-09-30; was 1 per 6 h, 28, Ladder wins).
+25. A ladder win grants trophies, 20 Amber and a Sundial Capsule while one is ready, and 40 Amber plus a Clay pip when none is; a loss gives 15 Amber and a ready Sundial Capsule, or a pip when none is; a Retreat gives 15 Amber, no capsule and no pip; 2 pips give a Clay capsule (2026-09-30; was: capsules while charges last, 3 pips).
 26. The Supply allowance banks to 7; 3 new quests join the queue at 04:00; loss protection "Warm-up match" appears after 3 losses.
 27. The odds sheet shows the bag state (60/80/40/13/4/2/1 per 200, "N of 200 left"; a migrated old bag says "of 100" and that it finishes its old mix) and pity counters, and the counters match what happens.
 28. Capsule strikes never show a non-climb after a climb.
@@ -6799,7 +6917,7 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 
 **Engagement (A15.20)**
 
-45. The first Supply Capsule appears after capsule 2; later ones need 3 finished matches each; the allowance banks 7. Charges bank 28. The quest panel shows 3 quests.
+45. The first Supply Capsule appears after capsule 2; from 2026-09-30 no new allowance accrues and an allowance already banked still needs 3 finished matches; the Sundial holds 34 (was: the allowance banks 7, charges bank 28). The quest panel shows 3 quests.
 46. The War Chest fills from counting wins only (never Skirmish), grants at 20 and never resets.
 47. The Daily offers three difficulties, shows the same opponent in two browsers set to the same date, pays from the bank, and Copy result copies the line with no name.
 48. The wrap, tilt and break cards appear as specified, never in battle, with Home as the primary button. The night line appears after 22:00.
@@ -6849,7 +6967,7 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 86. Cosmetics: emotes, quotes, base and national flags, base skins and decorations show in Collection with completion counts and equip in Customize; the chosen base cosmetics and flag show for both sides in battle and on the VS screen; nothing can be bought; no flag is picked from location.
 87. War Relics (v1.1) apply only in War Path, Skirmish and Quick Battle, never in Ladder, Daily or PvP.
 88. Online M1: the golden replays give the same hashes in Chromium, Firefox and WebKit in CI.
-89. Capsule ladder (2026-09-29, A6.4, A10; counts once built): the odds panel lists 7 tiers and says "Exactly 1 Aeon, 2 Platinum and 4 Gold in every 200 Win Capsules" with "N of 200 left" (a migrated save shows "N of 100 left" and the legacy-bag line until that bag runs out); a Win or Supply Capsule shows only its start tier and "Win Capsule" / "Supply Capsule" in the tray, on the Capsules shelf and on the Result, and nothing sorts by its hidden tier; a Platinum from Clay plays 4 strikes, one summit gem rising, one summit strike and 2 crests, and a Gold shows no summit gem, socket or empty crest; the first Aeon shows the skippable "Your first Aeon Capsule" step; an Open all batch with two new Legendaries plays one full walkout and one 3 s skippable one; an old save's unopened Aeon opens as Gold with +100 Dust, and a save that had claimed Trophy Road 4,000 finds one new Aeon on its shelf; the one-time notice appears in the Capsules tab, not on Home; the Aeon Collection can be crafted for 3,000 Dust only after the first Aeon. **Copy scan** (automated with the C5 copy review, scoped to `capsule.*`, `capsuleTier.*`, `ui.odds.*`, `ui.capsules.*`, `ui.notice.capsuleLadder.*` and `cosmetic.set.aeon.*`): no "jackpot", "ultra rare", "rarest", "so close", "almost", "nearly", "lucky", "limited", "don't miss" or "only {n} left", and no countdown to a capsule; the bag state says "left", never "only".
+89. Capsule ladder (2026-09-29, A6.4, A10; counts once built): the odds panel lists 7 tiers and says "Exactly 1 Aeon, 2 Platinum and 4 Gold in every 200 Win Capsules" (Sundial Capsules from 2026-09-30) with "N of 200 left" (a migrated save shows "N of 100 left" and the legacy-bag line until that bag runs out); a Win or Supply Capsule shows only its start tier and "Win Capsule" / "Supply Capsule" in the tray, on the Capsules shelf and on the Result, and nothing sorts by its hidden tier; a Platinum from Clay plays 4 strikes, one summit gem rising, one summit strike and 2 crests, and a Gold shows no summit gem, socket or empty crest; the first Aeon shows the skippable "Your first Aeon Capsule" step; an Open all batch with two new Legendaries plays one full walkout and one 3 s skippable one; an old save's unopened Aeon opens as Gold with +100 Dust, and a save that had claimed Trophy Road 4,000 finds one new Aeon on its shelf; the one-time notice appears in the Capsules tab, not on Home; the Aeon Collection can be crafted for 3,000 Dust only after the first Aeon. **Copy scan** (automated with the C5 copy review, scoped to `capsule.*`, `capsuleTier.*`, `ui.odds.*`, `ui.capsules.*`, `ui.notice.capsuleLadder.*` and `cosmetic.set.aeon.*`): no "jackpot", "ultra rare", "rarest", "so close", "almost", "nearly", "lucky", "limited", "don't miss" or "only {n} left", and no countdown to a capsule; the bag state says "left", never "only".
 
 ---
 

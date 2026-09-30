@@ -56,7 +56,7 @@ describe('economyChecks', () => {
     days: 365,
     copiesPerBagCapsule: T.copiesPerBagCapsule,
     amberPerBagCapsule: T.amberPerBagCapsule,
-    perDay: { win: 4, daily: 1, clay: 0.9, copies: 98, amber: 3030, quests: 3 },
+    perDay: { win: T.sundialCapsulesPerDay, daily: 0, clay: T.clayCapsulesPerDay, copies: 98, amber: 3030, quests: 3 },
     maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
     allLegendariesDay: 14,
     planL7Day: 42,
@@ -82,7 +82,7 @@ describe('medianMeasures (the 30-seed gate)', () => {
     days: 365,
     copiesPerBagCapsule: 16,
     amberPerBagCapsule: 411,
-    perDay: { win: 4, daily: 1, clay: 0.9, copies: 98, amber: 3030, quests: 3 },
+    perDay: { win: 4.8, daily: 0, clay: 1.1, copies: 98, amber: 3030, quests: 3 },
     maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
     allLegendariesDay: 9,
     planL7Day: 78,
@@ -102,6 +102,8 @@ describe('medianMeasures (the 30-seed gate)', () => {
     expect(m.maxDay.legendary).toBe(130);
     expect(m.collectionMaxedDay).toBeNull();
     expect(economyDefaults().seeds).toBe(30);
+    // The Sundial player (2026-09-30, A6.9): 7 finished ladder matches a day.
+    expect(economyDefaults().matchesPerDay).toBe(7);
   });
 });
 
@@ -138,6 +140,9 @@ describe('runEconomy', () => {
     }
     expect(r.checks.find((x) => x.id === 'economy.run')).toBeUndefined();
     expect(r.data.measures?.days).toBe(3);
+    // The casual player (3 matches a day) is reported, never gated.
+    expect(r.data.casual?.days).toBe(3);
+    expect(r.checks.find((x) => x.id === 'economy.casual')?.verdict).toBe('info');
   }, 120_000);
 
   it('claims the daily quests of the A6.9 player when src/meta can', async (ctx) => {

@@ -219,15 +219,22 @@ export interface SaveDoc {
   activePlan: number;
   capsules: {
     pending: PendingCapsule[];
-    /** Capsule charges; the bank holds up to 28 (A15.4). */
+    /**
+     * Ready Sundial capsules, up to 34 (A6.3; capsule charges, up to 28, before save v10). Any finished
+     * match but the tutorial or a Retreat claims one as a Sundial Capsule (`PendingCapsule.kind 'win'`).
+     */
     charges: number;
+    /** Start of the Sundial's current 5 h period (epoch ms). */
     chargesUpdatedAt: number;
     freeCapsulesLeft: number;
     clayMeter: number;
-    /** The Supply Capsule allowance, up to 7 (A15.4); `PendingCapsule.kind 'daily'` shows as "Supply Capsule". */
+    /**
+     * The Supply Capsule allowance left from before 2026-09-30, up to 7 (A15.4); it never grows again.
+     * `PendingCapsule.kind 'daily'` shows as "Supply Capsule".
+     */
     dailyBank: number;
     dailyNextAt: number | null;
-    /** Sorted tier indices left in the current Win Capsule bag (DESIGN A6.4); empty = the next draw refills it. */
+    /** Sorted tier indices left in the current Sundial Capsule bag (DESIGN A6.4); empty = the next draw refills it. */
     bag: number[];
     /**
      * The size of the Win Capsule bag that `bag` belongs to: 100 for a bag filled before the 2026-09-29
@@ -271,6 +278,7 @@ export interface SaveDoc {
    * Capsule ladder keys (A6.4, B8): `capsule.first.<tier>` (the save has opened a capsule of that
    * Legendary tier), `capsule.legacySkillAeon` (set by the ladder migration until the legacy skill
    * Aeons are granted) and `notice.capsuleLadder` (the one-time Capsules tab card; cleared when closed).
+   * `notice.sundial` (save v10, A6.3): the one-time "The Sundial" Capsules tab card; cleared when closed.
    */
   flags: Record<string, boolean>;
 }

@@ -9,9 +9,10 @@ import { C, M, TestClock, fresh, lastPending, matchInput, play, scripted, stats 
 
 const R = C.generals.conquest;
 
+/** Arena 3 with the Sundial empty, so only Conquest's own rewards show (sundial.test.ts has the Sundial claim). */
 function arena3(): SaveDoc {
   const s = scripted(4, 2);
-  return { ...s, flags: { ...s.flags, 'meta.ladderPlayed': true } };
+  return { ...s, capsules: { ...s.capsules, charges: 0, freeCapsulesLeft: 0 }, flags: { ...s.flags, 'meta.ladderPlayed': true } };
 }
 
 describe('Conquest (A6.10)', () => {

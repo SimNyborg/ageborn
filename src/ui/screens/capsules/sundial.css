@@ -1,0 +1,182 @@
+/*
+ * The Sundial card (DESIGN A6.3, A15.3): a stone dial with a bronze gnomon, "12 of 34 ready" and the
+ * clock time of the next capsule. Calm on purpose: no loop, no pulse, no countdown. The shadow eases in
+ * once when the card mounts; the ready gem pops once when a capsule becomes ready while it is open.
+ */
+.sundial-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s3);
+  flex: none;
+  padding: var(--ui-s2) var(--ui-s3) var(--ui-s2) var(--ui-s2);
+  border: 1px solid rgba(226, 213, 182, 0.2);
+  border-radius: var(--ui-r-md);
+  background:
+    radial-gradient(90% 140% at 0% 50%, rgba(255, 214, 128, 0.1), transparent 60%),
+    linear-gradient(180deg, rgba(37, 44, 57, 0.9), rgba(16, 19, 26, 0.9));
+  box-shadow: var(--ui-e1, 0 2px 0 rgba(0, 0, 0, 0.35));
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+.sundial-card.is-ready {
+  border-color: rgba(255, 214, 128, 0.42);
+  background:
+    radial-gradient(90% 140% at 0% 50%, rgba(255, 214, 128, 0.2), transparent 62%),
+    linear-gradient(180deg, rgba(40, 46, 58, 0.94), rgba(18, 21, 28, 0.94));
+}
+.sundial-card__art {
+  position: relative;
+  flex: none;
+  width: 116px;
+  height: 92px;
+}
+.sundial-dial {
+  display: block;
+  width: 116px;
+  height: 92px;
+  overflow: visible;
+  filter: drop-shadow(0 3px 0 rgba(8, 5, 20, 0.35));
+}
+.sundial-dial.is-ready {
+  filter: drop-shadow(0 3px 0 rgba(8, 5, 20, 0.35)) drop-shadow(0 0 10px rgba(255, 214, 128, 0.35));
+}
+.sundial-shadow {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  /* eases in once from the first hour mark (A15.3: no loop) */
+  animation: sundial-sweep var(--ui-dur-large) var(--ui-ease-out) both;
+}
+.sundial-dial.is-full .sundial-shadow {
+  opacity: 0;
+  animation: none;
+}
+@keyframes sundial-sweep {
+  from {
+    transform: rotate(180deg);
+    opacity: 0;
+  }
+}
+.sundial-mark {
+  stroke: #8f7a58;
+}
+.sundial-mark.is-on {
+  stroke: #ffb33d;
+}
+.sundial-dial.is-full .sundial-mark {
+  stroke: #ffe08f;
+}
+.sundial-gnomon {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.sundial-dial.is-full .sundial-gnomon {
+  filter: drop-shadow(0 0 4px rgba(255, 216, 138, 0.9));
+}
+
+/* The ready gem: a Clay-start capsule sitting by the dial; lit while one is ready. */
+.sundial-card__gem {
+  position: absolute;
+  right: 0;
+  top: -4px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255, 214, 128, 0.75);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #4a3d2c, #1c1710);
+  box-shadow: 0 2px 0 rgba(8, 5, 20, 0.6), 0 0 10px rgba(255, 214, 128, 0.35);
+}
+.sundial-card__gem.is-empty {
+  border-color: rgba(163, 144, 108, 0.45);
+  box-shadow: 0 2px 0 rgba(8, 5, 20, 0.6);
+  filter: grayscale(0.85);
+  opacity: 0.6;
+}
+.sundial-card__gem.is-pop {
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back) both;
+}
+
+.sundial-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.sundial-card__title {
+  margin: 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.sundial-card__status {
+  color: var(--ui-text);
+  font: 800 var(--ui-fs-title-s, 20px) / 1.15 var(--ui-font-display, inherit);
+}
+.sundial-card:not(.is-ready) .sundial-card__status {
+  color: var(--ui-text-2);
+}
+.sundial-card__when {
+  color: #ffd98a;
+  font-size: var(--ui-fs-label);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.sundial-card.is-full .sundial-card__when {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+}
+.sundial-card__rule {
+  color: var(--ui-text-3);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* The one-time notice's dial glyph */
+.cap-notice__icons .sundial-glyph {
+  filter: drop-shadow(0 2px 0 rgba(8, 5, 20, 0.5));
+}
+
+/* ---- phones ---- */
+@container ui-root (max-height: 480px) {
+  .sundial-card {
+    gap: var(--ui-s2);
+    padding: 4px var(--ui-s2) 4px 4px;
+  }
+  .sundial-card__art,
+  .sundial-dial {
+    width: 92px;
+    height: 72px;
+  }
+  .sundial-card__gem {
+    right: 2px;
+    top: -2px;
+    width: 30px;
+    height: 30px;
+  }
+  .sundial-card__gem svg {
+    width: 22px;
+    height: 22px;
+  }
+  .sundial-card__status {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sundial-card,
+  .sundial-shadow,
+  .sundial-card__gem.is-pop {
+    animation: none;
+  }
+}
+[data-reduce-motion='true'] .sundial-card,
+[data-reduce-motion='true'] .sundial-shadow,
+[data-reduce-motion='true'] .sundial-card__gem.is-pop {
+  animation: none;
+}

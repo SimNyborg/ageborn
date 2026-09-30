@@ -186,7 +186,7 @@ export default function MetaPage() {
           <div style={box} data-testid="meta-status">
             <b>{save.profile.name}</b> · {t(arena.nameKey)} (arena {arena.index}) · trophies {save.trophies.current} (best {save.trophies.best})<br />
             Amber {save.currencies.amber} · Dust {save.currencies.dust} · Codex Lv {save.codexLevel} ({save.codexPoints} pts)<br />
-            charges {save.capsules.charges}/{C.capsules.charges.max}{nextCharge !== null ? ` (next in ${Math.ceil(nextCharge / 60000)} min)` : ''} · free {save.capsules.freeCapsulesLeft} · Clay meter {save.capsules.clayMeter}/3 · Daily bank {save.capsules.dailyBank}
+            Sundial {save.capsules.charges}/{C.capsules.charges.max}{nextCharge !== null ? ` (next in ${Math.ceil(nextCharge / 60000)} min)` : ''} · free {save.capsules.freeCapsulesLeft} · Clay meter {save.capsules.clayMeter}/{C.capsules.clayMeterPips} · Supply allowance {save.capsules.dailyBank}
             {save.capsules.dailyNextAt ? ` (next ${new Date(save.capsules.dailyNextAt).toLocaleString()})` : ''}<br />
             bag left: {Object.entries(left).map(([k, v]) => `${k} ${v}`).join(' · ')}<br />
             pity: Epic {save.pity.sinceEpic} · Legendary {save.pity.sinceLegendary} · new card {save.pity.sinceNewCard} · opened {save.pity.opened} · crates {save.pity.wardrobeSinceEpic}/{save.pity.wardrobeSinceLegendary}

@@ -140,7 +140,7 @@ describe('Result screen cards (A15.6)', () => {
     m.click('[data-testid="result-skip"]');
     const card = text(m.q('[data-testid="result-card-wrap"]')!);
     expect(card).toContain('Wins: 3');
-    expect(card).toContain('Capsule charges used up.');
+    expect(card).toContain('The Sundial is empty.');
   });
 
   it('a late match adds the night line and makes Home primary', () => {

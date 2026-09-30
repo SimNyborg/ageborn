@@ -1,5 +1,5 @@
 /**
- * Meta rules (DESIGN B9, A6, C2/WP7): new saves, match rewards, charges and the Clay meter, daily
+ * Meta rules (DESIGN B9, A6, C2/WP7): new saves, match rewards, the Sundial and the Clay meter, daily
  * timers at 04:00, Time Capsules (bag, roll, pity, foils, script) and Wardrobe Crates, upgrades,
  * crafting and Dust, War Plan validation, auto-fill, Equip now and the advisor, trophies, arenas and
  * the Trophy Road, quests, Codex Level, Conquest, MMR, tier choice and opponent picking, and the
@@ -168,7 +168,8 @@ export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPla
 export { bagLeft, bagSize, bagTotal, legendaryPityBp, strikeCounts, strikePattern } from './capsules';
 export { grantLegacySkillAeons, LEGACY_SKILL_AEON_FLAG, legacyGrantedFlag, legacySkillAeonCount } from './legacyAeons';
 export { guaranteedLegendaries, tierIndex, tierOrder, topTier } from './tables';
-export { nextChargeInMs } from './charges';
+export { claimSundial, nextChargeInMs, nextSundialAt, sundialReady } from './charges';
+export { isRetreat } from './rewards';
 export { craftCost } from './dust';
 export { upgradeBlocker, upgradeCost } from './upgrades';
 export { claimableRoadNodes, trophyDelta } from './trophies';

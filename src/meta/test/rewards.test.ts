@@ -1,5 +1,5 @@
 /**
- * Match results (DESIGN A6.3 ladder table, charges and the Clay meter; A6.8 MMR and loss protection;
+ * Match results (DESIGN A6.3 ladder table, the Sundial and the Clay meter; A6.8 MMR and loss protection;
  * A6.1 stats; A5.8 titles; C5 #24-#26).
  */
 import { describe, expect, it } from 'vitest';
@@ -13,8 +13,14 @@ function noFree(seed = 1): SaveDoc {
   return { ...s, capsules: { ...s.capsules, freeCapsulesLeft: 0 }, flags: { ...s.flags, 'meta.ladderPlayed': true } };
 }
 
+/** The same with an empty Sundial. */
+function empty(seed = 1): SaveDoc {
+  const s = noFree(seed);
+  return { ...s, capsules: { ...s.capsules, charges: 0 } };
+}
+
 describe('ladder results (A6.3)', () => {
-  it('a win: +30 trophies, 20 Amber and a Win Capsule while charges last', () => {
+  it('a win: +30 trophies, 20 Amber and a Sundial Capsule while one is ready', () => {
     const s = noFree();
     const r = play(s, 'ladder', 'win');
     expect(r.rewards.slice(0, 3).map((x) => x.kind)).toEqual(['trophies', 'amber', 'capsule']);
@@ -27,10 +33,10 @@ describe('ladder results (A6.3)', () => {
     expect(r.save.currencies.amber).toBe(20);
   });
 
-  it('a win with no charge: 40 Amber and a Clay pip; 3 pips make a Clay capsule without a charge (C5 #25)', () => {
-    let s: SaveDoc = { ...noFree(), capsules: { ...noFree().capsules, charges: 0 } };
+  it('a win with the Sundial empty: 40 Amber and a Clay pip; 2 pips make a Clay capsule without the Sundial (C5 #25)', () => {
+    let s: SaveDoc = empty();
     const c = clock();
-    for (let i = 1; i <= 3; i += 1) {
+    for (let i = 1; i <= 2; i += 1) {
       const r = play(s, 'ladder', 'win', c);
       expect(r.rewards).toContainEqual({ kind: 'amber', amount: 40 });
       expect(r.rewards).toContainEqual({ kind: 'clayPip', meter: i });
@@ -42,8 +48,8 @@ describe('ladder results (A6.3)', () => {
     expect(s.capsules.charges).toBe(0);
   });
 
-  it('loss −20 (none below 400, never below the arena gate), 15 Amber and a pip; draw 0 and 15', () => {
-    const s = noFree();
+  it('loss −20 (none below 400, never below the arena gate), 15 Amber and a pip with the Sundial empty; draw 0 and 15', () => {
+    const s = empty();
     const low = play({ ...s, trophies: { current: 380, best: 380, roadClaimed: [] }, arenaIndex: 1 }, 'ladder', 'loss');
     expect(low.rewards[0]).toEqual({ kind: 'trophies', delta: 0 });
     expect(low.rewards).toContainEqual({ kind: 'amber', amount: 15 });
@@ -58,37 +64,40 @@ describe('ladder results (A6.3)', () => {
     expect(draw.rewards).toContainEqual({ kind: 'amber', amount: 15 });
   });
 
-  it('the first 10 capsules of a save use no charge; then charges refill 1 per 6 h and bank to 28 (C5 #24, A15.4)', () => {
+  it('the first 10 capsules of a save need no Sundial; then it readies 1 per 5 h and holds 34 (C5 #24, A15.4)', () => {
     let s = fresh();
     const c = clock();
     expect(s.capsules.charges).toBe(12);
     expect(s.capsules.freeCapsulesLeft).toBe(10);
     for (let i = 0; i < 2; i += 1) s = play(s, 'tutorial', 'win', c).save;
-    for (let i = 0; i < 8; i += 1) s = play(s, 'ladder', 'win', c).save;
+    // Free capsules come from any finished match, a loss included (A6.3, 2026-09-30).
+    for (let i = 0; i < 8; i += 1) s = play(s, 'ladder', i % 2 === 0 ? 'win' : 'loss', c).save;
     expect(s.capsules.freeCapsulesLeft).toBe(0);
     expect(s.capsules.charges).toBe(12);
-    for (let i = 0; i < 12; i += 1) s = play(s, 'ladder', 'win', c).save;
+    for (let i = 0; i < 12; i += 1) s = play(s, 'ladder', i % 3 === 0 ? 'loss' : 'win', c).save;
     expect(s.capsules.charges).toBe(0);
     expect(s.capsules.pending.filter((p) => p.kind === 'win')).toHaveLength(22);
     const extra = play(s, 'ladder', 'win', c);
     expect(extra.save.capsules.pending.filter((p) => p.kind === 'win')).toHaveLength(22);
-    c.advance(6 * HOUR - 1);
+    c.advance(5 * HOUR - 1);
     expect(M.tickTimers(s, c).capsules.charges).toBe(0);
     c.advance(1);
     expect(M.tickTimers(s, c).capsules.charges).toBe(1);
     c.advance(30 * DAY);
-    expect(M.tickTimers(s, c).capsules.charges).toBe(28);
+    expect(M.tickTimers(s, c).capsules.charges).toBe(34);
   });
 
-  it('spending a charge from a full bank starts a fresh 6 h period', () => {
+  it('claiming from a full Sundial starts a fresh 5 h period', () => {
     const c = clock();
     const s = noFree();
-    c.advance(7 * DAY);
-    const r = play(s, 'ladder', 'win', c);
-    expect(r.save.capsules.charges).toBe(27);
+    c.advance(8 * DAY);
+    const r = play(s, 'ladder', 'loss', c);
+    expect(r.save.capsules.charges).toBe(33);
     expect(r.save.capsules.chargesUpdatedAt).toBe(c.now());
-    c.advance(6 * HOUR);
-    expect(M.tickTimers(r.save, c).capsules.charges).toBe(28);
+    c.advance(5 * HOUR - 1);
+    expect(M.tickTimers(r.save, c).capsules.charges).toBe(33);
+    c.advance(1);
+    expect(M.tickTimers(r.save, c).capsules.charges).toBe(34);
   });
 
   it('a clock moved backwards never takes charges away', () => {
@@ -149,12 +158,18 @@ describe('other modes', () => {
     expect(loss.save.capsules.charges).toBe(12);
   });
 
-  it('skirmish: 5 Amber per win, no trophies, no capsules', () => {
+  it('skirmish: 5 Amber per win, no trophies; a ready Sundial Capsule, never a Clay pip', () => {
     const s = noFree();
-    const r = M.applyMatchResult(s, matchInput('skirmish', 'win', M.pickOpponent(s, 'skirmish', C, clock(), { skirmish: { generalId: 'moss', tier: 4, format: 'standard', standardLevels: true } })), C, clock());
+    const opp = M.pickOpponent(s, 'skirmish', C, clock(), { skirmish: { generalId: 'moss', tier: 4, format: 'standard', standardLevels: true } });
+    const r = M.applyMatchResult(s, matchInput('skirmish', 'win', opp), C, clock());
     expect(r.rewards[0]).toEqual({ kind: 'amber', amount: 5 });
+    expect(r.rewards[1]).toMatchObject({ kind: 'capsule' });
     expect(r.save.trophies).toEqual(s.trophies);
-    expect(r.save.capsules.pending).toHaveLength(0);
+    expect(r.save.capsules.pending).toHaveLength(1);
+    expect(r.save.capsules.pending[0]).toMatchObject({ kind: 'win' });
+    const none = M.applyMatchResult(empty(), matchInput('skirmish', 'loss', opp), C, clock());
+    expect(none.save.capsules.pending).toHaveLength(0);
+    expect(none.rewards.some((x) => x.kind === 'clayPip')).toBe(false);
   });
 
   it('every match updates the profile stats (A6.1)', () => {

@@ -234,7 +234,8 @@ describe('legacy skill Aeons (B8, the v6 migration)', () => {
     expect(legacySkillAeonCount(s, C)).toBe(1);
     const before = s.capsules.pending.length;
     const t1 = M.tickTimers(s, clock());
-    const added = t1.capsules.pending.slice(before);
+    // The same tick also turns a Clay meter left full by the 3 → 2 pip change into its Clay capsule (A6.3).
+    const added = t1.capsules.pending.slice(before).filter((p) => p.kind !== 'meter');
     expect(added).toHaveLength(1);
     expect(added[0]).toMatchObject({ kind: 'road', tier: topTier, startTier: topTier });
     expect(added[0]!.contents.stacks.filter((x) => x.rarity === 'legendary').length).toBeGreaterThanOrEqual(legendaries(topTier));

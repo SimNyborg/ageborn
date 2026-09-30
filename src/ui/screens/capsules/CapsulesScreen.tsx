@@ -3,14 +3,17 @@
  *
  * Left: the stage with the best capsule large (its name and where it came from), "Odds" one tap away
  * (task 2.8: odds in 2 taps) and the one primary, Open (gold, bottom-right of the stage). Every
- * capsule can be opened now: charges never block opening. Right: the shelf, one tile per capsule or
- * Wardrobe Crate with its name and source; tapping a tile opens that one. Under the shelf the banks,
- * each only after its first progress (2.6), each with its A15.3 cap line ("Holds up to N. When full,
- * it stops filling."). No timers. "Open all" (secondary) when 2 or more capsules wait.
+ * capsule can be opened now: the Sundial never blocks opening. Right: the shelf, one tile per capsule
+ * or Wardrobe Crate with its name and source; tapping a tile opens that one. Under the shelf the
+ * Sundial card (A6.3, 2026-09-30: the dial, "12 of 34 ready" and the local clock time of the next one,
+ * never a countdown) and the other banks, each only after its first progress (2.6), each with its
+ * A15.3 cap line ("Holds up to N. When full, it stops filling."). "Open all" (secondary) when 2 or
+ * more capsules wait.
  *
- * A Win, Supply or Clay meter capsule shows its start tier and kind name until it is opened; a
+ * A Sundial, Supply or Clay meter capsule shows its start tier and kind name until it is opened; a
  * fixed-tier capsule its tier, name and Legendary crests (the 2026-09-29 ladder, A10). The one-time
- * "Two new capsule tiers" card sits at the top of the shelf column until closed.
+ * "Two new capsule tiers" card sits at the top of the shelf column and "The Sundial" card right under
+ * the Sundial, each until closed.
  */
 import './capsules.css';
 import type { PendingCapsule, PendingCrate } from '@/contracts';
@@ -19,14 +22,15 @@ import { LadderNotice } from '../../components/LadderNotice';
 import { useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { formatInt } from '../../components/format';
-import { CapsuleIcon, ClockIcon, CrateIcon, InfoIcon } from '../../components/icons';
+import { CapsuleIcon, CloseIcon, CrateIcon, InfoIcon, SundialIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
 import { ClayMeter } from '../../components/Meters';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { CapsuleInfo } from '../home/parts';
-import { bankRules, chargesView, supplyView, trayCapsules } from '../model/progress';
+import { chargesView, supplyView, trayCapsules } from '../model/progress';
 import { featureOpen } from '../model/warPath';
+import { SundialCard } from './SundialCard';
 
 type ShelfItem = { kind: 'capsule'; c: PendingCapsule } | { kind: 'crate'; c: PendingCrate };
 
@@ -51,14 +55,13 @@ const CRATE_FROM_KEY: Readonly<Record<PendingCrate['source'], string>> = {
 };
 
 export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
-  const { save, content, t, router, services, locale } = useUi();
+  const { save, content, t, router, services, locale, now } = useUi();
   const s = save.value;
   const [info, setInfo] = useState(false);
   const pending = trayCapsules(s, content);
   const items: ShelfItem[] = [...pending.map((c) => ({ kind: 'capsule' as const, c })), ...s.capsules.wardrobe.map((c) => ({ kind: 'crate' as const, c }))];
   const best = items[0] ?? null;
-  const rules = bankRules(content);
-  const charges = chargesView(s, content, 0);
+  const charges = chargesView(s, content, now());
   const supply = supplyView(s, content);
   const ladder = featureOpen(s, content, 'ladder');
   const clay = Math.min(s.capsules.clayMeter, content.capsules.clayMeterPips);
@@ -74,23 +77,22 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
   const notice = s.flags['notice.capsuleLadder'] === true;
   const noticeTiers = caps.tierOrder.map((tier) => ({ tier, crests: tierCrests(caps, tier) })).filter((x) => x.crests > 0);
 
+  const sundialNotice = s.flags['notice.sundial'] === true;
+  const sundialNoticeEl = (
+    <SundialNotice hours={charges.hours} max={charges.max} supplyLeft={supply.moreMatches !== null} onClose={() => services.dismissNotice('sundial')} />
+  );
+  // The Supply Capsule retired into the Sundial (A15.4): its row shows only while old allowance is left.
   const banks = [
-    ladder
-      ? {
-          id: 'charges',
-          icon: <ClockIcon size={26} />,
-          label: t('ui.home.charges', { n: formatInt(charges.charges, locale), max: formatInt(charges.max, locale) }),
-          note: charges.free > 0 ? t('ui.home.freeCapsules', { n: charges.free }) : t('ui.capsules.chargesNote'),
-          cap: t('ui.info.bankCap', { n: formatInt(rules.chargesMax, locale) }),
-        }
-      : null,
-    supply.unlocked && supply.moreMatches !== null
+    supply.moreMatches !== null
       ? {
           id: 'supply',
           icon: <CapsuleIcon tier="bronze" size={28} />,
-          label: supply.moreMatches === 1 ? t('ui.home.supplyMoreOne') : t('ui.home.supplyMore', { n: formatInt(supply.moreMatches, locale) }),
+          label:
+            supply.moreMatches === 1
+              ? t('ui.capsules.supplyLegacyOne', { n: formatInt(supply.bank, locale) })
+              : t('ui.capsules.supplyLegacy', { n: formatInt(supply.bank, locale), m: formatInt(supply.moreMatches, locale) }),
           note: null,
-          cap: t('ui.info.bankCap', { n: formatInt(rules.supplyMax, locale) }),
+          cap: null,
         }
       : null,
   ].filter((b): b is NonNullable<typeof b> => b !== null);
@@ -144,6 +146,9 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
         </section>
 
         <div class="caps-side">
+          {/* The Sundial notice sits under the Sundial card (so the dial stays above the fold at 844x390);
+              only without the card (Ladder not open yet) does it lead the column. */}
+          {sundialNotice && !ladder ? sundialNoticeEl : null}
           {notice ? (
             <LadderNotice tiers={noticeTiers} legacy={services.legacySkillAeons()} onClose={() => services.dismissNotice('capsuleLadder')} />
           ) : null}
@@ -177,15 +182,17 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
             </section>
           ) : null}
 
-          {banks.length > 0 || clay > 0 ? (
+          {ladder || banks.length > 0 || clay > 0 ? (
             <section class="caps-banks" aria-label={t('ui.capsules.banks')}>
+              {ladder ? <SundialCard save={s} content={content} t={t} locale={locale} now={now} /> : null}
+              {sundialNotice && ladder ? sundialNoticeEl : null}
               {banks.map((b) => (
                 <div key={b.id} class="caps-bank" data-testid={b.id}>
                   <span class="caps-bank__icon">{b.icon}</span>
                   <span class="caps-bank__text">
                     <b>{b.label}</b>
                     {b.note ? <span>{b.note}</span> : null}
-                    <small>{b.cap}</small>
+                    {b.cap ? <small>{b.cap}</small> : null}
                   </span>
                 </div>
               ))}
@@ -203,5 +210,29 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
       </div>
       {info ? <CapsuleInfo onClose={() => setInfo(false)} /> : null}
     </ScreenFrame>
+  );
+}
+
+/**
+ * The one-time "The Sundial" card (2026-09-30; DESIGN A6.3, B8 step 4): for saves that played before
+ * the Sundial (save v10 sets `flags['notice.sundial']`). No timer, no expiry, no badge, never on Home;
+ * closing it clears the flag.
+ */
+function SundialNotice(p: { hours: number; max: number; supplyLeft: boolean; onClose: () => void }) {
+  const { t } = useUi();
+  return (
+    <section class="cap-notice ui-rm-own" data-testid="sundial-notice" aria-labelledby="sundial-notice-title">
+      <header class="cap-notice__head">
+        <span class="cap-notice__icons" aria-hidden="true">
+          <SundialIcon size={40} class="sundial-glyph" />
+        </span>
+        <b id="sundial-notice-title" class="cap-notice__title">
+          {t('ui.notice.sundial.title')}
+        </b>
+        <IconButton icon={<CloseIcon size={22} />} label={t('ui.common.close')} kind="tertiary" onClick={p.onClose} testid="sundial-notice-close" />
+      </header>
+      {/* The Supply sentence only for saves that still have allowance left (A15.3: say only what is true). */}
+      <p class="cap-notice__body">{t(p.supplyLeft ? 'ui.notice.sundial.body' : 'ui.notice.sundial.bodyNoSupply', { h: p.hours, max: p.max })}</p>
+    </section>
   );
 }

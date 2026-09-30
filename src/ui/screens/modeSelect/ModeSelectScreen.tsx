@@ -36,6 +36,7 @@ import {
   CastleIcon,
   LockIcon,
   StarIcon,
+  SundialIcon,
   SwordsIcon,
   TrophyIcon,
 } from "../../components/icons";
@@ -461,8 +462,8 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
               <AmberIcon size={18} /> {formatSigned(win.amber, locale)}
             </span>
           </p>
-          <p class="mode-card__meta">
-            <CapsuleIcon tier="bronze" size={20} />
+          <p class="mode-card__meta" data-testid="ladder-sundial">
+            <SundialIcon size={22} dim={charges.free === 0 && charges.charges === 0} />
             {charges.free > 0
               ? t("ui.home.freeCapsules", { n: charges.free })
               : t("ui.home.charges", { n: charges.charges, max: charges.max })}

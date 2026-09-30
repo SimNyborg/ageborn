@@ -36,7 +36,7 @@ export function tipLine(t: T, tip: { key: string; card?: string; age?: string },
 /** The chip of one reward step: an icon kind and its text (names through i18n, never raw ids). */
 export type RewardIconKind = 'amber' | 'dust' | 'capsule' | 'crate' | 'trophy' | 'title' | 'star' | 'feat' | 'plain';
 
-export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): { icon: RewardIconKind; text: string } | null {
+export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean; clayMax?: number | null } = {}): { icon: RewardIconKind; text: string } | null {
   switch (r.kind) {
     case 'trophies':
       return { icon: 'trophy', text: t('app.reward.trophies', { delta: r.delta > 0 ? `+${r.delta}` : `${r.delta}` }) };
@@ -49,7 +49,8 @@ export function rewardChip(t: T, r: RewardStep, o: { starter?: boolean } = {}): 
     case 'crate':
       return { icon: 'crate', text: t('app.reward.crate') };
     case 'clayPip':
-      return { icon: 'plain', text: t('app.reward.clayPip', { meter: r.meter }) };
+      // The pip count comes from content (A6.3: 2 pips since 2026-09-30); without typed content, no total.
+      return { icon: 'plain', text: o.clayMax ? t('app.reward.clayPip', { meter: r.meter, max: o.clayMax }) : t('app.reward.clayPipOne') };
     case 'codex':
       return { icon: 'plain', text: t('app.reward.codex', { points: r.points }) };
     case 'quest':
@@ -139,11 +140,12 @@ export function ResultScreen(p: { result: ResultState }) {
     }
     return out;
   }, [rewards]);
+  const clayMax = isMetaRules(ui.services.meta) ? asContent(ui.services.content).capsules.clayMeterPips : null;
   // Only steps with a chip are staged, so hidden steps never hold up "Tap to skip".
   const shown = useMemo(
     () =>
       rewards
-        .map((r) => ({ r, chip: rewardChip(ui.t, r, { starter: r.kind === 'capsule' && starterIds.has(r.capsuleId) }) }))
+        .map((r) => ({ r, chip: rewardChip(ui.t, r, { starter: r.kind === 'capsule' && starterIds.has(r.capsuleId), clayMax }) }))
         .filter((x): x is { r: RewardStep; chip: NonNullable<ReturnType<typeof rewardChip>> } => x.chip !== null),
     [rewards, starterIds],
   );

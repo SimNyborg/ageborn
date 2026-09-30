@@ -364,6 +364,24 @@ export function ClockIcon(p: IconProps) {
   );
 }
 
+/**
+ * The Sundial (A6.3, 2026-09-30): a stone dial seen from the front, a bronze gnomon and its shadow.
+ * `dim` greys it out (nothing ready); the Home chip lights it while a capsule is ready.
+ */
+export function SundialIcon(p: IconProps & { dim?: boolean }) {
+  const cls = [p.class, p.dim ? 'is-dim' : null].filter(Boolean).join(' ');
+  return (
+    <Svg size={p.size ?? 24} {...(cls ? { class: cls } : {})}>
+      <ellipse cx="12" cy="17.2" rx="10.8" ry="5.3" fill={p.dim ? '#8b8574' : '#a08c68'} {...O} />
+      <ellipse cx="12" cy="15" rx="10.8" ry="5.2" fill={p.dim ? '#bcb6a6' : '#ecdfbf'} {...O} />
+      <path d="M3.6 15.2h1.9M5.6 18l1.3-1M12 19.7v-1.5M18.4 18l-1.3-1M20.4 15.2h-1.9" stroke={p.dim ? '#8b8574' : '#e39a2e'} stroke-width="1.4" stroke-linecap="round" />
+      <path d="M12 15.4 6.6 18.1" stroke={OUTLINE} stroke-opacity={p.dim ? 0.25 : 0.5} stroke-width="2.6" stroke-linecap="round" />
+      <path d="M10.4 15.6h3.2L13 2.9Q12 2 11.3 3.1Z" fill={p.dim ? '#9a8f7b' : '#c98a3d'} {...O} />
+      <path d="M12.6 14.4 12.3 4.6" stroke={p.dim ? '#d4ccba' : '#ffe0a0'} stroke-width="1.1" stroke-linecap="round" />
+    </Svg>
+  );
+}
+
 export function CalendarIcon(p: IconProps) {
   return (
     <Svg {...p}>

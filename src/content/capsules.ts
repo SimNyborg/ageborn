@@ -1,5 +1,5 @@
 /**
- * Time Capsules, pity, charges, the onboarding script and Wardrobe Crates
+ * Time Capsules, pity, the Sundial (capsule charges until 2026-09-30), the onboarding script and Wardrobe Crates
  * (DESIGN A6.3, A6.4, A6.5, A10). The roll algorithm itself lives in `src/meta/capsules` (WP7);
  * this module is its data. Results are pre-rolled at grant time (A6.4).
  */
@@ -78,7 +78,7 @@ export const capsules: CapsuleTables = {
   // A6.4 step 1.2: Common 72%, Rare 22%, Epic 5%, Legendary 1%
   stackRollBp: { common: 7200, rare: 2200, epic: 500, legendary: 100 },
   // A6.4: exactly 60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum and 1 Aeon in every 200
-  // Win Capsules (the bag size is the sum of these counts)
+  // Sundial Capsules (kind `win`, the Win Capsule until 2026-09-30; the bag size is the sum of these counts)
   bag: { clay: 60, bronze: 80, silver: 40, jade: 13, gold: 4, platinum: 2, aeon: 1 },
   // A6.4 Supply Capsule: Bronze 78%, Silver 15%, Jade 5%, Gold 1.5%, Platinum 0.35%, Aeon 0.15%
   dailyOddsBp: { clay: 0, bronze: 7800, silver: 1500, jade: 500, gold: 150, platinum: 35, aeon: 15 },
@@ -101,15 +101,22 @@ export const capsules: CapsuleTables = {
     wardrobeEpicEvery: 5,
     wardrobeLegendaryEvery: 25,
   },
-  // A6.3, A15.4: a new save starts with 12; +1 every 6 h, banking up to 28 (7 days); the first 10 capsules use none
-  charges: { start: 12, max: 28, regenMs: 21600000, freeCapsules: 10 },
-  clayMeterPips: 3,
+  // A6.3, A15.4 the Sundial (2026-09-30; capsule charges before): a new save starts with 12 ready; one
+  // more every 5 h (18,000,000 ms), holding up to 34 (34 × 5 h = 170 h, the smallest bank of 5 h steps
+  // that holds 7 days); any finished match but the tutorial or a Retreat claims one; the first 10
+  // capsules of a save need none. Was +1 every 6 h, bank 28, Ladder wins only.
+  charges: { start: 12, max: 34, regenMs: 18000000, freeCapsules: 10 },
+  // A6.3: Ladder matches that bring no capsule fill it (3 pips until 2026-09-30; 2 keeps a 7-match
+  // day's income within about 3% once the Supply Capsule retired, A15.4)
+  clayMeterPips: 2,
   daily: { firstAfterCapsule: 2, bankMax: 3 },
-  // A15.4 Supply Capsule: every 3rd finished match turns one banked allowance (+1 a day, banks 7) into one
-  supply: { matchesPerCapsule: 3, allowanceMax: 7 },
+  // A15.4 Supply Capsule, retired 2026-09-30 (folded into the Sundial): no new allowance accrues; an
+  // allowance banked before still turns into a Supply Capsule on every 3rd finished match (banks 7)
+  supply: { matchesPerCapsule: 3, allowanceMax: 7, accrues: false },
   resetHour: 4,
   // A6.4 "Other capsule types" and A10 (climb start; null = fixed tier, reveal starts at step 4)
   kinds: {
+    // The Sundial Capsule (A6.3; the Win Capsule until 2026-09-30, the id stays `win` for saves)
     win: { kind: 'win', climbFrom: 'clay', countsForPity: true, nameKey: 'capsuleKind.win.name' },
     daily: { kind: 'daily', climbFrom: 'bronze', countsForPity: true, nameKey: 'capsuleKind.daily.name' },
     road: { kind: 'road', climbFrom: null, countsForPity: true, nameKey: 'capsuleKind.road.name' },

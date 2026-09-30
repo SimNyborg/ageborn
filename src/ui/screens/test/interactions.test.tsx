@@ -7,7 +7,7 @@ import { content } from '@/content';
 import { i18n } from '@/i18n';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixtureOpponent, fixturePause, fixtureRequest, fixtureResult } from '../fixtures/matches';
-import { midGameSave, newPlayerSave } from '../fixtures/saves';
+import { FIXTURE_NOW, midGameSave, newPlayerSave } from '../fixtures/saves';
 import { VS_MS } from '../vs/VsScreen';
 import { REWARD_STEP_MS } from '../model/result';
 import { input, keydown, text, type FakeElement } from './dom';
@@ -379,17 +379,54 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
     expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100Boarding Nets');
   });
 
-  it('charges show "n/max" with no timer (A15.13)', () => {
+  it('the Sundial card shows "n of 34 ready" and the next one as a clock time, never a countdown (A6.3, A15.3)', () => {
     m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
-    const row = text(m.q('[data-testid="charges"]')!);
-    expect(row).toMatch(/Charges \d+\/\d+/);
-    expect(row).not.toContain('+1 in');
+    expect(text(m.q('[data-testid="sundial-status"]')!)).toBe('5 of 34 ready');
+    const next = text(m.q('[data-testid="sundial-next"]')!);
+    expect(next).toMatch(/^Next one (\S+ )?at \d{1,2}[:.]\d{2}|^Next one \S+ \d{1,2}[:.]\d{2}/);
+    expect(next).not.toMatch(/\d+\s*[hms]\b|:\d{2}:\d{2}/);
+    expect(text(m.q('[data-testid="sundial"]')!)).toContain('Finish any battle to claim one, win or lose.');
+  });
+
+  it('a full Sundial says it has stopped filling and shows no next time', () => {
+    const mid = midGameSave(content);
+    m = mount({ save: { ...mid, capsules: { ...mid.capsules, charges: 34 } }, routes: [{ id: 'capsules' }] });
+    expect(text(m.q('[data-testid="sundial-status"]')!)).toBe('34 of 34 ready');
+    expect(text(m.q('[data-testid="sundial-next"]')!)).toBe('Full: it has stopped filling.');
+  });
+
+  it('Home shows only the Sundial glyph, with no number and no time; it opens the Capsules tab (A15.13)', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }] });
+    const chip = m.q('[data-testid="home-sundial"]')!;
+    expect(text(chip)).toBe('');
+    expect(chip.getAttribute('aria-label')).toBe('Sundial: a capsule is ready. Finish any battle to claim it. Opens Capsules.');
+    expect(chip.className).toContain('is-ready');
+    const home = text(m.container);
+    expect(home).not.toContain('Sundial');
+    expect(home).not.toMatch(/\/34\b/);
+    expect(home).not.toContain('Next one');
+    expect(home).not.toMatch(/\b\d{1,2}:\d{2}\b/);
+    m.unmount();
+    const mid = midGameSave(content);
+    m = mount({ save: { ...mid, capsules: { ...mid.capsules, charges: 0, chargesUpdatedAt: FIXTURE_NOW } }, routes: [{ id: 'home' }] });
+    const dim = m.q('[data-testid="home-sundial"]')!;
+    expect(dim.className).toContain('is-dim');
+    expect(dim.getAttribute('aria-label')).toBe('Sundial: none ready yet. Opens Capsules.');
+  });
+
+  it('the one-time Sundial notice shows in the Capsules tab for a save that has it, and closes', () => {
+    const mid = midGameSave(content);
+    m = mount({ save: { ...mid, flags: { ...mid.flags, 'notice.sundial': true } }, routes: [{ id: 'capsules' }] });
+    expect(text(m.q('[data-testid="sundial-notice"]')!)).toContain('It readies one every 5 hours and holds up to 34.');
+    m.unmount();
+    m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
+    expect(m.q('[data-testid="sundial-notice"]')).toBeNull();
   });
 
   it('shows the Supply line only while an allowance is banked (A15.4)', () => {
     const n = newPlayerSave(content);
     m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, matchesPlayed: 4, capsules: { ...n.capsules, dailyBank: 2 } }, routes: [{ id: 'capsules' }] });
-    expect(text(m.q('[data-testid="supply"]')!)).toContain('Supply Capsule: 2 more matches');
+    expect(text(m.q('[data-testid="supply"]')!)).toContain('Supply allowance left: 2 · 2 more matches');
     m.unmount();
     m = mount({ save: { ...n, pity: { ...n.pity, opened: 3 }, capsules: { ...n.capsules, dailyBank: 0 } }, routes: [{ id: 'capsules' }] });
     expect(m.q('[data-testid="supply"]')).toBeNull();
@@ -638,7 +675,7 @@ describe('Pause', () => {
       ],
     });
     m.click('[data-testid="pause-retreat"]');
-    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss.');
+    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss and claims no Sundial Capsule.');
     m.click('[data-testid="retreat-yes"]');
     expect(calls('retreat')).toHaveLength(1);
   });
@@ -1061,7 +1098,7 @@ describe('Trophy Road, Conquest, Profile, Settings', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'settings' }] });
     m.click('[data-testid="odds-overview"]');
     const sheet = m.q('[data-testid="odds-sheet"]')!;
-    expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon, 2 Platinum, and 4 Gold in every 200 Win Capsules.');
+    expect(text(sheet.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon, 2 Platinum, and 4 Gold in every 200 Sundial Capsules.');
     expect(text(sheet.querySelector('[data-testid="odds-bag-jade"]')!)).toContain('10 left');
     expect(text(sheet.querySelector('[data-testid="odds-pity-legendary"]')!)).toContain('Next capsule you earn: 45%');
   });

@@ -1,20 +1,26 @@
 /**
- * Match results and rewards (DESIGN A6.3, A6.7, A6.8, A6.10, A9.1, A9 #7).
+ * Match results and rewards (DESIGN A6.3, A6.7, A6.8, A6.10, A9.1, A9 #7, A15.4).
  *
  * | Mode | Rewards |
  * |---|---|
- * | Ladder win | +30 trophies; 20 Amber and a Win Capsule if a free capsule or a charge is left, otherwise 40 Amber and a Clay pip |
- * | Ladder loss | −20 trophies (none below 400, never below the arena gate); 15 Amber; a Clay pip |
- * | Ladder draw | 0 trophies; 15 Amber; a Clay pip |
- * | Tutorial (A8 matches 1-2) | the ladder Amber for the result and the next scripted capsule, win or lose ("a loss still gives rewards"); no trophies, charges or MMR |
- * | Skirmish | 5 Amber per win; no trophies, no capsules |
- * | Daily Challenge | first win of the day: an Age Capsule; later wins 20 Amber; no charges, no trophies |
- * | Conquest | one-time star rewards and milestones; no charges, no trophies, no MMR |
+ * | Ladder win | +30 trophies; a Sundial Capsule and 20 Amber if the Sundial has one ready (or a free capsule is left), otherwise 40 Amber and a Clay pip |
+ * | Ladder loss | −20 trophies (none below 400, never below the arena gate); 15 Amber; a Sundial Capsule if one is ready, otherwise a Clay pip (a Retreat: neither) |
+ * | Ladder draw | 0 trophies; 15 Amber; as a loss |
+ * | Tutorial (A8 matches 1-2) | the ladder Amber for the result and the next scripted capsule, win or lose ("a loss still gives rewards"); no trophies, Sundial or MMR |
+ * | Skirmish | 5 Amber per win; no trophies |
+ * | Daily Challenge | first win of the day: an Age Capsule; later wins 20 Amber; no trophies |
+ * | Conquest, War Path | one-time star rewards and milestones; no trophies, no MMR |
+ *
+ * The Sundial (A6.3, 2026-09-30): every finished match in any mode but the tutorial claims one ready
+ * Sundial Capsule (kind `win`, from the bag), win or lose; a Retreat never claims one, and one match
+ * claims at most one. Only Ladder matches that bring no capsule add a Clay pip; a Retreat adds none
+ * (A15.4: every reward needs play, never a Retreat).
  *
  * Ladder results also move the hidden MMR and the loss streak (loss protection). Every mode updates
  * the profile stats, quest progress and titles. A counting win fills the War Chest (A15.5), and every
- * 3rd finished match outside the tutorial turns a banked allowance into a Supply Capsule (A15.4). The returned steps are what the result screen stages
- * one at a time: trophies, Amber, capsule or Clay pip, stars, quest progress, arenas, titles.
+ * 3rd finished match outside the tutorial turns an allowance banked before 2026-09-30 into a Supply
+ * Capsule (A15.4). The returned steps are what the result screen stages one at a time: trophies,
+ * Amber, capsule or Clay pip, stars, quest progress, arenas, titles.
  */
 import type { AgeId, MatchResultInput, RewardStep, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
@@ -22,7 +28,7 @@ import { defaultCapsuleAge, grantCapsuleAt } from './capsules/grant';
 import { grantCrateAt } from './capsules/wardrobe';
 import { arenaOf } from './tables';
 import { questDef } from './quests';
-import { addClayPip, payForWinCapsule } from './charges';
+import { addClayPip, claimSundial } from './charges';
 import { applyConquest } from './conquest';
 import { applyWarPath, onboardingLevelId } from './warPath';
 import { dailyWin } from './daily';
@@ -95,6 +101,24 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
   };
 }
 
+/** True when the player left the match with Retreat (A15.6): it counts as a loss and claims no Sundial Capsule. */
+export function isRetreat(r: Pick<MatchResultInput, 'outcome' | 'mySide'>): boolean {
+  return r.outcome.reason === 'retreat' && resultOf(r) === 'loss';
+}
+
+/**
+ * The match's Sundial Capsule (A6.3): a free capsule or one ready Sundial capsule becomes a pending
+ * Sundial Capsule (kind `win`, rolled now). Null when the Sundial is empty (or the match was a Retreat).
+ */
+function sundialCapsule(s: SaveDoc, t: Content, r: MatchResultInput, now: number, steps: RewardStep[]): SaveDoc | null {
+  if (isRetreat(r)) return null;
+  const paid = claimSundial(s, t, now);
+  if (!paid) return null;
+  const g = grantCapsuleAt(paid.save, 'win', t, now);
+  steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
+  return g.save;
+}
+
 function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResult, now: number, steps: RewardStep[], arenas: number[]): SaveDoc {
   const rules = t.arenas.ladder;
   const format = r.opponent.format;
@@ -109,18 +133,15 @@ function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResul
     lossStreak: result === 'loss' ? s.lossStreak + 1 : 0,
     flags: { ...moved.save.flags, [META_FLAGS.ladderPlayed]: true },
   };
-  let pip = true;
-  if (result === 'win') {
-    const paid = payForWinCapsule(save, t, now, true);
-    if (paid) {
-      save = addAmber(paid.save, winRow.amber, steps);
-      const g = grantCapsuleAt(save, 'win', t, now);
-      save = g.save;
-      steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
-      pip = false;
-    } else save = addAmber(save, winRow.amberWithoutCharge, steps);
-  } else save = addAmber(save, result === 'loss' ? rules.loss.amber : rules.draw.amber, steps);
-  if (pip) {
+  // The Amber step stages before the capsule (A9 #7); the capsule decides the win's Amber.
+  const capsuleSteps: RewardStep[] = [];
+  const claimed = sundialCapsule(save, t, r, now, capsuleSteps);
+  if (claimed) save = claimed;
+  const amber = result === 'win' ? (claimed ? winRow.amber : winRow.amberWithoutCharge) : result === 'loss' ? rules.loss.amber : rules.draw.amber;
+  save = addAmber(save, amber, steps);
+  steps.push(...capsuleSteps);
+  // A Retreat brings no capsule and no pip either (A15.4), so a Retreat farm earns only loss Amber.
+  if (!claimed && !isRetreat(r)) {
     const p = addClayPip(save, t, now);
     save = p.save;
     steps.push({ kind: 'clayPip', meter: p.meter });
@@ -132,7 +153,7 @@ function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResul
 function tutorial(s: SaveDoc, t: Content, result: LadderResult, now: number, steps: RewardStep[]): SaveDoc {
   const rules = t.arenas.ladder;
   let save = addAmber(s, result === 'win' ? rules.win.amber : result === 'loss' ? rules.loss.amber : rules.draw.amber, steps);
-  save = payForWinCapsule(save, t, now, false)?.save ?? save;
+  save = claimSundial(save, t, now, false)?.save ?? save;
   const g = grantCapsuleAt(save, 'win', t, now);
   steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
   save = g.save;
@@ -206,6 +227,10 @@ export function applyMatchResultAt(
       break;
     }
   }
+
+  // A6.3: outside the Ladder (which claimed above) and the tutorial, a finished match claims a ready
+  // Sundial Capsule too, after the mode's own rewards; no Clay pip.
+  if (r.mode !== 'ladder' && r.mode !== 'tutorial') save = sundialCapsule(save, t, r, now, steps) ?? save;
 
   save = recordStats(save, t, r, result);
   if (r.mode !== 'tutorial') {

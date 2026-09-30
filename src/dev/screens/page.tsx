@@ -146,6 +146,27 @@ const VARIANTS: Variant[] = [
       };
     },
   },
+  {
+    // The Sundial (2026-09-30): the one-time notice for a save that played before it.
+    id: 'capsules-sundial',
+    label: 'Capsules tab: Sundial notice',
+    route: () => [{ id: 'capsules' }],
+    save: (s) => ({ ...s, flags: { ...s.flags, 'notice.sundial': true } }),
+  },
+  {
+    // The Sundial empty, the old Supply allowance used up, nothing on the shelf.
+    id: 'capsules-sundial-empty',
+    label: 'Capsules tab: Sundial empty',
+    route: () => [{ id: 'capsules' }],
+    save: (s) => ({ ...s, capsules: { ...s.capsules, pending: [], wardrobe: [], charges: 0, freeCapsulesLeft: 0, dailyBank: 0, clayMeter: 1, chargesUpdatedAt: FIXTURE_NOW - 2 * 3_600_000 } }),
+  },
+  {
+    // The Sundial full (34): it has stopped filling.
+    id: 'capsules-sundial-full',
+    label: 'Capsules tab: Sundial full',
+    route: () => [{ id: 'capsules' }],
+    save: (s) => ({ ...s, capsules: { ...s.capsules, charges: 34, freeCapsulesLeft: 0, dailyBank: 0 } }),
+  },
   { id: 'progress', label: 'Progress tab', route: () => [{ id: 'progress' }] },
   { id: 'modeSelect', label: 'Mode select', route: () => [{ id: 'home' }, { id: 'modeSelect' }] },
   vs('general'),

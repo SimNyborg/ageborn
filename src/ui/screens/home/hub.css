@@ -1154,3 +1154,18 @@
 .ui-root[data-reduce-motion='true'] .hub .home-scene__flock {
   display: none;
 }
+
+/* ---------------------------------------------------------------------------------------------- */
+/* The Sundial mark (A6.3, A15.13): the dial glyph alone, in colour while a capsule is ready and    */
+/* grey when none is. No number, no glow, no time and no motion loop on Home.                      */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hub-sundial__chip {
+  padding-inline: 6px;
+}
+.hub-sundial__chip .ui-chip__icon {
+  transition: opacity var(--ui-dur-small) var(--ui-ease-standard);
+}
+.hub-sundial.is-dim .ui-chip__icon {
+  opacity: 0.7;
+}

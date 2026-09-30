@@ -69,7 +69,9 @@ describe('v8 → v9: the Anti-heavy Rares join the starter kit', () => {
     expect(cards(1)).toEqual([['friar', true], ['field_surgeon', true], ['bonker', false]]);
     // Only the onboarding capsules 1 and 2 change.
     expect(cards(2)).toEqual([['pikeman', true], ['bonker', false]]);
-    expect(validateSaveDoc(doc).ok).toBe(true);
+    // The v9 doc validates once the later steps have run (the schema is the newest version's).
+    const later = migrate(JSON.parse(JSON.stringify(doc)));
+    expect(later.ok && validateSaveDoc(later.doc).ok).toBe(true);
     expect(v9.up!(JSON.parse(JSON.stringify(doc)))).toEqual(doc);
   });
 

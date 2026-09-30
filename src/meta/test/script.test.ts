@@ -92,8 +92,11 @@ describe('onboarding script (A6.5)', () => {
     const scriptedWin = { ...s, flags: { ...s.flags, 'meta.ladderPlayed': true } };
     const win = matchInput('daily', 'win', M.pickOpponent(scriptedWin, 'daily', C, c));
     expect(M.ageCapsuleDue(scriptedWin, win, C, c)).toBe(false);
-    const cap = lastPending(M.applyMatchResult(scriptedWin, win, C, c, { age: 'modern' }).save);
+    const after = M.applyMatchResult(scriptedWin, win, C, c, { age: 'modern' }).save;
+    // The Daily's Age Capsule takes the script step; the Sundial Capsule the match also claims does not (A6.3).
+    const cap = after.capsules.pending.find((p) => p.kind === 'age')!;
     expect(cap).toMatchObject({ kind: 'age', tier: 'gold', scriptIndex: 5, age: null });
+    expect(lastPending(after)).toMatchObject({ kind: 'win', scriptIndex: null });
     expect(cap.contents.stacks.some((x) => x.card === 'mammoth_matriarch')).toBe(true);
   });
 

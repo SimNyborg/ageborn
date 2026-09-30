@@ -24,7 +24,7 @@ function setup(o: { hour?: number } = {}) {
 }
 
 function facts(o: Partial<ResultFacts> = {}): ResultFacts {
-  return { mode: 'ladder', won: true, lost: false, lossStreak: 0, usedLastCharge: false, breakReminder: true, collectionSize: 10, baseDamage: 0, replayHash: null, ...o };
+  return { mode: 'ladder', won: true, lost: false, lossStreak: 0, claimedLastSundial: false, breakReminder: true, collectionSize: 10, baseDamage: 0, replayHash: null, ...o };
 }
 
 const loss = (streak: number, dmg = 0, hash: number | null = null) => facts({ won: false, lost: true, lossStreak: streak, baseDamage: dmg, replayHash: hash });
@@ -96,11 +96,16 @@ describe('Result cards (A15.6)', () => {
     expect(off.cues.onResult(facts({ breakReminder: false }))?.kind).not.toBe('break');
   });
 
-  it('wrap: on the Ladder win that used the last charge, once per session', () => {
+  it('wrap: on the match that claimed the Sundial\'s last ready capsule, win or lose, once per session', () => {
     const { cues } = setup();
     expect(cues.onResult(facts({ won: false, lost: true }))).toBeNull();
-    expect(cues.onResult(facts({ usedLastCharge: true, collectionSize: 12 }))).toEqual({ kind: 'wrap', wins: 1, losses: 1, newCards: 2, chargesOut: true });
-    expect(cues.onResult(facts({ usedLastCharge: true }))).toBeNull();
+    expect(cues.onResult(facts({ claimedLastSundial: true, collectionSize: 12 }))).toEqual({ kind: 'wrap', wins: 1, losses: 1, newCards: 2, chargesOut: true });
+    expect(cues.onResult(facts({ claimedLastSundial: true }))).toBeNull();
+  });
+
+  it('wrap: a lost match outside the Ladder that empties the Sundial counts too', () => {
+    const { cues } = setup();
+    expect(cues.onResult(facts({ mode: 'warPath', won: false, lost: true, claimedLastSundial: true }))).toMatchObject({ kind: 'wrap', chargesOut: true });
   });
 
   it('wrap: after 30 min of active play with at least 3 finished matches', () => {

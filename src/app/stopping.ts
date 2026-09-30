@@ -12,7 +12,8 @@
  *   - Tilt: once per session, on the Result of the 3rd Ladder loss in a row.
  *   - Break: when `settings.breakReminder` is on (the default), the first Result after each 60 min
  *     of active play.
- *   - Wrap: once per session, on the Result of the Ladder win that used the last capsule charge, or
+ *   - Wrap: once per session, on the Result of the match that claimed the Sundial's last ready capsule
+ *     (A6.3; any mode but the tutorial, win or lose), or
  *     the first Result after 30 min of active play with at least 3 finished matches.
  * - **Night line.** The Result gets the local hour the match ended; 22:00-06:00 adds the line.
  * - **Healthy-play signals** (A15.20), local only: sessions over 90 min, sessions after 22:00,
@@ -59,8 +60,8 @@ export interface ResultFacts {
   lost: boolean;
   /** Ladder losses in a row after this match (`SaveDoc.lossStreak`). */
   lossStreak: number;
-  /** This Ladder win paid its capsule with the last charge. */
-  usedLastCharge: boolean;
+  /** This match claimed the Sundial's last ready capsule (A6.3, A15.6; any mode but the tutorial). */
+  claimedLastSundial: boolean;
   /** `settings.breakReminder` (default on). */
   breakReminder: boolean;
   /** Cards owned now (the wrap card counts new cards of the session). */
@@ -240,7 +241,8 @@ export class StoppingCues {
     }
     // Wrap: once per session.
     if (!s.wrapShown) {
-      const usedLast = f.mode === 'ladder' && f.won && f.usedLastCharge;
+      // The match that claimed the Sundial's last ready capsule (win or lose), or a long session.
+      const usedLast = f.claimedLastSundial;
       const longEnough = s.activeMs >= WRAP_AFTER_MS && s.matches >= WRAP_MIN_MATCHES;
       if (usedLast || longEnough) {
         s.wrapShown = true;

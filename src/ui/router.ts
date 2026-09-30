@@ -81,6 +81,7 @@ export interface ResultInfo {
 export type ResultCard =
   | { kind: 'tilt'; watchIndex: number | null }
   | { kind: 'break' }
+  /** `chargesOut`: this match claimed the Sundial's last ready capsule (A6.3; the name predates the Sundial). */
   | { kind: 'wrap'; wins: number; losses: number; newCards: number; chargesOut: boolean };
 
 /** The Customize screen's tabs. */

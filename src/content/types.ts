@@ -181,14 +181,21 @@ export interface CapsuleTables {
     wardrobeEpicEvery: number;
     wardrobeLegendaryEvery: number;
   };
-  /** Ladder capsule charges (A6.3). */
+  /**
+   * The Sundial (A6.3, A15.4; capsule charges until 2026-09-30): `start` ready capsules on a new save,
+   * one more every `regenMs`, holding up to `max`; the first `freeCapsules` capsules of a save need none.
+   */
   charges: { start: number; max: number; regenMs: number; freeCapsules: number };
-  /** Pips that make a Clay capsule (A6.3). */
+  /** Pips that make a Clay capsule (A6.3): Ladder matches that bring no capsule add one. */
   clayMeterPips: number;
   /** Daily Capsule (A6.3): first after capsule 2 is opened, then one per day, banking up to 3. */
   daily: { firstAfterCapsule: number; bankMax: number };
-  /** Supply Capsule (A15.4): every `matchesPerCapsule`-th finished match uses one banked allowance; the allowance banks up to `allowanceMax`. */
-  supply: { matchesPerCapsule: number; allowanceMax: number };
+  /**
+   * Supply Capsule (A15.4): every `matchesPerCapsule`-th finished match uses one banked allowance; the
+   * allowance banks up to `allowanceMax`. `accrues` false (retired 2026-09-30, folded into the Sundial):
+   * no new allowance is added, an allowance banked before still converts.
+   */
+  supply: { matchesPerCapsule: number; allowanceMax: number; accrues: boolean };
   /** All daily timers reset at local 04:00 (A6.3). */
   resetHour: number;
   kinds: Record<PendingCapsule['kind'], CapsuleKindDef>;

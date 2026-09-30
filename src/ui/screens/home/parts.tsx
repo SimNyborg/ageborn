@@ -19,7 +19,6 @@ import {
   CardsIcon,
   CastleIcon,
   CheckIcon,
-  ClockIcon,
   CrateIcon,
   DustIcon,
   GearIcon,
@@ -28,6 +27,7 @@ import {
   RefreshIcon,
   RoadIcon,
   ScrollIcon,
+  SundialIcon,
   SwordsIcon,
   TrophyIcon,
 } from '../../components/icons';
@@ -274,16 +274,14 @@ export function CapsuleInfo(p: { onClose: () => void }) {
   const r = bankRules(content);
   const arena = arenaOf(s, content);
   const hours = Math.max(1, Math.round(r.chargeRegenMs / 3_600_000));
+  const supply = supplyView(s, content);
   const cap = (n: number) => t('ui.info.bankCap', { n: formatInt(n, locale) });
   const rows: { id: string; icon: ComponentChildren; title: string; body: string; cap?: string }[] = [
-    { id: 'charges', icon: <ClockIcon size={26} />, title: t('ui.info.charges'), body: t('ui.info.chargesRule', { h: hours }), cap: cap(r.chargesMax) },
-    {
-      id: 'supply',
-      icon: <CapsuleIcon tier="bronze" size={28} />,
-      title: t('ui.home.supply'),
-      body: t('ui.info.supplyRule', { n: r.supplyEvery }),
-      cap: cap(r.supplyMax),
-    },
+    { id: 'charges', icon: <SundialIcon size={28} />, title: t('ui.info.charges'), body: t('ui.info.chargesRule', { h: hours }), cap: cap(r.chargesMax) },
+    // The Supply Capsule retired into the Sundial (2026-09-30, A15.4): shown only while old allowance is left.
+    ...(supply.moreMatches !== null
+      ? [{ id: 'supply', icon: <CapsuleIcon tier="bronze" size={28} />, title: t('ui.home.supply'), body: t('ui.info.supplyRule', { n: r.supplyEvery }) }]
+      : []),
     { id: 'daily', icon: <CalendarIcon size={26} />, title: t('ui.info.daily'), body: t('ui.info.dailyRule'), cap: cap(r.dailyRewardsMax) },
     { id: 'clay', icon: <CapsuleIcon tier="clay" size={28} />, title: t('ui.clay.label'), body: t('ui.info.clayRule', { n: content.capsules.clayMeterPips }) },
   ];
@@ -312,12 +310,12 @@ export function CapsuleInfo(p: { onClose: () => void }) {
 }
 
 export function CapsuleTray(p: { sheet?: boolean } = {}) {
-  const { save, content, t, services, locale } = useUi();
+  const { save, content, t, services, locale, now } = useUi();
   const [info, setInfo] = useState(false);
   const s = save.value;
   const pending = trayCapsules(s, content);
   const crates = s.capsules.wardrobe;
-  const charges = chargesView(s, content, 0);
+  const charges = chargesView(s, content, now());
   const supply = supplyView(s, content);
   const best = pending[0];
   return (
@@ -376,21 +374,21 @@ export function CapsuleTray(p: { sheet?: boolean } = {}) {
         </div>
       ) : null}
       <div class="home-tray__rows">
-        {supply.unlocked && supply.moreMatches !== null ? (
+        {supply.moreMatches !== null ? (
           <div class="home-tray__row" data-testid="supply">
             <CapsuleIcon tier="bronze" size={30} />
             <span class="ui-grow">
               <b>
                 {supply.moreMatches === 1
-                  ? t('ui.home.supplyMoreOne')
-                  : t('ui.home.supplyMore', { n: formatInt(supply.moreMatches, locale) })}
+                  ? t('ui.capsules.supplyLegacyOne', { n: formatInt(supply.bank, locale) })
+                  : t('ui.capsules.supplyLegacy', { n: formatInt(supply.bank, locale), m: formatInt(supply.moreMatches, locale) })}
               </b>
             </span>
           </div>
         ) : null}
-        <div class="home-tray__row" data-testid="charges">
+        <div class={`home-tray__row${charges.charges > 0 ? ' is-ready' : ''}`} data-testid="charges">
           <span class="home-charge" aria-hidden="true">
-            <ClockIcon size={26} />
+            <SundialIcon size={28} dim={charges.charges === 0} />
           </span>
           <span class="ui-grow">
             <b>{t('ui.home.charges', { n: formatInt(charges.charges, locale), max: formatInt(charges.max, locale) })}</b>
@@ -401,6 +399,32 @@ export function CapsuleTray(p: { sheet?: boolean } = {}) {
       </div>
       {info ? <CapsuleInfo onClose={() => setInfo(false)} /> : null}
     </Panel>
+  );
+}
+
+/**
+ * Home's Sundial mark (DESIGN A6.3, A15.13; 2026-09-30): the dial glyph alone, in colour while a
+ * capsule is ready and grey when none is. No number (a "34/34" would read as a backlog and a pull
+ * cue, A15.13), no glow, no time, no countdown and no motion loop on Home; tapping it opens the
+ * Capsules tab, where the Sundial card shows "n of 34 ready" and when the next one is ready.
+ */
+export function SundialChip() {
+  const { save, content, t, router, now } = useUi();
+  const ready = chargesView(save.value, content, now()).charges > 0;
+  return (
+    <button
+      type="button"
+      class={`wp-chip hub-sundial${ready ? ' is-ready' : ' is-dim'}`}
+      data-testid="home-sundial"
+      aria-label={t(ready ? 'ui.home.sundialReadyAria' : 'ui.home.sundialEmptyAria')}
+      onClick={() => router.switchTab('capsules', { id: 'capsules' })}
+    >
+      <span class="ui-chip hub-sundial__chip">
+        <span class="ui-chip__icon">
+          <SundialIcon size={28} dim={!ready} />
+        </span>
+      </span>
+    </button>
   );
 }
 

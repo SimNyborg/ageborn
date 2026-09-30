@@ -98,7 +98,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   const { controller, services, meta } = o;
   const router = createRouter({ id: 'home' });
   const requests = new WeakMap<BattleHandle, MatchRequest>();
-  /** The save when each battle started (the wrap card compares charges and cards). */
+  /** The save when each battle started (the first-win check). */
   const saveAtStart = new WeakMap<BattleHandle, SaveDoc | null>();
   const toasts = createToastStore();
   // B8: problems the player must see (quota, blocked storage, an unreadable save).
@@ -235,15 +235,17 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       const started = r.result.battle ? saveAtStart.get(r.result.battle) : undefined;
       if (after && isFirstWin(started ?? null, after)) void persist();
       const newestFirst = [...replays].reverse();
-      const before = r.result.battle ? saveAtStart.get(r.result.battle) : undefined;
       const card = cues.onResult(
         {
           mode: input.mode,
           won,
           lost: input.outcome.winner !== null && !won,
           lossStreak: after?.lossStreak ?? 0,
-          usedLastCharge:
-            !!before && before.capsules.charges + before.capsules.freeCapsulesLeft > 0 && !!after && after.capsules.charges + after.capsules.freeCapsulesLeft === 0,
+          // A15.6 wrap: this match claimed a Sundial Capsule (kind `win`) and left the Sundial empty.
+          claimedLastSundial:
+            !!after &&
+            after.capsules.charges + after.capsules.freeCapsulesLeft === 0 &&
+            r.result.rewards.some((x) => x.kind === 'capsule' && after.capsules.pending.some((p) => p.id === x.capsuleId && p.kind === 'win')),
           breakReminder: after?.settings.breakReminder !== false,
           collectionSize: cardsOwned(),
           baseDamage: input.stats.baseDamage,

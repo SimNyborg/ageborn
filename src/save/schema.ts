@@ -196,10 +196,13 @@ export const SaveDocSchema = v.pipe(
     activePlan: count,
     capsules: v.object({
       pending: v.array(PendingCapsuleSchema),
+      /** Ready Sundial capsules, up to 34 (A6.3; capsule charges until save v10). */
       charges: count,
+      /** Start of the Sundial's current 5 h period (epoch ms). */
       chargesUpdatedAt: time,
       freeCapsulesLeft: count,
       clayMeter: count,
+      /** The Supply allowance left from before 2026-09-30 (A15.4); it never grows. */
       dailyBank: count,
       dailyNextAt: v.nullable(time),
       bag: v.array(int),

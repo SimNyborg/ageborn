@@ -163,23 +163,23 @@
       "nextOpponent": "Next opponent",
       "quests": "Quests",
       "capsules": "Capsules",
-      "noCapsules": "Win battles to earn capsules",
+      "noCapsules": "Finish battles to earn capsules",
       "open": "Open ({n})",
       "openAll": "Open all",
       "openOne": "Open {name}",
       "openCrate": "Open Wardrobe Crate",
       "more": "+{n}",
       "claim": "Claim",
-      "charges": "Charges {n}/{max}",
-      "freeCapsules": "Next {n} capsules use no charge",
+      "charges": "Sundial {n}/{max}",
+      "freeCapsules": "Next {n} capsules don't use the Sundial",
       "roadNext": "Next reward at {n}",
       "roadDone": "Trophy Road complete",
       "arenaN": "Arena {n}",
       "warChest": "War Chest {n}/{max}",
       "warChestHint": "Ladder and Daily wins fill it. Its progress never expires.",
       "supply": "Supply Capsule",
-      "supplyMore": "Supply Capsule: {n} more matches",
-      "supplyMoreOne": "Supply Capsule: 1 more match"
+      "sundialReadyAria": "Sundial: a capsule is ready. Finish any battle to claim it. Opens Capsules.",
+      "sundialEmptyAria": "Sundial: none ready yet. Opens Capsules."
     },
     "quest": {
       "claim": "Claim",
@@ -194,8 +194,8 @@
     "odds": {
       "title": "Odds and pity",
       "honest": "The result was decided when you earned this capsule. Tapping only reveals it.",
-      "bagTitle": "Win Capsule bag",
-      "bagLine": "Exactly {list} in every {size} Win Capsules.",
+      "bagTitle": "Sundial Capsule bag",
+      "bagLine": "Exactly {list} in every {size} Sundial Capsules.",
       "perHundred": "{n} in {size}",
       "left": "{n} left",
       "bagLeftTotal": "{n} of {size} left in your current bag",
@@ -249,7 +249,7 @@
       "quick": {
         "title": "Quick Battle",
         "desc": "Pick a difficulty and fight an AI General.",
-        "help": "No trophies, no capsules. {n} Amber per win."
+        "help": "No trophies. {n} Amber per win. Claims a ready Sundial Capsule."
       },
       "ladder": {
         "title": "Ladder",
@@ -261,12 +261,12 @@
         "title": "Conquest",
         "desc": "Beat 9 AI Generals for stars.",
         "open": "Open board",
-        "rules": "Full War. No charges, no trophies."
+        "rules": "Full War. No trophies."
       },
       "skirmish": {
         "title": "Skirmish",
         "desc": "Practice against any AI General.",
-        "help": "No trophies, no capsules.",
+        "help": "No trophies.",
         "setup": "Set up",
         "general": "Opponent",
         "echo": "AI · Echo of You: an AI playing your War Plan",
@@ -279,7 +279,7 @@
         "title": "Daily Challenge",
         "desc": "{format} with today's twist.",
         "wonToday": "Won today. More wins: {n} Amber",
-        "rules": "Uses no charges and changes no trophies.",
+        "rules": "Changes no trophies.",
         "difficulty": "Difficulty",
         "recruit": "Recruit",
         "veteran": "Veteran",
@@ -297,10 +297,18 @@
       "starterSource": "Set to get you started",
       "crate": "Wardrobe Crate",
       "emptyTitle": "No capsules right now",
-      "chargesNote": "Each Ladder win with a charge brings a capsule.",
-      "clayNote": "Wins without a charge fill it. {n} pips make a Clay Capsule.",
+      "chargesNote": "Finish any battle to claim one, win or lose.",
+      "sundialTitle": "The Sundial",
+      "sundialReady": "{n} of {max} ready",
+      "sundialNone": "None ready yet",
+      "sundialNext": "Next one at {time}",
+      "sundialNextDay": "Next one {day} {time}",
+      "sundialFull": "Full: it has stopped filling.",
+      "supplyLegacy": "Supply allowance left: {n} · {m} more matches",
+      "supplyLegacyOne": "Supply allowance left: {n} · 1 more match",
+      "clayNote": "Ladder battles that bring no capsule fill it. {n} pips make a Clay Capsule.",
       "from": {
-        "win": "From a Ladder win",
+        "win": "From the Sundial",
         "daily": "From finishing matches",
         "road": "From the Trophy Road",
         "meter": "From the Clay meter",
@@ -317,7 +325,7 @@
         "aeon": "From an Aeon Capsule",
         "welcome": "For your first win"
       },
-      "revealNote": "Win and Supply Capsules show their tier when you open them."
+      "revealNote": "Sundial and Supply Capsules show their tier when you open them."
     },
     "format": {
       "span": "{from} to {to}",
@@ -349,7 +357,7 @@
       "retreat": "Retreat",
       "retreatLocked": "Retreat unlocks at {time}",
       "retreatTitle": "Retreat?",
-      "retreatBody": "Retreating counts as a loss.",
+      "retreatBody": "Retreating counts as a loss and claims no Sundial Capsule.",
       "quitSkirmish": "Quit Skirmish",
       "quitBody": "Leave this Skirmish? It gives no rewards.",
       "scouted": "Scouted ({n})",
@@ -400,7 +408,7 @@
       "keepPlaying": "Keep playing",
       "wrapTitle": "Good session!",
       "wrapSummary": "Wins: {wins} · Losses: {losses} · New cards: {cards}",
-      "wrapCharges": "Capsule charges used up. Wins still pay Amber and a Clay pip.",
+      "wrapCharges": "The Sundial is empty. Ladder battles still pay Amber and a Clay pip.",
       "wrapNext": "Next on your road:",
       "copy": "Copy result",
       "copied": "Result copied",
@@ -542,7 +550,7 @@
       "fight": "Fight",
       "generalLabel": "{name}, {n} of 3 stars",
       "locked": "Conquest opens in {arena} ({n} trophies)",
-      "noCost": "Uses no charges, changes no trophies. Each star pays once.",
+      "noCost": "Changes no trophies. Each star pays once.",
       "cond": {
         "win": "Win",
         "base": "Win with your base above {n}%",
@@ -664,12 +672,12 @@
       "title": "Odds and how capsules work",
       "banksTitle": "How capsules are earned",
       "bankCap": "Holds up to {n}. When full, it stops filling.",
-      "charges": "Capsule charges",
-      "chargesRule": "A ladder win uses one charge and earns a capsule. You get +1 charge every {h} hours.",
-      "supplyRule": "+1 allowance each day. Each time you finish {n} matches, one allowance turns into a Supply Capsule.",
+      "charges": "The Sundial",
+      "chargesRule": "Every {h} hours the Sundial readies a capsule. Finish any battle to claim it, win or lose. The tutorial and a Retreat don't count.",
+      "supplyRule": "The Supply Capsule has retired. Allowance you had left still turns into a Supply Capsule every {n} matches.",
       "daily": "Daily Challenge rewards",
       "dailyRule": "+1 each day. A Daily Challenge win uses one and pays an Age Capsule.",
-      "clayRule": "Wins without a charge fill it. {n} pips make a Clay Capsule.",
+      "clayRule": "Ladder battles that bring no capsule fill it. {n} pips make a Clay Capsule.",
       "kept": "Nothing you have earned is ever taken away.",
       "rookie": "Your first opponents make extra mistakes while you learn. After that, ladder opponents adapt to your recent results. In Quick Battle and Skirmish you pick the difficulty."
     },
@@ -711,6 +719,11 @@
       }
     },
     "notice": {
+      "sundial": {
+        "title": "The Sundial",
+        "body": "Capsules now come from the Sundial. It readies one every {h} hours and holds up to {max}. Finish any battle to claim one, win or lose. Your charges are now ready capsules, and Supply allowance you had left still turns into Supply Capsules.",
+        "bodyNoSupply": "Capsules now come from the Sundial. It readies one every {h} hours and holds up to {max}. Finish any battle to claim one, win or lose. Your charges are now ready capsules."
+      },
       "capsuleLadder": {
         "title": "Two new capsule tiers",
         "body": "Gold and Platinum join the ladder above Jade, and Aeon now holds 3 Legendaries. Jade no longer turns a Rare into a Legendary. Unopened Aeon Capsules keep what they hold, get 100 Dust more and are now called Gold. The Aeons left in your current bag stay Aeon.",

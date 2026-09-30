@@ -1,8 +1,10 @@
 /**
- * The Supply Capsule (DESIGN A15.4, A6.3, A6.4).
+ * The Supply Capsule (DESIGN A15.4, A6.3, A6.4). Retired 2026-09-30 and folded into the Sundial
+ * (`charges.ts`): with `supply.accrues` false no allowance is added any more; an allowance banked
+ * before still converts as below until it is used, and the one-time capsule after capsule 2 stays.
  *
- * - The allowance (`capsules.dailyBank`) gains 1 at each local 04:00 once it is unlocked, up to 7
- *   (`accrueDaily` in `daily.ts` adds it; the cap comes from {@link supplyRules}).
+ * - While `accrues` is true, the allowance (`capsules.dailyBank`) gains 1 at each local 04:00 once it
+ *   is unlocked, up to 7 (`accrueDaily` in `daily.ts` adds it; the cap comes from {@link supplyRules}).
  * - Every 3rd finished match (`matchesPlayed` = 3, 6, 9 …, any mode but the tutorial, a Retreat
  *   included) turns one banked allowance into a Supply Capsule (`PendingCapsule.kind 'daily'`).
  *   With no allowance banked, nothing happens.
@@ -20,9 +22,11 @@ import { grantCapsuleAt } from './capsules/grant';
 export interface SupplyRules {
   matchesPerCapsule: number;
   allowanceMax: number;
+  /** False once the Supply Capsule retired (2026-09-30): no new allowance; a banked one still converts. */
+  accrues: boolean;
 }
 
-const DEFAULT_SUPPLY: SupplyRules = { matchesPerCapsule: 3, allowanceMax: 7 };
+const DEFAULT_SUPPLY: SupplyRules = { matchesPerCapsule: 3, allowanceMax: 7, accrues: true };
 
 /** The Supply rules of a content set. */
 export function supplyRules(t: Content): SupplyRules {
@@ -31,6 +35,7 @@ export function supplyRules(t: Content): SupplyRules {
   return {
     matchesPerCapsule: pos(s?.matchesPerCapsule, DEFAULT_SUPPLY.matchesPerCapsule),
     allowanceMax: pos(s?.allowanceMax, DEFAULT_SUPPLY.allowanceMax),
+    accrues: typeof s?.accrues === 'boolean' ? s.accrues : DEFAULT_SUPPLY.accrues,
   };
 }
 

@@ -156,8 +156,10 @@ describe('openCapsule', () => {
     expect(s.capsules.pending.filter((p) => p.kind === 'daily')).toHaveLength(1);
     expect(s.capsules.dailyBank).toBe(0);
     expect(s.capsules.dailyNextAt).toBeNull();
-    const ticked = M.tickTimers(s, clock());
-    expect(ticked.capsules.dailyNextAt).toBeGreaterThan(clock().now());
+    // Retired 2026-09-30 (A15.4): no allowance timer starts and none accrues.
+    const ticked = M.tickTimers(s, { now: () => clock().now() + 3 * 86_400_000 });
+    expect(ticked.capsules.dailyNextAt).toBeNull();
+    expect(ticked.capsules.dailyBank).toBe(0);
   });
 
   it('an unknown id is a programming error', () => {

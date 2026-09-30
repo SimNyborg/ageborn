@@ -171,8 +171,8 @@ describe('the odds sheet for the longer ladder', () => {
 
   it('shows the list bag line, the reveal note, crests, sure skins and the ladder rules; tier names are plain text', () => {
     const el = show(<OddsSheet model={oddsModel(content.capsules, content.rarities, midGameSave(content), true, content.cosmetics.collections)} />);
-    expect(text(el.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon, 2 Platinum, and 4 Gold in every 200 Win Capsules.');
-    expect(text(el.querySelector('[data-testid="odds-reveal-note"]')!)).toBe('Win and Supply Capsules show their tier when you open them.');
+    expect(text(el.querySelector('[data-testid="odds-aeon-line"]')!)).toBe('Exactly 1 Aeon, 2 Platinum, and 4 Gold in every 200 Sundial Capsules.');
+    expect(text(el.querySelector('[data-testid="odds-reveal-note"]')!)).toBe('Sundial and Supply Capsules show their tier when you open them.');
     expect(text(el.querySelector('[data-testid="odds-bag-platinum"]')!)).toContain('★2');
     expect(text(el.querySelector('[data-testid="odds-bag-jade"]')!)).not.toContain('★');
     const plat = text(el.querySelector('[data-testid="odds-extras-platinum"]')!);

@@ -5,7 +5,7 @@
  * does) on fresh saves in the last arena (full drop pool, random Legendaries on), with the onboarding
  * script already done, and checks what players are told:
  *
- * - **Bag totals**: every full bag (the sum of `capsules.bag`: 200) of Win Capsules holds exactly the
+ * - **Bag totals**: every full bag (the sum of `capsules.bag`: 200) of Sundial Capsules holds exactly the
  *   published counts (60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum, 1 Aeon).
  * - **Chi-square, family-wise p > 0.01 (Bonferroni)**: Supply Capsule tiers (every tier with odds
  *   above 0), the stack rarity roll (72/22/5/1, on stacks that no guarantee or pity could touch), foils
@@ -79,7 +79,7 @@ const SKIN_RARITIES: readonly SkinRarity[] = ['rare', 'epic', 'legendary'];
 /** Main strikes per climbing capsule (A10 step 3). */
 const MAIN_STRIKES = 4;
 
-/** The size of a full Win Capsule bag: the sum of the content's bag counts (A6.4). */
+/** The size of a full Sundial Capsule bag: the sum of the content's bag counts (A6.4). */
 export function contentBagSize(c: Content): number {
   return c.capsules.tierOrder.reduce((n, t) => n + c.capsules.bag[t], 0);
 }
@@ -231,7 +231,7 @@ export class DropsTally {
       }
     }
 
-    // Bag: groups of a full bag (the content bag size) of bag-drawn Win Capsules.
+    // Bag: groups of a full bag (the content bag size) of bag-drawn Sundial Capsules.
     if (o.kind === 'win' && !o.scripted) {
       this.winCount += 1;
       this.winCopies += extra.copies;
@@ -383,7 +383,7 @@ export function dropsChecks(s: DropsSummary, content: CompiledContent): Check[] 
   return [
     {
       id: 'drops.bag',
-      metric: `Win Capsule bag: every ${size} hold the published totals`,
+      metric: `Sundial Capsule bag: every ${size} hold the published totals`,
       target: 'all groups exact',
       value: `${s.bag.groups - s.bag.badGroups}/${s.bag.groups} groups exact`,
       verdict: s.bag.groups > 0 && s.bag.badGroups === 0 ? 'pass' : s.bag.groups === 0 ? 'skipped' : 'fail',
@@ -406,7 +406,7 @@ export interface DropsOptions {
   openings: number;
   streams: number;
   seed: number;
-  /** Every n-th capsule is a Daily Capsule, the rest Win Capsules. */
+  /** Every n-th capsule is a Supply Capsule, the rest Sundial Capsules. */
   dailyEvery: number;
 }
 
@@ -496,7 +496,7 @@ export async function runDrops(o: DropsOptions, content: CompiledContent = gameC
   try {
     const s = openCapsules(meta, content, o, onProgress).summary();
     return rep.finish(dropsChecks(s, content), { meta: 'src/meta', summary: s }, [
-      `A6.9 reference (the 2026-09-29 ladder): 16.05 copies and 411.3 Amber per bag capsule before pity; measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Win Capsule.`,
+      `A6.9 reference (the 2026-09-29 ladder): 16.05 copies and 411.3 Amber per bag capsule before pity; measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Sundial Capsule.`,
     ]);
   } catch (e) {
     return rep.finish([{ id: 'drops.run', metric: 'Capsule openings through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', summary: null });

@@ -3,8 +3,9 @@
  * UI environment and the pure view models:
  *
  * - `HubProfile`: avatar, name and trophies (once the Ladder is open); opens Profile.
- * - `HubTopRight`: the Amber and Dust chips (each once earned, with its first-seen caption, MR-28) and
- *   the gear.
+ * - `HubTopRight`: the Sundial mark (A6.3: the dial glyph alone, in colour while a capsule is ready,
+ *   once the Ladder is open; no number; it opens the Capsules tab), the Amber and Dust chips (each once earned, with its first-seen
+ *   caption, MR-28) and the gear.
  * - `ArenaTitle` and `TrophyBar`: the arena's name ribbon and the trophy progress to the next Trophy
  *   Road reward; the bar opens Trophy Road.
  * - `MatchPlate`: who the Battle button fights (the General's portrait with the AI badge, tier) and
@@ -12,7 +13,7 @@
  *   online opponent will show once online play exists (A18.10); until then every opponent is an AI.
  * - `CampaignCard`: the War Path, the offline side road (play offline, earn cards), with its region
  *   art, level and stars; opens the War Path screen.
- * - `CapsuleSlots`: four capsule slots, each opens its capsule with one tap (charges never block).
+ * - `CapsuleSlots`: four capsule slots, each opens its capsule with one tap (the Sundial never blocks).
  * - `UnlockPointer`: MR-40, a feature that just opened.
  */
 import { arenaNameKey, formatDescKey } from '@/content/keys';
@@ -32,7 +33,7 @@ import { formatName } from '../model/plan';
 import { arenaOf, roadProgress, trayCapsules } from '../model/progress';
 import { currentLevelId, featureOpen, levelNameKey, mapRegions, playLevelId, regionNameKey, type HomeUnlock } from '../model/warPath';
 import { RoadRewardView } from '../shared/RoadReward';
-import { CurrencyInfo } from './parts';
+import { CurrencyInfo, SundialChip } from './parts';
 import { RegionFar } from '../warPath/regionArt';
 
 // ---------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ export function HubProfile() {
 
 /** The currency chips (each once earned, with its first-seen caption, MR-28) and the gear. */
 export function HubTopRight(p: { quiet: boolean }) {
-  const { save, t, router, services } = useUi();
+  const { save, t, router, services, content } = useUi();
   const s = save.value;
   const [info, setInfo] = useState<'amber' | 'dust' | null>(null);
   const showAmber = s.currencies.amber > 0 || s.warPath?.legacy;
@@ -84,6 +85,8 @@ export function HubTopRight(p: { quiet: boolean }) {
   }, [caption]);
   return (
     <div class="wp-top__right">
+      {/* The Sundial mark (A6.3): the glyph alone, in colour while one is ready; no number, no time (A15.13). */}
+      {featureOpen(s, content, 'ladder') ? <SundialChip /> : null}
       {showAmber ? (
         <button type="button" class="wp-chip" onClick={() => setInfo('amber')} aria-label={t('ui.currency.amber')} data-testid="home-amber">
           <CurrencyChip kind="amber" value={s.currencies.amber} testid="chip-amber" />

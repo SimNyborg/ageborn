@@ -19,9 +19,13 @@ import { META_FLAGS } from './rules';
 import { skillTier } from './warChest';
 import { dateNumberOf, dayFromKey, dayKeyOf, gameDay, nextResetAt, type LocalTime } from './time';
 
-/** Adds the Daily Capsules earned by the resets up to `lt` (capped by the bank). */
+/**
+ * Adds the Supply allowance earned by the resets up to `lt` (capped by the bank). Nothing once the
+ * Supply Capsule has retired (`supply.accrues` false, 2026-09-30): the bank only shrinks from then on.
+ */
 export function accrueDaily(s: SaveDoc, t: Content, lt: LocalTime): SaveDoc {
   if (!s.flags[META_FLAGS.dailyUnlocked]) return s;
+  if (!supplyRules(t).accrues) return s;
   const cap = s.capsules;
   const hour = t.capsules.resetHour;
   const next = nextResetAt(lt, hour);

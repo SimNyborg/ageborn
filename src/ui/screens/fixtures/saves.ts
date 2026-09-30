@@ -315,7 +315,7 @@ export function midGameSave(content: Content): SaveDoc {
       charges: 5,
       chargesUpdatedAt: FIXTURE_NOW - 2 * HOUR,
       freeCapsulesLeft: 0,
-      clayMeter: 2,
+      clayMeter: 1,
       dailyBank: 1,
       dailyNextAt: FIXTURE_NOW + 14 * HOUR,
       // A 200-slot bag in progress (the 2026-09-29 ladder: tier indices 0-6, Clay to Aeon)
