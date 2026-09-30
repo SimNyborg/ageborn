@@ -153,10 +153,17 @@ export function BattleStage(p: {
     let log: SimEvent[] = [];
 
     let ai: AiKit | null = null;
-    const build = (art: ArtProvider): World => {
+    const build = (baseArt: ArtProvider): World => {
       const o = opts.current;
       const src = createSource({ kind: source, format, seed, autoplayMe, ai });
       const audio = new FakeAudio();
+      // `&backdrop=<id>` dresses your half in a backdrop skin (A18.9.4) for screenshots
+      const bd = new URLSearchParams(window.location.search).get('backdrop');
+      const art: ArtProvider = bd
+        ? Object.assign(Object.create(baseArt) as ArtProvider, {
+            createBackdrop: (b: Parameters<ArtProvider['createBackdrop']>[0]) => baseArt.createBackdrop({ ...b, skins: { left: `backdrop.${bd}`, right: b.skins?.right ?? null } }),
+          })
+        : baseArt;
       const view = new BattleView({
         sim: src.sim,
         art,

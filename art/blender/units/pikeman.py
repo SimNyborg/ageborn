@@ -1,24 +1,39 @@
 """Pikeman: Medieval Age anti-armor (DESIGN A5.3). Pike, reach 70, Brace, ~72 lu.
 
 Look (A11): a sturdy pikeman in a steel morion (upturned crescent brim, tall comb, gold
-rim), a slate breastplate over a team padded doublet with big puffed team sleeves, wine
-breeches and brown boots, and a long pike (A11: polearm = reach) with a steel leaf head and
-a team pennon that streams in the wind. He stands braced, feet wide. The attack coils the
-pike back, then lunges into a long level thrust (smear, held impact) and recovers.
+rim), a slate breastplate with a leather gorget over a team padded jack (cream lacing,
+big puffed team sleeves), wine breeches and brown boots, and a long pike (A11: polearm =
+reach) with a big steel leaf head, a gold collar, a cream tassel and a team pennon with a
+parchment bear paw that streams in the wind. He stands braced, feet wide.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
+  idle    braced; shifts his weight and regrips the shaft, blink
+  walk    march with the pike shouldered, the pennon streaming
+  attack  PLANT AND DRIVE: drops the pike level and sinks into a deep brace with both hands
+          pulled back to the hip (the held extreme: a coiled spring behind a level pike),
+          then an explosive two-handed drive straight forward (streak smear with ghost
+          heads), the lunge fully extended on the impact, and the pike quivers after
+  hit     armoured and braced (Brace: immune to knockback): barely moves, the morion
+          clanks down, eyes squeezed
+  die     D2 timber: lurches forward, then falls stiff onto his back like a felled tree,
+          the pike going over with him, the morion rolling off
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import face as F
+from ageborn_art import kit_medieval as K
+from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "pikeman"
 NAME = "Pikeman"
 HEIGHT_LU = 72
 CANVAS = (344, 250)
-FEET = (108, 222)
+FEET = (130, 222)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 33)}
+NO_RETIME = True
 
 SKIN = "#EBC4A0"
 HAIR = "#3E2F26"
@@ -38,8 +53,32 @@ SHOULDER = (0.0, B.SHOULDER_Z)
 # the far hand sits ~24 lu deeper than the pike; the 18 degree view yaw shows it about this
 # much further forward on screen, so its grip target is moved back by this amount
 DEPTH_SHIFT = 24.0 * 0.31
-SMEAR = {"joint": "hand_r", "inner": (HR[0] + TIP - 30, PY, HR[2]), "outer": (HR[0] + TIP, PY, HR[2]),
-         "color": STEEL, "taper": 0.3, "start": 0.2, "behind": 5.0}
+MORION_C = (1.5, 0.0, 58.0)
+
+
+def _morion(rig, joint):
+    """Steel morion: round cap, crescent brim turned up front and back, tall comb, gold rim."""
+    g = Geo().blob((1.5, 0, 56.0), (11.8, 11.4, 9.6), p=2.4)
+    g.clip((0, 0, 55.0), (0, 0, -1))
+    rig.part(joint, g, STEEL, finish="metal")
+    g = Geo()
+    g.blob((1.5, 0, 55.4), (13.8, 12.6, 1.5), p=2.6)
+    g.blob((14.0, 0, 57.8), (6.2, 10.8, 1.5), p=2.4, rot=(0, -32, 0))   # front upturn
+    g.blob((-11.0, 0, 57.8), (6.2, 10.8, 1.5), p=2.4, rot=(0, 32, 0))   # back upturn
+    rig.part(joint, g, STEEL, finish="metal")
+    pts = [(-8.0, 61.0), (-5.0, 67.5), (2.0, 70.0), (8.0, 66.5), (9.5, 61.0)]
+    g = Geo().slab([(x + 1.0, z) for x, z in pts], 0.0, 2.8)
+    rig.part(joint, g, STEEL, finish="metal")
+    g = Geo().blob((1.5, 0, 55.0), (12.1, 11.7, 1.2), p=2.8)
+    rig.part(joint, g, GOLD, finish="metal", outline=0.6)
+
+
+def _plume(rig, joint):
+    g = Geo()
+    for x, z, r in ((-6.0, 65.0, 3.4), (-9.5, 67.0, 3.8), (-13.5, 66.2, 3.4), (-16.8, 63.6, 2.8),
+                    (-18.6, 60.4, 2.2)):
+        g.blob((x, 0, z), (r * 1.2, r * 0.8, r), p=2.1)
+    rig.part(joint, g, team=True)
 
 
 def build(rig):
@@ -55,6 +94,11 @@ def build(rig):
     rig.part("torso", g, SLATE, finish="metal")
     g = Geo().capsule((10.2, -1.5, 34.0), (11.6, -1.5, 23.5), 1.0)  # breastplate ridge
     rig.part("torso", g, STEEL, finish="metal", outline=0.6)
+    for side, dy in (("r", -1), ("l", 1)):   # breastplate rivets
+        g = Geo()
+        for z in (24.0, 28.0, 32.0):
+            g.sphere((9.4, dy * 5.8, z), 1.1, cuts=2)
+        rig.part("torso", g, STEEL, finish="metal", outline=0)
     g = Geo().blob((0.4, 0, 20.6), (11.6, 10.6, 1.9), p=3.2)
     rig.part("torso", g, LEATHER)
     g = Geo().blob((11.5, -2.2, 20.6), (1.3, 2.1, 2.1), p=3.0)
@@ -64,34 +108,26 @@ def build(rig):
         g = Geo().blob((1.0, y * 1.1, 14.0), (6.8, 5.6, 5.8), p=2.2)
         rig.part(f"thigh_{s}", g, team=True)
 
-    # head: face, short beard, steel morion with a crescent brim, a comb and a gold rim
-    g = Geo().blob((2, 0, 49.0), (11.4, 10.8, 11.2), p=2.3)
-    g.blob((13.2, -0.6, 48.0), (3.0, 2.9, 3.1), p=2.0)
-    rig.part("head", g, SKIN)
-    B.face(rig, cx=12.0, cz=49.8, brow=HAIR, eye_r=(3.2, 3.0, 3.8))
-    g = Geo().blob((7.0, 0, 41.2), (7.6, 9.0, 4.2), p=2.2)
-    g.blob((-5.5, 0, 46.0), (5.6, 9.6, 6.0), p=2.2)
-    rig.part("head", g, HAIR, finish="hair")
-    g = Geo().blob((1.5, 0, 55.0), (11.8, 11.4, 9.6), p=2.4)
-    g.clip((0, 0, 54.0), (0, 0, -1))
-    rig.part("head", g, STEEL, finish="metal")
-    g = Geo()
-    g.blob((1.5, 0, 54.4), (13.5, 12.4, 1.4), p=2.6)
-    g.blob((13.5, 0, 56.8), (6.0, 10.6, 1.4), p=2.4, rot=(0, -30, 0))   # front upturn
-    g.blob((-10.5, 0, 56.8), (6.0, 10.6, 1.4), p=2.4, rot=(0, 30, 0))   # back upturn
-    rig.part("head", g, STEEL, finish="metal")
-    pts = [(-8.0, 60.0), (-5.0, 66.5), (2.0, 69.0), (8.0, 65.5), (9.5, 60.0)]
-    g = Geo().slab([(x + 1.0, z) for x, z in pts], 0.0, 2.6)
-    rig.part("head", g, STEEL, finish="metal")
-    g = Geo().blob((1.5, 0, 54.0), (12.1, 11.7, 1.1), p=2.8)
-    rig.part("head", g, GOLD, finish="metal", outline=0.6)
-    # team feather plume tucked behind the comb (follow-through)
-    rig.secondary("plume", "head", (-6.0, 0, 63.0), (-17.0, 0, 60.0), max_deg=12, gain=1.0)
-    g = Geo()
-    for x, z, r in ((-6.0, 64.0, 3.4), (-9.5, 66.0, 3.8), (-13.5, 65.2, 3.4), (-16.8, 62.6, 2.8),
-                    (-18.6, 59.4, 2.2)):
-        g.blob((x, 0, z), (r * 1.2, r * 0.8, r), p=2.1)
-    rig.part("plume", g, team=True)
+    # head: big eyes, a short beard, the steel morion on its own joint (it rolls off in the death)
+    head = Geo().blob((2, 0, 48.6), (11.4, 10.8, 11.2), p=2.3)
+    head.blob((14.0, -0.6, 45.6), (3.2, 3.0, 3.1), p=2.0)
+    hair = Geo().blob((7.0, 0, 40.4), (7.8, 9.2, 4.6), p=2.2)
+    hair.blob((-5.5, 0, 46.0), (5.8, 9.8, 6.4), p=2.2)
+    hair.blob((1.0, 0, 55.0), (11.6, 11.2, 5.5), p=2.2)
+    K.face2(rig, [head, hair], SKIN, cx=12.0, cz=48.6, eye_r=(3.8, 3.5, 4.4), brow=HAIR,
+            mouth_dz=-7.0, mouth_x=13.0, eye_at=(13.8, 48.8), mark_r=4.1)
+    rig.part("head", head, SKIN)
+    rig.part("head", hair, HAIR, finish="hair")
+    rig.joint("helm", "head", MORION_C)
+    _morion(rig, "helm")
+    rig.secondary("plume", "helm", (-6.0, 0, 64.2), (-17.0, 0, 61.2), max_deg=14, gain=1.2)
+    _plume(rig, "plume")
+    rig.joint("helm_loose", "root", MORION_C, hidden=True)
+    _morion(rig, "helm_loose")
+    _plume(rig, "helm_loose")
+    # leather gorget (a collar under the chin)
+    g = Geo().lathe([(8.2, 0), (9.6, 0.8), (9.6, 3.0), (8.4, 3.8)], (1.5, 0, 35.2), segs=22)
+    rig.part("torso", g, LEATHER, outline=0.6)
 
     # arms: puffed team sleeves, slate forearms, leather gloves
     for s in ("r", "l"):
@@ -100,28 +136,47 @@ def build(rig):
         g = Geo().blob((0.3, y * 1.02, 33.2), (6.4, 5.8, 6.6), p=2.2)
         rig.part(f"arm_{s}", g, team=True)
 
-    # the pike on the rear hand, modelled along +X (rest direction 0)
+    # the pike on the rear hand, modelled along +X (rest direction 0): a big leaf head
     hx, hy, hz = HR
-    g = Geo().lathe([(0, BUTT - 0.5), (1.9, BUTT), (1.7, 0), (1.5, TIP - 12), (0, TIP - 11)],
+    g = Geo().lathe([(0, BUTT - 0.5), (1.9, BUTT), (1.7, 0), (1.5, TIP - 16), (0, TIP - 15)],
                     (hx, PY, hz), (hx + 1, PY, hz), segs=10)
     rig.part("hand_r", g, WOOD)
-    g = Geo().lathe([(0, TIP - 16), (1.9, TIP - 15.5), (2.2, TIP - 12), (3.4, TIP - 8), (0, TIP)],
-                    (hx, PY, hz), (hx + 1, PY, hz), segs=12, squash=(1.0, 0.5))
+    g = Geo()
+    for t in (-4.0, 3.0):   # grip wraps where the hands hold it
+        g.lathe([(1.95, 0), (2.15, 0.5), (2.15, 2.4), (1.95, 2.9)], (hx + t, PY, hz), (hx + t + 1, PY, hz), segs=10)
+    rig.part("hand_r", g, LEATHER, outline=0)
+    g = Geo().lathe([(0, TIP - 21), (2.0, TIP - 20.5), (2.3, TIP - 17), (4.6, TIP - 11), (3.8, TIP - 5),
+                     (0, TIP)], (hx, PY, hz), (hx + 1, PY, hz), segs=12, squash=(1.0, 0.45))
     rig.part("hand_r", g, STEEL, finish="metal")
-    g = Geo().lathe([(0, TIP - 17), (2.6, TIP - 16.5), (2.6, TIP - 15), (0, TIP - 14.5)],
+    g = Geo().capsule((hx + TIP - 17.5, PY - 1.0, hz), (hx + TIP - 3.0, PY - 1.0, hz), 0.8)
+    rig.part("hand_r", g, SLATE, finish="metal", outline=0, highlight=False)
+    g = Geo().lathe([(0, TIP - 23), (2.8, TIP - 22.5), (2.8, TIP - 20.5), (0, TIP - 20)],
                     (hx, PY, hz), (hx + 1, PY, hz), segs=12)
     rig.part("hand_r", g, GOLD, finish="metal", outline=0.6)
     g = Geo().sphere((hx + BUTT, PY, hz), 2.3, cuts=3)
     rig.part("hand_r", g, SLATE, finish="metal", outline=0.8)
-    # team pennon below the head, streaming back (follow-through, held level)
-    px0 = hx + TIP - 19.0
-    rig.secondary("pennon", "hand_r", (px0, PY, hz - 1.0), (px0 - 15, PY, hz - 5.0), max_deg=14,
+    # cream tassel hanging under the collar
+    tx0 = hx + TIP - 22.0
+    rig.secondary("tassel", "hand_r", (tx0, PY, hz - 1.0), (tx0 - 1.0, PY, hz - 8.0), max_deg=30,
+                  gain=1.4, rot_gain=0.6)
+    g = Geo().capsule((tx0, PY - 0.6, hz - 1.0), (tx0 - 0.5, PY - 0.6, hz - 4.5), 0.9)
+    g.lathe([(0.6, 0), (2.0, 1.2), (2.2, 3.4), (0, 4.4)], (tx0 - 0.6, PY - 0.6, hz - 4.0),
+            (tx0 - 1.0, PY - 0.6, hz - 8.6), segs=10)
+    rig.part("tassel", g, PARCH, outline=0.6)
+    # team pennon below the head, streaming back (follow-through), with a parchment paw
+    px0 = hx + TIP - 25.0
+    rig.secondary("pennon", "hand_r", (px0, PY, hz - 1.0), (px0 - 16, PY, hz - 5.0), max_deg=14,
                   gain=1.2, rot_gain=0.4)
-    pts = [(0.0, 0.0), (-15.0, -1.0), (-11.0, -4.8), (-15.0, -8.6), (0.0, -9.2)]
-    g = Geo().slab([(px0 + x, hz - 0.8 + z) for x, z in pts], PY, 1.2)
-    rig.part("pennon", g, team=True, outline=0.8)
+    pts = [(0.0, 0.0), (-17.0, -1.0), (-12.5, -5.4), (-17.0, -9.8), (0.0, -10.4)]
+    pen = Geo().slab([(px0 + x, hz - 0.8 + z) for x, z in pts], PY, 1.2)
+    pface = F.Face(rig, "pennon", [pen])
+    rig.part("pennon", pen, team=True, outline=0.8)
+    g = K.paw(pface, Geo(), K.scr(pface, (px0 - 6.0, PY - 0.7, hz - 6.2)), s=0.95)
+    rig.part("pennon", g, PARCH, highlight=False, outline=0)
     rig.track("pikeTip", "hand_r", (hx + TIP, PY, hz))
     rig.track("_foot", "shin_r", (3.3, -6.0, 0.5))
+
+
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -147,82 +202,142 @@ def pike(a, f, w, grip=24.0):
 def _pennon(pose, w):
     # the pennon hangs back from the pike; counter-rotate a little so it streams level
     pose.setdefault("pennon", {})["r"] = pose.get("pennon", {}).get("r", 0.0) - 0.6 * w
+    pose.setdefault("tassel", {})["r"] = pose.get("tassel", {}).get("r", 0.0) - 0.9 * w
     return pose
 
 
 BRACE = {"thigh_r": {"r": 12}, "shin_r": {"r": -6}, "thigh_l": {"r": -12}, "shin_l": {"r": -4},
          "hips": {"z": -1.0}}
 STANCE_PIKE = (-80, -40, 58)
-
-
-def _stance():
-    return merge(pike(*STANCE_PIKE), BRACE, {"torso": {"r": -3}})
+STANCE = merge(pike(*STANCE_PIKE), BRACE, {"torso": {"r": -3}})
 
 
 def _idle(f):
-    c, lag = B.idle_wave(f)
-    w = STANCE_PIKE[2] + 2.0 * lag
-    pose = merge(pike(STANCE_PIKE[0] + 2 * lag, STANCE_PIKE[1], w), BRACE, {"torso": {"r": -3}},
-                 B.idle_body(f))
+    # braced breathing; he shifts his weight and regrips (the pike dips and lifts on 3-4)
+    grip = [0.0, 0.0, 0.4, 1.0, 0.5, 0.0][f]
+
+    def extra(ctx):
+        return {"torso": {"r": 1.0 * grip}, "hand_r": {"r": 0.0}}
+    w = STANCE_PIKE[2] - 5 * grip
+    base = merge(pike(STANCE_PIKE[0] - 4 * grip, STANCE_PIKE[1] + 6 * grip, w), BRACE, {"torso": {"r": -3}})
+    pose = M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=1)
     return _pennon(pose, w)
 
 
 def _walk(f):
-    pose, p, bl = B.walk_legs(f, stride=30.0)
-    w = 62 + 3 * bl
-    return _pennon(merge(pike(-78 + 4 * math.cos(p), -38, w), pose), w)
+    def extra(ctx):
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"plume": {"r": 2 * lag}}
+    p = 2 * math.pi * f / 8
+    w = 62 + 3 * math.cos(2 * p - 1.0)
+    base = merge(pike(-78 + 3 * math.cos(p), -38, w), {"torso": {"r": -2}})
+    return _pennon(M.walk_v2(f, base, HEIGHT_LU, thigh=36.0, knee=40.0, lift_lu=7.0, bob_pct=0.055,
+                             lean=-4.0, arms=(), twist=4.0, extra=extra), w)
 
 
-def _attack(f):
-    # 0-1 lower and coil the pike back (anticipation), 2 held coil, 3 smear (thrust),
-    # 4 held impact: long lunge, pike level, 5-7 recover to the braced stance
-    a = pick(f, [-100, -125, -135, -60, -28, -32, -55, -75])
-    fo = pick(f, [-55, -100, -140, -30, -6, -10, -25, -38])
-    tr = pick(f, [0, 6, 10, -8, -16, -14, -8, -4])
-    w = pick(f, [30, 12, 6, 2, 0, 2, 20, 45]) - tr   # pike angle on screen, not in the torso
-    sq = pick(f, [-0.04, -0.08, 0.04, 0.06, -0.12, -0.08, -0.02, 0.0])
-    pose = merge(pike(a, fo, w), {
-        "body": dict(squash(sq), x=pick(f, [-1, -3, -4.5, 3, 9, 8, 4, 1])),
-        "hips": {"z": pick(f, [-1, -2, -2.5, -1, -3.5, -3, -2, -1])},
-        "torso": {"r": tr},
-        "head": {"r": pick(f, [0, 3, 5, -3, -4, -3, -1, 0])},
-        "thigh_r": {"r": pick(f, [10, 4, 0, 18, 34, 30, 20, 12])},
-        "shin_r": {"r": pick(f, [-6, -4, -4, -10, -18, -14, -8, -6])},
-        "thigh_l": {"r": pick(f, [-12, -18, -22, -24, -32, -28, -18, -12])},
-        "shin_l": {"r": pick(f, [-4, -8, -10, -2, 0, -2, -4, -4])},
-    })
-    if f == 3:
-        pose["hand_r"]["sx"] = 1.12   # smear frame: the pike stretches along the thrust
-    if f in (3, 4):
-        B.yell(pose)
+# 11 unique frames, moves.SMALL_MELEE_MS
+#        read  dip  wind HOLD smear smear IMP  quiv quiv settle settle
+P_A = [-85, -115, -140, -152, -95, -50, -22, -20, -30, -55, -75]
+P_F = [-45, -85, -140, -172, -70, -20, -2, 0, -8, -25, -38]
+P_W = [50, 16, 16, 20, 8, 3, 0, -4.0, 3.5, 22, 45]           # pike angle on screen
+P_T = [-2, 5, 13, 19, -4, -12, -18, -18, -14, -8, -4]
+P_X = [0.0, -2.0, -6.0, -8.5, 1.0, 7.0, 12.0, 12.5, 10.0, 5.0, 2.0]
+P_Z = [-1.0, -3.0, -5.0, -6.0, -3.0, -3.0, -4.0, -3.5, -3.0, -2.0, -1.0]
+P_Q = [-0.02, -0.08, -0.04, -0.09, 0.08, 0.06, -0.12, 0.04, -0.05, 0.0, 0.0]
+TH_R = [10, 8, 14, 18, 22, 30, 38, 36, 30, 20, 12]
+SH_R = [-6, -14, -24, -30, -14, -16, -22, -20, -14, -8, -6]
+TH_L = [-12, -18, -22, -24, -30, -34, -38, -36, -30, -20, -12]
+SH_L = [-4, -8, -14, -18, -4, 0, 0, 0, -2, -4, -4]
+HEAD = [0, 3, 5, 6, -2, -4, -5, -4, -3, -1, 0]
+
+
+def _attack_pose(f):
+    w = P_W[f] - P_T[f]
+    pose = merge(pike(P_A[f], P_F[f], w), {
+        "hips": {"z": P_Z[f]},
+        "torso": {"r": P_T[f]},
+        "head": {"r": HEAD[f] - 0.4 * P_T[f]},
+        "thigh_r": {"r": TH_R[f]}, "shin_r": {"r": SH_R[f]},
+        "thigh_l": {"r": TH_L[f]}, "shin_l": {"r": SH_L[f]},
+    }, M.body_about((0, 0, 22), x=P_X[f], q=P_Q[f]))
+    if f in (4, 5):
+        pose["hand_r"]["sx"] = 1.12   # the pike stretches along the drive
+    if f in (1, 2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    elif f in (4, 5, 6, 7):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    elif f == 8:
+        pose = merge(pose, F.expr("grit"))
     return _pennon(pose, w)
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    w = STANCE_PIKE[2] + 12 * a
-    pose = merge(pike(STANCE_PIKE[0] + 10 * a, STANCE_PIKE[1] + 10 * a, w), BRACE, B.hit_body(f))
-    return _pennon(pose, w)
+PIKE_TIP = (HR[0] + TIP, PY, HR[2])
+DRIVE = {"kind": "streak", "joint": "hand_r", "point": PIKE_TIP, "color": "#C9D2DC", "width_lu": 9.0,
+         "white": 0.35}
 
 
-def _die(f):
-    w = pick(f, [62, 48, 36])
-    pose = merge(pike(-60, -20, w), fx.die_pose(f), {
-        "torso": {"r": pick(f, [16, 8, 4])},
-        "head": {"r": pick(f, [14, -6, -6])},
-        "thigh_r": {"r": pick(f, [25, 10, 10])}, "thigh_l": {"r": pick(f, [-10, -5, -5])},
+def _attack_clip():
+    ov = {
+        4: [dict(DRIVE, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+        5: [dict(DRIVE, **{"from": 3, "t0": 0.05, "t1": 1.0, "width_lu": 8.0})],
+        6: [dict(DRIVE, **{"from": 4, "t0": 0.35, "t1": 1.0, "width_lu": 6.5}),
+            {"kind": "burst", "joint": "hand_r", "point": PIKE_TIP, "r0_lu": 5.0, "r1_lu": 11.0,
+             "n": 6, "a0": -75.0, "arc": 150.0},
+            {"kind": "dust", "ground": (22.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 21, "spread": 0.8},
+            {"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 22, "spread": 0.7,
+             "dir": -1.0}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+def _hit(k):
+    a = M.HIT_AMT[k]
+    w = STANCE_PIKE[2] + 8 * a
+
+    def recoil(a):
+        return {"head": {"r": 8 * a}, "torso": {"r": 5 * a}, "brow": {"z": 1.2 * max(a, 0)}}
+    base = merge(pike(STANCE_PIKE[0] + 6 * a, STANCE_PIKE[1] + 8 * a, w), BRACE, {"torso": {"r": -3}})
+    return _pennon(K.hit_armoured(k, base, recoil, face_hurt=F.expr("squeeze", "grit"),
+                                  face_back=F.expr("grit"), push=1.2, clank=2.2), w)
+
+
+# D2 timber: the morion pops off on the slam and rolls away behind him
+HAT = {5: (-58.0, -46.0, 95.0), 6: (-66.0, -34.0, 170.0), 7: (-74.0, -50.0, 265.0),
+       8: (-78.0, -51.0, 330.0), 9: (-80.0, -51.0, 355.0)}
+DIE_W = [60, 62, 58, 30, -20, -85, -92, -90, -90, -90]   # pike angle in the torso
+
+
+def _die(k):
+    stiff = [0.3, 0.6, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0][k]
+    flop = [0, 0, 0, 0, 0, 0.6, 1.0, 0.8, 0.8, 0.8][k]
+    w = DIE_W[k]
+    pose = merge(pike(-70 + 20 * flop, -30 + 30 * flop, w), K.die_d2(k, heel_x=-5.0, lie_lift=7.0, back=True), {
+        "head": {"r": [-10, -6, 0, 0, 4, 10, -4, 0, 0, 0][k]},
+        "torso": {"r": -4 * (1 - stiff)},
+        "thigh_r": {"r": 8 * (1 - stiff) + 25 * flop}, "shin_r": {"r": -20 * flop},
+        "thigh_l": {"r": -4 * (1 - stiff) + 10 * flop}, "shin_l": {"r": -10 * flop},
     })
-    if f == 0:
-        B.yell(pose)
+    if k in HAT:
+        x, z, r = HAT[k]
+        pose["helm"] = {"hide": True}
+        pose["helm_loose"] = {"show": True, "x": x, "z": z, "r": r}
+    if k <= 1:
+        pose = merge(pose, F.expr("squeeze", "o"), {"brow": {"z": 1.8}})
+    elif k <= 4:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 2.4}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return _pennon(pose, w)
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl)

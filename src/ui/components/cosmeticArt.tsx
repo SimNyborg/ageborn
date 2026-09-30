@@ -5,7 +5,7 @@
  * provider (tests, dev pages) a neutral placeholder shows instead.
  */
 import './cosmeticArt.css';
-import type { AgeId, CardId } from '@/contracts';
+import type { AgeId, CardId, Side } from '@/contracts';
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 import { usePortrait } from './kit';
@@ -17,6 +17,8 @@ export interface CosmeticImageOptions {
   animate?: boolean;
   /** A base skin's tint swatch or particle layer, drawn over the real base picture ({@link BaseLook}). */
   layer?: 'tint' | 'fx';
+  /** Backdrops: the age whose half of the lane the still shows ({@link BackdropLook}). */
+  age?: AgeId;
 }
 
 export type CosmeticImageFn = (key: string, o?: CosmeticImageOptions) => string | null;
@@ -38,11 +40,12 @@ export function CosmeticImage(p: { item: string; class?: string; team?: number; 
 /**
  * A base as the lane draws it (A18.9.4): the age's own base picture with a base skin's body tint
  * multiplied over it and its ambient particles on top, so the preview matches the battle. Without a
- * portrait provider (tests, some dev pages) the skin's code-drawn keep stands in.
+ * portrait provider (tests, some dev pages) the skin's code-drawn keep stands in. `side: 1` flies the
+ * opponent's team colour on the base's banners and trims.
  */
-export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string }) {
+export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string; side?: Side }) {
   const fn = useCosmeticImage();
-  const body = usePortrait(`base.${p.age}` as CardId, { size: 256, plate: false });
+  const body = usePortrait(`base.${p.age}` as CardId, { size: 256, plate: false, ...(p.side ? { side: p.side } : {}) });
   if (!body) return <CosmeticImage item={p.skin ?? 'baseSkin.default'} {...(p.testid ? { testid: p.testid } : {})} />;
   const tint = p.skin && fn ? fn(p.skin, { layer: 'tint' }) : null;
   const fx = p.skin && fn ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true }) : null;
@@ -52,6 +55,23 @@ export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean
       <img class="cos-base__img" src={body} alt="" draggable={false} />
       {tint ? <img class="cos-base__img cos-base__tint" src={tint} alt="" draggable={false} style={{ maskImage: mask, WebkitMaskImage: mask }} /> : null}
       {fx ? <img class="cos-base__img cos-base__fx" src={fx} alt="" draggable={false} /> : null}
+    </span>
+  );
+}
+
+/**
+ * A battle backdrop skin as the lane paints it (A18.9.4 "Backdrops"): a still of your half of the
+ * lane in `age` (the same painters and theme pass as the battle) with the theme's weather moving over
+ * it. `skin` null is the age's classic sky. Without an art provider a soft sky placeholder shows.
+ */
+export function BackdropLook(p: { skin: string | null; age: AgeId; animate?: boolean; testid?: string }) {
+  const fn = useCosmeticImage();
+  const still = fn ? fn(p.skin ?? 'backdrop.classic', { age: p.age }) : null;
+  const fx = p.skin && fn ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true }) : null;
+  return (
+    <span class="cos-bd" data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
+      {still ? <img class="cos-bd__img" src={still} alt="" draggable={false} /> : <span class="cos-bd__img cos-bd__img--empty" />}
+      {fx ? <img class="cos-bd__fx" src={fx} alt="" draggable={false} /> : null}
     </span>
   );
 }

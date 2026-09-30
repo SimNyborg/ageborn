@@ -100,6 +100,25 @@ describe('createUiServices over the real meta rules', () => {
     expect(picked.seed).toBe(preview!.seed);
   });
 
+  it('the Home preview matches the ladder opponent in every format (the plate never shows someone else)', async () => {
+    const { services, meta, save } = await setup();
+    const formats = ['short', 'standard', 'full'] as const;
+    // A save far enough up the ladder that every format is open, with the first ladder match played.
+    const late = { ...save, arenaIndex: 6, trophies: { ...save.trophies, current: 2400, best: 2400 }, flags: { ...save.flags, 'meta.ladderPlayed': true } };
+    for (let played = 4; played < 10; played++) {
+      const s = servicesOnly(services, meta, { ...late, matchesPlayed: played });
+      for (const format of formats) {
+        const preview = s.ui.previewOpponent(format);
+        const picked = s.ui.prepareMatch({ mode: 'ladder', format });
+        expect(preview?.format).toBe(picked.format);
+        expect(preview?.generalId).toBe(picked.generalId);
+        expect(preview?.displayName).toBe(picked.displayName);
+        expect(preview?.seed).toBe(picked.seed);
+        expect(preview?.tier).toBe(picked.tier);
+      }
+    }
+  });
+
   it('export and import round-trip; import replaces the save and routes Home', async () => {
     const { services, meta, save } = await setup();
     const s = servicesOnly(services, meta, { ...save, currencies: { ...save.currencies, amber: 1234 } });

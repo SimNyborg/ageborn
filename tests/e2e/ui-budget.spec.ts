@@ -110,7 +110,10 @@ const PAGES: PageSpec[] = [
   { name: 'card-mammoth', hash: 'screens/card-mammoth_matriarch/mid/{vp}', strict: true, primary: false },
   { name: 'card-power', hash: 'screens/card-meteor_shower/mid/{vp}', strict: true, primary: false },
   { name: 'card-locked', hash: 'screens/card-friar/new/{vp}', strict: true, primary: false },
-  { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: false, primary: false },
+  // The Card Album (owner request 2026-09-30): the long Pokedex scroll, strict from its first build.
+  { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: true, primary: false },
+  { name: 'collection-new', hash: 'screens/collection/new/{vp}', strict: true, primary: false },
+  { name: 'customize-backdrops', hash: 'screens/customize-backdrops/mid/{vp}', strict: true, primary: false },
   { name: 'customize', hash: 'screens/customize-troops/mid/{vp}', strict: false, primary: false },
   { name: 'settings', hash: 'screens/settings/mid/{vp}', strict: false, primary: false },
 ];

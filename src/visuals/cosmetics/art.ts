@@ -5,13 +5,16 @@
  * the HUD; the battle view bakes the same shapes into textures ({@link drawCosmetic}). Keys are the
  * collection keys `<collection>.<id>` (`nationalFlag.dk`); unknown keys return null.
  */
+import type { AgeId } from '@/contracts/ids';
+import { BACKDROP_THEMES } from '../backdrops/themes';
+import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg } from './backdropPreview';
 import { BASE_SKINS } from './baseSkins';
 import { DECO_H, DECO_W, DECORATIONS } from './decorations';
 import { EMOTES, type EmoteLayer, type EmoteMotion } from './emotes';
 import { BANNER_OUTLINE, BASE_FLAGS, FLAG_H, FLAG_W, flagFinish, NATIONAL_FLAGS } from './flags';
 import { circle, drawShapes, hex, INK, poly, rect, roundRect, shade, shapesToSvg, star, type Ctx2D, type Paints, type Shape } from './shapes';
 
-export const COSMETIC_COLLECTIONS = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration'] as const;
+export const COSMETIC_COLLECTIONS = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'] as const;
 export type CosmeticCollectionId = (typeof COSMETIC_COLLECTIONS)[number];
 
 /** The default team colour of previews (side 0, A11). */
@@ -40,6 +43,8 @@ export function hasCosmeticArt(collection: string, id: string): boolean {
       return BASE_SKINS[id] !== undefined;
     case 'decoration':
       return DECORATIONS[id] !== undefined;
+    case 'backdrop':
+      return id === 'classic' || BACKDROP_THEMES[id] !== undefined;
     default:
       return false;
   }
@@ -308,6 +313,12 @@ export interface CosmeticSvgOptions {
    * `fx` is the ambient particle layer on a clear background. Null for other collections.
    */
   layer?: 'tint' | 'fx';
+  /**
+   * Backdrops (A18.9.4): the age whose half of the lane the preview shows (default Stone). Without
+   * `layer` a backdrop is a painted still of that half (a PNG, see {@link cosmeticImageUrl});
+   * `layer: 'fx'` is its weather as an animated SVG to lay over it.
+   */
+  age?: AgeId;
 }
 
 /** SVG markup for a cosmetic key (`nationalFlag.dk`), or null when there is no art for it. */
@@ -315,6 +326,7 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
   const k = parseCosmeticKey(key);
   if (!k) return null;
   const p: Paints = { team: o.team ?? PREVIEW_TEAM };
+  if (o.layer === 'fx' && k.collection === 'backdrop') return backdropWeatherSvg(key, o.animate ?? true);
   if (o.layer) return k.collection === 'baseSkin' ? baseSkinLayerSvg(k.id, o.layer, o.animate ?? true) : null;
   switch (k.collection) {
     case 'nationalFlag':
@@ -330,6 +342,9 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
       const shapes = baseSkinShapes(k.id);
       return shapes ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48">${shapesToSvg(shapes, p)}</svg>` : null;
     }
+    case 'backdrop':
+      // the emblem; the screens show the painted still (a PNG, `cosmeticImageUrl`) when they can
+      return backdropIconSvg(k.id);
   }
 }
 
@@ -341,6 +356,11 @@ export function svgDataUrl(svg: string): string {
 /** `cosmeticSvg` as a data URL, cached per key, team and motion. */
 const urlCache = new Map<string, string | null>();
 export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): string | null {
+  // A backdrop's still is painted by the same painters the lane uses (cached per age and skin there)
+  if (!o.layer && key.startsWith('backdrop.')) {
+    const still = backdropPreviewUrl(key === 'backdrop.classic' ? null : key, o.age ?? 'stone');
+    if (still) return still;
+  }
   const ck = `${key}|${o.team ?? PREVIEW_TEAM}|${o.animate ?? true}|${o.layer ?? ''}`;
   let u = urlCache.get(ck);
   if (u === undefined) {

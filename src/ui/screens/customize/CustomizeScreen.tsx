@@ -5,6 +5,7 @@
  * - Troops: every unit and turret skin (owned ones equip at once; locked ones show their rarity and
  *   the Dust price when craftable), the same tiles as the Collection's Skins tab.
  * - Bases: the base skins per age (the collection's restyles and the A5.8 base skins).
+ * - Backdrops: one battle background skin for your half of the lane in every age (live preview).
  * - Flags: the base flag and the national flag (only ever the player's own pick).
  * - Decorations: three fixed spots on the base.
  * - Emotes and Quotes: the battle wheel (fixed lines only; no text chat).
@@ -26,8 +27,8 @@ import type { CustomizeTab, RouteOf } from '../../router';
 import { SkinTile } from '../collection/CollectionScreen';
 import { useUi } from '../context';
 import { COLLECTIONS, progressOf } from '../model/cosmetics';
-import { BasesPanel, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
-import { FlagsTabIcon, QuoteTabIcon, SmileTabIcon, StatueTabIcon } from './icons';
+import { BackdropsPanel, BasesPanel, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
+import { BackdropTabIcon, FlagsTabIcon, QuoteTabIcon, SmileTabIcon, StatueTabIcon } from './icons';
 
 const isBaseSkin = (k: SkinDef): boolean => k.target.startsWith('base.');
 
@@ -160,6 +161,7 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
   const tabs = [
     { value: 'troops', label: t('ui.customize.troops'), icon: <BrushIcon size={20} />, testid: 'tab-troops' },
     { value: 'bases', label: t('ui.customize.bases'), icon: <CastleIcon size={20} />, testid: 'tab-bases' },
+    { value: 'backdrops', label: t('cosmetic.ui.tab.backdrops'), icon: <BackdropTabIcon size={20} />, testid: 'tab-backdrops' },
     { value: 'flags', label: t('cosmetic.ui.tab.flags'), icon: <FlagsTabIcon size={20} />, testid: 'tab-flags' },
     { value: 'decorations', label: t('cosmetic.ui.tab.decorations'), icon: <StatueTabIcon size={20} />, testid: 'tab-decorations' },
     { value: 'emotes', label: t('ui.customize.emotes'), icon: <SmileTabIcon size={20} />, testid: 'tab-emotes' },
@@ -190,6 +192,8 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
                 return list.length > 0 ? <SkinGrid skins={list} testid="cust-base-skins" /> : null;
               }}
             />
+          ) : tab === 'backdrops' ? (
+            <BackdropsPanel />
           ) : tab === 'flags' ? (
             <FlagsPanel />
           ) : tab === 'decorations' ? (

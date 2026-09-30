@@ -2,18 +2,18 @@
  "frames": {
   "sabertooth_idle_00": {
    "frame": {
-    "x": 450,
-    "y": 629,
-    "w": 223,
-    "h": 182
+    "x": 675,
+    "y": 452,
+    "w": 225,
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
-    "y": 158,
-    "w": 223,
-    "h": 182
+    "x": 149,
+    "y": 156,
+    "w": 225,
+    "h": 183
    },
    "sourceSize": {
     "w": 506,
@@ -26,18 +26,18 @@
   },
   "sabertooth_idle_00_team": {
    "frame": {
-    "x": 1182,
-    "y": 1429,
-    "w": 128,
-    "h": 90
+    "x": 672,
+    "y": 1111,
+    "w": 132,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 196,
-    "y": 202,
-    "w": 128,
-    "h": 90
+    "x": 192,
+    "y": 197,
+    "w": 132,
+    "h": 99
    },
    "sourceSize": {
     "w": 506,
@@ -50,18 +50,18 @@
   },
   "sabertooth_idle_01": {
    "frame": {
-    "x": 1104,
-    "y": 435,
-    "w": 221,
-    "h": 184
+    "x": 1790,
+    "y": 260,
+    "w": 224,
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 151,
-    "y": 155,
-    "w": 221,
-    "h": 184
+    "x": 149,
+    "y": 154,
+    "w": 224,
+    "h": 185
    },
    "sourceSize": {
     "w": 506,
@@ -74,18 +74,18 @@
   },
   "sabertooth_idle_01_team": {
    "frame": {
-    "x": 1159,
-    "y": 1329,
-    "w": 126,
-    "h": 92
+    "x": 263,
+    "y": 1111,
+    "w": 131,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 198,
-    "w": 126,
-    "h": 92
+    "x": 192,
+    "y": 195,
+    "w": 131,
+    "h": 100
    },
    "sourceSize": {
     "w": 506,
@@ -98,17 +98,17 @@
   },
   "sabertooth_idle_02": {
    "frame": {
-    "x": 662,
-    "y": 435,
-    "w": 217,
+    "x": 226,
+    "y": 260,
+    "w": 221,
     "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 153,
+    "x": 151,
     "y": 150,
-    "w": 217,
+    "w": 221,
     "h": 187
    },
    "sourceSize": {
@@ -122,18 +122,18 @@
   },
   "sabertooth_idle_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1429,
-    "w": 124,
-    "h": 92
+    "x": 1295,
+    "y": 1000,
+    "w": 129,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 196,
-    "w": 124,
-    "h": 92
+    "x": 193,
+    "y": 191,
+    "w": 129,
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -146,18 +146,18 @@
   },
   "sabertooth_idle_03": {
    "frame": {
-    "x": 1146,
-    "y": 240,
-    "w": 213,
-    "h": 190
+    "x": 1346,
+    "y": 260,
+    "w": 218,
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 154,
-    "y": 145,
-    "w": 213,
-    "h": 190
+    "y": 147,
+    "w": 218,
+    "h": 186
    },
    "sourceSize": {
     "w": 506,
@@ -170,18 +170,18 @@
   },
   "sabertooth_idle_03_team": {
    "frame": {
-    "x": 907,
-    "y": 1329,
-    "w": 122,
-    "h": 93
+    "x": 1031,
+    "y": 1000,
+    "w": 124,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 192,
-    "w": 122,
-    "h": 93
+    "x": 194,
+    "y": 187,
+    "w": 124,
+    "h": 102
    },
    "sourceSize": {
     "w": 506,
@@ -194,18 +194,18 @@
   },
   "sabertooth_idle_04": {
    "frame": {
-    "x": 497,
-    "y": 240,
-    "w": 210,
-    "h": 191
+    "x": 457,
+    "y": 452,
+    "w": 214,
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 156,
-    "y": 142,
-    "w": 210,
-    "h": 191
+    "y": 148,
+    "w": 214,
+    "h": 184
    },
    "sourceSize": {
     "w": 506,
@@ -218,18 +218,18 @@
   },
   "sabertooth_idle_04_team": {
    "frame": {
-    "x": 512,
-    "y": 1429,
-    "w": 120,
-    "h": 92
+    "x": 2,
+    "y": 1000,
+    "w": 121,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
-    "y": 191,
-    "w": 120,
-    "h": 92
+    "x": 194,
+    "y": 181,
+    "w": 121,
+    "h": 107
    },
    "sourceSize": {
     "w": 506,
@@ -242,18 +242,18 @@
   },
   "sabertooth_idle_05": {
    "frame": {
-    "x": 2,
-    "y": 435,
-    "w": 213,
-    "h": 190
+    "x": 904,
+    "y": 452,
+    "w": 218,
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 154,
-    "y": 145,
-    "w": 213,
-    "h": 190
+    "x": 153,
+    "y": 150,
+    "w": 218,
+    "h": 183
    },
    "sourceSize": {
     "w": 506,
@@ -266,18 +266,18 @@
   },
   "sabertooth_idle_05_team": {
    "frame": {
-    "x": 1033,
-    "y": 1329,
-    "w": 122,
-    "h": 93
+    "x": 254,
+    "y": 1000,
+    "w": 121,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 192,
-    "w": 122,
-    "h": 93
+    "x": 194,
+    "y": 183,
+    "w": 121,
+    "h": 106
    },
    "sourceSize": {
     "w": 506,
@@ -290,18 +290,18 @@
   },
   "sabertooth_idle_06": {
    "frame": {
-    "x": 883,
-    "y": 435,
-    "w": 217,
-    "h": 187
+    "x": 230,
+    "y": 452,
+    "w": 223,
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 153,
-    "y": 150,
-    "w": 217,
-    "h": 187
+    "x": 151,
+    "y": 151,
+    "w": 223,
+    "h": 184
    },
    "sourceSize": {
     "w": 506,
@@ -314,18 +314,18 @@
   },
   "sabertooth_idle_06_team": {
    "frame": {
-    "x": 130,
-    "y": 1429,
-    "w": 124,
-    "h": 92
+    "x": 133,
+    "y": 1111,
+    "w": 126,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 196,
-    "w": 124,
-    "h": 92
+    "x": 193,
+    "y": 191,
+    "w": 126,
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -339,16 +339,16 @@
   "sabertooth_idle_07": {
    "frame": {
     "x": 2,
-    "y": 629,
-    "w": 221,
+    "y": 452,
+    "w": 224,
     "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 151,
+    "x": 150,
     "y": 155,
-    "w": 221,
+    "w": 224,
     "h": 184
    },
    "sourceSize": {
@@ -362,18 +362,18 @@
   },
   "sabertooth_idle_07_team": {
    "frame": {
-    "x": 1289,
-    "y": 1329,
-    "w": 126,
-    "h": 92
+    "x": 398,
+    "y": 1111,
+    "w": 131,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 198,
-    "w": 126,
-    "h": 92
+    "x": 192,
+    "y": 195,
+    "w": 131,
+    "h": 100
    },
    "sourceSize": {
     "w": 506,
@@ -386,18 +386,18 @@
   },
   "sabertooth_walk_00": {
    "frame": {
-    "x": 925,
-    "y": 240,
-    "w": 217,
-    "h": 190
+    "x": 1269,
+    "y": 2,
+    "w": 219,
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 149,
-    "y": 148,
-    "w": 217,
-    "h": 190
+    "y": 147,
+    "w": 219,
+    "h": 193
    },
    "sourceSize": {
     "w": 506,
@@ -410,18 +410,18 @@
   },
   "sabertooth_walk_00_team": {
    "frame": {
-    "x": 920,
-    "y": 1429,
-    "w": 123,
-    "h": 91
+    "x": 1561,
+    "y": 1000,
+    "w": 128,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 198,
-    "w": 123,
-    "h": 91
+    "x": 191,
+    "y": 193,
+    "w": 128,
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -434,18 +434,18 @@
   },
   "sabertooth_walk_01": {
    "frame": {
-    "x": 711,
-    "y": 240,
-    "w": 210,
-    "h": 191
+    "x": 833,
+    "y": 2,
+    "w": 211,
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 153,
-    "y": 138,
-    "w": 210,
-    "h": 191
+    "y": 135,
+    "w": 211,
+    "h": 195
    },
    "sourceSize": {
     "w": 506,
@@ -458,18 +458,18 @@
   },
   "sabertooth_walk_01_team": {
    "frame": {
-    "x": 393,
-    "y": 1329,
-    "w": 119,
-    "h": 94
+    "x": 779,
+    "y": 1000,
+    "w": 122,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
-    "y": 188,
-    "w": 119,
-    "h": 94
+    "x": 195,
+    "y": 182,
+    "w": 122,
+    "h": 104
    },
    "sourceSize": {
     "w": 506,
@@ -482,18 +482,18 @@
   },
   "sabertooth_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 817,
+    "x": 1820,
+    "y": 452,
     "w": 209,
-    "h": 181
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 140,
+    "x": 158,
+    "y": 137,
     "w": 209,
-    "h": 181
+    "h": 182
    },
    "sourceSize": {
     "w": 506,
@@ -506,18 +506,18 @@
   },
   "sabertooth_walk_02_team": {
    "frame": {
-    "x": 1263,
-    "y": 1182,
-    "w": 120,
-    "h": 97
+    "x": 905,
+    "y": 1000,
+    "w": 122,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
-    "y": 184,
-    "w": 120,
-    "h": 97
+    "x": 196,
+    "y": 179,
+    "w": 122,
+    "h": 104
    },
    "sourceSize": {
     "w": 506,
@@ -530,17 +530,17 @@
   },
   "sabertooth_walk_03": {
    "frame": {
-    "x": 1128,
-    "y": 629,
-    "w": 213,
+    "x": 1601,
+    "y": 452,
+    "w": 215,
     "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
+    "x": 160,
     "y": 151,
-    "w": 213,
+    "w": 215,
     "h": 182
    },
    "sourceSize": {
@@ -554,18 +554,18 @@
   },
   "sabertooth_walk_03_team": {
    "frame": {
-    "x": 264,
-    "y": 1329,
-    "w": 125,
-    "h": 94
+    "x": 379,
+    "y": 1000,
+    "w": 130,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 191,
-    "w": 125,
-    "h": 94
+    "x": 194,
+    "y": 185,
+    "w": 130,
+    "h": 105
    },
    "sourceSize": {
     "w": 506,
@@ -578,17 +578,17 @@
   },
   "sabertooth_walk_04": {
    "frame": {
-    "x": 659,
-    "y": 817,
-    "w": 220,
+    "x": 466,
+    "y": 640,
+    "w": 225,
     "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 157,
-    "y": 163,
-    "w": 220,
+    "y": 165,
+    "w": 225,
     "h": 180
    },
    "sourceSize": {
@@ -602,18 +602,18 @@
   },
   "sabertooth_walk_04_team": {
    "frame": {
-    "x": 421,
-    "y": 1525,
-    "w": 130,
-    "h": 87
+    "x": 1621,
+    "y": 1111,
+    "w": 136,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 200,
-    "w": 130,
-    "h": 87
+    "x": 192,
+    "y": 196,
+    "w": 136,
+    "h": 97
    },
    "sourceSize": {
     "w": 506,
@@ -626,18 +626,18 @@
   },
   "sabertooth_walk_05": {
    "frame": {
-    "x": 1144,
-    "y": 817,
-    "w": 223,
-    "h": 178
+    "x": 2,
+    "y": 640,
+    "w": 228,
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 153,
-    "y": 166,
-    "w": 223,
-    "h": 178
+    "y": 168,
+    "w": 228,
+    "h": 180
    },
    "sourceSize": {
     "w": 506,
@@ -650,18 +650,18 @@
   },
   "sabertooth_walk_05_team": {
    "frame": {
-    "x": 705,
-    "y": 1525,
-    "w": 129,
-    "h": 86
+    "x": 146,
+    "y": 1216,
+    "w": 135,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 205,
-    "w": 129,
-    "h": 86
+    "x": 192,
+    "y": 201,
+    "w": 135,
+    "h": 96
    },
    "sourceSize": {
     "w": 506,
@@ -674,18 +674,18 @@
   },
   "sabertooth_walk_06": {
    "frame": {
-    "x": 227,
-    "y": 629,
-    "w": 219,
-    "h": 183
+    "x": 674,
+    "y": 260,
+    "w": 221,
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 151,
-    "y": 159,
-    "w": 219,
-    "h": 183
+    "y": 160,
+    "w": 221,
+    "h": 186
    },
    "sourceSize": {
     "w": 506,
@@ -698,18 +698,18 @@
   },
   "sabertooth_walk_06_team": {
    "frame": {
-    "x": 838,
-    "y": 1525,
-    "w": 123,
-    "h": 85
+    "x": 647,
+    "y": 1000,
+    "w": 128,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 204,
-    "w": 123,
-    "h": 85
+    "x": 193,
+    "y": 200,
+    "w": 128,
+    "h": 104
    },
    "sourceSize": {
     "w": 506,
@@ -722,18 +722,18 @@
   },
   "sabertooth_walk_07": {
    "frame": {
-    "x": 219,
-    "y": 435,
-    "w": 217,
-    "h": 188
+    "x": 1725,
+    "y": 2,
+    "w": 221,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 150,
+    "x": 149,
     "y": 154,
-    "w": 217,
-    "h": 188
+    "w": 221,
+    "h": 189
    },
    "sourceSize": {
     "w": 506,
@@ -746,18 +746,18 @@
   },
   "sabertooth_walk_07_team": {
    "frame": {
-    "x": 258,
-    "y": 1429,
-    "w": 123,
-    "h": 92
+    "x": 434,
+    "y": 1216,
+    "w": 129,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 202,
-    "w": 123,
-    "h": 92
+    "x": 191,
+    "y": 198,
+    "w": 129,
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -770,18 +770,18 @@
   },
   "sabertooth_attack_00": {
    "frame": {
-    "x": 242,
-    "y": 1002,
-    "w": 237,
-    "h": 171
+    "x": 1369,
+    "y": 452,
+    "w": 228,
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 143,
-    "y": 175,
-    "w": 237,
-    "h": 171
+    "x": 149,
+    "y": 158,
+    "w": 228,
+    "h": 182
    },
    "sourceSize": {
     "w": 506,
@@ -794,18 +794,18 @@
   },
   "sabertooth_attack_00_team": {
    "frame": {
-    "x": 2,
-    "y": 1525,
-    "w": 134,
-    "h": 88
+    "x": 808,
+    "y": 1111,
+    "w": 132,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
-    "y": 212,
-    "w": 134,
-    "h": 88
+    "x": 189,
+    "y": 194,
+    "w": 132,
+    "h": 99
    },
    "sourceSize": {
     "w": 506,
@@ -818,18 +818,18 @@
   },
   "sabertooth_attack_01": {
    "frame": {
-    "x": 1292,
-    "y": 2,
-    "w": 225,
-    "h": 192
+    "x": 486,
+    "y": 824,
+    "w": 247,
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 144,
-    "y": 145,
-    "w": 225,
-    "h": 192
+    "x": 138,
+    "y": 175,
+    "w": 247,
+    "h": 168
    },
    "sourceSize": {
     "w": 506,
@@ -842,18 +842,18 @@
   },
   "sabertooth_attack_01_team": {
    "frame": {
-    "x": 778,
-    "y": 1329,
-    "w": 125,
-    "h": 93
+    "x": 843,
+    "y": 1216,
+    "w": 144,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
-    "y": 194,
-    "w": 125,
-    "h": 93
+    "x": 182,
+    "y": 203,
+    "w": 144,
+    "h": 92
    },
    "sourceSize": {
     "w": 506,
@@ -866,18 +866,18 @@
   },
   "sabertooth_attack_02": {
    "frame": {
-    "x": 826,
+    "x": 407,
     "y": 2,
-    "w": 218,
-    "h": 214
+    "w": 212,
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 145,
-    "y": 122,
-    "w": 218,
-    "h": 214
+    "x": 144,
+    "y": 134,
+    "w": 212,
+    "h": 210
    },
    "sourceSize": {
     "w": 506,
@@ -890,18 +890,18 @@
   },
   "sabertooth_attack_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1329,
-    "w": 119,
-    "h": 96
+    "x": 127,
+    "y": 1000,
+    "w": 123,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 190,
-    "y": 184,
-    "w": 119,
-    "h": 96
+    "x": 180,
+    "y": 188,
+    "w": 123,
+    "h": 106
    },
    "sourceSize": {
     "w": 506,
@@ -914,18 +914,18 @@
   },
   "sabertooth_attack_03": {
    "frame": {
-    "x": 215,
-    "y": 817,
-    "w": 208,
-    "h": 181
+    "x": 2,
+    "y": 2,
+    "w": 190,
+    "h": 254
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 172,
-    "y": 151,
-    "w": 208,
-    "h": 181
+    "x": 149,
+    "y": 98,
+    "w": 190,
+    "h": 254
    },
    "sourceSize": {
     "w": 506,
@@ -938,18 +938,18 @@
   },
   "sabertooth_attack_03_team": {
    "frame": {
-    "x": 1387,
-    "y": 1182,
-    "w": 118,
-    "h": 97
+    "x": 1658,
+    "y": 824,
+    "w": 107,
+    "h": 129
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 212,
-    "y": 190,
-    "w": 118,
-    "h": 97
+    "x": 177,
+    "y": 167,
+    "w": 107,
+    "h": 129
    },
    "sourceSize": {
     "w": 506,
@@ -962,18 +962,18 @@
   },
   "sabertooth_attack_04": {
    "frame": {
-    "x": 1220,
-    "y": 1002,
-    "w": 250,
-    "h": 153
+    "x": 196,
+    "y": 2,
+    "w": 207,
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 195,
-    "w": 250,
-    "h": 153
+    "x": 155,
+    "y": 120,
+    "w": 207,
+    "h": 224
    },
    "sourceSize": {
     "w": 506,
@@ -986,18 +986,18 @@
   },
   "sabertooth_attack_04_team": {
    "frame": {
-    "x": 283,
-    "y": 1525,
-    "w": 134,
-    "h": 87
+    "x": 1769,
+    "y": 824,
+    "w": 120,
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 215,
-    "y": 216,
-    "w": 134,
-    "h": 87
+    "x": 189,
+    "y": 173,
+    "w": 120,
+    "h": 120
    },
    "sourceSize": {
     "w": 506,
@@ -1010,18 +1010,18 @@
   },
   "sabertooth_attack_05": {
    "frame": {
-    "x": 726,
-    "y": 1002,
-    "w": 227,
-    "h": 170
+    "x": 2,
+    "y": 260,
+    "w": 220,
+    "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 169,
-    "y": 175,
-    "w": 227,
-    "h": 170
+    "x": 161,
+    "y": 148,
+    "w": 220,
+    "h": 188
    },
    "sourceSize": {
     "w": 506,
@@ -1034,18 +1034,18 @@
   },
   "sabertooth_attack_05_team": {
    "frame": {
-    "x": 789,
-    "y": 1429,
-    "w": 127,
-    "h": 91
+    "x": 1893,
+    "y": 824,
+    "w": 124,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
-    "y": 205,
-    "w": 127,
-    "h": 91
+    "x": 204,
+    "y": 185,
+    "w": 124,
+    "h": 107
    },
    "sourceSize": {
     "w": 506,
@@ -1058,18 +1058,18 @@
   },
   "sabertooth_attack_06": {
    "frame": {
-    "x": 677,
-    "y": 629,
-    "w": 223,
-    "h": 182
+    "x": 1173,
+    "y": 824,
+    "w": 244,
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
-    "y": 158,
-    "w": 223,
-    "h": 182
+    "x": 164,
+    "y": 188,
+    "w": 244,
+    "h": 150
    },
    "sourceSize": {
     "w": 506,
@@ -1082,18 +1082,18 @@
   },
   "sabertooth_attack_06_team": {
    "frame": {
-    "x": 648,
-    "y": 1329,
-    "w": 126,
-    "h": 93
+    "x": 699,
+    "y": 1216,
+    "w": 140,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 204,
-    "y": 198,
-    "w": 126,
-    "h": 93
+    "x": 209,
+    "y": 202,
+    "w": 140,
+    "h": 94
    },
    "sourceSize": {
     "w": 506,
@@ -1106,18 +1106,18 @@
   },
   "sabertooth_attack_07": {
    "frame": {
-    "x": 440,
-    "y": 435,
-    "w": 218,
-    "h": 187
+    "x": 2,
+    "y": 824,
+    "w": 227,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 152,
-    "y": 150,
-    "w": 218,
-    "h": 187
+    "x": 171,
+    "y": 169,
+    "w": 227,
+    "h": 172
    },
    "sourceSize": {
     "w": 506,
@@ -1130,18 +1130,162 @@
   },
   "sabertooth_attack_07_team": {
    "frame": {
-    "x": 385,
-    "y": 1429,
-    "w": 123,
-    "h": 92
+    "x": 1353,
+    "y": 1111,
+    "w": 131,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 198,
-    "y": 196,
-    "w": 123,
-    "h": 92
+    "x": 211,
+    "y": 197,
+    "w": 131,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 356
+   },
+   "anchor": {
+    "x": 0.48617,
+    "y": 0.89326
+   }
+  },
+  "sabertooth_attack_08": {
+   "frame": {
+    "x": 926,
+    "y": 640,
+    "w": 228,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 164,
+    "w": 228,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 356
+   },
+   "anchor": {
+    "x": 0.48617,
+    "y": 0.89326
+   }
+  },
+  "sabertooth_attack_08_team": {
+   "frame": {
+    "x": 944,
+    "y": 1111,
+    "w": 131,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 195,
+    "w": 131,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 356
+   },
+   "anchor": {
+    "x": 0.48617,
+    "y": 0.89326
+   }
+  },
+  "sabertooth_attack_09": {
+   "frame": {
+    "x": 1123,
+    "y": 260,
+    "w": 219,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 163,
+    "y": 153,
+    "w": 219,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 356
+   },
+   "anchor": {
+    "x": 0.48617,
+    "y": 0.89326
+   }
+  },
+  "sabertooth_attack_09_team": {
+   "frame": {
+    "x": 2,
+    "y": 1111,
+    "w": 127,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 192,
+    "w": 127,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 356
+   },
+   "anchor": {
+    "x": 0.48617,
+    "y": 0.89326
+   }
+  },
+  "sabertooth_attack_10": {
+   "frame": {
+    "x": 899,
+    "y": 260,
+    "w": 220,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 151,
+    "w": 220,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 356
+   },
+   "anchor": {
+    "x": 0.48617,
+    "y": 0.89326
+   }
+  },
+  "sabertooth_attack_10_team": {
+   "frame": {
+    "x": 1428,
+    "y": 1000,
+    "w": 129,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 191,
+    "w": 129,
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -1154,18 +1298,18 @@
   },
   "sabertooth_hit_00": {
    "frame": {
-    "x": 483,
-    "y": 1002,
-    "w": 239,
-    "h": 170
+    "x": 1158,
+    "y": 640,
+    "w": 238,
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 139,
-    "y": 167,
-    "w": 239,
-    "h": 170
+    "x": 137,
+    "y": 161,
+    "w": 238,
+    "h": 175
    },
    "sourceSize": {
     "w": 506,
@@ -1178,18 +1322,18 @@
   },
   "sabertooth_hit_00_team": {
    "frame": {
-    "x": 140,
-    "y": 1525,
-    "w": 139,
-    "h": 87
+    "x": 2,
+    "y": 1216,
+    "w": 140,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
-    "y": 207,
-    "w": 139,
-    "h": 87
+    "x": 182,
+    "y": 199,
+    "w": 140,
+    "h": 96
    },
    "sourceSize": {
     "w": 506,
@@ -1202,18 +1346,18 @@
   },
   "sabertooth_hit_01": {
    "frame": {
-    "x": 957,
-    "y": 1002,
-    "w": 259,
-    "h": 162
+    "x": 233,
+    "y": 824,
+    "w": 249,
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 127,
-    "y": 174,
-    "w": 259,
-    "h": 162
+    "x": 133,
+    "y": 166,
+    "w": 249,
+    "h": 169
    },
    "sourceSize": {
     "w": 506,
@@ -1226,18 +1370,18 @@
   },
   "sabertooth_hit_01_team": {
    "frame": {
-    "x": 555,
-    "y": 1525,
-    "w": 146,
-    "h": 86
+    "x": 285,
+    "y": 1216,
+    "w": 145,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 180,
-    "y": 211,
-    "w": 146,
-    "h": 86
+    "x": 178,
+    "y": 201,
+    "w": 145,
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -1250,18 +1394,18 @@
   },
   "sabertooth_hit_02": {
    "frame": {
-    "x": 2,
-    "y": 1002,
-    "w": 236,
-    "h": 176
+    "x": 695,
+    "y": 640,
+    "w": 227,
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 138,
-    "y": 159,
-    "w": 236,
-    "h": 176
+    "x": 142,
+    "y": 158,
+    "w": 227,
+    "h": 178
    },
    "sourceSize": {
     "w": 506,
@@ -1274,18 +1418,18 @@
   },
   "sabertooth_hit_02_team": {
    "frame": {
-    "x": 1314,
-    "y": 1429,
-    "w": 135,
-    "h": 89
+    "x": 1079,
+    "y": 1111,
+    "w": 134,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
-    "y": 201,
-    "w": 135,
-    "h": 89
+    "x": 186,
+    "y": 196,
+    "w": 134,
+    "h": 98
    },
    "sourceSize": {
     "w": 506,
@@ -1298,18 +1442,18 @@
   },
   "sabertooth_hit_03": {
    "frame": {
-    "x": 427,
-    "y": 817,
-    "w": 228,
-    "h": 180
+    "x": 451,
+    "y": 260,
+    "w": 219,
+    "h": 187
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 143,
-    "y": 156,
-    "w": 228,
-    "h": 180
+    "x": 154,
+    "y": 151,
+    "w": 219,
+    "h": 187
    },
    "sourceSize": {
     "w": 506,
@@ -1322,18 +1466,18 @@
   },
   "sabertooth_hit_03_team": {
    "frame": {
-    "x": 1047,
-    "y": 1429,
-    "w": 131,
-    "h": 90
+    "x": 1693,
+    "y": 1000,
+    "w": 128,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 191,
-    "y": 200,
-    "w": 131,
-    "h": 90
+    "x": 193,
+    "y": 191,
+    "w": 128,
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -1346,18 +1490,18 @@
   },
   "sabertooth_hit_04": {
    "frame": {
-    "x": 904,
-    "y": 629,
-    "w": 220,
-    "h": 182
+    "x": 1568,
+    "y": 260,
+    "w": 218,
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 151,
-    "y": 156,
-    "w": 220,
-    "h": 182
+    "x": 154,
+    "y": 151,
+    "w": 218,
+    "h": 186
    },
    "sourceSize": {
     "w": 506,
@@ -1370,18 +1514,18 @@
   },
   "sabertooth_hit_04_team": {
    "frame": {
-    "x": 516,
-    "y": 1329,
+    "x": 1825,
+    "y": 1000,
     "w": 128,
-    "h": 93
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 195,
-    "y": 198,
+    "x": 193,
+    "y": 191,
     "w": 128,
-    "h": 93
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -1394,18 +1538,18 @@
   },
   "sabertooth_die_00": {
    "frame": {
-    "x": 2,
-    "y": 240,
-    "w": 244,
-    "h": 191
+    "x": 1400,
+    "y": 640,
+    "w": 241,
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 128,
-    "y": 151,
-    "w": 244,
-    "h": 191
+    "x": 140,
+    "y": 157,
+    "w": 241,
+    "h": 174
    },
    "sourceSize": {
     "w": 506,
@@ -1418,18 +1562,18 @@
   },
   "sabertooth_die_00_team": {
    "frame": {
-    "x": 125,
-    "y": 1329,
-    "w": 135,
-    "h": 94
+    "x": 1888,
+    "y": 1111,
+    "w": 143,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 177,
-    "y": 203,
-    "w": 135,
-    "h": 94
+    "x": 184,
+    "y": 194,
+    "w": 143,
+    "h": 96
    },
    "sourceSize": {
     "w": 506,
@@ -1442,18 +1586,18 @@
   },
   "sabertooth_die_01": {
    "frame": {
-    "x": 2,
+    "x": 623,
     "y": 2,
-    "w": 196,
-    "h": 234
+    "w": 206,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 123,
-    "y": 103,
-    "w": 196,
-    "h": 234
+    "x": 147,
+    "y": 131,
+    "w": 206,
+    "h": 200
    },
    "sourceSize": {
     "w": 506,
@@ -1466,18 +1610,18 @@
   },
   "sabertooth_die_01_team": {
    "frame": {
-    "x": 637,
-    "y": 1182,
-    "w": 115,
-    "h": 110
+    "x": 567,
+    "y": 1216,
+    "w": 128,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
-    "y": 166,
-    "w": 115,
-    "h": 110
+    "x": 182,
+    "y": 182,
+    "w": 128,
+    "h": 95
    },
    "sourceSize": {
     "w": 506,
@@ -1490,18 +1634,18 @@
   },
   "sabertooth_die_02": {
    "frame": {
-    "x": 202,
-    "y": 2,
-    "w": 202,
-    "h": 231
+    "x": 963,
+    "y": 824,
+    "w": 206,
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
-    "y": 105,
-    "w": 202,
-    "h": 231
+    "x": 147,
+    "y": 140,
+    "w": 206,
+    "h": 168
    },
    "sourceSize": {
     "w": 506,
@@ -1514,18 +1658,18 @@
   },
   "sabertooth_die_02_team": {
    "frame": {
-    "x": 268,
-    "y": 1182,
-    "w": 109,
-    "h": 112
+    "x": 1488,
+    "y": 1111,
+    "w": 129,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
-    "y": 164,
-    "w": 109,
-    "h": 112
+    "x": 181,
+    "y": 172,
+    "w": 129,
+    "h": 98
    },
    "sourceSize": {
     "w": 506,
@@ -1538,18 +1682,18 @@
   },
   "sabertooth_die_03": {
    "frame": {
-    "x": 408,
-    "y": 2,
-    "w": 206,
-    "h": 228
+    "x": 1421,
+    "y": 824,
+    "w": 233,
+    "h": 135
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 120,
-    "w": 206,
-    "h": 228
+    "x": 135,
+    "y": 166,
+    "w": 233,
+    "h": 135
    },
    "sourceSize": {
     "w": 506,
@@ -1562,18 +1706,18 @@
   },
   "sabertooth_die_03_team": {
    "frame": {
-    "x": 756,
-    "y": 1182,
-    "w": 110,
-    "h": 110
+    "x": 513,
+    "y": 1000,
+    "w": 130,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 137,
-    "y": 177,
-    "w": 110,
-    "h": 110
+    "x": 181,
+    "y": 184,
+    "w": 130,
+    "h": 105
    },
    "sourceSize": {
     "w": 506,
@@ -1586,18 +1730,18 @@
   },
   "sabertooth_die_04": {
    "frame": {
-    "x": 1048,
-    "y": 2,
-    "w": 240,
-    "h": 197
+    "x": 1645,
+    "y": 640,
+    "w": 253,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 159,
-    "w": 240,
-    "h": 197
+    "x": 126,
+    "y": 155,
+    "w": 253,
+    "h": 172
    },
    "sourceSize": {
     "w": 506,
@@ -1610,18 +1754,18 @@
   },
   "sabertooth_die_04_team": {
    "frame": {
-    "x": 870,
-    "y": 1182,
-    "w": 131,
-    "h": 109
+    "x": 1122,
+    "y": 1216,
+    "w": 145,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
-    "y": 207,
-    "w": 131,
-    "h": 109
+    "x": 171,
+    "y": 201,
+    "w": 145,
+    "h": 91
    },
    "sourceSize": {
     "w": 506,
@@ -1634,18 +1778,18 @@
   },
   "sabertooth_die_05": {
    "frame": {
-    "x": 618,
+    "x": 1048,
     "y": 2,
-    "w": 204,
-    "h": 222
+    "w": 217,
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
-    "y": 125,
-    "w": 204,
-    "h": 222
+    "x": 140,
+    "y": 145,
+    "w": 217,
+    "h": 194
    },
    "sourceSize": {
     "w": 506,
@@ -1658,18 +1802,18 @@
   },
   "sabertooth_die_05_team": {
    "frame": {
-    "x": 1005,
-    "y": 1182,
-    "w": 113,
-    "h": 104
+    "x": 1761,
+    "y": 1111,
+    "w": 123,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 143,
-    "y": 183,
-    "w": 113,
-    "h": 104
+    "x": 178,
+    "y": 197,
+    "w": 123,
+    "h": 97
    },
    "sourceSize": {
     "w": 506,
@@ -1682,18 +1826,18 @@
   },
   "sabertooth_die_06": {
    "frame": {
-    "x": 250,
-    "y": 240,
-    "w": 243,
-    "h": 191
+    "x": 1126,
+    "y": 452,
+    "w": 239,
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
-    "y": 162,
-    "w": 243,
-    "h": 191
+    "x": 129,
+    "y": 154,
+    "w": 239,
+    "h": 182
    },
    "sourceSize": {
     "w": 506,
@@ -1706,18 +1850,18 @@
   },
   "sabertooth_die_06_team": {
    "frame": {
-    "x": 1122,
-    "y": 1182,
-    "w": 137,
-    "h": 98
+    "x": 533,
+    "y": 1111,
+    "w": 135,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 209,
-    "w": 137,
-    "h": 98
+    "x": 173,
+    "y": 195,
+    "w": 135,
+    "h": 99
    },
    "sourceSize": {
     "w": 506,
@@ -1730,18 +1874,18 @@
   },
   "sabertooth_die_07": {
    "frame": {
-    "x": 883,
-    "y": 817,
-    "w": 257,
-    "h": 178
+    "x": 1492,
+    "y": 2,
+    "w": 229,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 174,
-    "w": 257,
-    "h": 178
+    "x": 133,
+    "y": 152,
+    "w": 229,
+    "h": 189
    },
    "sourceSize": {
     "w": 506,
@@ -1754,18 +1898,18 @@
   },
   "sabertooth_die_07_team": {
    "frame": {
-    "x": 636,
-    "y": 1429,
-    "w": 149,
-    "h": 91
+    "x": 1159,
+    "y": 1000,
+    "w": 132,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
-    "y": 218,
-    "w": 149,
-    "h": 91
+    "x": 173,
+    "y": 194,
+    "w": 132,
+    "h": 101
    },
    "sourceSize": {
     "w": 506,
@@ -1778,18 +1922,18 @@
   },
   "sabertooth_die_08": {
    "frame": {
-    "x": 2,
-    "y": 1182,
-    "w": 262,
-    "h": 143
+    "x": 234,
+    "y": 640,
+    "w": 228,
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 99,
-    "y": 204,
-    "w": 262,
-    "h": 143
+    "x": 134,
+    "y": 156,
+    "w": 228,
+    "h": 180
    },
    "sourceSize": {
     "w": 506,
@@ -1802,18 +1946,18 @@
   },
   "sabertooth_die_08_team": {
    "frame": {
-    "x": 965,
-    "y": 1525,
-    "w": 149,
-    "h": 79
+    "x": 1217,
+    "y": 1111,
+    "w": 132,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 155,
-    "y": 238,
-    "w": 149,
-    "h": 79
+    "x": 172,
+    "y": 196,
+    "w": 132,
+    "h": 98
    },
    "sourceSize": {
     "w": 506,
@@ -1826,18 +1970,18 @@
   },
   "sabertooth_die_09": {
    "frame": {
-    "x": 381,
-    "y": 1182,
-    "w": 252,
-    "h": 111
+    "x": 737,
+    "y": 824,
+    "w": 222,
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
-    "y": 230,
-    "w": 252,
-    "h": 111
+    "x": 136,
+    "y": 161,
+    "w": 222,
+    "h": 168
    },
    "sourceSize": {
     "w": 506,
@@ -1850,18 +1994,18 @@
   },
   "sabertooth_die_09_team": {
    "frame": {
-    "x": 1118,
-    "y": 1525,
-    "w": 145,
-    "h": 59
+    "x": 991,
+    "y": 1216,
+    "w": 127,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
-    "y": 258,
-    "w": 145,
-    "h": 59
+    "x": 175,
+    "y": 198,
+    "w": 127,
+    "h": 92
    },
    "sourceSize": {
     "w": 506,
@@ -1922,7 +2066,10 @@
    "sabertooth_attack_04",
    "sabertooth_attack_05",
    "sabertooth_attack_06",
-   "sabertooth_attack_07"
+   "sabertooth_attack_07",
+   "sabertooth_attack_08",
+   "sabertooth_attack_09",
+   "sabertooth_attack_10"
   ],
   "attack_team": [
    "sabertooth_attack_00_team",
@@ -1932,7 +2079,10 @@
    "sabertooth_attack_04_team",
    "sabertooth_attack_05_team",
    "sabertooth_attack_06_team",
-   "sabertooth_attack_07_team"
+   "sabertooth_attack_07_team",
+   "sabertooth_attack_08_team",
+   "sabertooth_attack_09_team",
+   "sabertooth_attack_10_team"
   ],
   "hit": [
    "sabertooth_hit_00",
@@ -1979,15 +2129,15 @@
   "image": "sabertooth.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 1616
+   "w": 2048,
+   "h": 1316
   },
   "scale": "3",
   "ageborn": {
    "visualId": "unit.sabertooth",
    "name": "Sabertooth",
    "heightLu": 60,
-   "widthLu": 85.0,
+   "widthLu": 85.4,
    "pxPerLu": 2.46,
    "feetPx": [
     246,
@@ -2033,36 +2183,36 @@
      "anchorsLu": {
       "fangTip": [
        [
-        40.8,
-        13.2
+        41.1,
+        14.3
        ],
        [
-        40.4,
-        14.2
-       ],
-       [
-        39.9,
-        15.5
-       ],
-       [
-        39.5,
-        16.8
-       ],
-       [
-        39.3,
-        17.6
-       ],
-       [
-        39.5,
-        16.8
+        40.6,
+        14.7
        ],
        [
         39.9,
         15.5
        ],
        [
-        40.4,
-        14.2
+        31.8,
+        12.6
+       ],
+       [
+        26.4,
+        11.6
+       ],
+       [
+        26.8,
+        11.2
+       ],
+       [
+        34.3,
+        12.1
+       ],
+       [
+        41.1,
+        14.5
        ]
       ]
      }
@@ -2094,44 +2244,44 @@
      "anchorsLu": {
       "fangTip": [
        [
-        41.0,
-        18.3
+        41.1,
+        18.8
        ],
        [
-        39.4,
-        20.2
+        39.0,
+        21.1
        ],
        [
-        38.8,
-        18.3
+        38.4,
+        19.0
        ],
        [
-        39.4,
-        14.1
+        39.3,
+        14.0
        ],
        [
-        40.5,
-        10.5
+        40.6,
+        9.8
        ],
        [
-        40.9,
-        9.6
+        41.1,
+        8.8
        ],
        [
         40.2,
-        12.0
+        11.6
        ],
        [
-        40.8,
-        15.3
+        40.9,
+        15.4
        ]
       ]
      },
-     "strideLu": 65.4,
-     "naturalSpeedLuPerS": 113.5
+     "strideLu": 68.2,
+     "naturalSpeedLuPerS": 118.4
     },
     "attack": {
-     "frames": 8,
+     "frames": 11,
      "loop": false,
      "sequence": [
       0,
@@ -2141,54 +2291,72 @@
       4,
       5,
       6,
-      7
+      7,
+      8,
+      9,
+      10
      ],
      "durationsMs": [
-      65,
-      70,
-      120,
+      30,
+      45,
+      50,
+      110,
       35,
-      140,
-      80,
-      80,
+      20,
+      120,
+      60,
+      50,
+      70,
       90
      ],
      "durationMs": 680,
-     "impactFrame": 4,
+     "impactFrame": 6,
      "impactAt": 0.4265,
-     "smearFrame": 3,
+     "smearFrame": 4,
      "anchorsLu": {
       "fangTip": [
        [
-        37.5,
-        6.8
+        37.6,
+        11.7
        ],
        [
-        44.6,
-        32.2
+        47.3,
+        12.7
        ],
        [
-        41.8,
-        47.9
+        39.4,
+        34.6
        ],
        [
-        35.7,
-        9.8
+        32.2,
+        61.0
        ],
        [
-        33.9,
-        2.0
+        33.6,
+        25.3
        ],
        [
-        37.7,
-        5.3
+        30.3,
+        12.9
        ],
        [
-        40.0,
-        10.5
+        30.4,
+        7.3
        ],
        [
-        40.2,
+        35.8,
+        8.3
+       ],
+       [
+        38.9,
+        8.6
+       ],
+       [
+        40.4,
+        12.4
+       ],
+       [
+        40.7,
         15.3
        ]
       ]
@@ -2215,24 +2383,24 @@
      "anchorsLu": {
       "fangTip": [
        [
-        47.2,
-        18.2
+        46.1,
+        21.7
        ],
        [
-        51.0,
-        22.8
+        50.9,
+        28.0
        ],
        [
-        45.9,
-        23.1
+        40.8,
+        17.6
        ],
        [
-        44.3,
-        19.3
+        39.7,
+        14.3
        ],
        [
-        41.5,
-        14.9
+        40.6,
+        15.6
        ]
       ]
      }
@@ -2273,7 +2441,7 @@
         0,
         21.6
        ],
-       "scale": 1.062
+       "scale": 1.068
       },
       {
        "id": "fx.ko_stars",
@@ -2283,51 +2451,51 @@
         33.0
        ],
        "loops": 2,
-       "scale": 1.031
+       "scale": 1.033
       }
      ],
      "hideUnitAtMs": 695,
      "anchorsLu": {
       "fangTip": [
        [
-        45.2,
-        39.5
+        49.2,
+        27.6
        ],
        [
-        24.1,
-        53.1
+        37.4,
+        32.6
        ],
        [
-        18.9,
-        53.5
+        31.2,
+        41.2
        ],
        [
-        15.8,
-        48.6
+        27.1,
+        47.2
        ],
        [
-        28.2,
-        38.7
+        33.1,
+        46.3
        ],
        [
-        18.0,
-        39.8
+        27.0,
+        48.4
        ],
        [
-        31.8,
-        31.9
+        32.4,
+        44.3
        ],
        [
-        36.5,
-        28.8
+        31.4,
+        43.4
        ],
        [
-        39.7,
-        21.4
+        31.2,
+        42.7
        ],
        [
-        39.3,
-        14.4
+        30.2,
+        41.8
        ]
       ]
      }

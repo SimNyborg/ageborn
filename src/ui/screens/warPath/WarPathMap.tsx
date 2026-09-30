@@ -23,6 +23,7 @@ import { useUi } from '../context';
 import { levelNameKey, regionNameKey, type MapNode, type MapRegion } from '../model/warPath';
 import { REGION_THEMES, RegionFar, RegionGround } from './regionArt';
 import { BossLair, Chest, EliteCrest, Foreground, Lantern, Scroll, UnlockBurst } from './mapDeco';
+import { StartCamp } from './regionScenery';
 
 /** The map's geometry at a size. */
 export interface MapLayout {
@@ -37,6 +38,8 @@ export interface MapLayout {
   spans: { start: number; end: number }[];
   worldW: number;
   horizon: number;
+  /** The top bar's bottom edge: nothing tall in the far layer reaches above it. */
+  top: number;
   yMin: number;
   yMax: number;
 }
@@ -57,14 +60,16 @@ export function mapLayout(o: { w: number; h: number; top: number; bottom: number
   // The road runs through the band between the top bar and the plate (4.1 "upper 60%").
   const top = o.top + node * 0.5 + 10;
   const bottom = Math.max(top + 20, o.h - o.bottom - node * 0.5 - 22);
-  // A calm road: the band's lower part on tall screens, so the age's sky and skyline show above it.
-  const amp = Math.min((bottom - top) / 2, node * 1.4);
+  // The road winds through most of the band (on tall screens it keeps a strip of sky and skyline
+  // above it), so it never reads as a flat line.
+  const amp = Math.min((bottom - top) / 2, node * 2.2);
   const mid = bottom - amp;
   const yMin = mid - amp;
   const yMax = mid + amp;
   const pts: { x: number; y: number }[] = [];
   const spans: { start: number; end: number }[] = [];
-  let x = Math.max(o.w * 0.45, spacing);
+  // The first node sits a little in from the left (the start camp fills the lead-in).
+  let x = Math.max(o.w * 0.34, spacing);
   for (const r of o.regions) {
     const start = x - spacing / 2;
     for (let i = r.from; i <= r.to; i++) {
@@ -79,7 +84,7 @@ export function mapLayout(o: { w: number; h: number; top: number; bottom: number
   }
   const worldW = x - gap + Math.max(o.w * 0.55, spacing);
   const horizon = Math.max(o.top + 40, yMin - node * 0.9);
-  return { w: o.w, h: o.h, spacing, node, boss, pts, spans, worldW, horizon, yMin, yMax };
+  return { w: o.w, h: o.h, spacing, node, boss, pts, spans, worldW, horizon, top: o.top, yMin, yMax };
 }
 
 /** A smooth path through points (Catmull-Rom as cubic Béziers). */
@@ -144,6 +149,8 @@ interface Props {
   onNode(node: MapNode, el: HTMLElement): void;
   /** True while the player pans (the level plate steps aside). */
   onPanning?(on: boolean): void;
+  /** True while the current node is off the view ("Back to my level" shows; the plate steps aside). */
+  onAway?(on: boolean): void;
   handle?: (h: WarPathMapHandle) => void;
   testid?: string;
 }
@@ -338,6 +345,9 @@ export function WarPathMap(p: Props) {
   const away = !!layout && !!cur && (curScreen < 24 || curScreen > layout.w - 24);
   const awayLeft = away && curScreen < 24;
   const show = p.show ?? {};
+  useEffect(() => {
+    p.onAway?.(away);
+  }, [away]);
 
   return (
     <div
@@ -364,7 +374,7 @@ export function WarPathMap(p: Props) {
             <GroundLayer layout={layout} regions={p.regions} scroll={scroll} />
             <Road layout={layout} nodes={p.nodes} regions={p.regions} show={show} />
             <RoadDeco layout={layout} nodes={p.nodes} scroll={scroll} />
-            <Gates layout={layout} regions={p.regions} show={show} />
+            <Gates layout={layout} regions={p.regions} show={show} scroll={scroll} />
             {p.nodes.map((n) => {
               const pt = layout.pts[n.i]!;
               if (pt.x - scroll < -200 || pt.x - scroll > layout.w + 200) return null;
@@ -396,7 +406,8 @@ export function WarPathMap(p: Props) {
             <button
               type="button"
               class={`wp-back ${awayLeft ? 'wp-back--left' : 'wp-back--right'}`}
-              style={{ top: `${Math.round(Math.min(layout.yMax, Math.max(layout.yMin, cur!.y)) - 22)}px` }}
+              // In the plate's row (the plate steps aside while away), clear of the nodes and the top bar.
+              style={{ top: `${Math.round(layout.h - p.insets.bottom + 6)}px` }}
               data-testid="wp-back-mine"
               aria-label={t('warPath.ui.backMineLabel')}
               onClick={(e) => {
@@ -438,7 +449,7 @@ function FarLayer(p: { layout: MapLayout; regions: readonly MapRegion[]; scroll:
         if (screenL > L.w + 50 || screenL + wf < -50) return null;
         return (
           <div key={r.age} class={`wp-band${i === 0 ? ' is-first' : ''}${i === p.regions.length - 1 ? ' is-last' : ''}`} style={{ left: `${left}px`, width: `${wf}px` }}>
-            <RegionFarMemo age={r.age} w={wf} h={L.h} horizon={L.horizon} />
+            <RegionFarMemo age={r.age} w={wf} h={L.h} horizon={L.horizon} ceiling={L.top + 6} />
           </div>
         );
       })}
@@ -447,11 +458,11 @@ function FarLayer(p: { layout: MapLayout; regions: readonly MapRegion[]; scroll:
 }
 
 const farCache = new Map<string, ComponentChildren>();
-function RegionFarMemo(p: { age: AgeId; w: number; h: number; horizon: number }) {
-  const key = `${p.age}|${p.w}|${p.h}|${Math.round(p.horizon)}`;
+function RegionFarMemo(p: { age: AgeId; w: number; h: number; horizon: number; ceiling: number }) {
+  const key = `${p.age}|${p.w}|${p.h}|${Math.round(p.horizon)}|${Math.round(p.ceiling)}`;
   let v = farCache.get(key);
   if (!v) {
-    v = <RegionFar age={p.age} w={p.w} h={p.h} horizon={p.horizon} />;
+    v = <RegionFar age={p.age} w={p.w} h={p.h} horizon={p.horizon} ceiling={p.ceiling} />;
     if (farCache.size > 40) farCache.clear();
     farCache.set(key, v);
   }
@@ -505,15 +516,20 @@ function Road(p: { layout: MapLayout; nodes: readonly MapNode[]; regions: readon
   const hide = p.show.hideOpen ? (p.nodes.find((n) => n.level.id === p.show.hideOpen)?.i ?? null) : null;
   // The lit road runs to the current node; while a ceremony hides it, to the level just beaten.
   const litEnd = hide !== null ? hide - 1 : Math.min(lastBeaten + 1, L.pts.length - 1);
+  // The road comes in from the left edge, past the start camp, to level 1.
+  const p0 = L.pts[0];
+  const lead = p0 ? [{ x: -L.spacing * 0.5, y: p0.y + L.node * 0.55 }, { x: p0.x - L.spacing * 0.75, y: p0.y + L.node * 0.35 }] : [];
   return (
     <svg class="wp-road" width={L.worldW} height={L.h} aria-hidden="true">
-      {p.regions.map((r) => {
+      {p.regions.map((r, ri) => {
         const th = REGION_THEMES[r.age];
         const to = Math.min(r.to + 1, L.pts.length - 1);
-        const seg = L.pts.slice(r.from, to + 1);
+        const seg = ri === 0 ? [...lead, ...L.pts.slice(r.from, to + 1)] : L.pts.slice(r.from, to + 1);
         const d = smooth(seg);
         return (
           <g key={r.age}>
+            {/* worn, trodden shoulders: the road's edges are not a clean line */}
+            <path d={d} class="wp-road__wear" style={{ stroke: th.roadEdge }} />
             <path d={d} class="wp-road__shadow" />
             <path d={d} class="wp-road__edge" style={{ stroke: th.roadEdge }} />
             <path d={d} class="wp-road__bed" style={{ stroke: th.road }} />
@@ -529,10 +545,18 @@ function Road(p: { layout: MapLayout; nodes: readonly MapNode[]; regions: readon
   );
 }
 
-/** Region gates on the road and the region banners (4.1: "a gate arch stands on the road"). */
-function Gates(p: { layout: MapLayout; regions: readonly MapRegion[]; show: MapShow }) {
+/** The margin a pinned region name keeps from the view's left edge (px). */
+const LABEL_PIN = 14;
+
+/**
+ * Region gates on the road and the region banners (4.1: "a gate arch stands on the road"). A region's
+ * name rides along the view's left edge while its region fills the view (so it never hangs half off
+ * the screen), then leaves with the region.
+ */
+function Gates(p: { layout: MapLayout; regions: readonly MapRegion[]; show: MapShow; scroll: number }) {
   const { t } = useKit();
   const L = p.layout;
+  const widths = useRef<Record<string, number>>({});
   return (
     <>
       {p.regions.map((r, i) => {
@@ -541,6 +565,11 @@ function Gates(p: { layout: MapLayout; regions: readonly MapRegion[]; show: MapS
         const gx = prev ? (prev.x + first.x) / 2 : null;
         const gy = prev ? (prev.y + first.y) / 2 : 0;
         const open = i === 0 || p.regions[i - 1]!.done;
+        const lw = widths.current[r.age] ?? 180;
+        const natural = gx ?? first.x - L.spacing * 1.2;
+        const span = L.spans[i]!;
+        // The label's centre: its own spot, or pinned to the view's left edge while the region is there.
+        const cx = Math.max(natural, Math.min(p.scroll + LABEL_PIN + lw / 2, span.end - lw / 2 - 12));
         return (
           <div key={r.age}>
             {gx !== null ? (
@@ -562,9 +591,12 @@ function Gates(p: { layout: MapLayout; regions: readonly MapRegion[]; show: MapS
               </div>
             ) : null}
             <div
-              class={`wp-regionName${r.done ? ' is-done' : ''}${gx === null ? ' is-start' : ''}`}
+              class={`wp-regionName${r.done ? ' is-done' : ''}${gx === null ? ' is-start' : ''}${cx > natural + 1 ? ' is-pinned' : ''}`}
+              ref={(el) => {
+                if (el && el.offsetWidth > 0) widths.current[r.age] = el.offsetWidth;
+              }}
               style={{
-                left: `${gx ?? first.x - L.spacing * 1.2}px`,
+                left: `${cx.toFixed(1)}px`,
                 top: `${Math.max(L.yMin - L.node * 0.2, gx === null ? first.y - L.node * 1.1 : Math.min(first.y, prev!.y) - L.node * 1.55)}px`,
               }}
               data-testid={`wp-region-${r.age}`}
@@ -723,8 +755,12 @@ function ForegroundLayer(p: { layout: MapLayout; regions: readonly MapRegion[]; 
 function RoadDeco(p: { layout: MapLayout; nodes: readonly MapNode[]; scroll: number }) {
   const L = p.layout;
   const lastBeaten = p.nodes.reduce((m, n) => (n.state === 'beaten' ? n.i : m), -1);
+  // The start camp beside the road's lead-in, before level 1.
+  const p0 = L.pts[0];
+  const camp = p0 ? { x: p0.x - L.spacing * 1.2, y: Math.min(L.h - 8, p0.y + L.node * 1.25) } : null;
   return (
     <svg class="wp-deco" width={L.worldW} height={L.h} aria-hidden="true">
+      {camp && camp.x > 70 && camp.x - p.scroll < L.w + 120 ? <StartCamp x={camp.x} y={camp.y} s={L.node / 64} t={REGION_THEMES[p.nodes[0]!.level.region]} /> : null}
       {p.nodes.slice(0, -1).map((n) => {
         const a = L.pts[n.i]!;
         const b = L.pts[n.i + 1]!;

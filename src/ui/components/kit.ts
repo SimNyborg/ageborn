@@ -9,7 +9,7 @@
  * - `sound`: optional UI sound hook (`ui_click`, `ui_deny`, `ui_tab`, `ui_toggle`, `ui_sheet`...;
  *   ui-plan 5.4). The app passes the audio service's `play`; without it the UI is silent.
  */
-import type { ArtProvider, CardId, Foil, SkinId } from '@/contracts';
+import type { ArtProvider, CardId, Foil, Side, SkinId } from '@/contracts';
 import { i18n } from '@/i18n';
 import { createContext } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
@@ -66,15 +66,16 @@ export function clearPortraitCache(): void {
 
 /**
  * Resolves a card portrait data URL through the injected provider, cached per
- * (card, skin, foil, size, plate). Returns null while loading, on failure (an empty URL), or without
- * a provider.
+ * (card, skin, foil, size, plate, side). `side: 1` paints the team areas in the opponent's colour.
+ * Returns null while loading, on failure (an empty URL), or without a provider.
  */
-export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil?: Foil; size: number; plate?: boolean }): string | null {
+export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil?: Foil; size: number; plate?: boolean; side?: Side }): string | null {
   const { portrait } = useKit();
   const skin = o.skin ?? undefined;
   const foil = o.foil ?? 'none';
   const plate = o.plate ?? true;
-  const key = card ? `${card}|${skin ?? ''}|${foil}|${o.size}|${plate ? 1 : 0}` : '';
+  const side = o.side ?? 0;
+  const key = card ? `${card}|${skin ?? ''}|${foil}|${o.size}|${plate ? 1 : 0}|${side}` : '';
   const [url, setUrl] = useState<string | null>(() => (key ? (portraitCache.get(key) ?? null) : null));
   useEffect(() => {
     if (!portrait || !card) {
@@ -90,6 +91,7 @@ export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil
     const req: PortraitRequest = { card, foil, size: o.size };
     if (skin) req.skin = skin;
     if (!plate) req.plate = false;
+    if (side) req.side = side;
     portrait(req).then(
       (u) => {
         if (u) portraitCache.set(key, u);

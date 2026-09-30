@@ -10,21 +10,26 @@ greaves and bracers, heavy sandalled feet that plant without sliding. The near h
 short polished leaf sword; the far arm carries a big round team shield in front of the body
 (polished rim, plum back, sandstone lambda).
 
-Motion: the idle breathes (the chest rises, the head and crest sway several lu); the walk is a
-slow, heavy stride (1.4 s); the attack is an overhead sword chop into the ground with a stomp
-(dust ring and sparks on the held impact); a hit recoils 7 degrees with a seam flash; the death
-staggers, crumples forward onto one knee and bursts (the seams flare white, plates fly off),
-which sets up the game's Molten Heart burst, then slumps for the dust hand-off.
+Motion (cartoon kit v2; a viewer expects a walking giant whose ability is Stomp to stamp the
+ground so hard it shakes, with a slow, heavy wind-up):
+  idle    breathes (the chest rises, steam-like heat pulses in the heart, the crest sways)
+  walk    a slow, heavy clank stride (1.4 s)
+  attack  QUAKE STOMP: shifts his weight, lifts the near foot to his chest with the shield
+          raised high and the sword held out for balance (the long held extreme), then stamps
+          the foot down and slams the shield rim into the ground: a deep crouch, a dust ring,
+          ground-crack lines, sparks and the heart flaring
+  hit     mech: a hard jolt without squash, every seam flashes white, a plate pops out and back
+  die     staggers, crumples onto one knee and bursts (the seams flare white, plates fly off),
+          which sets up the game's Molten Heart burst, then slumps for the dust hand-off
 """
 import math
 
-from ageborn_art import fx, retime
+from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_future as F
 from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
 
-retime.HEAVY_MELEE.add("bronze_colossus")
 
 SLUG = "bronze_colossus"
 NAME = "Bronze Colossus"
@@ -33,6 +38,7 @@ YAW_DEG = -46.0          # turned toward the camera: helmet front, chest, seams 
 CANVAS = (640, 610)
 FEET = (262, 580)
 ANCHORS = {"head": (6, 196), "hitCenter": (0, 104)}
+NO_RETIME = True
 
 BR = "#AC8F6C"           # statue bronze, aged (sat ~37%, outside the colour rule)
 BR_DK = "#806A4E"
@@ -58,8 +64,6 @@ UPPER, LOWER = 25.0, 25.0
 HAND = {s: (0.0, ARM_Y[s], SHOULDER_Z - UPPER - LOWER) for s in ("r", "l")}
 BLADE = 64.0             # leaf sword, grip to tip (modelled pointing up from the near fist)
 SW = (HAND["r"][0] + 1.5, HAND["r"][1] - 2.0, HAND["r"][2])
-SMEAR = {"joint": "sword", "inner": (SW[0], SW[1], SW[2] + 20.0), "outer": (SW[0], SW[1], SW[2] + BLADE + 6.0),
-         "color": B.BRONZE_HI, "taper": 0.45, "start": 0.3, "behind": 8.0}
 
 FLARES = []              # hidden white-hot copies of every seam, shown on the hit and the burst
 
@@ -368,13 +372,15 @@ def _flare(pose):
 
 
 def _idle(f):
-    # breathing: the chest rises and widens, the head and crest sway (>= 3 lu at the head)
-    c, lag = F.idle_wave(f)
+    # 6 poses x 150 ms: breathing (the chest rises and widens, the head and crest sway >= 3 lu)
+    c = math.cos(2 * math.pi * f / 6)
+    lag = math.cos(2 * math.pi * (f - 1) / 6)
     return merge(stand(2.4 * c), REST, _glow(f), {
         "torso": dict(squash(0.025 * c), r=1.6 * c),
         "head": {"r": -3.5 * lag, "x": 1.6 * lag, "z": 1.2 * c},
         "crest": {"r": 5.0 * lag},
         "arm_r": {"r": 2.5 * lag}, "arm_l": {"r": 2.0 * lag}, "hand_r": {"r": -3.0 * lag},
+        "eyes": {"s": 1.0 + 0.08 * (f == 3)},
     })
 
 
@@ -392,46 +398,81 @@ def _walk(f):
     })
 
 
-ATTACK_MS = [100, 100, 200, 50, 167, 100, 100, 100]
+# 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6)
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
+#          shift  dip  lift  HOLD  down  down  IMP  shock  foll  rec
+FOOT = [(10, 0), (8, 0), (18, 22), (22, 44), (26, 22), (28, 6), (28, 0), (28, 0), (24, 0), (14, 0)]
+BOB = [0, -5, 2, 6, 2, -4, -13, -11, -5, -1]
+DX = [-2, -3, -2, -3, 2, 6, 9, 9, 6, 2]
+TORSO = [3, 6, 8, 10, -4, -12, -22, -20, -10, -3]
+HEAD = [1, 3, 4, 4, -2, -6, -8, -7, -3, 0]
+Q = [0.0, -0.03, 0.02, 0.04, 0.02, 0.0, -0.09, -0.06, -0.02, 0.0]
+# sword out behind for balance, shield raised then slammed down (torso-space directions)
+RA = [-80, -70, -20, 0, -30, -60, -84, -84, -84, -84]
+RF = [40, 30, 10, 10, 0, -20, 30, 36, 40, 44]
+SWA = [118, 110, 150, 170, 140, 110, 100, 108, 116, 122]
+LA = [-40, -34, 10, 30, -10, -40, -66, -64, -56, -44]
+LF = [-8, 0, 40, 60, 10, -40, -70, -66, -50, -12]
+HEART = [1.0, 1.05, 1.1, 1.2, 1.3, 1.4, 1.7, 1.5, 1.2, 1.0]
 
 
 def _attack(f):
-    # 0-1 raise the sword over the head and lift the near foot (coil), 2 held extreme (blade
-    # far back behind the head), 3 smear (the chop), 4 held impact: blade driven into the
-    # ground ahead, foot stamped, deep crouch, dust ring and sparks; 5-7 heavy recovery
-    ra = pick(f, [-20, 70, 110, 20, -30, -36, -52, -66])
-    rf = pick(f, [30, 120, 150, -5, -40, -40, -30, -14])
-    sw = pick(f, [115, 150, 175, 10, -52, -46, -10, 40])
-    la = pick(f, [-36, -24, -18, -46, -58, -56, -50, -42])
-    lf = pick(f, [-4, 6, 12, -14, -22, -20, -14, -9])
-    foot = pick(f, [(12, 6), (16, 20), (18, 26), (22, 8), (24, 0), (22, 0), (16, 0), (11, 0)])
-    bob = pick(f, [0, -2, 1, -2, -16, -13, -6, -1])
-    dx = pick(f, [-1, -3, -4, 3, 8, 7, 4, 1])
-    pose = merge(legs((STANCE_X["r"] + foot[0] - 10, foot[1]), (STANCE_X["l"], 0.0), (dx, LIFT + bob)),
-                 arms(ra, rf, sw, la, lf), _glow(f), {
-        "torso": dict(squash(pick(f, [-0.02, -0.05, 0.05, 0.03, -0.1, -0.06, -0.02, 0])),
-                      r=pick(f, [2, 8, 12, -8, -24, -20, -10, -3])),
-        "head": {"r": pick(f, [1, 4, 6, -3, -8, -6, -3, 0])},
-        "dust": {"show": f in (4, 5, 6), "s": pick(f, [1, 1, 1, 1, 0.85, 1.15, 1.35, 1]),
-                 "z": pick(f, [0, 0, 0, 0, 0, 3, 6, 0])},
-        "sparks": {"show": f == 4},
-        "heart": {"s": pick(f, [1, 1.1, 1.2, 1.3, 1.5, 1.3, 1.1, 1])},
+    fx_, lift = FOOT[f]
+    pose = merge(legs((STANCE_X["r"] + fx_ - 10, lift), (STANCE_X["l"], 0.0), (DX[f], LIFT + BOB[f])),
+                 arms(RA[f], RF[f], SWA[f], LA[f], LF[f]), _glow(f), {
+        "torso": dict(squash(Q[f]), r=TORSO[f]),
+        "head": {"r": HEAD[f]},
+        "crest": {"r": [0, 2, -4, -8, 4, 8, 12, 6, 0, 0][f]},
+        "dust": {"show": f in (7, 8), "s": [0.7, 0.8, 1.0][min(2, max(0, f - 6))],
+                 "x": -34.0, "z": [0, 3, 6][min(2, max(0, f - 6))]},
+        "sparks": {"show": f in (6, 7), "x": -40.0, "z": -12.0, "s": 1.0 if f == 6 else 0.7},
+        "heart": {"s": HEART[f]},
+        "eyes": {"s": 1.3 if f in (3, 6) else 1.0},
     })
-    if f == 3:
-        pose.setdefault("sword", {})["sz"] = 1.2
+    if f in (6, 7):
+        pose = _flare(pose) if f == 6 else pose
     return pose
 
 
-def _hit(f):
-    # a 7 degree recoil with a white seam flash on the first frames
-    a = [1.0, 0.55, 0.2][f]
-    pose = merge(stand(-2.0 * a, -3.5 * a), REST, _glow(0), {
-        "torso": dict(squash(-0.04 * a), r=7 * a), "head": {"r": 8 * a},
+def _attack_clip():
+    foot = STANCE_X["r"] + 18.0
+    ov = {
+        4: [{"kind": "arc", "joint": "shield", "inner": (HAND["l"][0] + 12.0, HAND["l"][1] - 10.0, HAND["l"][2] + 8.0),
+             "outer": (HAND["l"][0] + 30.0, HAND["l"][1] - 20.0, HAND["l"][2] + 30.0), "from": 3, "color": B.SAND_LT,
+             "white": 0.3, "taper": 0.2, "lines": 3, "line_gap_lu": 4.0, "line_lu": 2.2, "outline_lu": 2.0}],
+        5: [{"kind": "dust", "ground": (foot, 0.0), "size_lu": 8.0, "puffs": 3, "seed": 2, "spread": 0.6}],
+        6: [{"kind": "dust", "ground": (foot - 30.0, 0.0), "size_lu": 12.0, "puffs": 3, "seed": 3, "spread": 0.8},
+            {"kind": "dust", "ground": (foot + 26.0, 0.0), "size_lu": 12.0, "puffs": 3, "seed": 4, "spread": 0.8},
+            {"kind": "burst", "joint": "root", "point": (foot, 0, 3.0), "r0_lu": 24.0, "r1_lu": 38.0,
+             "n": 3, "a0": 4.0, "arc": 42.0},
+            {"kind": "burst", "joint": "root", "point": (foot, 0, 3.0), "r0_lu": 24.0, "r1_lu": 38.0,
+             "n": 3, "a0": 134.0, "arc": 42.0}],
+        7: [{"kind": "dust", "ground": (foot - 38.0, 0.0), "size_lu": 14.0, "puffs": 3, "seed": 5, "spread": 0.9},
+            {"kind": "dust", "ground": (foot + 34.0, 0.0), "size_lu": 14.0, "puffs": 3, "seed": 6, "spread": 0.9},
+            {"kind": "burst", "joint": "root", "point": (foot, 0, 3.0), "r0_lu": 40.0, "r1_lu": 50.0,
+             "n": 3, "a0": 4.0, "arc": 42.0},
+            {"kind": "burst", "joint": "root", "point": (foot, 0, 3.0), "r0_lu": 40.0, "r1_lu": 50.0,
+             "n": 3, "a0": 134.0, "arc": 42.0}],
+    }
+    return M.clip("attack", [_attack(f) for f in range(10)], M.HEAVY_MELEE_MS, impact=M.HEAVY_MELEE_IMPACT,
+                  smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    # mech: a hard jolt back with no squash, every seam flashes white on the contact, the near
+    # chest plate pops out and snaps back, the crest whips
+    a = [1.0, 0.8, 0.35, -0.12, 0.0][k]
+    pose = merge(stand(-2.0 * max(a, 0), -4.0 * a), REST, _glow(0), {
+        "torso": {"r": 7 * a}, "head": {"r": 9 * a},
         "arm_r": {"r": 10 * a}, "arm_l": {"r": 8 * a},
-        "heart": {"s": 1.0 + 0.6 * a},
+        "heart": {"s": 1.0 + 0.7 * max(a, 0)},
+        "crest": {"r": -10 * a},
     })
-    if f == 0:
+    if k <= 1:
         _flare(pose)
+    if k in (1, 2):
+        pose["plate_0"] = {"show": True, "x": 6.0 if k == 1 else 2.0, "y": -3.0, "z": 3.0 if k == 1 else 1.0,
+                           "r": 18 if k == 1 else 6}
     return pose
 
 
@@ -494,10 +535,13 @@ def _die_extra():
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
         Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
+    M.check_contract([c for c in cl if c.name != "die"], heavy=True)
+    assert cl[-1].total_ms() == 1050 and cl[1].total_ms() == 1400
+    return cl

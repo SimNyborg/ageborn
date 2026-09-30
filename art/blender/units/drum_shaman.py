@@ -7,11 +7,25 @@ with a pale hide head and bone lacing. His near hand holds a bone drumstick. Idl
 swaying rhythm; the attack raises the stick high, holds, smears down and hits the drum: the
 drum squashes and a pale beat ring flares (the rock projectile spawns at `muzzle`, the drum
 head, on the impact frame).
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    nods to his own rhythm with his eyes closed, the stick tapping
+  walk    waddle: short steps with a side-to-side roll
+  attack  DOUBLE BEAT LAUNCH: a small beat that makes the stone on the drum hop, then both
+          hands go high and come down in a big beat that bounces the stone off the skin (the
+          projectile leaves the drum `muzzle` on impact; beat rings flare); his off hand puts
+          a new stone on the drum at the end
+  hit     light;  die  D3 dizzy spin, then sits down hard with spiral eyes
+Details: a bone spiral painted on the drum shell, bead strings hanging off the drum, belt
+rattles, face kit eyes and mouths.
 """
-from ageborn_art import fx
-from ageborn_art.anim import Clip, merge, pick, squash
+import math
+
+from ageborn_art import face as F
+from ageborn_art import moves as M
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
-from ageborn_art.rigs_stone import CaveBody, biped_hit, biped_idle, biped_walk
+from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "drum_shaman"
 NAME = "Drum Shaman"
@@ -19,6 +33,9 @@ HEIGHT_LU = 66
 CANVAS = (256, 236)
 FEET = (120, 210)
 ANCHORS = {"head": (0, 64), "hitCenter": (0, 30)}
+NO_RETIME = True
+ROCK = "#9A948A"
+RATTLE = "#B8A07A"
 
 SKIN = "#86695A"
 BEARD = "#D8D2C6"
@@ -41,7 +58,7 @@ STICK = 14.0
 
 
 def build(rig):
-    global ARM_R, ARM_L, SMEAR
+    global ARM_R, ARM_L, STICK_TIP
     body = CaveBody(rig, SKIN, FUR, hip_z=14.5, knee_z=8.0, ankle_z=3.6, waist_z=15.5,
                     shoulder_z=34.0, neck_z=35.5, hip_y=5.8, shoulder_y=11.6,
                     elbow=(1.5, 27.0), wrist=(3.8, 20.5), leg_r=(4.3, 3.8, 3.4),
@@ -68,23 +85,28 @@ def build(rig):
     rig.part("torso", g, BONE, outline=0.6)
 
     # head: bald crown under a horned skull, bushy white brows, big nose, long beard
-    g = Geo().blob((2.0, 0, 46.0), (9.6, 9.4, 9.8), p=2.3)
-    g.blob((12.2, -0.4, 44.6), (3.4, 2.8, 3.6), p=2.0, rot=(0, 20, 0))  # big nose
-    rig.part("head", g, SKIN)
-    g = Geo().capsule((9.6, -7.2, 49.8), (12.0, -1.8, 48.8), 1.9, 1.5)
-    g.capsule((12.0, 1.8, 48.8), (10.0, 6.4, 49.8), 1.5, 1.9)
-    rig.part("head", g, BROW, finish="hair", outline=0.6)
-    for y in (-4.0, 3.6):
-        g = Geo().blob((10.4, y, 46.4), (2.4, 2.6, 2.4))
-        rig.part("head", g, EYE, highlight=False)
-        g = Geo().blob((12.4, y - 0.3, 46.2), (1.0, 1.5, 1.5))
-        rig.part("head", g, PUPIL, outline=0)
+    head = Geo().blob((2.0, 0, 46.0), (9.6, 9.4, 9.8), p=2.3)
+    head.blob((12.2, -0.4, 44.6), (3.4, 2.8, 3.6), p=2.0, rot=(0, 20, 0))  # big nose
+    eyes = Geo()
+    for y in (-4.2, 3.6):
+        eyes.blob((10.2, y, 46.6), (3.1, 3.3, 3.2))
+    pup = Geo()
+    for y in (-4.2, 3.6):
+        pup.blob((12.6, y - 0.3, 46.4), (1.2, 1.9, 2.0))
+    face = F.Face(rig, "head", [head, eyes, pup])
+    rig.part("head", head, SKIN)
+    rig.part("head", eyes, EYE, highlight=False)
+    rig.joint("pupils", "head", (12.6, 0, 46.4))
+    rig.part("pupils", pup, PUPIL, outline=0)
+    rig.joint("brow", "head", (11.0, 0, 49.6))
+    g = Geo().capsule((9.6, -7.4, 50.2), (12.2, -1.8, 49.4), 2.2, 1.7)
+    g.capsule((12.2, 1.8, 49.4), (10.0, 6.4, 50.2), 1.7, 2.2)
+    rig.part("brow", g, BROW, finish="hair", outline=0.6)
+    face.eye_marks([(12.2, 46.6)], 3.0, SKIN)
     rig.joint("mouth", "head", (10.6, 0, 40.0))
     g = Geo().blob((10.8, -0.4, 40.2), (1.2, 3.0, 0.9), p=2.4)
     rig.part("mouth", g, MOUTH, outline=0, highlight=False)
-    rig.joint("chant", "head", (10.4, 0, 39.8), hidden=True)
-    g = Geo().blob((10.4, -0.4, 39.6), (1.8, 2.6, 2.4), p=2.2)
-    rig.part("chant", g, MOUTH, outline=0, highlight=False)
+    face.mouths((11.2, 40.0), 4.6)
     rig.secondary("beard", "head", (8.0, 0, 41.0), (8.5, 0, 25.0), max_deg=12, gain=1.1)
     g = Geo().blob((8.0, 0, 38.4), (6.2, 8.4, 4.2), p=2.2)
     g.lathe([(6.2, 0), (4.8, -5.0), (2.6, -9.5), (0, -13.0)], (8.2, 0, 38.0), segs=14,
@@ -135,6 +157,25 @@ def build(rig):
     rig.part("drum", g, BONE_DK, outline=0)
     top_c = tuple(t + a / L * 0.9 for t, a in zip(DRUM_TOP, ax))
     rig.track("muzzle", "drum", top_c)
+    # a bone spiral painted on the shell (a decal on the near side)
+    shell = Geo().lathe([(0, 0), (DRUM_R, 0.0), (DRUM_R, L), (0, L)], DRUM_BOT, DRUM_TOP, segs=22)
+    dface = F.Face(rig, "drum", [shell])
+    c = dface.hit(12.5, 16.5)
+    g = Geo()
+    sp = [(3.6 * (t / 16) * math.cos(t * 0.7), 3.6 * (t / 16) * math.sin(t * 0.7)) for t in range(1, 17)]
+    dface.stroke(g, c, sp, 1.2, 0.4)
+    rig.part("drum", g, BONE, highlight=False, outline=0)
+    shell.bm.free()
+    # bead strings hanging off the drum rim (follow-through)
+    rig.secondary("beads", "drum", (8.0, -10.5, 18.0), (6.5, -11.5, 7.0), max_deg=22, gain=1.4)
+    g = Geo().capsule((8.0, -10.5, 18.0), (6.8, -11.2, 8.5), 0.5)
+    for k, z in enumerate((15.5, 12.5, 9.5)):
+        g.sphere((7.8 - 0.4 * k, -11.0, z), 1.6, cuts=2)
+    rig.part("beads", g, BONE, outline=0.5)
+    # the stone that sits on the drum skin and is bounced off it
+    rig.joint("stone", "drum", top_c)
+    g = Geo().blob((top_c[0] + 0.5, top_c[1] - 1.0, top_c[2] + 2.6), (3.4, 3.0, 2.8), p=2.1)
+    rig.part("stone", g, ROCK, outline=0.8)
     # beat arcs: two pale arcs facing the camera that flare over the drum on impact
     import math as _m
     cx, cy, cz = DRUM_TOP[0] + 1.0, DRUM_TOP[1] - 8.0, DRUM_TOP[2] + 2.0
@@ -154,16 +195,23 @@ def build(rig):
     g = Geo().blob((fr[0], fr[1] - 0.5, fr[2] + STICK), (3.0, 3.0, 3.2), p=2.2)
     rig.part("stick", g, HIDE)
     tip = (fr[0], fr[1] - 0.5, fr[2] + STICK)
-    SMEAR = {"joint": "stick", "inner": (fr[0], fr[1] - 0.5, fr[2] + STICK - 6.0),
-             "outer": (fr[0], fr[1] - 0.5, fr[2] + STICK + 3.0), "color": HIDE, "taper": 0.4,
-             "start": 0.3}
+    STICK_TIP = tip
+    # team-dyed forearm wraps and a team sash across the belly
+    for side, y in (("r", -11.6), ("l", 11.6)):
+        g = Geo().capsule((2.6, y, 23.6), (3.2, y, 20.8), 4.0, 3.9)
+        rig.part(f"fore_{side}", g, team=True, outline=0.7)
+    g = Geo().capsule((8.2, -6.2, 21.0), (-2.0, 9.0, 31.0), 3.4, 3.2)
+    g.lathe([(10.4, 0), (11.2, 0.5), (11.2, 3.6), (10.4, 4.0)], (0.5, 0, 17.0), segs=22)
+    rig.part("torso", g, team=True, outline=0.7)
+    # belt rattles (two gourds on cords at the hip)
+    g = Geo().blob((-3.0, -9.8, 17.0), (2.4, 2.0, 3.0), p=2.2).blob((1.2, -10.4, 16.0), (2.0, 1.8, 2.6), p=2.2)
+    rig.part("hips", g, RATTLE, outline=0.6)
     rig.track("_foot", "shin_r", (2.9, -5.8, 0.5))
     ARM_R = body.arm("r", "stick", tip)
     ARM_L = body.arm("l")
 
 
-ARM_R = ARM_L = None
-SMEAR = None
+ARM_R = ARM_L = STICK_TIP = None
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -181,74 +229,114 @@ def stance():
 
 
 def _idle(f):
-    # a slow rhythm: the stick taps near the drum, the body sways
-    def extra(c, lag):
-        return {"arm_r": {"r": pick(f, [0, 6, 14, 18])}, "stick": {"r": pick(f, [0, 6, 16, 22])},
-                "torso": {"rz": 3 * c}, "head": {"r": 3 * lag}}
-    return biped_idle(f, stance(), extra=extra)
+    # nods to his own rhythm with his eyes closed; the stick taps on beats 0 and 4
+    tap = [1.0, 0.0, -0.4, 0.2, 1.0, 0.0, -0.4, 0.2][f]
 
-
-def _walk(f):
-    import math
-
-    def extra(p, lag_p, bob, bob_lag):
-        return {"arm_r": {"r": 6 * math.cos(p)}, "stick": {"r": 8 * math.cos(lag_p)},
-                "drum": {"r": 3 * math.cos(lag_p)}}
-    return biped_walk(f, stance(), lean=-4.0, bob_k=0.8, thigh=30.0, extra=extra)
-
-
-ATTACK_MS = [83, 83, 167, 42, 125, 100, 100, 100]
-
-
-def _attack(f):
-    # 0-1 raise the stick high, rise on the toes; 2 held extreme (stick overhead, stretch,
-    # chanting); 3 smear down; 4 held impact: stick on the drum, drum and body squash,
-    # beat ring; 5 ring flares wider, rebound; 6-7 settle
-    a = pick(f, [0, 40, 60, 10, -45, -38, -42, -45])
-    b = pick(f, [60, 100, 120, 20, -5, 20, 20, 20])
-    c = pick(f, [100, 130, 150, 40, -30, 20, 40, 50])
-    sq = pick(f, [0.02, 0.06, 0.09, 0.0, -0.14, -0.06, -0.02, 0.0])
-    pose = merge(stick_arm(a, b, c), off_arm(pick(f, [-40, -44, -46, -40, -36, -38, -40, -40]),
-                                             pick(f, [-10, -14, -16, -10, -4, -8, -10, -10])), {
-        "body": squash(sq),
-        "hips": {"z": pick(f, [0.4, 1.2, 2.0, 0.0, -2.2, -1.2, -0.4, 0])},
-        "torso": {"r": pick(f, [-4, 2, 6, -12, -18, -14, -10, -8])},
-        "head": {"r": pick(f, [4, -4, -10, 8, 12, 10, 8, 6])},
-        "drum": {"s": pick(f, [1, 1, 1, 1, 1, 1.04, 1, 1]),
-                 "sz": pick(f, [1, 1, 1, 1, 0.82, 1.08, 1.0, 1.0])},
-        "ring": {"show": f in (4, 5), "s": pick(f, [1, 1, 1, 1, 1.0, 1.55, 1, 1]),
-                 "sz": pick(f, [1, 1, 1, 1, 1, 0.6, 1, 1])},
-        "thigh_r": {"r": pick(f, [0, -4, -6, 4, 12, 8, 3, 0])},
-        "thigh_l": {"r": pick(f, [0, 4, 6, -4, -10, -6, -2, 0])},
-    })
-    if f in (2, 3, 4):
-        pose.update({"mouth": {"hide": True}, "chant": {"show": True}})
+    def extra(ctx):
+        return {"arm_r": {"r": -6 * tap}, "stick": {"r": -8 * tap},
+                "head": {"r": -5 * tap}, "torso": {"rz": 3 * ctx["sh"]}, "beads": {"r": 4 * tap}}
+    pose = M.idle_v2(f, stance(), extra=extra)
+    if f in (1, 2, 3, 5, 6):
+        pose = merge(pose, F.expr("blink"))
     return pose
 
 
-def _hit(f):
-    return biped_hit(f, stance(), extra=lambda a: {"arm_r": {"r": 20 * a}, "stick": {"r": 20 * a}})
+def _walk(f):
+    def extra(ctx):
+        return {"body": {"rx": 5 * math.sin(ctx["p"])}, "torso": {"rx": -3 * math.sin(ctx["p"])},
+                "stick": {"r": 8 * math.cos(ctx["lag_p"])}, "drum": {"r": 3 * math.cos(ctx["lag_p"])}}
+    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=24.0, knee=56.0, lift_lu=6.0, bob_pct=0.05,
+                     lean=-5.0, arm=0.0, fore=0.0, arms=(), extra=extra)
 
 
-def _die(f):
-    pose = merge(stance(), fx.die_pose(f), {
-        "torso": {"r": pick(f, [18, 8, 4])},
-        "head": {"r": pick(f, [14, -6, -6])},
-        "arm_r": {"r": pick(f, [70, 50, 50])}, "stick": {"r": pick(f, [60, 30, 30])},
-        "arm_l": {"r": pick(f, [90, 60, 60])},
-        "drum": {"r": pick(f, [-20, -10, -10])},
-        "thigh_r": {"r": pick(f, [25, 10, 10])}, "thigh_l": {"r": pick(f, [-10, -5, -5])},
+# 11 unique frames, moves.SMALL_MELEE_MS
+#          read small-beat wind HOLD smear lead IMP  rebound recoil place settle
+D_A = [-45, -40, 40, 70, 20, -30, -46, -38, -42, -45, -45]
+D_B = [20, -10, 110, 130, 60, -5, -8, 25, 15, 20, 20]
+D_C = [50, 0, 140, 160, 70, -10, -32, 30, 40, 50, 50]
+D_OA = [-40, -40, 45, 75, 25, -30, -42, -36, -20, 10, -40]
+D_OB = [-10, -10, 100, 125, 55, -8, -12, -6, 30, 60, -10]
+D_T = [-8, -12, 4, 8, -8, -16, -22, -16, -12, -10, -8]
+D_Q = [0.0, -0.06, 0.05, 0.1, 0.04, -0.02, -0.16, 0.05, -0.04, 0.0, 0.0]
+D_Z = [0.0, -1.0, 1.0, 2.2, 0.5, -0.5, -2.4, 0.4, -0.6, 0.0, 0.0]
+D_H = [6, 10, -6, -10, 4, 10, 14, 8, 10, 6, 6]
+D_STONE = [0.0, 5.0, 1.0, 0.0, 0.0, 0.0, None, None, None, 0.0, 0.0]
+D_DRUM_SZ = [1.0, 0.9, 1.04, 1.0, 1.0, 1.0, 0.8, 1.1, 0.96, 1.0, 1.0]
+
+
+def _attack_pose(f):
+    pose = merge(stick_arm(D_A[f], D_B[f], D_C[f]), off_arm(D_OA[f], D_OB[f]), {
+        "torso": {"r": D_T[f]}, "head": {"r": D_H[f]},
+        "drum": {"sz": D_DRUM_SZ[f], "sx": 1.0 / max(0.8, D_DRUM_SZ[f]) ** 0.5},
+        "thigh_r": {"r": [0, 2, -4, -6, 2, 8, 12, 8, 4, 2, 0][f]},
+        "thigh_l": {"r": [0, -2, 4, 6, -2, -6, -10, -6, -3, -1, 0][f]},
+        "ring": {"show": f in (6, 7), "s": 1.0 if f == 6 else 1.5, "sz": 1.0 if f == 6 else 0.7},
+    }, M.body_about((0, 0, 20), z=D_Z[f], q=D_Q[f]))
+    st = D_STONE[f]
+    pose["stone"] = {"hide": True} if st is None else {"z": st, "r": 25 * st}
+    if f in (2, 3, 4, 5):
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.0}})
+    elif f in (6, 7):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    elif f == 1:
+        pose = merge(pose, F.expr("grit"))
+    return pose
+
+
+def _attack_clip():
+    ov = {
+        1: [{"kind": "rings", "joint": "drum", "point": DRUM_TOP, "radii_lu": (7.0,), "a0": -20.0, "a1": 70.0}],
+        4: [{"kind": "arc", "joint": "stick", "inner": (STICK_TIP[0], STICK_TIP[1], STICK_TIP[2] - 5.0),
+             "outer": (STICK_TIP[0], STICK_TIP[1], STICK_TIP[2] + 3.0), "color": HIDE, "taper": 0.2,
+             "lines": 2}],
+        5: [{"kind": "arc", "joint": "stick", "inner": (STICK_TIP[0], STICK_TIP[1], STICK_TIP[2] - 5.0),
+             "outer": (STICK_TIP[0], STICK_TIP[1], STICK_TIP[2] + 3.0), "color": HIDE, "taper": 0.2,
+             "lines": 2}],
+        6: [{"kind": "rings", "joint": "drum", "point": DRUM_TOP, "radii_lu": (9.0, 15.0, 21.0), "a0": -30.0,
+             "a1": 100.0},
+            {"kind": "burst", "joint": "drum", "point": DRUM_TOP, "r0_lu": 6.0, "r1_lu": 11.0, "n": 3,
+             "a0": 40.0, "arc": 100.0}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+def _hit(k):
+    def recoil(a):
+        return {"head": {"r": 14 * a}, "torso": {"r": 10 * a},
+                "thigh_r": {"r": 18 * max(a, 0)}, "shin_r": {"r": -22 * max(a, 0)},
+                "arm_r": {"r": 20 * a}, "stick": {"r": 20 * a}, "arm_l": {"r": 26 * a},
+                "brow": {"z": 1.4 * max(a, 0)}, "beard": {"r": 10 * a}}
+    return M.hit_light(k, stance(), recoil, face_hurt=F.expr("squeeze", "o"))
+
+
+def _die(k):
+    sit = [0.0, 0.0, 0.0, 0.2, 1.0, 0.9, 1.0, 1.0, 1.0, 1.0][k]
+    flail = [0.3, 0.8, 1.0, 0.8, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0][k]
+    pose = merge(stance(), M.die_d3(k, center_z=26.0, height=HEIGHT_LU), {
+        # a hard sit that changes the silhouette at game size: lower, leaning back, legs
+        # out in front, arms flopped wide, the head lolling
+        "hips": {"z": -13.0 * sit},
+        "thigh_r": {"r": 85 * sit}, "shin_r": {"r": -35 * sit},
+        "thigh_l": {"r": 80 * sit}, "shin_l": {"r": -30 * sit},
+        "torso": {"r": 28 * sit + 8 * flail}, "head": {"r": 10 * flail - 16 * sit, "rx": 14 * sit},
+        "arm_r": {"r": 70 * flail + 30 * sit}, "stick": {"r": 40 * flail + 30 * sit},
+        "arm_l": {"r": 90 * flail + 45 * sit}, "drum": {"r": -20 * sit},
+        "stone": {"hide": True},
     })
-    if f == 0:
-        pose.update({"mouth": {"hide": True}, "chant": {"show": True}})
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", "o"))
+    else:
+        pose = merge(pose, F.expr("spiral", "tongue" if k >= 4 else "o"))
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=4, smear=3, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl)

@@ -1,8 +1,8 @@
 # Pre-rendered 3D sprite pipeline (art spike, v2)
 
-> **Realistic restyle (owner decision A18.9.5):** the shipping look is now the realistic pipeline in
-> [`styles/realistic/`](styles/realistic/README.md) (the Stone Age is restyled there: units, turrets, base
-> and backdrop). It keeps this pipeline's sheet contract exactly; use it for every age you restyle.
+> **Cartoon style ships (owner decision 2026-09-30):** this cartoon pipeline is the shipping look,
+> raised with the cartoon kit v2 below. The realistic restyle in [`styles/realistic/`](styles/realistic/README.md)
+> was rejected by the owner and is parked; do not use its look.
 
 This folder is a feasibility spike: it builds Ageborn units as simple 3D models in Blender
 from Python code (no manual modelling, no downloaded assets), renders them with a
@@ -33,6 +33,35 @@ downsampled from the same frames). Bases and turrets (`world/`) do not use v3.
 .venv-blender/bin/python art/blender/gen_portraits.py /tmp/v3
 node art/blender/gen_unit_manifest.mjs
 ```
+
+## Cartoon kit v2 (art director plan 2026-09-30)
+
+Units opt in with `NO_RETIME = True` and author their final clips with `ageborn_art/moves.py`
+(Stone Age done first; see `units/bonker.py` as the reference):
+
+| Module | What |
+|---|---|
+| `moves.py` | timing tables that keep every shipped `durationMs`, attack `impactAt` and die `fx` time (`SMALL_MELEE_MS`, `HEAVY_MELEE_MS`, `HIT_MS`, `DIE_MS[_HEAVY]`, `die_meta`), `clip()`, `check_contract()`, `body_about()` (spin and squash about the belly, not the feet), `walk_v2`, `idle_v2`, `hit_light`, `hit_beast`, death styles `die_d1` (fling and spin), `die_d3` (dizzy sit), `die_d4` (legs-up flop; `roll=-0.62` topples a heavy onto its side) |
+| `face.py` | expression decals laid on the head by camera ray casts: `eye_marks` (lids, squeeze, X, spiral) and `mouths` (grit, yell, O, KO tongue); `expr("yell", "squeeze")` in a pose shows them |
+| `smear2.py` | 2D smears and accents painted over the finished frame: `arc` (crescent or ring), `claw`, `streak`, `dust`, `burst`, `rings`; a clip opts in with `moves.clip(..., overlays={frame: [spec]})` |
+
+Review rules from the Stone pilot (apply to every age):
+
+- Pick the attack a viewer expects from the body and weapon (the owner addendum in the plan wins
+  over the plan table): beasts bite, gore, pounce or trample; clubs swing overhead; spears thrust.
+- The held extreme (longest pre-impact frame) must read as a black silhouette at 1x, weapon clear
+  of the head and body.
+- A full-turn `arc` smear whose inner point is the hand needs `band` 0.3-0.45 (a hollow ring;
+  without it the whirl paints a solid disc).
+- A D4 side topple must not keep a frame between rx -70 and -100 (edge-on, renders as a flat pill);
+  choose the kept steps (Mammoth `DIE_KEEP`).
+- D3 sits must change the silhouette: hips about -12 lu, thighs 80-85 forward, torso back 28, arms wide.
+- Small riders get `rig.rest_scale[joint] = 1.2`; a rider with a sim attack throws on the impact
+  beat, one without never throws a fake projectile.
+
+`world/common.turret_module(..., idle_frames=6, overlays=...)` gives a turret a 6-frame idle
+loop in the same 1020 ms and 2D accents. `node art/blender/check_timing.mjs [ref]` fails if any
+clip duration or attack `impactAt` in `src/visuals/unitSheets.gen.ts` differs from the git ref.
 
 ## Install
 

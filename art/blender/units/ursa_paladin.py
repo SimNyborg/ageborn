@@ -1,22 +1,34 @@
 """Ursa Paladin: Medieval Age Legendary siege heavy (DESIGN A5.3). Cleave, Roar, ~190 lu.
 
-Look (A11 rider rig, Legendary scale): a huge brown war bear in a team barding with a
-parchment hem and gold studs, a steel chanfron on its brow, a cream muzzle, angry brows and
-a roaring jaw, carrying a paladin (1.5x) in bright steel plate with a team tabard, a great
-helm with a gold crown crest, glowing eye slits and a team plume, and a wine cape. The
-paladin swings an oversized gold-banded warhammer (cleave) in the near hand and holds a tall
-team war banner in the far hand. Plume, cape, banner and the bear's tail follow through.
-The attack: the bear rears and the paladin hauls the hammer overhead (held), the bear
-slams its forepaws down with a roar as the hammer smashes in front of its muzzle (smear,
-held impact), then both recover.
+Look (A11 rider rig, Legendary scale): a huge brown war bear with a shaped anatomy (a
+shoulder hump, elbows and hocks with fur tufts, big paws with cream claws, a cream muzzle, a
+wet nose, angry brows and a roaring jaw with teeth and a tongue), in a team barding with a
+parchment hem, gold studs and a big parchment bear paw on the flank, a steel chanfron with a
+gold ridge. It carries a paladin (1.5x) in bright steel plate with a team tabard, a great
+helm with a gold crown crest (an accent), glowing eye slits and a team plume, and a wine
+cape. The paladin swings an oversized gold-banded warhammer (cleave) in the near hand and
+holds a tall team war banner in the far hand. Plume, cape, banner and tail follow through.
 
-Rendered at 1.25x (Legendary size budget, SPIKE_REPORT section 5).
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
+  idle    the bear sniffs the air (the head lifts, the nose twitches) and blinks; the
+          paladin raises his hammer fist
+  walk    heavy 4-beat: diagonal pairs, the shoulder hump rolling, the head nodding
+  attack  BEAR SWIPE AND HAMMER SPIN: the bear rears with a forepaw raised high, claws out,
+          roaring, while the paladin winds the hammer straight back (the held extreme); the
+          paw rakes down (claw smear) as the hammer sweeps round in a wide flat circle toward
+          the viewer (a hollow ring smear), both land together on the impact (the cleave
+          reads as a wide arc), and the hammer carries on round as the bear settles
+  hit     beast: the bear shakes its head, eyes squeezed, the paladin rocks back
+  die     D5 unhorsed: the bear rears, the paladin is thrown off the back spinning and lands
+          flat behind it, the bear flops down on its belly, X eyes and tongue
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import face as F
+from ageborn_art import kit_medieval as K
+from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "ursa_paladin"
@@ -24,9 +36,10 @@ NAME = "Ursa Paladin"
 HEIGHT_LU = 190
 YAW_DEG = -10.0
 SHEET_SCALE = 1.25   # render this unit with --scale 1.25 (Legendary budget)
-CANVAS = (476, 484)
-FEET = (206, 444)
+CANVAS = (540, 500)
+FEET = (262, 456)
 ANCHORS = {"head": (10, 186), "hitCenter": (0, 80)}
+NO_RETIME = True
 
 FUR = "#7B6453"
 FUR_DARK = "#5A493E"
@@ -57,22 +70,34 @@ def R(x, y, z):
 
 # weapon joints sit at the rider's hands, modelled pointing up (rest direction 90)
 HAMMER = 32.0     # haft length to the head centre (rider units)
-SMEAR = {"joint": "hand_r", "inner": R(0, -12.5, 5 + HAMMER - 7), "outer": R(0, -12.5, 5 + HAMMER + 9),
-         "color": STEEL, "taper": 0.5, "start": 0.3, "behind": 8.0}
+TONGUE = "#CF8E86"
 
 
 def _bear_leg(rig, name, x, y, front):
+    """A shaped bear leg: a thick upper leg to the elbow (front) or a haunch to the hock
+    (hind, bent back), fur tufts at the joint, a wrist, a big paw with cream claws."""
     rig.joint(name, "bear", (x, y, 70))
-    x2 = x + (3 if front else -2)
+    x2 = x + (3 if front else -7)
     rig.joint(f"{name}2", name, (x2, y, 36))
-    g = Geo().capsule((x, y, 72), (x2, y, 36), 14.5 if front else 16.0, 11.0)
+    if front:
+        g = Geo().capsule((x, y, 72), (x2, y, 36), 14.5, 11.0)
+        g.blob((x2 - 5, y, 40), (8.0, 10.0, 8.5), p=2.2)                  # elbow
+    else:
+        g = Geo().capsule((x, y, 74), (x2, y, 36), 17.0, 10.0)
+        g.blob((x + 2, y, 66), (18.0, 15.0, 16.0), p=2.2)                 # haunch
+        g.blob((x2 - 4, y, 38), (7.0, 9.0, 7.5), p=2.2)                   # hock
     rig.part(name, g, FUR, finish="hair")
-    g = Geo().capsule((x2, y, 36), (x2 + 1, y, 9), 11.0, 10.0)
-    g.blob((x2 + 4, y, 6.0), (14.0, 11.0, 6.6), p=2.4, taper=(1.05, 0.9))   # paw
+    g = Geo()
+    for dz in (0.0, 5.5):                                                  # fur tufts
+        g.lathe([(3.4, 0), (0, 6.0)], (x2 - 8, y - 5.5, 38 + dz), (x2 - 14, y - 6.0, 36 + dz), segs=8)
+    rig.part(name, g, FUR_DARK, finish="hair", outline=0.8)
+    fx = x2 + (1 if front else 5)
+    g = Geo().capsule((x2, y, 36), (fx, y, 9), 11.0, 9.6)
+    g.blob((fx + 4, y, 6.0), (14.5, 11.5, 6.8), p=2.4, taper=(1.05, 0.9))  # paw
     rig.part(f"{name}2", g, FUR, finish="hair")
     g = Geo()
-    for dy in (-5.5, 0.0, 5.5):
-        g.lathe([(2.2, 0), (1.6, 2.5), (0, 5.5)], (x2 + 15.5, y + dy, 4.0), (x2 + 20.5, y + dy, 1.5), segs=8)
+    for dy in (-6.0, -2.0, 2.0, 6.0):
+        g.lathe([(2.4, 0), (1.8, 2.6), (0, 6.5)], (fx + 16.0, y + dy, 4.4), (fx + 22.0, y + dy, 1.2), segs=8)
     rig.part(f"{name}2", g, CLAW, outline=0.8)
 
 
@@ -93,9 +118,17 @@ def build(rig):
     g = Geo().blob((-56, 0, 80), (7, 6, 6), p=2.2)
     rig.part("tail", g, FUR_DARK, finish="hair")
     # team barding over the back with a parchment hem, gold studs and a wine saddle
-    g = Geo().blob((-6, 0, 80), (44, 31.5, 27), p=2.6, taper=(1.05, 0.92))
-    g.clip((0, 0, 60), (0, 0, -1))
-    rig.part("bear", g, team=True)
+    bard = Geo().blob((-6, 0, 80), (44, 31.5, 27), p=2.6, taper=(1.05, 0.92))
+    bard.clip((0, 0, 60), (0, 0, -1))
+    bf = F.Face(rig, "bear", [bard])
+    rig.part("bear", bard, team=True)
+    g = K.paw(bf, Geo(), K.scr(bf, (-14.0, -31.0, 80.0)), s=3.0)
+    rig.part("bear", g, PARCH, highlight=False, outline=0)
+    # fur tufts along the back of the hump and the rump (silhouette notches)
+    g = Geo()
+    for x, z in ((34, 108), (22, 111), (-34, 104), (-46, 98)):
+        g.lathe([(4.0, 0), (0, 6.5)], (x, 0, z - 3), (x - 4, 0, z + 3), segs=8)
+    rig.part("bear", g, FUR_DARK, finish="hair", outline=0.8)
     g = Geo().blob((-6, 0, 61.2), (44.8, 32.2, 2.6), p=3.0)
     g.clip((0, 0, 59.0), (0, 0, -1))
     rig.part("bear", g, PARCH)
@@ -112,10 +145,15 @@ def build(rig):
     rig.joint("bhead", "neck", (58, 0, 88))
     g = Geo().capsule((40, 0, 84), (58, 0, 88), 20, 17)
     rig.part("neck", g, FUR, finish="hair")
-    g = Geo().blob((68, 0, 90), (19.5, 18.5, 17.5), p=2.2)
+    head_g = Geo().blob((68, 0, 90), (19.5, 18.5, 17.5), p=2.2)
     for sgn in (-1, 1):
-        g.blob((60, sgn * 13.5, 105.5), (5.6, 3.6, 5.6), p=2.2)
-    rig.part("bhead", g, FUR, finish="hair")
+        head_g.blob((60, sgn * 13.5, 105.5), (5.6, 3.6, 5.6), p=2.2)
+    head_g.blob((60, 0, 80), (15.0, 20.0, 12.0), p=2.2)                  # cheek ruff
+    eyes = Geo()
+    for y in (-10.0, 7.0):
+        eyes.blob((80.5, y, 94.5), (4.0, 3.6, 4.2))
+    bface = F.Face(rig, "bhead", [head_g, eyes])
+    rig.part("bhead", head_g, FUR, finish="hair")
     g = Geo()
     for sgn in (-1, 1):
         g.blob((61, sgn * 13.5 - sgn * 1.2 - 1.2, 105.0), (3.2, 1.6, 3.2), p=2.2)
@@ -129,11 +167,13 @@ def build(rig):
     rig.part("bhead", g, STEEL, finish="metal")
     g = Geo().capsule((58, 0, 108.8), (82, 0, 101.5), 1.8)
     rig.part("bhead", g, GOLD, finish="metal", outline=0.8)
+    rig.part("bhead", eyes, EYE, highlight=False)
+    rig.joint("pupils", "bhead", (83.4, 0, 94.2))
+    g = Geo()
     for y in (-10.0, 7.0):
-        g = Geo().blob((80.5, y, 94.5), (3.4, 3.2, 3.6))
-        rig.part("bhead", g, EYE, highlight=False)
-        g = Geo().blob((83.4, y - 0.6, 94.2), (1.4, 1.9, 2.0))
-        rig.part("bhead", g, PUPIL, outline=0)
+        g.blob((83.8, y - 0.6, 94.0), (1.7, 2.3, 2.4))
+    rig.part("pupils", g, PUPIL, outline=0)
+    bface.eye_marks([K.scr(bface, (83.0, -11.5, 94.5))], 4.4, FUR)
     g = Geo().capsule((77, -15.5, 101.5), (83.5, -3.0, 98.0), 2.2, 1.8)
     g.capsule((83.5, 2.0, 98.0), (79, 12.5, 101.0), 1.8, 2.2)
     rig.part("bhead", g, FUR_DARK, finish="hair")
@@ -147,6 +187,9 @@ def build(rig):
         g.lathe([(1.6, 0), (0, 3.2)], (92, dy, 78.5), (92, dy, 81.7), segs=8)
         g.lathe([(1.6, 0), (0, 3.2)], (92, dy, 83.5), (92, dy, 80.3), segs=8)
     rig.part("jaw", g, TOOTH, outline=0.5)
+    rig.joint("btongue", "jaw", (88, 0, 77), hidden=True)
+    g = Geo().blob((93, -1.0, 74.0), (5.0, 4.0, 2.2), p=2.2, rot=(0, 30, 0))
+    rig.part("btongue", g, TONGUE, outline=0.6)
     rig.track("_foot", "leg_fr2", (38, -15, 0.5))
 
     # -- the paladin (built in rider units around P, scaled 1.5 by the rider joint) --------
@@ -248,8 +291,11 @@ def build(rig):
 
 
 # -- poses ---------------------------------------------------------------------------------
-def hammer(a, f, w):
-    return B.arm("r", a, f, w, w_rest=90.0)
+def hammer(a, f, w, yaw=0.0):
+    p = B.arm("r", a, f, w, w_rest=90.0)
+    if yaw:
+        p["arm_r"]["rz"] = yaw
+    return p
 
 
 def banner(a, f, w=90.0):
@@ -257,6 +303,8 @@ def banner(a, f, w=90.0):
 
 
 STANCE = merge(hammer(-40, 30, 62), banner(-50, 20, 94), {"torso": {"r": -3}})
+BELLY = (0.0, 0.0, 72.0)
+HIND = (-34.0, 0.0, 0.0)
 
 
 def _banner_hang(pose):
@@ -267,108 +315,172 @@ def _banner_hang(pose):
 
 
 def _idle(f):
-    c, lag = B.idle_wave(f)
-    return _banner_hang(merge(STANCE, {
+    n = M.IDLE_FRAMES_HEAVY
+    c = math.cos(2 * math.pi * f / n)
+    lag = math.cos(2 * math.pi * (f - 1) / n)
+    sniff = [0.0, 0.4, 1.0, 0.7, 1.0, 0.2][f]
+    pose = merge(STANCE, {
         "bear": {"z": 1.6 * c},
-        "body": squash(0.025 * c),
-        "neck": {"r": -3.0 * lag}, "bhead": {"r": 2.5 * lag},
+        "body": squash(0.02 * c),
+        "neck": {"r": -3.0 * lag + 7 * sniff}, "bhead": {"r": 2.5 * lag + 5 * sniff},
+        "jaw": {"r": -3 * sniff},
         "rider": {"z": 1.0 * lag},
         "torso": {"r": 1.2 * lag},
         "head": {"r": -1.5 * lag},
         "arm_r": {"r": 2.5 * lag}, "hand_r": {"r": -3 * lag},
         "leg_fr": {"r": 1.0 * c}, "leg_br": {"r": -1.0 * c},
-    }))
-
-
-def _walk(f):
-    # a heavy bear walk: diagonal pairs, 0.88 s per cycle, big shoulder roll and head nod
-    p = 2 * math.pi * f / 8
-    s = math.sin(p)
-    c = math.cos(p)
-    bob = -2.2 * math.cos(2 * p)
-    lagp = 2 * (p - 2 * math.pi / 8)
-    up = lambda v: max(0.0, v)
-    return _banner_hang(merge(STANCE, {
-        "bear": {"z": bob - 0.6, "r": 1.4 * s},
-        # swing kept short so the paws plant at the sim speed (55 lu/s, playback ~1x)
-        "leg_fr": {"r": 9 * s}, "leg_fr2": {"r": -30 * up(c)},
-        "leg_bl": {"r": 8 * s}, "leg_bl2": {"r": 22 * up(-c)},
-        "leg_fl": {"r": -9 * s}, "leg_fl2": {"r": -30 * up(-c)},
-        "leg_br": {"r": -8 * s}, "leg_br2": {"r": 22 * up(c)},
-        "neck": {"r": -5 * math.cos(2 * p)}, "bhead": {"r": 3 * math.cos(2 * p)},
-        "rider": {"z": -1.3 * math.cos(lagp)},
-        "torso": {"r": -1.5 * math.cos(lagp)},
-        "hand_r": {"r": 3 * math.cos(lagp)},
-        "arm_l": {"r": 2 * math.cos(lagp)},
-    }))
-
-
-def _attack(f):
-    # 0-1 the bear rears and the paladin hauls the hammer back (squash), 2 held extreme,
-    # 3 smear, 4 held impact: forepaws slam, roar, hammer down in front of the muzzle,
-    # 5-7 recovery. See fx.MELEE_MS. Arm, hammer and banner angles are given on screen
-    # and converted to torso space.
-    sq = pick(f, [-0.04, -0.08, 0.05, 0.03, -0.12, -0.06, -0.02, 0.0])
-    br = pick(f, [4, 9, 12, 0, -6, -4, -1, 0])
-    tr = pick(f, [6, 12, 16, -8, -20, -16, -8, -3])
-    k = br + tr
-    pose = merge(
-        hammer(pick(f, [70, 110, 128, 50, -12, -14, -10, -43]) - k,
-               pick(f, [120, 150, 170, 40, -16, -18, 0, 27]) - k,
-               pick(f, [160, 195, 215, 60, -24, -20, 10, 59]) - k),
-        banner(pick(f, [-40, -34, -30, -46, -56, -54, -52, -53]) - k,
-               pick(f, [30, 36, 40, 24, 16, 16, 18, 17]) - k,
-               pick(f, [98, 102, 104, 94, 88, 89, 91, 91]) - k), {
-            "body": dict(squash(sq), x=pick(f, [-1, -3, -4, 3, 8, 7, 3, 0])),
-            "bear": {"r": br, "z": pick(f, [0, 2, 3, 0, -3, -2, -1, 0])},
-            "leg_fr": {"r": pick(f, [10, 24, 34, 0, -14, -10, -4, 0])},
-            "leg_fr2": {"r": pick(f, [-16, -40, -55, -16, -4, -2, 0, 0])},
-            "leg_fl": {"r": pick(f, [6, 16, 26, 10, 12, 8, 2, 0])},
-            "leg_fl2": {"r": pick(f, [-12, -34, -44, -30, -18, -10, -4, 0])},
-            "leg_br": {"r": pick(f, [4, 8, 12, -4, -12, -8, -3, 0])},
-            "leg_bl": {"r": pick(f, [2, 5, 8, -3, -8, -5, -2, 0])},
-            "neck": {"r": pick(f, [4, 8, 10, -4, -14, -10, -4, 0])},
-            "bhead": {"r": pick(f, [-4, -8, -10, 4, 12, 9, 3, 0])},
-            "jaw": {"r": pick(f, [-4, -10, -14, -20, -26, -20, -8, 0])},
-            "torso": {"r": tr},
-            "head": {"r": pick(f, [2, 4, 6, -4, -8, -6, -2, 0])},
-        })
-    if f == 3:
-        pose["hand_r"]["sz"] = 1.15
+        "tail": {"r": 6 * lag},
+    })
+    if f == 5:
+        pose = merge(pose, F.expr("blink", mouth=None))
     return _banner_hang(pose)
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
+def _walk(f):
+    # a heavy bear walk: diagonal pairs, 0.88 s per cycle, the hump rolling and the head nodding
+    p = 2 * math.pi * f / 8
+    s = math.sin(p)
+    c = math.cos(p)
+    bob = -2.4 * math.cos(2 * p)
+    lagp = 2 * (p - 2 * math.pi / 8)
+    up = lambda v: max(0.0, v)
     return _banner_hang(merge(STANCE, {
-        "body": dict(squash(-0.06 * a), x=-4.0 * a),
-        "bear": {"r": 4 * a},
-        "neck": {"r": 10 * a}, "bhead": {"r": -6 * a}, "jaw": {"r": -8 * a},
-        "torso": {"r": 10 * a}, "head": {"r": 6 * a},
-        "arm_r": {"r": 12 * a},
+        "bear": {"z": bob - 0.6, "r": 1.4 * s, "rx": 1.6 * s},
+        # swing kept short so the paws plant at the sim speed (55 lu/s, playback ~1x)
+        "leg_fr": {"r": 9 * s + 4 * up(c)}, "leg_fr2": {"r": -36 * up(c)},
+        "leg_bl": {"r": 8 * s}, "leg_bl2": {"r": 26 * up(-c)},
+        "leg_fl": {"r": -9 * s + 4 * up(-c)}, "leg_fl2": {"r": -36 * up(-c)},
+        "leg_br": {"r": -8 * s}, "leg_br2": {"r": 26 * up(c)},
+        "neck": {"r": -6 * math.cos(2 * p)}, "bhead": {"r": 4 * math.cos(2 * p)},
+        "rider": {"z": -1.5 * math.cos(lagp)},
+        "torso": {"r": -1.5 * math.cos(lagp)},
+        "hand_r": {"r": 3 * math.cos(lagp)},
+        "arm_l": {"r": 2 * math.cos(lagp)},
+        "tail": {"r": 5 * math.sin(2 * p)},
     }))
 
 
-def _die(f):
-    # a Legendary topples: fling, squash, hand-off (fx.dust_poof and fx.ko_stars)
-    body = [{"x": 2.0, "z": 5.0, "r": 8.0, "sz": 1.08, "sx": 0.95, "sy": 0.95},
-            {"x": -2.0, "z": 0.0, "r": 5.0, "sz": 0.74, "sx": 1.14, "sy": 1.14},
-            {"x": -2.0, "z": 0.0, "r": 3.0, "s": 0.85, "sz": 0.55, "sx": 1.2, "sy": 1.2}][f]
-    return _banner_hang(merge(STANCE, {"body": body}, {
-        "bear": {"r": pick(f, [8, 3, 1])},
-        "neck": {"r": pick(f, [18, 10, 10])}, "bhead": {"r": -8}, "jaw": {"r": pick(f, [-20, -10, -6])},
-        "leg_fr": {"r": pick(f, [34, 18, 18])}, "leg_fl": {"r": pick(f, [26, 14, 14])},
-        "torso": {"r": pick(f, [12, 6, 6])}, "arm_r": {"r": pick(f, [40, 20, 20])},
-        "arm_l": {"r": pick(f, [-16, -10, -10])},
-    }))
+# attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6. The
+# hammer arm is held level and swung round the paladin's vertical axis (yaw): -180 points
+# straight back, -90 toward the viewer, 0 forward.
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
+#        shift  dip  rear  HOLD  swipe sweep IMPACT carry follow settle
+BR = [2, -2, 12, 18, 6, -2, -6, -4, -1, 0]            # bear pitch about the hind paws
+BX = [-1.0, -2.0, -4.0, -5.0, 1.0, 5.0, 8.0, 7.0, 3.0, 0.0]
+BQ = [-0.02, -0.05, 0.03, 0.04, 0.02, -0.02, -0.07, 0.02, 0.0, 0.0]
+PAW = [(6, -10), (10, -20), (60, -70), (84, -80), (50, -20), (30, 10), (18, 16), (14, 8), (6, 0), (0, 0)]
+PAW_L = [(2, 0), (4, -6), (10, -20), (14, -26), (8, -14), (4, 0), (-2, 0), (0, 0), (0, 0), (0, 0)]
+NECK = [2, -6, 10, 14, 0, -8, -10, -6, -2, 0]
+BHEAD = [0, 4, 6, 8, -2, -4, 4, 2, 0, 0]
+JAW = [-2, -8, -18, -26, -20, -18, -28, -20, -8, 0]
+H_YAW = [-20, -100, -150, -172, -120, -70, -14, 30, 20, 0]
+H_A = [-30, -6, 10, 22, 12, 4, 4, -2, -20, -36]
+H_F = [20, 0, 2, 8, 2, -2, -4, -8, 5, 28]
+H_W = [60, 20, 14, 26, 14, 8, 8, -4, 20, 58]
+T_YAW = [0, -12, -24, -34, -14, 6, 24, 34, 18, 4]
+T_R = [-3, 2, 6, 10, 2, -4, -6, -8, -6, -3]
+
+
+def _attack_pose(f):
+    pose = merge(hammer(H_A[f], H_F[f], H_W[f], yaw=H_YAW[f]), banner(-50, 20, 94), {
+        "bear": {"r": 0.0},
+        "leg_fr": {"r": PAW[f][0]}, "leg_fr2": {"r": PAW[f][1]},
+        "leg_fl": {"r": PAW_L[f][0]}, "leg_fl2": {"r": PAW_L[f][1]},
+        "leg_br": {"r": [2, 4, 10, 14, 4, -4, -8, -6, -2, 0][f]},
+        "leg_bl": {"r": [2, 4, 8, 12, 2, -4, -6, -4, -2, 0][f]},
+        "neck": {"r": NECK[f]}, "bhead": {"r": BHEAD[f]}, "jaw": {"r": JAW[f]},
+        "torso": {"r": T_R[f], "rz": T_YAW[f]},
+        "head": {"r": -0.4 * T_R[f], "rz": -0.5 * T_YAW[f]},
+        "tail": {"r": [0, 4, 10, 12, -6, -10, -8, 4, 2, 0][f]},
+    }, M.body_about(HIND, x=BX[f], r=BR[f], q=BQ[f]))
+    if f in (4, 5):
+        pose["hand_r"]["sz"] = 1.15
+    if f in (1, 2, 3):
+        pose = merge(pose, F.expr("squeeze", mouth=None) if f == 1 else {})
+    if f in (5, 6, 7):
+        pose = merge(pose, {"btongue": {"show": True}})
+    return _banner_hang(pose)
+
+
+RX, RY, RZ = R(0, -12.5, 5)
+HEAD_C = (RX, RY - 1, RZ + HAMMER)
+SWEEP = {"kind": "arc", "joint": "hand_r", "inner": (RX, RY - 1, RZ + HAMMER * 0.3),
+         "outer": (RX, RY - 1, RZ + HAMMER + 8), "color": "#D6DDE6", "taper": 0.15, "white": 0.3,
+         "t0": 0.0, "t1": 0.95, "lines": 3, "line_gap_lu": 3.4, "outline_lu": 1.6, "samples": 20}
+CLAWS = [(34 + 3 + 1 + 20.0, -15 + dy, 3.0) for dy in (-6.0, 0.0, 6.0)]
+
+
+def _attack_clip():
+    claw = {"kind": "claw", "joint": "leg_fr2", "points": CLAWS, "color": "#F2EAD8", "width_lu": 4.5,
+            "white": 0.3}
+    ov = {
+        4: [dict(SWEEP, **{"from": 3}), dict(claw, **{"from": 3})],
+        5: [dict(SWEEP, **{"from": 3}), dict(claw, **{"from": 4})],
+        6: [dict(SWEEP, **{"from": 5, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "hand_r", "point": HEAD_C, "r0_lu": 12.0, "r1_lu": 22.0, "n": 6,
+             "a0": -60.0, "arc": 150.0},
+            {"kind": "dust", "ground": (56.0, 0.0), "size_lu": 14.0, "puffs": 5, "seed": 61, "spread": 1.3}],
+        7: [{"kind": "dust", "ground": (60.0, 0.0), "size_lu": 11.0, "puffs": 4, "seed": 62, "spread": 1.6}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    def recoil(a, shake):
+        return {"body": dict(squash(-0.05 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
+                "bear": {"r": 3 * a},
+                "neck": {"r": 10 * a}, "bhead": {"r": -6 * a + 8 * shake, "rx": 10 * shake},
+                "jaw": {"r": -10 * max(a, 0)},
+                "torso": {"r": 10 * a}, "head": {"r": 6 * a}, "arm_r": {"r": 12 * a},
+                "tail": {"r": 10 * a}}
+    return _banner_hang(M.hit_beast(k, STANCE, recoil, face_hurt=F.expr("squeeze", mouth=None)))
+
+
+# die D5 unhorsed: 8 unique poses in the 12 heavy steps (moves.DIE_SEQ_HEAVY)
+#        struck rear  thrown  air  flop  flat settle shrink
+D_BR = [4, 22, 18, 4, -4, -2, 0, 0]
+D_Z = [0, 0, 0, 0, -26, -36, -35, -35]
+D_X = [-3, -4, -4, -2, 0, 0, 0, 0]
+D_Q = [-0.06, 0.05, 0.02, 0.0, -0.08, -0.05, -0.02, -0.04]
+D_S = [1, 1, 1, 1, 1, 1, 1, 0.95]
+D_LF = [(6, -10), (60, -60), (50, -50), (10, -6), (-50, 40), (-70, 60), (-72, 62), (-72, 62)]
+D_LB = [(-4, 0), (-6, 0), (-4, 0), (0, 0), (40, -20), (70, -40), (72, -42), (72, -42)]
+D_NECK = [8, 16, 12, 0, -14, -22, -24, -24]
+D_BH = [-4, -8, -4, 0, 4, 8, 10, 10]
+D_JAW = [-14, -24, -20, -10, -16, -18, -18, -18]
+D_RX = [0, -4, -26, -48, -62, -64, -64, -64]
+D_RZ = [0, 4, 30, 18, -40, -30, -30, -30]
+D_RR = [4, 25, 110, 250, 450, 450, 450, 450]
+
+
+def _die(k):
+    pose = merge(STANCE, M.body_about(HIND, x=D_X[k], z=D_Z[k], r=D_BR[k], q=D_Q[k], s=D_S[k]), {
+        "leg_fr": {"r": D_LF[k][0]}, "leg_fr2": {"r": D_LF[k][1]},
+        "leg_fl": {"r": D_LF[k][0] - 6}, "leg_fl2": {"r": D_LF[k][1] - 6},
+        "leg_br": {"r": D_LB[k][0]}, "leg_br2": {"r": D_LB[k][1]},
+        "leg_bl": {"r": D_LB[k][0] - 4}, "leg_bl2": {"r": D_LB[k][1] + 4},
+        "neck": {"r": D_NECK[k]}, "bhead": {"r": D_BH[k]}, "jaw": {"r": D_JAW[k]},
+        "tail": {"r": [0, 16, 12, 4, -10, -16, -16, -16][k]},
+        "rider": {"x": D_RX[k], "z": D_RZ[k], "r": D_RR[k] - D_BR[k]},
+        "arm_r": {"r": [20, 70, 130, 90, 50, 50, 50, 50][k]},
+        "arm_l": {"r": [10, 60, 120, 80, 40, 40, 40, 40][k]},
+    })
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", mouth=None))
+    elif k >= 4:
+        pose = merge(pose, F.expr("x", mouth=None), {"btongue": {"show": True}})
+    return _banner_hang(pose)
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=110),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
+               [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], [110] * 8, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
+               extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
+    return M.check_contract(cl, heavy=True)

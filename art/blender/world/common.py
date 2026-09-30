@@ -224,12 +224,15 @@ def smoke_puff(rig, joint, at, size=1.0, name="smoke"):
 
 
 def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, idle=None, fire=None,
-                  yaw=TURRET_YAW, aim=(-55, 40), fire_kind="recoil", muzzle_joint="head"):
+                  yaw=TURRET_YAW, aim=(-55, 40), fire_kind="recoil", muzzle_joint="head",
+                  idle_frames=None, overlays=None):
     """A pipeline module for turret.<slug>.
 
     build(rig): adds parts. Joints `mount` (static, origin) and `head` (rotates about `pivot`)
     are created before build is called; put static parts on `mount`, rotating parts on `head`
     or its children. idle(f) / fire(f): extra pose channels (dicts) per unique frame.
+    idle_frames: 6 = a straight 6-frame idle loop (same 1020 ms) instead of the 4-frame
+    ping-pong. overlays: {clip: {frame: [smear2 spec, ...]}} (2D smears and accents).
     """
     px_, pz_ = pivot
     S = min(TURRET_SCALE, TURRET_MAX_LU / height)
@@ -272,13 +275,23 @@ def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, i
         return table[f]
 
     def clips():
-        return [
+        if idle_frames == 6:
+            idle_clip = Clip("idle", 6, lambda f: merge(HIDE_MOUNT, idle_fn(f)), loop=True,
+                             durations=IDLE_MS * len(IDLE_SEQ) // 6)
+        else:
+            idle_clip = Clip("idle", 4, lambda f: merge(HIDE_MOUNT, idle_fn(f)), loop=True, sequence=IDLE_SEQ,
+                             durations=IDLE_MS)
+        out = [
             Clip("mount", 1, lambda f: HIDE_HEAD, durations=[1000]),
-            Clip("idle", 4, lambda f: merge(HIDE_MOUNT, idle_fn(f)), loop=True, sequence=IDLE_SEQ, durations=IDLE_MS),
+            idle_clip,
             Clip("fire", 5, lambda f: merge(HIDE_MOUNT, fire_fn(f), {"flash": {"show": f == 1}}), impact=1, durations=FIRE_MS),
             Clip("build", 4, build_pose, durations=BUILD_MS),
             Clip("destroyed", 3, destroyed_pose, durations=DESTROYED_MS),
         ]
+        for c in out:
+            if overlays and c.name in overlays:
+                c.overlays2 = overlays[c.name]
+        return out
 
     cw, ch = canvas
     fx_, fy_ = feet

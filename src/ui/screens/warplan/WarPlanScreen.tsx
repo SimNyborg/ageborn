@@ -1,54 +1,41 @@
 /**
  * Army (S9, docs/ui-plan.md 4.2, 6.6; the route id stays `warPlan`): the deck builder with one
- * loadout per age and the whole card collection, like Clash Royale's Cards tab.
+ * loadout per age. Owner request 2026-09-30: for the selected age, three plain sections top to
+ * bottom, so it is obvious what goes into battle, what could, and what is still to find.
  *
- * - **Left:** the loadout of the selected age, always visible (U4, "which cards are equipped"): six
- *   troop slots, two turrets and the two power slots, Home (house) and Field (flag) (A2.9.10; the
- *   Field slot shows a padlock and its unlock line until it opens), with the War Council lines it can
- *   use (A18.5.2) and the advisor's first warning (A3; never a blocker). A power fits only its own
- *   slot; dropped on the other one it bounces back with "Home powers go in the Home slot".
- * - **Right:** "This age" (the cards that fit its slots) or "All cards" (the album with completion),
- *   with a filter and sort panel and removable filter chips. Equipped cards carry a check and a green
- *   underline; upgrade-ready cards the green arrow; unowned cards are silhouettes with a padlock.
+ * - **In battle** (a fixed band, always visible, U4): six troop slots, two turrets and the two power
+ *   slots, Home (house) and Field (flag) (A2.9.10; the Field slot shows a padlock and its unlock line
+ *   until it opens), each group with its count ("Troops 5/6"), the War Council lines it can use
+ *   (A18.5.2) and the advisor's first warning (A3; never a blocker). A power fits only its own slot.
+ * - **Available** (scrolls under the band): the cards of this age you own that are not in battle;
+ *   tap one and Use, tap-tap, or drag it onto a slot to swap it in.
+ * - **Locked**: the cards of this age not found yet, as greyed silhouettes with where they come from,
+ *   and "You own 12 of 15 Stone cards"; the Card Album (every age, `collection`) is one tap away.
  * - **Header:** Undo (every change of this visit, one at a time), the reached ages with a status mark
  *   each (and "More ages" locked), the average level, Auto-fill and "Who beats whom". Presets A/B/C
  *   join after the first boss; the army you look at is the army you play.
  *
  * Gestures (one meaning each, nothing waits for a double tap): tap a card to select it (it lifts, the
  * slots it fits glow green and a small bar offers Use, Info and Upgrade); tap a glowing slot to place
- * it. Tap a slot to select it (Info, Remove) and the grid narrows to the cards that fit; tap a card to
- * place it there. Drag a card sideways onto a slot; drag a slot onto another to swap, or onto the grid
- * to remove. Edits apply at once (no primary button, U1) and are saved through `setWarPlan`.
+ * it. Tap a slot to select it (Info, Remove) and the pool narrows to the cards that fit; tap a card to
+ * place it there. Drag a card onto a slot (on touch the drag starts sideways, so a vertical swipe
+ * scrolls the pool); drag a slot onto another to swap, or onto the pool to remove. Edits apply at
+ * once (no primary button, U1) and are saved through `setWarPlan`.
  */
 import './warplan.css';
-import { ageNameKey, rarityNameKey } from '@/content/keys';
-import type { AgeId, CardId, Loadout, PlanIssue, Rarity } from '@/contracts';
-import { UNIT_CLASSES, type CardClass, type ClassGlyphId } from '@/core/cardClass';
-import type { PowerSlot } from '@/contracts';
+import { ageNameKey } from '@/content/keys';
+import type { AgeId, CardId, Loadout, PlanIssue } from '@/contracts';
+import type { ClassGlyphId } from '@/core/cardClass';
 import { SlotGlyph } from '../../components/PowerGlyphs';
 import { MOTION_DUR } from '@/core/motion';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { CLASS_NAME_KEY, ClassIcon, CounterLegend } from '../../components/ClassIcon';
-import { Segmented, Toggle } from '../../components/Controls';
 import { beginDrag, cancelDrag, flyCard, snapshot, sparks, type FlightSource } from '../../components/drag';
 import { formatDec } from '../../components/format';
 import { haptic } from '../../components/haptics';
-import {
-  AGE_COLOR,
-  AgeGlyph,
-  CheckIcon,
-  CloseIcon,
-  CountersIcon,
-  FilterIcon,
-  LockIcon,
-  PencilIcon,
-  RARITY_COLOR,
-  RarityGem,
-  RefreshIcon,
-  UndoIcon,
-} from '../../components/icons';
+import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, PencilIcon, RARITY_COLOR, RefreshIcon, UndoIcon } from '../../components/icons';
 import { onGridKeyDown } from '../../components/keys';
 import { ScreenFrame } from '../../components/Layout';
 import { Modal, Sheet } from '../../components/Modal';
@@ -57,18 +44,16 @@ import { countDuration } from '@/core/motion';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { ageSections, cardSourceShort } from '../model/armyAge';
 import { cardDef, cardTile, isOwned, upgradeState } from '../model/cards';
 import { planIssueText } from '../model/match';
 import { POWER_SLOT_KEY, POWER_SLOT_LONG_KEY, POWER_WRONG_SLOT_KEY } from '../model/powerText';
 import { beatenCount } from '../model/warPath';
 import {
-  activeFilterCount,
   AGE_SHORT_KEY,
   ageStatus,
   albumProgress,
   ALL_SLOTS,
-  ARMY_FILTER,
-  armyCards,
   assignCard,
   cardAge,
   changedSlots,
@@ -79,7 +64,6 @@ import {
   fieldSlotOpen,
   fitsSlot,
   loadoutAvgLevel,
-  loadoutCards,
   normalizeLoadout,
   powerSlotOf,
   presetsOpen,
@@ -90,9 +74,9 @@ import {
   slotFromKey,
   slotKey,
   slotOfCard,
+  TURRET_SLOTS,
+  UNIT_SLOTS,
   type AgeStatus,
-  type ArmyFilter,
-  type ArmySort,
   type SlotRef,
 } from '../model/plan';
 import type { WarPlan } from '../services';
@@ -123,29 +107,18 @@ function slotLabelKey(slot: SlotRef): string {
 
 const AGE_SHORT = AGE_SHORT_KEY;
 
-/** The three groups of the "This age" grid (4.2, U4). */
-const GROUP_KEY = {
-  free: 'ui.army.group.free',
-  used: 'ui.army.group.used',
-  locked: 'ui.army.group.locked',
-} as const;
-
 const STATUS_KEY: Record<AgeStatus, string> = {
   ok: 'ui.army.status.ok',
   warn: 'ui.army.status.warn',
   error: 'ui.army.status.error',
 };
 
-const SORTS: readonly (ArmySort | 'none')[] = ['none', 'level', 'rarity', 'cost', 'ready'];
-const SORT_KEY: Record<ArmySort | 'none', string> = {
-  none: 'ui.army.sortNone',
-  level: 'ui.army.sortLevel',
-  rarity: 'ui.army.sortRarity',
-  cost: 'ui.army.sortCost',
-  ready: 'ui.army.sortReady',
-};
-const FILTER_CLASSES: readonly CardClass[] = [...UNIT_CLASSES, 'turret', 'power'];
-const RARITIES: readonly Rarity[] = ['common', 'rare', 'epic', 'legendary'];
+/** The In battle band's three groups, left to right (owner request 2026-09-30). */
+const BAND_GROUPS: readonly { id: SlotRef['kind']; key: string; slots: readonly SlotRef[] }[] = [
+  { id: 'unit', key: 'ui.armyAge.troops', slots: ALL_SLOTS.filter((x) => x.kind === 'unit') },
+  { id: 'turret', key: 'ui.armyAge.turrets', slots: ALL_SLOTS.filter((x) => x.kind === 'turret') },
+  { id: 'power', key: 'ui.armyAge.powers', slots: ALL_SLOTS.filter((x) => x.kind === 'power') },
+];
 
 type Selection = { type: 'card'; id: CardId } | { type: 'slot'; key: string } | null;
 /** Where the small action bar of a selection sits (MR-30). */
@@ -297,8 +270,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const [age, setAgeState] = useState<AgeId>(() => p.route.age ?? currentAge(s, content, ages));
   const [sel, setSel] = useState<Selection>(null);
   const [place, setPlace] = useState<Place>({ v: 'above', h: 'center' });
-  const [filter, setFilterState] = useState<ArmyFilter>(ARMY_FILTER);
-  const [sheet, setSheet] = useState<'filter' | 'legend' | 'advice' | 'presets' | null>(null);
+  const [sheet, setSheet] = useState<'legend' | 'advice' | 'presets' | null>(null);
   const [renaming, setRenaming] = useState(false);
   const [undo, setUndo] = useState<{ preset: number; plan: WarPlan }[]>([]);
   const [land, setLand] = useState<{ key: string; delay: number; n: number }[]>([]);
@@ -342,7 +314,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   );
   const selSlot = sel?.type === 'slot' ? slotFromKey(sel.key) : null;
   const selCard = sel?.type === 'card' ? sel.id : null;
-  const cards = armyCards(s, content, age, filter, selSlot ? selSlot.kind : null, selSlot?.kind === 'power' ? selSlot.slot : null);
+  const pool = ageSections(s, content, age, inArmy, selSlot ? selSlot.kind : null, selSlot?.kind === 'power' ? selSlot.slot : null);
   const album = albumProgress(s, content);
   const firstVisit = s.flags['ui-seen.army'] !== true;
 
@@ -351,11 +323,6 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     setAgeState(a);
     setSel(null);
     setFresh(true);
-  }
-  function setFilter(next: ArmyFilter) {
-    flipper.current.first();
-    flipping.current = true;
-    setFilterState(next);
   }
   function select(next: Selection, el?: HTMLElement | null, row0 = false) {
     setSel(next);
@@ -407,7 +374,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     box.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
   }, [age]);
 
-  // MR-38: the grid moves to its new order with FLIP after a filter or sort change.
+  // MR-38: the pool moves to its new order with FLIP after an edit moves cards between sections.
   useLayoutEffect(() => {
     if (!flipping.current) return;
     flipping.current = false;
@@ -883,43 +850,35 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     );
   }
 
-  /** Every card placed in any age of the army you look at ("In army" on the album, 4.2). */
-  const inAnyArmy = new Set(content.order.ages.flatMap((a) => (plan.loadouts[a] ? loadoutCards(plan.loadouts[a]) : [])));
-  const groups: { id: keyof typeof GROUP_KEY; ids: CardId[] }[] = [
-    { id: 'free', ids: cards.filter((id) => !inArmy.has(id) && isOwned(s, id, content)) },
-    { id: 'used', ids: cards.filter((id) => inArmy.has(id)) },
-    { id: 'locked', ids: cards.filter((id) => !inArmy.has(id) && !isOwned(s, id, content)) },
-  ];
   let n = 0;
 
-  function cell(id: CardId, i: number) {
+  function cell(id: CardId, i: number, locked: boolean) {
     const tile = cardTile(s, content, id, t)!;
-    const here = inAge(id);
     const isSel = selCard === id;
+    const src = locked ? cardSourceShort(s, content, id) : null;
     return (
       <div
         key={id}
-        class={`army-cell${isSel ? ' is-selected' : ''}${here ? '' : ' is-other'}`}
+        class={`army-cell${isSel ? ' is-selected' : ''}${locked ? ' is-locked' : ''}`}
         data-army-cell={id}
         data-army-keep=""
         style={{ '--i': Math.min(i, 12) }}
-        onPointerDown={(e) => dragFromGrid(e as unknown as PointerEvent, id)}
+        onPointerDown={locked ? undefined : (e) => dragFromGrid(e as unknown as PointerEvent, id)}
       >
         <CardTile
           card={tile}
           size="sm"
           grid
           showCost
-          showCopies
+          showCopies={!locked}
           selected={isSel}
           tip={!isSel}
-          equipped={here ? inArmy.has(id) : inAnyArmy.has(id)}
           onClick={() => tapCard(id, gridRef.current?.querySelector?.(`[data-army-cell="${id}"]`) as HTMLElement | null)}
           testid={`cand-${id}`}
         />
-        {filter.view === 'all' ? (
-          <span class="army-cell__age" data-tag="">
-            {t(AGE_SHORT[tile.age])}
+        {src ? (
+          <span class="army-cell__src" data-tag="" data-testid={`src-${id}`}>
+            {t(src.key, src.params)}
           </span>
         ) : null}
         {isSel ? cardActions(id) : null}
@@ -939,6 +898,11 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       <i class={`army-age__mark ui-warndot is-${st}`} aria-hidden="true" />
     );
   const locked = content.order.ages.filter((a) => !ages.includes(a));
+  /** How many slots of a group hold a card (a locked Field slot counts as not open). */
+  const filled = (g: (typeof BAND_GROUPS)[number]) => g.slots.filter((x) => inArmy.has(slotCard(loadout, x) ?? '')).length;
+  const groupMax = (g: (typeof BAND_GROUPS)[number]) => (g.id === 'unit' ? UNIT_SLOTS : g.id === 'turret' ? TURRET_SLOTS : fieldOpen ? 2 : 1);
+  const ageName = t(ageNameKey(age));
+  let slotIndex = 0;
 
   const header = (
     <div class="army-head" data-army-keep="">
@@ -1014,7 +978,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
         ) : null}
       </div>
       {seasoned ? (
-        <span class="army-avg" title={t('ui.army.avgLabel', { age: t(ageNameKey(age)) })} aria-label={t('ui.army.avgLabel', { age: t(ageNameKey(age)) })}>
+        <span class="army-avg" title={t('ui.army.avgLabel', { age: ageName })} aria-label={t('ui.army.avgLabel', { age: ageName })}>
           <span ref={avgRef} class="ui-num" data-testid="loadout-avg">
             {t('ui.army.avg', {
               n: shownAvg === null ? '-' : formatDec(shownAvg / 10, 1, locale),
@@ -1036,253 +1000,144 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   return (
     <ScreenFrame id="warPlan" title={t('ui.army.title')} onBack={() => router.back()} right={header} class="army-screen">
       <div class={`army${sel ? ' has-sel' : ''}`} ref={root}>
-        <section class="army-deck" data-army-col="" aria-labelledby="army-deck-title">
-          <h2 id="army-deck-title" class="army-deck__title">
-            {t('ui.army.deckTitle', { age: t(ageNameKey(age)) })}
-          </h2>
-          <div class="army-strip">
-            <ul class="army-lines" aria-label={t('ui.warplan.councilLines')} data-testid="wp-council-lines">
-              {lines.map((l) => {
-                const label = t(l.has ? 'ui.warplan.councilLineHas' : 'ui.warplan.councilLineNone', { cls: t(CLASS_NAME_KEY[l.cls]) });
-                return (
-                  <li key={l.cls} class={`army-line${l.has ? ' is-on' : ' is-off'}`} title={label} aria-label={label} data-testid={`wp-line-${l.cls}`}>
-                    <ClassIcon id={l.cls} size={20} />
-                  </li>
-                );
-              })}
-            </ul>
-            {seasoned && avg !== null ? (
-              // Phones: the average level sits here, so the header strip has room for more ages.
-              <span class="army-avg army-avg--strip" aria-hidden="true">
-                {t('ui.army.avg', { n: formatDec(avg, 1, locale) })}
-              </span>
-            ) : null}
-            {hint && !(lead && !sel) ? (
-              <p class="army-hint" key={hint} data-testid="army-hint">
-                {hint}
-              </p>
-            ) : (
-              <ul class="army-advice" data-testid="advisor" aria-live="polite">
-                {ageIssues.map((i, n) => {
-                  const icon = ISSUE_CLASS[i.code];
-                  return (
-                    <li key={i.code} class={`army-issue army-issue--${i.severity}${n > 0 ? ' ui-sr' : ''}`} data-testid={`issue-${i.code}`}>
-                      <button type="button" class="army-issue__btn" onClick={() => setSheet('advice')} data-army-keep="">
-                        <span class="army-issue__mark" aria-hidden="true" />
-                        {icon ? <ClassIcon id={icon} size={20} /> : null}
-                        <span class="army-issue__text">{planIssueText(i, t)}</span>
-                        {n === 0 && ageIssues.length > 1 ? (
-                          <span class="army-issue__more">
-                            {t('ui.army.adviceMore', {
-                              n: ageIssues.length - 1,
-                            })}
-                          </span>
-                        ) : null}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
+        {/* 1. In battle: the loadout of this age, always in view (owner request 2026-09-30, U4) */}
+        <section class="army-battle" data-army-col="" aria-labelledby="army-deck-title" data-testid="army-battle">
           <div class={`army-slots${fresh ? ' is-fresh' : ''}`} key={age} data-testid="wp-board">
-            {ALL_SLOTS.map((x, i) => slotView(x, i))}
-          </div>
-          <div class="army-legend-inline">
-            <CounterLegend compact />
+            {BAND_GROUPS.map((g, gi) => (
+              <div key={g.id} class={`army-bandgroup army-bandgroup--${g.id}`} role="group" aria-label={t(g.key, { n: filled(g), max: groupMax(g) })}>
+                <span class="army-bandgroup__label">
+                  {gi === 0 ? (
+                    <h2 id="army-deck-title" class="army-sec-title">
+                      <span class="army-sec-title__icon" aria-hidden="true">
+                        <CheckIcon size={12} />
+                      </span>
+                      {t('ui.armyAge.battle')}
+                      <span class="ui-sr"> · {t('ui.army.deckTitle', { age: ageName })}</span>
+                    </h2>
+                  ) : null}
+                  <span class="army-bandgroup__count" data-tag="" data-testid={`band-${g.id}`}>
+                    {t(g.key, { n: filled(g), max: groupMax(g) })}
+                  </span>
+                  {gi === 0 ? (
+                    <ul class="army-lines" aria-label={t('ui.warplan.councilLines')} data-testid="wp-council-lines">
+                      {lines.map((l) => {
+                        const label = t(l.has ? 'ui.warplan.councilLineHas' : 'ui.warplan.councilLineNone', { cls: t(CLASS_NAME_KEY[l.cls]) });
+                        return (
+                          <li key={l.cls} class={`army-line${l.has ? ' is-on' : ' is-off'}`} title={label} aria-label={label} data-testid={`wp-line-${l.cls}`}>
+                            <ClassIcon id={l.cls} size={16} />
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : null}
+                </span>
+                <div class="army-bandgroup__slots">{g.slots.map((x) => slotView(x, slotIndex++))}</div>
+              </div>
+            ))}
+            {/* The side column: the average level (phones) and the advisor's first warning, or a hint */}
+            <div class="army-bandside">
+              {seasoned && avg !== null ? (
+                <span class="army-avg army-avg--strip" aria-hidden="true">
+                  {t('ui.army.avg', { n: formatDec(avg, 1, locale) })}
+                </span>
+              ) : null}
+              {hint && !(lead && !sel) ? (
+                <p class="army-hint" key={hint} data-testid="army-hint">
+                  {hint}
+                </p>
+              ) : (
+                <ul class="army-advice" data-testid="advisor" aria-live="polite">
+                  {ageIssues.map((i, k) => {
+                    const icon = ISSUE_CLASS[i.code];
+                    return (
+                      <li key={i.code} class={`army-issue army-issue--${i.severity}${k > 0 ? ' ui-sr' : ''}`} data-testid={`issue-${i.code}`}>
+                        <button type="button" class="army-issue__btn" onClick={() => setSheet('advice')} data-army-keep="">
+                          <span class="army-issue__mark" aria-hidden="true" />
+                          {icon ? <ClassIcon id={icon} size={18} /> : null}
+                          <span class="army-issue__text">{planIssueText(i, t)}</span>
+                          {k === 0 && ageIssues.length > 1 ? (
+                            <span class="army-issue__more">
+                              {t('ui.army.adviceMore', {
+                                n: ageIssues.length - 1,
+                              })}
+                            </span>
+                          ) : null}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </div>
         </section>
 
-        <section class="army-cards" data-army-col="" aria-labelledby="army-cards-title">
-          <h2 id="army-cards-title" class="ui-sr">
-            {t('ui.army.cardsTitle')}
-          </h2>
-          <div class="army-cards__head">
-            <Segmented
-              label={t('ui.army.view.label')}
-              size="sm"
-              value={filter.view}
-              testid="army-view"
-              onChange={(view) => {
-                ui.sound?.('ui_tab');
-                setFilter({ ...filter, view });
-              }}
-              options={[
-                { value: 'age', label: t('ui.army.view.age') },
-                {
-                  value: 'all',
-                  label: t('ui.army.view.all', {
-                    n: album.owned,
-                    max: album.total,
-                  }),
-                },
-              ]}
-            />
-            <Button
-              kind="secondary"
-              size="s"
-              icon={<FilterIcon size={18} />}
-              testid="army-filter"
-              onClick={() => setSheet('filter')}
-              label={t('ui.army.filterTitle')}
-              class={activeFilterCount(filter) ? 'is-on' : ''}
-            >
-              {activeFilterCount(filter) ? t('ui.army.filterCount', { n: activeFilterCount(filter) }) : t('ui.army.filter')}
-            </Button>
-            <div class="army-chips" data-army-keep="">
+        {/* 2. Available and 3. Locked: the rest of this age's cards, in one scrolling pool */}
+        <section
+          class={`army-pool${sel?.type === 'card' ? ' is-selecting' : ''}`}
+          data-army-col=""
+          aria-label={t('ui.army.cardsTitle')}
+          ref={gridRef}
+          data-scroll=""
+          data-drop="grid"
+          data-testid="wp-cards"
+          onKeyDown={onGridKeyDown}
+          key={age}
+        >
+          <div class="army-sec army-sec--free" data-testid="army-group-free">
+            <h3 class="army-sec-head army-sec-head--free">
+              <span class="army-sec-title">{t('ui.armyAge.available', { n: pool.available.length })}</span>
               {selSlot ? (
                 <button
                   type="button"
                   class="army-chip is-slot"
                   onClick={() => setSel(null)}
                   data-testid="chip-slot"
-                  aria-label={t('ui.army.removeFilter', {
-                    name: t('ui.army.onlyKind', {
-                      slot: t(slotLabelKey(selSlot)),
-                    }),
-                  })}
+                  data-army-keep=""
+                  aria-label={t('ui.army.removeFilter', { name: t('ui.army.onlyKind', { slot: t(slotLabelKey(selSlot)) }) })}
                 >
                   <span class="army-chip__face">
                     {selSlot.kind === 'power' ? (
-                      // A power slot's chip is its glyph and short name ("Field"): "Field power cards" ran
-                      // off the panel on a phone and hid the clear control.
                       <>
                         <SlotGlyph slot={selSlot.slot} size={16} />
                         {t(POWER_SLOT_KEY[selSlot.slot])}
                       </>
                     ) : (
-                      t('ui.army.onlyKind', {
-                        slot: t(slotLabelKey(selSlot)),
-                      })
+                      t('ui.army.onlyKind', { slot: t(slotLabelKey(selSlot)) })
                     )}
                     <CloseIcon size={14} />
                   </span>
                 </button>
-              ) : null}
-              {filter.classes.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  class="army-chip"
-                  onClick={() =>
-                    setFilter({
-                      ...filter,
-                      classes: filter.classes.filter((x) => x !== c),
-                    })
-                  }
-                  aria-label={t('ui.army.removeFilter', {
-                    name: t(CLASS_NAME_KEY[c]),
-                  })}
-                >
-                  <span class="army-chip__face">
-                    <ClassIcon id={c} size={16} />
-                    {t(CLASS_NAME_KEY[c])}
-                    <CloseIcon size={14} />
-                  </span>
-                </button>
-              ))}
-              {(filter.powerSlots ?? []).map((slot) => (
-                <button
-                  key={`ps-${slot}`}
-                  type="button"
-                  class="army-chip"
-                  onClick={() => setFilter({ ...filter, powerSlots: (filter.powerSlots ?? []).filter((x) => x !== slot) })}
-                  aria-label={t('ui.army.removeFilter', { name: t(POWER_SLOT_LONG_KEY[slot]) })}
-                >
-                  <span class="army-chip__face">
-                    <SlotGlyph slot={slot} size={16} />
-                    {t(POWER_SLOT_KEY[slot])}
-                    <CloseIcon size={14} />
-                  </span>
-                </button>
-              ))}
-              {filter.rarity !== 'all' ? (
-                <button
-                  type="button"
-                  class="army-chip"
-                  onClick={() => setFilter({ ...filter, rarity: 'all' })}
-                  aria-label={t('ui.army.removeFilter', {
-                    name: t(rarityNameKey(filter.rarity)),
-                  })}
-                >
-                  <span class="army-chip__face">
-                    <RarityGem rarity={filter.rarity} size={14} />
-                    {t(rarityNameKey(filter.rarity))}
-                    <CloseIcon size={14} />
-                  </span>
-                </button>
-              ) : null}
-              {filter.ownedOnly ? (
-                <button
-                  type="button"
-                  class="army-chip"
-                  onClick={() => setFilter({ ...filter, ownedOnly: false })}
-                  aria-label={t('ui.army.removeFilter', {
-                    name: t('ui.army.filterOwned'),
-                  })}
-                >
-                  <span class="army-chip__face">
-                    {t('ui.army.filterOwned')}
-                    <CloseIcon size={14} />
-                  </span>
-                </button>
-              ) : null}
-              {filter.sort ? (
-                <button
-                  type="button"
-                  class="army-chip"
-                  onClick={() => setFilter({ ...filter, sort: null })}
-                  aria-label={t('ui.army.removeFilter', {
-                    name: t(SORT_KEY[filter.sort]),
-                  })}
-                >
-                  <span class="army-chip__face">
-                    {t('ui.army.sort')}: {t(SORT_KEY[filter.sort])}
-                    <CloseIcon size={14} />
-                  </span>
-                </button>
-              ) : null}
-            </div>
-          </div>
-          <div
-            class={`army-grid${filter.view === 'all' ? ' is-all' : ''}${sel?.type === 'card' ? ' is-selecting' : ''}`}
-            ref={gridRef}
-            data-scroll=""
-            data-drop="grid"
-            data-testid="wp-cards"
-            onKeyDown={onGridKeyDown}
-            key={`${filter.view}-${age}`}
-          >
-            {cards.length === 0 ? (
-              <div class="army-empty">
-                <p>{t('ui.army.none')}</p>
-                <Button kind="secondary" size="s" onClick={() => setFilter({ ...ARMY_FILTER, view: filter.view })} testid="army-clear">
-                  {t('ui.army.clear')}
-                </Button>
-              </div>
-            ) : filter.view === 'age' ? (
-              // "This age" in three labelled groups (U4, the owner's "which cards are equipped"): the
-              // cards that could still join first, then the ones already in this army, then the ones
-              // not found yet. The loadout on the left shows the same army in its slots.
-              groups.flatMap((g) =>
-                g.ids.length
-                  ? [
-                      <p key={`g-${g.id}`} class={`army-group army-group--${g.id}`} data-testid={`army-group-${g.id}`}>
-                        {g.id === 'used' ? <CheckIcon size={14} /> : g.id === 'locked' ? <LockIcon size={14} /> : null}
-                        <span>{t(GROUP_KEY[g.id], { n: g.ids.length })}</span>
-                      </p>,
-                      ...g.ids.map((id) => cell(id, n++)),
-                    ]
-                  : [],
-              )
+              ) : (
+                <small class="army-sec-sub">{t('ui.armyAge.availableHint')}</small>
+              )}
+            </h3>
+            {pool.available.length ? (
+              <div class="army-grid">{pool.available.map((id) => cell(id, n++, false))}</div>
             ) : (
-              cards.map((id, i) => cell(id, i))
+              <p class="army-empty" data-testid="army-available-empty">
+                {t('ui.armyAge.availableEmpty')}
+              </p>
             )}
+          </div>
+          <div class="army-sec army-sec--locked" data-testid="army-group-locked">
+            <h3 class="army-sec-head army-sec-head--locked">
+              <span class="army-sec-title">
+                <LockIcon size={14} />
+                {t('ui.armyAge.locked', { n: pool.locked.length })}
+              </span>
+              <small class="army-sec-sub" data-testid="army-owned-count">
+                {pool.owned >= pool.total ? t('ui.armyAge.lockedNone', { max: pool.total, age: t(AGE_SHORT[age]) }) : t('ui.armyAge.lockedOwned', { n: pool.owned, max: pool.total, age: t(AGE_SHORT[age]) })}
+              </small>
+              <Button kind="secondary" size="s" icon={<CardsIcon size={18} />} testid="army-album" class="army-album" onClick={() => router.go({ id: 'collection' })}>
+                {t('ui.armyAge.album', { n: album.owned, max: album.total })}
+              </Button>
+            </h3>
+            {pool.locked.length ? <div class="army-grid army-grid--locked">{pool.locked.map((id) => cell(id, n++, true))}</div> : null}
           </div>
         </section>
       </div>
 
-      {sheet === 'filter' ? <FilterSheet filter={filter} onChange={setFilter} onClose={() => setSheet(null)} /> : null}
       {sheet === 'legend' ? (
         <Sheet title={t('ui.army.counters')} onClose={() => setSheet(null)} testid="army-legend-sheet" icon={<CountersIcon size={24} />}>
           <CounterLegend />
@@ -1372,91 +1227,4 @@ function currentAge(save: Parameters<typeof albumProgress>[0], content: Paramete
 function formatFor(save: Parameters<typeof albumProgress>[0], content: Parameters<typeof albumProgress>[1]) {
   const formats = content.arenas.list[Math.max(0, Math.min(content.arenas.list.length - 1, save.arenaIndex))]!.ladderFormats;
   return formats[formats.length - 1] ?? 'short';
-}
-
-/** Filter and sort (ui-plan 4.2): class chips, rarity gems, owned only, sort. Changes apply at once. */
-function FilterSheet(p: { filter: ArmyFilter; onChange: (f: ArmyFilter) => void; onClose: () => void }) {
-  const { t } = useUi();
-  const f = p.filter;
-  const toggle = (c: CardClass) =>
-    p.onChange({
-      ...f,
-      classes: f.classes.includes(c) ? f.classes.filter((x) => x !== c) : [...f.classes, c],
-      // The Home / Field chips belong to the Power chip (A2.9.10): they go when it goes.
-      ...(c === 'power' && f.classes.includes('power') ? { powerSlots: [] } : {}),
-    });
-  const powerSlots = f.powerSlots ?? [];
-  const toggleSlot = (slot: PowerSlot) =>
-    p.onChange({ ...f, powerSlots: powerSlots.includes(slot) ? powerSlots.filter((x) => x !== slot) : [...powerSlots, slot] });
-  return (
-    <Sheet
-      title={t('ui.army.filterTitle')}
-      onClose={p.onClose}
-      testid="army-filter-sheet"
-      icon={<FilterIcon size={22} />}
-      actions={{
-        tertiary: (
-          <Button kind="tertiary" size="s" onClick={() => p.onChange({ ...ARMY_FILTER, view: f.view })} testid="filter-clear">
-            {t('ui.army.clear')}
-          </Button>
-        ),
-      }}
-    >
-      <div class="army-filter">
-        <h3 class="army-filter__label">{t('ui.army.filterClass')}</h3>
-        <div class="army-filter__classes" role="group" aria-label={t('ui.army.filterClass')}>
-          {FILTER_CLASSES.map((c) => {
-            const on = f.classes.includes(c);
-            return (
-              <button key={c} type="button" class={`army-fchip${on ? ' is-on' : ''}`} aria-pressed={on} onClick={() => toggle(c)} data-testid={`filter-${c}`}>
-                <ClassIcon id={c} size={22} />
-                <span>{t(CLASS_NAME_KEY[c])}</span>
-              </button>
-            );
-          })}
-        </div>
-        {f.classes.includes('power') ? (
-          <div class="army-filter__classes army-filter__slots" role="group" aria-label={t('ui.power.filterSlots')} data-testid="filter-power-slots">
-            {(['home', 'field'] as const).map((slot) => {
-              const on = powerSlots.includes(slot);
-              return (
-                <button key={slot} type="button" class={`army-fchip${on ? ' is-on' : ''}`} aria-pressed={on} onClick={() => toggleSlot(slot)} data-testid={`filter-power-${slot}`}>
-                  <SlotGlyph slot={slot} size={20} />
-                  <span>{t(POWER_SLOT_KEY[slot])}</span>
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-        <h3 class="army-filter__label">{t('ui.army.filterRarity')}</h3>
-        <Segmented
-          label={t('ui.army.filterRarity')}
-          value={f.rarity}
-          size="sm"
-          testid="filter-rarity"
-          onChange={(rarity) => p.onChange({ ...f, rarity })}
-          options={[
-            { value: 'all', label: t('ui.army.anyRarity') },
-            ...RARITIES.map((r) => ({
-              value: r,
-              label: t(rarityNameKey(r)),
-              icon: <RarityGem rarity={r} size={16} />,
-            })),
-          ]}
-        />
-        <div class="army-filter__row">
-          <Toggle label={t('ui.army.filterOwned')} checked={f.ownedOnly} onChange={(ownedOnly) => p.onChange({ ...f, ownedOnly })} testid="filter-owned" />
-        </div>
-        <h3 class="army-filter__label">{t('ui.army.sort')}</h3>
-        <Segmented
-          label={t('ui.army.sort')}
-          value={f.sort ?? 'none'}
-          size="sm"
-          testid="filter-sort"
-          onChange={(v) => p.onChange({ ...f, sort: v === 'none' ? null : v })}
-          options={SORTS.map((x) => ({ value: x, label: t(SORT_KEY[x]) }))}
-        />
-      </div>
-    </Sheet>
-  );
 }

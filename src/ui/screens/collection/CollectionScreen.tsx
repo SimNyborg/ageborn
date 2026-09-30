@@ -1,37 +1,26 @@
 /**
- * Collection (A9 #10): a grid filterable by age, role and rarity, with an owned / missing toggle;
- * silhouettes for unowned cards; copies bars and foil frames per card; a Skins tab; crafting with
- * Dust from the card detail and the skin tiles (A6.6).
+ * Collection (A9 #10), now the Card Album (owner request 2026-09-30): the Cards tab is a long scroll
+ * like a Pokedex, grouped by age with sticky age headers and completion bars, every card numbered,
+ * owned in colour and missing as a "?" silhouette with its source (`CardDex`); a Skins tab; the Feats
+ * tab; crafting with Dust from the card detail and the skin tiles (A6.6).
  */
 import './collection.css';
 import { ageNameKey, rarityNameKey, skinNameKey } from '@/content/keys';
 import type { AgeId, SkinDef } from '@/contracts';
-import { UNIT_CLASSES, unitClass } from '@/core/cardClass';
 import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
-import { CardArt, CardTile } from '../../components/CardTile';
-import { CLASS_NAME_KEY } from '../../components/ClassIcon';
+import { CardArt } from '../../components/CardTile';
 import { CurrencyChip, Pill } from '../../components/Chips';
-import { Segmented } from '../../components/Controls';
 import { formatInt } from '../../components/format';
-import { AgeGlyph, BoltIcon, CardsIcon, CheckIcon, DustIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TowerIcon } from '../../components/icons';
-import { onGridKeyDown } from '../../components/keys';
-import { Empty, ScreenFrame } from '../../components/Layout';
+import { CardsIcon, CheckIcon, DustIcon, LockIcon, RARITY_COLOR, StarIcon } from '../../components/icons';
+import { ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { CompletionStrip } from '../customize/CollectionPanels';
-import { cardDef, cardGlyph, cardTile, collectionProgress } from '../model/cards';
-import {
-  featViews,
-  filterCards,
-  NO_FILTER,
-  type AgeFilter,
-  type CollectionFilter,
-  type Ownership,
-  type RarityFilter,
-  type RoleFilter,
-} from '../model/collection';
+import { cardDef, cardGlyph } from '../model/cards';
+import { featViews } from '../model/collection';
+import { CardDex } from './CardDex';
 import { reasonKey } from '../model/reasons';
 
 export function SkinTile(p: { skin: SkinDef }) {
@@ -143,25 +132,16 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
   const { save, content, t, router } = useUi();
   const s = save.value;
   const [tab, setTab] = useState<'cards' | 'skins' | 'feats'>(p.route.tab ?? 'cards');
-  const [f, setF] = useState<CollectionFilter>(NO_FILTER);
-  const prog = collectionProgress(s, content);
   const foils = Object.values(s.collection).filter((e) => e.foil !== 'none').length;
-  const present = new Set(content.order.units.map((id) => unitClass(content.units[id]!)));
-  const classes = UNIT_CLASSES.filter((c) => present.has(c));
-  const cards = filterCards(s, content, f);
   const skins = content.order.skins.map((id) => content.skins[id]!);
-  const set = (patch: Partial<CollectionFilter>) => setF({ ...f, ...patch });
 
   return (
     <ScreenFrame
       id="collection"
-      title={t('ui.nav.collection')}
+      title={t('ui.dex.title')}
       onBack={() => router.back()}
       subtitle={
         <span class="col-sub">
-          <Pill tone="blue" icon={<CardsIcon size={16} />}>
-            {t('ui.collection.progress', { n: prog.owned, max: prog.total })}
-          </Pill>
           <Pill tone="violet">{t('ui.collection.foils', { n: foils })}</Pill>
         </span>
       }
@@ -182,96 +162,7 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
         />
         <div class="col-panel" role="tabpanel" id="col-panel" aria-labelledby={`col-tab-${tab}`}>
           {tab === 'cards' ? (
-            <>
-              <div class="col-filters" data-testid="filters">
-                <Segmented<AgeFilter>
-                  label={t('ui.collection.filterAge')}
-                  value={f.age}
-                  onChange={(age) => set({ age })}
-                  size="sm"
-                  testid="filter-age"
-                  options={[
-                    { value: 'all', label: t('ui.collection.all') },
-                    ...content.order.ages.map((a) => ({ value: a, label: t(ageNameKey(a)), icon: <AgeGlyph age={a} size={20} /> })),
-                  ]}
-                />
-                <Segmented<RarityFilter>
-                  label={t('ui.collection.filterRarity')}
-                  value={f.rarity}
-                  onChange={(rarity) => set({ rarity })}
-                  size="sm"
-                  testid="filter-rarity"
-                  options={[
-                    { value: 'all', label: t('ui.collection.all') },
-                    ...content.rarities.order.map((r) => ({
-                      value: r,
-                      label: t(rarityNameKey(r)),
-                      icon: <RarityGem rarity={r} size={16} />,
-                    })),
-                  ]}
-                />
-                <label class="col-select">
-                  <span class="ui-sr">{t('ui.collection.filterRole')}</span>
-                  <select
-                    value={f.role}
-                    onChange={(e) => set({ role: (e.currentTarget as HTMLSelectElement).value as RoleFilter })}
-                    data-testid="filter-role"
-                  >
-                    <option value="all">{t('ui.collection.allRoles')}</option>
-                    {classes.map((c) => (
-                      <option key={c} value={c}>
-                        {t(CLASS_NAME_KEY[c])}
-                      </option>
-                    ))}
-                    <option value="turret">{t('ui.warplan.turrets')}</option>
-                    <option value="power">{t('ui.warplan.powers')}</option>
-                  </select>
-                </label>
-                <Segmented<Ownership>
-                  label={t('ui.collection.filterOwned')}
-                  value={f.own}
-                  onChange={(own) => set({ own })}
-                  size="sm"
-                  testid="filter-owned"
-                  options={[
-                    { value: 'all', label: t('ui.collection.all') },
-                    { value: 'owned', label: t('ui.collection.owned') },
-                    { value: 'missing', label: t('ui.collection.missing') },
-                  ]}
-                />
-              </div>
-              {cards.length === 0 ? (
-                <Empty>{t('ui.collection.none')}</Empty>
-              ) : (
-                <div class="ui-cardgrid col-grid" onKeyDown={onGridKeyDown} data-testid="col-grid">
-                  {cards.map((id) => {
-                    const tile = cardTile(s, content, id, t)!;
-                    return (
-                      <CardTile
-                        key={id}
-                        card={tile}
-                        size="md"
-                        showCopies
-                        grid
-                        testid={`card-${id}`}
-                        onClick={() => router.go({ id: 'cardDetail', card: id })}
-                        corner={
-                          tile.kind === 'turret' ? (
-                            <span class="col-kind">
-                              <TowerIcon size={18} />
-                            </span>
-                          ) : tile.kind === 'power' ? (
-                            <span class="col-kind">
-                              <BoltIcon size={18} />
-                            </span>
-                          ) : undefined
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </>
+            <CardDex />
           ) : tab === 'skins' ? (
             <>
               {/* A18.9.4: completion of every cosmetic collection; Customize equips them */}

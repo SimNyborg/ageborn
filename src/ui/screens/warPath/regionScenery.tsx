@@ -497,3 +497,160 @@ export function SetPieces(p: { age: AgeId; w: number; h: number; hz: number; roa
   });
   return { items, blocked };
 }
+
+// ---------------------------------------------------------------------------------------------
+// Ground detail: fields, rock patches and worn earth, so the ground is never one flat plane
+// ---------------------------------------------------------------------------------------------
+
+/** Ages that farm: striped crop fields (the others get scrub or plating patches instead). */
+const FIELDS: Readonly<Partial<Record<AgeId, readonly [string, string]>>> = {
+  bronze: ['#c9ad5a', '#9c8a3e'],
+  medieval: ['#c8b45a', '#7e8f3a'],
+  gunpowder: ['#d0b060', '#8a9a44'],
+  industrial: ['#a89a5a', '#6f7a3e'],
+};
+
+/** A crop field in perspective: a skewed plot with furrow rows and a darker rim. */
+function field(w: number, h: number, c: readonly [string, string], rows: number) {
+  const k = 0.18 * w;
+  const d = `M${-w / 2 + k} ${-h} L${w / 2 + k * 0.4} ${-h} L${w / 2} 0 L${-w / 2} 0 Z`;
+  return (
+    <g>
+      <path d={d} fill={c[1]} stroke={INK} stroke-opacity=".35" stroke-width="1.5" stroke-linejoin="round" />
+      {Array.from({ length: rows }, (_, i) => {
+        const y = -h + ((i + 0.5) * h) / rows;
+        const f = (y + h) / h;
+        const x0 = -w / 2 + k * (1 - f);
+        const x1 = w / 2 + k * 0.4 * (1 - f);
+        return <path key={i} d={`M${(x0 + 3).toFixed(1)} ${y.toFixed(1)} L${(x1 - 3).toFixed(1)} ${y.toFixed(1)}`} stroke={c[0]} stroke-width={(1.6 + f * 2.4).toFixed(1)} stroke-linecap="round" />;
+      })}
+    </g>
+  );
+}
+
+/** A patch of flat stones half sunk in the ground. */
+function rocks(rng: Rng, n: number, t: RegionTheme) {
+  return (
+    <g>
+      {Array.from({ length: n }, (_, i) => {
+        const x = (rng.next() - 0.5) * 70;
+        const y = (rng.next() - 0.5) * 14;
+        const r = 5 + rng.next() * 9;
+        return (
+          <g key={i} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`}>
+            <ellipse cx="0" cy="1.5" rx={(r * 1.1).toFixed(1)} ry={(r * 0.42).toFixed(1)} fill="#000" opacity=".22" />
+            <ellipse cx="0" cy="0" rx={r.toFixed(1)} ry={(r * 0.5).toFixed(1)} fill={t.far2} stroke={INK} stroke-opacity=".4" stroke-width="1" />
+            <ellipse cx={(-r * 0.25).toFixed(1)} cy={(-r * 0.15).toFixed(1)} rx={(r * 0.55).toFixed(1)} ry={(r * 0.22).toFixed(1)} fill="#fff" opacity=".22" />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+/** Worn earth: a bare, lighter patch with pebbles (trampled ground, a dry clearing). */
+function worn(rng: Rng, t: RegionTheme) {
+  const rx = 40 + rng.next() * 40;
+  return (
+    <g>
+      <ellipse cx="0" cy="0" rx={rx.toFixed(0)} ry={(rx * 0.26).toFixed(1)} fill={t.roadEdge} opacity=".32" />
+      <ellipse cx={(-rx * 0.2).toFixed(0)} cy="-2" rx={(rx * 0.55).toFixed(0)} ry={(rx * 0.14).toFixed(1)} fill={t.road} opacity=".3" />
+      {Array.from({ length: 5 }, (_, i) => (
+        <circle key={i} cx={((rng.next() - 0.5) * rx * 1.4).toFixed(1)} cy={((rng.next() - 0.5) * rx * 0.3).toFixed(1)} r={(1.2 + rng.next() * 1.6).toFixed(1)} fill={t.far2} opacity=".7" />
+      ))}
+    </g>
+  );
+}
+
+/**
+ * Fields, rock patches and worn earth beside the road, one feature every ~300 px, alternating, never
+ * on the road (`clear` px from it) and inside the ground band. Returns the art and the areas props
+ * should keep off.
+ */
+export function GroundDetail(p: { age: AgeId; w: number; h: number; hz: number; roadY: (x: number) => number; clear: number; t: RegionTheme; rng: Rng; bottom: number }): {
+  art: ComponentChildren;
+  blocked: { x0: number; x1: number; y0: number; y1: number }[];
+} {
+  const out: ComponentChildren[] = [];
+  const blocked: { x0: number; x1: number; y0: number; y1: number }[] = [];
+  const crops = FIELDS[p.age];
+  let i = 0;
+  for (let x = 90 + p.rng.next() * 120; x < p.w - 60; x += 240 + p.rng.next() * 140, i++) {
+    const ry = p.roadY(x);
+    const kind = i % 3 === 0 ? (crops ? 'field' : 'worn') : i % 3 === 1 ? 'rocks' : crops && i % 2 ? 'field' : 'worn';
+    const fw = 110 + p.rng.next() * 60;
+    const fh = kind === 'field' ? 30 + p.rng.next() * 16 : 20;
+    // Below the road when there is room (the fields read best there), else above it.
+    const below = ry + p.clear + 30 + fh;
+    const above = ry - p.clear - 24;
+    const y = below < p.bottom - 6 ? Math.min(p.bottom - 6, below + p.rng.next() * Math.max(0, p.bottom - 6 - below) * 0.6) : above;
+    if (y < p.hz + 34 || y > p.bottom) continue;
+    const depth = Math.max(0.6, Math.min(1.3, 0.6 + ((y - p.hz) / Math.max(1, p.h - p.hz)) * 0.9));
+    const art = kind === 'field' ? field(fw, fh, crops!, 5 + Math.round(p.rng.next() * 2)) : kind === 'rocks' ? rocks(p.rng, 4 + Math.round(p.rng.next() * 3), p.t) : worn(p.rng, p.t);
+    out.push(
+      <g key={i} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${depth.toFixed(2)})`}>
+        {art}
+      </g>,
+    );
+    blocked.push({
+      x0: x - (fw / 2) * depth - 8,
+      x1: x + (fw / 2) * depth + 8,
+      y0: y - fh * depth - 10,
+      y1: y + 12,
+    });
+  }
+  return { art: <g>{out}</g>, blocked };
+}
+
+// ---------------------------------------------------------------------------------------------
+// The start camp: where the road begins (the lead-in before level 1)
+// ---------------------------------------------------------------------------------------------
+
+/** Your camp at the road's start: two tents, a campfire with smoke, a supply cart and your banner. */
+export function StartCamp(p: { x: number; y: number; s: number; t: RegionTheme }) {
+  return (
+    <g transform={`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${p.s.toFixed(2)})`} aria-hidden="true">
+      <ellipse cx="0" cy="4" rx="96" ry="18" fill={p.t.roadEdge} opacity=".35" />
+      {/* tents */}
+      <g transform="translate(-52 0)">
+        <ellipse cx="0" cy="2" rx="30" ry="6" fill="#000" opacity=".28" />
+        <path d="M-28 0 L0 -44 L28 0 Z" fill="#8a6a48" stroke={INK} stroke-width="2" stroke-linejoin="round" />
+        <path d="M-28 0 L0 -44 L-6 0 Z" fill="#b08a5e" />
+        <path d="M-6 0 L0 -18 L6 0 Z" fill="#2a1d14" />
+        <path d="M-5 -44 L2 -54 M5 -44 L-1 -53" stroke="#4a3322" stroke-width="2.5" stroke-linecap="round" />
+      </g>
+      <g transform="translate(-14 -16) scale(.72)">
+        <ellipse cx="0" cy="2" rx="30" ry="6" fill="#000" opacity=".25" />
+        <path d="M-28 0 L0 -44 L28 0 Z" fill="#7a5a3c" stroke={INK} stroke-width="2.4" stroke-linejoin="round" />
+        <path d="M-28 0 L0 -44 L-6 0 Z" fill="#a07a50" />
+      </g>
+      {/* campfire */}
+      <g transform="translate(18 6)">
+        <ellipse cx="0" cy="2" rx="14" ry="4" fill="#000" opacity=".3" />
+        <path d="M-10 2 L8 -3 M-8 -3 L10 2" stroke="#5b3d24" stroke-width="4" stroke-linecap="round" />
+        <path class="wp-fire" d="M-6 -2 Q-8 -14 0 -22 Q2 -12 7 -10 Q8 -4 4 -2 Z" fill="#ff9a2e" stroke={INK} stroke-width="1.2" />
+        <path class="wp-fire" d="M-2 -3 Q-3 -10 1 -14 Q3 -8 4 -4 Z" fill="#ffe08a" />
+        <g class="wp-smoke" transform="translate(0 -30) scale(.5)">
+          {[0, 1, 2].map((i) => (
+            <circle key={i} class="wp-smoke__puff" cx="0" cy="0" r={10 + i * 3} fill="#8a7d80" style={{ animationDelay: `${-i * 1.1}s` }} />
+          ))}
+        </g>
+      </g>
+      {/* supply cart */}
+      <g transform="translate(58 4)">
+        <ellipse cx="0" cy="0" rx="22" ry="5" fill="#000" opacity=".28" />
+        <rect x="-18" y="-20" width="34" height="12" rx="2" fill="#8a5a2c" stroke={INK} stroke-width="2" />
+        <path d="M-14 -20 Q-4 -32 12 -20" fill="#d8c79a" stroke={INK} stroke-width="1.6" />
+        <circle cx="-9" cy="-5" r="6" fill="#5b3d24" stroke={INK} stroke-width="2" />
+        <circle cx="9" cy="-5" r="6" fill="#5b3d24" stroke={INK} stroke-width="2" />
+        <path d="M16 -12 L30 -6" stroke="#5b3d24" stroke-width="3" stroke-linecap="round" />
+      </g>
+      {/* your banner */}
+      <g transform="translate(36 -4)">
+        <path d="M0 0 V-58" stroke="#3b2a1e" stroke-width="3" stroke-linecap="round" />
+        <circle cx="0" cy="-59" r="2.8" fill="#ffd466" stroke={INK} stroke-width="1" />
+        <path class="wp-flag" d="M1 -55 H22 L17 -47 L22 -39 H1 Z" fill="var(--ui-team-me)" stroke={INK} stroke-width="1.4" stroke-linejoin="round" />
+      </g>
+    </g>
+  );
+}

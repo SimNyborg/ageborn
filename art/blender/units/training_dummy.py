@@ -5,11 +5,20 @@ a round sack head with button eyes and a stitched grin, straw tufts sticking out
 top and the cuffs, twine ties, a team bullseye painted on its chest (it is a practice
 target) and a team scarf whose tail streams behind (follow-through). It swings a wooden
 practice club with a floppy, over-eager bonk. On death it bursts (the shared poof).
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    a rubbery wobble; walk  hop-waddle
+  attack  SPRING-BACK BONK: the whole dummy bends far back like a spring, whips forward with
+          the club (bold smear), bonks (impact lines, straw puff), then wobbles back and forth
+  hit     light;  die  D3 dizzy spin and sit
 """
-from ageborn_art import fx
-from ageborn_art.anim import Clip, merge, pick, squash
+import math
+
+from ageborn_art import face as F  # noqa: F401
+from ageborn_art import moves as M
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
-from ageborn_art.rigs_stone import CaveBody, biped_hit, biped_idle, biped_walk
+from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "training_dummy"
 NAME = "Training Dummy"
@@ -17,6 +26,7 @@ HEIGHT_LU = 60
 CANVAS = (232, 208)
 FEET = (104, 186)
 ANCHORS = {"head": (0, 58), "hitCenter": (0, 28)}
+NO_RETIME = True
 
 SACK = "#C8B48C"
 SACK_DK = "#A8966E"
@@ -29,7 +39,7 @@ PAINT_W = "#EDE3C8"
 
 
 def build(rig):
-    global ARM_R, ARM_L, SMEAR
+    global ARM_R, ARM_L, SMEAR2
     body = CaveBody(rig, SACK, None, hip_z=13.0, knee_z=7.0, ankle_z=3.0, waist_z=14.0,
                     shoulder_z=31.0, neck_z=33.0, hip_y=5.4, shoulder_y=11.2,
                     elbow=(1.2, 24.5), wrist=(3.0, 18.5), leg_r=(4.2, 3.8, 3.8),
@@ -111,15 +121,15 @@ def build(rig):
     rig.part("club", g, TWINE, outline=0.6)
     tip = (fr[0], fr[1] - 0.5, fr[2] + 21.0)
     rig.track("clubHead", "club", tip)
-    SMEAR = {"joint": "club", "inner": (fr[0], fr[1] - 0.5, fr[2] + 15.0),
-             "outer": (fr[0], fr[1] - 0.5, fr[2] + 26.0), "color": SACK, "taper": 0.5, "start": 0.35}
+    SMEAR2 = {"kind": "arc", "joint": "club", "inner": (fr[0], fr[1] - 0.5, fr[2] + 14.0),
+              "outer": (fr[0], fr[1] - 0.5, fr[2] + 26.0), "color": SACK, "taper": 0.15, "lines": 3}
     rig.track("_foot", "shin_r", (2.4, -5.4, 0.5))
     ARM_R = body.arm("r", "club", tip)
     ARM_L = body.arm("l")
 
 
 ARM_R = ARM_L = None
-SMEAR = None
+SMEAR2 = None
 
 
 def club_arm(a, b, c):
@@ -136,67 +146,86 @@ def stance():
 
 
 def _idle(f):
-    def extra(c, lag):
-        return {"arm_l": {"r": 8 * lag}, "club": {"r": -6 * lag}, "straw": {"r": 3 * lag}}
-    return biped_idle(f, stance(), amp=1.3, extra=extra)
+    def extra(ctx):
+        w = math.sin(2 * math.pi * f / 8)
+        return {"torso": {"r": 3 * w}, "head": {"r": -5 * w}, "arm_l": {"r": 10 * ctx["lag"]},
+                "club": {"r": -6 * ctx["lag"]}, "straw": {"r": 4 * ctx["lag"]}}
+    return M.idle_v2(f, stance(), bob=2.0, chest=0.045, extra=extra)
 
 
 def _walk(f):
-    import math
-
-    # a stiff, bouncy waddle: bigger bob, side rock, arms swing wide
-    def extra(p, lag_p, bob, bob_lag):
-        return {"torso": {"rx": 6 * math.sin(p)}, "arm_l": {"r": 28 * math.cos(p)},
-                "arm_r": {"r": -8 * math.cos(p)}, "club": {"r": 8 * math.cos(lag_p)}}
-    return biped_walk(f, stance(), lean=-4.0, bob_k=1.3, thigh=26.0, knee=40.0, extra=extra)
+    def extra(ctx):
+        return {"torso": {"rx": 7 * math.sin(ctx["p"])}, "club": {"r": 8 * math.cos(ctx["lag_p"])}}
+    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=28.0, knee=46.0, lift_lu=6.0, bob_pct=0.08,
+                     lean=-4.0, arm=30.0, arms=("l",), extra=extra)
 
 
-def _attack(f):
-    # an over-eager bonk: 0-1 wind way back, 2 held (leaning back, stretch), 3 smear,
-    # 4 held impact (squash, "oh" mouth), 5 the club bounces, 6-7 wobble back
-    a = pick(f, [40, 90, 110, 60, -30, -20, -26, -20])
-    b = pick(f, [90, 130, 150, 60, -20, -4, 20, 40])
-    c = pick(f, [120, 160, 175, 60, -5, 20, 45, 70])
-    sq = pick(f, [-0.06, -0.10, 0.10, 0.04, -0.18, 0.06, -0.04, 0.0])
-    pose = merge(club_arm(a, b, c), off_arm(pick(f, [-20, 0, 20, -40, -100, -80, -60, -40]),
-                                            pick(f, [0, 20, 40, -10, -60, -40, -30, -20])), {
-        "body": dict(squash(sq), x=pick(f, [-1, -2.5, -3.5, 2, 5, 4, 2, 0])),
-        "torso": {"r": pick(f, [6, 12, 18, -6, -22, -14, -6, -2])},
-        "head": {"r": pick(f, [4, 8, 12, -6, -16, 8, -4, 0])},
-        "thigh_r": {"r": pick(f, [0, -6, -8, 10, 20, 14, 6, 0])},
-        "thigh_l": {"r": pick(f, [0, 6, 8, -6, -14, -10, -4, 0])},
-    })
-    if f == 3:
-        pose["club"]["sx"] = 1.4
-    if f in (3, 4, 5):
+# 11 unique frames, moves.SMALL_MELEE_MS: bend back like a spring, whip, bonk, wobble
+#         read  dip  bend  HOLD  whip  whip  BONK wob+ wob- wob+ settle
+TA = [40, 70, 100, 120, 70, 10, -30, -18, -28, -22, -50]
+TB = [80, 110, 140, 160, 60, -10, -20, 0, -16, 10, 40]
+TC = [140, 165, 180, 190, 70, -10, -5, 20, 0, 60, 155]
+TT = [4, 12, 26, 34, -4, -20, -24, -12, -20, -8, -2]
+TH = [2, 8, 16, 22, -8, -18, -20, 6, -12, 4, 0]
+TQ = [-0.04, -0.1, 0.06, 0.14, 0.08, 0.0, -0.2, 0.08, -0.08, 0.03, 0.0]
+TX = [-0.5, -1.5, -3.0, -4.0, 1.0, 4.0, 5.0, 3.0, 4.0, 2.0, 0.0]
+
+
+def _attack_pose(f):
+    pose = merge(club_arm(TA[f], TB[f], TC[f]), off_arm([-20, 0, 20, 30, -40, -90, -110, -70, -95, -60, -40][f],
+                                                     [0, 20, 40, 50, -10, -50, -60, -30, -45, -25, -20][f]), {
+        "torso": {"r": TT[f]}, "head": {"r": TH[f]},
+        "straw": {"r": -1.2 * TT[f]},
+        "thigh_r": {"r": [0, -6, -8, -10, 10, 20, 20, 12, 16, 6, 0][f]},
+        "thigh_l": {"r": [0, 6, 8, 10, -6, -14, -14, -8, -12, -4, 0][f]},
+    }, M.body_about((0, 0, 18), x=TX[f], q=TQ[f]))
+    if f in (4, 5):
+        pose["club"]["sx"] = 1.3
+    if f in (4, 5, 6, 7):
         pose.update({"mouth": {"hide": True}, "oh": {"show": True}})
     return pose
 
 
-def _hit(f):
-    return biped_hit(f, stance(), extra=lambda a: {"arm_r": {"r": 20 * a}, "club": {"r": 16 * a},
-                                                    "straw": {"r": -10 * a}})
+def _attack_clip():
+    tip = SMEAR2["outer"]
+    ov = {4: [dict(SMEAR2)], 5: [dict(SMEAR2, t1=0.8)],
+          6: [{"kind": "burst", "joint": "club", "point": tip, "r0_lu": 8.0, "r1_lu": 14.0, "n": 5, "a0": 0.0,
+               "arc": 180.0},
+              {"kind": "dust", "joint": "straw", "point": (0.0, 0.0, 60.0), "size_lu": 5.0, "puffs": 3,
+               "seed": 41, "color": "#E4D29E"}]}
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
 
 
-def _die(f):
-    pose = merge(stance(), fx.die_pose(f), {
-        "torso": {"r": pick(f, [18, 8, 4])},
-        "head": {"r": pick(f, [20, -8, -8])},
-        "arm_r": {"r": pick(f, [50, 40, 40])}, "club": {"r": pick(f, [40, 30, 30])},
-        "arm_l": {"r": pick(f, [120, 90, 90])},
-        "thigh_r": {"r": pick(f, [30, 12, 12])}, "thigh_l": {"r": pick(f, [-12, -6, -6])},
+def _hit(k):
+    def recoil(a):
+        return {"head": {"r": 18 * a}, "torso": {"r": 14 * a}, "thigh_r": {"r": 22 * max(a, 0)},
+                "arm_r": {"r": 20 * a}, "club": {"r": 16 * a}, "arm_l": {"r": 40 * a}, "straw": {"r": -12 * a}}
+    return M.hit_light(k, stance(), recoil, face_hurt={"mouth": {"hide": True}, "oh": {"show": True}})
+
+
+def _die(k):
+    sit = [0.0, 0.0, 0.0, 0.2, 1.0, 0.9, 1.0, 1.0, 1.0, 1.0][k]
+    flail = [0.3, 0.8, 1.0, 0.8, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0][k]
+    pose = merge(stance(), M.die_d3(k, center_z=24.0, height=HEIGHT_LU), {
+        "hips": {"z": -12.0 * sit},
+        "thigh_r": {"r": 85 * sit}, "shin_r": {"r": -30 * sit},
+        "thigh_l": {"r": 80 * sit}, "shin_l": {"r": -25 * sit},
+        "torso": {"r": 28 * sit + 8 * flail}, "head": {"r": 14 * flail - 18 * sit, "rx": 14 * sit},
+        "arm_r": {"r": 60 * flail + 30 * sit}, "club": {"r": 40 * flail + 40 * sit},
+        "arm_l": {"r": 90 * flail + 45 * sit},
+        "straw": {"r": 20 * flail},
     })
-    if f == 0:
-        pose.update({"mouth": {"hide": True}, "oh": {"show": True}})
+    pose.update({"mouth": {"hide": True}, "oh": {"show": True}})
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl)

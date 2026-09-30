@@ -145,6 +145,9 @@ describe('reached ages and presets (2.6, U8)', () => {
     expect(reachedAges(fresh, content)).toEqual(content.formats['short']!.ages);
     expect(reachedAges({ ...fresh, stats: { ...fresh.stats, wins: 1 }, tutorial: { ...fresh.tutorial, step: 2 }, warPath: { ...fresh.warPath, stars: { 'wp.stone.l01': 1 } } }, content)).toEqual(['stone']);
     expect(presetsOpen(fresh, content)).toBe(false);
+    // The War Path is optional: enough wins anywhere (the Ladder) open the presets too.
+    expect(presetsOpen({ ...fresh, stats: { ...fresh.stats, wins: 9 } }, content)).toBe(false);
+    expect(presetsOpen({ ...fresh, stats: { ...fresh.stats, wins: 10 } }, content)).toBe(true);
   });
 
   it('the War Path region and the ladder formats open ages; a legacy save has them all', () => {

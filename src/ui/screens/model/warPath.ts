@@ -146,6 +146,17 @@ export function upgradesTaught(save: SaveDoc): boolean {
   return !!save.flags['tutorial.firstUpgrade'] || progressOf(save).legacy || beatenCount(save) >= 3;
 }
 
+/**
+ * The onboarding's forced first upgrade (A8; the app's `FirstUpgrade` over Home) has yet to play:
+ * right after the onboarding, before `flags['tutorial.firstUpgrade']` is set. Home holds its unlock
+ * moments until it has, so the first "new" moment is never used up underneath it (U8, U13). The card
+ * is the app's `FIRST_UPGRADE_CARD` (the app sets the flag at once when the upgrade cannot happen).
+ */
+export function firstUpgradePending(save: SaveDoc): boolean {
+  if (progressOf(save).legacy || !onboardingDone(save) || save.flags['tutorial.firstUpgrade']) return false;
+  return save.collection['bonker']?.level === 1;
+}
+
 /** The tab each feature opens (Modes, Ladder and Daily live on Home). */
 export const TAB_FEATURE: Readonly<Record<Exclude<TabId, 'battle'>, WarPathUnlock>> = {
   army: 'army',

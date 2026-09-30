@@ -1,6 +1,7 @@
 /**
- * Army, the deck builder (docs/ui-plan.md 4.2, 6.6 acceptance): all three ways to equip a card work
- * (card + Use, tap-tap, drag with a mouse and with a finger), a vertical swipe on the grid scrolls it
+ * Army, the deck builder (docs/ui-plan.md 4.2, 6.6 acceptance; owner request 2026-09-30: In battle,
+ * Available and Locked top to bottom): all three ways to equip a card work (card + Use, tap-tap, drag
+ * from the pool up to a slot with a mouse and with a finger), a vertical swipe on the pool scrolls it
  * and never picks a card up, the header Undo reverses the visit's changes, and Info and Upgrade open
  * Card detail. Runs on the dev screen gallery (`?dev=1#screens/army-warn/...`: the Stone Age army with
  * three troops, one turret and gaps to fill), with the preview services editing a local save.
@@ -50,7 +51,8 @@ test.describe('Army deck builder', () => {
     await page.getByTestId('cand-mammoth_matriarch').click();
     await page.getByTestId('card-use').click();
     await expect.poll(() => slotCard(page, 'unit-3')).toBe('mammoth_matriarch');
-    await expect(page.getByTestId('cand-mammoth_matriarch')).toHaveClass(/is-equipped/);
+    // It left Available for the In battle band.
+    await expect(page.getByTestId('cand-mammoth_matriarch')).toHaveCount(0);
 
     await page.getByTestId('cand-sabertooth').click();
     await expect(page.locator('[data-drop="unit-5"]')).toHaveClass(/is-drop-valid/);
@@ -88,7 +90,7 @@ test.describe('Army deck builder', () => {
     expect(await slotCard(page, 'unit-5')).toBeNull();
   });
 
-  test('on a phone a sideways finger drag equips, a vertical swipe scrolls the grid instead', async ({ browser }) => {
+  test('on a phone a sideways finger drag equips, a vertical swipe scrolls the pool instead', async ({ browser }) => {
     const context = await browser.newContext({ hasTouch: true, isMobile: false });
     const page = await context.newPage();
     await open(page);
@@ -104,7 +106,7 @@ test.describe('Army deck builder', () => {
     await grid.evaluate((el) => el.scrollTo(0, 0));
     const from = await centre(page, '[data-army-cell="mammoth_matriarch"] .ui-card__frame');
     const to = await centre(page, '[data-drop="unit-3"]');
-    // A real finger starts sideways toward the slots, then goes where it likes.
+    // A real finger starts sideways, then goes where it likes (up to the band's slots).
     await swipe(page, [from, { x: from.x - 40, y: from.y }, to]);
     await expect.poll(() => slotCard(page, 'unit-3')).toBe('mammoth_matriarch');
     await context.close();
@@ -117,8 +119,8 @@ test.describe('Army deck builder', () => {
     await expect(page.getByTestId('card-upgrade-btn')).toContainText('Confirm');
     await page.getByTestId('back').click();
     await expect(page.getByTestId('wp-board')).toBeVisible();
-    await page.getByTestId('cand-bonker').click();
-    await page.getByTestId('card-info').click();
+    await page.locator('[data-testid="slot-unit-0"] .ui-card').click();
+    await page.getByTestId('slot-info').click();
     await expect(page.getByTestId('card-stage')).toBeVisible();
   });
 });

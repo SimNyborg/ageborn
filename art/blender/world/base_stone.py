@@ -4,8 +4,9 @@ A mossy crag that leans toward the lane with an overhang, a firelit cave behind 
 framed by two mammoth tusks. Four cut rock shelves zig-zag up the crag for the turret mounts
 (common.BASE_MOUNTS): a boulder stack by the gate, a shelf in the face, a ledge under the overhang
 and the summit. Team colour: hide banners on poles (waving flags) and a big painted hide on the
-rock face. Crumble: chipped cracks and a lost chunk (75%), a broken palisade and rubble (50%), the
-summit knocked askew with the top banner gone and smoke (25%).
+rock face. Crumble: chipped cracks and a lost chunk (75%), a broken, burning palisade, soot and
+rubble (50%), the summit knocked askew with the top banner gone, the palisade down and fires on
+the crag (25%).
 Treasury: a berry basket and meat (1), a pile of furs (2), tusks and ochre stones (3).
 """
 import random
@@ -32,6 +33,7 @@ MEAT = "#B87A6A"
 FUR = "#8A6E52"
 FIRE = "#FFC47A"
 FIRE_CORE = "#FFF0CC"
+FIRE_OUT = "#E9823A"
 CRACK = "#3E362F"
 CHIP = "#B2A08A"
 
@@ -43,8 +45,28 @@ def build(rig, M):
     for j, pos in (("top", (-104, 30, 236)), ("chunkA", (-120, -30, 150)), ("chunkB", (-150, -10, 100)),
                    ("pal", (-104, -60, 0))):
         rig.joint(j, "body", pos)
-    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3"):
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "fire1", "fire2", "scorch"):
         rig.joint(j, "body", (0, 0, 0), hidden=True)
+    # damage fires (crumble 2+: the palisade burns; 3: the crag's shoulder too) and soot scorch
+    for j, spots in (("fire1", [(-122, -66, 34, 1.0), (-94, -66, 30, 0.8), (-108, -70, 22, 0.6)]),
+                     ("fire2", [(-150, -34, 118, 1.1), (-58, -30, 172, 0.9), (-132, -40, 96, 0.7)])):
+        o, g, c = Geo(), Geo(), Geo()
+        for x, y, z, k in spots:
+            k *= 1.5
+            for dx, dz, r, h in ((0, 0, 7.0, 22.0), (-6, -2, 4.6, 14.0), (6, -3, 4.2, 12.0)):
+                o.lathe([(0, 0), (r * 1.25 * k, h * 0.2 * k), (r * 1.0 * k, h * 0.55 * k), (0, h * 1.18 * k)],
+                        (x + dx * k, y + 2, z + dz * k - 1), segs=12)
+                g.lathe([(0, 0), (r * k, h * 0.18 * k), (r * 0.82 * k, h * 0.5 * k), (0, h * k)],
+                        (x + dx * k, y, z + dz * k), segs=12)
+                c.lathe([(0, 0), (r * 0.5 * k, h * 0.14 * k), (r * 0.36 * k, h * 0.38 * k), (0, h * 0.62 * k)],
+                        (x + dx * k, y - 3, z + dz * k), segs=10)
+        rig.part(j, o, glow=FIRE_OUT, outline=0)
+        rig.part(j, g, glow=FIRE, outline=0)
+        rig.part(j, c, glow=FIRE_CORE, outline=0)
+    g = Geo()
+    for x, z, rx, rz in ((-118, 150, 16, 10), (-60, 96, 14, 9), (-150, 64, 12, 12), (-40, 184, 14, 7)):
+        g.blob((x, -44, z), (rx, 3, rz), p=2.2)
+    rig.part("scorch", g, "#4A423A", outline=0, highlight=False)
 
     # the crag: a wide foot, a body that leans toward the lane, an overhang and the summit
     g = Geo()
@@ -243,10 +265,10 @@ def crumble(stage):
         pose.update({"crack1": {"show": True}, "chunkA": {"hide": True}, "rubble1": {"show": True}})
     if stage >= 2:
         pose.update({"crack2": {"show": True}, "chunkB": {"hide": True}, "rubble2": {"show": True},
-                     "pal": {"r": -14.0, "x": -3.0, "z": -3.0}})
+                     "pal": {"r": -14.0, "x": -3.0, "z": -3.0}, "fire1": {"show": True}, "scorch": {"show": True}})
     if stage >= 3:
-        pose.update({"crack3": {"show": True}, "rubble3": {"show": True},
-                     "top": {"r": 16.0, "x": -6.0, "z": -8.0}, "pal": {"r": -24.0, "x": -5.0, "z": -6.0}})
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "fire2": {"show": True},
+                     "top": {"r": 16.0, "x": -6.0, "z": -8.0}, "pal": {"r": -38.0, "x": -8.0, "z": -12.0}})
     return pose
 
 

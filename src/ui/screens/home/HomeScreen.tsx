@@ -21,7 +21,7 @@
 import './home.css';
 import './hub.css';
 import '../warPath/warPath.css';
-import type { FormatId } from '@/contracts';
+import type { AgeId, CardId, FormatId, Loadout } from '@/contracts';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { SwordsIcon } from '../../components/icons';
@@ -31,9 +31,9 @@ import type { RouteOf, TabId } from '../../router';
 import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
 import { equippedOf, owns } from '../model/cosmetics';
-import { formatAges } from '../model/plan';
+import { formatAges, reachedAges } from '../model/plan';
 import { arenaOf, unlocks } from '../model/progress';
-import { featureOpen, onboardingDone, pendingUnlock, unlockFlag, type HomeUnlock } from '../model/warPath';
+import { featureOpen, firstUpgradePending, pendingUnlock, unlockFlag, type HomeUnlock } from '../model/warPath';
 import { askFullscreen } from '../shared/fullscreen';
 import { useMatchStarter } from '../shared/MatchStarter';
 import { ModesSheet } from '../warPath/ModesSheet';
@@ -51,6 +51,16 @@ const FORMAT_FLAG = 'ui-ladderFormat.';
 export function trainingDue(step: number): 1 | 2 | null {
   if (step >= 4) return null;
   return step < 2 ? 1 : 2;
+}
+
+/** The last age of `ages` that the player has reached (else the first of `ages`). */
+function dioramaAge(ages: readonly AgeId[], reached: readonly AgeId[]): AgeId | undefined {
+  return [...ages].reverse().find((a) => reached.includes(a)) ?? ages[0];
+}
+
+/** A loadout's first two troops (the ones that walk out first). */
+function frontline(l: Loadout | undefined): CardId[] {
+  return (l?.units ?? []).filter((c): c is CardId => !!c).slice(0, 2);
 }
 
 export function HomeScreen(_p: { route: RouteOf<'home'> }) {
@@ -74,30 +84,47 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const u = unlocks(s, content);
   const formats = u.ladderFormats;
   const format: FormatId = formats.find((f) => s.flags[FORMAT_FLAG + f]) ?? formats[0] ?? 'short';
-  const opponent = ladderOpen ? services.previewOpponent() : null;
+  const opponent = ladderOpen ? services.previewOpponent(format) : null;
 
-  // The diorama shows both bases in the format's first age; yours wears your base skin (A18.9.4).
-  const age = formatAges(content, format)[0] ?? content.order.ages[0]!;
+  // The diorama shows both bases in the furthest age of the format you have reached (the age the war
+  // builds up to); yours wears your base skin (A18.9.4).
+  const age = dioramaAge(formatAges(content, format), reachedAges(s, content)) ?? content.order.ages[0]!;
   const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
   const skin = eq?.baseSkins?.[age] ?? null;
   const mySkin = skin && owns(s, content, skin) ? skin : null;
   const foeSkin = opponent?.side.look?.baseSkins?.[age] ?? null;
   const teams = hudTeamColors(s.settings.teamPreset, 0);
+  // Each side's frontline troops in the lane: your active War Plan's, and the AI's own plan (the
+  // training General's during the onboarding).
+  const plan = s.warPlans[s.activePlan] ?? s.warPlans[0];
+  const mine = frontline(plan?.loadouts[age]);
+  const trainingGeneral = training ? content.warPath.levels[content.warPath.order[training - 1]!]?.general : undefined;
+  const trainingPlan = trainingGeneral ? content.generals.list[trainingGeneral as keyof typeof content.generals.list]?.warPlan : null;
+  const foeUnits = frontline(opponent ? opponent.side.loadouts[age] : trainingPlan?.[age]);
+  const foe = foeUnits.length > 0 ? foeUnits : mine;
 
   // ---- MR-40: a feature that just opened (never for a legacy save) ------------------------------
   const covered = blockingOverlays.value > 0;
+  // An app overlay on top, or the onboarding's forced first upgrade still to come, holds the unlock
+  // moment until it has closed, so the moment is never used up underneath it (U8, U13).
+  const held = covered || firstUpgradePending(s);
   const [unlock, setUnlock] = useState<HomeUnlock | null>(null);
+  /** A second feature that opened at the same time and shares the moment (the Ladder with the War Path). */
+  const [unlockAlso, setUnlockAlso] = useState<HomeUnlock | null>(null);
   // One new thing per return to Home (U8): at most one unlock moment per visit.
   const unlockShown = useRef(false);
   useEffect(() => {
-    if (unlockShown.current || covered) return;
+    if (unlockShown.current || held) return;
     const f = pendingUnlock(s, content);
     if (!f) return;
     unlockShown.current = true;
-    services.setUiFlags({ [unlockFlag(f)]: true });
+    // The Ladder and the War Path both arrive when the onboarding ends: one combined moment.
+    const also: HomeUnlock | null = f === 'ladder' && featureOpen(s, content, 'campaign') && !s.flags[unlockFlag('campaign')] ? 'campaign' : null;
+    services.setUiFlags({ [unlockFlag(f)]: true, ...(also ? { [unlockFlag(also)]: true } : {}) });
     setUnlock(f);
+    setUnlockAlso(also);
     kit.sound?.('ui_unlock');
-  }, [s, covered]);
+  }, [s, held]);
 
   // ---- Battle ---------------------------------------------------------------------------------
   const [modes, setModes] = useState(false);
@@ -133,7 +160,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
     return () => document.removeEventListener('keydown', onKey);
   });
 
-  const quiet = !!unlock || covered || !!pendingUnlock(s, content);
+  const quiet = !!unlock || held || !!pendingUnlock(s, content);
   const scene = useMemo(() => <ArenaScene arena={arena.id} />, [arena.id]);
 
   return (
@@ -146,13 +173,14 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
     >
       {scene}
       <div class="hub-stage">
-        <Diorama arena={arena.id} age={age} mySkin={mySkin} foeSkin={foeSkin} teamMe={teams.me} teamFoe={teams.foe} launching={launching} />
+        <Diorama arena={arena.id} age={age} mySkin={mySkin} foeSkin={foeSkin} teamMe={teams.me} teamFoe={teams.foe} mine={mine} foe={foe} launching={launching} />
         {ladderOpen ? (
           <div class="hub-stage__caption">
             <ArenaTitle />
             <TrophyBar />
           </div>
-        ) : (
+        ) : unlock ? null : (
+          // The hint steps aside while an unlock moment shows, so its line never covers it.
           <p class="hub-stage__start" data-testid="wp-start">
             {training === 1 ? t('ui.hub.start') : t('ui.hub.startNext')}
           </p>
@@ -209,6 +237,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
       {unlock ? (
         <UnlockPointer
           feature={unlock}
+          also={unlockAlso}
           onOpen={() => {
             const f = unlock;
             const tab = UNLOCK_TAB[f];

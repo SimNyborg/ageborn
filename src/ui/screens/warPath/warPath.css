@@ -234,9 +234,11 @@
 .wp-plate:active {
   transform: scale(var(--ui-press-scale));
 }
+/* While panning the plate steps fully aside (a half-faded panel over the scenery reads as a ghost). */
 .wp-plate.is-aside {
-  opacity: 0.3;
+  opacity: 0;
   transform: translateX(24px);
+  pointer-events: none;
 }
 /* The unlock moment's line may sit where the plate is: the plate steps out until it folds away. */
 .wp-plate.is-away {
@@ -406,6 +408,12 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.wp-road__wear {
+  stroke-width: 46;
+  stroke-dasharray: 26 10 9 14 40 8;
+  stroke-linecap: round;
+  opacity: 0.28;
+}
 .wp-road__shadow {
   stroke: rgba(0, 0, 0, 0.35);
   stroke-width: 30;
@@ -484,6 +492,10 @@
 }
 .wp-regionName.is-start {
   transform: translate(-50%, -50%);
+}
+/* Riding along the view's left edge: under the nodes, so a node passing by is never covered. */
+.wp-regionName.is-pinned {
+  z-index: 1;
 }
 .wp-regionName__text {
   font: 700 var(--ui-fs-body) / var(--ui-lh-body) var(--ui-font-display);

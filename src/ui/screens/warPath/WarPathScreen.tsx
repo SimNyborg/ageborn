@@ -193,6 +193,8 @@ export function WarPathScreen(_p: { route: RouteOf<'warPath'> }) {
   // ---- panels and play --------------------------------------------------------------------------
   const [sheet, setSheet] = useState<MapNode | null>(null);
   const [panning, setPanning] = useState(false);
+  // The current level is off the view: the "Back to my level" chip takes the plate's row.
+  const [away, setAway] = useState(false);
   const [launching, setLaunching] = useState(false);
   const starter = useMatchStarter();
   // The road stays between the top bar and the plate (4.1): measure both.
@@ -269,6 +271,7 @@ export function WarPathScreen(_p: { route: RouteOf<'warPath'> }) {
         show={show}
         handle={(h) => (map.current = h)}
         onPanning={setPanning}
+        onAway={setAway}
         onNode={(n) => {
           if (ceremonyOn) {
             finishCeremony();
@@ -313,7 +316,9 @@ export function WarPathScreen(_p: { route: RouteOf<'warPath'> }) {
       <div class="wp-dock" ref={dockRef}>
         <button
           type="button"
-          class={`wp-plate${panning ? ' is-aside' : ''}`}
+          class={`wp-plate${away ? ' is-away' : panning ? ' is-aside' : ''}`}
+          aria-hidden={away ? 'true' : undefined}
+          tabIndex={away ? -1 : undefined}
           data-testid="level-plate"
           key={playId}
           onClick={() => setSheet(playNode)}

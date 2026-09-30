@@ -422,8 +422,6 @@
       "councilLines": "War Council research for this age",
       "councilLineHas": "{cls}: research helps this age",
       "councilLineNone": "{cls}: no unit in this age",
-      "turrets": "Turrets",
-      "powers": "Powers",
       "blockedTitle": "War Plan not ready",
       "blockedBody": "Your War Plan can't play {format} yet:",
       "blockedFix": "Open War Plan"
@@ -439,7 +437,7 @@
       "avgLabel": "Average level of your {age} army",
       "counters": "Who beats whom",
       "moreAges": "More ages",
-      "moreAgesReason": "Win War Path levels to reach more ages",
+      "moreAgesReason": "Climb arenas or win War Path levels to reach more ages",
       "ageShort": {
         "stone": "Stone",
         "bronze": "Bronze",
@@ -461,25 +459,6 @@
         "power": "Power",
         "more": "More in capsules"
       },
-      "view": {
-        "label": "Which cards",
-        "age": "This age",
-        "all": "All cards {n}/{max}"
-      },
-      "filter": "Filter",
-      "filterCount": "Filter {n}",
-      "filterTitle": "Filter and sort",
-      "filterClass": "Class",
-      "filterRarity": "Rarity",
-      "filterOwned": "Owned only",
-      "anyRarity": "Any",
-      "sort": "Sort",
-      "sortNone": "Default",
-      "sortLevel": "Level",
-      "sortRarity": "Rarity",
-      "sortCost": "Cost",
-      "sortReady": "Ready to upgrade",
-      "clear": "Clear all",
       "removeFilter": "Remove filter {name}",
       "onlyKind": "{slot} cards",
       "use": "Use",
@@ -487,17 +466,11 @@
       "upgrade": "Upgrade",
       "remove": "Remove",
       "inArmy": "In army",
-      "group": {
-        "free": "Not in army · {n}",
-        "used": "In your army · {n}",
-        "locked": "Not found yet · {n}"
-      },
       "otherAge": "{age} card: switch to {age}",
       "notOwned": "Not found yet",
       "hintFirst": "Tap a card, then Use",
       "hintCard": "Tap a glowing slot, or Use",
       "hintSlot": "Pick a card for this slot",
-      "none": "No cards match these filters.",
       "advice": "Advice",
       "adviceMore": "+{n}",
       "presets": "Armies",
@@ -544,17 +517,7 @@
     "collection": {
       "cards": "Cards",
       "skins": "Skins",
-      "progress": "{n}/{max} cards",
-      "foils": "{n} foils",
-      "all": "All",
-      "allRoles": "All classes",
-      "owned": "Owned",
-      "missing": "Missing",
-      "filterAge": "Filter by age",
-      "filterRarity": "Filter by rarity",
-      "filterRole": "Filter by class",
-      "filterOwned": "Owned or missing",
-      "none": "No cards match these filters."
+      "foils": "{n} foils"
     },
     "road": {
       "best": "Best {n}",
@@ -840,13 +803,12 @@
       "wrongSlot": {
         "home": "Home powers go in the Home slot",
         "field": "Field powers go in the Field slot"
-      },
-      "filterSlots": "Power slot"
+      }
     },
     "hub": {
-      "campaign": "Campaign",
-      "campaignSub": "Play offline, earn cards",
-      "campaignNext": "Next: {n}. {name}",
+      "campaign": "War Path",
+      "campaignSub": "Solo campaign vs AI",
+      "campaignNext": "Next: {name}",
       "campaignDone": "Every level beaten",
       "training": "Training match",
       "start": "Win your first battle",
@@ -858,6 +820,51 @@
       },
       "roadNext": "Next at {n}",
       "opponent": "Opponent"
+    },
+    "armyAge": {
+      "battle": "In battle",
+      "troops": "Troops {n}/{max}",
+      "turrets": "Turrets {n}/{max}",
+      "powers": "Powers {n}/{max}",
+      "available": "Available · {n}",
+      "availableHint": "Tap a card, then Use, or drag it onto a slot",
+      "availableEmpty": "Every card you own for this age is in battle. Open capsules to find more.",
+      "locked": "Locked · {n}",
+      "lockedOwned": "You own {n} of {max} {age} cards",
+      "lockedNone": "All {max} {age} cards found!",
+      "album": "Card Album {n}/{max}",
+      "src": {
+        "capsule": "Time Capsules",
+        "warPath": "War Path {level}",
+        "road": "Road {n}",
+        "starter": "Starter",
+        "arena": "Capsules · Arena {n}"
+      }
+    },
+    "dex": {
+      "title": "Card Album",
+      "found": "{n}/{max} found",
+      "percent": "{pct}%",
+      "complete": "Complete!",
+      "ageCount": "{n}/{max}",
+      "number": "No. {n}",
+      "missing": "Not found yet",
+      "jump": "Jump to an age",
+      "filters": "Filters",
+      "show": "Show",
+      "all": "All",
+      "owned": "Have",
+      "missingFilter": "Missing",
+      "rarity": "Rarity",
+      "anyRarity": "Any",
+      "class": "Class",
+      "anyClass": "All classes",
+      "none": "No cards match these filters.",
+      "clear": "Clear filters",
+      "src": {
+        "capsule": "Time Capsules",
+        "capsuleArena": "Time Capsules from Arena {n}"
+      }
     }
   }
 }

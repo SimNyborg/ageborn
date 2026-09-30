@@ -207,7 +207,7 @@ const VARIANTS: Variant[] = [
   { id: 'profile', label: 'Profile', route: () => [{ id: 'home' }, { id: 'profile' }] },
   { id: 'settings', label: 'Settings', route: () => [{ id: 'home' }, { id: 'settings' }] },
   { id: 'conquest', label: 'Conquest', route: () => [{ id: 'home' }, { id: 'conquest' }] },
-  ...(['troops', 'bases', 'flags', 'decorations', 'emotes', 'quotes', 'look'] as const).map(
+  ...(['troops', 'bases', 'backdrops', 'flags', 'decorations', 'emotes', 'quotes', 'look'] as const).map(
     (tab): Variant => ({ id: `customize-${tab}`, label: `Customize: ${tab}`, route: () => [{ id: 'home' }, { id: 'customize', tab }] }),
   ),
 ];

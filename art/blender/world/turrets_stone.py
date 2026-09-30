@@ -5,6 +5,7 @@ about its pivot; `fire` has a per-frame muzzle anchor where the projectile leave
 """
 import math
 
+from ageborn_art import face as F
 from ageborn_art.geometry import Geo
 
 from world.common import box, cyl, muzzle_flash, pennant, rock, rope, smoke_puff, turret_module
@@ -74,14 +75,23 @@ def rock_tosser_build(rig):
 
 
 def rock_tosser_idle(f):
-    return {"arm": {"r": 42.0 + 2.0 * math.sin(f / 4 * 2 * math.pi)}}
+    # 6-frame loop: the arm creaks back and forth, the loaded boulder wobbles in its cup
+    w = math.sin(f / 6 * 2 * math.pi)
+    return {"arm": {"r": 42.0 + 3.0 * w, "sz": 1.0 - 0.02 * math.cos(f / 6 * 2 * math.pi)},
+            "boulder": {"r": 14 * math.sin(f / 6 * 4 * math.pi), "z": 0.8 * max(0.0, -w)}}
 
 
 def rock_tosser_fire(f):
-    # cocked back (+r = counter-clockwise = toward -x), release forward, overshoot, recover
-    table = [(54, True), (-28, False), (-44, False), (-10, False), (26, True)]
-    a, loaded = table[f]
-    return {"arm": {"r": a}, "boulder": {"hide": not loaded, "s": 0.4 if f == 4 else 1.0}, "dust": {"show": f in (1, 2)}}
+    # 0 cranked far back (anticipation: the arm bends), 1 release (the arm whips, smear),
+    # 2 overshoot, 3 bounce back, 4 reloaded and returning
+    table = [(66, True, 0.9), (-28, False, 1.08), (-50, False, 1.0), (-14, False, 1.0), (30, True, 1.0)]
+    a, loaded, sz = table[f]
+    return {"arm": {"r": a, "sz": sz}, "boulder": {"hide": not loaded, "s": 0.6 if f == 4 else 1.0},
+            "dust": {"show": f in (1, 2), "s": 1.3 if f == 1 else 1.0}}
+
+
+ROCK_TOSSER_OVERLAYS = {"fire": {1: [{"kind": "arc", "joint": "arm", "inner": (-1.5, 0, 38), "outer": (-2.5, 0, 58),
+                                      "color": WOOD, "taper": 0.2, "t0": 0.0, "t1": 0.85, "lines": 3}]}}
 
 
 # -- Angry Beehive: a hive hanging from a branch on a stump ----------------------------------------
@@ -111,8 +121,27 @@ def beehive_build(rig):
     g = Geo()
     cyl(g, (8, 0, 32.8), (8, 0, 34.6), 10.9, bevel=0.3, segs=18)
     rig.part("head", g, team=True, outline=0.4)
-    g = Geo().blob((13, -8.5, 28), (3.2, 1.2, 2.6), p=2.0)
-    rig.part("head", g, BEE_DK, outline=0, highlight=False)
+    # the entrance is its mouth (it gapes on fire); an angry face above it
+    rig.joint("hole", "head", (13, -8.5, 28))
+    g = Geo().blob((13, -8.5, 28), (3.4, 1.4, 2.8), p=2.0)
+    rig.part("hole", g, BEE_DK, outline=0, highlight=False)
+    hive = Geo().lathe(prof, (8, 0, 22), (8, 0, 43), segs=18)
+    face = F.Face(rig, "head", [hive])
+    hive.bm.free()
+    g = Geo()
+    for x, z in ((9.0, 38.0), (15.4, 37.6)):
+        face.decal(g, face.hit(x, z), F.ellipse(0, 0, 2.3, 2.8, 14), 0.4)
+    rig.part("head", g, EYE, highlight=False, outline=0)
+    rig.joint("pupils", "head", (12, -10, 38))
+    g = Geo()
+    for x, z in ((9.0, 38.0), (15.4, 37.6)):
+        face.decal(g, face.hit(x, z) - face.view * 0.3, F.ellipse(0.8, -0.4, 1.3, 1.6, 10), 0.4)
+    rig.part("pupils", g, PUPIL, highlight=False, outline=0)
+    rig.joint("brows", "head", (12, -10, 41))
+    g = Geo()
+    for (x, z), d in (((9.0, 41.4), 1), ((15.4, 41.0), -1)):
+        face.stroke(g, face.hit(x, z) - face.view * 0.4, [(-2.4 * d, 1.1), (2.0 * d, -0.9)], 1.4, 0.4)
+    rig.part("brows", g, BEE_DK, highlight=False, outline=0)
     for i, (x, z) in enumerate(((22, 40), (-4, 34), (20, 22))):
         rig.joint(f"bee{i}", "head", (x, -10, z))
         g = Geo().blob((x, -10, z), (2.6, 2.0, 2.0), p=2.0)
@@ -124,17 +153,30 @@ def beehive_build(rig):
 
 
 def beehive_idle(f):
-    w = math.sin(f / 4 * 2 * math.pi)
-    return {"head": {"r": 3.0 * w}, "bee0": {"x": 3 * w, "z": 2 * math.cos(f * 1.6)},
-            "bee1": {"x": -2 * w, "z": 3 * w}, "bee2": {"x": 2 * math.cos(f * 1.6), "z": -2 * w}}
+    # 6-frame loop: the bees orbit the hive, it sways and grumbles (brows twitch)
+    t = f / 6 * 2 * math.pi
+    out = {"head": {"r": 3.0 * math.sin(t)}, "brows": {"z": 0.5 * math.sin(2 * t)},
+           "pupils": {"x": 0.4 * math.sin(t)}}
+    for i in range(3):
+        a = t + i * 2 * math.pi / 3
+        out[f"bee{i}"] = {"x": 7 * math.cos(a), "z": 5 * math.sin(a), "y": 3 * math.sin(a)}
+    return out
 
 
 def beehive_fire(f):
-    sq = [0.08, -0.12, 0.05, -0.02, 0.0][f]
-    spread = [0.0, 6.0, 10.0, 5.0, 1.0][f]
+    # 0 inhales (squashed, eyes squeezed, brows down), 1 spits the bee stream (stretched, the
+    # entrance gapes), 2-4 recover
+    sq = [0.12, -0.14, 0.05, -0.02, 0.0][f]
+    spread = [0.0, 8.0, 12.0, 6.0, 1.0][f]
     return {"head": {"sz": 1 - sq, "sx": 1 + sq * 0.9, "sy": 1 + sq * 0.9},
+            "hole": {"s": [0.7, 1.7, 1.4, 1.1, 1.0][f]},
+            "brows": {"z": [-1.2, -0.6, 0.0, 0.0, 0.0][f]},
             "bee0": {"x": spread, "z": spread * 0.4}, "bee1": {"x": spread * 1.4, "z": -spread * 0.3},
             "bee2": {"x": spread * 0.8, "z": -spread * 0.6}}
+
+
+BEEHIVE_OVERLAYS = {"fire": {1: [{"kind": "burst", "joint": "head", "point": (16, -9, 28), "r0_lu": 5.0, "r1_lu": 9.0,
+                                  "n": 3, "a0": -40.0, "arc": 80.0}]}}
 
 
 # -- Log Roller: a log held on a ramp, cut loose on fire ------------------------------------------
@@ -169,13 +211,16 @@ def log_roller_build(rig):
 
 
 def log_roller_idle(f):
-    return {"log": {"r": 1.5 * math.sin(f / 4 * 2 * math.pi)}}
+    # 6-frame loop: the log strains against its rope, jittering; the lever trembles
+    t = f / 6 * 2 * math.pi
+    return {"log": {"r": 3.0 * math.sin(t), "x": 0.6 * math.sin(3 * t)}, "lever": {"r": 2.0 * math.sin(2 * t)}}
 
 
 def log_roller_fire(f):
     x = [0, 14, 24, 0, 0][f]
-    return {"lever": {"r": [0, -40, -50, -30, 0][f]}, "log": {"x": x, "z": -x * 0.55, "r": -x * 6,
-                                                            "hide": f == 2, "s": 0.5 if f == 3 else 1.0},
+    return {"lever": {"r": [18, -40, -50, -30, 0][f]}, "log": {"x": x - (1.5 if f == 0 else 0), "z": -x * 0.55,
+                                                             "r": -x * 6, "hide": f == 2,
+                                                             "s": 0.5 if f == 3 else 1.0},
             "dust": {"show": f in (1, 2)}}
 
 
@@ -226,28 +271,41 @@ def toad_build(rig):
     rig.part("maw", g, MOUTH, outline=0, highlight=False)
     g = Geo().blob((11, 0, 18.4), (6, 6.4, 2.6), p=2.0)
     rig.part("maw", g, "#C8707E", outline=0)
+    # throat sac (puffs up before the tongue lash) and an eyelid for blinks
+    rig.joint("sac", "head", (7, -2, 14))
+    g = Geo().blob((8, -2, 13.5), (6.4, 7.2, 4.4), p=2.2)
+    rig.part("sac", g, TOAD_LT)
+    rig.joint("lid", "head", (9.6, -9, 32), hidden=True)
+    g = Geo().blob((9.8, -9.3, 32.3), (2.9, 1.9, 2.7), p=2.0)
+    rig.part("lid", g, TOAD, outline=0.4)
     # a team bandana
     g = Geo().blob((-6, 0, 22.5), (8.6, 12.6, 2.2), p=2.4, rot=(0, -20, 0))
     rig.part("head", g, team=True, outline=0.5)
 
 
 def toad_idle(f):
-    w = math.sin(f / 4 * 2 * math.pi)
-    return {"head": {"sz": 1 + 0.025 * w, "sx": 1 - 0.02 * w}, "jaw": {"sz": 1 + 0.12 * max(0, w)}}
+    # 6-frame loop: breathing, the throat sac pulses twice, one blink
+    t = f / 6 * 2 * math.pi
+    w = math.sin(t)
+    return {"head": {"sz": 1 + 0.025 * w, "sx": 1 - 0.02 * w}, "jaw": {"sz": 1 + 0.08 * max(0, w)},
+            "sac": {"s": 1.0 + 0.25 * max(0.0, math.sin(2 * t))}, "lid": {"show": f == 4}}
 
 
 def toad_fire(f):
-    return {"jaw": {"r": [-4, -26, -22, -10, 0][f]}, "maw": {"show": f in (1, 2, 3)},
+    # 0 the throat inflates (anticipation), 1 tongue lash (the maw opens, the sac empties), 2-4 recover
+    return {"jaw": {"r": [-2, -26, -22, -10, 0][f]}, "maw": {"show": f in (1, 2, 3)},
+            "sac": {"s": [1.6, 0.7, 0.85, 1.0, 1.0][f]}, "lid": {"show": f == 0},
             "head": {"sz": [0.9, 1.08, 1.03, 1.0, 1.0][f], "sx": [1.08, 0.95, 0.98, 1.0, 1.0][f], "x": [-1.5, 2, 1, 0, 0][f]}}
 
 
 TURRETS = [
     turret_module("rock_tosser", "Rock Tosser", "stone", 58, CANVAS, FEET, (0, 22), (-2.5, 0, 57), rock_tosser_build,
-                  rock_tosser_idle, rock_tosser_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="boulder"),
+                  rock_tosser_idle, rock_tosser_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="boulder",
+                  idle_frames=6, overlays=ROCK_TOSSER_OVERLAYS),
     turret_module("angry_beehive", "Angry Beehive", "stone", 50, CANVAS, FEET, (8, 44), (14, -9, 28), beehive_build,
-                  beehive_idle, beehive_fire, aim=(0, 0), fire_kind="pulse"),
+                  beehive_idle, beehive_fire, aim=(0, 0), fire_kind="pulse", idle_frames=6, overlays=BEEHIVE_OVERLAYS),
     turret_module("log_roller", "Log Roller", "stone", 44, CANVAS, FEET, (0, 0), (16, 0, 12), log_roller_build,
-                  log_roller_idle, log_roller_fire, aim=(0, 0), fire_kind="release"),
+                  log_roller_idle, log_roller_fire, aim=(0, 0), fire_kind="release", idle_frames=6),
     turret_module("grumpy_toad", "Grumpy Toad", "stone", 40, CANVAS, FEET, (0, 12), (15, -2, 18.5), toad_build,
-                  toad_idle, toad_fire, aim=(-18, 18), fire_kind="tongue"),
+                  toad_idle, toad_fire, aim=(-18, 18), fire_kind="tongue", idle_frames=6),
 ]

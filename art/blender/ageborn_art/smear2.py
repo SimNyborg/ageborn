@@ -7,7 +7,8 @@ outline: it vanished at game size. v2 paints bold cartoon shapes *over* the fini
   arc     a crescent swept by a weapon edge (inner and outer point on a joint) between two
           poses, tapered at the trailing end, weapon colour mixed 30% with white, a dark
           outline and 2-3 trailing speed lines. Inner = hand and outer = sling pouch gives a
-          ring or fan smear for whirls.
+          ring or fan smear for whirls; pass `band` (0.3-0.45) so a whirl paints a hollow
+          ring, not a solid disc that reads as a shield at game size.
   claw    three thin tapered crescents (claw rakes)
   streak  a straight thrust: a tapered wedge along the path plus parallel speed lines
   dust    a cartoon dust puff at a point (ground contact, club bounce, hoof scrape)
@@ -120,10 +121,13 @@ def _arc(d, rig, pa, pb, spec, lu):
                           spec.get("t0", 0.0), spec.get("t1", 0.9), spec.get("samples", 16))
     n = len(outer)
     tp = spec.get("taper", 0.0)
+    # band < 1 fills only the outer part of the swept area (a hollow whirl ring instead of a
+    # solid pie disc; use it whenever inner is the hand and the sweep is a full turn)
+    band = spec.get("band", 1.0)
     top, bot = [], []
     for k in range(n):
         u = k / (n - 1)
-        w = _taper(u, tp)
+        w = _taper(u, tp) * band
         o, i = outer[k], inner[k]
         top.append(o)
         bot.append((o[0] + (i[0] - o[0]) * w, o[1] + (i[1] - o[1]) * w))

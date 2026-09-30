@@ -27,6 +27,10 @@ describe('cosmetic collections (A18.9.4)', () => {
     expect(of('nationalFlag').length).toBeGreaterThanOrEqual(40);
     expect(of('decoration').length).toBeGreaterThanOrEqual(20);
     for (const age of AGE_ORDER) expect(of('baseSkin').some((x) => x.age === age), `base skin for ${age}`).toBe(true);
+    // battle backdrops (owner request 2026-09-30): at least 8, every rarity, none free at the start
+    expect(of('backdrop').length).toBeGreaterThanOrEqual(8);
+    expect(new Set(of('backdrop').map((x) => x.rarity)).size).toBe(4);
+    expect(col.defaults.backdrop).toBeNull();
   });
 
   it('has emotes for every age and general themes', () => {
@@ -59,7 +63,7 @@ describe('cosmetic collections (A18.9.4)', () => {
       expect(en[x.nameKey], x.nameKey).toBeTruthy();
       if (x.textKey) expect(en[x.textKey], x.textKey).toBeTruthy();
     }
-    for (const c of ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration']) expect(en[`cosmetic.collection.${c}`]).toBeTruthy();
+    for (const c of ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop']) expect(en[`cosmetic.collection.${c}`]).toBeTruthy();
   });
 
   it('keeps quotes short, friendly and free of insults (A16.28)', () => {

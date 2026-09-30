@@ -2,20 +2,28 @@
 
 Look (A17.12): a wheeled torsion bolt-thrower. A plum carriage with a long trail and two
 six-spoked wheels (a team spoke and a rim stud mark the roll) carries the weapon on a pivot:
-a long wooden stock, a plum torsion housing up front with aged-bronze washers and two swept
-team-painted bow arms (the team colour stays off the bolt, which reads as a projectile), a taut string, a
-heavy bolt with a polished head and sandstone fletching, and a windlass with a crank at the
-back. A crewman in a leather cap and a team tunic stands behind it, hands on the crank. The
-walk (a team pennant flies from a pole on the trail): he leans in and pushes it along with a pumping stride (the wheels roll at the ground
-speed). The attack: crank, crank (the string winds back),
-aim (held), release (the arms whip forward, the frame kicks and the bolt leaves at the
-per-frame `muzzle`), a recoil bounce, and he cranks the next bolt into place. The death: the
-frame tips back, the near wheel comes off, and the crewman is knocked backward and lands flat
-on the ground (contact on frame 4, a small bounce) before the dust hand-off.
+a long wooden stock, a plum torsion housing up front with aged-bronze washers, rope skein
+bundles with lashing bands and two swept team-painted bow arms (the team colour stays off the
+bolt, which reads as a projectile), a taut string, a heavy bolt with a polished head and
+sandstone fletching, a rack of spare bolts on the trail and a windlass with a crank at the
+back. A crewman in a leather cap (face kit, beard) and a team tunic works it.
+
+Animation (cartoon kit v2; a viewer expects a crew to crank, aim and let fly with a kick):
+  idle    the aimer nudges the elevation and peers along the stock, blink
+  walk    he leans in and pushes it along; the wheels roll at the ground speed
+  attack  CRANK, LOCK AND WHIP: three crank frames (the handle spins, the string winds back,
+          the arms bend), the aimer squints along the stock (the held extreme), release: the
+          torsion arms whip forward (smear, whip lines), the bolt leaves at the per-frame
+          `muzzle`, the whole frame hops and kicks back, lands with dust; he grabs a new bolt
+          from the rack and drops it into the groove
+  hit     vehicle: the carriage bounces, the crewman ducks and squeezes his eyes
+  die     D7 wreck: the frame tips back, the near wheel comes off, the crewman is knocked flat
+          (X eyes)
 """
 import math
 
-from ageborn_art import fx
+from ageborn_art import face as F
+from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_gunpowder as G
 from ageborn_art.anim import Clip, merge, pick, squash
@@ -28,6 +36,7 @@ YAW_DEG = -10.0
 CANVAS = (540, 270)
 FEET = (326, 246)
 ANCHORS = {"head": (-20, 74), "hitCenter": (0, 32)}
+NO_RETIME = True
 
 WHEEL_R = 15.0
 AXLE = (0.0, 0.0, WHEEL_R)
@@ -83,6 +92,18 @@ def build(rig):
     rig.part("cart", g, team=True, outline=0.8)
     g = Geo().capsule((-30.5, -8.8, 11.5), (-4.0, -8.8, 29.5), 0.9)
     rig.part("cart", g, B.SAND_LT, outline=0.4)
+    # a rack of spare bolts strapped along the near side of the trail
+    g = Geo()
+    for k in range(3):
+        g.capsule((-38.0 + 2.0 * k, -9.6 - 0.6 * k, 5.0 + 1.8 * k), (-12.0 + 2.0 * k, -9.6 - 0.6 * k, 22.5 + 1.8 * k), 0.8)
+    rig.part("cart", g, B.WOOD, outline=0.5)
+    g = Geo()
+    for k in range(3):
+        g.lathe([(0, 0), (1.1, 0.5), (1.6, 2.0), (0, 4.6)], (-12.0 + 2.0 * k, -9.8 - 0.6 * k, 22.5 + 1.8 * k),
+                (-8.3 + 2.0 * k, -9.8 - 0.6 * k, 25.0 + 1.8 * k), segs=8, squash=(1.0, 0.5))
+    rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.4)
+    g = Geo().capsule((-26.0, -12.2, 12.0), (-24.0, -12.2, 17.0), 1.0).capsule((-19.0, -12.2, 17.0), (-17.0, -12.2, 21.6), 1.0)
+    rig.part("cart", g, B.LEATHER_DK, outline=0.3)
 
     # the weapon on the pivot: stock, slider, torsion housing, arms, string, bolt, windlass
     tx, ty, tz = TRUN
@@ -104,6 +125,11 @@ def build(rig):
     for y in (-8.5, 8.5):
         g.capsule((hx, y, tz - 7.6), (hx, y, tz + 13.6), 2.6)         # the skein bundles
     rig.part("frame", g, B.SAND_DK, finish="hair", outline=0.6)
+    g = Geo()
+    for y in (-8.5, 8.5):
+        for z in (tz - 3.0, tz + 3.0, tz + 9.0):
+            g.lathe([(0, -0.7), (3.0, -0.7), (3.1, 0.7), (0, 0.7)], (hx, y, z), (hx, y, z + 1.0), segs=12)
+    rig.part("frame", g, B.LEATHER_DK, outline=0.4)
     g = Geo().capsule((hx + 6.0, 0, tz - 4.0), (hx + 6.0, 0, tz + 10.0), 1.0)
     rig.part("frame", g, B.AGED_DK, finish="metal", outline=0.5)
     for s, y, dz in (("n", -1.0, -13.0), ("f", 1.0, 17.0)):
@@ -164,18 +190,24 @@ def build(rig):
     rig.part("hips", g, team=True)
     g = Geo().blob((0.4, 0, 20.4), (11.0, 10.1, 1.8), p=3.2)
     rig.part("torso", g, B.LEATHER)
-    B.head_ball(rig)
-    B.face(rig, cx=12.0, cz=50.0, brow=B.HAIR, eye_r=(3.2, 3.0, 3.8))
-    g = Geo().blob((11.0, 0, 41.2), (6.2, 8.6, 3.6), p=2.2)           # short beard
-    g.blob((-5.6, 0, 46.4), (5.4, 9.2, 6.0), p=2.2)
-    rig.part("head", g, B.HAIR, finish="hair")
+    beard = Geo().blob((11.0, 0, 41.2), (6.2, 8.6, 3.6), p=2.2)       # short beard
+    B.face_kit(rig, cx=13.4, cz=50.0, eye_r=(3.8, 3.4, 4.5), extra=[beard], mouth_z=44.6, mouth_w=4.8)
+    beard.blob((-5.6, 0, 46.4), (5.4, 9.2, 6.0), p=2.2)
+    rig.part("head", beard, B.HAIR, finish="hair")
     g = Geo().blob((1.2, 0, 55.4), (12.0, 11.6, 8.4), p=2.4)          # leather cap
     g.clip((0, 0, 54.0), (0, 0, -1))
     rig.part("head", g, B.LEATHER)
-    g = Geo().blob((1.2, 0, 54.4), (12.6, 12.2, 1.4), p=2.8)
-    rig.part("head", g, B.LEATHER_DK, outline=0.6)
+    g = Geo().blob((1.2, 0, 55.0), (12.7, 12.3, 2.2), p=2.8)       # team cap band
+    rig.part("head", g, team=True, outline=0.6)
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.0, r1=3.6)
+    # a spare bolt in the crewman's near hand for the reload (hidden until he grabs it)
+    rig.joint("spare", "hand_r", (0.0, G.ARM_Y["r"], G.HAND_Z))
+    g = Geo().capsule((-14.0, G.ARM_Y["r"] - 1.5, G.HAND_Z), (14.0, G.ARM_Y["r"] - 1.5, G.HAND_Z), 0.9)
+    rig.part("spare", g, B.WOOD, outline=0.5)
+    g = Geo().lathe([(0, 0), (1.3, 0.6), (2.0, 2.4), (0, 6.0)], (14.0, G.ARM_Y["r"] - 1.5, G.HAND_Z),
+                    (20.0, G.ARM_Y["r"] - 1.5, G.HAND_Z), segs=8, squash=(1.0, 0.5))
+    rig.part("spare", g, B.BRONZE, finish=B.POLISH, outline=0.4)
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
@@ -207,8 +239,22 @@ def _crew(dx=0.0):
 
 
 def _idle(f):
-    c, lag = B.idle_wave(f)
-    return merge(_crew(), B.idle_body(f), gun(IDLE_ELEV + 0.5 * c), crank_hands(-30.0), {"torso": {"r": -8}})
+    # 6 poses in 920 ms: he nudges the elevation up (2), peers along the stock (3), lets it
+    # settle; a blink on 5
+    c = math.cos(2 * math.pi * f / 6)
+    lag = math.cos(2 * math.pi * (f - 1) / 6)
+    peer = [0.0, 0.4, 1.0, 1.0, 0.4, 0.0][f]
+    elev = IDLE_ELEV + 1.2 * peer
+    pose = merge(_crew(), gun(elev, tilt=0.3 * c), crank_hands(-30.0 + 10 * peer, elev), {
+        "hips": {"z": -0.6 * c}, "body": squash(-0.025 * c),
+        "torso": {"r": -8 - 8 * peer}, "head": {"r": -2.0 * lag - 6 * peer},
+        "pupils": {"x": 0.4 * peer},
+    })
+    if f == 5:
+        pose = merge(pose, F.expr("blink"))
+    elif peer > 0.9:
+        pose = merge(pose, {"brow": {"z": -0.8}})
+    return pose
 
 
 WALK_MS = 100
@@ -229,43 +275,95 @@ def _walk(f):
     })
 
 
-ATTACK_MS = [100, 100, 167, 83, 83, 100, 125, 125]
-ATTACK_IMPACT = 3
+# 10 unique frames in the shipped 883 ms, impact (release) at 367 ms (impactAt 0.4156)
+ATTACK_MS = [60, 60, 60, 187, 80, 70, 80, 100, 100, 86]
+ATTACK_IMPACT = 4
+#          crank crank crank AIM  REL  hop  land grab load settle
+E_EL = [IDLE_ELEV + 1, IDLE_ELEV + 1.5, IDLE_ELEV + 2, FIRE_ELEV, FIRE_ELEV + 1.5, FIRE_ELEV,
+        FIRE_ELEV - 1, IDLE_ELEV + 2, IDLE_ELEV + 1, IDLE_ELEV]
+E_REC = [0, 0, 0, 0, 5.0, 7.0, 5.0, 2.5, 1.0, 0]
+E_HOP = [0, 0, 0, 0, 1.5, 3.2, 0, 0.4, 0, 0]
+E_TILT = [0, 0, 0, 0, 2.0, 2.5, -1.0, 0.3, 0, 0]
+E_SPIN = [0, 0, 0, 0, -10, -22, -28, -22, -10, 0]
+E_CLAW = [-8.0, -17.0, -26.0, -28.0, 1.5, 0.0, 0.0, 0.0, -6.0, 0.0]
+E_CRANK = [60.0, 150.0, 240.0, 250.0, 250.0, 250.0, 250.0, 250.0, 250.0, 330.0]
+E_BOW = [-3, -7, -10, -11, 7, -3, 2, 0, 0, 0]
+E_Q = [-0.03, -0.05, -0.03, 0.0, -0.1, 0.05, -0.09, 0.0, 0.0, 0.0]
+C_DX = [0, 1, 0, -1, -3, -3, -2, 4, 6, 1]
+C_T = [-16, -6, -14, -24, 6, 8, 2, -18, -22, -8]
+C_H = [2, -2, 2, -8, 12, 8, 2, 4, 6, 0]
+C_THR = [14, 4, 16, 10, -6, -8, -2, 20, 22, 6]
+C_THL = [-14, -6, -16, -8, 8, 6, 2, -18, -20, -6]
+
+
+def load_hands(tx, tz, crew_dx):
+    """Both crew hands reaching to a point (character space) in front of him."""
+    sx = CREW_X + crew_dx
+    tgt = (tx - sx, tz)
+    ar, fr = G.ik2((0.0, G.SHOULDER_Z), tgt)
+    al, fl = G.ik2((0.0, G.SHOULDER_Z), (tgt[0] + 4.0, tgt[1] + 1.0))
+    return merge(G.arm("r", ar, fr), G.arm("l", al, fl))
 
 
 def _attack(f):
-    # 0-1 crank (the string winds back, squash), 2 aim (held, the frame lifts), 3 release: the
-    # arms whip forward, the string snaps, the bolt leaves (projectile at `muzzle`), the frame
-    # kicks; 4 recoil bounce with dust, 5-7 crank the next bolt into place
-    elev = pick(f, [IDLE_ELEV + 1, IDLE_ELEV + 2, FIRE_ELEV, FIRE_ELEV + 3, FIRE_ELEV + 1, IDLE_ELEV + 2,
-                    IDLE_ELEV + 1, IDLE_ELEV])
-    recoil = pick(f, [0, 0, 0, 5.0, 7.0, 4.0, 1.5, 0])
-    claw = pick(f, [-8.0, -18.0, -26.0, 0.0, 1.5, 0.0, -6.0, 0.0])
-    ang = pick(f, [60.0, 170.0, 200.0, 200.0, 200.0, 280.0, 340.0, 330.0])
-    pose = merge(_crew(pick(f, [0, 0, -1, -3, -3, -1, 0, 0])),
-                 gun(elev, recoil, pick(f, [0, 0, 0, 1.5, 2.5, 0.5, 0, 0]), pick(f, [0, 0, 0, 3.0, 4.0, 1.0, 0, 0]),
-                     pick(f, [0, 0, 0, -12, -24, -20, -8, 0])),
-                 crank_hands(ang, elev, pick(f, [0, 0, -1, -3, -3, -1, 0, 0]), recoil), {
-        "unit": dict(squash(pick(f, [-0.02, -0.04, -0.02, -0.1, 0.05, -0.02, 0, 0]))),
-        "claw": {"x": claw},
-        "bolt": {"hide": f in (3, 4), "s": 0.4 if f == 5 else 1.0},
-        "bow_n": {"r": pick(f, [-3, -7, -10, 6, 3, 0, -3, 0])},
-        "bow_f": {"r": pick(f, [3, 7, 10, -6, -3, 0, 3, 0])},
-        "torso": {"r": pick(f, [-10, -14, -6, 8, 6, 0, -10, -8])},
-        "head": {"r": pick(f, [0, -4, 4, 10, 8, 2, 0, 0])},
-        "thigh_r": {"r": pick(f, [10, 16, 6, -6, -8, -4, 8, 4])},
-        "thigh_l": {"r": pick(f, [-10, -18, -4, 8, 6, 2, -8, -4])},
-        "dust": {"show": f in (4, 5), "s": pick(f, [1, 1, 1, 1, 0.8, 1.2, 1, 1])},
+    elev, rec = E_EL[f], E_REC[f]
+    if f in (7, 8):
+        # grabs a spare bolt from the rack (7), lays it into the groove (8)
+        hands = load_hands(-36.0 if f == 7 else -24.0, 30.0 if f == 7 else 44.0, C_DX[f])
+        hands = merge(hands, {"crank": {"r": -E_CRANK[f]}, "spare": {"show": True, "r": 20 if f == 7 else -4}})
+    else:
+        hands = crank_hands(E_CRANK[f], elev, C_DX[f], rec)
+    pose = merge(_crew(C_DX[f]), gun(elev, rec, E_HOP[f], E_TILT[f], E_SPIN[f]), hands, {
+        "unit": dict(squash(E_Q[f])),
+        "claw": {"x": E_CLAW[f]},
+        "bolt": {"hide": f in (4, 5, 6, 7, 8)},
+        "bow_n": {"r": E_BOW[f]}, "bow_f": {"r": -E_BOW[f]},
+        "torso": {"r": C_T[f]}, "head": {"r": C_H[f]},
+        "thigh_r": {"r": C_THR[f]}, "thigh_l": {"r": C_THL[f]},
+        "dust": {"show": f in (5, 6), "s": 0.8 if f == 5 else 1.2},
     })
-    if f in (3, 4):
-        B.yell(pose)
+    if f in (0, 1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.6}})
+    elif f == 3:
+        pose = merge(pose, {"brow": {"z": -1.2, "r": -6}, "pupils": {"x": 0.5}})
+    elif f in (4, 5):
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif f == 6:
+        pose = merge(pose, F.expr("o"))
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(_crew(-2.0 * a), B.hit_body(f), gun(IDLE_ELEV + 5 * a, recoil=3.0 * a, tilt=3.0 * a),
-                 crank_hands(-30.0, crew_dx=-2.0 * a))
+def _attack_clip():
+    s_ = MS
+    tipn = (TIPS["n"][0], TIPS["n"][1], TIPS["n"][2])
+    bow = {"kind": "arc", "joint": "bow_n", "inner": (HOUSING_X - 6.0, -14.0, TRUN[2] - 3.0), "outer": tipn,
+           "color": B.SAND_LT, "white": 0.3, "taper": 0.2, "lines": 2}
+    ov = {
+        4: [dict(bow, **{"from": 3, "t1": 1.0}),
+            {"kind": "streak", "joint": "frame", "point": (STRING_REST + BOLT_LEN + 8.0, -0.5, SZ + 0.9),
+             "from": 3, "color": B.SAND_LT, "width_lu": 4.0, "white": 0.3},
+            {"kind": "burst", "joint": "bow_n", "point": tipn, "r0_lu": 4.0, "r1_lu": 9.0, "n": 4,
+             "a0": -30.0, "arc": 120.0},
+            {"kind": "burst", "joint": "frame", "point": (HOUSING_X + 6.0, 0, TRUN[2] + 3.0), "r0_lu": 8.0,
+             "r1_lu": 15.0, "n": 5, "a0": -60.0, "arc": 120.0}],
+        6: [{"kind": "dust", "ground": (0.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 3, "spread": 1.2},
+            {"kind": "dust", "ground": (-56.0 * s_ / 1.25, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 7}],
+    }
+    return M.clip("attack", [_attack(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+def _hit(k):
+    a = M.HIT_AMT[k]
+    b = [0.0, 1.0, -0.6, 0.3, 0.0][k]
+    pose = merge(_crew(-2.0 * max(a, 0)), gun(IDLE_ELEV + 5 * a, recoil=3.0 * a, hop=1.5 * b, tilt=3.0 * a),
+                 crank_hands(-30.0, crew_dx=-2.0 * max(a, 0)), {
+        "unit": dict(squash([-0.08, 0.04, -0.03, 0.02, 0.0][k])),
+        "hips": {"z": -3.0 * max(a, 0)}, "torso": {"r": -14 * max(a, 0) + 6 * min(a, 0)},
+        "head": {"r": 12 * max(a, 0)},
+    })
+    if k <= 1:
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    return pose
 
 
 # death: 8 unique poses, 12 steps (about 0.95 s). 0 struck (the frame kicks up), 1 the crewman
@@ -296,8 +394,12 @@ def _die(f):
         "dust": {"show": f in (3, 4, 5), "s": pick(f, [1, 1, 1, 0.9, 1.2, 1.4, 1, 1]),
                  "x": -58.0, "z": pick(f, [0, 0, 0, 0, 2, 3, 0, 0])},
     })
-    if f in (0, 1):
-        B.yell(pose)
+    if f == 0:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif f < 3:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 2.0}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return pose
 
 
@@ -312,10 +414,13 @@ def _die_extra():
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
+    M.check_contract([c for c in cl if c.name not in ("die",)], attack_ms=883, attack_impact_at=0.4156)
+    assert cl[-1].total_ms() == 970 and cl[1].total_ms() == 800
+    return cl

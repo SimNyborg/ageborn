@@ -25,7 +25,7 @@ from .geometry import Geo
 
 MOUTH_DARK = "#4A2424"
 TOOTH = "#F4EEDC"
-TONGUE = "#D9837A"
+TONGUE = "#CF8E86"
 LASH = "#2A211D"
 
 

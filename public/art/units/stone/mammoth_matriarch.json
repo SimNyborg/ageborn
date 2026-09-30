@@ -2,103 +2,103 @@
  "frames": {
   "mammoth_matriarch_idle_00": {
    "frame": {
-    "x": 881,
-    "y": 454,
+    "x": 185,
+    "y": 682,
     "w": 172,
     "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 64,
-    "y": 43,
+    "x": 106,
+    "y": 65,
     "w": 172,
     "h": 216
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_00_team": {
    "frame": {
-    "x": 390,
-    "y": 1229,
+    "x": 702,
+    "y": 1266,
     "w": 114,
-    "h": 140
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
-    "y": 51,
+    "x": 102,
+    "y": 73,
     "w": 114,
-    "h": 140
+    "h": 141
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_01": {
    "frame": {
-    "x": 183,
-    "y": 454,
+    "x": 523,
+    "y": 459,
     "w": 170,
     "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 65,
-    "y": 40,
+    "x": 107,
+    "y": 62,
     "w": 170,
     "h": 218
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_01_team": {
    "frame": {
-    "x": 1292,
-    "y": 1081,
+    "x": 1056,
+    "y": 1266,
     "w": 112,
-    "h": 142
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
-    "y": 48,
+    "x": 103,
+    "y": 71,
     "w": 112,
-    "h": 142
+    "h": 141
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_02": {
    "frame": {
-    "x": 978,
+    "x": 912,
     "y": 2,
     "w": 168,
     "h": 221
@@ -106,95 +106,335 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
-    "y": 35,
+    "x": 108,
+    "y": 57,
     "w": 168,
     "h": 221
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_02_team": {
    "frame": {
-    "x": 118,
-    "y": 1081,
+    "x": 696,
+    "y": 1116,
     "w": 111,
     "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 43,
+    "x": 104,
+    "y": 65,
     "w": 111,
     "h": 144
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_03": {
    "frame": {
-    "x": 2,
+    "x": 569,
     "y": 2,
-    "w": 167,
+    "w": 166,
     "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
-    "y": 32,
-    "w": 167,
+    "x": 109,
+    "y": 54,
+    "w": 166,
     "h": 224
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_03_team": {
    "frame": {
-    "x": 1098,
-    "y": 892,
+    "x": 120,
+    "y": 1116,
     "w": 111,
     "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 40,
+    "x": 104,
+    "y": 62,
     "w": 111,
     "h": 146
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_idle_04": {
    "frame": {
-    "x": 1150,
+    "x": 739,
+    "y": 2,
+    "w": 169,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 57,
+    "w": 169,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_idle_04_team": {
+   "frame": {
+    "x": 811,
+    "y": 1116,
+    "w": 111,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 65,
+    "w": 111,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_idle_05": {
+   "frame": {
+    "x": 348,
+    "y": 459,
+    "w": 171,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 62,
+    "w": 171,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_idle_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 1413,
+    "w": 112,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 71,
+    "w": 112,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_00": {
+   "frame": {
+    "x": 2,
+    "y": 459,
+    "w": 169,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 62,
+    "w": 169,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_00_team": {
+   "frame": {
+    "x": 1045,
+    "y": 1116,
+    "w": 111,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 71,
+    "w": 111,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_01": {
+   "frame": {
+    "x": 697,
+    "y": 459,
+    "w": 179,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 58,
+    "w": 179,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_01_team": {
+   "frame": {
+    "x": 347,
+    "y": 1266,
+    "w": 115,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 66,
+    "w": 115,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_02": {
+   "frame": {
+    "x": 522,
+    "y": 234,
+    "w": 169,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 62,
+    "w": 169,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_02_team": {
+   "frame": {
+    "x": 1160,
+    "y": 1116,
+    "w": 111,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 71,
+    "w": 111,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_walk_03": {
+   "frame": {
+    "x": 1084,
     "y": 2,
     "w": 168,
     "h": 221
@@ -202,1530 +442,1338 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
-    "y": 35,
+    "x": 109,
+    "y": 56,
     "w": 168,
     "h": 221
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_idle_04_team": {
-   "frame": {
-    "x": 233,
-    "y": 1081,
-    "w": 111,
-    "h": 144
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 62,
-    "y": 43,
-    "w": 111,
-    "h": 144
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_idle_05": {
-   "frame": {
-    "x": 357,
-    "y": 454,
-    "w": 170,
-    "h": 218
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 65,
-    "y": 40,
-    "w": 170,
-    "h": 218
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_idle_05_team": {
-   "frame": {
-    "x": 1408,
-    "y": 1081,
-    "w": 112,
-    "h": 142
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 61,
-    "y": 48,
-    "w": 112,
-    "h": 142
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_00": {
-   "frame": {
-    "x": 905,
-    "y": 230,
-    "w": 169,
-    "h": 219
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 66,
-    "y": 40,
-    "w": 169,
-    "h": 219
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_00_team": {
-   "frame": {
-    "x": 580,
-    "y": 1081,
-    "w": 111,
-    "h": 143
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 62,
-    "y": 48,
-    "w": 111,
-    "h": 143
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_01": {
-   "frame": {
-    "x": 1251,
-    "y": 230,
-    "w": 177,
-    "h": 218
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 63,
-    "y": 36,
-    "w": 177,
-    "h": 218
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_01_team": {
-   "frame": {
-    "x": 939,
-    "y": 1081,
-    "w": 114,
-    "h": 142
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 59,
-    "y": 44,
-    "w": 114,
-    "h": 142
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_02": {
-   "frame": {
-    "x": 385,
-    "y": 230,
-    "w": 169,
-    "h": 220
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 66,
-    "y": 40,
-    "w": 169,
-    "h": 220
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_02_team": {
-   "frame": {
-    "x": 348,
-    "y": 1081,
-    "w": 112,
-    "h": 143
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 61,
-    "y": 48,
-    "w": 112,
-    "h": 143
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_walk_03": {
-   "frame": {
-    "x": 558,
-    "y": 230,
-    "w": 168,
-    "h": 220
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 67,
-    "y": 35,
-    "w": 168,
-    "h": 220
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_03_team": {
    "frame": {
-    "x": 1330,
-    "y": 892,
+    "x": 348,
+    "y": 1116,
     "w": 112,
-    "h": 144
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 43,
+    "x": 104,
+    "y": 64,
     "w": 112,
-    "h": 144
+    "h": 145
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_04": {
    "frame": {
-    "x": 1078,
-    "y": 230,
+    "x": 175,
+    "y": 459,
     "w": 169,
     "h": 219
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
-    "y": 40,
+    "x": 108,
+    "y": 62,
     "w": 169,
     "h": 219
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_04_team": {
    "frame": {
-    "x": 695,
-    "y": 1081,
+    "x": 2,
+    "y": 1266,
     "w": 111,
     "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 48,
+    "x": 104,
+    "y": 71,
     "w": 111,
     "h": 143
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_05": {
    "frame": {
     "x": 2,
-    "y": 454,
-    "w": 177,
-    "h": 218
+    "y": 682,
+    "w": 179,
+    "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 63,
-    "y": 36,
-    "w": 177,
-    "h": 218
+    "x": 104,
+    "y": 58,
+    "w": 179,
+    "h": 216
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_05_team": {
    "frame": {
-    "x": 1057,
-    "y": 1081,
-    "w": 114,
+    "x": 466,
+    "y": 1266,
+    "w": 115,
     "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 59,
-    "y": 44,
-    "w": 114,
+    "x": 100,
+    "y": 66,
+    "w": 115,
     "h": 142
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_06": {
    "frame": {
-    "x": 708,
-    "y": 454,
+    "x": 880,
+    "y": 459,
     "w": 169,
     "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
-    "y": 40,
+    "x": 108,
+    "y": 62,
     "w": 169,
     "h": 217
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_06_team": {
    "frame": {
-    "x": 464,
-    "y": 1081,
-    "w": 112,
+    "x": 117,
+    "y": 1266,
+    "w": 111,
     "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
-    "y": 48,
-    "w": 112,
+    "x": 104,
+    "y": 71,
+    "w": 111,
     "h": 143
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_07": {
    "frame": {
-    "x": 1322,
-    "y": 2,
+    "x": 2,
+    "y": 234,
     "w": 168,
     "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 67,
-    "y": 35,
+    "x": 109,
+    "y": 56,
     "w": 168,
     "h": 221
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_walk_07_team": {
    "frame": {
-    "x": 2,
-    "y": 1081,
+    "x": 464,
+    "y": 1116,
     "w": 112,
-    "h": 144
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 43,
+    "x": 104,
+    "y": 64,
     "w": 112,
-    "h": 144
+    "h": 145
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_00": {
    "frame": {
-    "x": 199,
-    "y": 676,
-    "w": 200,
-    "h": 208
+    "x": 361,
+    "y": 682,
+    "w": 172,
+    "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 52,
-    "y": 49,
-    "w": 200,
-    "h": 208
+    "x": 104,
+    "y": 62,
+    "w": 172,
+    "h": 216
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_00_team": {
    "frame": {
-    "x": 1268,
-    "y": 1229,
-    "w": 122,
-    "h": 134
+    "x": 820,
+    "y": 1266,
+    "w": 114,
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 48,
-    "y": 58,
-    "w": 122,
-    "h": 134
+    "x": 100,
+    "y": 70,
+    "w": 114,
+    "h": 141
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_01": {
    "frame": {
-    "x": 2,
-    "y": 230,
-    "w": 204,
+    "x": 174,
+    "y": 234,
+    "w": 170,
     "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 39,
-    "y": 38,
-    "w": 204,
+    "x": 99,
+    "y": 58,
+    "w": 170,
     "h": 220
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_01_team": {
    "frame": {
-    "x": 257,
-    "y": 1229,
-    "w": 129,
-    "h": 140
+    "x": 926,
+    "y": 1116,
+    "w": 115,
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 35,
-    "y": 48,
-    "w": 129,
-    "h": 140
+    "x": 95,
+    "y": 66,
+    "w": 115,
+    "h": 143
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_02": {
    "frame": {
-    "x": 390,
-    "y": 2,
-    "w": 187,
-    "h": 222
+    "x": 948,
+    "y": 682,
+    "w": 166,
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 33,
-    "y": 36,
-    "w": 187,
-    "h": 222
+    "x": 101,
+    "y": 65,
+    "w": 166,
+    "h": 212
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_02_team": {
    "frame": {
-    "x": 121,
-    "y": 1229,
-    "w": 132,
-    "h": 140
+    "x": 938,
+    "y": 1266,
+    "w": 114,
+    "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 29,
-    "y": 46,
-    "w": 132,
-    "h": 140
+    "x": 97,
+    "y": 71,
+    "w": 114,
+    "h": 141
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_03": {
    "frame": {
-    "x": 581,
-    "y": 2,
-    "w": 172,
-    "h": 222
+    "x": 202,
+    "y": 902,
+    "w": 155,
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
-    "y": 33,
-    "w": 172,
-    "h": 222
+    "x": 105,
+    "y": 67,
+    "w": 155,
+    "h": 210
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_03_team": {
    "frame": {
-    "x": 978,
-    "y": 892,
-    "w": 116,
-    "h": 147
+    "x": 481,
+    "y": 1413,
+    "w": 109,
+    "h": 139
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
-    "y": 39,
-    "w": 116,
-    "h": 147
+    "x": 101,
+    "y": 75,
+    "w": 109,
+    "h": 139
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_04": {
    "frame": {
-    "x": 256,
-    "y": 892,
-    "w": 191,
-    "h": 185
+    "x": 200,
+    "y": 2,
+    "w": 164,
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 67,
-    "y": 78,
-    "w": 191,
-    "h": 185
+    "x": 111,
+    "y": 56,
+    "w": 164,
+    "h": 226
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_04_team": {
    "frame": {
-    "x": 253,
-    "y": 1374,
-    "w": 126,
-    "h": 125
+    "x": 235,
+    "y": 1116,
+    "w": 109,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 63,
-    "y": 83,
-    "w": 126,
-    "h": 125
+    "x": 107,
+    "y": 65,
+    "w": 109,
+    "h": 146
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_05": {
    "frame": {
-    "x": 1000,
-    "y": 676,
-    "w": 177,
-    "h": 200
+    "x": 368,
+    "y": 2,
+    "w": 197,
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 73,
-    "y": 62,
-    "w": 177,
-    "h": 200
+    "x": 110,
+    "y": 55,
+    "w": 197,
+    "h": 225
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_05_team": {
    "frame": {
     "x": 2,
-    "y": 1374,
-    "w": 115,
-    "h": 132
+    "y": 1116,
+    "w": 114,
+    "h": 146
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 69,
-    "y": 70,
-    "w": 115,
-    "h": 132
+    "x": 106,
+    "y": 64,
+    "w": 114,
+    "h": 146
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_06": {
    "frame": {
-    "x": 403,
-    "y": 676,
-    "w": 178,
-    "h": 208
+    "x": 2,
+    "y": 2,
+    "w": 194,
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 68,
-    "y": 52,
-    "w": 178,
-    "h": 208
+    "x": 111,
+    "y": 54,
+    "w": 194,
+    "h": 228
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_06_team": {
    "frame": {
-    "x": 643,
-    "y": 1229,
-    "w": 117,
-    "h": 138
+    "x": 1055,
+    "y": 902,
+    "w": 115,
+    "h": 148
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 64,
-    "y": 58,
-    "w": 117,
-    "h": 138
+    "x": 107,
+    "y": 63,
+    "w": 115,
+    "h": 148
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_07": {
    "frame": {
-    "x": 730,
-    "y": 230,
-    "w": 171,
+    "x": 868,
+    "y": 234,
+    "w": 203,
     "h": 219
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 65,
-    "y": 39,
-    "w": 171,
+    "x": 107,
+    "y": 60,
+    "w": 203,
     "h": 219
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_attack_07_team": {
    "frame": {
-    "x": 1175,
-    "y": 1081,
+    "x": 118,
+    "y": 1413,
+    "w": 119,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 70,
+    "w": 119,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_attack_08": {
+   "frame": {
+    "x": 1053,
+    "y": 459,
+    "w": 195,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 61,
+    "w": 195,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_attack_08_team": {
+   "frame": {
+    "x": 241,
+    "y": 1413,
+    "w": 116,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 70,
+    "w": 116,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_attack_09": {
+   "frame": {
+    "x": 348,
+    "y": 234,
+    "w": 170,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 59,
+    "w": 170,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_attack_09_team": {
+   "frame": {
+    "x": 580,
+    "y": 1116,
+    "w": 112,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 67,
+    "w": 112,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_00": {
+   "frame": {
+    "x": 2,
+    "y": 902,
+    "w": 196,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 68,
+    "w": 196,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_00_team": {
+   "frame": {
+    "x": 594,
+    "y": 1413,
+    "w": 120,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 76,
+    "w": 120,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_01": {
+   "frame": {
+    "x": 361,
+    "y": 902,
+    "w": 211,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 71,
+    "w": 211,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_01_team": {
+   "frame": {
+    "x": 718,
+    "y": 1413,
+    "w": 122,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 79,
+    "w": 122,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_02": {
+   "frame": {
+    "x": 537,
+    "y": 682,
+    "w": 175,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 64,
+    "w": 175,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_02_team": {
+   "frame": {
+    "x": 361,
+    "y": 1413,
+    "w": 116,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 73,
+    "w": 116,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_03": {
+   "frame": {
+    "x": 695,
+    "y": 234,
+    "w": 169,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 59,
+    "w": 169,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_03_team": {
+   "frame": {
+    "x": 232,
+    "y": 1266,
+    "w": 111,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 68,
+    "w": 111,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_04": {
+   "frame": {
+    "x": 1075,
+    "y": 234,
+    "w": 170,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 60,
+    "w": 170,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_hit_04_team": {
+   "frame": {
+    "x": 585,
+    "y": 1266,
     "w": 113,
     "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 61,
-    "y": 47,
+    "x": 102,
+    "y": 68,
     "w": 113,
     "h": 142
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
-  "mammoth_matriarch_attack_08": {
+  "mammoth_matriarch_die_00": {
    "frame": {
-    "x": 210,
-    "y": 230,
-    "w": 171,
-    "h": 220
+    "x": 576,
+    "y": 902,
+    "w": 208,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 71,
+    "w": 208,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_die_00_team": {
+   "frame": {
+    "x": 844,
+    "y": 1413,
+    "w": 126,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 79,
+    "w": 126,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 340,
+    "h": 311
+   },
+   "anchor": {
+    "x": 0.52941,
+    "y": 0.85531
+   }
+  },
+  "mammoth_matriarch_die_01": {
+   "frame": {
+    "x": 716,
+    "y": 682,
+    "w": 228,
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 64,
-    "y": 37,
-    "w": 171,
-    "h": 220
+    "y": 66,
+    "w": 228,
+    "h": 214
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
-  "mammoth_matriarch_attack_08_team": {
+  "mammoth_matriarch_die_01_team": {
    "frame": {
-    "x": 1213,
-    "y": 892,
-    "w": 113,
-    "h": 144
+    "x": 974,
+    "y": 1413,
+    "w": 149,
+    "h": 128
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 60,
-    "y": 45,
-    "w": 113,
-    "h": 144
+    "y": 85,
+    "w": 149,
+    "h": 128
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
-  "mammoth_matriarch_hit_00": {
+  "mammoth_matriarch_die_02": {
    "frame": {
-    "x": 805,
-    "y": 676,
-    "w": 191,
-    "h": 203
+    "x": 788,
+    "y": 902,
+    "w": 263,
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 54,
-    "y": 54,
-    "w": 191,
-    "h": 203
+    "x": 34,
+    "y": 104,
+    "w": 263,
+    "h": 157
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
-  "mammoth_matriarch_hit_00_team": {
+  "mammoth_matriarch_die_02_team": {
    "frame": {
-    "x": 1394,
-    "y": 1229,
-    "w": 123,
-    "h": 132
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 50,
-    "y": 62,
-    "w": 123,
-    "h": 132
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_01": {
-   "frame": {
-    "x": 1181,
-    "y": 676,
-    "w": 217,
-    "h": 195
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 48,
-    "y": 61,
-    "w": 217,
-    "h": 195
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_01_team": {
-   "frame": {
-    "x": 121,
-    "y": 1374,
-    "w": 128,
-    "h": 127
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 44,
-    "y": 69,
-    "w": 128,
-    "h": 127
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_02": {
-   "frame": {
-    "x": 2,
-    "y": 676,
-    "w": 193,
-    "h": 212
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 57,
-    "y": 44,
-    "w": 193,
-    "h": 212
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_02_team": {
-   "frame": {
-    "x": 1024,
-    "y": 1229,
-    "w": 117,
-    "h": 137
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 53,
-    "y": 53,
-    "w": 117,
-    "h": 137
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_03": {
-   "frame": {
-    "x": 1057,
-    "y": 454,
-    "w": 183,
-    "h": 214
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 59,
-    "y": 43,
-    "w": 183,
-    "h": 214
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_03_team": {
-   "frame": {
-    "x": 764,
-    "y": 1229,
-    "w": 117,
-    "h": 138
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 55,
-    "y": 52,
-    "w": 117,
-    "h": 138
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_04": {
-   "frame": {
-    "x": 531,
-    "y": 454,
-    "w": 173,
-    "h": 217
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 62,
-    "y": 41,
-    "w": 173,
-    "h": 217
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_hit_04_team": {
-   "frame": {
-    "x": 2,
-    "y": 1229,
-    "w": 115,
-    "h": 141
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 58,
-    "y": 49,
-    "w": 115,
-    "h": 141
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_die_00": {
-   "frame": {
-    "x": 585,
-    "y": 676,
-    "w": 216,
-    "h": 204
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 66,
-    "y": 50,
-    "w": 216,
-    "h": 204
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_die_00_team": {
-   "frame": {
-    "x": 1145,
-    "y": 1229,
-    "w": 119,
-    "h": 135
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 62,
-    "y": 59,
-    "w": 119,
-    "h": 135
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_die_01": {
-   "frame": {
-    "x": 173,
-    "y": 2,
-    "w": 213,
-    "h": 222
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 37,
-    "y": 34,
-    "w": 213,
-    "h": 222
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_die_01_team": {
-   "frame": {
-    "x": 810,
-    "y": 1081,
-    "w": 125,
-    "h": 142
+    "x": 874,
+    "y": 1558,
+    "w": 174,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 33,
-    "y": 43,
-    "w": 125,
-    "h": 142
+    "y": 121,
+    "w": 174,
+    "h": 102
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_die_02": {
-   "frame": {
-    "x": 1244,
-    "y": 454,
-    "w": 226,
-    "h": 212
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 21,
-    "y": 46,
-    "w": 226,
-    "h": 212
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
-   }
-  },
-  "mammoth_matriarch_die_02_team": {
-   "frame": {
-    "x": 885,
-    "y": 1229,
-    "w": 135,
-    "h": 137
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 17,
-    "y": 54,
-    "w": 135,
-    "h": 137
-   },
-   "sourceSize": {
-    "w": 298,
-    "h": 278
-   },
-   "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_03": {
    "frame": {
-    "x": 2,
-    "y": 892,
-    "w": 250,
-    "h": 185
+    "x": 673,
+    "y": 1558,
+    "w": 197,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 10,
-    "y": 78,
-    "w": 250,
-    "h": 185
+    "x": 111,
+    "y": 146,
+    "w": 197,
+    "h": 111
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_03_team": {
    "frame": {
-    "x": 535,
-    "y": 1374,
-    "w": 146,
-    "h": 114
+    "x": 1052,
+    "y": 1558,
+    "w": 90,
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 6,
-    "y": 92,
-    "w": 146,
-    "h": 114
+    "x": 120,
+    "y": 191,
+    "w": 90,
+    "h": 67
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_04": {
    "frame": {
-    "x": 757,
-    "y": 2,
-    "w": 217,
-    "h": 221
+    "x": 180,
+    "y": 1558,
+    "w": 171,
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 19,
-    "y": 39,
-    "w": 217,
-    "h": 221
+    "x": 120,
+    "y": 138,
+    "w": 171,
+    "h": 122
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_04_team": {
    "frame": {
-    "x": 508,
-    "y": 1229,
-    "w": 131,
-    "h": 138
+    "x": 2,
+    "y": 1686,
+    "w": 79,
+    "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 14,
-    "y": 53,
-    "w": 131,
-    "h": 138
+    "x": 124,
+    "y": 193,
+    "w": 79,
+    "h": 64
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_05": {
    "frame": {
-    "x": 451,
-    "y": 892,
-    "w": 251,
-    "h": 181
+    "x": 2,
+    "y": 1558,
+    "w": 174,
+    "h": 124
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 11,
-    "y": 80,
-    "w": 251,
-    "h": 181
+    "x": 108,
+    "y": 140,
+    "w": 174,
+    "h": 124
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_05_team": {
    "frame": {
-    "x": 383,
-    "y": 1374,
-    "w": 148,
-    "h": 116
+    "x": 1146,
+    "y": 1558,
+    "w": 83,
+    "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 7,
-    "y": 90,
-    "w": 148,
-    "h": 116
+    "x": 122,
+    "y": 194,
+    "w": 83,
+    "h": 65
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_06": {
    "frame": {
-    "x": 706,
-    "y": 892,
-    "w": 268,
-    "h": 157
+    "x": 355,
+    "y": 1558,
+    "w": 161,
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 8,
-    "y": 106,
-    "w": 268,
-    "h": 157
+    "x": 113,
+    "y": 143,
+    "w": 161,
+    "h": 119
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_06_team": {
    "frame": {
-    "x": 939,
-    "y": 1374,
-    "w": 156,
-    "h": 102
+    "x": 85,
+    "y": 1686,
+    "w": 82,
+    "h": 63
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 4,
-    "y": 113,
-    "w": 156,
-    "h": 102
+    "x": 122,
+    "y": 195,
+    "w": 82,
+    "h": 63
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_07": {
    "frame": {
-    "x": 685,
-    "y": 1374,
-    "w": 250,
-    "h": 102
+    "x": 520,
+    "y": 1558,
+    "w": 149,
+    "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 27,
-    "y": 157,
-    "w": 250,
-    "h": 102
+    "x": 116,
+    "y": 148,
+    "w": 149,
+    "h": 112
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   },
   "mammoth_matriarch_die_07_team": {
    "frame": {
-    "x": 1099,
-    "y": 1374,
-    "w": 142,
-    "h": 67
+    "x": 171,
+    "y": 1686,
+    "w": 79,
+    "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 23,
-    "y": 161,
-    "w": 142,
-    "h": 67
+    "x": 124,
+    "y": 196,
+    "w": 79,
+    "h": 61
    },
    "sourceSize": {
-    "w": 298,
-    "h": 278
+    "w": 340,
+    "h": 311
    },
    "anchor": {
-    "x": 0.46309,
-    "y": 0.8777
+    "x": 0.52941,
+    "y": 0.85531
    }
   }
  },
@@ -1768,33 +1816,31 @@
   ],
   "attack": [
    "mammoth_matriarch_attack_00",
-   "mammoth_matriarch_attack_00",
-   "mammoth_matriarch_attack_01",
    "mammoth_matriarch_attack_01",
    "mammoth_matriarch_attack_02",
    "mammoth_matriarch_attack_03",
    "mammoth_matriarch_attack_04",
-   "mammoth_matriarch_attack_04",
    "mammoth_matriarch_attack_05",
    "mammoth_matriarch_attack_06",
-   "mammoth_matriarch_attack_06",
    "mammoth_matriarch_attack_07",
-   "mammoth_matriarch_attack_08"
+   "mammoth_matriarch_attack_08",
+   "mammoth_matriarch_attack_08",
+   "mammoth_matriarch_attack_09",
+   "mammoth_matriarch_attack_09"
   ],
   "attack_team": [
    "mammoth_matriarch_attack_00_team",
-   "mammoth_matriarch_attack_00_team",
-   "mammoth_matriarch_attack_01_team",
    "mammoth_matriarch_attack_01_team",
    "mammoth_matriarch_attack_02_team",
    "mammoth_matriarch_attack_03_team",
    "mammoth_matriarch_attack_04_team",
-   "mammoth_matriarch_attack_04_team",
    "mammoth_matriarch_attack_05_team",
    "mammoth_matriarch_attack_06_team",
-   "mammoth_matriarch_attack_06_team",
    "mammoth_matriarch_attack_07_team",
-   "mammoth_matriarch_attack_08_team"
+   "mammoth_matriarch_attack_08_team",
+   "mammoth_matriarch_attack_08_team",
+   "mammoth_matriarch_attack_09_team",
+   "mammoth_matriarch_attack_09_team"
   ],
   "hit": [
    "mammoth_matriarch_hit_00",
@@ -1845,8 +1891,8 @@
   "image": "mammoth_matriarch.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 1508
+   "w": 1280,
+   "h": 1752
   },
   "scale": "1.25",
   "ageborn": {
@@ -1856,8 +1902,8 @@
    "widthLu": 164.4,
    "pxPerLu": 1.025,
    "feetPx": [
-    138.0,
-    244.0
+    180.0,
+    266.0
    ],
    "anchorsLu": {
     "head": [
@@ -1895,54 +1941,54 @@
      "anchorsLu": {
       "muzzle": [
        [
-        10.2,
-        119.0
-       ],
-       [
         11.5,
-        123.9
+        120.8
        ],
        [
-        10.9,
-        134.6
+        13.2,
+        125.5
        ],
        [
-        7.9,
-        142.1
+        13.1,
+        136.1
        ],
        [
-        10.9,
-        134.6
+        11.4,
+        143.3
        ],
        [
-        11.5,
-        123.9
+        13.3,
+        136.2
+       ],
+       [
+        12.4,
+        125.7
        ]
       ],
       "tuskTip": [
        [
-        85.5,
-        88.6
+        85.6,
+        88.5
        ],
        [
-        84.7,
-        90.6
+        84.8,
+        90.5
        ],
        [
-        83.5,
-        93.8
+        83.4,
+        94.0
        ],
        [
         82.8,
         95.5
        ],
        [
-        83.5,
-        93.8
+        83.7,
+        93.5
        ],
        [
-        84.7,
-        90.6
+        85.1,
+        90.0
        ]
       ]
      }
@@ -1974,184 +2020,190 @@
      "anchorsLu": {
       "muzzle": [
        [
-        10.0,
-        122.5
+        11.3,
+        123.1
        ],
        [
-        8.8,
-        126.0
+        9.9,
+        127.9
        ],
        [
-        10.0,
-        122.5
+        11.3,
+        123.1
        ],
        [
-        11.2,
-        125.5
+        12.7,
+        127.1
        ],
        [
-        10.0,
-        122.5
+        11.3,
+        123.1
        ],
        [
-        8.8,
-        126.0
+        9.9,
+        127.9
        ],
        [
-        10.0,
-        122.5
+        11.3,
+        123.1
        ],
        [
-        11.2,
-        125.5
+        12.7,
+        127.1
        ]
       ],
       "tuskTip": [
        [
-        84.4,
-        87.3
+        84.5,
+        86.3
        ],
        [
-        83.3,
-        97.8
-       ],
-       [
-        84.4,
-        87.3
+        83.1,
+        99.1
        ],
        [
         84.5,
-        94.2
+        86.3
        ],
        [
-        84.4,
-        87.3
-       ],
-       [
-        83.3,
-        97.8
-       ],
-       [
-        84.4,
-        87.3
+        84.6,
+        94.9
        ],
        [
         84.5,
-        94.2
+        86.3
+       ],
+       [
+        83.1,
+        99.1
+       ],
+       [
+        84.5,
+        86.3
+       ],
+       [
+        84.6,
+        94.9
        ]
       ]
      },
-     "strideLu": 69.8,
-     "naturalSpeedLuPerS": 51.3
+     "strideLu": 76.2,
+     "naturalSpeedLuPerS": 56.0
     },
     "attack": {
-     "frames": 9,
+     "frames": 10,
      "loop": false,
      "sequence": [
       0,
-      0,
-      1,
       1,
       2,
       3,
       4,
-      4,
       5,
       6,
-      6,
       7,
-      8
+      8,
+      8,
+      9,
+      9
      ],
      "durationsMs": [
+      70,
       90,
-      80,
-      80,
+      100,
+      200,
+      60,
+      50,
+      150,
       90,
-      190,
-      40,
-      90,
-      90,
-      90,
-      90,
-      90,
+      110,
+      100,
       100,
       110
      ],
      "durationMs": 1230,
-     "impactFrame": 4,
+     "impactFrame": 6,
      "impactAt": 0.4634,
-     "smearFrame": 3,
+     "smearFrame": 4,
      "anchorsLu": {
       "muzzle": [
        [
-        3.3,
-        118.8
+        11.3,
+        127.5
        ],
        [
-        -9.9,
-        143.1
+        1.3,
+        141.5
        ],
        [
-        -21.2,
-        151.7
-       ],
-       [
-        10.4,
+        -12.8,
         139.3
        ],
        [
-        17.5,
-        94.6
+        -20.1,
+        129.1
        ],
        [
-        15.7,
-        103.9
+        -13.8,
+        131.1
        ],
        [
-        13.5,
-        109.1
+        -8.9,
+        146.9
        ],
        [
-        10.5,
-        122.8
+        19.0,
+        138.3
        ],
        [
-        10.0,
-        124.4
+        12.4,
+        127.7
+       ],
+       [
+        14.3,
+        125.0
+       ],
+       [
+        12.3,
+        127.2
        ]
       ],
       "tuskTip": [
        [
-        81.0,
-        97.0
+        83.9,
+        87.0
        ],
        [
-        62.9,
-        130.6
+        77.4,
+        88.0
        ],
        [
-        53.8,
-        146.2
+        74.6,
+        60.6
        ],
        [
-        83.0,
-        89.9
+        67.2,
+        50.8
        ],
        [
-        105.4,
-        48.2
+        82.7,
+        77.3
        ],
        [
-        98.5,
-        58.5
+        83.3,
+        110.7
        ],
        [
-        94.6,
-        70.5
+        77.4,
+        128.1
        ],
        [
-        85.7,
-        89.4
+        76.0,
+        129.4
+       ],
+       [
+        86.9,
+        104.8
        ],
        [
         84.2,
@@ -2181,46 +2233,46 @@
      "anchorsLu": {
       "muzzle": [
        [
-        6.9,
-        112.5
-       ],
-       [
-        4.0,
-        108.8
+        6.5,
+        118.9
        ],
        [
         4.9,
-        120.5
+        116.7
        ],
        [
-        7.2,
-        120.7
+        8.4,
+        121.6
        ],
        [
-        9.5,
-        120.7
+        11.8,
+        126.2
+       ],
+       [
+        11.1,
+        125.3
        ]
       ],
       "tuskTip": [
        [
-        86.6,
+        81.7,
+        97.9
+       ],
+       [
+        80.0,
+        101.4
+       ],
+       [
+        83.1,
+        94.2
+       ],
+       [
+        84.4,
         89.8
        ],
        [
-        85.7,
-        91.6
-       ],
-       [
-        80.6,
-        99.4
-       ],
-       [
-        83.3,
-        95.1
-       ],
-       [
-        84.8,
-        90.8
+        84.1,
+        92.3
        ]
       ]
      }
@@ -2282,70 +2334,70 @@
      "anchorsLu": {
       "muzzle": [
        [
-        24.8,
-        130.0
+        6.9,
+        123.0
        ],
        [
-        -0.7,
-        158.0
+        -8.1,
+        161.8
        ],
        [
-        -9.2,
-        155.1
+        -43.1,
+        129.8
        ],
        [
-        -7.7,
-        132.2
+        -23.1,
+        -21.8
        ],
        [
-        -12.8,
-        164.7
+        -27.2,
+        -36.8
        ],
        [
-        0.7,
-        130.4
+        -29.8,
+        -34.2
        ],
        [
-        8.0,
-        111.7
+        -28.7,
+        -30.2
        ],
        [
-        19.3,
-        65.4
+        -27.3,
+        -24.8
        ]
       ],
       "tuskTip": [
        [
-        88.2,
-        102.3
+        82.9,
+        108.9
        ],
        [
-        58.7,
-        126.8
+        66.9,
+        117.1
        ],
        [
-        53.2,
-        122.9
+        68.9,
+        96.1
        ],
        [
-        61.5,
-        103.3
+        88.4,
+        32.8
        ],
        [
-        47.2,
-        120.1
+        72.7,
+        30.5
        ],
        [
-        67.8,
-        95.6
+        77.4,
+        22.5
        ],
        [
-        78.6,
-        83.2
+        77.1,
+        22.9
        ],
        [
-        83.9,
-        46.4
+        74.8,
+        23.6
        ]
       ]
      }

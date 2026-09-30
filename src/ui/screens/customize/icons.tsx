@@ -48,3 +48,17 @@ export function FlagsTabIcon(p: { size?: number }) {
     </S>
   );
 }
+
+/** Backdrops: a landscape panel with a moon, hills and falling snow. */
+export function BackdropTabIcon(p: { size?: number }) {
+  return (
+    <S size={p.size}>
+      <rect x="2.5" y="4" width="19" height="16" rx="3" fill="#5a6c9a" stroke={OUTLINE} stroke-width="1.6" />
+      <circle cx="16.5" cy="8.6" r="2.3" fill="#fff3c4" />
+      <path d="M3.3 16.4l4.6-5 3.4 3.4 3-2.6 6.4 4.6V17a2.2 2.2 0 0 1-2.2 2.2H5.5A2.2 2.2 0 0 1 3.3 17z" fill="#8fb4a0" stroke={OUTLINE} stroke-width="1.3" stroke-linejoin="round" />
+      <circle cx="6.5" cy="7.5" r="0.9" fill="#fff" />
+      <circle cx="10.4" cy="9.4" r="0.8" fill="#fff" />
+      <circle cx="8.6" cy="12" r="0.7" fill="#fff" />
+    </S>
+  );
+}

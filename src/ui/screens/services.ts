@@ -35,8 +35,12 @@ export type CosmeticEquipPatch =
 
 export interface UiServices {
   // ---- queries -------------------------------------------------------------------------------
-  /** The next ladder opponent for the Home preview (A9 #2), or null before the ladder opens. */
-  previewOpponent(): OpponentSpec | null;
+  /**
+   * The next ladder opponent for the Home preview (A9 #2) in `format` (the ladder's opponent seed
+   * depends on the format), or null before the ladder opens. It is the opponent `prepareMatch` gives
+   * a `{ mode: 'ladder', format }` request on the same save.
+   */
+  previewOpponent(format?: FormatId): OpponentSpec | null;
   /** Today's Daily Challenge modifier id (A9.1), seeded by the local date. */
   dailyModifier(): string | null;
   /** War Plan validation and advisor warnings (A3; `meta.validatePlan`). */

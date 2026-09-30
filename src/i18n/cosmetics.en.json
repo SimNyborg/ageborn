@@ -663,7 +663,9 @@
       "backdrop": "Battle backdrop",
       "backdropHint": "Your half of the battlefield wears it in every age. The enemy half keeps its own sky.",
       "backdropClassic": "Classic skies",
-      "backdropPreview": "Your half · {age}"
+      "backdropPreview": "Your half · {age}",
+      "tryingOn": "Trying on",
+      "tryOn": "Tap to try it on"
     },
     "hud": {
       "mute": "Mute opponent",

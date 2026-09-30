@@ -212,3 +212,47 @@ describe('earned items, crafting and completion', () => {
     expect(a.baseFlag).toMatch(/^baseFlag\./);
   });
 });
+
+describe('battle backdrops (A18.9.4 "Backdrops", owner request 2026-09-30)', () => {
+  it('starts on the classic skies and equips only an owned backdrop', () => {
+    const s = fresh();
+    expect(s.cosmetics.equipped.backdrop).toBeNull();
+    expect(equipCosmetic(s, C, { slot: 'backdrop', key: 'backdrop.winterfall' })).toEqual({ ok: false, reason: 'notOwned' });
+    expect(equipCosmetic(withOwned(s, 'baseFlag.oak'), C, { slot: 'backdrop', key: 'baseFlag.oak' })).toEqual({ ok: false, reason: 'wrongCollection' });
+    const a = ok(equipCosmetic(withOwned(s, 'backdrop.winterfall'), C, { slot: 'backdrop', key: 'backdrop.winterfall' }));
+    expect(a.cosmetics.equipped.backdrop).toBe('backdrop.winterfall');
+    expect(ok(equipCosmetic(a, C, { slot: 'backdrop', key: null })).cosmetics.equipped.backdrop).toBeNull();
+  });
+
+  it('shows the player\'s backdrop in the match look; AI bots keep the classic sky', () => {
+    const s = ok(equipCosmetic(withOwned(fresh(), 'backdrop.thunderstorm'), C, { slot: 'backdrop', key: 'backdrop.thunderstorm' }));
+    expect(sideLook(s, C).backdrop).toBe('backdrop.thunderstorm');
+    // an item no longer owned (a save edited by hand) is never shown
+    const lost = { ...s, cosmetics: { ...s.cosmetics, owned: s.cosmetics.owned.filter((k) => k !== 'backdrop.thunderstorm') } };
+    expect(sideLook(lost, C).backdrop).toBeNull();
+    for (const seed of ['Pip', 'The Warden', 'AI Commander 7']) expect(botLook(C, seed).backdrop).toBeNull();
+  });
+
+  it('are earned like the other collections: capsule and crate pools (craftable), the Trophy Road', () => {
+    const items = col.items.filter((x) => x.collection === 'backdrop');
+    expect(items.length).toBeGreaterThanOrEqual(8);
+    const kinds = new Set(items.map((x) => x.source.kind));
+    for (const k of ['capsule', 'crate', 'road']) expect(kinds.has(k as never), k).toBe(true);
+    expect(items.some((x) => x.source.kind === 'start')).toBe(false);
+    expect(poolItems(C, 'capsule').some((x) => x.collection === 'backdrop')).toBe(true);
+    expect(poolItems(C, 'crate').some((x) => x.collection === 'backdrop')).toBe(true);
+    // Legendary backdrops never sit in the capsule pool (its Legendary odds are 0)
+    for (const x of items) if (x.rarity === 'legendary') expect(x.source.kind).not.toBe('capsule');
+    const craft = ok(craftCosmetic({ ...withOwned(fresh()), currencies: { ...fresh().currencies, dust: 5000 } }, C, 'backdrop.golden_dusk'));
+    expect(craft.cosmetics.owned).toContain('backdrop.golden_dusk');
+    expect(collectionProgress(fresh(), C).backdrop).toEqual({ owned: 0, total: items.length });
+  });
+
+  it('grants a road backdrop with its claimed Trophy Road node', () => {
+    const s = fresh();
+    const road = col.items.find((x) => x.collection === 'backdrop' && x.source.kind === 'road')!;
+    const trophies = road.source.kind === 'road' ? road.source.trophies : 0;
+    const claimed = { ...s, trophies: { ...s.trophies, roadClaimed: [...s.trophies.roadClaimed, trophies] } };
+    expect(syncEarnedCosmetics(claimed, C).granted).toContain(cosmeticKey(road));
+  });
+});

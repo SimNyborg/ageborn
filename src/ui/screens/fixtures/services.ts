@@ -57,10 +57,11 @@ export function createPreviewServices(o: {
     save.value = fn(save.value);
   };
   return {
-    previewOpponent() {
-      return save.value.matchesPlayed >= 2
-        ? fixtureOpponent(content, o.opponent ?? (save.value.lossStreak >= 3 ? 'warmUp' : 'general'))
-        : null;
+    previewOpponent(format) {
+      log('previewOpponent', format);
+      if (save.value.matchesPlayed < 2) return null;
+      const opp = fixtureOpponent(content, o.opponent ?? (save.value.lossStreak >= 3 ? 'warmUp' : 'general'));
+      return format ? { ...opp, format } : opp;
     },
     dailyModifier() {
       return content.dailyModifiers.order[0] ?? null;

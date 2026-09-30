@@ -1,23 +1,24 @@
-/* Army (S9, docs/ui-plan.md 4.2): the loadout on the left, the cards on the right.
-   Compact (phones): 4 x 2 sm slots (62 x 84) plus the power beside them; the grid is 6+ columns of
-   sm tiles. Regular: md slots (96 x 128) with names, six troops in one row when there is room. */
+/* Army (S9, docs/ui-plan.md 4.2; owner request 2026-09-30): per age, three sections top to bottom.
+   1. In battle: a fixed band with the ten slots in one row, grouped Troops | Turrets | Powers.
+   2. Available and 3. Locked: one pool under it that scrolls (sm tiles on phones, md on desktop).
+   Compact (phones): 62 x 84 slots; regular: 88-96 px slots with names. */
 
 .army-screen {
-  --slot-w: 96px;
-  --cell-w: 88px;
-  --slot-gap: 12px;
+  --slot-w: 88px;
+  --cell-w: 84px;
+  --slot-gap: 8px;
 }
 @container ui-root (min-height: 700px) and (min-width: 1180px) {
   .army-screen {
-    --slot-w: 112px;
-    --cell-w: 96px;
+    --slot-w: 96px;
+    --cell-w: 92px;
   }
 }
 @container ui-root (max-height: 480px) {
   .army-screen {
-    --slot-w: 62px;
+    --slot-w: 58px;
     --cell-w: 62px;
-    --slot-gap: 6px;
+    --slot-gap: 5px;
   }
   /* The lit Army tab says where we are; the header's room goes to the ages. */
   .army-screen .ui-screen__titles {
@@ -182,56 +183,76 @@
   flex: none;
 }
 
-/* ---- Body: two columns ---------------------------------------------------------------------- */
+/* ---- Body: the In battle band over the scrolling pool ------------------------------------------ */
 
 .army {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--ui-s4);
-  height: 100%;
-  min-height: 0;
-}
-@container ui-root (max-height: 480px) {
-  .army {
-    gap: var(--ui-s3);
-  }
-}
-
-/* ---- Left: the loadout ---------------------------------------------------------------------- */
-
-.army-deck {
   display: flex;
   flex-direction: column;
   gap: var(--ui-s2);
+  height: 100%;
   min-height: 0;
-  overflow: visible;
 }
-/* "Your Stone army" over the slots on regular screens; phones keep it for screen readers only. */
-.army-deck__title {
-  margin: 0;
-  color: var(--ui-text);
-  font-family: var(--ui-font-display);
-  font-size: var(--ui-fs-title-s);
-  line-height: var(--ui-lh-title-s);
-  font-weight: 700;
-  letter-spacing: 0.02em;
+
+/* ---- 1. In battle -------------------------------------------------------------------------------- */
+
+.army-battle {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: none;
+  padding: 6px var(--ui-s3) 8px;
+  border: 1px solid rgba(95, 208, 138, 0.45);
+  border-radius: var(--ui-r-lg);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(95, 208, 138, 0.16), rgba(95, 208, 138, 0) 55%),
+    linear-gradient(var(--ui-light-angle), rgba(34, 44, 52, 0.95), rgba(20, 26, 32, 0.95));
+  box-shadow:
+    var(--ui-e1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
-@container ui-root (max-height: 480px) {
-  .army-deck__title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-.army-strip {
+/* The three section titles share one look: an icon badge, the caps title, a quiet count line. */
+.army-sec-head {
   display: flex;
   align-items: center;
   gap: var(--ui-s2);
-  min-height: 32px;
-  max-width: calc(4 * var(--slot-w) + 5 * var(--slot-gap) + var(--slot-w) + 6px);
+  min-height: 28px;
+  margin: 0;
+}
+.army-sec-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  margin: 0;
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+  font-size: var(--ui-fs-label);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.army-sec-title__icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ui-good);
+  color: var(--ui-ink);
+}
+.army-sec-sub {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .army-lines {
   display: flex;
@@ -244,8 +265,8 @@
 .army-line {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   transition: opacity var(--ui-dur-micro) var(--ui-ease-out);
 }
@@ -270,7 +291,8 @@
   transform: rotate(-45deg);
 }
 .army-hint {
-  margin: 0;
+  min-width: 0;
+  margin: 0 0 0 auto;
   color: var(--ui-text-2);
   font-size: var(--ui-fs-caption);
   line-height: 1.2;
@@ -280,7 +302,7 @@
 .army-advice {
   display: flex;
   min-width: 0;
-  margin: 0;
+  margin: 0 0 0 auto;
   padding: 0;
   list-style: none;
 }
@@ -339,75 +361,67 @@
 }
 
 .army-slots {
-  display: grid;
-  grid-template-columns: repeat(4, var(--slot-w)) 1px var(--slot-w);
-  grid-template-areas:
-    'u0 u1 u2 u3 div ph'
-    'u4 u5 t0 t1 div pf';
-  column-gap: var(--slot-gap);
-  row-gap: calc(var(--slot-gap) + 8px);
-  align-content: start;
-  padding: 4px 4px 4px;
+  display: flex;
+  align-items: stretch;
+  gap: calc(var(--slot-gap) * 2);
+  padding: 2px 2px 0;
   perspective: 600px;
 }
-.army-slots::before {
-  content: '';
-  grid-area: div;
-  width: 1px;
-  margin: 6px 0;
-  background: rgba(107, 120, 144, 0.4);
+/* One group per kind: its count over its slots; a thin rule between the groups. */
+.army-bandgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: none;
 }
-.army-slot--unit-0 {
-  grid-area: u0;
+.army-bandgroup + .army-bandgroup {
+  padding-left: calc(var(--slot-gap) * 2);
+  border-left: 1px solid rgba(107, 120, 144, 0.4);
 }
-.army-slot--unit-1 {
-  grid-area: u1;
+.army-bandgroup__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+  white-space: nowrap;
 }
-.army-slot--unit-2 {
-  grid-area: u2;
+.army-bandgroup__count {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-tag);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 14px;
+  text-transform: uppercase;
 }
-.army-slot--unit-3 {
-  grid-area: u3;
+.army-bandgroup--unit .army-bandgroup__count {
+  color: var(--ui-good);
 }
-.army-slot--unit-4 {
-  grid-area: u4;
+/* The advisor's warning (or a hint) and, on phones, the average level: the rest of the band's row. */
+.army-bandside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 1 1 96px;
+  min-width: 96px;
+  padding-left: var(--ui-s2);
 }
-.army-slot--unit-5 {
-  grid-area: u5;
+.army-bandside .army-hint,
+.army-bandside .army-advice {
+  margin: 0;
 }
-.army-slot--turret-0 {
-  grid-area: t0;
+.army-bandside .army-issue__btn {
+  margin: 0;
+  align-items: flex-start;
+  padding: 6px var(--ui-s2) 6px 6px;
 }
-.army-slot--turret-1 {
-  grid-area: t1;
+.army-bandside .army-issue__text {
+  white-space: normal;
 }
-/* The two power slots (A2.9.10): Home beside the first troop row, Field beside the second. */
-.army-slot--power-home {
-  grid-area: ph;
-}
-.army-slot--power-field {
-  grid-area: pf;
-}
-/* Regular screens: six troops in one row when the deck has the room, else three and three. */
-@container ui-root (min-height: 481px) {
-  .army-slots {
-    grid-template-columns: repeat(3, var(--slot-w)) 1px var(--slot-w);
-    grid-template-areas:
-      'u0 u1 u2 div ph'
-      'u3 u4 u5 div pf'
-      't0 t1 . div .';
-  }
-}
-@container ui-root (min-height: 481px) and (min-width: 1180px) {
-  .army-slots {
-    grid-template-columns: repeat(6, var(--slot-w));
-    grid-template-areas:
-      'u0 u1 u2 u3 u4 u5'
-      't0 t1 div ph pf .';
-  }
-  .army-slots::before {
-    justify-self: center;
-  }
+.army-bandgroup__slots {
+  display: flex;
+  gap: var(--slot-gap);
 }
 
 .army-slot {
@@ -685,70 +699,58 @@
   white-space: nowrap;
 }
 
-/* Desktop only: the counter legend inline under the slots (4.2 "Desktop"). */
-.army-legend-inline {
-  display: none;
-}
-@container ui-root (min-height: 800px) and (min-width: 1180px) {
-  .army-legend-inline {
-    display: block;
-    margin-top: var(--ui-s2);
-    max-width: calc(6 * var(--slot-w) + 5 * var(--slot-gap));
-  }
-}
-
 /* The dragged card shows the card only (drag.ts clones the whole cell). */
 .ui-drag-ghost .ui-card__name,
 .ui-drag-ghost .ui-card__classname,
 .ui-drag-ghost .ui-copies,
-.ui-drag-ghost .army-cell__age,
+.ui-drag-ghost .army-cell__src,
 .ui-drag-ghost .army-bar,
 .ui-drag-ghost .ui-card.is-equipped::after,
 .ui-flight .army-bar {
   display: none;
 }
 
-/* ---- Right: the cards ----------------------------------------------------------------------- */
+/* ---- 2. Available and 3. Locked: one scrolling pool --------------------------------------------- */
 
-.army-cards {
+.army-pool {
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  gap: var(--ui-s3);
+  flex: 1 1 auto;
   min-height: 0;
+  padding: var(--ui-s2) var(--ui-s3) var(--ui-s4);
   border: 1px solid rgba(107, 120, 144, 0.3);
   border-radius: var(--ui-r-lg);
   background: linear-gradient(var(--ui-light-angle), rgba(32, 38, 51, 0.85), rgba(21, 25, 33, 0.9));
   box-shadow: var(--ui-e1);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
 }
-.army-cards__head {
+.army-sec {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--ui-s2);
-  padding: 4px var(--ui-s2);
-  border-bottom: 1px solid rgba(107, 120, 144, 0.25);
-  background: rgba(15, 18, 24, 0.5);
 }
-.army-cards__head .ui-seg {
+.army-sec-head--free .army-sec-title {
+  color: var(--ui-text);
+}
+.army-sec-head--locked {
+  padding-top: var(--ui-s2);
+  border-top: 1px solid rgba(107, 120, 144, 0.28);
+}
+.army-sec-head--locked .army-sec-title {
+  color: var(--ui-text-2);
+}
+.army-album {
   flex: none;
-  flex-wrap: nowrap;
-}
-.army-cards__head .ui-seg__opt {
-  white-space: nowrap;
-}
-.army-cards__head .ui-btn.is-on .ui-btn__face {
-  box-shadow: inset 0 0 0 2px var(--ui-primary);
-}
-.army-chips {
-  display: flex;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.army-chips::-webkit-scrollbar {
-  display: none;
+  margin-left: auto;
 }
 .army-chip {
   position: relative;
@@ -789,27 +791,23 @@
 .army-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, var(--cell-w));
-  gap: var(--ui-s4) var(--ui-s4);
+  gap: var(--ui-s3) var(--ui-s4);
   align-content: start;
   justify-content: start;
-  flex: 1;
-  min-height: 0;
-  padding: var(--ui-s3) var(--ui-s3) var(--ui-s4);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
 }
 @container ui-root (max-height: 480px) {
   .army-grid {
-    gap: var(--ui-s3) var(--ui-s2);
-    padding: var(--ui-s3) var(--ui-s2) var(--ui-s4);
+    gap: var(--ui-s2) var(--ui-s3);
   }
-  /* The grid scrolls, so its cards keep their names on phones (U4: no remembering art); the
-     loadout's two rows have no room for them (the selection bar names the card). */
+  .army-pool {
+    padding: 4px var(--ui-s2) var(--ui-s3);
+    gap: var(--ui-s2);
+  }
+  .army-battle {
+    padding: 4px var(--ui-s2) 6px;
+  }
+  /* The pool scrolls, so its cards keep their names on phones (U4: no remembering art); the band's
+     one row has no room for them (the selection bar names the card). */
   .army-grid .army-cell .ui-card__name {
     /* A long single word ("Legionnaire") gets the gap beside the card too, never an ellipsis. */
     margin-left: -12px;
@@ -824,58 +822,40 @@
   .army-head .army-avg {
     display: none;
   }
-  .army-strip .army-avg--strip {
+  .army-bandside .army-avg--strip {
     display: inline-flex;
-    order: 2;
-    margin-left: auto;
-    height: 28px;
+    height: 24px;
     padding: 0 var(--ui-s2);
     font-size: var(--ui-fs-caption);
+  }
+  .army-bandside {
+    min-width: 84px;
+    padding-left: 0;
+    gap: 4px;
+  }
+  .army-bandside .army-issue__btn {
+    padding: 4px 6px 4px 4px;
+    line-height: 1.1;
+  }
+  .army-bandgroup__label {
+    height: 18px;
+  }
+  .army-pool .army-sec-head {
+    min-height: 22px;
+  }
+  .army-bandside .army-issue__btn .ui-class-icon {
+    display: none;
   }
 }
 .army-avg--strip {
   display: none;
 }
 /* Room under the last row, so a selected card's bar below it can scroll into view. */
-.army-grid.is-selecting {
+.army-pool.is-selecting {
   padding-bottom: 104px;
 }
-.army-grid.is-drop-valid {
+.army-pool.is-drop-valid {
   box-shadow: inset 0 0 0 2px rgba(95, 208, 138, 0.5);
-}
-/* "This age" groups (U4): a full-width caption row above each group, with a rule to the right. */
-.army-group {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: var(--ui-s1);
-  margin: 0 0 calc(-1 * var(--ui-s2));
-  color: var(--ui-text-2);
-  font-size: var(--ui-fs-caption);
-  line-height: var(--ui-lh-caption);
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  animation: ui-fade var(--ui-dur-small) var(--ui-ease-out);
-}
-.army-group::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  margin-left: var(--ui-s2);
-  background: linear-gradient(90deg, rgba(107, 120, 144, 0.6), rgba(107, 120, 144, 0));
-}
-.army-group ~ .army-group {
-  margin-top: var(--ui-s1);
-}
-.army-group--used {
-  color: var(--ui-good);
-}
-.army-group--used svg {
-  flex: none;
-}
-.army-group--locked {
-  color: var(--ui-text-3);
 }
 .army-cell {
   position: relative;
@@ -898,79 +878,32 @@
 .army-cell.is-selected {
   z-index: 20;
 }
-.army-cell.is-other .ui-card__frame {
-  filter: saturate(0.8);
-}
-.army-cell__age {
-  margin-top: 3px;
-  color: var(--ui-text-2);
+/* Locked (not found yet): the tile is a greyed silhouette with a padlock; under it, where it comes from. */
+.army-cell__src {
+  max-width: calc(var(--cell-w) + 10px);
+  margin-top: 2px;
+  color: var(--ui-text-3);
   font-size: var(--ui-fs-tag);
   font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.army-empty {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ui-s2);
-  padding: var(--ui-s5) var(--ui-s3);
-  color: var(--ui-text-2);
-  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
   text-align: center;
 }
-
-/* ---- Sheets: filter, advice, presets ------------------------------------------------------- */
-
-.army-filter {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ui-s2);
+.army-cell.is-locked .ui-card__name {
+  color: var(--ui-text-2);
 }
-.army-filter__label {
-  margin: var(--ui-s2) 0 0;
+.army-empty {
+  margin: 0;
+  padding: var(--ui-s2) var(--ui-s3);
+  border: 1px dashed rgba(107, 120, 144, 0.45);
+  border-radius: var(--ui-r-md);
   color: var(--ui-text-2);
   font-size: var(--ui-fs-caption);
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.army-filter__classes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ui-s2);
-}
-.army-fchip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 var(--ui-s3) 0 var(--ui-s2);
-  border: 1px solid var(--ui-edge);
-  border-radius: var(--ui-r-pill);
-  background: var(--ui-surface-2);
-  color: var(--ui-text-2);
-  font: inherit;
-  font-size: var(--ui-fs-label);
   font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color var(--ui-dur-micro) var(--ui-ease-out),
-    transform var(--ui-dur-micro) var(--ui-ease-back);
 }
-.army-fchip:active {
-  transform: scale(var(--ui-press-scale));
-}
-.army-fchip.is-on {
-  border-color: var(--ui-text);
-  background: var(--ui-surface-3);
-  color: var(--ui-text);
-  box-shadow: inset 0 -3px 0 var(--ui-primary);
-}
-.army-filter__row {
-  margin-top: var(--ui-s2);
-}
+
+/* ---- Sheets: advice, presets ------------------------------------------------------- */
+
 .army-advice-list,
 .army-presets {
   display: flex;
@@ -1054,7 +987,4 @@
 }
 .army-slot__tag--field {
   background: #8e3b2e;
-}
-.army-filter__slots {
-  margin-top: 8px;
 }

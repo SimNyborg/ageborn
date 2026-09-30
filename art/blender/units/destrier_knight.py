@@ -1,24 +1,43 @@
 """Destrier Knight: Medieval Age heavy (DESIGN A5.3), rider rig (A11). Lance charge, ~118 lu.
 
-Look (A11): white destrier in a team caparison with a parchment hem, knight (1.2x the horse's
-scale, so he reads) in slate plate with a team tabard, a big team plume, glowing eye dots in
-the helm slit, a large team heater shield with a parchment chevron on the near arm, and a
-wine lance in the far hand carried across the horse's neck with a team swallowtail pennant
-trailing behind the tip. Gold is an accent only. Tail, plume and pennant follow through.
+Look (A11): a white destrier with a shaped anatomy (knees on the forelegs, a hock bend on the
+hind legs, feathered fetlocks, dark hooves), a bridle and a slate chanfron, a forelock and a
+dark mane, in a team caparison with a parchment hem and a parchment bear paw on the flank. The knight (1.2x the horse's scale, so he reads) wears slate plate with a team
+tabard, a great helm with a glowing eye slit and a big team plume, a team heater shield with a
+parchment bear paw, and a wine lance with a steel vamplate and a team swallowtail pennant.
+Gold is an accent only. Tail, plume, pennant and forelock follow through.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
+  idle    the horse tosses its head and swishes its tail, the knight sits tall, blink
+  walk    trot: diagonal pairs, knees and hocks folding, the knight posting a frame late
+  attack  COUCHED LANCE CHARGE: the horse gathers onto its haunches while the lance comes
+          down from upright to couched under the arm (the held extreme: coiled, lance level),
+          then bursts forward with the forelegs thrown out (a streak smear and speed lines),
+          the lance level at the target on the impact (it flexes, impact lines, dust at the
+          hooves), the horse skids and the lance comes back up
+  hit     the horse shakes its head, eyes squeezed, the knight rocks behind the shield
+  die     D5 unhorsed: the horse rears, the knight is thrown off the back spinning and lands
+          flat behind it, the horse buckles at the knees and flops down, X eye and tongue
 """
-from ageborn_art import fx
-from ageborn_art.anim import Clip, merge, pick, squash
+import math
+
+from ageborn_art import face as F
+from ageborn_art import kit_medieval as K
+from ageborn_art import moves as M
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "destrier_knight"
 NAME = "Destrier Knight"
 HEIGHT_LU = 118
 YAW_DEG = -10.0
-CANVAS = (400, 292)
-FEET = (174, 274)
+CANVAS = (430, 300)
+FEET = (190, 278)
 ANCHORS = {"head": (0, 112), "hitCenter": (0, 50)}
+NO_RETIME = True
 
 COAT = "#E3DACB"
+COAT_DK = "#C9BEAD"
 MANE = "#4B4F58"
 TAIL = "#6E6660"
 HOOF = "#474C55"
@@ -29,25 +48,38 @@ WINE = "#8E2A4A"
 PARCH = "#E8DFC8"
 GOLD = "#D4A437"
 EYE = "#FAF6EE"
+LEATHER = "#5E4E42"
+NOSE = "#BFA99A"
 
 # lance: joint in the far hand; shaft along +Z (rest), tip at LANCE_TIP lu
 LX, LY, LZ = 10.5, 14.0, 65.0
-LANCE_TIP = 66.0
-SMEAR = {"joint": "lance", "inner": (LX, LY, LZ + 22), "outer": (LX, LY, LZ + LANCE_TIP),
-         "color": STEEL, "taper": 0.35, "start": 0.15, "behind": 6.0}
+LANCE_TIP = 70.0
 
 
 def _leg(rig, name, parent, x, y, z_top, front):
+    """A shaped leg: forearm (front) or gaskin (hind) to the knee or hock, a cannon, a
+    feathered fetlock, a slanted pastern and a hoof with a toe line."""
     rig.joint(f"{name}", parent, (x, y, z_top))
-    x2 = x + (1.5 if front else -1.0)
-    rig.joint(f"{name}2", name, (x2, y, 17.5))
-    g = Geo().capsule((x, y, z_top), (x2, y, 17.5), 6.2 if not front else 5.6, 3.9)
+    x2 = x + (1.5 if front else -4.5)
+    rig.joint(f"{name}2", name, (x2, y, 18.0))
+    if front:
+        g = Geo().capsule((x, y, z_top), (x2, y, 18.0), 6.0, 3.8)
+        g.blob((x2 + 0.6, y, 18.5), (3.9, 3.8, 3.4), p=2.2)          # knee
+    else:
+        g = Geo().capsule((x, y, z_top), (x2, y, 18.0), 7.0, 3.6)
+        g.blob((x2 - 1.2, y, 18.8), (3.8, 3.6, 3.6), p=2.2)          # hock point
     rig.part(name, g, COAT)
-    g = Geo().capsule((x2, y, 17.5), (x2 + 0.5, y, 5.5), 3.6, 3.3)
-    g.blob((x2 + 0.5, y, 8.0), (4.4, 4.4, 2.6), p=2.2)  # fetlock feathering
+    fx = x2 + (1.0 if front else 3.0)
+    g = Geo().capsule((x2, y, 18.0), (fx, y, 7.0), 3.3, 3.0)
     rig.part(f"{name}2", g, COAT)
-    g = Geo().blob((x2 + 1.3, y, 2.6), (5.0, 4.5, 2.9), p=3.0, taper=(1.05, 0.85))
+    g = Geo().blob((fx - 0.6, y, 7.2), (4.2, 4.3, 3.0), p=2.2)       # fetlock feathering
+    for dx in (-3.0, -0.8):
+        g.lathe([(1.6, 0), (0, -3.0)], (fx + dx, y, 5.0), (fx + dx - 1.2, y, 2.4), segs=8)
+    rig.part(f"{name}2", g, COAT_DK, finish="hair")
+    g = Geo().blob((fx + 1.2, y, 2.7), (5.0, 4.5, 2.9), p=3.0, taper=(1.05, 0.82))
     rig.part(f"{name}2", g, HOOF)
+    g = Geo().capsule((fx + 5.6, y - 3.5, 3.6), (fx + 5.8, y - 3.5, 0.8), 0.55)
+    rig.part(f"{name}2", g, DARK, outline=0, highlight=False)
 
 
 def build(rig):
@@ -62,10 +94,14 @@ def build(rig):
     # barrel under a team caparison with a parchment hem and gold studs
     g = Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3)
     rig.part("horse", g, COAT)
-    g = Geo().blob((0.5, 0, 41.5), (28.5, 14.2, 12.4), p=3.0, taper=(1.06, 0.96))
-    rig.part("horse", g, team=True)
+    cap = Geo().blob((0.5, 0, 41.5), (28.5, 14.2, 12.4), p=3.0, taper=(1.06, 0.96))
+    cface = F.Face(rig, "horse", [cap])
+    rig.part("horse", cap, team=True)
     g = Geo().blob((0.5, 0, 30.4), (29.4, 14.9, 2.4), p=3.2)
     rig.part("horse", g, PARCH)
+    # a big parchment bear paw on the flank
+    g = K.paw(cface, Geo(), K.scr(cface, (-8.0, -14.4, 43.0)), s=1.7)
+    rig.part("horse", g, PARCH, highlight=False, outline=0)
     g = Geo()
     for x in (-20, -7, 7, 20):
         g.sphere((x, -15.2, 30.6), 1.5, cuts=3)
@@ -84,19 +120,43 @@ def build(rig):
         t = i / 4
         g.blob((17 + 12 * t, 0, 57 + 14 * t), (5.2, 3.2, 5.0 - 0.9 * i * 0.5), p=2.2, rot=(0, -35, 0))
     rig.part("neck", g, MANE, finish="hair")
-    g = Geo().blob((38, 0, 63), (12.5, 6.4, 7.2), p=2.4, rot=(0, 40, 0))
-    g.blob((46.0, 0, 55.2), (6.6, 6.0, 5.8), p=2.2)
+    head = Geo().blob((38, 0, 63), (12.5, 6.4, 7.2), p=2.4, rot=(0, 40, 0))
+    head.blob((46.0, 0, 55.2), (6.8, 6.0, 5.8), p=2.2)
+    head.blob((33.0, 0, 62.0), (6.2, 6.6, 6.0), p=2.2)                # round cheek (jaw)
+    ears = Geo()
     for y in (-3.4, 3.4):
-        g.lathe([(2.2, 0), (1.6, 3), (0, 6.5)], (30.5, y, 70), (29.5, y * 1.3, 77.5), segs=10)
-    rig.part("hhead", g, COAT)
-    g = Geo().blob((39.5, 0, 64.5), (7.4, 5.7, 3.0), p=3.0, rot=(0, 38, 0))
+        ears.lathe([(2.3, 0), (1.7, 3), (0, 7.0)], (30.5, y, 70), (29.0, y * 1.3, 78.0), segs=10)
+    eye = Geo().blob((34.6, -5.2, 66.2), (2.4, 1.5, 2.7))
+    hf = F.Face(rig, "hhead", [head, eye])
+    rig.part("hhead", head, COAT)
+    rig.part("hhead", ears, COAT)
+    g = Geo().blob((47.6, -1.0, 54.4), (4.4, 5.2, 4.2), p=2.2)        # soft nose pad
+    rig.part("hhead", g, NOSE)
+    g = Geo().blob((39.5, 0, 64.5), (7.6, 5.9, 3.2), p=3.0, rot=(0, 38, 0))
+    g.capsule((34.5, 0, 69.5), (44.0, 0, 60.0), 1.4)                    # chanfron ridge
     rig.part("hhead", g, SLATE, finish="metal")
-    g = Geo().blob((34.6, -5.2, 65.8), (2.0, 1.4, 2.3))
-    rig.part("hhead", g, EYE, highlight=False, outline=0.8)
-    g = Geo().sphere((35.4, -6.3, 65.6), 1.25, cuts=3).sphere((50.5, -3.6, 55.5), 1.1, cuts=3)
+    rig.part("hhead", eye, EYE, highlight=False, outline=0.8)
+    rig.joint("pupils", "hhead", (35.4, -6.3, 65.8))
+    g = Geo().sphere((35.5, -6.2, 66.0), 1.35, cuts=3)
+    rig.part("pupils", g, DARK, outline=0)
+    g = Geo().sphere((50.2, -4.2, 55.8), 1.2, cuts=3)                  # nostril
     rig.part("hhead", g, DARK, outline=0)
-    g = Geo().capsule((47.5, -5.2, 52.5), (47.5, 5.2, 52.5), 1.2)  # bit
+    g = Geo()
+    c = hf.hit(*K.scr(hf, (49.0, -5.0, 51.0)))
+    hf.stroke(g, c, [(-4.5, 0.4), (0.0, -0.6), (2.4, 0.2)], 1.0, 0.4)   # lip line
+    rig.part("hhead", g, "#8A7A70", outline=0, highlight=False)
+    # bridle: noseband, cheek strap and the gold bit
+    g = Geo().capsule((44.0, -6.2, 58.8), (43.0, -6.0, 55.0), 1.0).capsule((43.0, -6.0, 55.0), (47.0, -5.6, 52.0), 1.0)
+    g.capsule((33.0, -6.4, 70.0), (43.6, -6.4, 58.0), 1.0)
+    rig.part("hhead", g, LEATHER, outline=0.5)
+    g = Geo().capsule((47.5, -5.4, 52.5), (47.5, 5.4, 52.5), 1.3)
     rig.part("hhead", g, GOLD, finish="metal", outline=0.8)
+    hf.eye_marks([K.scr(hf, (36.0, -6.4, 66.2))], 2.6, COAT)
+    hf.mouths(K.scr(hf, (48.0, -5.6, 50.8)), 5.0)
+    # forelock tuft between the ears (follow-through)
+    rig.secondary("forelock", "hhead", (31.0, 0, 71.0), (37.0, 0, 64.0), max_deg=16, gain=1.2)
+    g = Geo().capsule((31.0, -1.0, 71.0), (35.0, -1.5, 67.0), 2.6, 2.0).capsule((35.0, -1.5, 67.0), (37.5, -1.8, 63.5), 2.0, 1.0)
+    rig.part("forelock", g, MANE, finish="hair")
     # tail: half the old size, a mid grey-brown so it does not pull the eye to the rear
     rig.secondary("tail", "horse", (-26, 0, 49), (-31, 0, 36), max_deg=15, gain=1.0)
     g = Geo().capsule((-26, 0, 49), (-30.5, 0, 44), 2.6, 3.0).capsule((-30.5, 0, 44), (-31, 0, 36.5), 3.0, 1.4)
@@ -109,6 +169,10 @@ def build(rig):
     g = Geo().capsule((-1, -8.5, 58), (8, -11.5, 52), 5.2, 4.6).capsule((8, -11.5, 52), (7, -11.5, 40), 4.4, 4.0)
     g.blob((9.5, -11.5, 38.0), (5.8, 4.2, 3.0), p=2.8)
     rig.part("rider", g, SLATE, finish="metal")
+    g = Geo().capsule((5.0, -12.2, 51.0), (9.0, -12.2, 36.0), 0.8)   # stirrup leather
+    rig.part("rider", g, LEATHER, outline=0.4)
+    g = Geo().lathe([(2.6, 0), (3.0, 0.4), (3.0, 1.4), (2.6, 1.8)], (9.5, -12.0, 34.6), segs=12)
+    rig.part("rider", g, STEEL, finish="metal", outline=0.4)
     g = Geo().blob((-1, 0, 70.5), (9.2, 10.2, 11.2), p=2.4, taper=(0.95, 1.08))
     rig.part("ktorso", g, SLATE, finish="metal")
     g = Geo().blob((-0.4, 0, 64.8), (10.2, 11.2, 8.4), p=2.8, taper=(1.12, 0.9))
@@ -148,6 +212,16 @@ def build(rig):
             (LX, LY, LZ), segs=10)
     rig.part("lance", g, STEEL, finish="metal")
     rig.track("lanceTip", "lance", (LX, LY, LZ + LANCE_TIP))
+    # the lance that clatters to the ground when the knight is unhorsed (lying along +X)
+    rig.joint("lance_loose", "root", (20.0, -2.0, 2.6), hidden=True, scale=1.2)
+    o, d = (-6.0, -2.0, 2.6), (1.0, 0.0, 0.0)
+    p1 = (o[0] + d[0], o[1], o[2])
+    g = Geo().lathe([(0, -14), (1.8, -13.5), (2.0, -4), (2.1, 3), (1.8, 26), (1.4, LANCE_TIP - 12),
+                     (0, LANCE_TIP - 11)], o, p1, segs=12)
+    rig.part("lance_loose", g, WINE)
+    g = Geo().lathe([(0, 1.5), (2.6, 2.0), (6.8, 8.5), (5.8, 10), (0, 10.2)], o, p1, segs=16)
+    g.lathe([(1.8, LANCE_TIP - 13), (2.8, LANCE_TIP - 12), (1.6, LANCE_TIP - 6), (0, LANCE_TIP)], o, p1, segs=10)
+    rig.part("lance_loose", g, STEEL, finish="metal")
     rig.track("_foot", "leg_fr2", (19.8, -6.5, 0.5))
     # swallowtail pennant (14 x 8 lu after the 1.2x rider scale) trailing behind the tip; it is
     # counter-rotated to stream back level and follows through from the lance's movement
@@ -173,11 +247,15 @@ def build(rig):
     rot = (0, 0, 8)
     g = Geo().blob((sx, sy + 0.8, sz), (11.2, 1.4, 14.6), p=3.2, taper=(0.2, 1.0), rot=rot)
     rig.part("shield", g, STEEL, finish="metal")
-    g = Geo().blob((sx, sy, sz + 0.5), (9.5, 1.5, 12.6), p=3.2, taper=(0.17, 1.0), rot=rot)
-    rig.part("shield", g, team=True, outline=0.8)
-    g = Geo().capsule((sx - 5.6, sy - 1.8, sz - 2.6), (sx, sy - 2.0, sz + 3.6), 1.7)
-    g.capsule((sx, sy - 2.0, sz + 3.6), (sx + 5.6, sy - 1.8, sz - 2.6), 1.7)
-    rig.part("shield", g, PARCH, outline=0.6)
+    sh = Geo().blob((sx, sy, sz + 0.5), (9.5, 1.5, 12.6), p=3.2, taper=(0.17, 1.0), rot=rot)
+    sf = F.Face(rig, "shield", [sh])
+    rig.part("shield", sh, team=True, outline=0.8)
+    g = K.paw(sf, Geo(), K.scr(sf, (sx, sy - 1.6, sz + 1.0)), s=1.7)
+    rig.part("shield", g, PARCH, highlight=False, outline=0)
+    g = Geo().blob((sx, sy - 1.8, sz + 9.6), (2.2, 1.5, 2.2), p=2.2)
+    rig.part("shield", g, GOLD, finish="metal", outline=0.8)
+
+
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -204,107 +282,189 @@ def _finish(pose, lance_deg):
 STANCE = {
     "karm_l": {"r": 22}, "kfore_l": {"r": 20},
     "karm_r": {"r": 10}, "kfore_r": {"r": 40},
+    "neck": {"r": -9}, "hhead": {"r": 7},     # the head carried forward, clear of the knight
 }
 IDLE_LANCE = 28.0
+HX = (0.0, 0.0, 40.0)    # the horse's belly: squash and pitch pivot
+HOOF_B = (-19.0, 0.0, 0.0)
 
 
 def _idle(f):
-    c = [-1.0, -0.45, 0.45, 1.0][f]
-    lag = [-1.0, -1.0, -0.45, 0.45][f]
+    n = M.IDLE_FRAMES_HEAVY
+    c = math.cos(2 * math.pi * f / n)
+    lag = math.cos(2 * math.pi * (f - 1) / n)
+    toss = [0.0, 0.0, 0.6, 1.0, 0.3, 0.0][f]
     pose = merge(STANCE, {
-        "horse": {"z": 1.2 * c},
-        "body": squash(0.03 * c),
-        "neck": {"r": -3.0 * lag}, "hhead": {"r": 2.5 * lag},
+        "horse": {"z": 1.0 * c},
+        "body": squash(0.02 * c),
+        "neck": {"r": -3.0 * lag + 10 * toss}, "hhead": {"r": 2.5 * lag - 8 * toss},
         "rider": {"z": 0.8 * lag},
-        "ktorso": {"r": 1.2 * lag},
-        "leg_fr": {"r": 1.0 * c}, "leg_br": {"r": -1.0 * c},
+        "ktorso": {"r": 1.2 * lag}, "khead": {"r": -1.0 * lag},
+        "tail": {"r": [0, 8, 14, 4, -8, -4][f]},
+        "leg_fr": {"r": 1.0 * c + [0, 0, 6, 10, 2, 0][f]}, "leg_fr2": {"r": [0, 0, -18, -30, -6, 0][f]},
+        "leg_br": {"r": -1.0 * c},
     })
+    if f == 5:
+        pose = merge(pose, F.expr("blink", mouth=None))
     return _finish(pose, IDLE_LANCE + 1.5 * lag)
 
 
 def _walk(f):
-    # trot: diagonal pairs move together (front-right with back-left), 0.8 s per cycle
-    # (100 ms per frame, see clips()); the horse is lowest
-    # on the contact frames 0 and 4 (3.5 lu bob), nods +-8 degrees, the rider bobs 2.2 lu
-    # one frame behind
-    import math
+    # trot: diagonal pairs move together (front-right with back-left), 0.8 s per cycle; the
+    # knees and hocks fold on the swing, the knight posts a frame late
     p = 2 * math.pi * f / 8
-    s, c = math.sin(p), math.cos(p)
-    bob = -1.75 * math.cos(2 * p)
-    bob_lag = -1.1 * math.cos(2 * (p - 2 * math.pi / 8))
+    s_, c = math.sin(p), math.cos(p)
+    bob = -2.0 * math.cos(2 * p)
+    bob_lag = -1.6 * math.cos(2 * (p - 2 * math.pi / 8))
     up = lambda v: max(0.0, v)
     pose = merge(STANCE, {
-        "horse": {"z": bob - 0.4, "r": 1.5 * s},
-        "leg_fr": {"r": 20 * s}, "leg_fr2": {"r": -46 * up(c)},
-        "leg_bl": {"r": 16 * s}, "leg_bl2": {"r": 32 * up(-c)},
-        "leg_fl": {"r": -20 * s}, "leg_fl2": {"r": -46 * up(-c)},
-        "leg_br": {"r": -16 * s}, "leg_br2": {"r": 32 * up(c)},
-        "neck": {"r": -8 * math.cos(2 * p)}, "hhead": {"r": 3 * math.cos(2 * p)},
-        "rider": {"z": bob_lag},
-        "ktorso": {"r": -2.0 * math.cos(2 * (p - 2 * math.pi / 8))},
+        "horse": {"z": bob - 0.4, "r": 1.5 * s_},
+        "leg_fr": {"r": 22 * s_ + 10 * up(c)}, "leg_fr2": {"r": -62 * up(c)},
+        "leg_bl": {"r": 16 * s_}, "leg_bl2": {"r": 40 * up(-c)},
+        "leg_fl": {"r": -22 * s_ + 10 * up(-c)}, "leg_fl2": {"r": -62 * up(-c)},
+        "leg_br": {"r": -16 * s_}, "leg_br2": {"r": 40 * up(c)},
+        "neck": {"r": -8 * math.cos(2 * p)}, "hhead": {"r": 4 * math.cos(2 * p)},
+        "rider": {"z": bob_lag + 0.6},
+        "ktorso": {"r": -2.5 * math.cos(2 * (p - 2 * math.pi / 8))},
+        "tail": {"r": 6 * math.sin(2 * p)},
     })
     return _finish(pose, IDLE_LANCE + 2.5 * math.cos(2 * (p - 2 * math.pi / 8)))
 
 
-def _attack(f):
-    # 0-1 anticipation (the horse rears, squash 0.9/1.1), 2 held extreme (reared, lance
-    # high), 3 smear (lunge, lance swinging down), 4 held impact (lance level, lunge, squash
-    # 0.85/1.15), 5-7 recovery. See fx.MELEE_MS.
-    sq = pick(f, [-0.05, -0.10, 0.06, 0.04, -0.15, -0.08, -0.02, 0.0])
-    pose = merge(STANCE, {
-        "body": dict(squash(sq), x=pick(f, [-1, -3, -5, 4, 10, 9, 5, 0])),
-        "horse": {"r": pick(f, [4, 9, 14, 2, -5, -3, -1, 0])},
-        "leg_fr": {"r": pick(f, [10, 28, 40, 0, -16, -10, -4, 0])},
-        "leg_fr2": {"r": pick(f, [-20, -55, -75, -20, -8, -4, 0, 0])},
-        "leg_fl": {"r": pick(f, [6, 20, 30, 12, 16, 8, 2, 0])},
-        "leg_fl2": {"r": pick(f, [-14, -45, -60, -40, -30, -15, -5, 0])},
-        "leg_br": {"r": pick(f, [4, 10, 14, -6, -20, -12, -4, 0])},
-        "leg_bl": {"r": pick(f, [2, 6, 8, -4, -10, -6, -2, 0])},
-        "neck": {"r": pick(f, [4, 8, 12, -4, -14, -10, -4, 0])},
-        "hhead": {"r": pick(f, [-3, -6, -8, 2, 6, 4, 1, 0])},
-        "ktorso": {"r": pick(f, [4, 9, 12, -8, -16, -13, -6, 0])},
-        "karm_l": {"r": pick(f, [30, 40, 48, 20, 8, 10, 16, 0])},
-        "karm_r": {"r": pick(f, [4, 0, -4, 14, 22, 18, 12, 0])},
-        "khead": {"r": pick(f, [2, 4, 6, -4, -8, -6, -2, 0])},
+# attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
+#      shift  dip  coil HOLD burst reach IMPACT skid follow settle
+A_X = [-1.0, -3.0, -6.0, -8.0, 2.0, 9.0, 13.0, 12.0, 6.0, 1.0]
+A_Z = [0.0, -1.5, -3.0, -4.0, 2.5, 3.0, 0.0, -1.0, 0.0, 0.0]
+A_R = [2, 4, 9, 12, -2, 2, -4, -6, -2, 0]            # horse pitch (+ = forehand up)
+A_Q = [-0.02, -0.05, -0.07, -0.08, 0.05, 0.03, -0.07, 0.02, 0.0, 0.0]
+A_SX = [1.0, 1.0, 0.97, 0.96, 1.08, 1.06, 1.0, 1.0, 1.0, 1.0]
+LFR = [(4, -8), (8, -20), (12, -40), (16, -52), (34, 4), (42, 8), (24, 0), (30, -4), (10, 0), (0, 0)]
+LFL = [(0, 0), (4, -10), (6, -24), (8, -34), (26, -22), (36, 2), (18, 0), (24, 0), (6, 0), (0, 0)]
+LBR = [(2, 0), (6, 4), (16, 8), (22, 10), (-26, 0), (-32, 4), (-20, 0), (6, 0), (2, 0), (0, 0)]
+LBL = [(2, 0), (4, 2), (12, 6), (18, 8), (-30, 0), (-24, 10), (-16, 0), (10, 0), (4, 0), (0, 0)]
+NECK = [2, -2, 6, 10, -10, -12, 6, 12, 4, 0]
+HHEAD = [0, 4, -4, -6, 4, 6, -8, -10, -2, 0]
+KT = [2, -2, -8, -12, -16, -18, -14, -4, 0, 0]       # knight lean (- = forward)
+LANCE = [45, 36, 20, 6, 3, 2, 0, -4, 16, 28]
+KARM_L = [0, -4, -14, -22, -24, -24, -24, -12, -4, 0]
+KARM_R = [0, 0, 4, 6, 8, 8, 12, 6, 2, 0]
+A_TAIL = [0, 4, 8, 10, -12, -16, -8, 6, 4, 0]
+
+
+def _attack_pose(f):
+    pose = merge(STANCE, M.body_about(HX, x=A_X[f], z=A_Z[f], q=A_Q[f]), {
+        "body": {"sx": A_SX[f]},
+        "horse": {"r": A_R[f]},
+        "leg_fr": {"r": LFR[f][0]}, "leg_fr2": {"r": LFR[f][1]},
+        "leg_fl": {"r": LFL[f][0]}, "leg_fl2": {"r": LFL[f][1]},
+        "leg_br": {"r": LBR[f][0]}, "leg_br2": {"r": LBR[f][1]},
+        "leg_bl": {"r": LBL[f][0]}, "leg_bl2": {"r": LBL[f][1]},
+        "neck": {"r": NECK[f]}, "hhead": {"r": HHEAD[f]},
+        "ktorso": {"r": KT[f]}, "khead": {"r": -0.5 * KT[f]},
+        "karm_l": {"r": KARM_L[f]}, "karm_r": {"r": KARM_R[f]},
+        "tail": {"r": A_TAIL[f]},
     })
-    lance = pick(f, [34, 40, 46, 20, 2, 5, 14, IDLE_LANCE])
-    pose = _finish(pose, lance)
-    if f == 3:
-        pose["lance"]["sz"] = 1.12  # smear frame: the lance stretches along the thrust
+    if f in (2, 3):
+        pose = merge(pose, F.expr("grit", mouth=None))
+    elif f in (5, 6, 7):
+        pose = merge(pose, F.expr("yell", mouth=None))
+    pose = _finish(pose, LANCE[f])
+    if f in (4, 5):
+        pose["lance"]["sz"] = 1.1
+    if f == 6:
+        pose["lance"]["sz"] = 0.95   # the lance flexes on the hit
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    pose = merge(STANCE, {
-        "body": dict(squash(-0.08 * a), x=-4.0 * a),
-        "horse": {"r": 5 * a},
-        "neck": {"r": 14 * a}, "hhead": {"r": -8 * a},
-        "ktorso": {"r": 14 * a}, "khead": {"r": 8 * a},
-        "karm_r": {"r": 15 * a},
-    })
-    return _finish(pose, IDLE_LANCE + 10 * a)
+TIP = (LX, LY, LZ + LANCE_TIP)
+CHARGE = {"kind": "streak", "joint": "lance", "point": TIP, "color": "#C9D2DC", "width_lu": 10.0,
+          "white": 0.35}
 
 
-def _die(f):
-    pose = merge(STANCE, fx.die_pose(f), {
-        "horse": {"r": pick(f, [10, 4, 2])},
-        "neck": {"r": pick(f, [20, 12, 12])}, "hhead": {"r": -10},
-        "leg_fr": {"r": pick(f, [40, 20, 20])}, "leg_fl": {"r": pick(f, [30, 16, 16])},
-        "leg_fr2": {"r": -50},
-        "ktorso": {"r": pick(f, [22, 10, 10])}, "karm_r": {"r": 10},
+def _attack_clip():
+    ov = {
+        4: [dict(CHARGE, **{"from": 3, "t0": 0.0, "t1": 1.0}),
+            {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 51, "spread": 1.2,
+             "dir": -1.0}],
+        5: [dict(CHARGE, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 8.0})],
+        6: [{"kind": "burst", "joint": "lance", "point": TIP, "r0_lu": 8.0, "r1_lu": 16.0, "n": 6,
+             "a0": -80.0, "arc": 160.0},
+            {"kind": "dust", "ground": (34.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 52, "spread": 1.2},
+            {"kind": "dust", "ground": (-20.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 53, "spread": 0.9,
+             "dir": -1.0}],
+        7: [{"kind": "dust", "ground": (36.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 54, "spread": 1.5}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    def recoil(a, shake):
+        return {"body": dict(squash(-0.06 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
+                "horse": {"r": 4 * a},
+                "neck": {"r": 12 * a}, "hhead": {"r": -6 * a + 8 * shake, "rx": 10 * shake},
+                "ktorso": {"r": 10 * a}, "khead": {"r": 6 * a},
+                "karm_r": {"r": 14 * max(a, 0)}, "tail": {"r": 10 * a},
+                "leg_br": {"r": -8 * max(a, 0)}, "leg_bl": {"r": -6 * max(a, 0)}}
+    pose = M.hit_beast(k, STANCE, recoil, face_hurt=F.expr("squeeze", mouth=None))
+    return _finish(pose, IDLE_LANCE + 10 * M.HIT_AMT[k])
+
+
+# die D5 unhorsed: 8 unique poses in the 12 heavy steps (moves.DIE_SEQ_HEAVY)
+#        struck rear  thrown  air  buckle flop settle shrink
+D_HR = [4, 26, 22, 4, -6, -2, 0, 0]                  # horse pitch about the hind hooves
+D_Z = [0, 0, 0, 0, -12, -22, -21, -21]
+D_X = [-3, -4, -4, -2, 0, 0, 0, 0]
+D_Q = [-0.08, 0.06, 0.03, 0.0, -0.1, -0.06, -0.03, -0.05]
+D_S = [1, 1, 1, 1, 1, 1, 1, 0.94]
+D_LF = [(6, -10), (44, -90), (40, -80), (6, -6), (-40, 110), (-62, 128), (-64, 130), (-64, 130)]
+D_LB = [(-4, 0), (-6, 0), (-4, 0), (0, 0), (20, -30), (58, -118), (60, -122), (60, -122)]
+D_NECK = [10, 18, 14, 0, -18, -30, -32, -32]
+D_HH = [-6, -8, -6, 0, 8, 14, 16, 16]
+# the knight: thrown back off the saddle, a spin in the air, flat on his back behind the horse
+D_RX = [0, -4, -22, -40, -48, -50, -50, -50]
+D_RZ = [0, 3, 22, 10, -26, -20, -20, -20]
+D_RR = [4, 25, 110, 250, 450, 450, 450, 450]
+D_LANCE = [(None), (None), (10, 30, 30), (26, 12, 10), (34, 0, 0), (34, 0, 0), (34, 0, 0), (34, 0, 0)]
+
+
+def _die(k):
+    pose = merge(STANCE, M.body_about(HOOF_B, x=D_X[k], z=D_Z[k], r=D_HR[k], q=D_Q[k], s=D_S[k]), {
+        "leg_fr": {"r": D_LF[k][0]}, "leg_fr2": {"r": D_LF[k][1]},
+        "leg_fl": {"r": D_LF[k][0] - 6}, "leg_fl2": {"r": D_LF[k][1] - 8},
+        "leg_br": {"r": D_LB[k][0]}, "leg_br2": {"r": D_LB[k][1]},
+        "leg_bl": {"r": D_LB[k][0] - 4}, "leg_bl2": {"r": D_LB[k][1] + 6},
+        "neck": {"r": D_NECK[k]}, "hhead": {"r": D_HH[k]},
+        "tail": {"r": [0, 20, 16, 6, -10, -20, -20, -20][k]},
+        "rider": {"x": D_RX[k], "z": D_RZ[k], "r": D_RR[k] - D_HR[k]},
+        "karm_l": {"r": [20, 60, 120, 80, 40, 40, 40, 40][k]},
+        "karm_r": {"r": [10, 40, 90, 60, 30, 30, 30, 30][k]},
+        "ktorso": {"r": [6, 10, 0, 0, 0, 0, 0, 0][k]},
     })
-    return _finish(pose, pick(f, [26, 20, 16]))
+    pose = _finish(pose, [IDLE_LANCE + 8, IDLE_LANCE + 20, 0, 0, 0, 0, 0, 0][k])
+    if D_LANCE[k] is not None:
+        x, z, r = D_LANCE[k]
+        pose["lance"] = dict(pose.get("lance", {}), hide=True)
+        pose["lance_loose"] = {"show": True, "x": x, "z": z, "r": r}
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", mouth=None))
+    elif k < 4:
+        pose = merge(pose, F.expr("o", mouth=None))
+    else:
+        pose = merge(pose, F.expr("x", "tongue", mouth=None))
+    return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        # a heavy horse: 0.8 s cycle and a shorter stride, so it plays near 1x at its
-        # 60 lu/s sim speed instead of in slow motion
-        Clip("walk", 8, _walk, loop=True, durations=100),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
+               [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
+        # a heavy horse: 0.8 s cycle, so it plays near 1x at its 60 lu/s sim speed
+        M.clip("walk", [_walk(f) for f in range(8)], [100] * 8, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
+               extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
+    return M.check_contract(cl, heavy=True)

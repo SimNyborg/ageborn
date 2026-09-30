@@ -6,16 +6,21 @@
  * factory, a neon skyline, a ringed planet, a time rift).
  *
  * The bases are the real base pictures from the art provider (`BaseLook`, the ArtProvider portrait
- * `base.<age>`), so swapping art changes them here too; the island, landmark and props are code-drawn
- * chrome like the War Path regions. Ambient life (the island's float, smoke, water, flags, snow, neon,
- * motes) is CSS and stills under reduce motion. Deterministic, decorative (`aria-hidden`).
+ * `base.<age>`; the AI's in its team colour), so swapping art changes them here too; the island,
+ * landmark and props are code-drawn chrome like the War Path regions. Each side's frontline troops
+ * (your War Plan's first units, the AI's from its plan; ArtProvider portraits) stand in the lane:
+ * they breathe, the back ones taunt with a hop, and every few seconds the front pair lunges in for a
+ * near-clash with a spark and springs back (anticipation, stretch, recoil, settle). Ambient life
+ * (the island's float, smoke, water, flags, snow, neon, motes) is CSS and stills under reduce
+ * motion. Deterministic, decorative (`aria-hidden`).
  */
-import type { AgeId } from '@/contracts';
+import type { AgeId, CardId, Side } from '@/contracts';
 import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
 import { BaseLook } from '../../components/cosmeticArt';
+import { usePortrait } from '../../components/kit';
 
 interface IslandPalette {
   /** Top surface, its lit side and its patches. */
@@ -75,8 +80,7 @@ function Smoke(p: { x: number; y: number; s?: number; color?: string }) {
 }
 
 /** Each arena's landmark, drawn behind the island (its y 196 lands on the island's back edge). */
-function Landmark(p: { arena: ArenaId; pal: IslandPalette }): ComponentChildren {
-  const c = p.pal;
+function Landmark(p: { arena: ArenaId }): ComponentChildren {
   switch (p.arena) {
     case 'tar_pits':
       return (
@@ -283,7 +287,35 @@ function Banner(p: { x: number; y: number; color: string; flip?: boolean }) {
   );
 }
 
-export function Diorama(p: { arena: ArenaId; age: AgeId; mySkin: string | null; foeSkin: string | null; teamMe: string; teamFoe: string; launching?: boolean }) {
+/**
+ * One troop in the lane: an ArtProvider portrait (transparent, the side's team colour) in three
+ * layers, so the motions stack: the act (lunge or taunt hop), the body (breathing squash and
+ * stretch from the feet) and the picture (mirrored for the AI, who faces left).
+ */
+function LaneUnit(p: { card: CardId; side: Side; slot: 0 | 1 }) {
+  const url = usePortrait(p.card, { size: 192, plate: false, ...(p.side ? { side: 1 as const } : {}) });
+  return (
+    <span class={`hd__unit hd__unit--${p.side ? 'foe' : 'me'} hd__unit--s${p.slot}`} data-card={p.card}>
+      <i class="hd__unitShadow" />
+      <span class="hd__unitAct">
+        <span class="hd__unitBody">{url ? <img class="hd__unitImg" src={url} alt="" draggable={false} /> : <i class="hd__unitGhost" />}</span>
+      </span>
+    </span>
+  );
+}
+
+export function Diorama(p: {
+  arena: ArenaId;
+  age: AgeId;
+  mySkin: string | null;
+  foeSkin: string | null;
+  teamMe: string;
+  teamFoe: string;
+  /** Each side's frontline troops (up to two; the first stands in front). */
+  mine?: readonly CardId[];
+  foe?: readonly CardId[];
+  launching?: boolean;
+}) {
   const pal = ISLANDS[p.arena];
   const seed = fnv1a32(`hub:${p.arena}`);
   const cliff = useMemo(() => cliffPath(seed), [seed]);
@@ -293,60 +325,70 @@ export function Diorama(p: { arena: ArenaId; age: AgeId; mySkin: string | null; 
   }, [seed]);
   const id = `hd-${p.arena}`;
   return (
-    <div class={`hd${p.launching ? ' is-launching' : ''}`} data-arena={p.arena} aria-hidden="true" data-testid="hub-diorama">
+    <div class={`hd${p.launching ? ' is-launching' : ''}${(p.mine?.length ?? 0) > 0 && (p.foe?.length ?? 0) > 0 ? ' has-units' : ''}`} data-arena={p.arena} aria-hidden="true" data-testid="hub-diorama">
       <div class="hd__float">
-        <svg class="hd__art" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <radialGradient id={`${id}-glow`}>
-              <stop offset="0" stop-color={pal.glow} stop-opacity=".55" />
-              <stop offset="1" stop-color={pal.glow} stop-opacity="0" />
-            </radialGradient>
-            <linearGradient id={`${id}-cliff`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color={pal.cliff} />
-              <stop offset="1" stop-color={pal.cliffDark} />
-            </linearGradient>
-            <linearGradient id={`${id}-top`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color={pal.lit} />
-              <stop offset="1" stop-color={pal.top} />
-            </linearGradient>
-          </defs>
-          <ellipse class="hd-underglow" cx="300" cy="300" rx="230" ry="44" fill={`url(#${id}-glow)`} />
-          <g transform="translate(0 -42)">
-            <Landmark arena={p.arena} pal={pal} />
-          </g>
-          {/* the cliff underside with strata and a lit left face */}
-          <path d={cliff} fill={`url(#${id}-cliff)`} stroke="#0f1218" stroke-width="3" stroke-linejoin="round" />
-          <path d="M60 226 Q170 252 300 256 Q430 252 540 226" stroke={pal.strata} stroke-width="4" fill="none" opacity=".6" />
-          <path d="M96 256 Q200 280 300 284 Q400 280 504 256" stroke={pal.strata} stroke-width="3" fill="none" opacity=".45" />
-          <path d="M44 208 L70 262 L96 250" stroke="#fff" stroke-width="3" fill="none" opacity=".18" />
-          {/* the top surface */}
-          <ellipse cx="300" cy="206" rx="264" ry="54" fill={pal.top} stroke="#0f1218" stroke-width="3" />
-          <ellipse cx="286" cy="198" rx="236" ry="40" fill={`url(#${id}-top)`} opacity=".9" />
-          {patches.map((q, i) => (
-            <ellipse key={i} cx={q.cx.toFixed(0)} cy={q.cy.toFixed(0)} rx={q.rx.toFixed(0)} ry={(q.rx * 0.22).toFixed(1)} fill={pal.patch} opacity=".45" />
+        {/* One bob for the island and everything on it, so bases and troops ride it together. */}
+        <div class="hd__bob">
+          <svg class="hd__art" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <radialGradient id={`${id}-glow`}>
+                <stop offset="0" stop-color={pal.glow} stop-opacity=".55" />
+                <stop offset="1" stop-color={pal.glow} stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id={`${id}-cliff`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color={pal.cliff} />
+                <stop offset="1" stop-color={pal.cliffDark} />
+              </linearGradient>
+              <linearGradient id={`${id}-top`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color={pal.lit} />
+                <stop offset="1" stop-color={pal.top} />
+              </linearGradient>
+            </defs>
+            <ellipse class="hd-underglow" cx="300" cy="300" rx="230" ry="44" fill={`url(#${id}-glow)`} />
+            <g transform="translate(0 -42)">
+              <Landmark arena={p.arena} />
+            </g>
+            {/* the cliff underside with strata and a lit left face */}
+            <path d={cliff} fill={`url(#${id}-cliff)`} stroke="#0f1218" stroke-width="3" stroke-linejoin="round" />
+            <path d="M60 226 Q170 252 300 256 Q430 252 540 226" stroke={pal.strata} stroke-width="4" fill="none" opacity=".6" />
+            <path d="M96 256 Q200 280 300 284 Q400 280 504 256" stroke={pal.strata} stroke-width="3" fill="none" opacity=".45" />
+            <path d="M44 208 L70 262 L96 250" stroke="#fff" stroke-width="3" fill="none" opacity=".18" />
+            {/* the top surface */}
+            <ellipse cx="300" cy="206" rx="264" ry="54" fill={pal.top} stroke="#0f1218" stroke-width="3" />
+            <ellipse cx="286" cy="198" rx="236" ry="40" fill={`url(#${id}-top)`} opacity=".9" />
+            {patches.map((q, i) => (
+              <ellipse key={i} cx={q.cx.toFixed(0)} cy={q.cy.toFixed(0)} rx={q.rx.toFixed(0)} ry={(q.rx * 0.22).toFixed(1)} fill={pal.patch} opacity=".45" />
+            ))}
+            {/* the lane */}
+            <ellipse cx="300" cy="214" rx="226" ry="17" fill={pal.lane} stroke="#0f1218" stroke-width="2" opacity=".95" />
+            <path d="M96 214 Q300 206 504 214" stroke={pal.laneLit} stroke-width="5" stroke-dasharray="14 12" stroke-linecap="round" fill="none" opacity=".75" />
+            <Props pal={pal} seed={seed} arena={p.arena} />
+            <Banner x={176} y={214} color={p.teamMe} />
+            <Banner x={424} y={214} color={p.teamFoe} flip />
+            {/* the clash point at the lane's middle */}
+            <g class="hd-clash" transform="translate(300 206)">
+              <circle r="22" fill={pal.glow} opacity=".22" />
+              <path d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="#1b140d" stroke-width="7" stroke-linecap="round" />
+              <path d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="#ffe39a" stroke-width="3.5" stroke-linecap="round" />
+            </g>
+          </svg>
+          <span class="hd__base hd__base--me">
+            <BaseLook age={p.age} skin={p.mySkin} />
+          </span>
+          <span class="hd__base hd__base--foe">
+            <BaseLook age={p.age} skin={p.foeSkin} side={1} />
+          </span>
+          {(p.mine ?? []).slice(0, 2).map((c, i) => (
+            <LaneUnit key={`m${i}${c}`} card={c} side={0} slot={i as 0 | 1} />
           ))}
-          {/* the lane */}
-          <ellipse cx="300" cy="214" rx="226" ry="17" fill={pal.lane} stroke="#0f1218" stroke-width="2" opacity=".95" />
-          <path d="M96 214 Q300 206 504 214" stroke={pal.laneLit} stroke-width="5" stroke-dasharray="14 12" stroke-linecap="round" fill="none" opacity=".75" />
-          <Props pal={pal} seed={seed} arena={p.arena} />
-          <Banner x={176} y={214} color={p.teamMe} />
-          <Banner x={424} y={214} color={p.teamFoe} flip />
-          {/* the clash point at the lane's middle */}
-          <g class="hd-clash" transform="translate(300 206)">
-            <circle r="22" fill={pal.glow} opacity=".22" />
-            <path d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="#1b140d" stroke-width="7" stroke-linecap="round" />
-            <path d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="#ffe39a" stroke-width="3.5" stroke-linecap="round" />
-          </g>
-        </svg>
-        <span class="hd__base hd__base--me">
-          <BaseLook age={p.age} skin={p.mySkin} />
-        </span>
-        <span class="hd__base hd__base--foe">
-          <BaseLook age={p.age} skin={p.foeSkin} />
-        </span>
-        <i class="hd__spark hd__spark--1" />
-        <i class="hd__spark hd__spark--2" />
-        <i class="hd__spark hd__spark--3" />
+          {(p.foe ?? []).slice(0, 2).map((c, i) => (
+            <LaneUnit key={`f${i}${c}`} card={c} side={1} slot={i as 0 | 1} />
+          ))}
+          <i class="hd__clash" />
+          <i class="hd__spark hd__spark--1" />
+          <i class="hd__spark hd__spark--2" />
+          <i class="hd__spark hd__spark--3" />
+        </div>
       </div>
     </div>
   );

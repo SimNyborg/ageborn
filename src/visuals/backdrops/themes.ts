@@ -74,11 +74,11 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     glow: 0xf2cfa6,
     glowAlpha: 0.34,
     grade: 0x5a4a66,
-    gradeMix: 0.3,
-    midGradeScale: 0.8,
+    gradeMix: 0.42,
+    midGradeScale: 0.75,
     celestial: 'sun',
     celestialColor: 0xffe2b8,
-    celestialAt: { x: 1040, y: -250, r: 58 },
+    celestialAt: { x: 1040, y: -215, r: 52 },
     stars: 0,
     aurora: false,
     rim: 'none',
@@ -96,12 +96,12 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     skyMix: 0.78,
     glow: 0xe8c08e,
     glowAlpha: 0.26,
-    grade: 0x6a4c34,
-    gradeMix: 0.26,
+    grade: 0x6a5646,
+    gradeMix: 0.36,
     midGradeScale: 0.85,
     celestial: 'harvestMoon',
     celestialColor: 0xf4d4a0,
-    celestialAt: { x: 360, y: -430, r: 64 },
+    celestialAt: { x: 380, y: -240, r: 58 },
     stars: 30,
     aurora: false,
     rim: 'autumn',
@@ -119,10 +119,10 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     skyMix: 0.78,
     glow: 0xf4f7fa,
     glowAlpha: 0.3,
-    grade: 0xdfe7ee,
-    gradeMix: 0.34,
-    midGradeScale: 0.85,
-    celestial: 'sun',
+    grade: 0xe4ebf1,
+    gradeMix: 0.46,
+    midGradeScale: 1.25,
+    celestial: 'keep',
     celestialColor: 0xf6f8ff,
     stars: 0,
     aurora: false,
@@ -142,7 +142,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     glow: 0xf6e2e6,
     glowAlpha: 0.28,
     grade: 0xcfb0bc,
-    gradeMix: 0.16,
+    gradeMix: 0.2,
     midGradeScale: 1,
     celestial: 'keep',
     celestialColor: 0xfff4ec,
@@ -159,16 +159,16 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
   },
   starry_night: {
     skyTop: 0x121831,
-    skyBottom: 0x3a4666,
+    skyBottom: 0x404a66,
     skyMix: 0.93,
     glow: 0x5a6a8e,
     glowAlpha: 0.22,
     grade: 0x1a2140,
-    gradeMix: 0.5,
+    gradeMix: 0.56,
     midGradeScale: 0.8,
     celestial: 'moon',
     celestialColor: 0xf2f0e4,
-    celestialAt: { x: 860, y: -560, r: 34 },
+    celestialAt: { x: 860, y: -250, r: 30 },
     stars: 160,
     aurora: false,
     rim: 'none',
@@ -184,10 +184,10 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     skyTop: 0x28223e,
     skyBottom: 0x76586c,
     skyMix: 0.9,
-    glow: 0xd49a7a,
+    glow: 0xd4a286,
     glowAlpha: 0.24,
     grade: 0x2c2640,
-    gradeMix: 0.46,
+    gradeMix: 0.52,
     midGradeScale: 0.8,
     celestial: 'none',
     celestialColor: 0xffffff,
@@ -209,7 +209,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     glow: 0x9aa4ae,
     glowAlpha: 0.16,
     grade: 0x38404a,
-    gradeMix: 0.4,
+    gradeMix: 0.5,
     midGradeScale: 0.85,
     celestial: 'none',
     celestialColor: 0xffffff,
@@ -228,14 +228,14 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     skyTop: 0x2a1e24,
     skyBottom: 0x7a5c54,
     skyMix: 0.86,
-    glow: 0xb07a60,
+    glow: 0xb0846c,
     glowAlpha: 0.26,
     grade: 0x382a2c,
-    gradeMix: 0.42,
+    gradeMix: 0.5,
     midGradeScale: 0.85,
     celestial: 'sun',
     celestialColor: 0xd89a78,
-    celestialAt: { x: 700, y: -380, r: 40 },
+    celestialAt: { x: 700, y: -235, r: 38 },
     stars: 0,
     aurora: false,
     rim: 'none',
@@ -254,7 +254,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     glow: 0x4a8a88,
     glowAlpha: 0.2,
     grade: 0x16222e,
-    gradeMix: 0.46,
+    gradeMix: 0.54,
     midGradeScale: 0.8,
     celestial: 'none',
     celestialColor: 0xffffff,
@@ -276,11 +276,11 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     glow: 0x8a78a0,
     glowAlpha: 0.22,
     grade: 0x211a30,
-    gradeMix: 0.48,
+    gradeMix: 0.54,
     midGradeScale: 0.8,
     celestial: 'eclipse',
     celestialColor: 0xfff2dc,
-    celestialAt: { x: 820, y: -540, r: 46 },
+    celestialAt: { x: 820, y: -255, r: 40 },
     stars: 90,
     aurora: false,
     rim: 'none',
@@ -336,7 +336,6 @@ export function themeSky(ctx: Ctx2D, id: string, age: AgeId, th: BackdropTheme, 
   const W = f.width * f.pxPerLu;
   const H = f.height * f.pxPerLu;
   const k = f.pxPerLu;
-  const toX = (x: number) => (x - f.x0) * k;
   const toY = (y: number) => (y - f.yTop) * k;
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -358,7 +357,8 @@ export function themeSky(ctx: Ctx2D, id: string, age: AgeId, th: BackdropTheme, 
   // stars: denser and smaller up high, a few bright ones with a soft cross
   for (let i = 0; i < th.stars; i++) {
     const x = rng.next() * W;
-    const yLu = -780 + Math.pow(rng.next(), 1.6) * 520;
+    // spread over the whole sky, down to just above the hills (phones see only the lowest 290 lu)
+    const yLu = -770 + rng.next() * 690;
     const y = toY(yLu);
     const bright = rng.next();
     const r = Math.max(0.5, (bright > 0.93 ? 1.6 : 0.9) * k * 2.2);
@@ -384,13 +384,14 @@ function paintAurora(ctx: Ctx2D, f: LayerFrame, rng: { next(): number }): void {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   const bands: [number, number, number, number][] = [
-    [0x5ae8b0, -600, 150, 0.2],
-    [0x48c8c8, -540, 120, 0.16],
-    [0xa888e8, -660, 90, 0.1],
+    [0x5ae8b0, -300, 150, 0.2],
+    [0x48c8c8, -250, 110, 0.16],
+    [0xa888e8, -420, 110, 0.1],
   ];
   for (const [color, baseY, height, alpha] of bands) {
     const phase = rng.next() * Math.PI * 2;
-    const step = 3;
+    // one px columns, no overlap (overlapping columns add up under 'lighter' and read as stripes)
+    const step = 1;
     for (let x = 0; x < W; x += step) {
       const u = x / W;
       const wave = Math.sin(u * 7 + phase) * 40 + Math.sin(u * 17 + phase * 2) * 14;
@@ -401,7 +402,7 @@ function paintAurora(ctx: Ctx2D, f: LayerFrame, rng: { next(): number }): void {
       gr.addColorStop(0.35, toCss(color, alpha));
       gr.addColorStop(1, toCss(color, 0));
       ctx.fillStyle = gr;
-      ctx.fillRect(x, top, step + 0.5, h);
+      ctx.fillRect(x, top, step, h);
     }
   }
   ctx.restore();
@@ -410,7 +411,8 @@ function paintAurora(ctx: Ctx2D, f: LayerFrame, rng: { next(): number }): void {
 function paintCelestial(ctx: Ctx2D, th: BackdropTheme, f: LayerFrame): void {
   if (th.celestial === 'keep' || th.celestial === 'none') return;
   const k = f.pxPerLu;
-  const at = th.celestialAt ?? { x: 980, y: -540, r: 40 };
+  // phones show about 290 lu of sky over the lane (A17.7), so every sky feature sits low enough to show
+  const at = th.celestialAt ?? { x: 980, y: -250, r: 36 };
   const x = (at.x - f.x0) * k;
   const y = (at.y - f.yTop) * k;
   const r = at.r * k;
@@ -496,7 +498,7 @@ export function themeLayer(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, ki
 function paintRim(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far' | 'mid', age: AgeId, th: BackdropTheme, k: number): void {
   const W = canvas.width;
   const H = canvas.height;
-  const depthLu = th.rim === 'snow' ? (kind === 'far' ? 5 : 4) : th.rim === 'lights' ? 3 : 7;
+  const depthLu = th.rim === 'snow' ? (kind === 'far' ? 11 : 8) : th.rim === 'lights' ? 4 : 9;
   const dy = Math.max(1, Math.round(depthLu * k));
   const s = scratch(W, H);
   if (!s) return;
@@ -517,7 +519,7 @@ function paintRim(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far'
   const dots = scratch(W, H);
   if (!dots) return;
   const rng = mulberry32(seedFor(id, kind, age));
-  const n = Math.round((W * H) / (th.rim === 'lights' ? 900 : 140));
+  const n = Math.round((W * H) / (th.rim === 'lights' ? 420 : 38));
   for (let i = 0; i < n; i++) {
     const x = rng.next() * W;
     const y = rng.next() * H;
@@ -530,7 +532,7 @@ function paintRim(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far'
       dots.x.fillStyle = glow;
       dots.x.fillRect(x - r * 3.2, y - r * 3.2, r * 6.4, r * 6.4);
     } else {
-      const r = Math.max(0.7, k * (1.2 + rng.next() * 1.6));
+      const r = Math.max(0.9, k * (1.6 + rng.next() * 2));
       const c = rng.next() < 0.35 ? mix(th.rimColor, 0xffffff, 0.35) : rng.next() < 0.5 ? mix(th.rimColor, 0x6a4a3a, 0.2) : th.rimColor;
       dots.x.fillStyle = toCss(c, 0.9);
       dots.x.beginPath();

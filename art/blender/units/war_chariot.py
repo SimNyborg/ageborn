@@ -1,27 +1,35 @@
 """War Chariot: Bronze Age heavy (A17.9), rider rig. Scythe Charge (first hit x2, knockback), ~110 lu.
 
-Look (A17.12): a stocky chestnut horse with a dark mane in a team breast collar with a team plume on the bridle
-pulls a light two-wheeled chariot: a plum wickerwork car with a big team side panel, sandstone
-rails and bronze studs, six-spoked wheels (one spoke and a rim stud mark the roll) with polished-bronze scythe blades
-on the hubs, and a
-tall team swallowtail pennant on a pole at the back that trails in the wind. The charioteer
-(open-faced helmet with a team crest, linen cuirass) holds the reins in the far hand and a
-bronze khopesh in the near hand. The walk is a gallop (a suspension phase with every hoof off
-the ground on two frames) with the wheels rolling at the ground speed; the attack is the charge
-lean: the horse lunges, the car lurches forward, the khopesh sweeps down in a big smeared arc
-and the scythed hubs throw sparks on impact. The death is a wreck: the horse stumbles onto its
-knees and the car tips over onto its side, throwing the driver.
+Look (A17.12): a stocky chestnut horse (a deep chest, a tucked waist, round haunches, jointed
+legs with knees, hocks, fetlock tufts and dark hooves, an arched neck with a dark mane, a
+muzzle with a nostril) in a team breast collar and a team saddle cloth with a verdigris trim,
+a team plume on the bridle, pulls a light two-wheeled chariot: a plum wickerwork car with a
+big team side panel, sandstone rails and bronze studs, six-spoked wheels (a team spoke and a
+rim stud mark the roll) with polished-bronze scythe blades on the hubs that spin with the
+wheels, and a tall team swallowtail pennant on a pole at the back. The charioteer (face kit,
+open-faced helmet with a team crest, linen cuirass) holds the reins in the far hand and a
+bronze khopesh in the near hand.
+
+Animation (cartoon kit v2; a viewer expects a war chariot to charge and slash as it passes):
+  idle    the horse paws the ground and tosses its head, the driver shifts, blink
+  walk    a gallop with a suspension phase; the wheels roll at the ground speed
+  attack  DRIVE-BY SCYTHE CHARGE: the horse gathers on its haunches and the driver cocks the
+          khopesh high behind his head (the held extreme), the horse lunges, the car fishtails
+          (hull tilt), the scythed hubs whirl (ring smears) and the driver slashes down and
+          through (two smear frames); impact with sparks off the scythes, dust from the
+          wheels, the horse's head thrown forward
+  hit     vehicle: the car bounces on its axle, the driver ducks, the pennant whips
+  die     D7 wreck: the horse stumbles onto its knees, the car tips onto its side and the
+          driver is thrown (X eyes)
 """
 import math
 
-from ageborn_art import fx, retime
+from ageborn_art import face as F
+from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_gunpowder as G
 from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
-
-# heavy melee timing (long wind-up, held impact); additive, the set lives in retime.py
-retime.HEAVY_MELEE.add("war_chariot")
 
 SLUG = "war_chariot"
 NAME = "War Chariot"
@@ -30,6 +38,7 @@ YAW_DEG = -10.0
 CANVAS = (470, 300)
 FEET = (250, 276)
 ANCHORS = {"head": (-10, 104), "hitCenter": (0, 42)}
+NO_RETIME = True
 
 COAT = "#7C604B"          # chestnut, held at ~39% saturation (the A11 colour rule)
 COAT_DK = "#634D3C"
@@ -43,20 +52,25 @@ FLOOR_Z = 20.0
 DRIVER = (-30.0, 0.0, 18.0)  # pose offset of the driver's skeleton (feet on the car floor)
 HR = (0.0, G.ARM_Y["r"], G.HAND_Z)
 BLADE = 22.0
-SMEAR = {"joint": "khopesh", "inner": (HR[0] + 7.0, HR[1] - 1.0, HR[2] + BLADE - 6.0),
-         "outer": (HR[0] + 12.0, HR[1] - 1.0, HR[2] + BLADE + 2.0), "color": B.BRONZE_HI, "taper": 0.4,
-         "start": 0.15, "behind": 6.0}
 
 
 def _leg(rig, name, x, y, z_top, front):
+    """A jointed leg: forearm to the knee (front) or gaskin back to the hock (hind), then the
+    cannon to the fetlock (a dark tuft), a pastern and a dark hoof with a lighter sole."""
     rig.joint(name, "horse", (x, y, z_top))
-    x2 = x + (1.5 if front else -1.0)
-    rig.joint(f"{name}2", name, (x2, y, 16.5))
-    g = Geo().capsule((x, y, z_top), (x2, y, 16.5), 6.4 if not front else 5.8, 3.9)
+    kx = x + (1.2 if front else -4.5)
+    kz = 18.0 if front else 19.0
+    rig.joint(f"{name}2", name, (kx, y, kz))
+    fx_ = kx + (0.6 if front else 1.8)
+    g = Geo().capsule((x, y, z_top), (kx, y, kz), 6.8 if not front else 6.0, 3.6)
     rig.part(name, g, COAT)
-    g = Geo().capsule((x2, y, 16.5), (x2 + 0.5, y, 5.5), 3.5, 3.2)
+    g = Geo().blob((kx, y, kz), (3.8, 3.4, 3.4), p=2.2)                          # knee / hock
+    g.capsule((kx, y, kz), (fx_, y, 6.2), 3.0, 2.7)
     rig.part(f"{name}2", g, COAT)
-    g = Geo().blob((x2 + 1.2, y, 2.6), (4.8, 4.3, 2.9), p=3.0, taper=(1.05, 0.85))
+    g = Geo().blob((fx_ + 0.4, y, 5.6), (3.3, 3.1, 2.8), p=2.2)                 # fetlock tuft
+    g.lathe([(2.4, 0), (0, 3.0)], (fx_ - 0.6, y, 5.0), (fx_ - 3.0, y, 3.4), segs=8)
+    rig.part(f"{name}2", g, MANE, finish="hair", outline=0.8)
+    g = Geo().blob((fx_ + 1.5, y, 2.2), (4.6, 4.0, 2.5), p=3.0, taper=(1.08, 0.82))
     rig.part(f"{name}2", g, HOOF)
 
 
@@ -66,11 +80,18 @@ def _horse(rig):
     _leg(rig, "leg_bl", HX - 15, 6.0, 36, False)
     _leg(rig, "leg_fr", HX + 15, -6.0, 34, True)
     _leg(rig, "leg_br", HX - 15, -6.0, 36, False)
-    g = Geo().blob((HX, 0, 38), (23, 11, 11.5), p=2.3)
+    # a deep chest, a tucked waist and round haunches (not a box)
+    g = Geo().blob((HX, 0, 39.5), (21, 10.2, 9.6), p=2.3)
+    g.blob((HX + 12.5, 0, 38.0), (11.5, 10.8, 12.8), p=2.3)                   # chest
+    g.blob((HX - 12.5, 0, 40.5), (12.5, 11.0, 11.8), p=2.3)                   # haunch
     rig.part("horse", g, COAT)
-    g = Geo().blob((HX - 1, 0, 45.0), (13.5, 11.9, 6.0), p=2.8)        # team saddle cloth over the back
-    g.clip((0, 0, 40.5), (0, 0, -1))
+    g = Geo().blob((HX - 1, 0, 46.5), (13.5, 11.6, 6.0), p=2.8)        # team saddle cloth over the back
+    g.clip((0, 0, 40.0), (0, 0, -1))
     rig.part("horse", g, team=True, outline=0.8)
+    g = Geo().blob((HX - 1, 0, 40.2), (14.0, 12.0, 1.1), p=3.2)        # verdigris trim on the cloth
+    rig.part("horse", g, B.VERD, outline=0.5)
+    g = Geo().capsule((HX + 3, -10.8, 49.0), (HX + 3, -11.4, 33.0), 1.0)     # girth strap
+    rig.part("horse", g, B.LEATHER_DK, outline=0.4)
     # neck, head (1.2x), mane, team breast collar
     rig.joint("neck", "horse", (HX + 19, 0, 46))
     rig.joint("hhead", "neck", (HX + 29, 0, 62), scale=1.2)
@@ -91,13 +112,18 @@ def _horse(rig):
     rig.part("neck", g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
     g = Geo().blob((HX + 35, 0, 59), (11.5, 6.0, 6.8), p=2.4, rot=(0, 40, 0))
     g.blob((HX + 42.4, 0, 51.6), (6.2, 5.6, 5.4), p=2.2)
+    g.blob((HX + 33.0, 0, 55.2), (5.4, 5.8, 4.8), p=2.2)                      # cheek
     for y in (-3.2, 3.2):
         g.lathe([(2.0, 0), (1.5, 2.8), (0, 6.0)], (HX + 27.5, y, 66), (HX + 26.5, y * 1.3, 73), segs=10)
     rig.part("hhead", g, COAT)
     g = Geo().blob((HX + 31.8, -4.9, 61.8), (1.9, 1.3, 2.2))
     rig.part("hhead", g, B.EYE, highlight=False, outline=0.8)
-    g = Geo().sphere((HX + 32.6, -5.9, 61.6), 1.2, cuts=3).sphere((HX + 46.8, -3.4, 51.8), 1.0, cuts=3)
+    g = Geo().sphere((HX + 32.6, -5.9, 61.6), 1.2, cuts=3)
+    g.blob((HX + 46.2, -3.6, 52.6), (1.5, 1.0, 1.1), p=2.2)                    # nostril
+    g.capsule((HX + 41.0, -5.2, 48.6), (HX + 47.0, -3.6, 49.4), 0.55)          # lip line
     rig.part("hhead", g, B.PUPIL, outline=0)
+    g = Geo().capsule((HX + 30.4, -5.6, 64.6), (HX + 33.6, -5.8, 63.8), 0.8)   # brow over the eye
+    rig.part("hhead", g, COAT_DK, outline=0.3)
     g = Geo().capsule((HX + 28.0, -5.6, 64.0), (HX + 43.6, -5.0, 53.0), 0.9)   # bridle
     g.capsule((HX + 36.0, -5.8, 63.0), (HX + 33.0, -6.0, 52.0), 0.9)
     rig.part("hhead", g, B.LEATHER_DK, outline=0.4)
@@ -135,6 +161,8 @@ def _car(rig):
     # the car: floor, plum wicker body, team side panel, sandstone rails and bronze studs
     g = Geo().blob((AX + 1, 0, FLOOR_Z), (17, 12, 2.0), p=4.0)
     rig.part("cart", g, B.WOOD_DK)
+    g = Geo().blob((AX + 1, 0, FLOOR_Z - 1.6), (16.4, 11.4, 1.6), p=4.0)   # team-painted underside
+    rig.part("cart", g, team=True, outline=0.6)
     g = Geo().blob((AX + 3, 0, FLOOR_Z + 10.5), (14.5, 11.8, 10.0), p=3.0, taper=(1.0, 0.9), shift=(0.25, 0))
     g.clip((AX - 12, 0, 0), (-1, 0, 0))
     rig.part("cart", g, B.PLUM)
@@ -165,14 +193,21 @@ def _car(rig):
     G.wheel(rig, "wheel_r", (AX, -12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
             team_felloe=False, n_spokes=6)
     _marker(rig, "wheel_r", -12.0)
-    # the scythed hubs: curved polished-bronze blades on the axle ends (fixed, they do not spin)
-    g = Geo()
-    for y in (-19.5, 17.5):
-        g.slab([(AX - 1, WHEEL_R + 1.4), (AX - 10, WHEEL_R + 2.6), (AX - 19, WHEEL_R + 1.0), (AX - 25, WHEEL_R - 3.5),
-                (AX - 18, WHEEL_R - 0.8), (AX - 10, WHEEL_R - 0.4), (AX - 1, WHEEL_R - 1.4)], y, 1.2)
-    rig.part("cart", g, B.BRONZE, finish=B.POLISH, outline=0.6)
-    g = Geo().capsule((AX - 10, -20.3, WHEEL_R + 2.2), (AX - 23, -20.3, WHEEL_R - 2.4), 0.5)
-    rig.part("cart", g, B.SAND_LT, outline=0)
+    # the scythed hubs: curved polished-bronze blades on the axle ends; they spin with the wheels
+    for jn, y in (("scy_r", -19.5), ("scy_l", 17.5)):
+        rig.joint(jn, "cart", (AX, y, WHEEL_R))
+        g = Geo()
+        for sgn in (1, -1):
+            pts = [(AX, WHEEL_R + 1.4), (AX - 9, WHEEL_R + 2.6), (AX - 18, WHEEL_R + 1.0), (AX - 24, WHEEL_R - 3.5),
+                   (AX - 17, WHEEL_R - 0.8), (AX - 9, WHEEL_R - 0.4), (AX, WHEEL_R - 1.4)]
+            if sgn < 0:
+                pts = [(2 * AX - x, 2 * WHEEL_R - z) for x, z in pts]
+            g.slab(pts, y, 1.2)
+        rig.part(jn, g, B.BRONZE, finish=B.POLISH, outline=0.6)
+        if jn == "scy_r":
+            g = Geo().capsule((AX - 9, -20.3, WHEEL_R + 2.2), (AX - 22, -20.3, WHEEL_R - 2.4), 0.5)
+            g.capsule((AX + 9, -20.3, WHEEL_R - 2.2), (AX + 22, -20.3, WHEEL_R + 2.4), 0.5)
+            rig.part(jn, g, B.SAND_LT, outline=0)
     B.sparks(rig, "cart", (AX - 20.0, -22.0, 4.0), size=1.6, name="sparks", seed=2)
     B.dust_puff(rig, "unit", (AX - 20.0, -8.0, 3.0), size=1.2, name="dust")
 
@@ -186,12 +221,11 @@ def _driver(rig):
     for s, y in (("r", -12.0), ("l", 11.5)):
         g = Geo().blob((0.4, y, 37.0), (6.2, 5.4, 4.6), p=2.6)
         rig.part(f"arm_{s}", g, B.LINEN)
-    B.head_ball(rig)
-    B.face(rig, cx=12.0, cz=50.0, brow=B.HAIR, eye_r=(3.2, 3.0, 3.8))
-    g = Geo()
+    beard = Geo()
     for x, y, z, r in ((11.6, -3.0, 40.6, 2.4), (12.6, 0.0, 39.8, 2.6), (11.6, 3.0, 40.6, 2.2)):
-        g.blob((x, y, z), (r, r, r * 0.95), p=2.1)
-    rig.part("head", g, B.HAIR, finish="hair")
+        beard.blob((x, y, z), (r, r, r * 0.95), p=2.1)
+    B.face_kit(rig, cx=13.4, cz=50.0, eye_r=(3.8, 3.4, 4.5), extra=[beard], mouth_z=44.8, mouth_w=4.8)
+    rig.part("head", beard, B.HAIR, finish="hair")
     B.helmet(rig, crest_len=18.0, crest_h=8.0)
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.0, r1=3.6)
@@ -212,6 +246,8 @@ def _driver(rig):
     g.capsule((x + 5.0, y - 2.0, z + 15.2), (x + 11.6, y - 2.0, z + 21.4), 0.6)
     rig.part("khopesh", g, B.SAND_LT, outline=0)
     rig.track("bladeTip", "khopesh", (x + 12.0, y - 1.0, z + 24.0))
+    rig.part("hand_r", Geo().blob((0.3, G.ARM_Y["r"], G.HAND_Z + 3.2), (4.3, 4.3, 1.7), p=2.6), B.LEATHER,
+             outline=0.6)
 
 
 def build(rig):
@@ -237,17 +273,26 @@ SPIN_PER_FRAME = 37.5     # 300 degrees per cycle, seamless with 6 spokes; the t
 
 
 def car(dx=0.0, dz=0.0, tilt=0.0, spin=0.0):
-    return {"cart": {"x": dx, "z": dz, "r": tilt}, "wheel_r": {"r": -spin}, "wheel_l": {"r": -spin}}
+    return {"cart": {"x": dx, "z": dz, "r": tilt}, "wheel_r": {"r": -spin}, "wheel_l": {"r": -spin},
+            "scy_r": {"r": -spin}, "scy_l": {"r": -spin}}
 
 
 def _idle(f):
-    c, lag = B.idle_wave(f)
-    return merge(STANCE, car(tilt=0.3 * c), {
-        "horse": {"z": 1.0 * c}, "neck": {"r": -3.0 * lag}, "hhead": {"r": 2.5 * lag},
-        "leg_fr": {"r": 1.0 * c}, "leg_br": {"r": -1.0 * c},
+    # 6 poses x 150 ms: the horse paws the ground (the near foreleg lifts, scrapes back on 3)
+    # and tosses its head; the driver breathes and blinks
+    c = math.cos(2 * math.pi * f / 6)
+    lag = math.cos(2 * math.pi * (f - 1) / 6)
+    paw = [0.0, 0.6, 1.0, 0.3, 0.0, 0.0][f]
+    pose = merge(STANCE, car(tilt=0.3 * c), {
+        "horse": {"z": 1.0 * c}, "neck": {"r": -3.0 * lag + 6 * paw}, "hhead": {"r": 2.5 * lag - 5 * paw},
+        "leg_fr": {"r": 30 * paw - 8 * (f == 3)}, "leg_fr2": {"r": -55 * paw},
+        "leg_br": {"r": -1.0 * c},
         "hips": {"z": 0.8 * c}, "torso": {"r": 1.0 * c}, "head": {"r": -2.0 * lag},
         "arm_r": {"r": 2 * lag}, "hand_r": {"r": -3 * lag},
     })
+    if f == 4:
+        pose = merge(pose, F.expr("blink"))
+    return pose
 
 
 def _walk(f):
@@ -275,48 +320,100 @@ def _walk(f):
     })
 
 
+# 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6)
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
+#          shift gath  coil  HOLD  sm1  sm2  IMP  shock foll  rec
+A_FWD = [-1, -3, -5, -6, 2, 8, 13, 12, 7, 2]
+A_TILT = [0, -1, -2, -3, 2, 4, 5, 3, 1, 0]
+A_YAW = [0, 0, 0, 0, 4, 8, 6, 2, -2, 0]
+A_SPIN = [0, -8, -14, -16, 30, 110, 210, 280, 320, 340]
+A_HR = [2, 6, 11, 14, 4, -4, -8, -6, -2, 0]
+A_HZ = [0, 1, 2.5, 3.5, 1, -1, -2, -1, 0, 0]
+L_FR = [8, 24, 36, 42, 10, -16, -26, -18, -6, 0]
+L_FR2 = [-18, -50, -72, -80, -40, -6, 0, 0, 0, 0]
+L_FL = [4, 16, 28, 34, 26, 16, 18, 10, 2, 0]
+L_FL2 = [-12, -40, -58, -64, -50, -36, -28, -14, -4, 0]
+L_BR = [4, 8, 12, 14, -4, -18, -26, -16, -6, 0]
+L_BR2 = [0, 10, 18, 22, 10, 4, 0, 0, 0, 0]
+L_BL = [2, 6, 10, 12, -2, -10, -16, -10, -4, 0]
+L_BL2 = [0, 8, 14, 18, 8, 2, 0, 0, 0, 0]
+A_NECK = [3, 8, 13, 16, 2, -4, -8, -6, -3, -1]
+A_HH = [-2, -6, -9, -10, -2, 2, 4, 3, 2, 1]
+A_Q = [-0.02, -0.06, 0.03, 0.06, 0.04, 0.02, -0.1, -0.06, -0.02, 0.0]
+D_T = [4, 10, 16, 20, 0, -12, -22, -20, -12, -6]
+D_H = [2, 4, 6, 6, 0, -4, -8, -6, -3, -1]
+# khopesh arm in WORLD degrees (upper arm, forearm, blade); the driver's torso lean is subtracted
+K_A = [20, 70, 120, 140, 90, 30, -20, -30, -30, -30]
+K_F = [80, 120, 160, 175, 90, 20, -20, -10, 20, 40]
+K_W = [90, 140, 175, 190, 110, 20, -30, -40, 20, 70]
+R_A = [-30, -34, -38, -40, -24, -16, -10, -14, -24, -30]
+R_F = [-10, -14, -18, -20, -4, 4, 6, 2, -6, -10]
+
+
 def _attack(f):
-    # 0-1 anticipation (the horse gathers, the driver raises the khopesh, squash), 2 held
-    # extreme (horse rearing a little, blade high behind), 3 smear (the charge lunge, blade
-    # sweeping down), 4 held impact (lunge, blade low and forward, sparks off the scythes,
-    # dust), 5-7 recovery (fx.MELEE_MS, retimed as a heavy melee)
-    sq = pick(f, [-0.04, -0.08, 0.05, 0.04, -0.12, -0.07, -0.02, 0.0])
-    fwd = pick(f, [-1, -3, -5, 5, 12, 10, 5, 0])
-    pose = merge(DRV, car(fwd * 0.9, 0, pick(f, [0, -1, -2, 2, 4, 2, 1, 0]),
-                          pick(f, [0, -10, -15, 15, 45, 55, 60, 60])), {
-        "unit": dict(squash(sq), x=fwd * 0.1),
-        "horse": {"x": fwd, "r": pick(f, [3, 7, 11, 0, -6, -4, -1, 0]), "z": pick(f, [0, 1, 2, 0, -1.5, -1, 0, 0])},
-        "leg_fr": {"r": pick(f, [10, 24, 34, -10, -22, -14, -4, 0])},
-        "leg_fr2": {"r": pick(f, [-20, -50, -70, -10, 0, 0, 0, 0])},
-        "leg_fl": {"r": pick(f, [6, 16, 26, 20, 18, 10, 2, 0])},
-        "leg_fl2": {"r": pick(f, [-14, -40, -56, -44, -30, -16, -5, 0])},
-        "leg_br": {"r": pick(f, [4, 8, 12, -10, -24, -14, -4, 0])},
-        "leg_bl": {"r": pick(f, [2, 6, 8, -6, -14, -8, -2, 0])},
-        "neck": {"r": pick(f, [4, 8, 12, -6, -14, -10, -4, 0])},
-        "hhead": {"r": pick(f, [-3, -6, -8, 2, 6, 4, 1, 0])},
-        "torso": {"r": pick(f, [6, 12, 16, -8, -20, -16, -8, -4])},
-        "head": {"r": pick(f, [2, 4, 6, -3, -6, -5, -2, 0])},
-        "hips": {"x": pick(f, [0, -1, -2, 2, 4, 3, 1, 0])},
-        "sparks": {"show": f in (4, 5), "s": pick(f, [1, 1, 1, 1, 1.0, 0.7, 1, 1])},
-        "dust": {"show": f in (4, 5, 6), "s": pick(f, [1, 1, 1, 1, 0.8, 1.1, 1.3, 1]),
-                 "z": pick(f, [0, 0, 0, 0, 0, 2, 4, 0])},
-    }, khopesh(pick(f, [20, 110, 140, 60, 20, 10, -10, -30]), pick(f, [80, 140, 170, 40, 5, 0, 20, 40]),
-               pick(f, [90, 160, 185, 50, -8, -14, 30, 70])), reins(pick(f, [-30, -34, -38, -20, -10, -14, -24, -30]),
-                                                                    pick(f, [-10, -14, -18, 0, 6, 2, -6, -10])))
-    if f == 3:
-        pose["khopesh"] = {"sz": 1.2}   # smear frame: the blade stretches along the sweep
-    if f in (3, 4):
-        B.yell(pose)
+    t = D_T[f]
+    fwd = A_FWD[f]
+    pose = merge(DRV, car(fwd * 0.9, 0, A_TILT[f], A_SPIN[f]), {
+        "cart": {"rz": A_YAW[f]},
+        "unit": dict(squash(A_Q[f]), x=fwd * 0.1),
+        "horse": {"x": fwd, "r": A_HR[f], "z": A_HZ[f]},
+        "leg_fr": {"r": L_FR[f]}, "leg_fr2": {"r": L_FR2[f]},
+        "leg_fl": {"r": L_FL[f]}, "leg_fl2": {"r": L_FL2[f]},
+        "leg_br": {"r": L_BR[f]}, "leg_br2": {"r": L_BR2[f]},
+        "leg_bl": {"r": L_BL[f]}, "leg_bl2": {"r": L_BL2[f]},
+        "neck": {"r": A_NECK[f]}, "hhead": {"r": A_HH[f]},
+        "torso": {"r": t}, "head": {"r": D_H[f]},
+        "hips": {"x": fwd * 0.3},
+        "sparks": {"show": f in (6, 7), "s": 1.0 if f == 6 else 0.7},
+        "dust": {"show": f in (6, 7, 8), "s": [0.8, 1.15, 1.35][min(2, max(0, f - 6))],
+                 "z": [0, 2, 4][min(2, max(0, f - 6))]},
+    }, khopesh(K_A[f] - t, K_F[f] - t, K_W[f] - t), reins(R_A[f] - t, R_F[f] - t))
+    if f in (4, 5):
+        pose.setdefault("khopesh", {})["sz"] = 1.2
+    if f in (1, 2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    elif f in (4, 5, 6, 7):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(STANCE, car(-2.0 * a, 0, 2.0 * a), {
-        "unit": dict(squash(-0.06 * a), x=-3.0 * a),
-        "horse": {"r": 5 * a}, "neck": {"r": 14 * a}, "hhead": {"r": -8 * a},
-        "torso": {"r": 14 * a}, "head": {"r": 10 * a}, "arm_r": {"r": 14 * a},
+BLADE_IN = (HR[0] + 3.0, HR[1] - 1.0, HR[2] + 12.0)
+BLADE_OUT = (HR[0] + 12.0, HR[1] - 1.0, HR[2] + 24.0)
+
+
+def _attack_clip():
+    blade = {"kind": "arc", "joint": "khopesh", "inner": BLADE_IN, "outer": BLADE_OUT, "color": B.SAND_LT,
+             "white": 0.3, "taper": 0.15, "lines": 3}
+    ring = {"kind": "arc", "joint": "scy_r", "inner": (AX, -20.0, WHEEL_R), "outer": (AX - 24.0, -20.0, WHEEL_R - 3.5),
+            "color": B.SAND_LT, "white": 0.3, "taper": 0.3, "band": 0.4, "lines": 2, "samples": 20}
+    ov = {
+        4: [dict(blade, **{"from": 3, "t1": 0.95})],
+        5: [dict(blade, **{"from": 3, "t0": 0.3, "t1": 0.95}), dict(ring, **{"from": 4, "t1": 1.0})],
+        6: [dict(ring, **{"from": 5, "t1": 1.0}),
+            {"kind": "burst", "joint": "khopesh", "point": BLADE_OUT, "r0_lu": 7.0, "r1_lu": 14.0, "n": 5,
+             "a0": -80.0, "arc": 140.0},
+            {"kind": "dust", "ground": (AX - 6.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 3, "spread": 1.1},
+            {"kind": "dust", "ground": (HX + 18.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 6, "spread": 0.9}],
+        7: [dict(ring, **{"from": 6, "t1": 1.0, "lines": 1})],
+    }
+    return M.clip("attack", [_attack(f) for f in range(10)], M.HEAVY_MELEE_MS, impact=M.HEAVY_MELEE_IMPACT,
+                  smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    # vehicle: the car bounces on its axle, the driver ducks and squeezes his eyes, the horse
+    # throws its head, the pennant whips (follow-through)
+    a = M.HIT_AMT[k]
+    b = [0.0, 1.0, -0.6, 0.3, 0.0][k]
+    pose = merge(STANCE, car(-2.0 * a, -1.5 * b, 2.0 * a), {
+        "unit": dict(squash([-0.08, 0.04, -0.03, 0.02, 0.0][k]), x=-3.0 * max(a, 0)),
+        "horse": {"r": 5 * a, "z": 1.5 * b}, "neck": {"r": 14 * a}, "hhead": {"r": -8 * a},
+        "torso": {"r": -14 * max(a, 0) + 6 * min(a, 0)}, "head": {"r": -10 * max(a, 0)},
+        "hips": {"z": -3.0 * max(a, 0)}, "arm_r": {"r": 14 * a},
     })
+    if k <= 1:
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    return pose
 
 
 # death: 8 unique poses, 12 steps (about 1 s). 0 struck (the horse throws its head up, the car
@@ -357,8 +454,12 @@ def _die(f):
                  "z": pick(f, [0, 0, 0, 0, 2, 4, 0, 0])},
         "sparks": {"show": f == 3},
     })
-    if f in (0, 1):
-        B.yell(pose)
+    if f == 0:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif f < 3:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 2.0}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return pose
 
 
@@ -373,10 +474,13 @@ def _die_extra():
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
         Clip("walk", 8, _walk, loop=True, durations=100),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR, durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
+    M.check_contract([c for c in cl if c.name != "die"], heavy=True)
+    assert cl[-1].total_ms() == 970 and cl[1].total_ms() == 800
+    return cl

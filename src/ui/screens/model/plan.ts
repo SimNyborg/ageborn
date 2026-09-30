@@ -10,7 +10,7 @@ import { FIELD_SLOT_IN_BATTLE } from '@/core/powerReach';
 import type { WarPlan } from '../services';
 import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
-import { featureOpen } from './warPath';
+import { featureOpen, unlockWins } from './warPath';
 
 /** A loadout slot: six troops, two turrets and the two typed power slots, Home and Field (A2.9.1). */
 export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power'; slot: PowerSlot };
@@ -339,13 +339,18 @@ export function reachedAges(save: SaveDoc, content: Content): AgeId[] {
   return ages.filter((a) => reached.has(a));
 }
 
-/** Presets A/B/C join the Army header after the first boss (ui-plan 4.2, U8). */
+/**
+ * Presets A/B/C join the Army header after the first boss (ui-plan 4.2, U8), or after as many wins in
+ * any mode as the first region has levels (owner decision 2026-09-30: the War Path is optional, so the
+ * Ladder alone gets there too).
+ */
 export function presetsOpen(save: SaveDoc, content: Content): boolean {
   const wp = save.warPath;
   if (!wp || wp.legacy) return true;
   const first = content.warPath.regions[0];
   const boss = first ? first.levels[first.levels.length - 1] : undefined;
-  return !!boss && (wp.stars[boss] ?? 0) > 0;
+  if (boss && (wp.stars[boss] ?? 0) > 0) return true;
+  return !!first && unlockWins(save) >= first.levels.length;
 }
 
 /** The age tab's status mark (ui-plan 3.6 "Age tabs"): full and valid, advisor warning, or not playable. */

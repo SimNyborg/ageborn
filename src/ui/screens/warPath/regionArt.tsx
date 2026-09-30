@@ -16,7 +16,7 @@
 import type { AgeId } from '@/contracts';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
-import { Hills, SetPieces, Water } from './regionScenery';
+import { GroundDetail, Hills, SetPieces, Water } from './regionScenery';
 
 export interface RegionTheme {
   skyTop: string;
@@ -123,13 +123,18 @@ function Smoke(p: { x: number; y: number; s: number; color: string; n?: number }
   );
 }
 
-function Skyline(p: { age: AgeId; w: number; h: number; hz: number; t: RegionTheme; rng: Rng }): ComponentChildren {
+/** How far each age's landmark rises above the horizon at scale 1 (px), to keep it under the top bar. */
+const LANDMARK_H: Readonly<Record<AgeId, number>> = { stone: 150, bronze: 92, medieval: 184, gunpowder: 74, industrial: 150, modern: 184, future: 174, cosmic: 150 };
+
+function Skyline(p: { age: AgeId; w: number; h: number; hz: number; t: RegionTheme; rng: Rng; ceiling?: number | undefined }): ComponentChildren {
   const { w, hz, t, rng } = p;
   const out: ComponentChildren[] = [];
   const spots = Math.max(1, Math.round(w / 700));
+  // Below the top bar: a landmark that would reach into it is drawn smaller.
+  const room = p.ceiling !== undefined ? (hz - p.ceiling) / LANDMARK_H[p.age] : Infinity;
   for (let k = 0; k < spots; k++) {
     const x = ((k + 0.35 + rng.next() * 0.3) * w) / spots;
-    const s = Math.max(0.6, Math.min(1.2, p.h / 420));
+    const s = Math.max(0.35, Math.min(1.2, p.h / 420, room));
     const key = `${p.age}-${k}`;
     switch (p.age) {
       case 'stone':
@@ -291,7 +296,7 @@ function Stars(p: { w: number; hz: number; rng: Rng; n: number }) {
 }
 
 /** The far layer of a region: sky, sun glow, ridges and the age's landmark. */
-export function RegionFar(p: { age: AgeId; w: number; h: number; horizon: number }) {
+export function RegionFar(p: { age: AgeId; w: number; h: number; horizon: number; ceiling?: number }) {
   const t = REGION_THEMES[p.age];
   const id = `wpf-${p.age}`;
   const rng = mulberry32(fnv1a32(`far:${p.age}`));
@@ -334,7 +339,7 @@ export function RegionFar(p: { age: AgeId; w: number; h: number; horizon: number
         })
       )}
       <path d={p.age === 'stone' || p.age === 'cosmic' ? peaks(rng, p.w, hz, p.h * 0.2, 90, p.h) : ridge(rng, p.w, hz, p.h * 0.14, 120, p.h)} fill={t.far1} opacity=".8" />
-      {Skyline({ age: p.age, w: p.w, h: p.h, hz: hz + 4, t, rng })}
+      {Skyline({ age: p.age, w: p.w, h: p.h, hz: hz + 4, t, rng, ceiling: p.ceiling })}
       <path d={ridge(rng, p.w, hz + 10, p.h * 0.07, 80, p.h)} fill={t.far2} />
       <rect y={hz - 6} width={p.w} height="24" fill={t.skyBottom} opacity=".22" />
     </svg>
@@ -550,7 +555,7 @@ const shroom: Prop = (t) => (
 );
 
 const PROPS: Readonly<Record<AgeId, readonly Prop[]>> = {
-  stone: [pine, pine, boulder, tent, bones, pine],
+  stone: [pine, boulder, pine, tent, roundTree, boulder, pine, bones, pine],
   bronze: [roundTree, cypress, column, whiteHouse, cypress, roundTree],
   medieval: [roundTree, cottage, hay, pine, roundTree, cottage],
   gunpowder: [windmill, cannon, barrels, roundTree, roundTree, cottage],
@@ -591,11 +596,24 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
   const hillRng = mulberry32(fnv1a32(`hills:${p.age}`));
   const water = Water({ age: p.age, w: p.w, h: p.h, hz, roadY: p.roadY, clear: p.clear, t, rng });
   const pieces = SetPieces({ age: p.age, w: p.w, h: p.h, hz, roadY: p.roadY, clear: p.clear, t, bottomLimit: Math.min(water.blocked.y0 - 6, p.h - p.bottomClear - 10) });
+  const inPiece = (x: number, y: number) => pieces.blocked.some((b) => x > b.x0 && x < b.x1 && y > b.y0 && y < b.y1);
+  const detail = GroundDetail({
+    age: p.age,
+    w: p.w,
+    h: p.h,
+    hz,
+    roadY: p.roadY,
+    clear: p.clear,
+    t,
+    rng: mulberry32(fnv1a32(`detail:${p.age}`)),
+    bottom: Math.min(water.blocked.y0 - 8, p.h - p.bottomClear - 8),
+  });
   const blocked = (x: number, y: number) =>
-    (x > water.blocked.x0 && x < water.blocked.x1 && y > water.blocked.y0) || pieces.blocked.some((b) => x > b.x0 && x < b.x1 && y > b.y0 && y < b.y1);
+    (x > water.blocked.x0 && x < water.blocked.x1 && y > water.blocked.y0) || inPiece(x, y) || detail.blocked.some((b) => x > b.x0 && x < b.x1 && y > b.y0 && y < b.y1);
   const props: { x: number; y: number; s: number; f: Prop | null; v: number; art?: ComponentChildren }[] = [];
   const list = PROPS[p.age];
-  const step = 46;
+  // Sparser than a carpet of props: the fields, rocks and set pieces carry the variety.
+  const step = 62;
   for (let x = 12; x < p.w - 12; x += step * (0.6 + rng.next() * 0.9)) {
     const ry = p.roadY(x);
     const above = rng.next() < 0.55;
@@ -626,6 +644,7 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
       {Hills({ w: p.w, hz, t, rng: hillRng })}
       {patches}
       {water.art}
+      {detail.art}
       <path d={tufts.join(' ')} stroke={t.patchLight} stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".55" />
       <rect y={hz} width={p.w} height="40" fill={`url(#${id}-haze)`} />
       {props.map((q, i) => (

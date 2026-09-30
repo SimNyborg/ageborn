@@ -7,12 +7,28 @@ with a bone-bead hem and carries a wooden howdah with a team rim; two small cave
 (team tunics) sit in it, the front one hefting a rock (the riders' rocks leave from the
 exported per-frame `muzzle` anchor, A14.2), and a tall team banner flies from the back of
 the howdah (A11: heavies and ground Legendaries carry a pennant). The tail and banner
-follow through. The attack is a stomp: rock back, rear up with the trunk raised (held,
-trumpeting), a smeared crash down, a held impact with a big squash, and recovery; the
-riders bounce and the front one throws.
+follow through. The attack is a tusk gore (owner direction 2026-09-30).
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, heavy timing):
+  idle    the ears flap, the trunk sways, the riders fidget, a blink
+  walk    heavy four-beat walk, the trunk swinging a beat late
+  attack  TUSK GORE: she paws once and stomps (anticipation), drops her head low with the
+          tusks near the ground and the trunk tucked (held, angry brow), lunges and hooks the
+          tusks up and forward into the target (ivory smear, impact lines, the trunk flung up,
+          bellowing), overshoots and settles. The front kid winds his rock up behind his head
+          on the hold and throws it on the impact (throw smear; the rock leaves `muzzle` and is
+          back in his hand for the settle); the back kid ducks, then cheers
+  hit     beast: the head shakes, the riders grab on
+  die     D4 heavy: the riders leap clear, the howdah tips away, she topples onto her side
+          with the legs in the air, X eye and tongue out (no rug flatten)
+Details: carved dark bands on the tusks, layered shaggy locks on the dome and shoulders,
+bone totems on the howdah posts, toenails.
 """
-from ageborn_art import fx
-from ageborn_art.anim import Clip, merge, pick, squash
+import math
+
+from ageborn_art import face as F
+from ageborn_art import moves as M
+from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, walk4
 
@@ -23,6 +39,8 @@ YAW_DEG = -10.0
 CANVAS = (476, 444)
 FEET = (220, 390)
 ANCHORS = {"head": (0, 190), "hitCenter": (0, 90)}
+NO_RETIME = True
+BAND = "#5A4636"
 
 FUR = "#7E6858"
 FUR_DK = "#5F4F43"
@@ -41,6 +59,7 @@ PUPIL = "#221C19"
 MOUTH = "#5A2E2E"
 
 TUSK_TIP = (88.0, -14.0, 104.0)
+KID_S = 1.22
 
 
 def _leg(rig, name, p0, p1, front):
@@ -101,7 +120,6 @@ def _kid(rig, name, parent, x, z, throw=False):
 
 
 def build(rig):
-    global SMEAR
     q = Quad(rig, trunk=(0, 76), front_x=28.0, back_x=-28.0, leg_y=13.0, shoulder_z=76.0,
              hip_z=72.0, knee_z=36.0, hock_z=36.0, knee_dx=1.0, hock_dx=-1.0, far_dx=-5.0)
     for name in ("fl", "bl", "fr", "br"):
@@ -134,23 +152,39 @@ def build(rig):
     for x in range(-34, 30, 8):
         g.sphere((x + 4, -26.6, 71.4), 1.8, cuts=2)
     rig.part("trunk", g, BONE, outline=0.6)
-    # howdah: wooden platform with a team rim and corner posts
+    # layered shaggy locks over the shoulder hump
+    g = Geo()
+    for i in range(7):
+        x = 30 - 7 * i
+        g.lathe([(5.0, 0), (0, -14.0 - 2 * (i % 2))], (x, -21.0, 110 - 2.5 * i), (x - 3, -23.0, 96 - 2.5 * i), segs=8)
+    rig.part("trunk", g, SHAG, finish="hair", outline=0.8)
+    # howdah: wooden platform with a team rim and corner posts (its own joint: it tips off)
+    rig.joint("howdah", "trunk", (-8, 0, 122))
     g = Geo().blob((-8, 0, 122), (26, 21, 5), p=3.4)
-    rig.part("trunk", g, WOOD)
+    rig.part("howdah", g, WOOD)
     g = Geo().lathe([(22.0, 0), (24.0, 0.4), (24.0, 7.0), (22.0, 7.4)], (-8, 0, 125.5), (-8, 0, 133.0),
                     segs=28, squash=(1.2, 0.95))
-    rig.part("trunk", g, team=True)
+    rig.part("howdah", g, team=True)
     g = Geo()
     for x, y in ((18.0, -19.0), (-34.0, -19.0), (18.0, 19.0), (-34.0, 19.0)):
         g.capsule((x, y, 121), (x, y, 138), 2.0, 1.8).sphere((x, y, 139), 2.6, cuts=2)
-    rig.part("trunk", g, WOOD_DK)
+    rig.part("howdah", g, WOOD_DK)
+    g = Geo()   # bone totems on the near posts
+    for x in (18.0, -34.0):
+        g.blob((x, -19.0, 145.0), (3.6, 3.0, 4.2), p=2.2)
+        g.capsule((x - 3.0, -19.5, 146.5), (x - 5.5, -19.5, 151.0), 1.2, 0.7)
+        g.capsule((x + 3.0, -19.5, 146.5), (x + 5.5, -19.5, 151.0), 1.2, 0.7)
+    rig.part("howdah", g, BONE, outline=0.7)
     # riders (sitting in the howdah)
-    _kid(rig, "kid_b", "trunk", -22.0, 122.0)
-    _kid(rig, "kid_f", "trunk", 4.0, 124.0, throw=True)
+    _kid(rig, "kid_b", "howdah", -22.0, 122.0)
+    _kid(rig, "kid_f", "howdah", 4.0, 124.0, throw=True)
+    # the riders read at phone size (owner: the rider visibly throws): 1.22x about their seat
+    rig.rest_scale["kid_b"] = KID_S
+    rig.rest_scale["kid_f"] = KID_S
     # banner at the back of the howdah, streaming back
     g = Geo().capsule((-36, 8, 120), (-40, 8, 196), 2.2, 1.8).sphere((-40.2, 8, 197.5), 3.2, cuts=3)
-    rig.part("trunk", g, WOOD)
-    rig.secondary("banner", "trunk", (-39.6, 8, 192), (-70, 8, 180), max_deg=12, gain=1.2)
+    rig.part("howdah", g, WOOD)
+    rig.secondary("banner", "howdah", (-39.6, 8, 192), (-70, 8, 180), max_deg=12, gain=1.2)
     pts = [(-39.6, 193.0), (-73.0, 188.0), (-61.0, 178.0), (-72.0, 166.0), (-39.4, 165.0)]
     g = Geo().slab(pts, 8.0, 2.0)
     rig.part("banner", g, team=True, outline=1.0)
@@ -162,6 +196,8 @@ def build(rig):
     rig.part("neck", g, FUR)
     g = Geo().blob((50, 0, 112), (17, 17, 21), p=2.25, taper=(1.05, 0.9))
     g.blob((60, 0, 98), (10, 12, 12), p=2.2)
+    HEAD = Geo().blob((50, 0, 112), (17, 17, 21), p=2.25, taper=(1.05, 0.9))
+    HEAD.blob((60, 0, 98), (10, 12, 12), p=2.2)
     rig.part("head", g, FUR)
     g = Geo()
     for i in range(6):                                    # hair tuft on the dome
@@ -169,14 +205,19 @@ def build(rig):
         base = (48 + 10 * math.cos(a) - 4, 0, 118 + 12 * math.sin(a))
         g.capsule(base, (base[0] - 6, (i - 2.5) * 1.5, base[2] + 9), 3.0, 1.0)
     rig.part("head", g, SHAG, finish="hair")
-    g = Geo().blob((40, -14, 106), (6.5, 3.4, 10), p=2.2, rot=(10, 10, 0))  # ear
-    rig.part("head", g, FUR_DK, finish="hair")
-    g = Geo().capsule((56.0, -14.2, 116.5), (63.0, -10.4, 113.0), 2.2, 1.7)
-    rig.part("head", g, SHAG, finish="hair", outline=0.8)
-    g = Geo().blob((58.4, -13.0, 110.4), (3.0, 1.8, 3.0))
-    rig.part("head", g, EYE, highlight=False)
-    g = Geo().blob((60.2, -13.8, 110.2), (1.3, 1.0, 1.9))
-    rig.part("head", g, PUPIL, outline=0)
+    rig.joint("ear", "head", (42, -12, 112))
+    g = Geo().blob((40, -14, 106), (7.5, 3.4, 11.5), p=2.2, rot=(10, 10, 0))  # ear
+    rig.part("ear", g, FUR_DK, finish="hair")
+    rig.joint("brow", "head", (59, -13, 115))
+    g = Geo().capsule((56.0, -14.8, 117.0), (64.0, -10.4, 113.5), 2.6, 2.0)
+    rig.part("brow", g, SHAG, finish="hair", outline=0.8)
+    eye = Geo().blob((58.4, -13.2, 110.4), (4.0, 2.2, 4.0))
+    pup = Geo().blob((60.8, -14.2, 110.2), (1.7, 1.1, 2.5))
+    face = F.Face(rig, "head", [HEAD, eye, pup])
+    rig.part("head", eye, EYE, highlight=False)
+    rig.joint("pupils", "head", (60.8, -14.2, 110.2))
+    rig.part("pupils", pup, PUPIL, outline=0)
+    face.eye_marks([(60.5, 110.4)], 3.8, FUR)
     # mouth (opens when trumpeting)
     rig.joint("mouth", "head", (58, 0, 88), hidden=True)
     g = Geo().blob((58.5, -3.0, 88.0), (5.0, 7.0, 3.6), p=2.2)
@@ -190,9 +231,17 @@ def build(rig):
         d = (TUSK_TIP[0], 13.0 * y, TUSK_TIP[2])
         g.capsule(a, b, 5.0, 4.4).capsule(b, c, 4.4, 3.4).capsule(c, d, 3.4, 0.8)
     rig.part("head", g, IVORY, finish="gloss")
+    g = Geo()   # carved dark bands
+    for y in (-1, 1):
+        a = (58.0, 10.0 * y, 92.0)
+        b = (70.0, 13.5 * y, 78.0)
+        c = (84.0, 14.5 * y, 84.0)
+        for p0, p1, t, r in ((a, b, 0.55, 5.0), (b, c, 0.1, 4.5), (b, c, 0.55, 4.0)):
+            q0 = tuple(u + (v - u) * t for u, v in zip(p0, p1))
+            q1 = tuple(u + (v - u) * (t + 0.12) for u, v in zip(p0, p1))
+            g.capsule(q0, q1, r)
+    rig.part("head", g, BAND, outline=0.6)
     rig.track("tuskTip", "head", TUSK_TIP)
-    SMEAR = {"joint": "head", "inner": (84.0, -14.5, 84.0), "outer": (TUSK_TIP[0] + 2, -14.0, TUSK_TIP[2] + 4),
-             "color": IVORY, "taper": 0.35, "start": 0.2, "behind": 6.0}
     # trunk: three segments, curling forward at the tip
     rig.joint("trunk1", "head", (64, 0, 96))
     rig.joint("trunk2", "trunk1", (68, 0, 72))
@@ -218,8 +267,6 @@ def build(rig):
     rig.track("_foot", "leg_fr2", (30.0, -13.0, 0.5))
 
 
-SMEAR = None
-
 
 # -- poses ---------------------------------------------------------------------------------
 def _riders(lag, throw=None):
@@ -232,88 +279,158 @@ def _riders(lag, throw=None):
 
 
 def _idle(f):
-    c = [-1.0, -0.45, 0.45, 1.0][f]
-    lag = [-1.0, -1.0, -0.45, 0.45][f]
-    return merge({
-        "trunk": {"z": 1.6 * c},
-        "body": squash(0.02 * c),
-        "neck": {"r": -2.0 * lag}, "head": {"r": 2.0 * lag},
-        "trunk1": {"r": 4 * lag}, "trunk2": {"r": 6 * lag}, "trunk3": {"r": 10 * lag},
-    }, _riders(lag, throw=pick(f, [0, 20, 60, 90])))
-
-
-def _walk(f):
-    import math
-    p = 2 * math.pi * f / 8
-    lag = math.cos(4 * p - 1.2)
-    return merge(walk4(f, fr=11.0, br=10.0, knee=36.0, hock=24.0, bob=2.2, nod=3.0, roll=1.2), {
-        "trunk1": {"r": 6 * math.sin(2 * p)}, "trunk2": {"r": 8 * math.sin(2 * p - 0.6)},
-        "trunk3": {"r": 12 * math.sin(2 * p - 1.2)},
-    }, _riders(lag))
-
-
-ATTACK_MS = [100, 125, 250, 42, 167, 125, 125, 125]
-
-
-def _attack(f):
-    # 0 rock back, 1 rear up, 2 held extreme: reared, trunk raised and trumpeting, riders
-    # hold on and the front kid cocks his rock; 3 smear: crash down; 4 held impact: front
-    # feet slam, big squash 0.85/1.15, head down, riders bounce, the kid throws; 5-7 settle.
-    sq = pick(f, [-0.04, 0.03, 0.07, 0.03, -0.15, -0.07, -0.02, 0.0])
-    pose = {
-        "body": dict(squash(sq), x=pick(f, [-3.0, -5.0, -6.0, 2.0, 6.0, 5.0, 2.0, 0.0])),
-        "trunk": {"r": pick(f, [4, 12, 18, 2, -5, -2, 0, 0]),
-                  "z": pick(f, [-1.5, 2.0, 5.0, 0.0, -4.0, -2.0, -0.8, 0])},
-        "neck": {"r": pick(f, [4, 8, 10, -4, -10, -6, -2, 0])},
-        "head": {"r": pick(f, [2, 6, 8, -6, -10, -6, -2, 0])},
-        "trunk1": {"r": pick(f, [10, 40, 70, 10, -10, -6, 0, 0])},
-        "trunk2": {"r": pick(f, [10, 40, 60, 10, -8, -4, 0, 0])},
-        "trunk3": {"r": pick(f, [10, 30, 40, 10, 20, 10, 4, 0])},
-        "mouth": {"show": f in (1, 2, 3)},
-        "leg_fr": {"r": pick(f, [-4, 20, 34, 10, -6, -2, 0, 0])},
-        "leg_fr2": {"r": pick(f, [0, -30, -50, -20, 0, 0, 0, 0])},
-        "leg_fl": {"r": pick(f, [-4, 16, 28, 8, -4, -2, 0, 0])},
-        "leg_fl2": {"r": pick(f, [0, -26, -44, -16, 0, 0, 0, 0])},
-        "leg_br": {"r": pick(f, [6, -10, -16, -4, 4, 2, 0, 0])},
-        "leg_bl": {"r": pick(f, [6, -8, -14, -4, 4, 2, 0, 0])},
-    }
-    lag = pick(f, [0, -1, -1.5, 1.0, 3.0, -1.0, 0.5, 0])
-    throw = pick(f, [0, 60, 110, 60, -40, -30, -10, 0])
-    pose = merge(pose, _riders(lag, throw))
-    pose["rock"] = {"hide": f in (4, 5)}
+    n = M.IDLE_FRAMES_HEAVY
+    c = math.cos(2 * math.pi * f / n)
+    lag = math.cos(2 * math.pi * (f - 1) / n)
+    pose = merge({
+        "trunk": {"z": -1.6 * c},
+        "body": squash(-0.02 * c),
+        "neck": {"r": 2.0 * lag}, "head": {"r": -2.0 * lag},
+        "trunk1": {"r": -4 * lag}, "trunk2": {"r": -6 * lag}, "trunk3": {"r": -10 * lag},
+        "ear": {"rz": [0, 18, 30, 10, -6, 0][f]},
+    }, _riders(-lag, throw=[0, 20, 50, 70, 40, 10][f]))
+    if f == 3:
+        pose = merge(pose, F.expr("blink", mouth=None))
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge({
-        "body": dict(squash(-0.06 * a), x=-4.0 * a),
-        "trunk": {"r": 3 * a},
-        "neck": {"r": 6 * a}, "head": {"r": 5 * a},
-        "trunk1": {"r": 14 * a}, "trunk2": {"r": 10 * a},
-    }, _riders(-a))
+def _walk(f):
+    p = 2 * math.pi * f / 8
+    lag = math.cos(4 * p - 1.2)
+    return merge(walk4(f, fr=12.0, br=11.0, knee=40.0, hock=26.0, bob=2.8, nod=3.5, roll=1.4), {
+        "trunk1": {"r": 6 * math.sin(2 * p)}, "trunk2": {"r": 9 * math.sin(2 * p - 0.6)},
+        "trunk3": {"r": 14 * math.sin(2 * p - 1.2)},
+        "ear": {"rz": 10 * math.sin(4 * p - 1.0)},
+    }, _riders(lag))
 
 
-def _die(f):
-    return merge(fx.die_pose(f), {
-        "body": {"r": pick(f, [-12, -6, -2])},   # a 196 lu beast topples less than a man
-        "trunk": {"r": pick(f, [8, 4, 2])},
-        "neck": {"r": pick(f, [14, 8, 8])}, "head": {"r": pick(f, [8, -4, -4])},
-        "trunk1": {"r": pick(f, [50, 30, 30])}, "trunk2": {"r": pick(f, [30, 20, 20])},
-        "mouth": {"show": f == 0},
-        "leg_fr": {"r": pick(f, [30, 14, 14])}, "leg_fl": {"r": pick(f, [24, 12, 12])},
-        "leg_br": {"r": pick(f, [-16, -8, -8])}, "leg_bl": {"r": pick(f, [-12, -6, -6])},
-        # the riders jump off (they become two summoned Pebblers, A5.2)
-        "kid_f": {"z": pick(f, [16, 30, 30]), "x": pick(f, [10, 24, 24]), "hide": f == 2},
-        "kid_b": {"z": pick(f, [14, 26, 26]), "x": pick(f, [-6, -20, -20]), "hide": f == 2},
+# attack: 10 unique poses in the 12 heavy steps. A GORE (owner direction 2026-09-30): a
+# small foot stomp as the anticipation, the head drops low with the tusks near the ground
+# (held), then a lunge that hooks the tusks up and forward into the target with a heavy
+# follow-through; the front rider throws his rock on the impact beat.
+ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
+#        shift  paw  stomp HOLD  lunge hook IMPACT over follow settle
+MX = [-2.0, -4.0, -7.0, -9.0, 2.0, 7.0, 10.0, 9.0, 5.0, 0.0]
+MZ = [-0.5, 1.0, -2.0, -3.0, 0.0, 2.0, 3.0, 2.0, 0.6, 0.0]
+MR = [0, 3, -3, -5, 0, 4, 6, 6, 2, 0]
+MQ = [-0.02, 0.02, -0.05, -0.07, 0.03, 0.05, 0.07, 0.02, -0.01, 0.0]
+MN = [-3, -6, -16, -22, -10, 4, 12, 15, 6, 0]
+MH = [-2, -6, -18, -24, -8, 8, 16, 20, 6, 0]
+T1 = [-4, -8, -14, -14, 0, 20, 34, 30, 10, 0]
+T2 = [-4, -10, -18, -20, 0, 20, 30, 26, 8, 0]
+T3 = [-4, -12, -24, -26, 4, 24, 36, 30, 10, 0]
+LFR = [(-2, 0), (24, -38), (-6, 0), (-8, 2), (-4, 0), (-8, 0), (-10, 0), (-6, 0), (-2, 0), (0, 0)]
+LFL = [(-2, 0), (0, 0), (-4, 0), (-6, 2), (6, -10), (-2, -4), (-8, 0), (-4, 0), (0, 0), (0, 0)]
+LBR = [(3, 0), (4, 0), (8, -6), (10, -8), (-8, 0), (-14, 0), (-16, 0), (-12, 0), (-4, 0), (0, 0)]
+LBL = [(3, 0), (4, 0), (6, -4), (8, -6), (-6, 0), (-12, 0), (-14, 0), (-10, 0), (-4, 0), (0, 0)]
+RIDE = [0, -0.5, 1.5, 2.0, -1.0, 1.0, 3.5, 2.0, 0.5, 0]
+# front kid: arm angle (0 = rest, forward-down) and lean (+ back); the rock is up and back on
+# the hold, leaves on the impact and is back in his hand for the settle
+THROW = [20, 70, 150, 200, 205, 170, 10, -30, -10, 10]
+KLEAN = [0, 6, 16, 26, 26, 14, -24, -28, -8, 0]
+KRISE = [0, 0, 1.0, 2.0, 2.0, 3.0, 4.0, 2.5, 1.0, 0]
+# back kid: grips the rim, ducks on the lunge and cheers (fist up) on the impact
+KB_ARM = [0, 10, 0, -10, 0, 60, 150, 160, 80, 0]
+KB_LEAN = [0, 2, 6, 8, 0, -8, -10, -6, -2, 0]
+
+
+def _attack_pose(f):
+    pose = merge(M.body_about((0, 0, 90), x=MX[f], z=MZ[f], q=MQ[f]), {
+        "trunk": {"r": MR[f]},
+        "neck": {"r": MN[f]}, "head": {"r": MH[f]},
+        "trunk1": {"r": T1[f]}, "trunk2": {"r": T2[f]}, "trunk3": {"r": T3[f]},
+        "mouth": {"show": f in (5, 6, 7)},
+        "ear": {"rz": [0, 6, -16, -24, -10, 12, 34, 30, 8, 0][f]},
+        "leg_fr": {"r": LFR[f][0]}, "leg_fr2": {"r": LFR[f][1]},
+        "leg_fl": {"r": LFL[f][0]}, "leg_fl2": {"r": LFL[f][1]},
+        "leg_br": {"r": LBR[f][0]}, "leg_br2": {"r": LBR[f][1]},
+        "leg_bl": {"r": LBL[f][0]}, "leg_bl2": {"r": LBL[f][1]},
+    }, _riders(RIDE[f], THROW[f]), {
+        "kid_f": {"r": KLEAN[f], "z": KRISE[f]}, "kid_b": {"r": KB_LEAN[f]}, "kid_b_arm": {"r": KB_ARM[f]},
     })
+    pose["rock"] = {"hide": f in (6, 7, 8)}
+    if f in (2, 3, 4):
+        pose = merge(pose, {"brow": {"z": -1.8}})
+    elif f in (5, 6, 7):
+        pose = merge(pose, {"brow": {"z": -1.2}})
+    return pose
+
+
+TUSK_MID = (70.0, -13.5, 78.0)
+KID_F = (4.0, 124.0)
+
+
+def _attack_clip():
+    x, z = KID_F
+    hand_in = (x + 3.5, -8.0, z + 10.0)
+    hand_out = (x + 8.0, -10.5, z + 9.0)
+    gore = {"kind": "arc", "joint": "head", "inner": TUSK_MID, "outer": TUSK_TIP, "color": IVORY,
+            "taper": 0.15, "white": 0.2, "lines": 3, "line_gap_lu": 3.2, "outline_lu": 1.6}
+    ov = {
+        2: [{"kind": "dust", "ground": (30.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 31, "spread": 1.0}],
+        4: [dict(gore, t0=0.0, t1=0.9)],
+        5: [dict(gore, t0=0.0, t1=0.9),
+            {"kind": "arc", "joint": "kid_f_arm", "inner": hand_in, "outer": hand_out, "color": "#FFF4D6",
+             "taper": 0.2, "white": 0.0, "lines": 1, "line_gap_lu": 1.6, "outline_lu": 1.0, "from": 3}],
+        6: [{"kind": "burst", "joint": "head", "point": TUSK_TIP, "r0_lu": 12.0, "r1_lu": 24.0,
+             "n": 6, "a0": -30.0, "arc": 170.0},
+            {"kind": "arc", "joint": "kid_f_arm", "inner": hand_in, "outer": hand_out, "color": "#FFF4D6",
+             "taper": 0.2, "white": 0.0, "lines": 2, "line_gap_lu": 1.6, "outline_lu": 1.0},
+            {"kind": "dust", "ground": (-30.0, 0.0), "size_lu": 12.0, "puffs": 5, "seed": 32, "spread": 1.4,
+             "dir": -1.0}],
+        7: [{"kind": "dust", "ground": (-34.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 33, "spread": 1.6,
+             "dir": -1.0}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+def _hit(k):
+    def recoil(a, shake):
+        return merge({"body": dict(squash(-0.05 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
+                      "trunk": {"r": 3 * a},
+                      "neck": {"r": 6 * a}, "head": {"r": 5 * a + 5 * shake, "rx": 8 * shake},
+                      "trunk1": {"r": 14 * a}, "trunk2": {"r": 10 * a},
+                      "ear": {"rz": -20 * max(a, 0)}}, _riders(-2.5 * a))
+    return M.hit_beast(k, {}, recoil, face_hurt=F.expr("squeeze", mouth=None))
+
+
+def _die(k):
+    kick = [0.0, 0.2, 0.5, 0.9, 0.6, 1.0, 0.4, 0.2, 0.1, 0.0][k]
+    off = min(1.0, k / 2.0)
+    pose = merge(M.die_d4(k, center_z=90.0, back_z=44.0, height=HEIGHT_LU, heavy=True, roll=-0.62), {
+        "neck": {"r": [10, 14, 10, 6, 2, 0, 0, 0, 0, 0][k]},
+        "head": {"r": [6, -4, -8, -10, -10, -8, -8, -8, -8, -8][k]},
+        "trunk1": {"r": 40 * kick + 10}, "trunk2": {"r": 30 * kick}, "trunk3": {"r": 30 * kick},
+        "mouth": {"show": k <= 1},
+        "leg_fr": {"r": 24 * kick - 8}, "leg_fr2": {"r": -20 * kick},
+        "leg_fl": {"r": -16 * kick + 8}, "leg_fl2": {"r": -16 * kick},
+        "leg_br": {"r": -20 * kick}, "leg_br2": {"r": 16 * kick},
+        "leg_bl": {"r": 16 * kick}, "leg_bl2": {"r": 14 * kick},
+        # the riders jump off (they become two summoned Pebblers, A5.2); the howdah tips away
+        "kid_f": {"z": 34 * off, "x": 30 * off, "r": -40 * off, "hide": k >= 4},
+        "kid_b": {"z": 30 * off, "x": -26 * off, "r": 40 * off, "hide": k >= 4},
+        "kid_f_arm": {"r": 120 * off}, "kid_b_arm": {"r": 150 * off},
+        "howdah": {"r": 30 * off, "x": -20 * off, "hide": k >= 4},
+    })
+    if k >= 4:
+        pose = merge(pose, F.expr("x", mouth=None))
+    return pose
+
+
+# the heavy side topple passes edge-on at D4 step 3 (a flat pill at game size): skip it
+DIE_KEEP = [0, 1, 2, 4, 5, 7, 8, 9]
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=170),
-        Clip("attack", 8, _attack, impact=4, smear=3, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    keep = DIE_KEEP
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
+               [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], [170] * 8, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(keep[i]) for i in range(len(keep))], M.DIE_MS_HEAVY,
+               sequence=M.DIE_SEQ_HEAVY, extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
+    return M.check_contract(cl, heavy=True)

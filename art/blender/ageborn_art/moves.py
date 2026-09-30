@@ -224,15 +224,15 @@ def hit_beast(k, stance, recoil, face_hurt=None):
 # ground hit, a bounce, then a sprawl on the back. (x back, z up, r spin, q squash)
 D1_PATH = [
     dict(x=-2.0, z=0.0, r=10.0, q=-0.14),
-    dict(x=-6.0, z=9.0, r=70.0, q=0.14),
-    dict(x=-11.0, z=16.0, r=190.0, q=0.08),
-    dict(x=-15.0, z=12.0, r=320.0, q=0.02),
-    dict(x=-18.0, z=0.0, r=435.0, q=-0.22),
-    dict(x=-20.0, z=3.5, r=445.0, q=0.08),
-    dict(x=-21.0, z=0.0, r=450.0, q=-0.10),
-    dict(x=-21.0, z=0.0, r=450.0, q=-0.04),
-    dict(x=-21.0, z=0.0, r=450.0, q=-0.08, s=0.96),
-    dict(x=-21.0, z=0.0, r=450.0, q=-0.12, s=0.9),
+    dict(x=-5.0, z=9.0, r=70.0, q=0.14),
+    dict(x=-8.0, z=16.0, r=190.0, q=0.08),
+    dict(x=-11.0, z=12.0, r=320.0, q=0.02),
+    dict(x=-13.0, z=0.0, r=435.0, q=-0.22),
+    dict(x=-14.0, z=3.5, r=445.0, q=0.08),
+    dict(x=-15.0, z=0.0, r=450.0, q=-0.10),
+    dict(x=-15.0, z=0.0, r=450.0, q=-0.04),
+    dict(x=-15.0, z=0.0, r=450.0, q=-0.08, s=0.96),
+    dict(x=-15.0, z=0.0, r=450.0, q=-0.12, s=0.9),
 ]
 
 
@@ -254,7 +254,7 @@ D3_PATH = [
     dict(x=-2.0, z=0.0, r=8.0, rz=0.0, q=-0.12),
     dict(x=-4.0, z=3.0, r=-6.0, rz=90.0, q=0.08),
     dict(x=-5.0, z=4.0, r=8.0, rz=200.0, q=0.04),
-    dict(x=-5.5, z=2.0, r=-8.0, rz=300.0, q=0.0),
+    dict(x=-5.5, z=2.0, r=-8.0, rz=335.0, q=0.0),
     dict(x=-6.0, z=0.0, r=6.0, rz=360.0, q=-0.18),
     dict(x=-6.0, z=0.0, r=-4.0, rz=360.0, q=0.06),
     dict(x=-6.0, z=0.0, r=3.0, rz=360.0, q=-0.06),
@@ -287,14 +287,17 @@ D4_PATH = [  # x back, z up, r pitch, rx roll, q squash
 ]
 
 
-def die_d4(k, center_z, back_z, height, heavy=False):
+def die_d4(k, center_z, back_z, height, heavy=False, roll=1.0):
     """Beast flop, step k of 10. Upside down, the body's centre sits `back_z` above the
-    ground (half the trunk's depth), so the back rests on the ground."""
+    ground (half the trunk's depth), so the back rests on the ground. roll scales the roll:
+    1 = onto the back, legs toward the viewer on the way; -0.65 = a heavy topple onto the
+    side with the back (and its caparison) toward the viewer and the legs up behind."""
     b = D4_PATH[k]
     sc = max(0.8, min(1.6, height / 68.0)) if not heavy else 1.2
-    roll = abs(b["rx"]) / 180.0
-    land = -(center_z - back_z) * roll ** 1.5
-    return body_about((0, 0, center_z), x=b["x"] * sc, z=b["z"] * sc + land, r=b["r"], rx=b["rx"],
+    rx = b["rx"] * roll
+    amount = abs(b["rx"]) / 180.0
+    land = -(center_z - back_z) * amount ** 1.5
+    return body_about((0, 0, center_z), x=b["x"] * sc, z=b["z"] * sc + land, r=b["r"], rx=rx,
                       q=b["q"], s=b.get("s", 1.0))
 
 

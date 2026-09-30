@@ -118,7 +118,7 @@ def beard(rig, color=HAIR, cx=11.0, z=42.0, full=True):
 
 
 def helmet(rig, color=BRONZE, rim=VERD, crest=True, crest_len=26.0, crest_h=10.0, tall=0.0, cheek=True,
-           crest_color=None, c=(1.5, 0, 55.0), crest_joint="crest"):
+           crest_color=None, c=(1.5, 0, 55.0), crest_joint="crest", joint="head", crest_secondary=True):
     """An open-faced bronze helmet (Chalcidian cut): a dome, a neck guard, cheek guards that
     leave the eyes free, a polished rim and a tall horsehair crest (team) on a stilt that trails
     back and follows through. `tall` raises the dome (the Phalangite's high helmet)."""
@@ -126,25 +126,28 @@ def helmet(rig, color=BRONZE, rim=VERD, crest=True, crest_len=26.0, crest_h=10.0
     g = Geo().blob((cx, cy, cz + tall * 0.4), (12.4, 11.8, 10.2 + tall), p=2.4)
     g.clip((0, 0, cz - 1.6), (0, 0, -1))
     fin = POLISH if color == BRONZE else "metal"
-    rig.part("head", g, color, finish=fin)
+    rig.part(joint, g, color, finish=fin)
     g = Geo().blob((cx - 7.5, cy, cz - 5.0), (6.2, 11.4, 6.4), p=2.4)       # neck guard
     g.clip((cx - 5.0, 0, 0), (1, 0, 0))
-    rig.part("head", g, AGED if color == BRONZE else color, finish="metal")
+    rig.part(joint, g, AGED if color == BRONZE else color, finish="metal")
     if cheek:
         g = Geo()
         for y in (-10.2, 10.2):
             g.blob((cx + 3.2, y, cz - 6.6), (3.6, 1.6, 5.0), p=2.4, taper=(0.55, 1.0), rot=(0, -8, 0))
-        rig.part("head", g, AGED if color == BRONZE else color, finish="metal", outline=0.8)
+        rig.part(joint, g, AGED if color == BRONZE else color, finish="metal", outline=0.8)
     g = Geo().blob((cx + 0.4, cy, cz - 1.4), (12.9, 12.3, 1.3), p=2.8)       # polished rim
     g.capsule((cx + 12.0, -4.5, cz + 2.8), (cx + 12.4, 4.5, cz + 2.8), 1.0)   # brow ridge
-    rig.part("head", g, rim, finish=POLISH if rim in (BRONZE, BRONZE_HI) else "metal", outline=0.6)
+    rig.part(joint, g, rim, finish=POLISH if rim in (BRONZE, BRONZE_HI) else "metal", outline=0.6)
     if not crest:
         return None
     top = cz + 10.0 + tall
     g = Geo().capsule((cx, cy, top - 1.0), (cx - 1.0, cy, top + 4.2), 1.5)   # crest stilt
-    rig.part("head", g, VERD_DK, finish="metal", outline=0.6)
-    rig.secondary(crest_joint, "head", (cx + 6.0, cy, top + 4.0), (cx - crest_len, cy, top + 1.0),
-                  max_deg=10, gain=0.9)
+    rig.part(joint, g, VERD_DK, finish="metal", outline=0.6)
+    if crest_secondary:
+        rig.secondary(crest_joint, joint, (cx + 6.0, cy, top + 4.0), (cx - crest_len, cy, top + 1.0),
+                      max_deg=10, gain=0.9)
+    else:
+        crest_joint = joint
     g = Geo()
     n = 9
     for i in range(n):
@@ -162,7 +165,7 @@ def helmet(rig, color=BRONZE, rim=VERD, crest=True, crest_len=26.0, crest_h=10.0
 
 
 def aspis(rig, joint, center, r=13.0, depth=2.4, face_team=True, emblem=SAND_LT, rim=BRONZE, rot=(0, 0, 0),
-          boss=True, rim_w=1.8):
+          boss=True, rim_w=1.8, rivets=0):
     """A round shield facing the camera (-Y): a team face, a polished rim and a sandstone
     emblem (a lambda chevron). `center` is the face centre; the grip sits behind it."""
     cx, cy, cz = center
@@ -189,6 +192,14 @@ def aspis(rig, joint, center, r=13.0, depth=2.4, face_team=True, emblem=SAND_LT,
     if boss:
         g = Geo().sphere((cx, cy - depth * 0.95 - 0.4, cz), 1.6 * r / 13.0, cuts=3)
         rig.part(joint, g, BRONZE_HI, finish=POLISH, outline=0.5)
+    if rivets:
+        # polished rivets just inside the rim (read as a dotted ring at game size)
+        g = Geo()
+        rr = r - rim_w - 1.4
+        for k in range(rivets):
+            a = 2 * math.pi * (k + 0.5) / rivets
+            g.sphere((cx + rr * math.cos(a), cy - depth * 0.9, cz + rr * math.sin(a)), 1.05, cuts=2)
+        rig.part(joint, g, SAND_LT, finish="metal", outline=0.4)
 
 
 def spear(rig, joint, grip, fwd=30.0, back=18.0, r=1.4, shaft=WOOD, head=BRONZE, head_len=9.0, butt=True,
@@ -238,3 +249,91 @@ def sparks(rig, joint, at, size=1.0, name="sparks", color=FIRE, core=FIRE_CORE, 
     g = Geo().sphere((x, y - 4, z), 2.2 * size, cuts=3)
     rig.part(name, g, glow=core, outline=0)
     return name
+
+
+# -- cartoon kit v2 (art director plan 2026-09-30) ------------------------------------------------
+def face_kit(rig, cx=12.0, cz=50.0, skin=SKIN, brow=HAIR, eye_r=(3.4, 3.2, 4.2), eye_dy=(-4.6, 4.4),
+             center=(2, 0, 49.0), r=(11.4, 10.8, 11.2), nose=(13.4, -0.6, 48.0), nose_r=(3.0, 2.9, 3.1),
+             extra=(), mouth_z=None, mouth_w=5.2, brow_tilt=2.2, head="head"):
+    """Head ball, big eyes (pupils on their own joint), an angry brow on a `brow` joint, a
+    default mouth decal (`mouth`) and the face kit (face.py): lids, squeeze, X and spiral eyes,
+    grit, yell, O and KO tongue. `extra` are Geo objects that sit on the face (a beard) so
+    the decals land on them. Returns the Face."""
+    from . import face as FK
+    g = Geo().blob(center, r, p=2.3)
+    g.blob(nose, nose_r, p=2.0)
+    eyes, pup = Geo(), Geo()
+    for y in eye_dy:
+        eyes.blob((cx - 1.4, y, cz), eye_r)
+        pup.blob((cx + 1.5, y - 0.4, cz - 0.3), (1.4, 2.1, 2.2))
+    face = FK.Face(rig, head, [g, eyes, pup] + list(extra))
+    rig.part(head, g, skin)
+    rig.part(head, eyes, EYE, highlight=False)
+    rig.joint("pupils", head, (cx + 1.5, 0, cz))
+    rig.part("pupils", pup, PUPIL, outline=0)
+    if brow:
+        rig.joint("brow", head, (cx, 0, cz + 4.6))
+        a = brow_tilt
+        gb = Geo().capsule((cx - 1.8, eye_dy[0] - 3.4, cz + 5.4 + a * 0.4), (cx + 1.0, -0.4, cz + 4.0 - a * 0.5), 2.0, 1.8)
+        gb.capsule((cx + 1.0, -0.4, cz + 4.0 - a * 0.5), (cx - 1.8, eye_dy[1] + 3.2, cz + 5.4 + a * 0.4), 1.8, 2.0)
+        rig.part("brow", gb, brow, finish="hair", outline=0.7)
+    mz = cz - 7.0 if mouth_z is None else mouth_z
+    mx = cx - 0.4
+    rig.joint("mouth", head, (mx, 0, mz))
+    c = face.hit(mx, mz)
+    gm = Geo()
+    face.decal(gm, c, [(-2.2, 0.5), (2.0, 0.8), (2.1, -0.3), (-2.0, -0.6)], 0.4)
+    rig.part("mouth", gm, MOUTH, outline=0, highlight=False)
+    ex = cx - 1.4 + eye_r[0] * 0.62
+    face.eye_marks([(ex, cz)], eye_r[2] * 0.95, skin)
+    face.mouths((mx, mz - 0.4), mouth_w)
+    return face
+
+
+# D2 stiff topple (armoured and shield infantry): struck, a wobble forward to hold the line,
+# then he goes over backwards stiff as a plank, slams flat, bounces once and lies still.
+# (x back, z up, r pitch about the belly, q squash). The helmet pops off on the fall (unit side).
+D2_PATH = [
+    dict(x=-2.0, z=0.0, r=7.0, q=-0.12),
+    dict(x=-1.0, z=0.0, r=-7.0, q=0.05),
+    dict(x=-3.0, z=1.0, r=16.0, q=0.03),
+    dict(x=-7.0, z=2.0, r=48.0, q=0.02),
+    dict(x=-11.0, z=0.0, r=90.0, q=-0.2),
+    dict(x=-11.5, z=3.0, r=84.0, q=0.07),
+    dict(x=-12.0, z=0.0, r=90.0, q=-0.08),
+    dict(x=-12.0, z=0.0, r=90.0, q=-0.03),
+    dict(x=-12.0, z=0.0, r=90.0, q=-0.06, s=0.96),
+    dict(x=-12.0, z=0.0, r=90.0, q=-0.1, s=0.9),
+]
+
+
+def die_d2(k, center_z, lie_z, height):
+    """Body channels of the D2 path, step k of 10 (moves.DIE_MS). Pivots about the belly;
+    once tipped past 30 degrees the centre is lowered to lying height `lie_z`."""
+    from . import moves as M
+    b = D2_PATH[k]
+    sc = max(0.7, min(1.4, height / 68.0))
+    land = -(center_z - lie_z) * max(0.0, min(1.0, (b["r"] - 20.0) / 68.0)) ** 1.3
+    return M.body_about((0, 0, center_z), x=b["x"] * sc, z=b["z"] * sc + land, r=b["r"], q=b["q"],
+                        s=b.get("s", 1.0))
+
+
+HIT_ARM_AMT = [0.8, 1.0, 0.55, -0.15, 0.05]
+
+
+def hit_armoured(k, stance, recoil, face_hurt=None, helm="helm"):
+    """Armoured biped: a dip behind the shield (knees bend, shield up), the helmet clanks down
+    over the eyes on frame 1, then a small push back up and a settle. `recoil(a)` adds the
+    unit's shield and weapon motion at amount a (a < 0 the push back)."""
+    a = HIT_ARM_AMT[k]
+    q = [-0.12, -0.08, 0.03, 0.02, 0.0][k]
+    out = merge(stance, {"body": dict(squash(q), x=-2.5 * max(a, 0) + 0.8 * min(a, 0)),
+                         "hips": {"z": -2.2 * max(a, 0)},
+                         "thigh_r": {"r": 10 * max(a, 0)}, "shin_r": {"r": -16 * max(a, 0)},
+                         "thigh_l": {"r": 6 * max(a, 0)}, "shin_l": {"r": -14 * max(a, 0)},
+                         "torso": {"r": 6 * a}, "head": {"r": 8 * a}}, recoil(a))
+    if helm and k in (1, 2):
+        out = merge(out, {helm: {"z": -3.2 if k == 1 else -1.2, "r": -4 if k == 1 else 2}})
+    if k <= 1 and face_hurt:
+        out = merge(out, face_hurt)
+    return out

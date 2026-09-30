@@ -94,23 +94,36 @@ export function createUiServices(d: UiServicesDeps): UiServices {
   };
 
   // The Home preview must be the opponent the next ladder match gets (meta is deterministic in the
-  // save), so it is memoised per save object.
+  // save and the format: the ladder seed is `ladder:<format>`), so it is memoised per save object and
+  // format, and built exactly as `prepareMatch` builds it (base look included).
   let previewFor: SaveDoc | null = null;
-  let preview: OpponentSpec | null = null;
+  const previews = new Map<string, OpponentSpec>();
+
+  /** A18.9.4: the AI's base look, fixed here so Home, the VS screen and the battle show the same one. */
+  const withLook = (o: OpponentSpec): OpponentSpec => {
+    const look = o.side.look ?? opponentLook(content, o.generalId);
+    return look ? { ...o, side: { ...o.side, look } } : o;
+  };
 
   const replaysNewestFirst = (): ReplayDoc[] => [...store.loadReplays()].reverse();
 
   return {
     // ---- queries -----------------------------------------------------------------------------
-    previewOpponent() {
+    previewOpponent(format) {
       const s = d.save.value;
       // The ladder opens after the onboarding matches (A8): nothing to preview before.
       if (s.tutorial.step < 4) return null;
       if (previewFor !== s) {
         previewFor = s;
-        preview = meta.pickOpponent(s, 'ladder', content, clock, {});
+        previews.clear();
       }
-      return preview;
+      const key = format ?? '';
+      let o = previews.get(key);
+      if (!o) {
+        o = withLook(meta.pickOpponent(s, 'ladder', content, clock, format ? { format } : {}));
+        previews.set(key, o);
+      }
+      return o;
     },
     dailyModifier() {
       return meta.dailyModifier(content, clock);
@@ -129,9 +142,7 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     prepareMatch(req) {
       const s = ticked();
       const o = req.mode === 'tutorial' ? meta.pickOpponent(s, 'tutorial', content, clock, {}) : meta.pickOpponent(s, req.mode, content, clock, opponentOptions(req));
-      // A18.9.4: the AI's base look, fixed here so the VS screen and the battle show the same one
-      const look = o.side.look ?? opponentLook(content, o.generalId);
-      return look ? { ...o, side: { ...o.side, look } } : o;
+      return withLook(o);
     },
     beginBattle(req, opponent) {
       flow.begin(req, opponent);

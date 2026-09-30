@@ -19,7 +19,7 @@ const cust = (tab: string) => mount({ state: 'mid', routes: [{ id: 'home' }, { i
 describe('Customize: collections (A18.9.4)', () => {
   it('shows every tab and the completion over skins and collections', () => {
     m = cust('troops');
-    for (const tab of ['troops', 'bases', 'flags', 'decorations', 'emotes', 'quotes', 'look']) expect(m.q(`[data-testid="tab-${tab}"]`), tab).not.toBeNull();
+    for (const tab of ['troops', 'bases', 'backdrops', 'flags', 'decorations', 'emotes', 'quotes', 'look']) expect(m.q(`[data-testid="tab-${tab}"]`), tab).not.toBeNull();
     expect(text(m.q('[data-testid="cust-total"]')!)).toMatch(/^\d+\/\d+ found$/);
     // The per-collection counts live on each collection's own tab (review 9: not on Troops).
     expect(m.q('[data-testid="cosmetic-completion"]')).toBeNull();
@@ -102,3 +102,39 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(m.router.current.value).toMatchObject({ id: 'customize', tab: 'flags' });
   });
 });
+describe('Customize: battle backdrops (A18.9.4 "Backdrops", owner request 2026-09-30)', () => {
+  it('shows the live preview, the count and every backdrop; an owned one equips with Undo', () => {
+    m = cust('backdrops');
+    expect(m.q('[data-testid="backdrop-mock"]')).not.toBeNull();
+    // mid fixture: 3 of the backdrops owned, none equipped (the classic skies)
+    expect(text(m.q('[data-testid="found-backdrop"]')!)).toMatch(/^3\/\d+ found$/);
+    expect(m.q('[data-testid="backdrop-classic"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect(text(m.q('[data-testid="backdrop-name"]')!)).toBe('Classic skies');
+    m.click('[data-testid="item-backdrop.winterfall"] button');
+    expect(calls('equipCosmetic')).toEqual([{ slot: 'backdrop', key: 'backdrop.winterfall' }]);
+    expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-skin')).toBe('backdrop.winterfall');
+    expect(m.qa('[data-testid="toast"]')).toHaveLength(1);
+    m.click('[data-testid="backdrop-classic"]');
+    expect(calls('equipCosmetic')[1]).toEqual({ slot: 'backdrop', key: null });
+  });
+
+  it('a locked backdrop can be tried on in the preview but never equipped, and says how it is earned', () => {
+    m = cust('backdrops');
+    const tile = '[data-testid="item-backdrop.northern_lights"]';
+    expect(m.q(tile)!.getAttribute('class')).toContain('is-locked');
+    expect(text(m.q(tile)!)).toContain('Found in Wardrobe Crates');
+    m.click(`${tile} button`);
+    expect(calls('equipCosmetic')).toEqual([]);
+    expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-skin')).toBe('backdrop.northern_lights');
+    expect(text(m.q('[data-testid="backdrop-name"]')!)).toContain('Trying on');
+    // the road one names its node
+    expect(text(m.q('[data-testid="item-backdrop.eclipse"]')!)).toContain('Trophy Road at 3500 trophies');
+  });
+
+  it('switches the age the preview shows', () => {
+    m = cust('backdrops');
+    m.click('[data-testid="cust-bd-age"] [data-testid="age-tab-cosmic"]');
+    expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-age')).toBe('cosmic');
+  });
+});
+

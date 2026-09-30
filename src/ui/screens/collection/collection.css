@@ -227,3 +227,460 @@
   background: rgba(155, 107, 255, 0.35);
   font-size: 11px;
 }
+
+/* ---- The Card Album (owner request 2026-09-30): a long scroll like a Pokedex -------------------- */
+.dex {
+  --dex-head-top: 84px;
+  --dex-tile: 88px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+@container ui-root (max-height: 480px) {
+  .dex {
+    --dex-tile: 64px;
+    gap: 10px;
+  }
+}
+/* The sticky bar: total, Have / Missing, Filters, and the age chips. It spans the panel. */
+.dex-bar {
+  position: sticky;
+  top: calc(-1 * var(--ui-s3));
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: -12px -12px 0;
+  padding: 10px 12px 8px;
+  border-bottom: 2px solid rgba(27, 19, 48, 0.8);
+  border-radius: 0 16px 0 0;
+  background: linear-gradient(180deg, #342f66, #282452);
+  box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.6);
+}
+.dex-bar__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.dex-bar__row .ui-btn.is-on .ui-btn__face {
+  box-shadow: inset 0 0 0 2px var(--ui-primary);
+}
+.dex-total {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 160px;
+  min-width: 120px;
+  max-width: 280px;
+}
+.dex-total__text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+.dex-total__text b {
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.dex-total__text small {
+  color: var(--ui-primary-light, #ffe08a);
+  font-size: 13px;
+  font-weight: 900;
+}
+.dex-meter {
+  position: relative;
+  display: block;
+  height: 8px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 99px;
+  background: var(--ui-well);
+  overflow: hidden;
+}
+.dex-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #8ff0b0, #3ec27a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: width var(--ui-dur-medium) var(--ui-ease-out);
+}
+/* Age chips: jump to an age; the one in view lights up in its age colour. */
+.dex-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+.dex-chips::-webkit-scrollbar {
+  display: none;
+}
+.dex-chip {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-text-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  scroll-snap-align: center;
+}
+.dex-chip__face {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 2px 10px 2px 3px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 99px;
+  background: rgba(16, 20, 27, 0.55);
+  transition:
+    background-color var(--ui-dur-micro) var(--ui-ease-out),
+    color var(--ui-dur-micro) var(--ui-ease-out),
+    transform var(--ui-dur-micro) var(--ui-ease-back);
+}
+.dex-chip:active .dex-chip__face {
+  transform: scale(var(--ui-press-scale, 0.96));
+}
+.dex-chip__glyph {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--age) 55%, #1b1330);
+}
+.dex-chip__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.dex-chip.is-on {
+  color: var(--ui-text);
+}
+.dex-chip.is-on .dex-chip__face {
+  background: color-mix(in srgb, var(--age) 30%, #221d44);
+  box-shadow: inset 0 -3px 0 var(--age);
+}
+.dex-chip.is-done .dex-chip__count {
+  color: #ffe08a;
+}
+/* An age: a sticky header under the bar, then its numbered tiles. */
+.dex-age {
+  scroll-margin-top: var(--dex-head-top);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+.dex-age__head {
+  position: sticky;
+  top: calc(var(--dex-head-top) - 1px);
+  z-index: 4;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 4px;
+  margin: 0 -4px 10px;
+  padding: 6px 10px 8px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 14px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--age-main, #3a356f) 55%, #231e48) 0%, #231e48 70%);
+  box-shadow: 0 4px 0 rgba(27, 19, 48, 0.55);
+}
+.dex-age__glyph {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--age) 60%, #1b1330);
+}
+.dex-age__titles {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.dex-age__name {
+  margin: 0;
+  overflow: hidden;
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dex-age__note {
+  overflow: hidden;
+  color: var(--ui-text-2);
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dex-age__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ui-text);
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.dex-age__done {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 8px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 99px;
+  background: linear-gradient(180deg, #ffe58a, #f2b73a);
+  color: var(--ui-ink);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  animation: ui-pop 320ms var(--ui-ease-back) both;
+}
+.dex-meter--age {
+  grid-column: 2 / 4;
+  height: 7px;
+}
+.dex-age.is-done .dex-meter > span {
+  background: linear-gradient(180deg, #ffe58a, #e9a92c);
+}
+.dex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--dex-tile) + 14px), 1fr));
+  gap: 14px 8px;
+  padding: 0 2px 6px;
+}
+@container ui-root (max-height: 480px) {
+  .dex-grid {
+    gap: 10px 6px;
+  }
+  .dex-age__head {
+    padding: 4px 8px 6px;
+  }
+  .dex-age__glyph {
+    width: 32px;
+    height: 32px;
+  }
+  .dex-total__text b {
+    font-size: 15px;
+  }
+  /* Phones: one bar row (total, Have / Missing, the Filters icon, then the age chips that scroll) */
+  .dex-bar {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .dex-bar__row {
+    flex: none;
+    gap: 8px;
+  }
+  .dex-total {
+    flex: none;
+    width: 118px;
+    min-width: 0;
+  }
+  /* the bar under the count shows the share; the percent needs the room */
+  .dex-total__text small {
+    display: none;
+  }
+  .dex-bar__row .ui-btn__text {
+    display: none;
+  }
+  .dex-bar__row .ui-btn {
+    --minw: 44px;
+  }
+  .dex-bar__row .ui-btn__face {
+    padding: 0 var(--ui-s2);
+  }
+  .dex-chips {
+    flex: 1 1 auto;
+    min-width: 0;
+    mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent 100%);
+  }
+  .dex-chip__face {
+    min-height: 34px;
+    padding-right: 8px;
+  }
+  .dex-chip__glyph {
+    width: 26px;
+    height: 26px;
+  }
+  /* A one-row age header: glyph, name, bar, count */
+  .dex-age__head {
+    grid-template-columns: auto auto 1fr auto;
+    grid-template-rows: auto;
+    margin-bottom: 8px;
+  }
+  .dex-age__glyph {
+    grid-row: auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+  }
+  .dex-age__name {
+    font-size: 14px;
+  }
+  .dex-age__note {
+    display: none;
+  }
+  .dex-meter--age {
+    grid-column: auto;
+    grid-row: 1;
+    grid-column-start: 3;
+    min-width: 40px;
+  }
+  .dex-age__count {
+    grid-column-start: 4;
+    grid-row: 1;
+    font-size: 13px;
+  }
+}
+/* A numbered tile: the number over the card; a missing card is a dark "?" silhouette with its source. */
+.dex-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  animation: ui-rise var(--ui-dur-small) var(--ui-ease-enter) calc(var(--i, 0) * var(--ui-dur-stagger) * 0.5) both;
+}
+.dex-tile .ui-card {
+  --card-w: var(--dex-tile);
+}
+.dex-tile__no {
+  margin-bottom: 3px;
+  color: var(--ui-text-2);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+.dex-tile.is-missing .dex-tile__no {
+  margin-bottom: 3px;
+  color: var(--ui-text-3);
+}
+.dex-tile.is-missing .ui-card__lock {
+  display: none;
+}
+.dex-tile.is-missing .ui-card__frame {
+  filter: saturate(0.2) brightness(0.62);
+}
+.dex-tile__q {
+  position: absolute;
+  top: calc(16px + var(--dex-tile) * 0.62);
+  left: 50%;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  width: calc(var(--dex-tile) * 0.46);
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(16, 12, 36, 0.72);
+  color: #fff;
+  font-family: var(--ui-font-display);
+  font-size: calc(var(--dex-tile) * 0.3);
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+  box-shadow: 0 0 0 3px rgba(16, 12, 36, 0.35);
+}
+.dex-tile__src {
+  max-width: calc(var(--dex-tile) + 18px);
+  color: var(--ui-text-3);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+}
+.dex-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 12px;
+  color: var(--ui-text-2);
+  font-weight: 800;
+  text-align: center;
+}
+/* The Filters sheet: rarity and class. */
+.dex-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dex-filter__label {
+  margin: 8px 0 0;
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.dex-filter__classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dex-fchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px 0 10px;
+  border: 1px solid var(--ui-edge);
+  border-radius: 99px;
+  background: var(--ui-surface-2);
+  color: var(--ui-text-2);
+  font: inherit;
+  font-size: var(--ui-fs-label);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--ui-dur-micro) var(--ui-ease-out),
+    transform var(--ui-dur-micro) var(--ui-ease-back);
+}
+.dex-fchip:active {
+  transform: scale(var(--ui-press-scale, 0.96));
+}
+.dex-fchip.is-on {
+  border-color: var(--ui-text);
+  background: var(--ui-surface-3);
+  color: var(--ui-text);
+  box-shadow: inset 0 -3px 0 var(--ui-primary);
+}
+.dex-filter__foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dex-tile,
+  .dex-age__done {
+    animation: none;
+  }
+}

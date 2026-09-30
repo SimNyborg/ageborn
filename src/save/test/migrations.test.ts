@@ -266,6 +266,8 @@ describe('v2 → v3: cosmetic collections (A18.9.4)', () => {
       nationalFlag: null,
       baseSkins: {},
       decorations: ['decoration.fire_bowl', null, 'decoration.fern'],
+      // v8: the battle backdrop skin, classic skies until the player picks one
+      backdrop: null,
     });
     expect(doc.rng.capsule).toEqual(old.rng.capsule);
     expect(doc.rng.cosmetic).toHaveLength(4);

@@ -816,3 +816,102 @@ button.cos-mock__deco.is-picked {
   outline: none;
   box-shadow: inset 0 2px 0 rgba(27, 19, 48, 0.12), 0 0 0 3px var(--ui-gold);
 }
+
+/* ---- battle backdrops (A18.9.4 "Backdrops") ------------------------------------------------------ */
+/* The live preview: your half of the lane as the battle paints it, the theme's weather moving over
+   it and your base in front, with the item's name as a plate; a change cross-fades in (MR-61). */
+.cos-bdmock {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 10;
+  border: 3px solid var(--ui-ink);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #2a2840;
+  box-shadow: var(--ui-shadow-drop), inset 0 3px 0 rgba(255, 255, 255, 0.35);
+  isolation: isolate;
+}
+.cos-bdmock__stage {
+  position: absolute;
+  inset: 0;
+  animation: cos-bd-in 420ms var(--ui-ease-out) both;
+}
+@keyframes cos-bd-in {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+    filter: brightness(1.25);
+  }
+}
+.cos-bdmock__base {
+  position: absolute;
+  left: -2%;
+  bottom: 7%;
+  width: 34%;
+  height: 58%;
+  filter: drop-shadow(0 4px 0 rgba(27, 19, 48, 0.35));
+  pointer-events: none;
+}
+.cos-bdmock__base .cos-base__img {
+  object-position: 0 100%;
+}
+.cos-bdmock__name {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  max-width: 60%;
+  padding: 4px 10px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 10px;
+  background: rgba(27, 19, 48, 0.78);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: right;
+  animation: ui-pop 280ms var(--ui-ease-back) both;
+}
+.cos-bdmock__name small {
+  color: var(--ui-gold, #ffd447);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cos-bdmock.is-still .cos-bdmock__stage,
+.cos-bdmock.is-still .cos-bdmock__name {
+  animation: none;
+}
+.cos-grid--backdrops {
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+}
+.cos-tile--backdrop .cos-tile__art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 2px solid var(--ui-ink);
+  border-radius: 9px;
+}
+.cos-tile--backdrop .cos-tile__hit,
+.cos-tile--backdrop.cos-tile--plain {
+  padding: 8px 8px 6px;
+}
+.cos-tile.is-locked.is-previewable .cos-tile__hit {
+  cursor: pointer;
+}
+.cos-tile--backdrop .cos-tile__on,
+.cos-tile--backdrop .cos-tile__lock {
+  top: 12px;
+  right: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-bdmock__stage,
+  .cos-bdmock__name {
+    animation: none;
+  }
+}

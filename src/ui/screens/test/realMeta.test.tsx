@@ -55,7 +55,7 @@ function metaQueries(save: () => SaveDoc): Partial<UiServices> {
     }
   };
   return {
-    previewOpponent: () => meta.pickOpponent(save(), 'ladder', content, clock),
+    previewOpponent: (format) => meta.pickOpponent(save(), 'ladder', content, clock, format ? { format } : {}),
     dailyModifier: () => meta.dailyModifier(content, clock),
     validatePlan: (plan, format) => meta.validatePlan(plan, save(), content, format),
     autoFill: () => meta.autoFill(save(), content),

@@ -10,8 +10,9 @@ saturation (A11 rule).
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    bounces the club on the beat (it lifts and drops with a dip), weight shift, blink
   walk    stomp: bow-legged, a heavy down frame, the club bobbing a frame behind
-  attack  HOP-UP OVERHEAD SMASH: dips, rises on his toes with the club hanging behind at his
-          heels, hops in with the club whipping over the top (two smear frames), smashes it
+  attack  HOP-UP OVERHEAD SMASH: dips with the club lowered, rises on his toes and arches
+          back with the club cocked high behind his head (the held extreme reads as a black
+          silhouette), hops in with the club whipping over the top (two smear frames), smashes it
           into the ground (dust, impact lines, yell), the club BOUNCES back up and settles
   hit     light: head snaps back, front foot up, eyes squeezed, then an overshoot forward
   die     D1 fling and spin: the club flies up out of his hand, he spins 1.25 turns, lands
@@ -265,7 +266,7 @@ STANCE = merge(club_arm(-15, 25, 48), off_arm(-70, -30), {"torso": {"r": -3}, "c
 
 def _idle(f):
     # the club bounces on the beat: up on 1-2, dropped on 3 (dip), a second small beat on 6
-    lift = [0.0, 0.5, 1.0, -0.6, -0.2, 0.3, -0.35, -0.1][f]
+    lift = [0.0, 0.7, 1.0, -0.6, 0.2, -0.3][f]
 
     def extra(ctx):
         return merge(club_arm(-15 + 6 * lift, 25 + 10 * lift, 48 + 10 * lift), {
@@ -275,7 +276,7 @@ def _idle(f):
             "arm_l": {"r": -4 * ctx["lag"]}, "fore_l": {"r": 5 * max(0.0, -lift)},
         })
     base = merge({k: v for k, v in STANCE.items() if k not in ("arm_r", "fore_r", "club")})
-    return M.idle_v2(f, base, extra=extra, face_blink=F.expr("blink"), blink=5)
+    return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
 def _walk(f):
@@ -290,9 +291,9 @@ def _walk(f):
 
 # 11 unique frames, moves.SMALL_MELEE_MS
 #          read  dip  wind  HOLD smear smear IMP  bounce recoil settle settle
-A_ARM = [-8, -40, -110, 126, 80, 12, -10, 0, -8, -18, -14]
-A_FORE = [34, -10, -150, 176, 70, -8, -20, 5, -12, 5, 22]
-A_CLUB = [58, -30, 175, 211, 82, 18, 5, 30, 6, 22, 44]
+A_ARM = [-8, -30, 80, 110, 80, 12, -10, 0, -8, -18, -14]
+A_FORE = [34, 10, 110, 140, 70, -8, -20, 5, -12, 5, 22]
+A_CLUB = [58, 62, 120, 135, 82, 18, 5, 30, 6, 22, 44]
 A_Q = [-0.03, -0.12, 0.06, 0.12, 0.10, 0.02, -0.18, 0.05, -0.07, 0.02, 0.0]
 A_X = [-0.5, -2.0, -3.0, -3.5, 3.0, 7.0, 8.0, 7.5, 7.0, 4.0, 1.0]
 A_Z = [0.0, -2.8, 0.8, 2.6, 8.0, 4.5, -2.4, -0.8, -1.8, -0.5, 0.0]
@@ -363,8 +364,8 @@ def _hit(k):
 
 
 # die D1: fling and spin; the club leaves the hand on step 1 and tumbles up and away
-LOOSE = [None, (8, 0, 72, 60), (-2, 0, 90, 190), (-14, 0, 88, 330), (-24, 0, 70, 470),
-         (-32, 0, 44, 600), (-38, 0, 18, 700), (-42, 0, 6, 720), (-43, 0, 4, 720), (-43, 0, 4, 720)]
+LOOSE = [None, (10, 0, 70, 50), (8, 0, 92, 170), (10, 0, 98, 300), (14, 0, 84, 420),
+         (18, 0, 56, 530), (21, 0, 28, 610), (23, 0, 9, 630), (24, 0, 11, 632), (24, 0, 9, 630)]
 
 
 def _die(k):
@@ -391,10 +392,13 @@ def _die(k):
 
 def clips():
     cl = [
-        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
+        # 6 unique idle poses in the same 920 ms (atlas budget)
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _attack_clip(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
-        M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
+        # 8 unique KO poses in the 10 death steps (the last ones hold; atlas budget)
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
     return M.check_contract(cl)

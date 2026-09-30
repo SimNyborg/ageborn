@@ -154,7 +154,9 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     const std = opts.find((el) => text(el) === 'Standard')!;
     act(() => std.click());
     expect(m.save.value.flags['ui-ladderFormat.standard']).toBe(true);
-    expect(text(m.q('[data-testid="home-format-desc"]')!)).toContain('Standard War');
+    // The picker names the format; the line under it says what it means (never cut off at 844).
+    expect(text(m.q('[data-testid="home-format-desc"]')!)).toBe('5 ages, about 10 min.');
+    expect(calls('previewOpponent').some((c) => c.args[0] === 'standard')).toBe(true);
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
@@ -189,7 +191,9 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
 
   it('the Campaign card opens the War Path map; Back returns Home', () => {
     m = mount({ state: 'mid', shell: true });
-    expect(text(m.q('[data-testid="home-campaign"]')!)).toContain('Campaign');
+    // One name for it everywhere: the War Path (a solo campaign).
+    expect(text(m.q('[data-testid="home-campaign"]')!)).toContain('War Path');
+    expect(text(m.q('[data-testid="home-campaign"]')!)).toContain('Solo campaign vs AI');
     m.click('[data-testid="home-campaign"]');
     expect(m.router.current.value.id).toBe('warPath');
     expect(m.q('[data-testid="tabbar"]')).toBeNull();
@@ -239,16 +243,29 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(text(m.q('[data-testid="unlock-army"]')!).split(/\s+/).length).toBeLessThanOrEqual(9);
   });
 
-  it('when the onboarding ends, the Ladder opens, then the Campaign card, one per visit (U8)', () => {
+  it('when the onboarding ends, the Ladder and the War Path open in one moment, after the first upgrade (U8, U13)', () => {
     const n = afterMatch1();
-    const done = { ...n, matchesPlayed: 2, stats: { ...n.stats, wins: 2, matches: 2 }, tutorial: { step: 4, hintsShown: {} }, flags: { 'ui-unlock.army': true } };
+    const ended = { ...n, matchesPlayed: 2, stats: { ...n.stats, wins: 2, matches: 2 }, tutorial: { step: 4, hintsShown: {} }, flags: { 'ui-unlock.army': true } };
+    // The forced first upgrade is still to come (the app shows it over Home): no unlock moment is used up.
+    if (ended.collection['bonker']?.level === 1) {
+      m = mount({ save: ended, shell: true });
+      expect(m.q('.wp-unlock')).toBeNull();
+      expect(m.save.value.flags['ui-unlock.ladder']).toBeUndefined();
+      m.unmount();
+    }
+    const done = { ...ended, flags: { ...ended.flags, 'tutorial.firstUpgrade': true } };
     m = mount({ save: done, shell: true });
-    expect(m.q('[data-testid="unlock-ladder"]')).not.toBeNull();
-    expect(m.q('[data-testid="unlock-campaign"]')).toBeNull();
+    const moment = m.q('[data-testid="unlock-ladder"]');
+    expect(moment).not.toBeNull();
+    expect(moment!.getAttribute('data-also')).toBe('campaign');
+    expect(text(moment!)).toContain('Ladder and War Path');
+    expect(m.save.value.flags['ui-unlock.ladder']).toBe(true);
+    expect(m.save.value.flags['ui-unlock.campaign']).toBe(true);
     m.unmount();
+    // A save that already saw the Ladder moment gets the War Path's own.
     m = mount({ save: { ...done, flags: { ...done.flags, 'ui-unlock.ladder': true, 'ui-unlock.capsules': true } }, shell: true });
     expect(m.q('[data-testid="unlock-campaign"]')).not.toBeNull();
-    expect(text(m.q('[data-testid="unlock-campaign"]')!)).toContain('Campaign: play offline, earn cards');
+    expect(text(m.q('[data-testid="unlock-campaign"]')!)).toContain('War Path: solo battles, earn cards');
   });
 
   it('Amber and Dust info panels say they cannot be bought (A15.3)', () => {
@@ -653,9 +670,16 @@ describe('Pause', () => {
   });
 });
 
-describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
+describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', () => {
   const stone = () => m!.save.value.warPlans[m!.save.value.activePlan]!.loadouts.stone;
   const army = (): Mounted => mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+  /** The section a card sits in: 'battle' (a slot), 'free' (Available), 'locked', or ''. */
+  const sectionOf = (id: string): string => {
+    if (m!.q(`[data-testid="army-battle"] [data-card-id="${id}"]`)) return 'battle';
+    if (m!.q(`[data-testid="army-group-free"] [data-army-cell="${id}"]`)) return 'free';
+    if (m!.q(`[data-testid="army-group-locked"] [data-army-cell="${id}"]`)) return 'locked';
+    return '';
+  };
 
   it('equips with a card and Use (2 taps); a filled slot is removed from its own bar', () => {
     m = army();
@@ -671,34 +695,52 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
     m.click('[data-testid="card-use"]');
     expect(stone().units[4]).toBe('mammoth_matriarch');
     expect(m.q('[data-testid="card-actions"]')).toBeNull();
-    // Equipped state is visible on the grid card (U4).
-    expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-equipped');
+    // The card left Available and sits in the In battle band (U4).
+    expect(sectionOf('mammoth_matriarch')).toBe('battle');
+    expect(m.q('[data-testid="cand-mammoth_matriarch"]')).toBeNull();
   });
 
-  it('"This age" groups the grid: not in army, in your army, not found yet; an equip moves the card', () => {
+  it('shows three sections top to bottom: In battle, Available, Locked; an equip moves a card between them', () => {
     m = army();
-    const order = () =>
-      (m!.q('[data-testid="wp-cards"]') as FakeElement).children.map((el) => el.getAttribute('data-testid') ?? el.getAttribute('data-army-cell') ?? '');
-    const groupOf = (id: string): string => {
-      let g = '';
-      for (const x of order()) {
-        if (x.startsWith('army-group-')) g = x.slice('army-group-'.length);
-        if (x === id) return g;
-      }
-      return '';
-    };
-    expect(order()[0]).toBe('army-group-free');
-    expect(text(m.q('[data-testid="army-group-used"]')!)).toMatch(/In your army · \d+/);
-    // Every card in the Stone loadout is in the "used" group, and nothing else is.
+    const band = m.q('[data-testid="army-battle"]')!;
+    const free = m.q('[data-testid="army-group-free"]')!;
+    const locked = m.q('[data-testid="army-group-locked"]')!;
+    expect(band).not.toBeNull();
+    expect(free).not.toBeNull();
+    expect(locked).not.toBeNull();
+    // Every card in the Stone loadout is in the band and nowhere else; the pool holds the rest.
     const inArmy = [...stone().units, ...stone().turrets, stone().powers.home].filter((c): c is string => !!c);
-    for (const id of inArmy) expect(groupOf(id)).toBe('used');
-    expect(groupOf('mammoth_matriarch')).toBe('free');
+    for (const id of inArmy) expect(sectionOf(id), id).toBe('battle');
+    for (const id of inArmy) expect(m.q(`[data-army-cell="${id}"]`), id).toBeNull();
+    expect(sectionOf('mammoth_matriarch')).toBe('free');
+    // Counts per section (recognition over recall).
+    const troops = stone().units.filter((u) => !!u).length;
+    expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops}/6`);
+    expect(text(free.querySelector('.army-sec-title') as FakeElement)).toMatch(/^Available · \d+$/);
+    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(/All 17 Stone cards found!|You own \d+ of 17 Stone cards/);
     m.click('[data-testid="slot-unit-4"] .ui-card');
     m.click('[data-testid="remove-unit-4"]');
+    expect(sectionOf('drum_shaman')).toBe('free');
+    expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops - 1}/6`);
     m.click('[data-testid="cand-mammoth_matriarch"]');
     m.click('[data-testid="card-use"]');
-    expect(groupOf('mammoth_matriarch')).toBe('used');
-    expect(groupOf('drum_shaman')).toBe('free');
+    expect(sectionOf('mammoth_matriarch')).toBe('battle');
+    expect(sectionOf('drum_shaman')).toBe('free');
+  });
+
+  it('shows the cards not found yet as locked silhouettes with where they come from', () => {
+    m = mount({
+      state: 'new',
+      routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }],
+    });
+    expect(sectionOf('mammoth_matriarch')).toBe('locked');
+    expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-locked');
+    expect(text(m.q('[data-testid="src-mammoth_matriarch"]')!)).toBe('Time Capsules');
+    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(/You own \d+ of 17 Stone cards/);
+    // A locked card says so and offers Info; it cannot be used.
+    m.click('[data-testid="cand-mammoth_matriarch"]');
+    expect(m.q('[data-testid="card-use"]')).toBeNull();
+    expect(text(m.q('[data-testid="card-actions"]')!)).toContain('Not found yet');
   });
 
   it('tap-tap both ways: a selected card goes into the tapped slot, a selected slot takes the tapped card', () => {
@@ -707,17 +749,20 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
     // The slots it fits light up green (U5).
     expect(m.q('[data-drop="unit-0"]')!.getAttribute('class')).toContain('is-drop-valid');
     expect(m.q('[data-drop="turret-0"]')!.getAttribute('class')).not.toContain('is-drop-valid');
+    const was = stone().units[0]!;
     m.click('[data-testid="slot-unit-0"] .ui-card');
     expect(stone().units[0]).toBe('mammoth_matriarch');
-    // Select a slot first: the grid narrows to what fits, and the tapped card goes in.
+    // The card it replaced goes back to Available.
+    expect(sectionOf(was)).toBe('free');
+    // Select a slot first: the pool narrows to what fits, and the tapped card goes in.
     m.click('[data-testid="slot-turret-1"] .ui-card');
     expect(m.q('[data-testid="chip-slot"]')).not.toBeNull();
     expect(m.q('[data-testid="cand-bonker"]')).toBeNull();
     m.click('[data-testid="cand-log_roller"]');
     expect(stone().turrets[1]).toBe('log_roller');
-    // Picking a card that is already in the army moves it: never a duplicate.
+    // Moving a card inside the band swaps two slots: never a duplicate.
+    m.click('[data-testid="slot-unit-0"] .ui-card');
     m.click('[data-testid="slot-unit-5"] .ui-card');
-    m.click('[data-testid="cand-mammoth_matriarch"]');
     expect(stone().units[5]).toBe('mammoth_matriarch');
     expect(stone().units.filter((u) => u === 'mammoth_matriarch')).toHaveLength(1);
   });
@@ -736,20 +781,6 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
     m.click('[data-testid="army-undo"]');
     expect(stone()).toEqual(before);
     expect(m.q('[data-testid="army-undo"]')!.getAttribute('aria-disabled')).toBe('true');
-  });
-
-  it('a card that cannot be used here says why instead of failing (4.2)', () => {
-    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
-    m.click('[data-testid="cand-mammoth_matriarch"]');
-    expect(m.q('[data-testid="card-use"]')).toBeNull();
-    expect(text(m.q('[data-testid="card-actions"]')!)).toContain('Not found yet');
-    m.unmount();
-    m = army();
-    flush(() => (m!.qa('[data-testid="army-view"] [role="radio"]')[1] as FakeElement).click());
-    m.click('[data-testid="cand-hoplite"]');
-    m.click('[data-testid="card-use"]');
-    expect(text(m.q('[data-testid="card-use-reason"]')!)).toBe('Bronze card: switch to Bronze');
-    expect(stone().units).not.toContain('hoplite');
   });
 
   it('shows advisor warnings for the selected age and marks ages with issues', () => {
@@ -802,29 +833,28 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
 
   it('Info opens Card detail; Upgrade opens it with the upgrade already armed', () => {
     m = army();
-    m.click('[data-testid="cand-sabertooth"]');
+    // An owned Stone card in Available whose copies are ready for the next level.
+    const ready = Array.from(m.qa('[data-testid="army-group-free"] [data-army-cell]'))
+      .map((el) => el.getAttribute('data-army-cell')!)
+      .find((id) => m!.q(`[data-army-cell="${id}"] .ui-card.is-ready`));
+    expect(ready).toBeTruthy();
+    m.click(`[data-testid="cand-${ready}"]`);
     m.click('[data-testid="card-upgrade"]');
-    expect(m.router.current.value).toEqual({ id: 'cardDetail', card: 'sabertooth', upgrade: true });
+    expect(m.router.current.value).toEqual({ id: 'cardDetail', card: ready, upgrade: true });
     expect(text(m.q('[data-testid="card-upgrade-btn"]')!)).toContain('Confirm');
     flush(() => m!.router.back());
-    m.click('[data-testid="cand-bonker"]');
-    m.click('[data-testid="card-info"]');
-    expect(m.router.current.value).toEqual({ id: 'cardDetail', card: 'bonker' });
+    // Info from a slot in the band.
+    const first = stone().units[0]!;
+    m.click('[data-testid="slot-unit-0"] .ui-card');
+    m.click('[data-testid="slot-info"]');
+    expect(m.router.current.value).toEqual({ id: 'cardDetail', card: first });
   });
 
-  it('filters by class (7 classes plus Turret and Power) and shows the album with completion', () => {
+  it('opens the Card Album with its completion count', () => {
     m = army();
-    const all = m.qa('[data-testid="wp-cards"] [data-army-cell]').length;
-    m.click('[data-testid="army-filter"]');
-    expect(m.qa('[data-testid="army-filter-sheet"] .army-fchip')).toHaveLength(9);
-    m.click('[data-testid="filter-turret"]');
-    const turrets = m.qa('[data-testid="wp-cards"] [data-army-cell]').length;
-    expect(turrets).toBeGreaterThan(0);
-    expect(turrets).toBeLessThan(all);
-    expect(text(m.q('[data-testid="army-filter"]')!)).toContain('1');
-    flush(() => (m!.qa('[data-testid="army-view"] [role="radio"]')[1] as FakeElement).click());
-    expect(m.qa('[data-testid="wp-cards"] [data-army-cell]').length).toBe(content.order.turrets.length);
-    expect(text(m.q('[data-testid="army-view"]')!)).toMatch(/All cards \d+\/\d+/);
+    expect(text(m.q('[data-testid="army-album"]')!)).toMatch(/Card Album \d+\/\d+/);
+    m.click('[data-testid="army-album"]');
+    expect(m.router.current.value).toEqual({ id: 'collection' });
   });
 
   it('shows only reached ages and says how the rest unlock', () => {
@@ -837,15 +867,38 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6)', () => {
 });
 
 describe('Collection and card detail', () => {
-  it('filters the grid', () => {
+  it('the Card Album lists every card by age, numbered, and filters by Have / Missing, rarity and class', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'collection' }] });
-    const all = m.qa('[data-testid="col-grid"] .ui-card').length;
-    expect(all).toBe(136);
-    const legendary = m.q('[data-testid="filter-rarity"] [role="radio"]:not([aria-checked="true"])');
-    expect(legendary).not.toBeNull();
-    const radios = m.qa('[data-testid="filter-rarity"] [role="radio"]');
-    flush(() => radios[4]!.click());
-    expect(m.qa('[data-testid="col-grid"] .ui-card').length).toBe(8);
+    const cards = () => m!.qa('[data-testid="dex"] .dex-tile').length;
+    expect(cards()).toBe(136);
+    expect(m.qa('[data-testid="dex"] .dex-age')).toHaveLength(content.order.ages.length);
+    expect(text(m.q('[data-testid="dex-bonker"] .dex-tile__no')!)).toBe('No. 001');
+    const missing = m.qa('[data-testid="dex"] .dex-tile.is-missing').length;
+    expect(missing).toBeGreaterThan(0);
+    expect(text(m.q('[data-testid="dex-total"]')!)).toContain(`${136 - missing}/136 found`);
+    // Missing only: every tile left is a "?" silhouette with its source.
+    flush(() => (m!.qa('[data-testid="dex-own"] [role="radio"]')[2] as FakeElement).click());
+    expect(cards()).toBe(missing);
+    expect(m.qa('[data-testid="dex"] .dex-tile__src').length).toBe(missing);
+    // Every card again, then Legendary only (the Filters sheet).
+    flush(() => (m!.qa('[data-testid="dex-own"] [role="radio"]')[0] as FakeElement).click());
+    m.click('[data-testid="dex-filters"]');
+    flush(() => (m!.qa('[data-testid="dex-rarity"] [role="radio"]')[4] as FakeElement).click());
+    expect(cards()).toBe(8);
+    m.click('[data-testid="dex-filter-clear"]');
+    m.click('[data-testid="dex-class-turret"]');
+    expect(cards()).toBe(content.order.turrets.length);
+  });
+
+  it('the Card Album shows each age with its completion and a jump chip', () => {
+    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'collection' }] });
+    for (const age of content.order.ages) {
+      expect(m.q(`[data-testid="dex-age-${age}"]`), age).not.toBeNull();
+      expect(text(m.q(`[data-testid="dex-count-${age}"]`)!)).toMatch(/\d+\/17/);
+    expect(m.q(`[data-testid="dex-chip-${age}"]`), age).not.toBeNull();
+    }
+    expect(m.q('[data-testid="dex-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-missing');
+    expect(text(m.q('[data-testid="dex-src-mammoth_matriarch"]')!)).toBe('Time Capsules');
   });
 
   it('shows silhouettes for unowned cards', () => {

@@ -227,7 +227,8 @@
         "daily": "Daily Challenge: new every day",
         "open": "Open",
         "new": "Unlocked!",
-        "campaign": "Campaign: play offline, earn cards"
+        "campaign": "War Path: solo battles, earn cards",
+        "ladderCampaign": "Ladder and War Path: climb arenas or play solo"
       },
       "tryEasy": "Try Easy",
       "resultStars": "Level stars",

@@ -11,7 +11,7 @@ import type { AgeId, BaseEmoteId, CosmeticLoadout } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
-import { BaseLook, CosmeticImage } from '../../components/cosmeticArt';
+import { BackdropLook, BaseLook, CosmeticImage } from '../../components/cosmeticArt';
 import { CheckIcon, DustIcon, LockIcon, RARITY_COLOR } from '../../components/icons';
 import { AgePicker } from '../../components/Tabs';
 import { EmoteGlyph } from '../../hud/icons';
@@ -86,6 +86,8 @@ export function ItemTile(p: {
   /** The owned state labels (default "Equipped" / "Equip"). */
   onLabel?: string;
   pickLabel?: string;
+  /** Called on every tap, owned or not: try the item on in the preview (ui-plan 4.5, MR-60). */
+  onPreview?: () => void;
 }) {
   const { save, content, t, services } = useUi();
   const act = useAct();
@@ -99,7 +101,7 @@ export function ItemTile(p: {
   const rarity = p.item.rarity;
   return (
     <div
-      class={`cos-tile cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}`}
+      class={`cos-tile cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}${p.onPreview ? ' is-previewable' : ''}`}
       style={{ '--rar': RARITY_COLOR[rarity] }}
       data-testid={`item-${key}`}
     >
@@ -107,9 +109,10 @@ export function ItemTile(p: {
         type="button"
         class="cos-tile__hit"
         aria-pressed={p.on}
-        aria-disabled={have ? undefined : 'true'}
-        aria-label={`${t(p.item.nameKey)}. ${have ? (p.on ? t('cosmetic.ui.equipped') : (p.pickLabel ?? t('cosmetic.ui.equip'))) : t(hint.key, hint.params)}`}
+        aria-disabled={have || p.onPreview ? undefined : 'true'}
+        aria-label={`${t(p.item.nameKey)}. ${have ? (p.on ? t('cosmetic.ui.equipped') : (p.pickLabel ?? t('cosmetic.ui.equip'))) : `${p.onPreview ? `${t('cosmetic.ui.tryOn')}. ` : ''}${t(hint.key, hint.params)}`}`}
         onClick={() => {
+          p.onPreview?.();
           if (have) p.onPick();
         }}
       >
@@ -287,6 +290,88 @@ export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
         ))}
       </div>
       {p.extra ? p.extra(age) : null}
+    </MockLayout>
+  );
+}
+
+/**
+ * Battle backdrops (A18.9.4 "Backdrops", owner request 2026-09-30): one skin for your half of the
+ * battlefield in every age. The preview is the lane's own painting of your half with the theme's
+ * weather moving over it and your base in front; the age chips switch which age it shows. Tapping any
+ * tile tries it on (locked ones too: seeing what you can earn is honest and motivating); an owned one
+ * is equipped at once with Undo.
+ */
+export function BackdropsPanel() {
+  const { save, content, t, services } = useUi();
+  const act = useAct();
+  const now = useCurrentAge();
+  const [age, setAge] = useState<AgeId>(now);
+  const eq = equippedOf(save.value, content);
+  const cur = eq.backdrop ?? null;
+  const [tryOn, setTryOn] = useState<string | null | undefined>(undefined);
+  const shown = tryOn !== undefined ? tryOn : cur;
+  const reduce = save.value.settings.reduceMotion;
+  const items = ownedFirst(save.value, content, itemsOf(content, 'backdrop'));
+  const shownItem = shown ? items.find((x) => itemKey(x) === shown) : undefined;
+  const trying = shown !== cur;
+  const withUndo = useEquipWithUndo();
+  const mock = (
+    <figure class={`cos-bdmock${reduce ? ' is-still' : ''}`} data-testid="backdrop-mock" aria-label={t('cosmetic.ui.backdropPreview', { age: t(ageNameKey(age)) })}>
+      <span class="cos-bdmock__stage" key={`${age}|${shown ?? ''}`}>
+        <BackdropLook skin={shown} age={age} animate={!reduce} testid="backdrop-look" />
+      </span>
+      <span class="cos-bdmock__base" aria-hidden="true">
+        <BaseLook age={age} skin={eq.baseSkins[age] ?? null} />
+      </span>
+      <figcaption class="cos-mock__caption">{t('cosmetic.ui.backdropPreview', { age: t(ageNameKey(age)) })}</figcaption>
+      <span class={`cos-bdmock__name${trying ? ' is-trying' : ''}`} data-testid="backdrop-name">
+        {shownItem ? t(shownItem.nameKey) : t('cosmetic.ui.backdropClassic')}
+        {trying ? <small data-tag="">{t('cosmetic.ui.tryingOn')}</small> : null}
+      </span>
+    </figure>
+  );
+  return (
+    <MockLayout testid="cust-backdrops" mock={mock}>
+      <div class="cos-head">
+        <h3 class="cust-h">{t('cosmetic.ui.backdrop')}</h3>
+        <Found collection="backdrop" />
+      </div>
+      <p class="cust-hint">{t('cosmetic.ui.backdropHint')}</p>
+      <AgePicker ages={content.order.ages} value={age} onChange={setAge} compact testid="cust-bd-age" idPrefix="cust-bd-age" />
+      <div class="cos-grid cos-grid--backdrops">
+        <button
+          type="button"
+          class={`cos-tile cos-tile--plain cos-tile--backdrop${cur === null ? ' is-on' : ''}`}
+          aria-pressed={cur === null}
+          data-testid="backdrop-classic"
+          onClick={() => {
+            setTryOn(undefined);
+            if (cur !== null) act(services.equipCosmetic({ slot: 'backdrop', key: null }));
+          }}
+        >
+          <span class="cos-tile__art">
+            <BackdropLook skin={null} age={age} animate={false} />
+          </span>
+          <span class="cos-tile__name">{t('cosmetic.ui.backdropClassic')}</span>
+          {cur === null ? (
+            <span class="cos-tile__on" aria-hidden="true">
+              <CheckIcon size={16} />
+            </span>
+          ) : null}
+        </button>
+        {items.map((x) => (
+          <ItemTile
+            key={x.id}
+            item={x}
+            on={cur === itemKey(x)}
+            onPreview={() => setTryOn(owns(save.value, content, itemKey(x)) ? undefined : itemKey(x))}
+            onPick={() => {
+              if (cur !== itemKey(x)) withUndo({ slot: 'backdrop', key: itemKey(x) }, { slot: 'backdrop', key: cur }, t(x.nameKey));
+            }}
+            art={<BackdropLook skin={itemKey(x)} age={age} animate={false} />}
+          />
+        ))}
+      </div>
     </MockLayout>
   );
 }
@@ -512,7 +597,7 @@ export function CompletionStrip() {
   const { t } = useUi();
   return (
     <div class="cos-strip" data-testid="cosmetic-completion" aria-label={t('cosmetic.ui.collectionsTitle')}>
-      {(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration'] as const).map((c) => (
+      {(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'] as const).map((c) => (
         <Found key={c} collection={c} label />
       ))}
     </div>

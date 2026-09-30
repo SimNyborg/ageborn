@@ -4,13 +4,24 @@ Look (A11): the tallest and leanest of the cave folk, darker skin, a swept-back 
 with two big team feathers (follow-through), ochre cheek stripes (accent), a bone tooth
 necklace, a team sash across the chest and a team loincloth. The oversized spear (about his
 own height, polearm = reach) is held low and forward with both hands, flint head up front
-so the role reads at a glance. The attack is a lunging two-handed thrust: draw back, coil,
-held extreme, a smeared lunge, a held full extension at impact, and a recovery.
+so the role reads at a glance. Bone earrings, fur leg wraps and a quiver of spare flint
+points on his back; two cream feathers hang from the spear binding.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
+  idle    peers out under his hand, weight shift, blink
+  walk    sneak: low, long strides, a tip-toe up frame
+  attack  LEAPING FISH-STAB: coils, raises the spear overhead point-down, hops in and stabs
+          down and forward (streak smear, dust, impact lines); the spear quivers, then he
+          pulls it out
+  hit     light;  die  D1 fling and spin, X eyes
 """
-from ageborn_art import fx
-from ageborn_art.anim import Clip, merge, pick, squash
+import math
+
+from ageborn_art import face as F
+from ageborn_art import moves as M
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
-from ageborn_art.rigs_stone import CaveBody, biped_hit, biped_idle, biped_walk
+from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "spear_hunter"
 NAME = "Spear Hunter"
@@ -18,6 +29,7 @@ HEIGHT_LU = 72
 CANVAS = (330, 224)
 FEET = (130, 200)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 34)}
+NO_RETIME = True
 
 SKIN = "#A8876F"
 HAIR = "#3A302A"
@@ -38,7 +50,7 @@ SPEAR_BACK = 28.0
 
 
 def build(rig):
-    global ARM_R, ARM_L, SMEAR
+    global ARM_R, ARM_L, TIPSPEC
     body = CaveBody(rig, SKIN, FUR, hip_z=18.5, knee_z=10.0, ankle_z=4.2, waist_z=19.5,
                     shoulder_z=39.0, neck_z=41.0, hip_y=5.4, shoulder_y=11.2,
                     elbow=(1.5, 31.0), wrist=(3.8, 24.0), leg_r=(4.2, 3.6, 3.2),
@@ -68,6 +80,13 @@ def build(rig):
     g = Geo().blob((2.2, 0, 52.0), (9.4, 9.2, 10.6), p=2.3)
     g.blob((6.0, 0, 45.6), (6.8, 7.6, 5.0), p=2.3)
     g.blob((12.2, -0.4, 50.0), (2.8, 2.0, 3.0), p=2.0, rot=(0, -20, 0))   # nose
+    eyes = Geo()
+    for y in (-4.2, 3.6):
+        eyes.blob((9.8, y, 52.2), (3.5, 3.4, 4.1))
+    pup = Geo()
+    for y in (-4.2, 3.6):
+        pup.blob((12.6, y - 0.3, 52.0), (1.3, 2.2, 2.4))
+    face = F.Face(rig, "head", [g, eyes, pup])
     rig.part("head", g, SKIN)
     g = Geo().blob((-2.0, 0, 58.6), (9.6, 9.8, 5.2), p=2.2, rot=(0, -12, 0))  # hair cap
     g.blob((-7.8, 0, 52.5), (5.8, 9.2, 8.8), p=2.2)
@@ -83,27 +102,28 @@ def build(rig):
     rig.part("feathers", g, team=True, outline=0.8)
     g = Geo().capsule((-4.0, 1.5, 59.5), (-6.0, 1.5, 64.5), 0.7).capsule((-4.0, 1.5, 59.5), (-9.0, 1.5, 63.0), 0.7)
     rig.part("feathers", g, BONE, outline=0.6)
-    # stern brow, eyes, ochre cheek stripes, tight mouth
-    g = Geo().capsule((9.0, -7.4, 56.6), (12.2, -1.2, 55.0), 1.7, 1.4)
-    g.capsule((12.2, 1.2, 55.0), (9.8, 6.4, 56.6), 1.4, 1.7)
-    rig.part("head", g, HAIR, finish="hair", outline=0.6)
-    for y in (-4.0, 3.6):
-        g = Geo().blob((10.0, y, 52.2), (2.8, 2.8, 3.3))
-        rig.part("head", g, EYE, highlight=False)
-        g = Geo().blob((12.4, y - 0.3, 52.0), (1.1, 1.8, 2.0))
-        rig.part("head", g, PUPIL, outline=0)
+    # stern brow, eyes (face kit), ochre cheek stripes, tight mouth, bone earring
+    rig.joint("brow", "head", (11.0, 0, 55.6))
+    g = Geo().capsule((9.0, -7.6, 57.0), (12.4, -1.2, 55.2), 1.9, 1.6)
+    g.capsule((12.4, 1.2, 55.2), (9.8, 6.4, 56.8), 1.6, 1.9)
+    rig.part("brow", g, HAIR, finish="hair", outline=0.6)
+    rig.part("head", eyes, EYE, highlight=False)
+    rig.joint("pupils", "head", (12.6, 0, 52.0))
+    rig.part("pupils", pup, PUPIL, outline=0)
     g = Geo()
-    for z in (47.6, 45.2):
-        g.capsule((6.4, -8.9, z + 0.4), (9.4, -7.6, z), 0.8)
-    rig.part("head", g, OCHRE, outline=0)
+    for z in (47.8, 45.0):
+        c = face.hit(7.6, z)
+        face.stroke(g, c, [(-2.2, 0.5), (2.0, -0.3)], 1.5, 0.4)
+    rig.part("head", g, OCHRE, highlight=False, outline=0)
+    g = Geo().capsule((1.0, -9.4, 49.0), (1.4, -9.8, 44.6), 1.0).sphere((1.4, -9.8, 43.6), 1.5, cuts=2)
+    rig.part("head", g, BONE, outline=0.5)
     rig.joint("mouth", "head", (11.0, 0, 45.2))
-    g = Geo().blob((11.1, -0.6, 45.2), (1.0, 3.0, 0.8), p=2.4)
+    c = face.hit(11.4, 45.0)
+    g = Geo()
+    face.decal(g, c, [(-2.0, 0.5), (1.8, 0.7), (1.9, -0.3), (-1.9, -0.5)], 0.4)
     rig.part("mouth", g, MOUTH, outline=0, highlight=False)
-    rig.joint("yell", "head", (10.8, 0, 44.8), hidden=True)
-    g = Geo().blob((10.8, -0.4, 44.8), (1.8, 3.0, 2.4), p=2.2)
-    rig.part("yell", g, MOUTH, outline=0, highlight=False)
-    g = Geo().blob((11.9, -1.3, 46.4), (0.6, 0.9, 0.7), p=3.0).blob((11.9, 0.9, 46.4), (0.6, 0.9, 0.7), p=3.0)
-    rig.part("yell", g, TOOTH, outline=0, highlight=False)
+    face.eye_marks([(12.2, 52.2)], 3.5, SKIN)
+    face.mouths((11.2, 44.8), 5.4)
 
     # team armband on the near arm, fur pad on the far shoulder
     g = Geo().capsule((0.6, -11.6, 35.0), (1.1, -11.6, 31.6), 4.0, 3.8)
@@ -140,15 +160,34 @@ def build(rig):
     rig.part("spear", g, team=True, outline=0.8)
     tip = (x0 + SPEAR_FWD + 2.0, y0, z0)
     rig.track("spearTip", "spear", tip)
-    SMEAR = {"joint": "spear", "inner": (x0 + SPEAR_FWD - 16.0, y0, z0), "outer": tip,
+    TIPSPEC = {"joint": "spear", "inner": (x0 + SPEAR_FWD - 16.0, y0, z0), "outer": tip,
              "color": FLINT_HI, "taper": 0.3, "start": 0.2, "behind": 4.0}
+    # two cream feathers hanging from the head binding (they flutter)
+    rig.secondary("tassel", "spear", (x0 + SPEAR_FWD - 10.0, y0 - 2.0, z0 - 1.0),
+                  (x0 + SPEAR_FWD - 12.0, y0 - 2.0, z0 - 11.0), max_deg=30, gain=1.4)
+    fx0 = x0 + SPEAR_FWD - 10.0
+    g = Geo().blob((fx0 - 0.8, y0 - 2.6, z0 - 6.0), (1.9, 0.8, 4.6), p=2.2, rot=(0, 10, 0))
+    g.blob((fx0 + 1.4, y0 - 3.4, z0 - 5.0), (1.7, 0.8, 4.0), p=2.2, rot=(0, -12, 0))
+    rig.part("tassel", g, BONE, outline=0.6)
+    # team-dyed leg wraps
+    for side, y in (("r", -5.4), ("l", 5.4)):
+        g = Geo().capsule((0.7, y, 8.4), (1.0, y, 5.2), 4.2, 4.0)
+        rig.part(f"shin_{side}", g, team=True, outline=0.7)
+    # a quiver of spare flint points on his back
+    g = Geo().capsule((-8.5, 3.0, 26.0), (-12.5, 3.0, 42.0), 3.4, 3.8)
+    rig.part("torso", g, "#7A5E48")
+    g = Geo()
+    for dx, dz in ((0.0, 0.0), (-2.6, -1.0), (2.2, -1.4)):
+        g.lathe([(0, 0), (1.8, 1.0), (2.1, 3.2), (0, 6.4)], (-12.8 + dx, 3.0, 42.6 + dz),
+                (-14.0 + dx, 3.0, 49.0 + dz), segs=8, squash=(1.0, 0.5))
+    rig.part("torso", g, FLINT, finish="gloss", outline=0.6)
     rig.track("_foot", "shin_r", (2.9, -5.4, 0.5))
     ARM_R = body.arm("r", "spear", tip)
     ARM_L = body.arm("l")
 
 
 ARM_R = ARM_L = None
-SMEAR = None  # set in build()
+TIPSPEC = None  # set in build() (the v1 ribbon smear is replaced by smear2 overlays)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -168,70 +207,111 @@ def stance():
 
 
 def _idle(f):
-    def extra(c, lag):
-        return {"arm_r": {"r": 2 * lag}, "spear": {"r": -3 * lag}, "arm_l": {"r": 2 * lag}}
-    return biped_idle(f, stance(), extra=extra)
+    peer = [0.0, 0.6, 1.0, 1.0, 0.5, 0.0][f]
+
+    def extra(ctx):
+        return merge(off_arm(-28 + 118 * peer, 4 + 150 * peer), {
+            "arm_r": {"r": 2 * ctx["lag"]}, "spear": {"r": -3 * ctx["lag"]},
+            "head": {"r": -4 * peer}, "brow": {"z": -0.6 * peer}, "pupils": {"x": 0.5 * peer}})
+    base = {k: v for k, v in stance().items() if k not in ("arm_l", "fore_l")}
+    return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
 
 
 def _walk(f):
-    import math
+    def extra(ctx):
+        return {"hips": {"z": -2.2}, "spear": {"r": 4 * math.cos(ctx["lag_p"])},
+                "arm_l": {"r": -8 * math.cos(ctx["p"])}}
+    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=40.0, knee=70.0, lift_lu=6.0, bob_pct=0.045,
+                     lean=-12.0, arm=10.0, fore=6.0, arms=("r",), extra=extra)
 
-    def extra(p, lag_p, bob, bob_lag):
-        return {"arm_r": {"r": -6 * math.cos(p)}, "spear": {"r": 3 * math.cos(lag_p)},
-                "arm_l": {"r": 8 * math.cos(p)}}
-    return biped_walk(f, stance(), lean=-7.0, bob_k=0.9, thigh=28.0, extra=extra)
+
+# 11 unique frames, moves.SMALL_MELEE_MS
+#         read  dip   wind  HOLD  hop  lead   IMP  quiver quiver pull settle
+S_A = [-76, -120, 60, 100, 90, 30, -20, -18, -20, -60, -70]
+S_B = [-10, -60, 100, 95, 75, 12, -26, -24, -26, -12, -8]
+S_C = [12, 10, -10, -55, -50, -40, -36, -30, -41, 0, 12]
+S_T = [-4, 6, 4, 8, 0, -14, -24, -20, -22, -10, -5]
+S_Q = [-0.03, -0.12, 0.06, 0.11, 0.08, 0.02, -0.18, -0.06, -0.08, 0.0, 0.0]
+S_X = [-0.5, -2.0, -2.5, -2.0, 5.0, 9.0, 12.0, 11.5, 11.0, 6.0, 1.5]
+S_Z = [0.0, -2.8, 0.8, 2.4, 8.5, 4.5, -2.6, -1.2, -1.6, -0.4, 0.0]
+S_H = [-2, 2, -6, -12, -10, 4, 12, 8, 8, 2, 0]
+S_THR = [0, -10, -4, -6, 22, 30, 34, 28, 28, 10, 2]
+S_SHR = [0, 8, 0, 0, -34, -24, -28, -22, -24, -6, 0]
+S_THL = [4, 10, 4, 12, -8, -16, -22, -18, -18, -6, 0]
+S_SHL = [-4, -12, -2, -14, -28, -10, -8, -6, -6, -2, 0]
+S_OA = [-28, -80, 50, 100, 85, 25, -10, -10, -12, -30, -28]
+S_OB = [4, -30, 90, 110, 80, 10, -14, -12, -14, 2, 4]
 
 
-def _attack(f):
-    # 0-1 draw back and coil (squash), 2 held extreme (spear far back, weight on the back
-    # foot), 3 smear (lunging forward), 4 held impact: full extension, spear level, front
-    # knee bent, squash 0.85/1.15, yell; 5-7 recovery. Timing: fx.MELEE_MS.
-    a = pick(f, [-110, -150, -165, -70, -10, -16, -40, -66])
-    b = pick(f, [-60, 200, 185, -20, 4, 0, -6, -8])
-    c = pick(f, [10, 8, 6, 2, -2, 0, 6, 12])
-    tr = pick(f, [4, 8, 12, -12, -26, -22, -12, -6])
-    sq = pick(f, [-0.05, -0.10, 0.06, 0.05, -0.15, -0.08, -0.02, 0.0])
-    pose = merge(spear_arm(a, b, c, tr), off_arm(pick(f, [-50, -70, -80, -20, 10, 4, -12, -24]),
-                                             pick(f, [-10, -24, -30, 6, 10, 8, 6, 4])), {
-        "body": dict(squash(sq), x=pick(f, [-1.5, -3.0, -4.5, 3.0, 9.0, 8.0, 4.0, 1.0])),
-        "hips": {"z": pick(f, [0, -0.8, -1.2, -0.4, -3.0, -2.2, -0.8, 0])},
-        "torso": {"r": tr},
-        "head": {"r": pick(f, [-2, -4, -6, 6, 16, 14, 8, 4])},
-        "thigh_r": {"r": pick(f, [0, -8, -12, 18, 40, 34, 16, 4])},
-        "shin_r": {"r": pick(f, [0, 0, 0, -16, -34, -30, -12, -2])},
-        "thigh_l": {"r": pick(f, [6, 14, 20, -10, -22, -18, -8, 0])},
-        "shin_l": {"r": pick(f, [-6, -12, -16, -4, -8, -6, -2, 0])},
-    })
-    if f == 3:
-        pose["spear"]["sx"] = 1.08  # smear frame: the spear stretches along the thrust
-    if f in (3, 4):
-        pose.update({"mouth": {"hide": True}, "yell": {"show": True}})
+def _attack_pose(f):
+    pose = merge(spear_arm(S_A[f], S_B[f], S_C[f], S_T[f]), off_arm(S_OA[f], S_OB[f]), {
+        "torso": {"r": S_T[f]}, "head": {"r": S_H[f]},
+        "thigh_r": {"r": S_THR[f]}, "shin_r": {"r": S_SHR[f]},
+        "thigh_l": {"r": S_THL[f]}, "shin_l": {"r": S_SHL[f]},
+    }, M.body_about((0, 0, 22), x=S_X[f], z=S_Z[f], q=S_Q[f]))
+    if f == 3:   # on his toes
+        pose = merge(pose, {"shin_r": {"r": -12}, "shin_l": {"r": -12}})
+    if f in (4, 5):
+        pose["spear"]["sx"] = 1.1
+    if f in (7, 8):
+        pose["spear"]["sz"] = 1.0 + (0.06 if f == 7 else -0.05)
+    if f in (1, 2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    elif f in (4, 5, 6, 7):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
     return pose
 
 
-def _hit(f):
-    return biped_hit(f, stance(), extra=lambda a: {"arm_r": {"r": 14 * a}, "spear": {"r": 10 * a}})
+def _attack_clip():
+    tip = TIPSPEC["outer"]
+    ov = {
+        4: [{"kind": "streak", "joint": "spear", "point": tip, "color": FLINT_HI, "width_lu": 7.0, "from": 3}],
+        5: [{"kind": "streak", "joint": "spear", "point": tip, "color": FLINT_HI, "width_lu": 8.0}],
+        6: [{"kind": "dust", "joint": "spear", "point": tip, "ground_snap": True, "size_lu": 8.0, "puffs": 4,
+             "seed": 3},
+            {"kind": "burst", "joint": "spear", "point": tip, "r0_lu": 7.0, "r1_lu": 13.0, "n": 4, "a0": 30.0,
+             "arc": 120.0}],
+        7: [{"kind": "burst", "joint": "spear", "point": (tip[0] - 26.0, tip[1], tip[2]), "r0_lu": 3.0,
+             "r1_lu": 6.0, "n": 2, "a0": 60.0, "arc": 60.0, "color": "#FFFFFF"}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
 
 
-def _die(f):
-    pose = merge(stance(), fx.die_pose(f), {
-        "torso": {"r": pick(f, [16, 8, 4])},
-        "head": {"r": pick(f, [14, -6, -6])},
-        "arm_r": {"r": pick(f, [50, 40, 40])}, "spear": {"r": pick(f, [40, 30, 30])},
-        "arm_l": {"r": pick(f, [120, 90, 90])},
-        "thigh_r": {"r": pick(f, [25, 10, 10])}, "thigh_l": {"r": pick(f, [-10, -5, -5])},
+def _hit(k):
+    def recoil(a):
+        return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
+                "thigh_r": {"r": 22 * max(a, 0)}, "shin_r": {"r": -26 * max(a, 0)},
+                "arm_r": {"r": 12 * a}, "spear": {"r": 10 * a},
+                "arm_l": {"r": 30 * a}, "brow": {"z": 1.4 * max(a, 0)}, "feathers": {"r": 12 * a}}
+    return M.hit_light(k, stance(), recoil, face_hurt=F.expr("squeeze", "grit"))
+
+
+def _die(k):
+    flail = [0.3, 1.0, 1.0, 0.8, 0.2, 0.5, 0.1, 0.0, 0.0, 0.0][k]
+    pose = merge(stance(), M.die_d1(k, center_z=30.0, lie_z=10.0, height=HEIGHT_LU), {
+        "torso": {"r": 10 * flail}, "head": {"r": 14 * flail - 6},
+        "arm_r": {"r": 60 * flail + 20}, "spear": {"r": 40 * flail},
+        "arm_l": {"r": 110 * flail + 30}, "fore_l": {"r": 40 * flail},
+        "thigh_r": {"r": 40 * flail + 20}, "shin_r": {"r": -30 * flail},
+        "thigh_l": {"r": -20 * flail + 10}, "shin_l": {"r": -20 * flail},
     })
-    if f == 0:
-        pose.update({"mouth": {"hide": True}, "yell": {"show": True}})
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif k < 4:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.8}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=fx.MELEE_IMPACT, smear=fx.MELEE_SMEAR,
-             durations=fx.MELEE_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        # 6 unique idle poses in the same 920 ms (atlas budget)
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl)
