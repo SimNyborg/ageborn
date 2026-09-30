@@ -2742,7 +2742,7 @@
 @container hud (max-height: 499px) {
   .hud-foe-ring-core {
     inset: 3px;
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
