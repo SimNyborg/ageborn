@@ -1,193 +1,327 @@
 """Grenadier: Gunpowder Age anti-armor (DESIGN A5.4). Lobbed bomb (proj.lob), splash, ~74 lu.
 
-Look (A11, Gunpowder palette): a burly grenadier with a big handlebar moustache, a tall
-mitre cap (team front plate, brass badge, cream edge, black back), a team coat with cream
-cuffs and a cream crossbelt, a leather grenade pouch on the hip, cream breeches and black
-gaiters. He holds an oversized black iron bomb with a brass fuse cap and a sparking fuse,
-so 'explosive' reads at 56 px. The attack lights the fuse, winds far back with a held
-extreme, and throws overhand; the bomb leaves the hand on the release frame (the game draws
-proj.lob from the exported per-frame `muzzle` anchor), and a fresh bomb comes out of the
-pouch on the last frame.
+Look (A11, Gunpowder palette): a burly grenadier with a big waxed handlebar moustache, a tall
+mitre cap (a team front plate with a cream anchor and a brass rim, a black back, a cream tuft),
+a team coat with cream cuffs, a cream crossbelt, brass buttons, a leather bomb bag with a brass
+flap badge on the near hip, cream breeches and black gaiters. He holds an oversized black iron
+bomb with a brass fuse cap in the near hand and a smouldering match cord in the far hand, so
+'explosive' reads at 56 px.
+
+Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
+  idle    blows on the match cord (it glows brighter, a wisp of smoke), weight shift, blink
+  walk    waddle: side sway and short steps, the bomb carried in front, the match swinging
+  attack  LIGHT THE FUSE AND BIG LOB: brings the bomb up and touches the match to the fuse (a
+          spark burst), grins at the fizzing fuse, then rears back with the bomb cocked behind
+          his head and the front knee up (the held extreme), whips it over (a smear) and lobs
+          it high (the bomb leaves `muzzle` on the release frame), follows through, then ducks
+          and covers his ears with his eyes squeezed shut, and pulls a new bomb from the bag
+  hit     light: head snaps back, the mitre cap lifts, eyes squeezed
+  die     D1 fling and spin: spins back, the mitre cap pops off, lands on his back, X eyes
 """
-from ageborn_art import fx
+import math
+
+from ageborn_art import face as F
+from ageborn_art import kit_gunpowder as G
+from ageborn_art import kit_medieval as K
+from ageborn_art import moves as M
 from ageborn_art import rigs_gunpowder as B
-from ageborn_art.anim import Clip, merge, pick, squash
+from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "grenadier"
 NAME = "Grenadier"
 HEIGHT_LU = 76
-CANVAS = (264, 252)
-FEET = (116, 226)
+CANVAS = (276, 262)
+FEET = (122, 232)
 ANCHORS = {"head": (2, 74), "hitCenter": (0, 34), "muzzle": (18, 46)}
+NO_RETIME = True
 
 HAIR = "#5C4A3E"
 BOMB = "#34363C"
 SHOE = "#2F2B2B"
+CORD = "#8A7456"
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
-BOMB_C = (HR[0] + 2.0, HR[1] - 2.0, HR[2] + 6.4)   # bomb centre, held in the near fist
-BOMB_R = 7.2
+HL = (0.0, B.ARM_Y["l"], B.HAND_Z)
+BOMB_C = (HR[0] + 2.0, HR[1] - 2.0, HR[2] + 6.8)   # bomb centre, held in the near fist
+BOMB_R = 7.8
+CAP_C = (1.0, 0.0, 57.0)
+
+
+def _cap(rig, joint):
+    g = Geo().blob((0.0, 0, 61.0), (9.8, 10.4, 9.4), p=2.4, taper=(1.0, 0.55))
+    g.clip((0, 0, 56.2), (0, 0, -1))
+    rig.part(joint, g, B.BLACK)
+    plate = Geo().slab([(-2.0, 56.0), (13.2, 56.0), (12.0, 64.0), (8.6, 71.0), (3.6, 76.4), (-0.6, 76.6),
+                        (-2.0, 72.0)], 0.0, 17.4, rot=(0, -10, 0), origin=(5, 0, 56))
+    pf = F.Face(rig, joint, [plate])
+    rig.part(joint, plate, team=True)
+    g = G.anchor(pf, Geo(), K.scr(pf, (11.0, -8.7, 63.5)), s=0.95)
+    rig.part(joint, g, B.CREAM, highlight=False, outline=0)
+    g = Geo().capsule((-1.0, -8.9, 56.6), (13.4, -8.9, 56.6), 1.3).capsule((13.4, -8.9, 56.6), (13.4, 8.6, 56.6), 1.3)
+    rig.part(joint, g, B.BRASS, finish="metal", outline=0.6)
+    g = Geo().sphere((0.6, 0, 77.0), 2.8, cuts=3)   # tuft
+    rig.part(joint, g, B.CREAM, finish="hair", outline=0.6)
 
 
 def build(rig):
     B.skeleton(rig)
     B.legs(rig, B.CREAM, SHOE, stocking=B.BLACK, thigh_r=5.0)
 
-    # torso: broad team coat, cream crossbelt, brass buttons, grenade pouch
-    g = Geo().blob((0, 0, 28.0), (11.8, 10.8, 12.2), p=2.4, taper=(1.1, 0.96))
-    g.blob((0, 0, 18.0), (11.2, 10.4, 5.0), p=2.6)
+    # torso: broad team coat, cream crossbelt, brass buttons, leather belt
+    g = Geo().blob((0, 0, 28.0), (12.0, 11.0, 12.2), p=2.4, taper=(1.1, 0.96))
+    g.blob((0, 0, 18.0), (11.4, 10.6, 5.0), p=2.6)
     rig.part("torso", g, team=True)
-    g = Geo().blob((5.2, -1.0, 26.5), (7.0, 5.0, 10.4), p=2.6, taper=(1.08, 0.72))
-    g.clip((8.0, 0, 0), (-1, 0, 0))
-    rig.part("torso", g, B.CREAM)            # waistcoat front
-    g = Geo().blob((0.4, 0, 17.4), (11.8, 10.8, 2.2), p=3.0)
+    g = Geo().blob((0.4, 0, 17.4), (12.0, 11.0, 2.2), p=3.0)
     rig.part("torso", g, B.LEATHER)          # belt
-    g = Geo().capsule((0.5, 10.4, 38.0), (11.6, 0.0, 27.0), 2.0).capsule((11.6, 0.0, 27.0), (4.0, -11.2, 17.5), 2.0)
+    g = Geo().blob((12.2, -2.6, 17.4), (1.4, 2.4, 2.0), p=2.4)
+    rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
+    g = Geo().capsule((0.5, 10.4, 38.0), (11.8, 0.0, 27.0), 2.2).capsule((11.8, 0.0, 27.0), (4.0, -11.4, 17.5), 2.2)
     rig.part("torso", g, B.CREAM, outline=0.8)
     g = Geo()
     for z in (33.0, 28.5, 24.0):
-        g.sphere((12.4, -4.2, z), 1.1, cuts=3)
+        g.sphere((12.6, -4.4, z), 1.2, cuts=3)
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob((1.2, 0, 37.6), (7.2, 7.6, 2.4), p=2.4)
     rig.part("torso", g, B.BLACK)
-    g = Geo().blob((2.0, -11.6, 16.5), (5.2, 3.0, 4.6), p=3.0)     # grenade pouch
+    # the bomb bag on the near hip: leather satchel, a flap with a brass badge
+    g = Geo().blob((1.0, -12.4, 14.4), (6.0, 3.4, 5.6), p=3.0, taper=(1.0, 0.9))
     rig.part("hips", g, B.LEATHER)
-    g = Geo().blob((2.0, -14.4, 17.0), (2.2, 0.9, 2.2), p=2.4)
+    g = Geo().blob((1.2, -14.2, 17.4), (6.2, 1.8, 3.0), p=3.0)
+    rig.part("hips", g, "#5E4A3C")
+    g = Geo().blob((1.6, -15.8, 16.4), (1.8, 0.9, 1.8), p=2.4)
     rig.part("hips", g, B.BRASS, finish="metal", outline=0.5)
     rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=12, gain=0.9)
-    g = Geo().blob((-6.0, 0, 11.5), (5.0, 10.0, 7.6), p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
+    g = Geo().blob((-6.0, 0, 11.5), (5.2, 10.2, 7.8), p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
     rig.part("tails", g, team=True)
+    g = Geo().blob((-7.2, 0, 5.2), (3.8, 10.8, 2.2), p=2.6, rot=(0, 10, 0))
+    rig.part("tails", g, B.CREAM)
 
-    # head: big moustache, sideburns, the mitre cap
-    B.head_ball(rig, center=(2, 0, 49.0), nose=(14.0, -0.6, 47.6), nose_r=(3.8, 3.2, 3.6))
-    B.face(rig, cx=12.6, cz=50.2, brow=HAIR, eye_r=(3.3, 3.1, 4.0))
-    g = Geo().blob((13.6, -3.8, 44.2), (2.6, 4.2, 1.8), p=2.2, rot=(22, 0, 0))
-    g.blob((13.6, 2.8, 44.2), (2.6, 4.2, 1.8), p=2.2, rot=(-22, 0, 0))
-    g.capsule((13.0, -7.6, 44.8), (12.2, -9.6, 47.6), 1.4, 0.8)           # waxed curl
-    g.blob((-5.0, 0, 47.5), (5.8, 10.4, 6.4), p=2.2)
+    # head: face kit, a big waxed handlebar moustache, sideburns, the mitre cap
+    head = G.head_geos(center=(2, 0, 49.0), nose=(14.0, -0.6, 47.2), nose_r=(3.8, 3.2, 3.6))
+    hair = Geo().blob((-5.0, 0, 47.5), (5.8, 10.4, 6.4), p=2.2)
+    hair.blob((4.0, -10.0, 45.0), (3.6, 2.2, 5.0), p=2.2)       # sideburn
+    K.face2(rig, [head, hair], B.SKIN, cx=12.2, cz=50.0, eye_dy=(-4.6, 4.4),
+            eye_r=(3.8, 3.5, 4.4), brow=HAIR, mouth_dz=-8.6, mouth_x=12.8,
+            eye_at=(14.0, 50.2), mark_r=4.1)
+    rig.part("head", head, B.SKIN)
+    rig.part("head", hair, HAIR, finish="hair")
+    g = Geo().blob((13.8, -4.0, 44.0), (2.8, 4.6, 2.0), p=2.2, rot=(22, 0, 0))
+    g.blob((13.8, 3.0, 44.0), (2.8, 4.6, 2.0), p=2.2, rot=(-22, 0, 0))
+    g.capsule((13.0, -8.0, 44.6), (12.4, -10.6, 48.2), 1.6, 0.9)           # waxed curl
+    g.capsule((12.4, -10.6, 48.2), (11.0, -9.8, 50.0), 0.9, 0.6)
     rig.part("head", g, HAIR, finish="hair")
-    # mitre cap: a tall rounded front plate (team) over a black cap, brass badge, cream edge
-    g = Geo().blob((0.0, 0, 60.5), (9.6, 10.2, 9.0), p=2.4, taper=(1.0, 0.55))
-    g.clip((0, 0, 56.2), (0, 0, -1))
-    rig.part("head", g, B.BLACK)
-    g = Geo().slab([(-2.0, 56.0), (13.0, 56.0), (11.8, 64.0), (8.4, 71.0), (3.4, 76.0), (-0.6, 76.2),
-                    (-2.0, 72.0)], 0.0, 17.0, rot=(0, -10, 0), origin=(5, 0, 56))
-    rig.part("head", g, team=True)
-    g = Geo().blob((11.8, -4.4, 63.0), (1.4, 3.2, 3.6), p=2.2, rot=(0, -10, 0))
-    rig.part("head", g, B.BRASS, finish="metal", outline=0.6)
-    g = Geo().capsule((-1.0, -8.8, 56.6), (13.2, -8.8, 56.6), 1.2).capsule((13.2, -8.8, 56.6), (13.2, 8.4, 56.6), 1.2)
-    rig.part("head", g, B.CREAM, outline=0.6)
-    g = Geo().sphere((0.6, 0, 76.4), 2.4, cuts=3)   # tuft
-    rig.part("head", g, B.CREAM, finish="hair", outline=0.6)
+    rig.joint("cap", "head", CAP_C)
+    _cap(rig, "cap")
+    rig.joint("cap_loose", "root", CAP_C, hidden=True)
+    _cap(rig, "cap_loose")
 
-    # arms: team sleeves, cream cuffs
+    # arms: team sleeves, cream cuffs, gloves with thumbs
     for s in ("r", "l"):
-        B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM, r0=4.6, r1=4.1, fist=4.5)
-    for s, y in (("r", -12.6), ("l", 12.0)):
-        g = Geo().blob((0, y, 37.0), (6.0, 5.2, 4.6), p=2.4)
+        B.arm_parts(rig, s, team_sleeve=True, cuff=B.CREAM, r0=4.7, r1=4.2, fist=4.6)
+        y = B.ARM_Y[s]
+        g = Geo().blob((2.8, y - 1.4 * (1 if s == "r" else -1), B.HAND_Z + 1.0), (1.6, 1.5, 2.2), p=2.2)
+        rig.part(f"hand_{s}", g, B.SKIN, outline=0.5)
+    for s, y in (("r", -12.8), ("l", 12.2)):
+        g = Geo().blob((0, y, 37.0), (6.2, 5.4, 4.8), p=2.4)
         rig.part(f"arm_{s}", g, team=True)
 
-    # the bomb on its own joint in the near hand, with a sparking fuse
+    # the bomb on its own joint in the near hand, a brass fuse cap and a sparking fuse
     rig.joint("bomb", "hand_r", BOMB_C)
     bx, by, bz = BOMB_C
     g = Geo().sphere(BOMB_C, BOMB_R, cuts=6)
     rig.part("bomb", g, BOMB, finish="gloss", outline_hex="#50535A")
-    g = Geo().lathe([(0, 0), (2.4, 0), (2.4, 1.8), (1.6, 2.6), (0, 2.6)], (bx + 3.0, by, bz + 5.9),
-                    (bx + 4.4, by, bz + 8.8), segs=12)
+    g = Geo().blob((bx - 3.0, by - 5.4, bz + 3.4), (1.8, 1.0, 1.6), p=2.2)   # a highlight glint
+    rig.part("bomb", g, "#F4F4F0", highlight=False, outline=0)
+    g = Geo().lathe([(0, 0), (2.6, 0), (2.6, 1.9), (1.7, 2.8), (0, 2.8)], (bx + 3.2, by, bz + 6.4),
+                    (bx + 4.7, by, bz + 9.4), segs=12)
     rig.part("bomb", g, B.BRASS, finish="metal", outline=0.6)
-    g = Geo().capsule((bx + 4.2, by, bz + 8.6), (bx + 6.2, by, bz + 11.6), 0.8)
+    g = Geo().capsule((bx + 4.5, by, bz + 9.2), (bx + 6.8, by, bz + 12.4), 0.9)
     rig.part("bomb", g, B.TAN, outline=0.5)
-    rig.joint("spark", "bomb", (bx + 6.4, by, bz + 12.0))
-    g = Geo().star((bx + 6.4, by - 1.2, bz + 12.2), 3.6, 1.4, 1.0, points=5)
+    rig.joint("spark", "bomb", (bx + 7.0, by, bz + 12.8))
+    g = Geo().star((bx + 7.0, by - 1.2, bz + 13.0), 4.0, 1.5, 1.0, points=6)
     rig.part("spark", g, glow=B.FIRE, outline=0)
-    g = Geo().sphere((bx + 6.4, by - 1.8, bz + 12.2), 1.4, cuts=3)
+    g = Geo().sphere((bx + 7.0, by - 1.8, bz + 13.0), 1.5, cuts=3)
     rig.part("spark", g, glow="#FFFFFF", outline=0)
     rig.track("muzzle", "bomb", BOMB_C)
+
+    # the match cord in the far hand: a coiled cord with a glowing, smoking tip
+    lx, ly, lz = HL
+    g = Geo().lathe([(3.4, -1.2), (3.9, 0), (3.4, 1.2), (2.4, 1.2), (2.0, 0), (2.4, -1.2)],
+                    (lx + 0.4, ly - 1.0, lz - 4.6), (lx + 0.4, ly - 3.0, lz - 4.6), segs=14)
+    g.capsule((lx + 0.6, ly - 1.4, lz + 2.0), (lx + 3.4, ly - 1.4, lz + 9.0), 1.0)
+    rig.part("hand_l", g, CORD, finish="hair", outline=0.5)
+    rig.joint("match", "hand_l", (lx + 3.6, ly - 1.4, lz + 9.6))
+    g = Geo().sphere((lx + 3.6, ly - 2.2, lz + 9.6), 1.8, cuts=3)
+    rig.part("match", g, glow="#FFB870", outline=0.6, outline_hex=B.FIRE)
+    rig.joint("wisp", "match", (lx + 3.6, ly - 1.4, lz + 13.0), hidden=True)
+    g = Geo().sphere((lx + 4.6, ly - 2.0, lz + 14.0), 1.8, cuts=3).sphere((lx + 3.2, ly - 2.0, lz + 17.0), 1.5, cuts=3)
+    rig.part("wisp", g, B.SMOKE, finish="dust", outline=0.5)
     rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
 def bomb_arm(a, f, w=80.0):
     """The bomb sits on top of the fist: `w` keeps the fist's rest-up direction pointing
-    `w` degrees (90 = straight up), whatever the arm does."""
+    `w` degrees (90 = straight up)."""
     return B.arm("r", a, f, w, w_rest=90.0)
 
 
-STANCE = merge(bomb_arm(-20, 55), B.arm("l", -80, -35), {"torso": {"r": -2}})
+def match_arm(a, f, w=80.0):
+    return B.arm("l", a, f, w, w_rest=90.0)
+
+
+STANCE = merge(bomb_arm(-22, 50), match_arm(-70, -20, 70), {"torso": {"r": -2}})
+SH = (0.0, B.SHOULDER_Z)
 
 
 def _idle(f):
-    c, lag = B.idle_wave(f)
-    return merge(STANCE, B.idle_body(f), {
-        "arm_r": {"r": 3 * lag}, "fore_r": {"r": -3 * lag},
-        "arm_l": {"r": -3 * lag},
-        "spark": {"s": [1.0, 0.7, 1.15, 0.85][f], "r": 25 * f},
-    })
+    # breathing; he lifts the match cord and blows on it (2-3: it glows, a wisp rises), blink
+    blow = [0.0, 0.4, 1.0, 1.0, 0.3, 0.0][f]
 
-
-def _walk(f):
-    import math
-    pose, p, bl = B.walk_legs(f, lean=-8.0)
-    return merge(STANCE, pose, {
-        "arm_l": {"r": 22 * math.cos(p)}, "fore_l": {"r": 8 * max(0.0, math.cos(p))},
-        "arm_r": {"r": -6 * math.cos(p - 0.8)}, "fore_r": {"r": 4 * bl},
-        "spark": {"s": [1.0, 0.7, 1.15, 0.85][f % 4], "r": 25 * f},
-    })
-
-
-ATTACK_MS = [83, 83, 167, 42, 125, 83, 83, 83]
-ATTACK_IMPACT = 4
-
-
-def _attack(f):
-    # 0 bring the bomb up, 1 dip back (squash), 2 held extreme: wound far back, off arm
-    # pointing at the target, 3 whip (stretch), 4 release (bomb gone, arm thrown forward),
-    # 5-6 follow-through, 7 a new bomb from the pouch
-    a = pick(f, [20, 100, 118, 105, 20, -20, -40, -45])
-    fo = pick(f, [70, 135, 140, 100, 25, -30, -40, 5])
-    w = pick(f, [80, 150, 200, 120, 40, 0, -20, 80])
-    pose = merge(bomb_arm(a, fo, w), B.arm("l", pick(f, [-60, -10, 15, -20, -80, -90, -85, -80]),
-                                         pick(f, [-20, 5, 15, -40, -60, -50, -40, -35])), {
-        "body": dict(squash(pick(f, [0.0, -0.08, 0.06, 0.08, -0.12, -0.06, 0.0, 0.0])),
-                     x=pick(f, [0, -2.0, -4.0, 1.0, 5.0, 5.0, 3.0, 0.5])),
-        "hips": {"z": pick(f, [0, -1.0, 0.6, 0.4, -2.0, -1.5, -0.6, 0])},
-        "torso": {"r": pick(f, [0, 10, 18, 2, -20, -22, -12, -3])},
-        "head": {"r": pick(f, [0, 2, -6, -6, -8, -6, -2, 0])},
-        "thigh_r": {"r": pick(f, [0, -8, -12, 4, 20, 18, 8, 0])},
-        "shin_r": {"r": pick(f, [0, -6, -8, -6, -12, -10, -4, 0])},
-        "thigh_l": {"r": pick(f, [0, 10, 14, -2, -16, -14, -8, 0])},
-        "shin_l": {"r": pick(f, [0, -2, -6, -8, -6, -4, -2, 0])},
-        "bomb": {"hide": f in (4, 5, 6), "s": pick(f, [1, 1, 1, 1, 1, 1, 1, 0.8])},
-        "spark": {"s": pick(f, [0.6, 1.3, 1.1, 1.4, 1, 1, 1, 0.6]), "r": 30 * f},
-    })
-    if f == 3:
-        pose["bomb"]["sx"] = 1.25
-    if f in (3, 4):
-        B.yell(pose)
+    def extra(ctx):
+        return merge(match_arm(-70 + 45 * blow, -20 + 95 * blow, 70 + 10 * blow), {
+            "arm_r": {"r": 3 * ctx["lag"]}, "fore_r": {"r": -3 * ctx["lag"]},
+            "head": {"r": -3 * blow}, "match": {"s": 1.0 + 0.4 * blow},
+            "wisp": {"show": blow > 0.5, "z": 2.0 * blow},
+            "spark": {"s": [1.0, 0.7, 1.15, 0.85, 1.1, 0.8][f], "r": 25 * f}})
+    base = {k: v for k, v in STANCE.items() if k not in ("arm_l", "fore_l", "hand_l")}
+    pose = M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
+    if blow > 0.5:
+        pose = merge(pose, F.expr("o"))
     return pose
 
 
-def _hit(f):
-    a = [1.0, 0.55, 0.2][f]
-    return merge(STANCE, B.hit_body(f), {"arm_r": {"r": 20 * a}, "arm_l": {"r": 30 * a}})
+def _walk(f):
+    # waddle: side sway, short steps, the bomb carried in front, the match swinging
+    def extra(ctx):
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"fore_r": {"r": 4 * lag}, "hand_l": {"r": -8 * math.cos(ctx["lag_p"])},
+                "spark": {"s": [1.0, 0.7, 1.15, 0.85][ctx["f"] % 4], "r": 25 * ctx["f"]}}
+    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=26.0, knee=50.0, lift_lu=6.0, bob_pct=0.055,
+                     lean=-3.0, arm=24.0, twist=4.0, sway=9.0, arms=("l",), extra=extra)
 
 
-def _die(f):
-    pose = merge(STANCE, fx.die_pose(f), B.die_limbs(f), {
-        "arm_r": {"r": pick(f, [60, 50, 50])}, "arm_l": {"r": pick(f, [120, 90, 90])},
-        "spark": {"hide": f > 0},
+# attack: 749 ms, the release (impact) at 375 ms (impactAt 0.5007, as shipped); 11 unique frames
+#            light spark grin HOLD whip | RELEASE follow ears ears bag new
+ATTACK_MS = [40, 55, 60, 150, 70, 90, 70, 80, 60, 44, 30]
+ATTACK_IMPACT = 5
+# bomb arm (upper, fore, fist-up direction), WORLD degrees (the torso lean is subtracted)
+BA = [(-10, 60, 80), (0, 75, 80), (20, 95, 100), (118, 150, 205), (100, 70, 120),
+      (48, 52, 60), (-35, -50, 0), None, None, (-95, -120, -60), (-30, 40, 80)]
+# match arm: to the fuse (0-2), pointing at the target on the wind-up, then down
+MA = [(-10, 55, 70), (5, 70, 70), (-40, 10, 60), (8, 20, 30), (-40, -30, 40),
+      (-80, -60, 60), (-85, -45, 70), None, None, (-70, -20, 70), (-70, -20, 70)]
+T_R = [-2, -4, 2, 16, 2, -18, -20, -8, -6, -6, -3]
+T_YAW = [0, -4, 0, 24, 10, -12, -16, 0, 0, 6, 0]
+HEAD = [-4, -8, -4, -8, -6, -6, -4, 8, 6, 0, 0]
+B_X = [0.0, 0.5, 0.0, -4.0, 0.5, 5.0, 6.0, 1.0, 0.5, 0.0, 0.0]
+B_Z = [0.0, 0.0, 0.5, 1.0, -0.5, -2.2, -2.6, -4.0, -3.0, -1.0, 0.0]
+B_Q = [0.0, -0.03, 0.03, 0.06, 0.08, -0.1, -0.08, -0.12, -0.06, 0.0, 0.0]
+TH_R = [0, 0, 4, 40, 18, 24, 22, 10, 8, 4, 0]     # front knee lifts on the wind-up (a pitcher)
+SH_R = [0, 0, -4, -60, -30, -12, -10, -12, -8, -2, 0]
+TH_L = [0, 0, -4, -10, -14, -24, -22, -10, -8, -4, 0]
+SH_L = [0, 0, -2, -6, -8, -6, -4, -12, -8, -2, 0]
+EARS = (4.0, 50.0)   # both hands to the ears (torso space)
+
+
+def _attack_pose(f):
+    t = T_R[f]
+    if BA[f] is None:
+        a, fo = B.ik2(SH, (EARS[0] + 1.0, EARS[1]), elbow_down=False)
+        arms = merge(bomb_arm(a, fo, 80), match_arm(*B.ik2(SH, EARS, elbow_down=False), 80))
+    else:
+        a, fo, w = BA[f]
+        ma, mf, mw = MA[f]
+        arms = merge(bomb_arm(a - t, fo - t, w - t), match_arm(ma - t, mf - t, mw - t))
+    pose = merge(arms, {
+        "torso": {"r": t, "rz": T_YAW[f]},
+        "head": {"r": HEAD[f] - 0.4 * t, "rz": -0.5 * T_YAW[f]},
+        "thigh_r": {"r": TH_R[f]}, "shin_r": {"r": SH_R[f]},
+        "thigh_l": {"r": TH_L[f]}, "shin_l": {"r": SH_L[f]},
+        "bomb": {"hide": f in (5, 6, 7, 8, 9)},
+        "spark": {"s": [0.4, 1.8, 1.4, 1.5, 1.6, 1, 1, 1, 1, 1, 0.5][f], "r": 30 * f},
+        "match": {"s": [1.2, 1.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0][f]},
+    }, M.body_about((0, 0, 22), x=B_X[f], z=B_Z[f], q=B_Q[f]))
+    if f == 4:
+        pose["bomb"]["sx"] = 1.2
+    if f in (0, 1, 2):
+        pose = merge(pose, F.expr("grit") if f == 2 else F.expr("o"), {"brow": {"z": 0.8 if f == 2 else 1.4}})
+    elif f == 3:
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif f in (4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    elif f in (7, 8):
+        pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -0.6}})
+    return pose
+
+
+BOMB_TOP = (BOMB_C[0], BOMB_C[1], BOMB_C[2] + BOMB_R)
+
+
+def _attack_clip():
+    ov = {
+        1: [{"kind": "burst", "joint": "bomb", "point": (BOMB_C[0] + 7.0, BOMB_C[1], BOMB_C[2] + 13.0),
+             "r0_lu": 4.0, "r1_lu": 8.5, "n": 7, "color": "#FFE7B0"}],
+        4: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
+             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3,
+             "samples": 16, "from": 3}],
+        5: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
+             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.3, "t1": 1.0, "lines": 2,
+             "samples": 14, "from": 4},
+            {"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 41, "spread": 0.8}],
+        7: [{"kind": "rings", "joint": "head", "point": (2.0, 0.0, 52.0), "radii_lu": (15.0, 19.0),
+             "a0": 30.0, "a1": 150.0, "color": "#FFF4D6"}],
+    }
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov)
+
+
+def _hit(k):
+    def recoil(a):
+        return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
+                "thigh_r": {"r": 22 * max(a, 0)}, "shin_r": {"r": -26 * max(a, 0)},
+                "arm_r": {"r": 20 * a}, "arm_l": {"r": 30 * a}, "fore_l": {"r": 20 * a},
+                "cap": {"z": 3.0 * max(a, 0), "r": 8 * a},
+                "brow": {"z": 1.6 * max(a, 0)}}
+    return M.hit_light(k, STANCE, recoil, face_hurt=F.expr("squeeze", "grit"),
+                       face_back=F.expr("grit") if k == 2 else None)
+
+
+CAP_PATH = {1: (3.0, 8.0, 30.0), 2: (8.0, 16.0, 110.0), 3: (14.0, 19.0, 200.0), 4: (20.0, 14.0, 280.0),
+            5: (25.0, 0.0, 330.0), 6: (29.0, -24.0, 355.0), 7: (32.0, -48.0, 372.0), 8: (33.0, -50.0, 366.0),
+            9: (33.0, -50.0, 366.0)}
+
+
+def _die(k):
+    flail = [0.3, 1.0, 1.0, 0.8, 0.2, 0.5, 0.1, 0.0, 0.0, 0.0][k]
+    pose = merge(STANCE, M.die_d1(k, center_z=29.0, lie_z=12.0, height=HEIGHT_LU), {
+        "torso": {"r": 10 * flail}, "head": {"r": 14 * flail - 6},
+        "arm_r": {"r": 70 * flail + 30}, "arm_l": {"r": 110 * flail + 30}, "fore_l": {"r": 40 * flail},
+        "thigh_r": {"r": 40 * flail + 20}, "shin_r": {"r": -30 * flail},
+        "thigh_l": {"r": -20 * flail + 10}, "shin_l": {"r": -20 * flail},
+        "spark": {"hide": k > 0},
     })
-    if f == 0:
-        B.yell(pose)
+    if k in CAP_PATH:
+        x, z, r = CAP_PATH[k]
+        pose["cap"] = {"hide": True}
+        pose["cap_loose"] = {"show": True, "x": x, "z": z, "r": r}
+    if k == 0:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif k < 4:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 2.0}})
+    else:
+        pose = merge(pose, F.expr("x", "tongue"))
     return pose
 
 
 def clips():
-    return [
-        Clip("idle", 4, _idle, loop=True, sequence=fx.IDLE_SEQUENCE, durations=fx.IDLE_MS),
-        Clip("walk", 8, _walk, loop=True, durations=fx.WALK_MS),
-        Clip("attack", 8, _attack, impact=ATTACK_IMPACT, durations=ATTACK_MS),
-        Clip("hit", 3, _hit, durations=fx.HIT_MS),
-        Clip("die", 3, _die, durations=fx.DIE_MS, extra=fx.death_meta(HEIGHT_LU)),
+    cl = [
+        M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _attack_clip(),
+        M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
+        M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
+               sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
     ]
+    return M.check_contract(cl, attack_ms=749, attack_impact_at=0.5007)
