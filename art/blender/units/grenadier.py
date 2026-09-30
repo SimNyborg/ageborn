@@ -59,7 +59,7 @@ def _cap(rig, joint):
     g = G.anchor(pf, Geo(), K.scr(pf, (11.0, -8.7, 63.5)), s=0.95)
     rig.part(joint, g, B.CREAM, highlight=False, outline=0)
     g = Geo().capsule((-1.0, -8.9, 56.6), (13.4, -8.9, 56.6), 1.3).capsule((13.4, -8.9, 56.6), (13.4, 8.6, 56.6), 1.3)
-    rig.part(joint, g, B.BRASS, finish="metal", outline=0.6)
+    rig.part(joint, g, B.CREAM, outline=0.6)
     g = Geo().sphere((0.6, 0, 77.0), 2.8, cuts=3)   # tuft
     rig.part(joint, g, B.CREAM, finish="hair", outline=0.6)
 
@@ -72,6 +72,9 @@ def build(rig):
     g = Geo().blob((0, 0, 28.0), (12.0, 11.0, 12.2), p=2.4, taper=(1.1, 0.96))
     g.blob((0, 0, 18.0), (11.4, 10.6, 5.0), p=2.6)
     rig.part("torso", g, team=True)
+    g = Geo().blob((5.4, -1.0, 26.5), (7.2, 5.2, 10.4), p=2.6, taper=(1.08, 0.72))
+    g.clip((8.2, 0, 0), (-1, 0, 0))
+    rig.part("torso", g, B.CREAM)            # waistcoat front
     g = Geo().blob((0.4, 0, 17.4), (12.0, 11.0, 2.2), p=3.0)
     rig.part("torso", g, B.LEATHER)          # belt
     g = Geo().blob((12.2, -2.6, 17.4), (1.4, 2.4, 2.0), p=2.4)
@@ -171,7 +174,7 @@ def match_arm(a, f, w=80.0):
     return B.arm("l", a, f, w, w_rest=90.0)
 
 
-STANCE = merge(bomb_arm(-22, 50), match_arm(-70, -20, 70), {"torso": {"r": -2}})
+STANCE = merge(bomb_arm(-44, 12, 84), match_arm(-70, -20, 70), {"torso": {"r": -2}})
 SH = (0.0, B.SHOULDER_Z)
 
 
@@ -198,7 +201,7 @@ def _walk(f):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
         return {"fore_r": {"r": 4 * lag}, "hand_l": {"r": -8 * math.cos(ctx["lag_p"])},
                 "spark": {"s": [1.0, 0.7, 1.15, 0.85][ctx["f"] % 4], "r": 25 * ctx["f"]}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=26.0, knee=50.0, lift_lu=6.0, bob_pct=0.055,
+    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=28.0, knee=50.0, lift_lu=6.0, bob_pct=0.055,
                      lean=-3.0, arm=24.0, twist=4.0, sway=9.0, arms=("l",), extra=extra)
 
 
@@ -207,7 +210,7 @@ def _walk(f):
 ATTACK_MS = [40, 55, 60, 150, 70, 90, 70, 80, 60, 44, 30]
 ATTACK_IMPACT = 5
 # bomb arm (upper, fore, fist-up direction), WORLD degrees (the torso lean is subtracted)
-BA = [(-10, 60, 80), (0, 75, 80), (20, 95, 100), (118, 150, 205), (100, 70, 120),
+BA = [(-20, 45, 80), (0, 75, 80), (20, 95, 100), (118, 150, 205), (100, 70, 120),
       (48, 52, 60), (-35, -50, 0), None, None, (-95, -120, -60), (-30, 40, 80)]
 # match arm: to the fuse (0-2), pointing at the target on the wind-up, then down
 MA = [(-10, 55, 70), (5, 70, 70), (-40, 10, 60), (8, 20, 30), (-40, -30, 40),
@@ -266,12 +269,7 @@ def _attack_clip():
         4: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
              "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3,
              "samples": 16, "from": 3}],
-        5: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
-             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.3, "t1": 1.0, "lines": 2,
-             "samples": 14, "from": 4},
-            {"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 41, "spread": 0.8}],
-        7: [{"kind": "rings", "joint": "head", "point": (2.0, 0.0, 52.0), "radii_lu": (15.0, 19.0),
-             "a0": 30.0, "a1": 150.0, "color": "#FFF4D6"}],
+        5: [{"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 41, "spread": 0.8}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
                   overlays=ov)

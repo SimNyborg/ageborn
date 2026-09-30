@@ -26,7 +26,7 @@ from ageborn_art.geometry import Geo
 SLUG = "steam_golem"
 NAME = "Steam Golem"
 HEIGHT_LU = 110
-YAW_DEG = -41.0          # turned toward the camera so the furnace face on the boiler front reads
+YAW_DEG = -24.0          # turned toward the camera so the furnace face on the boiler front reads
 CANVAS = (360, 300)
 FEET = (132, 280)
 ANCHORS = {"head": (4, 106), "hitCenter": (0, 58)}
@@ -101,7 +101,7 @@ def build(rig):
     rig.part("hull", g, I.IRON_LT, finish="metal", outline=0)
     # the furnace face on the boiler front (turned toward the camera): a dark rounded furnace
     # mouth with a glowing grate of horizontal bars and two angry glowing eye slits above it
-    ang = math.radians(-24.0)
+    ang = math.radians(-42.0)
     nx, ny = math.cos(ang), math.sin(ang)
     ux, uy = -ny, nx
 
@@ -138,8 +138,8 @@ def build(rig):
         g.capsule((c[0] - 2.2 * ux, c[1] - 2.2 * uy, c[2] - 2.2), (c[0] + 2.2 * ux, c[1] + 2.2 * uy, c[2] + 2.2), 0.9)
     rig.part("eyes_x", g, I.COAL, outline=0)
     # pressure gauge on the chest: its needle climbs on the wind-up and pins in the red
-    KI.gauge(rig, "hull", (14.0, -17.4, hz + 14.0), r=3.6, name="gauge", normal=(1.0, -1.0))
-    g = Geo().blob((15.4, -19.2, hz + 17.2), (0.6, 1.4, 0.9), p=2.4)          # the red zone mark
+    KI.gauge(rig, "hull", (2.0, -22.4, hz + 13.0), r=3.6, name="gauge", normal=(0.2, -1.0))
+    g = Geo().blob((2.6, -24.6, hz + 16.4), (1.4, 0.6, 0.9), p=2.4)          # the red zone mark
     rig.part("hull", g, "#8A3A2A", outline=0, highlight=False)
     # hidden accents: a rivet that pops out on a hit, a spark on the struck plate, knee steam
     rig.joint("bolt", "hull", (18.0, -16.0, hz + 2.0), hidden=True)
@@ -308,8 +308,8 @@ def _walk_clip():
 
 # attack: 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6 at 570 ms)
 #        shift dip  coil HOLD smear smear IMP  shock follow recover
-RA = [-110, -130, -160, -178, -72, -20, 0, -3, -34, -82]
-RF = [-94, -118, -154, -172, -52, -12, 0, -3, -30, -72]
+RA = [-110, -130, -160, -178, -84, -38, -22, -24, -46, -86]
+RF = [-94, -118, -154, -172, -64, -30, -22, -24, -42, -76]
 RAM = [0, -2, -5, -7, 8, 18, 28, 25, 12, 3]
 HULL_R = [2, 5, 9, 12, -2, -8, -13, -11, -6, -2]
 HULL_RZ = [3, 7, 12, 16, 3, -4, -8, -7, -4, -1]
@@ -326,7 +326,7 @@ def _attack_pose(f):
         "hull": {"r": HULL_R[f], "rz": HULL_RZ[f]},
         "head": {"r": [0, 2, 4, 5, -2, -4, -6, -5, -3, -1][f]},
         "sparks": {"show": f == 6},
-        "steam": {"show": f in (3, 6, 7, 8), "s": [1, 1, 1, 0.55, 1, 1, 1.25, 1.55, 1.3, 1][f],
+        "steam": {"show": f in (3, 6, 7, 8), "s": [1, 1, 1, 0.55, 1, 1, 0.95, 1.15, 1.0, 1][f],
                   "z": [0, 0, 0, 0, 0, 0, 0, 2, 5, 0][f]},
         "puff": {"show": f in (2, 3, 7, 8), "s": [1, 1, 1.1, 1.25, 1, 1, 1, 1.4, 1.6, 1][f],
                  "z": [0, 0, 0, 2, 0, 0, 0, 3, 6, 0][f]},
@@ -385,9 +385,9 @@ def _hit(k):
 # off, 4 the boiler slumps to the ground, 5 the cap lands, 6-7 settled, smoke rising, fire out
 DIE_HIPS = [0, -1, -6, -10, -18, -19, -19, -19]
 DIE_HULL_R = [4, -3, 6, 10, 14, 12, 12, 12]
-DIE_HEAD = [(0, 0, 0), (2, 14, 30), (4, 24, 80), (8, 26, 150), (12, 18, 210), (15, -2, 250),
-            (16, -8, 255), (16, -8, 255)]
-DIE_ARM = [None, None, None, (4, -6, 20), (8, -24, 60), (10, -30, 88), (10, -31, 90), (10, -31, 90)]
+DIE_HEAD = [(0, 0, 0), (3, 16, 40), (8, 28, 110), (14, 26, 190), (20, 8, 260), (26, -30, 330),
+            (30, -50, 358), (30, -50, 358)]
+DIE_ARM = [None, None, None, (8, -10, 20), (16, -30, 50), (20, -40, 70), (21, -42, 74), (21, -42, 74)]
 
 
 def _die(k):
