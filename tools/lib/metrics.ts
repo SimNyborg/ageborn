@@ -1,7 +1,9 @@
 /**
  * Per-match metrics for the balance tools, reduced from the `SimEvent` stream (DESIGN B3 events,
  * A2.14 metrics): evolve timings, kills by killer kind (turret share), damage and gold per card
- * (damage per gold), power casts and hits (coverage), rejected commands, and the outcome.
+ * (damage per gold), power casts and hits (coverage), rejected commands, and the outcome; plus the
+ * A2.9.12 power metrics (gold paid for powers, card value killed by powers, one record per cast and
+ * the casts of every age stay).
  *
  * The reducer is pure: the same events give the same summary, so worker threads can return compact
  * summaries instead of event logs. Units follow B3: damage in centi-HP, positions in milli-lu.
@@ -9,6 +11,27 @@
 import type { AgeId, CardId, CompiledContent, FormatId, KillerKind, MatchOutcome, Side, SimEvent } from '../../src/contracts';
 
 export type KillKind = KillerKind | 'other';
+
+/**
+ * One cast (A2.9.12): [power, slot (0 Home, 1 Field), enemy card value it killed, the enemy's on-lane army
+ * value when it was cast, the card value of the enemies it touched, how many it touched, cost paid].
+ * Card values are whole gold and leave summons out.
+ */
+export type CastRecord = [CardId, 0 | 1, number, number, number, number, number];
+
+/** One age stay (A2.9.12): [age index in the window, seconds, casts, Field casts]. */
+export type StayRecord = [number, number, number, number];
+
+/** The A2.9.12 power metrics of one side. */
+export interface PowerStats {
+  /** Whole gold paid for casts (the effective cost). */
+  gold: number;
+  /** Enemy card value killed (summons excluded): by anything, and by this side's powers. */
+  killValue: number;
+  powerKillValue: number;
+  casts: CastRecord[];
+  stays: StayRecord[];
+}
 
 export interface SideStats {
   /** Tick of every `ascendStart` (the moment Evolve is pressed), in order. */
@@ -44,6 +67,8 @@ export interface SideStats {
   lastStandFired: boolean;
   /** Most trained units alive at once (summons excluded). */
   maxUnitsAlive: number;
+  /** A2.9.12 power metrics (absent in summaries from older tool builds). */
+  power?: PowerStats;
 }
 
 export interface MatchSummary {
@@ -95,6 +120,7 @@ function emptySide(): SideStats {
     stanceChanges: 0,
     lastStandFired: false,
     maxUnitsAlive: 0,
+    power: { gold: 0, killValue: 0, powerKillValue: 0, casts: [], stays: [] },
   };
 }
 
@@ -111,7 +137,16 @@ export class MatchTally {
   private readonly unitCard = new Map<number, CardId>();
   private readonly trainedIds = new Set<number>();
   private readonly alive: [number, number] = [0, 0];
-  private readonly castInfo = new Map<number, { side: Side; power: CardId; hit: Set<number> }>();
+  private readonly castInfo = new Map<number, { side: Side; power: CardId; hit: Set<number>; rec: CastRecord }>();
+  /** Card value of each side's trained units alive now (A2.9.12 army value at a cast). */
+  private readonly armyValue: [number, number] = [0, 0];
+  /** The cast whose power hit a unit last (a power kill is credited to it). */
+  private readonly lastCastOn = new Map<number, number>();
+  /** The open age stay per side: [age index, start tick, casts, Field casts]. */
+  private readonly stay: [[number, number, number, number], [number, number, number, number]] = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
   private readonly mounts: [(CardId | null)[], (CardId | null)[]] = [[null, null, null, null], [null, null, null, null]];
   private readonly refundBp: number;
   private firstClash: number | null = null;
@@ -120,6 +155,18 @@ export class MatchTally {
   constructor(private readonly content: CompiledContent) {
     this.refundBp = content.economy.sellRefundBp;
     for (const s of this.sides) s.goldEarned = content.economy.startGold;
+  }
+
+  /** The card value of a unit for the power metrics: trained units only (summons are worth 0). */
+  private cardValue(id: number): number {
+    if (!this.trainedIds.has(id)) return 0;
+    const card = this.unitCard.get(id);
+    return card ? (this.content.units[card]?.cost ?? 0) : 0;
+  }
+
+  private closeStay(side: Side, tick: number): void {
+    const st = this.stay[side];
+    this.sides[side].power?.stays.push([st[0], (tick - st[1]) / 20, st[2], st[3]]);
   }
 
   private turretCost(card: CardId | null | undefined): number {
@@ -140,6 +187,7 @@ export class MatchTally {
           const s = this.sides[e.side];
           add(s.trained, e.card, 1);
           add(s.spent, e.card, this.content.units[e.card]?.cost ?? 0);
+          this.armyValue[e.side] += this.content.units[e.card]?.cost ?? 0;
           this.alive[e.side] += 1;
           if (this.alive[e.side] > s.maxUnitsAlive) s.maxUnitsAlive = this.alive[e.side];
         }
@@ -147,7 +195,24 @@ export class MatchTally {
       }
       case 'died': {
         this.sides[e.side].lost += 1;
-        if (this.trainedIds.delete(e.id)) this.alive[e.side] = Math.max(0, this.alive[e.side] - 1);
+        const value = this.cardValue(e.id);
+        if (e.killerSide !== null && e.killerSide !== e.side) {
+          const ps = this.sides[e.killerSide].power;
+          if (ps) {
+            ps.killValue += value;
+            if (e.killerKind === 'power') {
+              ps.powerKillValue += value;
+              const cid = this.lastCastOn.get(e.id);
+              const c = cid === undefined ? undefined : this.castInfo.get(cid);
+              if (c) c.rec[2] += value;
+            }
+          }
+        }
+        this.lastCastOn.delete(e.id);
+        if (this.trainedIds.delete(e.id)) {
+          this.alive[e.side] = Math.max(0, this.alive[e.side] - 1);
+          this.armyValue[e.side] = Math.max(0, this.armyValue[e.side] - value);
+        }
         if (e.killerSide !== null) {
           const kind: KillKind = e.killerKind ?? 'other';
           this.sides[e.killerSide].kills[kind] += 1;
@@ -160,7 +225,17 @@ export class MatchTally {
         if (this.firstClash === null && e.sourceKind === 'unit' && e.castId === null) this.firstClash = e.tick;
         const by = this.sides[other(targetSide)];
         add(by.damage, e.sourceCard, e.damage);
-        if (e.castId !== null) this.castInfo.get(e.castId)?.hit.add(e.targetId);
+        if (e.castId !== null) {
+          const c = this.castInfo.get(e.castId);
+          if (c && c.side !== targetSide) {
+            if (!c.hit.has(e.targetId)) {
+              c.rec[4] += this.cardValue(e.targetId);
+              c.rec[5] += 1;
+            }
+            c.hit.add(e.targetId);
+            if (e.sourceKind === 'power') this.lastCastOn.set(e.targetId, e.castId);
+          }
+        }
         break;
       }
       case 'baseDamaged': {
@@ -174,9 +249,16 @@ export class MatchTally {
       case 'ascendStart':
         this.sides[e.side].evolveTicks.push(e.tick);
         break;
-      case 'ageUp':
+      case 'ageUp': {
         this.sides[e.side].ageUpTicks[e.age] = e.tick;
+        this.closeStay(e.side, e.tick);
+        const st = this.stay[e.side];
+        st[0] += 1;
+        st[1] = e.tick;
+        st[2] = 0;
+        st[3] = 0;
         break;
+      }
       case 'turretBuildStart': {
         this.mounts[e.side][e.mount] = e.card;
         add(this.sides[e.side].spent, e.card, this.turretCost(e.card));
@@ -196,9 +278,19 @@ export class MatchTally {
         break;
       }
       case 'powerTelegraph': {
-        this.castInfo.set(e.castId, { side: e.side, power: e.power, hit: new Set() });
+        const slot: 0 | 1 = e.slot === 'field' ? 1 : 0;
+        const cast: CastRecord = [e.power, slot, 0, this.armyValue[other(e.side)], 0, 0, e.cost];
+        this.castInfo.set(e.castId, { side: e.side, power: e.power, hit: new Set(), rec: cast });
         const rec = (this.sides[e.side].powers[e.power] ??= { casts: 0, unitsHit: 0 });
         rec.casts += 1;
+        const ps = this.sides[e.side].power;
+        if (ps) {
+          ps.gold += e.cost;
+          ps.casts.push(cast);
+        }
+        const st = this.stay[e.side];
+        st[2] += 1;
+        if (slot === 1) st[3] += 1;
         break;
       }
       case 'treasuryUp':
@@ -261,6 +353,7 @@ export class MatchTally {
       if (rec) rec.unitsHit += c.hit.size;
     }
     this.castInfo.clear();
+    for (const side of [0, 1] as const) this.closeStay(side, o.ticks);
     const out = o.outcome;
     return {
       seed: o.seed,

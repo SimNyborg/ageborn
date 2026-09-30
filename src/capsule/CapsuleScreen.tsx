@@ -20,6 +20,7 @@ import { OddsPanel } from './OddsPanel';
 import { RARITY_COLORS, TIER_COLORS, cssHex } from './palette';
 import { planOpenAll, planWardrobeShow, SHOW_TIMING, type Cue, type ShowPlan, type ShowStep } from './plan';
 import { ShowRunner, type RunnerState, type StrikeHit } from './runner';
+import { windowForOutputLatency } from './strikeTiming';
 import { SummaryPanel, type SummaryActions } from './summary';
 import { pityLines, wardrobePityLines, type PityLine } from './summaryModel';
 import {
@@ -213,6 +214,8 @@ function ShowScreen(p: ShowScreenProps) {
     app.renderer.on('resize', onResize);
     const runner = new ShowRunner(p.plan, stage, {
       audio: p.audio ?? null,
+      // The count-in ticks reach the ear late on some devices (Android): the timing window follows.
+      strikeWindow: windowForOutputLatency(outputLatencyMs(p.audio)),
       onCue: (c, s) => cbs.current.onCue?.(c, s),
       onHit: (h) => cbs.current.onHit?.(h),
       onState: (s) => {
@@ -506,4 +509,15 @@ function Counter(p: { value: number; dust: boolean; run: boolean; delayMs: numbe
       <span class={p.dust ? css.dustGem : css.amberGem} />+{shown}
     </div>
   );
+}
+
+/**
+ * The audio output latency in ms when the service exposes its AudioContext (the real
+ * `WebAudioService` does; a fake or a locked service gives 0). Read once at show start.
+ */
+function outputLatencyMs(audio: AudioService | null | undefined): number {
+  const ctx = (audio as { ctx?: { outputLatency?: number; baseLatency?: number } | null } | null | undefined)?.ctx;
+  if (!ctx) return 0;
+  const sec = ctx.outputLatency || ctx.baseLatency || 0;
+  return Number.isFinite(sec) ? sec * 1000 : 0;
 }

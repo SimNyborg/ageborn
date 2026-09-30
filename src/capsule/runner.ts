@@ -44,13 +44,19 @@ export interface ShowView {
    * flourish now). Called at most once per strike, never for a skipped one.
    */
   strikeHit?(step: TimedStrike, hit: StrikeHit): void;
+  /**
+   * Any tap on a hammer blow (graded or not, before `strikeHit` when both come), for a neutral tap
+   * tick on the timing ring: the player sees the tap landed, early or late, with no text and no
+   * penalty. `tMs` is the tap's step time.
+   */
+  strikeTap?(step: TimedStrike, tMs: number): void;
 }
 
 export interface RunnerState {
   index: number;
   kind: StepKind;
   phase: 'run' | 'done';
-  /** "Tap as the hammer lands!" is shown late in the charge and through the strikes until the first tap. */
+  /** "Tap on the beat!" is shown late in the charge and through the strikes until the first tap. */
   prompt: 'tap' | null;
   canSkip: boolean;
   canFastForward: boolean;
@@ -115,6 +121,9 @@ export class ShowRunner {
   private combo = 0;
   /** The player has tapped a strike (the prompt then steps aside). */
   private struck = false;
+  /** Show time (scaled ms, every step) and when the last tap came in it: the tap-rate rule. */
+  private showMs = 0;
+  private lastTapMs = -Infinity;
   private last: RunnerState | null = null;
   private readonly ffScale: number;
   private readonly rushScale: number;
@@ -190,12 +199,14 @@ export class ShowRunner {
       const before = this.t;
       if (adv < remain) {
         this.t += adv;
+        this.showMs += adv;
         this.fireCues(s);
         this.passBeat(s, before);
         this.view.progress(s, this.t, adv);
         real = 0;
       } else {
         this.t = s.durationMs;
+        this.showMs += remain;
         this.fireCues(s);
         this.passBeat(s, before);
         this.view.progress(s, this.t, remain);
@@ -215,9 +226,13 @@ export class ShowRunner {
   tap(lateMs = 0): void {
     const s = this.step;
     if (!s || this.phase === 'done') return;
+    const late = Math.max(0, Math.min(MAX_FRAME_MS, lateMs)) * this.scaleFor(s);
+    const since = this.showMs + late - this.lastTapMs;
+    this.lastTapMs = this.showMs + late;
     if (isTimed(s)) {
       this.struck = true;
-      this.judge(s, this.t + Math.max(0, Math.min(MAX_FRAME_MS, lateMs)) * this.scaleFor(s));
+      this.view.strikeTap?.(s, this.t + late);
+      this.judge(s, this.t + late, since);
     } else if (s.kind === 'summitRise' || (s.kind === 'charge' && this.t >= s.durationMs * CHARGE_PROMPT_AT)) {
       // Before the count-in: the prompt is answered; the beat is not hurried.
     } else if (RUSHABLE.has(s.kind) && s.fastForward) {
@@ -268,9 +283,9 @@ export class ShowRunner {
   }
 
   /** Grades the strike's one counted tap (feel only: nothing in the plan or the timeline changes). */
-  private judge(s: TimedStrike, tapMs: number): void {
+  private judge(s: TimedStrike, tapMs: number, sincePrevTapMs: number): void {
     if (this.judged || tapMs > s.durationMs) return;
-    const j = judgeTap(tapMs, s.impactMs, this.win);
+    const j = judgeTap(tapMs, s.impactMs, this.win, sincePrevTapMs);
     if (!j) return;
     this.judged = true;
     this.combo = nextCombo(this.combo, j.grade);

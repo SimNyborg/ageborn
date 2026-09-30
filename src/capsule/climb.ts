@@ -509,6 +509,9 @@ export class CapsuleDrum {
   private readonly stars: Star[] = [];
   private readonly cracks: [number, number][][];
   private leak = 0;
+  /** A graded hit's short extra leak and how fast it fades (per ms). */
+  private leakPulse = 0;
+  private leakPulseRate = 0;
   private stateNow: DrumState = drumState('clay');
   private nextState: DrumState | null = null;
   private wipe = 0;
@@ -744,6 +747,12 @@ export class CapsuleDrum {
     this.leak = Math.max(0, Math.min(2, amount));
   }
 
+  /** A short extra flare of the leak (a graded hit): `amount` on top, gone linearly within `ms`. */
+  pulseLeak(amount: number, ms: number): void {
+    this.leakPulse = Math.max(this.leakPulse, amount);
+    this.leakPulseRate = this.leakPulse / Math.max(1, ms);
+  }
+
   /** A white silhouette over the drum, 0..1. */
   setWhite(alpha: number): void {
     this.white.alpha = Math.max(0, Math.min(1, alpha));
@@ -759,6 +768,7 @@ export class CapsuleDrum {
     this.starsG.visible = false;
     this.crackAmount = 0;
     this.leak = 0;
+    this.leakPulse = 0;
     this.leakG.clear();
     this.shattered = true;
   }
@@ -858,6 +868,7 @@ export class CapsuleDrum {
   update(dtMs: number): void {
     this.time += dtMs;
     this.energy = Math.max(0, this.energy - dtMs / 900);
+    this.leakPulse = Math.max(0, this.leakPulse - dtMs * this.leakPulseRate);
     if (this.shattered) return;
     const pulse = 0.72 + 0.28 * Math.sin(this.time / 260);
     this.ringGlow.alpha = Math.min(1, pulse + this.energy * 0.6);
@@ -893,7 +904,8 @@ export class CapsuleDrum {
   private drawLeak(): void {
     const g = this.leakG;
     g.clear();
-    if (this.leak <= 0.01 || this.crackAmount <= 0) return;
+    const leak = Math.min(2, this.leak + this.leakPulse);
+    if (leak <= 0.01 || this.crackAmount <= 0) return;
     const c = TIER_COLORS[this.tier];
     const n = this.cracks.length;
     this.cracks.forEach((pts, i) => {
@@ -908,16 +920,16 @@ export class CapsuleDrum {
       const ay = (tip[1] + 118) * 0.6 + (tip[1] - prev[1]) * 0.8;
       const len0 = Math.hypot(ax, ay) || 1;
       const flick = 0.75 + 0.25 * Math.sin(this.time / 37 + i * 2.1);
-      const len = (40 + 110 * this.leak) * flick * (0.6 + 0.4 * local);
+      const len = (40 + 110 * leak) * flick * (0.6 + 0.4 * local);
       const ux = ax / len0;
       const uy = ay / len0;
-      const w = (5 + 7 * this.leak) * flick;
+      const w = (5 + 7 * leak) * flick;
       const ex = tip[0] + ux * len;
       const ey = tip[1] + uy * len;
       // A tapered wedge: wide and soft outside, a white-hot core.
-      g.poly([tip[0] - uy * 2, tip[1] + ux * 2, ex - uy * w, ey + ux * w, ex + uy * w, ey - ux * w, tip[0] + uy * 2, tip[1] - ux * 2]).fill({ color: c, alpha: 0.28 * Math.min(1, this.leak) });
-      g.poly([tip[0] - uy, tip[1] + ux, ex - (uy * w) / 3, ey + (ux * w) / 3, ex + (uy * w) / 3, ey - (ux * w) / 3, tip[0] + uy, tip[1] - ux]).fill({ color: shade(c, 0.7), alpha: 0.55 * Math.min(1, this.leak) });
-      g.circle(tip[0], tip[1], 5 + 4 * this.leak).fill({ color: 0xffffff, alpha: 0.7 * flick });
+      g.poly([tip[0] - uy * 2, tip[1] + ux * 2, ex - uy * w, ey + ux * w, ex + uy * w, ey - ux * w, tip[0] + uy * 2, tip[1] - ux * 2]).fill({ color: c, alpha: 0.28 * Math.min(1, leak) });
+      g.poly([tip[0] - uy, tip[1] + ux, ex - (uy * w) / 3, ey + (ux * w) / 3, ex + (uy * w) / 3, ey - (ux * w) / 3, tip[0] + uy, tip[1] - ux]).fill({ color: shade(c, 0.7), alpha: 0.55 * Math.min(1, leak) });
+      g.circle(tip[0], tip[1], 5 + 4 * leak).fill({ color: 0xffffff, alpha: 0.7 * flick });
     });
   }
 

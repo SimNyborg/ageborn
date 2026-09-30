@@ -156,6 +156,20 @@ function areaCandidates(ctx: Ctx, c: CastRt, pr: PowerRules): { u: UnitRt; cand:
   return out;
 }
 
+/**
+ * Is the unit inside the cast's reach area now (A2.9.4, the hard mask)? Checked at every hit, so a unit
+ * in `hitIds` that has moved past the area (knockback, a pull, Fall back) is no longer touched: staying
+ * eligible for the cap never overrides the mask.
+ */
+export function inCastArea(ctx: Ctx, c: CastRt, pr: PowerRules, e: UnitRt): boolean {
+  const p = pOf(e.x, c.side);
+  if (pr.effect.kind === 'stampede') {
+    const half = unitRules(ctx, e).half;
+    return p + half >= c.areaMin && p - half <= c.areaMax;
+  }
+  return p >= c.areaMin && p <= c.areaMax;
+}
+
 /** The eligible set of a cast now (A2.9.5): its `hitIds` plus the first free cap slots in cap order. */
 export function castEligible(ctx: Ctx, c: CastRt, pr: PowerRules): Set<number> {
   const cands = areaCandidates(ctx, c, pr).map((x) => x.cand);
@@ -448,7 +462,7 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       const elig = castEligible(ctx, c, pr);
       const touched: { u: UnitRt; cand: CapCandidate }[] = [];
       for (const e of ctx.s.units) {
-        if (!elig.has(e.id) || c.hitIds.includes(e.id) || !hittableBy(e, c.side, fx.hitsAir, true)) continue;
+        if (!elig.has(e.id) || c.hitIds.includes(e.id) || !hittableBy(e, c.side, fx.hitsAir, true) || !inCastArea(ctx, c, pr, e)) continue;
         if (pointDist(beamX, e.x, unitRules(ctx, e).half) > fx.halfWidth) continue;
         touched.push({ u: e, cand: { id: e.id, p: pOf(e.x, c.side) } });
       }
@@ -478,7 +492,7 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
         const hits = c.runnerHits[r] as number[];
         const touched: { u: UnitRt; cand: CapCandidate }[] = [];
         for (const e of ctx.s.units) {
-          if (!elig.has(e.id) || e.side === c.side || !alive(e) || e.air || hits.includes(e.id)) continue;
+          if (!elig.has(e.id) || e.side === c.side || !alive(e) || e.air || hits.includes(e.id) || !inCastArea(ctx, c, pr, e)) continue;
           const ep = pOf(e.x, c.side);
           const half = unitRules(ctx, e).half;
           if (ep + half < startP + lo || ep - half > startP + hi) continue;
@@ -514,7 +528,7 @@ function runCast(ctx: Ctx, c: CastRt, pr: PowerRules): void {
       const elig = castEligible(ctx, c, pr);
       const touched: { u: UnitRt; cand: CapCandidate }[] = [];
       for (const e of ctx.s.units) {
-        if (!elig.has(e.id) || !hittableBy(e, c.side, fx.hitsAir, true)) continue;
+        if (!elig.has(e.id) || !hittableBy(e, c.side, fx.hitsAir, true) || !inCastArea(ctx, c, pr, e)) continue;
         if (centreDist(c.x, e.x) > fx.halfZone) continue;
         touched.push({ u: e, cand: { id: e.id, p: pOf(e.x, c.side) } });
       }

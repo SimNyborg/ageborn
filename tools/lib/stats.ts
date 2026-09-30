@@ -75,6 +75,20 @@ export function pairedDelta(pairScores: readonly number[]): Estimate {
 }
 
 /**
+ * The mean of paired differences in points (×100) with a normal 95% interval: one difference per seed,
+ * for example a test plan's score minus a control plan's score against the same opponent (A2.9.12
+ * situational power rows).
+ */
+export function meanDiff(diffs: readonly number[]): Estimate {
+  const n = diffs.length;
+  if (n === 0) return { value: Number.NaN, lo: Number.NaN, hi: Number.NaN, n };
+  const m = mean(diffs);
+  const se = stdev(diffs) / Math.sqrt(n);
+  const value = m * 100;
+  return { value, lo: value - Z95 * se * 100, hi: value + Z95 * se * 100, n };
+}
+
+/**
  * A proportion in percent with a Wilson 95% interval. `successes` may be fractional (draws count half).
  */
 export function proportion(successes: number, n: number): Estimate {

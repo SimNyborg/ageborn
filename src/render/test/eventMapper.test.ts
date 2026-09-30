@@ -414,6 +414,11 @@ describe('event mapper: coverage', () => {
     expect(pick(out, 'view').map((v) => v.ev.t)).toEqual(['emote', 'denied']);
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['emote_pop', 'ui_deny']);
   });
+
+  it('a rejected power command keeps its slot, so the HUD flashes the right button (A2.9.7)', () => {
+    const out = run([ev('commandRejected', { side: 0, t: 'power', reason: 'powerNoTarget', slot: 'field' })]);
+    expect(pick(out, 'view').map((v) => v.ev)).toEqual([{ t: 'denied', command: 'power', reason: 'powerNoTarget', slot: 'field' }]);
+  });
 });
 
 describe('event mapper: effect presets and sizes on the real content', () => {

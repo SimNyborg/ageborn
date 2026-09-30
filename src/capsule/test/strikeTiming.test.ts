@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { FakeAudio } from '@/contracts/fakes/audio';
 import { planCapsuleShow, SHOW_TIMING, type ShowPlan, type ShowStep } from '../plan';
 import { ShowRunner, type ShowView, type StrikeHit, type TimedStrike } from '../runner';
-import { comboPitchBp, gradeOffset, judgeTap, nextCombo, STRIKE_WINDOW, strikeOffsetMs, windowCloseMs } from '../strikeTiming';
+import { comboPitchBp, gradeOffset, judgeTap, MAX_OUTPUT_LATENCY_MS, nextCombo, STRIKE_WINDOW, strikeOffsetMs, windowCloseMs, windowForOutputLatency } from '../strikeTiming';
 import { reveal, stack, testCatalog } from './fixtures';
 
 const catalog = testCatalog();
@@ -19,7 +19,7 @@ const ON = I + W.latencyMs;
 
 describe('strike timing window (pure, ms)', () => {
   it('grades a latency-corrected offset: Perfect ±60, Good ±140, else a miss', () => {
-    expect(W).toEqual({ perfectMs: 60, goodMs: 140, latencyMs: 30, lockMs: 300 });
+    expect(W).toEqual({ perfectMs: 60, goodMs: 140, latencyMs: 30, lockMs: 180, minGapMs: 150 });
     expect(gradeOffset(0)).toBe('perfect');
     expect(gradeOffset(-60)).toBe('perfect');
     expect(gradeOffset(60)).toBe('perfect');
@@ -49,10 +49,32 @@ describe('strike timing window (pure, ms)', () => {
   });
 
   it('counts one tap per strike from the lock on, so an early tap is a miss and earlier taps are ignored', () => {
-    expect(judgeTap(ON - 300, I)).toEqual({ grade: 'miss', offsetMs: -300 });
+    expect(judgeTap(ON - 180, I)).toEqual({ grade: 'miss', offsetMs: -180 });
     expect(judgeTap(ON - 141, I)?.grade).toBe('miss');
-    expect(judgeTap(ON - 301, I)).toBeNull();
+    expect(judgeTap(ON - 181, I)).toBeNull();
     expect(judgeTap(0, I)).toBeNull();
+  });
+
+  it('starts the lock after the third tick, so a tap on each tick never uses up the strike', () => {
+    for (let k = 0; k < SHOW_TIMING.strikeTicks; k++) expect(judgeTap(k * SHOW_TIMING.strikeBeatMs, I)).toBeNull();
+    // Even a tap on the third tick a little late (40 ms) is not counted yet.
+    expect(judgeTap(2 * SHOW_TIMING.strikeBeatMs + 40, I)).toBeNull();
+  });
+
+  it('makes a counted tap that follows the last one too closely a miss (mashing), not one on the beat', () => {
+    expect(judgeTap(ON, I, W, W.minGapMs - 1)).toEqual({ grade: 'miss', offsetMs: 0 });
+    expect(judgeTap(ON, I, W, W.minGapMs)).toEqual({ grade: 'perfect', offsetMs: 0 });
+    expect(judgeTap(ON, I, W, SHOW_TIMING.strikeBeatMs)?.grade).toBe('perfect');
+  });
+
+  it('follows the audio output latency (half of it, clamped), keeping the window inside the strike', () => {
+    expect(windowForOutputLatency(0)).toEqual(W);
+    expect(windowForOutputLatency(40).latencyMs).toBe(W.latencyMs + 20);
+    expect(windowForOutputLatency(150).latencyMs).toBe(W.latencyMs + MAX_OUTPUT_LATENCY_MS / 2);
+    expect(windowForOutputLatency(-5)).toEqual(W);
+    expect(windowForOutputLatency(Number.NaN)).toEqual(W);
+    const widest = windowForOutputLatency(1000);
+    expect(windowCloseMs(SHOW_TIMING.strikeImpactMs, widest)).toBeLessThan(SHOW_TIMING.strikeMs);
   });
 
   it('builds a combo on consecutive Perfects only, and pitches the Perfect ring up a major scale', () => {
@@ -173,7 +195,9 @@ describe('timing a strike never changes the result (A10, A15.3)', () => {
       const patterns: Record<string, number[]> = {
         perfect: at(0),
         good: at(100),
-        early: at(-200),
+        early: at(-160),
+        // Tapping along with the count-in: a tap on each tick, then the beat.
+        tapAlong: timed.flatMap((s) => [0, 200, 400].map((t) => startOf(s.id) + t).concat(startOf(s.id) + ON)),
         // Past the window but still inside the strike: too late to count.
         late: at(150),
         // Mashing through every hammer blow, every 23 ms.
@@ -198,10 +222,17 @@ describe('timing a strike never changes the result (A10, A15.3)', () => {
       expect(good.hits.every((h) => h.grade === 'good' && h.combo === 0)).toBe(true);
       const early = play(plan, patterns.early);
       expect(early.hits.every((h) => h.grade === 'miss')).toBe(true);
+      expect(early.hits).toHaveLength(strikeIds.length);
       expect(early.graded).toEqual([]);
+      // Ticks tapped along are ignored; the tap on the beat is the one judged, and it is Perfect.
+      const along = play(plan, patterns.tapAlong);
+      expect(along.hits.map((h) => h.grade)).toEqual(strikeIds.map(() => 'perfect'));
+      expect(along.hits.map((h) => h.combo)).toEqual(strikeIds.map((_, i) => i + 1));
       // Too late to count at all: the strike just landed on its own.
       expect(play(plan, patterns.late).hits).toEqual([]);
-      expect(play(plan, patterns.mash).hits.every((h) => h.grade === 'miss')).toBe(true);
+      const mash = play(plan, patterns.mash);
+      expect(mash.hits).toHaveLength(strikeIds.length);
+      expect(mash.hits.every((h) => h.grade === 'miss')).toBe(true);
     });
   }
 

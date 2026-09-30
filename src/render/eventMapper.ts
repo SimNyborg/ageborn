@@ -681,7 +681,7 @@ export class EventMapper {
       case 'commandRejected':
         if (ev.side !== this.mySide) return;
         this.rule('deny', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
-        out.push({ a: 'view', ev: { t: 'denied', command: ev.t, reason: ev.reason } });
+        out.push({ a: 'view', ev: ev.slot ? { t: 'denied', command: ev.t, reason: ev.reason, slot: ev.slot } : { t: 'denied', command: ev.t, reason: ev.reason } });
         return;
       case 'matchEnded': {
         const r = ev.result;

@@ -81,7 +81,6 @@ describe('Age Powers: slots, cost and validation (A2.9.1, A2.9.2, A2.9.7)', () =
 
   it('rejections come in the A2.9.7 order, before any gold is paid', () => {
     const { sim, st } = powerArena('meteor_shower');
-    const g0 = sim.state.sides[0].gold;
     expect(rejected(st.step({ t: 'power', side: 0, slot: 'middle' as 'home' }))).toBe('badCommand');
     expect(rejected(st.step({ t: 'power', side: 0, slot: 'home', p: Number.NaN }))).toBe('badCommand');
     // reloading beats no gold
@@ -91,12 +90,14 @@ describe('Age Powers: slots, cost and validation (A2.9.1, A2.9.2, A2.9.7)', () =
     devSetPower(sim, 0, 1000000, 'home');
     // auto-aim with nothing eligible beats no gold
     expect(rejected(cast(st, 'home'))).toBe('powerNoTarget');
-    // a manual drop still needs the gold
+    // a manual drop still needs the gold; nothing is paid and the reload is kept
+    devSetGold(sim, 0, 99);
+    const g1 = sim.state.sides[0].gold;
     const ev = cast(st, 'home', 500);
     expect(rejected(ev)).toBe('noGold');
     expect(ofKind(ev, 'commandRejected')[0]?.slot).toBe('home');
     expect(sim.state.sides[0].powerPpm[0]).toBe(1000000);
-    expect(sim.state.sides[0].gold).toBe(ofKind(ev, 'commandRejected').length > 0 ? sim.state.sides[0].gold : g0);
+    expect(sim.state.sides[0].gold).toBe(g1 + PASSIVE);
   });
 
   it('an empty slot is rejected with noPower (a locked slot arrives empty)', () => {
@@ -163,13 +164,20 @@ describe('Age Powers: reload (A2.9.3)', () => {
   it('the remainder is carried, so a 30 s reload fills on tick 600, not 601', () => {
     const { sim, st } = powerArena('caltrops');
     enemies(sim, 'footman', [600]);
-    expect(ofKind(cast(st, 'home', 600), 'powerTelegraph')).toHaveLength(1);
+    const tel = ofKind(cast(st, 'home', 600), 'powerTelegraph')[0];
+    expect(tel).toBeDefined();
+    const castTick = tel?.tick ?? 0;
     const s = sim.state.sides[0];
     // 1 tick already reloaded after the cast
     expect(reloadTicksLeft(s.powerPpm[0], s.powerRem[0], 10000, 600)).toBe(599);
-    const ev = stepN(sim, 599);
-    expect(ofKind(ev, 'powerReady').filter((r) => r.side === 0 && r.slot === 'home')).toHaveLength(1);
-    expect(ofKind(ev, 'powerReady').find((r) => r.side === 0 && r.slot === 'home')?.tick).toBe((ofKind(ev, 'powerReady')[0]?.tick ?? 0));
+    const homeReady = (ev: readonly SimEvent[]) => ofKind(ev, 'powerReady').filter((r) => r.side === 0 && r.slot === 'home');
+    // not a tick early ...
+    expect(homeReady(stepN(sim, 598))).toHaveLength(0);
+    expect(sim.state.sides[0].powerPpm[0]).toBeLessThan(1000000);
+    // ... and not a tick late: the cast tick reloads too, so 600 reload ticks end on castTick + 599
+    const ready = homeReady(stepN(sim, 1));
+    expect(ready).toHaveLength(1);
+    expect(ready[0]?.tick).toBe(castTick + 599);
     expect(sim.state.sides[0].powerPpm[0]).toBe(1000000);
   });
 
@@ -250,6 +258,30 @@ describe('Age Powers: reach and the hard mask (A2.9.4)', () => {
     const hit = new Set(ofKind(ev, 'hit').filter((h) => h.sourceKind === 'power').map((h) => h.targetId));
     for (const id of outside) expect(hit.has(id)).toBe(false);
     for (const id of inside) expect(hit.has(id)).toBe(true);
+  });
+
+  it('a unit already hit by a barrage is not hit again once it is moved past the Home line (the mask beats hitIds)', () => {
+    const { sim, st } = powerArena('meteor_shower');
+    // Hit by the first meteors near the zone edge at 600, then carried past the line into the reach of
+    // the last ones (they land up to 1,000 + jitter, radius 40).
+    const [id] = enemies(sim, 'tuskback', [620]);
+    const ev = [...cast(st, 'home', 1990)];
+    expect(ofKind(ev, 'powerTelegraph')[0]?.x).toBe(800000);
+    // Run the barrage until its first blast lands on the unit (it joins hitIds), then move it past 1,000
+    // the way knockback or Fall back would.
+    let firstHit = -1;
+    for (let i = 0; i < 80 && firstHit < 0; i += 1) {
+      const e = stepN(sim, 1);
+      if (ofKind(e, 'hit').some((h) => h.sourceKind === 'power' && h.targetId === id)) firstHit = sim.state.tick;
+    }
+    expect(firstHit).toBeGreaterThan(0);
+    const u = unitById(sim, id as number);
+    if (!u) throw new Error('unit gone');
+    const hp = u.hp;
+    u.x = 1010 * 1000;
+    const later = stepN(sim, 80);
+    expect(ofKind(later, 'hit').filter((h) => h.sourceKind === 'power' && h.targetId === id)).toHaveLength(0);
+    expect(unitById(sim, id as number)?.hp).toBe(hp);
   });
 
   it('a Front effect never touches an enemy past the band max + zone / 2', () => {

@@ -10,7 +10,8 @@ import type { AgeId, CardId, Command, EmoteId, MatchOutcome, PowerReach, PowerSl
 
 export type HudViewEvent =
   | { t: 'emote'; side: Side; emote: EmoteId }
-  | { t: 'denied'; command: Command['t']; reason: string }
+  /** `slot` is set for a rejected `power` command (A2.9.7), so the right power button answers. */
+  | { t: 'denied'; command: Command['t']; reason: string; slot?: PowerSlot }
   | { t: 'evolved'; side: Side; age: AgeId }
   | { t: 'ascending'; side: Side; age: AgeId }
   | { t: 'lastStandArmed'; side: Side }

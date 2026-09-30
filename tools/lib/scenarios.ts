@@ -6,7 +6,13 @@
  *   base's destruction. The defender trains nothing, owns no turrets and has Last Stand spent; the clock
  *   is off (`training.noClock`), so no phase multiplies base damage.
  * - **Power damage per unit in zone**: the A2.9 coverage estimate (count × 2 × radius / zone hits per
- *   unit) against the age's L1 Infantry and Heavy commons: 60-100% and 15-35%.
+ *   unit) against the age's L1 Infantry and Heavy commons (reported).
+ * - **Static per-power budgets by family** (A2.9.6, A2.9.12): Home bombards and sweeps 80-100% of I and
+ *   20-30% of H per unit; front barrages and charges 60-95% and 15-27%; strikes 55-65% of H and never a
+ *   kill on a full-HP same-age Heavy or non-Legendary Epic (Epics take `strikeEpicBp`); controls at least
+ *   12 disabled unit-seconds per 100 gold at the cap with damage ≤ 45% of I (snares and pulls 30-40%);
+ *   Flak ≤ 100% of its age's air Epic at the centre; buffs ≤ 70% of I in shields plus heals per target.
+ *   Pulse counts use the sim's formula (max(1, duration ÷ 500)).
  *
  * The base scenario sets up state with the sim's dev helpers (src/sim/debug.ts), which is fine for a tool
  * and means the sim refuses to build a replay of it.
@@ -51,6 +57,104 @@ export function commonArmy(content: CompiledContent, age: AgeId): UnitDef[] {
     pop += u.pop;
   }
   return army;
+}
+
+/** The static budget check of one power (A2.9.6). Families without a numeric budget always pass. */
+export interface PowerBudget {
+  power: CardId;
+  family: PowerDef['family'];
+  target: string;
+  value: string;
+  pass: boolean;
+}
+
+/** HP with the innate shield (the Photon Knight's counts as HP). */
+function ehp(u: UnitDef): number {
+  const shield = u.abilities.find((a) => a.kind === 'innateShield');
+  return u.hp + (shield?.kind === 'innateShield' ? shield.amount : 0);
+}
+
+const pctOf = (a: number, b: number): number => Math.round((a * 100) / b);
+
+export function powerBudget(content: CompiledContent, pw: PowerDef): PowerBudget {
+  const e = pw.effect;
+  const us = unitsOfAge(content, pw.age);
+  const i = us.find((u) => u.group === 'infantry' && u.rarity === 'common');
+  const h = us.find((u) => u.group === 'heavy' && u.rarity === 'common');
+  const epics = us.filter((u) => u.rarity === 'epic');
+  const epic = epics.find((u) => u.group === 'epic') ?? epics[0];
+  const airEpic = epics.find((u) => u.tags.includes('air')) ?? epic;
+  const out = (target: string, value: string, pass: boolean): PowerBudget => ({ power: pw.id, family: pw.family, target, value, pass });
+  if (!i || !h) return out('-', 'no Infantry or Heavy common in the age', false);
+  switch (pw.family) {
+    case 'bombard':
+    case 'sweep':
+    case 'frontBarrage':
+    case 'charge': {
+      let perUnit = 0;
+      if (e.kind === 'barrage') perUnit = (e.damage * e.count * 2 * e.radius) / e.zone;
+      else if (e.kind === 'sweep') perUnit = e.damage;
+      else if (e.kind === 'stampede') perUnit = e.damage * e.maxHitsPerEnemy;
+      const home = pw.family === 'bombard' || pw.family === 'sweep';
+      const [ilo, ihi, hlo, hhi] = home ? [80, 100, 20, 30] : [60, 95, 15, 27];
+      const li = pctOf(perUnit, ehp(i));
+      const hi = pctOf(perUnit, ehp(h));
+      return out(`${ilo}-${ihi}% of ${i.id} / ${hlo}-${hhi}% of ${h.id}`, `${Math.round(perUnit)} HP: ${li}% / ${hi}%`, li >= ilo && li <= ihi && hi >= hlo && hi <= hhi);
+    }
+    case 'strike': {
+      if (e.kind !== 'strike') break;
+      const total = e.damage * e.shots;
+      const pct = pctOf(total, ehp(h));
+      const onEpic = epic ? Math.trunc((total * content.economy.power.strikeEpicBp) / 10_000) : 0;
+      const epicOk = !epic || onEpic < ehp(epic);
+      return out(`55-65% of ${h.id}; never kills a full ${h.id} or ${epic?.id ?? 'Epic'}`, `${total}: ${pct}%${epic ? `; ${epic.id} takes ${onEpic} of ${ehp(epic)}` : ''}`, pct >= 55 && pct <= 65 && total < ehp(h) && epicOk);
+    }
+    case 'snare':
+    case 'pull':
+    case 'stun': {
+      if (e.kind !== 'field') break;
+      const pulses = Math.max(1, Math.trunc(e.durationMs / 500));
+      const cap = pw.maxTargets ?? 0;
+      let ds = 0;
+      for (const st of e.statuses ?? []) {
+        if (st.kind === 'stun') ds += (cap * st.durationMs) / 1000;
+        if (st.kind === 'snare') ds += (cap * (st.magnitudeBp / 10_000) * pulses * 500) / 1000;
+      }
+      const per100 = (ds * 100) / pw.cost;
+      const dmgPct = ((e.damagePerPulse ?? 0) * pulses * 100) / ehp(i);
+      const band = pw.family === 'stun' ? [0, 45] : [30, 40];
+      return out(
+        `≥ 12 disabled unit-s per 100 g; damage ${band[0]}-${band[1]}% of ${i.id}`,
+        `${per100.toFixed(1)} unit-s per 100 g; damage ${Math.round(dmgPct)}%`,
+        per100 >= 12 && Math.round(dmgPct) >= (band[0] as number) && dmgPct <= (band[1] as number) + 0.5,
+      );
+    }
+    case 'flak': {
+      if (e.kind !== 'barrage' || !airEpic) break;
+      const centre = e.damage * e.count;
+      return out(`≤ 100% of ${airEpic.id} at the centre`, `${centre} of ${ehp(airEpic)}: ${pctOf(centre, ehp(airEpic))}%`, centre <= ehp(airEpic));
+    }
+    case 'rally':
+    case 'ward':
+    case 'mend': {
+      if (e.kind !== 'buffAll') break;
+      let total = 0;
+      let capsOk = true;
+      const caps = content.economy.statCaps;
+      for (const st of e.statuses) {
+        if (st.kind === 'shield') total += st.amount ?? 0;
+        if (st.kind === 'regen') total += (i.hp * st.magnitudeBp) / 10_000;
+        if (st.kind === 'speedBuff' && st.magnitudeBp > caps.speedBp) capsOk = false;
+        if (st.kind === 'attackSpeedBuff' && st.magnitudeBp > caps.attackSpeedBp) capsOk = false;
+        if (st.kind === 'damageBuff' && st.magnitudeBp > caps.damageBp) capsOk = false;
+      }
+      const pct = pctOf(total, ehp(i));
+      return out(`shields + heals ≤ 70% of ${i.id}; stats within the A18.2 caps; ≤ 8 units`, `${pct}%${capsOk ? '' : ', over a stat cap'}; ${e.maxTargets} units`, pct <= 70 && capsOk && e.maxTargets <= 8);
+    }
+    default:
+      return out('no static budget (gated through its ±3 row)', '-', true);
+  }
+  return out('-', `effect ${e.kind} does not fit family ${pw.family}`, false);
 }
 
 /** Evolves `side` to `ageIndex` with the regular Evolve command (so the base rescales as in a match). */

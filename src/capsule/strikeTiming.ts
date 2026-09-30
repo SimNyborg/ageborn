@@ -26,18 +26,43 @@ export interface StrikeWindow {
   latencyMs: number;
   /**
    * The first tap closer than this before the hit uses up the strike's one judged tap (a miss when
-   * it is early), so mashing cannot farm Perfects. Earlier taps are ignored.
+   * it is early). Earlier taps are ignored, so a player tapping along with the count-in (a tap on
+   * each tick, 200 ms apart) keeps the strike for the tap on the beat: the lock starts just outside
+   * the Good window, after the third tick.
    */
   lockMs: number;
+  /**
+   * A judged tap that comes less than this after the previous tap (any tap, counted or not) is a
+   * miss: mashing cannot farm Perfects, while tapping along with the 200 ms count-in still can.
+   */
+  minGapMs: number;
 }
 
 /**
  * Tuned 2026-09-29 (docs/decisions.md): a casual player extrapolating a 200 ms count-in taps with a
  * spread of about ±50 ms (1 SD) on a phone. ±60 ms Perfect is then hit roughly 2 times in 3 (4 in a
  * row about 1 in 5), ±140 ms Good almost always, and a pure reaction to the hit (≥ 180 ms after it)
- * falls outside both, so it is timing, not reflex.
+ * falls outside both, so it is timing, not reflex. The lock (180 ms, from 2026-09-30) starts after
+ * the third tick even for a tap-along on the ticks; mashing is stopped by `minGapMs` instead.
  */
-export const STRIKE_WINDOW: Readonly<StrikeWindow> = { perfectMs: 60, goodMs: 140, latencyMs: 30, lockMs: 300 };
+export const STRIKE_WINDOW: Readonly<StrikeWindow> = { perfectMs: 60, goodMs: 140, latencyMs: 30, lockMs: 180, minGapMs: 150 };
+
+/**
+ * The most audio output latency the window follows (a device reporting more is centred here): half
+ * of it (+25 ms) keeps the window's late edge inside the strike (600 + 55 + 140 < 800 ms).
+ */
+export const MAX_OUTPUT_LATENCY_MS = 50;
+
+/**
+ * The window for a device whose audio reaches the ear `outputLatencyMs` late (the AudioContext's
+ * `outputLatency`, or `baseLatency`, in ms): the centre moves later by half of it (a player times to
+ * the ticks and to the closing ring at once), the latency clamped to 0..`MAX_OUTPUT_LATENCY_MS`.
+ * Integer ms. A calibration setting can replace this later.
+ */
+export function windowForOutputLatency(outputLatencyMs: number, w: StrikeWindow = STRIKE_WINDOW): StrikeWindow {
+  const ms = Number.isFinite(outputLatencyMs) ? Math.max(0, Math.min(MAX_OUTPUT_LATENCY_MS, outputLatencyMs)) : 0;
+  return { ...w, latencyMs: w.latencyMs + Math.round(ms / 2) };
+}
 
 export type StrikeGrade = 'perfect' | 'good' | 'miss';
 
@@ -63,12 +88,13 @@ export function gradeOffset(offsetMs: number, w: StrikeWindow = STRIKE_WINDOW): 
 /**
  * Judges a tap at step time `tapMs` against the hit at `impactMs`. Returns null when the tap is too
  * early to count (before the lock) or after the window has closed; a counted tap is the strike's one
- * judged tap.
+ * judged tap. `sincePrevTapMs` is how long after the previous tap it came (show time); a counted
+ * tap closer than `minGapMs` to it is a miss (mashing).
  */
-export function judgeTap(tapMs: number, impactMs: number, w: StrikeWindow = STRIKE_WINDOW): StrikeJudgement | null {
+export function judgeTap(tapMs: number, impactMs: number, w: StrikeWindow = STRIKE_WINDOW, sincePrevTapMs = Infinity): StrikeJudgement | null {
   const offsetMs = strikeOffsetMs(tapMs, impactMs, w);
   if (offsetMs < -Math.max(w.lockMs, w.goodMs) || offsetMs > w.goodMs) return null;
-  return { grade: gradeOffset(offsetMs, w), offsetMs };
+  return { grade: sincePrevTapMs < w.minGapMs ? 'miss' : gradeOffset(offsetMs, w), offsetMs };
 }
 
 /** Step time after which the strike's window is closed (an untapped strike ends the combo here). */

@@ -52,6 +52,7 @@ import {
   sellIntent,
   simDenyReason,
   powerSlotOf,
+  powerTarget,
   type DenyReason,
   type DenyTarget,
   type HudIntent,
@@ -341,7 +342,8 @@ export function Hud(props: HudProps) {
           else setPopover({ mount: ev.mount, x: ev.screen.x, y: ev.screen.y });
           return;
         case 'denied': {
-          const target = lastTarget.current[ev.command] ?? denyTargetFor(ev.command);
+          // A power rejection names its slot, so two slots pressed close together each get their own answer.
+          const target = ev.command === 'power' && ev.slot ? powerTarget(ev.slot) : (lastTarget.current[ev.command] ?? denyTargetFor(ev.command));
           if (!target) return;
           flash(target);
           const slot = /^card(\d)$/.exec(target);

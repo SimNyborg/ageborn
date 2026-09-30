@@ -188,7 +188,8 @@ export type ViewAction =
 /** Events the battle view raises for the HUD and the session. */
 export type ViewEvent =
   | { t: 'emote'; side: Side; emote: EmoteId }
-  | { t: 'denied'; command: Command['t']; reason: string }
+  /** `slot` is set for a rejected `power` command, so the HUD flashes the right button (A2.9.7). */
+  | { t: 'denied'; command: Command['t']; reason: string; slot?: PowerSlot }
   | { t: 'evolved'; side: Side; age: AgeId }
   | { t: 'ascending'; side: Side; age: AgeId }
   | { t: 'lastStandArmed'; side: Side }

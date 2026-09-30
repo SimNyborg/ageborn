@@ -12,7 +12,12 @@
  *   the test plan once on each side) in the Standard window that holds the card's age (its second
  *   position where possible). Passes when the 95% CI of the win-rate delta lies within ±3 points (full:
  *   2,000 matches per card) or ±6 (smoke: 400 matches). Cards in the baseline plan are the control.
- * - **Scenarios**: base time to kill per age and the A2.9 power damage per unit in zone.
+ * - **Power metrics** of the mirror (A2.9.12, gated): power share of gold and of enemy value killed, the
+ *   army share one cast touches, the largest single cast, casts per age stay and value per gold.
+ * - **Situational powers** (A2.9.12 setups): Flak is tested against an opponent plan with its age's air
+ *   Epic in the Support Rare slot, Suppress against the 4-turret Hold proxy; the delta is the test plan's
+ *   score minus the baseline plan's score against the same opponent on the same seeds.
+ * - **Scenarios**: base time to kill per age and the static per-power checks by family (A2.9.6).
  * - **Damage per gold per card**, per age (reported, not gated).
  *
  * Exits non-zero when an A2.14 target fails (unless `--no-gate`). Library entry: `runBalance`.
@@ -23,10 +28,11 @@ import type { AgeId, CardId, CompiledContent, FormatId } from '../src/contracts'
 import { content as gameContent } from '../src/content';
 import { BALANCED_GENERAL, playedResults, type JobResult, type MatchJob } from './lib/jobs';
 import { totalKills, type MatchSummary } from './lib/metrics';
-import { agesOf, allCardTests, baselinePlan, cardTest, type CardTest } from './lib/plans';
+import { agesOf, allCardTests, baselinePlan, cardTest, clonePlan, unitsOfAge, type CardTest, type Plan } from './lib/plans';
+import { powerRows, powerSummary, type PowerRow, type PowerSummary } from './lib/powerMetrics';
 import { runJobs, type RunOutcome } from './lib/runner';
-import { baseTimeToKill, powerCoverage } from './lib/scenarios';
-import { median, pairedDelta, proportion, quantile, shareWithin, type Estimate } from './lib/stats';
+import { baseTimeToKill, powerBudget, powerCoverage, type PowerBudget } from './lib/scenarios';
+import { meanDiff, median, pairedDelta, proportion, quantile, shareWithin, type Estimate } from './lib/stats';
 import {
   ciWithinCheck,
   crashCheck,
@@ -106,9 +112,37 @@ export const TARGETS = {
   researchItems: { lo: 5, hi: 8 },
   firstMover: { lo: 47, hi: 53 },
   baseKill: { lo: 40, hi: 60 },
-  powerLight: { lo: 60, hi: 100 },
-  powerHeavy: { lo: 15, hi: 35 },
+  /** A2.9.12 power gates on the tier V mirror. */
+  power: {
+    goldShare: { lo: 8, hi: 16 },
+    killShare: { lo: 5, hi: 12 },
+    armyShareMax: 40,
+    largestCastMax: 350,
+    castsPerStay: { lo: 1.5, hi: 3.5 },
+    staysWithCastMin: 70,
+    fieldStaysMin: 50,
+    valuePerGold: { lo: 1.2, hi: 2.0 },
+  },
 } as const;
+
+/**
+ * A2.9.12 situational setups: Flak is gated against its age's air Epic, Suppress against a 4-turret Hold
+ * opponent; every other power (controls included) on the baseline, head to head.
+ */
+export type Situation = { kind: 'airEpic'; plan: Plan } | { kind: 'turtle' };
+
+export function situationOf(content: CompiledContent, card: CardId): Situation | null {
+  const pw = content.powers[card];
+  if (!pw) return null;
+  if (pw.family === 'suppress') return { kind: 'turtle' };
+  if (pw.family !== 'flak') return null;
+  const air = unitsOfAge(content, pw.age).find((u) => u.rarity === 'epic' && u.tags.includes('air'));
+  const plan = clonePlan(baselinePlan(content));
+  const l = plan[pw.age];
+  // The Support Rare slot (the baseline's fifth troop slot) holds the air Epic.
+  if (air && l) l.units[4] = air.id;
+  return { kind: 'airEpic', plan };
+}
 
 const TICKS_PER_SEC = 20;
 
@@ -153,6 +187,23 @@ export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: 
   for (const t of tests) {
     if (t.inBaseline) continue;
     const format = cardFormat(content, t.age);
+    const sit = situationOf(content, t.card);
+    if (sit) {
+      // The test plan and the baseline plan each meet the same opponent on the same seeds, on both sides.
+      const opp: Plan = sit.kind === 'airEpic' ? sit.plan : base;
+      const oppSeat: MatchJob['seats'][number] = sit.kind === 'turtle' ? { kind: 'proxy', proxy: 'turret_turtle' } : botSeat(o.tier);
+      for (let k = 0; k < o.pairsPerCard; k += 1) {
+        const seed = o.seed + k;
+        for (const [tag, plan] of [
+          [`card.${t.card}`, t.plan],
+          [`ctrl.${t.card}`, base],
+        ] as const) {
+          jobs.push({ id: jobs.length, tag, seed, format, level: o.level, plans: [plan, opp], seats: [botSeat(o.tier), oppSeat], subject: 0 });
+          jobs.push({ id: jobs.length, tag, seed, format, level: o.level, plans: [opp, plan], seats: [oppSeat, botSeat(o.tier)], subject: 1 });
+        }
+      }
+      continue;
+    }
     for (let k = 0; k < o.pairsPerCard; k += 1) {
       const seed = o.seed + k;
       jobs.push({ id: jobs.length, tag: `card.${t.card}`, seed, format, level: o.level, plans: [t.plan, base], seats, subject: 0 });
@@ -193,9 +244,11 @@ export interface MirrorStats {
   firstClashSamples: number;
   /** Share of contact samples with the contact point between the turret covers (A17.14, reported). */
   contactMiddlePct: number;
+  /** A2.9.12 power metrics, both sides pooled; null when the summaries carry none. */
+  power: PowerSummary | null;
 }
 
-export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): MirrorStats {
+export function mirrorStats(format: FormatId, ms: readonly MatchSummary[], content: CompiledContent = gameContent): MirrorStats {
   const lengths = ms.map((m) => m.ticks / TICKS_PER_SEC);
   const evolves: number[][] = [];
   for (const m of ms) {
@@ -260,6 +313,7 @@ export function mirrorStats(format: FormatId, ms: readonly MatchSummary[]): Mirr
     kills,
     draws,
     ...clashAndContact(ms),
+    power: ms.some((m) => m.sides.some((x) => x.power)) ? powerSummary(content, ms.flatMap((m) => m.sides)) : null,
   };
 }
 
@@ -358,7 +412,59 @@ export function mirrorChecks(s: MirrorStats): Check[] {
     // A16.5: turret share of kills is reported only.
     checks.push(infoCheck(`info.${f}.turretShare`, `${name} War turret share of kills`, fmtPct(s.turretSharePct), 'reported only (A16.5)'));
   }
+  if (s.power) checks.push(...powerChecks(f, name, s.power, s.matches));
   return checks;
+}
+
+/** The A2.9.12 power gates of one mirror format. */
+export function powerChecks(f: FormatId, name: string, p: PowerSummary, matches: number): Check[] {
+  const T = TARGETS.power;
+  const out: Check[] = [];
+  const m = (c: Check): Check => requireSamples(c, matches);
+  const pct = (v: number): string => fmtPct(v);
+  out.push(m(rangeCheck(`mirror.${f}.power.goldShare`, `${name} War: power share of gold`, p.goldSharePct, T.goldShare.lo, T.goldShare.hi, { target: `${T.goldShare.lo}-${T.goldShare.hi}% (A2.9.12)`, show: pct })));
+  out.push(
+    m(rangeCheck(`mirror.${f}.power.killShare`, `${name} War: power share of enemy value killed`, p.killSharePct, T.killShare.lo, T.killShare.hi, { target: `${T.killShare.lo}-${T.killShare.hi}% (A2.9.12)`, show: pct })),
+  );
+  out.push(
+    requireSamples(
+      maxCheck(`mirror.${f}.power.armyShare`, `${name} War: enemy army value touched by one cast (army ≥ 750, p50)`, p.armyShareP50, T.armyShareMax, { target: `≤ ${T.armyShareMax}% (A2.9.12)`, show: pct }),
+      p.armyShareSamples,
+    ),
+  );
+  out.push(
+    requireSamples(
+      maxCheck(`mirror.${f}.power.largestCast`, `${name} War: largest single cast, card value killed (p99)`, p.largestCastP99, T.largestCastMax, {
+        target: `≤ ${T.largestCastMax} (A2.9.12)`,
+        show: (v) => `${fmtNum(v, 0)} (max ${fmtNum(p.largestCastMax, 0)})`,
+      }),
+      p.casts,
+    ),
+  );
+  out.push(
+    requireSamples(
+      rangeCheck(`mirror.${f}.power.castsPerStay`, `${name} War: casts per side per age stay (median)`, p.castsPerStayMedian, T.castsPerStay.lo, T.castsPerStay.hi, {
+        target: `${T.castsPerStay.lo}-${T.castsPerStay.hi} (A2.9.12)`,
+        show: (v) => `${fmtNum(v, 1)} (mean ${fmtNum(p.castsPerStayMean, 2)})`,
+      }),
+      p.stays,
+    ),
+  );
+  out.push(requireSamples(rangeCheck(`mirror.${f}.power.staysWithCast`, `${name} War: age stays with a cast`, p.staysWithCastPct, T.staysWithCastMin, 100, { target: `≥ ${T.staysWithCastMin}% (A2.9.12)`, show: pct }), p.stays));
+  out.push(
+    requireSamples(rangeCheck(`mirror.${f}.power.fieldStays`, `${name} War: age stays with a Field cast`, p.staysWithFieldCastPct, T.fieldStaysMin, 100, { target: `≥ ${T.fieldStaysMin}% (A2.9.12)`, show: pct }), p.stays),
+  );
+  out.push(
+    requireSamples(
+      rangeCheck(`mirror.${f}.power.valuePerGold`, `${name} War: value per gold of damaging casts (median)`, p.valuePerGoldMedian, T.valuePerGold.lo, T.valuePerGold.hi, {
+        target: `${T.valuePerGold.lo}-${T.valuePerGold.hi} (A2.9.12)`,
+        show: (v) => fmtNum(v, 2),
+      }),
+      p.valuePerGoldSamples,
+    ),
+  );
+  out.push(infoCheck(`info.${f}.power.castsPerMatch`, `${name} War: casts per side per match (median)`, fmtNum(p.castsPerMatchMedian, 1), 'reported (A2.9.12: Short 5-11, Standard 9-18, Full 13-26)'));
+  return out;
 }
 
 export interface CardResult {
@@ -372,6 +478,28 @@ export interface CardResult {
   winRatePct: number;
   delta: Estimate;
   verdict: Check['verdict'];
+}
+
+/** A2.9.12 situational delta: per seed, the test plan's mean score minus the control plan's (points). */
+export function situationalDelta(test: readonly JobResult[], ctrl: readonly JobResult[]): Estimate {
+  const bySeed = (rs: readonly JobResult[]): Map<number, number> => {
+    const m = new Map<number, number[]>();
+    for (const r of rs) {
+      if (r.subject === null) continue;
+      const list = m.get(r.summary.seed) ?? [];
+      list.push(r.summary.winner === null ? 0.5 : r.summary.winner === r.subject ? 1 : 0);
+      m.set(r.summary.seed, list);
+    }
+    return new Map([...m].map(([k, xs]) => [k, xs.reduce((a, b) => a + b, 0) / xs.length]));
+  };
+  const a = bySeed(test);
+  const b = bySeed(ctrl);
+  const diffs: number[] = [];
+  for (const [seed, v] of [...a].sort((x, y) => x[0] - y[0])) {
+    const c = b.get(seed);
+    if (c !== undefined) diffs.push(v - c);
+  }
+  return meanDiff(diffs);
 }
 
 /** Pair scores per seed for one card: mean of the subject's two scores. */
@@ -424,6 +552,10 @@ export interface PowerUse {
   power: CardId;
   casts: number;
   unitsHitPerCast: number;
+  /** A2.9.12 per cast: mean card value killed, mean value per gold (kills × 1.3 ÷ cost), casts that killed nothing. */
+  killMean?: number;
+  valuePerGold?: number;
+  zeroKillPct?: number;
 }
 
 export function powerUse(ms: readonly MatchSummary[]): PowerUse[] {
@@ -438,7 +570,13 @@ export function powerUse(ms: readonly MatchSummary[]): PowerUse[] {
       }
     }
   }
-  return [...acc.entries()].map(([power, a]) => ({ power, casts: a.casts, unitsHitPerCast: a.casts ? a.hit / a.casts : 0 })).sort((a, b) => a.power.localeCompare(b.power));
+  const rows = new Map<CardId, PowerRow>(powerRows(ms.flatMap((m) => m.sides)).map((r) => [r.power, r]));
+  return [...acc.entries()]
+    .map(([power, a]) => {
+      const r = rows.get(power);
+      return { power, casts: a.casts, unitsHitPerCast: a.casts ? a.hit / a.casts : 0, ...(r ? { killMean: r.killMean, valuePerGold: r.valuePerGoldMean, zeroKillPct: r.zeroKillPct } : {}) };
+    })
+    .sort((a, b) => a.power.localeCompare(b.power));
 }
 
 export interface BalanceData {
@@ -447,14 +585,16 @@ export interface BalanceData {
   cards: CardResult[];
   baseKill: ReturnType<typeof baseTimeToKill>[];
   powerCoverage: NonNullable<ReturnType<typeof powerCoverage>>[];
+  /** The static per-power checks by family (A2.9.6). */
+  powerBudgets?: PowerBudget[];
   damagePerGold: DamagePerGold[];
   powerUse: PowerUse[];
   matches: number;
   avgMatchMs: number;
 }
 
-/** Scenario checks: base time to kill and A2.9 power damage per unit (no bots needed). */
-export function scenarioChecks(content: CompiledContent): { checks: Check[]; baseKill: BalanceData['baseKill']; coverage: BalanceData['powerCoverage'] } {
+/** Scenario checks: base time to kill and the static per-power checks by family (no bots needed). */
+export function scenarioChecks(content: CompiledContent): { checks: Check[]; baseKill: BalanceData['baseKill']; coverage: BalanceData['powerCoverage']; budgets: PowerBudget[] } {
   const checks: Check[] = [];
   const baseKill = agesOf(content).map((age) => baseTimeToKill(content, age));
   for (const b of baseKill) {
@@ -468,18 +608,13 @@ export function scenarioChecks(content: CompiledContent): { checks: Check[]; bas
   const coverage = Object.values(content.powers)
     .map((p) => powerCoverage(content, p))
     .filter((x): x is NonNullable<typeof x> => x !== null);
-  for (const c of coverage) {
-    const okLight = c.lightPct >= TARGETS.powerLight.lo && c.lightPct <= TARGETS.powerLight.hi;
-    const okHeavy = c.heavyPct >= TARGETS.powerHeavy.lo && c.heavyPct <= TARGETS.powerHeavy.hi;
-    checks.push({
-      id: `scenario.power.${c.power}`,
-      metric: `Power damage per unit, ${c.power}`,
-      target: `${TARGETS.powerLight.lo}-${TARGETS.powerLight.hi}% of ${c.light ?? 'Infantry'} / ${TARGETS.powerHeavy.lo}-${TARGETS.powerHeavy.hi}% of ${c.heavy ?? 'Heavy'}`,
-      value: `${fmtNum(c.perUnit, 0)} HP: ${fmtPct(c.lightPct, 0)} / ${fmtPct(c.heavyPct, 0)}`,
-      verdict: okLight && okHeavy ? 'pass' : 'fail',
-    });
+  // A2.9.6: each family has its own target (Flak against its age's air Epic, strikes against the Heavy
+  // and Epic, controls in disabled unit-seconds, buffs in shields and heals), with the sim's pulse counts.
+  const budgets = Object.values(content.powers).map((p) => powerBudget(content, p));
+  for (const b of budgets) {
+    checks.push({ id: `scenario.power.${b.power}`, metric: `Power budget, ${b.power} (${b.family})`, target: b.target, value: b.value, verdict: b.pass ? 'pass' : 'fail' });
   }
-  return { checks, baseKill, coverage };
+  return { checks, baseKill, coverage, budgets };
 }
 
 /** Plays a balance run and returns the report (no files written). */
@@ -516,7 +651,11 @@ export async function runBalance(o: BalanceOptions, content: CompiledContent = g
   const mirrors: MirrorStats[] = [];
   if (o.mirror) {
     for (const f of o.mirrorFormats) {
-      const s = mirrorStats(f, (byTag.get(`mirror.${f}`) ?? []).map((r) => r.summary));
+      const s = mirrorStats(
+        f,
+        (byTag.get(`mirror.${f}`) ?? []).map((r) => r.summary),
+        content,
+      );
       mirrors.push(s);
       checks.push(...mirrorChecks(s));
     }
@@ -526,7 +665,9 @@ export async function runBalance(o: BalanceOptions, content: CompiledContent = g
   for (const t of tests) {
     const rs = byTag.get(`card.${t.card}`) ?? [];
     const pairs = pairScores(rs);
-    const delta = pairedDelta(pairs);
+    // A situational power: its plan's score minus the baseline plan's against the same opponent, per seed.
+    const ctrl = byTag.get(`ctrl.${t.card}`);
+    const delta = ctrl ? situationalDelta(rs, ctrl) : pairedDelta(pairs);
     let verdict: Check['verdict'] = 'info';
     if (!t.inBaseline) {
       const c = requireSamples(ciWithinCheck(`card.${t.card}`, `Win-rate delta, ${t.card} (${t.age} ${t.rarity} ${t.kind})`, delta, o.bound), delta.n);
@@ -552,21 +693,24 @@ export async function runBalance(o: BalanceOptions, content: CompiledContent = g
 
   let baseKill: BalanceData['baseKill'] = [];
   let coverage: BalanceData['powerCoverage'] = [];
+  let budgets: PowerBudget[] = [];
   if (o.scenarios) {
     const sc = scenarioChecks(content);
     checks.push(...sc.checks);
     baseKill = sc.baseKill;
     coverage = sc.coverage;
+    budgets = sc.budgets;
   }
 
-  const all = played.map((r) => r.summary);
+  // Situational control rows are not the game's baseline: they stay out of the damage and power tables.
+  const all = played.filter((r) => !r.tag.startsWith('ctrl.')).map((r) => r.summary);
   const dpg = damagePerGold(content, all);
   const pu = powerUse(all);
   if (dpg.length > 0) checks.push(infoCheck('info.damagePerGold', 'Damage per gold per card', `${dpg.length} cards, see table`));
   const avgMatchMs = played.length ? played.reduce((a, r) => a + r.ms, 0) / played.length : 0;
   return rep.finish(
     checks,
-    { bots: { source: run.botSource, reason: run.botReason }, mirrors, cards, baseKill, powerCoverage: coverage, damagePerGold: dpg, powerUse: pu, matches: run.results.length, avgMatchMs },
+    { bots: { source: run.botSource, reason: run.botReason }, mirrors, cards, baseKill, powerCoverage: coverage, powerBudgets: budgets, damagePerGold: dpg, powerUse: pu, matches: run.results.length, avgMatchMs },
     notes,
   );
 }
@@ -597,6 +741,31 @@ export function balanceSections(r: Report<BalanceData>): string[] {
           fmtEstimate(m.firstMover, 1, '%'),
           fmtPct(m.turretSharePct),
         ]),
+      ),
+    );
+  }
+  const pm = d.mirrors.filter((m) => m.power);
+  if (pm.length > 0) {
+    out.push(
+      '## Powers in the mirror (A2.9.12)',
+      '',
+      markdownTable(
+        ['Format', 'Casts per side per match', 'Casts per stay (median / mean)', 'Stays with a cast', 'Stays with a Field cast', 'Gold share', 'Kill share', 'Army share per cast (p50)', 'Largest cast p99 (max)', 'Value per gold (median)'],
+        pm.map((m) => {
+          const p = m.power as PowerSummary;
+          return [
+            m.format,
+            fmtNum(p.castsPerMatchMedian, 1),
+            `${fmtNum(p.castsPerStayMedian, 1)} / ${fmtNum(p.castsPerStayMean, 2)}`,
+            fmtPct(p.staysWithCastPct),
+            fmtPct(p.staysWithFieldCastPct),
+            fmtPct(p.goldSharePct),
+            fmtPct(p.killSharePct),
+            `${fmtPct(p.armyShareP50, 0)} (n ${p.armyShareSamples})`,
+            `${fmtNum(p.largestCastP99, 0)} (${fmtNum(p.largestCastMax, 0)})`,
+            fmtNum(p.valuePerGoldMedian, 2),
+          ];
+        }),
       ),
     );
   }
@@ -635,11 +804,23 @@ export function balanceSections(r: Report<BalanceData>): string[] {
       '## Powers',
       '',
       markdownTable(
-        ['Power', 'A2.9 damage per unit', 'vs Infantry', 'vs Heavy', 'Casts in matches', 'Enemies hit per cast'],
-        [...new Set([...d.powerCoverage.map((x) => x.power), ...d.powerUse.map((x) => x.power)])].sort().map((id) => {
+        ['Power', 'Budget (A2.9.6)', 'A2.9 damage per unit', 'vs Infantry', 'vs Heavy', 'Casts in matches', 'Enemies hit per cast', 'Value killed per cast', 'Value per gold', 'Casts that killed nothing'],
+        [...new Set([...d.powerCoverage.map((x) => x.power), ...d.powerUse.map((x) => x.power), ...(d.powerBudgets ?? []).map((x) => x.power)])].sort().map((id) => {
           const c = d.powerCoverage.find((x) => x.power === id);
           const u = d.powerUse.find((x) => x.power === id);
-          return [id, c ? fmtNum(c.perUnit, 0) : '-', c ? fmtPct(c.lightPct, 0) : '-', c ? fmtPct(c.heavyPct, 0) : '-', u?.casts ?? 0, u ? fmtNum(u.unitsHitPerCast, 2) : '-'];
+          const b = d.powerBudgets?.find((x) => x.power === id);
+          return [
+            id,
+            b ? `${b.value} (${b.pass ? 'pass' : 'FAIL'})` : '-',
+            c ? fmtNum(c.perUnit, 0) : '-',
+            c ? fmtPct(c.lightPct, 0) : '-',
+            c ? fmtPct(c.heavyPct, 0) : '-',
+            u?.casts ?? 0,
+            u ? fmtNum(u.unitsHitPerCast, 2) : '-',
+            u?.killMean !== undefined ? fmtNum(u.killMean, 0) : '-',
+            u?.valuePerGold !== undefined ? fmtNum(u.valuePerGold, 2) : '-',
+            u?.zeroKillPct !== undefined ? fmtPct(u.zeroKillPct, 0) : '-',
+          ];
         }),
       ),
     );

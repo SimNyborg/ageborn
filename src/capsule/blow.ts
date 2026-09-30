@@ -31,20 +31,26 @@ export const BLOW = {
   pullMs: 40,
   /** The swing itself. */
   downMs: 100,
-  /** The notches: after the rebound, then after ticks 1, 2 and 3 (the top), then the pull. */
+  /**
+   * The notches: after the rebound, then after ticks 1, 2 and 3 (the top), then the pull. Each tick
+   * tips the head about 0.16 rad further over the drum as the hand lifts it, so the hammer itself
+   * counts in (readable on a phone), and the pull back over the shoulder is a real wind-up.
+   */
   notches: [
     { a: 0.34, lift: 10 },
-    { a: 0.3, lift: 34 },
-    { a: 0.22, lift: 60 },
-    { a: 0.12, lift: 86 },
+    { a: 0.18, lift: 36 },
+    { a: 0.02, lift: 62 },
+    { a: -0.13, lift: 88 },
   ] as readonly Pose[],
-  pull: { a: 0.3, lift: 94 } as Pose,
+  pull: { a: 0.3, lift: 96 } as Pose,
   /**
    * The hammer rests on the drum this long after the hit (the visible hit-stop), by grade. Even an
-   * ungraded hit sits long enough (70 ms) that a Perfect tapped just after the hit (up to +90 ms
-   * measured) still finds the hammer on the drum.
+   * ungraded hit sits 100 ms (`latencyMs + perfectMs + 10` of `STRIKE_WINDOW`), so a Perfect tapped
+   * after the hit (the raw Perfect window ends 90 ms after it) still finds the head on the drum and
+   * the stage extends the pin through its flourish. A Good that late (up to +170 ms) comes with the
+   * hammer in the air; its flourish stays at the hit point, never on the hammer.
    */
-  pinMs: { none: 70, climb: 80, good: 90, perfect: 120, max: 160 } as const,
+  pinMs: { none: 100, climb: 110, good: 110, perfect: 130, max: 160 } as const,
   /** Summit strike: two notches up (white-hot), then the slow descent over the last beat. */
   summit: {
     notches: [

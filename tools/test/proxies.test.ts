@@ -29,9 +29,11 @@ function play(id: ProxyId, seconds: number, seed = 3) {
 
 describe('exploit proxies (DESIGN B12)', () => {
   it('lists the eight B12 proxies, the A16.5 random-spam and mono-heavy proxies and the five A18.12 proxies', () => {
-    expect(EXPLOIT_PROXIES).toHaveLength(15);
+    expect(EXPLOIT_PROXIES).toHaveLength(20);
     expect(EXPLOIT_PROXIES.slice(8, 10)).toEqual(['random_spam', 'mono_heavy']);
-    expect(EXPLOIT_PROXIES.slice(10)).toEqual(['drill_rush', 'tech_turtle', 'flag_ball', 'fallback_turtle', 'stance_toggler']);
+    expect(EXPLOIT_PROXIES.slice(10, 15)).toEqual(['drill_rush', 'tech_turtle', 'flag_ball', 'fallback_turtle', 'stance_toggler']);
+    // A2.9.12 power proxies (the wave pair, no_power and the gate sniper run in their own job set)
+    expect(EXPLOIT_PROXIES.slice(15)).toEqual(['power_hoarder', 'home_turtle', 'power_spam', 'drop_spam', 'runner_reach']);
     expect(isProxyId('turret_turtle')).toBe(true);
     expect(isProxyId('nope')).toBe(false);
   });
@@ -111,5 +113,67 @@ describe('exploit proxies (DESIGN B12)', () => {
       expect(r['ascending'] ?? 0).toBe(0);
       expect(r['mountBusy'] ?? 0).toBe(0);
     }
+  });
+});
+
+describe('Age Power proxies (A2.9.12)', () => {
+  const casts = (commands: ReturnType<typeof play>['commands']) => commands.filter((c) => c.side === 0 && c.t === 'power');
+
+  it('the power hoarder holds at 480 and casts only its Home slot, auto-aimed', () => {
+    const { commands } = play('power_hoarder', 420);
+    expect(commands.find((c) => c.side === 0 && c.t === 'stance')).toMatchObject({ mode: 'hold', holdP: 480 });
+    const cs = casts(commands);
+    expect(cs.length).toBeGreaterThan(0);
+    for (const c of cs) expect(c).toMatchObject({ slot: 'home' });
+    for (const c of cs) expect('p' in c && c.p !== undefined).toBe(false);
+  });
+
+  it('no_power never casts; power_spam casts both slots', () => {
+    expect(casts(play('no_power', 300).commands)).toHaveLength(0);
+    const slots = new Set(casts(play('power_spam', 300).commands).map((c) => (c.t === 'power' ? c.slot : '')));
+    expect(slots).toEqual(new Set(['home', 'field']));
+  });
+
+  it('drop spam, the runner and the gate sniper carry their Field power where the age has one', () => {
+    expect(STRATEGIES.drop_spam.plan(content).modern?.powers.field).toBe('paratroopers');
+    expect(STRATEGIES.drop_spam.plan(content).cosmic?.powers.field).toBe('warp_strike');
+    expect(STRATEGIES.runner_reach.plan(content).gunpowder?.powers.field).toBe('horse_artillery');
+    expect(STRATEGIES.gate_sniper.plan(content).cosmic?.powers.field).toBe('ion_cannon');
+  });
+
+  it('the covered value reads the reach area, the cap and the screen (the save_counter trigger)', () => {
+    const p = createProxy('save_counter', content, 0, 1, 'full');
+    const unit = (id: number, p: number) => ({ id, side: 1 as const, card: 'bonker', level: 1, p: p * 1000, hp: 100, maxHp: 100, shield: 0, air: false, summoned: false });
+    // Eight Bonkers in the Home half and a rich clump past mid-lane: Meteor Shower (cap 5) covers five.
+    const units = [...[440, 460, 480, 500, 520, 540, 560, 580].map((x, i) => unit(10 + i, x)), ...[1300, 1310, 1320, 1330].map((x, i) => unit(30 + i, x))];
+    const z = p.coveredZone({ side: 0, units } as never, 'meteor_shower');
+    const cost = content.units.bonker?.cost ?? 0;
+    expect(z.value).toBe(5 * cost);
+    expect(z.count).toBe(5);
+    // the aim stays inside the Home band (centre ≤ 1,000 − zone / 2)
+    expect(z.p).not.toBeNull();
+    expect(z.p as number).toBeLessThanOrEqual(1000 - (content.powers.meteor_shower?.effect as { zone: number }).zone / 2);
+    // only the clump past mid-lane: nothing in reach
+    expect(p.coveredZone({ side: 0, units: units.slice(8) } as never, 'meteor_shower').value).toBe(0);
+  });
+
+  it('bait, then wave lures the Home power before its banked wave goes', () => {
+    const seed = 5;
+    const sim = createSim({
+      seed,
+      format: 'standard',
+      content,
+      sides: [
+        sideConfig(content, STRATEGIES.bait_wave.plan(content), { level: 7, label: 'Proxy bait_wave', isBot: false }),
+        sideConfig(content, STRATEGIES.power_hoarder.plan(content), { level: 7, label: 'Proxy power_hoarder', isBot: false }),
+      ],
+    });
+    const bait = createProxy('bait_wave', content, 0, seed, 'standard');
+    const m = new HeadlessMatch(sim, [
+      { side: 0, controller: bait },
+      { side: 1, controller: createProxy('power_hoarder', content, 1, seed, 'standard') },
+    ]);
+    m.run({ maxTicks: 20 * 480 });
+    expect(bait.baits.started).toBeGreaterThan(0);
   });
 });

@@ -94,13 +94,24 @@ const HIT = { x: PED.x + 78, y: PED.y - 138 };
  * tier colour, so it cannot hint at a climb.
  */
 const CUE_RING = { r0: 150, r1: 30, color: 0xfff1cf, bead: 0xffd98a } as const;
-/** Where "Perfect!" pops: above the drum's right shoulder, clear of the hammer's raised head. */
-const POP = { x: HIT.x + 36, y: HIT.y - 176 } as const;
-/** The graded hit's layers (A10 step 3): hit-stop, flash, punch, sparks, haptics. Feel only. */
+/**
+ * Where "Perfect!" pops: high above the hit, clear of the drum's silhouette and crest (so a grade
+ * never sits on top of the result a climb shows) and of the hammer's raised head.
+ */
+const POP = { x: HIT.x + 110, y: HIT.y - 224 } as const;
+/**
+ * The graded hit's layers (A10 step 3): hit-stop, a local bloom at the hit point (never a
+ * full-screen flash, which is a climb's), a short pulse of crack light that stays below a climb's
+ * (+0.35) and fades within 250 ms, punch, sparks, haptics. Feel only.
+ */
 const GRADE_FX = {
-  perfect: { hitstop: 110, flash: 0.3, punch: 0.05, trauma: 0.22, sparks: 30, stars: 14, shards: 8, energy: 2, leak: 0.55, vibrate: [30, 20, 45] as number[] },
-  good: { hitstop: 60, flash: 0.14, punch: 0.022, trauma: 0.08, sparks: 12, stars: 5, shards: 3, energy: 0.9, leak: 0.25, vibrate: [18] as number[] },
+  perfect: { hitstop: 110, bloom: 0.85, punch: 0.05, trauma: 0.22, sparks: 30, stars: 14, shards: 8, leakPulse: 0.25, vibrate: [30, 20, 45] as number[] },
+  good: { hitstop: 60, bloom: 0.55, punch: 0.022, trauma: 0.08, sparks: 12, stars: 5, shards: 3, leakPulse: 0.12, vibrate: [18] as number[] },
 } as const;
+/** How long a grade's crack light takes to fade out once the hit-stop lets go. */
+const GRADE_LEAK_MS = 250;
+/** The neutral tap tick on the timing ring (any tap on a blow, no text, no penalty). */
+const TAP_TICK_MS = 160;
 
 /** A timed blow in progress (the hammer's pose is a pure function of its time, `blow.ts`). */
 interface Blow extends BlowPose {
@@ -301,6 +312,9 @@ export class CapsuleStage implements ShowView {
   private readonly impactGlow: Sprite;
   private impactT = -1;
   private impactBig = false;
+  private impactBloom = 0;
+  /** The neutral tap tick on the timing ring, 1 → 0. */
+  private tapTick = 0;
   private readonly popLayer = new Container();
   private readonly pops: Pop[] = [];
   /** Per pip: a tick or a climb pops it, then it springs back. */
@@ -309,8 +323,6 @@ export class CapsuleStage implements ShowView {
   private cuePulse = 0;
   private heatSparkT = 0;
   private glintT = 0;
-  /** A combo of 4+ Perfects kicks the back rays for a moment. */
-  private raysKick = 0;
 
   constructor(
     readonly plan: ShowPlan,
@@ -754,6 +766,15 @@ export class CapsuleStage implements ShowView {
     this.gradeFx(step, hit);
   }
 
+  /**
+   * Any tap on a hammer blow: a neutral tick on the timing ring (no text, no penalty, the same for
+   * an early, a late and a graded tap), so the player can see where the tap fell against the ring.
+   */
+  strikeTap(step: TimedStrike): void {
+    if (this.blow?.id !== step.id) return;
+    this.tapTick = 1;
+  }
+
   // ---------------------------------------------------------------------------------------------
   // The climb (A10 steps 1-4)
   // ---------------------------------------------------------------------------------------------
@@ -872,10 +893,12 @@ export class CapsuleStage implements ShowView {
   }
 
   /**
-   * The graded hit's flourish (A10 step 3), on top of the strike's own impact: hit-stop, a flash and
-   * crack light in the colour the drum already shows, sparks and debris, a camera punch, a haptic
-   * pulse and a "Perfect!" pop; a Good gets a lighter version, a miss nothing. The same size on a
-   * climb and a non-climb, so the grade never reads as a result (and never as a near miss).
+   * The graded hit's flourish (A10 step 3), on top of the strike's own impact: hit-stop, a local
+   * bloom and a short pulse of crack light in the colour the drum already shows, rings at the hit
+   * point, sparks and debris, a camera punch, a haptic pulse and a "Perfect!" pop high above the
+   * drum; a Good gets a lighter version, a miss nothing. The same size on a climb and a non-climb,
+   * and it borrows none of a climb's signals (no screen flash, no pip pop, no lasting crack light,
+   * no back rays), so the grade never reads as a result, and never as a near miss.
    */
   private gradeFx(s: TimedStrike, hit: StrikeHit): void {
     if (hit.grade === 'miss' || !this.fire(`grade-${s.id}`)) return;
@@ -886,25 +909,23 @@ export class CapsuleStage implements ShowView {
     const c = s.kind === 'summitStrike' ? 0xfff6e8 : TIER_COLORS[this.tier];
     const combo = perfect ? hit.combo : 0;
     this.hitstop = Math.max(this.hitstop, G.hitstop);
-    // Reduce motion: no shake and no flash; the pop, the light in the cracks and the sound stay.
-    if (!rm) this.flash(G.flash + 0.02 * Math.min(3, combo), mixColor(0xffffff, c, 0.3));
+    // Reduce motion: no shake and no punch; the bloom (dimmer), the pop, the crack light and the
+    // sound stay. There is no screen flash at all: that is a climb's signal.
     this.addPunch(G.punch + 0.006 * Math.min(4, combo));
     this.trauma.add(G.trauma);
     this.vibrate(G.vibrate);
-    this.drum.energy = Math.max(this.drum.energy, G.energy);
-    if (s.kind === 'strike') {
-      const after = this.crackAfter(s.index + 1);
-      this.drum.setLeak(after.leak + (s.climb ? 0.35 : 0) + G.leak);
-      this.pipPop[s.index] = Math.max(this.pipPop[s.index] ?? 0, perfect ? 0.8 : 0.45);
-    }
+    // A short pulse of light from the cracks that fades within 250 ms, below a climb's own +0.35:
+    // the capsule never looks more charged for a good tap.
+    if (s.kind === 'strike') this.drum.pulseLeak(G.leakPulse, GRADE_LEAK_MS);
     this.impactT = 0;
     this.impactBig = perfect;
+    this.impactBloom = G.bloom + 0.03 * Math.min(3, combo);
     this.impactStar.tint = perfect ? 0xffffff : 0xfff1cf;
-    this.impactGlow.tint = c;
-    // Two rings: a white core and one in the drum's colour; a Perfect adds a floor shockwave.
-    this.ring(HIT.x - 6, HIT.y, 16, perfect ? 190 : 120, 0xffffff, perfect ? 12 : 7, perfect ? 280 : 220, 1);
-    this.ring(HIT.x - 6, HIT.y, 26, perfect ? 270 : 160, c, perfect ? 18 : 9, perfect ? 420 : 300, 0.9);
-    if (perfect) this.ring(PED.x, PED.y + 2, 50, 300, shade(c, 0.3), 10, 460, 0.5, 0.28);
+    this.impactGlow.tint = mixColor(0xffffff, c, 0.5);
+    // Two rings at the hit point (a white core and one in the drum's colour), inside the hit area,
+    // never around the whole drum.
+    this.ring(HIT.x - 6, HIT.y, 14, perfect ? 96 : 68, 0xffffff, perfect ? 10 : 6, perfect ? 260 : 210, 1);
+    this.ring(HIT.x - 6, HIT.y, 22, perfect ? 124 : 86, c, perfect ? 12 : 7, perfect ? 360 : 280, 0.85);
     const k = rm ? 0.35 : this.lite ? 0.6 : 1;
     for (let i = 0; i < Math.round(G.sparks * k); i++) {
       const a = -Math.PI * 0.1 + (this.rng.next() - 0.5) * 2.6;
@@ -943,16 +964,15 @@ export class CapsuleStage implements ShowView {
         tint: shade(s.kind === 'summitStrike' ? TIER_COLORS[s.from] : c, -0.15),
       });
     }
-    // The combo flourish: a ring of stars thrown out evenly (more for a longer run), released as the
-    // hit-stop lets go.
+    // The combo flourish: a ring of stars thrown out evenly from the hit point (more for a longer
+    // run), released as the hit-stop lets go. The back rays stay the climb's: no flare here.
     if (combo >= 2) {
       const n = Math.min(12, 3 * combo) * (rm ? 0.5 : 1);
       for (let i = 0; i < n; i++) {
         const a = (i / n) * Math.PI * 2 + this.rng.next() * 0.2;
-        const r0 = 40;
-        this.particles.spawn({ tex: starTexture(), x: HIT.x - 6 + Math.cos(a) * r0, y: HIT.y + Math.sin(a) * r0, vx: Math.cos(a) * 360, vy: Math.sin(a) * 360, life: 520, drag: 0.02, gravity: 0, scale: [1, 0], alpha: [1, 0], rot: a, vr: 6, tint: i % 2 ? 0xffffff : 0xffe7a8, add: true, delay: 40 });
+        const r0 = 30;
+        this.particles.spawn({ tex: starTexture(), x: HIT.x - 6 + Math.cos(a) * r0, y: HIT.y + Math.sin(a) * r0, vx: Math.cos(a) * 260, vy: Math.sin(a) * 260, life: 460, drag: 0.03, gravity: 0, scale: [0.9, 0], alpha: [1, 0], rot: a, vr: 6, tint: i % 2 ? 0xffffff : 0xffe7a8, add: true, delay: 40 });
       }
-      if (combo >= 4 && !rm) this.raysKick = 1;
     }
     this.popText(perfect, combo);
   }
@@ -2333,7 +2353,8 @@ export class CapsuleStage implements ShowView {
     this.fan?.tick(frozen ? 0 : dt);
     this.updateFlyers(fx);
     this.updateRings(fx);
-    this.updateMorph(frozen ? 0 : dt);
+    // The climb's colour wipe runs on real time too: a graded hit-stop never holds it half done.
+    this.updateMorph(dt);
     this.updateStaging(dt);
 
     // Room mood: dim and rarity tint.
@@ -2524,7 +2545,8 @@ export class CapsuleStage implements ShowView {
       this.glint.alpha = 0;
     }
     this.updateCue(dt);
-    // The pips pop on a tick, a climb or a graded hit, then spring back.
+    // The pips pop on a tick or a climb (never on a graded hit: that would read as "it almost lit"),
+    // then spring back.
     for (let i = 0; i < this.pipPop.length; i++) {
       const v = this.pipPop[i] ?? 0;
       this.pips.pip(i)?.scale.set(rm ? 1 : 1 + v);
@@ -2554,8 +2576,9 @@ export class CapsuleStage implements ShowView {
         this.impactStar.alpha = rm ? 0 : fade;
         this.impactStar.scale.set(k * (0.35 + 0.75 * grow + 0.15 * u));
         this.impactStar.rotation = 0.4 * u;
-        this.impactGlow.alpha = (rm ? 0.3 : 0.5) * fade * k;
-        this.impactGlow.scale.set(k * (0.7 + 0.5 * grow));
+        // The local bloom: additive light at the hit point in place of a screen flash.
+        this.impactGlow.alpha = Math.min(1, (rm ? 0.45 : 1) * this.impactBloom * fade);
+        this.impactGlow.scale.set(k * (0.8 + 0.7 * grow));
       }
     }
     this.updatePops(dt);
@@ -2566,6 +2589,8 @@ export class CapsuleStage implements ShowView {
     const g = this.cueG;
     g.clear();
     this.cuePulse = Math.max(0, this.cuePulse - dt / 150);
+    const tick = this.tapTick;
+    this.tapTick = Math.max(0, this.tapTick - dt / TAP_TICK_MS);
     const b = this.blow;
     if (!b) return;
     const rm = this.d.settings.reduceMotion;
@@ -2574,6 +2599,11 @@ export class CapsuleStage implements ShowView {
     const cx = HIT.x - 6;
     const cy = HIT.y;
     const R = CUE_RING;
+    if (tick > 0) {
+      // The tap tick: a thin ring that leaves the target and fades (neutral warm white).
+      const e = 1 - tick;
+      g.circle(cx, cy, R.r1 + (rm ? 4 : 4 + 16 * easeOutCubic(e))).stroke({ width: 2.5, color: R.color, alpha: 0.6 * tick });
+    }
     if (t < I) {
       const fade = span(t, 0, 90);
       const u = t / I;
@@ -2634,10 +2664,6 @@ export class CapsuleStage implements ShowView {
   private updateRays(dt: number): void {
     this.backRays.rotation += dt / 5200;
     this.backRays.alpha += (this.raysLevel * (this.drum.root.visible ? 1 : 0) - this.backRays.alpha) * Math.min(1, dt / 120);
-    if (this.raysKick > 0) {
-      this.backRays.alpha = Math.max(this.backRays.alpha, 0.9 * this.raysKick);
-      this.raysKick = Math.max(0, this.raysKick - dt / 500);
-    }
     this.backRays.scale.set(0.95 + 0.05 * Math.sin(this.time / 600) + this.raysLevel * 0.6);
     this.bigRays.rotation -= dt / 7000;
     const target = this.bigRaysLevel * (1 - 0.7 * this.summaryDim);

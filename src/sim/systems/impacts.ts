@@ -17,7 +17,7 @@ import { centreDist, distFromGate, edgeDist, isAheadOrLevel, pOf, pointDist, xOf
 import type { UnitRules } from '../rules';
 import { BASE_TARGET, LANE, other, type Ctx, type Impact, type Knock, type UnitRt } from '../state';
 import { alive, findUnit, unitRules } from '../units';
-import { applyPowerStatus, castEligible } from './powers';
+import { applyPowerStatus, castEligible, inCastArea } from './powers';
 import { canHit } from './targeting';
 
 export function impactSystem(ctx: Ctx): void {
@@ -62,11 +62,12 @@ export function resolveImpact(ctx: Ctx, imp: Impact): void {
       const pr = cast ? ctx.rules.powers[cast.power] : undefined;
       if (cast && pr && pr.maxTargets > 0) {
         // A power blast (A2.9.5): only the cast's eligible units (its `hitIds` plus the first free cap
-        // slots in cap order across the reach area), taken in cap order.
+        // slots in cap order across the reach area), taken in cap order, and only while they are inside
+        // the reach area (A2.9.4, the hard mask: a hit unit knocked past the Home line is not hit again).
         const elig = castEligible(ctx, cast, pr);
         const hits: Cand[] = [];
         for (const e of ctx.s.units) {
-          if (!elig.has(e.id) || !hittable(ctx, imp, e)) continue;
+          if (!elig.has(e.id) || !hittable(ctx, imp, e) || !inCastArea(ctx, cast, pr, e)) continue;
           if (centreDist(imp.x, e.x) <= imp.radius) hits.push({ u: e, d: pOf(e.x, cast.side) });
         }
         hits.sort(byDist);

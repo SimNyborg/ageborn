@@ -38,13 +38,32 @@
  * 18. `fallback_turtle`: Fall back, 4 turrets, Defences research (Keep Walls and Last Stand Drill are v1.1).
  * 19. `stance_toggler`: the Balanced reference player that flips Charge and Hold on every engagement.
  *
+ * Age Power proxies (A2.9.12; each plays the Balanced script unless noted):
+ *
+ * 20. `power_hoarder`: Hold at 480 with 4 turrets; casts only its Home power, auto-aimed, when the
+ *     covered eligible value is 150+ or its base was hit in the last 3 s.
+ * 21. `home_turtle`: Hold at 320 with 4 turrets; casts the Home and the Field starter on every wave (an
+ *     enemy ground unit on its half), the Field one when it can reach (turtle band, A2.14).
+ * 22. `power_spam`: casts both slots on every reload (auto-aim).
+ * 23. `no_power`: never casts (vs the Balanced script it must lose 60-80%).
+ * 24. `plain_wave` and `bait_wave`: bank 500, then send it all; `bait_wave` first sends at most 150 gold of
+ *     its cheapest units while the enemy's Home ring is full (a bombard or sweep, or not scouted yet) and
+ *     releases the bank when the enemy casts its Home power or after 12 s.
+ * 25. `drop_spam`: a Drop in the Field slot where the age has one, cast on every reload.
+ * 26. `runner_reach`: a front barrage (else the charge) in the Field slot; sends a lone fast runner ahead
+ *     and casts the Field slot on every reload at the enemy's staging area behind it.
+ * 27. `gate_sniper`: a strike in the Field slot where the age has one, cast at the enemy's rearmost unit.
+ *
+ * Every power trigger reads the covered eligible value (the cap and the screen, A2.9.5) through the shared
+ * `core/powerReach` helpers, the way the sim's auto-aim and the bots do.
+ *
  * `balanced` is a plain reference player; the tools also use it as the stand-in bot when `src/ai`
  * cannot be loaded. Proxies see the same `Observation` as bots (A7.1) with a 300 ms reaction delay and
  * decide every 0.5 s, so they never outpace a human. Plans are derived from content by role and
  * ability, so the proxies follow content changes.
  */
-import type { BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, ResearchPickDef, ResearchView, Side, StanceMode, UnitDef } from '../src/contracts';
-import { frontP, powerReachRules, reachAreaMax, reachBand, suppressLegal } from '../src/core/powerReach';
+import type { BotController, CardId, Command, CompiledContent, FormatId, Loadout, Observation, PowerDef, PowerSlot, ResearchPickDef, ResearchView, Side, StanceMode, UnitDef } from '../src/contracts';
+import { eligibleIds, frontP, powerReachRules, reachAreaMax, reachBand, suppressLegal, type PowerReachRules } from '../src/core/powerReach';
 import { nextIncomePick, researchCommand, researchCost, startablePicks } from '../src/core/research';
 import { pickWeighted, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { agesOf, baselinePlan, clonePlan, turretsOfAge, unitsOfAge, type Plan } from './lib/plans';
@@ -71,7 +90,26 @@ export type ProxyId =
   | 'tech_turtle'
   | 'flag_ball'
   | 'fallback_turtle'
-  | 'stance_toggler';
+  | 'stance_toggler'
+  | 'power_hoarder'
+  | 'home_turtle'
+  | 'power_spam'
+  | 'no_power'
+  | 'plain_wave'
+  | 'bait_wave'
+  | 'drop_spam'
+  | 'runner_reach'
+  | 'gate_sniper';
+
+/**
+ * A2.9.12 power habits (they override `power`): `hoard` casts only the Home slot, auto-aimed, when the
+ * covered eligible value is ≥ 150 or the base was hit in the last 3 s; `spam` casts both slots on every
+ * reload; `never` never casts; `homeWave` casts both slots whenever an enemy ground unit stands on its
+ * half (the Field slot when it can reach); `drop`, `runner` and `sniper` cast a Field power of that family
+ * on every reload (a drop; a Front power behind a lone runner; a strike at the enemy's rearmost unit) and
+ * use the Home slot as `power` says.
+ */
+export type PowerHabit = 'hoard' | 'spam' | 'never' | 'homeWave' | 'drop' | 'runner' | 'sniper';
 
 /** Mono family groups (A16.5): Heavy, anti-air and Ranged. */
 export type MonoGroup = 'heavy' | 'antiAir' | 'ranged';
@@ -119,6 +157,10 @@ export interface Strategy {
   safeEvolveMs?: number;
   /** Last Stand only when this many enemies are within 450 lu (default: whenever armed). */
   lastStandFoes?: number;
+  /** A2.9.12 power habit (overrides `power`). */
+  powerHabit?: PowerHabit;
+  /** A2.9.12 wave proxies (with `bankTo`): `bait` lures the enemy's Home power before the banked wave goes. */
+  wave?: 'plain' | 'bait';
   plan(content: CompiledContent): Plan;
 }
 
@@ -171,6 +213,25 @@ function healPlan(content: CompiledContent): Plan {
 }
 
 const base = (content: CompiledContent): Plan => baselinePlan(content);
+
+/** The baseline plan with a Field power of `family` in every age that has one (the starter elsewhere). */
+function fieldFamilyPlan(content: CompiledContent, families: readonly PowerDef['family'][]): Plan {
+  const plan = clonePlan(baselinePlan(content));
+  for (const age of agesOf(content)) {
+    const l = plan[age] as Loadout;
+    for (const fam of families) {
+      const pw = Object.values(content.powers).find((p) => p.age === age && p.slot === 'field' && p.family === fam);
+      if (pw) {
+        l.powers = { ...l.powers, field: pw.id };
+        break;
+      }
+    }
+  }
+  return plan;
+}
+const dropPlan = (content: CompiledContent): Plan => fieldFamilyPlan(content, ['drop']);
+const frontPlan = (content: CompiledContent): Plan => fieldFamilyPlan(content, ['frontBarrage', 'charge']);
+const strikePlan = (content: CompiledContent): Plan => fieldFamilyPlan(content, ['strike']);
 
 /**
  * The researching Balanced script (A18.12 reference): Granary first, then a Troops line for the classes
@@ -308,6 +369,36 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
     researchFromMs: 0,
   },
   stance_toggler: { ...BALANCED, id: 'stance_toggler', title: 'Stance toggler (flips on every engagement)', stance: 'toggle' },
+  // A2.9.12 power proxies.
+  power_hoarder: {
+    ...BALANCED,
+    id: 'power_hoarder',
+    title: 'Power hoarder (Hold at 480, 4 turrets, Home power on 150+ or when hit)',
+    weights: [2, 4, 1, 3, 1],
+    turrets: 4,
+    stance: 'hold',
+    holdP: 480,
+    reserve: 50,
+    powerHabit: 'hoard',
+  },
+  home_turtle: {
+    ...BALANCED,
+    id: 'home_turtle',
+    title: 'Home turtle (Hold at 320, 4 turrets, both starters on every wave)',
+    weights: [2, 4, 1, 3, 1],
+    turrets: 4,
+    stance: 'hold',
+    holdP: 320,
+    reserve: 50,
+    powerHabit: 'homeWave',
+  },
+  power_spam: { ...BALANCED, id: 'power_spam', title: 'Power spam (both slots on every reload)', powerHabit: 'spam' },
+  no_power: { ...BALANCED, id: 'no_power', title: 'No power (never casts)', powerHabit: 'never' },
+  plain_wave: { ...BALANCED, id: 'plain_wave', title: 'Plain wave (bank 500, then all in)', bankTo: 500, wave: 'plain' },
+  bait_wave: { ...BALANCED, id: 'bait_wave', title: 'Bait, then wave (150 g of bait into a full Home ring, then the 500 bank)', bankTo: 500, wave: 'bait' },
+  drop_spam: { ...BALANCED, id: 'drop_spam', title: 'Drop spam (a Drop on every reload)', powerHabit: 'drop', plan: dropPlan },
+  runner_reach: { ...BALANCED, id: 'runner_reach', title: 'Runner reach (a lone runner, then Front powers at their staging area)', powerHabit: 'runner', plan: frontPlan },
+  gate_sniper: { ...BALANCED, id: 'gate_sniper', title: 'Gate sniper (strikes only at the enemy rear)', powerHabit: 'sniper', plan: strikePlan },
 };
 
 /** Whether a unit belongs to a mono family group (anti-air: any unit that hits air). */
@@ -335,15 +426,37 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
   'flag_ball',
   'fallback_turtle',
   'stance_toggler',
+  // A2.9.12
+  'power_hoarder',
+  'home_turtle',
+  'power_spam',
+  'drop_spam',
+  'runner_reach',
 ];
 
 /** Every other proxy the tools know (run with `--proxies`). */
-export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'few_then_evolve', 'rush', 'save_counter', 'no_research'];
+export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'few_then_evolve', 'rush', 'save_counter', 'no_research', 'no_power', 'plain_wave', 'bait_wave', 'gate_sniper'];
 
 /** Enemy ground units this close to the own gate make an evolve unsafe (A7.2). */
 const EVOLVE_SAFE_P = 300_000;
 /** Last Stand radius (A2.11). */
 const LAST_STAND_P = 450_000;
+/** `hoard`: the covered eligible value that is worth a cast (whole gold), and "hit in the last 3 s". */
+const HOARD_VALUE = 150;
+const HURT_TICKS = 60;
+/** A base loss counts as a hit only with an enemy this close to the gate (Siege decay is no hit). */
+const HURT_NEAR_P = 500_000;
+/** The mid-lane line: `homeWave` casts while an enemy ground unit is on its half. */
+const MID_P = 1_000_000;
+/** Bait, then wave (A2.9.9): at most 150 gold of bait, released after 12 s at the latest. */
+const BAIT_SPEND = 150;
+const BAIT_RELEASE_TICKS = 240;
+/** `sniper`: a strike aim is clamped to the lane's power clamp and picks within 80 lu of it (A2.9.7). */
+const SNIPER_REACH = 80_000;
+/** A charge starts at p 200 without a power front (A2.9.4 `battle.stampedeFallbackP`). */
+const STAMPEDE_FALLBACK_P = 200_000;
+/** `runner`: a runner is sent while the Field slot is this far reloaded and no own unit is past mid-lane. */
+const RUNNER_PPM = 750_000;
 
 export function isProxyId(s: string): s is ProxyId {
   return Object.hasOwn(STRATEGIES, s);
@@ -370,6 +483,18 @@ export class ScriptedPlayer implements BotController {
   /** Tick Evolve was first seen available in the current age (`safeEvolveMs`). */
   private evolveSeenTick = -1;
   private evolveSeenAge = -1;
+  /** Base HP at the previous decision and the last tick it dropped with an enemy near (a hit). */
+  private lastBaseBp = 10_000;
+  private hurtTick = -1_000;
+  /** `bait`: the tick the bait started (−1 when not baiting) and the gold spent on it. */
+  private baitStart = -1;
+  private baitSpent = 0;
+  /** The observation tick the enemy's latest Home telegraph was first seen, and the telegraphs seen. */
+  private foeHomeCastTick = -1;
+  private readonly seenTelegraphs = new Set<string>();
+  private readonly reach: PowerReachRules;
+  /** `bait`: baits started, and those released by the enemy's Home cast (for the tools and tests). */
+  readonly baits = { started: 0, drewCast: 0 };
 
   constructor(
     readonly strategy: Strategy,
@@ -383,9 +508,18 @@ export class ScriptedPlayer implements BotController {
     this.ascendWaitTicks = content.ticks.ascend + PROXY_DELAY_TICKS + TICKS_PER_DECISION;
     this.mountWaitTicks = content.ticks.turretBuild + PROXY_DELAY_TICKS + TICKS_PER_DECISION;
     this.maxAgeIndex = (content.formats[format]?.ages.length ?? 1) - 1;
+    this.reach = powerReachRules(content.economy);
   }
 
   onTick(obs: Observation): Command[] {
+    // The enemy's Home casts (their telegraphs are public), for `bait`.
+    for (const t of obs.telegraphs) {
+      if (t.side === this.side || t.slot !== 'home') continue;
+      const k = `${t.power}:${t.impactTick}`;
+      if (this.seenTelegraphs.has(k)) continue;
+      this.seenTelegraphs.add(k);
+      this.foeHomeCastTick = obs.tick;
+    }
     // Decide every 0.5 s of game time, once per observation (while the delay ring fills, the same
     // oldest observation is handed over several times).
     if (obs.tick % TICKS_PER_DECISION !== 0 || obs.tick === this.lastDecisionTick) return [];
@@ -400,6 +534,9 @@ export class ScriptedPlayer implements BotController {
     const nearMid = obs.units.filter((u) => u.side !== side && u.p > this.content.economy.powerZoneClamp[0] * 1000 && u.p < this.content.economy.powerZoneClamp[1] * 1000).length;
 
     const foes = obs.units.filter((u) => u.side !== side && u.hp > 0);
+    if (me.baseHpBp < this.lastBaseBp && foes.some((u) => u.p <= HURT_NEAR_P)) this.hurtTick = obs.tick;
+    this.lastBaseBp = me.baseHpBp;
+    const hurt = obs.tick - this.hurtTick <= HURT_TICKS;
     if (me.lastStand === 'armed' && foes.filter((u) => u.p <= LAST_STAND_P).length >= (st.lastStandFoes ?? 0)) out.push({ t: 'lastStand', side });
 
     // Evolve and power (A2.4, A2.9).
@@ -421,23 +558,13 @@ export class ScriptedPlayer implements BotController {
       evolveNow = !unsafe || obs.tick - this.evolveSeenTick >= Math.trunc(st.safeEvolveMs / 50);
     }
     for (const slot of castable) {
-      const card = me.powers[slot]?.card ?? '';
+      const o = me.powers[slot];
       // Both slots may be ready; the second cast needs the gold the first left (A2.9.2).
-      if (gold < (me.powers[slot]?.cost ?? 0)) continue;
-      if (st.power === 'beforeEvolve' && me.ageIndex < this.maxAgeIndex) {
-        if (evolveNow) {
-          out.push({ t: 'power', side, slot });
-          gold -= me.powers[slot]?.cost ?? 0;
-        }
-      } else if (st.powerMinValue !== undefined) {
-        const zone = this.bestZone(foes, card);
-        if (zone.value >= st.powerMinValue) {
-          out.push({ t: 'power', side, slot, p: zone.p });
-          gold -= me.powers[slot]?.cost ?? 0;
-        }
-      } else if (st.power === 'full' || nearMid >= 3 || threat) {
-        out.push({ t: 'power', side, slot });
-        gold -= me.powers[slot]?.cost ?? 0;
+      if (!o || gold < o.cost) continue;
+      const cmd = this.powerCommand(obs, slot, o.card, { evolveNow, nearMid, threat, hurt });
+      if (cmd) {
+        out.push(cmd);
+        gold -= o.cost;
       }
     }
     // Evolve on the next decision, after a cast made for it.
@@ -447,6 +574,9 @@ export class ScriptedPlayer implements BotController {
       this.evolveIssuedTick = obs.tick;
     }
 
+    // A power habit keeps the next cast's price in hand once its slot is nearly reloaded (A2.9.2: casts
+    // cost gold, so a player who means to cast saves for it); a threat at the gate still gets trained against.
+    const keep = this.powerReserve(me);
     // War Council (A18.5): the Economy income picks first (the Treasury before A18.5.4), then the
     // strategy's list. An income-first player buys nothing else until it has them, and trains only when
     // the base is threatened.
@@ -457,7 +587,7 @@ export class ScriptedPlayer implements BotController {
     const pick = income ?? listed;
     if (pick) {
       const cost = researchCost(this.content, pick);
-      if (gold >= cost + (income ? 0 : st.reserve)) {
+      if (gold >= cost + (income ? 0 : st.reserve) + keep) {
         out.push(researchCommand(side, pick));
         gold -= cost;
       }
@@ -476,7 +606,7 @@ export class ScriptedPlayer implements BotController {
       if (slot === null) break;
       const card = me.turretCards[slot] as CardId;
       const cost = this.content.turrets[card]?.cost ?? Number.POSITIVE_INFINITY;
-      if (t === null && m < st.turrets && gold >= cost) {
+      if (t === null && m < st.turrets && gold >= cost + keep) {
         out.push({ t: 'buildTurret', side, mount: m as 0 | 1 | 2 | 3, slot });
         gold -= cost;
         boughtInfra = true;
@@ -484,7 +614,7 @@ export class ScriptedPlayer implements BotController {
       } else if (t !== null && st.modernise && this.content.ages[t.age].index < me.ageIndex) {
         const credit = Math.trunc(((this.content.turrets[t.card]?.cost ?? 0) * econ.sellRefundBp) / 10_000);
         const price = cost - credit;
-        if (gold >= price) {
+        if (gold >= price + keep) {
           out.push({ t: 'replaceTurret', side, mount: m as 0 | 1 | 2 | 3, slot });
           gold -= price;
           this.mountBusyUntil[m] = obs.tick + this.mountWaitTicks;
@@ -493,7 +623,7 @@ export class ScriptedPlayer implements BotController {
     }
     if (me.mountsOwned < st.turrets && me.mountsOwned < 4 && !greedy) {
       const cost = econ.mountCosts[me.mountsOwned] ?? Number.POSITIVE_INFINITY;
-      if (gold >= cost + (threat ? 100 : 0)) {
+      if (gold >= cost + (threat ? 100 : 0) + keep) {
         out.push({ t: 'buyMount', side });
         gold -= cost;
         boughtInfra = true;
@@ -519,16 +649,43 @@ export class ScriptedPlayer implements BotController {
     const room = st.maxAlive === undefined ? econ.queueMax : st.maxAlive - alive - queued;
     // `bankTo`: save up a wave, then spend it all; a threat at the gate is answered at once.
     if (st.bankTo !== undefined) {
-      if (gold >= st.bankTo + saving) this.spending = true;
-      else if (gold < this.cheapestInTray(me.tray)) this.spending = false;
+      if (this.baitStart >= 0) {
+        // Bait, then wave (A2.9.9): release the bank when the enemy's Home power fires or after 12 s.
+        if (threat || this.foeHomeCastTick >= this.baitStart || obs.tick - this.baitStart >= BAIT_RELEASE_TICKS) {
+          if (this.foeHomeCastTick >= this.baitStart) this.baits.drewCast += 1;
+          this.baitStart = -1;
+          this.spending = true;
+        } else {
+          this.trainBait(out, me.tray, gold, queued);
+          return out;
+        }
+      } else if (!this.spending && gold >= st.bankTo + saving) {
+        if (st.wave === 'bait' && this.foeHomeLoaded(obs)) {
+          this.baitStart = obs.tick;
+          this.baitSpent = 0;
+          this.baits.started += 1;
+          this.trainBait(out, me.tray, gold, queued);
+          return out;
+        }
+        this.spending = true;
+      } else if (gold < this.cheapestInTray(me.tray)) this.spending = false;
       if (!this.spending && !threat) return out;
+    }
+    // `runner`: one fast unit ahead of the army while the Field power comes back (A2.9.12 runner_reach).
+    if (st.powerHabit === 'runner' && queued < econ.queueMax && this.wantsRunner(obs)) {
+      const r = this.fastestAffordable(me.tray, gold);
+      if (r !== null) {
+        out.push({ t: 'train', side, slot: r as 0 | 1 | 2 | 3 | 4 | 5 });
+        gold -= this.content.units[me.tray[r] as CardId]?.cost ?? 0;
+        queued += 1;
+      }
     }
     for (let i = 0; i < 4 && queued < econ.queueMax && i < room; i += 1) {
       const slot = this.pickTrain(me.tray, gold, foes, threat);
       if (slot === null) break;
       const card = me.tray[slot] as CardId;
       const cost = this.content.units[card]?.cost ?? Number.POSITIVE_INFINITY;
-      if (gold < cost + (threat ? 0 : st.reserve) + saving) break;
+      if (gold < cost + (threat ? 0 : st.reserve + keep) + saving) break;
       out.push({ t: 'train', side, slot: slot as 0 | 1 | 2 | 3 | 4 | 5 });
       gold -= cost;
       queued += 1;
@@ -625,19 +782,178 @@ export class ScriptedPlayer implements BotController {
   }
 
   /**
-   * The best aim for the equipped power: the window of the power's zone (300 lu when it has none) that
-   * holds the most enemy card value inside the power clamp. `p` is whole lu in the own frame.
+   * The cast command for one reloaded, affordable slot, or null to hold it (A2.9.12 slot-aware proxies):
+   * the power habit first, then the strategy's `power` rule (Home where "the power" was cast before, the
+   * Field slot by the same trigger).
    */
-  private bestZone(foes: Observation['units'], power: CardId): { p: number; value: number } {
-    const def = this.content.powers[power];
-    const fx = def?.effect as { kind: string; zone?: number; width?: number } | undefined;
-    const width = fx?.zone ?? fx?.width ?? 300;
-    const [lo, hi] = this.content.economy.powerZoneClamp;
-    let best = { p: Math.trunc((lo + hi) / 2), value: 0 };
-    for (let p = lo; p <= hi; p += 20) {
-      let v = 0;
-      for (const u of foes) if (Math.abs(u.p / 1000 - p) <= width / 2) v += this.content.units[u.card]?.cost ?? 0;
-      if (v > best.value) best = { p, value: v };
+  private powerCommand(obs: Observation, slot: PowerSlot, card: CardId, c: { evolveNow: boolean; nearMid: number; threat: boolean; hurt: boolean }): Command | null {
+    const st = this.strategy;
+    const side = this.side;
+    const def = this.content.powers[card];
+    if (!def) return null;
+    const auto: Command = { t: 'power', side, slot };
+    switch (st.powerHabit) {
+      case 'never':
+        return null;
+      case 'spam':
+        return auto;
+      case 'hoard': {
+        if (slot !== 'home') return null;
+        const z = this.coveredZone(obs, card);
+        return z.value > 0 && (z.value >= HOARD_VALUE || c.hurt) ? auto : null;
+      }
+      case 'homeWave':
+        return obs.units.some((u) => u.side !== side && u.hp > 0 && !u.air && u.p < MID_P) ? auto : null;
+      case 'drop':
+        if (slot === 'field' && def.family === 'drop') return auto;
+        break;
+      case 'runner':
+        if (slot === 'field' && def.reach === 'front') return auto;
+        break;
+      case 'sniper':
+        if (slot === 'field' && def.family === 'strike') {
+          const p = this.rearmostTarget(obs, def);
+          return p === null ? null : { t: 'power', side, slot, p };
+        }
+        break;
+      default:
+        break;
+    }
+    if (st.power === 'beforeEvolve' && obs.me.ageIndex < this.maxAgeIndex) return c.evolveNow ? auto : null;
+    if (st.powerMinValue !== undefined) {
+      // "When the zone holds 350": the covered eligible value (the cap and the screen), aimed inside the band.
+      const z = this.coveredZone(obs, card);
+      if (z.value < st.powerMinValue) return null;
+      return z.p === null ? auto : { t: 'power', side, slot, p: z.p };
+    }
+    return st.power === 'full' || c.nearMid >= 3 || c.threat ? auto : null;
+  }
+
+  /**
+   * The best auto-aim zone of a power over what the proxy sees, with the sim's rules (A2.9.4-A2.9.5): the
+   * band, the reach area (the hard mask) and the eligible set (the first `maxTargets` hittable enemies in
+   * cap order); value = the card value of the eligible enemies the zone covers (whole gold). `p` is the aim
+   * in whole lu (null for kinds without an aim: charges, strikes, buffs, drops, Suppress).
+   */
+  coveredZone(obs: Observation, card: CardId): { p: number | null; value: number; count: number } {
+    const def = this.content.powers[card];
+    const none = { p: null, value: 0, count: 0 };
+    if (!def) return none;
+    const e = def.effect;
+    const r = this.reach;
+    const own = obs.units.filter((u) => u.side === this.side && u.hp > 0).map((u) => ({ id: u.id, p: u.p, air: u.air, summoned: u.summoned }));
+    const front = frontP(own, r.frontRank);
+    const cost = (c: CardId): number => this.content.units[c]?.cost ?? 0;
+    const foes = obs.units.filter((u) => u.side !== this.side && u.hp > 0);
+    const cap = (n: number): number => (def.maxTargets !== undefined && def.maxTargets > 0 ? def.maxTargets : n);
+    if (e.kind === 'stampede') {
+      const start = front ?? STAMPEDE_FALLBACK_P;
+      const inRun = foes.filter((u) => !u.air && u.p >= start && u.p <= start + e.distance * 1000);
+      const elig = eligibleIds(inRun, cap(inRun.length), []);
+      const run = inRun.filter((u) => elig.has(u.id));
+      return { p: null, value: run.reduce((a, u) => a + cost(u.card), 0), count: run.length };
+    }
+    if (e.kind === 'strike') {
+      const hit = foes.filter((u) => (u.air ? e.hitsAir : true));
+      const best = hit.reduce((m, u) => Math.max(m, cost(u.card)), 0);
+      return { p: null, value: best, count: best > 0 ? 1 : 0 };
+    }
+    if (e.kind !== 'barrage' && e.kind !== 'sweep' && e.kind !== 'field') return none;
+    const zone = e.zone * 1000;
+    const band = reachBand(def.reach, zone, front, r);
+    if (!band) return none;
+    const areaMax = reachAreaMax(def.reach, zone, band, r);
+    const air = e.hitsAir;
+    const ground = e.kind === 'barrage' ? e.hitsGround !== false : true;
+    const inArea = foes.filter((u) => (u.air ? air : ground) && u.p <= areaMax);
+    const elig = eligibleIds(inArea, cap(inArea.length), []);
+    const cands = inArea.filter((u) => elig.has(u.id));
+    const half = Math.trunc(zone / 2);
+    let best: { p: number | null; value: number; count: number } = { p: Math.trunc(band[0] / 1000), value: 0, count: 0 };
+    for (let p = band[0]; p <= band[1]; p += r.scanStep) {
+      let value = 0;
+      let count = 0;
+      for (const u of cands) {
+        if (Math.abs(u.p - p) > half) continue;
+        value += cost(u.card);
+        count += 1;
+      }
+      if (value > best.value) best = { p: Math.trunc(p / 1000), value, count };
+    }
+    return best;
+  }
+
+  /** `sniper`: the enemy's rearmost hittable unit a strike can still pick (whole lu), or null. */
+  private rearmostTarget(obs: Observation, def: PowerDef): number | null {
+    const e = def.effect;
+    if (e.kind !== 'strike') return null;
+    const max = this.reach.zoneMax;
+    let best: number | null = null;
+    for (const u of obs.units) {
+      if (u.side === this.side || u.hp <= 0 || (u.air && !e.hitsAir)) continue;
+      if (u.p > max + SNIPER_REACH) continue;
+      if (best === null || u.p > best) best = u.p;
+    }
+    return best === null ? null : Math.trunc(Math.min(best, max) / 1000);
+  }
+
+  /**
+   * Gold a power habit keeps for its next cast (whole gold): the price of the dearest slot it casts that
+   * is at least 75% reloaded; 0 without a habit (the older proxies spend as before).
+   */
+  private powerReserve(me: Observation['me']): number {
+    const h = this.strategy.powerHabit;
+    if (!h || h === 'never') return 0;
+    const slots: PowerSlot[] = h === 'hoard' ? ['home'] : h === 'spam' || h === 'homeWave' ? ['home', 'field'] : ['field'];
+    let keep = 0;
+    for (const slot of slots) {
+      const o = me.powers[slot];
+      if (o && o.ppm >= RUNNER_PPM && o.cost > keep) keep = o.cost;
+    }
+    return keep;
+  }
+
+  /** `bait`: the enemy's Home ring is full and its power is a bombard or sweep (or not scouted yet). */
+  private foeHomeLoaded(obs: Observation): boolean {
+    const h = obs.foe.powers.home;
+    if (!h || h.ppm < CHARGED_PPM) return false;
+    if (h.card === null) return true;
+    const fam = this.content.powers[h.card]?.family;
+    return fam === 'bombard' || fam === 'sweep';
+  }
+
+  /** `bait`: the cheapest tray unit while the bait stays within 150 gold. */
+  private trainBait(out: Command[], tray: readonly (CardId | null)[], gold: number, queued: number): void {
+    if (queued >= this.content.economy.queueMax) return;
+    let best = -1;
+    let bestCost = Number.POSITIVE_INFINITY;
+    tray.forEach((c, i) => {
+      const u = c === null ? undefined : this.content.units[c];
+      if (u && u.group !== 'legendary' && u.cost < bestCost) {
+        best = i;
+        bestCost = u.cost;
+      }
+    });
+    if (best < 0 || this.baitSpent + bestCost > BAIT_SPEND || gold < bestCost) return;
+    out.push({ t: 'train', side: this.side, slot: best as 0 | 1 | 2 | 3 | 4 | 5 });
+    this.baitSpent += bestCost;
+  }
+
+  /** `runner`: the Field slot is coming back and no own ground unit is past mid-lane. */
+  private wantsRunner(obs: Observation): boolean {
+    const f = obs.me.powers.field;
+    if (!f || f.ppm < RUNNER_PPM) return false;
+    return !obs.units.some((u) => u.side === this.side && u.hp > 0 && !u.air && u.p >= MID_P);
+  }
+
+  /** The fastest affordable ground unit in the tray (ties: the cheaper, then the lower slot), or null. */
+  private fastestAffordable(tray: readonly (CardId | null)[], gold: number): number | null {
+    let best: number | null = null;
+    for (let i = 0; i < tray.length; i += 1) {
+      const u = tray[i] ? this.content.units[tray[i] as CardId] : undefined;
+      if (!u || u.cost > gold || u.tags.includes('air')) continue;
+      const b = best === null ? undefined : this.content.units[tray[best] as CardId];
+      if (!b || u.speed > b.speed || (u.speed === b.speed && u.cost < b.cost)) best = i;
     }
     return best;
   }

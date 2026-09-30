@@ -60,9 +60,18 @@ export function hashState(s: SimStateRt): number {
   for (const p of s.projectiles) h.int(p.pid).int(p.x).int(p.toX).int(p.impactTick).int(p.targetId).bool(p.miss);
   h.int(s.casts.length);
   for (const c of s.casts) {
-    h.int(c.castId).str(c.slot).int(c.x).int(c.nextIndex).int(c.targetId).int(c.areaMin).int(c.areaMax).bool(c.applied);
+    h.int(c.castId).int(c.side).str(c.slot).str(c.power).int(c.startTick).int(c.x).int(c.zone).int(c.nextIndex).int(c.levelBp).int(c.targetId);
+    h.int(c.telegraphEnd).int(c.endTick).int(c.cost).int(c.areaMin).int(c.areaMax).bool(c.applied);
+    // Hits and, for a stampede, each id's hit count (`maxHits`) and every runner's hit list.
     h.int(c.hitIds.length);
     for (const id of c.hitIds) h.int(id);
+    h.int(c.hitCounts.length);
+    for (const n of c.hitCounts) h.int(n);
+    h.int(c.runnerHits.length);
+    for (const r of c.runnerHits) {
+      h.int(r.length);
+      for (const id of r) h.int(id);
+    }
   }
   return h.value;
 }

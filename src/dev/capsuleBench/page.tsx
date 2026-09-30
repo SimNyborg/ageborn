@@ -47,7 +47,7 @@ import { bodySamplePoints, gemSamplePoints, mountDrumGallery } from './drumGalle
 const DRUMS = 'drums';
 
 /** Auto-tap: where each hammer blow is tapped, in ms from the latency-corrected hit (A10 step 3). */
-const AUTO_TAP = { off: null, perfect: 0, good: 100, early: -200 } as const;
+const AUTO_TAP = { off: null, perfect: 0, good: 100, early: -160 } as const;
 type AutoTap = keyof typeof AUTO_TAP;
 
 export const title = 'Capsule bench';
@@ -351,7 +351,7 @@ export default function CapsuleBench() {
             <div key={i}>{l}</div>
           ))}
         </div>
-        <p style={{ opacity: 0.7 }}>Tap as the hammer lands (Perfect ±{STRIKE_WINDOW.perfectMs} ms, Good ±{STRIKE_WINDOW.goodMs} ms), tap to hurry a card, hold to fast-forward, Esc to skip.</p>
+        <p style={{ opacity: 0.7 }}>Tap on the beat (Perfect ±{STRIKE_WINDOW.perfectMs} ms, Good ±{STRIKE_WINDOW.goodMs} ms), tap to hurry a card, hold to fast-forward, Esc to skip.</p>
         <a style={{ color: '#9fc3ff' }} href="?dev=1">
           All dev pages
         </a>
