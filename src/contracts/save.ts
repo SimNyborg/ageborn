@@ -208,6 +208,8 @@ export interface SaveDoc {
   arenaIndex: number;
   collection: Record<CardId, { level: number; copies: number; isNew: boolean; foil: Foil }>;
   powersOwned: CardId[];
+  /** Fort cards owned (A16.14.6, save v11): no copies, levels or Dust; never from capsules. */
+  fortsOwned: CardId[];
   skins: { owned: SkinId[]; equipped: Record<string, SkinId> };
   /**
    * Banner and title ids, plus cosmetic collection keys (`<collection>.<id>`, A18.9.4) in `owned`;
@@ -279,6 +281,7 @@ export interface SaveDoc {
    * Legendary tier), `capsule.legacySkillAeon` (set by the ladder migration until the legacy skill
    * Aeons are granted) and `notice.capsuleLadder` (the one-time Capsules tab card; cleared when closed).
    * `notice.sundial` (save v10, A6.3): the one-time "The Sundial" Capsules tab card; cleared when closed.
+   * `fort.slot` (save v11, A16.14.6): the Fort slot is unlocked (War Path Bronze L4 first clear or 400 trophies).
    */
   flags: Record<string, boolean>;
 }

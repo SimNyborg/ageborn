@@ -29,6 +29,11 @@ export interface MatchStats {
   powerCasts?: [number, number];
   baseDamage: number;
   heavyKillsByAA: number;
+  /**
+   * Forts (A16.14, SIM_VERSION 5.0.0; absent in older stats): placed, whole gold spent on them, destroyed
+   * and decayed (own forts), bounty gold they paid the enemy, levies spawned and whole damage dealt by levies.
+   */
+  forts?: { placed: number; gold: number; destroyed: number; decayed: number; bountyPaid: number; levies: number; levyDamage: number };
   /** Bought any Economy research (A18.5.4; the Treasury before A18). */
   usedTreasury: boolean;
   usedLastStand: boolean;

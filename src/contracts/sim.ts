@@ -23,6 +23,12 @@ export interface Loadout {
    * legal and its cast is rejected (`noPower`); a meta-locked slot arrives empty (the match rule).
    */
   powers: LoadoutPowers;
+  /**
+   * The Fort slot (DESIGN A16.14.1): one Fort card or null. Optional so configs that predate forts parse and
+   * play with no fort (SIM_VERSION 5.0.0); a meta-locked slot arrives null and every `fort` command is
+   * rejected (`noFort`).
+   */
+  fort?: CardId | null;
 }
 
 /** A loadout's two power slots (DESIGN A2.9.1). */
@@ -117,6 +123,46 @@ export interface ActiveStatus {
   sourceId: number;
 }
 
+/**
+ * The fort part of a live wall, tower or camp (DESIGN A16.14.2, spec 13). Ticks are sim ticks.
+ * `doneTick` is when the scaffold completes (it blocks, fires and spawns from then); `decayFromTick` is
+ * the first tick of its decay grid (moved to the Siege start when Siege begins). `multBp` is the placing
+ * loadout's multiplier. `lastEnemyHitBy` is the unit (or turret source) id of the last enemy hit.
+ */
+export interface FortState {
+  pad: number;
+  kind: 'wall' | 'tower' | 'camp';
+  doneTick: number;
+  done: boolean;
+  decayFromTick: number;
+  /** A camp's next spawn tick (0 for other kinds). */
+  campNextTick: number;
+  /** A camp's levies, alive or not yet pruned. */
+  levyIds: number[];
+  multBp: number;
+  /** Suppress (A2.9.6): a tower starts no attack before this tick. */
+  silencedUntilTick: number;
+  lastEnemyHitTick: number;
+  lastEnemyHitBy: number;
+}
+
+/** A trap (DESIGN A16.14.3): never targeted, never blocking, always visible. `p` is own-frame milli-lu. */
+export interface TrapState {
+  id: number;
+  side: Side;
+  card: CardId;
+  pad: number;
+  p: number;
+  /** Armed from this tick. */
+  armTick: number;
+  /** Expires at this tick (armTick + life). */
+  untilTick: number;
+  charges: number;
+  /** No charge fires before this tick (1 s between charges). */
+  nextTick: number;
+  multBp: number;
+}
+
 /** A live unit. `x` and `prevX` in milli-lu; views interpolate between them (DESIGN B6). */
 export interface UnitState {
   id: number;
@@ -137,6 +183,8 @@ export interface UnitState {
   summoned: boolean;
   timers: number[];
   lastDamageTick: number;
+  /** Walls, towers and camps (their hidden twin cards, A16.14.8); absent on every other unit. */
+  fort?: FortState;
 }
 
 /**
@@ -235,6 +283,8 @@ export interface SideState {
   lastStand: 'locked' | 'armed' | 'charging' | 'used';
   retreated: boolean;
   callStrikeReadyTick: number;
+  /** The shared Fort slot is recharged from this tick (A16.14.2: first at 0:20, then 25 s after each placement). */
+  fortReadyTick: number;
 }
 
 /** The whole match state. Entities iterate in id order (DESIGN B3 Entities). */
@@ -245,6 +295,8 @@ export interface SimState {
   units: UnitState[];
   projectiles: ProjectileState[];
   casts: PowerCastState[];
+  /** Traps on the lane, in id order (A16.14.3); walls, towers and camps are units. */
+  traps: TrapState[];
   /** sfc32 state, seeded via xmur3 of `"${seed}"` (DESIGN B3 RNG). */
   rng: [number, number, number, number];
   nextId: number;

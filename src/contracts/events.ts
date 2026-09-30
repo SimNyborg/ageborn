@@ -13,7 +13,8 @@ import type { AgeId, CardId, DmgType, EmoteId, Side, VisualId } from './ids';
 export type KillerKind = 'unit' | 'turret' | 'power' | 'lastStand' | 'ability' | 'decay';
 
 type EventBody =
-  | { e: 'unitSpawned'; id: number; side: Side; card: CardId; x: number; summoned: boolean; level: number }
+  /** `from`: the camp that sent a levy (A16.14.3). */
+  | { e: 'unitSpawned'; id: number; side: Side; card: CardId; x: number; summoned: boolean; level: number; from?: number }
   /** The view time-scales the attack clip so `impactAt` lands after `windupTicks` (DESIGN B5). */
   | { e: 'attackStarted'; id: number; targetId: number; windupTicks: number; attackIndex: number }
   | { e: 'projectileFired'; pid: number; from: number; targetId: number; toX: number; travelTicks: number; visualId: VisualId }
@@ -87,6 +88,19 @@ type EventBody =
   | { e: 'powerImpact'; side: Side; power: CardId; castId: number; x: number; index: number }
   /** Suppress (A2.9.7): `side`'s mount starts no turret attack until `untilTick`. */
   | { e: 'turretSilenced'; side: Side; mount: number; untilTick: number }
+  /**
+   * Forts (DESIGN A16.14). `fortPlaced`: a scaffold (or an unarmed trap) went up on own pad `pad`; `x` in
+   * milli-lu, `cost` whole gold. `fortBuilt`: the scaffold completed. `fortDecayed`: it crumbled away;
+   * `creditedTo` is the enemy side paid the bounty (an enemy hit it in the last 3 s), absent otherwise.
+   * A destroyed fort emits `died` like a unit. `towerSilenced`: Suppress jammed a field tower.
+   */
+  | { e: 'fortPlaced'; side: Side; id: number; card: CardId; pad: number; x: number; cost: number }
+  | { e: 'fortBuilt'; id: number }
+  | { e: 'fortDecayed'; id: number; creditedTo?: Side }
+  | { e: 'trapArmed'; id: number }
+  | { e: 'trapTriggered'; id: number; charge: number; x: number }
+  | { e: 'trapExpired'; id: number }
+  | { e: 'towerSilenced'; side: Side; id: number; untilTick: number }
   /** Stance or Hold flag change (A18.4.2); `holdP` is the flag's own-side p in lu. */
   | { e: 'stanceChanged'; side: Side; stance: StanceMode; holdP: number }
   /** Last Stand lifecycle (DESIGN A2.11). */

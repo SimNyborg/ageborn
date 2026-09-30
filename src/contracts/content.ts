@@ -151,6 +151,142 @@ export interface UnitDef {
   weakVs: CardId[];
   /** Hidden, non-collectable cards such as the Training Dummy (DESIGN A5.6). */
   hidden?: boolean;
+  /**
+   * A fort's hidden twin (A16.14.8): the compiler turns every wall, tower and camp `FortDef` into a hidden
+   * unit with the same id (`role` and `group` `fort`, speed 0), so every `content.units[card]` lookup
+   * resolves. The sim runs the fort rules on units whose card carries this.
+   */
+  fort?: { kind: Exclude<FortKind, 'trap'> };
+  /**
+   * A camp's Levy (A16.14.3): a hidden summon cloned from its age's Infantry Common with 40% HP and damage,
+   * cost 0 (no pop, no bounty, no power auto-aim value). Always marches; ranks last in every power cap.
+   */
+  levy?: boolean;
+  /** The value AI threat estimates use when `cost` is 0 (a levy: 16% of the Infantry cost). */
+  aiValue?: number;
+}
+
+/** The four fort kinds (DESIGN A16.14.1). */
+export type FortKind = 'wall' | 'tower' | 'camp' | 'trap';
+
+/**
+ * How a fort is owned (A16.14.6): `starter` (the 8 walls, granted when the Fort slot unlocks), `unlock`
+ * (the Stone Camp, Trap and Tower, granted with the walls), `warPath` (a Bronze-to-Cosmic L4, L6 or L8 first
+ * clear, with a Trophy Road fort-set fallback). Never in capsules.
+ */
+export type FortSource = 'starter' | 'unlock' | 'warPath';
+
+/**
+ * A Fort card (DESIGN A16.14): a stationary card placed on a pad. Walls, towers and camps also exist as a
+ * hidden twin in `CompiledContent.units` (same id); traps live in `SimState.traps`. HP, damage and trap
+ * damage are L1 values, scaled by the placing loadout's multiplier (no card levels, no copies, no Dust).
+ */
+export interface FortDef {
+  id: CardId;
+  kind: 'fort';
+  age: AgeId;
+  rarity: Exclude<Rarity, 'legendary'>;
+  fortKind: FortKind;
+  source: FortSource;
+  /** The Trophy Road node of its fort set (the fallback of a War Path fort, A16.14.6). */
+  road?: number;
+  /** The War Path level (4, 6 or 8, in the fort's own region) whose first clear grants it. */
+  warPathLevel?: number;
+  /** Whole gold, flat across ages (Wall 125, Bunker 175, Trap 75, Camp and Tower 150). */
+  cost: number;
+  /** Pop used while alive, scaffolds included (6; a Trap 3). */
+  pop: number;
+  /** Max HP at L1 (0 for traps, which cannot be targeted). */
+  hp: number;
+  /** Collision size: towers medium, walls and camps large, traps none. */
+  size: 'medium' | 'large' | null;
+  /** Pads the card may use: `home` (walls, towers, traps) or `any` (camps). */
+  pads: 'home' | 'any';
+  /** A tower's one attack (the age's Ranged Common × 1.5 damage, range clamped by pad). */
+  attack?: AttackDef;
+  /** A camp: its levy card, first spawn after completion, then every `everyMs` while fewer than `maxAlive` of its levies live. */
+  camp?: { spawn: CardId; everyMs: number; firstMs: number; maxAlive: number };
+  /**
+   * A trap: fires on an enemy ground unit whose centre comes within `triggerLu` (1 s between charges);
+   * each charge hits the nearest such unit plus its area (at most `maxTargets`, secondaries 50%).
+   */
+  trap?: {
+    charges: number;
+    triggerLu: number;
+    betweenMs: number;
+    armMs: number;
+    lifeMs: number;
+    damage: number;
+    radius: number;
+    maxTargets: number;
+    statuses: StatusApply[];
+  };
+  /** Sandbag Bunker: own ground units within `behindLu` behind it take `rangedTakenBp` less from attacks with range ≥ 100. */
+  cover?: { behindLu: number; rangedTakenBp: number };
+  /** Hardlight Barrier: `bpPerSec` of max HP per second after `delayMs` without damage, until its decay starts. */
+  regen?: { bpPerSec: number; delayMs: number };
+  visualId: VisualId;
+  sfx: { place: SoundId; complete: SoundId; die: SoundId };
+  nameKey: string;
+  descKey: string;
+  /** Per-age class hints (A16.14.1 kind rows). */
+  strongVs: CardId[];
+  weakVs: CardId[];
+}
+
+/**
+ * The fort rules (DESIGN A16.14.2, spec section 13), in table units. Positions are own-frame p (lu from
+ * the own gate). Optional in `EconomyRules` so content that predates forts still compiles (no forts).
+ */
+export interface FortEconomyRules {
+  /** Pads, own-frame p in lu: the first `homePads` are Home pads (inside turret cover), the rest Field pads. */
+  pads: number[];
+  homePads: number;
+  /** A pad is illegal while an enemy ground unit's centre is within this many lu. */
+  padClearLu: number;
+  /** A Field pad needs the own front at rank `fieldFrontRank` at p ≥ pad + this. */
+  fieldBehindLu: number;
+  fieldFrontRank: number;
+  /** At most this many forts alive per side (scaffolds and traps count), camps and towers separately. */
+  maxAlive: number;
+  maxCamps: number;
+  maxTowers: number;
+  /** The shared slot recharge after each placement, and the first ready time (ms from match start). */
+  rechargeMs: number;
+  firstReadyMs: number;
+  /** A new fort is a scaffold for this long at `scaffoldHpBp` of its max HP. */
+  scaffoldMs: number;
+  scaffoldHpBp: number;
+  /** Safe pads (AI and Key D): the nearest enemy needs scaffold time + this to arrive. */
+  safeMarginMs: number;
+  /** Decay: from this long after completion, `decayBpPerSec` of max HP per second; in Siege `siegeDecayBp` (×2 = 2%/s). */
+  decayStartMs: number;
+  decayBpPerSec: number;
+  siegeDecayBp: number;
+  /** A decaying fort counts as destroyed by an enemy that hit it within this long. */
+  decayCreditMs: number;
+  /** Damage taken ×2 in Siege; ×0.5 from other attacks with compiled range ≥ `rangedMinLu`; ×2 structure mod. */
+  siegeTakenBp: number;
+  rangedTakenBp: number;
+  rangedMinLu: number;
+  structureBp: number;
+  /** Bounty paid for a destroyed fort, bp of its cost (the unit rates). */
+  bountyGoldBp: number;
+  bountyXpBp: number;
+  /** A tower's far reach never passes this own-frame p (= `turretRangeHardCapLu`). */
+  towerReachMaxP: number;
+  /** Contact rule: up to `contactMax` blocked enemies within `contactLu` behind the blocked front may attack a fort. */
+  contactLu: number;
+  contactMax: number;
+  /** Kind stats from the age baselines (A16.14.3): HP bp of the Heavy Common, tower damage bp of the Ranged Common. */
+  wallHpBp: number;
+  towerHpBp: number;
+  campHpBp: number;
+  towerDamageBp: number;
+  /** Levies: HP and damage bp of the Infantry Common; `aiValueBp` of its cost. */
+  levyHpBp: number;
+  levyDamageBp: number;
+  levyAiValueBp: number;
 }
 
 /** A turret card. No Legendary turrets in v1 (DESIGN A2.8). Turrets are invulnerable and never target bases. */
@@ -356,6 +492,8 @@ export interface EconomyRules {
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
   /** Age Power rules and data levers (DESIGN A2.9.3-A2.9.6). */
   power: PowerEconomyRules;
+  /** The Fort class (DESIGN A16.14); absent in content that predates forts (no fort can be placed). */
+  fort?: FortEconomyRules;
   /**
    * Siege (A2.10). `moveSpeedBp` is the forced march (A17.3: unit movement ×1.2 while in Siege);
    * `gateCrowdLu` the siege crowd (A16.4 step 2): in Siege a unit may stand level with the ally ahead of it
@@ -479,6 +617,8 @@ export type ResearchEffect =
   | { kind: 'turret'; stat: 'range' | 'attackSpeed' | 'damage'; value: number }
   /** Modernise price × `priceBp` and build time `buildMs` (Engineers). */
   | { kind: 'modernise'; priceBp: number; buildMs: number }
+  /** Fort scaffolds complete in `ms` instead of `economy.fort.scaffoldMs` (Engineers, A16.14.5). */
+  | { kind: 'fortScaffold'; ms: number }
   /** Economy income, milli-gold per second; never doubled by Overdrive (A18.5.4). */
   | { kind: 'income'; milliGoldPerSec: number }
   /** Kill bounty: `addBp` to the bounty rate, or ×(1 + `bonusBp`) for kills made in your own half (p ≤ L / 2). */
@@ -578,6 +718,11 @@ export interface CompiledContent {
   units: Record<CardId, UnitDef>;
   turrets: Record<CardId, TurretDef>;
   powers: Record<CardId, PowerDef>;
+  /**
+   * Fort cards (DESIGN A16.14): walls, towers, camps and traps. Walls, towers and camps also have a hidden
+   * twin in `units` under the same id. Content that predates forts has an empty record.
+   */
+  forts: Record<CardId, FortDef>;
   skins: Record<SkinId, SkinDef>;
   /** The War Council (DESIGN A18.5). */
   research: ResearchRules;

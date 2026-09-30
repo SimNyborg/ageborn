@@ -10,6 +10,9 @@ import type { EmoteId, Side } from './ids';
 /** A tray slot: 6 unit cards per loadout from A18 phase 2 (DESIGN A18.9; was 5). */
 export type TraySlot = 0 | 1 | 2 | 3 | 4 | 5;
 
+/** A fort pad index: 0-2 Home pads, 3-4 Field pads (DESIGN A16.14.1, `economy.fort.pads`). */
+export type FortPad = 0 | 1 | 2 | 3 | 4;
+
 /** The three stances (DESIGN A18.4.2). */
 export type StanceMode = 'charge' | 'hold' | 'fallback';
 
@@ -49,6 +52,13 @@ export type Command =
    * 20 lu. Sent with the current mode it is a flag move only.
    */
   | { t: 'stance'; side: Side; mode: StanceMode; holdP?: number }
+  /**
+   * Place the current loadout's Fort card on own pad `pad` (index into `economy.fort.pads`, 0-4; DESIGN
+   * A16.14.2). The cost is paid on acceptance, never refunded. Rejections, in order: `badCommand`,
+   * `noFort`, `fortSiege`, `fortRecharge`, `fortMax`, `fortCampMax`, `fortPadKind`, `fortPadTaken`,
+   * `fortPadEnemy`, `fortPadField`, `popFull`, `noGold`.
+   */
+  | { t: 'fort'; side: Side; pad: FortPad }
   /** Fire Last Stand while armed (DESIGN A2.11). */
   | { t: 'lastStand'; side: Side }
   | { t: 'emote'; side: Side; emote: EmoteId }

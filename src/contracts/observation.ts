@@ -5,7 +5,7 @@
  * reach undelayed state (DESIGN B6 loop, B10). Positions are `p`, relative to the observer (A2.1).
  */
 import type { StanceMode } from './commands';
-import type { PowerSlot } from './content';
+import type { FortKind, PowerSlot } from './content';
 import type { AgeId, CardId, Side } from './ids';
 import type { SideState, SimState } from './sim';
 
@@ -41,6 +41,49 @@ export interface ObservedFoePower {
   ppm: number;
 }
 
+/**
+ * One of my fort pads as the placement rules see it now (A16.14.2, `core/fortPads.ts`). `p` in lu (own
+ * frame); `reason` is the deny code of an illegal pad (`fortPadKind`, `fortPadTaken`, `fortPadEnemy`,
+ * `fortPadField`), null when legal; `towerRange` the range a tower of my card would have there (lu), 0
+ * for other kinds.
+ */
+export interface ObservedFortPad {
+  p: number;
+  kind: 'home' | 'field';
+  legal: boolean;
+  safe: boolean;
+  reason: string | null;
+  towerRange: number;
+}
+
+/** My Fort slot (A16.14.2): the card, its price and recharge, what is alive, and the pads. */
+export interface ObservedFort {
+  card: CardId;
+  cost: number;
+  /** Ticks until the slot is recharged (0 = ready). */
+  readyTicks: number;
+  /** Own forts alive (scaffolds and traps count). */
+  alive: number;
+  campAlive: boolean;
+  pads: ObservedFortPad[];
+}
+
+/** The opponent's public fort ring (A16.14.7): the card once scouted, and the ticks until ready. */
+export interface ObservedFoeFort {
+  card: CardId | null;
+  readyTicks: number;
+}
+
+/** A trap as both sides see it (always visible, A16.14.3): `p` relative to the observer, milli-lu. */
+export interface ObservedTrap {
+  id: number;
+  side: Side;
+  card: CardId;
+  p: number;
+  armed: boolean;
+  charges: number;
+}
+
 export interface Observation {
   tick: number;
   side: Side;
@@ -69,6 +112,8 @@ export interface Observation {
     lastStand: SideState['lastStand'];
     tray: (CardId | null)[];
     turretCards: (CardId | null)[];
+    /** My Fort slot; null when the loadout has none (absent before SIM_VERSION 5.0.0). */
+    fort?: ObservedFort | null;
   };
   /** Only what a human could see on screen (DESIGN A7.1). */
   foe: {
@@ -85,6 +130,8 @@ export interface Observation {
     treasury: number;
     lastStand: SideState['lastStand'];
     scouted: CardId[];
+    /** Their fort recharge ring (public, A16.14.7); null when their loadout has no Fort card. */
+    fort?: ObservedFoeFort | null;
   };
   /** Visible telegraphs; `targetId` is a strike's locked unit (−1 otherwise). */
   telegraphs: { side: Side; slot: PowerSlot; power: CardId; p: number; zone: number; impactTick: number; targetId: number }[];
@@ -99,7 +146,13 @@ export interface Observation {
     maxHp: number;
     shield: number;
     air: boolean;
-    /** Summoned (Vanguard, drops, riders): never the power front F (A2.9.4). */
+    /** Summoned (Vanguard, drops, riders, levies): never the power front F (A2.9.4). */
     summoned: boolean;
+    /** A wall, tower or camp (A16.14): stationary, never F, never eligible for powers. */
+    fort?: Exclude<FortKind, 'trap'>;
+    /** A fort still under scaffold (it does not block, fire or spawn yet). */
+    scaffold?: boolean;
   }[];
+  /** Traps of both sides (always visible, A16.14.3). */
+  traps?: ObservedTrap[];
 }

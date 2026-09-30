@@ -132,12 +132,46 @@ export interface BaseDressingView {
   destroy(): void;
 }
 
+/** Per-frame pose of a fort (DESIGN A16.14.8, B5): stages and flags derived from sim state by the view. */
+export interface FortPose {
+  x: number;
+  y: number;
+  hpBp: number;
+  /** Scaffold progress, bp (10,000 = complete). */
+  scaffoldBp: number;
+  /** How far decay has eaten the fort, bp of max HP (drives the crack overlay). */
+  decayBp: number;
+  crumbleStage: 0 | 1 | 2 | 3;
+  /** Trap charge pips. */
+  charges?: number;
+  /** A tower jammed by Suppress. */
+  silenced: boolean;
+  /** Ms until a tower's next shot (the renderer plays the 200 ms `windup` pose from it; the sim keeps 0% windup). */
+  nextAttackInMs?: number;
+}
+
+/** A fort view (walls, towers, camps, traps): a static rig with `scaffold`, `build`, `idle`, `hit`, `crumble1-3`, `collapse`, ... clips. */
+export interface FortView {
+  readonly root: import('pixi.js').Container;
+  setPose(p: FortPose): void;
+  play(clip: string, o?: { durationMs?: number; loop?: boolean }): void;
+  freeze(ms: number): void;
+  flash(ms: number, color?: number): void;
+  update(dtMs: number): void;
+  destroy(): void;
+}
+
 /** The injected art provider (DESIGN B5). */
 export interface ArtProvider {
   /** Bakes the given ages (Stone/Medieval at boot, the rest lazily; DESIGN B5). */
   preload(ages: AgeId[]): Promise<void>;
   createUnit(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): UnitView;
   createTurret(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): TurretView;
+  /**
+   * A fort (`fort.<slug>`, A16.14.8). Optional until F3 draws the rigs: without it the battle view shows a
+   * fort through `createUnit` (its twin's visual id falls back to a placeholder).
+   */
+  createFort?(o: { visualId: VisualId; side: Side; teamPreset: TeamPreset; kind: 'wall' | 'tower' | 'camp' | 'trap' }): FortView;
   createBase(o: { age: AgeId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): BaseView;
   /**
    * `skins`: each half's backdrop skin (`backdrop.<id>`, A18.9.4), left = side 0; absent or null

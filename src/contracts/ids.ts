@@ -89,8 +89,11 @@ export type Foil = 'none' | 'bronze' | 'silver' | 'holo';
 /** Team colour presets, including colourblind-friendly ones (DESIGN A11, B5 team colour contract). */
 export type TeamPreset = 'default' | 'blueYellow' | 'highContrast';
 
-/** Unit tags used by damage mods, targeting and rules (DESIGN A2.6). */
-export type Tag = 'light' | 'armored' | 'bio' | 'mech' | 'ground' | 'air' | 'legendary' | 'support' | 'ranged' | 'melee';
+/**
+ * Unit tags used by damage mods, targeting and rules (DESIGN A2.6). `structure` marks the hidden fort
+ * twins (A16.14.8): the ×2 structure mod of Heavy, Legendary, siege and artillery attacks names it.
+ */
+export type Tag = 'light' | 'armored' | 'bio' | 'mech' | 'ground' | 'air' | 'legendary' | 'support' | 'ranged' | 'melee' | 'structure';
 
 /** Card role (DESIGN A2.6, A5 tables). */
 export type Role =
@@ -105,10 +108,15 @@ export type Role =
   | 'airBomber'
   | 'airGunship'
   | 'antiMech'
-  | 'siegeHeavy';
+  | 'siegeHeavy'
+  /** A fort's hidden twin unit (walls, towers, camps; A16.14.8). Never trained, never in a tray. */
+  | 'fort';
 
-/** Role group: drives pop, queue conversion on evolve and bot scoring (DESIGN A2.4, A2.6, A2.7). */
-export type RoleGroup = 'infantry' | 'ranged' | 'heavy' | 'antiArmor' | 'support' | 'epic' | 'legendary';
+/**
+ * Role group: drives pop, queue conversion on evolve and bot scoring (DESIGN A2.4, A2.6, A2.7). `fort` is
+ * the group of the hidden fort twins (A16.14.8): never queued, never converted.
+ */
+export type RoleGroup = 'infantry' | 'ranged' | 'heavy' | 'antiArmor' | 'support' | 'epic' | 'legendary' | 'fort';
 
 /** Damage type; drives hit effects and sounds only, not numbers (DESIGN A14.2, A12). */
 export type DmgType = 'blunt' | 'slash' | 'pierce' | 'bullet' | 'laser' | 'blast';

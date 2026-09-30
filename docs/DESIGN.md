@@ -3627,7 +3627,7 @@ Towers hit ground and air; tower ranges are card values, clamped to 244 on pad 3
 | + camps / + towers, old pads | 0, 9.5 / 0, 4.0 | 1.0, 8.5 / 1.0, 10.5 | 2, **20** / 2, 11 |
 | + walls / camps / towers, new pads | 0, 11.0 / 0, 13.5 / 0, 11.5 | 0.5, 8.0 / 3.0, **17.0** / 2.0, **18.5** | |
 | + walls / camps / towers, new pads and the Siege decay switch | 0, 8.5 / 0, 13.5 / 0, 10.5 | 0, 6.5 / 2.0, **16.5** / 2.0, **18.5** | |
-| + towers, new pads, Siege switch, `maxTowers` 1 (lever 1) | TOWERLEVER_SHORT | TOWERLEVER_STD | |
+| + towers, new pads, Siege switch, `maxTowers` 1 | 0, 11.5 | 0.5, **20.0** | |
 | `home_turtle` | 0, 22.5 | 7.0, 42.0 | |
 | + walls / camps / towers, old pads | 0, 9.0 / 0, 20.0 / 0, 12.0 | 1.5, 11.5 / 4.0, 21.0 / 0.5, 13.0 | |
 
@@ -3653,7 +3653,7 @@ Towers hit ground and air; tower ranges are card values, clamped to 244 on pad 3
 
 **Go or no-go (end of F0).** F0 first adds every rule listed above as not modelled, the new pads, safe pads and the tower clamp, then runs every row at smoke size; the owner hears the numbers in plain words; a failing turtle or mirror row goes through the levers before F1 starts.
 
-**Levers, data first.** If forts turtle or stall: `maxTowers` 1; decay start 60 → 45 s; recharge 25 → 30 s; tower HP 50 → 40%; wall HP 1.0 → 0.8 × H; camp interval 8 → 10 s or levy cap 2 → 1; `maxAlive` 2 → 1; Home pads back toward the gate (300 → 260). If forts are too weak (once the AI plans them): `contactMax` 5 → 3; scaffold 5 → 4 s; wall 125 → 100 gold; levy stats 40 → 50%; trap charges +1; camp interval 8 → 7 s. Never: towers on Field pads (they break the cover invariant), levies that obey Hold. A lower fort bounty is unmeasured and may be tried only as a measured lever. Every lever is re-run against the turtle and mirror rows before it ships.
+**Levers, data first.** If forts turtle or stall: decay start 60 → 45 s; recharge 25 → 30 s; tower HP 50 → 40%; wall HP 1.0 → 0.8 × H; camp interval 8 → 10 s or levy cap 2 → 1; `maxAlive` 2 → 1; `maxTowers` 1 last (on the emulation it did not move the tower turtle: 20.0% against 18.5%, because fewer towers also fed the bot less). If forts are too weak (once the AI plans them): `contactMax` 5 → 3; scaffold 5 → 4 s; wall 125 → 100 gold; levy stats 40 → 50%; trap charges +1; camp interval 8 → 7 s. Never: towers on Field pads (they break the cover invariant), levies that obey Hold. A lower fort bounty is unmeasured and may be tried only as a measured lever. Every lever is re-run against the turtle and mirror rows before it ships.
 
 **Build (A18.13 phase 6, split like the power rework):** F0 prototype gate (no shipped code: the emulation moved into `tools/` as `--patch` data plus a driver hook, extended with the missing rules; the placebo, forced-placement, fort-AI, turtle, `camp_hold_mirror`, `flag_ball` + towers, `runner_camp` and tier VII `fort_spam` rows at smoke size with paired seeds; the owner hears the numbers) · F1 rules, the complete contract bump, the save step (v11 today), AI v1 in the ledger, `SIM_VERSION` 5.0.0 with `fort: null` sent until F2 · F2 HUD, Army, `docs/ui-plan.md` 4.2 and 4.7, Bronze L4 teaching, the trophy-unlock hint, the unlock; then `meta` sends forts · F3 art and sound (Playwright at 844 × 390 and 1280 × 720) · owner check · F4 War Path, unlock-set and Road sources, the bot source filter · F5 tuning at the gate sizes.
 

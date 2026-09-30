@@ -76,6 +76,24 @@ export interface HudFoePowerSlot {
   ppm: number;
 }
 
+/** My Fort button (A16.14.7, F2): the slot's card, price, recharge and caps; the enemy's public ring. */
+export interface HudFort {
+  card: CardId;
+  cost: number;
+  /** Gold ≥ cost now. */
+  affordable: boolean;
+  /** Whole seconds until recharged (rounded up), 0 when ready. */
+  secondsLeft: number;
+  /** "2/2": the alive cap is reached. */
+  cap: boolean;
+  /** The slot is locked by progression (meta); the sim sees it empty. */
+  slotLocked: boolean;
+  /** Siege: forts crumble, no placing. */
+  siege: boolean;
+  /** The enemy's recharge ring (public): card once scouted, seconds left; null when they have no Fort card. */
+  foeRing: { card: CardId | null; secondsLeft: number } | null;
+}
+
 export interface HudModel {
   clockMs: number;
   phase: SimState['phase'];
@@ -140,6 +158,8 @@ export interface HudModel {
     heavyThreat?: boolean;
   };
   mounts: { index: number; owned: boolean; card: CardId | null; outdated: boolean; state: TurretState['state'] | 'empty' }[];
+  /** My Fort slot (A16.14.7); absent in older models and while the slot is off (F2 turns it on). */
+  fort?: HudFort | null;
   /** Speed and pause are allowed in every v1 mode (DESIGN A2.12). */
   speed: 1 | 1.5 | 2;
   paused: boolean;
