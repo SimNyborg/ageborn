@@ -15,7 +15,7 @@ import { frontP, type FrontCandidate } from './powerReach';
  * `fort: null` for both sides until the HUD's Fort button ships in F2, which turns it on and lets the
  * match rule follow the `fort.slot` flag (and the Daily always plays it).
  */
-export const FORT_SLOT_IN_BATTLE = false;
+export const FORT_SLOT_IN_BATTLE = true;
 
 /** DESIGN A16.14 values (spec section 13). Content without `economy.fort` has no forts at all. */
 export const DEFAULT_FORT_ECONOMY: Readonly<FortEconomyRules> = {

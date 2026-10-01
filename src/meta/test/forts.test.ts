@@ -148,9 +148,9 @@ describe('bots and the match rule (A16.14.6)', () => {
 
   it('while the slot is off in battle (F1) both sides play with fort: null', () => {
     const open = unlockFortSlot(fresh(), C).save;
-    const out = applyFortMatchRule(cfgWith('palisade', 'war_camp'), open, 'ladder');
+    const out = applyFortMatchRule(cfgWith('palisade', 'war_camp'), open, 'ladder', false);
     for (const s of out.sides) for (const l of Object.values(s.loadouts)) expect(l?.fort).toBeNull();
-    expect(fortSlotLive(open, 'ladder')).toBe(false);
+    expect(fortSlotLive(open, 'ladder', false)).toBe(false);
   });
 
   it('with the slot on (F2): a locked slot is empty for both sides; the Daily always plays it', () => {

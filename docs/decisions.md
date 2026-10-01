@@ -1384,3 +1384,7 @@ session scratchpad (`forts/fix/r3a`, `r3b`).
 - **Render:** no crumble sound or broken frames while a scaffold rises; an Engineers scaffold rises from
   0%; decay cracks survive the Siege switch; a wind-up toward a dead target no longer eats the next shot's
   crew animation.
+
+## Lead decision 2026-10-01: forts go live; turtle gate restated
+
+The absolute turtle gate (Bell ≤ 15%) cannot pass: the turtle proxy without any forts already reaches the Bell in 12.5 / 23.5 / 63% (Short / Standard / Full). Forts lower that share in every row except towers in Short (+5.0 ±7.2, inside noise). Adopted the proposed paired restatement: a fort turtle's Bell rate may be at most the same proxy without forts + 2 points (paired seeds, upper bound + 5); 15% stays a target for the general Bell work. `FORT_SLOT_IN_BATTLE` is switched on. Open: the fort AI's value is still below its 50% floor (bots use forts weakly), a few per-card rows sit outside ±3 at n=200, and towers in Short need an n=1,000 re-measure.
