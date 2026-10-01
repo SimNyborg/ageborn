@@ -443,6 +443,7 @@
       "autoFilledOne": "Auto-filled 1 slot",
       "autoFilledNone": "Already your best cards",
       "avg": "Avg Lv {n}",
+      "avgShort": "Lv {n}",
       "avgLabel": "Average level of your {age} army",
       "counters": "Who beats whom",
       "moreAges": "More ages",
@@ -466,7 +467,8 @@
         "unit": "Troop",
         "turret": "Turret",
         "power": "Power",
-        "more": "More in capsules"
+        "more": "More in capsules",
+        "fort": "Fort"
       },
       "removeFilter": "Remove filter {name}",
       "onlyKind": "{slot} cards",
@@ -487,7 +489,9 @@
       "presetUse": "Use army {name}",
       "presetInUse": "In use",
       "cardsTitle": "Cards",
-      "deckTitle": "Your army · {age}"
+      "deckTitle": "Your army · {age}",
+      "fortLockedPath": "Bronze 4",
+      "fortLockedOr": "or"
     },
     "advisor": {
       "tooFewUnits": "{age} needs at least 3 units.",
@@ -870,8 +874,10 @@
         "warPath": "War Path {level}",
         "road": "Road {n}",
         "starter": "Starter",
-        "arena": "Capsules · Arena {n}"
-      }
+        "arena": "Capsules · Arena {n}",
+        "fortSlot": "Comes with the Fort slot"
+      },
+      "fort": "Fort {n}/{max}"
     },
     "dex": {
       "title": "Card Album",
@@ -897,6 +903,30 @@
         "capsule": "Time Capsules",
         "capsuleArena": "Time Capsules from Arena {n}"
       }
+    },
+    "fort": {
+      "owned": "You own this fort",
+      "role": {
+        "wall": "Stops a wave inside your turret cover, so your turrets get time to shoot.",
+        "tower": "A tower that stands still in front of your base and shoots ground and air.",
+        "camp": "Sends a very weak levy every 8 s (2 at a time) that costs you nothing. Levies always march.",
+        "trap": "A visible patch that fires when an enemy walks on it. It cannot be hit and never blocks."
+      },
+      "answer": {
+        "wall": "Beat it with Heavies, siege or artillery (×2). Air flies over it and drops land behind it.",
+        "tower": "Beat it with Heavies (×2) or artillery, which outranges it. Infantry that reach it win.",
+        "camp": "Splash clears the levies. Heavies break the camp ×2.",
+        "trap": "Send a cheap unit first to spring it. Air never sets it off."
+      },
+      "where": "Where it stands",
+      "padsHome": "Home pads, in turret cover",
+      "padsAny": "Home and Field pads",
+      "mid": "Middle",
+      "levyEvery": "A levy every",
+      "levyMax": "Levies at once",
+      "levy": "{hp} HP, {dmg} damage. It takes no army space and pays the enemy no bounty.",
+      "slow": "Slows by {pct}% for {s} s",
+      "level": "No levels: a fort is as strong as the average level of your troops in this age."
     }
   }
 }

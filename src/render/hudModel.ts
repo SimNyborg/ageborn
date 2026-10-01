@@ -81,12 +81,15 @@ function hudFort(state: Readonly<SimState>, content: CompiledContent, obs: Obser
   const def = o ? content.forts?.[o.card] : undefined;
   if (!f || !o || !def) return null;
   const foe = obs.foe.fort;
+  // The sim's fortMax rule (core fortDenyReason): 2 forts up, or a tower card with `maxTowers` towers up.
+  let towers = 0;
+  if (def.fortKind === 'tower') for (const u of state.units) if (u.side === obs.side && u.fort?.kind === 'tower' && u.hp > 0 && u.mode !== 'dying') towers += 1;
   return {
     card: o.card,
     cost: o.cost,
     affordable: Math.floor(obs.me.gold / 1000) >= o.cost,
     secondsLeft: Math.ceil((o.readyTicks * 50) / 1000),
-    cap: o.alive >= f.maxAlive,
+    cap: o.alive >= f.maxAlive || (def.fortKind === 'tower' && towers >= f.maxTowers),
     slotLocked: false,
     siege: state.phase === 'siege',
     foeRing: foe ? { card: foe.card, secondsLeft: Math.ceil((foe.readyTicks * 50) / 1000) } : null,

@@ -15,7 +15,7 @@ import { FX_RECIPES } from './effects/recipes';
 import { getPart } from './parts/registry';
 import { BASE_PUPPETS, ICON_SPRITES, PROJECTILE_SPRITES, TURRET_PUPPETS, UNIT_PUPPETS } from './library';
 import { isTeamZone } from './palette';
-import { FORT_PUPPETS, LEVY_PUPPETS } from './forts';
+import { buildFortOverrides, buildLevyOverrides, FORT_PUPPETS, LEVY_PUPPETS } from './forts';
 import { SKIN_PUPPETS } from './skins';
 import { CLIP_TIMING, WORLD } from './style';
 import { WORLD_OVERRIDES } from './manifest.world';
@@ -116,7 +116,8 @@ export function buildProceduralManifest(): Record<string, VisualDef> {
 }
 
 export function buildManifest(): Record<string, VisualDef> {
-  return { ...PROCEDURAL_MANIFEST, ...WORLD_OVERRIDES, ...UNIT_OVERRIDES, ...OVERRIDES };
+  // A16.14.8: fort sheets, and levies drawn from their Infantry Common's sheet
+  return { ...PROCEDURAL_MANIFEST, ...WORLD_OVERRIDES, ...UNIT_OVERRIDES, ...buildLevyOverrides(UNIT_OVERRIDES), ...buildFortOverrides(), ...OVERRIDES };
 }
 
 /** Procedural entries only (see `buildProceduralManifest`). */

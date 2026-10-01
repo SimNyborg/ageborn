@@ -6,7 +6,7 @@
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, PowerSlot, SaveDoc } from '@/contracts';
 import { cardsOfAge, isOwned } from './cards';
-import { fortSlotShown, type SlotRef } from './plan';
+import { fortSlotOpen, type SlotRef } from './plan';
 
 export interface AgeSections {
   /** Owned cards of the age that are not in its army, troops then turrets then powers. */
@@ -31,8 +31,9 @@ export function ageSections(
   onlyPower?: PowerSlot | null,
 ): AgeSections {
   const c = cardsOfAge(content, age);
-  // Fort cards join after the powers once battles play the Fort slot (A16.14.7).
-  const all = [...c.units, ...c.turrets, ...c.powers, ...(fortSlotShown() ? c.forts : [])];
+  // Fort cards join after the powers once this save's Fort slot is open (A16.14.6/A16.14.7: no fort
+  // reward shows anywhere before the unlock, so the Locked strip and the age totals leave them out).
+  const all = [...c.units, ...c.turrets, ...c.powers, ...(fortSlotOpen(save) ? c.forts : [])];
   const fits = (id: CardId): boolean => {
     const kind = content.forts?.[id] ? 'fort' : content.units[id] ? 'unit' : content.turrets[id] ? 'turret' : 'power';
     if (only && kind !== only) return false;

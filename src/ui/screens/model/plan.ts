@@ -41,6 +41,8 @@ export function fieldSlotLockKeys(save: SaveDoc, inBattle: boolean = FIELD_SLOT_
  * trophies; meta sets it, `META_FLAGS.fortSlot`).
  */
 export const FORT_SLOT_FLAG = 'fort.slot';
+/** Best trophies that open the Fort slot (A16.14.6; meta's `FORT_SLOT_TROPHIES`). */
+export const FORT_UNLOCK_TROPHIES = 400;
 
 /** A preview switch for the dev screen gallery and tests: shows the Fort slot before battles play it. */
 let fortPreview = false;

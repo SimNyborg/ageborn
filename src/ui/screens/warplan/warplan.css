@@ -1222,6 +1222,41 @@
 .army-slot__locked .army-slot__more {
   color: var(--ui-text-2);
 }
+/* The locked Fort slot: padlock, FORT, then both routes on two short lines (War Path level; or trophies). */
+.army-slot__locked:has(.army-slot__routes) {
+  gap: 2px;
+  padding: 4px 2px;
+}
+.army-slot__locked:has(.army-slot__routes) .army-slot__watermark {
+  opacity: 0.08;
+}
+.army-slot__routes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  line-height: 13px;
+}
+.army-slot__route {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--ui-text-2);
+  font-size: min(var(--ui-fs-tag), 11px);
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+.army-slot__route--trophy {
+  color: #f2c230;
+  font-variant-numeric: tabular-nums;
+}
+.army-slot__or {
+  margin-right: 1px;
+  color: var(--ui-text-3);
+  font-weight: 700;
+}
 .army-slot__tag {
   position: absolute;
   left: 50%;
@@ -1244,4 +1279,72 @@
 }
 .army-slot__tag--field {
   background: #8e3b2e;
+}
+
+/* The Fort group (A16.14.7) adds 1 slot to the band's one row. Desktop: 6 px gaps keep the 88 px
+   slots and the advisor column in 1206 px. Phones (below 480 px tall): 4 px gaps, and the side column
+   keeps "Lv 3.9" and the advisor's mark only (its sentence is the chip's label and the advice sheet);
+   the hint goes, since the pool's header says the same. `scrollWidth <= clientWidth` is asserted. */
+.army-avg__short {
+  display: none;
+}
+.army-slots.has-fort {
+  --slot-gap: 6px;
+}
+.army-slots.has-fort .army-bandside {
+  flex-basis: 88px;
+  min-width: 88px;
+}
+@container ui-root (max-height: 480px) {
+  .army-slots.has-fort {
+    --slot-gap: 4px;
+  }
+  .army-slots.has-fort .army-bandside {
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: flex-start;
+  }
+  .army-slots.has-fort .army-avg__long,
+  .army-slots.has-fort .army-bandside .army-hint,
+  .army-slots.has-fort .army-bandside .army-issue__text {
+    display: none;
+  }
+  .army-slots.has-fort .army-avg__short {
+    display: inline;
+  }
+  .army-slots.has-fort .army-bandside .army-avg--strip {
+    padding: 0 6px;
+  }
+  .army-slots.has-fort .army-bandside .army-issue__btn {
+    width: auto;
+    min-width: 36px;
+    min-height: 36px;
+    justify-content: center;
+    padding: 4px 8px;
+  }
+}
+/* The Fort slot's face (A16.14.7): the fort stone frame of the tray button, so it never reads as a
+   troop; the rarity still shows on its gem. */
+.army-bandgroup--fort .ui-card__frame {
+  --frame: #9a8a74;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(40, 28, 18, 0.28) 9px 10px),
+    linear-gradient(var(--ui-light-angle), #d8cbb4 0%, #9a8a74 22%, #5d5244 54%, #8c7c66 82%, #cbbda4 100%);
+}
+.army-bandgroup--fort .army-bandgroup__count {
+  color: #e2a57e;
+}
+/* A Camp in the plan: its levies are Infantry, so the Infantry line wears a small camp badge. */
+.army-line.has-levies {
+  position: relative;
+}
+.army-line.has-levies.is-off {
+  opacity: 0.75;
+  filter: none;
+}
+.army-line__fort {
+  position: absolute;
+  right: -5px;
+  bottom: -4px;
+  line-height: 0;
 }

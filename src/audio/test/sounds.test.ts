@@ -65,6 +65,10 @@ const A13: Record<string, string[]> = {
     'pw_drones', 'pw_emp', 'pw_singularity', 'pw_flare', 'pw_comet', 'pw_ion',
     'power_cast', 'power_lock', 'turret_jammed',
   ],
+  /** Forts (A16.14.8, A13): placing, building, hits by material, crumble, collapse, decay, traps, camps. */
+  forts: [
+    'fort_place', 'fort_build', 'fort_complete', 'fort_hit_wood', 'fort_hit_stone', 'fort_hit_metal', 'fort_hit_energy', 'fort_crumble', 'fort_collapse', 'fort_decay', 'trap_arm', 'trap_snap', 'trap_blast', 'camp_horn', 'levy_spawn', 'fort_denied',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -78,7 +82,8 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    expect(A13_IDS).toHaveLength(182);
+    // 182 + the 16 fort sounds (A16.14.8)
+    expect(A13_IDS).toHaveLength(198);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

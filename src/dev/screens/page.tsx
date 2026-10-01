@@ -26,6 +26,7 @@ import { ScreenHost } from '@/ui/screens/ScreenHost';
 import { primeWarPathSeen } from '@/ui/screens/warPath/WarPathScreen';
 import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
 import type { SaveDoc } from '@/contracts';
+import { setFortSlotPreview } from '@/ui/screens/model/plan';
 import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
 import { createArtProvider } from '@/visuals';
 import { cosmeticImageUrl } from '@/visuals/cosmetics/art';
@@ -45,6 +46,28 @@ interface Variant {
   prime?: (s: SaveDoc) => void;
   /** Opens the routes inside this tab of the shell (the tab bar shows). */
   tab?: TabId;
+  /** Shows the Fort slot before battles play it (A16.14.7 preview, `setFortSlotPreview`). */
+  forts?: boolean;
+}
+
+/**
+ * A save with the Fort slot open (A16.14.6): the 8 walls and the Stone set owned, every age's wall in
+ * the slot, plus the Bronze camp and trap from War Path; `fort: null` in Stone for the empty slot.
+ */
+function withForts(s: SaveDoc, o: { empty?: boolean; locked?: boolean; camp?: boolean } = {}): SaveDoc {
+  const forts = content.order.forts ?? [];
+  const wall = (age: string) => forts.find((id) => content.forts?.[id]?.age === age && content.forts?.[id]?.fortKind === 'wall') ?? null;
+  const owned = forts.filter((id) => {
+    const f = content.forts?.[id];
+    return !!f && (f.fortKind === 'wall' || f.age === 'stone' || (f.age === 'bronze' && f.fortKind !== 'tower'));
+  });
+  const plans = s.warPlans.map((plan) => ({
+    ...plan,
+    loadouts: Object.fromEntries(
+      Object.entries(plan.loadouts).map(([age, l]) => [age, { ...l, fort: o.locked || (o.empty && age === 'stone') ? null : o.camp && age === 'stone' ? 'war_camp' : wall(age) }]),
+    ) as typeof plan.loadouts,
+  }));
+  return { ...s, fortsOwned: o.locked ? [] : owned, flags: { ...s.flags, 'fort.slot': !o.locked }, warPlans: plans };
 }
 
 /** A save on its very first launch (War Path level 1 next, nothing earned yet; ui-plan 2.6). */
@@ -94,6 +117,9 @@ const card = (id: string): Variant => ({
   label: `Card: ${id}`,
   route: () => [{ id: 'home' }, { id: 'collection' }, { id: 'cardDetail', card: id }],
 });
+
+/** A Fort card's detail with the Fort slot open (A16.14.7). */
+const fortCard = (id: string): Variant => ({ ...card(id), forts: true, save: (s) => withForts(s) });
 
 const VARIANTS: Variant[] = [
   { id: 'home', label: 'Home', route: () => [{ id: 'home' }] },
@@ -223,6 +249,17 @@ const VARIANTS: Variant[] = [
     route: () => [{ id: 'warPlan', age: 'stone' }],
     save: (s) => ({ ...s, flags: { ...s.flags, 'power.field': false } }),
   },
+  // A16.14.7: the Fort slot in the Army band (open with the wall, empty, locked) and a fort's card detail.
+  { id: 'army-fort', label: 'Army tab: Fort slot', tab: 'army', forts: true, route: () => [{ id: 'warPlan', age: 'bronze' }], save: (s) => withForts(s) },
+  { id: 'army-fort-empty', label: 'Army tab: Fort slot empty', tab: 'army', forts: true, route: () => [{ id: 'warPlan', age: 'stone' }], save: (s) => withForts(s, { empty: true }) },
+  { id: 'army-fort-camp', label: 'Army tab: a Camp in the Fort slot', tab: 'army', forts: true, route: () => [{ id: 'warPlan', age: 'stone' }], save: (s) => withForts(s, { camp: true }) },
+  { id: 'army-fort-locked', label: 'Army tab: Fort slot locked', tab: 'army', forts: true, route: () => [{ id: 'warPlan', age: 'stone' }], save: (s) => withForts(s, { locked: true }) },
+  fortCard('palisade'),
+  fortCard('sling_perch'),
+  fortCard('war_camp'),
+  fortCard('spike_pit'),
+  fortCard('muster_tents'),
+  fortCard('ion_spire'),
   { id: 'collection', label: 'Collection', route: () => [{ id: 'home' }, { id: 'collection' }] },
   { id: 'collection-skins', label: 'Collection: skins', route: () => [{ id: 'home' }, { id: 'collection', tab: 'skins' }] },
   card('bonker'),
@@ -286,6 +323,7 @@ export default function ScreensPage() {
 
   const v = VARIANTS.find((x) => x.id === variant) ?? VARIANTS[0]!;
   const env = useMemo(() => {
+    setFortSlotPreview(v.forts === true);
     const base = fixtureSave(content, state);
     const initial = v.save ? v.save(base) : base;
     primeWarPathSeen(null);

@@ -14,9 +14,11 @@ import { SimImpl } from './createSim';
  * every hit, also of a unit already in the cast's `hitIds` (A2.9.4), and the state hash covers every
  * field of a cast (charge hit counts and runner hits, reload timing, level). 5.0.0: the Fort class
  * (A16.14): the `fort` command, walls, towers and camps as hidden twin units, levies, traps, the
- * structure mod, fort targeting, contact, decay and bounty; levies rank last in power caps.
+ * structure mod, fort targeting, contact, decay and bounty; levies rank last in power caps. 5.1.0: the
+ * contact cap is a hard limit on a fort's short-range attackers (reach units no longer bypass it), and
+ * the safe-pad test reads a moving enemy's current speed (review 2026-10-01).
  */
-export const SIM_VERSION = '5.0.0';
+export const SIM_VERSION = '5.1.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

@@ -34,6 +34,7 @@ import { alive, findUnit, spawnFort, spawnUnit, unitRules } from '../units';
 import { loadoutLevelBp } from './powers';
 import { fireProjectile } from './projectiles';
 import { markPlayed } from './training';
+import { unitSpeed } from './movement';
 import { turretRange } from './targeting';
 
 // ---------------------------------------------------------------------------------------------
@@ -71,8 +72,11 @@ export function padContext(ctx: Ctx, side: Side, fr: FortRules, taken: readonly 
     if (u.side === side) {
       own.push({ id: u.id, p, air: u.air, summoned: u.summoned, leaping: u.leapEnd > 0, structure: u.fort !== undefined });
     } else if (!u.fort) {
-      // Enemy forts stand on their own pads, never within reach of ours; they never move.
-      enemies.push({ id: u.id, p, half: r.half, air: u.air, speed: r.speed * TICKS_PER_SECOND });
+      // Enemy forts stand on their own pads, never within reach of ours; they never move. Current speed
+      // (research, Charge with War Horns, speed buffs and slows) for a unit that moved last tick, card
+      // speed for a standing one (A16.14.1 safe pad).
+      const v = u.moved !== 0 ? unitSpeed(ctx, u, r) : r.speed;
+      enemies.push({ id: u.id, p, half: r.half, air: u.air, speed: v * TICKS_PER_SECOND });
     }
   }
   return { cardPads: fr.pads, size: fr.def.size, taken, enemies, own };
@@ -92,12 +96,21 @@ export function longestTurretRange(ctx: Ctx, side: Side): number | null {
   return best;
 }
 
-/** Is pad `i` safe for the side's Fort card now (AI and Key D, A16.14.2)? */
-export function fortPadSafe(ctx: Ctx, side: Side, i: number, pc: PadContext): boolean {
+/** The side's safe-pad inputs, computed once per observation (the scaffold rules and the cover limit). */
+export interface SafeInputs {
+  rules: FortPadRules;
+  cover: number | null;
+}
+export function safeInputs(ctx: Ctx, side: Side): SafeInputs | null {
   const f = ctx.econ.fort;
-  if (!f) return false;
-  const rules = scaffoldRules(ctx, side);
-  return padSafe(rules ?? f.pads, i, pc, coverLimitP(f.pads, longestTurretRange(ctx, side)));
+  if (!f) return null;
+  return { rules: scaffoldRules(ctx, side) ?? f.pads, cover: coverLimitP(f.pads, longestTurretRange(ctx, side)) };
+}
+
+/** Is pad `i` safe for the side's Fort card now (AI and Key D, A16.14.2)? Pass `si` to reuse the inputs across pads. */
+export function fortPadSafe(ctx: Ctx, side: Side, i: number, pc: PadContext, si: SafeInputs | null = safeInputs(ctx, side)): boolean {
+  if (!si) return false;
+  return padSafe(si.rules, i, pc, si.cover);
 }
 
 /** The side's scaffold time in ticks: Engineers (A16.14.5) or the economy's. */
@@ -318,12 +331,20 @@ export function fortStatusSystem(ctx: Ctx): void {
 // ---------------------------------------------------------------------------------------------
 // Step 8: the contact rule and field towers
 
+/** Scratch lists for `pickContacts` (reused every tick; never part of the state). */
+const FRONT: { u: UnitRt; d: number }[] = [];
+const BEHIND: { u: UnitRt; d: number }[] = [];
+const byDist = (a: { u: UnitRt; d: number }, b: { u: UnitRt; d: number }): number => a.d - b.d || a.u.id - b.u.id;
+
 /**
- * The contact rule (A16.14.2): while a completed fort blocks the enemy front, up to `contactMax` enemy
- * ground units may attack it with attack 0 as if in range: the blocked front rank first (the units that
- * stand at it: within their attack-0 range and closer than 100 lu, nearest first), then the others whose
- * centre is within `contactLu` behind the blocked front unit, nearest first, ties to the lower id.
- * Re-picked every tick; a unit is in at most one fort's set (forts in id order).
+ * The contact rule (A16.14.2), a hard cap on short-range attackers: while a completed fort blocks the
+ * enemy front, at most `contactMax` enemy ground units may attack it with an attack of compiled range
+ * < 100. The set is the blocked front rank first (the units that stand at it: within their attack-0
+ * range, nearest first), then the others whose centre is within `contactLu` behind the blocked front
+ * unit, nearest first, ties to the lower id. Members may hit it with attack 0 as if in range; every
+ * other short-range attacker may not target it at all (targeting reads the set). Re-picked every tick;
+ * a unit is in at most one fort's set (forts in id order). Attacks with range ≥ 100 are never capped
+ * (they pick forts last and deal ×0.5).
  */
 export function pickContacts(ctx: Ctx): void {
   const c = ctx.contact;
@@ -334,36 +355,46 @@ export function pickContacts(ctx: Ctx): void {
   for (const fort of units) {
     if (!fort.fort || !fort.fort.done || !alive(fort)) continue;
     const fr = unitRules(ctx, fort);
-    const front: { u: UnitRt; d: number }[] = [];
-    const rest: UnitRt[] = [];
+    FRONT.length = 0;
+    BEHIND.length = 0;
     for (const e of units) {
       if (e.side === fort.side || !alive(e) || e.air || e.fort || e.leapEnd > 0 || c.has(e.id)) continue;
       if (!isAheadOrLevel(e.side, e.x, fort.x)) continue;
       const er = unitRules(ctx, e);
-      const d = edgeDist(e.x, er.half, fort.x, fr.half);
       const reach = er.attacks[0]?.range ?? 0;
-      if (d <= reach && d < f.rangedMin) front.push({ u: e, d });
-      else rest.push(e);
+      if (reach >= f.rangedMin) continue;
+      const d = edgeDist(e.x, er.half, fort.x, fr.half);
+      if (d <= reach) FRONT.push({ u: e, d });
+      else BEHIND.push({ u: e, d: pOf(e.x, e.side) });
     }
-    if (front.length === 0) continue;
-    front.sort((a, b) => a.d - b.d || a.u.id - b.u.id);
-    const lead = front[0] as { u: UnitRt };
+    if (FRONT.length === 0) continue;
+    FRONT.sort(byDist);
+    const lead = FRONT[0] as { u: UnitRt };
     const leadP = pOf(lead.u.x, lead.u.side);
-    const behind: { u: UnitRt; d: number }[] = [];
-    for (const e of rest) {
-      if (e.side !== lead.u.side) continue;
-      const p = pOf(e.x, e.side);
-      if (p > leadP || leadP - p > f.contact) continue;
-      behind.push({ u: e, d: leadP - p });
-    }
-    behind.sort((a, b) => a.d - b.d || a.u.id - b.u.id);
     let n = 0;
-    for (const x of [...front, ...behind]) {
+    for (const x of FRONT) {
+      if (n >= f.contactMax) break;
+      c.set(x.u.id, fort.id);
+      n += 1;
+    }
+    if (n >= f.contactMax) continue;
+    let w = 0;
+    for (const x of BEHIND) {
+      const p = x.d;
+      if (p > leadP || leadP - p > f.contact) continue;
+      BEHIND[w] = { u: x.u, d: leadP - p };
+      w += 1;
+    }
+    BEHIND.length = w;
+    BEHIND.sort(byDist);
+    for (const x of BEHIND) {
       if (n >= f.contactMax) break;
       c.set(x.u.id, fort.id);
       n += 1;
     }
   }
+  FRONT.length = 0;
+  BEHIND.length = 0;
 }
 
 /**

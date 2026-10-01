@@ -1723,3 +1723,4 @@ def alert_base(v, rng):
 # The power rework (DESIGN A2.9, A5.7): the 32 new powers and the shared power cues live in their own
 # module, which registers into REGISTRY with the helpers above.
 import sounds_powers  # noqa: E402,F401
+import sounds_forts  # noqa: E402,F401

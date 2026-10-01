@@ -879,3 +879,89 @@
   color: var(--ui-text);
   font-weight: 800;
 }
+
+/* A Fort card's facts (A16.14.7): kind chip, the lane diagram of your half with the pads, the turret
+   cover, the fort to scale and a tower's reach from each Home pad (never past p 560). */
+.cd-fort__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 4px;
+  border-radius: var(--ui-r-pill);
+  background: color-mix(in srgb, var(--cls-fort, #b0643f) 70%, #1b1330);
+  color: var(--ui-text);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+.cd-fortlane__cover {
+  fill: color-mix(in srgb, var(--ui-team-me, #2f7df6) 22%, transparent);
+  stroke: color-mix(in srgb, var(--ui-team-me, #2f7df6) 70%, #fff);
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
+}
+.cd-fortlane__cap {
+  stroke: var(--ui-bad, #ff6b5a);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 2;
+}
+.cd-fortlane__reach line {
+  stroke: var(--ui-primary, #f2b52c);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.cd-fortlane__reach circle {
+  fill: var(--ui-primary, #f2b52c);
+}
+.cd-fortlane__pad {
+  fill: var(--ui-surface-2, #2a2440);
+  stroke: var(--ui-text-3);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+.cd-fortlane__pad.is-lit {
+  fill: color-mix(in srgb, var(--ui-good, #5ed17a) 40%, #1b1330);
+  stroke: var(--ui-good, #5ed17a);
+  stroke-width: 1.6;
+  opacity: 1;
+}
+.cd-fortlane__pad.is-field:not(.is-lit) {
+  stroke-dasharray: 2 2;
+}
+.cd-fortlane__fort {
+  fill: #c9a57a;
+  stroke: #2b1a10;
+  stroke-width: 1.4;
+}
+.cd-fortlane__fort.is-tower {
+  fill: #d9b98a;
+}
+.cd-fortlane__fort.is-camp {
+  fill: #e8d3a6;
+}
+.cd-fortlane__fort.is-trap {
+  fill: #7d4a2c;
+  stroke-dasharray: 2 1.5;
+}
+
+/* The fort on the stage: it stands still (no strike), with a slow breathing settle and its shadow. */
+.cd-stage__figure.is-fort {
+  animation: cd-fort-idle 3.2s var(--ui-ease-standard) infinite;
+}
+.cd-stage__figure.is-fort svg {
+  width: 62%;
+  height: auto;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+@keyframes cd-fort-idle {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.012, 0.988);
+  }
+}
+[data-reduce-motion='true'] .cd-stage__figure.is-fort {
+  animation: none;
+}

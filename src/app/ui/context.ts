@@ -19,7 +19,8 @@ export interface AppUi {
   createView(sim: Sim, mySide?: 0 | 1, o?: { spectator?: boolean }): SessionView;
   /** Frames for replays (the Pixi ticker in the app). */
   scheduler: FrameScheduler | null;
-  portrait(card: CardId, foil: Foil, size: number): Promise<string>;
+  /** A card portrait; `plate: false` leaves the background transparent (the HUD's fort button and drag ghost). */
+  portrait(card: CardId, foil: Foil, size: number, plate?: boolean): Promise<string>;
   t(key: string, params?: Record<string, string | number>): string;
   /** The persistent Pixi application the capsule show draws into (B6); absent in tests. */
   pixi?: Application;

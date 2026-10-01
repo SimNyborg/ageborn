@@ -6,14 +6,17 @@
  * fort rigs' portraits through the art service (`FORT_PORTRAITS`); it never stands in for battle art.
  */
 import type { AgeId, FortKind } from '@/contracts';
+import { useState } from 'preact/hooks';
 import './fortGlyphs.css';
 import { OUTLINE, type IconProps } from './icons';
 
 /**
- * Fort portraits come from the art service once F3 draws the fort rigs (A16.14.8). Until then the F1
- * placeholder rigs are turret puppets, so the UI draws the kind illustration below instead.
+ * Fort portraits come from the art service (A16.14.8): F3 rendered every fort, and the provider turns
+ * `fort.<slug>` into its card still (`<slug>.portrait.png` with its team layer). So the Army card, the
+ * card detail, the tray button and the drag ghost show the same object as the lane. The kind
+ * illustration below stays as the fallback while a portrait loads or when the art service is missing.
  */
-export const FORT_PORTRAITS = false;
+export const FORT_PORTRAITS = true;
 
 const GLYPH = '#FFF8E8';
 const S = { stroke: OUTLINE, 'stroke-linejoin': 'round' as const, 'stroke-linecap': 'round' as const };
@@ -119,8 +122,29 @@ const SPIKE_AGES: ReadonlySet<AgeId> = new Set<AgeId>(['stone', 'bronze', 'medie
  * light and a dark outline, a `banner` cloth (team colour in battle, a neutral gold on meta screens,
  * ui-plan 3.2) and a soft ground shadow. `glow` is the energy accent for Future and Cosmic.
  */
-export function FortArt(p: { kind: FortKind; age: AgeId; size?: number; banner?: string; silhouette?: boolean; class?: string }) {
+export function FortArt(p: { kind: FortKind; age: AgeId; size?: number; banner?: string; silhouette?: boolean; class?: string; src?: string | null }) {
   const s = p.size ?? 64;
+  // The fort's own portrait (the art service's still) when it has loaded; the kind illustration otherwise
+  // (also when the still turns out empty: a stand-in art service returns a 1 px image).
+  const [badSrc, setBadSrc] = useState<string | null>(null);
+  if (p.src && badSrc !== p.src) {
+    const src = p.src;
+    return (
+      <img
+        class={`ui-fort-art ui-fort-art--still${p.silhouette ? ' is-silhouette' : ''} ${p.class ?? ''}`}
+        src={src}
+        width={s}
+        height={s}
+        alt=""
+        draggable={false}
+        data-kind={p.kind}
+        onLoad={(e) => {
+          if ((e.currentTarget as HTMLImageElement).naturalWidth < 8) setBadSrc(src);
+        }}
+        onError={() => setBadSrc(src)}
+      />
+    );
+  }
   const mat = AGE_MATERIAL[p.age] ?? 'stone';
   const m = MAT[mat];
   const banner = p.banner ?? '#E0A93A';

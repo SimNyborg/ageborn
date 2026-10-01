@@ -5,12 +5,13 @@
 import type { CardId, Foil } from '@/contracts';
 import { useEffect, useState } from 'preact/hooks';
 
-export type PortraitFn = (card: CardId, foil: Foil, size: number) => Promise<string>;
+/** `plate: false` leaves the background transparent (the fort button and the drag ghost). */
+export type PortraitFn = (card: CardId, foil: Foil, size: number, plate?: boolean) => Promise<string>;
 
 const cache = new Map<string, string>();
 
-export function usePortrait(fn: PortraitFn | undefined, card: CardId | null, foil: Foil, size: number): string | null {
-  const key = card ? `${card}|${foil}|${size}` : '';
+export function usePortrait(fn: PortraitFn | undefined, card: CardId | null, foil: Foil, size: number, plate = true): string | null {
+  const key = card ? `${card}|${foil}|${size}|${plate ? 1 : 0}` : '';
   const [url, setUrl] = useState<string | null>(() => (key ? (cache.get(key) ?? null) : null));
   useEffect(() => {
     if (!fn || !card) {
@@ -23,7 +24,7 @@ export function usePortrait(fn: PortraitFn | undefined, card: CardId | null, foi
       return;
     }
     let live = true;
-    fn(card, foil, size).then(
+    (plate ? fn(card, foil, size) : fn(card, foil, size, false)).then(
       (u) => {
         cache.set(key, u);
         if (live) setUrl(u);

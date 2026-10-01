@@ -37,11 +37,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { CardArt, CardTile } from '../../components/CardTile';
 import { CLASS_NAME_KEY, ClassIcon, CounterLegend } from '../../components/ClassIcon';
-import { FortKindGlyph } from '../../components/FortGlyphs';
+import { FortKindBadge, FortKindGlyph } from '../../components/FortGlyphs';
 import { beginDrag, cancelDrag, flyCard, snapshot, sparks, type FlightSource } from '../../components/drag';
 import { formatDec } from '../../components/format';
 import { haptic } from '../../components/haptics';
-import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, PencilIcon, RARITY_COLOR, RefreshIcon, SwordsIcon, UndoIcon } from '../../components/icons';
+import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, PencilIcon, RARITY_COLOR, RefreshIcon, SwordsIcon, TrophyIcon, UndoIcon } from '../../components/icons';
 import { onGridKeyDown } from '../../components/keys';
 import { ScreenFrame } from '../../components/Layout';
 import { Modal, Sheet } from '../../components/Modal';
@@ -71,6 +71,7 @@ import {
   fitsSlot,
   fortSlotOpen,
   fortSlotShown,
+  FORT_UNLOCK_TROPHIES,
   loadoutAvgLevel,
   normalizeLoadout,
   powerSlotOf,
@@ -831,12 +832,20 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             <span class="army-slot__watermark" aria-hidden="true">
               <FortKindGlyph kind="wall" size={40} />
             </span>
-            <LockIcon size={20} />
+            <LockIcon size={16} />
             <span class="army-slot__label" data-tag="">
               {t('ui.army.slot.fort')}
             </span>
-            <span class="army-slot__more" data-tag="">
-              {t('ui.army.fortLockedShort')}
+            {/* Both routes (A16.14.6): the War Path level, or the trophies for a ladder-only player. */}
+            <span class="army-slot__routes" data-testid="fort-lock-routes">
+              <span class="army-slot__route" data-tag="">
+                {t('ui.army.fortLockedPath')}
+              </span>
+              <span class="army-slot__route army-slot__route--trophy" data-tag="">
+                <span class="army-slot__or">{t('ui.army.fortLockedOr')}</span>
+                <TrophyIcon size={11} />
+                {FORT_UNLOCK_TROPHIES}
+              </span>
             </span>
           </button>
         </div>
@@ -1014,6 +1023,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   }
 
   const lines = researchLines(content, loadout);
+  const campInPlan = fortOpen && loadout.fort !== null && loadout.fort !== undefined && content.forts?.[loadout.fort]?.fortKind === 'camp';
   const lead = ageIssues[0];
   const hint = selCard ? t('ui.army.hintCard') : selSlot ? t('ui.army.hintSlot') : firstVisit ? t('ui.army.hintFirst') : null;
   const statusMark = (st: AgeStatus) =>
@@ -1155,7 +1165,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       <div class={`army${sel ? ' has-sel' : ''}`} ref={root}>
         {/* 1. In battle: the loadout of this age, always in view (owner request 2026-09-30, U4) */}
         <section class="army-battle" data-army-col="" aria-labelledby="army-deck-title" data-testid="army-battle">
-          <div class={`army-slots${fresh ? ' is-fresh' : ''}`} key={age} data-testid="wp-board">
+          <div class={`army-slots${fresh ? ' is-fresh' : ''}${fortShown ? ' has-fort' : ''}`} key={age} data-testid="wp-board">
             {bandGroups.map((g, gi) => (
               <div key={g.id} class={`army-bandgroup army-bandgroup--${g.id}`} role="group" aria-label={t(g.key, { n: filled(g), max: groupMax(g) })}>
                 <span class="army-bandgroup__label">
@@ -1171,15 +1181,25 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                     </h2>
                   ) : null}
                   <span class="army-bandgroup__count" data-tag="" data-testid={`band-${g.id}`}>
-                    {t(g.key, { n: filled(g), max: groupMax(g) })}
+                    {/* A locked Fort slot has no count to fill yet: just its name over the padlock. */}
+                    {g.id === 'fort' && !fortOpen ? t('ui.army.slot.fort') : t(g.key, { n: filled(g), max: groupMax(g) })}
                   </span>
                   {gi === 0 ? (
                     <ul class="army-lines" aria-label={t('ui.warplan.councilLines')} data-testid="wp-council-lines">
                       {lines.map((l) => {
-                        const label = t(l.has ? 'ui.warplan.councilLineHas' : 'ui.warplan.councilLineNone', { cls: t(CLASS_NAME_KEY[l.cls]) });
+                        // A Camp's levies are Infantry (A16.14.3): the Infantry line carries a small camp
+                        // badge and says so (the advisor's info line, A16.14.7).
+                        const levies = l.cls === 'infantry' && campInPlan;
+                        const base = t(l.has ? 'ui.warplan.councilLineHas' : 'ui.warplan.councilLineNone', { cls: t(CLASS_NAME_KEY[l.cls]) });
+                        const label = levies ? `${base}. ${t('advisor.levyInfantry')}` : base;
                         return (
-                          <li key={l.cls} class={`army-line${l.has ? ' is-on' : ' is-off'}`} title={label} aria-label={label} data-testid={`wp-line-${l.cls}`}>
+                          <li key={l.cls} class={`army-line${l.has ? ' is-on' : ' is-off'}${levies ? ' has-levies' : ''}`} title={label} aria-label={label} data-testid={`wp-line-${l.cls}`}>
                             <ClassIcon id={l.cls} size={16} />
+                            {levies ? (
+                              <span class="army-line__fort" aria-hidden="true">
+                                <FortKindBadge kind="camp" size={11} />
+                              </span>
+                            ) : null}
                           </li>
                         );
                       })}
@@ -1193,7 +1213,9 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
             <div class="army-bandside">
               {seasoned && avg !== null ? (
                 <span class="army-avg army-avg--strip" aria-hidden="true">
-                  {t('ui.army.avg', { n: formatDec(avg, 1, locale) })}
+                  <span class="army-avg__long">{t('ui.army.avg', { n: formatDec(avg, 1, locale) })}</span>
+                  {/* With the Fort group the phone band keeps only "Lv 3.9" (A16.14.7: no overflow). */}
+                  <span class="army-avg__short">{t('ui.army.avgShort', { n: formatDec(avg, 1, locale) })}</span>
                 </span>
               ) : null}
               {hint && !(lead && !sel) ? (

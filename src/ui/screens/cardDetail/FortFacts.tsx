@@ -12,7 +12,7 @@ import { fortEconomyOf, towerRangeOnPad } from '@/core/fortPads';
 import { Pill } from '../../components/Chips';
 import { CLASS_NAME_KEY, ClassIcon } from '../../components/ClassIcon';
 import { FORT_KIND_KEY, FortKindBadge } from '../../components/FortGlyphs';
-import { fortTraits } from '../../components/fortInfo';
+import { ageHasSuppress, fortTraits } from '../../components/fortInfo';
 import { formatInt, formatSeconds } from '../../components/format';
 import { CoinIcon } from '../../components/icons';
 import type { UnitClass } from '@/core/cardClass';
@@ -68,12 +68,16 @@ export function FortLaneDiagram(p: { def: FortDef; content: Content; t: T }) {
         <rect class="cd-lane__ground" x="0" y="40" width="400" height="16" rx="3" />
         {cover > 0 ? <rect class="cd-fortlane__cover" x="0" y="36" width={x(cover)} height="24" rx="3" /> : null}
         {def.attack ? <line class="cd-fortlane__cap" x1={x(f.towerReachMaxP)} y1="6" x2={x(f.towerReachMaxP)} y2="62" /> : null}
-        {reach.map((r, i) => (
-          <g key={r.pad} class="cd-fortlane__reach">
-            <line x1={x(r.pad)} y1={10 + i * 7} x2={x(r.pad + r.r)} y2={10 + i * 7} />
-            <circle cx={x(r.pad + r.r)} cy={10 + i * 7} r="2.2" />
-          </g>
-        ))}
+        {reach.map((r, i) => {
+          // A tower's range counts from its edge (pad + half-width + range, never past p 560).
+          const from = r.pad + Math.trunc(size / 2);
+          return (
+            <g key={r.pad} class="cd-fortlane__reach">
+              <line x1={x(from)} y1={10 + i * 7} x2={x(from + r.r)} y2={10 + i * 7} />
+              <circle cx={x(from + r.r)} cy={10 + i * 7} r="2.2" />
+            </g>
+          );
+        })}
         {f.pads.map((pad, i) => {
           const field = i >= f.homePads;
           const lit = !field || any;
@@ -198,7 +202,7 @@ export function FortFacts(p: { def: FortDef; content: Content; t: T; locale: str
       {slow ? <p class="cd-power__unit">{t('ui.fort.slow', { pct: Math.round(slow.magnitudeBp / 100), s: formatSeconds(slow.durationMs, locale) })}</p> : null}
       <p class="cd-power__note">{t('ui.fort.level')}</p>
       <div class="cd-tags" data-testid="fort-traits">
-        {fortTraits(def, true).map((k) => (
+        {fortTraits(def, true, ageHasSuppress(content, def.age)).map((k) => (
           <Pill key={k} tone={k === 'fort.trait.heavyX2' || k === 'fort.trait.decay' || k === 'fort.trait.siege' ? 'red' : 'neutral'}>
             {t(k)}
           </Pill>

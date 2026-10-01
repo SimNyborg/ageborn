@@ -70,8 +70,9 @@ export function baselinePlan(content: CompiledContent): Plan {
   return plan;
 }
 
+/** A deep copy of a loadout, the Fort slot included (A16.14.1). */
 export function cloneLoadout(l: Loadout): Loadout {
-  return { units: [...l.units], turrets: [...l.turrets], powers: { ...l.powers } };
+  return { units: [...l.units], turrets: [...l.turrets], powers: { ...l.powers }, ...(l.fort !== undefined ? { fort: l.fort } : {}) };
 }
 
 export function clonePlan(p: Plan): Plan {

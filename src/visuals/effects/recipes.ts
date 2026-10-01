@@ -13,6 +13,7 @@
  * are screen or UI cues and exempt (`exemptColorRule`, docs/decisions.md WP4).
  */
 
+import { fortFxRecipes } from './fortRecipes';
 import { powerFxRecipes } from './powerRecipes';
 
 export type Range = readonly [number, number];
@@ -728,6 +729,8 @@ export const FX_RECIPES: readonly FxRecipe[] = [
 
   // The power rework (A2.9, A5.7): the new powers' effects, telegraph decorations and shared cues.
   ...powerFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
+  // A16.14.8 forts
+  ...fortFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
 ];
 
 export const FX_RECIPE_BY_ID: ReadonlyMap<string, FxRecipe> = new Map(FX_RECIPES.map((r) => [r.id, r]));

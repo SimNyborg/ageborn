@@ -55,6 +55,11 @@
  *     and casts the Field slot on every reload at the enemy's staging area behind it.
  * 27. `gate_sniper`: a strike in the Field slot where the age has one, cast at the enemy's rearmost unit.
  *
+ * Fort driver hooks (A16.14.9, used by `tools/forts.ts`): `FortTurtleDriver` wraps any controller and
+ * re-places its Fort card on every recharge (paid from its gold) on the most forward safe Home pad, else
+ * the most rearward legal Home pad (the `wall_turtle` / `camp_turtle` / `tower_turtle` rows);
+ * `HoldDriver` locks a controller to Hold (the `camp_hold_mirror` row).
+ *
  * Every power trigger reads the covered eligible value (the cap and the screen, A2.9.5) through the shared
  * `core/powerReach` helpers, the way the sim's auto-aim and the bots do.
  *
@@ -1048,4 +1053,49 @@ export class ScriptedPlayer implements BotController {
 /** A proxy controller for a side. */
 export function createProxy(id: ProxyId, content: CompiledContent, side: Side, seed: number, format: FormatId): ScriptedPlayer {
   return new ScriptedPlayer(STRATEGIES[id], content, side, seed, format);
+}
+
+/**
+ * The turtle rows' fort hook (A16.14.9): the wrapped controller plays as usual, and the driver re-places
+ * its Fort card on every recharge, paid from its own gold, on the most forward safe Home pad (else the
+ * most rearward legal Home pad). Never in Siege, never over the cap of 2. Deterministic.
+ */
+export class FortTurtleDriver implements BotController {
+  readonly snapshotDelayTicks: number;
+  private waitUntil = -1;
+  constructor(private readonly inner: BotController) {
+    this.snapshotDelayTicks = inner.snapshotDelayTicks;
+  }
+  onTick(obs: Observation): Command[] {
+    const out = [...this.inner.onTick(obs)];
+    const f = obs.me.fort;
+    if (!f || obs.phase === 'siege' || obs.phase === 'ended' || obs.tick < this.waitUntil) return out;
+    if (f.readyTicks > this.snapshotDelayTicks + 1 || f.alive >= 2 || obs.me.gold < f.cost * 1000) return out;
+    let safe = -1;
+    let back = -1;
+    f.pads.forEach((p, i) => {
+      if (!p.legal || p.kind !== 'home') return;
+      if (p.safe && (safe < 0 || p.p > (f.pads[safe]?.p ?? 0))) safe = i;
+      if (back < 0 || p.p < (f.pads[back]?.p ?? 0)) back = i;
+    });
+    const pad = safe >= 0 ? safe : back;
+    if (pad < 0) return out;
+    // A short pause after each try: the command and its effect arrive with the observation delay.
+    this.waitUntil = obs.tick + 40;
+    out.push({ t: 'fort', side: obs.side, pad: pad as 0 | 1 | 2 | 3 | 4 });
+    return out;
+  }
+}
+
+/** The `camp_hold_mirror` hook (A16.14.9): the wrapped controller never leaves Hold (its stance commands are dropped). */
+export class HoldDriver implements BotController {
+  readonly snapshotDelayTicks: number;
+  constructor(private readonly inner: BotController) {
+    this.snapshotDelayTicks = inner.snapshotDelayTicks;
+  }
+  onTick(obs: Observation): Command[] {
+    const out: Command[] = this.inner.onTick(obs).filter((c) => c.t !== 'stance');
+    if (obs.me.stance !== 'hold' && obs.tick % 20 === 0) out.push({ t: 'stance', side: obs.side, mode: 'hold' });
+    return out;
+  }
 }

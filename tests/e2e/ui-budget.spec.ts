@@ -109,6 +109,11 @@ const PAGES: PageSpec[] = [
   },
   { name: 'card-mammoth', hash: 'screens/card-mammoth_matriarch/mid/{vp}', strict: true, primary: false },
   { name: 'card-power', hash: 'screens/card-meteor_shower/mid/{vp}', strict: true, primary: false },
+  // Forts (A16.14.7): the Army band with the Fort group (open, locked) and a fort's card detail.
+  { name: 'army-fort', hash: 'screens/army-fort/mid/{vp}', strict: true, primary: false },
+  { name: 'army-fort-locked', hash: 'screens/army-fort-locked/mid/{vp}', strict: true, primary: false },
+  { name: 'card-fort-tower', hash: 'screens/card-sling_perch/mid/{vp}', strict: true, primary: false },
+  { name: 'card-fort-camp', hash: 'screens/card-war_camp/mid/{vp}', strict: true, primary: false },
   { name: 'card-locked', hash: 'screens/card-friar/new/{vp}', strict: true, primary: false },
   // The Card Album (owner request 2026-09-30): the long Pokedex scroll, strict from its first build.
   { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: true, primary: false },

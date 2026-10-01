@@ -11,7 +11,7 @@ import { MILLI, effectiveReloadMs, padKind, slotIndex, towerRangeOnPad } from '@
 import { pOf, xOf } from './geometry';
 import { ranksOpen, researchProgressBp } from './research';
 import { baseHpBp, loadoutOf, other, slotFort, slotPower, xpBp, type Ctx, type SideRt } from './state';
-import { fortCounts, fortPadReason, fortPadSafe, padContext } from './systems/forts';
+import { fortCounts, fortPadReason, fortPadSafe, padContext, safeInputs } from './systems/forts';
 import { powerCost, powerRateBp } from './systems/powers';
 
 /** My power slot (A2.9.3): the effective cost and reload the sim applies. */
@@ -71,14 +71,15 @@ function myFort(ctx: Ctx, side: Side): ObservedFort | null {
   if (!f || !card || !fr) return null;
   const counts = fortCounts(ctx, side);
   const pc = padContext(ctx, side, fr, counts.taken);
+  const si = safeInputs(ctx, side);
+  const atk = fr.def.attack;
   const pads: ObservedFortPad[] = f.pads.pads.map((p, i) => {
     const reason = fortPadReason(ctx, i, pc);
-    const atk = fr.def.attack;
     return {
       p: Math.trunc(p / MILLI),
       kind: padKind(f.pads, i),
       legal: reason === null,
-      safe: reason === null && fortPadSafe(ctx, side, i, pc),
+      safe: reason === null && fortPadSafe(ctx, side, i, pc, si),
       reason,
       towerRange: atk ? Math.trunc(towerRangeOnPad(atk.range * MILLI, p, fr.half, f.pads.towerReachMax) / MILLI) : 0,
     };

@@ -181,7 +181,7 @@ export const cosmic: RawAgeTables = {
     wall('cosmic', 'void_rampart'),
     tower('cosmic', 'ion_spire', { warPath: 8, road: 3200 }),
     camp('cosmic', 'warp_barracks', 'star_recruit', { warPath: 4, road: 3200 }),
-    trap('cosmic', 'void_mine', { warPath: 6, road: 3200 }, { charges: 2, damage: 290, radius: 50 }),
+    trap('cosmic', 'void_mine', { warPath: 6, road: 3200 }, { charges: 1, damage: 430, radius: 50 }),
   ],
 };
 

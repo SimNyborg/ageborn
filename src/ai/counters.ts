@@ -54,8 +54,9 @@ function counterCell(book: CardBook, card: CardId, target: CardId): number {
  */
 export function counterTargets(foes: readonly SeenUnit[], myFront: number | null, depth: number): SeenUnit[] {
   const front = myFront ?? 0;
-  // Levies are never counter targets (A16.14.3): a free 8-gold summon says nothing about the enemy's plan.
-  const real = foes.filter((u) => !u.levy);
+  // Summons are never counter targets (A16.14.3): a free levy, drop or rider says nothing about the
+  // enemy's plan.
+  const real = foes.filter((u) => !u.summoned && !u.levy);
   let near = real.filter((u) => (u.p > front ? u.p - front : front - u.p) <= COUNTER_RADIUS);
   if (near.length === 0) near = [...real];
   near.sort((a, b) => a.p - b.p || a.id - b.id);

@@ -350,7 +350,16 @@ export function BattleStage(p: {
 
   const w = hudWorld?.world;
   const art = hudWorld?.art;
-  const portrait = useMemo(() => (art ? (card: string, foil: Foil, size: number) => art.portrait({ card, foil, size, side: 0 }) : undefined), [art]);
+  const portrait = useMemo(
+    () =>
+      art
+        ? (card: string, foil: Foil, size: number, plate?: boolean) => {
+            const req: Parameters<typeof art.portrait>[0] & { plate?: boolean } = { card, foil, size, side: 0, ...(plate === false ? { plate: false } : {}) };
+            return art.portrait(req);
+          }
+        : undefined,
+    [art],
+  );
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: '#1b1a2e' }} data-testid="battle-stage">
       <div ref={host} style={{ position: 'absolute', inset: 0 }} />

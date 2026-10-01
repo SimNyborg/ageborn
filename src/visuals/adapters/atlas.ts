@@ -43,6 +43,11 @@ import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
 import { isWorldSource, WorldAtlas } from './worldAtlas';
+
+/** Fort sheets (`art/forts/<age>/<slug>.json`, A16.14.8) are not unit sheets. */
+function isFortSource(source: string): boolean {
+  return /art\/forts\//.test(source);
+}
 import type { BackdropRequest, BaseRequest, EffectRequest, PortraitRequest, ViewKind, ViewRequest, VisualAdapter } from './types';
 
 /** What the adapter needs from a loaded sheet (a Pixi Spritesheet, or a fake in tests). */
@@ -51,6 +56,8 @@ export interface AtlasData {
   /** Scale of the sheet (texture units per lu = `meta.scale / meta.ageborn.pxPerLu`). */
   luPerUnit: number;
   clips: Readonly<Record<string, AtlasClipMeta>>;
+  /** The sheet's own `heightLu`: an entry drawing it at another height (a levy at 0.85) scales the sprite. */
+  heightLu?: number;
 }
 
 export interface AtlasClipMeta {
@@ -183,6 +190,7 @@ async function loadWithAssets(url: string): Promise<AtlasData> {
     animations: sheet.animations,
     luPerUnit: m ? scale / m.pxPerLu : 1,
     clips: m?.clips ?? {},
+    ...(m?.heightLu ? { heightLu: m.heightLu } : {}),
   };
 }
 
@@ -265,6 +273,8 @@ export class AtlasAdapter implements VisualAdapter {
       return false;
     }
     if (def.kind !== 'atlas') return false;
+    // forts draw through `createFort` (fortViews/atlasFortView.ts); here only their card still
+    if (isFortSource(def.source)) return what === 'portrait' && portraitStillBase(def.source) !== null;
     // units with a sheet also get a rendered card still (falls back to the procedural portrait)
     if (what === 'portrait') return portraitStillBase(def.source) !== null;
     if (!this.sheets.has(def.source)) {
@@ -298,7 +308,8 @@ export class AtlasAdapter implements VisualAdapter {
   /** Non-world sheet sources of the given ages (sheets outside `art/units/<age>/` count for every age). */
   private unitSources(ages: readonly AgeId[]): string[] {
     const set = new Set(ages);
-    return [...new Set(this.o.entries().filter((d) => d.kind === 'atlas' && !isWorldSource(d.source)).map((d) => d.source))].filter((s) => {
+    // fort sheets (art/forts/...) load through the provider's fort atlas, not as unit sheets
+    return [...new Set(this.o.entries().filter((d) => d.kind === 'atlas' && !isWorldSource(d.source) && !isFortSource(d.source)).map((d) => d.source))].filter((s) => {
       const a = unitSheetAge(s);
       return a === null || set.has(a);
     });
@@ -324,6 +335,16 @@ export class AtlasAdapter implements VisualAdapter {
   /** Resolves once every unit sheet of `ages` has loaded (or failed). Dev pages and screenshots use it. */
   async unitSheetsReady(ages: readonly AgeId[]): Promise<void> {
     await Promise.all(this.unitSources(ages).map((s) => this.ensure(s)));
+  }
+
+  /**
+   * A loaded unit sheet, or undefined (and starts loading it). Fort views draw a tower's crew from the
+   * age's Ranged Common sheet this way (A16.14.8).
+   */
+  sheetFor(source: string): AtlasData | undefined {
+    const s = this.sheets.get(source);
+    if (!s) void this.ensure(source);
+    return s;
   }
 
   /** True when the sheet is loaded (tests, gallery). */
@@ -383,7 +404,7 @@ export class AtlasAdapter implements VisualAdapter {
     const puppet = puppetById(r.key);
     const color = teamColor(r.side, r.teamPreset);
     if (still) {
-      const url = await renderStillPortrait({ url: this.url(still), age: unitSheetAge(r.def.source) ?? puppet?.age ?? null, size: r.size, foil: r.foil, teamColor: color, plate: r.plate });
+      const url = await renderStillPortrait({ url: this.url(still), age: unitSheetAge(r.def.source) ?? (/art\/forts\/([a-z]+)\//.exec(r.def.source)?.[1] as AgeId | undefined) ?? puppet?.age ?? null, size: r.size, foil: r.foil, teamColor: color, plate: r.plate });
       if (url) return url;
     }
     if (!puppet) return '';
@@ -487,6 +508,8 @@ class AtlasUnitView implements UnitView {
   private readonly rng: CosmeticRng;
   private readonly facing0: 1 | -1;
   private facing: 1 | -1;
+  /** Sprite scale: the sheet's density, times `heightLu / sheet heightLu` for an entry drawn smaller (levies). */
+  private readonly k: number;
   private glyph: Container | null = null;
   private glyphGroup: RoleGroup | null = null;
   private trim: Container | null = null;
@@ -547,7 +570,9 @@ class AtlasUnitView implements UnitView {
     this.flashSprite.blendMode = 'add';
     this.flashSprite.visible = false;
     this.body.addChild(this.teamSprite, this.baseSprite, this.flashSprite);
-    this.body.scale.set(sheet.luPerUnit * this.facing, sheet.luPerUnit);
+    const hk = sheet.heightLu && def.heightLu > 0 ? def.heightLu / sheet.heightLu : 1;
+    this.k = sheet.luPerUnit * (Math.abs(hk - 1) > 0.02 ? hk : 1);
+    this.body.scale.set(this.k * this.facing, this.k);
     if (def.filters?.alpha !== undefined) this.body.alpha = def.filters.alpha;
     this.root.addChild(this.ground, this.body, this.overlay);
     this.puffs = new PuffList(this.overlay);
@@ -561,7 +586,7 @@ class AtlasUnitView implements UnitView {
     this.root.position.set(p.x, p.y);
     if (p.facing !== this.facing) {
       this.facing = p.facing;
-      this.body.scale.x = this.sheet.luPerUnit * p.facing;
+      this.body.scale.x = this.k * p.facing;
       for (const o of [this.stars, this.clock, this.bubble]) if (o) o.x = this.anchors.hitCenter.x * p.facing;
     }
     this.root.alpha = p.alpha;
@@ -609,7 +634,9 @@ class AtlasUnitView implements UnitView {
       if (t0 && t0.name === 'walk' && t0.anim === 'walk') {
         const meta = this.sheet.clips[t0.anim];
         const authored = t0.steps.reduce((a, b) => a + b, 0);
-        opts = { ...o, durationMs: atlasWalkDurationMs(authored, meta?.naturalSpeedLuPerS, o?.durationMs) };
+        // a smaller entry (a levy) strides shorter in lu: scale the natural speed with it
+        const natural = meta?.naturalSpeedLuPerS !== undefined ? meta.naturalSpeedLuPerS * (this.k / this.sheet.luPerUnit) : undefined;
+        opts = { ...o, durationMs: atlasWalkDurationMs(authored, natural, o?.durationMs) };
       }
     }
     const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...opts } : opts);

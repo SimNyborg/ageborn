@@ -12,6 +12,7 @@ import { ICON_ZONES } from './parts/icons';
 import { TRIM_COLORS } from './palette';
 import { AGES } from './ages';
 import { FORT_PUPPETS, LEVY_PUPPETS } from './forts';
+import './parts/forts';
 import { AGE_PUPPETS } from './puppets';
 import type { BasePuppet } from './rigs/base';
 import type { TurretPuppet } from './rigs/turret';
@@ -110,6 +111,10 @@ export const ICON_SPRITES: readonly PuppetDef[] = [
   spritePuppet('icon.chevron', 'icon.chevron', UI, 20),
   spritePuppet('icon.base_alert', 'icon.base_alert', UI, 24),
   spritePuppet('icon.follow', 'icon.follow', UI, 22),
+  // A16.14.8 forts: the kind glyphs, the pad marker and the tray's stone frame
+  ...(['wall', 'tower', 'camp', 'trap'] as const).map((k) => spritePuppet(`icon.fort.${k}`, `icon.fort.${k}`, UI, 20)),
+  spritePuppet('icon.fort.pad', 'icon.fort.pad', UI, 20),
+  spritePuppet('ui.frame.fort', 'ui.frame.fort', UI, 48),
   ...(['bronze', 'silver', 'gold'] as const).map((t) => spritePuppet(`trim.${t}`, `trim.${t}`, UI, 10)),
   ...(['bronze', 'silver', 'holo'] as const).map((t) => spritePuppet(`foil.${t}`, `foil.${t}`, UI, 100)),
 ];

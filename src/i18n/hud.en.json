@@ -234,7 +234,7 @@
       "fortRecharge": "Ready in {s} s",
       "fortGold": "Need {n} gold",
       "fortPop": "Army full",
-      "fortMax": "{n} forts up",
+      "fortMax": "Max {n} up at once",
       "fortCampMax": "One camp at a time",
       "fortNoPad": "No clear pad",
       "fortEnemyNear": "Enemy near",
@@ -246,7 +246,6 @@
     },
     "inField": "In field",
     "fort": {
-      "label": "Fort",
       "buttonLabel": "{name}, {kind}: {state}",
       "stateReady": "ready to place",
       "cap": "{n}/{max}",
@@ -268,10 +267,8 @@
       },
       "foe": {
         "label": "Their fort: {name}, {state}",
-        "unknown": "Their fort: {state}",
         "ready": "ready",
-        "secs": "ready in {s} s",
-        "unseen": "Not seen yet"
+        "secs": "ready in {s} s"
       }
     }
   }

@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AgeId, CardId, CompiledContent, FormatId, MatchConfig, SideConfig, SimEvent } from '@/contracts';
 import { raw } from '@/content/raw';
-import { BP, LANE_MLU, MILLI } from '@/core';
+import { LANE_MLU, MILLI } from '@/core';
 import { createSim } from '../createSim';
 import { makeImpact, unitDamage } from '../damage';
 import { devGrantResearch, devMove, devPlaceFort, devPlaceTurret, devSetGold, devSetPower, devSpawn, simCtx, stepN, unitById } from '../debug';
@@ -239,6 +239,23 @@ describe('contact rule (A16.14.2)', () => {
     for (let t = 0; t < 20; t += 1) for (const e of sim.step([])) if (e.e === 'hit' && e.targetId === wall) hits.push(e.sourceId);
     expect(hits.length).toBeGreaterThanOrEqual(4);
     expect(hits.length).toBeLessThanOrEqual(5);
+  });
+
+  it('the cap is a hard limit: reach units (Spear Hunters, range 60) never hit a wall with more than 5', () => {
+    const { sim, ctx } = fortSim();
+    const wall = devPlaceFort(sim, 0, 'palisade', { pad: 2, done: true });
+    for (let i = 0; i < 10; i += 1) devSpawn(sim, 1, 'spear_hunter', { p: foeP(340 + i * 8) });
+    stepN(sim, 30);
+    expect(ctx.contact.size).toBeLessThanOrEqual(5);
+    // Every 2 s window: at most 5 distinct attackers, all of them in the contact set.
+    for (let w = 0; w < 3 && unitById(sim, wall); w += 1) {
+      const by = new Set<number>();
+      for (let t = 0; t < 40; t += 1) {
+        for (const e of sim.step([])) if (e.e === 'hit' && e.targetId === wall) by.add(e.sourceId);
+      }
+      expect(by.size).toBeGreaterThan(0);
+      expect(by.size).toBeLessThanOrEqual(5);
+    }
   });
 });
 
@@ -656,6 +673,28 @@ describe('special walls (A16.14.3)', () => {
   });
 });
 
+describe('safe pads (A16.14.1)', () => {
+  /** Is pad 0 (p 160, the only safe pad with no turret) safe one tick after a walking Bonker spawns at p? */
+  function safeWith(p: number, buffBp: number): boolean {
+    const { sim } = fortSim({ fort: { stone: 'palisade' } });
+    const foe = devSpawn(sim, 1, 'bonker', { p: foeP(p) });
+    const u = unitById(sim, foe.id);
+    if (buffBp > 0) u?.statuses.push({ kind: 'speedBuff', magnitudeBp: buffBp, untilTick: 100000, amount: 0, frozen: false, sourceId: 0 });
+    sim.step([]);
+    return sim.observe(0).me.fort?.pads[0]?.safe === true;
+  }
+
+  it('reads a walking enemy at its current speed: a speed buff turns a just-safe pad unsafe', () => {
+    let lastSafe = -1;
+    for (let p = 900; p >= 300; p -= 10) {
+      if (!safeWith(p, 0)) break;
+      lastSafe = p;
+    }
+    expect(lastSafe).toBeGreaterThan(300);
+    expect(safeWith(lastSafe, 2000)).toBe(false);
+  });
+});
+
 describe('observation (A16.14.7)', () => {
   it('shows my slot and pads, the enemy ring (card once placed), forts as units and traps to both sides', () => {
     const { sim, st } = fortSim({ fort: { stone: 'palisade' }, foeFort: { stone: 'spike_pit' } });
@@ -716,19 +755,24 @@ describe('hash, determinism and replays (B3)', () => {
     const cfg = fortConfig({ fort: { stone: 'palisade' }, foeFort: { stone: 'sling_perch' }, clock: true, format: 'short', modifiers: ['sudden_siege'] });
     const sim = createSim(cfg);
     const st = new Stamper(sim);
+    const events: SimEvent[] = [];
     for (let t = 0; t < 40000 && !sim.state.outcome; t += 1) {
       const cmds: Parameters<Stamper['step']> = [];
-      if (t % 25 === 0) cmds.push({ t: 'train', side: 0, slot: 0 }, { t: 'train', side: 1, slot: t % 50 === 0 ? 2 : 1 });
-      if (t % 100 === 0) cmds.push({ t: 'fort', side: 0, pad: 2 }, { t: 'fort', side: 1, pad: 1 }, { t: 'retreat', side: 0 });
-      st.step(...cmds);
+      if (t % 100 === 50) cmds.push({ t: 'train', side: 0, slot: 0 }, { t: 'train', side: 1, slot: t % 200 === 50 ? 2 : 1 });
+      if (t % 100 === 0) cmds.push({ t: 'fort', side: 0, pad: ((t / 100) % 3) as 0 | 1 | 2 }, { t: 'fort', side: 1, pad: ((t / 100) % 3) as 0 | 1 | 2 });
+      events.push(...st.step(...cmds));
     }
     expect(sim.state.outcome).not.toBeNull();
     const doc = buildReplay(sim);
     expect(doc.commands.some((c) => c.t === 'fort')).toBe(true);
     const check = verifyReplay(doc, cfg.content);
     expect(check.ok).toBe(true);
-    const stats = computeMatchStats([], { format: cfg.format, content: cfg.content }, 0);
-    expect(stats.forts).toEqual({ placed: 0, gold: 0, destroyed: 0, decayed: 0, bountyPaid: 0, levies: 0, levyDamage: 0 });
+    // The recorded match's own events: side 1 placed Sling Perches (150 gold each).
+    const placed = events.filter((e) => e.e === 'fortPlaced' && e.side === 1).length;
+    const stats = computeMatchStats(events, { format: cfg.format, content: cfg.content }, 1);
+    expect(placed).toBeGreaterThan(0);
+    expect(stats.forts?.placed).toBe(placed);
+    expect(stats.forts?.gold).toBe(placed * (cfg.content.forts['sling_perch']?.cost ?? 0));
   });
 
   it('stats count forts placed and their gold', () => {
@@ -747,6 +791,5 @@ describe('hash, determinism and replays (B3)', () => {
     const st = new Stamper(sim);
     stepN(sim, READY);
     expect(rejection(st.step({ t: 'fort', side: 0, pad: 0 }))).toBe('noFort');
-    expect(BP).toBe(10000);
   });
 });

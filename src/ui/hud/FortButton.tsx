@@ -28,8 +28,8 @@ import type { FortDef, FortKind } from '@/contracts';
 import { createPortal } from 'preact/compat';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { signal } from '@preact/signals';
-import { FORT_KIND_KEY, FortArt, FortKindBadge } from '../components/FortGlyphs';
-import { fortNumbers, fortTraits } from '../components/fortInfo';
+import { FORT_KIND_KEY, FORT_PORTRAITS, FortArt, FortKindBadge } from '../components/FortGlyphs';
+import { ageHasSuppress, fortNumbers, fortTraits } from '../components/fortInfo';
 import { haptic } from '../components/haptics';
 import { animate, ease, reducedMotion } from '../components/motion';
 import type { HudCtx } from './context';
@@ -38,6 +38,7 @@ import { CoinIcon } from './icons';
 import { LONG_PRESS_MS, POWER_DRAG_PX, fortIntent, fortPadReasonKey, fortSlotView, fortSnapPad, fortStateReason, type FortSlotView } from './model';
 import { minimapDropX } from './PowerButton';
 import { ReasonTip } from './Reason';
+import { usePortrait } from './usePortrait';
 import { MOTION_DUR } from '@/core/motion';
 import './fort.css';
 
@@ -118,7 +119,7 @@ function FortTip(p: { c: HudCtx; def: FortDef; cost: number }) {
         ))}
       </div>
       <ul class="hud-fort-tip-traits">
-        {fortTraits(def).map((k) => (
+        {fortTraits(def, false, ageHasSuppress(c.config.content, def.age)).map((k) => (
           <li key={k}>{t(k)}</li>
         ))}
       </ul>
@@ -203,9 +204,13 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
 
   /** The reason key of the illegal usable pad nearest a tapped client x (within a finger's reach), or null. */
   const nearestBlocked = (clientX: number): string | null => {
-    const { v: vv } = live.current;
     const r = hudRoot()?.getBoundingClientRect();
-    const x = clientX - (r?.left ?? 0);
+    return blockedAt(clientX - (r?.left ?? 0));
+  };
+
+  /** The reason key of the illegal usable pad nearest a HUD-local x (within a finger's reach), or null. */
+  const blockedAt = (x: number): string | null => {
+    const { v: vv } = live.current;
     let best: string | null = null;
     let bestD = Infinity;
     for (const i of vv.usable) {
@@ -450,7 +455,13 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
   const root = aiming ? hudRoot() : null;
   const dragging = aiming && aim?.mode === 'drag';
   const overHud = dragging && aim?.over === 'hud';
+  // While the card is in hand and not snapped, its label says what the pads say (the card itself sits
+  // where the pad labels are): "No clear pad" when none is legal, the reason of a blocked pad under it.
+  const noPad = dragging && v.legal.length === 0;
+  const hoverWhy = dragging && aim?.pointer && aim.snap === null && aim.over === 'lane' && !noPad ? blockedAt(aim.pointer.x) : null;
   const team = c.colors?.me;
+  // The fort's own still (the same object as on the lane, A16.14.8), bare so the stone frame shows.
+  const still = usePortrait(FORT_PORTRAITS ? c.portrait : undefined, def.id, 'none', 140, false);
 
   return (
     <div class={cls('hud-fort-slot', ready && 'is-ready', aiming && 'is-aiming')} data-testid="hud-fort-slot" data-state={v.state}>
@@ -516,9 +527,25 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
           press.current = null;
           if (mode.current === 'drag') {
             const res = resolve(e.clientX, e.clientY, FORT_SNAP_PX);
-            const snap = res.over === 'hud' ? null : (res.snap ?? (res.over === 'off' ? (aimSig.peek()?.snap ?? null) : null));
+            const prev = aimSig.peek()?.snap ?? null;
+            const snap = res.over === 'hud' ? null : (res.snap ?? (res.over === 'off' ? prev : null));
             if (snap !== null) place(snap);
-            else live.current.c.audio?.play('ui_toggle');
+            else {
+              // A drop on the lane that places nothing says why (MR-03): the blocked pad under the finger,
+              // the pad the ghost was snapped to if it turned illegal during the hold, or "No clear pad".
+              const vv = live.current.v;
+              let why: string | null = null;
+              if (res.over === 'lane') {
+                why = nearestBlocked(e.clientX);
+                const was = prev !== null ? vv.f.pads?.[prev] : undefined;
+                if (!why && was) why = (!was.legal ? fortPadReasonKey(was.reason) : null) ?? 'hud.deny.fortNoPad';
+                if (!why && vv.legal.length === 0) why = 'hud.deny.fortNoPad';
+              }
+              if (why) {
+                live.current.c.act({ k: 'deny', target: 'fort', reason: { key: why } });
+                shake(btn.current);
+              } else live.current.c.audio?.play('ui_toggle');
+            }
             end();
             return;
           }
@@ -551,7 +578,7 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
       >
         <i class="hud-fort-frame" aria-hidden="true" />
         <span class="hud-fort-art">
-          <FortArt kind={kind} age={def.age} size={c.compact ? 44 : 70} {...(team ? { banner: team } : {})} />
+          <FortArt kind={kind} age={def.age} size={c.compact ? 44 : 70} src={still} {...(team ? { banner: team } : {})} />
         </span>
         <FortRing frac={v.frac} drainKey={drain} />
         {recharging ? (
@@ -599,7 +626,8 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
           {t('tutorial.fort.hint')}
         </div>
       ) : null}
-      {aiming && aim?.mode === 'tap' ? (
+      {/* While a reason pops ("Enemy near"), it has the chip's place; the aiming line comes back after. */}
+      {aiming && aim?.mode === 'tap' && !c.reason('fort') ? (
         <div class="hud-fort-chip" data-testid="hud-fort-aiming" role="status">
           {t('hud.fort.tapPad')}
           {kind === 'camp' ? <span class="hud-fort-chip-sub">{t('hud.fort.fieldToo')}</span> : null}
@@ -633,13 +661,17 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
         : null}
       {root && dragging && aim?.pointer
         ? createPortal(
-            <div class={cls('hud-fort-token', overHud && 'is-cancel', aim.snap !== null && 'is-snapped')} data-testid="hud-fort-token" style={{ left: `${aim.pointer.x}px`, top: `${aim.pointer.y}px` }}>
+            <div class={cls('hud-fort-token', overHud && 'is-cancel', noPad && 'is-none', aim.snap !== null && 'is-snapped')} data-testid="hud-fort-token" style={{ left: `${aim.pointer.x}px`, top: `${aim.pointer.y}px` }}>
               <span class="hud-fort-token-core">
-                <FortArt kind={kind} age={def.age} size={40} {...(team ? { banner: team } : {})} />
+                <FortArt kind={kind} age={def.age} size={52} src={still} {...(team ? { banner: team } : {})} />
               </span>
-              <span class={cls('hud-fort-token-label', !overHud && 'is-info')} data-testid="hud-fort-token-label">
+              <span class={cls('hud-fort-token-label', !overHud && !noPad && !hoverWhy && 'is-info')} data-testid="hud-fort-token-label" data-why={noPad ? 'hud.deny.fortNoPad' : (hoverWhy ?? undefined)}>
                 {overHud ? (
                   t('hud.fort.cancel')
+                ) : noPad ? (
+                  t('hud.deny.fortNoPad')
+                ) : hoverWhy ? (
+                  t(hoverWhy)
                 ) : (
                   <>
                     <span>{aim.snap === null ? t('hud.fort.dragPad') : name}</span>

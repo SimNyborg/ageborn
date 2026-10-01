@@ -23,8 +23,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // A changed hash marks every stored replay as "from an older version" (B3). If you tuned a
     // battle number on purpose, update this value and note it in docs/balance-log.md.
     // A16.14 (SIM_VERSION 5.0.0): forts, their twins and levies, `economy.fort`, the structure mods and
-    // Engineers' scaffold effect joined the hashed slice.
-    expect(content.hash).toBe('8e9bcafb');
+    // Engineers' scaffold effect joined the hashed slice. Fort tuning (review fixes 2026-10-01): 1 fort up,
+    // camps every 10 s with 1 levy at 30%, traps 100 gold with fewer splash charges.
+    expect(content.hash).toBe('affe2f93');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

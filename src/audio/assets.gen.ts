@@ -35,16 +35,16 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 1843383;
+export const SFX_BYTES = 1988733;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
-  ui: { src: "audio/sfx/ui.e81e775f.ogg", bytes: 26764, seconds: 5.216, alt: "audio/sfx/ui.99255a2e.m4a", sync: 0.02031 },
+  ui: { src: "audio/sfx/ui.400ffb08.ogg", bytes: 31477, seconds: 6.116, alt: "audio/sfx/ui.a93998b1.m4a", sync: 0.02031 },
   battle: { src: "audio/sfx/battle.e60e5e80.ogg", bytes: 210181, seconds: 41.708, alt: "audio/sfx/battle.decc1415.m4a", sync: 0.02031 },
   stone: { src: "audio/sfx/stone.c8b32aea.ogg", bytes: 80488, seconds: 15.984, alt: "audio/sfx/stone.fd48fae3.m4a", sync: 0.02031 },
   bronze: { src: "audio/sfx/bronze.6fdd1967.ogg", bytes: 104543, seconds: 20.458, alt: "audio/sfx/bronze.088a4ba6.m4a", sync: 0.02031 },
   medieval: { src: "audio/sfx/medieval.92e90cbb.ogg", bytes: 99108, seconds: 19.32, alt: "audio/sfx/medieval.5fd63af9.m4a", sync: 0.02031 },
-  match: { src: "audio/sfx/match.1992a3b9.ogg", bytes: 327946, seconds: 64.476, alt: "audio/sfx/match.6b1b9725.m4a", sync: 0.02031 },
+  match: { src: "audio/sfx/match.c76424ac.ogg", bytes: 468583, seconds: 92.395, alt: "audio/sfx/match.5016bfb1.m4a", sync: 0.02031 },
   gunpowder: { src: "audio/sfx/gunpowder.b21b79e7.ogg", bytes: 147786, seconds: 28.887, alt: "audio/sfx/gunpowder.76704510.m4a", sync: 0.02031 },
   industrial: { src: "audio/sfx/industrial.e82e5a17.ogg", bytes: 154199, seconds: 30.177, alt: "audio/sfx/industrial.10164215.m4a", sync: 0.02031 },
   modern: { src: "audio/sfx/modern.15a36d82.ogg", bytes: 117015, seconds: 23.036, alt: "audio/sfx/modern.79a11798.m4a", sync: 0.02031 },
@@ -61,6 +61,7 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   ui_tab: { sheet: "ui", variants: [[2.13, 0.09688], [2.27687, 0.09433], [2.42121, 0.09467]] },
   ui_confirm: { sheet: "ui", variants: [[2.56588, 1.02], [3.63587, 1.02]] },
   meter_pip: { sheet: "ui", variants: [[4.70587, 0.12], [4.87587, 0.12], [5.04587, 0.12]] },
+  fort_denied: { sheet: "ui", variants: [[5.21587, 0.25], [5.51588, 0.25], [5.81588, 0.25]] },
   spawn_pop: { sheet: "battle", variants: [[0.15, 0.18], [0.38, 0.18], [0.61, 0.18]] },
   spawn_heavy: { sheet: "battle", variants: [[0.84, 0.589], [1.479, 0.56617], [2.09517, 0.56304]] },
   step_heavy: { sheet: "battle", variants: [[2.70821, 0.25], [3.00821, 0.25], [3.30821, 0.25]] },
@@ -146,6 +147,21 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   siege_bell: { sheet: "match", variants: [[56.14825, 3.4]] },
   victory_jingle: { sheet: "match", variants: [[59.59825, 2.17754]] },
   defeat_jingle: { sheet: "match", variants: [[61.82579, 2.6]] },
+  fort_place: { sheet: "match", variants: [[64.47579, 0.42477], [64.95056, 0.45229], [65.45285, 0.44829]] },
+  fort_build: { sheet: "match", variants: [[65.95115, 0.64429], [66.64544, 0.63656], [67.332, 0.63779]] },
+  fort_complete: { sheet: "match", variants: [[68.01979, 0.7884], [68.85819, 0.7884], [69.69658, 0.7884]] },
+  fort_hit_wood: { sheet: "match", variants: [[70.53498, 0.22], [70.80498, 0.22], [71.07498, 0.22], [71.34498, 0.22]] },
+  fort_hit_stone: { sheet: "match", variants: [[71.61498, 0.30954], [71.97452, 0.31133], [72.33585, 0.32554], [72.7114, 0.32694]] },
+  fort_hit_metal: { sheet: "match", variants: [[73.08833, 0.35], [73.48833, 0.35], [73.88833, 0.35], [74.28833, 0.35]] },
+  fort_hit_energy: { sheet: "match", variants: [[74.68833, 0.25], [74.98833, 0.25], [75.28833, 0.25], [75.58833, 0.25]] },
+  fort_crumble: { sheet: "match", variants: [[75.88833, 0.48488], [76.42321, 0.52877], [77.00198, 0.52838]] },
+  fort_collapse: { sheet: "match", variants: [[77.58035, 1.23827], [78.86862, 1.29983], [80.21846, 1.23423]] },
+  fort_decay: { sheet: "match", variants: [[81.50269, 0.93225], [82.48494, 0.92104], [83.45598, 0.88481]] },
+  trap_arm: { sheet: "match", variants: [[84.39079, 0.28], [84.72079, 0.28], [85.05079, 0.28]] },
+  trap_snap: { sheet: "match", variants: [[85.38079, 0.18], [85.61079, 0.18], [85.84079, 0.18]] },
+  trap_blast: { sheet: "match", variants: [[86.07079, 1.0275], [87.14829, 1.0375], [88.23579, 1.02715]] },
+  camp_horn: { sheet: "match", variants: [[89.31294, 0.77944], [90.14238, 0.77944], [90.97181, 0.77944]] },
+  levy_spawn: { sheet: "match", variants: [[91.80125, 0.14819], [91.99944, 0.14798], [92.19742, 0.14723]] },
   shot_musket: { sheet: "gunpowder", variants: [[0.15, 0.74296], [0.94296, 0.71083], [1.70379, 0.71544]] },
   shot_lob: { sheet: "gunpowder", variants: [[2.46923, 0.25], [2.76923, 0.25], [3.06923, 0.25]] },
   shot_cannon: { sheet: "gunpowder", variants: [[3.36923, 1.29579], [4.71502, 1.41375], [6.17877, 1.36598]] },

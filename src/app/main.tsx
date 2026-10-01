@@ -142,7 +142,11 @@ async function start(root: HTMLElement): Promise<void> {
     scheduler: pixi.scheduler,
     pixi: pixi.app,
     storage: safeStorage(),
-    portrait: (card, foil, size) => art.portrait({ card, foil, size, side: 0 }),
+    portrait: (card, foil, size, plate) => {
+      // The provider takes the optional `plate` flag (docs/requests/wp4-portrait-plate-contract.md).
+      const req: Parameters<typeof art.portrait>[0] & { plate?: boolean } = { card, foil, size, side: 0, ...(plate === false ? { plate: false } : {}) };
+      return art.portrait(req);
+    },
     t: (key, params) => services.i18n.t(key, params),
     download: (file) => {
       const url = URL.createObjectURL(new Blob([file.text], { type: file.mime }));

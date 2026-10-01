@@ -10,7 +10,7 @@ import { createSim } from '@/sim';
 import { botFortCard, botProfile, createBot, fortKindsFor, runHeadless } from '@/ai';
 import { cardBook } from '../book';
 import { Brain, type DecisionTrace } from '../brain';
-import { counterScore, sampleOfForts, sampleOfUnits } from '../counters';
+import { counterScore, counterTargets, sampleOfForts, sampleOfUnits } from '../counters';
 import { FoeGoldEstimator } from '../estimate';
 import { FORT_SCORE, fortDefence, fortGoal, planFort, type FortPlanInput } from '../forts';
 import { Ledger } from '../ledger';
@@ -190,6 +190,19 @@ describe('the fort planner (A16.14.7)', () => {
     expect(planFort(view(withFort(observation({ gold, units: softWave(), phase: 'siege' }), fortSlot(wall))), input()).action).toBeNull();
   });
 
+  it('with only a short-range turret built, reads the rear pad as it would with none (cover rule, A16.14.2)', () => {
+    // The Pitch Cauldron (130 lu) puts the cover limit below pad 160, so the sim marks every Home pad unsafe.
+    const turrets: Observation['me']['turrets'] = [{ card: 'pitch_cauldron', age: 'medieval' }, null, null, null];
+    const unsafe = fortSlot(wall, { safe: [false, false, false] });
+    // Stone Infantry walks 87 lu/s: 6 s (scaffold + 1 s) is 522 lu, so the wave is read as it crosses mid-lane.
+    const crossing = softWave().map((u) => ({ ...u, p: u.p + 250 * MILLI }));
+    const far = view(withFort(observation({ gold, units: crossing, turrets }), unsafe));
+    expect(planFort(far, input()).action).toEqual({ kind: 'fort', pad: 0, card: wall, cost: 125 * MILLI });
+    // An enemy that would reach pad 160 before the scaffold completes keeps it unsafe.
+    const near = view(withFort(observation({ gold, units: [...crossing, unit(0, INF, 350)], turrets }), unsafe));
+    expect(planFort(near, input()).action).toBeNull();
+  });
+
   it('obeys the tier: 0-I none, a tower needs V, VII+ keeps the gold for a banked wave', () => {
     const tower = fortOf('stone', 'tower');
     const mk = (card: CardId): View => view(withFort(observation({ gold, units: softWave() }), fortSlot(card)));
@@ -222,6 +235,26 @@ describe('the fort planner (A16.14.7)', () => {
     const summoned = [{ ...unit(1, INF, 950), summoned: true }, unit(1, RNG, 930)];
     expect(planFort(view(withFort(observation({ gold, units: summoned }), fortSlot(camp))), input()).action).toBeNull();
     expect(planFort(view(withFort(observation({ gold, units: charging, stance: 'hold' }), fortSlot(camp))), input()).action).toBeNull();
+  });
+
+  it('a rejected camp command leaves the age camp unspent; a camp it sees go up spends it', () => {
+    const camp = fortOf('stone', 'camp');
+    const charging = [unit(1, INF, 950), unit(1, RNG, 930)];
+    const brain = new Brain(
+      { book, tier: { ...tierParams(7), mistakeBp: 0, researchFromTicks: 1e9 }, persona: personalityFor(content, 'echo'), weights: weightsBp(BALANCED_WEIGHTS), mistakeBonusBp: 0, openings: [] },
+      seedSfc32('b'),
+    );
+    const offers = (units: Observation['units'], tick: number): boolean =>
+      brain
+        .decide(view(withFort(observation({ tick, gold, units }), fortSlot(camp, { safe: [true, true, true, true, false] }))), new BotMemory(book), seedSfc32('d'))
+        .candidates.some((c) => c.action.kind === 'fort');
+    expect(offers(charging, 1200)).toBe(true);
+    // The command was rejected (no camp ever showed up): the next look still offers the camp.
+    expect(offers(charging, 1260)).toBe(true);
+    // Its camp is seen standing, then falls: once per age, so no second camp.
+    const up = [...charging, { ...unit(1, camp, 1180), fort: 'camp' as const }];
+    offers(up, 1300);
+    expect(offers(charging, 1400)).toBe(false);
   });
 
   it('plans the gold in its ledger: a saving goal for a wave about to cross mid-lane', () => {
@@ -271,7 +304,7 @@ describe('answering forts (A16.14.7)', () => {
       ),
     );
     // The camp on a Field pad (820 from their gate) is outside 500 lu.
-    expect(fortDefence(v.foeForts, v.foeTraps)).toBe(2 * 125 + 2 * 150 + 75);
+    expect(fortDefence(v.foeForts, v.foeTraps)).toBe(2 * 125 + 2 * 150 + 100);
   });
 
   it('the structure row: Heavies beat walls, air flies over them, ranged fire does half', () => {
@@ -317,14 +350,23 @@ describe('memory and the gold estimate ignore forts and levies (A16.14.3)', () =
     expect(mem.foeOnMyHalfTick).toBe(420);
   });
 
+  it('other summons (an enemy paradrop past mid-lane, own riders) never move the clocks or the memory either', () => {
+    const mem = new BotMemory(book);
+    mem.observe(observation({ tick: 400, units: [{ ...unit(1, INF, 1500), summoned: true }, { ...unit(0, INF, 300), summoned: true }] }));
+    expect(mem.pastMidTick).toBe(0);
+    expect(mem.foeOnMyHalfTick).toBe(0);
+    expect(mem.remembered()).toEqual([]);
+    expect(counterTargets(view(observation({ units: [{ ...unit(1, INF, 1500), summoned: true }] })).foes, null, 0)).toEqual([]);
+  });
+
   it('foe levies are free, foe traps and forts are paid at their price', () => {
     const est = new FoeGoldEstimator(book);
     est.observe(observation({ tick: 0, units: [{ ...unit(0, LEVY, 1800), summoned: true }] }));
     expect(est.spent).toBe(0);
     est.observe({ ...observation({ tick: 0 }), traps: [{ id: 9, side: 0, card: fortOf('stone', 'trap'), p: 1840 * MILLI, armed: false, charges: 3 }] });
-    expect(est.spent).toBe(75 * MILLI);
+    expect(est.spent).toBe(100 * MILLI);
     est.observe(observation({ tick: 0, units: [{ ...unit(0, fortOf('stone', 'wall'), 1700), fort: 'wall' }] }));
-    expect(est.spent).toBe(200 * MILLI);
+    expect(est.spent).toBe(225 * MILLI);
   });
 
   it('an own fort that falls under attack pays the foe half its price; one that crumbles alone pays nothing', () => {
@@ -349,9 +391,9 @@ function planWith(kind: FortKind | null): Partial<Record<AgeId, Loadout>> {
   return out;
 }
 
-function fortMatch(seed: number, format: string, kind: FortKind | null, tiers: [number, number], generals: [string, string] = ['echo', 'echo']) {
-  const plan = planWith(kind);
-  const cfg = matchConfig({ seed, format, sides: [sideConfig(content, { level: 7, loadouts: plan }), sideConfig(content, { level: 7, loadouts: plan })] });
+function fortMatch(seed: number, format: string, kind: FortKind | null | [FortKind | null, FortKind | null], tiers: [number, number], generals: [string, string] = ['echo', 'echo']) {
+  const kinds = Array.isArray(kind) ? kind : [kind, kind];
+  const cfg = matchConfig({ seed, format, sides: [sideConfig(content, { level: 7, loadouts: planWith(kinds[0] ?? null) }), sideConfig(content, { level: 7, loadouts: planWith(kinds[1] ?? null) })] });
   const sim = createSim(cfg);
   const seats = [0, 1].map((s) => ({ side: s as Side, controller: createBot(botProfile(content, { generalId: generals[s] as string, tier: tiers[s] as number }), s as Side, seed, content) }));
   const placed: { side: Side; card: CardId; pad: number }[] = [];
@@ -371,6 +413,29 @@ describe('bots place forts in real matches, under the player rules (A16.14.7)', 
     for (const p of a.placed) expect(content.forts[p.card]?.fortKind).toBe('camp');
     const b = fortMatch(3, 'standard', 'camp', [7, 7]);
     expect(b.hash).toBe(a.hash);
+  });
+
+  it('tier VII walls, towers and traps: Home pads only, never rejected for a rule the bot could see', { timeout: 60000 }, () => {
+    for (const kind of ['wall', 'tower', 'trap'] as const) {
+      // A wave worth a fort does not come every match: the first of a few fixed seeds with one.
+      let m = fortMatch(1, 'short', [null, kind], [7, 7]);
+      for (let seed = 2; seed <= 12 && m.placed.length === 0; seed += 1) m = fortMatch(seed, 'short', [null, kind], [7, 7]);
+      expect(m.placed.length, kind).toBeGreaterThan(0);
+      for (const p of m.placed) {
+        expect(p.side).toBe(1);
+        expect(content.forts[p.card]?.fortKind).toBe(kind);
+        expect(p.pad).toBeLessThan(3);
+      }
+      // The observation is a few ticks old: only a unit walking onto the pad in the meantime may reject it.
+      for (const x of m.result.rejected.filter((r) => r.t === 'fort')) expect(['fortPadEnemy']).toContain(x.reason);
+    }
+  });
+
+  it('tiers II-IV never place a tower or a camp, even with one in the plan', { timeout: 60000 }, () => {
+    for (const kind of ['tower', 'camp'] as const) {
+      const m = fortMatch(3, 'short', [null, kind], [7, 4]);
+      expect(m.result.commands.filter((c) => c.t === 'fort'), kind).toEqual([]);
+    }
   });
 
   it('tiers 0-I never place a fort; a loadout without a Fort card never sends a fort command', { timeout: 60000 }, () => {

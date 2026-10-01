@@ -11,13 +11,16 @@ import type { StatusApply } from '@/contracts/content';
 import type { AgeId } from '@/contracts/ids';
 import type { FortSpec } from '@/core/forts';
 
-/** The camp levy timing (A16.14.3): first 2 s after completion, then every 8 s, at most 2 alive. */
-const CAMP = { everyMs: 8000, firstMs: 2000, maxAlive: 2 } as const;
+/**
+ * The camp levy timing (A16.14.3): first 2 s after completion, then every 10 s, at most 1 alive (the
+ * A16.14.9 camp lever, fixer 2026-10-01: at 8 s and 2 alive a camp beat its age's wall by 16-34 points).
+ */
+const CAMP = { everyMs: 10000, firstMs: 2000, maxAlive: 1 } as const;
 /** Trap timing (A16.14.3): fires within 30 lu, 1 s between charges, armed after 2 s, expires 120 s after arming. */
 const TRAP = { triggerLu: 30, betweenMs: 1000, armMs: 2000, lifeMs: 120000 } as const;
 
-/** Prices (A16.14.1): the same in every age. */
-export const FORT_COST = { wall: 125, bunker: 175, trap: 75, camp: 150, tower: 150 } as const;
+/** Prices (A16.14.1): the same in every age. Traps 100 (was 75: the forced trap mirror stalled, fixer 2026-10-01). */
+export const FORT_COST = { wall: 125, bunker: 175, trap: 100, camp: 150, tower: 150 } as const;
 /** Pop (A16.14.1): walls, towers and camps 6; traps 3. */
 export const FORT_POP = { wall: 6, trap: 3, camp: 6, tower: 6 } as const;
 

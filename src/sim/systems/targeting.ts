@@ -13,8 +13,9 @@
 import type { Side, TargetPriority } from '@/contracts';
 // Forts (A16.14.2 targeting): an attack with compiled range < 100 treats forts like units (candidates
 // together by class and distance, then the base); an attack with range ≥ 100 takes units first, then the
-// base, then forts, so a fort never shields the base from fire. The contact rule lets up to 5 blocked
-// attackers hit a fort with attack 0 as if in range. Turrets never target forts; towers use `forts.ts`.
+// base, then forts, so a fort never shields the base from fire. The contact rule caps the short-range
+// attackers of a fort at 5 (the contact set, which may hit it with attack 0 as if in range); no other
+// short-range attack may target it. Turrets never target forts; towers use `forts.ts`.
 import { isLeaping, rangeBonus } from '../damage';
 import { centreDist, distFromGate, distToEnemyGate, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import { DENSE_SCAN_STEP, TAG, type AttackRules, type UnitRules } from '../rules';
@@ -82,7 +83,7 @@ function bestUnitCandidate(
     const e = foes[i] as UnitRt;
     const isFort = e.fort !== undefined;
     if (isFort ? forts === NO_FORTS : forts === ONLY_FORTS) continue;
-    if (!canHit(a, e)) continue;
+    if (!canHit(a, e) || (isFort && !fortAllowed(ctx, u, a, e))) continue;
     const er = unitRules(ctx, e);
     const d = edgeDist(u.x, r.half, e.x, er.half);
     if (d > maxDist || d < a.minRange) continue;
@@ -105,6 +106,17 @@ function longRange(ctx: Ctx, a: AttackRules): boolean {
 function contactFort(ctx: Ctx, u: UnitRt, ai: number): number {
   if (ai !== 0) return NO_TARGET;
   return ctx.contact.get(u.id) ?? NO_TARGET;
+}
+
+/**
+ * The contact cap (A16.14.2) is a hard limit: a ground unit's attack with compiled range < 100 may target
+ * a completed fort only while the unit is in that fort's contact set (`pickContacts`). Attacks with
+ * range ≥ 100, air units and scaffolds are never capped.
+ */
+function fortAllowed(ctx: Ctx, u: UnitRt, a: AttackRules, fort: UnitRt): boolean {
+  // A scaffold does not block, so it has no contact set: whoever reaches it in passing may hit it.
+  if (u.air || longRange(ctx, a) || !fort.fort?.done) return true;
+  return ctx.contact.get(u.id) === fort.id;
 }
 
 /**
@@ -140,6 +152,7 @@ function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, target
   if (targetId === NO_TARGET) return null;
   const e = findUnit(ctx, targetId);
   if (!e || !alive(e) || e.side === u.side || !canHit(a, e)) return null;
+  if (e.fort && !r.bomber && !fortAllowed(ctx, u, a, e)) return null;
   const er = unitRules(ctx, e);
   const d = edgeDist(u.x, r.half, e.x, er.half);
   const contact = e.fort !== undefined && contactFort(ctx, u, ai) === e.id;
@@ -243,6 +256,7 @@ export function targetInRange(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): bo
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
   if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window;
+  if (e.fort && !fortAllowed(ctx, u, a, e)) return false;
   if (e.fort && contactFort(ctx, u, ai) === e.id) return true;
   const d = edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half);
   return d <= rangeOf(ctx, u, a) && d >= a.minRange;
@@ -257,6 +271,7 @@ export function targetValidForImpact(ctx: Ctx, u: UnitRt, r: UnitRules, ai: numb
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
   if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window + ctx.econ.leash;
+  if (e.fort && !fortAllowed(ctx, u, a, e)) return false;
   if (e.fort && contactFort(ctx, u, ai) === e.id) return true;
   return edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= rangeOf(ctx, u, a) + ctx.econ.leash;
 }

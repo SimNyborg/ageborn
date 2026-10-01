@@ -1,5 +1,5 @@
 /**
- * Golden replays (DESIGN B13): 10 recorded matches on the frozen fixture content with known final
+ * Golden replays (DESIGN B13): 14 recorded matches on the frozen fixture content with known final
  * hashes. Any change to the simulation's behaviour changes a hash and fails this test on purpose.
  *
  * Re-record after an intended rule change (and bump SIM_VERSION in replay.ts):
@@ -7,6 +7,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { AgeId, Command, MatchConfig, Observation, ReplayDoc, Side, SideConfig, SimEvent } from '@/contracts';
+import { simCtx } from '../debug';
 import { buildReplay, verifyReplay } from '../replay';
 import { STRATEGIES, fixture, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
 
@@ -22,6 +23,36 @@ interface Scenario {
   players: [Strategy, Strategy];
   /** Both players also place their Fort card on every recharge (SIM_VERSION 5.0.0, A16.14). */
   forts?: boolean;
+  /** Fort directors (SIM_VERSION 5.1.0): eager placement on unsafe pads, saving, and Suppress casts. */
+  director?: [DirectorOpts, DirectorOpts];
+}
+
+interface DirectorOpts {
+  /** Places on a legal pad the enemy reaches before completion first (a scaffold built into a wave). */
+  eager?: boolean;
+  /** Casts its Field power (Suppress) whenever an enemy tower stands. */
+  caster?: boolean;
+}
+
+/**
+ * A fort director (the 13- and 14- fort goldens): a scripted player that saves for its Fort card (and,
+ * as a caster, for its Field power) instead of spending everything, places the fort the moment it is
+ * ready (eager: on an unsafe legal pad first), and casts Suppress while an enemy tower stands.
+ */
+function directorPlayer(side: Side, seed: number, strat: Strategy, o: DirectorOpts): (obs: Observation) => Command[] {
+  const base = scriptedPlayer(fixture, side, seed, strat);
+  const order = o.eager ? ([2, 1, 0] as const) : ([2, 1, 3, 0, 4] as const);
+  return (obs) => {
+    const f = obs.me.fort;
+    const foeTower = obs.units.some((u) => u.side !== side && u.fort === 'tower');
+    const saving = (f && f.readyTicks < 100 && obs.me.gold < f.cost * 1000) || (o.caster && foeTower && obs.me.gold < 150000);
+    const all = base(obs);
+    const out = saving ? all.filter((c) => c.t !== 'train' && c.t !== 'buildTurret' && c.t !== 'research') : all;
+    if (o.caster && obs.tick % 10 === 0 && foeTower) out.unshift({ t: 'power', side, slot: 'field' });
+    if (!f || f.readyTicks > 0 || obs.me.gold < f.cost * 1000) return out;
+    const pad = o.eager ? (order.find((i) => f.pads[i]?.legal && !f.pads[i]?.safe) ?? order.find((i) => f.pads[i]?.legal)) : order.find((i) => f.pads[i]?.legal);
+    return pad === undefined ? out : [{ t: 'fort', side, pad }, ...out];
+  };
 }
 
 /** A side config with a Fort card per age (A16.14.1). */
@@ -164,13 +195,54 @@ const SCENARIOS: Scenario[] = [
     players: [S.greedy, S.balanced],
     forts: true,
   },
+  {
+    // SIM_VERSION 5.1.0 (A16.14 cases, review 2026-10-01): a rushing army that casts Suppress (Undermine)
+    // on the enemy's towers against a Heavy army that builds towers and walls: towers silenced, a blocked
+    // blob held to the contact cap, a decayed fort credited to its last attacker and another credited to
+    // nobody, and the Siege decay switch.
+    name: '13-forts-cases',
+    cfg: () =>
+      matchConfig({
+        seed: 1313,
+        format: 'short',
+        modifiers: ['gold_rush', 'fast_forward'],
+        sides: [
+          withForts(side(fixture, { level: 4, plan: { power: 'undermine' } }), { stone: 'palisade', medieval: 'shield_barricade', gunpowder: 'gabion_wall' }),
+          withForts(bot({ level: 4 }), { stone: 'sling_perch', medieval: 'longbow_tower', gunpowder: 'gabion_wall' }),
+        ],
+      }),
+    players: [S.rush, S.heavy],
+    director: [{ eager: true, caster: true }, { eager: true }],
+  },
+  {
+    // SIM_VERSION 5.1.0: the same directors with Sudden Siege: a scaffold destroyed before it completes
+    // (built into a wave), Heavies breaking forts, decay and the Siege switch.
+    name: '14-forts-scaffold',
+    cfg: () =>
+      matchConfig({
+        seed: 1311,
+        format: 'short',
+        modifiers: ['sudden_siege', 'gold_rush', 'fast_forward'],
+        sides: [
+          withForts(side(fixture, { level: 4, plan: { power: 'undermine' } }), { stone: 'palisade', medieval: 'shield_barricade', gunpowder: 'gabion_wall' }),
+          withForts(bot({ level: 4 }), { stone: 'sling_perch', medieval: 'longbow_tower', gunpowder: 'gabion_wall' }),
+        ],
+      }),
+    players: [S.heavy, S.heavy],
+    director: [{ eager: true, caster: true }, { eager: true }],
+  },
 ];
+
+/** The players of a scenario (scripted, fort placers or fort directors). */
+function playersOf(sc: Scenario, seed: number): [(obs: Observation) => Command[], (obs: Observation) => Command[]] {
+  if (sc.director) return [directorPlayer(0, seed, sc.players[0], sc.director[0]), directorPlayer(1, seed + 1, sc.players[1], sc.director[1])];
+  const make = sc.forts ? fortPlayer : (s: Side, sd: number, st: Strategy) => scriptedPlayer(fixture, s, sd, st);
+  return [make(0, seed, sc.players[0]), make(1, seed + 1, sc.players[1])];
+}
 
 function record(sc: Scenario): ReplayDoc {
   const cfg = sc.cfg();
-  const seed = cfg.seed;
-  const make = sc.forts ? fortPlayer : (s: Side, sd: number, st: Strategy) => scriptedPlayer(fixture, s, sd, st);
-  const { sim } = runMatch(cfg, [make(0, seed, sc.players[0]), make(1, seed + 1, sc.players[1])], {
+  const { sim } = runMatch(cfg, playersOf(sc, cfg.seed), {
     maxTicks: 30000,
   });
   if (!sim.state.outcome) throw new Error(`golden scenario ${sc.name} did not end`);
@@ -199,8 +271,8 @@ async function writeGolden(): Promise<void> {
 if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
-  it('has all 12 recorded files', () => {
-    expect(SCENARIOS).toHaveLength(12);
+  it('has all 14 recorded files', () => {
+    expect(SCENARIOS).toHaveLength(14);
     for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
   });
 
@@ -218,6 +290,40 @@ describe('golden replays (B13)', () => {
     const levies = events.filter((e) => e.e === 'unitSpawned' && e.from !== undefined);
     expect(levies.length).toBeGreaterThan(0);
     expect(levies.filter((e) => e.tick > siege)).toEqual([]);
+  });
+
+  it('12-, 13- and 14-forts together cover every listed fort case (DESIGN A16.14.8 golden, review 2026-10-01)', () => {
+    const have = { creditedDecay: false, uncreditedDecay: false, towerSilenced: false, heavyBreaksFort: false, scaffoldDestroyed: false, contactCapped: false, siegeSwitch: false };
+    for (const name of ['12-forts', '13-forts-cases', '14-forts-scaffold']) {
+      const sc = SCENARIOS.find((x) => x.name === name);
+      if (!sc) throw new Error(`no scenario ${name}`);
+      const cfg = sc.cfg();
+      const fortIds = new Set<number>();
+      const built = new Set<number>();
+      let siegeTick = -1;
+      runMatch(cfg, playersOf(sc, cfg.seed), {
+        maxTicks: 30000,
+        onTick: (sim, ev) => {
+          for (const e of ev) {
+            if (e.e === 'fortPlaced') fortIds.add(e.id);
+            else if (e.e === 'fortBuilt') built.add(e.id);
+            else if (e.e === 'fortDecayed') have[e.creditedTo !== undefined ? 'creditedDecay' : 'uncreditedDecay'] = true;
+            else if (e.e === 'towerSilenced') have.towerSilenced = true;
+            else if (e.e === 'phaseChanged' && e.phase === 'siege') siegeTick = e.tick;
+            else if (e.e === 'died' && fortIds.has(e.id)) {
+              if (!built.has(e.id) && e.killerKind !== 'decay') have.scaffoldDestroyed = true;
+              if (e.killerCard && fixture.units[e.killerCard]?.group === 'heavy') have.heavyBreaksFort = true;
+            }
+          }
+          const ctx = simCtx(sim);
+          const per = new Map<number, number>();
+          for (const f of ctx.contact.values()) per.set(f, (per.get(f) ?? 0) + 1);
+          for (const n of per.values()) if (n >= (ctx.econ.fort?.contactMax ?? 5)) have.contactCapped = true;
+          if (siegeTick >= 0 && sim.state.tick > siegeTick + 20) for (const u of ctx.s.units) if (u.fort?.done && u.hp > 0 && u.fort.decayFromTick === siegeTick) have.siegeSwitch = true;
+        },
+      });
+    }
+    expect(have).toEqual({ creditedDecay: true, uncreditedDecay: true, towerSilenced: true, heavyBreaksFort: true, scaffoldDestroyed: true, contactCapped: true, siegeSwitch: true });
   });
 
   for (const sc of SCENARIOS) {

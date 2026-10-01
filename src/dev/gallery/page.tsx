@@ -2,6 +2,7 @@
  * Art gallery (WP4, DESIGN B5): the review sheet and screenshot-test target for every visual.
  *
  *  - units / turrets: every visualId × clip × skin × team (both sides) × colourblind preset
+ *  - forts: every fort of an age in every state (A16.14.8), both teams, or its whole life in a loop
  *  - world: split-age backdrops, arena grounds, bases (crumble, Treasury, horn, morph, collapse),
  *    turrets on their mounts, an optional parade
  *  - effects: every A14.1 effect and projectile
@@ -22,6 +23,7 @@ import { TEAM_PRESETS } from '@/visuals/palette';
 import { STYLE, WORLD } from '@/visuals/style';
 import { UNIT_CLIPS } from './cells';
 import { buildEffects } from './effects';
+import { buildForts } from './forts';
 import { BakePanel, ChecksPanel, HandoffPanel, PortraitsPanel } from './panels';
 import { PixiStage } from './stage';
 import { get, num, ui, useParams, writeParams } from './state';
@@ -34,7 +36,7 @@ export const title = 'Art gallery';
 /** A12 checklist #7 "readable at 32 px height": the zoom that draws infantry 32 px tall (CSS px). */
 const READABLE_ZOOM = (Math.round((STYLE.minReadablePx / STYLE.heightInfantryLu) * 100) / 100).toString();
 
-const SECTIONS = ['units', 'turrets', 'world', 'effects', 'portraits', 'checks', 'handoff', 'bake'] as const;
+const SECTIONS = ['units', 'turrets', 'forts', 'world', 'effects', 'portraits', 'checks', 'handoff', 'bake'] as const;
 type Section = (typeof SECTIONS)[number];
 
 function Select(p: { label: string; value: string; options: readonly string[]; onChange: (v: string) => void; testId?: string }) {
@@ -117,6 +119,33 @@ export default function Gallery() {
           deps={[section, age, clip, sidesParam, skins, trim, zoom, only]}
           atlas={atlas}
           build={(ctx) => buildGrid(ctx, { kind, age, skins, only, sides, preset, clip, trim, zoom })}
+        />
+      </>
+    );
+  } else if (section === 'forts') {
+    const fage = get(params, 'age', 'stone') as AgeId | 'all';
+    const mode = get(params, 'mode', 'states') === 'life' ? 'life' : 'states';
+    const fzoom = num(params, 'zoom', 1.2);
+    body = (
+      <>
+        <div style={bar}>
+          <Select label="age" value={fage} options={['all', ...AGES]} onChange={set('age')} testId="gallery-age" />
+          <Select label="mode" value={mode} options={['states', 'life']} onChange={set('mode')} />
+          <Select label="sides" value={sidesParam} options={['both', '0', '1']} onChange={set('sides')} />
+          <Select label="zoom" value={String(fzoom)} options={['0.6', '0.9', '1.2', '1.6', '2.4']} onChange={set('zoom')} />
+          {common}
+        </div>
+        <PixiStage
+          testId="gallery-forts"
+          height={Math.ceil(((fage === 'all' ? AGES.length : 1) * 4 * (sidesParam === 'both' ? 2 : 1) * 150 + 160) * fzoom)}
+          preset={preset}
+          tier={tier}
+          quality={quality}
+          freezeAtMs={freeze}
+          speed={speed}
+          background={0x9fb0c0}
+          deps={[section, fage, mode, sidesParam, fzoom]}
+          build={(ctx) => buildForts(ctx, { age: fage, preset, zoom: fzoom, mode, sides })}
         />
       </>
     );

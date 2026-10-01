@@ -917,13 +917,13 @@ function checkForts(issues: Issues, c: Content): void {
   const halfSmall = Math.trunc(c.economy.sizes.small / 2);
   const halfMedium = Math.trunc(c.economy.sizes.medium / 2);
   issues.check(f.towerReachMaxP === c.economy.turretRangeHardCapLu, 'economy.fort.towerReachMaxP', 'tower reach stops at the turret hard cap (A16.14.1)');
-  const costOf: Record<string, number> = { wall: 125, trap: 75, camp: 150, tower: 150 };
+  const costOf: Record<string, number> = { wall: 125, trap: 100, camp: 150, tower: 150 };
   for (const x of list) {
     const p = `forts.${x.id}`;
     issues.check(x.age in c.ages, p, `unknown age "${x.age}"`);
     issues.check(x.visualId === `fort.${x.id}`, p, 'visualId must be fort.<slug> (A16.14.8)');
     issues.check(x.nameKey === `card.${x.id}.name` && x.descKey === `card.${x.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
-    issues.check(x.cost === costOf[x.fortKind] || (x.fortKind === 'wall' && x.cover !== undefined && x.cost === 175), p, 'fort costs by kind: Wall 125 (Bunker 175), Trap 75, Camp 150, Tower 150 (A16.14.1)');
+    issues.check(x.cost === costOf[x.fortKind] || (x.fortKind === 'wall' && x.cover !== undefined && x.cost === 175), p, 'fort costs by kind: Wall 125 (Bunker 175), Trap 100, Camp 150, Tower 150 (A16.14.1)');
     issues.check(x.pop === (x.fortKind === 'trap' ? 3 : 6), p, 'fort pop: 6, a Trap 3 (A16.14.1)');
     issues.check(x.size === (x.fortKind === 'tower' ? 'medium' : x.fortKind === 'trap' ? null : 'large'), p, 'towers medium, walls and camps large, traps no body');
     issues.check(x.pads === (x.fortKind === 'camp' ? 'any' : 'home'), p, 'only camps may use Field pads (A16.14.1)');

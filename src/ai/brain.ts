@@ -408,6 +408,8 @@ export class Brain {
   private baitCooldownUntil = 0;
   /** The age a camp was last placed in (A16.14.7: once per age stay), or null. */
   private campAge: number | null = null;
+  /** Own camp ids already seen (`trackCamps`). */
+  private readonly seenCamps = new Set<number>();
   private readonly opening: OpeningPlan;
   private openingIndex = 0;
 
@@ -476,8 +478,9 @@ export class Brain {
       if (this.wavePeak !== null) this.wavePeak = Math.max(this.wavePeak, v.myArmy);
       pushOk = siege || this.wavePeak !== null;
     }
-    // A16.14.7: enemy levies always march, so they never count as the enemy on the bot's half.
-    const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane && !u.levy);
+    // A16.14.3/A16.14.7: summons (levies always march; drops, riders, the Vanguard) never count as the
+    // enemy on the bot's half.
+    const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane && !u.summoned && !u.levy);
     const allIn = P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP));
     // Push gate (A7.2 anti-turtle): the bot charges past mid-lane only with myArmy ≥ gate × D. When the
     // gate fails it banks instead of feeding units into the turrets one by one: a Treasury saving goal
@@ -548,6 +551,7 @@ export class Brain {
     }
     this.campReach = campReach < Number.MAX_SAFE_INTEGER ? campReach : null;
     const campTurret = this.campReach !== null ? this.chooseTurretAt(v, Number.MAX_SAFE_INTEGER) : null;
+    this.trackCamps(v);
     // A16.14.7: the fort is planned inside the gold ledger, after the camp turret and counter goals.
     const fortIn: FortPlanInput | null = this.opening.noFort
       ? null
@@ -804,7 +808,6 @@ export class Brain {
     if (chanceBp(rng, Math.min(MAX_MISTAKE_BP, t.mistakeBp + this.cfg.mistakeBonusBp))) {
       const m = pickMistake(rng, opts);
       if (m.kind === 'floatGold') this.idleUntil = v.now + FLOAT_IDLE_TICKS;
-      this.noteFort(v, m.action);
       trace.mistake = m.kind;
       trace.action = m.action;
       trace.reason = 'mistake';
@@ -824,7 +827,6 @@ export class Brain {
       if (i >= 0) action = (ts[i] as Scored).action;
     }
     if (action.kind === 'stance') this.stanceTick = v.now;
-    this.noteFort(v, action);
     if (this.bait && action.kind === 'train') this.bait.spent += action.cost;
     if (action.kind === 'research') {
       this.researchTick = v.now;
@@ -835,9 +837,17 @@ export class Brain {
     return trace;
   }
 
-  /** Remembers the age of a camp placement (A16.14.7: once per age stay). */
-  private noteFort(v: View, a: BotAction | null): void {
-    if (a?.kind === 'fort' && this.cfg.book.forts[a.card]?.kind === 'camp') this.campAge = v.ageIndex;
+  /**
+   * Remembers the age of a camp placement (A16.14.7: once per age stay) from the bot's own camps as it
+   * sees them, not from the command: a camp command the sim rejects (the pad turned illegal while the
+   * observation was delayed) leaves the age's camp unspent, so the bot can try again.
+   */
+  private trackCamps(v: View): void {
+    for (const f of v.myForts) {
+      if (f.kind !== 'camp' || this.seenCamps.has(f.id)) continue;
+      this.seenCamps.add(f.id);
+      this.campAge = v.ageIndex;
+    }
   }
 
   /**

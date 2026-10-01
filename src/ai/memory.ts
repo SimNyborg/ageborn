@@ -117,9 +117,10 @@ export class BotMemory {
     const counts = new Map<CardId, number>();
     for (const u of obs.units) {
       if (u.hp <= 0) continue;
-      // A16.14.3/A16.14.7: forts and levies never feed the attack clock, the quiet-lane test or the
-      // composition memory, so a camp cannot stall a bot and enemy levies cannot switch off its research.
-      if (u.fort || this.book.units[u.card]?.levy) continue;
+      // A16.14.3/A16.14.7: forts and summons (levies, drops, riders, the Vanguard) never feed the attack
+      // clock, the quiet-lane test or the composition memory, so a camp cannot stall a bot and enemy
+      // summons cannot switch off its research.
+      if (u.fort || u.summoned || this.book.units[u.card]?.levy) continue;
       if (u.side === obs.side) {
         if (!u.air && u.p > mid) this.pastMidTick = obs.tick;
       } else {

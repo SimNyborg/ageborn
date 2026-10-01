@@ -25,7 +25,7 @@ import type {
   SideLook,
   WarPathMatch,
 } from '@/contracts';
-import { botProfile } from '@/ai';
+import { botFortCard, botProfile } from '@/ai';
 import type { Content, Difficulty, DifficultyTable, GeneralDef, GeneralId } from '@/content';
 import { applyFortMatchRule, applyPowerMatchRule, commanderInfo, meta, ROOKIE_DISCLOSURE_KEY } from '@/meta';
 import {
@@ -237,6 +237,24 @@ export interface MatchSetupOptions extends SetupLabels {
 }
 
 /**
+ * A bot's Fort cards (A16.14.7, `docs/requests/wp11-bot-fort-cards.md`): every loadout with an empty Fort
+ * slot gets `botFortCard` for its age (null below tier II). Scripted Generals (Old Grogg) and the mirror
+ * (Echo of You, who plays the player's own plan) keep their slots as they are. `applyFortMatchRule` runs
+ * after this, so the source filter still turns a card the player could not own into the age's wall.
+ */
+export function withBotForts(side: SideConfig, content: CompiledContent, generalId: string, tier: number): SideConfig {
+  const g = generalDef(content, generalId);
+  if (!content.forts || g?.scripted || g?.mirror) return side;
+  const loadouts: Partial<Record<AgeId, Loadout>> = {};
+  for (const age of Object.keys(side.loadouts) as AgeId[]) {
+    const l = side.loadouts[age];
+    if (!l) continue;
+    loadouts[age] = (l.fort ?? null) === null ? { ...l, fort: botFortCard(content, age, { generalId, tier }) } : l;
+  }
+  return { ...side, loadouts };
+}
+
+/**
  * The setup for a match against `opponent` (any mode). The opponent's side from the spec is kept
  * as is, but always flagged as a bot (A7.1).
  */
@@ -256,8 +274,10 @@ export function matchSetupFor(save: SaveDoc | null, opponent: OpponentSpec, mode
   // A2.9.1 the power match rule: bots only field powers the player could own; both sides play the same
   // power slots (Home only until the Field slot is unlocked and the HUD dock ships, P2).
   const ruled = applyPowerMatchRule(config, save, mode);
-  // A16.14.6 the fort match rule: both sides play the same Fort slot (none until F2 turns it on).
-  config.sides = applyFortMatchRule(ruled, save, mode).sides;
+  // A16.14.6/A16.14.7 the fort match rule: a bot brings its own Fort card (its General's preferred kind
+  // that its tier places, else the age's wall), then the source filter and "both sides play the same
+  // Fort slot" apply (none until F2 turns it on).
+  config.sides = applyFortMatchRule({ ...ruled, sides: [ruled.sides[0], withBotForts(ruled.sides[1], content, opponent.generalId, opponent.tier)] }, save, mode).sides;
   // A15.3: whenever the bot gets A6.8's new-player mistakes, the opponent says so (meta adds this
   // for the opponents it picks; Quick Battle and onboarding match 2 are built here).
   const disclosed =

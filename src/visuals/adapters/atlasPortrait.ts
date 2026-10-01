@@ -7,6 +7,7 @@
  */
 import type { AgeId, Foil } from '@/contracts/ids';
 import { drawPortraitPlate, foilFrame } from '../portraits';
+import { drawCloth2d, PORTRAIT_DRESS } from '../fortViews/fortDress';
 
 /**
  * Units whose sheet is installed but whose card still is not rendered yet (`art/blender/gen_portraits.py`
@@ -17,6 +18,9 @@ export const UNITS_WITHOUT_STILLS: ReadonlySet<string> = new Set(['riveter', 'sa
 
 /** `art/units/<age>/<slug>.json` → `art/portraits/<slug>` (no extension), or null for other sources. */
 export function portraitStillBase(source: string): string | null {
+  // forts (A16.14.8): `art/forts/<age>/<slug>.json` → `art/forts/<age>/<slug>.portrait`
+  const f = /^(.*art\/forts\/[a-z]+\/[a-z0-9_]+)\.json$/.exec(source);
+  if (f?.[1]) return `${f[1]}.portrait`;
   const m = /art\/units\/[a-z]+\/([a-z0-9_]+)\.json$/.exec(source);
   const slug = m?.[1];
   return slug !== undefined && !UNITS_WITHOUT_STILLS.has(slug) ? `art/portraits/${slug}` : null;
@@ -51,6 +55,11 @@ export interface StillPortraitOptions {
   plate: boolean;
 }
 
+/** The fort slug of a still url (`.../forts/stone/palisade.portrait` → `palisade`), or null. */
+function stillSlug(url: string): string | null {
+  return /\/([a-z0-9_]+)\.portrait$/.exec(url)?.[1] ?? null;
+}
+
 export async function renderStillPortrait(o: StillPortraitOptions): Promise<string | null> {
   if (typeof document === 'undefined') return null;
   let base: HTMLImageElement;
@@ -62,6 +71,7 @@ export async function renderStillPortrait(o: StillPortraitOptions): Promise<stri
     return null;
   }
   const { size } = o;
+  const dress = PORTRAIT_DRESS[stillSlug(o.url) ?? ''] ?? null;
   const c = document.createElement('canvas');
   c.width = size;
   c.height = size;
@@ -80,7 +90,7 @@ export async function renderStillPortrait(o: StillPortraitOptions): Promise<stri
       tc.imageSmoothingQuality = 'high';
       tc.drawImage(team, off, off, inner, inner);
       tc.globalCompositeOperation = 'multiply';
-      tc.fillStyle = css(o.teamColor);
+      tc.fillStyle = css(dress ? dress.underlay : o.teamColor);
       tc.fillRect(0, 0, size, size);
       tc.globalCompositeOperation = 'destination-in';
       tc.drawImage(team, off, off, inner, inner);
@@ -89,6 +99,8 @@ export async function renderStillPortrait(o: StillPortraitOptions): Promise<stri
   }
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(base, off, off, inner, inner);
+  // a fort whose team layer reads as a blob wears its team cloth on the card too (fortDress.ts)
+  if (dress) drawCloth2d(ctx, off + dress.banner.x * inner, off + dress.banner.y * inner, dress.banner.w * inner, dress.banner.h * inner, o.teamColor);
   foilFrame(ctx, o.foil, size);
   return c.toDataURL('image/png');
 }

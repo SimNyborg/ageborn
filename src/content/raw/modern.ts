@@ -182,6 +182,6 @@ export const modern: RawAgeTables = {
     wall('modern', 'sandbag_bunker', { cost: FORT_COST.bunker, cover: { behindLu: 60, rangedTakenBp: 2000 } }),
     tower('modern', 'pillbox', { warPath: 8, road: 2900 }),
     camp('modern', 'forward_base', 'conscript', { warPath: 4, road: 2900 }),
-    trap('modern', 'minefield', { warPath: 6, road: 2900 }, { charges: 3, damage: 130, radius: 40 }),
+    trap('modern', 'minefield', { warPath: 6, road: 2900 }, { charges: 2, damage: 130, radius: 40 }),
   ],
 };

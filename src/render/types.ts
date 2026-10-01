@@ -133,6 +133,10 @@ export type ViewAction =
   | { a: 'unitDie'; id: number }
   | { a: 'unitFlash'; id: number; ms: number; color?: number }
   | { a: 'unitFreeze'; id: number; ms: number; jitterPx?: number }
+  /** A fort's own moment (A16.14.8): `place`, `build`, `spawn` (a camp's door), `hit`, `attack`. */
+  | { a: 'fortClip'; id: number; clip: string }
+  /** A trap's state (A16.14.3): `armed`, `trigger`, `spent`. */
+  | { a: 'trapClip'; id: number; clip: string }
   | { a: 'cheer'; side: Side }
   | {
       a: 'projectile';

@@ -432,9 +432,11 @@
 }
 
 .hud-fort .hud-key {
+  /* On the pad plinth under the button, clear of the seconds, the pop and the pips. */
   top: auto;
-  bottom: 22px;
-  left: -4px;
+  bottom: -9px;
+  left: 50%;
+  translate: -50% 0;
   z-index: 5;
 }
 
@@ -609,7 +611,8 @@
   box-sizing: border-box;
   border: 1px solid var(--hud-edge);
   border-radius: var(--ui-r-md, 12px);
-  background: var(--hud-panel-hi);
+  /* Solid: nothing behind the tip (the power hint, the lane) may show through its text. */
+  background: linear-gradient(var(--hud-panel-hi), var(--hud-panel-hi)), #12161e;
   color: var(--hud-text);
   font-size: 12px;
   font-weight: 700;
@@ -640,6 +643,25 @@
     visibility: visible;
     translate: 0 0;
     transition-delay: var(--ui-dur-tip-hover, 350ms);
+  }
+}
+
+/* The tip and the first-time power hint share the space above the dock: while the tip is open the
+   hint steps aside, and the fort slot draws above the power buttons. */
+.hud-fort-slot:has(.hud-fort.is-tip) {
+  z-index: 8;
+}
+
+.hud:has(.hud-fort.is-tip) .hud-power-hint {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (hover: hover) {
+  .hud:has(.hud-fort:hover:not(.is-aiming):not(.is-lifted)) .hud-power-hint {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--ui-dur-micro) var(--ui-ease-out) var(--ui-dur-tip-hover, 350ms), visibility 0s linear calc(var(--ui-dur-tip-hover, 350ms) + var(--ui-dur-micro));
   }
 }
 
@@ -780,7 +802,18 @@
   transition:
     opacity var(--ui-dur-micro) var(--ui-ease-out),
     scale var(--ui-dur-micro) var(--ui-ease-back),
-    translate var(--ui-dur-micro) var(--ui-ease-out);
+    translate var(--ui-dur-micro) var(--ui-ease-out),
+    top var(--ui-dur-micro) var(--ui-ease-out);
+}
+
+/* Not snapped: the card rides high above the finger so the pads' reason labels under it stay readable
+   ("Enemy near", "Army first", "Taken" sit 38-75 px above the pads). */
+.hud-fort-token:not(.is-snapped) .hud-fort-token-core {
+  top: -152px;
+}
+
+.hud-fort-token:not(.is-snapped) .hud-fort-token-label {
+  top: -180px;
 }
 
 /* Snapped to a pad: the ghost on the lane is the fort now; the card gets out of the way. */
@@ -794,7 +827,8 @@
   top: -64px;
 }
 
-.hud-fort-token.is-cancel .hud-fort-token-core {
+.hud-fort-token.is-cancel .hud-fort-token-core,
+.hud-fort-token.is-none .hud-fort-token-core {
   opacity: 0.6;
   filter: grayscale(0.8);
 }
@@ -815,6 +849,7 @@
   white-space: nowrap;
   translate: -50% 0;
   box-shadow: 0 0 0 1.5px var(--hud-ink);
+  transition: top var(--ui-dur-micro) var(--ui-ease-out);
 }
 
 .hud-fort-token-label.is-info {
@@ -1170,7 +1205,7 @@
   bottom: -4px;
   translate: -50% 0;
   transform-origin: 50% 100%;
-  animation: hud-fburst-ghost 360ms var(--ui-ease-in, cubic-bezier(0.55, 0, 1, 0.45)) forwards;
+  animation: hud-fburst-ghost 360ms var(--ui-ease-exit) forwards;
 }
 
 .hud-fburst-ghost .ui-fort-art {
@@ -1342,32 +1377,19 @@
   box-shadow: 0 0 0 1.5px var(--hud-ink);
 }
 
-/* A trap: always visible to both sides, a hazard patch on the ground with its charge pips. */
+/* A trap: always visible to both sides. The battle view draws the trap itself (unarmed, armed, sprung,
+   spent); the HUD adds only its charge chip, which blinks while the trap arms. */
 .hud-ltrap {
   width: 0;
   height: 0;
   --tc: var(--hud-me);
-  --tw: max(34px, calc(var(--w, 60) * var(--s, 1) * 1px));
 }
 
 .hud-ltrap.is-foe {
   --tc: var(--hud-foe);
 }
 
-.hud-ltrap-patch {
-  position: absolute;
-  left: calc(var(--tw) / -2);
-  top: -5px;
-  width: var(--tw);
-  height: 10px;
-  border-radius: 50%;
-  background: repeating-linear-gradient(-50deg, rgba(242, 194, 48, 0.55) 0 5px, rgba(20, 16, 10, 0.6) 5px 10px);
-  box-shadow:
-    0 0 0 2px var(--tc),
-    0 0 0 3.5px rgba(8, 10, 14, 0.8);
-}
-
-.hud-ltrap.is-arming .hud-ltrap-patch {
+.hud-ltrap.is-arming .hud-ltrap-pips {
   animation: hud-ltrap-arm 700ms ease-in-out infinite;
 }
 
@@ -1409,7 +1431,7 @@
 .hud[data-reduce-motion='true'] .hud-fburst-ring,
 .hud[data-reduce-motion='true'] .hud-fburst-dust,
 .hud[data-reduce-motion='true'] .hud-ltag.is-decaying .hud-ltag-plate,
-.hud[data-reduce-motion='true'] .hud-ltrap.is-arming .hud-ltrap-patch,
+.hud[data-reduce-motion='true'] .hud-ltrap.is-arming .hud-ltrap-pips,
 .hud[data-reduce-motion='true'] .hud-fort-token-core {
   animation: none;
 }
@@ -1426,7 +1448,7 @@
   .hud-fburst-ring,
   .hud-fburst-dust,
   .hud-ltag.is-decaying .hud-ltag-plate,
-  .hud-ltrap.is-arming .hud-ltrap-patch {
+  .hud-ltrap.is-arming .hud-ltrap-pips {
     animation: none;
   }
 }
@@ -1435,8 +1457,9 @@
 
 .hud-foe-fort {
   position: absolute;
-  left: -7px;
-  bottom: -5px;
+  /* The chip's bottom-right corner: open sky on every layout (the minimap row ends before it). */
+  right: -6px;
+  bottom: -8px;
   z-index: 3;
   width: 22px;
   height: 22px;
@@ -1474,6 +1497,11 @@
 }
 
 .hud-foe-fort .hud-foe-ring-tip {
-  right: auto;
-  left: 0;
+  right: 0;
+  left: auto;
+}
+
+/* A denied press's reason has the tip's place: the hover tip steps aside while it shows. */
+.hud-fort-slot:has(.hud-reason) .hud-fort-tip {
+  display: none;
 }

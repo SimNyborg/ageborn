@@ -9,6 +9,7 @@ import {
   CLASS_COLOR,
   CLASS_GLYPH,
   COUNTER_LEGEND,
+  FORT_LEGEND_ROW,
   type CardClass,
   type ClassGlyphId,
   type UnitClass,
@@ -170,12 +171,13 @@ function Arrow() {
 
 /**
  * The War Plan counter legend: the A2.6 triangle (Heavy beats Infantry beats Anti-armor beats
- * Heavy) drawn as three badges on a ring of arrows, and the side notes (Air, Ranged, Siege).
+ * Heavy) drawn as three badges on a ring of arrows, and the side notes (Air, Ranged, Siege). With
+ * `forts` (once battles play the Fort slot, A16.14.7) one more row: Heavy beats Fort.
  */
-export function CounterLegend(p: { compact?: boolean }) {
+export function CounterLegend(p: { compact?: boolean; forts?: boolean }) {
   const { t } = useKit();
   const tri = COUNTER_LEGEND.slice(0, 3);
-  const notes = COUNTER_LEGEND.slice(3);
+  const notes = p.forts ? [...COUNTER_LEGEND.slice(3), FORT_LEGEND_ROW] : COUNTER_LEGEND.slice(3);
   const name = (c: ClassGlyphId) => t(CLASS_NAME_KEY[c]);
   // Triangle corners (percent of the box): Heavy top, Infantry bottom right, Anti-armor bottom left.
   const at: Record<string, [number, number]> = {

@@ -94,7 +94,10 @@ export function PixiStage(p: StageProps) {
       // unit sheets of later ages stream in the background in the game; the gallery waits for all of them,
       // but at most 8 s: anything still loading then draws with its procedural fallback
       // (docs/requests/done/wp12-gallery-sections-blank.md).
-      await Promise.race([art.atlas.unitSheetsReady([...ALL_AGES]).catch(() => undefined), new Promise<void>((r) => setTimeout(r, 8_000))]);
+      await Promise.race([
+        Promise.all([art.atlas.unitSheetsReady([...ALL_AGES]), art.fortSheetsReady([...ALL_AGES])]).catch(() => undefined),
+        new Promise<void>((r) => setTimeout(r, 8_000)),
+      ]);
       if (disposed) return;
       const root = new Container();
       app.stage.addChild(root);

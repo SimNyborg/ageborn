@@ -51,8 +51,14 @@ const A17_SOUND_IDS = [
   'blink_warp', 'drone_launch', 'pw_wave', 'pw_aegis', 'pw_iron_horse', 'pw_zeppelin', 'pw_starfall', 'pw_warp', 'alert_base',
 ];
 
+/** Fort sounds (A16.14.8, A13). */
+const FORT_SOUND_IDS = [
+  'fort_place', 'fort_build', 'fort_complete', 'fort_hit_wood', 'fort_hit_stone', 'fort_hit_metal', 'fort_hit_energy', 'fort_crumble', 'fort_collapse', 'fort_decay', 'trap_arm', 'trap_snap', 'trap_blast', 'camp_horn', 'levy_spawn', 'fort_denied',
+];
+
 export const A13_SOUND_IDS = new Set([
   ...A17_SOUND_IDS,
+  ...FORT_SOUND_IDS,
   ...REWORK_POWER_SOUND_IDS,
   'ui_click', 'ui_hover', 'ui_deny', 'ui_toggle', 'ui_tab', 'ui_confirm', 'meter_pip',
   'spawn_pop', 'spawn_heavy', 'spawn_legendary', 'step_heavy', 'step_mech',

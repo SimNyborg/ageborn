@@ -6,7 +6,7 @@
  *
  * | Kind | When (all inside the gold ledger: slot ready, gold ≥ price + the tier's gold float, a safe pad) | Pad |
  * |---|---|---|
- * | Wall, Tower, Trap | enemy ground value in the bot's half ≥ 300 and ≥ 1.2 × the bot's own army there, and less than half of it Heavy, siege, artillery or Legendary (a fort in front of breakers feeds them) | the most forward safe Home pad (inside own cover) |
+ * | Wall, Tower, Trap | enemy ground value entering the bot's half (from 500 lu before mid-lane) ≥ 300 and ≥ 1.2 × the bot's own army in its half, and less than half of it Heavy, siege, artillery or Legendary (a fort in front of breakers feeds them) | the most forward safe Home pad (inside own cover; pad 160 when a short turret alone blocks the cover rule) |
  * | Camp | once per age stay after the opening, while Charging with 2+ trained units out | the most forward safe pad (Field when legal) |
  *
  * Tiers 0-I never place forts, II-IV walls and traps, V-X every kind; VII-X place none while banking for
@@ -14,12 +14,12 @@
  * enemy army is on the lane; Kettle camps; Boomsworth towers; the Warden any), Ledger never places towers.
  * The mistake "place a wall in front of Heavies" is offered when only the breaker rule holds the bot back.
  *
- * The gold is planned in the brain's saving goals (`fortGoal`): a wave about to cross mid-lane sets a
+ * The gold is planned in the brain's saving goals (`fortGoal`): a wave 900 lu short of mid-lane sets a
  * `fort` goal of price + gold float that outranks the counter goal, and a due camp sets one after the
  * income research goal, so trains that would spend the fort's gold wait instead of a bolt-on purchase.
  */
 import type { AgeId, CardId, CompiledContent, FortKind } from '@/contracts';
-import { BP, LANE_MLU, MILLI } from '@/core';
+import { BP, LANE_MLU, MILLI, padSafe, type PadContext } from '@/core';
 import type { BotAction } from './actions';
 import type { CardBook } from './book';
 import { personalityFor, type Personality } from './personalities';
@@ -42,12 +42,22 @@ export const FORT_GATE_ZONE = 500 * MILLI;
 export const FORT_D_STRONG = 2;
 export const FORT_D_WEAK = 1;
 /**
- * The ledger plan (A16.14.7 "inside the bot's gold ledger"): once a wave is this close to crossing
- * mid-lane and the slot is ready within 3 s, the bot saves the fort's price plus its gold float (trains
- * that would dip below it wait), so the gold is there when the wave enters its half.
+ * Walls, towers and traps go up while the wave is at most this far short of mid-lane (bot frame), before
+ * it stands on or near the Home pads (then no pad is safe). 500 lu (was 300, fixer 2026-10-01): the bot
+ * plans its wall about a wave earlier, so a safe pad still exists when it decides (bots almost never
+ * placed forts in the one-age windows: 0.03-0.37 walls per match).
  */
-export const FORT_APPROACH = 300 * MILLI;
-export const FORT_GOAL_READY_TICKS = 60;
+export const FORT_APPROACH = 500 * MILLI;
+/**
+ * The ledger plan (A16.14.7 "inside the bot's gold ledger"): once a wave is this close to crossing
+ * mid-lane and the slot is ready within 8 s, the bot saves the fort's price plus its gold float (trains
+ * that would dip below it wait), so the gold is there when the wave comes into range of a pad (900 lu since
+ * the planning window moved to 500 lu, fixer 2026-10-01). Measured
+ * (2026-09-30, tier VII): with the goal at 300 lu and 3 s the bot held 0-50 gold in most decisions
+ * where a wave met the value rule, and placed a wall in 1 of 6 Short matches.
+ */
+export const FORT_GOAL_APPROACH = 900 * MILLI;
+export const FORT_GOAL_READY_TICKS = 160;
 /** Scores (bp of score): a defensive fort outranks a stance change, below a power cast and Last Stand; a camp is a spare-gold move. */
 export const FORT_SCORE = 16000;
 export const CAMP_SCORE = 12000;
@@ -125,8 +135,11 @@ export interface FortPlan {
 
 const NONE: FortPlan = { action: null, score: 0, inFrontOfHeavies: null };
 
-/** The most forward safe pad (index) of the given pad kinds, or null. Safe pads include the cover rule (A16.14.2). */
-function forwardSafePad(v: View, kinds: 'home' | 'any'): number | null {
+/**
+ * The most forward safe pad (index) of the given pad kinds, or null. Safe pads include the cover rule
+ * (A16.14.2); when that rule alone leaves no pad, the rear Home pad may do (`rearPadFallback`).
+ */
+function forwardSafePad(v: View, book: CardBook, kinds: 'home' | 'any'): number | null {
   const slot = v.fort;
   if (!slot) return null;
   let best: number | null = null;
@@ -135,7 +148,29 @@ function forwardSafePad(v: View, kinds: 'home' | 'any'): number | null {
     if (kinds === 'home' && p.kind !== 'home') return;
     if (best === null || p.p > (slot.pads[best]?.p ?? 0)) best = i;
   });
-  return best;
+  return best ?? rearPadFallback(v, book);
+}
+
+/**
+ * The rear Home pad (index 0) when the cover rule alone makes every Home pad unsafe (A16.14.2). With no
+ * turret built pad 160 counts as covered, but a built short-range turret (the Pitch Cauldron, 130 lu)
+ * puts the cover limit below it, so a bot with only such a turret would never place a fort. The bot then
+ * reads pad 160 as it would with no turret: legal, and every visible enemy ground unit needs the scaffold
+ * time + 1 s to reach it at its card speed (public numbers only; slowed units are slower, so this errs safe).
+ */
+function rearPadFallback(v: View, book: CardBook): number | null {
+  const slot = v.fort;
+  const r = book.econ.fort;
+  const pad = slot?.pads[0];
+  if (!slot || !r || !pad || v.turretsBuilt === 0 || !pad.legal || pad.safe || pad.kind !== 'home') return null;
+  if (slot.pads.some((p) => p.kind === 'home' && p.legal && p.safe)) return null;
+  const sizes = book.content.economy.sizes;
+  const enemies = v.foes.map((u) => {
+    const def = book.content.units[u.card];
+    return { id: u.id, p: u.p, half: Math.trunc(((def ? (sizes[def.size] ?? 0) : 0) * MILLI) / 2), air: u.air, speed: (u.def?.speed ?? 0) * MILLI };
+  });
+  const ctx: PadContext = { cardPads: slot.def.pads, size: slot.def.size, taken: [], enemies, own: [] };
+  return padSafe(r, 0, ctx, null) ? 0 : null;
 }
 
 /** The forced pad (tools only): the most forward safe pad, else the most rearward legal one; or the most forward legal pad. */
@@ -204,11 +239,11 @@ export function fortGoal(v: View, i: FortPlanInput): { amount: number; why: 'def
   if (slot.readyIn > FORT_GOAL_READY_TICKS || slot.alive >= r.maxAlive || (kind === 'tower' && slot.towers >= r.maxTowers) || (kind === 'camp' && slot.campAlive)) return null;
   if (v.popCommitted + slot.def.pop > i.book.econ.popCap || (i.tier.fortNoBank && i.banking)) return null;
   const amount = slot.cost + i.tier.goldFloat * MILLI;
-  if (kind === 'camp') return campDue(v, i) && forwardSafePad(v, 'any') !== null ? { amount, why: 'camp' } : null;
+  if (kind === 'camp') return campDue(v, i) && forwardSafePad(v, i.book, 'any') !== null ? { amount, why: 'camp' } : null;
   const mid = i.book.econ.midLane;
-  const w = waveAt(v, mid, mid + FORT_APPROACH);
+  const w = waveAt(v, mid, mid + FORT_GOAL_APPROACH);
   if (!isWave(v, i.persona, w) || w.breakers * BP >= FORT_BREAKER_SHARE_BP * Math.max(1, w.threat)) return null;
-  if (forwardSafePad(v, 'home') === null) return null;
+  if (forwardSafePad(v, i.book, 'home') === null) return null;
   return { amount, why: 'defend' };
 }
 
@@ -247,15 +282,18 @@ export function planFort(v: View, i: FortPlanInput): FortPlan {
   if (kind === 'camp') {
     // Once per age stay (Kettle, whose kind it is, may keep one up), while Charging with 2+ trained units out.
     if (!campDue(v, i)) return NONE;
-    const pad = forwardSafePad(v, 'any');
+    const pad = forwardSafePad(v, i.book, 'any');
     return pad === null ? NONE : { action: act(pad), score: CAMP_SCORE, inFrontOfHeavies: null };
   }
 
-  // Wall, Tower, Trap: a real wave in the bot's half that outnumbers what it has there.
+  // Wall, Tower, Trap: a real wave entering the bot's half that outnumbers what it has there. The wave is
+  // read from 500 lu before mid-lane, like the saving goal: a wave already deep in the half stands on
+  // or near the Home pads, which are then unsafe (a scaffold there only feeds it), so waiting for the
+  // whole wave to cross found a safe pad in under a third of the decisions that met the value rule.
   const mid = i.book.econ.midLane;
-  const w = waveAt(v, mid, mid);
+  const w = waveAt(v, mid, mid + FORT_APPROACH);
   if (!isWave(v, i.persona, w)) return NONE;
-  const pad = forwardSafePad(v, 'home');
+  const pad = forwardSafePad(v, i.book, 'home');
   if (pad === null) return NONE;
   // A fort in front of breakers feeds them (×2 damage, 50% bounty): only as a mistake.
   if (w.breakers * BP >= FORT_BREAKER_SHARE_BP * Math.max(1, w.threat)) return { action: null, score: 0, inFrontOfHeavies: act(pad) };

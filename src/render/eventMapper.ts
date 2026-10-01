@@ -13,6 +13,7 @@ import { feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig'
 import { BASE_DEPTH_LU, LANE_LU, MILLI_LU, gateX } from './layout';
 import { BACKDROP_WIPE_MS } from './seam';
 import type { Anchor, ViewAction } from './types';
+import { FORT_SOUNDS, fortHitSound, fortMaterial } from './fortFeel';
 
 /** What the mapper needs to know about a live unit. */
 export interface UnitInfo {
@@ -211,6 +212,10 @@ export class EventMapper {
   private suppressBy: [string, string] = ['', ''];
   /** Sources whose area ring already played in the current `map` call (one ring per impact, not per victim). */
   private areaShown = new Set<string>();
+  /** Live traps by id (A16.14.3): their card (snap or blast) and x. */
+  private readonly traps = new Map<number, { card: string; side: Side }>();
+  /** Forts that crumbled away (decay): their removal is quiet (A16.14.8). */
+  private readonly decayed = new Set<number>();
 
   constructor(o: MapperOptions) {
     this.content = o.content;
@@ -298,6 +303,35 @@ export class EventMapper {
     if (r.duckDb !== undefined && r.duckMs !== undefined && r.duckMs > 0) out.push({ a: 'duck', db: r.duckDb, ms: r.duckMs });
   }
 
+  /** The bounty coins and XP sparkles flying to your HUD for a kill (A12 Unit death). */
+  private coins(ev: Extract<SimEvent, { e: 'died' }>, at: Anchor, out: ViewAction[]): void {
+    const tun = this.feel.tuning;
+    if (ev.killerSide !== this.mySide || ev.side === this.mySide) return;
+    if (ev.bountyGold > 0) {
+      const coins = feelRule(this.feel, 'death.coins').particles?.[0];
+      if (coins) out.push({ a: 'fxFly', effectId: coins.effectId, from: at, to: 'gold', count: coinCount(ev.bountyGold), priority: coins.priority });
+      out.push({ a: 'view', ev: { t: 'coins', count: coinCount(ev.bountyGold) } });
+    }
+    if (ev.bountyXp > 0) {
+      const r = feelRule(this.feel, 'xp.kill');
+      const xp = r.particles?.[0];
+      if (xp) out.push({ a: 'fxFly', effectId: xp.effectId, from: at, to: 'xp', count: xp.count, priority: xp.priority });
+      // The tick sounds when the sparkles reach the XP bar.
+      if (r.sound) out.push({ a: 'sound', id: r.sound, delayMs: tun.xpTravelMs, gap: { key: r.sound, gapMs: tun.coinSoundGapMs } });
+    }
+  }
+
+  /** A fort falls (A16.14.8): debris of its material, dust, trauma +0.2; a decayed one crumbles quietly. */
+  private fortFell(id: number, card: string, at: Anchor, out: ViewAction[]): void {
+    const quiet = this.decayed.delete(id);
+    const mat = fortMaterial(card);
+    out.push({ a: 'fx', effectId: `fx.fort_debris_${mat}`, at, count: 1, priority: 3, opts: { radius: 30 } });
+    out.push({ a: 'fx', effectId: 'fx.dust_poof', at: { k: 'unit', id, part: 'feet' }, count: quiet ? 1 : 2, priority: 2, spreadLu: 18 });
+    out.push({ a: 'sound', id: quiet ? FORT_SOUNDS.decay : FORT_SOUNDS.collapse });
+    if (!quiet) out.push({ a: 'trauma', amount: 0.2, gap: { key: 'fortFall', gapMs: 250 } });
+    out.push({ a: 'intensity', amount: this.feel.tuning.intensity.death });
+  }
+
   private one(ev: SimEvent, unit: (id: number) => UnitInfo | undefined, diedNow: Set<number>, out: ViewAction[]): void {
     const C = this.content;
     const tun = this.feel.tuning;
@@ -305,6 +339,17 @@ export class EventMapper {
       case 'unitSpawned': {
         const def = C.units[ev.card];
         out.push({ a: 'unitSpawn', id: ev.id, side: ev.side, card: ev.card, x: ev.x / MILLI_LU, summoned: ev.summoned, level: ev.level });
+        // A fort's twin appears as a scaffold: its feel is `fortPlaced`'s (A16.14.8)
+        if (def?.fort) return;
+        if (ev.from !== undefined) {
+          // A levy leaves its camp: the door opens with a puff and a small horn (A16.14.8)
+          out.push({ a: 'unitClip', id: ev.id, clip: 'spawn' });
+          out.push({ a: 'fortClip', id: ev.from, clip: 'spawn' });
+          out.push({ a: 'fx', effectId: 'fx.levy_spawn', at: { k: 'unit', id: ev.from, part: 'feet' }, count: 1, priority: 1, opts: { side: ev.side } });
+          out.push({ a: 'sound', id: FORT_SOUNDS.levySpawn, gap: { key: FORT_SOUNDS.levySpawn, gapMs: 250 } });
+          out.push({ a: 'sound', id: FORT_SOUNDS.campHorn, delayMs: 60, gap: { key: FORT_SOUNDS.campHorn, gapMs: 3000 } });
+          return;
+        }
         out.push({ a: 'unitClip', id: ev.id, clip: 'spawn' });
         this.rule('unit.spawn', { at: { k: 'unit', id: ev.id, part: 'feet' }, subs: { spawnSound: spawnSoundFor(def) } }, out);
         // A per-card effect that loops on the unit while it lives (A17.12: the Sapper's lit fuse).
@@ -365,7 +410,11 @@ export class EventMapper {
         const turret = decodeTurretSource(ev.sourceId);
         const fromX = src ? src.x : turret ? gateX(turret.side) : undefined;
         const dir = fromX !== undefined ? { x: Math.sign(x - fromX) || 1, y: 0 } : undefined;
-        const subs: Subs = { spark: sparkFor(ev.dmgType, ev.modBp), hitSound: hitSoundFor(ev.dmgType, ev.modBp) };
+        const vDef = victim ? C.units[victim.card] : undefined;
+        // A fort answers in its own material (A16.14.8: wood, stone, metal, energy)
+        const subs: Subs = { spark: sparkFor(ev.dmgType, ev.modBp), hitSound: vDef?.fort && ev.modBp < EFFECTIVE_BP ? fortHitSound(victim?.card ?? '') : hitSoundFor(ev.dmgType, ev.modBp) };
+        // A trap's victim alone freezes for 60 ms (A16.14.8: the snap)
+        if (this.traps.has(ev.sourceId) && victim) out.push({ a: 'unitFreeze', id: ev.targetId, ms: 60 });
         // A field's pulses (A2.9.7, every 0.5 s) hit the same units again and again: the first pulse
         // plays the hit, the later ones only roll into one running number per unit.
         const cast = ev.sourceKind === 'power' && ev.castId !== undefined && ev.castId !== null ? this.casts.get(ev.castId) : undefined;
@@ -439,6 +488,11 @@ export class EventMapper {
         const def = C.units[ev.card];
         const at: Anchor = { k: 'unit', id: ev.id, part: 'hit' };
         out.push({ a: 'unitDie', id: ev.id });
+        if (def?.fort) {
+          this.fortFell(ev.id, ev.card, at, out);
+          this.coins(ev, at, out);
+          return;
+        }
         const g = def?.group;
         const key = g === 'legendary' ? 'death.legendary' : g === 'heavy' || g === 'epic' ? 'death.heavy' : 'death.unit';
         const killer = ev.killerId !== null && ev.killerId > 0 ? ev.killerId : undefined;
@@ -448,20 +502,7 @@ export class EventMapper {
           const oneIn = Math.max(1, Math.round(tun.mechExplodeOneIn));
           if (this.rng.int(oneIn) === 0) this.rule('death.mech.explode', { at }, out);
         }
-        if (ev.killerSide === this.mySide && ev.side !== this.mySide) {
-          if (ev.bountyGold > 0) {
-            const coins = feelRule(this.feel, 'death.coins').particles?.[0];
-            if (coins) out.push({ a: 'fxFly', effectId: coins.effectId, from: at, to: 'gold', count: coinCount(ev.bountyGold), priority: coins.priority });
-            out.push({ a: 'view', ev: { t: 'coins', count: coinCount(ev.bountyGold) } });
-          }
-          if (ev.bountyXp > 0) {
-            const r = feelRule(this.feel, 'xp.kill');
-            const xp = r.particles?.[0];
-            if (xp) out.push({ a: 'fxFly', effectId: xp.effectId, from: at, to: 'xp', count: xp.count, priority: xp.priority });
-            // The tick sounds when the sparkles reach the XP bar.
-            if (r.sound) out.push({ a: 'sound', id: r.sound, delayMs: tun.xpTravelMs, gap: { key: r.sound, gapMs: tun.coinSoundGapMs } });
-          }
-        }
+        this.coins(ev, at, out);
         out.push({ a: 'intensity', amount: tun.intensity.death });
         return;
       }
@@ -649,16 +690,59 @@ export class EventMapper {
           this.rule(key, { at: { k: 'mount', side: ev.side, mount: ev.mount }, opts: { side: ev.side, durationMs: Math.max(0, (ev.untilTick - ev.tick) * 50) } }, out);
         }
         return;
-      case 'fortPlaced':
-      case 'fortBuilt':
-      case 'fortDecayed':
-      case 'trapArmed':
-      case 'trapTriggered':
-      case 'trapExpired':
-      case 'towerSilenced':
-        // Forts (A16.14): the placing thud, build pop, crumble, trap snap and jam feel arrive with the
-        // fort art in F3 (A16.14.8); the fort itself is drawn through its twin unit's view until then.
+      // Forts (A16.14.8): the placing thud, the build pop, the collapse, the trap snap and the jam
+      case 'fortPlaced': {
+        const x = ev.x / MILLI_LU;
+        const trap = C.forts[ev.card]?.fortKind === 'trap';
+        if (trap) this.traps.set(ev.id, { card: ev.card, side: ev.side });
+        out.push({ a: 'sound', id: FORT_SOUNDS.place });
+        out.push({ a: 'fx', effectId: 'fx.fort_scaffold_dust', at: { k: 'world', x, y: 0 }, count: 1, priority: 2, opts: { side: ev.side, radius: trap ? 26 : 30 } });
+        if (!trap) {
+          out.push({ a: 'unitFreeze', id: ev.id, ms: 40 });
+          out.push({ a: 'sound', id: FORT_SOUNDS.build, delayMs: 320 });
+        }
         return;
+      }
+      case 'fortBuilt': {
+        out.push({ a: 'fortClip', id: ev.id, clip: 'build' });
+        out.push({ a: 'fx', effectId: 'fx.fort_build_pop', at: { k: 'unit', id: ev.id, part: 'feet' }, count: 1, priority: 2, opts: { radius: 30 } });
+        out.push({ a: 'sound', id: FORT_SOUNDS.complete });
+        return;
+      }
+      case 'fortDecayed':
+        this.decayed.add(ev.id);
+        if (this.decayed.size > 256) this.decayed.clear();
+        return;
+      case 'trapArmed':
+        out.push({ a: 'trapClip', id: ev.id, clip: 'armed' });
+        out.push({ a: 'sound', id: FORT_SOUNDS.trapArm, gap: { key: FORT_SOUNDS.trapArm, gapMs: 400 } });
+        return;
+      case 'trapTriggered': {
+        const t = this.traps.get(ev.id);
+        const tr = t ? C.forts[t.card]?.trap : undefined;
+        const x = ev.x / MILLI_LU;
+        out.push({ a: 'trapClip', id: ev.id, clip: 'trigger' });
+        if (tr && tr.radius > 0) {
+          out.push({ a: 'fx', effectId: 'fx.blast', at: { k: 'world', x, y: -6 }, count: 1, priority: 3, opts: { radius: tr.radius } });
+          out.push({ a: 'sound', id: FORT_SOUNDS.trapBlast });
+          out.push({ a: 'trauma', amount: 0.14, gap: { key: 'trap', gapMs: 300 } });
+        } else {
+          out.push({ a: 'fx', effectId: 'fx.trap_snap', at: { k: 'world', x, y: -2 }, count: 1, priority: 3 });
+          out.push({ a: 'sound', id: FORT_SOUNDS.trapSnap });
+        }
+        return;
+      }
+      case 'trapExpired':
+        out.push({ a: 'trapClip', id: ev.id, clip: 'spent' });
+        this.traps.delete(ev.id);
+        return;
+      case 'towerSilenced': {
+        const ms = Math.max(0, (ev.untilTick - ev.tick) * 50);
+        const by = this.suppressBy[ev.side === 0 ? 1 : 0];
+        const key = by && this.has(`power.jammed.${by}`) ? `power.jammed.${by}` : 'power.jammed';
+        if (unit(ev.id)) this.rule(key, { at: { k: 'unit', id: ev.id, part: 'head' }, opts: { side: ev.side, durationMs: ms }, follow: true }, out);
+        return;
+      }
       case 'stanceChanged':
         if (ev.side === this.mySide) this.rule('stance', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
         return;

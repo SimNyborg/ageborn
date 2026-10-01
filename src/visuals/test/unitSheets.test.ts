@@ -79,10 +79,13 @@ describe('unit sprite sheets in the manifest', () => {
     const stills = new Set(Object.keys(PORTRAITS));
     for (const u of Object.values(content.units)) {
       const def = MANIFEST[u.visualId];
-      if (def?.kind !== 'atlas') continue;
-      const has = stills.has(`/public/art/portraits/${u.id}.png`) && stills.has(`/public/art/portraits/${u.id}_team.png`);
+      // fort twins keep their stills next to their sheets (src/visuals/test/forts.test.ts)
+      if (def?.kind !== 'atlas' || u.fort) continue;
+      // levies draw (and show) their Infantry Common's sheet and still (A16.14.8)
+      const slug = /\/([a-z0-9_]+)\.json$/.exec(def.source)?.[1] ?? u.id;
+      const has = stills.has(`/public/art/portraits/${slug}.png`) && stills.has(`/public/art/portraits/${slug}_team.png`);
       expect(portraitStillBase(def.source) !== null, u.id).toBe(has);
-      expect(UNITS_WITHOUT_STILLS.has(u.id), u.id).toBe(!has);
+      expect(UNITS_WITHOUT_STILLS.has(slug), u.id).toBe(!has);
     }
   });
 

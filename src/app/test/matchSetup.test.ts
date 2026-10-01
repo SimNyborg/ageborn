@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { content } from '@/content';
+import type { CardId, SaveDoc, SideConfig } from '@/contracts';
+import { FixedClock } from '@/contracts/fakes/clock';
+import { content, type Content } from '@/content';
 import { fakeContent } from '@/contracts/fakes/content';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
-import { commanderId } from '@/meta';
+import { applyFortMatchRule, commanderId, meta, unlockFortSlot } from '@/meta';
 import { MATCH1, MATCH1_SEED, MATCH1_TRAYS, MATCH2 } from '@/tutorial';
-import { botProfileFor, difficultyTable, difficultyTier, generalOpponent, generalPlan, matchSetupFor, nextMatchNumber, playerSide, quickBattle, standardLevel, tutorialMatch1, tutorialMatch2 } from '../matchSetup';
+import { botProfileFor, difficultyTable, difficultyTier, generalOpponent, generalPlan, matchSetupFor, nextMatchNumber, playerSide, quickBattle, standardLevel, tutorialMatch1, tutorialMatch2, withBotForts } from '../matchSetup';
 
 describe('match 1 setup (A8)', () => {
   const s = tutorialMatch1(null, content, 'Old Grogg');
@@ -167,5 +169,37 @@ describe('helpers', () => {
   it('nextMatchNumber', () => {
     expect(nextMatchNumber(null)).toBe(1);
     expect(nextMatchNumber(fakeSaveDoc({ matchesPlayed: 4 }))).toBe(5);
+  });
+});
+
+describe('bot Fort cards (A16.14.7, docs/requests/wp11-bot-fort-cards.md)', () => {
+  const fresh = (): SaveDoc => meta.newSave(content, new FixedClock(Date.UTC(2026, 8, 28, 12)), 7);
+  const t = content as unknown as Content;
+  const fortsOf = (side: SideConfig): (CardId | null)[] => Object.values(side.loadouts).map((l) => l?.fort ?? null);
+
+  it('fills every empty bot slot (the General’s kind, else the wall); the source filter and the slot rule still apply', () => {
+    const kettle = generalOpponent(content, { generalId: 'kettle', displayName: 'Captain Kettle', tier: 7, level: 7, format: 'full', seed: 1 });
+    const filled = withBotForts(kettle.side, content, 'kettle', 7);
+    for (const [age, l] of Object.entries(filled.loadouts)) expect(content.forts[l?.fort ?? '']?.age).toBe(age);
+    expect(filled.loadouts.stone?.fort).toBe(Object.values(content.forts).find((f) => f.age === 'stone' && f.fortKind === 'camp')?.id);
+    // A player whose slot is open: both sides carry a fort in every age; Kettle's Bronze camp is not
+    // ownable yet, so it becomes the Bronze wall.
+    const open = unlockFortSlot(fresh(), t).save;
+    const setup = matchSetupFor(open, kettle, 'ladder', content);
+    const me = playerSide(open, content);
+    const cfg = applyFortMatchRule({ ...setup.config, sides: [me, filled] }, open, 'ladder', true);
+    for (const side of cfg.sides) for (const f of fortsOf(side)) expect(f).not.toBeNull();
+    expect(content.forts[cfg.sides[1].loadouts.bronze?.fort ?? '']?.fortKind).toBe('wall');
+    // A locked slot sends no fort to either side.
+    const locked = applyFortMatchRule({ ...setup.config, sides: [playerSide(fresh(), content), filled] }, fresh(), 'ladder', true);
+    for (const side of locked.sides) expect(fortsOf(side).every((f) => f === null)).toBe(true);
+  });
+
+  it('tiers 0-I bring no Fort card; Old Grogg and Echo of You keep their slots', () => {
+    const low = generalOpponent(content, { generalId: 'kettle', displayName: 'Captain Kettle', tier: 1, level: 1, format: 'short', seed: 1 });
+    expect(fortsOf(withBotForts(low.side, content, 'kettle', 1)).every((f) => f === null)).toBe(true);
+    const side = { ...low.side };
+    expect(withBotForts(side, content, 'grogg', 7)).toBe(side);
+    expect(withBotForts(side, content, 'echo', 7)).toBe(side);
   });
 });

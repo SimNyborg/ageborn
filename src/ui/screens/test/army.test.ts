@@ -13,6 +13,12 @@ import {
   ALL_SLOTS,
   ARMY_FILTER,
   activeFilterCount,
+  assignCard,
+  clearSlot,
+  fortSlotOpen,
+  fortSlotShown,
+  setFortSlotPreview,
+  slotKindOf,
   ageStatus,
   albumProgress,
   armyCards,
@@ -81,8 +87,8 @@ describe('Equip now (A3, ui-plan 4.2 "Use")', () => {
 });
 
 describe('slots and changes', () => {
-  it('has six troops, two turrets and the Home and Field powers, with stable keys', () => {
-    expect(ALL_SLOTS.map(slotKey)).toEqual(['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'turret-0', 'turret-1', 'power-home', 'power-field']);
+  it('has six troops, two turrets, the Home and Field powers and the Fort slot, with stable keys', () => {
+    expect(ALL_SLOTS.map(slotKey)).toEqual(['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'turret-0', 'turret-1', 'power-home', 'power-field', 'fort']);
     for (const s of ALL_SLOTS) expect(slotFromKey(slotKey(s))).toEqual(s);
     expect(slotFromKey('grid')).toBeNull();
   });
@@ -301,5 +307,54 @@ describe('the Field power slot on the Army screen (A2.9.1, A2.9.13)', () => {
     // the grid card of the kept Field power is not marked equipped, and the slot says why it is shut
     expect(m.q(`[data-testid="cand-${field}"]`)?.getAttribute('class') ?? '').not.toContain('is-equipped');
     expect(text(m.q('[data-testid="slot-power-field"]')!)).toContain('Coming soon');
+  });
+});
+
+describe('The Fort slot (A16.14.7)', () => {
+  const withForts = (open: boolean) => ({ ...mid, fortsOwned: ['palisade', 'war_camp', 'spike_pit', 'sling_perch', 'cyclopean_wall'], flags: { ...mid.flags, 'fort.slot': open } });
+  afterEach(() => setFortSlotPreview(false));
+
+  it('is hidden until battles play it, then shows open or with its padlock', () => {
+    expect(fortSlotShown(false)).toBe(false);
+    expect(fortSlotOpen(withForts(true), false)).toBe(false);
+    expect(fortSlotShown(true)).toBe(true);
+    expect(fortSlotOpen(withForts(true), true)).toBe(true);
+    expect(fortSlotOpen(withForts(false), true)).toBe(false);
+    setFortSlotPreview(true);
+    expect(fortSlotShown(false)).toBe(true);
+  });
+
+  it('takes only an owned fort of its age, and a fort goes nowhere else', () => {
+    setFortSlotPreview(true);
+    const s = withForts(true);
+    expect(slotKindOf(content, 'palisade')).toBe('fort');
+    expect(fitsSlot(s, content, 'stone', { kind: 'fort' }, 'palisade')).toBe(true);
+    expect(fitsSlot(s, content, 'stone', { kind: 'unit', index: 0 }, 'palisade')).toBe(false);
+    expect(fitsSlot(s, content, 'bronze', { kind: 'fort' }, 'palisade')).toBe(false);
+    expect(fitsSlot(s, content, 'stone', { kind: 'fort' }, 'bonker')).toBe(false);
+    // Not owned yet, or the slot still locked.
+    expect(fitsSlot({ ...s, fortsOwned: [] }, content, 'stone', { kind: 'fort' }, 'palisade')).toBe(false);
+    expect(fitsSlot(withForts(false), content, 'stone', { kind: 'fort' }, 'palisade')).toBe(false);
+  });
+
+  it('Use fills the Fort slot or swaps its fort; clearing empties it; the key is stable', () => {
+    setFortSlotPreview(true);
+    const s = withForts(true);
+    const l = { ...stone(), fort: null };
+    expect(equipSlot(s, content, l, 'war_camp')).toEqual({ kind: 'fort' });
+    const a = assignCard(content, l, { kind: 'fort' }, 'war_camp');
+    expect(a.fort).toBe('war_camp');
+    expect(a.units).toEqual(l.units);
+    expect(slotOfCard(a, 'war_camp')).toEqual({ kind: 'fort' });
+    expect(changedSlots(l, a).map(slotKey)).toEqual(['fort']);
+    expect(assignCard(content, a, { kind: 'fort' }, 'palisade').fort).toBe('palisade');
+    expect(clearSlot(a, { kind: 'fort' }).fort).toBeNull();
+    expect(slotFromKey('fort')).toEqual({ kind: 'fort' });
+    expect(equipSlot(withForts(false), content, l, 'war_camp')).toBeNull();
+  });
+
+  it('keeps the Fort card through normalizing an older loadout', () => {
+    expect(normalizeLoadout({ units: [], turrets: [], powers: { home: null, field: null } }).fort).toBeNull();
+    expect(normalizeLoadout({ ...stone(), fort: 'palisade' }).fort).toBe('palisade');
   });
 });

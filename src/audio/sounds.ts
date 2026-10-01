@@ -999,6 +999,63 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
   ]), { ...MUSICAL, maxVoices: 1 }),
   // The reel calls this per tile with a falling pitch (A10.1) and already spaces its ticks 40 ms apart.
   reel_tick: fx('capsule', variants(3, (v) => ({ vol: 0.25, freq: 1500 * (1 + 0.03 * v), attack: 0.001, release: 0.016, shape: 'square', lowpass: 10000 })), CALLER_PITCHED),
+
+  // Forts (DESIGN A16.14.8, A13): placing, the scaffold's hammering, completion, hits by material, the
+  // crumble stages, the collapse and the quiet decay, the traps, the camp's horn and the levy's step-out.
+  // Every age shares them (a wall is timber, stone, metal or energy whatever the age); no fort is up before
+  // 0:20, so they pre-render with the later match moments (the `match` group); the denial is a UI sound.
+  fort_place: mix('match', mixVariants(3, (v) => [
+    thump(0, 70 * (1 + 0.05 * v), 0.7, 0.22, -0.6),
+    noiseBurst(0, { vol: 0.45, freq: 260, decay: 0.02, sustainVol: 0.3, release: 0.18, lowpass: 1600 }),
+    noiseBurst(60, { vol: 0.2, freq: 900, release: 0.3, lowpass: 2600, tremolo: 0.3, repeat: 0.05 }),
+  ]), { maxVoices: 2 }),
+  fort_build: mix('match', mixVariants(3, (v) => [
+    ...[0, 170, 340, 560].map((ms, k) => at(ms, { vol: 0.35, freq: 380 * (1 + 0.04 * v + 0.03 * k), attack: 0.001, release: 0.06, shape: 'tri', noise: 0.4, lowpass: 3200 })),
+    noiseBurst(620, { vol: 0.18, freq: 1200, release: 0.25, tremolo: 0.6, repeat: 0.03, lowpass: 3000 }),
+  ]), { maxVoices: 2, gapMs: 200 }),
+  fort_complete: mix('match', mixVariants(3, (v) => [
+    thump(0, 90, 0.55, 0.2),
+    at(40, { vol: 0.35, freq: 523 * (1 + 0.01 * v), attack: 0.002, sustain: 0.04, release: 0.25, shape: 'tri', jump: 262, jumpTime: 0.07 }),
+    noiseBurst(0, { vol: 0.3, freq: 400, release: 0.2, lowpass: 2200 }),
+  ]), MUSICAL),
+  fort_hit_wood: fx('match', variants(4, (v) => ({ vol: 0.45, freq: 210 * (1 + 0.07 * v), attack: 0.001, release: 0.1, shape: 'tri', noise: 0.8, slide: -1.2, lowpass: 2600 }))),
+  fort_hit_stone: fx('match', variants(4, (v) => ({ vol: 0.45, freq: 150 * (1 + 0.07 * v), attack: 0.001, release: 0.12, shape: 'noise', slide: -0.8, lowpass: 2200 }))),
+  fort_hit_metal: mix('match', mixVariants(4, (v) => [
+    at(0, { vol: 0.35, freq: 820 * (1 + 0.06 * v), attack: 0.001, sustain: 0.02, release: 0.22, shape: 'sin', mod: 3.2, lowpass: 7000 }),
+    noiseBurst(0, { vol: 0.3, freq: 1500, release: 0.05, highpass: 900 }),
+  ])),
+  fort_hit_energy: fx('match', variants(4, (v) => ({ vol: 0.35, freq: 640 * (1 + 0.06 * v), attack: 0.002, sustain: 0.03, release: 0.14, shape: 'square', curve: 0.6, slide: -6, lowpass: 6000 }))),
+  fort_crumble: mix('match', mixVariants(3, (v) => [
+    thump(0, 62 * (1 + 0.05 * v), 0.6, 0.3),
+    noiseBurst(0, { vol: 0.5, freq: 300, decay: 0.05, sustainVol: 0.35, release: 0.45, lowpass: 1800, tremolo: 0.4, repeat: 0.06 }),
+  ]), { maxVoices: 2 }),
+  fort_collapse: mix('match', mixVariants(3, (v) => [
+    thump(0, 48 * (1 + 0.04 * v), 0.8, 0.5),
+    noiseBurst(0, { vol: 0.6, freq: 240, decay: 0.08, sustainVol: 0.4, release: 0.9, lowpass: 1600, tremolo: 0.5, repeat: 0.08 }),
+    noiseBurst(250, { vol: 0.3, freq: 700, release: 0.6, lowpass: 2600, tremolo: 0.6, repeat: 0.05 }),
+  ]), { maxVoices: 2 }),
+  fort_decay: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 420 * (1 + 0.05 * v), attack: 0.05, sustain: 0.2, release: 0.5, lowpass: 1500, tremolo: 0.5, repeat: 0.07 }),
+    thump(120, 70, 0.3, 0.25),
+  ]), { maxVoices: 2 }),
+  trap_arm: fx('match', variants(3, (v) => ({ vol: 0.3, freq: 900 * (1 + 0.05 * v), attack: 0.002, sustain: 0.01, release: 0.05, shape: 'tri', jump: -300, jumpTime: 0.03, repeat: 0.06 }))),
+  trap_snap: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.55, freq: 1400 * (1 + 0.05 * v), release: 0.06, highpass: 600 }),
+    at(10, { vol: 0.4, freq: 180 * (1 + 0.06 * v), attack: 0.001, release: 0.12, shape: 'tri', slide: -2, noise: 0.5 }),
+  ])),
+  trap_blast: mix('match', mixVariants(3, (v) => [
+    thump(0, 55 * (1 + 0.05 * v), 0.8, 0.4),
+    noiseBurst(0, { vol: 0.7, freq: 200, decay: 0.05, sustainVol: 0.5, release: 0.6, lowpass: 2000 }),
+  ]), { maxVoices: 2 }),
+  camp_horn: fx('match', variants(3, (v) => ({ vol: 0.3, freq: 196 * (1 + 0.01 * v), attack: 0.06, sustain: 0.28, release: 0.25, shape: 'saw', curve: 0.9, slide: 0.05, lowpass: 1600, tremolo: 0.06, repeat: 0.18 })), { ...MUSICAL, maxVoices: 1, gapMs: 3000 }),
+  levy_spawn: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.28, freq: 500 * (1 + 0.05 * v), release: 0.09, lowpass: 2400 }),
+    at(30, { vol: 0.25, freq: 260 * (1 + 0.08 * v), attack: 0.003, release: 0.08, shape: 'tri', slide: 3 }),
+  ])),
+  fort_denied: mix('ui', mixVariants(3, (v) => [
+    thump(0, 110 * (1 + 0.03 * v), 0.45, 0.1),
+    at(0, { vol: 0.3, freq: 150 * (1 + 0.04 * v), attack: 0.004, sustain: 0.08, release: 0.08, shape: 'square', curve: 0.7, slide: -0.3, lowpass: 2400 }),
+  ])),
 };
 
 /** Every sound id in the manifest, in declaration order. */

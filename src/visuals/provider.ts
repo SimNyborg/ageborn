@@ -5,10 +5,13 @@
  *
  * `?art=placeholder|procedural|atlas` forces a tier for comparison (`artOverrideFromUrl`).
  */
-import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView, TurretView, UnitView, VisualDef } from '@/contracts/art';
+import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView, FortView, TurretView, UnitView, VisualDef } from '@/contracts/art';
 import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets } from './adapters/atlas';
+import { WorldAtlas } from './adapters/worldAtlas';
+import { AtlasFortView } from './fortViews/atlasFortView';
+import { fortSource, type FortKindId } from './forts';
 import type { BakeStats } from './bake';
 import { PlaceholderAdapter } from './adapters/placeholder';
 import { ProceduralAdapter } from './adapters/procedural';
@@ -76,6 +79,9 @@ export class VisualsArtProvider implements ArtProvider {
   /** Cosmetic RNG seeds for new views, per provider so a fresh provider replays identically (gallery `t=` screenshots). */
   private nextSeed = 1;
   private preset: TeamPreset;
+  /** Fort sheets (A16.14.8), loaded per age like the world sheets; `fortHd` picks the 2.46 px/lu sheets. */
+  readonly forts: WorldAtlas;
+  private readonly fortHd: boolean;
   readonly force: VisualKind | null;
   readonly quality: 'high' | 'lite';
 
@@ -90,6 +96,9 @@ export class VisualsArtProvider implements ArtProvider {
     const rawDpr = o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
     this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker, quality: this.quality, hd: this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr) });
     this.adapters = { placeholder: this.placeholder, procedural: this.procedural, atlas: this.atlas, spine: new SpineAdapter() };
+    this.fortHd = this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr);
+    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
+    this.forts = new WorldAtlas((s) => (/^(https?:|data:|\/)/.test(s) ? s : `${base}${s}`));
     this.warn = o.warn ?? ((m) => console.warn(m));
   }
 
@@ -158,6 +167,60 @@ export class VisualsArtProvider implements ArtProvider {
       const a = this.adapters[k];
       if (a.available) await a.preload(ages);
     }
+    // fort sheets (A16.14.8): Stone's are awaited (every match starts there), the rest stream in
+    if (this.force === null || this.force === 'atlas') {
+      const want = new Set(ages);
+      const now: Promise<unknown>[] = [];
+      for (const d of Object.values(this.manifest)) {
+        const f = d.kind === 'atlas' ? fortSource(d.source) : null;
+        if (!f || !want.has(f.age)) continue;
+        const p = this.forts.ensure(this.fortSheetUrl(d.source));
+        if (f.age === 'stone') now.push(p);
+      }
+      await Promise.all(now);
+    }
+  }
+
+  /** Resolves once every fort sheet of `ages` has loaded (or failed). Dev pages and screenshots use it. */
+  async fortSheetsReady(ages: readonly AgeId[]): Promise<void> {
+    const want = new Set(ages);
+    const all: Promise<unknown>[] = [];
+    for (const d of Object.values(this.manifest)) {
+      const f = d.kind === 'atlas' ? fortSource(d.source) : null;
+      if (f && want.has(f.age)) all.push(this.forts.ensure(this.fortSheetUrl(d.source)));
+    }
+    await Promise.all(all);
+  }
+
+  /** The fort sheet to load for a manifest source (`.hd.json` on dense screens). */
+  private fortSheetUrl(source: string): string {
+    return this.fortHd ? source.replace(/\.json$/, '.hd.json') : source;
+  }
+
+  /**
+   * A fort view (A16.14.8): walls, towers, camps and traps from their realistic sheets (a code stand-in
+   * while a sheet loads or where none is installed). A tower's crew draws from its unit sheet.
+   */
+  createFort(o: { visualId: VisualId; side: Side; teamPreset: TeamPreset; kind: FortKindId }): FortView {
+    const r = this.resolve(o.visualId);
+    const def: VisualDef = r?.def ?? { ...this.missing(o.visualId), heightLu: o.kind === 'trap' ? 24 : o.kind === 'tower' ? 100 : 90 };
+    const src = def.kind === 'atlas' && fortSource(def.source) ? def.source : null;
+    const age = src ? (fortSource(src)?.age ?? null) : null;
+    return new AtlasFortView({
+      def,
+      side: o.side,
+      kind: o.kind,
+      teamColor: teamColor(o.side, o.teamPreset),
+      decor: this.procedural.baker,
+      seed: this.nextSeed++,
+      sheets: this.forts,
+      source: src && (this.force === null || this.force === 'atlas') ? this.fortSheetUrl(src) : null,
+      age,
+      crewSheet: (visualId) => {
+        const c = this.resolve(visualId)?.def;
+        return c && c.kind === 'atlas' ? this.atlas.sheetFor(c.source) : undefined;
+      },
+    });
   }
 
   createUnit(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): UnitView {
@@ -273,7 +336,7 @@ export class VisualsArtProvider implements ArtProvider {
   /** Card id → visual id: units, turrets and powers share one id space; base and icon ids pass through. */
   visualIdForCard(card: CardId): VisualId {
     if (card.includes('.')) return card;
-    for (const prefix of ['unit.', 'turret.', 'power.']) if (this.manifest[`${prefix}${card}`]) return `${prefix}${card}`;
+    for (const prefix of ['unit.', 'turret.', 'power.', 'fort.']) if (this.manifest[`${prefix}${card}`]) return `${prefix}${card}`;
     return `unit.${card}`;
   }
 

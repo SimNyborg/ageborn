@@ -177,6 +177,6 @@ export const gunpowder: RawAgeTables = {
     wall('gunpowder', 'gabion_wall'),
     tower('gunpowder', 'musket_redoubt', { warPath: 8, road: 2500 }),
     camp('gunpowder', 'militia_muster', 'militiaman', { warPath: 4, road: 2500 }),
-    trap('gunpowder', 'powder_keg', { warPath: 6, road: 2500 }, { charges: 1, damage: 330, radius: 60 }),
+    trap('gunpowder', 'powder_keg', { warPath: 6, road: 2500 }, { charges: 1, damage: 230, radius: 60 }),
   ],
 };

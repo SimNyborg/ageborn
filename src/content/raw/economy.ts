@@ -228,7 +228,8 @@ export const economy: EconomyRules = {
     padClearLu: 120,
     fieldBehindLu: 100,
     fieldFrontRank: 2,
-    maxAlive: 2,
+    // 1 fort (or trap) up at a time (the A16.14.9 maxAlive lever, fixer 2026-10-01)
+    maxAlive: 1,
     maxCamps: 1,
     maxTowers: 2,
     rechargeMs: 25000,
@@ -253,8 +254,9 @@ export const economy: EconomyRules = {
     towerHpBp: 5000,
     campHpBp: 6000,
     towerDamageBp: 15000,
-    levyHpBp: 4000,
-    levyDamageBp: 4000,
+    // levies 30% of the age's Infantry Common (was 40%: the levies supplied 15-28 points of a camp's edge)
+    levyHpBp: 3000,
+    levyDamageBp: 3000,
     levyAiValueBp: 1600,
   },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate

@@ -115,15 +115,20 @@ function stepLeap(ctx: Ctx, u: UnitRt, r: UnitRules): void {
  * Siege forced march (A17.3).
  */
 function speedOf(ctx: Ctx, m: Mover): number {
-  let v = m.r.speed;
-  const fx = m.u.fx;
+  return unitSpeed(ctx, m.u, m.r);
+}
+
+/** A unit's effective speed now (mlu/tick; see `speedOf`). Also read by the fort safe-pad test (A16.14.1). */
+export function unitSpeed(ctx: Ctx, u: UnitRt, r: UnitRules): number {
+  let v = r.speed;
+  const fx = u.fx;
   let fixed = fx ? fx.speedBp : 0;
-  if (fx?.horns && !m.u.air && (m.r.levy || ctx.s.sides[m.u.side].stance === 'charge')) fixed += fx.horns.chargeSpeedBp;
-  const bonus = capSum(fixed, statusBp(m.u, 'speedBuff'), ctx.econ.caps.speedBp);
+  if (fx?.horns && !u.air && (r.levy || ctx.s.sides[u.side].stance === 'charge')) fixed += fx.horns.chargeSpeedBp;
+  const bonus = capSum(fixed, statusBp(u, 'speedBuff'), ctx.econ.caps.speedBp);
   if (bonus !== 0) v = Math.trunc((v * (BP + bonus)) / BP);
   // Slows and snares (A2.9.6): the stronger applies, after the A18.2 caps.
-  const slowBp = statusBp(m.u, 'slow');
-  const snareBp = statusBp(m.u, 'snare');
+  const slowBp = statusBp(u, 'slow');
+  const snareBp = statusBp(u, 'snare');
   const slow = slowBp > snareBp ? slowBp : snareBp;
   if (slow > 0) v = Math.trunc((v * (BP - (slow > BP ? BP : slow))) / BP);
   if (ctx.s.phase === 'siege') {

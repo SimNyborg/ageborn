@@ -75,6 +75,8 @@ import {
   type ViewEventListener,
   type ViewSettings,
 } from './types';
+import { FORT_ROW_LU, FORT_Z, fortCrumble, fortPoseOf, FortUnitView, scaffoldMsFor, TrapViews } from './fortViews';
+import { FORT_SOUNDS } from './fortFeel';
 
 export interface BattleViewOptions {
   /** The running sim (or anything with read-only state and config, such as a replay). */
@@ -129,6 +131,16 @@ interface UnitEntry {
   oneShotLeftMs: number;
   aura: EffectView | null;
   pose: UnitPose;
+  /** Walls, towers and camps (A16.14.8): the fort view and the tick the view first saw it (scaffold start). */
+  fort?: FortUnitView;
+  fortStart?: number;
+  fortStage?: number;
+  /** Was the fort complete last frame (a completion sets the crumble stage silently)? */
+  fortDone?: boolean;
+  /** The decay clock the view last saw, the decay shown then, and the decay carried over a Siege switch. */
+  fortDecayFrom?: number;
+  fortDecayShown?: number;
+  fortDecayCarry?: number;
 }
 
 interface TurretEntry {
@@ -175,6 +187,8 @@ const BAR_CROWD_UNITS = 10;
 const BAR_FRONT_UNITS = 3;
 /** Display objects further than this outside the view are not drawn (A17.7 culling). */
 const CULL_LU = 150;
+/** How long a fort's collapse and rubble stay after it falls (A16.14.8). */
+const FORT_RUBBLE_MS = 2600;
 /** At most this many minimap dots (the B16 on-screen cap). */
 const MINIMAP_MAX_UNITS = 80;
 /** Turret cover on the minimap: the turret range cap (A17.3). */
@@ -246,6 +260,8 @@ export class BattleView {
   private readonly shadows = new Graphics();
   private readonly zones = new ZoneOverlay();
   private readonly markers: MountMarkers;
+  /** Traps on the lane (A16.14.3; not units). */
+  private readonly trapViews: TrapViews;
   /** Your Hold flag on the lane (A18.4.2) and the p a flag drag previews (null when not dragging). */
   private readonly holdFlag = new HoldFlagMarker();
   private flagGhostP: number | null = null;
@@ -325,6 +341,7 @@ export class BattleView {
     this.layers.telegraphs.addChild(this.zones.root, this.markers.root);
     this.layers.ground.addChild(this.zones.groundRoot);
     this.layers.structures.addChildAt(this.holdFlag.root, 0);
+    this.trapViews = new TrapViews(o.art, this.layers.ground, this.config.content, () => this.settings.teamPreset, (p, side) => (side === 0 ? p : LANE_LU * MILLI_LU - p));
 
     this.applySettings(this.settings);
     this.resize(1280, 720);
@@ -983,6 +1000,7 @@ export class BattleView {
     this.director.update(this.paused ? 0 : realDt, gameDt);
 
     this.syncUnits(alpha, gameDt);
+    this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
     this.updateFollowers();
     this.syncTurrets(gameDt);
     this.syncBases(gameDt);
@@ -1325,6 +1343,7 @@ export class BattleView {
     this.input = null;
     for (const e of this.units.values()) this.destroyUnit(e);
     this.units.clear();
+    this.trapViews.destroy();
     for (const e of this.turrets.values()) e.view.destroy();
     this.turrets.clear();
     for (const l of this.leavingTurrets) l.view.destroy();
@@ -1371,6 +1390,7 @@ export class BattleView {
       if (b.dressing) withMotion(b.dressing, this.viewMotion());
     }
     for (const e of this.turrets?.values() ?? []) withMotion(e.view, this.viewMotion());
+    for (const e of this.units?.values() ?? []) if (e.fort) withMotion(e.fort.fort, this.viewMotion());
   }
 
   private viewMotion(): ViewMotion {
@@ -1460,7 +1480,8 @@ export class BattleView {
         const e = this.units.get(a.id);
         if (!e || e.dying) return;
         e.dying = true;
-        e.dieLeftMs = this.feel.tuning.deathLingerMs;
+        // a fort's rubble lingers a moment after the collapse (A16.14.8)
+        e.dieLeftMs = e.fort ? FORT_RUBBLE_MS : this.feel.tuning.deathLingerMs;
         e.view.play('die');
         e.loopClip = null;
         e.bar.shown = false;
@@ -1469,6 +1490,12 @@ export class BattleView {
       }
       case 'unitFlash':
         this.units.get(a.id)?.view.flash(a.ms, a.color);
+        return;
+      case 'fortClip':
+        this.units.get(a.id)?.fort?.fort.play(a.clip);
+        return;
+      case 'trapClip':
+        this.trapViews.play(a.id, a.clip);
         return;
       case 'unitFreeze': {
         const e = this.units.get(a.id);
@@ -1736,12 +1763,18 @@ export class BattleView {
   private createUnit(id: number, side: Side, card: CardId, level: number, x: number): UnitEntry {
     const def = this.config.content.units[card];
     const skin = this.config.sides[side].skins[card];
-    const view = this.art.createUnit({
-      visualId: def?.visualId ?? `unit.${card}`,
-      ...(skin ? { skin } : {}),
-      side,
-      teamPreset: this.settings.teamPreset,
-    });
+    // Walls, towers and camps (A16.14.8) draw through the fort view when the art provides one.
+    const fortKind = def?.fort?.kind;
+    const fort = fortKind && this.art.createFort ? new FortUnitView(this.art.createFort({ visualId: def.visualId, side, teamPreset: this.settings.teamPreset, kind: fortKind })) : undefined;
+    if (fort) withMotion(fort.fort, this.viewMotion());
+    const view: UnitView =
+      fort ??
+      this.art.createUnit({
+        visualId: def?.visualId ?? `unit.${card}`,
+        ...(skin ? { skin } : {}),
+        side,
+        teamPreset: this.settings.teamPreset,
+      });
     const air = def?.tags.includes(AIR_TAGS) ?? false;
     const sizeLu = def ? this.config.content.economy.sizes[def.size] : 24;
     const e: UnitEntry = {
@@ -1780,8 +1813,12 @@ export class BattleView {
         roleGlyph: def?.group ?? 'infantry',
       },
     };
-    const rows = depthRows([...this.units.values(), e].filter((v) => !v.dying).map((v) => ({ id: v.id, side: v.side, x: v.x, air: v.air })));
-    e.y = rows.get(id) ?? 0;
+    if (fort) {
+      e.fort = fort;
+      e.fortStart = this.sim.state.tick;
+    }
+    const rows = depthRows([...this.units.values(), e].filter((v) => !v.dying && !v.fort).map((v) => ({ id: v.id, side: v.side, x: v.x, air: v.air })));
+    e.y = fort ? FORT_ROW_LU : (rows.get(id) ?? 0);
     this.layers.units.addChild(view.root);
     if ((def?.group === 'legendary' || (skin && this.config.content.skins[skin]?.rarity === 'legendary')) && PRESETS[this.preset].legendaryAuras) {
       // A white glow around the whole figure: centred on the hit centre, sized by the figure's height.
@@ -1833,10 +1870,29 @@ export class BattleView {
       }
       const hpBp = u.maxHp > 0 ? Math.floor((u.hp * 10000) / u.maxHp) : 0;
       e.shieldBp = u.maxHp > 0 ? Math.floor(((u.shield + u.innateShield) * 10000) / u.maxHp) : 0;
+      if (e.fort && u.fort) {
+        // The Siege switch moves the decay clock to the Siege start (A16.14.2): keep the cracks already shown.
+        if (e.fortDecayFrom !== undefined && e.fortDecayFrom !== u.fort.decayFromTick && u.fort.done) e.fortDecayCarry = e.fortDecayShown ?? 0;
+        e.fortDecayFrom = u.fort.decayFromTick;
+        const scaffoldMs = scaffoldMsFor(this.config.content, st.sides[u.side]?.research.owned ?? []);
+        const pose = fortPoseOf(u, st.tick, e.fortStart ?? st.tick, st.phase === 'siege', scaffoldMs, {
+          decayCarryBp: e.fortDecayCarry ?? 0,
+          targetAlive: (id) => st.units.some((x) => x.id === id && x.hp > 0),
+        });
+        e.fortDecayShown = pose.decayBp;
+        e.fort.setFortState(pose);
+        // A crumble stage breaks off with its own sound (A16.14.8: at 66%, 33% and 12%). A scaffold stands
+        // at 50% HP by rule, so the stage counts only once the fort is complete, and the completion itself
+        // sets it silently.
+        const stage = u.fort.done ? fortCrumble(hpBp) : 0;
+        if (u.fort.done && e.fortDone && stage > (e.fortStage ?? 0) && gameDt > 0) this.exec({ a: 'sound', id: FORT_SOUNDS.crumble, gap: { key: FORT_SOUNDS.crumble, gapMs: 200 } });
+        e.fortStage = stage;
+        e.fortDone = u.fort.done;
+      }
       stepBar(e.bar, hpBp, e.shieldBp, gameDt, this.feel.tuning.ghostHoldMs, this.feel.tuning.ghostDrainMs);
     }
     const rows = depthRows(
-      [...this.units.values()].filter((e) => !e.dying && this.liveIds.has(e.id)).map((e) => ({ id: e.id, side: e.side, x: e.x, air: e.air })),
+      [...this.units.values()].filter((e) => !e.dying && !e.fort && this.liveIds.has(e.id)).map((e) => ({ id: e.id, side: e.side, x: e.x, air: e.air })),
     );
     const rowStep = (this.feel.tuning.rowEaseLuPerSec * gameDt) / 1000;
     for (const e of [...this.units.values()]) {
@@ -1904,12 +1960,14 @@ export class BattleView {
     p.frozen = e.frozen;
     p.alpha = e.dying ? Math.min(1, e.dieLeftMs / 300) : 1;
     e.view.setPose(p);
-    e.view.root.zIndex = depthZ(e.y, e.air, e.id);
+    // forts stand behind every unit row, so the troops at a wall read in front of it
+    e.view.root.zIndex = e.fort ? FORT_Z + (e.id % 1000) : depthZ(e.y, e.air, e.id);
   }
 
   private frontInputs(): { side: Side; x: number; air: boolean }[] {
     const out: { side: Side; x: number; air: boolean }[] = [];
-    for (const e of this.units.values()) if (!e.dying) out.push({ side: e.side, x: e.x, air: e.air });
+    // forts are never the front (A16.14.2: the camera follows the troops)
+    for (const e of this.units.values()) if (!e.dying && !e.fort) out.push({ side: e.side, x: e.x, air: e.air });
     return out;
   }
 
@@ -1951,7 +2009,7 @@ export class BattleView {
     g.clear();
     if (!g.visible) return;
     for (const e of this.units.values()) {
-      if (!e.view.root.visible) continue;
+      if (!e.view.root.visible || e.fort) continue;
       const a = e.dying ? 0.2 * Math.min(1, e.dieLeftMs / 300) : 0.24;
       const w = e.sizeLu * 0.62 + 6;
       if (e.air) {

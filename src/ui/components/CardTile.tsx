@@ -256,7 +256,7 @@ export function CardTile(p: {
           {t(CLASS_NAME_KEY[c.cls])}
         </span>
       ) : null}
-      {p.showCopies && c.owned && c.kind !== 'power' ? <CopiesBar copies={c.copies} needed={c.needed} ready={c.upgradeReady} /> : null}
+      {p.showCopies && c.owned && c.kind !== 'power' && c.kind !== 'fort' ? <CopiesBar copies={c.copies} needed={c.needed} ready={c.upgradeReady} /> : null}
     </>
   );
   const tipView =

@@ -7,6 +7,8 @@
  *   npx tsx tools/sim-cli.ts exploits  [--mode smoke|full] [--matches N] [--proxies a,b] [--formats short,standard] [--tier 7] [--workers N] [--no-a18] [--no-power-rows] [--no-lane] [--lane-matches N] [--no-gate] [--patch file.json]
  *   npx tsx tools/sim-cli.ts strength  [--mode smoke|full] [--matches N] [--pairs N] [--tiers 2,4,6,8,10] [--proxies a,b]
  *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
+ *   npx tsx tools/sim-cli.ts forts     [--mode smoke|full] [--rows placebo,mirror,...] [--kinds wall,camp] [--formats short,standard]
+ *                                      [--matches N] [--matches-full N] [--card-matches N] [--tier 7] [--level 7] [--seed 5001] [--raw f.json] [--patch file.json]
  *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--matches-per-day 7] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
@@ -28,6 +30,7 @@ import { csvSections, runCsv } from './csv';
 import { dropsDefaults, dropsSections, runDrops } from './drops';
 import { economyDefaults, economySections, runEconomy } from './economy';
 import { exploitDefaults, exploitSections, runExploits } from './exploits';
+import { FORT_KINDS, FORT_ROW_GROUPS, fortsDefaults, fortsSections, runForts, type FortRowGroup } from './forts';
 import { runStrength, strengthDefaults, strengthSections } from './strength';
 import { bool, int, list, parseArgs, str, type Args } from './lib/args';
 import { HeadlessMatch } from './lib/driver';
@@ -54,6 +57,11 @@ Commands:
                   --no-power-rows (skip the A2.9.12 no_power, bait and gate sniper rows)
                   --no-lane (skip the per-age lane gate: mono Heavy vs tier VII and mono Anti-heavy vs
                   mono Heavy in every one-age window), --lane-matches N (per row and age; 40 smoke, 80 full)
+  forts           fort gates (A16.14.9) with paired seeds: placebo, fort-AI and forced mirrors, fort AI value,
+                  fort_spam, turret/home turtles and flag_ball + towers, camp_hold_mirror, runner_camp and the
+                  per-card rows (each fort vs its age's wall in every one-age window)
+                  --mode smoke|full --rows ${FORT_ROW_GROUPS.join(',')} --kinds ${FORT_KINDS.join(',')}
+                  --formats short,standard --matches N --matches-full N --card-matches N --tier 7 --level 7 --seed 5001 --raw f.json
   strength        AI tiers vs human-like scripted strategies, and adjacent tiers head to head
                   --mode smoke|full --matches N (per cell) --pairs N (per tier pair, 0 = none)
                   --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
@@ -80,6 +88,7 @@ export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   balance: ['mode', 'matches', 'mirror', 'cards', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'lane', 'lane-matches', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
+  forts: ['mode', 'rows', 'kinds', 'formats', 'matches', 'matches-full', 'card-matches', 'tier', 'level', 'seed', 'raw', 'patch'],
   economy: ['days', 'seed', 'seeds', 'matches-per-day'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
@@ -242,6 +251,30 @@ export async function main(argv: readonly string[]): Promise<number> {
         onProgress: progressPrinter('strength'),
       }, patchedGameContent());
       return finish(report, strengthSections(report), a);
+    }
+    case 'forts': {
+      const d = fortsDefaults(mode(a));
+      const rows = list(a, 'rows');
+      for (const r of rows) if (!(FORT_ROW_GROUPS as readonly string[]).includes(r)) throw new Error(`unknown fort row group "${r}" (${FORT_ROW_GROUPS.join(', ')})`);
+      const kinds = list(a, 'kinds');
+      for (const k of kinds) if (!(FORT_KINDS as readonly string[]).includes(k)) throw new Error(`unknown fort kind "${k}" (${FORT_KINDS.join(', ')})`);
+      const raw = str(a, 'raw', '');
+      const report = await runForts({
+        ...d,
+        groups: rows.length > 0 ? (rows as FortRowGroup[]) : d.groups,
+        kinds: kinds.length > 0 ? (kinds as typeof d.kinds) : d.kinds,
+        formats: formatList(list(a, 'formats'), [...d.formats]),
+        matches: int(a, 'matches', d.matches),
+        matchesFull: int(a, 'matches-full', d.matchesFull),
+        cardMatches: int(a, 'card-matches', d.cardMatches),
+        tier: int(a, 'tier', d.tier),
+        level: int(a, 'level', d.level),
+        seed: int(a, 'seed', d.seed),
+        workers,
+        ...(raw !== '' ? { raw: path.resolve(raw) } : {}),
+        onProgress: progressPrinter('forts'),
+      }, patchedGameContent());
+      return finish(report, fortsSections(report), a);
     }
     case 'economy': {
       const d = economyDefaults();

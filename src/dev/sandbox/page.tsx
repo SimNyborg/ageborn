@@ -157,7 +157,8 @@ function BattleTab(p: { bare?: boolean }) {
   const [seed, setSeed] = useState(1);
   const [autoplayMe, setAutoplayMe] = useState(() => param('autoplay', ['1', '0'] as const, '0') === '1');
   const [settings, setSettings] = useState<ViewSettings>({ ...DEFAULT_VIEW_SETTINGS });
-  const [speed, setSpeed] = useState<1 | 1.5 | 2>(1);
+  // `&speed=2` starts fast (browser checks that wait for a recharge, e.g. the Fort slot's first 20 s).
+  const [speed, setSpeed] = useState<1 | 1.5 | 2>(() => Number(param('speed', ['1', '1.5', '2'] as const, '1')) as 1 | 1.5 | 2);
   const [paused, setPaused] = useState(false);
   const [runKey, setRunKey] = useState(0);
   const [stats, setStats] = useState<StageStats | null>(null);

@@ -37,16 +37,16 @@ const ROSTER: Record<AgeId, [string, string, string, string, string]> = {
   cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'star_recruit', 'void_mine'],
 };
 
-/** A16.14.4 L1 numbers: wall HP, tower HP / damage / interval / range, camp HP, levy HP / damage. */
+/** A16.14.4 L1 numbers: wall HP, tower HP / damage / interval / range, camp HP, levy HP / damage (levies 30%, fixer 2026-10-01). */
 const TABLE: Record<AgeId, [number, number, number, number, number, number, number, number]> = {
-  stone: [560, 280, 27, 1400, 200, 336, 64, 8],
-  bronze: [630, 315, 30, 1400, 210, 378, 74, 9],
-  medieval: [756, 378, 36, 1400, 230, 453, 86, 10],
-  gunpowder: [1019, 509, 70, 2000, 240, 611, 116, 14],
-  industrial: [1187, 593, 49, 1200, 250, 712, 132, 16],
-  modern: [1378, 689, 48, 1000, 260, 826, 157, 19],
-  future: [1860, 930, 64, 1000, 260, 1116, 188, 26],
-  cosmic: [2509, 1254, 81, 1000, 270, 1505, 280, 36],
+  stone: [560, 280, 27, 1400, 200, 336, 48, 6],
+  bronze: [630, 315, 30, 1400, 210, 378, 55, 6],
+  medieval: [756, 378, 36, 1400, 230, 453, 64, 8],
+  gunpowder: [1019, 509, 70, 2000, 240, 611, 87, 10],
+  industrial: [1187, 593, 49, 1200, 250, 712, 99, 12],
+  modern: [1378, 689, 48, 1000, 260, 826, 118, 14],
+  future: [1860, 930, 64, 1000, 260, 1116, 141, 19],
+  cosmic: [2509, 1254, 81, 1000, 270, 1505, 210, 27],
 };
 
 describe('the Fort roster (A16.14.4)', () => {
@@ -72,8 +72,8 @@ describe('the Fort roster (A16.14.4)', () => {
     expect(of(age, 'wall')).toMatchObject({ id: wall, hp: wallHp, cost: age === 'modern' ? 175 : 125, pop: 6, size: 'large', pads: 'home', source: 'starter' });
     expect(of(age, 'tower')).toMatchObject({ id: tower, hp: towerHp, cost: 150, pop: 6, size: 'medium', pads: 'home' });
     expect(of(age, 'tower').attack).toMatchObject({ damage: towerDmg, intervalMs: towerMs, range: towerRange, windupPct: 0, hitsGround: true, hitsAir: true });
-    expect(of(age, 'camp')).toMatchObject({ id: camp, hp: campHp, cost: 150, pop: 6, size: 'large', pads: 'any', camp: { spawn: levy, everyMs: 8000, firstMs: 2000, maxAlive: 2 } });
-    expect(of(age, 'trap')).toMatchObject({ id: trap, hp: 0, cost: 75, pop: 3, size: null, pads: 'home' });
+    expect(of(age, 'camp')).toMatchObject({ id: camp, hp: campHp, cost: 150, pop: 6, size: 'large', pads: 'any', camp: { spawn: levy, everyMs: 10000, firstMs: 2000, maxAlive: 1 } });
+    expect(of(age, 'trap')).toMatchObject({ id: trap, hp: 0, cost: 100, pop: 3, size: null, pads: 'home' });
     expect(content.units[levy]).toMatchObject({ hp: levyHp, cost: 0, aiValue: 8, hidden: true, levy: true, abilities: [] });
     expect(content.units[levy]?.attacks[0]?.damage).toBe(levyDmg);
     // Twins share the fort's id, HP, cost and pop.
@@ -107,7 +107,7 @@ describe('the Fort roster (A16.14.4)', () => {
 
 describe('static gates (A16.14.9, spec 12.2)', () => {
   it('trap budget: primary damage over all charges is 0.6-1.2 × the L1 Infantry HP (Grav Mire, a control trap, may go below)', () => {
-    const want: Record<AgeId, number | null> = { stone: 75, bronze: 74, medieval: 75, gunpowder: 113, industrial: 73, modern: 99, future: null, cosmic: 83 };
+    const want: Record<AgeId, number | null> = { stone: 75, bronze: 74, medieval: 75, gunpowder: 79, industrial: 61, modern: 66, future: null, cosmic: 61 };
     for (const age of AGE_ORDER) {
       const t = of(age, 'trap').trap;
       if (!t) throw new Error('no trap');
@@ -183,10 +183,10 @@ describe('static gates (A16.14.9, spec 12.2)', () => {
     }
   });
 
-  it('levy farm: levies cost 0 (no bounty, no XP), at most 2 per camp; Engineers shorten scaffolds to 3 s', () => {
+  it('levy farm: levies cost 0 (no bounty, no XP), at most 1 per camp; Engineers shorten scaffolds to 3 s', () => {
     for (const x of forts.filter((y) => y.camp)) {
       expect(content.units[x.camp?.spawn ?? '']?.cost).toBe(0);
-      expect(x.camp?.maxAlive).toBe(2);
+      expect(x.camp?.maxAlive).toBe(1);
     }
     const eng = content.research.picks.find((p) => p.id === 'defences.engineers');
     expect(eng?.effects).toContainEqual({ kind: 'fortScaffold', ms: 3000 });

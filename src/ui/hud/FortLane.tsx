@@ -11,17 +11,18 @@
  * - **A placement:** the ghost contracts into the pad and a dust ring rises (MR-70b).
  * - **Always:** a small tag on every fort of both sides (the kind glyph on a plate in the side's colour,
  *   the scaffold's progress ring while it builds, cracks while it crumbles, the jammed mark on a silenced
- *   tower) and every trap as an always-visible hazard patch with its charge pips, so the opponent's forts
- *   read at a glance.
+ *   tower) and every trap's charge chip (its glyph and pips; the battle view draws the trap itself:
+ *   unarmed, armed, sprung, spent), so the opponent's forts read at a glance.
  *
  * The battle view draws the forts themselves; nothing here changes timing (the sim owns it, B5).
  */
 import type { FortKind, HudFortPad, HudLaneFort } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { FortArt, FortKindGlyph } from '../components/FortGlyphs';
+import { FORT_PORTRAITS, FortArt, FortKindGlyph } from '../components/FortGlyphs';
 import type { HudCtx } from './context';
 import { fortWidthLu } from './fortAim';
 import { ageIds, fortPadLook, fortPadReasonKey, fortSlotView } from './model';
+import { usePortrait } from './usePortrait';
 
 function cls(...parts: (string | false | null | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
@@ -70,12 +71,42 @@ function useGroundLayout(host: { current: HTMLElement | null }, c: HudCtx): void
 }
 
 /** One pad marker: plinth, ring, and the reason or "Builds under fire" label. */
-function Pad(p: { c: HudCtx; pad: HudFortPad; index: number; snapped: boolean; hint: boolean; quiet: boolean }) {
+/** A pad's label key while a fort is in hand: its reason when blocked, "Builds under fire" when amber. */
+function padLabelKey(pad: HudFortPad): string | null {
+  const look = fortPadLook(pad);
+  return look === 'blocked' ? fortPadReasonKey(pad.reason) : look === 'underFire' ? 'hud.fort.underFire' : null;
+}
+
+/**
+ * Which pads carry their label: neighbours that say the same thing ("Enemy near" three times) share one
+ * label on the middle pad of the run, so the lane never stacks three identical tags.
+ */
+export function padLabelOwners(pads: readonly HudFortPad[], shown: readonly number[]): Set<number> {
+  const out = new Set<number>();
+  let run: number[] = [];
+  let key: string | null = null;
+  const flush = (): void => {
+    if (run.length > 0 && key !== null) out.add(run[Math.floor((run.length - 1) / 2)]!);
+    run = [];
+  };
+  for (const i of [...shown].sort((a, b) => pads[a]!.p - pads[b]!.p)) {
+    const k = padLabelKey(pads[i]!);
+    if (k !== key) {
+      flush();
+      key = k;
+    }
+    run.push(i);
+  }
+  flush();
+  return out;
+}
+
+function Pad(p: { c: HudCtx; pad: HudFortPad; index: number; snapped: boolean; hint: boolean; quiet: boolean; labelled: boolean }) {
   const { c, pad } = p;
   const look = fortPadLook(pad);
   // The hint only lights the pads; the reasons are for the moment a fort is in hand, and while the ghost
   // stands on a pad the dragged fort's label speaks for it (the others keep their rings).
-  const reason = p.hint || p.quiet ? null : look === 'blocked' ? fortPadReasonKey(pad.reason) : look === 'underFire' ? 'hud.fort.underFire' : null;
+  const reason = p.hint || p.quiet || !p.labelled ? null : padLabelKey(pad);
   return (
     <div
       class={cls('hud-fpad', `is-${look}`, `is-${pad.kind}`, p.snapped && 'is-snap', p.hint && 'is-hint', p.index % 2 === 1 && 'is-alt')}
@@ -122,7 +153,6 @@ function LaneTag(p: { c: HudCtx; f: HudLaneFort }) {
         title={label}
         style={{ '--w': fortWidthLu('trap') }}
       >
-        <i class="hud-ltrap-patch" aria-hidden="true" />
         <span class="hud-ltrap-pips" aria-hidden="true">
           <FortKindGlyph kind="trap" size={14} />
           {Array.from({ length: Math.max(0, f.charges ?? 0) }, (_, i) => (
@@ -181,10 +211,14 @@ export function FortLane(p: { c: HudCtx }) {
   const fieldSpan = span(field);
   const fieldOpen = field.some((i) => pads[i]!.reason !== 'fortPadField');
   const snap = aim && aim.mode !== 'hint' ? aim.snap : null;
+  const labelled = showPads ? padLabelOwners(pads, usable) : new Set<number>();
   const snapPad = snap !== null ? pads[snap] : undefined;
   const kind = def?.fortKind ?? 'wall';
   const team = c.colors?.me;
   const lane = c.m.laneForts ?? [];
+  // The fort's own still, the same object the battle view builds (A16.14.8).
+  const still = usePortrait(FORT_PORTRAITS ? c.portrait : undefined, def?.id ?? null, 'none', 140, false);
+  const burstStill = usePortrait(FORT_PORTRAITS ? c.portrait : undefined, burst?.card ?? null, 'none', 140, false);
   return (
     <div ref={host} class={cls('hud-fort-lane', showPads && 'is-aiming')} data-testid="hud-fort-lane" aria-hidden={lane.length === 0 && !showPads ? 'true' : undefined}>
       {showPads && homeSpan ? <div class="hud-fband is-home" data-p={homeSpan[0] - 44} data-p2={homeSpan[1] + 44} /> : null}
@@ -193,10 +227,11 @@ export function FortLane(p: { c: HudCtx }) {
         <LaneTag key={f.id} c={c} f={f} />
       ))}
       {showPads
-        ? usable.map((i) => <Pad key={i} c={c} pad={pads[i]!} index={i} snapped={snap === i} hint={aim?.mode === 'hint'} quiet={snap !== null} />)
+        ? usable.map((i) => <Pad key={i} c={c} pad={pads[i]!} index={i} snapped={snap === i} hint={aim?.mode === 'hint'} quiet={snap !== null} labelled={labelled.has(i)} />)
         : null}
       {showPads && snapPad && def?.attack && snapPad.towerRange > 0 ? (
-        <div class="hud-freach" data-p={snapPad.p} data-p2={snapPad.p + snapPad.towerRange} data-testid="hud-fort-reach">
+        // A tower's range counts from its edge (the sim's edge distance): pad + half-width + range.
+        <div class="hud-freach" data-p={snapPad.p + fortWidthLu('tower') / 2} data-p2={snapPad.p + fortWidthLu('tower') / 2 + snapPad.towerRange} data-testid="hud-fort-reach">
           <span class="hud-freach-label" data-tag>
             {c.t('fort.stat.reach')} {snapPad.towerRange}
           </span>
@@ -206,14 +241,14 @@ export function FortLane(p: { c: HudCtx }) {
         <div key={`g${snap}`} class={cls('hud-fghost', `is-${kind}`, snapPad.legal && !snapPad.safe && 'is-underfire')} data-p={snapPad.p} data-testid="hud-fort-ghost" style={{ '--w': fortWidthLu(kind) }}>
           <i class="hud-fghost-foot" aria-hidden="true" />
           <span class="hud-fghost-art">
-            <FortArt kind={kind} age={age} size={64} {...(team ? { banner: team } : {})} />
+            <FortArt kind={kind} age={age} size={64} src={still} {...(team ? { banner: team } : {})} />
           </span>
         </div>
       ) : null}
       {burst ? (
         <div key={`b${burst.n}`} class={cls('hud-fburst', `is-${burst.kind}`)} data-p={burst.p} data-testid="hud-fort-burst" style={{ '--w': fortWidthLu(burst.kind) }}>
           <span class="hud-fburst-ghost">
-            <FortArt kind={burst.kind} age={age} size={64} {...(team ? { banner: team } : {})} />
+            <FortArt kind={burst.kind} age={age} size={64} src={burstStill} {...(team ? { banner: team } : {})} />
           </span>
           <i class="hud-fburst-ring" />
           <i class="hud-fburst-dust is-a" />

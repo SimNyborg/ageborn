@@ -40,3 +40,9 @@ for (const age of Object.keys(side.loadouts) as AgeId[]) {
   camp levels, and the wall before that.
 - A tier I bot gets no Fort card.
 - Both sides still play the same slots (a locked player slot sends `fort: null` for both).
+
+## Status (forts fixer, 2026-10-01)
+
+Done in `src/app/matchSetup.ts`: `withBotForts` fills every empty bot Fort slot with `botFortCard` before
+`applyFortMatchRule` (scripted Generals and Echo of You keep their slots). Tests in
+`src/app/test/matchSetup.test.ts`.

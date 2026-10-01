@@ -440,3 +440,30 @@
   background: rgba(8, 10, 14, 0.72);
   color: #d6e6ff;
 }
+
+/* Fort cards (A16.14.7): the kind's art stands on the tile's floor, and the pop it takes sits where a
+   unit's level would (forts have no levels). */
+.ui-art__fort {
+  display: grid;
+  place-items: end center;
+  padding-bottom: 12%;
+}
+.ui-card__pop {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--card-w) * 0.08);
+  transform: translateX(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px 1px 4px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(8, 10, 14, 0.78);
+  color: var(--ui-text);
+  font-size: var(--ui-fs-caption);
+  line-height: 1.1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

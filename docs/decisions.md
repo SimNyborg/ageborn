@@ -1272,3 +1272,115 @@ Every critic issue was checked against the code and the raw runs; this block sup
 - **Phone UI:** the Army band budget comes from the built CSS (736 of 794 px, the advisor moves to the band's title row below 480 px height); the Fort button sits in a placement dock with the powers and a stone frame, so a tap beside the unit cards never means "aim"; minimap taps snap to the nearest legal pad; the enemy's fort recharge is public like power rings.
 - **Evidence downgraded.** The emulation is indicative: few placements (0.47-1.95 per match in the AI mirrors), confounded tower rows, noise (±7 points on a share, ±10 on a difference at n = 200; the same config read 34.5% and 41.0%), empty checks (`fort_spam` on a script that loses 97-100%; turtles that win 0-7%), and missing rules. Gates that already fail on it are stated: old pads `camp_turtle` 20% and `wall_turtle` 17% in Full War, Home towers +4 in the Full War mirror; new pads (`run9a`-`run9c`, 200 per row) `tower_turtle` 18.5% and `camp_turtle` 16.5-17% in Standard War, with `maxTowers` 1 no help (20.0%). The gates now use paired seeds, 1,000 per mirror format, a placebo row, forced-placement mirrors, a one-sided median (not more than 30 s longer), a tier VII `fort_spam`, `camp_hold_mirror`, `flag_ball` + towers and `runner_camp`. F0 models every missing rule before the go/no-go.
 - **Rejected:** keeping 240/360/460 with a runtime cover limit (legal pads that change with turret builds are harder to read); a scaffold that pays reduced bounty; placing bans in the last 120 s before the Bell (the Siege switch is simpler and covers every window); hiding the enemy fort recharge; changing `ui-plan.md` here (F2 owns it).
+
+## Forts: AI v1 (WP3, 2026-09-30)
+
+Built on the forts F1 core (`SIM_VERSION` 5.0.0) from spec section 9 and DESIGN A16.14.7. The numbers
+below come from headless runs with tier VII at L7 on the baseline plan, with paired seeds. They are in
+`scratchpad/forts/tuning.md` of the forts build.
+
+- 2026-09-30 (when a wall, tower or trap goes up): the wave is read from 300 lu before mid-lane, not only
+  once it is in the bot's half.
+  - Stone Infantry walks 87 lu/s, so "scaffold + 1 s" is 522 lu. A Home pad is only safe while the
+    enemy front is about 560 lu or more away. A wave that has fully crossed mid-lane stands on or near the
+    pads.
+  - Before this change, fewer than a third of the decisions that met the value rule (≥ 300, ≥ 1.2 × own
+    army, under half breakers) had a safe pad.
+  - The value and breaker rules are unchanged.
+- 2026-09-30 (ledger): the defensive saving goal starts when a qualifying wave is 700 lu short of
+  mid-lane and the slot is ready within 8 s (it was 300 lu and 3 s). With the late goal the bot held
+  0-50 gold in most qualifying decisions.
+  - Wall placements per side per match (Short / Standard / Full) went from 0.10 / 0.32 / 0.42 to
+    0.47 / 1.01 / 1.31.
+  - The fort AI value moved from 47.5 / 47.7% to 51.0 / 52.8% (walls, Short / Standard; n = 200, ±7).
+- 2026-09-30 (cover fallback): with only a short-range turret built (the Pitch Cauldron, 130 lu), the
+  core cover limit falls below pad 160, so no Home pad is ever safe.
+  - The bot then reads pad 160 as it would with no turret: legal, and every visible enemy ground unit
+    needs scaffold + 1 s to reach it at its card speed (public numbers only).
+  - The core fix is requested in `docs/requests/wp0-fort-cover-short-turret.md`. The fallback goes
+    once it lands.
+- 2026-09-30 (measured, indicative sizes):
+  - The placebo mirror is identical to the no-fort mirror.
+  - In the fort-AI and forced mirrors, walls, towers and camps stay within ±3 Bell points in Short and
+    Standard.
+  - Traps read +4 to +9 in both mirror kinds, with a Full median of +45 to +50 s: traps are the stall
+    risk.
+  - `fort_spam` scores 11-44%.
+  - Every fort turtle reaches the Bell less often than the same proxy without forts (the worst is towers
+    in Short, +1.0 ±11.0). The fort-free `turret_turtle` is itself at 17 / 32 / 71%, so the absolute
+    "≤ 15% at the Bell" gate cannot pass for any kind in Full War.
+  - Proposals (trap price 100 with one charge fewer; a paired turtle gate) are in the tuning file.
+    Nothing in content was changed.
+
+## WP4/WP6 forts F3: art and audio (2026-10-01)
+
+- **All 32 forts are rendered in the realistic Blender pipeline**, not only Stone: a static fort renders in about a minute (`art/blender/styles/realistic/forts/`: `kit.py` sheet contract, `parts.py` breakable masonry, sandbags, gabions, tents, pits; one module per age; `run.py` renders, installs and writes the card still). Sheets go to `public/art/forts/<age>/<slug>(.hd).json` (2.8 MB for all 32 at both densities).
+- **Sheet contract:** `body` (crumble 0-3), `front` (crewed towers: the parapet drawn over the crew), `scaffold`, `rubble`, `flag` (loop), `door` (camps), `trap` (unarmed, armed, sprung, spent). One canvas and feet anchor for every clip. Crumble by construction: each piece falls off at a stage (top and edge pieces first) and lies at the foot from then on.
+- **Tower crews are the age's Ranged Common drawn from its own unit sheet** (scale 0.6, standing on the platform, warped so its throw releases on the sim's shot: the 200 ms wind-up reads `nextAttackInMs`). Crewless towers (Pillbox, Sentry Pylon, Ion Spire) charge a glow at their muzzle. So a restyled Ranged Common restyles its tower crew for free.
+- **Levies draw from their Infantry Common's sheet at 0.85** (`VisualDef.heightLu` below the sheet's scales the sprite and its walk), not from a new outfit: a new levy outfit means re-rendering eight units and is left for the restyle pass.
+- **Everything that moves on a fort is code** (`src/visuals/fortViews/atlasFortView.ts`): the placing drop, the ground-up reveal behind the scaffold, the build pop, flag unfurl, hit shake, flash and chips by material, crumble bursts, decay cracks and flakes, the camp door, trap pops, and the collapse into rubble. Presentation only; the sim owns every timing.
+- **Fort sounds pre-render in the `match` group** (no fort is up before 0:20), keeping the boot ZzFX budget under 300 ms; `fort_denied` is a UI sound. Material per card for hit sounds and debris lives in `src/render/fortFeel.ts` (render-side presentation data).
+- **In battle the trap art draws no charge pips** (the HUD's chip shows them); requested the HUD drop its DOM hazard patch (`docs/requests/forts-f3-art-hud-content.md`).
+
+## Forts: review fixes (fixer, 2026-10-01)
+
+All 30 confirmed findings of the forts review, fixed against DESIGN A16.14. Measured with the new repo
+tool `npx tsx tools/sim-cli.ts forts` (tier VII at L7, paired seeds 5001+); raw results and reports in the
+session scratchpad (`forts/fix/r3a`, `r3b`).
+
+- **Sim (`SIM_VERSION` 5.1.0, goldens re-recorded deliberately).** The contact cap is a hard limit: a
+  ground unit's attack with compiled range < 100 may target a completed fort only while the unit is in
+  that fort's contact set, so reach units (Spear Hunter, Pikeman, Hover Tank) no longer put 8-9 attackers
+  on a wall. The safe-pad test reads a moving enemy's current speed (research, Charge with War Horns,
+  speed buffs, slows); standing units keep card speed. The observation computes the safe-pad inputs once
+  per observation, and the contact scan reuses its lists. Two new fort goldens, `13-forts-cases` and
+  `14-forts-scaffold` (scripted fort directors), plus `12-forts` cover every listed case, asserted by one
+  test: credited and uncredited decay, a silenced tower, a Heavy breaking a fort, a destroyed scaffold,
+  a contact-capped blob and the Siege decay switch.
+- **Content (data only, the A16.14.9 levers).** `maxAlive` 2 → 1 (one fort or trap up at a time: forced
+  walls stopped feeding two bounties per recharge, which is what made every other kind look strong next to
+  the wall); camps every 10 s with 1 levy alive (was 8 s, 2); levies 30% of the Infantry Common (was 40%);
+  traps 100 gold (was 75) with fewer splash charges (Powder Keg 1 × 230, Tripwire 1 × 200, Minefield
+  2 × 130, Void Mine 1 × 430; budget 0.61-0.79; the Stone to Medieval pits keep 3 charges, P1 option b).
+  Wall price unchanged (100 measured worse on the per-card rows).
+- **Per card vs the wall** (n = 200 per window): the worst camp moved from +34.3 to −8.8..+5.0; traps
+  −7.8..+6.8; towers −3.5..+2.8 (was up to +16 for Powder Keg and Void Mine). CIs are ±6-8 at this size.
+- **Mirrors** (n = 400): forced trap mirror Bell Δ 0.0 (Short) and −1.3 (Standard), was +9.0; fort-AI
+  walls Standard −6.3 (was +3.6), towers Standard −5.5; Short fort-AI rows still read +1.8 to +6.8 with
+  ±6.7 noise (towers Short +6.8 [0.3, 13.2] is the one to re-measure at 1,000). Mean length Δ within
+  ±21 s everywhere. Placebo exactly 0, camp_hold_mirror 0, runner_camp −8.8 / −21.3.
+- **Median gate → mean.** The Standard no-fort mirror reaches the Bell in ~59% of matches, so its median
+  is pinned at 12:30 and a median gate can never fail; DESIGN A16.14.9 now gates the mean length.
+- **Turtle gate: not passable as written; owner or lead decision needed.** Turtles vs tier VII, Bell %
+  Short / Standard / Full (n = 200): no forts 12.5 / 23.5 / 63.0; walls 5.0 / 18.0 / 25.0; towers
+  17.5 / 16.0 / 43.0; camps 10.5 / 14.5 / 32.0; traps 8.0 / 18.5 / 43.0. Every paired Δ is ≤ 0 except
+  towers Short (+5.0 ±7.2), wins never above the fort-free turtle, and every home_turtle row passes (Bell
+  ≤ 47%, was 61%). Forts lower the turtle's Bell share; the fort-free proxy alone fails the absolute
+  15%, so no fort lever can pass it (weaker forts move the Bell toward 63%). Proposed: restate as "fort
+  turtle Bell ≤ the same proxy without forts + 2, paired, upper bound + 5", with 15% kept as a target for
+  the Bell work. Until decided, `FORT_SLOT_IN_BATTLE` stays off.
+- **Fort AI value still below 50%** (42.8-52.4%; camps in Standard 42.8%). The planning window moved from
+  300 to 500 lu before mid-lane (goal 700 → 900): wall placements rose a little (Short 0.51 → 0.59). The
+  "too weak" levers fight the per-card and turtle rows; next step is an AI policy pass (when a camp pays).
+- **B3:** sim-only Full War (recorded commands, bots excluded, 6 seeds): none 150 ms, camp 197, wall 191,
+  tower 164, trap 155 against the 850 ms budget. With both bots and an observation every tick: 761 / 907
+  / 809 / 697 / 750; the extra is AI time on levies. tuning.md's "897 ms over budget" note is corrected.
+- **AI and meta:** bots bring their own Fort card (`withBotForts` in `app/matchSetup.ts`, before the source
+  filter; scripted Generals and Echo keep theirs); summons (not only levies) never feed `pastMidTick`,
+  `foeOnMyHalfTick`, the composition memory or counter targets; the once-per-age camp is spent only when
+  the bot sees its camp stand (a rejected command no longer spends it).
+- **Tools:** `cloneLoadout` keeps the Fort slot; `tools/forts.ts` (`sim:forts`) runs placebo, fort-AI and
+  forced mirrors, value, fort_spam, turret/home turtles and flag_ball + towers, camp_hold_mirror,
+  runner_camp (forced camps, Field pads first) and the per-card rows, with paired deltas and gates;
+  `FortTurtleDriver` and `HoldDriver` live in `tools/proxies.ts`.
+- **HUD and Army:** a drop on a blocked pad says why and shakes; the card in hand rides above the pad labels
+  and names a hovered pad's reason ("No clear pad" when none is legal); the trap hazard sticker is gone
+  (the art shows; the pips chip stays); the card, card detail, tray button and drag ghost use the fort's
+  own rendered still; the Palisade wears a team banner with an ink outline in battle and on its card (the
+  sheet's team layer read as a blob); the locked Fort slot names both routes ("Bronze 4", "or 🏆 400");
+  fort cards stay out of Locked and the age totals until the save's slot opens; the fort tip is solid and
+  hides the power hint; the tower reach band and the card's diagram start at the tower's edge; the fort
+  cap reads "Max {n} up at once" and counts `maxTowers`.
+- **Render:** no crumble sound or broken frames while a scaffold rises; an Engineers scaffold rises from
+  0%; decay cracks survive the Siege switch; a wind-up toward a dead target no longer eats the next shot's
+  crew animation.

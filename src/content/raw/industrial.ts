@@ -188,7 +188,7 @@ export const industrial: RawAgeTables = {
     wall('industrial', 'trench_parapet'),
     tower('industrial', 'sniper_nest', { warPath: 8, road: 2700 }),
     camp('industrial', 'recruiting_depot', 'volunteer', { warPath: 4, road: 2700 }),
-    trap('industrial', 'tripwire_charge', { warPath: 6, road: 2700 }, { charges: 2, damage: 120, radius: 40 }),
+    trap('industrial', 'tripwire_charge', { warPath: 6, road: 2700 }, { charges: 1, damage: 200, radius: 40 }),
   ],
 };
 
