@@ -4131,3 +4131,192 @@
     width: 50px;
   }
 }
+
+/* ------------------------------------------------- Last Base Standing (A2.10.1, A9.2; L3) */
+
+/* The clock counts up; a 6-pip escalation meter replaces the timeline; the step's name under it.
+   The whole block is one button (≥ 44 px): a tap drops the schedule down and never pauses. */
+.hud-esc-wrap {
+  position: relative;
+  pointer-events: auto;
+}
+.hud-clock.hud-esc {
+  min-width: 92px;
+  min-height: 44px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+.hud-clock.hud-esc:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+.hud-esc-pips {
+  display: flex;
+  gap: 3px;
+  margin-top: 3px;
+}
+.hud-esc-pip {
+  width: 10px;
+  height: 5px;
+  border-radius: 2px;
+  background: rgba(8, 10, 14, 0.85);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.hud-esc-pip.is-on {
+  animation: hud-pip-on var(--ui-dur-small) var(--ui-ease-back) both;
+}
+.hud-esc-pip.is-overdrive.is-on {
+  background: var(--hud-gold);
+}
+.hud-esc-pip.is-siege.is-on {
+  background: #ff5a4a;
+}
+/* Crumble pips: cracked stone (a dark crack across the brown). */
+.hud-esc-pip.is-crumble {
+  position: relative;
+}
+.hud-esc-pip.is-crumble.is-on {
+  background: linear-gradient(115deg, #a07a52 0 45%, #2a1c12 45% 55%, #a07a52 55%);
+}
+@keyframes hud-pip-on {
+  from {
+    transform: scale(1.8);
+  }
+}
+.hud-esc-tag.tone-none {
+  color: var(--hud-dim);
+}
+.hud-esc-tag.tone-overdrive {
+  background: var(--hud-gold-face);
+  color: var(--ui-ink, #1d1405);
+}
+.hud-esc-tag.tone-siege {
+  background: #e0402f;
+}
+.hud-esc-tag.tone-crumble {
+  background: #7a5634;
+  box-shadow: 0 0 0 1px #2a1c12;
+}
+.hud-clock.hud-esc.tone-crumble {
+  box-shadow:
+    var(--hud-shadow),
+    0 0 0 1.5px #a07a52,
+    0 0 14px rgba(160, 122, 82, 0.55);
+}
+.hud-esc-tag {
+  animation: hud-pip-on var(--ui-dur-small) var(--ui-ease-back) both;
+}
+.hud-esc-drop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: max-content;
+  max-width: min(420px, 90cqw);
+  padding: 8px 10px;
+  translate: -50% 0;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: var(--hud-panel);
+  box-shadow: var(--hud-shadow);
+  font-size: 12px;
+  line-height: 1.3;
+  animation: hud-drop-in var(--ui-dur-small) var(--ui-ease-out) both;
+}
+@keyframes hud-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.hud-esc-title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hud-dim);
+}
+.hud-esc-row {
+  display: grid;
+  grid-template-columns: 38px auto 1fr;
+  gap: 6px;
+  align-items: baseline;
+  opacity: 0.75;
+}
+.hud-esc-row.is-on {
+  opacity: 1;
+}
+.hud-esc-row b {
+  white-space: nowrap;
+}
+.hud-esc-row.is-overdrive b {
+  color: #ffe38a;
+}
+.hud-esc-row.is-siege b {
+  color: #ff9d8f;
+}
+.hud-esc-row.is-crumble b {
+  color: #d9b48a;
+}
+.hud-esc-at {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+/* MR-126 in the HUD: the crumbling side's panel gets a "Crumbling" chip and a cracked HP bar. */
+.hud-crumbling {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  z-index: 2;
+  padding: 0 7px;
+  translate: -50% 0;
+  border-radius: 99px;
+  background: #7a5634;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 2px 0 rgba(0, 0, 0, 0.4);
+  color: #fff3df;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: hud-crumble-chip 1.6s var(--ui-ease-standard) infinite alternate;
+}
+@keyframes hud-crumble-chip {
+  to {
+    transform: translateY(1px) rotate(-1.5deg);
+  }
+}
+.hud-side.is-crumbling .hud-hp::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(118deg, transparent 0 22%, rgba(20, 12, 6, 0.85) 22% 24%, transparent 24% 100%),
+    linear-gradient(62deg, transparent 0 58%, rgba(20, 12, 6, 0.85) 58% 60%, transparent 60% 100%),
+    linear-gradient(100deg, transparent 0 80%, rgba(20, 12, 6, 0.7) 80% 81.5%, transparent 81.5% 100%);
+}
+.hud-side.is-crumbling {
+  box-shadow:
+    var(--hud-shadow),
+    0 0 0 1.5px #a07a52;
+}
+.hud[data-reduce-motion='true'] :is(.hud-crumbling, .hud-esc-pip.is-on, .hud-esc-tag, .hud-esc-drop) {
+  animation: none !important;
+}
+/* MR-125: the escalation step banner is short (1.2 s) and never takes input. */
+.hud-moment-escalate {
+  animation-duration: 1200ms;
+}
+.hud-moment-escalate .hud-moment-title {
+  color: #ffb4a8;
+}

@@ -1,0 +1,1152 @@
+/*
+ * The online-first Battle hub (spec 2026-10-01): the match plate's states and length picker, the mode
+ * switcher, the Modes chooser, the online mock (search fog, room, VS) and the diorama's far side.
+ * Motion rows MR-120 to MR-124 (ui-plan 5.5). Tokens only; reduce motion swaps movement for fades.
+ */
+
+/* ---------------------------------------------------------------------------------------------- */
+/* The plate                                                                                       */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hub-plate {
+  position: relative;
+  container: hub-plate / inline-size;
+}
+.hub-plate__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* MR-120: a mode change cross-fades the body (the frame stays put). */
+  animation: hub-plate-swap var(--ui-dur-medium) var(--ui-ease-enter) both;
+}
+@keyframes hub-plate-swap {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+.hub-plate__glyph {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ui-r-sm);
+  background: radial-gradient(circle at 40% 30%, #3a4458, #1b2130 72%);
+  box-shadow:
+    0 0 0 2px var(--ui-team-foe),
+    0 0 0 4px rgba(15, 18, 24, 0.9);
+}
+.hub-plate__glyph.is-daily {
+  background: radial-gradient(circle at 40% 30%, #5a4a2a, #2a2216 72%);
+}
+.hub-plate__glyph.is-friend {
+  background: radial-gradient(circle at 40% 30%, #4a3f73, #211c38 72%);
+  box-shadow:
+    0 0 0 2px #9b6cf0,
+    0 0 0 4px rgba(15, 18, 24, 0.9);
+}
+.hub-plate__glyph.is-unknown {
+  overflow: hidden;
+  background: linear-gradient(180deg, #2c3342, #1a1f2a);
+  box-shadow:
+    0 0 0 2px #6b7890,
+    0 0 0 4px rgba(15, 18, 24, 0.9);
+}
+.hub-plate__glyph.is-dim {
+  opacity: 0.6;
+  filter: grayscale(1);
+}
+.hub-plate__glyph.is-compass {
+  background: radial-gradient(circle at 40% 30%, #3b4a63, #1a2232 72%);
+  box-shadow:
+    0 0 0 2px #5ad1ff,
+    0 0 0 4px rgba(15, 18, 24, 0.9);
+}
+/* MR-121: the compass needle turns slowly while searching (calm: one turn per 4 s). */
+.hub-plate__glyph.is-compass .ui-compass__needle {
+  transform-origin: 12px 12px;
+  animation: hub-needle 4s var(--ui-ease-standard) infinite;
+}
+@keyframes hub-needle {
+  0% {
+    transform: rotate(-20deg);
+  }
+  50% {
+    transform: rotate(200deg);
+  }
+  100% {
+    transform: rotate(340deg);
+  }
+}
+.hub-plate__avatar {
+  position: relative;
+  display: block;
+  width: 44px;
+  height: 44px;
+}
+.hub-plate__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  min-height: 44px;
+}
+.hub-plate__line.is-stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.hub-plate__line .hub-plate__desc {
+  flex: 1;
+  min-width: 0;
+}
+.hub-plate__line .ui-btn--s {
+  flex: none;
+}
+.hub-plate__info.ui-iconbtn {
+  flex: none;
+  margin: -4px -6px -4px 0;
+}
+.hub-plate__desc.has-win {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+}
+.hub-plate__win {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px 1px 8px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(242, 181, 44, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(242, 181, 44, 0.5);
+  color: var(--ui-primary-light);
+  font: 800 var(--ui-fs-caption) / 1.3 var(--ui-font-text);
+  white-space: nowrap;
+}
+.hub-plate__sub {
+  display: block;
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-tag) / 1.25 var(--ui-font-text);
+}
+.hub-plate__elapsed {
+  font: 800 var(--ui-fs-title-s) / 1 var(--ui-font-display);
+  letter-spacing: 0.04em;
+  color: var(--ui-text);
+}
+.hub-plate__chip {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--ui-s3);
+  border-radius: var(--ui-r-md);
+  background: #10141b;
+  box-shadow: inset 0 0 0 1px rgba(107, 120, 144, 0.5);
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-caption) / 1.2 var(--ui-font-text);
+}
+.hub-plate__tip {
+  animation: hub-plate-swap var(--ui-dur-large) var(--ui-ease-enter) both;
+}
+.hub-plate.is-searching {
+  border-color: rgba(90, 209, 255, 0.55);
+}
+.hub-plate.is-found {
+  border-color: rgba(63, 194, 122, 0.85);
+  /* MR-123: the found player flashes in (0.6 s, then VS). */
+  animation: hub-found var(--ui-dur-count-m) var(--ui-ease-out) both;
+}
+@keyframes hub-found {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(63, 194, 122, 0.9);
+  }
+  45% {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 10px rgba(63, 194, 122, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--ui-e3);
+  }
+}
+
+/* The first-seen caption above the plate (MR-28): what "No clock" means, once. */
+.hub-plate__caption.wp-caption {
+  top: auto;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 100%;
+  white-space: normal;
+  font-size: var(--ui-fs-caption);
+  line-height: var(--ui-lh-caption);
+}
+.hub-plate__caption.wp-caption::before {
+  top: auto;
+  bottom: -6px;
+  border-top: 6px solid var(--ui-surface-1);
+  border-bottom: 0;
+}
+
+/* ---- the length picker (A2.10): four segments, each ≥ 48 px ---- */
+.hub-len.ui-seg {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.hub-len .hub-len__opt {
+  flex: 1 1 auto;
+  min-width: 48px;
+  padding: 0 6px;
+  gap: 5px;
+}
+.hub-len__opt.is-last {
+  flex: 0 0 auto;
+}
+.hub-len__glyph {
+  display: flex;
+  transition: transform var(--ui-dur-small) var(--ui-ease-back);
+}
+.hub-len__opt.is-last.is-on .hub-len__glyph {
+  transform: rotate(-6deg) scale(1.08);
+}
+.hub-len__opt.is-last.is-on::after {
+  background: #e05a3c;
+}
+.hub-len__opt.is-locked {
+  color: var(--ui-text-3);
+}
+.hub-len__opt.is-locked > span:not(.hub-len__lock) {
+  opacity: 0.55;
+}
+.hub-len__lock {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: flex;
+}
+/* Phones (plate < 300 px): the fourth segment stacks the glyph over "No clock" in small type, so the
+   headline length is named everywhere; from 300 px glyph and label sit side by side. */
+@container hub-plate (max-width: 299px) {
+  .hub-len .hub-len__opt.is-last {
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    padding: 0 3px;
+  }
+  .hub-len__opt.is-last .hub-len__glyph svg {
+    width: 16px;
+    height: 16px;
+  }
+  .hub-len__lbl {
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+}
+
+/* ---- P5: the difficulty stepper ---- */
+.hub-step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  border: 1px solid rgba(107, 120, 144, 0.5);
+  border-radius: var(--ui-r-md);
+  background: #10141b;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+.hub-step .ui-iconbtn {
+  flex: none;
+}
+.hub-step__value {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font: 800 var(--ui-fs-label) / 1.1 var(--ui-font-display);
+  letter-spacing: 0.03em;
+  animation: hub-step-in var(--ui-dur-small) var(--ui-ease-back) both;
+}
+@keyframes hub-step-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* ---- P7: the Skirmish summary and Change ---- */
+.hub-sum {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  min-height: 44px;
+}
+.hub-sum__text {
+  min-width: 0;
+  font: 700 var(--ui-fs-caption) / 1.25 var(--ui-font-text);
+}
+
+/* ---- the online opponent row: the connected dot and the Player chip ---- */
+.hub-conn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  color: #8fe3b0;
+  letter-spacing: 0.02em;
+}
+.hub-conn i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3fc27a;
+  box-shadow: 0 0 0 2px rgba(63, 194, 122, 0.3);
+}
+.ui-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+.ui-player__chip {
+  padding: 0 5px;
+  border-radius: 6px;
+  background: #8fe3b0;
+  color: var(--ui-ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* The mode switcher (the Modes tile, 88 × 64 / 112 × 80)                                         */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hub-switch .ui-btn__face {
+  position: relative;
+  gap: 1px;
+}
+.hub-switch .ui-btn__text {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+.hub-switch__icon {
+  display: flex;
+  /* MR-120: the new mode's icon lands with a small pop. */
+  animation: hub-switch-pop var(--ui-dur-small) var(--ui-ease-back) both;
+}
+@keyframes hub-switch-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+.hub-switch__name {
+  font: 800 13px / 1.05 var(--ui-font-text);
+  color: var(--ui-text);
+  animation: ui-fade-in var(--ui-dur-small) var(--ui-ease-standard) both;
+}
+.hub-switch__tag {
+  padding: 1px 6px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(159, 231, 245, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(159, 231, 245, 0.45);
+  color: #bfefff;
+  font: 800 11px / 1.2 var(--ui-font-text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hub-switch__tag[data-mode='online'] {
+  background: rgba(63, 194, 122, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(63, 194, 122, 0.6);
+  color: #b4f0cc;
+}
+.hub-switch__tag[data-mode='friend'] {
+  background: rgba(155, 108, 240, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(155, 108, 240, 0.6);
+  color: #dccbff;
+}
+.hub-switch__caret {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  display: flex;
+  color: var(--ui-text-2);
+}
+@container ui-root (min-height: 481px) {
+  .hub-switch__name {
+    font-size: 15px;
+  }
+}
+/* The Friend Duel entry, shown as coming later (owner decision 2026-10-01): a quiet, locked chip left
+   of the switcher in the bottom row. Dashed edge and muted colours say "not yet"; it never pulses. */
+.hub-dock .wp-playRow {
+  position: relative;
+}
+.hub-friend {
+  position: absolute;
+  right: calc(100% + var(--ui-s2));
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 88px;
+  height: 56px;
+  padding: 4px 4px 5px;
+  border: 1.5px dashed rgba(155, 108, 240, 0.55);
+  border-radius: var(--ui-r-md);
+  background: linear-gradient(180deg, rgba(43, 36, 64, 0.88), rgba(25, 22, 38, 0.92));
+  box-shadow: var(--ui-e2);
+  color: var(--ui-text-2);
+  cursor: pointer;
+  animation: hub-friend-in var(--ui-dur-medium) var(--ui-ease-enter) both;
+  transition:
+    transform var(--ui-dur-micro) var(--ui-ease-standard),
+    border-color var(--ui-dur-small) var(--ui-ease-standard);
+}
+@keyframes hub-friend-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.hub-friend:hover {
+  border-color: rgba(185, 150, 255, 0.85);
+}
+.hub-friend:active {
+  transform: translateY(1px) scale(0.97);
+}
+.hub-friend__icon {
+  position: relative;
+  display: flex;
+  opacity: 0.8;
+}
+.hub-friend__lock {
+  position: absolute;
+  right: -7px;
+  bottom: -3px;
+  display: flex;
+  padding: 1px;
+  border-radius: 50%;
+  background: #1c1830;
+}
+.hub-friend__name {
+  color: var(--ui-text);
+  font: 800 12px / 1.05 var(--ui-font-text);
+  white-space: nowrap;
+}
+.hub-friend__tag {
+  padding: 1px 6px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(155, 108, 240, 0.2);
+  color: #dccbff;
+  font: 800 11px / 1.15 var(--ui-font-text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.hub-friend__long {
+  display: none;
+}
+/* Desktop (wide bottom row): the switcher's size, and the full "Arrives with online play". */
+@container ui-root (min-height: 481px) {
+  .hub-friend {
+    width: 184px;
+    height: 80px;
+    gap: 4px;
+    padding: 6px 10px 8px;
+  }
+  .hub-friend__icon svg {
+    width: 28px;
+    height: 28px;
+  }
+  .hub-friend__name {
+    font-size: 15px;
+  }
+  .hub-friend__tag {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+  }
+  .hub-friend__short {
+    display: none;
+  }
+  .hub-friend__long {
+    display: inline;
+  }
+}
+.ui-root[data-reduce-motion='true'] .hub-friend {
+  animation: none;
+}
+
+/* The token MR-120 flies from the chosen card into the tile. */
+.hub-fly {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 233, 160, 0.55), rgba(255, 233, 160, 0) 70%);
+}
+
+/* Battle as Cancel while searching: slate, same place and size, no pulse (1.5). */
+.ui-btn.hub-battle.is-cancel .ui-btn__face {
+  letter-spacing: 0.04em;
+}
+/* While searching the tab bar dims and does not respond (leaving Home would cancel). */
+.ui-root:has(.hub.is-searching) .ui-tabbar {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  pointer-events: none;
+  transition: opacity var(--ui-dur-medium) var(--ui-ease-standard);
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* The Modes chooser                                                                               */
+/* ---------------------------------------------------------------------------------------------- */
+
+.md-hint {
+  margin: 0 0 var(--ui-s3);
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+.md-group {
+  margin: var(--ui-s3) 0 6px;
+  padding-top: var(--ui-s2);
+  color: var(--ui-text-2);
+  font: 800 var(--ui-fs-tag) / var(--ui-lh-tag) var(--ui-font-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.md-row {
+  position: relative;
+}
+.md-card {
+  position: relative;
+}
+.md-card.has-side {
+  padding-right: 118px;
+}
+.md-card__side {
+  position: absolute;
+  top: 50%;
+  right: var(--ui-s3);
+  transform: translateY(-50%);
+}
+.md-card__check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--ui-primary);
+  color: var(--ui-ink);
+  animation: hub-switch-pop var(--ui-dur-small) var(--ui-ease-back) both;
+}
+.md-card.has-side .md-card__check {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+}
+.md-card__icon {
+  position: relative;
+}
+.md-card__lock {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  display: flex;
+}
+.md-card__desc.is-lock {
+  color: var(--ui-primary-light);
+  font-weight: 700;
+}
+.md-card__more {
+  margin: 6px var(--ui-s1) 0;
+  padding: var(--ui-s2) var(--ui-s3);
+  border-radius: var(--ui-r-sm);
+  background: var(--ui-surface-1);
+  color: var(--ui-text);
+  font: 500 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+  animation: hub-plate-swap var(--ui-dur-small) var(--ui-ease-enter) both;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* The diorama's far side online (spec 1.6; MR-121, MR-122)                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+.hd:is(.is-foe-unknown, .is-foe-searching) .hd__base--foe > :not(.hd__unknown) {
+  filter: grayscale(1) brightness(0.45) contrast(0.85);
+}
+.hd__unknown {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  display: grid;
+  place-items: center;
+  width: 50%;
+  aspect-ratio: 1;
+  border: 3px solid #0f1218;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #8a94a8, #4a5366);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%);
+  animation: hub-q-bob var(--ui-dur-breathe) var(--ui-ease-standard) infinite alternate;
+}
+.hd__unknown b {
+  color: #f4efe4;
+  font: 900 clamp(14px, 5cqw, 30px) / 1 var(--ui-font-display);
+  text-shadow: 0 2px 0 #0f1218;
+}
+@keyframes hub-q-bob {
+  to {
+    transform: translate(-50%, -62%);
+  }
+}
+.hd__fog {
+  position: absolute;
+  right: 0;
+  bottom: 22%;
+  width: 46%;
+  height: 58%;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 55%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 55%, #000 35%, transparent 100%);
+  animation: ui-fade-in var(--ui-dur-large) var(--ui-ease-standard) both;
+}
+.hd__fog i {
+  position: absolute;
+  inset: 10% -40%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(220, 228, 240, 0.92), rgba(220, 228, 240, 0) 62%);
+  animation: hub-fog 7s linear infinite;
+}
+.hd__fog .hd__fog-b {
+  inset: 25% -50% 0;
+  opacity: 0.8;
+  animation-duration: 9s;
+  animation-direction: reverse;
+}
+.hd__fog .hd__fog-sweep {
+  inset: -20% auto -20% 0;
+  width: 30%;
+  border-radius: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: hub-sweep 2.6s var(--ui-ease-standard) infinite;
+}
+@keyframes hub-fog {
+  from {
+    transform: translateX(-20%);
+  }
+  to {
+    transform: translateX(20%);
+  }
+}
+@keyframes hub-sweep {
+  from {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  to {
+    transform: translateX(420%) skewX(-12deg);
+  }
+}
+/* MR-122: the found base drops in with a squash, then settles; a dust puff at its feet. */
+.hd.is-foe-found .hd__base--foe {
+  animation: hub-drop 520ms var(--ui-ease-out) both;
+  transform-origin: 50% 100%;
+}
+@keyframes hub-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-40%) scale(0.9, 1.1);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(1.12, 0.86);
+  }
+  78% {
+    transform: translateY(-4%) scale(0.97, 1.04);
+  }
+  100% {
+    transform: none;
+  }
+}
+.hd__dust {
+  position: absolute;
+  right: 6%;
+  bottom: 30%;
+  width: 26%;
+  height: 10%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(230, 214, 180, 0.8), rgba(230, 214, 180, 0) 70%);
+  animation: hub-dust 700ms var(--ui-ease-out) 260ms both;
+  pointer-events: none;
+}
+@keyframes hub-dust {
+  from {
+    opacity: 0.9;
+    transform: scale(0.4, 0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.5, 1.2);
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* Friend Duel: the room panel and the code entry (S22; MR-124)                                    */
+/* ---------------------------------------------------------------------------------------------- */
+
+.room {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s3);
+}
+.room__label {
+  color: var(--ui-text-2);
+  font: 800 var(--ui-fs-tag) / var(--ui-lh-tag) var(--ui-font-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.room__codeBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-s2) var(--ui-s3);
+  padding: var(--ui-s3);
+  border-radius: var(--ui-r-md);
+  background: linear-gradient(180deg, #2a2440, #1a1628);
+  box-shadow: inset 0 0 0 1px rgba(155, 108, 240, 0.45);
+}
+.room__codeBox .room__label {
+  flex-basis: 100%;
+}
+.room-code {
+  display: inline-flex;
+  gap: 6px;
+}
+.room-code b {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 44px;
+  border-radius: var(--ui-r-sm);
+  background: #f4efe4;
+  box-shadow:
+    0 3px 0 #9c8f72,
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+  color: var(--ui-ink);
+  font: 900 26px / 1 var(--ui-font-display);
+  /* MR-124: the letters flip in one by one. */
+  animation: room-flip var(--ui-dur-small) var(--ui-ease-back) both;
+  animation-delay: calc(var(--i) * var(--ui-dur-stagger));
+}
+@keyframes room-flip {
+  from {
+    opacity: 0;
+    transform: perspective(200px) rotateX(-80deg);
+  }
+}
+.room__codeActions {
+  display: inline-flex;
+  gap: var(--ui-s2);
+  margin-left: auto;
+}
+.room__row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.room__row .hub-len {
+  max-width: 420px;
+}
+.room__line {
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+.room__people {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s3);
+  padding: var(--ui-s2) var(--ui-s3);
+  border-radius: var(--ui-r-md);
+  background: var(--ui-surface-1);
+}
+.room__person {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--ui-s2);
+  min-width: 0;
+}
+.room__person.is-friend {
+  animation: hub-plate-swap var(--ui-dur-medium) var(--ui-ease-enter) both;
+}
+.room__who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.room__who b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 800 var(--ui-fs-label) / 1.1 var(--ui-font-display);
+}
+.room__who small {
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / 1.2 var(--ui-font-text);
+}
+.room__vs {
+  color: var(--ui-primary);
+  font: 900 var(--ui-fs-title-s) / 1 var(--ui-font-display);
+}
+.room__ghost {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px dashed rgba(195, 188, 174, 0.5);
+  border-radius: 50%;
+}
+.room__dots {
+  display: flex;
+  gap: 3px;
+}
+.room__dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ui-text-2);
+  animation: room-dot 1.2s var(--ui-ease-standard) infinite;
+}
+.room__dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.room__dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes room-dot {
+  50% {
+    transform: translateY(-4px);
+    opacity: 0.4;
+  }
+}
+.join {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+  position: relative;
+}
+.join__boxes {
+  display: flex;
+  gap: 8px;
+}
+.join__boxes b {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+  border-radius: var(--ui-r-sm);
+  background: #10141b;
+  box-shadow: inset 0 0 0 2px rgba(107, 120, 144, 0.6);
+  color: var(--ui-text);
+  font: 900 28px / 1 var(--ui-font-display);
+}
+.join__boxes b.is-next {
+  box-shadow: inset 0 0 0 2px var(--ui-primary);
+}
+.join__boxes b.is-set {
+  animation: hub-switch-pop var(--ui-dur-micro) var(--ui-ease-back) both;
+}
+.join__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  font-size: 16px;
+}
+.join__hint {
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+.join__hint.is-bad {
+  color: #ff9a8a;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* VS between two people (S3 online): 3 s, no skip                                                  */
+/* ---------------------------------------------------------------------------------------------- */
+
+.ui-root:has(.ovs) .ui-tabbar {
+  visibility: hidden;
+}
+.ovs {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--ui-s4);
+  padding: var(--ui-s5) calc(var(--ui-margin) + var(--ui-s4));
+  overflow: hidden;
+  background:
+    linear-gradient(100deg, rgba(47, 125, 246, 0.55) 0 46%, transparent 46% 54%, rgba(224, 90, 60, 0.55) 54%),
+    radial-gradient(circle at 50% 50%, #2a2f45, #0d0f18 75%);
+  animation: ui-fade-in var(--ui-dur-medium) var(--ui-ease-standard) both;
+}
+/* Depth: a warm clash glow behind VS and a slow light sweep along the seam (ambient, never busy). */
+.ovs::before,
+.ovs::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+.ovs::before {
+  left: 50%;
+  top: 50%;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 196, 77, 0.32), rgba(255, 140, 40, 0.1) 45%, transparent 70%);
+  animation: ovs-glow 1.6s var(--ui-ease-standard) infinite alternate;
+}
+.ovs::after {
+  inset: -20% 0;
+  width: 18%;
+  left: 41%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: skewX(-10deg) translateY(-30%);
+  animation: ovs-sweep 2.4s var(--ui-ease-standard) infinite;
+}
+@keyframes ovs-glow {
+  from {
+    opacity: 0.6;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+@keyframes ovs-sweep {
+  from {
+    transform: skewX(-10deg) translateY(-40%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    transform: skewX(-10deg) translateY(40%);
+    opacity: 0;
+  }
+}
+.ovs > * {
+  position: relative;
+  z-index: 1;
+}
+.ovs__plate {
+  --team: 47, 125, 246;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 100%;
+  max-width: 420px;
+  justify-self: end;
+  gap: 6px;
+  min-width: 0;
+  padding: var(--ui-s4) var(--ui-s3) var(--ui-s3);
+  border: 2px solid rgba(var(--team), 0.85);
+  border-radius: var(--ui-r-lg);
+  background:
+    linear-gradient(180deg, rgba(var(--team), 0.38), rgba(var(--team), 0.08) 38%, transparent 60%),
+    linear-gradient(180deg, rgba(25, 30, 42, 0.92), rgba(12, 15, 21, 0.94));
+  box-shadow:
+    var(--ui-e3),
+    0 0 28px rgba(var(--team), 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  animation: ovs-in-l var(--ui-dur-large) var(--ui-ease-out) both;
+}
+.ovs__plate.is-foe {
+  --team: 224, 90, 60;
+  justify-self: start;
+  animation-name: ovs-in-r;
+}
+.ovs__avatar {
+  position: relative;
+  display: flex;
+  margin-bottom: 2px;
+}
+/* A soft halo in the team colour behind the avatar. */
+.ovs__avatar::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--team), 0.55), transparent 70%);
+  z-index: -1;
+}
+@keyframes ovs-in-l {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px) scale(0.96);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(6px) scale(1.01);
+  }
+}
+@keyframes ovs-in-r {
+  0% {
+    opacity: 0;
+    transform: translateX(60px) scale(0.96);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(-6px) scale(1.01);
+  }
+}
+@container ui-root (min-height: 481px) {
+  .ovs__plate {
+    min-height: 300px;
+    gap: 8px;
+  }
+  .ovs__avatar {
+    transform: scale(1.3);
+    margin: 10px 0 12px;
+  }
+}
+.ovs__name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 800 var(--ui-fs-title-s) / 1.1 var(--ui-font-display);
+}
+.ovs__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / 1.2 var(--ui-font-text);
+}
+.ovs__bars {
+  display: flex;
+}
+.ovs__actions {
+  display: flex;
+  gap: var(--ui-s1);
+  min-height: 44px;
+}
+.ovs__mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  max-width: 260px;
+}
+.ovs__vs {
+  color: var(--ui-primary);
+  font: 900 var(--ui-fs-display) / 1 var(--ui-font-display);
+  text-shadow: 0 4px 0 #7a4d0c;
+  animation: ovs-slam var(--ui-dur-large) var(--ui-ease-back) 120ms both;
+}
+@keyframes ovs-slam {
+  from {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+.ovs__len,
+.ovs__rule {
+  font: 700 var(--ui-fs-caption) / 1.25 var(--ui-font-text);
+}
+.ovs__rule {
+  color: #b4f0cc;
+}
+.ovs__timer {
+  display: block;
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ui-primary);
+  transform-origin: 0 50%;
+  animation: ovs-timer 3s linear both;
+}
+.ovs.is-frozen .ovs__timer {
+  animation: none;
+  transform: scaleX(0.4);
+}
+@keyframes ovs-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ---- the Last Base Standing info panel ---- */
+.hub-lastInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+  margin: 0;
+  padding-left: 1.1em;
+  font: 500 var(--ui-fs-body) / var(--ui-lh-body) var(--ui-font-text);
+}
+.hub-lastInfo__warn {
+  margin: var(--ui-s3) 0 0;
+  color: var(--ui-text-2);
+  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+}
+
+/* ---- reduce motion: fades and tints instead of movement (U14) ---- */
+.ui-root[data-reduce-motion='true'] .ovs::before,
+.ui-root[data-reduce-motion='true'] .ovs::after {
+  animation: none;
+}
+.ui-root[data-reduce-motion='true'] :is(.hub-plate__body, .hub-plate__tip, .hub-switch__icon, .hub-step__value, .md-card__check, .md-card__more, .room-code b, .room__person.is-friend, .ovs__plate, .ovs__vs, .join__boxes b.is-set) {
+  animation-name: ui-fade-in !important;
+  animation-duration: var(--ui-dur-reduced) !important;
+}
+.ui-root[data-reduce-motion='true'] :is(.hd__unknown, .hd__fog i, .ui-compass__needle, .room__dots i, .hd.is-foe-found .hd__base--foe, .hd__dust, .hub-plate.is-found) {
+  animation: none !important;
+}
+
+/* Online plate details: the search clock in the over row, two short lines under the idle picker. */
+.hub-plate__tier.is-time {
+  background: rgba(90, 209, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(90, 209, 255, 0.6);
+  color: #cdf3ff;
+  font-variant-numeric: tabular-nums;
+}
+.hub-plate__desc.is-two {
+  display: flex;
+  flex-direction: column;
+}
+.hub-plate .ui-player {
+  margin-left: 6px;
+}

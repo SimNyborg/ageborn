@@ -387,6 +387,17 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
     phaseMarks: noClock
       ? { overdriveMs: null, siegeMs: null, finalBellMs: null }
       : { overdriveMs: fmt?.overdriveMs ?? null, siegeMs: siegeMs === null ? null : Math.max(50, siegeMs - mods.siegeEarlierMs), finalBellMs: fmt?.finalBellMs ?? null },
+    // Last Base Standing (A2.10.1): the public step schedule and who crumbles, by Side (L3).
+    ...(obs.escalation
+      ? {
+          escalation: {
+            step: obs.escalation.step,
+            steps: obs.escalation.steps.length,
+            atMs: obs.escalation.steps.map((x) => x.tick * 50),
+            crumbling: [obs.escalation.crumbling[0], obs.escalation.crumbling[1]] as [boolean, boolean],
+          },
+        }
+      : {}),
     me: {
       gold: Math.floor(me.gold / 1000),
       goldPerSec: Math.round(goldPerSec * 10) / 10,

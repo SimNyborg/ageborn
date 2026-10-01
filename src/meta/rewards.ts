@@ -6,6 +6,7 @@
  * | Ladder win | +30 trophies; a Sundial Capsule and 20 Amber if the Sundial has one ready (or a free capsule is left), otherwise 40 Amber and a Clay pip |
  * | Ladder loss | −20 trophies (none below 400, never below the arena gate); 15 Amber; a Sundial Capsule if one is ready, otherwise a Clay pip (a Retreat: neither) |
  * | Ladder draw | 0 trophies; 15 Amber; as a loss |
+ * | Last Base Standing (A2.10.1) | as the Ladder with 0 trophies either way; a Retreat pays no Amber |
  * | Tutorial (A8 matches 1-2) | the ladder Amber for the result and the next scripted capsule, win or lose ("a loss still gives rewards"); no trophies, Sundial or MMR |
  * | Skirmish | 5 Amber per win; no trophies |
  * | Daily Challenge | first win of the day: an Age Capsule; later wins 20 Amber; no trophies |
@@ -38,7 +39,7 @@ import { META_FLAGS } from './rules';
 import { tickTimersAt } from './timers';
 import { unlockTitles } from './titles';
 import { rewardFormat } from './formats';
-import { applyTrophies, ladderWinFor, trophyDelta, type LadderResult } from './trophies';
+import { applyTrophies, isUnranked, ladderWinFor, trophyDelta, type LadderResult } from './trophies';
 import { planAverageLevelCenti, planHasLegendary } from './warplan';
 import { grantFeats } from './feats';
 import { supplyAfterMatch } from './supply';
@@ -137,7 +138,10 @@ function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResul
   const capsuleSteps: RewardStep[] = [];
   const claimed = sundialCapsule(save, t, r, now, capsuleSteps);
   if (claimed) save = claimed;
-  const amber = result === 'win' ? (claimed ? winRow.amber : winRow.amberWithoutCharge) : result === 'loss' ? rules.loss.amber : rules.draw.amber;
+  // A Retreat in an unranked length (Last Base Standing, A2.10.1) pays no Amber: it costs no trophies,
+  // so loss Amber for a Retreat at 1:00 would be a free farm at every trophy count.
+  const freeRetreat = isRetreat(r) && isUnranked(t, format);
+  const amber = freeRetreat ? 0 : result === 'win' ? (claimed ? winRow.amber : winRow.amberWithoutCharge) : result === 'loss' ? rules.loss.amber : rules.draw.amber;
   save = addAmber(save, amber, steps);
   steps.push(...capsuleSteps);
   // A Retreat brings no capsule and no pip either (A15.4), so a Retreat farm earns only loss Amber.

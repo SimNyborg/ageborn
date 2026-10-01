@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import type { SaveDoc } from '@/contracts';
 import { formatKind, rewardFormat, windowOf } from '../formats';
 import { isUnranked, ladderWinFor, trophyDelta } from '../trophies';
-import { C, play, scripted } from './helpers';
+import { C, clock, M, matchInput, play, scripted } from './helpers';
 
 /** A save in Arena 3 (where Last Base Standing opens), past onboarding, every free capsule used. */
 function arena3(o: { trophies?: number; charges?: number } = {}): SaveDoc {
@@ -78,6 +78,23 @@ describe('Last Base Standing rewards (A15.8)', () => {
     expect(r.save.trophies.current).toBe(600);
     expect(r.save.mmr).toBeLessThan(s.mmr);
     expect(r.save.lossStreak).toBe(s.lossStreak + 1);
+  });
+
+  it('a Retreat pays no Amber (it costs no trophies, so loss Amber would be a free farm), and the timed lengths keep theirs', () => {
+    const retreat = (format: string) => {
+      const s = arena3({ charges: 0 });
+      const c = clock();
+      const opponent = M.pickOpponent(s, 'ladder', C, c, { format });
+      return M.applyMatchResult(s, matchInput('ladder', 'loss', opponent, { reason: 'retreat' }), C, c);
+    };
+    const last = retreat('last');
+    expect(last.rewards[0]).toEqual({ kind: 'trophies', delta: 0 });
+    expect(last.rewards.some((x) => x.kind === 'amber' || x.kind === 'capsule' || x.kind === 'clayPip')).toBe(false);
+    expect(last.save.currencies.amber).toBe(arena3({ charges: 0 }).currencies.amber);
+    // A Retreat in a ranked length still costs trophies and pays the loss Amber (A6.3).
+    const full = retreat('full');
+    expect(full.rewards[0]).toEqual({ kind: 'trophies', delta: -20 });
+    expect(full.rewards).toContainEqual({ kind: 'amber', amount: 15 });
   });
 
   it('is only offered from Arena 3: below it the Ladder falls back to the arena first length', () => {

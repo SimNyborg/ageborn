@@ -106,7 +106,9 @@ export type ProxyId =
   | 'bait_wave'
   | 'drop_spam'
   | 'runner_reach'
-  | 'gate_sniper';
+  | 'gate_sniper'
+  | 'idle'
+  | 'rope_runner';
 
 /**
  * A2.9.12 power habits (they override `power`): `hoard` casts only the Home slot, auto-aimed, when the
@@ -150,7 +152,8 @@ export interface Strategy {
   stance: 'charge' | 'hold' | 'massThenCharge' | 'fallback' | 'flagBall' | 'toggle';
   /** Hold flag p in lu (A18.4.2: 320-800). */
   holdP?: number;
-  evolve: 'asap' | 'bank';
+  /** `never`: stays in the first age (the `idle` proxy). */
+  evolve: 'asap' | 'bank' | 'never';
   power: 'value' | 'beforeEvolve' | 'full';
   /** Whole gold kept back before training. */
   reserve: number;
@@ -408,6 +411,29 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
   drop_spam: { ...BALANCED, id: 'drop_spam', title: 'Drop spam (a Drop on every reload)', powerHabit: 'drop', plan: dropPlan },
   runner_reach: { ...BALANCED, id: 'runner_reach', title: 'Runner reach (a lone runner, then Front powers at their staging area)', powerHabit: 'runner', plan: frontPlan },
   gate_sniper: { ...BALANCED, id: 'gate_sniper', title: 'Gate sniper (strikes only at the enemy rear)', powerHabit: 'sniper', plan: strikePlan },
+  // A2.10.1 Last Base Standing proxies (`sim-cli lbs`).
+  idle: {
+    ...BALANCED,
+    id: 'idle',
+    title: 'Idle (never trains, builds, researches, casts or evolves)',
+    income: 0,
+    research: [],
+    turrets: 0,
+    modernise: false,
+    evolve: 'never',
+    maxAlive: 0,
+    powerHabit: 'never',
+  },
+  rope_runner: {
+    ...BALANCED,
+    id: 'rope_runner',
+    title: 'Rope runner (4 turrets at home, one cheap runner at a time on Charge to steer the Crumble rope)',
+    train: 'cheapest',
+    turrets: 4,
+    reserve: 50,
+    stance: 'charge',
+    maxAlive: 1,
+  },
 };
 
 /** Whether a unit belongs to a mono family group (anti-air: any unit that hits air). */
@@ -445,7 +471,7 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
 ];
 
 /** Every other proxy the tools know (run with `--proxies`). */
-export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'mono_antiheavy', 'few_then_evolve', 'rush', 'save_counter', 'no_research', 'no_power', 'plain_wave', 'bait_wave', 'gate_sniper'];
+export const EXTRA_PROXIES: readonly ProxyId[] = ['mono_ranged', 'mono_antiair', 'mono_antiheavy', 'few_then_evolve', 'rush', 'save_counter', 'no_research', 'no_power', 'plain_wave', 'bait_wave', 'gate_sniper', 'idle', 'rope_runner'];
 
 /** Enemy ground units this close to the own gate make an evolve unsafe (A7.2). */
 const EVOLVE_SAFE_P = 300_000;
@@ -562,7 +588,7 @@ export class ScriptedPlayer implements BotController {
       const o = me.powers[slot];
       return o !== null && o.ppm >= CHARGED_PPM && gold >= o.cost && this.reachable(obs, side, o.card);
     });
-    let evolveNow = canEvolve && (st.evolve === 'asap' || me.xpBp >= BANK_XP_BP);
+    let evolveNow = canEvolve && st.evolve !== 'never' && (st.evolve === 'asap' || me.xpBp >= BANK_XP_BP);
     if (evolveNow && st.safeEvolveMs !== undefined) {
       const unsafe = foes.some((u) => !u.air && u.p <= EVOLVE_SAFE_P);
       evolveNow = !unsafe || obs.tick - this.evolveSeenTick >= Math.trunc(st.safeEvolveMs / 50);

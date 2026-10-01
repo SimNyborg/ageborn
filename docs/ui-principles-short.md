@@ -4,8 +4,8 @@ Full detail, numbers and the motion catalogue: `docs/ui-plan.md` (Part 1 rules U
 
 **Screens**
 1. One screen, one job, at most one primary (`data-primary`), bottom-right under the right thumb. A new player can say what the screen is for in 5 seconds.
-2. Home's Play always starts the next War Path level in 1 tap. Other modes start from the Modes panel (2 taps). From any Result the next battle is at most 1 tap away; a War Path win continues to the map.
-3. Five tabs, one per verb: Army, Capsules, War Path (Home), Progress, Customize. Every thing has exactly one home. Depth at most 2; never a panel on a panel (info panels excepted).
+2. Home's Battle plays the mode shown on the mode switcher in 1 tap (the Ladder by default); another mode is 2 taps away (switcher, card), and the panel only selects, never starts. The plate over Battle always shows exactly what Battle will do. From any Result the next battle is at most 1 tap away; a War Path win continues to the map.
+3. Five tabs, one per verb: Army, Capsules, Battle (Home), Progress, Customize; no Shop or Events tab, ever (events are switcher cards). Every thing has exactly one home. Depth at most 2; never a panel on a panel (info panels excepted).
 4. Back is top-left, Close is top-right; Esc, browser back and Android back do the same (a history entry per panel, sub-screen, jump and battle). A cross-tab jump returns to its origin. State is kept on return.
 5. It fits the phone: 844 × 390, 844 × 340, 800 × 360 and 1280 × 720, with safe areas; budget every layout in px first. Text ≥ 12 px (tags ≥ 11 bold). Targets ≥ 48 px (44 rare), ≥ 8 px apart. No clipping, no truncation, no page scroll; the primary never scrolls away.
 6. Show, don't make them remember: class, cost, level, counters, equipped, locked and ready sit on the item. Nothing essential is hover-only.

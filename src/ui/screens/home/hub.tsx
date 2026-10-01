@@ -8,28 +8,23 @@
  *   caption, MR-28) and the gear.
  * - `ArenaTitle` and `TrophyBar`: the arena's name ribbon and the trophy progress to the next Trophy
  *   Road reward; the bar opens Trophy Road.
- * - `MatchPlate`: who the Battle button fights (the General's portrait with the AI badge, tier) and
- *   the format picker, sitting over Battle like the War Path's level plate. It is the slot where the
- *   online opponent will show once online play exists (A18.10); until then every opponent is an AI.
+ * - The match plate over Battle lives in `plate.tsx` (and its online states in `online.tsx`).
  * - `CampaignCard`: the War Path, the offline side road (play offline, earn cards), with its region
  *   art, level and stars; opens the War Path screen.
  * - `CapsuleSlots`: four capsule slots, each opens its capsule with one tap (the Sundial never blocks).
  * - `UnlockPointer`: MR-40, a feature that just opened.
  */
-import { arenaNameKey, formatDescKey } from '@/content/keys';
-import type { FormatId, OpponentSpec } from '@/contracts';
+import { arenaNameKey } from '@/content/keys';
+import type { SaveDoc } from '@/contracts';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { Avatar, GeneralPortrait } from '../../components/Avatar';
+import { Avatar } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
-import { AiBadge, CurrencyChip } from '../../components/Chips';
-import { Segmented } from '../../components/Controls';
-import { formatInt, tierNumeral } from '../../components/format';
+import { CurrencyChip } from '../../components/Chips';
+import { formatInt } from '../../components/format';
 import { CapsuleIcon, CrateIcon, GearIcon, StarIcon, TrophyIcon } from '../../components/icons';
 import { pendingCrests, pendingNameKey, visibleTier } from '../../components/capsuleLook';
 import { useKit } from '../../components/kit';
 import { useUi } from '../context';
-import { opponentName } from '../model/opponent';
-import { formatName } from '../model/plan';
 import { arenaOf, roadProgress, trayCapsules } from '../model/progress';
 import { currentLevelId, featureOpen, levelNameKey, mapRegions, playLevelId, regionNameKey, type HomeUnlock } from '../model/warPath';
 import { RoadRewardView } from '../shared/RoadReward';
@@ -59,6 +54,16 @@ export function HubProfile() {
   );
 }
 
+/**
+ * The currency caption still to show (MR-28): Amber first, then Dust, each once its chip is on Home.
+ * Home queues its other first-seen captions (the plate's No clock caption) behind it (U8).
+ */
+export function pendingCurrencyCaption(s: SaveDoc): 'amber' | 'dust' | null {
+  const showAmber = s.currencies.amber > 0 || s.warPath?.legacy;
+  const showDust = s.currencies.dust > 0 || s.warPath?.legacy;
+  return showAmber && !s.flags['ui-seen.amber'] ? 'amber' : showDust && !s.flags['ui-seen.dust'] ? 'dust' : null;
+}
+
 /** The currency chips (each once earned, with its first-seen caption, MR-28) and the gear. */
 export function HubTopRight(p: { quiet: boolean }) {
   const { save, t, router, services, content } = useUi();
@@ -67,7 +72,7 @@ export function HubTopRight(p: { quiet: boolean }) {
   const showAmber = s.currencies.amber > 0 || s.warPath?.legacy;
   const showDust = s.currencies.dust > 0 || s.warPath?.legacy;
   // One first-seen caption at a time, never over a ceremony (MR-28, U13).
-  const caption = p.quiet ? null : showAmber && !s.flags['ui-seen.amber'] ? 'amber' : showDust && !s.flags['ui-seen.dust'] ? 'dust' : null;
+  const caption = p.quiet ? null : pendingCurrencyCaption(s);
   const [shown, setShown] = useState<'amber' | 'dust' | null>(null);
   // The caption counts as seen once it has shown in full; a ceremony or unlock that starts meanwhile
   // hides it, and it comes back afterwards (never two new things at once, U8).
@@ -165,74 +170,6 @@ export function TrophyBar() {
         </span>
       ) : null}
     </button>
-  );
-}
-
-// ---------------------------------------------------------------------------------------------
-// The match plate (who Battle fights, and the format)
-// ---------------------------------------------------------------------------------------------
-
-/** Short labels for the format picker (whole literals, so the strings check sees them). */
-const FORMAT_SHORT: Readonly<Record<string, string>> = { short: 'ui.hub.format.short', standard: 'ui.hub.format.standard', full: 'ui.hub.format.full' };
-
-export function MatchPlate(p: {
-  opponent: OpponentSpec | null;
-  /** The onboarding match Battle starts while it is due (A8), else null. */
-  training: 1 | 2 | null;
-  formats: readonly FormatId[];
-  format: FormatId;
-  onFormat(f: FormatId): void;
-  aside?: boolean;
-}) {
-  const { t, content } = useUi();
-  const o = p.opponent;
-  // Onboarding: the level's General (Old Grogg, then Pip), labelled AI like every bot (A7.1).
-  const trainingGeneral = p.training ? content.warPath.levels[content.warPath.order[p.training - 1]!]?.general : undefined;
-  const generalId = o?.generalId ?? trainingGeneral ?? null;
-  const g = generalId ? content.generals.list[generalId as keyof typeof content.generals.list] : undefined;
-  const name = o ? opponentName(o, content, t) : g ? t(g.nameKey) : '';
-  return (
-    <div class={`hub-plate${p.aside ? ' is-away' : ''}`} data-testid="home-opponent">
-      <div class="hub-plate__who">
-        <span class="hub-plate__portrait">
-          {generalId ? <GeneralPortrait generalId={generalId} size={44} label={name} /> : null}
-          <span class="hub-plate__ai">
-            <AiBadge size="sm" />
-          </span>
-        </span>
-        <span class="hub-plate__text">
-          <span class="hub-plate__over" data-tag="">
-            {p.training ? t('ui.hub.training') : t('ui.hub.opponent')}
-            {o ? (
-              <span class="hub-plate__tier" data-testid="home-opponent-tier">
-                {t('ui.vs.tier', { tier: tierNumeral(o.tier) })}
-              </span>
-            ) : null}
-          </span>
-          <span class="hub-plate__name" data-clip-check="">
-            {name}
-          </span>
-        </span>
-      </div>
-      {!p.training && p.formats.length > 1 ? (
-        <div class="hub-plate__format">
-          <Segmented
-            label={t('ui.mode.format')}
-            value={p.format}
-            onChange={p.onFormat}
-            options={p.formats.map((f) => ({ value: f, label: FORMAT_SHORT[f] ? t(FORMAT_SHORT[f]) : formatName(content, t, f) }))}
-            testid="home-format"
-            size="sm"
-          />
-        </div>
-      ) : null}
-      {!p.training ? (
-        <span class="hub-plate__desc" data-testid="home-format-desc">
-          {/* The picker already names the format; alone, the line names it itself. */}
-          {p.formats.length > 1 ? t(formatDescKey(p.format)) : `${formatName(content, t, p.format)} · ${t(formatDescKey(p.format))}`}
-        </span>
-      ) : null}
-    </div>
   );
 }
 

@@ -107,11 +107,14 @@ export const fixtureStats: MatchStats = {
   mvpCard: 'pikeman',
 };
 
-export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss';
+export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss' | 'lastWin';
 
 export function fixtureResult(content: Content, which: ResultFixture): ResultInfo {
-  const opp = fixtureOpponent(content, which === 'conquest' ? 'warden' : 'general');
-  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' ? 0 : which === 'loss' || which === 'warPathLoss' ? 1 : null;
+  const base = fixtureOpponent(content, which === 'conquest' ? 'warden' : 'general');
+  // Last Base Standing (A2.10.1): won at 23:41, in Crumble, unranked.
+  const last = which === 'lastWin';
+  const opp = last ? { ...base, format: 'last' } : base;
+  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' || last ? 0 : which === 'loss' || which === 'warPathLoss' ? 1 : null;
   const path = which === 'warPath' ? 'wp.bronze.l03' : which === 'warPathLoss' ? 'wp.bronze.l07' : null;
   const input: MatchResultInput = {
     mode: which === 'conquest' ? 'conquest' : path ? 'warPath' : 'ladder',
@@ -119,12 +122,12 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
     outcome: {
       winner,
       reason: which === 'draw' ? 'finalBell' : 'baseDestroyed',
-      tick: 6620,
+      tick: last ? 28420 : 6620,
       baseHpBp: winner === 0 ? [6200, 0] : winner === 1 ? [0, 4100] : [3100, 3080],
     },
     mySide: 0,
     opponent: opp,
-    stats: which === 'warPath' ? { ...fixtureStats, usedLastStand: true } : which === 'loss' || which === 'warPathLoss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
+    stats: last ? { ...fixtureStats, durationMs: 1421000 } : which === 'warPath' ? { ...fixtureStats, usedLastStand: true } : which === 'loss' || which === 'warPathLoss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
   };
   let rewards: RewardStep[];
   switch (which) {
@@ -136,6 +139,13 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
         { kind: 'codex', points: 0, levelUp: false },
         { kind: 'quest', questId: 'win_2', progress: 2, done: true },
         { kind: 'quest', questId: 'train_30', progress: 30, done: true },
+      ];
+      break;
+    case 'lastWin':
+      rewards = [
+        { kind: 'trophies', delta: 0 },
+        { kind: 'amber', amount: 35 },
+        { kind: 'capsule', capsuleId: 'cap-mid-1' },
       ];
       break;
     case 'noCapsule':
@@ -188,7 +198,7 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
     input,
     rewards,
     replayIndex: 0,
-    request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : path ? { mode: 'warPath', level: path, difficulty: 'normal' } : { mode: 'ladder', format: 'standard' },
+    request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : path ? { mode: 'warPath', level: path, difficulty: 'normal' } : { mode: 'ladder', format: last ? 'last' : 'standard' },
   };
 }
 

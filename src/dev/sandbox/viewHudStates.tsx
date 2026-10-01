@@ -19,7 +19,7 @@ const LANE_BG =
 export function HudStates() {
   const [size, setSize] = useState<keyof typeof SIZES>('desktop');
   const [preset, setPreset] = useState<TeamPreset>('default');
-  const [format, setFormat] = useState<'full' | 'short' | 'tutorial'>('full');
+  const [format, setFormat] = useState<'full' | 'short' | 'tutorial' | 'last'>(() => (location.hash.includes('last') ? 'last' : 'full'));
   const config = useMemo(() => realMatchConfig(format, 1), [format]);
   const samples = useMemo(() => hudSamples(config, 0), [config]);
   const dim = SIZES[size];
@@ -44,10 +44,11 @@ export function HudStates() {
         </label>
         <label>
           format{' '}
-          <select value={format} onChange={(e) => setFormat((e.target as HTMLSelectElement).value as 'full' | 'short' | 'tutorial')}>
+          <select value={format} onChange={(e) => setFormat((e.target as HTMLSelectElement).value as 'full' | 'short' | 'tutorial' | 'last')}>
             <option value="full">full</option>
             <option value="short">short</option>
             <option value="tutorial">tutorial</option>
+            <option value="last">last (Last Base Standing)</option>
           </select>
         </label>
       </div>

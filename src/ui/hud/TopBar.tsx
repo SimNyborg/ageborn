@@ -27,7 +27,7 @@ import type { HudCtx } from './context';
 import { EmoteBubble, EmoteButton } from './EmoteWheel';
 import { AgeGlyph, EyeIcon, HornIcon, PauseIcon, PlayIcon, RobotIcon } from './icons';
 import { Minimap } from './Minimap';
-import { ageIds, clockView, formatClock, frontStrip, powerFraction, xpProgress, type FrontLine } from './model';
+import { ageIds, clockView, escalationView, formatClock, frontStrip, powerFraction, xpProgress, type EscalationView, type FrontLine } from './model';
 import { CoinIcon } from './icons';
 import { usePortrait } from './usePortrait';
 import { PickBadge } from './councilIcons';
@@ -352,6 +352,71 @@ function FrontStripView(p: { front: FrontLine | null; label: string }) {
   );
 }
 
+/**
+ * Last Base Standing's clock (A2.10.1, A9.2): it counts up; under it a 6-pip escalation meter (gold
+ * Overdrive, red Siege I-III, cracked stone Crumble I-II) and the step's name. A tap drops the public
+ * schedule down (like Scouted, it folds away after 3 s and never pauses). No countdown anywhere.
+ */
+function EscalationClock(p: { c: HudCtx; v: EscalationView }) {
+  const { t, m } = p.c;
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const id = setTimeout(() => setOpen(false), SCOUTED_COLLAPSE_MS);
+    return () => clearTimeout(id);
+  }, [open]);
+  const what = (x: EscalationView['pips'][number]) =>
+    x.tone === 'overdrive'
+      ? t('hud.esc.overdriveWhat')
+      : x.tone === 'siege'
+        ? t('hud.esc.siegeWhat', { base: x.base, turret: x.turretCut })
+        : t('hud.esc.crumbleWhat', { pct: x.crumblePct });
+  const tone = [...p.v.pips].reverse().find((x) => x.reached)?.tone ?? 'none';
+  return (
+    <div class="hud-esc-wrap">
+      <button
+        type="button"
+        class={`hud-clock hud-esc phase-${m.phase} tone-${tone}`}
+        data-testid="hud-clock"
+        aria-label={t('hud.esc.meterLabel', { step: t(p.v.stepKey) })}
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span class="hud-clock-text">{p.v.text}</span>
+        <span class="hud-esc-pips" data-testid="hud-esc-pips" aria-hidden="true">
+          {p.v.pips.map((x) => (
+            <i key={x.key} class={`hud-esc-pip is-${x.tone}${x.reached ? ' is-on' : ''}`} />
+          ))}
+        </span>
+        <span class={`hud-phase-tag hud-esc-tag tone-${tone}`} data-tag data-testid="hud-esc-step" key={p.v.stepKey}>
+          {t(p.v.stepKey)}
+        </span>
+      </button>
+      {open ? (
+        <div class="hud-esc-drop" role="note" data-testid="hud-esc-schedule">
+          <b class="hud-esc-title">{t('hud.esc.title')}</b>
+          {p.v.pips.map((x) => (
+            <div key={x.key} class={`hud-esc-row is-${x.tone}${x.reached ? ' is-on' : ''}`}>
+              <span class="hud-esc-at">{formatClock(x.atMs)}</span>
+              <b>{t(`hud.esc.step.${x.key}`)}</b>
+              <span>{what(x)}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** The "Crumbling" chip on a side whose base the Crumble rope takes now (A2.10.1; MR-126 in the HUD). */
+function Crumbling(p: { t: HudCtx['t'] }) {
+  return (
+    <span class="hud-crumbling" data-tag data-testid="hud-crumbling">
+      {p.t('hud.esc.crumbling')}
+    </span>
+  );
+}
+
 export interface Bubble {
   id: number;
   side: 0 | 1;
@@ -386,6 +451,7 @@ export function TopBar(p: {
   const myAge = ages[m.me.ageIndex] ?? 'stone';
   const foeAge = ages[m.foe.ageIndex] ?? 'stone';
   const clock = clockView(m);
+  const esc = escalationView(m, c.config, c.side);
   const mySide = c.side;
   const foeSide = mySide === 0 ? 1 : 0;
   const bubble = (side: 0 | 1) => p.bubbles.filter((b) => b.side === side).slice(-1)[0];
@@ -402,7 +468,8 @@ export function TopBar(p: {
 
   return (
     <div class="hud-top" ref={p.topRef}>
-      <div ref={meEl} class="hud-panel hud-side hud-me" data-testid="hud-me">
+      <div ref={meEl} class={`hud-panel hud-side hud-me${esc?.crumbling.me ? ' is-crumbling' : ''}`} data-testid="hud-me">
+        {esc?.crumbling.me ? <Crumbling t={t} /> : null}
         <Medallion age={myAge} team="me" label={t(`age.${myAge}.name`)} />
         <div class="hud-bars">
           <HpBar bp={m.me.baseHpBp} team="me" label={t('hud.baseHp')} />
@@ -417,6 +484,7 @@ export function TopBar(p: {
       </div>
 
       <div class="hud-center">
+        {esc ? <EscalationClock c={c} v={esc} /> : null}
         {clock.progress !== null ? (
           <div class={`hud-clock phase-${m.phase}`} data-testid="hud-clock" aria-label={t('hud.clockLabel')}>
             <div class="hud-clock-text">{clock.text}</div>
@@ -442,7 +510,8 @@ export function TopBar(p: {
       </div>
       {c.view?.minimap ? <Minimap c={c} /> : null}
 
-      <div ref={foeEl} class="hud-panel hud-side hud-foe" data-testid="hud-foe">
+      <div ref={foeEl} class={`hud-panel hud-side hud-foe${esc?.crumbling.foe ? ' is-crumbling' : ''}`} data-testid="hud-foe">
+        {esc?.crumbling.foe ? <Crumbling t={t} /> : null}
         <div class="hud-bars">
           <div class="hud-name hud-name-foe">
             {/* The foe is always an AI in a live battle (A7.1); in a replay shown from the AI's side

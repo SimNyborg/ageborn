@@ -19,9 +19,18 @@ import { equippedOf, owns } from '../model/cosmetics';
 import { generalOf, opponentName, personalityOf } from '../model/opponent';
 import { activePlan, formatAges, formatName, planAvgLevel } from '../model/plan';
 import { featureOpen, levelNameKey } from '../model/warPath';
+import { minutesText } from '../model/homeMode';
 
 /** A9 #4: the VS screen shows for 2 s. */
 export const VS_MS = 2000;
+
+/** "No clock · Siege rises every 2½ min from 14:30 · Crumble from 22:00" (A2.10.1), from the format's steps. */
+function lastBaseRow(steps: readonly { atMs: number; crumbleBpPerSec: number }[], t: (k: string, p?: Record<string, string | number>) => string): string {
+  const clock = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}`;
+  const crumble = steps.find((x) => x.crumbleBpPerSec > 0);
+  const every = steps.length > 1 ? minutesText(steps[1]!.atMs - steps[0]!.atMs) : '';
+  return t('ui.vs.lastRow', { every, from: clock(steps[0]?.atMs ?? 0), crumble: clock(crumble?.atMs ?? 0) });
+}
 
 /** Mode chips; the Tutorial format already reads "Training", so it has none. */
 const MODE_KEYS = {
@@ -157,6 +166,11 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
             <Pill tone="green" testid="vs-warmup">
               {t('ui.vs.warmUp')}
             </Pill>
+          ) : null}
+          {content.formats[o.format]?.escalation ? (
+            <span class="vs__mod" data-testid="vs-last">
+              <b>{t('ui.lastBase.title')}</b> {lastBaseRow(content.formats[o.format]!.escalation!, t)}
+            </span>
           ) : null}
           {o.modifiers.map((m) => (
             <span key={m} class="vs__mod" data-testid={`vs-mod-${m}`}>

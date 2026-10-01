@@ -30,11 +30,13 @@ export function toTimed(w: WireCmd): TimedCommand {
 }
 
 /**
- * Hard cap on a match's length in ticks: the Final Bell plus two minutes of slack (50 ms ticks).
- * The relay ends a room past this tick, and the re-simulation never runs further.
+ * Hard cap on a match's length in ticks: the Final Bell plus two minutes of slack (50 ms ticks); in
+ * Last Base Standing (no Bell, A2.10.1) its guaranteed end `endByMs` (26:35) plus two minutes, so a real
+ * war never meets it. The relay ends a room past this tick, and the re-simulation never runs further.
  */
 export function maxTicksFor(format: MatchSpec['format']): number {
-  const bell = content.formats[format]?.finalBellMs ?? 645_000;
+  const f = content.formats[format];
+  const bell = f?.finalBellMs ?? f?.endByMs ?? 645_000;
   return Math.ceil(bell / 50) + 2400;
 }
 

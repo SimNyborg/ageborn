@@ -1,51 +1,60 @@
 /**
- * Home is the Battle hub (S2; owner decision 2026-09-30, ui-plan 2.3). The game's main point is the
- * 1v1 battle (the online 2-player mode later, the Ladder against labelled AI opponents today), so it
- * is the first thing a player sees and the one primary on Home. The War Path campaign is the offline
- * side road, one tap away on the Campaign card.
+ * Home is the Battle hub (S2; owner decision 2026-09-30, ui-plan 2.3), laid out as the lobby of a
+ * 2-player online game (owner request 2026-10-01; spec "online-first Battle hub"). The game's main
+ * point is the 1v1 battle (online later, the Ladder against labelled AI opponents today), so it is the
+ * first thing a player sees and Battle is the one primary on Home. The War Path campaign is the
+ * offline side road, one tap away on its card.
  *
  * - **Stage** (full bleed): the arena's sky and skyline (`ArenaScene`) with the arena diorama in the
- *   centre: your base and the AI's across the lane, the arena's landmark behind (`Diorama`). Under it
- *   the arena's name and the trophy bar to the next Trophy Road reward (once the Ladder is open).
- * - **Top bar**: the profile chip (trophies once the Ladder is open), the Amber and Dust chips, the gear.
- * - **Left**: the Campaign card (after the onboarding) and the four capsule slots (once Capsules open).
- * - **Right, over Battle**: the match plate (who Battle fights, with the AI badge and tier; the format
- *   picker from Arena 2) and **Battle** (gold, XL, bottom-right, the only primary and the one pulse),
- *   with **Modes** (slate) to its left once open. The five tabs are the shell's bottom bar.
+ *   centre: your base and the opponent's across the lane, the arena's landmark behind (`Diorama`).
+ *   Under it the arena's name and the trophy bar to the next Trophy Road reward (once the Ladder is open).
+ * - **Top bar**: the profile chip (trophies once the Ladder is open), the Sundial mark, the Amber and
+ *   Dust chips, the gear.
+ * - **Left**: the War Path card (after the onboarding) and the four capsule slots (once Capsules open).
+ * - **Right, over Battle**: the match plate, the lobby card that always shows exactly what Battle will
+ *   do (`plate.tsx`: who you fight, with the AI chip; the one choice the mode needs, like the battle
+ *   length; one line), and **Battle** (gold, XL, bottom-right, the only primary and the one pulse),
+ *   with the **mode switcher** to its left once open (3 wins). The switcher shows the mode Battle
+ *   plays ("Ladder · vs AI"); its panel selects a mode and never starts one. The five tabs are the
+ *   shell's bottom bar.
  *
  * While the onboarding runs (A8), Battle starts its matches (the training match vs Old Grogg, then
- * match 2 vs Pip; both are War Path Stone L1 and L2). Afterwards it starts a Ladder match. Feature
- * unlocks play here (MR-40): the feature that just opened glows free of its padlock with one line and
- * "Open"; Battle stays lit and interrupts it.
+ * match 2 vs Pip; both are War Path Stone L1 and L2). Feature unlocks play here (MR-40).
+ *
+ * Online play (Friend Duel at M2, Online Battle at M4) has its plate states, search, room and VS in
+ * `online.tsx`; they render only in the dev mock (`onlineMock`) until they work (spec 1.8).
  */
 import './home.css';
 import './hub.css';
 import '../warPath/warPath.css';
+import './lobby.css';
 import type { AgeId, CardId, FormatId, Loadout } from '@/contracts';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { SwordsIcon } from '../../components/icons';
 import { useKit } from '../../components/kit';
+import { fly } from '../../components/motion';
 import { blockingOverlays } from '../../components/overlay';
-import type { RouteOf, TabId } from '../../router';
+import type { MatchRequest, RouteOf, TabId } from '../../router';
 import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
 import { equippedOf, owns } from '../model/cosmetics';
+import { battleRequest, homeMode, homeModeFlags, ladderFormat, ladderFormatFlags, quickGeneralFor, skirmishSetup, type HomeMode } from '../model/homeMode';
 import { formatAges, reachedAges } from '../model/plan';
-import { arenaOf, unlocks } from '../model/progress';
+import { arenaOf, lastDifficulty } from '../model/progress';
 import { featureOpen, firstUpgradePending, pendingUnlock, unlockFlag, type HomeUnlock } from '../model/warPath';
 import { askFullscreen } from '../shared/fullscreen';
 import { useMatchStarter } from '../shared/MatchStarter';
 import { ModesSheet } from '../warPath/ModesSheet';
 import { TAB_ROOTS } from '../warPath/shell';
 import { ArenaScene } from './ArenaScene';
-import { Diorama } from './Diorama';
-import { ArenaTitle, CampaignCard, CapsuleSlots, HubProfile, HubTopRight, MatchPlate, TrophyBar, UnlockPointer } from './hub';
+import { Diorama, type FoeLook } from './Diorama';
+import { ArenaTitle, CampaignCard, CapsuleSlots, HubProfile, HubTopRight, pendingCurrencyCaption, TrophyBar, UnlockPointer } from './hub';
+import { JoinPanel, onlineLengths, onlineMock, OnlinePlate, OnlineVs, RoomPanel, useElapsed, type OnlineState } from './online';
+import { MatchPlate } from './plate';
+import { FriendSoonChip, ModeSwitcher, type SwitcherMode } from './switcher';
 
 const UNLOCK_TAB: Readonly<Partial<Record<HomeUnlock, TabId>>> = { army: 'army', capsules: 'capsules', customize: 'customize', progress: 'progress' };
-
-/** The ladder format Battle plays (remembered per save as a UI flag, like the Modes panel's last mode). */
-const FORMAT_FLAG = 'ui-ladderFormat.';
 
 /** The onboarding match Battle starts while it is due (A8): step 0 is match 1, step 2 is match 2. */
 export function trainingDue(step: number): 1 | 2 | null {
@@ -64,7 +73,7 @@ function frontline(l: Loadout | undefined): CardId[] {
 }
 
 export function HomeScreen(_p: { route: RouteOf<'home'> }) {
-  const { save, content, t, router, services } = useUi();
+  const { save, content, t, router, services, toasts } = useUi();
   const kit = useKit();
   const s = save.value;
   const reduce = s.settings.reduceMotion;
@@ -81,27 +90,73 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const modesOpen = featureOpen(s, content, 'modes');
   const armyOpen = featureOpen(s, content, 'army');
   const arena = arenaOf(s, content);
-  const u = unlocks(s, content);
-  const formats = u.ladderFormats;
-  const format: FormatId = formats.find((f) => s.flags[FORMAT_FLAG + f]) ?? formats[0] ?? 'short';
-  const opponent = ladderOpen ? services.previewOpponent(format) : null;
 
-  // The diorama shows both bases in the furthest age of the format you have reached (the age the war
-  // builds up to); yours wears your base skin (A18.9.4).
-  const age = dioramaAge(formatAges(content, format), reachedAges(s, content)) ?? content.order.ages[0]!;
+  // ---- The mode Battle plays (the switcher), and the dev-only online mock -----------------------
+  const mock = onlineMock.value;
+  const aiMode: HomeMode = training || !modesOpen ? 'ladder' : homeMode(s, content);
+  const [mockMode, setMockMode] = useState<SwitcherMode | null>(mock ? mock.mode : null);
+  const onlineMode = mock && (mockMode === 'online' || mockMode === 'friend') && !training ? mockMode : null;
+  const mode: SwitcherMode = onlineMode ?? aiMode;
+  const format = ladderFormat(s, content);
+  const [onlineFormat, setOnlineFormat] = useState<FormatId>('short');
+  const opponent = ladderOpen && mode === 'ladder' ? services.previewOpponent(format) : null;
+
+  // ---- Online flow (mock): search counts up, the AI is offered after 25 s, Found, VS ------------
+  const [ostate, setOstate] = useState<OnlineState>(mock?.state ?? 'idle');
+  const [room, setRoom] = useState<'host' | 'join' | null>(mock?.room ?? null);
+  const [vs, setVs] = useState(!!mock?.vs);
+  const searching = !!onlineMode && ostate === 'searching';
+  const elapsed = useElapsed(searching, mock?.elapsedMs ?? 0);
+  useEffect(() => {
+    if (!searching || !mock || mock.foundAfterMs === null || mock.foundAfterMs === undefined) return;
+    if (elapsed < mock.foundAfterMs) return;
+    // MR-122 / MR-123: the fog clears, the plate flashes the player for 0.6 s, then VS.
+    setOstate('found');
+    kit.sound?.('ui_confirm');
+    const id = setTimeout(() => setVs(true), 600);
+    return () => clearTimeout(id);
+  }, [searching, elapsed]);
+  // Esc and back cancel a search (1.5); while searching the tab bar dims and does not respond.
+  useEffect(() => {
+    if (!searching) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      setOstate('idle');
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [searching]);
+
+  // The diorama shows both bases in the furthest age of the war's window you have reached (the age
+  // the war builds up to); yours wears your base skin (A18.9.4).
+  const playFormat: FormatId = onlineMode
+    ? onlineFormat
+    : mode === 'quick'
+      ? 'short'
+      : mode === 'daily'
+        ? content.dailyModifiers.challenge.format
+        : mode === 'skirmish'
+          ? (skirmishSetup(s, content)?.format ?? format)
+          : format;
+  const age = dioramaAge(formatAges(content, playFormat), reachedAges(s, content)) ?? content.order.ages[0]!;
   const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
   const skin = eq?.baseSkins?.[age] ?? null;
   const mySkin = skin && owns(s, content, skin) ? skin : null;
   const foeSkin = opponent?.side.look?.baseSkins?.[age] ?? null;
   const teams = hudTeamColors(s.settings.teamPreset, 0);
   // Each side's frontline troops in the lane: your active War Plan's, and the AI's own plan (the
-  // training General's during the onboarding).
+  // training General's during the onboarding, the Quick or Skirmish General's in those modes).
   const plan = s.warPlans[s.activePlan] ?? s.warPlans[0];
   const mine = frontline(plan?.loadouts[age]);
   const trainingGeneral = training ? content.warPath.levels[content.warPath.order[training - 1]!]?.general : undefined;
-  const trainingPlan = trainingGeneral ? content.generals.list[trainingGeneral as keyof typeof content.generals.list]?.warPlan : null;
-  const foeUnits = frontline(opponent ? opponent.side.loadouts[age] : trainingPlan?.[age]);
+  const modeGeneral = mode === 'quick' ? quickGeneralFor(content, lastDifficulty(s, content)) : mode === 'skirmish' ? skirmishSetup(s, content)?.generalId : undefined;
+  const planGeneral = trainingGeneral ?? modeGeneral;
+  const generalPlan = planGeneral ? content.generals.list[planGeneral as keyof typeof content.generals.list]?.warPlan : null;
+  const foeUnits = frontline(opponent ? opponent.side.loadouts[age] : generalPlan?.[age]);
   const foe = foeUnits.length > 0 ? foeUnits : mine;
+  // Online, the far base is a "?" until a player is found; it fogs while searching (spec 1.6).
+  const foeLook: FoeLook = onlineMode ? (ostate === 'found' ? 'found' : searching ? 'searching' : 'unknown') : 'ai';
 
   // ---- MR-40: a feature that just opened (never for a legacy save) ------------------------------
   const covered = blockingOverlays.value > 0;
@@ -128,14 +183,15 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
 
   // ---- Battle ---------------------------------------------------------------------------------
   const [modes, setModes] = useState(false);
+  /** The card the Modes panel opens on (the Friend Duel chip opens it on Friend Duel's note). */
+  const [modesFocus, setModesFocus] = useState<SwitcherMode | null>(null);
   const [launching, setLaunching] = useState(false);
   const starter = useMatchStarter();
 
-  function battle() {
+  /** MR-15: Battle dips, the diorama leans in and the clash flares, then VS (an AI match never searches). */
+  function launch(req: MatchRequest) {
     setUnlock(null);
     askFullscreen();
-    const req = training ? ({ mode: 'tutorial', match: training } as const) : ({ mode: 'ladder', format } as const);
-    // MR-15: Battle dips, the diorama leans in and the clash flares, then VS.
     if (reduce) {
       starter.start(req);
       return;
@@ -147,10 +203,34 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
     }, 220);
   }
 
+  function battle() {
+    if (onlineMode) {
+      if (onlineMode === 'friend') {
+        setRoom('host');
+        return;
+      }
+      if (ostate === 'searching') setOstate('idle');
+      else if (ostate === 'idle') {
+        kit.sound?.('ui_click');
+        setOstate('searching');
+      }
+      return;
+    }
+    launch(training ? { mode: 'tutorial', match: training } : battleRequest(s, content, s.settings.defaultSpeed));
+  }
+
+  /** The labelled AI choice (after 25 s of searching, or when online is not available): the Ladder vs AI. */
+  function playAi() {
+    setOstate('idle');
+    setMockMode('ladder');
+    services.setUiFlags(homeModeFlags('ladder'));
+    launch({ mode: 'ladder', format: ladderFormat(s, content) });
+  }
+
   // Keyboard (2.2): Space starts a battle on Home.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== ' ' || e.defaultPrevented || modes) return;
+      if (e.key !== ' ' || e.defaultPrevented || modes || room || vs) return;
       const tag = (e.target as HTMLElement | null)?.tagName ?? '';
       if (/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(tag)) return;
       e.preventDefault();
@@ -160,20 +240,56 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
     return () => document.removeEventListener('keydown', onKey);
   });
 
+  /** MR-120: the picked card's icon arcs into the switcher tile; the plate cross-fades. */
+  const switcherRef = useRef<HTMLDivElement>(null);
+  function select(m: SwitcherMode, icon: Element | null) {
+    kit.sound?.('ui_toggle');
+    setMockMode(m);
+    if (m === 'online' || m === 'friend') setOstate(mock?.state === 'searching' || mock?.state === 'found' ? 'idle' : (mock?.state ?? 'idle'));
+    else services.setUiFlags(homeModeFlags(m));
+    const tile = switcherRef.current?.querySelector('.hub-switch');
+    if (icon && tile && !reduce) {
+      const from = icon.getBoundingClientRect();
+      const token = () => {
+        const el = document.createElement('span');
+        el.setAttribute('class', 'hub-fly');
+        if (typeof icon.cloneNode === 'function') el.appendChild(icon.cloneNode(true));
+        return el;
+      };
+      fly(from, tile, { token });
+    }
+  }
+
+  const unavailable = !!onlineMode && (ostate === 'noConnection' || ostate === 'full' || ostate === 'update');
+  const battleLabel = onlineMode === 'friend' ? t('ui.hub.createRoom') : searching ? t('ui.online.cancel') : t('ui.home.battle');
   const quiet = !!unlock || held || !!pendingUnlock(s, content);
   const scene = useMemo(() => <ArenaScene arena={arena.id} />, [arena.id]);
+  const overlay = modes || !!room || vs;
+  const unavailableKey = ostate === 'noConnection' ? 'ui.online.noConnection' : ostate === 'full' ? 'ui.online.full' : 'ui.online.update';
 
   return (
     <section
-      class={`ui-screen hub${launching ? ' is-launching' : ''}${armyOpen ? '' : ' is-first'}${ladderOpen ? ' is-ladder' : ' is-training'}`}
+      class={`ui-screen hub${launching ? ' is-launching' : ''}${armyOpen ? '' : ' is-first'}${ladderOpen ? ' is-ladder' : ' is-training'}${searching ? ' is-searching' : ''}`}
       data-screen="home"
       data-arena={arena.id}
+      data-mode={mode}
       data-unlock={unlock ?? undefined}
       aria-label={t('ui.home.title')}
     >
       {scene}
       <div class="hub-stage">
-        <Diorama arena={arena.id} age={age} mySkin={mySkin} foeSkin={foeSkin} teamMe={teams.me} teamFoe={teams.foe} mine={mine} foe={foe} launching={launching} />
+        <Diorama
+          arena={arena.id}
+          age={age}
+          mySkin={mySkin}
+          foeSkin={foeLook === 'ai' ? foeSkin : null}
+          teamMe={teams.me}
+          teamFoe={teams.foe}
+          mine={mine}
+          foe={foeLook === 'ai' || foeLook === 'found' ? foe : []}
+          foeLook={foeLook}
+          launching={launching}
+        />
         {ladderOpen ? (
           <div class="hub-stage__caption">
             <ArenaTitle />
@@ -201,35 +317,68 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
       ) : null}
 
       <div class="wp-dock hub-dock">
-        <MatchPlate
-          opponent={opponent}
-          training={training}
-          formats={formats}
-          format={format}
-          onFormat={(f) => services.setUiFlags(Object.fromEntries(formats.map((x) => [FORMAT_FLAG + x, x === f])))}
-          aside={unlock === 'modes' || unlock === 'daily'}
-        />
-        <div class="wp-playRow">
-          {modesOpen ? (
-            <Button kind="secondary" size="xl" class="wp-modes" icon={<SwordsIcon size={24} />} testid="home-modes" onClick={() => setModes(true)}>
-              {t('warPath.ui.modes')}
-            </Button>
+        {onlineMode && mock ? (
+          <OnlinePlate
+            mock={{ ...mock, mode: onlineMode }}
+            state={ostate}
+            elapsed={elapsed}
+            format={onlineLengths(onlineMode).includes(onlineFormat) ? onlineFormat : 'short'}
+            onFormat={setOnlineFormat}
+            onAi={playAi}
+            onJoin={() => setRoom('join')}
+            aside={unlock === 'modes' || unlock === 'daily'}
+          />
+        ) : (
+          <MatchPlate
+            mode={aiMode}
+            opponent={opponent}
+            training={training}
+            format={format}
+            onFormat={(f) => services.setUiFlags(ladderFormatFlags(content, f))}
+            onSkirmish={() => router.go({ id: 'modeSelect', focus: 'skirmish' })}
+            aside={unlock === 'modes' || unlock === 'daily'}
+            // The No clock caption queues behind a currency caption already on screen (one at a time, U8).
+            quiet={quiet || pendingCurrencyCaption(s) !== null}
+          />
+        )}
+        <div class="wp-playRow" ref={switcherRef}>
+          {/* The friend entry, shown as coming later (owner decision 2026-10-01); gone once the mock's Friend Duel works. */}
+          {modesOpen && !training && !mock ? (
+            <FriendSoonChip
+              onOpen={() => {
+                setModesFocus('friend');
+                setModes(true);
+              }}
+            />
+          ) : null}
+          {modesOpen && !training ? (
+            <ModeSwitcher
+              mode={mode}
+              onOpen={() => {
+                setModesFocus(null);
+                setModes(true);
+              }}
+              disabled={searching}
+              reason={t('ui.online.searching')}
+            />
           ) : null}
           <Button
-            kind="primary"
+            kind={searching ? 'secondary' : 'primary'}
             size="xl"
-            class="wp-play hub-battle"
-            pulse={!modes && !covered}
-            primary={!modes && !covered}
+            class={`wp-play hub-battle${searching ? ' is-cancel' : ''}`}
+            pulse={!overlay && !covered && !searching && !unavailable}
+            primary={!overlay && !covered && !searching}
             testid="play"
             autofocus
-            icon={<SwordsIcon size={30} />}
+            disabled={unavailable}
+            reason={unavailable ? t('ui.online.battleBlocked', { reason: t(unavailableKey) }) : undefined}
+            icon={searching ? null : <SwordsIcon size={30} />}
             onClick={(e) => {
               e.stopPropagation();
               battle();
             }}
           >
-            {t('ui.home.battle')}
+            {battleLabel}
           </Button>
         </div>
       </div>
@@ -251,12 +400,19 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
         />
       ) : null}
 
-      {modes ? (
-        <ModesSheet
-          onClose={() => setModes(false)}
-          onStart={(req) => {
-            setModes(false);
-            starter.start(req);
+      {modes ? <ModesSheet selected={mode} online={!!mock} focus={modesFocus} onSelect={select} onClose={() => setModes(false)} /> : null}
+      {room === 'host' && mock ? <RoomPanel mock={mock} format={onlineFormat} onFormat={setOnlineFormat} onClose={() => setRoom(null)} /> : null}
+      {room === 'join' ? <JoinPanel onClose={() => setRoom(null)} /> : null}
+      {vs && mock ? (
+        <OnlineVs
+          mock={mock}
+          format={onlineFormat}
+          frozen={!!mock.vs}
+          onDone={() => {
+            // The mock has no battle to start: back to the idle lobby.
+            setVs(false);
+            setOstate('idle');
+            toasts.show(t('ui.online.found'), { tone: 'info' });
           }}
         />
       ) : null}

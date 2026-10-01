@@ -261,7 +261,7 @@
         "title": "Conquest",
         "desc": "Beat 9 AI Generals for stars.",
         "open": "Open board",
-        "rules": "Full War. No trophies."
+        "rules": "Long War. No trophies."
       },
       "skirmish": {
         "title": "Skirmish",
@@ -348,7 +348,8 @@
         "skirmish": "Skirmish",
         "daily": "Daily Challenge",
         "warPath": "War Path"
-      }
+      },
+      "lastRow": "No clock · Siege rises every {every} min from {from} · Crumble from {crumble}"
     },
     "pause": {
       "title": "Paused",
@@ -368,6 +369,16 @@
       "defeat": "Defeat",
       "draw": "Draw",
       "vs": "vs {name}",
+      "unranked": "Unranked · stays at {n}",
+      "lastReason": {
+        "theirFell": "Their base fell at {time}",
+        "yoursFell": "Your base fell at {time}",
+        "theirCrumbled": "Their walls crumbled at {time}",
+        "yoursCrumbled": "Your walls crumbled at {time}",
+        "both": "Both bases fell together at {time}",
+        "retreated": "You retreated at {time}",
+        "theyRetreated": "They retreated at {time}"
+      },
       "recap": "Battle recap",
       "rewards": "Rewards",
       "mvp": "MVP",
@@ -835,11 +846,32 @@
       "startNext": "One more training battle",
       "format": {
         "short": "Short",
-        "standard": "Standard",
-        "full": "Full"
+        "standard": "Medium",
+        "full": "Long",
+        "last": "No clock"
       },
       "roadNext": "Next at {n}",
-      "opponent": "Opponent"
+      "opponent": "Opponent",
+      "lastAria": "Last Base Standing, no clock",
+      "lengths": "Battle length",
+      "lineTimed": "{ages} ages · up to {min} min",
+      "lineUntimed": "{ages} ages · no clock",
+      "winTrophies": "win +{n}",
+      "lengthLocked": "{name} opens at Arena {n} ({trophies} trophies)",
+      "lastCaption": "No clock: the war grows fiercer until a base falls (at most about {end} min).",
+      "lastInfo": "About Last Base Standing",
+      "quickLine": "Short War · {n} Amber per win",
+      "dailyLine": "Today: {modifier} · {format}",
+      "dailyDone": "Today's capsule collected · wins pay {n} Amber",
+      "skirmishLine": "{difficulty} · {format}",
+      "skirmishStd": "every card Lv {n}",
+      "change": "Change",
+      "difficulty": "Difficulty",
+      "createRoom": "Create room",
+      "friendSoon": "Later",
+      "friendSoonAria": "Friend Duel arrives with online play. More about it",
+      "easier": "Easier",
+      "harder": "Harder"
     },
     "armyAge": {
       "battle": "In battle",
@@ -927,6 +959,89 @@
       "levy": "{hp} HP, {dmg} damage. It takes no army space and pays the enemy no bounty.",
       "slow": "Slows by {pct}% for {s} s",
       "level": "No levels: a fort is as strong as the average level of your troops in this age."
+    },
+    "lastBase": {
+      "title": "Last Base Standing",
+      "what": "No Final Bell and no countdown. The war ends when a base falls.",
+      "siege": "Siege begins at {from} and rises every {every} min: bases take more damage, turrets deal less.",
+      "crumble": "From {crumble}, the side fighting in its own half crumbles, so every war ends by about {end} min.",
+      "rewards": "No trophies, win or lose. A win pays Amber like a Long War. Every finished war claims a ready Sundial capsule; a Retreat pays nothing.",
+      "closing": "Closing the game ends the war with no result."
+    },
+    "switcher": {
+      "label": "Mode: {mode}. Change mode",
+      "tagAi": "vs AI",
+      "tagPlayers": "vs players",
+      "tagFriend": "vs a friend",
+      "ladder": "Ladder",
+      "quick": "Quick",
+      "daily": "Daily",
+      "skirmish": "Skirmish",
+      "friend": "Friend Duel",
+      "online": "Online"
+    },
+    "modesPanel": {
+      "groupAi": "vs AI",
+      "groupPlayers": "vs players",
+      "ladderDesc": "Climb the arenas against AI Generals.",
+      "ladderReward": "Trophies and capsules",
+      "friend": "Friend Duel",
+      "friendDesc": "Play a friend with a room code.",
+      "friendSoon": "Arrives with online play",
+      "friendInfo": "When online play opens, you create a room, share its code and fight your friend in any of the four lengths. Every card at level 8, no trophies, nothing to buy.",
+      "online": "Online Battle",
+      "onlineDesc": "Fight a player in a Short, Medium or Long War.",
+      "onlineReward": "Amber and capsules, no trophies",
+      "selectHint": "Pick a mode. Battle on Home plays it."
+    },
+    "online": {
+      "player": "Player",
+      "opponent": "Opponent",
+      "connected": "Connected",
+      "unknown": "A player",
+      "unknownSub": "Found when you press Battle",
+      "casualLine": "All cards at level 8 · no trophies",
+      "searching": "Searching for a player",
+      "tip1": "Tip: evolve when your army holds the middle.",
+      "tip2": "Tip: anti-heavy troops beat Heavies.",
+      "tip3": "Tip: Siege halves turret damage. Push!",
+      "noPlayerYet": "No player yet.",
+      "playAi": "Play an AI General",
+      "found": "Player found",
+      "cancel": "Cancel",
+      "friendTitle": "Play a friend",
+      "friendLine": "No trophies · all cards level 8",
+      "enterCode": "Enter a code",
+      "noConnection": "No connection",
+      "noConnectionLine": "Check your connection, or play the Ladder vs AI.",
+      "full": "Online is full",
+      "fullLine": "Online battles are full right now. The Ladder vs AI is open.",
+      "update": "Update needed",
+      "updateLine": "A new version is ready. Reload to play online.",
+      "playVsAi": "Play vs AI",
+      "reload": "Reload",
+      "battleBlocked": "Battle can't start: {reason}",
+      "room": {
+        "title": "Play a friend",
+        "code": "Room code",
+        "copy": "Copy",
+        "copied": "Copied",
+        "share": "Share",
+        "waiting": "Waiting for your friend… {time}",
+        "ready": "Ready",
+        "leave": "Leave room",
+        "length": "Length (you choose)",
+        "host": "Host",
+        "join": "Join",
+        "codeHint": "Six letters and numbers, from your friend",
+        "noRoom": "No room with that code"
+      },
+      "vs": {
+        "levels": "All cards at level 8",
+        "connection": "Connection {n} of 3",
+        "block": "Block",
+        "report": "Report"
+      }
     }
   }
 }

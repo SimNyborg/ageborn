@@ -204,9 +204,9 @@
   },
   "format": {
     "tutorial": { "name": "Training", "desc": "Stone Age to Future Age, no clock." },
-    "short": { "name": "Short War", "desc": "3 ages, about 7 min." },
-    "standard": { "name": "Standard War", "desc": "5 ages, about 10 min." },
-    "full": { "name": "Full War", "desc": "7 ages, about 15 min." },
+    "short": { "name": "Short War", "desc": "3 ages, up to 8½ min." },
+    "standard": { "name": "Medium War", "desc": "5 ages, up to 12½ min." },
+    "full": { "name": "Long War", "desc": "7 ages, up to 17½ min." },
     "last": { "name": "Last Base Standing", "desc": "7 ages, no clock: the Siege rises until a base falls." }
   },
   "rarity": {
@@ -408,12 +408,12 @@
   "title": {
     "recruit": { "name": "Recruit", "unlock": "Start playing" },
     "firestarter": { "name": "Firestarter", "unlock": "Win your first battle" },
-    "evolver": { "name": "Evolver", "unlock": "Reach the last age of a Full War" },
+    "evolver": { "name": "Evolver", "unlock": "Reach the last age of a Long War or Last Base Standing" },
     "mammoth_tamer": { "name": "Mammoth Tamer", "unlock": "Own the Mammoth Matriarch" },
     "collector": { "name": "Collector", "unlock": "Reach Codex Level 10" },
     "siege_scholar": { "name": "Siege Scholar", "unlock": "Reach Arena 4" },
     "last_stander": { "name": "Last Stander", "unlock": "Win after your Last Stand" },
-    "speedrunner": { "name": "Speedrunner", "unlock": "Reach the last age of a Full War before 10:00" },
+    "speedrunner": { "name": "Speedrunner", "unlock": "Reach the last age of a Long War (or Last Base Standing) before 10:00" },
     "veteran": { "name": "Veteran", "unlock": "Win 100 battles" },
     "curator": { "name": "Curator", "unlock": "Reach Codex Level 40" },
     "wardens_bane": { "name": "Warden's Bane", "unlock": "Beat The Warden" },
@@ -427,13 +427,13 @@
   "feat": {
     "caveman_diplomacy": { "name": "Caveman Diplomacy", "riddle": "Old bones, new tricks.", "hint": "A Stone Age unit kills a Future Age unit." },
     "arrows_into_tomorrow": { "name": "Arrows into Tomorrow", "riddle": "The sky of the past rains on the future.", "hint": "One Arrow Storm kills 3 or more Modern or Future units." },
-    "stubborn": { "name": "Stubborn", "riddle": "Some never leave the castle.", "hint": "Win a Standard or Full War without evolving past Medieval." },
-    "no_walls": { "name": "No Walls", "riddle": "Who needs towers?", "hint": "Win a Full War without building a turret." },
+    "stubborn": { "name": "Stubborn", "riddle": "Some never leave the castle.", "hint": "Win a Medium or Long War (or Last Base Standing) without evolving past Medieval." },
+    "no_walls": { "name": "No Walls", "riddle": "Who needs towers?", "hint": "Win a Long War (or Last Base Standing) without building a turret." },
     "photo_finish": { "name": "Photo Finish", "riddle": "By a hair.", "hint": "Win at the Final Bell by 2% base HP or less." },
     "horn_of_legends": { "name": "Horn of Legends", "riddle": "One last blast.", "hint": "One Last Stand volley kills 8 or more units." },
-    "lightspeed": { "name": "Lightspeed", "riddle": "Clubs to lasers, fast.", "hint": "Reach the Future Age before 9:00 in a Full War." },
+    "lightspeed": { "name": "Lightspeed", "riddle": "Clubs to lasers, fast.", "hint": "Reach the Future Age before 9:00 in a Long War or Last Base Standing." },
     "underdog": { "name": "Underdog", "riddle": "Two ages behind, still standing.", "hint": "Win after your opponent was two ages ahead of you." },
-    "humble_beginnings": { "name": "Humble Beginnings", "riddle": "Commons can conquer.", "hint": "Win a Full War with only Common cards and starter powers in your plan." },
+    "humble_beginnings": { "name": "Humble Beginnings", "riddle": "Commons can conquer.", "hint": "Win a Long War (or Last Base Standing) with only Common cards and starter powers in your plan." },
     "back_from_the_brink": { "name": "Back from the Brink", "riddle": "Almost dust.", "hint": "Win after your base fell below 5% HP." },
     "stone_cold": { "name": "Stone Cold", "riddle": "The first stone is the last.", "hint": "A Stone Age unit deals the final blow to a base in the Future Age." },
     "old_guard": { "name": "Old Guard", "riddle": "Five ages, one army.", "hint": "Have living units from 5 different ages on your side at the same time." }

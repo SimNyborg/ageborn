@@ -769,8 +769,16 @@ export class EventMapper {
         if (ev.phase === 'siege') out.push({ a: 'musicLayer', layer: 'siege', v: 1 });
         return;
       case 'escalated':
+        // Last Base Standing (A2.10.1, MR-125): each step hits like the Siege horn and lifts the music's
+        // intensity layer; the HUD shows the step banner. Step 1 (Siege I) lands on the same tick as
+        // `phaseChanged` siege, which already plays the horn, so it is not played twice.
+        if (ev.step > 1) this.rule('phase.siege', { at: { k: 'world', x: LANE_LU / 2, y: -80 } }, out);
+        out.push({ a: 'musicLayer', layer: 'intensity', v: Math.min(1, 0.4 + ev.step * 0.12) });
+        return;
       case 'crumbled':
-        // Last Base Standing (A2.10.1): the step banner, drum and Crumble dust arrive with L3 (MR-125, MR-126).
+        // MR-126: stones fall from the crumbling base's top on every rope beat (the damage itself arrives as
+        // a sourceless `baseDamaged`, which already drops the decay debris at its front).
+        this.rule('base.decay', { at: { k: 'base', side: ev.side, part: 'top' }, spreadLu: 40 }, out);
         return;
       case 'emote':
         out.push({ a: 'view', ev: { t: 'emote', side: ev.side, emote: ev.emote } });

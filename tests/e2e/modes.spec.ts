@@ -35,9 +35,9 @@ test.describe('modes and replays', () => {
     const problems = watchPage(page);
     await veteranHome(page);
     await modeSelect(page);
-    // Arena 3: the format picker offers every ladder format (A6.3).
+    // Arena 3: the format picker offers every ladder length (A6.3, A2.10: Short, Medium, Long, Last Base Standing).
     const picker = page.getByTestId('ladder-format');
-    await expect(picker.getByRole('radio')).toHaveCount(3);
+    await expect(picker.getByRole('radio')).toHaveCount(4);
     await picker.getByRole('radio').first().click();
     await page.getByTestId('ladder-start').click();
     // VS: the opponent is an AI General (A7.1).
@@ -65,6 +65,20 @@ test.describe('modes and replays', () => {
     await page.keyboard.press('Shift');
     await page.getByTestId('replay-back').click({ force: true });
     await expect(page.getByTestId('play')).toBeVisible({ timeout: 15_000 });
+    expect(problems.errors).toEqual([]);
+  });
+
+  test('the mode switcher selects Quick Battle; Battle plays it vs a labelled AI (no search)', async ({ page }) => {
+    const problems = watchPage(page);
+    await veteranHome(page);
+    await expect(page.getByTestId('home-modes')).toContainText('Ladder');
+    await page.getByTestId('home-modes').click();
+    await page.getByTestId('mode-quick').click();
+    await expect(page.getByTestId('modes-sheet')).toHaveCount(0);
+    await expect(page.getByTestId('home-modes')).toContainText('Quick');
+    await expect(page.getByTestId('home-opponent').getByTestId('ai-badge')).toBeVisible();
+    await page.getByTestId('play').click();
+    await expect(page.getByTestId('vs-foe').getByTestId('ai-badge')).toBeVisible({ timeout: 10_000 });
     expect(problems.errors).toEqual([]);
   });
 

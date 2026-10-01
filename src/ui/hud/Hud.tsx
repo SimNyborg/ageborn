@@ -43,6 +43,7 @@ import {
   EVOLVE_REARM_MS,
   REASON_MS,
   phaseBanner,
+  escalationView,
   buyMountIntent,
   denyTargetFor,
   hudPulse,
@@ -142,12 +143,12 @@ function rememberKeysUsed(): void {
 /** A big centred moment: "Medieval Age!", "Overdrive! Gold ×2", the blocked-at-the-gate callout. */
 interface Moment {
   id: number;
-  kind: 'evolve' | 'phase' | 'blocked';
+  kind: 'evolve' | 'phase' | 'blocked' | 'escalate';
   title: string;
   sub?: string;
 }
 
-const MOMENT_MS: Record<Moment['kind'], number> = { evolve: 2400, phase: 2600, blocked: 4200 };
+const MOMENT_MS: Record<Moment['kind'], number> = { evolve: 2400, phase: 2600, blocked: 4200, escalate: 1200 };
 /** The War Council sheet leaves in 130 ms (0.7 × its 180 ms entrance, A15 motion rules). */
 const SHEET_EXIT_MS = 130;
 /** The research-complete card stays this long (a tap skips it). */
@@ -508,9 +509,29 @@ export function Hud(props: HudProps) {
   useEffect(() => {
     if (m.phase === lastPhase.current) return;
     lastPhase.current = m.phase;
+    // Last Base Standing's Siege has no decay: its steps get their own banner below, not "Bases crumble".
+    if (m.escalation && m.phase === 'siege') return;
     const b = phaseBanner(m.phase);
     if (b) showMoment({ kind: 'phase', title: t(b.title), sub: t(b.sub) });
   }, [m.phase, t, showMoment]);
+
+  // MR-125: each escalation step of a war with no Final Bell gets a 1.2 s banner that says what it
+  // changes ("Siege II · Bases take ×3 damage"); it never blocks input.
+  const lastStep = useRef(m.escalation?.step ?? 0);
+  useEffect(() => {
+    const e = m.escalation;
+    if (!e || e.step <= lastStep.current) {
+      if (e) lastStep.current = e.step;
+      return;
+    }
+    lastStep.current = e.step;
+    const v = escalationView(m, config, side);
+    const pip = v?.pips.filter((x) => x.tone !== 'overdrive')[e.step - 1];
+    if (!v || !pip) return;
+    const sub =
+      pip.tone === 'siege' ? t('hud.esc.bannerS', { base: pip.base }) : pip.key === 'c1' ? t('hud.esc.bannerC') : t('hud.esc.bannerC2');
+    showMoment({ kind: 'escalate', title: t(`hud.esc.step.${pip.key}`), sub });
+  }, [m.escalation?.step, t, showMoment]);
 
   // Where the fighting is, and the "blocked at their gate" callout (audit #7).
   const front = view?.frontLine?.() ?? null;

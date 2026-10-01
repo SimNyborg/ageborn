@@ -800,6 +800,67 @@ export function clockView(m: HudModel): ClockView {
   };
 }
 
+/** One pip of the Last Base Standing escalation meter (A2.10.1, A9.2). */
+export interface EscalationPip {
+  /** `overdrive`, then the Siege steps `s1`-`s3`, then the Crumble steps `c1`, `c2`. */
+  key: string;
+  atMs: number;
+  /** `overdrive` (gold), `siege` (red) or `crumble` (stone, cracked). */
+  tone: 'overdrive' | 'siege' | 'crumble';
+  reached: boolean;
+  /** The schedule line's values: base damage ×, turret damage −%, crumble % of base health a second. */
+  base: number;
+  turretCut: number;
+  crumblePct: number;
+}
+
+export interface EscalationView {
+  /** The clock counts up (no countdown anywhere, A2.10.1). */
+  text: string;
+  pips: EscalationPip[];
+  /** The name key of the step in force (`hud.esc.step.*`; "No clock" before Overdrive). */
+  stepKey: string;
+  /** Crumbling now, for this HUD's side and the opponent's. */
+  crumbling: { me: boolean; foe: boolean };
+}
+
+/**
+ * The escalation meter of a war with no Final Bell (Last Base Standing): 6 pips (Overdrive, Siege I-III,
+ * Crumble I-II) from the format's public steps; null in a timed format.
+ */
+export function escalationView(m: HudModel, config: Readonly<MatchConfig>, side: Side): EscalationView | null {
+  const e = m.escalation;
+  if (!e) return null;
+  const steps = config.content.formats[config.format]?.escalation ?? [];
+  const pips: EscalationPip[] = [];
+  const od = m.phaseMarks.overdriveMs;
+  if (od !== null) pips.push({ key: 'overdrive', atMs: od, tone: 'overdrive', reached: m.clockMs >= od, base: 1, turretCut: 0, crumblePct: 0 });
+  let siege = 0;
+  let crumble = 0;
+  e.atMs.forEach((at, i) => {
+    const d = steps[i];
+    const isCrumble = (d?.crumbleBpPerSec ?? 0) > 0;
+    const key = isCrumble ? `c${++crumble}` : `s${++siege}`;
+    pips.push({
+      key,
+      atMs: at,
+      tone: isCrumble ? 'crumble' : 'siege',
+      reached: e.step > i,
+      base: (d?.baseDamageBp ?? 10000) / 10000,
+      turretCut: Math.round(100 - (d?.turretDamageBp ?? 10000) / 100),
+      crumblePct: (d?.crumbleBpPerSec ?? 0) / 100,
+    });
+  });
+  const current = [...pips].reverse().find((p) => p.reached);
+  const foe: Side = side === 0 ? 1 : 0;
+  return {
+    text: formatClock(Math.floor(m.clockMs / 1000) * 1000),
+    pips,
+    stepKey: `hud.esc.step.${current ? current.key : 'regulation'}`,
+    crumbling: { me: e.crumbling[side], foe: e.crumbling[foe] },
+  };
+}
+
 /** Power charge 0..1. */
 export function powerFraction(ppm: number): number {
   return Math.max(0, Math.min(1, ppm / PPM_FULL));

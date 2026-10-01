@@ -239,5 +239,29 @@ export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSa
     s('fallback', 'Fall back stance', { me: { stance: 'fallback' } }),
     s('fast', 'Speed 2x and paused', { speed: 2, paused: true }),
     s('ended', 'Match over: the tray is disabled', { phase: 'ended', clockMs: 402_000, foe: { baseHpBp: 0 } }),
+    // Last Base Standing (A2.10.1): the clock counts up over the 6-pip escalation meter.
+    ...(fmt?.escalation
+      ? (() => {
+          const at = fmt.escalation.map((x) => x.atMs);
+          const esc = (step: number, crumbling: [boolean, boolean]) => ({ step, steps: at.length, atMs: at, crumbling });
+          return [
+            s('lbsRegulation', 'Last Base Standing before Overdrive: the clock counts up, "No clock" under it', { clockMs: 260_000, escalation: esc(0, [false, false]) }),
+            s('lbsSiege2', 'Last Base Standing, Siege II: three red pips lit', {
+              clockMs: (at[1] ?? 0) + 40_000,
+              phase: 'siege',
+              me: { ageIndex: lastAge, baseHpBp: 6100 },
+              foe: { ageIndex: lastAge, baseHpBp: 4800 },
+              escalation: esc(2, [false, false]),
+            }),
+            s('lbsCrumble', 'Last Base Standing, Crumble: the opponent fights in its own half, its base crumbles', {
+              clockMs: (at[3] ?? 0) + 25_000,
+              phase: 'siege',
+              me: { ageIndex: lastAge, baseHpBp: 5200 },
+              foe: { ageIndex: lastAge, baseHpBp: 3100 },
+              escalation: esc(4, side === 0 ? [false, true] : [true, false]),
+            }),
+          ];
+        })()
+      : []),
   ];
 }

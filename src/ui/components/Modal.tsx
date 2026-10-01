@@ -101,6 +101,8 @@ export function Sheet(p: {
   testid?: string;
   /** Info panels (S17) may open over another sheet; they sit one layer higher. */
   info?: boolean;
+  /** Receives the sheet's own close (with its exit motion), for a choice that closes it (the Modes chooser). */
+  closeRef?: { current: (() => void) | null };
 }) {
   const kit = useKit();
   const portal = useContext(PortalContext);
@@ -122,6 +124,8 @@ export function Sheet(p: {
     const ms = reducedMotion(root.current) ? MOTION_DUR.reduced : MOTION_DUR.mediumOut;
     setTimeout(() => onClose.current(), ms);
   }
+
+  if (p.closeRef) p.closeRef.current = close;
 
   // The browser and Android back gesture close the sheet first (U7).
   useEffect(() => pushBackHandler(() => close()), []);

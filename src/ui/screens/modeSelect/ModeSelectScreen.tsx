@@ -34,6 +34,7 @@ import {
   CalendarIcon,
   CapsuleIcon,
   CastleIcon,
+  LastBaseIcon,
   LockIcon,
   StarIcon,
   SundialIcon,
@@ -45,6 +46,7 @@ import { Modal } from "../../components/Modal";
 import type { MatchRequest, RouteOf } from "../../router";
 import { useUi } from "../context";
 import { agesAwaitingAntiArmor } from "../model/plan";
+import { homeModeFlags, quickGeneralFor, skirmishSetupFlags } from "../model/homeMode";
 import {
   chargesView,
   conquestView,
@@ -82,18 +84,16 @@ function FormatNote(p: { content: Content; format: FormatId; t: (k: string, v?: 
   );
 }
 
-/**
- * The Quick Battle opponent for a difficulty: the first ladder General (content order) whose tier
- * range holds the difficulty's tier (Easy: Pip, Normal: Kettle, ..., Legendary: the Warden).
- */
-export function quickGeneral(content: Content, d: Difficulty): GeneralId {
-  const tier = content.generals.difficulty.tiers[d];
-  const list = content.generals.order.map((g) => content.generals.list[g]);
-  const fit = list.find(
-    (g) => !g.scripted && !g.mirror && g.tiers && g.tiers[0] <= tier && tier <= g.tiers[1],
-  );
-  return fit?.id ?? "kettle";
-}
+/** Short length labels, shared with Home's length picker (whole literals, so the strings check sees them). */
+const LENGTH_LABEL: Readonly<Record<string, string>> = {
+  short: "ui.hub.format.short",
+  standard: "ui.hub.format.standard",
+  full: "ui.hub.format.full",
+  last: "ui.hub.format.last",
+};
+
+/** The Quick Battle opponent for a difficulty (the model lives in `model/homeMode`). */
+export const quickGeneral = quickGeneralFor;
 
 /** The five named difficulties, each with its AI tier (owner feedback 2026-09-28). */
 export function DifficultyPicker(p: {
@@ -323,9 +323,9 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
   const { save, content, t, locale, router, services, now } = useUi();
   const s = save.value;
   const u = unlocks(s, content);
-  const [format, setFormat] = useState<FormatId>(
-    u.ladderFormats[u.ladderFormats.length - 1] ?? "short",
-  );
+  // The longest timed length by default; Last Base Standing (A2.10.1) is only ever picked on purpose.
+  const timed = u.ladderFormats.filter((f) => content.formats[f]?.kind !== "untimed");
+  const [format, setFormat] = useState<FormatId>(timed[timed.length - 1] ?? "short");
   const [skirmish, setSkirmish] = useState(
     p.route.focus === "skirmish" && u.skirmish,
   );
@@ -353,6 +353,9 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
 
   function start(req: MatchRequest) {
     setSkirmish(false);
+    // Skirmish setup's Play also selects Skirmish on Home's switcher with these settings (A9 #3).
+    if (req.mode === "skirmish" && skirmish)
+      services.setUiFlags({ ...skirmishSetupFlags(s, req.options), ...homeModeFlags("skirmish") });
     starter.start(req);
   }
 
@@ -442,7 +445,9 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
               onChange={setFormat}
               options={u.ladderFormats.map((f) => ({
                 value: f,
-                label: t(formatNameKey(f)),
+                // The short length names of Home's picker (A2.10); the note under it names the war.
+                label: LENGTH_LABEL[f] ? t(LENGTH_LABEL[f]) : t(formatNameKey(f)),
+                ...(f === "last" ? { icon: <LastBaseIcon size={18} /> } : {}),
               }))}
               testid="ladder-format"
               size="sm"

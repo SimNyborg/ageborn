@@ -11,10 +11,10 @@
  *   claimed nodes' trophy values.
  */
 import type { FormatId, Result, SaveDoc } from '@/contracts';
-import type { Content, GateReward, LadderWin, RoadReward } from '@/content';
+import type { Content, GateReward, RoadReward } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 import { grantCrateAt } from './capsules/wardrobe';
-import { rewardFormat } from './formats';
+import { isUnranked, ladderWinFor } from '@/content/ladder';
 import { META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER } from './rules';
 import { arenaOf } from './tables';
 import { addCosmetics, unlockTitles } from './titles';
@@ -22,25 +22,8 @@ import { checkFortUnlock, grantRoadFort } from './forts';
 
 export type LadderResult = 'win' | 'loss' | 'draw';
 
-/**
- * The ladder win reward for a format (A15.8): from 400 trophies each format pays its own row (Short
- * +26, Standard +30, Full +34 and more Amber for longer wars); below that every format pays A6.3's.
- */
-export function ladderWinFor(s: Pick<SaveDoc, 'trophies'>, t: Content, format?: FormatId): LadderWin {
-  const l = t.arenas.ladder;
-  if (!format) return l.win;
-  // A window pays the row of its family (A18.3.4: `short.bronze` pays Short War's).
-  const row = l.winByFormat.formats[rewardFormat(t, format)];
-  // A2.10.1: an unranked length (Last Base Standing) pays its own row at every trophy count.
-  if (row?.unranked) return row;
-  if (s.trophies.current < l.winByFormat.fromTrophies) return l.win;
-  return row ?? l.win;
-}
-
-/** True when a format moves no trophies (A2.10.1: Last Base Standing is unranked). */
-export function isUnranked(t: Content, format?: FormatId): boolean {
-  return format !== undefined && t.arenas.ladder.winByFormat.formats[rewardFormat(t, format)]?.unranked === true;
-}
+/** The ladder win row of a format and whether it is unranked (A15.8, A2.10.1; shared with the UI). */
+export { isUnranked, ladderWinFor } from '@/content/ladder';
 
 /** The trophy change of a ladder result (A6.3, A15.8 for wins by format; 0 in an unranked length, A2.10.1). */
 export function trophyDelta(s: SaveDoc, t: Content, result: LadderResult, format?: FormatId): number {

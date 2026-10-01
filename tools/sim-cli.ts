@@ -13,6 +13,8 @@
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
  *   npx tsx tools/sim-cli.ts csv export|import [--dir reports/csv] [--raw src/content/raw] [--dry-run]
+ *   npx tsx tools/sim-cli.ts lbs       [--mode smoke|full] [--mirror N] [--matches N] [--proxies a,b] [--format last]
+ *                                      [--tier 7] [--level 7] [--seed 9001] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts match     [--format full] [--seed 1] [--p0 bot:echo:5] [--p1 proxy:turret_turtle]
  *                                      [--level 7] [--replay out.json]
  *
@@ -31,6 +33,7 @@ import { dropsDefaults, dropsSections, runDrops } from './drops';
 import { economyDefaults, economySections, runEconomy } from './economy';
 import { exploitDefaults, exploitSections, runExploits } from './exploits';
 import { FORT_KINDS, FORT_ROW_GROUPS, fortsDefaults, fortsSections, runForts, type FortRowGroup } from './forts';
+import { lbsDefaults, lbsSections, runLbs } from './lbs';
 import { runStrength, strengthDefaults, strengthSections } from './strength';
 import { bool, int, list, parseArgs, str, type Args } from './lib/args';
 import { HeadlessMatch } from './lib/driver';
@@ -73,6 +76,10 @@ Commands:
                   <file|dir>...
   csv             export|import the unit, turret and power tables as CSV (B4)
                   --dir reports/csv --raw src/content/raw --dry-run
+  lbs             Last Base Standing gates (A2.10.1): tier VII mirror length (median, p90, longest, none past
+                  endByMs), where wars end, draws, first-mover; turtles, rope_runner and cheap_spam vs tier VII;
+                  idle vs tier 0; the headless cost of the longest war
+                  --mode smoke|full --mirror N --matches N (per proxy) --proxies a,b --format last --tier 7 --level 7 --seed 9001
   match           play one headless match and print its summary (debugging)
                   --format full --seed 1 --level 7 --p0 bot:echo:5 --p1 proxy:turret_turtle --replay out.json
 
@@ -93,6 +100,7 @@ export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
   csv: ['dir', 'raw', 'dry-run'],
+  lbs: ['mode', 'mirror', 'matches', 'proxies', 'format', 'tier', 'level', 'seed', 'patch'],
   match: ['format', 'seed', 'level', 'p0', 'p1', 'replay'],
 };
 
@@ -301,6 +309,25 @@ export async function main(argv: readonly string[]): Promise<number> {
       };
       const report = runCsv(sub, opts);
       return finish(report, csvSections(report), a);
+    }
+    case 'lbs': {
+      const d = lbsDefaults(mode(a));
+      const proxies = list(a, 'proxies');
+      for (const p of proxies) if (!isProxyId(p)) throw new Error(`unknown proxy "${p}" (${Object.keys(STRATEGIES).join(', ')})`);
+      const format = formatList([str(a, 'format', d.format)], [d.format])[0] ?? d.format;
+      const report = await runLbs({
+        ...d,
+        format,
+        mirrorMatches: int(a, 'mirror', d.mirrorMatches),
+        proxyMatches: int(a, 'matches', d.proxyMatches),
+        proxies: proxies.length > 0 ? (proxies as ProxyId[]) : d.proxies,
+        tier: int(a, 'tier', d.tier),
+        level: int(a, 'level', d.level),
+        seed: int(a, 'seed', d.seed),
+        workers,
+        onProgress: progressPrinter('lbs'),
+      }, patchedGameContent());
+      return finish(report, lbsSections(report), a);
     }
     case 'match':
       return matchCommand(a);

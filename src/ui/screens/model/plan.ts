@@ -189,7 +189,8 @@ export function planAvgLevel(save: SaveDoc, content: Content, plan: WarPlan, age
  * the next format uses"; the player picks among these from Arena 2).
  */
 export function nextFormat(save: SaveDoc, content: Content): FormatId {
-  const formats = arenaOf(save, content).ladderFormats;
+  // Last Base Standing (A2.10.1) plays the Long War's ages; the longest timed length names them.
+  const formats = arenaOf(save, content).ladderFormats.filter((f) => content.formats[f]?.kind !== 'untimed');
   return formats[formats.length - 1] ?? 'short';
 }
 

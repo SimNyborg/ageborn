@@ -6,6 +6,7 @@
 import type { ArenaDef, DailyDifficulty, Difficulty, GeneralDef, LadderWin, QuestDef, RoadNode } from '@/content/types';
 import type { Content } from '@/content/types';
 import type { CapsuleTier, FormatId, SaveDoc } from '@/contracts';
+import { ladderWinFor } from '@/content/ladder';
 import { byVisibleTier } from '../../components/capsuleLook';
 
 /** The player's arena (`save.arenaIndex` is 0-based into `arenas.list`). */
@@ -397,11 +398,9 @@ export function conquestView(save: SaveDoc, content: Content): ConquestView {
 // Ladder rewards by format (A15.8) and the Daily difficulty (A9.1, A15.7)
 // ---------------------------------------------------------------------------------------------
 
-/** What a ladder win pays in a format: the A15.8 table from 400 trophies, the A6.3 row below. */
+/** What a ladder win pays in a format (meta's own rule, shared through content: A15.8, A2.10.1). */
 export function ladderWin(save: SaveDoc, content: Content, format: FormatId): LadderWin {
-  const l = content.arenas.ladder;
-  const by = l.winByFormat;
-  return save.trophies.current >= by.fromTrophies ? (by.formats[format] ?? l.win) : l.win;
+  return ladderWinFor(save, content, format);
 }
 
 export const DAILY_DIFFICULTIES: readonly DailyDifficulty[] = ['recruit', 'veteran', 'warlord'];

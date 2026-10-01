@@ -304,6 +304,13 @@ function LaneUnit(p: { card: CardId; side: Side; slot: 0 | 1 }) {
   );
 }
 
+/**
+ * The far side of the lane (spec "online-first Battle hub" 1.6): the AI's base (`ai`); online, a grey
+ * "?" silhouette until a player is found (`unknown`), fog drifting over it while searching
+ * (`searching`, MR-121), and the found player's base dropping in as the fog clears (`found`, MR-122).
+ */
+export type FoeLook = 'ai' | 'unknown' | 'searching' | 'found';
+
 export function Diorama(p: {
   arena: ArenaId;
   age: AgeId;
@@ -314,8 +321,11 @@ export function Diorama(p: {
   /** Each side's frontline troops (up to two; the first stands in front). */
   mine?: readonly CardId[];
   foe?: readonly CardId[];
+  foeLook?: FoeLook;
   launching?: boolean;
 }) {
+  const look = p.foeLook ?? 'ai';
+  const hidden = look === 'unknown' || look === 'searching';
   const pal = ISLANDS[p.arena];
   const seed = fnv1a32(`hub:${p.arena}`);
   const cliff = useMemo(() => cliffPath(seed), [seed]);
@@ -325,7 +335,12 @@ export function Diorama(p: {
   }, [seed]);
   const id = `hd-${p.arena}`;
   return (
-    <div class={`hd${p.launching ? ' is-launching' : ''}${(p.mine?.length ?? 0) > 0 && (p.foe?.length ?? 0) > 0 ? ' has-units' : ''}`} data-arena={p.arena} aria-hidden="true" data-testid="hub-diorama">
+    <div
+      class={`hd${p.launching ? ' is-launching' : ''}${(p.mine?.length ?? 0) > 0 && (p.foe?.length ?? 0) > 0 ? ' has-units' : ''} is-foe-${look}`}
+      data-arena={p.arena}
+      aria-hidden="true"
+      data-testid="hub-diorama"
+    >
       <div class="hd__float">
         {/* One bob for the island and everything on it, so bases and troops ride it together. */}
         <div class="hd__bob">
@@ -364,7 +379,7 @@ export function Diorama(p: {
             <path d="M96 214 Q300 206 504 214" stroke={pal.laneLit} stroke-width="5" stroke-dasharray="14 12" stroke-linecap="round" fill="none" opacity=".75" />
             <Props pal={pal} seed={seed} arena={p.arena} />
             <Banner x={176} y={214} color={p.teamMe} />
-            <Banner x={424} y={214} color={p.teamFoe} flip />
+            <Banner x={424} y={214} color={hidden ? '#7a8294' : p.teamFoe} flip />
             {/* the clash point at the lane's middle */}
             <g class="hd-clash" transform="translate(300 206)">
               <circle r="22" fill={pal.glow} opacity=".22" />
@@ -375,9 +390,22 @@ export function Diorama(p: {
           <span class="hd__base hd__base--me">
             <BaseLook age={p.age} skin={p.mySkin} />
           </span>
-          <span class="hd__base hd__base--foe">
+          <span class="hd__base hd__base--foe" key={look === 'found' ? 'found' : 'base'}>
             <BaseLook age={p.age} skin={p.foeSkin} side={1} />
+            {hidden ? (
+              <i class="hd__unknown">
+                <b>?</b>
+              </i>
+            ) : null}
           </span>
+          {look === 'searching' ? (
+            <span class="hd__fog">
+              <i class="hd__fog-a" />
+              <i class="hd__fog-b" />
+              <i class="hd__fog-sweep" />
+            </span>
+          ) : null}
+          {look === 'found' ? <i class="hd__dust" /> : null}
           {(p.mine ?? []).slice(0, 2).map((c, i) => (
             <LaneUnit key={`m${i}${c}`} card={c} side={0} slot={i as 0 | 1} />
           ))}

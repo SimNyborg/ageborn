@@ -270,6 +270,26 @@
         "ready": "ready",
         "secs": "ready in {s} s"
       }
+    },
+    "esc": {
+      "step": {
+        "regulation": "No clock",
+        "overdrive": "Overdrive",
+        "s1": "Siege I",
+        "s2": "Siege II",
+        "s3": "Siege III",
+        "c1": "Crumble",
+        "c2": "Crumble II"
+      },
+      "siegeWhat": "bases take ×{base} damage, turrets deal −{turret}%",
+      "overdriveWhat": "gold and experience ×2",
+      "crumbleWhat": "the side in its own half loses {pct}% base health a second",
+      "title": "No clock: the war rises",
+      "meterLabel": "Escalation: {step}. Tap for the schedule",
+      "crumbling": "Crumbling",
+      "bannerS": "Bases take ×{base} damage",
+      "bannerC": "The side in its own half crumbles",
+      "bannerC2": "Crumbling doubles"
     }
   }
 }

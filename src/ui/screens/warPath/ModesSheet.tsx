@@ -1,42 +1,77 @@
 /**
- * The Modes panel (S2b, ui-plan 4.1): other ways to play, one card per row. Tapping a card selects
- * it; the panel's one primary (gold, bottom-right, where Battle is on Home) starts the selected mode.
- * Quick Battle keeps its difficulty picker inline; Skirmish opens its setup screen ("Set up"); the
- * Conquest board opens as before until A18.7.10 folds it into the map. The Ladder is Home's own
- * Battle button (owner decision 2026-09-30), so it has no card here. Modes that are not open yet say
- * when they open (Daily at 6 wins, ui-plan 2.6). Mode cards use neutral surfaces, not coloured
- * headers (U5).
+ * The Modes panel (S2b, ui-plan 4.1), reworked on 2026-10-01 into the **mode switcher's chooser**
+ * (spec "online-first Battle hub" 1.3): one card per row (icon, name, one plain line, the reward and a
+ * check on the selected card). A tap **selects** the mode and closes the panel; it never starts a
+ * match: Battle on Home plays the selected mode (MR-120: the card's icon flies into the switcher).
+ *
+ * - **vs AI**: Ladder (the default), Quick Battle, Daily Challenge (opens at 6 wins), Skirmish ("Set
+ *   up" opens its setup; once a setup has been played the card selects it), Conquest (opens its
+ *   board, until A18.7.10 folds it into the map).
+ * - **vs players** (first): Friend Duel, shown now as a locked card that says it arrives with online play and
+ *   what it will be (owner request 2026-10-01: Home should lead towards 2-player online battles).
+ *   Online Battle and Ranked join when they work (M4, M5); the dev mock shows them.
+ *
+ * No timers, no countdowns, no player counts. Mode cards use neutral surfaces (U5).
  */
-import type { Difficulty } from '@/content/types';
 import type { ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
-import { AiBadge } from '../../components/Chips';
-import { formatInt, tierNumeral } from '../../components/format';
-import { AmberIcon, CalendarIcon, CapsuleIcon, CastleIcon, LockIcon, SwordsIcon } from '../../components/icons';
+import { AmberIcon, CalendarIcon, CapsuleIcon, CastleIcon, CheckIcon, FriendsIcon, GlobeIcon, LockIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { Sheet } from '../../components/Modal';
-import type { MatchRequest } from '../../router';
 import { useUi } from '../context';
-import { DifficultyPicker, quickGeneral } from '../modeSelect/ModeSelectScreen';
-import { difficultyFlags, lastDifficulty, unlocks } from '../model/progress';
+import type { SwitcherMode } from '../home/switcher';
+import { skirmishSetup } from '../model/homeMode';
+import { unlocks } from '../model/progress';
 import { featureOpen } from '../model/warPath';
 
-type ModeId = 'quick' | 'daily' | 'skirmish' | 'conquest';
-const MODE_IDS: readonly ModeId[] = ['quick', 'daily', 'skirmish', 'conquest'];
-/** The panel opens on the last mode started (task 2.8: a Ladder battle in 2 taps). */
-const LAST_MODE_FLAG = 'ui-lastMode.';
+interface Card {
+  id: SwitcherMode | 'conquest';
+  icon: ComponentChildren;
+  title: string;
+  desc: string;
+  reward?: ComponentChildren;
+  /** Why it cannot be picked yet (its line replaces the description). */
+  lock?: string | null;
+  /** A side action on the card (Skirmish's Set up). */
+  side?: ComponentChildren;
+  /** More words that a tap on a locked card reveals (Friend Duel). */
+  more?: string;
+}
 
-export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): void }) {
-  const { save, content, t, locale, services, router } = useUi();
+export function ModesSheet(p: {
+  selected: SwitcherMode;
+  onSelect(mode: SwitcherMode, icon: Element | null): void;
+  onClose(): void;
+  /** The dev mock of online play (spec 1.8): Online Battle and Friend Duel are pickable. */
+  online?: boolean;
+  /** A card whose note opens with the panel (Home's Friend Duel chip opens it on Friend Duel). */
+  focus?: SwitcherMode | null;
+}) {
+  const { save, content, t, router } = useUi();
   const s = save.value;
   const u = unlocks(s, content);
   const dailyOpen = featureOpen(s, content, 'daily');
-  const [pick, setPick] = useState<Difficulty>(() => lastDifficulty(s, content));
-  const [sel, setSel] = useState<ModeId>(() => MODE_IDS.find((m) => s.flags[LAST_MODE_FLAG + m]) ?? 'quick');
-  const quickGen = quickGeneral(content, pick);
-  const quickTier = content.generals.difficulty.tiers[pick];
+  const hasSetup = skirmishSetup(s, content) !== null;
+  const close = useRef<(() => void) | null>(null);
+  const [more, setMore] = useState<string | null>(p.focus ?? null);
 
-  const cards: { id: ModeId; icon: ComponentChildren; title: string; desc: string; reward?: ComponentChildren; lock?: string | null }[] = [
+  const setUp = () => {
+    p.onClose();
+    router.go({ id: 'modeSelect', focus: 'skirmish' });
+  };
+
+  const ai: Card[] = [
+    {
+      id: 'ladder',
+      icon: <TrophyIcon size={30} />,
+      title: t('warPath.ui.ladder'),
+      desc: t('ui.modesPanel.ladderDesc'),
+      reward: (
+        <>
+          <TrophyIcon size={16} /> {t('ui.modesPanel.ladderReward')}
+        </>
+      ),
+    },
     {
       id: 'quick',
       icon: <SwordsIcon size={30} />,
@@ -60,45 +95,137 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
       ),
       lock: dailyOpen ? null : t('warPath.ui.modeLocked', { n: content.warPath.unlocks.daily }),
     },
-    { id: 'skirmish', icon: <SwordsIcon size={28} />, title: t('warPath.ui.skirmish'), desc: t('warPath.ui.skirmishDesc') },
-    ...(u.conquest ? [{ id: 'conquest' as const, icon: <CastleIcon size={28} />, title: t('warPath.ui.conquest'), desc: t('warPath.ui.conquestDesc') }] : []),
+    {
+      id: 'skirmish',
+      icon: <SwordsIcon size={28} />,
+      title: t('warPath.ui.skirmish'),
+      desc: t('warPath.ui.skirmishDesc'),
+      side: (
+        <Button kind="secondary" size="s" testid="skirmish-open" onClick={setUp}>
+          {t('warPath.ui.skirmishSetUp')}
+        </Button>
+      ),
+    },
+    ...(u.conquest
+      ? [
+          {
+            id: 'conquest' as const,
+            icon: <CastleIcon size={28} />,
+            title: t('warPath.ui.conquest'),
+            desc: t('warPath.ui.conquestDesc'),
+            side: (
+              <Button
+                kind="secondary"
+                size="s"
+                testid="conquest-open"
+                onClick={() => {
+                  p.onClose();
+                  router.go({ id: 'conquest' });
+                }}
+              >
+                {t('warPath.ui.conquestOpen')}
+              </Button>
+            ),
+          },
+        ]
+      : []),
+  ];
+  const players: Card[] = [
+    ...(p.online
+      ? [
+          {
+            id: 'online' as const,
+            icon: <GlobeIcon size={30} />,
+            title: t('ui.modesPanel.online'),
+            desc: t('ui.modesPanel.onlineDesc'),
+            reward: (
+              <>
+                <AmberIcon size={16} /> {t('ui.modesPanel.onlineReward')}
+              </>
+            ),
+          },
+        ]
+      : []),
+    {
+      id: 'friend',
+      icon: <FriendsIcon size={30} />,
+      title: t('ui.modesPanel.friend'),
+      desc: t('ui.modesPanel.friendDesc'),
+      lock: p.online ? null : t('ui.modesPanel.friendSoon'),
+      more: t('ui.modesPanel.friendInfo'),
+    },
   ];
 
-  function start(id: ModeId) {
-    services.setUiFlags(Object.fromEntries(MODE_IDS.map((m) => [LAST_MODE_FLAG + m, m === id])));
-    switch (id) {
-      case 'quick':
-        p.onStart({ mode: 'skirmish', options: { generalId: quickGen, tier: quickTier, format: 'short', standardLevels: false }, speed: s.settings.defaultSpeed });
-        return;
-      case 'daily':
-        p.onStart({ mode: 'daily' });
-        return;
-      case 'skirmish':
-        p.onClose();
-        router.go({ id: 'modeSelect', focus: 'skirmish' });
-        return;
-      case 'conquest':
-        p.onClose();
-        router.go({ id: 'conquest' });
-        return;
+  function tap(c: Card, el: HTMLElement) {
+    if (c.lock) {
+      setMore((m) => (m === c.id ? null : c.id));
+      return;
     }
+    if (c.id === 'conquest') {
+      p.onClose();
+      router.go({ id: 'conquest' });
+      return;
+    }
+    if (c.id === 'skirmish' && !hasSetup) {
+      setUp();
+      return;
+    }
+    p.onSelect(c.id, el.querySelector('.md-card__icon svg'));
+    close.current?.();
   }
 
-  const selected = cards.find((c) => c.id === sel) ?? cards[0]!;
-  const primaryLabel = selected.id === 'skirmish' ? t('warPath.ui.skirmishSetUp') : selected.id === 'conquest' ? t('warPath.ui.conquestOpen') : t('warPath.ui.playMode');
+  const row = (c: Card) => {
+    const on = c.id === p.selected;
+    const open = more === c.id;
+    return (
+      <li key={c.id} class="md-row">
+        <button
+          type="button"
+          aria-pressed={c.lock ? undefined : on}
+          aria-disabled={c.lock ? 'true' : undefined}
+          aria-expanded={c.lock && c.more ? open : undefined}
+          class={`md-card${on ? ' is-on' : ''}${c.lock ? ' is-locked' : ''}${c.side ? ' has-side' : ''}`}
+          data-testid={`mode-${c.id}`}
+          onClick={(e) => tap(c, e.currentTarget)}
+        >
+          <span class="md-card__icon">
+            {c.icon}
+            {c.lock ? (
+              <span class="md-card__lock">
+                <LockIcon size={16} />
+              </span>
+            ) : null}
+          </span>
+          <span class="md-card__text">
+            <span class="md-card__title">{c.title}</span>
+            <span class={`md-card__desc${c.lock ? ' is-lock' : ''}`}>{c.lock ?? c.desc}</span>
+            {c.reward && !c.lock ? <span class="md-card__reward">{c.reward}</span> : null}
+            {c.lock && c.more && !open ? <span class="md-card__desc">{c.desc}</span> : null}
+          </span>
+          {on ? (
+            <span class="md-card__check" aria-hidden="true">
+              <CheckIcon size={20} />
+            </span>
+          ) : null}
+        </button>
+        {c.side ? <span class="md-card__side">{c.side}</span> : null}
+        {open && c.more ? (
+          <p class="md-card__more" role="note" data-testid={`mode-${c.id}-more`} ref={(el) => el?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })}>
+            {c.more}
+          </p>
+        ) : null}
+      </li>
+    );
+  };
 
   return (
     <Sheet
       title={t('warPath.ui.modesTitle')}
       onClose={p.onClose}
+      closeRef={close}
       testid="modes-sheet"
       icon={<SwordsIcon size={24} />}
       actions={{
-        primary: selected.lock ? undefined : (
-          <Button kind="primary" size="l" icon={<SwordsIcon size={22} />} testid="modes-play" autofocus onClick={() => start(selected.id)}>
-            {primaryLabel}
-          </Button>
-        ),
         tertiary: (
           <Button
             kind="tertiary"
@@ -114,49 +241,18 @@ export function ModesSheet(p: { onClose(): void; onStart(req: MatchRequest): voi
         ),
       }}
     >
-      <ul class="md-list" role="listbox" aria-label={t('warPath.ui.modesTitle')}>
-        {cards.map((c) => {
-          const on = c.id === selected.id;
-          return (
-            <li key={c.id}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={on}
-                class={`md-card${on ? ' is-on' : ''}${c.lock ? ' is-locked' : ''}`}
-                data-testid={`mode-${c.id}`}
-                onClick={() => setSel(c.id)}
-              >
-                <span class="md-card__icon">{c.lock ? <LockIcon size={24} /> : c.icon}</span>
-                <span class="md-card__text">
-                  <span class="md-card__title">{c.title}</span>
-                  <span class="md-card__desc">{c.lock ?? c.desc}</span>
-                  {c.reward && !c.lock ? <span class="md-card__reward">{c.reward}</span> : null}
-                </span>
-              </button>
-              {on && c.id === 'quick' ? (
-                <div class="md-card__extra">
-                  <DifficultyPicker
-                    value={pick}
-                    onChange={(d) => {
-                      setPick(d);
-                      services.setUiFlags(difficultyFlags(d, content));
-                    }}
-                    testid="modes-difficulty"
-                  />
-                  <p class="md-card__meta">
-                    <AiBadge size="sm" />
-                    <b>{t(content.generals.list[quickGen].nameKey)}</b>
-                    <span>{t('ui.vs.tier', { tier: tierNumeral(quickTier) })}</span>
-                    <span>· {formatInt(content.arenas.ladder.skirmishWinAmber, locale)}</span>
-                    <AmberIcon size={14} />
-                  </p>
-                </div>
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
+      <p class="md-hint">{t('ui.modesPanel.selectHint')}</p>
+      {/* vs players leads: the game is built for 2-player online battles (owner request 2026-10-01). */}
+      {(['players', 'ai'] as const).map((g) => (
+        <div key={g}>
+          <h3 class="md-group" data-tag="">
+            {t(g === 'ai' ? 'ui.modesPanel.groupAi' : 'ui.modesPanel.groupPlayers')}
+          </h3>
+          <ul class="md-list" aria-label={t(g === 'ai' ? 'ui.modesPanel.groupAi' : 'ui.modesPanel.groupPlayers')}>
+            {(g === 'ai' ? ai : players).map(row)}
+          </ul>
+        </div>
+      ))}
     </Sheet>
   );
 }

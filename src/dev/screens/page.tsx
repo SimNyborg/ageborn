@@ -24,6 +24,7 @@ import { FIXTURE_NOW, FIXTURE_STATES, fixtureSave, type FixtureState } from '@/u
 import { createPreviewServices } from '@/ui/screens/fixtures/services';
 import { ScreenHost } from '@/ui/screens/ScreenHost';
 import { primeWarPathSeen } from '@/ui/screens/warPath/WarPathScreen';
+import { onlineMock, type OnlineMock } from '@/ui/screens/home/online';
 import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
 import type { SaveDoc } from '@/contracts';
 import { setFortSlotPreview } from '@/ui/screens/model/plan';
@@ -94,6 +95,56 @@ function ceremony(level: string, before: number) {
   };
 }
 
+/** A save at a trophy count (and its arena), with the Home flags patched (the mode switcher). */
+function homeAt(trophies: number, flags: Record<string, boolean> = {}) {
+  return (s: SaveDoc): SaveDoc => {
+    const idx = Math.max(0, content.arenas.list.filter((a) => a.trophies <= trophies).length - 1);
+    return { ...s, trophies: { ...s.trophies, current: trophies, best: Math.max(trophies, s.trophies.best) }, arenaIndex: idx, flags: { ...s.flags, ...flags } };
+  };
+}
+
+/**
+ * The online mock (spec "online-first Battle hub" 1.8): the plate, search, room and VS of online play,
+ * shown only here until M2/M4 work. The player Ana is a made-up person for the screenshots.
+ */
+const ANA = { name: 'Ana', avatar: { seed: 4242, parts: {} }, trophies: 1180, arena: 4, bars: 3 as const };
+function online(id: string, label: string, o: Partial<OnlineMock>): Variant {
+  return {
+    id,
+    label: `Home online (mock): ${label}`,
+    route: () => [{ id: 'home' }],
+    prime: () => {
+      onlineMock.value = { mode: 'online', state: 'idle', foe: ANA, code: 'K7MPQ4', foundAfterMs: 6000, ...o };
+    },
+  };
+}
+
+const HOME_MODES: Variant[] = [
+  { id: 'home-a1', label: 'Home: Ladder at Arena 1 (one length)', route: () => [{ id: 'home' }], save: homeAt(80) },
+  { id: 'home-a2', label: 'Home: Ladder at Arena 2 (Long and No clock locked)', route: () => [{ id: 'home' }], save: homeAt(220) },
+  { id: 'home-last', label: 'Home: Last Base Standing picked (first time)', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-ladderFormat.last': true }) },
+  { id: 'home-quick', label: 'Home: Quick Battle selected', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-homeMode.quick': true }) },
+  { id: 'home-daily', label: 'Home: Daily selected', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-homeMode.daily': true }) },
+  {
+    id: 'home-skirmish',
+    label: 'Home: Skirmish selected (last setup)',
+    route: () => [{ id: 'home' }],
+    save: homeAt(1020, { 'ui-homeMode.skirmish': true, 'ui-skirmish.set': true, 'ui-skirmish.g.boomsworth': true, 'ui-skirmish.f.full': true }),
+  },
+  online('home-online', 'idle', {}),
+  online('home-online-search', 'searching 0:12', { state: 'searching', elapsedMs: 12_000, foundAfterMs: null }),
+  online('home-online-wait', 'searching past 25 s (AI choice)', { state: 'searching', elapsedMs: 27_000, foundAfterMs: null }),
+  online('home-online-found', 'found', { state: 'found' }),
+  online('home-online-noconn', 'no connection', { state: 'noConnection' }),
+  online('home-online-full', 'online full', { state: 'full' }),
+  online('home-online-update', 'update needed', { state: 'update' }),
+  online('home-friend', 'Friend Duel', { mode: 'friend' }),
+  online('home-room', 'Friend Duel room (waiting)', { mode: 'friend', room: 'host' }),
+  online('home-room-joined', 'Friend Duel room (friend joined)', { mode: 'friend', room: 'host', friendJoined: true }),
+  online('home-join', 'Friend Duel: enter a code', { mode: 'friend', room: 'join' }),
+  online('vs-online', 'VS between two players', { state: 'found', vs: true }),
+];
+
 const vs = (o: OpponentFixture): Variant => ({
   id: `vs-${o}`,
   label: `VS: ${o}`,
@@ -124,6 +175,7 @@ const fortCard = (id: string): Variant => ({ ...card(id), forts: true, save: (s)
 const VARIANTS: Variant[] = [
   { id: 'home', label: 'Home', route: () => [{ id: 'home' }] },
   { id: 'home-first', label: 'Home: first launch', route: () => [{ id: 'home' }], save: firstLaunch },
+  ...HOME_MODES,
   {
     id: 'home-unlock',
     label: 'Home: Army unlock (after L1)',
@@ -221,6 +273,7 @@ const VARIANTS: Variant[] = [
     route: () => [{ id: 'home' }, { id: 'result', info: { ...fixtureResult(content, 'loss'), tipKey: 'app.tip.heavyGap', tipCard: 'pikeman', tipAge: 'medieval' } }],
   },
   result('draw'),
+  result('lastWin'),
   result('conquest'),
   result('noCapsule'),
   result('warPath'),
@@ -327,6 +380,7 @@ export default function ScreensPage() {
     const base = fixtureSave(content, state);
     const initial = v.save ? v.save(base) : base;
     primeWarPathSeen(null);
+    onlineMock.value = null;
     v.prime?.(initial);
     const save = signal(initial);
     const router = createRouter({ id: 'home' });

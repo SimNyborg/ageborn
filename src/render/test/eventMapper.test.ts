@@ -603,4 +603,18 @@ describe('A13 sound priority', () => {
     expect(actingSide(hit({ sourceId: 99, targetId: 2 }), u)).toBe(0);
     expect(actingSide(ev('phaseChanged', { phase: 'overdrive' } as never), u)).toBeNull();
   });
+
+  it('plays the Siege horn once when Siege I and the siege phase land on the same tick (A2.10.1)', () => {
+    const horn = (events: SimEvent[]) => {
+      const out = run(events);
+      const once = run([ev('phaseChanged', { phase: 'siege' })]);
+      const one = pick(once, 'sound').map((x) => x.id);
+      return { sounds: pick(out, 'sound').map((x) => x.id), one };
+    };
+    const siege = horn([ev('phaseChanged', { phase: 'siege' }), ev('escalated', { step: 1 })]);
+    expect(siege.sounds).toEqual(siege.one);
+    // Later steps hit the horn on their own.
+    const later = run([ev('escalated', { step: 2 })]);
+    expect(pick(later, 'sound').length).toBeGreaterThan(0);
+  });
 });

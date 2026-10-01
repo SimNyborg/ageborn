@@ -1044,3 +1044,115 @@ export function CountersIcon(p: IconProps) {
     </Svg>
   );
 }
+
+// ---------------------------------------------------------------------------------------------
+// The online-first Battle hub and the battle lengths (2026-10-01)
+// ---------------------------------------------------------------------------------------------
+
+/** Last Base Standing (A2.10.1): a cracked tower with its banner, the "no clock" length's glyph. */
+export function LastBaseIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M5.5 21.5 6.8 9h10.4l1.3 12.5z" fill="#aab4c4" {...O} />
+      <path d="M5 5.2h2.5v2.1h2.1V5.2h4.8v2.1h2.1V5.2H19V9H5z" fill="#cfd6e4" {...O} />
+      <path d="M12 9.4 10.4 12.6l2.4 1.6-1.9 3.6" fill="none" stroke={OUTLINE} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 1.6v4" stroke={OUTLINE} stroke-width="1.6" stroke-linecap="round" />
+      <path d="M12 1.7h5.2l-1.5 1.5 1.5 1.5H12z" fill="#e05a3c" {...O} />
+      <path d="M3.5 21.5h17" stroke={OUTLINE} stroke-width="1.6" stroke-linecap="round" />
+      <path d="M17.9 19.5l1.6-.8.8 1.6M4.2 19.9l1.2-.4" fill="none" stroke="#8a93a6" stroke-width="1.2" stroke-linecap="round" />
+      <path d="M7.4 10.4v8.2" stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".6" />
+    </Svg>
+  );
+}
+
+/** A person (the Player chip on a human nameplate online, A16.21; never on a bot). */
+export function PlayerIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="12" cy="8" r="4.2" fill="#ffd9a8" {...O} />
+      <path d="M4.2 21a7.8 7.8 0 0 1 15.6 0z" fill="#3fc27a" {...O} />
+    </Svg>
+  );
+}
+
+/** Two people side by side: Friend Duel and, later, Friends. */
+export function FriendsIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="15.6" cy="8.2" r="3.4" fill="#ffcf9a" {...O} />
+      <path d="M10.2 20a5.4 5.4 0 0 1 10.8 0z" fill="#9b6cf0" {...O} />
+      <circle cx="8.6" cy="9" r="3.8" fill="#ffd9a8" {...O} />
+      <path d="M2.6 21a6 6 0 0 1 12 0z" fill="#2f7df6" {...O} />
+    </Svg>
+  );
+}
+
+/** A globe: Online Battle. */
+export function GlobeIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="12" cy="12" r="9.2" fill="#2f9df6" {...O} />
+      <path d="M6 7.5c2.2.6 3 2.3 2 3.8-.9 1.4.4 2.8 1.8 3 1.3.3 1.1 2.4.4 4.3M14.2 3.4c-.6 1.5.2 2.6 1.6 2.9 1.6.3 1.6 2.3 3.6 2.2M15 20.2c.2-1.6 1-2.6 2.6-2.8 1.2-.2 1.7-1 2.2-2" fill="none" stroke="#3fc27a" stroke-width="2.6" stroke-linecap="round" />
+      <path d="M7 5.6a8 8 0 0 1 4-1.6" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7" />
+    </Svg>
+  );
+}
+
+/** Caret pointing down (a chooser opens). */
+export function CaretIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M6 9.5 12 15.5 18 9.5" fill="none" stroke={OUTLINE} stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M6 9.5 12 15.5 18 9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** Chevron for steppers (`left` mirrors it). */
+export function ChevronIcon(p: IconProps & { left?: boolean }) {
+  const d = p.left ? 'M14.5 6 8.5 12l6 6' : 'M9.5 6l6 6-6 6';
+  return (
+    <Svg {...p}>
+      <path d={d} fill="none" stroke={OUTLINE} stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d={d} fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** Share (an arrow leaving a tray). */
+export function ShareIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M5 12v7.5h14V12" fill="none" stroke={OUTLINE} stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M5 12v7.5h14V12" fill="none" stroke="#e8eef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 15V3.5M7.6 7.6 12 3.2l4.4 4.4" fill="none" stroke={OUTLINE} stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 15V3.5M7.6 7.6 12 3.2l4.4 4.4" fill="none" stroke="#5ad1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </Svg>
+  );
+}
+
+/** A compass (the search, MR-121): the needle turns slowly while searching. */
+export function CompassIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="12" cy="12" r="9.4" fill="#f1e6c4" {...O} />
+      <circle cx="12" cy="12" r="6.8" fill="none" stroke="#c9b27a" stroke-width="1.2" />
+      <g class="ui-compass__needle">
+        <path d="M12 4.6 14.2 12H9.8z" fill="#e05a3c" {...O} />
+        <path d="M12 19.4 9.8 12h4.4z" fill="#5a6478" {...O} />
+      </g>
+      <circle cx="12" cy="12" r="1.3" fill={OUTLINE} />
+    </Svg>
+  );
+}
+
+/** Connection strength: 1-3 lit bars (online VS, A16.21). */
+export function SignalIcon(p: IconProps & { bars: 1 | 2 | 3 }) {
+  return (
+    <Svg {...p}>
+      {[0, 1, 2].map((i) => (
+        <rect key={i} x={4 + i * 6} y={15 - i * 5} width="4.4" height={6 + i * 5} rx="1.2" fill={i < p.bars ? '#3fc27a' : '#4a5468'} {...O} />
+      ))}
+    </Svg>
+  );
+}

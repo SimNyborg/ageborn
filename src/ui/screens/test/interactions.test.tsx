@@ -146,20 +146,49 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(m.router.current.value.id).toBe('vs');
   });
 
-  it('the format picker sets the format Battle plays and remembers it', () => {
+  it('the length picker sets the length Battle plays and remembers it (Short, Medium, Long, No clock)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid', shell: true });
     const opts = m.qa('[data-testid="home-format"] [role="radio"]');
-    expect(opts.length).toBeGreaterThan(1);
-    const std = opts.find((el) => text(el) === 'Standard')!;
+    expect(opts.map((el) => el.getAttribute('data-format'))).toEqual(['short', 'standard', 'full', 'last']);
+    const std = opts.find((el) => text(el) === 'Medium')!;
     act(() => std.click());
     expect(m.save.value.flags['ui-ladderFormat.standard']).toBe(true);
-    // The picker names the format; the line under it says what it means (never cut off at 844).
-    expect(text(m.q('[data-testid="home-format-desc"]')!)).toBe('5 ages, about 10 min.');
+    // The picker names the length; the line under it quotes the upper bound (never cut off at 844).
+    expect(text(m.q('[data-testid="home-format-desc"]')!)).toContain('5 ages · up to 12½ min');
     expect(calls('previewOpponent').some((c) => c.args[0] === 'standard')).toBe(true);
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
+  });
+
+  it('Last Base Standing: no clock, no trophies, an info panel; Battle plays it (A2.10.1)', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true });
+    act(() => m!.q('[data-testid="home-format"] [data-format="last"]')!.click());
+    expect(m.save.value.flags['ui-ladderFormat.last']).toBe(true);
+    // One short line (no layout jump); "no trophies" lives in the info panel.
+    expect(text(m.q('[data-testid="home-format-desc"]')!)).toBe('7 ages · no clock');
+    // The fourth segment names itself on phones too (glyph over "No clock").
+    expect(text(m.q('[data-testid="home-format"] [data-format="last"]')!)).toBe('No clock');
+    m.click('[data-testid="home-last-info"]');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('Closing the game ends the war');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('No trophies, win or lose');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('Every finished war claims a ready Sundial capsule');
+    m.click('[data-testid="last-info"] .ui-modal__close');
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'last' });
+  });
+
+  it('a locked length keeps its place and says which arena opens it (U12)', () => {
+    const s = midGameSave(content);
+    m = mount({ save: { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 }, shell: true });
+    const long = m.q('[data-testid="home-format"] [data-format="full"]')!;
+    expect(long.getAttribute('aria-disabled')).toBe('true');
+    act(() => long.click());
+    expect(m.save.value.flags['ui-ladderFormat.full']).toBeUndefined();
+    expect(text(m.q('[data-testid="toast"]')!)).toContain('Arena 3');
   });
 
   it('first launch shows only the arena, Battle and the gear; Battle starts the training match vs an AI', () => {
@@ -209,16 +238,66 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(calls('openCapsule')).toHaveLength(1);
   });
 
-  it('Modes opens the panel; its Play starts Quick Battle at the picked difficulty', () => {
+  it('the mode switcher selects a mode (never starts one); Battle then plays it (spec 1.3)', () => {
+    vi.useFakeTimers();
     m = mount({ state: 'mid' });
+    expect(text(m.q('[data-testid="home-modes"]')!)).toContain('Ladder');
     m.click('[data-testid="home-modes"]');
     expect(m.q('[data-testid="modes-sheet"]')).not.toBeNull();
-    expect(m.q('[data-testid="mode-ladder"]')).toBeNull();
-    m.click('[data-testid="modes-play"]');
+    // Ladder is a card (the default, selected); online play is shown as a locked card that says so.
+    expect(m.q('[data-testid="mode-ladder"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect(m.q('[data-testid="mode-friend"]')!.getAttribute('aria-disabled')).toBe('true');
+    m.click('[data-testid="mode-quick"]');
+    flush(() => vi.advanceTimersByTime(400));
+    expect(calls('prepareMatch')).toHaveLength(0);
+    expect(m.save.value.flags['ui-homeMode.quick']).toBe(true);
+    expect(m.q('[data-testid="modes-sheet"]')).toBeNull();
+    expect(text(m.q('[data-testid="home-modes"]')!)).toContain('Quick');
+    // The plate shows exactly what Battle does: the Quick General, labelled AI, and a difficulty.
+    expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).not.toBeNull();
+    expect(m.q('[data-testid="home-difficulty"]')).not.toBeNull();
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
     const req = calls('prepareMatch')[0]!.args[0] as { mode: string; options: { format: string } };
     expect(req.mode).toBe('skirmish');
     expect(req.options.format).toBe('short');
     expect(m.router.current.value.id).toBe('vs');
+  });
+
+  it('the No clock caption waits behind a currency caption already on screen (one at a time, U8)', () => {
+    vi.useFakeTimers();
+    const s = midGameSave(content);
+    const fresh = { ...s, flags: { ...s.flags, 'ui-seen.amber': false, 'ui-seen.dust': true, 'ui-seen.lastBase': false, 'ui-ladderFormat.last': true } };
+    m = mount({ save: fresh, shell: true });
+    expect(m.q('[data-testid="caption-amber"]')).not.toBeNull();
+    expect(m.q('[data-testid="caption-last"]')).toBeNull();
+    flush(() => vi.advanceTimersByTime(4100));
+    expect(m.q('[data-testid="caption-amber"]')).toBeNull();
+    expect(text(m.q('[data-testid="caption-last"]')!)).toContain('at most about 26½ min');
+  });
+
+  it('Home shows one honest friend entry: a locked chip that opens the panel on Friend Duel (owner decision 2026-10-01)', () => {
+    m = mount({ state: 'mid' });
+    const chip = m.q('[data-testid="home-friend-soon"]')!;
+    expect(text(chip)).toContain('Friend Duel');
+    expect(chip.getAttribute('aria-label')).toContain('arrives with online play');
+    m.click('[data-testid="home-friend-soon"]');
+    // vs players leads the panel, with Friend Duel's note open; nothing was selected or started.
+    const groups = m.qa('[data-testid="modes-sheet"] .md-group').map(text);
+    expect(groups[0]).toBe('vs players');
+    expect(text(m.q('[data-testid="mode-friend-more"]')!)).toContain('room');
+    expect(m.save.value.flags['ui-homeMode.friend']).toBeUndefined();
+    expect(calls('prepareMatch')).toHaveLength(0);
+  });
+
+  it('the Friend Duel card is visible but locked until online play works, and explains itself', () => {
+    m = mount({ state: 'mid' });
+    m.click('[data-testid="home-modes"]');
+    expect(text(m.q('[data-testid="mode-friend"]')!)).toContain('Arrives with online play');
+    m.click('[data-testid="mode-friend"]');
+    expect(text(m.q('[data-testid="mode-friend-more"]')!)).toContain('room');
+    expect(m.save.value.flags['ui-homeMode.friend']).toBeUndefined();
+    expect(m.q('[data-testid="modes-sheet"]')).not.toBeNull();
   });
 
   it('tabs: locked tabs say when they open, open ones switch, at most 2 ready badges (2.2, 2.6)', () => {
@@ -495,7 +574,7 @@ describe('Mode select', () => {
     m = mount({ save: n, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
     m.click('[data-testid="skirmish-open"]');
     expect(m.q('[data-testid^="skirmish-note-"]')).toBeNull();
-    const full = m.qa('[data-testid="skirmish-setup"] [role="radio"]').find((el) => text(el) === 'Full War')!;
+    const full = m.qa('[data-testid="skirmish-setup"] [role="radio"]').find((el) => text(el) === 'Long War')!;
     flush(() => full.click());
     expect(m.qa('[data-testid^="skirmish-note-"]').map((el) => el.getAttribute('data-testid'))).toEqual([
       'skirmish-note-industrial',
@@ -513,7 +592,7 @@ describe('Mode select', () => {
     expect(calls('prepareMatch')).toHaveLength(0);
     expect(m.router.current.value.id).toBe('modeSelect');
     const dialog = m.q('[data-testid="plan-blocked"]')!;
-    expect(text(dialog)).toContain("Your War Plan can't play Full War yet:");
+    expect(text(dialog)).toContain("Your War Plan can't play Long War yet:");
     expect(text(dialog)).toContain('Medieval Age needs a turret.');
     m.click('[data-testid="plan-blocked-fix"]');
     expect(m.router.current.value).toEqual({ id: 'warPlan', age: 'medieval' });
@@ -610,6 +689,19 @@ describe('Result (rewards staged, each skippable)', () => {
     m = mount({ save: { ...save, settings: { ...save.settings, reduceMotion: true } }, routes: route() });
     expect(m.qa('.result-reward').length).toBe(3);
     expect(m.q('[data-testid="ui-root"]')!.getAttribute('data-reduce-motion')).toBe('true');
+  });
+
+  it('Last Base Standing: the reason line says how the war ended, and the trophy row says unranked (A2.10.1)', () => {
+    m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'lastWin') }] });
+    expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their walls crumbled at 23:41');
+    m.click('[data-testid="result-skip"]');
+    expect(text(m.q('[data-testid="reward-unranked"]')!)).toContain('Unranked');
+    // A timed war has neither.
+    m.unmount();
+    m = mount({ routes: route() });
+    m.click('[data-testid="result-skip"]');
+    expect(m.q('[data-testid="result-reason"]')).toBeNull();
+    expect(m.q('[data-testid="reward-unranked"]')).toBeNull();
   });
 
   it('hides "Open capsule" once the earned capsule has been opened', () => {

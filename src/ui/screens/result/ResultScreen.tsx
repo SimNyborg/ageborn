@@ -9,7 +9,9 @@
 import './result.css';
 import { ageNameKey, arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
-import type { AgeId, CapsuleTier, MatchStats, RewardStep } from '@/contracts';
+import type { AgeId, CapsuleTier, MatchResultInput, MatchStats, RewardStep } from '@/contracts';
+import { isUnranked } from '@/content/ladder';
+import { TICK_MS } from '@/core';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -190,7 +192,7 @@ function RewardRow(p: {
   );
 }
 
-function TrophyReward(p: { delta: number; total: number; animate: boolean }) {
+function TrophyReward(p: { delta: number; total: number; animate: boolean; unranked?: boolean | undefined }) {
   const { t, locale } = useKit();
   const shown = useCountUp(p.total - p.delta, p.total, COUNT_UP_MS, p.animate);
   return (
@@ -201,17 +203,20 @@ function TrophyReward(p: { delta: number; total: number; animate: boolean }) {
       tone={p.delta > 0 ? 'good' : p.delta < 0 ? 'bad' : 'gold'}
       value={formatSigned(p.delta, locale)}
     >
-      <span class="result-reward__sub ui-num">{formatInt(shown, locale)}</span>
+      {/* An unranked length (Last Base Standing, A2.10.1) says why the trophies did not move. */}
+      <span class="result-reward__sub ui-num" data-testid={p.unranked ? 'reward-unranked' : undefined}>
+        {p.unranked ? t('ui.result.unranked', { n: formatInt(shown, locale) }) : formatInt(shown, locale)}
+      </span>
     </RewardRow>
   );
 }
 
-function Reward(p: { r: RewardStep; animate: boolean }) {
+function Reward(p: { r: RewardStep; animate: boolean; unranked?: boolean | undefined }) {
   const { t, locale, content, save } = useUi();
   const r = p.r;
   switch (r.kind) {
     case 'trophies':
-      return <TrophyReward delta={r.delta} total={save.value.trophies.current} animate={p.animate} />;
+      return <TrophyReward delta={r.delta} total={save.value.trophies.current} animate={p.animate} unranked={p.unranked} />;
     case 'amber':
       return (
         <RewardRow
@@ -406,12 +411,12 @@ function FeatStage(p: { featId: string }) {
   );
 }
 
-function Stage(p: { stage: ResultStage; animate: boolean }) {
+function Stage(p: { stage: ResultStage; animate: boolean; unranked?: boolean | undefined }) {
   const st = p.stage;
   switch (st.kind) {
     case 'trophies':
     case 'main':
-      return <Reward r={st.step} animate={p.animate} />;
+      return <Reward r={st.step} animate={p.animate} unranked={p.unranked} />;
     case 'progress':
       return <ProgressStage progress={st.progress} />;
     case 'feat':
@@ -620,6 +625,25 @@ function StopCard(p: { card: ResultCard; onNext: () => void; onDismiss: () => vo
   );
 }
 
+/**
+ * The reason line of a war with no clock (Last Base Standing, A2.10.1; spec 2.4): how and when it
+ * ended, and whether the walls crumbled (the base fell in a Crumble step). Null for a timed format.
+ */
+export function lastBaseReason(input: Pick<MatchResultInput, 'outcome' | 'mySide' | 'opponent'>, content: Content, t: (k: string, v?: Record<string, string | number>) => string): string | null {
+  const f = content.formats[input.opponent.format];
+  if (f?.kind !== 'untimed') return null;
+  const ms = input.outcome.tick * TICK_MS;
+  const time = formatClock(ms);
+  const o = input.outcome;
+  if (o.reason === 'retreat') return t(o.winner === input.mySide ? 'ui.result.lastReason.theyRetreated' : 'ui.result.lastReason.retreated', { time });
+  if (o.reason === 'bothDestroyed' || o.winner === null) return t('ui.result.lastReason.both', { time });
+  const crumble = (f.escalation ?? []).find((x) => x.crumbleBpPerSec > 0);
+  const crumbled = !!crumble && ms >= crumble.atMs;
+  const won = o.winner === input.mySide;
+  if (crumbled) return t(won ? 'ui.result.lastReason.theirCrumbled' : 'ui.result.lastReason.yoursCrumbled', { time });
+  return t(won ? 'ui.result.lastReason.theirFell' : 'ui.result.lastReason.yoursFell', { time });
+}
+
 export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const { save, content, t, locale, router, services, toasts } = useUi();
   const info = p.route.info;
@@ -640,6 +664,9 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const stats = info.input.stats;
   const opp = info.input.opponent;
   const night = info.endedHour !== undefined && isNight(info.endedHour);
+  // Last Base Standing (A2.10.1): the reason line, and the trophy row says it is unranked.
+  const lastReason = lastBaseReason(info.input, content, t);
+  const unranked = info.input.mode === 'ladder' && isUnranked(content, opp.format);
 
   useEffect(() => {
     if (shown >= stages.length) return;
@@ -765,6 +792,11 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       vs={
         <>
           {t('ui.result.vs', { name: opponentName(opp, content, t) })} <AiBadge size="sm" />
+          {lastReason ? (
+            <span class="result__reason" data-testid="result-reason">
+              {lastReason}
+            </span>
+          ) : null}
         </>
       }
       recap={
@@ -807,7 +839,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           </h2>
           <ul class="result__list">
             {stages.slice(0, shown).map((st, i) => (
-              <Stage key={i} stage={st} animate={!reduce} />
+              <Stage key={i} stage={st} animate={!reduce} unranked={unranked} />
             ))}
           </ul>
           {done ? <SummaryRow steps={plan.summary} /> : null}

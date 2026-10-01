@@ -156,12 +156,23 @@
 }
 .result__vs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--ui-s2);
+  gap: 4px var(--ui-s2);
   padding-left: 4px;
   font-weight: 700;
   font-size: var(--ui-fs-body);
   color: var(--ui-text-2);
+}
+/* Last Base Standing: how the war with no clock ended (A2.10.1). */
+.result__reason {
+  padding: 1px 8px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(224, 90, 60, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(224, 90, 60, 0.45);
+  color: #ffd2c4;
+  font: 700 var(--ui-fs-caption) / 1.35 var(--ui-font-text);
+  animation: ui-fade-in var(--ui-dur-medium) var(--ui-ease-standard) both;
 }
 
 .result__recap,

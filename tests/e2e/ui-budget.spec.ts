@@ -72,17 +72,46 @@ const PAGES: PageSpec[] = [
     },
   },
   {
+    // The Modes panel is the switcher's chooser (2026-10-01): a tap selects a mode, so it has no primary.
     name: 'modes',
     hash: 'screens/home/mid/{vp}',
     strict: true,
-    primary: true,
+    primary: false,
     prepare: async (page) => {
       await page.click('[data-testid="home-modes"]');
     },
   },
+  // The online-first Battle hub (spec 2026-10-01): every plate state, and the online mocks (dev only).
+  { name: 'home-a1', hash: 'screens/home-a1/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-a2', hash: 'screens/home-a2/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-last', hash: 'screens/home-last/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-quick', hash: 'screens/home-quick/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-daily', hash: 'screens/home-daily/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-skirmish', hash: 'screens/home-skirmish/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-online', hash: 'screens/home-online/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'home-online-search', hash: 'screens/home-online-search/mid/{vp}', strict: true, primary: false, home: true },
+  { name: 'home-online-wait', hash: 'screens/home-online-wait/mid/{vp}', strict: true, primary: false, home: true },
+  { name: 'home-online-noconn', hash: 'screens/home-online-noconn/mid/{vp}', strict: true, primary: false, home: true },
+  { name: 'home-friend', hash: 'screens/home-friend/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'room', hash: 'screens/home-room/mid/{vp}', strict: true, primary: false },
+  { name: 'room-joined', hash: 'screens/home-room-joined/mid/{vp}', strict: true, primary: true },
+  { name: 'join', hash: 'screens/home-join/mid/{vp}', strict: true, primary: false },
+  { name: 'vs-online', hash: 'screens/vs-online/mid/{vp}', strict: true, primary: false },
   { name: 'capsules', hash: 'screens/capsules/mid/{vp}', strict: true, primary: false },
   { name: 'progress', hash: 'screens/progress/mid/{vp}', strict: true, primary: false },
   { name: 'result-warPath', hash: 'screens/result-warPath/mid/{vp}', strict: true, primary: true },
+  // Last Base Standing's Result: the reason line and the unranked trophy row (A2.10.1).
+  { name: 'result-lastWin', hash: 'screens/result-lastWin/mid/{vp}', strict: true, primary: true },
+  {
+    // Home's one online entry (owner decision 2026-10-01): the Friend Duel chip opens the panel on its note.
+    name: 'modes-friend',
+    hash: 'screens/home/mid/{vp}',
+    strict: true,
+    primary: false,
+    prepare: async (page) => {
+      await page.click('[data-testid="home-friend-soon"]');
+    },
+  },
   // Backlog (UI-3, UI-4): reported, not failed.
   { name: 'modeSelect', hash: 'screens/modeSelect/mid/{vp}', strict: false, primary: false },
   { name: 'warPlan', hash: 'screens/warPlan/mid/{vp}', strict: true, primary: false },
@@ -295,7 +324,7 @@ test.describe('UA-01: every Mode select picker button can be hit', () => {
         }
         return out;
       });
-      expect(res.length).toBe(11);
+      expect(res.length).toBe(12);
       expect(res.filter((x) => !x.hit || x.h < 44)).toEqual([]);
     });
   }
